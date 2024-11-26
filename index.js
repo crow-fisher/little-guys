@@ -3,7 +3,7 @@ var MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
 
 var materialSelect = document.getElementById("materialSelect");
 
-var selectedMaterial = "static";
+var selectedMaterial = "water";
 
 materialSelect.addEventListener('change', (e) => selectedMaterial = e.target.value);
 MAIN_CANVAS.addEventListener('mousemove', handleClick, false);
@@ -33,9 +33,15 @@ class BaseSquare {
         this.posX = Math.floor(posX);
         this.posY = Math.floor(posY);
         this.color = "A1A6B4";
-
+        this.solid = true;
         // block properties - overridden by block type
         this.physicsEnabled = true;
+
+        // water flow parameters
+        this.waterContainment = 0;
+        this.waterContainmentMax = 0.5;
+        this.waterContainmentFillRate = 0.25;
+        this.waterContainmentTransferRate = 0.0005; // what fraction of ticks does it trigger percolate on
 
         this.speed = 0;
         this.physicsBlocksFallen = 0;
@@ -53,7 +59,6 @@ class BaseSquare {
             BASE_SIZE
         );
     };
-
     // Returns true if something happened.
     // Keep looping on physics until all are false.
     physics() {
@@ -90,15 +95,57 @@ class BaseSquare {
         this.posY = Math.floor(finalPos);
         return true;
     }
+    
+    percolateDown() {
+        if (this.waterContainment < this.waterContainmentMax) {
+            this.waterContainment += this.waterContainmentFillRate;
+        }
+        var next = getSquare(this.posX, this.posY + 1);
+        var percolateProbability = (this.waterContainment / this.waterContainmentMax) * this.waterContainmentTransferRate; 
+        if (next == null) {
+            if (Math.random() > (1 - (percolateProbability / 2))) {
+                return addSquare(new WaterSquare(1, 1, this.posX, this.posY + 1));
+            }
+            return false;
+        }
+        if (next.solid) {
+            if (Math.random() > (1 - percolateProbability)) {
+                return next.percolateDown();
+            }
+        }
+        return false;
+    }
+
+    percolateSide(dir) {
+        if (this.waterContainment < this.waterContainmentMax) {
+            this.waterContainment += this.waterContainmentFillRate;
+        }
+        var next = getSquare(this.posX + dir, this.posY);
+        var percolateProbability = (this.waterContainment / this.waterContainmentMax) * this.waterContainmentTransferRate; 
+
+        if (next == null) {
+            if (Math.random() > (1 - (percolateProbability / 2))) {
+                return addSquare(new WaterSquare(1, 1, this.posX + dir, this.posY));
+            }
+            return false;
+        }
+        if (next.solid) {
+            if (Math.random() > (1 - percolateProbability)) {
+                return next.percolateSide(dir);
+            }
+        }
+        return false;
+    }
 
 }
 
-class BlockSquare extends BaseSquare {
+class DirtSquare extends BaseSquare {
     constructor(sizeX, sizeY, posX, posY) {
         super(sizeX, sizeY, posX, posY);
-        var numb = String(randNumber(10, 99));
-        this.color = numb + numb + numb;
-        // this.color = "000100";
+        var numb1 = String(randNumber(60, 80));
+        var numb2 = String(randNumber(25, 35));
+        var numb3 = String(randNumber(0, 9));
+        this.color = numb1 + numb2 + "0" + numb3;
     }
 }
 
@@ -107,6 +154,111 @@ class StaticSquare extends BaseSquare {
         super(sizeX, sizeY, posX, posY);
         this.color = "000100";
         this.physicsEnabled = false;
+    }
+}
+
+class WaterSquare extends BaseSquare {u
+    constructor(sizeX, sizeY, posX, posY) {
+        super(sizeX, sizeY, posX, posY);
+        var numb1 = randNumber(50, 99);
+        var numb2 = Math.min(99, numb1 * 3);
+        this.color = String(numb1) + String(numb1) + String(numb2);
+        this.solid = false;
+    }
+
+    physics() {
+        super.physics();
+        this.calculatePressure();
+    }
+    
+    calculatePressure() {
+        // Water model based on pressure. 
+        // Top: Count how many blocks of water are above me (non-solid blocks!)
+        // Sides: Count how many blocks of water are to the side, OR we hit a 'solid' wall.
+        // Remember: bigger number = below.
+        var pressureTop = 0;
+        var pressureLeft = 0; 
+        var pressureRight = 0;
+
+        var testTopIdx = this.posY - 1; 
+        while (testTopIdx >= 0) {
+            var testSquare = getSquare(this.posX, testTopIdx);
+            if (testSquare != null && !testSquare.solid) {
+                pressureTop += 1;
+                testTopIdx -= 1;
+            } else {
+                break;
+            }
+        }
+
+        var testLeftIdx = this.posX - 1;
+        while (testLeftIdx >= 0) {
+            var testSquare = getSquare(testLeftIdx, this.posY);
+            if (testSquare != null) {
+                if (testSquare.solid) {
+                    pressureLeft = 10 ** 8;
+                    break;
+                } else {
+                    pressureLeft += 1;
+                    testLeftIdx -= 1;
+                } 
+            } else {
+                break;
+            }
+        }
+        var testRightIdx = this.posX + 1;
+        while (testRightIdx <= CANVAS_SQUARES_X) {
+            var testSquare = getSquare(testRightIdx, this.posY);
+            if (testSquare != null) {
+                if (testSquare.solid) {
+                    pressureRight = 10 ** 8;
+                    break;
+                } else {
+                    pressureRight += 1;
+                    testRightIdx += 1;
+                } 
+            } else {
+                break;
+            }
+        }
+
+        if (pressureTop > 0) {
+            if (pressureLeft != pressureRight) {
+                // now we need to flow eithet  
+                if (pressureLeft > pressureRight) {
+                    this.flowSide(1);
+                } else {
+                    this.flowSide(-1);
+                }
+            } else {
+                this.flowSide(randDirection());
+            }
+        }
+        
+        // check if we have a solid block directly below us and percolate it if we do 
+        var below = getSquare(this.posX, this.posY + 1);
+        if (below == null) {
+            return;
+        }
+        if (below.solid) {
+            if (below.percolateDown()) {
+                removeSquare(this);
+            };
+        }
+    }
+    
+    flowSide(dir) {
+        var nextSq = getSquare(this.posX + dir, this.posY);
+        if (nextSq == null) {
+            this.posX += dir;
+        } else if (nextSq.solid) {
+            if (nextSq.percolateSide(dir)) {
+                removeSquare(this);
+                console.log("removing water");
+            };
+        } else {
+            nextSq.flowSide(dir);
+        }
     }
 }
 
@@ -131,6 +283,10 @@ function getSquare(posX, posY) {
     }
     return null;
 }
+
+function removeSquare(square) {
+    ALL_SQUARES = ALL_SQUARES.filter((el) => el != square);
+}
 function reset() {
     for (let i = 0; i < ALL_SQUARES.length; i++) {
         ALL_SQUARES[i].reset();
@@ -149,26 +305,39 @@ function physics() {
         ALL_SQUARES[i].physics();
         ALL_SQUARES[i].physics();
     }
-
+}
+function purge() {
+    ALL_SQUARES = ALL_SQUARES.filter(
+            (test) => {
+                var ret = true; 
+                ret &= test.posX > 0;
+                ret &= test.posX < CANVAS_SQUARES_X;
+                ret &= test.posY > 0;
+                ret &= test.posY < CANVAS_SQUARES_Y;
+                return ret;
+            }
+    );
 }
 
 function main() {
     MAIN_CONTEXT.clearRect(0, 0, CANVAS_SQUARES_X * BASE_SIZE, CANVAS_SQUARES_Y * BASE_SIZE);
     reset();
     physics();
+    purge();
     render();
     doClickAdd();
 }
 
 for (let i = 0; i < CANVAS_SQUARES_X; i++) {
     addSquare(new StaticSquare(1, 1, i, CANVAS_SQUARES_Y - 1));
+    addSquare(new StaticSquare(1, 1, i, CANVAS_SQUARES_Y / 2));
 }
 
-for (let i = 0; i < 5000; i++) {
-    addSquare(new BlockSquare(1, 1,
-        randNumber(0, CANVAS_SQUARES_X),
-        randNumber(0, CANVAS_SQUARES_Y - 2)));
-}
+// for (let i = 0; i < 5000; i++) {
+//     addSquare(new BlockSquare(1, 1,
+//         randNumber(0, CANVAS_SQUARES_X),
+//         randNumber(0, CANVAS_SQUARES_Y - 2)));
+// }
 
 function randNumber(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
@@ -182,8 +351,6 @@ function doClickAdd() {
     if (lastClickEvent == null) {
         return; 
     }
-    console.log(mouseDown);
-
     if (mouseDown > 0) {
         var offsetX = lastClickEvent.offsetX / BASE_SIZE;
         var offsetY = lastClickEvent.offsetY / BASE_SIZE;
@@ -191,13 +358,20 @@ function doClickAdd() {
             case "static":
                 addSquare(new StaticSquare(1, 1, offsetX, offsetY));
                 break;
-            case "block":
-                addSquare(new BlockSquare(1, 1, offsetX, offsetY));
+            case "dirt":
+                addSquare(new DirtSquare(1, 1, offsetX, offsetY));
+                break; 
+            case "water": 
+                addSquare(new WaterSquare(1, 1, offsetX, offsetY));
                 break;
         }
     }
 }
 
-setInterval(main, 1);
+
+function randDirection() {
+    return Math.random() > 0.5 ? 1 : -1
+}
+setInterval(main, 5);
 
 // setTimeout(() => window.location.reload(), 3000);
