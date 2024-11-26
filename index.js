@@ -3,13 +3,17 @@ var MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
 
 var materialSelect = document.getElementById("materialSelect");
 
-var selectedMaterial = "water";
+var selectedMaterial = "dirt";
 
 materialSelect.addEventListener('change', (e) => selectedMaterial = e.target.value);
 MAIN_CANVAS.addEventListener('mousemove', handleClick, false);
 
+var MAX_VISITS = 100;
+
 var mouseDown = 0;
 var lastClickEvent = null;
+var lastTick = Date.now();
+
 document.body.onmousedown = function() { 
     mouseDown = 1;
 }
@@ -20,16 +24,21 @@ document.body.onmouseup = function() {
 // each square is 16x16
 // 'little guys' may aquire multiple squares
 const BASE_SIZE = 8; 
+const MILLIS_PER_TICK = 2;
 var CANVAS_SQUARES_X = 128
 var CANVAS_SQUARES_Y = 64
 
 MAIN_CANVAS.width = CANVAS_SQUARES_X * BASE_SIZE;
 MAIN_CANVAS.height = CANVAS_SQUARES_Y * BASE_SIZE;
 
+var ALL_SQUARES = [];
+var DIRTY_SQUARES = [];
+var NEXT_DIRTY_SQUARES = [];
+
+var visitedBlockCount = {}
+
 class BaseSquare {
-    constructor(sizeX, sizeY, posX, posY) {
-        this.sizeX = sizeX;
-        this.sizeY = sizeY;
+    constructor(posX, posY) {
         this.posX = Math.floor(posX);
         this.posY = Math.floor(posY);
         this.color = "A1A6B4";
@@ -43,6 +52,7 @@ class BaseSquare {
         this.waterContainmentFillRate = 0.25;
         this.waterContainmentTransferRate = 0.0005; // what fraction of ticks does it trigger percolate on
 
+        this.falling = false;
         this.speed = 0;
         this.physicsBlocksFallen = 0;
     };
@@ -59,6 +69,11 @@ class BaseSquare {
             BASE_SIZE
         );
     };
+
+    updatePosition(newPosX, newPosY) {
+        
+    }
+    
     // Returns true if something happened.
     // Keep looping on physics until all are false.
     physics() {
@@ -74,7 +89,6 @@ class BaseSquare {
         if (this.speed == 1) {
             if (getSquare(this.posX, this.posY + 1)) {
                 return false;
-            } else {
             }
         } else {
             for (let i = 1; i < this.speed + 1; i++) {
@@ -93,6 +107,7 @@ class BaseSquare {
         }
         this.physicsBlocksFallen = finalPos - this.posY;
         this.posY = Math.floor(finalPos);
+        markDirtySquare(this);
         return true;
     }
     
@@ -104,12 +119,14 @@ class BaseSquare {
         var percolateProbability = (this.waterContainment / this.waterContainmentMax) * this.waterContainmentTransferRate; 
         if (next == null) {
             if (Math.random() > (1 - (percolateProbability / 2))) {
-                return addSquare(new WaterSquare(1, 1, this.posX, this.posY + 1));
+                markDirtySquare(this);
+                return addSquare(new WaterSquare(this.posX, this.posY + 1));
             }
             return false;
         }
         if (next.solid) {
             if (Math.random() > (1 - percolateProbability)) {
+                markDirtySquare(this);
                 return next.percolateDown();
             }
         }
@@ -125,23 +142,29 @@ class BaseSquare {
 
         if (next == null) {
             if (Math.random() > (1 - (percolateProbability / 2))) {
-                return addSquare(new WaterSquare(1, 1, this.posX + dir, this.posY));
+                markDirtySquare(this);
+                return addSquare(new WaterSquare(this.posX + dir, this.posY));
             }
             return false;
         }
         if (next.solid) {
             if (Math.random() > (1 - percolateProbability)) {
+                markDirtySquare(this);
                 return next.percolateSide(dir);
             }
         }
         return false;
     }
 
+    isDirty() {
+        return false;
+    }
+
 }
 
 class DirtSquare extends BaseSquare {
-    constructor(sizeX, sizeY, posX, posY) {
-        super(sizeX, sizeY, posX, posY);
+    constructor(posX, posY) {
+        super(posX, posY);
         var numb1 = String(randNumber(60, 80));
         var numb2 = String(randNumber(25, 35));
         var numb3 = String(randNumber(0, 9));
@@ -150,20 +173,24 @@ class DirtSquare extends BaseSquare {
 }
 
 class StaticSquare extends BaseSquare {
-    constructor(sizeX, sizeY, posX, posY) {
-        super(sizeX, sizeY, posX, posY);
+    constructor(posX, posY) {
+        super(posX, posY);
         this.color = "000100";
         this.physicsEnabled = false;
     }
 }
 
 class WaterSquare extends BaseSquare {u
-    constructor(sizeX, sizeY, posX, posY) {
-        super(sizeX, sizeY, posX, posY);
+    constructor(posX, posY) {
+        super(posX, posY);
         var numb1 = randNumber(50, 99);
         var numb2 = Math.min(99, numb1 * 3);
         this.color = String(numb1) + String(numb1) + String(numb2);
         this.solid = false;
+    }
+
+    isDirty() {
+        return true;
     }
 
     physics() {
@@ -224,9 +251,9 @@ class WaterSquare extends BaseSquare {u
 
         if (pressureTop > 0) {
             if (pressureLeft != pressureRight) {
-                // now we need to flow eithet  
+                // now we need to flow either
                 if (pressureLeft > pressureRight) {
-                    this.flowSide(1);
+                        this.flowSide(1);
                 } else {
                     this.flowSide(-1);
                 }
@@ -254,7 +281,6 @@ class WaterSquare extends BaseSquare {u
         } else if (nextSq.solid) {
             if (nextSq.percolateSide(dir)) {
                 removeSquare(this);
-                console.log("removing water");
             };
         } else {
             nextSq.flowSide(dir);
@@ -262,7 +288,6 @@ class WaterSquare extends BaseSquare {u
     }
 }
 
-var ALL_SQUARES = [];
 
 function addSquare(square) {
     if (getSquare(square.posX, square.posY) != null) {
@@ -270,7 +295,22 @@ function addSquare(square) {
         return false;
     }
     ALL_SQUARES.push(square);
+    markDirtySquare(square);
     return square;
+}
+
+function markDirtySquare(square) {
+    NEXT_DIRTY_SQUARES.push(square);
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+            var sq = getSquare(square.posX + i - 2, square.posY + j - 2);
+            if (sq == null || sq == square) {
+                continue;
+            } else {
+                NEXT_DIRTY_SQUARES.push(sq);
+            }
+        }
+    }
 }
 
 function getSquare(posX, posY) {
@@ -287,11 +327,15 @@ function getSquare(posX, posY) {
 function removeSquare(square) {
     ALL_SQUARES = ALL_SQUARES.filter((el) => el != square);
 }
+
 function reset() {
     for (let i = 0; i < ALL_SQUARES.length; i++) {
         ALL_SQUARES[i].reset();
     }
     ALL_SQUARES.sort((a, b) => b.posY - a.posY);
+    DIRTY_SQUARES = [...new Set(NEXT_DIRTY_SQUARES.concat(ALL_SQUARES.filter((sq => sq.isDirty()))))];
+    NEXT_DIRTY_SQUARES = [];
+    visitedBlockCount = {};
 }
 
 function render() {
@@ -300,10 +344,8 @@ function render() {
     }
 }
 function physics() {
-    for (let i = 0; i < ALL_SQUARES.length; i++) {
-        ALL_SQUARES[i].physics();
-        ALL_SQUARES[i].physics();
-        ALL_SQUARES[i].physics();
+    for (let i = 0; i < DIRTY_SQUARES.length; i++) {
+        DIRTY_SQUARES[i].physics();
     }
 }
 function purge() {
@@ -320,17 +362,20 @@ function purge() {
 }
 
 function main() {
-    MAIN_CONTEXT.clearRect(0, 0, CANVAS_SQUARES_X * BASE_SIZE, CANVAS_SQUARES_Y * BASE_SIZE);
-    reset();
-    physics();
-    purge();
-    render();
-    doClickAdd();
+    if (Date.now() - lastTick > MILLIS_PER_TICK) {
+        MAIN_CONTEXT.clearRect(0, 0, CANVAS_SQUARES_X * BASE_SIZE, CANVAS_SQUARES_Y * BASE_SIZE);
+        reset();
+        doClickAdd();
+        physics();
+        purge();
+        render();
+        lastTick = Date.now();
+    }
 }
 
 for (let i = 0; i < CANVAS_SQUARES_X; i++) {
-    addSquare(new StaticSquare(1, 1, i, CANVAS_SQUARES_Y - 1));
-    addSquare(new StaticSquare(1, 1, i, CANVAS_SQUARES_Y / 2));
+    addSquare(new StaticSquare(i, CANVAS_SQUARES_Y - 1));
+    addSquare(new StaticSquare(i, CANVAS_SQUARES_Y / 2));
 }
 
 // for (let i = 0; i < 5000; i++) {
@@ -356,13 +401,13 @@ function doClickAdd() {
         var offsetY = lastClickEvent.offsetY / BASE_SIZE;
         switch (selectedMaterial) {
             case "static":
-                addSquare(new StaticSquare(1, 1, offsetX, offsetY));
+                addSquare(new StaticSquare(offsetX, offsetY));
                 break;
             case "dirt":
-                addSquare(new DirtSquare(1, 1, offsetX, offsetY));
+                addSquare(new DirtSquare(offsetX, offsetY));
                 break; 
             case "water": 
-                addSquare(new WaterSquare(1, 1, offsetX, offsetY));
+                addSquare(new WaterSquare(offsetX, offsetY));
                 break;
         }
     }
@@ -372,6 +417,8 @@ function doClickAdd() {
 function randDirection() {
     return Math.random() > 0.5 ? 1 : -1
 }
-setInterval(main, 5);
+
+
+setInterval(main, 1);
 
 // setTimeout(() => window.location.reload(), 3000);
