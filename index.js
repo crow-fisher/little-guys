@@ -31,11 +31,9 @@ var CANVAS_SQUARES_Y = 64
 MAIN_CANVAS.width = CANVAS_SQUARES_X * BASE_SIZE;
 MAIN_CANVAS.height = CANVAS_SQUARES_Y * BASE_SIZE;
 
-var ALL_SQUARES = [];
+var ALL_SQUARES = {}
 var DIRTY_SQUARES = [];
 var NEXT_DIRTY_SQUARES = [];
-
-var visitedBlockCount = {}
 
 class BaseSquare {
     constructor(posX, posY) {
@@ -69,9 +67,14 @@ class BaseSquare {
             BASE_SIZE
         );
     };
-
     updatePosition(newPosX, newPosY) {
-        
+        newPosX = Math.floor(newPosX);
+        newPosY = Math.floor(newPosY);
+
+        ALL_SQUARES[this.posX][this.posY] = null;
+        ALL_SQUARES[newPosX][newPosY] = this;
+        this.posX = newPosX;
+        this.posY = newPosY;
     }
     
     // Returns true if something happened.
@@ -106,7 +109,7 @@ class BaseSquare {
             finalPos = this.posY + this.speed;
         }
         this.physicsBlocksFallen = finalPos - this.posY;
-        this.posY = Math.floor(finalPos);
+        this.updatePosition(this.posX, finalPos);
         markDirtySquare(this);
         return true;
     }
@@ -253,7 +256,7 @@ class WaterSquare extends BaseSquare {u
             if (pressureLeft != pressureRight) {
                 // now we need to flow either
                 if (pressureLeft > pressureRight) {
-                        this.flowSide(1);
+                    this.flowSide(1);
                 } else {
                     this.flowSide(-1);
                 }
@@ -277,7 +280,7 @@ class WaterSquare extends BaseSquare {u
     flowSide(dir) {
         var nextSq = getSquare(this.posX + dir, this.posY);
         if (nextSq == null) {
-            this.posX += dir;
+            this.updatePosition(this.posX + dir, this.posY);
         } else if (nextSq.solid) {
             if (nextSq.percolateSide(dir)) {
                 removeSquare(this);
@@ -294,7 +297,11 @@ function addSquare(square) {
         console.warn("Square not added; coordinates occupied.");
         return false;
     }
-    ALL_SQUARES.push(square);
+    if (!square.posX in ALL_SQUARES) {
+        ALL_SQUARES[square.posX] = {};
+    }
+    ALL_SQUARES[square.posX][square.posY] = square;
+    
     markDirtySquare(square);
     return square;
 }
@@ -314,49 +321,61 @@ function markDirtySquare(square) {
 }
 
 function getSquare(posX, posY) {
-    posX = Math.floor(posX);
-    posY = Math.floor(posY);
-    for (let i = 0; i < ALL_SQUARES.length; i++) {
-        if (ALL_SQUARES[i].posX == posX && ALL_SQUARES[i].posY == posY) {
-            return ALL_SQUARES[i];
-        }
+    if (!(posX in ALL_SQUARES)) {
+        ALL_SQUARES[posX] = {};
     }
-    return null;
+    return ALL_SQUARES[posX][posY];
 }
 
 function removeSquare(square) {
-    ALL_SQUARES = ALL_SQUARES.filter((el) => el != square);
+    ALL_SQUARES[square.posX][square.posY] = null;
 }
 
 function reset() {
-    for (let i = 0; i < ALL_SQUARES.length; i++) {
-        ALL_SQUARES[i].reset();
-    }
-    ALL_SQUARES.sort((a, b) => b.posY - a.posY);
-    DIRTY_SQUARES = [...new Set(NEXT_DIRTY_SQUARES.concat(ALL_SQUARES.filter((sq => sq.isDirty()))))];
+    var iterDirtykeys = [];
+    iterateOnSquares((sq) => {
+        sq.reset();
+        if (sq.isDirty()) {
+            iterDirtykeys.push(sq);
+        }
+    });
+    DIRTY_SQUARES = [...new Set(NEXT_DIRTY_SQUARES.concat(iterDirtykeys))];
     NEXT_DIRTY_SQUARES = [];
     visitedBlockCount = {};
 }
 
 function render() {
-    for (let i = 0; i < ALL_SQUARES.length; i++) {
-        ALL_SQUARES[i].render();
-    }
+    iterateOnSquares((sq) => sq.render());
 }
 function physics() {
-    for (let i = 0; i < DIRTY_SQUARES.length; i++) {
-        DIRTY_SQUARES[i].physics();
+    iterateOnSquares((sq) => sq.physics());
+}
+
+/**
+ * @param {function} func - function with an argumnet of the square it should do the operation on  
+ */
+function iterateOnSquares(func) {
+    var rootKeys = Object.keys(ALL_SQUARES);
+    for (let i = 0; i < rootKeys.length; i++) {
+        var subKeys = Object.keys(ALL_SQUARES[rootKeys[i]]);
+        for (let j = 0; j < subKeys.length; j++) {
+            var sq = ALL_SQUARES[rootKeys[i]][subKeys[j]];
+            if (sq != null) {
+                func(sq);
+            }
+        }
     }
 }
 function purge() {
-    ALL_SQUARES = ALL_SQUARES.filter(
-            (test) => {
+    iterateOnSquares((sq) => {
                 var ret = true; 
-                ret &= test.posX > 0;
-                ret &= test.posX < CANVAS_SQUARES_X;
-                ret &= test.posY > 0;
-                ret &= test.posY < CANVAS_SQUARES_Y;
-                return ret;
+                ret &= sq.posX > 0;
+                ret &= sq.posX < CANVAS_SQUARES_X;
+                ret &= sq.posY > 0;
+                ret &= sq.posY < CANVAS_SQUARES_Y;
+                if (!ret) {
+                    removeSquare(sq);
+                }
             }
     );
 }
