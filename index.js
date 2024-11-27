@@ -1,7 +1,7 @@
 var MAIN_CANVAS = document.getElementById("main");
 var MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
-
 var materialSelect = document.getElementById("materialSelect");
+var fastTerrain = document.getElementById("fastTerrain");
 
 var selectedMaterial = "dirt";
 
@@ -46,8 +46,8 @@ class BaseSquare {
         this.waterContainment = 0;
         this.waterContainmentMax = 0.5;
         this.waterContainmentFillRate = 0.25;
-        this.waterContainmentTransferRate = 0.05; // what fraction of ticks does it trigger percolate on
-
+        this.waterContainmentTransferRate = 0.0005; // what fraction of ticks does it trigger percolate on
+        this.waterContainmentEvaporationRate = 0.0005; // what fraction of contained water will get reduced per tick
         this.evaporationRate = 0;
         this.falling = false;
         this.speed = 0;
@@ -107,6 +107,8 @@ class BaseSquare {
     // Returns true if something happened.
     // Keep looping on physics until all are false.
     physics() {
+        this.evaporateInnerMoisture();
+
         if (!this.physicsEnabled) {
             return false;
         }
@@ -193,6 +195,28 @@ class BaseSquare {
         }
     }
 
+    evaporateInnerMoisture() {
+        if (this.waterContainment == 0) {
+            return;
+        }
+
+        var pressureTop = 0;
+        var testTopIdx = this.posY - 1;
+        while (testTopIdx >= 0) {
+            var testSquare = getSquare(this.posX, testTopIdx);
+            if (testSquare != null && !testSquare.solid) {
+                pressureTop += 1;
+                testTopIdx -= 1;
+            } else {
+                break;
+            }
+        }
+
+        if (Math.random() > (1 - this.waterContainmentEvaporationRate / 2 ** pressureTop)) {
+            this.waterContainment = Math.max(0, this.waterContainment - this.waterContainmentTransferRate);
+        }
+    }
+
     isDirty() {
         return false;
     }
@@ -224,6 +248,17 @@ class RainSquare extends StaticSquare {
     }
     physics() {
         if (Math.random() > 0.999) {
+            addSquare(new WaterSquare(this.posX, this.posY + 1));
+        }
+    }
+}
+class HeavyRainSquare extends StaticSquare {
+    constructor(posX, posY) {
+        super(posX, posY);
+        this.colorBase = "#FFAAAA";
+    }
+    physics() {
+        if (Math.random() > 0.98) {
             addSquare(new WaterSquare(this.posX, this.posY + 1));
         }
     }
@@ -444,7 +479,6 @@ function main() {
 
 for (let i = 0; i < CANVAS_SQUARES_X; i++) {
     addSquare(new StaticSquare(i, CANVAS_SQUARES_Y - 1));
-    addSquare(new StaticSquare(i, CANVAS_SQUARES_Y / 2));
 }
 
 // for (let i = 0; i < 5000; i++) {
@@ -468,21 +502,31 @@ function doClickAdd() {
     if (mouseDown > 0) {
         var offsetX = lastClickEvent.offsetX / BASE_SIZE;
         var offsetY = lastClickEvent.offsetY / BASE_SIZE;
-        switch (selectedMaterial) {
-            case "static":
-                addSquare(new StaticSquare(offsetX, offsetY));
+        for (let i = 0; i < (CANVAS_SQUARES_Y - offsetY); i++) {
+            var curY = offsetY + i;
+            switch (selectedMaterial) {
+                case "static":
+                    addSquare(new StaticSquare(offsetX, curY));
+                    break;
+                case "dirt":
+                    addSquare(new DirtSquare(offsetX, curY));
+                    break;
+                case "water":
+                    addSquare(new WaterSquare(offsetX, curY));
+                    break;
+                case "rain":
+                    addSquare(new RainSquare(offsetX, curY));
+                    break;
+                case "heavy rain":
+                    addSquare(new HeavyRainSquare(offsetX, curY));
+                    break;
+            }
+            if (!fastTerrain.checked) {
                 break;
-            case "dirt":
-                addSquare(new DirtSquare(offsetX, offsetY));
-                break;
-            case "water":
-                addSquare(new WaterSquare(offsetX, offsetY));
-                break;
-            case "rain":
-                addSquare(new RainSquare(offsetX, offsetY));
-                break;
+            }
         }
     }
+
 }
 
 
