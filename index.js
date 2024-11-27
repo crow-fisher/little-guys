@@ -23,8 +23,8 @@ document.body.onmouseup = function () {
 // 'little guys' may aquire multiple squares
 const BASE_SIZE = 8;
 const MILLIS_PER_TICK = 2;
-var CANVAS_SQUARES_X = 256
-var CANVAS_SQUARES_Y = 128;
+var CANVAS_SQUARES_X = 256 * 2;
+var CANVAS_SQUARES_Y = 128 * 2;
 
 MAIN_CANVAS.width = CANVAS_SQUARES_X * BASE_SIZE;
 MAIN_CANVAS.height = CANVAS_SQUARES_Y * BASE_SIZE;
@@ -441,15 +441,19 @@ function physics() {
  */
 function iterateOnSquares(func) {
     var rootKeys = Object.keys(ALL_SQUARES);
+    var squareOrder = [];
     for (let i = 0; i < rootKeys.length; i++) {
         var subKeys = Object.keys(ALL_SQUARES[rootKeys[i]]);
         for (let j = 0; j < subKeys.length; j++) {
             var sq = ALL_SQUARES[rootKeys[i]][subKeys[j]];
             if (sq != null) {
-                func(sq);
+                squareOrder.push(sq);
+                // func(sq);
             }
         }
     }
+    squareOrder.sort((a, b) => (Math.random() > 0.01 ? b.posY - a.posY : a.posY - b.posY));
+    squareOrder.forEach(func);
 }
 function purge() {
     iterateOnSquares((sq) => {
