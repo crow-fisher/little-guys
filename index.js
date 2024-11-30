@@ -84,6 +84,7 @@ class BaseSquare {
         this.falling = false;
         this.speed = 0;
         this.physicsBlocksFallen = 0;
+        this.holdPositionUntil = 0;
     };
     reset() {
         if (this.blockHealth <= 0) {
@@ -127,9 +128,12 @@ class BaseSquare {
 
     }
     updatePosition(newPosX, newPosY) {
+        if (this.holdPositionUntil > Date.now()) {
+            return;
+        }
+
         newPosX = Math.floor(newPosX);
         newPosY = Math.floor(newPosY);
-
         ALL_SQUARES[this.posX][this.posY] = null;
         ALL_SQUARES[newPosX][newPosY] = this;
         this.posX = newPosX;
@@ -199,6 +203,32 @@ class BaseSquare {
         }
         return blockHealthCost;
     }
+
+    percolateUp() {
+        var blockHealthCost = 0;
+        var startContainment = this.waterContainment;
+        if (this.waterContainment < this.waterContainmentMax) {
+            this.waterContainment += this.waterContainmentFillRate;
+        }
+        blockHealthCost += this.waterContainment - startContainment;
+        var next = getSquare(this.posX, this.posY - 1);
+        var percolateProbability = (this.waterContainment / this.waterContainmentMax) * this.waterContainmentTransferRate;
+        if (next == null) {
+            if (Math.random() > (1 - (percolateProbability / 2))) {
+                markDirtySquare(this);
+                return blockHealthCost + (addSquare(new WaterSquare(this.posX, this.posY - 1)) != null ? 1 : 0);
+            }
+            return blockHealthCost;
+        }
+        if (next.solid) {
+            if (Math.random() > (1 - percolateProbability)) {
+                markDirtySquare(this);
+                return blockHealthCost + next.percolateDown();
+            }
+        }
+        return blockHealthCost;
+    }
+
 
     percolateSide(dir) {
         var blockPercolateCost = 0;
@@ -310,6 +340,9 @@ class HeavyRainSquare extends StaticSquare {
 class WaterSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
+        this.currentPressure = 0;
+        this.boundedTop = false;
+
         var numb1 = randNumber(50, 99);
         var numb2 = Math.min(99, numb1 * 3);
         this.colorBase = String(numb1) + String(numb1) + String(numb2);
@@ -327,10 +360,6 @@ class WaterSquare extends BaseSquare {
     }
 
     pressurePhysics() {
-        // Water model based on pressure. 
-        // Top: Count how many blocks of water are above me (non-solid blocks!)
-        // Sides: Count how many blocks of water are to the side, OR we hit a 'solid' wall.
-        // Remember: bigger number = below.
         var pressureTop = 0;
         var pressureLeft = 0;
         var pressureRight = 0;
@@ -338,10 +367,16 @@ class WaterSquare extends BaseSquare {
         var testTopIdx = this.posY - 1;
         while (testTopIdx >= 0) {
             var testSquare = getSquare(this.posX, testTopIdx);
-            if (testSquare != null && !testSquare.solid) {
-                pressureTop += 1;
-                testTopIdx -= 1;
+            if (testSquare != null) {
+                if (testSquare.solid) {
+                    this.boundedTop = true;
+                    break;
+                } else {
+                    pressureTop += 1;
+                    testTopIdx -= 1;
+                }
             } else {
+                this.boundedTop = false;
                 break;
             }
         }
@@ -377,9 +412,48 @@ class WaterSquare extends BaseSquare {
             }
         }
 
+        // 'water pressure' routine
+        // rules: 
+
+        // default case (cup):
+        // * the left and right sides must be solid (ie, pressure 10 e 8)
+        // * then save whatever the pressureTop is
+        // * otherwise it's zero.
+
+        // but we also need to consider the case of a tube flow 
+        // where we are bounded by on all sides
+        // in that case, take the highest pressure from an adjacent block
+
+        // but we still need the default case pressure value there, so we can determine 
+        // if we even need to do flowage
+
+        // because if neighbor pressure is higher than normal pressure, 
+        // *and* we are unbounded up top, then we need to flow *up*
+
+        if (pressureLeft == pressureRight && pressureLeft == 10 ** 8) {
+            this.currentPressure = pressureTop;
+            for (var i = -1; i < 1; i++) {
+                for (var j = 0; j < 1; j++) {
+                    var sq = getSquare(this.posX + i, this.posY - j)
+                    if (sq != null && sq.solid == false) {
+                        this.currentPressure = Math.max(this.currentPressure, sq.currentPressure + j);
+                    }
+                }
+            }
+        } else {
+            // not bounded on left or right side, still gooshy
+            this.currentPressure = 0; 
+        }
+
+        if (this.currentPressure > pressureTop) {
+            this.flowUp();
+            this.holdPositionUntil = Date.now() + MILLIS_PER_TICK * 3;
+            console.log("flow up");
+        }
+
+
         if (pressureTop > 0) {
             if (pressureLeft != pressureRight) {
-                // now we need to flow either
                 if (pressureLeft > pressureRight) {
                     this.flowSide(1);
                 } else {
@@ -417,6 +491,14 @@ class WaterSquare extends BaseSquare {
             nextSq.flowSide(dir);
         }
     }
+    flowUp() {
+        console.log(491);
+        var nextSq = getSquare(this.posX, this.posY - 1);
+        if (nextSq == null) {
+            this.updatePosition(this.posX, this.posY - 1);
+        }
+    }
+
 }
 
 
@@ -574,7 +656,7 @@ function doClickAdd() {
         var dy = y2 - y1;
         var dz = Math.pow(dx ** 2 + dy ** 2, 0.5);
     
-        var totalCount = Math.round(dz);
+        var totalCount = Math.max(1, Math.round(dz));
         var ddx = dx / totalCount;
         var ddy = dy / totalCount; 
         for (let i = 0; i < totalCount; i++) {
