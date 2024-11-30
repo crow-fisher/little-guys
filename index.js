@@ -562,8 +562,6 @@ function doClickAdd() {
         var offsetY = lastClickEvent.offsetY / BASE_SIZE;
         var prevOffsetX = (lastLastClickEvent == null ? lastClickEvent : lastLastClickEvent).offsetX / BASE_SIZE;
         var prevOffsetY = (lastLastClickEvent == null ? lastClickEvent : lastLastClickEvent).offsetY / BASE_SIZE;
-        var dirX = (offsetX - prevOffsetX > 0 ? 1 : -1);
-        var dirY = (offsetY - prevOffsetY > 0 ? 1 : -1);
 
         // point slope motherfuckers 
 
