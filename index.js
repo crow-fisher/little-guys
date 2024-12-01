@@ -24,8 +24,8 @@ document.body.onmouseup = function () {
 // 'little guys' may aquire multiple squares
 const BASE_SIZE = 8;
 var MILLIS_PER_TICK = 2;
-var CANVAS_SQUARES_X = 160; //6;
-var CANVAS_SQUARES_Y = 100; // 8;
+var CANVAS_SQUARES_X = 60; //6;
+var CANVAS_SQUARES_Y = 80; // 8;
 var ERASE_RADIUS = 2;
 var lastLastClickEvent = null;
 
@@ -34,9 +34,13 @@ MAIN_CANVAS.height = CANVAS_SQUARES_Y * BASE_SIZE;
 
 var stats = new Map();
 var statsLastUpdatedTime = 0;
+var NUM_GROUPS = 0;
 var ALL_SQUARES = new Map();
 var DIRTY_SQUARES = [];
 var NEXT_DIRTY_SQUARES = [];
+
+var WATERFLOW_TARGET_SQUARES = new Set();
+var WATERFLOW_CANDIDATE_SQUARES = new Set();
 
 var rightMouseClicked = false;
 
@@ -86,12 +90,15 @@ class BaseSquare {
         this.falling = false;
         this.speed = 0;
         this.physicsBlocksFallen = 0;
+
+        this.group = -1;
     };
     reset() {
         if (this.blockHealth <= 0) {
             removeSquare(this);
         }
         this.physicsBlocksFallen = 0;
+        this.group = -1;
         this.speed += 1;
     }
     render() {
@@ -132,38 +139,53 @@ class BaseSquare {
         newPosY = Math.floor(newPosY);
         var existingSq = getSquare(newPosX, newPosY);
         if (existingSq) {
-            if (!existingSq.solid) {
-                var moveLocations = [
-                    [1, 0],
-                    [-1, 0],
-                    [0, 1],
-                    [1, 1],
-                    [-1, 1],
-                    [0, -1],
-                    [1, -1],
-                    [-1, -1]
-                ];
-                for (let i = 0; i < moveLocations.length; i++) {
-                    var moveLocation = moveLocations[i];
-                    var finalX = moveLocation[0] + existingSq.posX;
-                    var finalY = moveLocation[1] + existingSq.posY;
-                    var testSq = getSquare(finalX, finalY);
-                    if (testSq == null) {
-                        existingSq.updatePosition(finalX, finalY);
-                    }
-                }
-            }
+            return false;
+        } else {
+            ALL_SQUARES[this.posX][this.posY] = null;
+            ALL_SQUARES[newPosX][newPosY] = this;
+            this.posX = newPosX;
+            this.posY = newPosY;
+            return true;
         }
-        ALL_SQUARES[this.posX][this.posY] = null;
-        ALL_SQUARES[newPosX][newPosY] = this;
-        this.posX = newPosX;
-        this.posY = newPosY;
+    }
+
+    calculateGroup() {
+        if (this.group != -1) {
+            return;
+        }
+        var groupNeighbors = new Set(getNeighbors(this.posX, this.posY).filter((sq) => sq != null && this.colorBase == sq.colorBase));
+        groupNeighbors.add(this);
+        while (true) {
+            var startGroupNeighborsSize = groupNeighbors.size;
+            groupNeighbors.forEach((neighbor) => {
+                var neighborGroupNeighbors = new Set(getNeighbors(neighbor.posX, neighbor.posY).filter((sq) => sq != null && this.colorBase == sq.colorBase));
+                neighborGroupNeighbors.forEach((neighborGroupNeighbor) => groupNeighbors.add(neighborGroupNeighbor))
+            })
+            var endGroupNeighborsSize = groupNeighbors.size;
+            if (startGroupNeighborsSize == endGroupNeighborsSize) {
+                break;
+            }   
+        }
+
+        var group = Array.from(groupNeighbors).map((x) => x.group).find((x) => x != -1);
+        if (group != null) {
+            // then we have already set this group, somehow
+            // probably some physics shenanigans
+            groupNeighbors.forEach((x) => x.group = group);
+            this.group = group;
+            return;
+        }
+
+        var nextGroupId = getNextGroupId();
+        groupNeighbors.forEach((x) => x.group = nextGroupId);
+
     }
 
     // Returns true if something happened.
     // Keep looping on physics until all are false.
     physics() {
         this.evaporateInnerMoisture();
+        this.calculateGroup();
 
         if (!this.physicsEnabled) {
             return false;
@@ -363,12 +385,20 @@ class HeavyRainSquare extends StaticSquare {
 class WaterSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
-        this.currentPressure = 0;
         this.boundedTop = false;
         this.colorBase = "#79beee";
         this.solid = false;
         this.evaporationRate = 0;
-        this.viscocity = 0.02;
+        this.viscocity = 0.8;
+
+        this.currentPressureDirect = 0;
+        this.currentPressureIndirect = 0;
+    }
+
+    reset() {
+        super.reset();
+        this.currentPressureDirect = 0;
+        this.currentPressureIndirect = 0;
     }
 
     isDirty() {
@@ -387,7 +417,7 @@ class WaterSquare extends BaseSquare {
         // Apply this effect for 20% of the block's visual value. 
         // As a fraction of 0 to 255, create either perfect white or perfect grey.
         
-        var num = this.currentPressure;
+        var num = this.currentPressureIndirect;
         var numMax = getGlobalStatistic("pressure") + 1;
         
         var featureColor255 = (1 - (num / numMax )) * 255;
@@ -409,157 +439,78 @@ class WaterSquare extends BaseSquare {
     }
 
     pressurePhysics() {
-        var pressureTop = 0;
-        var pressureLeft = 0;
-        var pressureRight = 0;
-
-        var testTopIdx = this.posY - 1;
-        while (testTopIdx >= 0) {
-            var testSquare = getSquare(this.posX, testTopIdx);
-            if (testSquare != null) {
-                if (testSquare.solid) {
-                    this.boundedTop = true;
-                    break;
-                } else {
-                    pressureTop += 1;
-                    testTopIdx -= 1;
-                }
-            } else {
-                this.boundedTop = false;
-                break;
-            }
-        }
-
-        var testLeftIdx = this.posX - 1;
-        while (testLeftIdx >= 0) {
-            var testSquare = getSquare(testLeftIdx, this.posY);
-            if (testSquare != null) {
-                if (testSquare.solid) {
-                    pressureLeft = 10 ** 8;
-                    break;
-                } else {
-                    pressureLeft += 1;
-                    testLeftIdx -= 1;
-                }
-            } else {
-                break;
-            }
-        }
-        var testRightIdx = this.posX + 1;
-        while (testRightIdx <= CANVAS_SQUARES_X) {
-            var testSquare = getSquare(testRightIdx, this.posY);
-            if (testSquare != null) {
-                if (testSquare.solid) {
-                    pressureRight = 10 ** 8;
-                    break;
-                } else {
-                    pressureRight += 1;
-                    testRightIdx += 1;
-                }
-            } else {
-                break;
-            }
-        }
-
-        // 'water pressure' routine
-        // rules: 
-
-        // default case (cup):
-        // * the left and right sides must be solid (ie, pressure 10 e 8)
-        // * then save whatever the pressureTop is
-        // * otherwise it's zero.
-
-        // but we also need to consider the case of a tube flow 
-        // where we are bounded by on all sides
-        // in that case, take the highest pressure from an adjacent block
-
-        // but we still need the default case pressure value there, so we can determine 
-        // if we even need to do flowage
-
-        // because if neighbor pressure is higher than normal pressure, 
-        // *and* we are unbounded up top, then we need to flow *up*
-
-        if (pressureLeft == pressureRight && pressureLeft == 10 ** 8) {
-            this.currentPressure = pressureTop;
-            for (var i = -1; i < 2; i++) {
-                for (var j = 0; j < 2; j++) {
-                    var sq = getSquare(this.posX + i, this.posY - j)
-                    if (sq != null && sq.solid == false) {
-                        this.currentPressure = Math.max(this.currentPressure, sq.currentPressure + j);
-                    }
-                }
-            }
-        } else {
-            // not bounded on left or right side, still gooshy
-            this.currentPressure = Math.min(pressureTop, (pressureLeft + pressureRight) / 2); 
-        }
-
-        if (pressureLeft == pressureRight && pressureLeft == 10 ** 8) {
-            if (this.currentPressure - pressureTop > 2) {
-                this.flowUp();
-            }
-        }
-
-        updateGlobalStatistic("pressure", this.currentPressure);
-
-        if (pressureTop > 0) {
-            if (pressureLeft != pressureRight) {
-                if (Math.random() > (1 - this.viscocity)) {
-                    if (pressureLeft > pressureRight) {
-                        this.flowSide(1);
-                    } else {
-                        this.flowSide(-1);
-                    }
-                }
-
-            } else {
-                this.flowSide(randDirection());
-            }
-        } else {
-            // Evaporation! 
-            if (Math.random() > 0.5) {
-                this.blockHealth -= this.evaporationRate; 
-            }
-        }
-
-        // check if we have a solid block directly below us and percolate it if we do 
-        var below = getSquare(this.posX, this.posY + 1);
-        if (below == null) {
+        if (getSquare(this.posX, this.posY + 1) == null) {
             return;
         }
-        if (below.solid) {
-            this.blockHealth -= below.percolateDown();
-        }
+        this.calculatePressures();
+        this.calculateCandidateFlows();
     }
 
-    flowSide(dir) {
-        var nextSq = getSquare(this.posX + dir, this.posY);
-        if (nextSq == null) {
-            // side flowage has been...annoying. 
-            // we are going to opprotunistically fill in the water square where we are putting in air, 
-            // and then hope older me can make the water go away from the top automatically
-
-            var nextSqNeighbors = getNeighbors(this.posX + dir, this.posY);
-            var nextSqNeighborsFiltered = nextSqNeighbors.filter((x) => x != null);
-            
-            if (nextSqNeighbors.length == nextSqNeighborsFiltered.length) {
-                addSquare(new WaterSquare(this.posX + dir, this.posY));
-            } else {
-                this.updatePosition(this.posX + dir, this.posY);
+    calculateCandidateFlows() {
+        var neighbors = getNeighbors(this.posX, this.posY);
+        if (this.currentPressureIndirect == 0) {
+            WATERFLOW_CANDIDATE_SQUARES.add(this);
+            for (let i = 0; i < neighbors.length; i++) {
+                var sq = neighbors[i];
+                if (sq == null || sq.solid) {
+                    continue;
+                }
+                if (sq.currentPressureIndirect == 0) {
+                    WATERFLOW_CANDIDATE_SQUARES.add(sq);
+                }
             }
-
-        } else if (nextSq.solid) {
-            if (nextSq.percolateSide(dir)) {
-                removeSquare(this);
-            };
-        } else {
-            nextSq.flowSide(dir);
+        }
+        if (this.currentPressureIndirect >= this.currentPressureDirect) {
+            for (var i = -1; i < 2; i++) {
+                for (var j = -1; j < 2; j++) {
+                    if (i == 0 && j == 0) {
+                        continue;
+                    }
+                    var sq = getSquare(this.posX + i, this.posY + j);
+                    if (sq == null) {
+                        WATERFLOW_TARGET_SQUARES.add([this.posX + i, this.posY + j, this.group]);
+                    }
+                }
+            }
         }
     }
-    flowUp() {
-        var nextSq = getSquare(this.posX, this.posY - 1);
-        if (nextSq == null) {
-            this.updatePosition(this.posX, this.posY - 1);
+
+    calculatePressures() {
+        this.calculateDirectPressure();
+        this.calculateIndirectPressure();
+        updateGlobalStatistic("pressure", this.currentPressureIndirect);
+    }
+
+    /**
+     * Direct pressure is how many blocks of water are directly above us. 
+     */
+    calculateDirectPressure() {
+        this.currentPressureDirect = 0;
+        var curY = this.posY - 1;
+        while (true) {
+            var sq = getSquare(this.posX, curY);
+            if (sq == null) {
+                break;
+            }
+            if (sq.solid) {
+                break;
+            }
+            curY -= 1;
+            this.currentPressureDirect += 1;
+        }
+    }
+    calculateIndirectPressure() {
+        this.currentPressureIndirect = this.currentPressureDirect;
+        var neighbors = getNeighbors(this.posX, this.posY);
+        for (let i = 0; i < neighbors.length; i++) {
+            var sq = neighbors[i];
+            if (sq == null || sq.solid) {
+                continue;
+            }
+            this.currentPressureIndirect = Math.max(
+                this.currentPressureIndirect,
+                sq.currentPressureIndirect + (this.posY - sq.posY)
+            ); 
         }
     }
 }
@@ -637,6 +588,8 @@ function reset() {
     NEXT_DIRTY_SQUARES = [];
     visitedBlockCount = {};
     stats["pressure"] = 0;
+    WATERFLOW_TARGET_SQUARES = new Set();
+    WATERFLOW_CANDIDATE_SQUARES = new Set();
 }
 
 function render() {
@@ -679,27 +632,37 @@ function purge() {
     );
 }
 
+function doWaterFlow() {
+    if (WATERFLOW_CANDIDATE_SQUARES.size > 0 && WATERFLOW_TARGET_SQUARES.size > 0) {
+        // we need to do some water-mcflowin!
+        var candidate_squares_as_list = Array.from(WATERFLOW_CANDIDATE_SQUARES);
+        var target_squares_as_list = Array.from(WATERFLOW_TARGET_SQUARES);
+        target_squares_as_list.sort((a, b) => b[1] - a[1]);
+        for (let i = 0; i < Math.min(candidate_squares_as_list.length, target_squares_as_list.length); i++) {
+            var candidate = candidate_squares_as_list[i];
+            var target = target_squares_as_list[i];
+            if (candidate.group == target[2]) {
+                if (Math.random() > (1 - candidate.viscocity)) {
+                    candidate.updatePosition(target[0], target[1]);
+                }
+            }
+        }
+    }
+}
+
 function main() {
     if (Date.now() - lastTick > MILLIS_PER_TICK) {
         MAIN_CONTEXT.clearRect(0, 0, CANVAS_SQUARES_X * BASE_SIZE, CANVAS_SQUARES_Y * BASE_SIZE);
         reset();
         doClickAdd();
         physics();
+        doWaterFlow();
         purge();
         render();
         lastTick = Date.now();
     }
 }
 
-for (let i = 0; i < CANVAS_SQUARES_X; i++) {
-    addSquare(new StaticSquare(i, CANVAS_SQUARES_Y - 1));
-}
-
-// for (let i = 0; i < 5000; i++) {
-//     addSquare(new BlockSquare(1, 1,
-//         randNumber(0, CANVAS_SQUARES_X),
-//         randNumber(0, CANVAS_SQUARES_Y - 2)));
-// }
 
 function randNumber(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
@@ -787,9 +750,9 @@ function doErase(x, y) {
     }
 }
 
-
-function randDirection() {
-    return Math.random() > 0.5 ? 1 : -1
+function getNextGroupId() {
+    NUM_GROUPS += 1;
+    return NUM_GROUPS;
 }
 
 // thanks https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
@@ -803,13 +766,6 @@ function hexToRgb(hex) {
 }
 function rgbToHex(r, g, b) {
     return "#" + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1);
-  }
-
-setInterval(main, 1);
-
-// setTimeout(() => window.location.reload(), 3000);
-window.oncontextmenu = function () {
-    return false;     // cancel default menu
   }
 
 function updateGlobalStatistic(name, value) {
@@ -826,4 +782,16 @@ function getGlobalStatistic(name) {
     }
     return stats[name];
 }
+
   
+
+for (let i = 0; i < CANVAS_SQUARES_X; i++) {
+    addSquare(new StaticSquare(i, CANVAS_SQUARES_Y - 1));
+}
+
+setInterval(main, 1);
+
+// setTimeout(() => window.location.reload(), 3000);
+window.oncontextmenu = function () {
+    return false;     // cancel default menu
+  }
