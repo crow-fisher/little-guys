@@ -23,9 +23,9 @@ document.body.onmouseup = function () {
 // each square is 16x16
 // 'little guys' may aquire multiple squares
 const BASE_SIZE = 8;
-const MILLIS_PER_TICK = 2;
-var CANVAS_SQUARES_X = 256;
-var CANVAS_SQUARES_Y = 128;
+var MILLIS_PER_TICK = 2;
+var CANVAS_SQUARES_X = 6; //6;
+var CANVAS_SQUARES_Y = 5; // 8;
 var ERASE_RADIUS = 2;
 var lastLastClickEvent = null;
 
@@ -467,11 +467,11 @@ class WaterSquare extends BaseSquare {
             }
         } else {
             // not bounded on left or right side, still gooshy
-            this.currentPressure = Math.min(pressureTop, Math.min(pressureLeft, pressureRight)); 
+            this.currentPressure = Math.min(pressureTop, (pressureLeft + pressureRight) / 2); 
         }
 
-        if (this.currentPressure > pressureTop) {
-            if (Math.random() > (1 - this.viscocity)) {
+        if (pressureLeft == pressureRight && pressureLeft == 10 ** 8) {
+            if (pressureTop == 0 && this.currentPressure > 0) {
                 this.flowUp();
             }
         }
@@ -644,7 +644,7 @@ function main() {
 }
 
 for (let i = 0; i < CANVAS_SQUARES_X; i++) {
-    addSquare(new DrainSquare(i, CANVAS_SQUARES_Y - 1));
+    addSquare(new StaticSquare(i, CANVAS_SQUARES_Y - 1));
 }
 
 // for (let i = 0; i < 5000; i++) {
