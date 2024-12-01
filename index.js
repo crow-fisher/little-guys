@@ -397,8 +397,6 @@ class WaterSquare extends BaseSquare {
 
     reset() {
         super.reset();
-        this.currentPressureDirect = 0;
-        this.currentPressureIndirect = 0;
     }
 
     isDirty() {
@@ -408,6 +406,7 @@ class WaterSquare extends BaseSquare {
     physics() {
         super.physics();
         this.pressurePhysics();
+        this.calculatePressures();
     }
 
     calculateColor() {
@@ -442,7 +441,6 @@ class WaterSquare extends BaseSquare {
         if (getSquare(this.posX, this.posY + 1) == null) {
             return;
         }
-        this.calculatePressures();
         this.calculateCandidateFlows();
     }
 
