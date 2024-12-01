@@ -32,7 +32,9 @@ var lastLastClickEvent = null;
 MAIN_CANVAS.width = CANVAS_SQUARES_X * BASE_SIZE;
 MAIN_CANVAS.height = CANVAS_SQUARES_Y * BASE_SIZE;
 
-var ALL_SQUARES = {}
+var stats = new Map();
+var statsLastUpdatedTime = 0;
+var ALL_SQUARES = new Map();
 var DIRTY_SQUARES = [];
 var NEXT_DIRTY_SQUARES = [];
 
@@ -106,7 +108,6 @@ class BaseSquare {
     calculateColor() {
         var baseColorRGB = hexToRgb(this.colorBase);
         var darkeningStrength = 0.3;
-
         // Water Saturation Calculation
         // Apply this effect for 20% of the block's visual value. 
         // As a fraction of 0 to 255, create either perfect white or perfect grey.
@@ -342,10 +343,7 @@ class WaterSquare extends BaseSquare {
         super(posX, posY);
         this.currentPressure = 0;
         this.boundedTop = false;
-
-        var numb1 = randNumber(50, 99);
-        var numb2 = Math.min(99, numb1 * 3);
-        this.colorBase = String(numb1) + String(numb1) + String(numb2);
+        this.colorBase = "#79beee";
         this.solid = false;
         this.evaporationRate = 0.0001;
     }
@@ -357,6 +355,34 @@ class WaterSquare extends BaseSquare {
     physics() {
         super.physics();
         this.pressurePhysics();
+    }
+
+    calculateColor() {
+        var baseColorRGB = hexToRgb(this.colorBase);
+        var darkeningStrength = 0.3;
+        // Water Saturation Calculation
+        // Apply this effect for 20% of the block's visual value. 
+        // As a fraction of 0 to 255, create either perfect white or perfect grey.
+        
+        var num = this.currentPressure;
+        var numMax = getGlobalStatistic("pressure") + 1;
+        
+        var featureColor255 = (1 - (num / numMax )) * 255;
+        var darkeningColorRGB = {r: featureColor255, b: featureColor255, g: featureColor255};
+        
+        ['r', 'g', 'b'].forEach((p) => {
+            darkeningColorRGB[p] *= darkeningStrength;
+            baseColorRGB[p] *= (1 - darkeningStrength);
+        });
+
+        var resColor = {
+            r: darkeningColorRGB.r + baseColorRGB.r,
+            g: darkeningColorRGB.g + baseColorRGB.g,
+            b: darkeningColorRGB.b + baseColorRGB.b
+        }
+
+        return rgbToHex(Math.floor(resColor.r), Math.floor(resColor.g), Math.floor(resColor.b));
+
     }
 
     pressurePhysics() {
@@ -448,9 +474,9 @@ class WaterSquare extends BaseSquare {
         if (this.currentPressure > pressureTop) {
             this.flowUp();
             this.holdPositionUntil = Date.now() + MILLIS_PER_TICK * 3;
-            console.log("flow up");
         }
 
+        updateGlobalStatistic("pressure", this.currentPressure);
 
         if (pressureTop > 0) {
             if (pressureLeft != pressureRight) {
@@ -492,7 +518,6 @@ class WaterSquare extends BaseSquare {
         }
     }
     flowUp() {
-        console.log(491);
         var nextSq = getSquare(this.posX, this.posY - 1);
         if (nextSq == null) {
             this.updatePosition(this.posX, this.posY - 1);
@@ -508,7 +533,7 @@ function addSquare(square) {
         return false;
     }
     if (!square.posX in ALL_SQUARES) {
-        ALL_SQUARES[square.posX] = {};
+        ALL_SQUARES[square.posX] = new Map();
     }
     ALL_SQUARES[square.posX][square.posY] = square;
 
@@ -560,6 +585,7 @@ function reset() {
     DIRTY_SQUARES = [...new Set(NEXT_DIRTY_SQUARES.concat(iterDirtykeys))];
     NEXT_DIRTY_SQUARES = [];
     visitedBlockCount = {};
+    stats["pressure"] = 0;
 }
 
 function render() {
@@ -735,5 +761,18 @@ window.oncontextmenu = function () {
     return false;     // cancel default menu
   }
 
-
+function updateGlobalStatistic(name, value) {
+    if (name in stats) {
+        if (value > (stats[name]) ) {
+            stats[name] = value;
+        }
+    }
+}
+function getGlobalStatistic(name) { 
+    if (!name in stats) {
+        console.warn("getGlobalStatistic miss for ", name)
+        return -1;
+    }
+    return stats[name];
+}
   
