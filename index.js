@@ -24,8 +24,8 @@ document.body.onmouseup = function () {
 // 'little guys' may aquire multiple squares
 const BASE_SIZE = 8;
 var MILLIS_PER_TICK = 2;
-var CANVAS_SQUARES_X = 6; //6;
-var CANVAS_SQUARES_Y = 5; // 8;
+var CANVAS_SQUARES_X = 160; //6;
+var CANVAS_SQUARES_Y = 100; // 8;
 var ERASE_RADIUS = 2;
 var lastLastClickEvent = null;
 
@@ -130,6 +130,30 @@ class BaseSquare {
     updatePosition(newPosX, newPosY) {
         newPosX = Math.floor(newPosX);
         newPosY = Math.floor(newPosY);
+        var existingSq = getSquare(newPosX, newPosY);
+        if (existingSq) {
+            if (!existingSq.solid) {
+                var moveLocations = [
+                    [1, 0],
+                    [-1, 0],
+                    [0, 1],
+                    [1, 1],
+                    [-1, 1],
+                    [0, -1],
+                    [1, -1],
+                    [-1, -1]
+                ];
+                for (let i = 0; i < moveLocations.length; i++) {
+                    var moveLocation = moveLocations[i];
+                    var finalX = moveLocation[0] + existingSq.posX;
+                    var finalY = moveLocation[1] + existingSq.posY;
+                    var testSq = getSquare(finalX, finalY);
+                    if (testSq == null) {
+                        existingSq.updatePosition(finalX, finalY);
+                    }
+                }
+            }
+        }
         ALL_SQUARES[this.posX][this.posY] = null;
         ALL_SQUARES[newPosX][newPosY] = this;
         this.posX = newPosX;
@@ -343,7 +367,7 @@ class WaterSquare extends BaseSquare {
         this.boundedTop = false;
         this.colorBase = "#79beee";
         this.solid = false;
-        this.evaporationRate = 0.0001;
+        this.evaporationRate = 0;
         this.viscocity = 0.02;
     }
 
@@ -471,7 +495,7 @@ class WaterSquare extends BaseSquare {
         }
 
         if (pressureLeft == pressureRight && pressureLeft == 10 ** 8) {
-            if (pressureTop == 0 && this.currentPressure > 0) {
+            if (this.currentPressure - pressureTop > 2) {
                 this.flowUp();
             }
         }
@@ -511,7 +535,19 @@ class WaterSquare extends BaseSquare {
     flowSide(dir) {
         var nextSq = getSquare(this.posX + dir, this.posY);
         if (nextSq == null) {
-            this.updatePosition(this.posX + dir, this.posY);
+            // side flowage has been...annoying. 
+            // we are going to opprotunistically fill in the water square where we are putting in air, 
+            // and then hope older me can make the water go away from the top automatically
+
+            var nextSqNeighbors = getNeighbors(this.posX + dir, this.posY);
+            var nextSqNeighborsFiltered = nextSqNeighbors.filter((x) => x != null);
+            
+            if (nextSqNeighbors.length == nextSqNeighborsFiltered.length) {
+                addSquare(new WaterSquare(this.posX + dir, this.posY));
+            } else {
+                this.updatePosition(this.posX + dir, this.posY);
+            }
+
         } else if (nextSq.solid) {
             if (nextSq.percolateSide(dir)) {
                 removeSquare(this);
@@ -526,7 +562,19 @@ class WaterSquare extends BaseSquare {
             this.updatePosition(this.posX, this.posY - 1);
         }
     }
+}
 
+function getNeighbors(x, y) {
+    var out = [];
+    for (var i = -1; i < 2; i++) {
+        for (var j = -1; j < 2; j++) {
+            if (i == 0 && j == 0) {
+                continue;
+            }
+            out.push(getSquare(x + i, y + j));
+        }
+    }
+    return out;
 }
 
 
