@@ -86,7 +86,6 @@ class BaseSquare {
         this.falling = false;
         this.speed = 0;
         this.physicsBlocksFallen = 0;
-        this.holdPositionUntil = 0;
     };
     reset() {
         if (this.blockHealth <= 0) {
@@ -129,10 +128,6 @@ class BaseSquare {
 
     }
     updatePosition(newPosX, newPosY) {
-        if (this.holdPositionUntil > Date.now()) {
-            return;
-        }
-
         newPosX = Math.floor(newPosX);
         newPosY = Math.floor(newPosY);
         ALL_SQUARES[this.posX][this.posY] = null;
@@ -262,6 +257,9 @@ class BaseSquare {
         if (this.waterContainment == 0) {
             return;
         }
+        if (this.boundedTop) {
+            return;
+        }
 
         var pressureTop = 0;
         var testTopIdx = this.posY - 1;
@@ -346,6 +344,7 @@ class WaterSquare extends BaseSquare {
         this.colorBase = "#79beee";
         this.solid = false;
         this.evaporationRate = 0.0001;
+        this.viscocity = 0.02;
     }
 
     isDirty() {
@@ -458,8 +457,8 @@ class WaterSquare extends BaseSquare {
 
         if (pressureLeft == pressureRight && pressureLeft == 10 ** 8) {
             this.currentPressure = pressureTop;
-            for (var i = -1; i < 1; i++) {
-                for (var j = 0; j < 1; j++) {
+            for (var i = -1; i < 2; i++) {
+                for (var j = 0; j < 2; j++) {
                     var sq = getSquare(this.posX + i, this.posY - j)
                     if (sq != null && sq.solid == false) {
                         this.currentPressure = Math.max(this.currentPressure, sq.currentPressure + j);
@@ -468,23 +467,27 @@ class WaterSquare extends BaseSquare {
             }
         } else {
             // not bounded on left or right side, still gooshy
-            this.currentPressure = 0; 
+            this.currentPressure = Math.min(pressureTop, Math.min(pressureLeft, pressureRight)); 
         }
 
         if (this.currentPressure > pressureTop) {
-            this.flowUp();
-            this.holdPositionUntil = Date.now() + MILLIS_PER_TICK * 3;
+            if (Math.random() > (1 - this.viscocity)) {
+                this.flowUp();
+            }
         }
 
         updateGlobalStatistic("pressure", this.currentPressure);
 
         if (pressureTop > 0) {
             if (pressureLeft != pressureRight) {
-                if (pressureLeft > pressureRight) {
-                    this.flowSide(1);
-                } else {
-                    this.flowSide(-1);
+                if (Math.random() > (1 - this.viscocity)) {
+                    if (pressureLeft > pressureRight) {
+                        this.flowSide(1);
+                    } else {
+                        this.flowSide(-1);
+                    }
                 }
+
             } else {
                 this.flowSide(randDirection());
             }
