@@ -3,7 +3,7 @@ var MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
 var materialSelect = document.getElementById("materialSelect");
 var fastTerrain = document.getElementById("fastTerrain");
 
-var selectedMaterial = "static";
+var selectedMaterial = "water";
 
 materialSelect.addEventListener('change', (e) => selectedMaterial = e.target.value);
 MAIN_CANVAS.addEventListener('mousemove', handleClick, false);
@@ -185,7 +185,6 @@ class BaseSquare {
     // Keep looping on physics until all are false.
     physics() {
         this.evaporateInnerMoisture();
-        this.calculateGroup();
 
         if (!this.physicsEnabled) {
             return false;
@@ -220,6 +219,14 @@ class BaseSquare {
         markDirtySquare(this);
         return true;
     }
+    
+    /* Called before physics(), with blocks in strict order from top left to bottom right. */ 
+    physicsBefore() {
+        this.calculateGroup();
+    }
+
+    /* god i fucking hate water physics */ 
+    physicsBefore2() {}
 
     percolateDown() {
         var blockHealthCost = 0;
@@ -391,12 +398,14 @@ class WaterSquare extends BaseSquare {
         this.evaporationRate = 0;
         this.viscocity = 0.8;
 
-        this.currentPressureDirect = 0;
-        this.currentPressureIndirect = 0;
+        this.currentPressureDirect = -1;
+        this.currentPressureIndirect = -1;
     }
 
     reset() {
         super.reset();
+        this.currentPressureDirect = -1;
+        this.currentPressureIndirect = -1;
     }
 
     isDirty() {
@@ -405,8 +414,6 @@ class WaterSquare extends BaseSquare {
 
     physics() {
         super.physics();
-        this.pressurePhysics();
-        this.calculatePressures();
     }
 
     calculateColor() {
@@ -437,11 +444,15 @@ class WaterSquare extends BaseSquare {
 
     }
 
-    pressurePhysics() {
-        if (getSquare(this.posX, this.posY + 1) == null) {
-            return;
-        }
-        this.calculateCandidateFlows();
+    physicsBefore() {
+        super.physicsBefore();
+        this.calculateDirectPressure();
+    }
+
+    physicsBefore2() {
+        super.physicsBefore2();
+        this.calculateIndirectPressure(0);
+        updateGlobalStatistic("pressure", this.currentPressureIndirect);
     }
 
     calculateCandidateFlows() {
@@ -473,12 +484,6 @@ class WaterSquare extends BaseSquare {
         }
     }
 
-    calculatePressures() {
-        this.calculateDirectPressure();
-        this.calculateIndirectPressure();
-        updateGlobalStatistic("pressure", this.currentPressureIndirect);
-    }
-
     /**
      * Direct pressure is how many blocks of water are directly above us. 
      */
@@ -497,18 +502,21 @@ class WaterSquare extends BaseSquare {
             this.currentPressureDirect += 1;
         }
     }
-    calculateIndirectPressure() {
-        this.currentPressureIndirect = this.currentPressureDirect;
-        var neighbors = getNeighbors(this.posX, this.posY);
-        for (let i = 0; i < neighbors.length; i++) {
-            var sq = neighbors[i];
-            if (sq == null || sq.solid) {
-                continue;
-            }
-            this.currentPressureIndirect = Math.max(
-                this.currentPressureIndirect,
-                sq.currentPressureIndirect + (this.posY - sq.posY)
-            ); 
+    calculateIndirectPressure(startingPressure) { 
+        // we are looking for neighbors *of the same group*. 
+        // we will only do this calculation *once* per group. 
+        // starting on the top left member of that group.
+        if (this.currentPressureIndirect != -1) {
+            return;
+        }
+        var myNeighbors = Array.from(getNeighbors(this.posX, this.posY)
+            .filter((sq) => sq != null && sq.group == this.group));
+
+        this.currentPressureIndirect = Math.max(this.currentPressureDirect, startingPressure);
+        for (let i = 0; i < myNeighbors.length; i++) {
+            var myNeighbor = myNeighbors[i];
+            var dy = myNeighbor.posY - this.posY;
+            myNeighbor.calculateIndirectPressure(startingPressure + dy);
         }
     }
 }
@@ -591,16 +599,20 @@ function reset() {
 }
 
 function render() {
-    iterateOnSquares((sq) => sq.render());
+    iterateOnSquares((sq) => sq.render(), 0);
 }
 function physics() {
-    iterateOnSquares((sq) => sq.physics());
+    iterateOnSquares((sq) => sq.physics(), 0.1);
+}
+function physicsBefore() {
+    iterateOnSquares((sq) => sq.physicsBefore(), 0);
+    iterateOnSquares((sq) => sq.physicsBefore2(), 0);
 }
 
 /**
  * @param {function} func - function with an argumnet of the square it should do the operation on  
  */
-function iterateOnSquares(func) {
+function iterateOnSquares(func, sortRandomness) {
     var rootKeys = Object.keys(ALL_SQUARES);
     var squareOrder = [];
     for (let i = 0; i < rootKeys.length; i++) {
@@ -613,7 +625,7 @@ function iterateOnSquares(func) {
             }
         }
     }
-    squareOrder.sort((a, b) => (Math.random() > 0.01 ? b.posY - a.posY : a.posY - b.posY));
+    squareOrder.sort((a, b) => (Math.random() > sortRandomness ? (a.posX + a.posY * 10) - (b.posX + b.posY * 10) : (a.posX + a.posY * 10 - b.posX + b.posY * 10)));
     squareOrder.forEach(func);
 }
 function purge() {
@@ -653,6 +665,7 @@ function main() {
         MAIN_CONTEXT.clearRect(0, 0, CANVAS_SQUARES_X * BASE_SIZE, CANVAS_SQUARES_Y * BASE_SIZE);
         reset();
         doClickAdd();
+        physicsBefore();
         physics();
         doWaterFlow();
         purge();
@@ -785,6 +798,12 @@ function getGlobalStatistic(name) {
 
 for (let i = 0; i < CANVAS_SQUARES_X; i++) {
     addSquare(new StaticSquare(i, CANVAS_SQUARES_Y - 1));
+}
+
+
+for (let i = 0; i < CANVAS_SQUARES_Y; i++) {
+    addSquare(new StaticSquare(CANVAS_SQUARES_X - 1, i));
+    addSquare(new StaticSquare(1, i));
 }
 
 setInterval(main, 1);
