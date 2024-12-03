@@ -3,7 +3,7 @@ var MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
 var materialSelect = document.getElementById("materialSelect");
 var fastTerrain = document.getElementById("fastTerrain");
 
-var selectedMaterial = "water";
+var selectedMaterial = "static";
 
 materialSelect.addEventListener('change', (e) => selectedMaterial = e.target.value);
 MAIN_CANVAS.addEventListener('mousemove', handleClick, false);
@@ -396,7 +396,7 @@ class WaterSquare extends BaseSquare {
         this.colorBase = "#79beee";
         this.solid = false;
         this.evaporationRate = 0;
-        this.viscocity = 0.8;
+        this.viscocity = 0.4;
 
         this.currentPressureDirect = -1;
         this.currentPressureIndirect = -1;
@@ -414,6 +414,7 @@ class WaterSquare extends BaseSquare {
 
     physics() {
         super.physics();
+        this.calculateCandidateFlows(); 
     }
 
     calculateColor() {
@@ -456,27 +457,16 @@ class WaterSquare extends BaseSquare {
     }
 
     calculateCandidateFlows() {
-        var neighbors = getNeighbors(this.posX, this.posY);
         if (this.currentPressureIndirect == 0) {
             WATERFLOW_CANDIDATE_SQUARES.add(this);
-            for (let i = 0; i < neighbors.length; i++) {
-                var sq = neighbors[i];
-                if (sq == null || sq.solid) {
-                    continue;
-                }
-                if (sq.currentPressureIndirect == 0) {
-                    WATERFLOW_CANDIDATE_SQUARES.add(sq);
-                }
-            }
         }
         if (this.currentPressureIndirect >= this.currentPressureDirect) {
             for (var i = -1; i < 2; i++) {
-                for (var j = -1; j < 2; j++) {
-                    if (i == 0 && j == 0) {
+                for (var j = (this.currentPressureIndirect > 2 ? -1 : 0); j < 2; j++) {
+                    if (Math.abs(i) == Math.abs(j)) {
                         continue;
                     }
-                    var sq = getSquare(this.posX + i, this.posY + j);
-                    if (sq == null) {
+                    if (getSquare(this.posX + i, this.posY + j) == null) {
                         WATERFLOW_TARGET_SQUARES.add([this.posX + i, this.posY + j, this.group]);
                     }
                 }
@@ -647,10 +637,11 @@ function doWaterFlow() {
         // we need to do some water-mcflowin!
         var candidate_squares_as_list = Array.from(WATERFLOW_CANDIDATE_SQUARES);
         var target_squares_as_list = Array.from(WATERFLOW_TARGET_SQUARES);
+
         target_squares_as_list.sort((a, b) => b[1] - a[1]);
-        for (let i = 0; i < Math.min(candidate_squares_as_list.length, target_squares_as_list.length); i++) {
-            var candidate = candidate_squares_as_list[i];
-            var target = target_squares_as_list[i];
+        for (let i = 0; i < Math.max(candidate_squares_as_list.length, target_squares_as_list.length); i++) {
+            var candidate = candidate_squares_as_list[i % candidate_squares_as_list.length];
+            var target = target_squares_as_list[i % target_squares_as_list.length];
             if (candidate.group == target[2]) {
                 if (Math.random() > (1 - candidate.viscocity)) {
                     candidate.updatePosition(target[0], target[1]);
