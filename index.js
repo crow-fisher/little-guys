@@ -24,8 +24,8 @@ document.body.onmouseup = function () {
 // 'little guys' may aquire multiple squares
 const BASE_SIZE = 8;
 var MILLIS_PER_TICK = 2;
-var CANVAS_SQUARES_X = 60; //6;
-var CANVAS_SQUARES_Y = 80; // 8;
+var CANVAS_SQUARES_X = 128; //6;
+var CANVAS_SQUARES_Y = 64; // 8;
 var ERASE_RADIUS = 2;
 var lastLastClickEvent = null;
 
@@ -39,7 +39,7 @@ var ALL_SQUARES = new Map();
 var DIRTY_SQUARES = [];
 var NEXT_DIRTY_SQUARES = [];
 
-var WATERFLOW_TARGET_SQUARES = new Set();
+var WATERFLOW_TARGET_SQUARES = new Map();
 var WATERFLOW_CANDIDATE_SQUARES = new Set();
 
 var rightMouseClicked = false;
@@ -396,7 +396,7 @@ class WaterSquare extends BaseSquare {
         this.colorBase = "#79beee";
         this.solid = false;
         this.evaporationRate = 0;
-        this.viscocity = 0.4;
+        this.viscocity = 0.01;
 
         this.currentPressureDirect = -1;
         this.currentPressureIndirect = -1;
@@ -467,7 +467,10 @@ class WaterSquare extends BaseSquare {
                         continue;
                     }
                     if (getSquare(this.posX + i, this.posY + j) == null) {
-                        WATERFLOW_TARGET_SQUARES.add([this.posX + i, this.posY + j, this.group]);
+                        if (!(this.currentPressureIndirect in WATERFLOW_TARGET_SQUARES)) {
+                            WATERFLOW_TARGET_SQUARES[this.currentPressureIndirect] = new Array();
+                        }
+                        WATERFLOW_TARGET_SQUARES[this.currentPressureIndirect].push([this.posX + i, this.posY + j, this.group]);
                     }
                 }
             }
@@ -584,7 +587,7 @@ function reset() {
     NEXT_DIRTY_SQUARES = [];
     visitedBlockCount = {};
     stats["pressure"] = 0;
-    WATERFLOW_TARGET_SQUARES = new Set();
+    WATERFLOW_TARGET_SQUARES = new Map();
     WATERFLOW_CANDIDATE_SQUARES = new Set();
 }
 
@@ -633,18 +636,22 @@ function purge() {
 }
 
 function doWaterFlow() {
-    if (WATERFLOW_CANDIDATE_SQUARES.size > 0 && WATERFLOW_TARGET_SQUARES.size > 0) {
-        // we need to do some water-mcflowin!
-        var candidate_squares_as_list = Array.from(WATERFLOW_CANDIDATE_SQUARES);
-        var target_squares_as_list = Array.from(WATERFLOW_TARGET_SQUARES);
+    for (let curWaterflowPressure = 2; curWaterflowPressure < getGlobalStatistic("pressure"); curWaterflowPressure++) {
+        if (WATERFLOW_CANDIDATE_SQUARES.size > 0) {
+            // we need to do some water-mcflowin!
+            var candidate_squares_as_list = Array.from(WATERFLOW_CANDIDATE_SQUARES);
+            var target_squares = WATERFLOW_TARGET_SQUARES[curWaterflowPressure];
+            if (target_squares == null) {
+                continue;
+            }
 
-        target_squares_as_list.sort((a, b) => b[1] - a[1]);
-        for (let i = 0; i < Math.max(candidate_squares_as_list.length, target_squares_as_list.length); i++) {
-            var candidate = candidate_squares_as_list[i % candidate_squares_as_list.length];
-            var target = target_squares_as_list[i % target_squares_as_list.length];
-            if (candidate.group == target[2]) {
-                if (Math.random() > (1 - candidate.viscocity)) {
-                    candidate.updatePosition(target[0], target[1]);
+            for (let j = 0; j < Math.max(candidate_squares_as_list.length, target_squares.length); j++) {
+                var candidate = candidate_squares_as_list[j % candidate_squares_as_list.length];
+                var target = target_squares[j % target_squares.length];
+                if (candidate.group == target[2]) {
+                    if (Math.random() > ((1 - candidate.viscocity) ** curWaterflowPressure)) {
+                        candidate.updatePosition(target[0], target[1]);
+                    }
                 }
             }
         }
@@ -654,8 +661,8 @@ function doWaterFlow() {
 function main() {
     if (Date.now() - lastTick > MILLIS_PER_TICK) {
         MAIN_CONTEXT.clearRect(0, 0, CANVAS_SQUARES_X * BASE_SIZE, CANVAS_SQUARES_Y * BASE_SIZE);
-        reset();
         doClickAdd();
+        reset();
         physicsBefore();
         physics();
         doWaterFlow();
@@ -788,14 +795,14 @@ function getGlobalStatistic(name) {
   
 
 for (let i = 0; i < CANVAS_SQUARES_X; i++) {
-    addSquare(new StaticSquare(i, CANVAS_SQUARES_Y - 1));
+    addSquare(new DrainSquare(i, CANVAS_SQUARES_Y - 1));
 }
 
 
-for (let i = 0; i < CANVAS_SQUARES_Y; i++) {
-    addSquare(new StaticSquare(CANVAS_SQUARES_X - 1, i));
-    addSquare(new StaticSquare(1, i));
-}
+// for (let i = 0; i < CANVAS_SQUARES_Y; i++) {
+//     addSquare(new StaticSquare(CANVAS_SQUARES_X - 1, i));
+//     addSquare(new StaticSquare(1, i));
+// }
 
 setInterval(main, 1);
 
