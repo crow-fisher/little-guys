@@ -24,8 +24,8 @@ document.body.onmouseup = function () {
 // 'little guys' may aquire multiple squares
 const BASE_SIZE = 8;
 var MILLIS_PER_TICK = 2;
-var CANVAS_SQUARES_X = 200; // * 8; //6;
-var CANVAS_SQUARES_Y = 100; // * 8; // 8;
+var CANVAS_SQUARES_X = 157; // * 8; //6;
+var CANVAS_SQUARES_Y = 80; // * 8; // 8;
 var ERASE_RADIUS = 2;
 var lastLastClickEvent = null;
 
