@@ -3,7 +3,7 @@ var MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
 var materialSelect = document.getElementById("materialSelect");
 var fastTerrain = document.getElementById("fastTerrain");
 
-var selectedMaterial = "static";
+var selectedMaterial = "water";
 
 materialSelect.addEventListener('change', (e) => selectedMaterial = e.target.value);
 MAIN_CANVAS.addEventListener('mousemove', handleClick, false);
@@ -24,8 +24,8 @@ document.body.onmouseup = function () {
 // 'little guys' may aquire multiple squares
 const BASE_SIZE = 8;
 var MILLIS_PER_TICK = 2;
-var CANVAS_SQUARES_X = 128; //6;
-var CANVAS_SQUARES_Y = 64; // 8;
+var CANVAS_SQUARES_X = 16 * 8; //6;
+var CANVAS_SQUARES_Y = 9 * 8; // 8;
 var ERASE_RADIUS = 2;
 var lastLastClickEvent = null;
 
@@ -45,28 +45,28 @@ var WATERFLOW_CANDIDATE_SQUARES = new Set();
 var rightMouseClicked = false;
 
 function handleMouseDown(e) {
-  //e.button describes the mouse button that was clicked
-  // 0 is left, 1 is middle, 2 is right
-  if (e.button === 2) {
-    rightMouseClicked = true;
-  } else if (e.button === 0) {  
-    //Do something if left button was clicked and right button is still pressed
-    if (rightMouseClicked) {
-      console.log('hello');
-      //code
+    //e.button describes the mouse button that was clicked
+    // 0 is left, 1 is middle, 2 is right
+    if (e.button === 2) {
+        rightMouseClicked = true;
+    } else if (e.button === 0) {
+        //Do something if left button was clicked and right button is still pressed
+        if (rightMouseClicked) {
+            console.log('hello');
+            //code
+        }
     }
-  }
 }
 
 function handleMouseUp(e) {
-  if (e.button === 2) {
-    rightMouseClicked = false;
-  }
+    if (e.button === 2) {
+        rightMouseClicked = false;
+    }
 }
 
 document.addEventListener('mousedown', handleMouseDown);
 document.addEventListener('mouseup', handleMouseUp);
-document.addEventListener('contextmenu', function(e) {
+document.addEventListener('contextmenu', function (e) {
     e.preventDefault();
 });
 
@@ -117,9 +117,9 @@ class BaseSquare {
         // Water Saturation Calculation
         // Apply this effect for 20% of the block's visual value. 
         // As a fraction of 0 to 255, create either perfect white or perfect grey.
-        var waterColor255 = (1 - (this.waterContainment / this.waterContainmentMax )) * 255;
-        var darkeningColorRGB = {r: waterColor255, b: waterColor255, g: waterColor255};
-        
+        var waterColor255 = (1 - (this.waterContainment / this.waterContainmentMax)) * 255;
+        var darkeningColorRGB = { r: waterColor255, b: waterColor255, g: waterColor255 };
+
         ['r', 'g', 'b'].forEach((p) => {
             darkeningColorRGB[p] *= darkeningStrength;
             baseColorRGB[p] *= (1 - darkeningStrength);
@@ -164,7 +164,7 @@ class BaseSquare {
             var endGroupNeighborsSize = groupNeighbors.size;
             if (startGroupNeighborsSize == endGroupNeighborsSize) {
                 break;
-            }   
+            }
         }
 
         var group = Array.from(groupNeighbors).map((x) => x.group).find((x) => x != -1);
@@ -219,14 +219,14 @@ class BaseSquare {
         markDirtySquare(this);
         return true;
     }
-    
-    /* Called before physics(), with blocks in strict order from top left to bottom right. */ 
+
+    /* Called before physics(), with blocks in strict order from top left to bottom right. */
     physicsBefore() {
         this.calculateGroup();
     }
 
-    /* god i fucking hate water physics */ 
-    physicsBefore2() {}
+    /* god i fucking hate water physics */
+    physicsBefore2() { }
 
     percolateDown() {
         var blockHealthCost = 0;
@@ -396,7 +396,7 @@ class WaterSquare extends BaseSquare {
         this.colorBase = "#79beee";
         this.solid = false;
         this.evaporationRate = 0;
-        this.viscocity = 0.01;
+        this.viscocity = 0.1;
 
         this.currentPressureDirect = -1;
         this.currentPressureIndirect = -1;
@@ -414,7 +414,7 @@ class WaterSquare extends BaseSquare {
 
     physics() {
         super.physics();
-        this.calculateCandidateFlows(); 
+        this.calculateCandidateFlows();
     }
 
     calculateColor() {
@@ -423,13 +423,13 @@ class WaterSquare extends BaseSquare {
         // Water Saturation Calculation
         // Apply this effect for 20% of the block's visual value. 
         // As a fraction of 0 to 255, create either perfect white or perfect grey.
-        
+
         var num = this.currentPressureIndirect;
         var numMax = getGlobalStatistic("pressure") + 1;
-        
-        var featureColor255 = (1 - (num / numMax )) * 255;
-        var darkeningColorRGB = {r: featureColor255, b: featureColor255, g: featureColor255};
-        
+
+        var featureColor255 = (1 - (num / numMax)) * 255;
+        var darkeningColorRGB = { r: featureColor255, b: featureColor255, g: featureColor255 };
+
         ['r', 'g', 'b'].forEach((p) => {
             darkeningColorRGB[p] *= darkeningStrength;
             baseColorRGB[p] *= (1 - darkeningStrength);
@@ -495,7 +495,7 @@ class WaterSquare extends BaseSquare {
             this.currentPressureDirect += 1;
         }
     }
-    calculateIndirectPressure(startingPressure) { 
+    calculateIndirectPressure(startingPressure) {
         // we are looking for neighbors *of the same group*. 
         // we will only do this calculation *once* per group. 
         // starting on the top left member of that group.
@@ -514,6 +514,9 @@ class WaterSquare extends BaseSquare {
     }
 }
 
+/**
+ * Gets direct neighbors; above, below  
+ */
 function getNeighbors(x, y) {
     var out = [];
     for (var i = -1; i < 2; i++) {
@@ -631,12 +634,11 @@ function purge() {
         if (!ret) {
             removeSquare(sq);
         }
-    }
-    );
+    });
 }
 
 function doWaterFlow() {
-    for (let curWaterflowPressure = 2; curWaterflowPressure < getGlobalStatistic("pressure"); curWaterflowPressure++) {
+    for (let curWaterflowPressure = 0; curWaterflowPressure < getGlobalStatistic("pressure"); curWaterflowPressure++) {
         if (WATERFLOW_CANDIDATE_SQUARES.size > 0) {
             // we need to do some water-mcflowin!
             var candidate_squares_as_list = Array.from(WATERFLOW_CANDIDATE_SQUARES);
@@ -649,7 +651,12 @@ function doWaterFlow() {
                 var candidate = candidate_squares_as_list[j % candidate_squares_as_list.length];
                 var target = target_squares[j % target_squares.length];
                 if (candidate.group == target[2]) {
-                    if (Math.random() > ((1 - candidate.viscocity) ** curWaterflowPressure)) {
+                    if (Math.random() > ((1 - candidate.viscocity) ** (curWaterflowPressure + 1))) {
+                        var dx = target[0] - candidate.posX;
+                        var dy = target[1] - candidate.posY;
+                        if (Math.abs(dy) == 0 && Math.abs(dx) < 5) {
+                            continue;
+                        }
                         candidate.updatePosition(target[0], target[1]);
                     }
                 }
@@ -698,16 +705,16 @@ function doClickAdd() {
 
         var x1 = prevOffsetX;
         var x2 = offsetX;
-        var y1 = prevOffsetY; 
+        var y1 = prevOffsetY;
         var y2 = offsetY;
 
-        var dx = x2 - x1; 
+        var dx = x2 - x1;
         var dy = y2 - y1;
         var dz = Math.pow(dx ** 2 + dy ** 2, 0.5);
-    
+
         var totalCount = Math.max(1, Math.round(dz));
         var ddx = dx / totalCount;
-        var ddy = dy / totalCount; 
+        var ddy = dy / totalCount;
         for (let i = 0; i < totalCount; i++) {
             var px = x1 + ddx * i;
             var py = y1 + ddy * i;
@@ -775,16 +782,16 @@ function hexToRgb(hex) {
 }
 function rgbToHex(r, g, b) {
     return "#" + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1);
-  }
+}
 
 function updateGlobalStatistic(name, value) {
     if (name in stats) {
-        if (value > (stats[name]) ) {
+        if (value > (stats[name])) {
             stats[name] = value;
         }
     }
 }
-function getGlobalStatistic(name) { 
+function getGlobalStatistic(name) {
     if (!name in stats) {
         console.warn("getGlobalStatistic miss for ", name)
         return -1;
@@ -792,21 +799,21 @@ function getGlobalStatistic(name) {
     return stats[name];
 }
 
-  
+
 
 for (let i = 0; i < CANVAS_SQUARES_X; i++) {
-    addSquare(new DrainSquare(i, CANVAS_SQUARES_Y - 1));
+    addSquare(new StaticSquare(i, CANVAS_SQUARES_Y - 1));
 }
 
 
-// for (let i = 0; i < CANVAS_SQUARES_Y; i++) {
-//     addSquare(new StaticSquare(CANVAS_SQUARES_X - 1, i));
-//     addSquare(new StaticSquare(1, i));
-// }
+for (let i = 0; i < CANVAS_SQUARES_Y; i++) {
+    addSquare(new StaticSquare(CANVAS_SQUARES_X - 1, i));
+    addSquare(new StaticSquare(1, i));
+}
 
 setInterval(main, 1);
 
 // setTimeout(() => window.location.reload(), 3000);
 window.oncontextmenu = function () {
     return false;     // cancel default menu
-  }
+}
