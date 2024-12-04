@@ -228,81 +228,6 @@ class BaseSquare {
     /* god i fucking hate water physics */
     physicsBefore2() { }
 
-    percolateDown() {
-        var blockHealthCost = 0;
-        var startContainment = this.waterContainment;
-        if (this.waterContainment < this.waterContainmentMax) {
-            this.waterContainment += this.waterContainmentFillRate;
-        }
-        blockHealthCost += this.waterContainment - startContainment;
-        var next = getSquare(this.posX, this.posY + 1);
-        var percolateProbability = (this.waterContainment / this.waterContainmentMax) * this.waterContainmentTransferRate;
-        if (next == null) {
-            if (Math.random() > (1 - (percolateProbability / 2))) {
-                return blockHealthCost + (addSquare(new WaterSquare(this.posX, this.posY + 1)) != null ? 1 : 0);
-            }
-            return blockHealthCost;
-        }
-        if (next.solid) {
-            if (Math.random() > (1 - percolateProbability)) {
-                return blockHealthCost + next.percolateDown();
-            }
-        }
-        return blockHealthCost;
-    }
-
-    percolateUp() {
-        var blockHealthCost = 0;
-        var startContainment = this.waterContainment;
-        if (this.waterContainment < this.waterContainmentMax) {
-            this.waterContainment += this.waterContainmentFillRate;
-        }
-        blockHealthCost += this.waterContainment - startContainment;
-        var next = getSquare(this.posX, this.posY - 1);
-        var percolateProbability = (this.waterContainment / this.waterContainmentMax) * this.waterContainmentTransferRate;
-        if (next == null) {
-            if (Math.random() > (1 - (percolateProbability / 2))) {
-                return blockHealthCost + (addSquare(new WaterSquare(this.posX, this.posY - 1)) != null ? 1 : 0);
-            }
-            return blockHealthCost;
-        }
-        if (next.solid) {
-            if (Math.random() > (1 - percolateProbability)) {
-                return blockHealthCost + next.percolateUp();
-            }
-        }
-        return blockHealthCost;
-    }
-
-
-    percolateSide(dir) {
-        var blockPercolateCost = 0;
-        var startContainment = this.waterContainment;
-        if (this.waterContainment < this.waterContainmentMax) {
-            this.waterContainment += this.waterContainmentFillRate;
-        }
-        blockPercolateCost += this.waterContainment - startContainment;
-
-        var next = getSquare(this.posX + dir, this.posY);
-        var percolateProbability = (this.waterContainment / this.waterContainmentMax) * this.waterContainmentTransferRate;
-
-        if (this.waterContainment == this.waterContainmentMax) {
-            if (next == null) {
-                if (Math.random() > (1 - (percolateProbability / 2))) {
-                    return blockPercolateCost + addSquare(new WaterSquare(this.posX + dir, this.posY));
-                }
-                return blockPercolateCost;
-            }
-            if (next.solid) {
-                if (Math.random() > (1 - percolateProbability)) {
-                    return blockPercolateCost + next.percolateSide(dir);
-                }
-                return blockPercolateCost;
-            }
-        }
-        return blockPercolateCost;
-    }
-
     percolateFromBlock(otherBlockMoisture) {
         var moistureDiff = otherBlockMoisture - this.waterContainment;
         if (moistureDiff < 0) {
@@ -340,7 +265,7 @@ class BaseSquare {
         var downSquare = getSquare(this.posX, this.posY + 1);
         if (downSquare != null && downSquare.solid) {
             if (Math.random() > (1 - (percolateProbability / 2))) {
-                this.waterContainment -= downSquare.percolateDown(this.waterContainment);
+                this.waterContainment -= downSquare.percolateFromBlock(this.waterContainment);
             }
         }
     }
@@ -545,17 +470,17 @@ class WaterSquare extends BaseSquare {
     doNeighborPercolation() {
         var upSquare = getSquare(this.posX, this.posY - 1);
         if (upSquare != null && upSquare.solid) {
-            this.blockHealth -= upSquare.percolateUp();
+            this.blockHealth -= upSquare.percolateFromBlock(1);
         }
         for (let i = -1; i < 2; i += 2) {
             var sq = getSquare(this.posX + i, this.posY);
             if (sq != null && sq.solid) {
-                this.blockHealth -= sq.percolateSide(i);
+                this.blockHealth -= sq.percolateFromBlock(1);
             }
         }
         var downSquare = getSquare(this.posX, this.posY + 1);
         if (downSquare != null && downSquare.solid) {
-            this.blockHealth -= downSquare.percolateDown();
+            this.blockHealth -= downSquare.percolateFromBlock(1);
         }
     }
 }
@@ -827,7 +752,7 @@ function getGlobalStatistic(name) {
 
 
 for (let i = 0; i < CANVAS_SQUARES_X; i++) {
-    addSquare(new StaticSquare(i, CANVAS_SQUARES_Y - 1));
+    addSquare(new DrainSquare(i, CANVAS_SQUARES_Y - 1));
 }
 
 
