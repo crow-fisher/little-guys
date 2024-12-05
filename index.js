@@ -82,9 +82,9 @@ class BaseSquare {
         this.blockHealth = 1; // when reaches zero, delete
         // water flow parameters
         this.waterContainment = 0;
-        this.waterContainmentMax = 0.75;
-        this.waterContainmentFillRate = 0.05;
-        this.waterContainmentTransferRate = 0.8; // what fraction of ticks does it trigger percolate on
+        this.waterContainmentMax = 0.2;
+        this.waterContainmentFillRate = 0.01;
+        this.waterContainmentTransferRate = 0.3; // what fraction of ticks does it trigger percolate on
         this.waterContainmentEvaporationRate = 0.0005; // what fraction of contained water will get reduced per tick
         this.evaporationRate = 0;
         this.falling = false;
@@ -235,7 +235,7 @@ class BaseSquare {
         }
 
         if (Math.random() > (1 - this.waterContainmentTransferRate)) {
-            var nextWaterContainment = Math.max(this.waterContainmentMax, this.waterContainment + moistureDiff / 2);
+            var nextWaterContainment = Math.min(this.waterContainmentMax, this.waterContainment + moistureDiff / 2);
             var dw = nextWaterContainment - this.waterContainment;
             this.waterContainment = nextWaterContainment;
             return dw;
@@ -247,27 +247,14 @@ class BaseSquare {
         if (this.waterContainment <= 0) {
             return 0;
         }
-        var percolateProbability = (this.waterContainment / this.waterContainmentMax) * this.waterContainmentTransferRate;
-        var upSquare = getSquare(this.posX, this.posY - 1);
-        if (upSquare != null && upSquare.solid) {
+        var directNeighbors = getDirectNeighbors(this.posX, this.posY).filter((sq) => sq != null && sq.solid);
+
+        directNeighbors.forEach((sq) => {
+            var percolateProbability = (this.waterContainment / this.waterContainmentMax) * this.waterContainmentTransferRate;
             if (Math.random() > (1 - (percolateProbability / 2))) {
-                this.waterContainment -= upSquare.percolateFromBlock(this.waterContainment);
+                this.waterContainment -= sq.percolateFromBlock(this.waterContainment);
             }
-        }
-        for (let i = -1; i < 2; i += 2) {
-            var sq = getSquare(this.posX + i, this.posY);
-            if (sq != null && sq.solid) {
-                if (Math.random() > (1 - (percolateProbability / 2))) {
-                    this.waterContainment -= sq.percolateFromBlock(this.waterContainment);
-                }
-            }
-        }
-        var downSquare = getSquare(this.posX, this.posY + 1);
-        if (downSquare != null && downSquare.solid) {
-            if (Math.random() > (1 - (percolateProbability / 2))) {
-                this.waterContainment -= downSquare.percolateFromBlock(this.waterContainment);
-            }
-        }
+        });
     }
 
     evaporateInnerMoisture() {
@@ -275,16 +262,10 @@ class BaseSquare {
             return;
         }
 
-        var sqAbove = getSquare(this.posX, this.posY - 1);
-        var sqBelow = getSquare(this.posX, this.posY + 1);
-        var sqRight = getSquare(this.posX + 1, this.posY);
-        var sqLeft = getSquare(this.posX - 1, this.posY);
-
-        var airCounter = 0;
-        airCounter += sqAbove == null ? 1 : 0;
-        airCounter += sqBelow == null ? 1 : 0;
-        airCounter += sqRight == null ? 1 : 0;
-        airCounter += sqLeft == null ? 1 : 0;
+        var airCounter = getDirectNeighbors(this.posX, this.posY).map((sq) => (sq == null ? 1 : 0)).reduce(
+            (accumulator, currentValue) => accumulator + currentValue,
+            0,
+        );
 
         for (let i = 0; i < airCounter; i++) {
             if (Math.random() > (1 - this.waterContainmentEvaporationRate)) {
@@ -485,14 +466,28 @@ class WaterSquare extends BaseSquare {
     }
 }
 
-/**
- * Gets direct neighbors; above, below  
- */
+// Returns all neighbors (including corners)
 function getNeighbors(x, y) {
     var out = [];
     for (var i = -1; i < 2; i++) {
         for (var j = -1; j < 2; j++) {
             if (i == 0 && j == 0) {
+                continue;
+            }
+            out.push(getSquare(x + i, y + j));
+        }
+    }
+    return out;
+}
+
+function getDirectNeighbors(x, y) {
+    var out = [];
+    for (var i = -1; i < 2; i++) {
+        for (var j = -1; j < 2; j++) {
+            if (i == 0 && j == 0) {
+                continue;
+            }
+            if (abs(i) == abs(j)) {
                 continue;
             }
             out.push(getSquare(x + i, y + j));
@@ -767,3 +762,5 @@ setInterval(main, 1);
 window.oncontextmenu = function () {
     return false;     // cancel default menu
 }
+
+var abs = Math.abs;
