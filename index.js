@@ -82,7 +82,6 @@ class BaseSquare {
         // water flow parameters
         this.waterContainment = 0;
         this.waterContainmentMax = 0.2;
-        this.waterContainmentFillRate = 0.01;
         this.waterContainmentTransferRate = 0.3; // what fraction of ticks does it trigger percolate on
         this.waterContainmentEvaporationRate = 0.0005; // what fraction of contained water will get reduced per tick
         this.evaporationRate = 0;
@@ -287,7 +286,6 @@ class StaticSquare extends BaseSquare {
         this.colorBase = "#000100";
         this.physicsEnabled = false;
         this.waterContainmentMax = 0;
-        this.waterContainmentFillRate = 0;
         this.waterContainmentTransferRate = 0;
     }
 }
@@ -295,17 +293,17 @@ class StaticSquare extends BaseSquare {
 class DrainSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
-        this.colorBase = "#000100";
+        this.colorBase = "#555555";
         this.physicsEnabled = false;
-        this.waterContainmentMax = 1;
-        this.waterContainmentFillRate = 0.01;
-        this.waterContainmentTransferRate = 0.1;
+        this.waterContainmentMax = 1.01;
+        this.waterContainmentTransferRate = 0.5;
     }
 
     percolateInnerMoisture() {
         if (this.waterContainment <= 0) {
             return 0;
         }
+
         for (var i = -1; i < 2; i++) {
             for (var j = -1; j < 2; j++) {
                 if (i == 0 && j == 0) {
@@ -314,8 +312,10 @@ class DrainSquare extends BaseSquare {
                 if (abs(i) == abs(j)) {
                     continue;
                 }
-                if (addSquare(new WaterSquare(this.posX + i, this.posY + j)) != null) {
-                    this.waterContainment -= 1;
+                if (this.waterContainment >= 1) {
+                    if (addSquare(new WaterSquare(this.posX + i, this.posY + j))) {
+                        this.waterContainment -= 1;
+                    }
                 }
             }
         }
@@ -324,8 +324,6 @@ class DrainSquare extends BaseSquare {
     calculateColor() {
         var baseColorRGB = hexToRgb(this.colorBase);
         return rgbToHex(Math.floor(baseColorRGB.r), Math.floor(baseColorRGB.g), Math.floor(baseColorRGB.b));
-
-
     }
 }
 
@@ -335,7 +333,6 @@ class WaterDistributionSquare extends BaseSquare {
         this.colorBase = "#000500";
         this.physicsEnabled = false;
         this.waterContainmentMax = 100;
-        this.waterContainmentFillRate = 1;
         this.waterContainmentTransferRate = 1;
     }
 }
