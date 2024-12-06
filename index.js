@@ -3,7 +3,7 @@ var MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
 var materialSelect = document.getElementById("materialSelect");
 var fastTerrain = document.getElementById("fastTerrain");
 
-var selectedMaterial = "water";
+var selectedMaterial = "dirt";
 
 materialSelect.addEventListener('change', (e) => selectedMaterial = e.target.value);
 MAIN_CANVAS.addEventListener('mousemove', handleClick, false);
@@ -36,8 +36,7 @@ var stats = new Map();
 var statsLastUpdatedTime = 0;
 var NUM_GROUPS = 0;
 var ALL_SQUARES = new Map();
-var DIRTY_SQUARES = [];
-var NEXT_DIRTY_SQUARES = [];
+var ALL_ORGANISMS = new Map();
 
 var WATERFLOW_TARGET_SQUARES = new Map();
 var WATERFLOW_CANDIDATE_SQUARES = new Set();
@@ -268,8 +267,8 @@ class BaseSquare {
         );
 
         for (let i = 0; i < airCounter; i++) {
-            if (Math.random() > (1 - this.waterContainmentEvaporationRate)) {
-                this.waterContainment = Math.max(0, this.waterContainment - this.waterContainmentTransferRate);
+            if (Math.random() > (1 - this.waterContainmentTransferRate)) {
+                this.waterContainment = Math.max(0, this.waterContainment - this.waterContainmentEvaporationRate);
             }
         }
     }
@@ -294,6 +293,43 @@ class StaticSquare extends BaseSquare {
 }
 
 class DrainSquare extends BaseSquare {
+    constructor(posX, posY) {
+        super(posX, posY);
+        this.colorBase = "#000100";
+        this.physicsEnabled = false;
+        this.waterContainmentMax = 1;
+        this.waterContainmentFillRate = 0.01;
+        this.waterContainmentTransferRate = 0.1;
+    }
+
+    percolateInnerMoisture() {
+        if (this.waterContainment <= 0) {
+            return 0;
+        }
+        for (var i = -1; i < 2; i++) {
+            for (var j = -1; j < 2; j++) {
+                if (i == 0 && j == 0) {
+                    continue;
+                }
+                if (abs(i) == abs(j)) {
+                    continue;
+                }
+                if (addSquare(new WaterSquare(this.posX + i, this.posY + j)) != null) {
+                    this.waterContainment -= 1;
+                }
+            }
+        }
+    }
+
+    calculateColor() {
+        var baseColorRGB = hexToRgb(this.colorBase);
+        return rgbToHex(Math.floor(baseColorRGB.r), Math.floor(baseColorRGB.g), Math.floor(baseColorRGB.b));
+
+
+    }
+}
+
+class WaterDistributionSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
         this.colorBase = "#000500";
@@ -451,20 +487,52 @@ class WaterSquare extends BaseSquare {
     doNeighborPercolation() {
         var upSquare = getSquare(this.posX, this.posY - 1);
         if (upSquare != null && upSquare.solid) {
-            this.blockHealth -= upSquare.percolateFromBlock(1);
+            this.blockHealth -= upSquare.percolateFromBlock(upSquare.waterContainmentMax);
         }
         for (let i = -1; i < 2; i += 2) {
             var sq = getSquare(this.posX + i, this.posY);
             if (sq != null && sq.solid) {
-                this.blockHealth -= sq.percolateFromBlock(1);
+                this.blockHealth -= sq.percolateFromBlock(sq.waterContainmentMax);
             }
         }
         var downSquare = getSquare(this.posX, this.posY + 1);
         if (downSquare != null && downSquare.solid) {
-            this.blockHealth -= downSquare.percolateFromBlock(1);
+            this.blockHealth -= downSquare.percolateFromBlock(downSquare.waterContainmentMax);
         }
     }
 }
+
+class BaseLifeSquarePopulation {
+    constructor(refSquare) {
+        this.refSquare = refSquare;
+    }
+    render() {}
+}
+
+class BaseOrganism {
+    constructor(posX, posY) {
+        this.posX = Math.floor(posX); 
+        this.posY = Math.floor(posY);
+        this.associatedSquares = new Array();
+        this.type = "base";
+    }
+
+    render() {}
+
+    process() {}
+}
+
+class PlantOrganism extends BaseOrganism {
+    constructor(posX, posY) {
+        super(posX, posY);
+        this.type = "plant";
+    }
+    render() {
+        this.associatedSquares.forEach((sp) => sp.render())
+    }
+}
+
+
 
 // Returns all neighbors (including corners)
 function getNeighbors(x, y) {
@@ -509,12 +577,46 @@ function addSquare(square) {
     return square;
 }
 
+function addOrganism(organism) {
+    if (getSquare(organism.posX, organism.posY) == null) {
+        console.warn("Invalid organism placement; no squares to bind to.")
+        return false;
+    }
+    var existingOrganisms = getOrganismsAtSquare(organism.posX, organism.posY);
+
+    var existingOrganismsOfSameTypeArray = Array.from(existingOrganisms.filter((org) => org.type == organism.type));
+
+    if (existingOrganismsOfSameTypeArray.length > 0) {
+        console.warn("Invalid organism placement; already found an organism of this type here.")
+        return false;
+    }
+
+    if (!(organism.posX in ALL_ORGANISMS)) {
+        ALL_ORGANISMS[organism.posX] = new Map();
+    }
+    if (!(organism.posY in ALL_ORGANISMS[organism.posX])) {
+        ALL_ORGANISMS[organism.posX][organism.posY] = new Array();
+    }
+    ALL_ORGANISMS[organism.posX][organism.posY].push(organism);
+    return organism;
+}
 
 function getSquare(posX, posY) {
     if (!(posX in ALL_SQUARES)) {
-        ALL_SQUARES[posX] = {};
+        ALL_SQUARES[posX] = new Map();
     }
     return ALL_SQUARES[posX][posY];
+}
+
+function getOrganismsAtSquare(posX, posY) {
+    if (!(posX in ALL_ORGANISMS)) {
+        ALL_ORGANISMS[posX] = new Map();
+    }
+    if (!(posY in ALL_ORGANISMS[posX])) {
+        ALL_ORGANISMS[posX][posY] = new Array();
+    }
+
+    return ALL_ORGANISMS[posX][posY];
 }
 
 function removeSquarePos(x, y) {
@@ -685,9 +787,18 @@ function doClickAdd() {
                         case "heavy rain":
                             addSquare(new HeavyRainSquare(px, curY));
                             break;
-                        case "drain":
+                        case "water distribution":
+                            addSquare(new WaterDistributionSquare(px, curY));
+                            break;
+                        case "drain": 
                             addSquare(new DrainSquare(px, curY));
                             break;
+
+                        // organism sections
+                        // in this case we only want to add one per click
+                        case "plant":
+                            addOrganism(new PlantOrganism(px, curY));
+                            return;
                     }
                 }
                 if (!fastTerrain.checked) {
