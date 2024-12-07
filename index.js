@@ -332,7 +332,7 @@ class WaterDistributionSquare extends BaseSquare {
         super(posX, posY);
         this.colorBase = "#000500";
         this.physicsEnabled = false;
-        this.waterContainmentMax = 100;
+        this.waterContainmentMax = 2;
         this.waterContainmentTransferRate = 1;
     }
     percolateInnerMoisture() {
