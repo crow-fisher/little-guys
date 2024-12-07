@@ -335,6 +335,30 @@ class WaterDistributionSquare extends BaseSquare {
         this.waterContainmentMax = 100;
         this.waterContainmentTransferRate = 1;
     }
+    percolateInnerMoisture() {
+        if (this.waterContainment <= 0) {
+            return 0;
+        }
+        var neighbors = getNeighbors(this.posX, this.posY).filter((sq) => sq != null && sq.solid);
+
+        neighbors.forEach((sq) => {
+            this.waterContainment -= sq.percolateFromBlock(this.waterContainment);
+        });
+    }
+
+
+    percolateFromBlock(otherBlockMoisture) {
+        var moistureDiff = otherBlockMoisture - this.waterContainment;
+        if (moistureDiff < 0) {
+            return 0; // wet things get other things wet; dry things do not get other things dry 
+        }
+
+        var nextWaterContainment = Math.min(this.waterContainmentMax, this.waterContainment + moistureDiff / 2);
+        var dw = nextWaterContainment - this.waterContainment;
+        this.waterContainment = nextWaterContainment;
+        return dw;
+    }
+
 }
 
 class RainSquare extends StaticSquare {
