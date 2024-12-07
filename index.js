@@ -24,8 +24,8 @@ document.body.onmouseup = function () {
 // 'little guys' may aquire multiple squares
 const BASE_SIZE = 8;
 var MILLIS_PER_TICK = 2;
-var CANVAS_SQUARES_X = 157; // * 8; //6;
-var CANVAS_SQUARES_Y = 80; // * 8; // 8;
+var CANVAS_SQUARES_X = 15; // * 8; //6;
+var CANVAS_SQUARES_Y = 8; // * 8; // 8;
 var ERASE_RADIUS = 2;
 var lastLastClickEvent = null;
 
@@ -36,7 +36,8 @@ var stats = new Map();
 var statsLastUpdatedTime = 0;
 var NUM_GROUPS = 0;
 var ALL_SQUARES = new Map();
-var ALL_ORGANISMS = new Map();
+var ALL_ORGANISMS = new Array();
+var ALL_ORGANISM_SQUARES = new Map();
 
 var WATERFLOW_TARGET_SQUARES = new Map();
 var WATERFLOW_CANDIDATE_SQUARES = new Set();
@@ -434,7 +435,6 @@ class WaterSquare extends BaseSquare {
         }
 
         return rgbToHex(Math.floor(resColor.r), Math.floor(resColor.g), Math.floor(resColor.b));
-
     }
 
     physicsBefore() {
@@ -523,11 +523,30 @@ class WaterSquare extends BaseSquare {
     }
 }
 
-class BaseLifeSquarePopulation {
-    constructor(refSquare) {
-        this.refSquare = refSquare;
+class BaseLifeSquare {
+    constructor(posX, posY) {
+        this.posX = posX;
+        this.posY = posY;
+        this.type = "base";
     }
-    render() {}
+
+    tick() {}
+
+    render() {
+        MAIN_CONTEXT.fillStyle = this.calculateColor();
+        MAIN_CONTEXT.fillRect(
+            this.posX * BASE_SIZE,
+            this.posY * BASE_SIZE,
+            BASE_SIZE,
+            BASE_SIZE
+        );
+    };
+
+    calculateColor() {
+        var baseColorRGB = hexToRgb(this.colorBase);
+        return rgbToHex(Math.floor(baseColorRGB.r), Math.floor(baseColorRGB.g), Math.floor(baseColorRGB.b));
+    }
+
 }
 
 class BaseOrganism {
@@ -537,6 +556,8 @@ class BaseOrganism {
         this.associatedSquares = new Array();
         this.type = "base";
     }
+
+    getInitialSquare() {}
 
     render() {}
 
@@ -553,6 +574,92 @@ class PlantOrganism extends BaseOrganism {
     }
 }
 
+class PlantSeedOrganism extends PlantOrganism {
+    constructor(posX, posY) {
+        super(posX, posY);
+    }
+    getInitialSquare() {
+        return new PlantSeedSqaure(this.posX, this.posY);
+    }
+}
+
+class PlantSeedSqaure extends BaseLifeSquare {
+    constructor(posX, posY) {
+        super(posX, posY);
+        this.type = "seed";
+        this.sproutStatus = 0;
+        this.sproutGrowthRate = 0.01;
+        this.neighborWaterContainmentRequiredToGrow = 0.8;
+        this.neighborWaterContainmentRequiredToDecay = 0.1;
+        this.colorBase = "#EABDA8";
+    }
+
+    tick() {
+        super.tick();
+        var hostSquare = getSquare(this.posX, this.posY);
+        var directNeighbors = getNeighbors(this.posX, this.posY);
+
+        var totalSurroundingWater = hostSquare.waterContainment;
+        for (var i = 0; i < directNeighbors.length; i++) {
+            var neighbor = directNeighbors[i];
+            if (neighbor == null) {
+                continue;
+            }
+            if (!neighbor.solid) { // basically if it's a water type?? idk maybe this is unclear
+                totalSurroundingWater += 1;
+                continue;
+            }
+            totalSurroundingWater += neighbor.waterContainment;
+        }
+        
+        if (totalSurroundingWater < this.neighborWaterContainmentRequiredToDecay) {
+            this.sproutStatus -= this.sproutGrowthRate;
+        }
+        if (totalSurroundingWater > this.neighborWaterContainmentRequiredToGrow) {
+            this.sproutStatus += this.sproutGrowthRate;
+        }
+
+        this.sproutStatus = Math.max(0, this.sproutStatus);
+        if (this.sproutStatus > 1) {
+            console.log("Sprouted!");
+            this.sprout();
+            this.sproutStatus = 1;
+        }
+    }
+
+    sprout() {
+        this.colorBase = "#EEC643";
+    }
+
+    calculateColor() {
+        var baseColorRGB = hexToRgb(this.colorBase);
+        var darkeningStrength = 0.3;
+        // Water Saturation Calculation
+        // Apply this effect for 20% of the block's visual value. 
+        // As a fraction of 0 to 255, create either perfect white or perfect grey.
+
+        var num = this.sproutStatus;
+        var numMax = 1;
+
+        var featureColor255 = (1 - (num / numMax)) * 255;
+        var darkeningColorRGB = { r: featureColor255, b: featureColor255, g: featureColor255 };
+
+        ['r', 'g', 'b'].forEach((p) => {
+            darkeningColorRGB[p] *= darkeningStrength;
+            baseColorRGB[p] *= (1 - darkeningStrength);
+        });
+
+        var resColor = {
+            r: darkeningColorRGB.r + baseColorRGB.r,
+            g: darkeningColorRGB.g + baseColorRGB.g,
+            b: darkeningColorRGB.b + baseColorRGB.b
+        }
+
+        return rgbToHex(Math.floor(resColor.r), Math.floor(resColor.g), Math.floor(resColor.b));
+    }
+
+
+}
 
 
 // Returns all neighbors (including corners)
@@ -603,23 +710,33 @@ function addOrganism(organism) {
         console.warn("Invalid organism placement; no squares to bind to.")
         return false;
     }
-    var existingOrganisms = getOrganismsAtSquare(organism.posX, organism.posY);
 
-    var existingOrganismsOfSameTypeArray = Array.from(existingOrganisms.filter((org) => org.type == organism.type));
+    if (addOrganismSquare(organism.getInitialSquare())) {
+        ALL_ORGANISMS.push(organism);
+    }
+}
 
-    if (existingOrganismsOfSameTypeArray.length > 0) {
+function addOrganismSquare(organismSqaure) {
+    if (getSquare(organismSqaure.posX, organismSqaure.posY) == null) {
+        console.warn("Invalid organism placement; no squares to bind to.")
+        return false;
+    }
+    var existingOrganismSquares = getOrganismSquaresAtSquare(organismSqaure.posX, organismSqaure.posY);
+    var existingOrganismSquaresOfSameTypeArray = Array.from(existingOrganismSquares.filter((org) => org.type == organismSqaure.type));
+
+    if (existingOrganismSquaresOfSameTypeArray.length > 0) {
         console.warn("Invalid organism placement; already found an organism of this type here.")
         return false;
     }
 
-    if (!(organism.posX in ALL_ORGANISMS)) {
-        ALL_ORGANISMS[organism.posX] = new Map();
+    if (!(organismSqaure.posX in ALL_ORGANISM_SQUARES)) {
+        ALL_ORGANISM_SQUARES[organismSqaure.posX] = new Map();
     }
-    if (!(organism.posY in ALL_ORGANISMS[organism.posX])) {
-        ALL_ORGANISMS[organism.posX][organism.posY] = new Array();
+    if (!(organismSqaure.posY in ALL_ORGANISM_SQUARES[organismSqaure.posX])) {
+        ALL_ORGANISM_SQUARES[organismSqaure.posX][organismSqaure.posY] = new Array();
     }
-    ALL_ORGANISMS[organism.posX][organism.posY].push(organism);
-    return organism;
+    ALL_ORGANISM_SQUARES[organismSqaure.posX][organismSqaure.posY].push(organismSqaure);
+    return organismSqaure;
 }
 
 function getSquare(posX, posY) {
@@ -629,15 +746,16 @@ function getSquare(posX, posY) {
     return ALL_SQUARES[posX][posY];
 }
 
-function getOrganismsAtSquare(posX, posY) {
-    if (!(posX in ALL_ORGANISMS)) {
-        ALL_ORGANISMS[posX] = new Map();
+
+function getOrganismSquaresAtSquare(posX, posY) {
+    if (!(posX in ALL_ORGANISM_SQUARES)) {
+        ALL_ORGANISM_SQUARES[posX] = new Map();
     }
-    if (!(posY in ALL_ORGANISMS[posX])) {
-        ALL_ORGANISMS[posX][posY] = new Array();
+    if (!(posY in ALL_ORGANISM_SQUARES[posX])) {
+        ALL_ORGANISM_SQUARES[posX][posY] = new Array();
     }
 
-    return ALL_ORGANISMS[posX][posY];
+    return ALL_ORGANISM_SQUARES[posX][posY];
 }
 
 function removeSquarePos(x, y) {
@@ -673,6 +791,14 @@ function physicsBefore() {
     iterateOnSquares((sq) => sq.physicsBefore2(), 0);
 }
 
+function tickOrganisms() {
+    iterateOnOrganismSquares((orgSq) => orgSq.tick(), 0);
+}
+
+function renderOrganisms() {
+    iterateOnOrganismSquares((orgSq) => orgSq.render(), 0);
+}
+
 /**
  * @param {function} func - function with an argumnet of the square it should do the operation on  
  */
@@ -692,6 +818,23 @@ function iterateOnSquares(func, sortRandomness) {
     squareOrder.sort((a, b) => (Math.random() > sortRandomness ? (a.posX + a.posY * 10) - (b.posX + b.posY * 10) : (a.posX + a.posY * 10 - b.posX + b.posY * 10)));
     squareOrder.forEach(func);
 }
+
+function iterateOnOrganismSquares(func, sortRandomness) {
+    var rootKeys = Object.keys(ALL_ORGANISM_SQUARES);
+    var squareOrder = [];
+    for (let i = 0; i < rootKeys.length; i++) {
+        var subKeys = Object.keys(ALL_ORGANISM_SQUARES[rootKeys[i]]);
+        for (let j = 0; j < subKeys.length; j++) {
+            var sq = ALL_ORGANISM_SQUARES[rootKeys[i]][subKeys[j]];
+            if (sq != null) {
+                squareOrder.push(...sq);
+            }
+        }
+    }
+    squareOrder.sort((a, b) => (Math.random() > sortRandomness ? (a.posX + a.posY * 10) - (b.posX + b.posY * 10) : (a.posX + a.posY * 10 - b.posX + b.posY * 10)));
+    squareOrder.forEach(func);
+}
+
 function purge() {
     iterateOnSquares((sq) => {
         var ret = true;
@@ -736,13 +879,21 @@ function doWaterFlow() {
 function main() {
     if (Date.now() - lastTick > MILLIS_PER_TICK) {
         MAIN_CONTEXT.clearRect(0, 0, CANVAS_SQUARES_X * BASE_SIZE, CANVAS_SQUARES_Y * BASE_SIZE);
+
+        
         doClickAdd();
+        
+        // square life cycle
         reset();
         physicsBefore();
         physics();
         doWaterFlow();
         purge();
         render();
+
+        // organism life cycle;
+        tickOrganisms();
+        renderOrganisms();
         lastTick = Date.now();
     }
 }
@@ -818,7 +969,7 @@ function doClickAdd() {
                         // organism sections
                         // in this case we only want to add one per click
                         case "plant":
-                            addOrganism(new PlantOrganism(px, curY));
+                            addOrganism(new PlantSeedOrganism(px, curY));
                             return;
                     }
                 }
