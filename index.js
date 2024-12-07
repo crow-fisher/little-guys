@@ -555,14 +555,52 @@ class BaseOrganism {
         this.posY = Math.floor(posY);
         this.associatedSquares = new Array();
         this.type = "base";
+        this.valid = false;
+        var initialSquare = this.getInitialSquare();
+        if (initialSquare) {
+            addOrganismSquare(initialSquare);
+            this.associatedSquares.push(initialSquare);
+            this.valid = true;
+        }
     }
 
     getInitialSquare() {}
 
-    render() {}
+    render() {
+        this.associatedSquares.forEach((sp) => sp.render())
+    }
 
-    process() {}
+    process() {
+        this.tick();
+        this.postTick();
+    }
+
+    tick() {
+        this.associatedSquares.forEach((sp) => sp.tick())
+    }
+
+    postTick() {}
 }
+
+
+// Organic processing life cycle
+
+/* 
+
+A 'TypeOrganism' has a collection of 'TypeSquares' that are 
+its members. 
+
+These can be a variety of subtypes for different functions.
+
+Computationally, organic life does the following: 
+
+* Call 'tick' on all member squares.
+* Then, call 'postTick' on itself. 
+
+Inside 'postTick', we make decisions about what to do 
+next, such as where to grow or where to die. 
+
+*/
 
 class PlantOrganism extends BaseOrganism {
     constructor(posX, posY) {
@@ -581,6 +619,16 @@ class PlantSeedOrganism extends PlantOrganism {
     getInitialSquare() {
         return new PlantSeedSqaure(this.posX, this.posY);
     }
+
+    postTick() {
+        if (this.associatedSquares[0].sproutStatus >= 1) {
+            // now we need to convert ourself into a 'plant organism'
+            ALL_ORGANISMS = Array.from(ALL_ORGANISMS.filter((org) => org != this));
+            for (let i = 0; i < this.associatedSquares.length; i++) {
+                removeOrganismSquare(this.associatedSquares[i]);
+            }
+        }
+    }
 }
 
 class PlantSeedSqaure extends BaseLifeSquare {
@@ -595,7 +643,6 @@ class PlantSeedSqaure extends BaseLifeSquare {
     }
 
     tick() {
-        super.tick();
         var hostSquare = getSquare(this.posX, this.posY);
         var directNeighbors = getNeighbors(this.posX, this.posY);
 
@@ -620,15 +667,6 @@ class PlantSeedSqaure extends BaseLifeSquare {
         }
 
         this.sproutStatus = Math.max(0, this.sproutStatus);
-        if (this.sproutStatus > 1) {
-            console.log("Sprouted!");
-            this.sprout();
-            this.sproutStatus = 1;
-        }
-    }
-
-    sprout() {
-        this.colorBase = "#EEC643";
     }
 
     calculateColor() {
@@ -711,7 +749,7 @@ function addOrganism(organism) {
         return false;
     }
 
-    if (addOrganismSquare(organism.getInitialSquare())) {
+    if (organism.valid) {
         ALL_ORGANISMS.push(organism);
     }
 }
@@ -758,6 +796,21 @@ function getOrganismSquaresAtSquare(posX, posY) {
     return ALL_ORGANISM_SQUARES[posX][posY];
 }
 
+function removeOrganismSquare(organismSquare) {
+    var posX = organismSquare.posX;
+    var posY = organismSquare.posY;
+
+    if (!(posX in ALL_ORGANISM_SQUARES)) {
+        ALL_ORGANISM_SQUARES[posX] = new Map();
+    }
+    if (!(posY in ALL_ORGANISM_SQUARES[posX])) {
+        ALL_ORGANISM_SQUARES[posX][posY] = new Array();
+    }
+
+    ALL_ORGANISM_SQUARES[posX][posY] = Array.from(
+        ALL_ORGANISM_SQUARES[posX][posY].filter((osq) => osq != organismSquare))
+}
+
 function removeSquarePos(x, y) {
     x = Math.floor(x);
     y = Math.floor(y);
@@ -791,12 +844,12 @@ function physicsBefore() {
     iterateOnSquares((sq) => sq.physicsBefore2(), 0);
 }
 
-function tickOrganisms() {
-    iterateOnOrganismSquares((orgSq) => orgSq.tick(), 0);
+function processOrganisms() {
+    iterateOnOrganisms((org) => org.process(), 0);
 }
 
 function renderOrganisms() {
-    iterateOnOrganismSquares((orgSq) => orgSq.render(), 0);
+    iterateOnOrganisms((org) => org.render(), 0);
 }
 
 /**
@@ -819,20 +872,10 @@ function iterateOnSquares(func, sortRandomness) {
     squareOrder.forEach(func);
 }
 
-function iterateOnOrganismSquares(func, sortRandomness) {
-    var rootKeys = Object.keys(ALL_ORGANISM_SQUARES);
-    var squareOrder = [];
-    for (let i = 0; i < rootKeys.length; i++) {
-        var subKeys = Object.keys(ALL_ORGANISM_SQUARES[rootKeys[i]]);
-        for (let j = 0; j < subKeys.length; j++) {
-            var sq = ALL_ORGANISM_SQUARES[rootKeys[i]][subKeys[j]];
-            if (sq != null) {
-                squareOrder.push(...sq);
-            }
-        }
-    }
-    squareOrder.sort((a, b) => (Math.random() > sortRandomness ? (a.posX + a.posY * 10) - (b.posX + b.posY * 10) : (a.posX + a.posY * 10 - b.posX + b.posY * 10)));
-    squareOrder.forEach(func);
+function iterateOnOrganisms(func, sortRandomness) {
+    var organismOrder = ALL_ORGANISMS;
+    organismOrder.sort((a, b) => (Math.random() > sortRandomness ? (a.posX + a.posY * 10) - (b.posX + b.posY * 10) : (a.posX + a.posY * 10 - b.posX + b.posY * 10)));
+    organismOrder.forEach(func);
 }
 
 function purge() {
@@ -892,7 +935,7 @@ function main() {
         render();
 
         // organism life cycle;
-        tickOrganisms();
+        processOrganisms();
         renderOrganisms();
         lastTick = Date.now();
     }
