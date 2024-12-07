@@ -24,8 +24,8 @@ document.body.onmouseup = function () {
 // 'little guys' may aquire multiple squares
 const BASE_SIZE = 8;
 var MILLIS_PER_TICK = 2;
-var CANVAS_SQUARES_X = 15; // * 8; //6;
-var CANVAS_SQUARES_Y = 8; // * 8; // 8;
+var CANVAS_SQUARES_X = 150; // * 8; //6;
+var CANVAS_SQUARES_Y = 80; // * 8; // 8;
 var ERASE_RADIUS = 2;
 var lastLastClickEvent = null;
 
@@ -291,6 +291,16 @@ class StaticSquare extends BaseSquare {
     }
 }
 
+class PlantSquare extends BaseSquare {
+    constructor(posX, posY) {
+        super(posX, posY);
+        this.colorBase = "#4CB963";
+        this.physicsEnabled = false;
+        this.waterContainmentMax = 0;
+        this.waterContainmentTransferRate = 0;
+    }
+}
+
 class DrainSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
@@ -528,6 +538,7 @@ class BaseLifeSquare {
         this.posX = posX;
         this.posY = posY;
         this.type = "base";
+        this.colorBase = "#1D263B";
     }
 
     tick() {}
@@ -556,15 +567,15 @@ class BaseOrganism {
         this.associatedSquares = new Array();
         this.type = "base";
         this.valid = false;
-        var initialSquare = this.getInitialSquare();
-        if (initialSquare) {
-            addOrganismSquare(initialSquare);
-            this.associatedSquares.push(initialSquare);
+        var initialSquares = this.getInitialSqaures();
+        if (initialSquares.length > 0) {
+            initialSquares.forEach((sq) => addOrganismSquare(sq));
+            this.associatedSquares.push(...initialSquares);
             this.valid = true;
         }
     }
 
-    getInitialSquare() {}
+    getInitialSqaures() { return new Array(); }
 
     render() {
         this.associatedSquares.forEach((sp) => sp.render())
@@ -607,17 +618,61 @@ class PlantOrganism extends BaseOrganism {
         super(posX, posY);
         this.type = "plant";
     }
+
+    getInitialSqaures() {
+        var ret = new Array();
+        
+        // a plant needs to grow a PlantSquare above ground 
+        // and grow a RootOrganism into existing Dirt
+        
+        if (addSquare(new PlantSquare(this.posX, this.posY - 1))) {
+            var orgSq = addOrganismSquare(new PlantLifeSquare(this.posX, this.posY - 1));
+            if (orgSq) {
+                ret.push(orgSq);
+            }
+        };
+
+        // root time
+
+        var rootSq = addOrganismSquare(new RootLifeSquare(this.posX, this.posY));
+
+        if (rootSq) {
+            ret.push(rootSq);
+        }
+
+        if (ret.length == 2) {
+            return ret;
+        } else {
+            return new Array();
+        }
+    }
     render() {
         this.associatedSquares.forEach((sp) => sp.render())
     }
 }
 
-class PlantSeedOrganism extends PlantOrganism {
+class PlantLifeSquare extends BaseLifeSquare {
+    constructor(posX, posY) {
+        super(posX, posY);
+        this.colorBase = "#157F1F";
+    }
+}
+
+class RootLifeSquare extends BaseLifeSquare {
+    constructor(posX, posY) {
+        super(posX, posY);
+        this.colorBase = "#554640"
+    }
+}
+
+class PlantSeedOrganism extends BaseOrganism {
     constructor(posX, posY) {
         super(posX, posY);
     }
-    getInitialSquare() {
-        return new PlantSeedSqaure(this.posX, this.posY);
+    getInitialSqaures() {
+        var ret = super.getInitialSqaures();
+        ret.push(new PlantSeedLifeSquare(this.posX, this.posY));
+        return ret;
     }
 
     postTick() {
@@ -627,11 +682,12 @@ class PlantSeedOrganism extends PlantOrganism {
             for (let i = 0; i < this.associatedSquares.length; i++) {
                 removeOrganismSquare(this.associatedSquares[i]);
             }
+            addOrganism(new PlantOrganism(this.posX, this.posY));
         }
     }
 }
 
-class PlantSeedSqaure extends BaseLifeSquare {
+class PlantSeedLifeSquare extends BaseLifeSquare {
     constructor(posX, posY) {
         super(posX, posY);
         this.type = "seed";
