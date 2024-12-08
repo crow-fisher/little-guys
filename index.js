@@ -2,6 +2,10 @@ var MAIN_CANVAS = document.getElementById("main");
 var MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
 var materialSelect = document.getElementById("materialSelect");
 var fastTerrain = document.getElementById("fastTerrain");
+var loadSlotA = document.getElementById("loadSlotA");
+var saveSlotA = document.getElementById("saveSlotA");
+var configSliders = document.getElementById("configSliders");
+var configOuptput = document.getElementById("configOutput");
 
 var selectedMaterial = "dirt";
 
@@ -44,8 +48,6 @@ var WATERFLOW_CANDIDATE_SQUARES = new Set();
 
 var rightMouseClicked = false;
 
-var loadSlotA = document.getElementById("loadSlotA");
-var saveSlotA = document.getElementById("saveSlotA");
 
 loadSlotA.onclick = (e) => loadSlot("A");
 saveSlotA.onclick = (e) => saveSlot("A"); 
@@ -921,7 +923,7 @@ class PlantOrganism extends BaseOrganism {
 
         var threshold = this.associatedSquares.length ** 1.5;
         
-        console.log("air:" , this.airNutrients, "water:", this.waterNutrients, "root", this.rootNutrients);
+        // console.log("air:" , this.airNutrients, "water:", this.waterNutrients, "root", this.rootNutrients);
         if (this.airNutrients > threshold && this.waterNutrients > threshold && this.rootNutrients > threshold) {
             this.growWaterRoot();
 
@@ -1585,3 +1587,60 @@ var ProtoMap = {
     "PlantSeedOrganism": PlantSeedOrganism.prototype,
     "PlantSeedLifeSquare": PlantSeedLifeSquare.prototype
 }
+
+
+var all_configs = [];
+
+var displayConfigDirty = false;
+var displayConfigText = "";
+
+
+function addConfig(config) {
+    all_configs.push(config);
+    var newSlider = document.createElement("input");
+    newSlider.type = "range";
+    newSlider.class = "slider";
+    newSlider.value = config.value;
+    newSlider.min = config.value / 10;
+    newSlider.max = config.value * 10;
+    newSlider.step = config.value / 1000;
+    newSlider.id = "slider_" + config.name;
+    newSlider.onchange = (e) => 
+        {
+            config.value = e.target.value;
+            displayConfigDirty = true;
+        };
+
+    configSliders.appendChild(newSlider);
+    var label = document.createElement("label");
+    label.innerText = "slider_" + config.name;
+    label.htmlFor = "slider_" + config.name;
+    configSliders.appendChild(label);
+    configSliders.append(document.createElement("br"));
+}
+
+function displayConfigs() {
+    if (!displayConfigDirty) {
+        return;
+    }
+    configOuptput.innerText = "";
+    for (let i = 0; i < all_configs.length; i++) {
+        var cfg = all_configs[i];
+        configOuptput.innerText += "var " + cfg.name + "={\n\tname: \"" + cfg.name + "\",\n\tvalue: " + cfg.value + "\n};\n";
+    }
+    displayConfigDirty = false;
+}
+
+var foo={
+name: "foo",
+value: 375.0222
+};
+var bar={
+name: "bar",
+value: 88.10352
+};
+addConfig(foo);
+addConfig(bar);
+
+setInterval(displayConfigs, 1);
+
