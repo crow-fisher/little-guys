@@ -44,6 +44,77 @@ var WATERFLOW_CANDIDATE_SQUARES = new Set();
 
 var rightMouseClicked = false;
 
+var loadSlotA = document.getElementById("loadSlotA");
+var saveSlotA = document.getElementById("saveSlotA");
+
+loadSlotA.onclick = (e) => loadSlot("A");
+saveSlotA.onclick = (e) => saveSlot("A"); 
+
+
+
+function loadSlot(slotName) {
+    var sqLoad = localStorage.getItem("ALL_SQUARES_" + slotName);
+    if (sqLoad == null) {
+        alert("no data to load!!! beep boop :(")
+        return null;
+    }
+    // These are not our 'real' objects - they are JSON objects.
+    // So they don't have functions and such. 
+    var loaded_ALL_SQUARES = JSON.parse(localStorage.getItem("ALL_SQUARES_" + slotName));
+    var loaded_ALL_ORGANISMS = JSON.parse(localStorage.getItem("ALL_ORGANISMS_" + slotName));
+    var loaded_ALL_ORGANISM_SQUARES = JSON.parse(localStorage.getItem("ALL_ORGANISM_SQUARES_" + slotName));
+
+    // bippity boppity do something like this 
+    // Object.setPrototypeOf(sq, DirtSquare.prototype)
+
+    ALL_SQUARES = new Map();
+    ALL_ORGANISMS = new Array();
+    ALL_ORGANISM_SQUARES = new Map();
+
+    var rootKeys = Object.keys(loaded_ALL_SQUARES);
+    for (let i = 0; i < rootKeys.length; i++) {
+        var subKeys = Object.keys(loaded_ALL_SQUARES[rootKeys[i]]);
+        for (let j = 0; j < subKeys.length; j++) {
+            var sq = loaded_ALL_SQUARES[rootKeys[i]][subKeys[j]];
+            if (sq != null) {
+                addSquare(Object.setPrototypeOf(sq, ProtoMap[sq.proto]));
+            }
+        }
+    }
+
+    rootKeys = Object.keys(loaded_ALL_ORGANISM_SQUARES);
+    for (let i = 0; i < rootKeys.length; i++) {
+        var subKeys = Object.keys(loaded_ALL_ORGANISM_SQUARES[rootKeys[i]]);
+        for (let j = 0; j < subKeys.length; j++) {
+            var squares = loaded_ALL_ORGANISM_SQUARES[rootKeys[i]][subKeys[j]];
+            for (let k = 0; k < squares.length; k++) {
+                var sq = squares[k];
+                if (sq != null) {
+                    addOrganismSquare(Object.setPrototypeOf(sq, ProtoMap[sq.proto]));
+                }
+            }
+
+        }
+    }
+
+    for (let i = 0; i < loaded_ALL_ORGANISMS.length; i++) {
+        var org = loaded_ALL_ORGANISMS[i];
+        Object.setPrototypeOf(org, ProtoMap[org.proto]);
+        for (let j = 0; j < org.associatedSquares.length; j++) {
+            var orgSq = org.associatedSquares[j];
+            org.associatedSquares[j] = getOrganismSquaresAtSquareOfProto(orgSq.posX, orgSq.posY, orgSq.proto);
+        }
+        addOrganism(org);
+    }
+
+}
+function saveSlot(slotName) {
+    localStorage.setItem("ALL_SQUARES_" + slotName, JSON.stringify(ALL_SQUARES));    
+    localStorage.setItem("ALL_ORGANISMS_" + slotName, JSON.stringify(ALL_ORGANISMS));    
+    localStorage.setItem("ALL_ORGANISM_SQUARES_" + slotName, JSON.stringify(ALL_ORGANISM_SQUARES));
+}
+
+
 function handleMouseDown(e) {
     //e.button describes the mouse button that was clicked
     // 0 is left, 1 is middle, 2 is right
@@ -73,6 +144,7 @@ document.addEventListener('contextmenu', function (e) {
 
 class BaseSquare {
     constructor(posX, posY) {
+        this.proto = "BaseSquare";
         this.posX = Math.floor(posX);
         this.posY = Math.floor(posY);
         this.colorBase = "#A1A6B4";
@@ -303,6 +375,7 @@ class BaseSquare {
 class DirtSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
+        this.proto = "DirtSquare";
         this.colorBase = "#B06C49";
         this.nutrientValue = 0.05;
         this.rootable = true;
@@ -312,6 +385,7 @@ class DirtSquare extends BaseSquare {
 class StaticSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
+        this.proto = "StaticSquare";
         this.colorBase = "#000100";
         this.physicsEnabled = false;
         this.waterContainmentMax = 0;
@@ -322,6 +396,7 @@ class StaticSquare extends BaseSquare {
 class PlantSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
+        this.proto = "PlantSquare";
         this.colorBase = "#4CB963";
         this.physicsEnabled = false;
         this.waterContainmentMax = 0;
@@ -332,6 +407,7 @@ class PlantSquare extends BaseSquare {
 class DrainSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
+        this.proto = "DrainSquare";
         this.colorBase = "#555555";
         this.physicsEnabled = false;
         this.waterContainmentMax = 1.01;
@@ -369,6 +445,7 @@ class DrainSquare extends BaseSquare {
 class WaterDistributionSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
+        this.proto = "WaterDistributionSquare";
         this.colorBase = "#000500";
         this.physicsEnabled = false;
         this.waterContainmentMax = 2;
@@ -403,6 +480,7 @@ class WaterDistributionSquare extends BaseSquare {
 class RainSquare extends StaticSquare {
     constructor(posX, posY) {
         super(posX, posY);
+        this.proto = "RainSquare";
         this.colorBase = "#AAAAAA";
     }
     physics() {
@@ -414,6 +492,7 @@ class RainSquare extends StaticSquare {
 class HeavyRainSquare extends StaticSquare {
     constructor(posX, posY) {
         super(posX, posY);
+        this.proto = "HeavyRainSquare";
         this.colorBase = "#FFAAAA";
     }
     physics() {
@@ -426,6 +505,7 @@ class HeavyRainSquare extends StaticSquare {
 class WaterSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
+        this.proto = "WaterSquare";
         this.boundedTop = false;
         this.colorBase = "#79beee";
         this.solid = false;
@@ -563,6 +643,7 @@ class WaterSquare extends BaseSquare {
 
 class BaseLifeSquare {
     constructor(posX, posY) {
+        this.proto = "BaseLifeSquare";
         this.posX = posX;
         this.posY = posY;
         this.type = "base";
@@ -590,6 +671,7 @@ class BaseLifeSquare {
 
 class BaseOrganism {
     constructor(posX, posY) {
+        this.proto = "BaseOrganism";
         this.posX = Math.floor(posX); 
         this.posY = Math.floor(posY);
         this.associatedSquares = new Array();
@@ -651,6 +733,7 @@ next, such as where to grow or where to die.
 class PlantOrganism extends BaseOrganism {
     constructor(posX, posY) {
         super(posX, posY);
+        this.proto = "PlantOrganism";
         this.type = "plant";
         
         this.rootNutrients = 1;
@@ -938,6 +1021,7 @@ class PlantOrganism extends BaseOrganism {
 class PlantLifeSquare extends BaseLifeSquare {
     constructor(posX, posY) {
         super(posX, posY);
+        this.proto = "PlantLifeSquare";
         this.colorBase = "#157F1F";
         this.type = "green";
         this.airNutrients = 0;
@@ -958,6 +1042,7 @@ class PlantLifeSquare extends BaseLifeSquare {
 class RootLifeSquare extends BaseLifeSquare {
     constructor(posX, posY) {
         super(posX, posY);
+        this.proto = "RootLifeSquare";
         this.colorBase = "#554640";
         this.type = "root";
         this.rootNutrients = 0;
@@ -979,6 +1064,7 @@ class RootLifeSquare extends BaseLifeSquare {
 class PlantSeedOrganism extends BaseOrganism {
     constructor(posX, posY) {
         super(posX, posY);
+        this.proto = "PlantSeedOrganism";
     }
     getInitialSqaures() {
         var ret = super.getInitialSqaures();
@@ -998,6 +1084,7 @@ class PlantSeedOrganism extends BaseOrganism {
 class PlantSeedLifeSquare extends BaseLifeSquare {
     constructor(posX, posY) {
         super(posX, posY);
+        this.proto = "PlantSeedLifeSquare";
         this.type = "seed";
         this.sproutStatus = 0;
         this.sproutGrowthRate = 0.01;
@@ -1162,6 +1249,21 @@ function getOrganismSquaresAtSquare(posX, posY) {
     }
 
     return ALL_ORGANISM_SQUARES[posX][posY];
+}
+
+function getOrganismSquaresAtSquareOfProto(posX, posY, proto) {
+    if (!(posX in ALL_ORGANISM_SQUARES)) {
+        ALL_ORGANISM_SQUARES[posX] = new Map();
+    }
+    if (!(posY in ALL_ORGANISM_SQUARES[posX])) {
+        ALL_ORGANISM_SQUARES[posX][posY] = new Array();
+    }
+    for (let i = 0; i < ALL_ORGANISM_SQUARES[posX][posY].length; i++) {
+        if (ALL_ORGANISM_SQUARES[posX][posY][i].proto == proto) {
+            return ALL_ORGANISM_SQUARES[posX][posY][i];
+        }
+    }
+    return null;
 }
 
 function removeOrganismSquare(organismSquare) {
@@ -1390,7 +1492,7 @@ function doClickAdd() {
                             return;
                     }
                 }
-                if (!fastTerrain.checked) {
+                if (!fastTerrain.checked || selectedMaterial.indexOf("rain") > 0) {
                     break;
                 }
             }
@@ -1464,3 +1566,22 @@ window.oncontextmenu = function () {
 }
 
 var abs = Math.abs;
+
+var ProtoMap = {
+    "BaseSquare": BaseSquare.prototype,
+    "DirtSquare": DirtSquare.prototype,
+    "StaticSquare": StaticSquare.prototype,
+    "PlantSquare": PlantSquare.prototype,
+    "DrainSquare": DrainSquare.prototype,
+    "WaterDistributionSquare": WaterDistributionSquare.prototype,
+    "RainSquare": RainSquare.prototype,
+    "HeavyRainSquare": HeavyRainSquare.prototype,
+    "WaterSquare": WaterSquare.prototype,
+    "BaseLifeSquare": BaseLifeSquare.prototype,
+    "BaseOrganism": BaseOrganism.prototype,
+    "PlantOrganism": PlantOrganism.prototype,
+    "PlantLifeSquare": PlantLifeSquare.prototype,
+    "RootLifeSquare": RootLifeSquare.prototype,
+    "PlantSeedOrganism": PlantSeedOrganism.prototype,
+    "PlantSeedLifeSquare": PlantSeedLifeSquare.prototype
+}
