@@ -89,7 +89,8 @@ class BaseSquare {
         this.falling = false;
         this.speed = 0;
         this.physicsBlocksFallen = 0;
-
+        this.nutrientValue = 0; 
+        this.rootable = false;
         this.group = -1;
     };
     reset() {
@@ -140,10 +141,25 @@ class BaseSquare {
         if (existingSq) {
             return false;
         } else {
+            var existingLifeSquares = getOrganismSquaresAtSquare(this.posX, this.posY);
+            existingLifeSquares.forEach((sq) => {
+                removeOrganismSquare(sq);
+                console.log("Removed sq: ", sq);
+
+            });
+
             ALL_SQUARES[this.posX][this.posY] = null;
             ALL_SQUARES[newPosX][newPosY] = this;
             this.posX = newPosX;
             this.posY = newPosY;
+
+            existingLifeSquares.forEach((sq) => {
+                sq.posX = newPosX;
+                sq.posY = newPosY;
+                addOrganismSquare(sq);
+                console.log("Added sq: ", sq);
+            });
+
             return true;
         }
     }
@@ -272,12 +288,24 @@ class BaseSquare {
             }
         }
     }
+
+    suckWater(rootWaterSaturation) {
+        if (rootWaterSaturation > this.waterContainment) {
+            return 0;
+        }
+        var diff = this.waterContainment - rootWaterSaturation;
+        var ret = Math.min(this.waterContainmentTransferRate, diff / 2);
+        this.waterContainment -= ret;
+        return ret;
+    }
 }
 
 class DirtSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
         this.colorBase = "#B06C49";
+        this.nutrientValue = 0.05;
+        this.rootable = true;
     }
 }
 
@@ -581,6 +609,13 @@ class BaseOrganism {
         this.associatedSquares.forEach((sp) => sp.render())
     }
 
+    destroy() {
+        ALL_ORGANISMS = Array.from(ALL_ORGANISMS.filter((org) => org != this));
+        for (let i = 0; i < this.associatedSquares.length; i++) {
+            removeOrganismSquare(this.associatedSquares[i]);
+        }
+    }
+
     process() {
         this.tick();
         this.postTick();
@@ -617,6 +652,10 @@ class PlantOrganism extends BaseOrganism {
     constructor(posX, posY) {
         super(posX, posY);
         this.type = "plant";
+        
+        this.rootNutrients = 1;
+        this.airNutrients = 1;
+        this.waterNutrients = 1;
     }
 
     getInitialSqaures() {
@@ -634,10 +673,12 @@ class PlantOrganism extends BaseOrganism {
 
         // root time
 
-        var rootSq = addOrganismSquare(new RootLifeSquare(this.posX, this.posY));
-
-        if (rootSq) {
-            ret.push(rootSq);
+        var rootTargetSq = getSquare(this.posX, this.posY);
+        if (rootTargetSq != null && rootTargetSq.rootable) {
+            var rootSq = addOrganismSquare(new RootLifeSquare(this.posX, this.posY));
+            if (rootSq) {
+                ret.push(rootSq);
+            }
         }
 
         if (ret.length == 2) {
@@ -649,19 +690,289 @@ class PlantOrganism extends BaseOrganism {
     render() {
         this.associatedSquares.forEach((sp) => sp.render())
     }
+
+    postTick() {
+        var airSuckFrac = 0.8;
+        var waterSuckFrac = 0.2; 
+        var rootSuckFrac = 0.2;
+
+        var airNutrientsGained = 0;
+        var waterNutrientsGained = 0;
+        var rootNutrientsGained = 0;
+
+        for (let i = 0; i < this.associatedSquares.length; i++) {
+            let lifeSquare = this.associatedSquares[i];
+            if (lifeSquare.type == "root") {
+                rootNutrientsGained = lifeSquare.rootNutrients * rootSuckFrac;
+                waterNutrientsGained = lifeSquare.waterNutrients * waterSuckFrac;
+                
+                this.rootNutrients += rootNutrientsGained;
+                lifeSquare.rootNutrients -= rootNutrientsGained;
+
+                this.waterNutrients += waterNutrientsGained;
+                lifeSquare.waterNutrients -= waterNutrientsGained;
+            }   
+            if (lifeSquare.type == "green") {
+                airNutrientsGained = lifeSquare.airNutrients * airSuckFrac;
+
+                this.airNutrients += airNutrientsGained;
+                lifeSquare.airNutrients -= airNutrientsGained;
+            }
+        }
+
+        this.grow();
+
+        var nutrientCost = this.associatedSquares.length / 500;
+
+        var netAirNutrients = airNutrientsGained - nutrientCost;
+        var netWaterNutrients = waterNutrientsGained - nutrientCost;
+        var netRootNutrientsGained = rootNutrientsGained - nutrientCost;
+
+        if (netAirNutrients < 0) {
+            if (netWaterNutrients > netRootNutrientsGained) {
+                this.killRootWithLeastWater();
+            }
+            else {
+                this.killRootWithLeastRootResource();
+            }
+        }
+        if (netWaterNutrients < 0) {
+            if (netAirNutrients < netRootNutrientsGained) {
+                this.killRootWithLeastWater();
+            } else {
+                this.killGreen();
+            }
+        }
+        if (netRootNutrientsGained < 0) {
+            if (netAirNutrients < netWaterNutrients) {
+                this.killRootWithLeastRootResource();
+            } else {
+                this.killGreen();
+            }
+        }
+
+        this.airNutrients -= nutrientCost;
+        this.waterNutrients -= nutrientCost;
+        this.rootNutrients -= nutrientCost;
+    }
+
+    getLowestGreen() {
+        return Array.from(this.associatedSquares
+            .filter((sq) => sq.type == "green")).sort((a, b) => b.posY - a.posY)[0];
+    }
+
+    getHighestGreen() {
+        return Array.from(this.associatedSquares
+            .filter((sq) => sq.type == "green")).sort((a, b) => a.posY - b.posY)[0];
+    }
+
+    getExteriorRoots() {
+        var lowestGreen = Array.from(this.associatedSquares
+            .filter((sq) => sq.type == "green")).sort((a, b) => b.posY - a.posY)[0];
+        
+        var visitedSquares = new Set();
+        var exteriorRoots = new Set();
+        var squaresToExplore = new Array(); 
+        squaresToExplore.push(lowestGreen); // LifeSquare 
+        visitedSquares.add(getSquare(lowestGreen.posX, lowestGreen.posY)); // TerrainSquares
+        var curIdx = 0;
+        do {
+            var activeSquare = squaresToExplore[curIdx];
+            var myNeighbors = getDirectNeighbors(activeSquare.posX, activeSquare.posY);
+            for (let i = 0; i < myNeighbors.length; i++) {
+                var neighbor = myNeighbors[i];
+                var isExteriorRoot = true;
+                if (neighbor == null) {
+                    continue;
+                }
+                if (getCountOfOrganismsSquaresOfTypeAtPosition(neighbor.posX, neighbor.posY, "root") > 0 && (Array.from(visitedSquares).indexOf(neighbor) == -1)) {
+                    squaresToExplore.push(neighbor)
+                    visitedSquares.add(neighbor);
+                    isExteriorRoot = false;
+
+                }
+                if (isExteriorRoot) {
+                    exteriorRoots.add(activeSquare);
+                }
+            }
+            curIdx += 1;
+        } while (curIdx < squaresToExplore.length);
+        
+        return Array.from(exteriorRoots);
+    }
+
+    killRootWithLeastWater() {
+        var exteriorRoots = this.getExteriorRoots();
+        if (exteriorRoots.length == 0) { 
+            return;
+        }
+        var targetRoot = exteriorRoots[0];
+        for (let i = 0; i < exteriorRoots.length; i++) {
+            if (exteriorRoots[i].waterNutrients < targetRoot.waterNutrients) {
+                targetRoot = exteriorRoots[i];
+            }
+        }
+        removeOrganismSquare(targetRoot);
+    }
+
+    killRootWithLeastRootResource() {
+        var exteriorRoots = this.getExteriorRoots();
+        if (exteriorRoots.length == 0) { 
+            return;
+        }
+        var targetRoot = exteriorRoots[0];
+        for (let i = 0; i < exteriorRoots.length; i++) {
+            if (exteriorRoots[i].rootNutrients < targetRoot.rootNutrients) {
+                targetRoot = exteriorRoots[i];
+            }
+        }
+        removeOrganismSquare(targetRoot);
+    }
+
+    killGreen() {
+        removeOrganismSquare(this.getHighestGreen());
+    }
+
+    grow() {
+        // make a decision on how to grow based on which of our needs we need the most
+
+        var threshold = this.associatedSquares.length ** 1.5;
+        
+        console.log("air:" , this.airNutrients, "water:", this.waterNutrients, "root", this.rootNutrients);
+        if (this.airNutrients > threshold && this.waterNutrients > threshold && this.rootNutrients > threshold) {
+            this.growWaterRoot();
+
+            if (this.airNutrients < Math.min(this.waterNutrients, this.rootNutrients)) {
+                // grow a new plant
+                this.growNewPlant();
+            }
+            else if (this.waterNutrients < Math.min(this.rootNutrients, this.airNutrients)) {
+                // grow water-thirsty root
+                this.growWaterRoot();
+            }
+            else if (this.rootNutrients < Math.min(this.airNutrients, this.waterNutrients)) {
+                // grow dirt-thirsty root
+                this.growDirtRoot();
+            }
+        }
+    }
+
+    growNewPlant() {
+        var highestPlantSquare = Array.from(this.associatedSquares.filter((sq) => sq.type == "green").sort((a, b) => a.posY - b.posY))[0];
+        if (addSquare(new PlantSquare(highestPlantSquare.posX, highestPlantSquare.posY - 1))) {
+            var orgSq = addOrganismSquare(new PlantLifeSquare(highestPlantSquare.posX, highestPlantSquare.posY - 1));
+            if (orgSq) {
+                this.associatedSquares.push(orgSq);
+            }
+        };
+    }
+
+    growWaterRoot() {
+        var wettestSquare = null;
+        for (let i = 0; i < this.associatedSquares.length; i++) {
+            var sq = this.associatedSquares[i];
+            if (sq.type != "root") {
+                continue;
+            }
+            var sqNeighbors = getDirectNeighbors(sq.posX, sq.posY);
+            for (let j = 0; j < sqNeighbors.length; j++) {
+                var compSquare = sqNeighbors[j];
+                if (compSquare == null || !compSquare.rootable) {
+                    continue;
+                }
+                if (wettestSquare == null || wettestSquare.waterContainment < compSquare.waterContainment) {
+                    if (getCountOfOrganismsSquaresOfTypeAtPosition("root") > 0) {
+                        continue;
+                    } else {
+                        wettestSquare = compSquare;
+                    }
+                }
+            }
+        }
+        if (wettestSquare != null) {
+            var rootSquare = addOrganismSquare(new RootLifeSquare(wettestSquare.posX, wettestSquare.posY));
+            if (rootSquare) {
+                this.associatedSquares.push(rootSquare);
+                this.waterNutrients -= 1;
+            }
+        }
+    }
+
+    growDirtRoot() {
+        var dirtiestSquare = null;
+        var dirtiestSquareDirtResourceAvailable = 0;
+
+        for (let i = 0; i < this.associatedSquares.length; i++) {
+            var sq = this.associatedSquares[i];
+            if (sq.type != "root") {
+                continue;
+            }
+            var sqNeighbors = getDirectNeighbors(sq.posX, sq.posY);
+            for (let j = 0; j < sqNeighbors.length; j++) {
+                var compSquare = sqNeighbors[j];
+                if (compSquare == null || !compSquare.rootable) {
+                    continue;
+                }
+                
+                var compSquareNeighbors = getDirectNeighbors(compSquare.posX, compSquare.posY);
+                var compSquareResourceAvailable = compSquareNeighbors.filter((sq) => sq != null && sq.solid && sq.nutrientValue > 0).map((sq) => sq.nutrientValue).reduce(
+                    (accumulator, currentValue) => accumulator + currentValue,
+                    0,
+                );
+
+                if (compSquareResourceAvailable > dirtiestSquareDirtResourceAvailable) {
+                    dirtiestSquare = compSquare;
+                }
+            }
+        }
+        if (dirtiestSquare != null) {
+            var rootSquare = addOrganismSquare(new RootLifeSquare(dirtiestSquare.posX, dirtiestSquare.posY));
+            if (rootSquare) {
+                this.associatedSquares.push(rootSquare);
+                this.rootNutrients -= 1;
+            }
+        }
+    }
 }
 
 class PlantLifeSquare extends BaseLifeSquare {
     constructor(posX, posY) {
         super(posX, posY);
         this.colorBase = "#157F1F";
+        this.type = "green";
+        this.airNutrients = 0;
+    }
+
+    tick() {
+        this.airNutrients = 0;
+        var neighbors = getDirectNeighbors(this.posX, this.posY);
+        for (var i = 0; i < neighbors.length; i++) {
+            var neighbor = neighbors[i];
+            if (neighbor == null) {
+                this.airNutrients += 0.0025;
+            }
+        }
     }
 }
 
 class RootLifeSquare extends BaseLifeSquare {
     constructor(posX, posY) {
         super(posX, posY);
-        this.colorBase = "#554640"
+        this.colorBase = "#554640";
+        this.type = "root";
+        this.rootNutrients = 0;
+        this.waterNutrients = 0; 
+    }
+    tick() {
+        this.rootNutrients = 0;
+        var neighbors = getDirectNeighbors(this.posX, this.posY);
+        for (var i = 0; i < neighbors.length; i++) {
+            var neighbor = neighbors[i];
+            if (neighbor != null && neighbor.solid) {
+                this.rootNutrients += neighbor.nutrientValue;
+                this.waterNutrients += neighbor.suckWater(this.waterNutrients);
+            }
+        }
     }
 }
 
@@ -678,10 +989,7 @@ class PlantSeedOrganism extends BaseOrganism {
     postTick() {
         if (this.associatedSquares[0].sproutStatus >= 1) {
             // now we need to convert ourself into a 'plant organism'
-            ALL_ORGANISMS = Array.from(ALL_ORGANISMS.filter((org) => org != this));
-            for (let i = 0; i < this.associatedSquares.length; i++) {
-                removeOrganismSquare(this.associatedSquares[i]);
-            }
+            this.destroy();
             addOrganism(new PlantOrganism(this.posX, this.posY));
         }
     }
@@ -700,6 +1008,10 @@ class PlantSeedLifeSquare extends BaseLifeSquare {
 
     tick() {
         var hostSquare = getSquare(this.posX, this.posY);
+        if (hostSquare == null) {
+            console.error("Host squarre is null!");
+            return;
+        }
         var directNeighbors = getNeighbors(this.posX, this.posY);
 
         var totalSurroundingWater = hostSquare.waterContainment;
@@ -945,6 +1257,12 @@ function purge() {
             removeSquare(sq);
         }
     });
+}
+
+function getCountOfOrganismsSquaresOfTypeAtPosition(posX, posY, type) {
+    var existingOrganismSquares = getOrganismSquaresAtSquare(posX, posY);
+    var existingOrganismSquaresOfSameTypeArray = Array.from(existingOrganismSquares.filter((org) => org.type == type));
+    return existingOrganismSquaresOfSameTypeArray.length;
 }
 
 function doWaterFlow() {
