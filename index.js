@@ -4,6 +4,8 @@ var materialSelect = document.getElementById("materialSelect");
 var fastTerrain = document.getElementById("fastTerrain");
 var loadSlotA = document.getElementById("loadSlotA");
 var saveSlotA = document.getElementById("saveSlotA");
+var loadSlotB = document.getElementById("loadSlotB");
+var saveSlotB = document.getElementById("saveSlotB");
 var configSliders = document.getElementById("configSliders");
 var configOuptput = document.getElementById("configOutput");
 
@@ -190,16 +192,23 @@ var p_seed_ls_sproutGrowthRate = {
 };
 var p_seed_ls_neighborWaterContainmentRequiredToGrow = {
     name: "p_seed_ls_neighborWaterContainmentRequiredToGrow",
-    value: 0.8
+    value: 0.3
 };
 var p_seed_ls_neighborWaterContainmentRequiredToDecay = {
     name: "p_seed_ls_neighborWaterContainmentRequiredToDecay",
-    value: 0.1
+    value: 0.05
 };
 var p_seed_ls_darkeningStrength = {
     name: "p_seed_ls_darkeningStrength",
     value: 0.3
 };
+
+var global_plantToRealWaterConversionFactor = {
+    name: "global_plantToRealWaterConversionFactor",
+    value: 10
+}
+
+addConfig(global_plantToRealWaterConversionFactor);
 addConfig(b_sq_waterContainmentMax);
 addConfig(b_sq_nutrientValue);
 addConfig(static_sq_waterContainmentMax);
@@ -233,6 +242,8 @@ addConfig(p_seed_ls_darkeningStrength);
 
 loadSlotA.onclick = (e) => loadSlot("A");
 saveSlotA.onclick = (e) => saveSlot("A");
+loadSlotB.onclick = (e) => loadSlot("B");
+saveSlotB.onclick = (e) => saveSlot("B");
 
 function loadSlot(slotName) {
     var sqLoad = localStorage.getItem("ALL_SQUARES_" + slotName);
@@ -549,7 +560,7 @@ class BaseSquare {
         }
         var diff = this.waterContainment - rootWaterSaturation;
         var ret = Math.min(this.waterContainmentTransferRate.value, diff / 2);
-        this.waterContainment -= ret;
+        this.waterContainment -= (ret / global_plantToRealWaterConversionFactor.value);
         return ret;
     }
 }
@@ -580,7 +591,6 @@ class PlantSquare extends BaseSquare {
         super(posX, posY);
         this.proto = "PlantSquare";
         this.colorBase = "#4CB963";
-        this.physicsEnabled = false;
         this.waterContainmentMax = static_sq_waterContainmentMax; 
         this.waterContainmentTransferRate = static_sq_waterContainmentTransferRate;
     }
@@ -810,20 +820,25 @@ class WaterSquare extends BaseSquare {
     }
 
     doNeighborPercolation() {
-        var upSquare = getSquare(this.posX, this.posY - 1);
-        if (upSquare != null && upSquare.solid) {
-            this.blockHealth -= upSquare.percolateFromBlock(upSquare.waterContainmentMax.value);
-        }
-        for (let i = -1; i < 2; i += 2) {
-            var sq = getSquare(this.posX + i, this.posY);
-            if (sq != null && sq.solid) {
-                this.blockHealth -= sq.percolateFromBlock(sq.waterContainmentMax.value);
+        getDirectNeighbors(this.posX, this.posY).forEach((sq) => {
+            if (sq == null) {
+                return;
             }
-        }
-        var downSquare = getSquare(this.posX, this.posY + 1);
-        if (downSquare != null && downSquare.solid) {
-            this.blockHealth -= downSquare.percolateFromBlock(downSquare.waterContainmentMax.value);
-        }
+            if (sq.solid) {
+                this.blockHealth -= sq.percolateFromBlock(sq.waterContainmentMax.value);
+            } else if (sq.proto == this.proto) {
+                if (sq.blockHealth <= this.blockHealth) {
+                    var diff = 1 - this.blockHealth;
+                    if (diff > sq.blockHealth) {
+                        this.blockHealth += sq.blockHealth;
+                        removeSquare(sq);
+                    } else {
+                        this.blockHealth += diff;
+                        sq.blockHealth -= diff;
+                    }
+                }
+            }
+        });
     }
 }
 
@@ -939,9 +954,8 @@ class PlantOrganism extends BaseOrganism {
 
         // a plant needs to grow a PlantSquare above ground 
         // and grow a RootOrganism into existing Dirt
-
         var topSquare = getSquare(this.posX, this.posY - 1);
-        if (topSquare != null && !top.proto == "WaterSqaure") {
+        if (topSquare != null && topSquare.proto == "WaterSquare") {
             removeSquare(topSquare); // fuck them kids!!!!
         }
         if (addSquare(new PlantSquare(this.posX, this.posY - 1))) {
@@ -1115,8 +1129,6 @@ class PlantOrganism extends BaseOrganism {
 
     grow() {
         // make a decision on how to grow based on which of our needs we need the most
-        var threshold = this.associatedSquares.length ** 1.5;
-
         var greenThreshold = this.getCountOfAssociatedSquaresOfType("green") * po_greenSquareSizeExponentCost.value;
         var rootThreshold = this.getCountOfAssociatedSquaresOfType("root") * po_rootSquareSizeExponentCost.value;
         if (this.airNutrients > greenThreshold && this.waterNutrients > greenThreshold && this.rootNutrients > greenThreshold) {
@@ -1270,6 +1282,10 @@ class PlantSeedOrganism extends BaseOrganism {
     }
     getInitialSqaures() {
         var ret = super.getInitialSqaures();
+        var sq = getSquare(this.posX, this.posY);
+        if (sq == null || !sq.rootable) {
+            return ret;
+        }
         ret.push(new PlantSeedLifeSquare(this.posX, this.posY));
         return ret;
     }
