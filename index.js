@@ -872,10 +872,10 @@ class BaseOrganism {
     }
 
     getCountOfAssociatedSquaresOfProto(proto) {
-        return Array.from(this.associatedSquares.filter((org) => org.proto == proto));
+        return Array.from(this.associatedSquares.filter((org) => org.proto == proto)).length;
     }
     getCountOfAssociatedSquaresOfType(type) {
-        return Array.from(this.associatedSquares.filter((org) => org.type == type));
+        return Array.from(this.associatedSquares.filter((org) => org.type == type)).length;
     }
 
     getInitialSqaures() { return new Array(); }
@@ -1125,9 +1125,9 @@ class PlantOrganism extends BaseOrganism {
 
         if (this.airNutrients > rootThreshold && this.waterNutrients > rootThreshold && this.rootNutrients > rootThreshold) {
             if (this.waterNutrients < this.rootNutrients) {
-                growWaterRoot();
+                this.growWaterRoot();
             } else {
-                growDirtRoot();
+                this.growDirtRoot();
             }
         };
     }
@@ -1156,15 +1156,14 @@ class PlantOrganism extends BaseOrganism {
             var sqNeighbors = getDirectNeighbors(sq.posX, sq.posY);
             for (let j = 0; j < sqNeighbors.length; j++) {
                 var compSquare = sqNeighbors[j];
-                if (compSquare == null || !compSquare.rootable) {
+                if (compSquare == null 
+                    || !compSquare.rootable 
+                    || getCountOfOrganismsSquaresOfTypeAtPosition(compSquare.posX, compSquare.posY, "root") > 0) 
+                {
                     continue;
                 }
                 if (wettestSquare == null || wettestSquare.waterContainment < compSquare.waterContainment) {
-                    if (getCountOfOrganismsSquaresOfTypeAtPosition("root") > 0) {
-                        continue;
-                    } else {
-                        wettestSquare = compSquare;
-                    }
+                    wettestSquare = compSquare;
                 }
             }
         }
@@ -1182,22 +1181,32 @@ class PlantOrganism extends BaseOrganism {
         var dirtiestSquareDirtResourceAvailable = 0;
 
         for (let i = 0; i < this.associatedSquares.length; i++) {
-            var sq = this.associatedSquares[i];
-            if (sq.type != "root") {
+            var iterSquare = this.associatedSquares[i];
+            if (iterSquare.type != "root") {
                 continue;
             }
-            var sqNeighbors = getDirectNeighbors(sq.posX, sq.posY);
-            for (let j = 0; j < sqNeighbors.length; j++) {
-                var compSquare = sqNeighbors[j];
-                if (compSquare == null || !compSquare.rootable) {
+            var iterSqaureNeighbors = getDirectNeighbors(iterSquare.posX, iterSquare.posY);
+            for (let j = 0; j < iterSqaureNeighbors.length; j++) {
+                var compSquare = iterSqaureNeighbors[j];
+                if (compSquare == null 
+                    || !compSquare.rootable 
+                    || getCountOfOrganismsSquaresOfTypeAtPosition(compSquare.posX, compSquare.posY, "root") > 0) 
+                {
                     continue;
                 }
-
                 var compSquareNeighbors = getDirectNeighbors(compSquare.posX, compSquare.posY);
-                var compSquareResourceAvailable = compSquareNeighbors.filter((sq) => sq != null && sq.solid && sq.nutrientValue.value > 0).map((sq) => sq.nutrientValue.value).reduce(
+                var compSquareResourceAvailable = compSquareNeighbors
+                    .filter((sq) => sq != null && sq.solid && sq.nutrientValue.value > 0)
+                    .filter((sq) => {
+                        var sqNeighbors = getDirectNeighbors(sq.posX, sq.posY);
+                        return Array.from(sqNeighbors.filter((ssq) => ssq != null).filter((ssq) => getCountOfOrganismsSquaresOfTypeAtPosition(ssq.posX, ssq.posY, "root"))).length > 1
+                    })
+                    .map((sq) => sq.nutrientValue.value)
+                    .reduce(
                     (accumulator, currentValue) => accumulator + currentValue,
                     0,
                 );
+                console.log(compSquareResourceAvailable);
 
                 if (compSquareResourceAvailable > dirtiestSquareDirtResourceAvailable) {
                     dirtiestSquare = compSquare;
