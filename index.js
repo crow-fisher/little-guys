@@ -27,7 +27,7 @@ document.body.onmouseup = function () {
 // each square is 16x16
 // 'little guys' may aquire multiple squares
 const BASE_SIZE = 8;
-var MILLIS_PER_TICK = 2;
+var MILLIS_PER_TICK = 16;
 var CANVAS_SQUARES_X = 150; // * 8; //6;
 var CANVAS_SQUARES_Y = 80; // * 8; // 8;
 var ERASE_RADIUS = 2;
@@ -51,8 +51,6 @@ var rightMouseClicked = false;
 
 loadSlotA.onclick = (e) => loadSlot("A");
 saveSlotA.onclick = (e) => saveSlot("A");
-
-
 
 function loadSlot(slotName) {
     var sqLoad = localStorage.getItem("ALL_SQUARES_" + slotName);
@@ -750,6 +748,10 @@ class PlantOrganism extends BaseOrganism {
         // a plant needs to grow a PlantSquare above ground 
         // and grow a RootOrganism into existing Dirt
 
+        var topSquare = getSquare(this.posX, this.posY - 1); 
+        if (topSquare != null && !top.proto == "WaterSqaure") {
+            removeSquare(topSquare); // fuck them kids!!!!
+        }
         if (addSquare(new PlantSquare(this.posX, this.posY - 1))) {
             var orgSq = addOrganismSquare(new PlantLifeSquare(this.posX, this.posY - 1));
             if (orgSq) {
@@ -816,24 +818,24 @@ class PlantOrganism extends BaseOrganism {
 
         if (netAirNutrients < 0) {
             if (netWaterNutrients > netRootNutrientsGained) {
-                this.killRootWithLeastWater();
+                // this.killRootWithLeastWater();
             }
             else {
-                this.killRootWithLeastRootResource();
+                // this.killRootWithLeastRootResource();
             }
         }
         if (netWaterNutrients < 0) {
             if (netAirNutrients < netRootNutrientsGained) {
-                this.killRootWithLeastWater();
+                // this.killRootWithLeastWater();
             } else {
-                this.killGreen();
+                // this.killGreen();
             }
         }
         if (netRootNutrientsGained < 0) {
             if (netAirNutrients < netWaterNutrients) {
-                this.killRootWithLeastRootResource();
+                // this.killRootWithLeastRootResource();
             } else {
-                this.killGreen();
+                // this.killGreen();
             }
         }
 
@@ -1224,7 +1226,7 @@ function addOrganismSquare(organismSqaure) {
         return false;
     }
 
-    if (getCountOfOrganismsSquaresOfTypeAtPosition(organismSqaure.posX, organismSqaure.posY, organismSqaure.proto) > 0) {
+    if (getCountOfOrganismsSquaresOfProtoAtPosition(organismSqaure.posX, organismSqaure.posY, organismSqaure.proto) > 0) {
         console.warn("Invalid organism placement; already found an organism of this type here.")
         return false;
     }
@@ -1366,6 +1368,12 @@ function purge() {
             removeSquare(sq);
         }
     });
+}
+
+function getCountOfOrganismsSquaresOfProtoAtPosition(posX, posY, proto) {
+    var existingOrganismSquares = getOrganismSquaresAtSquare(posX, posY);
+    var existingOrganismSquaresOfSameProtoArray = Array.from(existingOrganismSquares.filter((org) => org.proto == proto));
+    return existingOrganismSquaresOfSameProtoArray.length;
 }
 
 function getCountOfOrganismsSquaresOfTypeAtPosition(posX, posY, type) {
