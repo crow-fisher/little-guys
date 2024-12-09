@@ -48,7 +48,6 @@ var WATERFLOW_CANDIDATE_SQUARES = new Set();
 
 var rightMouseClicked = false;
 
-
 loadSlotA.onclick = (e) => loadSlot("A");
 saveSlotA.onclick = (e) => saveSlot("A");
 
@@ -155,9 +154,9 @@ class BaseSquare {
         this.blockHealth = 1; // when reaches zero, delete
         // water flow parameters
         this.waterContainment = 0;
-        this.waterContainmentMax = 0.2;
-        this.waterContainmentTransferRate = 0.3; // what fraction of ticks does it trigger percolate on
-        this.waterContainmentEvaporationRate = 0.0005; // what fraction of contained water will get reduced per tick
+        this.waterContainmentMax = b_sq_waterContainmentMax.value;
+        this.waterContainmentTransferRate = b_sq_waterContainmentTransferRate.value; // what fraction of ticks does it trigger percolate on
+        this.waterContainmentEvaporationRate = b_sq_waterContainmentEvaporationRate.value; // what fraction of contained water will get reduced per tick
         this.evaporationRate = 0;
         this.falling = false;
         this.speed = 0;
@@ -186,7 +185,7 @@ class BaseSquare {
 
     calculateColor() {
         var baseColorRGB = hexToRgb(this.colorBase);
-        var darkeningStrength = 0.3;
+        var darkeningStrength = b_sq_darkeningStrength.value;
         // Water Saturation Calculation
         // Apply this effect for 20% of the block's visual value. 
         // As a fraction of 0 to 255, create either perfect white or perfect grey.
@@ -241,12 +240,12 @@ class BaseSquare {
         if (this.group != -1) {
             return;
         }
-        var groupNeighbors = new Set(getNeighbors(this.posX, this.posY).filter((sq) => sq != null && this.colorBase == sq.colorBase));
+        var groupNeighbors = new Set(getNeighbors(this.posX, this.posY).filter((sq) => sq != null && this.proto == sq.proto));
         groupNeighbors.add(this);
         while (true) {
             var startGroupNeighborsSize = groupNeighbors.size;
             groupNeighbors.forEach((neighbor) => {
-                var neighborGroupNeighbors = new Set(getNeighbors(neighbor.posX, neighbor.posY).filter((sq) => sq != null && this.colorBase == sq.colorBase));
+                var neighborGroupNeighbors = new Set(getNeighbors(neighbor.posX, neighbor.posY).filter((sq) => sq != null && this.proto == sq.proto));
                 neighborGroupNeighbors.forEach((neighborGroupNeighbor) => groupNeighbors.add(neighborGroupNeighbor))
             })
             var endGroupNeighborsSize = groupNeighbors.size;
@@ -378,7 +377,7 @@ class DirtSquare extends BaseSquare {
         super(posX, posY);
         this.proto = "DirtSquare";
         this.colorBase = "#B06C49";
-        this.nutrientValue = 0.05;
+        this.nutrientValue = d_sq_nutrientValue.value;
         this.rootable = true;
     }
 }
@@ -485,7 +484,7 @@ class RainSquare extends StaticSquare {
         this.colorBase = "#AAAAAA";
     }
     physics() {
-        if (Math.random() > 0.999) {
+        if (Math.random() > (1 - rain_dropChance.value)) {
             addSquare(new WaterSquare(this.posX, this.posY + 1));
         }
     }
@@ -497,7 +496,7 @@ class HeavyRainSquare extends StaticSquare {
         this.colorBase = "#FFAAAA";
     }
     physics() {
-        if (Math.random() > 0.98) {
+        if (Math.random() > (1 - heavyrain_dropChance.value)) {
             addSquare(new WaterSquare(this.posX, this.posY + 1));
         }
     }
@@ -510,8 +509,8 @@ class WaterSquare extends BaseSquare {
         this.boundedTop = false;
         this.colorBase = "#79beee";
         this.solid = false;
-        this.evaporationRate = 0;
-        this.viscocity = 0.1;
+        this.evaporationRate = water_evaporationRate.value;
+        this.viscocity = water_viscocity.value;
 
         this.currentPressureDirect = -1;
         this.currentPressureIndirect = -1;
@@ -531,7 +530,7 @@ class WaterSquare extends BaseSquare {
 
     calculateColor() {
         var baseColorRGB = hexToRgb(this.colorBase);
-        var darkeningStrength = 0.3;
+        var darkeningStrength = water_darkeningStrength;
         // Water Saturation Calculation
         // Apply this effect for 20% of the block's visual value. 
         // As a fraction of 0 to 255, create either perfect white or perfect grey.
@@ -686,6 +685,13 @@ class BaseOrganism {
         }
     }
 
+    getCountOfAssociatedSquaresOfProto(proto) {
+        return Array.from(this.associatedSquares.filter((org) => org.proto == proto));
+    }
+    getCountOfAssociatedSquaresOfType(type) {
+        return Array.from(this.associatedSquares.filter((org) => org.type == type));
+    }
+
     getInitialSqaures() { return new Array(); }
 
     render() {
@@ -780,9 +786,9 @@ class PlantOrganism extends BaseOrganism {
     }
 
     postTick() {
-        var airSuckFrac = 0.8;
-        var waterSuckFrac = 0.2;
-        var rootSuckFrac = 0.2;
+        var airSuckFrac = po_airSuckFrac.value; 
+        var waterSuckFrac = po_waterSuckFrac.value; 
+        var rootSuckFrac = po_rootSuckFrac.value; 
 
         var airNutrientsGained = 0;
         var waterNutrientsGained = 0;
@@ -810,7 +816,7 @@ class PlantOrganism extends BaseOrganism {
 
         this.grow();
 
-        var nutrientCost = this.associatedSquares.length / 500;
+        var nutrientCost = this.associatedSquares.length * po_perFrameCostFracPerSquare.value;
 
         var netAirNutrients = airNutrientsGained - nutrientCost;
         var netWaterNutrients = waterNutrientsGained - nutrientCost;
@@ -923,26 +929,21 @@ class PlantOrganism extends BaseOrganism {
 
     grow() {
         // make a decision on how to grow based on which of our needs we need the most
-
         var threshold = this.associatedSquares.length ** 1.5;
 
-        // console.log("air:" , this.airNutrients, "water:", this.waterNutrients, "root", this.rootNutrients);
-        if (this.airNutrients > threshold && this.waterNutrients > threshold && this.rootNutrients > threshold) {
-            this.growWaterRoot();
+        var greenThreshold = this.getCountOfAssociatedSquaresOfType("green") * po_greenSquareSizeExponentCost.value;
+        var rootThreshold = this.getCountOfAssociatedSquaresOfType("root") * po_rootSquareSizeExponentCost.value;
+        if (this.airNutrients > greenThreshold && this.waterNutrients > greenThreshold && this.rootNutrients > greenThreshold) {
+            this.growNewPlant();
+        };
 
-            if (this.airNutrients < Math.min(this.waterNutrients, this.rootNutrients)) {
-                // grow a new plant
-                this.growNewPlant();
+        if (this.airNutrients > rootThreshold && this.waterNutrients > rootThreshold && this.rootNutrients > rootThreshold) {
+            if (this.waterNutrients < this.rootNutrients) {
+                growWaterRoot();
+            } else {
+                growDirtRoot();
             }
-            else if (this.waterNutrients < Math.min(this.rootNutrients, this.airNutrients)) {
-                // grow water-thirsty root
-                this.growWaterRoot();
-            }
-            else if (this.rootNutrients < Math.min(this.airNutrients, this.waterNutrients)) {
-                // grow dirt-thirsty root
-                this.growDirtRoot();
-            }
-        }
+        };
     }
 
     growNewPlant() {
@@ -1042,7 +1043,7 @@ class PlantLifeSquare extends BaseLifeSquare {
         for (var i = 0; i < neighbors.length; i++) {
             var neighbor = neighbors[i];
             if (neighbor == null) {
-                this.airNutrients += 0.0025;
+                this.airNutrients += p_ls_airNutrientsPerExposedNeighborTick.value;
             }
         }
     }
@@ -1096,9 +1097,9 @@ class PlantSeedLifeSquare extends BaseLifeSquare {
         this.proto = "PlantSeedLifeSquare";
         this.type = "seed";
         this.sproutStatus = 0;
-        this.sproutGrowthRate = 0.01;
-        this.neighborWaterContainmentRequiredToGrow = 0.8;
-        this.neighborWaterContainmentRequiredToDecay = 0.1;
+        this.sproutGrowthRate = p_seed_ls_sproutGrowthRate.value;;
+        this.neighborWaterContainmentRequiredToGrow = p_seed_ls_neighborWaterContainmentRequiredToGrow.value;
+        this.neighborWaterContainmentRequiredToDecay = p_seed_ls_neighborWaterContainmentRequiredToDecay.value;
         this.colorBase = "#EABDA8";
     }
 
@@ -1135,7 +1136,7 @@ class PlantSeedLifeSquare extends BaseLifeSquare {
 
     calculateColor() {
         var baseColorRGB = hexToRgb(this.colorBase);
-        var darkeningStrength = 0.3;
+        var darkeningStrength = p_seed_ls_darkeningStrength.value;
         // Water Saturation Calculation
         // Apply this effect for 20% of the block's visual value. 
         // As a fraction of 0 to 255, create either perfect white or perfect grey.
@@ -1663,3 +1664,33 @@ addConfig(bar);
 
 setInterval(displayConfigs, 1);
 
+
+var b_sq_waterContainmentMax = 0.2;
+var b_sq_waterContainmentTransferRate = 0.3;
+var b_sq_waterContainmentEvaporationRate = 0.0005;
+var b_sq_darkeningStrength = 0.3;
+
+var d_sq_nutrientValue = 0.05;
+
+var rain_dropChance = 0.001;
+var heavyrain_dropChance = 0.02;
+
+var water_evaporationRate = 0; 
+var water_viscocity = 0.1;
+var water_darkeningStrength = 0.3;
+
+var po_airSuckFrac = 0.2;
+var po_waterSuckFrac = 0.2;
+var po_rootSuckFrac = 0.2;
+
+var po_perFrameCostFracPerSquare = (1 / 500);
+
+var po_greenSquareSizeExponentCost = 1.5;
+var po_rootSquareSizeExponentCost = 1.5;
+
+var p_ls_airNutrientsPerExposedNeighborTick = 0.0025;
+
+var p_seed_ls_sproutGrowthRate = 0.01;
+var p_seed_ls_neighborWaterContainmentRequiredToGrow = 0.8;
+var p_seed_ls_neighborWaterContainmentRequiredToDecay = 0.1;
+var p_seed_ls_darkeningStrength = 0.3;
