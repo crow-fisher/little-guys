@@ -1180,39 +1180,32 @@ class PlantOrganism extends BaseOrganism {
         var dirtiestSquare = null;
         var dirtiestSquareDirtResourceAvailable = 0;
 
-        for (let i = 0; i < this.associatedSquares.length; i++) {
-            var iterSquare = this.associatedSquares[i];
-            if (iterSquare.type != "root") {
-                continue;
-            }
-            var iterSqaureNeighbors = getDirectNeighbors(iterSquare.posX, iterSquare.posY);
-            for (let j = 0; j < iterSqaureNeighbors.length; j++) {
-                var compSquare = iterSqaureNeighbors[j];
+        this.associatedSquares.filter((iterSquare) => iterSquare.type == "root").forEach((iterSquare) => {
+            getDirectNeighbors(iterSquare.posX, iterSquare.posY).forEach((compSquare) => {
                 if (compSquare == null 
                     || !compSquare.rootable 
                     || getCountOfOrganismsSquaresOfTypeAtPosition(compSquare.posX, compSquare.posY, "root") > 0) 
                 {
-                    continue;
+                    return;
                 }
-                var compSquareNeighbors = getDirectNeighbors(compSquare.posX, compSquare.posY);
-                var compSquareResourceAvailable = compSquareNeighbors
+                var compSquareResourceAvailable = getDirectNeighbors(compSquare.posX, compSquare.posY)
                     .filter((sq) => sq != null && sq.solid && sq.nutrientValue.value > 0)
-                    .filter((sq) => {
+                    .map((sq) => {
                         var sqNeighbors = getDirectNeighbors(sq.posX, sq.posY);
-                        return Array.from(sqNeighbors.filter((ssq) => ssq != null).filter((ssq) => getCountOfOrganismsSquaresOfTypeAtPosition(ssq.posX, ssq.posY, "root"))).length > 1
+                        var sqNeighborsRooted = Array.from(sqNeighbors.filter((ssq) => ssq != null).filter((ssq) => getCountOfOrganismsSquaresOfTypeAtPosition(ssq.posX, ssq.posY, "root")));
+                        return sq.nutrientValue.value / (sqNeighborsRooted.length + 1);
                     })
-                    .map((sq) => sq.nutrientValue.value)
                     .reduce(
                     (accumulator, currentValue) => accumulator + currentValue,
                     0,
                 );
-                console.log(compSquareResourceAvailable);
 
                 if (compSquareResourceAvailable > dirtiestSquareDirtResourceAvailable) {
                     dirtiestSquare = compSquare;
+                    dirtiestSquareDirtResourceAvailable = compSquareResourceAvailable;
                 }
-            }
-        }
+            });
+        });
         if (dirtiestSquare != null) {
             var rootSquare = addOrganismSquare(new RootLifeSquare(dirtiestSquare.posX, dirtiestSquare.posY));
             if (rootSquare) {
