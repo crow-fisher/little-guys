@@ -89,7 +89,7 @@ var b_sq_nutrientValue = {
 };
 var static_sq_waterContainmentMax = {
     name: "static_sq_waterContainmentMax",
-    value: 0
+    value: 0.001
 }
 var static_sq_waterContainmentTransferRate = {
     name: "static_sq_waterContainmentTransferRate",
@@ -200,15 +200,21 @@ var p_seed_ls_darkeningStrength = {
     name: "p_seed_ls_darkeningStrength",
     value: 0.3
 };
-
 addConfig(b_sq_waterContainmentMax);
+addConfig(b_sq_nutrientValue);
+addConfig(static_sq_waterContainmentMax);
+addConfig(static_sq_waterContainmentTransferRate);
+addConfig(drain_sq_waterContainmentMax);
+addConfig(drain_sq_waterTransferRate);
+addConfig(wds_sq_waterContainmentMax);
+addConfig(wds_sq_waterContainmentTransferRate);
 addConfig(b_sq_waterContainmentTransferRate);
 addConfig(b_sq_waterContainmentEvaporationRate);
 addConfig(b_sq_darkeningStrength);
 addConfig(d_sq_nutrientValue);
 addConfig(rain_dropChance);
-addConfig(rain_dropHealth);
 addConfig(heavyrain_dropChance);
+addConfig(rain_dropHealth);
 addConfig(water_evaporationRate);
 addConfig(water_viscocity);
 addConfig(water_darkeningStrength);
@@ -334,7 +340,6 @@ class BaseSquare {
         this.waterContainmentMax = b_sq_waterContainmentMax;
         this.waterContainmentTransferRate = b_sq_waterContainmentTransferRate; // what fraction of ticks does it trigger percolate on
         this.waterContainmentEvaporationRate = b_sq_waterContainmentEvaporationRate; // what fraction of contained water will get reduced per tick
-        this.evaporationRate = 0;
         this.falling = false;
         this.speed = 0;
         this.physicsBlocksFallen = 0;
@@ -692,9 +697,7 @@ class WaterSquare extends BaseSquare {
         this.boundedTop = false;
         this.colorBase = "#79beee";
         this.solid = false;
-        this.evaporationRate = water_evaporationRate.value;
-        this.viscocity = water_viscocity.value;
-
+        this.viscocity = water_viscocity;
         this.currentPressureDirect = -1;
         this.currentPressureIndirect = -1;
     }
@@ -809,17 +812,17 @@ class WaterSquare extends BaseSquare {
     doNeighborPercolation() {
         var upSquare = getSquare(this.posX, this.posY - 1);
         if (upSquare != null && upSquare.solid) {
-            this.blockHealth -= upSquare.percolateFromBlock(upSquare.waterContainmentMax);
+            this.blockHealth -= upSquare.percolateFromBlock(upSquare.waterContainmentMax.value);
         }
         for (let i = -1; i < 2; i += 2) {
             var sq = getSquare(this.posX + i, this.posY);
             if (sq != null && sq.solid) {
-                this.blockHealth -= sq.percolateFromBlock(sq.waterContainmentMax);
+                this.blockHealth -= sq.percolateFromBlock(sq.waterContainmentMax.value);
             }
         }
         var downSquare = getSquare(this.posX, this.posY + 1);
         if (downSquare != null && downSquare.solid) {
-            this.blockHealth -= downSquare.percolateFromBlock(downSquare.waterContainmentMax);
+            this.blockHealth -= downSquare.percolateFromBlock(downSquare.waterContainmentMax.value);
         }
     }
 }
@@ -1280,9 +1283,9 @@ class PlantSeedLifeSquare extends BaseLifeSquare {
         this.proto = "PlantSeedLifeSquare";
         this.type = "seed";
         this.sproutStatus = 0;
-        this.sproutGrowthRate = p_seed_ls_sproutGrowthRate.value;;
-        this.neighborWaterContainmentRequiredToGrow = p_seed_ls_neighborWaterContainmentRequiredToGrow.value;
-        this.neighborWaterContainmentRequiredToDecay = p_seed_ls_neighborWaterContainmentRequiredToDecay.value;
+        this.sproutGrowthRate = p_seed_ls_sproutGrowthRate;
+        this.p_seed_ls_neighborWaterContainmentRequiredToGrow = p_seed_ls_neighborWaterContainmentRequiredToGrow;
+        this.neighborWaterContainmentRequiredToDecay = p_seed_ls_neighborWaterContainmentRequiredToDecay;
         this.colorBase = "#EABDA8";
     }
 
@@ -1307,11 +1310,11 @@ class PlantSeedLifeSquare extends BaseLifeSquare {
             totalSurroundingWater += neighbor.waterContainment;
         }
 
-        if (totalSurroundingWater < this.neighborWaterContainmentRequiredToDecay) {
-            this.sproutStatus -= this.sproutGrowthRate;
+        if (totalSurroundingWater < this.neighborWaterContainmentRequiredToDecay.value) {
+            this.sproutStatus -= this.sproutGrowthRate.value;
         }
-        if (totalSurroundingWater > this.neighborWaterContainmentRequiredToGrow) {
-            this.sproutStatus += this.sproutGrowthRate;
+        if (totalSurroundingWater > this.p_seed_ls_neighborWaterContainmentRequiredToGrow.value) {
+            this.sproutStatus += this.sproutGrowthRate.value;
         }
 
         this.sproutStatus = Math.max(0, this.sproutStatus);
@@ -1587,7 +1590,7 @@ function doWaterFlow() {
                 var candidate = candidate_squares_as_list[j % candidate_squares_as_list.length];
                 var target = target_squares[j % target_squares.length];
                 if (candidate.group == target[2]) {
-                    if (Math.random() > ((1 - candidate.viscocity) ** (curWaterflowPressure + 1))) {
+                    if (Math.random() > ((1 - candidate.viscocity.value) ** (curWaterflowPressure + 1))) {
                         var dx = target[0] - candidate.posX;
                         var dy = target[1] - candidate.posY;
                         if (Math.abs(dy) == 0 && Math.abs(dx) < 5) {
