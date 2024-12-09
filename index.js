@@ -1226,6 +1226,10 @@ class PlantLifeSquare extends BaseLifeSquare {
     tick() {
         this.airNutrients = 0;
         var neighbors = getDirectNeighbors(this.posX, this.posY);
+        var neighborAbove = getSquare(this.posX, this.posY - 1);
+        if (neighborAbove != null && neighborAbove.proto == "WaterSquare") {
+            removeSquare(neighborAbove);
+        }
         for (var i = 0; i < neighbors.length; i++) {
             var neighbor = neighbors[i];
             if (neighbor == null) {
