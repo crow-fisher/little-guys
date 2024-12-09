@@ -83,13 +83,46 @@ var b_sq_waterContainmentMax = {
     name: "b_sq_waterContainmentMax",
     value: 0.2
 };
+var b_sq_nutrientValue = {
+    name: "b_sq_nutrientValue", 
+    value: 0
+};
+var static_sq_waterContainmentMax = {
+    name: "static_sq_waterContainmentMax",
+    value: 0
+}
+var static_sq_waterContainmentTransferRate = {
+    name: "static_sq_waterContainmentTransferRate",
+    value: 0
+}
+
+var drain_sq_waterContainmentMax = {
+    name: "drain_sq_waterContainmentMax",
+    value: 1.01
+}
+
+var drain_sq_waterTransferRate = {
+    name: "drain_sq_waterTransferRate",
+    value: 0.5
+}
+
+var wds_sq_waterContainmentMax = {
+    name: "wds_sq_waterContainmentMax",
+    value: 2
+};
+
+var wds_sq_waterContainmentTransferRate = {
+    name: "waterContainmentTransferRate",
+    value: 1
+};
+
 var b_sq_waterContainmentTransferRate = {
     name: "b_sq_waterContainmentTransferRate",
-    value: 0.3
+    value: 0.6
 };
 var b_sq_waterContainmentEvaporationRate = {
     name: "b_sq_waterContainmentEvaporationRate",
-    value: 0.0005
+    value: 0.000005
 };
 var b_sq_darkeningStrength = {
     name: "b_sq_darkeningStrength",
@@ -107,9 +140,13 @@ var heavyrain_dropChance = {
     name: "heavyrain_dropChance",
     value: 0.02
 };
-var water_evaporationRate ={
+var rain_dropHealth = {
+    name: "rain_dropHealth", 
+    value: 0.05
+};
+var water_evaporationRate = {
     name: "water_evaporationRate",
-    value:  0
+    value: 0
 };
 var water_viscocity = {
     name: "water_viscocity",
@@ -133,7 +170,7 @@ var po_rootSuckFrac = {
 };
 var po_perFrameCostFracPerSquare = {
     name: "po_perFrameCostFracPerSquare",
-    value: .0002
+    value: 0.0002
 };
 var po_greenSquareSizeExponentCost = {
     name: "po_greenSquareSizeExponentCost",
@@ -170,6 +207,7 @@ addConfig(b_sq_waterContainmentEvaporationRate);
 addConfig(b_sq_darkeningStrength);
 addConfig(d_sq_nutrientValue);
 addConfig(rain_dropChance);
+addConfig(rain_dropHealth);
 addConfig(heavyrain_dropChance);
 addConfig(water_evaporationRate);
 addConfig(water_viscocity);
@@ -293,14 +331,14 @@ class BaseSquare {
         this.blockHealth = 1; // when reaches zero, delete
         // water flow parameters
         this.waterContainment = 0;
-        this.waterContainmentMax = b_sq_waterContainmentMax.value;
-        this.waterContainmentTransferRate = b_sq_waterContainmentTransferRate.value; // what fraction of ticks does it trigger percolate on
-        this.waterContainmentEvaporationRate = b_sq_waterContainmentEvaporationRate.value; // what fraction of contained water will get reduced per tick
+        this.waterContainmentMax = b_sq_waterContainmentMax;
+        this.waterContainmentTransferRate = b_sq_waterContainmentTransferRate; // what fraction of ticks does it trigger percolate on
+        this.waterContainmentEvaporationRate = b_sq_waterContainmentEvaporationRate; // what fraction of contained water will get reduced per tick
         this.evaporationRate = 0;
         this.falling = false;
         this.speed = 0;
         this.physicsBlocksFallen = 0;
-        this.nutrientValue = 0;
+        this.nutrientValue = b_sq_nutrientValue;
         this.rootable = false;
         this.group = -1;
     };
@@ -328,7 +366,7 @@ class BaseSquare {
         // Water Saturation Calculation
         // Apply this effect for 20% of the block's visual value. 
         // As a fraction of 0 to 255, create either perfect white or perfect grey.
-        var waterColor255 = (1 - (this.waterContainment / this.waterContainmentMax)) * 255;
+        var waterColor255 = (1 - (this.waterContainment / this.waterContainmentMax.value)) * 255;
         var darkeningColorRGB = { r: waterColor255, b: waterColor255, g: waterColor255 };
 
         ['r', 'g', 'b'].forEach((p) => {
@@ -460,8 +498,8 @@ class BaseSquare {
             return 0; // wet things get other things wet; dry things do not get other things dry 
         }
 
-        if (Math.random() > (1 - this.waterContainmentTransferRate)) {
-            var nextWaterContainment = Math.min(this.waterContainmentMax, this.waterContainment + moistureDiff / 2);
+        if (Math.random() > (1 - this.waterContainmentTransferRate.value)) {
+            var nextWaterContainment = Math.min(this.waterContainmentMax.value, this.waterContainment + moistureDiff / 2);
             var dw = nextWaterContainment - this.waterContainment;
             this.waterContainment = nextWaterContainment;
             return dw;
@@ -476,7 +514,7 @@ class BaseSquare {
         var directNeighbors = getDirectNeighbors(this.posX, this.posY).filter((sq) => sq != null && sq.solid);
 
         directNeighbors.forEach((sq) => {
-            var percolateProbability = (this.waterContainment / this.waterContainmentMax) * this.waterContainmentTransferRate;
+            var percolateProbability = (this.waterContainment / this.waterContainmentMax.value) * this.waterContainmentTransferRate.value;
             if (Math.random() > (1 - (percolateProbability / 2))) {
                 this.waterContainment -= sq.percolateFromBlock(this.waterContainment);
             }
@@ -494,8 +532,8 @@ class BaseSquare {
         );
 
         for (let i = 0; i < airCounter; i++) {
-            if (Math.random() > (1 - this.waterContainmentTransferRate)) {
-                this.waterContainment = Math.max(0, this.waterContainment - this.waterContainmentEvaporationRate);
+            if (Math.random() > (1 - this.waterContainmentTransferRate.value)) {
+                this.waterContainment = Math.max(0, this.waterContainment - this.waterContainmentEvaporationRate.value);
             }
         }
     }
@@ -505,7 +543,7 @@ class BaseSquare {
             return 0;
         }
         var diff = this.waterContainment - rootWaterSaturation;
-        var ret = Math.min(this.waterContainmentTransferRate, diff / 2);
+        var ret = Math.min(this.waterContainmentTransferRate.value, diff / 2);
         this.waterContainment -= ret;
         return ret;
     }
@@ -516,7 +554,7 @@ class DirtSquare extends BaseSquare {
         super(posX, posY);
         this.proto = "DirtSquare";
         this.colorBase = "#B06C49";
-        this.nutrientValue = d_sq_nutrientValue.value;
+        this.nutrientValue = d_sq_nutrientValue;
         this.rootable = true;
     }
 }
@@ -527,8 +565,8 @@ class StaticSquare extends BaseSquare {
         this.proto = "StaticSquare";
         this.colorBase = "#000100";
         this.physicsEnabled = false;
-        this.waterContainmentMax = 0;
-        this.waterContainmentTransferRate = 0;
+        this.waterContainmentMax = static_sq_waterContainmentMax; 
+        this.waterContainmentTransferRate = static_sq_waterContainmentTransferRate;
     }
 }
 
@@ -538,8 +576,8 @@ class PlantSquare extends BaseSquare {
         this.proto = "PlantSquare";
         this.colorBase = "#4CB963";
         this.physicsEnabled = false;
-        this.waterContainmentMax = 0;
-        this.waterContainmentTransferRate = 0;
+        this.waterContainmentMax = static_sq_waterContainmentMax; 
+        this.waterContainmentTransferRate = static_sq_waterContainmentTransferRate;
     }
 }
 
@@ -549,8 +587,8 @@ class DrainSquare extends BaseSquare {
         this.proto = "DrainSquare";
         this.colorBase = "#555555";
         this.physicsEnabled = false;
-        this.waterContainmentMax = 1.01;
-        this.waterContainmentTransferRate = 0.5;
+        this.waterContainmentMax = drain_sq_waterContainmentMax;
+        this.waterContainmentTransferRate = drain_sq_waterTransferRate;
     }
 
     percolateInnerMoisture() {
@@ -587,8 +625,8 @@ class WaterDistributionSquare extends BaseSquare {
         this.proto = "WaterDistributionSquare";
         this.colorBase = "#000500";
         this.physicsEnabled = false;
-        this.waterContainmentMax = 2;
-        this.waterContainmentTransferRate = 1;
+        this.waterContainmentMax = wds_sq_waterContainmentMax;
+        this.waterContainmentTransferRate = wds_sq_waterContainmentTransferRate;
     }
     percolateInnerMoisture() {
         if (this.waterContainment <= 0) {
@@ -608,7 +646,7 @@ class WaterDistributionSquare extends BaseSquare {
             return 0; // wet things get other things wet; dry things do not get other things dry 
         }
 
-        var nextWaterContainment = Math.min(this.waterContainmentMax, this.waterContainment + moistureDiff / 2);
+        var nextWaterContainment = Math.min(this.waterContainmentMax.value, this.waterContainment + moistureDiff / 2);
         var dw = nextWaterContainment - this.waterContainment;
         this.waterContainment = nextWaterContainment;
         return dw;
@@ -624,7 +662,10 @@ class RainSquare extends StaticSquare {
     }
     physics() {
         if (Math.random() > (1 - rain_dropChance.value)) {
-            addSquare(new WaterSquare(this.posX, this.posY + 1));
+            var newSq = addSquare(new WaterSquare(this.posX, this.posY + 1));
+            if (newSq) {
+                newSq.blockHealth = rain_dropHealth.value;
+            };
         }
     }
 }
@@ -636,7 +677,10 @@ class HeavyRainSquare extends StaticSquare {
     }
     physics() {
         if (Math.random() > (1 - heavyrain_dropChance.value)) {
-            addSquare(new WaterSquare(this.posX, this.posY + 1));
+            var newSq = addSquare(new WaterSquare(this.posX, this.posY + 1));
+            if (newSq) {
+                newSq.blockHealth = rain_dropHealth.value;
+            };
         }
     }
 }
@@ -669,7 +713,7 @@ class WaterSquare extends BaseSquare {
 
     calculateColor() {
         var baseColorRGB = hexToRgb(this.colorBase);
-        var darkeningStrength = water_darkeningStrength;
+        var darkeningStrength = water_darkeningStrength.value;
         // Water Saturation Calculation
         // Apply this effect for 20% of the block's visual value. 
         // As a fraction of 0 to 255, create either perfect white or perfect grey.
@@ -893,7 +937,7 @@ class PlantOrganism extends BaseOrganism {
         // a plant needs to grow a PlantSquare above ground 
         // and grow a RootOrganism into existing Dirt
 
-        var topSquare = getSquare(this.posX, this.posY - 1); 
+        var topSquare = getSquare(this.posX, this.posY - 1);
         if (topSquare != null && !top.proto == "WaterSqaure") {
             removeSquare(topSquare); // fuck them kids!!!!
         }
@@ -925,9 +969,9 @@ class PlantOrganism extends BaseOrganism {
     }
 
     postTick() {
-        var airSuckFrac = po_airSuckFrac.value; 
-        var waterSuckFrac = po_waterSuckFrac.value; 
-        var rootSuckFrac = po_rootSuckFrac.value; 
+        var airSuckFrac = po_airSuckFrac.value;
+        var waterSuckFrac = po_waterSuckFrac.value;
+        var rootSuckFrac = po_rootSuckFrac.value;
 
         var airNutrientsGained = 0;
         var waterNutrientsGained = 0;
@@ -1147,7 +1191,7 @@ class PlantOrganism extends BaseOrganism {
                 }
 
                 var compSquareNeighbors = getDirectNeighbors(compSquare.posX, compSquare.posY);
-                var compSquareResourceAvailable = compSquareNeighbors.filter((sq) => sq != null && sq.solid && sq.nutrientValue > 0).map((sq) => sq.nutrientValue).reduce(
+                var compSquareResourceAvailable = compSquareNeighbors.filter((sq) => sq != null && sq.solid && sq.nutrientValue.value > 0).map((sq) => sq.nutrientValue.value).reduce(
                     (accumulator, currentValue) => accumulator + currentValue,
                     0,
                 );
@@ -1203,7 +1247,7 @@ class RootLifeSquare extends BaseLifeSquare {
         for (var i = 0; i < neighbors.length; i++) {
             var neighbor = neighbors[i];
             if (neighbor != null && neighbor.solid) {
-                this.rootNutrients += neighbor.nutrientValue;
+                this.rootNutrients += neighbor.nutrientValue.value;
                 this.waterNutrients += neighbor.suckWater(this.waterNutrients);
             }
         }
