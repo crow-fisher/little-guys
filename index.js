@@ -432,6 +432,9 @@ class BaseSquare {
 
     }
     updatePosition(newPosX, newPosY) {
+        if (newPosX == this.posX && newPosY == this.posY) {
+            return;
+        }
         newPosX = Math.floor(newPosX);
         newPosY = Math.floor(newPosY);
         var existingSq = getSquare(newPosX, newPosY);
@@ -439,22 +442,29 @@ class BaseSquare {
             // console.warn("Trying to move a square to an already populated square. This: ", this, ", other square, ", existingSq);
             return false;
         }
-
+        
         var existingLifeSquares = getOrganismSquaresAtSquare(this.posX, this.posY);
+        var newLifeSquares = [];
         existingLifeSquares.forEach((sq) => {
             removeOrganismSquare(sq);
             sq.posX = newPosX;
-            sq.posY = newPosX;
-            addOrganismSquare(sq);
-            console.log("Updated existingLifeSquare position", sq);
-
+            sq.posY = newPosY;
+            newLifeSquares.push(sq);
         });
+
+        getOrganismsAtSquare(this.posX, this.posY).forEach((org) => {org.posX = newPosX; org.posY = newPosY});
+    
 
         ALL_SQUARES[this.posX][this.posY] = null;
         ALL_SQUARES[newPosX][newPosY] = this;
 
         this.posX = newPosX;
         this.posY = newPosY;
+
+        newLifeSquares.forEach((sq) => {
+            addOrganismSquare(sq);
+            console.log("Updated existingLifeSquare position", sq);
+        });
 
         return true;
     }
@@ -1552,6 +1562,15 @@ function getOrganismSquaresAtSquare(posX, posY) {
     return ALL_ORGANISM_SQUARES[posX][posY];
 }
 
+// SLOW 
+function getOrganismsAtSquare(posX, posY) {
+    var arr = Array.from(ALL_ORGANISMS.filter((org) => org.posX == posX && org.posY == posY));
+    if (arr.length == 0) {
+        return [];
+    }
+    return arr;
+}
+
 function getOrganismSquaresAtSquareOfProto(posX, posY, proto) {
     if (!(posX in ALL_ORGANISM_SQUARES)) {
         ALL_ORGANISM_SQUARES[posX] = new Map();
@@ -1797,7 +1816,11 @@ function doClickAdd() {
                         // organism sections
                         // in this case we only want to add one per click
                         case "plant":
-                            addOrganism(new PlantSeedOrganism(px, curY));
+                            var sq = addSquare(new SeedSquare(px, curY));
+                            if (sq != null) {
+                                addOrganism(new PlantSeedOrganism(px, curY));
+                            }
+                            
                             return;
                     }
                 }
