@@ -436,7 +436,7 @@ class BaseSquare {
         newPosY = Math.floor(newPosY);
         var existingSq = getSquare(newPosX, newPosY);
         if (existingSq) {
-            console.warn("Trying to move a square to an already populated square. This: ", this, ", other square, ", existingSq);
+            // console.warn("Trying to move a square to an already populated square. This: ", this, ", other square, ", existingSq);
             return false;
         }
 
@@ -938,7 +938,6 @@ class BaseOrganism {
         var seedSquare = this.getSeedSquare();
         seedSquare.speedX = Math.floor(randNumber(-3, 3));
         seedSquare.speedY = Math.floor(randNumber(-3, -1));
-        addSquare(seedSquare);
     }
 
     getSeedSquare() {
