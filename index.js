@@ -50,6 +50,20 @@ var WATERFLOW_CANDIDATE_SQUARES = new Set();
 
 var rightMouseClicked = false;
 
+function displayConfigs() {
+    if (!displayConfigDirty) {
+        return;
+    }
+    configOuptput.innerText = "";
+    for (let i = 0; i < all_configs.length; i++) {
+        var cfg = all_configs[i];
+        configOuptput.innerText += "var " + cfg.name + "={\n\tname: \"" + cfg.name + "\",\n\tvalue: " + cfg.value + "\n};\n";
+    }
+    displayConfigDirty = false;
+}
+
+
+
 setInterval(displayConfigs, 1);
 
 var all_configs = [];
@@ -335,6 +349,26 @@ document.addEventListener('contextmenu', function (e) {
     e.preventDefault();
 });
 
+class Law {
+    // Each organism will have its own instance of 'Law'. 
+    // This means each one can have its own statistics tracked. 
+    constructor() {
+        this.airAccepted = 0;
+        this.waterAccepted = 0; 
+        this.dirtAccepted = 0;
+        this.energyGiven = 0; 
+    }
+
+    photosynthesis(air, water, dirt) {
+        var energyOut = Math.min(Math.min(air, water), dirt);
+        this.energyGiven += energyOut;
+        this.airAccepted += energyOut;
+        this.waterAccepted += energyOut;
+        this.dirtAccepted += energyOut;
+        return energyOut;
+    }
+}
+
 
 class BaseSquare {
     constructor(posX, posY) {
@@ -351,9 +385,8 @@ class BaseSquare {
         this.waterContainmentMax = b_sq_waterContainmentMax;
         this.waterContainmentTransferRate = b_sq_waterContainmentTransferRate; // what fraction of ticks does it trigger percolate on
         this.waterContainmentEvaporationRate = b_sq_waterContainmentEvaporationRate; // what fraction of contained water will get reduced per tick
-        this.falling = false;
-        this.speed = 0;
-        this.physicsBlocksFallen = 0;
+        this.speedX = 0;
+        this.speedY = 0;
         this.nutrientValue = b_sq_nutrientValue;
         this.rootable = false;
         this.group = -1;
@@ -362,9 +395,8 @@ class BaseSquare {
         if (this.blockHealth <= 0) {
             removeSquare(this);
         }
-        this.physicsBlocksFallen = 0;
         this.group = -1;
-        this.speed += 1;
+        this.speedY += 1;
     }
     render() {
         MAIN_CONTEXT.fillStyle = this.calculateColor();
@@ -404,29 +436,27 @@ class BaseSquare {
         newPosY = Math.floor(newPosY);
         var existingSq = getSquare(newPosX, newPosY);
         if (existingSq) {
+            console.warn("Trying to move a square to an already populated square. This: ", this, ", other square, ", existingSq);
             return false;
-        } else {
-            var existingLifeSquares = getOrganismSquaresAtSquare(this.posX, this.posY);
-            existingLifeSquares.forEach((sq) => {
-                removeOrganismSquare(sq);
-                console.log("Removed sq: ", sq);
-
-            });
-
-            ALL_SQUARES[this.posX][this.posY] = null;
-            ALL_SQUARES[newPosX][newPosY] = this;
-            this.posX = newPosX;
-            this.posY = newPosY;
-
-            existingLifeSquares.forEach((sq) => {
-                sq.posX = newPosX;
-                sq.posY = newPosY;
-                addOrganismSquare(sq);
-                console.log("Added sq: ", sq);
-            });
-
-            return true;
         }
+
+        var existingLifeSquares = getOrganismSquaresAtSquare(this.posX, this.posY);
+        existingLifeSquares.forEach((sq) => {
+            removeOrganismSquare(sq);
+            sq.posX = newPosX;
+            sq.posY = newPosX;
+            addOrganismSquare(sq);
+            console.log("Updated existingLifeSquare position", sq);
+
+        });
+
+        ALL_SQUARES[this.posX][this.posY] = null;
+        ALL_SQUARES[newPosX][newPosY] = this;
+
+        this.posX = newPosX;
+        this.posY = newPosY;
+
+        return true;
     }
 
     calculateGroup() {
@@ -461,8 +491,6 @@ class BaseSquare {
 
     }
 
-    // Returns true if something happened.
-    // Keep looping on physics until all are false.
     physics() {
         this.evaporateInnerMoisture();
         this.percolateInnerMoisture();
@@ -470,33 +498,31 @@ class BaseSquare {
         if (!this.physicsEnabled) {
             return false;
         }
-        if (this.physicsBlocksFallen == this.speed) {
-            return false;
-        }
-        var finalPos;
-        var bonkPos = -1;
+        var finalXPos = this.posX;
+        var finalYPos = this.posY;
+        var bonked = false;
 
-        if (this.speed == 1) {
-            if (getSquare(this.posX, this.posY + 1)) {
-                return false;
-            }
-        } else {
-            for (let i = 1; i < this.speed + 1; i++) {
-                if (getSquare(this.posX, this.posY + i)) {
-                    bonkPos = this.posY + i;
-                    // we bonked into something
+        for (let i = 1; i < this.speedY + 1; i++) {
+            for (let j = 0; j < Math.abs(this.speedX) + 1; j++) {
+                var jSigned = (this.speedX > 0) ? j : -j;
+                var jSignedMinusOne = (this.speedX == 0 ? 0 : (this.speedX > 0) ? (j - 1) : -(j - 1));
+                if (getSquare(this.posX + jSigned, this.posY + i)) {
+                    finalYPos = this.posY + (i - 1);
+                    finalXPos = this.posX + jSignedMinusOne; 
+                    this.speedX = 0;
+                    this.speedY = 0;
+                    bonked = true;
                     break;
                 }
+            } if (bonked) {
+                break;
             }
         }
-        if (bonkPos != -1) {
-            finalPos = bonkPos - 1;
-            this.speed = 0;
-        } else {
-            finalPos = this.posY + this.speed;
+        if (!bonked) {
+            finalXPos = this.posX + this.speedX;
+            finalYPos = this.posY + this.speedY;
         }
-        this.physicsBlocksFallen = finalPos - this.posY;
-        this.updatePosition(this.posX, finalPos);
+        this.updatePosition(finalXPos, finalYPos);
         return true;
     }
 
@@ -569,6 +595,16 @@ class DirtSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
         this.proto = "DirtSquare";
+        this.colorBase = "#B06C49";
+        this.nutrientValue = d_sq_nutrientValue;
+        this.rootable = true;
+    }
+}
+
+class SeedSquare extends BaseSquare {
+    constructor(posX, posY) {
+        super(posX, posY);
+        this.proto = "SeedSquare";
         this.colorBase = "#B06C49";
         this.nutrientValue = d_sq_nutrientValue;
         this.rootable = true;
@@ -849,9 +885,12 @@ class BaseLifeSquare {
         this.posY = posY;
         this.type = "base";
         this.colorBase = "#1D263B";
+        this.lastUpdateTime = Date.now();
     }
 
-    tick() { }
+    tick() { 
+        this.lastUpdateTime = Date.now();
+    }
 
     render() {
         MAIN_CONTEXT.fillStyle = this.calculateColor();
@@ -878,12 +917,32 @@ class BaseOrganism {
         this.associatedSquares = new Array();
         this.type = "base";
         this.valid = false;
+        this.law = new Law();
+        
+        this.spawnTime = Date.now();
+        this.currentEnergy = 0; 
+        
+        // life cycle properties
+        this.maxLifeTime = 1000 * 60 * 1;
+        this.reproductionEnergy = 30;
+        
         var initialSquares = this.getInitialSqaures();
         if (initialSquares.length > 0) {
             initialSquares.forEach((sq) => addOrganismSquare(sq));
             this.associatedSquares.push(...initialSquares);
             this.valid = true;
         }
+    }
+
+    spawnSeed() {
+        var seedSquare = this.getSeedSquare();
+        seedSquare.speedX = Math.floor(randNumber(-3, 3));
+        seedSquare.speedY = Math.floor(randNumber(-3, -1));
+        addSquare(seedSquare);
+    }
+
+    getSeedSquare() {
+        return null; // should be a SeedSquare with a contained PlantSeedOrganism or similar
     }
 
     getCountOfAssociatedSquaresOfProto(proto) {
@@ -947,6 +1006,15 @@ class PlantOrganism extends BaseOrganism {
         this.rootNutrients = 1;
         this.airNutrients = 1;
         this.waterNutrients = 1;
+    }
+
+    getSeedSquare() {
+        var topGreen = this.getHighestGreen();
+        var seedSquare = new SeedSquare(topGreen.posX, topGreen.posY - 1);
+        if (addSquare(seedSquare)) {
+            addOrganism(new PlantSeedOrganism(seedSquare.posX, seedSquare.posY));
+        }
+        return seedSquare;
     }
 
     getInitialSqaures() {
@@ -1416,6 +1484,22 @@ function addSquare(square) {
     return square;
 }
 
+function addSquareOverride(square) {
+    var existingSquare = getSquare(square.posX, square.posY);
+    if (existingSquare != null) {
+        if (existingSquare.physicsEnabled == true && square.solid) {
+            removeSquare(existingSquare);
+        } else {
+            return false;
+        }
+    }
+    if (!square.posX in ALL_SQUARES) {
+        ALL_SQUARES[square.posX] = new Map();
+    }
+    ALL_SQUARES[square.posX][square.posY] = square;
+    return square;
+}
+
 function addOrganism(organism) {
     if (getSquare(organism.posX, organism.posY) == null) {
         console.warn("Invalid organism placement; no squares to bind to.")
@@ -1494,9 +1578,7 @@ function removeOrganismSquare(organismSquare) {
     if (!(posY in ALL_ORGANISM_SQUARES[posX])) {
         ALL_ORGANISM_SQUARES[posX][posY] = new Array();
     }
-
-    ALL_ORGANISM_SQUARES[posX][posY] = Array.from(
-        ALL_ORGANISM_SQUARES[posX][posY].filter((osq) => osq != organismSquare))
+    removeItemAll(ALL_ORGANISM_SQUARES[posX][posY], organismSquare);
 }
 
 function removeSquarePos(x, y) {
@@ -1512,9 +1594,7 @@ function removeSquare(square) {
 }
 
 function reset() {
-    iterateOnSquares((sq) => {
-        sq.reset();
-    });
+    iterateOnSquares((sq) => sq.reset(), 0);
     visitedBlockCount = {};
     stats["pressure"] = 0;
     WATERFLOW_TARGET_SQUARES = new Map();
@@ -1632,14 +1712,13 @@ function main() {
 
 
         doClickAdd();
-
+        render();
         // square life cycle
         reset();
         physicsBefore();
         physics();
         doWaterFlow();
         purge();
-        render();
 
         // organism life cycle;
         processOrganisms();
@@ -1695,25 +1774,25 @@ function doClickAdd() {
                 } else {
                     switch (selectedMaterial) {
                         case "static":
-                            addSquare(new StaticSquare(px, curY));
+                            addSquareOverride(new StaticSquare(px, curY));
                             break;
                         case "dirt":
-                            addSquare(new DirtSquare(px, curY));
+                            addSquareOverride(new DirtSquare(px, curY));
                             break;
                         case "water":
-                            addSquare(new WaterSquare(px, curY));
+                            addSquareOverride(new WaterSquare(px, curY));
                             break;
                         case "rain":
-                            addSquare(new RainSquare(px, curY));
+                            addSquareOverride(new RainSquare(px, curY));
                             break;
                         case "heavy rain":
-                            addSquare(new HeavyRainSquare(px, curY));
+                            addSquareOverride(new HeavyRainSquare(px, curY));
                             break;
                         case "water distribution":
-                            addSquare(new WaterDistributionSquare(px, curY));
+                            addSquareOverride(new WaterDistributionSquare(px, curY));
                             break;
                         case "drain":
-                            addSquare(new DrainSquare(px, curY));
+                            addSquareOverride(new DrainSquare(px, curY));
                             break;
 
                         // organism sections
@@ -1777,6 +1856,17 @@ function getGlobalStatistic(name) {
     return stats[name];
 }
 
+function removeItemAll(arr, value) {
+    var i = 0;
+    while (i < arr.length) {
+      if (arr[i] === value) {
+        arr.splice(i, 1);
+      } else {
+        ++i;
+      }
+    }
+    return arr;
+  }
 
 
 for (let i = 0; i < CANVAS_SQUARES_X; i++) {
@@ -1814,28 +1904,16 @@ var ProtoMap = {
     "PlantLifeSquare": PlantLifeSquare.prototype,
     "RootLifeSquare": RootLifeSquare.prototype,
     "PlantSeedOrganism": PlantSeedOrganism.prototype,
-    "PlantSeedLifeSquare": PlantSeedLifeSquare.prototype
+    "PlantSeedLifeSquare": PlantSeedLifeSquare.prototype,
+    "SeedSquare": SeedSquare.prototype
 }
 
-
-function displayConfigs() {
-    if (!displayConfigDirty) {
-        return;
-    }
-    configOuptput.innerText = "";
-    for (let i = 0; i < all_configs.length; i++) {
-        var cfg = all_configs[i];
-        configOuptput.innerText += "var " + cfg.name + "={\n\tname: \"" + cfg.name + "\",\n\tvalue: " + cfg.value + "\n};\n";
-    }
-    displayConfigDirty = false;
-}
-
-var foo = {
-    name: "foo",
-    value: 375.0222
-};
-var bar = {
-    name: "bar",
-    value: 88.10352
+function organismSquareCleanup() {
+    ALL_ORGANISM_SQUARES.keys().forEach(
+        (posX) => ALL_ORGANISM_SQUARES[posX].keys()
+            .forEach((posY) => ALL_ORGANISM_SQUARES[posY][posY]
+                .filter((sq) => Date.now() - sq.lastUpdateTime > 1000)
+                .forEach(removeOrganismSquare)));
 };
 
+setInterval(organismSquareCleanup, 1000);
