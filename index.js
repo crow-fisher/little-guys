@@ -281,10 +281,8 @@ function loadSlot(slotName) {
     for (let i = 0; i < rootKeys.length; i++) {
         var subKeys = Object.keys(loaded_ALL_SQUARES[rootKeys[i]]);
         for (let j = 0; j < subKeys.length; j++) {
-            var sq = loaded_ALL_SQUARES[rootKeys[i]][subKeys[j]];
-            if (sq != null) {
-                addSquare(Object.setPrototypeOf(sq, ProtoMap[sq.proto]));
-            }
+            var sqArr = loaded_ALL_SQUARES[rootKeys[i]][subKeys[j]];
+            sqArr.forEach((sq) => addSquare(Object.setPrototypeOf(sq, ProtoMap[sq.proto])));
         }
     }
 
@@ -391,6 +389,7 @@ class BaseSquare {
         this.rootable = false;
         this.group = -1;
         this.organic = false;
+        this.collision = true;
     };
     reset() {
         if (this.blockHealth <= 0) {
@@ -438,9 +437,9 @@ class BaseSquare {
         }
         newPosX = Math.floor(newPosX);
         newPosY = Math.floor(newPosY);
-        var existingSq = getSquare(newPosX, newPosY);
-        if (existingSq) {
-            // console.warn("Trying to move a square to an already populated square. This: ", this, ", other square, ", existingSq);
+        var existingSquareArr = getSquares(newPosX, newPosY);
+        if (Array.from(existingSquareArr.filter((sq) => sq.collision)).length > 0) {
+            console.warn("Square not moved; new occupied by a block with collision.");
             return false;
         }
 
@@ -456,12 +455,12 @@ class BaseSquare {
         getOrganismsAtSquare(this.posX, this.posY).forEach((org) => { org.posX = newPosX; org.posY = newPosY });
 
 
-        ALL_SQUARES[this.posX][this.posY] = null;
-        ALL_SQUARES[newPosX][newPosY] = this;
+        removeItemAll(ALL_SQUARES[this.posX][this.posY], this);
 
         this.posX = newPosX;
         this.posY = newPosY;
 
+        addSquare(this);
         newLifeSquares.forEach((sq) => {
             addOrganismSquare(sq);
         });
@@ -516,17 +515,17 @@ class BaseSquare {
             for (let j = 0; j < Math.abs(this.speedX) + 1; j++) {
                 var jSigned = (this.speedX > 0) ? j : -j;
                 var jSignedMinusOne = (this.speedX == 0 ? 0 : (this.speedX > 0) ? (j - 1) : -(j - 1));
-                if (getSquare(this.posX + jSigned, this.posY + i)) {
+                getSquares(this.posX + jSigned, this.posY + i).filter((sq) => sq.collision).forEach((fn) => {
                     finalYPos = this.posY + (i - 1);
                     finalXPos = this.posX + jSignedMinusOne;
                     this.speedX = 0;
                     this.speedY = 0;
                     bonked = true;
+                });
+                if (bonked)
                     break;
-                }
-            } if (bonked) {
+            } if (bonked) 
                 break;
-            }
         }
         if (!bonked) {
             finalXPos = this.posX + this.speedX;
@@ -547,17 +546,17 @@ class BaseSquare {
     percolateFromBlock(otherBlockMoisture, otherBlockYPosition) {
         var moistureDiff = (otherBlockMoisture - this.waterContainment) / 2;
         var heightDiff = this.posY - otherBlockYPosition; // bigger number == lower, so if this is negative we are percolating up
-        
+
         if (moistureDiff < 0) {
             return 0; // wet things get other things wet; dry things do not get other things dry 
         }
 
         var a = this.waterContainment;
         var b = Math.min(this.waterContainmentMax.value, otherBlockMoisture);
-        
+
         // 'b' is bigger than 'a'
         // so the more 'a' terms we have relative to 'b', the slower we are percolating    
-    
+
         var next = 0;
         if (heightDiff > 0) {
             // if we are below, then do a direct percolation
@@ -628,7 +627,7 @@ class SeedSquare extends BaseSquare {
     }
     physics() {
         super.physics();
-        var sqBelow = getSquare(this.posX, this.posY + 1);
+        var sqBelow = getSquares(this.posX, this.posY + 1);
         if (sqBelow != null && sqBelow.rootable) {
             var orgBelow = getOrganismSquaresAtSquare(sqBelow.posX, sqBelow.posY);
             removeSquare(this); // then do nothing with our seeds
@@ -662,6 +661,7 @@ class PlantSquare extends BaseSquare {
         this.waterContainmentMax = static_sq_waterContainmentMax;
         this.waterContainmentTransferRate = static_sq_waterContainmentTransferRate;
         this.organic = true;
+        this.collision = false;
     }
 }
 
@@ -731,6 +731,7 @@ class RainSquare extends StaticSquare {
         super(posX, posY);
         this.proto = "RainSquare";
         this.colorBase = "#59546C";
+        this.collision = false;
     }
     physics() {
         if (Math.random() > (1 - rain_dropChance.value)) {
@@ -746,6 +747,7 @@ class HeavyRainSquare extends StaticSquare {
         super(posX, posY);
         this.proto = "HeavyRainSquare";
         this.colorBase = "#38405F";
+        this.collision = false;
     }
     physics() {
         if (Math.random() > (1 - heavyrain_dropChance.value)) {
@@ -841,7 +843,7 @@ class WaterSquare extends BaseSquare {
                     if (Math.abs(i) == Math.abs(j)) {
                         continue;
                     }
-                    if (getSquare(this.posX + i, this.posY + j) == null) {
+                    if (Array.from(getSquares(this.posX + i, this.posY + j).filter((sq) => sq.proto == this.proto)).length == 0) {
                         if (!(this.currentPressureIndirect in WATERFLOW_TARGET_SQUARES)) {
                             WATERFLOW_TARGET_SQUARES[this.currentPressureIndirect] = new Array();
                         }
@@ -859,11 +861,11 @@ class WaterSquare extends BaseSquare {
         this.currentPressureDirect = 0;
         var curY = this.posY - 1;
         while (true) {
-            var sq = getSquare(this.posX, curY);
-            if (sq == null) {
+            var squaresAtPos = getSquares(this.posX, curY);
+            if (squaresAtPos.length == 0) {
                 break;
             }
-            if (sq.solid) {
+            if (Array.from(squaresAtPos.filter((sq) => sq.solid && sq.collision)).length > 0) {
                 break;
             }
             curY -= 1;
@@ -898,6 +900,9 @@ class WaterSquare extends BaseSquare {
                     (osq) => osq.waterNutrients += this.blockHealth
                 );
                 removeSquare(this);
+                return;
+            }
+            if (sq.collision == false) {
                 return;
             }
             if (sq.solid) {
@@ -998,7 +1003,7 @@ class BaseOrganism {
 
     destroy() {
         this.associatedSquares.forEach((asq) => {
-            var sq = getSquare(asq.posX, asq.posY);
+            var sq = getSquares(asq.posX, asq.posY);
             if (sq != null && sq.organic) {
                 removeSquare(sq);
             }
@@ -1073,9 +1078,9 @@ class PlantOrganism extends BaseOrganism {
         var ret = new Array();
         // a plant needs to grow a PlantSquare above ground 
         // and grow a RootOrganism into existing Dirt
-        var topSquare = getSquare(this.posX, this.posY - 1);
+        var topSquare = getSquares(this.posX, this.posY - 1);
         if (topSquare != null && topSquare.proto == "WaterSquare") {
-            var topTop = getSquare(this.posX, this.posY - 2);
+            var topTop = getSquares(this.posX, this.posY - 2);
             if (topTop == null) {
                 removeSquare(topSquare); // fuck them kids!!!!
             } else {
@@ -1090,7 +1095,7 @@ class PlantOrganism extends BaseOrganism {
         };
 
         // root time
-        var rootTargetSq = getSquare(this.posX, this.posY);
+        var rootTargetSq = getSquares(this.posX, this.posY);
         if (rootTargetSq != null && rootTargetSq.rootable) {
             var rootSq = addOrganismSquare(new RootLifeSquare(this.posX, this.posY));
             if (rootSq) {
@@ -1189,7 +1194,7 @@ class PlantOrganism extends BaseOrganism {
         var exteriorRoots = new Set();
         var squaresToExplore = new Array();
         squaresToExplore.push(lowestGreen); // LifeSquare 
-        visitedSquares.add(getSquare(lowestGreen.posX, lowestGreen.posY)); // TerrainSquares
+        visitedSquares.add(getSquares(lowestGreen.posX, lowestGreen.posY)); // TerrainSquares
         var curIdx = 0;
         do {
             var activeSquare = squaresToExplore[curIdx];
@@ -1385,7 +1390,7 @@ class PlantSeedOrganism extends BaseOrganism {
         this.growInitialSquares();
     }
     growInitialSquares() {
-        var sq = getSquare(this.posX, this.posY);
+        var sq = getSquares(this.posX, this.posY);
         if (sq != null && sq.rootable) {
             var newLifeSquare = new PlantSeedLifeSquare(this.posX, this.posY);
             if (addOrganismSquare(newLifeSquare)) {
@@ -1397,7 +1402,7 @@ class PlantSeedOrganism extends BaseOrganism {
     postTick() {
         if (this.associatedSquares[0].sproutStatus >= 1) {
             // now we need to convert ourself into a 'plant organism'
-            var squareBottom = getSquare(this.posX, this.posY + 1);
+            var squareBottom = getSquares(this.posX, this.posY + 1);
             if (squareBottom != null && squareBottom.organic) {
                 this.destroy();
                 return;
@@ -1426,7 +1431,7 @@ class PlantSeedLifeSquare extends BaseLifeSquare {
     }
 
     tick() {
-        var hostSquare = getSquare(this.posX, this.posY);
+        var hostSquare = getSquares(this.posX, this.posY);
         if (hostSquare == null) {
             console.error("Host squarre is null!");
             return;
@@ -1495,7 +1500,7 @@ function getNeighbors(x, y) {
             if (i == 0 && j == 0) {
                 continue;
             }
-            out.push(getSquare(x + i, y + j));
+            out.push(...getSquares(x + i, y + j));
         }
     }
     return out;
@@ -1511,7 +1516,7 @@ function getDirectNeighbors(x, y) {
             if (abs(i) == abs(j)) {
                 continue;
             }
-            out.push(getSquare(x + i, y + j));
+            out.push(...getSquares(x + i, y + j));
         }
     }
     return out;
@@ -1519,36 +1524,35 @@ function getDirectNeighbors(x, y) {
 
 
 function addSquare(square) {
-    if (getSquare(square.posX, square.posY) != null) {
-        console.warn("Square not added; coordinates occupied.");
+    var existingSquareArr = getSquares(square.posX, square.posY);
+    if (Array.from(existingSquareArr.filter((sq) => sq.collision)).length > 0) {
+        console.warn("Square not added; coordinates occupied by a block with collision.");
         return false;
     }
-    if (!square.posX in ALL_SQUARES) {
+    if (!(square.posX in ALL_SQUARES)) {
         ALL_SQUARES[square.posX] = new Map();
     }
-    ALL_SQUARES[square.posX][square.posY] = square;
+    if (!(square.posY in ALL_SQUARES[square.posX])) {
+        ALL_SQUARES[square.posX][square.posY] = new Array();
+    }
+    ALL_SQUARES[square.posX][square.posY].push(square);
     return square;
 }
 
 function addSquareOverride(square) {
-    var existingSquare = getSquare(square.posX, square.posY);
-    if (existingSquare != null) {
-        if (existingSquare.physicsEnabled == true && square.solid) {
-            removeSquare(existingSquare);
-        } else {
-            return false;
-        }
+    var existingSquareArr = getSquares(square.posX, square.posY);
+    if (Array.from(existingSquareArr.filter((sq) => sq.collision)).length == 0) {
+        addSquare(square);
+        return;
     }
-    if (!square.posX in ALL_SQUARES) {
-        ALL_SQUARES[square.posX] = new Map();
-    }
-    ALL_SQUARES[square.posX][square.posY] = square;
-    return square;
+    existingSquareArr.filter((sq) => sq.collision).forEach((sq) => removeSquare(sq));
+    addSquare(square);
 }
 
 function addOrganism(organism) {
-    if (getSquare(organism.posX, organism.posY) == null) {
-        console.warn("Invalid organism placement; no squares to bind to.")
+    var existingSquareArr = getSquares(square.posX, square.posY);
+    if (Array.from(existingSquareArr.filter((sq) => sq.collision)).length == 0) {
+        console.warn("Invalid organism placement; no collidable squares to bind to.")
         return false;
     }
 
@@ -1566,13 +1570,14 @@ function addOrganism(organism) {
 }
 
 function addOrganismSquare(organismSqaure) {
-    if (getSquare(organismSqaure.posX, organismSqaure.posY) == null) {
-        console.warn("Invalid organism placement; no squares to bind to.")
+    var existingSquareArr = getSquares(square.posX, square.posY);
+    if (Array.from(existingSquareArr.filter((sq) => sq.collision)).length == 0) {
+        console.warn("Invalid organism square placement; no squares to bind to.")
         return false;
     }
 
     if (getCountOfOrganismsSquaresOfProtoAtPosition(organismSqaure.posX, organismSqaure.posY, organismSqaure.proto) > 0) {
-        console.warn("Invalid organism placement; already found an organism of this type here.")
+        console.warn("Invalid organism square placement; already found an organism of this type here.")
         return false;
     }
 
@@ -1586,10 +1591,14 @@ function addOrganismSquare(organismSqaure) {
     return organismSqaure;
 }
 
-function getSquare(posX, posY) {
+function getSquares(posX, posY) {
     if (!(posX in ALL_SQUARES)) {
         ALL_SQUARES[posX] = new Map();
     }
+    if (!(posY in ALL_SQUARES[posX])) {
+        ALL_SQUARES[posX][posY] = new Array();
+    }
+
     return ALL_SQUARES[posX][posY];
 }
 
@@ -1645,8 +1654,8 @@ function removeOrganismSquare(organismSquare) {
 function removeSquarePos(x, y) {
     x = Math.floor(x);
     y = Math.floor(y);
-    if (getSquare(x, y) != null) {
-        removeSquare(getSquare(x, y));
+    if (getSquares(x, y) != null) {
+        removeSquare(getSquares(x, y));
 
     }
 }
@@ -1654,7 +1663,7 @@ function removeSquare(square) {
     getOrganismSquaresAtSquare(square.posX, square.posY)
         .forEach(removeOrganismSquare);
     ALL_ORGANISM_SQUARES[square.posX][square.posY]
-    ALL_SQUARES[square.posX][square.posY] = null;
+    removeItemAll(ALL_SQUARES[square.posX][square.posY], square);
 }
 
 function reset() {
@@ -1693,11 +1702,7 @@ function iterateOnSquares(func, sortRandomness) {
     for (let i = 0; i < rootKeys.length; i++) {
         var subKeys = Object.keys(ALL_SQUARES[rootKeys[i]]);
         for (let j = 0; j < subKeys.length; j++) {
-            var sq = ALL_SQUARES[rootKeys[i]][subKeys[j]];
-            if (sq != null) {
-                squareOrder.push(sq);
-                // func(sq);
-            }
+            squareOrder.push(...getSquares(rootKeys[i], rootKeys[j]));
         }
     }
     squareOrder.sort((a, b) => (Math.random() > sortRandomness ? (a.posX + a.posY * 10) - (b.posX + b.posY * 10) : (a.posX + a.posY * 10 - b.posX + b.posY * 10)));
