@@ -463,8 +463,12 @@ class BaseSquare {
             newLifeSquares.push(sq);
         });
 
-        getOrganismsAtSquare(this.posX, this.posY).forEach((org) => { org.posX = newPosX; org.posY = newPosY });
-
+        var organismsAtEndSquare = getOrganismsAtSquare(newPosX, newPosY);
+        if (organismsAtEndSquare.length == 0) {
+            getOrganismsAtSquare(this.posX, this.posY).forEach((org) => { org.posX = newPosX; org.posY = newPosY });
+        } else {
+            getOrganismsAtSquare(this.posX, this.posY).forEach((org) => org.destroy());
+        }
 
         removeItemAll(ALL_SQUARES[this.posX][this.posY], this);
 
