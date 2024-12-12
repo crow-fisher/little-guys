@@ -727,6 +727,14 @@ class WaterDistributionSquare extends BaseSquare {
         this.waterContainmentTransferRate = wds_sq_waterContainmentTransferRate;
     }
 
+    percolateInnerMoisture() {
+        if (this.waterContainment <= 0) {
+            return 0;
+        }
+        var directNeighbors = getNeighbors(this.posX, this.posY).filter((sq) => sq != null && sq.solid);
+        directNeighbors.forEach((sq) => this.waterContainment -= sq.percolateFromBlock(this.waterContainment, this.posY));
+    }
+
     percolateFromBlock(otherBlockMoisture, otherBlockYPosition) {
         var moistureDiff = otherBlockMoisture - this.waterContainment;
         if (moistureDiff < 0) {
@@ -1134,10 +1142,12 @@ class PlantOrganism extends BaseOrganism {
         }
 
         if (ret.length == 2) {
-            ret.forEach(addOrganismSquare);
             ret.forEach((sq) => this.addAssociatedSquare(sq));
             return ret;
         } else {
+            if (newPlantSquare != null) {
+                removeSquare(newPlantSquare);
+            }
             ret.forEach(removeOrganismSquare);
         }
     }
@@ -1439,8 +1449,8 @@ class PlantSeedOrganism extends BaseOrganism {
     postTick() {
         if (this.associatedSquares[0].sproutStatus >= 1) {
             // now we need to convert ourself into a 'plant organism'
-            addOrganism(new PlantOrganism(this.posX, this.posY));
             this.destroy();
+            addOrganism(new PlantOrganism(this.posX, this.posY));
         }
     }
 }
@@ -1590,7 +1600,8 @@ function addOrganism(organism) {
         return false;
     }
 
-    if (getCountOfOrganismsOfTypeAtPosition(organism.posX, organism.posY, organism.proto) > 0) {
+    if (getOrganismsAtSquare(organism.posX, organism.posY).length > 0) {
+        organism.destroy();
         return;
     }
 
