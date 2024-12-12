@@ -9,9 +9,12 @@ var saveSlotB = document.getElementById("saveSlotB");
 var configSliders = document.getElementById("configSliders");
 var configOuptput = document.getElementById("configOutput");
 
+var timeScaleInput = document.getElementById("timeScale");
+
 var selectedMaterial = "dirt";
 
 materialSelect.addEventListener('change', (e) => selectedMaterial = e.target.value);
+timeScale.addEventListener('change', (e) => TIME_SCALE = e.target.value);
 MAIN_CANVAS.addEventListener('mousemove', handleClick, false);
 
 var mouseDown = 0;
@@ -29,12 +32,14 @@ document.body.onmouseup = function () {
 
 // each square is 16x16
 // 'little guys' may aquire multiple squares
+var TIME_SCALE = 1;
 const BASE_SIZE = 8;
 var MILLIS_PER_TICK = 16;
 var CANVAS_SQUARES_X = 80; // * 8; //6;
 var CANVAS_SQUARES_Y = 80; // * 8; // 8;
 var ERASE_RADIUS = 2;
 var lastLastClickEvent = null;
+var curEntitySpawnedId = 0;
 
 MAIN_CANVAS.width = CANVAS_SQUARES_X * BASE_SIZE;
 MAIN_CANVAS.height = CANVAS_SQUARES_Y * BASE_SIZE;
@@ -94,6 +99,11 @@ function addConfig(config) {
     };
 }
 
+
+var time_scale = {
+    name: "b_sq_waterContainmentMax",
+    value: 1
+};
 
 var b_sq_waterContainmentMax = {
     name: "b_sq_waterContainmentMax",
@@ -375,6 +385,7 @@ class BaseSquare {
         this.posY = Math.floor(posY);
         this.colorBase = "#A1A6B4";
         this.solid = true;
+        this.spawnedEntityId = 0;
         // block properties - overridden by block type
         this.physicsEnabled = true;
         this.blockHealth = 1; // when reaches zero, delete
@@ -515,7 +526,7 @@ class BaseSquare {
             for (let j = 0; j < Math.abs(this.speedX) + 1; j++) {
                 var jSigned = (this.speedX > 0) ? j : -j;
                 var jSignedMinusOne = (this.speedX == 0 ? 0 : (this.speedX > 0) ? (j - 1) : -(j - 1));
-                getSquares(this.posX + jSigned, this.posY + i).filter((sq) => sq.collision).forEach((fn) => {
+                getSquares(this.posX + jSigned, this.posY + i).filter((sq) => (this.organic && sq.organic) || sq.collision).forEach((fn) => {
                     finalYPos = this.posY + (i - 1);
                     finalXPos = this.posX + jSignedMinusOne;
                     this.speedX = 0;
@@ -627,18 +638,21 @@ class SeedSquare extends BaseSquare {
     }
     physics() {
         super.physics();
-        var sqBelow = getSquares(this.posX, this.posY + 1);
-        if (sqBelow != null && sqBelow.rootable) {
-            var orgBelow = getOrganismSquaresAtSquare(sqBelow.posX, sqBelow.posY);
-            removeSquare(this); // then do nothing with our seeds
 
-            if (orgBelow.length == 0) {
-                getOrganismsAtSquare(this.posX, this.posY).forEach((org) => {
-                    org.posY += 1;
-                    org.associatedSquares.forEach((sq) => sq.posY += 1);
-                });
-            }
-        }
+        getSquares(this.posX, this.posY + 1)
+            .filter((sq) => sq.rootable)
+            .forEach((sqBelow) => {
+                removeSquare(this);
+                var orgSquaresBelow = getOrganismSquaresAtSquare(sqBelow.posX, sqBelow.posY);    
+                if (orgSquaresBelow.length == 0) {
+                    getOrganismsAtSquare(this.posX, this.posY).forEach((org) => {
+                        org.posY += 1;
+                        org.associatedSquares.forEach((sq) => sq.posY += 1);
+                    });
+                } else {
+                    getOrganismsAtSquare(this.posX, this.posY).forEach((org) => org.destroy());
+                }
+            })
     }
 }
 
@@ -930,6 +944,7 @@ class BaseLifeSquare {
         this.posY = posY;
         this.type = "base";
         this.colorBase = "#1D263B";
+        this.spawnedEntityId = 0;
         this.lastUpdateTime = Date.now();
         this.airNutrients = 0;
         this.waterNutrients = 0;
@@ -965,6 +980,7 @@ class BaseOrganism {
         this.associatedSquares = new Array();
         this.type = "base";
         this.law = new Law();
+        this.spawnedEntityId = 0;
 
         this.spawnTime = Date.now();
         this.currentEnergy = 0;
@@ -974,6 +990,11 @@ class BaseOrganism {
         this.maxLifeTime = 1000 * 30 * 1;
         this.reproductionEnergy = 100;
         this.reproductionEnergyUnit = 50;
+    }
+
+    addAssociatedSquare(lifeSquare) {
+        lifeSquare.spawnedEntityId = this.spawnedEntityId;
+        this.associatedSquares.push(lifeSquare);
     }
 
     spawnSeed() {
@@ -1003,11 +1024,12 @@ class BaseOrganism {
 
     destroy() {
         this.associatedSquares.forEach((asq) => {
-            var sq = getSquares(asq.posX, asq.posY);
-            if (sq != null && sq.organic) {
-                removeSquare(sq);
-            }
-            removeOrganismSquare(asq);
+            getSquares(asq.posX, asq.posY).forEach((sq) => {
+                if (sq != null && sq.organic) {
+                    removeSquare(sq);
+                }
+                removeOrganismSquare(asq);
+            });
         });
         ALL_ORGANISMS = Array.from(ALL_ORGANISMS.filter((org) => org != this));
     }
@@ -1067,7 +1089,12 @@ class PlantOrganism extends BaseOrganism {
         var topGreen = this.getHighestGreen();
         var seedSquare = new SeedSquare(topGreen.posX, topGreen.posY - 1);
         if (addSquare(seedSquare)) {
-            addOrganism(new PlantSeedOrganism(seedSquare.posX, seedSquare.posY));
+            seedSquare.spawnedEntityId = curEntitySpawnedId;
+            curEntitySpawnedId += 1;
+            var newOrg = new PlantSeedOrganism(seedSquare.posX, seedSquare.posY);
+            if (addOrganism(newOrg)) {
+                newOrg.spawnedEntityId = seedSquare.spawnedEntityId;
+            }
         } else {
             return null;
         }
@@ -1078,24 +1105,27 @@ class PlantOrganism extends BaseOrganism {
         var ret = new Array();
         // a plant needs to grow a PlantSquare above ground 
         // and grow a RootOrganism into existing Dirt
-        var topSquare = getSquares(this.posX, this.posY - 1);
+        var topSquare = getCollidableSquareAtLocation(this.posX, this.posY - 1);
         if (topSquare != null && topSquare.proto == "WaterSquare") {
-            var topTop = getSquares(this.posX, this.posY - 2);
+            var topTop = getCollidableSquareAtLocation(this.posX, this.posY - 2);
             if (topTop == null) {
                 removeSquare(topSquare); // fuck them kids!!!!
             } else {
                 return;
             }
         }
-        if (addSquare(new PlantSquare(this.posX, this.posY - 1))) {
+        var newPlantSquare = addSquare(new PlantSquare(this.posX, this.posY - 1));
+        if (newPlantSquare != null) {
+            newPlantSquare.spawnedEntityId = this.spawnedEntityId;
             var orgSq = addOrganismSquare(new PlantLifeSquare(this.posX, this.posY - 1));
             if (orgSq) {
+                orgSq.spawnedEntityId = this.spawnedEntityId;
                 ret.push(orgSq);
             }
         };
 
         // root time
-        var rootTargetSq = getSquares(this.posX, this.posY);
+        var rootTargetSq = getCollidableSquareAtLocation(this.posX, this.posY);
         if (rootTargetSq != null && rootTargetSq.rootable) {
             var rootSq = addOrganismSquare(new RootLifeSquare(this.posX, this.posY));
             if (rootSq) {
@@ -1105,7 +1135,7 @@ class PlantOrganism extends BaseOrganism {
 
         if (ret.length == 2) {
             ret.forEach(addOrganismSquare);
-            this.associatedSquares.push(...ret);
+            ret.forEach((sq) => this.addAssociatedSquare(sq));
             return ret;
         } else {
             ret.forEach(removeOrganismSquare);
@@ -1253,10 +1283,12 @@ class PlantOrganism extends BaseOrganism {
                 // then we take highest root square;
                 highestPlantSquare = Array.from(this.associatedSquares.filter((sq) => sq.type == "root").sort((a, b) => a.posY - b.posY))[0];
             }
-            if (addSquare(new PlantSquare(highestPlantSquare.posX, highestPlantSquare.posY - 1))) {
+            var newPlantSquare = new PlantSquare(highestPlantSquare.posX, highestPlantSquare.posY - 1);
+            if (addSquare(newPlantSquare)) {
+                newPlantSquare.spawnedEntityId = this.spawnedEntityId;
                 var orgSq = addOrganismSquare(new PlantLifeSquare(highestPlantSquare.posX, highestPlantSquare.posY - 1));
                 if (orgSq) {
-                    this.associatedSquares.push(orgSq);
+                    this.addAssociatedSquare(orgSq);
                     return 1;
                 }
             };
@@ -1299,7 +1331,7 @@ class PlantOrganism extends BaseOrganism {
             if (wettestSquare != null) {
                 var rootSquare = addOrganismSquare(new RootLifeSquare(wettestSquare.posX, wettestSquare.posY));
                 if (rootSquare) {
-                    this.associatedSquares.push(rootSquare);
+                    this.addAssociatedSquare(rootSquare);
                     return 1;
                 }
             }
@@ -1342,7 +1374,7 @@ class PlantOrganism extends BaseOrganism {
             if (dirtiestSquare != null) {
                 var rootSquare = addOrganismSquare(new RootLifeSquare(dirtiestSquare.posX, dirtiestSquare.posY));
                 if (rootSquare) {
-                    this.associatedSquares.push(rootSquare);
+                    this.addAssociatedSquare(rootSquare);
                     return 1;
                 }
             }
@@ -1361,7 +1393,13 @@ class PlantLifeSquare extends BaseLifeSquare {
 
     tick() {
         this.airNutrients = 0;
-        getDirectNeighbors(this.posX, this.posY).filter((nb) => nb == null).forEach((sq) => this.airNutrients += p_ls_airNutrientsPerExposedNeighborTick.value);
+        this.airNutrients = getDirectNeighbors(this.posX, this.posY)
+                .filter((nb) => nb != null)
+                .map((sq) => p_ls_airNutrientsPerExposedNeighborTick.value)
+                .reduce(
+                    (accumulator, currentValue) => accumulator + currentValue,
+                    0,
+                );
     }
 }
 
@@ -1390,30 +1428,19 @@ class PlantSeedOrganism extends BaseOrganism {
         this.growInitialSquares();
     }
     growInitialSquares() {
-        var sq = getSquares(this.posX, this.posY);
-        if (sq != null && sq.rootable) {
+        getSquares(this.posX, this.posY).filter((sq) => sq.collision && sq.rootable).forEach((sq) => {
             var newLifeSquare = new PlantSeedLifeSquare(this.posX, this.posY);
             if (addOrganismSquare(newLifeSquare)) {
-                this.associatedSquares.push(newLifeSquare);
+                this.addAssociatedSquare(newLifeSquare);
             }
-        }
+        });
     }
 
     postTick() {
         if (this.associatedSquares[0].sproutStatus >= 1) {
             // now we need to convert ourself into a 'plant organism'
-            var squareBottom = getSquares(this.posX, this.posY + 1);
-            if (squareBottom != null && squareBottom.organic) {
-                this.destroy();
-                return;
-            } else {
-                if (squareBottom.physicsEnabled) {
-                    addOrganism(new PlantOrganism(this.posX, this.posY));
-                    this.destroy();
-                } else {
-                    this.destroy();
-                }
-            }
+            addOrganism(new PlantOrganism(this.posX, this.posY));
+            this.destroy();
         }
     }
 }
@@ -1431,11 +1458,12 @@ class PlantSeedLifeSquare extends BaseLifeSquare {
     }
 
     tick() {
-        var hostSquare = getSquares(this.posX, this.posY);
-        if (hostSquare == null) {
-            console.error("Host squarre is null!");
+        var hostSquareArr = Array.from(getSquares(this.posX, this.posY).filter((sq) => sq.collision && sq.rootable));
+        if (hostSquareArr.length == 0) {
+            console.error("No collidable and rootable host square found!");
             return;
         }
+        var hostSquare = hostSquareArr[0];
         var directNeighbors = getNeighbors(this.posX, this.posY);
 
         var totalSurroundingWater = hostSquare.waterContainment;
@@ -1445,7 +1473,7 @@ class PlantSeedLifeSquare extends BaseLifeSquare {
                 continue;
             }
             if (!neighbor.solid) { // basically if it's a water type?? idk maybe this is unclear
-                totalSurroundingWater += 1;
+                totalSurroundingWater += neighbor.blockHealth;
                 continue;
             }
             totalSurroundingWater += neighbor.waterContainment;
@@ -1540,17 +1568,23 @@ function addSquare(square) {
 }
 
 function addSquareOverride(square) {
-    var existingSquareArr = getSquares(square.posX, square.posY);
-    if (Array.from(existingSquareArr.filter((sq) => sq.collision)).length == 0) {
+    var existingSquares = getSquares(square.posX, square.posY);
+    if (Array.from(existingSquares.filter((sq) => sq.collision)).length == 0) {
         addSquare(square);
         return;
     }
-    existingSquareArr.filter((sq) => sq.collision).forEach((sq) => removeSquare(sq));
+    var existingStaticSquareArrPhysicsDisabled = Array.from(existingSquares.filter((sq) => sq.collision && !sq.physicsEnabled));
+    if (existingStaticSquareArrPhysicsDisabled.length > 0) {
+        return;
+    }
+    if (square.solid) {
+        existingStaticSquareArr = existingSquares.filter((sq) => sq.collision).forEach((sq) => removeSquare(sq));
+    }
     addSquare(square);
 }
 
 function addOrganism(organism) {
-    var existingSquareArr = getSquares(square.posX, square.posY);
+    var existingSquareArr = getSquares(organism.posX, organism.posY);
     if (Array.from(existingSquareArr.filter((sq) => sq.collision)).length == 0) {
         console.warn("Invalid organism placement; no collidable squares to bind to.")
         return false;
@@ -1561,6 +1595,8 @@ function addOrganism(organism) {
     }
 
     if (organism.associatedSquares.length > 0) {
+        organism.spawnedEntityId = curEntitySpawnedId;
+        curEntitySpawnedId += 1;
         ALL_ORGANISMS.push(organism);
     } else {
         console.log("Organism is fucked up in some way; please reconsider")
@@ -1570,8 +1606,8 @@ function addOrganism(organism) {
 }
 
 function addOrganismSquare(organismSqaure) {
-    var existingSquareArr = getSquares(square.posX, square.posY);
-    if (Array.from(existingSquareArr.filter((sq) => sq.collision)).length == 0) {
+    var validSquareArr = Array.from(getSquares(organismSqaure.posX, organismSqaure.posY).filter((sq) => sq.organic || sq.rootable));
+    if (validSquareArr.length == 0) {
         console.warn("Invalid organism square placement; no squares to bind to.")
         return false;
     }
@@ -1598,8 +1634,21 @@ function getSquares(posX, posY) {
     if (!(posY in ALL_SQUARES[posX])) {
         ALL_SQUARES[posX][posY] = new Array();
     }
-
     return ALL_SQUARES[posX][posY];
+}
+
+function getCollidableSquareAtLocation(posX, posY) {
+    if (!(posX in ALL_SQUARES)) {
+        ALL_SQUARES[posX] = new Map();
+    }
+    if (!(posY in ALL_SQUARES[posX])) {
+        ALL_SQUARES[posX][posY] = new Array();
+    }
+    var arr = Array.from(ALL_SQUARES[posX][posY].filter((sq) => sq.collision));
+    if (arr.length == 0) {
+        return null
+    }
+    return arr[0];
 }
 
 
@@ -1654,11 +1703,9 @@ function removeOrganismSquare(organismSquare) {
 function removeSquarePos(x, y) {
     x = Math.floor(x);
     y = Math.floor(y);
-    if (getSquares(x, y) != null) {
-        removeSquare(getSquares(x, y));
-
-    }
+    getSquares(x, y).forEach(removeSquare);
 }
+
 function removeSquare(square) {
     getOrganismSquaresAtSquare(square.posX, square.posY)
         .forEach(removeOrganismSquare);
@@ -1796,16 +1843,21 @@ function main() {
         render();
         doClickAdd();
         // square life cycle
-        reset();
-        physicsBefore();
-        physics();
-        doWaterFlow();
-        purge();
 
-        // organism life cycle;
-        processOrganisms();
-        renderOrganisms();
+        for (let i = 0; i < TIME_SCALE; i++) {
+            reset();
+            physicsBefore();
+            physics();
+            doWaterFlow();
+            purge();
+    
+            // organism life cycle;
+            processOrganisms();
+            renderOrganisms();
+        }
+
         lastTick = Date.now();
+
     }
 }
 
