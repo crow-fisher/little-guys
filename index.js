@@ -48,7 +48,7 @@ var stats = new Map();
 var statsLastUpdatedTime = 0;
 var NUM_GROUPS = 0;
 var ALL_SQUARES = new Map();
-var ALL_ORGANISMS = new Array();
+var ALL_ORGANISMS = new Map();
 var ALL_ORGANISM_SQUARES = new Map();
 
 var WATERFLOW_TARGET_SQUARES = new Map();
@@ -296,32 +296,32 @@ function loadSlot(slotName) {
         }
     }
 
-    rootKeys = Object.keys(loaded_ALL_ORGANISM_SQUARES);
-    for (let i = 0; i < rootKeys.length; i++) {
-        var subKeys = Object.keys(loaded_ALL_ORGANISM_SQUARES[rootKeys[i]]);
-        for (let j = 0; j < subKeys.length; j++) {
-            var squares = loaded_ALL_ORGANISM_SQUARES[rootKeys[i]][subKeys[j]];
-            for (let k = 0; k < squares.length; k++) {
-                var sq = squares[k];
-                if (sq != null) {
-                    addOrganismSquare(Object.setPrototypeOf(sq, ProtoMap[sq.proto]));
-                }
-            }
-        }
-    }
+    // rootKeys = Object.keys(loaded_ALL_ORGANISM_SQUARES);
+    // for (let i = 0; i < rootKeys.length; i++) {
+    //     var subKeys = Object.keys(loaded_ALL_ORGANISM_SQUARES[rootKeys[i]]);
+    //     for (let j = 0; j < subKeys.length; j++) {
+    //         var squares = loaded_ALL_ORGANISM_SQUARES[rootKeys[i]][subKeys[j]];
+    //         for (let k = 0; k < squares.length; k++) {
+    //             var sq = squares[k];
+    //             if (sq != null) {
+    //                 addOrganismSquare(Object.setPrototypeOf(sq, ProtoMap[sq.proto]));
+    //             }
+    //         }
+    //     }
+    // }
 
-    for (let i = 0; i < loaded_ALL_ORGANISMS.length; i++) {
-        var org = loaded_ALL_ORGANISMS[i];
-        Object.setPrototypeOf(org, ProtoMap[org.proto]);
-        var orgAssociatedSquares = new Array();
-        Object.setPrototypeOf(org.law, Law.prototype);
-        org.associatedSquares.forEach(
-            (orgSq) => orgAssociatedSquares.push(
-                getOrganismSquaresAtSquareOfProto(orgSq.posX, orgSq.posY, orgSq.proto)
-            ));
-        org.associatedSquares = Array.from(orgAssociatedSquares.filter((x) => x != null));
-        addOrganism(org);
-    }
+    // for (let i = 0; i < loaded_ALL_ORGANISMS.length; i++) {
+    //     var org = loaded_ALL_ORGANISMS[i];
+    //     Object.setPrototypeOf(org, ProtoMap[org.proto]);
+    //     var orgAssociatedSquares = new Array();
+    //     Object.setPrototypeOf(org.law, Law.prototype);
+    //     org.associatedSquares.forEach(
+    //         (orgSq) => orgAssociatedSquares.push(
+    //             getOrganismSquaresAtSquareOfProto(orgSq.posX, orgSq.posY, orgSq.proto)
+    //         ));
+    //     org.associatedSquares = Array.from(orgAssociatedSquares.filter((x) => x != null));
+    //     addOrganism(org);
+    // }
 }
 
 function saveSlot(slotName) {
@@ -375,6 +375,16 @@ class Law {
         this.dirtAccepted += energyOut;
         return energyOut;
     }
+}
+
+function getObjectArrFromMap(baseMap, posX, posY) {
+    if (!(posX in baseMap)) {
+        baseMap[posX] = new Map();
+    }
+    if (!(posY in baseMap[posX])) {
+        baseMap[posX][posY] = new Array();
+    }
+    return baseMap[posX][posY];
 }
 
 
@@ -446,36 +456,52 @@ class BaseSquare {
         if (newPosX == this.posX && newPosY == this.posY) {
             return;
         }
+        if (newPosX < 0 || newPosX >= CANVAS_SQUARES_X || newPosY < 0 || newPosY >= CANVAS_SQUARES_Y) {
+            removeSquare(this);
+            return;
+        }
         newPosX = Math.floor(newPosX);
         newPosY = Math.floor(newPosY);
-        var existingSquareArr = getSquares(newPosX, newPosY);
-        if (Array.from(existingSquareArr.filter((sq) => sq.collision)).length > 0) {
+
+        var error = false;
+
+        getCollidableSquareAtLocation(newPosX, newPosY).forEach((sq) => {
+            error = true;
+        });
+        if (error) {
             console.warn("Square not moved; new occupied by a block with collision.");
             return false;
         }
 
-        var existingLifeSquares = getOrganismSquaresAtSquare(this.posX, this.posY);
+        var associatedOrganisms = getOrganismsAtSquare(this.posX, this.posY);
+        var associatedOrganismsAtDest = getOrganismSquaresAtSquare(newPosX, newPosY);
+        
+        associatedOrganisms.forEach((org) => associatedOrganismsAtDest.filter((org) => org.proto == destOrg.proto).forEach((destOrg) => org.destroy()));
+        
+        // update this after yeeting the unbelievers
+        associatedOrganisms = getOrganismsAtSquare(this.posX, this.posY);
+        
+        var associatedLifeSquares = getOrganismSquaresAtSquare(this.posX, this.posY);
         var newLifeSquares = [];
-        existingLifeSquares.forEach((sq) => {
+        associatedLifeSquares.forEach((sq) => {
             removeOrganismSquare(sq);
             sq.posX = newPosX;
             sq.posY = newPosY;
             newLifeSquares.push(sq);
         });
 
-        var organismsAtEndSquare = getOrganismsAtSquare(newPosX, newPosY);
-        if (organismsAtEndSquare.length == 0) {
-            getOrganismsAtSquare(this.posX, this.posY).forEach((org) => { org.posX = newPosX; org.posY = newPosY });
-        } else {
-            getOrganismsAtSquare(this.posX, this.posY).forEach((org) => org.destroy());
-        }
+        associatedOrganisms.forEach((org) => {
+            removeOrganism(org);
+            org.posX = newPosX;
+            org.posY = newPosY;
+            addOrganism(org);
+        });
 
-        removeItemAll(ALL_SQUARES[this.posX][this.posY], this);
-
+        removeSquare(this);
         this.posX = newPosX;
         this.posY = newPosY;
-
         addSquare(this);
+
         newLifeSquares.forEach((sq) => {
             addOrganismSquare(sq);
         });
@@ -546,6 +572,7 @@ class BaseSquare {
             finalXPos = this.posX + this.speedX;
             finalYPos = this.posY + this.speedY;
         }
+
         this.updatePosition(finalXPos, finalYPos);
         return true;
     }
@@ -1043,7 +1070,7 @@ class BaseOrganism {
                 removeOrganismSquare(asq);
             });
         });
-        ALL_ORGANISMS = Array.from(ALL_ORGANISMS.filter((org) => org != this));
+        removeOrganism(this);
     }
 
     process() {
@@ -1566,18 +1593,16 @@ function getDirectNeighbors(x, y) {
 
 
 function addSquare(square) {
-    var existingSquareArr = getSquares(square.posX, square.posY);
-    if (Array.from(existingSquareArr.filter((sq) => sq.collision)).length > 0) {
+    var error = false;
+    getCollidableSquareAtLocation(square.posX, square.posY).forEach((sq) => {
+        error = true;
+    })
+
+    if (error) {
         console.warn("Square not added; coordinates occupied by a block with collision.");
         return false;
     }
-    if (!(square.posX in ALL_SQUARES)) {
-        ALL_SQUARES[square.posX] = new Map();
-    }
-    if (!(square.posY in ALL_SQUARES[square.posX])) {
-        ALL_SQUARES[square.posX][square.posY] = new Array();
-    }
-    ALL_SQUARES[square.posX][square.posY].push(square);
+    getSquares(square.posX, square.posY).push(square);
     return square;
 }
 
@@ -1591,15 +1616,14 @@ function addSquareOverride(square) {
     if (existingStaticSquareArrPhysicsDisabled.length > 0) {
         return;
     }
-    if (square.solid) {
+    if (square.collision) {
         existingStaticSquareArr = existingSquares.filter((sq) => sq.collision).forEach((sq) => removeSquare(sq));
     }
     addSquare(square);
 }
 
 function addOrganism(organism) {
-    var existingSquareArr = getSquares(organism.posX, organism.posY);
-    if (Array.from(existingSquareArr.filter((sq) => sq.collision)).length == 0) {
+    if (Array.from(getCollidableSquareAtLocation(organism.posX, organism.posY)).length == 0) {
         console.warn("Invalid organism placement; no collidable squares to bind to.")
         return false;
     }
@@ -1612,7 +1636,13 @@ function addOrganism(organism) {
     if (organism.associatedSquares.length > 0) {
         organism.spawnedEntityId = curEntitySpawnedId;
         curEntitySpawnedId += 1;
-        ALL_ORGANISMS.push(organism);
+        if (!(organism.posX in ALL_ORGANISMS)) {
+            ALL_ORGANISMS[organism.posX] = new Map();
+        }
+        if (!(organism.posY in ALL_ORGANISMS[organism.posX])) {
+            ALL_ORGANISMS[organism.posX][organism.posY] = new Array();
+        }
+        ALL_ORGANISMS[organism.posX][organism.posY].push(organism);
     } else {
         console.log("Organism is fucked up in some way; please reconsider")
         organism.destroy();
@@ -1643,77 +1673,37 @@ function addOrganismSquare(organismSqaure) {
 }
 
 function getSquares(posX, posY) {
-    if (!(posX in ALL_SQUARES)) {
-        ALL_SQUARES[posX] = new Map();
-    }
-    if (!(posY in ALL_SQUARES[posX])) {
-        ALL_SQUARES[posX][posY] = new Array();
-    }
-    return ALL_SQUARES[posX][posY];
+    return getObjectArrFromMap(ALL_SQUARES, posX, posY);
 }
 
 function getCollidableSquareAtLocation(posX, posY) {
-    if (!(posX in ALL_SQUARES)) {
-        ALL_SQUARES[posX] = new Map();
-    }
-    if (!(posY in ALL_SQUARES[posX])) {
-        ALL_SQUARES[posX][posY] = new Array();
-    }
-    var arr = Array.from(ALL_SQUARES[posX][posY].filter((sq) => sq.collision));
-    if (arr.length == 0) {
-        return null
-    }
-    return arr[0];
+    return getSquares(posX, posY).filter((sq) => sq.collision);
 }
-
 
 function getOrganismSquaresAtSquare(posX, posY) {
-    if (!(posX in ALL_ORGANISM_SQUARES)) {
-        ALL_ORGANISM_SQUARES[posX] = new Map();
-    }
-    if (!(posY in ALL_ORGANISM_SQUARES[posX])) {
-        ALL_ORGANISM_SQUARES[posX][posY] = new Array();
-    }
-
-    return ALL_ORGANISM_SQUARES[posX][posY];
+    return getObjectArrFromMap(ALL_ORGANISM_SQUARES, posX, posY);
 }
 
-// SLOW 
 function getOrganismsAtSquare(posX, posY) {
-    var arr = Array.from(ALL_ORGANISMS.filter((org) => org.posX == posX && org.posY == posY));
-    if (arr.length == 0) {
-        return [];
-    }
-    return arr;
+    return getObjectArrFromMap(ALL_ORGANISMS, posX, posY);
 }
 
 function getOrganismSquaresAtSquareOfProto(posX, posY, proto) {
-    if (!(posX in ALL_ORGANISM_SQUARES)) {
-        ALL_ORGANISM_SQUARES[posX] = new Map();
-    }
-    if (!(posY in ALL_ORGANISM_SQUARES[posX])) {
-        ALL_ORGANISM_SQUARES[posX][posY] = new Array();
-    }
-    for (let i = 0; i < ALL_ORGANISM_SQUARES[posX][posY].length; i++) {
-        if (ALL_ORGANISM_SQUARES[posX][posY][i].proto == proto) {
-            return ALL_ORGANISM_SQUARES[posX][posY][i];
-        }
-    }
-    return null;
+    return getObjectArrFromMap(ALL_ORGANISM_SQUARES, posX, posY).filter((osq) => osq.proto == proto);
 }
 
 function removeOrganismSquare(organismSquare) {
     var posX = organismSquare.posX;
     var posY = organismSquare.posY;
-
-    if (!(posX in ALL_ORGANISM_SQUARES)) {
-        ALL_ORGANISM_SQUARES[posX] = new Map();
-    }
-    if (!(posY in ALL_ORGANISM_SQUARES[posX])) {
-        ALL_ORGANISM_SQUARES[posX][posY] = new Array();
-    }
-    removeItemAll(ALL_ORGANISM_SQUARES[posX][posY], organismSquare);
+    removeItemAll(getObjectArrFromMap(ALL_ORGANISM_SQUARES, posX, posY), organismSquare);
 }
+
+function removeOrganism(organism) {
+    var posX = organism.posX;
+    var posY = organism.posY;
+    removeItemAll(getObjectArrFromMap(ALL_ORGANISMS, posX, posY), organism);
+}
+
 
 function removeSquarePos(x, y) {
     x = Math.floor(x);
@@ -1722,10 +1712,12 @@ function removeSquarePos(x, y) {
 }
 
 function removeSquare(square) {
-    getOrganismSquaresAtSquare(square.posX, square.posY)
-        .forEach(removeOrganismSquare);
-    ALL_ORGANISM_SQUARES[square.posX][square.posY]
-    removeItemAll(ALL_SQUARES[square.posX][square.posY], square);
+    if (square.collision) {
+        getObjectArrFromMap(ALL_ORGANISMS, square.posX, square.posY).forEach((org) => org.destroy());
+        getOrganismSquaresAtSquare(square.posX, square.posY)
+            .forEach((orgSq) => removeItemAll(getObjectArrFromMap(ALL_ORGANISM_SQUARES, square.posX, square.posY), orgSq));
+    }
+    removeItemAll(getObjectArrFromMap(ALL_SQUARES, square.posX, square.posY), square);
 }
 
 function reset() {
@@ -1764,7 +1756,7 @@ function iterateOnSquares(func, sortRandomness) {
     for (let i = 0; i < rootKeys.length; i++) {
         var subKeys = Object.keys(ALL_SQUARES[rootKeys[i]]);
         for (let j = 0; j < subKeys.length; j++) {
-            squareOrder.push(...getSquares(rootKeys[i], rootKeys[j]));
+            squareOrder.push(...getSquares(rootKeys[i], subKeys[j]));
         }
     }
     squareOrder.sort((a, b) => (Math.random() > sortRandomness ? (a.posX + a.posY * 10) - (b.posX + b.posY * 10) : (a.posX + a.posY * 10 - b.posX + b.posY * 10)));
@@ -1772,7 +1764,14 @@ function iterateOnSquares(func, sortRandomness) {
 }
 
 function iterateOnOrganisms(func, sortRandomness) {
-    var organismOrder = ALL_ORGANISMS;
+    var rootKeys = Object.keys(ALL_ORGANISMS);
+    var organismOrder = [];
+    for (let i = 0; i < rootKeys.length; i++) {
+        var subKeys = Object.keys(ALL_ORGANISMS[rootKeys[i]]);
+        for (let j = 0; j < subKeys.length; j++) {
+            organismOrder.push(...getOrganismsAtSquare(rootKeys[i], rootKeys[j]));
+        }
+    }
     organismOrder.sort((a, b) => (Math.random() > sortRandomness ? (a.posX + a.posY * 10) - (b.posX + b.posY * 10) : (a.posX + a.posY * 10 - b.posX + b.posY * 10)));
     organismOrder.forEach(func);
 }
@@ -1780,28 +1779,33 @@ function iterateOnOrganisms(func, sortRandomness) {
 function purge() {
     iterateOnSquares((sq) => {
         var ret = true;
-        ret &= sq.posX > 0;
+        ret &= sq.posX >= 0;
         ret &= sq.posX < CANVAS_SQUARES_X;
-        ret &= sq.posY > 0;
+        ret &= sq.posY >= 0;
         ret &= sq.posY < CANVAS_SQUARES_Y;
         if (!ret) {
             removeSquare(sq);
         }
     });
-    ALL_ORGANISMS = Array.from(ALL_ORGANISMS.filter((org) => {
+
+    iterateOnOrganisms((org) => {
         var ret = true;
         ret &= org.posX > 0;
         ret &= org.posX < CANVAS_SQUARES_X;
         ret &= org.posY > 0;
         ret &= org.posY < CANVAS_SQUARES_Y;
-        return ret;
-    }));
+        if (!ret) {
+            removeOrganism(org);
+        }
+    })
 
     ALL_ORGANISM_SQUARES.keys().forEach((key) => {
         if (key < 0 || key >= CANVAS_SQUARES_X) {
             ALL_ORGANISM_SQUARES.delete(key);
         }
     })
+
+
 }
 
 function getCountOfOrganismsSquaresOfProtoAtPosition(posX, posY, proto) {
@@ -1816,12 +1820,6 @@ function getCountOfOrganismsSquaresOfTypeAtPosition(posX, posY, type) {
     return existingOrganismSquaresOfSameTypeArray.length;
 }
 
-function getCountOfOrganismsOfTypeAtPosition(posX, posY, type) {
-    return existingOrganismSquaresOfSameTypeArray = Array.from(ALL_ORGANISMS
-        .filter((org) => org.posX == posX && org.posY == posY)
-        .filter((org) => org.proto == type)
-    ).length;
-}
 
 function doWaterFlow() {
     for (let curWaterflowPressure = 0; curWaterflowPressure < getGlobalStatistic("pressure"); curWaterflowPressure++) {
@@ -2033,10 +2031,10 @@ for (let i = 0; i < CANVAS_SQUARES_X; i++) {
 }
 
 
-for (let i = 0; i < CANVAS_SQUARES_Y; i++) {
-    addSquare(new StaticSquare(CANVAS_SQUARES_X - 1, i));
-    addSquare(new StaticSquare(1, i));
-}
+// for (let i = 0; i < CANVAS_SQUARES_Y; i++) {
+//     addSquare(new StaticSquare(CANVAS_SQUARES_X - 1, i));
+//     addSquare(new StaticSquare(1, i));
+// }
 
 setInterval(main, 1);
 
