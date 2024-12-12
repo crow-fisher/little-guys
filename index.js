@@ -35,8 +35,8 @@ document.body.onmouseup = function () {
 var TIME_SCALE = 1;
 const BASE_SIZE = 8;
 var MILLIS_PER_TICK = 16;
-var CANVAS_SQUARES_X = 80; // * 8; //6;
-var CANVAS_SQUARES_Y = 80; // * 8; // 8;
+var CANVAS_SQUARES_X = 8; // * 8; //6;
+var CANVAS_SQUARES_Y = 8; // * 8; // 8;
 var ERASE_RADIUS = 2;
 var lastLastClickEvent = null;
 var curEntitySpawnedId = 0;
@@ -475,36 +475,29 @@ class BaseSquare {
 
         var associatedOrganisms = getOrganismsAtSquare(this.posX, this.posY);
         var associatedOrganismsAtDest = getOrganismSquaresAtSquare(newPosX, newPosY);
-        
         associatedOrganisms.forEach((org) => associatedOrganismsAtDest.filter((org) => org.proto == destOrg.proto).forEach((destOrg) => org.destroy()));
-        
-        // update this after yeeting the unbelievers
-        associatedOrganisms = getOrganismsAtSquare(this.posX, this.posY);
-        
-        var associatedLifeSquares = getOrganismSquaresAtSquare(this.posX, this.posY);
+        // we remove any organisms from our block that are also in the destination first 
         var newLifeSquares = [];
-        associatedLifeSquares.forEach((sq) => {
+        var newOrganisms = [];
+        getOrganismSquaresAtSquare(this.posX, this.posY).forEach((sq) => {
             removeOrganismSquare(sq);
             sq.posX = newPosX;
             sq.posY = newPosY;
             newLifeSquares.push(sq);
         });
 
-        associatedOrganisms.forEach((org) => {
+        getOrganismsAtSquare(this.posX, this.posY).forEach((org) => {
             removeOrganism(org);
             org.posX = newPosX;
             org.posY = newPosY;
-            addOrganism(org);
+            newOrganisms.push(org);
         });
-
         removeSquare(this);
         this.posX = newPosX;
         this.posY = newPosY;
         addSquare(this);
-
-        newLifeSquares.forEach((sq) => {
-            addOrganismSquare(sq);
-        });
+        newOrganisms.forEach(addOrganism);
+        newLifeSquares.forEach(addOrganismSquare);
 
         return true;
     }
@@ -585,31 +578,52 @@ class BaseSquare {
     /* god i fucking hate water physics */
     physicsBefore2() { }
 
-    percolateFromBlock(otherBlockMoisture, otherBlockYPosition) {
-        var moistureDiff = (otherBlockMoisture - this.waterContainment) / 2;
-        var heightDiff = this.posY - otherBlockYPosition; // bigger number == lower, so if this is negative we are percolating up
-
-        if (moistureDiff < 0) {
-            return 0; // wet things get other things wet; dry things do not get other things dry 
-        }
-
-        var a = this.waterContainment;
-        var b = Math.min(this.waterContainmentMax.value, otherBlockMoisture);
-
-        // 'b' is bigger than 'a'
-        // so the more 'a' terms we have relative to 'b', the slower we are percolating    
-
-        var next = 0;
+    percolateFromWater(waterBlock) {
+        var heightDiff = this.posY - waterBlock.posY; // bigger number == lower, so if this is negative we are percolating up
+        var maxAmountToPercolateFromBlock = 0;
+        var amountToPercolate = 0;
         if (heightDiff > 0) {
-            // if we are below, then do a direct percolation
-            next = (a + b) / 2;
+            maxAmountToPercolateFromBlock = Math.min(this.waterContainmentTransferRate * Math.random(), waterBlock.blockHealth / 1 + Math.random());
+            amountToPercolate = Math.min(maxAmountToPercolateFromBlock, waterBlock.blockHealth);
+            // flowing down
+            return amountToPercolate;
+        } else if (heightDiff == 0) {
+            maxAmountToPercolateFromBlock = Math.min(this.waterContainmentTransferRate, waterBlock.waterContainmentTransferRate);
+            amountToPercolate = Math.min(maxAmountToPercolateFromBlock, waterBlock.blockHealth - ((this.blockHealth + waterBlock.blockHealth) / 2));
+            this.waterContainment += amountToPercolate;
+            return amountToPercolate;
         } else {
-            var rand = Math.random(); // between 0 and 1 
-            next = (a * (2 + rand) + b) / (3 + rand);
+            // flowing up
+            // nvm
+            return 0;
         }
-        var waterGained = next - this.waterContainment;
-        this.waterContainment = next;
-        return waterGained;
+    }
+
+    percolateFromBlock(otherBlock) {
+        var heightDiff = this.posY - otherBlock.posY; // bigger number == lower, so if this is negative we are percolating up
+        
+        if (this.waterContainment > otherBlock.waterContainment) {
+            // water flows from wet to dry
+            return 0;
+        }
+
+        var maxAmountToPercolateFromBlock = 0;
+        var amountToPercolate = 0;
+        if (heightDiff > 0) {
+            maxAmountToPercolateFromBlock = Math.min(this.waterContainmentTransferRate * Math.random(), otherBlock.waterContainment / 1 + Math.random());
+            amountToPercolate = Math.min(maxAmountToPercolateFromBlock, otherBlock.waterContainment);
+
+            // flowing down
+        } else if (heightDiff == 0) {
+            maxAmountToPercolateFromBlock = Math.min(this.waterContainmentTransferRate, otherBlock.waterContainmentTransferRate);
+            amountToPercolate = Math.min(maxAmountToPercolateFromBlock, otherBlock.waterContainment - ((this.waterContainment + otherBlock.waterContainment) / 2));
+            this.waterContainment += amountToPercolate;
+            return amountToPercolate;
+        } else {
+            // flowing up
+            // nvm
+            return 0;
+        }
     }
 
     percolateInnerMoisture() {
@@ -617,7 +631,7 @@ class BaseSquare {
             return 0;
         }
         var directNeighbors = getDirectNeighbors(this.posX, this.posY).filter((sq) => sq != null && sq.solid);
-        directNeighbors.forEach((sq) => this.waterContainment -= sq.percolateFromBlock(this.waterContainment, this.posY));
+        directNeighbors.forEach((sq) => this.waterContainment -= sq.percolateFromBlock(this));
     }
 
     evaporateInnerMoisture() {
@@ -673,16 +687,18 @@ class SeedSquare extends BaseSquare {
         getSquares(this.posX, this.posY + 1)
             .filter((sq) => sq.rootable)
             .forEach((sqBelow) => {
-                removeSquare(this);
                 var orgSquaresBelow = getOrganismSquaresAtSquare(sqBelow.posX, sqBelow.posY);    
                 if (orgSquaresBelow.length == 0) {
                     getOrganismsAtSquare(this.posX, this.posY).forEach((org) => {
+                        removeOrganism(org);
                         org.posY += 1;
                         org.associatedSquares.forEach((sq) => sq.posY += 1);
+                        addOrganism(org);
                     });
                 } else {
                     getOrganismsAtSquare(this.posX, this.posY).forEach((org) => org.destroy());
                 }
+                removeSquare(this);
             })
     }
 }
@@ -763,18 +779,19 @@ class WaterDistributionSquare extends BaseSquare {
             return 0;
         }
         var directNeighbors = getNeighbors(this.posX, this.posY).filter((sq) => sq != null && sq.solid);
-        directNeighbors.forEach((sq) => this.waterContainment -= sq.percolateFromBlock(this.waterContainment, this.posY));
+        directNeighbors.forEach((sq) => this.waterContainment -= sq.percolateFromBlock(this));
     }
 
-    percolateFromBlock(otherBlockMoisture, otherBlockYPosition) {
-        var moistureDiff = otherBlockMoisture - this.waterContainment;
-        if (moistureDiff < 0) {
-            return 0; // wet things get other things wet; dry things do not get other things dry 
-        }
-        var nextWaterContainment = (this.waterContainment + Math.min(this.waterContainmentMax.value, otherBlockMoisture)) / 2;
-        var dw = nextWaterContainment - this.waterContainment;
-        this.waterContainment = nextWaterContainment;
-        return dw;
+    percolateFromBlock(otherBlock) { 
+        // TOOD
+        // var moistureDiff = otherBlockMoisture - this.waterContainment;
+        // if (moistureDiff < 0) {
+        //     return 0; // wet things get other things wet; dry things do not get other things dry 
+        // }
+        // var nextWaterContainment = (this.waterContainment + Math.min(this.waterContainmentMax.value, otherBlockMoisture)) / 2;
+        // var dw = nextWaterContainment - this.waterContainment;
+        // this.waterContainment = nextWaterContainment;
+        // return dw;
     }
 
 }
@@ -896,7 +913,7 @@ class WaterSquare extends BaseSquare {
                     if (Math.abs(i) == Math.abs(j)) {
                         continue;
                     }
-                    if (Array.from(getSquares(this.posX + i, this.posY + j).filter((sq) => sq.proto == this.proto)).length == 0) {
+                    if (Array.from(getSquares(this.posX + i, this.posY + j).filter((sq) => sq.solid || sq.proto == this.proto)).length == 0) {
                         if (!(this.currentPressureIndirect in WATERFLOW_TARGET_SQUARES)) {
                             WATERFLOW_TARGET_SQUARES[this.currentPressureIndirect] = new Array();
                         }
@@ -959,7 +976,7 @@ class WaterSquare extends BaseSquare {
                 return;
             }
             if (sq.solid) {
-                this.blockHealth -= sq.percolateFromBlock(sq.waterContainmentMax.value, this.posY);
+                this.blockHealth -= sq.percolateFromWater(this);
             } else if (sq.proto == this.proto) {
                 if (sq.blockHealth <= this.blockHealth) {
                     var diff = 1 - this.blockHealth;
@@ -1064,7 +1081,7 @@ class BaseOrganism {
     destroy() {
         this.associatedSquares.forEach((asq) => {
             getSquares(asq.posX, asq.posY).forEach((sq) => {
-                if (sq != null && sq.organic) {
+                if (sq != null && sq.organic && sq.spawnedEntityId == this.spawnedEntityId) {
                     removeSquare(sq);
                 }
                 removeOrganismSquare(asq);
@@ -1158,19 +1175,19 @@ class PlantOrganism extends BaseOrganism {
             newPlantSquare.spawnedEntityId = this.spawnedEntityId;
             var orgSq = addOrganismSquare(new PlantLifeSquare(this.posX, this.posY - 1));
             if (orgSq) {
-                orgSq.spawnedEntityId = this.spawnedEntityId;
                 ret.push(orgSq);
             }
         };
 
         // root time
-        var rootTargetSq = getCollidableSquareAtLocation(this.posX, this.posY);
-        if (rootTargetSq != null && rootTargetSq.rootable) {
-            var rootSq = addOrganismSquare(new RootLifeSquare(this.posX, this.posY));
-            if (rootSq) {
-                ret.push(rootSq);
-            }
-        }
+        getSquares(this.posX, this.posY)
+            .filter((sq) => sq.rootable)
+            .forEach((sq) => {
+                var rootSq = addOrganismSquare(new RootLifeSquare(this.posX, this.posY));
+                if (rootSq) {
+                    ret.push(rootSq);
+                }
+            });
 
         if (ret.length == 2) {
             ret.forEach((sq) => this.addAssociatedSquare(sq));
@@ -2027,14 +2044,14 @@ function removeItemAll(arr, value) {
 
 
 for (let i = 0; i < CANVAS_SQUARES_X; i++) {
-    addSquare(new DrainSquare(i, CANVAS_SQUARES_Y - 1));
+    addSquare(new StaticSquare(i, CANVAS_SQUARES_Y - 2));
 }
 
 
-// for (let i = 0; i < CANVAS_SQUARES_Y; i++) {
-//     addSquare(new StaticSquare(CANVAS_SQUARES_X - 1, i));
-//     addSquare(new StaticSquare(1, i));
-// }
+for (let i = 0; i < CANVAS_SQUARES_Y; i++) {
+    addSquare(new StaticSquare(CANVAS_SQUARES_X - 1, i));
+    addSquare(new StaticSquare(0, i));
+}
 
 setInterval(main, 1);
 
