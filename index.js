@@ -35,8 +35,8 @@ document.body.onmouseup = function () {
 var TIME_SCALE = 1;
 const BASE_SIZE = 8;
 var MILLIS_PER_TICK = 16;
-var CANVAS_SQUARES_X = 8; // * 8; //6;
-var CANVAS_SQUARES_Y = 8; // * 8; // 8;
+var CANVAS_SQUARES_X = 80; // * 8; //6;
+var CANVAS_SQUARES_Y = 80; // * 8; // 8;
 var ERASE_RADIUS = 2;
 var lastLastClickEvent = null;
 var curEntitySpawnedId = 0;
@@ -144,7 +144,7 @@ var wds_sq_waterContainmentTransferRate = {
 
 var b_sq_waterContainmentTransferRate = {
     name: "b_sq_waterContainmentTransferRate",
-    value: 0.005
+    value: 0.15
 };
 var b_sq_waterContainmentEvaporationRate = {
     name: "b_sq_waterContainmentEvaporationRate",
@@ -604,31 +604,26 @@ class BaseSquare {
     }
 
     percolateFromBlock(otherBlock) {
-        return 0;
-        // var heightDiff = this.posY - otherBlock.posY; // bigger number == lower, so if this is negative we are percolating up
-        
-        // if (this.waterContainment > otherBlock.waterContainment) {
-        //     // water flows from wet to dry
-        //     return 0;
-        // }
-
-        // var maxAmountToPercolateFromBlock = 0;
-        // var amountToPercolate = 0;
-        // if (heightDiff > 0) {
-        //     maxAmountToPercolateFromBlock = Math.min(this.waterContainmentTransferRate * Math.random(), otherBlock.waterContainment / 1 + Math.random());
-        //     amountToPercolate = Math.min(maxAmountToPercolateFromBlock, otherBlock.waterContainment);
-
-        //     // flowing down
-        // } else if (heightDiff == 0) {
-        //     maxAmountToPercolateFromBlock = Math.min(this.waterContainmentTransferRate, otherBlock.waterContainmentTransferRate);
-        //     amountToPercolate = Math.min(maxAmountToPercolateFromBlock, otherBlock.waterContainment - ((this.waterContainment + otherBlock.waterContainment) / 2));
-        //     this.waterContainment += amountToPercolate;
-        //     return amountToPercolate;
-        // } else {
-        //     // flowing up
-        //     // nvm
-        //     return 0;
-        // }
+        var heightDiff = this.posY - otherBlock.posY; // bigger number == lower, so if this is negative we are percolating u
+        if (this.waterContainment > otherBlock.waterContainment) {
+            // water flows from wet to dry
+            return 0;
+        }
+        var maxAmountToPercolateFromBlock = 0;
+        var amountToPercolate = 0;
+        if (heightDiff > 0) {
+            maxAmountToPercolateFromBlock = Math.min(this.waterContainmentMax.value - this.waterContainment, Math.min(this.waterContainmentTransferRate.value * Math.random(), otherBlock.waterContainment / (1 + Math.random())));
+            amountToPercolate = Math.min(maxAmountToPercolateFromBlock, otherBlock.waterContainment);
+            this.waterContainment += amountToPercolate;
+            return amountToPercolate;
+        } else if (heightDiff == 0) {
+            maxAmountToPercolateFromBlock = Math.min(this.waterContainmentMax.value - this.waterContainment, Math.min(this.waterContainmentTransferRate.value, otherBlock.waterContainmentTransferRate.value));
+            amountToPercolate = Math.min(maxAmountToPercolateFromBlock, otherBlock.waterContainment - ((this.waterContainment + otherBlock.waterContainment) / 2));
+            this.waterContainment += amountToPercolate;
+            return amountToPercolate;
+        } else {
+            return 0;
+        }
     }
 
     percolateInnerMoisture() {
@@ -1754,7 +1749,7 @@ function render() {
     iterateOnSquares((sq) => sq.render(), 0);
 }
 function physics() {
-    iterateOnSquares((sq) => sq.physics(), 0.1);
+    iterateOnSquares((sq) => sq.physics(), 0.5);
 }
 function physicsBefore() {
     iterateOnSquares((sq) => sq.physicsBefore(), 0);
