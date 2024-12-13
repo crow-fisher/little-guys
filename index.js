@@ -727,7 +727,8 @@ class PlantSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
         this.proto = "PlantSquare";
-        this.colorBase = "#4CB963";
+        // this.colorBase = "#4CB963";
+        this.colorBase = "#FF3366";
         this.waterContainmentMax = static_sq_waterContainmentMax;
         this.waterContainmentTransferRate = static_sq_waterContainmentTransferRate;
         this.organic = true;
@@ -1080,11 +1081,9 @@ class BaseOrganism {
 
     destroy() {
         this.associatedSquares.forEach((asq) => {
-            getSquares(asq.posX, asq.posY).forEach((sq) => {
-                if (sq != null && sq.organic && sq.spawnedEntityId == this.spawnedEntityId) {
-                    removeSquare(sq);
-                }
-            });
+            if (asq.linkedSquare != null) {
+                removeSquare(asq.linkedSquare);
+            }
             removeOrganismSquare(asq)
         });
         removeOrganism(this);
