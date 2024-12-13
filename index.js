@@ -34,8 +34,8 @@ document.body.onmouseup = function () {
 // 'little guys' may aquire multiple squares
 var TIME_SCALE = 1;
 const BASE_SIZE = 8;
-var MILLIS_PER_TICK = 16;
-var CANVAS_SQUARES_X = 80; // * 8; //6;
+var MILLIS_PER_TICK = 1;
+var CANVAS_SQUARES_X = 40; // * 8; //6;
 var CANVAS_SQUARES_Y = 80; // * 8; // 8;
 var ERASE_RADIUS = 2;
 var lastLastClickEvent = null;
@@ -465,20 +465,20 @@ class BaseSquare {
 
         var error = false;
 
-        getCollidableSquareAtLocation(newPosX, newPosY).forEach((sq) => {
-            error = true;
-        });
+        getSquares(newPosX, newPosY)
+            .filter((sq) => (this.organic && sq.organic) || sq.collision)
+            .forEach((sq) => {
+                error = true;
+            });
+
         if (error) {
             console.warn("Square not moved; new occupied by a block with collision.");
             return false;
         }
 
-        var associatedOrganisms = getOrganismsAtSquare(this.posX, this.posY);
-        var associatedOrganismsAtDest = getOrganismSquaresAtSquare(newPosX, newPosY);
-        associatedOrganisms.forEach((org) => associatedOrganismsAtDest.filter((destOrg) => org.proto == destOrg.proto).forEach((destOrg) => org.destroy()));
-        // we remove any organisms from our block that are also in the destination first 
         var newLifeSquares = [];
         var newOrganisms = [];
+        
         getOrganismSquaresAtSquare(this.posX, this.posY).forEach((sq) => {
             removeOrganismSquare(sq);
             sq.posX = newPosX;
@@ -492,7 +492,9 @@ class BaseSquare {
             org.posY = newPosY;
             newOrganisms.push(org);
         });
+
         removeItemAll(getObjectArrFromMap(ALL_SQUARES, this.posX, this.posY), this);
+
         this.posX = newPosX;
         this.posY = newPosY;
         getObjectArrFromMap(ALL_SQUARES, this.posX, this.posY).push(this);
@@ -549,7 +551,9 @@ class BaseSquare {
             for (let j = 0; j < Math.abs(this.speedX) + 1; j++) {
                 var jSigned = (this.speedX > 0) ? j : -j;
                 var jSignedMinusOne = (this.speedX == 0 ? 0 : (this.speedX > 0) ? (j - 1) : -(j - 1));
-                getSquares(this.posX + jSigned, this.posY + i).filter((sq) => (this.organic && sq.organic) || sq.collision).forEach((fn) => {
+                getSquares(this.posX + jSigned, this.posY + i)
+                .filter((sq) => (this.organic && sq.organic) || sq.collision)
+                .forEach((fn) => {
                     finalYPos = this.posY + (i - 1);
                     finalXPos = this.posX + jSignedMinusOne;
                     this.speedX = 0;
@@ -678,7 +682,7 @@ class SeedSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
         this.proto = "SeedSquare";
-        this.colorBase = "#B06C49";
+        this.colorBase = "#709775";
         this.nutrientValue = d_sq_nutrientValue;
         this.rootable = true;
         this.organic = true;
@@ -695,7 +699,7 @@ class SeedSquare extends BaseSquare {
                         removeOrganism(org);
                         org.posY += 1;
                         org.associatedSquares.forEach((sq) => sq.posY += 1);
-                        addOrganism(org);
+                        getObjectArrFromMap(ALL_ORGANISMS, org.posX, org.posY).push(org);
                     });
                 } else {
                     getOrganismsAtSquare(this.posX, this.posY).forEach((org) => org.destroy());
@@ -1182,9 +1186,6 @@ class PlantOrganism extends BaseOrganism {
             ret.forEach(removeOrganismSquare);
         }
     }
-    render() {
-        this.associatedSquares.forEach((sp) => sp.render())
-    }
 
     postTick() {
         var airSuckFrac = po_airSuckFrac.value;
@@ -1495,7 +1496,7 @@ class PlantSeedLifeSquare extends BaseLifeSquare {
         this.sproutGrowthRate = p_seed_ls_sproutGrowthRate;
         this.p_seed_ls_neighborWaterContainmentRequiredToGrow = p_seed_ls_neighborWaterContainmentRequiredToGrow;
         this.neighborWaterContainmentRequiredToDecay = p_seed_ls_neighborWaterContainmentRequiredToDecay;
-        this.colorBase = "#EABDA8";
+        this.colorBase = "#A1CCA5";
     }
 
     tick() {
@@ -1650,19 +1651,11 @@ function addOrganismSquare(organismSqaure) {
         console.warn("Invalid organism square placement; no squares to bind to.")
         return false;
     }
-
     if (getCountOfOrganismsSquaresOfProtoAtPosition(organismSqaure.posX, organismSqaure.posY, organismSqaure.proto) > 0) {
         console.warn("Invalid organism square placement; already found an organism of this type here.")
         return false;
     }
-
-    if (!(organismSqaure.posX in ALL_ORGANISM_SQUARES)) {
-        ALL_ORGANISM_SQUARES[organismSqaure.posX] = new Map();
-    }
-    if (!(organismSqaure.posY in ALL_ORGANISM_SQUARES[organismSqaure.posX])) {
-        ALL_ORGANISM_SQUARES[organismSqaure.posX][organismSqaure.posY] = new Array();
-    }
-    ALL_ORGANISM_SQUARES[organismSqaure.posX][organismSqaure.posY].push(organismSqaure);
+    getObjectArrFromMap(ALL_ORGANISM_SQUARES, organismSqaure.posX, organismSqaure.posY).push(organismSqaure);
     return organismSqaure;
 }
 
@@ -1750,12 +1743,11 @@ function iterateOnSquares(func, sortRandomness) {
     for (let i = 0; i < rootKeys.length; i++) {
         var subKeys = Object.keys(ALL_SQUARES[rootKeys[i]]);
         for (let j = 0; j < subKeys.length; j++) {
-            getSquares(rootKeys[i], subKeys[j]).forEach(func);
-            // squareOrder.push(...getSquares(rootKeys[i], subKeys[j]));
+            squareOrder.push(...getSquares(rootKeys[i], subKeys[j]));
         }
     }
-    // squareOrder.sort((a, b) => (Math.random() > sortRandomness ? (a.posX + a.posY * 10) - (b.posX + b.posY * 10) : (a.posX + a.posY * 10 - b.posX + b.posY * 10)));
-    // squareOrder.forEach(func);
+    squareOrder.sort((a, b) => (Math.random() > sortRandomness ? (a.posX + a.posY * 10) - (b.posX + b.posY * 10) : (a.posX + a.posY * 10 - b.posX + b.posY * 10)));
+    squareOrder.forEach(func);
 }
 
 function iterateOnOrganisms(func, sortRandomness) {
@@ -1764,7 +1756,7 @@ function iterateOnOrganisms(func, sortRandomness) {
     for (let i = 0; i < rootKeys.length; i++) {
         var subKeys = Object.keys(ALL_ORGANISMS[rootKeys[i]]);
         for (let j = 0; j < subKeys.length; j++) {
-            organismOrder.push(...getOrganismsAtSquare(rootKeys[i], rootKeys[j]));
+            organismOrder.push(...getOrganismsAtSquare(rootKeys[i], subKeys[j]));
         }
     }
     organismOrder.sort((a, b) => (Math.random() > sortRandomness ? (a.posX + a.posY * 10) - (b.posX + b.posY * 10) : (a.posX + a.posY * 10 - b.posX + b.posY * 10)));
@@ -1848,23 +1840,15 @@ function doWaterFlow() {
 function main() {
     if (Date.now() - lastTick > MILLIS_PER_TICK) {
         MAIN_CONTEXT.clearRect(0, 0, CANVAS_SQUARES_X * BASE_SIZE, CANVAS_SQUARES_Y * BASE_SIZE);
-
-        render();
         doClickAdd();
-        // square life cycle
-
-        for (let i = 0; i < TIME_SCALE; i++) {
-            reset();
-            physicsBefore();
-            physics();
-            doWaterFlow();
-            purge();
-    
-            // organism life cycle;
-            processOrganisms();
-            renderOrganisms();
-        }
-
+        reset();
+        physicsBefore();
+        physics();
+        doWaterFlow();
+        purge();
+        render();
+        processOrganisms();
+        renderOrganisms();
         lastTick = Date.now();
     }
 
@@ -1924,7 +1908,7 @@ function doClickAdd() {
                             addSquareOverride(new DirtSquare(px, curY));
                             break;
                         case "water":
-                            addSquareOverride(new WaterSquare(px, curY));
+                            addSquare(new WaterSquare(px, curY));
                             break;
                         case "rain":
                             addSquareOverride(new RainSquare(px, curY));
