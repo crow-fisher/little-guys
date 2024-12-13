@@ -36,7 +36,7 @@ var TIME_SCALE = 1;
 const BASE_SIZE = 8;
 var MILLIS_PER_TICK = 1;
 var CANVAS_SQUARES_X = 40; // * 8; //6;
-var CANVAS_SQUARES_Y = 80; // * 8; // 8;
+var CANVAS_SQUARES_Y = 40; // * 8; // 8;
 var ERASE_RADIUS = 2;
 var lastLastClickEvent = null;
 var curEntitySpawnedId = 0;
@@ -991,6 +991,7 @@ class BaseLifeSquare {
         this.airNutrients = 0;
         this.waterNutrients = 0;
         this.rootNutrients = 0;
+        this.linkedSquare = null;
     }
 
     tick() {
@@ -1012,6 +1013,13 @@ class BaseLifeSquare {
         return rgbToHex(Math.floor(baseColorRGB.r), Math.floor(baseColorRGB.g), Math.floor(baseColorRGB.b));
     }
 
+    setSpawnedEntityId(id) {
+        this.spawnedEntityId = id;
+        if (this.linkedSquare != null) {
+            this.linkedSquare.spawnedEntityId = id;
+        }
+    }
+
 }
 
 class BaseOrganism {
@@ -1029,9 +1037,9 @@ class BaseOrganism {
         this.totalEnergy = 0;
 
         // life cycle properties
-        this.maxLifeTime = 1000 * 30 * 1;
-        this.reproductionEnergy = 100;
-        this.reproductionEnergyUnit = 50;
+        this.maxLifeTime = 1000 * 10 * 1;
+        this.reproductionEnergy = 30;
+        this.reproductionEnergyUnit = 5;
     }
 
     addAssociatedSquare(lifeSquare) {
@@ -1044,6 +1052,9 @@ class BaseOrganism {
         if (seedSquare != null) {
             seedSquare.speedX = Math.floor(randNumber(-3, 3));
             seedSquare.speedY = Math.floor(randNumber(-3, -1));
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -1070,8 +1081,8 @@ class BaseOrganism {
                 if (sq != null && sq.organic && sq.spawnedEntityId == this.spawnedEntityId) {
                     removeSquare(sq);
                 }
-                removeOrganismSquare(asq);
             });
+            removeOrganismSquare(asq)
         });
         removeOrganism(this);
     }
@@ -1132,16 +1143,18 @@ class PlantOrganism extends BaseOrganism {
         var seedSquare = new SeedSquare(topGreen.posX, topGreen.posY - 1);
         if (addSquare(seedSquare)) {
             var newOrg = new PlantSeedOrganism(seedSquare.posX, seedSquare.posY);
+            newOrg.linkedSquare = seedSquare;
             if (addOrganism(newOrg)) {
-                seedSquare.spawnedEntityId = newOrg.spawnedEntityId;
+                return seedSquare;
             } else {
                 removeSquare(seedSquare);
+                console.log("Failed to add organism to seed square");
                 return null;
             }
         } else {
+            console.warn("Failed to generate seed square...")
             return null;
         }
-        return seedSquare;
     }
 
     growInitialSquares() {
@@ -1159,9 +1172,9 @@ class PlantOrganism extends BaseOrganism {
         }
         var newPlantSquare = addSquare(new PlantSquare(this.posX, this.posY - 1));
         if (newPlantSquare) {
-            newPlantSquare.spawnedEntityId = this.spawnedEntityId;
             var orgSq = addOrganismSquare(new PlantLifeSquare(this.posX, this.posY - 1));
             if (orgSq) {
+                orgSq.linkedSquare = newPlantSquare;
                 ret.push(orgSq);
             }
         };
@@ -1232,8 +1245,9 @@ class PlantOrganism extends BaseOrganism {
         var totalEnergyLifeCycleRate = this.totalEnergy / this.maxLifeTime;
 
         if (currentEnergyPercentage > 1) {
-            this.spawnSeed();
-            this.currentEnergy -= this.reproductionEnergyUnit;
+            if (this.spawnSeed()) {
+                this.currentEnergy -= this.reproductionEnergyUnit;
+            }
             return;
         }
 
@@ -1327,9 +1341,10 @@ class PlantOrganism extends BaseOrganism {
             }
             var newPlantSquare = new PlantSquare(highestPlantSquare.posX, highestPlantSquare.posY - 1);
             if (addSquare(newPlantSquare)) {
-                newPlantSquare.spawnedEntityId = this.spawnedEntityId;
                 var orgSq = addOrganismSquare(new PlantLifeSquare(highestPlantSquare.posX, highestPlantSquare.posY - 1));
                 if (orgSq) {
+                    orgSq.linkedSquare = newPlantSquare;
+                    orgSq.setSpawnedEntityId(this.spawnedEntityId);
                     this.addAssociatedSquare(orgSq);
                     return 1;
                 }
@@ -1631,18 +1646,20 @@ function addOrganism(organism) {
 
     if (getOrganismsAtSquare(organism.posX, organism.posY).length > 0) {
         organism.destroy();
-        return;
+        return false;
     }
 
     if (organism.associatedSquares.length > 0) {
         organism.spawnedEntityId = curEntitySpawnedId;
+        organism.associatedSquares.forEach((asq) => asq.setSpawnedEntityId(organism.spawnedEntityId));
         curEntitySpawnedId += 1;
         getObjectArrFromMap(ALL_ORGANISMS, organism.posX, organism.posY).push(organism);
+        return organism;
     } else {
         console.log("Organism is fucked up in some way; please reconsider")
         organism.destroy();
+        return false;
     }
-
 }
 
 function addOrganismSquare(organismSqaure) {
@@ -1934,8 +1951,10 @@ function doClickAdd() {
                             }
                             var sq = addSquare(new SeedSquare(px, curY));
                             if (sq != null) {
+                                var newOrg = new PlantSeedOrganism(px, curY);
+                                newOrg.linkedSquare = sq;
                                 organismAddedThisClick = true;
-                                addOrganism(new PlantSeedOrganism(px, curY));
+                                addOrganism(newOrg);
                             }
                             break;
                     }
