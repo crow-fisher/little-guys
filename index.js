@@ -36,7 +36,7 @@ var TIME_SCALE = 1;
 const BASE_SIZE = 8;
 var MILLIS_PER_TICK = 1;
 var CANVAS_SQUARES_X = 120; // * 8; //6;
-var CANVAS_SQUARES_Y = 60; // * 8; // 8;
+var CANVAS_SQUARES_Y = 80; // * 8; // 8;
 var ERASE_RADIUS = 2;
 var lastLastClickEvent = null;
 var curEntitySpawnedId = 0;
@@ -698,16 +698,14 @@ class SeedSquare extends BaseSquare {
         getSquares(this.posX, this.posY + 1)
             .filter((sq) => sq.rootable)
             .forEach((sqBelow) => {
-                var orgSquaresBelow = getOrganismSquaresAtSquare(sqBelow.posX, sqBelow.posY);    
-                if (orgSquaresBelow.length == 0) {
+                var organismsBelow = getOrganismsAtSquare(sqBelow.posX, sqBelow.posY) ;
+                if (organismsBelow.length == 0) {
                     getOrganismsAtSquare(this.posX, this.posY).forEach((org) => {
                         removeOrganism(org);
                         org.posY += 1;
                         org.associatedSquares.forEach((sq) => sq.posY += 1);
                         getObjectArrFromMap(ALL_ORGANISMS, org.posX, org.posY).push(org);
                     });
-                } else {
-                    getOrganismsAtSquare(this.posX, this.posY).forEach((org) => org.destroy());
                 }
                 removeSquare(this);
             })
@@ -1042,9 +1040,9 @@ class BaseOrganism {
         this.totalEnergy = 0;
 
         // life cycle properties
-        this.maxLifeTime = 1000 * 60 * 1;
-        this.reproductionEnergy = 200;
-        this.reproductionEnergyUnit = 50;
+        this.maxLifeTime = 1000 * 40 * 1;
+        this.reproductionEnergy = 100;
+        this.reproductionEnergyUnit = 5;
     }
 
     addAssociatedSquare(lifeSquare) {
@@ -1250,9 +1248,8 @@ class PlantOrganism extends BaseOrganism {
         var totalEnergyLifeCycleRate = this.totalEnergy / this.maxLifeTime;
 
         if (currentEnergyPercentage > 1) {
-            if (this.spawnSeed()) {
-                this.currentEnergy -= this.reproductionEnergyUnit;
-            }
+            this.spawnSeed();
+            this.currentEnergy -= this.reproductionEnergyUnit;
             return;
         }
 
@@ -1261,8 +1258,6 @@ class PlantOrganism extends BaseOrganism {
             this.grow();
             return;
         } else {
-            // we are growing fast enough it shoudl be fine
-            console.log("Not growing - we will hit reproduction energy")
             return;
         }
     }
@@ -2036,7 +2031,7 @@ function removeItemAll(arr, value) {
 
 
 for (let i = 0; i < CANVAS_SQUARES_X; i++) {
-    addSquare(new StaticSquare(i, CANVAS_SQUARES_Y - 2));
+    addSquare(new StaticSquare(i, CANVAS_SQUARES_Y - 1));
 }
 
 
