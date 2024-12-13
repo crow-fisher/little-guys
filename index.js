@@ -35,8 +35,8 @@ document.body.onmouseup = function () {
 var TIME_SCALE = 1;
 const BASE_SIZE = 8;
 var MILLIS_PER_TICK = 1;
-var CANVAS_SQUARES_X = 80; // * 8; //6;
-var CANVAS_SQUARES_Y = 40; // * 8; // 8;
+var CANVAS_SQUARES_X = 120; // * 8; //6;
+var CANVAS_SQUARES_Y = 60; // * 8; // 8;
 var ERASE_RADIUS = 2;
 var lastLastClickEvent = null;
 var curEntitySpawnedId = 0;
@@ -430,6 +430,11 @@ class BaseSquare {
     };
 
     calculateColor() {
+        if (this.waterContainmentMax.value == 0) {
+            var baseColorRGB = hexToRgb(this.colorBase);
+            return rgbToHex(Math.floor(baseColorRGB.r), Math.floor(baseColorRGB.g), Math.floor(baseColorRGB.b));
+        }
+        
         var baseColorRGB = hexToRgb(this.colorBase);
         var darkeningStrength = b_sq_darkeningStrength.value;
         // Water Saturation Calculation
@@ -1037,9 +1042,9 @@ class BaseOrganism {
         this.totalEnergy = 0;
 
         // life cycle properties
-        this.maxLifeTime = 1000 * 10 * 1;
-        this.reproductionEnergy = 30;
-        this.reproductionEnergyUnit = 5;
+        this.maxLifeTime = 1000 * 60 * 1;
+        this.reproductionEnergy = 200;
+        this.reproductionEnergyUnit = 50;
     }
 
     addAssociatedSquare(lifeSquare) {
@@ -1494,6 +1499,10 @@ class PlantSeedOrganism extends BaseOrganism {
     }
 
     postTick() {
+        var lifeCyclePercentage = (Date.now() - this.spawnTime) / this.maxLifeTime;
+        if (lifeCyclePercentage > 1) {
+            this.destroy();
+        }
         if (this.associatedSquares[0].sproutStatus >= 1) {
             // now we need to convert ourself into a 'plant organism'
             this.destroy();
