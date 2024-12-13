@@ -579,7 +579,7 @@ class BaseSquare {
     physicsBefore2() { }
 
     percolateFromWater(waterBlock) {
-        if (this.waterContainmentMax.value == 0) {
+        if (this.waterContainmentMax.value == 0 || this.waterContainment >= this.waterContainmentMax.value) {
             return 0;
         }
         var heightDiff = this.posY - waterBlock.posY; // bigger number == lower, so if this is negative we are percolating up
@@ -605,24 +605,26 @@ class BaseSquare {
 
     percolateFromBlock(otherBlock) {
         var heightDiff = this.posY - otherBlock.posY; // bigger number == lower, so if this is negative we are percolating u
-        if (this.waterContainment > otherBlock.waterContainment) {
+        if (this.waterContainment > otherBlock.waterContainment || this.waterContainment >= this.waterContainmentMax.value) {
             // water flows from wet to dry
             return 0;
         }
         var maxAmountToPercolateFromBlock = 0;
         var amountToPercolate = 0;
         if (heightDiff > 0) {
-            maxAmountToPercolateFromBlock = Math.min(this.waterContainmentMax.value - this.waterContainment, Math.min(this.waterContainmentTransferRate.value * Math.random(), otherBlock.waterContainment / (1 + Math.random())));
+            maxAmountToPercolateFromBlock = Math.min(this.waterContainmentMax.value - this.waterContainment, Math.min(this.waterContainmentTransferRate.value, otherBlock.waterContainment) * (heightDiff + 1));
             amountToPercolate = Math.min(maxAmountToPercolateFromBlock, otherBlock.waterContainment);
             this.waterContainment += amountToPercolate;
             return amountToPercolate;
-        } else if (heightDiff == 0) {
+        } else {
             maxAmountToPercolateFromBlock = Math.min(this.waterContainmentMax.value - this.waterContainment, Math.min(this.waterContainmentTransferRate.value, otherBlock.waterContainmentTransferRate.value));
             amountToPercolate = Math.min(maxAmountToPercolateFromBlock, otherBlock.waterContainment - ((this.waterContainment + otherBlock.waterContainment) / 2));
+            var amountToPercolateToAverage = (otherBlock.waterContainment - this.waterContainment) / 2;
+
+            amountToPercolate = Math.min(amountToPercolate, amountToPercolateToAverage);
+            amountToPercolate /= (1 + Math.random());
             this.waterContainment += amountToPercolate;
             return amountToPercolate;
-        } else {
-            return 0;
         }
     }
 
@@ -772,26 +774,6 @@ class WaterDistributionSquare extends BaseSquare {
         this.physicsEnabled = false;
         this.waterContainmentMax = wds_sq_waterContainmentMax;
         this.waterContainmentTransferRate = wds_sq_waterContainmentTransferRate;
-    }
-
-    percolateInnerMoisture() {
-        if (this.waterContainment <= 0) {
-            return 0;
-        }
-        var directNeighbors = getNeighbors(this.posX, this.posY).filter((sq) => sq != null && sq.solid);
-        directNeighbors.forEach((sq) => this.waterContainment -= sq.percolateFromBlock(this));
-    }
-
-    percolateFromBlock(otherBlock) { 
-        // TOOD
-        // var moistureDiff = otherBlockMoisture - this.waterContainment;
-        // if (moistureDiff < 0) {
-        //     return 0; // wet things get other things wet; dry things do not get other things dry 
-        // }
-        // var nextWaterContainment = (this.waterContainment + Math.min(this.waterContainmentMax.value, otherBlockMoisture)) / 2;
-        // var dw = nextWaterContainment - this.waterContainment;
-        // this.waterContainment = nextWaterContainment;
-        // return dw;
     }
 
 }
@@ -1773,11 +1755,12 @@ function iterateOnSquares(func, sortRandomness) {
     for (let i = 0; i < rootKeys.length; i++) {
         var subKeys = Object.keys(ALL_SQUARES[rootKeys[i]]);
         for (let j = 0; j < subKeys.length; j++) {
-            squareOrder.push(...getSquares(rootKeys[i], subKeys[j]));
+            getSquares(rootKeys[i], subKeys[j]).forEach(func);
+            // squareOrder.push(...getSquares(rootKeys[i], subKeys[j]));
         }
     }
-    squareOrder.sort((a, b) => (Math.random() > sortRandomness ? (a.posX + a.posY * 10) - (b.posX + b.posY * 10) : (a.posX + a.posY * 10 - b.posX + b.posY * 10)));
-    squareOrder.forEach(func);
+    // squareOrder.sort((a, b) => (Math.random() > sortRandomness ? (a.posX + a.posY * 10) - (b.posX + b.posY * 10) : (a.posX + a.posY * 10 - b.posX + b.posY * 10)));
+    // squareOrder.forEach(func);
 }
 
 function iterateOnOrganisms(func, sortRandomness) {
@@ -1800,6 +1783,7 @@ function purge() {
         ret &= sq.posX < CANVAS_SQUARES_X;
         ret &= sq.posY >= 0;
         ret &= sq.posY < CANVAS_SQUARES_Y;
+        ret &= sq.blockHealth > 0;
         if (!ret) {
             removeSquare(sq);
         }
