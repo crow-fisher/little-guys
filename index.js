@@ -475,7 +475,7 @@ class BaseSquare {
 
         var associatedOrganisms = getOrganismsAtSquare(this.posX, this.posY);
         var associatedOrganismsAtDest = getOrganismSquaresAtSquare(newPosX, newPosY);
-        associatedOrganisms.forEach((org) => associatedOrganismsAtDest.filter((org) => org.proto == destOrg.proto).forEach((destOrg) => org.destroy()));
+        associatedOrganisms.forEach((org) => associatedOrganismsAtDest.filter((destOrg) => org.proto == destOrg.proto).forEach((destOrg) => org.destroy()));
         // we remove any organisms from our block that are also in the destination first 
         var newLifeSquares = [];
         var newOrganisms = [];
@@ -492,10 +492,10 @@ class BaseSquare {
             org.posY = newPosY;
             newOrganisms.push(org);
         });
-        removeSquare(this);
+        removeItemAll(getObjectArrFromMap(ALL_SQUARES, this.posX, this.posY), this);
         this.posX = newPosX;
         this.posY = newPosY;
-        addSquare(this);
+        getObjectArrFromMap(ALL_SQUARES, this.posX, this.posY).push(this);
         newOrganisms.forEach(addOrganism);
         newLifeSquares.forEach(addOrganismSquare);
 
@@ -1127,11 +1127,12 @@ class PlantOrganism extends BaseOrganism {
         var topGreen = this.getHighestGreen();
         var seedSquare = new SeedSquare(topGreen.posX, topGreen.posY - 1);
         if (addSquare(seedSquare)) {
-            seedSquare.spawnedEntityId = curEntitySpawnedId;
-            curEntitySpawnedId += 1;
             var newOrg = new PlantSeedOrganism(seedSquare.posX, seedSquare.posY);
             if (addOrganism(newOrg)) {
-                newOrg.spawnedEntityId = seedSquare.spawnedEntityId;
+                seedSquare.spawnedEntityId = newOrg.spawnedEntityId;
+            } else {
+                removeSquare(seedSquare);
+                return null;
             }
         } else {
             return null;
@@ -1153,7 +1154,7 @@ class PlantOrganism extends BaseOrganism {
             }
         }
         var newPlantSquare = addSquare(new PlantSquare(this.posX, this.posY - 1));
-        if (newPlantSquare != null) {
+        if (newPlantSquare) {
             newPlantSquare.spawnedEntityId = this.spawnedEntityId;
             var orgSq = addOrganismSquare(new PlantLifeSquare(this.posX, this.posY - 1));
             if (orgSq) {
@@ -1635,13 +1636,7 @@ function addOrganism(organism) {
     if (organism.associatedSquares.length > 0) {
         organism.spawnedEntityId = curEntitySpawnedId;
         curEntitySpawnedId += 1;
-        if (!(organism.posX in ALL_ORGANISMS)) {
-            ALL_ORGANISMS[organism.posX] = new Map();
-        }
-        if (!(organism.posY in ALL_ORGANISMS[organism.posX])) {
-            ALL_ORGANISMS[organism.posX][organism.posY] = new Array();
-        }
-        ALL_ORGANISMS[organism.posX][organism.posY].push(organism);
+        getObjectArrFromMap(ALL_ORGANISMS, organism.posX, organism.posY).push(organism);
     } else {
         console.log("Organism is fucked up in some way; please reconsider")
         organism.destroy();
@@ -1871,8 +1866,9 @@ function main() {
         }
 
         lastTick = Date.now();
-
     }
+
+    setTimeout(main, 5);
 }
 
 
@@ -2037,8 +2033,6 @@ for (let i = 0; i < CANVAS_SQUARES_Y; i++) {
     addSquare(new StaticSquare(0, i));
 }
 
-setInterval(main, 1);
-
 // setTimeout(() => window.location.reload(), 3000);
 window.oncontextmenu = function () {
     return false;     // cancel default menu
@@ -2066,3 +2060,5 @@ var ProtoMap = {
     "SeedSquare": SeedSquare.prototype,
     "Law": Law.prototype
 }
+
+main()
