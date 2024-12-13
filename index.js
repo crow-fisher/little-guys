@@ -115,7 +115,7 @@ var b_sq_nutrientValue = {
 };
 var static_sq_waterContainmentMax = {
     name: "static_sq_waterContainmentMax",
-    value: 0.001
+    value: 0.0
 }
 var static_sq_waterContainmentTransferRate = {
     name: "static_sq_waterContainmentTransferRate",
@@ -139,12 +139,12 @@ var wds_sq_waterContainmentMax = {
 
 var wds_sq_waterContainmentTransferRate = {
     name: "waterContainmentTransferRate",
-    value: 1
+    value: 0.15
 };
 
 var b_sq_waterContainmentTransferRate = {
     name: "b_sq_waterContainmentTransferRate",
-    value: 1
+    value: 0.005
 };
 var b_sq_waterContainmentEvaporationRate = {
     name: "b_sq_waterContainmentEvaporationRate",
@@ -579,16 +579,20 @@ class BaseSquare {
     physicsBefore2() { }
 
     percolateFromWater(waterBlock) {
+        if (this.waterContainmentMax.value == 0) {
+            return 0;
+        }
         var heightDiff = this.posY - waterBlock.posY; // bigger number == lower, so if this is negative we are percolating up
         var maxAmountToPercolateFromBlock = 0;
         var amountToPercolate = 0;
         if (heightDiff > 0) {
-            maxAmountToPercolateFromBlock = Math.min(this.waterContainmentTransferRate * Math.random(), waterBlock.blockHealth / 1 + Math.random());
+            maxAmountToPercolateFromBlock = Math.min(this.waterContainmentMax.value - this.waterContainment, Math.min(this.waterContainmentTransferRate.value * Math.random(), waterBlock.blockHealth / 1 + Math.random()));
             amountToPercolate = Math.min(maxAmountToPercolateFromBlock, waterBlock.blockHealth);
+            this.waterContainment += amountToPercolate;
             // flowing down
             return amountToPercolate;
         } else if (heightDiff == 0) {
-            maxAmountToPercolateFromBlock = Math.min(this.waterContainmentTransferRate, waterBlock.waterContainmentTransferRate);
+            maxAmountToPercolateFromBlock = Math.min(this.waterContainmentMax.value - this.waterContainment, Math.min(this.waterContainmentTransferRate.value, waterBlock.waterContainmentTransferRate.value));
             amountToPercolate = Math.min(maxAmountToPercolateFromBlock, waterBlock.blockHealth - ((this.blockHealth + waterBlock.blockHealth) / 2));
             this.waterContainment += amountToPercolate;
             return amountToPercolate;
@@ -600,30 +604,31 @@ class BaseSquare {
     }
 
     percolateFromBlock(otherBlock) {
-        var heightDiff = this.posY - otherBlock.posY; // bigger number == lower, so if this is negative we are percolating up
+        return 0;
+        // var heightDiff = this.posY - otherBlock.posY; // bigger number == lower, so if this is negative we are percolating up
         
-        if (this.waterContainment > otherBlock.waterContainment) {
-            // water flows from wet to dry
-            return 0;
-        }
+        // if (this.waterContainment > otherBlock.waterContainment) {
+        //     // water flows from wet to dry
+        //     return 0;
+        // }
 
-        var maxAmountToPercolateFromBlock = 0;
-        var amountToPercolate = 0;
-        if (heightDiff > 0) {
-            maxAmountToPercolateFromBlock = Math.min(this.waterContainmentTransferRate * Math.random(), otherBlock.waterContainment / 1 + Math.random());
-            amountToPercolate = Math.min(maxAmountToPercolateFromBlock, otherBlock.waterContainment);
+        // var maxAmountToPercolateFromBlock = 0;
+        // var amountToPercolate = 0;
+        // if (heightDiff > 0) {
+        //     maxAmountToPercolateFromBlock = Math.min(this.waterContainmentTransferRate * Math.random(), otherBlock.waterContainment / 1 + Math.random());
+        //     amountToPercolate = Math.min(maxAmountToPercolateFromBlock, otherBlock.waterContainment);
 
-            // flowing down
-        } else if (heightDiff == 0) {
-            maxAmountToPercolateFromBlock = Math.min(this.waterContainmentTransferRate, otherBlock.waterContainmentTransferRate);
-            amountToPercolate = Math.min(maxAmountToPercolateFromBlock, otherBlock.waterContainment - ((this.waterContainment + otherBlock.waterContainment) / 2));
-            this.waterContainment += amountToPercolate;
-            return amountToPercolate;
-        } else {
-            // flowing up
-            // nvm
-            return 0;
-        }
+        //     // flowing down
+        // } else if (heightDiff == 0) {
+        //     maxAmountToPercolateFromBlock = Math.min(this.waterContainmentTransferRate, otherBlock.waterContainmentTransferRate);
+        //     amountToPercolate = Math.min(maxAmountToPercolateFromBlock, otherBlock.waterContainment - ((this.waterContainment + otherBlock.waterContainment) / 2));
+        //     this.waterContainment += amountToPercolate;
+        //     return amountToPercolate;
+        // } else {
+        //     // flowing up
+        //     // nvm
+        //     return 0;
+        // }
     }
 
     percolateInnerMoisture() {
