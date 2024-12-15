@@ -14,6 +14,7 @@ class BaseLifeSquare {
         this.waterNutrients = 0;
         this.rootNutrients = 0;
         this.linkedSquare = null;
+        this.opacity = 1;
     }
 
     tick() {

@@ -3,15 +3,6 @@ import { ALL_ORGANISM_SQUARES } from "../globals.js";
 import { getSquares } from "../squares/_sqOperations.js";
 
 function addOrganismSquare(organismSqaure) {
-    var validSquareArr = Array.from(getSquares(organismSqaure.posX, organismSqaure.posY).filter((sq) => sq.organic || sq.rootable));
-    if (validSquareArr.length == 0) {
-        console.warn("Invalid organism square placement; no squares to bind to.")
-        return false;
-    }
-    if (getCountOfOrganismsSquaresOfProtoAtPosition(organismSqaure.posX, organismSqaure.posY, organismSqaure.proto) > 0) {
-        console.warn("Invalid organism square placement; already found an organism of this type here.")
-        return false;
-    }
     getObjectArrFromMap(ALL_ORGANISM_SQUARES, organismSqaure.posX, organismSqaure.posY).push(organismSqaure);
     return organismSqaure;
 }
@@ -36,4 +27,12 @@ function getCountOfOrganismsSquaresOfTypeAtPosition(posX, posY, type) {
     return existingOrganismSquaresOfSameTypeArray.length;
 }
 
-export { addOrganismSquare, getOrganismSquaresAtSquare, getOrganismSquaresAtSquareOfProto, getCountOfOrganismsSquaresOfProtoAtPosition, getCountOfOrganismsSquaresOfTypeAtPosition}
+function getOrganismSquaresAtSquareWithEntityId(sq, spawnedEntityId) {
+    return Array.from(getOrganismSquaresAtSquare(sq.posX, sq.posY).filter((ls) => ls.spawnedEntityId == spawnedEntityId));
+}
+
+export { 
+    addOrganismSquare, getOrganismSquaresAtSquare, getOrganismSquaresAtSquareOfProto, 
+    getCountOfOrganismsSquaresOfProtoAtPosition, getCountOfOrganismsSquaresOfTypeAtPosition, 
+    getOrganismSquaresAtSquareWithEntityId
+}

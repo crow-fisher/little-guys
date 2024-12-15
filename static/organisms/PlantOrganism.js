@@ -14,6 +14,8 @@ import { addSquare } from "../squares/_sqOperations.js";
 import { getCountOfOrganismsSquaresOfProtoAtPosition, getCountOfOrganismsSquaresOfTypeAtPosition } from "../lifeSquares/_lsOperations.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 import { addOrganism } from "./_orgOperations.js";
+import { getOrganismSquaresAtSquare } from "../lifeSquares/_lsOperations.js";
+import { getOrganismSquaresAtSquareWithEntityId } from "../lifeSquares/_lsOperations.js";
 
 import {
     global_plantToRealWaterConversionFactor,
@@ -295,21 +297,15 @@ class PlantOrganism extends BaseOrganism {
                 if (sq.type != "root") {
                     continue;
                 }
-                var sqNeighbors = getDirectNeighbors(sq.posX, sq.posY);
-                for (let j = 0; j < sqNeighbors.length; j++) {
-                    var compSquare = sqNeighbors[j];
-                    if (compSquare == null
-                        || !compSquare.rootable
-                        || getCountOfOrganismsSquaresOfTypeAtPosition(compSquare.posX, compSquare.posY, "root") > 0) {
-                        continue;
-                    }
-                    if (
-                        // (this.getNumRootNeighborsAtSquare(compSquare) < 3) && 
-                        (wettestSquare == null || (wettestSquare.waterContainment < compSquare.waterContainment))) {
-                        wettestSquare = compSquare;
-                    }
+                getDirectNeighbors(sq.posX, sq.posY)
+                    .filter((_sq) => _sq != null)
+                    .filter((_sq) => _sq.rootable)
+                    .filter((_sq) => getOrganismSquaresAtSquareWithEntityId(_sq, this.spawnedEntityId).length == 0)
+                    .forEach((compSquare) => {
+                        if ((wettestSquare == null || (wettestSquare.waterContainment < compSquare.waterContainment))) {
+                            wettestSquare = compSquare;
+                    }});
                 }
-            }
             if (wettestSquare != null) {
                 var rootSquare = addOrganismSquare(new RootLifeSquare(wettestSquare.posX, wettestSquare.posY));
                 if (rootSquare) {

@@ -1,11 +1,13 @@
 import { BaseLifeSquare } from "./BaseLifeSquare.js";
 import { getDirectNeighbors } from "../squares/_sqOperations.js";
+import { hexToRgb } from "../common.js";
 
 
 class RootLifeSquare extends BaseLifeSquare {
     constructor(posX, posY) {
         super(posX, posY);
         this.proto = "RootLifeSquare";
+        this.opacity = 0.2;
         this.colorBase = "#554640";
         this.type = "root";
     }
@@ -17,6 +19,11 @@ class RootLifeSquare extends BaseLifeSquare {
                 this.rootNutrients += neighbor.nutrientValue.value;
                 this.waterNutrients += neighbor.suckWater(this.waterNutrients);
             });
+    }
+
+    calculateColor() {
+        var colorRgb = hexToRgb(this.colorBase);
+        return "rgba(" + colorRgb.r + "," + colorRgb.g + "," + colorRgb.b + "," + this.opacity + ")";
     }
 }
 
