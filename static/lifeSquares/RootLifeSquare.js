@@ -1,3 +1,6 @@
+import { BaseLifeSquare } from "./BaseLifeSquare.js";
+import { getDirectNeighbors } from "../squares/_sqOperations.js";
+
 
 class RootLifeSquare extends BaseLifeSquare {
     constructor(posX, posY) {

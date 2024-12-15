@@ -1,3 +1,11 @@
+import { BaseLifeSquare } from "./BaseLifeSquare.js";
+import { getDirectNeighbors } from "../squares/_sqOperations.js";
+
+import {
+    p_ls_airNutrientsPerExposedNeighborTick,
+    } from "../config/config.js"
+
+
 class PlantLifeSquare extends BaseLifeSquare {
     constructor(posX, posY) {
         super(posX, posY);

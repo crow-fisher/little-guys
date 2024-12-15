@@ -15,6 +15,12 @@ import { WaterDistributionSquare } from "./squares/WaterDistributionSquare.js";
 import { DrainSquare } from "./squares/DrainSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
 import { PlantSeedOrganism } from "./organisms/PlantSeedOrganism.js";
+import { addOrganism } from "./organisms/_orgOperations.js";
+
+import { ALL_ORGANISMS, ALL_ORGANISM_SQUARES, ALL_SQUARES } from "./globals.js";
+
+import { doErase } from "./manipulation.js";
+import { ProtoMap } from "./types.js";
 
 var materialSelect = document.getElementById("materialSelect");
 var fastTerrain = document.getElementById("fastTerrain");
@@ -58,9 +64,7 @@ document.body.onmouseup = function () {
 var TIME_SCALE = 1;
 var MILLIS_PER_TICK = 1;
 
-var ERASE_RADIUS = 2;
 var lastLastClickEvent = null;
-var curEntitySpawnedId = 0;
 
 
 
@@ -121,9 +125,9 @@ function loadSlot(slotName) {
     // bippity boppity do something like this 
     // Object.setPrototypeOf(sq, DirtSquare.prototype)
 
-    ALL_SQUARES = new Map();
-    ALL_ORGANISMS = new Array();
-    ALL_ORGANISM_SQUARES = new Map();
+    ALL_SQUARES.clear();
+    ALL_ORGANISMS.clear();
+    ALL_ORGANISM_SQUARES.clear();
 
     loadObjArr(loaded_ALL_SQUARES, addSquare)
 

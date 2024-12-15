@@ -9,6 +9,9 @@ import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js";
 import { getObjectArrFromMap } from "./common.js";
 import { getOrganismSquaresAtSquare } from "./lifeSquares/_lsOperations.js";
 import { removeItemAll } from "./common.js";
+import { removeOrganism } from "./organisms/_orgOperations.js";
+
+
 
 function purge() {
     iterateOnSquares((sq) => {

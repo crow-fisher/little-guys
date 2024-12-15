@@ -1,3 +1,9 @@
+import { removeSquareAndChildren } from "../globalOperations.js";
+import { removeOrganismSquare } from "../squares/_sqOperations.js";
+import { removeOrganism } from "./_orgOperations.js";
+import { Law } from "../Law.js";
+import { randNumber } from "../common.js";
+
 class BaseOrganism {
     constructor(posX, posY) {
         this.proto = "BaseOrganism";

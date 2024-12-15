@@ -1,4 +1,4 @@
-export class Law {
+class Law {
     // Each organism will have its own instance of 'Law'. 
     // This means each one can have its own statistics tracked. 
     constructor() {
@@ -17,3 +17,5 @@ export class Law {
         return energyOut;
     }
 }
+
+export { Law };

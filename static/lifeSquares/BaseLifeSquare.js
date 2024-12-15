@@ -1,3 +1,6 @@
+import  {MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE} from "../index.js";
+import { hexToRgb, rgbToHex } from "../common.js";
+
 class BaseLifeSquare {
     constructor(posX, posY) {
         this.proto = "BaseLifeSquare";

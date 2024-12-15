@@ -5,12 +5,21 @@ var stats = new Map();
 var NUM_GROUPS = 0; 
 var WATERFLOW_TARGET_SQUARES = new Map();
 var WATERFLOW_CANDIDATE_SQUARES = new Set();
-
+var curEntitySpawnedId = 0;
 
 
 function getNextGroupId() {
     NUM_GROUPS += 1;
     return NUM_GROUPS;
+}
+
+function getCurEntitySpawnId() {
+    return curEntitySpawnedId;
+}
+
+function getNextEntitySpawnId() {
+    curEntitySpawnedId += 1;
+    return curEntitySpawnedId;
 }
 
 function updateGlobalStatistic(name, value) {
@@ -30,6 +39,7 @@ function getGlobalStatistic(name) {
 
 
 export {
-    ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES,
-    getNextGroupId, updateGlobalStatistic, getGlobalStatistic
+    ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES, curEntitySpawnedId,
+    getNextGroupId, updateGlobalStatistic, getGlobalStatistic,
+    getNextEntitySpawnId, getCurEntitySpawnId
 }

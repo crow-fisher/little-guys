@@ -12,6 +12,7 @@ import {
 
 import { getObjectArrFromMap, removeItemAll, hexToRgb, rgbToHex, randNumber} from "../common.js";
 import {purge, reset, render, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquareAndChildren} from "../globalOperations.js"
+import { getOrganismSquaresAtSquare } from "../lifeSquares/_lsOperations.js";
 
 class WaterSquare extends BaseSquare {  
     constructor(posX, posY) {

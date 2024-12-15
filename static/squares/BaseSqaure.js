@@ -2,42 +2,18 @@ import {
     global_plantToRealWaterConversionFactor,
     b_sq_waterContainmentMax,
     b_sq_nutrientValue,
-    static_sq_waterContainmentMax,
-    static_sq_waterContainmentTransferRate,
-    drain_sq_waterContainmentMax,
-    drain_sq_waterTransferRate,
-    wds_sq_waterContainmentMax,
-    wds_sq_waterContainmentTransferRate,
     b_sq_waterContainmentTransferRate,
     b_sq_waterContainmentEvaporationRate,
     b_sq_darkeningStrength,
-    d_sq_nutrientValue,
-    rain_dropChance,
-    heavyrain_dropChance,
-    rain_dropHealth,
-    water_evaporationRate,
-    water_viscocity,
-    water_darkeningStrength,
-    po_airSuckFrac,
-    po_waterSuckFrac,
-    po_rootSuckFrac,
-    po_perFrameCostFracPerSquare,
-    po_greenSquareSizeExponentCost,
-    po_rootSquareSizeExponentCost,
-    p_ls_airNutrientsPerExposedNeighborTick,
-    p_seed_ls_sproutGrowthRate,
-    p_seed_ls_neighborWaterContainmentRequiredToGrow,
-    p_seed_ls_neighborWaterContainmentRequiredToDecay,
-    p_seed_ls_darkeningStrength
-    } from "../config/config.js"
+} from "../config/config.js"
 
-import {getNeighbors, getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares} from "./_sqOperations.js"
+import { getNeighbors, getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares } from "./_sqOperations.js"
 import {
     ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES,
     getNextGroupId, updateGlobalStatistic, getGlobalStatistic
 } from "../globals.js";
 
-import  {MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE} from "../index.js";
+import { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE } from "../index.js";
 
 import { hexToRgb, rgbToHex } from "../common.js";
 
@@ -49,8 +25,11 @@ import { getObjectArrFromMap } from "../common.js";
 import { addOrganism } from "../organisms/_orgOperations.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 
-import {purge, reset, render, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquareAndChildren} from "../globalOperations.js"
+import { purge, reset, render, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquareAndChildren } from "../globalOperations.js"
 
+import { removeOrganismSquare } from "./_sqOperations.js";
+
+import { removeOrganism } from "../organisms/_orgOperations.js";
 
 export class BaseSquare {
     constructor(posX, posY) {
@@ -98,7 +77,7 @@ export class BaseSquare {
             var baseColorRGB = hexToRgb(this.colorBase);
             return rgbToHex(Math.floor(baseColorRGB.r), Math.floor(baseColorRGB.g), Math.floor(baseColorRGB.b));
         }
-        
+
         var baseColorRGB = hexToRgb(this.colorBase);
         var darkeningStrength = b_sq_darkeningStrength.value;
         // Water Saturation Calculation
@@ -147,7 +126,7 @@ export class BaseSquare {
 
         var newLifeSquares = [];
         var newOrganisms = [];
-        
+
         getOrganismSquaresAtSquare(this.posX, this.posY).forEach((sq) => {
             removeOrganismSquare(sq);
             sq.posX = newPosX;
@@ -221,17 +200,17 @@ export class BaseSquare {
                 var jSigned = (this.speedX > 0) ? j : -j;
                 var jSignedMinusOne = (this.speedX == 0 ? 0 : (this.speedX > 0) ? (j - 1) : -(j - 1));
                 getSquares(this.posX + jSigned, this.posY + i)
-                .filter((sq) => (this.organic && sq.organic) || sq.collision)
-                .forEach((fn) => {
-                    finalYPos = this.posY + (i - 1);
-                    finalXPos = this.posX + jSignedMinusOne;
-                    this.speedX = 0;
-                    this.speedY = 0;
-                    bonked = true;
-                });
+                    .filter((sq) => (this.organic && sq.organic) || sq.collision)
+                    .forEach((fn) => {
+                        finalYPos = this.posY + (i - 1);
+                        finalXPos = this.posX + jSignedMinusOne;
+                        this.speedX = 0;
+                        this.speedY = 0;
+                        bonked = true;
+                    });
                 if (bonked)
                     break;
-            } if (bonked) 
+            } if (bonked)
                 break;
         }
         if (!bonked) {

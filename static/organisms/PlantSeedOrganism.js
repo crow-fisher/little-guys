@@ -1,5 +1,9 @@
 import {BaseOrganism} from "./BaseOrganism.js"
-
+import { PlantSeedLifeSquare } from "../lifeSquares/PlantSeedLifeSquare.js";
+import { PlantOrganism } from "./PlantOrganism.js";
+import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
+import { getSquares } from "../squares/_sqOperations.js";
+import { addOrganism } from "./_orgOperations.js";
 class PlantSeedOrganism extends BaseOrganism {
     constructor(posX, posY) {
         super(posX, posY);

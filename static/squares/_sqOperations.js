@@ -1,7 +1,8 @@
 import { getObjectArrFromMap } from "../common.js";
-import { ALL_SQUARES, stats } from "../globals.js";
+import { ALL_SQUARES, ALL_ORGANISM_SQUARES, stats } from "../globals.js";
 import { removeSquareAndChildren } from "../globalOperations.js";
 import { getOrganismSquaresAtSquare } from "../lifeSquares/_lsOperations.js";
+import { removeItemAll } from "../common.js";
 
 var abs = Math.abs;
 
@@ -104,4 +105,4 @@ function removeSquarePos(x, y) {
 
 
 
-export {getNeighbors, getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares};
+export {getNeighbors, getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares, removeOrganismSquare, removeSquarePos};
