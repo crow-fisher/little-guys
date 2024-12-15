@@ -3,6 +3,8 @@ import { ALL_SQUARES, stats } from "../globals.js";
 import { removeSquareAndChildren } from "../globalOperations.js";
 import { getOrganismSquaresAtSquare } from "../lifeSquares/_lsOperations.js";
 
+var abs = Math.abs;
+
 function getNeighbors(x, y) {
     var out = [];
     for (var i = -1; i < 2; i++) {

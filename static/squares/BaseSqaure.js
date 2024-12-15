@@ -49,6 +49,9 @@ import { getObjectArrFromMap } from "../common.js";
 import { addOrganism } from "../organisms/_orgOperations.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 
+import {purge, reset, render, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquareAndChildren} from "../globalOperations.js"
+
+
 export class BaseSquare {
     constructor(posX, posY) {
         this.proto = "BaseSquare";
