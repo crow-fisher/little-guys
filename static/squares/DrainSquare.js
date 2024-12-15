@@ -1,3 +1,6 @@
+import { BaseSquare } from "./BaseSqaure.js";
+
+
 class DrainSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);

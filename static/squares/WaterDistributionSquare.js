@@ -1,3 +1,5 @@
+import { BaseSquare } from "./BaseSqaure.js";
+
 class WaterDistributionSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);

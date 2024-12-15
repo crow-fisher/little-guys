@@ -54,7 +54,7 @@ class BaseOrganism {
     destroy() {
         this.associatedSquares.forEach((asq) => {
             if (asq.linkedSquare != null) {
-                removeSquare(asq.linkedSquare);
+                removeSquareAndChildren(asq.linkedSquare);
             }
             removeOrganismSquare(asq)
         });
@@ -72,3 +72,5 @@ class BaseOrganism {
 
     postTick() { }
 }
+
+export {BaseOrganism}

@@ -1,3 +1,5 @@
+import { BaseSquare } from "./BaseSqaure.js";
+import { StaticSquare } from "./StaticSquare.js";
 
 class RainSquare extends StaticSquare {
     constructor(posX, posY) {

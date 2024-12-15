@@ -1,3 +1,12 @@
+var ALL_SQUARES = new Map();
+var ALL_ORGANISMS = new Map();
+var ALL_ORGANISM_SQUARES = new Map();
+var stats = new Map();
+var NUM_GROUPS = 0; 
+var WATERFLOW_TARGET_SQUARES = new Map();
+var WATERFLOW_CANDIDATE_SQUARES = new Set();
+
+
 
 function getNextGroupId() {
     NUM_GROUPS += 1;
@@ -20,4 +29,7 @@ function getGlobalStatistic(name) {
 }
 
 
-export {getNextGroupId, updateGlobalStatistic, getGlobalStatistic}
+export {
+    ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES,
+    getNextGroupId, updateGlobalStatistic, getGlobalStatistic
+}

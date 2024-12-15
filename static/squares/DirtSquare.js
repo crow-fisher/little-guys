@@ -1,3 +1,5 @@
+import { BaseSquare } from "./BaseSqaure.js";
+import { d_sq_nutrientValue } from "../config/config.js";
 class DirtSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);

@@ -31,6 +31,24 @@ import {
     p_seed_ls_darkeningStrength
     } from "../config/config.js"
 
+import {getNeighbors, getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares} from "./_sqOperations.js"
+import {
+    ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES,
+    getNextGroupId, updateGlobalStatistic, getGlobalStatistic
+} from "../globals.js";
+
+import  {MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE} from "../index.js";
+
+import { hexToRgb, rgbToHex } from "../common.js";
+
+import { getCountOfOrganismsSquaresOfTypeAtPosition } from "../lifeSquares/_lsOperations.js";
+import { getOrganismSquaresAtSquare } from "../lifeSquares/_lsOperations.js";
+import { getOrganismsAtSquare } from "../organisms/_orgOperations.js";
+import { removeItemAll } from "../common.js";
+import { getObjectArrFromMap } from "../common.js";
+import { addOrganism } from "../organisms/_orgOperations.js";
+import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
+
 export class BaseSquare {
     constructor(posX, posY) {
         this.proto = "BaseSquare";
@@ -57,7 +75,7 @@ export class BaseSquare {
     };
     reset() {
         if (this.blockHealth <= 0) {
-            removeSquare(this);
+            removeSquareAndChildren(this);
         }
         this.group = -1;
         this.speedY += 1;
@@ -105,7 +123,7 @@ export class BaseSquare {
             return;
         }
         if (newPosX < 0 || newPosX >= CANVAS_SQUARES_X || newPosY < 0 || newPosY >= CANVAS_SQUARES_Y) {
-            removeSquare(this);
+            removeSquareAndChildren(this);
             return;
         }
         newPosX = Math.floor(newPosX);

@@ -1,3 +1,6 @@
+import { getObjectArrFromMap } from "../common.js";
+import { ALL_ORGANISM_SQUARES } from "../globals.js";
+
 function addOrganismSquare(organismSqaure) {
     var validSquareArr = Array.from(getSquares(organismSqaure.posX, organismSqaure.posY).filter((sq) => sq.organic || sq.rootable));
     if (validSquareArr.length == 0) {

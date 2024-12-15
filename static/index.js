@@ -1,42 +1,21 @@
 import { BaseSquare } from "./squares/BaseSqaure.js";
-import {
-    global_plantToRealWaterConversionFactor,
-    b_sq_waterContainmentMax,
-    b_sq_nutrientValue,
-    static_sq_waterContainmentMax,
-    static_sq_waterContainmentTransferRate,
-    drain_sq_waterContainmentMax,
-    drain_sq_waterTransferRate,
-    wds_sq_waterContainmentMax,
-    wds_sq_waterContainmentTransferRate,
-    b_sq_waterContainmentTransferRate,
-    b_sq_waterContainmentEvaporationRate,
-    b_sq_darkeningStrength,
-    d_sq_nutrientValue,
-    rain_dropChance,
-    heavyrain_dropChance,
-    rain_dropHealth,
-    water_evaporationRate,
-    water_viscocity,
-    water_darkeningStrength,
-    po_airSuckFrac,
-    po_waterSuckFrac,
-    po_rootSuckFrac,
-    po_perFrameCostFracPerSquare,
-    po_greenSquareSizeExponentCost,
-    po_rootSquareSizeExponentCost,
-    p_ls_airNutrientsPerExposedNeighborTick,
-    p_seed_ls_sproutGrowthRate,
-    p_seed_ls_neighborWaterContainmentRequiredToGrow,
-    p_seed_ls_neighborWaterContainmentRequiredToDecay,
-    p_seed_ls_darkeningStrength
-    } from "./config/config.js"
 
-import { addSquareOverride, getDirectNeighbors, getNeighbors } from "./squares/_sqOperations.js";
-import { Law } from "./Law.js";
 
-var MAIN_CANVAS = document.getElementById("main");
-var MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
+import {getNeighbors, getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares} from "./squares/_sqOperations.js";
+
+import {purge, reset, render, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow} from "./globalOperations.js"
+
+import { StaticSquare } from "./squares/StaticSquare.js"
+import { DirtSquare } from "./squares/DirtSquare.js";
+import { WaterSquare } from "./squares/WaterSquare.js";
+import { RainSquare } from "./squares/RainSquare.js";
+import { HeavyRainSquare } from "./squares/RainSquare.js";
+import { AquiferSquare } from "./squares/RainSquare.js";
+import { WaterDistributionSquare } from "./squares/WaterDistributionSquare.js";
+import { DrainSquare } from "./squares/DrainSquare.js";
+import { SeedSquare } from "./squares/SeedSquare.js";
+import { PlantSeedOrganism } from "./organisms/PlantSeedOrganism.js";
+
 var materialSelect = document.getElementById("materialSelect");
 var fastTerrain = document.getElementById("fastTerrain");
 var loadSlotA = document.getElementById("loadSlotA");
@@ -48,12 +27,23 @@ var selectedMaterial = "dirt";
 
 materialSelect.addEventListener('change', (e) => selectedMaterial = e.target.value);
 timeScale.addEventListener('change', (e) => TIME_SCALE = e.target.value);
-MAIN_CANVAS.addEventListener('mousemove', handleClick, false);
 
 var mouseDown = 0;
 var organismAddedThisClick = false;
 var lastClickEvent = null;
 var lastTick = Date.now();
+
+var CANVAS_SQUARES_X = 120; // * 8; //6;
+var CANVAS_SQUARES_Y = 80; // * 8; // 8;
+
+var MAIN_CANVAS = document.getElementById("main");
+var MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
+const BASE_SIZE = 8;
+MAIN_CANVAS.width = CANVAS_SQUARES_X * BASE_SIZE;
+MAIN_CANVAS.height = CANVAS_SQUARES_Y * BASE_SIZE;
+
+MAIN_CANVAS.addEventListener('mousemove', handleClick, false);
+
 
 document.body.onmousedown = function () {
     mouseDown = 1;
@@ -66,26 +56,13 @@ document.body.onmouseup = function () {
 // each square is 16x16
 // 'little guys' may aquire multiple squares
 var TIME_SCALE = 1;
-const BASE_SIZE = 8;
 var MILLIS_PER_TICK = 1;
-var CANVAS_SQUARES_X = 120; // * 8; //6;
-var CANVAS_SQUARES_Y = 80; // * 8; // 8;
+
 var ERASE_RADIUS = 2;
 var lastLastClickEvent = null;
 var curEntitySpawnedId = 0;
 
-MAIN_CANVAS.width = CANVAS_SQUARES_X * BASE_SIZE;
-MAIN_CANVAS.height = CANVAS_SQUARES_Y * BASE_SIZE;
 
-var stats = new Map();
-var statsLastUpdatedTime = 0;
-var NUM_GROUPS = 0;
-var ALL_SQUARES = new Map();
-var ALL_ORGANISMS = new Map();
-var ALL_ORGANISM_SQUARES = new Map();
-
-var WATERFLOW_TARGET_SQUARES = new Map();
-var WATERFLOW_CANDIDATE_SQUARES = new Set();
 
 var rightMouseClicked = false;
 
@@ -220,36 +197,6 @@ document.addEventListener('contextmenu', function (e) {
     e.preventDefault();
 });
 
-
-
-function doWaterFlow() {
-    for (let curWaterflowPressure = 0; curWaterflowPressure < getGlobalStatistic("pressure"); curWaterflowPressure++) {
-        if (WATERFLOW_CANDIDATE_SQUARES.size > 0) {
-            // we need to do some water-mcflowin!
-            var candidate_squares_as_list = Array.from(WATERFLOW_CANDIDATE_SQUARES);
-            var target_squares = WATERFLOW_TARGET_SQUARES[curWaterflowPressure];
-            if (target_squares == null) {
-                continue;
-            }
-
-            for (let j = 0; j < Math.max(candidate_squares_as_list.length, target_squares.length); j++) {
-                var candidate = candidate_squares_as_list[j % candidate_squares_as_list.length];
-                var target = target_squares[j % target_squares.length];
-                if (candidate.group == target[2]) {
-                    if (Math.random() > ((1 - candidate.viscocity.value) ** (curWaterflowPressure + 1))) {
-                        var dx = target[0] - candidate.posX;
-                        var dy = target[1] - candidate.posY;
-                        if (Math.abs(dy) == 0 && Math.abs(dx) < 5) {
-                            continue;
-                        }
-                        candidate.updatePosition(target[0], target[1]);
-                    }
-                }
-            }
-        }
-    }
-}
-
 function main() {
     if (Date.now() - lastTick > MILLIS_PER_TICK) {
         MAIN_CONTEXT.clearRect(0, 0, CANVAS_SQUARES_X * BASE_SIZE, CANVAS_SQUARES_Y * BASE_SIZE);
@@ -267,7 +214,6 @@ function main() {
 
     setTimeout(main, 5);
 }
-
 
 
 function handleClick(event) {
@@ -375,3 +321,5 @@ window.oncontextmenu = function () {
     return false;     // cancel default menu
 }
 main()
+
+export {MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE}

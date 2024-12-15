@@ -1,3 +1,4 @@
+import { BaseSquare } from "./BaseSqaure.js";
 
 class SeedSquare extends BaseSquare {
     constructor(posX, posY) {
@@ -23,7 +24,7 @@ class SeedSquare extends BaseSquare {
                         getObjectArrFromMap(ALL_ORGANISMS, org.posX, org.posY).push(org);
                     });
                 }
-                removeSquare(this);
+                removeSquareAndChildren(this);
             })
     }
 }

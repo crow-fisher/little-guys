@@ -1,3 +1,6 @@
+import { ALL_ORGANISMS } from "../globals.js";
+import { getObjectArrFromMap } from "../common.js";
+
 function addOrganism(organism) {
     if (Array.from(getCollidableSquareAtLocation(organism.posX, organism.posY)).length == 0) {
         console.warn("Invalid organism placement; no collidable squares to bind to.")

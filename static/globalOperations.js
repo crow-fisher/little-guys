@@ -1,3 +1,15 @@
+import { iterateOnSquares } from "./squares/_sqOperations.js";
+import { iterateOnOrganisms } from "./organisms/_orgOperations.js";
+import {
+    ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES,
+    getNextGroupId, updateGlobalStatistic, getGlobalStatistic
+} from "./globals.js";
+
+import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js";
+import { getObjectArrFromMap } from "./common.js";
+import { getOrganismSquaresAtSquare } from "./lifeSquares/_lsOperations.js";
+import { removeItemAll } from "./common.js";
+
 function purge() {
     iterateOnSquares((sq) => {
         var ret = true;
@@ -33,8 +45,8 @@ function purge() {
 function reset() {
     iterateOnSquares((sq) => sq.reset(), 0);
     stats["pressure"] = 0;
-    WATERFLOW_TARGET_SQUARES = new Map();
-    WATERFLOW_CANDIDATE_SQUARES = new Set();
+    WATERFLOW_TARGET_SQUARES.clear()
+    WATERFLOW_CANDIDATE_SQUARES.clear()
 }
 
 function render() {
@@ -65,4 +77,33 @@ function removeSquareAndChildren(square) {
     removeItemAll(getObjectArrFromMap(ALL_SQUARES, square.posX, square.posY), square);
 }
 
-export {purge, reset, render, physics, physicsBefore, processOrganisms, renderOrganisms}
+
+function doWaterFlow() {
+    for (let curWaterflowPressure = 0; curWaterflowPressure < getGlobalStatistic("pressure"); curWaterflowPressure++) {
+        if (WATERFLOW_CANDIDATE_SQUARES.size > 0) {
+            // we need to do some water-mcflowin!
+            var candidate_squares_as_list = Array.from(WATERFLOW_CANDIDATE_SQUARES);
+            var target_squares = WATERFLOW_TARGET_SQUARES[curWaterflowPressure];
+            if (target_squares == null) {
+                continue;
+            }
+
+            for (let j = 0; j < Math.max(candidate_squares_as_list.length, target_squares.length); j++) {
+                var candidate = candidate_squares_as_list[j % candidate_squares_as_list.length];
+                var target = target_squares[j % target_squares.length];
+                if (candidate.group == target[2]) {
+                    if (Math.random() > ((1 - candidate.viscocity.value) ** (curWaterflowPressure + 1))) {
+                        var dx = target[0] - candidate.posX;
+                        var dy = target[1] - candidate.posY;
+                        if (Math.abs(dy) == 0 && Math.abs(dx) < 5) {
+                            continue;
+                        }
+                        candidate.updatePosition(target[0], target[1]);
+                    }
+                }
+            }
+        }
+    }
+}
+
+export {purge, reset, render, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquareAndChildren}

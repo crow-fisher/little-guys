@@ -1,4 +1,7 @@
-import { getSquares, removeSquare } from "..";
+import { getObjectArrFromMap } from "../common.js";
+import { ALL_SQUARES, stats } from "../globals.js";
+import { removeSquareAndChildren } from "../globalOperations.js";
+import { getOrganismSquaresAtSquare } from "../lifeSquares/_lsOperations.js";
 
 function getNeighbors(x, y) {
     var out = [];
@@ -54,7 +57,7 @@ function addSquareOverride(square) {
         return;
     }
     if (square.collision) {
-        existingStaticSquareArr = existingSquares.filter((sq) => sq.collision).forEach((sq) => removeSquare(sq));
+        existingSquares.filter((sq) => sq.collision).forEach((sq) => removeSquareAndChildren(sq));
     }
     addSquare(square);
 }
@@ -93,17 +96,9 @@ function removeOrganismSquare(organismSquare) {
 function removeSquarePos(x, y) {
     x = Math.floor(x);
     y = Math.floor(y);
-    getSquares(x, y).forEach(removeSquare);
+    getSquares(x, y).forEach(removeSquareAndChildren);
 }
 
-function removeSquare(square) {
-    if (square.collision) {
-        getObjectArrFromMap(ALL_ORGANISMS, square.posX, square.posY).forEach((org) => org.destroy());
-        getOrganismSquaresAtSquare(square.posX, square.posY)
-            .forEach((orgSq) => removeItemAll(getObjectArrFromMap(ALL_ORGANISM_SQUARES, square.posX, square.posY), orgSq));
-    }
-    removeItemAll(getObjectArrFromMap(ALL_SQUARES, square.posX, square.posY), square);
-}
 
 
 

@@ -1,3 +1,5 @@
+import {BaseOrganism} from "./BaseOrganism.js"
+
 class PlantSeedOrganism extends BaseOrganism {
     constructor(posX, posY) {
         super(posX, posY);
@@ -25,3 +27,5 @@ class PlantSeedOrganism extends BaseOrganism {
         }
     }
 }
+
+export {PlantSeedOrganism} 

@@ -1,3 +1,5 @@
+import { BaseSquare } from "./BaseSqaure.js";
+
 class WaterSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
@@ -126,7 +128,7 @@ class WaterSquare extends BaseSquare {
                 getOrganismSquaresAtSquare(sq.posX, sq.posY).forEach(
                     (osq) => osq.waterNutrients += this.blockHealth
                 );
-                removeSquare(this);
+                removeSquareAndChildren(this);
                 return;
             }
             if (sq.collision == false) {
@@ -139,7 +141,7 @@ class WaterSquare extends BaseSquare {
                     var diff = 1 - this.blockHealth;
                     if (diff > sq.blockHealth) {
                         this.blockHealth += sq.blockHealth;
-                        removeSquare(sq);
+                        removeSquareAndChildren(sq);
                     } else {
                         this.blockHealth += diff;
                         sq.blockHealth -= diff;

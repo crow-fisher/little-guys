@@ -1,3 +1,5 @@
+import {BaseOrganism} from "./BaseOrganism.js"
+
 class PlantOrganism extends BaseOrganism {
     constructor(posX, posY) {
         super(posX, posY);
@@ -26,7 +28,7 @@ class PlantOrganism extends BaseOrganism {
             if (addOrganism(newOrg)) {
                 return seedSquare;
             } else {
-                removeSquare(seedSquare);
+                removeSquareAndChildren(seedSquare);
                 console.log("Failed to add organism to seed square");
                 return null;
             }
@@ -44,7 +46,7 @@ class PlantOrganism extends BaseOrganism {
         if (topSquare != null && topSquare.proto == "WaterSquare") {
             var topTop = getCollidableSquareAtLocation(this.posX, this.posY - 2);
             if (topTop == null) {
-                removeSquare(topSquare); // fuck them kids!!!!
+                removeSquareAndChildren(topSquare); // fuck them kids!!!!
             } else {
                 return;
             }
@@ -73,7 +75,7 @@ class PlantOrganism extends BaseOrganism {
             return ret;
         } else {
             if (newPlantSquare != null) {
-                removeSquare(newPlantSquare);
+                removeSquareAndChildren(newPlantSquare);
             }
             ret.forEach(removeOrganismSquare);
         }
