@@ -268,6 +268,41 @@ saveSlotA.onclick = (e) => saveSlot("A");
 loadSlotB.onclick = (e) => loadSlot("B");
 saveSlotB.onclick = (e) => saveSlot("B");
 
+function loadObjArr(sourceObjMap, addFunc) {
+    var rootKeys = Object.keys(sourceObjMap);
+    for (let i = 0; i < rootKeys.length; i++) {
+        var subObj = sourceObjMap[rootKeys[i]];
+        if (subObj != null) {
+            var subKeys = Object.keys(subObj);
+            for (let j = 0; j < subKeys.length; j++) {
+                sourceObjMap[rootKeys[i]][subKeys[j]].forEach((obj) => addFunc(Object.setPrototypeOf(obj, ProtoMap[obj.proto])));
+            }
+        }
+    }
+}
+
+// function loadOrganismsFromOrgMap(sourceOrgMap) {
+//     var rootKeys = Object.keys(sourceOrgMap);
+//     for (let i = 0; i < rootKeys.length; i++) {
+//         var subObj = sourceOrgMap[rootKeys[i]];
+//         if (subObj != null) {
+//             var subKeys = Object.keys(subObj);
+//             for (let j = 0; j < subKeys.length; j++) {
+//                 sourceObjMap[rootKeys[i]][subKeys[j]].forEach((org) => {
+//                     var orgAsOrganism = Object.setPrototypeOf(org, ProtoMap[org.proto]);
+//                     for (let i = 0; i < orgAsOrganism.associatedSquares.length; i++) {
+//                         var sq = orgAsOrganism.associatedSquares[i];
+//                         sq = Object.setPrototypeOf(sq, ProtoMap[org.proto]);
+//                         if (sq.linkedSquare != null) {
+
+//                         }
+//                     }
+//             }
+//         }
+//     }
+// }
+
+
 function loadSlot(slotName) {
     var sqLoad = localStorage.getItem("ALL_SQUARES_" + slotName);
     if (sqLoad == null) {
@@ -287,14 +322,16 @@ function loadSlot(slotName) {
     ALL_ORGANISMS = new Array();
     ALL_ORGANISM_SQUARES = new Map();
 
-    var rootKeys = Object.keys(loaded_ALL_SQUARES);
-    for (let i = 0; i < rootKeys.length; i++) {
-        var subKeys = Object.keys(loaded_ALL_SQUARES[rootKeys[i]]);
-        for (let j = 0; j < subKeys.length; j++) {
-            var sqArr = loaded_ALL_SQUARES[rootKeys[i]][subKeys[j]];
-            sqArr.forEach((sq) => addSquare(Object.setPrototypeOf(sq, ProtoMap[sq.proto])));
-        }
-    }
+    loadObjArr(loaded_ALL_SQUARES, addSquare)
+
+    // var rootKeys = Object.keys(loaded_ALL_SQUARES);
+    // for (let i = 0; i < rootKeys.length; i++) {
+    //     var subKeys = Object.keys(loaded_ALL_SQUARES[rootKeys[i]]);
+    //     for (let j = 0; j < subKeys.length; j++) {
+    //         loaded_ALL_SQUARES[rootKeys[i]][subKeys[j]].forEach((sq) => addSquare(Object.setPrototypeOf(sq, ProtoMap[sq.proto])));
+    //     }
+    // }
+
 
     // rootKeys = Object.keys(loaded_ALL_ORGANISM_SQUARES);
     // for (let i = 0; i < rootKeys.length; i++) {
