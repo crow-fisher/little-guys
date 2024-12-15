@@ -2,7 +2,7 @@ import { iterateOnSquares } from "./squares/_sqOperations.js";
 import { iterateOnOrganisms } from "./organisms/_orgOperations.js";
 import {
     ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES,
-    getNextGroupId, updateGlobalStatistic, getGlobalStatistic
+    getNextGroupId, updateGlobalStatistic, getGlobalStatistic, resetWaterflowSquares
 } from "./globals.js";
 
 import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js";
@@ -48,8 +48,7 @@ function purge() {
 function reset() {
     iterateOnSquares((sq) => sq.reset(), 0);
     stats["pressure"] = 0;
-    WATERFLOW_TARGET_SQUARES.clear()
-    WATERFLOW_CANDIDATE_SQUARES.clear()
+    resetWaterflowSquares();
 }
 
 function render() {

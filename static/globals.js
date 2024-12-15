@@ -37,9 +37,12 @@ function getGlobalStatistic(name) {
     return stats[name];
 }
 
-
+function resetWaterflowSquares() {
+    WATERFLOW_TARGET_SQUARES = new Map();
+    WATERFLOW_CANDIDATE_SQUARES = new Set();
+}
 export {
     ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES, curEntitySpawnedId,
     getNextGroupId, updateGlobalStatistic, getGlobalStatistic,
-    getNextEntitySpawnId, getCurEntitySpawnId
+    getNextEntitySpawnId, getCurEntitySpawnId, resetWaterflowSquares
 }

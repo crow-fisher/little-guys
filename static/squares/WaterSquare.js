@@ -6,13 +6,15 @@ import {
 
 import {getNeighbors, getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares} from "./_sqOperations.js";
 import {
-    ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES,
+    ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats,
     getNextGroupId, updateGlobalStatistic, getGlobalStatistic
 } from "../globals.js";
 
 import { getObjectArrFromMap, removeItemAll, hexToRgb, rgbToHex, randNumber} from "../common.js";
 import {purge, reset, render, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquareAndChildren} from "../globalOperations.js"
 import { getOrganismSquaresAtSquare } from "../lifeSquares/_lsOperations.js";
+
+import { WATERFLOW_CANDIDATE_SQUARES, WATERFLOW_TARGET_SQUARES } from "../globals.js";
 
 class WaterSquare extends BaseSquare {  
     constructor(posX, posY) {
