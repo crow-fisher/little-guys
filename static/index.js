@@ -44,7 +44,7 @@ var CANVAS_SQUARES_Y = 80; // * 8; // 8;
 
 var MAIN_CANVAS = document.getElementById("main");
 var MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
-const BASE_SIZE = 8;
+const BASE_SIZE = 16;
 MAIN_CANVAS.width = CANVAS_SQUARES_X * BASE_SIZE;
 MAIN_CANVAS.height = CANVAS_SQUARES_Y * BASE_SIZE;
 
