@@ -22,7 +22,7 @@ import { getOrganismSquaresAtSquare } from "../lifeSquares/_lsOperations.js";
 import { getOrganismsAtSquare } from "../organisms/_orgOperations.js";
 import { removeItemAll } from "../common.js";
 import { getObjectArrFromMap } from "../common.js";
-import { addOrganism } from "../organisms/_orgOperations.js";
+import { addOrganism, addNewOrganism } from "../organisms/_orgOperations.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 
 import { purge, reset, render, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquareAndChildren } from "../globalOperations.js"
@@ -114,11 +114,10 @@ export class BaseSquare {
         var error = false;
 
         getSquares(newPosX, newPosY)
-            .filter((sq) => (this.organic && sq.organic) || sq.collision)
+            .filter((sq) => this.collision && sq.collision)
             .forEach((sq) => {
                 error = true;
             });
-
         if (error) {
             console.warn("Square not moved; new occupied by a block with collision.");
             return false;
@@ -127,14 +126,18 @@ export class BaseSquare {
         var newLifeSquares = [];
         var newOrganisms = [];
 
-        getOrganismSquaresAtSquare(this.posX, this.posY).forEach((sq) => {
-            removeOrganismSquare(sq);
-            sq.posX = newPosX;
-            sq.posY = newPosY;
-            newLifeSquares.push(sq);
+        getOrganismSquaresAtSquare(this.posX, this.posY)
+            .filter((osq) => !this.organic || osq.spawnedEntityId == this.spawnedEntityId)
+            .forEach((osq) => {
+            removeOrganismSquare(osq);
+            osq.posX = newPosX;
+            osq.posY = newPosY;
+            newLifeSquares.push(osq);
         });
 
-        getOrganismsAtSquare(this.posX, this.posY).forEach((org) => {
+        getOrganismsAtSquare(this.posX, this.posY)
+        .filter((org) => !this.organic || org.spawnedEntityId == this.spawnedEntityId)
+        .forEach((org) => {
             removeOrganism(org);
             org.posX = newPosX;
             org.posY = newPosY;
@@ -200,7 +203,10 @@ export class BaseSquare {
                 var jSigned = (this.speedX > 0) ? j : -j;
                 var jSignedMinusOne = (this.speedX == 0 ? 0 : (this.speedX > 0) ? (j - 1) : -(j - 1));
                 getSquares(this.posX + jSigned, this.posY + i)
-                    .filter((sq) => (this.organic && sq.organic) || sq.collision)
+                    .filter((sq) => (sq.collision || (
+                        (this.organic && sq.organic) &&
+                        this.spawnedEntityId == sq.spawnedEntityId
+                    )))
                     .forEach((fn) => {
                         finalYPos = this.posY + (i - 1);
                         finalXPos = this.posX + jSignedMinusOne;

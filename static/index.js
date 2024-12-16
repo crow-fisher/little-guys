@@ -15,9 +15,9 @@ import { WaterDistributionSquare } from "./squares/WaterDistributionSquare.js";
 import { DrainSquare } from "./squares/DrainSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
 import { PlantSeedOrganism } from "./organisms/PlantSeedOrganism.js";
-import { addOrganism } from "./organisms/_orgOperations.js";
+import { addNewOrganism, addOrganism } from "./organisms/_orgOperations.js";
 
-import { ALL_ORGANISMS, ALL_ORGANISM_SQUARES, ALL_SQUARES } from "./globals.js";
+import { ALL_ORGANISMS, ALL_ORGANISM_SQUARES, ALL_SQUARES, getNextEntitySpawnId } from "./globals.js";
 
 import { doErase } from "./manipulation.js";
 import { ProtoMap } from "./types.js";
@@ -130,42 +130,6 @@ function loadSlot(slotName) {
     ALL_ORGANISM_SQUARES.clear();
 
     loadObjArr(loaded_ALL_SQUARES, addSquare)
-
-    // var rootKeys = Object.keys(loaded_ALL_SQUARES);
-    // for (let i = 0; i < rootKeys.length; i++) {
-    //     var subKeys = Object.keys(loaded_ALL_SQUARES[rootKeys[i]]);
-    //     for (let j = 0; j < subKeys.length; j++) {
-    //         loaded_ALL_SQUARES[rootKeys[i]][subKeys[j]].forEach((sq) => addSquare(Object.setPrototypeOf(sq, ProtoMap[sq.proto])));
-    //     }
-    // }
-
-
-    // rootKeys = Object.keys(loaded_ALL_ORGANISM_SQUARES);
-    // for (let i = 0; i < rootKeys.length; i++) {
-    //     var subKeys = Object.keys(loaded_ALL_ORGANISM_SQUARES[rootKeys[i]]);
-    //     for (let j = 0; j < subKeys.length; j++) {
-    //         var squares = loaded_ALL_ORGANISM_SQUARES[rootKeys[i]][subKeys[j]];
-    //         for (let k = 0; k < squares.length; k++) {
-    //             var sq = squares[k];
-    //             if (sq != null) {
-    //                 addOrganismSquare(Object.setPrototypeOf(sq, ProtoMap[sq.proto]));
-    //             }
-    //         }
-    //     }
-    // }
-
-    // for (let i = 0; i < loaded_ALL_ORGANISMS.length; i++) {
-    //     var org = loaded_ALL_ORGANISMS[i];
-    //     Object.setPrototypeOf(org, ProtoMap[org.proto]);
-    //     var orgAssociatedSquares = new Array();
-    //     Object.setPrototypeOf(org.law, Law.prototype);
-    //     org.associatedSquares.forEach(
-    //         (orgSq) => orgAssociatedSquares.push(
-    //             getOrganismSquaresAtSquareOfProto(orgSq.posX, orgSq.posY, orgSq.proto)
-    //         ));
-    //     org.associatedSquares = Array.from(orgAssociatedSquares.filter((x) => x != null));
-    //     addOrganism(org);
-    // }
 }
 
 function saveSlot(slotName) {
@@ -293,11 +257,15 @@ function doClickAdd() {
                                 break;
                             }
                             var sq = addSquare(new SeedSquare(px, curY));
-                            if (sq != null) {
+                            if (sq) {
                                 var newOrg = new PlantSeedOrganism(px, curY);
                                 newOrg.linkedSquare = sq;
-                                organismAddedThisClick = true;
-                                addOrganism(newOrg);
+                                if (newOrg) {
+                                    organismAddedThisClick = true;
+                                    addNewOrganism(newOrg);
+                                } else {
+                                    removeSquare(sq);
+                                }
                             }
                             break;
                     }

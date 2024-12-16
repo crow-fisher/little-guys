@@ -72,8 +72,12 @@ function renderOrganisms() {
 
 function removeSquareAndChildren(square) {
     if (square.collision) {
-        getObjectArrFromMap(ALL_ORGANISMS, square.posX, square.posY).forEach((org) => org.destroy());
+        getObjectArrFromMap(ALL_ORGANISMS, square.posX, square.posY)
+            .filter((org) => (!square.organic || org.spawnedEntityId == square.spawnedEntityId))
+            .forEach((org) => org.destroy());
+
         getOrganismSquaresAtSquare(square.posX, square.posY)
+            .filter((orgSq) => (!square.organic || orgSq.spawnedEntityId == square.spawnedEntityId))
             .forEach((orgSq) => removeItemAll(getObjectArrFromMap(ALL_ORGANISM_SQUARES, square.posX, square.posY), orgSq));
     }
     removeItemAll(getObjectArrFromMap(ALL_SQUARES, square.posX, square.posY), square);

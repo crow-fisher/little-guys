@@ -13,7 +13,7 @@ import { getDirectNeighbors } from "../squares/_sqOperations.js";
 import { addSquare } from "../squares/_sqOperations.js";
 import { getCountOfOrganismsSquaresOfProtoAtPosition, getCountOfOrganismsSquaresOfTypeAtPosition } from "../lifeSquares/_lsOperations.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
-import { addOrganism } from "./_orgOperations.js";
+import { addNewOrganism, addOrganism } from "./_orgOperations.js";
 import { getOrganismSquaresAtSquare } from "../lifeSquares/_lsOperations.js";
 import { getOrganismSquaresAtSquareWithEntityId } from "../lifeSquares/_lsOperations.js";
 
@@ -74,7 +74,7 @@ class PlantOrganism extends BaseOrganism {
         if (addSquare(seedSquare)) {
             var newOrg = new PlantSeedOrganism(seedSquare.posX, seedSquare.posY);
             newOrg.linkedSquare = seedSquare;
-            if (addOrganism(newOrg)) {
+            if (addNewOrganism(newOrg)) {
                 return seedSquare;
             } else {
                 removeSquareAndChildren(seedSquare);

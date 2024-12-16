@@ -3,9 +3,10 @@ import { getObjectArrFromMap } from "../common.js";
 import { getCollidableSquareAtLocation } from "../squares/_sqOperations.js";
 import { removeItemAll } from "../common.js";
 
-function addOrganism(organism) {
+function addNewOrganism(organism) {
     if (Array.from(getCollidableSquareAtLocation(organism.posX, organism.posY)).length == 0) {
         console.warn("Invalid organism placement; no collidable squares to bind to.")
+        organism.destroy();
         return false;
     }
 
@@ -17,6 +18,9 @@ function addOrganism(organism) {
     if (organism.associatedSquares.length > 0) {
         organism.spawnedEntityId = getNextEntitySpawnId();
         organism.associatedSquares.forEach((asq) => asq.setSpawnedEntityId(organism.spawnedEntityId));
+        if (organism.linkedSquare != null) {
+            organism.linkedSquare.spawnedEntityId = organism.spawnedEntityId;
+        }
         getObjectArrFromMap(ALL_ORGANISMS, organism.posX, organism.posY).push(organism);
         return organism;
     } else {
@@ -24,6 +28,11 @@ function addOrganism(organism) {
         organism.destroy();
         return false;
     }
+}
+
+function addOrganism(organism) {
+    getObjectArrFromMap(ALL_ORGANISMS, organism.posX, organism.posY).push(organism);
+    return organism;
 }
 
 function getOrganismsAtSquare(posX, posY) {
@@ -49,4 +58,4 @@ function removeOrganism(organism) {
     removeItemAll(getObjectArrFromMap(ALL_ORGANISMS, posX, posY), organism);
 }
 
-export {addOrganism, getOrganismsAtSquare, iterateOnOrganisms, removeOrganism}
+export {addNewOrganism, addOrganism, getOrganismsAtSquare, iterateOnOrganisms, removeOrganism}

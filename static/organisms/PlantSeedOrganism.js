@@ -3,7 +3,7 @@ import { PlantSeedLifeSquare } from "../lifeSquares/PlantSeedLifeSquare.js";
 import { PlantOrganism } from "./PlantOrganism.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 import { getSquares } from "../squares/_sqOperations.js";
-import { addOrganism } from "./_orgOperations.js";
+import { addNewOrganism, addOrganism } from "./_orgOperations.js";
 class PlantSeedOrganism extends BaseOrganism {
     constructor(posX, posY) {
         super(posX, posY);
@@ -27,7 +27,7 @@ class PlantSeedOrganism extends BaseOrganism {
         if (this.associatedSquares[0].sproutStatus >= 1) {
             // now we need to convert ourself into a 'plant organism'
             this.destroy();
-            addOrganism(new PlantOrganism(this.posX, this.posY));
+            addNewOrganism(new PlantOrganism(this.posX, this.posY));
         }
     }
 }
