@@ -49,6 +49,7 @@ import {
     p_seed_ls_neighborWaterContainmentRequiredToDecay,
     p_seed_ls_darkeningStrength
     } from "../config/config.js"
+import { getCurTime } from "../globals.js";
 class PlantOrganism extends BaseOrganism {
     constructor(posX, posY) {
         super(posX, posY);
@@ -61,10 +62,14 @@ class PlantOrganism extends BaseOrganism {
 
         this.throttleInterval = 1000;
 
-        this.plantLastGrown = Date.now();
-        this.waterLastGrown = Date.now();
-        this.rootLastGrown = Date.now();
+        this.plantLastGrown = getCurTime();
+        this.waterLastGrown = getCurTime;
+        this.rootLastGrown = getCurTime();
 
+        this.maximumLifeSquaresOfType = {
+            "plant": 5,
+            "root": 20
+        }
         this.growInitialSquares();
     }
 
@@ -166,7 +171,7 @@ class PlantOrganism extends BaseOrganism {
 
         // our goal is to get enough energy to hit the 'reproductionEnergy', then spurt
 
-        var lifeCyclePercentage = (Date.now() - this.spawnTime) / this.maxLifeTime;
+        var lifeCyclePercentage = (getCurTime() - this.spawnTime) / this.maxLifeTime;
         if (lifeCyclePercentage > 1) {
             this.destroy();
         }
@@ -259,8 +264,8 @@ class PlantOrganism extends BaseOrganism {
     }
 
     growNewPlant() {
-        if (Date.now() > this.plantLastGrown + this.throttleInterval) {
-            this.plantLastGrown = Date.now();
+        if (getCurTime() > this.plantLastGrown + this.throttleInterval) {
+            this.plantLastGrown = getCurTime();
             var highestPlantSquare = Array.from(this.associatedSquares.filter((sq) => sq.type == "green").sort((a, b) => a.posY - b.posY))[0];
             if (highestPlantSquare == null) {
                 // then we take highest root square;
@@ -289,8 +294,8 @@ class PlantOrganism extends BaseOrganism {
     }
 
     growWaterRoot() {
-        if (Date.now() > this.waterLastGrown + this.throttleInterval) {
-            this.waterLastGrown = Date.now();
+        if (getCurTime() > this.waterLastGrown + this.throttleInterval) {
+            this.waterLastGrown = getCurTime();
             var wettestSquare = null;
             for (let i = 0; i < this.associatedSquares.length; i++) {
                 var sq = this.associatedSquares[i];
@@ -318,8 +323,8 @@ class PlantOrganism extends BaseOrganism {
     }
 
     growDirtRoot() {
-        if (Date.now() > this.rootLastGrown + this.throttleInterval) {
-            this.rootLastGrown = Date.now();
+        if (getCurTime() > this.rootLastGrown + this.throttleInterval) {
+            this.rootLastGrown = getCurTime();
             var dirtiestSquare = null;
             var dirtiestSquareDirtResourceAvailable = 0;
 

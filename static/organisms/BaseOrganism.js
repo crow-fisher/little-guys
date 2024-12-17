@@ -3,6 +3,7 @@ import { removeOrganismSquare } from "../squares/_sqOperations.js";
 import { removeOrganism } from "./_orgOperations.js";
 import { Law } from "../Law.js";
 import { randNumber } from "../common.js";
+import { getCurTime } from "../globals.js";
 
 class BaseOrganism {
     constructor(posX, posY) {
@@ -14,7 +15,7 @@ class BaseOrganism {
         this.law = new Law();
         this.spawnedEntityId = 0;
 
-        this.spawnTime = Date.now();
+        this.spawnTime = getCurTime();
         this.currentEnergy = 0;
         this.totalEnergy = 0;
 
@@ -22,11 +23,18 @@ class BaseOrganism {
         this.maxLifeTime = 1000 * 40 * 1;
         this.reproductionEnergy = 100;
         this.reproductionEnergyUnit = 5;
+
+        this.associatedSquaresCountByType = {}
+
     }
 
     addAssociatedSquare(lifeSquare) {
         lifeSquare.spawnedEntityId = this.spawnedEntityId;
         this.associatedSquares.push(lifeSquare);
+        if (!(lifeSquare.type in this.associatedSquaresCountByType)) {
+            this.associatedSquaresCountByType[lifeSquare.type] = 0;
+        }
+        this.associatedSquaresCountByType[lifeSquare.type] += 1;
     }
 
     spawnSeed() {
