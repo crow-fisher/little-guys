@@ -1,6 +1,7 @@
 import { BaseLifeSquare } from "./BaseLifeSquare.js";
 import { getDirectNeighbors } from "../squares/_sqOperations.js";
 import { BASE_SIZE, MAIN_CANVAS, MAIN_CONTEXT } from "../index.js";
+import { loadImage } from "../common.js";
 
 import {
     p_ls_airNutrientsPerExposedNeighborTick,
@@ -13,20 +14,7 @@ class PlantLifeSquare extends BaseLifeSquare {
         this.proto = "PlantLifeSquare";
         this.colorBase = "#157F1F";
         this.type = "green";
-        this.image = loadImage("static/icons/plantSquare.png");
     }
-
-    render() {
-        var plantPattern = MAIN_CONTEXT.createPattern(this.image, 'repeat');
-        MAIN_CONTEXT.fillStyle = plantPattern;
-        MAIN_CONTEXT.fillRect(
-            this.posX * BASE_SIZE,
-            this.posY * BASE_SIZE,
-            BASE_SIZE,
-            BASE_SIZE
-        );
-    };
-
 
     tick() {
         this.airNutrients = 0;
@@ -40,10 +28,6 @@ class PlantLifeSquare extends BaseLifeSquare {
     }
 }
 
-function loadImage(url) {
-    let i = new Image();
-    i.src = url;
-    return i;
-}
+
 
 export {PlantLifeSquare}

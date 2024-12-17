@@ -5,7 +5,7 @@ import { getNeighbors, getDirectNeighbors, addSquare, addSquareOverride, getSqua
 
 import { purge, reset, render, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow } from "./globalOperations.js"
 
-import { StaticSquare } from "./squares/StaticSquare.js"
+import { RockSquare } from "./squares/RockSquare.js"
 import { DirtSquare } from "./squares/DirtSquare.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
 import { RainSquare } from "./squares/RainSquare.js";
@@ -221,8 +221,8 @@ function doClickAdd() {
                     break;
                 } else {
                     switch (selectedMaterial) {
-                        case "static":
-                            addSquareOverride(new StaticSquare(px, curY));
+                        case "rock":
+                            addSquareOverride(new RockSquare(px, curY));
                             break;
                         case "dirt":
                             addSquareOverride(new DirtSquare(px, curY));
@@ -278,12 +278,12 @@ function doClickAdd() {
 // thanks https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
 
 for (let i = 0; i < CANVAS_SQUARES_X; i++) {
-    addSquare(new StaticSquare(i, CANVAS_SQUARES_Y - 1));
+    addSquare(new RockSquare(i, CANVAS_SQUARES_Y - 1));
 }
 
 for (let i = 0; i < CANVAS_SQUARES_Y; i++) {
-    addSquare(new StaticSquare(CANVAS_SQUARES_X - 1, i));
-    addSquare(new StaticSquare(0, i));
+    addSquare(new RockSquare(CANVAS_SQUARES_X - 1, i));
+    addSquare(new RockSquare(0, i));
 }
 window.oncontextmenu = function () {
     return false;     // cancel default menu

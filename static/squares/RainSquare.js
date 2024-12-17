@@ -1,5 +1,5 @@
 import { BaseSquare } from "./BaseSqaure.js";
-import { StaticSquare } from "./StaticSquare.js";
+import { RockSquare } from "./RockSquare.js";
 import {
     global_plantToRealWaterConversionFactor,
     b_sq_waterContainmentMax,
@@ -33,10 +33,10 @@ import {
     p_seed_ls_darkeningStrength
     } from "../config/config.js"
     
-import { addSquare } from "./_sqOperations.js";
+import { addSquare, getSquares } from "./_sqOperations.js";
 import { WaterSquare } from "./WaterSquare.js";
 
-class RainSquare extends StaticSquare {
+class RainSquare extends RockSquare {
     constructor(posX, posY) {
         super(posX, posY);
         this.proto = "RainSquare";
@@ -52,7 +52,7 @@ class RainSquare extends StaticSquare {
         }
     }
 }
-class HeavyRainSquare extends StaticSquare {
+class HeavyRainSquare extends RockSquare {
     constructor(posX, posY) {
         super(posX, posY);
         this.proto = "HeavyRainSquare";
@@ -77,7 +77,9 @@ class AquiferSquare extends BaseSquare {
         this.colorBase = "#0E131F";
     }
     physics() {
-        addSquare(new WaterSquare(this.posX, this.posY + 1));
+        if (getSquares(this.posX, this.posY + 1).length == 0) {
+            addSquare(new WaterSquare(this.posX, this.posY + 1));
+        }
     }
 }
 

@@ -39,4 +39,10 @@ function randNumber(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
 }
 
-export {getObjectArrFromMap, removeItemAll, hexToRgb, rgbToHex, randNumber}
+function loadImage(url) {
+    let i = new Image();
+    i.src = url;
+    return i;
+}
+
+export {getObjectArrFromMap, removeItemAll, hexToRgb, rgbToHex, randNumber, loadImage}

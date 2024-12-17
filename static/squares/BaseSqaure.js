@@ -1,4 +1,7 @@
 import {
+    dirt_baseColorAmount,
+    dirt_darkColorAmount,
+    dirt_accentColorAmount,
     global_plantToRealWaterConversionFactor,
     b_sq_waterContainmentMax,
     b_sq_nutrientValue,
@@ -9,7 +12,7 @@ import {
 
 import { getNeighbors, getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares } from "./_sqOperations.js"
 import {
-    ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES,
+    ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES, darkeningColorCache,
     getNextGroupId, updateGlobalStatistic, getGlobalStatistic
 } from "../globals.js";
 
@@ -30,6 +33,8 @@ import { purge, reset, render, physics, physicsBefore, processOrganisms, renderO
 import { removeOrganismSquare } from "./_sqOperations.js";
 
 import { removeOrganism } from "../organisms/_orgOperations.js";
+
+
 
 export class BaseSquare {
     constructor(posX, posY) {
@@ -55,6 +60,19 @@ export class BaseSquare {
         this.organic = false;
         this.collision = true;
         this.visible = true; 
+
+        this.randoms = [];
+
+        this.renderWithColorRange = false;
+        // for ref - values from dirt
+        this.baseColor = "#9A8873";
+        this.baseColorAmount = dirt_baseColorAmount;
+        this.darkColor = "#46351D";
+        this.darkColorAmount = dirt_darkColorAmount;
+        this.accentColor = "#246A73";
+        this.accentColorAmount = dirt_accentColorAmount;
+
+
     };
     reset() {
         if (this.blockHealth <= 0) {
@@ -67,6 +85,10 @@ export class BaseSquare {
         if (!this.visible) {
             return;
         }
+        if (this.renderWithColorRange) {
+            this.renderWithVariedColors();
+            return;
+        }
         MAIN_CONTEXT.fillStyle = this.calculateColor();
         MAIN_CONTEXT.fillRect(
             this.posX * BASE_SIZE,
@@ -75,6 +97,80 @@ export class BaseSquare {
             BASE_SIZE
         );
     };
+
+    getStaticRand(randIdx) {
+        while (randIdx > this.randoms.length - 1) {
+            this.randoms.push(Math.random());
+        }
+        return this.randoms[randIdx];
+    }
+
+    renderWithVariedColors() {
+        var res = this.getStaticRand(1) * (parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value) + parseFloat(this.baseColorAmount.value)); 
+        var primaryColor = null;
+        var altColor1 = null;
+        var altColor2 = null;
+
+        if (res < parseFloat(this.accentColorAmount.value)) {
+            primaryColor = this.accentColor;
+            altColor1 = this.darkColor;
+            altColor2 = this.colorBase;
+        } else if (res < parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value)) {
+            primaryColor = this.darkColor;
+            altColor1 = this.baseColor;
+            altColor2 = this.darkColor;
+        } else {
+            altColor1 = this.darkColor;
+            altColor2 = this.darkColor;
+            primaryColor = this.baseColor;
+        }
+
+        var rand = this.getStaticRand(2);
+        var baseColorRgb = hexToRgb(primaryColor);
+        var altColor1Rgb = hexToRgb(altColor1);
+        var altColor2Rgb = hexToRgb(altColor2);
+
+        var outColor = {
+            r: baseColorRgb.r * 0.5 + ((altColor1Rgb.r * rand + altColor2Rgb.r * (1 - rand)) * 0.5),
+            g: baseColorRgb.g * 0.5 + ((altColor1Rgb.g * rand + altColor2Rgb.g * (1 - rand)) * 0.5),
+            b: baseColorRgb.b * 0.5 + ((altColor1Rgb.b * rand + altColor2Rgb.b * (1 - rand)) * 0.5)
+        }
+
+        var outHex = rgbToHex(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b));
+
+        MAIN_CONTEXT.fillStyle = outHex;
+        MAIN_CONTEXT.fillRect(
+            this.posX * BASE_SIZE,
+            this.posY * BASE_SIZE,
+            BASE_SIZE,
+            BASE_SIZE
+        );
+
+        MAIN_CONTEXT.fillStyle = this.calculateDarkeningColor(this.waterContainment, this.waterContainmentMax.value);
+        MAIN_CONTEXT.fillRect(
+            this.posX * BASE_SIZE,
+            this.posY * BASE_SIZE,
+            BASE_SIZE,
+            BASE_SIZE
+        );
+
+    }
+
+    calculateDarkeningColor(darkVal, darkValMax) {
+        if (darkVal == 0) {
+            return "rgba(67,58,63, 0)";
+        }
+        var waterColor255 = Math.floor((darkVal / darkValMax) * 255);
+        if (waterColor255 in darkeningColorCache) {
+            return darkeningColorCache[waterColor255];
+        }
+        var darkeningStrength = (darkVal / darkValMax) * b_sq_darkeningStrength.value;
+        var res = "rgba(67,58,63," + darkeningStrength +")";
+
+        darkeningColorCache[waterColor255] = res;
+
+        return res;
+    }
 
     calculateColor() {
         if (this.waterContainmentMax.value == 0) {

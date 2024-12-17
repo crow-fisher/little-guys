@@ -1,6 +1,6 @@
 import { BaseSquare } from "./squares/BaseSqaure.js";
 import { DirtSquare } from "./squares/DirtSquare.js";
-import { StaticSquare } from "./squares/StaticSquare.js";
+import { RockSquare } from "./squares/RockSquare.js";
 import { PlantSquare } from "./squares/PlantSquare.js";
 import { DrainSquare } from "./squares/DrainSquare.js";
 import { WaterDistributionSquare } from "./squares/WaterDistributionSquare.js";
@@ -22,7 +22,7 @@ import { AquiferSquare } from "./squares/RainSquare.js";
 var ProtoMap = {
     "BaseSquare": BaseSquare.prototype,
     "DirtSquare": DirtSquare.prototype,
-    "StaticSquare": StaticSquare.prototype,
+    "RockSquare": RockSquare.prototype,
     "PlantSquare": PlantSquare.prototype,
     "DrainSquare": DrainSquare.prototype,
     "WaterDistributionSquare": WaterDistributionSquare.prototype,

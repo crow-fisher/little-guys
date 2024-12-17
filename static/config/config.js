@@ -11,8 +11,8 @@ function addConfig(config) {
     newSlider.type = "range";
     newSlider.class = "slider";
     newSlider.value = config.value;
-    newSlider.min = config.value / 2;
-    newSlider.max = config.value * 2;
+    newSlider.min = config.value / 10;
+    newSlider.max = config.value * 10;
     newSlider.step = config.value / 1000;
     newSlider.id = "slider_" + config.name;
     configSliders.appendChild(newSlider);
@@ -128,7 +128,7 @@ var po_waterSuckFrac = {
 };
 var po_rootSuckFrac = {
     name: "po_rootSuckFrac",
-    value: 0.2
+    value: 0.05
 };
 var po_perFrameCostFracPerSquare = {
     name: "po_perFrameCostFracPerSquare",
@@ -167,6 +167,42 @@ var global_plantToRealWaterConversionFactor = {
     value: 20
 }
 
+var dirt_baseColorAmount = {
+    name: "dirt_baseColorAmount",
+    value: 10
+};
+
+var dirt_darkColorAmount = {
+    name: "dirt_darkColorAmount",
+    value: 370
+};
+var dirt_accentColorAmount = {
+    name: "dirt_accentColorAmount",
+    value: 5
+};
+
+var rock_baseColorAmount = {
+    name: "rock_baseColorAmount",
+    value: 10
+};
+
+var rock_darkColorAmount = {
+    name: "rock_darkColorAmount",
+    value: 370
+};
+var rock_accentColorAmount = {
+    name: "rock_accentColorAmount",
+    value: 5
+};
+
+addConfig(dirt_baseColorAmount);
+addConfig(dirt_darkColorAmount);
+addConfig(dirt_accentColorAmount);
+
+addConfig(rock_baseColorAmount);
+addConfig(rock_darkColorAmount);
+addConfig(rock_accentColorAmount);
+
 addConfig(global_plantToRealWaterConversionFactor);
 addConfig(b_sq_waterContainmentMax);
 addConfig(b_sq_nutrientValue);
@@ -203,34 +239,40 @@ setInterval(displayConfigs, 1);
 
 
 export {
-global_plantToRealWaterConversionFactor,
-b_sq_waterContainmentMax,
-b_sq_nutrientValue,
-static_sq_waterContainmentMax,
-static_sq_waterContainmentTransferRate,
-drain_sq_waterContainmentMax,
-drain_sq_waterTransferRate,
-wds_sq_waterContainmentMax,
-wds_sq_waterContainmentTransferRate,
-b_sq_waterContainmentTransferRate,
-b_sq_waterContainmentEvaporationRate,
-b_sq_darkeningStrength,
-d_sq_nutrientValue,
-rain_dropChance,
-heavyrain_dropChance,
-rain_dropHealth,
-water_evaporationRate,
-water_viscocity,
-water_darkeningStrength,
-po_airSuckFrac,
-po_waterSuckFrac,
-po_rootSuckFrac,
-po_perFrameCostFracPerSquare,
-po_greenSquareSizeExponentCost,
-po_rootSquareSizeExponentCost,
-p_ls_airNutrientsPerExposedNeighborTick,
-p_seed_ls_sproutGrowthRate,
-p_seed_ls_neighborWaterContainmentRequiredToGrow,
-p_seed_ls_neighborWaterContainmentRequiredToDecay,
-p_seed_ls_darkeningStrength
+    dirt_baseColorAmount,
+    dirt_darkColorAmount,
+    dirt_accentColorAmount,
+    rock_baseColorAmount,
+    rock_darkColorAmount,
+    rock_accentColorAmount,
+    global_plantToRealWaterConversionFactor,
+    b_sq_waterContainmentMax,
+    b_sq_nutrientValue,
+    static_sq_waterContainmentMax,
+    static_sq_waterContainmentTransferRate,
+    drain_sq_waterContainmentMax,
+    drain_sq_waterTransferRate,
+    wds_sq_waterContainmentMax,
+    wds_sq_waterContainmentTransferRate,
+    b_sq_waterContainmentTransferRate,
+    b_sq_waterContainmentEvaporationRate,
+    b_sq_darkeningStrength,
+    d_sq_nutrientValue,
+    rain_dropChance,
+    heavyrain_dropChance,
+    rain_dropHealth,
+    water_evaporationRate,
+    water_viscocity,
+    water_darkeningStrength,
+    po_airSuckFrac,
+    po_waterSuckFrac,
+    po_rootSuckFrac,
+    po_perFrameCostFracPerSquare,
+    po_greenSquareSizeExponentCost,
+    po_rootSquareSizeExponentCost,
+    p_ls_airNutrientsPerExposedNeighborTick,
+    p_seed_ls_sproutGrowthRate,
+    p_seed_ls_neighborWaterContainmentRequiredToGrow,
+    p_seed_ls_neighborWaterContainmentRequiredToDecay,
+    p_seed_ls_darkeningStrength
 }
