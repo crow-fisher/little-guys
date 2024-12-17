@@ -1,9 +1,9 @@
 import { BaseSquare } from "./squares/BaseSqaure.js";
 
 
-import {getNeighbors, getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares} from "./squares/_sqOperations.js";
+import { getNeighbors, getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares } from "./squares/_sqOperations.js";
 
-import {purge, reset, render, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow} from "./globalOperations.js"
+import { purge, reset, render, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow } from "./globalOperations.js"
 
 import { StaticSquare } from "./squares/StaticSquare.js"
 import { DirtSquare } from "./squares/DirtSquare.js";
@@ -17,7 +17,7 @@ import { SeedSquare } from "./squares/SeedSquare.js";
 import { PlantSeedOrganism } from "./organisms/PlantSeedOrganism.js";
 import { addNewOrganism, addOrganism } from "./organisms/_orgOperations.js";
 
-import { ALL_ORGANISMS, ALL_ORGANISM_SQUARES, ALL_SQUARES, getNextEntitySpawnId } from "./globals.js";
+import { updateTime, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, ALL_SQUARES, getNextEntitySpawnId } from "./globals.js";
 
 import { doErase } from "./manipulation.js";
 import { ProtoMap } from "./types.js";
@@ -50,7 +50,6 @@ MAIN_CANVAS.height = CANVAS_SQUARES_Y * BASE_SIZE;
 
 MAIN_CANVAS.addEventListener('mousemove', handleClick, false);
 
-
 document.body.onmousedown = function () {
     mouseDown = 1;
 }
@@ -65,9 +64,6 @@ var TIME_SCALE = 1;
 var MILLIS_PER_TICK = 1;
 
 var lastLastClickEvent = null;
-
-
-
 var rightMouseClicked = false;
 
 loadSlotA.onclick = (e) => loadSlot("A");
@@ -179,7 +175,7 @@ function main() {
         renderOrganisms();
         lastTick = Date.now();
     }
-
+    updateTime();
     setTimeout(main, 5);
 }
 
@@ -294,4 +290,4 @@ window.oncontextmenu = function () {
 }
 main()
 
-export {MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE}
+export { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE }

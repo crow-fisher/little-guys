@@ -43,6 +43,7 @@ class PlantSquare extends BaseSquare {
         this.waterContainmentTransferRate = static_sq_waterContainmentTransferRate;
         this.organic = true;
         this.collision = false;
+        this.visible = false;
     }
 }
 

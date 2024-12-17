@@ -54,6 +54,7 @@ export class BaseSquare {
         this.group = -1;
         this.organic = false;
         this.collision = true;
+        this.visible = true; 
     };
     reset() {
         if (this.blockHealth <= 0) {
@@ -63,6 +64,9 @@ export class BaseSquare {
         this.speedY += 1;
     }
     render() {
+        if (!this.visible) {
+            return;
+        }
         MAIN_CONTEXT.fillStyle = this.calculateColor();
         MAIN_CONTEXT.fillRect(
             this.posX * BASE_SIZE,

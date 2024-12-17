@@ -4,6 +4,8 @@ import { PlantOrganism } from "./PlantOrganism.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import { addNewOrganism, addOrganism } from "./_orgOperations.js";
+import { getCurTime } from "../globals.js";
+
 class PlantSeedOrganism extends BaseOrganism {
     constructor(posX, posY) {
         super(posX, posY);
@@ -20,7 +22,7 @@ class PlantSeedOrganism extends BaseOrganism {
     }
 
     postTick() {
-        var lifeCyclePercentage = (Date.now() - this.spawnTime) / this.maxLifeTime;
+        var lifeCyclePercentage = (getCurTime() - this.spawnTime) / this.maxLifeTime;
         if (lifeCyclePercentage > 1) {
             this.destroy();
         }

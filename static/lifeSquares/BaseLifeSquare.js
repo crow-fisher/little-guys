@@ -1,6 +1,8 @@
 import  {MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE} from "../index.js";
 import { hexToRgb, rgbToHex } from "../common.js";
 
+import { getCurTime } from "../globals.js";
+
 class BaseLifeSquare {
     constructor(posX, posY) {
         this.proto = "BaseLifeSquare";
@@ -9,7 +11,7 @@ class BaseLifeSquare {
         this.type = "base";
         this.colorBase = "#1D263B";
         this.spawnedEntityId = 0;
-        this.lastUpdateTime = Date.now();
+        this.lastUpdateTime = getCurTime()
         this.airNutrients = 0;
         this.waterNutrients = 0;
         this.rootNutrients = 0;
@@ -18,7 +20,7 @@ class BaseLifeSquare {
     }
 
     tick() {
-        this.lastUpdateTime = Date.now();
+        this.lastUpdateTime = getCurTime()
     }
 
     render() {
