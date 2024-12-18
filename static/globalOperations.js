@@ -85,18 +85,22 @@ function removeSquareAndChildren(square) {
 
 
 function doWaterFlow() {
+    var movedCandidates = new Set();
     for (let curWaterflowPressure = 0; curWaterflowPressure < getGlobalStatistic("pressure"); curWaterflowPressure++) {
         if (!(curWaterflowPressure in WATERFLOW_TARGET_SQUARES)) {
             continue;
         }
-        WATERFLOW_CANDIDATE_SQUARES.forEach((candidate) => {
+        Array.from(WATERFLOW_CANDIDATE_SQUARES).filter((candidate) => !(candidate in movedCandidates)).forEach((candidate) => {
             let curTargetSet = Array.from(WATERFLOW_TARGET_SQUARES[curWaterflowPressure]).filter((arr) => arr[2] == candidate.group);
             curTargetSet.some((target) => {
                 if (getSquares(target[0], target[1]).some((sq) => sq.proto == "WaterSquare" || sq.collision)) {
                     return false;
                 } else {
                     if (Math.random() > ((1 - candidate.viscocity.value) ** (curWaterflowPressure + 1))) {
-                        return candidate.updatePosition(target[0], target[1]);
+                        if (candidate.updatePosition(target[0], target[1])) {
+                            movedCandidates.add(candidate);
+                            return true;
+                        }
                     } return false;
                 }
             });
