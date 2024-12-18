@@ -90,9 +90,9 @@ class WaterSquare extends BaseSquare {
                     }
                     if (Array.from(getSquares(this.posX + i, this.posY + j).filter((sq) => sq.solid || sq.proto == this.proto)).length == 0) {
                         if (!(this.currentPressureIndirect in WATERFLOW_TARGET_SQUARES)) {
-                            WATERFLOW_TARGET_SQUARES[this.currentPressureIndirect] = new Array();
+                            WATERFLOW_TARGET_SQUARES[this.currentPressureIndirect] = new Set();
                         }
-                        WATERFLOW_TARGET_SQUARES[this.currentPressureIndirect].push([this.posX + i, this.posY + j, this.group]);
+                        WATERFLOW_TARGET_SQUARES[this.currentPressureIndirect].add([this.posX + i, this.posY + j, this.group]);
                     }
                 }
             }
