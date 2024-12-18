@@ -35,6 +35,7 @@ import {
     
 import { addSquare, getSquares } from "./_sqOperations.js";
 import { WaterSquare } from "./WaterSquare.js";
+import { randNumber } from "../common.js";
 
 class RainSquare extends RockSquare {
     constructor(posX, posY) {
@@ -48,6 +49,7 @@ class RainSquare extends RockSquare {
             var newSq = addSquare(new WaterSquare(this.posX, this.posY + 1));
             if (newSq) {
                 newSq.blockHealth = rain_dropHealth.value;
+                newSq.speedX = randNumber(-1, 1);
             };
         }
     }
@@ -64,6 +66,7 @@ class HeavyRainSquare extends RockSquare {
             var newSq = addSquare(new WaterSquare(this.posX, this.posY + 1));
             if (newSq) {
                 newSq.blockHealth = rain_dropHealth.value;
+                newSq.speedX = randNumber(-2, 2);
             };
         }
     }
@@ -78,7 +81,10 @@ class AquiferSquare extends BaseSquare {
     }
     physics() {
         if (getSquares(this.posX, this.posY + 1).length == 0) {
-            addSquare(new WaterSquare(this.posX, this.posY + 1));
+            var sq = addSquare(new WaterSquare(this.posX, this.posY + 1));
+            if (sq) {
+                sq.speedX = randNumber(-2, 2);
+            }
         }
     }
 }

@@ -87,8 +87,6 @@ class PlantOrganism extends BaseOrganism {
             var orgSq = addOrganismSquare(new PlantLifeSquare(this.posX, this.posY - 1));
             if (orgSq) {
                 orgSq.linkedSquare = newPlantSquare;
-                orgSq.width = this.width;
-                this.width *= 0.95;
                 ret.push(orgSq);
             }
         };
@@ -259,8 +257,6 @@ class PlantOrganism extends BaseOrganism {
                 if (orgSq) {
                     orgSq.linkedSquare = newPlantSquare;
                     orgSq.setSpawnedEntityId(this.spawnedEntityId);
-                    orgSq.width = this.width;
-                    this.width *= (1 - (Math.random() / 10));
                     this.addAssociatedSquare(orgSq);
                     return 1;
                 }
@@ -360,7 +356,6 @@ class PlantOrganism extends BaseOrganism {
         this.associatedSquares
         .filter((sq) => sq.type == "green")
         .forEach((lsq) => {
-            lsq.width = parseFloat(plant_initialWidth.value) + (parseFloat(plant_deltaWidth.value)) * (lsq.posY - this.highestGreen.posY);
             lsq.xOffset = this.xOffset;
         });
     }

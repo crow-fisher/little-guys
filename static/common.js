@@ -36,6 +36,7 @@ function rgbToHex(r, g, b) {
 }
 
 function randNumber(min, max) {
+    max += 1;
     return Math.floor(Math.random() * (max - min) + min);
 }
 

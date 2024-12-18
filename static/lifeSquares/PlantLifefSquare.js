@@ -2,6 +2,7 @@ import { BaseLifeSquare } from "./BaseLifeSquare.js";
 import { getDirectNeighbors } from "../squares/_sqOperations.js";
 import { BASE_SIZE, MAIN_CANVAS, MAIN_CONTEXT } from "../index.js";
 import { loadImage } from "../common.js";
+import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount } from "../config/config.js";
 
 import {
     p_ls_airNutrientsPerExposedNeighborTick,
@@ -14,12 +15,20 @@ class PlantLifeSquare extends BaseLifeSquare {
         this.proto = "PlantLifeSquare";
         this.colorBase = "#157F1F";
         this.type = "green";
+        this.width =.99;
+
+        this.baseColor = "#157F1F";
+        this.baseColorAmount = dirt_baseColorAmount;
+        this.darkColor = "#12664F";
+        this.darkColorAmount = dirt_darkColorAmount;
+        this.accentColor = "#BBCEA8";
+        this.accentColorAmount = dirt_accentColorAmount;
+        this.renderWithColorRange = true;
 
         // width and xOffset are scaled between 0 and 1
         // width of 0.8 means it occupies 80% of the X width 
         // xOffset of 0 means the left block side is all the way to the left
         // xOffset of 1 means the right block side is all the way to the right 
-        this.width = 0.8; // scaled between 0 and 1
     }
 
     tick() {

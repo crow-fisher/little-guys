@@ -2,6 +2,7 @@ import  {MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZ
 import { hexToRgb, rgbToHex } from "../common.js";
 
 import { getCurTime } from "../globals.js";
+import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount } from "../config/config.js";
 
 class BaseLifeSquare {
     constructor(posX, posY) {
@@ -19,21 +20,86 @@ class BaseLifeSquare {
         this.opacity = 1;
         this.width = 1;
         this.xOffset = 0.5;
+        this.randoms = [];
+
+        this.renderWithColorRange = false;
+        // for ref - values from plant
+        this.baseColor = "#9A8873";
+        this.baseColorAmount = dirt_baseColorAmount;
+        this.darkColor = "#46351D";
+        this.darkColorAmount = dirt_darkColorAmount;
+        this.accentColor = "#246A73";
+        this.accentColorAmount = dirt_accentColorAmount;
+
     }
 
     tick() {
         this.lastUpdateTime = getCurTime()
     }
 
-    render() {
-        MAIN_CONTEXT.fillStyle = this.calculateColor();
+    getStaticRand(randIdx) {
+        while (randIdx > this.randoms.length - 1) {
+            this.randoms.push(Math.random());
+        }
+        return this.randoms[randIdx];
+    }
 
-        var renderedWidth = this.width * BASE_SIZE;
-        var startOffset = ((BASE_SIZE - renderedWidth) * this.xOffset) + this.posX * BASE_SIZE;
+    renderWithVariedColors() {
+        var res = this.getStaticRand(1) * (parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value) + parseFloat(this.baseColorAmount.value)); 
+        var primaryColor = null;
+        var altColor1 = null;
+        var altColor2 = null;
+
+        if (res < parseFloat(this.accentColorAmount.value)) {
+            primaryColor = this.accentColor;
+            altColor1 = this.darkColor;
+            altColor2 = this.colorBase;
+        } else if (res < parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value)) {
+            primaryColor = this.darkColor;
+            altColor1 = this.baseColor;
+            altColor2 = this.darkColor;
+        } else {
+            altColor1 = this.darkColor;
+            altColor2 = this.darkColor;
+            primaryColor = this.baseColor;
+        }
+
+        var rand = this.getStaticRand(2);
+        var baseColorRgb = hexToRgb(primaryColor);
+        var altColor1Rgb = hexToRgb(altColor1);
+        var altColor2Rgb = hexToRgb(altColor2);
+
+        var outColor = {
+            r: baseColorRgb.r * 0.5 + ((altColor1Rgb.r * rand + altColor2Rgb.r * (1 - rand)) * 0.5),
+            g: baseColorRgb.g * 0.5 + ((altColor1Rgb.g * rand + altColor2Rgb.g * (1 - rand)) * 0.5),
+            b: baseColorRgb.b * 0.5 + ((altColor1Rgb.b * rand + altColor2Rgb.b * (1 - rand)) * 0.5)
+        }
+
+        var outHex = rgbToHex(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b));
+
+        MAIN_CONTEXT.fillStyle = outHex;
+
+        var startPos = this.posX * BASE_SIZE + (1 - this.width) * BASE_SIZE * this.xOffset;
         MAIN_CONTEXT.fillRect(
-            startOffset,
+            startPos,
             this.posY * BASE_SIZE,
-            renderedWidth,
+            this.width * BASE_SIZE,
+            BASE_SIZE
+        );
+    }
+
+
+    render() {
+        if (this.renderWithColorRange) {
+            this.renderWithVariedColors();
+            return;
+        }
+
+        MAIN_CONTEXT.fillStyle = this.calculateColor();
+        MAIN_CONTEXT.fillRect(
+            this.posX * BASE_SIZE,
+            this.posY * BASE_SIZE,
+            BASE_SIZE,
             BASE_SIZE
         );
     };

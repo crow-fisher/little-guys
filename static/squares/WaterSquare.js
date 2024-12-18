@@ -4,7 +4,7 @@ import {
     water_darkeningStrength,
     } from "../config/config.js"
 
-import {getNeighbors, getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares} from "./_sqOperations.js";
+import {getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares} from "./_sqOperations.js";
 import {
     ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats,
     getNextGroupId, updateGlobalStatistic, getGlobalStatistic
@@ -125,7 +125,7 @@ class WaterSquare extends BaseSquare {
             return;
         }
         this.currentPressureIndirect = Math.max(this.currentPressureDirect, startingPressure);
-        getNeighbors(this.posX, this.posY)
+        getDirectNeighbors(this.posX, this.posY)
             .filter((sq) => sq != null && sq.group == this.group)
             .forEach((myNeighbor) => {
                 var dy = myNeighbor.posY - this.posY;

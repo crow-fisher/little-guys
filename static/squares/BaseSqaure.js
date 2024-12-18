@@ -153,7 +153,6 @@ export class BaseSquare {
             BASE_SIZE,
             BASE_SIZE
         );
-
     }
 
     calculateDarkeningColor(darkVal, darkValMax) {
