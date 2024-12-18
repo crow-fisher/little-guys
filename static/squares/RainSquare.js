@@ -73,7 +73,7 @@ class AquiferSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
         this.physicsEnabled = false;
-        this.proto = "RainSquare";
+        this.proto = "AquiferSquare";
         this.colorBase = "#0E131F";
     }
     physics() {

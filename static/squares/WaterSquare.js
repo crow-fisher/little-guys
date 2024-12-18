@@ -124,15 +124,13 @@ class WaterSquare extends BaseSquare {
         if (this.currentPressureIndirect != -1) {
             return;
         }
-        var myNeighbors = Array.from(getNeighbors(this.posX, this.posY)
-            .filter((sq) => sq != null && sq.group == this.group));
-
         this.currentPressureIndirect = Math.max(this.currentPressureDirect, startingPressure);
-        for (let i = 0; i < myNeighbors.length; i++) {
-            var myNeighbor = myNeighbors[i];
-            var dy = myNeighbor.posY - this.posY;
-            myNeighbor.calculateIndirectPressure(startingPressure + dy);
-        }
+        getNeighbors(this.posX, this.posY)
+            .filter((sq) => sq != null && sq.group == this.group)
+            .forEach((myNeighbor) => {
+                var dy = myNeighbor.posY - this.posY;
+                myNeighbor.calculateIndirectPressure(startingPressure + dy);
+            });
     }
 
     doNeighborPercolation() {
