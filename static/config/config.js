@@ -195,6 +195,19 @@ var rock_accentColorAmount = {
     value: 5
 };
 
+var plant_initialWidth = {
+    name: "plant_initialWidth",
+    value: 0.338
+};
+
+var plant_deltaWidth = {
+    name: "plant_deltaWidth",
+    value: 0.003
+};
+
+addConfig(plant_initialWidth);
+addConfig(plant_deltaWidth);
+
 addConfig(dirt_baseColorAmount);
 addConfig(dirt_darkColorAmount);
 addConfig(dirt_accentColorAmount);
@@ -239,6 +252,8 @@ setInterval(displayConfigs, 1);
 
 
 export {
+    plant_initialWidth,
+    plant_deltaWidth,
     dirt_baseColorAmount,
     dirt_darkColorAmount,
     dirt_accentColorAmount,

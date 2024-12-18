@@ -18,6 +18,7 @@ function addNewOrganism(organism) {
     if (organism.associatedSquares.length > 0) {
         organism.spawnedEntityId = getNextEntitySpawnId();
         organism.associatedSquares.forEach((asq) => asq.setSpawnedEntityId(organism.spawnedEntityId));
+        organism.xOffset = Math.random();
         if (organism.linkedSquare != null) {
             organism.linkedSquare.spawnedEntityId = organism.spawnedEntityId;
         }

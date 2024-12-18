@@ -18,36 +18,11 @@ import { getOrganismSquaresAtSquare } from "../lifeSquares/_lsOperations.js";
 import { getOrganismSquaresAtSquareWithEntityId } from "../lifeSquares/_lsOperations.js";
 
 import {
-    global_plantToRealWaterConversionFactor,
-    b_sq_waterContainmentMax,
-    b_sq_nutrientValue,
-    static_sq_waterContainmentMax,
-    static_sq_waterContainmentTransferRate,
-    drain_sq_waterContainmentMax,
-    drain_sq_waterTransferRate,
-    wds_sq_waterContainmentMax,
-    wds_sq_waterContainmentTransferRate,
-    b_sq_waterContainmentTransferRate,
-    b_sq_waterContainmentEvaporationRate,
-    b_sq_darkeningStrength,
-    d_sq_nutrientValue,
-    rain_dropChance,
-    heavyrain_dropChance,
-    rain_dropHealth,
-    water_evaporationRate,
-    water_viscocity,
-    water_darkeningStrength,
+    plant_initialWidth,
+    plant_deltaWidth,
     po_airSuckFrac,
     po_waterSuckFrac,
     po_rootSuckFrac,
-    po_perFrameCostFracPerSquare,
-    po_greenSquareSizeExponentCost,
-    po_rootSquareSizeExponentCost,
-    p_ls_airNutrientsPerExposedNeighborTick,
-    p_seed_ls_sproutGrowthRate,
-    p_seed_ls_neighborWaterContainmentRequiredToGrow,
-    p_seed_ls_neighborWaterContainmentRequiredToDecay,
-    p_seed_ls_darkeningStrength
     } from "../config/config.js"
 import { getCurTime } from "../globals.js";
 class PlantOrganism extends BaseOrganism {
@@ -67,9 +42,13 @@ class PlantOrganism extends BaseOrganism {
         this.rootLastGrown = getCurTime();
 
         this.maximumLifeSquaresOfType = {
-            "plant": 5,
-            "root": 20
+            "plant": 3,
+            "root": 10
         }
+
+
+
+        this.highestGreen = null;
         this.growInitialSquares();
     }
 
@@ -110,6 +89,8 @@ class PlantOrganism extends BaseOrganism {
             var orgSq = addOrganismSquare(new PlantLifeSquare(this.posX, this.posY - 1));
             if (orgSq) {
                 orgSq.linkedSquare = newPlantSquare;
+                orgSq.width = this.width;
+                this.width *= 0.95;
                 ret.push(orgSq);
             }
         };
@@ -264,6 +245,9 @@ class PlantOrganism extends BaseOrganism {
     }
 
     growNewPlant() {
+        if (this.associatedSquaresCountByType["green"] > this.maximumLifeSquaresOfType["green"]) {
+            return 0;
+        }
         if (getCurTime() > this.plantLastGrown + this.throttleInterval) {
             this.plantLastGrown = getCurTime();
             var highestPlantSquare = Array.from(this.associatedSquares.filter((sq) => sq.type == "green").sort((a, b) => a.posY - b.posY))[0];
@@ -277,6 +261,8 @@ class PlantOrganism extends BaseOrganism {
                 if (orgSq) {
                     orgSq.linkedSquare = newPlantSquare;
                     orgSq.setSpawnedEntityId(this.spawnedEntityId);
+                    orgSq.width = this.width;
+                    this.width *= (1 - (Math.random() / 10));
                     this.addAssociatedSquare(orgSq);
                     return 1;
                 }
@@ -294,6 +280,9 @@ class PlantOrganism extends BaseOrganism {
     }
 
     growWaterRoot() {
+        if (this.associatedSquaresCountByType["root"] > this.maximumLifeSquaresOfType["root"]) {
+            return 0;
+        }
         if (getCurTime() > this.waterLastGrown + this.throttleInterval) {
             this.waterLastGrown = getCurTime();
             var wettestSquare = null;
@@ -323,6 +312,9 @@ class PlantOrganism extends BaseOrganism {
     }
 
     growDirtRoot() {
+        if (this.associatedSquaresCountByType["root"] > this.maximumLifeSquaresOfType["root"]) {
+            return 0;
+        }
         if (getCurTime() > this.rootLastGrown + this.throttleInterval) {
             this.rootLastGrown = getCurTime();
             var dirtiestSquare = null;
@@ -363,6 +355,16 @@ class PlantOrganism extends BaseOrganism {
             }
         }
         return 0;
+    }
+
+    preRender() {
+        this.highestGreen = this.getHighestGreen();
+        this.associatedSquares
+        .filter((sq) => sq.type == "green")
+        .forEach((lsq) => {
+            lsq.width = parseFloat(plant_initialWidth.value) + (parseFloat(plant_deltaWidth.value)) * (lsq.posY - this.highestGreen.posY);
+            lsq.xOffset = this.xOffset;
+        });
     }
 }
 

@@ -14,6 +14,8 @@ class BaseOrganism {
         this.type = "base";
         this.law = new Law();
         this.spawnedEntityId = 0;
+        this.width = 0.95;
+        this.xOffset = 0.5;
 
         this.spawnTime = getCurTime();
         this.currentEnergy = 0;
@@ -23,9 +25,8 @@ class BaseOrganism {
         this.maxLifeTime = 1000 * 40 * 1;
         this.reproductionEnergy = 100;
         this.reproductionEnergyUnit = 5;
-
-        this.associatedSquaresCountByType = {}
-
+        this.maximumLifeSquaresOfType = {}
+        this.associatedSquaresCountByType = {};
     }
 
     addAssociatedSquare(lifeSquare) {
@@ -36,6 +37,8 @@ class BaseOrganism {
         }
         this.associatedSquaresCountByType[lifeSquare.type] += 1;
     }
+
+    preRender() {}
 
     spawnSeed() {
         var seedSquare = this.getSeedSquare();
@@ -62,6 +65,7 @@ class BaseOrganism {
     growInitialSquares() { return new Array(); }
 
     render() {
+        this.preRender();
         this.associatedSquares.forEach((sp) => sp.render())
     }
 

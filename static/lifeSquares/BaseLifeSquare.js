@@ -17,6 +17,8 @@ class BaseLifeSquare {
         this.rootNutrients = 0;
         this.linkedSquare = null;
         this.opacity = 1;
+        this.width = 1;
+        this.xOffset = 0.5;
     }
 
     tick() {
@@ -25,10 +27,13 @@ class BaseLifeSquare {
 
     render() {
         MAIN_CONTEXT.fillStyle = this.calculateColor();
+
+        var renderedWidth = this.width * BASE_SIZE;
+        var startOffset = ((BASE_SIZE - renderedWidth) * this.xOffset) + this.posX * BASE_SIZE;
         MAIN_CONTEXT.fillRect(
-            this.posX * BASE_SIZE,
+            startOffset,
             this.posY * BASE_SIZE,
-            BASE_SIZE,
+            renderedWidth,
             BASE_SIZE
         );
     };

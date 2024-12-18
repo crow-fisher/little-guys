@@ -14,6 +14,12 @@ class PlantLifeSquare extends BaseLifeSquare {
         this.proto = "PlantLifeSquare";
         this.colorBase = "#157F1F";
         this.type = "green";
+
+        // width and xOffset are scaled between 0 and 1
+        // width of 0.8 means it occupies 80% of the X width 
+        // xOffset of 0 means the left block side is all the way to the left
+        // xOffset of 1 means the right block side is all the way to the right 
+        this.width = 0.8; // scaled between 0 and 1
     }
 
     tick() {
