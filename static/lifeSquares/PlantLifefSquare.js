@@ -17,11 +17,11 @@ class PlantLifeSquare extends BaseLifeSquare {
         this.type = "green";
         this.width =.99;
 
-        this.baseColor = "#157F1F";
+        this.baseColor = "#50C878";
         this.baseColorAmount = dirt_baseColorAmount;
-        this.darkColor = "#12664F";
+        this.darkColor = "#00563B";
         this.darkColorAmount = dirt_darkColorAmount;
-        this.accentColor = "#BBCEA8";
+        this.accentColor = "#138808";
         this.accentColorAmount = dirt_accentColorAmount;
         this.renderWithColorRange = true;
 

@@ -42,7 +42,7 @@ function addSquare(square) {
     })
 
     if (error) {
-        console.warn("Square not added; coordinates occupied by a block with collision.");
+        // console.warn("Square not added; coordinates occupied by a block with collision.");
         return false;
     }
     getSquares(square.posX, square.posY).push(square);

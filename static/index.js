@@ -266,7 +266,7 @@ function doClickAdd() {
                             break;
                     }
                 }
-                if (!fastTerrain.checked || selectedMaterial.indexOf("rain") >= 0) {
+                if (!fastTerrain.checked || selectedMaterial.indexOf("rain") >= 0 || selectedMaterial.indexOf("aquifer") >= 0 ) {
                     break;
                 }
             }

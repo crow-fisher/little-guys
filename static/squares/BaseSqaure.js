@@ -18,7 +18,7 @@ import {
 
 import { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE } from "../index.js";
 
-import { hexToRgb, rgbToHex } from "../common.js";
+import { hexToRgb, rgbToHex, rgbToRgba } from "../common.js";
 
 import { getCountOfOrganismsSquaresOfTypeAtPosition } from "../lifeSquares/_lsOperations.js";
 import { getOrganismSquaresAtSquare } from "../lifeSquares/_lsOperations.js";
@@ -41,7 +41,6 @@ export class BaseSquare {
         this.proto = "BaseSquare";
         this.posX = Math.floor(posX);
         this.posY = Math.floor(posY);
-        this.colorBase = "#A1A6B4";
         this.solid = true;
         this.spawnedEntityId = 0;
         // block properties - overridden by block type
@@ -72,6 +71,8 @@ export class BaseSquare {
         this.accentColor = "#246A73";
         this.accentColorAmount = dirt_accentColorAmount;
 
+        this.opacity = 1;
+
 
     };
     reset() {
@@ -85,17 +86,7 @@ export class BaseSquare {
         if (!this.visible) {
             return;
         }
-        if (this.renderWithColorRange) {
-            this.renderWithVariedColors();
-            return;
-        }
-        MAIN_CONTEXT.fillStyle = this.calculateColor();
-        MAIN_CONTEXT.fillRect(
-            this.posX * BASE_SIZE,
-            this.posY * BASE_SIZE,
-            BASE_SIZE,
-            BASE_SIZE
-        );
+        this.renderWithVariedColors();
     };
 
     getStaticRand(randIdx) {
@@ -103,6 +94,12 @@ export class BaseSquare {
             this.randoms.push(Math.random());
         }
         return this.randoms[randIdx];
+    }
+
+    swapColors(otherSquare) {
+        var t1 = this.randoms;
+        this.randoms = otherSquare.randoms;
+        otherSquare.randoms = t1;
     }
 
     renderWithVariedColors() {
@@ -114,7 +111,7 @@ export class BaseSquare {
         if (res < parseFloat(this.accentColorAmount.value)) {
             primaryColor = this.accentColor;
             altColor1 = this.darkColor;
-            altColor2 = this.colorBase;
+            altColor2 = this.baseColor;
         } else if (res < parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value)) {
             primaryColor = this.darkColor;
             altColor1 = this.baseColor;
@@ -136,9 +133,10 @@ export class BaseSquare {
             b: baseColorRgb.b * 0.5 + ((altColor1Rgb.b * rand + altColor2Rgb.b * (1 - rand)) * 0.5)
         }
 
-        var outHex = rgbToHex(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b));
+        var outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), this.opacity);
+        // var outHex = rgbToHex(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b));
 
-        MAIN_CONTEXT.fillStyle = outHex;
+        MAIN_CONTEXT.fillStyle = outRgba;
         MAIN_CONTEXT.fillRect(
             this.posX * BASE_SIZE,
             this.posY * BASE_SIZE,
@@ -146,20 +144,26 @@ export class BaseSquare {
             BASE_SIZE
         );
 
-        MAIN_CONTEXT.fillStyle = this.calculateDarkeningColor(this.waterContainment, this.waterContainmentMax.value);
-        MAIN_CONTEXT.fillRect(
-            this.posX * BASE_SIZE,
-            this.posY * BASE_SIZE,
-            BASE_SIZE,
-            BASE_SIZE
-        );
+        if (this.solid) {
+            MAIN_CONTEXT.fillStyle = this.calculateDarkeningColor()
+            MAIN_CONTEXT.fillRect(
+                this.posX * BASE_SIZE,
+                this.posY * BASE_SIZE,
+                BASE_SIZE,
+                BASE_SIZE
+            );
+        }
     }
 
-    calculateDarkeningColor(darkVal, darkValMax) {
+    calculateDarkeningColor() {
+        return this.calculateDarkeningColorImpl(this.waterContainment, this.waterContainmentMax.value);
+    }
+
+    calculateDarkeningColorImpl(darkVal, darkValMax) {
         if (darkVal == 0) {
             return "rgba(67,58,63, 0)";
         }
-        var waterColor255 = Math.floor((darkVal / darkValMax) * 255);
+        var waterColor255 = Math.floor((darkVal / darkValMax) * 255) * this.opacity;
         if (waterColor255 in darkeningColorCache) {
             return darkeningColorCache[waterColor255];
         }
@@ -171,34 +175,6 @@ export class BaseSquare {
         return res;
     }
 
-    calculateColor() {
-        if (this.waterContainmentMax.value == 0) {
-            var baseColorRGB = hexToRgb(this.colorBase);
-            return rgbToHex(Math.floor(baseColorRGB.r), Math.floor(baseColorRGB.g), Math.floor(baseColorRGB.b));
-        }
-
-        var baseColorRGB = hexToRgb(this.colorBase);
-        var darkeningStrength = b_sq_darkeningStrength.value;
-        // Water Saturation Calculation
-        // Apply this effect for 20% of the block's visual value. 
-        // As a fraction of 0 to 255, create either perfect white or perfect grey.
-        var waterColor255 = (1 - (this.waterContainment / this.waterContainmentMax.value)) * 255;
-        var darkeningColorRGB = { r: waterColor255, b: waterColor255, g: waterColor255 };
-
-        ['r', 'g', 'b'].forEach((p) => {
-            darkeningColorRGB[p] *= darkeningStrength;
-            baseColorRGB[p] *= (1 - darkeningStrength);
-        });
-
-        var resColor = {
-            r: darkeningColorRGB.r + baseColorRGB.r,
-            g: darkeningColorRGB.g + baseColorRGB.g,
-            b: darkeningColorRGB.b + baseColorRGB.b
-        }
-
-        return rgbToHex(Math.floor(resColor.r), Math.floor(resColor.g), Math.floor(resColor.b));
-
-    }
     updatePosition(newPosX, newPosY) {
         if (newPosX == this.posX && newPosY == this.posY) {
             return;

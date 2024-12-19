@@ -22,7 +22,7 @@ function addConfig(config) {
     configSliders.appendChild(label);
     configSliders.append(document.createElement("br"));
     newSlider.onchange = (e) => {
-        config.value = e.target.value;
+        config.value = parseFloat(e.target.value);
         displayConfigDirty = true;
         label.innerText = "slider_" + config.name + "\tvalue: " + e.target.value;
     };
@@ -73,7 +73,7 @@ var wds_sq_waterContainmentMax = {
     value: 2
 };
 
-var wds_sq_waterContainmentTransferRate = {
+var wds_sq_waterTransferRate = {
     name: "waterContainmentTransferRate",
     value: 0.15
 };
@@ -224,7 +224,7 @@ addConfig(static_sq_waterContainmentTransferRate);
 addConfig(drain_sq_waterContainmentMax);
 addConfig(drain_sq_waterTransferRate);
 addConfig(wds_sq_waterContainmentMax);
-addConfig(wds_sq_waterContainmentTransferRate);
+addConfig(wds_sq_waterTransferRate);
 addConfig(b_sq_waterContainmentTransferRate);
 addConfig(b_sq_waterContainmentEvaporationRate);
 addConfig(b_sq_darkeningStrength);
@@ -268,7 +268,7 @@ export {
     drain_sq_waterContainmentMax,
     drain_sq_waterTransferRate,
     wds_sq_waterContainmentMax,
-    wds_sq_waterContainmentTransferRate,
+    wds_sq_waterTransferRate,
     b_sq_waterContainmentTransferRate,
     b_sq_waterContainmentEvaporationRate,
     b_sq_darkeningStrength,

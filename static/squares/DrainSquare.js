@@ -9,7 +9,7 @@ import {
     drain_sq_waterContainmentMax,
     drain_sq_waterTransferRate,
     wds_sq_waterContainmentMax,
-    wds_sq_waterContainmentTransferRate,
+    wds_sq_waterTransferRate,
     b_sq_waterContainmentTransferRate,
     b_sq_waterContainmentEvaporationRate,
     b_sq_darkeningStrength,

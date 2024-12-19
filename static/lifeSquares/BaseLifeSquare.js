@@ -3,6 +3,7 @@ import { hexToRgb, rgbToHex } from "../common.js";
 
 import { getCurTime } from "../globals.js";
 import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount } from "../config/config.js";
+import { getSquares } from "../squares/_sqOperations.js";
 
 class BaseLifeSquare {
     constructor(posX, posY) {
@@ -80,11 +81,17 @@ class BaseLifeSquare {
         MAIN_CONTEXT.fillStyle = outHex;
 
         var startPos = this.posX * BASE_SIZE + (1 - this.width) * BASE_SIZE * this.xOffset;
+        
+        var height = BASE_SIZE * (1 + this.getStaticRand(3));
+
+        // getSquares(this.posX, this.posY - 1).forEach((x) => height = BASE_SIZE);
+
+        if (getSquares(this.posX, this.posY - 1))
         MAIN_CONTEXT.fillRect(
             startPos,
-            this.posY * BASE_SIZE,
+            this.posY * BASE_SIZE - (height - BASE_SIZE),
             this.width * BASE_SIZE,
-            BASE_SIZE
+            height
         );
     }
 

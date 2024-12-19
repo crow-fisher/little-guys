@@ -9,7 +9,7 @@ import {
     drain_sq_waterContainmentMax,
     drain_sq_waterTransferRate,
     wds_sq_waterContainmentMax,
-    wds_sq_waterContainmentTransferRate,
+    wds_sq_waterTransferRate,
     b_sq_waterContainmentTransferRate,
     b_sq_waterContainmentEvaporationRate,
     b_sq_darkeningStrength,
@@ -78,6 +78,8 @@ class AquiferSquare extends BaseSquare {
         this.physicsEnabled = false;
         this.proto = "AquiferSquare";
         this.colorBase = "#0E131F";
+        this.waterContainmentMax = wds_sq_waterContainmentMax;
+        this.waterContainmentTransferRate = wds_sq_waterTransferRate;
     }
     physics() {
         if (getSquares(this.posX, this.posY + 1).length == 0) {

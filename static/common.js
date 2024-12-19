@@ -35,6 +35,10 @@ function rgbToHex(r, g, b) {
     return "#" + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1);
 }
 
+function rgbToRgba(r, g, b, a) {
+    return "rgba(" + r + "," + g + "," + b + "," + a + ")";
+}
+
 function randNumber(min, max) {
     max += 1;
     return Math.floor(Math.random() * (max - min) + min);
@@ -46,4 +50,4 @@ function loadImage(url) {
     return i;
 }
 
-export {getObjectArrFromMap, removeItemAll, hexToRgb, rgbToHex, randNumber, loadImage}
+export {getObjectArrFromMap, removeItemAll, hexToRgb, rgbToHex, rgbToRgba, randNumber, loadImage}

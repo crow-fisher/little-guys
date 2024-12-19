@@ -4,7 +4,7 @@ import {
     water_darkeningStrength,
     } from "../config/config.js"
 
-import {getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares} from "./_sqOperations.js";
+import {getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares, getNeighbors} from "./_sqOperations.js";
 import {
     ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats,
     getNextGroupId, updateGlobalStatistic, getGlobalStatistic
@@ -21,11 +21,15 @@ class WaterSquare extends BaseSquare {
         super(posX, posY);
         this.proto = "WaterSquare";
         this.boundedTop = false;
-        this.colorBase = "#79beee";
         this.solid = false;
         this.viscocity = water_viscocity;
         this.currentPressureDirect = -1;
         this.currentPressureIndirect = -1;
+
+        this.baseColor = "#0093AF";
+        this.darkColor = "#2774AE";
+        this.accentColor = "#85B09A";
+        this.opacity = 0.5;
     }
 
     reset() {
@@ -38,33 +42,21 @@ class WaterSquare extends BaseSquare {
         super.physics();
         this.calculateCandidateFlows();
         this.doNeighborPercolation();
+        this.doLocalColorSwapping();
     }
 
-    calculateColor() {
-        var baseColorRGB = hexToRgb(this.colorBase);
-        var darkeningStrength = water_darkeningStrength.value;
-        // Water Saturation Calculation
-        // Apply this effect for 20% of the block's visual value. 
-        // As a fraction of 0 to 255, create either perfect white or perfect grey.
-
-        var num = this.currentPressureIndirect;
-        var numMax = getGlobalStatistic("pressure") + 1;
-
-        var featureColor255 = (1 - (num / numMax)) * 255;
-        var darkeningColorRGB = { r: featureColor255, b: featureColor255, g: featureColor255 };
-
-        ['r', 'g', 'b'].forEach((p) => {
-            darkeningColorRGB[p] *= darkeningStrength;
-            baseColorRGB[p] *= (1 - darkeningStrength);
-        });
-
-        var resColor = {
-            r: darkeningColorRGB.r + baseColorRGB.r,
-            g: darkeningColorRGB.g + baseColorRGB.g,
-            b: darkeningColorRGB.b + baseColorRGB.b
+    doLocalColorSwapping() {
+        if (Math.random() > 0.99) {
+            getNeighbors(this.posX, this.posY).filter((sq) => sq.group == this.group).forEach((sq) => {
+                if (Math.random() > 0.75) {
+                    this.swapColors(sq);
+                }
+            });
         }
 
-        return rgbToHex(Math.floor(resColor.r), Math.floor(resColor.g), Math.floor(resColor.b));
+    }
+    calculateDarkeningColor() {
+        return this.calculateDarkeningColorImpl(this.currentPressureIndirect, getGlobalStatistic("pressure") + 1);
     }
 
     physicsBefore() {
@@ -104,18 +96,33 @@ class WaterSquare extends BaseSquare {
      */
     calculateDirectPressure() {
         this.currentPressureDirect = 0;
+
+        getSquares(this.posX, this.posY - 1)
+            .filter((sq) => sq.proto == this.proto)
+            .filter((sq) => sq.group == this.group)
+            .filter((sq) => sq.currentPressureDirect > 0)
+            .forEach((sq) => this.currentPressureDirect = sq.currentPressureDirect + 1)
+
         var curY = this.posY - 1;
-        while (true) {
-            var squaresAtPos = getSquares(this.posX, curY);
-            if (squaresAtPos.length == 0) {
-                break;
+        if (this.currentPressureDirect == 0) {
+            while (true) {
+                var squaresAtPos = getSquares(this.posX, curY);
+                if (squaresAtPos.length == 0) {
+                    break;
+                }
+                if (Array.from(squaresAtPos.filter((sq) => sq.solid && sq.collision)).length > 0) {
+                    break;
+                }
+                curY -= 1;
+                this.currentPressureDirect += 1;
             }
-            if (Array.from(squaresAtPos.filter((sq) => sq.solid && sq.collision)).length > 0) {
-                break;
-            }
-            curY -= 1;
-            this.currentPressureDirect += 1;
         }
+
+        getSquares(this.posX, this.posY + 1)
+            .filter((sq) => sq.proto == this.proto)
+            .filter((sq) => sq.group == this.group)
+            .forEach((sq) => sq.currentPressureDirect = this.currentPressureDirect + 1)
+
     }
     calculateIndirectPressure(startingPressure) {
         // we are looking for neighbors *of the same group*. 
@@ -124,13 +131,44 @@ class WaterSquare extends BaseSquare {
         if (this.currentPressureIndirect != -1) {
             return;
         }
-        this.currentPressureIndirect = Math.max(this.currentPressureDirect, startingPressure);
-        getDirectNeighbors(this.posX, this.posY)
-            .filter((sq) => sq != null && sq.group == this.group)
-            .forEach((myNeighbor) => {
-                var dy = myNeighbor.posY - this.posY;
-                myNeighbor.calculateIndirectPressure(startingPressure + dy);
-            });
+
+        var perGroupData = new Map();
+        iterateOnSquares((sq) => {
+            if (!(sq.group in perGroupData)) {
+                perGroupData[sq.group] = new Map();
+                perGroupData[sq.group]["minPosY"] = 10 ** 8;
+            }
+            perGroupData[sq.group]["minPosY"] = Math.min(sq.posY, perGroupData[sq.group]["minPosY"])
+        })
+        iterateOnSquares((sq) => {
+            sq.currentPressureIndirect = sq.currentPressureDirect + sq.posY - perGroupData[sq.group]["minPosY"];
+        })
+        // var nodes = [this];
+        // var visited = set();
+        // var curIdx = 0;
+        // var cur = null;
+        // while (curIdx < nodes.length) {
+        //     cur = nodes[curIdx];
+
+        //         getDirectNeighbors(this.posX, this.posY)
+        //         .filter((sq) => sq != null && sq.group == this.group)
+        //         .forEach((myNeighbor) => {
+        //             if (!(myNeighbor in visited)) {
+        //                 var dy = myNeighbor.posY - this.posY;
+        //                 myNeighbor.currentPressureIndirect = Math.max(myNeighbor.currentPressureDirect, startingPressure + dy);
+
+        //                 myNeighbor.calculateIndirectPressure(startingPressure + dy);
+        //             }
+
+        //         });
+        // }
+        
+        // getDirectNeighbors(this.posX, this.posY)
+        //     .filter((sq) => sq != null && sq.group == this.group)
+        //     .forEach((myNeighbor) => {
+        //         var dy = myNeighbor.posY - this.posY;
+        //         myNeighbor.calculateIndirectPressure(startingPressure + dy);
+        //     });
     }
 
     doNeighborPercolation() {

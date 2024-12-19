@@ -8,7 +8,7 @@ import {
     drain_sq_waterContainmentMax,
     drain_sq_waterTransferRate,
     wds_sq_waterContainmentMax,
-    wds_sq_waterContainmentTransferRate,
+    wds_sq_waterTransferRate,
     b_sq_waterContainmentTransferRate,
     b_sq_waterContainmentEvaporationRate,
     b_sq_darkeningStrength,
@@ -39,7 +39,7 @@ class WaterDistributionSquare extends BaseSquare {
         this.colorBase = "#000500";
         this.physicsEnabled = false;
         this.waterContainmentMax = wds_sq_waterContainmentMax;
-        this.waterContainmentTransferRate = wds_sq_waterContainmentTransferRate;
+        this.waterContainmentTransferRate = wds_sq_waterTransferRate;
     }
 
 }
