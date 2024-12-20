@@ -80,15 +80,55 @@ class BaseOrganism {
     }
 
     process() {
+        this.preTick();
         this.tick();
         this.postTick();
+    }
+
+    preTick() {
+        this.associatedSquares.forEach((sp) => sp.preTick())
     }
 
     tick() {
         this.associatedSquares.forEach((sp) => sp.tick())
     }
 
-    postTick() { }
+    postTick() {
+        this.associatedSquares.forEach((lifeSquare) => {
+            this.dirtNutrients += lifeSquare.dirtNutrients;
+            this.waterNutrients += lifeSquare.waterNutrients;
+            this.airNutrients += lifeSquare.airNutrients;
+        });
+
+        var energyGained = this.law.photosynthesis(this.airNutrients - this.totalEnergy, this.waterNutrients - this.totalEnergy, this.dirtNutrients - this.totalEnergy);
+
+        this.currentEnergy += energyGained;
+        this.totalEnergy += energyGained;
+
+        var lifeCyclePercentage = (getCurTime() - this.spawnTime) / this.maxLifeTime;
+        if (lifeCyclePercentage > 1) {
+            this.destroy();
+        }
+
+        var currentEnergyPercentage = this.currentEnergy / this.reproductionEnergy;
+        var totalEnergyLifeCycleRate = this.totalEnergy / this.maxLifeTime;
+
+        if (currentEnergyPercentage > 1) {
+            this.spawnSeed();
+            this.currentEnergy -= this.reproductionEnergyUnit;
+            return;
+        }
+
+        var projectedEnergyAtEOL = this.currentEnergy + (totalEnergyLifeCycleRate * (1 - lifeCyclePercentage) * this.maxLifeTime);
+        if (projectedEnergyAtEOL < this.reproductionEnergy * 2) {
+            this.grow();
+            return;
+        } else {
+            return;
+        }
+    }
+
+    grow() {}
 }
 
 export {BaseOrganism}

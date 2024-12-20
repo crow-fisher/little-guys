@@ -31,7 +31,7 @@ class PlantOrganism extends BaseOrganism {
         this.proto = "PlantOrganism";
         this.type = "plant";
 
-        this.rootNutrients = 1;
+        this.dirtNutrients = 1;
         this.airNutrients = 1;
         this.waterNutrients = 1;
 
@@ -112,65 +112,6 @@ class PlantOrganism extends BaseOrganism {
         }
     }
 
-    postTick() {
-        var airSuckFrac = po_airSuckFrac.value;
-        var waterSuckFrac = po_waterSuckFrac.value;
-        var rootSuckFrac = po_rootSuckFrac.value;
-
-        var airNutrientsGained = 0;
-        var waterNutrientsGained = 0;
-        var rootNutrientsGained = 0;
-
-        this.associatedSquares.forEach((lifeSquare) => {
-            rootNutrientsGained = lifeSquare.rootNutrients * rootSuckFrac;
-            waterNutrientsGained = lifeSquare.waterNutrients * waterSuckFrac;
-
-            this.rootNutrients += rootNutrientsGained;
-            lifeSquare.rootNutrients -= rootNutrientsGained;
-
-            this.waterNutrients += waterNutrientsGained;
-            lifeSquare.waterNutrients -= waterNutrientsGained;
-
-            airNutrientsGained = lifeSquare.airNutrients * airSuckFrac;
-
-            this.airNutrients += airNutrientsGained;
-            lifeSquare.airNutrients -= airNutrientsGained;
-        });
-
-        var energyGained = this.law.photosynthesis(this.airNutrients, this.waterNutrients, this.rootNutrients);
-
-        this.currentEnergy += energyGained;
-        this.totalEnergy += energyGained;
-
-        this.airNutrients -= energyGained;
-        this.waterNutrients -= energyGained;
-        this.rootNutrients -= energyGained;
-
-        // our goal is to get enough energy to hit the 'reproductionEnergy', then spurt
-
-        var lifeCyclePercentage = (getCurTime() - this.spawnTime) / this.maxLifeTime;
-        if (lifeCyclePercentage > 1) {
-            this.destroy();
-        }
-        var currentEnergyPercentage = this.currentEnergy / this.reproductionEnergy;
-
-        var totalEnergyLifeCycleRate = this.totalEnergy / this.maxLifeTime;
-
-        if (currentEnergyPercentage > 1) {
-            this.spawnSeed();
-            this.currentEnergy -= this.reproductionEnergyUnit;
-            return;
-        }
-
-        var projectedEnergyAtEOL = this.currentEnergy + (totalEnergyLifeCycleRate * (1 - lifeCyclePercentage) * this.maxLifeTime);
-        if (projectedEnergyAtEOL < this.reproductionEnergy * 2) {
-            this.grow();
-            return;
-        } else {
-            return;
-        }
-    }
-
     getLowestGreen() {
         return Array.from(this.associatedSquares
             .filter((sq) => sq.type == "green")).sort((a, b) => b.posY - a.posY)[0];
@@ -218,7 +159,7 @@ class PlantOrganism extends BaseOrganism {
 
     grow() {
         // make a decision on how to grow based on which of our needs we need the most
-        let minNutrient = Math.min(Math.min(this.airNutrients, this.rootNutrients), this.waterNutrients);
+        let minNutrient = Math.min(Math.min(this.airNutrients, this.dirtNutrients), this.waterNutrients);
         if (this.currentEnergy < 0) {
             console.log("Want to grow...but the effort is too much")
             return;
@@ -229,7 +170,7 @@ class PlantOrganism extends BaseOrganism {
             return;
         }
 
-        if (this.rootNutrients == minNutrient) {
+        if (this.dirtNutrients == minNutrient) {
             this.currentEnergy -= this.growDirtRoot();
             return;
         }

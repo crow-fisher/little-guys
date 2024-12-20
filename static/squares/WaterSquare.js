@@ -30,6 +30,8 @@ class WaterSquare extends BaseSquare {
         this.darkColor = "#2774AE";
         this.accentColor = "#85B09A";
         this.opacity = 0.5;
+        
+        this.blockHealth = 100;
     }
 
     reset() {
@@ -178,9 +180,8 @@ class WaterSquare extends BaseSquare {
             }
             if (sq.organic) {
                 getOrganismSquaresAtSquare(sq.posX, sq.posY).forEach(
-                    (osq) => osq.waterNutrients += this.blockHealth
+                    (osq) => this.blockHealth -= osq.adjacentWater(this.blockHealth)
                 );
-                removeSquareAndChildren(this);
                 return;
             }
             if (sq.collision == false) {

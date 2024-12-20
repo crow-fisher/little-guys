@@ -32,14 +32,13 @@ class PlantLifeSquare extends BaseLifeSquare {
     }
 
     tick() {
-        this.airNutrients = 0;
-        this.airNutrients = getDirectNeighbors(this.posX, this.posY)
+        this.addAirNutrient(getDirectNeighbors(this.posX, this.posY)
                 .filter((nb) => nb != null)
                 .map((sq) => p_ls_airNutrientsPerExposedNeighborTick.value)
                 .reduce(
                     (accumulator, currentValue) => accumulator + currentValue,
                     0,
-                );
+                ));
     }
 }
 

@@ -12,12 +12,12 @@ class RootLifeSquare extends BaseLifeSquare {
         this.type = "root";
     }
     tick() {
-        this.rootNutrients = 0;
+        this.dirtNutrients = 0;
         getDirectNeighbors(this.posX, this.posY)
             .filter((n) => n != null && n.solid)
             .forEach((neighbor) => {
-                this.rootNutrients += neighbor.nutrientValue.value;
-                this.waterNutrients += neighbor.suckWater(this.waterNutrients);
+                this.addDirtNutrient(neighbor.nutrientValue.value);
+                this.addWaterNutrient(neighbor.suckWater(this.maxNutrientDt - this.waterNutrients));
             });
     }
 

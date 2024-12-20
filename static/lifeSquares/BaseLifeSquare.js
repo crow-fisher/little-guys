@@ -13,10 +13,13 @@ class BaseLifeSquare {
         this.type = "base";
         this.colorBase = "#1D263B";
         this.spawnedEntityId = 0;
-        this.lastUpdateTime = getCurTime()
+
+        this.maxNutrientDt = 0.05;
+
         this.airNutrients = 0;
         this.waterNutrients = 0;
-        this.rootNutrients = 0;
+        this.dirtNutrients = 0;
+    
         this.linkedSquare = null;
         this.opacity = 1;
         this.width = 1;
@@ -31,11 +34,37 @@ class BaseLifeSquare {
         this.darkColorAmount = dirt_darkColorAmount;
         this.accentColor = "#246A73";
         this.accentColorAmount = dirt_accentColorAmount;
+    }
 
+    addAirNutrient(nutrientAmount) {
+        var start = this.airNutrients;
+        this.airNutrients = Math.min(this.maxNutrientDt, this.airNutrients + nutrientAmount);
+        return this.airNutrients - start;
+    }
+
+    addWaterNutrient(nutrientAmount) {
+        var start = this.airNutrients;
+        this.waterNutrients = Math.min(this.maxNutrientDt, this.waterNutrients + nutrientAmount);
+        return this.waterNutrients - start;
+    }
+
+    addDirtNutrient(nutrientAmount) {
+        var start = this.dirtNutrients;
+        this.dirtNutrients = Math.min(this.maxNutrientDt, this.dirtNutrients + nutrientAmount);
+        return this.dirtNutrients - start;
+    }
+
+    adjacentWater(waterBlockHealth) {
+        return this.addWaterNutrient(waterBlockHealth);
+    }
+
+    preTick() {
+        this.airNutrients = 0;
+        this.waterNutrients = 0;
+        this.dirtNutrients = 0;
     }
 
     tick() {
-        this.lastUpdateTime = getCurTime()
     }
 
     getStaticRand(randIdx) {
