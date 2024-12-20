@@ -58,6 +58,10 @@ document.body.onmouseup = function () {
     organismAddedThisClick = false;
 }
 
+var shiftPressed = false;
+
+
+
 // each square is 16x16
 // 'little guys' may aquire multiple squares
 var TIME_SCALE = 1;
@@ -266,7 +270,7 @@ function doClickAdd() {
                             break;
                     }
                 }
-                if (!fastTerrain.checked || selectedMaterial.indexOf("rain") >= 0 || selectedMaterial.indexOf("aquifer") >= 0 ) {
+                if (!shiftPressed || selectedMaterial.indexOf("rain") >= 0 || selectedMaterial.indexOf("aquifer") >= 0 ) {
                     break;
                 }
             }
@@ -289,5 +293,27 @@ window.oncontextmenu = function () {
     return false;     // cancel default menu
 }
 main()
+
+
+window.onload = function() {
+    document.addEventListener('keydown', function(e) {
+        if (e.code === "ShiftLeft") {
+            shiftPressed = true;
+        }
+    }, false);
+
+    document.addEventListener('keyup', function(e) {
+        if (e.code === "ShiftLeft") {
+            shiftPressed = false;
+        }
+    }, false);
+
+    
+    // document.addEventListener('keyup', (e) => {
+    //     if (e.code === "Shift") {
+    //         shiftPressed = false;
+    //     }
+    // });
+}
 
 export { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE }

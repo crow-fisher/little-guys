@@ -1,5 +1,5 @@
 import { BaseSquare } from "./BaseSqaure.js";
-import { d_sq_nutrientValue } from "../config/config.js";
+import { dirtNutrientValuePerDirectNeighbor } from "../config/config.js";
 
 import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount } from "../config/config.js";
 class ClaySquare extends BaseSquare {
@@ -7,7 +7,7 @@ class ClaySquare extends BaseSquare {
         super(posX, posY);
         this.proto = "ClaySquare";
         this.colorBase = "#B06C49";
-        this.nutrientValue = d_sq_nutrientValue;
+        this.nutrientValue = dirtNutrientValuePerDirectNeighbor;
         this.rootable = true;
         
         this.renderWithColorRange = true;

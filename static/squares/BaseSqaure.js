@@ -3,10 +3,10 @@ import {
     dirt_darkColorAmount,
     dirt_accentColorAmount,
     global_plantToRealWaterConversionFactor,
-    b_sq_waterContainmentMax,
     b_sq_nutrientValue,
-    b_sq_waterContainmentTransferRate,
-    b_sq_waterContainmentEvaporationRate,
+    base_waterContainmentMax,
+    base_waterContainmentTransferRate,
+    base_waterContainmentEvaporationRate,
     b_sq_darkeningStrength,
 } from "../config/config.js"
 
@@ -48,9 +48,9 @@ export class BaseSquare {
         this.blockHealth = 1; // when reaches zero, delete
         // water flow parameters
         this.waterContainment = 0;
-        this.waterContainmentMax = b_sq_waterContainmentMax;
-        this.waterContainmentTransferRate = b_sq_waterContainmentTransferRate; // what fraction of ticks does it trigger percolate on
-        this.waterContainmentEvaporationRate = b_sq_waterContainmentEvaporationRate; // what fraction of contained water will get reduced per tick
+        this.waterContainmentMax = base_waterContainmentMax;
+        this.waterContainmentTransferRate = base_waterContainmentTransferRate; // what fraction of ticks does it trigger percolate on
+        this.waterContainmentEvaporationRate = base_waterContainmentEvaporationRate; // what fraction of contained water will get reduced per tick
         this.speedX = 0;
         this.speedY = 0;
         this.nutrientValue = b_sq_nutrientValue;

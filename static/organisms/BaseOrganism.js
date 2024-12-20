@@ -23,8 +23,8 @@ class BaseOrganism {
 
         // life cycle properties
         this.maxLifeTime = 1000 * 40 * 1;
-        this.reproductionEnergy = 100;
-        this.reproductionEnergyUnit = 5;
+        this.reproductionEnergy = 1000;
+        this.reproductionEnergyUnit = 300;
         this.maximumLifeSquaresOfType = {}
         this.associatedSquaresCountByType = {};
     }

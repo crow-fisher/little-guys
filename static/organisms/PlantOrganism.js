@@ -17,13 +17,6 @@ import { addNewOrganism, addOrganism } from "./_orgOperations.js";
 import { getOrganismSquaresAtSquare } from "../lifeSquares/_lsOperations.js";
 import { getOrganismSquaresAtSquareWithEntityId } from "../lifeSquares/_lsOperations.js";
 
-import {
-    plant_initialWidth,
-    plant_deltaWidth,
-    po_airSuckFrac,
-    po_waterSuckFrac,
-    po_rootSuckFrac,
-    } from "../config/config.js"
 import { getCurTime } from "../globals.js";
 class PlantOrganism extends BaseOrganism {
     constructor(posX, posY) {
@@ -73,15 +66,17 @@ class PlantOrganism extends BaseOrganism {
         var ret = new Array();
         // a plant needs to grow a PlantSquare above ground 
         // and grow a RootOrganism into existing Dirt
-        var topSquare = getCollidableSquareAtLocation(this.posX, this.posY - 1);
-        if (topSquare != null && topSquare.proto == "WaterSquare") {
-            var topTop = getCollidableSquareAtLocation(this.posX, this.posY - 2);
-            if (topTop == null) {
-                removeSquareAndChildren(topSquare); // fuck them kids!!!!
-            } else {
-                return;
-            }
-        }
+        getCollidableSquareAtLocation(this.posX, this.posY - 1)
+            .filter((sq) => sq.proto == "WaterSquare")
+            .forEach((sq) => {
+                var topEmpty = true;
+                getCollidableSquareAtLocation(sq.posX, sq.posY - 1).forEach((sq) => {
+                    topEmpty = false;
+                })
+                if (topEmpty) {
+                    removeSquareAndChildren(sq); // fuck them kids!!!!
+                }
+        });
         var newPlantSquare = addSquare(new PlantSquare(this.posX, this.posY - 1));
         if (newPlantSquare) {
             var orgSq = addOrganismSquare(new PlantLifeSquare(this.posX, this.posY - 1));
@@ -94,6 +89,7 @@ class PlantOrganism extends BaseOrganism {
         // root time
         getSquares(this.posX, this.posY)
             .filter((sq) => sq.rootable)
+            .filter((sq) => sq.proto != "SeedSquare")
             .forEach((sq) => {
                 var rootSq = addOrganismSquare(new RootLifeSquare(this.posX, this.posY));
                 if (rootSq) {

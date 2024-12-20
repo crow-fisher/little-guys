@@ -1,12 +1,12 @@
 import { BaseLifeSquare } from "./BaseLifeSquare.js";
-import { getDirectNeighbors } from "../squares/_sqOperations.js";
+import { getDirectNeighbors, getNeighbors } from "../squares/_sqOperations.js";
 import { BASE_SIZE, MAIN_CANVAS, MAIN_CONTEXT } from "../index.js";
 import { loadImage } from "../common.js";
 import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount } from "../config/config.js";
 
 import {
-    p_ls_airNutrientsPerExposedNeighborTick,
-    } from "../config/config.js"
+    airNutrientsPerEmptyNeighbor,
+} from "../config/config.js"
 
 
 class PlantLifeSquare extends BaseLifeSquare {
@@ -15,7 +15,7 @@ class PlantLifeSquare extends BaseLifeSquare {
         this.proto = "PlantLifeSquare";
         this.colorBase = "#157F1F";
         this.type = "green";
-        this.width =.99;
+        this.width = .99;
 
         this.baseColor = "#50C878";
         this.baseColorAmount = dirt_baseColorAmount;
@@ -32,16 +32,21 @@ class PlantLifeSquare extends BaseLifeSquare {
     }
 
     tick() {
-        this.addAirNutrient(getDirectNeighbors(this.posX, this.posY)
-                .filter((nb) => nb != null)
-                .map((sq) => p_ls_airNutrientsPerExposedNeighborTick.value)
-                .reduce(
-                    (accumulator, currentValue) => accumulator + currentValue,
-                    0,
-                ));
+        this.addAirNutrient(
+            airNutrientsPerEmptyNeighbor.value *
+            (
+                9 - getNeighbors(this.posX, this.posY)
+                    .map((sq) => 1)
+                    .reduce(
+                        (accumulator, currentValue) => accumulator + currentValue,
+                        0,
+                    ))
+        );
+
+
     }
 }
 
 
 
-export {PlantLifeSquare}
+export { PlantLifeSquare }

@@ -40,11 +40,30 @@ function displayConfigs() {
     displayConfigDirty = false;
 }
 
-
-var b_sq_waterContainmentMax = {
-    name: "b_sq_waterContainmentMax",
-    value: 0.2
+var airNutrientsPerEmptyNeighbor = {
+    name: "airNutrientsPerEmptyNeighbor",
+    value: 0.05
 };
+
+var dirtNutrientValuePerDirectNeighbor = {
+    name: "dirtNutrientValuePerDirectNeighbor",
+    value: 0.05
+};
+
+var base_waterContainmentMax = {
+    name: "base_waterContainmentMax",
+    value: 5
+};  
+
+var base_waterContainmentTransferRate = {
+    name: "base_waterContainmentTransferRate",
+    value: 0.25
+};
+var base_waterContainmentEvaporationRate = {
+    name: "base_waterContainmentEvaporationRate",
+    value: 0.0005
+};
+
 var b_sq_nutrientValue = {
     name: "b_sq_nutrientValue",
     value: 0
@@ -78,22 +97,12 @@ var wds_sq_waterTransferRate = {
     value: 0.15
 };
 
-var b_sq_waterContainmentTransferRate = {
-    name: "b_sq_waterContainmentTransferRate",
-    value: 0.15
-};
-var b_sq_waterContainmentEvaporationRate = {
-    name: "b_sq_waterContainmentEvaporationRate",
-    value: 0.000005
-};
+
 var b_sq_darkeningStrength = {
     name: "b_sq_darkeningStrength",
     value: 0.3
 };
-var d_sq_nutrientValue = {
-    name: "d_sq_nutrientValue",
-    value: 0.1
-};
+
 var rain_dropChance = {
     name: "rain_dropChance",
     value: 0.001
@@ -118,18 +127,6 @@ var water_darkeningStrength = {
     name: "water_darkeningStrength",
     value: 0.3
 };
-var po_airSuckFrac = {
-    name: "po_airSuckFrac",
-    value: 0.2
-};
-var po_waterSuckFrac = {
-    name: "po_waterSuckFrac",
-    value: 0.2
-};
-var po_rootSuckFrac = {
-    name: "po_rootSuckFrac",
-    value: 0.05
-};
 var po_perFrameCostFracPerSquare = {
     name: "po_perFrameCostFracPerSquare",
     value: 0.0002
@@ -142,10 +139,7 @@ var po_rootSquareSizeExponentCost = {
     name: "po_rootSquareSizeExponentCost",
     value: 1.5
 };
-var p_ls_airNutrientsPerExposedNeighborTick = {
-    name: "p_ls_airNutrientsPerExposedNeighborTick",
-    value: 0.05
-};
+
 var p_seed_ls_sproutGrowthRate = {
     name: "p_seed_ls_sproutGrowthRate",
     value: 0.01
@@ -217,7 +211,7 @@ addConfig(rock_darkColorAmount);
 addConfig(rock_accentColorAmount);
 
 addConfig(global_plantToRealWaterConversionFactor);
-addConfig(b_sq_waterContainmentMax);
+addConfig(base_waterContainmentMax);
 addConfig(b_sq_nutrientValue);
 addConfig(static_sq_waterContainmentMax);
 addConfig(static_sq_waterContainmentTransferRate);
@@ -225,23 +219,20 @@ addConfig(drain_sq_waterContainmentMax);
 addConfig(drain_sq_waterTransferRate);
 addConfig(wds_sq_waterContainmentMax);
 addConfig(wds_sq_waterTransferRate);
-addConfig(b_sq_waterContainmentTransferRate);
-addConfig(b_sq_waterContainmentEvaporationRate);
+addConfig(base_waterContainmentTransferRate);
+addConfig(base_waterContainmentEvaporationRate);
 addConfig(b_sq_darkeningStrength);
-addConfig(d_sq_nutrientValue);
+addConfig(dirtNutrientValuePerDirectNeighbor);
 addConfig(rain_dropChance);
 addConfig(heavyrain_dropChance);
 addConfig(rain_dropHealth);
 addConfig(water_evaporationRate);
 addConfig(water_viscocity);
 addConfig(water_darkeningStrength);
-addConfig(po_airSuckFrac);
-addConfig(po_waterSuckFrac);
-addConfig(po_rootSuckFrac);
 addConfig(po_perFrameCostFracPerSquare);
 addConfig(po_greenSquareSizeExponentCost);
 addConfig(po_rootSquareSizeExponentCost);
-addConfig(p_ls_airNutrientsPerExposedNeighborTick);
+addConfig(airNutrientsPerEmptyNeighbor);
 addConfig(p_seed_ls_sproutGrowthRate);
 addConfig(p_seed_ls_neighborWaterContainmentRequiredToGrow);
 addConfig(p_seed_ls_neighborWaterContainmentRequiredToDecay);
@@ -261,7 +252,7 @@ export {
     rock_darkColorAmount,
     rock_accentColorAmount,
     global_plantToRealWaterConversionFactor,
-    b_sq_waterContainmentMax,
+    base_waterContainmentMax,
     b_sq_nutrientValue,
     static_sq_waterContainmentMax,
     static_sq_waterContainmentTransferRate,
@@ -269,23 +260,20 @@ export {
     drain_sq_waterTransferRate,
     wds_sq_waterContainmentMax,
     wds_sq_waterTransferRate,
-    b_sq_waterContainmentTransferRate,
-    b_sq_waterContainmentEvaporationRate,
+    base_waterContainmentTransferRate,
+    base_waterContainmentEvaporationRate,
     b_sq_darkeningStrength,
-    d_sq_nutrientValue,
+    dirtNutrientValuePerDirectNeighbor,
     rain_dropChance,
     heavyrain_dropChance,
     rain_dropHealth,
     water_evaporationRate,
     water_viscocity,
     water_darkeningStrength,
-    po_airSuckFrac,
-    po_waterSuckFrac,
-    po_rootSuckFrac,
     po_perFrameCostFracPerSquare,
     po_greenSquareSizeExponentCost,
     po_rootSquareSizeExponentCost,
-    p_ls_airNutrientsPerExposedNeighborTick,
+    airNutrientsPerEmptyNeighbor,
     p_seed_ls_sproutGrowthRate,
     p_seed_ls_neighborWaterContainmentRequiredToGrow,
     p_seed_ls_neighborWaterContainmentRequiredToDecay,

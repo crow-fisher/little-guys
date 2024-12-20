@@ -38,19 +38,19 @@ class BaseLifeSquare {
 
     addAirNutrient(nutrientAmount) {
         var start = this.airNutrients;
-        this.airNutrients = Math.min(this.maxNutrientDt, this.airNutrients + nutrientAmount);
+        this.airNutrients += Math.min(this.maxNutrientDt, this.airNutrients + nutrientAmount);
         return this.airNutrients - start;
     }
 
     addWaterNutrient(nutrientAmount) {
-        var start = this.airNutrients;
-        this.waterNutrients = Math.min(this.maxNutrientDt, this.waterNutrients + nutrientAmount);
+        var start = this.waterNutrients;
+        this.waterNutrients += Math.min(this.maxNutrientDt, this.waterNutrients + nutrientAmount);
         return this.waterNutrients - start;
     }
 
     addDirtNutrient(nutrientAmount) {
         var start = this.dirtNutrients;
-        this.dirtNutrients = Math.min(this.maxNutrientDt, this.dirtNutrients + nutrientAmount);
+        this.dirtNutrients += Math.min(this.maxNutrientDt, this.dirtNutrients + nutrientAmount);
         return this.dirtNutrients - start;
     }
 
