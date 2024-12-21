@@ -7,12 +7,12 @@ import {
     p_seed_ls_neighborWaterContainmentRequiredToDecay,
     p_seed_ls_darkeningStrength
     } from "../config/config.js"
-import { getSquares } from "../squares/_sqOperations.js";
+import { getDirectNeighbors, getSquares } from "../squares/_sqOperations.js";
 import { getNeighbors } from "../squares/_sqOperations.js";
 import { hexToRgb, rgbToHex } from "../common.js";
 class PlantSeedLifeSquare extends BaseLifeSquare {
-    constructor(posX, posY) {
-        super(posX, posY);
+    constructor(square) {
+        super(square);
         this.proto = "PlantSeedLifeSquare";
         this.type = "seed";
         this.sproutStatus = 0;
@@ -23,26 +23,10 @@ class PlantSeedLifeSquare extends BaseLifeSquare {
     }
 
     tick() {
-        var hostSquareArr = Array.from(getSquares(this.posX, this.posY).filter((sq) => sq.collision && sq.rootable));
-        if (hostSquareArr.length == 0) {
-            console.error("No collidable and rootable host square found!");
-            return;
-        }
-        var hostSquare = hostSquareArr[0];
-        var directNeighbors = getNeighbors(this.posX, this.posY);
-
-        var totalSurroundingWater = hostSquare.waterContainment;
-        for (var i = 0; i < directNeighbors.length; i++) {
-            var neighbor = directNeighbors[i];
-            if (neighbor == null) {
-                continue;
-            }
-            if (!neighbor.solid) { // basically if it's a water type?? idk maybe this is unclear
-                totalSurroundingWater += neighbor.blockHealth;
-                continue;
-            }
-            totalSurroundingWater += neighbor.waterContainment;
-        }
+        var totalSurroundingWater = this.linkedSquare.waterContainment + 
+            getDirectNeighbors(this.posX, this.posY)
+                .map((neighbor) => neighbor.waterContainment)
+                .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 
         if (totalSurroundingWater < this.neighborWaterContainmentRequiredToDecay.value) {
             this.sproutStatus -= this.sproutGrowthRate.value;
@@ -50,7 +34,6 @@ class PlantSeedLifeSquare extends BaseLifeSquare {
         if (totalSurroundingWater > this.p_seed_ls_neighborWaterContainmentRequiredToGrow.value) {
             this.sproutStatus += this.sproutGrowthRate.value;
         }
-
         this.sproutStatus = Math.max(0, this.sproutStatus);
     }
 

@@ -3,13 +3,13 @@ import { hexToRgb, rgbToHex } from "../common.js";
 
 import { getCurTime } from "../globals.js";
 import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount } from "../config/config.js";
-import { getSquares } from "../squares/_sqOperations.js";
+import { getSquares, removeOrganismSquare } from "../squares/_sqOperations.js";
 
 class BaseLifeSquare {
-    constructor(posX, posY) {
+    constructor(square) {
         this.proto = "BaseLifeSquare";
-        this.posX = posX;
-        this.posY = posY;
+        this.posX = square.posX;
+        this.posY = square.posY;
         this.type = "base";
         this.colorBase = "#1D263B";
         this.spawnedEntityId = 0;
@@ -20,7 +20,9 @@ class BaseLifeSquare {
         this.waterNutrients = 0;
         this.dirtNutrients = 0;
     
-        this.linkedSquare = null;
+        this.linkedSquare = square;
+        this.linkedOrganism = null;
+
         this.opacity = 1;
         this.width = 1;
         this.xOffset = 0.5;
@@ -34,6 +36,23 @@ class BaseLifeSquare {
         this.darkColorAmount = dirt_darkColorAmount;
         this.accentColor = "#246A73";
         this.accentColorAmount = dirt_accentColorAmount;
+    }
+
+    linkSquare(square) {
+        square.linkOrganismSquare(this);
+    }
+    unlinkSquare(square) {
+        square.unlinkOrganismSquare(this);
+    }
+    linkOrganism(organism) {
+        this.linkedOrganism = organism;
+        this.spawnedEntityId = organism.spawnedEntityId;
+    }
+    destroy() {
+        if (this.linkedSquare.organic) {
+            this.linkedSquare.destroy();
+        }
+        removeOrganismSquare(this);
     }
 
     addAirNutrient(nutrientAmount) {
@@ -52,10 +71,6 @@ class BaseLifeSquare {
         var start = this.dirtNutrients;
         this.dirtNutrients += Math.min(this.maxNutrientDt, this.dirtNutrients + nutrientAmount);
         return this.dirtNutrients - start;
-    }
-
-    adjacentWater(waterBlockHealth) {
-        return this.addWaterNutrient(waterBlockHealth);
     }
 
     preTick() {
@@ -123,7 +138,6 @@ class BaseLifeSquare {
             height
         );
     }
-
 
     render() {
         if (this.renderWithColorRange) {

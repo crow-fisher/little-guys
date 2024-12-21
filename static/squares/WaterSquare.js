@@ -11,7 +11,7 @@
     } from "../globals.js";
 
     import { getObjectArrFromMap, removeItemAll, hexToRgb, rgbToHex, randNumber} from "../common.js";
-    import {purge, reset, render, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquareAndChildren} from "../globalOperations.js"
+    import { purge, reset, render, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquare} from "../globalOperations.js"
     import { getOrganismSquaresAtSquare } from "../lifeSquares/_lsOperations.js";
 
     import { WATERFLOW_CANDIDATE_SQUARES, WATERFLOW_TARGET_SQUARES } from "../globals.js";
@@ -32,7 +32,8 @@
             this.accentColor = "#85B09A";
             this.opacity = 0.5;
             
-            this.blockHealth = 100;
+            this.maxBlockHealth = 100;
+            this.blockHealth = this.maxBlockHealth;
         }
 
         reset() {
@@ -69,12 +70,12 @@
 
         physicsBefore2() {
             super.physicsBefore2();
-            this.calculateIndirectPressure(0);
+            this.calculateIndirectPressure();
             updateGlobalStatistic("pressure", this.currentPressureIndirect);
         }
 
         calculateCandidateFlows() {
-            if (this.currentPressureIndirect == 0) {
+            if (Math.random() > 0.5 + (0.24 * this.currentPressureIndirect)) {
                 WATERFLOW_CANDIDATE_SQUARES.add(this);
             }
             if (this.currentPressureIndirect >= this.currentPressureDirect) {
@@ -83,7 +84,8 @@
                         if (Math.abs(i) == Math.abs(j)) {
                             continue;
                         }
-                        if (Array.from(getSquares(this.posX + i, this.posY + j).filter((sq) => sq.solid || sq.proto == this.proto)).length == 0) {
+                        if (Array.from(getSquares(this.posX + i, this.posY + j)
+                            .filter((sq) => sq.collision || sq.proto == this.proto)).length == 0) {
                             if (!(this.currentPressureIndirect in WATERFLOW_TARGET_SQUARES)) {
                                 WATERFLOW_TARGET_SQUARES[this.currentPressureIndirect] = new Set();
                             }
@@ -99,7 +101,6 @@
          */
         calculateDirectPressure() {
             this.currentPressureDirect = 0;
-
             getSquares(this.posX, this.posY - 1)
                 .filter((sq) => sq.proto == this.proto)
                 .filter((sq) => sq.group == this.group)
@@ -120,17 +121,13 @@
                     this.currentPressureDirect += 1;
                 }
             }
-
             getSquares(this.posX, this.posY + 1)
                 .filter((sq) => sq.proto == this.proto)
                 .filter((sq) => sq.group == this.group)
                 .forEach((sq) => sq.currentPressureDirect = this.currentPressureDirect + 1)
 
         }
-        calculateIndirectPressure(startingPressure) {
-            // we are looking for neighbors *of the same group*. 
-            // we will only do this calculation *once* per group. 
-            // starting on the top left member of that group.
+        calculateIndirectPressure() {
             if (this.currentPressureIndirect != -1) {
                 return;
             }
@@ -146,60 +143,27 @@
             iterateOnSquares((sq) => {
                 sq.currentPressureIndirect = sq.currentPressureDirect + sq.posY - perGroupData[sq.group]["minPosY"];
             })
-            // var nodes = [this];
-            // var visited = set();
-            // var curIdx = 0;
-            // var cur = null;
-            // while (curIdx < nodes.length) {
-            //     cur = nodes[curIdx];
-
-            //         getDirectNeighbors(this.posX, this.posY)
-            //         .filter((sq) => sq != null && sq.group == this.group)
-            //         .forEach((myNeighbor) => {
-            //             if (!(myNeighbor in visited)) {
-            //                 var dy = myNeighbor.posY - this.posY;
-            //                 myNeighbor.currentPressureIndirect = Math.max(myNeighbor.currentPressureDirect, startingPressure + dy);
-
-            //                 myNeighbor.calculateIndirectPressure(startingPressure + dy);
-            //             }
-
-            //         });
-            // }
-            
-            // getDirectNeighbors(this.posX, this.posY)
-            //     .filter((sq) => sq != null && sq.group == this.group)
-            //     .forEach((myNeighbor) => {
-            //         var dy = myNeighbor.posY - this.posY;
-            //         myNeighbor.calculateIndirectPressure(startingPressure + dy);
-            //     });
         }
 
         doNeighborPercolation() {
-            getDirectNeighbors(this.posX, this.posY).forEach((sq) => { 
-                if (sq.organic) {
-                    getOrganismSquaresAtSquare(sq.posX, sq.posY).forEach(
-                        (osq) => this.blockHealth -= osq.adjacentWater(this.blockHealth)
-                    );
-                    return;
-                }
-                if (sq.collision == false) {
-                    return;
-                }
-                if (sq.solid) {
-                    this.blockHealth -= sq.percolateFromWater(this);
-                } else if (sq.proto == this.proto) {
-                    if (sq.blockHealth <= this.blockHealth) {
-                        var diff = 100 - this.blockHealth;
-                        if (diff > sq.blockHealth) {
-                            this.blockHealth += sq.blockHealth;
-                            removeSquareAndChildren(sq);
-                        } else {
-                            this.blockHealth += diff;
-                            sq.blockHealth -= diff;
+            getDirectNeighbors(this.posX, this.posY)
+                .filter((sq) => sq.collision)
+                .forEach((sq) => { 
+                    if (sq.solid) {
+                        this.blockHealth -= sq.percolateFromWater(this);
+                    } else {
+                        if (sq.blockHealth <= this.blockHealth) {
+                            var diff = this.maxBlockHealth - this.blockHealth;
+                            if (diff > sq.blockHealth) {
+                                this.blockHealth += sq.blockHealth;
+                                removeSquare(sq);
+                            } else {
+                                this.blockHealth += diff;
+                                sq.blockHealth -= diff;
+                            }
                         }
                     }
-                }
-            });
+                });
         }
     }
 

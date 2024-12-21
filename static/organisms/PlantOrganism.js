@@ -2,7 +2,7 @@ import {BaseOrganism} from "./BaseOrganism.js"
 import { SeedSquare } from "../squares/SeedSquare.js";
 import { PlantSeedOrganism } from "./PlantSeedOrganism.js";
 
-import { removeSquareAndChildren } from "../globalOperations.js";
+import { removeSquare } from "../globalOperations.js";
 import { getCollidableSquareAtLocation } from "../squares/_sqOperations.js";
 import { PlantSquare } from "../squares/PlantSquare.js";
 import { PlantLifeSquare } from "../lifeSquares/PlantLifefSquare.js";
@@ -19,8 +19,8 @@ import { getOrganismSquaresAtSquareWithEntityId } from "../lifeSquares/_lsOperat
 
 import { getCurTime } from "../globals.js";
 class PlantOrganism extends BaseOrganism {
-    constructor(posX, posY) {
-        super(posX, posY);
+    constructor(square) {
+        super(square);
         this.proto = "PlantOrganism";
         this.type = "plant";
 
@@ -31,11 +31,11 @@ class PlantOrganism extends BaseOrganism {
         this.throttleInterval = 1000;
 
         this.plantLastGrown = getCurTime();
-        this.waterLastGrown = getCurTime;
+        this.waterLastGrown = getCurTime();
         this.rootLastGrown = getCurTime();
 
         this.maximumLifeSquaresOfType = {
-            "plant": 3,
+            "green": 3,
             "root": 10
         }
 
@@ -47,12 +47,12 @@ class PlantOrganism extends BaseOrganism {
         var topGreen = this.getHighestGreen();
         var seedSquare = new SeedSquare(topGreen.posX, topGreen.posY - 1);
         if (addSquare(seedSquare)) {
-            var newOrg = new PlantSeedOrganism(seedSquare.posX, seedSquare.posY);
-            newOrg.linkedSquare = seedSquare;
+            var newOrg = new PlantSeedOrganism(seedSquare);
+            newOrg.linkSquare(seedSquare);
             if (addNewOrganism(newOrg)) {
                 return seedSquare;
             } else {
-                removeSquareAndChildren(seedSquare);
+                removeSquare(seedSquare);
                 console.log("Failed to add organism to seed square");
                 return null;
             }
@@ -63,7 +63,6 @@ class PlantOrganism extends BaseOrganism {
     }
 
     growInitialSquares() {
-        var ret = new Array();
         // a plant needs to grow a PlantSquare above ground 
         // and grow a RootOrganism into existing Dirt
         getCollidableSquareAtLocation(this.posX, this.posY - 1)
@@ -74,87 +73,39 @@ class PlantOrganism extends BaseOrganism {
                     topEmpty = false;
                 })
                 if (topEmpty) {
-                    removeSquareAndChildren(sq); // fuck them kids!!!!
+                    removeSquare(sq); // fuck them kids!!!!
                 }
         });
         var newPlantSquare = addSquare(new PlantSquare(this.posX, this.posY - 1));
         if (newPlantSquare) {
-            var orgSq = addOrganismSquare(new PlantLifeSquare(this.posX, this.posY - 1));
+            var orgSq = addOrganismSquare(new PlantLifeSquare(newPlantSquare));
             if (orgSq) {
-                orgSq.linkedSquare = newPlantSquare;
-                ret.push(orgSq);
+                orgSq.linkSquare(newPlantSquare);
+                orgSq.linkOrganism(this);
+                this.addAssociatedLifeSquare(orgSq);
             }
-        };
-
-        // root time
-        getSquares(this.posX, this.posY)
-            .filter((sq) => sq.rootable)
-            .filter((sq) => sq.proto != "SeedSquare")
-            .forEach((sq) => {
-                var rootSq = addOrganismSquare(new RootLifeSquare(this.posX, this.posY));
-                if (rootSq) {
-                    ret.push(rootSq);
-                }
-            });
-
-        if (ret.length == 2) {
-            ret.forEach((sq) => this.addAssociatedSquare(sq));
-            return ret;
         } else {
-            if (newPlantSquare != null) {
-                removeSquareAndChildren(newPlantSquare);
-            }
-            ret.forEach(removeOrganismSquare);
+            this.destroy();
         }
+        var rootSq = addOrganismSquare(new RootLifeSquare(this.linkedSquare));
+        rootSq.linkOrganism(this);
+        rootSq.linkSquare(this.linkedSquare);
+        this.addAssociatedLifeSquare(rootSq);
     }
 
     getLowestGreen() {
-        return Array.from(this.associatedSquares
+        return Array.from(this.lifeSquares
             .filter((sq) => sq.type == "green")).sort((a, b) => b.posY - a.posY)[0];
     }
 
     getHighestGreen() {
-        return Array.from(this.associatedSquares
+        return Array.from(this.lifeSquares
             .filter((sq) => sq.type == "green")).sort((a, b) => a.posY - b.posY)[0];
     }
-
-    getExteriorRoots() {
-        var lowestGreen = Array.from(this.associatedSquares
-            .filter((sq) => sq.type == "green")).sort((a, b) => b.posY - a.posY)[0];
-
-        var visitedSquares = new Set();
-        var exteriorRoots = new Set();
-        var squaresToExplore = new Array();
-        squaresToExplore.push(lowestGreen); // LifeSquare 
-        visitedSquares.add(getSquares(lowestGreen.posX, lowestGreen.posY)); // TerrainSquares
-        var curIdx = 0;
-        do {
-            var activeSquare = squaresToExplore[curIdx];
-            var myNeighbors = getDirectNeighbors(activeSquare.posX, activeSquare.posY);
-            for (let i = 0; i < myNeighbors.length; i++) {
-                var neighbor = myNeighbors[i];
-                var isExteriorRoot = true;
-                if (neighbor == null) {
-                    continue;
-                }
-                if (getCountOfOrganismsSquaresOfTypeAtPosition(neighbor.posX, neighbor.posY, "root") > 0 && (Array.from(visitedSquares).indexOf(neighbor) == -1)) {
-                    squaresToExplore.push(neighbor)
-                    visitedSquares.add(neighbor);
-                    isExteriorRoot = false;
-
-                }
-                if (isExteriorRoot) {
-                    exteriorRoots.add(activeSquare);
-                }
-            }
-            curIdx += 1;
-        } while (curIdx < squaresToExplore.length);
-
-        return Array.from(exteriorRoots);
-    }
-
+    
     grow() {
         // make a decision on how to grow based on which of our needs we need the most
+        
         let minNutrient = Math.min(Math.min(this.airNutrients, this.dirtNutrients), this.waterNutrients);
         if (this.currentEnergy < 0) {
             console.log("Want to grow...but the effort is too much")
@@ -177,24 +128,31 @@ class PlantOrganism extends BaseOrganism {
         }
     }
 
+    canGrowPlant() {
+        return this.lifeSquaresCountByType["green"] <= this.maximumLifeSquaresOfType["green"];
+    }
+    canGrowRoot() {
+        return this.lifeSquaresCountByType["root"] <= this.maximumLifeSquaresOfType["root"]
+    }
+
     growNewPlant() {
-        if (this.associatedSquaresCountByType["green"] > this.maximumLifeSquaresOfType["green"]) {
+        if (!this.canGrowPlant()) {
             return 0;
         }
         if (getCurTime() > this.plantLastGrown + this.throttleInterval) {
             this.plantLastGrown = getCurTime();
-            var highestPlantSquare = Array.from(this.associatedSquares.filter((sq) => sq.type == "green").sort((a, b) => a.posY - b.posY))[0];
+            var highestPlantSquare = Array.from(this.lifeSquares.filter((sq) => sq.type == "green").sort((a, b) => a.posY - b.posY))[0];
             if (highestPlantSquare == null) {
                 // then we take highest root square;
-                highestPlantSquare = Array.from(this.associatedSquares.filter((sq) => sq.type == "root").sort((a, b) => a.posY - b.posY))[0];
+                highestPlantSquare = Array.from(this.lifeSquares.filter((sq) => sq.type == "root").sort((a, b) => a.posY - b.posY))[0];
             }
             var newPlantSquare = new PlantSquare(highestPlantSquare.posX, highestPlantSquare.posY - 1);
             if (addSquare(newPlantSquare)) {
-                var orgSq = addOrganismSquare(new PlantLifeSquare(highestPlantSquare.posX, highestPlantSquare.posY - 1));
+                var orgSq = addOrganismSquare(new PlantLifeSquare(newPlantSquare));
                 if (orgSq) {
-                    orgSq.linkedSquare = newPlantSquare;
-                    orgSq.setSpawnedEntityId(this.spawnedEntityId);
-                    this.addAssociatedSquare(orgSq);
+                    this.addAssociatedLifeSquare(orgSq);
+                    orgSq.linkOrganism(this);
+                    orgSq.linkSquare(newPlantSquare);
                     return 1;
                 }
             };
@@ -211,14 +169,14 @@ class PlantOrganism extends BaseOrganism {
     }
 
     growWaterRoot() {
-        if (this.associatedSquaresCountByType["root"] > this.maximumLifeSquaresOfType["root"]) {
+        if (!this.canGrowRoot()) {
             return 0;
         }
         if (getCurTime() > this.waterLastGrown + this.throttleInterval) {
             this.waterLastGrown = getCurTime();
             var wettestSquare = null;
-            for (let i = 0; i < this.associatedSquares.length; i++) {
-                var sq = this.associatedSquares[i];
+            for (let i = 0; i < this.lifeSquares.length; i++) {
+                var sq = this.lifeSquares[i];
                 if (sq.type != "root") {
                     continue;
                 }
@@ -232,9 +190,11 @@ class PlantOrganism extends BaseOrganism {
                     }});
                 }
             if (wettestSquare != null) {
-                var rootSquare = addOrganismSquare(new RootLifeSquare(wettestSquare.posX, wettestSquare.posY));
+                var rootSquare = addOrganismSquare(new RootLifeSquare(wettestSquare));
                 if (rootSquare) {
-                    this.addAssociatedSquare(rootSquare);
+                    this.addAssociatedLifeSquare(rootSquare);
+                    rootSquare.linkOrganism(this);
+                    rootSquare.linkSquare(wettestSquare);
                     return 1;
                 }
             }
@@ -243,7 +203,7 @@ class PlantOrganism extends BaseOrganism {
     }
 
     growDirtRoot() {
-        if (this.associatedSquaresCountByType["root"] > this.maximumLifeSquaresOfType["root"]) {
+        if (!this.canGrowRoot()) {
             return 0;
         }
         if (getCurTime() > this.rootLastGrown + this.throttleInterval) {
@@ -251,38 +211,39 @@ class PlantOrganism extends BaseOrganism {
             var dirtiestSquare = null;
             var dirtiestSquareDirtResourceAvailable = 0;
 
-            this.associatedSquares.filter((iterSquare) => iterSquare.type == "root").forEach((iterSquare) => {
-                getDirectNeighbors(iterSquare.posX, iterSquare.posY)
-                    .filter((compSquare) => compSquare != null)
-                    .filter((compSquare) => compSquare.rootable)
-                    .filter((compSquare) => getOrganismSquaresAtSquare(compSquare.posX, compSquare.posY).length == 0)
-                    .forEach((compSquare) => {
-                        var compSquareResourceAvailable = getDirectNeighbors(compSquare.posX, compSquare.posY)
-                            .filter((sq) => sq != null && sq.solid && sq.nutrientValue.value > 0)
-                            .map((sq) => {
-                                var sqNeighbors = getDirectNeighbors(sq.posX, sq.posY);
-                                var sqNeighborsRooted = Array.from(sqNeighbors.filter((ssq) => ssq != null).filter((ssq) => getCountOfOrganismsSquaresOfTypeAtPosition(ssq.posX, ssq.posY, "root")));
-                                return sq.nutrientValue.value / (sqNeighborsRooted.length + 1);
-                            })
-                            .reduce(
-                                (accumulator, currentValue) => accumulator + currentValue,
-                                0,
-                            );
+            this.lifeSquares.filter((iterSquare) => iterSquare.type == "root")
+                .forEach((iterSquare) => {
+                    getDirectNeighbors(iterSquare.posX, iterSquare.posY)
+                        .filter((compSquare) => compSquare != null)
+                        .filter((compSquare) => compSquare.rootable)
+                        .filter((compSquare) => getOrganismSquaresAtSquare(compSquare.posX, compSquare.posY).length == 0)
+                        .forEach((compSquare) => {
+                            var compSquareResourceAvailable = getDirectNeighbors(compSquare.posX, compSquare.posY)
+                                .filter((sq) => sq != null && sq.solid && sq.nutrientValue.value > 0)
+                                .map((sq) => {
+                                    var sqNeighbors = getDirectNeighbors(sq.posX, sq.posY);
+                                    var sqNeighborsRooted = Array.from(sqNeighbors.filter((ssq) => ssq != null).filter((ssq) => getCountOfOrganismsSquaresOfTypeAtPosition(ssq.posX, ssq.posY, "root")));
+                                    return sq.nutrientValue.value / (sqNeighborsRooted.length + 1);
+                                })
+                                .reduce(
+                                    (accumulator, currentValue) => accumulator + currentValue,
+                                    0,
+                                );
 
-                        if (compSquareResourceAvailable > dirtiestSquareDirtResourceAvailable ||
-                            (compSquareResourceAvailable == dirtiestSquareDirtResourceAvailable && compSquare.posY < dirtiestSquare.posY)
-                        ) {
-                            dirtiestSquare = compSquare;
-                            dirtiestSquareDirtResourceAvailable = compSquareResourceAvailable;
-                        }
-                    });
+                            if (compSquareResourceAvailable > dirtiestSquareDirtResourceAvailable ||
+                                (compSquareResourceAvailable == dirtiestSquareDirtResourceAvailable && compSquare.posY < dirtiestSquare.posY)
+                            ) {
+                                dirtiestSquare = compSquare;
+                                dirtiestSquareDirtResourceAvailable = compSquareResourceAvailable;
+                            }
+                        });
             });
             if (dirtiestSquare != null) {
-                var rootSquare = addOrganismSquare(new RootLifeSquare(dirtiestSquare.posX, dirtiestSquare.posY));
-                if (rootSquare) {
-                    this.addAssociatedSquare(rootSquare);
-                    return 1;
-                }
+                var rootLifeSquare = addOrganismSquare(new RootLifeSquare(dirtiestSquare));
+                this.addAssociatedLifeSquare(rootLifeSquare);
+                rootLifeSquare.linkOrganism(this);
+                rootLifeSquare.linkSquare(dirtiestSquare);
+                return 1;
             }
         }
         return 0;
@@ -290,7 +251,7 @@ class PlantOrganism extends BaseOrganism {
 
     preRender() {
         this.highestGreen = this.getHighestGreen();
-        this.associatedSquares
+        this.lifeSquares
         .filter((sq) => sq.type == "green")
         .forEach((lsq) => {
             lsq.xOffset = this.xOffset;

@@ -30,6 +30,7 @@ var loadSlotB = document.getElementById("loadSlotB");
 var saveSlotB = document.getElementById("saveSlotB");
 
 var selectedMaterial = "dirt";
+const BASE_SIZE = 12;
 
 materialSelect.addEventListener('change', (e) => selectedMaterial = e.target.value);
 timeScale.addEventListener('change', (e) => TIME_SCALE = e.target.value);
@@ -39,12 +40,11 @@ var organismAddedThisClick = false;
 var lastClickEvent = null;
 var lastTick = Date.now();
 
-var CANVAS_SQUARES_X = 120; // * 8; //6;
-var CANVAS_SQUARES_Y = 80; // * 8; // 8;
+var CANVAS_SQUARES_X = 50; // * 8; //6;
+var CANVAS_SQUARES_Y = 50; // * 8; // 8;
 
 var MAIN_CANVAS = document.getElementById("main");
 var MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
-const BASE_SIZE = 16;
 MAIN_CANVAS.width = CANVAS_SQUARES_X * BASE_SIZE;
 MAIN_CANVAS.height = CANVAS_SQUARES_Y * BASE_SIZE;
 
@@ -97,8 +97,8 @@ function loadObjArr(sourceObjMap, addFunc) {
 //             for (let j = 0; j < subKeys.length; j++) {
 //                 sourceObjMap[rootKeys[i]][subKeys[j]].forEach((org) => {
 //                     var orgAsOrganism = Object.setPrototypeOf(org, ProtoMap[org.proto]);
-//                     for (let i = 0; i < orgAsOrganism.associatedSquares.length; i++) {
-//                         var sq = orgAsOrganism.associatedSquares[i];
+//                     for (let i = 0; i < orgAsOrganism.lifeSquares.length; i++) {
+//                         var sq = orgAsOrganism.lifeSquares[i];
 //                         sq = Object.setPrototypeOf(sq, ProtoMap[org.proto]);
 //                         if (sq.linkedSquare != null) {
 
@@ -258,14 +258,8 @@ function doClickAdd() {
                             }
                             var sq = addSquare(new SeedSquare(px, curY));
                             if (sq) {
-                                var newOrg = new PlantSeedOrganism(px, curY);
-                                newOrg.linkedSquare = sq;
-                                if (newOrg) {
-                                    organismAddedThisClick = true;
-                                    addNewOrganism(newOrg);
-                                } else {
-                                    removeSquare(sq);
-                                }
+                                organismAddedThisClick = true;
+                                addNewOrganism(new PlantSeedOrganism(sq));
                             }
                             break;
                     }

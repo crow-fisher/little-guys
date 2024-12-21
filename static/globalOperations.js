@@ -1,5 +1,5 @@
 import { getSquares, iterateOnSquares } from "./squares/_sqOperations.js";
-import { iterateOnOrganisms } from "./organisms/_orgOperations.js";
+import { getOrganismsAtSquare, iterateOnOrganisms } from "./organisms/_orgOperations.js";
 import {
     ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES,
     getNextGroupId, updateGlobalStatistic, getGlobalStatistic, resetWaterflowSquares
@@ -22,7 +22,7 @@ function purge() {
         ret &= sq.posY < CANVAS_SQUARES_Y;
         ret &= sq.blockHealth > 0;
         if (!ret) {
-            removeSquareAndChildren(sq);
+            removeSquare(sq);
         }
     });
 
@@ -70,12 +70,7 @@ function renderOrganisms() {
     iterateOnOrganisms((org) => org.render(), 0);
 }
 
-function removeSquareAndChildren(square) {
-    if (square.collision) {
-        getObjectArrFromMap(ALL_ORGANISMS, square.posX, square.posY)
-            .filter((org) => (!square.organic || org.spawnedEntityId == square.spawnedEntityId))
-            .forEach((org) => org.destroy());
-    }
+function removeSquare(square) {
     removeItemAll(getObjectArrFromMap(ALL_SQUARES, square.posX, square.posY), square);
 }
 
@@ -101,28 +96,7 @@ function doWaterFlow() {
                 }
             });
         });
-        // if (WATERFLOW_CANDIDATE_SQUARES.size > 0) {
-        //     // we need to do some water-mcflowin!
-        //     var candidate_squares_as_list = Array.from(WATERFLOW_CANDIDATE_SQUARES);
-        //     var target_squares = WATERFLOW_TARGET_SQUARES[curWaterflowPressure];
-        //     if (target_squares == null) {
-        //         continue;
-        //     }
-
-        //     for (let j = 0; j < Math.max(candidate_squares_as_list.length, target_squares.length); j++) {
-        //         var candidate = candidate_squares_as_list[j % candidate_squares_as_list.length];
-        //         var target = target_squares[j % target_squares.length];
-        //         if (candidate.group == target[2]) {
-        //                 var dx = target[0] - candidate.posX;
-        //                 var dy = target[1] - candidate.posY;
-        //                 if (Math.abs(dy) == 0 && Math.abs(dx) < 5) {
-        //                     continue;
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
     }
 }
 
-export {purge, reset, render, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquareAndChildren}
+export {purge, reset, render, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquare}

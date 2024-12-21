@@ -10,8 +10,8 @@ import {
 
 
 class PlantLifeSquare extends BaseLifeSquare {
-    constructor(posX, posY) {
-        super(posX, posY);
+    constructor(square) {
+        super(square);
         this.proto = "PlantLifeSquare";
         this.colorBase = "#157F1F";
         this.type = "green";

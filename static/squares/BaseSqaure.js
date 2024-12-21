@@ -28,7 +28,7 @@ import { getObjectArrFromMap } from "../common.js";
 import { addOrganism, addNewOrganism } from "../organisms/_orgOperations.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 
-import { purge, reset, render, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquareAndChildren } from "../globalOperations.js"
+import { purge, reset, render, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquare } from "../globalOperations.js"
 
 import { removeOrganismSquare } from "./_sqOperations.js";
 
@@ -59,9 +59,9 @@ export class BaseSquare {
         this.organic = false;
         this.collision = true;
         this.visible = true; 
-
         this.randoms = [];
-
+        this.linkedOrganism = null;
+        this.linkedOrganismSquares = new Array();
         this.renderWithColorRange = false;
         // for ref - values from dirt
         this.baseColor = "#9A8873";
@@ -70,14 +70,34 @@ export class BaseSquare {
         this.darkColorAmount = dirt_darkColorAmount;
         this.accentColor = "#246A73";
         this.accentColorAmount = dirt_accentColorAmount;
-
         this.opacity = 1;
-
-
+        this.waterSinkRate = 0.95;
     };
+    destroy() {
+        removeSquare(this);
+    }
+    linkOrganism(organism) {
+        this.linkedOrganism = organism;
+        organism.linkedSquare = this;
+    }
+    unlinkOrganism(organism) {
+        this.linkedOrganism = null;
+        organism.linkedSquare = null;
+    }
+    linkOrganismSquare(organismSquare) {
+        if (organismSquare in this.linkedOrganismSquares) {
+            console.warn("Trying to link an organismSquare that it's already been attached to...odd state.");
+        }
+        this.linkedOrganismSquares.push(organismSquare);
+        organismSquare.linkedSquare = this;
+    }
+    unlinkOrganismSquare(organismSquare) {
+        this.linkedOrganismSquares = Array.from(this.linkedOrganismSquares.filter((lsq) => lsq != organismSquare));
+        organismSquare.linkedSquare = null;
+    }
     reset() {
         if (this.blockHealth <= 0) {
-            removeSquareAndChildren(this);
+            removeSquare(this);
         }
         this.group = -1;
         this.speedY += 1;
@@ -180,7 +200,7 @@ export class BaseSquare {
             return;
         }
         if (newPosX < 0 || newPosX >= CANVAS_SQUARES_X || newPosY < 0 || newPosY >= CANVAS_SQUARES_Y) {
-            removeSquareAndChildren(this);
+            removeSquare(this);
             return;
         }
         newPosX = Math.floor(newPosX);
@@ -197,35 +217,24 @@ export class BaseSquare {
             console.warn("Square not moved; new occupied by a block with collision.");
             return false;
         }
+        this.linkedOrganismSquares.forEach((lsq) => {
+            removeOrganismSquare(lsq);
+            lsq.posX = newPosX;
+            lsq.posY = newPosY;
+            addOrganismSquare(lsq);
+        })
 
-        var newLifeSquares = [];
-        var newOrganisms = [];
+        if (this.linkedOrganism != null) {
+            removeOrganism(this.linkedOrganism);
+            this.linkedOrganism.posX = newPosX;
+            this.linkedOrganism.posY = newPosY;
+            addOrganism(this.linkedOrganism);
+        }
 
-        getOrganismSquaresAtSquare(this.posX, this.posY)
-            .filter((osq) => !this.organic || osq.spawnedEntityId == this.spawnedEntityId)
-            .forEach((osq) => {
-            removeOrganismSquare(osq);
-            osq.posX = newPosX;
-            osq.posY = newPosY;
-            newLifeSquares.push(osq);
-        });
-
-        getOrganismsAtSquare(this.posX, this.posY)
-        .filter((org) => !this.organic || org.spawnedEntityId == this.spawnedEntityId)
-        .forEach((org) => {
-            removeOrganism(org);
-            org.posX = newPosX;
-            org.posY = newPosY;
-            newOrganisms.push(org);
-        });
-
-        removeItemAll(getObjectArrFromMap(ALL_SQUARES, this.posX, this.posY), this);
-
+        removeSquare(this);
         this.posX = newPosX;
         this.posY = newPosY;
-        getObjectArrFromMap(ALL_SQUARES, this.posX, this.posY).push(this);
-        newOrganisms.forEach(addOrganism);
-        newLifeSquares.forEach(addOrganismSquare);
+        addSquare(this);
 
         return true;
     }
@@ -269,6 +278,9 @@ export class BaseSquare {
         if (!this.physicsEnabled || getCountOfOrganismsSquaresOfTypeAtPosition(this.posX, this.posY, "root") > 0) {
             return false;
         }
+
+        this.waterSinkPhysics();
+
         var finalXPos = this.posX;
         var finalYPos = this.posY;
         var bonked = false;
@@ -301,6 +313,19 @@ export class BaseSquare {
 
         this.updatePosition(finalXPos, finalYPos);
         return true;
+    }
+
+    waterSinkPhysics() {
+        getSquares(this.posX, this.posY + 1)
+        .filter((sq) => sq.proto == "WaterSquare")
+        .forEach((sq) => {
+            if (Math.random() > this.waterSinkRate) {
+                removeSquare(sq);
+                sq.posY -= 1;
+                this.updatePosition(this.posX, this.posY + 1);
+                addSquare(sq);
+            }
+        });
     }
 
     /* Called before physics(), with blocks in strict order from top left to bottom right. */
@@ -386,13 +411,12 @@ export class BaseSquare {
         }
     }
 
-    suckWater(rootWaterSaturation) {
-        if (rootWaterSaturation > this.waterContainment) {
+    suckWater(rootRequestedWater) {
+        if (rootRequestedWater <= 0) {
             return 0;
         }
-        var diff = this.waterContainment - rootWaterSaturation;
-        var ret = Math.min(this.waterContainmentTransferRate.value, diff / 2);
-        this.waterContainment -= (ret / global_plantToRealWaterConversionFactor.value);
-        return ret;
+        var ret = Math.min(rootRequestedWater, this.waterContainment);
+        this.waterContainment -= ret;
+        return ret; 
     }
 }

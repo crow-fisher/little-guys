@@ -1,8 +1,9 @@
 import { getObjectArrFromMap } from "../common.js";
 import { ALL_SQUARES, ALL_ORGANISM_SQUARES, stats } from "../globals.js";
-import { removeSquareAndChildren } from "../globalOperations.js";
+import { removeSquare } from "../globalOperations.js";
 import { getOrganismSquaresAtSquare } from "../lifeSquares/_lsOperations.js";
 import { removeItemAll } from "../common.js";
+import { getOrganismsAtSquare } from "../organisms/_orgOperations.js";
 
 var abs = Math.abs;
 
@@ -60,7 +61,7 @@ function addSquareOverride(square) {
         return;
     }
     if (square.collision) {
-        existingSquares.filter((sq) => sq.collision).forEach((sq) => removeSquareAndChildren(sq));
+        existingSquares.filter((sq) => sq.collision).forEach((sq) => removeSquare(sq));
     }
     addSquare(square);
 }
@@ -91,15 +92,15 @@ function getCollidableSquareAtLocation(posX, posY) {
 }
 
 function removeOrganismSquare(organismSquare) {
-    var posX = organismSquare.posX;
-    var posY = organismSquare.posY;
-    removeItemAll(getObjectArrFromMap(ALL_ORGANISM_SQUARES, posX, posY), organismSquare);
+    removeItemAll(getObjectArrFromMap(ALL_ORGANISM_SQUARES, organismSquare.posX, organismSquare.posY), organismSquare);
 }
 
+// Does not remove organic squares.
 function removeSquarePos(x, y) {
     x = Math.floor(x);
     y = Math.floor(y);
-    getSquares(x, y).forEach(removeSquareAndChildren);
+    getOrganismsAtSquare(x, y).forEach((org) => org.destroy());
+    getSquares(x, y).filter((sq) => !sq.organic).forEach((sq) => sq.destroy());
 }
 
 

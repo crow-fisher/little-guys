@@ -4,31 +4,18 @@ import { getCollidableSquareAtLocation } from "../squares/_sqOperations.js";
 import { removeItemAll } from "../common.js";
 
 function addNewOrganism(organism) {
-    if (Array.from(getCollidableSquareAtLocation(organism.posX, organism.posY)).length == 0) {
-        console.warn("Invalid organism placement; no collidable squares to bind to.")
-        organism.destroy();
-        return false;
-    }
-
     if (getOrganismsAtSquare(organism.posX, organism.posY).length > 0) {
+        console.warn("Weird state; tried to add an organism to an existing square.")
+        console.log(getOrganismsAtSquare(organism.posX, organism.posY));
+        console.log(organism);
         organism.destroy();
         return false;
     }
-
-    if (organism.associatedSquares.length > 0) {
-        organism.spawnedEntityId = getNextEntitySpawnId();
-        organism.associatedSquares.forEach((asq) => asq.setSpawnedEntityId(organism.spawnedEntityId));
-        organism.xOffset = Math.random();
-        if (organism.linkedSquare != null) {
-            organism.linkedSquare.spawnedEntityId = organism.spawnedEntityId;
-        }
-        getObjectArrFromMap(ALL_ORGANISMS, organism.posX, organism.posY).push(organism);
-        return organism;
-    } else {
-        console.log("Organism is fucked up in some way; please reconsider")
+    if (organism.linkedSquare == null) {
         organism.destroy();
-        return false;
     }
+    getObjectArrFromMap(ALL_ORGANISMS, organism.posX, organism.posY).push(organism);
+    return organism;
 }
 
 function addOrganism(organism) {
@@ -54,9 +41,7 @@ function iterateOnOrganisms(func, sortRandomness) {
 }
 
 function removeOrganism(organism) {
-    var posX = organism.posX;
-    var posY = organism.posY;
-    removeItemAll(getObjectArrFromMap(ALL_ORGANISMS, posX, posY), organism);
+    removeItemAll(getObjectArrFromMap(ALL_ORGANISMS, organism.posX, organism.posY), organism);
 }
 
 export {addNewOrganism, addOrganism, getOrganismsAtSquare, iterateOnOrganisms, removeOrganism}

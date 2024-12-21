@@ -1,16 +1,17 @@
-import { removeSquareAndChildren } from "../globalOperations.js";
+import { removeSquare } from "../globalOperations.js";
 import { removeOrganismSquare } from "../squares/_sqOperations.js";
 import { removeOrganism } from "./_orgOperations.js";
 import { Law } from "../Law.js";
 import { randNumber } from "../common.js";
 import { getCurTime } from "../globals.js";
+import { getNextEntitySpawnId } from "../globals.js";
 
 class BaseOrganism {
-    constructor(posX, posY) {
+    constructor(square) {
         this.proto = "BaseOrganism";
-        this.posX = Math.floor(posX);
-        this.posY = Math.floor(posY);
-        this.associatedSquares = new Array();
+        this.posX = square.posX;
+        this.posY = square.posY;
+        this.lifeSquares = new Array();
         this.type = "base";
         this.law = new Law();
         this.spawnedEntityId = 0;
@@ -26,16 +27,34 @@ class BaseOrganism {
         this.reproductionEnergy = 1000;
         this.reproductionEnergyUnit = 300;
         this.maximumLifeSquaresOfType = {}
-        this.associatedSquaresCountByType = {};
+        this.lifeSquaresCountByType = {};
+        this.spawnedEntityId = getNextEntitySpawnId();
+        this.linkSquare(square);
     }
 
-    addAssociatedSquare(lifeSquare) {
-        lifeSquare.spawnedEntityId = this.spawnedEntityId;
-        this.associatedSquares.push(lifeSquare);
-        if (!(lifeSquare.type in this.associatedSquaresCountByType)) {
-            this.associatedSquaresCountByType[lifeSquare.type] = 0;
+    linkSquare(square) {
+        if (square.linkedSquare != null) {
+            return;
         }
-        this.associatedSquaresCountByType[lifeSquare.type] += 1;
+
+        this.linkedSquare = square;
+        square.linkedOrganism = this;
+    }
+    unlinkSquare(square) {
+        this.linkedSquare = null;
+        square.linkedOrganism = null;
+    }
+
+    addAssociatedLifeSquare(lifeSquare) {
+        this.lifeSquares.push(lifeSquare);
+        if (!(lifeSquare.type in this.lifeSquaresCountByType)) {
+            this.lifeSquaresCountByType[lifeSquare.type] = 0;
+        }
+        this.lifeSquaresCountByType[lifeSquare.type] += 1;
+    }
+    removeAssociatedLifeSquare(lifeSquare) {
+        this.lifeSquaresCountByType[lifeSquare.type] -= 1;
+        this.lifeSquares = Array.from(this.lifeSquares.filter((lsq) => lsq != lifeSquare));
     }
 
     preRender() {}
@@ -56,26 +75,21 @@ class BaseOrganism {
     }
 
     getCountOfAssociatedSquaresOfProto(proto) {
-        return Array.from(this.associatedSquares.filter((org) => org.proto == proto)).length;
+        return Array.from(this.lifeSquares.filter((org) => org.proto == proto)).length;
     }
     getCountOfAssociatedSquaresOfType(type) {
-        return Array.from(this.associatedSquares.filter((org) => org.type == type)).length;
+        return Array.from(this.lifeSquares.filter((org) => org.type == type)).length;
     }
 
     growInitialSquares() { return new Array(); }
 
     render() {
         this.preRender();
-        this.associatedSquares.forEach((sp) => sp.render())
+        this.lifeSquares.forEach((sp) => sp.render())
     }
 
     destroy() {
-        this.associatedSquares.forEach((asq) => {
-            if (asq.linkedSquare != null) {
-                removeSquareAndChildren(asq.linkedSquare);
-            }
-            removeOrganismSquare(asq)
-        });
+        this.lifeSquares.forEach((lifeSquare) => lifeSquare.destroy());
         removeOrganism(this);
     }
 
@@ -86,15 +100,15 @@ class BaseOrganism {
     }
 
     preTick() {
-        this.associatedSquares.forEach((sp) => sp.preTick())
+        this.lifeSquares.forEach((sp) => sp.preTick())
     }
 
     tick() {
-        this.associatedSquares.forEach((sp) => sp.tick())
+        this.lifeSquares.forEach((sp) => sp.tick())
     }
 
     postTick() {
-        this.associatedSquares.forEach((lifeSquare) => {
+        this.lifeSquares.forEach((lifeSquare) => {
             this.dirtNutrients += lifeSquare.dirtNutrients;
             this.waterNutrients += lifeSquare.waterNutrients;
             this.airNutrients += lifeSquare.airNutrients;
