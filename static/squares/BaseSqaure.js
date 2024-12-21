@@ -289,7 +289,7 @@ export class BaseSquare {
                 getSquares(this.posX + jSigned, this.posY + i)
                     .filter((sq) => (sq.collision || (
                         (this.organic && sq.organic) &&
-                        this.spawnedEntityId == sq.spawnedEntityId
+                        (this.spawnedEntityId == sq.spawnedEntityId)
                     )))
                     .forEach((fn) => {
                         finalYPos = this.posY + (i - 1);

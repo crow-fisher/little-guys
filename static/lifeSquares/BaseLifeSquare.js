@@ -25,6 +25,10 @@ class BaseLifeSquare {
         this.linkedOrganism = organism;
         this.spawnedEntityId = organism.spawnedEntityId;
 
+        if (square.organic) {
+            square.spawnedEntityId = organism.spawnedEntityId;
+        }
+
         this.opacity = 1;
         this.width = 1;
         this.xOffset = 0.5;
