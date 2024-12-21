@@ -37,8 +37,8 @@ var organismAddedThisClick = false;
 var lastClickEvent = null;
 var lastTick = Date.now();
 
-var CANVAS_SQUARES_X = 50; // * 8; //6;
-var CANVAS_SQUARES_Y = 50 + 5; // * 8; // 8;
+var CANVAS_SQUARES_X = 5; // * 8; //6;
+var CANVAS_SQUARES_Y = 5 + 5; // * 8; // 8;
 
 var MAIN_CANVAS = document.getElementById("main");
 var MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');

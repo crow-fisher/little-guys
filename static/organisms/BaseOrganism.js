@@ -36,10 +36,6 @@ class BaseOrganism {
     }
 
     linkSquare(square) {
-        if (square.linkedSquare != null) {
-            return;
-        }
-
         this.linkedSquare = square;
         square.linkedOrganism = this;
     }

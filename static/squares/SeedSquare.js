@@ -27,21 +27,19 @@ class SeedSquare extends BaseSquare {
                 var organismsBelow = getOrganismsAtSquare(sq.posX, sq.posY);
                 var linkedOrganism = this.linkedOrganism;
                 if (organismsBelow.length == 0) {
-                    
                     removeOrganism(linkedOrganism);
                     linkedOrganism.posY += 1;
-                    linkedOrganism.linkSquare(sq);
                     addOrganism(linkedOrganism);
-
+                    linkedOrganism.linkSquare(sq);
                     linkedOrganism.lifeSquares.forEach((lsq) => {
                         removeOrganismSquare(lsq);
                         lsq.posY += 1;
-                        lsq.linkSquare(sq);
                         addOrganismSquare(lsq);
+                        lsq.linkSquare(sq);
                     });
-
                     this.destroy();
                 } else {
+                    console.log("Already found an organism here: ", this.posX, this.posY + 1);
                     this.linkedOrganism.destroy();
                     this.destroy();
                 }
