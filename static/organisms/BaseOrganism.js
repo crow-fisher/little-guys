@@ -57,6 +57,7 @@ class BaseOrganism {
     removeAssociatedLifeSquare(lifeSquare) {
         this.lifeSquaresCountByType[lifeSquare.type] -= 1;
         this.lifeSquares = Array.from(this.lifeSquares.filter((lsq) => lsq != lifeSquare));
+        lifeSquare.destroy();
     }
 
     preRender() {}
@@ -146,14 +147,14 @@ class BaseOrganism {
 
         var projectedEnergyAtEOL = this.currentEnergy + totalEnergyLifeCycleRate * (1 - lifeCyclePercentage);
         if (projectedEnergyAtEOL < this.reproductionEnergy * 2) {
-            this.grow();
+            this.growAndDecay();
             return;
         } else {
             return;
         }
     }
 
-    grow() {}
+    growAndDecay() {}
 }
 
 export {BaseOrganism}

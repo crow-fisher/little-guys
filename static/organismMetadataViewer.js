@@ -20,16 +20,18 @@ function organismMetadataViewerMain() {
     metadataCanvas.clearRect(0, 0, canvasWidth, canvasHeight);
     
     iterateOnOrganisms((org) => {
-        var organismMetadata = new Map();
-        organismMetadata["waterNutrients"] = org.waterNutrients;
-        organismMetadata["dirtNutrients"] = org.dirtNutrients;
-        organismMetadata["airNutrients"] = org.airNutrients;
-        organismMetadata["lifeCyclePercentage"] = org.getLifeCyclePercentage();
-        organismMetadata["currentEnergyPercentage"] = org.getCurrentEnergyPercentage();
-        organismMetadata["currentEnergy"] = org.currentEnergy;
-        organismMetadata["reproductionEnergy"] = org.reproductionEnergy;
-        organismMetadata["reproductionEnergyUnit"] = org.reproductionEnergyUnit;
-        organismMetadatas.push(organismMetadata);
+        if (org.type == "plant") {
+            var organismMetadata = new Map();
+            organismMetadata["waterNutrients"] = org.waterNutrients;
+            organismMetadata["dirtNutrients"] = org.dirtNutrients;
+            organismMetadata["airNutrients"] = org.airNutrients;
+            organismMetadata["lifeCyclePercentage"] = org.getLifeCyclePercentage();
+            organismMetadata["currentEnergyPercentage"] = org.getCurrentEnergyPercentage();
+            organismMetadata["currentEnergy"] = org.currentEnergy;
+            organismMetadata["reproductionEnergy"] = org.reproductionEnergy;
+            organismMetadata["reproductionEnergyUnit"] = org.reproductionEnergyUnit;
+            organismMetadatas.push(organismMetadata);
+        }
     });
 
     var curYStartPos = padding;

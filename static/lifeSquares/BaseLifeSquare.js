@@ -25,6 +25,7 @@ class BaseLifeSquare {
         this.linkedSquare = square;
         this.linkedOrganism = organism;
         this.spawnedEntityId = organism.spawnedEntityId;
+        this.childLifeSquares = new Array();
 
         if (square.organic) {
             square.spawnedEntityId = organism.spawnedEntityId;
@@ -43,6 +44,13 @@ class BaseLifeSquare {
         this.darkColorAmount = dirt_darkColorAmount;
         this.accentColor = "#246A73";
         this.accentColorAmount = dirt_accentColorAmount;
+    }
+    addChild(lifeSquare) {
+        if (lifeSquare in this.childLifeSquares) {
+            console.warn("Error state: lifeSquare in this.childLifeSquares");
+            return;
+        }
+        this.childLifeSquares.push(lifeSquare);
     }
 
     linkSquare(square) {

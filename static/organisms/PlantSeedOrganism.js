@@ -10,6 +10,7 @@ class PlantSeedOrganism extends BaseOrganism {
     constructor(square) {
         super(square);
         this.proto = "PlantSeedOrganism";
+        this.type = "seed";
         this.growInitialSquares();
     }
     growInitialSquares() {
