@@ -11,7 +11,6 @@ class PlantSeedOrganism extends BaseOrganism {
         super(square);
         this.proto = "PlantSeedOrganism";
         this.type = "seed";
-        this.growInitialSquares();
     }
     growInitialSquares() {
         getSquares(this.posX, this.posY)
@@ -20,6 +19,7 @@ class PlantSeedOrganism extends BaseOrganism {
                 var newLifeSquare = new PlantSeedLifeSquare(this.linkedSquare, this);
                 if (addOrganismSquare(newLifeSquare)) {
                     newLifeSquare.linkSquare(sq);
+                    sq.linkOrganismSquare(newLifeSquare);
                     this.addAssociatedLifeSquare(newLifeSquare);
                 }
         });

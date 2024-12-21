@@ -32,6 +32,7 @@ class BaseOrganism {
         this.lifeSquaresCountByType = {};
         this.spawnedEntityId = getNextEntitySpawnId();
         this.linkSquare(square);
+        this.growInitialSquares();
     }
 
     linkSquare(square) {
@@ -42,9 +43,8 @@ class BaseOrganism {
         this.linkedSquare = square;
         square.linkedOrganism = this;
     }
-    unlinkSquare(square) {
+    unlinkSquare() {
         this.linkedSquare = null;
-        square.linkedOrganism = null;
     }
 
     addAssociatedLifeSquare(lifeSquare) {

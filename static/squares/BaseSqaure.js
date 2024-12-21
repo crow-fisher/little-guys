@@ -203,6 +203,20 @@ export class BaseSquare {
         newPosX = Math.floor(newPosX);
         newPosY = Math.floor(newPosY);
 
+        if (this.organic) {
+            var shouldDie = false;
+            getOrganismsAtSquare(newPosX, newPosY)
+                .forEach((org) => {
+                    shouldDie = true;
+                    return;
+                });
+            if (shouldDie) {
+                this.linkedOrganism.destroy()
+                this.destroy();
+                return;
+            }
+        }
+
         var error = false;
 
         getSquares(newPosX, newPosY)

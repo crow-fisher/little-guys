@@ -37,8 +37,8 @@ var organismAddedThisClick = false;
 var lastClickEvent = null;
 var lastTick = Date.now();
 
-var CANVAS_SQUARES_X = 40; // * 8; //6;
-var CANVAS_SQUARES_Y = 40; // * 8; // 8;
+var CANVAS_SQUARES_X = 50; // * 8; //6;
+var CANVAS_SQUARES_Y = 50 + 5; // * 8; // 8;
 
 var MAIN_CANVAS = document.getElementById("main");
 var MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
@@ -84,28 +84,6 @@ function loadObjArr(sourceObjMap, addFunc) {
         }
     }
 }
-
-// function loadOrganismsFromOrgMap(sourceOrgMap) {
-//     var rootKeys = Object.keys(sourceOrgMap);
-//     for (let i = 0; i < rootKeys.length; i++) {
-//         var subObj = sourceOrgMap[rootKeys[i]];
-//         if (subObj != null) {
-//             var subKeys = Object.keys(subObj);
-//             for (let j = 0; j < subKeys.length; j++) {
-//                 sourceObjMap[rootKeys[i]][subKeys[j]].forEach((org) => {
-//                     var orgAsOrganism = Object.setPrototypeOf(org, ProtoMap[org.proto]);
-//                     for (let i = 0; i < orgAsOrganism.lifeSquares.length; i++) {
-//                         var sq = orgAsOrganism.lifeSquares[i];
-//                         sq = Object.setPrototypeOf(sq, ProtoMap[org.proto]);
-//                         if (sq.linkedSquare != null) {
-
-//                         }
-//                     }
-//             }
-//         }
-//     }
-// }
-
 
 function loadSlot(slotName) {
     var sqLoad = localStorage.getItem("ALL_SQUARES_" + slotName);
@@ -167,6 +145,9 @@ function main() {
         MAIN_CONTEXT.clearRect(0, 0, CANVAS_SQUARES_X * BASE_SIZE, CANVAS_SQUARES_Y * BASE_SIZE);
         doClickAdd();
         reset();
+
+        render();
+
         physicsBefore();
         physics();
         doWaterFlow();

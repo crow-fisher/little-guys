@@ -40,7 +40,6 @@ class PlantOrganism extends BaseOrganism {
         }
 
         this.highestGreen = null;
-        this.growInitialSquares();
     }
 
     getSeedSquare() {

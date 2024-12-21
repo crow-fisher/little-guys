@@ -16,7 +16,7 @@ class PlantSquare extends BaseSquare {
         this.organic = true;
         this.physicsEnabled = false;
         this.collision = false;
-        this.visible = false;
+        this.visible = true;
     }
 }
 

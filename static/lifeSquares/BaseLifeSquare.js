@@ -54,10 +54,10 @@ class BaseLifeSquare {
     }
 
     linkSquare(square) {
-        square.linkOrganismSquare(this);
+        this.linkedSquare = square;
     }
-    unlinkSquare(square) {
-        square.unlinkOrganismSquare(this);
+    unlinkSquare() {
+        this.linkedSquare = null;
     }
     destroy() {
         if (this.linkedSquare.organic) {
