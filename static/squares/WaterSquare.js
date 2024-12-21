@@ -75,7 +75,7 @@
         }
 
         calculateCandidateFlows() {
-            if (Math.random() > 0.5 + (0.24 * this.currentPressureIndirect)) {
+            if (this.currentPressureIndirect == 0) {
                 WATERFLOW_CANDIDATE_SQUARES.add(this);
             }
             if (this.currentPressureIndirect >= this.currentPressureDirect) {
@@ -141,7 +141,7 @@
                 perGroupData[sq.group]["minPosY"] = Math.min(sq.posY, perGroupData[sq.group]["minPosY"])
             })
             iterateOnSquares((sq) => {
-                sq.currentPressureIndirect = sq.currentPressureDirect + sq.posY - perGroupData[sq.group]["minPosY"];
+                sq.currentPressureIndirect = Math.max(sq.currentPressureDirect, sq.posY - perGroupData[sq.group]["minPosY"]);
             })
         }
 

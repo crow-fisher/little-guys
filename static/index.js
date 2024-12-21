@@ -30,7 +30,7 @@ var loadSlotB = document.getElementById("loadSlotB");
 var saveSlotB = document.getElementById("saveSlotB");
 
 var selectedMaterial = "dirt";
-const BASE_SIZE = 12;
+const BASE_SIZE = 32;
 
 materialSelect.addEventListener('change', (e) => selectedMaterial = e.target.value);
 timeScale.addEventListener('change', (e) => TIME_SCALE = e.target.value);
@@ -40,8 +40,8 @@ var organismAddedThisClick = false;
 var lastClickEvent = null;
 var lastTick = Date.now();
 
-var CANVAS_SQUARES_X = 50; // * 8; //6;
-var CANVAS_SQUARES_Y = 50; // * 8; // 8;
+var CANVAS_SQUARES_X = 40; // * 8; //6;
+var CANVAS_SQUARES_Y = 40; // * 8; // 8;
 
 var MAIN_CANVAS = document.getElementById("main");
 var MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
