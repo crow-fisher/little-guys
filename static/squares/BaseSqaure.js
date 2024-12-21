@@ -55,6 +55,7 @@ export class BaseSquare {
         this.speedY = 0;
         this.nutrientValue = b_sq_nutrientValue;
         this.rootable = false;
+        this.validPlantHome = false;
         this.group = -1;
         this.organic = false;
         this.collision = true;

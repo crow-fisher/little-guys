@@ -16,7 +16,7 @@ class RootLifeSquare extends BaseLifeSquare {
             .filter((n) => n.solid)
             .forEach((neighbor) => {
                 this.addDirtNutrient(neighbor.nutrientValue.value);
-                this.addWaterNutrient(neighbor.suckWater(this.maxNutrientDt - this.waterNutrients));
+                this.addWaterNutrient(neighbor.suckWater(this.maxWaterDt - this.waterNutrients));
             });
     }
 

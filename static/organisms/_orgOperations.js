@@ -4,6 +4,10 @@ import { getCollidableSquareAtLocation } from "../squares/_sqOperations.js";
 import { removeItemAll } from "../common.js";
 
 function addNewOrganism(organism) {
+    if (!organism.alive) {
+        return;
+    }
+
     if (getOrganismsAtSquare(organism.posX, organism.posY).length > 0) {
         console.warn("Weird state; tried to add an organism to an existing square.")
         console.log(getOrganismsAtSquare(organism.posX, organism.posY));

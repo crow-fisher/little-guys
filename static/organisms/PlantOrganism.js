@@ -86,6 +86,10 @@ class PlantOrganism extends BaseOrganism {
         } else {
             this.destroy();
         }
+        if (!this.linkedSquare.validPlantHome) {
+            this.destroy();
+            return;
+        }
         var rootSq = addOrganismSquare(new RootLifeSquare(this.linkedSquare, this));
         rootSq.linkSquare(this.linkedSquare);
         this.addAssociatedLifeSquare(rootSq);
@@ -106,7 +110,6 @@ class PlantOrganism extends BaseOrganism {
         
         let minNutrient = Math.min(Math.min(this.airNutrients, this.dirtNutrients), this.waterNutrients);
         if (this.currentEnergy < 0) {
-            console.log("Want to grow...but the effort is too much")
             return;
         }
 

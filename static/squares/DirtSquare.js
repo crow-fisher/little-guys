@@ -9,6 +9,7 @@ class DirtSquare extends BaseSquare {
         this.colorBase = "#B06C49";
         this.nutrientValue = dirtNutrientValuePerDirectNeighbor;
         this.rootable = true;
+        this.validPlantHome = true;
         
         this.renderWithColorRange = true;
         this.baseColor = "#b88a5f";

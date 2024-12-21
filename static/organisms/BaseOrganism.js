@@ -17,6 +17,7 @@ class BaseOrganism {
         this.spawnedEntityId = 0;
         this.width = 0.95;
         this.xOffset = 0.5;
+        this.alive = true;
 
         this.spawnTime = getCurTime();
         this.currentEnergy = 0;
@@ -91,6 +92,7 @@ class BaseOrganism {
 
     destroy() {
         this.lifeSquares.forEach((lifeSquare) => lifeSquare.destroy());
+        this.alive = false;
         removeOrganism(this);
     }
 
