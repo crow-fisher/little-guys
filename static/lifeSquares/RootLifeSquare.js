@@ -4,8 +4,8 @@ import { hexToRgb } from "../common.js";
 
 
 class RootLifeSquare extends BaseLifeSquare {
-    constructor(square) {
-        super(square);
+    constructor(square, organism) {
+        super(square, organism);
         this.proto = "RootLifeSquare";
         this.opacity = 0.6;
         this.colorBase = "#554640";

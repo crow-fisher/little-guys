@@ -11,8 +11,8 @@ import { getDirectNeighbors, getSquares } from "../squares/_sqOperations.js";
 import { getNeighbors } from "../squares/_sqOperations.js";
 import { hexToRgb, rgbToHex } from "../common.js";
 class PlantSeedLifeSquare extends BaseLifeSquare {
-    constructor(square) {
-        super(square);
+    constructor(square, organism) {
+        super(square, organism);
         this.proto = "PlantSeedLifeSquare";
         this.type = "seed";
         this.sproutStatus = 0;

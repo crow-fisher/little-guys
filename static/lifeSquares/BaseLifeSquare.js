@@ -6,13 +6,12 @@ import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount } fr
 import { getSquares, removeOrganismSquare } from "../squares/_sqOperations.js";
 
 class BaseLifeSquare {
-    constructor(square) {
+    constructor(square, organism) {
         this.proto = "BaseLifeSquare";
         this.posX = square.posX;
         this.posY = square.posY;
         this.type = "base";
         this.colorBase = "#1D263B";
-        this.spawnedEntityId = 0;
 
         this.maxNutrientDt = 0.05;
 
@@ -21,7 +20,8 @@ class BaseLifeSquare {
         this.dirtNutrients = 0;
     
         this.linkedSquare = square;
-        this.linkedOrganism = null;
+        this.linkedOrganism = organism;
+        this.spawnedEntityId = organism.spawnedEntityId;
 
         this.opacity = 1;
         this.width = 1;
@@ -43,10 +43,6 @@ class BaseLifeSquare {
     }
     unlinkSquare(square) {
         square.unlinkOrganismSquare(this);
-    }
-    linkOrganism(organism) {
-        this.linkedOrganism = organism;
-        this.spawnedEntityId = organism.spawnedEntityId;
     }
     destroy() {
         if (this.linkedSquare.organic) {

@@ -26,6 +26,7 @@ class BaseOrganism {
         this.maxLifeTime = 1000 * 40 * 1;
         this.reproductionEnergy = 1000;
         this.reproductionEnergyUnit = 300;
+        this.perNewLifeSquareGrowthCost = 10;
         this.maximumLifeSquaresOfType = {}
         this.lifeSquaresCountByType = {};
         this.spawnedEntityId = getNextEntitySpawnId();

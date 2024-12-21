@@ -78,22 +78,18 @@ export class BaseSquare {
     }
     linkOrganism(organism) {
         this.linkedOrganism = organism;
-        organism.linkedSquare = this;
     }
-    unlinkOrganism(organism) {
+    unlinkOrganism() {
         this.linkedOrganism = null;
-        organism.linkedSquare = null;
     }
     linkOrganismSquare(organismSquare) {
         if (organismSquare in this.linkedOrganismSquares) {
             console.warn("Trying to link an organismSquare that it's already been attached to...odd state.");
         }
         this.linkedOrganismSquares.push(organismSquare);
-        organismSquare.linkedSquare = this;
     }
     unlinkOrganismSquare(organismSquare) {
         this.linkedOrganismSquares = Array.from(this.linkedOrganismSquares.filter((lsq) => lsq != organismSquare));
-        organismSquare.linkedSquare = null;
     }
     reset() {
         if (this.blockHealth <= 0) {

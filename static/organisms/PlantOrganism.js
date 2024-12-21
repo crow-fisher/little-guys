@@ -78,17 +78,15 @@ class PlantOrganism extends BaseOrganism {
         });
         var newPlantSquare = addSquare(new PlantSquare(this.posX, this.posY - 1));
         if (newPlantSquare) {
-            var orgSq = addOrganismSquare(new PlantLifeSquare(newPlantSquare));
+            var orgSq = addOrganismSquare(new PlantLifeSquare(newPlantSquare, this));
             if (orgSq) {
                 orgSq.linkSquare(newPlantSquare);
-                orgSq.linkOrganism(this);
                 this.addAssociatedLifeSquare(orgSq);
             }
         } else {
             this.destroy();
         }
-        var rootSq = addOrganismSquare(new RootLifeSquare(this.linkedSquare));
-        rootSq.linkOrganism(this);
+        var rootSq = addOrganismSquare(new RootLifeSquare(this.linkedSquare, this));
         rootSq.linkSquare(this.linkedSquare);
         this.addAssociatedLifeSquare(rootSq);
     }
@@ -148,12 +146,11 @@ class PlantOrganism extends BaseOrganism {
             }
             var newPlantSquare = new PlantSquare(highestPlantSquare.posX, highestPlantSquare.posY - 1);
             if (addSquare(newPlantSquare)) {
-                var orgSq = addOrganismSquare(new PlantLifeSquare(newPlantSquare));
+                var orgSq = addOrganismSquare(new PlantLifeSquare(newPlantSquare, this));
                 if (orgSq) {
                     this.addAssociatedLifeSquare(orgSq);
-                    orgSq.linkOrganism(this);
                     orgSq.linkSquare(newPlantSquare);
-                    return 1;
+                    return this.perNewLifeSquareGrowthCost;;
                 }
             };
         }
@@ -190,12 +187,11 @@ class PlantOrganism extends BaseOrganism {
                     }});
                 }
             if (wettestSquare != null) {
-                var rootSquare = addOrganismSquare(new RootLifeSquare(wettestSquare));
+                var rootSquare = addOrganismSquare(new RootLifeSquare(wettestSquare, this));
                 if (rootSquare) {
                     this.addAssociatedLifeSquare(rootSquare);
-                    rootSquare.linkOrganism(this);
                     rootSquare.linkSquare(wettestSquare);
-                    return 1;
+                    return this.perNewLifeSquareGrowthCost;;
                 }
             }
         }
@@ -239,11 +235,10 @@ class PlantOrganism extends BaseOrganism {
                         });
             });
             if (dirtiestSquare != null) {
-                var rootLifeSquare = addOrganismSquare(new RootLifeSquare(dirtiestSquare));
+                var rootLifeSquare = addOrganismSquare(new RootLifeSquare(dirtiestSquare, this));
                 this.addAssociatedLifeSquare(rootLifeSquare);
-                rootLifeSquare.linkOrganism(this);
                 rootLifeSquare.linkSquare(dirtiestSquare);
-                return 1;
+                return this.perNewLifeSquareGrowthCost;;
             }
         }
         return 0;

@@ -16,9 +16,8 @@ class PlantSeedOrganism extends BaseOrganism {
         getSquares(this.posX, this.posY)
             .filter((sq) => sq.collision && sq.rootable)
             .forEach((sq) => {
-                var newLifeSquare = new PlantSeedLifeSquare(this.linkedSquare);
+                var newLifeSquare = new PlantSeedLifeSquare(this.linkedSquare, this);
                 if (addOrganismSquare(newLifeSquare)) {
-                    newLifeSquare.linkOrganism(this);
                     newLifeSquare.linkSquare(sq);
                     this.addAssociatedLifeSquare(newLifeSquare);
                 }
