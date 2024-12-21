@@ -1,10 +1,6 @@
 import { BaseSquare } from "./squares/BaseSqaure.js";
-
-
 import { getNeighbors, getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares } from "./squares/_sqOperations.js";
-
 import { purge, reset, render, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow } from "./globalOperations.js"
-
 import { RockSquare } from "./squares/RockSquare.js"
 import { DirtSquare } from "./squares/DirtSquare.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
@@ -16,6 +12,7 @@ import { DrainSquare } from "./squares/DrainSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
 import { PlantSeedOrganism } from "./organisms/PlantSeedOrganism.js";
 import { addNewOrganism, addOrganism } from "./organisms/_orgOperations.js";
+import { organismMetadataViewerMain } from "./organismMetadataViewer.js";
 
 import { updateTime, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, ALL_SQUARES, getNextEntitySpawnId } from "./globals.js";
 
@@ -181,6 +178,7 @@ function main() {
     }
     updateTime();
     setTimeout(main, 5);
+    organismMetadataViewerMain();
 }
 
 

@@ -110,6 +110,14 @@ class BaseOrganism {
         this.lifeSquares.forEach((sp) => sp.tick())
     }
 
+    getLifeCyclePercentage() {
+        return (getCurTime() - this.spawnTime) / this.maxLifeTime;
+    }
+
+    getCurrentEnergyPercentage() {
+        return this.currentEnergy / this.reproductionEnergy;
+    }
+
     postTick() {
         this.lifeSquares.forEach((lifeSquare) => {
             this.dirtNutrients += lifeSquare.dirtNutrients;
@@ -122,13 +130,13 @@ class BaseOrganism {
         this.currentEnergy += energyGained;
         this.totalEnergy += energyGained;
 
-        var lifeCyclePercentage = (getCurTime() - this.spawnTime) / this.maxLifeTime;
+        var lifeCyclePercentage = this.getLifeCyclePercentage();
         if (lifeCyclePercentage > 1) {
             this.destroy();
         }
 
-        var currentEnergyPercentage = this.currentEnergy / this.reproductionEnergy;
-        var totalEnergyLifeCycleRate = this.totalEnergy / this.maxLifeTime;
+        var currentEnergyPercentage = this.getCurrentEnergyPercentage();
+        var totalEnergyLifeCycleRate = this.totalEnergy / lifeCyclePercentage;
 
         if (currentEnergyPercentage > 1) {
             this.spawnSeed();
@@ -136,7 +144,7 @@ class BaseOrganism {
             return;
         }
 
-        var projectedEnergyAtEOL = this.currentEnergy + (totalEnergyLifeCycleRate * (1 - lifeCyclePercentage) * this.maxLifeTime);
+        var projectedEnergyAtEOL = this.currentEnergy + totalEnergyLifeCycleRate * (1 - lifeCyclePercentage);
         if (projectedEnergyAtEOL < this.reproductionEnergy * 2) {
             this.grow();
             return;

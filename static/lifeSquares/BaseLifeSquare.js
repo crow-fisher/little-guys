@@ -4,6 +4,7 @@ import { hexToRgb, rgbToHex } from "../common.js";
 import { getCurTime } from "../globals.js";
 import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount } from "../config/config.js";
 import { getSquares, removeOrganismSquare } from "../squares/_sqOperations.js";
+import { airNutrientsPerEmptyNeighbor } from "../config/config.js";
 
 class BaseLifeSquare {
     constructor(square, organism) {
@@ -13,7 +14,7 @@ class BaseLifeSquare {
         this.type = "base";
         this.colorBase = "#1D263B";
         
-        this.maxAirDt = 0.5;
+        this.maxAirDt = airNutrientsPerEmptyNeighbor;
         this.maxWaterDt = 0.05;
         this.maxDirtDt = 0.05;
 
@@ -59,7 +60,7 @@ class BaseLifeSquare {
 
     addAirNutrient(nutrientAmount) {
         var start = this.airNutrients;
-        this.airNutrients += Math.min(this.maxAirDt, this.airNutrients + nutrientAmount);
+        this.airNutrients += Math.min(this.maxAirDt.value * 7, this.airNutrients + nutrientAmount);
         return this.airNutrients - start;
     }
 

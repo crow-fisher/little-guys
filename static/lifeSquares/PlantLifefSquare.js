@@ -35,7 +35,7 @@ class PlantLifeSquare extends BaseLifeSquare {
         this.addAirNutrient(
             airNutrientsPerEmptyNeighbor.value *
             (
-                9 - getNeighbors(this.posX, this.posY)
+                8 - getNeighbors(this.posX, this.posY)
                     .map((sq) => 1)
                     .reduce(
                         (accumulator, currentValue) => accumulator + currentValue,

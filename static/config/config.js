@@ -42,12 +42,12 @@ function displayConfigs() {
 
 var airNutrientsPerEmptyNeighbor = {
     name: "airNutrientsPerEmptyNeighbor",
-    value: 0.5
+    value: 0.02
 };
 
 var dirtNutrientValuePerDirectNeighbor = {
     name: "dirtNutrientValuePerDirectNeighbor",
-    value: 0.05
+    value: 0.02
 };
 
 var base_waterContainmentMax = {

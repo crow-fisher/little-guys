@@ -38,9 +38,18 @@ function getDirectNeighbors(x, y) {
 
 function addSquare(square) {
     var error = false;
-    getCollidableSquareAtLocation(square.posX, square.posY).forEach((sq) => {
-        error = true;
-    })
+    if (square.organic) {
+        getSquares(square.posX, square.posY)
+        .filter((sq) => sq.organic || sq.rootable)
+        .forEach((sq) => {
+            error = true;
+        })
+    } else {
+        getCollidableSquareAtLocation(square.posX, square.posY).forEach((sq) => {
+            error = true;
+        })
+    }
+
 
     if (error) {
         // console.warn("Square not added; coordinates occupied by a block with collision.");
