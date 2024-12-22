@@ -18,6 +18,7 @@ import { updateTime, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, ALL_SQUARES, getNextEn
 
 import { doErase } from "./manipulation.js";
 import { ProtoMap } from "./types.js";
+import { GravelSquare } from "./squares/GravelSquare.js";
 
 var materialSelect = document.getElementById("materialSelect");
 var fastTerrain = document.getElementById("fastTerrain");
@@ -203,7 +204,7 @@ function doClickAdd() {
                             addSquareOverride(new RockSquare(px, curY));
                             break;
                         case "dirt":
-                            addSquareOverride(new DirtSquare(px, curY));
+                            addSquare(new DirtSquare(px, curY));
                             break;
                         case "water":
                             addSquare(new WaterSquare(px, curY));
@@ -221,8 +222,12 @@ function doClickAdd() {
                             addSquareOverride(new DrainSquare(px, curY));
                             break;
                         case "aquifer":
-                            addSquareOverride(new AquiferSquare(px, curY));
+                            addSquare(new AquiferSquare(px, curY));
                             break;
+                        case "gravel":
+                            addSquare(new GravelSquare(px, curY));
+                            break;
+
 
                         // organism sections
                         // in this case we only want to add one per click

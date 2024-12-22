@@ -62,7 +62,6 @@ export class BaseSquare {
         this.randoms = [];
         this.linkedOrganism = null;
         this.linkedOrganismSquares = new Array();
-        this.renderWithColorRange = false;
         // for ref - values from dirt
         this.baseColor = "#9A8873";
         this.baseColorAmount = dirt_baseColorAmount;

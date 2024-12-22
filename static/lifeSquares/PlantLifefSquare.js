@@ -23,7 +23,6 @@ class PlantLifeSquare extends BaseLifeSquare {
         this.darkColorAmount = dirt_darkColorAmount;
         this.accentColor = "#138808";
         this.accentColorAmount = dirt_accentColorAmount;
-        this.renderWithColorRange = true;
 
         // width and xOffset are scaled between 0 and 1
         // width of 0.8 means it occupies 80% of the X width 

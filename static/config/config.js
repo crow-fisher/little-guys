@@ -50,6 +50,11 @@ var dirtNutrientValuePerDirectNeighbor = {
     value: 0.02
 };
 
+var noNutrientValuePerDirectNeighbor = {
+    name: "noNutrientValuePerDirectNeighbor",
+    value: 0
+};
+
 var base_waterContainmentMax = {
     name: "base_waterContainmentMax",
     value: 5
@@ -59,6 +64,17 @@ var base_waterContainmentTransferRate = {
     name: "base_waterContainmentTransferRate",
     value: 0.25
 };
+
+var gravel_waterContainmentMax = {
+    name: "gravel_waterContainmentMax",
+    value: 30
+};  
+
+var gravel_waterContainmentTransferRate = {
+    name: "gravel_waterContainmentTransferRate",
+    value: 10
+};
+
 var base_waterContainmentEvaporationRate = {
     name: "base_waterContainmentEvaporationRate",
     value: 0.0005
@@ -198,6 +214,9 @@ var plant_deltaWidth = {
     name: "plant_deltaWidth",
     value: 0.003
 };
+addConfig(gravel_waterContainmentTransferRate);
+addConfig(gravel_waterContainmentMax);
+
 
 addConfig(plant_initialWidth);
 addConfig(plant_deltaWidth);
@@ -277,5 +296,8 @@ export {
     p_seed_ls_sproutGrowthRate,
     p_seed_ls_neighborWaterContainmentRequiredToGrow,
     p_seed_ls_neighborWaterContainmentRequiredToDecay,
-    p_seed_ls_darkeningStrength
+    p_seed_ls_darkeningStrength,
+    noNutrientValuePerDirectNeighbor,
+    gravel_waterContainmentTransferRate,
+    gravel_waterContainmentMax
 }

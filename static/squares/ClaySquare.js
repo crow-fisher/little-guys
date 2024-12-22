@@ -10,7 +10,6 @@ class ClaySquare extends BaseSquare {
         this.nutrientValue = dirtNutrientValuePerDirectNeighbor;
         this.rootable = true;
         
-        this.renderWithColorRange = true;
         this.baseColor = "#b88a5f";
         this.baseColorAmount = dirt_baseColorAmount;
         this.darkColor = "#855c48";

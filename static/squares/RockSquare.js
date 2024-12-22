@@ -16,7 +16,6 @@ class RockSquare extends BaseSquare {
         this.waterContainmentMax = static_sq_waterContainmentMax;
         this.waterContainmentTransferRate = static_sq_waterContainmentTransferRate;
         this.darken = false;
-        this.renderWithColorRange = true;
         this.baseColor = "#dbdadf";
         this.baseColorAmount = rock_baseColorAmount;
         this.darkColor = "#65666a";
