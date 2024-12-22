@@ -5,8 +5,8 @@ import { iterateOnOrganisms } from "./organisms/_orgOperations.js";
 const organismMetadataViewerCanvas = document.getElementById("organismMetadataViewer");
 var metadataCanvas = organismMetadataViewerCanvas.getContext('2d');
 
-var canvasWidth = 70;
-var canvasHeight = 1600;
+var canvasWidth = 200;
+var canvasHeight = 800;
 
 organismMetadataViewerCanvas.width = canvasWidth;
 organismMetadataViewerCanvas.height = canvasHeight;

@@ -13,16 +13,12 @@ class PlantSeedOrganism extends BaseOrganism {
         this.type = "seed";
     }
     growInitialSquares() {
-        getSquares(this.posX, this.posY)
-            .filter((sq) => sq.collision && sq.rootable)
-            .forEach((sq) => {
-                var newLifeSquare = new PlantSeedLifeSquare(this.linkedSquare, this);
-                if (addOrganismSquare(newLifeSquare)) {
-                    newLifeSquare.linkSquare(sq);
-                    sq.linkOrganismSquare(newLifeSquare);
-                    this.addAssociatedLifeSquare(newLifeSquare);
-                }
-        });
+        var newLifeSquare = new PlantSeedLifeSquare(this.linkedSquare, this);
+        if (addOrganismSquare(newLifeSquare)) {
+            newLifeSquare.linkSquare(this.linkedSquare);
+            this.linkedSquare.linkOrganismSquare(newLifeSquare);
+            this.addAssociatedLifeSquare(newLifeSquare);
+        }
     }
 
     postTick() {
@@ -30,7 +26,7 @@ class PlantSeedOrganism extends BaseOrganism {
         if (lifeCyclePercentage > 1) {
             this.destroy();
         }
-        if (this.lifeSquares[0].sproutStatus >= 1) {
+        if (this.lifeSquares.some((lsq) => lsq.sproutStatus >= 1)) {
             // now we need to convert ourself into a 'plant organism'
             var linkedSquareCache = this.linkedSquare;
             this.destroy();

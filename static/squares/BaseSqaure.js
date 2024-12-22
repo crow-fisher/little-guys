@@ -31,9 +31,7 @@ import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 import { purge, reset, render, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquare } from "../globalOperations.js"
 
 import { removeOrganismSquare } from "./_sqOperations.js";
-
 import { removeOrganism } from "../organisms/_orgOperations.js";
-
 
 
 export class BaseSquare {
@@ -203,31 +201,21 @@ export class BaseSquare {
         newPosX = Math.floor(newPosX);
         newPosY = Math.floor(newPosY);
 
-        if (this.organic) {
-            var shouldDie = false;
-            getOrganismsAtSquare(newPosX, newPosY)
-                .forEach((org) => {
-                    shouldDie = true;
-                    return;
-                });
-            if (shouldDie) {
+        if (getSquares(newPosX, newPosY)
+            .some((sq) => this.collision && sq.collision)) {
+            return false;
+        }
+
+        if (this.linkedOrganism != null) {
+            if (getOrganismsAtSquare(newPosX, newPosY).some((org) => true)) {
+                console.log("Found an existing organism at target block; destroying this organism");
+                console.log(this.linkedOrganism);
                 this.linkedOrganism.destroy()
-                this.destroy();
-                return;
+
+                return false;
             }
         }
 
-        var error = false;
-
-        getSquares(newPosX, newPosY)
-            .filter((sq) => this.collision && sq.collision)
-            .forEach((sq) => {
-                error = true;
-            });
-        if (error) {
-            console.warn("Square not moved; new occupied by a block with collision.");
-            return false;
-        }
         this.linkedOrganismSquares.forEach((lsq) => {
             removeOrganismSquare(lsq);
             lsq.posX = newPosX;
@@ -286,7 +274,7 @@ export class BaseSquare {
         this.evaporateInnerMoisture();
         this.percolateInnerMoisture();
 
-        if (!this.physicsEnabled || getCountOfOrganismsSquaresOfTypeAtPosition(this.posX, this.posY, "root") > 0) {
+        if (!this.physicsEnabled || this.linkedOrganismSquares.some((sq) => sq.type == "root")) {
             return false;
         }
 
@@ -300,18 +288,17 @@ export class BaseSquare {
             for (let j = 0; j < Math.abs(this.speedX) + 1; j++) {
                 var jSigned = (this.speedX > 0) ? j : -j;
                 var jSignedMinusOne = (this.speedX == 0 ? 0 : (this.speedX > 0) ? (j - 1) : -(j - 1));
-                getSquares(this.posX + jSigned, this.posY + i)
-                    .filter((sq) => (sq.collision || (
+                if (getSquares(this.posX + jSigned, this.posY + i)
+                    .some((sq) => (sq.collision || (
                         (this.organic && sq.organic) &&
                         (this.spawnedEntityId == sq.spawnedEntityId)
-                    )))
-                    .forEach((fn) => {
+                    )))) {
                         finalYPos = this.posY + (i - 1);
                         finalXPos = this.posX + jSignedMinusOne;
                         this.speedX = 0;
                         this.speedY = 0;
                         bonked = true;
-                    });
+                    }
                 if (bonked)
                     break;
             } if (bonked)
@@ -322,7 +309,10 @@ export class BaseSquare {
             finalYPos = this.posY + this.speedY;
         }
 
-        this.updatePosition(finalXPos, finalYPos);
+        if (finalXPos != this.posX | this.posY != finalYPos) {
+            this.updatePosition(finalXPos, finalYPos);
+        }
+
         return true;
     }
 

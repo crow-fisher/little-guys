@@ -14,7 +14,11 @@ class SeedSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
         this.proto = "SeedSquare";
-        this.colorBase = "#709775";
+
+        this.baseColor = "#0088FF";
+        this.darkColor = "#00001D";
+        this.accentColor = "#FF6A00";
+
         this.nutrientValue = dirtNutrientValuePerDirectNeighbor;
         this.rootable = true;
         this.organic = true;
@@ -29,8 +33,9 @@ class SeedSquare extends BaseSquare {
                 if (organismsBelow.length == 0) {
                     removeOrganism(linkedOrganism);
                     linkedOrganism.posY += 1;
-                    addOrganism(linkedOrganism);
                     linkedOrganism.linkSquare(sq);
+                    addOrganism(linkedOrganism);
+
                     linkedOrganism.lifeSquares.forEach((lsq) => {
                         removeOrganismSquare(lsq);
                         lsq.posY += 1;
@@ -41,7 +46,6 @@ class SeedSquare extends BaseSquare {
                 } else {
                     console.log("Already found an organism here: ", this.posX, this.posY + 1);
                     this.linkedOrganism.destroy();
-                    this.destroy();
                 }
             });
 

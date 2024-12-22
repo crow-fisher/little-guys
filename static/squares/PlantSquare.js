@@ -10,7 +10,10 @@ class PlantSquare extends BaseSquare {
         super(posX, posY);
         this.proto = "PlantSquare";
         // this.colorBase = "#4CB963";
-        this.colorBase = "#FF3366";
+        this.baseColor = "#FF8873";
+        this.darkColor = "#46FF1D";
+        this.accentColor = "#246AFF";
+
         this.waterContainmentMax = static_sq_waterContainmentMax;
         this.waterContainmentTransferRate = static_sq_waterContainmentTransferRate;
         this.organic = true;
