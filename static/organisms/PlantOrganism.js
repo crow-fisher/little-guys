@@ -35,8 +35,8 @@ class PlantOrganism extends BaseOrganism {
         this.rootLastGrown = getCurTime();
 
         this.maximumLifeSquaresOfType = {
-            "green": 3,
-            "root": 10
+            "green": 10,
+            "root": 20
         }
 
         this.highestGreen = null;

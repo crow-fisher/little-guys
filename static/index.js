@@ -37,7 +37,7 @@ var organismAddedThisClick = false;
 var lastClickEvent = null;
 var lastTick = Date.now();
 
-var CANVAS_SQUARES_X = 70; // * 8; //6;
+var CANVAS_SQUARES_X = 170; // * 8; //6;
 var CANVAS_SQUARES_Y = 50 + 5; // * 8; // 8;
 
 var MAIN_CANVAS = document.getElementById("main");
@@ -57,10 +57,6 @@ document.body.onmouseup = function () {
 
 var shiftPressed = false;
 
-
-
-// each square is 16x16
-// 'little guys' may aquire multiple squares
 var TIME_SCALE = 1;
 var MILLIS_PER_TICK = 1;
 

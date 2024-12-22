@@ -11,8 +11,8 @@ var canvasHeight = 800;
 organismMetadataViewerCanvas.width = canvasWidth;
 organismMetadataViewerCanvas.height = canvasHeight;
 
-var padding = 10;
-var resourceBarHeight = 25;
+var padding = 2;
+var resourceBarHeight = 5;
 
 function organismMetadataViewerMain() {
     // for each organism save a struct that's like 
