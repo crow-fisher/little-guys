@@ -148,7 +148,6 @@ function main() {
         physics();
         doWaterFlow();
         purge();
-        render();
         processOrganisms();
         renderOrganisms();
         lastTick = Date.now();

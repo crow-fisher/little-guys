@@ -58,6 +58,7 @@ export class BaseSquare {
         this.organic = false;
         this.collision = true;
         this.visible = true; 
+        this.darken = true;
         this.randoms = [];
         this.linkedOrganism = null;
         this.linkedOrganismSquares = new Array();
@@ -167,8 +168,7 @@ export class BaseSquare {
             BASE_SIZE,
             BASE_SIZE
         );
-
-        if (this.solid) {
+        if (this.darken && this.solid) {
             MAIN_CONTEXT.fillStyle = this.calculateDarkeningColor()
             MAIN_CONTEXT.fillRect(
                 this.posX * BASE_SIZE,
