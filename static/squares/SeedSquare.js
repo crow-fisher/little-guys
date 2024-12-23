@@ -29,9 +29,8 @@ class SeedSquare extends BaseSquare {
         getSquares(this.posX, this.posY + 1)
             .filter((sq) => sq.rootable)
             .forEach((sq) => {
-                var organismsBelow = getOrganismsAtSquare(sq.posX, sq.posY);
                 var linkedOrganism = this.linkedOrganism;
-                if (organismsBelow.length == 0) {
+                if (sq.linkedOrganism == null) {
                     removeOrganism(linkedOrganism);
                     linkedOrganism.posY += 1;
                     linkedOrganism.linkSquare(sq);

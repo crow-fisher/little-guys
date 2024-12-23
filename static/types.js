@@ -11,7 +11,7 @@ import { BaseLifeSquare } from "./lifeSquares/BaseLifeSquare.js";
 import { BaseOrganism } from "./organisms/BaseOrganism.js";
 import { PopGrassOrganism } from "./organisms/PopGrassOrganism.js";
 import { PopGrassGreenLifeSquare } from "./lifeSquares/PopGrassGreenLifeSquare.js";
-import { PopGrassRootLifeSquare } from "./lifeSquares/PopGrassPopGrassRootLifeSquare.js";
+import { PopGrassRootLifeSquare } from "./lifeSquares/PopGrassRootLifeSquare.js";
 import { PopGrassSeedOrganism } from "./organisms/PopGrassSeedOrganism.js";
 import { PlantSeedLifeSquare } from "./lifeSquares/PlantSeedLifeSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";

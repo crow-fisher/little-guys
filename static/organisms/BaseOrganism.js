@@ -16,6 +16,7 @@ class BaseOrganism {
         this.width = 0.95;
         this.xOffset = 0.5;
         this.alive = true;
+        this.hovered = false;
 
         this.spawnTime = getCurTime();
         this.currentEnergy = 0;
@@ -25,11 +26,12 @@ class BaseOrganism {
         this.perTickDamage = 1;
         this.currentHealth = 100;
         this.nutrientDiffTolerance = 1.1565;
+        this.nutrientDiffRegainHealth = 1.15;
 
         // life cycle properties
         this.maxLifeTime = 1000 * 20 * 1;
-        this.reproductionEnergy = 100;
-        this.reproductionEnergyUnit = 30;
+        this.reproductionEnergy = 1300;
+        this.reproductionEnergyUnit = 600;
         this.perNewLifeSquareGrowthCost = 5;
         this.maximumLifeSquaresOfType = {}
         this.lifeSquaresCountByType = {};
@@ -49,6 +51,9 @@ class BaseOrganism {
 
         if (nutrientStdDev > this.nutrientDiffTolerance) {
             this.currentHealth -= this.perTickDamage;
+        }
+        if (nutrientStdDev < this.nutrientDiffRegainHealth) {
+            this.currentHealth += this.perTickDamage;
         }
 
         if (this.currentHealth < 0) {
@@ -162,14 +167,14 @@ class BaseOrganism {
         var currentEnergyPercentage = this.getCurrentEnergyPercentage();
         var totalEnergyLifeCycleRate = this.totalEnergy / lifeCyclePercentage;
 
-        if (currentEnergyPercentage > 1) {
+        if (lifeCyclePercentage > 0.75 && currentEnergyPercentage > 1) {
             this.spawnSeed();
             this.currentEnergy -= this.reproductionEnergyUnit;
             return;
         }
 
         var projectedEnergyAtEOL = this.currentEnergy + totalEnergyLifeCycleRate * (1 - lifeCyclePercentage);
-        if (projectedEnergyAtEOL < this.reproductionEnergy * 2) {
+        if (projectedEnergyAtEOL < this.reproductionEnergy * (2 + 10 * Math.max(0, (0.75 - lifeCyclePercentage)))) {
             this.growAndDecay();
             return;
         } else {

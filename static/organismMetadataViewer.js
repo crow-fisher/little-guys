@@ -18,6 +18,7 @@ function organismMetadataViewerMain() {
     // for each organism save a struct that's like 
     var organismMetadatas = new Array();
     metadataCanvas.clearRect(0, 0, canvasWidth, canvasHeight);
+
     
     iterateOnOrganisms((org) => {
         if (org.type == "plant") {
@@ -31,6 +32,7 @@ function organismMetadataViewerMain() {
             organismMetadata["reproductionEnergy"] = org.reproductionEnergy;
             organismMetadata["reproductionEnergyUnit"] = org.reproductionEnergyUnit;
             organismMetadata["currentHealth"] = org.currentHealth / org.maxHealth;
+            organismMetadata["hovered"] = org.hovered;
             organismMetadatas.push(organismMetadata);
         }
     });
@@ -39,6 +41,9 @@ function organismMetadataViewerMain() {
 
     organismMetadatas.forEach((organismMetadata) => {
         // nutrient section
+        var curPadding = organismMetadata["hovered"] ? padding * 2 : padding;
+        var curResourceBarHeight = organismMetadata["hovered"] ? resourceBarHeight * 2 : resourceBarHeight;
+
         var maxNutrient = Math.max(
             Math.max(
                 organismMetadata["waterNutrients"],
@@ -51,59 +56,59 @@ function organismMetadataViewerMain() {
         
         metadataCanvas.fillStyle = "#0093AF";
         metadataCanvas.fillRect(
-            padding,
+            curPadding,
             curYStartPos,
-            (waterNutrientFrac * (canvasWidth - (padding * 2))),
-            resourceBarHeight
+            (waterNutrientFrac * (canvasWidth - (curPadding * 2))),
+            curResourceBarHeight
         );
 
-        curYStartPos += resourceBarHeight + padding;
+        curYStartPos += curResourceBarHeight + curPadding;
 
         metadataCanvas.fillStyle = "#855c48";
         metadataCanvas.fillRect(
-            padding,
+            curPadding,
             curYStartPos,
-            (dirtNutrientFrac * (canvasWidth - (padding * 2))),
-            resourceBarHeight
+            (dirtNutrientFrac * (canvasWidth - (curPadding * 2))),
+            curResourceBarHeight
         );
 
-        curYStartPos += resourceBarHeight + padding;
+        curYStartPos += curResourceBarHeight + curPadding;
 
         metadataCanvas.fillStyle = "#dddddd";
         metadataCanvas.fillRect(
-            padding,
+            curPadding,
             curYStartPos,
-            (airNutrientFrac * (canvasWidth - (padding * 2))),
-            resourceBarHeight
+            (airNutrientFrac * (canvasWidth - (curPadding * 2))),
+            curResourceBarHeight
         );
-        curYStartPos += resourceBarHeight + padding;
+        curYStartPos += curResourceBarHeight + curPadding;
 
         metadataCanvas.fillStyle = "#00FF00";
         metadataCanvas.fillRect(
-            padding,
+            curPadding,
             curYStartPos,
-            (organismMetadata["currentEnergyPercentage"] * (canvasWidth - (padding * 2))),
-            resourceBarHeight
+            (organismMetadata["currentEnergyPercentage"] * (canvasWidth - (curPadding * 2))),
+            curResourceBarHeight
         );
-        curYStartPos += resourceBarHeight + padding;
+        curYStartPos += curResourceBarHeight + curPadding;
 
         metadataCanvas.fillStyle = "#222222";
         metadataCanvas.fillRect(
-            padding,
+            curPadding,
             curYStartPos,
-            (organismMetadata["lifeCyclePercentage"] * (canvasWidth - (padding * 2))),
-            resourceBarHeight
+            (organismMetadata["lifeCyclePercentage"] * (canvasWidth - (curPadding * 2))),
+            curResourceBarHeight
         );
-        curYStartPos += resourceBarHeight + padding;
+        curYStartPos += curResourceBarHeight + curPadding;
 
         metadataCanvas.fillStyle = "#FF0000";
         metadataCanvas.fillRect(
-            padding,
+            curPadding,
             curYStartPos,
-            (organismMetadata["currentHealth"] * (canvasWidth - (padding * 2))),
-            resourceBarHeight
+            (organismMetadata["currentHealth"] * (canvasWidth - (curPadding * 2))),
+            curResourceBarHeight
         );
-        curYStartPos += resourceBarHeight + padding;
+        curYStartPos += curResourceBarHeight + curPadding;
 
 
     })

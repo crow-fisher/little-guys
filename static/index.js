@@ -11,7 +11,7 @@ import { WaterDistributionSquare } from "./squares/WaterDistributionSquare.js";
 import { DrainSquare } from "./squares/DrainSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
 import { PopGrassSeedOrganism } from "./organisms/PopGrassSeedOrganism.js";
-import { addNewOrganism, addOrganism } from "./organisms/_orgOperations.js";
+import { addNewOrganism, addOrganism, iterateOnOrganisms } from "./organisms/_orgOperations.js";
 import { organismMetadataViewerMain } from "./organismMetadataViewer.js";
 
 import { updateTime, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, ALL_SQUARES, getNextEntitySpawnId } from "./globals.js";
@@ -20,6 +20,7 @@ import { doErase } from "./manipulation.js";
 import { ProtoMap } from "./types.js";
 import { GravelSquare } from "./squares/GravelSquare.js";
 import { SandSquare } from "./squares/SandSquare.js";
+import { getOrganismSquaresAtSquare } from "./lifeSquares/_lsOperations.js";
 
 var materialSelect = document.getElementById("materialSelect");
 var fastTerrain = document.getElementById("fastTerrain");
@@ -36,7 +37,7 @@ timeScale.addEventListener('change', (e) => TIME_SCALE = e.target.value);
 
 var mouseDown = 0;
 var organismAddedThisClick = false;
-var lastClickEvent = null;
+var lastMoveEvent = null;
 var lastTick = Date.now();
 
 var CANVAS_SQUARES_X = 170; // * 8; //6;
@@ -196,26 +197,37 @@ function main() {
     }
     updateTime();
     setTimeout(main, 5);
+    doMouseHover();
     organismMetadataViewerMain();
 }
 
 
 function handleClick(event) {
-    lastClickEvent = event;
+    lastMoveEvent = event;
     if (!rightMouseClicked && mouseDown <= 0) {
         lastLastClickEvent = event;
     }
 }
 
+function doMouseHover() {
+    if (lastMoveEvent == null) {
+        return;
+    }
+    var px = lastMoveEvent.offsetX / BASE_SIZE;
+    var py = lastMoveEvent.offsetY / BASE_SIZE;
+    iterateOnOrganisms((org) => org.hovered = false);
+    getOrganismSquaresAtSquare(Math.floor(px), Math.floor(py)).forEach((orgSq) => orgSq.linkedOrganism.hovered = true);
+}
+
 function doClickAdd() {
-    if (lastClickEvent == null) {
+    if (lastMoveEvent == null) {
         return;
     }
     if (mouseDown > 0) {
-        var offsetX = lastClickEvent.offsetX / BASE_SIZE;
-        var offsetY = lastClickEvent.offsetY / BASE_SIZE;
-        var prevOffsetX = (lastLastClickEvent == null ? lastClickEvent : lastLastClickEvent).offsetX / BASE_SIZE;
-        var prevOffsetY = (lastLastClickEvent == null ? lastClickEvent : lastLastClickEvent).offsetY / BASE_SIZE;
+        var offsetX = lastMoveEvent.offsetX / BASE_SIZE;
+        var offsetY = lastMoveEvent.offsetY / BASE_SIZE;
+        var prevOffsetX = (lastLastClickEvent == null ? lastMoveEvent : lastLastClickEvent).offsetX / BASE_SIZE;
+        var prevOffsetY = (lastLastClickEvent == null ? lastMoveEvent : lastLastClickEvent).offsetY / BASE_SIZE;
 
         // point slope motherfuckers 
 
@@ -279,20 +291,23 @@ function doClickAdd() {
                             if (organismAddedThisClick) {
                                 break;
                             }
-                            var sq = addSquare(new SeedSquare(px, curY));
-                            if (sq) {
-                                organismAddedThisClick = true;
-                                addNewOrganism(new PopGrassSeedOrganism(sq));
+                            if (Math.random() > 0.95) {
+                                var sq = addSquare(new SeedSquare(px, curY));
+                                if (sq) {
+                                    // organismAddedThisClick = true;
+                                    addNewOrganism(new PopGrassSeedOrganism(sq));
+                                }
+                                break;
                             }
-                            break;
+
                     }
                 }
-                if (!shiftPressed || selectedMaterial.indexOf("rain") >= 0 || selectedMaterial.indexOf("aquifer") >= 0 ) {
+                if (!shiftPressed || selectedMaterial.indexOf("rain") >= 0 || selectedMaterial.indexOf("aquifer") >= 0) {
                     break;
                 }
             }
         }
-        lastLastClickEvent = lastClickEvent;
+        lastLastClickEvent = lastMoveEvent;
     }
 }
 
@@ -312,20 +327,20 @@ window.oncontextmenu = function () {
 main()
 
 
-window.onload = function() {
-    document.addEventListener('keydown', function(e) {
+window.onload = function () {
+    document.addEventListener('keydown', function (e) {
         if (e.code === "ShiftLeft") {
             shiftPressed = true;
         }
     }, false);
 
-    document.addEventListener('keyup', function(e) {
+    document.addEventListener('keyup', function (e) {
         if (e.code === "ShiftLeft") {
             shiftPressed = false;
         }
     }, false);
 
-    
+
     // document.addEventListener('keyup', (e) => {
     //     if (e.code === "Shift") {
     //         shiftPressed = false;

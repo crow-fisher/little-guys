@@ -144,7 +144,7 @@ var heavyrain_dropChance = {
 };
 var rain_dropHealth = {
     name: "rain_dropHealth",
-    value: 0.05
+    value: 0.5
 };
 var water_evaporationRate = {
     name: "water_evaporationRate",
