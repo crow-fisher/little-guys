@@ -27,6 +27,8 @@ class BaseLifeSquare {
         this.spawnedEntityId = organism.spawnedEntityId;
         this.childLifeSquares = new Array();
 
+        this.height = BASE_SIZE;
+
         if (square.organic) {
             square.spawnedEntityId = organism.spawnedEntityId;
         }
@@ -161,7 +163,7 @@ class BaseLifeSquare {
 
         var startPos = this.posX * BASE_SIZE + (1 - this.width) * BASE_SIZE * this.xOffset;
         
-        var height = BASE_SIZE * (1 + this.getStaticRand(3));
+        var height = this.height * (1 + this.getStaticRand(3));
 
         // getSquares(this.posX, this.posY - 1).forEach((x) => height = BASE_SIZE);
 

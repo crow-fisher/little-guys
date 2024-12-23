@@ -57,22 +57,22 @@ var noNutrientValuePerDirectNeighbor = {
 
 var base_waterContainmentMax = {
     name: "base_waterContainmentMax",
-    value: 5
+    value: 20
 };  
 
 var base_waterContainmentTransferRate = {
     name: "base_waterContainmentTransferRate",
-    value: 0.25
+    value: 5
 };
 
 var gravel_waterContainmentMax = {
     name: "gravel_waterContainmentMax",
-    value: 30
+    value: 40
 };  
 
 var gravel_waterContainmentTransferRate = {
     name: "gravel_waterContainmentTransferRate",
-    value: 10
+    value: 20
 };
 
 var base_waterContainmentEvaporationRate = {
@@ -95,22 +95,22 @@ var static_sq_waterContainmentTransferRate = {
 
 var drain_sq_waterContainmentMax = {
     name: "drain_sq_waterContainmentMax",
-    value: 1.01
+    value: 1000
 }
 
 var drain_sq_waterTransferRate = {
     name: "drain_sq_waterTransferRate",
-    value: 0.5
+    value: 50
 }
 
 var wds_sq_waterContainmentMax = {
     name: "wds_sq_waterContainmentMax",
-    value: 2
+    value: 1000
 };
 
 var wds_sq_waterTransferRate = {
     name: "waterContainmentTransferRate",
-    value: 0.15
+    value: 50
 };
 
 

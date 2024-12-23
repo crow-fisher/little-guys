@@ -10,6 +10,7 @@ import {
 import { getDirectNeighbors, getSquares } from "../squares/_sqOperations.js";
 import { getNeighbors } from "../squares/_sqOperations.js";
 import { hexToRgb, rgbToHex } from "../common.js";
+import { BASE_SIZE } from "../index.js";
 class PlantSeedLifeSquare extends BaseLifeSquare {
     constructor(square, organism) {
         super(square, organism);
@@ -20,6 +21,11 @@ class PlantSeedLifeSquare extends BaseLifeSquare {
         this.p_seed_ls_neighborWaterContainmentRequiredToGrow = p_seed_ls_neighborWaterContainmentRequiredToGrow;
         this.neighborWaterContainmentRequiredToDecay = p_seed_ls_neighborWaterContainmentRequiredToDecay;
         this.colorBase = "#A1CCA5";
+        this.height = BASE_SIZE / 4;
+
+        this.baseColor = "#98817B";
+        this.darkColor = "#8B8589";
+        this.accentColor = "#848482";
     }
 
     tick() {

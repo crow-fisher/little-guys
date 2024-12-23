@@ -32,7 +32,7 @@
             this.accentColor = "#85B09A";
             this.opacity = 0.5;
             
-            this.maxBlockHealth = 100;
+            this.maxBlockHealth = 200;
             this.blockHealth = this.maxBlockHealth;
         }
 

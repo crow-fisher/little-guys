@@ -24,7 +24,7 @@ class BaseOrganism {
         this.maxHealth = 100;
         this.perTickDamage = 1;
         this.currentHealth = 100;
-        this.nutrientDiffTolerance = 1.159;
+        this.nutrientDiffTolerance = 1.157;
 
         // life cycle properties
         this.maxLifeTime = 1000 * 20 * 1;
