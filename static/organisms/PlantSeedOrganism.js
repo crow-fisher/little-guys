@@ -22,6 +22,10 @@ class PlantSeedOrganism extends BaseOrganism {
     }
 
     postTick() {
+        if (!(getSquares(this.linkedSquare.posX, this.linkedSquare.posY).some((sq) => sq == this.linkedSquare))) {
+            this.destroy();
+        }
+
         var lifeCyclePercentage = (getCurTime() - this.spawnTime) / this.maxLifeTime;
         if (lifeCyclePercentage > 1) {
             this.destroy();

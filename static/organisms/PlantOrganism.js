@@ -109,7 +109,6 @@ class PlantOrganism extends BaseOrganism {
         // make a decision on how to grow based on which of our needs we need the most
         
         let minNutrient = Math.min(Math.min(this.airNutrients, this.dirtNutrients), this.waterNutrients);
-        let maxNutrient = Math.max(Math.max(this.airNutrients, this.dirtNutrients), this.waterNutrients);
         if (this.currentEnergy < 0) {
             return;
         }
@@ -128,49 +127,12 @@ class PlantOrganism extends BaseOrganism {
             this.currentEnergy -= this.growWaterRoot();
             return;
         }
-
-        if (maxNutrient > minNutrient * 2) {
-            if (this.airNutrients == maxNutrient) {
-                this.decayPlant();
-            }
-            if (this.waterNutrients == maxNutrient) {
-                this.decayWaterRoot();
-            }
-            if (this.dirtNutrients == maxNutrient) {
-                this.decayDirtRoot();
-            }
-        }
-    }
-
-    decayPlant() {
-        this.removeAssociatedLifeSquare(this.getHighestGreen());
     }
 
     getExteriorRoots() {
         return this.lifeSquares
         .filter((lsq) => lsq.type == "root")
         .filter((lsq) => lsq.childLifeSquares.length == 0);
-    }
-    decayWaterRoot() {
-        var exteriorRoots = Array.from(this.getExteriorRoots());
-        var wettestRoot = null;
-        exteriorRoots.forEach((lsq) => {
-            if (wettestRoot == null || lsq.waterNutrients > wettestRoot.waterNutrients) {
-                wettestRoot = lsq;
-            }
-        });
-        this.removeAssociatedLifeSquare(wettestRoot);
-    }
-
-    decayDirtRoot() {
-        var exteriorRoots = Array.from(this.getExteriorRoots());
-        var dirtiestRoot = null;
-        exteriorRoots.forEach((lsq) => {
-            if (dirtiestRoot == null || lsq.dirtNutrients > dirtiestRoot.dirtNutrients) {
-                dirtiestRoot = lsq;
-            }
-        });
-        this.removeAssociatedLifeSquare(dirtiestRoot);
     }
 
     canGrowPlant() {

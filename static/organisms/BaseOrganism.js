@@ -20,17 +20,42 @@ class BaseOrganism {
         this.spawnTime = getCurTime();
         this.currentEnergy = 0;
         this.totalEnergy = 0;
+        
+        this.maxHealth = 100;
+        this.perTickDamage = 1;
+        this.currentHealth = 100;
+        this.nutrientDiffTolerance = 1.159;
 
         // life cycle properties
-        this.maxLifeTime = 1000 * 100 * 1;
-        this.reproductionEnergy = 1000;
-        this.reproductionEnergyUnit = 300;
-        this.perNewLifeSquareGrowthCost = 10;
+        this.maxLifeTime = 1000 * 20 * 1;
+        this.reproductionEnergy = 100;
+        this.reproductionEnergyUnit = 30;
+        this.perNewLifeSquareGrowthCost = 5;
         this.maximumLifeSquaresOfType = {}
         this.lifeSquaresCountByType = {};
         this.spawnedEntityId = getNextEntitySpawnId();
         this.linkSquare(square);
         this.growInitialSquares();
+    }
+
+    processHealth() { 
+        let meanNutrient = this.airNutrients + this.dirtNutrients + this.waterNutrients;
+        let airNutrientNormalized = this.airNutrients / meanNutrient;
+        let dirtNutrientNormalized = this.dirtNutrients / meanNutrient;
+        let waterNutrientNormalized = this.waterNutrients / meanNutrient;
+
+        let nutrientVariance = (1 - airNutrientNormalized) ** 2 + (1 - dirtNutrientNormalized) ** 2 + (1 - waterNutrientNormalized) ** 2;
+        let nutrientStdDev = nutrientVariance ** 0.5; 
+
+        if (nutrientStdDev > this.nutrientDiffTolerance) {
+            console.log(nutrientStdDev, this.nutrientDiffTolerance, this.airNutrients, this.dirtNutrients, this.waterNutrients);
+            this.currentHealth -= this.perTickDamage;
+        }
+
+        if (this.currentHealth < 0) {
+            console.log("YEETING MYSELF IDC")
+            this.destroy();
+        }
     }
 
     linkSquare(square) {
@@ -95,6 +120,7 @@ class BaseOrganism {
         this.preTick();
         this.tick();
         this.postTick();
+        this.processHealth();
     }
 
     preTick() {
@@ -113,6 +139,10 @@ class BaseOrganism {
         return this.currentEnergy / this.reproductionEnergy;
     }
 
+    getEnergyConversionEfficiency() {
+        return ((this.currentHealth + this.maxHealth) / 2) / this.maxHealth;
+    }
+
     postTick() {
         this.lifeSquares.forEach((lifeSquare) => {
             this.dirtNutrients += lifeSquare.dirtNutrients;
@@ -121,6 +151,7 @@ class BaseOrganism {
         });
 
         var energyGained = this.law.photosynthesis(this.airNutrients - this.totalEnergy, this.waterNutrients - this.totalEnergy, this.dirtNutrients - this.totalEnergy);
+        energyGained *= this.getEnergyConversionEfficiency();
 
         this.currentEnergy += energyGained;
         this.totalEnergy += energyGained;

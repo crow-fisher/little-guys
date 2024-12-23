@@ -30,6 +30,7 @@ function organismMetadataViewerMain() {
             organismMetadata["currentEnergy"] = org.currentEnergy;
             organismMetadata["reproductionEnergy"] = org.reproductionEnergy;
             organismMetadata["reproductionEnergyUnit"] = org.reproductionEnergyUnit;
+            organismMetadata["currentHealth"] = org.currentHealth / org.maxHealth;
             organismMetadatas.push(organismMetadata);
         }
     });
@@ -91,6 +92,15 @@ function organismMetadataViewerMain() {
             padding,
             curYStartPos,
             (organismMetadata["lifeCyclePercentage"] * (canvasWidth - (padding * 2))),
+            resourceBarHeight
+        );
+        curYStartPos += resourceBarHeight + padding;
+
+        metadataCanvas.fillStyle = "#FF0000";
+        metadataCanvas.fillRect(
+            padding,
+            curYStartPos,
+            (organismMetadata["currentHealth"] * (canvasWidth - (padding * 2))),
             resourceBarHeight
         );
         curYStartPos += resourceBarHeight + padding;

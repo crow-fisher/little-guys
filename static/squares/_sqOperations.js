@@ -37,7 +37,7 @@ function getDirectNeighbors(x, y) {
 }
 
 function addSquare(square) {
-    if (square.collision && getSquares(square.posX, square.posY).some((sq) => sq.collision)) {
+    if (!square.organic && square.collision && getSquares(square.posX, square.posY).some((sq) => sq.collision)) {
         return false;
     }
     getSquares(square.posX, square.posY).push(square);

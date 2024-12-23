@@ -66,19 +66,43 @@ class BaseLifeSquare {
         removeOrganismSquare(this);
     }
 
+    addNutrientSmart(maxNutrientValue, curValue, setter) {
+        if (curValue == this.getMinNutrient()) {
+            setter(maxNutrientValue);
+        }
+        var meanNutrient = this.getMeanNutrient();
+        var diffToMean = meanNutrient - curValue;
+        var amountToAdd = Math.max(maxNutrientValue / 2, diffToMean);
+        setter(amountToAdd);
+
+    }
+
     addAirNutrient(nutrientAmount) {
+        this.addNutrientSmart(nutrientAmount, this.airNutrients, (val) => this._addAirNutrient(val));
+    }
+
+    addWaterNutrient(nutrientAmount) {
+        this.addNutrientSmart(nutrientAmount, this.waterNutrients, (val) => this._addWaterNutrient(val));
+    }
+
+    addDirtNutrient(nutrientAmount) {
+        this.addNutrientSmart(nutrientAmount, this.dirtNutrients, (val) => this._addDirtNutrient(val));
+    }
+
+
+    _addAirNutrient(nutrientAmount) {
         var start = this.airNutrients;
         this.airNutrients += Math.min(this.maxAirDt.value * 7, this.airNutrients + nutrientAmount);
         return this.airNutrients - start;
     }
 
-    addWaterNutrient(nutrientAmount) {
+    _addWaterNutrient(nutrientAmount) {
         var start = this.waterNutrients;
         this.waterNutrients += Math.min(this.maxWaterDt, this.waterNutrients + nutrientAmount);
         return this.waterNutrients - start;
     }
 
-    addDirtNutrient(nutrientAmount) {
+    _addDirtNutrient(nutrientAmount) {
         var start = this.dirtNutrients;
         this.dirtNutrients += Math.min(this.maxDirtDt, this.dirtNutrients + nutrientAmount);
         return this.dirtNutrients - start;
@@ -100,7 +124,7 @@ class BaseLifeSquare {
         return this.randoms[randIdx];
     }
 
-    renderWithVariedColors() {
+    render() {
         var res = this.getStaticRand(1) * (parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value) + parseFloat(this.baseColorAmount.value)); 
         var primaryColor = null;
         var altColor1 = null;
@@ -150,21 +174,6 @@ class BaseLifeSquare {
         );
     }
 
-    render() {
-        if (this.renderWithColorRange) {
-            this.renderWithVariedColors();
-            return;
-        }
-
-        MAIN_CONTEXT.fillStyle = this.calculateColor();
-        MAIN_CONTEXT.fillRect(
-            this.posX * BASE_SIZE,
-            this.posY * BASE_SIZE,
-            BASE_SIZE,
-            BASE_SIZE
-        );
-    };
-
     calculateColor() {
         var baseColorRGB = hexToRgb(this.colorBase);
         return rgbToHex(Math.floor(baseColorRGB.r), Math.floor(baseColorRGB.g), Math.floor(baseColorRGB.b));
@@ -175,6 +184,17 @@ class BaseLifeSquare {
         if (this.linkedSquare != null) {
             this.linkedSquare.spawnedEntityId = id;
         }
+    }
+
+    getMinNutrient() {
+        return Math.min(Math.min(this.airNutrients, this.dirtNutrients), this.waterNutrients);
+    }
+
+    getMaxNutrient() {
+        return Math.max(Math.max(this.airNutrients, this.dirtNutrients), this.waterNutrients);
+    }
+    getMeanNutrient() {
+        return (this.airNutrients + this.dirtNutrients + this.waterNutrients) / 3;
     }
 
 }
