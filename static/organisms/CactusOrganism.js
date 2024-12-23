@@ -18,6 +18,9 @@ import { getOrganismSquaresAtSquare } from "../lifeSquares/_lsOperations.js";
 import { getOrganismSquaresAtSquareWithEntityId } from "../lifeSquares/_lsOperations.js";
 
 import { getCurTime } from "../globals.js";
+import { CactusGreenLifeSquare } from "../lifeSquares/CactusGreenLifeSquare.js";
+import { CactusRootLifeSquare } from "../lifeSquares/CactusRootLifeSquare.js";
+import { CactusSeedOrganism } from "./CactusSeedOrganism.js";
 class CactusOrganism extends BaseOrganism {
     constructor(square) {
         super(square);
@@ -46,7 +49,7 @@ class CactusOrganism extends BaseOrganism {
         var topGreen = this.getHighestGreen();
         var seedSquare = new SeedSquare(topGreen.posX, topGreen.posY - 1);
         if (addSquare(seedSquare)) {
-            var newOrg = new PopGrassSeedOrganism(seedSquare);
+            var newOrg = new CactusSeedOrganism(seedSquare);
             newOrg.linkSquare(seedSquare);
             if (addNewOrganism(newOrg)) {
                 return seedSquare;
@@ -77,7 +80,7 @@ class CactusOrganism extends BaseOrganism {
         });
         var newPlantSquare = addSquare(new PlantSquare(this.posX, this.posY - 1));
         if (newPlantSquare) {
-            var orgSq = addOrganismSquare(new PopGrassGreenLifeSquare(newPlantSquare, this));
+            var orgSq = addOrganismSquare(new CactusGreenLifeSquare(newPlantSquare, this));
             if (orgSq) {
                 orgSq.linkSquare(newPlantSquare);
                 this.addAssociatedLifeSquare(orgSq);
@@ -89,7 +92,7 @@ class CactusOrganism extends BaseOrganism {
             this.destroy();
             return;
         }
-        var rootSq = addOrganismSquare(new PopGrassRootLifeSquare(this.linkedSquare, this));
+        var rootSq = addOrganismSquare(new CactusRootLifeSquare(this.linkedSquare, this));
         rootSq.linkSquare(this.linkedSquare);
         rootSq.addChild(orgSq);
         this.addAssociatedLifeSquare(rootSq);
@@ -155,7 +158,7 @@ class CactusOrganism extends BaseOrganism {
             }
             var newPlantSquare = new PlantSquare(highestPlantSquare.posX, highestPlantSquare.posY - 1);
             if (addSquare(newPlantSquare)) {
-                var newPopGrassGreenLifeSquare = addOrganismSquare(new PopGrassGreenLifeSquare(newPlantSquare, this));
+                var newPopGrassGreenLifeSquare = addOrganismSquare(new CactusGreenLifeSquare(newPlantSquare, this));
                 if (newPopGrassGreenLifeSquare) {
                     this.addAssociatedLifeSquare(newPopGrassGreenLifeSquare);
                     newPopGrassGreenLifeSquare.linkSquare(newPlantSquare);
@@ -199,7 +202,7 @@ class CactusOrganism extends BaseOrganism {
                     }});
                 }
             if (wettestSquare != null) {
-                var newPopGrassRootLifeSquare = addOrganismSquare(new PopGrassRootLifeSquare(wettestSquare, this));
+                var newPopGrassRootLifeSquare = addOrganismSquare(new CactusRootLifeSquare(wettestSquare, this));
                 if (newPopGrassRootLifeSquare) {
                     this.addAssociatedLifeSquare(newPopGrassRootLifeSquare);
                     newPopGrassRootLifeSquare.linkSquare(wettestSquare);
@@ -250,11 +253,11 @@ class CactusOrganism extends BaseOrganism {
                         });
             });
             if (dirtiestSquare != null) {
-                var PopGrassRootLifeSquare = addOrganismSquare(new PopGrassRootLifeSquare(dirtiestSquare, this));
-                this.addAssociatedLifeSquare(PopGrassRootLifeSquare);
-                PopGrassRootLifeSquare.linkSquare(dirtiestSquare);
-                dirtiestSquareParent.addChild(PopGrassRootLifeSquare);
-                return this.perNewLifeSquareGrowthCost;;
+                var newRootSquare = addOrganismSquare(new CactusRootLifeSquare(dirtiestSquare, this));
+                this.addAssociatedLifeSquare(newRootSquare);
+                newRootSquare.linkSquare(dirtiestSquare);
+                dirtiestSquareParent.addChild(newRootSquare);
+                return this.perNewLifeSquareGrowthCost;
             }
         }
         return 0;

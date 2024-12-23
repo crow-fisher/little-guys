@@ -13,7 +13,7 @@ import { PopGrassOrganism } from "./organisms/PopGrassOrganism.js";
 import { PopGrassGreenLifeSquare } from "./lifeSquares/PopGrassGreenLifeSquare.js";
 import { PopGrassRootLifeSquare } from "./lifeSquares/PopGrassRootLifeSquare.js";
 import { PopGrassSeedOrganism } from "./organisms/PopGrassSeedOrganism.js";
-import { PlantSeedLifeSquare } from "./lifeSquares/PlantSeedLifeSquare.js";
+import { SeedLifeSquare } from "./lifeSquares/SeedLifeSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
 import { Law } from "./Law.js";
 import { AquiferSquare } from "./squares/RainSquare.js";
@@ -36,7 +36,7 @@ var ProtoMap = {
     "PopGrassGreenLifeSquare": PopGrassGreenLifeSquare.prototype,
     "PopGrassRootLifeSquare": PopGrassRootLifeSquare.prototype,
     "PopGrassSeedOrganism": PopGrassSeedOrganism.prototype,
-    "PlantSeedLifeSquare": PlantSeedLifeSquare.prototype,
+    "SeedLifeSquare": SeedLifeSquare.prototype,
     "SeedSquare": SeedSquare.prototype,
     "Law": Law.prototype,
     "AquiferSquare": AquiferSquare.prototype,

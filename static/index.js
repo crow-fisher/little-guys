@@ -21,6 +21,7 @@ import { ProtoMap } from "./types.js";
 import { GravelSquare } from "./squares/GravelSquare.js";
 import { SandSquare } from "./squares/SandSquare.js";
 import { getOrganismSquaresAtSquare } from "./lifeSquares/_lsOperations.js";
+import { CactusSeedOrganism } from "./organisms/CactusSeedOrganism.js";
 
 var materialSelect = document.getElementById("materialSelect");
 var fastTerrain = document.getElementById("fastTerrain");
@@ -287,10 +288,7 @@ function doClickAdd() {
 
                         // organism sections
                         // in this case we only want to add one per click
-                        case "plant":
-                            if (organismAddedThisClick) {
-                                break;
-                            }
+                        case "popgrass":
                             if (Math.random() > 0.95) {
                                 var sq = addSquare(new SeedSquare(px, curY));
                                 if (sq) {
@@ -299,7 +297,15 @@ function doClickAdd() {
                                 }
                                 break;
                             }
-
+                        case "cactus":
+                            if (Math.random() > 0.95) {
+                                var sq = addSquare(new SeedSquare(px, curY));
+                                if (sq) {
+                                    // organismAddedThisClick = true;
+                                    addNewOrganism(new CactusSeedOrganism(sq));
+                                }
+                                break;
+                            }
                     }
                 }
                 if (!shiftPressed || selectedMaterial.indexOf("rain") >= 0 || selectedMaterial.indexOf("aquifer") >= 0) {

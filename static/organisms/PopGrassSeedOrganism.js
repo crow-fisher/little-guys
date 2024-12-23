@@ -1,4 +1,4 @@
-import { PlantSeedLifeSquare } from "../lifeSquares/PlantSeedLifeSquare.js";
+import { SeedLifeSquare } from "../lifeSquares/SeedLifeSquare.js";
 import { PopGrassOrganism } from "./PopGrassOrganism.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 import { getSquares } from "../squares/_sqOperations.js";
@@ -13,28 +13,11 @@ class PopGrassSeedOrganism extends BaseSeedOrganism {
         this.sproutCtor = (linkedSquare) => new PopGrassOrganism(linkedSquare)
     }
     growInitialSquares() {
-        var newLifeSquare = new PlantSeedLifeSquare(this.linkedSquare, this);
+        var newLifeSquare = new SeedLifeSquare(this.linkedSquare, this);
         if (addOrganismSquare(newLifeSquare)) {
             newLifeSquare.linkSquare(this.linkedSquare);
             this.linkedSquare.linkOrganismSquare(newLifeSquare);
             this.addAssociatedLifeSquare(newLifeSquare);
-        }
-    }
-
-    postTick() {
-        if (!(getSquares(this.linkedSquare.posX, this.linkedSquare.posY).some((sq) => sq == this.linkedSquare))) {
-            this.destroy();
-        }
-
-        var lifeCyclePercentage = (getCurTime() - this.spawnTime) / this.maxLifeTime;
-        if (lifeCyclePercentage > 1) {
-            this.destroy();
-        }
-        if (this.lifeSquares.some((lsq) => lsq.sproutStatus >= 1)) {
-            // now we need to convert ourself into a 'plant organism'
-            var linkedSquareCache = this.linkedSquare;
-            this.destroy();
-            addNewOrganism(new PopGrassOrganism(linkedSquareCache));
         }
     }
 }

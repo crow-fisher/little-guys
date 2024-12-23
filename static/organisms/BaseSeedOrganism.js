@@ -1,5 +1,5 @@
 import {BaseOrganism} from "./BaseOrganism.js"
-import { PlantSeedLifeSquare } from "../lifeSquares/PlantSeedLifeSquare.js";
+import { SeedLifeSquare } from "../lifeSquares/SeedLifeSquare.js";
 import { PopGrassOrganism } from "./PopGrassOrganism.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 import { getSquares } from "../squares/_sqOperations.js";
@@ -27,7 +27,7 @@ class BaseSeedOrganism extends BaseOrganism {
             // now we need to convert ourself into a 'plant organism'
             var linkedSquareCache = this.linkedSquare;
             this.destroy();
-            addNewOrganism(sproutCtor(linkedSquareCache));
+            addNewOrganism(this.sproutCtor(linkedSquareCache));
         }
     }
 }
