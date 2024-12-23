@@ -17,6 +17,7 @@ import { PlantSeedLifeSquare } from "./lifeSquares/PlantSeedLifeSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
 import { Law } from "./Law.js";
 import { AquiferSquare } from "./squares/RainSquare.js";
+import { GravelSquare } from "./squares/GravelSquare.js";
 
 
 var ProtoMap = {
@@ -38,7 +39,8 @@ var ProtoMap = {
     "PlantSeedLifeSquare": PlantSeedLifeSquare.prototype,
     "SeedSquare": SeedSquare.prototype,
     "Law": Law.prototype,
-    "AquiferSquare": AquiferSquare.prototype
+    "AquiferSquare": AquiferSquare.prototype,
+    "GravelSquare": GravelSquare.prototype
 }
 
 export {ProtoMap}

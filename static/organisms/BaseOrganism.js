@@ -24,7 +24,7 @@ class BaseOrganism {
         this.maxHealth = 100;
         this.perTickDamage = 1;
         this.currentHealth = 100;
-        this.nutrientDiffTolerance = 1.157;
+        this.nutrientDiffTolerance = 1.1565;
 
         // life cycle properties
         this.maxLifeTime = 1000 * 20 * 1;
@@ -48,12 +48,10 @@ class BaseOrganism {
         let nutrientStdDev = nutrientVariance ** 0.5; 
 
         if (nutrientStdDev > this.nutrientDiffTolerance) {
-            console.log(nutrientStdDev, this.nutrientDiffTolerance, this.airNutrients, this.dirtNutrients, this.waterNutrients);
             this.currentHealth -= this.perTickDamage;
         }
 
         if (this.currentHealth < 0) {
-            console.log("YEETING MYSELF IDC")
             this.destroy();
         }
     }

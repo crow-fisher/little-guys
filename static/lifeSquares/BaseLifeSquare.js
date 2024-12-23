@@ -1,5 +1,5 @@
-import  {MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE} from "../index.js";
-import { hexToRgb, rgbToHex } from "../common.js";
+import { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE } from "../index.js";
+import { hexToRgb, rgbToHex, rgbToRgba } from "../common.js";
 
 import { getCurTime } from "../globals.js";
 import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount } from "../config/config.js";
@@ -13,7 +13,7 @@ class BaseLifeSquare {
         this.posY = square.posY;
         this.type = "base";
         this.colorBase = "#1D263B";
-        
+
         this.maxAirDt = airNutrientsPerEmptyNeighbor;
         this.maxWaterDt = 0.05;
         this.maxDirtDt = 0.05;
@@ -21,7 +21,7 @@ class BaseLifeSquare {
         this.airNutrients = 0;
         this.waterNutrients = 0;
         this.dirtNutrients = 0;
-    
+
         this.linkedSquare = square;
         this.linkedOrganism = organism;
         this.spawnedEntityId = organism.spawnedEntityId;
@@ -37,6 +37,8 @@ class BaseLifeSquare {
         this.width = 1;
         this.xOffset = 0.5;
         this.randoms = [];
+
+        this.cachedRgba = null;
 
         this.renderWithColorRange = false;
         // for ref - values from plant
@@ -127,53 +129,58 @@ class BaseLifeSquare {
     }
 
     render() {
-        var res = this.getStaticRand(1) * (parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value) + parseFloat(this.baseColorAmount.value)); 
-        var primaryColor = null;
-        var altColor1 = null;
-        var altColor2 = null;
-
-        if (res < parseFloat(this.accentColorAmount.value)) {
-            primaryColor = this.accentColor;
-            altColor1 = this.darkColor;
-            altColor2 = this.colorBase;
-        } else if (res < parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value)) {
-            primaryColor = this.darkColor;
-            altColor1 = this.baseColor;
-            altColor2 = this.darkColor;
+        if (this.cachedRgba) {
+            MAIN_CONTEXT.fillStyle = this.cachedRgba;
         } else {
-            altColor1 = this.darkColor;
-            altColor2 = this.darkColor;
-            primaryColor = this.baseColor;
+
+            var res = this.getStaticRand(1) * (parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value) + parseFloat(this.baseColorAmount.value));
+            var primaryColor = null;
+            var altColor1 = null;
+            var altColor2 = null;
+
+            if (res < parseFloat(this.accentColorAmount.value)) {
+                primaryColor = this.accentColor;
+                altColor1 = this.darkColor;
+                altColor2 = this.colorBase;
+            } else if (res < parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value)) {
+                primaryColor = this.darkColor;
+                altColor1 = this.baseColor;
+                altColor2 = this.darkColor;
+            } else {
+                altColor1 = this.darkColor;
+                altColor2 = this.darkColor;
+                primaryColor = this.baseColor;
+            }
+
+            var rand = this.getStaticRand(2);
+            var baseColorRgb = hexToRgb(primaryColor);
+            var altColor1Rgb = hexToRgb(altColor1);
+            var altColor2Rgb = hexToRgb(altColor2);
+
+            var outColor = {
+                r: baseColorRgb.r * 0.5 + ((altColor1Rgb.r * rand + altColor2Rgb.r * (1 - rand)) * 0.5),
+                g: baseColorRgb.g * 0.5 + ((altColor1Rgb.g * rand + altColor2Rgb.g * (1 - rand)) * 0.5),
+                b: baseColorRgb.b * 0.5 + ((altColor1Rgb.b * rand + altColor2Rgb.b * (1 - rand)) * 0.5)
+            }
+
+            var outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), this.opacity);
+            MAIN_CONTEXT.fillStyle = outRgba;
+            this.cachedRgba = outRgba;
         }
-
-        var rand = this.getStaticRand(2);
-        var baseColorRgb = hexToRgb(primaryColor);
-        var altColor1Rgb = hexToRgb(altColor1);
-        var altColor2Rgb = hexToRgb(altColor2);
-
-        var outColor = {
-            r: baseColorRgb.r * 0.5 + ((altColor1Rgb.r * rand + altColor2Rgb.r * (1 - rand)) * 0.5),
-            g: baseColorRgb.g * 0.5 + ((altColor1Rgb.g * rand + altColor2Rgb.g * (1 - rand)) * 0.5),
-            b: baseColorRgb.b * 0.5 + ((altColor1Rgb.b * rand + altColor2Rgb.b * (1 - rand)) * 0.5)
-        }
-
-        var outHex = rgbToHex(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b));
-
-        MAIN_CONTEXT.fillStyle = outHex;
 
         var startPos = this.posX * BASE_SIZE + (1 - this.width) * BASE_SIZE * this.xOffset;
-        
+
         var height = this.height * (1 + this.getStaticRand(3));
 
         // getSquares(this.posX, this.posY - 1).forEach((x) => height = BASE_SIZE);
 
         if (getSquares(this.posX, this.posY - 1))
-        MAIN_CONTEXT.fillRect(
-            startPos,
-            this.posY * BASE_SIZE - (height - BASE_SIZE),
-            this.width * BASE_SIZE,
-            height
-        );
+            MAIN_CONTEXT.fillRect(
+                startPos,
+                this.posY * BASE_SIZE - (height - BASE_SIZE),
+                this.width * BASE_SIZE,
+                height
+            );
     }
 
     calculateColor() {
@@ -200,4 +207,4 @@ class BaseLifeSquare {
     }
 
 }
-export {BaseLifeSquare}
+export { BaseLifeSquare }

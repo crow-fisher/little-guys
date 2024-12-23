@@ -22,6 +22,7 @@ class SeedSquare extends BaseSquare {
         this.nutrientValue = dirtNutrientValuePerDirectNeighbor;
         this.rootable = true;
         this.organic = true;
+        this.visible = false;
     }
     physics() {
         super.physics();

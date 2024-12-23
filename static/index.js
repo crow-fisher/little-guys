@@ -39,7 +39,7 @@ var lastClickEvent = null;
 var lastTick = Date.now();
 
 var CANVAS_SQUARES_X = 170; // * 8; //6;
-var CANVAS_SQUARES_Y = 50 + 5; // * 8; // 8;
+var CANVAS_SQUARES_Y = 80 + 5; // * 8; // 8;
 
 var MAIN_CANVAS = document.getElementById("main");
 var MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
@@ -82,7 +82,7 @@ function loadObjArr(sourceObjMap, addFunc) {
     }
 }
 
-function loadSlot(slotName) {
+async function loadSlot(slotName) {
     var sqLoad = localStorage.getItem("ALL_SQUARES_" + slotName);
     if (sqLoad == null) {
         alert("no data to load!!! beep boop :(")
@@ -90,7 +90,7 @@ function loadSlot(slotName) {
     }
     // These are not our 'real' objects - they are JSON objects.
     // So they don't have functions and such. 
-    var loaded_ALL_SQUARES = JSON.parse(localStorage.getItem("ALL_SQUARES_" + slotName));
+    const loaded_ALL_SQUARES = JSON.parse(await base64ToGzip(sqLoad));
     var loaded_ALL_ORGANISMS = JSON.parse(localStorage.getItem("ALL_ORGANISMS_" + slotName));
     var loaded_ALL_ORGANISM_SQUARES = JSON.parse(localStorage.getItem("ALL_ORGANISM_SQUARES_" + slotName));
 
@@ -104,10 +104,50 @@ function loadSlot(slotName) {
     loadObjArr(loaded_ALL_SQUARES, addSquare)
 }
 
-function saveSlot(slotName) {
-    localStorage.setItem("ALL_SQUARES_" + slotName, JSON.stringify(ALL_SQUARES));
-    localStorage.setItem("ALL_ORGANISMS_" + slotName, JSON.stringify(ALL_ORGANISMS));
-    localStorage.setItem("ALL_ORGANISM_SQUARES_" + slotName, JSON.stringify(ALL_ORGANISM_SQUARES));
+async function saveSlot(slotName) {
+    const compressedSquares = await gzipToBase64(JSON.stringify(ALL_SQUARES));
+    localStorage.setItem("ALL_SQUARES_" + slotName, compressedSquares);
+    // localStorage.setItem("ALL_ORGANISMS_" + slotName, JSON.stringify(ALL_ORGANISMS));
+    // localStorage.setItem("ALL_ORGANISM_SQUARES_" + slotName, JSON.stringify(ALL_ORGANISM_SQUARES));
+}
+
+async function gzipToBase64(inputString) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(inputString);
+
+    const compressionStream = new CompressionStream("gzip");
+    const writer = compressionStream.writable.getWriter();
+    writer.write(data);
+    writer.close();
+
+    const compressedStream = compressionStream.readable;
+    const compressedArrayBuffer = await new Response(compressedStream).arrayBuffer();
+    const compressedUint8Array = new Uint8Array(compressedArrayBuffer);
+
+    // Encode to Base64 in chunks
+    let binaryString = '';
+    for (let i = 0; i < compressedUint8Array.length; i++) {
+        binaryString += String.fromCharCode(compressedUint8Array[i]);
+    }
+
+    return btoa(binaryString);
+}
+
+// Decode Base64 and gunzip
+async function base64ToGzip(base64String) {
+    const binaryString = atob(base64String);
+    const compressedData = Uint8Array.from(binaryString, (char) => char.charCodeAt(0));
+
+    const decompressionStream = new DecompressionStream("gzip");
+    const writer = decompressionStream.writable.getWriter();
+    writer.write(compressedData);
+    writer.close();
+
+    const decompressedStream = decompressionStream.readable;
+    const decompressedArrayBuffer = await new Response(decompressedStream).arrayBuffer();
+
+    const decoder = new TextDecoder();
+    return decoder.decode(decompressedArrayBuffer);
 }
 
 

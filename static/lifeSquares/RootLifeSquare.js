@@ -7,7 +7,7 @@ class RootLifeSquare extends BaseLifeSquare {
     constructor(square, organism) {
         super(square, organism);
         this.proto = "RootLifeSquare";
-        this.opacity = 0.6;
+        this.opacity = 0.4;
         this.colorBase = "#554640";
         this.type = "root";
     }
