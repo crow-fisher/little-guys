@@ -28,12 +28,12 @@ function purge() {
 
     iterateOnOrganisms((org) => {
         var ret = true;
-        ret &= org.posX > 0;
+        ret &= org.posX >= 0;
         ret &= org.posX < CANVAS_SQUARES_X;
-        ret &= org.posY > 0;
+        ret &= org.posY >= 0;
         ret &= org.posY < CANVAS_SQUARES_Y;
         if (!ret) {
-            removeOrganism(org);
+            org.destroy();
         }
     })
 

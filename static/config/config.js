@@ -152,7 +152,7 @@ var water_evaporationRate = {
 };
 var water_viscocity = {
     name: "water_viscocity",
-    value: 0.3
+    value: 0.8
 };
 var water_darkeningStrength = {
     name: "water_darkeningStrength",

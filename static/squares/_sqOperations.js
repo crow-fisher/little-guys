@@ -40,7 +40,7 @@ function addSquare(square) {
     if (!square.organic && square.collision && getSquares(square.posX, square.posY).some((sq) => sq.collision)) {
         return false;
     }
-    if (!square.organic && getSquares(square.posX, square.posY).some((sq) => sq.proto == square.proto)) {
+    if (getSquares(square.posX, square.posY).some((sq) => sq.proto == square.proto)) {
         return false;
     }
     getSquares(square.posX, square.posY).push(square);

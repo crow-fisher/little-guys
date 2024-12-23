@@ -5,7 +5,8 @@ import { removeItemAll } from "../common.js";
 
 function addNewOrganism(organism) {
     if (!organism.alive) {
-        return;
+        organism.destroy();
+        return false;
     }
 
     if (getOrganismsAtSquare(organism.posX, organism.posY).length > 0) {
@@ -17,8 +18,9 @@ function addNewOrganism(organism) {
     }
     if (organism.linkedSquare == null) {
         organism.destroy();
+        return false;
     }
-    getObjectArrFromMap(ALL_ORGANISMS, organism.posX, organism.posY).push(organism);
+    addOrganism(organism);
     return organism;
 }
 

@@ -44,6 +44,9 @@ var lastTick = Date.now();
 var CANVAS_SQUARES_X = 170; // * 8; //6;
 var CANVAS_SQUARES_Y = 80 + 5; // * 8; // 8;
 
+// var CANVAS_SQUARES_X = 10;
+// var CANVAS_SQUARES_Y = 10;
+
 var MAIN_CANVAS = document.getElementById("main");
 var MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
 MAIN_CANVAS.width = CANVAS_SQUARES_X * BASE_SIZE;

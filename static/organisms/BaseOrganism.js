@@ -89,12 +89,11 @@ class BaseOrganism {
 
     linkSquare(square) {
         this.linkedSquare = square;
-        square.linkedOrganism = this;
+        square.linkOrganism(this);
     }
     unlinkSquare() {
         this.linkedSquare = null;
     }
-
     addAssociatedLifeSquare(lifeSquare) {
         this.lifeSquares.push(lifeSquare);
         if (!(lifeSquare.type in this.lifeSquaresCountByType)) {
@@ -142,6 +141,7 @@ class BaseOrganism {
     destroy() {
         this.lifeSquares.forEach((lifeSquare) => lifeSquare.destroy());
         this.alive = false;
+        this.linkedSquare.unlinkOrganism();
         removeOrganism(this);
     }
 
