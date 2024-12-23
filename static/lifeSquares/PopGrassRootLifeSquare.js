@@ -10,6 +10,7 @@ class PopGrassRootLifeSquare extends BaseLifeSquare {
         this.opacity = 0.4;
         this.colorBase = "#554640";
         this.type = "root";
+        this.waterCoef = 0.3;
     }
     tick() {
         getDirectNeighbors(this.posX, this.posY)

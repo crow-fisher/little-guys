@@ -21,7 +21,7 @@ class SeedLifeSquare extends BaseLifeSquare {
         this.p_seed_ls_neighborWaterContainmentRequiredToGrow = p_seed_ls_neighborWaterContainmentRequiredToGrow;
         this.neighborWaterContainmentRequiredToDecay = p_seed_ls_neighborWaterContainmentRequiredToDecay;
         this.colorBase = "#A1CCA5";
-        this.height = BASE_SIZE / 4;
+        this.height = 0.25;
 
         this.baseColor = "#98817B";
         this.darkColor = "#8B8589";

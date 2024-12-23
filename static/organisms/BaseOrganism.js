@@ -24,15 +24,14 @@ class BaseOrganism {
         
         this.maxHealth = 100;
         this.perTickDamage = 1;
-        this.currentHealth = 100;
+        this.currentHealth = this.maxHealth;
         this.nutrientDiffTolerance = 1.1565;
         this.nutrientDiffRegainHealth = 1.15;
 
         // life cycle properties
         this.maxLifeTime = 1000 * 20 * 1;
-        this.reproductionEnergy = 1300;
-        this.reproductionEnergyUnit = 600;
-        this.perNewLifeSquareGrowthCost = 5;
+        this.reproductionEnergy = 1000;
+        this.reproductionEnergyUnit = 100;
         this.maximumLifeSquaresOfType = {}
         this.lifeSquaresCountByType = {};
         this.spawnedEntityId = getNextEntitySpawnId();
@@ -40,7 +39,35 @@ class BaseOrganism {
         this.growInitialSquares();
     }
 
+    storeAndRetrieveWater() {
+        let minNutrient = Math.min(Math.min(this.airNutrients, this.dirtNutrients), this.waterNutrients);
+        let maxNutrient = Math.max(Math.max(this.airNutrients, this.dirtNutrients), this.waterNutrients);
+        let meanNutrient = (this.airNutrients + this.dirtNutrients + this.waterNutrients) / 3;
+
+        if (this.waterNutrients == minNutrient) {
+            this.lifeSquares.filter((lsq) => lsq.type == "green").forEach((lsq) => {
+                if (this.waterNutrients >= meanNutrient) {
+                    return;
+                }
+                this.waterNutrients += lsq.retrieveWater();
+            })
+        }
+
+        if (this.waterNutrients == maxNutrient) {
+            this.lifeSquares.filter((lsq) => lsq.type == "green").forEach((lsq) => {
+                if (this.waterNutrients <= meanNutrient) {
+                    return;
+                }
+                this.waterNutrients -= lsq.storeWater(this.waterNutrients);
+            })
+        }
+    }
+
+
     processHealth() { 
+        if (this.getLifeCyclePercentage() < 0.1) {
+            return;
+        }
         let meanNutrient = this.airNutrients + this.dirtNutrients + this.waterNutrients;
         let airNutrientNormalized = this.airNutrients / meanNutrient;
         let dirtNutrientNormalized = this.dirtNutrients / meanNutrient;
@@ -55,7 +82,6 @@ class BaseOrganism {
         if (nutrientStdDev < this.nutrientDiffRegainHealth) {
             this.currentHealth += this.perTickDamage;
         }
-
         if (this.currentHealth < 0) {
             this.destroy();
         }
@@ -124,6 +150,7 @@ class BaseOrganism {
         this.tick();
         this.postTick();
         this.processHealth();
+        this.storeAndRetrieveWater();
     }
 
     preTick() {

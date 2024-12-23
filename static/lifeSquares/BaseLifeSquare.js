@@ -22,6 +22,14 @@ class BaseLifeSquare {
         this.waterNutrients = 0;
         this.dirtNutrients = 0;
 
+        this.storedWater = 0;
+        this.storedWaterMax = 2;
+        this.storedWaterTransferRate = 0.5;
+
+        this.airCoef = 1;
+        this.waterCoef = 1;
+        this.dirtCoef = 1;
+
         this.linkedSquare = square;
         this.linkedOrganism = organism;
         this.spawnedEntityId = organism.spawnedEntityId;
@@ -35,6 +43,7 @@ class BaseLifeSquare {
 
         this.opacity = 1;
         this.width = 1;
+        this.height = 1;
         this.xOffset = 0.5;
         this.randoms = [];
 
@@ -49,12 +58,32 @@ class BaseLifeSquare {
         this.accentColor = "#246A73";
         this.accentColorAmount = dirt_accentColorAmount;
     }
+
+    storeWater(amountToAdd) {
+        if (this.storedWater >= this.storedWaterMax) {
+            return 0;
+        }
+        var amountToStore = Math.min(this.storedWaterMax - this.storedWater, Math.min(amountToAdd, this.storedWaterTransferRate));
+        this.storedWater += amountToStore;
+        return amountToStore;
+    }
+
+    retrieveWater() {
+        return Math.min(this.storedWaterTransferRate, this.storedWater);
+    }
+
+    getCost() {
+        return (this.airCoef * this.waterCoef * this.dirtCoef) ** 0.5;
+    }
+
     addChild(lifeSquare) {
         if (lifeSquare in this.childLifeSquares) {
             console.warn("Error state: lifeSquare in this.childLifeSquares");
             return;
         }
         this.childLifeSquares.push(lifeSquare);
+        this.width = 1;
+        this.height = 1;
     }
 
     linkSquare(square) {
@@ -95,18 +124,21 @@ class BaseLifeSquare {
 
 
     _addAirNutrient(nutrientAmount) {
+        nutrientAmount *= this.airCoef;
         var start = this.airNutrients;
         this.airNutrients += Math.min(this.maxAirDt.value * 7, this.airNutrients + nutrientAmount);
         return this.airNutrients - start;
     }
 
     _addWaterNutrient(nutrientAmount) {
+        nutrientAmount *= this.waterCoef;
         var start = this.waterNutrients;
         this.waterNutrients += Math.min(this.maxWaterDt, this.waterNutrients + nutrientAmount);
         return this.waterNutrients - start;
     }
 
     _addDirtNutrient(nutrientAmount) {
+        nutrientAmount *= this.dirtCoef;
         var start = this.dirtNutrients;
         this.dirtNutrients += Math.min(this.maxDirtDt, this.dirtNutrients + nutrientAmount);
         return this.dirtNutrients - start;
@@ -166,20 +198,19 @@ class BaseLifeSquare {
             var outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), this.opacity);
             MAIN_CONTEXT.fillStyle = outRgba;
             this.cachedRgba = outRgba;
+            // this.height = (1 + this.getStaticRand(3));
         }
 
         var startPos = this.posX * BASE_SIZE + (1 - this.width) * BASE_SIZE * this.xOffset;
-
-        var height = this.height * (1 + this.getStaticRand(3));
 
         // getSquares(this.posX, this.posY - 1).forEach((x) => height = BASE_SIZE);
 
         if (getSquares(this.posX, this.posY - 1))
             MAIN_CONTEXT.fillRect(
                 startPos,
-                this.posY * BASE_SIZE - (height - BASE_SIZE),
+                this.posY * BASE_SIZE,
                 this.width * BASE_SIZE,
-                height
+                this.height * BASE_SIZE
             );
     }
 

@@ -28,6 +28,9 @@ class PopGrassOrganism extends BaseOrganism {
 
         this.throttleInterval = 1000;
 
+        this.reproductionEnergy = 800;
+        this.reproductionEnergyUnit = 20;
+
         this.plantLastGrown = getCurTime();
         this.waterLastGrown = getCurTime();
         this.rootLastGrown = getCurTime();
@@ -158,7 +161,7 @@ class PopGrassOrganism extends BaseOrganism {
                     this.addAssociatedLifeSquare(newPopGrassGreenLifeSquare);
                     newPopGrassGreenLifeSquare.linkSquare(newPlantSquare);
                     highestPlantSquare.addChild(newPopGrassGreenLifeSquare);
-                    return this.perNewLifeSquareGrowthCost;
+                    return newPopGrassGreenLifeSquare.getCost();
                 }
             };
         }
@@ -202,7 +205,7 @@ class PopGrassOrganism extends BaseOrganism {
                     this.addAssociatedLifeSquare(newPopGrassRootLifeSquare);
                     newPopGrassRootLifeSquare.linkSquare(wettestSquare);
                     wettestSquareParent.addChild(newPopGrassRootLifeSquare)
-                    return this.perNewLifeSquareGrowthCost;
+                    return newPopGrassRootLifeSquare.getCost();
                 }
             }
         }
@@ -252,7 +255,7 @@ class PopGrassOrganism extends BaseOrganism {
                 this.addAssociatedLifeSquare(popGrassRootLifeSquare);
                 popGrassRootLifeSquare.linkSquare(dirtiestSquare);
                 dirtiestSquareParent.addChild(popGrassRootLifeSquare);
-                return this.perNewLifeSquareGrowthCost;;
+                return popGrassRootLifeSquare.getCost();
             }
         }
         return 0;

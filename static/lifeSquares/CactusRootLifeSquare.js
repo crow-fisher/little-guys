@@ -10,6 +10,8 @@ class CactusRootLifeSquare extends BaseLifeSquare {
         this.opacity = 0.4;
         this.colorBase = "#D1E231";
         this.type = "root";
+        this.rootCoef = 3;
+        this.waterCoef = 20;
     }
     tick() {
         getDirectNeighbors(this.posX, this.posY)

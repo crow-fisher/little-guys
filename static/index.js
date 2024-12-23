@@ -295,8 +295,9 @@ function doClickAdd() {
                                     // organismAddedThisClick = true;
                                     addNewOrganism(new PopGrassSeedOrganism(sq));
                                 }
-                                break;
                             }
+                            break;
+
                         case "cactus":
                             if (Math.random() > 0.95) {
                                 var sq = addSquare(new SeedSquare(px, curY));
@@ -304,8 +305,8 @@ function doClickAdd() {
                                     // organismAddedThisClick = true;
                                     addNewOrganism(new CactusSeedOrganism(sq));
                                 }
-                                break;
                             }
+                            break;
                     }
                 }
                 if (!shiftPressed || selectedMaterial.indexOf("rain") >= 0 || selectedMaterial.indexOf("aquifer") >= 0) {
@@ -320,13 +321,13 @@ function doClickAdd() {
 // thanks https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
 
 for (let i = 0; i < CANVAS_SQUARES_X; i++) {
-    addSquare(new RockSquare(i, CANVAS_SQUARES_Y - 1));
+    addSquare(new DrainSquare(i, CANVAS_SQUARES_Y - 1));
 }
 
-for (let i = 0; i < CANVAS_SQUARES_Y; i++) {
-    addSquare(new RockSquare(CANVAS_SQUARES_X - 1, i));
-    addSquare(new RockSquare(0, i));
-}
+// for (let i = 0; i < CANVAS_SQUARES_Y; i++) {
+//     addSquare(new RockSquare(CANVAS_SQUARES_X - 1, i));
+//     addSquare(new RockSquare(0, i));
+// }
 window.oncontextmenu = function () {
     return false;     // cancel default menu
 }

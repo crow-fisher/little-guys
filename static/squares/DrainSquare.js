@@ -3,37 +3,35 @@ import { BaseSquare } from "./BaseSqaure.js";
 import {
     drain_sq_waterContainmentMax,
     drain_sq_waterTransferRate,
-
+    rock_accentColorAmount,
+    rock_baseColorAmount,
+    rock_darkColorAmount
     } from "../config/config.js"
     
+import { WaterSquare } from "./WaterSquare.js";
+import { addSquare } from "./_sqOperations.js";
 class DrainSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
         this.proto = "DrainSquare";
-        this.colorBase = "#555555";
         this.physicsEnabled = false;
         this.waterContainmentMax = drain_sq_waterContainmentMax;
         this.waterContainmentTransferRate = drain_sq_waterTransferRate;
+        this.baseColor = "#dbdadf";
+        this.baseColorAmount = rock_baseColorAmount;
+        this.darkColor = "#65666a";
+        this.darkColorAmount = rock_darkColorAmount;
+        this.accentColor = "#b5a7a6";
+        this.accentColorAmount = rock_accentColorAmount;
     }
 
     percolateInnerMoisture() {
         if (this.waterContainment <= 0) {
             return 0;
         }
-
-        for (var i = -1; i < 2; i++) {
-            for (var j = -1; j < 2; j++) {
-                if (i == 0 && j == 0) {
-                    continue;
-                }
-                if (abs(i) == abs(j)) {
-                    continue;
-                }
-                if (this.waterContainment >= 1) {
-                    if (addSquare(new WaterSquare(this.posX + i, this.posY + j))) {
-                        this.waterContainment -= 1;
-                    }
-                }
+        if (this.waterContainment >= 1) {
+            if (addSquare(new WaterSquare(this.posX, this.posY + 1))) {
+                this.waterContainment -= 1;
             }
         }
     }

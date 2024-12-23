@@ -35,15 +35,35 @@ class HeavyRainSquare extends RockSquare {
         this.proto = "HeavyRainSquare";
         this.colorBase = "#38405F";
         this.collision = false;
+
+        this.maxRainDrops = 30;
+        this.curRainDrops = this.maxRainDrops / 2;
+        this.rainRechargeRate = 0.03;
+        this.raining = true;
+
     }
     physics() {
-        if (Math.random() > (1 - heavyrain_dropChance.value)) {
-            var newSq = addSquare(new WaterSquare(this.posX, this.posY + 1));
-            if (newSq) {
-                newSq.blockHealth = rain_dropHealth.value;
-                newSq.speedX = randNumber(-2, 2);
-            };
+        if (this.raining) {
+            if (this.curRainDrops < 0) {
+                this.raining = false;
+                return;
+            }
+            if (Math.random() > (1 - heavyrain_dropChance.value)) {
+                var newSq = addSquare(new WaterSquare(this.posX, this.posY + 1));
+                if (newSq) {
+                    newSq.blockHealth = rain_dropHealth.value;
+                    newSq.speedX = randNumber(-2, 2);
+                    this.curRainDrops -= 1;
+                };
+            }
+        } else {
+            if (this.curRainDrops > this.maxRainDrops) {
+                this.raining = true;
+            } else {
+                this.curRainDrops += this.rainRechargeRate;
+            }
         }
+
     }
 }
 

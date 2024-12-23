@@ -16,6 +16,10 @@ class CactusGreenLifeSquare extends BaseLifeSquare {
         this.type = "green";
         this.width = .99;
 
+        this.storedWaterMax = 10;
+
+        this.airCoef = 3;
+
         this.baseColor = "#DA9100";
         this.baseColorAmount = dirt_baseColorAmount;
         this.darkColor = "#74C365";

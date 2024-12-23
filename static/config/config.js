@@ -110,12 +110,12 @@ var static_sq_waterContainmentTransferRate = {
 
 var drain_sq_waterContainmentMax = {
     name: "drain_sq_waterContainmentMax",
-    value: 1000
+    value: 10000
 }
 
 var drain_sq_waterTransferRate = {
     name: "drain_sq_waterTransferRate",
-    value: 50
+    value: 500
 }
 
 var wds_sq_waterContainmentMax = {

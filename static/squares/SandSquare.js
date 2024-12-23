@@ -11,6 +11,7 @@ class SandSquare extends BaseSquare {
         this.waterContainmentMax = sand_waterContainmentMax;
         this.waterContainmentTransferRate = sand_waterContainmentTransferRate
         this.waterSinkRate = 0.6;
+        this.validPlantHome = true;
         
         this.baseColor = "#C19A6B";
         this.baseColorAmount = dirt_baseColorAmount;

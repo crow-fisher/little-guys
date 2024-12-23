@@ -33,6 +33,9 @@ class CactusOrganism extends BaseOrganism {
 
         this.throttleInterval = 1000;
 
+        this.maxLifeTime = 1000 * 40 * 1;
+        this.reproductionEnergy = 1300;
+        this.reproductionEnergyUnit = 600;
         this.plantLastGrown = getCurTime();
         this.waterLastGrown = getCurTime();
         this.rootLastGrown = getCurTime();
@@ -44,6 +47,11 @@ class CactusOrganism extends BaseOrganism {
 
         this.highestGreen = null;
     }
+
+    postTick() {
+        super.postTick();
+    }
+
 
     getSeedSquare() {
         var topGreen = this.getHighestGreen();
@@ -151,19 +159,51 @@ class CactusOrganism extends BaseOrganism {
         }
         if (getCurTime() > this.plantLastGrown + this.throttleInterval) {
             this.plantLastGrown = getCurTime();
-            var highestPlantSquare = Array.from(this.lifeSquares.filter((sq) => sq.type == "green").sort((a, b) => a.posY - b.posY))[0];
-            if (highestPlantSquare == null) {
-                // then we take highest root square;
-                highestPlantSquare = Array.from(this.lifeSquares.filter((sq) => sq.type == "root").sort((a, b) => a.posY - b.posY))[0];
+
+            // grow in a sphere around the base of the organism
+
+            var candidateGrowthLocations = new Array();
+
+            this.lifeSquares.forEach((lsq) => {
+                for (let i = -1; i < 2; i++) {
+                    for (let j = -1; j < 2; j++) {
+                        if (i == 0 && j == 0) {
+                            continue;
+                        }
+                        if (Math.abs(i) == Math.abs(j)) {
+                            continue;
+                        }
+                        var nextX = lsq.posX + i;
+                        var nextY = lsq.posY + j;
+                        if (getSquares(nextX, nextY).length == 0) {
+                            var dist = ((this.posX - nextX) ** 8 + (this.posY - nextY) ** 2) ** 0.5;
+                            var numNeighborsAtNewSquare = this.lifeSquares
+                                .filter((sq) => sq in getDirectNeighbors(nextX, nextY))
+                                .map((sq) => 1)
+                                .reduce(
+                                (accumulator, currentValue) => accumulator + currentValue,
+                                0,
+                            );
+
+                            candidateGrowthLocations.push([lsq.posX + i, lsq.posY + j, numNeighborsAtNewSquare, dist, lsq]);
+                        }
+                    }
+                }
+            });
+
+            if (candidateGrowthLocations.length == 0) {
+                return;
             }
-            var newPlantSquare = new PlantSquare(highestPlantSquare.posX, highestPlantSquare.posY - 1);
+            candidateGrowthLocations.sort((a, b) => (a[2] - b[2]) * 100 + (a[3] - b[3]));
+            var chosenCandidate = candidateGrowthLocations[Math.floor(Math.random() * candidateGrowthLocations.length / 2)]
+            var newPlantSquare = new PlantSquare(chosenCandidate[0], chosenCandidate[1]);
             if (addSquare(newPlantSquare)) {
                 var newPopGrassGreenLifeSquare = addOrganismSquare(new CactusGreenLifeSquare(newPlantSquare, this));
                 if (newPopGrassGreenLifeSquare) {
                     this.addAssociatedLifeSquare(newPopGrassGreenLifeSquare);
                     newPopGrassGreenLifeSquare.linkSquare(newPlantSquare);
-                    highestPlantSquare.addChild(newPopGrassGreenLifeSquare);
-                    return this.perNewLifeSquareGrowthCost;
+                    chosenCandidate[4].addChild(newPopGrassGreenLifeSquare);
+                    return newPopGrassGreenLifeSquare.getCost();
                 }
             };
         }
@@ -207,7 +247,7 @@ class CactusOrganism extends BaseOrganism {
                     this.addAssociatedLifeSquare(newPopGrassRootLifeSquare);
                     newPopGrassRootLifeSquare.linkSquare(wettestSquare);
                     wettestSquareParent.addChild(newPopGrassRootLifeSquare)
-                    return this.perNewLifeSquareGrowthCost;;
+                    return newPopGrassRootLifeSquare.getCost();
                 }
             }
         }
@@ -257,7 +297,7 @@ class CactusOrganism extends BaseOrganism {
                 this.addAssociatedLifeSquare(newRootSquare);
                 newRootSquare.linkSquare(dirtiestSquare);
                 dirtiestSquareParent.addChild(newRootSquare);
-                return this.perNewLifeSquareGrowthCost;
+                return newRootSquare.getCost();
             }
         }
         return 0;
