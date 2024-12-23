@@ -9,10 +9,10 @@ import { HeavyRainSquare } from "./squares/RainSquare.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
 import { BaseLifeSquare } from "./lifeSquares/BaseLifeSquare.js";
 import { BaseOrganism } from "./organisms/BaseOrganism.js";
-import { PlantOrganism } from "./organisms/PlantOrganism.js";
-import { PlantLifeSquare } from "./lifeSquares/PlantLifefSquare.js";
-import { RootLifeSquare } from "./lifeSquares/RootLifeSquare.js";
-import { PlantSeedOrganism } from "./organisms/PlantSeedOrganism.js";
+import { PopGrassOrganism } from "./organisms/PopGrassOrganism.js";
+import { PopGrassGreenLifeSquare } from "./lifeSquares/PopGrassGreenLifeSquare.js";
+import { PopGrassRootLifeSquare } from "./lifeSquares/PopGrassPopGrassRootLifeSquare.js";
+import { PopGrassSeedOrganism } from "./organisms/PopGrassSeedOrganism.js";
 import { PlantSeedLifeSquare } from "./lifeSquares/PlantSeedLifeSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
 import { Law } from "./Law.js";
@@ -32,10 +32,10 @@ var ProtoMap = {
     "WaterSquare": WaterSquare.prototype,
     "BaseLifeSquare": BaseLifeSquare.prototype,
     "BaseOrganism": BaseOrganism.prototype,
-    "PlantOrganism": PlantOrganism.prototype,
-    "PlantLifeSquare": PlantLifeSquare.prototype,
-    "RootLifeSquare": RootLifeSquare.prototype,
-    "PlantSeedOrganism": PlantSeedOrganism.prototype,
+    "PopGrassOrganism": PopGrassOrganism.prototype,
+    "PopGrassGreenLifeSquare": PopGrassGreenLifeSquare.prototype,
+    "PopGrassRootLifeSquare": PopGrassRootLifeSquare.prototype,
+    "PopGrassSeedOrganism": PopGrassSeedOrganism.prototype,
     "PlantSeedLifeSquare": PlantSeedLifeSquare.prototype,
     "SeedSquare": SeedSquare.prototype,
     "Law": Law.prototype,

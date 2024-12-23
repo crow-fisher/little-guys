@@ -91,7 +91,7 @@ class BaseOrganism {
     }
 
     getSeedSquare() {
-        return null; // should be a SeedSquare with a contained PlantSeedOrganism or similar
+        return null; // should be a SeedSquare with a contained PopGrassSeedOrganism or similar
     }
 
     getCountOfAssociatedSquaresOfProto(proto) {

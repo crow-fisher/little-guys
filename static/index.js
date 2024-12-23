@@ -10,7 +10,7 @@ import { AquiferSquare } from "./squares/RainSquare.js";
 import { WaterDistributionSquare } from "./squares/WaterDistributionSquare.js";
 import { DrainSquare } from "./squares/DrainSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
-import { PlantSeedOrganism } from "./organisms/PlantSeedOrganism.js";
+import { PopGrassSeedOrganism } from "./organisms/PopGrassSeedOrganism.js";
 import { addNewOrganism, addOrganism } from "./organisms/_orgOperations.js";
 import { organismMetadataViewerMain } from "./organismMetadataViewer.js";
 
@@ -282,7 +282,7 @@ function doClickAdd() {
                             var sq = addSquare(new SeedSquare(px, curY));
                             if (sq) {
                                 organismAddedThisClick = true;
-                                addNewOrganism(new PlantSeedOrganism(sq));
+                                addNewOrganism(new PopGrassSeedOrganism(sq));
                             }
                             break;
                     }
