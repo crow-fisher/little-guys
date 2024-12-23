@@ -19,6 +19,7 @@ import { updateTime, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, ALL_SQUARES, getNextEn
 import { doErase } from "./manipulation.js";
 import { ProtoMap } from "./types.js";
 import { GravelSquare } from "./squares/GravelSquare.js";
+import { SandSquare } from "./squares/SandSquare.js";
 
 var materialSelect = document.getElementById("materialSelect");
 var fastTerrain = document.getElementById("fastTerrain");
@@ -266,6 +267,9 @@ function doClickAdd() {
                             break;
                         case "gravel":
                             addSquare(new GravelSquare(px, curY));
+                            break;
+                        case "sand":
+                            addSquare(new SandSquare(px, curY));
                             break;
 
 

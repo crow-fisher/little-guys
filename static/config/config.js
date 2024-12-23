@@ -75,6 +75,21 @@ var gravel_waterContainmentTransferRate = {
     value: 20
 };
 
+var sand_waterContainmentMax = {
+    name: "sand_waterContainmentMax",
+    value: 30
+};  
+
+var sand_waterContainmentTransferRate = {
+    name: "sand_waterContainmentTransferRate",
+    value: 10
+};
+
+var sand_nutrientValue = {
+    name: "sand_nutrientValue",
+    value: 0.01
+}
+
 var base_waterContainmentEvaporationRate = {
     name: "base_waterContainmentEvaporationRate",
     value: 0.0005
@@ -299,5 +314,9 @@ export {
     p_seed_ls_darkeningStrength,
     noNutrientValuePerDirectNeighbor,
     gravel_waterContainmentTransferRate,
-    gravel_waterContainmentMax
+    gravel_waterContainmentMax,
+    sand_waterContainmentMax,
+    sand_waterContainmentTransferRate,
+    sand_nutrientValue
+
 }

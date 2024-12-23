@@ -13,6 +13,8 @@ class GravelSquare extends BaseSquare {
         this.baseColor = "#91A3B0";
         this.darkColor = "#536878";
         this.accentColor = "#AA98A9";
+        this.waterSinkRate = 0.4;
+
     }
 }
 

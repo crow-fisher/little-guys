@@ -70,7 +70,7 @@ export class BaseSquare {
         this.accentColor = "#246A73";
         this.accentColorAmount = dirt_accentColorAmount;
         this.opacity = 1;
-        this.waterSinkRate = 0.95;
+        this.waterSinkRate = 0.8;
         this.cachedRgba = null;
     };
     destroy() {
