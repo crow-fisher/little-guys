@@ -27,10 +27,6 @@ class CactusOrganism extends BaseOrganism {
         this.proto = "CactusOrganism";
         this.type = "plant";
 
-        this.dirtNutrients = 1;
-        this.airNutrients = 1;
-        this.waterNutrients = 1;
-
         this.throttleInterval = 1000;
 
         this.maxLifeTime = 1000 * 40 * 1;

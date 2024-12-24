@@ -14,7 +14,7 @@ class BaseLifeSquare {
         this.type = "base";
         this.colorBase = "#1D263B";
 
-        this.maxAirDt = airNutrientsPerEmptyNeighbor;
+        this.maxAirDt = 0.1;
         this.maxWaterDt = 0.05;
         this.maxDirtDt = 0.05;
 
@@ -99,50 +99,40 @@ class BaseLifeSquare {
         removeOrganismSquare(this);
     }
 
-    addNutrientSmart(maxNutrientValue, curValue, setter) {
-        if (curValue == this.getMinNutrient()) {
-            setter(maxNutrientValue);
-        }
-        var meanNutrient = this.getMeanNutrient();
-        var diffToMean = meanNutrient - curValue;
-        var amountToAdd = Math.max(maxNutrientValue / 2, diffToMean);
-        setter(amountToAdd);
 
+    addDirtNutrient(nutrientAmount) {
+        nutrientAmount *= this.dirtCoef;
+        var amountOfDirtToAdd = this.linkedOrganism.getAmountOfDirtNutrientsToCollect();
+        if (amountOfDirtToAdd < nutrientAmount / 2) {
+            return this._addDirtNutrient(nutrientAmount / 2);
+        } else {
+            if (amountOfDirtToAdd < nutrientAmount) {
+                return this._addDirtNutrient(amountOfDirtToAdd);
+            }
+            return this._addDirtNutrient(nutrientAmount);;
+        }
+    }
+
+    _addDirtNutrient(nutrientAmount) {
+        var start = this.dirtNutrients;
+        this.dirtNutrients += Math.min(this.maxDirtDt, this.dirtNutrients + nutrientAmount);
+        return this.waterNutrients - start;
     }
 
     addAirNutrient(nutrientAmount) {
-        this.addNutrientSmart(nutrientAmount, this.airNutrients, (val) => this._addAirNutrient(val));
-    }
-
-    addWaterNutrient(nutrientAmount) {
-        this.addNutrientSmart(nutrientAmount, this.waterNutrients, (val) => this._addWaterNutrient(val));
-    }
-
-    addDirtNutrient(nutrientAmount) {
-        this.addNutrientSmart(nutrientAmount, this.dirtNutrients, (val) => this._addDirtNutrient(val));
-    }
-
-
-    _addAirNutrient(nutrientAmount) {
         nutrientAmount *= this.airCoef;
         var start = this.airNutrients;
-        this.airNutrients += Math.min(this.maxAirDt.value * 7, this.airNutrients + nutrientAmount);
+        this.airNutrients += Math.min(this.maxAirDt, this.airNutrients + nutrientAmount);
         return this.airNutrients - start;
     }
 
-    _addWaterNutrient(nutrientAmount) {
+    addWaterNutrient(nutrientAmount) {
         nutrientAmount *= this.waterCoef;
         var start = this.waterNutrients;
         this.waterNutrients += Math.min(this.maxWaterDt, this.waterNutrients + nutrientAmount);
         return this.waterNutrients - start;
     }
 
-    _addDirtNutrient(nutrientAmount) {
-        nutrientAmount *= this.dirtCoef;
-        var start = this.dirtNutrients;
-        this.dirtNutrients += Math.min(this.maxDirtDt, this.dirtNutrients + nutrientAmount);
-        return this.dirtNutrients - start;
-    }
 
     preTick() {
         this.airNutrients = 0;
@@ -203,15 +193,12 @@ class BaseLifeSquare {
 
         var startPos = this.posX * BASE_SIZE + (1 - this.width) * BASE_SIZE * this.xOffset;
 
-        // getSquares(this.posX, this.posY - 1).forEach((x) => height = BASE_SIZE);
-
-        if (getSquares(this.posX, this.posY - 1))
-            MAIN_CONTEXT.fillRect(
-                startPos,
-                this.posY * BASE_SIZE,
-                this.width * BASE_SIZE,
-                this.height * BASE_SIZE
-            );
+        MAIN_CONTEXT.fillRect(
+            startPos,
+            this.posY * BASE_SIZE,
+            this.width * BASE_SIZE,
+            this.height * BASE_SIZE
+        );
     }
 
     calculateColor() {

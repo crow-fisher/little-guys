@@ -28,6 +28,10 @@ class BaseOrganism {
         this.nutrientDiffTolerance = 1.1565;
         this.nutrientDiffRegainHealth = 1.15;
 
+        this.dirtNutrients = 1;
+        this.airNutrients = 1;
+        this.waterNutrients = 1;
+
         // life cycle properties
         this.maxLifeTime = 1000 * 20 * 1;
         this.reproductionEnergy = 1000;
@@ -62,6 +66,14 @@ class BaseOrganism {
             })
         }
     }
+
+    getAmountOfDirtNutrientsToCollect() {
+        let meanNutrient = (this.airNutrients + this.dirtNutrients + this.waterNutrients) / 3;
+        return meanNutrient - this.dirtNutrients;
+    }
+
+    
+    growFlower() { return 0; }
 
 
     processHealth() { 
@@ -151,6 +163,7 @@ class BaseOrganism {
         this.postTick();
         this.processHealth();
         this.storeAndRetrieveWater();
+        this.currentEnergy -= this.growFlower();
     }
 
     preTick() {

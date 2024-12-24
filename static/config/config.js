@@ -42,7 +42,7 @@ function displayConfigs() {
 
 var airNutrientsPerEmptyNeighbor = {
     name: "airNutrientsPerEmptyNeighbor",
-    value: 0.02
+    value: 0.05
 };
 
 var dirtNutrientValuePerDirectNeighbor = {
@@ -152,7 +152,7 @@ var water_evaporationRate = {
 };
 var water_viscocity = {
     name: "water_viscocity",
-    value: 0.8
+    value: 0.6
 };
 var water_darkeningStrength = {
     name: "water_darkeningStrength",

@@ -250,7 +250,7 @@ export class BaseSquare {
         if (this.group != -1) {
             return;
         }
-        var groupNeighbors = new Set(getNeighbors(this.posX, this.posY).filter((sq) => sq != null && this.proto == sq.proto));
+        var groupNeighbors = new Set(getNeighbors(this.posX, this.posY).filter((sq) => this.proto == sq.proto));
         groupNeighbors.add(this);
         while (true) {
             var startGroupNeighborsSize = groupNeighbors.size;

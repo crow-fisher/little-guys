@@ -81,21 +81,18 @@ function doWaterFlow() {
         if (!(curWaterflowPressure in WATERFLOW_TARGET_SQUARES)) {
             continue;
         }
-        Array.from(WATERFLOW_CANDIDATE_SQUARES).filter((candidate) => !(candidate in movedCandidates)).forEach((candidate) => {
-            let curTargetSet = Array.from(WATERFLOW_TARGET_SQUARES[curWaterflowPressure]).filter((arr) => arr[2] == candidate.group);
-            curTargetSet.some((target) => {
-                if (getSquares(target[0], target[1]).some((sq) => sq.proto == "WaterSquare" || sq.collision)) {
-                    return false;
-                } else {
+        Array.from(WATERFLOW_CANDIDATE_SQUARES).filter((candidate) => !(candidate in movedCandidates))
+            .forEach((candidate) => {
+                let curTargetSet = Array.from(WATERFLOW_TARGET_SQUARES[curWaterflowPressure]).filter((arr) => arr[2] == candidate.group);
+                curTargetSet.some((target) => {
                     if (Math.random() > ((0.998 - (candidate.viscocity.value * curWaterflowPressure)))) {
                         if (candidate.updatePosition(target[0], target[1])) {
                             movedCandidates.add(candidate);
                             return true;
                         }
                     } return false;
-                }
+                });
             });
-        });
     }
 }
 

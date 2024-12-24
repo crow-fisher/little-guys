@@ -84,8 +84,11 @@
                         if (Math.abs(i) == Math.abs(j)) {
                             continue;
                         }
-                        if (Array.from(getSquares(this.posX + i, this.posY + j)
-                            .filter((sq) => sq.collision || sq.proto == this.proto)).length == 0) {
+                        if (Array.from(
+                            getSquares(this.posX + i, this.posY + j)
+                                .filter((sq) => sq.collision || sq.proto == this.proto))
+                            .length == 0) {
+
                             if (!(this.currentPressureIndirect in WATERFLOW_TARGET_SQUARES)) {
                                 WATERFLOW_TARGET_SQUARES[this.currentPressureIndirect] = new Set();
                             }

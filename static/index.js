@@ -22,6 +22,7 @@ import { GravelSquare } from "./squares/GravelSquare.js";
 import { SandSquare } from "./squares/SandSquare.js";
 import { getOrganismSquaresAtSquare } from "./lifeSquares/_lsOperations.js";
 import { CactusSeedOrganism } from "./organisms/CactusSeedOrganism.js";
+import { LilyPadSeedOrganism } from "./organisms/LilyPadSeedOrganism.js";
 
 var materialSelect = document.getElementById("materialSelect");
 var fastTerrain = document.getElementById("fastTerrain");
@@ -31,7 +32,7 @@ var loadSlotB = document.getElementById("loadSlotB");
 var saveSlotB = document.getElementById("saveSlotB");
 
 var selectedMaterial = "dirt";
-const BASE_SIZE = 12;
+const BASE_SIZE = 4;
 
 materialSelect.addEventListener('change', (e) => selectedMaterial = e.target.value);
 timeScale.addEventListener('change', (e) => TIME_SCALE = e.target.value);
@@ -107,7 +108,7 @@ async function loadSlot(slotName) {
     ALL_ORGANISMS.clear();
     ALL_ORGANISM_SQUARES.clear();
 
-    loadObjArr(loaded_ALL_SQUARES, addSquare)
+    loadObjArr(loaded_ALL_SQUARES, addSquareOverride)
 }
 
 async function saveSlot(slotName) {
@@ -188,15 +189,13 @@ function main() {
         MAIN_CONTEXT.clearRect(0, 0, CANVAS_SQUARES_X * BASE_SIZE, CANVAS_SQUARES_Y * BASE_SIZE);
         doClickAdd();
         reset();
-
-        render();
-
         physicsBefore();
         physics();
         doWaterFlow();
         purge();
         processOrganisms();
         renderOrganisms();
+        render();
         lastTick = Date.now();
     }
     updateTime();
@@ -305,8 +304,16 @@ function doClickAdd() {
                             if (Math.random() > 0.95) {
                                 var sq = addSquare(new SeedSquare(px, curY));
                                 if (sq) {
-                                    // organismAddedThisClick = true;
                                     addNewOrganism(new CactusSeedOrganism(sq));
+                                }
+                            }
+                            break;
+
+                        case "lilypad":
+                            if (Math.random() > 0.95) {
+                                var sq = addSquare(new SeedSquare(px, curY));
+                                if (sq) {
+                                    addNewOrganism(new LilyPadSeedOrganism(sq));
                                 }
                             }
                             break;
