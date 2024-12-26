@@ -33,6 +33,7 @@ import { purge, reset, render, physics, physicsBefore, processOrganisms, renderO
 import { removeOrganismSquare } from "./_sqOperations.js";
 import { removeOrganism } from "../organisms/_orgOperations.js";
 
+import { addSquareByName } from "../index.js";
 
 export class BaseSquare {
     constructor(posX, posY) {
@@ -460,6 +461,23 @@ export class BaseSquare {
             return 0;
         }
         getDirectNeighbors(this.posX, this.posY).filter((sq) => sq.solid).forEach((sq) => this.waterContainment -= sq.percolateFromBlock(this));
+        this.doBlockOutflow(); 
+    }
+
+    doBlockOutflow() {
+        if (this.waterContainment < this.waterContainmentMax.value) {
+            return;
+        }
+        for (let side = -1; side <= 1; side += 2) {
+            if (getSquares(this.posX + side, this.posY).some((sq) => sq.collision)) {
+                continue;
+            }
+            var sq = addSquareByName(this.posX + side, this.posY, "water");
+            if (sq) {
+                sq.blockHealth = this.waterContainment * 0.4; 
+                this.waterContainment -= sq.blockHealth;
+            }
+        }
     }
 
     evaporateInnerMoisture() {
@@ -488,3 +506,4 @@ export class BaseSquare {
         return ret; 
     }
 }
+

@@ -6,7 +6,7 @@ class GravelSquare extends BaseSquare {
         super(posX, posY);
         this.proto = "GravelSquare";
         this.nutrientValue = noNutrientValuePerDirectNeighbor;
-        this.rootable = false;
+        this.rootable = true;
         this.validPlantHome = false;
         this.waterContainmentMax = gravel_waterContainmentMax;
         this.waterContainmentTransferRate = gravel_waterContainmentTransferRate;

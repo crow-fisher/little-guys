@@ -226,6 +226,31 @@ function doMouseHover() {
     getOrganismSquaresAtSquare(Math.floor(px), Math.floor(py)).forEach((orgSq) => orgSq.linkedOrganism.hovered = true);
 }
 
+function addSquareByName(posX, posY, name) {
+    switch (name) {
+        case "rock":
+            return addSquareOverride(new RockSquare(posX, posY));
+        case "dirt":
+            return addSquare(new DirtSquare(posX, posY));
+        case "water":
+            return addSquare(new WaterSquare(posX, posY));
+        case "rain":
+            return addSquareOverride(new RainSquare(posX, posY));
+        case "heavy rain":
+            return addSquareOverride(new HeavyRainSquare(posX, posY));
+        case "water distribution":
+            return addSquareOverride(new WaterDistributionSquare(posX, posY));
+        case "drain":
+            return addSquareOverride(new DrainSquare(posX, posY));
+        case "aquifer":
+            return addSquare(new AquiferSquare(posX, posY));
+        case "gravel":
+            return addSquare(new GravelSquare(posX, posY));
+        case "sand":
+            return addSquare(new SandSquare(posX, posY));
+    }
+}
+
 function doClickAdd() {
     if (lastMoveEvent == null) {
         return;
@@ -259,39 +284,8 @@ function doClickAdd() {
                     doErase(px, curY);
                     break;
                 } else {
+                    addSquareByName(px, curY, selectedMaterial);
                     switch (selectedMaterial) {
-                        case "rock":
-                            addSquareOverride(new RockSquare(px, curY));
-                            break;
-                        case "dirt":
-                            addSquare(new DirtSquare(px, curY));
-                            break;
-                        case "water":
-                            addSquare(new WaterSquare(px, curY));
-                            break;
-                        case "rain":
-                            addSquareOverride(new RainSquare(px, curY));
-                            break;
-                        case "heavy rain":
-                            addSquareOverride(new HeavyRainSquare(px, curY));
-                            break;
-                        case "water distribution":
-                            addSquareOverride(new WaterDistributionSquare(px, curY));
-                            break;
-                        case "drain":
-                            addSquareOverride(new DrainSquare(px, curY));
-                            break;
-                        case "aquifer":
-                            addSquare(new AquiferSquare(px, curY));
-                            break;
-                        case "gravel":
-                            addSquare(new GravelSquare(px, curY));
-                            break;
-                        case "sand":
-                            addSquare(new SandSquare(px, curY));
-                            break;
-
-
                         // organism sections
                         // in this case we only want to add one per click
                         case "popgrass":
@@ -369,4 +363,4 @@ window.onload = function () {
     // });
 }
 
-export { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, selectedViewMode }
+export { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, selectedViewMode, addSquareByName }

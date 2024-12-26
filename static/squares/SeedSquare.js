@@ -48,7 +48,15 @@ class SeedSquare extends BaseSquare {
                     this.linkedOrganism.destroy();
                 }
             });
-
+        
+        getSquares(this.posX, this.posY + 1)
+        .filter((sq) => !sq.validPlantHome)
+        .filter((sq) => sq.solid)
+        .forEach((sq) => {
+            if (this.linkedOrganism != null) {
+                this.linkedOrganism.destroy();
+            }
+        });
     }
 }
 
