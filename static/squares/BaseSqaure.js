@@ -250,13 +250,19 @@ export class BaseSquare {
         if (this.group != -1) {
             return;
         }
-        var groupNeighbors = new Set(getNeighbors(this.posX, this.posY).filter((sq) => this.proto == sq.proto));
+        var visited = new Set();
+        var groupNeighbors = new Set(getDirectNeighbors(this.posX, this.posY).filter((sq) => this.proto == sq.proto));
         groupNeighbors.add(this);
         while (true) {
             var startGroupNeighborsSize = groupNeighbors.size;
             groupNeighbors.forEach((neighbor) => {
-                var neighborGroupNeighbors = new Set(getNeighbors(neighbor.posX, neighbor.posY).filter((sq) => sq != null && this.proto == sq.proto));
-                neighborGroupNeighbors.forEach((neighborGroupNeighbor) => groupNeighbors.add(neighborGroupNeighbor))
+                if (neighbor in visited) {
+                    return;
+                }
+                getDirectNeighbors(neighbor.posX, neighbor.posY).filter((sq) => this.proto == sq.proto)
+                    .forEach((neighborGroupNeighbor) => groupNeighbors.add(neighborGroupNeighbor));
+                    
+                visited.add(neighbor);
             })
             var endGroupNeighborsSize = groupNeighbors.size;
             if (startGroupNeighborsSize == endGroupNeighborsSize) {

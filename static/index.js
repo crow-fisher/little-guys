@@ -23,6 +23,7 @@ import { SandSquare } from "./squares/SandSquare.js";
 import { getOrganismSquaresAtSquare } from "./lifeSquares/_lsOperations.js";
 import { CactusSeedOrganism } from "./organisms/CactusSeedOrganism.js";
 import { LilyPadSeedOrganism } from "./organisms/LilyPadSeedOrganism.js";
+import { PlantSquare } from "./squares/PlantSquare.js";
 
 var materialSelect = document.getElementById("materialSelect");
 var fastTerrain = document.getElementById("fastTerrain");
@@ -45,8 +46,8 @@ var lastTick = Date.now();
 var CANVAS_SQUARES_X = 270; // * 8; //6;
 var CANVAS_SQUARES_Y = 80 + 5; // * 8; // 8;
 
-// var CANVAS_SQUARES_X = 10;
-// var CANVAS_SQUARES_Y = 10;
+// var CANVAS_SQUARES_X = 40;
+// var CANVAS_SQUARES_Y = 40;
 
 var MAIN_CANVAS = document.getElementById("main");
 var MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');

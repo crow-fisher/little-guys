@@ -108,26 +108,7 @@
                 .filter((sq) => sq.proto == this.proto)
                 .filter((sq) => sq.group == this.group)
                 .filter((sq) => sq.currentPressureDirect > 0)
-                .forEach((sq) => this.currentPressureDirect = sq.currentPressureDirect + 1)
-
-            var curY = this.posY - 1;
-            if (this.currentPressureDirect == 0) {
-                while (true) {
-                    var squaresAtPos = getSquares(this.posX, curY);
-                    if (squaresAtPos.length == 0) {
-                        break;
-                    }
-                    if (Array.from(squaresAtPos.filter((sq) => sq.solid && sq.collision)).length > 0) {
-                        break;
-                    }
-                    curY -= 1;
-                    this.currentPressureDirect += 1;
-                }
-            }
-            getSquares(this.posX, this.posY + 1)
-                .filter((sq) => sq.proto == this.proto)
-                .filter((sq) => sq.group == this.group)
-                .forEach((sq) => sq.currentPressureDirect = this.currentPressureDirect + 1)
+                .forEach((sq) => this.currentPressureDirect = sq.currentPressureDirect + 1);
 
         }
         calculateIndirectPressure() {
@@ -137,6 +118,9 @@
 
             var perGroupData = new Map();
             iterateOnSquares((sq) => {
+                if (sq.proto != this.proto) {
+                    return;
+                }
                 if (!(sq.group in perGroupData)) {
                     perGroupData[sq.group] = new Map();
                     perGroupData[sq.group]["minPosY"] = 10 ** 8;
@@ -144,6 +128,9 @@
                 perGroupData[sq.group]["minPosY"] = Math.min(sq.posY, perGroupData[sq.group]["minPosY"])
             })
             iterateOnSquares((sq) => {
+                if (sq.proto != this.proto) {
+                    return;
+                }
                 sq.currentPressureIndirect = Math.max(sq.currentPressureDirect, sq.posY - perGroupData[sq.group]["minPosY"]);
             })
         }

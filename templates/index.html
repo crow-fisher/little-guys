@@ -2,7 +2,7 @@
 
 <body>
     <canvas tabindex='1' id="main"></canvas>
-    <canvas tabindex='2' id="organismMetadataViewer"></canvas>
+    <canvas tabindex='2' hidden id="organismMetadataViewer"></canvas>
     <p>little guys</p>
     <select id="materialSelect">
         <option value="dirt">dirt</option>
@@ -19,7 +19,12 @@
         <option value="drain">drain</option>
         <option value="water distribution">water distribution</option>
     </select>
-    <input type="checkbox" id="fastTerrain">fast terrain?</input>
+    <select id="viewmodeSelect">
+        <option value="normal">normal</option>
+        <option value="watersaturation">water saturation</option>
+        <option value="directpressure">direct water pressure</option>
+        <option value="indirectpressure">indirect water pressure</option>
+    </select>
     <input type="number" id="timeScale">time scale</input>
     <button type="button" id="loadSlotA">load slot A</button>
     <button type="button" id="saveSlotA">save slot A</button>
