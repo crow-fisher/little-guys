@@ -24,8 +24,8 @@ class PopGrassOrganism extends BaseOrganism {
 
         this.throttleInterval = 1000;
 
-        this.reproductionEnergy = 200;
-        this.reproductionEnergyUnit = 20;
+        this.reproductionEnergy = 800;
+        this.reproductionEnergyUnit = 200;
 
 
 

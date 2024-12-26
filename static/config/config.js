@@ -131,7 +131,7 @@ var wds_sq_waterTransferRate = {
 
 var b_sq_darkeningStrength = {
     name: "b_sq_darkeningStrength",
-    value: 0.3
+    value: 0.5
 };
 
 var rain_dropChance = {

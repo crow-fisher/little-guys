@@ -114,7 +114,20 @@ export class BaseSquare {
         else if (selectedViewMode == "watersaturation") {
             this.renderWaterSaturation();
         }
+        else if (selectedViewMode == "organismStructure") {
+            this.renderAsGrey();
+        }
     };
+
+    renderAsGrey() {
+        MAIN_CONTEXT.fillStyle = "rgba(50, 50, 50, 0.2)";
+        MAIN_CONTEXT.fillRect(
+            this.posX * BASE_SIZE,
+            this.posY * BASE_SIZE,
+            BASE_SIZE,
+            BASE_SIZE
+        );
+    }
 
     renderWaterSaturation() {
         this.renderSpecialViewMode(this.waterSaturation_color1, this.waterSaturation_color2, this.waterContainment, this.waterContainmentMax.value);
@@ -465,17 +478,19 @@ export class BaseSquare {
     }
 
     doBlockOutflow() {
-        if (this.waterContainment < this.waterContainmentMax.value) {
+        if (this.waterContainment < this.waterContainmentTransferRate.value * 2) {
             return;
         }
         for (let side = -1; side <= 1; side += 2) {
             if (getSquares(this.posX + side, this.posY).some((sq) => sq.collision)) {
                 continue;
             }
-            var sq = addSquareByName(this.posX + side, this.posY, "water");
-            if (sq) {
-                sq.blockHealth = this.waterContainment * 0.4; 
-                this.waterContainment -= sq.blockHealth;
+            if (Math.random() > 0.9) {
+                var sq = addSquareByName(this.posX + side, this.posY, "water");
+                if (sq) {
+                    sq.blockHealth = this.waterContainmentTransferRate.value; 
+                    this.waterContainment -= sq.blockHealth;
+                }
             }
         }
     }

@@ -62,14 +62,10 @@
         }
 
         renderWaterSaturation() {
-            MAIN_CONTEXT.fillStyle = "#BBBBBB";
-            MAIN_CONTEXT.fillRect(
-                this.posX * BASE_SIZE,
-                this.posY * BASE_SIZE,
-                BASE_SIZE,
-                BASE_SIZE
-            );
+            this.renderAsGrey();
         }
+
+
 
 
         calculateDarkeningColor() {
