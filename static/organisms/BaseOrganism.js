@@ -1,6 +1,6 @@
 import { removeOrganism } from "./_orgOperations.js";
 import { Law } from "../Law.js";
-import { randNumber } from "../common.js";
+import { getStandardDeviation, randNumber } from "../common.js";
 import { getCurTime } from "../globals.js";
 import { getNextEntitySpawnId } from "../globals.js";
 
@@ -103,6 +103,55 @@ class BaseOrganism {
             this.destroy();
         }
     }
+    getMaxDirtNutrient() {
+        if (this.maxDirtNutrient != 0) {
+            return this.maxDirtNutrient;
+        }
+        this.maxDirtNutrient = Array.from(this.lifeSquares.map((ls) => ls.dirtNutrients)).sort((a, b) => b - a)[0]
+        return this.maxDirtNutrient;
+    }
+
+    getMaxAirNutrient() {
+        if (this.maxAirNutrient != 0) {
+            return this.maxAirNutrient;
+        }
+        this.maxAirNutrient = Array.from(this.lifeSquares.map((ls) => ls.airNutrients)).sort((a, b) => b - a)[0]
+        return this.maxAirNutrient;
+    }
+    getMaxWaterNutrient() {
+        if (this.maxWaterNutrient != 0) {
+            return this.maxWaterNutrient;
+        }
+        this.maxWaterNutrient = Array.from(this.lifeSquares.map((ls) => ls.waterNutrients)).sort((a, b) => b - a)[0]
+        return this.maxWaterNutrient;
+    }
+
+    getStdevDirtNutrient() {
+        if (this.stdevDirtNutrient != 0) {
+            return this.stdevDirtNutrient;
+        }
+        this.stdevDirtNutrient = getStandardDeviation(Array.from(this.lifeSquares.map((ls) => ls.dirtNutrients)));
+        return this.stdevDirtNutrient;
+    }
+
+    getStdevAirNutrient() {
+        if (this.stdevAirNutrient != 0) {
+            return this.stdevAirNutrient;
+        }
+        this.stdevAirNutrient = getStandardDeviation(Array.from(this.lifeSquares.map((ls) => ls.airNutrients)));
+        return this.stdevAirNutrient;
+    }
+    getStdevWaterNutrient() {
+        if (this.stdevWaterNutrient != 0) {
+            return this.stdevWaterNutrient;
+        }
+        this.stdevWaterNutrient = getStandardDeviation(Array.from(this.lifeSquares.map((ls) => ls.waterNutrients)));
+        return this.stdevWaterNutrient;
+    }
+
+    getCurrentHealth() {
+        return this.currentHealth / this.maxHealth;
+    }
 
     linkSquare(square) {
         this.linkedSquare = square;
@@ -171,7 +220,21 @@ class BaseOrganism {
         this.currentEnergy -= this.growFlower();
     }
 
+    getMaxAllNutrients() {
+        return this.getMaxAirNutrient() + this.getMaxWaterNutrient() + this.getMaxAirNutrient();
+    }
+
+    getStdevAllNutrients() {
+        return Math.sqrt((this.getMaxAirNutrient() ** 2) / 3 + (this.getMaxDirtNutrient() ** 2) / 3 + (this.getMaxWaterNutrient() ** 2) / 3)
+    }
+
     preTick() {
+        this.maxAirNutrient = 0;
+        this.maxDirtNutrient = 0;
+        this.maxWaterNutrient = 0;
+        this.stdevAirNutrient = 0;
+        this.stdevDirtNutrient = 0;
+        this.stdevWaterNutrient = 0;
         this.lifeSquares.forEach((sp) => sp.preTick())
     }
 

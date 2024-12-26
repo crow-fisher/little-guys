@@ -114,7 +114,7 @@ export class BaseSquare {
         else if (selectedViewMode == "watersaturation") {
             this.renderWaterSaturation();
         }
-        else if (selectedViewMode == "organismStructure") {
+        else if (selectedViewMode.startsWith("organism")) {
             this.renderAsGrey();
         }
     };

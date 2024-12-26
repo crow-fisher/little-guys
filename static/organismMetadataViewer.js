@@ -31,7 +31,7 @@ function organismMetadataViewerMain() {
             organismMetadata["currentEnergy"] = org.currentEnergy;
             organismMetadata["reproductionEnergy"] = org.reproductionEnergy;
             organismMetadata["reproductionEnergyUnit"] = org.reproductionEnergyUnit;
-            organismMetadata["currentHealth"] = org.currentHealth / org.maxHealth;
+            organismMetadata["currentHealth"] = org.getCurrentHealth();
             organismMetadata["hovered"] = org.hovered;
             organismMetadatas.push(organismMetadata);
         }
