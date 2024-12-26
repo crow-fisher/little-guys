@@ -16,7 +16,7 @@ import {
     getNextGroupId, updateGlobalStatistic, getGlobalStatistic
 } from "../globals.js";
 
-import { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE } from "../index.js";
+import { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, selectedViewMode } from "../index.js";
 
 import { hexToRgb, rgbToHex, rgbToRgba } from "../common.js";
 
@@ -47,8 +47,8 @@ export class BaseSquare {
         // water flow parameters
         this.waterContainment = 0;
         this.waterContainmentMax = base_waterContainmentMax;
-        this.waterContainmentTransferRate = base_waterContainmentTransferRate; // what fraction of ticks does it trigger percolate on
-        this.waterContainmentEvaporationRate = base_waterContainmentEvaporationRate; // what fraction of contained water will get reduced per tick
+        this.waterContainmentTransferRate = base_waterContainmentTransferRate;
+        this.waterContainmentEvaporationRate = base_waterContainmentEvaporationRate;
         this.speedX = 0;
         this.speedY = 0;
         this.nutrientValue = b_sq_nutrientValue;
@@ -72,6 +72,11 @@ export class BaseSquare {
         this.opacity = 1;
         this.waterSinkRate = 0.8;
         this.cachedRgba = null;
+
+        // for special view modes
+        this.waterSaturation_color1 = "#9bafd9";
+        this.waterSaturation_color2 = "#103783";
+
     };
     destroy() {
         removeSquare(this);
@@ -102,8 +107,36 @@ export class BaseSquare {
         if (!this.visible) {
             return;
         }
-        this.renderWithVariedColors();
+        if (selectedViewMode == "normal") {
+            this.renderWithVariedColors();
+        }
+        else if (selectedViewMode == "watersaturation") {
+            this.renderWaterSaturation();
+        }
     };
+
+    renderWaterSaturation() {
+        this.renderSpecialViewMode(this.waterSaturation_color1, this.waterSaturation_color2, this.waterContainment, this.waterContainmentMax.value);
+    }
+
+    renderSpecialViewMode(color1, color2, value, valueMax) {
+        var color1Rgb = hexToRgb(color1);
+        var color2Rgb = hexToRgb(color2);
+        var frac = value / valueMax;
+        var outColor = {
+            r: color1Rgb.r * frac + color2Rgb.r * (1 - frac),
+            g: color1Rgb.g * frac + color2Rgb.g * (1 - frac),
+            b: color1Rgb.b * frac + color2Rgb.b * (1 - frac)
+        }
+        var outHex = rgbToHex(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b));
+        MAIN_CONTEXT.fillStyle = outHex;
+        MAIN_CONTEXT.fillRect(
+            this.posX * BASE_SIZE,
+            this.posY * BASE_SIZE,
+            BASE_SIZE,
+            BASE_SIZE
+        );
+    }
 
     getStaticRand(randIdx) {
         while (randIdx > this.randoms.length - 1) {
@@ -261,7 +294,7 @@ export class BaseSquare {
                 }
                 getDirectNeighbors(neighbor.posX, neighbor.posY).filter((sq) => this.proto == sq.proto)
                     .forEach((neighborGroupNeighbor) => groupNeighbors.add(neighborGroupNeighbor));
-                    
+
                 visited.add(neighbor);
             })
             var endGroupNeighborsSize = groupNeighbors.size;
@@ -377,36 +410,56 @@ export class BaseSquare {
     }
 
     percolateFromBlock(otherBlock) {
-        var heightDiff = this.posY - otherBlock.posY; // bigger number == lower, so if this is negative we are percolating u
-        if (this.waterContainment > otherBlock.waterContainment || this.waterContainment >= this.waterContainmentMax.value) {
-            // water flows from wet to dry
+        var heightDiff = this.posY - otherBlock.posY; // bigger number == lower, so if this is negative we are percolating up
+        // water only flows from wet to dry
+        if (moistureDiff > 0 || this.waterContainment >= this.waterContainmentMax.value) {
             return 0;
         }
-        var maxAmountToPercolateFromBlock = 0;
-        var amountToPercolate = 0;
+
+        /* 
+
+        percolation goals: 
+            * water should flow downwards, decaying by 20%
+                * eg., if water is added above some blocks with max water containment 1, 
+                * 
+                * ...
+                * 0.49
+                * 0.7
+                * 1
+            * if water is flowing to the side, tend towards equalization
+            * if water is flowing up, aim for a lower fraction similar to above (eg, mult of 0.5)
+        */ 
+
+
+        var targetWaterDiff = 0.5; // value between 0 and 1. 
+            // if 0.5, try to balance water equally between this and otherBlock.
+            // if 0, put all water into this. 
+            // if 1, put all water into otherBlock.  
+
         if (heightDiff > 0) {
-            maxAmountToPercolateFromBlock = Math.min(this.waterContainmentMax.value - this.waterContainment, Math.min(this.waterContainmentTransferRate.value, otherBlock.waterContainment)) / 2;
-            amountToPercolate = Math.min(maxAmountToPercolateFromBlock, (otherBlock.waterContainment - (this.waterContainment * 0.75)) / 2);
-            this.waterContainment += amountToPercolate;
-            return amountToPercolate;
-        } else {
-            maxAmountToPercolateFromBlock = Math.min(this.waterContainmentMax.value - this.waterContainment, Math.min(this.waterContainmentTransferRate.value, otherBlock.waterContainmentTransferRate.value)) / 2;
-            amountToPercolate = Math.min(maxAmountToPercolateFromBlock, otherBlock.waterContainment - ((this.waterContainment + otherBlock.waterContainment) / 2));
-            var amountToPercolateToAverage = (otherBlock.waterContainment - this.waterContainment) / 2;
-            amountToPercolate = Math.min(amountToPercolate, amountToPercolateToAverage);
-            amountToPercolate /= 2;
-            this.waterContainment += amountToPercolate;
-            return amountToPercolate;
+            targetWaterDiff = 0.45;
+        }
+        else if (heightDiff < 0) {
+            targetWaterDiff = 0.55;
+        }
+
+        var moistureDiff = ((otherBlock.waterContainment * (1 - targetWaterDiff)) - (this.waterContainment * targetWaterDiff)) / 2;
+        if (moistureDiff < 0) {
             return 0;
         }
+        var maxAmountToPercolateFromBlock = Math.min(this.waterContainmentMax.value - this.waterContainment, Math.min(this.waterContainmentTransferRate.value, otherBlock.waterContainmentTransferRate.value));
+         
+        var amountToPercolate = Math.min(moistureDiff, maxAmountToPercolateFromBlock);
+        this.waterContainment += amountToPercolate;
+        return amountToPercolate;
+
     }
 
     percolateInnerMoisture() {
         if (this.waterContainment <= 0) {
             return 0;
         }
-        var directNeighbors = getDirectNeighbors(this.posX, this.posY).filter((sq) => sq != null && sq.solid);
-        directNeighbors.forEach((sq) => this.waterContainment -= sq.percolateFromBlock(this));
+        getDirectNeighbors(this.posX, this.posY).filter((sq) => sq.solid).forEach((sq) => this.waterContainment -= sq.percolateFromBlock(this));
     }
 
     evaporateInnerMoisture() {

@@ -27,16 +27,19 @@ import { PlantSquare } from "./squares/PlantSquare.js";
 
 var materialSelect = document.getElementById("materialSelect");
 var fastTerrain = document.getElementById("fastTerrain");
+var viewmodeSelect = document.getElementById("viewmodeSelect");
+
 var loadSlotA = document.getElementById("loadSlotA");
 var saveSlotA = document.getElementById("saveSlotA");
 var loadSlotB = document.getElementById("loadSlotB");
 var saveSlotB = document.getElementById("saveSlotB");
 
 var selectedMaterial = "dirt";
+var selectedViewMode = "normal";
 const BASE_SIZE = 4;
 
 materialSelect.addEventListener('change', (e) => selectedMaterial = e.target.value);
-timeScale.addEventListener('change', (e) => TIME_SCALE = e.target.value);
+viewmodeSelect.addEventListener('change', (e) => selectedViewMode = e.target.value);
 
 var mouseDown = 0;
 var organismAddedThisClick = false;
@@ -67,7 +70,7 @@ document.body.onmouseup = function () {
 var shiftPressed = false;
 
 var TIME_SCALE = 1;
-var MILLIS_PER_TICK = 1;
+var MILLIS_PER_TICK = 10;
 
 var lastLastClickEvent = null;
 var rightMouseClicked = false;
@@ -332,7 +335,7 @@ function doClickAdd() {
 // thanks https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
 
 for (let i = 0; i < CANVAS_SQUARES_X; i++) {
-    addSquare(new DrainSquare(i, CANVAS_SQUARES_Y - 1));
+    addSquare(new RockSquare(i, CANVAS_SQUARES_Y - 1));
 }
 
 // for (let i = 0; i < CANVAS_SQUARES_Y; i++) {
@@ -366,4 +369,4 @@ window.onload = function () {
     // });
 }
 
-export { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE }
+export { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, selectedViewMode }

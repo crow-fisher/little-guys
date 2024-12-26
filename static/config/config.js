@@ -67,22 +67,22 @@ var base_waterContainmentTransferRate = {
 
 var gravel_waterContainmentMax = {
     name: "gravel_waterContainmentMax",
-    value: 40
+    value: 25
 };  
 
 var gravel_waterContainmentTransferRate = {
     name: "gravel_waterContainmentTransferRate",
-    value: 20
+    value: 8
 };
 
 var sand_waterContainmentMax = {
     name: "sand_waterContainmentMax",
-    value: 30
+    value: 22
 };  
 
 var sand_waterContainmentTransferRate = {
     name: "sand_waterContainmentTransferRate",
-    value: 10
+    value: 6
 };
 
 var sand_nutrientValue = {
@@ -110,12 +110,12 @@ var static_sq_waterContainmentTransferRate = {
 
 var drain_sq_waterContainmentMax = {
     name: "drain_sq_waterContainmentMax",
-    value: 10000
+    value: 40
 }
 
 var drain_sq_waterTransferRate = {
     name: "drain_sq_waterTransferRate",
-    value: 500
+    value: 10
 }
 
 var wds_sq_waterContainmentMax = {

@@ -81,7 +81,7 @@ class BaseOrganism {
 
 
     processHealth() { 
-        if (this.getLifeCyclePercentage() < 0.1) {
+        if (this.getLifeCyclePercentage() < 0.05) {
             return;
         }
         let meanNutrient = this.airNutrients + this.dirtNutrients + this.waterNutrients;

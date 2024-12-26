@@ -16,6 +16,8 @@
 
     import { WATERFLOW_CANDIDATE_SQUARES, WATERFLOW_TARGET_SQUARES } from "../globals.js";
 
+
+    import { BASE_SIZE, MAIN_CONTEXT } from "../index.js";
     class WaterSquare extends BaseSquare {  
         constructor(posX, posY) {
             super(posX, posY);
@@ -32,7 +34,7 @@
             this.accentColor = "#85B09A";
             this.opacity = 0.5;
             
-            this.maxBlockHealth = 2000;
+            this.maxBlockHealth = 40;
             this.blockHealth = this.maxBlockHealth;
         }
 
@@ -57,8 +59,19 @@
                     }
                 });
             }
-
         }
+
+        renderWaterSaturation() {
+            MAIN_CONTEXT.fillStyle = "#BBBBBB";
+            MAIN_CONTEXT.fillRect(
+                this.posX * BASE_SIZE,
+                this.posY * BASE_SIZE,
+                BASE_SIZE,
+                BASE_SIZE
+            );
+        }
+
+
         calculateDarkeningColor() {
             return this.calculateDarkeningColorImpl(this.currentPressureIndirect, getGlobalStatistic("pressure") + 1);
         }
