@@ -32,6 +32,10 @@ class BaseOrganism {
         this.airNutrients = 1;
         this.waterNutrients = 1;
 
+        this.plantLastGrown = getCurTime();
+        this.waterLastGrown = getCurTime();
+        this.rootLastGrown = getCurTime();
+
         // life cycle properties
         this.maxLifeTime = 1000 * 20 * 1;
         this.reproductionEnergy = 1000;
@@ -90,6 +94,7 @@ class BaseOrganism {
 
         if (nutrientStdDev > this.nutrientDiffTolerance) {
             this.currentHealth -= this.perTickDamage;
+            this.growAndDecay();
         }
         if (nutrientStdDev < this.nutrientDiffRegainHealth) {
             this.currentHealth += this.perTickDamage;

@@ -29,16 +29,16 @@ class CactusOrganism extends BaseOrganism {
 
         this.throttleInterval = 1000;
 
-        this.maxLifeTime = 1000 * 40 * 1;
-        this.reproductionEnergy = 1300;
-        this.reproductionEnergyUnit = 600;
+        this.maxLifeTime = 1000 * 80 * 1;
+        this.reproductionEnergy = 800;
+        this.reproductionEnergyUnit = 100;
         this.plantLastGrown = getCurTime();
         this.waterLastGrown = getCurTime();
         this.rootLastGrown = getCurTime();
 
         this.maximumLifeSquaresOfType = {
-            "green": 10,
-            "root": 20
+            "green": 100,
+            "root": 200
         }
 
         this.highestGreen = null;
@@ -113,8 +113,6 @@ class CactusOrganism extends BaseOrganism {
     }
     
     growAndDecay() {
-        // make a decision on how to grow based on which of our needs we need the most
-        
         let minNutrient = Math.min(Math.min(this.airNutrients, this.dirtNutrients), this.waterNutrients);
         if (this.currentEnergy < 0) {
             return;
@@ -191,7 +189,7 @@ class CactusOrganism extends BaseOrganism {
                 return;
             }
             candidateGrowthLocations.sort((a, b) => (a[2] - b[2]) * 100 + (a[3] - b[3]));
-            var chosenCandidate = candidateGrowthLocations[Math.floor(Math.random() * candidateGrowthLocations.length / 2)]
+            var chosenCandidate = candidateGrowthLocations[Math.floor(Math.random() * candidateGrowthLocations.length / 4)]
             var newPlantSquare = new PlantSquare(chosenCandidate[0], chosenCandidate[1]);
             if (addSquare(newPlantSquare)) {
                 var newPopGrassGreenLifeSquare = addOrganismSquare(new CactusGreenLifeSquare(newPlantSquare, this));

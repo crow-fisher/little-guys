@@ -27,9 +27,7 @@ class PopGrassOrganism extends BaseOrganism {
         this.reproductionEnergy = 200;
         this.reproductionEnergyUnit = 20;
 
-        this.plantLastGrown = getCurTime();
-        this.waterLastGrown = getCurTime();
-        this.rootLastGrown = getCurTime();
+
 
         this.maximumLifeSquaresOfType = {
             "green": 20,
@@ -238,7 +236,7 @@ class PopGrassOrganism extends BaseOrganism {
                                 );
 
                             if (compSquareResourceAvailable > dirtiestSquareDirtResourceAvailable ||
-                                (compSquareResourceAvailable == dirtiestSquareDirtResourceAvailable && compSquare.posY < dirtiestSquare.posY)
+                                (compSquareResourceAvailable == dirtiestSquareDirtResourceAvailable)
                             ) {
                                 dirtiestSquare = compSquare;
                                 dirtiestSquareParent = iterSquare;

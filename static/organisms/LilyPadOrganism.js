@@ -28,8 +28,8 @@ class LilyPadOrganism extends BaseOrganism {
 
         this.throttleInterval = 1000;
 
-        this.reproductionEnergy = 500;
-        this.reproductionEnergyUnit = 100;
+        this.reproductionEnergy = 800;
+        this.reproductionEnergyUnit = 300;
 
         this.maxLifeTime = 1000 * 50;
 
@@ -159,7 +159,10 @@ class LilyPadOrganism extends BaseOrganism {
     growFlower() {
         if (this.shouldGrowFlower()) {
             var highestPlantSquare = Array.from(this.lifeSquares.filter((sq) => sq.type == "green").sort((a, b) => a.posY - b.posY))[0];
-            if (!(getSquares(highestPlantSquare.posX, highestPlantSquare.posY - 1).some((sq) => sq.proto == "WaterSquare"))) {
+            if (
+                !(getSquares(highestPlantSquare.posX, highestPlantSquare.posY - 1).some((sq) => sq.proto == "WaterSquare")) &&
+                !(getSquares(highestPlantSquare.posX, highestPlantSquare.posY - 1).some((sq) => sq.collision || sq.organic))
+                ) {
                 var newPlantSquare = new PlantSquare(highestPlantSquare.posX, highestPlantSquare.posY - 1);
                 if (addSquare(newPlantSquare)) {
                     var newLilyPadFlowerLifeSquare = addOrganismSquare(new LilyPadFlowerLifeSquare(newPlantSquare, this));
