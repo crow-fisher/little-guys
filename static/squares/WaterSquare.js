@@ -169,17 +169,19 @@ class WaterSquare extends BaseSquare {
             .filter((sq) => sq.collision)
             .filter((sq) => sq.solid)
             .forEach((sq) => this.blockHealth -= sq.percolateFromWater(this));
-        
-        if (this.posX % 2 == 0 && this.posY % 2 == 0) {
+
+        if (this.currentPressureDirect > 1 && this.blockHealth > 0.75) {
             getNeighbors(this.posX, this.posY)
                 .filter((sq) => sq.group == this.group)
+                .filter((sq) => sq.blockHealth < this.blockHealth)
                 .forEach((sq) => {
                     var start = this.blockHealth;
                     var amountToAdd = Math.min(this.blockHealthMax - start, sq.blockHealth);
                     this.blockHealth += amountToAdd;
-                    sq.blockHealth <= amountToAdd;
+                    sq.blockHealth -= amountToAdd;
                 });
         }
+ 
     }
 }
 
