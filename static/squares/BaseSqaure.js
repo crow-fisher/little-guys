@@ -18,7 +18,7 @@ import {
 
 import { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, selectedViewMode } from "../index.js";
 
-import { hexToRgb, rgbToHex, rgbToRgba } from "../common.js";
+import { hexToRgb, processColorStdev, processColorStdevMulticolor, rgbToHex, rgbToRgba } from "../common.js";
 
 import { getCountOfOrganismsSquaresOfTypeAtPosition } from "../lifeSquares/_lsOperations.js";
 import { getOrganismSquaresAtSquare } from "../lifeSquares/_lsOperations.js";
@@ -28,7 +28,7 @@ import { getObjectArrFromMap } from "../common.js";
 import { addOrganism, addNewOrganism } from "../organisms/_orgOperations.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 
-import { purge, reset, render, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquare } from "../globalOperations.js"
+import { purge, reset, render, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquare, getSquareStdevForGetter } from "../globalOperations.js"
 
 import { removeOrganismSquare } from "./_sqOperations.js";
 import { removeOrganism } from "../organisms/_orgOperations.js";
@@ -132,10 +132,10 @@ export class BaseSquare {
     }
 
     renderWaterSaturation() {
-        this.renderSpecialViewMode(this.waterSaturation_color1, this.waterSaturation_color2, this.waterContainment, this.waterContainmentMax.value);
+        this.renderSpecialViewModeLinear(this.waterSaturation_color1, this.waterSaturation_color2, this.waterContainment, this.waterContainmentMax.value);
     }
 
-    renderSpecialViewMode(color1, color2, value, valueMax) {
+    renderSpecialViewModeLinear(color1, color2, value, valueMax) {
         var color1Rgb = hexToRgb(color1);
         var color2Rgb = hexToRgb(color2);
         var frac = value / valueMax;

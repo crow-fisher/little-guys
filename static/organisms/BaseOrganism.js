@@ -18,6 +18,10 @@ class BaseOrganism {
         this.alive = true;
         this.hovered = false;
 
+        this.airCoef = 1;
+        this.dirtCoef = 1;
+        this.waterCoef = 1;
+
         this.spawnTime = getCurTime();
         this.currentEnergy = 0;
         this.totalEnergy = 0;
@@ -317,9 +321,9 @@ class BaseOrganism {
 
     postTick() {
         this.lifeSquares.forEach((lifeSquare) => {
-            this.dirtNutrients += lifeSquare.dirtNutrients;
-            this.waterNutrients += lifeSquare.waterNutrients;
-            this.airNutrients += lifeSquare.airNutrients;
+            this.dirtNutrients += lifeSquare.dirtNutrients * this.dirtCoef;
+            this.waterNutrients += lifeSquare.waterNutrients * this.waterCoef;
+            this.airNutrients += lifeSquare.airNutrients * this.airCoef;
         });
 
         var energyGained = this.law.photosynthesis(this.airNutrients - this.totalEnergy, this.waterNutrients - this.totalEnergy, this.dirtNutrients - this.totalEnergy);

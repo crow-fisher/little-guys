@@ -6,7 +6,7 @@ import {
 } from "./globals.js";
 
 import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js";
-import { getObjectArrFromMap } from "./common.js";
+import { getObjectArrFromMap, getStandardDeviation } from "./common.js";
 import { getOrganismSquaresAtSquare } from "./lifeSquares/_lsOperations.js";
 import { removeItemAll } from "./common.js";
 import { removeOrganism } from "./organisms/_orgOperations.js";
@@ -43,11 +43,22 @@ function purge() {
         }
     })
 }
-
+function getSquareStdevForGetter(valueGetter, valueGetterName) { 
+    if (valueGetterName in stats && stats[valueGetterName] != 0) {
+        return stats[valueGetterName];
+    } else {
+        var all_squares = [];
+        iterateOnSquares((sq) => all_squares.push(sq), 0);
+        var stdev = getStandardDeviation(all_squares.map(valueGetter));
+        stats[valueGetterName] = stdev;
+        return stdev;
+    }
+}
 
 function reset() {
     iterateOnSquares((sq) => sq.reset(), 0);
     stats["pressure"] = 0;
+    stats["squareStdev"] = 0;
     resetWaterflowSquares();
 }
 
@@ -96,4 +107,4 @@ function doWaterFlow() {
     }
 }
 
-export {purge, reset, render, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquare}
+export {purge, reset, render, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquare, getSquareStdevForGetter}

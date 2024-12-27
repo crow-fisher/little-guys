@@ -4,7 +4,6 @@ import { BaseLifeSquare } from "./BaseLifeSquare.js";
 import {
     p_seed_ls_sproutGrowthRate,
     p_seed_ls_neighborWaterContainmentRequiredToGrow,
-    p_seed_ls_neighborWaterContainmentRequiredToDecay,
     p_seed_ls_darkeningStrength
     } from "../config/config.js"
 import { getDirectNeighbors, getSquares } from "../squares/_sqOperations.js";
@@ -19,7 +18,6 @@ class SeedLifeSquare extends BaseLifeSquare {
         this.sproutStatus = 0;
         this.sproutGrowthRate = p_seed_ls_sproutGrowthRate;
         this.p_seed_ls_neighborWaterContainmentRequiredToGrow = p_seed_ls_neighborWaterContainmentRequiredToGrow;
-        this.neighborWaterContainmentRequiredToDecay = p_seed_ls_neighborWaterContainmentRequiredToDecay;
         this.colorBase = "#A1CCA5";
         this.height = 0.25;
 
@@ -34,9 +32,6 @@ class SeedLifeSquare extends BaseLifeSquare {
                 .map((neighbor) => neighbor.waterContainment)
                 .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 
-        if (totalSurroundingWater < this.neighborWaterContainmentRequiredToDecay.value) {
-            this.sproutStatus -= this.sproutGrowthRate.value;
-        }
         if (totalSurroundingWater > this.p_seed_ls_neighborWaterContainmentRequiredToGrow.value) {
             this.sproutStatus += this.sproutGrowthRate.value;
         }

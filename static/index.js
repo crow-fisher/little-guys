@@ -24,6 +24,7 @@ import { getOrganismSquaresAtSquare } from "./lifeSquares/_lsOperations.js";
 import { CactusSeedOrganism } from "./organisms/CactusSeedOrganism.js";
 import { LilyPadSeedOrganism } from "./organisms/LilyPadSeedOrganism.js";
 import { PlantSquare } from "./squares/PlantSquare.js";
+import { randNumber } from "./common.js";
 
 var materialSelect = document.getElementById("materialSelect");
 var fastTerrain = document.getElementById("fastTerrain");
@@ -70,7 +71,7 @@ document.body.onmouseup = function () {
 var shiftPressed = false;
 
 var TIME_SCALE = 1;
-var MILLIS_PER_TICK = 10;
+var MILLIS_PER_TICK = 1;
 
 var lastLastClickEvent = null;
 var rightMouseClicked = false;
@@ -226,29 +227,34 @@ function doMouseHover() {
     getOrganismSquaresAtSquare(Math.floor(px), Math.floor(py)).forEach((orgSq) => orgSq.linkedOrganism.hovered = true);
 }
 
-function addSquareByName(posX, posY, name) {
-    switch (name) {
-        case "rock":
-            return addSquareOverride(new RockSquare(posX, posY));
-        case "dirt":
-            return addSquare(new DirtSquare(posX, posY));
-        case "water":
-            return addSquare(new WaterSquare(posX, posY));
-        case "rain":
-            return addSquareOverride(new RainSquare(posX, posY));
-        case "heavy rain":
-            return addSquareOverride(new HeavyRainSquare(posX, posY));
-        case "water distribution":
-            return addSquareOverride(new WaterDistributionSquare(posX, posY));
-        case "drain":
-            return addSquareOverride(new DrainSquare(posX, posY));
-        case "aquifer":
-            return addSquare(new AquiferSquare(posX, posY));
-        case "gravel":
-            return addSquare(new GravelSquare(posX, posY));
-        case "sand":
-            return addSquare(new SandSquare(posX, posY));
-    }
+function addSquareByName(posX, posY, nameIn) {
+
+    var nameSplit = nameIn.split(",");
+    nameSplit.forEach((namePart) => {
+        var name = nameSplit[randNumber(0, nameSplit.length - 1)]
+        switch (name) {
+            case "rock":
+                return addSquareOverride(new RockSquare(posX, posY));
+            case "dirt":
+                return addSquare(new DirtSquare(posX, posY));
+            case "water":
+                return addSquare(new WaterSquare(posX, posY));
+            case "rain":
+                return addSquareOverride(new RainSquare(posX, posY));
+            case "heavy rain":
+                return addSquareOverride(new HeavyRainSquare(posX, posY));
+            case "water distribution":
+                return addSquareOverride(new WaterDistributionSquare(posX, posY));
+            case "drain":
+                return addSquareOverride(new DrainSquare(posX, posY));
+            case "aquifer":
+                return addSquare(new AquiferSquare(posX, posY));
+            case "gravel":
+                return addSquare(new GravelSquare(posX, posY));
+            case "sand":
+                return addSquare(new SandSquare(posX, posY));
+        }
+    })
 }
 
 function doClickAdd() {

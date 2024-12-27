@@ -177,7 +177,7 @@ var p_seed_ls_sproutGrowthRate = {
 };
 var p_seed_ls_neighborWaterContainmentRequiredToGrow = {
     name: "p_seed_ls_neighborWaterContainmentRequiredToGrow",
-    value: 0.3
+    value: 0.002
 };
 var p_seed_ls_neighborWaterContainmentRequiredToDecay = {
     name: "p_seed_ls_neighborWaterContainmentRequiredToDecay",

@@ -62,7 +62,6 @@ class WaterSquare extends BaseSquare {
             });
         }
     }
-
     renderWaterSaturation() {
         this.renderAsGrey();
     }

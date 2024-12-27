@@ -1,5 +1,5 @@
 import { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE } from "../index.js";
-import { getZPercent, hexToRgb, rgbToHex, rgbToRgba } from "../common.js";
+import { getZPercent, hexToRgb, processColorStdev, rgbToHex, rgbToRgba } from "../common.js";
 
 import { getCurTime } from "../globals.js";
 import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount } from "../config/config.js";
@@ -28,10 +28,6 @@ class BaseLifeSquare {
         this.storedWater = 0;
         this.storedWaterMax = 5;
         this.storedWaterTransferRate = 1;
-
-        this.airCoef = 1;
-        this.waterCoef = 1;
-        this.dirtCoef = 1;
 
         this.linkedSquare = square;
         this.linkedOrganism = organism;
@@ -69,6 +65,10 @@ class BaseLifeSquare {
         this.accentColorAmount = dirt_accentColorAmount;
     }
 
+    getCost() {
+        return 1;
+    }
+
     storeWater(amountToAdd) {
         if (this.storedWater >= this.storedWaterMax) {
             return 0;
@@ -82,10 +82,6 @@ class BaseLifeSquare {
         var amountToRetrieve = Math.min(this.storedWaterTransferRate, this.storedWater);
         this.storedWater -= amountToRetrieve;
         return amountToRetrieve;
-    }
-
-    getCost() {
-        return (this.airCoef * this.waterCoef * this.dirtCoef) ** 0.5;
     }
 
     addChild(lifeSquare) {
@@ -113,7 +109,6 @@ class BaseLifeSquare {
 
 
     addDirtNutrient(nutrientAmount) {
-        nutrientAmount *= this.dirtCoef;
         var amountOfDirtToAdd = this.linkedOrganism.getAmountOfDirtNutrientsToCollect();
         if (amountOfDirtToAdd < nutrientAmount / 2) {
             return this._addDirtNutrient(nutrientAmount / 2);
@@ -132,14 +127,12 @@ class BaseLifeSquare {
     }
 
     addAirNutrient(nutrientAmount) {
-        nutrientAmount *= this.airCoef;
         var start = this.airNutrients;
         this.airNutrients += Math.min(this.maxAirDt, this.airNutrients + nutrientAmount);
         return this.airNutrients - start;
     }
 
     addWaterNutrient(nutrientAmount) {
-        nutrientAmount *= this.waterCoef;
         var start = this.waterNutrients;
         this.waterNutrients += Math.min(this.maxWaterDt, this.waterNutrients + nutrientAmount);
         return this.waterNutrients - start;
@@ -170,15 +163,7 @@ class BaseLifeSquare {
         return this.randoms[randIdx];
     }
 
-    processColorStdev(val_max, val, val_stdev, color) {
-        var z = (val_max - val) / val_stdev;
-        var p = getZPercent(z);
-        return {
-            r: Math.floor(color.r * (1 - p) + 255 * (p)), 
-            g: Math.floor(color.g * (1 - p) + 255 * (p)), 
-            b: Math.floor(color.b * (1 - p) + 255 * (p))
-        }
-    }
+
 
     render() {
         if (selectedViewMode.startsWith("organism") && selectedViewMode != "organismStructure") {
@@ -274,8 +259,7 @@ class BaseLifeSquare {
                     val_stdev = 2;
                     break;
             }
-
-            var colorProcessed = this.processColorStdev(val_max, val, val_max, color);
+            var colorProcessed = processColorStdev(val_max, val, val_max, color);
 
             MAIN_CONTEXT.fillStyle = rgbToHex(colorProcessed.r, colorProcessed.g, colorProcessed.b);
             MAIN_CONTEXT.fillRect(

@@ -56,6 +56,20 @@ function getStandardDeviation (array) {
     return Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n)
   }
 
+function processColorStdev(val_max, val, val_stdev, color) {
+    return processColorStdevMulticolor(val_max, val, val_stdev, color, {r: 255, g: 255, b: 255});
+}
+
+function processColorStdevMulticolor(val_max, val, val_stdev, color1, color2) {
+    var z = (val_max - val) / val_stdev;
+    var p = getZPercent(z);
+    return {
+        r: Math.floor(color1.r * (1 - p) + color2.r * (p)), 
+        g: Math.floor(color1.g * (1 - p) + color2.g * (p)), 
+        b: Math.floor(color1.b * (1 - p) + color2.b * (p))
+    }
+}
+
 
 function getZPercent(z) {
 
@@ -90,4 +104,4 @@ sum += 0.5;
 return sum;
 }
 
-export {getObjectArrFromMap, removeItemAll, hexToRgb, rgbToHex, rgbToRgba, randNumber, loadImage, getStandardDeviation, getZPercent }
+export {getObjectArrFromMap, removeItemAll, hexToRgb, rgbToHex, rgbToRgba, randNumber, loadImage, getStandardDeviation, getZPercent, processColorStdev, processColorStdevMulticolor }

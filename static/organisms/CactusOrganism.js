@@ -36,6 +36,10 @@ class CactusOrganism extends BaseOrganism {
         this.waterLastGrown = getCurTime();
         this.rootLastGrown = getCurTime();
 
+        this.airCoef = 1;
+        this.dirtCoef = 8;
+        this.waterCoef = 4;
+
         this.maximumLifeSquaresOfType = {
             "green": 100,
             "root": 200
