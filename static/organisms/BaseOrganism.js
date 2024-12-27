@@ -37,9 +37,9 @@ class BaseOrganism {
         this.rootLastGrown = getCurTime();
 
         // life cycle properties
-        this.maxLifeTime = 1000 * 60 * 1;
-        this.reproductionEnergy = 1000;
-        this.reproductionEnergyUnit = 500;
+        this.maxLifeTime = 1000 * 60 * 2;
+        this.reproductionEnergy = 1500;
+        this.reproductionEnergyUnit = 1000;
         this.maximumLifeSquaresOfType = {}
         this.lifeSquaresCountByType = {};
         this.spawnedEntityId = getNextEntitySpawnId();
@@ -57,7 +57,7 @@ class BaseOrganism {
         var currentDirtNumSquares = this.dirtNutrients / this.getMeanNutrient() * this.lifeSquares.length;
 
         this.setIndicatorOnSquares(currentHealthNumSquares, (sq, amount) => sq.healthIndicated = amount);
-        this.setIndicatorOnSquares(currentEnergyNumSquares, (sq, amount) => sq.energyIndicated += amount * (1 - sq.energyIndicated) / 2);
+        this.setIndicatorOnSquares(currentEnergyNumSquares, (sq, amount) => sq.energyIndicated = amount);
         this.setIndicatorOnSquares(currentLifetimeNumSquares, (sq, amount) => sq.lifetimeIndicated = amount);
         
         this.setIndicatorOnSquares(currentAirNumSquares, (sq, amount) => sq.airIndicated += (sq.airIndicated > 0 ? -amount : amount));
@@ -90,11 +90,8 @@ class BaseOrganism {
 
 
     storeAndRetrieveWater() {
-        let minNutrient = this.getMinNutrient(); 
-        let maxNutrient = this.getMaxNutrient();
         let meanNutrient = this.getMeanNutrient(); 
-
-        if (this.waterNutrients == minNutrient) {
+        if (this.waterNutrients < meanNutrient) {
             this.lifeSquares.filter((lsq) => lsq.type == "green").forEach((lsq) => {
                 if (this.waterNutrients >= meanNutrient) {
                     return;
@@ -103,13 +100,16 @@ class BaseOrganism {
             })
         }
 
-        if (this.waterNutrients == maxNutrient) {
+        if (this.waterNutrients > meanNutrient) {
+            var amountToStore = (this.waterNutrients - meanNutrient);
+            var amountStored = 0;
             this.lifeSquares.filter((lsq) => lsq.type == "green").forEach((lsq) => {
-                if (this.waterNutrients <= meanNutrient) {
+                if (amountStored >= amountToStore) {
                     return;
                 }
-                this.waterNutrients -= lsq.storeWater(this.waterNutrients);
+                amountStored += lsq.storeWater(amountToStore - amountStored);
             })
+            this.waterNutrients -= amountStored;
         }
     }
 
@@ -302,16 +302,16 @@ class BaseOrganism {
         let meanNutrient = this.getMeanNutrient();
 
         if (this.airNutrients == minNutrient) {
-            this.currentEnergy -= this.growNewPlant();
+            this.currentEnergy -= (this.currentEnergy / 10) * this.growNewPlant();
             return;
         }
 
         if (this.dirtNutrients == minNutrient && this.waterNutrients < meanNutrient * 1.1) {
-            this.currentEnergy -= this.growDirtRoot();
+            this.currentEnergy -= (this.currentEnergy / 10) * this.growDirtRoot();
         }
 
         if (this.waterNutrients == minNutrient && this.dirtNutrients < meanNutrient * 1.1) {
-            this.currentEnergy -= this.growWaterRoot();
+            this.currentEnergy -= (this.currentEnergy / 10) * this.growWaterRoot();
         }
     }
 

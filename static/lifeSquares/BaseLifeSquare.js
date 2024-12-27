@@ -26,8 +26,8 @@ class BaseLifeSquare {
         this.dirtNutrients = 0;
 
         this.storedWater = 0;
-        this.storedWaterMax = 0.5;
-        this.storedWaterTransferRate = 0.5;
+        this.storedWaterMax = 5;
+        this.storedWaterTransferRate = 1;
 
         this.airCoef = 1;
         this.waterCoef = 1;
@@ -79,7 +79,9 @@ class BaseLifeSquare {
     }
 
     retrieveWater() {
-        return Math.min(this.storedWaterTransferRate, this.storedWater);
+        var amountToRetrieve = Math.min(this.storedWaterTransferRate, this.storedWater);
+        this.storedWater -= amountToRetrieve;
+        return amountToRetrieve;
     }
 
     getCost() {
@@ -152,7 +154,7 @@ class BaseLifeSquare {
         this.healthIndicated = 0;
         this.energyIndicated = 0;
         this.lifetimeIndicated = 0;
-        
+
         this.waterIndicated = 0;
         this.airIndicated = 0;
         this.dirtIndicated = 0;
