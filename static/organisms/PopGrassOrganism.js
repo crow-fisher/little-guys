@@ -24,8 +24,9 @@ class PopGrassOrganism extends BaseOrganism {
 
         this.throttleInterval = 2000;
 
-        this.reproductionEnergy = 1600;
-        this.reproductionEnergyUnit = 800;
+        this.airCoef = 1;
+        this.dirtCoef = 1;
+        this.waterCoef = 0.5;
 
         this.maximumLifeSquaresOfType = {
             "green": 20,

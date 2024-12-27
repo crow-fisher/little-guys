@@ -28,14 +28,14 @@ class LilyPadOrganism extends BaseOrganism {
 
         this.throttleInterval = 1000;
 
-        this.reproductionEnergy = 800;
-        this.reproductionEnergyUnit = 300;
-
         this.maxLifeTime = 1000 * 50;
 
         this.plantLastGrown = getCurTime();
         this.waterLastGrown = getCurTime();
         this.rootLastGrown = getCurTime();
+
+        this.reproductionEnergy /= 4;
+        this.reproductionEnergyUnit /= 4;
 
         this.maximumLifeSquaresOfType = {
             "green": 20,

@@ -30,15 +30,14 @@ class CactusOrganism extends BaseOrganism {
         this.throttleInterval = 1000;
 
         this.maxLifeTime = 1000 * 80 * 1;
-        this.reproductionEnergy = 800;
-        this.reproductionEnergyUnit = 100;
+
         this.plantLastGrown = getCurTime();
         this.waterLastGrown = getCurTime();
         this.rootLastGrown = getCurTime();
 
-        this.airCoef = 1;
-        this.dirtCoef = 8;
-        this.waterCoef = 4;
+        this.airCoef = 3.5;
+        this.dirtCoef = 2.5;
+        this.waterCoef = 8.5;
 
         this.maximumLifeSquaresOfType = {
             "green": 100,

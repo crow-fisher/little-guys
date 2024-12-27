@@ -17,9 +17,9 @@ class BaseLifeSquare {
         this.type = "base";
         this.colorBase = "#1D263B";
 
-        this.maxAirDt = 0.1;
-        this.maxWaterDt = 0.05;
-        this.maxDirtDt = 0.05;
+        this.maxAirDt = 0.005;
+        this.maxWaterDt = 0.005;
+        this.maxDirtDt = 0.005;
 
         this.airNutrients = 0;
         this.waterNutrients = 0;

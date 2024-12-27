@@ -42,8 +42,8 @@ class BaseOrganism {
 
         // life cycle properties
         this.maxLifeTime = 1000 * 60 * 2;
-        this.reproductionEnergy = 1500;
-        this.reproductionEnergyUnit = 1000;
+        this.reproductionEnergy = 100;
+        this.reproductionEnergyUnit = 50;
         this.maximumLifeSquaresOfType = {}
         this.lifeSquaresCountByType = {};
         this.spawnedEntityId = getNextEntitySpawnId();
@@ -136,6 +136,7 @@ class BaseOrganism {
 
         if (minNutrient < (meanNutrient / 2) || maxNutrient > (meanNutrient * 1.5)) {
             this.currentHealth -= this.perTickDamage;
+            console.log("Lost health: min: ", minNutrient, this.airNutrients, this.dirtNutrients, this.waterNutrients);
             this.growAndDecay();
         }
 
@@ -294,7 +295,9 @@ class BaseOrganism {
     }
 
     getEnergyConversionEfficiency() {
-        return ((this.currentHealth + this.maxHealth) / 2) / this.maxHealth;
+        return (
+            ((this.currentHealth + this.maxHealth) / 2) / this.maxHealth
+        ) / (this.airCoef * this.dirtCoef * this.waterCoef);
     }
         
     growAndDecay() {

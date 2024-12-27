@@ -18,12 +18,14 @@ import { SeedSquare } from "./squares/SeedSquare.js";
 import { Law } from "./Law.js";
 import { AquiferSquare } from "./squares/RainSquare.js";
 import { GravelSquare } from "./squares/GravelSquare.js";
+import { SandSquare } from "./squares/SandSquare.js";
 
 
 var ProtoMap = {
     "BaseSquare": BaseSquare.prototype,
     "DirtSquare": DirtSquare.prototype,
     "RockSquare": RockSquare.prototype,
+    "SandSquare": SandSquare.prototype,
     "PlantSquare": PlantSquare.prototype,
     "DrainSquare": DrainSquare.prototype,
     "WaterDistributionSquare": WaterDistributionSquare.prototype,
