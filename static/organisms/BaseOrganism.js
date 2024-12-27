@@ -57,7 +57,7 @@ class BaseOrganism {
         var currentDirtNumSquares = this.dirtNutrients / this.getMeanNutrient() * this.lifeSquares.length;
 
         this.setIndicatorOnSquares(currentHealthNumSquares, (sq, amount) => sq.healthIndicated = amount);
-        this.setIndicatorOnSquares(currentEnergyNumSquares, (sq, amount) => sq.energyIndicated = amount);
+        this.setIndicatorOnSquares(currentEnergyNumSquares, (sq, amount) => sq.energyIndicated += amount * (1 - sq.energyIndicated) / 2);
         this.setIndicatorOnSquares(currentLifetimeNumSquares, (sq, amount) => sq.lifetimeIndicated = amount);
         
         this.setIndicatorOnSquares(currentAirNumSquares, (sq, amount) => sq.airIndicated += (sq.airIndicated > 0 ? -amount : amount));
@@ -126,21 +126,15 @@ class BaseOrganism {
         if (this.getLifeCyclePercentage() < 0.05) {
             return;
         }
-        let meanNutrient = this.airNutrients + this.dirtNutrients + this.waterNutrients;
-        let airNutrientNormalized = this.airNutrients / meanNutrient;
-        let dirtNutrientNormalized = this.dirtNutrients / meanNutrient;
-        let waterNutrientNormalized = this.waterNutrients / meanNutrient;
+        let minNutrient = this.getMinNutrient();
+        let meanNutrient = this.getMeanNutrient();
+        let maxNutrient = this.getMaxNutrient();
 
-        let nutrientVariance = (1 - airNutrientNormalized) ** 2 + (1 - dirtNutrientNormalized) ** 2 + (1 - waterNutrientNormalized) ** 2;
-        let nutrientStdDev = nutrientVariance ** 0.5; 
-
-        if (nutrientStdDev > this.nutrientDiffTolerance) {
+        if (minNutrient < (meanNutrient / 2) || maxNutrient > (meanNutrient * 1.5)) {
             this.currentHealth -= this.perTickDamage;
             this.growAndDecay();
         }
-        if (nutrientStdDev < this.nutrientDiffRegainHealth) {
-            this.currentHealth += this.perTickDamage;
-        }
+
         if (this.currentHealth < 0) {
             this.destroy();
         }
@@ -222,7 +216,9 @@ class BaseOrganism {
     spawnSeed() {
         var seedSquare = this.getSeedSquare();
         if (seedSquare != null) {
-            seedSquare.speedX = Math.floor(randNumber(-3, 3));
+            while (seedSquare.speedX == 0) {
+                seedSquare.speedX = Math.floor(randNumber(-3, 3));
+            }
             seedSquare.speedY = Math.floor(randNumber(-3, -1));
             return true;
         } else {
@@ -231,7 +227,6 @@ class BaseOrganism {
     }
 
     getSeedSquare() {
-        return null; // should be a SeedSquare with a contained PopGrassSeedOrganism or similar
     }
 
     getCountOfAssociatedSquaresOfProto(proto) {
@@ -297,6 +292,28 @@ class BaseOrganism {
     getEnergyConversionEfficiency() {
         return ((this.currentHealth + this.maxHealth) / 2) / this.maxHealth;
     }
+        
+    growAndDecay() {
+        // make a decision on how to grow based on which of our needs we need the most
+        if (this.currentEnergy < 0) {
+            return;
+        }
+        let minNutrient = this.getMinNutrient();
+        let meanNutrient = this.getMeanNutrient();
+
+        if (this.airNutrients == minNutrient) {
+            this.currentEnergy -= this.growNewPlant();
+            return;
+        }
+
+        if (this.dirtNutrients == minNutrient && this.waterNutrients < meanNutrient * 1.1) {
+            this.currentEnergy -= this.growDirtRoot();
+        }
+
+        if (this.waterNutrients == minNutrient && this.dirtNutrients < meanNutrient * 1.1) {
+            this.currentEnergy -= this.growWaterRoot();
+        }
+    }
 
     postTick() {
         this.lifeSquares.forEach((lifeSquare) => {
@@ -314,6 +331,11 @@ class BaseOrganism {
         var lifeCyclePercentage = this.getLifeCyclePercentage();
         if (lifeCyclePercentage > 1) {
             this.destroy();
+        }
+
+        if (lifeCyclePercentage < 0.6) {
+            this.growAndDecay();
+            return;
         }
 
         var currentEnergyPercentage = this.getCurrentEnergyFrac();
@@ -335,7 +357,6 @@ class BaseOrganism {
         }
     }
 
-    growAndDecay() {}
 }
 
 export {BaseOrganism}

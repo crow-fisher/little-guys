@@ -22,7 +22,7 @@ class PopGrassOrganism extends BaseOrganism {
         this.proto = "PopGrassOrganism";
         this.type = "plant";
 
-        this.throttleInterval = 300;
+        this.throttleInterval = 2000;
 
         this.reproductionEnergy = 1600;
         this.reproductionEnergyUnit = 800;
@@ -98,27 +98,6 @@ class PopGrassOrganism extends BaseOrganism {
             .filter((sq) => sq.type == "green")).sort((a, b) => a.posY - b.posY)[0];
     }
     
-    growAndDecay() {
-        // make a decision on how to grow based on which of our needs we need the most
-        
-        if (this.currentEnergy < 0) {
-            return;
-        }
-
-        let meanNutrient = this.getMeanNutrient();
-
-        if (this.airNutrients < meanNutrient) {
-            this.currentEnergy -= this.growNewPlant();
-        }
-
-        if (this.dirtNutrients < this.waterNutrients && this.waterNutrients < meanNutrient) {
-            this.currentEnergy -= this.growDirtRoot();
-        }
-
-        if (this.waterNutrients < this.dirtNutrients && this.dirtNutrients < meanNutrient) {
-            this.currentEnergy -= this.growWaterRoot();
-        }
-    }
 
     getExteriorRoots() {
         return this.lifeSquares

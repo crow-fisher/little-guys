@@ -47,7 +47,7 @@ var airNutrientsPerEmptyNeighbor = {
 
 var dirtNutrientValuePerDirectNeighbor = {
     name: "dirtNutrientValuePerDirectNeighbor",
-    value: 0.04
+    value: 0.0005
 };
 
 var noNutrientValuePerDirectNeighbor = {

@@ -111,28 +111,6 @@ class CactusOrganism extends BaseOrganism {
         return Array.from(this.lifeSquares
             .filter((sq) => sq.type == "green")).sort((a, b) => a.posY - b.posY)[0];
     }
-    
-    growAndDecay() {
-        let minNutrient = Math.min(Math.min(this.airNutrients, this.dirtNutrients), this.waterNutrients);
-        if (this.currentEnergy < 0) {
-            return;
-        }
-
-        if (this.airNutrients == minNutrient) {
-            this.currentEnergy -= this.growNewPlant();
-            return;
-        }
-
-        if (this.dirtNutrients == minNutrient) {
-            this.currentEnergy -= this.growDirtRoot();
-            return;
-        }
-
-        if (this.waterNutrients == minNutrient) {
-            this.currentEnergy -= this.growWaterRoot();
-            return;
-        }
-    }
 
     getExteriorRoots() {
         return this.lifeSquares

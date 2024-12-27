@@ -18,8 +18,6 @@ class LilyPadWaterGreenLifeSquare extends BaseLifeSquare {
         this.type = "green";
         this.width = .99;
 
-        this.dirtCoef = .5
-
         this.baseColor = "#ADFF2F";
         this.baseColorAmount = dirt_baseColorAmount;
         this.darkColor = "#A7FC00";

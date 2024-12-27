@@ -149,6 +149,10 @@ class BaseLifeSquare {
         this.waterNutrients = 0;
         this.dirtNutrients = 0;
 
+        this.healthIndicated = 0;
+        this.energyIndicated = 0;
+        this.lifetimeIndicated = 0;
+        
         this.waterIndicated = 0;
         this.airIndicated = 0;
         this.dirtIndicated = 0;
@@ -235,23 +239,10 @@ class BaseLifeSquare {
                     val_stdev = 2;
                     break;
                 case "organismNutrients":
-                    // var baseColorDirt = {r: this.dirtIndicated * 255, g: 0, b: 0};
-                    // var baseColorWater = {r: 0, g: 0, b: 200};
-                    // var baseColorAir = {r: 0, g: 200, b: 0};
-
-                    // var processedColorDirt = this.processColorStdev(1, this.dirtIndicated, 2, baseColorDirt);
-                    // var processedColorWater = this.processColorStdev(1, this.waterIndicated, 2, baseColorWater);
-                    // var processedColorAir = this.processColorStdev(1, this.airIndicated, 2, baseColorAir);
-
-                    // color = {
-                    //     r: (processedColorDirt.r + processedColorWater.r + processedColorAir.r) / 3,
-                    //     g: (processedColorDirt.g + processedColorWater.g + processedColorAir.g) / 3,
-                    //     b: (processedColorDirt.b + processedColorWater.b + processedColorAir.b) / 3
-                    // }
                     color = {
-                        r: 50 + this.dirtIndicated * 180,
-                        g: 50 + this.airIndicated * 180,
-                        b: 50 + this.waterIndicated * 180
+                        r: 50 + (1 - this.dirtIndicated) * 180,
+                        g: 50 + (1 - this.airIndicated) * 180,
+                        b: 50 + (1 - this.waterIndicated) * 180
                     }
                     MAIN_CONTEXT.fillStyle = rgbToHex(color.r, color.g, color.b);
                     MAIN_CONTEXT.fillRect(

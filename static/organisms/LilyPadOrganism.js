@@ -115,30 +115,6 @@ class LilyPadOrganism extends BaseOrganism {
             .filter((sq) => sq.type == "green")).sort((a, b) => a.posY - b.posY)[0];
     }
 
-    growAndDecay() {
-        // make a decision on how to grow based on which of our needs we need the most
-
-        let minNutrient = Math.min(Math.min(this.airNutrients, this.dirtNutrients), this.waterNutrients);
-        if (this.currentEnergy < 0) {
-            return;
-        }
-
-        if (this.airNutrients == minNutrient) {
-            this.currentEnergy -= this.growNewPlant();
-            return;
-        }
-
-        if (this.dirtNutrients == minNutrient) {
-            this.currentEnergy -= this.growDirtRoot();
-            return;
-        }
-
-        if (this.waterNutrients == minNutrient) {
-            this.currentEnergy -= this.growWaterRoot();
-            return;
-        }
-    }
-
     getExteriorRoots() {
         return this.lifeSquares
             .filter((lsq) => lsq.type == "root")
