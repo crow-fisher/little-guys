@@ -2,7 +2,6 @@
 
 <body>
     <canvas tabindex='1' id="main"></canvas>
-    <canvas tabindex='2' hidden id="organismMetadataViewer"></canvas>
     <p>little guys</p>
     <select id="materialSelect">
         <option value="dirt,dirt,dirt,sand">dirt</option>
@@ -25,6 +24,8 @@
     <select id="viewmodeSelect">
         <option value="normal">normal</option>
         <option value="watersaturation">water saturation</option>
+        <option value="blockhealthliquid">water density</option>
+
         <option value="organismStructure">organism structures</option>
         <option value="organismSquareNutrients">nutrients by square</option>
         <option value="organismSquareDirt">organism square dirt nutrients</option>
@@ -42,7 +43,7 @@
         <option value="organismLifetime"> organism lifetime</option>
 
     </select>
-    <input type="number" id="timeScale">time scale</input>
+    <input type="number" id="timeScale" value=1>time scale</input>
     <button type="button" id="loadSlotA">load slot A</button>
     <button type="button" id="saveSlotA">save slot A</button>
     <button type="button" id="loadSlotB">load slot B</button>

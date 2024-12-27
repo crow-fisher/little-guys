@@ -44,7 +44,8 @@ export class BaseSquare {
         this.spawnedEntityId = 0;
         // block properties - overridden by block type
         this.physicsEnabled = true;
-        this.blockHealth = 1; // when reaches zero, delete
+        this.blockHealthMax = 1;
+        this.blockHealth = this.blockHealthMax; // when reaches zero, delete
         // water flow parameters
         this.waterContainment = 0;
         this.waterContainmentMax = base_waterContainmentMax;
@@ -58,7 +59,7 @@ export class BaseSquare {
         this.group = -1;
         this.organic = false;
         this.collision = true;
-        this.visible = true; 
+        this.visible = true;
         this.darken = true;
         this.randoms = [];
         this.linkedOrganism = null;
@@ -76,8 +77,11 @@ export class BaseSquare {
         this.frameFrozen = false;
 
         // for special view modes
-        this.waterSaturation_color1 = "#9bafd9";
-        this.waterSaturation_color2 = "#103783";
+        this.waterSaturation_color1 = "#103783";
+        this.waterSaturation_color2 = "#9bafd9";
+
+        this.blockHealth_color1 = "#45caff";
+        this.blockHealth_color2 = "#ff1b6b";
 
     };
     destroy() {
@@ -119,6 +123,13 @@ export class BaseSquare {
         else if (selectedViewMode.startsWith("organism")) {
             this.renderAsGrey();
         }
+        else if (selectedViewMode == "blockhealthliquid") {
+            if (this.solid) {
+                this.renderAsGrey();
+            } else {
+                this.renderBlockHealth();
+            }
+        }
     };
 
     renderAsGrey() {
@@ -131,8 +142,12 @@ export class BaseSquare {
         );
     }
 
+    renderBlockHealth() {
+        this.renderSpecialViewModeLinear(this.waterSaturation_color1, this.waterSaturation_color2, this.blockHealth, this.blockHealthMax);
+    }
+
     renderWaterSaturation() {
-        this.renderSpecialViewModeLinear(this.waterSaturation_color1, this.waterSaturation_color2, this.waterContainment, this.waterContainmentMax.value);
+        this.renderSpecialViewModeLinear(this.blockHealth_color1, this.blockHealth_color2, this.waterContainment, this.waterContainmentMax.value);
     }
 
     renderSpecialViewModeLinear(color1, color2, value, valueMax) {
@@ -173,7 +188,7 @@ export class BaseSquare {
         if (this.cachedRgba != null) {
             MAIN_CONTEXT.fillStyle = this.cachedRgba;
         } else {
-            var res = this.getStaticRand(1) * (parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value) + parseFloat(this.baseColorAmount.value)); 
+            var res = this.getStaticRand(1) * (parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value) + parseFloat(this.baseColorAmount.value));
             var primaryColor = null;
             var altColor1 = null;
             var altColor2 = null;
@@ -240,7 +255,7 @@ export class BaseSquare {
             return darkeningColorCache[waterColor255];
         }
         var darkeningStrength = (darkVal / darkValMax) * b_sq_darkeningStrength.value;
-        var res = "rgba(67,58,63," + darkeningStrength +")";
+        var res = "rgba(67,58,63," + darkeningStrength + ")";
 
         darkeningColorCache[waterColor255] = res;
 
@@ -340,7 +355,7 @@ export class BaseSquare {
         if (!this.physicsEnabled || this.linkedOrganismSquares.some((sq) => sq.type == "root")) {
             return false;
         }
-        
+
         if (this.frameFrozen) {
             return;
         }
@@ -361,12 +376,12 @@ export class BaseSquare {
                         (this.organic && sq.organic) &&
                         (this.spawnedEntityId == sq.spawnedEntityId)
                     )))) {
-                        finalYPos = this.posY + (i - 1);
-                        finalXPos = this.posX + jSignedMinusOne;
-                        this.speedX = 0;
-                        this.speedY = 0;
-                        bonked = true;
-                    }
+                    finalYPos = this.posY + (i - 1);
+                    finalXPos = this.posX + jSignedMinusOne;
+                    this.speedX = 0;
+                    this.speedY = 0;
+                    bonked = true;
+                }
                 if (bonked)
                     break;
             } if (bonked)
@@ -386,15 +401,15 @@ export class BaseSquare {
 
     waterSinkPhysics() {
         getSquares(this.posX, this.posY + 1)
-        .filter((sq) => sq.proto == "WaterSquare")
-        .forEach((sq) => {
-            if (Math.random() > this.waterSinkRate) {
-                removeSquare(sq);
-                sq.posY -= 1;
-                this.updatePosition(this.posX, this.posY + 1);
-                addSquare(sq);
-            }
-        });
+            .filter((sq) => sq.proto == "WaterSquare")
+            .forEach((sq) => {
+                if (Math.random() > this.waterSinkRate) {
+                    removeSquare(sq);
+                    sq.posY -= 1;
+                    this.updatePosition(this.posX, this.posY + 1);
+                    addSquare(sq);
+                }
+            });
     }
 
     /* Called before physics(), with blocks in strict order from top left to bottom right. */
@@ -449,13 +464,13 @@ export class BaseSquare {
                 * 1
             * if water is flowing to the side, tend towards equalization
             * if water is flowing up, aim for a lower fraction similar to above (eg, mult of 0.5)
-        */ 
+        */
 
 
         var targetWaterDiff = 0.5; // value between 0 and 1. 
-            // if 0.5, try to balance water equally between this and otherBlock.
-            // if 0, put all water into this. 
-            // if 1, put all water into otherBlock.  
+        // if 0.5, try to balance water equally between this and otherBlock.
+        // if 0, put all water into this. 
+        // if 1, put all water into otherBlock.  
 
         if (heightDiff > 0) {
             targetWaterDiff = 0.45;
@@ -469,7 +484,7 @@ export class BaseSquare {
             return 0;
         }
         var maxAmountToPercolateFromBlock = Math.min(this.waterContainmentMax.value - this.waterContainment, Math.min(this.waterContainmentTransferRate.value, otherBlock.waterContainmentTransferRate.value));
-         
+
         var amountToPercolate = Math.min(moistureDiff, maxAmountToPercolateFromBlock);
         this.waterContainment += amountToPercolate;
         return amountToPercolate;
@@ -481,13 +496,14 @@ export class BaseSquare {
             return 0;
         }
         getDirectNeighbors(this.posX, this.posY).filter((sq) => sq.solid).forEach((sq) => this.waterContainment -= sq.percolateFromBlock(this));
-        this.doBlockOutflow(); 
+        this.doBlockOutflow();
     }
 
     doBlockOutflow() {
-        if (this.waterContainment < this.waterContainmentTransferRate.value * 2) {
+        if (this.waterContainment < this.waterContainmentMax.value / 2) {
             return;
         }
+
         for (let side = -1; side <= 1; side += 2) {
             getSquares(this.posX + side, this.posY).filter((sq) => sq.proto == "WaterSquare")
                 .forEach((sq) => {
@@ -498,14 +514,16 @@ export class BaseSquare {
             if (getSquares(this.posX + side, this.posY).some((sq) => sq.collision)) {
                 continue;
             }
-            for (let i = 2; i < (this.waterContainment / this.waterContainmentTransferRate.value); i++) {
-                if (Math.random() > 0.99) {
-                    var sq = addSquareByName(this.posX + side, this.posY, "water");
-                    if (sq) {
-                        sq.blockHealth = this.waterContainmentTransferRate.value;
-                        this.waterContainment -= sq.blockHealth;
-                    }
-                }
+            var newWater = addSquareByName(this.posX + side, this.posY, "water");
+            if (newWater) {
+                newWater.blockHealth = this.waterContainmentTransferRate.value;
+                this.waterContainment -= this.waterContainmentTransferRate.value;
+                getNeighbors(this.posX, this.posY)
+                    .filter((sq) => sq.group == this.group)
+                    .forEach((sq) => {
+                    newWater.blockHealth += sq.waterContainmentTransferRate.value;
+                    sq.waterContainment -= sq.waterContainmentTransferRate.value;
+                });
             }
         }
     }
@@ -533,7 +551,7 @@ export class BaseSquare {
         }
         var ret = Math.min(rootRequestedWater, (this.waterContainment / 1000));
         this.waterContainment -= ret;
-        return ret; 
+        return ret;
     }
 }
 

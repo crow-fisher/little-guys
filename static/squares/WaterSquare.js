@@ -36,8 +36,8 @@ class WaterSquare extends BaseSquare {
         this.accentColor = "#85B09A";
         this.opacity = 0.5;
 
-        this.maxBlockHealth = 40;
-        this.blockHealth = this.maxBlockHealth;
+        this.blockHealthMax = 40;
+        this.blockHealth = this.blockHealthMax;
     }
 
     reset() {
@@ -165,24 +165,21 @@ class WaterSquare extends BaseSquare {
         }
     }
     doNeighborPercolation() {
-        getDirectNeighbors(this.posX, this.posY)
+        getNeighbors(this.posX, this.posY)
             .filter((sq) => sq.collision)
-            .forEach((sq) => {
-                if (sq.solid) {
-                    this.blockHealth -= sq.percolateFromWater(this);
-                } else {
-                    if (sq.blockHealth <= this.blockHealth) {
-                        var diff = this.maxBlockHealth - this.blockHealth;
-                        if (diff > sq.blockHealth) {
-                            this.blockHealth += sq.blockHealth;
-                            removeSquare(sq);
-                        } else {
-                            this.blockHealth += diff;
-                            sq.blockHealth -= diff;
-                        }
-                    }
-                }
-            });
+            .filter((sq) => sq.solid)
+            .forEach((sq) => this.blockHealth -= sq.percolateFromWater(this));
+        
+        if (this.posX % 2 == 0 && this.posY % 2 == 0) {
+            getNeighbors(this.posX, this.posY)
+                .filter((sq) => sq.group == this.group)
+                .forEach((sq) => {
+                    var start = this.blockHealth;
+                    var amountToAdd = Math.min(this.blockHealthMax - start, sq.blockHealth);
+                    this.blockHealth += amountToAdd;
+                    sq.blockHealth <= amountToAdd;
+                });
+        }
     }
 }
 

@@ -12,7 +12,6 @@ import { DrainSquare } from "./squares/DrainSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
 import { PopGrassSeedOrganism } from "./organisms/PopGrassSeedOrganism.js";
 import { addNewOrganism, addOrganism, iterateOnOrganisms } from "./organisms/_orgOperations.js";
-import { organismMetadataViewerMain } from "./organismMetadataViewer.js";
 
 import { updateTime, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, ALL_SQUARES, getNextEntitySpawnId } from "./globals.js";
 
@@ -27,7 +26,7 @@ import { PlantSquare } from "./squares/PlantSquare.js";
 import { randNumber } from "./common.js";
 
 var materialSelect = document.getElementById("materialSelect");
-var fastTerrain = document.getElementById("fastTerrain");
+var timeScale = document.getElementById("timeScale");
 var viewmodeSelect = document.getElementById("viewmodeSelect");
 
 var loadSlotA = document.getElementById("loadSlotA");
@@ -41,6 +40,7 @@ const BASE_SIZE = 4;
 
 materialSelect.addEventListener('change', (e) => selectedMaterial = e.target.value);
 viewmodeSelect.addEventListener('change', (e) => selectedViewMode = e.target.value);
+timeScale.addEventListener("change", (e) => TIME_SCALE = e.target.value)
 
 var mouseDown = 0;
 var organismAddedThisClick = false;
@@ -193,12 +193,14 @@ function main() {
     if (Date.now() - lastTick > MILLIS_PER_TICK) {
         MAIN_CONTEXT.clearRect(0, 0, CANVAS_SQUARES_X * BASE_SIZE, CANVAS_SQUARES_Y * BASE_SIZE);
         doClickAdd();
-        reset();
-        physicsBefore();
-        physics();
-        doWaterFlow();
-        purge();
-        processOrganisms();
+        for (let i = 0; i < TIME_SCALE; i++) {
+            reset();
+            physicsBefore();
+            physics();
+            doWaterFlow();
+            purge();
+            processOrganisms();
+        }
         renderOrganisms();
         render();
         lastTick = Date.now();
@@ -206,7 +208,6 @@ function main() {
     updateTime();
     setTimeout(main, 5);
     doMouseHover();
-    organismMetadataViewerMain();
 }
 
 
@@ -227,34 +228,36 @@ function doMouseHover() {
     getOrganismSquaresAtSquare(Math.floor(px), Math.floor(py)).forEach((orgSq) => orgSq.linkedOrganism.hovered = true);
 }
 
-function addSquareByName(posX, posY, nameIn) {
-
+function addSquareByNameCSV(posX, posY, nameIn) {
     var nameSplit = nameIn.split(",");
-    nameSplit.forEach((namePart) => {
-        var name = nameSplit[randNumber(0, nameSplit.length - 1)]
-        switch (name) {
-            case "rock":
-                return addSquareOverride(new RockSquare(posX, posY));
-            case "dirt":
-                return addSquare(new DirtSquare(posX, posY));
-            case "water":
-                return addSquare(new WaterSquare(posX, posY));
-            case "rain":
-                return addSquareOverride(new RainSquare(posX, posY));
-            case "heavy rain":
-                return addSquareOverride(new HeavyRainSquare(posX, posY));
-            case "water distribution":
-                return addSquareOverride(new WaterDistributionSquare(posX, posY));
-            case "drain":
-                return addSquareOverride(new DrainSquare(posX, posY));
-            case "aquifer":
-                return addSquare(new AquiferSquare(posX, posY));
-            case "gravel":
-                return addSquare(new GravelSquare(posX, posY));
-            case "sand":
-                return addSquare(new SandSquare(posX, posY));
-        }
-    })
+    nameSplit.forEach((unused) => 
+        addSquareByName(posX, posY, nameSplit[randNumber(0, nameSplit.length - 1)])
+    );
+}
+
+function addSquareByName(posX, posY, name) {
+    switch (name) {
+        case "rock":
+            return addSquareOverride(new RockSquare(posX, posY));
+        case "dirt":
+            return addSquare(new DirtSquare(posX, posY));
+        case "water":
+            return addSquare(new WaterSquare(posX, posY));
+        case "rain":
+            return addSquareOverride(new RainSquare(posX, posY));
+        case "heavy rain":
+            return addSquareOverride(new HeavyRainSquare(posX, posY));
+        case "water distribution":
+            return addSquareOverride(new WaterDistributionSquare(posX, posY));
+        case "drain":
+            return addSquareOverride(new DrainSquare(posX, posY));
+        case "aquifer":
+            return addSquare(new AquiferSquare(posX, posY));
+        case "gravel":
+            return addSquare(new GravelSquare(posX, posY));
+        case "sand":
+            return addSquare(new SandSquare(posX, posY));
+    };
 }
 
 function doClickAdd() {
@@ -290,7 +293,7 @@ function doClickAdd() {
                     doErase(px, curY);
                     break;
                 } else {
-                    addSquareByName(px, curY, selectedMaterial);
+                    addSquareByNameCSV(px, curY, selectedMaterial);
                     switch (selectedMaterial) {
                         // organism sections
                         // in this case we only want to add one per click
@@ -369,4 +372,4 @@ window.onload = function () {
     // });
 }
 
-export { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, selectedViewMode, addSquareByName }
+export { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, selectedViewMode, addSquareByName, addSquareByNameCSV }
