@@ -67,9 +67,6 @@ class WaterSquare extends BaseSquare {
         this.renderAsGrey();
     }
 
-
-
-
     calculateDarkeningColor() {
         return this.calculateDarkeningColorImpl(this.currentPressureIndirect, getGlobalStatistic("pressure") + 1);
     }
@@ -77,6 +74,7 @@ class WaterSquare extends BaseSquare {
     physicsBefore() {
         super.physicsBefore();
         this.calculateDirectPressure();
+        this.checkAdhesion();
     }
 
     physicsBefore2() {
@@ -120,7 +118,6 @@ class WaterSquare extends BaseSquare {
             .filter((sq) => sq.group == this.group)
             .filter((sq) => sq.currentPressureDirect > 0)
             .forEach((sq) => this.currentPressureDirect = sq.currentPressureDirect + 1);
-
     }
     calculateIndirectPressure() {
         if (this.currentPressureIndirect != -1) {
@@ -146,6 +143,18 @@ class WaterSquare extends BaseSquare {
         })
     }
 
+    checkAdhesion() {
+        for (let side = -1; side <= 1; side += 2) {
+            if (getSquares(this.posX + side, this.posY).some((sq) => sq.collision && sq.solid)) {
+                var shouldFall = false;
+                this.frameFrozen = true;
+                for (let i = 0; i < this.currentPressureDirect; i++) {
+                    shouldFall |= Math.random() > 0.9999;
+                }
+                this.frameFrozen = !shouldFall;
+            }
+        }
+    }
     doNeighborPercolation() {
         getDirectNeighbors(this.posX, this.posY)
             .filter((sq) => sq.collision)

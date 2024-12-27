@@ -73,6 +73,7 @@ export class BaseSquare {
         this.opacity = 1;
         this.waterSinkRate = 0.8;
         this.cachedRgba = null;
+        this.frameFrozen = true;
 
         // for special view modes
         this.waterSaturation_color1 = "#9bafd9";
@@ -103,6 +104,7 @@ export class BaseSquare {
         }
         this.group = -1;
         this.speedY += 1;
+        this.frameFrozen = false;
     }
     render() {
         if (!this.visible) {
@@ -338,8 +340,13 @@ export class BaseSquare {
         if (!this.physicsEnabled || this.linkedOrganismSquares.some((sq) => sq.type == "root")) {
             return false;
         }
+        
+        if (this.frameFrozen) {
+            return;
+        }
 
         this.waterSinkPhysics();
+
 
         var finalXPos = this.posX;
         var finalYPos = this.posY;
@@ -482,14 +489,22 @@ export class BaseSquare {
             return;
         }
         for (let side = -1; side <= 1; side += 2) {
+            getSquares(this.posX + side, this.posY).filter((sq) => sq.proto == "WaterSquare")
+                .forEach((sq) => {
+                    sq.frameFrozen = false;
+                    sq.physics();
+                });
+
             if (getSquares(this.posX + side, this.posY).some((sq) => sq.collision)) {
                 continue;
             }
-            if (Math.random() > 0.9) {
-                var sq = addSquareByName(this.posX + side, this.posY, "water");
-                if (sq) {
-                    sq.blockHealth = this.waterContainmentTransferRate.value; 
-                    this.waterContainment -= sq.blockHealth;
+            for (let i = 2; i < (this.waterContainment / this.waterContainmentTransferRate.value); i++) {
+                if (Math.random() > 0.99) {
+                    var sq = addSquareByName(this.posX + side, this.posY, "water");
+                    if (sq) {
+                        sq.blockHealth = this.waterContainmentTransferRate.value;
+                        this.waterContainment -= sq.blockHealth;
+                    }
                 }
             }
         }
