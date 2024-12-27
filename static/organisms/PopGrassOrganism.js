@@ -22,16 +22,14 @@ class PopGrassOrganism extends BaseOrganism {
         this.proto = "PopGrassOrganism";
         this.type = "plant";
 
-        this.throttleInterval = 1000;
+        this.throttleInterval = 300;
 
-        this.reproductionEnergy = 800;
-        this.reproductionEnergyUnit = 200;
-
-
+        this.reproductionEnergy = 1600;
+        this.reproductionEnergyUnit = 800;
 
         this.maximumLifeSquaresOfType = {
             "green": 20,
-            "root": 20
+            "root": 80
         }
 
         this.highestGreen = null;
@@ -103,24 +101,22 @@ class PopGrassOrganism extends BaseOrganism {
     growAndDecay() {
         // make a decision on how to grow based on which of our needs we need the most
         
-        let minNutrient = Math.min(Math.min(this.airNutrients, this.dirtNutrients), this.waterNutrients);
         if (this.currentEnergy < 0) {
             return;
         }
 
-        if (this.airNutrients == minNutrient) {
+        let meanNutrient = this.getMeanNutrient();
+
+        if (this.airNutrients < meanNutrient) {
             this.currentEnergy -= this.growNewPlant();
-            return;
         }
 
-        if (this.dirtNutrients == minNutrient) {
+        if (this.dirtNutrients < this.waterNutrients && this.waterNutrients < meanNutrient) {
             this.currentEnergy -= this.growDirtRoot();
-            return;
         }
 
-        if (this.waterNutrients == minNutrient) {
+        if (this.waterNutrients < this.dirtNutrients && this.dirtNutrients < meanNutrient) {
             this.currentEnergy -= this.growWaterRoot();
-            return;
         }
     }
 
@@ -256,6 +252,7 @@ class PopGrassOrganism extends BaseOrganism {
     }
 
     preRender() {
+        super.preRender();
         this.highestGreen = this.getHighestGreen();
         this.lifeSquares
         .filter((sq) => sq.type == "green")

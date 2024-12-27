@@ -7,7 +7,7 @@ import { getSquares, removeOrganismSquare } from "../squares/_sqOperations.js";
 import { airNutrientsPerEmptyNeighbor } from "../config/config.js";
  
 import { selectedViewMode } from "../index.js";
-import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_GREEN, RGB_COLOR_GREY, RGB_COLOR_RED } from "../colors.js";
+import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_GREEN, RGB_COLOR_BLACK, RGB_COLOR_RED } from "../colors.js";
 
 class BaseLifeSquare {
     constructor(square, organism) {
@@ -26,7 +26,7 @@ class BaseLifeSquare {
         this.dirtNutrients = 0;
 
         this.storedWater = 0;
-        this.storedWaterMax = 2;
+        this.storedWaterMax = 0.5;
         this.storedWaterTransferRate = 0.5;
 
         this.airCoef = 1;
@@ -49,6 +49,13 @@ class BaseLifeSquare {
         this.height = 1;
         this.xOffset = 0.5;
         this.randoms = [];
+
+        this.energyIndicated = 0;
+        this.healthIndicated = 0;
+        this.lifetimeIndicated = 0;
+        this.airIndicated = 0;
+        this.waterIndicated = 0;
+        this.dirtIndicated = 0;
 
         this.cachedRgba = null;
 
@@ -141,6 +148,10 @@ class BaseLifeSquare {
         this.airNutrients = 0;
         this.waterNutrients = 0;
         this.dirtNutrients = 0;
+
+        this.waterIndicated = 0;
+        this.airIndicated = 0;
+        this.dirtIndicated = 0;
     }
 
     tick() {
@@ -153,6 +164,16 @@ class BaseLifeSquare {
         return this.randoms[randIdx];
     }
 
+    processColorStdev(val_max, val, val_stdev, color) {
+        var z = (val_max - val) / val_stdev;
+        var p = getZPercent(z);
+        return {
+            r: Math.floor(color.r * (1 - p) + 255 * (p)), 
+            g: Math.floor(color.g * (1 - p) + 255 * (p)), 
+            b: Math.floor(color.b * (1 - p) + 255 * (p))
+        }
+    }
+
     render() {
         if (selectedViewMode.startsWith("organism") && selectedViewMode != "organismStructure") {
             var color = null;
@@ -161,13 +182,7 @@ class BaseLifeSquare {
             var val_stdev;
 
             switch (selectedViewMode) {
-                case "organismHealth":
-                    color = RGB_COLOR_RED;
-                    val = this.linkedOrganism.getCurrentHealth();
-                    val_max = 1; 
-                    val_stdev = 0.5;
-                    break;
-                case "organismNutrients":
+                case "organismSquareNutrients":
                     color = {
                         r: 255 * (this.dirtNutrients / this.linkedOrganism.getMaxDirtNutrient()),
                         g: 255 * (this.airNutrients / this.linkedOrganism.getMaxAirNutrient()),
@@ -177,34 +192,97 @@ class BaseLifeSquare {
                     val_max = this.linkedOrganism.getMaxAllNutrients(); 
                     val_stdev = this.linkedOrganism.getStdevAllNutrients();
                     break;
-                case "organismDirt":
+                case "organismSquareDirt":
                     color = RGB_COLOR_BROWN;
                     val = this.dirtNutrients;
                     val_max = this.linkedOrganism.getMaxDirtNutrient();
                     val_stdev = this.linkedOrganism.getStdevDirtNutrient();
                     break;
-                case "organismWater":
+                case "organismSquareWater":
                     color = RGB_COLOR_BLUE;
                     val = this.waterNutrients;
                     val_max = this.linkedOrganism.getMaxWaterNutrient();
                     val_stdev = this.linkedOrganism.getStdevWaterNutrient();
                     break;
-                case "organismAir":
+                case "organismSquareAir":
                     color = RGB_COLOR_GREEN;
                     val = this.airNutrients;
                     val_max = this.linkedOrganism.getMaxAirNutrient();
                     val_stdev = this.linkedOrganism.getStdevAirNutrient();
+                    break;
+                case "organismSquareWaterStored":
+                    color = RGB_COLOR_BLUE;
+                    val = this.storedWater;
+                    val_max = this.storedWaterMax;
+                    val_stdev = this.storedWaterMax / 4;
+                    break;
+                case "organismHealth":
+                    color = RGB_COLOR_RED;
+                    val = this.healthIndicated; 
+                    val_max = 1;
+                    val_stdev = 2;
+                    break;
+                case "organismEnergy":
+                    color = RGB_COLOR_GREEN;
+                    val = this.energyIndicated; 
+                    val_max = 1;
+                    val_stdev = 2;
+                    break;
+                case "organismLifetime":
+                    color = RGB_COLOR_BLACK;
+                    val = this.lifetimeIndicated; 
+                    val_max = 1;
+                    val_stdev = 2;
+                    break;
+                case "organismNutrients":
+                    // var baseColorDirt = {r: this.dirtIndicated * 255, g: 0, b: 0};
+                    // var baseColorWater = {r: 0, g: 0, b: 200};
+                    // var baseColorAir = {r: 0, g: 200, b: 0};
+
+                    // var processedColorDirt = this.processColorStdev(1, this.dirtIndicated, 2, baseColorDirt);
+                    // var processedColorWater = this.processColorStdev(1, this.waterIndicated, 2, baseColorWater);
+                    // var processedColorAir = this.processColorStdev(1, this.airIndicated, 2, baseColorAir);
+
+                    // color = {
+                    //     r: (processedColorDirt.r + processedColorWater.r + processedColorAir.r) / 3,
+                    //     g: (processedColorDirt.g + processedColorWater.g + processedColorAir.g) / 3,
+                    //     b: (processedColorDirt.b + processedColorWater.b + processedColorAir.b) / 3
+                    // }
+                    color = {
+                        r: 50 + this.dirtIndicated * 180,
+                        g: 50 + this.airIndicated * 180,
+                        b: 50 + this.waterIndicated * 180
+                    }
+                    MAIN_CONTEXT.fillStyle = rgbToHex(color.r, color.g, color.b);
+                    MAIN_CONTEXT.fillRect(
+                        this.posX * BASE_SIZE,
+                        this.posY * BASE_SIZE,
+                        this.width * BASE_SIZE,
+                        this.height * BASE_SIZE
+                    );
+                    return;
+                    
+                case "organismDirt":
+                    color = RGB_COLOR_BROWN;
+                    val = this.dirtIndicated;
+                    val_max = 1;
+                    val_stdev = 2;
+                    break;
+                case "organismWater":
+                    color = RGB_COLOR_BLUE;
+                    val = this.waterIndicated;
+                    val_max = 1;
+                    val_stdev = 2;
+                    break;
+                case "organismAir":
+                    color = RGB_COLOR_GREEN;
+                    val = this.airIndicated;
+                    val_max = 1;
+                    val_stdev = 2;
+                    break;
             }
 
-
-            var z = (val_max - val) / val_stdev;
-            var p = getZPercent(z);
-
-            var colorProcessed = {
-                r: Math.floor(color.r * (1 - p) + 255 * (p)), 
-                g: Math.floor(color.g * (1 - p) + 255 * (p)), 
-                b: Math.floor(color.b * (1 - p) + 255 * (p))
-            }
+            var colorProcessed = this.processColorStdev(val_max, val, val_max, color);
 
             MAIN_CONTEXT.fillStyle = rgbToHex(colorProcessed.r, colorProcessed.g, colorProcessed.b);
             MAIN_CONTEXT.fillRect(

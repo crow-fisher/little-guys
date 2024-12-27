@@ -37,9 +37,9 @@ class BaseOrganism {
         this.rootLastGrown = getCurTime();
 
         // life cycle properties
-        this.maxLifeTime = 1000 * 20 * 1;
+        this.maxLifeTime = 1000 * 60 * 1;
         this.reproductionEnergy = 1000;
-        this.reproductionEnergyUnit = 100;
+        this.reproductionEnergyUnit = 500;
         this.maximumLifeSquaresOfType = {}
         this.lifeSquaresCountByType = {};
         this.spawnedEntityId = getNextEntitySpawnId();
@@ -47,10 +47,52 @@ class BaseOrganism {
         this.growInitialSquares();
     }
 
+    setHealthAndEnergyColorInSubsquares() {
+        var currentHealthNumSquares = Math.min(1, this.getCurrentHealth()) * this.lifeSquares.length;
+        var currentEnergyNumSquares = Math.min(1, this.getCurrentEnergyFrac()) * this.lifeSquares.length;
+        var currentLifetimeNumSquares = Math.min(1, this.getLifeCyclePercentage()) * this.lifeSquares.length;
+
+        var currentAirNumSquares = this.airNutrients / this.getMeanNutrient() * this.lifeSquares.length;
+        var currentWaterNumSquares = this.waterNutrients / this.getMeanNutrient() * this.lifeSquares.length;
+        var currentDirtNumSquares = this.dirtNutrients / this.getMeanNutrient() * this.lifeSquares.length;
+
+        this.setIndicatorOnSquares(currentHealthNumSquares, (sq, amount) => sq.healthIndicated = amount);
+        this.setIndicatorOnSquares(currentEnergyNumSquares, (sq, amount) => sq.energyIndicated = amount);
+        this.setIndicatorOnSquares(currentLifetimeNumSquares, (sq, amount) => sq.lifetimeIndicated = amount);
+        
+        this.setIndicatorOnSquares(currentAirNumSquares, (sq, amount) => sq.airIndicated += (sq.airIndicated > 0 ? -amount : amount));
+        this.setIndicatorOnSquares(currentWaterNumSquares, (sq, amount) => sq.waterIndicated += (sq.waterIndicated > 0 ? -amount : amount));
+        this.setIndicatorOnSquares(currentDirtNumSquares, (sq, amount) => sq.dirtIndicated += (sq.dirtIndicated > 0 ? -amount : amount));
+    }
+
+    setIndicatorOnSquares(amountToAdd, setter) {
+        var cidx = 0;
+        var amountAdded = 0;
+        while (cidx < amountToAdd && amountAdded < amountToAdd) {
+            var curAmountToAdd = Math.min(1, amountToAdd - amountAdded);
+            setter(this.lifeSquares[cidx % this.lifeSquares.length], curAmountToAdd)
+            amountAdded += curAmountToAdd;
+            cidx += 1;
+        }
+    }
+
+    getMaxNutrient() {
+        return Math.max(Math.max(this.airNutrients, this.dirtNutrients), this.waterNutrients);
+    }
+
+    getMinNutrient() {
+        return Math.min(Math.min(this.airNutrients, this.dirtNutrients), this.waterNutrients);
+    }
+
+    getMeanNutrient() {
+        return (this.airNutrients + this.dirtNutrients + this.waterNutrients) / 3;
+    }
+
+
     storeAndRetrieveWater() {
-        let minNutrient = Math.min(Math.min(this.airNutrients, this.dirtNutrients), this.waterNutrients);
-        let maxNutrient = Math.max(Math.max(this.airNutrients, this.dirtNutrients), this.waterNutrients);
-        let meanNutrient = (this.airNutrients + this.dirtNutrients + this.waterNutrients) / 3;
+        let minNutrient = this.getMinNutrient(); 
+        let maxNutrient = this.getMaxNutrient();
+        let meanNutrient = this.getMeanNutrient(); 
 
         if (this.waterNutrients == minNutrient) {
             this.lifeSquares.filter((lsq) => lsq.type == "green").forEach((lsq) => {
@@ -173,7 +215,9 @@ class BaseOrganism {
         lifeSquare.destroy();
     }
 
-    preRender() {}
+    preRender() {
+        this.setHealthAndEnergyColorInSubsquares();
+    }
 
     spawnSeed() {
         var seedSquare = this.getSeedSquare();
@@ -246,7 +290,7 @@ class BaseOrganism {
         return (getCurTime() - this.spawnTime) / this.maxLifeTime;
     }
 
-    getCurrentEnergyPercentage() {
+    getCurrentEnergyFrac() {
         return this.currentEnergy / this.reproductionEnergy;
     }
 
@@ -272,12 +316,13 @@ class BaseOrganism {
             this.destroy();
         }
 
-        var currentEnergyPercentage = this.getCurrentEnergyPercentage();
+        var currentEnergyPercentage = this.getCurrentEnergyFrac();
         var totalEnergyLifeCycleRate = this.totalEnergy / lifeCyclePercentage;
 
-        if (lifeCyclePercentage > 0.75 && currentEnergyPercentage > 1) {
-            this.spawnSeed();
-            this.currentEnergy -= this.reproductionEnergyUnit;
+        if (currentEnergyPercentage > 1) {
+            if (this.spawnSeed()) {
+                this.currentEnergy -= this.reproductionEnergyUnit;
+            }
             return;
         }
 

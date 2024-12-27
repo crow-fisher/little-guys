@@ -67,6 +67,16 @@ class WaterSquare extends BaseSquare {
         this.renderAsGrey();
     }
 
+    renderAsGrey() {
+        MAIN_CONTEXT.fillStyle = "rgba(102, 81, 196, 0.16)";
+        MAIN_CONTEXT.fillRect(
+            this.posX * BASE_SIZE,
+            this.posY * BASE_SIZE,
+            BASE_SIZE,
+            BASE_SIZE
+        );
+    }
+
     calculateDarkeningColor() {
         return this.calculateDarkeningColorImpl(this.currentPressureIndirect, getGlobalStatistic("pressure") + 1);
     }

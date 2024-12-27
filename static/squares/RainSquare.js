@@ -71,10 +71,12 @@ class AquiferSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
         this.physicsEnabled = false;
+        this.collision = false;
         this.proto = "AquiferSquare";
         this.colorBase = "#0E131F";
         this.waterContainmentMax = wds_sq_waterContainmentMax;
         this.waterContainmentTransferRate = wds_sq_waterTransferRate;
+        this.opacity = 0.03;
     }
     physics() {
         if (getSquares(this.posX, this.posY + 1).length == 0) {

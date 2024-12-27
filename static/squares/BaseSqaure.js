@@ -73,7 +73,7 @@ export class BaseSquare {
         this.opacity = 1;
         this.waterSinkRate = 0.8;
         this.cachedRgba = null;
-        this.frameFrozen = true;
+        this.frameFrozen = false;
 
         // for special view modes
         this.waterSaturation_color1 = "#9bafd9";

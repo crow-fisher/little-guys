@@ -27,7 +27,7 @@ function organismMetadataViewerMain() {
             organismMetadata["dirtNutrients"] = org.dirtNutrients;
             organismMetadata["airNutrients"] = org.airNutrients;
             organismMetadata["lifeCyclePercentage"] = org.getLifeCyclePercentage();
-            organismMetadata["currentEnergyPercentage"] = org.getCurrentEnergyPercentage();
+            organismMetadata["currentEnergyPercentage"] = org.getCurrentEnergyFrac();
             organismMetadata["currentEnergy"] = org.currentEnergy;
             organismMetadata["reproductionEnergy"] = org.reproductionEnergy;
             organismMetadata["reproductionEnergyUnit"] = org.reproductionEnergyUnit;

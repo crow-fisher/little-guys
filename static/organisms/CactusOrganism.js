@@ -298,6 +298,7 @@ class CactusOrganism extends BaseOrganism {
     }
 
     preRender() {
+        super.preRender();
         this.highestGreen = this.getHighestGreen();
         this.lifeSquares
         .filter((sq) => sq.type == "green")
