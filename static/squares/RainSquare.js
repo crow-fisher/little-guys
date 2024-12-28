@@ -85,12 +85,11 @@ class HeavyRainSquare extends RockSquare {
 }
 
 class AquiferSquare extends BaseSquare {
-    constructor(posX, posY) {
+    constructor(posX, posY) { 
+        super(posX, posY);
         this.baseColor = "#E5E4E2";
         this.darkColor = "#C0C0C0";
         this.accentColor = "#708090";
-
-        super(posX, posY);
         this.physicsEnabled = false;
         this.collision = false;
         this.proto = "AquiferSquare";

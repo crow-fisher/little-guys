@@ -23,8 +23,11 @@ class RockSquare extends BaseSquare {
         this.accentColor = "#adacbc";
         this.accentColorAmount = rock_accentColorAmount;
     }
-    physics() {}
-    physicsBefore() {}
+    physics() {
+    }
+    physicsBefore() {
+        this.calculateDirectPressure();
+    }
     calculateGroup() {}
 }
 
