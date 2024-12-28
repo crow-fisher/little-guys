@@ -330,6 +330,9 @@ class BaseOrganism {
     }
 
     postTick() {
+        if (this.lifeSquares.length == 0) {
+            this.destroy();
+        }
         this.lifeSquares.forEach((lifeSquare) => {
             this.dirtNutrients += lifeSquare.dirtNutrients * this.dirtCoef;
             this.waterNutrients += lifeSquare.waterNutrients * this.waterCoef;

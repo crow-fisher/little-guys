@@ -34,8 +34,8 @@ class LilyPadOrganism extends BaseOrganism {
 
         this.spawnSeedSpeed = -2;
 
-        this.reproductionEnergy *= 2;
-        this.reproductionEnergyUnit *= 2;
+        this.reproductionEnergy *= 1.7;
+        this.reproductionEnergyUnit *= 1.7;
 
         this.maximumLifeSquaresOfType = {
             "green": 20,
