@@ -18,12 +18,9 @@ class LilyPadWaterGreenLifeSquare extends BaseLifeSquare {
         this.type = "green";
         this.width = .99;
 
-        this.baseColor = "#ADFF2F";
-        this.baseColorAmount = dirt_baseColorAmount;
-        this.darkColor = "#A7FC00";
-        this.darkColorAmount = dirt_darkColorAmount;
-        this.accentColor = "#9ACD32";
-        this.accentColorAmount = dirt_accentColorAmount;
+        this.baseColor = "#88ca69";
+        this.darkColor = "#5f734d";
+        this.accentColor = "#a4af8b";
 
         // width and xOffset are scaled between 0 and 1
         // width of 0.8 means it occupies 80% of the X width 

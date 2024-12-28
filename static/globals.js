@@ -9,6 +9,7 @@ var curEntitySpawnedId = 0;
 var curTime = 0;
 var prevTime = Date.now();
 var darkeningColorCache = new Map();
+var waterDarkeningColorCache = new Map();
 
 
 function getCurTime() {
@@ -60,6 +61,7 @@ function resetWaterflowSquares() {
 }
 export {
     ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES, curEntitySpawnedId, darkeningColorCache,
+    waterDarkeningColorCache,
     getNextGroupId, updateGlobalStatistic, getGlobalStatistic,
     getNextEntitySpawnId, getCurEntitySpawnId, resetWaterflowSquares,
     getCurTime, updateTime

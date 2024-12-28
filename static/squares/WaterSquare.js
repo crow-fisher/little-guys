@@ -7,12 +7,13 @@ import {
 import { getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares, getNeighbors } from "./_sqOperations.js";
 import {
     ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats,
-    getNextGroupId, updateGlobalStatistic, getGlobalStatistic
+    getNextGroupId, updateGlobalStatistic, getGlobalStatistic,
+    waterDarkeningColorCache
 } from "../globals.js";
 
 import { WATERFLOW_CANDIDATE_SQUARES, WATERFLOW_TARGET_SQUARES } from "../globals.js";
 
-
+import { darkeningColorCache } from "../globals.js";
 import { BASE_SIZE, MAIN_CONTEXT } from "../index.js";
 import { COLOR_BLUE } from "../colors.js";
 
@@ -72,8 +73,29 @@ class WaterSquare extends BaseSquare {
         );
     }
 
-    calculateDarkeningColor() {
-        return this.calculateDarkeningColorImpl(this.currentPressureIndirect, getGlobalStatistic("pressure") + 1);
+    blockPressureDarken() {
+        MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.currentPressureIndirect, 13);
+        MAIN_CONTEXT.fillRect(
+            this.posX * BASE_SIZE,
+            this.posY * BASE_SIZE,
+            BASE_SIZE,
+            BASE_SIZE
+        );
+    }
+    calculateDarkeningColorImpl(darkVal, darkValMax) {
+        if (darkVal == 0) {
+            return "rgba(73,121,107,0)";
+        }
+        var waterColor255 = Math.floor((darkVal / darkValMax) * 255) * this.opacity;
+        if (waterColor255 in waterDarkeningColorCache) {
+            return waterDarkeningColorCache[waterColor255];
+        }
+        var darkeningStrength = (darkVal / darkValMax) * 0.8;
+        var res = "rgba(73,121,107," + darkeningStrength + ")";
+
+        waterDarkeningColorCache[waterColor255] = res;
+
+        return res;
     }
 
     physicsBefore() {

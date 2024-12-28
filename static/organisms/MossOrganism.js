@@ -74,6 +74,7 @@ class MossOrganism extends BaseOrganism {
             getDirectNeighbors(lsq.posX, lsq.posY)
             .filter((sq) => sq.linkedOrganismSquares.length == 0)
             .filter((sq) => sq.rootable)
+            .filter((sq) => sq.currentPressureDirect < 5)
             .forEach((sq) => {
                 // 'sq' is a candidate growth location
                 // assess the value of 'sq'

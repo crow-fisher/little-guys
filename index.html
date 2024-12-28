@@ -58,7 +58,7 @@
             <td>
                 <select id="organismWetland">
                     <option value="popgrass">popgrass</option>
-                    <option value="lilypad">lilypad</option>
+                    <option value="waterlily">water lily</option>
                     <option value="moss">moss</option>
                 </select>
             </td>
@@ -75,6 +75,7 @@
             <th>view mode</th>
             <th>time scale</th>
             <th>save and load</th>
+            <th>canvas scale</th>
         </tr>
         <tr>
             <td>
@@ -107,25 +108,34 @@
                     <input type="number" id="timeScale" value=1>time scale</input>
                 </div>
             </td>
-            <td>
+            <td style="min-width: 230px;">
                 <div class="centerContents margin10PxBottom">
                     <label for="loadSlotA">slot A</label>
                     <button type="button" id="loadSlotA">load</button>
                     <button type="button" id="saveSlotA">save</button>
                 </div>
                 <div class="centerContents margin10PxBottom">
-                    <label for="loadSlotB">slot A</label>
+                    <label for="loadSlotB">slot B</label>
                     <button type="button" id="loadSlotB">load</button>
                     <button type="button" id="saveSlotB">save</button>
                 </div>
                 <div class="centerContents margin10PxBottom">
-                    <label for="loadSlotC">slot A</label>
+                    <label for="loadSlotC">slot C</label>
                     <button type="button" id="loadSlotC">load</button>
                     <button type="button" id="saveSlotC">save</button>
                 </div>
                 <div class="centerContents margin10PxBottom">
                     <label for="loadSlotC">pond demo</label>
                     <button type="button" id="loadSlotPond">load</button>
+                </div>
+            </td>
+            <td>
+                <div class="centerContents margin10PxBottom">
+                    <label for="canvasWidth">canvas width</label>
+                    <input type="number" id="canvasWidth" value=240></input>
+                    <br/>
+                    <label for="canvasHeight">canvas height</label>
+                    <input type="number" id="canvasHeight" value=100></input>
                 </div>
             </td>
         </tr>

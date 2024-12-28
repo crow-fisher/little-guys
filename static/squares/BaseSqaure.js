@@ -224,7 +224,6 @@ export class BaseSquare {
             this.cachedRgba = outRgba;
             // var outHex = rgbToHex(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b));
             MAIN_CONTEXT.fillStyle = outRgba;
-
         }
 
         MAIN_CONTEXT.fillRect(
@@ -233,19 +232,31 @@ export class BaseSquare {
             BASE_SIZE,
             BASE_SIZE
         );
-        if (this.darken && this.solid) {
-            MAIN_CONTEXT.fillStyle = this.calculateDarkeningColor()
-            MAIN_CONTEXT.fillRect(
-                this.posX * BASE_SIZE,
-                this.posY * BASE_SIZE,
-                BASE_SIZE,
-                BASE_SIZE
-            );
+        if (this.solid) {
+            this.waterContainmentDarken();
         }
+        this.blockPressureDarken();
+
     }
 
-    calculateDarkeningColor() {
-        return this.calculateDarkeningColorImpl(this.waterContainment, this.waterContainmentMax.value);
+    waterContainmentDarken() {
+        MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.waterContainment, this.waterContainmentMax.value);
+        MAIN_CONTEXT.fillRect(
+            this.posX * BASE_SIZE,
+            this.posY * BASE_SIZE,
+            BASE_SIZE,
+            BASE_SIZE
+        );
+    }
+
+    blockPressureDarken() {
+        MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.currentPressureDirect, 12);
+        MAIN_CONTEXT.fillRect(
+            this.posX * BASE_SIZE,
+            this.posY * BASE_SIZE,
+            BASE_SIZE,
+            BASE_SIZE
+        );
     }
 
     calculateDarkeningColorImpl(darkVal, darkValMax) {

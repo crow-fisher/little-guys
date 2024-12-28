@@ -16,8 +16,11 @@ class RainSquare extends RockSquare {
     constructor(posX, posY) {
         super(posX, posY);
         this.proto = "RainSquare";
-        this.colorBase = "#59546C";
         this.collision = false;
+
+        this.baseColor = "#F5F5F5";
+        this.darkColor = "#E5E4E2";
+        this.accentColor = "#91A3B0";
     }
     physics() {
         if (Math.random() > (1 - rain_dropChance.value)) {
@@ -39,8 +42,11 @@ class HeavyRainSquare extends RockSquare {
     constructor(posX, posY) {
         super(posX, posY);
         this.proto = "HeavyRainSquare";
-        this.colorBase = "#38405F";
         this.collision = false;
+    
+        this.baseColor = "#C0C0C0";
+        this.darkColor = "#91A3B0";
+        this.accentColor = "#BEBFC5";
 
         this.maxRainDrops = 30;
         this.curRainDrops = this.maxRainDrops / 2;
@@ -80,11 +86,14 @@ class HeavyRainSquare extends RockSquare {
 
 class AquiferSquare extends BaseSquare {
     constructor(posX, posY) {
+        this.baseColor = "#E5E4E2";
+        this.darkColor = "#C0C0C0";
+        this.accentColor = "#708090";
+
         super(posX, posY);
         this.physicsEnabled = false;
         this.collision = false;
         this.proto = "AquiferSquare";
-        this.colorBase = "#0E131F";
         this.waterContainmentMax = wds_sq_waterContainmentMax;
         this.waterContainmentTransferRate = wds_sq_waterTransferRate;
         this.opacity = 0.03;

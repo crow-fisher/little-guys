@@ -17,8 +17,8 @@ class LilyPadFlowerLifeSquare extends BaseLifeSquare {
         this.type = "flower";
         this.width = .99;
 
-        this.centerColor = "rgba(255, 239, 0, 0.8)";
-        this.petalColor = "rgba(178, 132, 190, 0.8)";
+        this.centerColor = "rgba(253,200,118, 0.8)";
+        this.petalColor = "rgba(193,21,102, 0.8)";
 
         // width and xOffset are scaled between 0 and 1
         // width of 0.8 means it occupies 80% of the X width 

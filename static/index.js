@@ -1,6 +1,6 @@
 import { BaseSquare } from "./squares/BaseSqaure.js";
 import { getNeighbors, getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares } from "./squares/_sqOperations.js";
-import { purge, reset, renderWater, renderSquares, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow } from "./globalOperations.js"
+import { purge, reset, renderWater, renderSquares, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquare } from "./globalOperations.js"
 import { RockSquare } from "./squares/RockSquare.js"
 import { DirtSquare } from "./squares/DirtSquare.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
@@ -58,6 +58,8 @@ var orgWetlandHeader_ref = "organismWetland"
 var orgOtherHeader = document.getElementById("orgOtherHeader");
 var orgOtherHeader_ref = "organismOther"
 
+var canvasWidth = document.getElementById("canvasWidth");
+var canvasHeight = document.getElementById("canvasHeight");
 
 var timeScale = document.getElementById("timeScale");
 var viewmodeSelect = document.getElementById("viewmodeSelect");
@@ -151,13 +153,46 @@ brushStrengthSlider.addEventListener('change', (e) => {
 viewmodeSelect.addEventListener('change', (e) => selectedViewMode = e.target.value);
 timeScale.addEventListener("change", (e) => TIME_SCALE = e.target.value)
 
+canvasWidth.addEventListener('change', (e) => setCanvasSquaresX(e.target.value));
+canvasHeight.addEventListener('change', (e) => setCanvasSquaresY(e.target.value));
+
 var mouseDown = 0;
 var organismAddedThisClick = false;
 var lastMoveEvent = null;
 var lastTick = Date.now();
 
-var CANVAS_SQUARES_X = 270; // * 8; //6;
-var CANVAS_SQUARES_Y = Math.floor(CANVAS_SQUARES_X * (7 / 16)); // * 8; // 8;
+var CANVAS_SQUARES_X = 240; // * 8; //6;
+var CANVAS_SQUARES_Y = 100; // * 8; // 8;
+
+function setCanvasSquaresX(val) {
+    CANVAS_SQUARES_X = Math.floor(val);
+    MAIN_CANVAS.width = CANVAS_SQUARES_X * BASE_SIZE;
+    MAIN_CANVAS.height = CANVAS_SQUARES_Y * BASE_SIZE;
+    mainControlTable.setAttribute("width", CANVAS_SQUARES_X * BASE_SIZE);
+    secondaryControlTable.setAttribute("width", CANVAS_SQUARES_X * BASE_SIZE);
+    for (let i = 0; i < CANVAS_SQUARES_X; i++) {
+        addSquare(new RockSquare(i, CANVAS_SQUARES_Y - 1));
+    }
+}
+
+function getCanvasSquaresX() {
+    return CANVAS_SQUARES_X;
+}
+
+function setCanvasSquaresY(val) {
+    CANVAS_SQUARES_Y = Math.floor(val);
+    MAIN_CANVAS.width = CANVAS_SQUARES_X * BASE_SIZE;
+    MAIN_CANVAS.height = CANVAS_SQUARES_Y * BASE_SIZE;
+    mainControlTable.setAttribute("width", CANVAS_SQUARES_X * BASE_SIZE);
+    secondaryControlTable.setAttribute("width", CANVAS_SQUARES_X * BASE_SIZE);
+    for (let i = 0; i < CANVAS_SQUARES_X; i++) {
+        addSquare(new RockSquare(i, CANVAS_SQUARES_Y - 1));
+    }
+}
+function getCanvasSquaresY() {
+    return CANVAS_SQUARES_Y;
+}
+
 
 mainControlTable.setAttribute("width", CANVAS_SQUARES_X * BASE_SIZE);
 secondaryControlTable.setAttribute("width", CANVAS_SQUARES_X * BASE_SIZE);
@@ -197,16 +232,29 @@ saveSlotC.onclick = (e) => saveSlot("C");
 loadSlotPond.onclick = (e) => loadSlotFromSave(pond_demo_square_data);
 
 function loadObjArr(sourceObjMap, addFunc) {
+    iterateOnSquares((sq) => sq.destroy());
+    var sqMaxPosY = 0;
     var rootKeys = Object.keys(sourceObjMap);
     for (let i = 0; i < rootKeys.length; i++) {
         var subObj = sourceObjMap[rootKeys[i]];
         if (subObj != null) {
             var subKeys = Object.keys(subObj);
             for (let j = 0; j < subKeys.length; j++) {
-                sourceObjMap[rootKeys[i]][subKeys[j]].forEach((obj) => addFunc(Object.setPrototypeOf(obj, ProtoMap[obj.proto])));
+                sourceObjMap[rootKeys[i]][subKeys[j]].forEach((obj) => {
+                    addFunc(Object.setPrototypeOf(obj, ProtoMap[obj.proto]));
+                    sqMaxPosY = Math.max(sqMaxPosY, obj.posY);
+            });
             }
         }
     }
+    if (sqMaxPosY != CANVAS_SQUARES_Y) {
+        iterateOnSquares((sq) => {
+            removeSquare(sq);
+            sq.posY += (CANVAS_SQUARES_Y - 1) - sqMaxPosY;
+            addSquare(sq)
+        }, 1);
+    }
+
 }
 
 async function loadSlotFromSave(slotData) {
@@ -452,7 +500,7 @@ function doClickAdd() {
                                 }
                                 break;
     
-                            case "lilypad":
+                            case "waterlily":
                                 if (Math.random() > 0.95) {
                                     var sq = addSquare(new SeedSquare(px, curY));
                                     if (sq) {
@@ -518,4 +566,7 @@ window.onload = function () {
     // });
 }
 
-export { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, selectedViewMode, addSquareByName }
+export { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, selectedViewMode, addSquareByName,
+    setCanvasSquaresX, setCanvasSquaresY,
+    getCanvasSquaresX, getCanvasSquaresY
+}

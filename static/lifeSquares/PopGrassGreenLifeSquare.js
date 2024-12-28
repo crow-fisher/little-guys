@@ -17,11 +17,11 @@ class PopGrassGreenLifeSquare extends BaseLifeSquare {
         this.type = "green";
         this.width = .99;
 
-        this.baseColor = "#50C878";
+        this.baseColor = "#83ab40";
         this.baseColorAmount = dirt_baseColorAmount;
-        this.darkColor = "#00563B";
+        this.darkColor = "#4c6f21";
         this.darkColorAmount = dirt_darkColorAmount;
-        this.accentColor = "#138808";
+        this.accentColor = "#c1d8ab";
         this.accentColorAmount = dirt_accentColorAmount;
 
         // width and xOffset are scaled between 0 and 1
@@ -45,7 +45,7 @@ class PopGrassGreenLifeSquare extends BaseLifeSquare {
             airNutrientsPerEmptyNeighbor.value *
             (
                 getNeighbors(this.posX, this.posY)
-                    .filter((sq) => sq.proto == this.linkedSquare.proto)
+                    .filter((sq) => sq.proto == this.linkedSquareproto)
                     .map((sq) => 0.65)
                     .reduce(
                         (accumulator, currentValue) => accumulator + currentValue,

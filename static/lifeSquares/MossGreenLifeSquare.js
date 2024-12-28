@@ -21,11 +21,11 @@ class MossGreenLifeSquare extends BaseLifeSquare {
         this.storedWaterMax = 0.01;
         this.storedWaterTransferRate = .001;
 
-        this.baseColor = "#4F7942";
+        this.baseColor = "#b8d005";
         this.baseColorAmount = dirt_baseColorAmount;
-        this.darkColor = "#013220";
+        this.darkColor = "#506812";
         this.darkColorAmount = dirt_darkColorAmount;
-        this.accentColor = "#138808";
+        this.accentColor = "#cedda2";
         this.accentColorAmount = dirt_accentColorAmount;
     }
 
