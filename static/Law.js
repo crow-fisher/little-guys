@@ -9,7 +9,7 @@ class Law {
     }
 
     photosynthesis(air, water, root) {
-        var energyOut = Math.min(Math.min(air, water), root);
+        var energyOut = Math.max(Math.min(Math.min(air, water), root), 0)
         this.energyGiven += energyOut;
         this.airAccepted += energyOut;
         this.waterAccepted += energyOut;

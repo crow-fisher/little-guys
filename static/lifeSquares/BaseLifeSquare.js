@@ -103,6 +103,8 @@ class BaseLifeSquare {
     destroy() {
         if (this.linkedSquare.organic) {
             this.linkedSquare.destroy();
+        } else {
+            this.linkedSquare.unlinkOrganismSquare(this);
         }
         removeOrganismSquare(this);
     }
@@ -162,8 +164,21 @@ class BaseLifeSquare {
         }
         return this.randoms[randIdx];
     }
-
-
+    
+    getScore() {
+        var outScore = 0;
+        var orgMeanNutrient = this.linkedOrganism.getMeanNutrient();
+        if (this.linkedOrganism.dirtNutrients < orgMeanNutrient) {
+            outScore += this.dirtNutrients * this.linkedOrganism.dirtCoef;
+        }
+        if (this.linkedOrganism.waterNutrients < orgMeanNutrient) {
+            outScore += this.waterNutrients * this.linkedOrganism.waterCoef;
+        }
+        if (this.linkedOrganism.airNutrients < orgMeanNutrient) {
+            outScore += this.airNutrients * this.linkedOrganism.airCoef;
+        }
+        return outScore;
+    }
 
     render() {
         if (selectedViewMode.startsWith("organism") && selectedViewMode != "organismStructure") {
@@ -171,7 +186,6 @@ class BaseLifeSquare {
             var val;
             var val_max; 
             var val_stdev;
-
             switch (selectedViewMode) {
                 case "organismSquareNutrients":
                     color = {
@@ -262,7 +276,6 @@ class BaseLifeSquare {
         if (this.cachedRgba) {
             MAIN_CONTEXT.fillStyle = this.cachedRgba;
         } else {
-
             var res = this.getStaticRand(1) * (parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value) + parseFloat(this.baseColorAmount.value));
             var primaryColor = null;
             var altColor1 = null;

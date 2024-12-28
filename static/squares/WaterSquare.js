@@ -10,10 +10,6 @@ import {
     getNextGroupId, updateGlobalStatistic, getGlobalStatistic
 } from "../globals.js";
 
-import { getObjectArrFromMap, removeItemAll, hexToRgb, rgbToHex, randNumber } from "../common.js";
-import { purge, reset, render, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquare } from "../globalOperations.js"
-import { getOrganismSquaresAtSquare } from "../lifeSquares/_lsOperations.js";
-
 import { WATERFLOW_CANDIDATE_SQUARES, WATERFLOW_TARGET_SQUARES } from "../globals.js";
 
 

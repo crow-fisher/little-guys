@@ -28,7 +28,7 @@ import { getObjectArrFromMap } from "../common.js";
 import { addOrganism, addNewOrganism } from "../organisms/_orgOperations.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 
-import { purge, reset, render, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquare, getSquareStdevForGetter } from "../globalOperations.js"
+import { purge, reset, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquare, getSquareStdevForGetter } from "../globalOperations.js"
 
 import { removeOrganismSquare } from "./_sqOperations.js";
 import { removeOrganism } from "../organisms/_orgOperations.js";
@@ -82,6 +82,8 @@ export class BaseSquare {
 
         this.blockHealth_color1 = "#45caff";
         this.blockHealth_color2 = "#ff1b6b";
+
+        this.currentPressureDirect = 0;
 
     };
     destroy() {
@@ -415,6 +417,7 @@ export class BaseSquare {
     /* Called before physics(), with blocks in strict order from top left to bottom right. */
     physicsBefore() {
         this.calculateGroup();
+        this.calculateDirectPressure();
     }
 
     /* god i fucking hate water physics */
@@ -489,6 +492,14 @@ export class BaseSquare {
         this.waterContainment += amountToPercolate;
         return amountToPercolate;
 
+    }
+
+    calculateDirectPressure() {
+        this.currentPressureDirect = 0;
+        getSquares(this.posX, this.posY - 1)
+            .filter((sq) => sq.solid)
+            .filter((sq) => sq.currentPressureDirect > 0)
+            .forEach((sq) => this.currentPressureDirect = sq.currentPressureDirect + 1);
     }
 
     percolateInnerMoisture() {

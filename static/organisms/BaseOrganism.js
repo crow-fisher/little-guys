@@ -42,6 +42,8 @@ class BaseOrganism {
         this.waterLastGrown = getCurTime();
         this.rootLastGrown = getCurTime();
 
+        this.recentSquareRemovals = new Array();
+
         // life cycle properties
         this.maxLifeTime = 1000 * 60 * 2;
         this.reproductionEnergy = 100;
@@ -138,7 +140,6 @@ class BaseOrganism {
 
         if (minNutrient < (meanNutrient / 2) || maxNutrient > (meanNutrient * 1.5)) {
             this.currentHealth -= this.perTickDamage;
-            console.log("Lost health: min: ", minNutrient, this.airNutrients, this.dirtNutrients, this.waterNutrients);
             this.growAndDecay();
         }
 
@@ -214,6 +215,7 @@ class BaseOrganism {
         this.lifeSquaresCountByType[lifeSquare.type] -= 1;
         this.lifeSquares = Array.from(this.lifeSquares.filter((lsq) => lsq != lifeSquare));
         lifeSquare.destroy();
+        this.recentSquareRemovals.push([lifeSquare.posX, lifeSquare.posY]);
     }
 
     preRender() {
@@ -282,6 +284,9 @@ class BaseOrganism {
         this.stdevDirtNutrient = 0;
         this.stdevWaterNutrient = 0;
         this.lifeSquares.forEach((sp) => sp.preTick())
+        if (this.recentSquareRemovals.length > 5) {
+            this.recentSquareRemovals = new Array();
+        }
     }
 
     tick() {

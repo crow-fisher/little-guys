@@ -62,9 +62,14 @@ function reset() {
     resetWaterflowSquares();
 }
 
-function render() {
-    iterateOnSquares((sq) => sq.render(), 0);
+function renderSquares() {
+    iterateOnSquares((sq) => sq.solid ? sq.render() : null, 0);
 }
+
+function renderWater() {
+    iterateOnSquares((sq) => !sq.solid ? sq.render() : null, 0);
+}
+
 function physics() {
     iterateOnSquares((sq) => sq.physics(), 0.5);
 }
@@ -107,4 +112,4 @@ function doWaterFlow() {
     }
 }
 
-export {purge, reset, render, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquare, getSquareStdevForGetter}
+export {purge, reset, renderWater, renderSquares, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquare, getSquareStdevForGetter}

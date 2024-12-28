@@ -1,6 +1,6 @@
 import { BaseSquare } from "./squares/BaseSqaure.js";
 import { getNeighbors, getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares } from "./squares/_sqOperations.js";
-import { purge, reset, render, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow } from "./globalOperations.js"
+import { purge, reset, renderWater, renderSquares, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow } from "./globalOperations.js"
 import { RockSquare } from "./squares/RockSquare.js"
 import { DirtSquare } from "./squares/DirtSquare.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
@@ -22,6 +22,7 @@ import { SandSquare } from "./squares/SandSquare.js";
 import { getOrganismSquaresAtSquare } from "./lifeSquares/_lsOperations.js";
 import { CactusSeedOrganism } from "./organisms/CactusSeedOrganism.js";
 import { LilyPadSeedOrganism } from "./organisms/LilyPadSeedOrganism.js";
+import { MossSeedOrganism } from "./organisms/MossSeedOrganism.js";
 import { PlantSquare } from "./squares/PlantSquare.js";
 import { randNumber } from "./common.js";
 
@@ -247,8 +248,9 @@ function main() {
             purge();
             processOrganisms();
         }
+        renderSquares();
         renderOrganisms();
-        render();
+        renderWater();
         lastTick = Date.now();
     }
     updateTime();
@@ -386,6 +388,14 @@ function doClickAdd() {
                                     }
                                 }
                                 break;
+
+                            case "moss":
+                                if (Math.random() > 0.95) {
+                                    var sq = addSquare(new SeedSquare(px, curY));
+                                    if (sq) {
+                                        addNewOrganism(new MossSeedOrganism(sq));
+                                    }
+                                }
                         }
                     }
                     
