@@ -1,83 +1,136 @@
 <html>
 
+<head>
+    <link rel="stylesheet" href="./static/index.css" />
+</head>
+
 <body>
     <canvas tabindex='1' id="main"></canvas>
-    <p>little guys</p>
-    <select id="specialSelect">
-        <option value="water">water</option>
-        <option value="rain">rain</option>
-        <option value="heavy rain">heavy rain</option>
-        <option value="aquifer">aquifer</option>
-        <option value="drain">drain</option>
-    </select>
+    <table id="mainControlTable">
+        <tr>
+            <th id="specialHeader">special material select</th>
+            <th id="normalHeader">normal material select</th>
+            <th id="orgWetlandHeader">wetland organism select</th>
+            <th id="orgOtherHeader">other organism select</th>
+        </tr>
+        <tr>
+            <td>
+                <select id="specialSelect">
+                    <option value="water">water</option>
+                    <option value="rain">rain</option>
+                    <option value="heavy rain">heavy rain</option>
+                    <option value="aquifer">aquifer</option>
+                    <option value="drain">drain</option>
+                </select>
+            </td>
+            <td>
+                <div class="centerContents">
+                    <select id="material1">
+                        <option value="dirt">dirt</option>
+                        <option value="gravel">gravel</option>
+                        <option value="sand">sand</option>
+                        <option value="rock">rock</option>
+                    </select>
 
-    <select id="material1">
-        <option value="dirt">dirt</option>
-        <option value="gravel">gravel</option>
-        <option value="sand">sand</option>
-        <option value="rock">rock</option>
-    </select>
+                    <select id="material2">
+                        <option value="sand">sand</option>
+                        <option value="dirt">dirt</option>
+                        <option value="gravel">gravel</option>
+                        <option value="rock">rock</option>
+                    </select>
+                </div>
+                <br />
+                <div class="centerContents">
+                    <input type="checkbox" id="mixMaterials" checked />
+                    <label class="absolute" for="mixMaterials">mix materials?</lavel>
+                </div>
+                <br />
+                <div class="centerContents">
+                    <input type="range" min="1" max="100" value="1" id="materialSlider">
+                    <label class="absolute" for="materialSlider">ratio</label>
+                </div>
+                <br/>
+                <div class="centerContents">
+                    <input type="range" min="1" max="100" value="100" id="brushStrengthSlider">
+                    <label class="absolute" for="materialSlider">brush strength</label>
+                </div>
+            </td>
+            <td>
+                <select id="organismWetland">
+                    <option value="popgrass">popgrass</option>
+                    <option value="lilypad">lilypad</option>
+                    <option value="moss">moss</option>
+                </select>
+            </td>
+            <td>
+                <select id="organismOther">
+                    <option value="cactus">cactus</option>
+                </select>
+            </td>
+        </tr>
+    </table>
 
-    <select id="material2">
-        <option value="sand">sand</option>
-        <option value="dirt">dirt</option>
-        <option value="gravel">gravel</option>
-        <option value="rock">rock</option>
-    </select>
+    <table id="secondaryControlTable">
+        <tr>
+            <th>view mode</th>
+            <th>time scale</th>
+            <th>save and load</th>
+        </tr>
+        <tr>
+            <td>
+                <div class="centerContents">
+                    <select id="viewmodeSelect">
+                        <option value="normal">normal</option>
+                        <option value="watersaturation">water saturation</option>
+                        <option value="blockhealthliquid">water density</option>
 
-    <input type="checkbox" id="mixMaterials" checked/>
-    <label for="mixMaterials">mix materials?</lavel>
-    <input type="range" min="1" max="100" value="1" id="materialSlider">
-    <label for="materialSlider">material ratio</label>
+                        <option value="organismStructure">organism structures</option>
+                        <option value="organismSquareNutrients">nutrients by square</option>
+                        <option value="organismSquareDirt">organism square dirt nutrients</option>
+                        <option value="organismSquareWater">organism square water nutrients</option>
+                        <option value="organismSquareAir">organism square air nutrients</option>
+                        <option value="organismSquareWaterStored">organism square water stored</option>
 
-    <select id="organismWetland">
-        <option value="popgrass">popgrass</option>
-        <option value="lilypad">lilypad</option>
-        <option value="moss">moss</option>
-    </select>
+                        <option value="organismDirt">organism dirt nutrients</option>
+                        <option value="organismWater">organism water nutrients</option>
+                        <option value="organismAir">organism air nutrients</option>
 
-    <select id="organismOther">
-        <option value="cactus">cactus</option>
-    </select>
-
-    <select id="viewmodeSelect">
-        <option value="normal">normal</option>
-        <option value="watersaturation">water saturation</option>
-        <option value="blockhealthliquid">water density</option>
-
-        <option value="organismStructure">organism structures</option>
-        <option value="organismSquareNutrients">nutrients by square</option>
-        <option value="organismSquareDirt">organism square dirt nutrients</option>
-        <option value="organismSquareWater">organism square water nutrients</option>
-        <option value="organismSquareAir">organism square air nutrients</option>
-        <option value="organismSquareWaterStored">organism square water stored</option>
-
-        <option value="organismDirt">organism dirt nutrients</option>
-        <option value="organismWater">organism water nutrients</option>
-        <option value="organismAir">organism air nutrients</option>
-
-        <option value="organismNutrients">organism nutrients (composite)</option>
-        <option value="organismHealth">organism health</option>
-        <option value="organismEnergy">organism energy</option>
-        <option value="organismLifetime"> organism lifetime</option>
-    </select>
-    <input type="number" id="timeScale" value=1>time scale</input>
-    
-    <br/>
-    <button type="button" id="loadSlotA">load slot A (pop grass)</button>
-    <button type="button" id="saveSlotA">save slot A (pop grass)</button>
-    <button type="button" id="loadSlotB">load slot B (moss)</button>
-    <button type="button" id="saveSlotB">save slot B (moss)</button>
-    <button type="button" id="loadSlotC">load slot C (lily pad)</button>
-    <button type="button" id="saveSlotC">save slot C (lily pad)</button>
-
-    <br/>
-    <button type="button" id="loadSlotPond">load pond demo</button>
-
-    <div id="configSliders">
-    </div>
-    <code id="configOutput"></code>
+                        <option value="organismNutrients">organism nutrients (composite)</option>
+                        <option value="organismHealth">organism health</option>
+                        <option value="organismEnergy">organism energy</option>
+                        <option value="organismLifetime"> organism lifetime</option>
+                    </select>
+                </div>
+            </td>
+            <td>
+                <div class="centerContents">
+                    <input type="number" id="timeScale" value=1>time scale</input>
+                </div>
+            </td>
+            <td>
+                <div class="centerContents margin10PxBottom">
+                    <label for="loadSlotA">slot A</label>
+                    <button type="button" id="loadSlotA">load</button>
+                    <button type="button" id="saveSlotA">save</button>
+                </div>
+                <div class="centerContents margin10PxBottom">
+                    <label for="loadSlotB">slot A</label>
+                    <button type="button" id="loadSlotB">load</button>
+                    <button type="button" id="saveSlotB">save</button>
+                </div>
+                <div class="centerContents margin10PxBottom">
+                    <label for="loadSlotC">slot A</label>
+                    <button type="button" id="loadSlotC">load</button>
+                    <button type="button" id="saveSlotC">save</button>
+                </div>
+                <div class="centerContents margin10PxBottom">
+                    <label for="loadSlotC">pond demo</label>
+                    <button type="button" id="loadSlotPond">load</button>
+                </div>
+            </td>
+        </tr>
+    </table>
 </body>
 <script type="module" src="./static/index.js"></script>
-<link rel="stylesheet" src="./static/index.css"/>
+
 </html>

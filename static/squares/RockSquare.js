@@ -16,11 +16,11 @@ class RockSquare extends BaseSquare {
         this.waterContainmentMax = static_sq_waterContainmentMax;
         this.waterContainmentTransferRate = static_sq_waterContainmentTransferRate;
         this.darken = false;
-        this.baseColor = "#dbdadf";
+        this.baseColor = "#b69e87";
         this.baseColorAmount = rock_baseColorAmount;
-        this.darkColor = "#65666a";
+        this.darkColor = "#5f4f48";
         this.darkColorAmount = rock_darkColorAmount;
-        this.accentColor = "#b5a7a6";
+        this.accentColor = "#adacbc";
         this.accentColorAmount = rock_accentColorAmount;
     }
     physics() {}

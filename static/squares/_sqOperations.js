@@ -4,6 +4,7 @@ import { removeSquare } from "../globalOperations.js";
 import { getOrganismSquaresAtSquare } from "../lifeSquares/_lsOperations.js";
 import { removeItemAll } from "../common.js";
 import { getOrganismsAtSquare } from "../organisms/_orgOperations.js";
+import { CANVAS_SQUARES_Y } from "../index.js";
 
 var abs = Math.abs;
 
@@ -53,8 +54,8 @@ function addSquareOverride(square) {
         addSquare(square);
         return;
     }
-    var existingStaticSquareArrPhysicsDisabled = Array.from(existingSquares.filter((sq) => sq.collision && !sq.physicsEnabled));
-    if (existingStaticSquareArrPhysicsDisabled.length > 0) {
+    var bottomLayer = Array.from(existingSquares.filter((sq) => sq.collision && sq.posY == (CANVAS_SQUARES_Y - 1)));
+    if (bottomLayer.length > 0) {
         return;
     }
     if (square.collision) {

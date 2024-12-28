@@ -1,0 +1,26 @@
+* {
+    font-family: 'Courier New', Courier, monospace;
+    vertical-align: baseline;
+   }
+
+                
+.centerContents {
+    margin: auto;
+    width: 80%;
+}
+
+.absolute {
+    position: absolute;
+}
+
+.nonselected {
+    font-weight: 200;
+}
+
+.selected {
+    font-weight: 700;
+}
+
+.margin10PxBottom {
+    margin-bottom: 10px;
+}

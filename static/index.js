@@ -38,12 +38,26 @@ var material2_val = "sand";
 var mixMaterials = document.getElementById("mixMaterials");
 var mixMaterials_val = true;
 var materialSlider = document.getElementById("materialSlider");
-var materialSlider_val = 1;
+var materialSlider_val = 0;
+var brushStrengthSlider = document.getElementById("brushStrengthSlider");
+var brushStrengthSlider_val = 100;
 
 var organismWetland = document.getElementById("organismWetland");
 var organismWetland_val;
 var organismOther = document.getElementById("organismOther");
 var organismOther_val;
+
+var mainControlTable = document.getElementById("mainControlTable");
+var secondaryControlTable = document.getElementById("secondaryControlTable");
+var specialHeader = document.getElementById("specialHeader");
+var specialHeader_ref = "special"
+var normalHeader = document.getElementById("normalHeader");
+var normalHeader_ref = "normal"
+var orgWetlandHeader = document.getElementById("orgWetlandHeader");
+var orgWetlandHeader_ref = "organismWetland"
+var orgOtherHeader = document.getElementById("orgOtherHeader");
+var orgOtherHeader_ref = "organismOther"
+
 
 var timeScale = document.getElementById("timeScale");
 var viewmodeSelect = document.getElementById("viewmodeSelect");
@@ -62,33 +76,76 @@ var selectedViewMode = "normal";
 const BASE_SIZE = 4;
 
 
+function styleHeader() {
+    var nonbold_headers = [
+        specialHeader,
+        normalHeader,
+        orgWetlandHeader,
+        orgOtherHeader
+    ]
+    var bold_headers = [];
+    if (lastMode == specialHeader_ref) {
+        nonbold_headers = Array.from(nonbold_headers.filter((v) => v != specialHeader));
+        bold_headers.push(specialHeader);
+    }
+    if (lastMode == normalHeader_ref) {
+        nonbold_headers = Array.from(nonbold_headers.filter((v) => v != normalHeader));
+        bold_headers.push(normalHeader);
+    }
+    if (lastMode == orgWetlandHeader_ref) {
+        nonbold_headers = Array.from(nonbold_headers.filter((v) => v != orgWetlandHeader));
+        bold_headers.push(orgWetlandHeader);
+    }
+    if (lastMode == orgOtherHeader_ref) {
+        nonbold_headers = Array.from(nonbold_headers.filter((v) => v != orgOtherHeader));
+        bold_headers.push(orgOtherHeader);
+    }
+
+    nonbold_headers.forEach((header) => header.classList = "nonselected");
+    bold_headers.forEach((header) => header.classList = "selected");
+}
+
+styleHeader();
+
 specialSelect.addEventListener('change', (e) => {
     lastMode = "special";
+    styleHeader();
     specialSelect_val = e.target.value;
 });
 material1.addEventListener('change', (e) => {
     lastMode = "normal";
+    styleHeader();
     material1_val = e.target.value;
 });
 material2.addEventListener('change', (e) => {
     lastMode = "normal";
+    styleHeader();
     material2_val = e.target.value;
 });
 mixMaterials.addEventListener('change', (e) => {
     lastMode = "normal";
+    styleHeader();
     mixMaterials_val = e.target.checked;
 });
 materialSlider.addEventListener('change', (e) =>  {
     lastMode = "normal";
+    styleHeader();
     materialSlider_val = parseInt(e.target.value);
 });
 organismWetland.addEventListener('change', (e) => {
     lastMode = "organismWetland";
+    styleHeader();
     organismWetland_val = e.target.value;
 });
 organismOther.addEventListener('change', (e) => {
     lastMode = "organismOther";
+    styleHeader();
     organismOther_val = e.target.value;
+});
+brushStrengthSlider.addEventListener('change', (e) => {
+    lastMode = "normal";
+    styleHeader();
+    brushStrengthSlider_val = e.target.value;
 });
 
 viewmodeSelect.addEventListener('change', (e) => selectedViewMode = e.target.value);
@@ -100,8 +157,10 @@ var lastMoveEvent = null;
 var lastTick = Date.now();
 
 var CANVAS_SQUARES_X = 270; // * 8; //6;
-var CANVAS_SQUARES_Y = 80 + 5; // * 8; // 8;
+var CANVAS_SQUARES_Y = Math.floor(CANVAS_SQUARES_X * (7 / 16)); // * 8; // 8;
 
+mainControlTable.setAttribute("width", CANVAS_SQUARES_X * BASE_SIZE);
+secondaryControlTable.setAttribute("width", CANVAS_SQUARES_X * BASE_SIZE);
 // var CANVAS_SQUARES_X = 40;
 // var CANVAS_SQUARES_Y = 40;
 
@@ -287,6 +346,9 @@ function doMouseHover() {
 }
 
 function addSquareByNameConfig(posX, posY) {
+    if (Math.random() * 100 < (100 - brushStrengthSlider_val)) {
+        return;
+    }
     if (!mixMaterials_val) {
         return addSquareByName(posX, posY, material1_val);
     }
