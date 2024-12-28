@@ -28,6 +28,12 @@ class RainSquare extends RockSquare {
             };
         }
     }
+    render() {
+        if (!this.visible) {
+            return;
+        }
+        this.renderWithVariedColors();
+    }
 }
 class HeavyRainSquare extends RockSquare {
     constructor(posX, posY) {
@@ -63,7 +69,12 @@ class HeavyRainSquare extends RockSquare {
                 this.curRainDrops += this.rainRechargeRate;
             }
         }
-
+    }
+    render() {
+        if (!this.visible) {
+            return;
+        }
+        this.renderWithVariedColors();
     }
 }
 
@@ -85,6 +96,12 @@ class AquiferSquare extends BaseSquare {
                 sq.speedX = randNumber(-2, 2);
             }
         }
+    }
+    render() {
+        if (!this.visible) {
+            return;
+        }
+        this.renderWithVariedColors();
     }
 }
 

@@ -497,8 +497,7 @@ export class BaseSquare {
     calculateDirectPressure() {
         this.currentPressureDirect = 0;
         getSquares(this.posX, this.posY - 1)
-            .filter((sq) => sq.solid)
-            .filter((sq) => sq.currentPressureDirect > 0)
+            .filter((sq) => sq.collision)
             .forEach((sq) => this.currentPressureDirect = sq.currentPressureDirect + 1);
     }
 
@@ -538,7 +537,7 @@ export class BaseSquare {
         }
     }
 
-    evaporateInnerMoisture() {
+    evaporateInnerMoisture() {  
         if (this.waterContainment == 0) {
             return;
         }

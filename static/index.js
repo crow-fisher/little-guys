@@ -25,6 +25,7 @@ import { LilyPadSeedOrganism } from "./organisms/LilyPadSeedOrganism.js";
 import { MossSeedOrganism } from "./organisms/MossSeedOrganism.js";
 import { PlantSquare } from "./squares/PlantSquare.js";
 import { randNumber } from "./common.js";
+import { pond_demo_square_data } from "./saves.js";
 
 var lastMode = "normal"; // options: "normal", "special", "organism";
 
@@ -35,9 +36,9 @@ var material1_val = "dirt";
 var material2 = document.getElementById("material2");
 var material2_val = "sand";
 var mixMaterials = document.getElementById("mixMaterials");
-var mixMaterials_val = false;
+var mixMaterials_val = true;
 var materialSlider = document.getElementById("materialSlider");
-var materialSlider_val = 50;
+var materialSlider_val = 1;
 
 var organismWetland = document.getElementById("organismWetland");
 var organismWetland_val;
@@ -51,6 +52,10 @@ var loadSlotA = document.getElementById("loadSlotA");
 var saveSlotA = document.getElementById("saveSlotA");
 var loadSlotB = document.getElementById("loadSlotB");
 var saveSlotB = document.getElementById("saveSlotB");
+var loadSlotC = document.getElementById("loadSlotC");
+var saveSlotC = document.getElementById("saveSlotC");
+
+var loadSlotPond = document.getElementById("loadSlotPond");
 
 var selectedMaterial = "dirt";
 var selectedViewMode = "normal";
@@ -127,6 +132,10 @@ loadSlotA.onclick = (e) => loadSlot("A");
 saveSlotA.onclick = (e) => saveSlot("A");
 loadSlotB.onclick = (e) => loadSlot("B");
 saveSlotB.onclick = (e) => saveSlot("B");
+loadSlotC.onclick = (e) => loadSlot("C");
+saveSlotC.onclick = (e) => saveSlot("C");
+
+loadSlotPond.onclick = (e) => loadSlotFromSave(pond_demo_square_data);
 
 function loadObjArr(sourceObjMap, addFunc) {
     var rootKeys = Object.keys(sourceObjMap);
@@ -139,6 +148,11 @@ function loadObjArr(sourceObjMap, addFunc) {
             }
         }
     }
+}
+
+async function loadSlotFromSave(slotData) {
+    const loaded_ALL_SQUARES = JSON.parse(await base64ToGzip(slotData));
+    loadObjArr(loaded_ALL_SQUARES, addSquareOverride)
 }
 
 async function loadSlot(slotName) {
@@ -155,10 +169,6 @@ async function loadSlot(slotName) {
 
     // bippity boppity do something like this 
     // Object.setPrototypeOf(sq, DirtSquare.prototype)
-
-    ALL_SQUARES.clear();
-    ALL_ORGANISMS.clear();
-    ALL_ORGANISM_SQUARES.clear();
 
     loadObjArr(loaded_ALL_SQUARES, addSquareOverride)
 }
@@ -292,7 +302,7 @@ function addSquareByName(posX, posY, name) {
         case "rock":
             return addSquareOverride(new RockSquare(posX, posY));
         case "dirt":
-            return addSquare(new DirtSquare(posX, posY));
+            return addSquareOverride(new DirtSquare(posX, posY));
         case "water":
             return addSquare(new WaterSquare(posX, posY));
         case "rain":
@@ -306,9 +316,9 @@ function addSquareByName(posX, posY, name) {
         case "aquifer":
             return addSquare(new AquiferSquare(posX, posY));
         case "gravel":
-            return addSquare(new GravelSquare(posX, posY));
+            return addSquareOverride(new GravelSquare(posX, posY));
         case "sand":
-            return addSquare(new SandSquare(posX, posY));
+            return addSquareOverride(new SandSquare(posX, posY));
     };
 }
 

@@ -102,6 +102,7 @@ class CactusOrganism extends BaseOrganism {
         var rootSq = addOrganismSquare(new CactusRootLifeSquare(this.linkedSquare, this));
         rootSq.linkSquare(this.linkedSquare);
         rootSq.addChild(orgSq);
+        this.linkedSquare.linkOrganismSquare(rootSq);
         this.addAssociatedLifeSquare(rootSq);
     }
 
@@ -217,12 +218,13 @@ class CactusOrganism extends BaseOrganism {
                     }});
                 }
             if (wettestSquare != null) {
-                var newPopGrassRootLifeSquare = addOrganismSquare(new CactusRootLifeSquare(wettestSquare, this));
-                if (newPopGrassRootLifeSquare) {
-                    this.addAssociatedLifeSquare(newPopGrassRootLifeSquare);
-                    newPopGrassRootLifeSquare.linkSquare(wettestSquare);
-                    wettestSquareParent.addChild(newPopGrassRootLifeSquare)
-                    return newPopGrassRootLifeSquare.getCost();
+                var cactusRootLifeSquare = addOrganismSquare(new CactusRootLifeSquare(wettestSquare, this));
+                if (cactusRootLifeSquare) {
+                    this.addAssociatedLifeSquare(cactusRootLifeSquare);
+                    cactusRootLifeSquare.linkSquare(wettestSquare);
+                    wettestSquareParent.addChild(cactusRootLifeSquare)
+                    wettestSquare.linkOrganismSquare(cactusRootLifeSquare);
+                    return cactusRootLifeSquare.getCost();
                 }
             }
         }
@@ -272,6 +274,7 @@ class CactusOrganism extends BaseOrganism {
                 this.addAssociatedLifeSquare(newRootSquare);
                 newRootSquare.linkSquare(dirtiestSquare);
                 dirtiestSquareParent.addChild(newRootSquare);
+                dirtiestSquare.linkOrganismSquare(newRootSquare);
                 return newRootSquare.getCost();
             }
         }

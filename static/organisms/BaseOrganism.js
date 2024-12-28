@@ -284,7 +284,7 @@ class BaseOrganism {
         this.stdevDirtNutrient = 0;
         this.stdevWaterNutrient = 0;
         this.lifeSquares.forEach((sp) => sp.preTick())
-        if (this.recentSquareRemovals.length > 5) {
+        if (this.recentSquareRemovals.length > 10) {
             this.recentSquareRemovals = new Array();
         }
     }

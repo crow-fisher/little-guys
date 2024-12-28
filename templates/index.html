@@ -27,9 +27,9 @@
         <option value="rock">rock</option>
     </select>
 
-    <input type="checkbox" id="mixMaterials"/>
+    <input type="checkbox" id="mixMaterials" checked/>
     <label for="mixMaterials">mix materials?</lavel>
-    <input type="range" min="1" max="100" value="50" id="materialSlider">
+    <input type="range" min="1" max="100" value="1" id="materialSlider">
     <label for="materialSlider">material ratio</label>
 
     <select id="organismWetland">
@@ -62,13 +62,20 @@
         <option value="organismHealth">organism health</option>
         <option value="organismEnergy">organism energy</option>
         <option value="organismLifetime"> organism lifetime</option>
-
     </select>
     <input type="number" id="timeScale" value=1>time scale</input>
+    
+    <br/>
     <button type="button" id="loadSlotA">load slot A (pop grass)</button>
     <button type="button" id="saveSlotA">save slot A (pop grass)</button>
-    <button type="button" id="loadSlotB">load slot B</button>
-    <button type="button" id="saveSlotB">save slot B</button>
+    <button type="button" id="loadSlotB">load slot B (moss)</button>
+    <button type="button" id="saveSlotB">save slot B (moss)</button>
+    <button type="button" id="loadSlotC">load slot C (lily pad)</button>
+    <button type="button" id="saveSlotC">save slot C (lily pad)</button>
+
+    <br/>
+    <button type="button" id="loadSlotPond">load pond demo</button>
+
     <div id="configSliders">
     </div>
     <code id="configOutput"></code>

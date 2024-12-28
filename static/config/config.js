@@ -87,7 +87,7 @@ var sand_waterContainmentTransferRate = {
 
 var sand_nutrientValue = {
     name: "sand_nutrientValue",
-    value: 0.01
+    value: dirtNutrientValuePerDirectNeighbor.value / 2
 }
 
 var base_waterContainmentEvaporationRate = {
@@ -173,7 +173,7 @@ var po_rootSquareSizeExponentCost = {
 
 var p_seed_ls_sproutGrowthRate = {
     name: "p_seed_ls_sproutGrowthRate",
-    value: 0.01
+    value: 0.003
 };
 var p_seed_ls_neighborWaterContainmentRequiredToGrow = {
     name: "p_seed_ls_neighborWaterContainmentRequiredToGrow",

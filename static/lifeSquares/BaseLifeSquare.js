@@ -233,9 +233,9 @@ class BaseLifeSquare {
                     break;
                 case "organismNutrients":
                     color = {
-                        r: 50 + (1 - this.dirtIndicated) * 180,
-                        g: 50 + (1 - this.airIndicated) * 180,
-                        b: 50 + (1 - this.waterIndicated) * 180
+                        r: 100 + (1 - this.dirtIndicated) * 130,
+                        g: 100 + (1 - this.airIndicated) * 130,
+                        b: 100 + (1 - this.waterIndicated) * 130
                     }
                     MAIN_CONTEXT.fillStyle = rgbToHex(color.r, color.g, color.b);
                     MAIN_CONTEXT.fillRect(

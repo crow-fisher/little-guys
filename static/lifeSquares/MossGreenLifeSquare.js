@@ -34,9 +34,14 @@ class MossGreenLifeSquare extends BaseLifeSquare {
     }
 
     tick() {
+        if (this.linkedSquare.linkedOrganismSquares.length > 1) {
+            this.linkedOrganism.removeAssociatedLifeSquare(this);
+            return;
+        }
         this.addAirNutrient(this.linkedOrganism.getAirNutrientsAtSquare(this.posX, this.posY));
         this.addWaterNutrient(this.linkedSquare.suckWater(this.maxWaterDt - this.waterNutrients));
-        this.addDirtNutrient(this.linkedSquare.nutrientValue.value);
+        this.addDirtNutrient(this.linkedOrganism.getDirtNutrientsAtSquare(this.posX, this.posY));
+         
     }
 
 }

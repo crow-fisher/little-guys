@@ -30,7 +30,7 @@ class PopGrassOrganism extends BaseOrganism {
         this.waterCoef = 0.30;
 
         this.maximumLifeSquaresOfType = {
-            "green": 15 * randNumber(5, 15),
+            "green": randNumber(5, 15),
             "root": 80
         }
 
@@ -87,6 +87,7 @@ class PopGrassOrganism extends BaseOrganism {
         var rootSq = addOrganismSquare(new PopGrassRootLifeSquare(this.linkedSquare, this));
         rootSq.linkSquare(this.linkedSquare);
         rootSq.addChild(orgSq);
+        this.linkedSquare.linkOrganismSquare(rootSq);
         this.addAssociatedLifeSquare(rootSq);
     }
 
@@ -175,6 +176,7 @@ class PopGrassOrganism extends BaseOrganism {
                 if (newPopGrassRootLifeSquare) {
                     this.addAssociatedLifeSquare(newPopGrassRootLifeSquare);
                     newPopGrassRootLifeSquare.linkSquare(wettestSquare);
+                    wettestSquare.linkOrganismSquare(newPopGrassRootLifeSquare);
                     wettestSquareParent.addChild(newPopGrassRootLifeSquare)
                     return newPopGrassRootLifeSquare.getCost();
                 }
@@ -226,6 +228,7 @@ class PopGrassOrganism extends BaseOrganism {
                 this.addAssociatedLifeSquare(popGrassRootLifeSquare);
                 popGrassRootLifeSquare.linkSquare(dirtiestSquare);
                 dirtiestSquareParent.addChild(popGrassRootLifeSquare);
+                dirtiestSquare.linkOrganismSquare(popGrassRootLifeSquare);
                 return popGrassRootLifeSquare.getCost();
             }
         }

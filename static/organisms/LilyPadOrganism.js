@@ -102,6 +102,7 @@ class LilyPadOrganism extends BaseOrganism {
         var rootSq = addOrganismSquare(new LilyPadRootLifeSquare(this.linkedSquare, this));
         rootSq.linkSquare(this.linkedSquare);
         rootSq.addChild(orgSq);
+        this.linkedSquare.linkOrganismSquare(rootSq);
         this.addAssociatedLifeSquare(rootSq);
     }
 
@@ -260,6 +261,7 @@ class LilyPadOrganism extends BaseOrganism {
                     this.addAssociatedLifeSquare(newLilyPadWaterlifeSquare);
                     newLilyPadWaterlifeSquare.linkSquare(wettestSquare);
                     wettestSquareParent.addChild(newLilyPadWaterlifeSquare)
+                    wettestSquare.linkOrganismSquare(newLilyPadWaterlifeSquare);
                     return newLilyPadWaterlifeSquare.getCost();
                 }
             }
@@ -310,6 +312,7 @@ class LilyPadOrganism extends BaseOrganism {
                 this.addAssociatedLifeSquare(lilyPadRootLifeSquare);
                 lilyPadRootLifeSquare.linkSquare(dirtiestSquare);
                 dirtiestSquareParent.addChild(lilyPadRootLifeSquare);
+                dirtiestSquare.linkOrganismSquare(lilyPadRootLifeSquare);
                 return lilyPadRootLifeSquare.getCost();
             }
         }

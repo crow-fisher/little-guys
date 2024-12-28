@@ -23,11 +23,11 @@ class MossOrganism extends BaseOrganism {
         this.reproductionEnergy *= 100;
         this.reproductionEnergyUnit *= 100;
 
-        this.currentHealth *= 1000;
+        this.currentHealth *= 2;
 
-        this.airCoef = 0.25;
-        this.dirtCoef = 1.6;
-        this.waterCoef = 0.20;
+        this.airCoef = 0.3;
+        this.dirtCoef = 1;
+        this.waterCoef = 0.1;
 
         this.maximumLifeSquaresOfType = {
             "green": 1000
@@ -68,15 +68,12 @@ class MossOrganism extends BaseOrganism {
         this.addAssociatedLifeSquare(firstMossSquare);
     }
     growForOptimizingNutrient(squareGetter) {
-        if (getCurTime() - this.plantLastGrown < this.lifeSquaresCountByType["green"]) {
-            return 0;
-        }
-        
         var maxSqSum = 0;
         var maxSq = null;
         this.lifeSquares.forEach((lsq) => {
             getDirectNeighbors(lsq.posX, lsq.posY)
             .filter((sq) => sq.linkedOrganismSquares.length == 0)
+            .filter((sq) => sq.rootable)
             .forEach((sq) => {
                 // 'sq' is a candidate growth location
                 // assess the value of 'sq'
@@ -120,7 +117,7 @@ class MossOrganism extends BaseOrganism {
             return 0;
         }
         var targetSquare = sqArr[0];
-        return airNutrientsPerEmptyNeighbor.value * (0.25 ** targetSquare.currentPressureDirect)
+        return airNutrientsPerEmptyNeighbor.value * (.7 ** targetSquare.currentPressureDirect)
     }
 
     getWaterNutrientsAtSquare(posX, posY) {
@@ -139,7 +136,10 @@ class MossOrganism extends BaseOrganism {
             return 0;
         }
         var targetSquare = sqArr[0];
-        return targetSquare.nutrientValue.value;
+        var val = targetSquare.nutrientValue.value;
+
+        getDirectNeighbors(posX, posY).filter((sq) => sq.linkedOrganismSquares.length > 0).forEach((sq) => val * 0.8);
+        return val;
     }
 
     growAndDecay() {
@@ -147,18 +147,9 @@ class MossOrganism extends BaseOrganism {
         if (this.currentEnergy < 0) {
             return;
         }
-        let meanNutrient = this.getMeanNutrient();
 
-        if (this.airNutrients <= meanNutrient) {
-            this.currentEnergy -= this.growForOptimizingNutrient((sq) => this.getAirNutrientsAtSquare(sq.posX, sq.posY));
-        }
-
-        if (this.dirtNutrients <= meanNutrient) {
-            this.currentEnergy -= this.growForOptimizingNutrient((sq) => this.getDirtNutrientsAtSquare(sq.posX, sq.posY));
-        }
-
-        if (this.waterNutrients <= meanNutrient) {
-            this.currentEnergy -= this.growForOptimizingNutrient((sq) => this.getWaterNutrientsAtSquare(sq.posX, sq.posY));
+        if (getCurTime() - this.plantLastGrown < (this.lifeSquaresCountByType["green"] ** 1.5)) {
+            return;
         }
 
         let squareScores = Array.from(this.lifeSquares.map((lsq) => lsq.getScore())).sort();
@@ -169,11 +160,40 @@ class MossOrganism extends BaseOrganism {
             );
             let squareScoresMean = squareScoresSum / squareScores.length;
             let squareScoresStdev = getStandardDeviation(squareScores);
-            let squareScoreThreshold = squareScoresMean - (1 + Math.random()) * squareScoresStdev;
+            let squareScoreThreshold = squareScoresMean - ((Math.random() / 2)) * squareScoresStdev;
+            var start = this.lifeSquares.length;
             this.lifeSquares
                 .filter((lsq) => lsq.posX != this.posX && lsq.posY != this.posY)
-                .filter((lsq) => lsq.getScore() < squareScoreThreshold).forEach((lsq) => this.removeAssociatedLifeSquare(lsq));
+                .filter((lsq) => lsq.getScore() < squareScoreThreshold)
+                .some((lsq) => {
+                    this.removeAssociatedLifeSquare(lsq);
+                    return true;
+                });
+            
+            if (start > this.lifeSquares.length) {
+                this.plantLastGrown = getCurTime();
+                return;
+            }
         }
+
+        let meanNutrient = this.getMeanNutrient();
+
+        if (this.airNutrients <= meanNutrient) {
+            this.currentEnergy -= this.growForOptimizingNutrient((sq) => this.getAirNutrientsAtSquare(sq.posX, sq.posY));
+            return;
+        }
+
+        if (this.dirtNutrients <= meanNutrient) {
+            this.currentEnergy -= this.growForOptimizingNutrient((sq) => this.getDirtNutrientsAtSquare(sq.posX, sq.posY));
+            return;
+        }
+
+        if (this.waterNutrients <= meanNutrient) {
+            this.currentEnergy -= this.growForOptimizingNutrient((sq) => this.getWaterNutrientsAtSquare(sq.posX, sq.posY));
+            return;
+        }
+
+        
     }
 }
 
