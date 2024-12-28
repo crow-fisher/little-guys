@@ -6,6 +6,7 @@ var displayConfigDirty = false;
 var displayConfigText = "";
 
 function addConfig(config) {
+    return;
     all_configs.push(config);
     var newSlider = document.createElement("input");
     newSlider.type = "range";
