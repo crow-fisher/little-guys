@@ -514,16 +514,15 @@ export class BaseSquare {
             if (getSquares(this.posX + side, this.posY).some((sq) => sq.collision)) {
                 continue;
             }
+            if (getNeighbors(this.posX, this.posY)
+                .filter((sq) => sq.group == this.group)
+                .some((sq) => sq.waterContainment != sq.waterContainmentMax.value)) {
+                    return;
+                }
             var newWater = addSquareByName(this.posX + side, this.posY, "water");
             if (newWater) {
                 newWater.blockHealth = this.waterContainmentTransferRate.value;
                 this.waterContainment -= this.waterContainmentTransferRate.value;
-                getNeighbors(this.posX, this.posY)
-                    .filter((sq) => sq.group == this.group)
-                    .forEach((sq) => {
-                    newWater.blockHealth += sq.waterContainmentTransferRate.value;
-                    sq.waterContainment -= sq.waterContainmentTransferRate.value;
-                });
             }
         }
     }

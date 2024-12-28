@@ -28,14 +28,14 @@ class LilyPadOrganism extends BaseOrganism {
 
         this.throttleInterval = 1000;
 
-        this.maxLifeTime = 1000 * 50;
+        this.airCoef = 1;
+        this.dirtCoef = .8;
+        this.waterCoef = 0.20;
 
-        this.plantLastGrown = getCurTime();
-        this.waterLastGrown = getCurTime();
-        this.rootLastGrown = getCurTime();
+        this.spawnSeedSpeed = -2;
 
-        this.reproductionEnergy /= 4;
-        this.reproductionEnergyUnit /= 4;
+        this.reproductionEnergy *= 1;
+        this.reproductionEnergyUnit *= 1;
 
         this.maximumLifeSquaresOfType = {
             "green": 20,
@@ -135,10 +135,16 @@ class LilyPadOrganism extends BaseOrganism {
     growFlower() {
         if (this.shouldGrowFlower()) {
             var highestPlantSquare = Array.from(this.lifeSquares.filter((sq) => sq.type == "green").sort((a, b) => a.posY - b.posY))[0];
-            if (
-                !(getSquares(highestPlantSquare.posX, highestPlantSquare.posY - 1).some((sq) => sq.proto == "WaterSquare")) &&
-                !(getSquares(highestPlantSquare.posX, highestPlantSquare.posY - 1).some((sq) => sq.collision || sq.organic))
-                ) {
+            if (getSquares(highestPlantSquare.posX, highestPlantSquare.posY - 1).some((sq) => sq.proto == "WaterSquare")) {
+                var newPlantSquare = new PlantSquare(highestPlantSquare.posX, highestPlantSquare.posY - 1);
+                var newLilyPadWaterGreenLifeSquare = addOrganismSquare(new LilyPadWaterGreenLifeSquare(newPlantSquare, this));
+                if (newLilyPadWaterGreenLifeSquare) {
+                    this.addAssociatedLifeSquare(newLilyPadWaterGreenLifeSquare);
+                    newLilyPadWaterGreenLifeSquare.linkSquare(newPlantSquare);
+                    highestPlantSquare.addChild(newLilyPadWaterGreenLifeSquare)
+                    return newLilyPadWaterGreenLifeSquare.getCost();
+                }
+            } else {
                 var newPlantSquare = new PlantSquare(highestPlantSquare.posX, highestPlantSquare.posY - 1);
                 if (addSquare(newPlantSquare)) {
                     var newLilyPadFlowerLifeSquare = addOrganismSquare(new LilyPadFlowerLifeSquare(newPlantSquare, this));
@@ -148,15 +154,6 @@ class LilyPadOrganism extends BaseOrganism {
                         highestPlantSquare.addChild(newLilyPadFlowerLifeSquare);
                         return newLilyPadFlowerLifeSquare.getCost();
                     }
-                }
-            } else {
-                var newPlantSquare = new PlantSquare(highestPlantSquare.posX, highestPlantSquare.posY - 1);
-                var newLilyPadWaterGreenLifeSquare = addOrganismSquare(new LilyPadWaterGreenLifeSquare(newPlantSquare, this));
-                if (newLilyPadWaterGreenLifeSquare) {
-                    this.addAssociatedLifeSquare(newLilyPadWaterGreenLifeSquare);
-                    newLilyPadWaterGreenLifeSquare.linkSquare(newPlantSquare);
-                    highestPlantSquare.addChild(newLilyPadWaterGreenLifeSquare)
-                    return newLilyPadWaterGreenLifeSquare.getCost();
                 }
             }
         }
@@ -185,7 +182,7 @@ class LilyPadOrganism extends BaseOrganism {
                         .forEach((compSquare) => {
                             var compSquareNutrientsAvailable = getDirectNeighbors(compSquare.posX, compSquare.posY)
                                 .filter((sq) => getOrganismSquaresAtSquare(sq.posX, sq.posY).length == 0)
-                                .map((sq) => 1 * (0.9 ** compSquare.currentPressureIndirect))
+                                .map((sq) => sq.solid ? 0.05 : (1 * (0.9 ** compSquare.currentPressureIndirect)))
                                 .reduce(
                                     (accumulator, currentValue) => accumulator + currentValue,
                                     0,
@@ -258,12 +255,12 @@ class LilyPadOrganism extends BaseOrganism {
                     });
             }
             if (wettestSquare != null) {
-                var newPopGrassRootLifeSquare = addOrganismSquare(new PopGrassRootLifeSquare(wettestSquare, this));
-                if (newPopGrassRootLifeSquare) {
-                    this.addAssociatedLifeSquare(newPopGrassRootLifeSquare);
-                    newPopGrassRootLifeSquare.linkSquare(wettestSquare);
-                    wettestSquareParent.addChild(newPopGrassRootLifeSquare)
-                    return newPopGrassRootLifeSquare.getCost();
+                var newLilyPadWaterlifeSquare = addOrganismSquare(new LilyPadRootLifeSquare(wettestSquare, this));
+                if (newLilyPadWaterlifeSquare) {
+                    this.addAssociatedLifeSquare(newLilyPadWaterlifeSquare);
+                    newLilyPadWaterlifeSquare.linkSquare(wettestSquare);
+                    wettestSquareParent.addChild(newLilyPadWaterlifeSquare)
+                    return newLilyPadWaterlifeSquare.getCost();
                 }
             }
         }
@@ -309,11 +306,11 @@ class LilyPadOrganism extends BaseOrganism {
                         });
                 });
             if (dirtiestSquare != null) {
-                var popGrassRootLifeSquare = addOrganismSquare(new PopGrassRootLifeSquare(dirtiestSquare, this));
-                this.addAssociatedLifeSquare(popGrassRootLifeSquare);
-                popGrassRootLifeSquare.linkSquare(dirtiestSquare);
-                dirtiestSquareParent.addChild(popGrassRootLifeSquare);
-                return popGrassRootLifeSquare.getCost();
+                var lilyPadRootLifeSquare = addOrganismSquare(new LilyPadRootLifeSquare(dirtiestSquare, this));
+                this.addAssociatedLifeSquare(lilyPadRootLifeSquare);
+                lilyPadRootLifeSquare.linkSquare(dirtiestSquare);
+                dirtiestSquareParent.addChild(lilyPadRootLifeSquare);
+                return lilyPadRootLifeSquare.getCost();
             }
         }
         return 0;

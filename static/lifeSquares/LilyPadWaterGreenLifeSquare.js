@@ -35,9 +35,8 @@ class LilyPadWaterGreenLifeSquare extends BaseLifeSquare {
         this.addAirNutrient(
             airNutrientsPerEmptyNeighbor.value *
             getDirectNeighbors(this.posX, this.posY)
-            .filter((sq) => sq.proto == "WaterSquare")
             .filter((sq) => getOrganismSquaresAtSquare(sq.posX, sq.posY).length == 0)
-            .map((sq) => 1 * (0.9 ** (sq.currentPressureIndirect ** 0.5)))
+            .map((sq) => (sq.solid ? 0.05 : (1 * (0.9 ** (sq.currentPressureIndirect)))))
             .reduce(
                 (accumulator, currentValue) => accumulator + currentValue,
                 0,

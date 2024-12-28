@@ -3,24 +3,44 @@
 <body>
     <canvas tabindex='1' id="main"></canvas>
     <p>little guys</p>
-    <select id="materialSelect">
-        <option value="dirt,dirt,dirt,sand">dirt</option>
-        <option value="gravel">gravel</option>
-        <option value="sand,sand,sand,dirt">sand</option>
-        <option value="sand,dirt">sandy dirt</option>
-        <option value="sand,sand,dirt">very sandy dirt</option>
-        <option value="sand,dirt,dirt">very dirty sand</option>
-        <option value="popgrass">popgrass</option>
-        <option value="cactus">cactus</option>
-        <option value="lilypad">lilypad</option>
+
+    <select id="specialSelect">
         <option value="water">water</option>
-        <option value="rock">rock</option>
         <option value="rain">rain</option>
         <option value="heavy rain">heavy rain</option>
         <option value="aquifer">aquifer</option>
         <option value="drain">drain</option>
-        <option value="water distribution">water distribution</option>
+        <!-- <option value="water distribution">water distribution</option> -->
     </select>
+
+    <select id="material1">
+        <option value="dirt">dirt</option>
+        <option value="gravel">gravel</option>
+        <option value="sand">sand</option>
+        <option value="rock">rock</option>
+    </select>
+
+    <select id="material2">
+        <option value="sand">sand</option>
+        <option value="dirt">dirt</option>
+        <option value="gravel">gravel</option>
+        <option value="rock">rock</option>
+    </select>
+
+    <input type="checkbox" id="mixMaterials"/>
+    <label for="mixMaterials">mix materials?</lavel>
+    <input type="range" min="1" max="100" value="50" id="materialSlider">
+    <label for="materialSlider">material ratio</label>
+
+    <select id="organismWetland">
+        <option value="popgrass">popgrass</option>
+        <option value="lilypad">lilypad</option>
+    </select>
+
+    <select id="organismOther">
+        <option value="cactus">cactus</option>
+    </select>
+
     <select id="viewmodeSelect">
         <option value="normal">normal</option>
         <option value="watersaturation">water saturation</option>
@@ -44,8 +64,8 @@
 
     </select>
     <input type="number" id="timeScale" value=1>time scale</input>
-    <button type="button" id="loadSlotA">load slot A</button>
-    <button type="button" id="saveSlotA">save slot A</button>
+    <button type="button" id="loadSlotA">load slot A (pop grass)</button>
+    <button type="button" id="saveSlotA">save slot A (pop grass)</button>
     <button type="button" id="loadSlotB">load slot B</button>
     <button type="button" id="saveSlotB">save slot B</button>
     <div id="configSliders">

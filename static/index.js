@@ -25,7 +25,24 @@ import { LilyPadSeedOrganism } from "./organisms/LilyPadSeedOrganism.js";
 import { PlantSquare } from "./squares/PlantSquare.js";
 import { randNumber } from "./common.js";
 
-var materialSelect = document.getElementById("materialSelect");
+var lastMode = "normal"; // options: "normal", "special", "organism";
+
+var specialSelect = document.getElementById("specialSelect");
+var specialSelect_val = "water";
+var material1 = document.getElementById("material1");
+var material1_val = "dirt";
+var material2 = document.getElementById("material2");
+var material2_val = "sand";
+var mixMaterials = document.getElementById("mixMaterials");
+var mixMaterials_val = false;
+var materialSlider = document.getElementById("materialSlider");
+var materialSlider_val = 50;
+
+var organismWetland = document.getElementById("organismWetland");
+var organismWetland_val;
+var organismOther = document.getElementById("organismOther");
+var organismOther_val;
+
 var timeScale = document.getElementById("timeScale");
 var viewmodeSelect = document.getElementById("viewmodeSelect");
 
@@ -38,7 +55,36 @@ var selectedMaterial = "dirt";
 var selectedViewMode = "normal";
 const BASE_SIZE = 4;
 
-materialSelect.addEventListener('change', (e) => selectedMaterial = e.target.value);
+
+specialSelect.addEventListener('change', (e) => {
+    lastMode = "special";
+    specialSelect_val = e.target.value;
+});
+material1.addEventListener('change', (e) => {
+    lastMode = "normal";
+    material1_val = e.target.value;
+});
+material2.addEventListener('change', (e) => {
+    lastMode = "normal";
+    material2_val = e.target.value;
+});
+mixMaterials.addEventListener('change', (e) => {
+    lastMode = "normal";
+    mixMaterials_val = e.target.checked;
+});
+materialSlider.addEventListener('change', (e) =>  {
+    lastMode = "normal";
+    materialSlider_val = parseInt(e.target.value);
+});
+organismWetland.addEventListener('change', (e) => {
+    lastMode = "organismWetland";
+    organismWetland_val = e.target.value;
+});
+organismOther.addEventListener('change', (e) => {
+    lastMode = "organismOther";
+    organismOther_val = e.target.value;
+});
+
 viewmodeSelect.addEventListener('change', (e) => selectedViewMode = e.target.value);
 timeScale.addEventListener("change", (e) => TIME_SCALE = e.target.value)
 
@@ -228,11 +274,15 @@ function doMouseHover() {
     getOrganismSquaresAtSquare(Math.floor(px), Math.floor(py)).forEach((orgSq) => orgSq.linkedOrganism.hovered = true);
 }
 
-function addSquareByNameCSV(posX, posY, nameIn) {
-    var nameSplit = nameIn.split(",");
-    nameSplit.forEach((unused) => 
-        addSquareByName(posX, posY, nameSplit[randNumber(0, nameSplit.length - 1)])
-    );
+function addSquareByNameConfig(posX, posY) {
+    if (!mixMaterials_val) {
+        return addSquareByName(posX, posY, material1_val);
+    }
+    if (Math.random() * 100 > materialSlider_val) {
+        return addSquareByName(posX, posY, material1_val);
+    } else {
+        return addSquareByName(posX, posY, material2_val);
+    }
 }
 
 function addSquareByName(posX, posY, name) {
@@ -293,38 +343,52 @@ function doClickAdd() {
                     doErase(px, curY);
                     break;
                 } else {
-                    addSquareByNameCSV(px, curY, selectedMaterial);
-                    switch (selectedMaterial) {
-                        // organism sections
-                        // in this case we only want to add one per click
-                        case "popgrass":
-                            if (Math.random() > 0.95) {
-                                var sq = addSquare(new SeedSquare(px, curY));
-                                if (sq) {
-                                    // organismAddedThisClick = true;
-                                    addNewOrganism(new PopGrassSeedOrganism(sq));
-                                }
-                            }
-                            break;
-
-                        case "cactus":
-                            if (Math.random() > 0.95) {
-                                var sq = addSquare(new SeedSquare(px, curY));
-                                if (sq) {
-                                    addNewOrganism(new CactusSeedOrganism(sq));
-                                }
-                            }
-                            break;
-
-                        case "lilypad":
-                            if (Math.random() > 0.95) {
-                                var sq = addSquare(new SeedSquare(px, curY));
-                                if (sq) {
-                                    addNewOrganism(new LilyPadSeedOrganism(sq));
-                                }
-                            }
-                            break;
+                    if (lastMode == "normal") {
+                        addSquareByNameConfig(px, curY);
                     }
+                    else if (lastMode == "special") {
+                        addSquareByName(px, curY, specialSelect_val);
+                    } else if (lastMode.startsWith("organism")) {
+                        var selectedOrganism;
+                        if (lastMode == "organismWetland") {
+                            selectedOrganism = organismWetland_val;
+                        } else if (lastMode == "organismOther") {
+                            selectedOrganism = organismOther_val;
+                        }
+
+                        switch (selectedOrganism) {
+                            // organism sections
+                            // in this case we only want to add one per click
+                            case "popgrass":
+                                if (Math.random() > 0.95) {
+                                    var sq = addSquare(new SeedSquare(px, curY));
+                                    if (sq) {
+                                        // organismAddedThisClick = true;
+                                        addNewOrganism(new PopGrassSeedOrganism(sq));
+                                    }
+                                }
+                                break;
+    
+                            case "cactus":
+                                if (Math.random() > 0.95) {
+                                    var sq = addSquare(new SeedSquare(px, curY));
+                                    if (sq) {
+                                        addNewOrganism(new CactusSeedOrganism(sq));
+                                    }
+                                }
+                                break;
+    
+                            case "lilypad":
+                                if (Math.random() > 0.95) {
+                                    var sq = addSquare(new SeedSquare(px, curY));
+                                    if (sq) {
+                                        addNewOrganism(new LilyPadSeedOrganism(sq));
+                                    }
+                                }
+                                break;
+                        }
+                    }
+                    
                 }
                 if (!shiftPressed || selectedMaterial.indexOf("rain") >= 0 || selectedMaterial.indexOf("aquifer") >= 0) {
                     break;
@@ -372,4 +436,4 @@ window.onload = function () {
     // });
 }
 
-export { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, selectedViewMode, addSquareByName, addSquareByNameCSV }
+export { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, selectedViewMode, addSquareByName }

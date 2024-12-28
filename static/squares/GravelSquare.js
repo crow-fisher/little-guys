@@ -10,9 +10,9 @@ class GravelSquare extends BaseSquare {
         this.validPlantHome = false;
         this.waterContainmentMax = gravel_waterContainmentMax;
         this.waterContainmentTransferRate = gravel_waterContainmentTransferRate;
-        this.baseColor = "#91A3B0";
-        this.darkColor = "#536878";
-        this.accentColor = "#AA98A9";
+        this.baseColor = "#9F8170";
+        this.darkColor = "#7B3F00";
+        this.accentColor = "#4A412A";
         this.waterSinkRate = 0.4;
 
     }

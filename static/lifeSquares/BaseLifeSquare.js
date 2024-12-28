@@ -1,5 +1,5 @@
 import { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE } from "../index.js";
-import { getZPercent, hexToRgb, processColorStdev, rgbToHex, rgbToRgba } from "../common.js";
+import { getZPercent, hexToRgb, processColorLerp, processColorStdev, rgbToHex, rgbToRgba } from "../common.js";
 
 import { getCurTime } from "../globals.js";
 import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount } from "../config/config.js";
@@ -180,50 +180,42 @@ class BaseLifeSquare {
                         b: 255 * (this.waterNutrients / this.linkedOrganism.getMaxWaterNutrient())
                     }
                     val = this.dirtNutrients + this.airNutrients + this.waterNutrients;
-                    val_max = this.linkedOrganism.getMaxAllNutrients(); 
-                    val_stdev = this.linkedOrganism.getStdevAllNutrients();
+                    val_max = this.maxAirDt + this.maxWaterDt + this.maxDirtDt; 
                     break;
                 case "organismSquareDirt":
                     color = RGB_COLOR_BROWN;
                     val = this.dirtNutrients;
-                    val_max = this.linkedOrganism.getMaxDirtNutrient();
-                    val_stdev = this.linkedOrganism.getStdevDirtNutrient();
+                    val_max = this.maxDirtDt;
                     break;
                 case "organismSquareWater":
                     color = RGB_COLOR_BLUE;
                     val = this.waterNutrients;
-                    val_max = this.linkedOrganism.getMaxWaterNutrient();
-                    val_stdev = this.linkedOrganism.getStdevWaterNutrient();
+                    val_max = this.maxWaterDt;
                     break;
                 case "organismSquareAir":
                     color = RGB_COLOR_GREEN;
                     val = this.airNutrients;
-                    val_max = this.linkedOrganism.getMaxAirNutrient();
-                    val_stdev = this.linkedOrganism.getStdevAirNutrient();
+                    val_max = this.maxAirDt;
                     break;
                 case "organismSquareWaterStored":
                     color = RGB_COLOR_BLUE;
                     val = this.storedWater;
                     val_max = this.storedWaterMax;
-                    val_stdev = this.storedWaterMax / 4;
                     break;
                 case "organismHealth":
                     color = RGB_COLOR_RED;
                     val = this.healthIndicated; 
                     val_max = 1;
-                    val_stdev = 2;
                     break;
                 case "organismEnergy":
                     color = RGB_COLOR_GREEN;
                     val = this.energyIndicated; 
                     val_max = 1;
-                    val_stdev = 2;
                     break;
                 case "organismLifetime":
                     color = RGB_COLOR_BLACK;
                     val = this.lifetimeIndicated; 
                     val_max = 1;
-                    val_stdev = 2;
                     break;
                 case "organismNutrients":
                     color = {
@@ -250,17 +242,14 @@ class BaseLifeSquare {
                     color = RGB_COLOR_BLUE;
                     val = this.waterIndicated;
                     val_max = 1;
-                    val_stdev = 2;
                     break;
                 case "organismAir":
                     color = RGB_COLOR_GREEN;
                     val = this.airIndicated;
                     val_max = 1;
-                    val_stdev = 2;
                     break;
             }
-            var colorProcessed = processColorStdev(val_max, val, val_max, color);
-
+            var colorProcessed = processColorLerp((val_max - val), -0.5, val_max + 0.5, color);
             MAIN_CONTEXT.fillStyle = rgbToHex(colorProcessed.r, colorProcessed.g, colorProcessed.b);
             MAIN_CONTEXT.fillRect(
                 this.posX * BASE_SIZE,

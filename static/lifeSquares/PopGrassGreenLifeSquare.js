@@ -41,6 +41,17 @@ class PopGrassGreenLifeSquare extends BaseLifeSquare {
                         0,
                     ))
         );
+        this.addAirNutrient(
+            airNutrientsPerEmptyNeighbor.value *
+            (
+                getNeighbors(this.posX, this.posY)
+                    .filter((sq) => sq.proto == this.linkedSquare.proto)
+                    .map((sq) => 0.65)
+                    .reduce(
+                        (accumulator, currentValue) => accumulator + currentValue,
+                        0,
+                    ))
+        );
 
 
     }

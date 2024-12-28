@@ -16,6 +16,7 @@ import { getOrganismSquaresAtSquare } from "../lifeSquares/_lsOperations.js";
 import { getOrganismSquaresAtSquareWithEntityId } from "../lifeSquares/_lsOperations.js";
 
 import { getCurTime } from "../globals.js";
+import { randNumber } from "../common.js";
 class PopGrassOrganism extends BaseOrganism {
     constructor(square) {
         super(square);
@@ -26,10 +27,10 @@ class PopGrassOrganism extends BaseOrganism {
 
         this.airCoef = 1;
         this.dirtCoef = 1;
-        this.waterCoef = 0.5;
+        this.waterCoef = 0.30;
 
         this.maximumLifeSquaresOfType = {
-            "green": 20,
+            "green": 15 * randNumber(5, 15),
             "root": 80
         }
 

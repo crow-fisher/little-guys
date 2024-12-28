@@ -22,6 +22,8 @@ class BaseOrganism {
         this.dirtCoef = 1;
         this.waterCoef = 1;
 
+        this.spawnSeedSpeed = 3;
+
         this.spawnTime = getCurTime();
         this.currentEnergy = 0;
         this.totalEnergy = 0;
@@ -222,9 +224,9 @@ class BaseOrganism {
         var seedSquare = this.getSeedSquare();
         if (seedSquare != null) {
             while (seedSquare.speedX == 0) {
-                seedSquare.speedX = Math.floor(randNumber(-3, 3));
+                seedSquare.speedX = Math.floor(randNumber(-this.spawnSeedSpeed, this.spawnSeedSpeed));
             }
-            seedSquare.speedY = Math.floor(randNumber(-3, -1));
+            seedSquare.speedY = Math.floor(randNumber(-this.spawnSeedSpeed, -1));
             return true;
         } else {
             return false;
@@ -294,10 +296,10 @@ class BaseOrganism {
         return this.currentEnergy / this.reproductionEnergy;
     }
 
-    getEnergyConversionEfficiency() {
+    getHealthEnergyConversionEfficiency() {
         return (
             ((this.currentHealth + this.maxHealth) / 2) / this.maxHealth
-        ) / (this.airCoef * this.dirtCoef * this.waterCoef);
+        );
     }
         
     growAndDecay() {
@@ -330,7 +332,7 @@ class BaseOrganism {
         });
 
         var energyGained = this.law.photosynthesis(this.airNutrients - this.totalEnergy, this.waterNutrients - this.totalEnergy, this.dirtNutrients - this.totalEnergy);
-        energyGained *= this.getEnergyConversionEfficiency();
+        energyGained *= this.getHealthEnergyConversionEfficiency();
 
         this.currentEnergy += energyGained;
         this.totalEnergy += energyGained;
