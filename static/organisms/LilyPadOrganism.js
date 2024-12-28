@@ -34,8 +34,8 @@ class LilyPadOrganism extends BaseOrganism {
 
         this.spawnSeedSpeed = -2;
 
-        this.reproductionEnergy *= 1;
-        this.reproductionEnergyUnit *= 1;
+        this.reproductionEnergy *= 2;
+        this.reproductionEnergyUnit *= 2;
 
         this.maximumLifeSquaresOfType = {
             "green": 20,
@@ -208,16 +208,16 @@ class LilyPadOrganism extends BaseOrganism {
                     }
                 }
             } else {
-                var newPlantSquare = new PlantSquare(highestPlantSquare.posX, highestPlantSquare.posY - 1);
-                if (addSquare(newPlantSquare)) {
-                    var newLilyPadWaterGreenLifeSquare = addOrganismSquare(new LilyPadWaterGreenLifeSquare(newPlantSquare, this));
-                    if (newLilyPadWaterGreenLifeSquare) {
-                        this.addAssociatedLifeSquare(newLilyPadWaterGreenLifeSquare);
-                        newLilyPadWaterGreenLifeSquare.linkSquare(newPlantSquare);
-                        highestPlantSquare.addChild(newLilyPadWaterGreenLifeSquare);
-                        return newLilyPadWaterGreenLifeSquare.getCost();
-                    }
-                };
+                // var newPlantSquare = new PlantSquare(highestPlantSquare.posX, highestPlantSquare.posY - 1);
+                // if (addSquare(newPlantSquare)) {
+                //     var newLilyPadWaterGreenLifeSquare = addOrganismSquare(new LilyPadWaterGreenLifeSquare(newPlantSquare, this));
+                //     if (newLilyPadWaterGreenLifeSquare) {
+                //         this.addAssociatedLifeSquare(newLilyPadWaterGreenLifeSquare);
+                //         newLilyPadWaterGreenLifeSquare.linkSquare(newPlantSquare);
+                //         highestPlantSquare.addChild(newLilyPadWaterGreenLifeSquare);
+                //         return newLilyPadWaterGreenLifeSquare.getCost();
+                //     }
+                // };
             }
         }
         return 0;

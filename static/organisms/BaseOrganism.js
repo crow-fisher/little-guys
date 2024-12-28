@@ -347,20 +347,21 @@ class BaseOrganism {
             this.destroy();
         }
 
-        if (lifeCyclePercentage < 0.6) {
-            this.growAndDecay();
-            return;
-        }
-
-        var currentEnergyPercentage = this.getCurrentEnergyFrac();
-        var totalEnergyLifeCycleRate = this.totalEnergy / lifeCyclePercentage;
-
-        if (currentEnergyPercentage > 1) {
+        if (this.getCurrentEnergyFrac() > 1) {
             if (this.spawnSeed()) {
                 this.currentEnergy -= this.reproductionEnergyUnit;
             }
             return;
         }
+
+        if (lifeCyclePercentage < 0.6) {
+            this.growAndDecay();
+            return;
+        }
+
+        var totalEnergyLifeCycleRate = this.totalEnergy / lifeCyclePercentage;
+
+
 
         var projectedEnergyAtEOL = this.currentEnergy + totalEnergyLifeCycleRate * (1 - lifeCyclePercentage);
         if (projectedEnergyAtEOL < this.reproductionEnergy * (2 + 10 * Math.max(0, (0.75 - lifeCyclePercentage)))) {
