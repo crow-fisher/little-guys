@@ -364,6 +364,7 @@ export class BaseSquare {
     physics() {
         this.evaporateInnerMoisture();
         this.percolateInnerMoisture();
+        this.calculateDirectPressure();
 
         if (!this.physicsEnabled || this.linkedOrganismSquares.some((sq) => sq.type == "root")) {
             return false;
@@ -428,7 +429,6 @@ export class BaseSquare {
     /* Called before physics(), with blocks in strict order from top left to bottom right. */
     physicsBefore() {
         this.calculateGroup();
-        this.calculateDirectPressure();
     }
 
     /* god i fucking hate water physics */
