@@ -108,12 +108,7 @@ class PopGrassOrganism extends BaseOrganism {
         .filter((lsq) => lsq.childLifeSquares.length == 0);
     }
 
-    canGrowPlant() {
-        return this.lifeSquaresCountByType["green"] <= this.maximumLifeSquaresOfType["green"];
-    }
-    canGrowRoot() {
-        return this.lifeSquaresCountByType["root"] <= this.maximumLifeSquaresOfType["root"]
-    }
+
 
     growNewPlant() {
         if (!this.canGrowPlant()) {

@@ -32,7 +32,7 @@ class LilyPadOrganism extends BaseOrganism {
         this.dirtCoef = .8;
         this.waterCoef = 0.20;
 
-        this.spawnSeedSpeed = -2;
+        this.spawnSeedSpeed = 1;
 
         this.reproductionEnergy *= 1.7;
         this.reproductionEnergyUnit *= 1.7;
@@ -120,13 +120,6 @@ class LilyPadOrganism extends BaseOrganism {
         return this.lifeSquares
             .filter((lsq) => lsq.type == "root")
             .filter((lsq) => lsq.childLifeSquares.length == 0);
-    }
-
-    canGrowPlant() {
-        return this.lifeSquaresCountByType["green"] <= this.maximumLifeSquaresOfType["green"];
-    }
-    canGrowRoot() {
-        return this.lifeSquaresCountByType["root"] <= this.maximumLifeSquaresOfType["root"]
     }
 
     shouldGrowFlower() {

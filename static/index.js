@@ -26,6 +26,7 @@ import { MossSeedOrganism } from "./organisms/MossSeedOrganism.js";
 import { PlantSquare } from "./squares/PlantSquare.js";
 import { randNumber } from "./common.js";
 import { pond_demo_square_data } from "./saves.js";
+import { HydrangeaSeedOrganism } from "./organisms/HydrangeaSeedOrganism.js";
 
 var lastMode = "normal"; // options: "normal", "special", "organism";
 
@@ -514,6 +515,13 @@ function doClickAdd() {
                                     var sq = addSquare(new SeedSquare(px, curY));
                                     if (sq) {
                                         addNewOrganism(new MossSeedOrganism(sq));
+                                    }
+                                }
+                            case "hydrangea":
+                                if (Math.random() > 0.99) {
+                                    var sq = addSquare(new SeedSquare(px, curY));
+                                    if (sq) {
+                                        addNewOrganism(new HydrangeaSeedOrganism(sq));
                                     }
                                 }
                         }

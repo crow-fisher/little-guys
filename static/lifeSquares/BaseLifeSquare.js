@@ -16,6 +16,8 @@ class BaseLifeSquare {
         this.posY = square.posY;
         this.type = "base";
         this.colorBase = "#1D263B";
+        this.motivation = null; // if specified - 'air', 'water', 'dirt'
+        this.spawnTime = getCurTime();
 
         this.maxAirDt = 0.005;
         this.maxWaterDt = 0.005;
@@ -63,6 +65,10 @@ class BaseLifeSquare {
         this.darkColorAmount = dirt_darkColorAmount;
         this.accentColor = "#246A73";
         this.accentColorAmount = dirt_accentColorAmount;
+    }
+
+    dist(testX, testY) { // manhattan
+        return Math.abs(this.posX - testX) + Math.abs(this.posY - testY);
     }
 
     getCost() {

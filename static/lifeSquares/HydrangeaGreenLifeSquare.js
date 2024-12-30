@@ -7,27 +7,20 @@ import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount } fr
 import {
     airNutrientsPerEmptyNeighbor,
 } from "../config/config.js"
+import { getOrganismSquaresAtSquare } from "./_lsOperations.js";
 
 
-class PopGrassGreenLifeSquare extends BaseLifeSquare {
+class HydrangeaGreenLifeSquare extends BaseLifeSquare {
     constructor(square, organism) {
         super(square, organism);
-        this.proto = "PopGrassGreenLifeSquare";
+        this.proto = "HydrangeaGreenLifeSquare";
         this.colorBase = "#157F1F";
         this.type = "green";
         this.width = .99;
 
-        this.baseColor = "#83ab40";
-        this.baseColorAmount = dirt_baseColorAmount;
-        this.darkColor = "#4c6f21";
-        this.darkColorAmount = dirt_darkColorAmount;
-        this.accentColor = "#c1d8ab";
-        this.accentColorAmount = dirt_accentColorAmount;
-
-        // width and xOffset are scaled between 0 and 1
-        // width of 0.8 means it occupies 80% of the X width 
-        // xOffset of 0 means the left block side is all the way to the left
-        // xOffset of 1 means the right block side is all the way to the right 
+        this.baseColor = "#0d4613";
+        this.darkColor = "#39a12c";
+        this.accentColor = "#d6f482";
     }
 
     tick() {
@@ -46,17 +39,15 @@ class PopGrassGreenLifeSquare extends BaseLifeSquare {
             (
                 getNeighbors(this.posX, this.posY)
                     .filter((sq) => sq.organic)
-                    .map((sq) => 0.65)
+                    .map((sq) => 0.85)
                     .reduce(
                         (accumulator, currentValue) => accumulator + currentValue,
                         0,
                     ))
         );
-
-
     }
 }
 
 
 
-export { PopGrassGreenLifeSquare }
+export { HydrangeaGreenLifeSquare }

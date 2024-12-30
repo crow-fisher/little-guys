@@ -96,6 +96,12 @@ class BaseOrganism {
         return (this.airNutrients + this.dirtNutrients + this.waterNutrients) / 3;
     }
 
+    canGrowPlant() {
+        return this.lifeSquaresCountByType["green"] <= this.maximumLifeSquaresOfType["green"];
+    }
+    canGrowRoot() {
+        return this.lifeSquaresCountByType["root"] <= this.maximumLifeSquaresOfType["root"]
+    }
 
     storeAndRetrieveWater() {
         let meanNutrient = this.getMeanNutrient(); 
@@ -305,6 +311,22 @@ class BaseOrganism {
         return (
             ((this.currentHealth + this.maxHealth) / 2) / this.maxHealth
         );
+    }
+
+    getGrownSquaresByMotivation() {
+        var out = {
+            "dirt": 0,
+            "water": 0,
+            "air": 0
+        };
+        this.lifeSquares.forEach((sq) => {
+            if (sq.motivation in out) {
+                out[sq.motivation] += 1;
+            } else {
+                out[sq.motivation] = 1;
+            }
+        });
+        return out;
     }
         
     growAndDecay() {
