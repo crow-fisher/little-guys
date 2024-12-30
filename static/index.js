@@ -77,6 +77,8 @@ var selectedMaterial = "dirt";
 var selectedViewMode = "normal";
 const BASE_SIZE = 4;
 
+// browser detection
+var browserIsFirefox = (typeof InstallTrigger !== 'undefined');
 
 function styleHeader() {
     var nonbold_headers = [
@@ -387,8 +389,8 @@ function doMouseHover() {
     if (lastMoveEvent == null) {
         return;
     }
-    var px = lastMoveEvent.offsetX / BASE_SIZE;
-    var py = lastMoveEvent.offsetY / BASE_SIZE;
+    var px = getMouseEventX(lastMoveEvent) / BASE_SIZE;
+    var py = getMouseEventY(lastMoveEvent) / BASE_SIZE;
     iterateOnOrganisms((org) => org.hovered = false);
     getOrganismSquaresAtSquare(Math.floor(px), Math.floor(py)).forEach((orgSq) => orgSq.linkedOrganism.hovered = true);
 }
@@ -432,15 +434,31 @@ function addSquareByName(posX, posY, name) {
     };
 }
 
+function getMouseEventX(evt) {
+    // Firefox does not support offsetX
+    if(browserIsFirefox)
+        return evt.layerX;
+
+    return evt.offsetX;
+}
+
+function getMouseEventY(evt) {
+    // Firefox does not support offsetY
+    if(browserIsFirefox)
+        return evt.layerY;
+
+    return evt.offsetY;
+}
+
 function doClickAdd() {
     if (lastMoveEvent == null) {
         return;
     }
     if (mouseDown > 0) {
-        var offsetX = lastMoveEvent.offsetX / BASE_SIZE;
-        var offsetY = lastMoveEvent.offsetY / BASE_SIZE;
-        var prevOffsetX = (lastLastClickEvent == null ? lastMoveEvent : lastLastClickEvent).offsetX / BASE_SIZE;
-        var prevOffsetY = (lastLastClickEvent == null ? lastMoveEvent : lastLastClickEvent).offsetY / BASE_SIZE;
+        var offsetX = getMouseEventX(lastMoveEvent) / BASE_SIZE;
+        var offsetY = getMouseEventY(lastMoveEvent)  / BASE_SIZE;
+        var prevOffsetX = getMouseEventX((lastLastClickEvent == null ? lastMoveEvent : lastLastClickEvent)) / BASE_SIZE;
+        var prevOffsetY = getMouseEventY((lastLastClickEvent == null ? lastMoveEvent : lastLastClickEvent)) / BASE_SIZE;
 
         // point slope motherfuckers 
 
