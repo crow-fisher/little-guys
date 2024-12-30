@@ -29,15 +29,17 @@ class HydrangeaOrganism extends BaseOrganism {
 
         this.throttleInterval = 1000;
 
-        this.airCoef = 0.008;
-        this.dirtCoef = .8;
-        this.waterCoef = 0.20;
+        this.airCoef = 0.5;
+        this.dirtCoef = 0.8;
+        this.waterCoef = 0.2;
 
         this.spawnSeedSpeed = 2;
 
-        this.maxLifeTime *= 2;
-        this.reproductionEnergy *= 1.5;
-        this.reproductionEnergyUnit *= 1.5;
+        var mult = 0.5;
+        this.maxLifeTime *= mult;
+
+        this.reproductionEnergy *= mult;
+        this.reproductionEnergyUnit *= mult;
 
         this.maximumLifeSquaresOfType = {
             "green": 1000,
@@ -45,18 +47,16 @@ class HydrangeaOrganism extends BaseOrganism {
         }
 
         this.ovalParts = [randNumber(8, 12), randNumber(2, 4)].sort();
-        this.ovalMaj = this.ovalParts[1];
-        this.ovalMaj += this.ovalMaj % 2;
         this.ovalMin = this.ovalParts[0];
         this.ovalMin += this.ovalMin % 2;
+        this.ovalMaj = this.ovalParts[1];
+        this.ovalMaj += this.ovalMaj % 2;
 
         this.c = Math.random() * (Math.PI / 2) * (Math.random() > 0.5 ? 1 : -1);
 
         this.flowerColorAir = "#f4f3f5";
         this.flowerColorWater = "#efeff0";
         this.flowerColorDirt = "#f2a3eb";
-
-        this.minAgeToGrowFlower = 1 * 100;
     }
 
     getNextFlowerColor() {
@@ -94,7 +94,7 @@ class HydrangeaOrganism extends BaseOrganism {
 
 
     isPointInGrowBounds(x, y) {
-        return (Math.sin(x * this.c)) + (x ** 2 / this.ovalMaj ** 2) + (y ** 2 / this.ovalMin ** 2) < 0.8;
+        return (Math.sin(x * this.c)) + (x ** 2 / this.ovalMin ** 2) + (y ** 2 / this.ovalMaj ** 2) < 0.8;
     }
 
     getSeedSquare() {
@@ -154,8 +154,8 @@ class HydrangeaOrganism extends BaseOrganism {
 
     getValidGreenLocations() {
         var out = [];
-        for (let i = -this.ovalMaj; i <= this.ovalMaj; i++) {
-            for (let j = -this.ovalMin; j <= this.ovalMin; j++) {
+        for (let i = -this.ovalMin; i <= this.ovalMin; i++) {
+            for (let j = -this.ovalMaj; j <= this.ovalMaj; j++) {
                 if (this.isPointInGrowBounds(i, j)) {
                     out.push([this.posX + i, this.posY + j - this.ovalMin + 2]);
                 }
@@ -165,7 +165,7 @@ class HydrangeaOrganism extends BaseOrganism {
     }
 
     shouldGrowFlower() {
-        return this.currentEnergy > (this.reproductionEnergy * 0.5 +
+        return this.currentEnergy > (this.reproductionEnergy * 0.8 +
             (0.05 *
                 this.lifeSquares.map((lsq) => lsq.type == "flower")
                     .reduce(
@@ -175,19 +175,23 @@ class HydrangeaOrganism extends BaseOrganism {
     }
 
     growFlower() {
-        var candidateParents = Array.from(this.lifeSquares.filter((lsq) => lsq.type == "green").filter((lsq) => lsq.spawnTime < getCurTime() - this.minAgeToGrowFlower));
+        if (!this.shouldGrowFlower()) {
+            return 0;
+        }
+                    
+        var candidateParents = Array.from(this.lifeSquares.filter((lsq) => lsq.type == "green").filter((sq) => sq.posY < (this.getHighestGreen().posY + 2)));
         var chosenPlantToReplace = null;
         while (candidateParents.length > 0) {
             var curCandidateParent = candidateParents[randNumber(0, candidateParents.length - 1)];
             if (
-                getDirectNeighbors(curCandidateParent.posX, curCandidateParent.posY)
+                getNeighbors(curCandidateParent.posX, curCandidateParent.posY)
                     .filter((sq) => sq.linkedOrganism == this)
                     .filter((sq) => sq.linkedOrganismSquares.some((lsq) => lsq.type == "flower"))
                     .map((sq) => 1)
                     .reduce(
                         (accumulator, currentValue) => accumulator + currentValue,
                         0,
-                        ) > 0
+                        ) > (Math.floor(Math.random() * 2))
                 ) {
                 candidateParents = Array.from(candidateParents.filter((cand) => cand != curCandidateParent));
                 continue;

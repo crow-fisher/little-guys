@@ -102,6 +102,16 @@ class BaseOrganism {
     canGrowRoot() {
         return this.lifeSquaresCountByType["root"] <= this.maximumLifeSquaresOfType["root"]
     }
+    
+    getLowestGreen() {
+        return Array.from(this.lifeSquares
+            .filter((sq) => sq.type == "green")).sort((a, b) => b.posY - a.posY)[0];
+    }
+
+    getHighestGreen() {
+        return Array.from(this.lifeSquares
+            .filter((sq) => sq.type == "green")).sort((a, b) => a.posY - b.posY)[0];
+    }
 
     storeAndRetrieveWater() {
         let meanNutrient = this.getMeanNutrient(); 

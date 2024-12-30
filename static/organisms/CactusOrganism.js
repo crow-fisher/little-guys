@@ -106,15 +106,6 @@ class CactusOrganism extends BaseOrganism {
         this.addAssociatedLifeSquare(rootSq);
     }
 
-    getLowestGreen() {
-        return Array.from(this.lifeSquares
-            .filter((sq) => sq.type == "green")).sort((a, b) => b.posY - a.posY)[0];
-    }
-
-    getHighestGreen() {
-        return Array.from(this.lifeSquares
-            .filter((sq) => sq.type == "green")).sort((a, b) => a.posY - b.posY)[0];
-    }
 
     getExteriorRoots() {
         return this.lifeSquares
