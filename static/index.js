@@ -130,7 +130,7 @@ mixMaterials.addEventListener('change', (e) => {
     styleHeader();
     mixMaterials_val = e.target.checked;
 });
-materialSlider.addEventListener('change', (e) =>  {
+materialSlider.addEventListener('change', (e) => {
     lastMode = "normal";
     styleHeader();
     materialSlider_val = parseInt(e.target.value);
@@ -160,6 +160,9 @@ canvasHeight.addEventListener('change', (e) => setCanvasSquaresY(e.target.value)
 var mouseDown = 0;
 var organismAddedThisClick = false;
 var lastMoveEvent = null;
+var lastMoveOffset = null;
+var lastLastMoveOffset = null;
+
 var lastTick = Date.now();
 
 var CANVAS_SQUARES_X = 240; // * 8; //6;
@@ -220,7 +223,6 @@ var shiftPressed = false;
 var TIME_SCALE = 1;
 var MILLIS_PER_TICK = 1;
 
-var lastLastClickEvent = null;
 var rightMouseClicked = false;
 
 loadSlotA.onclick = (e) => loadSlot("A");
@@ -244,7 +246,7 @@ function loadObjArr(sourceObjMap, addFunc) {
                 sourceObjMap[rootKeys[i]][subKeys[j]].forEach((obj) => {
                     addFunc(Object.setPrototypeOf(obj, ProtoMap[obj.proto]));
                     sqMaxPosY = Math.max(sqMaxPosY, obj.posY);
-            });
+                });
             }
         }
     }
@@ -377,10 +379,32 @@ function main() {
 }
 
 
+
+function getOffset(evt) {
+    if (evt.offsetX != undefined)
+        return { x: evt.offsetX, y: evt.offsetY };
+
+    var el = evt.target;
+    var offset = { x: 0, y: 0 };
+
+    while (el.offsetParent) {
+        offset.x += el.offsetLeft;
+        offset.y += el.offsetTop;
+        el = el.offsetParent;
+    }
+
+    offset.x = evt.pageX - offset.x;
+    offset.y = evt.pageY - offset.y;
+
+    return offset;
+}
+
 function handleClick(event) {
     lastMoveEvent = event;
+    lastMoveOffset = getOffset(event);
+
     if (!rightMouseClicked && mouseDown <= 0) {
-        lastLastClickEvent = event;
+        lastLastMoveOffset = lastMoveOffset;
     }
 }
 
@@ -388,8 +412,8 @@ function doMouseHover() {
     if (lastMoveEvent == null) {
         return;
     }
-    var px = lastMoveEvent.offsetX / BASE_SIZE;
-    var py = lastMoveEvent.offsetY / BASE_SIZE;
+    var px = lastMoveEvent.x / BASE_SIZE;
+    var py = lastMoveEvent.y / BASE_SIZE;
     iterateOnOrganisms((org) => org.hovered = false);
     getOrganismSquaresAtSquare(Math.floor(px), Math.floor(py)).forEach((orgSq) => orgSq.linkedOrganism.hovered = true);
 }
@@ -438,10 +462,10 @@ function doClickAdd() {
         return;
     }
     if (mouseDown > 0) {
-        var offsetX = lastMoveEvent.offsetX / BASE_SIZE;
-        var offsetY = lastMoveEvent.offsetY / BASE_SIZE;
-        var prevOffsetX = (lastLastClickEvent == null ? lastMoveEvent : lastLastClickEvent).offsetX / BASE_SIZE;
-        var prevOffsetY = (lastLastClickEvent == null ? lastMoveEvent : lastLastClickEvent).offsetY / BASE_SIZE;
+        var offsetX = lastMoveOffset.x / BASE_SIZE;
+        var offsetY = lastMoveOffset.y / BASE_SIZE;
+        var prevOffsetX = (lastLastMoveOffset == null ? lastLastMoveOffset : lastLastMoveOffset).x / BASE_SIZE;
+        var prevOffsetY = (lastLastMoveOffset == null ? lastLastMoveOffset : lastLastMoveOffset).y / BASE_SIZE;
 
         // point slope motherfuckers 
 
@@ -491,7 +515,7 @@ function doClickAdd() {
                                     }
                                 }
                                 break;
-    
+
                             case "cactus":
                                 if (Math.random() > 0.95) {
                                     var sq = addSquare(new SeedSquare(px, curY));
@@ -500,7 +524,7 @@ function doClickAdd() {
                                     }
                                 }
                                 break;
-    
+
                             case "waterlily":
                                 if (Math.random() > 0.95) {
                                     var sq = addSquare(new SeedSquare(px, curY));
@@ -526,14 +550,14 @@ function doClickAdd() {
                                 }
                         }
                     }
-                    
+
                 }
                 if (!shiftPressed || selectedMaterial.indexOf("rain") >= 0 || selectedMaterial.indexOf("aquifer") >= 0) {
                     break;
                 }
             }
         }
-        lastLastClickEvent = lastMoveEvent;
+        lastLastMoveOffset = lastMoveOffset;
     }
 }
 
@@ -574,7 +598,8 @@ window.onload = function () {
     // });
 }
 
-export { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, selectedViewMode, addSquareByName,
+export {
+    MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, selectedViewMode, addSquareByName,
     setCanvasSquaresX, setCanvasSquaresY,
     getCanvasSquaresX, getCanvasSquaresY
 }

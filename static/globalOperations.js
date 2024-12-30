@@ -37,7 +37,7 @@ function purge() {
         }
     })
 
-    ALL_ORGANISM_SQUARES.keys().forEach((key) => {
+    Object.keys(ALL_ORGANISM_SQUARES).forEach((key) => {
         if (key < 0 || key >= CANVAS_SQUARES_X) {
             ALL_ORGANISM_SQUARES.delete(key);
         }
