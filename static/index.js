@@ -542,7 +542,7 @@ function doClickAdd() {
                                     }
                                 }
                             case "hydrangea":
-                                if (Math.random() > 0.99) {
+                                if (Math.random() > 0.95) {
                                     var sq = addSquare(new SeedSquare(px, curY));
                                     if (sq) {
                                         addNewOrganism(new HydrangeaSeedOrganism(sq));

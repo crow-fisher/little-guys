@@ -29,12 +29,13 @@ class HydrangeaOrganism extends BaseOrganism {
 
         this.throttleInterval = 1000;
 
-        this.airCoef = 1;
+        this.airCoef = 0.008;
         this.dirtCoef = .8;
         this.waterCoef = 0.20;
 
         this.spawnSeedSpeed = 2;
 
+        this.maxLifeTime *= 2;
         this.reproductionEnergy *= 1.5;
         this.reproductionEnergyUnit *= 1.5;
 
@@ -43,7 +44,7 @@ class HydrangeaOrganism extends BaseOrganism {
             "root": 20
         }
 
-        this.ovalParts = [randNumber(3, 8), randNumber(2, 5)].sort();
+        this.ovalParts = [randNumber(8, 12), randNumber(2, 4)].sort();
         this.ovalMaj = this.ovalParts[1];
         this.ovalMaj += this.ovalMaj % 2;
         this.ovalMin = this.ovalParts[0];
@@ -55,7 +56,7 @@ class HydrangeaOrganism extends BaseOrganism {
         this.flowerColorWater = "#efeff0";
         this.flowerColorDirt = "#f2a3eb";
 
-        this.minAgeToGrowFlower = 10 * 1000;
+        this.minAgeToGrowFlower = 1 * 100;
     }
 
     getNextFlowerColor() {
@@ -174,36 +175,34 @@ class HydrangeaOrganism extends BaseOrganism {
     }
 
     growFlower() {
-        if (!this.shouldGrowFlower()) {
-            return 0;
-        }
         var candidateParents = Array.from(this.lifeSquares.filter((lsq) => lsq.type == "green").filter((lsq) => lsq.spawnTime < getCurTime() - this.minAgeToGrowFlower));
-        var chosenCandidateParent = null;
+        var chosenPlantToReplace = null;
         while (candidateParents.length > 0) {
-            chosenCandidateParent = candidateParents[randNumber(0, candidateParents.length - 1)];
+            var curCandidateParent = candidateParents[randNumber(0, candidateParents.length - 1)];
             if (
-                getSquares(chosenCandidateParent.posX, chosenCandidateParent.posY - 1).some((sq) => sq.organic || sq.collision) || 
-                    (
-                        getNeighbors(chosenCandidateParent.posX, chosenCandidateParent.posY - 1)
-                            .filter((sq) => sq.linkedOrganismSquares.some((lsq) => lsq.type == "flower"))
-                            .map((sq) => 1)
-                            .reduce(
-                                (accumulator, currentValue) => accumulator + currentValue,
-                                0,
-                            ) > 0
-                    )) {
-                candidateParents = Array.from(candidateParents.filter((cand) => cand != chosenCandidateParent));
+                getDirectNeighbors(curCandidateParent.posX, curCandidateParent.posY)
+                    .filter((sq) => sq.linkedOrganism == this)
+                    .filter((sq) => sq.linkedOrganismSquares.some((lsq) => lsq.type == "flower"))
+                    .map((sq) => 1)
+                    .reduce(
+                        (accumulator, currentValue) => accumulator + currentValue,
+                        0,
+                        ) > 0
+                ) {
+                candidateParents = Array.from(candidateParents.filter((cand) => cand != curCandidateParent));
                 continue;
-            }
-            else {
+            } else {
+                chosenPlantToReplace = curCandidateParent;
                 break;
             }
         }
-        if (chosenCandidateParent == null) {
+        if (chosenPlantToReplace == null) {
             return 0;
         }
 
-        var newPlantSquare = new PlantSquare(chosenCandidateParent.posX, chosenCandidateParent.posY - 1);
+        var chosenPlantToReplaceParent = chosenPlantToReplace.parentLifeSquare;
+        this.removeAssociatedLifeSquare(chosenPlantToReplace);
+        var newPlantSquare = new PlantSquare(chosenPlantToReplace.posX, chosenPlantToReplace.posY);
         if (addSquare(newPlantSquare)) {
             var newHydrangeaFlowerLifeSquare = addOrganismSquare(new HydrangeaFlowerLifeSquare(newPlantSquare, this));
             if (newHydrangeaFlowerLifeSquare) {
@@ -212,7 +211,7 @@ class HydrangeaOrganism extends BaseOrganism {
                 this.addAssociatedLifeSquare(newHydrangeaFlowerLifeSquare);
                 newHydrangeaFlowerLifeSquare.linkSquare(newPlantSquare);
                 newHydrangeaFlowerLifeSquare.color = this.getNextFlowerColor();
-                chosenCandidateParent.addChild(newHydrangeaFlowerLifeSquare);
+                chosenPlantToReplaceParent.addChild(newHydrangeaFlowerLifeSquare);
                 return newHydrangeaFlowerLifeSquare.getCost();
             } else {
                 newPlantSquare.destroy();
