@@ -30,9 +30,11 @@ class DrainSquare extends BaseSquare {
             return 0;
         }
         if (this.waterContainment >= 1) {
-            if (addSquare(new WaterSquare(this.posX, this.posY + 1))) {
-                this.waterContainment -= 1;
-            }
+            var sq = new WaterSquare(this.posX, this.posY + 1);
+            if (addSquare(sq)) {
+                sq.blockHealth = Math.min(sq.blockHealth, this.waterContainment);
+                this.waterContainment -= sq.blockHealth;
+                }
         }
     }
 
