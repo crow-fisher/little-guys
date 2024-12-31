@@ -554,11 +554,13 @@ function doClickAdd() {
                                 break;
                             
                             case "hydrangea":
-                                if (Math.random() > 0.95) {
-                                    var sq = addSquare(new SeedSquare(px, curY));
-                                    if (sq) {
-                                        addNewOrganism(new HydrangeaSeedOrganism(sq));
-                                    }
+                                if (organismAddedThisClick) {
+                                    return;
+                                }
+                                var sq = addSquare(new SeedSquare(px, curY));
+                                if (sq) {
+                                    addNewOrganism(new HydrangeaSeedOrganism(sq));
+                                    organismAddedThisClick = true;
                                 }
                                 break;
                         }

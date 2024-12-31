@@ -50,7 +50,7 @@ class HydrangeaGreenLifeSquare extends BaseLifeSquare {
         if (this.linkedOrganism.distToEdge(this.posX, this.posY) > this.shouldFlower) {
             return;
         }
-        if (this.linkedOrganism.getLifeCyclePercentage() < this.linkedOrganism.flowerStart + this.shouldFlower * .03) {
+        if (this.linkedOrganism.getLifeCyclePercentage() < this.linkedOrganism.flowerStart + this.shouldFlower * .01) {
             return;
         }
         if (!this.shouldFlowerFlag) {
@@ -118,7 +118,7 @@ class HydrangeaGreenLifeSquare extends BaseLifeSquare {
         );
         if (this.linkedOrganism.getLifeCyclePercentage() > (1 - (1 - this.linkedOrganism.flowerEnd) * 2)) {
             if (this.linkedOrganism.blocksToEdge(this.posX, this.posY) < (this.shouldFlower * 0.7)) {
-                this.opacity -= 0.02;
+                this.opacity -= 0.01;
                 if (this.opacity < 0) {
                     this.linkedOrganism.removeAssociatedLifeSquare(this);
                     return;

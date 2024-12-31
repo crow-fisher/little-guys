@@ -215,7 +215,7 @@ class BaseLifeSquare {
     }
 
     darkeningRender() {
-        MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.linkedSquare.currentPressureDirect, 12);
+        MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.linkedSquare.currentPressureDirect, 8);
         MAIN_CONTEXT.fillRect(
             this.posX * BASE_SIZE,
             this.posY * BASE_SIZE,
@@ -238,9 +238,9 @@ class BaseLifeSquare {
             return rgbToRgba(c.r, c.g, c.b, 0);
         }
         var darkeningStrength = (darkVal / darkValMax) * b_sq_darkeningStrength.value;
-        // if (this.flowering) {
-        //     darkeningStrength /= 3;
-        // }
+        if (this.flowering) {
+            darkeningStrength /= 3;
+        }
         return rgbToRgba(c.r, c.g, c.b, darkeningStrength * this.opacity);
     }
 

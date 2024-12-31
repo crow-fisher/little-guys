@@ -7,6 +7,7 @@ class MossCoolOrganism extends MossOrganism {
     constructor(square) {
         super(square);
         this.proto = "MossCoolOrganism";
+        this.waterCoef = 0.4;
     }
 
     growInitialSquares() {
