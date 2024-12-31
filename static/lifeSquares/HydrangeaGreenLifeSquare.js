@@ -23,6 +23,38 @@ class HydrangeaGreenLifeSquare extends BaseLifeSquare {
         this.accentColor = "#d6f482";
     }
 
+    flower() {
+        if (this.shouldFlower == "0") {
+            return;
+        }
+        this.flowering = true;
+    }
+
+    render() {
+        if (this.flowering) {
+            MAIN_CONTEXT.fillStyle = this.flowerColor; 
+            MAIN_CONTEXT.fillRect(
+            this.posX * BASE_SIZE,
+            this.posY * BASE_SIZE,
+            this.width * BASE_SIZE,
+            this.height * BASE_SIZE
+        );
+        this.darkeningRender();
+        } else {
+            super.render();
+        }
+    }
+
+    darkeningRender() {
+        MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.distFromOrigin, this.linkedOrganism.maxDistFromOrigin);
+        MAIN_CONTEXT.fillRect(
+            this.posX * BASE_SIZE,
+            this.posY * BASE_SIZE,
+            this.width * BASE_SIZE,
+            this.height * BASE_SIZE
+        );
+    }
+
     tick() {
         this.addAirNutrient(
             airNutrientsPerEmptyNeighbor.value *

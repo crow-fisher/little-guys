@@ -18,9 +18,8 @@ import { getOrganismSquaresAtSquareWithEntityId } from "../lifeSquares/_lsOperat
 import { getCurTime } from "../globals.js";
 import { HydrangeaSeedOrganism } from "./HydrangeaSeedOrganism.js";
 import { HydrangeaRootLifeSquare } from "../lifeSquares/HydrangeaRootLifeSquare.js";
-import { HydrangeaFlowerLifeSquare } from "../lifeSquares/HydrangeaFlowerLifeSquare.js";
 import { HydrangeaGreenLifeSquare } from "../lifeSquares/HydrangeaGreenLifeSquare.js";
-import { getDist, hexToRgb, randNumber, rgbToHex } from "../common.js";
+import { getDist, hexToRgb, randNumber, rgbToHex, dec2bin } from "../common.js";
 class HydrangeaOrganism extends BaseOrganism {
     constructor(square) {
         super(square);
@@ -29,34 +28,73 @@ class HydrangeaOrganism extends BaseOrganism {
 
         this.throttleInterval = 1000;
 
-        this.airCoef = 0.5;
+        this.airCoef = 0.04;
         this.dirtCoef = 0.8;
         this.waterCoef = 0.2;
 
         this.spawnSeedSpeed = 2;
 
-        var mult = 0.5;
-        this.maxLifeTime *= mult;
-
-        this.reproductionEnergy *= mult;
-        this.reproductionEnergyUnit *= mult;
 
         this.maximumLifeSquaresOfType = {
             "green": 1000,
             "root": 20
         }
 
-        this.ovalParts = [randNumber(8, 12), randNumber(2, 4)].sort();
-        this.ovalMin = this.ovalParts[0];
-        this.ovalMin += this.ovalMin % 2;
-        this.ovalMaj = this.ovalParts[1];
-        this.ovalMaj += this.ovalMaj % 2;
-
-        this.c = Math.random() * (Math.PI / 2) * (Math.random() > 0.5 ? 1 : -1);
-
+        this.width = randNumber(7, 9);
+        this.height = randNumber(8, 13) * 2;
+        this.numFlowers = randNumber(8, 13);
+        this.numBlocks = Math.floor(2 * this.width * this.height * this.characteristicIntegral(1));
+        this.numPossibleFlowerBlocks = Math.floor(this.numBlocks / (3 + Math.random())); 
+        this.bitmask = this.getSubBitMask(this.numFlowers / 2, this.numPossibleFlowerBlocks / 2.5) + this.getSubBitMask(this.numFlowers / 2, this.numPossibleFlowerBlocks / 1.5);
+        this.curBitmaskPosition = 0;
         this.flowerColorAir = "#f4f3f5";
-        this.flowerColorWater = "#efeff0";
+        this.flowerColorWater = "#973080";
         this.flowerColorDirt = "#f2a3eb";
+
+
+        console.log(this.numBlocks);
+        var mult = this.numBlocks / 75;
+        this.maxLifeTime *= mult;
+        this.reproductionEnergy *= mult;
+        this.reproductionEnergyUnit *= mult;
+
+
+    }
+
+    getSubBitMask(base, part) {
+        return dec2bin(Math.floor(2 ** base + 2 ** (part + Math.random())))
+    }
+    addAssociatedLifeSquare(lifeSquare) {
+        super.addAssociatedLifeSquare(lifeSquare);
+        if (this.bitmask == null) {
+            return;
+        }
+        if (lifeSquare.type == "green") {
+            if (this.curBitmaskPosition > (this.numBlocks - this.numPossibleFlowerBlocks)) {
+                lifeSquare.shouldFlower = this.bitmask[(this.curBitmaskPosition % ((this.numBlocks - this.numPossibleFlowerBlocks))) % this.bitmask.length];
+            }
+            this.curBitmaskPosition += 1;
+        }
+    }
+
+    isPointInGrowBounds(x, y) {
+        x = Math.abs(x);
+        y = Math.abs(y);
+        x /= this.width;
+        y /= this.height;
+        if (x > 1) {
+            return false;
+        }
+        return y < Math.abs(this.characteristicFunc(x));
+    }
+
+    // normalized to 1
+    characteristicFunc(x) {
+        return 1 - x**3;
+    }
+
+    characteristicIntegral(x) {
+        return x - (1/4) * x **4;
     }
 
     getNextFlowerColor() {
@@ -92,11 +130,6 @@ class HydrangeaOrganism extends BaseOrganism {
         return rgbToHex(out.r, out.g, out.b);
     }
 
-
-    isPointInGrowBounds(x, y) {
-        return (Math.sin(x * this.c)) + (x ** 2 / this.ovalMin ** 2) + (y ** 2 / this.ovalMaj ** 2) < 0.8;
-    }
-
     getSeedSquare() {
         var ret = null;
         this.lifeSquares
@@ -121,6 +154,11 @@ class HydrangeaOrganism extends BaseOrganism {
         return ret;
     }
 
+    growFlower() {
+        this.lifeSquares.forEach((lsq) => lsq.flower());
+        return 0;
+    }
+
     growInitialSquares() {
         // hydrangas cannot grow underwater in any capacity like pop grass
         if (getCollidableSquareAtLocation(this.posX, this.posY - 1)
@@ -131,15 +169,17 @@ class HydrangeaOrganism extends BaseOrganism {
         var orgSq;
         var newPlantSquare = addSquare(new PlantSquare(this.posX, this.posY - 1));
         if (newPlantSquare) {
-            var orgSq = addOrganismSquare(new HydrangeaGreenLifeSquare(newPlantSquare, this));
+            orgSq = addOrganismSquare(new HydrangeaGreenLifeSquare(newPlantSquare, this));
             if (orgSq) {
                 orgSq.linkSquare(newPlantSquare);
                 this.addAssociatedLifeSquare(orgSq);
+            } else {
+                this.destroy();
             }
         } else {
             this.destroy();
         }
-        if (!this.linkedSquare.validPlantHome) {
+        if (orgSq == null || !this.linkedSquare.validPlantHome) {
             this.destroy();
             return;
         }
@@ -148,84 +188,18 @@ class HydrangeaOrganism extends BaseOrganism {
         rootSq.addChild(orgSq);
         this.linkedSquare.linkOrganismSquare(rootSq);
         this.addAssociatedLifeSquare(rootSq);
-
-
     }
 
     getValidGreenLocations() {
         var out = [];
-        for (let i = -this.ovalMin; i <= this.ovalMin; i++) {
-            for (let j = -this.ovalMaj; j <= this.ovalMaj; j++) {
+        for (let i = -this.width; i <= this.width; i++) {
+            for (let j = 0; j <= this.height; j++) {
                 if (this.isPointInGrowBounds(i, j)) {
-                    out.push([this.posX + i, this.posY + j - this.ovalMin + 2]);
+                    out.push([this.posX + i, this.posY - j]);
                 }
             }
         }
         return out;
-    }
-
-    shouldGrowFlower() {
-        return this.currentEnergy > (this.reproductionEnergy * 0.8 +
-            (0.05 *
-                this.lifeSquares.map((lsq) => lsq.type == "flower")
-                    .reduce(
-                        (accumulator, currentValue) => accumulator + currentValue,
-                        0,
-                    )));
-    }
-
-    growFlower() {
-        if (!this.shouldGrowFlower()) {
-            return 0;
-        }
-                    
-        var candidateParents = Array.from(this.lifeSquares.filter((lsq) => lsq.type == "green").filter((sq) => sq.posY < (this.getHighestGreen().posY + 2)));
-        var chosenPlantToReplace = null;
-        while (candidateParents.length > 0) {
-            var curCandidateParent = candidateParents[randNumber(0, candidateParents.length - 1)];
-            if (
-                getNeighbors(curCandidateParent.posX, curCandidateParent.posY)
-                    .filter((sq) => sq.linkedOrganism == this)
-                    .filter((sq) => sq.linkedOrganismSquares.some((lsq) => lsq.type == "flower"))
-                    .map((sq) => 1)
-                    .reduce(
-                        (accumulator, currentValue) => accumulator + currentValue,
-                        0,
-                        ) > (Math.floor(Math.random() * 2))
-                ) {
-                candidateParents = Array.from(candidateParents.filter((cand) => cand != curCandidateParent));
-                continue;
-            } else {
-                chosenPlantToReplace = curCandidateParent;
-                break;
-            }
-        }
-        if (chosenPlantToReplace == null) {
-            return 0;
-        }
-
-        var chosenPlantToReplaceParent = chosenPlantToReplace.parentLifeSquare;
-        this.removeAssociatedLifeSquare(chosenPlantToReplace);
-        var newPlantSquare = new PlantSquare(chosenPlantToReplace.posX, chosenPlantToReplace.posY);
-        if (addSquare(newPlantSquare)) {
-            var newHydrangeaFlowerLifeSquare = addOrganismSquare(new HydrangeaFlowerLifeSquare(newPlantSquare, this));
-            if (newHydrangeaFlowerLifeSquare) {
-                newPlantSquare.linkOrganism(this);
-                newPlantSquare.linkOrganismSquare(newHydrangeaFlowerLifeSquare);
-                this.addAssociatedLifeSquare(newHydrangeaFlowerLifeSquare);
-                newHydrangeaFlowerLifeSquare.linkSquare(newPlantSquare);
-                newHydrangeaFlowerLifeSquare.color = this.getNextFlowerColor();
-                chosenPlantToReplaceParent.addChild(newHydrangeaFlowerLifeSquare);
-                return newHydrangeaFlowerLifeSquare.getCost();
-            } else {
-                newPlantSquare.destroy();
-                return 0;
-            }
-        } else {
-            return 0;
-        }
-
-
     }
 
     growNewPlant() {
@@ -264,6 +238,7 @@ class HydrangeaOrganism extends BaseOrganism {
             if (newHydrangeaGreenLifeSquare) {
                 newPlantSquare.linkOrganism(this);
                 newPlantSquare.linkOrganismSquare(newHydrangeaGreenLifeSquare);
+                newHydrangeaGreenLifeSquare.flowerColor = this.getNextFlowerColor();
                 newHydrangeaGreenLifeSquare.motivation = "air";
                 this.addAssociatedLifeSquare(newHydrangeaGreenLifeSquare);
                 newHydrangeaGreenLifeSquare.linkSquare(newPlantSquare);

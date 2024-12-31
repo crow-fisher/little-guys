@@ -44,6 +44,8 @@ class BaseOrganism {
 
         this.recentSquareRemovals = new Array();
 
+        this.maxDistFromOrigin = 0;
+
         // life cycle properties
         this.maxLifeTime = 1000 * 60 * 2;
         this.reproductionEnergy = 100;
@@ -220,12 +222,17 @@ class BaseOrganism {
     unlinkSquare() {
         this.linkedSquare = null;
     }
+    dist(posX, posY) {
+        return Math.sqrt((this.posX - posX) ** 2 + (this.posY - posY) ** 2);
+    }
     addAssociatedLifeSquare(lifeSquare) {
         this.lifeSquares.push(lifeSquare);
         if (!(lifeSquare.type in this.lifeSquaresCountByType)) {
             this.lifeSquaresCountByType[lifeSquare.type] = 0;
         }
         this.lifeSquaresCountByType[lifeSquare.type] += 1;
+        lifeSquare.distFromOrigin = this.dist(lifeSquare.posX, lifeSquare.posY);
+        this.maxDistFromOrigin = Math.max(this.maxDistFromOrigin, lifeSquare.distFromOrigin);
     }
     removeAssociatedLifeSquare(lifeSquare) {
         this.lifeSquaresCountByType[lifeSquare.type] -= 1;

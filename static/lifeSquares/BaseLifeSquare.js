@@ -2,7 +2,7 @@ import { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZ
 import { getZPercent, hexToRgb, processColorLerp, processColorStdev, rgbToHex, rgbToRgba } from "../common.js";
 
 import { getCurTime } from "../globals.js";
-import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount } from "../config/config.js";
+import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount, b_sq_darkeningStrength } from "../config/config.js";
 import { getSquares, removeOrganismSquare } from "../squares/_sqOperations.js";
 import { airNutrientsPerEmptyNeighbor } from "../config/config.js";
  
@@ -58,13 +58,20 @@ class BaseLifeSquare {
 
         this.cachedRgba = null;
 
+        this.flowering = false;
+        this.flowerColor = "#000000";
+        this.shouldFlower = '0';
+
         this.renderWithColorRange = false;
         // for ref - values from plant
         this.baseColor = "#9A8873";
+        this.baseColor_rgb = hexToRgb(this.baseColor);
         this.baseColorAmount = dirt_baseColorAmount;
         this.darkColor = "#46351D";
+        this.darkColor_rgb = hexToRgb(this.darkColor);
         this.darkColorAmount = dirt_darkColorAmount;
         this.accentColor = "#246A73";
+        this.accentColor_rgb = hexToRgb(this.accentColor);
         this.accentColorAmount = dirt_accentColorAmount;
     }
 
@@ -75,6 +82,8 @@ class BaseLifeSquare {
     getCost() {
         return 1;
     }
+
+    flower() {}
 
     storeWater(amountToAdd) {
         if (this.storedWater >= this.storedWaterMax) {
@@ -193,6 +202,28 @@ class BaseLifeSquare {
             outScore += this.airNutrients * this.linkedOrganism.airCoef;
         }
         return outScore;
+    }
+
+    darkeningRender() {}
+
+    calculateDarkeningColorImpl(darkVal, darkValMax) {
+        var c;
+        if (this.flowering) {
+            c = hexToRgb(this.flowerColor);
+            c.r /= 3;
+            c.g /= 3; 
+            c.b /= 3;
+        } else {
+            c = this.darkColor_rgb;
+        }
+        if (darkVal == 0) {
+            return rgbToRgba(c.r, c.g, c.b, 0);
+        }
+        var darkeningStrength = (darkVal / darkValMax) * b_sq_darkeningStrength.value;
+        if (this.flowering) {
+            darkeningStrength /= 4;
+        }
+        return rgbToRgba(c.r, c.g, c.b, darkeningStrength);;
     }
 
     render() {
@@ -335,6 +366,8 @@ class BaseLifeSquare {
             this.width * BASE_SIZE,
             this.height * BASE_SIZE
         );
+
+        this.darkeningRender();
     }
 
     calculateColor() {

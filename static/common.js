@@ -120,9 +120,12 @@ function getDist(x1, x2, y1, y2) {
     return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5;
 }
 
+function dec2bin(dec) {
+    return (dec >>> 0).toString(2);
+  }
 
 
 export { getObjectArrFromMap, removeItemAll, hexToRgb, rgbToHex, rgbToRgba, 
     randNumber, loadImage, getStandardDeviation, getZPercent,
      processColorStdev, processColorStdevMulticolor, processColorLerp, 
-     processColorLerpBicolor, getDist}
+     processColorLerpBicolor, getDist, dec2bin }
