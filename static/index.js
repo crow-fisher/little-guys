@@ -542,6 +542,7 @@ function doClickAdd() {
                                         addNewOrganism(new MossSeedOrganism(sq));
                                     }
                                 }
+                                break;
                             
                             case "mosscool":
                                 if (Math.random() > 0.95) {
@@ -550,6 +551,7 @@ function doClickAdd() {
                                         addNewOrganism(new MossCoolSeedOrganism(sq));
                                     }
                                 }
+                                break;
                             
                             case "hydrangea":
                                 if (Math.random() > 0.95) {
@@ -558,6 +560,7 @@ function doClickAdd() {
                                         addNewOrganism(new HydrangeaSeedOrganism(sq));
                                     }
                                 }
+                                break;
                         }
                     }
 

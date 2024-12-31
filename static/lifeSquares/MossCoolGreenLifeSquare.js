@@ -6,9 +6,9 @@ class MossCoolGreenLifeSquare extends MossGreenLifeSquare {
         this.proto = "MossCoolGreenLifeSquare";
         this.type = "green";
 
-        this.baseColor = "#a2d321";
-        this.darkColor = "#8dc320";
-        this.accentColor = "#5aa100";
+        this.baseColor = "#4DBB58";
+        this.darkColor = "#366847";
+        this.accentColor = "#78a88b";
     }
 }
 

@@ -208,7 +208,15 @@ class BaseLifeSquare {
         return outScore;
     }
 
-    darkeningRender() {}
+    darkeningRender() {
+        MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.linkedSquare.currentPressureDirect, 12);
+        MAIN_CONTEXT.fillRect(
+            this.posX * BASE_SIZE,
+            this.posY * BASE_SIZE,
+            this.width * BASE_SIZE,
+            this.height * BASE_SIZE
+            );
+    }
 
     calculateDarkeningColorImpl(darkVal, darkValMax) {
         var c;

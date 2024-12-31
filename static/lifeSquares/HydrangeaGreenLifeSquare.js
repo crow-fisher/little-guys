@@ -18,9 +18,9 @@ class HydrangeaGreenLifeSquare extends BaseLifeSquare {
         this.type = "green";
         this.width = .99;
 
-        this.baseColor = "#87a600";
-        this.darkColor = "#2e6301";
-        this.accentColor = "#a1b739";
+        this.baseColor = "#5BAD35";
+        this.darkColor = "#34631A";
+        this.accentColor = "#95B633";
     }
 
     flower() {
@@ -68,6 +68,7 @@ class HydrangeaGreenLifeSquare extends BaseLifeSquare {
     }
 
     darkeningRender() {
+        super.darkeningRender();
         MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.distFromOrigin, this.linkedOrganism.maxDistFromOrigin);
         MAIN_CONTEXT.fillRect(
             this.posX * BASE_SIZE,

@@ -30,6 +30,10 @@ class SeedSquare extends BaseSquare {
             .filter((sq) => sq.rootable)
             .forEach((sq) => {
                 var linkedOrganism = this.linkedOrganism;
+                if (this.linkedOrganism == null) {
+                    this.destroy();
+                    return;
+                }
                 if (sq.linkedOrganism == null) {
                     removeOrganism(linkedOrganism);
                     linkedOrganism.posY += 1;
