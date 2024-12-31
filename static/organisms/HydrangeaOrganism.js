@@ -28,7 +28,7 @@ class HydrangeaOrganism extends BaseOrganism {
 
         this.throttleInterval = 1000;
 
-        this.airCoef = 0.04;
+        this.airCoef = 0.8;
         this.dirtCoef = 0.8;
         this.waterCoef = 0.2;
 
@@ -53,11 +53,6 @@ class HydrangeaOrganism extends BaseOrganism {
         this.flowerColorWater = "#973080";
         this.flowerColorDirt = "#f2a3eb";
 
-        var mult = this.numBlocks / 150;
-
-        this.maxLifeTime *= mult;
-        this.reproductionEnergy *= mult;
-        this.reproductionEnergyUnit *= mult;
     }
 
     distToEdge(posX, posY) {
@@ -174,7 +169,7 @@ class HydrangeaOrganism extends BaseOrganism {
     getSeedSquare() {
         var ret = null;
         this.lifeSquares
-            .filter((lsq) => lsq.type == "flower")
+            .filter((lsq) => lsq.flowering)
             .filter((lsq) => getSquares(lsq.posX, lsq.posY - 1).length == 0)
             .some((lsq) => {
                 var seedSquare = new SeedSquare(lsq.posX, lsq.posY - 1);
@@ -241,6 +236,13 @@ class HydrangeaOrganism extends BaseOrganism {
             }
         }
         return out;
+    }
+
+    growAndDecay() {
+        super.growAndDecay();
+        if (Math.random() > 0.999) {
+            this.currentEnergy -= (this.currentEnergy / 10) * this.growNewPlant();
+        }
     }
 
     growNewPlant() {

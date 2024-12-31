@@ -25,6 +25,8 @@ class MossOrganism extends BaseOrganism {
 
         this.currentHealth *= 2;
 
+        this.opacity = 0.6;
+
         this.airCoef = 0.3;
         this.dirtCoef = 1;
         this.waterCoef = 0.1;
@@ -72,7 +74,7 @@ class MossOrganism extends BaseOrganism {
         var maxSq = null;
         this.lifeSquares.forEach((lsq) => {
             getDirectNeighbors(lsq.posX, lsq.posY)
-            .filter((sq) => sq.linkedOrganismSquares.length == 0)
+            .filter((sq) => sq.linkedOrganismSquares.length == 0 || !(sq.linkedOrganismSquares.some((lsq) => lsq.linkedOrganism == this)))
             .filter((sq) => sq.rootable)
             .filter((sq) => sq.currentPressureDirect < 5)
             .forEach((sq) => {

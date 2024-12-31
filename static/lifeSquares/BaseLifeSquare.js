@@ -105,6 +105,10 @@ class BaseLifeSquare {
     }
 
     addChild(lifeSquare) {
+        if (lifeSquare == null) {
+            console.warn("lifesquare is null", lifeSquare);
+            return;
+        }
         if (lifeSquare in this.childLifeSquares) {
             console.warn("Error state: lifeSquare in this.childLifeSquares");
             return;
