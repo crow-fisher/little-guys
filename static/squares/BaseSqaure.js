@@ -508,7 +508,8 @@ export class BaseSquare {
     calculateDirectPressure() {
         this.currentPressureDirect = 0;
         getSquares(this.posX, this.posY - 1)
-            .forEach((sq) => this.currentPressureDirect = Math.max(this.currentPressureDirect, sq.currentPressureDirect + 1));
+            .forEach((sq) => this.currentPressureDirect = Math.max(this.currentPressureDirect, 
+                sq.currentPressureDirect + (sq.organic ? 0.35 : 1)));
     }
 
     percolateInnerMoisture() {

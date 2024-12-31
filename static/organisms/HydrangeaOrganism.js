@@ -28,9 +28,11 @@ class HydrangeaOrganism extends BaseOrganism {
 
         this.throttleInterval = 1000;
 
-        this.airCoef = 0.8;
+        this.airCoef = 0.008;
         this.dirtCoef = 0.8;
         this.waterCoef = 0.2;
+
+        this.maxLifeTime /= 10;
 
         this.spawnSeedSpeed = 2;
 
@@ -39,11 +41,16 @@ class HydrangeaOrganism extends BaseOrganism {
             "root": 20
         }
 
-        this.width = randNumber(3, 5);
+        this.width = randNumber(5, 7);
         this.height = randNumber(3, 4) * 2;
-        this.numBlocks = Math.floor(this.width * this.height * this.characteristicIntegral(1));
+        this.slant = Math.random() - 0.5;
+        this.numBlocks = Math.floor(2 * this.width * this.height * this.characteristicIntegral(1));
         this.numPossibleFlowerBlocks = Math.floor(this.numBlocks * 0.7);
-        this.numFlowers = Math.floor(this.numBlocks * 0.4);
+        this.numNonFlowerBlocks = this.numBlocks - this.numPossibleFlowerBlocks;
+        this.numFlowers = Math.floor(this.numBlocks * 0.2);
+
+        this.flowerStart = 0.0;
+        this.flowerEnd = 0.9;
         
         this.bitmasks = [];
         this.loadBitmasks();
@@ -52,7 +59,41 @@ class HydrangeaOrganism extends BaseOrganism {
         this.flowerColorAir = "#f4f3f5";
         this.flowerColorWater = "#973080";
         this.flowerColorDirt = "#f2a3eb";
+        this.flowerStartOpacity = 0.8;
+    }
 
+    blocksToEdge(posX, posY) {
+        var flowerRelativePosX = posX - this.posX;
+        var flowerRelativePosY = posY - this.posY;
+        
+        var max = Math.max(Math.abs(flowerRelativePosX), Math.abs(flowerRelativePosY));
+        var posRelativePosXNormalized = flowerRelativePosX / max;
+        var posRelativePosYNormalized = flowerRelativePosY / max;
+
+        var xSide = (flowerRelativePosX > 0 ? 1 : -1);
+        
+        this.endWidth = this.width * posRelativePosXNormalized * xSide;
+        this.endHeight = this.height * posRelativePosYNormalized * (flowerRelativePosY > 0 ? 1 : -1);
+
+        var curX = flowerRelativePosX;
+        var curY = flowerRelativePosY;
+
+        while (Math.abs(curX) <= Math.abs(this.endWidth) && curY <= this.endHeight) {
+            var nextX = curX + xSide;
+            var nextY = curY + 1;
+            if (nextX <= Math.abs(this.endWidth) && this.lifeSquares.some((lsq) => lsq.posX == this.posX + nextX && lsq.posY == this.posY + curY)) {
+                curX = nextX;
+                continue;
+            } else {
+                if (nextY <= this.endHeight && this.lifeSquares.some((lsq) => lsq.posX == this.posX + curX && lsq.posY == this.posY + nextY)) {
+                    curY = nextY;
+                    continue;
+                } else {
+                    break;
+                }
+            }
+        } 
+        return Math.abs(curX - flowerRelativePosX) + Math.abs(curY - flowerRelativePosY);
     }
 
     distToEdge(posX, posY) {
@@ -75,23 +116,24 @@ class HydrangeaOrganism extends BaseOrganism {
     }
 
     loadBitmasks() {
-        for (let i = 0; i <= 10; i++) {
+        for (let i = 0; i <= 4; i++) {
             this.bitmasks.push(this.getBitmask());
         }
     }
 
     getBitmask() {
         return this.getSubBitMask(this.numPossibleFlowerBlocks * 0.3, (this.numFlowers / 2)).concat(
-               this.getSubBitMask(this.numPossibleFlowerBlocks * 0.5, (this.numFlowers / 2))
+               this.getSubBitMask(this.numPossibleFlowerBlocks * 0.5, (this.numFlowers / 2)).concat(
+               this.getSubBitMask(this.numNonFlowerBlocks, this.numNonFlowerBlocks / 2))
         )
     }
 
     getSubBitMask(length, total) {
-        var out = [];
+        var out = [0];
         for (let i = 0; i < length; i++) {
-            out.push(Math.random() * (total / length));
+            out.push(Math.random() * (total / length) * (Math.random() > out[out.length - 1] ? 2 : 0.5));
         }
-        return out;
+        return out.slice(1);
     }
 
     getBitmaskValue(idx) {
@@ -106,15 +148,13 @@ class HydrangeaOrganism extends BaseOrganism {
             return;
         }
         if (lifeSquare.type == "green") {
-            if (this.curBitmaskPosition > (this.numBlocks - this.numPossibleFlowerBlocks)) {
-                lifeSquare.shouldFlower = this.getBitmaskValue(this.curBitmaskPosition % (this.numBlocks - this.numPossibleFlowerBlocks));
-            }
+            lifeSquare.shouldFlower = this.getBitmaskValue(this.curBitmaskPosition);
+            lifeSquare.shouldFlowerFlag = this.curBitmaskPosition > (this.numBlocks - this.numPossibleFlowerBlocks);
             this.curBitmaskPosition += 1;
         }
     }
 
     isPointInGrowBounds(x, y) {
-        x = Math.abs(x);
         y = Math.abs(y);
         x /= this.width;
         y /= this.height;
@@ -126,11 +166,11 @@ class HydrangeaOrganism extends BaseOrganism {
 
     // normalized to 1
     characteristicFunc(x) {
-        return 1 - x**3;
+        return 1 - Math.abs(x)**3 + this.slant * x;
     }
 
     characteristicIntegral(x) {
-        return x - (1/4) * x **4;
+        return x - (1/4) * x **4 + (1/2) * this.slant * x ** 2; ;
     }
 
     getNextFlowerColors() {
@@ -163,7 +203,7 @@ class HydrangeaOrganism extends BaseOrganism {
             g: Math.floor(airColorRgb.g * airColorMult + dirtColorRgb.g * dirtColorMult + waterColorRgb.g * waterColorMult),
             b: Math.floor(airColorRgb.b * airColorMult + dirtColorRgb.b * dirtColorMult + waterColorRgb.b * waterColorMult),
         }
-        return [rgbToHex(out.r, out.g, out.b), rgbToRgba(out.r, out.g, out.b, 0.8)];
+        return [rgbToHex(out.r, out.g, out.b), rgbToRgba(out.r, out.g, out.b, this.flowerStartOpacity), out];
     }
 
     getSeedSquare() {
@@ -285,6 +325,9 @@ class HydrangeaOrganism extends BaseOrganism {
                 var flowerColors = this.getNextFlowerColors();
                 newHydrangeaGreenLifeSquare.flowerColor = flowerColors[0];
                 newHydrangeaGreenLifeSquare.flowerColorRgba = flowerColors[1];
+                newHydrangeaGreenLifeSquare.flowerColorRgb = flowerColors[2];
+                newHydrangeaGreenLifeSquare.opacity = this.flowerStartOpacity;
+
                 newHydrangeaGreenLifeSquare.motivation = "air";
                 this.addAssociatedLifeSquare(newHydrangeaGreenLifeSquare);
                 newHydrangeaGreenLifeSquare.linkSquare(newPlantSquare);

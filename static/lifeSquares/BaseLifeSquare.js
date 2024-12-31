@@ -61,7 +61,9 @@ class BaseLifeSquare {
         this.flowering = false;
         this.flowerColor = "#000000";
         this.flowerColorRgba = "rgba(0, 0, 0, 0)";
+        this.flowerColorRgb = {r: 0, g: 0, b: 0};
         this.shouldFlower = 0;
+        this.shouldFlowerFlag = false;
         this.numAdjacentFlowers = 0;
 
         this.distFromOrigin = 0;
@@ -239,7 +241,7 @@ class BaseLifeSquare {
         // if (this.flowering) {
         //     darkeningStrength /= 3;
         // }
-        return rgbToRgba(c.r, c.g, c.b, darkeningStrength);;
+        return rgbToRgba(c.r, c.g, c.b, darkeningStrength * this.opacity);
     }
 
     render() {
@@ -370,8 +372,6 @@ class BaseLifeSquare {
 
             var outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), this.opacity);
             MAIN_CONTEXT.fillStyle = outRgba;
-            this.cachedRgba = outRgba;
-            // this.height = (1 + this.getStaticRand(3));
         }
 
         var startPos = this.posX * BASE_SIZE + (1 - this.width) * BASE_SIZE * this.xOffset;

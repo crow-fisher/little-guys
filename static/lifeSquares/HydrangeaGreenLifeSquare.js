@@ -1,7 +1,7 @@
 import { BaseLifeSquare } from "./BaseLifeSquare.js";
 import { getDirectNeighbors, getNeighbors } from "../squares/_sqOperations.js";
 import { BASE_SIZE, MAIN_CANVAS, MAIN_CONTEXT } from "../index.js";
-import { loadImage } from "../common.js";
+import { loadImage, rgbToRgba } from "../common.js";
 import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount } from "../config/config.js";
 
 import {
@@ -24,7 +24,12 @@ class HydrangeaGreenLifeSquare extends BaseLifeSquare {
     }
 
     flower() {
-        if (this.linkedOrganism.getLifeCyclePercentage() > 0.9 + (this.shouldFlower * 0.01)) {
+        if (this.linkedOrganism.getLifeCyclePercentage() > this.linkedOrganism.flowerEnd + (this.shouldFlower * 0.02)) {
+            this.opacity -= 0.001;
+            if (this.opacity < 0) {
+                this.destroy();
+                return;
+            }
             this.flowering = false;
             return;
         }
@@ -45,7 +50,10 @@ class HydrangeaGreenLifeSquare extends BaseLifeSquare {
         if (this.linkedOrganism.distToEdge(this.posX, this.posY) > this.shouldFlower) {
             return;
         }
-        if (this.linkedOrganism.getLifeCyclePercentage() < 0.75 + this.shouldFlower * .03) {
+        if (this.linkedOrganism.getLifeCyclePercentage() < this.linkedOrganism.flowerStart + this.shouldFlower * .03) {
+            return;
+        }
+        if (!this.shouldFlowerFlag) {
             return;
         }
     
@@ -55,7 +63,7 @@ class HydrangeaGreenLifeSquare extends BaseLifeSquare {
     render() {
         super.render();
         if (this.flowering) {
-            MAIN_CONTEXT.fillStyle = this.flowerColorRgba; 
+            MAIN_CONTEXT.fillStyle = rgbToRgba(this.flowerColorRgb.r, this.flowerColorRgb.g, this.flowerColorRgb.b, this.opacity);
             MAIN_CONTEXT.fillRect(
             this.posX * BASE_SIZE,
             this.posY * BASE_SIZE,
@@ -63,8 +71,8 @@ class HydrangeaGreenLifeSquare extends BaseLifeSquare {
             this.height * BASE_SIZE
             );
             MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(
-                (Math.max(0, this.linkedOrganism.distToEdge(this.posX, this.posY) - this.shouldFlower / 2)), 
-                4 
+                (Math.max(0, this.shouldFlower - this.linkedOrganism.distToEdge(this.posX, this.posY))), 
+                2 
             );
             MAIN_CONTEXT.fillRect(
                 this.posX * BASE_SIZE,
@@ -108,6 +116,15 @@ class HydrangeaGreenLifeSquare extends BaseLifeSquare {
                         0,
                     ))
         );
+        if (this.linkedOrganism.getLifeCyclePercentage() > (1 - (1 - this.linkedOrganism.flowerEnd) * 2)) {
+            if (this.linkedOrganism.blocksToEdge(this.posX, this.posY) < (this.shouldFlower * 0.7)) {
+                this.opacity -= 0.02;
+                if (this.opacity < 0) {
+                    this.linkedOrganism.removeAssociatedLifeSquare(this);
+                    return;
+                }
+            }
+        }
     }
 }
 
