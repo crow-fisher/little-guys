@@ -41,7 +41,7 @@ class HydrangeaOrganism extends BaseOrganism {
         }
 
         this.width = randNumber(7, 9);
-        this.height = randNumber(8, 13) * 2;
+        this.height = randNumber(6, 8) * 2;
         this.numFlowers = randNumber(8, 13);
         this.numBlocks = Math.floor(2 * this.width * this.height * this.characteristicIntegral(1));
         this.numPossibleFlowerBlocks = Math.floor(this.numBlocks / (3 + Math.random())); 
@@ -51,14 +51,11 @@ class HydrangeaOrganism extends BaseOrganism {
         this.flowerColorWater = "#973080";
         this.flowerColorDirt = "#f2a3eb";
 
-
         console.log(this.numBlocks);
         var mult = this.numBlocks / 75;
         this.maxLifeTime *= mult;
         this.reproductionEnergy *= mult;
         this.reproductionEnergyUnit *= mult;
-
-
     }
 
     getSubBitMask(base, part) {
