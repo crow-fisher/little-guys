@@ -18,9 +18,9 @@ class HydrangeaGreenLifeSquare extends BaseLifeSquare {
         this.type = "green";
         this.width = .99;
 
-        this.baseColor = "#0d4613";
-        this.darkColor = "#39a12c";
-        this.accentColor = "#d6f482";
+        this.baseColor = "#87a600";
+        this.darkColor = "#2e6301";
+        this.accentColor = "#a1b739";
     }
 
     flower() {
