@@ -19,7 +19,7 @@ import { getCurTime } from "../globals.js";
 import { HydrangeaSeedOrganism } from "./HydrangeaSeedOrganism.js";
 import { HydrangeaRootLifeSquare } from "../lifeSquares/HydrangeaRootLifeSquare.js";
 import { HydrangeaGreenLifeSquare } from "../lifeSquares/HydrangeaGreenLifeSquare.js";
-import { getDist, hexToRgb, randNumber, rgbToHex, dec2bin } from "../common.js";
+import { getDist, hexToRgb, randNumber, rgbToHex, dec2bin, rgbToRgba } from "../common.js";
 class HydrangeaOrganism extends BaseOrganism {
     constructor(square) {
         super(square);
@@ -34,41 +34,85 @@ class HydrangeaOrganism extends BaseOrganism {
 
         this.spawnSeedSpeed = 2;
 
-
         this.maximumLifeSquaresOfType = {
             "green": 1000,
             "root": 20
         }
 
-        this.width = randNumber(7, 9);
-        this.height = randNumber(6, 8) * 2;
-        this.numFlowers = randNumber(8, 13);
-        this.numBlocks = Math.floor(2 * this.width * this.height * this.characteristicIntegral(1));
-        this.numPossibleFlowerBlocks = Math.floor(this.numBlocks / (3 + Math.random())); 
-        this.bitmask = this.getSubBitMask(this.numFlowers / 2, this.numPossibleFlowerBlocks / 2.5) + this.getSubBitMask(this.numFlowers / 2, this.numPossibleFlowerBlocks / 1.5);
+        this.width = randNumber(3, 5);
+        this.height = randNumber(3, 4) * 2;
+        this.numBlocks = Math.floor(this.width * this.height * this.characteristicIntegral(1));
+        this.numPossibleFlowerBlocks = Math.floor(this.numBlocks * 0.7);
+        this.numFlowers = Math.floor(this.numBlocks * 0.4);
+        
+        this.bitmasks = [];
+        this.loadBitmasks();
+
         this.curBitmaskPosition = 0;
         this.flowerColorAir = "#f4f3f5";
         this.flowerColorWater = "#973080";
         this.flowerColorDirt = "#f2a3eb";
 
-        console.log(this.numBlocks);
-        var mult = this.numBlocks / 75;
+        var mult = this.numBlocks / 150;
+
         this.maxLifeTime *= mult;
         this.reproductionEnergy *= mult;
         this.reproductionEnergyUnit *= mult;
     }
 
-    getSubBitMask(base, part) {
-        return dec2bin(Math.floor(2 ** base + 2 ** (part + Math.random())))
+    distToEdge(posX, posY) {
+        var flowerRelativePosX = Math.abs(posX - this.posX);
+        var flowerRelativePosY = Math.abs(posY - this.posY);
+        
+        var max = Math.max(flowerRelativePosX, flowerRelativePosY);
+        var posRelativePosXNormalized = flowerRelativePosX / max;
+        var posRelativePosYNormalized = flowerRelativePosY / max;
+
+        return this.innerDist(this.width * posRelativePosXNormalized, this.height * posRelativePosYNormalized) - this.innerDist(flowerRelativePosX, flowerRelativePosY)
+    }
+
+    innerDist(x, y) {
+        return Math.sqrt(x ** 2 + y ** 2);
+    }
+
+    dist(posX, posY) {
+        return Math.sqrt((this.posX - posX) ** 2 + (this.posY - posY) ** 2);
+    }
+
+    loadBitmasks() {
+        for (let i = 0; i <= 10; i++) {
+            this.bitmasks.push(this.getBitmask());
+        }
+    }
+
+    getBitmask() {
+        return this.getSubBitMask(this.numPossibleFlowerBlocks * 0.3, (this.numFlowers / 2)).concat(
+               this.getSubBitMask(this.numPossibleFlowerBlocks * 0.5, (this.numFlowers / 2))
+        )
+    }
+
+    getSubBitMask(length, total) {
+        var out = [];
+        for (let i = 0; i < length; i++) {
+            out.push(Math.random() * (total / length));
+        }
+        return out;
+    }
+
+    getBitmaskValue(idx) {
+        return this.bitmasks.map((bitmask) => bitmask[idx % bitmask.length]).reduce(
+            (accumulator, currentValue) => accumulator + currentValue,
+            0,
+        );
     }
     addAssociatedLifeSquare(lifeSquare) {
         super.addAssociatedLifeSquare(lifeSquare);
-        if (this.bitmask == null) {
+        if (this.bitmasks == null) {
             return;
         }
         if (lifeSquare.type == "green") {
             if (this.curBitmaskPosition > (this.numBlocks - this.numPossibleFlowerBlocks)) {
-                lifeSquare.shouldFlower = this.bitmask[(this.curBitmaskPosition % ((this.numBlocks - this.numPossibleFlowerBlocks))) % this.bitmask.length];
+                lifeSquare.shouldFlower = this.getBitmaskValue(this.curBitmaskPosition % (this.numBlocks - this.numPossibleFlowerBlocks));
             }
             this.curBitmaskPosition += 1;
         }
@@ -94,7 +138,7 @@ class HydrangeaOrganism extends BaseOrganism {
         return x - (1/4) * x **4;
     }
 
-    getNextFlowerColor() {
+    getNextFlowerColors() {
         var squaresByType = this.getGrownSquaresByMotivation();
 
         var min = Math.min(Math.min(squaresByType["air"], squaresByType["dirt"]), squaresByType["water"]);
@@ -124,7 +168,7 @@ class HydrangeaOrganism extends BaseOrganism {
             g: Math.floor(airColorRgb.g * airColorMult + dirtColorRgb.g * dirtColorMult + waterColorRgb.g * waterColorMult),
             b: Math.floor(airColorRgb.b * airColorMult + dirtColorRgb.b * dirtColorMult + waterColorRgb.b * waterColorMult),
         }
-        return rgbToHex(out.r, out.g, out.b);
+        return [rgbToHex(out.r, out.g, out.b), rgbToRgba(out.r, out.g, out.b, 0.8)];
     }
 
     getSeedSquare() {
@@ -235,7 +279,10 @@ class HydrangeaOrganism extends BaseOrganism {
             if (newHydrangeaGreenLifeSquare) {
                 newPlantSquare.linkOrganism(this);
                 newPlantSquare.linkOrganismSquare(newHydrangeaGreenLifeSquare);
-                newHydrangeaGreenLifeSquare.flowerColor = this.getNextFlowerColor();
+                
+                var flowerColors = this.getNextFlowerColors();
+                newHydrangeaGreenLifeSquare.flowerColor = flowerColors[0];
+                newHydrangeaGreenLifeSquare.flowerColorRgba = flowerColors[1];
                 newHydrangeaGreenLifeSquare.motivation = "air";
                 this.addAssociatedLifeSquare(newHydrangeaGreenLifeSquare);
                 newHydrangeaGreenLifeSquare.linkSquare(newPlantSquare);

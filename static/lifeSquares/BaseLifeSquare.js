@@ -60,7 +60,11 @@ class BaseLifeSquare {
 
         this.flowering = false;
         this.flowerColor = "#000000";
-        this.shouldFlower = '0';
+        this.flowerColorRgba = "rgba(0, 0, 0, 0)";
+        this.shouldFlower = 0;
+        this.numAdjacentFlowers = 0;
+
+        this.distFromOrigin = 0;
 
         this.renderWithColorRange = false;
         // for ref - values from plant
@@ -220,9 +224,9 @@ class BaseLifeSquare {
             return rgbToRgba(c.r, c.g, c.b, 0);
         }
         var darkeningStrength = (darkVal / darkValMax) * b_sq_darkeningStrength.value;
-        if (this.flowering) {
-            darkeningStrength /= 4;
-        }
+        // if (this.flowering) {
+        //     darkeningStrength /= 3;
+        // }
         return rgbToRgba(c.r, c.g, c.b, darkeningStrength);;
     }
 

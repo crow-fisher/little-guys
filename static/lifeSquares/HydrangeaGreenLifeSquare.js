@@ -24,24 +24,46 @@ class HydrangeaGreenLifeSquare extends BaseLifeSquare {
     }
 
     flower() {
-        if (this.shouldFlower == "0") {
+        if (this.numAdjacentFlowers == 0) {
+            this.numAdjacentFlowers = getNeighbors(this.posX, this.posY)
+            .filter((sq) => sq.linkedOrganismSquares.some((sq) => sq.flowering))
+            .map((sq) => (0.5 + Math.random()))
+            .reduce(
+                (accumulator, currentValue) => accumulator + currentValue,
+                0,
+            );
+        }
+        if (this.numAdjacentFlowers > 3) {
+            this.flowering = false;
             return;
         }
+        if (this.linkedOrganism.distToEdge(this.posX, this.posY) > this.shouldFlower) {
+            return;
+        }
+    
         this.flowering = true;
     }
 
     render() {
+        super.render();
         if (this.flowering) {
-            MAIN_CONTEXT.fillStyle = this.flowerColor; 
+            MAIN_CONTEXT.fillStyle = this.flowerColorRgba; 
             MAIN_CONTEXT.fillRect(
             this.posX * BASE_SIZE,
             this.posY * BASE_SIZE,
             this.width * BASE_SIZE,
             this.height * BASE_SIZE
-        );
-        this.darkeningRender();
-        } else {
-            super.render();
+            );
+            MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(
+                (Math.max(0, this.linkedOrganism.distToEdge(this.posX, this.posY) - this.shouldFlower / 2)), 
+                4 
+            );
+            MAIN_CONTEXT.fillRect(
+                this.posX * BASE_SIZE,
+                this.posY * BASE_SIZE,
+                this.width * BASE_SIZE,
+                this.height * BASE_SIZE
+                );
         }
     }
 
