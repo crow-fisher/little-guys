@@ -48,7 +48,7 @@ class HydrangeaOrganism extends BaseOrganism {
         this.width = randNumber(5, 7);
         this.height = randNumber(3, 4) * 2;
         this.slant = Math.random() - 0.5;
-        this.numBlocks = Math.floor(1.5 * this.width * this.height * this.characteristicIntegral(1));
+        this.numBlocks = Math.floor(this.width * this.height * (this.characteristicIntegral(1) - this.characteristicIntegral(-1)));
         this.numPossibleFlowerBlocks = Math.floor(this.numBlocks * 0.7);
         this.numNonFlowerBlocks = this.numBlocks - this.numPossibleFlowerBlocks;
         this.numFlowers = Math.floor(this.numBlocks * 0.2);
