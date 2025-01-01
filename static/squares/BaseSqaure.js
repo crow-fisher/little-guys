@@ -85,6 +85,8 @@ export class BaseSquare {
 
         this.currentPressureDirect = 0;
 
+        this.surface = false;
+
     };
     destroy() {
         removeSquare(this);
@@ -124,6 +126,8 @@ export class BaseSquare {
         }
         else if (selectedViewMode.startsWith("organism")) {
             this.renderAsGrey();
+        } else if (selectedViewMode == "surface") {
+            this.renderSurface();
         }
         else if (selectedViewMode == "blockhealthliquid") {
             if (this.solid) {
@@ -133,6 +137,16 @@ export class BaseSquare {
             }
         }
     };
+
+    renderSurface() {
+        MAIN_CONTEXT.fillStyle = this.surface ? "rgba(172, 35, 226, 0.75)" : "rgba(30, 13, 58, 0.82)";
+        MAIN_CONTEXT.fillRect(
+            this.posX * BASE_SIZE,
+            this.posY * BASE_SIZE,
+            BASE_SIZE,
+            BASE_SIZE
+        );
+    }
 
     renderAsGrey() {
         MAIN_CONTEXT.fillStyle = "rgba(50, 50, 50, 0.2)";
@@ -287,7 +301,7 @@ export class BaseSquare {
         newPosY = Math.floor(newPosY);
 
         if (getSquares(newPosX, newPosY)
-            .some((sq) => this.collision && sq.collision)) {
+            .some((sq) => this.collision && sq.collision && !sq.surface)) {
             return false;
         }
 
@@ -386,10 +400,11 @@ export class BaseSquare {
                 var jSigned = (this.speedX > 0) ? j : -j;
                 var jSignedMinusOne = (this.speedX == 0 ? 0 : (this.speedX > 0) ? (j - 1) : -(j - 1));
                 if (getSquares(this.posX + jSigned, this.posY + i)
-                    .some((sq) => (sq.collision || (
-                        (this.organic && sq.organic) &&
-                        (this.spawnedEntityId == sq.spawnedEntityId)
-                    )))) {
+                    .some((sq) => 
+                        (!this.organic && sq.collision) || 
+                        (this.spawnedEntityId == sq.spawnedEntityId) ||
+                        this.organic && sq.collision && sq.surface && Math.random() > 0.9
+                    )) {
                     finalYPos = this.posY + (i - 1);
                     finalXPos = this.posX + jSignedMinusOne;
                     this.speedX = 0;
@@ -507,6 +522,9 @@ export class BaseSquare {
 
     calculateDirectPressure() {
         this.currentPressureDirect = 0;
+        if (this.surface) {
+            return;
+        }
         getSquares(this.posX, this.posY - 1)
             .forEach((sq) => this.currentPressureDirect = Math.max(this.currentPressureDirect, 
                 sq.currentPressureDirect + (sq.organic ? 0.35 : 1)));

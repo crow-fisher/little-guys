@@ -82,7 +82,7 @@ function iterateOnSquares(func, sortRandomness) {
 
 
 function getSquares(posX, posY) {
-    return getObjectArrFromMap(ALL_SQUARES, posX, posY);
+    return getObjectArrFromMap(ALL_SQUARES, Math.floor(posX), Math.floor(posY));
 }
 
 function getCollidableSquareAtLocation(posX, posY) {
@@ -100,8 +100,6 @@ function removeSquarePos(x, y) {
     getOrganismsAtSquare(x, y).forEach((org) => org.destroy());
     getSquares(x, y).filter((sq) => !sq.organic).forEach((sq) => sq.destroy());
 }
-
-
 
 
 export {getNeighbors, getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares, removeOrganismSquare, removeSquarePos};

@@ -28,6 +28,7 @@ class SeedSquare extends BaseSquare {
         super.physics();
         getSquares(this.posX, this.posY + 1)
             .filter((sq) => sq.rootable)
+            .filter((sq) => !sq.surface || sq.surface && Math.random() > 0.7)
             .forEach((sq) => {
                 var linkedOrganism = this.linkedOrganism;
                 if (this.linkedOrganism == null) {

@@ -25,11 +25,9 @@ class WindGrassOrganism extends BaseOrganism {
         this.type = "plant";
 
         this.throttleInterval = 300;
-        this.currentEnergy = 1000;
+        this.currentEnergy = 20;
 
-        this.reproductionEnergy = 100000;
-
-        this.airCoef = .001;
+        this.airCoef = 1;
         this.dirtCoef = 1;
         this.waterCoef = 0.30;
 

@@ -14,6 +14,7 @@
             <th id="normalHeader">normal material select</th>
             <th id="orgWetlandHeader">wetland organism select</th>
             <th id="orgOtherHeader">other organism select</th>
+            <th id="blockModificationHeader">block modification tool select</th>
         </tr>
         <tr>
             <td>
@@ -87,6 +88,13 @@
                     <option value="cactus">cactus</option>
                 </select>
             </td>
+            <td>
+                <select id="blockModification">
+                    <option value="">please select</option>
+                    <option value="markSurface">mark as surface</option>
+                    <option value="unmarkSurface">unmark as surface</option>
+                </select>   
+            </td>
         </tr>
     </table>
 
@@ -104,6 +112,7 @@
                         <option value="normal">normal</option>
                         <option value="watersaturation">water saturation</option>
                         <option value="blockhealthliquid">water density</option>
+                        <option value="surface">see surface squares</option>
 
                         <option value="organismStructure">organism structures</option>
                         <option value="organismSquareNutrients">nutrients by square</option>

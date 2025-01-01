@@ -30,7 +30,7 @@ import { HydrangeaSeedOrganism } from "./organisms/HydrangeaSeedOrganism.js";
 import { MossCoolSeedOrganism } from "./organisms/MossCoolSeedOrganism.js";
 import { WindGrassSeedOrganism } from "./organisms/WindGrassSeedOrganism.js";
 
-var lastMode = "normal"; // options: "normal", "special", "organism";
+var lastMode = "normal"; // options: "normal", "special", "organism", "blockModification";
 
 var specialSelect = document.getElementById("specialSelect");
 var specialSelect_val = "water";
@@ -49,6 +49,8 @@ var organismWetland = document.getElementById("organismWetland");
 var organismWetland_val;
 var organismOther = document.getElementById("organismOther");
 var organismOther_val;
+var blockModification = document.getElementById("blockModification");
+var blockModification_val;
 
 var mainControlTable = document.getElementById("mainControlTable");
 var secondaryControlTable = document.getElementById("secondaryControlTable");
@@ -60,6 +62,8 @@ var orgWetlandHeader = document.getElementById("orgWetlandHeader");
 var orgWetlandHeader_ref = "organismWetland"
 var orgOtherHeader = document.getElementById("orgOtherHeader");
 var orgOtherHeader_ref = "organismOther"
+var blockModificationHeader = document.getElementById("blockModificationHeader");
+var blockModificationHeader_ref = "blockModification";
 
 var canvasWidth = document.getElementById("canvasWidth");
 var canvasHeight = document.getElementById("canvasHeight");
@@ -86,7 +90,8 @@ function styleHeader() {
         specialHeader,
         normalHeader,
         orgWetlandHeader,
-        orgOtherHeader
+        orgOtherHeader,
+        blockModificationHeader
     ]
     var bold_headers = [];
     if (lastMode == specialHeader_ref) {
@@ -104,6 +109,10 @@ function styleHeader() {
     if (lastMode == orgOtherHeader_ref) {
         nonbold_headers = Array.from(nonbold_headers.filter((v) => v != orgOtherHeader));
         bold_headers.push(orgOtherHeader);
+    }
+    if (lastMode == blockModificationHeader_ref) {
+        nonbold_headers = Array.from(nonbold_headers.filter((v) => v != blockModificationHeader));
+        bold_headers.push(blockModificationHeader);
     }
 
     nonbold_headers.forEach((header) => header.classList = "nonselected");
@@ -146,6 +155,11 @@ organismOther.addEventListener('change', (e) => {
     lastMode = "organismOther";
     styleHeader();
     organismOther_val = e.target.value;
+});
+blockModification.addEventListener('change', (e) => {
+    lastMode = "blockModification";
+    styleHeader();
+    blockModification_val = e.target.value;
 });
 brushStrengthSlider.addEventListener('change', (e) => {
     lastMode = "normal";
@@ -459,6 +473,13 @@ function addSquareByName(posX, posY, name) {
     };
 }
 
+function doBlockMod(posX, posY) {
+    if (blockModification_val == "markSurface" || blockModification_val == "unmarkSurface") {
+        getSquares(posX, posY)
+            .forEach((sq) => sq.surface = blockModification_val == "markSurface" ? true : false);
+    }
+}
+
 function doClickAdd() {
     if (lastMoveEvent == null) {
         return;
@@ -494,6 +515,9 @@ function doClickAdd() {
                 } else {
                     if (lastMode == "normal") {
                         addSquareByNameConfig(px, curY);
+                    }
+                    else if (lastMode == "blockModification") {
+                        doBlockMod(px, curY);
                     }
                     else if (lastMode == "special") {
                         addSquareByName(px, curY, specialSelect_val);
@@ -624,8 +648,11 @@ window.onload = function () {
     // });
 }
 
+loadSlotFromSave(pond_demo_square_data);
+
 export {
     MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, selectedViewMode, addSquareByName,
     setCanvasSquaresX, setCanvasSquaresY,
     getCanvasSquaresX, getCanvasSquaresY
 }
+
