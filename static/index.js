@@ -28,6 +28,7 @@ import { randNumber } from "./common.js";
 import { pond_demo_square_data } from "./saves.js";
 import { HydrangeaSeedOrganism } from "./organisms/HydrangeaSeedOrganism.js";
 import { MossCoolSeedOrganism } from "./organisms/MossCoolSeedOrganism.js";
+import { WindGrassSeedOrganism } from "./organisms/WindGrassSeedOrganism.js";
 
 var lastMode = "normal"; // options: "normal", "special", "organism";
 
@@ -561,6 +562,16 @@ function doClickAdd() {
                                 if (sq) {
                                     addNewOrganism(new HydrangeaSeedOrganism(sq));
                                     organismAddedThisClick = true;
+                                }
+                                break;
+                            
+                            case "windgrass":
+                                if (Math.random() > 0.95) {
+                                    var sq = addSquare(new SeedSquare(px, curY));
+                                    if (sq) {
+                                        // organismAddedThisClick = true;
+                                        addNewOrganism(new WindGrassSeedOrganism(sq));
+                                    }
                                 }
                                 break;
                         }
