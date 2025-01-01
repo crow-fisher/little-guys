@@ -474,10 +474,30 @@ function addSquareByName(posX, posY, name) {
 }
 
 function doBlockMod(posX, posY) {
-    if (blockModification_val == "markSurface" || blockModification_val == "unmarkSurface") {
+    if (blockModification_val == "markSurface") {
         getSquares(posX, posY)
-            .forEach((sq) => sq.surface = blockModification_val == "markSurface" ? true : false);
+            .forEach((sq) => sq.surface = !rightMouseClicked);
+        getDirectNeighbors(posX, posY)
+            .forEach((sq) => sq.surface = !rightMouseClicked);
+    } 
+
+    if (blockModification_val == "ligthenBlocks") {
+        if (!rightMouseClicked) {
+            getSquares(posX, posY)
+                .forEach((sq) => sq.blockModDarkenVal = sq.blockModDarkenVal == null ? 0 : Math.min(sq.blockModDarkenVal + .01, 1));
+            
+            getDirectNeighbors(posX, posY)
+                .forEach((sq) => sq.blockModDarkenVal = sq.blockModDarkenVal == null ? 0 : Math.min(sq.blockModDarkenVal + .005, 1));
+        } else {
+            getSquares(posX, posY)
+                .forEach((sq) => sq.blockModDarkenVal = sq.blockModDarkenVal == null ? 0 : Math.max(sq.blockModDarkenVal - .01, -1));
+            
+            getDirectNeighbors(posX, posY)
+                .forEach((sq) => sq.blockModDarkenVal = sq.blockModDarkenVal == null ? 0 : Math.max(sq.blockModDarkenVal - .005, -1));
+        }
+        
     }
+
 }
 
 function doClickAdd() {
@@ -509,7 +529,7 @@ function doClickAdd() {
             var py = y1 + ddy * i;
             for (let i = 0; i < (CANVAS_SQUARES_Y - offsetY); i++) {
                 var curY = py + i;
-                if (rightMouseClicked) {
+                if (rightMouseClicked && lastMode == "normal") {
                     doErase(px, curY);
                     break;
                 } else {

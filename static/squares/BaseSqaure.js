@@ -84,6 +84,7 @@ export class BaseSquare {
         this.blockHealth_color2 = "#ff1b6b";
 
         this.currentPressureDirect = 0;
+        this.blockModDarkenVal = 0;
 
         this.surface = false;
 
@@ -249,8 +250,7 @@ export class BaseSquare {
         if (this.solid) {
             this.waterContainmentDarken();
         }
-        this.blockPressureDarken();
-
+        this.blockPressureAndModDarken();
     }
 
     waterContainmentDarken() {
@@ -263,8 +263,10 @@ export class BaseSquare {
         );
     }
 
-    blockPressureDarken() {
-        MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.currentPressureDirect, 12);
+    blockPressureAndModDarken() {
+        var pressureMax = 12;
+        var pressureMod = (this.blockModDarkenVal != null ? this.blockModDarkenVal : 0) * pressureMax;
+        MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.currentPressureDirect + pressureMod, 12);
         MAIN_CONTEXT.fillRect(
             this.posX * BASE_SIZE,
             this.posY * BASE_SIZE,

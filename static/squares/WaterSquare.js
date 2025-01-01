@@ -73,7 +73,7 @@ class WaterSquare extends BaseSquare {
         );
     }
 
-    blockPressureDarken() {
+    blockPressureAndModDarken() {
         MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.currentPressureIndirect, 13);
         MAIN_CONTEXT.fillRect(
             this.posX * BASE_SIZE,
