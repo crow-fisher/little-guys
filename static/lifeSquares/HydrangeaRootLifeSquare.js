@@ -12,7 +12,7 @@ class HydrangeaRootLifeSquare extends BaseLifeSquare {
     }
     tick() {
         getDirectNeighbors(this.posX, this.posY)
-            .filter((n) => n.solid)
+            .filter((n) => n.rootable)
             .forEach((neighbor) => {
                 this.addDirtNutrient(neighbor.nutrientValue.value);
                 this.addWaterNutrient(neighbor.suckWater(this.maxWaterDt - this.waterNutrients));

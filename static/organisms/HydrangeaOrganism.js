@@ -305,7 +305,7 @@ class HydrangeaOrganism extends BaseOrganism {
 
         this.getValidGreenLocations()
             .filter((loc) => !this.lifeSquares.some((lsq) => lsq.posX == loc[0] && lsq.posY == loc[1]))
-            .filter((loc) => !getSquares(loc[0], loc[1]).some((sq) => sq.organic || sq.collision))
+            .filter((loc) => !getSquares(loc[0], loc[1]).some((sq) => !sq.surface && sq.collision))
             .forEach((loc) => {
                 var adjacentLifeSquares = Array.from(this.lifeSquares
                     .filter((lsq) => lsq.dist(loc[0], loc[1]) < 2)
