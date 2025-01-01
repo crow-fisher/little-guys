@@ -24,18 +24,99 @@ class WindGrassOrganism extends BaseOrganism {
         this.proto = "WindGrassOrganism";
         this.type = "plant";
 
-        this.throttleInterval = 2000;
+        this.throttleInterval = 300;
+        this.currentEnergy = 1000;
 
-        this.airCoef = 1;
+        this.reproductionEnergy = 100000;
+
+        this.airCoef = .001;
         this.dirtCoef = 1;
         this.waterCoef = 0.30;
 
         this.maximumLifeSquaresOfType = {
-            "green": randNumber(5, 15),
+            "green": randNumber(3, 6),
             "root": 80
         }
 
         this.highestGreen = null;
+        this.startDeflectionAngle = 0; 
+        this.lastDeflectionStates = new Array(100);
+        this.lastDeflectionAngles = new Array(100);
+        this.deflectionIdx = 0;
+
+        this.deflectionState = 0;
+        this.deflectionStateTheta = 0;
+        this.deflectionStateMax = Math.random() * 500;
+
+        this.deflectionStateFunctions = [];
+    }
+
+    updateDeflectionStateFunctions() {
+        if (this.deflectionStateFunctions.length > 4) {
+            return;
+        }
+        var r1 = Math.random(), r2 = Math.random(), r3 = Math.random(); 
+        this.deflectionStateFunctions.push(() => (r1 * 5 + r2 * 10 * Math.sin((1 + r3) * this.deflectionStateTheta)));
+    }
+
+    updateDeflectionState() {
+        if (this.deflectionIdx % 75 == 0) {
+            this.deflectionStateFunctions.shift();
+        }
+        this.updateDeflectionStateFunctions();
+        this.deflectionStateTheta += 0.1;
+
+        this.deflectionState = this.deflectionStateFunctions.map((f) => f()).reduce(
+            (accumulator, currentValue) => accumulator + currentValue,
+            0,
+        );
+    }
+
+    getStartDeflectionState() {
+        return this.lastDeflectionStates.reduce(
+            (accumulator, currentValue) => accumulator + currentValue,
+            0,
+        ) / this.lastDeflectionStates.length;
+    }
+
+    getStartDeflectionAngle() {
+        if (this.deflectionIdx < this.lastDeflectionAngles.length) {
+            return Math.PI / 2;
+        }
+
+        return this.lastDeflectionAngles.reduce(
+            (accumulator, currentValue) => accumulator + currentValue,
+            0,
+        ) / this.lastDeflectionAngles.length;
+    }
+
+
+
+    applyDeflectionStateToSquares() {
+        var greenSquares = Array.from(this.lifeSquares.filter((lsq) => lsq.type == "green"));
+        var deflectionPerSquare = (this.deflectionState - this.getStartDeflectionState()) / greenSquares.length;
+
+        var currentTheta = (this.getStartDeflectionAngle())
+        var currentXOffset = 0;
+        var currentYOffset = 0;
+
+        for (let i = 0; i < greenSquares.length; i++) {
+            var sqAppliedDeflection = deflectionPerSquare; // * (i / greenSquares.length);
+            currentTheta += sqAppliedDeflection / greenSquares[i].deflectionStrength; // hooke's law motherfuckerrrrrsssss
+            
+            this.lastDeflectionAngles[this.deflectionIdx % this.lastDeflectionAngles.length] = currentTheta;
+            this.lastDeflectionStates[this.deflectionIdx % this.lastDeflectionStates.length] = this.deflectionState;
+
+            currentXOffset += Math.cos(currentTheta);
+            currentYOffset += Math.sin(currentTheta);
+
+            this.deflectionIdx += 1;
+
+            greenSquares[i].deflectionXOffset = currentXOffset - 2 * ((greenSquares[i].linkedOrganism.posX - greenSquares[i].posX) / 2);
+            greenSquares[i].deflectionYOffset = currentYOffset - 2 * ((greenSquares[i].linkedOrganism.posY - greenSquares[i].posY) / 2);
+        }
+        
+        
     }
 
     getSeedSquare() {
@@ -240,6 +321,13 @@ class WindGrassOrganism extends BaseOrganism {
             lsq.xOffset = this.xOffset;
         });
     }
+
+    tick() {
+        super.tick();
+        this.updateDeflectionState();
+        this.applyDeflectionStateToSquares();
+    }
+
 }
 
 export { WindGrassOrganism }

@@ -5,7 +5,7 @@ import { getCurTime } from "../globals.js";
 import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount, b_sq_darkeningStrength } from "../config/config.js";
 import { getSquares, removeOrganismSquare } from "../squares/_sqOperations.js";
 import { airNutrientsPerEmptyNeighbor } from "../config/config.js";
- 
+
 import { selectedViewMode } from "../index.js";
 import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_GREEN, RGB_COLOR_BLACK, RGB_COLOR_RED } from "../colors.js";
 
@@ -30,6 +30,10 @@ class BaseLifeSquare {
         this.storedWater = 0;
         this.storedWaterMax = 5;
         this.storedWaterTransferRate = 1;
+
+        this.deflectionStrength = 0;
+        this.deflectionXOffset = 0;
+        this.deflectionYOffset = 0;
 
         this.linkedSquare = square;
         this.linkedOrganism = organism;
@@ -61,7 +65,7 @@ class BaseLifeSquare {
         this.flowering = false;
         this.flowerColor = "#000000";
         this.flowerColorRgba = "rgba(0, 0, 0, 0)";
-        this.flowerColorRgb = {r: 0, g: 0, b: 0};
+        this.flowerColorRgb = { r: 0, g: 0, b: 0 };
         this.shouldFlower = 0;
         this.shouldFlowerFlag = false;
         this.numAdjacentFlowers = 0;
@@ -89,7 +93,7 @@ class BaseLifeSquare {
         return 1;
     }
 
-    flower() {}
+    flower() { }
 
     storeWater(amountToAdd) {
         if (this.storedWater >= this.storedWaterMax) {
@@ -198,7 +202,7 @@ class BaseLifeSquare {
         }
         return this.randoms[randIdx];
     }
-    
+
     getScore() {
         var outScore = 0;
         var orgMeanNutrient = this.linkedOrganism.getMeanNutrient();
@@ -217,11 +221,11 @@ class BaseLifeSquare {
     darkeningRender() {
         MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.linkedSquare.currentPressureDirect, 8);
         MAIN_CONTEXT.fillRect(
-            this.posX * BASE_SIZE,
-            this.posY * BASE_SIZE,
+            (this.posX - this.deflectionXOffset) * BASE_SIZE,
+            (this.posY - this.deflectionYOffset) * BASE_SIZE,
             this.width * BASE_SIZE,
             this.height * BASE_SIZE
-            );
+        );
     }
 
     calculateDarkeningColorImpl(darkVal, darkValMax) {
@@ -229,7 +233,7 @@ class BaseLifeSquare {
         if (this.flowering) {
             c = hexToRgb(this.flowerColor);
             c.r /= 3;
-            c.g /= 3; 
+            c.g /= 3;
             c.b /= 3;
         } else {
             c = this.darkColor_rgb;
@@ -248,7 +252,7 @@ class BaseLifeSquare {
         if (selectedViewMode.startsWith("organism") && selectedViewMode != "organismStructure") {
             var color = null;
             var val;
-            var val_max; 
+            var val_max;
             var val_stdev;
             switch (selectedViewMode) {
                 case "organismSquareNutrients":
@@ -258,7 +262,7 @@ class BaseLifeSquare {
                         b: 255 * (this.waterNutrients / this.linkedOrganism.getMaxWaterNutrient())
                     }
                     val = this.dirtNutrients + this.airNutrients + this.waterNutrients;
-                    val_max = this.maxAirDt + this.maxWaterDt + this.maxDirtDt; 
+                    val_max = this.maxAirDt + this.maxWaterDt + this.maxDirtDt;
                     break;
                 case "organismSquareDirt":
                     color = RGB_COLOR_BROWN;
@@ -282,17 +286,17 @@ class BaseLifeSquare {
                     break;
                 case "organismHealth":
                     color = RGB_COLOR_RED;
-                    val = this.healthIndicated; 
+                    val = this.healthIndicated;
                     val_max = 1;
                     break;
                 case "organismEnergy":
                     color = RGB_COLOR_GREEN;
-                    val = this.energyIndicated; 
+                    val = this.energyIndicated;
                     val_max = 1;
                     break;
                 case "organismLifetime":
                     color = RGB_COLOR_BLACK;
-                    val = this.lifetimeIndicated; 
+                    val = this.lifetimeIndicated;
                     val_max = 1;
                     break;
                 case "organismNutrients":
@@ -303,13 +307,13 @@ class BaseLifeSquare {
                     }
                     MAIN_CONTEXT.fillStyle = rgbToHex(color.r, color.g, color.b);
                     MAIN_CONTEXT.fillRect(
-                        this.posX * BASE_SIZE,
-                        this.posY * BASE_SIZE,
+                        (this.posX - this.deflectionXOffset) * BASE_SIZE,
+                        (this.posY - this.deflectionYOffset) * BASE_SIZE,
                         this.width * BASE_SIZE,
                         this.height * BASE_SIZE
                     );
                     return;
-                    
+
                 case "organismDirt":
                     color = RGB_COLOR_BROWN;
                     val = this.dirtIndicated;
@@ -330,8 +334,8 @@ class BaseLifeSquare {
             var colorProcessed = processColorLerp((val_max - val), -0.5, val_max + 0.5, color);
             MAIN_CONTEXT.fillStyle = rgbToHex(colorProcessed.r, colorProcessed.g, colorProcessed.b);
             MAIN_CONTEXT.fillRect(
-                this.posX * BASE_SIZE,
-                this.posY * BASE_SIZE,
+                (this.posX - this.deflectionXOffset) * BASE_SIZE,
+                (this.posY - this.deflectionYOffset) * BASE_SIZE,
                 this.width * BASE_SIZE,
                 this.height * BASE_SIZE
             );
@@ -374,11 +378,11 @@ class BaseLifeSquare {
             MAIN_CONTEXT.fillStyle = outRgba;
         }
 
-        var startPos = this.posX * BASE_SIZE + (1 - this.width) * BASE_SIZE * this.xOffset;
+        var startPos = (this.posX - this.deflectionXOffset) * BASE_SIZE + (1 - this.width) * BASE_SIZE * this.xOffset;
 
         MAIN_CONTEXT.fillRect(
             startPos,
-            this.posY * BASE_SIZE,
+            (this.posY - this.deflectionYOffset) * BASE_SIZE,
             this.width * BASE_SIZE,
             this.height * BASE_SIZE
         );

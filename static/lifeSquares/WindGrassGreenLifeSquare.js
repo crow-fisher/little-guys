@@ -17,6 +17,8 @@ class WindGrassGreenLifeSquare extends BaseLifeSquare {
         this.type = "green";
         this.width = .99;
 
+        this.deflectionStrength = 70; // per radian
+
         this.baseColor = "#83ab40";
         this.baseColorAmount = dirt_baseColorAmount;
         this.darkColor = "#4c6f21";
