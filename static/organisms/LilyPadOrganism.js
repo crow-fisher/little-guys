@@ -291,7 +291,8 @@ class LilyPadOrganism extends BaseOrganism {
                                     0,
                                 );
 
-                            if (compSquareResourceAvailable > dirtiestSquareDirtResourceAvailable ||
+                            if (dirtiestSquare == null || 
+                                compSquareResourceAvailable > dirtiestSquareDirtResourceAvailable ||
                                 (compSquareResourceAvailable == dirtiestSquareDirtResourceAvailable && compSquare.posY < dirtiestSquare.posY)
                             ) {
                                 dirtiestSquare = compSquare;

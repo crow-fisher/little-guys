@@ -120,7 +120,7 @@ class MossOrganism extends BaseOrganism {
             return 0;
         }
         var targetSquare = sqArr[0];
-        return airNutrientsPerEmptyNeighbor.value * (.7 ** targetSquare.currentPressureDirect)
+        return (airNutrientsPerEmptyNeighbor.value * (.7 ** targetSquare.currentPressureDirect)) / (targetSquare.linkedOrganismSquares.length + 1)
     }
 
     getWaterNutrientsAtSquare(posX, posY) {
@@ -129,7 +129,7 @@ class MossOrganism extends BaseOrganism {
             return 0;
         }
         var targetSquare = sqArr[0];
-        return targetSquare.waterContainment;
+        return (targetSquare.waterContainment) / (targetSquare.linkedOrganismSquares.length + 1);
     }
 
     
@@ -139,9 +139,7 @@ class MossOrganism extends BaseOrganism {
             return 0;
         }
         var targetSquare = sqArr[0];
-        var val = targetSquare.nutrientValue.value;
-
-        getDirectNeighbors(posX, posY).filter((sq) => sq.linkedOrganismSquares.length > 0).forEach((sq) => val * 0.8);
+        var val = targetSquare.nutrientValue.value / targetSquare.linkedOrganismSquares.length;
         return val;
     }
 
