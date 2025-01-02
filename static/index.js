@@ -29,6 +29,7 @@ import { pond_demo_square_data } from "./saves.js";
 import { HydrangeaSeedOrganism } from "./organisms/HydrangeaSeedOrganism.js";
 import { MossCoolSeedOrganism } from "./organisms/MossCoolSeedOrganism.js";
 import { WindGrassSeedOrganism } from "./organisms/WindGrassSeedOrganism.js";
+import { addWindPressure, initializeWindPressureMap, removeWindPressure, renderWindPressureMap, tickWindPressureMap } from "./wind.js";
 
 var lastMode = "normal"; // options: "normal", "special", "organism", "blockModification";
 
@@ -181,7 +182,7 @@ var lastLastMoveOffset = null;
 
 var lastTick = Date.now();
 
-var CANVAS_SQUARES_X = 240; // * 8; //6;
+var CANVAS_SQUARES_X = 100; // * 8; //6;
 var CANVAS_SQUARES_Y = 100; // * 8; // 8;
 
 function setCanvasSquaresX(val) {
@@ -384,15 +385,20 @@ function main() {
             purge();
             processOrganisms();
         }
+        tickWindPressureMap();
         renderSquares();
         renderOrganisms();
         renderWater();
+        renderWindPressureMap();
         lastTick = Date.now();
     }
     updateTime();
     setTimeout(main, 5);
     doMouseHover();
 }
+
+initializeWindPressureMap();
+
 
 
 
@@ -496,6 +502,12 @@ function doBlockMod(posX, posY) {
                 .forEach((sq) => sq.blockModDarkenVal = sq.blockModDarkenVal == null ? 0 : Math.max(sq.blockModDarkenVal - .005, -1));
         }
         
+    }
+    if (blockModification_val == "wind") {
+        if (!rightMouseClicked) 
+        addWindPressure(posX, posY);
+        else 
+        removeWindPressure(posX, posY);
     }
 
 }
@@ -668,7 +680,7 @@ window.onload = function () {
     // });
 }
 
-loadSlotFromSave(pond_demo_square_data);
+// loadSlotFromSave(pond_demo_square_data);
 
 export {
     MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, selectedViewMode, addSquareByName,
