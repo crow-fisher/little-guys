@@ -18,6 +18,8 @@ import { getOrganismSquaresAtSquareWithEntityId } from "../lifeSquares/_lsOperat
 import { getCurTime } from "../globals.js";
 import { randNumber } from "../common.js";
 
+import { getWindSpeedAtLocation } from "../wind.js";
+
 class WindGrassOrganism extends BaseOrganism {
     constructor(square) {
         super(square);
@@ -38,77 +40,95 @@ class WindGrassOrganism extends BaseOrganism {
 
         this.highestGreen = null;
         this.startDeflectionAngle = 0; 
-        this.lastDeflectionStates = new Array(100);
-        this.lastDeflectionAngles = new Array(100);
+        this.lastDeflectionStateXs = new Array(2);
+        this.lastDeflectionStateYs = new Array(2);
         this.deflectionIdx = 0;
 
-        this.deflectionState = 0;
-        this.deflectionStateTheta = 0;
-        this.deflectionStateMax = Math.random() * 500;
+        this.deflectionStateX = 100;
+        this.deflectionStateY = 100;
 
         this.deflectionStateFunctions = [];
     }
 
-    updateDeflectionStateFunctions() {
-        if (this.deflectionStateFunctions.length > 4) {
+    updateDeflectionState() {
+        var highestGreen = this.getHighestGreen();
+        // var windVec = getWindSpeedAtLocation(highestGreen.posX + highestGreen.deflectionXOffset, highestGreen.posY + highestGreen.deflectionYOffset);
+        var windVec = getWindSpeedAtLocation(highestGreen.posX, highestGreen.posY);
+
+        var startX = this.getStartDeflectionStateX();
+        var startY = this.getStartDeflectionStateY();
+
+        windVec[0] /= (this.lastDeflectionStateXs.length / 2) * 10;
+        windVec[1] /= (this.lastDeflectionStateYs.length / 2) * 10;
+        
+        this.deflectionStateX = startX + windVec[0];
+        this.deflectionStateY = startY + windVec[1];
+        this.deflectionLength = (this.deflectionStateX ** 2 + this.deflectionStateY ** 2) ** 0.5;
+
+        if (this.deflectionLength == 0) {
             return;
         }
-        var r1 = Math.random(), r2 = Math.random(), r3 = Math.random(); 
-        this.deflectionStateFunctions.push(() => (r1 * 5 + r2 * 10 * Math.sin((1 + r3) * this.deflectionStateTheta)));
+
+        this.deflectionStateX /= this.deflectionLength;
+        this.deflectionStateY /= this.deflectionLength;
+
+        this.lastDeflectionStateXs[this.deflectionIdx % this.lastDeflectionStateXs.length] = this.deflectionStateX;
+        this.lastDeflectionStateYs[this.deflectionIdx % this.lastDeflectionStateYs.length] = this.deflectionStateY;
+
+        this.deflectionIdx += 1;
     }
 
-    updateDeflectionState() {
-        if (this.deflectionIdx % 75 == 0) {
-            this.deflectionStateFunctions.shift();
-        }
-        this.updateDeflectionStateFunctions();
-        this.deflectionStateTheta += 0.1;
-
-        this.deflectionState = this.deflectionStateFunctions.map((f) => f()).reduce(
+    getStartDeflectionStateX() {
+        return this.lastDeflectionStateXs.reduce(
             (accumulator, currentValue) => accumulator + currentValue,
             0,
-        );
+        ) / this.lastDeflectionStateXs.length;
     }
 
-    getStartDeflectionState() {
-        return this.lastDeflectionStates.reduce(
+    getStartDeflectionStateY() {
+        return this.lastDeflectionStateYs.reduce(
             (accumulator, currentValue) => accumulator + currentValue,
             0,
-        ) / this.lastDeflectionStates.length;
+        ) / this.lastDeflectionStateYs.length;
     }
-
-    getStartDeflectionAngle() {
-        if (this.deflectionIdx < this.lastDeflectionAngles.length) {
-            return Math.PI / 2;
-        }
-
-        return this.lastDeflectionAngles.reduce(
-            (accumulator, currentValue) => accumulator + currentValue,
-            0,
-        ) / this.lastDeflectionAngles.length;
-    }
-
 
 
     applyDeflectionStateToSquares() {
         var greenSquares = Array.from(this.lifeSquares.filter((lsq) => lsq.type == "green"));
-        var deflectionPerSquare = (this.deflectionState - this.getStartDeflectionState()) / greenSquares.length;
 
-        var currentTheta = (this.getStartDeflectionAngle())
+        var startDeflectionX = this.getStartDeflectionStateX();
+        var startDeflectionY = this.getStartDeflectionStateY();
+
+        var currentDeflectionX = this.deflectionStateX;
+        var currentDeflectionY = this.deflectionStateY;
+
+        if (startDeflectionX * startDeflectionY * currentDeflectionX * currentDeflectionY == 0) {
+            return;
+        }
+
+        var startTheta = 0;
+        var endTheta = Math.atan(currentDeflectionY / currentDeflectionX);
+
+        if (startDeflectionY < 0 && startDeflectionX < 0) {
+            startTheta = 2 * Math.PI - startTheta;
+        }
+
+        if (currentDeflectionY < 0 && currentDeflectionX < 0) {
+            endTheta =  2 * Math.PI - endTheta;
+        }
+
+        var thetaDelta = endTheta; // - startTheta;
+
         var currentXOffset = 0;
         var currentYOffset = 0;
 
+        var currentTheta = startTheta;
+
         for (let i = 0; i < greenSquares.length; i++) {
-            var sqAppliedDeflection = deflectionPerSquare; // * (i / greenSquares.length);
-            currentTheta += sqAppliedDeflection / greenSquares[i].deflectionStrength; // hooke's law motherfuckerrrrrsssss
-            
-            this.lastDeflectionAngles[this.deflectionIdx % this.lastDeflectionAngles.length] = currentTheta;
-            this.lastDeflectionStates[this.deflectionIdx % this.lastDeflectionStates.length] = this.deflectionState;
+            currentTheta += thetaDelta / greenSquares.length;
 
             currentXOffset += Math.cos(currentTheta);
             currentYOffset += Math.sin(currentTheta);
-
-            this.deflectionIdx += 1;
 
             greenSquares[i].deflectionXOffset = currentXOffset - 2 * ((greenSquares[i].linkedOrganism.posX - greenSquares[i].posX) / 2);
             greenSquares[i].deflectionYOffset = currentYOffset - 2 * ((greenSquares[i].linkedOrganism.posY - greenSquares[i].posY) / 2);
