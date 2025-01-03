@@ -40,8 +40,8 @@ class WindGrassOrganism extends BaseOrganism {
 
         this.highestGreen = null;
         this.startDeflectionAngle = 0; 
-        this.lastDeflectionStateXs = new Array(20);
-        this.lastDeflectionStateYs = new Array(20);
+        this.lastDeflectionStateXs = new Array(4);
+        this.lastDeflectionStateYs = new Array(4);
         this.deflectionIdx = 0;
 
         this.deflectionStateX = 0;
@@ -58,11 +58,14 @@ class WindGrassOrganism extends BaseOrganism {
         var startX = this.getStartDeflectionStateX();
         var startY = this.getStartDeflectionStateY();
         // apply wind force 
-        // this.deflectionStateX = startX + windVec[0];
-        // this.deflectionStateY = startY + windVec[1];
+        this.deflectionStateX = startX + windVec[0] / 4;
+        this.deflectionStateY = startY + windVec[1] / 4;
 
-        this.deflectionStateX += windVec[0];
-        this.deflectionStateY += windVec[1];
+        // this.deflectionStateX += windVec[0];
+        // this.deflectionStateY += windVec[1];
+
+        this.deflectionStateY = Math.max(-.9, this.deflectionStateY);
+
         // apply plant spring force
         
         this.deflectionStateX *= 0.8;
@@ -72,6 +75,7 @@ class WindGrassOrganism extends BaseOrganism {
         this.lastDeflectionStateYs[this.deflectionIdx % this.lastDeflectionStateYs.length] = this.deflectionStateY;
 
         this.deflectionIdx += 1;
+
     }
 
     getStartDeflectionStateX() {
@@ -105,8 +109,16 @@ class WindGrassOrganism extends BaseOrganism {
             startLength = 1;
             currentLength = 1;
         }
-        startDeflectionY += (1 - startDeflectionX ** 2) ** 0.5;
-        currentDeflectionY += (1 - currentDeflectionY ** 2) ** 0.5;
+        
+        if (startDeflectionX == 0) {
+            startDeflectionX = 0.1;
+        }
+        if (currentDeflectionX == 0) {
+            currentDeflectionX = 0.1;
+        }
+
+        startDeflectionY += (Math.max(1, startLength) **2 - startDeflectionX ** 2) ** 0.5;
+        currentDeflectionY += (Math.max(1, currentLength) ** 2 - currentDeflectionX ** 2) ** 0.5;
 
         var startTheta = Math.atan(startDeflectionY / startDeflectionX);
         var endTheta = Math.atan(currentDeflectionY / currentDeflectionX);
@@ -121,6 +133,8 @@ class WindGrassOrganism extends BaseOrganism {
 
         var currentXOffset = 0;
         var currentYOffset = 0;
+
+        console.log(startTheta, endTheta);
 
         startTheta = Math.max(0.4, startTheta);
         startTheta = Math.min(Math.PI - 0.4, startTheta);

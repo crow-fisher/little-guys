@@ -155,7 +155,7 @@ function getWindDirectNeighbors(x, y) {
     ]
 }
 
-var delta = 10;
+var delta = 30;
 
 function addWindPressure(x, y) {
     x = (Math.floor(x) + CANVAS_SQUARES_X) % CANVAS_SQUARES_X;
