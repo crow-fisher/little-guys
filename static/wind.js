@@ -8,6 +8,9 @@ var windPressureMapByPressure;
 var windFlowStrength = 0.5;
 
 function gp(x, y) {
+    if (isNaN(x) || isNaN(y)) {
+        return 0;
+    }
     x = (Math.floor(x) + CANVAS_SQUARES_X) % CANVAS_SQUARES_X;
     y = (Math.floor(y) + CANVAS_SQUARES_Y) % CANVAS_SQUARES_Y;
     return wpm[x][y];
@@ -97,6 +100,14 @@ function renderWindPressureMap() {
             var p = gp(i, j);
             var s = getWindSpeedAtLocation(i, j);
 
+            MAIN_CONTEXT.fillStyle = rgbToRgba(p, p, p, .2);
+            MAIN_CONTEXT.fillRect(
+                i * BASE_SIZE,
+                j * BASE_SIZE,
+                BASE_SIZE,
+                BASE_SIZE
+            );
+
             if ((i * j) % 32 != 0) {
                 continue;
             }
@@ -111,13 +122,7 @@ function renderWindPressureMap() {
             MAIN_CONTEXT.stroke();
             MAIN_CONTEXT.closePath();
 
-            MAIN_CONTEXT.fillStyle = rgbToRgba(p, p, p, 0.5);
-            MAIN_CONTEXT.fillRect(
-                i * BASE_SIZE,
-                j * BASE_SIZE,
-                BASE_SIZE,
-                BASE_SIZE
-            );
+
         }
     }
 }
