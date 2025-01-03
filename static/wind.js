@@ -50,21 +50,21 @@ function tickWindPressureMap() {
     windPressureMapByPressure = new Map();
     for (let i = 0; i < CANVAS_SQUARES_X; i++) {
         for (let j = 0; j < CANVAS_SQUARES_Y; j++) {
-            // if (getSquares(i, j).some((sq) => sq.collision)) {
-            //     wpm[i][j] = -1;
-            // } else {
-            //     if (wpm[i][j] == -1) {
-            //         if (!getWindDirectNeighbors(i, j).some((sq) => {
-            //             if (gp(sq[0], sq[1]) != -1) {
-            //                 wpm[i][j] = gp(sq[0], sq[1]);
-            //                 return true;
-            //             }
-            //             return false;
-            //         })) {
-            //             wpm[i][j] = 100;
-            //         }
-            //     }
-            // }
+            if (getSquares(i, j).some((sq) => sq.collision)) {
+                wpm[i][j] = -1;
+            } else {
+                if (wpm[i][j] == -1) {
+                    if (!getWindDirectNeighbors(i, j).some((sq) => {
+                        if (gp(sq[0], sq[1]) != -1) {
+                            wpm[i][j] = gp(sq[0], sq[1]);
+                            return true;
+                        }
+                        return false;
+                    })) {
+                        wpm[i][j] = 100;
+                    }
+                }
+            }
             var pressure = Math.floor(wpm[i][j]);
             if (!(pressure in windPressureMapByPressure)) {
                 windPressureMapByPressure[pressure] = new Array();
@@ -84,8 +84,12 @@ function tickWindPressureMap() {
                     .forEach((spl) => {
                         var x = (spl[0] + CANVAS_SQUARES_X) % CANVAS_SQUARES_X;
                         var y = (spl[1] + CANVAS_SQUARES_Y) % CANVAS_SQUARES_Y;
+                        if (pl[0] == 0 || pl[0] == CANVAS_SQUARES_X || pl[1] == 0 || pl[1] == CANVAS_SQUARES_Y) {
+                            wpm[x][y] = 100;
+                        }
                         var plPressure = wpm[pl[0]][pl[1]];
                         var splPressure = wpm[x][y];
+
                         var windPressureDiff = getWindPressureDiff(plPressure, splPressure);
                         wpm[pl[0]][pl[1]] -= windPressureDiff;
                         wpm[x][y] += windPressureDiff;
@@ -155,7 +159,7 @@ function getWindDirectNeighbors(x, y) {
     ]
 }
 
-var delta = 30;
+var delta = 50;
 
 function addWindPressure(x, y) {
     x = (Math.floor(x) + CANVAS_SQUARES_X) % CANVAS_SQUARES_X;

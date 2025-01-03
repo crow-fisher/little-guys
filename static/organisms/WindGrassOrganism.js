@@ -40,8 +40,8 @@ class WindGrassOrganism extends BaseOrganism {
 
         this.highestGreen = null;
         this.startDeflectionAngle = 0; 
-        this.lastDeflectionStateXs = new Array(4);
-        this.lastDeflectionStateYs = new Array(4);
+        this.lastDeflectionStateXs = new Array(8);
+        this.lastDeflectionStateYs = new Array(8);
         this.deflectionIdx = 0;
 
         this.deflectionStateX = 0;
@@ -58,8 +58,8 @@ class WindGrassOrganism extends BaseOrganism {
         var startX = this.getStartDeflectionStateX();
         var startY = this.getStartDeflectionStateY();
         // apply wind force 
-        this.deflectionStateX = startX + windVec[0] / 4;
-        this.deflectionStateY = startY + windVec[1] / 4;
+        this.deflectionStateX = startX + (windVec[0] / this.lastDeflectionStateXs.length);
+        this.deflectionStateY = startY + (windVec[1] / this.lastDeflectionStateYs.length);
 
         // this.deflectionStateX += windVec[0];
         // this.deflectionStateY += windVec[1];
