@@ -52,8 +52,7 @@ class WindGrassOrganism extends BaseOrganism {
 
     updateDeflectionState() {
         var highestGreen = this.getHighestGreen();
-        // var windVec = getWindSpeedAtLocation(highestGreen.posX + highestGreen.deflectionXOffset, highestGreen.posY + highestGreen.deflectionYOffset);
-        var windVec = getWindSpeedAtLocation(highestGreen.posX, highestGreen.posY);
+        var windVec = getWindSpeedAtLocation(highestGreen.posX + highestGreen.deflectionXOffset, highestGreen.posY + highestGreen.deflectionYOffset);
 
         var startX = this.getStartDeflectionStateX();
         var startY = this.getStartDeflectionStateY();
