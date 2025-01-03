@@ -182,7 +182,7 @@ var lastLastMoveOffset = null;
 
 var lastTick = Date.now();
 
-var CANVAS_SQUARES_X = 240; // * 8; //6;
+var CANVAS_SQUARES_X = 100; // * 8; //6;
 var CANVAS_SQUARES_Y = 100; // * 8; // 8;
 
 function setCanvasSquaresX(val) {
@@ -384,13 +384,13 @@ function main() {
             doWaterFlow();
             purge();
             processOrganisms();
-            // tickWindPressureMap();
+            tickWindPressureMap();
 
         }
         renderSquares();
         renderOrganisms();
         renderWater();
-        // renderWindPressureMap();
+        renderWindPressureMap();
         lastTick = Date.now();
     }
     updateTime();
