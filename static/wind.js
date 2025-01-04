@@ -1,11 +1,20 @@
-import { rgbToHex, rgbToRgba } from "./common.js";
+import { randRange, rgbToHex, rgbToRgba } from "./common.js";
 import { getSquares } from "./squares/_sqOperations.js";
 import { MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE } from "./index.js";
+import { getCurTime } from "./globals.js";
 
 var wpm;
 var windPressureMapByPressure;
-
 var windFlowStrength = 0.5;
+
+var base_wind_pressure = 10;
+
+var windFuncCurTheta = 0;
+var windFuncCurThetaDt = 0.1;
+var windFunctionApplicationMap = new Map();
+var windFunctionApplicationArray = new Array();
+var windFunctionApplicationLastAddTime = -(10 ** 8);
+var windFunctionApplicaitonDt = 10000;
 
 function gp(x, y) {
     if (isNaN(x) || isNaN(y)) {
@@ -29,14 +38,16 @@ function initializeWindPressureMap() {
     wpm = new Map();
     windPressureMapByPressure = new Map();
 
-    var start_pressure = 100;
+    var start_pressure = base_wind_pressure;
     windPressureMapByPressure[start_pressure] = new Array();
     for (let i = 0; i < CANVAS_SQUARES_X; i++) {
         for (let j = 0; j < CANVAS_SQUARES_Y; j++) {
             if (!(i in wpm)) {
                 wpm[i] = new Map();
+                windFunctionApplicationMap[i] = new Map();
             }
-            if (false && getSquares(i, j).some((sq) => (!sq.surface) && sq.collision)) {
+            windFunctionApplicationMap[i][j] = -1;
+            if (getSquares(i, j).some((sq) => (!sq.surface) && sq.collision)) {
                 wpm[i][j] = -1;
             } else {
                 wpm[i][j] = start_pressure;
@@ -47,24 +58,30 @@ function initializeWindPressureMap() {
 }
 
 function tickWindPressureMap() {
+    windFuncCurTheta += windFuncCurThetaDt;
     windPressureMapByPressure = new Map();
     for (let i = 0; i < CANVAS_SQUARES_X; i++) {
         for (let j = 0; j < CANVAS_SQUARES_Y; j++) {
-            // if (getSquares(i, j).some((sq) => !sq.surface && sq.collision)) {
-            //     wpm[i][j] = -1;
-            // } else {
-            //     if (wpm[i][j] == -1) {
-            //         if (!getWindDirectNeighbors(i, j).some((sq) => {
-            //             if (gp(sq[0], sq[1]) != -1) {
-            //                 wpm[i][j] = gp(sq[0], sq[1]);
-            //                 return true;
-            //             }
-            //             return false;
-            //         })) {
-            //             wpm[i][j] = 100;
-            //         }
-            //     }
-            // }
+            if (getSquares(i, j).some((sq) => !sq.surface && sq.collision)) {
+                wpm[i][j] = -1;
+            } else {
+                if (wpm[i][j] == -1) {
+                    if (!getWindDirectNeighbors(i, j).some((sq) => {
+                        if (gp(sq[0], sq[1]) != -1) {
+                            wpm[i][j] = gp(sq[0], sq[1]);
+                            return true;
+                        }
+                        return false;
+                    })) {
+                        wpm[i][j] = base_wind_pressure;
+                    }
+                }
+            }
+
+            if (windFunctionApplicationMap[i][j] != -1) {
+                wpm[i][j] = Math.max(0, wpm[i][j] + windFunctionApplicationArray[windFunctionApplicationMap[i][j] - 1](windFuncCurTheta));
+            }
+
             var pressure = Math.floor(wpm[i][j]);
             if (!(pressure in windPressureMapByPressure)) {
                 windPressureMapByPressure[pressure] = new Array();
@@ -85,7 +102,7 @@ function tickWindPressureMap() {
                         var x = (spl[0] + CANVAS_SQUARES_X) % CANVAS_SQUARES_X;
                         var y = (spl[1] + CANVAS_SQUARES_Y) % CANVAS_SQUARES_Y;
                         if (pl[0] == 0 || pl[0] == CANVAS_SQUARES_X || pl[1] == 0 || pl[1] == CANVAS_SQUARES_Y) {
-                            wpm[x][y] = 100;
+                            wpm[x][y] = base_wind_pressure;
                         }
                         var plPressure = wpm[pl[0]][pl[1]];
                         var splPressure = wpm[x][y];
@@ -104,7 +121,7 @@ function renderWindPressureMap() {
             var p = gp(i, j);
             var s = getWindSpeedAtLocation(i, j);
 
-            MAIN_CONTEXT.fillStyle = rgbToRgba(p, p, p, .2);
+            MAIN_CONTEXT.fillStyle = rgbToRgba(p, p, p, .8);
             MAIN_CONTEXT.fillRect(
                 i * BASE_SIZE,
                 j * BASE_SIZE,
@@ -168,7 +185,6 @@ function addWindPressure(x, y) {
 
     getWindDirectNeighbors(x, y).forEach(
         (loc) => wpm[(loc[0] + CANVAS_SQUARES_X) % CANVAS_SQUARES_X][(loc[1] + CANVAS_SQUARES_Y) % CANVAS_SQUARES_Y] += delta);
-        
 }
 
 function removeWindPressure(x, y) {
@@ -179,5 +195,27 @@ function removeWindPressure(x, y) {
         (loc) => wpm[(loc[0] + CANVAS_SQUARES_X) % CANVAS_SQUARES_X][(loc[1] + CANVAS_SQUARES_Y) % CANVAS_SQUARES_Y] = Math.max(0, wpm[(loc[0] + CANVAS_SQUARES_X) % CANVAS_SQUARES_X][(loc[1] + CANVAS_SQUARES_Y) % CANVAS_SQUARES_Y] - delta));
 }
 
+function getParameterizedWindFunc(a, b) {
+    return (theta) => 50 * (a + a * Math.sin(Math.cos(theta)) - a * Math.sin(b * theta));
+}
 
-export { getWindSpeedAtLocation, renderWindPressureMap, initializeWindPressureMap, tickWindPressureMap, addWindPressure, removeWindPressure }
+function getCurrentWindPressureFunc() {
+    if (getCurTime() - windFunctionApplicationLastAddTime > windFunctionApplicaitonDt) {
+        // make a new new one
+        windFunctionApplicationArray.push(getParameterizedWindFunc(randRange(-10, 10), randRange(-3, 3)));
+    }
+    windFunctionApplicationLastAddTime = getCurTime();
+    return windFunctionApplicationArray.length;
+}
+
+function addFunctionAddWindPressure(x, y) {
+    x = (Math.floor(x) + CANVAS_SQUARES_X) % CANVAS_SQUARES_X;
+    y = (Math.floor(y) + CANVAS_SQUARES_Y) % CANVAS_SQUARES_Y;
+    windFunctionApplicationMap[x][y] = getCurrentWindPressureFunc();
+}
+ 
+function removeFunctionAddWindPressure(x, y) {
+    windFunctionApplicationMap[x][y] = -1;
+}
+
+export { removeFunctionAddWindPressure, addFunctionAddWindPressure, getWindSpeedAtLocation, renderWindPressureMap, initializeWindPressureMap, tickWindPressureMap, addWindPressure, removeWindPressure }

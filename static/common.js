@@ -44,6 +44,11 @@ function randNumber(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
 }
 
+function randRange(min, max) {
+    max += 1;
+    return Math.random() * (max - min) + min;
+}
+
 function loadImage(url) {
     let i = new Image();
     i.src = url;
@@ -126,6 +131,6 @@ function dec2bin(dec) {
 
 
 export { getObjectArrFromMap, removeItemAll, hexToRgb, rgbToHex, rgbToRgba, 
-    randNumber, loadImage, getStandardDeviation, getZPercent,
+    randNumber, randRange, loadImage, getStandardDeviation, getZPercent,
      processColorStdev, processColorStdevMulticolor, processColorLerp, 
      processColorLerpBicolor, getDist, dec2bin }

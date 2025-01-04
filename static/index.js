@@ -29,7 +29,7 @@ import { pond_demo_square_data } from "./saves.js";
 import { HydrangeaSeedOrganism } from "./organisms/HydrangeaSeedOrganism.js";
 import { MossCoolSeedOrganism } from "./organisms/MossCoolSeedOrganism.js";
 import { WindGrassSeedOrganism } from "./organisms/WindGrassSeedOrganism.js";
-import { addWindPressure, initializeWindPressureMap, removeWindPressure, renderWindPressureMap, tickWindPressureMap } from "./wind.js";
+import { addWindPressure, initializeWindPressureMap, addFunctionAddWindPressure, removeFunctionAddWindPressure, removeWindPressure, renderWindPressureMap, tickWindPressureMap } from "./wind.js";
 
 var lastMode = "normal"; // options: "normal", "special", "organism", "blockModification";
 
@@ -182,8 +182,10 @@ var lastLastMoveOffset = null;
 
 var lastTick = Date.now();
 
-var CANVAS_SQUARES_X = 300; // * 8; //6;
-var CANVAS_SQUARES_Y = 100; // * 8; // 8;
+// MUST be a multiple of 4 
+// wind is tiled x4
+var CANVAS_SQUARES_X = 75 * 4; // * 8; //6;
+var CANVAS_SQUARES_Y = 35 * 4; // * 8; // 8;
 
 function setCanvasSquaresX(val) {
     CANVAS_SQUARES_X = Math.floor(val);
@@ -509,6 +511,12 @@ function doBlockMod(posX, posY) {
         addWindPressure(posX, posY);
         else 
         removeWindPressure(posX, posY);
+    }
+    if (blockModification_val == "windadd") {
+        if (!rightMouseClicked) 
+            addFunctionAddWindPressure(posX, posY);
+            else 
+            removeFunctionAddWindPressure(posX, posY);
     }
 
 }
