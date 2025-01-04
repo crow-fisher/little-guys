@@ -29,6 +29,8 @@ class WindGrassOrganism extends BaseOrganism {
         this.throttleInterval = 300;
         this.currentEnergy = 20;
 
+        this.springCoef = 100;
+
         this.airCoef = 1;
         this.dirtCoef = 1;
         this.waterCoef = 0.30;
@@ -40,114 +42,71 @@ class WindGrassOrganism extends BaseOrganism {
 
         this.highestGreen = null;
         this.startDeflectionAngle = 0; 
-        this.lastDeflectionStateXs = new Array(8);
-        this.lastDeflectionStateYs = new Array(8);
+        this.lastDeflectionStateThetas = new Array(50);
         this.deflectionIdx = 0;
 
-        this.deflectionStateX = 0;
-        this.deflectionStateY = 0;
-
+        this.deflectionStateTheta = Math.PI / 2;
         this.deflectionStateFunctions = [];
+
+        for (let i = 0; i < this.lastDeflectionStateThetas.length; i++) {
+            this.lastDeflectionStateThetas[i] = Math.PI / 2;
+        }
     }
 
     updateDeflectionState() {
         var highestGreen = this.getHighestGreen();
         var windVec = getWindSpeedAtLocation(highestGreen.posX + highestGreen.deflectionXOffset, highestGreen.posY + highestGreen.deflectionYOffset);
 
-        // start 
-        var startX = this.getStartDeflectionStateX();
-        var startY = this.getStartDeflectionStateY();
-        // apply wind force 
-        this.deflectionStateX = startX + (windVec[0] / this.lastDeflectionStateXs.length);
-        this.deflectionStateY = startY + (windVec[1] / this.lastDeflectionStateYs.length);
+        // start with our rolling average theta 
+        var startTheta = this.getStartDeflectionStateTheta();
 
-        // this.deflectionStateX += windVec[0];
-        // this.deflectionStateY += windVec[1];
+        var startSpringForce = Math.cos(startTheta) * this.springCoef;
 
-        this.deflectionStateY = Math.max(-.9, this.deflectionStateY);
+        // return rate
+        startSpringForce *= 0.5;
 
-        // apply plant spring force
+        // 1. check the direction of our x component compared to the wind 
+        // 2. based on angle, 
+        // we need to check if our x component is in the same direction
         
-        this.deflectionStateX *= 0.8;
-        this.deflectionStateY *= 0.8;
+        // apply wind force 
+        var windX = windVec[0];
 
-        this.lastDeflectionStateXs[this.deflectionIdx % this.lastDeflectionStateXs.length] = this.deflectionStateX;
-        this.lastDeflectionStateYs[this.deflectionIdx % this.lastDeflectionStateYs.length] = this.deflectionStateY;
+        var endSpringForce = startSpringForce + windX;
+        
+        endSpringForce = Math.min(this.springCoef, endSpringForce);
+        endSpringForce = Math.max(-this.springCoef, endSpringForce);
 
+        this.deflectionStateTheta = Math.acos(endSpringForce / this.springCoef);
+
+        this.deflectionStateTheta = Math.max(0.1, this.deflectionStateTheta);
+        this.deflectionStateTheta = Math.min(Math.PI - 0.1, this.deflectionStateTheta);
+
+        this.lastDeflectionStateThetas[this.deflectionIdx % this.lastDeflectionStateThetas.length] = this.deflectionStateTheta;
         this.deflectionIdx += 1;
 
     }
 
-    getStartDeflectionStateX() {
-        return this.lastDeflectionStateXs.reduce(
+    getStartDeflectionStateTheta() {
+        return this.lastDeflectionStateThetas.reduce(
             (accumulator, currentValue) => accumulator + currentValue,
             0,
-        ) / this.lastDeflectionStateXs.length;
-    }
-
-    getStartDeflectionStateY() {
-        return this.lastDeflectionStateYs.reduce(
-            (accumulator, currentValue) => accumulator + currentValue,
-            0,
-        ) / this.lastDeflectionStateYs.length;
+        ) / this.lastDeflectionStateThetas.length;
     }
 
 
     applyDeflectionStateToSquares() {
         var greenSquares = Array.from(this.lifeSquares.filter((lsq) => lsq.type == "green"));
 
-        var startDeflectionX = this.getStartDeflectionStateX();
-        var startDeflectionY = this.getStartDeflectionStateY();
-
-        var currentDeflectionX = this.deflectionStateX;
-        var currentDeflectionY = this.deflectionStateY;
-
-        var startLength = (startDeflectionX ** 2 + startDeflectionY ** 2 ) ** 0.5
-        var currentLength = (currentDeflectionX ** 2 + currentDeflectionY ** 2 ) ** 0.5
-
-        if (startLength * currentLength == 0) {
-            startLength = 1;
-            currentLength = 1;
-        }
+        var startTheta = this.getStartDeflectionStateTheta();
+        var endTheta = this.getStartDeflectionStateTheta() * 0.75 + this.deflectionStateTheta * 0.25;
         
-        if (startDeflectionX == 0) {
-            startDeflectionX = 0.1;
-        }
-        if (currentDeflectionX == 0) {
-            currentDeflectionX = 0.1;
-        }
-
-        startDeflectionY += (Math.max(1, startLength) **2 - startDeflectionX ** 2) ** 0.5;
-        currentDeflectionY += (Math.max(1, currentLength) ** 2 - currentDeflectionX ** 2) ** 0.5;
-
-        var startTheta = Math.atan(startDeflectionY / startDeflectionX);
-        var endTheta = Math.atan(currentDeflectionY / currentDeflectionX);
-
-        if (startDeflectionX < 0) {
-            startTheta = Math.PI + startTheta;
-        }
-
-        if (currentDeflectionX < 0) {
-            endTheta = Math.PI + endTheta;
-        }
-
-        var currentXOffset = 0;
-        var currentYOffset = 0;
-
-        console.log(startTheta, endTheta);
-
-        startTheta = Math.max(0.4, startTheta);
-        startTheta = Math.min(Math.PI - 0.4, startTheta);
-
-        endTheta = Math.max(0.2, endTheta);
-        endTheta = Math.min(Math.PI - 0.2, endTheta);
-
-        // startTheta = 0;
-        // endTheta = Math.PI / 2;
-
         // 0 is straight left, pi/2 is up, pi is right, pi * 3/2 is down
         var currentTheta = startTheta;
         var thetaDelta = endTheta - startTheta;
+
+        var currentXOffset = 0;
+        var currentYOffset = 0;
 
         for (let i = 0; i < greenSquares.length; i++) {
             currentTheta += thetaDelta / greenSquares.length;
