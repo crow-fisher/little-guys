@@ -392,7 +392,10 @@ function main() {
         renderSquares();
         renderOrganisms();
         renderWater();
-        renderWindPressureMap();
+
+        if (blockModification_val != null && lastMode == "blockModification" && blockModification_val.startsWith("wind")) {
+            renderWindPressureMap();
+        }
         lastTick = Date.now();
     }
     updateTime();

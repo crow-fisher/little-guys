@@ -29,7 +29,7 @@ class WindGrassOrganism extends BaseOrganism {
         this.throttleInterval = 300;
         this.currentEnergy = 20;
 
-        this.springCoef = 2;
+        this.springCoef = 5;
 
         this.airCoef = 1;
         this.dirtCoef = 1;
@@ -63,7 +63,7 @@ class WindGrassOrganism extends BaseOrganism {
         var startSpringForce = Math.cos(startTheta) * this.springCoef;
 
         // return rate
-        startSpringForce *= 0.5;
+        startSpringForce *= 0.2;
 
         // 1. check the direction of our x component compared to the wind 
         // 2. based on angle, 
