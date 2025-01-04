@@ -9,10 +9,10 @@ import {
 } from "../config/config.js"
 
 
-class WindGrassGreenLifeSquare extends BaseLifeSquare {
+class SunflowerGreenLifeSquare extends BaseLifeSquare {
     constructor(square, organism) {
         super(square, organism);
-        this.proto = "WindGrassGreenLifeSquare";
+        this.proto = "SunflowerGreenLifeSquare";
         this.colorBase = "#157F1F";
         this.type = "green";
         this.width = .99;
@@ -62,4 +62,4 @@ class WindGrassGreenLifeSquare extends BaseLifeSquare {
 
 
 
-export { WindGrassGreenLifeSquare }
+export { SunflowerGreenLifeSquare }

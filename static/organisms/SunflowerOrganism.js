@@ -1,12 +1,12 @@
 import {BaseOrganism} from "./BaseOrganism.js"
 import { SeedSquare } from "../squares/SeedSquare.js";
-import { WindGrassSeedOrganism } from "./WindGrassSeedOrganism.js";
+import { SunflowerSeedOrganism } from "./SunflowerSeedOrganism.js";
 
 import { removeSquare } from "../globalOperations.js";
 import { getCollidableSquareAtLocation } from "../squares/_sqOperations.js";
 import { PlantSquare } from "../squares/PlantSquare.js";
-import { WindGrassGreenLifeSquare } from "../lifeSquares/WindGrassGreenLifeSquare.js";
-import { WindGrassRootLifeSquare } from "../lifeSquares/WindGrassRootLifeSquare.js";
+import { SunflowerGreenLifeSquare } from "../lifeSquares/SunflowerGreenLifeSquare.js";
+import { SunflowerRootLifeSquare } from "../lifeSquares/SunflowerRootLifeSquare.js";
 import { getDirectNeighbors } from "../squares/_sqOperations.js";
 import { addSquare } from "../squares/_sqOperations.js";
 import { getCountOfOrganismsSquaresOfTypeAtPosition } from "../lifeSquares/_lsOperations.js";
@@ -20,10 +20,10 @@ import { randNumber } from "../common.js";
 
 import { getWindSpeedAtLocation } from "../wind.js";
 
-class WindGrassOrganism extends BaseOrganism {
+class SunflowerOrganism extends BaseOrganism {
     constructor(square) {
         super(square);
-        this.proto = "WindGrassOrganism";
+        this.proto = "SunflowerOrganism";
         this.type = "plant";
 
         this.throttleInterval = 300;
@@ -31,18 +31,18 @@ class WindGrassOrganism extends BaseOrganism {
 
         this.springCoef = 5;
 
-        this.airCoef = 1;
+        this.airCoef = 0.35;
         this.dirtCoef = 1;
         this.waterCoef = 0.30;
 
         this.maximumLifeSquaresOfType = {
-            "green": randNumber(3, 6),
+            "green": randNumber(8, 13),
             "root": 80
         }
 
         this.highestGreen = null;
         this.startDeflectionAngle = 0; 
-        this.lastDeflectionStateThetas = new Array(50);
+        this.lastDeflectionStateThetas = new Array(1000);
         this.deflectionIdx = 0;
 
         this.deflectionStateTheta = Math.PI / 2;
@@ -62,8 +62,8 @@ class WindGrassOrganism extends BaseOrganism {
 
         var startSpringForce = Math.cos(startTheta) * this.springCoef;
 
-        // return rate
-        startSpringForce *= 0.2;
+        // spring return rate
+        startSpringForce *= 0.70;
 
         // 1. check the direction of our x component compared to the wind 
         // 2. based on angle, 
@@ -72,7 +72,7 @@ class WindGrassOrganism extends BaseOrganism {
         // apply wind force 
         var windX = windVec[0];
 
-        var endSpringForce = startSpringForce + windX;
+        var endSpringForce = startSpringForce * 0.8 + windX * 0.2;
         
         endSpringForce = Math.min(this.springCoef, endSpringForce);
         endSpringForce = Math.max(-this.springCoef, endSpringForce);
@@ -123,7 +123,7 @@ class WindGrassOrganism extends BaseOrganism {
         var topGreen = this.getHighestGreen();
         var seedSquare = new SeedSquare(topGreen.posX, topGreen.posY - 1);
         if (addSquare(seedSquare)) {
-            var newOrg = new WindGrassSeedOrganism(seedSquare);
+            var newOrg = new SunflowerSeedOrganism(seedSquare);
             newOrg.linkSquare(seedSquare);
             if (addNewOrganism(newOrg)) {
                 return seedSquare;
@@ -154,7 +154,7 @@ class WindGrassOrganism extends BaseOrganism {
         });
         var newPlantSquare = addSquare(new PlantSquare(this.posX, this.posY - 1));
         if (newPlantSquare) {
-            var orgSq = addOrganismSquare(new WindGrassGreenLifeSquare(newPlantSquare, this));
+            var orgSq = addOrganismSquare(new SunflowerGreenLifeSquare(newPlantSquare, this));
             if (orgSq) {
                 orgSq.linkSquare(newPlantSquare);
                 this.addAssociatedLifeSquare(orgSq);
@@ -166,7 +166,7 @@ class WindGrassOrganism extends BaseOrganism {
             this.destroy();
             return;
         }
-        var rootSq = addOrganismSquare(new WindGrassRootLifeSquare(this.linkedSquare, this));
+        var rootSq = addOrganismSquare(new SunflowerRootLifeSquare(this.linkedSquare, this));
         rootSq.linkSquare(this.linkedSquare);
         rootSq.addChild(orgSq);
         this.linkedSquare.linkOrganismSquare(rootSq);
@@ -205,12 +205,12 @@ class WindGrassOrganism extends BaseOrganism {
             }
             var newPlantSquare = new PlantSquare(highestPlantSquare.posX, highestPlantSquare.posY - 1);
             if (addSquare(newPlantSquare)) {
-                var newWindGrassGreenLifeSquare = addOrganismSquare(new WindGrassGreenLifeSquare(newPlantSquare, this));
-                if (newWindGrassGreenLifeSquare) {
-                    this.addAssociatedLifeSquare(newWindGrassGreenLifeSquare);
-                    newWindGrassGreenLifeSquare.linkSquare(newPlantSquare);
-                    highestPlantSquare.addChild(newWindGrassGreenLifeSquare);
-                    return newWindGrassGreenLifeSquare.getCost();
+                var newSunflowerGreenLifeSquare = addOrganismSquare(new SunflowerGreenLifeSquare(newPlantSquare, this));
+                if (newSunflowerGreenLifeSquare) {
+                    this.addAssociatedLifeSquare(newSunflowerGreenLifeSquare);
+                    newSunflowerGreenLifeSquare.linkSquare(newPlantSquare);
+                    highestPlantSquare.addChild(newSunflowerGreenLifeSquare);
+                    return newSunflowerGreenLifeSquare.getCost();
                 }
             };
         }
@@ -249,13 +249,13 @@ class WindGrassOrganism extends BaseOrganism {
                     }});
                 }
             if (wettestSquare != null) {
-                var newWindGrassRootLifeSquare = addOrganismSquare(new WindGrassRootLifeSquare(wettestSquare, this));
-                if (newWindGrassRootLifeSquare) {
-                    this.addAssociatedLifeSquare(newWindGrassRootLifeSquare);
-                    newWindGrassRootLifeSquare.linkSquare(wettestSquare);
-                    wettestSquare.linkOrganismSquare(newWindGrassRootLifeSquare);
-                    wettestSquareParent.addChild(newWindGrassRootLifeSquare)
-                    return newWindGrassRootLifeSquare.getCost();
+                var newSunflowerRootLifeSquare = addOrganismSquare(new SunflowerRootLifeSquare(wettestSquare, this));
+                if (newSunflowerRootLifeSquare) {
+                    this.addAssociatedLifeSquare(newSunflowerRootLifeSquare);
+                    newSunflowerRootLifeSquare.linkSquare(wettestSquare);
+                    wettestSquare.linkOrganismSquare(newSunflowerRootLifeSquare);
+                    wettestSquareParent.addChild(newSunflowerRootLifeSquare)
+                    return newSunflowerRootLifeSquare.getCost();
                 }
             }
         }
@@ -301,12 +301,12 @@ class WindGrassOrganism extends BaseOrganism {
                         });
             });
             if (dirtiestSquare != null) {
-                var windGrassRootLifeSquare = addOrganismSquare(new WindGrassRootLifeSquare(dirtiestSquare, this));
-                this.addAssociatedLifeSquare(windGrassRootLifeSquare);
-                windGrassRootLifeSquare.linkSquare(dirtiestSquare);
-                dirtiestSquareParent.addChild(windGrassRootLifeSquare);
-                dirtiestSquare.linkOrganismSquare(windGrassRootLifeSquare);
-                return windGrassRootLifeSquare.getCost();
+                var sunflowerRootLifeSquare = addOrganismSquare(new SunflowerRootLifeSquare(dirtiestSquare, this));
+                this.addAssociatedLifeSquare(sunflowerRootLifeSquare);
+                sunflowerRootLifeSquare.linkSquare(dirtiestSquare);
+                dirtiestSquareParent.addChild(sunflowerRootLifeSquare);
+                dirtiestSquare.linkOrganismSquare(sunflowerRootLifeSquare);
+                return sunflowerRootLifeSquare.getCost();
             }
         }
         return 0;
@@ -330,4 +330,4 @@ class WindGrassOrganism extends BaseOrganism {
 
 }
 
-export { WindGrassOrganism }
+export { SunflowerOrganism }

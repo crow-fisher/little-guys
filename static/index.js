@@ -28,7 +28,7 @@ import { randNumber } from "./common.js";
 import { pond_demo_square_data } from "./saves.js";
 import { HydrangeaSeedOrganism } from "./organisms/HydrangeaSeedOrganism.js";
 import { MossCoolSeedOrganism } from "./organisms/MossCoolSeedOrganism.js";
-import { WindGrassSeedOrganism } from "./organisms/WindGrassSeedOrganism.js";
+import { SunflowerSeedOrganism } from "./organisms/SunflowerSeedOrganism.js";
 import { addWindPressure, initializeWindPressureMap, addFunctionAddWindPressure, removeFunctionAddWindPressure, removeWindPressure, renderWindPressureMap, tickWindPressureMap } from "./wind.js";
 
 var lastMode = "normal"; // options: "normal", "special", "organism", "blockModification";
@@ -633,12 +633,12 @@ function doClickAdd() {
                                 }
                                 break;
                             
-                            case "windgrass":
+                            case "Sunflower":
                                 if (Math.random() > 0.95) {
                                     var sq = addSquare(new SeedSquare(px, curY));
                                     if (sq) {
                                         // organismAddedThisClick = true;
-                                        addNewOrganism(new WindGrassSeedOrganism(sq));
+                                        addNewOrganism(new SunflowerSeedOrganism(sq));
                                     }
                                 }
                                 break;

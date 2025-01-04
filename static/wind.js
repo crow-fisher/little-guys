@@ -134,6 +134,23 @@ function tickWindPressureMap() {
                         wpm[pl[0]][pl[1]] -= windPressureDiff;
                         wpm[x][y] += windPressureDiff;
                 });
+
+                getWindIndirectNeighbors(pl[0], pl[1])
+                    .forEach((spl) => {
+                        var x = (spl[0] + WIND_SQUARES_X()) % WIND_SQUARES_X();
+                        var y = (spl[1] + WIND_SQUARES_Y()) % WIND_SQUARES_Y();
+                        if (pl[0] == 0 || pl[0] == CANVAS_SQUARES_X || pl[1] == 0 || pl[1] == CANVAS_SQUARES_Y) {
+                            wpm[x][y] = base_wind_pressure;
+                        }
+                        var plPressure = wpm[pl[0]][pl[1]];
+                        var splPressure = wpm[x][y];
+
+                        var windPressureDiff = getWindPressureDiff(plPressure, splPressure);
+                        windPressureDiff *= Math.SQRT1_2;
+
+                        wpm[pl[0]][pl[1]] -= windPressureDiff;
+                        wpm[x][y] += windPressureDiff;
+            });
         });
     });
 }
@@ -144,7 +161,7 @@ function renderWindPressureMap() {
             var p = gp(i, j);
             var s = _getWindSpeedAtLocation(i, j);
 
-            MAIN_CONTEXT.fillStyle = rgbToRgba(p, p, p, .8);
+            MAIN_CONTEXT.fillStyle = rgbToRgba(p, p, p, .3);
             MAIN_CONTEXT.fillRect(
                 4 * i * BASE_SIZE,
                 4 * j * BASE_SIZE,
@@ -190,7 +207,17 @@ function getWindDirectNeighbors(x, y) {
         [x, y - 1],
         [x, y + 1]
     ]
+} 
+
+function getWindIndirectNeighbors(x, y) {
+    return [
+        [x - 1, y - 1],
+        [x + 1, y - 1],
+        [x + 1, y - 1],
+        [x + 1, y + 1]
+    ]
 }
+
 
 
 function getParameterizedWindFunc(a, b) {
@@ -257,7 +284,7 @@ function _getWindSpeedAtLocation(x, y) {
 
     var previousAvgX = previousSumX / previousSpeeds.length;
     var previousAvgY = previousSumY / previousSpeeds.length;
-
+    
     previousSpeeds.push([netPresX, netPresY]);
 
     if (previousSpeeds.length > 10) {

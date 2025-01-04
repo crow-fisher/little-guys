@@ -3,10 +3,10 @@ import { getDirectNeighbors } from "../squares/_sqOperations.js";
 import { hexToRgb } from "../common.js";
 
 
-class WindGrassRootLifeSquare extends BaseLifeSquare {
+class SunflowerRootLifeSquare extends BaseLifeSquare {
     constructor(square, organism) {
         super(square, organism);
-        this.proto = "WindGrassRootLifeSquare";
+        this.proto = "SunflowerRootLifeSquare";
         this.opacity = 0.4;
         this.colorBase = "#554640";
         this.type = "root";
@@ -26,4 +26,4 @@ class WindGrassRootLifeSquare extends BaseLifeSquare {
     }
 }
 
-export { WindGrassRootLifeSquare }
+export { SunflowerRootLifeSquare }

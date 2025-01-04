@@ -1,13 +1,13 @@
 import { SeedLifeSquare } from "../lifeSquares/SeedLifeSquare.js";
-import { WindGrassOrganism } from "./WindGrassOrganism.js";
+import { SunflowerOrganism } from "./SunflowerOrganism.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 import { BaseSeedOrganism } from "./BaseSeedOrganism.js";
 
-class WindGrassSeedOrganism extends BaseSeedOrganism {
+class SunflowerSeedOrganism extends BaseSeedOrganism {
     constructor(square) {
         super(square);
-        this.proto = "WindGrassSeedOrganism";
-        this.sproutCtor = (linkedSquare) => new WindGrassOrganism(linkedSquare)
+        this.proto = "SunflowerSeedOrganism";
+        this.sproutCtor = (linkedSquare) => new SunflowerOrganism(linkedSquare)
     }
     growInitialSquares() {
         var newLifeSquare = new SeedLifeSquare(this.linkedSquare, this);
@@ -19,4 +19,4 @@ class WindGrassSeedOrganism extends BaseSeedOrganism {
     }
 }
 
-export {WindGrassSeedOrganism} 
+export {SunflowerSeedOrganism} 
