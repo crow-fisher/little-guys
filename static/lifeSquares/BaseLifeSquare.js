@@ -15,6 +15,7 @@ class BaseLifeSquare {
         this.posX = square.posX;
         this.posY = square.posY;
         this.type = "base";
+        this.subtype = "";
         this.colorBase = "#1D263B";
         this.motivation = null; // if specified - 'air', 'water', 'dirt'
         this.spawnTime = getCurTime();

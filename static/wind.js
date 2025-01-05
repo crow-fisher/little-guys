@@ -293,9 +293,7 @@ function _getWindSpeedAtLocation(x, y) {
 
     var coef = 0.8;
     return [previousAvgX * coef + netPresX * (1 - coef), previousAvgY * coef + netPresY * (1 - coef)];
-    // return [netPresX, netPresY]
 }
-
 
 function addWindPressure(x, y) {
     x = Math.floor(x / 4);

@@ -112,8 +112,22 @@ class SunflowerOrganism extends BaseOrganism {
         var currentXOffset = 0;
         var currentYOffset = 0;
 
+        var hg = this.getHighestGreen();
+
+        var hgX = this.posX - hg.posX;
+        var hgY = this.posY - hg.posY;
+        
+        var hgDist = (hgX ** 2 + hgY ** 2) ** 0.5;
+
         for (let i = 0; i < greenSquares.length; i++) {
-            currentTheta += thetaDelta / greenSquares.length;
+            var cs = greenSquares[i];
+
+            var csX = this.posX - cs.posX;
+            var csY = this.posY - cs.posY;
+            
+            var csDist = (csX ** 2 + csY ** 2) ** 0.5; 
+
+            var currentTheta = startTheta + (csDist / hgDist) * thetaDelta;
 
             currentXOffset += Math.cos(currentTheta);
             currentYOffset += Math.sin(currentTheta);
@@ -194,7 +208,27 @@ class SunflowerOrganism extends BaseOrganism {
         .filter((lsq) => lsq.childLifeSquares.length == 0);
     }
 
+    growUp() {
+        var highestPlantSquare = this.getHighestGreen();
+        var newPlantSquare = new PlantSquare(highestPlantSquare.posX, highestPlantSquare.posY - 1);
+        if (addSquare(newPlantSquare)) {
+            var newSunflowerGreenLifeSquare = addOrganismSquare(new SunflowerGreenLifeSquare(newPlantSquare, this));
+            if (newSunflowerGreenLifeSquare) {
+                this.addAssociatedLifeSquare(newSunflowerGreenLifeSquare);
+                newSunflowerGreenLifeSquare.linkSquare(newPlantSquare);
+                highestPlantSquare.addChild(newSunflowerGreenLifeSquare);
 
+                if (highestPlantSquare.subtype == "stem") {
+                    if (Math.random() > 0.5) {
+                        newSunflowerGreenLifeSquare.subtype == "joint";
+                    }
+                }
+                return newSunflowerGreenLifeSquare.getCost();
+            }
+        };
+    }
+
+    
 
     growNewPlant() {
         if (!this.canGrowPlant()) {
@@ -202,21 +236,8 @@ class SunflowerOrganism extends BaseOrganism {
         }
         if (getCurTime() > this.plantLastGrown + this.throttleInterval) {
             this.plantLastGrown = getCurTime();
-            var highestPlantSquare = Array.from(this.lifeSquares.filter((sq) => sq.type == "green").sort((a, b) => a.posY - b.posY))[0];
-            if (highestPlantSquare == null) {
-                // then we take highest root square;
-                highestPlantSquare = Array.from(this.lifeSquares.filter((sq) => sq.type == "root").sort((a, b) => a.posY - b.posY))[0];
-            }
-            var newPlantSquare = new PlantSquare(highestPlantSquare.posX, highestPlantSquare.posY - 1);
-            if (addSquare(newPlantSquare)) {
-                var newSunflowerGreenLifeSquare = addOrganismSquare(new SunflowerGreenLifeSquare(newPlantSquare, this));
-                if (newSunflowerGreenLifeSquare) {
-                    this.addAssociatedLifeSquare(newSunflowerGreenLifeSquare);
-                    newSunflowerGreenLifeSquare.linkSquare(newPlantSquare);
-                    highestPlantSquare.addChild(newSunflowerGreenLifeSquare);
-                    return newSunflowerGreenLifeSquare.getCost();
-                }
-            };
+            this.growUp();
+
         }
         return 0;
     }

@@ -15,6 +15,7 @@ class SunflowerGreenLifeSquare extends BaseLifeSquare {
         this.proto = "SunflowerGreenLifeSquare";
         this.colorBase = "#157F1F";
         this.type = "green";
+        this.subtype = "stem"; // others - "joint", "flower"
         this.width = .99;
 
         this.deflectionStrength = 70;
@@ -22,10 +23,6 @@ class SunflowerGreenLifeSquare extends BaseLifeSquare {
         this.stemBaseColor = "#83ab40";
         this.stemDarkColor = "#4c6f21";
         this.stemAccentColor = "#c1d8ab";
-
-        this.shouldGrowLeaf = false;
-        this.leafEquations = [(x) => -.3 * x * (x - 2), (x) => .3 * x * (x - 2)];
-        this.leafXIntercept = 2;
 
         this.baseColor = "#83ab40";
         this.baseColorAmount = dirt_baseColorAmount;
