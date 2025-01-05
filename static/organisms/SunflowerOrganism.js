@@ -29,22 +29,23 @@ class SunflowerOrganism extends BaseOrganism {
         this.throttleInterval = 300;
         this.springCoef = 5;
 
-        this.airCoef = 0.35;
+        this.airCoef = 0.05;
         this.dirtCoef = 1;
         this.waterCoef = 0.30;
+
+        this.currentEnergy = 10;
 
         this.reproductionEnergy *= 0.5;
         this.reproductionEnergyUnit *= 0.5;
 
         this.maximumLifeSquaresOfType = {
-            "green": randNumber(8, 13),
+            "green": 80,
             "root": 80
         }
 
         this.highestGreen = null;
 
-        this.leafBranchStructures = [];
-        this.flowerStructure = [];
+        this.nextSide = Math.random() > 0.5 ? 1 : -1;
 
         this.startDeflectionAngle = 0; 
         this.lastDeflectionStateThetas = new Array(1000);
@@ -124,16 +125,16 @@ class SunflowerOrganism extends BaseOrganism {
 
             var csX = this.posX - cs.posX;
             var csY = this.posY - cs.posY;
-            
+
             var csDist = (csX ** 2 + csY ** 2) ** 0.5; 
 
             var currentTheta = startTheta + (csDist / hgDist) * thetaDelta;
 
-            currentXOffset += Math.cos(currentTheta);
-            currentYOffset += Math.sin(currentTheta);
+            currentXOffset = csDist * Math.cos(currentTheta);
+            currentYOffset = csDist * Math.sin(currentTheta);
 
-            greenSquares[i].deflectionXOffset = -currentXOffset - 2 * ((greenSquares[i].linkedOrganism.posX - greenSquares[i].posX) / 2);
-            greenSquares[i].deflectionYOffset = currentYOffset - 2 * ((greenSquares[i].linkedOrganism.posY - greenSquares[i].posY) / 2);
+            greenSquares[i].deflectionXOffset = -currentXOffset ; //- 2 * ((greenSquares[i].linkedOrganism.posX - greenSquares[i].posX) / 2);
+            greenSquares[i].deflectionYOffset = currentYOffset  ; //- 2 * ((greenSquares[i].linkedOrganism.posY - greenSquares[i].posY) / 2);
         }
     }
 
@@ -198,7 +199,7 @@ class SunflowerOrganism extends BaseOrganism {
 
     getHighestGreen() {
         return Array.from(this.lifeSquares
-            .filter((sq) => sq.type == "green")).sort((a, b) => a.posY - b.posY)[0];
+            .filter((sq) => sq.type == "green" && sq.subtype != "leaf").sort((a, b) => a.posY - b.posY))[0];
     }
     
 
@@ -216,16 +217,49 @@ class SunflowerOrganism extends BaseOrganism {
             if (newSunflowerGreenLifeSquare) {
                 this.addAssociatedLifeSquare(newSunflowerGreenLifeSquare);
                 newSunflowerGreenLifeSquare.linkSquare(newPlantSquare);
-                highestPlantSquare.addChild(newSunflowerGreenLifeSquare);
-
                 if (highestPlantSquare.subtype == "stem") {
-                    if (Math.random() > 0.5) {
-                        newSunflowerGreenLifeSquare.subtype == "joint";
-                    }
+                    newSunflowerGreenLifeSquare.subtype = "joint";
                 }
                 return newSunflowerGreenLifeSquare.getCost();
             }
         };
+        return 0;
+    }
+
+    growFromJoint(lifeSquare) {
+        var jointGrowthPlan = lifeSquare.getGrowthPlan();
+
+        if (jointGrowthPlan.some((loc) => {
+            var posX = loc[0];
+            var posY = loc[1];
+
+            if (this.lifeSquares.some((lsq) => lsq.posX == posX && lsq.posY == posY)) {
+                return false;
+            }
+        
+            var candidateParents = Array.from(this.lifeSquares.filter((lsq) => lsq.dist(posX, posY) <= 1));
+
+            if (candidateParents.length == 0) {
+                return false;
+            }
+
+            var newPlantSquare = new PlantSquare(posX, posY);
+            if (addSquare(newPlantSquare)) {
+                var newSunflowerGreenLifeSquare = addOrganismSquare(new SunflowerGreenLifeSquare(newPlantSquare, this));
+                if (newSunflowerGreenLifeSquare) {
+                    this.addAssociatedLifeSquare(newSunflowerGreenLifeSquare);
+                    newSunflowerGreenLifeSquare.linkSquare(newPlantSquare);
+                    newSunflowerGreenLifeSquare.subtype = "leaf";
+                    return true;
+                }
+            }
+            return false;
+        })) {
+            return true;
+        }
+        return false;
+        
+
     }
 
     
@@ -236,7 +270,11 @@ class SunflowerOrganism extends BaseOrganism {
         }
         if (getCurTime() > this.plantLastGrown + this.throttleInterval) {
             this.plantLastGrown = getCurTime();
-            this.growUp();
+            if (this.lifeSquares.filter((lsq) => lsq.type == "green" && lsq.subtype == "joint").some((lsq) => this.growFromJoint(lsq))) {
+                return this.lifeSquares[this.lifeSquares.length - 1].getCost(); // yeah, yeah, tell it to the judge 
+            } else {
+                return this.growUp();
+            }
 
         }
         return 0;
