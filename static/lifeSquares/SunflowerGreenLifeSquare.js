@@ -17,7 +17,15 @@ class SunflowerGreenLifeSquare extends BaseLifeSquare {
         this.type = "green";
         this.width = .99;
 
-        this.deflectionStrength = 70; // per radian
+        this.deflectionStrength = 70;
+
+        this.stemBaseColor = "#83ab40";
+        this.stemDarkColor = "#4c6f21";
+        this.stemAccentColor = "#c1d8ab";
+
+        this.shouldGrowLeaf = false;
+        this.leafEquations = [(x) => -.3 * x * (x - 2), (x) => .3 * x * (x - 2)];
+        this.leafXIntercept = 2;
 
         this.baseColor = "#83ab40";
         this.baseColorAmount = dirt_baseColorAmount;

@@ -27,13 +27,14 @@ class SunflowerOrganism extends BaseOrganism {
         this.type = "plant";
 
         this.throttleInterval = 300;
-        this.currentEnergy = 20;
-
         this.springCoef = 5;
 
         this.airCoef = 0.35;
         this.dirtCoef = 1;
         this.waterCoef = 0.30;
+
+        this.reproductionEnergy *= 0.5;
+        this.reproductionEnergyUnit *= 0.5;
 
         this.maximumLifeSquaresOfType = {
             "green": randNumber(8, 13),
@@ -41,10 +42,13 @@ class SunflowerOrganism extends BaseOrganism {
         }
 
         this.highestGreen = null;
+
+        this.leafBranchStructures = [];
+        this.flowerStructure = [];
+
         this.startDeflectionAngle = 0; 
         this.lastDeflectionStateThetas = new Array(1000);
         this.deflectionIdx = 0;
-
         this.deflectionStateTheta = Math.PI / 2;
         this.deflectionStateFunctions = [];
 

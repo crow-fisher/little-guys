@@ -306,7 +306,7 @@ function addWindPressure(x, y) {
     wpm[Math.floor(x)][Math.floor(y)] += clickAddPressure;
 
     getWindDirectNeighbors(x, y).forEach(
-        (loc) => wpm[(loc[0] + CANVAS_SQUARES_X) % CANVAS_SQUARES_X][(loc[1] + CANVAS_SQUARES_Y) % CANVAS_SQUARES_Y] += clickAddPressure);
+        (loc) => wpm[(loc[0] + WIND_SQUARES_X()) % WIND_SQUARES_X()][(loc[1] + WIND_SQUARES_Y()) % WIND_SQUARES_Y()] += clickAddPressure);
 }
 
 function removeWindPressure(x, y) {

@@ -55,7 +55,7 @@ class SeedSquare extends BaseSquare {
             });
         
         getSquares(this.posX, this.posY + 1)
-        .filter((sq) => !sq.validPlantHome)
+        .filter((sq) => !sq.validPlantHome || sq.currentPressureDirect > 0)
         .filter((sq) => sq.solid)
         .forEach((sq) => {
             if (this.linkedOrganism != null) {
