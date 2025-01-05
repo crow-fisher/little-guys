@@ -15,7 +15,6 @@ class PopGrassGreenLifeSquare extends BaseLifeSquare {
         this.proto = "PopGrassGreenLifeSquare";
         this.colorBase = "#157F1F";
         this.type = "green";
-        this.width = .99;
 
         this.baseColor = "#c0d527";
         this.baseColorAmount = dirt_baseColorAmount;

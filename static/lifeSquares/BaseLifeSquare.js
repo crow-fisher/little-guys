@@ -230,7 +230,10 @@ class BaseLifeSquare {
     }
 
     distToFrontBlockModDarken() {
-        MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.linkedOrganism.linkedSquare.distToFront, 12);
+        if (this.linkedOrganism.getLowestGreen() == null) {
+            return;
+        }
+        MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(Math.max(0, this.linkedOrganism.linkedSquare.distToFront - this.linkedOrganism.getLowestGreen().linkedSquare.currentPressureDirect), 12);
         MAIN_CONTEXT.fillRect(
             (this.posX - this.deflectionXOffset) * BASE_SIZE,
             (this.posY - this.deflectionYOffset) * BASE_SIZE,

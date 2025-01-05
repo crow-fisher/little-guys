@@ -104,7 +104,7 @@ class BaseOrganism {
         if (!this.applyWind) {
             return;
         }
-        var greenSquares = Array.from(this.lifeSquares.filter((lsq) => lsq.type == "green"));
+        var greenSquares = Array.from(this.lifeSquares.filter((lsq) => lsq.type != "root"));
 
         var startTheta = this.getStartDeflectionStateTheta();
         var endTheta = this.getStartDeflectionStateTheta() * 0.75 + this.deflectionStateTheta * 0.25;

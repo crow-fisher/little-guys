@@ -16,7 +16,6 @@ class LilyPadWaterGreenLifeSquare extends BaseLifeSquare {
         this.proto = "LilyPadWaterGreenLifeSquare";
         this.colorBase = "#157F1F";
         this.type = "green";
-        this.width = .99;
 
         this.baseColor = "#88ca69";
         this.darkColor = "#5f734d";

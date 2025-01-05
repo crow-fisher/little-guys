@@ -15,7 +15,6 @@ class LilyPadFlowerLifeSquare extends BaseLifeSquare {
         this.proto = "LilyPadFlowerLifeSquare";
         this.colorBase = "#157F1F";
         this.type = "flower";
-        this.width = .99;
 
         this.centerColor = "rgba(253,200,118, 0.8)";
         this.petalColor = "rgba(193,21,102, 0.8)";

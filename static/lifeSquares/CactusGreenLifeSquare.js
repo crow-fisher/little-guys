@@ -14,7 +14,6 @@ class CactusGreenLifeSquare extends BaseLifeSquare {
         super(square, organism);
         this.proto = "CactusGreenLifeSquare";
         this.type = "green";
-        this.width = .99;
 
         this.storedWaterMax = 40;
         this.storedWaterTransferRate = 1;

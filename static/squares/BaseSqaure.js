@@ -543,9 +543,17 @@ export class BaseSquare {
         if (this.surface) {
             return;
         }
+        if (this.organic) {
+            if (this.linkedOrganismSquares.some((sq) => sq.type == "green" && sq.subtype == "leaf")) {
+                this.linkedOrganismSquares
+                    .filter((lsq) => lsq.type == "green" && lsq.subtype == "leaf")
+                    .forEach((lsq) => this.currentPressureDirect = lsq.parentLifeSquare.linkedSquare.currentPressureDirect);
+                return;
+            }
+        }
         getSquares(this.posX, this.posY - 1)
             .forEach((sq) => this.currentPressureDirect = Math.max(this.currentPressureDirect, 
-                sq.currentPressureDirect + (sq.organic ? 0.15 : 1)));
+                sq.currentPressureDirect + (sq.organic ? 0.55 : 1)));
     }
 
     calculateDistToFront() {

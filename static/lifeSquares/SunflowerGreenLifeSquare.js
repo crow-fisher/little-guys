@@ -16,7 +16,6 @@ class SunflowerGreenLifeSquare extends BaseLifeSquare {
         this.colorBase = "#157F1F";
         this.type = "green";
         this.subtype = "stem"; // others - "joint", "flower"
-        this.width = .99;
 
         this.deflectionStrength = 70;
 
@@ -103,9 +102,9 @@ class SunflowerGreenLifeSquare extends BaseLifeSquare {
 
         var circleRadius = this.linkedOrganism.flowerRadius;
 
-        for (let i = 0; i < circleRadius; i++) {
-            for (let j = 0; j < circleRadius; j++) {
-                var dist = Math.ceil((i ** 2 + j ** 2) ** 0.5);
+        for (let i = 0; i < circleRadius + 2; i++) {
+            for (let j = 0; j < circleRadius + 2; j++) {
+                var dist = Math.floor((i ** 2 + j ** 2) ** 0.5);
                 if (dist > circleRadius) {
                     continue;
                 }

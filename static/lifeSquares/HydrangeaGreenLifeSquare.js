@@ -16,7 +16,6 @@ class HydrangeaGreenLifeSquare extends BaseLifeSquare {
         this.proto = "HydrangeaGreenLifeSquare";
         this.colorBase = "#157F1F";
         this.type = "green";
-        this.width = .99;
 
         this.baseColor = "#5BAD35";
         this.darkColor = "#34631A";
