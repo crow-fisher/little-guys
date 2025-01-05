@@ -50,11 +50,11 @@ class SunflowerOrganism extends BaseOrganism {
         this.startDeflectionAngle = 0; 
         this.lastDeflectionStateThetas = new Array(1000);
         this.deflectionIdx = 0;
-        this.deflectionStateTheta = Math.PI / 2;
+        this.deflectionStateTheta = 0;
         this.deflectionStateFunctions = [];
 
         for (let i = 0; i < this.lastDeflectionStateThetas.length; i++) {
-            this.lastDeflectionStateThetas[i] = Math.PI / 2;
+            this.lastDeflectionStateThetas[i] = 0;
         }
     }
 
@@ -65,7 +65,7 @@ class SunflowerOrganism extends BaseOrganism {
         // start with our rolling average theta 
         var startTheta = this.getStartDeflectionStateTheta();
 
-        var startSpringForce = Math.cos(startTheta) * this.springCoef;
+        var startSpringForce = Math.sin(startTheta) * this.springCoef;
 
         // spring return rate
         startSpringForce *= 0.70;
@@ -82,10 +82,10 @@ class SunflowerOrganism extends BaseOrganism {
         endSpringForce = Math.min(this.springCoef, endSpringForce);
         endSpringForce = Math.max(-this.springCoef, endSpringForce);
 
-        this.deflectionStateTheta = Math.acos(endSpringForce / this.springCoef);
+        this.deflectionStateTheta = Math.asin(endSpringForce / this.springCoef);
 
-        this.deflectionStateTheta = Math.max(0.1, this.deflectionStateTheta);
-        this.deflectionStateTheta = Math.min(Math.PI - 0.1, this.deflectionStateTheta);
+        // this.deflectionStateTheta = Math.max(0.1, this.deflectionStateTheta);
+        // this.deflectionStateTheta = Math.min(Math.PI - 0.1, this.deflectionStateTheta);
 
         this.lastDeflectionStateThetas[this.deflectionIdx % this.lastDeflectionStateThetas.length] = this.deflectionStateTheta;
         this.deflectionIdx += 1;
@@ -123,6 +123,8 @@ class SunflowerOrganism extends BaseOrganism {
         for (let i = 0; i < greenSquares.length; i++) {
             var cs = greenSquares[i];
 
+            // relative to origin
+            
             var csX = this.posX - cs.posX;
             var csY = this.posY - cs.posY;
 
@@ -130,11 +132,18 @@ class SunflowerOrganism extends BaseOrganism {
 
             var currentTheta = startTheta + (csDist / hgDist) * thetaDelta;
 
-            currentXOffset = csDist * Math.cos(currentTheta);
-            currentYOffset = csDist * Math.sin(currentTheta);
+            // https://academo.org/demos/rotation-about-point/
+            var endX = csX * Math.cos(currentTheta) - csY * Math.sin(currentTheta);
+            var endY = csY * Math.cos(currentTheta) + csX * Math.sin(currentTheta);
 
-            greenSquares[i].deflectionXOffset = -currentXOffset ; //- 2 * ((greenSquares[i].linkedOrganism.posX - greenSquares[i].posX) / 2);
-            greenSquares[i].deflectionYOffset = currentYOffset  ; //- 2 * ((greenSquares[i].linkedOrganism.posY - greenSquares[i].posY) / 2);
+            // currentXOffset = csDist * Math.cos(currentTheta);
+            // currentYOffset = csDist * Math.sin(currentTheta);
+
+            currentXOffset = csX - endX;
+            currentYOffset = csY - endY;
+
+            cs.deflectionXOffset = -currentXOffset
+            cs.deflectionYOffset = currentYOffset
         }
     }
 
