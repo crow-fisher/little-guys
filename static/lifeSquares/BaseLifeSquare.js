@@ -9,6 +9,8 @@ import { airNutrientsPerEmptyNeighbor } from "../config/config.js";
 import { selectedViewMode } from "../index.js";
 import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_GREEN, RGB_COLOR_BLACK, RGB_COLOR_RED } from "../colors.js";
 
+var LSQ_RENDER_SIZE_MULT = 1.1;
+
 class BaseLifeSquare {
     constructor(square, organism) {
         this.proto = "BaseLifeSquare";
@@ -224,8 +226,8 @@ class BaseLifeSquare {
         MAIN_CONTEXT.fillRect(
             (this.posX - this.deflectionXOffset) * BASE_SIZE,
             (this.posY - this.deflectionYOffset) * BASE_SIZE,
-            this.width * BASE_SIZE,
-            this.height * BASE_SIZE
+            this.width * BASE_SIZE * LSQ_RENDER_SIZE_MULT,
+            this.height * BASE_SIZE * LSQ_RENDER_SIZE_MULT
         );
     }
 
@@ -237,8 +239,8 @@ class BaseLifeSquare {
         MAIN_CONTEXT.fillRect(
             (this.posX - this.deflectionXOffset) * BASE_SIZE,
             (this.posY - this.deflectionYOffset) * BASE_SIZE,
-            this.width * BASE_SIZE,
-            this.height * BASE_SIZE
+            this.width * BASE_SIZE * LSQ_RENDER_SIZE_MULT,
+            this.height * BASE_SIZE * LSQ_RENDER_SIZE_MULT
         );
     }
 
@@ -324,8 +326,8 @@ class BaseLifeSquare {
                     MAIN_CONTEXT.fillRect(
                         (this.posX - this.deflectionXOffset) * BASE_SIZE,
                         (this.posY - this.deflectionYOffset) * BASE_SIZE,
-                        this.width * BASE_SIZE,
-                        this.height * BASE_SIZE
+                        this.width * BASE_SIZE * LSQ_RENDER_SIZE_MULT,
+                        this.height * BASE_SIZE * LSQ_RENDER_SIZE_MULT
                     );
                     return;
 
@@ -351,8 +353,8 @@ class BaseLifeSquare {
             MAIN_CONTEXT.fillRect(
                 (this.posX - this.deflectionXOffset) * BASE_SIZE,
                 (this.posY - this.deflectionYOffset) * BASE_SIZE,
-                this.width * BASE_SIZE,
-                this.height * BASE_SIZE
+                this.width * BASE_SIZE * LSQ_RENDER_SIZE_MULT,
+                this.height * BASE_SIZE * LSQ_RENDER_SIZE_MULT
             );
             return;
         }
@@ -398,8 +400,8 @@ class BaseLifeSquare {
         MAIN_CONTEXT.fillRect(
             startPos,
             (this.posY - this.deflectionYOffset) * BASE_SIZE,
-            this.width * BASE_SIZE,
-            this.height * BASE_SIZE
+            this.width * BASE_SIZE * LSQ_RENDER_SIZE_MULT,
+            this.height * BASE_SIZE * LSQ_RENDER_SIZE_MULT
         );
 
         this.darkeningRender();

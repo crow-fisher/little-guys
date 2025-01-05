@@ -120,6 +120,9 @@ class SunflowerOrganism extends BaseOrganism {
     }
 
     growUp() {
+        if (this.bloomed) {
+            return 0;
+        }
         var highestPlantSquare = this.getHighestGreen();
         var newPlantSquare = new PlantSquare(highestPlantSquare.posX, highestPlantSquare.posY - 1);
         if (addSquare(newPlantSquare)) {
@@ -149,6 +152,9 @@ class SunflowerOrganism extends BaseOrganism {
     }
 
     growFlower() {
+        if (this.bloomed) {
+            return 0;
+        }
 
         if (this.getLifeCyclePercentage() > 0.12) {
             this.currentEnergy = this.reproductionEnergy * 10;
@@ -231,8 +237,7 @@ class SunflowerOrganism extends BaseOrganism {
                             this.addAssociatedLifeSquare(newSunflowerGreenLifeSquare);
                             newSunflowerGreenLifeSquare.linkSquare(newPlantSquare);
                             newSunflowerGreenLifeSquare.type = "flower";
-
-                            if (dist < this.flowerRadius - 1) {
+                            if (dist <= this.flowerRadius - 2) {
                                 newSunflowerGreenLifeSquare.subtype = "flowerCenter";
                             } else {
                                 newSunflowerGreenLifeSquare.subtype = "flowerPetal";
@@ -244,12 +249,11 @@ class SunflowerOrganism extends BaseOrganism {
                 }
 
                 var currentSqAtLoc = currentSqAtLocArr[0];
-                if (currentSqAtLoc.type == "flower") {
-                    if (dist < this.flowerRadius - 1) {
-                        currentSqAtLoc.subtype = "flowerCenter";
-                    } else {
-                        currentSqAtLoc.subtype = "flowerPetal";
-                    }
+                currentSqAtLoc.type = "flower";
+                if (dist <= this.flowerRadius - 1) {
+                    currentSqAtLoc.subtype = "flowerCenter";
+                } else {
+                    currentSqAtLoc.subtype = "flowerPetal";
                 }
                 
                 // otherwise change that type to be a flower
