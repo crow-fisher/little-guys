@@ -85,6 +85,7 @@ export class BaseSquare {
 
         this.currentPressureDirect = 0;
         this.blockModDarkenVal = 0;
+        this.distToFront = 0;
 
         this.surface = false;
 
@@ -251,6 +252,7 @@ export class BaseSquare {
             this.waterContainmentDarken();
         }
         this.blockPressureAndModDarken();
+        this.distToFrontBlockModDarken();
     }
 
     waterContainmentDarken() {
@@ -267,6 +269,19 @@ export class BaseSquare {
         var pressureMax = 12;
         var pressureMod = (this.blockModDarkenVal != null ? this.blockModDarkenVal : 0) * pressureMax;
         MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.currentPressureDirect + pressureMod, 12);
+        MAIN_CONTEXT.fillRect(
+            this.posX * BASE_SIZE,
+            this.posY * BASE_SIZE,
+            BASE_SIZE,
+            BASE_SIZE
+        );
+    }
+
+    distToFrontBlockModDarken() {
+        if (!this.surface) {
+            return;
+        }
+        MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.distToFront, 8);
         MAIN_CONTEXT.fillRect(
             this.posX * BASE_SIZE,
             this.posY * BASE_SIZE,
@@ -381,6 +396,7 @@ export class BaseSquare {
         this.evaporateInnerMoisture();
         this.percolateInnerMoisture();
         this.calculateDirectPressure();
+        this.calculateDistToFront();
 
         if (!this.physicsEnabled || this.linkedOrganismSquares.some((sq) => sq.type == "root")) {
             return false;
@@ -530,6 +546,18 @@ export class BaseSquare {
         getSquares(this.posX, this.posY - 1)
             .forEach((sq) => this.currentPressureDirect = Math.max(this.currentPressureDirect, 
                 sq.currentPressureDirect + (sq.organic ? 0.35 : 1)));
+    }
+
+    calculateDistToFront() {
+        if (!this.surface) {
+            return 0;
+        }
+
+        this.distToFront = 0 + Math.max(getSquares(this.posX, this.posY + 1)
+            .filter((sq) => sq.surface && sq.collision)
+            .map((sq) => sq.calculateDistToFront() + 1));
+
+        return this.distToFront;
     }
 
     percolateInnerMoisture() {

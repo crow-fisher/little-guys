@@ -111,9 +111,6 @@ class SunflowerOrganism extends BaseOrganism {
 
         startTheta = endTheta - thetaDelta;
 
-        var currentXOffset = 0;
-        var currentYOffset = 0;
-
         var hg = this.getHighestGreen();
 
         var hgX = this.posX - hg.posX;
@@ -137,16 +134,8 @@ class SunflowerOrganism extends BaseOrganism {
             var endX = csX * Math.cos(currentTheta) - csY * Math.sin(currentTheta);
             var endY = csY * Math.cos(currentTheta) + csX * Math.sin(currentTheta);
 
-            var endDist = (endX ** 2 + endY ** 2) ** 0.5; 
-
-            // currentXOffset = csDist * Math.cos(currentTheta);
-            // currentYOffset = csDist * Math.sin(currentTheta);
-
-            currentXOffset = (csX - endX); 
-            currentYOffset = (csY - endY); 
-
-            cs.deflectionXOffset = -currentXOffset
-            cs.deflectionYOffset = -currentYOffset
+            cs.deflectionXOffset = endX - csX;
+            cs.deflectionYOffset = endY - csY;
         }
     }
 

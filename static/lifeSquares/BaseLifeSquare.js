@@ -229,6 +229,20 @@ class BaseLifeSquare {
         );
     }
 
+    distToFrontBlockModDarken() {
+        if (!this.surface) {
+            return;
+        }
+        MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.linkedSquare.distToFront, 8);
+        MAIN_CONTEXT.fillRect(
+            (this.posX - this.deflectionXOffset) * BASE_SIZE,
+            (this.posY - this.deflectionYOffset) * BASE_SIZE,
+            this.width * BASE_SIZE,
+            this.height * BASE_SIZE
+        );
+    }
+
+
     calculateDarkeningColorImpl(darkVal, darkValMax) {
         var c;
         if (this.flowering) {
@@ -389,6 +403,7 @@ class BaseLifeSquare {
         );
 
         this.darkeningRender();
+        this.distToFrontBlockModDarken();
     }
 
     calculateColor() {

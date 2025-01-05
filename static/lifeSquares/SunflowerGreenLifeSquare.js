@@ -24,15 +24,15 @@ class SunflowerGreenLifeSquare extends BaseLifeSquare {
 
         this.jointGrowthPlan = null;
 
-        this.stemBaseColor = "#83ab40";
-        this.stemDarkColor = "#4c6f21";
-        this.stemAccentColor = "#c1d8ab";
+        this.stemBaseColor = "#a4b25c";
+        this.stemDarkColor = "#4c5731";
+        this.stemAccentColor = "#b1be7f";
 
-        this.baseColor = "#83ab40";
+        this.baseColor = this.stemBaseColor;
         this.baseColorAmount = dirt_baseColorAmount;
-        this.darkColor = "#4c6f21";
+        this.darkColor = this.stemDarkColor;
         this.darkColorAmount = dirt_darkColorAmount;
-        this.accentColor = "#c1d8ab";
+        this.accentColor = this.stemAccentColor; 
         this.accentColorAmount = dirt_accentColorAmount;
 
         // width and xOffset are scaled between 0 and 1
