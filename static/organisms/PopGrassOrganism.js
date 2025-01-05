@@ -34,7 +34,7 @@ class PopGrassOrganism extends BaseOrganism {
             "root": 80
         }
 
-        this.highestGreen = null;
+        this.applyWind = true;
     }
 
     getSeedSquare() {
@@ -232,7 +232,6 @@ class PopGrassOrganism extends BaseOrganism {
 
     preRender() {
         super.preRender();
-        this.highestGreen = this.getHighestGreen();
         this.lifeSquares
         .filter((sq) => sq.type == "green")
         .forEach((lsq) => {

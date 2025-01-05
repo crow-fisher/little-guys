@@ -34,7 +34,6 @@ class MossOrganism extends BaseOrganism {
         this.maximumLifeSquaresOfType = {
             "green": 1000
         }
-        this.highestGreen = null;
 
     }
 

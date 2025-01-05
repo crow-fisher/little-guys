@@ -44,7 +44,7 @@ class CactusOrganism extends BaseOrganism {
             "root": 200
         }
 
-        this.highestGreen = null;
+        this.applyWind = true;
     }
 
     postTick() {
@@ -267,7 +267,6 @@ class CactusOrganism extends BaseOrganism {
 
     preRender() {
         super.preRender();
-        this.highestGreen = this.getHighestGreen();
         this.lifeSquares
         .filter((sq) => sq.type == "green")
         .forEach((lsq) => {

@@ -42,6 +42,9 @@ class HydrangeaOrganism extends BaseOrganism {
             "root": 20
         }
 
+        this.applyWind = true;
+        this.springCoef *= 20;
+
     }
 
     hydrangaInit() {

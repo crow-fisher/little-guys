@@ -18,7 +18,6 @@ import { getOrganismSquaresAtSquareWithEntityId } from "../lifeSquares/_lsOperat
 import { getCurTime } from "../globals.js";
 import { randNumber } from "../common.js";
 
-import { getWindSpeedAtLocation } from "../wind.js";
 
 class SunflowerOrganism extends BaseOrganism {
     constructor(square) {
@@ -27,7 +26,6 @@ class SunflowerOrganism extends BaseOrganism {
         this.type = "plant";
 
         this.throttleInterval = 300;
-        this.springCoef = 5;
 
         this.airCoef = 0.05;
         this.dirtCoef = 1;
@@ -43,100 +41,9 @@ class SunflowerOrganism extends BaseOrganism {
             "root": 80
         }
 
-        this.highestGreen = null;
-
         this.nextSide = Math.random() > 0.5 ? 1 : -1;
 
-        this.startDeflectionAngle = 0; 
-        this.lastDeflectionStateThetas = new Array(400);
-        this.deflectionIdx = 0;
-        this.deflectionStateTheta = 0;
-        this.deflectionStateFunctions = [];
-
-        for (let i = 0; i < this.lastDeflectionStateThetas.length; i++) {
-            this.lastDeflectionStateThetas[i] = 0;
-        }
-    }
-
-    updateDeflectionState() {
-        var highestGreen = this.getHighestGreen();
-        var windVec = getWindSpeedAtLocation(highestGreen.posX + highestGreen.deflectionXOffset, highestGreen.posY + highestGreen.deflectionYOffset);
-
-        // start with our rolling average theta 
-        var startTheta = this.getStartDeflectionStateTheta();
-
-        var startSpringForce = Math.sin(startTheta) * this.springCoef;
-
-        // spring return rate
-        startSpringForce *= 0.70;
-
-        // 1. check the direction of our x component compared to the wind 
-        // 2. based on angle, 
-        // we need to check if our x component is in the same direction
-        
-        // apply wind force 
-        var windX = windVec[0];
-
-        var endSpringForce = startSpringForce * 0.8 + windX * 0.2;
-        
-        endSpringForce = Math.min(this.springCoef, endSpringForce);
-        endSpringForce = Math.max(-this.springCoef, endSpringForce);
-
-        this.deflectionStateTheta = Math.asin(endSpringForce / this.springCoef);
-
-        // this.deflectionStateTheta = Math.max(0.1, this.deflectionStateTheta);
-        // this.deflectionStateTheta = Math.min(Math.PI - 0.1, this.deflectionStateTheta);
-
-        this.lastDeflectionStateThetas[this.deflectionIdx % this.lastDeflectionStateThetas.length] = this.deflectionStateTheta;
-        this.deflectionIdx += 1;
-
-    }
-
-    getStartDeflectionStateTheta() {
-        return this.lastDeflectionStateThetas.reduce(
-            (accumulator, currentValue) => accumulator + currentValue,
-            0,
-        ) / this.lastDeflectionStateThetas.length;
-    }
-
-
-    applyDeflectionStateToSquares() {
-        var greenSquares = Array.from(this.lifeSquares.filter((lsq) => lsq.type == "green"));
-
-        var startTheta = this.getStartDeflectionStateTheta();
-        var endTheta = this.getStartDeflectionStateTheta() * 0.75 + this.deflectionStateTheta * 0.25;
-        
-        var currentTheta = startTheta;
-        var thetaDelta = endTheta - startTheta;
-
-        startTheta = endTheta - thetaDelta;
-
-        var hg = this.getHighestGreen();
-
-        var hgX = this.posX - hg.posX;
-        var hgY = this.posY - hg.posY;
-        
-        var hgDist = (hgX ** 2 + hgY ** 2) ** 0.5;
-
-        for (let i = 0; i < greenSquares.length; i++) {
-            var cs = greenSquares[i];
-
-            // relative to origin
-            
-            var csX = this.posX - cs.posX;
-            var csY = this.posY - cs.posY;
-
-            var csDist = (csX ** 2 + csY ** 2) ** 0.5; 
-
-            var currentTheta = startTheta + (csDist / hgDist) * thetaDelta;
-
-            // https://academo.org/demos/rotation-about-point/
-            var endX = csX * Math.cos(currentTheta) - csY * Math.sin(currentTheta);
-            var endY = csY * Math.cos(currentTheta) + csX * Math.sin(currentTheta);
-
-            cs.deflectionXOffset = endX - csX;
-            cs.deflectionYOffset = endY - csY;
-        }
+        this.applyWind = true;
     }
 
     getSeedSquare() {
@@ -378,18 +285,11 @@ class SunflowerOrganism extends BaseOrganism {
 
     preRender() {
         super.preRender();
-        this.highestGreen = this.getHighestGreen();
         this.lifeSquares
         .filter((sq) => sq.type == "green")
         .forEach((lsq) => {
             lsq.xOffset = this.xOffset;
         });
-    }
-
-    tick() {
-        super.tick();
-        this.updateDeflectionState();
-        this.applyDeflectionStateToSquares();
     }
 
 }

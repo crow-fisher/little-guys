@@ -16,16 +16,16 @@ class MossGreenLifeSquare extends BaseLifeSquare {
         this.type = "green";
         this.width = .99;
 
-        this.opacity = 0.5;
+        this.opacity = 0.4;
 
         this.storedWaterMax = 0.01;
         this.storedWaterTransferRate = .001;
 
-        this.baseColor = "#b8d005";
+        this.baseColor = "#62771f";
         this.baseColorAmount = dirt_baseColorAmount;
-        this.darkColor = "#506812";
+        this.darkColor = "#576914";
         this.darkColorAmount = dirt_darkColorAmount;
-        this.accentColor = "#cedda2";
+        this.accentColor = "#202d05";
         this.accentColorAmount = dirt_accentColorAmount;
     }
 

@@ -3,6 +3,7 @@ import { Law } from "../Law.js";
 import { getStandardDeviation, randNumber } from "../common.js";
 import { getCurTime } from "../globals.js";
 import { getNextEntitySpawnId } from "../globals.js";
+import { getWindSpeedAtLocation } from "../wind.js";
 
 class BaseOrganism {
     constructor(square) {
@@ -55,6 +56,94 @@ class BaseOrganism {
         this.spawnedEntityId = getNextEntitySpawnId();
         this.linkSquare(square);
         this.growInitialSquares();
+
+        this.applyWind = false;
+        this.springCoef = 5;
+        this.startDeflectionAngle = 0; 
+        this.lastDeflectionStateThetas = new Array(400);
+        this.deflectionIdx = 0;
+        this.deflectionStateTheta = 0;
+        this.deflectionStateFunctions = [];
+
+        for (let i = 0; i < this.lastDeflectionStateThetas.length; i++) {
+            this.lastDeflectionStateThetas[i] = 0;
+        }
+
+    }
+
+    updateDeflectionState() {
+        if (!this.applyWind) {
+            return;
+        }
+        var highestGreen = this.getHighestGreen();
+        var windVec = getWindSpeedAtLocation(highestGreen.posX + highestGreen.deflectionXOffset, highestGreen.posY + highestGreen.deflectionYOffset);
+        var startTheta = this.getStartDeflectionStateTheta();
+        var startSpringForce = Math.sin(startTheta) * this.springCoef;
+        startSpringForce *= 0.70;
+        var windX = windVec[0];
+        var endSpringForce = startSpringForce * 0.8 + windX * 0.2;
+        
+        endSpringForce = Math.min(this.springCoef, endSpringForce);
+        endSpringForce = Math.max(-this.springCoef, endSpringForce);
+
+        this.deflectionStateTheta = Math.asin(endSpringForce / this.springCoef);
+
+        this.lastDeflectionStateThetas[this.deflectionIdx % this.lastDeflectionStateThetas.length] = this.deflectionStateTheta;
+        this.deflectionIdx += 1;
+    }
+
+    getStartDeflectionStateTheta() {
+        return this.lastDeflectionStateThetas.reduce(
+            (accumulator, currentValue) => accumulator + currentValue,
+            0,
+        ) / this.lastDeflectionStateThetas.length;
+    }
+
+
+    applyDeflectionStateToSquares() {
+        if (!this.applyWind) {
+            return;
+        }
+        var greenSquares = Array.from(this.lifeSquares.filter((lsq) => lsq.type == "green"));
+
+        var startTheta = this.getStartDeflectionStateTheta();
+        var endTheta = this.getStartDeflectionStateTheta() * 0.75 + this.deflectionStateTheta * 0.25;
+        
+        var currentTheta = startTheta;
+        var thetaDelta = endTheta - startTheta;
+
+        startTheta = endTheta - thetaDelta;
+
+        var hg = this.getHighestGreen();
+
+        if (hg == null) {
+            return;
+        }
+
+        var hgX = this.posX - hg.posX;
+        var hgY = this.posY - hg.posY;
+        
+        var hgDist = (hgX ** 2 + hgY ** 2) ** 0.5;
+
+        for (let i = 0; i < greenSquares.length; i++) {
+            var cs = greenSquares[i];
+
+            // relative to origin
+            
+            var csX = this.posX - cs.posX;
+            var csY = this.posY - cs.posY;
+
+            var csDist = (csX ** 2 + csY ** 2) ** 0.5; 
+
+            var currentTheta = startTheta + (csDist / hgDist) * thetaDelta;
+
+            // https://academo.org/demos/rotation-about-point/
+            var endX = csX * Math.cos(currentTheta) - csY * Math.sin(currentTheta);
+            var endY = csY * Math.cos(currentTheta) + csX * Math.sin(currentTheta);
+
+            cs.deflectionXOffset = endX - csX;
+            cs.deflectionYOffset = endY - csY;
+        }
     }
 
     setHealthAndEnergyColorInSubsquares() {
@@ -313,7 +402,9 @@ class BaseOrganism {
     }
 
     tick() {
-        this.lifeSquares.forEach((sp) => sp.tick())
+        this.lifeSquares.forEach((sp) => sp.tick());
+        this.updateDeflectionState();
+        this.applyDeflectionStateToSquares();
     }
 
     getLifeCyclePercentage() {

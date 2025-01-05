@@ -17,11 +17,11 @@ class PopGrassGreenLifeSquare extends BaseLifeSquare {
         this.type = "green";
         this.width = .99;
 
-        this.baseColor = "#83ab40";
+        this.baseColor = "#c0d527";
         this.baseColorAmount = dirt_baseColorAmount;
-        this.darkColor = "#4c6f21";
+        this.darkColor = "#637a0c";
         this.darkColorAmount = dirt_darkColorAmount;
-        this.accentColor = "#c1d8ab";
+        this.accentColor = "#cfdaa0";
         this.accentColorAmount = dirt_accentColorAmount;
 
         // width and xOffset are scaled between 0 and 1

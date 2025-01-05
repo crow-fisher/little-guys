@@ -42,7 +42,6 @@ class LilyPadOrganism extends BaseOrganism {
             "root": 20
         }
 
-        this.highestGreen = null;
     }
 
     getSeedSquare() {
@@ -315,7 +314,6 @@ class LilyPadOrganism extends BaseOrganism {
 
     preRender() {
         super.preRender();
-        this.highestGreen = this.getHighestGreen();
         this.lifeSquares
             .filter((sq) => sq.type == "green")
             .forEach((lsq) => {
