@@ -135,19 +135,24 @@ class SunflowerOrganism extends BaseOrganism {
     }
 
     growFromJoint(lifeSquare) {
-        var jointGrowthPlan = lifeSquare.getGrowthPlan();
+        var jointGrowthPlan = lifeSquare.getGrowthPlan().filter((loc) => !this.lifeSquares.some((lsq) => lsq.posX == loc[0] && lsq.posY == loc[1]));
 
-        if (jointGrowthPlan.some((loc) => {
+
+        var jointGrowthPlanMinY = Math.min(...jointGrowthPlan.map((loc) => loc[1]));
+
+        if (jointGrowthPlan
+            .filter((loc) => loc[1] == jointGrowthPlanMinY)
+            .some((loc) => {
             var posX = loc[0];
             var posY = loc[1];
 
-            if (this.lifeSquares.some((lsq) => lsq.posX == posX && lsq.posY == posY)) {
-                return false;
-            }
-        
             var candidateParents = Array.from(this.lifeSquares.filter((lsq) => lsq.dist(posX, posY) <= 1));
 
             if (candidateParents.length == 0) {
+                return false;
+            }
+
+            if (Math.random() < 0.7) {
                 return false;
             }
 

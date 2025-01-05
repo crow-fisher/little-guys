@@ -545,7 +545,7 @@ export class BaseSquare {
         }
         getSquares(this.posX, this.posY - 1)
             .forEach((sq) => this.currentPressureDirect = Math.max(this.currentPressureDirect, 
-                sq.currentPressureDirect + (sq.organic ? 0.35 : 1)));
+                sq.currentPressureDirect + (sq.organic ? 0.15 : 1)));
     }
 
     calculateDistToFront() {
