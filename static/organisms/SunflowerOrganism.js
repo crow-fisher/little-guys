@@ -43,6 +43,8 @@ class SunflowerOrganism extends BaseOrganism {
 
         this.nextSide = Math.random() > 0.5 ? 1 : -1;
 
+        this.flowerRadius = 3;
+        this.bloomed = false;
         this.applyWind = true;
     }
 
@@ -134,12 +136,140 @@ class SunflowerOrganism extends BaseOrganism {
         return 0;
     }
 
+    getFlowerStart() {
+        var ar =  Array.from(this.lifeSquares.filter((sq) => sq.type == "flower" && sq.subtype == "flowerStart"));
+        if (ar.length == 0) {
+            return null;
+        }
+        return ar[0];
+    }
+
+    flowerLifeCycle() {
+
+    }
+
+    growFlower() {
+
+        if (this.getLifeCyclePercentage() > 0.12) {
+            this.currentEnergy = this.reproductionEnergy * 10;
+        }
+
+        var flowerStart = this.getFlowerStart();
+        if (flowerStart == null && this.getCurrentEnergyFrac() > 1) {
+            var highestPlantSquare = this.getHighestGreen();
+            if (highestPlantSquare.subtype == "joint") {
+                this.currentEnergy -= this.growUp();
+                return this.growFlower();
+                // return 0;
+            }
+            var newPlantSquare = new PlantSquare(highestPlantSquare.posX, highestPlantSquare.posY - 1);
+            if (addSquare(newPlantSquare)) {
+                var newSunflowerGreenLifeSquare = addOrganismSquare(new SunflowerGreenLifeSquare(newPlantSquare, this));
+                if (newSunflowerGreenLifeSquare) {
+                    this.addAssociatedLifeSquare(newSunflowerGreenLifeSquare);
+                    newSunflowerGreenLifeSquare.linkSquare(newPlantSquare);
+                    newSunflowerGreenLifeSquare.type = "flower";
+                    newSunflowerGreenLifeSquare.subtype = "flowerStart";
+                    return newSunflowerGreenLifeSquare.getCost();
+                }
+            };
+        }
+
+        if (flowerStart == null && this.getCurrentEnergyFrac() < 1) {
+            // not enough juice, try again later
+            return 0;
+        }
+
+        var flowerGrowthPlan = flowerStart.getFlowerCenterGrowthPlan().filter((loc) => !this.lifeSquares.some((lsq) => lsq.posX == loc[0] && lsq.posY == loc[1]));
+        var flowerGrowthPlanMaxY = Math.max(...flowerGrowthPlan.map((loc) => loc[1]));
+
+        if (flowerGrowthPlan
+            .filter((loc) => loc[1] == flowerGrowthPlanMaxY)
+            .some((loc) => {
+                var posX = loc[0];
+                var posY = loc[1];
+                var candidateParents = Array.from(this.lifeSquares.filter((lsq) => lsq.dist(posX, posY) <= 1));
+                if (candidateParents.length == 0) {
+                    return false;
+                }
+                // if (Math.random() < 0.7) {
+                //     return false;
+                // }
+
+                var newPlantSquare = new PlantSquare(posX, posY);
+                if (addSquare(newPlantSquare)) {
+                    var newSunflowerGreenLifeSquare = addOrganismSquare(new SunflowerGreenLifeSquare(newPlantSquare, this));
+                    if (newSunflowerGreenLifeSquare) {
+                        this.addAssociatedLifeSquare(newSunflowerGreenLifeSquare);
+                        newSunflowerGreenLifeSquare.linkSquare(newPlantSquare);
+                        newSunflowerGreenLifeSquare.type = "flower";
+                        newSunflowerGreenLifeSquare.subtype = "flowerCenter";
+                        return true;
+                    }
+                }
+                return false;
+            })) {
+                return 0;
+            }
+
+            if (this.bloomed) {
+                return 0;
+            }
+            var flowerBloomGrowthPlan = flowerStart.getFlowerBloomGrowthPlan();
+
+            flowerBloomGrowthPlan.forEach((loc) => {
+                var posX = loc[0];
+                var posY = loc[1];
+                var dist = loc[2];
+
+                var currentSqAtLocArr = Array.from(this.lifeSquares.filter((lsq) => lsq.posX == posX && lsq.posY == posY));
+                var newPlantSquare = new PlantSquare(posX, posY);
+                if (currentSqAtLocArr.length == 0) {
+                    if (addSquare(newPlantSquare)) {
+                        var newSunflowerGreenLifeSquare = addOrganismSquare(new SunflowerGreenLifeSquare(newPlantSquare, this));
+                        if (newSunflowerGreenLifeSquare) {
+                            this.addAssociatedLifeSquare(newSunflowerGreenLifeSquare);
+                            newSunflowerGreenLifeSquare.linkSquare(newPlantSquare);
+                            newSunflowerGreenLifeSquare.type = "flower";
+
+                            if (dist < this.flowerRadius - 1) {
+                                newSunflowerGreenLifeSquare.subtype = "flowerCenter";
+                            } else {
+                                newSunflowerGreenLifeSquare.subtype = "flowerPetal";
+
+                            }
+                            return;
+                        }
+                    }
+                }
+
+                var currentSqAtLoc = currentSqAtLocArr[0];
+                if (currentSqAtLoc.type == "flower") {
+                    if (dist < this.flowerRadius - 1) {
+                        currentSqAtLoc.subtype = "flowerCenter";
+                    } else {
+                        currentSqAtLoc.subtype = "flowerPetal";
+                    }
+                }
+                
+                // otherwise change that type to be a flower
+            });
+
+            this.bloomed = true;
+        
+            return this.currentEnergy / 10;
+
+            // we've gotten all the way through our flower growth plan
+
+            // now the flower has to bloom
+
+
+    }
+    
+
     growFromJoint(lifeSquare) {
-        var jointGrowthPlan = lifeSquare.getGrowthPlan().filter((loc) => !this.lifeSquares.some((lsq) => lsq.posX == loc[0] && lsq.posY == loc[1]));
-
-
+        var jointGrowthPlan = lifeSquare.getJointGrowthPlan().filter((loc) => !this.lifeSquares.some((lsq) => lsq.posX == loc[0] && lsq.posY == loc[1]));
         var jointGrowthPlanMinY = Math.min(...jointGrowthPlan.map((loc) => loc[1]));
-
         if (jointGrowthPlan
             .filter((loc) => loc[1] == jointGrowthPlanMinY)
             .some((loc) => {
