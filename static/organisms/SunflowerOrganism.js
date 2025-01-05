@@ -48,7 +48,7 @@ class SunflowerOrganism extends BaseOrganism {
         this.nextSide = Math.random() > 0.5 ? 1 : -1;
 
         this.startDeflectionAngle = 0; 
-        this.lastDeflectionStateThetas = new Array(1000);
+        this.lastDeflectionStateThetas = new Array(400);
         this.deflectionIdx = 0;
         this.deflectionStateTheta = 0;
         this.deflectionStateFunctions = [];
@@ -106,9 +106,10 @@ class SunflowerOrganism extends BaseOrganism {
         var startTheta = this.getStartDeflectionStateTheta();
         var endTheta = this.getStartDeflectionStateTheta() * 0.75 + this.deflectionStateTheta * 0.25;
         
-        // 0 is straight left, pi/2 is up, pi is right, pi * 3/2 is down
         var currentTheta = startTheta;
         var thetaDelta = endTheta - startTheta;
+
+        startTheta = endTheta - thetaDelta;
 
         var currentXOffset = 0;
         var currentYOffset = 0;
@@ -136,14 +137,16 @@ class SunflowerOrganism extends BaseOrganism {
             var endX = csX * Math.cos(currentTheta) - csY * Math.sin(currentTheta);
             var endY = csY * Math.cos(currentTheta) + csX * Math.sin(currentTheta);
 
+            var endDist = (endX ** 2 + endY ** 2) ** 0.5; 
+
             // currentXOffset = csDist * Math.cos(currentTheta);
             // currentYOffset = csDist * Math.sin(currentTheta);
 
-            currentXOffset = csX - endX;
-            currentYOffset = csY - endY;
+            currentXOffset = (csX - endX); 
+            currentYOffset = (csY - endY); 
 
             cs.deflectionXOffset = -currentXOffset
-            cs.deflectionYOffset = currentYOffset
+            cs.deflectionYOffset = -currentYOffset
         }
     }
 
