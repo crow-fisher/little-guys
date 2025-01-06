@@ -60,14 +60,11 @@ class BaseOrganism {
         this.applyWind = false;
         this.springCoef = 5;
         this.startDeflectionAngle = 0; 
-        this.lastDeflectionStateThetas = new Array(100);
+        this.lastDeflectionStateRollingAverage = 0;
+        this.lastDeflectionStateThetaRollingAveragePeriod = 1000;
         this.deflectionIdx = 0;
         this.deflectionStateTheta = 0;
         this.deflectionStateFunctions = [];
-
-        for (let i = 0; i < this.lastDeflectionStateThetas.length; i++) {
-            this.lastDeflectionStateThetas[i] = 0;
-        }
 
     }
 
@@ -76,8 +73,14 @@ class BaseOrganism {
             return;
         }
         var highestGreen = this.getHighestGreen();
+
+        if (highestGreen == null) {
+            this.destroy();
+            return;
+        }
+
         var windVec = getWindSpeedAtLocation(highestGreen.posX + highestGreen.deflectionXOffset, highestGreen.posY + highestGreen.deflectionYOffset);
-        var startTheta = this.getStartDeflectionStateTheta();
+        var startTheta = this.lastDeflectionStateRollingAverage;
         var startSpringForce = Math.sin(startTheta) * this.springCoef;
         startSpringForce *= 0.70;
         var windX = windVec[0];
@@ -89,15 +92,8 @@ class BaseOrganism {
 
         this.deflectionStateTheta = Math.asin(endSpringForce / this.springCoef);
 
-        this.lastDeflectionStateThetas[this.deflectionIdx % this.lastDeflectionStateThetas.length] = this.deflectionStateTheta;
-        this.deflectionIdx += 1;
-    }
-
-    getStartDeflectionStateTheta() {
-        return this.lastDeflectionStateThetas.reduce(
-            (accumulator, currentValue) => accumulator + currentValue,
-            0,
-        ) / this.lastDeflectionStateThetas.length;
+        this.lastDeflectionStateRollingAverage *= (1 - (1 / this.lastDeflectionStateThetaRollingAveragePeriod));
+        this.lastDeflectionStateRollingAverage += (1 / this.lastDeflectionStateThetaRollingAveragePeriod) * this.deflectionStateTheta;
     }
 
 
@@ -107,8 +103,8 @@ class BaseOrganism {
         }
         var greenSquares = Array.from(this.lifeSquares.filter((lsq) => lsq.type != "root"));
 
-        var startTheta = this.getStartDeflectionStateTheta();
-        var endTheta = this.getStartDeflectionStateTheta() * 0.75 + this.deflectionStateTheta * 0.25;
+        var startTheta = this.lastDeflectionStateRollingAverage;
+        var endTheta = this.lastDeflectionStateRollingAverage * 0.75 + this.deflectionStateTheta * 0.25;
         
         var currentTheta = startTheta;
         var thetaDelta = endTheta - startTheta;

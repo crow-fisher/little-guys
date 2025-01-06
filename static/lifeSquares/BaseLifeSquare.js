@@ -124,8 +124,8 @@ class BaseLifeSquare {
         }
         this.childLifeSquares.push(lifeSquare);
         lifeSquare.parentLifeSquare = this;
-        this.width = 1;
-        this.height = 1;
+        lifeSquare.deflectionXOffset = this.deflectionXOffset;
+        lifeSquare.deflectionYOffset = this.deflectionYOffset;
     }
 
     removeChild(lifeSquare) {
@@ -221,8 +221,8 @@ class BaseLifeSquare {
         return outScore;
     }
 
-    darkeningRender() {
-        MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.linkedSquare.currentPressureDirect, 5);
+    darkeningRender() { 
+        MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.linkedSquare.currentPressureDirect, 10);
         MAIN_CONTEXT.fillRect(
             (this.posX - this.deflectionXOffset) * BASE_SIZE,
             (this.posY - this.deflectionYOffset) * BASE_SIZE,
@@ -235,7 +235,7 @@ class BaseLifeSquare {
         if (this.linkedOrganism.getLowestGreen() == null) {
             return;
         }
-        MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(Math.max(0, this.linkedOrganism.linkedSquare.distToFront - this.linkedOrganism.getLowestGreen().linkedSquare.currentPressureDirect), 12);
+        MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(Math.max(0, this.linkedOrganism.linkedSquare.distToFront - this.linkedOrganism.getLowestGreen().linkedSquare.currentPressureDirect), 32);
         MAIN_CONTEXT.fillRect(
             (this.posX - this.deflectionXOffset) * BASE_SIZE,
             (this.posY - this.deflectionYOffset) * BASE_SIZE,
@@ -432,4 +432,4 @@ class BaseLifeSquare {
     }
 
 }
-export { BaseLifeSquare }
+export { BaseLifeSquare, LSQ_RENDER_SIZE_MULT }

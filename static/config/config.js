@@ -174,7 +174,7 @@ var po_rootSquareSizeExponentCost = {
 
 var p_seed_ls_sproutGrowthRate = {
     name: "p_seed_ls_sproutGrowthRate",
-    value: 0.03
+    value: 0.012
 };
 var p_seed_ls_neighborWaterContainmentRequiredToGrow = {
     name: "p_seed_ls_neighborWaterContainmentRequiredToGrow",

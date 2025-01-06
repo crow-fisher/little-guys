@@ -11,7 +11,7 @@ var windFlowStrength = 0.5;
 var base_wind_pressure = 10;
 
 var windFuncCurTheta = 0;
-var windFuncCurThetaDt = 0.02;
+var windFuncCurThetaDt = 0.01;
 var windFunctionApplicationMap = new Map();
 var windFunctionApplicationArray = new Array();
 var windFunctionApplicationLastAddTime = -(10 ** 8);
@@ -21,7 +21,7 @@ var windSpeedSmoothingMap = new Map();
 
 var windColors = [COLOR_BLUE, COLOR_GREEN, COLOR_RED, COLOR_BROWN];
 
-var clickAddPressure = 5;
+var clickAddPressure = 20;
 
 var WIND_SQUARES_X = () => CANVAS_SQUARES_X / 4;
 var WIND_SQUARES_Y = () => CANVAS_SQUARES_Y / 4;
@@ -67,7 +67,10 @@ function checkIfCollisionAtWindSquare(x, y) {
 function initializeWindPressureMap() {
     wpm = new Map();
     windPressureMapByPressure = new Map();
-
+    windFunctionApplicationMap = new Map();
+    windFunctionApplicationArray = new Array();
+    windFunctionApplicationLastAddTime = -(10 ** 8);
+    windSpeedSmoothingMap = new Map();
     var start_pressure = base_wind_pressure;
     windPressureMapByPressure[start_pressure] = new Array();
     for (let i = 0; i < WIND_SQUARES_X(); i++) {
@@ -94,6 +97,10 @@ function tickWindPressureMap() {
     windPressureMapByPressure = new Map();
     for (let i = 0; i < WIND_SQUARES_X(); i++) {
         for (let j = 0; j < WIND_SQUARES_Y(); j++) {
+            if (isNaN(wpm[i][j])) {
+                initializeWindPressureMap();
+                return;
+            }
             if (checkIfCollisionAtWindSquare(i, j)) {
                 wpm[i][j] = -1;
             } else {
@@ -228,15 +235,14 @@ function getWindIndirectNeighbors(x, y) {
 }
 
 
-
 function getParameterizedWindFunc(a, b) {
-    return (theta) => 5 * (a + a * Math.sin(Math.cos(theta)) - a * Math.sin(b * theta));
+    return (x) => b * (Math.log1p(-1 + Math.sin(Math.cos(x / a))) + 1.9);
 }
 
 function getCurrentWindPressureFunc() {
     if (getCurTime() - windFunctionApplicationLastAddTime > windFunctionApplicaitonDt) {
         // make a new new one
-        windFunctionApplicationArray.push(getParameterizedWindFunc(randRange(5, 8), randRange(3, 4)));
+        windFunctionApplicationArray.push(getParameterizedWindFunc(randRange(8, 13), randRange(10, 30)));
     }
     windFunctionApplicationLastAddTime = getCurTime();
     return windFunctionApplicationArray.length;

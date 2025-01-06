@@ -526,6 +526,12 @@ function doBlockMod(posX, posY) {
 
 }
 
+function getBlockModification_val() {
+    if (lastMode == "blockModification") 
+        return blockModification_val;
+    return "";
+}
+
 function doClickAdd() {
     if (lastMoveEvent == null) {
         return;
@@ -636,19 +642,20 @@ function doClickAdd() {
                                 break;
                             
                             case "Sunflower":
-                                if (Math.random() > 0.95) {
-                                    var sq = addSquare(new SeedSquare(px, curY));
-                                    if (sq) {
-                                        // organismAddedThisClick = true;
-                                        addNewOrganism(new SunflowerSeedOrganism(sq));
-                                    }
+                                if (organismAddedThisClick) {
+                                    return;
+                                }
+                                var sq = addSquare(new SeedSquare(px, curY));
+                                if (sq) {
+                                    addNewOrganism(new SunflowerSeedOrganism(sq));
+                                    organismAddedThisClick = true;
                                 }
                                 break;
                         }
                     }
 
                 }
-                if (!shiftPressed || selectedMaterial.indexOf("rain") >= 0 || selectedMaterial.indexOf("aquifer") >= 0) {
+                if (!shiftPressed || selectedMaterial.indexOf("rain") >= 0 || selectedMaterial.indexOf("aquifer") >= 0 || blockModification_val == "windadd") {
                     break;
                 }
             }
@@ -699,6 +706,7 @@ window.onload = function () {
 export {
     MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, selectedViewMode, addSquareByName,
     setCanvasSquaresX, setCanvasSquaresY,
-    getCanvasSquaresX, getCanvasSquaresY
+    getCanvasSquaresX, getCanvasSquaresY,
+    getBlockModification_val
 }
 

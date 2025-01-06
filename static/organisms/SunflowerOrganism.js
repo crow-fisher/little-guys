@@ -46,6 +46,8 @@ class SunflowerOrganism extends BaseOrganism {
         this.flowerRadius = 3;
         this.bloomed = false;
         this.applyWind = true;
+
+        this.minNumGreensForFlower = randNumber(50, 80);
     }
 
     getSeedSquare() {
@@ -141,6 +143,7 @@ class SunflowerOrganism extends BaseOrganism {
                 if (highestPlantSquare.subtype == "stem") {
                     newSunflowerGreenLifeSquare.subtype = "joint";
                 }
+                highestPlantSquare.addChild(newSunflowerGreenLifeSquare);
                 return newSunflowerGreenLifeSquare.getCost();
             }
         };
@@ -159,11 +162,17 @@ class SunflowerOrganism extends BaseOrganism {
 
     }
 
+    aboveMinNumGreensForFlower() {
+        return this.lifeSquares.filter((lsq) => lsq.type == "green").map((lsq) => 1).reduce(
+            (accumulator, currentValue) => accumulator + currentValue,
+            0,
+        ) > this.minNumGreensForFlower;
+    }
+
     growFlower() {
-        if (this.bloomed) {
+        if (this.bloomed || !this.aboveMinNumGreensForFlower()) {
             return 0;
         }
-
         var flowerStart = this.getFlowerStart();
         if (flowerStart == null && this.getCurrentEnergyFrac() > 1) {
             var highestPlantSquare = this.getHighestGreen();
@@ -180,6 +189,7 @@ class SunflowerOrganism extends BaseOrganism {
                     newSunflowerGreenLifeSquare.linkSquare(newPlantSquare);
                     newSunflowerGreenLifeSquare.type = "flower";
                     newSunflowerGreenLifeSquare.subtype = "flowerStart";
+                    highestPlantSquare.addChild(newSunflowerGreenLifeSquare);
                     return newSunflowerGreenLifeSquare.getCost();
                 }
             };
@@ -205,6 +215,7 @@ class SunflowerOrganism extends BaseOrganism {
                 // if (Math.random() < 0.7) {
                 //     return false;
                 // }
+                var chosenCandidate = candidateParents[randNumber(0, candidateParents.length - 1)];
 
                 var newPlantSquare = new PlantSquare(posX, posY);
                 if (addSquare(newPlantSquare)) {
@@ -214,6 +225,7 @@ class SunflowerOrganism extends BaseOrganism {
                         newSunflowerGreenLifeSquare.linkSquare(newPlantSquare);
                         newSunflowerGreenLifeSquare.type = "flower";
                         newSunflowerGreenLifeSquare.subtype = "flowerCenter";
+                        chosenCandidate.addChild(newSunflowerGreenLifeSquare);
                         return true;
                     }
                 }
@@ -247,6 +259,7 @@ class SunflowerOrganism extends BaseOrganism {
                                 newSunflowerGreenLifeSquare.subtype = "flowerPetal";
 
                             }
+                            flowerStart.addChild(newSunflowerGreenLifeSquare);
                             return;
                         }
                     }
@@ -273,7 +286,13 @@ class SunflowerOrganism extends BaseOrganism {
 
 
     }
-    
+
+    growAndDecay() {
+        super.growAndDecay();
+        if (!this.aboveMinNumGreensForFlower()) {
+            this.growNewPlant();
+        }
+    }
 
     growFromJoint(lifeSquare) {
         var jointGrowthPlan = lifeSquare.getJointGrowthPlan().filter((loc) => !this.lifeSquares.some((lsq) => lsq.posX == loc[0] && lsq.posY == loc[1]));
@@ -294,6 +313,8 @@ class SunflowerOrganism extends BaseOrganism {
                 return false;
             }
 
+            var chosenParent = candidateParents[randNumber(0, candidateParents.length - 1)];
+
             var newPlantSquare = new PlantSquare(posX, posY);
             if (addSquare(newPlantSquare)) {
                 var newSunflowerGreenLifeSquare = addOrganismSquare(new SunflowerGreenLifeSquare(newPlantSquare, this));
@@ -301,6 +322,7 @@ class SunflowerOrganism extends BaseOrganism {
                     this.addAssociatedLifeSquare(newSunflowerGreenLifeSquare);
                     newSunflowerGreenLifeSquare.linkSquare(newPlantSquare);
                     newSunflowerGreenLifeSquare.subtype = "leaf";
+                    chosenParent.addChild(newSunflowerGreenLifeSquare);
                     return true;
                 }
             }
@@ -309,11 +331,7 @@ class SunflowerOrganism extends BaseOrganism {
             return true;
         }
         return false;
-        
-
     }
-
-    
 
     growNewPlant() {
         if (!this.canGrowPlant()) {

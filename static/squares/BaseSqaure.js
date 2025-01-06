@@ -17,7 +17,7 @@ import {
     getCurTime
 } from "../globals.js";
 
-import { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, selectedViewMode } from "../index.js";
+import { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, selectedViewMode, getBlockModification_val } from "../index.js";
 
 import { hexToRgb, processColorStdev, processColorStdevMulticolor, rgbToHex, rgbToRgba } from "../common.js";
 
@@ -127,6 +127,9 @@ export class BaseSquare {
         }
         if (selectedViewMode == "normal") {
             this.renderWithVariedColors();
+            if (getBlockModification_val() == "markSurface") {
+                this.renderSurface();
+            }
         }
         else if (selectedViewMode == "watersaturation") {
             this.renderWaterSaturation();
@@ -134,6 +137,7 @@ export class BaseSquare {
         else if (selectedViewMode.startsWith("organism")) {
             this.renderAsGrey();
         } else if (selectedViewMode == "surface") {
+            this.renderWithVariedColors();
             this.renderSurface();
         }
         else if (selectedViewMode == "blockhealthliquid") {
@@ -146,7 +150,7 @@ export class BaseSquare {
     };
 
     renderSurface() {
-        MAIN_CONTEXT.fillStyle = this.surface ? "rgba(172, 35, 226, 0.75)" : "rgba(30, 13, 58, 0.82)";
+        MAIN_CONTEXT.fillStyle = this.surface ? "rgba(172, 35, 226, 0.25)" : "rgba(30, 172, 58, 0.25)";
         MAIN_CONTEXT.fillRect(
             this.posX * BASE_SIZE,
             this.posY * BASE_SIZE,
@@ -415,8 +419,6 @@ export class BaseSquare {
         }
 
         this.waterSinkPhysics();
-
-
         var finalXPos = this.posX;
         var finalYPos = this.posY;
         var bonked = false;
@@ -428,7 +430,7 @@ export class BaseSquare {
                 if (getSquares(this.posX + jSigned, this.posY + i)
                     .some((sq) => 
                         (!this.organic && sq.collision) || 
-                        (this.spawnedEntityId == sq.spawnedEntityId) ||
+                        (this.organic && this.spawnedEntityId == sq.spawnedEntityId) ||
                         this.organic && sq.collision && sq.currentPressureDirect > 0 && Math.random() > 0.9
                     )) {
                     finalYPos = this.posY + (i - 1);

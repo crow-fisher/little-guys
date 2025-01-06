@@ -34,7 +34,7 @@ class HydrangeaOrganism extends BaseOrganism {
 
         this.spawnSeedSpeed = 4;
 
-        this.reproductionEnergy *= 1.5;
+        this.reproductionEnergy *= 0.75;
         this.reproductionEnergyUnit *= 0.75;
 
         this.maximumLifeSquaresOfType = {

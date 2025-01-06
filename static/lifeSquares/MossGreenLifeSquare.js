@@ -15,7 +15,7 @@ class MossGreenLifeSquare extends BaseLifeSquare {
         this.proto = "MossGreenLifeSquare";
         this.type = "green";
 
-        this.opacity = 0.4;
+        this.opacity = 0.15;
 
         this.storedWaterMax = 0.01;
         this.storedWaterTransferRate = .001;
