@@ -393,7 +393,7 @@ function main() {
         renderOrganisms();
         renderWater();
 
-        if (blockModification_val != null && lastMode == "blockModification" && blockModification_val.startsWith("windAdd")) {
+        if (blockModification_val != null && lastMode == "blockModification" && blockModification_val.startsWith("wind")) {
             renderWindPressureMap();
         }
         lastTick = Date.now();
@@ -488,8 +488,10 @@ function addSquareByName(posX, posY, name) {
 function doBlockMod(posX, posY) {
     if (blockModification_val == "markSurface") {
         getSquares(posX, posY)
+            .filter((sq) => sq.solid && sq.collision)        
             .forEach((sq) => sq.surface = !rightMouseClicked);
         getDirectNeighbors(posX, posY)
+            .filter((sq) => sq.solid && sq.collision)
             .forEach((sq) => sq.surface = !rightMouseClicked);
     } 
 
@@ -553,7 +555,7 @@ function doClickAdd() {
             var py = y1 + ddy * i;
             for (let i = 0; i < (CANVAS_SQUARES_Y - offsetY); i++) {
                 var curY = py + i;
-                if (rightMouseClicked && lastMode == "normal") {
+                if (rightMouseClicked && (lastMode == "normal" || lastMode == "special")) {
                     doErase(px, curY);
                     break;
                 } else {

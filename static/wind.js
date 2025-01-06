@@ -45,12 +45,21 @@ function getWindPressureDiff(w1, w2) {
 }
 
 function checkIfCollisionAtWindSquare(x, y) {
+    var every = true;
+    var someSquareFound = false;
     for (let i = 0; i < 4; i++) {
         for (let j = 0; j < 4; j++) {
-            if (getSquares(x * 4 + i, y * 4 + j).some((sq) => (!sq.surface) && sq.collision && sq.solid)) {
-                return true;
+            var ar = getSquares(x * 4 + i, y * 4 + j);
+            if (ar.length > 0) {
+                someSquareFound = true;
+                every = every && ar.some((sq) => (!sq.surface) && sq.collision && sq.solid);
+            } else {
+                every = false;
             }
         }
+    }
+    if (someSquareFound) {
+        return every;
     }
     return false;
 }
@@ -227,7 +236,7 @@ function getParameterizedWindFunc(a, b) {
 function getCurrentWindPressureFunc() {
     if (getCurTime() - windFunctionApplicationLastAddTime > windFunctionApplicaitonDt) {
         // make a new new one
-        windFunctionApplicationArray.push(getParameterizedWindFunc(randRange(-3, 5), randRange(-3, 3)));
+        windFunctionApplicationArray.push(getParameterizedWindFunc(randRange(5, 8), randRange(3, 4)));
     }
     windFunctionApplicationLastAddTime = getCurTime();
     return windFunctionApplicationArray.length;
@@ -253,10 +262,10 @@ function _getWindSpeedAtLocation(x, y) {
     var pressureTop = gp(x, y - 1) - gp(x, y);
     var pressureBottom = gp(x, y + 1) - gp(x, y);
 
-    if (pressureLeft * pressureRight != 0) {
+    if (pressureLeft * pressureRight <= 0) {
         netPresX = (pressureLeft - pressureRight);
     }
-    if (pressureTop * pressureBottom != 0) {
+    if (pressureTop * pressureBottom <= 0) {
         netPresY = (pressureTop - pressureBottom);
     }
     // if (gp(x - 1, y) >= 0)
@@ -287,7 +296,7 @@ function _getWindSpeedAtLocation(x, y) {
     
     previousSpeeds.push([netPresX, netPresY]);
 
-    if (previousSpeeds.length > 10) {
+    if (previousSpeeds.length > 5) {
         previousSpeeds.shift(1);
     }
 

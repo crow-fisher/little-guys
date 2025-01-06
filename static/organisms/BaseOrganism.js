@@ -60,7 +60,7 @@ class BaseOrganism {
         this.applyWind = false;
         this.springCoef = 5;
         this.startDeflectionAngle = 0; 
-        this.lastDeflectionStateThetas = new Array(400);
+        this.lastDeflectionStateThetas = new Array(100);
         this.deflectionIdx = 0;
         this.deflectionStateTheta = 0;
         this.deflectionStateFunctions = [];
@@ -81,7 +81,8 @@ class BaseOrganism {
         var startSpringForce = Math.sin(startTheta) * this.springCoef;
         startSpringForce *= 0.70;
         var windX = windVec[0];
-        var endSpringForce = startSpringForce * 0.8 + windX * 0.2;
+        var coef = 0.5;
+        var endSpringForce = startSpringForce * (1 - coef) + windX * coef;
         
         endSpringForce = Math.min(this.springCoef, endSpringForce);
         endSpringForce = Math.max(-this.springCoef, endSpringForce);

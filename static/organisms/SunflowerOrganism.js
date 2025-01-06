@@ -25,9 +25,9 @@ class SunflowerOrganism extends BaseOrganism {
         this.proto = "SunflowerOrganism";
         this.type = "plant";
 
-        this.throttleInterval = 300;
+        this.throttleInterval = Math.random() * 1000;
 
-        this.airCoef = 0.05;
+        this.airCoef = 0.25;
         this.dirtCoef = 1;
         this.waterCoef = 0.30;
 
@@ -49,8 +49,11 @@ class SunflowerOrganism extends BaseOrganism {
     }
 
     getSeedSquare() {
-        var topGreen = this.getHighestGreen();
-        var seedSquare = new SeedSquare(topGreen.posX, topGreen.posY - 1);
+        if (!this.bloomed) {
+            return;
+        }
+        var topFlowerPetal = this.getHighestFlowerPetal();
+        var seedSquare = new SeedSquare(topFlowerPetal.posX, topFlowerPetal.posY - 1);
         if (addSquare(seedSquare)) {
             var newOrg = new SunflowerSeedOrganism(seedSquare);
             newOrg.linkSquare(seedSquare);
@@ -111,7 +114,12 @@ class SunflowerOrganism extends BaseOrganism {
         return Array.from(this.lifeSquares
             .filter((sq) => sq.type == "green" && sq.subtype != "leaf").sort((a, b) => a.posY - b.posY))[0];
     }
-    
+
+    getHighestFlowerPetal() {
+        return Array.from(this.lifeSquares
+            .filter((sq) => sq.type == "flower" && sq.subtype == "flowerPetal").sort((a, b) => a.posY - b.posY))[0];
+    }
+
 
     getExteriorRoots() {
         return this.lifeSquares
@@ -154,10 +162,6 @@ class SunflowerOrganism extends BaseOrganism {
     growFlower() {
         if (this.bloomed) {
             return 0;
-        }
-
-        if (this.getLifeCyclePercentage() > 0.12) {
-            this.currentEnergy = this.reproductionEnergy * 10;
         }
 
         var flowerStart = this.getFlowerStart();

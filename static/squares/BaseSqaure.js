@@ -13,7 +13,8 @@ import {
 import { getNeighbors, getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares } from "./_sqOperations.js"
 import {
     ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES, darkeningColorCache,
-    getNextGroupId, updateGlobalStatistic, getGlobalStatistic
+    getNextGroupId, updateGlobalStatistic, getGlobalStatistic,
+    getCurTime
 } from "../globals.js";
 
 import { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, selectedViewMode } from "../index.js";
@@ -57,6 +58,7 @@ export class BaseSquare {
         this.rootable = false;
         this.validPlantHome = false;
         this.group = -1;
+        this.calculateGroupFlag = false;
         this.organic = false;
         this.collision = true;
         this.visible = true;
@@ -86,6 +88,9 @@ export class BaseSquare {
         this.currentPressureDirect = 0;
         this.blockModDarkenVal = 0;
         this.distToFront = 0;
+        this.distToFrontLastUpdated = -(10 ** 8);
+
+        this.miscBlockPropUpdateInterval = Math.random() * 1000;
 
         this.surface = false;
 
@@ -358,6 +363,9 @@ export class BaseSquare {
         if (this.group != -1) {
             return;
         }
+        if (!this.calculateGroupFlag) {
+            return;
+        }
         var visited = new Set();
         var groupNeighbors = new Set(getDirectNeighbors(this.posX, this.posY).filter((sq) => this.proto == sq.proto));
         groupNeighbors.add(this);
@@ -421,7 +429,7 @@ export class BaseSquare {
                     .some((sq) => 
                         (!this.organic && sq.collision) || 
                         (this.spawnedEntityId == sq.spawnedEntityId) ||
-                        this.organic && sq.collision && sq.surface && Math.random() > 0.9
+                        this.organic && sq.collision && sq.currentPressureDirect > 0 && Math.random() > 0.9
                     )) {
                     finalYPos = this.posY + (i - 1);
                     finalXPos = this.posX + jSignedMinusOne;
@@ -561,6 +569,11 @@ export class BaseSquare {
             return 0;
         }
 
+        if (getCurTime() < this.distToFrontLastUpdated + this.miscBlockPropUpdateInterval) {
+            return this.distToFront;
+        }
+
+        this.distToFrontLastUpdated = getCurTime();
         this.distToFront = 0 + Math.max(getSquares(this.posX, this.posY + 1)
             .filter((sq) => sq.surface && sq.collision)
             .map((sq) => sq.calculateDistToFront() + 1));

@@ -28,7 +28,6 @@ class SeedSquare extends BaseSquare {
         super.physics();
         getSquares(this.posX, this.posY + 1)
             .filter((sq) => sq.rootable)
-            .filter((sq) => !sq.surface || sq.surface && Math.random() > 0.7)
             .forEach((sq) => {
                 var linkedOrganism = this.linkedOrganism;
                 if (this.linkedOrganism == null) {
@@ -55,13 +54,13 @@ class SeedSquare extends BaseSquare {
             });
         
         getSquares(this.posX, this.posY + 1)
-        .filter((sq) => !sq.validPlantHome || sq.currentPressureDirect > 0)
-        .filter((sq) => sq.solid)
-        .forEach((sq) => {
-            if (this.linkedOrganism != null) {
-                this.linkedOrganism.destroy();
-            }
-        });
+            .filter((sq) => !sq.validPlantHome)
+            .filter((sq) => sq.solid)
+            .forEach((sq) => {
+                if (this.linkedOrganism != null) {
+                    this.linkedOrganism.destroy();
+                }
+            });
     }
 }
 

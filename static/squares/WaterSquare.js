@@ -27,7 +27,8 @@ class WaterSquare extends BaseSquare {
         this.currentPressureDirect = -1;
         this.currentPressureIndirect = -1;
         this.rootable = false;
-
+        this.calculateGroupFlag = true; 
+        
         this.baseColor = COLOR_BLUE;
         this.darkColor = "#2774AE";
         this.accentColor = "#85B09A";
