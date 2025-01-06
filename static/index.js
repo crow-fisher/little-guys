@@ -25,7 +25,7 @@ import { LilyPadSeedOrganism } from "./organisms/LilyPadSeedOrganism.js";
 import { MossSeedOrganism } from "./organisms/MossSeedOrganism.js";
 import { PlantSquare } from "./squares/PlantSquare.js";
 import { randNumber } from "./common.js";
-import { pond_demo_square_data } from "./saves.js";
+import { pond_demo_square_data, wet_valley_demo as wet_valley_demo_data } from "./saves.js";
 import { HydrangeaSeedOrganism } from "./organisms/HydrangeaSeedOrganism.js";
 import { MossCoolSeedOrganism } from "./organisms/MossCoolSeedOrganism.js";
 import { SunflowerSeedOrganism } from "./organisms/SunflowerSeedOrganism.js";
@@ -80,6 +80,7 @@ var loadSlotC = document.getElementById("loadSlotC");
 var saveSlotC = document.getElementById("saveSlotC");
 
 var loadSlotPond = document.getElementById("loadSlotPond");
+var loadSlotValley = document.getElementById("loadSlotValley");
 
 var selectedMaterial = "dirt";
 var selectedViewMode = "normal";
@@ -252,6 +253,7 @@ loadSlotC.onclick = (e) => loadSlot("C");
 saveSlotC.onclick = (e) => saveSlot("C");
 
 loadSlotPond.onclick = (e) => loadSlotFromSave(pond_demo_square_data);
+loadSlotPond.onclick = (e) => loadSlotFromSave(wet_valley_demo_data);
 
 function loadObjArr(sourceObjMap, addFunc) {
     iterateOnSquares((sq) => sq.destroy());
