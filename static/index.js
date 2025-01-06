@@ -253,7 +253,7 @@ loadSlotC.onclick = (e) => loadSlot("C");
 saveSlotC.onclick = (e) => saveSlot("C");
 
 loadSlotPond.onclick = (e) => loadSlotFromSave(pond_demo_square_data);
-loadSlotPond.onclick = (e) => loadSlotFromSave(wet_valley_demo_data);
+loadSlotValley.onclick = (e) => loadSlotFromSave(wet_valley_demo_data);
 
 function loadObjArr(sourceObjMap, addFunc) {
     iterateOnSquares((sq) => sq.destroy());
