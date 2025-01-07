@@ -90,8 +90,15 @@ class BaseOrganism {
         endSpringForce = Math.min(this.springCoef, endSpringForce);
         endSpringForce = Math.max(-this.springCoef, endSpringForce);
 
-        this.deflectionStateTheta = Math.asin(endSpringForce / this.springCoef);
+        
+        var endDeflectionStateTheta = Math.asin(endSpringForce / this.springCoef);
 
+        if (Math.abs(endDeflectionStateTheta - this.deflectionStateTheta) > Math.abs(this.deflectionStateTheta) * 0.1) {
+            this.deflectionStateTheta = this.deflectionStateTheta * 0.9 + endDeflectionStateTheta * 0.1;
+        } else {
+            this.deflectionStateTheta = endDeflectionStateTheta;
+        }
+        
         this.lastDeflectionStateRollingAverage *= (1 - (1 / this.lastDeflectionStateThetaRollingAveragePeriod));
         this.lastDeflectionStateRollingAverage += (1 / this.lastDeflectionStateThetaRollingAveragePeriod) * this.deflectionStateTheta;
     }
