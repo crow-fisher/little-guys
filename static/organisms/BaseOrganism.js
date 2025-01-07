@@ -1,7 +1,7 @@
 import { removeOrganism } from "./_orgOperations.js";
 import { Law } from "../Law.js";
 import { getStandardDeviation, randNumber } from "../common.js";
-import { getCurTime } from "../globals.js";
+import { getCurTime } from "../time.js";
 import { getNextEntitySpawnId } from "../globals.js";
 import { getWindSpeedAtLocation } from "../wind.js";
 

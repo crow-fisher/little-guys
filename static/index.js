@@ -13,7 +13,8 @@ import { SeedSquare } from "./squares/SeedSquare.js";
 import { PopGrassSeedOrganism } from "./organisms/PopGrassSeedOrganism.js";
 import { addNewOrganism, addOrganism, iterateOnOrganisms } from "./organisms/_orgOperations.js";
 
-import { updateTime, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, ALL_SQUARES, getNextEntitySpawnId } from "./globals.js";
+import { ALL_ORGANISMS, ALL_ORGANISM_SQUARES, ALL_SQUARES, getNextEntitySpawnId } from "./globals.js";
+import { getCurDay, getCurTime, updateTime, renderTime } from "./time.js";
 
 import { doErase } from "./manipulation.js";
 import { ProtoMap } from "./types.js";
@@ -377,6 +378,7 @@ document.addEventListener('contextmenu', function (e) {
     e.preventDefault();
 });
 
+
 function main() {
     if (Date.now() - lastTick > MILLIS_PER_TICK) {
         MAIN_CONTEXT.clearRect(0, 0, CANVAS_SQUARES_X * BASE_SIZE, CANVAS_SQUARES_Y * BASE_SIZE);
@@ -391,6 +393,7 @@ function main() {
             tickWindPressureMap();
 
         }
+        renderTime();
         renderSquares();
         renderOrganisms();
         renderWater();

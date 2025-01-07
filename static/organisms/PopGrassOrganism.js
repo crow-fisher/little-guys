@@ -15,7 +15,7 @@ import { addNewOrganism, addOrganism } from "./_orgOperations.js";
 import { getOrganismSquaresAtSquare } from "../lifeSquares/_lsOperations.js";
 import { getOrganismSquaresAtSquareWithEntityId } from "../lifeSquares/_lsOperations.js";
 
-import { getCurTime } from "../globals.js";
+import { getCurTime } from "../time.js";
 import { randNumber } from "../common.js";
 class PopGrassOrganism extends BaseOrganism {
     constructor(square) {

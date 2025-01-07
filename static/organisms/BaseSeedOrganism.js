@@ -4,7 +4,7 @@ import { PopGrassOrganism } from "./PopGrassOrganism.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import { addNewOrganism, addOrganism } from "./_orgOperations.js";
-import { getCurTime } from "../globals.js";
+import { getCurTime } from "../time.js";
 
 class BaseSeedOrganism extends BaseOrganism {
     constructor(square) {

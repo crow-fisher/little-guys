@@ -2,7 +2,7 @@ import {BaseOrganism} from "./BaseOrganism.js"
 import { getSquares } from "../squares/_sqOperations.js";
 import { getDirectNeighbors } from "../squares/_sqOperations.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
-import { getCurTime } from "../globals.js";
+import { getCurTime } from "../time.js";
 import { MossGreenLifeSquare } from "../lifeSquares/MossGreenLifeSquare.js";
 import { airNutrientsPerEmptyNeighbor } from "../config/config.js";
 import { getStandardDeviation } from "../common.js";

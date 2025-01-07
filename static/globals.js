@@ -6,25 +6,9 @@ var NUM_GROUPS = 0;
 var WATERFLOW_TARGET_SQUARES = new Map();
 var WATERFLOW_CANDIDATE_SQUARES = new Set();
 var curEntitySpawnedId = 0;
-var curTime = 0;
-var prevTime = Date.now();
 var darkeningColorCache = new Map();
 var waterDarkeningColorCache = new Map();
 
-
-function getCurTime() {
-    return curTime;
-}
-
-function updateTime() {
-    var dt = Date.now() - prevTime;
-    if (dt > 100) {
-        prevTime = Date.now();
-    } else {
-        curTime += dt; 
-        prevTime = Date.now();
-    }
-}
 
 function getNextGroupId() {
     NUM_GROUPS += 1;
@@ -63,6 +47,5 @@ export {
     ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES, curEntitySpawnedId, darkeningColorCache,
     waterDarkeningColorCache,
     getNextGroupId, updateGlobalStatistic, getGlobalStatistic,
-    getNextEntitySpawnId, getCurEntitySpawnId, resetWaterflowSquares,
-    getCurTime, updateTime
+    getNextEntitySpawnId, getCurEntitySpawnId, resetWaterflowSquares
 }

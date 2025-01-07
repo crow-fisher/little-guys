@@ -3,7 +3,7 @@ import { PopGrassOrganism } from "./PopGrassOrganism.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import { addNewOrganism } from "./_orgOperations.js";
-import { getCurTime } from "../globals.js";
+import { getCurTime } from "../time.js";
 import { BaseSeedOrganism } from "./BaseSeedOrganism.js";
 import { CactusOrganism } from "./CactusOrganism.js";
 

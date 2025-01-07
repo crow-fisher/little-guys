@@ -1,5 +1,5 @@
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
-import { getCurTime } from "../globals.js";
+import { getCurTime } from "../time.js";
 import { MossCoolGreenLifeSquare } from "../lifeSquares/MossCoolGreenLifeSquare.js";
 import { MossOrganism } from "./MossOrganism.js";
 

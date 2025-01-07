@@ -13,8 +13,7 @@ import {
 import { getNeighbors, getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares } from "./_sqOperations.js"
 import {
     ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES, darkeningColorCache,
-    getNextGroupId, updateGlobalStatistic, getGlobalStatistic,
-    getCurTime
+    getNextGroupId, updateGlobalStatistic, getGlobalStatistic
 } from "../globals.js";
 
 import { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, selectedViewMode, getBlockModification_val } from "../index.js";
@@ -35,6 +34,7 @@ import { removeOrganismSquare } from "./_sqOperations.js";
 import { removeOrganism } from "../organisms/_orgOperations.js";
 
 import { addSquareByName } from "../index.js";
+import { getCurTime } from "../time.js";
 
 export class BaseSquare {
     constructor(posX, posY) {
