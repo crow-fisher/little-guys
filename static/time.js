@@ -1,11 +1,71 @@
-import { rgbToRgba } from "./common.js";
+import { randNumber, randRange, rgbToRgba } from "./common.js";
 import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, MAIN_CONTEXT} from "./index.js";
 
 var millis_per_day = 100000;
-var curDay = 0.2;
+var curDay = 0;
 var curTime = 0;
 
 var prevTime = Date.now();
+
+var starMap;
+var starMapCenterX;
+var starMapCenterY;
+
+function initializeStarMap() {
+    starMap = new Map();
+    starMapCenterX = randNumber(0, CANVAS_SQUARES_X);
+    starMapCenterY = randNumber(0, CANVAS_SQUARES_Y);
+
+    var numStars = 1000;
+
+    for (let i = 0; i < numStars; i++) {
+        var starX = randNumber(-CANVAS_SQUARES_X * 2, CANVAS_SQUARES_X * 2);
+        var starY = randNumber(-CANVAS_SQUARES_Y * 2, CANVAS_SQUARES_Y * 2);
+        var starBrightness = Math.random();
+
+        if (!(starX in starMap)) {
+            starMap[starX] = new Map();
+        }
+        starMap[starX][starY] = starBrightness;
+    }
+}
+
+
+function renderStarMap() {
+    if (starMap == null) {
+        initializeStarMap();
+    }
+
+    var xKeys = Array.from(Object.keys(starMap));
+    for (let i = 0; i < xKeys.length; i++) {
+        var yKeys = Array.from(Object.keys(starMap[xKeys[i]]));
+        for (let j = 0; j < yKeys.length; j++) {
+            var starX = xKeys[i];
+            var starY = yKeys[j];
+            var starbrightness = starMap[starX][starY];
+
+            var starXRelOrigin = starX - starMapCenterX;
+            var starYRelOrigin = starY - starMapCenterY;
+
+            var dayTheta = (getCurDay() % 1) * 2 * Math.PI;
+
+            var rotatedX = starXRelOrigin * Math.cos(dayTheta) - starYRelOrigin * Math.sin(dayTheta);
+            var rotatedY = starYRelOrigin * Math.cos(dayTheta) + starXRelOrigin * Math.sin(dayTheta);
+
+
+            var endX = rotatedX + starMapCenterX;
+            var endY = rotatedY + starMapCenterX;
+
+            MAIN_CONTEXT.fillStyle = rgbToRgba(255, 255, 255, starbrightness);
+            MAIN_CONTEXT.fillRect(
+                endX * BASE_SIZE,
+                endY * BASE_SIZE,
+                BASE_SIZE,
+                BASE_SIZE
+            );
+        }
+    }
+}
 
 function getCurDay() {
     return curDay;
@@ -27,6 +87,7 @@ function updateTime() {
 }
 
 function renderTime() {
+
     // 0.5 is noon, 0.25 is sunrise, 0.75 is sunset
     var daylightStrength = 0;
     var currentTime = getCurDay() % 1;
@@ -50,6 +111,8 @@ function renderTime() {
         CANVAS_SQUARES_X * BASE_SIZE,
         CANVAS_SQUARES_Y * BASE_SIZE
     );
+
+    renderStarMap();
 }
 
 // https://www.researchgate.net/publication/328726901_Real-time_adaptable_and_coherent_rendering_for_outdoor_augmented_reality/download
