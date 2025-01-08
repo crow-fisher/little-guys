@@ -1,7 +1,7 @@
 import { hexToRgb, randNumber, rgbToRgba } from "./common.js";
 import { addSquare } from "./squares/_sqOperations.js";
 import { MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE } from "./index.js";
-import { WaterSquare } from "./squares/WaterSquare.js";
+import { addSquareByName } from "./index.js";
 
 var temperatureMap;
 var waterSaturationMap;
@@ -35,8 +35,30 @@ function saturationPressureOfWaterVapor(t) {
     return Math.E ** (77.345 + 0.057 * t - 7235 / t) / (t ** 8.2);
 }
 
-function setSquareWaterContainmentToHumidityMult(x, y, m) {
-    waterSaturationMap[x][y] = saturationPressureOfWaterVapor(temperatureMap[x][y]) * m;
+function getTemperatureAtSquare(x, y) {
+    x /= 4;
+    y /= 4;
+
+    x = Math.floor(x);
+    y = Math.floor(y);
+
+    if (x < 0 || x >= curSquaresX || y < 0 || y >= curSquaresY) {
+        return 273 + 30;
+    }
+
+    return temperatureMap[x][y];
+}
+function applyTemperatureDelta(x, y, val) {
+    x /= 4;
+    y /= 4;
+
+    x = Math.floor(x);
+    y = Math.floor(y);
+
+    if (x < 0 || x >= curSquaresX || y < 0 || y >= curSquaresY) {
+        return;
+    }
+    temperatureMap[x][y] += val;
 }
 
 function init() {
@@ -120,7 +142,7 @@ function doRain() {
                 var usedWaterPascalsPerSquare = pascalsPerWaterSquare / 5;
 
                 if (Math.random() < probability && Math.random() > 0.99) {
-                    var sq = addSquare(new WaterSquare(x * 4 + randNumber(0, 3), y * 4 + randNumber(0, 3)));
+                    var sq = addSquareByName(x * 4 + randNumber(0, 3), y * 4 + randNumber(0, 3), "water");
                     if (sq) {
                         sq.blockHealth = 0.05;
                         waterSaturationMap[x][y] -= usedWaterPascalsPerSquare;
@@ -172,21 +194,21 @@ function getHumidity(x, y) {
 
 function calculateColor(val, valMin, valMax, colorMin, colorMax) {
     val = Math.min(val, valMax);
-    var normalized = (val - valMin) / valMax;
+    var normalized = (val - valMin) / (valMax - valMin);
     return rgbToRgba(
-        colorMax.r * normalized + colorMin.r * (1 - normalized),
-        colorMax.g * normalized + colorMin.g * (1 - normalized),
-        colorMax.b * normalized + colorMin.b * (1 - normalized),
+        Math.floor(colorMax.r * normalized + colorMin.r * (1 - normalized)),
+        Math.floor(colorMax.g * normalized + colorMin.g * (1 - normalized)),
+        Math.floor(colorMax.b * normalized + colorMin.b * (1 - normalized)),
         cloudMaxOpacity
     );
 }
 
 function calculateColorOpacity(val, valMin, valMax, colorMin, colorMax) {
-    var normalized = Math.max(Math.min(1, (val - valMin) / valMax), 0);
+    var normalized = Math.max(Math.min(1, (val - valMin) / (valMax - valMin)), 0);
     return rgbToRgba(
-        colorMax.r * normalized + colorMin.r * (1 - normalized),
-        colorMax.g * normalized + colorMin.g * (1 - normalized),
-        colorMax.b * normalized + colorMin.b * (1 - normalized),
+        Math.floor(colorMax.r * normalized + colorMin.r * (1 - normalized)),
+        Math.floor(colorMax.g * normalized + colorMin.g * (1 - normalized)),
+        Math.floor(colorMax.b * normalized + colorMin.b * (1 - normalized)),
         normalized * cloudMaxOpacity
     );
 }
@@ -268,4 +290,4 @@ function _addWaterSaturation(x, y) {
     waterSaturationMap[x][y] += 0.10 * saturationPressureOfWaterVapor(temperatureMap[x][y]);
 }
  
-export { renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds }
+export { applyTemperatureDelta, renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds, getTemperatureAtSquare }

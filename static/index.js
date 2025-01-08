@@ -404,7 +404,7 @@ function main() {
             renderWindPressureMap();
         }
         if (blockModification_val != null && lastMode == "blockModification" && blockModification_val.startsWith("temperature")) {
-            // renderTemperature();
+            renderTemperature();
         }
         if (blockModification_val != null && lastMode == "blockModification" && blockModification_val.startsWith("humidity")) {
             renderWaterSaturation();

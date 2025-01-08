@@ -52,7 +52,6 @@ function renderStarMap() {
             var rotatedX = starXRelOrigin * Math.cos(dayTheta) - starYRelOrigin * Math.sin(dayTheta);
             var rotatedY = starYRelOrigin * Math.cos(dayTheta) + starXRelOrigin * Math.sin(dayTheta);
 
-
             var endX = rotatedX + starMapCenterX;
             var endY = rotatedY + starMapCenterX;
 

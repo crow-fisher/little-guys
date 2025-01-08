@@ -35,6 +35,7 @@ import { removeOrganism } from "../organisms/_orgOperations.js";
 
 import { addSquareByName } from "../index.js";
 import { getCurTime } from "../time.js";
+import { applyTemperatureDelta, getTemperatureAtSquare } from "../temperature_humidity.js";
 
 export class BaseSquare {
     constructor(posX, posY) {
@@ -98,7 +99,28 @@ export class BaseSquare {
 
         this.surface = false;
 
+        this.temperature = 273 + 200; // start temperature in kelvin 
+        this.thermalConductivity = 1;  // watts/meter kelvin. max is 10
+        this.thermalMass = 2; // e.g., '2' means one degree of this would equal 2 degrees of air temp for a wind square 
+
+        this.state = 0; // 0 = solid, 1 = liquid
+        this.fusionHeat = 10 ** 8; // kJ/mol
+        this.vaporHeat = 10 ** 8; // kJ/mol
+        this.fusionTemp = 0; // freezing point 
+        this.vaporTemp = 10 ** 8; // boiling point
     };
+
+    temperatureRoutine() {
+        if (this.currentPressureDirect != 0) {
+            return;
+        }
+        var adjacentTemp = getTemperatureAtSquare(this.posX, this.posY);
+        var diff = this.thermalConductivity * ((adjacentTemp - this.temperature) / 10);
+        this.temperature += diff / this.thermalMass;
+        applyTemperatureDelta(this.posX, this.posY, -diff);
+    }
+
+
     destroy() {
         removeSquare(this);
     }
@@ -475,6 +497,7 @@ export class BaseSquare {
 
     /* Called before physics(), with blocks in strict order from top left to bottom right. */
     physicsBefore() {
+        this.temperatureRoutine();
         this.calculateGroup();
     }
 
