@@ -31,6 +31,7 @@ import { HydrangeaSeedOrganism } from "./organisms/HydrangeaSeedOrganism.js";
 import { MossCoolSeedOrganism } from "./organisms/MossCoolSeedOrganism.js";
 import { SunflowerSeedOrganism } from "./organisms/SunflowerSeedOrganism.js";
 import { addWindPressure, initializeWindPressureMap, addFunctionAddWindPressure, removeFunctionAddWindPressure, removeWindPressure, renderWindPressureMap, tickWindPressureMap } from "./wind.js";
+import { renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation } from "./temperature_humidity.js";
 
 var lastMode = "normal"; // options: "normal", "special", "organism", "blockModification";
 
@@ -391,7 +392,7 @@ function main() {
             purge();
             processOrganisms();
             tickWindPressureMap();
-
+            tickMaps();
         }
         renderTime();
         renderSquares();
@@ -400,6 +401,12 @@ function main() {
 
         if (blockModification_val != null && lastMode == "blockModification" && blockModification_val.startsWith("wind")) {
             renderWindPressureMap();
+        }
+        if (blockModification_val != null && lastMode == "blockModification" && blockModification_val.startsWith("temperature")) {
+            renderTemperature();
+        }
+        if (blockModification_val != null && lastMode == "blockModification" && blockModification_val.startsWith("humidity")) {
+            renderWaterSaturation();
         }
         lastTick = Date.now();
     }
@@ -514,7 +521,6 @@ function doBlockMod(posX, posY) {
             getDirectNeighbors(posX, posY)
                 .forEach((sq) => sq.blockModDarkenVal = sq.blockModDarkenVal == null ? 0 : Math.max(sq.blockModDarkenVal - .005, -1));
         }
-        
     }
     if (blockModification_val == "wind") {
         if (!rightMouseClicked) 
@@ -527,6 +533,12 @@ function doBlockMod(posX, posY) {
             addFunctionAddWindPressure(posX, posY);
             else 
             removeFunctionAddWindPressure(posX, posY);
+    }
+    if (blockModification_val == "temperature") {
+        if (!rightMouseClicked) 
+            addTemperature(posX, posY, 5);
+        else 
+            addTemperature(posX, posY, -5);
     }
 
 }
