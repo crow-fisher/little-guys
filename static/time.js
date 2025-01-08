@@ -16,7 +16,7 @@ function initializeStarMap() {
     starMapCenterX = randNumber(0, CANVAS_SQUARES_X);
     starMapCenterY = randNumber(0, CANVAS_SQUARES_Y);
 
-    var numStars = 1000;
+    var numStars = 3000;
 
     for (let i = 0; i < numStars; i++) {
         var starX = randNumber(-CANVAS_SQUARES_X * 2, CANVAS_SQUARES_X * 2);
@@ -60,8 +60,8 @@ function renderStarMap() {
             MAIN_CONTEXT.fillRect(
                 endX * BASE_SIZE,
                 endY * BASE_SIZE,
-                BASE_SIZE,
-                BASE_SIZE
+                starbrightness * BASE_SIZE,
+                starbrightness * BASE_SIZE
             );
         }
     }
