@@ -249,7 +249,7 @@ function _addTemperature(x, y, delta) {
     if (side > 0) {
         temperatureMap[x][y] += 1;
     } else {
-        temperatureMap[x][y] = ((temperatureMap[x][y] * (delta - side)) + (side * 200)) / delta;
+        temperatureMap[x][y] = ((temperatureMap[x][y] * (delta - side)) + (side * 273)) / delta;
     }
 }
 
