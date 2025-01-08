@@ -18,20 +18,21 @@ var c_tempHighRGB = hexToRgb("#f1515e");
 var c_waterSaturationLowRGB = hexToRgb("#9bafd9");
 var c_waterSaturationHighRGB = hexToRgb("#103783");
 
-var c_cloudMinRGB = hexToRgb("#dbdce1");
-var c_cloudMaxRGB = hexToRgb("#a3a6b7");
+var c_cloudMinRGB = hexToRgb("#f1f0f6");
+var c_cloudMidRGB = hexToRgb("#dbdce1")
+var c_cloudMaxRGB = hexToRgb("#818398");
 
-var cloudMaxSaturation = 16;
+var cloudMaxHumidity = 4;
+var cloudRainThresh = 2;
+var cloudRainMax = 8;
+var cloudMaxOpacity = 0.65;
+
+var pascalsPerWaterSquare = 10 ** 11;
 // https://www.engineeringtoolbox.com/water-vapor-saturation-pressure-air-d_689.html
 
 
 function saturationPressureOfWaterVapor(t) {
     return Math.E ** (77.345 + 0.057 * t - 7235 / t) / (t ** 8.2);
-}
-
-function getHumidityAtSquare(x, y) {
-    return waterSaturationMap[x][y] / saturationPressureOfWaterVapor(temperatureMap[x][y]);
-
 }
 
 function setSquareWaterContainmentToHumidityMult(x, y, m) {
@@ -44,7 +45,7 @@ function init() {
     curSquaresX = Math.ceil(CANVAS_SQUARES_X / 4)
     curSquaresY = Math.ceil(CANVAS_SQUARES_Y / 4)
 
-    var start_watersaturation = saturationPressureOfWaterVapor(start_temperature) * 0.75;
+    var start_watersaturation = saturationPressureOfWaterVapor(start_temperature) * cloudMaxHumidity * cloudRainThresh;
 
     for (let i = 0; i < curSquaresX; i++) {
         for (let j = 0; j < curSquaresY; j++) {
@@ -97,22 +98,35 @@ function doRain() {
         for (let j = 0; j < yKeys.length; j++) {
             var x = parseInt(xKeys[i]);
             var y = parseInt(yKeys[j]);
-            var adjacentWaterSaturation = getHumidityAtSquare(x, y) + getMapDirectNeighbors(x, y)
+            var adjacentHumidity = getHumidity(x, y) + getMapDirectNeighbors(x, y)
                 .filter((loc) => loc[0] >= 0 && loc[0] < curSquaresX && loc[1] >= 0 && loc[1] < curSquaresY)
-                .map((loc) => getHumidityAtSquare(loc[0], loc[1]))
+                .map((loc) => getHumidity(loc[0], loc[1]))
                 .reduce(
                     (accumulator, currentValue) => accumulator + currentValue,
                     0,
                 );
 
-            if (adjacentWaterSaturation > (cloudMaxSaturation * 5)) {
-                var sq = addSquare(new WaterSquare(x * 4 + randNumber(0, 3), y * 4 + randNumber(0, 3)));
-                if (sq) {
-                    sq.blockHealth = 0.05;
-                    // setSquareWaterContainmentToHumidityMult(x, y, cloudMaxSaturation);
-                    // getMapDirectNeighbors(x, y)
-                    // .filter((loc) => loc[0] >= 0 && loc[0] < curSquaresX && loc[1] >= 0 && loc[1] < curSquaresY)
-                    // .map((loc) => setSquareWaterContainmentToHumidityMult(loc[0], loc[1], 0.75))
+            var adjacentWaterPascals = waterSaturationMap[x][y] + getMapDirectNeighbors(x, y)
+                .filter((loc) => loc[0] >= 0 && loc[0] < curSquaresX && loc[1] >= 0 && loc[1] < curSquaresY)
+                .map((loc) => waterSaturationMap[loc[0]][loc[1]])
+                .reduce(
+                    (accumulator, currentValue) => accumulator + currentValue,
+                    0,
+                ) * 0.8;
+
+            if (adjacentHumidity > (cloudMaxHumidity * 5 * cloudRainThresh) && adjacentWaterPascals > pascalsPerWaterSquare) {
+                var probability = adjacentHumidity / (cloudMaxHumidity * 5 * cloudRainMax);
+                var usedWaterPascalsPerSquare = pascalsPerWaterSquare / 5;
+
+                if (Math.random() < probability && Math.random() > 0.99) {
+                    var sq = addSquare(new WaterSquare(x * 4 + randNumber(0, 3), y * 4 + randNumber(0, 3)));
+                    if (sq) {
+                        sq.blockHealth = 0.05;
+                        waterSaturationMap[x][y] -= usedWaterPascalsPerSquare;
+                        getMapDirectNeighbors(x, y)
+                        .filter((loc) => loc[0] >= 0 && loc[0] < curSquaresX && loc[1] >= 0 && loc[1] < curSquaresY)
+                        .map((loc) =>  waterSaturationMap[loc[0]][loc[1]] -= usedWaterPascalsPerSquare);
+                    }
                 }
             }
         }
@@ -123,10 +137,11 @@ function renderClouds() {
     for (let i = 0; i < curSquaresX; i++) {
         for (let j = 0; j < curSquaresY; j++) {
             var squreHumidity = getHumidity(i, j);
-            if (squreHumidity < 1) {
-                continue;
+            if (squreHumidity < (cloudMaxHumidity * cloudRainThresh) ) {
+                MAIN_CONTEXT.fillStyle = calculateColorOpacity(squreHumidity, 0, cloudMaxHumidity * cloudRainThresh, c_cloudMinRGB, c_cloudMidRGB);
+            } else {
+                MAIN_CONTEXT.fillStyle = calculateColor(squreHumidity, cloudMaxHumidity * cloudRainThresh, cloudMaxHumidity * cloudRainMax, c_cloudMidRGB, c_cloudMaxRGB);
             }
-            MAIN_CONTEXT.fillStyle = calculateColorOpacity(squreHumidity - 1, 0, cloudMaxSaturation, c_cloudMinRGB, c_cloudMaxRGB);
             MAIN_CONTEXT.fillRect(
                 4 * i * BASE_SIZE,
                 4 * j * BASE_SIZE,
@@ -142,24 +157,23 @@ function tickMaps() {
     if (temperatureMap == null || waterSaturationMap == null) {
         init();
     }
-    tickMap(temperatureMap, (a, b) => (a - b) / 2);
+    tickMap(temperatureMap, (a, b) => (a - b) / 8);
     tickMap(waterSaturationMap, (a, b) => (a - b) / 2);
     doRain();
 }
 
-function getHumidity(i, j) {
-    var current = waterSaturationMap[i][j];
-    var max = saturationPressureOfWaterVapor(temperatureMap[i][j]);
-    return current / max;
+function getHumidity(x, y) {
+    return waterSaturationMap[x][y] / saturationPressureOfWaterVapor(temperatureMap[x][y]);
 }
 
 function calculateColor(val, valMin, valMax, colorMin, colorMax) {
+    val = Math.min(val, valMax);
     var normalized = (val - valMin) / valMax;
     return rgbToRgba(
         colorMax.r * normalized + colorMin.r * (1 - normalized),
         colorMax.g * normalized + colorMin.g * (1 - normalized),
         colorMax.b * normalized + colorMin.b * (1 - normalized),
-        0.65
+        cloudMaxOpacity
     );
 }
 
@@ -169,7 +183,7 @@ function calculateColorOpacity(val, valMin, valMax, colorMin, colorMax) {
         colorMax.r * normalized + colorMin.r * (1 - normalized),
         colorMax.g * normalized + colorMin.g * (1 - normalized),
         colorMax.b * normalized + colorMin.b * (1 - normalized),
-        normalized
+        normalized * cloudMaxOpacity
     );
 }
 
@@ -190,7 +204,7 @@ function renderTemperature() {
 function renderWaterSaturation() {
     for (let i = 0; i < curSquaresX; i++) {
         for (let j = 0; j < curSquaresY; j++) {
-            MAIN_CONTEXT.fillStyle = calculateColor(getHumidity(i, j) , 0, 1, c_waterSaturationLowRGB, c_waterSaturationHighRGB);
+            MAIN_CONTEXT.fillStyle = calculateColor(getHumidity(i, j), cloudMaxHumidity * 0, cloudMaxHumidity * 4, c_waterSaturationLowRGB, c_waterSaturationHighRGB);
             MAIN_CONTEXT.fillRect(
                 4 * i * BASE_SIZE,
                 4 * j * BASE_SIZE,
@@ -229,7 +243,14 @@ function addTemperature(x, y, dt) {
 function _addTemperature(x, y, delta) {
     x = (Math.floor(x) + curSquaresX) % curSquaresX;
     y = (Math.floor(y) + curSquaresY) % curSquaresY;
-    temperatureMap[x][y] += delta;
+
+    var side = delta > 0 ? 1 : -1;
+
+    if (side > 0) {
+        temperatureMap[x][y] += 1;
+    } else {
+        temperatureMap[x][y] = ((temperatureMap[x][y] * (delta - side)) + (side * 200)) / delta;
+    }
 }
 
 function addWaterSaturation(x, y) {

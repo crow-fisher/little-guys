@@ -41,6 +41,10 @@ export class BaseSquare {
         this.proto = "BaseSquare";
         this.posX = Math.floor(posX);
         this.posY = Math.floor(posY);
+
+        this.offsetX = posX % 1;
+        this.offsetY = posY % 1;
+
         this.solid = true;
         this.spawnedEntityId = 0;
         // block properties - overridden by block type
@@ -152,8 +156,8 @@ export class BaseSquare {
     renderSurface() {
         MAIN_CONTEXT.fillStyle = this.surface ? "rgba(172, 35, 226, 0.25)" : "rgba(30, 172, 58, 0.25)";
         MAIN_CONTEXT.fillRect(
-            this.posX * BASE_SIZE,
-            this.posY * BASE_SIZE,
+            (this.offsetX + this.posX) * BASE_SIZE,
+            (this.offsetY + this.posY) * BASE_SIZE,
             BASE_SIZE,
             BASE_SIZE
         );
@@ -162,8 +166,8 @@ export class BaseSquare {
     renderAsGrey() {
         MAIN_CONTEXT.fillStyle = "rgba(50, 50, 50, 0.2)";
         MAIN_CONTEXT.fillRect(
-            this.posX * BASE_SIZE,
-            this.posY * BASE_SIZE,
+            (this.offsetX + this.posX) * BASE_SIZE,
+            (this.offsetY + this.posY) * BASE_SIZE,
             BASE_SIZE,
             BASE_SIZE
         );
@@ -189,8 +193,8 @@ export class BaseSquare {
         var outHex = rgbToHex(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b));
         MAIN_CONTEXT.fillStyle = outHex;
         MAIN_CONTEXT.fillRect(
-            this.posX * BASE_SIZE,
-            this.posY * BASE_SIZE,
+            (this.offsetX + this.posX) * BASE_SIZE,
+            (this.offsetY + this.posY) * BASE_SIZE,
             BASE_SIZE,
             BASE_SIZE
         );
@@ -252,8 +256,8 @@ export class BaseSquare {
         }
 
         MAIN_CONTEXT.fillRect(
-            this.posX * BASE_SIZE,
-            this.posY * BASE_SIZE,
+            (this.offsetX + this.posX) * BASE_SIZE,
+            (this.offsetY + this.posY) * BASE_SIZE,
             BASE_SIZE,
             BASE_SIZE
         );
@@ -267,8 +271,8 @@ export class BaseSquare {
     waterContainmentDarken() {
         MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.waterContainment, this.waterContainmentMax.value);
         MAIN_CONTEXT.fillRect(
-            this.posX * BASE_SIZE,
-            this.posY * BASE_SIZE,
+            (this.offsetX + this.posX) * BASE_SIZE,
+            (this.offsetY + this.posY) * BASE_SIZE,
             BASE_SIZE,
             BASE_SIZE
         );
@@ -279,8 +283,8 @@ export class BaseSquare {
         var pressureMod = (this.blockModDarkenVal != null ? this.blockModDarkenVal : 0) * pressureMax;
         MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.currentPressureDirect + pressureMod, 12);
         MAIN_CONTEXT.fillRect(
-            this.posX * BASE_SIZE,
-            this.posY * BASE_SIZE,
+            (this.offsetX + this.posX) * BASE_SIZE,
+            (this.offsetY + this.posY) * BASE_SIZE,
             BASE_SIZE,
             BASE_SIZE
         );
@@ -292,8 +296,8 @@ export class BaseSquare {
         }
         MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.distToFront, 8);
         MAIN_CONTEXT.fillRect(
-            this.posX * BASE_SIZE,
-            this.posY * BASE_SIZE,
+            (this.offsetX + this.posX) * BASE_SIZE,
+            (this.offsetY + this.posY) * BASE_SIZE,
             BASE_SIZE,
             BASE_SIZE
         );

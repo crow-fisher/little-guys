@@ -575,8 +575,8 @@ function doClickAdd() {
         var ddx = dx / totalCount;
         var ddy = dy / totalCount;
         for (let i = 0; i < totalCount; i += 0.5) {
-            var px = x1 + ddx * i;
-            var py = y1 + ddy * i;
+            var px = Math.floor(x1 + ddx * i);
+            var py = Math.floor(y1 + ddy * i);
             for (let i = 0; i < (CANVAS_SQUARES_Y - offsetY); i++) {
                 var curY = py + i;
                 if (rightMouseClicked && (lastMode == "normal" || lastMode == "special")) {

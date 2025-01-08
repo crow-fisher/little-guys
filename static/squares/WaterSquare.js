@@ -198,7 +198,6 @@ class WaterSquare extends BaseSquare {
                 sq.blockHealth = 0;
                 sq.destroy();
             });
- 
     }
 }
 
