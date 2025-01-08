@@ -27,7 +27,7 @@ var cloudRainThresh = 2;
 var cloudRainMax = 8;
 var cloudMaxOpacity = 0.65;
 
-var pascalsPerWaterSquare = 10 ** 11;
+var pascalsPerWaterSquare = 10 ** 10;
 // https://www.engineeringtoolbox.com/water-vapor-saturation-pressure-air-d_689.html
 
 
@@ -109,6 +109,7 @@ function doRain() {
             var adjacentWaterPascals = waterSaturationMap[x][y] + getMapDirectNeighbors(x, y)
                 .filter((loc) => loc[0] >= 0 && loc[0] < curSquaresX && loc[1] >= 0 && loc[1] < curSquaresY)
                 .map((loc) => waterSaturationMap[loc[0]][loc[1]])
+                .filter((val) => val > (pascalsPerWaterSquare / 5))
                 .reduce(
                     (accumulator, currentValue) => accumulator + currentValue,
                     0,
@@ -136,11 +137,14 @@ function doRain() {
 function renderClouds() {
     for (let i = 0; i < curSquaresX; i++) {
         for (let j = 0; j < curSquaresY; j++) {
-            var squreHumidity = getHumidity(i, j);
-            if (squreHumidity < (cloudMaxHumidity * cloudRainThresh) ) {
-                MAIN_CONTEXT.fillStyle = calculateColorOpacity(squreHumidity, 0, cloudMaxHumidity * cloudRainThresh, c_cloudMinRGB, c_cloudMidRGB);
+            var squareHumidity = getHumidity(i, j);
+            if (squareHumidity < 1) {
+                continue;
+            }
+            if (squareHumidity < (cloudMaxHumidity * cloudRainThresh) ) {
+                MAIN_CONTEXT.fillStyle = calculateColorOpacity(squareHumidity, 0, cloudMaxHumidity * cloudRainThresh, c_cloudMinRGB, c_cloudMidRGB);
             } else {
-                MAIN_CONTEXT.fillStyle = calculateColor(squreHumidity, cloudMaxHumidity * cloudRainThresh, cloudMaxHumidity * cloudRainMax, c_cloudMidRGB, c_cloudMaxRGB);
+                MAIN_CONTEXT.fillStyle = calculateColor(squareHumidity, cloudMaxHumidity * cloudRainThresh, cloudMaxHumidity * cloudRainMax, c_cloudMidRGB, c_cloudMaxRGB);
             }
             MAIN_CONTEXT.fillRect(
                 4 * i * BASE_SIZE,
