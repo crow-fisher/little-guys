@@ -23,15 +23,18 @@ var windColors = [COLOR_BLUE, COLOR_GREEN, COLOR_RED, COLOR_BROWN];
 
 var clickAddPressure = 20;
 
-var WIND_SQUARES_X = () => CANVAS_SQUARES_X / 4;
-var WIND_SQUARES_Y = () => CANVAS_SQUARES_Y / 4;
+var WIND_SQUARES_X = () => Math.ceil(CANVAS_SQUARES_X / 4);
+var WIND_SQUARES_Y = () => Math.ceil(CANVAS_SQUARES_Y / 4);
+
+var curWindSquaresX = -1;
+var curWindSquaresY = -1;
 
 function gp(x, y) {
     if (isNaN(x) || isNaN(y)) {
         return 0;
     }
-    x = (Math.floor(x) + WIND_SQUARES_X()) % WIND_SQUARES_X();
-    y = (Math.floor(y) + WIND_SQUARES_Y()) % WIND_SQUARES_Y();
+    x = (Math.floor(x) + curWindSquaresX) % curWindSquaresX;
+    y = (Math.floor(y) + curWindSquaresY) % curWindSquaresY;
     return wpm[x][y];
 }
 
@@ -71,10 +74,14 @@ function initializeWindPressureMap() {
     windFunctionApplicationArray = new Array();
     windFunctionApplicationLastAddTime = -(10 ** 8);
     windSpeedSmoothingMap = new Map();
+
+    curWindSquaresX = WIND_SQUARES_X();
+    curWindSquaresY = WIND_SQUARES_Y();
+
     var start_pressure = base_wind_pressure;
     windPressureMapByPressure[start_pressure] = new Array();
-    for (let i = 0; i < WIND_SQUARES_X(); i++) {
-        for (let j = 0; j < WIND_SQUARES_Y(); j++) {
+    for (let i = 0; i < curWindSquaresX; i++) {
+        for (let j = 0; j < curWindSquaresY; j++) {
             if (!(i in wpm)) {
                 wpm[i] = new Map();
                 windFunctionApplicationMap[i] = new Map(); 
@@ -95,9 +102,14 @@ function initializeWindPressureMap() {
 function tickWindPressureMap() {
     windFuncCurTheta += windFuncCurThetaDt;
     windPressureMapByPressure = new Map();
-    for (let i = 0; i < WIND_SQUARES_X(); i++) {
-        for (let j = 0; j < WIND_SQUARES_Y(); j++) {
-            if (isNaN(wpm[i][j])) {
+
+    if (WIND_SQUARES_X() != curWindSquaresX || WIND_SQUARES_Y() != curWindSquaresY) {
+        initializeWindPressureMap();
+    } 
+
+    for (let i = 0; i < curWindSquaresX; i++) {
+        for (let j = 0; j < curWindSquaresY; j++) {
+            if (isNaN(wpm[i][j]) || i >= curWindSquaresX || j >= curWindSquaresY) {
                 initializeWindPressureMap();
                 return;
             }
@@ -138,8 +150,8 @@ function tickWindPressureMap() {
             .forEach((pl) => {
                 getWindDirectNeighbors(pl[0], pl[1])
                     .forEach((spl) => {
-                        var x = (spl[0] + WIND_SQUARES_X()) % WIND_SQUARES_X();
-                        var y = (spl[1] + WIND_SQUARES_Y()) % WIND_SQUARES_Y();
+                        var x = (spl[0] + curWindSquaresX) % curWindSquaresX;
+                        var y = (spl[1] + curWindSquaresY) % curWindSquaresY;
                         if (pl[0] == 0 || pl[0] == CANVAS_SQUARES_X || pl[1] == 0 || pl[1] == CANVAS_SQUARES_Y) {
                             wpm[x][y] = base_wind_pressure;
                         }
@@ -153,8 +165,8 @@ function tickWindPressureMap() {
 
                 getWindIndirectNeighbors(pl[0], pl[1])
                     .forEach((spl) => {
-                        var x = (spl[0] + WIND_SQUARES_X()) % WIND_SQUARES_X();
-                        var y = (spl[1] + WIND_SQUARES_Y()) % WIND_SQUARES_Y();
+                        var x = (spl[0] + curWindSquaresX) % curWindSquaresX;
+                        var y = (spl[1] + curWindSquaresY) % curWindSquaresY;
                         if (pl[0] == 0 || pl[0] == CANVAS_SQUARES_X || pl[1] == 0 || pl[1] == CANVAS_SQUARES_Y) {
                             wpm[x][y] = base_wind_pressure;
                         }
@@ -172,8 +184,8 @@ function tickWindPressureMap() {
 }
 
 function renderWindPressureMap() {
-    for (let i = 0; i < WIND_SQUARES_X(); i++) {
-        for (let j = 0; j < WIND_SQUARES_Y(); j++) {
+    for (let i = 0; i < curWindSquaresX; i++) {
+        for (let j = 0; j < curWindSquaresY; j++) {
             var p = gp(i, j);
             var s = _getWindSpeedAtLocation(i, j);
 
@@ -314,12 +326,12 @@ function addWindPressure(x, y) {
     x = Math.floor(x / 4);
     y = Math.floor(y / 4);
 
-    x = (Math.floor(x) + WIND_SQUARES_X()) % WIND_SQUARES_X();
-    y = (Math.floor(y) + WIND_SQUARES_Y()) % WIND_SQUARES_Y();
+    x = (Math.floor(x) + curWindSquaresX) % curWindSquaresX;
+    y = (Math.floor(y) + curWindSquaresY) % curWindSquaresY;
     wpm[Math.floor(x)][Math.floor(y)] += clickAddPressure;
 
     getWindDirectNeighbors(x, y).forEach(
-        (loc) => wpm[(loc[0] + WIND_SQUARES_X()) % WIND_SQUARES_X()][(loc[1] + WIND_SQUARES_Y()) % WIND_SQUARES_Y()] += clickAddPressure);
+        (loc) => wpm[(loc[0] + curWindSquaresX) % curWindSquaresX][(loc[1] + curWindSquaresY) % curWindSquaresY] += clickAddPressure);
 }
 
 function removeWindPressure(x, y) {

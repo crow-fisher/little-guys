@@ -184,7 +184,6 @@ var lastLastMoveOffset = null;
 
 var lastTick = Date.now();
 
-// MUST be a multiple of 4 
 // wind is tiled x4
 var CANVAS_SQUARES_X = 75 * 4; // * 8; //6;
 var CANVAS_SQUARES_Y = 35 * 4; // * 8; // 8;
