@@ -174,4 +174,4 @@ function temp_blue(temperature) {
 }
 
 
-export { getCurDay, getCurTime, updateTime, renderTime }
+export { getCurDay, getCurTime, updateTime, renderTime, initializeStarMap }

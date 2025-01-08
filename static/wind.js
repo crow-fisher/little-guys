@@ -1,7 +1,7 @@
 import { randRange, rgbToHex, rgbToRgba } from "./common.js";
 import { getSquares } from "./squares/_sqOperations.js";
 import { MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE } from "./index.js";
-import { getCurTime } from "./time.js";
+import { getCurTime, initializeStarMap } from "./time.js";
 import { COLOR_BLUE, COLOR_BROWN, COLOR_GREEN, COLOR_RED } from "./colors.js";
 
 var wpm;
@@ -74,6 +74,8 @@ function initializeWindPressureMap() {
     windFunctionApplicationArray = new Array();
     windFunctionApplicationLastAddTime = -(10 ** 8);
     windSpeedSmoothingMap = new Map();
+
+    initializeStarMap();
 
     curWindSquaresX = WIND_SQUARES_X();
     curWindSquaresY = WIND_SQUARES_Y();
