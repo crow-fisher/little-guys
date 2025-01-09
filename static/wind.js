@@ -31,7 +31,7 @@ var f_upperPressureMap = new Map();
 
 var windColors = [COLOR_BLUE, COLOR_GREEN, COLOR_RED, COLOR_BROWN];
 
-var clickAddPressure = base_wind_pressure * 0.01;
+var clickAddPressure = base_wind_pressure * 0.001;
 
 var WIND_SQUARES_X = () => CANVAS_SQUARES_X / 4;
 var WIND_SQUARES_Y = () => CANVAS_SQUARES_Y / 4;
@@ -201,7 +201,7 @@ function tickWindPressureMap() {
                             var plTemp = getTemperatureAtWindSquare(x, y);
                             var splTemp = getTemperatureAtWindSquare(x2, y2);
 
-                            var windPressureDiff = getWindPressureDiff(plPressureProcessed - expectedPressureDiff, splPressureProcessed + expectedPressureDiff); // + expectedPressureDiff, splPressureProcessed - expectedPressureDiff);
+                            var windPressureDiff = getWindPressureDiff(plPressureProcessed - expectedPressureDiff / 2, splPressureProcessed + expectedPressureDiff / 2); // + expectedPressureDiff, splPressureProcessed - expectedPressureDiff);
                             
                             if (windPressureDiff == 0) {
                                 return;
@@ -224,10 +224,16 @@ function tickWindPressureMap() {
 function renderWindPressureMap() {
     for (let i = 0; i < WIND_SQUARES_X(); i++) {
         for (let j = 0; j < WIND_SQUARES_Y(); j++) {
+
+            var presure_min = base_wind_pressure - stp_pascals_per_meter * CANVAS_SQUARES_Y;
+            var pressure_max = base_wind_pressure + stp_pascals_per_meter * CANVAS_SQUARES_Y;
+
             var p = getPressure(i, j);
             var s = _getWindSpeedAtLocation(i, j);
 
-            MAIN_CONTEXT.fillStyle = rgbToRgba(p, p, p, .3);
+            var pressure_255 = ((p - presure_min) / (pressure_max - presure_min)) * 255;
+
+            MAIN_CONTEXT.fillStyle = rgbToRgba(pressure_255, pressure_255, pressure_255, .3);
             MAIN_CONTEXT.fillRect(
                 4 * i * BASE_SIZE,
                 4 * j * BASE_SIZE,
@@ -377,16 +383,16 @@ function windSpeedFromPressure(pascals, sourcePressure) {
 
 }
 
-function addWindPressure(x, y) {
-    x = Math.floor(x / 4);
-    y = Math.floor(y / 4);
+function addWindPressure(posX, posY) {
+    var x = Math.floor(posX / 4);
+    var y = Math.floor(posY / 4);
+    if (x < 0 || x >= WIND_SQUARES_X() || y < 0 || y >= WIND_SQUARES_Y()) {
+        return;
+    }
+    windPressureMap[x][y] += clickAddPressure;
 
-    x = (Math.floor(x) + WIND_SQUARES_X()) % WIND_SQUARES_X();
-    y = (Math.floor(y) + WIND_SQUARES_Y()) % WIND_SQUARES_Y();
-    windPressureMap[Math.floor(x)][Math.floor(y)] += clickAddPressure;
-
-    getWindDirectNeighbors(x, y).forEach(
-        (loc) => windPressureMap[(loc[0] + WIND_SQUARES_X()) % WIND_SQUARES_X()][(loc[1] + WIND_SQUARES_Y()) % WIND_SQUARES_Y()] += clickAddPressure);
+    // getWindDirectNeighbors(x, y).forEach(
+    //     (loc) => windPressureMap[(loc[0] + WIND_SQUARES_X()) % WIND_SQUARES_X()][(loc[1] + WIND_SQUARES_Y()) % WIND_SQUARES_Y()] += clickAddPressure);
 }
 
 function removeWindPressure(x, y) {
