@@ -28,7 +28,16 @@ var cloudRainThresh = 2;
 var cloudRainMax = 8;
 var cloudMaxOpacity = 0.65;
 
-var pascalsPerWaterSquare = 10 ** 10;
+
+/*
+1 meter water 
+55345 moles of water in 1 meter cubed
+44.64 mols per liter at 1 atm
+55345 / 64 = 875 moles per meter cubed gas
+implies pressure of 875 / 44.64 = 19.6 atm or 1.986 * 10 ** 6 pascals
+*/
+
+var pascalsPerWaterSquare = 1.986 * 10 ** 6;
 // https://www.engineeringtoolbox.com/water-vapor-saturation-pressure-air-d_689.html
 
 

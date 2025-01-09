@@ -8,7 +8,7 @@ var windPressureMap;
 var windPressureMapByPressure;
 var windFlowStrength = 0.5;
 
-var base_wind_pressure = 10;
+var base_wind_pressure = 101325; // 1 atm in pascals
 
 var windFuncCurTheta = 0;
 var windFuncCurThetaDt = 0.01;
