@@ -2,7 +2,8 @@ import { hexToRgb, randNumber, rgbToRgba } from "./common.js";
 import { addSquare } from "./squares/_sqOperations.js";
 import { MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE } from "./index.js";
 import { addSquareByName } from "./index.js";
-import { updateWindPressureByMult } from "./wind.js";
+import { base_wind_pressure, getPressure, updateWindPressureByMult } from "./wind.js";
+import { getCurTime, getPrevTime } from "./time.js";
 
 var temperatureMap;
 var waterSaturationMap;
@@ -12,6 +13,11 @@ var curSquaresY = 0;
 
 var clickAddTemperature = 1;
 var start_temperature = 273 + 20;
+
+var air_thermalConductivity = 0.024; // watts per meter kelvin
+var air_specificHeat = 1.005; // joules per gram degrees c 
+var air_atomicWeight = 28.96;
+var waterVapor_specificHeat = 1.9;  // ...
 
 var c_tempLowRGB = hexToRgb("#1dbde6");
 var c_tempHighRGB = hexToRgb("#f1515e");
@@ -36,7 +42,6 @@ var cloudMaxOpacity = 0.65;
 55345 / 64 = 875 moles per meter cubed gas
 implies pressure of 875 / 44.64 = 19.6 atm or 1.986 * 10 ** 6 pascals
 */
-
 var pascalsPerWaterSquare = 1.986 * 10 ** 6;
 // https://www.engineeringtoolbox.com/water-vapor-saturation-pressure-air-d_689.html
 
@@ -99,6 +104,35 @@ function updateSquareTemperature(x, y, newVal) {
     updateWindPressureByMult(x, y, mult);
 }
 
+function temperatureDiffFunction(x, y, high, low) {
+    /* 
+
+    'high' and 'low' are temperature values of adjacent 4x4 cubes of air 
+    
+    air_specificHeat = 
+
+    getPressure returns pascals for 64 meter cubed
+
+    44.64 moles per 1 atm 
+    
+    get our fraction of our air pressure against 1 atm
+    */
+
+    var watts_transferRate = (high - low) * 4 * 64 * air_thermalConductivity;
+    // total watts transferred by air component
+
+    var joules_transferredEnergy = watts_transferRate * ((getCurTime() - getPrevTime()) / 1000);
+    var air_molesMult = (getPressure(x, y) / base_wind_pressure)
+    var air_molesTotal = air_molesMult * 44.64;
+    var air_grams = air_molesTotal * air_atomicWeight;
+    
+    var air_joules_per_degree = air_grams / air_specificHeat;
+    var air_degrees = joules_transferredEnergy / air_joules_per_degree;
+
+    return air_degrees * 64;
+
+}
+
 
 function tickMap(
     map,
@@ -121,7 +155,7 @@ function tickMap(
                     if (map[x2][y2] >= map[x][y]) {
                         return;
                     }
-                    var diff = diff_function(map[x][y], map[x2][y2]);
+                    var diff = diff_function(x, y, map[x][y], map[x2][y2]);
                     update_function(x, y, map[x][y] - diff);
                     update_function(x2, y2, map[x2][y2] + diff);
                 }));
@@ -199,8 +233,8 @@ function tickMaps() {
     if (temperatureMap == null || waterSaturationMap == null) {
         init();
     }
-    tickMap(temperatureMap, (a, b) => (a - b) / 8, updateSquareTemperature);
-    tickMap(waterSaturationMap, (a, b) => (a - b) / 2, (x, y, v) => waterSaturationMap[x][y] = v);
+    tickMap(temperatureMap, temperatureDiffFunction, updateSquareTemperature);
+    tickMap(waterSaturationMap, (x, y, a, b) => (a - b) / 2, (x, y, v) => waterSaturationMap[x][y] = v);
     doRain();
 }
 
@@ -289,9 +323,9 @@ function _addTemperature(x, y, delta) {
     var side = delta > 0 ? 1 : -1;
 
     if (side > 0) {
-        temperatureMap[x][y] += 1;
+        updateSquareTemperature(x, y, temperatureMap[x][y] + 1);
     } else {
-        temperatureMap[x][y] = ((temperatureMap[x][y] * (delta - side)) + (side * 273)) / delta;
+        updateSquareTemperature(x, y, ((temperatureMap[x][y] * (delta - side)) + (side * 273)) / delta);
     }
 }
 

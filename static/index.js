@@ -89,6 +89,8 @@ var selectedViewMode = "normal";
 const BASE_SIZE = 4;
 
 
+
+
 function styleHeader() {
     var nonbold_headers = [
         specialHeader,

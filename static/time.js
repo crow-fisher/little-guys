@@ -4,12 +4,18 @@ import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, MAIN_CONTEXT} from "./in
 var millis_per_day = 100000;
 var curDay = 0;
 var curTime = 0;
+var prevTime = 0;
 
-var prevTime = Date.now();
+
+var prevRealTime = Date.now();
 
 var starMap;
 var starMapCenterX;
 var starMapCenterY;
+
+function getPrevTime() {
+    return prevTime;
+}
 
 function initializeStarMap() {
     starMap = new Map();
@@ -75,13 +81,14 @@ function getCurTime() {
 }
 
 function updateTime() {
-    var dt = Date.now() - prevTime;
+    var dt = Date.now() - prevRealTime;
     if (dt > 100) {
-        prevTime = Date.now();
+        prevRealTime = Date.now();
     } else {
+        prevTime = curTime;
         curTime += dt; 
         curDay += dt / millis_per_day;
-        prevTime = Date.now();
+        prevRealTime = Date.now();
     }
 }
 
@@ -167,4 +174,4 @@ function temp_blue(temperature) {
 }
 
 
-export { getCurDay, getCurTime, updateTime, renderTime }
+export { getCurDay, getCurTime, getPrevTime, updateTime, renderTime }

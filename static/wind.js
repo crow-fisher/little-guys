@@ -19,6 +19,9 @@ var windFunctionApplicaitonDt = 1000;
 
 var windSpeedSmoothingMap = new Map();
 
+var f_windDensityMap = new Map();
+var f_upperPressureMap = new Map();
+
 var windColors = [COLOR_BLUE, COLOR_GREEN, COLOR_RED, COLOR_BROWN];
 
 var clickAddPressure = 20;
@@ -352,4 +355,4 @@ function updateWindPressureByMult(x, y, m) {
     windPressureMap[x][y] *= m;
 }
 
-export { removeFunctionAddWindPressure, addFunctionAddWindPressure, getWindSpeedAtLocation, renderWindPressureMap, initializeWindPressureMap, tickWindPressureMap, addWindPressure, removeWindPressure, updateWindPressureByMult }
+export { getPressure, removeFunctionAddWindPressure, addFunctionAddWindPressure, getWindSpeedAtLocation, renderWindPressureMap, initializeWindPressureMap, tickWindPressureMap, addWindPressure, removeWindPressure, updateWindPressureByMult, base_wind_pressure}
