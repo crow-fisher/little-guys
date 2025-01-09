@@ -47,7 +47,7 @@ var pascalsPerWaterSquare = 1.986 * 10 ** 6;
 
 
 function saturationPressureOfWaterVapor(t) {
-    return Math.E ** (77.345 + 0.057 * t - 7235 / t) / (t ** 8.2);
+    return Math.E ** (77.345 + 0.0057 * t - 7235 / t) / (t ** 8.2);
 }
 
 function getTemperatureAtWindSquare(x, y) {
@@ -109,14 +109,14 @@ function updateSquareTemperature(x, y, newVal) {
     if (temperatureMap == null) {
         init();
     }
-    if (isNaN(newVal)) {
-        console.log("FUCK!");
-        return;
+    if (isNaN(newVal) || !isFinite(newVal) || newVal < 0) {
+        console.warn("Trying to set invalid temperature ", newVal);
+        newVal = 10;
     }
     var oldVal = temperatureMap[x][y];
     var mult = newVal / oldVal;
     temperatureMap[x][y] = newVal;
-    updateWindPressureByMult(x, y, mult);
+    // updateWindPressureByMult(x, y, mult);
 }
 
 function temperatureDiffFunction(x, y, high, low) {
@@ -256,6 +256,13 @@ function getHumidity(x, y) {
     return waterSaturationMap[x][y] / saturationPressureOfWaterVapor(temperatureMap[x][y]);
 }
 
+function getWaterSaturation(x, y) {
+    if (waterSaturationMap == null) {
+        init();
+    }
+    return waterSaturationMap[x][y];
+}
+
 function calculateColor(val, valMin, valMax, colorMin, colorMax) {
     val = Math.min(val, valMax);
     var normalized = (val - valMin) / (valMax - valMin);
@@ -349,5 +356,6 @@ function _addWaterSaturation(x, y) {
     y = (Math.floor(y) + curSquaresY) % curSquaresY;
     waterSaturationMap[x][y] += 0.10 * saturationPressureOfWaterVapor(temperatureMap[x][y]);
 }
+
  
-export { getTemperatureAtWindSquare, updateSquareTemperature, applyTemperatureDelta, renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds, getTemperatureAtSquare }
+export { getWaterSaturation, getTemperatureAtWindSquare, updateSquareTemperature, applyTemperatureDelta, renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds, getTemperatureAtSquare }
