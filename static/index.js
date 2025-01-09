@@ -30,7 +30,7 @@ import { pond_demo_square_data, wet_valley_demo as wet_valley_demo_data } from "
 import { HydrangeaSeedOrganism } from "./organisms/HydrangeaSeedOrganism.js";
 import { MossCoolSeedOrganism } from "./organisms/MossCoolSeedOrganism.js";
 import { SunflowerSeedOrganism } from "./organisms/SunflowerSeedOrganism.js";
-import { addWindPressure, initializeWindPressureMap, addFunctionAddWindPressure, removeFunctionAddWindPressure, removeWindPressure, renderWindPressureMap, tickWindPressureMap } from "./wind.js";
+import { addWindPressure, initializeWindPressureMap, removeFunctionAddWindPressure, removeWindPressure, renderWindPressureMap, tickWindPressureMap } from "./wind.js";
 import { renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds } from "./temperature_humidity.js";
 
 var lastMode = "normal"; // options: "normal", "special", "organism", "blockModification";
@@ -535,12 +535,6 @@ function doBlockMod(posX, posY) {
         addWindPressure(posX, posY);
         else 
         removeWindPressure(posX, posY);
-    }
-    if (blockModification_val == "windadd") {
-        if (!rightMouseClicked) 
-            addFunctionAddWindPressure(posX, posY);
-            else 
-            removeFunctionAddWindPressure(posX, posY);
     }
     if (blockModification_val == "temperature") {
         if (!rightMouseClicked) 

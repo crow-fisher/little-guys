@@ -31,12 +31,12 @@ var f_upperPressureMap = new Map();
 
 var windColors = [COLOR_BLUE, COLOR_GREEN, COLOR_RED, COLOR_BROWN];
 
-var clickAddPressure = base_wind_pressure * 0.001;
+var clickAddPressure = base_wind_pressure * 0.01;
 
 var WIND_SQUARES_X = () => CANVAS_SQUARES_X / 4;
 var WIND_SQUARES_Y = () => CANVAS_SQUARES_Y / 4;
 
-function getSquareDensity(x, y) {
+function getAirSquareDensity(x, y) {
     return ((windPressureMap[x][y] / base_wind_pressure) * (air_molar_mass / getTempMolarMult(x, y)) + (getWaterSaturation(x, y) / base_wind_pressure) * (water_vapor_molar_mass / getTempMolarMult(x, y))) / air_molar_mass;
 }
 
@@ -48,7 +48,7 @@ function getPressureProcessed(x, y) {
         return base_wind_pressure;
     }
     var pressure = windPressureMap[x][y];
-    var density = getSquareDensity(x, y);
+    var density = getAirSquareDensity(x, y);
     return pressure * density;
 }
 
@@ -176,8 +176,8 @@ function tickWindPressureMap() {
 
                             // now, process plPressure and splPressure
 
-                            var plDensity = getSquareDensity(x, y);
-                            var splDensity = getSquareDensity(x2, y2);
+                            var plDensity = getAirSquareDensity(x, y);
+                            var splDensity = getAirSquareDensity(x2, y2);
 
                             var plPressureProcessed = plPressure * plDensity;
                             var splPressureProcessed = splPressure * splDensity;
@@ -281,19 +281,6 @@ function getWindDirectNeighbors(x, y) {
     ]
 }
 
-function getWindIndirectNeighbors(x, y) {
-    return [
-        [x - 1, y - 1],
-        [x + 1, y - 1],
-        [x + 1, y - 1],
-        [x + 1, y + 1]
-    ]
-}
-
-
-function getParameterizedWindFunc(a, b) {
-    return (x) => b * (Math.log1p(-1 + Math.sin(Math.cos(x / a))) + 1.9);
-}
 
 function getCurrentWindPressureFunc() {
     if (getCurTime() - windFunctionApplicationLastAddTime > windFunctionApplicaitonDt) {
@@ -324,9 +311,9 @@ function _getWindSpeedAtLocation(x, y) {
 
     var pressureTop = 
         getPressureProcessed(x, y - 1) - 
-        (getPressureProcessed(x, y) - getSquareDensity(x, y - 1) * 4 * stp_pascals_per_meter);
+        (getPressureProcessed(x, y) - getAirSquareDensity(x, y - 1) * 4 * stp_pascals_per_meter);
     var pressureBottom = 
-        (getPressureProcessed(x, y + 1) - getSquareDensity(x, y) * 4 * stp_pascals_per_meter) - 
+        (getPressureProcessed(x, y + 1) - getAirSquareDensity(x, y) * 4 * stp_pascals_per_meter) - 
         getPressureProcessed(x, y);
 
     if (pressureLeft * pressureRight <= 0) {
@@ -335,14 +322,6 @@ function _getWindSpeedAtLocation(x, y) {
     if (pressureTop * pressureBottom <= 0) {
         netPresY = (pressureTop - pressureBottom);
     }
-    // if (gp(x - 1, y) >= 0)
-    //     netPresX -= (gp(x, y) - gp(x - 1, y));
-    // if (gp(x + 1, y) >= 0)
-    //     netPresX += (gp(x, y) - gp(x + 1, y));
-    // if (gp(x, y - 1) >= 0)
-    //     netPresY -= (gp(x, y) - gp(x, y - 1));
-    // if (gp(x, y + 1) >= 0)
-    //     netPresY += (gp(x, y) - gp(x, y + 1));
 
     netPresX = (netPresX > 0 ? 1 : -1) * windSpeedFromPressure(Math.abs(netPresX), windPressureMap[x][y]);
     netPresY = (netPresY > 0 ? 1 : -1) * windSpeedFromPressure(Math.abs(netPresY), windPressureMap[x][y]);
@@ -406,15 +385,6 @@ function removeWindPressure(x, y) {
         (loc) => windPressureMap[(loc[0] + CANVAS_SQUARES_X) % CANVAS_SQUARES_X][(loc[1] + CANVAS_SQUARES_Y) % CANVAS_SQUARES_Y] = Math.max(0, windPressureMap[(loc[0] + CANVAS_SQUARES_X) % CANVAS_SQUARES_X][(loc[1] + CANVAS_SQUARES_Y) % CANVAS_SQUARES_Y] - clickAddPressure));
 }
 
-function addFunctionAddWindPressure(x, y) {
-    x = Math.floor(x / 4);
-    y = Math.floor(y / 4);
-
-    x = (Math.floor(x) + CANVAS_SQUARES_X) % CANVAS_SQUARES_X;
-    y = (Math.floor(y) + CANVAS_SQUARES_Y) % CANVAS_SQUARES_Y;
-    windFunctionApplicationMap[x][y] = getCurrentWindPressureFunc();
-}
-
 function removeFunctionAddWindPressure(x, y) {
     x = Math.floor(x / 4);
     y = Math.floor(y / 4);
@@ -427,4 +397,4 @@ function updateWindPressureByMult(x, y, m) {
 
 initializeWindPressureMap();
 
-export { getPressure, removeFunctionAddWindPressure, addFunctionAddWindPressure, getWindSpeedAtLocation, renderWindPressureMap, initializeWindPressureMap, tickWindPressureMap, addWindPressure, removeWindPressure, updateWindPressureByMult, base_wind_pressure }
+export { getPressure, getAirSquareDensity, removeFunctionAddWindPressure, getWindSpeedAtLocation, renderWindPressureMap, initializeWindPressureMap, tickWindPressureMap, addWindPressure, removeWindPressure, updateWindPressureByMult, base_wind_pressure }
