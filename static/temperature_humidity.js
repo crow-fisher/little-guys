@@ -2,8 +2,8 @@ import { hexToRgb, randNumber, rgbToRgba } from "./common.js";
 import { addSquare } from "./squares/_sqOperations.js";
 import { MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE } from "./index.js";
 import { addSquareByName } from "./index.js";
-import { base_wind_pressure, getPressure, updateWindPressureByMult } from "./wind.js";
-import { getCurTime, getPrevTime } from "./time.js";
+import { base_wind_pressure, getPressure, initializeWindPressureMap, updateWindPressureByMult } from "./wind.js";
+import { getCurTime, getPrevTime, getTimeSpeedMult } from "./time.js";
 
 var temperatureMap;
 var waterSaturationMap;
@@ -49,6 +49,14 @@ var pascalsPerWaterSquare = 1.986 * 10 ** 6;
 function saturationPressureOfWaterVapor(t) {
     return Math.E ** (77.345 + 0.057 * t - 7235 / t) / (t ** 8.2);
 }
+
+function getTemperatureAtWindSquare(x, y) {
+    if (temperatureMap ==  null) {
+        init();
+    }
+    return temperatureMap[x][y];
+}
+
 
 function getTemperatureAtSquare(x, y) {
     x /= 4;
@@ -98,6 +106,13 @@ function init() {
 }
 
 function updateSquareTemperature(x, y, newVal) {
+    if (temperatureMap == null) {
+        init();
+    }
+    if (isNaN(newVal)) {
+        console.log("FUCK!");
+        return;
+    }
     var oldVal = temperatureMap[x][y];
     var mult = newVal / oldVal;
     temperatureMap[x][y] = newVal;
@@ -118,9 +133,8 @@ function temperatureDiffFunction(x, y, high, low) {
     get our fraction of our air pressure against 1 atm
     */
 
-    var watts_transferRate = (high - low) * 4 * 64 * air_thermalConductivity;
+    var watts_transferRate = (high - low) * air_thermalConductivity;
     // total watts transferred by air component
-
     var joules_transferredEnergy = watts_transferRate * ((getCurTime() - getPrevTime()) / 1000);
     var air_molesMult = (getPressure(x, y) / base_wind_pressure)
     var air_molesTotal = air_molesMult * 44.64;
@@ -129,7 +143,7 @@ function temperatureDiffFunction(x, y, high, low) {
     var air_joules_per_degree = air_grams / air_specificHeat;
     var air_degrees = joules_transferredEnergy / air_joules_per_degree;
 
-    return air_degrees * 64;
+    return air_degrees * getTimeSpeedMult();
 
 }
 
@@ -309,21 +323,17 @@ function getMapIndirectNeighbors(x, y) {
     ]
 }
 
-function addTemperature(x, y, dt) {
+function addTemperature(x, y, delta) {
     x /= 4;
     y /= 4;
-    _addTemperature(x, y, dt);
-    getMapDirectNeighbors(x, y).forEach((loc) => _addTemperature(loc[0], loc[1], dt));
-}
 
-function _addTemperature(x, y, delta) {
     x = (Math.floor(x) + curSquaresX) % curSquaresX;
     y = (Math.floor(y) + curSquaresY) % curSquaresY;
 
     var side = delta > 0 ? 1 : -1;
 
     if (side > 0) {
-        updateSquareTemperature(x, y, temperatureMap[x][y] + 1);
+        updateSquareTemperature(x, y, temperatureMap[x][y] + delta);
     } else {
         updateSquareTemperature(x, y, ((temperatureMap[x][y] * (delta - side)) + (side * 273)) / delta);
     }
@@ -340,4 +350,4 @@ function _addWaterSaturation(x, y) {
     waterSaturationMap[x][y] += 0.10 * saturationPressureOfWaterVapor(temperatureMap[x][y]);
 }
  
-export { applyTemperatureDelta, renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds, getTemperatureAtSquare }
+export { getTemperatureAtWindSquare, updateSquareTemperature, applyTemperatureDelta, renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds, getTemperatureAtSquare }

@@ -3,6 +3,7 @@ import { getSquares } from "./squares/_sqOperations.js";
 import { MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE } from "./index.js";
 import { getCurTime } from "./time.js";
 import { COLOR_BLUE, COLOR_BROWN, COLOR_GREEN, COLOR_RED } from "./colors.js";
+import { addTemperature, getTemperatureAtSquare, getTemperatureAtWindSquare, updateSquareTemperature } from "./temperature_humidity.js";
 
 var windPressureMap;
 var windPressureMapByPressure;
@@ -40,6 +41,10 @@ function getPressure(x, y) {
 
 function getWindPressureDiff(w1, w2) {
     if (w1 < 0 || w2 < 0) {
+        return 0;
+    }
+    if (!isFinite(w1) || !isFinite(w2)) {
+        console.log("FUCK!!!!");
         return 0;
     }
     var diff = w1 - w2;
@@ -139,17 +144,31 @@ function tickWindPressureMap() {
         var pressureLocations = windPressureMapByPressure[pressure];
         pressureLocations
             .forEach((pl) => {
-                getWindDirectNeighbors(pl[0], pl[1])
+                var x = pl[0];
+                var y = pl[1];
+                getWindDirectNeighbors(x, y)
                     .forEach((spl) => {
-                        var x = (spl[0] + WIND_SQUARES_X()) % WIND_SQUARES_X();
-                        var y = (spl[1] + WIND_SQUARES_Y()) % WIND_SQUARES_Y();
-                        if (pl[0] == 0 || pl[0] == CANVAS_SQUARES_X || pl[1] == 0 || pl[1] == CANVAS_SQUARES_Y) {
-                            windPressureMap[x][y] = base_wind_pressure;
-                        }
-                        var plPressure = windPressureMap[pl[0]][pl[1]];
-                        var splPressure = windPressureMap[x][y];
+                        var x2 = (spl[0] + WIND_SQUARES_X()) % WIND_SQUARES_X();
+                        var y2 = (spl[1] + WIND_SQUARES_Y()) % WIND_SQUARES_Y();
 
+                        var plPressure = windPressureMap[x][y];
+                        var splPressure = windPressureMap[x2][y2];
+
+                        if (splPressure < 0 || plPressure < 0) {
+                            return;
+                        }
+                         
+                        var plTemp = getTemperatureAtWindSquare(x, y);
+                        var splTemp = getTemperatureAtWindSquare(x2, y2);
                         var windPressureDiff = getWindPressureDiff(plPressure, splPressure);
+                        
+                        var plEnergyLost = windPressureDiff * plTemp; 
+                        var startSplEnergy = splPressure * splTemp;
+                        var endSplEnergy = startSplEnergy + plEnergyLost;
+                        var endSplTemp = endSplEnergy / (splPressure + windPressureDiff);
+                        // only spl has a change in temperature 
+                        // since we are flowing from pl to spl
+                        updateSquareTemperature(x2, y2, endSplTemp);
                         windPressureMap[pl[0]][pl[1]] -= windPressureDiff;
                         windPressureMap[x][y] += windPressureDiff;
                 });

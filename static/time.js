@@ -1,17 +1,23 @@
 import { randNumber, randRange, rgbToRgba } from "./common.js";
 import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, MAIN_CONTEXT} from "./index.js";
 
-var millis_per_day = 100000;
+// var millis_per_day = 100000;
+var millis_per_day = 5000;
+
 var curDay = 0;
 var curTime = 0;
 var prevTime = 0;
-
 
 var prevRealTime = Date.now();
 
 var starMap;
 var starMapCenterX;
 var starMapCenterY;
+
+
+function getTimeSpeedMult() {
+    return 8.64 * 10 ** 7 / millis_per_day;
+}
 
 function getPrevTime() {
     return prevTime;
@@ -174,4 +180,4 @@ function temp_blue(temperature) {
 }
 
 
-export { getCurDay, getCurTime, getPrevTime, updateTime, renderTime }
+export { getCurDay, getCurTime, getPrevTime, updateTime, renderTime, getTimeSpeedMult }
