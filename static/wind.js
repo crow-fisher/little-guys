@@ -31,7 +31,7 @@ var f_upperPressureMap = new Map();
 
 var windColors = [COLOR_BLUE, COLOR_GREEN, COLOR_RED, COLOR_BROWN];
 
-var clickAddPressure = base_wind_pressure * 0.01;
+var clickAddPressure = base_wind_pressure * 0.004;
 
 var WIND_SQUARES_X = () => CANVAS_SQUARES_X / 4;
 var WIND_SQUARES_Y = () => CANVAS_SQUARES_Y / 4;
@@ -52,8 +52,8 @@ function getPressureProcessed(x, y) {
         return -1;
     }
     var pressure = windPressureMap[x][y];
-    var density = getAirSquareDensity(x, y);
-    return pressure / density;
+    var density = getAirSquareDensityTempAndHumidity(x, y);
+    return pressure * density;
 }
 
 function getPressure(x, y) {
@@ -184,8 +184,8 @@ function tickWindPressureMap() {
                             var plDensity = getAirSquareDensityTempAndHumidity(x, y);
                             var splDensity = getAirSquareDensityTempAndHumidity(x2, y2);
 
-                            var plPressureProcessed = plPressure / plDensity;
-                            var splPressureProcessed = splPressure / splDensity;
+                            var plPressureProcessed = plPressure * plDensity;
+                            var splPressureProcessed = splPressure * splDensity;
 
                             var y2_relY = y2 - y;
                             var expectedPressureDiff = 0;
@@ -211,12 +211,20 @@ function tickWindPressureMap() {
                             if (windPressureDiff == 0) {
                                 return;
                             }
+
+                            if ((plPressure - windPressureDiff) < 0 || (splPressure + windPressureDiff < 0)) {
+                                console.warn("FUCK!!!");
+                                return;
+                            }
                             var plEnergyLost = windPressureDiff * plTemp;
                             var startSplEnergy = splPressure * splTemp;
                             var endSplEnergy = startSplEnergy + plEnergyLost;
                             var endSplTemp = endSplEnergy / (splPressure + windPressureDiff);
                             // only spl has a change in temperature 
                             // since we are flowing from pl to spl
+
+                            // if (Math.abs(plTemp - splTemp) > 1) 
+                            //     console.log(x2, y2, splTemp, endSplTemp);
                             updateSquareTemperature(x2, y2, endSplTemp);
                             windPressureMap[x][y] -= windPressureDiff;
                             windPressureMap[x2][y2] += windPressureDiff;
@@ -412,4 +420,4 @@ function isPointInBounds(x, y) {
 
 initializeWindPressureMap();
 
-export { getPressure, getAirSquareDensity, removeFunctionAddWindPressure, getWindSpeedAtLocation, renderWindPressureMap, initializeWindPressureMap, tickWindPressureMap, addWindPressure, removeWindPressure, updateWindPressureByMult, base_wind_pressure }
+export { getPressure, getAirSquareDensity, removeFunctionAddWindPressure, getWindSpeedAtLocation, renderWindPressureMap, initializeWindPressureMap, tickWindPressureMap, addWindPressure, removeWindPressure, updateWindPressureByMult, getAirSquareDensityTempAndHumidity, base_wind_pressure }

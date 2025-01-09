@@ -2,7 +2,7 @@ import { hexToRgb, randNumber, rgbToRgba } from "./common.js";
 import { addSquare } from "./squares/_sqOperations.js";
 import { MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE } from "./index.js";
 import { addSquareByName } from "./index.js";
-import { base_wind_pressure, getAirSquareDensity, getPressure, initializeWindPressureMap, updateWindPressureByMult } from "./wind.js";
+import { base_wind_pressure, getAirSquareDensity, getPressure, initializeWindPressureMap, updateWindPressureByMult, getAirSquareDensityTempAndHumidity } from "./wind.js";
 import { getCurTime, getPrevTime, getTimeSpeedMult } from "./time.js";
 
 var temperatureMap;
@@ -109,10 +109,12 @@ function updateSquareTemperature(x, y, newVal) {
     if (temperatureMap == null) {
         init();
     }
-    if (isNaN(newVal) || !isFinite(newVal) || newVal < 0) {
+    if (isNaN(newVal) || !isFinite(newVal)) {
         console.warn("Trying to set invalid temperature ", newVal);
         newVal = 273;
     }
+    newVal = Math.max(newVal, 0);
+    newVal = Math.min(newVal, start_temperature * 2);
     temperatureMap[x][y] = newVal;
 }
 
@@ -136,7 +138,7 @@ function temperatureDiffFunction(x, y, high, low) {
     var watts_transferRate = (high - low) * air_thermalConductivity;
     // total watts transferred by air component
     var joules_transferredEnergy = watts_transferRate * ((getCurTime() - getPrevTime()) / 1000);
-    var air_molesMult = getAirSquareDensity(x, y);
+    var air_molesMult = getAirSquareDensityTempAndHumidity(x, y);
 
     if (air_molesMult > 2 || air_molesMult < 0.125) {
         console.warn("Something fucky");
