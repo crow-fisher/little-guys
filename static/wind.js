@@ -31,7 +31,7 @@ var f_upperPressureMap = new Map();
 
 var windColors = [COLOR_BLUE, COLOR_GREEN, COLOR_RED, COLOR_BROWN];
 
-var clickAddPressure = base_wind_pressure * 0.1;
+var clickAddPressure = base_wind_pressure * 0.01;
 
 var WIND_SQUARES_X = () => CANVAS_SQUARES_X / 4;
 var WIND_SQUARES_Y = () => CANVAS_SQUARES_Y / 4;
@@ -383,8 +383,10 @@ function removeWindPressure(x, y) {
     x = Math.floor(x / 4);
     y = Math.floor(y / 4);
 
-    x = (Math.floor(x) + CANVAS_SQUARES_X) % CANVAS_SQUARES_X;
-    y = (Math.floor(y) + CANVAS_SQUARES_Y) % CANVAS_SQUARES_Y;
+    if (!isPointInBounds(x, y)) {
+        return;
+    }
+
     windPressureMap[Math.floor(x)][Math.floor(y)] = Math.max(0, windPressureMap[Math.floor(x)][Math.floor(y)] + clickAddPressure);
     getWindDirectNeighbors(x, y).forEach(
         (loc) => windPressureMap[(loc[0] + CANVAS_SQUARES_X) % CANVAS_SQUARES_X][(loc[1] + CANVAS_SQUARES_Y) % CANVAS_SQUARES_Y] = Math.max(0, windPressureMap[(loc[0] + CANVAS_SQUARES_X) % CANVAS_SQUARES_X][(loc[1] + CANVAS_SQUARES_Y) % CANVAS_SQUARES_Y] - clickAddPressure));
