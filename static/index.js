@@ -396,7 +396,7 @@ function main() {
             tickWindPressureMap();
             tickMaps();
         }
-        renderTime();
+        // renderTime();
         renderSquares();
         renderOrganisms();
         renderWater();
@@ -405,7 +405,7 @@ function main() {
 
         renderWindPressureMap();
         renderTemperature();
-        renderWaterSaturation();
+        // renderWaterSaturation();
         
         // if (blockModification_val != null && lastMode == "blockModification" && blockModification_val.startsWith("wind")) {
         //     renderWindPressureMap();
@@ -538,9 +538,9 @@ function doBlockMod(posX, posY) {
     }
     if (blockModification_val == "temperature") {
         if (!rightMouseClicked) 
-            addTemperature(posX, posY, 5);
+            addTemperature(posX, posY, .05);
         else 
-            addTemperature(posX, posY, -5);
+            addTemperature(posX, posY, -0.05);
     }
 
 }

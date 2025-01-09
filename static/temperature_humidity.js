@@ -12,7 +12,7 @@ var curSquaresX = 0;
 var curSquaresY = 0;
 
 var clickAddTemperature = 1;
-var start_temperature = 273 + 20;
+var start_temperature = 273;
 
 var air_thermalConductivity = 0.024; // watts per meter kelvin
 var air_specificHeat = 1.005; // joules per gram degrees c 
@@ -166,7 +166,9 @@ function tickMap(
             var x = parseInt(xKeys[i]);
             var y = parseInt(yKeys[j]);
             [getMapDirectNeighbors, getMapIndirectNeighbors].forEach((f) => 
-                f(x, y).forEach((loc) => {
+                f(x, y)
+                    .filter((loc) => isPointInBounds(loc[0], loc[1]))
+                    .forEach((loc) => {
                     var x2 = loc[0];
                     var y2 = loc[1];
                     if (x2 < 0 || x2 >= curSquaresX || y2 < 0 || y2 >= curSquaresY) {
@@ -293,7 +295,7 @@ function calculateColorOpacity(val, valMin, valMax, colorMin, colorMax) {
 function renderTemperature() {
     for (let i = 0; i < curSquaresX; i++) {
         for (let j = 0; j < curSquaresY; j++) {
-            MAIN_CONTEXT.fillStyle = calculateColor(temperatureMap[i][j], 273, 273 + 50, c_tempLowRGB, c_tempHighRGB);
+            MAIN_CONTEXT.fillStyle = calculateColor(temperatureMap[i][j], 273, 273 + 30, c_tempLowRGB, c_tempHighRGB);
             MAIN_CONTEXT.fillRect(
                 4 * i * BASE_SIZE,
                 4 * j * BASE_SIZE,
@@ -336,19 +338,25 @@ function getMapIndirectNeighbors(x, y) {
     ]
 }
 
+function isPointInBounds(x, y) {
+    return x >= 0 && x < curSquaresX && y >= 0 && y < curSquaresY; 
+}
+
+
 function addTemperature(x, y, delta) {
-    x /= 4;
-    y /= 4;
+    x  = Math.floor(x / 4);
+    y  = Math.floor(y / 4);
 
-    x = (Math.floor(x) + curSquaresX) % curSquaresX;
-    y = (Math.floor(y) + curSquaresY) % curSquaresY;
+    if (!isPointInBounds(x, y)) {
+        return;
+    }
 
-    var side = delta > 0 ? 1 : -1;
-
-    if (side > 0) {
-        updateSquareTemperature(x, y, temperatureMap[x][y] + delta);
-    } else {
-        updateSquareTemperature(x, y, ((temperatureMap[x][y] * (delta - side)) + (side * 273)) / delta);
+    var startTemp = temperatureMap[x][y];
+    updateSquareTemperature(x, y, temperatureMap[x][y] + delta);
+    var endTemp = temperatureMap[x][y];
+    if (startTemp != endTemp) {
+        var mult = (endTemp - startTemp) / 273; 
+        updateWindPressureByMult(x, y, (1 + mult));
     }
 }
 

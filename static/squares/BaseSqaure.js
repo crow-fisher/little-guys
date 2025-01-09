@@ -115,7 +115,7 @@ export class BaseSquare {
             return;
         }
         var adjacentTemp = getTemperatureAtSquare(this.posX, this.posY);
-        var diff = this.thermalConductivity * ((adjacentTemp - this.temperature) / 10);
+        var diff = this.thermalConductivity * ((adjacentTemp - this.temperature) / 1000);
         this.temperature += diff / this.thermalMass;
         applyTemperatureDelta(this.posX, this.posY, -diff);
     }

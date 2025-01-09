@@ -12,7 +12,7 @@ var windFlowStrength = 0.5;
 
 var air_molar_mass = 28.96;
 var water_vapor_molar_mass = 18;
-var stp_pascals_per_meter = 110;
+var stp_pascals_per_meter = 11;
 var moles_per_1_atm_of_1_mcubed = 44.64;
 
 var base_wind_pressure = 101325; // 1 atm in pascals
@@ -44,8 +44,8 @@ function getPressureProcessed(x, y) {
     if (windPressureMap == null) {
         initializeWindPressureMap();
     }
-    if (x < 0 || x >= WIND_SQUARES_X() || y < 0 || y >= WIND_SQUARES_Y()) {
-        return base_wind_pressure;
+    if (!isPointInBounds(x, y)) {
+        return -1;
     }
     var pressure = windPressureMap[x][y];
     var density = getAirSquareDensity(x, y);
@@ -128,8 +128,8 @@ function getTempMolarMult(x, y) {
 
 function tickWindPressureMap() {
     windPressureMapByPressure = new Map();
-    for (let i = 1; i < WIND_SQUARES_X() - 1; i++) {
-        for (let j = 1; j < WIND_SQUARES_Y() - 1; j++) {
+    for (let i = 0; i < WIND_SQUARES_X() - 1; i++) {
+        for (let j = 0; j < WIND_SQUARES_Y() - 1; j++) {
             if (checkIfCollisionAtWindSquare(i, j)) {
                 windPressureMap[i][j] = -1;
             } else {
@@ -163,9 +163,10 @@ function tickWindPressureMap() {
                     var x = pl[0];
                     var y = pl[1];
                     getWindDirectNeighbors(x, y)
+                        .filter((spl) => isPointInBounds(spl[0], spl[1]))
                         .forEach((spl) => {
-                            var x2 = (spl[0] + WIND_SQUARES_X()) % WIND_SQUARES_X();
-                            var y2 = (spl[1] + WIND_SQUARES_Y()) % WIND_SQUARES_Y();
+                            var x2 = spl[0];
+                            var y2 = spl[1];
 
                             var plPressure = windPressureMap[x][y];
                             var splPressure = windPressureMap[x2][y2];
@@ -225,15 +226,15 @@ function renderWindPressureMap() {
     for (let i = 0; i < WIND_SQUARES_X(); i++) {
         for (let j = 0; j < WIND_SQUARES_Y(); j++) {
 
-            var presure_min = base_wind_pressure - stp_pascals_per_meter * CANVAS_SQUARES_Y;
-            var pressure_max = base_wind_pressure + stp_pascals_per_meter * CANVAS_SQUARES_Y;
+            var presure_min = base_wind_pressure - stp_pascals_per_meter / 2 * CANVAS_SQUARES_Y;
+            var pressure_max = base_wind_pressure + stp_pascals_per_meter / 2 * CANVAS_SQUARES_Y;
 
             var p = getPressure(i, j);
             var s = _getWindSpeedAtLocation(i, j);
 
             var pressure_255 = ((p - presure_min) / (pressure_max - presure_min)) * 255;
 
-            MAIN_CONTEXT.fillStyle = rgbToRgba(pressure_255, pressure_255, pressure_255, .3);
+            MAIN_CONTEXT.fillStyle = rgbToRgba(255 - pressure_255, 255 - pressure_255, 255 - pressure_255, .3);
             MAIN_CONTEXT.fillRect(
                 4 * i * BASE_SIZE,
                 4 * j * BASE_SIZE,
@@ -316,10 +317,10 @@ function _getWindSpeedAtLocation(x, y) {
         (getPressureProcessed(x, y + 1) - getAirSquareDensity(x, y) * 4 * stp_pascals_per_meter) - 
         getPressureProcessed(x, y);
 
-    if (pressureLeft * pressureRight <= 0) {
+    if (pressureLeft > 0 &&  pressureRight > 0) {
         netPresX = (pressureLeft - pressureRight);
     }
-    if (pressureTop * pressureBottom <= 0) {
+    if (pressureTop > 0 && pressureBottom > 0) {
         netPresY = (pressureTop - pressureBottom);
     }
 
@@ -393,6 +394,10 @@ function removeFunctionAddWindPressure(x, y) {
 
 function updateWindPressureByMult(x, y, m) {
     windPressureMap[x][y] *= m;
+}
+
+function isPointInBounds(x, y) {
+    return x >= 0 && x < WIND_SQUARES_X() && y >= 0 && y < WIND_SQUARES_Y(); 
 }
 
 initializeWindPressureMap();
