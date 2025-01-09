@@ -31,7 +31,7 @@ var f_upperPressureMap = new Map();
 
 var windColors = [COLOR_BLUE, COLOR_GREEN, COLOR_RED, COLOR_BROWN];
 
-var clickAddPressure = base_wind_pressure * 0.004;
+var clickAddPressure = base_wind_pressure * 0.01;
 
 var WIND_SQUARES_X = () => CANVAS_SQUARES_X / 4;
 var WIND_SQUARES_Y = () => CANVAS_SQUARES_Y / 4;

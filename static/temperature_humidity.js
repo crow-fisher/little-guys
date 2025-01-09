@@ -118,12 +118,15 @@ function updateSquareTemperature(x, y, newVal) {
     temperatureMap[x][y] = newVal;
 }
 
-function temperatureDiffFunction(x, y, high, low) {
+function temperatureDiffFunction(x, y, x2, y2, high, low) {
     if (getPressure(x, y) < 0) {
         return 0;
     }
-    /* 
+    if (getPressure(x2, y2) < 0) {
+        return 0;
+    }
 
+    /* 
     'high' and 'low' are temperature values of adjacent 4x4 cubes of air 
     
     air_specificHeat = 
@@ -153,6 +156,10 @@ function temperatureDiffFunction(x, y, high, low) {
 
     air_degrees /= 10;
 
+    if (y2 < y) {
+        air_degrees *= 100;
+    }
+
     return air_degrees * getTimeSpeedMult();
 
 }
@@ -175,7 +182,7 @@ function tickMap(
                     .forEach((loc) => {
                     var x2 = loc[0];
                     var y2 = loc[1];
-                    var diff = diff_function(x, y, map[x][y], map[x2][y2]);
+                    var diff = diff_function(x, y, x2, y2, map[x][y], map[x2][y2]);
                     update_function(x, y, map[x][y] - diff);
                     update_function(x2, y2, map[x2][y2] + diff);
                 }));
@@ -254,7 +261,7 @@ function tickMaps() {
         init();
     }
     tickMap(temperatureMap, temperatureDiffFunction, updateSquareTemperature);
-    tickMap(waterSaturationMap, (x, y, a, b) => (a - b) / 2, (x, y, v) => waterSaturationMap[x][y] = v);
+    tickMap(waterSaturationMap, (x, y, x2, y2, a, b) => (a - b) / 2, (x, y, v) => waterSaturationMap[x][y] = v);
     doRain();
 }
 
