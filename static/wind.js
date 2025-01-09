@@ -12,7 +12,7 @@ var windFlowStrength = 0.5;
 
 var air_molar_mass = 28.96;
 var water_vapor_molar_mass = 18;
-var stp_pascals_per_meter = 11;
+var stp_pascals_per_meter = 1100;
 var moles_per_1_atm_of_1_mcubed = 44.64;
 
 var base_wind_pressure = 101325; // 1 atm in pascals
@@ -40,6 +40,10 @@ function getAirSquareDensity(x, y) {
     return ((windPressureMap[x][y] / base_wind_pressure) * (air_molar_mass / getTempMolarMult(x, y)) + (getWaterSaturation(x, y) / base_wind_pressure) * (water_vapor_molar_mass / getTempMolarMult(x, y))) / air_molar_mass;
 }
 
+function getAirSquareDensityTempAndHumidity(x, y) {
+    return ((air_molar_mass / getTempMolarMult(x, y)) + (getWaterSaturation(x, y) / base_wind_pressure) * (water_vapor_molar_mass / getTempMolarMult(x, y))) / air_molar_mass;
+}
+
 function getPressureProcessed(x, y) {
     if (windPressureMap == null) {
         initializeWindPressureMap();
@@ -49,7 +53,7 @@ function getPressureProcessed(x, y) {
     }
     var pressure = windPressureMap[x][y];
     var density = getAirSquareDensity(x, y);
-    return pressure * density;
+    return pressure / density;
 }
 
 function getPressure(x, y) {
@@ -177,11 +181,11 @@ function tickWindPressureMap() {
 
                             // now, process plPressure and splPressure
 
-                            var plDensity = getAirSquareDensity(x, y);
-                            var splDensity = getAirSquareDensity(x2, y2);
+                            var plDensity = getAirSquareDensityTempAndHumidity(x, y);
+                            var splDensity = getAirSquareDensityTempAndHumidity(x2, y2);
 
-                            var plPressureProcessed = plPressure * plDensity;
-                            var splPressureProcessed = splPressure * splDensity;
+                            var plPressureProcessed = plPressure / plDensity;
+                            var splPressureProcessed = splPressure / splDensity;
 
                             var y2_relY = y2 - y;
                             var expectedPressureDiff = 0;
