@@ -25,7 +25,7 @@ var f_upperPressureMap = new Map();
 
 var windColors = [COLOR_BLUE, COLOR_GREEN, COLOR_RED, COLOR_BROWN];
 
-var clickAddPressure = 20;
+var clickAddPressure = base_wind_pressure * 0.01;
 
 var WIND_SQUARES_X = () => CANVAS_SQUARES_X / 4;
 var WIND_SQUARES_Y = () => CANVAS_SQUARES_Y / 4;
@@ -159,7 +159,7 @@ function tickWindPressureMap() {
                         }
                          
                         var plTemp = getTemperatureAtWindSquare(x, y);
-                        var splTemp = getTemperatureAtWindSquare(x2, y2);
+                        var splTemp = getTemperatureAtWindSquare(x2, y2);   
                         var windPressureDiff = getWindPressureDiff(plPressure, splPressure);
                         
                         var plEnergyLost = windPressureDiff * plTemp; 
@@ -305,6 +305,9 @@ function _getWindSpeedAtLocation(x, y) {
     // if (gp(x, y + 1) >= 0)
     //     netPresY += (gp(x, y) - gp(x, y + 1));
 
+    netPresX = (netPresX > 0 ? 1 : -1) * windSpeedFromPressure(Math.abs(netPresX), windPressureMap[x][y]);
+    netPresY = (netPresY > 0 ? 1 : -1) * windSpeedFromPressure(Math.abs(netPresY), windPressureMap[x][y]);
+
     var previousSpeeds = windSpeedSmoothingMap[x][y];
     if (previousSpeeds.length == 0) {
         previousSpeeds.push([netPresX, netPresY]);
@@ -321,6 +324,8 @@ function _getWindSpeedAtLocation(x, y) {
 
     var previousAvgX = previousSumX / previousSpeeds.length;
     var previousAvgY = previousSumY / previousSpeeds.length;
+
+    //  √(2 * 100 Pa / 1.225 kg/m³)
     
     previousSpeeds.push([netPresX, netPresY]);
 
@@ -330,6 +335,13 @@ function _getWindSpeedAtLocation(x, y) {
 
     var coef = 0.8;
     return [previousAvgX * coef + netPresX * (1 - coef), previousAvgY * coef + netPresY * (1 - coef)];
+}
+
+function windSpeedFromPressure(pascals, sourcePressure) {
+    //  √(2 * 100 Pa / 1.225 kg/m³)
+    // sketchy gen ai shit 
+    return (2 * pascals / (1.225 * sourcePressure / base_wind_pressure)) ** 0.5;
+
 }
 
 function addWindPressure(x, y) {
