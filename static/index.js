@@ -400,15 +400,20 @@ function main() {
         renderWater();
         renderClouds();
 
-        if (blockModification_val != null && lastMode == "blockModification" && blockModification_val.startsWith("wind")) {
-            renderWindPressureMap();
-        }
-        if (blockModification_val != null && lastMode == "blockModification" && blockModification_val.startsWith("temperature")) {
-            renderTemperature();
-        }
-        if (blockModification_val != null && lastMode == "blockModification" && blockModification_val.startsWith("humidity")) {
-            renderWaterSaturation();
-        }
+
+        renderWindPressureMap();
+        renderTemperature();
+        renderWaterSaturation();
+        
+        // if (blockModification_val != null && lastMode == "blockModification" && blockModification_val.startsWith("wind")) {
+        //     renderWindPressureMap();
+        // }
+        // if (blockModification_val != null && lastMode == "blockModification" && blockModification_val.startsWith("temperature")) {
+        //     renderTemperature();
+        // }
+        // if (blockModification_val != null && lastMode == "blockModification" && blockModification_val.startsWith("humidity")) {
+        //     renderWaterSaturation();
+        // }
         lastTick = Date.now();
     }
     updateTime();

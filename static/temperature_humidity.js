@@ -2,6 +2,7 @@ import { hexToRgb, randNumber, rgbToRgba } from "./common.js";
 import { addSquare } from "./squares/_sqOperations.js";
 import { MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE } from "./index.js";
 import { addSquareByName } from "./index.js";
+import { updateWindPressureByMult } from "./wind.js";
 
 var temperatureMap;
 var waterSaturationMap;
@@ -48,6 +49,7 @@ function getTemperatureAtSquare(x, y) {
 
     return temperatureMap[x][y];
 }
+
 function applyTemperatureDelta(x, y, val) {
     x /= 4;
     y /= 4;
@@ -81,9 +83,18 @@ function init() {
     }
 }
 
+function updateSquareTemperature(x, y, newVal) {
+    var oldVal = temperatureMap[x][y];
+    var mult = newVal / oldVal;
+    temperatureMap[x][y] = newVal;
+    updateWindPressureByMult(x, y, mult);
+}
+
+
 function tickMap(
     map,
-    diff_function
+    diff_function,
+    update_function
 ) {
     var xKeys = Array.from(Object.keys(map));
     for (let i = 0; i < xKeys.length; i++) {
@@ -91,7 +102,6 @@ function tickMap(
         for (let j = 0; j < yKeys.length; j++) {
             var x = parseInt(xKeys[i]);
             var y = parseInt(yKeys[j]);
-            var sqVal = map[x][y];
             [getMapDirectNeighbors, getMapIndirectNeighbors].forEach((f) => 
                 f(x, y).forEach((loc) => {
                     var x2 = loc[0];
@@ -99,15 +109,12 @@ function tickMap(
                     if (x2 < 0 || x2 >= curSquaresX || y2 < 0 || y2 >= curSquaresY) {
                         return;
                     }
-                    var compVal = map[x2][y2];
-
-                    if (compVal >= sqVal) {
+                    if (map[x2][y2] >= map[x][y]) {
                         return;
                     }
-                    var diff = diff_function(sqVal, compVal);
-                    map[x][y] -= diff;
-                    map[x2][y2] += diff;
-                    sqVal = map[x][y];
+                    var diff = diff_function(map[x][y], map[x2][y2]);
+                    update_function(x, y, map[x][y] - diff);
+                    update_function(x2, y2, map[x2][y2] + diff);
                 }));
         }
     }
@@ -183,8 +190,8 @@ function tickMaps() {
     if (temperatureMap == null || waterSaturationMap == null) {
         init();
     }
-    tickMap(temperatureMap, (a, b) => (a - b) / 8);
-    tickMap(waterSaturationMap, (a, b) => (a - b) / 2);
+    tickMap(temperatureMap, (a, b) => (a - b) / 8, updateSquareTemperature);
+    tickMap(waterSaturationMap, (a, b) => (a - b) / 2, (x, y, v) => waterSaturationMap[x][y] = v);
     doRain();
 }
 

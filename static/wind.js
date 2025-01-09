@@ -26,7 +26,7 @@ var clickAddPressure = 20;
 var WIND_SQUARES_X = () => CANVAS_SQUARES_X / 4;
 var WIND_SQUARES_Y = () => CANVAS_SQUARES_Y / 4;
 
-function gp(x, y) {
+function getPressure(x, y) {
     if (isNaN(x) || isNaN(y)) {
         return 0;
     }
@@ -106,8 +106,8 @@ function tickWindPressureMap() {
             } else {
                 if (windPressureMap[i][j] == -1) {
                     if (!getWindDirectNeighbors(i, j).some((sq) => {
-                        if (gp(sq[0], sq[1]) != -1) {
-                            windPressureMap[i][j] = gp(sq[0], sq[1]);
+                        if (getPressure(sq[0], sq[1]) != -1) {
+                            windPressureMap[i][j] = getPressure(sq[0], sq[1]);
                             return true;
                         }
                         return false;
@@ -174,7 +174,7 @@ function tickWindPressureMap() {
 function renderWindPressureMap() {
     for (let i = 0; i < WIND_SQUARES_X(); i++) {
         for (let j = 0; j < WIND_SQUARES_Y(); j++) {
-            var p = gp(i, j);
+            var p = getPressure(i, j);
             var s = _getWindSpeedAtLocation(i, j);
 
             MAIN_CONTEXT.fillStyle = rgbToRgba(p, p, p, .3);
@@ -257,16 +257,16 @@ function getWindSpeedAtLocation(x, y) {
 }
 
 function _getWindSpeedAtLocation(x, y) {
-    if (gp(x, y) < 0) {
+    if (getPressure(x, y) < 0) {
         return [0, 0];
     }
     var netPresX = 0;
     var netPresY = 0; 
 
-    var pressureLeft = gp(x - 1, y) - gp(x, y);
-    var pressureRight = gp(x + 1, y) - gp(x, y);
-    var pressureTop = gp(x, y - 1) - gp(x, y);
-    var pressureBottom = gp(x, y + 1) - gp(x, y);
+    var pressureLeft = getPressure(x - 1, y) - getPressure(x, y);
+    var pressureRight = getPressure(x + 1, y) - getPressure(x, y);
+    var pressureTop = getPressure(x, y - 1) - getPressure(x, y);
+    var pressureBottom = getPressure(x, y + 1) - getPressure(x, y);
 
     if (pressureLeft * pressureRight <= 0) {
         netPresX = (pressureLeft - pressureRight);
@@ -348,4 +348,8 @@ function removeFunctionAddWindPressure(x, y) {
     windFunctionApplicationMap[x][y] = -1;
 }
 
-export { removeFunctionAddWindPressure, addFunctionAddWindPressure, getWindSpeedAtLocation, renderWindPressureMap, initializeWindPressureMap, tickWindPressureMap, addWindPressure, removeWindPressure }
+function updateWindPressureByMult(x, y, m) {
+    windPressureMap[x][y] *= m;
+}
+
+export { removeFunctionAddWindPressure, addFunctionAddWindPressure, getWindSpeedAtLocation, renderWindPressureMap, initializeWindPressureMap, tickWindPressureMap, addWindPressure, removeWindPressure, updateWindPressureByMult }
