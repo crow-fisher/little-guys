@@ -12,7 +12,7 @@ var windFlowStrength = 0.5;
 
 var air_molar_mass = 28.96;
 var water_vapor_molar_mass = 18;
-var stp_pascals_per_meter = 11;
+var stp_pascals_per_meter = 110;
 var moles_per_1_atm_of_1_mcubed = 44.64;
 
 var base_wind_pressure = 101325; // 1 atm in pascals
@@ -31,7 +31,7 @@ var f_upperPressureMap = new Map();
 
 var windColors = [COLOR_BLUE, COLOR_GREEN, COLOR_RED, COLOR_BROWN];
 
-var clickAddPressure = base_wind_pressure * 0.01;
+var clickAddPressure = base_wind_pressure * 0.0001;
 
 var WIND_SQUARES_X = () => CANVAS_SQUARES_X / 4;
 var WIND_SQUARES_Y = () => CANVAS_SQUARES_Y / 4;
@@ -201,7 +201,7 @@ function tickWindPressureMap() {
                             var plTemp = getTemperatureAtWindSquare(x, y);
                             var splTemp = getTemperatureAtWindSquare(x2, y2);
 
-                            var windPressureDiff = getWindPressureDiff(plPressureProcessed - expectedPressureDiff / 2, splPressureProcessed + expectedPressureDiff / 2); // + expectedPressureDiff, splPressureProcessed - expectedPressureDiff);
+                            var windPressureDiff = getWindPressureDiff(plPressureProcessed - expectedPressureDiff / 2, splPressureProcessed + expectedPressureDiff / 2) / 2; // + expectedPressureDiff, splPressureProcessed - expectedPressureDiff);
                             
                             if (windPressureDiff == 0) {
                                 return;
