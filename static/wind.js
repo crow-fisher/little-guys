@@ -31,7 +31,7 @@ var f_upperPressureMap = new Map();
 
 var windColors = [COLOR_BLUE, COLOR_GREEN, COLOR_RED, COLOR_BROWN];
 
-var clickAddPressure = base_wind_pressure * 0.0001;
+var clickAddPressure = base_wind_pressure * 0.1;
 
 var WIND_SQUARES_X = () => CANVAS_SQUARES_X / 4;
 var WIND_SQUARES_Y = () => CANVAS_SQUARES_Y / 4;
@@ -317,15 +317,19 @@ function _getWindSpeedAtLocation(x, y) {
         (getPressureProcessed(x, y + 1) - getAirSquareDensity(x, y) * 4 * stp_pascals_per_meter) - 
         getPressureProcessed(x, y);
 
-    if (pressureLeft > 0 &&  pressureRight > 0) {
+    if ((getPressureProcessed(x, y - 1) > 0) &&  (getPressureProcessed(x, y + 1) > 0)) {
         netPresX = (pressureLeft - pressureRight);
     }
-    if (pressureTop > 0 && pressureBottom > 0) {
+    if ((getPressureProcessed(x, y - 1) > 0) && (getPressureProcessed(x, y + 1) > 0)) {
         netPresY = (pressureTop - pressureBottom);
     }
 
     netPresX = (netPresX > 0 ? 1 : -1) * windSpeedFromPressure(Math.abs(netPresX), windPressureMap[x][y]);
     netPresY = (netPresY > 0 ? 1 : -1) * windSpeedFromPressure(Math.abs(netPresY), windPressureMap[x][y]);
+
+    netPresX /= 100;
+    netPresY /= 100;
+
 
     var previousSpeeds = windSpeedSmoothingMap[x][y];
     if (previousSpeeds.length == 0) {

@@ -111,7 +111,7 @@ function updateSquareTemperature(x, y, newVal) {
     }
     if (isNaN(newVal) || !isFinite(newVal) || newVal < 0) {
         console.warn("Trying to set invalid temperature ", newVal);
-        newVal = 10;
+        newVal = 273;
     }
     temperatureMap[x][y] = newVal;
 }
@@ -149,6 +149,8 @@ function temperatureDiffFunction(x, y, high, low) {
     var air_joules_per_degree = air_grams / air_specificHeat;
     var air_degrees = joules_transferredEnergy / air_joules_per_degree;
 
+    air_degrees /= 10;
+
     return air_degrees * getTimeSpeedMult();
 
 }
@@ -171,12 +173,6 @@ function tickMap(
                     .forEach((loc) => {
                     var x2 = loc[0];
                     var y2 = loc[1];
-                    if (x2 < 0 || x2 >= curSquaresX || y2 < 0 || y2 >= curSquaresY) {
-                        return;
-                    }
-                    if (map[x2][y2] >= map[x][y]) {
-                        return;
-                    }
                     var diff = diff_function(x, y, map[x][y], map[x2][y2]);
                     update_function(x, y, map[x][y] - diff);
                     update_function(x2, y2, map[x2][y2] + diff);
