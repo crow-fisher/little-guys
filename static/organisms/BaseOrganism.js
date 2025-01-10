@@ -49,8 +49,8 @@ class BaseOrganism {
 
         // life cycle properties
         this.maxLifeTime = 1000 * 60 * 2;
-        this.reproductionEnergy = 100    * 0.8
-        this.reproductionEnergyUnit = 50 * 0.8;
+        this.reproductionEnergy = 100    * 0.6
+        this.reproductionEnergyUnit = 50 * 0.6;
         this.maximumLifeSquaresOfType = {}
         this.lifeSquaresCountByType = {};
         this.spawnedEntityId = getNextEntitySpawnId();
