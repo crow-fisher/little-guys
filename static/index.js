@@ -30,7 +30,7 @@ import { pond_demo_square_data, wet_valley_demo as wet_valley_demo_data } from "
 import { HydrangeaSeedOrganism } from "./organisms/HydrangeaSeedOrganism.js";
 import { MossCoolSeedOrganism } from "./organisms/MossCoolSeedOrganism.js";
 import { SunflowerSeedOrganism } from "./organisms/SunflowerSeedOrganism.js";
-import { addWindPressure, initializeWindPressureMap, removeFunctionAddWindPressure, removeWindPressure, renderWindPressureMap, tickWindPressureMap } from "./wind.js";
+import { addWindPressure, initializeWindPressureMap, removeWindPressure, renderWindPressureMap, tickWindPressureMap } from "./wind.js";
 import { renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds } from "./temperature_humidity.js";
 
 var lastMode = "normal"; // options: "normal", "special", "organism", "blockModification";
@@ -187,7 +187,6 @@ var lastLastMoveOffset = null;
 
 var lastTick = Date.now();
 
-// MUST be a multiple of 4 
 // wind is tiled x4
 var CANVAS_SQUARES_X = 75 * 4; // * 8; //6;
 var CANVAS_SQUARES_Y = 35 * 4; // * 8; // 8;

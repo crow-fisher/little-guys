@@ -1,9 +1,8 @@
 import { randNumber, randRange, rgbToRgba } from "./common.js";
 import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, MAIN_CONTEXT} from "./index.js";
 
-// var millis_per_day = 100000;
-var millis_per_day = 5000;
-
+var millis_per_day = 100000;
+// var millis_per_day = 5000;
 var curDay = 0;
 var curTime = 0;
 var prevTime = 0;
@@ -25,14 +24,14 @@ function getPrevTime() {
 
 function initializeStarMap() {
     starMap = new Map();
-    starMapCenterX = randNumber(0, CANVAS_SQUARES_X);
-    starMapCenterY = randNumber(0, CANVAS_SQUARES_Y);
+    starMapCenterX = randNumber(CANVAS_SQUARES_X / 4, CANVAS_SQUARES_X * 0.75);
+    starMapCenterY = randNumber(CANVAS_SQUARES_Y / 4, CANVAS_SQUARES_Y * 0.75);
 
-    var numStars = 3000;
+    var numStars = randNumber(100, 50000);
 
     for (let i = 0; i < numStars; i++) {
-        var starX = randNumber(-CANVAS_SQUARES_X * 2, CANVAS_SQUARES_X * 2);
-        var starY = randNumber(-CANVAS_SQUARES_Y * 2, CANVAS_SQUARES_Y * 2);
+        var starX = randNumber(-CANVAS_SQUARES_X * 4, CANVAS_SQUARES_X * 4);
+        var starY = randNumber(-CANVAS_SQUARES_Y * 4, CANVAS_SQUARES_Y * 4);
         var starBrightness = Math.random();
 
         if (!(starX in starMap)) {
@@ -66,6 +65,13 @@ function renderStarMap() {
 
             var endX = rotatedX + starMapCenterX;
             var endY = rotatedY + starMapCenterX;
+
+            if (endX < 0 || endY < 0) {
+                continue;
+            }
+            if (endX > CANVAS_SQUARES_X || endY > CANVAS_SQUARES_Y) {
+                continue;
+            }
 
             MAIN_CONTEXT.fillStyle = rgbToRgba(255, 255, 255, starbrightness);
             MAIN_CONTEXT.fillRect(
@@ -131,7 +137,7 @@ function renderTime() {
 
 function calculateTempColor(temperature) {
     temperature /= 100;
-    temperature = Math.max(20, temperature);
+    temperature = Math.max(10, temperature);
     return {
         r: temp_red(temperature),
         g: temp_green(temperature),
@@ -180,4 +186,4 @@ function temp_blue(temperature) {
 }
 
 
-export { getCurDay, getCurTime, getPrevTime, updateTime, renderTime, getTimeSpeedMult }
+export { getCurDay, getCurTime, getPrevTime, updateTime, renderTime, getTimeSpeedMult, initializeStarMap}
