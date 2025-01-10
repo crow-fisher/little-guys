@@ -33,8 +33,8 @@ class SunflowerOrganism extends BaseOrganism {
 
         this.currentEnergy = 10;
 
-        this.reproductionEnergy *= 0.5;
-        this.reproductionEnergyUnit *= 0.5;
+        this.reproductionEnergy *= 0.8;
+        this.reproductionEnergyUnit *= 0.8;
 
         this.maximumLifeSquaresOfType = {
             "green": 80,
