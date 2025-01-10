@@ -82,7 +82,7 @@ function applyTemperatureDelta(x, y, val) {
     if (x < 0 || x >= curSquaresX || y < 0 || y >= curSquaresY) {
         return;
     }
-    temperatureMap[x][y] += val;
+    updateSquareTemperature(x, y, temperatureMap[x][y] + val)
 }
 
 function init() {
@@ -160,7 +160,7 @@ function temperatureDiffFunction(x, y, x2, y2, high, low) {
     air_degrees /= 10;
 
     if (y2 < y) {
-        air_degrees *= 100;
+        air_degrees *= 1000;
     }
 
     return air_degrees * getTimeSpeedMult();

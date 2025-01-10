@@ -195,50 +195,17 @@ function tickWindPressureMap() {
                             var x2 = spl[0];
                             var y2 = spl[1];
 
-                            var plPressure = windPressureMap[x][y];
                             var splPressure = windPressureMap[x2][y2];
-
-                            if (splPressure < 0 || plPressure < 0) {
-                                return;
-                            }
-
-                            // now, process plPressure and splPressure
-
-                            var plDensity = getAirSquareDensityTempAndHumidity(x, y);
-                            var splDensity = getAirSquareDensityTempAndHumidity(x2, y2);
-
-                            var plPressureProcessed = plPressure * plDensity;
-                            var splPressureProcessed = splPressure * splDensity;
-
-                            var y2_relY = y2 - y;
-                            var expectedPressureDiff = 0;
-
-                            if (y2_relY != 0) {
-                                if (y2_relY < 0) {
-                                    expectedPressureDiff = stp_pascals_per_meter * 4 * splDensity;
-                                } else {
-                                    expectedPressureDiff = -1 * stp_pascals_per_meter * 4 * plDensity;
-                                }
-                            }
-
-                            /* 
-                            if y2_relY is negative, then spl is on top of pl. 
-                            therefore, pl's air air pressure should be ("stp pascals per meter" * "splDensity" * 4) pascals higher than spl's. so subtract that from it when we do our diffy wiffy
-                            */
-
+                        
                             var plTemp = getTemperatureAtWindSquare(x, y);
                             var splTemp = getTemperatureAtWindSquare(x2, y2);
 
-                            var windPressureDiff = getWindPressureDiff(plPressureProcessed - expectedPressureDiff / 2, splPressureProcessed + expectedPressureDiff / 2) / 2; // + expectedPressureDiff, splPressureProcessed - expectedPressureDiff);
+                            var windPressureDiff = getExpectedPressureDifferential(x, y, x2, y2);
 
                             if (windPressureDiff == 0) {
                                 return;
                             }
 
-                            if ((plPressure - windPressureDiff) < 0 || (splPressure + windPressureDiff < 0)) {
-                                console.warn("FUCK!!!");
-                                return;
-                            }
                             var plEnergyLost = windPressureDiff * plTemp;
                             var startSplEnergy = splPressure * splTemp;
                             var endSplEnergy = startSplEnergy + plEnergyLost;
@@ -255,6 +222,40 @@ function tickWindPressureMap() {
                 });
         });
 };
+
+function getExpectedPressureDifferential(x, y, x2, y2) {
+    if (!isPointInBounds(x, y) || !isPointInBounds(x2, y2)) {
+        return 0;
+    }
+
+    var plPressure = windPressureMap[x][y];
+    var splPressure = windPressureMap[x2][y2];
+
+    if (splPressure < 0 || plPressure < 0) {
+        return;
+    }
+
+    // now, process plPressure and splPressure
+
+    var plDensity = getAirSquareDensityTempAndHumidity(x, y);
+    var splDensity = getAirSquareDensityTempAndHumidity(x2, y2);
+
+    var plPressureProcessed = plPressure * plDensity;
+    var splPressureProcessed = splPressure * splDensity;
+
+    var y2_relY = y2 - y;
+    var expectedPressureDiff = 0;
+
+    if (y2_relY != 0) {
+        if (y2_relY < 0) {
+            expectedPressureDiff = stp_pascals_per_meter * 4 * splDensity;
+        } else {
+            expectedPressureDiff = -1 * stp_pascals_per_meter * 4 * plDensity;
+        }
+    }
+
+    return getWindPressureDiff(plPressureProcessed - expectedPressureDiff / 2, splPressureProcessed + expectedPressureDiff / 2) / 2;
+}
 
 
 function renderWindPressureMap() {
@@ -331,22 +332,25 @@ function _getWindSpeedAtLocation(x, y) {
     var netPresX = 0;
     var netPresY = 0;
 
-    var pressureLeft = getPressureProcessed(x - 1, y) - getPressureProcessed(x, y);
-    var pressureRight = getPressureProcessed(x + 1, y) - getPressureProcessed(x, y);
+    // var pressureLeft = getPressureProcessed(x - 1, y) - getPressureProcessed(x, y);
+    // var pressureRight = getPressureProcessed(x + 1, y) - getPressureProcessed(x, y);
 
-    var pressureTop =
-        getPressureProcessed(x, y - 1) -
-        (getPressureProcessed(x, y) - getAirSquareDensity(x, y - 1) * 4 * stp_pascals_per_meter);
-    var pressureBottom =
-        (getPressureProcessed(x, y + 1) - getAirSquareDensity(x, y) * 4 * stp_pascals_per_meter) -
-        getPressureProcessed(x, y);
+    // var pressureTop =
+    //     getPressureProcessed(x, y - 1) -
+    //     (getPressureProcessed(x, y) - getAirSquareDensity(x, y - 1) * 4 * stp_pascals_per_meter);
+    // var pressureBottom =
+    //     (getPressureProcessed(x, y + 1) - getAirSquareDensity(x, y) * 4 * stp_pascals_per_meter) -
+    //     getPressureProcessed(x, y);
 
-    if ((getPressureProcessed(x, y - 1) > 0) && (getPressureProcessed(x, y + 1) > 0)) {
-        netPresX = (pressureLeft - pressureRight);
-    }
-    if ((getPressureProcessed(x, y - 1) > 0) && (getPressureProcessed(x, y + 1) > 0)) {
-        netPresY = (pressureTop - pressureBottom);
-    }
+    // if ((getPressureProcessed(x, y - 1) > 0) && (getPressureProcessed(x, y + 1) > 0)) {
+    //     netPresX = (pressureLeft - pressureRight);
+    // }
+    // if ((getPressureProcessed(x, y - 1) > 0) && (getPressureProcessed(x, y + 1) > 0)) {
+    //     netPresY = (pressureTop - pressureBottom);
+    // }
+
+    netPresX = getExpectedPressureDifferential(x, y, x + 1, y) - getExpectedPressureDifferential(x, y, x - 1, y)
+    netPresY = getExpectedPressureDifferential(x, y, x, y + 1) - getExpectedPressureDifferential(x, y, x, y - 1)
 
     netPresX = (netPresX > 0 ? 1 : -1) * windSpeedFromPressure(Math.abs(netPresX), windPressureMap[x][y]);
     netPresY = (netPresY > 0 ? 1 : -1) * windSpeedFromPressure(Math.abs(netPresY), windPressureMap[x][y]);
