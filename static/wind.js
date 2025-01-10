@@ -82,6 +82,10 @@ function getWindPressureDiff(w1, w2) {
     return diff;
 }
 
+function setPressurebyMult(x, y, mult) {
+    windPressureMap[x][y] *= mult;
+}
+
 function checkIfCollisionAtWindSquare(x, y) {
     var every = true;
     var someSquareFound = false;
@@ -418,4 +422,4 @@ function isPointInBounds(x, y) {
 
 initializeWindPressureMap();
 
-export { getPressure, getAirSquareDensity, getWindSpeedAtLocation, renderWindPressureMap, initializeWindPressureMap, tickWindPressureMap, addWindPressure, removeWindPressure, updateWindPressureByMult, getAirSquareDensityTempAndHumidity, base_wind_pressure }
+export { setPressurebyMult, getPressure, getAirSquareDensity, getWindSpeedAtLocation, renderWindPressureMap, initializeWindPressureMap, tickWindPressureMap, addWindPressure, removeWindPressure, updateWindPressureByMult, getAirSquareDensityTempAndHumidity, base_wind_pressure }

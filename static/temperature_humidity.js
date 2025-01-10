@@ -2,7 +2,7 @@ import { hexToRgb, randNumber, rgbToRgba } from "./common.js";
 import { addSquare } from "./squares/_sqOperations.js";
 import { MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE } from "./index.js";
 import { addSquareByName } from "./index.js";
-import { base_wind_pressure, getAirSquareDensity, getPressure, initializeWindPressureMap, updateWindPressureByMult, getAirSquareDensityTempAndHumidity } from "./wind.js";
+import { base_wind_pressure, getAirSquareDensity, getPressure, initializeWindPressureMap, updateWindPressureByMult, getAirSquareDensityTempAndHumidity, setPressurebyMult } from "./wind.js";
 import { getCurTime, getPrevTime, getTimeSpeedMult } from "./time.js";
 
 var temperatureMap;
@@ -115,7 +115,10 @@ function updateSquareTemperature(x, y, newVal) {
     }
     newVal = Math.max(newVal, 0);
     newVal = Math.min(newVal, start_temperature * 2);
+    var start = temperatureMap[x][y];
     temperatureMap[x][y] = newVal;
+    var end = temperatureMap[x][y];
+    setPressurebyMult(x, y, (end / start));
 }
 
 function temperatureDiffFunction(x, y, x2, y2, high, low) {
