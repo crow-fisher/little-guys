@@ -99,7 +99,7 @@ export class BaseSquare {
 
         this.surface = false;
 
-        this.temperature = 273 + 30; // start temperature in kelvin 
+        this.temperature = 273 + 300; // start temperature in kelvin 
         this.thermalConductivity = 1;  // watts/meter kelvin. max is 10
         this.thermalMass = 2; // e.g., '2' means one degree of this would equal 2 degrees of air temp for a wind square 
 

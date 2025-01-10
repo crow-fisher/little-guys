@@ -339,9 +339,8 @@ function _getWindSpeedAtLocation(x, y) {
     netPresX = (netPresX > 0 ? 1 : -1) * windSpeedFromPressure(Math.abs(netPresX), windPressureMap[x][y]);
     netPresY = (netPresY > 0 ? 1 : -1) * windSpeedFromPressure(Math.abs(netPresY), windPressureMap[x][y]);
 
-    netPresX /= 100;
-    netPresY /= 100;
-
+    netPresX /= 10;
+    netPresY /= 10;
 
     var previousSpeeds = windSpeedSmoothingMap[x][y];
     if (previousSpeeds.length == 0) {
