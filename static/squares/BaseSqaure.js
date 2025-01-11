@@ -35,7 +35,7 @@ import { removeOrganism } from "../organisms/_orgOperations.js";
 
 import { addSquareByName } from "../index.js";
 import { getCurTime } from "../time.js";
-import { addWaterSaturation, addWaterSaturationPascals, applySquareTemperatureDelta, calculateColorTemperature, cloudRainThresh, getTemperatureAtSquare, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, updateSquareTemperature } from "../temperature_humidity.js";
+import { addTemperature, addWaterSaturation, addWaterSaturationPascals, applySquareTemperatureDelta, calculateColorTemperature, cloudRainThresh, getTemperatureAtSquare, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, updateSquareTemperature } from "../temperature_humidity.js";
 import { getWindSquareAbove } from "../wind.js";
 
 export class BaseSquare {
@@ -100,7 +100,7 @@ export class BaseSquare {
 
         this.surface = false;
 
-        this.temperature = 273 + 100; // start temperature in kelvin 
+        this.temperature = 273 + 200; // start temperature in kelvin 
         this.thermalConductivity = 1;  // watts/meter kelvin. max is 10
         this.thermalMass = 2; // e.g., '2' means one degree of this would equal 2 degrees of air temp for a wind square 
 
@@ -111,15 +111,12 @@ export class BaseSquare {
         this.vaporTemp = 10 ** 8; // boiling point
 
         this.water_fusionHeat = 6;
-        this.water_vaporHeat = 40.7;
-        this.water_fusionTemp = 273; 
+        this.water_vaporHeat = .0047;
+        this.water_fusionTemp = 273;
         this.water_vaporTemp = 373;
     };
 
     temperatureRoutine() {
-        if (this.currentPressureDirect != 0) {
-            return;
-        }
         var adjacentWindSquare = getWindSquareAbove(this.posX, this.posY);
 
         var x = adjacentWindSquare[0];
@@ -149,28 +146,31 @@ export class BaseSquare {
             return;
         }
 
-        var temperatureAbove = getTemperatureAtWindSquare(x, y);
         var waterPascalsAbove = getWaterSaturation(x, y);
-
-        var maxPascals = saturationPressureOfWaterVapor(temperatureAbove);
         var vaporPressure = saturationPressureOfWaterVapor(this.temperature);
 
-        if (waterPascalsAbove > maxPascals || waterPascalsAbove > vaporPressure) {
+        if (waterPascalsAbove > vaporPressure) {
             return;
         }
 
         var diff = vaporPressure - waterPascalsAbove;
-        diff /= 10;
 
         if (this.solid) {
             diff *= this.waterContainment / this.waterContainmentMax.value;
-            this.waterContainment -= (diff / pascalsPerWaterSquare); 
+            this.waterContainment -= (diff / pascalsPerWaterSquare);
         } else {
+            // evaporating water
             diff *= this.blockHealth / this.blockHealthMax;
             this.blockHealth -= (diff / pascalsPerWaterSquare);
+            // also take the temperature out of the air square above us
+            updateSquareTemperature(x, y, getTemperatureAtWindSquare(x, y) - 0.1 * diff * this.water_vaporHeat);
         }
+        this.temperature -= diff * this.water_vaporHeat;
 
-        this.temperature -= (diff / 10 ** 6) * this.water_vaporHeat;
+        if (this.temperature < 0) {
+            console.warn("This temperature got under 0");
+            this.temperature = 5;
+        }
         addWaterSaturationPascals(x, y, diff);
     }
 
@@ -523,8 +523,8 @@ export class BaseSquare {
                 var jSigned = (this.speedX > 0) ? j : -j;
                 var jSignedMinusOne = (this.speedX == 0 ? 0 : (this.speedX > 0) ? (j - 1) : -(j - 1));
                 if (getSquares(this.posX + jSigned, this.posY + i)
-                    .some((sq) => 
-                        (!this.organic && sq.collision) || 
+                    .some((sq) =>
+                        (!this.organic && sq.collision) ||
                         (this.organic && this.spawnedEntityId == sq.spawnedEntityId) ||
                         this.organic && sq.collision && sq.currentPressureDirect > 0 && Math.random() > 0.9
                     )) {
@@ -658,7 +658,7 @@ export class BaseSquare {
             }
         }
         getSquares(this.posX, this.posY - 1)
-            .forEach((sq) => this.currentPressureDirect = Math.max(this.currentPressureDirect, 
+            .forEach((sq) => this.currentPressureDirect = Math.max(this.currentPressureDirect,
                 sq.currentPressureDirect + (sq.organic ? 0.55 : 1)));
     }
 
@@ -692,7 +692,7 @@ export class BaseSquare {
             .filter((sq) => sq.collision)
             .forEach((sq) => {
                 var diff = this.temperature - sq.temperature;
-                var diffSmall = diff / 10; 
+                var diffSmall = diff / 10;
                 this.temperature -= diffSmall;
                 sq.temperature += diffSmall;
             })
@@ -716,8 +716,8 @@ export class BaseSquare {
             if (getNeighbors(this.posX, this.posY)
                 .filter((sq) => sq.group == this.group)
                 .some((sq) => sq.waterContainment != sq.waterContainmentMax.value)) {
-                    return;
-                }
+                return;
+            }
             var newWater = addSquareByName(this.posX + side, this.posY, "water");
             if (newWater) {
                 newWater.blockHealth = this.waterContainmentTransferRate.value;
@@ -726,7 +726,7 @@ export class BaseSquare {
         }
     }
 
-    evaporateInnerMoisture() {  
+    evaporateInnerMoisture() {
         if (this.waterContainment == 0) {
             return;
         }

@@ -163,15 +163,17 @@ function temperatureDiffFunction(x, y, x2, y2, high, low) {
 }
 
 function humidityDiffFunction(x, y, x2, y2, high, low) {
-    var humidity1 = getHumidity(x, y);
-    var humidity2 = getHumidity(x2, y2);
+    var humidity1 = getHumidity(x, y); // 0.2
+    var humidity2 = getHumidity(x2, y2); // 0.8
 
-    var humidityDiff = Math.min((humidity1 - humidity2) / 2, 1);
+    var humidityDiff = humidity1 - humidity2; // 0.2 - 0.8 = -0.6;
 
-    var square1PascalsForHumidityDiff = saturationPressureOfWaterVapor(temperatureMap[x][y]) * Math.abs(humidityDiff);
-    var square2PascalsForHumidityDiff = saturationPressureOfWaterVapor(temperatureMap[x2][y2]) * Math.abs(humidityDiff);
+    var square1PascalsForHumidityDiff = saturationPressureOfWaterVapor(temperatureMap[x][y]) * Math.abs(humidityDiff / 2);
+    var square2PascalsForHumidityDiff = saturationPressureOfWaterVapor(temperatureMap[x2][y2]) * Math.abs(humidityDiff / 2);
 
     var minPascalsForHumidityDiff = Math.min(square1PascalsForHumidityDiff, square2PascalsForHumidityDiff)
+
+    minPascalsForHumidityDiff *= 0.001;
 
     if (humidityDiff > 0) {
         return minPascalsForHumidityDiff;
@@ -328,7 +330,7 @@ function getWaterSaturation(x, y) {
 }
 
 function calculateColorTemperature(val) {
-    return calculateColor(val, 273, 273 + 30, c_tempLowRGB, c_tempHighRGB);
+    return calculateColor(val, 273, 273 + 100, c_tempLowRGB, c_tempHighRGB);
 }
 
 function calculateColor(val, valMin, valMax, colorMin, colorMax) {
@@ -358,7 +360,7 @@ function renderTemperature() {
             if (getPressure(i, j) < 0) {
                 continue;
             }
-            MAIN_CONTEXT.fillStyle = calculateColor(temperatureMap[i][j], 273, 273 + 30, c_tempLowRGB, c_tempHighRGB);
+            MAIN_CONTEXT.fillStyle = calculateColorTemperature(temperatureMap[i][j]);
             MAIN_CONTEXT.fillRect(
                 4 * i * BASE_SIZE,
                 4 * j * BASE_SIZE,
