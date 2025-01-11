@@ -35,7 +35,8 @@ import { removeOrganism } from "../organisms/_orgOperations.js";
 
 import { addSquareByName } from "../index.js";
 import { getCurTime } from "../time.js";
-import { applySquareTemperatureDelta, getTemperatureAtSquare } from "../temperature_humidity.js";
+import { applySquareTemperatureDelta, getTemperatureAtSquare, getTemperatureAtWindSquare, updateSquareTemperature } from "../temperature_humidity.js";
+import { getWindSquareAbove } from "../wind.js";
 
 export class BaseSquare {
     constructor(posX, posY) {
@@ -114,10 +115,19 @@ export class BaseSquare {
         if (this.currentPressureDirect != 0) {
             return;
         }
-        var adjacentTemp = getTemperatureAtSquare(this.posX, this.posY);
+        var adjacentWindSquare = getWindSquareAbove(this.posX, this.posY);
+
+        var x = adjacentWindSquare[0];
+        var y = adjacentWindSquare[1];
+
+        if (x < 0 || y < 0) {
+            return;
+        }
+
+        var adjacentTemp = getTemperatureAtWindSquare(x, y);
         var diff = this.thermalConductivity * ((adjacentTemp - this.temperature) / 100);
         this.temperature += diff / this.thermalMass;
-        applySquareTemperatureDelta(this.posX, this.posY, -diff);
+        updateSquareTemperature(x, y, getTemperatureAtWindSquare(x, y) - diff);
     }
 
 

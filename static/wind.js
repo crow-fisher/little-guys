@@ -69,6 +69,24 @@ function getPressure(x, y) {
     return windPressureMap[x][y];
 }
 
+function getWindSquareAbove(squareX, squareY) {
+    var x = Math.floor(squareX / 4);
+    var y = Math.floor(squareY / 4);
+    var p = -1;
+
+    if (!isPointInBounds(x, y)) {
+        return [-1, -1];
+    }
+    while (getPressure(x, y) < 0 && isPointInBounds(x, y - 1)) {
+        y -= 1;
+    }
+
+    if (getPressure(x, y) < 0) {
+        return [-1, -1];
+    }
+    return [x, y];
+}
+
 function getWindPressureDiff(w1, w2) {
     if (w1 < 0 || w2 < 0) {
         return 0;
@@ -144,7 +162,7 @@ function initializeWindPressureMap() {
 }
 
 function getTempMolarMult(x, y) {
-    return 1 + ((getTemperatureAtSquare(x, y) - 273) / 273);
+    return 1 + ((getTemperatureAtWindSquare(x, y) - 273) / 273);
 }
 
 function tickWindPressureMap() {
@@ -432,4 +450,4 @@ function isPointInBounds(x, y) {
 
 initializeWindPressureMap();
 
-export { setPressurebyMult, getPressure, getAirSquareDensity, getWindSpeedAtLocation, renderWindPressureMap, initializeWindPressureMap, tickWindPressureMap, addWindPressure, removeWindPressure, updateWindPressureByMult, getAirSquareDensityTempAndHumidity, base_wind_pressure }
+export { getWindSquareAbove, setPressurebyMult, getPressure, getAirSquareDensity, getWindSpeedAtLocation, renderWindPressureMap, initializeWindPressureMap, tickWindPressureMap, addWindPressure, removeWindPressure, updateWindPressureByMult, getAirSquareDensityTempAndHumidity, base_wind_pressure }

@@ -50,7 +50,7 @@ function saturationPressureOfWaterVapor(t) {
 }
 
 function getTemperatureAtWindSquare(x, y) {
-    if (temperatureMap ==  null) {
+    if (temperatureMap == null) {
         init();
     }
     return temperatureMap[x][y];
@@ -64,8 +64,8 @@ function getTemperatureAtSquare(x, y) {
     x = Math.floor(x);
     y = Math.floor(y);
 
-    if (x < 0 || x >= curSquaresX || y < 0 || y >= curSquaresY) {
-        return 273 + 30;
+    if (!isPointInBounds(x, y)) {
+        return 273;
     }
 
     return temperatureMap[x][y];
@@ -112,7 +112,7 @@ function updateSquareTemperature(x, y, newVal) {
         console.warn("Trying to set invalid temperature ", newVal);
         newVal = 273;
     }
-    newVal = Math.max(newVal, 0);
+    newVal = Math.max(newVal, 10);
     newVal = Math.min(newVal, start_temperature * 2);
     var start = temperatureMap[x][y];
     temperatureMap[x][y] = newVal;
@@ -152,7 +152,7 @@ function temperatureDiffFunction(x, y, x2, y2, high, low) {
 
     var air_molesTotal = air_molesMult * 44.64;
     var air_grams = air_molesTotal * air_atomicWeight;
-    
+
     var air_joules_per_degree = air_grams / air_specificHeat;
     var air_degrees = joules_transferredEnergy / air_joules_per_degree;
 
@@ -165,12 +165,12 @@ function humidityDiffFunction(x, y, x2, y2, high, low) {
     var humidity1 = getHumidity(x, y);
     var humidity2 = getHumidity(x2, y2);
 
-    var humidityDiff = (humidity1 - humidity2) / 2;
+    var humidityDiff = Math.min((humidity1 - humidity2) / 2, 1);
 
     var square1PascalsForHumidityDiff = saturationPressureOfWaterVapor(temperatureMap[x][y]) * Math.abs(humidityDiff);
     var square2PascalsForHumidityDiff = saturationPressureOfWaterVapor(temperatureMap[x2][y2]) * Math.abs(humidityDiff);
 
-    var minPascalsForHumidityDiff = Math.min(square1PascalsForHumidityDiff, square2PascalsForHumidityDiff);
+    var minPascalsForHumidityDiff = Math.min(square1PascalsForHumidityDiff, square2PascalsForHumidityDiff)
 
     if (humidityDiff > 0) {
         return minPascalsForHumidityDiff;
@@ -194,45 +194,45 @@ function tickMap(
             if (getPressure(x, y) < 0) {
                 continue;
             }
-            [getMapDirectNeighbors].forEach((f) => 
+            [getMapDirectNeighbors].forEach((f) =>
                 f(x, y)
                     .filter((loc) => isPointInBounds(loc[0], loc[1]))
                     .filter((loc) => getPressure(loc[0], loc[1]) > 0)
                     .forEach((loc) => {
-                    var x2 = loc[0];
-                    var y2 = loc[1];
-                    var diff = diff_function(x, y, x2, y2, map[x][y], map[x2][y2]);
-                    
-                    if (y == y2) {
+                        var x2 = loc[0];
+                        var y2 = loc[1];
+                        var diff = diff_function(x, y, x2, y2, map[x][y], map[x2][y2]);
+
+                        if (y == y2) {
+                            update_function(x, y, map[x][y] - diff);
+                            update_function(x2, y2, map[x2][y2] + diff);
+                            return;
+                        }
+
+                        var side = 1;
+                        if (y2 < y) {
+                            side *= -1;
+                        }
+                        if (diff < 0) {
+                            side *= -1;
+                        }
+
+                        var vertMult = 5;
+
+                        if (side == 1) {
+                            diff /= vertMult;
+                        } else {
+                            diff *= vertMult;
+                        }
+
                         update_function(x, y, map[x][y] - diff);
                         update_function(x2, y2, map[x2][y2] + diff);
-                        return;
-                    }
 
-                    var side = 1;
-                    if (y2 < y) {
-                        side *= -1;
-                    }
-                    if (diff < 0) {
-                        side *= -1;
-                    }
-                
-                    var vertMult = 5; 
+                        // if positive, heat rising
+                        // if negative, cold falling
 
-                    if (side == 1) {
-                        diff /= vertMult;
-                    } else {
-                        diff *= vertMult;
-                    }
-
-                    update_function(x, y, map[x][y] - diff);
-                    update_function(x2, y2, map[x2][y2] + diff);
-
-                    // if positive, heat rising
-                    // if negative, cold falling
-
-                    // do the transform here to make sure that's what you're doing
-                }));
+                        // do the transform here to make sure that's what you're doing
+                    }));
         }
     }
 }
@@ -271,8 +271,8 @@ function doRain() {
                         sq.blockHealth = 0.05;
                         waterSaturationMap[x][y] -= usedWaterPascalsPerSquare;
                         getMapDirectNeighbors(x, y)
-                        .filter((loc) => loc[0] >= 0 && loc[0] < curSquaresX && loc[1] >= 0 && loc[1] < curSquaresY)
-                        .map((loc) =>  waterSaturationMap[loc[0]][loc[1]] -= usedWaterPascalsPerSquare);
+                            .filter((loc) => loc[0] >= 0 && loc[0] < curSquaresX && loc[1] >= 0 && loc[1] < curSquaresY)
+                            .map((loc) => waterSaturationMap[loc[0]][loc[1]] -= usedWaterPascalsPerSquare);
                     }
                 }
             }
@@ -290,7 +290,7 @@ function renderClouds() {
             if (squareHumidity < 1) {
                 continue;
             }
-            if (squareHumidity < (cloudMaxHumidity * cloudRainThresh) ) {
+            if (squareHumidity < (cloudMaxHumidity * cloudRainThresh)) {
                 MAIN_CONTEXT.fillStyle = calculateColorOpacity(squareHumidity, 0, cloudMaxHumidity * cloudRainThresh, c_cloudMinRGB, c_cloudMidRGB);
             } else {
                 MAIN_CONTEXT.fillStyle = calculateColor(squareHumidity, cloudMaxHumidity * cloudRainThresh, cloudMaxHumidity * cloudRainMax, c_cloudMidRGB, c_cloudMaxRGB);
@@ -369,7 +369,7 @@ function renderWaterSaturation() {
         for (let j = 0; j < curSquaresY; j++) {
             if (getPressure(i, j) < 0) {
                 continue;
-            } 
+            }
             MAIN_CONTEXT.fillStyle = calculateColor(getHumidity(i, j), cloudMaxHumidity * 0, cloudMaxHumidity * 4, c_waterSaturationLowRGB, c_waterSaturationHighRGB);
             MAIN_CONTEXT.fillRect(
                 4 * i * BASE_SIZE,
@@ -388,10 +388,10 @@ function getMapDirectNeighbors(x, y) {
         [x, y - 1],
         [x, y + 1]
     ]
-} 
+}
 
 function isPointInBounds(x, y) {
-    return x >= 0 && x < curSquaresX && y >= 0 && y < curSquaresY; 
+    return x >= 0 && x < curSquaresX && y >= 0 && y < curSquaresY;
 }
 
 function resetTemperatureAndHumidityAtSquare(x, y) {
@@ -401,8 +401,8 @@ function resetTemperatureAndHumidityAtSquare(x, y) {
 
 
 function addTemperature(x, y, delta) {
-    x  = Math.floor(x / 4);
-    y  = Math.floor(y / 4);
+    x = Math.floor(x / 4);
+    y = Math.floor(y / 4);
 
     if (!isPointInBounds(x, y)) {
         return;
@@ -412,7 +412,7 @@ function addTemperature(x, y, delta) {
     updateSquareTemperature(x, y, Math.max(temperatureMap[x][y] + delta, 0.1));
     var endTemp = temperatureMap[x][y];
     if (startTemp != endTemp) {
-        var mult = (endTemp - startTemp) / 273; 
+        var mult = (endTemp - startTemp) / 273;
         updateWindPressureByMult(x, y, (1 + mult));
     }
 }
@@ -428,5 +428,5 @@ function _addWaterSaturation(x, y) {
     waterSaturationMap[x][y] += 0.10 * saturationPressureOfWaterVapor(temperatureMap[x][y]);
 }
 
- 
+
 export { resetTemperatureAndHumidityAtSquare, getWaterSaturation, getTemperatureAtWindSquare, updateSquareTemperature, applySquareTemperatureDelta, renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds, getTemperatureAtSquare }
