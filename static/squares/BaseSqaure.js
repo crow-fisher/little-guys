@@ -35,7 +35,7 @@ import { removeOrganism } from "../organisms/_orgOperations.js";
 
 import { addSquareByName } from "../index.js";
 import { getCurTime } from "../time.js";
-import { addWaterSaturation, addWaterSaturationPascals, applySquareTemperatureDelta, cloudRainThresh, getTemperatureAtSquare, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, updateSquareTemperature } from "../temperature_humidity.js";
+import { addWaterSaturation, addWaterSaturationPascals, applySquareTemperatureDelta, calculateColorTemperature, cloudRainThresh, getTemperatureAtSquare, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, updateSquareTemperature } from "../temperature_humidity.js";
 import { getWindSquareAbove } from "../wind.js";
 
 export class BaseSquare {
@@ -227,7 +227,20 @@ export class BaseSquare {
                 this.renderBlockHealth();
             }
         }
+        else if (selectedViewMode == "temperature") {
+            this.renderTemperature();
+        }
     };
+
+    renderTemperature() {
+        MAIN_CONTEXT.fillStyle = calculateColorTemperature(this.temperature);
+        MAIN_CONTEXT.fillRect(
+            this.posX * BASE_SIZE,
+            this.posY * BASE_SIZE,
+            BASE_SIZE,
+            BASE_SIZE
+        );
+    }
 
     renderSurface() {
         MAIN_CONTEXT.fillStyle = this.surface ? "rgba(172, 35, 226, 0.25)" : "rgba(30, 172, 58, 0.25)";
@@ -489,6 +502,8 @@ export class BaseSquare {
         this.percolateInnerMoisture();
         this.calculateDirectPressure();
         this.calculateDistToFront();
+        this.waterEvaporationRoutine();
+        this.transferHeat();
 
         if (!this.physicsEnabled || this.linkedOrganismSquares.some((sq) => sq.type == "root")) {
             return false;
@@ -670,6 +685,17 @@ export class BaseSquare {
         }
         getDirectNeighbors(this.posX, this.posY).filter((sq) => sq.solid).forEach((sq) => this.waterContainment -= sq.percolateFromBlock(this));
         this.doBlockOutflow();
+    }
+
+    transferHeat() {
+        getNeighbors(this.posX, this.posY)
+            .filter((sq) => sq.collision)
+            .forEach((sq) => {
+                var diff = this.temperature - sq.temperature;
+                var diffSmall = diff / 10; 
+                this.temperature -= diffSmall;
+                sq.temperature += diffSmall;
+            })
     }
 
     doBlockOutflow() {

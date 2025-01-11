@@ -17,6 +17,7 @@ var air_thermalConductivity = 0.024; // watts per meter kelvin
 var air_specificHeat = 1.005; // joules per gram degrees c 
 var air_atomicWeight = 28.96;
 var waterVapor_specificHeat = 1.9;  // ...
+var startHumidity = 0.5;
 
 var c_tempLowRGB = hexToRgb("#1dbde6");
 var c_tempHighRGB = hexToRgb("#f1515e");
@@ -90,7 +91,7 @@ function init() {
     curSquaresX = Math.ceil(CANVAS_SQUARES_X / 4)
     curSquaresY = Math.ceil(CANVAS_SQUARES_Y / 4)
 
-    var start_watersaturation = saturationPressureOfWaterVapor(start_temperature) * cloudMaxHumidity * cloudRainThresh;
+    var start_watersaturation = saturationPressureOfWaterVapor(start_temperature) * cloudMaxHumidity * cloudRainThresh * startHumidity;
 
     for (let i = 0; i < curSquaresX; i++) {
         for (let j = 0; j < curSquaresY; j++) {
@@ -326,6 +327,10 @@ function getWaterSaturation(x, y) {
     return waterSaturationMap[x][y];
 }
 
+function calculateColorTemperature(val) {
+    return calculateColor(val, 273, 273 + 30, c_tempLowRGB, c_tempHighRGB);
+}
+
 function calculateColor(val, valMin, valMax, colorMin, colorMax) {
     val = Math.min(val, valMax);
     var normalized = (val - valMin) / (valMax - valMin);
@@ -370,7 +375,7 @@ function renderWaterSaturation() {
             if (getPressure(i, j) < 0) {
                 continue;
             }
-            MAIN_CONTEXT.fillStyle = calculateColor(getHumidity(i, j), cloudMaxHumidity * 0, cloudMaxHumidity * 4, c_waterSaturationLowRGB, c_waterSaturationHighRGB);
+            MAIN_CONTEXT.fillStyle = calculateColor(getHumidity(i, j), 0, 2, c_waterSaturationLowRGB, c_waterSaturationHighRGB);
             MAIN_CONTEXT.fillRect(
                 4 * i * BASE_SIZE,
                 4 * j * BASE_SIZE,
@@ -433,4 +438,4 @@ function _addWaterSaturation(x, y) {
 }
 
 
-export { pascalsPerWaterSquare, cloudRainThresh, addWaterSaturationPascals, saturationPressureOfWaterVapor, resetTemperatureAndHumidityAtSquare, getWaterSaturation, getTemperatureAtWindSquare, updateSquareTemperature, applySquareTemperatureDelta, renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds, getTemperatureAtSquare }
+export { pascalsPerWaterSquare, cloudRainThresh, calculateColorTemperature, addWaterSaturationPascals, saturationPressureOfWaterVapor, resetTemperatureAndHumidityAtSquare, getWaterSaturation, getTemperatureAtWindSquare, updateSquareTemperature, applySquareTemperatureDelta, renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds, getTemperatureAtSquare }

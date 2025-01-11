@@ -63,7 +63,7 @@ var base_waterContainmentMax = {
 
 var base_waterContainmentTransferRate = {
     name: "base_waterContainmentTransferRate",
-    value: 5
+    value: 0.5
 };
 
 var gravel_waterContainmentMax = {

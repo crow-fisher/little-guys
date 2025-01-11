@@ -407,11 +407,16 @@ function main() {
         }
         
 
-        renderTime();
+        if (selectedViewMode == "normal") {
+            renderTime();
+        }
         renderSquares();
         renderOrganisms();
         renderWater();
-        renderClouds();
+
+        if (selectedViewMode == "normal") {
+            renderClouds();
+        }
 
 
         // if (blockModification_val != null && lastMode == "blockModification" && blockModification_val.startsWith("wind")) {
