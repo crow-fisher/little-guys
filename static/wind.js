@@ -83,6 +83,9 @@ function getWindPressureDiff(w1, w2) {
 }
 
 function setPressurebyMult(x, y, mult) {
+    if (getPressure(x, y) < 0) {
+        return;
+    }
     windPressureMap[x][y] *= mult;
 }
 
@@ -183,6 +186,7 @@ function tickWindPressureMap() {
     var windPressureMapKeys = Array.from(Object.keys(windPressureMapByPressure)).sort((a, b) => b - a);
 
     windPressureMapKeys
+        .filter((pressure) => pressure > 0)
         .forEach((pressure) => {
             var pressureLocations = windPressureMapByPressure[pressure];
             pressureLocations
@@ -191,6 +195,7 @@ function tickWindPressureMap() {
                     var y = pl[1];
                     getWindDirectNeighbors(x, y)
                         .filter((spl) => isPointInBounds(spl[0], spl[1]))
+                        .filter((spl) => getPressure(spl[0], spl[1]) > 0)
                         .forEach((spl) => {
                             var x2 = spl[0];
                             var y2 = spl[1];

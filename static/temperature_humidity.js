@@ -177,6 +177,7 @@ function tickMap(
             [getMapDirectNeighbors].forEach((f) => 
                 f(x, y)
                     .filter((loc) => isPointInBounds(loc[0], loc[1]))
+                    .filter((loc) => getPressure(loc[0], loc[1]) > 0)
                     .forEach((loc) => {
                     var x2 = loc[0];
                     var y2 = loc[1];
