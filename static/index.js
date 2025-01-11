@@ -537,9 +537,9 @@ function doBlockMod(posX, posY) {
     }
     if (blockModification_val == "temperature") {
         if (!rightMouseClicked) 
-            addTemperature(posX, posY, .05);
+            addTemperature(posX, posY, .5);
         else 
-            addTemperature(posX, posY, -0.05);
+            addTemperature(posX, posY, -0.5);
     }
 
 }

@@ -11,7 +11,6 @@ var waterSaturationMap;
 var curSquaresX = 0;
 var curSquaresY = 0;
 
-var clickAddTemperature = 1;
 var start_temperature = 273;
 
 var air_thermalConductivity = 0.024; // watts per meter kelvin
@@ -157,11 +156,7 @@ function temperatureDiffFunction(x, y, x2, y2, high, low) {
     var air_joules_per_degree = air_grams / air_specificHeat;
     var air_degrees = joules_transferredEnergy / air_joules_per_degree;
 
-    air_degrees /= 10;
-
-    if (y2 < y) {
-        air_degrees *= 1000;
-    }
+    air_degrees *= 100;
 
     return air_degrees * getTimeSpeedMult();
 
@@ -179,15 +174,43 @@ function tickMap(
         for (let j = 0; j < yKeys.length; j++) {
             var x = parseInt(xKeys[i]);
             var y = parseInt(yKeys[j]);
-            [getMapDirectNeighbors, getMapIndirectNeighbors].forEach((f) => 
+            [getMapDirectNeighbors].forEach((f) => 
                 f(x, y)
                     .filter((loc) => isPointInBounds(loc[0], loc[1]))
                     .forEach((loc) => {
                     var x2 = loc[0];
                     var y2 = loc[1];
                     var diff = diff_function(x, y, x2, y2, map[x][y], map[x2][y2]);
+                    
+                    if (y == y2) {
+                        update_function(x, y, map[x][y] - diff);
+                        update_function(x2, y2, map[x2][y2] + diff);
+                        return;
+                    }
+
+                    var side = 1;
+                    if (y2 < y) {
+                        side *= -1;
+                    }
+                    if (diff < 0) {
+                        side *= -1;
+                    }
+                
+                    var vertMult = 5; 
+
+                    if (side == 1) {
+                        diff /= vertMult;
+                    } else {
+                        diff *= vertMult;
+                    }
+
                     update_function(x, y, map[x][y] - diff);
                     update_function(x2, y2, map[x2][y2] + diff);
+
+                    // if positive, heat rising
+                    // if negative, cold falling
+
+                    // do the transform here to make sure that's what you're doing
                 }));
         }
     }
