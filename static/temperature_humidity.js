@@ -71,15 +71,15 @@ function getTemperatureAtSquare(x, y) {
     return temperatureMap[x][y];
 }
 
-function applyTemperatureDelta(x, y, val) {
+function applySquareTemperatureDelta(x, y, val) {
     x /= 4;
     y /= 4;
 
     x = Math.floor(x);
     y = Math.floor(y);
 
-    if (x < 0 || x >= curSquaresX || y < 0 || y >= curSquaresY) {
-        return;
+    if (!isPointInBounds(x, y)) {
+        return 0;
     }
     updateSquareTemperature(x, y, temperatureMap[x][y] + val)
 }
@@ -165,7 +165,7 @@ function humidityDiffFunction(x, y, x2, y2, high, low) {
     var humidity1 = getHumidity(x, y);
     var humidity2 = getHumidity(x2, y2);
 
-    var humidityDiff = humidity1 - humidity2;
+    var humidityDiff = (humidity1 - humidity2) / 2;
 
     var square1PascalsForHumidityDiff = saturationPressureOfWaterVapor(temperatureMap[x][y]) * Math.abs(humidityDiff);
     var square2PascalsForHumidityDiff = saturationPressureOfWaterVapor(temperatureMap[x2][y2]) * Math.abs(humidityDiff);
@@ -173,12 +173,11 @@ function humidityDiffFunction(x, y, x2, y2, high, low) {
     var minPascalsForHumidityDiff = Math.min(square1PascalsForHumidityDiff, square2PascalsForHumidityDiff);
 
     if (humidityDiff > 0) {
-        return minPascalsForHumidityDiff / 2;
+        return minPascalsForHumidityDiff;
     } else {
-        return (-1) * (minPascalsForHumidityDiff / 2);
+        return (-1) * (minPascalsForHumidityDiff);
     }
 }
-
 
 
 function tickMap(
@@ -284,6 +283,9 @@ function doRain() {
 function renderClouds() {
     for (let i = 0; i < curSquaresX; i++) {
         for (let j = 0; j < curSquaresY; j++) {
+            if (getPressure(i, j) < 0) {
+                continue;
+            }
             var squareHumidity = getHumidity(i, j);
             if (squareHumidity < 1) {
                 continue;
@@ -310,7 +312,6 @@ function tickMaps() {
     }
     tickMap(temperatureMap, temperatureDiffFunction, updateSquareTemperature);
     tickMap(waterSaturationMap, humidityDiffFunction, (x, y, v) => waterSaturationMap[x][y] = v);
-    // tickMap(waterSaturationMap, (x, y, x2, y2, a, b) => (a - b) / 2, (x, y, v) => waterSaturationMap[x][y] = v);
     doRain();
 }
 
@@ -366,6 +367,9 @@ function renderTemperature() {
 function renderWaterSaturation() {
     for (let i = 0; i < curSquaresX; i++) {
         for (let j = 0; j < curSquaresY; j++) {
+            if (getPressure(i, j) < 0) {
+                continue;
+            } 
             MAIN_CONTEXT.fillStyle = calculateColor(getHumidity(i, j), cloudMaxHumidity * 0, cloudMaxHumidity * 4, c_waterSaturationLowRGB, c_waterSaturationHighRGB);
             MAIN_CONTEXT.fillRect(
                 4 * i * BASE_SIZE,
@@ -386,17 +390,13 @@ function getMapDirectNeighbors(x, y) {
     ]
 } 
 
-function getMapIndirectNeighbors(x, y) {
-    return [
-        [x - 1, y - 1],
-        [x + 1, y - 1],
-        [x + 1, y - 1],
-        [x + 1, y + 1]
-    ]
-}
-
 function isPointInBounds(x, y) {
     return x >= 0 && x < curSquaresX && y >= 0 && y < curSquaresY; 
+}
+
+function resetTemperatureAndHumidityAtSquare(x, y) {
+    temperatureMap[x][y] = start_temperature;
+    waterSaturationMap[x][y] = saturationPressureOfWaterVapor(start_temperature);
 }
 
 
@@ -409,7 +409,7 @@ function addTemperature(x, y, delta) {
     }
 
     var startTemp = temperatureMap[x][y];
-    updateSquareTemperature(x, y, temperatureMap[x][y] + delta);
+    updateSquareTemperature(x, y, Math.max(temperatureMap[x][y] + delta, 0.1));
     var endTemp = temperatureMap[x][y];
     if (startTemp != endTemp) {
         var mult = (endTemp - startTemp) / 273; 
@@ -429,4 +429,4 @@ function _addWaterSaturation(x, y) {
 }
 
  
-export { getWaterSaturation, getTemperatureAtWindSquare, updateSquareTemperature, applyTemperatureDelta, renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds, getTemperatureAtSquare }
+export { resetTemperatureAndHumidityAtSquare, getWaterSaturation, getTemperatureAtWindSquare, updateSquareTemperature, applySquareTemperatureDelta, renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds, getTemperatureAtSquare }

@@ -3,7 +3,7 @@ import { getSquares } from "./squares/_sqOperations.js";
 import { MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE } from "./index.js";
 import { getCurTime, initializeStarMap } from "./time.js";
 import { COLOR_BLUE, COLOR_BROWN, COLOR_GREEN, COLOR_RED } from "./colors.js";
-import { addTemperature, getTemperatureAtSquare, getTemperatureAtWindSquare, getWaterSaturation, updateSquareTemperature } from "./temperature_humidity.js";
+import { addTemperature, getTemperatureAtSquare, getTemperatureAtWindSquare, getWaterSaturation, resetTemperatureAndHumidityAtSquare, updateSquareTemperature } from "./temperature_humidity.js";
 
 var windPressureMap;
 var windPressureMapByPressure;
@@ -173,6 +173,7 @@ function tickWindPressureMap() {
                     })) {
                         windPressureMap[i][j] = base_wind_pressure;
                     }
+                    resetTemperatureAndHumidityAtSquare(i, j);
                 }
             }
             var pressure = Math.floor(windPressureMap[i][j]);
