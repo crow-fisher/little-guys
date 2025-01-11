@@ -417,6 +417,10 @@ function addTemperature(x, y, delta) {
     }
 }
 
+function addWaterSaturationPascals(x, y, pascals) {
+    waterSaturationMap[x][y] += pascals;
+}
+
 function addWaterSaturation(x, y) {
     _addWaterSaturation(x, y);
     getMapDirectNeighbors(x, y).forEach((loc) => _addWaterSaturation(loc[0], loc[1]));
@@ -429,4 +433,4 @@ function _addWaterSaturation(x, y) {
 }
 
 
-export { resetTemperatureAndHumidityAtSquare, getWaterSaturation, getTemperatureAtWindSquare, updateSquareTemperature, applySquareTemperatureDelta, renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds, getTemperatureAtSquare }
+export { pascalsPerWaterSquare, cloudRainThresh, addWaterSaturationPascals, saturationPressureOfWaterVapor, resetTemperatureAndHumidityAtSquare, getWaterSaturation, getTemperatureAtWindSquare, updateSquareTemperature, applySquareTemperatureDelta, renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds, getTemperatureAtSquare }

@@ -35,7 +35,7 @@ import { removeOrganism } from "../organisms/_orgOperations.js";
 
 import { addSquareByName } from "../index.js";
 import { getCurTime } from "../time.js";
-import { applySquareTemperatureDelta, getTemperatureAtSquare, getTemperatureAtWindSquare, updateSquareTemperature } from "../temperature_humidity.js";
+import { addWaterSaturation, addWaterSaturationPascals, applySquareTemperatureDelta, cloudRainThresh, getTemperatureAtSquare, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, updateSquareTemperature } from "../temperature_humidity.js";
 import { getWindSquareAbove } from "../wind.js";
 
 export class BaseSquare {
@@ -109,6 +109,11 @@ export class BaseSquare {
         this.vaporHeat = 10 ** 8; // kJ/mol
         this.fusionTemp = 0; // freezing point 
         this.vaporTemp = 10 ** 8; // boiling point
+
+        this.water_fusionHeat = 6;
+        this.water_vaporHeat = 40.7;
+        this.water_fusionTemp = 273; 
+        this.water_vaporTemp = 373;
     };
 
     temperatureRoutine() {
@@ -128,6 +133,45 @@ export class BaseSquare {
         var diff = this.thermalConductivity * ((adjacentTemp - this.temperature) / 100);
         this.temperature += diff / this.thermalMass;
         updateSquareTemperature(x, y, getTemperatureAtWindSquare(x, y) - diff);
+    }
+
+    waterEvaporationRoutine() {
+        if (this.currentPressureDirect != 0) {
+            return;
+        }
+
+        var adjacentWindSquare = getWindSquareAbove(this.posX, this.posY);
+
+        var x = adjacentWindSquare[0];
+        var y = adjacentWindSquare[1];
+
+        if (x < 0 || y < 0) {
+            return;
+        }
+
+        var temperatureAbove = getTemperatureAtWindSquare(x, y);
+        var waterPascalsAbove = getWaterSaturation(x, y);
+
+        var maxPascals = saturationPressureOfWaterVapor(temperatureAbove);
+        var vaporPressure = saturationPressureOfWaterVapor(this.temperature);
+
+        if (waterPascalsAbove > maxPascals || waterPascalsAbove > vaporPressure) {
+            return;
+        }
+
+        var diff = vaporPressure - waterPascalsAbove;
+        diff /= 10;
+
+        if (this.solid) {
+            diff *= this.waterContainment / this.waterContainmentMax.value;
+            this.waterContainment -= (diff / pascalsPerWaterSquare); 
+        } else {
+            diff *= this.blockHealth / this.blockHealthMax;
+            this.blockHealth -= (diff / pascalsPerWaterSquare);
+        }
+
+        this.temperature -= (diff / 10 ** 6) * this.water_vaporHeat;
+        addWaterSaturationPascals(x, y, diff);
     }
 
 

@@ -40,10 +40,7 @@ class WaterSquare extends BaseSquare {
         // water starts as a liquid 
         this.state = 1;
         this.thermalConductivity = 0.6;
-        this.fusionHeat = 6;
-        this.vaporHeat = 40.7;
-        this.fusionTemp = 273; 
-        this.vaporTemp = 373;
+
     }
 
     reset() {
