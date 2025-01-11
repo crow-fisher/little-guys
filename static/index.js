@@ -188,8 +188,8 @@ var lastLastMoveOffset = null;
 var lastTick = Date.now();
 
 // wind is tiled x4
-var CANVAS_SQUARES_X = 75 * 4; // * 8; //6;
-var CANVAS_SQUARES_Y = 35 * 4; // * 8; // 8;
+var CANVAS_SQUARES_X = 20 * 4; // * 8; //6;
+var CANVAS_SQUARES_Y = 20 * 4; // * 8; // 8;
 
 function setCanvasSquaresX(val) {
     CANVAS_SQUARES_X = Math.floor(val);
@@ -395,16 +395,21 @@ function main() {
             tickWindPressureMap();
             tickMaps();
         }
-        // renderTime();
+        renderTime();
         renderSquares();
         renderOrganisms();
         renderWater();
         renderClouds();
 
-
-        renderWindPressureMap();
-        renderTemperature();
-        // renderWaterSaturation();
+        if (selectedViewMode == "temperature") {
+            renderTemperature();
+        }
+        if (selectedViewMode == "wind") {
+            renderWindPressureMap();
+        }
+        if (selectedViewMode == "humidity") {
+            renderWaterSaturation();
+        }
         
         // if (blockModification_val != null && lastMode == "blockModification" && blockModification_val.startsWith("wind")) {
         //     renderWindPressureMap();

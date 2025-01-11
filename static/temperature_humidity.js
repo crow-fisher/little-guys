@@ -159,8 +159,26 @@ function temperatureDiffFunction(x, y, x2, y2, high, low) {
     air_degrees *= 100;
 
     return air_degrees * getTimeSpeedMult();
-
 }
+
+function humidityDiffFunction(x, y, x2, y2, high, low) {
+    var humidity1 = getHumidity(x, y);
+    var humidity2 = getHumidity(x2, y2);
+
+    var humidityDiff = humidity1 - humidity2;
+
+    var square1PascalsForHumidityDiff = saturationPressureOfWaterVapor(temperatureMap[x][y]) * Math.abs(humidityDiff);
+    var square2PascalsForHumidityDiff = saturationPressureOfWaterVapor(temperatureMap[x2][y2]) * Math.abs(humidityDiff);
+
+    var minPascalsForHumidityDiff = Math.min(square1PascalsForHumidityDiff, square2PascalsForHumidityDiff);
+
+    if (humidityDiff > 0) {
+        return minPascalsForHumidityDiff / 2;
+    } else {
+        return (-1) * (minPascalsForHumidityDiff / 2);
+    }
+}
+
 
 
 function tickMap(
@@ -174,6 +192,9 @@ function tickMap(
         for (let j = 0; j < yKeys.length; j++) {
             var x = parseInt(xKeys[i]);
             var y = parseInt(yKeys[j]);
+            if (getPressure(x, y) < 0) {
+                continue;
+            }
             [getMapDirectNeighbors].forEach((f) => 
                 f(x, y)
                     .filter((loc) => isPointInBounds(loc[0], loc[1]))
@@ -288,7 +309,8 @@ function tickMaps() {
         init();
     }
     tickMap(temperatureMap, temperatureDiffFunction, updateSquareTemperature);
-    tickMap(waterSaturationMap, (x, y, x2, y2, a, b) => (a - b) / 2, (x, y, v) => waterSaturationMap[x][y] = v);
+    tickMap(waterSaturationMap, humidityDiffFunction, (x, y, v) => waterSaturationMap[x][y] = v);
+    // tickMap(waterSaturationMap, (x, y, x2, y2, a, b) => (a - b) / 2, (x, y, v) => waterSaturationMap[x][y] = v);
     doRain();
 }
 
@@ -327,6 +349,9 @@ function calculateColorOpacity(val, valMin, valMax, colorMin, colorMax) {
 function renderTemperature() {
     for (let i = 0; i < curSquaresX; i++) {
         for (let j = 0; j < curSquaresY; j++) {
+            if (getPressure(i, j) < 0) {
+                continue;
+            }
             MAIN_CONTEXT.fillStyle = calculateColor(temperatureMap[i][j], 273, 273 + 30, c_tempLowRGB, c_tempHighRGB);
             MAIN_CONTEXT.fillRect(
                 4 * i * BASE_SIZE,
