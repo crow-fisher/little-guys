@@ -3,7 +3,7 @@ import { getSquares } from "./squares/_sqOperations.js";
 import { MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE } from "./index.js";
 import { getCurTime, initializeStarMap } from "./time.js";
 import { COLOR_BLUE, COLOR_BROWN, COLOR_GREEN, COLOR_RED } from "./colors.js";
-import { addTemperature, getTemperatureAtSquare, getTemperatureAtWindSquare, getWaterSaturation, resetTemperatureAndHumidityAtSquare, updateSquareTemperature } from "./temperature_humidity.js";
+import { addTemperature, addWaterSaturationPascals, getTemperatureAtSquare, getTemperatureAtWindSquare, getWaterSaturation, resetTemperatureAndHumidityAtSquare, updateSquareTemperature } from "./temperature_humidity.js";
 
 var windPressureMap;
 var windPressureMapByPressure;
@@ -218,7 +218,8 @@ function tickWindPressureMap() {
                         .forEach((spl) => {
                             var x2 = spl[0];
                             var y2 = spl[1];
-
+                            
+                            var plPressure = windPressureMap[x][y]
                             var splPressure = windPressureMap[x2][y2];
                         
                             var plTemp = getTemperatureAtWindSquare(x, y);
@@ -240,6 +241,13 @@ function tickWindPressureMap() {
                             // if (Math.abs(plTemp - splTemp) > 1) 
                             //     console.log(x2, y2, splTemp, endSplTemp);
                             updateSquareTemperature(x2, y2, endSplTemp);
+
+                            var plWaterPressure = getWaterSaturation(x, y);
+                            var waterPascalsLost = (windPressureDiff / plPressure) * plWaterPressure;
+                            addWaterSaturationPascals(x, y, -waterPascalsLost);
+                            addWaterSaturationPascals(x2, y2, waterPascalsLost);
+
+                            //TODO: Also do this for water pressure!!!
                             windPressureMap[x][y] -= windPressureDiff;
                             windPressureMap[x2][y2] += windPressureDiff;
                         });

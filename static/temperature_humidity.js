@@ -11,7 +11,7 @@ var waterSaturationMap;
 var curSquaresX = 0;
 var curSquaresY = 0;
 
-var start_temperature = 273;
+var start_temperature = 273 + 40;
 
 var air_thermalConductivity = 0.024; // watts per meter kelvin
 var air_specificHeat = 1.005; // joules per gram degrees c 
@@ -30,7 +30,7 @@ var c_cloudMidRGB = hexToRgb("#dbdce1")
 var c_cloudMaxRGB = hexToRgb("#818398");
 
 var cloudMaxHumidity = 4;
-var cloudRainThresh = 2;
+var cloudRainThresh = 1;
 var cloudRainMax = 8;
 var cloudMaxOpacity = 0.65;
 
@@ -146,11 +146,6 @@ function temperatureDiffFunction(x, y, x2, y2, high, low) {
     var joules_transferredEnergy = watts_transferRate * ((getCurTime() - getPrevTime()) / 1000);
     var air_molesMult = getAirSquareDensityTempAndHumidity(x, y);
 
-    if (air_molesMult > 2 || air_molesMult < 0.125) {
-        console.warn("Something fucky");
-        return 0;
-    }
-
     var air_molesTotal = air_molesMult * 44.64;
     var air_grams = air_molesTotal * air_atomicWeight;
 
@@ -265,10 +260,8 @@ function doRain() {
                 ) * 0.8;
 
             if (adjacentHumidity > (cloudMaxHumidity * 5 * cloudRainThresh) && adjacentWaterPascals > pascalsPerWaterSquare) {
-                var probability = adjacentHumidity / (cloudMaxHumidity * 5 * cloudRainMax);
                 var usedWaterPascalsPerSquare = pascalsPerWaterSquare / 5;
-
-                if (Math.random() < probability && Math.random() > 0.99) {
+                if (Math.random() > 0.90) {
                     var sq = addSquareByName(x * 4 + randNumber(0, 3), y * 4 + randNumber(0, 3), "water");
                     if (sq) {
                         sq.blockHealth = 0.05;
@@ -330,7 +323,7 @@ function getWaterSaturation(x, y) {
 }
 
 function calculateColorTemperature(val) {
-    return calculateColor(val, 273, 273 + 100, c_tempLowRGB, c_tempHighRGB);
+    return calculateColor(val, 273, 273 + 200, c_tempLowRGB, c_tempHighRGB);
 }
 
 function calculateColor(val, valMin, valMax, colorMin, colorMax) {
@@ -424,8 +417,20 @@ function addTemperature(x, y, delta) {
     }
 }
 
+function addWaterSaturationPascalsSqCoords(x, y, pascals) {
+    x = Math.floor(x / 4);
+    y = Math.floor(y / 4);
+
+    if (!isPointInBounds(x, y)) {
+        return;
+    }
+    addWaterSaturationPascals(x, y, pascals);
+}
+
 function addWaterSaturationPascals(x, y, pascals) {
-    waterSaturationMap[x][y] += pascals;
+    var end = waterSaturationMap[x][y] + pascals; 
+    end = Math.max(end, 10);
+    waterSaturationMap[x][y] = end;
 }
 
 function addWaterSaturation(x, y) {
@@ -440,4 +445,4 @@ function _addWaterSaturation(x, y) {
 }
 
 
-export { pascalsPerWaterSquare, cloudRainThresh, calculateColorTemperature, addWaterSaturationPascals, saturationPressureOfWaterVapor, resetTemperatureAndHumidityAtSquare, getWaterSaturation, getTemperatureAtWindSquare, updateSquareTemperature, applySquareTemperatureDelta, renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds, getTemperatureAtSquare }
+export { pascalsPerWaterSquare, cloudRainThresh, calculateColorTemperature, addWaterSaturationPascals, addWaterSaturationPascalsSqCoords, saturationPressureOfWaterVapor, resetTemperatureAndHumidityAtSquare, getWaterSaturation, getTemperatureAtWindSquare, updateSquareTemperature, applySquareTemperatureDelta, renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds, getTemperatureAtSquare }

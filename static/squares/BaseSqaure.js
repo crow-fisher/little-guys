@@ -111,7 +111,7 @@ export class BaseSquare {
         this.vaporTemp = 10 ** 8; // boiling point
 
         this.water_fusionHeat = 6;
-        this.water_vaporHeat = .0047;
+        this.water_vaporHeat = .000047;
         this.water_fusionTemp = 273;
         this.water_vaporTemp = 373;
     };
@@ -160,7 +160,6 @@ export class BaseSquare {
             this.waterContainment -= (diff / pascalsPerWaterSquare);
         } else {
             // evaporating water
-            diff *= this.blockHealth / this.blockHealthMax;
             this.blockHealth -= (diff / pascalsPerWaterSquare);
             // also take the temperature out of the air square above us
             updateSquareTemperature(x, y, getTemperatureAtWindSquare(x, y) - 0.1 * diff * this.water_vaporHeat);

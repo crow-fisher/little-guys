@@ -31,7 +31,7 @@ import { HydrangeaSeedOrganism } from "./organisms/HydrangeaSeedOrganism.js";
 import { MossCoolSeedOrganism } from "./organisms/MossCoolSeedOrganism.js";
 import { SunflowerSeedOrganism } from "./organisms/SunflowerSeedOrganism.js";
 import { addWindPressure, initializeWindPressureMap, removeWindPressure, renderWindPressureMap, tickWindPressureMap } from "./wind.js";
-import { renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds } from "./temperature_humidity.js";
+import { renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds, addWaterSaturationPascals, addWaterSaturationPascalsSqCoords } from "./temperature_humidity.js";
 
 var lastMode = "normal"; // options: "normal", "special", "organism", "blockModification";
 
@@ -553,6 +553,12 @@ function doBlockMod(posX, posY) {
             addTemperature(posX, posY, .05);
         else 
             addTemperature(posX, posY, -0.05);
+    }
+    if (blockModification_val == "humidity") {
+        if (!rightMouseClicked)
+            addWaterSaturationPascalsSqCoords(posX, posY, 1000);
+        else
+            addWaterSaturationPascalsSqCoords(posX, posY, -1000);
     }
 
 }
