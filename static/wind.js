@@ -44,19 +44,7 @@ function getAirSquareDensity(x, y) {
 }
 
 function getAirSquareDensityTempAndHumidity(x, y) {
-    return ((air_molar_mass / getTempMolarMult(x, y)) + (getWaterSaturation(x, y) / base_wind_pressure) * (water_vapor_molar_mass / getTempMolarMult(x, y))) / air_molar_mass;
-}
-
-function getPressureProcessed(x, y) {
-    if (windPressureMap == null) {
-        initializeWindPressureMap();
-    }
-    if (!isPointInBounds(x, y)) {
-        return -1;
-    }
-    var pressure = windPressureMap[x][y];
-    var density = getAirSquareDensityTempAndHumidity(x, y);
-    return pressure * density;
+    return getTempMolarMult(x, y); // ((air_molar_mass / getTempMolarMult(x, y)) + (getWaterSaturation(x, y) / base_wind_pressure) * (water_vapor_molar_mass / getTempMolarMult(x, y))) / air_molar_mass;
 }
 
 function getPressure(x, y) {

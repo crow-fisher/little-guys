@@ -1,10 +1,10 @@
-import { randNumber, randRange, rgbToRgba } from "./common.js";
+import { hexToRgb, randNumber, randRange, rgbToRgba } from "./common.js";
 import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, MAIN_CONTEXT} from "./index.js";
+import { calculateColor, calculateColorProvideOpacity } from "./temperature_humidity.js";
 
 var millis_per_day = 100000;
-// var millis_per_day = 5000;
 var curDay = 0;
-var curTime = 0;
+var curTime = 0.2;
 var prevTime = 0;
 
 var prevRealTime = Date.now();
@@ -12,7 +12,12 @@ var prevRealTime = Date.now();
 var starMap;
 var starMapCenterX;
 var starMapCenterY;
-
+// https://coolors.co/gradient-maker/18254c-5a4d41-a49f67-7e9fb1-84b2e2?position=0,43,53,73,100&opacity=100,100,100,100,100&type=linear&rotation=90
+var sky_nightRGB = hexToRgb("#18254C");
+var sky_duskRGB = hexToRgb("#5A4D41");
+var sky_colorEveningMorningRGB = hexToRgb("#A49F67");
+var sky_colorNearNoonRGB = hexToRgb("#7E9FB1");
+var sky_colorNoonRGB = hexToRgb("#84B2E2");
 
 function getTimeSpeedMult() {
     return 8.64 * 10 ** 7 / millis_per_day;
@@ -42,7 +47,7 @@ function initializeStarMap() {
 }
 
 
-function renderStarMap() {
+function renderStarMap(brightnessMult) {
     if (starMap == null) {
         initializeStarMap();
     }
@@ -53,7 +58,7 @@ function renderStarMap() {
         for (let j = 0; j < yKeys.length; j++) {
             var starX = xKeys[i];
             var starY = yKeys[j];
-            var starbrightness = starMap[starX][starY];
+            var starbrightness = starMap[starX][starY] * Math.max(brightnessMult, 0);
 
             var starXRelOrigin = starX - starMapCenterX;
             var starYRelOrigin = starY - starMapCenterY;
@@ -104,11 +109,59 @@ function updateTime() {
     }
 }
 
-function renderTime() {
+function renderSkyBackground(time) {
+    var processed = Math.max(0, (1 - Math.abs(0.5 - time) * 2) * 2.5 - 1)
+    var minColor, maxColor, min, max, starBrightness;
 
+    var duskEnd = 0.2;
+    var morningEnd = 0.5;
+    var nearNoon = 0.8;
+    var noon = 1.5;
+
+    if (processed < duskEnd) {
+        minColor = sky_nightRGB;
+        maxColor = sky_duskRGB;
+        min = 0;
+        max = duskEnd;
+        starBrightness = 1;
+    } else if (processed < morningEnd) {
+        minColor = sky_duskRGB;
+        maxColor = sky_colorEveningMorningRGB;
+        min = duskEnd;
+        max = morningEnd;
+        starBrightness = 1 - ((processed - min) / (max - min));
+    } else if (processed < nearNoon) {
+        minColor = sky_colorEveningMorningRGB;
+        maxColor = sky_colorNearNoonRGB;
+        min = morningEnd;
+        max = nearNoon;
+        starBrightness = 0;
+    } else {
+        minColor = sky_colorNearNoonRGB
+        maxColor = sky_colorNoonRGB;
+        min = nearNoon; 
+        max = noon;
+        starBrightness = 0;
+    }
+
+    MAIN_CONTEXT.fillStyle = calculateColorProvideOpacity(processed, min, max, minColor, maxColor, 0.5);
+    MAIN_CONTEXT.fillRect(
+        0,
+        0,
+        CANVAS_SQUARES_X * BASE_SIZE,
+        CANVAS_SQUARES_Y * BASE_SIZE
+    );
+
+    if (starBrightness > 0) {
+        renderStarMap(starBrightness);
+    }
+}
+
+function renderTime() {
     // 0.5 is noon, 0.25 is sunrise, 0.75 is sunset
     var daylightStrength = 0;
     var currentTime = getCurDay() % 1;
+
     if (currentTime > 0.25 && currentTime < 0.75) {
         daylightStrength = Math.sin(currentTime * 2 * Math.PI - (Math.PI / 2)) ** 0.35;
     }
@@ -122,6 +175,7 @@ function renderTime() {
         b: Math.floor(dc.b * daylightStrength),
     }
 
+
     MAIN_CONTEXT.fillStyle = rgbToRgba(resColor.r, resColor.g, resColor.b, 0.35);
     MAIN_CONTEXT.fillRect(
         0,
@@ -130,7 +184,9 @@ function renderTime() {
         CANVAS_SQUARES_Y * BASE_SIZE
     );
 
-    renderStarMap();
+    renderSkyBackground(currentTime);
+
+
 }
 
 // https://www.researchgate.net/publication/328726901_Real-time_adaptable_and_coherent_rendering_for_outdoor_augmented_reality/download

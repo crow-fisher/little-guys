@@ -91,7 +91,7 @@ function init() {
     curSquaresX = Math.ceil(CANVAS_SQUARES_X / 4)
     curSquaresY = Math.ceil(CANVAS_SQUARES_Y / 4)
 
-    var start_watersaturation = saturationPressureOfWaterVapor(start_temperature) * cloudMaxHumidity * cloudRainThresh * startHumidity;
+    var start_watersaturation = saturationPressureOfWaterVapor(start_temperature) * startHumidity;
 
     for (let i = 0; i < curSquaresX; i++) {
         for (let j = 0; j < curSquaresY; j++) {
@@ -326,6 +326,7 @@ function calculateColorTemperature(val) {
     return calculateColor(val, 273, 273 + 200, c_tempLowRGB, c_tempHighRGB);
 }
 
+
 function calculateColor(val, valMin, valMax, colorMin, colorMax) {
     val = Math.min(val, valMax);
     var normalized = (val - valMin) / (valMax - valMin);
@@ -344,6 +345,17 @@ function calculateColorOpacity(val, valMin, valMax, colorMin, colorMax) {
         Math.floor(colorMax.g * normalized + colorMin.g * (1 - normalized)),
         Math.floor(colorMax.b * normalized + colorMin.b * (1 - normalized)),
         normalized * cloudMaxOpacity
+    );
+}
+
+function calculateColorProvideOpacity(val, valMin, valMax, colorMin, colorMax, opacity) {
+    val = Math.min(val, valMax);
+    var normalized = (val - valMin) / (valMax - valMin);
+    return rgbToRgba(
+        Math.floor(colorMax.r * normalized + colorMin.r * (1 - normalized)),
+        Math.floor(colorMax.g * normalized + colorMin.g * (1 - normalized)),
+        Math.floor(colorMax.b * normalized + colorMin.b * (1 - normalized)),
+        opacity
     );
 }
 
@@ -445,4 +457,4 @@ function _addWaterSaturation(x, y) {
 }
 
 
-export { pascalsPerWaterSquare, cloudRainThresh, calculateColorTemperature, addWaterSaturationPascals, addWaterSaturationPascalsSqCoords, saturationPressureOfWaterVapor, resetTemperatureAndHumidityAtSquare, getWaterSaturation, getTemperatureAtWindSquare, updateSquareTemperature, applySquareTemperatureDelta, renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds, getTemperatureAtSquare }
+export { calculateColorProvideOpacity, pascalsPerWaterSquare, cloudRainThresh, calculateColor, calculateColorTemperature, addWaterSaturationPascals, addWaterSaturationPascalsSqCoords, saturationPressureOfWaterVapor, resetTemperatureAndHumidityAtSquare, getWaterSaturation, getTemperatureAtWindSquare, updateSquareTemperature, applySquareTemperatureDelta, renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds, getTemperatureAtSquare }
