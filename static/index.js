@@ -45,6 +45,11 @@ var mixMaterials = document.getElementById("mixMaterials");
 var mixMaterials_val = true;
 var materialSlider = document.getElementById("materialSlider");
 var materialSlider_val = 0;
+var newBlockTemperature = document.getElementById("newBlockTemperature");
+var newBlockTemperature_val = 273 + 20;
+var lockTemperature = document.getElementById("lockTemperature");
+var lockTemperature_val = false;
+
 var brushStrengthSlider = document.getElementById("brushStrengthSlider");
 var brushStrengthSlider_val = 100;
 
@@ -87,6 +92,15 @@ var loadSlotValley = document.getElementById("loadSlotValley");
 var selectedMaterial = "dirt";
 var selectedViewMode = "normal";
 const BASE_SIZE = 4;
+
+function getNewBlockTemperatureVal() {
+    return newBlockTemperature_val;
+}
+
+function getNewBlockLockedTemperature() {
+    return lockTemperature_val;
+}
+
 
 
 
@@ -151,6 +165,14 @@ materialSlider.addEventListener('change', (e) => {
     lastMode = "normal";
     styleHeader();
     materialSlider_val = parseInt(e.target.value);
+});
+newBlockTemperature.addEventListener('change', (e) => {
+    styleHeader();
+    newBlockTemperature_val = 273 + parseInt(e.target.value);
+});
+lockTemperature.addEventListener('change', (e) => {
+    styleHeader();
+    lockTemperature_val = e.target.checked;
 });
 organismWetland.addEventListener('change', (e) => {
     lastMode = "organismWetland";
@@ -744,6 +766,7 @@ export {
     MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, selectedViewMode, addSquareByName,
     setCanvasSquaresX, setCanvasSquaresY,
     getCanvasSquaresX, getCanvasSquaresY,
-    getBlockModification_val
+    getBlockModification_val,
+    getNewBlockTemperatureVal, getNewBlockLockedTemperature
 }
 

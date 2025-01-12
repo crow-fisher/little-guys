@@ -692,8 +692,8 @@ export class BaseSquare {
             .forEach((sq) => {
                 var diff = this.temperature - sq.temperature;
                 var diffSmall = diff / 10;
-                this.temperature -= diffSmall;
-                sq.temperature += diffSmall;
+                this.temperature -= diffSmall / this.thermalMass;
+                sq.temperature += diffSmall / sq.thermalMass;
             })
     }
 

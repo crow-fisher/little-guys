@@ -4,7 +4,7 @@ import { removeSquare } from "../globalOperations.js";
 import { getOrganismSquaresAtSquare } from "../lifeSquares/_lsOperations.js";
 import { removeItemAll } from "../common.js";
 import { getOrganismsAtSquare } from "../organisms/_orgOperations.js";
-import { CANVAS_SQUARES_Y } from "../index.js";
+import { CANVAS_SQUARES_Y, getNewBlockLockedTemperature, getNewBlockTemperatureVal } from "../index.js";
 
 var abs = Math.abs;
 
@@ -43,6 +43,12 @@ function addSquare(square) {
     }
     if (!square.organic && getSquares(square.posX, square.posY).some((sq) => sq.proto == square.proto)) {
         return false;
+    }
+    if (!square.organic && square.collision) {
+        square.temperature = getNewBlockTemperatureVal();
+        if (getNewBlockLockedTemperature()) {
+            square.thermalMass = 10 ** 8;
+        }
     }
     getSquares(square.posX, square.posY).push(square);
     return square;

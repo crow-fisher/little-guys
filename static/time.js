@@ -51,6 +51,7 @@ function renderStarMap(brightnessMult) {
     if (starMap == null) {
         initializeStarMap();
     }
+    
 
     var xKeys = Array.from(Object.keys(starMap));
     for (let i = 0; i < xKeys.length; i++) {
@@ -123,7 +124,6 @@ function renderSkyBackground(time) {
         maxColor = sky_duskRGB;
         min = 0;
         max = duskEnd;
-        starBrightness = 1;
     } else if (processed < morningEnd) {
         minColor = sky_duskRGB;
         maxColor = sky_colorEveningMorningRGB;
@@ -135,13 +135,11 @@ function renderSkyBackground(time) {
         maxColor = sky_colorNearNoonRGB;
         min = morningEnd;
         max = nearNoon;
-        starBrightness = 0;
     } else {
         minColor = sky_colorNearNoonRGB
         maxColor = sky_colorNoonRGB;
         min = nearNoon; 
         max = noon;
-        starBrightness = 0;
     }
 
     MAIN_CONTEXT.fillStyle = calculateColorProvideOpacity(processed, min, max, minColor, maxColor, 0.5);
@@ -152,9 +150,7 @@ function renderSkyBackground(time) {
         CANVAS_SQUARES_Y * BASE_SIZE
     );
 
-    if (starBrightness > 0) {
-        renderStarMap(starBrightness);
-    }
+    renderStarMap(1 - getDaylightStrength());
 }
 
 function getDaylightStrength() {
