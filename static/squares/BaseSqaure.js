@@ -157,14 +157,13 @@ export class BaseSquare {
 
         if (this.solid) {
             diff *= this.waterContainment / this.waterContainmentMax.value;
-            this.waterContainment -= (diff / pascalsPerWaterSquare);
+            this.waterContainment -= (diff / pascalsPerWaterSquare); 
+            this.temperature -= diff * this.water_vaporHeat;
         } else {
             // evaporating water
             this.blockHealth -= (diff / pascalsPerWaterSquare);
-            // also take the temperature out of the air square above us
-            updateSquareTemperature(x, y, getTemperatureAtWindSquare(x, y) - 0.1 * diff * this.water_vaporHeat);
+            updateSquareTemperature(x, y, getTemperatureAtWindSquare(x, y) - 0.2 * diff * this.water_vaporHeat);
         }
-        this.temperature -= diff * this.water_vaporHeat;
 
         if (this.temperature < 0) {
             console.warn("This temperature got under 0");
