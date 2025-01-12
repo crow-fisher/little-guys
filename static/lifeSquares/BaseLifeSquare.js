@@ -222,7 +222,7 @@ class BaseLifeSquare {
     }
 
     darkeningRender() { 
-        MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.linkedSquare.currentPressureDirect, 10);
+        MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl((10 - 8 * getDaylightStrength()) + this.linkedSquare.currentPressureDirect, 10);
         MAIN_CONTEXT.fillRect(
             (this.posX - this.deflectionXOffset) * BASE_SIZE,
             (this.posY - this.deflectionYOffset) * BASE_SIZE,

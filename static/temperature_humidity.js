@@ -259,12 +259,15 @@ function doRain() {
                     0,
                 ) * 0.8;
 
-            if (adjacentHumidity > (cloudMaxHumidity * 5 * cloudRainThresh) && adjacentWaterPascals > pascalsPerWaterSquare) {
-                var usedWaterPascalsPerSquare = pascalsPerWaterSquare / 5;
+            var rainDropHealth = 0.05;
+            var rainDropPascals = pascalsPerWaterSquare * rainDropHealth;
+
+            if (adjacentHumidity > (cloudMaxHumidity * 5 * cloudRainThresh) && adjacentWaterPascals > rainDropPascals) {
+                var usedWaterPascalsPerSquare = rainDropPascals / 5;
                 if (Math.random() > 0.90) {
                     var sq = addSquareByName(x * 4 + randNumber(0, 3), y * 4 + randNumber(0, 3), "water");
                     if (sq) {
-                        sq.blockHealth = 0.05;
+                        sq.blockHealth = rainDropHealth;
                         waterSaturationMap[x][y] -= usedWaterPascalsPerSquare;
                         getMapDirectNeighbors(x, y)
                             .filter((loc) => loc[0] >= 0 && loc[0] < curSquaresX && loc[1] >= 0 && loc[1] < curSquaresY)

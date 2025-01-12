@@ -34,7 +34,7 @@ import { removeOrganismSquare } from "./_sqOperations.js";
 import { removeOrganism } from "../organisms/_orgOperations.js";
 
 import { addSquareByName } from "../index.js";
-import { getCurTime } from "../time.js";
+import { getCurTime, getDaylightStrength } from "../time.js";
 import { addTemperature, addWaterSaturation, addWaterSaturationPascals, applySquareTemperatureDelta, calculateColorTemperature, cloudRainThresh, getTemperatureAtSquare, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, updateSquareTemperature } from "../temperature_humidity.js";
 import { getWindSquareAbove } from "../wind.js";
 
@@ -369,7 +369,7 @@ export class BaseSquare {
     blockPressureAndModDarken() {
         var pressureMax = 12;
         var pressureMod = (this.blockModDarkenVal != null ? this.blockModDarkenVal : 0) * pressureMax;
-        MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.currentPressureDirect + pressureMod, 12);
+        MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl((12 - 10 * getDaylightStrength()) + this.currentPressureDirect + pressureMod, 12);
         MAIN_CONTEXT.fillRect(
             (this.offsetX + this.posX) * BASE_SIZE,
             (this.offsetY + this.posY) * BASE_SIZE,

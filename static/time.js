@@ -157,13 +157,23 @@ function renderSkyBackground(time) {
     }
 }
 
+function getDaylightStrength() {
+    var currentTime = getCurDay() % 1;
+
+    var darkness = 0.05;
+    if (currentTime < 0.25 || currentTime > 0.75) {
+        return darkness;
+    }
+    return darkness + (Math.sin(currentTime * 2 * Math.PI - (Math.PI / 2)) ** 0.35) * (1 - darkness);
+}
+
 function renderTime() {
     // 0.5 is noon, 0.25 is sunrise, 0.75 is sunset
     var daylightStrength = 0;
     var currentTime = getCurDay() % 1;
 
     if (currentTime > 0.25 && currentTime < 0.75) {
-        daylightStrength = Math.sin(currentTime * 2 * Math.PI - (Math.PI / 2)) ** 0.35;
+        daylightStrength = getDaylightStrength();
     }
 
     var myTemp = daylightStrength * 6600;
@@ -242,4 +252,4 @@ function temp_blue(temperature) {
 }
 
 
-export { getCurDay, getCurTime, getPrevTime, updateTime, renderTime, getTimeSpeedMult, initializeStarMap}
+export { getDaylightStrength, getCurDay, getCurTime, getPrevTime, updateTime, renderTime, getTimeSpeedMult, initializeStarMap}
