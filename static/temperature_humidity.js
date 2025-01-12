@@ -262,14 +262,13 @@ function doRain() {
             var rainDropHealth = 0.05;
             var rainDropPascals = pascalsPerWaterSquare * rainDropHealth;
 
-            rainDropPascals /= 10;
-
             if (adjacentHumidity > (cloudMaxHumidity * 5 * cloudRainThresh) && adjacentWaterPascals > rainDropPascals) {
                 var usedWaterPascalsPerSquare = rainDropPascals / 5;
                 if (Math.random() > 0.90) {
                     var sq = addSquareByName(x * 4 + randNumber(0, 3), y * 4 + randNumber(0, 3), "water");
                     if (sq) {
                         sq.blockHealth = rainDropHealth;
+                        sq.temperature = temperatureMap[x][y];
                         waterSaturationMap[x][y] -= usedWaterPascalsPerSquare;
                         getMapDirectNeighbors(x, y)
                             .filter((loc) => loc[0] >= 0 && loc[0] < curSquaresX && loc[1] >= 0 && loc[1] < curSquaresY)

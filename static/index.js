@@ -30,7 +30,7 @@ import { pond_demo_square_data, wet_valley_demo as wet_valley_demo_data } from "
 import { HydrangeaSeedOrganism } from "./organisms/HydrangeaSeedOrganism.js";
 import { MossCoolSeedOrganism } from "./organisms/MossCoolSeedOrganism.js";
 import { SunflowerSeedOrganism } from "./organisms/SunflowerSeedOrganism.js";
-import { addWindPressure, initializeWindPressureMap, removeWindPressure, renderWindPressureMap, tickWindPressureMap } from "./wind.js";
+import { clearPrevailingWind, addPrevailingWind, addWindPressure, initializeWindPressureMap, removeWindPressure, renderWindPressureMap, tickWindPressureMap } from "./wind.js";
 import { renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds, addWaterSaturationPascals, addWaterSaturationPascalsSqCoords } from "./temperature_humidity.js";
 
 var lastMode = "normal"; // options: "normal", "special", "organism", "blockModification";
@@ -421,7 +421,7 @@ function main() {
         if (selectedViewMode == "temperature") {
             renderTemperature();
         }
-        if (selectedViewMode == "wind") {
+        if (selectedViewMode == "wind" || (lastMode == "blockModification" && blockModification_val.startsWith("wind"))) {
             renderWindPressureMap();
         }
         if (selectedViewMode == "watersaturation") {
@@ -501,16 +501,23 @@ function doMouseHover() {
 }
 
 function addSquareByNameConfig(posX, posY) {
+    var square = null;
     if (Math.random() * 100 < (100 - brushStrengthSlider_val)) {
         return;
     }
     if (!mixMaterials_val) {
-        return addSquareByName(posX, posY, material1_val);
+        square = addSquareByName(posX, posY, material1_val);
     }
     if (Math.random() * 100 > materialSlider_val) {
-        return addSquareByName(posX, posY, material1_val);
+        square = addSquareByName(posX, posY, material1_val);
     } else {
-        return addSquareByName(posX, posY, material2_val);
+        square = addSquareByName(posX, posY, material2_val);
+    }
+    if (square != null && !square.organic && square.collision) {
+        square.temperature = getNewBlockTemperatureVal();
+        if (getNewBlockLockedTemperature()) {
+            square.thermalMass = 10 ** 8;
+        }
     }
 }
 
@@ -570,6 +577,15 @@ function doBlockMod(posX, posY) {
         else 
         removeWindPressure(posX, posY);
     }
+    if (blockModification_val == "windAdd") {
+        if (!rightMouseClicked)
+            addPrevailingWind(posX, posY, 1);
+        else
+            addPrevailingWind(posX, posY, -1);
+    }
+    if (blockModification_val == "windClear")
+        clearPrevailingWind(posX, posY);
+
     if (blockModification_val == "temperature") {
         if (!rightMouseClicked) 
             addTemperature(posX, posY, .05);
