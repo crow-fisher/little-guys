@@ -230,7 +230,17 @@ function tickWindPressureMap() {
                             updateSquareTemperature(x2, y2, endSplTemp);
 
                             var plWaterPressure = getWaterSaturation(x, y);
-                            var waterPascalsLost = (windPressureDiff / plPressure) * plWaterPressure;
+                            var splWaterPressure = getWaterSaturation(x2, y2);
+
+                            var plWaterPascalsLost = (windPressureDiff / plPressure) * plWaterPressure;
+                            var splWaterPascalsLost = (windPressureDiff / splPressure) * splWaterPressure;
+                            
+                            var waterPascalsLost;
+                            if (plWaterPascalsLost >= 0)
+                                waterPascalsLost = Math.min(plWaterPascalsLost, splWaterPascalsLost);
+                            else
+                                waterPascalsLost = Math.max(plWaterPascalsLost, splWaterPascalsLost);
+
                             addWaterSaturationPascals(x, y, -waterPascalsLost);
                             addWaterSaturationPascals(x2, y2, waterPascalsLost);
 

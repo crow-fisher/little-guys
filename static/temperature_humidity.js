@@ -30,7 +30,7 @@ var c_cloudMidRGB = hexToRgb("#dbdce1")
 var c_cloudMaxRGB = hexToRgb("#818398");
 
 var cloudMaxHumidity = 4;
-var cloudRainThresh = 1;
+var cloudRainThresh = 2;
 var cloudRainMax = 8;
 var cloudMaxOpacity = 0.65;
 
@@ -235,13 +235,13 @@ function tickMap(
     }
 }
 
+function canSquareRain(x, y, minPascals) {
+    return (waterSaturationMap[x][y] > minPascals) ? 1 : 0;
+}
+
 function doRain() {
-    var xKeys = Array.from(Object.keys(waterSaturationMap));
-    for (let i = 0; i < xKeys.length; i++) {
-        var yKeys = Array.from(Object.keys(waterSaturationMap[xKeys[i]]));
-        for (let j = 0; j < yKeys.length; j++) {
-            var x = parseInt(xKeys[i]);
-            var y = parseInt(yKeys[j]);
+    for (let x = 0; x < curSquaresX; x++) {
+        for (let y = 0; y < curSquaresY; y++) {
             var adjacentHumidity = getHumidity(x, y) + getMapDirectNeighbors(x, y)
                 .filter((loc) => loc[0] >= 0 && loc[0] < curSquaresX && loc[1] >= 0 && loc[1] < curSquaresY)
                 .map((loc) => getHumidity(loc[0], loc[1]))
@@ -250,30 +250,44 @@ function doRain() {
                     0,
                 );
 
-            var adjacentWaterPascals = waterSaturationMap[x][y] + getMapDirectNeighbors(x, y)
-                .filter((loc) => loc[0] >= 0 && loc[0] < curSquaresX && loc[1] >= 0 && loc[1] < curSquaresY)
-                .map((loc) => waterSaturationMap[loc[0]][loc[1]])
-                .filter((val) => val > (pascalsPerWaterSquare / 5))
-                .reduce(
-                    (accumulator, currentValue) => accumulator + currentValue,
-                    0,
-                ) * 0.8;
+            if (adjacentHumidity < (5 * cloudRainThresh))
+                continue;
 
             var rainDropHealth = 0.05;
             var rainDropPascals = pascalsPerWaterSquare * rainDropHealth;
+            var usedWaterPascalsPerSquare = rainDropPascals / 5;
 
-            if (adjacentHumidity > (cloudMaxHumidity * 5 * cloudRainThresh) && adjacentWaterPascals > rainDropPascals) {
-                var usedWaterPascalsPerSquare = rainDropPascals / 5;
-                if (Math.random() > 0.90) {
-                    var sq = addSquareByName(x * 4 + randNumber(0, 3), y * 4 + randNumber(0, 3), "water");
-                    if (sq) {
-                        sq.blockHealth = rainDropHealth;
-                        sq.temperature = temperatureMap[x][y];
-                        waterSaturationMap[x][y] -= usedWaterPascalsPerSquare;
-                        getMapDirectNeighbors(x, y)
-                            .filter((loc) => loc[0] >= 0 && loc[0] < curSquaresX && loc[1] >= 0 && loc[1] < curSquaresY)
-                            .map((loc) => waterSaturationMap[loc[0]][loc[1]] -= usedWaterPascalsPerSquare);
-                    }
+            var adjacentWaterPascals = waterSaturationMap[x][y] + getMapDirectNeighbors(x, y)
+                .filter((loc) => loc[0] >= 0 && loc[0] < curSquaresX && loc[1] >= 0 && loc[1] < curSquaresY)
+                .map((loc) => waterSaturationMap[loc[0]][loc[1]])
+                .reduce(
+                    (accumulator, currentValue) => accumulator + currentValue,
+                    0,
+                );
+
+            if (adjacentWaterPascals < rainDropPascals)
+                continue;
+            
+            var adjacentSquaresWithEnoughWater = canSquareRain(x, y, rainDropPascals) + getMapDirectNeighbors(x, y)
+                .filter((loc) => loc[0] >= 0 && loc[0] < curSquaresX && loc[1] >= 0 && loc[1] < curSquaresY)
+                .map((loc) => canSquareRain(loc[0], loc[1], rainDropPascals))
+                .reduce(
+                    (accumulator, currentValue) => accumulator + currentValue,
+                    0,
+                );
+
+            if (adjacentSquaresWithEnoughWater < 5)
+                continue;
+
+            if (Math.random() > 0.90) {
+                var sq = addSquareByName(x * 4 + randNumber(0, 3), y * 4 + randNumber(0, 3), "water");
+                if (sq) {
+                    sq.blockHealth = rainDropHealth;
+                    sq.temperature = temperatureMap[x][y];
+                    waterSaturationMap[x][y] -= usedWaterPascalsPerSquare;
+                    getMapDirectNeighbors(x, y)
+                        .filter((loc) => loc[0] >= 0 && loc[0] < curSquaresX && loc[1] >= 0 && loc[1] < curSquaresY)
+                        .map((loc) => waterSaturationMap[loc[0]][loc[1]] -= usedWaterPascalsPerSquare);
                 }
             }
         }
@@ -311,7 +325,12 @@ function tickMaps() {
         init();
     }
     tickMap(temperatureMap, temperatureDiffFunction, updateSquareTemperature);
-    tickMap(waterSaturationMap, humidityDiffFunction, (x, y, v) => waterSaturationMap[x][y] = v);
+    tickMap(waterSaturationMap, humidityDiffFunction, (x, y, v) => {
+        if (v < 0) {
+            console.warn("V is less than zero in tickMap!");
+        }
+        waterSaturationMap[x][y] = v;
+    });
     doRain();
 }
 
@@ -322,6 +341,11 @@ function getHumidity(x, y) {
 function getWaterSaturation(x, y) {
     if (waterSaturationMap == null) {
         init();
+    }
+    var ret = waterSaturationMap[x][y];
+    if (ret < 0) {
+        console.warn("Tried to return water saturation below zero: ", ret, x, y);
+        resetTemperatureAndHumidityAtSquare(x, y);
     }
     return waterSaturationMap[x][y];
 }
@@ -441,7 +465,12 @@ function addWaterSaturationPascalsSqCoords(x, y, pascals) {
 }
 
 function addWaterSaturationPascals(x, y, pascals) {
-    waterSaturationMap[x][y] += pascals;
+    var end = waterSaturationMap[x][y] + pascals;
+    if (end < 0) {
+        console.warn("Trying to set water saturation pascals to below zero");
+    }
+    end = Math.max(0, end);
+    waterSaturationMap[x][y] = end;
 }
 
 function addWaterSaturation(x, y) {

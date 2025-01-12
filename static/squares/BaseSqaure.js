@@ -149,6 +149,9 @@ export class BaseSquare {
         var waterPascalsAbove = getWaterSaturation(x, y);
         var vaporPressure = saturationPressureOfWaterVapor(this.temperature);
 
+        if (waterPascalsAbove < 0) {
+            console.warn("Water pressure above was below zero!")
+        }
         if (waterPascalsAbove > vaporPressure) {
             return;
         }
