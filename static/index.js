@@ -427,7 +427,7 @@ function main() {
         if (selectedViewMode == "watersaturation") {
             renderWaterSaturation();
         }
-        
+
 
         if (selectedViewMode == "normal") {
             renderTime();
@@ -505,15 +505,55 @@ function addSquareByNameConfig(posX, posY) {
     if (Math.random() * 100 < (100 - brushStrengthSlider_val)) {
         return;
     }
-    if (!mixMaterials_val) {
-        square = addSquareByName(posX, posY, material1_val);
-    }
-    if (Math.random() * 100 > materialSlider_val) {
-        square = addSquareByName(posX, posY, material1_val);
+    if (lastMode == "special") {
+        square = addSquareByName(posX, posY, specialSelect_val);
     } else {
-        square = addSquareByName(posX, posY, material2_val);
+        if (!mixMaterials_val) {
+            square = addSquareByName(posX, posY, material1_val);
+        }
+        if (Math.random() * 100 > materialSlider_val) {
+            square = addSquareByName(posX, posY, material1_val);
+        } else {
+            square = addSquareByName(posX, posY, material2_val);
+        }
     }
-    if (square != null && !square.organic && square.collision) {
+}
+
+function addSquareByName(posX, posY, name) {
+    var square; 
+    switch (name) {
+        case "rock":
+            square = addSquareOverride(new RockSquare(posX, posY));
+            break;
+        case "dirt":
+            square = addSquareOverride(new DirtSquare(posX, posY));
+            break;
+        case "water":
+            square = addSquare(new WaterSquare(posX, posY));
+            break;
+        case "rain":
+            square = addSquareOverride(new RainSquare(posX, posY));
+            break;
+        case "heavy rain":
+            square = addSquareOverride(new HeavyRainSquare(posX, posY));
+            break;
+        case "water distribution":
+            square = addSquareOverride(new WaterDistributionSquare(posX, posY));
+            break;
+        case "drain":
+            square = addSquareOverride(new DrainSquare(posX, posY));
+            break;
+        case "aquifer":
+            square = addSquare(new AquiferSquare(posX, posY));
+            break;
+        case "gravel":
+            square = addSquareOverride(new GravelSquare(posX, posY));
+            break;
+        case "sand":
+            square = addSquareOverride(new SandSquare(posX, posY));
+            break;
+    };
+    if (square && !square.organic) {
         square.temperature = getNewBlockTemperatureVal();
         if (getNewBlockLockedTemperature()) {
             square.thermalMass = 10 ** 8;
@@ -521,61 +561,36 @@ function addSquareByNameConfig(posX, posY) {
     }
 }
 
-function addSquareByName(posX, posY, name) {
-    switch (name) {
-        case "rock":
-            return addSquareOverride(new RockSquare(posX, posY));
-        case "dirt":
-            return addSquareOverride(new DirtSquare(posX, posY));
-        case "water":
-            return addSquare(new WaterSquare(posX, posY));
-        case "rain":
-            return addSquareOverride(new RainSquare(posX, posY));
-        case "heavy rain":
-            return addSquareOverride(new HeavyRainSquare(posX, posY));
-        case "water distribution":
-            return addSquareOverride(new WaterDistributionSquare(posX, posY));
-        case "drain":
-            return addSquareOverride(new DrainSquare(posX, posY));
-        case "aquifer":
-            return addSquare(new AquiferSquare(posX, posY));
-        case "gravel":
-            return addSquareOverride(new GravelSquare(posX, posY));
-        case "sand":
-            return addSquareOverride(new SandSquare(posX, posY));
-    };
-}
-
 function doBlockMod(posX, posY) {
     if (blockModification_val == "markSurface") {
         getSquares(posX, posY)
-            .filter((sq) => sq.solid && sq.collision)        
+            .filter((sq) => sq.solid && sq.collision)
             .forEach((sq) => sq.surface = !rightMouseClicked);
         getDirectNeighbors(posX, posY)
             .filter((sq) => sq.solid && sq.collision)
             .forEach((sq) => sq.surface = !rightMouseClicked);
-    } 
+    }
 
     if (blockModification_val == "ligthenBlocks") {
         if (!rightMouseClicked) {
             getSquares(posX, posY)
                 .forEach((sq) => sq.blockModDarkenVal = sq.blockModDarkenVal == null ? 0 : Math.min(sq.blockModDarkenVal + .01, 1));
-            
+
             getDirectNeighbors(posX, posY)
                 .forEach((sq) => sq.blockModDarkenVal = sq.blockModDarkenVal == null ? 0 : Math.min(sq.blockModDarkenVal + .005, 1));
         } else {
             getSquares(posX, posY)
                 .forEach((sq) => sq.blockModDarkenVal = sq.blockModDarkenVal == null ? 0 : Math.max(sq.blockModDarkenVal - .01, -1));
-            
+
             getDirectNeighbors(posX, posY)
                 .forEach((sq) => sq.blockModDarkenVal = sq.blockModDarkenVal == null ? 0 : Math.max(sq.blockModDarkenVal - .005, -1));
         }
     }
     if (blockModification_val == "wind") {
-        if (!rightMouseClicked) 
-        addWindPressure(posX, posY);
-        else 
-        removeWindPressure(posX, posY);
+        if (!rightMouseClicked)
+            addWindPressure(posX, posY);
+        else
+            removeWindPressure(posX, posY);
     }
     if (blockModification_val == "windAdd") {
         if (!rightMouseClicked)
@@ -587,10 +602,10 @@ function doBlockMod(posX, posY) {
         clearPrevailingWind(posX, posY);
 
     if (blockModification_val == "temperature") {
-        if (!rightMouseClicked) 
-            addTemperature(posX, posY, .05);
-        else 
-            addTemperature(posX, posY, -0.05);
+        if (!rightMouseClicked)
+            addTemperature(posX, posY, .5);
+        else
+            addTemperature(posX, posY, -0.5);
     }
     if (blockModification_val == "humidity") {
         if (!rightMouseClicked)
@@ -602,7 +617,7 @@ function doBlockMod(posX, posY) {
 }
 
 function getBlockModification_val() {
-    if (lastMode == "blockModification") 
+    if (lastMode == "blockModification")
         return blockModification_val;
     return "";
 }
@@ -640,14 +655,10 @@ function doClickAdd() {
                     doErase(px, curY);
                     break;
                 } else {
-                    if (lastMode == "normal") {
+                    if (lastMode == "normal" || lastMode == "special") {
                         addSquareByNameConfig(px, curY);
-                    }
-                    else if (lastMode == "blockModification") {
+                    } else if (lastMode == "blockModification") {
                         doBlockMod(px, curY);
-                    }
-                    else if (lastMode == "special") {
-                        addSquareByName(px, curY, specialSelect_val);
                     } else if (lastMode.startsWith("organism")) {
                         var selectedOrganism;
                         if (lastMode == "organismWetland") {
@@ -695,7 +706,7 @@ function doClickAdd() {
                                     }
                                 }
                                 break;
-                            
+
                             case "mosscool":
                                 if (Math.random() > 0.95) {
                                     var sq = addSquare(new SeedSquare(px, curY));
@@ -704,7 +715,7 @@ function doClickAdd() {
                                     }
                                 }
                                 break;
-                            
+
                             case "hydrangea":
                                 if (organismAddedThisClick) {
                                     return;
@@ -715,7 +726,7 @@ function doClickAdd() {
                                     organismAddedThisClick = true;
                                 }
                                 break;
-                            
+
                             case "Sunflower":
                                 if (organismAddedThisClick) {
                                     return;

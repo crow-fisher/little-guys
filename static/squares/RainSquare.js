@@ -17,7 +17,6 @@ class RainSquare extends RockSquare {
         super(posX, posY);
         this.proto = "RainSquare";
         this.collision = false;
-
         this.baseColor = "#F5F5F5";
         this.darkColor = "#E5E4E2";
         this.accentColor = "#91A3B0";
@@ -27,6 +26,7 @@ class RainSquare extends RockSquare {
             var newSq = addSquare(new WaterSquare(this.posX, this.posY + 1));
             if (newSq) {
                 newSq.blockHealth = rain_dropHealth.value;
+                newSq.temperature = this.temperature;
                 newSq.speedX = randNumber(-1, 1);
             };
         }
@@ -65,6 +65,8 @@ class HeavyRainSquare extends RockSquare {
                 if (newSq) {
                     newSq.blockHealth = rain_dropHealth.value;
                     newSq.speedX = randNumber(-2, 2);
+                    newSq.temperature = this.temperature;
+
                     this.curRainDrops -= 1;
                 };
             }
@@ -102,6 +104,7 @@ class AquiferSquare extends BaseSquare {
             var sq = addSquare(new WaterSquare(this.posX, this.posY + 1));
             if (sq) {
                 sq.speedX = randNumber(-2, 2);
+                sq.temperature = this.temperature;
             }
         }
     }

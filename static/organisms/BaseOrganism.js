@@ -99,8 +99,14 @@ class BaseOrganism {
             this.deflectionStateTheta = endDeflectionStateTheta;
         }
         
+        if (isNaN(this.lastDeflectionStateRollingAverage)) {
+            console.warn("FUCK 103");
+        }
         this.lastDeflectionStateRollingAverage *= (1 - (1 / this.lastDeflectionStateThetaRollingAveragePeriod));
         this.lastDeflectionStateRollingAverage += (1 / this.lastDeflectionStateThetaRollingAveragePeriod) * this.deflectionStateTheta;
+        if (isNaN(this.lastDeflectionStateRollingAverage)) {
+            console.warn("FUCK 108");
+        }
     }
 
 
@@ -147,6 +153,10 @@ class BaseOrganism {
 
             cs.deflectionXOffset = endX - csX;
             cs.deflectionYOffset = endY - csY;
+
+            if (isNaN(cs.deflectionXOffset)) {
+                console.warn("FUCKKKKK");
+            }
         }
     }
 

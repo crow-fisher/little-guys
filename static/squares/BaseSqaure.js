@@ -100,7 +100,7 @@ export class BaseSquare {
 
         this.surface = false;
 
-        this.temperature = 273 + 200; // start temperature in kelvin 
+        this.temperature = 273 + 20; // start temperature in kelvin 
         this.thermalConductivity = 1;  // watts/meter kelvin. max is 10
         this.thermalMass = 2; // e.g., '2' means one degree of this would equal 2 degrees of air temp for a wind square 
 
@@ -117,6 +117,9 @@ export class BaseSquare {
     };
 
     temperatureRoutine() {
+        if (this.organic) {
+            return;
+        }
         var adjacentWindSquare = getWindSquareAbove(this.posX, this.posY);
 
         var x = adjacentWindSquare[0];
@@ -133,7 +136,7 @@ export class BaseSquare {
     }
 
     waterEvaporationRoutine() {
-        if (this.currentPressureDirect != 0) {
+        if (this.currentPressureDirect != 0 || this.organic) {
             return;
         }
 
@@ -157,6 +160,8 @@ export class BaseSquare {
         }
 
         var diff = vaporPressure - waterPascalsAbove;
+
+        diff /= 1000;
 
         if (this.solid) {
             diff *= this.waterContainment / this.waterContainmentMax.value;

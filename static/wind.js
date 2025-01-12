@@ -162,7 +162,14 @@ function tickWindPressureMap() {
             var prevailingWind = prevailingWindMap[i][j];
             if (prevailingWind != -1) {
                 var prevailingWindPressure = prevailingWindStartPressureMap[i][j] * (prevailingWind_minAtm * (1 - prevailingWind) + prevailingWind_maxAtm * prevailingWind)
+
+                var start = windPressureMap[i][j];
+                var startWater = getWaterSaturation(i, j);
+
                 windPressureMap[i][j] = prevailingWindPressure;
+                var mult = windPressureMap[i][j] / start;
+                
+                addWaterSaturationPascals(i, j, -Math.abs((1 - mult) * startWater));
             }
 
             if (checkIfCollisionAtWindSquare(i, j)) {
@@ -261,7 +268,7 @@ function getExpectedPressureDifferential(x, y, x2, y2) {
     var splPressure = windPressureMap[x2][y2];
 
     if (splPressure < 0 || plPressure < 0) {
-        return;
+        return 0;
     }
 
     // now, process plPressure and splPressure
@@ -364,6 +371,7 @@ function _getWindSpeedAtLocation(x, y) {
     netPresX = getExpectedPressureDifferential(x, y, x + 1, y) - getExpectedPressureDifferential(x, y, x - 1, y)
     netPresY = getExpectedPressureDifferential(x, y, x, y + 1) - getExpectedPressureDifferential(x, y, x, y - 1)
 
+
     netPresX = (netPresX > 0 ? 1 : -1) * windSpeedFromPressure(Math.abs(netPresX), windPressureMap[x][y]);
     netPresY = (netPresY > 0 ? 1 : -1) * windSpeedFromPressure(Math.abs(netPresY), windPressureMap[x][y]);
 
@@ -396,6 +404,10 @@ function _getWindSpeedAtLocation(x, y) {
     }
 
     var coef = 0.8;
+
+    if (isNaN(previousAvgX * coef + netPresX * (1 - coef))) {
+        console.warn("FUCK 408");
+    }
     return [previousAvgX * coef + netPresX * (1 - coef), previousAvgY * coef + netPresY * (1 - coef)];
 }
 

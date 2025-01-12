@@ -1,7 +1,7 @@
 import { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE } from "../index.js";
 import { getZPercent, hexToRgb, processColorLerp, processColorStdev, rgbToHex, rgbToRgba } from "../common.js";
 
-import { getCurTime } from "../time.js";
+import { getCurTime, getDaylightStrength } from "../time.js";
 import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount, b_sq_darkeningStrength } from "../config/config.js";
 import { getSquares, removeOrganismSquare } from "../squares/_sqOperations.js";
 import { airNutrientsPerEmptyNeighbor } from "../config/config.js";
