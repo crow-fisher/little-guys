@@ -11,7 +11,7 @@ var waterSaturationMap;
 var curSquaresX = 0;
 var curSquaresY = 0;
 
-var start_temperature = 273 + 40;
+var start_temperature = 273 + 20;
 
 var air_thermalConductivity = 0.024; // watts per meter kelvin
 var air_specificHeat = 1.005; // joules per gram degrees c 
@@ -262,6 +262,8 @@ function doRain() {
             var rainDropHealth = 0.05;
             var rainDropPascals = pascalsPerWaterSquare * rainDropHealth;
 
+            rainDropPascals /= 10;
+
             if (adjacentHumidity > (cloudMaxHumidity * 5 * cloudRainThresh) && adjacentWaterPascals > rainDropPascals) {
                 var usedWaterPascalsPerSquare = rainDropPascals / 5;
                 if (Math.random() > 0.90) {
@@ -326,7 +328,7 @@ function getWaterSaturation(x, y) {
 }
 
 function calculateColorTemperature(val) {
-    return calculateColor(val, 273, 273 + 200, c_tempLowRGB, c_tempHighRGB);
+    return calculateColor(val, 273, 273 + 100, c_tempLowRGB, c_tempHighRGB);
 }
 
 
@@ -440,9 +442,7 @@ function addWaterSaturationPascalsSqCoords(x, y, pascals) {
 }
 
 function addWaterSaturationPascals(x, y, pascals) {
-    var end = waterSaturationMap[x][y] + pascals; 
-    end = Math.max(end, 10);
-    waterSaturationMap[x][y] = end;
+    waterSaturationMap[x][y] += pascals;
 }
 
 function addWaterSaturation(x, y) {
