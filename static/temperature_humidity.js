@@ -365,9 +365,6 @@ function calculateColorProvideOpacity(val, valMin, valMax, colorMin, colorMax, o
 function renderTemperature() {
     for (let i = 0; i < curSquaresX; i++) {
         for (let j = 0; j < curSquaresY; j++) {
-            if (getPressure(i, j) < 0) {
-                continue;
-            }
             MAIN_CONTEXT.fillStyle = calculateColorTemperature(temperatureMap[i][j]);
             MAIN_CONTEXT.fillRect(
                 4 * i * BASE_SIZE,
