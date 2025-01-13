@@ -58,7 +58,7 @@ class BaseOrganism {
         this.growInitialSquares();
 
         this.applyWind = false;
-        this.springCoef = 1;
+        this.springCoef = 4;
         this.startDeflectionAngle = 0; 
         this.lastDeflectionStateRollingAverage = 0;
         this.lastDeflectionStateThetaRollingAveragePeriod = 1000;
