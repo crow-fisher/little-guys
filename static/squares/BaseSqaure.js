@@ -161,7 +161,7 @@ export class BaseSquare {
 
         var diff = vaporPressure - waterPascalsAbove;
 
-        diff /= 1000;
+        diff /= 30;
 
         if (this.solid) {
             diff *= this.waterContainment / this.waterContainmentMax.value;

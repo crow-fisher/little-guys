@@ -26,7 +26,7 @@ import { LilyPadSeedOrganism } from "./organisms/LilyPadSeedOrganism.js";
 import { MossSeedOrganism } from "./organisms/MossSeedOrganism.js";
 import { PlantSquare } from "./squares/PlantSquare.js";
 import { randNumber } from "./common.js";
-import { pond_demo_square_data, wet_valley_demo as wet_valley_demo_data } from "./saves.js";
+import { volcano } from "./saves.js";
 import { HydrangeaSeedOrganism } from "./organisms/HydrangeaSeedOrganism.js";
 import { MossCoolSeedOrganism } from "./organisms/MossCoolSeedOrganism.js";
 import { SunflowerSeedOrganism } from "./organisms/SunflowerSeedOrganism.js";
@@ -89,7 +89,7 @@ var saveSlotB = document.getElementById("saveSlotB");
 var loadSlotC = document.getElementById("loadSlotC");
 var saveSlotC = document.getElementById("saveSlotC");
 
-var loadSlotPond = document.getElementById("loadSlotPond");
+var loadSlotVolcano = document.getElementById("loadSlotVolcano");
 var loadSlotValley = document.getElementById("loadSlotValley");
 
 var selectedMaterial = "dirt";
@@ -198,8 +198,6 @@ brushStrengthSlider.addEventListener('change', (e) => {
     brushStrengthSlider_val = e.target.value;
 });
 brushSizeSlider.addEventListener('change', (e) => {
-    lastMode = "normal";
-    styleHeader();
     brushSizeSlider_val = e.target.value;
 });
 
@@ -285,8 +283,7 @@ saveSlotB.onclick = (e) => saveSlot("B");
 loadSlotC.onclick = (e) => loadSlot("C");
 saveSlotC.onclick = (e) => saveSlot("C");
 
-loadSlotPond.onclick = (e) => loadSlotFromSave(pond_demo_square_data);
-loadSlotValley.onclick = (e) => loadSlotFromSave(wet_valley_demo_data);
+loadSlotVolcano.onclick = (e) => loadSlotFromSave(volcano);
 
 function loadObjArr(sourceObjMap, addFunc) {
     iterateOnSquares((sq) => sq.destroy());
@@ -404,8 +401,8 @@ function handleMouseUp(e) {
     }
 }
 
-document.addEventListener('mousedown', handleMouseDown);
-document.addEventListener('mouseup', handleMouseUp);
+MAIN_CANVAS.addEventListener('mousedown', handleMouseDown);
+MAIN_CANVAS.addEventListener('mouseup', handleMouseUp);
 document.addEventListener('contextmenu', function (e) {
     e.preventDefault();
 });
@@ -514,15 +511,25 @@ function addSquareByNameConfig(posX, posY) {
         return;
     }
     if (lastMode == "special") {
-        square = addSquareByName(posX, posY, specialSelect_val);
+        square = addSquareByNameSetTemp(posX, posY, specialSelect_val);
     } else {
         if (!mixMaterials_val) {
-            square = addSquareByName(posX, posY, material1_val);
+            square = addSquareByNameSetTemp(posX, posY, material1_val);
         }
         if (Math.random() * 100 > materialSlider_val) {
-            square = addSquareByName(posX, posY, material1_val);
+            square = addSquareByNameSetTemp(posX, posY, material1_val);
         } else {
-            square = addSquareByName(posX, posY, material2_val);
+            square = addSquareByNameSetTemp(posX, posY, material2_val);
+        }
+    }
+}
+
+function addSquareByNameSetTemp(posX, posY, name) {
+    var square = addSquareByName(posX, posY, name);
+    if (square && !square.organic) {
+        square.temperature = getNewBlockTemperatureVal();
+        if (getNewBlockLockedTemperature()) {
+            square.thermalMass = 10 ** 8;
         }
     }
 }
@@ -561,12 +568,7 @@ function addSquareByName(posX, posY, name) {
             square = addSquareOverride(new SandSquare(posX, posY));
             break;
     };
-    if (square && !square.organic) {
-        square.temperature = getNewBlockTemperatureVal();
-        if (getNewBlockLockedTemperature()) {
-            square.thermalMass = 10 ** 8;
-        }
-    }
+    return square;
 }
 
 function doBlockMod(posX, posY) {
@@ -632,6 +634,11 @@ function getBlockModification_val() {
 
 function doBrushFunc(centerX, centerY, func) {
     var workingRadius = brushSizeSlider_val * 2 + 1;
+
+    if (lastMode == "special" && specialSelect_val != "water") {
+        func(centerX, centerY);
+        return;
+    }
     var start = (workingRadius + 1) / 2;
     for (var i = -start; i < start; i++) {
         for (var j = -start; j < start; j++) {
@@ -690,7 +697,7 @@ function doClickAdd() {
                         // in this case we only want to add one per click
                         case "popgrass":
                             if (Math.random() > 0.95) {
-                                var sq = addSquare(new SeedSquare(px, curY));
+                                var sq = addSquare(new SeedSquare(px, py));
                                 if (sq) {
                                     // organismAddedThisClick = true;
                                     addNewOrganism(new PopGrassSeedOrganism(sq));
@@ -700,7 +707,7 @@ function doClickAdd() {
 
                         case "cactus":
                             if (Math.random() > 0.95) {
-                                var sq = addSquare(new SeedSquare(px, curY));
+                                var sq = addSquare(new SeedSquare(px, py));
                                 if (sq) {
                                     addNewOrganism(new CactusSeedOrganism(sq));
                                 }
@@ -709,7 +716,7 @@ function doClickAdd() {
 
                         case "waterlily":
                             if (Math.random() > 0.95) {
-                                var sq = addSquare(new SeedSquare(px, curY));
+                                var sq = addSquare(new SeedSquare(px, py));
                                 if (sq) {
                                     addNewOrganism(new LilyPadSeedOrganism(sq));
                                 }
@@ -718,7 +725,7 @@ function doClickAdd() {
 
                         case "moss":
                             if (Math.random() > 0.95) {
-                                var sq = addSquare(new SeedSquare(px, curY));
+                                var sq = addSquare(new SeedSquare(px, py));
                                 if (sq) {
                                     addNewOrganism(new MossSeedOrganism(sq));
                                 }
@@ -727,7 +734,7 @@ function doClickAdd() {
 
                         case "mosscool":
                             if (Math.random() > 0.95) {
-                                var sq = addSquare(new SeedSquare(px, curY));
+                                var sq = addSquare(new SeedSquare(px, py));
                                 if (sq) {
                                     addNewOrganism(new MossCoolSeedOrganism(sq));
                                 }
@@ -738,7 +745,7 @@ function doClickAdd() {
                             if (organismAddedThisClick) {
                                 return;
                             }
-                            var sq = addSquare(new SeedSquare(px, curY));
+                            var sq = addSquare(new SeedSquare(px, py));
                             if (sq) {
                                 addNewOrganism(new HydrangeaSeedOrganism(sq));
                                 organismAddedThisClick = true;
@@ -749,7 +756,7 @@ function doClickAdd() {
                             if (organismAddedThisClick) {
                                 return;
                             }
-                            var sq = addSquare(new SeedSquare(px, curY));
+                            var sq = addSquare(new SeedSquare(px, py));
                             if (sq) {
                                 addNewOrganism(new SunflowerSeedOrganism(sq));
                                 organismAddedThisClick = true;

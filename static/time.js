@@ -13,7 +13,7 @@ var starMap;
 var starMapCenterX;
 var starMapCenterY;
 // https://coolors.co/gradient-maker/18254c-5a4d41-a49f67-7e9fb1-84b2e2?position=0,43,53,73,100&opacity=100,100,100,100,100&type=linear&rotation=90
-var sky_nightRGB = hexToRgb("#18254C");
+var sky_nightRGB = hexToRgb("#121622");
 var sky_duskRGB = hexToRgb("#5A4D41");
 var sky_colorEveningMorningRGB = hexToRgb("#A49F67");
 var sky_colorNearNoonRGB = hexToRgb("#7E9FB1");
@@ -142,7 +142,7 @@ function renderSkyBackground(time) {
         max = noon;
     }
 
-    MAIN_CONTEXT.fillStyle = calculateColorProvideOpacity(processed, min, max, minColor, maxColor, 0.5);
+    MAIN_CONTEXT.fillStyle = calculateColorProvideOpacity(processed, min, max, minColor, maxColor, 0.8);
     MAIN_CONTEXT.fillRect(
         0,
         0,

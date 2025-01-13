@@ -307,7 +307,7 @@ function renderClouds() {
             if (squareHumidity < (cloudMaxHumidity * cloudRainThresh)) {
                 MAIN_CONTEXT.fillStyle = calculateColorOpacity(squareHumidity, 0, cloudMaxHumidity * cloudRainThresh, c_cloudMinRGB, c_cloudMidRGB);
             } else {
-                MAIN_CONTEXT.fillStyle = calculateColor(squareHumidity, cloudMaxHumidity * cloudRainThresh, cloudMaxHumidity * cloudRainMax, c_cloudMidRGB, c_cloudMaxRGB);
+                MAIN_CONTEXT.fillStyle = calculateColor(squareHumidity, cloudMaxHumidity * cloudRainThresh, cloudMaxHumidity * cloudRainMax * 4, c_cloudMidRGB, c_cloudMaxRGB);
             }
             MAIN_CONTEXT.fillRect(
                 4 * i * BASE_SIZE,
@@ -467,7 +467,7 @@ function addWaterSaturationPascalsSqCoords(x, y, pascals) {
 function addWaterSaturationPascals(x, y, pascals) {
     var end = waterSaturationMap[x][y] + pascals;
     if (end < 0) {
-        console.warn("Trying to set water saturation pascals to below zero");
+        // console.warn("Trying to set water saturation pascals to below zero");
     }
     end = Math.max(0, end);
     waterSaturationMap[x][y] = end;
