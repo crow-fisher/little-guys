@@ -13,8 +13,8 @@
             <th id="specialHeader">special material select</th>
             <th id="normalHeader">normal material select</th>
             <th id="orgWetlandHeader">wetland organism select</th>
-            <th id="blockModificationHeader">block modification tool select</th>
             <th id="orgOtherHeader">other organism select</th>
+            <th id="blockModificationHeader">other tool select</th>
         </tr>
         <tr>
             <td>
@@ -51,34 +51,28 @@
                 <br />
                 <div class="centerContents">
                     <input type="range" min="1" max="100" value="1" id="materialSlider">
-                    <label class="absolute" for="materialSlider">ratio</label>
+                    <label class="absolute" for="materialSlider">mix ratio</label>
                 </div>
                 <br />
-                <div class="centerContents">
+                <div class="centerContents" hidden>
                     <input type="range" min="1" max="100" value="100" id="brushStrengthSlider">
                     <label class="absolute" for="materialSlider">brush strength</label>
+                </div>
+
+                <div class="centerContents">
+                    <input type="range" min="1" max="10" value="3" id="brushSizeSlider">
+                    <label class="absolute" for="brushSizeSlider">brush size</label>
                 </div>
 
                 <div class="centerContents">
                     <p>temperature</p>
                     <input type="range" min="0" max="100" value="20" id="newBlockTemperature">
                     <label class="absolute" for="newBlockTemperature">0 to 100 C</label>
+                    <br/>
                     <input type="checkbox" id="lockTemperature" />
                     <label class="absolute" for="lockTemperature">lock square temperature</lavel>
                 </div>
 
-                <div class="centerContents">
-                    <p style="margin-top: 0.5em; margin-bottom: 0.5em">controls:</p>
-                    <ul style="margin-top: 0.5em">
-                        <li>
-                            right click to erase
-                        </li>
-                        <li>
-                            hold shift and click to build terrain quickly
-                        </li>
-                    </ul>
-                    <br />
-                </div>
             </td>
             <td>
                 <select id="organismWetland">
@@ -92,6 +86,12 @@
                 </select>
             </td>
             <td>
+                <select id="organismOther">
+                    <option value="">please select</option>
+                    <option value="cactus">cactus</option>
+                </select>
+            </td>
+            <td>
                 <select id="blockModification">
                     <option value="">please select</option>
                     <option value="markSurface">mark or unmark blocks as surface</option>
@@ -101,12 +101,6 @@
                     <option value="windClear">clear prevailing wind</option>
                     <option value="temperature">mainpulate air temperatures</option>
                     <option value="humidity">mainpulate humidity</option>
-                </select>
-            </td>
-            <td>
-                <select id="organismOther">
-                    <option value="">please select</option>
-                    <option value="cactus">cactus</option>
                 </select>
             </td>
 
@@ -169,15 +163,14 @@
                     <button type="button" id="saveSlotC">save</button>
                     <button type="button" id="loadSlotC">load</button>
                 </div>
-                <div class="centerContents margin10PxBottom">
+                <div hidden class="centerContents margin10PxBottom">
                     <label for="loadSlotPond">pond demo</label>
                     <button type="button" id="loadSlotPond">load</button>
                 </div>
-                <div class="centerContents margin10PxBottom">
+                <div hidden class="centerContents margin10PxBottom">
                     <label for="loadSlotValley">valley demo</label>
                     <button type="button" id="loadSlotValley">load</button>
                 </div>
-
             </td>
             <td>
                 <div class="centerContents margin10PxBottom">
@@ -190,6 +183,15 @@
             </td>
         </tr>
     </table>
+    <div class="centerContents">
+        <p style="margin-top: 0.5em; margin-bottom: 0.5em">controls:</p>
+        <ul style="margin-top: 0.5em">
+            <li>
+                right click to erase
+            </li>
+        </ul>
+        <br />
+    </div>
 </body>
 <script type="module" src="./static/index.js"></script>
 

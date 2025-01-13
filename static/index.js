@@ -1,5 +1,5 @@
 import { BaseSquare } from "./squares/BaseSqaure.js";
-import { getNeighbors, getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares } from "./squares/_sqOperations.js";
+import { getNeighbors, getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares, removeSquarePos } from "./squares/_sqOperations.js";
 import { purge, reset, renderWater, renderSquares, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquare } from "./globalOperations.js"
 import { RockSquare } from "./squares/RockSquare.js"
 import { DirtSquare } from "./squares/DirtSquare.js";
@@ -52,6 +52,9 @@ var lockTemperature_val = false;
 
 var brushStrengthSlider = document.getElementById("brushStrengthSlider");
 var brushStrengthSlider_val = 100;
+
+var brushSizeSlider = document.getElementById("brushSizeSlider");
+var brushSizeSlider_val = 3;
 
 var organismWetland = document.getElementById("organismWetland");
 var organismWetland_val;
@@ -193,6 +196,11 @@ brushStrengthSlider.addEventListener('change', (e) => {
     lastMode = "normal";
     styleHeader();
     brushStrengthSlider_val = e.target.value;
+});
+brushSizeSlider.addEventListener('change', (e) => {
+    lastMode = "normal";
+    styleHeader();
+    brushSizeSlider_val = e.target.value;
 });
 
 viewmodeSelect.addEventListener('change', (e) => selectedViewMode = e.target.value);
@@ -609,9 +617,9 @@ function doBlockMod(posX, posY) {
     }
     if (blockModification_val == "humidity") {
         if (!rightMouseClicked)
-            addWaterSaturationPascalsSqCoords(posX, posY, 1000);
+            addWaterSaturationPascalsSqCoords(posX, posY, 100);
         else
-            addWaterSaturationPascalsSqCoords(posX, posY, -1000);
+            addWaterSaturationPascalsSqCoords(posX, posY, -100);
     }
 
 }
@@ -620,6 +628,19 @@ function getBlockModification_val() {
     if (lastMode == "blockModification")
         return blockModification_val;
     return "";
+}
+
+function doBrushFunc(centerX, centerY, func) {
+    var workingRadius = brushSizeSlider_val * 2 + 1;
+    var start = (workingRadius + 1) / 2;
+    for (var i = -start; i < start; i++) {
+        for (var j = -start; j < start; j++) {
+            if (Math.abs(i) + Math.abs(j) + 2 > (start ** 2 + start ** 2) ** 0.5) {
+                continue;
+            }
+            func(centerX + i, centerY + j);
+        }
+    }
 }
 
 function doClickAdd() {
@@ -649,100 +670,92 @@ function doClickAdd() {
         for (let i = 0; i < totalCount; i += 0.5) {
             var px = Math.floor(x1 + ddx * i);
             var py = Math.floor(y1 + ddy * i);
-            for (let i = 0; i < (CANVAS_SQUARES_Y - offsetY); i++) {
-                var curY = py + i;
-                if (rightMouseClicked && (lastMode == "normal" || lastMode == "special")) {
-                    doErase(px, curY);
-                    break;
-                } else {
-                    if (lastMode == "normal" || lastMode == "special") {
-                        addSquareByNameConfig(px, curY);
-                    } else if (lastMode == "blockModification") {
-                        doBlockMod(px, curY);
-                    } else if (lastMode.startsWith("organism")) {
-                        var selectedOrganism;
-                        if (lastMode == "organismWetland") {
-                            selectedOrganism = organismWetland_val;
-                        } else if (lastMode == "organismOther") {
-                            selectedOrganism = organismOther_val;
-                        }
-
-                        switch (selectedOrganism) {
-                            // organism sections
-                            // in this case we only want to add one per click
-                            case "popgrass":
-                                if (Math.random() > 0.95) {
-                                    var sq = addSquare(new SeedSquare(px, curY));
-                                    if (sq) {
-                                        // organismAddedThisClick = true;
-                                        addNewOrganism(new PopGrassSeedOrganism(sq));
-                                    }
-                                }
-                                break;
-
-                            case "cactus":
-                                if (Math.random() > 0.95) {
-                                    var sq = addSquare(new SeedSquare(px, curY));
-                                    if (sq) {
-                                        addNewOrganism(new CactusSeedOrganism(sq));
-                                    }
-                                }
-                                break;
-
-                            case "waterlily":
-                                if (Math.random() > 0.95) {
-                                    var sq = addSquare(new SeedSquare(px, curY));
-                                    if (sq) {
-                                        addNewOrganism(new LilyPadSeedOrganism(sq));
-                                    }
-                                }
-                                break;
-
-                            case "moss":
-                                if (Math.random() > 0.95) {
-                                    var sq = addSquare(new SeedSquare(px, curY));
-                                    if (sq) {
-                                        addNewOrganism(new MossSeedOrganism(sq));
-                                    }
-                                }
-                                break;
-
-                            case "mosscool":
-                                if (Math.random() > 0.95) {
-                                    var sq = addSquare(new SeedSquare(px, curY));
-                                    if (sq) {
-                                        addNewOrganism(new MossCoolSeedOrganism(sq));
-                                    }
-                                }
-                                break;
-
-                            case "hydrangea":
-                                if (organismAddedThisClick) {
-                                    return;
-                                }
-                                var sq = addSquare(new SeedSquare(px, curY));
-                                if (sq) {
-                                    addNewOrganism(new HydrangeaSeedOrganism(sq));
-                                    organismAddedThisClick = true;
-                                }
-                                break;
-
-                            case "Sunflower":
-                                if (organismAddedThisClick) {
-                                    return;
-                                }
-                                var sq = addSquare(new SeedSquare(px, curY));
-                                if (sq) {
-                                    addNewOrganism(new SunflowerSeedOrganism(sq));
-                                    organismAddedThisClick = true;
-                                }
-                                break;
-                        }
+            if (rightMouseClicked && (lastMode == "normal" || lastMode == "special")) {
+                doBrushFunc(px, py, (x, y) => removeSquarePos(x, y));
+            } else {
+                if (lastMode == "normal" || lastMode == "special") {
+                    doBrushFunc(px, py, (x, y) => addSquareByNameConfig(x, y));
+                } else if (lastMode == "blockModification") {
+                    doBrushFunc(px, py, (x, y) => doBlockMod(x, y));
+                } else if (lastMode.startsWith("organism")) {
+                    var selectedOrganism;
+                    if (lastMode == "organismWetland") {
+                        selectedOrganism = organismWetland_val;
+                    } else if (lastMode == "organismOther") {
+                        selectedOrganism = organismOther_val;
                     }
 
-                }
-                if (!shiftPressed || selectedMaterial.indexOf("rain") >= 0 || selectedMaterial.indexOf("aquifer") >= 0 || blockModification_val == "windadd") {
-                    break;
+                    switch (selectedOrganism) {
+                        // organism sections
+                        // in this case we only want to add one per click
+                        case "popgrass":
+                            if (Math.random() > 0.95) {
+                                var sq = addSquare(new SeedSquare(px, curY));
+                                if (sq) {
+                                    // organismAddedThisClick = true;
+                                    addNewOrganism(new PopGrassSeedOrganism(sq));
+                                }
+                            }
+                            break;
+
+                        case "cactus":
+                            if (Math.random() > 0.95) {
+                                var sq = addSquare(new SeedSquare(px, curY));
+                                if (sq) {
+                                    addNewOrganism(new CactusSeedOrganism(sq));
+                                }
+                            }
+                            break;
+
+                        case "waterlily":
+                            if (Math.random() > 0.95) {
+                                var sq = addSquare(new SeedSquare(px, curY));
+                                if (sq) {
+                                    addNewOrganism(new LilyPadSeedOrganism(sq));
+                                }
+                            }
+                            break;
+
+                        case "moss":
+                            if (Math.random() > 0.95) {
+                                var sq = addSquare(new SeedSquare(px, curY));
+                                if (sq) {
+                                    addNewOrganism(new MossSeedOrganism(sq));
+                                }
+                            }
+                            break;
+
+                        case "mosscool":
+                            if (Math.random() > 0.95) {
+                                var sq = addSquare(new SeedSquare(px, curY));
+                                if (sq) {
+                                    addNewOrganism(new MossCoolSeedOrganism(sq));
+                                }
+                            }
+                            break;
+
+                        case "hydrangea":
+                            if (organismAddedThisClick) {
+                                return;
+                            }
+                            var sq = addSquare(new SeedSquare(px, curY));
+                            if (sq) {
+                                addNewOrganism(new HydrangeaSeedOrganism(sq));
+                                organismAddedThisClick = true;
+                            }
+                            break;
+
+                        case "Sunflower":
+                            if (organismAddedThisClick) {
+                                return;
+                            }
+                            var sq = addSquare(new SeedSquare(px, curY));
+                            if (sq) {
+                                addNewOrganism(new SunflowerSeedOrganism(sq));
+                                organismAddedThisClick = true;
+                            }
+                            break;
+                    }
                 }
             }
         }
