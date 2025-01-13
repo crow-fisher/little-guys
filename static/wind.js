@@ -435,9 +435,13 @@ function removeWindPressure(x, y) {
         return;
     }
 
-    windPressureMap[Math.floor(x)][Math.floor(y)] = Math.max(0, windPressureMap[Math.floor(x)][Math.floor(y)] + clickAddPressure);
+    windPressureMap[x][y] = Math.max(1, windPressureMap[x][y] - clickAddPressure);
     getWindDirectNeighbors(x, y).forEach(
-        (loc) => windPressureMap[(loc[0] + CANVAS_SQUARES_X) % CANVAS_SQUARES_X][(loc[1] + CANVAS_SQUARES_Y) % CANVAS_SQUARES_Y] = Math.max(0, windPressureMap[(loc[0] + CANVAS_SQUARES_X) % CANVAS_SQUARES_X][(loc[1] + CANVAS_SQUARES_Y) % CANVAS_SQUARES_Y] - clickAddPressure));
+        (loc) => {
+            var x2 = loc[0];
+            var y2 = loc[1];
+            windPressureMap[x2][y2] = Math.max(1, windPressureMap[x2][y2] - clickAddPressure);
+        });
 }
 
 function updateWindPressureByMult(x, y, m) {
