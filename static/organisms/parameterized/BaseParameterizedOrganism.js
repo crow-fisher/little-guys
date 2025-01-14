@@ -113,6 +113,7 @@ export class BaseParameterizedOrganism extends BaseOrganism {
             if (growthPlan.areStepsCompleted()) {
                 growthPlan.postConstruct();
                 growthPlan.completed = true;
+                this.stage = growthPlan.endStage;
             }
             if (growthPlan.required && growthPlan.steps.some((step) => step.completedSquare == null)) {
                 this.destroy();
@@ -131,7 +132,7 @@ export class BaseParameterizedOrganism extends BaseOrganism {
         windX *= (strength / length);
         var coef = 0.5;
         var endSpringForce = startSpringForce * (1 - coef) + windX * coef;
-        growthComponent.setCurrentDeflection(Math.asin(endSpringForce / growthComponent.springCoef));
+        growthComponent.setCurrentDeflection(Math.asin(endSpringForce / (strength ** 2)));
         growthComponent.children.forEach(this._updateDeflectionState);
     }
 
