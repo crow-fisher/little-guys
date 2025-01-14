@@ -427,7 +427,7 @@ function main() {
         if (selectedViewMode == "temperature") {
             renderTemperature();
         }
-        if (selectedViewMode == "wind" || (lastMode == "blockModification" && blockModification_val.startsWith("wind"))) {
+        if (selectedViewMode == "wind" || (lastMode == "blockModification" && (blockModification_val == "windAdd" || blockModification_val == "windClear"))) {
             renderWindPressureMap();
         }
         if (selectedViewMode == "watersaturation") {
