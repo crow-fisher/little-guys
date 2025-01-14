@@ -17,7 +17,9 @@ export class BaseParameterizedOrganism extends BaseOrganism {
             STAGE_FLOWER,
             STAGE_FRUIT
         ];
-        this.activeGrowthPlans = [];
+        this.growthPlans = [];
+
+        this.originGrowth = null;
 
         // organism config in 'days'
         this.adultTime = 3;
@@ -33,13 +35,13 @@ export class BaseParameterizedOrganism extends BaseOrganism {
 
     growAndDecay() {
         if (this.stage == STAGE_SPROUT) {
-            this.activeGrowthPlans.push(this.gp_sprout())
+            this.growthPlans.push(this.gp_sprout())
         }
         this.executeGrowthPlans();
     }
 
     gp_sprout() {
-        var growthPlan = new GrowthPlan(true, STAGE_JUVENILE);
+        var growthPlan = new GrowthPlan(this.posX, this.posY, true, STAGE_JUVENILE, 0, 1);
         growthPlan.steps.push(new GrowthPlanStep(
             0,
             0,
@@ -52,7 +54,8 @@ export class BaseParameterizedOrganism extends BaseOrganism {
                     greenSquare.linkSquare(plantSquare);
                     plantSquare.linkOrganismSquare(greenSquare);
                     this.addAssociatedLifeSquare(greenSquare);
-                    return true;
+                    this.rootGreen = greenSquare;
+                    return greenSquare  ;
                 }
                 return false;
             }
@@ -68,9 +71,10 @@ export class BaseParameterizedOrganism extends BaseOrganism {
                 rootSq.linkSquare(this.linkedSquare);
                 this.linkedSquare.linkOrganismSquare(rootSq);
                 this.addAssociatedLifeSquare(rootSq);
-                return true;
+                return rootSq;
             }
         ));
+        growthPlan.postConstruct = () => this.originGrowth = growthPlan.getGrowthComponent();
         return growthPlan;
     }
 
@@ -95,24 +99,86 @@ export class BaseParameterizedOrganism extends BaseOrganism {
     }
 
     executeGrowthPlans() {
-        this.activeGrowthPlans.forEach((growthPlan) => {
+        this.growthPlans.filter((gp) => !gp.completed).forEach((growthPlan) => {
             growthPlan.steps.forEach((step) => {
                 if (
                     (getCurDay() >= step.timeGetter() + step.timeCost) &&
                     (this.currentEnergy >= step.energyCost)
                 ) {
-                    step.completed = step.action();
+                    step.doAction();
                     step.timeSetter(getCurDay());
                     this.currentEnergy -= step.energyCost;
                 };
             });
-            if (growthPlan.completed()) {
-                this.stage = growthPlan.endStage;
-                this.activeGrowthPlans = Array.from(this.activeGrowthPlans.filter((plan) => plan != growthPlan));
+            if (growthPlan.areStepsCompleted()) {
+                growthPlan.postConstruct();
+                growthPlan.completed = true;
+            }
+            if (growthPlan.required && growthPlan.steps.some((step) => step.completedSquare == null)) {
+                this.destroy();
             }
         });
-        if (this.activeGrowthPlans.some((plan) => plan.required && plan.steps.some((step) => !step.completed))) {
-            this.destroy();
+    }
+
+    _updateDeflectionState(growthComponent) {
+        var strength = growthComponent.getTotalStrength();
+        var length = growthComponent.getTotalSize();
+        var windVec = growthComponent.getNetWindSpeed();
+
+        var startSpringForce = growthComponent.getStartSpringForce();
+
+        var windX = windVec[0];
+        windX *= (strength / length);
+        var coef = 0.5;
+        var endSpringForce = startSpringForce * (1 - coef) + windX * coef;
+        growthComponent.setCurrentDeflection(Math.asin(endSpringForce / growthComponent.springCoef));
+        growthComponent.children.forEach(this._updateDeflectionState);
+    }
+
+    updateDeflectionState() {
+        if (this.originGrowth != null) {
+            this._updateDeflectionState(this.originGrowth);
         }
     }
+
+    _applyDeflectionStateToSquares(growthComponent, parentComponent) {
+        var startDeflectionXOffset = 0;
+        var startDeflectionYOffset = 0;
+        if (parentComponent != null) {
+            startDeflectionXOffset = parentComponent.getDeflectionXAtPosition(growthComponent.posX, growthComponent.posY);
+            startDeflectionYOffset = parentComponent.getDeflectionYAtPosition(growthComponent.posX, growthComponent.posY);
+        }
+
+        var startTheta = growthComponent.deflectionRollingAverage;
+        var endTheta = growthComponent.currentDeflection;
+        var length = growthComponent.getTotalSize();
+
+        var thetaDelta = endTheta - startTheta;
+
+        growthComponent.lifeSquares.forEach((lsq) => {
+            // relative to origin
+            var relLsqX = growthComponent.posX - lsq.posX;
+            var relLsqY = growthComponent.posY - lsq.posY;
+            var lsqDist = (relLsqX ** 2 + relLsqY ** 2) ** 0.5;
+            var currentTheta = startTheta + (lsqDist / length) * thetaDelta;
+
+            var endX = startDeflectionXOffset + relLsqX * Math.cos(currentTheta) - relLsqY * Math.sin(currentTheta);
+            var endY = startDeflectionYOffset + relLsqY * Math.cos(currentTheta) + relLsqX * Math.sin(currentTheta);
+
+            lsq.deflectionXOffset = endX - relLsqX;
+            lsq.deflectionYOffset = endY - relLsqY;
+        })
+
+        growthComponent.children.forEach(this._applyDeflectionStateToSquares);
+    }
+
+
+    applyDeflectionStateToSquares() {
+        if (this.originGrowth != null) {
+            this._applyDeflectionStateToSquares(this.originGrowth, null);
+        }
+
+    }
+
+
 }
