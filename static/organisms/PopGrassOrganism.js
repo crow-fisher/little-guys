@@ -74,7 +74,6 @@ class PopGrassOrganism extends BaseOrganism {
         if (newPlantSquare) {
             var orgSq = addOrganismSquare(new PopGrassGreenLifeSquare(newPlantSquare, this));
             if (orgSq) {
-                orgSq.linkSquare(newPlantSquare);
                 this.addAssociatedLifeSquare(orgSq);
             }
         } else {

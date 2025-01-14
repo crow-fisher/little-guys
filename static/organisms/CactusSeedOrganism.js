@@ -13,14 +13,7 @@ class CactusSeedOrganism extends BaseSeedOrganism {
         this.proto = "CactusSeedOrganism";
         this.sproutCtor = (linkedSquare) => new CactusOrganism(linkedSquare)
     }
-    growInitialSquares() {
-        var newLifeSquare = new SeedLifeSquare(this.linkedSquare, this);
-        if (addOrganismSquare(newLifeSquare)) {
-            newLifeSquare.linkSquare(this.linkedSquare);
-            this.linkedSquare.linkOrganismSquare(newLifeSquare);
-            this.addAssociatedLifeSquare(newLifeSquare);
-        }
-    }
+
 }
 
 export {CactusSeedOrganism} 

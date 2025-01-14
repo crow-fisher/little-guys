@@ -32,6 +32,7 @@ import { MossCoolSeedOrganism } from "./organisms/MossCoolSeedOrganism.js";
 import { SunflowerSeedOrganism } from "./organisms/SunflowerSeedOrganism.js";
 import { clearPrevailingWind, addPrevailingWind, addWindPressure, initializeWindPressureMap, removeWindPressure, renderWindPressureMap, tickWindPressureMap } from "./wind.js";
 import { renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds, addWaterSaturationPascals, addWaterSaturationPascalsSqCoords } from "./temperature_humidity.js";
+import { LilyOfTheValleySeedOrganism } from "./organisms/parameterized/woodland/LilyOfTheValleySeedOrganism.js";
 
 var lastMode = "normal"; // options: "normal", "special", "organism", "blockModification";
 
@@ -759,6 +760,17 @@ function doClickAdd() {
                             var sq = addSquare(new SeedSquare(px, py));
                             if (sq) {
                                 addNewOrganism(new SunflowerSeedOrganism(sq));
+                                organismAddedThisClick = true;
+                            }
+                            break;
+
+                        case "lilyOfTheValley":
+                            if (organismAddedThisClick) {
+                                return;
+                            }
+                            var sq = addSquare(new SeedSquare(px, py));
+                            if (sq) {
+                                addNewOrganism(new LilyOfTheValleySeedOrganism(sq));
                                 organismAddedThisClick = true;
                             }
                             break;

@@ -1,7 +1,7 @@
 import { removeOrganism } from "./_orgOperations.js";
 import { Law } from "../Law.js";
 import { getStandardDeviation, randNumber } from "../common.js";
-import { getCurTime } from "../time.js";
+import { getCurDay } from "../time.js";
 import { getNextEntitySpawnId } from "../globals.js";
 import { getWindSpeedAtLocation } from "../wind.js";
 
@@ -25,7 +25,7 @@ class BaseOrganism {
 
         this.spawnSeedSpeed = 3;
 
-        this.spawnTime = getCurTime();
+        this.spawnTime = getCurDay();
         this.currentEnergy = 0;
         this.totalEnergy = 0;
         
@@ -39,9 +39,9 @@ class BaseOrganism {
         this.airNutrients = 1;
         this.waterNutrients = 1;
 
-        this.plantLastGrown = getCurTime();
-        this.waterLastGrown = getCurTime();
-        this.rootLastGrown = getCurTime();
+        this.plantLastGrown = getCurDay();
+        this.waterLastGrown = getCurDay();
+        this.rootLastGrown = getCurDay();
 
         this.recentSquareRemovals = new Array();
 
@@ -422,7 +422,7 @@ class BaseOrganism {
     }
 
     getLifeCyclePercentage() {
-        return (getCurTime() - this.spawnTime) / this.maxLifeTime;
+        return (getCurDay() - this.spawnTime) / this.maxLifeTime;
     }
 
     getCurrentEnergyFrac() {
@@ -474,9 +474,6 @@ class BaseOrganism {
     }
 
     postTick() {
-        if (this.lifeSquares.length == 0) {
-            this.destroy();
-        }
         this.lifeSquares.forEach((lifeSquare) => {
             this.dirtNutrients += lifeSquare.dirtNutrients * this.dirtCoef;
             this.waterNutrients += lifeSquare.waterNutrients * this.waterCoef;
