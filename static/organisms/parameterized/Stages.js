@@ -3,3 +3,9 @@ export const STAGE_JUVENILE = "STAGE_JUVENILE";
 export const STAGE_ADULT = "STAGE_ADULT";
 export const STAGE_FLOWER = "STAGE_FLOWER";
 export const STAGE_FRUIT = "STAGE_FRUIT";
+
+export const SUBTYPE_SPROUT = "SUBTYPE_SPROUT";
+export const SUBTYPE_SHOOT = "SUBTYPE_SHOOT";
+export const SUBTYPE_STEM = "SUBTYPE_STEM";
+export const SUBTYPE_LEAFSTEM = "SUBTYPE_LEAFSTEM";
+export const SUBTYPE_LEAF = "SUBTYPE_LEAF";

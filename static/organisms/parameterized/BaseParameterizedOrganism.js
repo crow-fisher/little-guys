@@ -1,9 +1,11 @@
+import { addOrganismSquare } from "../../lifeSquares/_lsOperations.js";
 import { addSquare } from "../../squares/_sqOperations.js";
 import { PlantSquare } from "../../squares/PlantSquare.js";
 import { getCurDay } from "../../time.js";
+import { addNewOrganism } from "../_orgOperations.js";
 import { BaseOrganism } from "../BaseOrganism.js";
 import { GrowthPlan, GrowthPlanStep } from "./GrowthPlan.js";
-import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT } from "./Stages.js";
+import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_SPROUT } from "./Stages.js";
 
 
 export class BaseParameterizedOrganism extends BaseOrganism {
@@ -26,11 +28,36 @@ export class BaseParameterizedOrganism extends BaseOrganism {
 
         // store the actual time we attained them at
         this.stageTimeMap = { STAGE_SPROUT: 0 };
+        this.stageGrowthCount = {}
 
         // fill these out!
         this.greenType = null;
         this.rootType = null;
+    }
 
+    growPlantSquare(parentSquare, dx, dy) {
+        var newPlantSquare = new PlantSquare(parentSquare.posX + dx, parentSquare.posY - dy);
+        if (addSquare(newPlantSquare)) {
+            var newGreenSquare = addOrganismSquare(new this.greenType(newPlantSquare, this));
+            if (newGreenSquare) {
+                this.addAssociatedLifeSquare(newGreenSquare);
+                newGreenSquare.linkSquare(newPlantSquare);
+                parentSquare.addChild(newPlantSquare);
+                return newGreenSquare;
+            }
+        }
+        return null;
+    }
+
+    getOriginForNewGrowth(subtype) {
+        return this._getOriginForNewGrowth(subtype, this.originGrowth).at(0);
+    }
+
+    _getOriginForNewGrowth(subtype, component) {
+        var out = new Array();
+        out.push(...component.lifeSquares.filter((sq) => sq.subtype == subtype))
+        component.children.map((child) => this._getOriginForNewGrowth(subtype, child)).forEach((o) => out.push(...o));
+        return out;
     }
 
     growAndDecay() {
@@ -53,9 +80,10 @@ export class BaseParameterizedOrganism extends BaseOrganism {
                     var greenSquare = new this.greenType(plantSquare, this);
                     greenSquare.linkSquare(plantSquare);
                     plantSquare.linkOrganismSquare(greenSquare);
+                    greenSquare.subtype = SUBTYPE_SPROUT;
                     this.addAssociatedLifeSquare(greenSquare);
                     this.rootGreen = greenSquare;
-                    return greenSquare  ;
+                    return greenSquare;
                 }
                 return false;
             }
@@ -100,7 +128,7 @@ export class BaseParameterizedOrganism extends BaseOrganism {
 
     executeGrowthPlans() {
         this.growthPlans.filter((gp) => !gp.completed).forEach((growthPlan) => {
-            growthPlan.steps.forEach((step) => {
+            growthPlan.steps.filter((step) => !step.completed).forEach((step) => {
                 if (
                     (getCurDay() >= step.timeGetter() + step.timeCost) &&
                     (this.currentEnergy >= step.energyCost)

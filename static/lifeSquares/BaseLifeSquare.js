@@ -16,6 +16,8 @@ class BaseLifeSquare {
         this.proto = "BaseLifeSquare";
         this.posX = square.posX;
         this.posY = square.posY;
+        this.xOffset = 0;
+        this.yOffset = 0;
         this.type = "base";
         this.subtype = "";
         this.colorBase = "#1D263B";
@@ -226,8 +228,8 @@ class BaseLifeSquare {
     darkeningRender() { 
         MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl((10 - 8 * getDaylightStrength()) + this.linkedSquare.currentPressureDirect, 10);
         MAIN_CONTEXT.fillRect(
-            (this.posX - this.deflectionXOffset) * BASE_SIZE,
-            (this.posY - this.deflectionYOffset) * BASE_SIZE,
+            (this.posX - (this.deflectionXOffset + this.xOffset)) * BASE_SIZE,
+            (this.posY - (this.deflectionYOffset + this.yOffset)) * BASE_SIZE,
             this.width * BASE_SIZE * LSQ_RENDER_SIZE_MULT,
             this.height * BASE_SIZE * LSQ_RENDER_SIZE_MULT
         );
@@ -239,8 +241,8 @@ class BaseLifeSquare {
         }
         MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(Math.max(0, this.linkedOrganism.linkedSquare.distToFront - this.linkedOrganism.getLowestGreen().linkedSquare.currentPressureDirect), 32);
         MAIN_CONTEXT.fillRect(
-            (this.posX - this.deflectionXOffset) * BASE_SIZE,
-            (this.posY - this.deflectionYOffset) * BASE_SIZE,
+            (this.posX - (this.deflectionXOffset + this.xOffset)) * BASE_SIZE,
+            (this.posY - (this.deflectionYOffset + this.yOffset)) * BASE_SIZE,
             this.width * BASE_SIZE * LSQ_RENDER_SIZE_MULT,
             this.height * BASE_SIZE * LSQ_RENDER_SIZE_MULT
         );
@@ -326,8 +328,8 @@ class BaseLifeSquare {
                     }
                     MAIN_CONTEXT.fillStyle = rgbToHex(color.r, color.g, color.b);
                     MAIN_CONTEXT.fillRect(
-                        (this.posX - this.deflectionXOffset) * BASE_SIZE,
-                        (this.posY - this.deflectionYOffset) * BASE_SIZE,
+                        (this.posX - (this.deflectionXOffset + this.xOffset)) * BASE_SIZE,
+                        (this.posY - (this.deflectionYOffset + this.yOffset)) * BASE_SIZE,
                         this.width * BASE_SIZE * LSQ_RENDER_SIZE_MULT,
                         this.height * BASE_SIZE * LSQ_RENDER_SIZE_MULT
                     );
@@ -353,8 +355,8 @@ class BaseLifeSquare {
             var colorProcessed = processColorLerp((val_max - val), -0.5, val_max + 0.5, color);
             MAIN_CONTEXT.fillStyle = rgbToHex(colorProcessed.r, colorProcessed.g, colorProcessed.b);
             MAIN_CONTEXT.fillRect(
-                (this.posX - this.deflectionXOffset) * BASE_SIZE,
-                (this.posY - this.deflectionYOffset) * BASE_SIZE,
+                (this.posX - (this.deflectionXOffset + this.xOffset)) * BASE_SIZE,
+                (this.posY - (this.deflectionYOffset + this.yOffset)) * BASE_SIZE,
                 this.width * BASE_SIZE * LSQ_RENDER_SIZE_MULT,
                 this.height * BASE_SIZE * LSQ_RENDER_SIZE_MULT
             );
@@ -397,11 +399,11 @@ class BaseLifeSquare {
             MAIN_CONTEXT.fillStyle = outRgba;
         }
 
-        var startPos = (this.posX - this.deflectionXOffset) * BASE_SIZE + (1 - this.width) * BASE_SIZE * this.xOffset;
+        var startPos = (this.posX - (this.deflectionXOffset + this.xOffset)) * BASE_SIZE + (1 - this.width) * BASE_SIZE * this.xOffset;
 
         MAIN_CONTEXT.fillRect(
             startPos,
-            (this.posY - this.deflectionYOffset) * BASE_SIZE,
+            (this.posY - (this.deflectionYOffset + this.yOffset)) * BASE_SIZE,
             this.width * BASE_SIZE * LSQ_RENDER_SIZE_MULT,
             this.height * BASE_SIZE * LSQ_RENDER_SIZE_MULT
         );
