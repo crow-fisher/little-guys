@@ -22,10 +22,11 @@ export class LilyOfTheValleyOrganism extends BaseParameterizedOrganism {
         
         var startGreen = this.getOriginForNewGrowth(SUBTYPE_SPROUT);
         var growthPlan = new GrowthPlan(startGreen.posX, startGreen.posY, false, STAGE_JUVENILE, randRange(-0.1, 0.1), 1);
+        growthPlan.postConstruct = () => this.originGrowth.children.push(growthPlan.getGrowthComponent());
         for (let t = 1; t < randNumber(10, 30); t++) {
             growthPlan.steps.push(new GrowthPlanStep(
                 0,
-                0.001,
+                0.00001,
                 () => this.plantLastGrown,
                 (time) => this.plantLastGrown = time,
                 () => {

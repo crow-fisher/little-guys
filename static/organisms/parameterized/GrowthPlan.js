@@ -11,7 +11,7 @@ export class GrowthPlan {
         this.springForce = springForce;
         this.completed = false;
         this.areStepsCompleted = () => this.steps.every((step) => step.completed);
-        this.postConstruct = () => null;
+        this.postConstruct = () => console.warn("Warning: postconstruct not implemented");
     }
 
     getGrowthComponent() {
@@ -33,7 +33,7 @@ export class GrowthPlanStep {
     doAction() {
         var newLifeSquare = this.action();
         this.completed = true;
-        if (newLifeSquare) {    
+        if (newLifeSquare) {
             this.completedSquare = newLifeSquare;
         }
     }
@@ -54,7 +54,7 @@ export class GrowthComponent {
 
         this.lifeSquares = Array.from(lifeSquares);
         this.baseDeflection = baseDeflection;
-        this.currentDeflection = baseDeflection;
+        this.currentDeflection = baseDeflection / 2;
         this.deflectionRollingAverage = baseDeflection;
         this.size = (xSize ** 2 + ySize ** 2) ** 0.5;
         this.strength = strengths.reduce(
@@ -63,6 +63,54 @@ export class GrowthComponent {
         );
         this.children = new Array();
     }
+
+    updateDeflectionState() {
+        var strength = this.getTotalStrength();
+        var length = this.getTotalSize();
+        var windVec = this.getNetWindSpeed();
+        var startSpringForce = this.getStartSpringForce() / length;
+
+        var windX = windVec[0];
+        var coef = 0.5;
+        var endSpringForce = startSpringForce * (1 - coef) + windX * coef;
+        this.setCurrentDeflection(Math.asin(endSpringForce / (strength ** 2)));
+        this.children.forEach((child) => child.updateDeflectionState());
+    }
+
+
+    applyDeflectionState(parentComponent) {
+        var startDeflectionXOffset = 0;
+        var startDeflectionYOffset = 0;
+        if (parentComponent != null) {
+            startDeflectionXOffset = parentComponent.getDeflectionXAtPosition(this.posX, this.posY);
+            startDeflectionYOffset = parentComponent.getDeflectionYAtPosition(this.posX, this.posY);
+        }
+
+        var startTheta = this.deflectionRollingAverage;
+        var endTheta = this.currentDeflection;
+        var length = this.getTotalSize();
+
+        var thetaDelta = endTheta - startTheta;
+
+        this.lifeSquares.forEach((lsq) => {
+            // relative to origin
+            var relLsqX = this.posX - lsq.posX;
+            var relLsqY = this.posY - lsq.posY;
+            var lsqDist = (relLsqX ** 2 + relLsqY ** 2) ** 0.5;
+            var currentTheta = startTheta + (lsqDist / length) * thetaDelta;
+
+            var endX = startDeflectionXOffset + relLsqX * Math.cos(currentTheta) - relLsqY * Math.sin(currentTheta);
+            var endY = startDeflectionYOffset + relLsqY * Math.cos(currentTheta) + relLsqX * Math.sin(currentTheta);
+
+            lsq.deflectionXOffset = endX - relLsqX;
+            lsq.deflectionYOffset = endY - relLsqY;
+        })
+
+        this.children.forEach((child) => child.applyDeflectionState());
+
+    }
+
+
 
     getTotalStrength() {
         return this.strength + this.children.map((gc) => gc.strength).reduce(

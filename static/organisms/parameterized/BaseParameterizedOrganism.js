@@ -149,65 +149,16 @@ export class BaseParameterizedOrganism extends BaseOrganism {
         });
     }
 
-    _updateDeflectionState(growthComponent) {
-        var strength = growthComponent.getTotalStrength();
-        var length = growthComponent.getTotalSize();
-        var windVec = growthComponent.getNetWindSpeed();
-
-        var startSpringForce = growthComponent.getStartSpringForce();
-
-        var windX = windVec[0];
-        windX *= (strength / length);
-        var coef = 0.5;
-        var endSpringForce = startSpringForce * (1 - coef) + windX * coef;
-        growthComponent.setCurrentDeflection(Math.asin(endSpringForce / (strength ** 2)));
-        growthComponent.children.forEach(this._updateDeflectionState);
-    }
-
     updateDeflectionState() {
         if (this.originGrowth != null) {
-            this._updateDeflectionState(this.originGrowth);
+            this.originGrowth.updateDeflectionState();
         }
     }
-
-    _applyDeflectionStateToSquares(growthComponent, parentComponent) {
-        var startDeflectionXOffset = 0;
-        var startDeflectionYOffset = 0;
-        if (parentComponent != null) {
-            startDeflectionXOffset = parentComponent.getDeflectionXAtPosition(growthComponent.posX, growthComponent.posY);
-            startDeflectionYOffset = parentComponent.getDeflectionYAtPosition(growthComponent.posX, growthComponent.posY);
-        }
-
-        var startTheta = growthComponent.deflectionRollingAverage;
-        var endTheta = growthComponent.currentDeflection;
-        var length = growthComponent.getTotalSize();
-
-        var thetaDelta = endTheta - startTheta;
-
-        growthComponent.lifeSquares.forEach((lsq) => {
-            // relative to origin
-            var relLsqX = growthComponent.posX - lsq.posX;
-            var relLsqY = growthComponent.posY - lsq.posY;
-            var lsqDist = (relLsqX ** 2 + relLsqY ** 2) ** 0.5;
-            var currentTheta = startTheta + (lsqDist / length) * thetaDelta;
-
-            var endX = startDeflectionXOffset + relLsqX * Math.cos(currentTheta) - relLsqY * Math.sin(currentTheta);
-            var endY = startDeflectionYOffset + relLsqY * Math.cos(currentTheta) + relLsqX * Math.sin(currentTheta);
-
-            lsq.deflectionXOffset = endX - relLsqX;
-            lsq.deflectionYOffset = endY - relLsqY;
-        })
-
-        growthComponent.children.forEach(this._applyDeflectionStateToSquares);
-    }
-
 
     applyDeflectionStateToSquares() {
         if (this.originGrowth != null) {
-            this._applyDeflectionStateToSquares(this.originGrowth, null);
+            this.originGrowth.applyDeflectionState(null);
         }
-
     }
-
 
 }
