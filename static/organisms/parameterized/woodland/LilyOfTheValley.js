@@ -3,7 +3,7 @@ import { LilyOfTheValleyGreenSquare } from "../../../lifeSquares/parameterized/w
 import { LilyOfTheValleyRootSquare } from "../../../lifeSquares/parameterized/woodland/LilyOfTheValleyRootSquare.js";
 import { BaseParameterizedOrganism } from "../BaseParameterizedOrganism.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
-import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_SHOOT, SUBTYPE_SPROUT } from "../Stages.js";
+import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT } from "../Stages.js";
 
 export class LilyOfTheValleyOrganism extends BaseParameterizedOrganism {
     constructor(posX, posY) {
@@ -32,11 +32,23 @@ export class LilyOfTheValleyOrganism extends BaseParameterizedOrganism {
                 (time) => this.plantLastGrown = time,
                 () => {
                     var shoot = this.growPlantSquare(startGreen, 0, t);
-                    shoot.subtype = SUBTYPE_SHOOT;
+                    shoot.subtype = (Math.random() > 0.5 ? SUBTYPE_SHOOT : SUBTYPE_NODE);
                     return shoot;
                 }
             ))
         }
+        growthPlan.steps.push(new GrowthPlanStep(
+            growthPlan,
+            0,
+            0.00001,
+            () => this.plantLastGrown,
+            (time) => this.plantLastGrown = time,
+            () => {
+                var shoot = this.growPlantSquare(startGreen, 0, t);
+                shoot.subtype = SUBTYPE_SHOOT;
+                return shoot;
+            }
+        ))
         this.stageGrowthCount[STAGE_JUVENILE] += 1;
         return growthPlan;
     }
