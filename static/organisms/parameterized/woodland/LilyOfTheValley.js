@@ -25,6 +25,7 @@ export class LilyOfTheValleyOrganism extends BaseParameterizedOrganism {
         growthPlan.postConstruct = () => this.originGrowth.children.push(growthPlan.getGrowthComponent());
         for (let t = 1; t < randNumber(10, 30); t++) {
             growthPlan.steps.push(new GrowthPlanStep(
+                growthPlan,
                 0,
                 0.00001,
                 () => this.plantLastGrown,

@@ -70,6 +70,7 @@ export class BaseParameterizedOrganism extends BaseOrganism {
     gp_sprout() {
         var growthPlan = new GrowthPlan(this.posX, this.posY, true, STAGE_JUVENILE, 0, 1);
         growthPlan.steps.push(new GrowthPlanStep(
+            growthPlan,
             0,
             0,
             () => this.plantLastGrown,
@@ -90,6 +91,7 @@ export class BaseParameterizedOrganism extends BaseOrganism {
         ));
 
         growthPlan.steps.push(new GrowthPlanStep(
+            growthPlan,
             0,
             0,
             () => this.rootLastGrown,
@@ -136,6 +138,9 @@ export class BaseParameterizedOrganism extends BaseOrganism {
                     step.doAction();
                     step.timeSetter(getCurDay());
                     this.currentEnergy -= step.energyCost;
+                    if (this.originGrowth != null) {
+                        this.originGrowth.addChild(growthPlan.getGrowthComponent())
+                    }
                 };
             });
             if (growthPlan.areStepsCompleted()) {

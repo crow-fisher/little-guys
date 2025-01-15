@@ -10,17 +10,22 @@ export class GrowthPlan {
         this.baseDeflection = baseDeflection;
         this.springForce = springForce;
         this.completed = false;
+        this.component = null;
         this.areStepsCompleted = () => this.steps.every((step) => step.completed);
         this.postConstruct = () => console.warn("Warning: postconstruct not implemented");
     }
 
     getGrowthComponent() {
-        return new GrowthComponent(this.posX, this.posY, this.steps.map((step) => step.completedSquare), this.baseDeflection)
+        if (this.component == null) {
+            this.component = new GrowthComponent(this.posX, this.posY, this.steps.filter((step) => step.completed).map((step) => step.completedSquare), this.baseDeflection)
+        }
+        return this.component;
     }
 }
 
 export class GrowthPlanStep {
-    constructor(energyCost, timeCost, timeAccessor, timeSetter, action) {
+    constructor(growthPlan, energyCost, timeCost, timeAccessor, timeSetter, action) {
+        this.growthPlan = growthPlan;
         this.energyCost = energyCost;
         this.timeCost = timeCost;
         this.timeGetter = timeAccessor;
@@ -36,6 +41,9 @@ export class GrowthPlanStep {
         if (newLifeSquare) {
             this.completedSquare = newLifeSquare;
         }
+        this.growthPlan.getGrowthComponent().lifeSquares.push(newLifeSquare);
+        this.growthPlan.getGrowthComponent().updateDeflectionState();
+        this.growthPlan.getGrowthComponent().applyDeflectionState();
     }
 
 }
@@ -43,11 +51,6 @@ export class GrowthPlanStep {
 export class GrowthComponent {
     constructor(posX, posY, lifeSquares, baseDeflection) {
         var strengths = lifeSquares.map((lsq) => lsq.strength)
-        var xPositions = lifeSquares.map((lsq) => lsq.posX);
-        var yPositions = lifeSquares.map((lsq) => lsq.posY);
-
-        var xSize = Math.max(...xPositions) - Math.min(...xPositions);
-        var ySize = Math.max(...yPositions) - Math.min(...yPositions);
 
         this.posX = posX;
         this.posY = posY;
@@ -56,12 +59,26 @@ export class GrowthComponent {
         this.baseDeflection = baseDeflection;
         this.currentDeflection = baseDeflection / 2;
         this.deflectionRollingAverage = baseDeflection;
-        this.size = (xSize ** 2 + ySize ** 2) ** 0.5;
         this.strength = strengths.reduce(
             (accumulator, currentValue) => accumulator + currentValue,
             0,
         );
         this.children = new Array();
+    }
+
+    size() {
+        var xPositions = this.lifeSquares.map((lsq) => lsq.posX);
+        var yPositions = this.lifeSquares.map((lsq) => lsq.posY);
+        var xSize = Math.max(...xPositions) - Math.min(...xPositions);
+        var ySize = Math.max(...yPositions) - Math.min(...yPositions);
+        return Math.max(1, (xSize ** 2 + ySize ** 2) ** 0.5);
+    }
+
+    addChild(childComponent) {
+        if (childComponent in this.children) {
+            return;
+        }
+        this.children.push(childComponent);
     }
 
     updateDeflectionState() {
@@ -73,7 +90,9 @@ export class GrowthComponent {
         var windX = windVec[0];
         var coef = 0.5;
         var endSpringForce = startSpringForce * (1 - coef) + windX * coef;
-        this.setCurrentDeflection(Math.asin(endSpringForce / (strength ** 2)));
+        endSpringForce = Math.min(endSpringForce, strength * 100);
+        endSpringForce = Math.max(endSpringForce, -strength * 100);
+        this.setCurrentDeflection(Math.asin(endSpringForce / (strength * 100)));
         this.children.forEach((child) => child.updateDeflectionState());
     }
 
@@ -120,7 +139,7 @@ export class GrowthComponent {
     }
 
     getTotalSize() {
-        return this.size + this.children.map((gc) => gc.size).reduce(
+        return this.size() + this.children.map((gc) => gc.size()).reduce(
             (accumulator, currentValue) => accumulator + currentValue,
             0,
         );
