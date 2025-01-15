@@ -22,7 +22,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         
         var startGreen = this.getOriginForNewGrowth(SUBTYPE_SPROUT);
         var growthPlan = new GrowthPlan(startGreen.posX, startGreen.posY, false, STAGE_ADULT, randRange(0, 1) - 1, Math.random() / 3, 1);
-        growthPlan.postConstruct = () => this.originGrowth.children.push(growthPlan.component);
+        growthPlan.postConstruct = () => this.originGrowth.addChild(growthPlan.component);
         for (let t = 1; t < randNumber(10, 30); t++) {
             growthPlan.steps.push(new GrowthPlanStep(
                 growthPlan,
@@ -68,7 +68,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         }
         var startComponent = startNode.component;
         var growthPlan = new GrowthPlan(startNode.posX, startNode.posY, false, STAGE_ADULT, randRange(0, 1) - 1, Math.random() / 3, 1);
-        growthPlan.postConstruct = () => startComponent.children.push(growthPlan.component);
+        growthPlan.postConstruct = () => startComponent.addChild(growthPlan.component);
         for (let t = 1; t < randNumber(10, 50); t++) {
             growthPlan.steps.push(new GrowthPlanStep(
                 growthPlan,
@@ -87,6 +87,25 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         return growthPlan;
     }
 
+    addTrunkToGrowthPlan(growthPlan) {
+        if (growthPlan.component.lifeSquares.length > 20) {
+            return;
+        }
+        growthPlan.completed = false;
+        growthPlan.steps.push(new GrowthPlanStep(
+            growthPlan,
+            0,
+            0.001,
+            () => this.plantLastGrown,
+            (time) => this.plantLastGrown = time,
+            () => {
+                var node = this.growPlantSquare(growthPlan.component.lifeSquares.at(0), 0, 0);
+                node.subtype = SUBTYPE_NODE;
+                return node;
+            }
+        ));
+    }
+
     growAndDecay() {
         super.growAndDecay();
         if (this.stage == STAGE_JUVENILE) {
@@ -98,6 +117,9 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
             var plan = this.gp_adult();
             if (plan != null)
                 this.growthPlans.push(plan);
+            else {
+                this.addTrunkToGrowthPlan(this.stageGrowthPlans[STAGE_JUVENILE].at(0))
+            }
         }
     }
 }

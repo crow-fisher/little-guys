@@ -45,7 +45,7 @@ export class GrowthPlanStep {
             newLifeSquare.component = this.growthPlan.component;
         }
         this.growthPlan.executePostConstruct();
-        this.growthPlan.component.lifeSquares.push(newLifeSquare);
+        this.growthPlan.component.addLifeSquare(newLifeSquare);
     }
 }
 
@@ -71,10 +71,14 @@ export class GrowthComponent {
     }
 
     addLifeSquare(newLsq) {
-        this.lifeSquares.filter((llsq) => llsq.posX == newLsq.posX && llsq.posY <= newLsq.posY).forEach((llsq) => {
-            this.children.filter((child) => child.posX == llsq.posX && child.posY == llsq.posY).forEach((child) => child.shiftUp());
-            llsq.shiftUp();
-        });
+        this.children.filter((child) => child.posX == newLsq.posX && child.posY >= newLsq.posY)
+            .forEach((child) => child.shiftUp());
+
+        this.lifeSquares.filter((llsq) => llsq.subtype == newLsq.subtype && llsq.posY <= newLsq.posY)
+            .forEach((llsq) => {
+                llsq.shiftUp();
+            });
+
         this.lifeSquares.push(newLsq);
     }
 
@@ -122,7 +126,7 @@ export class GrowthComponent {
 
     getDeflectionYAtPosition(posX, posY) {
         return this.lifeSquares.filter((lsq) => lsq.posX == posX && lsq.posY == posY).map((lsq) => lsq.deflectionYOffset).at(0);
-}   
+    }   
 
 
     applyDeflectionState(parentComponent) {
