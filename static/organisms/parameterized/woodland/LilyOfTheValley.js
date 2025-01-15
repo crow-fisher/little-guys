@@ -21,9 +21,10 @@ export class LilyOfTheValleyOrganism extends BaseParameterizedOrganism {
         }
         
         var startGreen = this.getOriginForNewGrowth(SUBTYPE_SPROUT);
-        var growthPlan = new GrowthPlan(startGreen.posX, startGreen.posY, false, STAGE_JUVENILE, randRange(0, 1) - 1, Math.random() / 3, 1);
+        var growthPlan = new GrowthPlan(startGreen.posX, startGreen.posY, false, STAGE_ADULT, randRange(0, 1) - 1, Math.random() / 3, 1);
         growthPlan.postConstruct = () => this.originGrowth.children.push(growthPlan.getGrowthComponent());
-        for (let t = 1; t < randNumber(10, 30); t++) {
+        let t;
+        for (t = 1; t < randNumber(10, 30); t++) {
             growthPlan.steps.push(new GrowthPlanStep(
                 growthPlan,
                 0,
@@ -32,11 +33,12 @@ export class LilyOfTheValleyOrganism extends BaseParameterizedOrganism {
                 (time) => this.plantLastGrown = time,
                 () => {
                     var shoot = this.growPlantSquare(startGreen, 0, t);
-                    shoot.subtype = (Math.random() > 0.5 ? SUBTYPE_SHOOT : SUBTYPE_NODE);
+                    shoot.subtype = SUBTYPE_SHOOT;
                     return shoot;
                 }
             ))
         }
+
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
             0,
@@ -44,12 +46,43 @@ export class LilyOfTheValleyOrganism extends BaseParameterizedOrganism {
             () => this.plantLastGrown,
             (time) => this.plantLastGrown = time,
             () => {
-                var shoot = this.growPlantSquare(startGreen, 0, t);
-                shoot.subtype = SUBTYPE_SHOOT;
-                return shoot;
+                var node = this.growPlantSquare(startGreen, 0, t + 1);
+                node.subtype = SUBTYPE_NODE;
+                return node;
             }
         ))
+
         this.stageGrowthCount[STAGE_JUVENILE] += 1;
+        return growthPlan;
+    }
+
+    gp_adult() {
+        if (!(STAGE_ADULT in this.stageGrowthCount)) {
+            this.stageGrowthCount[STAGE_ADULT] = 0;
+        }
+        if (this.stageGrowthCount[STAGE_ADULT] > 3) {
+            return null;
+        }
+        var startNode = this.getOriginForNewGrowth(SUBTYPE_NODE);
+        var growthPlan = new GrowthPlan(startNode.posX, startNode.posY, false, STAGE_ADULT, randRange(0, 1) - 1, Math.random() / 3, 1);
+        growthPlan.postConstruct = () => this.originGrowth.children.push(growthPlan.getGrowthComponent());
+        let t;
+        for (t = 1; t < randNumber(10, 30); t++) {
+            growthPlan.steps.push(new GrowthPlanStep(
+                growthPlan,
+                0,
+                0.00001,
+                () => this.plantLastGrown,
+                (time) => this.plantLastGrown = time,
+                () => {
+                    var shoot = this.growPlantSquare(startNode, 0, t);
+                    shoot.subtype = SUBTYPE_SHOOT;
+                    return shoot;
+                }
+            ))
+        }
+
+        this.stageGrowthCount[STAGE_ADULT] += 1;
         return growthPlan;
     }
 
@@ -57,6 +90,11 @@ export class LilyOfTheValleyOrganism extends BaseParameterizedOrganism {
         super.growAndDecay();
         if (this.stage == STAGE_JUVENILE) {
             var plan = this.gp_juvenile();
+            if (plan != null)
+                this.growthPlans.push(plan);
+        }
+        if (this.stage == STAGE_ADULT) {
+            var plan = this.gp_adult();
             if (plan != null)
                 this.growthPlans.push(plan);
         }
