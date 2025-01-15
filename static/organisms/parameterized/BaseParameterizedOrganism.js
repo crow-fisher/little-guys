@@ -138,10 +138,14 @@ export class BaseParameterizedOrganism extends BaseOrganism {
                     step.doAction();
                     step.timeSetter(getCurDay());
                     this.currentEnergy -= step.energyCost;
+
+                    if (this.originGrowth != null) {
+                        this.originGrowth.updateDeflectionState();
+                        this.originGrowth.applyDeflectionState();
+                    }
                 };
             });
             if (growthPlan.areStepsCompleted()) {
-                growthPlan.postConstruct();
                 growthPlan.completed = true;
                 this.stage = growthPlan.endStage;
             }

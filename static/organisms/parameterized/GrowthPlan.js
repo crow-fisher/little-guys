@@ -18,6 +18,11 @@ export class GrowthPlan {
         this.component = new GrowthComponent(this.posX, this.posY, this.steps.filter((step) => step.completed).map((step) => step.completedSquare), baseDeflection, baseCurve)
     }
 
+    executePostConstruct() {
+        this.postConstruct();
+        this.postConstruct = () => null;
+    }
+
 }
 
 export class GrowthPlanStep {
@@ -39,9 +44,8 @@ export class GrowthPlanStep {
             this.completedSquare = newLifeSquare;
             newLifeSquare.component = this.growthPlan.component;
         }
+        this.growthPlan.executePostConstruct();
         this.growthPlan.component.lifeSquares.push(newLifeSquare);
-        this.growthPlan.component.updateDeflectionState();
-        this.growthPlan.component.applyDeflectionState();
     }
 }
 
