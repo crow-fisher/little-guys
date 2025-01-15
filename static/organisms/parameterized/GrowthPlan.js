@@ -1,24 +1,25 @@
 import { getWindSpeedAtLocation } from "../../wind.js";
 
+const ROLLING_AVERAGE_PERIOD = 50;
+
 export class GrowthPlan {
-    constructor(posX, posY, required, endStage, baseDeflection, springForce) {
+    constructor(posX, posY, required, endStage, baseDeflection, baseCurve, springForce) {
         this.posX = posX;
         this.posY = posY;
         this.required = required;
         this.steps = new Array(); // GrowthPlanStep
         this.endStage = endStage;
         this.baseDeflection = baseDeflection;
+        this.baseCurve = baseCurve;
         this.springForce = springForce;
         this.completed = false;
         this.component = null;
         this.areStepsCompleted = () => this.steps.every((step) => step.completed);
         this.postConstruct = () => console.warn("Warning: postconstruct not implemented");
+        this.component = new GrowthComponent(this.posX, this.posY, this.steps.filter((step) => step.completed).map((step) => step.completedSquare), baseDeflection, baseCurve)
     }
 
     getGrowthComponent() {
-        if (this.component == null) {
-            this.component = new GrowthComponent(this.posX, this.posY, this.steps.filter((step) => step.completed).map((step) => step.completedSquare), this.baseDeflection)
-        }
         return this.component;
     }
 }
@@ -49,21 +50,25 @@ export class GrowthPlanStep {
 }
 
 export class GrowthComponent {
-    constructor(posX, posY, lifeSquares, baseDeflection) {
+    constructor(posX, posY, lifeSquares, baseDeflection, baseCurve) {
         var strengths = lifeSquares.map((lsq) => lsq.strength)
 
         this.posX = posX;
         this.posY = posY;
 
         this.lifeSquares = Array.from(lifeSquares);
-        this.baseDeflection = baseDeflection;
-        this.currentDeflection = baseDeflection / 2;
-        this.deflectionRollingAverage = baseDeflection;
+        this.currentDeflection = 0;
+        this.deflectionRollingAverage = 10 ** 8;
         this.strength = strengths.reduce(
             (accumulator, currentValue) => accumulator + currentValue,
             0,
         );
         this.children = new Array();
+        
+        this.baseCurve = (Math.random() > 0.5 ? baseCurve : -baseCurve);
+        this.baseDeflection = Math.asin(baseDeflection);
+        this.setCurrentDeflection(this.baseDeflection);
+
     }
 
     size() {
@@ -75,7 +80,7 @@ export class GrowthComponent {
     }
 
     addChild(childComponent) {
-        if (childComponent in this.children) {
+        if (this.children.indexOf(childComponent) != -1) {
             return;
         }
         this.children.push(childComponent);
@@ -85,10 +90,10 @@ export class GrowthComponent {
         var strength = this.getTotalStrength();
         var length = this.getTotalSize();
         var windVec = this.getNetWindSpeed();
-        var startSpringForce = this.getStartSpringForce() / length;
 
+        var startSpringForce = this.getStartSpringForce() * 30;
         var windX = windVec[0];
-        var coef = 0.5;
+        var coef = 0.05;
         var endSpringForce = startSpringForce * (1 - coef) + windX * coef;
         endSpringForce = Math.min(endSpringForce, strength * 100);
         endSpringForce = Math.max(endSpringForce, -strength * 100);
@@ -105,8 +110,8 @@ export class GrowthComponent {
             startDeflectionYOffset = parentComponent.getDeflectionYAtPosition(this.posX, this.posY);
         }
 
-        var startTheta = this.deflectionRollingAverage;
-        var endTheta = this.currentDeflection;
+        var startTheta = this.deflectionRollingAverage - this.baseCurve / 2;
+        var endTheta = this.currentDeflection + this.baseCurve / 2;
         var length = this.getTotalSize();
 
         var thetaDelta = endTheta - startTheta;
@@ -132,17 +137,17 @@ export class GrowthComponent {
 
 
     getTotalStrength() {
-        return this.strength + this.children.map((gc) => gc.strength).reduce(
+        return Math.max(1, this.strength + this.children.map((gc) => gc.strength).reduce(
             (accumulator, currentValue) => accumulator + currentValue,
             0,
-        );
+        ));
     }
 
     getTotalSize() {
-        return this.size() + this.children.map((gc) => gc.size()).reduce(
+        return Math.max(1, this.size() + this.children.map((gc) => gc.size()).reduce(
             (accumulator, currentValue) => accumulator + currentValue,
             0,
-        );
+        ));
     }
 
     getNetWindSpeed() {
@@ -153,11 +158,15 @@ export class GrowthComponent {
     }
 
     getStartSpringForce() {
-        return Math.sin(this.deflectionRollingAverage - this.baseDeflection) * this.getTotalStrength();
+        return Math.sin(this.deflectionRollingAverage - this.baseDeflection) * this.getTotalStrength() * 2;
     }
 
     setCurrentDeflection(deflection) {
         this.currentDeflection = deflection;
-        this.deflectionRollingAverage = this.deflectionRollingAverage * 0.9 + deflection * 0.1;
+        if (this.deflectionRollingAverage == 10 ** 8) {
+            this.deflectionRollingAverage = deflection;
+        } else {
+            this.deflectionRollingAverage = this.deflectionRollingAverage * ((ROLLING_AVERAGE_PERIOD - 1) / ROLLING_AVERAGE_PERIOD) + deflection * (1 / ROLLING_AVERAGE_PERIOD);
+        }
     }
 }
