@@ -3,11 +3,13 @@ import { getZPercent, hexToRgb, processColorLerp, processColorStdev, rgbToHex, r
 
 import { getCurTime, getDaylightStrength } from "../time.js";
 import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount, b_sq_darkeningStrength } from "../config/config.js";
-import { getSquares, removeOrganismSquare } from "../squares/_sqOperations.js";
+import { addSquare, getSquares, removeOrganismSquare } from "../squares/_sqOperations.js";
 import { airNutrientsPerEmptyNeighbor } from "../config/config.js";
 
 import { selectedViewMode } from "../index.js";
 import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_GREEN, RGB_COLOR_BLACK, RGB_COLOR_RED } from "../colors.js";
+import { addOrganismSquare } from "./_lsOperations.js";
+import { removeSquare } from "../globalOperations.js";
 
 var LSQ_RENDER_SIZE_MULT = 1.1;
 
@@ -92,6 +94,15 @@ class BaseLifeSquare {
         this.accentColor = "#246A73";
         this.accentColor_rgb = hexToRgb(this.accentColor);
         this.accentColorAmount = dirt_accentColorAmount;
+    }
+
+    shiftUp() {
+        removeOrganismSquare(this);
+        this.posY -= 1;
+        addOrganismSquare(this);
+        removeSquare(this.linkedSquare);
+        this.linkedSquare.posY -= 1;
+        addSquare(this.linkedSquare);
     }
 
     dist(testX, testY) { // manhattan

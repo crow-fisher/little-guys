@@ -68,7 +68,20 @@ export class GrowthComponent {
         this.baseCurve = (Math.random() > 0.5 ? baseCurve : -baseCurve);
         this.baseDeflection = Math.asin(baseDeflection);
         this.setCurrentDeflection(this.baseDeflection);
+    }
 
+    addLifeSquare(newLsq) {
+        this.lifeSquares.filter((llsq) => llsq.posX == newLsq.posX && llsq.posY <= newLsq.posY).forEach((llsq) => {
+            this.children.filter((child) => child.posX == llsq.posX && child.posY == llsq.posY).forEach((child) => child.shiftUp());
+            llsq.shiftUp();
+        });
+        this.lifeSquares.push(newLsq);
+    }
+
+    shiftUp() {
+        this.posY -= 1;
+        this.lifeSquares.forEach((lsq) => lsq.shiftUp());
+        this.children.forEach((child) => child.shiftUp());
     }
 
     size() {

@@ -13,10 +13,10 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
     }
 
     gp_juvenile() {
-        if (!(STAGE_JUVENILE in this.stageGrowthCount)) {
-            this.stageGrowthCount[STAGE_JUVENILE] = 0;
+        if (!(STAGE_JUVENILE in this.stageGrowthPlans)) {
+            this.stageGrowthPlans[STAGE_JUVENILE] = new Array();
         }
-        if (this.stageGrowthCount[STAGE_JUVENILE] > 0) {
+        if (this.stageGrowthPlans[STAGE_JUVENILE].length > 0) {
             return null;
         }
         
@@ -51,15 +51,15 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
             }
         ))
 
-        this.stageGrowthCount[STAGE_JUVENILE] += 1;
+        this.stageGrowthPlans[STAGE_JUVENILE].push(growthPlan);
         return growthPlan;
     }
 
     gp_adult() {
-        if (!(STAGE_ADULT in this.stageGrowthCount)) {
-            this.stageGrowthCount[STAGE_ADULT] = 0;
+        if (!(STAGE_ADULT in this.stageGrowthPlans)) {
+            this.stageGrowthPlans[STAGE_ADULT] = new Array();
         }
-        if (this.stageGrowthCount[STAGE_ADULT] > 3) {
+        if (this.stageGrowthPlans[STAGE_ADULT].length > 3) {
             return;
         }
         var startNode = this.getOriginForNewGrowth(SUBTYPE_NODE);
@@ -69,7 +69,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         var startComponent = startNode.component;
         var growthPlan = new GrowthPlan(startNode.posX, startNode.posY, false, STAGE_ADULT, randRange(0, 1) - 1, Math.random() / 3, 1);
         growthPlan.postConstruct = () => startComponent.children.push(growthPlan.component);
-        for (let t = 1; t < randNumber(10, 30); t++) {
+        for (let t = 1; t < randNumber(10, 50); t++) {
             growthPlan.steps.push(new GrowthPlanStep(
                 growthPlan,
                 0,
@@ -83,7 +83,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
                 }
             ))
         }
-        this.stageGrowthCount[STAGE_ADULT] += 1;
+        this.stageGrowthPlans[STAGE_ADULT].push(growthPlan);
         return growthPlan;
     }
 
