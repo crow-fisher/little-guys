@@ -48,7 +48,7 @@ export class GrowthPlanStep {
         this.growthPlan.component.addLifeSquare(newLifeSquare);
     }
 }
-
+    
 export class GrowthComponent {
     constructor(posX, posY, lifeSquares, baseDeflection, baseCurve) {
         var strengths = lifeSquares.map((lsq) => lsq.strength)
@@ -71,10 +71,10 @@ export class GrowthComponent {
     }
 
     addLifeSquare(newLsq) {
-        this.children.filter((child) => child.posX == newLsq.posX && child.posY >= newLsq.posY)
+        this.children.filter((child) => child.posX == newLsq.posX && child.posY <= newLsq.posY)
             .forEach((child) => child.shiftUp());
 
-        this.lifeSquares.filter((llsq) => llsq.subtype == newLsq.subtype && llsq.posY <= newLsq.posY)
+        this.lifeSquares.filter((llsq) => llsq.proto == newLsq.proto && llsq.posX == newLsq.posX && llsq.posY <= newLsq.posY)
             .forEach((llsq) => {
                 llsq.shiftUp();
             });

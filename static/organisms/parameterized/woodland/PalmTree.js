@@ -59,7 +59,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         if (!(STAGE_ADULT in this.stageGrowthPlans)) {
             this.stageGrowthPlans[STAGE_ADULT] = new Array();
         }
-        if (this.stageGrowthPlans[STAGE_ADULT].length > 3) {
+        if (this.stageGrowthPlans[STAGE_ADULT].length > 4) {
             return;
         }
         var startNode = this.getOriginForNewGrowth(SUBTYPE_NODE);
@@ -95,11 +95,11 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
             0,
-            0.001,
+            0.004,
             () => this.plantLastGrown,
             (time) => this.plantLastGrown = time,
             () => {
-                var node = this.growPlantSquare(growthPlan.component.lifeSquares.at(0), 0, 0);
+                var node = this.growPlantSquare(growthPlan.component.lifeSquares.at(2), 0, 0);
                 node.subtype = SUBTYPE_NODE;
                 return node;
             }
