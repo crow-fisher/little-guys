@@ -22,9 +22,8 @@ export class LilyOfTheValleyOrganism extends BaseParameterizedOrganism {
         
         var startGreen = this.getOriginForNewGrowth(SUBTYPE_SPROUT);
         var growthPlan = new GrowthPlan(startGreen.posX, startGreen.posY, false, STAGE_ADULT, randRange(0, 1) - 1, Math.random() / 3, 1);
-        growthPlan.postConstruct = () => this.originGrowth.children.push(growthPlan.getGrowthComponent());
-        let t;
-        for (t = 1; t < randNumber(10, 30); t++) {
+        growthPlan.postConstruct = () => this.originGrowth.children.push(growthPlan.component);
+        for (let t = 1; t < randNumber(10, 30); t++) {
             growthPlan.steps.push(new GrowthPlanStep(
                 growthPlan,
                 0,
@@ -46,7 +45,7 @@ export class LilyOfTheValleyOrganism extends BaseParameterizedOrganism {
             () => this.plantLastGrown,
             (time) => this.plantLastGrown = time,
             () => {
-                var node = this.growPlantSquare(startGreen, 0, t + 1);
+                var node = this.growPlantSquare(startGreen, 0, growthPlan.steps.length);
                 node.subtype = SUBTYPE_NODE;
                 return node;
             }
@@ -64,10 +63,10 @@ export class LilyOfTheValleyOrganism extends BaseParameterizedOrganism {
             return null;
         }
         var startNode = this.getOriginForNewGrowth(SUBTYPE_NODE);
+        var startComponent = startNode.component;
         var growthPlan = new GrowthPlan(startNode.posX, startNode.posY, false, STAGE_ADULT, randRange(0, 1) - 1, Math.random() / 3, 1);
-        growthPlan.postConstruct = () => this.originGrowth.children.push(growthPlan.getGrowthComponent());
-        let t;
-        for (t = 1; t < randNumber(10, 30); t++) {
+        growthPlan.postConstruct = () => startComponent.children.push(growthPlan.component);
+        for (let t = 1; t < randNumber(10, 30); t++) {
             growthPlan.steps.push(new GrowthPlanStep(
                 growthPlan,
                 0,
@@ -81,7 +80,6 @@ export class LilyOfTheValleyOrganism extends BaseParameterizedOrganism {
                 }
             ))
         }
-
         this.stageGrowthCount[STAGE_ADULT] += 1;
         return growthPlan;
     }

@@ -13,15 +13,11 @@ export class GrowthPlan {
         this.baseCurve = baseCurve;
         this.springForce = springForce;
         this.completed = false;
-        this.component = null;
         this.areStepsCompleted = () => this.steps.every((step) => step.completed);
         this.postConstruct = () => console.warn("Warning: postconstruct not implemented");
         this.component = new GrowthComponent(this.posX, this.posY, this.steps.filter((step) => step.completed).map((step) => step.completedSquare), baseDeflection, baseCurve)
     }
 
-    getGrowthComponent() {
-        return this.component;
-    }
 }
 
 export class GrowthPlanStep {
@@ -41,12 +37,12 @@ export class GrowthPlanStep {
         this.completed = true;
         if (newLifeSquare) {
             this.completedSquare = newLifeSquare;
+            newLifeSquare.component = this.growthPlan.component;
         }
-        this.growthPlan.getGrowthComponent().lifeSquares.push(newLifeSquare);
-        this.growthPlan.getGrowthComponent().updateDeflectionState();
-        this.growthPlan.getGrowthComponent().applyDeflectionState();
+        this.growthPlan.component.lifeSquares.push(newLifeSquare);
+        this.growthPlan.component.updateDeflectionState();
+        this.growthPlan.component.applyDeflectionState();
     }
-
 }
 
 export class GrowthComponent {
@@ -89,9 +85,11 @@ export class GrowthComponent {
     updateDeflectionState() {
         var strength = this.getTotalStrength();
         var length = this.getTotalSize();
+
+        strength /= (length ** 0.5)
         var windVec = this.getNetWindSpeed();
 
-        var startSpringForce = this.getStartSpringForce() * 30;
+        var startSpringForce = this.getStartSpringForce() * 4;
         var windX = windVec[0];
         var coef = 0.05;
         var endSpringForce = startSpringForce * (1 - coef) + windX * coef;
@@ -100,6 +98,14 @@ export class GrowthComponent {
         this.setCurrentDeflection(Math.asin(endSpringForce / (strength * 100)));
         this.children.forEach((child) => child.updateDeflectionState());
     }
+
+    getDeflectionXAtPosition(posX, posY) {
+        return this.lifeSquares.filter((lsq) => lsq.posX == posX && lsq.posY == posY).map((lsq) => lsq.deflectionXOffset).at(0);
+    }
+
+    getDeflectionYAtPosition(posX, posY) {
+        return this.lifeSquares.filter((lsq) => lsq.posX == posX && lsq.posY == posY).map((lsq) => lsq.deflectionYOffset).at(0);
+}   
 
 
     applyDeflectionState(parentComponent) {
@@ -130,8 +136,7 @@ export class GrowthComponent {
             lsq.deflectionYOffset = endY - relLsqY;
         })
 
-        this.children.forEach((child) => child.applyDeflectionState());
-
+        this.children.forEach((child) => child.applyDeflectionState(this));
     }
 
 

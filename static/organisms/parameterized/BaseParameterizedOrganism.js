@@ -104,7 +104,7 @@ export class BaseParameterizedOrganism extends BaseOrganism {
                 return rootSq;
             }
         ));
-        growthPlan.postConstruct = () => this.originGrowth = growthPlan.getGrowthComponent();
+        growthPlan.postConstruct = () => this.originGrowth = growthPlan.component;
         return growthPlan;
     }
 
@@ -138,9 +138,6 @@ export class BaseParameterizedOrganism extends BaseOrganism {
                     step.doAction();
                     step.timeSetter(getCurDay());
                     this.currentEnergy -= step.energyCost;
-                    if (this.originGrowth != null) {
-                        this.originGrowth.addChild(growthPlan.getGrowthComponent())
-                    }
                 };
             });
             if (growthPlan.areStepsCompleted()) {

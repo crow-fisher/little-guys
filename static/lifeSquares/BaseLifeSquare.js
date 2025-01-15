@@ -24,6 +24,7 @@ class BaseLifeSquare {
         this.motivation = null; // if specified - 'air', 'water', 'dirt'
         this.spawnTime = getCurTime();
 
+
         this.maxAirDt = 0.005;
         this.maxWaterDt = 0.005;
         this.maxDirtDt = 0.005;
@@ -78,6 +79,7 @@ class BaseLifeSquare {
         this.numAdjacentFlowers = 0;
 
         this.distFromOrigin = 0;
+        this.component = null;
 
         this.renderWithColorRange = false;
         // for ref - values from plant
