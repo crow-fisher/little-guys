@@ -11,8 +11,8 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         this.greenType = PalmTreeGreenSquare;
         this.rootType = PalmTreeRootSquare;
 
-        this.trunkMaxThickness = 2;
-        this.trunkCurThickness = 0;
+        this.trunkMaxThickness = 5;
+        this.trunkCurThickness = 1;
     }
 
     gp_juvenile() {
@@ -25,7 +25,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         
         var startGreen = this.getOriginsForNewGrowth(SUBTYPE_SPROUT).at(0);
         var growthPlan = new GrowthPlan(startGreen.posX, startGreen.posY, false, STAGE_ADULT, randRange(0, 1) - 1, Math.random() / 3, 1);
-        growthPlan.postConstruct = () => {this.originGrowth.addChild(growthPlan.component); this.trunkCurThickness += 1};
+        growthPlan.postConstruct = () => this.originGrowth.addChild(growthPlan.component);
         for (let t = 1; t < randNumber(10, 30); t++) {
             growthPlan.steps.push(new GrowthPlanStep(
                 growthPlan,
@@ -93,6 +93,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
     addTrunkToGrowthPlan(growthPlan) {
         if (this.trunkCurThickness < this.trunkMaxThickness) {
             growthPlan.completed = false;
+            var t = this.trunkCurThickness;
             this.getOriginsForNewGrowth(SUBTYPE_TRUNK_CORE).forEach((trunk) => 
                 growthPlan.steps.push(new GrowthPlanStep(
                     growthPlan,
@@ -101,12 +102,12 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
                     () => this.plantLastGrown,
                     (time) => this.plantLastGrown = time,
                     () => {
-                        var node = this.growPlantSquare(trunk, -1, 0);
+                        var node = this.growPlantSquare(trunk, t, 0);
                         node.subtype = SUBTYPE_TRUNK;
                         return node;
                     }
             )));
-            growthPlan.postConstruct = () => this.trunkCurThickness += 1;   
+            this.trunkCurThickness += 1;   
         }
 
     }
