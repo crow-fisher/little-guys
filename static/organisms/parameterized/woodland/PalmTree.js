@@ -3,7 +3,7 @@ import { PalmTreeGreenSquare } from "../../../lifeSquares/parameterized/woodland
 import { PalmTreeRootSquare } from "../../../lifeSquares/parameterized/woodland/PalmTreeRootSquare.js";
 import { BaseParameterizedOrganism } from "../BaseParameterizedOrganism.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
-import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_TRUNK, SUBTYPE_TRUNK_CORE } from "../Stages.js";
+import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_TRUNK, SUBTYPE_TRUNK_CORE } from "../Stages.js";
 
 export class PalmTreeOrganism extends BaseParameterizedOrganism {
     constructor(posX, posY) {
@@ -23,8 +23,8 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
             return null;
         }
         
-        var startGreen = this.getOriginsForNewGrowth(SUBTYPE_SPROUT).at(0);
-        var growthPlan = new GrowthPlan(startGreen.posX, startGreen.posY, false, STAGE_ADULT, randRange(0, 1) - 1, Math.random() / 3, 1);
+        var startRootNode = this.getOriginsForNewGrowth(SUBTYPE_ROOTNODE).at(0);
+        var growthPlan = new GrowthPlan(startRootNode.posX, startRootNode.posY, false, STAGE_ADULT, randRange(0, 1) - 1, Math.random() / 3, 1);
         growthPlan.postConstruct = () => this.originGrowth.addChild(growthPlan.component);
         for (let t = 1; t < randNumber(10, 30); t++) {
             growthPlan.steps.push(new GrowthPlanStep(
@@ -34,7 +34,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
                 () => this.plantLastGrown,
                 (time) => this.plantLastGrown = time,
                 () => {
-                    var shoot = this.growPlantSquare(startGreen, 0, t);
+                    var shoot = this.growPlantSquare(startRootNode, 0, t);
                     shoot.subtype = SUBTYPE_TRUNK_CORE;
                     return shoot;
                 }
@@ -48,7 +48,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
             () => this.plantLastGrown,
             (time) => this.plantLastGrown = time,
             () => {
-                var node = this.growPlantSquare(startGreen, 0, growthPlan.steps.length);
+                var node = this.growPlantSquare(startRootNode, 0, growthPlan.steps.length);
                 node.subtype = SUBTYPE_NODE;
                 return node;
             }

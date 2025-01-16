@@ -5,7 +5,7 @@ import { getCurDay } from "../../time.js";
 import { addNewOrganism } from "../_orgOperations.js";
 import { BaseOrganism } from "../BaseOrganism.js";
 import { GrowthPlan, GrowthPlanStep } from "./GrowthPlan.js";
-import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_SPROUT } from "./Stages.js";
+import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_ROOTNODE, SUBTYPE_SPROUT } from "./Stages.js";
 
 
 export class BaseParameterizedOrganism extends BaseOrganism {
@@ -73,32 +73,12 @@ export class BaseParameterizedOrganism extends BaseOrganism {
             growthPlan,
             0,
             0,
-            () => this.plantLastGrown,
-            (time) => this.plantLastGrown = time,
-            () => {
-                var plantSquare = new PlantSquare(this.posX, this.posY - 1);
-                if (addSquare(plantSquare)) {
-                    var greenSquare = new this.greenType(plantSquare, this);
-                    greenSquare.linkSquare(plantSquare);
-                    plantSquare.linkOrganismSquare(greenSquare);
-                    greenSquare.subtype = SUBTYPE_SPROUT;
-                    this.addAssociatedLifeSquare(greenSquare);
-                    this.rootGreen = greenSquare;
-                    return greenSquare;
-                }
-                return false;
-            }
-        ));
-
-        growthPlan.steps.push(new GrowthPlanStep(
-            growthPlan,
-            0,
-            0,
             () => this.rootLastGrown,
             (time) => this.rootLastGrown = time,
             () => {
                 var rootSq = new this.rootType(this.linkedSquare, this);
                 rootSq.linkSquare(this.linkedSquare);
+                rootSq.subtype = SUBTYPE_ROOTNODE;
                 this.linkedSquare.linkOrganismSquare(rootSq);
                 this.addAssociatedLifeSquare(rootSq);
                 return rootSq;

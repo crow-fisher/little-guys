@@ -5,6 +5,7 @@ export const STAGE_FLOWER = "STAGE_FLOWER";
 export const STAGE_FRUIT = "STAGE_FRUIT";
 
 export const SUBTYPE_SPROUT = "SUBTYPE_SPROUT";
+export const SUBTYPE_ROOTNODE = "SUBTYPE_ROOTNODE";
 export const SUBTYPE_SHOOT = "SUBTYPE_SHOOT";
 export const SUBTYPE_NODE = "SUBTYPE_NODE";
 export const SUBTYPE_STEM = "SUBTYPE_STEM";
