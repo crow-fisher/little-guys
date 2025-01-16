@@ -819,7 +819,7 @@ window.onload = function () {
     // });
 }
 
-// loadSlotFromSave(pond_demo_square_data);
+loadSlotFromSave(volcano);
 
 export {
     MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, selectedViewMode, addSquareByName,

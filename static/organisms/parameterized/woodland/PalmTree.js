@@ -3,13 +3,16 @@ import { PalmTreeGreenSquare } from "../../../lifeSquares/parameterized/woodland
 import { PalmTreeRootSquare } from "../../../lifeSquares/parameterized/woodland/PalmTreeRootSquare.js";
 import { BaseParameterizedOrganism } from "../BaseParameterizedOrganism.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
-import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT } from "../Stages.js";
+import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_TRUNK, SUBTYPE_TRUNK_CORE } from "../Stages.js";
 
 export class PalmTreeOrganism extends BaseParameterizedOrganism {
     constructor(posX, posY) {
         super(posX, posY);
         this.greenType = PalmTreeGreenSquare;
         this.rootType = PalmTreeRootSquare;
+
+        this.trunkMaxThickness = 2;
+        this.trunkCurThickness = 0;
     }
 
     gp_juvenile() {
@@ -20,9 +23,9 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
             return null;
         }
         
-        var startGreen = this.getOriginForNewGrowth(SUBTYPE_SPROUT);
+        var startGreen = this.getOriginsForNewGrowth(SUBTYPE_SPROUT).at(0);
         var growthPlan = new GrowthPlan(startGreen.posX, startGreen.posY, false, STAGE_ADULT, randRange(0, 1) - 1, Math.random() / 3, 1);
-        growthPlan.postConstruct = () => this.originGrowth.addChild(growthPlan.component);
+        growthPlan.postConstruct = () => {this.originGrowth.addChild(growthPlan.component); this.trunkCurThickness += 1};
         for (let t = 1; t < randNumber(10, 30); t++) {
             growthPlan.steps.push(new GrowthPlanStep(
                 growthPlan,
@@ -32,7 +35,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
                 (time) => this.plantLastGrown = time,
                 () => {
                     var shoot = this.growPlantSquare(startGreen, 0, t);
-                    shoot.subtype = SUBTYPE_SHOOT;
+                    shoot.subtype = SUBTYPE_TRUNK_CORE;
                     return shoot;
                 }
             ))
@@ -62,7 +65,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         if (this.stageGrowthPlans[STAGE_ADULT].length > 4) {
             return;
         }
-        var startNode = this.getOriginForNewGrowth(SUBTYPE_NODE);
+        var startNode = this.getOriginsForNewGrowth(SUBTYPE_NODE).at(0);
         if (startNode == null) {
             return;
         }
@@ -88,22 +91,24 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
     }
 
     addTrunkToGrowthPlan(growthPlan) {
-        if (growthPlan.component.lifeSquares.length > 20) {
-            return;
+        if (this.trunkCurThickness < this.trunkMaxThickness) {
+            growthPlan.completed = false;
+            this.getOriginsForNewGrowth(SUBTYPE_TRUNK_CORE).forEach((trunk) => 
+                growthPlan.steps.push(new GrowthPlanStep(
+                    growthPlan,
+                    0,
+                    0.0004,
+                    () => this.plantLastGrown,
+                    (time) => this.plantLastGrown = time,
+                    () => {
+                        var node = this.growPlantSquare(trunk, -1, 0);
+                        node.subtype = SUBTYPE_TRUNK;
+                        return node;
+                    }
+            )));
+            growthPlan.postConstruct = () => this.trunkCurThickness += 1;   
         }
-        growthPlan.completed = false;
-        growthPlan.steps.push(new GrowthPlanStep(
-            growthPlan,
-            0,
-            0.004,
-            () => this.plantLastGrown,
-            (time) => this.plantLastGrown = time,
-            () => {
-                var node = this.growPlantSquare(growthPlan.component.lifeSquares.at(2), 0, 0);
-                node.subtype = SUBTYPE_NODE;
-                return node;
-            }
-        ));
+
     }
 
     growAndDecay() {

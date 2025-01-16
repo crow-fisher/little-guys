@@ -49,8 +49,8 @@ export class BaseParameterizedOrganism extends BaseOrganism {
         return null;
     }
 
-    getOriginForNewGrowth(subtype) {
-        return this._getOriginForNewGrowth(subtype, this.originGrowth).at(0);
+    getOriginsForNewGrowth(subtype) {
+        return this._getOriginForNewGrowth(subtype, this.originGrowth);
     }
 
     _getOriginForNewGrowth(subtype, component) {
