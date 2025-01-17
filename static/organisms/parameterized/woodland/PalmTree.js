@@ -111,7 +111,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
 
         // then thicken our trunk
 
-        this.thickenTrunkGrowthPlan(trunk);
+        // this.thickenTrunkGrowthPlan(trunk);
 
         // then, uh, i don't fucking know 
     }
@@ -147,7 +147,9 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
     extendLeafGrowthPlan(leafGrowthPlan, maxLeafLength) {
         if (leafGrowthPlan.growthPlan.steps.length < maxLeafLength) {
             for (let t = leafGrowthPlan.growthPlan.steps.length; t < maxLeafLength; t++) {
-                leafGrowthPlan.steps.push(new GrowthPlanStep(
+                leafGrowthPlan.completed = false;
+
+                leafGrowthPlan.growthPlan.steps.push(new GrowthPlanStep(
                     leafGrowthPlan,
                     0,
                     0.001,
