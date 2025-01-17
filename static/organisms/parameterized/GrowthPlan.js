@@ -62,9 +62,9 @@ export class GrowthComponent {
         this.strength = strengths.reduce(
             (accumulator, currentValue) => accumulator + currentValue,
             0,
-        );
-        this.children = new Array();
+        ) * (this.xSize() ** 3) * this.ySize();
         
+        this.children = new Array();
         this.baseCurve = (Math.random() > 0.5 ? baseCurve : -baseCurve);
         this.baseDeflection = Math.asin(baseDeflection);
         this.setCurrentDeflection(this.baseDeflection);

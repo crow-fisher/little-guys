@@ -44,7 +44,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         var startRootNode = this.getOriginsForNewGrowth(SUBTYPE_ROOTNODE).at(0);
         var growthPlan = new GrowthPlan(startRootNode.posX, startRootNode.posY, false, STAGE_ADULT, randRange(0, 1) - 1, Math.random() / 3, TYPE_TRUNK);
         growthPlan.postConstruct = () => this.originGrowth.addChild(growthPlan.component);
-        for (let t = 1; t < randNumber(10, 30); t++) {
+        for (let t = 1; t < randNumber(5, 10); t++) {
             growthPlan.steps.push(new GrowthPlanStep(
                 growthPlan,
                 0,
@@ -79,7 +79,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
     adultGrowthPlanning() {
         var trunk = this.getAllComponentsofType(TYPE_TRUNK).at(0);
 
-        var maxLeaves = Math.floor(trunk.lifeSquares.map((lsq) => lsq.subtype == SUBTYPE_NODE ? 3 : 0.1).reduce(
+        var maxLeaves = 1 + Math.floor(trunk.lifeSquares.map((lsq) => lsq.subtype == SUBTYPE_NODE ? 3 : 0.1).reduce(
             (accumulator, currentValue) => accumulator + currentValue,
             0,
         ));
@@ -170,13 +170,12 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
     increaseHeightGrowthPlan(trunk) {
         var xPositions = trunk.xPositions();
         var yPositions = trunk.yPositions();
-
-        var posY = yPositions.at(randNumber(0, yPositions.size() - 1));
-        
+        var posY = yPositions.at(randNumber(1, yPositions.length - 2));
+        trunk.growthPlan.completed = false;
         xPositions.forEach((posX) => {
             var trunkLifeSquare = trunk.lifeSquares.filter((lsq) => lsq.posX == posX && lsq.posY == posY).at(0);
-            trunk.steps.push(new GrowthPlanStep(
-                trunk,
+            trunk.growthPlan.steps.push(new GrowthPlanStep(
+                trunk.growthPlan,
                 0,
                 0.0004,
                 () => this.plantLastGrown,
@@ -206,17 +205,17 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
             return;
         }
         rootNodeSq.subtype = SUBTYPE_ROOTNODE;
-        trunk.completed = false;
+        trunk.growthPlan.completed = false;
         var curY = rootNodeSq.posY - 1;
         while (curY > trunkMinY) {
             trunk.growthPlan.steps.push(new GrowthPlanStep(
-                trunk,
+                trunk.growthPlan,
                 0,
                 0.0000001,
                 () => this.plantLastGrown,
                 (time) => this.plantLastGrown = time,
                 () => {
-                    var node = this.growPlantSquare(rootNodeSq, 0, rootNodeSq.posY - curY);
+                    var node = this.growPlantSquarePos(rootNodeSq, rootNodeSq.posX, rootNodeSq.posY - 1);
                     node.subtype = SUBTYPE_TRUNK;
                     return node;
                 }

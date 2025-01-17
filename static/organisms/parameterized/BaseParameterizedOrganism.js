@@ -38,6 +38,20 @@ export class BaseParameterizedOrganism extends BaseOrganism {
         this.rootType = null;
     }
 
+    growPlantSquarePos(parentSquare, posX, posY) {
+        var newPlantSquare = new PlantSquare(posX, posY);
+        if (addSquare(newPlantSquare)) {
+            var newGreenSquare = addOrganismSquare(new this.greenType(newPlantSquare, this));
+            if (newGreenSquare) {
+                this.addAssociatedLifeSquare(newGreenSquare);
+                newGreenSquare.linkSquare(newPlantSquare);
+                parentSquare.addChild(newPlantSquare);
+                return newGreenSquare;
+            }
+        }
+        return null;
+    }
+
     growPlantSquare(parentSquare, dx, dy) {
         var newPlantSquare = new PlantSquare(parentSquare.posX + dx, parentSquare.posY - dy);
         if (addSquare(newPlantSquare)) {
