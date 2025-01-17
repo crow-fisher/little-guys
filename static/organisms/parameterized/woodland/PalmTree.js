@@ -3,7 +3,7 @@ import { PalmTreeGreenSquare } from "../../../lifeSquares/parameterized/woodland
 import { PalmTreeRootSquare } from "../../../lifeSquares/parameterized/woodland/PalmTreeRootSquare.js";
 import { BaseParameterizedOrganism } from "../BaseParameterizedOrganism.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
-import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_TRUNK, SUBTYPE_TRUNK_CORE, TYPE_LEAF, TYPE_TRUNK } from "../Stages.js";
+import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_TRUNK, SUBTYPE_TRUNK_CORE, TYPE_LEAF, TYPE_TRUNK } from "../Stages.js";
 
 export class PalmTreeOrganism extends BaseParameterizedOrganism {
     constructor(posX, posY) {
@@ -86,7 +86,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
 
         var maxHeight = trunk.xSize() * 4;
 
-        var maxLeafLength = Math.ceil(trunk.ySize() / 2);
+        var maxLeafLength = Math.ceil(trunk.ySize());
 
         // try to grow additional leaves if we can 
 
@@ -136,7 +136,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
                 (time) => this.plantLastGrown = time,
                 () => {
                     var shoot = this.growPlantSquare(startNode, 0, t);
-                    shoot.subtype = SUBTYPE_SHOOT;
+                    shoot.subtype = SUBTYPE_LEAF;
                     return shoot;
                 }
             ))
@@ -144,20 +144,19 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         return growthPlan;
     }
 
-    extendLeafGrowthPlan(leafGrowthPlan, maxLeafLength) {
-        if (leafGrowthPlan.growthPlan.steps.length < maxLeafLength) {
-            for (let t = leafGrowthPlan.growthPlan.steps.length; t < maxLeafLength; t++) {
-                leafGrowthPlan.completed = false;
-
-                leafGrowthPlan.growthPlan.steps.push(new GrowthPlanStep(
-                    leafGrowthPlan,
+    extendLeafGrowthPlan(leafComponent, maxLeafLength) {
+        if (leafComponent.growthPlan.steps.length < maxLeafLength) {
+            for (let t = leafComponent.growthPlan.steps.length; t < maxLeafLength; t++) {
+                leafComponent.growthPlan.completed = false;
+                leafComponent.growthPlan.steps.push(new GrowthPlanStep(
+                    leafComponent.growthPlan,
                     0,
                     0.001,
                     () => this.plantLastGrown,
                     (time) => this.plantLastGrown = time,
                     () => {
-                        var shoot = this.growPlantSquare(startNode, 0, t);
-                        shoot.subtype = SUBTYPE_SHOOT;
+                        var shoot = this.growPlantSquare(leafComponent.lifeSquares.at(0), 0, 0);
+                        shoot.subtype = SUBTYPE_LEAF;
                         return shoot;
                     }
                 ))
