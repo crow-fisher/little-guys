@@ -127,7 +127,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         })
         var growthPlan = new GrowthPlan(startNode.posX, startNode.posY, false, STAGE_ADULT, randRange(0, 1) - 1, Math.random() / 3, TYPE_LEAF);
         growthPlan.postConstruct = () => startComponent.addChild(growthPlan.component);
-        for (let t = 1; t < maxLeafLength; t++) {
+        for (let t = 1; t < randNumber(0, maxLeafLength); t++) {
             growthPlan.steps.push(new GrowthPlanStep(
                 growthPlan,
                 0,
@@ -170,10 +170,13 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
     increaseHeightGrowthPlan(trunk) {
         var xPositions = trunk.xPositions();
         var yPositions = trunk.yPositions();
-        var posY = yPositions.at(randNumber(1, yPositions.length - 2));
+        var posY = yPositions.at(3);
         trunk.growthPlan.completed = false;
         xPositions.forEach((posX) => {
-            var trunkLifeSquare = trunk.lifeSquares.filter((lsq) => lsq.posX == posX && lsq.posY == posY).at(0);
+            var trunkLifeSquare = trunk.lifeSquares.filter((lsq) => lsq.posX == posX && lsq.posY >= posY).at(0);
+            if (trunkLifeSquare == null) {
+                return;
+            }
             trunk.growthPlan.steps.push(new GrowthPlanStep(
                 trunk.growthPlan,
                 0,

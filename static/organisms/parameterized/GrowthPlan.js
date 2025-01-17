@@ -99,11 +99,17 @@ export class GrowthComponent {
     }
 
     xSize() {
+        if (this.lifeSquares.length == 0) {
+            return 1;
+        }
         var xPositions = this.lifeSquares.map((lsq) => lsq.posX);
         return Math.max(...xPositions) - Math.min(...xPositions);
     }
 
     ySize() {
+        if (this.lifeSquares.length == 0) {
+            return 1;
+        }
         var yPositions = this.lifeSquares.map((lsq) => lsq.posY);
         return Math.max(...yPositions) - Math.min(...yPositions);
     }
@@ -117,9 +123,6 @@ export class GrowthComponent {
 
     updateDeflectionState() {
         var strength = this.getTotalStrength();
-        var length = this.getTotalSize();
-
-        strength /= (length ** 0.5)
         var windVec = this.getNetWindSpeed();
 
         var startSpringForce = this.getStartSpringForce() * 4;
