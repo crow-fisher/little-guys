@@ -5,7 +5,7 @@ import { getCurDay } from "../../time.js";
 import { addNewOrganism } from "../_orgOperations.js";
 import { BaseOrganism } from "../BaseOrganism.js";
 import { GrowthPlan, GrowthPlanStep } from "./GrowthPlan.js";
-import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_ROOTNODE, SUBTYPE_SPROUT, TYPE_TRUNK } from "./Stages.js";
+import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_ROOTNODE, SUBTYPE_SPROUT, TYPE_HEART, TYPE_TRUNK } from "./Stages.js";
 
 
 export class BaseParameterizedOrganism extends BaseOrganism {
@@ -50,6 +50,17 @@ export class BaseParameterizedOrganism extends BaseOrganism {
             }
         }
         return null;
+    }
+
+    getAllComponentsofType(componentType) {
+        return this._getAllComponentsofType(componentType, this.originGrowth);
+    }
+
+    _getAllComponentsofType(componentType, component) {
+        var out = new Array();
+        out.push(...component.children.filter((child) => child.type == componentType))
+        out.push(...component.children.map((child) => this._getAllComponentsofType(subtype, child)))
+        return out;
     }
 
     getOriginsForNewGrowth(subtype) {

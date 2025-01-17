@@ -15,7 +15,7 @@ export class GrowthPlan {
         this.completed = false;
         this.areStepsCompleted = () => this.steps.every((step) => step.completed);
         this.postConstruct = () => console.warn("Warning: postconstruct not implemented");
-        this.component = new GrowthComponent(this.posX, this.posY, this.steps.filter((step) => step.completed).map((step) => step.completedSquare), baseDeflection, baseCurve, type)
+        this.component = new GrowthComponent(this, this.steps.filter((step) => step.completed).map((step) => step.completedSquare), baseDeflection, baseCurve, type)
     }
 
     executePostConstruct() {
@@ -26,14 +26,13 @@ export class GrowthPlan {
 }
 
 export class GrowthPlanStep {
-    constructor(growthPlan, energyCost, timeCost, timeAccessor, timeSetter, action, type) {
+    constructor(growthPlan, energyCost, timeCost, timeAccessor, timeSetter, action) {
         this.growthPlan = growthPlan;
         this.energyCost = energyCost;
         this.timeCost = timeCost;
         this.timeGetter = timeAccessor;
         this.timeSetter = timeSetter;
         this.action = action;
-        this.type = type;
         this.completed = false;
         this.completedSquare = null;
     }
@@ -51,11 +50,11 @@ export class GrowthPlanStep {
 }
     
 export class GrowthComponent {
-    constructor(posX, posY, lifeSquares, baseDeflection, baseCurve) {
+    constructor(growthPlan, lifeSquares, baseDeflection, baseCurve, type) {
         var strengths = lifeSquares.map((lsq) => lsq.strength)
-
-        this.posX = posX;
-        this.posY = posY;
+        this.growthPlan = growthPlan;
+        this.posX = growthPlan.posX;   
+        this.posY = growthPlan.posY;
 
         this.lifeSquares = Array.from(lifeSquares);
         this.currentDeflection = 0;
@@ -69,6 +68,8 @@ export class GrowthComponent {
         this.baseCurve = (Math.random() > 0.5 ? baseCurve : -baseCurve);
         this.baseDeflection = Math.asin(baseDeflection);
         this.setCurrentDeflection(this.baseDeflection);
+
+        this.type = type;
     }
 
     addLifeSquare(newLsq) {
@@ -89,12 +90,14 @@ export class GrowthComponent {
         this.children.forEach((child) => child.shiftUp());
     }
 
-    size() {
+    xSize() {
         var xPositions = this.lifeSquares.map((lsq) => lsq.posX);
+        return xSize = Math.max(...xPositions) - Math.min(...xPositions);
+    }
+
+    ySize() {
         var yPositions = this.lifeSquares.map((lsq) => lsq.posY);
-        var xSize = Math.max(...xPositions) - Math.min(...xPositions);
-        var ySize = Math.max(...yPositions) - Math.min(...yPositions);
-        return Math.max(1, (xSize ** 2 + ySize ** 2) ** 0.5);
+        return ySize = Math.max(...yPositions) - Math.min(...yPositions);
     }
 
     addChild(childComponent) {
@@ -171,7 +174,7 @@ export class GrowthComponent {
     }
 
     getTotalSize() {
-        return Math.max(1, this.size() + this.children.map((gc) => gc.size()).reduce(
+        return Math.max(1, this.lifeSquares.length + this.children.map((gc) => this.lifeSquares.length).reduce(
             (accumulator, currentValue) => accumulator + currentValue,
             0,
         ));
