@@ -5,7 +5,7 @@ import { getCurDay } from "../../time.js";
 import { addNewOrganism } from "../_orgOperations.js";
 import { BaseOrganism } from "../BaseOrganism.js";
 import { GrowthPlan, GrowthPlanStep } from "./GrowthPlan.js";
-import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_ROOTNODE, SUBTYPE_SPROUT } from "./Stages.js";
+import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_ROOTNODE, SUBTYPE_SPROUT, TYPE_TRUNK } from "./Stages.js";
 
 
 export class BaseParameterizedOrganism extends BaseOrganism {
@@ -59,7 +59,7 @@ export class BaseParameterizedOrganism extends BaseOrganism {
     _getOriginForNewGrowth(subtype, component) {
         var out = new Array();
         out.push(...component.lifeSquares.filter((sq) => sq.subtype == subtype))
-        component.children.map((child) => this._getOriginForNewGrowth(subtype, child)).forEach((o) => out.push(...o));
+        out.push(...component.children.map((child) => this._getOriginForNewGrowth(subtype, child)))
         return out;
     }
 
@@ -89,7 +89,7 @@ export class BaseParameterizedOrganism extends BaseOrganism {
     }
 
     gp_sprout() {
-        var growthPlan = new GrowthPlan(this.posX, this.posY, true, STAGE_JUVENILE, 0, 0, 1);
+        var growthPlan = new GrowthPlan(this.posX, this.posY, true, STAGE_JUVENILE, 0, 0, TYPE_HEART);
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
             0,

@@ -6,6 +6,8 @@ export class PalmTreeRootSquare extends BaseLifeSquare {
         super(square, organism);
         this.proto = "PalmTreeRootSquare";
         this.type = "root";
+        this.opacity = 0.4;
+        this.colorBase = "#D1E231";
     }
 
     tick() {

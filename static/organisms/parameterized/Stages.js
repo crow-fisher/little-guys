@@ -4,6 +4,11 @@ export const STAGE_ADULT = "STAGE_ADULT";
 export const STAGE_FLOWER = "STAGE_FLOWER";
 export const STAGE_FRUIT = "STAGE_FRUIT";
 
+export const TYPE_ROOT = "TYPE_ROOT";
+export const TYPE_HEART = "TYPE_HEART";
+export const TYPE_TRUNK = "TYPE_TRUNK";
+export const TYPE_LEAF = "TYPE_LEAF";
+
 export const SUBTYPE_SPROUT = "SUBTYPE_SPROUT";
 export const SUBTYPE_ROOTNODE = "SUBTYPE_ROOTNODE";
 export const SUBTYPE_SHOOT = "SUBTYPE_SHOOT";

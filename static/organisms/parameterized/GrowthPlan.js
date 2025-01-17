@@ -3,7 +3,7 @@ import { getWindSpeedAtLocation } from "../../wind.js";
 const ROLLING_AVERAGE_PERIOD = 50;
 
 export class GrowthPlan {
-    constructor(posX, posY, required, endStage, baseDeflection, baseCurve, springForce) {
+    constructor(posX, posY, required, endStage, baseDeflection, baseCurve, type) {
         this.posX = posX;
         this.posY = posY;
         this.required = required;
@@ -11,11 +11,11 @@ export class GrowthPlan {
         this.endStage = endStage;
         this.baseDeflection = baseDeflection;
         this.baseCurve = baseCurve;
-        this.springForce = springForce;
+        this.type = type;
         this.completed = false;
         this.areStepsCompleted = () => this.steps.every((step) => step.completed);
         this.postConstruct = () => console.warn("Warning: postconstruct not implemented");
-        this.component = new GrowthComponent(this.posX, this.posY, this.steps.filter((step) => step.completed).map((step) => step.completedSquare), baseDeflection, baseCurve)
+        this.component = new GrowthComponent(this.posX, this.posY, this.steps.filter((step) => step.completed).map((step) => step.completedSquare), baseDeflection, baseCurve, type)
     }
 
     executePostConstruct() {
@@ -26,13 +26,14 @@ export class GrowthPlan {
 }
 
 export class GrowthPlanStep {
-    constructor(growthPlan, energyCost, timeCost, timeAccessor, timeSetter, action) {
+    constructor(growthPlan, energyCost, timeCost, timeAccessor, timeSetter, action, type) {
         this.growthPlan = growthPlan;
         this.energyCost = energyCost;
         this.timeCost = timeCost;
         this.timeGetter = timeAccessor;
         this.timeSetter = timeSetter;
         this.action = action;
+        this.type = type;
         this.completed = false;
         this.completedSquare = null;
     }
