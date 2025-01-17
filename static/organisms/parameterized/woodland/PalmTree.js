@@ -104,27 +104,28 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
 
         // then try to increase our height 
 
-        // then try to thicken our trunk
-
-
-        var plan = this.gp_adult();
-        if (plan != null)
-            this.growthPlans.push(plan);
-        else {
-            this.thickenTrunkGrowthPlan(this.stageGrowthPlans[STAGE_JUVENILE].at(0))
+        if (trunk.ySize() < maxHeight) {
+            this.increaseHeightGrowthPlan(trunk);
+            return;
         }
+
+        // then thicken our trunk
+
+        this.thickenTrunkGrowthPlan(trunk);
+
+        // then, uh, i don't fucking know 
     }
 
     newLeafGrowthPlan(startComponent, maxLeafLength) {
         // grow from the node with the least child lifesquares
-        var startNode = null;
+        var startNode;
         
         startComponent.lifeSquares.filter((lsq) => lsq.subtype == SUBTYPE_NODE).forEach((lsq) => {
-            if (lsq.childLifeSquares.length < startNode.childLifeSquares.length) {
+            if (startNode == null || lsq.childLifeSquares.length < startNode.childLifeSquares.length) {
                 startNode = lsq;
             }
         })
-        var growthPlan = new GrowthPlan(startNode.posX, startNode.posY, false, STAGE_ADULT, randRange(0, 1) - 1, Math.random() / 3, 1);
+        var growthPlan = new GrowthPlan(startNode.posX, startNode.posY, false, STAGE_ADULT, randRange(0, 1) - 1, Math.random() / 3, TYPE_LEAF);
         growthPlan.postConstruct = () => startComponent.addChild(growthPlan.component);
         for (let t = 1; t < maxLeafLength; t++) {
             growthPlan.steps.push(new GrowthPlanStep(
@@ -140,7 +141,6 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
                 }
             ))
         }
-        this.stageGrowthPlans[STAGE_ADULT].push(growthPlan);
         return growthPlan;
     }
 
@@ -165,7 +165,27 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         return false;
     }
 
-    increaseHeightGrowthPlan() {
+    increaseHeightGrowthPlan(trunk) {
+        var xPositions = trunk.xPositions();
+        var yPositions = trunk.yPositions();
+
+        var posY = yPositions.at(randNumber(0, yPositions.size() - 1));
+        
+        xPositions.forEach((posX) => {
+            var trunkLifeSquare = trunk.lifeSquares.filter((lsq) => lsq.posX == posX && lsq.posY == posY).at(0);
+            growthPlan.steps.push(new GrowthPlanStep(
+                growthPlan,
+                0,
+                0.0004,
+                () => this.plantLastGrown,
+                (time) => this.plantLastGrown = time,
+                () => {
+                    var node = this.growPlantSquare(trunkLifeSquare, 0, 0);
+                    node.subtype = SUBTYPE_TRUNK;
+                    return node;
+                }
+            ))
+        })
 
     }
     
@@ -185,7 +205,8 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
                         node.subtype = SUBTYPE_TRUNK;
                         return node;
                     }
-            )));
+                ))
+            );
             this.trunkCurThickness += 1;   
         }
 

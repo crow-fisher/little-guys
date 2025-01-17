@@ -90,14 +90,22 @@ export class GrowthComponent {
         this.children.forEach((child) => child.shiftUp());
     }
 
+    xPositions() {
+        return this.lifeSquares.map((lsq) => lsq.posX);
+    }
+
+    yPositions() {
+        return this.lifeSquares.map((lsq) => lsq.posY);
+    }
+
     xSize() {
         var xPositions = this.lifeSquares.map((lsq) => lsq.posX);
-        return xSize = Math.max(...xPositions) - Math.min(...xPositions);
+        return Math.max(...xPositions) - Math.min(...xPositions);
     }
 
     ySize() {
         var yPositions = this.lifeSquares.map((lsq) => lsq.posY);
-        return ySize = Math.max(...yPositions) - Math.min(...yPositions);
+        return Math.max(...yPositions) - Math.min(...yPositions);
     }
 
     addChild(childComponent) {

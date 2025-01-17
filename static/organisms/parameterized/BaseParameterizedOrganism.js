@@ -59,7 +59,7 @@ export class BaseParameterizedOrganism extends BaseOrganism {
     _getAllComponentsofType(componentType, component) {
         var out = new Array();
         out.push(...component.children.filter((child) => child.type == componentType))
-        out.push(...component.children.map((child) => this._getAllComponentsofType(subtype, child)))
+        out.push(...component.children.map((child) => this._getAllComponentsofType(componentType, child)))
         return out;
     }
 
