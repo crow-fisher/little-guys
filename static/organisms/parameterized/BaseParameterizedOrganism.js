@@ -1,5 +1,5 @@
-import { addOrganismSquare } from "../../lifeSquares/_lsOperations.js";
-import { addSquare } from "../../squares/_sqOperations.js";
+import { addOrganismSquare, getOrganismSquaresAtSquareWithEntityId } from "../../lifeSquares/_lsOperations.js";
+import { addSquare, getDirectNeighbors } from "../../squares/_sqOperations.js";
 import { PlantSquare } from "../../squares/PlantSquare.js";
 import { getCurDay } from "../../time.js";
 import { addNewOrganism } from "../_orgOperations.js";
@@ -20,10 +20,11 @@ export class BaseParameterizedOrganism extends BaseOrganism {
             STAGE_FRUIT
         ];
         this.growthPlans = [];
-        
         this.shouldGrow = true;
-
         this.originGrowth = null;
+
+        this.maxSquaresOfTypePerDay = 100;
+        this.throttleInterval = () => 1 / this.maxSquaresOfTypePerDay;
 
         // organism config in 'days'
         this.adultTime = 3;
@@ -66,6 +67,24 @@ export class BaseParameterizedOrganism extends BaseOrganism {
         if (this.stage == STAGE_SPROUT) {
             this.growthPlans.push(this.gp_sprout())
         }
+
+        let minNutrient = this.getMinNutrient();
+        let meanNutrient = this.getMeanNutrient();
+
+        if (this.airNutrients == minNutrient) {
+            this.shouldGrow = true;
+        } else {
+            this.shouldGrow = false;
+        }
+
+        if (this.dirtNutrients == minNutrient && this.waterNutrients < meanNutrient * 1.1) {
+            this.growDirtRoot();
+        }
+
+        if (this.waterNutrients == minNutrient && this.dirtNutrients < meanNutrient * 1.1) {
+            this.growWaterRoot();
+        }
+        
         this.executeGrowthPlans();
     }
 
@@ -111,11 +130,12 @@ export class BaseParameterizedOrganism extends BaseOrganism {
     }
 
     executeGrowthPlans() {
-        if (!this.shouldGrow) {
-            return;
-        }
-        var somethingDone = false;
+        // if (!this.shouldGrow) {
+        //     return;
+        // }
+        var anyStepFound = false;
         this.growthPlans.filter((gp) => !gp.completed).forEach((growthPlan) => {
+            anyStepFound = true;
             growthPlan.steps.filter((step) => !step.completed).forEach((step) => {
                 if (
                     (getCurDay() >= step.timeGetter() + step.timeCost) &&
@@ -124,8 +144,6 @@ export class BaseParameterizedOrganism extends BaseOrganism {
                     step.doAction();
                     step.timeSetter(getCurDay());
                     this.currentEnergy -= step.energyCost;
-                    somethingDone = true;
-
                     if (this.originGrowth != null) {
                         this.originGrowth.updateDeflectionState();
                         this.originGrowth.applyDeflectionState();
@@ -141,7 +159,7 @@ export class BaseParameterizedOrganism extends BaseOrganism {
             }
         });
 
-        if (!somethingDone) {
+        if (!anyStepFound) {
             this.planGrowth();
         }
     }
@@ -160,4 +178,47 @@ export class BaseParameterizedOrganism extends BaseOrganism {
         }
     }
 
+    growRoot(f) {
+        var targetSquare = null;
+        var targetSquareParent = null;
+        this.lifeSquares.filter((lsq) => lsq.type == "root").forEach((lsq) => {
+            getDirectNeighbors(lsq.posX, lsq.posY)
+                .filter((_sq) => _sq != null)
+                .filter((_sq) => _sq.rootable)
+                .filter((_sq) => getOrganismSquaresAtSquareWithEntityId(_sq, this.spawnedEntityId).length == 0)
+                .filter((_sq) => targetSquare == null || f(targetSquare) < f(_sq))
+                .forEach((_sq) => {targetSquare = _sq; targetSquareParent = lsq});
+        });
+        if (targetSquare == null) {
+            return;
+        }
+
+        var newRootLifeSquare = addOrganismSquare(new this.rootType(targetSquare, this));
+        if (newRootLifeSquare) {
+            this.addAssociatedLifeSquare(newRootLifeSquare);
+            newRootLifeSquare.linkSquare(targetSquare);
+            targetSquareParent.addChild(newRootLifeSquare)
+            targetSquare.linkOrganismSquare(newRootLifeSquare);
+        }
+    }
+
+    growWaterRoot() {
+        if (!this.canGrowRoot()) {
+            return 0;
+        }
+        if (getCurDay() > this.waterLastGrown + this.throttleInterval()) {
+            this.waterLastGrown = getCurDay();
+            this.growRoot((sq) => sq.waterContainment);
+        }
+    }
+
+    growDirtRoot() {
+        if (!this.canGrowRoot()) {
+            return 0;
+        }
+        if (getCurDay() > this.waterLastGrown + this.throttleInterval()) {
+            this.rootLastGrown = getCurDay();
+            this.growRoot((sq) => sq.nutrientValue.value);
+        }
+    }
 }

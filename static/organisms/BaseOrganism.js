@@ -1,7 +1,7 @@
 import { removeOrganism } from "./_orgOperations.js";
 import { Law } from "../Law.js";
 import { getStandardDeviation, randNumber } from "../common.js";
-import { getCurDay } from "../time.js";
+import { getCurDay, getCurTime } from "../time.js";
 import { getNextEntitySpawnId } from "../globals.js";
 import { getWindSpeedAtLocation } from "../wind.js";
 
@@ -39,9 +39,9 @@ class BaseOrganism {
         this.airNutrients = 1;
         this.waterNutrients = 1;
 
-        this.plantLastGrown = getCurDay();
-        this.waterLastGrown = getCurDay();
-        this.rootLastGrown = getCurDay();
+        this.plantLastGrown = 0;
+        this.waterLastGrown = 0;
+        this.rootLastGrown = 0;
 
         this.recentSquareRemovals = new Array();
 
@@ -51,8 +51,8 @@ class BaseOrganism {
         this.maxLifeTime = 1000 * 60 * 4 * (Math.random() + 1);
         this.reproductionEnergy = 100    * 0.6
         this.reproductionEnergyUnit = 50 * 0.6;
-        this.maximumLifeSquaresOfType = {}
-        this.lifeSquaresCountByType = {};
+        this.maximumLifeSquaresOfType = {"green": 100, "root": 100};
+        this.lifeSquaresCountByType = {"green": 0, "root": 0};
         this.spawnedEntityId = getNextEntitySpawnId();
         this.linkSquare(square);
         this.growInitialSquares();

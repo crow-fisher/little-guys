@@ -33,14 +33,11 @@ class CactusGreenLifeSquare extends BaseLifeSquare {
                 8 - getNeighbors(this.posX, this.posY)
                     .filter((sq) => !sq.surface)
                     .map((sq) => 1)
-
                     .reduce(
                         (accumulator, currentValue) => accumulator + currentValue,
                         0,
                     ))
         );
-
-
     }
 }
 

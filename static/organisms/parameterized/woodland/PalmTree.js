@@ -14,6 +14,12 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         this.trunkMaxThickness = 5;
         this.trunkCurThickness = 1;
 
+        this.airCoef = 0.01;
+        this.waterCoef = 0.01;
+        this.dirtCoef = 0.01;
+        this.reproductionEnergy = 10 ** 8;
+        this.currentHealth = 10 ** 8;
+
         /* 
         the palm tree rules
         ------------------- 
@@ -139,26 +145,4 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
             }
         }
     }
-
-    growAndDecay() {
-        super.growAndDecay();
-        let minNutrient = this.getMinNutrient();
-        let meanNutrient = this.getMeanNutrient();
-
-        if (this.airNutrients == minNutrient) {
-            this.shouldGrow = true;
-        } else {
-            this.shouldGrow = false;
-        }
-
-        if (this.dirtNutrients == minNutrient && this.waterNutrients < meanNutrient * 1.1) {
-            this.currentEnergy -= (this.currentEnergy / 10) * this.growDirtRoot();
-        }
-
-        if (this.waterNutrients == minNutrient && this.dirtNutrients < meanNutrient * 1.1) {
-            this.currentEnergy -= (this.currentEnergy / 10) * this.growWaterRoot();
-        }
-
-    }
-
 }
