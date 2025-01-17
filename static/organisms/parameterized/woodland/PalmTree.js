@@ -16,7 +16,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
 
         this.airCoef = 0.01;
         this.waterCoef = 0.01;
-        this.dirtCoef = 0.01;
+        this.dirtCoef = 0.001;
         this.reproductionEnergy = 10 ** 8;
         this.currentHealth = 10 ** 8;
 
@@ -111,7 +111,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
 
         // then thicken our trunk
 
-        // this.thickenTrunkGrowthPlan(trunk);
+        this.thickenTrunkGrowthPlan(trunk);
 
         // then, uh, i don't fucking know 
     }
@@ -175,8 +175,8 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         
         xPositions.forEach((posX) => {
             var trunkLifeSquare = trunk.lifeSquares.filter((lsq) => lsq.posX == posX && lsq.posY == posY).at(0);
-            growthPlan.steps.push(new GrowthPlanStep(
-                growthPlan,
+            trunk.steps.push(new GrowthPlanStep(
+                trunk,
                 0,
                 0.0004,
                 () => this.plantLastGrown,
@@ -191,61 +191,40 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
 
     }
     
-    thickenTrunkGrowthPlan(growthPlan) {
-        if (this.trunkCurThickness < this.trunkMaxThickness) {
-            growthPlan.completed = false;
-            var t = (this.trunkCurThickness % 2 > 0 ? -1 : 1) * Math.ceil(this.trunkCurThickness / 2);
-            this.getOriginsForNewGrowth(SUBTYPE_TRUNK_CORE).forEach((trunk) => 
-                growthPlan.steps.push(new GrowthPlanStep(
-                    growthPlan,
-                    0,
-                    0.0004,
-                    () => this.plantLastGrown,
-                    (time) => this.plantLastGrown = time,
-                    () => {
-                        var node = this.growPlantSquare(trunk, t, 0);
-                        node.subtype = SUBTYPE_TRUNK;
-                        return node;
-                    }
-                ))
-            );
-            this.trunkCurThickness += 1;   
-        }
+    thickenTrunkGrowthPlan(trunk) {
 
-    }
-
-    gp_adult() {
-        if (!(STAGE_ADULT in this.stageGrowthPlans)) {
-            this.stageGrowthPlans[STAGE_ADULT] = new Array();
-        }
-        if (this.stageGrowthPlans[STAGE_ADULT].length > 4) {
+        if (trunk == null) {
+            console.error("DING DONG DIDDLY DO FUCK");
             return;
         }
-        var startNode = this.getOriginsForNewGrowth(SUBTYPE_NODE).at(0);
-        if (startNode == null) {
+        // the growth plan coming out of this needs to be fast (0 time)
+        var nextX = (this.trunkCurThickness % 2 > 0 ? -1 : 1) * Math.ceil(this.trunkCurThickness / 2);
+        var trunkMinY = Math.min(...trunk.yPositions());
+
+        var rootNodeSq = this.lifeSquares.find((lsq) => lsq.posX == trunk.posX + nextX && lsq.linkedSquare.currentPressureDirect == 0);
+        if (rootNodeSq == null) {
             return;
         }
-        var startComponent = startNode.component;
-        var growthPlan = new GrowthPlan(startNode.posX, startNode.posY, false, STAGE_ADULT, randRange(0, 1) - 1, Math.random() / 3, 1);
-        growthPlan.postConstruct = () => startComponent.addChild(growthPlan.component);
-        for (let t = 1; t < randNumber(10, 50); t++) {
-            growthPlan.steps.push(new GrowthPlanStep(
-                growthPlan,
+        rootNodeSq.subtype = SUBTYPE_ROOTNODE;
+        trunk.completed = false;
+        var curY = rootNodeSq.posY - 1;
+        while (curY > trunkMinY) {
+            trunk.growthPlan.steps.push(new GrowthPlanStep(
+                trunk,
                 0,
-                0.001,
+                0.0000001,
                 () => this.plantLastGrown,
                 (time) => this.plantLastGrown = time,
                 () => {
-                    var shoot = this.growPlantSquare(startNode, 0, t);
-                    shoot.subtype = SUBTYPE_SHOOT;
-                    return shoot;
+                    var node = this.growPlantSquare(rootNodeSq, 0, rootNodeSq.posY - curY);
+                    node.subtype = SUBTYPE_TRUNK;
+                    return node;
                 }
-            ))
-        }
-        this.stageGrowthPlans[STAGE_ADULT].push(growthPlan);
-        return growthPlan;
+            ));
+            curY -= 1;
+        };
+        this.trunkCurThickness += 1;   
     }
-
 
     planGrowth() {
         if (this.stage == STAGE_JUVENILE) {
