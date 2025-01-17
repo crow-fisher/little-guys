@@ -51,7 +51,6 @@ export class GrowthPlanStep {
     
 export class GrowthComponent {
     constructor(growthPlan, lifeSquares, baseDeflection, baseCurve, type) {
-        var strengths = lifeSquares.map((lsq) => lsq.strength)
         this.growthPlan = growthPlan;
         this.posX = growthPlan.posX;   
         this.posY = growthPlan.posY;
@@ -59,7 +58,7 @@ export class GrowthComponent {
         this.lifeSquares = Array.from(lifeSquares);
         this.currentDeflection = 0;
         this.deflectionRollingAverage = 10 ** 8;
-        this.strength = strengths.reduce(
+        this.strength = () => lifeSquares.map((lsq) => lsq.strength).reduce(
             (accumulator, currentValue) => accumulator + currentValue,
             0,
         ) * (this.xSize() ** 3) * this.ySize();
@@ -124,7 +123,6 @@ export class GrowthComponent {
     updateDeflectionState() {
         var strength = this.getTotalStrength();
         var windVec = this.getNetWindSpeed();
-
         var startSpringForce = this.getStartSpringForce() * 4;
         var windX = windVec[0];
         var coef = 0.05;
@@ -178,7 +176,7 @@ export class GrowthComponent {
 
 
     getTotalStrength() {
-        return Math.max(1, this.strength + this.children.map((gc) => gc.strength).reduce(
+        return Math.max(1, this.strength() + this.children.map((gc) => gc.strength()).reduce(
             (accumulator, currentValue) => accumulator + currentValue,
             0,
         ));

@@ -125,7 +125,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
                 startNode = lsq;
             }
         })
-        var growthPlan = new GrowthPlan(startNode.posX, startNode.posY, false, STAGE_ADULT, randRange(0, 1) - 1, Math.random() / 3, TYPE_LEAF);
+        var growthPlan = new GrowthPlan(startNode.posX, startNode.posY, false, STAGE_ADULT, 0.5 + randRange(0, 1) - 1, Math.random() / 3, TYPE_LEAF);
         growthPlan.postConstruct = () => startComponent.addChild(growthPlan.component);
         for (let t = 1; t < randNumber(0, maxLeafLength); t++) {
             growthPlan.steps.push(new GrowthPlanStep(
