@@ -13,6 +13,18 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
 
         this.trunkMaxThickness = 5;
         this.trunkCurThickness = 1;
+
+        /* 
+        the palm tree rules
+        ------------------- 
+
+        each node can only grow so many fronds 
+        to grow some height, you must be at least height/n wide
+        to grow a leaf of some length, you must be some fraction of that leaf length tall 
+        as more height is added at the top, if there already 2 or more nodes, the "middle" node gets moved to the side (with all its children) and the new node goes in the middle
+        to grow some width, you must be anchored at the bottom to a SUBTYPE_ROOTNODE root 
+        roots may be promoted to SUBTYPE_ROOTNODE 
+        */ 
     }
 
     gp_juvenile() {
@@ -90,10 +102,10 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         return growthPlan;
     }
 
-    addTrunkToGrowthPlan(growthPlan) {
+    thickenTrunkGrowthPlan(growthPlan) {
         if (this.trunkCurThickness < this.trunkMaxThickness) {
             growthPlan.completed = false;
-            var t = this.trunkCurThickness;
+            var t = (this.trunkCurThickness % 2 > 0 ? -1 : 1) * Math.ceil(this.trunkCurThickness / 2);
             this.getOriginsForNewGrowth(SUBTYPE_TRUNK_CORE).forEach((trunk) => 
                 growthPlan.steps.push(new GrowthPlanStep(
                     growthPlan,
@@ -112,8 +124,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
 
     }
 
-    growAndDecay() {
-        super.growAndDecay();
+    planGrowth() {
         if (this.stage == STAGE_JUVENILE) {
             var plan = this.gp_juvenile();
             if (plan != null)
@@ -124,8 +135,30 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
             if (plan != null)
                 this.growthPlans.push(plan);
             else {
-                this.addTrunkToGrowthPlan(this.stageGrowthPlans[STAGE_JUVENILE].at(0))
+                this.thickenTrunkGrowthPlan(this.stageGrowthPlans[STAGE_JUVENILE].at(0))
             }
         }
     }
+
+    growAndDecay() {
+        super.growAndDecay();
+        let minNutrient = this.getMinNutrient();
+        let meanNutrient = this.getMeanNutrient();
+
+        if (this.airNutrients == minNutrient) {
+            this.shouldGrow = true;
+        } else {
+            this.shouldGrow = false;
+        }
+
+        if (this.dirtNutrients == minNutrient && this.waterNutrients < meanNutrient * 1.1) {
+            this.currentEnergy -= (this.currentEnergy / 10) * this.growDirtRoot();
+        }
+
+        if (this.waterNutrients == minNutrient && this.dirtNutrients < meanNutrient * 1.1) {
+            this.currentEnergy -= (this.currentEnergy / 10) * this.growWaterRoot();
+        }
+
+    }
+
 }

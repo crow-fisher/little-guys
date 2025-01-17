@@ -20,6 +20,8 @@ export class BaseParameterizedOrganism extends BaseOrganism {
             STAGE_FRUIT
         ];
         this.growthPlans = [];
+        
+        this.shouldGrow = true;
 
         this.originGrowth = null;
 
@@ -109,6 +111,10 @@ export class BaseParameterizedOrganism extends BaseOrganism {
     }
 
     executeGrowthPlans() {
+        if (!this.shouldGrow) {
+            return;
+        }
+        var somethingDone = false;
         this.growthPlans.filter((gp) => !gp.completed).forEach((growthPlan) => {
             growthPlan.steps.filter((step) => !step.completed).forEach((step) => {
                 if (
@@ -118,6 +124,7 @@ export class BaseParameterizedOrganism extends BaseOrganism {
                     step.doAction();
                     step.timeSetter(getCurDay());
                     this.currentEnergy -= step.energyCost;
+                    somethingDone = true;
 
                     if (this.originGrowth != null) {
                         this.originGrowth.updateDeflectionState();
@@ -133,7 +140,13 @@ export class BaseParameterizedOrganism extends BaseOrganism {
                 this.destroy();
             }
         });
+
+        if (!somethingDone) {
+            this.planGrowth();
+        }
     }
+
+    planGrowth() {}
 
     updateDeflectionState() {
         if (this.originGrowth != null) {

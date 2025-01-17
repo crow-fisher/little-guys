@@ -34,7 +34,7 @@ import { clearPrevailingWind, addPrevailingWind, addWindPressure, initializeWind
 import { renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds, addWaterSaturationPascals, addWaterSaturationPascalsSqCoords } from "./temperature_humidity.js";
 import { PalmTreeSeedOrganism } from "./organisms/parameterized/woodland/PalmTreeSeedOrganism.js";
 
-var lastMode = "normal"; // options: "normal", "special", "organism", "blockModification";
+var lastMode = "organism"; // options: "normal", "special", "organism", "blockModification";
 
 var specialSelect = document.getElementById("specialSelect");
 var specialSelect_val = "water";
