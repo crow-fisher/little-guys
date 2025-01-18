@@ -119,8 +119,6 @@ export class BaseParameterizedOrganism extends BaseOrganism {
             growthPlan,
             0,
             0,
-            () => this.rootLastGrown,
-            (time) => this.rootLastGrown = time,
             () => {
                 var rootSq = new this.rootType(this.linkedSquare, this);
                 rootSq.linkSquare(this.linkedSquare);
@@ -164,11 +162,11 @@ export class BaseParameterizedOrganism extends BaseOrganism {
             anyStepFound = true;
             growthPlan.steps.filter((step) => !step.completed).forEach((step) => {
                 if (
-                    (getCurDay() + timeBudget >= step.timeGetter() + step.timeCost) &&
+                    (getCurDay() + timeBudget >= growthPlan.stepLastExecuted + step.timeCost) &&
                     (this.currentEnergy >= step.energyCost)
                 ) {
                     step.doAction();
-                    step.timeSetter(getCurDay());
+                    step.growthPlan.stepLastExecuted = getCurDay();
                     this.currentEnergy -= step.energyCost;
                     if (this.originGrowth != null) {
                         this.originGrowth.updateDeflectionState();
@@ -177,7 +175,7 @@ export class BaseParameterizedOrganism extends BaseOrganism {
                 };
             });
             if (growthPlan.areStepsCompleted()) {
-                growthPlan.completed = true;
+                growthPlan.complete();
                 this.stage = growthPlan.endStage;
             }
             if (growthPlan.required && growthPlan.steps.some((step) => step.completedSquare == null)) {

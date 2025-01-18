@@ -20,9 +20,9 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         this.reproductionEnergy = 10 ** 8;
         this.currentHealth = 10 ** 8;
         
-        this.sproutGrowTimeInDays = 10 ** (-4);
-        this.leafGrowTimeInDays = 10 ** (-8);
-        this.trunkGrowTimeInDays = 10 ** (-8);
+        this.sproutGrowTimeInDays =  10 ** (-3);
+        this.leafGrowTimeInDays =      10 ** (-3);
+        this.trunkGrowTimeInDays =    10 ** (-3);
 
         this.side = Math.random() > 0.5 ? -1 : 1;
 
@@ -52,15 +52,13 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         }
 
         var startRootNode = this.getOriginsForNewGrowth(SUBTYPE_ROOTNODE).at(0);
-        var growthPlan = new GrowthPlan(startRootNode.posX, startRootNode.posY, false, STAGE_ADULT, 0, 0, TYPE_TRUNK, 100);
+        var growthPlan = new GrowthPlan(startRootNode.posX, startRootNode.posY, false, STAGE_ADULT, 0, 0, TYPE_TRUNK, 1);
         growthPlan.postConstruct = () => this.originGrowth.addChild(growthPlan.component);
         for (let t = 1; t < randNumber(5, 10); t++) {
             growthPlan.steps.push(new GrowthPlanStep(
                 growthPlan,
                 0,
                 this.sproutGrowTimeInDays,
-                () => this.plantLastGrown,
-                (time) => this.plantLastGrown = time,
                 () => {
                     var shoot = this.growPlantSquare(startRootNode, 0, t);
                     shoot.subtype = SUBTYPE_TRUNK;
@@ -74,8 +72,6 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
             growthPlan,
             0,
             this.sproutGrowTimeInDays,
-            () => this.plantLastGrown,
-            (time) => this.plantLastGrown = time,
             () => {
                 var node = this.growPlantSquare(startRootNode, 0, growthPlan.steps.length);
                 node.subtype = SUBTYPE_NODE;
@@ -98,27 +94,23 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
 
         
         var maxHeight = trunk.xSizeCur() * this.org_thicknessHeightMult;
-        var maxLeafLength = trunk.ySizeCur();
+        var maxLeafLength = trunk.ySizeCur() * 0.8;
 
         // try to grow additional leaves if we can 
 
         var curLeaves = trunk.children.length;
         if (curLeaves < maxLeaves) {
             this.growthPlans.push(this.newLeafGrowthPlan(trunk, maxLeafLength));
-            return;
         }
 
         // then try to extend our leaves 
 
-        if (this.getAllComponentsofType(TYPE_LEAF).some((growthPlan) => this.extendLeafGrowthPlan(growthPlan, maxLeafLength))) {
-            return;
-        }
+        this.getAllComponentsofType(TYPE_LEAF).forEach((growthPlan) => this.extendLeafGrowthPlan(growthPlan, maxLeafLength));
 
         // then try to increase our height 
 
         if (trunk.ySize() < maxHeight) {
             this.increaseHeightGrowthPlan(trunk, maxHeight - trunk.ySize());
-            return;
         }
 
         // then thicken our trunk
@@ -144,8 +136,6 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
                 growthPlan,
                 0,
                 this.leafGrowTimeInDays,
-                () => this.plantLastGrown,
-                (time) => this.plantLastGrown = time,
                 () => {
                     var shoot = this.growPlantSquare(startNode, 0, t);
                     shoot.subtype = SUBTYPE_LEAF;
@@ -165,8 +155,6 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
                     leafComponent.growthPlan,
                     0,
                     this.leafGrowTimeInDays,
-                    () => this.plantLastGrown,
-                    (time) => this.plantLastGrown = time,
                     () => {
                         var shoot = this.growPlantSquare(leafComponent.lifeSquares.at(0), 0, 0);
                         shoot.subtype = SUBTYPE_LEAF;
@@ -183,6 +171,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
     increaseHeightGrowthPlan(trunk, increaseAmount) {
         var xPositions = trunk.xPositions();
         trunk.growthPlan.completed = false;
+        trunk.growthPlan.postComplete = () => this.redistributeLeaves(trunk);
         xPositions.forEach((posX) => {
             var existingTrunkSq = trunk.lifeSquares.find((lsq) => lsq.posX == posX);
             for (let i = 0; i < increaseAmount; i++) {
@@ -190,8 +179,6 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
                     trunk.growthPlan,
                     0,
                     this.trunkGrowTimeInDays,
-                    () => this.plantLastGrown,
-                    (time) => this.plantLastGrown = time,
                     () => {
                         var node = this.growPlantSquare(existingTrunkSq, 0, 0);
                         node.subtype = SUBTYPE_TRUNK;
@@ -201,15 +188,6 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
                 ));
             }
         });
-        trunk.growthPlan.steps.push(new GrowthPlanStep(
-            trunk.growthPlan,
-            0,
-            0,
-            () => this.plantLastGrown,
-            (time) => this.plantLastGrown = time,
-            null,
-            () => this.redistributeLeaves(trunk)
-        ));
     }
 
     thickenTrunkGrowthPlan(trunk) {
@@ -228,14 +206,14 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         }
         rootNodeSq.subtype = SUBTYPE_ROOTNODE;
         trunk.growthPlan.completed = false;
+        trunk.growthPlan.postComplete = () => this.redistributeLeaves(trunk);
+
         var curY = rootNodeSq.posY - 1;
         while (curY >= trunkMinY) {
             trunk.growthPlan.steps.push(new GrowthPlanStep(
                 trunk.growthPlan,
                 0,
                 this.trunkGrowTimeInDays,
-                () => this.plantLastGrown,
-                (time) => this.plantLastGrown = time,
                 () => {
                     var node = this.growPlantSquarePos(rootNodeSq, rootNodeSq.posX, rootNodeSq.posY - 1);
                     node.subtype = SUBTYPE_TRUNK;
@@ -245,17 +223,6 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
             ));
             curY -= 1;
         };
-
-        trunk.growthPlan.steps.push(new GrowthPlanStep(
-            trunk.growthPlan,
-            0,
-            0,
-            () => this.plantLastGrown,
-            (time) => this.plantLastGrown = time,
-            null,
-            () => this.redistributeLeaves(trunk),
-        ));
-        this.trunkCurThickness += 1;
     }
 
     redistributeLeaves(trunk) {

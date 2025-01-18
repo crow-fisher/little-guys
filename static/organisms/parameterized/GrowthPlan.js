@@ -13,9 +13,16 @@ export class GrowthPlan {
         this.baseCurve = baseCurve;
         this.type = type;
         this.completed = false;
+        this.stepLastExecuted = 0;
         this.areStepsCompleted = () => this.steps.every((step) => step.completed);
         this.postConstruct = () => console.warn("Warning: postconstruct not implemented");
+        this.postComplete = () => null;
         this.component = new GrowthComponent(this, this.steps.filter((step) => step.completed).map((step) => step.completedSquare), baseDeflection, baseCurve, type, strengthMult)
+    }
+
+    complete() {
+        this.completed = true; 
+        this.postComplete();
     }
 
     executePostConstruct() {
@@ -26,12 +33,10 @@ export class GrowthPlan {
 }
 
 export class GrowthPlanStep {
-    constructor(growthPlan, energyCost, timeCost, timeAccessor, timeSetter, growSqAction, otherAction) {
+    constructor(growthPlan, energyCost, timeCost, growSqAction, otherAction) {
         this.growthPlan = growthPlan;
         this.energyCost = energyCost;
         this.timeCost = timeCost;
-        this.timeGetter = timeAccessor;
-        this.timeSetter = timeSetter;
         this.growSqAction = growSqAction;
         this.otherAction = otherAction;
         this.completed = false;
