@@ -4,6 +4,7 @@ import { calculateColor, calculateColorProvideOpacity } from "./temperature_humi
 
 var millis_per_day = 100000;
 var curDay = 0;
+var prevDay = 0;
 var curTime = 0.2;
 var prevTime = 0;
 
@@ -94,6 +95,10 @@ function getCurDay() {
     return curDay;
 }
 
+function getPrevDay() {
+    return prevDay;
+}
+
 function getCurTime() {
     return curTime;
 }
@@ -104,6 +109,7 @@ function updateTime() {
         prevRealTime = Date.now();
     } else {
         prevTime = curTime;
+        prevDay = curDay;
         curTime += dt; 
         curDay += dt / millis_per_day;
         prevRealTime = Date.now();
@@ -248,4 +254,4 @@ function temp_blue(temperature) {
 }
 
 
-export { getDaylightStrength, getCurDay, getCurTime, getPrevTime, updateTime, renderTime, getTimeSpeedMult, initializeStarMap}
+export { getDaylightStrength, getPrevDay, getCurDay, getCurTime, getPrevTime, updateTime, renderTime, getTimeSpeedMult, initializeStarMap}

@@ -19,7 +19,12 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         this.dirtCoef = 0.001;
         this.reproductionEnergy = 10 ** 8;
         this.currentHealth = 10 ** 8;
+        
+        this.sproutGrowTimeInDays = 10 ** (-4);
+        this.leafGrowTimeInDays = 10 ** (-8);
+        this.trunkGrowTimeInDays = 10 ** (-8);
 
+        this.side = Math.random() > 0.5 ? -1 : 1;
 
         // parameterized growth rules
 
@@ -53,7 +58,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
             growthPlan.steps.push(new GrowthPlanStep(
                 growthPlan,
                 0,
-                0.001,
+                this.sproutGrowTimeInDays,
                 () => this.plantLastGrown,
                 (time) => this.plantLastGrown = time,
                 () => {
@@ -67,7 +72,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
             0,
-            0.001,
+            this.sproutGrowTimeInDays,
             () => this.plantLastGrown,
             (time) => this.plantLastGrown = time,
             () => {
@@ -136,7 +141,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
             growthPlan.steps.push(new GrowthPlanStep(
                 growthPlan,
                 0,
-                0.001,
+                this.leafGrowTimeInDays,
                 () => this.plantLastGrown,
                 (time) => this.plantLastGrown = time,
                 () => {
@@ -156,7 +161,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
                 leafComponent.growthPlan.steps.push(new GrowthPlanStep(
                     leafComponent.growthPlan,
                     0,
-                    0.001,
+                    this.leafGrowTimeInDays,
                     () => this.plantLastGrown,
                     (time) => this.plantLastGrown = time,
                     () => {
@@ -180,7 +185,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
                 trunk.growthPlan.steps.push(new GrowthPlanStep(
                     trunk.growthPlan,
                     0,
-                    0,
+                    this.trunkGrowTimeInDays,
                     () => this.plantLastGrown,
                     (time) => this.plantLastGrown = time,
                     () => {
@@ -197,22 +202,24 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         if (this.trunkCurThickness >= this.trunkMaxThickness) {
             return;
         }
-        var nextX = (this.trunkCurThickness % 2 > 0 ? -1 : 1) * Math.ceil(this.trunkCurThickness / 2);
+        var xPositions = trunk.xPositions();
+        var nextX = (this.trunkCurThickness % 2 > 0 ? this.side : this.side * -1) * Math.ceil(this.trunkCurThickness / 2);
         var trunkMaxY = Math.max(...trunk.yPositions());
         var trunkMinY = Math.min(...trunk.yPositions());
 
         var rootNodeSq = this.lifeSquares.find((lsq) => lsq.type == "root" && lsq.posX == trunk.posX + nextX && lsq.posY <= trunkMaxY + 1);
-        if (rootNodeSq == null) {
+        if (rootNodeSq == null || xPositions.some((num) => num == rootNodeSq.posX)) {
+            this.side *= -1;
             return;
         }
         rootNodeSq.subtype = SUBTYPE_ROOTNODE;
         trunk.growthPlan.completed = false;
         var curY = rootNodeSq.posY - 1;
-        while (curY > trunkMinY) {
+        while (curY >= trunkMinY) {
             trunk.growthPlan.steps.push(new GrowthPlanStep(
                 trunk.growthPlan,
                 0,
-                10 ** (-8),
+                this.trunkGrowTimeInDays,
                 () => this.plantLastGrown,
                 (time) => this.plantLastGrown = time,
                 () => {

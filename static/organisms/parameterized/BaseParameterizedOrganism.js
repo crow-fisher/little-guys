@@ -1,7 +1,7 @@
 import { addOrganismSquare, getOrganismSquaresAtSquareWithEntityId } from "../../lifeSquares/_lsOperations.js";
 import { addSquare, getDirectNeighbors } from "../../squares/_sqOperations.js";
 import { PlantSquare } from "../../squares/PlantSquare.js";
-import { getCurDay } from "../../time.js";
+import { getCurDay, getPrevDay } from "../../time.js";
 import { addNewOrganism } from "../_orgOperations.js";
 import { BaseOrganism } from "../BaseOrganism.js";
 import { GrowthPlan, GrowthPlanStep } from "./GrowthPlan.js";
@@ -159,11 +159,12 @@ export class BaseParameterizedOrganism extends BaseOrganism {
         //     return;
         // }
         var anyStepFound = false;
+        var timeBudget = getCurDay() - getPrevDay();
         this.growthPlans.filter((gp) => !gp.completed).forEach((growthPlan) => {
             anyStepFound = true;
             growthPlan.steps.filter((step) => !step.completed).forEach((step) => {
                 if (
-                    (getCurDay() >= step.timeGetter() + step.timeCost) &&
+                    (getCurDay() + timeBudget >= step.timeGetter() + step.timeCost) &&
                     (this.currentEnergy >= step.energyCost)
                 ) {
                     step.doAction();
