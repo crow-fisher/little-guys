@@ -96,13 +96,17 @@ class BaseLifeSquare {
         this.accentColorAmount = dirt_accentColorAmount;
     }
 
-    shiftUp() {
+    updatePositionDifferential(dx, dy) {
         removeOrganismSquare(this);
-        this.posY -= 1;
-        addOrganismSquare(this);
         removeSquare(this.linkedSquare);
-        this.linkedSquare.posY -= 1;
+        this.posX += dx;
+        this.posY += dy;
+        addOrganismSquare(this);
         addSquare(this.linkedSquare);
+    }
+
+    shiftUp() {
+        this.updatePositionDifferential(0, -1);
     }
 
     dist(testX, testY) { // manhattan

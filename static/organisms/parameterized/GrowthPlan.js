@@ -26,26 +26,33 @@ export class GrowthPlan {
 }
 
 export class GrowthPlanStep {
-    constructor(growthPlan, energyCost, timeCost, timeAccessor, timeSetter, action) {
+    constructor(growthPlan, energyCost, timeCost, timeAccessor, timeSetter, growSqAction, otherAction) {
         this.growthPlan = growthPlan;
         this.energyCost = energyCost;
         this.timeCost = timeCost;
         this.timeGetter = timeAccessor;
         this.timeSetter = timeSetter;
-        this.action = action;
+        this.growSqAction = growSqAction;
+        this.otherAction = otherAction;
         this.completed = false;
         this.completedSquare = null;
     }
 
     doAction() {
-        var newLifeSquare = this.action();
-        this.completed = true;
-        if (newLifeSquare) {
-            this.completedSquare = newLifeSquare;
-            newLifeSquare.component = this.growthPlan.component;
+        if (this.growSqAction != null) {
+            var newLifeSquare = this.growSqAction();
+            this.completed = true;
+            if (newLifeSquare) {
+                this.completedSquare = newLifeSquare;
+                newLifeSquare.component = this.growthPlan.component;
+            }
+            this.growthPlan.executePostConstruct();
+            this.growthPlan.component.addLifeSquare(newLifeSquare);
         }
-        this.growthPlan.executePostConstruct();
-        this.growthPlan.component.addLifeSquare(newLifeSquare);
+        if (this.otherAction != null) {
+            this.otherAction();
+            this.completed = true;
+        }
     }
 }
     
@@ -81,6 +88,17 @@ export class GrowthComponent {
             });
 
         this.lifeSquares.push(newLsq);
+    }
+
+    updatePosition(newPosX, newPosY) {
+        var dx = newPosX - this.posX;
+        var dy = newPosY - this.posY;
+        
+        this.lifeSquares.forEach((lsq) => lsq.updatePositionDifferential(dx, dy));
+        this.children.forEach((child) => child.updatePosition(newPosX, newPosY));
+
+        this.posX = newPosX;
+        this.posY = newPosY;
     }
 
     shiftUp() {

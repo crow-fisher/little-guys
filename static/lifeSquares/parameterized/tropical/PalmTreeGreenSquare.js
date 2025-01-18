@@ -1,7 +1,7 @@
 import { getNeighbors } from "../../../squares/_sqOperations.js";
 import { BaseLifeSquare } from "../../BaseLifeSquare.js";
 import { airNutrientsPerEmptyNeighbor } from "../../../config/config.js";
-import { SUBTYPE_LEAF, SUBTYPE_LEAFSTEM, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_TRUNK, SUBTYPE_TRUNK_CORE } from "../../../organisms/parameterized/Stages.js";
+import { SUBTYPE_LEAF, SUBTYPE_LEAFSTEM, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_TRUNK } from "../../../organisms/parameterized/Stages.js";
 import { hexToRgb } from "../../../common.js";
 
 export class PalmTreeGreenSquare extends BaseLifeSquare {
@@ -17,7 +17,6 @@ export class PalmTreeGreenSquare extends BaseLifeSquare {
     subtypeColorUpdate() {
         switch (this.subtype) {
             case SUBTYPE_TRUNK:
-            case SUBTYPE_TRUNK_CORE:
             case SUBTYPE_SHOOT:
             case SUBTYPE_SPROUT:
                 this.baseColor = "#615041";
@@ -26,11 +25,14 @@ export class PalmTreeGreenSquare extends BaseLifeSquare {
                 break;
             case SUBTYPE_LEAF:
             case SUBTYPE_LEAFSTEM:
-            case SUBTYPE_NODE:
                 this.baseColor = "#6c7d45";
                 this.darkColor = "#7a7106";
                 this.accentColor = "#d0ce24";
                 break;
+            case SUBTYPE_NODE:
+                this.baseColor = "#000000";
+                this.darkColor = "#111111";
+                this.accentColor = "#222222";
             default:
                 console.warn("BIPPITY BOPPITY")
         }

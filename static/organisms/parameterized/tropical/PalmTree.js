@@ -3,7 +3,7 @@ import { PalmTreeGreenSquare } from "../../../lifeSquares/parameterized/tropical
 import { PalmTreeRootSquare } from "../../../lifeSquares/parameterized/tropical/PalmTreeRootSquare.js";
 import { BaseParameterizedOrganism } from "../BaseParameterizedOrganism.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
-import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_TRUNK, SUBTYPE_TRUNK_CORE, TYPE_LEAF, TYPE_TRUNK } from "../Stages.js";
+import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_TRUNK, TYPE_LEAF, TYPE_TRUNK } from "../Stages.js";
 
 export class PalmTreeOrganism extends BaseParameterizedOrganism {
     constructor(posX, posY) {
@@ -63,9 +63,10 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
                 (time) => this.plantLastGrown = time,
                 () => {
                     var shoot = this.growPlantSquare(startRootNode, 0, t);
-                    shoot.subtype = SUBTYPE_TRUNK_CORE;
+                    shoot.subtype = SUBTYPE_TRUNK;
                     return shoot;
-                }
+                },
+                null
             ))
         }
 
@@ -79,7 +80,8 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
                 var node = this.growPlantSquare(startRootNode, 0, growthPlan.steps.length);
                 node.subtype = SUBTYPE_NODE;
                 return node;
-            }
+            },
+            null
         ))
 
         this.stageGrowthPlans[STAGE_JUVENILE].push(growthPlan);
@@ -148,7 +150,8 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
                     var shoot = this.growPlantSquare(startNode, 0, t);
                     shoot.subtype = SUBTYPE_LEAF;
                     return shoot;
-                }
+                },
+                null
             ))
         }
         return growthPlan;
@@ -168,7 +171,8 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
                         var shoot = this.growPlantSquare(leafComponent.lifeSquares.at(0), 0, 0);
                         shoot.subtype = SUBTYPE_LEAF;
                         return shoot;
-                    }
+                    },
+                    null
                 ))
             }
             return true;
@@ -192,10 +196,20 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
                         var node = this.growPlantSquare(existingTrunkSq, 0, 0);
                         node.subtype = SUBTYPE_TRUNK;
                         return node;
-                    }
+                    },
+                    null
                 ));
             }
-        })
+        });
+        trunk.growthPlan.steps.push(new GrowthPlanStep(
+            trunk.growthPlan,
+            0,
+            0,
+            () => this.plantLastGrown,
+            (time) => this.plantLastGrown = time,
+            null,
+            () => this.redistributeLeaves(trunk)
+        ));
     }
 
     thickenTrunkGrowthPlan(trunk) {
@@ -226,11 +240,33 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
                     var node = this.growPlantSquarePos(rootNodeSq, rootNodeSq.posX, rootNodeSq.posY - 1);
                     node.subtype = SUBTYPE_TRUNK;
                     return node;
-                }
+                },
+                null
             ));
             curY -= 1;
         };
+
+        trunk.growthPlan.steps.push(new GrowthPlanStep(
+            trunk.growthPlan,
+            0,
+            0,
+            () => this.plantLastGrown,
+            (time) => this.plantLastGrown = time,
+            null,
+            () => this.redistributeLeaves(trunk),
+        ));
         this.trunkCurThickness += 1;
+    }
+
+    redistributeLeaves(trunk) {
+        var trunkMinY = Math.min(...trunk.yPositions());
+        trunk.lifeSquares.forEach((lsq) => {
+            if (lsq.posY == trunkMinY) {
+                lsq.subtype = SUBTYPE_NODE;
+            } else {
+                lsq.subtype = SUBTYPE_TRUNK;
+            }
+        })
     }
 
     planGrowth() {
