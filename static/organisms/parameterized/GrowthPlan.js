@@ -71,10 +71,9 @@ export class GrowthComponent {
         ) * (this.xSize() ** 3) * this.ySize();
         
         this.children = new Array();
-        this.baseCurve = (Math.random() > 0.5 ? baseCurve : -baseCurve);
-        this.baseDeflection = Math.asin(baseDeflection);
+        this.baseCurve = baseCurve;
+        this.baseDeflection = baseDeflection;
         this.setCurrentDeflection(this.baseDeflection);
-
         this.type = type;
     }
 
@@ -149,7 +148,7 @@ export class GrowthComponent {
     updateDeflectionState() {
         var strength = this.getTotalStrength();
         var windVec = this.getNetWindSpeed();
-        var startSpringForce = this.getStartSpringForce() * 4;
+        var startSpringForce = this.getStartSpringForce() * 100;
         var windX = windVec[0];
         var coef = 0.05;
         var endSpringForce = startSpringForce * (1 - coef) + windX * coef;
@@ -223,7 +222,7 @@ export class GrowthComponent {
     }
 
     getStartSpringForce() {
-        return Math.sin(this.deflectionRollingAverage - this.baseDeflection) * this.getTotalStrength() * 2;
+        return Math.sin(this.deflectionRollingAverage - this.baseDeflection) * this.getTotalStrength();
     }
 
     setCurrentDeflection(deflection) {

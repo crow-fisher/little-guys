@@ -45,7 +45,6 @@ function randNumber(min, max) {
 }
 
 function randRange(min, max) {
-    max += 1;
     return Math.random() * (max - min) + min;
 }
 
