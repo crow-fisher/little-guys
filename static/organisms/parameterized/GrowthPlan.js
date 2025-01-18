@@ -3,7 +3,7 @@ import { getWindSpeedAtLocation } from "../../wind.js";
 const ROLLING_AVERAGE_PERIOD = 50;
 
 export class GrowthPlan {
-    constructor(posX, posY, required, endStage, baseDeflection, baseCurve, type) {
+    constructor(posX, posY, required, endStage, baseDeflection, baseCurve, type, strengthMult) {
         this.posX = posX;
         this.posY = posY;
         this.required = required;
@@ -15,7 +15,7 @@ export class GrowthPlan {
         this.completed = false;
         this.areStepsCompleted = () => this.steps.every((step) => step.completed);
         this.postConstruct = () => console.warn("Warning: postconstruct not implemented");
-        this.component = new GrowthComponent(this, this.steps.filter((step) => step.completed).map((step) => step.completedSquare), baseDeflection, baseCurve, type)
+        this.component = new GrowthComponent(this, this.steps.filter((step) => step.completed).map((step) => step.completedSquare), baseDeflection, baseCurve, type, strengthMult)
     }
 
     executePostConstruct() {
@@ -57,7 +57,7 @@ export class GrowthPlanStep {
 }
     
 export class GrowthComponent {
-    constructor(growthPlan, lifeSquares, baseDeflection, baseCurve, type) {
+    constructor(growthPlan, lifeSquares, baseDeflection, baseCurve, type, strengthMult) {
         this.growthPlan = growthPlan;
         this.posX = growthPlan.posX;   
         this.posY = growthPlan.posY;
@@ -65,7 +65,7 @@ export class GrowthComponent {
         this.lifeSquares = Array.from(lifeSquares);
         this.currentDeflection = 0;
         this.deflectionRollingAverage = 10 ** 8;
-        this.strength = () => lifeSquares.map((lsq) => lsq.strength).reduce(
+        this.strength = () => strengthMult * this.lifeSquares.map((lsq) => lsq.strength).reduce(
             (accumulator, currentValue) => accumulator + currentValue,
             0,
         ) * (this.xSize() ** 3) * this.ySize();
@@ -115,7 +115,7 @@ export class GrowthComponent {
     }
 
     xSize() {
-        if (this.lifeSquares.length == 0) {
+        if (this.lifeSquares.length <= 1) {
             return 1;
         }
         var xPositions = this.lifeSquares.map((lsq) => lsq.posX);
@@ -123,7 +123,7 @@ export class GrowthComponent {
     }
 
     ySize() {
-        if (this.lifeSquares.length == 0) {
+        if (this.lifeSquares.length <= 1) {
             return 1;
         }
         var yPositions = this.lifeSquares.map((lsq) => lsq.posY);
@@ -175,8 +175,12 @@ export class GrowthComponent {
             startDeflectionYOffset = parentComponent.getDeflectionYAtPosition(this.posX, this.posY);
         }
 
-        var startTheta = this.deflectionRollingAverage - this.baseCurve / 2;
-        var endTheta = this.currentDeflection + this.baseCurve / 2;
+        var side = this.currentDeflection > 0 ? 1 : -1;
+
+        var curve = this.baseCurve + 0.04 * (this.ySize() * side) / this.getTotalStrength();
+        
+        var startTheta = this.deflectionRollingAverage - curve / 2;
+        var endTheta = this.currentDeflection + curve / 2;
         var length = this.getTotalSize();
 
         var thetaDelta = endTheta - startTheta;

@@ -782,10 +782,16 @@ function doClickAdd() {
     }
 }
 
-// thanks https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
-
 for (let i = 0; i < CANVAS_SQUARES_X; i++) {
     addSquare(new RockSquare(i, CANVAS_SQUARES_Y - 1));
+}
+
+for (let i = 0; i < CANVAS_SQUARES_X; i++) {
+    for (let j = 1; j < 10; j++) {
+        addSquareByNameSetTemp(i, CANVAS_SQUARES_Y - (1 + j), "dirt");
+    }
+    addSquareByNameSetTemp(i, 0, "water");
+
 }
 
 // for (let i = 0; i < CANVAS_SQUARES_Y; i++) {
@@ -819,7 +825,7 @@ window.onload = function () {
     // });
 }
 
-loadSlotFromSave(volcano);
+// loadSlotFromSave(volcano);
 
 export {
     MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, selectedViewMode, addSquareByName,

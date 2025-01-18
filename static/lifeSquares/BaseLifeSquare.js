@@ -173,6 +173,7 @@ class BaseLifeSquare {
 
 
     addDirtNutrient(nutrientAmount) {
+        nutrientAmount = Math.max(nutrientAmount, 0);
         var amountOfDirtToAdd = this.linkedOrganism.getAmountOfDirtNutrientsToCollect();
         if (amountOfDirtToAdd < nutrientAmount / 2) {
             return this._addDirtNutrient(nutrientAmount / 2);
@@ -191,12 +192,14 @@ class BaseLifeSquare {
     }
 
     addAirNutrient(nutrientAmount) {
+        nutrientAmount = Math.max(nutrientAmount, 0);
         var start = this.airNutrients;
         this.airNutrients += Math.min(this.maxAirDt, this.airNutrients + nutrientAmount);
         return this.airNutrients - start;
     }
 
     addWaterNutrient(nutrientAmount) {
+        nutrientAmount = Math.max(nutrientAmount, 0);
         var start = this.waterNutrients;
         this.waterNutrients += Math.min(this.maxWaterDt, this.waterNutrients + nutrientAmount);
         return this.waterNutrients - start;

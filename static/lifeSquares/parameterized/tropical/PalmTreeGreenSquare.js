@@ -33,6 +33,7 @@ export class PalmTreeGreenSquare extends BaseLifeSquare {
                 this.baseColor = "#000000";
                 this.darkColor = "#111111";
                 this.accentColor = "#222222";
+                break;
             default:
                 console.warn("BIPPITY BOPPITY")
         }
