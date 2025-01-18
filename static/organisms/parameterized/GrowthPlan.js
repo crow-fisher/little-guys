@@ -113,6 +113,14 @@ export class GrowthComponent {
         return Math.max(...yPositions) - Math.min(...yPositions);
     }
 
+    xSizeCur() {
+        return this.lifeSquares.length / Math.max(1, this.ySize());
+    }
+
+    ySizeCur() {
+        return this.lifeSquares.length / Math.max(1, this.xSize());
+    }
+
     addChild(childComponent) {
         if (this.children.indexOf(childComponent) != -1) {
             return;

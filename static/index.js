@@ -32,7 +32,7 @@ import { MossCoolSeedOrganism } from "./organisms/MossCoolSeedOrganism.js";
 import { SunflowerSeedOrganism } from "./organisms/SunflowerSeedOrganism.js";
 import { clearPrevailingWind, addPrevailingWind, addWindPressure, initializeWindPressureMap, removeWindPressure, renderWindPressureMap, tickWindPressureMap } from "./wind.js";
 import { renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds, addWaterSaturationPascals, addWaterSaturationPascalsSqCoords } from "./temperature_humidity.js";
-import { PalmTreeSeedOrganism } from "./organisms/parameterized/woodland/PalmTreeSeedOrganism.js";
+import { PalmTreeSeedOrganism } from "./organisms/parameterized/tropical/PalmTreeSeedOrganism.js";
 
 var lastMode = "organism"; // options: "normal", "special", "organism", "blockModification";
 

@@ -1,6 +1,6 @@
 import { randNumber, randRange } from "../../../common.js";
-import { PalmTreeGreenSquare } from "../../../lifeSquares/parameterized/woodland/PalmTreeGreenSquare.js";
-import { PalmTreeRootSquare } from "../../../lifeSquares/parameterized/woodland/PalmTreeRootSquare.js";
+import { PalmTreeGreenSquare } from "../../../lifeSquares/parameterized/tropical/PalmTreeGreenSquare.js";
+import { PalmTreeRootSquare } from "../../../lifeSquares/parameterized/tropical/PalmTreeRootSquare.js";
 import { BaseParameterizedOrganism } from "../BaseParameterizedOrganism.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_TRUNK, SUBTYPE_TRUNK_CORE, TYPE_LEAF, TYPE_TRUNK } from "../Stages.js";
@@ -11,7 +11,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         this.greenType = PalmTreeGreenSquare;
         this.rootType = PalmTreeRootSquare;
 
-        this.trunkMaxThickness = 5;
+        this.trunkMaxThickness = 3;
         this.trunkCurThickness = 1;
 
         this.airCoef = 0.01;
@@ -84,9 +84,9 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
             0,
         ));
 
-        var maxHeight = trunk.xSize() * 2;
-
-        var maxLeafLength = Math.ceil(trunk.ySize());
+        
+        var maxHeight = trunk.xSizeCur() * 2;
+        var maxLeafLength = trunk.ySizeCur();
 
         // try to grow additional leaves if we can 
 
@@ -174,7 +174,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         xPositions.forEach((posX) => {
             var rootNodeSq = this.lifeSquares.find((lsq) => lsq.type == "root" && lsq.posX == posX && lsq.posX <= trunkMaxX + 1);
             if (rootNodeSq == null) {
-                return;
+                return; 
             }
             var curY = rootNodeSq.posY - 1;
             while (curY > trunkMinY) {
@@ -182,7 +182,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
                 trunk.growthPlan.steps.push(new GrowthPlanStep(
                     trunk.growthPlan,
                     0,
-                    0,
+                    10 ** (-8),
                     () => this.plantLastGrown,
                     (time) => this.plantLastGrown = time,
                     () => {
@@ -197,6 +197,9 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
     }
 
     thickenTrunkGrowthPlan(trunk) {
+        if (this.trunkCurThickness >= this.trunkMaxThickness) {
+            return;
+        }
         // the growth plan coming out of this needs to be fast (0 time)
         var nextX = (this.trunkCurThickness % 2 > 0 ? -1 : 1) * Math.ceil(this.trunkCurThickness / 2);
         var trunkMinY = Math.min(...trunk.yPositions());
@@ -213,7 +216,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
             trunk.growthPlan.steps.push(new GrowthPlanStep(
                 trunk.growthPlan,
                 0,
-                0,
+                10 ** (-8),
                 () => this.plantLastGrown,
                 (time) => this.plantLastGrown = time,
                 () => {
