@@ -248,7 +248,9 @@ class BaseLifeSquare {
         );
     }
 
-    distToFrontBlockModDarken() {
+    distToFrontBlockModDarken() { 
+        // TODO: optimize, this is dinky dinky slow rn
+        return;
         if (this.linkedOrganism.getLowestGreen() == null) {
             return;
         }
