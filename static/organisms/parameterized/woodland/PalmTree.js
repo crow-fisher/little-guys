@@ -179,7 +179,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
             trunk.growthPlan.steps.push(new GrowthPlanStep(
                 trunk.growthPlan,
                 0,
-                0.0004,
+                0.0,
                 () => this.plantLastGrown,
                 (time) => this.plantLastGrown = time,
                 () => {
@@ -193,11 +193,6 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
     }
     
     thickenTrunkGrowthPlan(trunk) {
-
-        if (trunk == null) {
-            console.error("DING DONG DIDDLY DO FUCK");
-            return;
-        }
         // the growth plan coming out of this needs to be fast (0 time)
         var nextX = (this.trunkCurThickness % 2 > 0 ? -1 : 1) * Math.ceil(this.trunkCurThickness / 2);
         var trunkMinY = Math.min(...trunk.yPositions());
@@ -213,7 +208,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
             trunk.growthPlan.steps.push(new GrowthPlanStep(
                 trunk.growthPlan,
                 0,
-                0.0000001,
+                0,
                 () => this.plantLastGrown,
                 (time) => this.plantLastGrown = time,
                 () => {
