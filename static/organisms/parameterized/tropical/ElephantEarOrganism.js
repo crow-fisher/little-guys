@@ -31,15 +31,11 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
         this.org_thicknessHeightMult = randRange(3, 4);
 
         /* 
-        the palm tree rules
-        ------------------- 
+        the elephant ear rules
 
-        each node can only grow so many fronds (fraction of number of life squares in trunk)
-        to grow some height, you must be at least height/n wide
-        to grow a leaf of some length, you must be some fraction of that leaf length tall 
-        as more height is added at the top, if there already 2 or more nodes, the "middle" node gets moved to the side (with all its children) and the new node goes in the middle
-        to grow some width, you must be anchored at the bottom to a SUBTYPE_ROOTNODE root 
-        roots may be promoted to SUBTYPE_ROOTNODE 
+        stems grow up at an angle, then they have a node 
+        
+
         */
     }
 
