@@ -180,13 +180,11 @@ export class GrowthComponent {
             startDeflectionYOffset = parentComponent.getDeflectionYAtPosition(this.posX, this.posY);
         }
 
-        var side = this.currentDeflection > 0 ? 1 : -1;
-
-        var curve = this.baseCurve + 0.04 * (this.ySize() * side) / this.getTotalStrength();
+        var curve = this.baseCurve + Math.sin(this.currentDeflection) * 0.06 * this.ySizeCur() / this.getTotalStrength();
         
-        var startTheta = this.deflectionRollingAverage - curve / 2;
-        var endTheta = this.currentDeflection + curve / 2;
-        var length = this.getTotalSize();
+        var startTheta = this.deflectionRollingAverage;
+        var endTheta = this.currentDeflection + curve;
+        var length = this.ySizeCur();;
 
         var thetaDelta = endTheta - startTheta;
 
@@ -216,7 +214,7 @@ export class GrowthComponent {
         ));
     }
 
-    getTotalSize() {
+    getTotalLifeSquares() {
         return Math.max(1, this.lifeSquares.length + this.children.map((gc) => this.lifeSquares.length).reduce(
             (accumulator, currentValue) => accumulator + currentValue,
             0,

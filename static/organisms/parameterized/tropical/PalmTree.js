@@ -52,7 +52,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         }
 
         var startRootNode = this.getOriginsForNewGrowth(SUBTYPE_ROOTNODE).at(0);
-        var growthPlan = new GrowthPlan(startRootNode.posX, startRootNode.posY, false, STAGE_ADULT, 0, 0, TYPE_TRUNK, 1);
+        var growthPlan = new GrowthPlan(startRootNode.posX, startRootNode.posY, false, STAGE_ADULT, 0, randRange(-.05, .05), TYPE_TRUNK, 1);
         growthPlan.postConstruct = () => this.originGrowth.addChild(growthPlan.component);
         for (let t = 1; t < randNumber(5, 10); t++) {
             growthPlan.steps.push(new GrowthPlanStep(
@@ -90,11 +90,11 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         var maxLeaves = 1 + Math.floor(trunk.lifeSquares.map((lsq) => lsq.subtype == SUBTYPE_NODE ? 3 : 0.1).reduce(
             (accumulator, currentValue) => accumulator + currentValue,
             0,
-        ));
+        )) * 0.7;
 
         
         var maxHeight = trunk.xSizeCur() * this.org_thicknessHeightMult;
-        var maxLeafLength = trunk.ySizeCur() * 0.8;
+        var maxLeafLength = trunk.ySizeCur() * 0.4;
 
         // try to grow additional leaves if we can 
 
