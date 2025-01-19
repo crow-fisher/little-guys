@@ -55,7 +55,7 @@ class BaseLifeSquare {
             square.spawnedEntityId = organism.spawnedEntityId;
         }
 
-        this.strength = 10 ** 8;
+        this.strength = 1;
 
         this.opacity = 1;
         this.width = 1;

@@ -1,6 +1,6 @@
 import { getWindSpeedAtLocation } from "../../wind.js";
 
-const ROLLING_AVERAGE_PERIOD = 50;
+const ROLLING_AVERAGE_PERIOD = 200;
 
 export class GrowthPlan {
     constructor(posX, posY, required, endStage, baseDeflection, baseCurve, type, strengthMult) {
@@ -73,7 +73,7 @@ export class GrowthComponent {
         this.strength = () => strengthMult * this.lifeSquares.map((lsq) => lsq.strength).reduce(
             (accumulator, currentValue) => accumulator + currentValue,
             0,
-        ) * (this.xSize() ** 3) * this.ySize();
+        ) * (this.xSize()) / this.ySize();
         
         this.children = new Array();
         this.baseCurve = baseCurve;
