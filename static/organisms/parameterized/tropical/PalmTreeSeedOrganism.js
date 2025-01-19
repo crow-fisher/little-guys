@@ -1,5 +1,5 @@
 import { BaseSeedOrganism } from "../../BaseSeedOrganism.js";
-import { PalmTreeOrganism } from "./PalmTree.js";
+import { PalmTreeOrganism } from "./PalmTreeOrganism.js";
 
 export class PalmTreeSeedOrganism extends BaseSeedOrganism {
     constructor(square) {
