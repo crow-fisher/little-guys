@@ -222,7 +222,7 @@ export class GrowthComponent {
     }
 
     getNetWindSpeed() {
-        return this.lifeSquares.map((lsq) => getWindSpeedAtLocation(lsq.posX, lsq.posY)).reduce(
+        return this.lifeSquares.map((lsq) => getWindSpeedAtLocation(lsq.posX + lsq.deflectionXOffset, lsq.posY + lsq.deflectionYOffset)).reduce(
             (accumulator, currentValue) => [accumulator[0] + currentValue[0], accumulator[1] + currentValue[1]],
             [0, 0]
         );

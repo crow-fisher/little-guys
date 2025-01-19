@@ -96,6 +96,12 @@ class BaseLifeSquare {
         this.accentColorAmount = dirt_accentColorAmount;
     }
 
+    makeRandomsSimilar(otherSquare) {
+        for (let i = 0; i < this.randoms.length; i++) {
+            this.randoms[i] = otherSquare.randoms[i] * 0.9 + this.randoms[i] * 0.1;
+        }
+    }
+
     updatePositionDifferential(dx, dy) {
         removeOrganismSquare(this);
         removeSquare(this.linkedSquare);

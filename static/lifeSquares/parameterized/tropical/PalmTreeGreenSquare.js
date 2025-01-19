@@ -19,20 +19,20 @@ export class PalmTreeGreenSquare extends BaseLifeSquare {
             case SUBTYPE_TRUNK:
             case SUBTYPE_SHOOT:
             case SUBTYPE_SPROUT:
-                this.baseColor = "#615041";
-                this.darkColor = "#8e7b6a";
+                this.baseColor = "#a28575";
+                this.darkColor = "#6f544b";
                 this.accentColor = "#351e0f";
                 break;
             case SUBTYPE_LEAF:
             case SUBTYPE_LEAFSTEM:
-                this.baseColor = "#6c7d45";
-                this.darkColor = "#7a7106";
-                this.accentColor = "#d0ce24";
+                this.baseColor = "#334718";
+                this.darkColor = "#757826";
+                this.accentColor = "#a79228";
                 break;
             case SUBTYPE_NODE:
-                this.baseColor = "#000000";
-                this.darkColor = "#111111";
-                this.accentColor = "#222222";
+                this.baseColor = "#5b4238";
+                this.darkColor = "#5c4a3c";
+                this.accentColor = "#613d2a";
                 break;
             default:
                 console.warn("BIPPITY BOPPITY")

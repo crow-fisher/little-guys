@@ -11,7 +11,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         this.greenType = PalmTreeGreenSquare;
         this.rootType = PalmTreeRootSquare;
 
-        this.trunkMaxThickness = 3;
+        this.trunkMaxThickness = 2;
         this.trunkCurThickness = 1;
 
         this.airCoef = 0.01;
@@ -28,7 +28,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
 
         // parameterized growth rules
 
-        this.org_thicknessHeightMult = randRange(2, 4);
+        this.org_thicknessHeightMult = randRange(3, 4);
 
         /* 
         the palm tree rules
@@ -87,14 +87,13 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
     adultGrowthPlanning() {
         var trunk = this.getAllComponentsofType(TYPE_TRUNK).at(0);
 
-        var maxLeaves = 1 + Math.floor(trunk.lifeSquares.map((lsq) => lsq.subtype == SUBTYPE_NODE ? 3 : 0.1).reduce(
+        var maxLeaves = 3 + Math.floor(trunk.lifeSquares.map((lsq) => lsq.subtype == SUBTYPE_NODE ? 3 : 0.1).reduce(
             (accumulator, currentValue) => accumulator + currentValue,
             0,
         )) * 0.7;
+        var maxLeafLength = 3 + trunk.ySizeCur() * 0.4;
 
-        
         var maxHeight = trunk.xSizeCur() * this.org_thicknessHeightMult;
-        var maxLeafLength = trunk.ySizeCur() * 0.4;
 
         // try to grow additional leaves if we can 
 
@@ -107,7 +106,12 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
 
         this.getAllComponentsofType(TYPE_LEAF).forEach((growthPlan) => this.extendLeafGrowthPlan(growthPlan, maxLeafLength));
 
-        // then try to increase our height 
+        // then try to increase our height, but only if we are all out of other things to do 
+        
+        if (this.growthPlans.some((gp) => !gp.completed)) {
+            return;
+        }
+        
 
         if (trunk.ySize() < maxHeight) {
             this.increaseHeightGrowthPlan(trunk, maxHeight - trunk.ySize());
@@ -194,6 +198,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         if (this.trunkCurThickness >= this.trunkMaxThickness) {
             return;
         }
+        this.trunkCurThickness += 1;
         var xPositions = trunk.xPositions();
         var nextX = (this.trunkCurThickness % 2 > 0 ? this.side : this.side * -1) * Math.ceil(this.trunkCurThickness / 2);
         var trunkMaxY = Math.max(...trunk.yPositions());
@@ -233,6 +238,10 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
                 lsq.subtype = SUBTYPE_NODE;
             } else {
                 lsq.subtype = SUBTYPE_TRUNK;
+            }
+            var middleLsq = this.lifeSquares.find((llsq) => llsq.posX == this.posX && llsq.posY == lsq.posY);
+            if (lsq != middleLsq) {
+                lsq.makeRandomsSimilar(middleLsq);
             }
         });
 
