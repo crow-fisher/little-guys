@@ -61,7 +61,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
                 this.sproutGrowTimeInDays,
                 () => {
                     var shoot = this.growPlantSquare(startRootNode, 0, t);
-                    shoot.subtype = SUBTYPE_TRUNK;
+                    shoot.subtype = SUBTYPE_STEM;
                     return shoot;
                 },
                 null

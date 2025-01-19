@@ -33,6 +33,7 @@ import { SunflowerSeedOrganism } from "./organisms/SunflowerSeedOrganism.js";
 import { clearPrevailingWind, addPrevailingWind, addWindPressure, initializeWindPressureMap, removeWindPressure, renderWindPressureMap, tickWindPressureMap } from "./wind.js";
 import { renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds, addWaterSaturationPascals, addWaterSaturationPascalsSqCoords } from "./temperature_humidity.js";
 import { PalmTreeSeedOrganism } from "./organisms/parameterized/tropical/PalmTreeSeedOrganism.js";
+import { ElephantEarSeedOrganism } from "./organisms/parameterized/tropical/ElephantEarSeedOrganism.js";
 
 var lastMode = "organism"; // options: "normal", "special", "organism", "blockModification";
 
@@ -774,6 +775,17 @@ function doClickAdd() {
                                 organismAddedThisClick = true;
                             }
                             break;
+
+                            case "ElephantEar":
+                                if (organismAddedThisClick) {
+                                    return;
+                                }
+                                var sq = addSquare(new SeedSquare(px, py));
+                                if (sq) {
+                                    addNewOrganism(new ElephantEarSeedOrganism(sq));
+                                    organismAddedThisClick = true;
+                                }
+                                break;
                     }
                 }
             }
