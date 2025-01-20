@@ -84,7 +84,7 @@ export class GrowthComponent {
         ) * (this.xSize()) / this.ySize();
         
         this.children = new Array();
-
+        this.parentComponent = null;
         this.setCurrentDeflection(this.getBaseDeflection());
     }
 
@@ -161,6 +161,7 @@ export class GrowthComponent {
             return;
         }
         this.children.push(childComponent);
+        childComponent.parentComponent = this;
     }
 
     updateDeflectionState() {
@@ -196,8 +197,9 @@ export class GrowthComponent {
         var ret = this.baseRotation;
         if (this.parentComponent != null) {
             ret += this.parentComponent.getBaseRotation();
+            ret += this.parentComponent.getCurrentDeflection();
         }
-        return (this.theta > 0 ? ret : -ret);
+        return ret;
     }
 
 
@@ -209,11 +211,12 @@ export class GrowthComponent {
             startDeflectionYOffset = parentComponent.getDeflectionYAtPosition(this.posX, this.posY);
         }
 
-        var curve = this.baseCurve + Math.sin(this.getCurrentDeflection()) * 0.06 * this.ySizeCur() / this.getTotalStrength();
+        var curve = this.baseCurve + Math.sin(this.currentDeflection) * 0.06 * this.ySizeCur() / this.getTotalStrength();
         
         var startTheta = this.deflectionRollingAverage + this.getBaseRotation();
         var endTheta = this.currentDeflection + curve + this.getBaseRotation();
-        var length = this.ySizeCur();;
+
+        var length = this.ySizeCur();
 
         var thetaDelta = endTheta - startTheta;
 
