@@ -3,7 +3,7 @@ import { ElephantEarGreenSquare } from "../../../lifeSquares/parameterized/tropi
 import { ElephantEarRootSquare } from "../../../lifeSquares/parameterized/tropical/ElephantEarRootSquare.js";
 import { BaseParameterizedOrganism } from "../BaseParameterizedOrganism.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
-import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_TRUNK, TYPE_LEAF, TYPE_TRUNK } from "../Stages.js";
+import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_SHOOT, SUBTYPE_STEM, SUBTYPE_TRUNK, TYPE_LEAF, TYPE_TRUNK } from "../Stages.js";
 
 export class ElephantEarOrganism extends BaseParameterizedOrganism {
     constructor(posX, posY) {
@@ -31,18 +31,91 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
         this.org_thicknessHeightMult = randRange(3, 4);
 
         /* 
-        the palm tree rules
-        ------------------- 
+        the elephant ear rules
+        ---------------------- 
 
-        each node can only grow so many fronds (fraction of number of life squares in trunk)
-        to grow some height, you must be at least height/n wide
-        to grow a leaf of some length, you must be some fraction of that leaf length tall 
-        as more height is added at the top, if there already 2 or more nodes, the "middle" node gets moved to the side (with all its children) and the new node goes in the middle
-        to grow some width, you must be anchored at the bottom to a SUBTYPE_ROOTNODE root 
-        roots may be promoted to SUBTYPE_ROOTNODE 
+        grow a curved stem with a big ol leaf at the end of it at some angle
+        
         */
     }
 
+    getLeafLocations(xSize, ySize) {
+        var locs = new Array();
+        for (let x = -1; x < 1; x += 0.1) {
+            for (let y = 0; y < 2.5; y += 0.1) {
+                var elipseVal = (1.8 * x) ** 2 + (y - 1) ** 2; 
+                var triangleVal = -Math.abs(2*x) + 0.7;
+                if (elipseVal <= 2 && y >= triangleVal) {
+                    locs.push([x, y]);
+                }
+            }
+        }
+
+        var maxX = Math.max(...locs.map((loc) => loc[0]));
+        var maxY = Math.max(...locs.map((loc) => loc[1]));
+
+        var out = new Array();
+        for (let i = 0; i < xSize; i++) {
+            for (let j = 0; j < ySize; j++) {
+                var ip = (i / xSize) * maxX;
+                var jp = (j / ySize) * maxY;
+
+                if (locs.some((pos) => pos[0] >= ip && pos[1] >= jp)) {
+                    out.push([i, j]);
+                    out.push([-i, j]);
+                }
+            }
+        }
+        return out;
+    }
+
+    
+
+    newLeafGrowthPlan(startComponent) {
+        var startNode = startComponent.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_NODE);
+        var growthPlan = new GrowthPlan(startNode.posX, startNode.posY, false, STAGE_ADULT, randRange(-Math.PI/2, Math.PI/2), 0, 0, TYPE_LEAF, 1);
+        growthPlan.postConstruct = () => startComponent.addChild(growthPlan.component);
+        for (let t = 1; t < 4; t++) {
+            growthPlan.steps.push(new GrowthPlanStep(
+                growthPlan,
+                0,
+                this.leafGrowTimeInDays,
+                () => {
+                    var shoot = this.growPlantSquare(startNode, 0, t);
+                    shoot.subtype = SUBTYPE_STEM;
+                    return shoot;
+                },
+                null
+            ));
+        };
+
+        var stemLeafNode;
+        growthPlan.steps.push(new GrowthPlanStep(
+            growthPlan,
+            0,
+            this.leafGrowTimeInDays,
+            () => {
+                stemLeafNode = this.growPlantSquare(startNode, 0, 5);
+                stemLeafNode.subtype = SUBTYPE_NODE;
+                return stemLeafNode;
+            },
+            null
+        ));
+        var leafLocations = this.getLeafLocations(5, 5);
+        leafLocations.filter((loc) => loc[0] != 0).forEach((loc) => growthPlan.steps.push(new GrowthPlanStep(
+            growthPlan,
+            0,
+            this.leafGrowTimeInDays,
+            () => {
+                var shoot = this.growPlantSquare(stemLeafNode, loc[0], loc[1]);
+                shoot.subtype = SUBTYPE_LEAF;
+                return shoot;
+            },
+            null
+        )));
+        return growthPlan;
+    }
+    
     gp_juvenile() {
         if (!(STAGE_JUVENILE in this.stageGrowthPlans)) {
             this.stageGrowthPlans[STAGE_JUVENILE] = new Array();
@@ -124,32 +197,7 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
         // then, uh, i don't fucking know 
     }
 
-    newLeafGrowthPlan(startComponent, maxLeafLength) {
-        // grow from the node with the least child lifesquares
-        var startNode;
 
-        startComponent.lifeSquares.filter((lsq) => lsq.subtype == SUBTYPE_NODE).forEach((lsq) => {
-            if (startNode == null || lsq.childLifeSquares.length < startNode.childLifeSquares.length) {
-                startNode = lsq;
-            }
-        })
-        var growthPlan = new GrowthPlan(startNode.posX, startNode.posY, false, STAGE_ADULT, randRange(-Math.PI/2, Math.PI/2), randRange(-Math.PI, Math.PI), Math.random() / 3, TYPE_LEAF, 1);
-        growthPlan.postConstruct = () => startComponent.addChild(growthPlan.component);
-        for (let t = 1; t < randNumber(0, maxLeafLength); t++) {
-            growthPlan.steps.push(new GrowthPlanStep(
-                growthPlan,
-                0,
-                this.leafGrowTimeInDays,
-                () => {
-                    var shoot = this.growPlantSquare(startNode, 0, t);
-                    shoot.subtype = SUBTYPE_LEAF;
-                    return shoot;
-                },
-                null
-            ))
-        }
-        return growthPlan;
-    }
 
     extendLeafGrowthPlan(leafComponent, maxLeafLength) {
         if (leafComponent.growthPlan.steps.length < maxLeafLength) {
