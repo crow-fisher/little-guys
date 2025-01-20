@@ -67,7 +67,7 @@ export class GrowthComponent {
         this.growthPlan = growthPlan;
         this.lifeSquares = Array.from(lifeSquares);
         this.theta = theta;
-        
+
         this.posX = growthPlan.posX;   
         this.posY = growthPlan.posY;
 
@@ -128,6 +128,13 @@ export class GrowthComponent {
         }
         var xPositions = this.lifeSquares.map((lsq) => lsq.posX);
         return Math.max(...xPositions) - Math.min(...xPositions);
+    }
+
+    getTheta() {
+        if (this.parentComponent == null) {
+            return this.theta;
+        }
+        return this.theta + this.parentComponent.getTheta();
     }
 
     ySize() {
@@ -198,8 +205,15 @@ export class GrowthComponent {
             var lsqDist = (relLsqX ** 2 + relLsqY ** 2) ** 0.5;
             var currentTheta = startTheta + (lsqDist / length) * thetaDelta;
 
-            var endX = startDeflectionXOffset + relLsqX * Math.cos(currentTheta) - relLsqY * Math.sin(currentTheta);
-            var endY = startDeflectionYOffset + relLsqY * Math.cos(currentTheta) + relLsqX * Math.sin(currentTheta);
+            var offsetX = relLsqX * Math.cos(currentTheta) - relLsqY * Math.sin(currentTheta);
+            var offsetY = relLsqY * Math.cos(currentTheta) + relLsqX * Math.sin(currentTheta);
+
+            if (this.getTheta() != 0) {
+                offsetX *= Math.sin(this.getTheta());
+            }
+
+            var endX = startDeflectionXOffset + offsetX; 
+            var endY = startDeflectionYOffset + offsetY; 
 
             lsq.deflectionXOffset = endX - relLsqX;
             lsq.deflectionYOffset = endY - relLsqY;
