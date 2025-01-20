@@ -21,7 +21,7 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
         this.currentHealth = 10 ** 8;
         
         this.sproutGrowTimeInDays =  10 ** (-3);
-        this.leafGrowTimeInDays =      10 ** (-3);
+        this.leafGrowTimeInDays = 0; //     10 ** (-3);
         this.trunkGrowTimeInDays =    10 ** (-3);
 
         this.side = Math.random() > 0.5 ? -1 : 1;
@@ -60,7 +60,9 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
                 var ip = (i / xSize) * maxX;
                 var jp = (j / ySize) * maxY;
 
-                if (locs.some((pos) => pos[0] >= ip && pos[1] >= jp)) {
+                
+                var minDist = Math.min(...locs.map((loc) => ((loc[0] - ip) ** 2 + (loc[1] - jp) ** 2) ** 0.5));
+                if (minDist < 0.1) {
                     out.push([i, j]);
                     out.push([-i, j]);
                 }
@@ -73,7 +75,8 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
 
     newLeafGrowthPlan(startComponent) {
         var startNode = startComponent.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_NODE);
-        var growthPlan = new GrowthPlan(startNode.posX, startNode.posY, false, STAGE_ADULT, randRange(-Math.PI/2, Math.PI/2), 0, 0, TYPE_LEAF, 1);
+        // var growthPlan = new GrowthPlan(startNode.posX, startNode.posY, false, STAGE_ADULT, randRange(-Math.PI/2, Math.PI/2), 0, 0, TYPE_LEAF, 1);
+        var growthPlan = new GrowthPlan(startNode.posX, startNode.posY, false, STAGE_ADULT, 0, 0, 0, TYPE_LEAF, 1);
         growthPlan.postConstruct = () => startComponent.addChild(growthPlan.component);
         for (let t = 1; t < 4; t++) {
             growthPlan.steps.push(new GrowthPlanStep(
@@ -95,13 +98,13 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
             0,
             this.leafGrowTimeInDays,
             () => {
-                stemLeafNode = this.growPlantSquare(startNode, 0, 5);
+                stemLeafNode = this.growPlantSquare(startNode, 0, 4);
                 stemLeafNode.subtype = SUBTYPE_NODE;
                 return stemLeafNode;
             },
             null
         ));
-        var leafLocations = this.getLeafLocations(5, 5);
+        var leafLocations = this.getLeafLocations(10, 20);
         leafLocations.filter((loc) => loc[0] != 0).forEach((loc) => growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
             0,
@@ -171,9 +174,10 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
         // try to grow additional leaves if we can 
 
         var curLeaves = trunk.children.length;
-        if (curLeaves < maxLeaves) {
-            this.growthPlans.push(this.newLeafGrowthPlan(trunk, maxLeafLength));
+        if (curLeaves < 1) {
+            this.growthPlans.push(this.newLeafGrowthPlan(trunk));
         }
+        return;
 
         // then try to extend our leaves 
 
@@ -305,6 +309,7 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
             if (plan != null)
                 this.growthPlans.push(plan);
         }
+        
         if (this.stage == STAGE_ADULT) {
             this.adultGrowthPlanning();
         }
