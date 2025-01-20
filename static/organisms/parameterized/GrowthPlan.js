@@ -3,12 +3,13 @@ import { getWindSpeedAtLocation } from "../../wind.js";
 const ROLLING_AVERAGE_PERIOD = 200;
 
 export class GrowthPlan {
-    constructor(posX, posY, required, endStage, baseDeflection, baseCurve, type, strengthMult) {
+    constructor(posX, posY, required, endStage, theta, baseDeflection, baseCurve, type, strengthMult) {
         this.posX = posX;
         this.posY = posY;
         this.required = required;
         this.steps = new Array(); // GrowthPlanStep
         this.endStage = endStage;
+        this.theta = theta;
         this.baseDeflection = baseDeflection;
         this.baseCurve = baseCurve;
         this.type = type;
@@ -17,7 +18,7 @@ export class GrowthPlan {
         this.areStepsCompleted = () => this.steps.every((step) => step.completed);
         this.postConstruct = () => console.warn("Warning: postconstruct not implemented");
         this.postComplete = () => null;
-        this.component = new GrowthComponent(this, this.steps.filter((step) => step.completed).map((step) => step.completedSquare), baseDeflection, baseCurve, type, strengthMult)
+        this.component = new GrowthComponent(this, this.steps.filter((step) => step.completed).map((step) => step.completedSquare), theta, baseDeflection, baseCurve, type, strengthMult)
     }
 
     complete() {
@@ -62,12 +63,14 @@ export class GrowthPlanStep {
 }
     
 export class GrowthComponent {
-    constructor(growthPlan, lifeSquares, baseDeflection, baseCurve, type, strengthMult) {
+    constructor(growthPlan, lifeSquares, theta, baseDeflection, baseCurve, type, strengthMult) {
         this.growthPlan = growthPlan;
+        this.lifeSquares = Array.from(lifeSquares);
+        this.theta = theta;
+        
         this.posX = growthPlan.posX;   
         this.posY = growthPlan.posY;
 
-        this.lifeSquares = Array.from(lifeSquares);
         this.currentDeflection = 0;
         this.deflectionRollingAverage = 10 ** 8;
         this.strength = () => strengthMult * this.lifeSquares.map((lsq) => lsq.strength).reduce(

@@ -1,6 +1,6 @@
 import { randNumber, randRange } from "../../../common.js";
-import { PalmTreeGreenSquare } from "../../../lifeSquares/parameterized/tropical/PalmTreeGreenSquare.js";
-import { PalmTreeRootSquare } from "../../../lifeSquares/parameterized/tropical/PalmTreeRootSquare.js";
+import { ElephantEarGreenSquare } from "../../../lifeSquares/parameterized/tropical/ElephantEarGreenSquare.js";
+import { ElephantEarRootSquare } from "../../../lifeSquares/parameterized/tropical/ElephantEarRootSquare.js";
 import { BaseParameterizedOrganism } from "../BaseParameterizedOrganism.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_TRUNK, TYPE_LEAF, TYPE_TRUNK } from "../Stages.js";
@@ -8,8 +8,8 @@ import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, S
 export class ElephantEarOrganism extends BaseParameterizedOrganism {
     constructor(posX, posY) {
         super(posX, posY);
-        this.greenType = PalmTreeGreenSquare;
-        this.rootType = PalmTreeRootSquare;
+        this.greenType = ElephantEarGreenSquare;
+        this.rootType = ElephantEarRootSquare;
 
         this.trunkMaxThickness = 2;
         this.trunkCurThickness = 1;
@@ -31,11 +31,15 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
         this.org_thicknessHeightMult = randRange(3, 4);
 
         /* 
-        the elephant ear rules
+        the palm tree rules
+        ------------------- 
 
-        stems grow up at an angle, then they have a node 
-        
-
+        each node can only grow so many fronds (fraction of number of life squares in trunk)
+        to grow some height, you must be at least height/n wide
+        to grow a leaf of some length, you must be some fraction of that leaf length tall 
+        as more height is added at the top, if there already 2 or more nodes, the "middle" node gets moved to the side (with all its children) and the new node goes in the middle
+        to grow some width, you must be anchored at the bottom to a SUBTYPE_ROOTNODE root 
+        roots may be promoted to SUBTYPE_ROOTNODE 
         */
     }
 
@@ -48,7 +52,7 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
         }
 
         var startRootNode = this.getOriginsForNewGrowth(SUBTYPE_ROOTNODE).at(0);
-        var growthPlan = new GrowthPlan(startRootNode.posX, startRootNode.posY, false, STAGE_ADULT, 0, randRange(-.05, .05), TYPE_TRUNK, 1);
+        var growthPlan = new GrowthPlan(startRootNode.posX, startRootNode.posY, false, STAGE_ADULT, 0, 0, randRange(-.05, .05), TYPE_TRUNK, 1);
         growthPlan.postConstruct = () => this.originGrowth.addChild(growthPlan.component);
         for (let t = 1; t < randNumber(5, 10); t++) {
             growthPlan.steps.push(new GrowthPlanStep(
@@ -57,7 +61,7 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
                 this.sproutGrowTimeInDays,
                 () => {
                     var shoot = this.growPlantSquare(startRootNode, 0, t);
-                    shoot.subtype = SUBTYPE_TRUNK;
+                    shoot.subtype = SUBTYPE_STEM;
                     return shoot;
                 },
                 null
@@ -129,7 +133,7 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
                 startNode = lsq;
             }
         })
-        var growthPlan = new GrowthPlan(startNode.posX, startNode.posY, false, STAGE_ADULT, randRange(-Math.PI, Math.PI), Math.random() / 3, TYPE_LEAF, 1);
+        var growthPlan = new GrowthPlan(startNode.posX, startNode.posY, false, STAGE_ADULT, randRange(-Math.PI/2, Math.PI/2), randRange(-Math.PI, Math.PI), Math.random() / 3, TYPE_LEAF, 1);
         growthPlan.postConstruct = () => startComponent.addChild(growthPlan.component);
         for (let t = 1; t < randNumber(0, maxLeafLength); t++) {
             growthPlan.steps.push(new GrowthPlanStep(
