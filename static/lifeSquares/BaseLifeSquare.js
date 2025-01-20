@@ -11,7 +11,7 @@ import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_GREEN, RGB_COLOR_BLACK, RGB_
 import { addOrganismSquare } from "./_lsOperations.js";
 import { removeSquare } from "../globalOperations.js";
 
-var LSQ_RENDER_SIZE_MULT = 1.1;
+var LSQ_RENDER_SIZE_MULT = Math.SQRT2;
 
 class BaseLifeSquare {
     constructor(square, organism) {

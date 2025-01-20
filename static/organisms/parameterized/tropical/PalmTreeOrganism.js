@@ -127,13 +127,12 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
     newLeafGrowthPlan(startComponent, maxLeafLength) {
         // grow from the node with the least child lifesquares
         var startNode;
-
         startComponent.lifeSquares.filter((lsq) => lsq.subtype == SUBTYPE_NODE).forEach((lsq) => {
             if (startNode == null || lsq.childLifeSquares.length < startNode.childLifeSquares.length) {
                 startNode = lsq;
             }
         })
-        var growthPlan = new GrowthPlan(startNode.posX, startNode.posY, false, STAGE_ADULT, randRange(-Math.PI/2, Math.PI/2), randRange(0.5, 1), Math.random() / 3, TYPE_LEAF, 1);
+        var growthPlan = new GrowthPlan(startNode.posX, startNode.posY, false, STAGE_ADULT, randRange(-Math.PI/2, Math.PI/2), 0, randRange(-1, 1), Math.random() / 3, TYPE_LEAF, 1);
         growthPlan.postConstruct = () => startComponent.addChild(growthPlan.component);
         for (let t = 1; t < randNumber(0, maxLeafLength); t++) {
             growthPlan.steps.push(new GrowthPlanStep(

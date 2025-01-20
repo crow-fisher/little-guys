@@ -114,7 +114,7 @@ export class BaseParameterizedOrganism extends BaseOrganism {
     }
 
     gp_sprout() {
-        var growthPlan = new GrowthPlan(this.posX, this.posY, true, STAGE_JUVENILE, 0, 0, 0, TYPE_HEART, 10 ** 8);
+        var growthPlan = new GrowthPlan(this.posX, this.posY, true, STAGE_JUVENILE, 0, 0, 0, 0, TYPE_HEART, 10 ** 8);
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
             0,

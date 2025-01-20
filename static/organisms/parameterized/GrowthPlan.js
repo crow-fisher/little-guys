@@ -3,13 +3,14 @@ import { getWindSpeedAtLocation } from "../../wind.js";
 const ROLLING_AVERAGE_PERIOD = 200;
 
 export class GrowthPlan {
-    constructor(posX, posY, required, endStage, theta, baseDeflection, baseCurve, type, strengthMult) {
+    constructor(posX, posY, required, endStage, theta, baseRotation, baseDeflection, baseCurve, type, strengthMult) {
         this.posX = posX;
         this.posY = posY;
         this.required = required;
         this.steps = new Array(); // GrowthPlanStep
         this.endStage = endStage;
         this.theta = theta;
+        this.baseRotation = baseRotation;
         this.baseDeflection = baseDeflection;
         this.baseCurve = baseCurve;
         this.type = type;
@@ -18,7 +19,7 @@ export class GrowthPlan {
         this.areStepsCompleted = () => this.steps.every((step) => step.completed);
         this.postConstruct = () => console.warn("Warning: postconstruct not implemented");
         this.postComplete = () => null;
-        this.component = new GrowthComponent(this, this.steps.filter((step) => step.completed).map((step) => step.completedSquare), theta, baseDeflection, baseCurve, type, strengthMult)
+        this.component = new GrowthComponent(this, this.steps.filter((step) => step.completed).map((step) => step.completedSquare), theta, baseRotation, baseDeflection, baseCurve, type, strengthMult)
     }
 
     complete() {
@@ -63,10 +64,14 @@ export class GrowthPlanStep {
 }
     
 export class GrowthComponent {
-    constructor(growthPlan, lifeSquares, theta, baseDeflection, baseCurve, type, strengthMult) {
+    constructor(growthPlan, lifeSquares, theta, baseRotation, baseDeflection, baseCurve, type, strengthMult) {
         this.growthPlan = growthPlan;
-        this.lifeSquares = Array.from(lifeSquares);
+        this.lifeSquares = lifeSquares;
         this.theta = theta;
+        this.baseRotation = baseRotation;
+        this.baseDeflection = baseDeflection;
+        this.baseCurve = baseCurve;
+        this.type = type;
 
         this.posX = growthPlan.posX;   
         this.posY = growthPlan.posY;
@@ -79,10 +84,8 @@ export class GrowthComponent {
         ) * (this.xSize()) / this.ySize();
         
         this.children = new Array();
-        this.baseCurve = baseCurve;
-        this.baseDeflection = baseDeflection;
-        this.setCurrentDeflection(this.baseDeflection);
-        this.type = type;
+
+        this.setCurrentDeflection(this.getBaseDeflection());
     }
 
     addLifeSquare(newLsq) {
@@ -179,7 +182,23 @@ export class GrowthComponent {
 
     getDeflectionYAtPosition(posX, posY) {
         return this.lifeSquares.filter((lsq) => lsq.posX == posX && lsq.posY == posY).map((lsq) => lsq.deflectionYOffset).at(0);
-    }   
+    }
+
+    getCurrentDeflection() {
+        if (this.parentComponent == null) {
+            return this.currentDeflection;
+        } else {
+            return this.currentDeflection + this.parentComponent.getCurrentDeflection();
+        }
+    }
+
+    getBaseRotation() {
+        var ret = this.baseRotation;
+        if (this.parentComponent != null) {
+            ret += this.parentComponent.getBaseRotation();
+        }
+        return (this.theta > 0 ? ret : -ret);
+    }
 
 
     applyDeflectionState(parentComponent) {
@@ -190,10 +209,10 @@ export class GrowthComponent {
             startDeflectionYOffset = parentComponent.getDeflectionYAtPosition(this.posX, this.posY);
         }
 
-        var curve = this.baseCurve + Math.sin(this.currentDeflection) * 0.06 * this.ySizeCur() / this.getTotalStrength();
+        var curve = this.baseCurve + Math.sin(this.getCurrentDeflection()) * 0.06 * this.ySizeCur() / this.getTotalStrength();
         
-        var startTheta = this.deflectionRollingAverage;
-        var endTheta = this.currentDeflection + curve;
+        var startTheta = this.deflectionRollingAverage + this.getBaseRotation();
+        var endTheta = this.currentDeflection + curve + this.getBaseRotation();
         var length = this.ySizeCur();;
 
         var thetaDelta = endTheta - startTheta;
@@ -246,11 +265,22 @@ export class GrowthComponent {
     }
 
     getStartSpringForce() {
-        return Math.sin(this.deflectionRollingAverage - this.baseDeflection) * this.getTotalStrength();
+        return Math.sin(this.deflectionRollingAverage - this.getBaseDeflection()) * this.getTotalStrength();
+    }
+
+    getBaseDeflection() {
+        if (this.parentComponent == null) {
+            return this.baseDeflection;
+        } else {
+            return this.baseDeflection + this.parentComponent.getBaseDeflection();
+        }
     }
 
     setCurrentDeflection(deflection) {
         this.currentDeflection = deflection;
+        if (this.parentComponent != null) {
+            this.currentDeflection -= this.parentComponent.getCurrentDeflection();
+        }
         if (this.deflectionRollingAverage == 10 ** 8) {
             this.deflectionRollingAverage = deflection;
         } else {
