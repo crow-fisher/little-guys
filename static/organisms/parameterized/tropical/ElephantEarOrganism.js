@@ -41,8 +41,9 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
 
     getLeafLocations(xSize, ySize) {
         var locs = new Array();
-        for (let x = -1; x < 1; x += 0.1) {
-            for (let y = 0; y < 2.5; y += 0.1) {
+        var step = 0.01;
+        for (let x = -1; x < 1; x += step) {
+            for (let y = 0; y < 2.5; y += step) {
                 var elipseVal = (1.8 * x) ** 2 + (y - 1) ** 2; 
                 var triangleVal = -Math.abs(2*x) + 0.7;
                 if (elipseVal <= 2 && y >= triangleVal) {
@@ -60,11 +61,11 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
                 var ip = (i / xSize) * maxX;
                 var jp = (j / ySize) * maxY;
 
-                
                 var minDist = Math.min(...locs.map((loc) => ((loc[0] - ip) ** 2 + (loc[1] - jp) ** 2) ** 0.5));
-                if (minDist < 0.1) {
+                if (minDist < step * Math.SQRT2) {
                     out.push([i, j]);
-                    out.push([-i, j]);
+                    if (i != 0) 
+                        out.push([-i, j]);
                 }
             }
         }
@@ -104,8 +105,24 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
             },
             null
         ));
+
+        
         var leafLocations = this.getLeafLocations(10, 20);
-        leafLocations.filter((loc) => loc[0] != 0).forEach((loc) => growthPlan.steps.push(new GrowthPlanStep(
+        for (let t = 0; t < Math.min(...leafLocations.filter((loc) => loc[0] == 0).map((loc) => loc[1])); t++) {
+            growthPlan.steps.push(new GrowthPlanStep(
+                growthPlan,
+                0,
+                this.leafGrowTimeInDays,
+                () => {
+                    var shoot = this.growPlantSquare(stemLeafNode, 0, t);
+                    shoot.subtype = SUBTYPE_STEM;
+                    return shoot;
+                },
+                null
+            ));
+        };
+        
+        leafLocations.forEach((loc) => growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
             0,
             this.leafGrowTimeInDays,
