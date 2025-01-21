@@ -81,6 +81,7 @@ class BaseLifeSquare {
         this.numAdjacentFlowers = 0;
 
         this.distFromOrigin = 0;
+        this.distToFront = 0;
         this.component = null;
 
         this.renderWithColorRange = false;

@@ -419,6 +419,7 @@ class BaseOrganism {
         this.lifeSquares.forEach((sp) => sp.tick());
         this.updateDeflectionState();
         this.applyDeflectionStateToSquares();
+        this.lifeSquares = this.lifeSquares.sort((a, b) => a.distToFront - b.distToFront);
     }
 
     getLifeCyclePercentage() {
