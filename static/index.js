@@ -96,7 +96,9 @@ var loadSlotValley = document.getElementById("loadSlotValley");
 
 var selectedMaterial = "dirt";
 var selectedViewMode = "normal";
+var global_theta_base = 0;
 const BASE_SIZE = 4;
+
 
 function getNewBlockTemperatureVal() {
     return newBlockTemperature_val;
@@ -839,11 +841,22 @@ window.onload = function () {
 
 // loadSlotFromSave(volcano);
 
+function zoom(event) {
+    event.preventDefault();
+    global_theta_base += event.deltaY * -0.001;
+}
+MAIN_CANVAS.onwheel = zoom;
+  
+function getGlobalThetaBase() {
+    return global_theta_base;
+}
+
 export {
-    MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, selectedViewMode, addSquareByName,
+    MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, global_theta_base, selectedViewMode, addSquareByName,
     setCanvasSquaresX, setCanvasSquaresY,
     getCanvasSquaresX, getCanvasSquaresY,
     getBlockModification_val,
-    getNewBlockTemperatureVal, getNewBlockLockedTemperature
+    getNewBlockTemperatureVal, getNewBlockLockedTemperature,
+    getGlobalThetaBase
 }
 

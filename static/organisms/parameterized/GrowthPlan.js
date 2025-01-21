@@ -1,3 +1,4 @@
+import { getGlobalThetaBase } from "../../index.js";
 import { getWindSpeedAtLocation } from "../../wind.js";
 
 const ROLLING_AVERAGE_PERIOD = 200;
@@ -231,7 +232,7 @@ export class GrowthComponent {
             var offsetY = relLsqY * Math.cos(currentTheta) + relLsqX * Math.sin(currentTheta);
 
             if (this.getTheta() != 0) {
-                offsetX *= Math.sin(this.getTheta());
+                offsetX *= Math.sin(getGlobalThetaBase() - this.getTheta());
             }
 
             var endX = startDeflectionXOffset + offsetX; 
