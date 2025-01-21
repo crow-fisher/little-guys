@@ -87,6 +87,7 @@ export class GrowthComponent {
         this.children = new Array();
         this.parentComponent = null;
         this.setCurrentDeflection(this.getBaseDeflection());
+        this.distToFront = 0;
     }
 
     addLifeSquare(newLsq) {
@@ -203,6 +204,13 @@ export class GrowthComponent {
         return ret;
     }
 
+    getDistToFront() {
+        if (this.parentComponent == null) {
+            return this.distToFront;
+        } else {
+            return this.distToFront + this.parentComponent.getDistToFront();
+        }
+    }
 
     applyDeflectionState(parentComponent) {
         var startDeflectionXOffset = 0;
@@ -232,7 +240,9 @@ export class GrowthComponent {
             var offsetY = relLsqY * Math.cos(currentTheta) + relLsqX * Math.sin(currentTheta);
 
             if (this.getTheta() != 0) {
-                lsq.distToFront = offsetX * Math.cos(getGlobalThetaBase() - this.getTheta())
+                this.distToFront = offsetX * Math.cos(getGlobalThetaBase() - this.getTheta());
+                lsq.distToFront = this.getDistToFront(); 
+                offsetX * Math.cos(getGlobalThetaBase() - this.getTheta())
                 offsetX *= Math.sin(getGlobalThetaBase() - this.getTheta());
             }
 
