@@ -75,7 +75,11 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
 
     newLeafGrowthPlan(startComponent) {
         var startNode = startComponent.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_NODE);
-        var growthPlan = new GrowthPlan(startNode.posX, startNode.posY, false, STAGE_ADULT, 0, 0, 0, 0, TYPE_LEAF, 1);
+        var growthPlan = new GrowthPlan(
+            startNode.posX, startNode.posY, 
+            false, STAGE_ADULT, 
+            Math.PI / 4, 0, 0, 0.5, 
+            TYPE_LEAF, 1);
         growthPlan.postConstruct = () => startComponent.addChild(growthPlan.component);
         var stemLength = 20;
         for (let t = 1; t < stemLength; t++) {
@@ -106,7 +110,12 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
         ));
 
         growthPlan.postComplete = () => {
-            var leafGrowthPlan = new GrowthPlan(stemLeafNode.posX, stemLeafNode.posY, false, STAGE_ADULT, Math.PI / 2, randRange(2.5, 3), 0, 0, TYPE_LEAF, 1);
+            var leafGrowthPlan = new GrowthPlan(
+                stemLeafNode.posX, stemLeafNode.posY, 
+                false, STAGE_ADULT, 
+                Math.PI / 4, Math.PI, 0, 0, 
+                TYPE_LEAF, 1);
+
             leafGrowthPlan.postConstruct = () => growthPlan.component.addChild(leafGrowthPlan.component);
             var leafLocations = this.getLeafLocations(5, 10);
             for (let t = 0; t < Math.min(...leafLocations.filter((loc) => loc[0] == 0).map((loc) => loc[1])); t++) {
@@ -149,9 +158,13 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
         }
 
         var startRootNode = this.getOriginsForNewGrowth(SUBTYPE_ROOTNODE).at(0);
-        var growthPlan = new GrowthPlan(startRootNode.posX, startRootNode.posY, false, STAGE_ADULT, randRange(-Math.PI/2, Math.PI/2), randRange(0, 1), randRange(-1, 1), Math.random() / 3, TYPE_TRUNK, 1);
+        var growthPlan = new GrowthPlan(
+            startRootNode.posX, startRootNode.posY, 
+            false, STAGE_ADULT, 
+            0, 0, 0, 0, 
+            TYPE_TRUNK, 3);
         growthPlan.postConstruct = () => this.originGrowth.addChild(growthPlan.component);
-        for (let t = 1; t < randNumber(5, 10); t++) {
+        for (let t = 1; t < 20; t++) {
             growthPlan.steps.push(new GrowthPlanStep(
                 growthPlan,
                 0,
