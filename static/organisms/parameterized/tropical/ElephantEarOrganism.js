@@ -21,8 +21,8 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
         this.currentHealth = 10 ** 8;
         
         this.sproutGrowTimeInDays =  10 ** (-3);
-        this.leafGrowTimeInDays = 0; //     10 ** (-3);
-        this.trunkGrowTimeInDays =    10 ** (-3);
+        this.leafGrowTimeInDays =    10 ** (-3);
+        this.trunkGrowTimeInDays =   10 ** (-3);
 
         this.side = Math.random() > 0.5 ? -1 : 1;
 
@@ -42,10 +42,11 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
     getLeafLocations(xSize, ySize) {
         var locs = new Array();
         var step = 0.01;
+        var yIntercept = 0.7;
         for (let x = -1; x < 1; x += step) {
             for (let y = 0; y < 2.5; y += step) {
                 var elipseVal = (1.8 * x) ** 2 + (y - 1) ** 2; 
-                var triangleVal = -Math.abs(2*x) + 0.7;
+                var triangleVal = -Math.abs(2*x) + yIntercept;
                 if (elipseVal <= 2 && y >= triangleVal) {
                     locs.push([x, y]);
                 }
@@ -78,10 +79,10 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
         var growthPlan = new GrowthPlan(
             startNode.posX, startNode.posY, 
             false, STAGE_ADULT, 
-            Math.PI / 4, 0, 0, 0.5, 
+            randRange(0, Math.PI), 0, 0, 0.5, 
             TYPE_LEAF, 1);
         growthPlan.postConstruct = () => startComponent.addChild(growthPlan.component);
-        var stemLength = 20;
+        var stemLength = randNumber(5, 20);
         for (let t = 1; t < stemLength; t++) {
             growthPlan.steps.push(new GrowthPlanStep(
                 growthPlan,
@@ -113,7 +114,7 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
             var leafGrowthPlan = new GrowthPlan(
                 stemLeafNode.posX, stemLeafNode.posY, 
                 false, STAGE_ADULT, 
-                Math.PI / 4, Math.PI, 0, 0, 
+                randRange(0, Math.PI), Math.PI, 0, 0, 
                 TYPE_LEAF, 1);
 
             leafGrowthPlan.postConstruct = () => growthPlan.component.addChild(leafGrowthPlan.component);
@@ -208,7 +209,7 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
         // try to grow additional leaves if we can 
 
         var curLeaves = trunk.children.length;
-        if (curLeaves < 1) {
+        if (curLeaves < 3) {
             this.growthPlans.push(this.newLeafGrowthPlan(trunk));
         }
     }
