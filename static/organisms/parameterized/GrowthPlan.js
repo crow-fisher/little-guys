@@ -239,12 +239,10 @@ export class GrowthComponent {
             var offsetX = relLsqX * Math.cos(currentTheta) - relLsqY * Math.sin(currentTheta);
             var offsetY = relLsqY * Math.cos(currentTheta) + relLsqX * Math.sin(currentTheta);
 
-            if (this.getTheta() != 0) {
-                this.distToFront = offsetX * Math.cos(getGlobalThetaBase() - this.getTheta());
-                lsq.distToFront = this.getDistToFront(); 
-                offsetX * Math.cos(getGlobalThetaBase() - this.getTheta())
-                offsetX *= Math.sin(getGlobalThetaBase() - this.getTheta());
-            }
+            this.distToFront = offsetX * Math.cos(getGlobalThetaBase() - this.getTheta());
+            lsq.distToFront = this.getDistToFront(); 
+            offsetX * Math.cos(getGlobalThetaBase() - this.getTheta())
+            offsetX *= Math.sin(getGlobalThetaBase() - this.getTheta());
 
             var endX = startDeflectionXOffset + offsetX; 
             var endY = startDeflectionYOffset + offsetY; 
