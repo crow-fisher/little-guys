@@ -120,7 +120,7 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
             leafGrowthPlan.postConstruct = () => growthPlan.component.addChild(leafGrowthPlan.component);
             var leafLocations = this.getLeafLocations(5, 10);
             for (let t = 0; t < Math.min(...leafLocations.filter((loc) => loc[0] == 0).map((loc) => loc[1])); t++) {
-                leafGrowthPlan.steps.push(new GrowthPlanStep(
+                var step = new GrowthPlanStep(
                     leafGrowthPlan,
                     0,
                     this.leafGrowTimeInDays,
@@ -130,20 +130,29 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
                         return shoot;
                     },
                     null
-                ));
+                );
+                step.distToCenter = t;
+
+                leafGrowthPlan.steps.push(step);
             };
             
-            leafLocations.forEach((loc) => leafGrowthPlan.steps.push(new GrowthPlanStep(
-                leafGrowthPlan,
-                0,
-                this.leafGrowTimeInDays,
-                () => {
-                    var shoot = this.growPlantSquare(stemLeafNode, loc[0], loc[1]);
-                    shoot.subtype = SUBTYPE_LEAF;
-                    return shoot;
-                },
-                null
-            )));
+            leafLocations.forEach((loc) => {
+                var step = new GrowthPlanStep(
+                    leafGrowthPlan,
+                    0,
+                    this.leafGrowTimeInDays,
+                    () => {
+                        var shoot = this.growPlantSquare(stemLeafNode, loc[0], loc[1]);
+                        shoot.subtype = SUBTYPE_LEAF;
+                        return shoot;
+                    },
+                    null
+                ); 
+                step.distToCenter = (loc[0] ** 2 + loc[1] ** 2) ** 0.5;
+                leafGrowthPlan.steps.push(step);
+            });
+            leafGrowthPlan.steps.sort((a, b) => a.distToCenter - b.distToCenter);
+
             this.growthPlans.push(leafGrowthPlan);
         };
 
