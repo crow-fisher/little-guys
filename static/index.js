@@ -844,6 +844,7 @@ window.onload = function () {
 
 function zoom(event) {
     event.preventDefault();
+    
     global_theta_base += event.deltaY * -0.001;
 }
 MAIN_CANVAS.onwheel = zoom;

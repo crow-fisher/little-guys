@@ -136,10 +136,14 @@ export class GrowthComponent {
     }
 
     getTheta() {
+       return this._getTheta() - getGlobalThetaBase();
+    }
+
+    _getTheta() {
         if (this.parentComponent == null) {
             return this.theta;
         }
-        return this.theta + this.parentComponent.getTheta();
+        return this.theta + this.parentComponent._getTheta();
     }
 
     ySize() {
@@ -170,7 +174,7 @@ export class GrowthComponent {
         var strength = this.getTotalStrength();
         var windVec = this.getNetWindSpeed();
         var startSpringForce = this.getStartSpringForce() * 100;
-        var windX = windVec[0];
+        var windX = Math.sin(this.getTheta()) * windVec[0];
         var coef = 0.05;
         var endSpringForce = startSpringForce * (1 - coef) + windX * coef;
         endSpringForce = Math.min(endSpringForce, strength * 100);
@@ -239,7 +243,7 @@ export class GrowthComponent {
             var offsetX = relLsqX * Math.cos(currentTheta) - relLsqY * Math.sin(currentTheta);
             var offsetY = relLsqY * Math.cos(currentTheta) + relLsqX * Math.sin(currentTheta);
 
-            this.distToFront = offsetX * Math.cos(getGlobalThetaBase() - this.getTheta());
+            this.distToFront = offsetX * Math.cos(this.getTheta());
             lsq.distToFront = this.getDistToFront(); 
             offsetX * Math.cos(getGlobalThetaBase() - this.getTheta())
             offsetX *= Math.sin(getGlobalThetaBase() - this.getTheta());
