@@ -308,19 +308,26 @@ function zoomCanvasFillRect(x, y, dx, dy) {
 function zoom(event) {
     event.preventDefault();
 
-    const totalWidth = CANVAS_SQUARES_X * BASE_SIZE;
-    const totalHeight = CANVAS_SQUARES_Y * BASE_SIZE;
+    var totalWidth = CANVAS_SQUARES_X * BASE_SIZE;
+    var totalHeight = CANVAS_SQUARES_Y * BASE_SIZE;
 
-    const x = 1 - lastMoveOffset.x / totalWidth;
-    const y = 1 - lastMoveOffset.y / totalHeight;
-    const startZoom = CANVAS_SQUARES_ZOOM;
-
+    var x = 1 - lastMoveOffset.x / totalWidth;
+    var y = 1 - lastMoveOffset.y / totalHeight;
+    var startZoom = CANVAS_SQUARES_ZOOM;
     CANVAS_SQUARES_ZOOM = Math.min(Math.max(CANVAS_SQUARES_ZOOM + event.deltaY * -0.001, 1), 100);
+    var endZoom = CANVAS_SQUARES_ZOOM;
 
-    const zoomFactor = CANVAS_SQUARES_ZOOM / startZoom;
+    var startWidth = totalWidth / startZoom;
+    var endWidth = totalWidth / endZoom;
 
-    CANVAS_VIEWPORT_CENTER_X = (CANVAS_VIEWPORT_CENTER_X - x * totalWidth) * zoomFactor + x * totalWidth;
-    CANVAS_VIEWPORT_CENTER_Y = (CANVAS_VIEWPORT_CENTER_Y - y * totalHeight) * zoomFactor + y * totalHeight;
+    var startHeight = totalHeight / startZoom;
+    var endHeight = totalHeight / endZoom;
+
+    var widthDiff = endWidth - startWidth;
+    var heightDiff = endHeight - startHeight;
+
+    CANVAS_VIEWPORT_CENTER_X += (widthDiff * (x - 0.5));
+    CANVAS_VIEWPORT_CENTER_Y += (heightDiff * (y - 0.5));
 }
 
 
