@@ -335,6 +335,15 @@ async function loadSlot(slotName) {
 }
 
 async function saveSlot(slotName) {
+
+    var anyOrganisms = false;
+    iterateOnOrganisms((org) => anyOrganisms = true);
+
+    if (anyOrganisms) {
+        alert("saving not currently supported with organisms :(")
+        return;
+    }
+
     const compressedSquares = await gzipToBase64(JSON.stringify(ALL_SQUARES));
     localStorage.setItem("ALL_SQUARES_" + slotName, compressedSquares);
     // localStorage.setItem("ALL_ORGANISMS_" + slotName, JSON.stringify(ALL_ORGANISMS));
