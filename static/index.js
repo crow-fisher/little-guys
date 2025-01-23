@@ -256,8 +256,9 @@ function getCanvasSquaresY() {
 }
 
 // these numbers go up to the full window width
-var CANVAS_VIEWPORT_OFFSET_X = 0;
-var CANVAS_VIEWPORT_OFFSET_Y = 0;
+var CANVAS_VIEWPORT_CENTER_X = CANVAS_SQUARES_X * BASE_SIZE / 2;
+var CANVAS_VIEWPORT_CENTER_Y = CANVAS_SQUARES_Y * BASE_SIZE / 2;
+
 var CANVAS_SQUARES_ZOOM = 1; // higher is farther in. 1/n etc etc 
 
 function zoomCanvasFillRect(x, y, dx, dy) {
@@ -270,24 +271,27 @@ function zoomCanvasFillRect(x, y, dx, dy) {
     var windowWidth = totalWidth / CANVAS_SQUARES_ZOOM;
     var windowHeight = totalHeight / CANVAS_SQUARES_ZOOM;
 
-    var windowWidthEnd = CANVAS_VIEWPORT_OFFSET_X + windowWidth;
-    var windowHeightEnd = CANVAS_VIEWPORT_OFFSET_Y + windowHeight; 
+    var windowWidthStart = CANVAS_VIEWPORT_CENTER_X - (windowWidth / 2);
+    var windowHeightStart = CANVAS_VIEWPORT_CENTER_Y - (windowHeight / 2); 
+
+    var windowWidthEnd = CANVAS_VIEWPORT_CENTER_X + (windowWidth / 2);
+    var windowHeightEnd = CANVAS_VIEWPORT_CENTER_Y + (windowHeight / 2); 
 
     if (x == 0 && y == 0) {
-        x = CANVAS_VIEWPORT_OFFSET_X;
-        y = CANVAS_VIEWPORT_OFFSET_Y;
+        x = windowWidthStart;
+        y = windowHeightStart;
     }
 
-    if (x < CANVAS_VIEWPORT_OFFSET_X || x > windowWidthEnd) {
+    if (x < windowWidthStart || x > windowWidthEnd) {
         return;
     }
 
-    if (y < CANVAS_VIEWPORT_OFFSET_Y || y > windowHeightEnd) {
+    if (y < windowHeightStart || y > windowHeightEnd) {
         return;
     }
 
-    var xpi = (x - CANVAS_VIEWPORT_OFFSET_X) / (windowWidthEnd - CANVAS_VIEWPORT_OFFSET_X);
-    var ypi = (y - CANVAS_VIEWPORT_OFFSET_Y) / (windowHeightEnd - CANVAS_VIEWPORT_OFFSET_Y);
+    var xpi = (x - windowWidthStart) / (windowWidthEnd - windowWidthStart);
+    var ypi = (y - windowHeightStart) / (windowHeightEnd - windowHeightStart);
 
     var xpl = xpi * totalWidth;
     var ypl = ypi * totalHeight;
@@ -300,52 +304,23 @@ function zoomCanvasFillRect(x, y, dx, dy) {
     );
 }
 
-function pixelsToCanvasSquares(x, y) {
-    // 
-
-}
-
 
 function zoom(event) {
     event.preventDefault();
 
-    var x = lastMoveOffset.x / BASE_SIZE;
-    var y = lastMoveOffset.y / BASE_SIZE;
+    const totalWidth = CANVAS_SQUARES_X * BASE_SIZE;
+    const totalHeight = CANVAS_SQUARES_Y * BASE_SIZE;
 
-    var totalWidth = CANVAS_SQUARES_X * BASE_SIZE;
-    var totalHeight = CANVAS_SQUARES_Y * BASE_SIZE;
+    const x = 1 - lastMoveOffset.x / totalWidth;
+    const y = 1 - lastMoveOffset.y / totalHeight;
+    const startZoom = CANVAS_SQUARES_ZOOM;
 
-    var windowWidth = totalWidth / CANVAS_SQUARES_ZOOM;
-    var windowHeight = totalHeight / CANVAS_SQUARES_ZOOM;
+    CANVAS_SQUARES_ZOOM = Math.min(Math.max(CANVAS_SQUARES_ZOOM + event.deltaY * -0.001, 1), 100);
 
-    var windowWidthStart = (totalWidth / CANVAS_SQUARES_ZOOM) * (CANVAS_VIEWPORT_OFFSET_X - 0.5);
-    var windowWidthEnd = windowWidthStart + windowWidth;
+    const zoomFactor = CANVAS_SQUARES_ZOOM / startZoom;
 
-    var windowHeightStart = (totalHeight / CANVAS_SQUARES_ZOOM) * (CANVAS_VIEWPORT_OFFSET_Y - 0.5);
-    var windowHeightEnd = windowHeightStart + windowHeight; 
-
-    var xpi = (x - windowWidthStart) / (windowWidthEnd - windowWidthStart);
-    var ypi = (y - windowHeightStart) / (windowHeightEnd - windowHeightStart);
-
-    var startZoom = CANVAS_SQUARES_ZOOM;
-    CANVAS_SQUARES_ZOOM += event.deltaY * -0.001;
-    var endZoom = CANVAS_SQUARES_ZOOM;
-
-    var zoomDiff = 1 - startZoom / endZoom;
-
-    var cpxi = CANVAS_VIEWPORT_OFFSET_X / windowWidth;
-    var cpyi = CANVAS_VIEWPORT_OFFSET_Y / windowHeight;
-
-    CANVAS_VIEWPORT_OFFSET_X = CANVAS_VIEWPORT_OFFSET_X * zoomDiff + ((xpi - cpxi) * windowWidth) * zoomDiff;
-    CANVAS_VIEWPORT_OFFSET_Y = CANVAS_VIEWPORT_OFFSET_Y * zoomDiff + ((ypi - cpyi) * windowHeight) * zoomDiff;
-
-    // check if we're over any organism squares
-    // ALL_ORGANISM_SQUARES.map((sq) => [sq.posX + sq.deflectionXOffset, sq.posY + sq.deflectionYOffset])
-    
-    CANVAS_SQUARES_ZOOM = Math.min(CANVAS_SQUARES_ZOOM, 100);
-    CANVAS_SQUARES_ZOOM = Math.max(CANVAS_SQUARES_ZOOM, 1);
-
-    // global_theta_base += event.deltaY * -0.001;
+    CANVAS_VIEWPORT_CENTER_X = (CANVAS_VIEWPORT_CENTER_X - x * totalWidth) * zoomFactor + x * totalWidth;
+    CANVAS_VIEWPORT_CENTER_Y = (CANVAS_VIEWPORT_CENTER_Y - y * totalHeight) * zoomFactor + y * totalHeight;
 }
 
 
