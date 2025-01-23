@@ -295,7 +295,7 @@ function zoomCanvasFillRect(x, y, dx, dy) {
 
     var xpl = xpi * totalWidth;
     var ypl = ypi * totalHeight;
-
+    
     MAIN_CONTEXT.fillRect(
         xpl, 
         ypl,
