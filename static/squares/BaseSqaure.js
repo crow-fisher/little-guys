@@ -16,7 +16,7 @@ import {
     getNextGroupId, updateGlobalStatistic, getGlobalStatistic
 } from "../globals.js";
 
-import { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, selectedViewMode, getBlockModification_val } from "../index.js";
+import { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, selectedViewMode, getBlockModification_val, zoomCanvasFillRect } from "../index.js";
 
 import { hexToRgb, processColorStdev, processColorStdevMulticolor, rgbToHex, rgbToRgba } from "../common.js";
 
@@ -240,7 +240,7 @@ export class BaseSquare {
 
     renderTemperature() {
         MAIN_CONTEXT.fillStyle = calculateColorTemperature(this.temperature);
-        MAIN_CONTEXT.fillRect(
+        zoomCanvasFillRect(
             this.posX * BASE_SIZE,
             this.posY * BASE_SIZE,
             BASE_SIZE,
@@ -250,7 +250,7 @@ export class BaseSquare {
 
     renderSurface() {
         MAIN_CONTEXT.fillStyle = this.surface ? "rgba(172, 35, 226, 0.25)" : "rgba(30, 172, 58, 0.25)";
-        MAIN_CONTEXT.fillRect(
+        zoomCanvasFillRect(
             (this.offsetX + this.posX) * BASE_SIZE,
             (this.offsetY + this.posY) * BASE_SIZE,
             BASE_SIZE,
@@ -260,7 +260,7 @@ export class BaseSquare {
 
     renderAsGrey() {
         MAIN_CONTEXT.fillStyle = "rgba(50, 50, 50, 0.2)";
-        MAIN_CONTEXT.fillRect(
+        zoomCanvasFillRect(
             (this.offsetX + this.posX) * BASE_SIZE,
             (this.offsetY + this.posY) * BASE_SIZE,
             BASE_SIZE,
@@ -287,7 +287,7 @@ export class BaseSquare {
         }
         var outHex = rgbToHex(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b));
         MAIN_CONTEXT.fillStyle = outHex;
-        MAIN_CONTEXT.fillRect(
+        zoomCanvasFillRect(
             (this.offsetX + this.posX) * BASE_SIZE,
             (this.offsetY + this.posY) * BASE_SIZE,
             BASE_SIZE,
@@ -350,7 +350,7 @@ export class BaseSquare {
             MAIN_CONTEXT.fillStyle = outRgba;
         }
 
-        MAIN_CONTEXT.fillRect(
+        zoomCanvasFillRect(
             (this.offsetX + this.posX) * BASE_SIZE,
             (this.offsetY + this.posY) * BASE_SIZE,
             BASE_SIZE,
@@ -365,7 +365,7 @@ export class BaseSquare {
 
     waterContainmentDarken() {
         MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.waterContainment, this.waterContainmentMax.value);
-        MAIN_CONTEXT.fillRect(
+        zoomCanvasFillRect(
             (this.offsetX + this.posX) * BASE_SIZE,
             (this.offsetY + this.posY) * BASE_SIZE,
             BASE_SIZE,
@@ -377,7 +377,7 @@ export class BaseSquare {
         var pressureMax = 12;
         var pressureMod = (this.blockModDarkenVal != null ? this.blockModDarkenVal : 0) * pressureMax;
         MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl((12 - 10 * getDaylightStrength()) + this.currentPressureDirect + pressureMod, 12);
-        MAIN_CONTEXT.fillRect(
+        zoomCanvasFillRect(
             (this.offsetX + this.posX) * BASE_SIZE,
             (this.offsetY + this.posY) * BASE_SIZE,
             BASE_SIZE,
@@ -390,7 +390,7 @@ export class BaseSquare {
             return;
         }
         MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.distToFront, 8);
-        MAIN_CONTEXT.fillRect(
+        zoomCanvasFillRect(
             (this.offsetX + this.posX) * BASE_SIZE,
             (this.offsetY + this.posY) * BASE_SIZE,
             BASE_SIZE,

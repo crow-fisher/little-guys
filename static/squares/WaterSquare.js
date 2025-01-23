@@ -14,7 +14,7 @@ import {
 import { WATERFLOW_CANDIDATE_SQUARES, WATERFLOW_TARGET_SQUARES } from "../globals.js";
 
 import { darkeningColorCache } from "../globals.js";
-import { BASE_SIZE, MAIN_CONTEXT } from "../index.js";
+import { BASE_SIZE, MAIN_CONTEXT, zoomCanvasFillRect } from "../index.js";
 import { COLOR_BLUE } from "../colors.js";
 
 class WaterSquare extends BaseSquare {
@@ -74,7 +74,7 @@ class WaterSquare extends BaseSquare {
 
     renderAsGrey() {
         MAIN_CONTEXT.fillStyle = "rgba(102, 81, 196, 0.16)";
-        MAIN_CONTEXT.fillRect(
+        zoomCanvasFillRect(
             this.posX * BASE_SIZE,
             this.posY * BASE_SIZE,
             BASE_SIZE,
@@ -84,7 +84,7 @@ class WaterSquare extends BaseSquare {
 
     blockPressureAndModDarken() {
         MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.currentPressureIndirect, 13);
-        MAIN_CONTEXT.fillRect(
+        zoomCanvasFillRect(
             this.posX * BASE_SIZE,
             this.posY * BASE_SIZE,
             BASE_SIZE,

@@ -220,8 +220,11 @@ var lastLastMoveOffset = null;
 var lastTick = Date.now();
 
 // wind is tiled x4
+
 var CANVAS_SQUARES_X = 60 * 4; // * 8; //6;
 var CANVAS_SQUARES_Y = 30 * 4; // * 8; // 8;
+
+
 
 function setCanvasSquaresX(val) {
     CANVAS_SQUARES_X = Math.floor(val);
@@ -252,6 +255,73 @@ function getCanvasSquaresY() {
     return CANVAS_SQUARES_Y;
 }
 
+var CANVAS_VIEWPORT_OFFSET_X = 0.5;
+var CANVAS_VIEWPORT_OFFSET_Y = 0.5;
+var CANVAS_SQUARES_ZOOM = 1; // higher is farther in
+
+function zoomCanvasFillRect(x, y, dx, dy) {
+    dx *= CANVAS_SQUARES_ZOOM;
+    dy *= CANVAS_SQUARES_ZOOM;
+
+    var totalWidth = CANVAS_SQUARES_X * BASE_SIZE;
+    var totalHeight = CANVAS_SQUARES_Y * BASE_SIZE;
+
+    var windowWidth = totalWidth / CANVAS_SQUARES_ZOOM;
+    var windowHeight = totalHeight / CANVAS_SQUARES_ZOOM;
+
+    var windowWidthStart = (totalWidth / CANVAS_SQUARES_ZOOM) * (CANVAS_VIEWPORT_OFFSET_X - 0.5);
+    var windowWidthEnd = windowWidthStart + windowWidth;
+
+    var windowHeightStart = (totalHeight / CANVAS_SQUARES_ZOOM) * (CANVAS_VIEWPORT_OFFSET_Y - 0.5);
+    var windowHeightEnd = windowHeightStart + totalHeight;
+
+    if (x < windowWidthStart || x > windowWidthEnd) {
+        return;
+    }
+
+    if (y < windowHeightStart || y > windowHeightEnd) {
+        return;
+    }
+
+    var xpi = (x - windowWidthStart) / (windowWidthEnd - windowHeightStart);
+    var ypi = (y - windowHeightStart) / (windowHeightEnd - windowHeightStart);
+
+    var xpl = xpi * totalWidth;
+    var ypl = ypi * totalHeight;
+
+    MAIN_CONTEXT.fillRect(
+        xpl, 
+        ypl,
+        dx,
+        dy
+    );
+} 
+
+
+function pixelsToCanvasSquares(x, y) {
+    // 
+
+}
+
+
+function zoom(event) {
+    event.preventDefault();
+
+    // first check if we're over any organism square
+
+    var offsetX = lastMoveOffset.x / BASE_SIZE;
+    var offsetY = lastMoveOffset.y / BASE_SIZE;
+
+    // ALL_ORGANISM_SQUARES.map((sq) => [sq.posX + sq.deflectionXOffset, sq.posY + sq.deflectionYOffset])
+    
+    CANVAS_SQUARES_ZOOM += event.deltaY * -0.001;
+
+    CANVAS_SQUARES_ZOOM = Math.min(CANVAS_SQUARES_ZOOM, 100);
+    CANVAS_SQUARES_ZOOM = Math.max(CANVAS_SQUARES_ZOOM, 1);
+
+    // global_theta_base += event.deltaY * -0.001;
+}
+
 
 mainControlTable.setAttribute("width", CANVAS_SQUARES_X * BASE_SIZE);
 secondaryControlTable.setAttribute("width", CANVAS_SQUARES_X * BASE_SIZE);
@@ -263,6 +333,7 @@ var MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
 MAIN_CANVAS.width = CANVAS_SQUARES_X * BASE_SIZE;
 MAIN_CANVAS.height = CANVAS_SQUARES_Y * BASE_SIZE;
 
+MAIN_CANVAS.onwheel = zoom;
 MAIN_CANVAS.addEventListener('mousemove', handleClick, false);
 
 document.body.onmousedown = function () {
@@ -842,12 +913,6 @@ window.onload = function () {
 
 // loadSlotFromSave(volcano);
 
-function zoom(event) {
-    event.preventDefault();
-    
-    global_theta_base += event.deltaY * -0.001;
-}
-MAIN_CANVAS.onwheel = zoom;
   
 function getGlobalThetaBase() {
     return global_theta_base;
@@ -859,6 +924,7 @@ export {
     getCanvasSquaresX, getCanvasSquaresY,
     getBlockModification_val,
     getNewBlockTemperatureVal, getNewBlockLockedTemperature,
-    getGlobalThetaBase
+    getGlobalThetaBase,
+    zoomCanvasFillRect
 }
 

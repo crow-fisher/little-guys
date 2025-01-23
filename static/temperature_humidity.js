@@ -1,6 +1,6 @@
 import { hexToRgb, randNumber, rgbToRgba } from "./common.js";
 import { addSquare } from "./squares/_sqOperations.js";
-import { MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE } from "./index.js";
+import { MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, zoomCanvasFillRect } from "./index.js";
 import { addSquareByName } from "./index.js";
 import { base_wind_pressure, getAirSquareDensity, getPressure, initializeWindPressureMap, updateWindPressureByMult, getAirSquareDensityTempAndHumidity, setPressurebyMult } from "./wind.js";
 import { getCurTime, getPrevTime, getTimeSpeedMult } from "./time.js";
@@ -309,7 +309,7 @@ function renderClouds() {
             } else {
                 MAIN_CONTEXT.fillStyle = calculateColor(squareHumidity, cloudMaxHumidity * cloudRainThresh, cloudMaxHumidity * cloudRainMax * 4, c_cloudMidRGB, c_cloudMaxRGB);
             }
-            MAIN_CONTEXT.fillRect(
+            zoomCanvasFillRect(
                 4 * i * BASE_SIZE,
                 4 * j * BASE_SIZE,
                 4 * BASE_SIZE,
@@ -391,7 +391,7 @@ function renderTemperature() {
     for (let i = 0; i < curSquaresX; i++) {
         for (let j = 0; j < curSquaresY; j++) {
             MAIN_CONTEXT.fillStyle = calculateColorTemperature(temperatureMap[i][j]);
-            MAIN_CONTEXT.fillRect(
+            zoomCanvasFillRect(
                 4 * i * BASE_SIZE,
                 4 * j * BASE_SIZE,
                 4 * BASE_SIZE,
@@ -408,7 +408,7 @@ function renderWaterSaturation() {
                 continue;
             }
             MAIN_CONTEXT.fillStyle = calculateColor(getHumidity(i, j), 0, 2, c_waterSaturationLowRGB, c_waterSaturationHighRGB);
-            MAIN_CONTEXT.fillRect(
+            zoomCanvasFillRect(
                 4 * i * BASE_SIZE,
                 4 * j * BASE_SIZE,
                 4 * BASE_SIZE,

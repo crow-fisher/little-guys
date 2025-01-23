@@ -1,6 +1,6 @@
 import { BaseLifeSquare } from "./BaseLifeSquare.js";
 import { getDirectNeighbors, getNeighbors } from "../squares/_sqOperations.js";
-import { BASE_SIZE, MAIN_CANVAS, MAIN_CONTEXT } from "../index.js";
+import { BASE_SIZE, MAIN_CANVAS, MAIN_CONTEXT, zoomCanvasFillRect } from "../index.js";
 import { loadImage } from "../common.js";
 import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount } from "../config/config.js";
 
@@ -40,7 +40,7 @@ class LilyPadFlowerLifeSquare extends BaseLifeSquare {
 
     renderSquareWithColor(posX, posY, color) {
         MAIN_CONTEXT.fillStyle = color;
-        MAIN_CONTEXT.fillRect(
+        zoomCanvasFillRect(
             posX * BASE_SIZE,
             posY * BASE_SIZE,
             BASE_SIZE,

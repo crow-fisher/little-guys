@@ -1,7 +1,7 @@
 
 import { BaseLifeSquare, LSQ_RENDER_SIZE_MULT } from "./BaseLifeSquare.js";
 import { getDirectNeighbors, getNeighbors } from "../squares/_sqOperations.js";
-import { BASE_SIZE, MAIN_CANVAS, MAIN_CONTEXT } from "../index.js";
+import { BASE_SIZE, MAIN_CANVAS, MAIN_CONTEXT, zoomCanvasFillRect } from "../index.js";
 import { loadImage, rgbToRgba } from "../common.js";
 import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount } from "../config/config.js";
 
@@ -64,7 +64,7 @@ class HydrangeaGreenLifeSquare extends BaseLifeSquare {
         super.render();
         if (this.flowering) {
             MAIN_CONTEXT.fillStyle = rgbToRgba(this.flowerColorRgb.r, this.flowerColorRgb.g, this.flowerColorRgb.b, this.opacity);
-            MAIN_CONTEXT.fillRect(
+            zoomCanvasFillRect(
             this.posX * BASE_SIZE,
             this.posY * BASE_SIZE,
             this.width * BASE_SIZE,
@@ -74,7 +74,7 @@ class HydrangeaGreenLifeSquare extends BaseLifeSquare {
                 (Math.max(0, this.shouldFlower - this.linkedOrganism.distToEdge(this.posX, this.posY))), 
                 2 
             );
-            MAIN_CONTEXT.fillRect(
+            zoomCanvasFillRect(
                 this.posX * BASE_SIZE,
                 this.posY * BASE_SIZE,
                 this.width * BASE_SIZE,
@@ -86,7 +86,7 @@ class HydrangeaGreenLifeSquare extends BaseLifeSquare {
     darkeningRender() {
         super.darkeningRender();
         MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.distFromOrigin, this.linkedOrganism.maxDistFromOrigin);
-        MAIN_CONTEXT.fillRect(
+        zoomCanvasFillRect(
             this.posX * BASE_SIZE,
             this.posY * BASE_SIZE,
             this.width * BASE_SIZE,

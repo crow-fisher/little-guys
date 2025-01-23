@@ -1,5 +1,5 @@
 import { hexToRgb, randNumber, randRange, rgbToRgba } from "./common.js";
-import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, MAIN_CONTEXT} from "./index.js";
+import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, MAIN_CONTEXT, zoomCanvasFillRect} from "./index.js";
 import { calculateColor, calculateColorProvideOpacity } from "./temperature_humidity.js";
 
 var millis_per_day = 100000;
@@ -81,7 +81,7 @@ function renderStarMap(brightnessMult) {
             }
 
             MAIN_CONTEXT.fillStyle = rgbToRgba(255, 255, 255, starbrightness);
-            MAIN_CONTEXT.fillRect(
+            zoomCanvasFillRect(
                 endX * BASE_SIZE,
                 endY * BASE_SIZE,
                 starbrightness * BASE_SIZE,
@@ -149,7 +149,7 @@ function renderSkyBackground(time) {
     }
 
     MAIN_CONTEXT.fillStyle = calculateColorProvideOpacity(processed, min, max, minColor, maxColor, 0.8);
-    MAIN_CONTEXT.fillRect(
+    zoomCanvasFillRect(
         0,
         0,
         CANVAS_SQUARES_X * BASE_SIZE,
@@ -189,7 +189,7 @@ function renderTime() {
 
 
     MAIN_CONTEXT.fillStyle = rgbToRgba(resColor.r, resColor.g, resColor.b, 0.35);
-    MAIN_CONTEXT.fillRect(
+    zoomCanvasFillRect(
         0,
         0,
         CANVAS_SQUARES_X * BASE_SIZE,

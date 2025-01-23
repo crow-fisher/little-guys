@@ -1,4 +1,4 @@
-import { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE } from "../index.js";
+import { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, zoomCanvasFillRect } from "../index.js";
 import { getZPercent, hexToRgb, processColorLerp, processColorStdev, rgbToHex, rgbToRgba } from "../common.js";
 
 import { getCurTime, getDaylightStrength } from "../time.js";
@@ -254,7 +254,7 @@ class BaseLifeSquare {
 
     darkeningRender() { 
         MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl((10 - 8 * getDaylightStrength()) + this.linkedSquare.currentPressureDirect, 10);
-        MAIN_CONTEXT.fillRect(
+        zoomCanvasFillRect(
             (this.posX - (this.deflectionXOffset + this.xOffset)) * BASE_SIZE,
             (this.posY - (this.deflectionYOffset + this.yOffset)) * BASE_SIZE,
             this.width * BASE_SIZE * LSQ_RENDER_SIZE_MULT,
@@ -269,7 +269,7 @@ class BaseLifeSquare {
             return;
         }
         MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(Math.max(0, this.linkedOrganism.linkedSquare.distToFront - this.linkedOrganism.getLowestGreen().linkedSquare.currentPressureDirect), 32);
-        MAIN_CONTEXT.fillRect(
+        zoomCanvasFillRect(
             (this.posX - (this.deflectionXOffset + this.xOffset)) * BASE_SIZE,
             (this.posY - (this.deflectionYOffset + this.yOffset)) * BASE_SIZE,
             this.width * BASE_SIZE * LSQ_RENDER_SIZE_MULT,
@@ -356,7 +356,7 @@ class BaseLifeSquare {
                         b: 100 + (1 - this.waterIndicated) * 130
                     }
                     MAIN_CONTEXT.fillStyle = rgbToHex(color.r, color.g, color.b);
-                    MAIN_CONTEXT.fillRect(
+                    zoomCanvasFillRect(
                         (this.posX - (this.deflectionXOffset + this.xOffset)) * BASE_SIZE,
                         (this.posY - (this.deflectionYOffset + this.yOffset)) * BASE_SIZE,
                         this.width * BASE_SIZE * LSQ_RENDER_SIZE_MULT,
@@ -383,7 +383,7 @@ class BaseLifeSquare {
             }
             var colorProcessed = processColorLerp((val_max - val), -0.5, val_max + 0.5, color);
             MAIN_CONTEXT.fillStyle = rgbToHex(colorProcessed.r, colorProcessed.g, colorProcessed.b);
-            MAIN_CONTEXT.fillRect(
+            zoomCanvasFillRect(
                 (this.posX - (this.deflectionXOffset + this.xOffset)) * BASE_SIZE,
                 (this.posY - (this.deflectionYOffset + this.yOffset)) * BASE_SIZE,
                 this.width * BASE_SIZE * LSQ_RENDER_SIZE_MULT,
@@ -430,7 +430,7 @@ class BaseLifeSquare {
 
         var startPos = (this.posX - (this.deflectionXOffset + this.xOffset)) * BASE_SIZE + (1 - this.width) * BASE_SIZE * this.xOffset;
 
-        MAIN_CONTEXT.fillRect(
+        zoomCanvasFillRect(
             startPos,
             (this.posY - (this.deflectionYOffset + this.yOffset)) * BASE_SIZE,
             this.width * BASE_SIZE * LSQ_RENDER_SIZE_MULT,
