@@ -358,6 +358,7 @@ var TIME_SCALE = 1;
 var MILLIS_PER_TICK = 1;
 
 var rightMouseClicked = false;
+var middleMouseClicked = false;
 
 loadSlotA.onclick = (e) => loadSlot("A");
 saveSlotA.onclick = (e) => saveSlot("A");
@@ -484,12 +485,20 @@ function handleMouseDown(e) {
             console.log('hello');
             //code
         }
+    } else if (e.button === 1) {
+        CANVAS_VIEWPORT_CENTER_X = (CANVAS_SQUARES_X * BASE_SIZE) / 2;
+        CANVAS_VIEWPORT_CENTER_Y = (CANVAS_SQUARES_Y * BASE_SIZE) / 2;
+        CANVAS_SQUARES_ZOOM = 1;
+        middleMouseClicked = true;
     }
 }
 
 function handleMouseUp(e) {
     if (e.button === 2) {
         rightMouseClicked = false;
+    }
+    if (e.button == 1) {
+        middleMouseClicked = false;
     }
 }
 
@@ -745,6 +754,9 @@ function doBrushFunc(centerX, centerY, func) {
 
 function doClickAdd() {
     if (lastMoveEvent == null) {
+        return;
+    }
+    if (middleMouseClicked) {
         return;
     }
     if (mouseDown > 0) {
