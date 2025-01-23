@@ -261,6 +261,28 @@ var CANVAS_VIEWPORT_CENTER_Y = CANVAS_SQUARES_Y * BASE_SIZE / 2;
 
 var CANVAS_SQUARES_ZOOM = 1; // higher is farther in. 1/n etc etc 
 
+function transformPixelsToCanvasSquares(x, y) {
+    var totalWidth = CANVAS_SQUARES_X * BASE_SIZE;
+    var totalHeight = CANVAS_SQUARES_Y * BASE_SIZE;
+
+    var windowWidth = totalWidth / CANVAS_SQUARES_ZOOM;
+    var windowHeight = totalHeight / CANVAS_SQUARES_ZOOM;
+
+    var canvasWindowWidth = CANVAS_SQUARES_X / CANVAS_SQUARES_ZOOM;
+    var canvasWindowHeight = CANVAS_SQUARES_Y / CANVAS_SQUARES_ZOOM;
+    
+    var windowWidthStart = CANVAS_VIEWPORT_CENTER_X - (windowWidth / 2);
+    var windowHeightStart = CANVAS_VIEWPORT_CENTER_Y - (windowHeight / 2); 
+
+    var canvasWindowWidthStart = windowWidthStart /   BASE_SIZE;
+    var canvasWindowHeightStart = windowHeightStart / BASE_SIZE;
+
+    var xpi = x / totalWidth;
+    var ypi = y / totalHeight;
+
+    return [canvasWindowWidthStart + xpi * canvasWindowWidth, canvasWindowHeightStart + ypi * canvasWindowHeight];
+}
+
 function zoomCanvasFillRect(x, y, dx, dy) {
     dx *= CANVAS_SQUARES_ZOOM;
     dy *= CANVAS_SQUARES_ZOOM;
@@ -760,10 +782,21 @@ function doClickAdd() {
         return;
     }
     if (mouseDown > 0) {
-        var offsetX = lastMoveOffset.x / BASE_SIZE;
-        var offsetY = lastMoveOffset.y / BASE_SIZE;
-        var prevOffsetX = (lastLastMoveOffset == null ? lastLastMoveOffset : lastLastMoveOffset).x / BASE_SIZE;
-        var prevOffsetY = (lastLastMoveOffset == null ? lastLastMoveOffset : lastLastMoveOffset).y / BASE_SIZE;
+        var offsetTransformed = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);
+        var offsetX = offsetTransformed[0];
+        var offsetY = offsetTransformed[1];
+
+        var prevOffsetX;
+        var prevOffsetY;
+
+        if (lastLastMoveOffset == null) {
+            prevOffsetX = offsetX;
+            prevOffsetY = offsetY;
+        } else {
+            var prevOffsets =  transformPixelsToCanvasSquares(lastLastMoveOffset.x, lastLastMoveOffset.y);
+            prevOffsetX = prevOffsets[0];
+            prevOffsetY = prevOffsets[1];
+        }
 
         // point slope motherfuckers 
 
