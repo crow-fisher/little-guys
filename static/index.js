@@ -254,7 +254,6 @@ function setCanvasSquaresY(val) {
 function getCanvasSquaresY() {
     return CANVAS_SQUARES_Y;
 }
-
 var CANVAS_VIEWPORT_OFFSET_X = 0.5;
 var CANVAS_VIEWPORT_OFFSET_Y = 0.5;
 var CANVAS_SQUARES_ZOOM = 1; // higher is farther in
@@ -273,7 +272,7 @@ function zoomCanvasFillRect(x, y, dx, dy) {
     var windowWidthEnd = windowWidthStart + windowWidth;
 
     var windowHeightStart = (totalHeight / CANVAS_SQUARES_ZOOM) * (CANVAS_VIEWPORT_OFFSET_Y - 0.5);
-    var windowHeightEnd = windowHeightStart + totalHeight;
+    var windowHeightEnd = windowHeightStart + windowHeight; // Fixed to add `windowHeight` instead of `totalHeight`
 
     if (x < windowWidthStart || x > windowWidthEnd) {
         return;
@@ -283,8 +282,8 @@ function zoomCanvasFillRect(x, y, dx, dy) {
         return;
     }
 
-    var xpi = (x - windowWidthStart) / (windowWidthEnd - windowHeightStart);
-    var ypi = (y - windowHeightStart) / (windowHeightEnd - windowHeightStart);
+    var xpi = (x - windowWidthStart) / (windowWidthEnd - windowWidthStart); // Fixed denominator
+    var ypi = (y - windowHeightStart) / (windowHeightEnd - windowHeightStart); // Fixed denominator
 
     var xpl = xpi * totalWidth;
     var ypl = ypi * totalHeight;
@@ -295,8 +294,7 @@ function zoomCanvasFillRect(x, y, dx, dy) {
         dx,
         dy
     );
-} 
-
+}
 
 function pixelsToCanvasSquares(x, y) {
     // 
