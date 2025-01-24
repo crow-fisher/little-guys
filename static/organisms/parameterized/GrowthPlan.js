@@ -97,7 +97,7 @@ export class GrowthComponent {
         
         this.children = new Array();
         this.parentComponent = null;
-        this.setCurrentDeflection(this.getBaseDeflection());
+        this.setCurrentDeflection(this.getBaseDeflection() + baseCurve);
         this.distToFront = 0;
         this.spawnTime = getCurDay();
     }

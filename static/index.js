@@ -333,6 +333,23 @@ function zoom(event) {
     var totalWidth = CANVAS_SQUARES_X * BASE_SIZE;
     var totalHeight = CANVAS_SQUARES_Y * BASE_SIZE;
 
+    var canvasPos = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);
+
+    var lsqFound = false;
+    iterateOnOrganisms((org) => org.lifeSquares.filter((lsq) => lsq.component != null)
+        .forEach((lsq) => {
+        var lsqx = lsq.posX - (lsq.deflectionXOffset * Math.sin(lsq.component.getTheta()) + lsq.xOffset);
+        var lsqy = lsq.posY - (lsq.deflectionYOffset + lsq.yOffset);
+        var dist = ((1 + canvasPos[0] - lsqx) ** 2 + (1 + canvasPos[1] - lsqy) ** 2) ** 0.5;
+        if (dist < 5) {
+            lsq.component.theta += event.deltaY * 0.0001;
+            lsqFound = true;
+        }
+    }), 0);
+    if (lsqFound) {
+        return;
+    }
+
     var x = 1 - lastMoveOffset.x / totalWidth;
     var y = 1 - lastMoveOffset.y / totalHeight;
     var startZoom = CANVAS_SQUARES_ZOOM;
