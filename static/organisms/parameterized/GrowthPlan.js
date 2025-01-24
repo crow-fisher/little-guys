@@ -196,12 +196,6 @@ export class GrowthComponent {
         var coef = 0.05;
 
         var endSpringForce = startSpringForce * (1 - coef) + windX * coef;
-
-        // if (endSpringForce < 0) {
-        //     endSpringForce = (-endSpringForce) ** 0.25 * -1;
-        // } else {
-        //     endSpringForce = endSpringForce ** 0.25;
-        // }
         endSpringForce = Math.min(endSpringForce, strength);
         endSpringForce = Math.max(endSpringForce, -strength);
         this.setCurrentDeflection(Math.asin(endSpringForce / (strength)));
@@ -276,8 +270,8 @@ export class GrowthComponent {
 
         var curve = this.baseCurve + Math.sin(this.currentDeflection) * 0.06 * this.ySizeCur() / this.getTotalStrength();
         
-        var startTheta = this.deflectionRollingAverage + this.getBaseRotation();
-        var endTheta = this.currentDeflection + curve + this.getBaseRotation();
+        var startTheta = this.getDeflectionRollingAverage() + this.getBaseRotation();
+        var endTheta = this.getCurrentDeflection() + curve + this.getBaseRotation();
 
         var length = this.ySizeCur();
 

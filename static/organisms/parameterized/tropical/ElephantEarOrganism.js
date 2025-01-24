@@ -217,10 +217,10 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
                 0, 0, 0, 0, 
                 TYPE_LEAF, 1);
             firstLeafGrowthPlan.postConstruct = () => growthPlan.component.addChild(firstLeafGrowthPlan.component);
-            // firstLeafGrowthPlan.setBaseDeflectionOverTime([
-            //     [0.1, 0],
-            //     [0.25, 1]
-            // ])
+            firstLeafGrowthPlan.setBaseDeflectionOverTime([
+                [0.01, Math.PI / 4],
+                [0.25, 0]
+            ])
             for (let t = 1; t < 10; t++) {
                 firstLeafGrowthPlan.steps.push(new GrowthPlanStep(
                     firstLeafGrowthPlan,
