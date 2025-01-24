@@ -191,13 +191,20 @@ export class GrowthComponent {
     updateDeflectionState() {
         var strength = this.getTotalStrength();
         var windVec = this.getNetWindSpeed();
-        var startSpringForce = this.getStartSpringForce() * 100;
-        var windX = windVec[0];
+        var startSpringForce = this.getStartSpringForce();
+        var windX = windVec[0] * 0.1;
         var coef = 0.05;
+
         var endSpringForce = startSpringForce * (1 - coef) + windX * coef;
-        endSpringForce = Math.min(endSpringForce, strength * 100);
-        endSpringForce = Math.max(endSpringForce, -strength * 100);
-        this.setCurrentDeflection(Math.asin(endSpringForce / (strength * 100)));
+
+        // if (endSpringForce < 0) {
+        //     endSpringForce = (-endSpringForce) ** 0.25 * -1;
+        // } else {
+        //     endSpringForce = endSpringForce ** 0.25;
+        // }
+        endSpringForce = Math.min(endSpringForce, strength);
+        endSpringForce = Math.max(endSpringForce, -strength);
+        this.setCurrentDeflection(Math.asin(endSpringForce / (strength)));
         this.children.forEach((child) => child.updateDeflectionState());
     }
 
@@ -218,7 +225,7 @@ export class GrowthComponent {
     }
 
     getBaseRotation() {
-        var ret = this.baseRotation;
+        var ret = this._getBaseRotation();
         if (this.parentComponent != null) {
             ret += this.parentComponent.getBaseRotation();
         }
@@ -324,15 +331,19 @@ export class GrowthComponent {
     }
 
     getStartSpringForce() {
-        return Math.sin(this.deflectionRollingAverage - this.getBaseDeflection()) * this.getTotalStrength();
+        return Math.sin(this.getBaseDeflection() - this.getDeflectionRollingAverage()) * this.getTotalStrength();
+    }
+
+    getDeflectionRollingAverage() {
+        if (this.parentComponent == null)
+            return this.deflectionRollingAverage;
+        return this.deflectionRollingAverage + this.parentComponent.getBaseDeflection();
     }
 
     getBaseDeflection() {
-        if (this.parentComponent == null) {
-            return this.baseDeflection;
-        } else {
-            return this.baseDeflection + this.parentComponent.getBaseDeflection();
-        }
+        if (this.parentComponent == null) 
+            return this._getBaseDeflection();
+        return this._getBaseDeflection() + this.parentComponent.getBaseDeflection();
     }
 
     _getBaseDeflection() {

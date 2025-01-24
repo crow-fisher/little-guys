@@ -545,7 +545,7 @@ function main() {
             processOrganisms();
             tickWindPressureMap();
             tickMaps();
-            global_theta_base += 0.01;
+            // global_theta_base += 0.1;
         }
 
         if (selectedViewMode == "temperature") {
