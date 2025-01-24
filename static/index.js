@@ -499,6 +499,7 @@ async function base64ToGzip(base64String) {
 function handleMouseDown(e) {
     //e.button describes the mouse button that was clicked
     // 0 is left, 1 is middle, 2 is right
+    e.preventDefault();
     if (e.button === 2) {
         rightMouseClicked = true;
     } else if (e.button === 0) {

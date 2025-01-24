@@ -71,7 +71,7 @@ function renderWater() {
 }
 
 function physics() {
-    iterateOnSquares((sq) => sq.physics(), 0.5);
+    iterateOnSquares((sq) => sq.physics(), 0);
 }
 function physicsBefore() {
     iterateOnSquares((sq) => sq.physicsBefore(), 0);
