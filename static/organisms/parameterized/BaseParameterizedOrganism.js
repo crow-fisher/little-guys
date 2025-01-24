@@ -31,7 +31,6 @@ export class BaseParameterizedOrganism extends BaseOrganism {
 
         // store the actual time we attained them at
         this.stageTimeMap = { STAGE_SPROUT: 0 };
-        this.stageGrowthPlans = {}
 
         // fill these out!
         this.greenType = null;

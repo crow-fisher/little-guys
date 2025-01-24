@@ -161,14 +161,6 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
     }
     
     gp_juvenile() {
-        if (!(STAGE_JUVENILE in this.stageGrowthPlans)) {
-            this.stageGrowthPlans[STAGE_JUVENILE] = new Array();
-            this.stageGrowthPlans[STAGE_ADULT] = new Array();
-        }
-        if (this.stageGrowthPlans[STAGE_JUVENILE].length > 0) {
-            return null;
-        }
-
         var startRootNode = this.getOriginsForNewGrowth(SUBTYPE_ROOTNODE).at(0);
         var growthPlan = new GrowthPlan(
             startRootNode.posX, startRootNode.posY, 
@@ -176,7 +168,22 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
             -getGlobalThetaBase(), 0, 0, 0, 
             TYPE_TRUNK, 3);
         growthPlan.postConstruct = () => this.originGrowth.addChild(growthPlan.component);
-        for (let t = 1; t < 2; t++) {
+        for (let t = 1; t < 10; t++) {
+            if (t == 2) {
+                growthPlan.steps.push(new GrowthPlanStep(
+                    growthPlan,
+                    0,
+                    this.sproutGrowTimeInDays,
+                    () => {
+                        var leafNode = this.growPlantSquare(startRootNode, 0, growthPlan.steps.length);
+                        leafNode.subtype = SUBTYPE_NODE;
+                        this.growLeafFromNode(leafNode, 5, 10);
+                        return leafNode;
+                    },
+                    null
+                ));
+                continue;
+            }
             growthPlan.steps.push(new GrowthPlanStep(
                 growthPlan,
                 0,
@@ -190,22 +197,6 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
             ))
         }
 
-        var leafNode = null;
-
-        growthPlan.steps.push(new GrowthPlanStep(
-            growthPlan,
-            0,
-            this.sproutGrowTimeInDays,
-            () => {
-                leafNode = this.growPlantSquare(startRootNode, 0, growthPlan.steps.length);
-                leafNode.subtype = SUBTYPE_NODE;
-                this.growLeafFromNode(leafNode, 5, 10);
-                return leafNode;
-            },
-            null
-        ))
-
-        this.stageGrowthPlans[STAGE_JUVENILE].push(growthPlan);
         return growthPlan;
     }
 

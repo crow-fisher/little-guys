@@ -44,13 +44,6 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
     }
 
     gp_juvenile() {
-        if (!(STAGE_JUVENILE in this.stageGrowthPlans)) {
-            this.stageGrowthPlans[STAGE_JUVENILE] = new Array();
-        }
-        if (this.stageGrowthPlans[STAGE_JUVENILE].length > 0) {
-            return null;
-        }
-
         var startRootNode = this.getOriginsForNewGrowth(SUBTYPE_ROOTNODE).at(0);
         var growthPlan = new GrowthPlan(
             startRootNode.posX, startRootNode.posY, 
@@ -84,7 +77,6 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
             null
         ))
 
-        this.stageGrowthPlans[STAGE_JUVENILE].push(growthPlan);
         return growthPlan;
     }
 
