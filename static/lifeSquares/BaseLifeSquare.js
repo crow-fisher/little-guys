@@ -252,11 +252,19 @@ class BaseLifeSquare {
         return outScore;
     }
 
+    getPosX() {
+        return this.posX - (this.deflectionXOffset + this.xOffset);
+    }
+
+    getPosY() {
+        return this.posY - (this.deflectionYOffset + this.yOffset);
+    }
+
     darkeningRender() { 
         MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl((10 - 8 * getDaylightStrength()) + this.linkedSquare.currentPressureDirect, 10);
         zoomCanvasFillRect(
-            (this.posX - (this.deflectionXOffset + this.xOffset)) * BASE_SIZE,
-            (this.posY - (this.deflectionYOffset + this.yOffset)) * BASE_SIZE,
+            this.getPosX() * BASE_SIZE,
+            this.getPosY() * BASE_SIZE,
             this.width * BASE_SIZE * LSQ_RENDER_SIZE_MULT,
             this.height * BASE_SIZE * LSQ_RENDER_SIZE_MULT
         );
@@ -270,8 +278,8 @@ class BaseLifeSquare {
         }
         MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(Math.max(0, this.linkedOrganism.linkedSquare.distToFront - this.linkedOrganism.getLowestGreen().linkedSquare.currentPressureDirect), 32);
         zoomCanvasFillRect(
-            (this.posX - (this.deflectionXOffset + this.xOffset)) * BASE_SIZE,
-            (this.posY - (this.deflectionYOffset + this.yOffset)) * BASE_SIZE,
+            this.getPosX() * BASE_SIZE,
+            this.getPosY() * BASE_SIZE,
             this.width * BASE_SIZE * LSQ_RENDER_SIZE_MULT,
             this.height * BASE_SIZE * LSQ_RENDER_SIZE_MULT
         );
@@ -357,8 +365,8 @@ class BaseLifeSquare {
                     }
                     MAIN_CONTEXT.fillStyle = rgbToHex(color.r, color.g, color.b);
                     zoomCanvasFillRect(
-                        (this.posX - (this.deflectionXOffset + this.xOffset)) * BASE_SIZE,
-                        (this.posY - (this.deflectionYOffset + this.yOffset)) * BASE_SIZE,
+                        this.getPosX() * BASE_SIZE,
+                        this.getPosY() * BASE_SIZE,
                         this.width * BASE_SIZE * LSQ_RENDER_SIZE_MULT,
                         this.height * BASE_SIZE * LSQ_RENDER_SIZE_MULT
                     );
@@ -384,8 +392,8 @@ class BaseLifeSquare {
             var colorProcessed = processColorLerp((val_max - val), -0.5, val_max + 0.5, color);
             MAIN_CONTEXT.fillStyle = rgbToHex(colorProcessed.r, colorProcessed.g, colorProcessed.b);
             zoomCanvasFillRect(
-                (this.posX - (this.deflectionXOffset + this.xOffset)) * BASE_SIZE,
-                (this.posY - (this.deflectionYOffset + this.yOffset)) * BASE_SIZE,
+                this.getPosX() * BASE_SIZE,
+                this.getPosY() * BASE_SIZE,
                 this.width * BASE_SIZE * LSQ_RENDER_SIZE_MULT,
                 this.height * BASE_SIZE * LSQ_RENDER_SIZE_MULT
             );
@@ -428,11 +436,9 @@ class BaseLifeSquare {
             MAIN_CONTEXT.fillStyle = outRgba;
         }
 
-        var startPos = (this.posX - (this.deflectionXOffset + this.xOffset)) * BASE_SIZE + (1 - this.width) * BASE_SIZE * this.xOffset;
-
         zoomCanvasFillRect(
-            startPos,
-            (this.posY - (this.deflectionYOffset + this.yOffset)) * BASE_SIZE,
+            this.getPosX() * BASE_SIZE,
+            this.getPosY() * BASE_SIZE,
             this.width * BASE_SIZE * LSQ_RENDER_SIZE_MULT,
             this.height * BASE_SIZE * LSQ_RENDER_SIZE_MULT
         );

@@ -192,7 +192,7 @@ export class GrowthComponent {
         var strength = this.getTotalStrength();
         var windVec = this.getNetWindSpeed();
         var startSpringForce = this.getStartSpringForce();
-        var windX = windVec[0] * 0.1;
+        var windX = Math.sin(this.getTheta()) * windVec[0] * 0.1;
         var coef = 0.05;
 
         var endSpringForce = startSpringForce * (1 - coef) + windX * coef;
@@ -324,7 +324,7 @@ export class GrowthComponent {
     }
 
     getNetWindSpeed() {
-        return this.lifeSquares.map((lsq) => getWindSpeedAtLocation(lsq.posX + lsq.deflectionXOffset, lsq.posY + lsq.deflectionYOffset)).reduce(
+        return this.lifeSquares.map((lsq) => getWindSpeedAtLocation(lsq.getPosX(), lsq.getPosY())).reduce(
             (accumulator, currentValue) => [accumulator[0] + currentValue[0], accumulator[1] + currentValue[1]],
             [0, 0]
         );
