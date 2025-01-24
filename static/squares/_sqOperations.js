@@ -4,7 +4,7 @@ import { removeSquare } from "../globalOperations.js";
 import { getOrganismSquaresAtSquare } from "../lifeSquares/_lsOperations.js";
 import { removeItemAll } from "../common.js";
 import { getOrganismsAtSquare } from "../organisms/_orgOperations.js";
-import { CANVAS_SQUARES_Y, getNewBlockLockedTemperature, getNewBlockTemperatureVal } from "../index.js";
+import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y, getNewBlockLockedTemperature, getNewBlockTemperatureVal } from "../index.js";
 
 var abs = Math.abs;
 
@@ -77,7 +77,7 @@ function iterateOnSquares(func, sortRandomness) {
             squareOrder.push(...getSquares(rootKeys[i], subKeys[j]));
         }
     }
-    squareOrder.sort((a, b) => (Math.random() > sortRandomness ? (a.posX + a.posY * 10) - (b.posX + b.posY * 10) : (a.posX + a.posY * 10 - b.posX + b.posY * 10)));
+    squareOrder.sort((b, a) => (a.posX + a.posY * CANVAS_SQUARES_X) - (b.posX + b.posY * CANVAS_SQUARES_X));
     squareOrder.forEach(func);
 }
 
