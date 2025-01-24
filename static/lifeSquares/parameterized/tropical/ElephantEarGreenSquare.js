@@ -19,9 +19,9 @@ export class ElephantEarGreenSquare extends BaseLifeSquare {
             case SUBTYPE_TRUNK:
             case SUBTYPE_SHOOT:
             case SUBTYPE_SPROUT:
-                this.baseColor = "#a28575";
-                this.darkColor = "#6f544b";
-                this.accentColor = "#351e0f";
+                this.baseColor = "#4d7c3c";
+                this.darkColor = "#416f2b";
+                this.accentColor = "#413530";
                 break;
             case SUBTYPE_LEAF:
             case SUBTYPE_LEAFSTEM:
@@ -30,9 +30,9 @@ export class ElephantEarGreenSquare extends BaseLifeSquare {
                 this.accentColor = "#a79228";
                 break;
             case SUBTYPE_NODE:
-                this.baseColor = "#5b4238";
-                this.darkColor = "#5c4a3c";
-                this.accentColor = "#613d2a";
+                this.baseColor = "#4d7c3c";
+                this.darkColor = "#416f2b";
+                this.accentColor = "#413530";
                 break;
             default:
                 console.warn("BIPPITY BOPPITY")
