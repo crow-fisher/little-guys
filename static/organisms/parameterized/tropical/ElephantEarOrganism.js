@@ -221,7 +221,7 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
                 [0.01, Math.PI / 4],
                 [0.25, 0]
             ])
-            for (let t = 1; t < 10; t++) {
+            for (let t = 1; t < 3; t++) {
                 firstLeafGrowthPlan.steps.push(new GrowthPlanStep(
                     firstLeafGrowthPlan,
                     0,

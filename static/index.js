@@ -339,8 +339,8 @@ function zoom(event) {
     iterateOnOrganisms((org) => org.lifeSquares.filter((lsq) => lsq.component != null)
         .forEach((lsq) => {
         var dist = ((canvasPos[0] - lsq.getPosX()) ** 2 + (canvasPos[1] - lsq.getPosY()) ** 2) ** 0.5;
-        if (dist < 2) {
-            lsq.component.theta += event.deltaY * 0.0001;
+        if (dist < 1.4) {
+            lsq.component.theta += event.deltaY * 0.0003;
             lsqFound = true;
         }
     }), 0);
