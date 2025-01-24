@@ -175,7 +175,7 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
             -getGlobalThetaBase(), 0, 0, 0, 
             TYPE_TRUNK, 3);
         growthPlan.postConstruct = () => this.originGrowth.addChild(growthPlan.component);
-        for (let t = 1; t < 20; t++) {
+        for (let t = 1; t < 2; t++) {
             growthPlan.steps.push(new GrowthPlanStep(
                 growthPlan,
                 0,
