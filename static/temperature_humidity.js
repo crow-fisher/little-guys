@@ -433,7 +433,7 @@ function isPointInBounds(x, y) {
 
 function resetTemperatureAndHumidityAtSquare(x, y) {
     temperatureMap[x][y] = start_temperature;
-    waterSaturationMap[x][y] = saturationPressureOfWaterVapor(start_temperature);
+    waterSaturationMap[x][y] = saturationPressureOfWaterVapor(start_temperature) * startHumidity;
 }
 
 

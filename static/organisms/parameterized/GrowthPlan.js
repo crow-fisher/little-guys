@@ -1,4 +1,5 @@
 import { getGlobalThetaBase } from "../../index.js";
+import { getCurDay } from "../../time.js";
 import { getWindSpeedAtLocation } from "../../wind.js";
 
 const ROLLING_AVERAGE_PERIOD = 200;
@@ -21,6 +22,16 @@ export class GrowthPlan {
         this.postConstruct = () => console.warn("Warning: postconstruct not implemented");
         this.postComplete = () => null;
         this.component = new GrowthComponent(this, this.steps.filter((step) => step.completed).map((step) => step.completedSquare), theta, baseRotation, baseDeflection, baseCurve, type, strengthMult)
+    }
+
+    setBaseDeflectionOverTime(deflectionOverTimeList) {
+        this.deflectionOverTimeList = deflectionOverTimeList;
+        this.component.deflectionOverTimeList = deflectionOverTimeList;
+    }
+
+    setBaseRotationOverTime(rotationOverTimeList) {
+        this.rotationOverTimeList = rotationOverTimeList;
+        this.component.rotationOverTimeList = rotationOverTimeList;
     }
 
     complete() {
@@ -88,6 +99,17 @@ export class GrowthComponent {
         this.parentComponent = null;
         this.setCurrentDeflection(this.getBaseDeflection());
         this.distToFront = 0;
+        this.spawnTime = getCurDay();
+    }
+
+    setBaseDeflectionOverTime(deflectionOverTimeList) {
+        this.deflectionOverTimeList = deflectionOverTimeList;
+        this.growthPlan.deflectionOverTimeList = deflectionOverTimeList;
+    }
+
+    setBaseRotationOverTime(rotationOverTimeList) {
+        this.rotationOverTimeList = rotationOverTimeList;
+        this.growthPlan.rotationOverTimeList = rotationOverTimeList;
     }
 
     addLifeSquare(newLsq) {
@@ -199,9 +221,34 @@ export class GrowthComponent {
         var ret = this.baseRotation;
         if (this.parentComponent != null) {
             ret += this.parentComponent.getBaseRotation();
-            ret += this.parentComponent.getCurrentDeflection();
         }
         return ret;
+    }
+
+    _getBaseRotation() {
+        if (this.rotationOverTimeList == null) {
+            return this.baseRotation;
+        } else {
+            if (this.rotationOverTimeList.length != 2) {
+                alert("just fyi, this is not implemented yet. just send 2 for now and update them through your growth cycles");
+            }
+            var mapped = this.rotationOverTimeList.map((l) => l[0]);
+
+            var min = Math.min(...mapped);
+            var max = Math.max(...mapped);
+
+            var ot = getCurDay() - this.spawnTime;
+
+            if (ot > max) {
+                return this.rotationOverTimeList[this.rotationOverTimeList.length - 1][1];
+            }
+            if (ot < min) {
+                return this.rotationOverTimeList[0][1];
+            } else { // assuming this has two entries at the moment
+                var rel = (ot - min) / (max - min);
+                return this.rotationOverTimeList[0][1] * (1 - rel) + this.rotationOverTimeList[1][1] * rel;
+            }
+        }
     }
 
     getDistToFront() {
@@ -285,6 +332,32 @@ export class GrowthComponent {
             return this.baseDeflection;
         } else {
             return this.baseDeflection + this.parentComponent.getBaseDeflection();
+        }
+    }
+
+    _getBaseDeflection() {
+        if (this.deflectionOverTimeList == null) {
+            return this.baseDeflection;
+        } else {
+            if (this.deflectionOverTimeList.length != 2) {
+                alert("just fyi, this is not implemented yet. just send 2 for now and update them through your growth cycles");
+            }
+            var mapped = this.deflectionOverTimeList.map((l) => l[0]);
+
+            var min = Math.min(...mapped);
+            var max = Math.max(...mapped);
+
+            var ot = getCurDay() - this.spawnTime;
+
+            if (ot > max) {
+                return this.deflectionOverTimeList[this.deflectionOverTimeList.length - 1][1];
+            }
+            if (ot < min) {
+                return this.deflectionOverTimeList[0][1];
+            } else {
+                var rel = (ot - min) / (max - min);
+                return this.deflectionOverTimeList[0][1] * (1 - rel) + this.deflectionOverTimeList[1][1] * rel;
+            }
         }
     }
 
