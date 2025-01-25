@@ -112,10 +112,10 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
             twist, twist, 0, 0,0,
             TYPE_LEAF, 1);
 
-        // leafGrowthPlan.setBaseRotationOverTime([
-        //     [0, 0],
-        //     [0.1, Math.PI * 0.3]
-        // ]);
+        leafGrowthPlan.setBaseRotationOverTime([
+            [0, 0],
+            [0.1, Math.PI * 0.3]
+        ]);
 
         leafGrowthPlan.postConstruct = () => stemLeafNode.component.addChild(leafGrowthPlan.component);
         var leafLocations = this.getLeafLocations(xSize, ySize);
@@ -169,7 +169,7 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
         rootNodeSq.subtype = SUBTYPE_ROOTNODE;
         rootNodeSq.component = this.originGrowth;
         var newGrowthPlan = this.growLeafAndStemFromNode(rootNodeSq,
-            randRange(-Math.PI * 0.2, Math.PI * 0.2),
+            randRange(-Math.PI * 0.5, Math.PI * 0.5),
             randNumber(13, 18),
             randNumber(4, 6),
             randNumber(12, 18)

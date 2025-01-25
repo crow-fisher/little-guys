@@ -1,7 +1,7 @@
 import { getNeighbors } from "../../../squares/_sqOperations.js";
 import { BaseLifeSquare } from "../../BaseLifeSquare.js";
 import { airNutrientsPerEmptyNeighbor } from "../../../config/config.js";
-import { SUBTYPE_LEAF, SUBTYPE_LEAFSTEM, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_TRUNK } from "../../../organisms/parameterized/Stages.js";
+import { SUBTYPE_LEAF, SUBTYPE_LEAFSTEM, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_TRUNK } from "../../../organisms/parameterized/Stages.js";
 import { hexToRgb } from "../../../common.js";
 
 export class ElephantEarGreenSquare extends BaseLifeSquare {
@@ -19,6 +19,7 @@ export class ElephantEarGreenSquare extends BaseLifeSquare {
             case SUBTYPE_TRUNK:
             case SUBTYPE_SHOOT:
             case SUBTYPE_SPROUT:
+            case SUBTYPE_STEM:
                 this.baseColor = "#4d7c3c";
                 this.darkColor = "#416f2b";
                 this.accentColor = "#413530";
