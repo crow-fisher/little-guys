@@ -5,7 +5,7 @@ import { getWindSpeedAtLocation } from "../../wind.js";
 const ROLLING_AVERAGE_PERIOD = 200;
 
 export class GrowthPlan {
-    constructor(posX, posY, required, endStage, theta, baseRotation, baseDeflection, baseCurve, type, strengthMult) {
+    constructor(posX, posY, required, endStage, theta, twist, baseRotation, baseDeflection, baseCurve, type, strengthMult) {
         this.posX = posX;
         this.posY = posY;
         this.required = required;
@@ -21,7 +21,10 @@ export class GrowthPlan {
         this.areStepsCompleted = () => this.steps.every((step) => step.completed);
         this.postConstruct = () => console.warn("Warning: postconstruct not implemented");
         this.postComplete = () => null;
-        this.component = new GrowthComponent(this, this.steps.filter((step) => step.completed).map((step) => step.completedSquare), theta, baseRotation, baseDeflection, baseCurve, type, strengthMult)
+        this.component = new GrowthComponent(
+            this, 
+            this.steps.filter((step) => step.completed).map((step) => step.completedSquare),
+             theta, twist, baseRotation, baseDeflection, baseCurve, type, strengthMult)
     }
 
     setBaseDeflectionOverTime(deflectionOverTimeList) {
@@ -76,10 +79,11 @@ export class GrowthPlanStep {
 }
     
 export class GrowthComponent {
-    constructor(growthPlan, lifeSquares, theta, baseRotation, baseDeflection, baseCurve, type, strengthMult) {
+    constructor(growthPlan, lifeSquares, theta, twist, baseRotation, baseDeflection, baseCurve, type, strengthMult) {
         this.growthPlan = growthPlan;
         this.lifeSquares = lifeSquares;
         this.theta = theta;
+        this.twist = twist;
         this.baseRotation = baseRotation;
         this.baseDeflection = baseDeflection;
         this.baseCurve = baseCurve;
@@ -97,7 +101,7 @@ export class GrowthComponent {
         
         this.children = new Array();
         this.parentComponent = null;
-        this.setCurrentDeflection(this.getBaseDeflection() + baseCurve);
+        this.setCurrentDeflection(baseDeflection);
         this.distToFront = 0;
         this.spawnTime = getCurDay();
     }
@@ -164,6 +168,13 @@ export class GrowthComponent {
         return this.theta + this.parentComponent.getTheta();
     }
 
+    getTwist() {
+        if (this.parentComponent == null) {
+            return this.twist;
+        }
+        return this.twist + this.parentComponent.getTwist();
+    }
+
     ySize() {
         if (this.lifeSquares.length <= 1) {
             return 1;
@@ -212,9 +223,9 @@ export class GrowthComponent {
 
     getCurrentDeflection() {
         if (this.parentComponent == null) {
-            return this.currentDeflection;
+            return this.currentDeflection + this.baseDeflection;
         } else {
-            return this.currentDeflection + this.parentComponent.getCurrentDeflection();
+            return this.currentDeflection + this.baseDeflection + this.parentComponent.getCurrentDeflection();
         }
     }
 
@@ -260,6 +271,14 @@ export class GrowthComponent {
         }
     }
 
+    getParentDeflection() {
+        if (this.parentComponent == null) {
+            return this.currentDeflection + this.baseDeflection;
+        } else {
+            return this.currentDeflection + this.baseDeflection + this.parentComponent.getParentDeflection();
+        }
+    }
+
     applyDeflectionState(parentComponent) {
         var startDeflectionXOffset = 0;
         var startDeflectionYOffset = 0;
@@ -270,8 +289,8 @@ export class GrowthComponent {
 
         var curve = this.baseCurve + Math.sin(this.currentDeflection) * 0.06 * this.ySizeCur() / this.getTotalStrength();
         
-        var startTheta = this.getDeflectionRollingAverage() + this.getBaseRotation();
-        var endTheta = this.getCurrentDeflection() + curve + this.getBaseRotation();
+        var startTheta = this.deflectionRollingAverage + this.getParentDeflection();
+        var endTheta = this.currentDeflection + curve + this.getParentDeflection();
 
         var length = this.ySizeCur();
 
@@ -290,6 +309,7 @@ export class GrowthComponent {
             this.distToFront = offsetX * Math.cos(this.getTheta());
             lsq.distToFront = this.getDistToFront(); 
             offsetX *= Math.sin(this.getTheta());
+            offsetY *= Math.cos(this.getTwist());
 
             var endX = startDeflectionXOffset + offsetX; 
             var endY = startDeflectionYOffset + offsetY; 
@@ -300,8 +320,6 @@ export class GrowthComponent {
 
         this.children.forEach((child) => child.applyDeflectionState(this));
     }
-
-
 
     getTotalStrength() {
         return Math.max(1, this.strength() + this.children.map((gc) => gc.strength()).reduce(
@@ -323,21 +341,16 @@ export class GrowthComponent {
             [0, 0]
         );
     }
-
     getStartSpringForce() {
-        return Math.sin(this.getBaseDeflection() - this.getDeflectionRollingAverage()) * this.getTotalStrength();
-    }
-
-    getDeflectionRollingAverage() {
-        if (this.parentComponent == null)
-            return this.deflectionRollingAverage;
-        return this.deflectionRollingAverage + this.parentComponent.getBaseDeflection();
+        return Math.sin(this.getBaseDeflection() - this.deflectionRollingAverage) * this.getTotalStrength();
     }
 
     getBaseDeflection() {
-        if (this.parentComponent == null) 
+        if (this.parentComponent == null) {
             return this._getBaseDeflection();
-        return this._getBaseDeflection() + this.parentComponent.getBaseDeflection();
+        } else {
+            return this._getBaseDeflection() + this.parentComponent.getBaseDeflection();
+        }
     }
 
     _getBaseDeflection() {
@@ -368,9 +381,6 @@ export class GrowthComponent {
 
     setCurrentDeflection(deflection) {
         this.currentDeflection = deflection;
-        if (this.parentComponent != null) {
-            this.currentDeflection -= this.parentComponent.getCurrentDeflection();
-        }
         if (this.deflectionRollingAverage == 10 ** 8) {
             this.deflectionRollingAverage = deflection;
         } else {

@@ -21,9 +21,9 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
         this.reproductionEnergy = 10 ** 8;
         this.currentHealth = 10 ** 8;
         
-        this.sproutGrowTimeInDays =  10 ** (-3);
-        this.leafGrowTimeInDays =    10 ** (-3);
-        this.trunkGrowTimeInDays =   10 ** (-3);
+        this.sproutGrowTimeInDays =  10 ** (-3.2);
+        this.leafGrowTimeInDays =    10 ** (-3.2);
+        this.trunkGrowTimeInDays =   10 ** (-3.2);
 
         this.side = Math.random() > 0.5 ? -1 : 1;
 
@@ -73,98 +73,37 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
         return out;
     }
 
-
-    newLeafGrowthPlan(startComponent) {
-        var startNode = startComponent.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_NODE);
+    leafGrowthPlanAtAngle(startLsq, xSize, ySize) {
         var growthPlan = new GrowthPlan(
-            startNode.posX, startNode.posY, 
+            startLsq.posX, startLsq.posY, 
             false, STAGE_ADULT, 
-            -getGlobalThetaBase(), 0, 0, 0, 
+            deflection, 0, 0, deflection,0,
             TYPE_LEAF, 1);
-        growthPlan.postConstruct = () => startComponent.addChild(growthPlan.component);
-        var stemLength = randNumber(5, 20);
-        for (let t = 1; t < stemLength; t++) {
-            growthPlan.steps.push(new GrowthPlanStep(
-                growthPlan,
-                0,
-                this.leafGrowTimeInDays,
-                () => {
-                    var shoot = this.growPlantSquare(startNode, 0, t);
-                    shoot.subtype = SUBTYPE_STEM;
-                    return shoot;
-                },
-                null
-            ));
-        };
+        growthPlan.postConstruct = () => startLsq.component.addChild(growthPlan.component);
 
-        var stemLeafNode;
+        var newNode = null;
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
             0,
             this.leafGrowTimeInDays,
             () => {
-                stemLeafNode = this.growPlantSquare(startNode, 0, stemLength);
-                stemLeafNode.subtype = SUBTYPE_NODE;
-                return stemLeafNode;
+                newNode = this.growPlantSquare(startLsq, 0, 1);
+                newNode.subtype = SUBTYPE_NODE;
+                return newNode;
             },
             null
         ));
-
-        growthPlan.postComplete = () => {
-            var leafGrowthPlan = new GrowthPlan(
-                stemLeafNode.posX, stemLeafNode.posY, 
-                false, STAGE_ADULT, 
-                randRange(0, Math.PI), 0, 0, 0, 
-                TYPE_LEAF, 1);
-
-            leafGrowthPlan.postConstruct = () => growthPlan.component.addChild(leafGrowthPlan.component);
-            var leafLocations = this.getLeafLocations(8, 10);
-            for (let t = 0; t < Math.min(...leafLocations.filter((loc) => loc[0] == 0).map((loc) => loc[1])); t++) {
-                var step = new GrowthPlanStep(
-                    leafGrowthPlan,
-                    0,
-                    this.leafGrowTimeInDays,
-                    () => {
-                        var shoot = this.growPlantSquare(stemLeafNode, 0, t);
-                        shoot.subtype = SUBTYPE_STEM;
-                        return shoot;
-                    },
-                    null
-                );
-                step.distToCenter = t;
-
-                leafGrowthPlan.steps.push(step);
-            };
-            
-            leafLocations.forEach((loc) => {
-                var step = new GrowthPlanStep(
-                    leafGrowthPlan,
-                    0,
-                    this.leafGrowTimeInDays,
-                    () => {
-                        var shoot = this.growPlantSquare(stemLeafNode, loc[0], loc[1]);
-                        shoot.subtype = SUBTYPE_LEAF;
-                        return shoot;
-                    },
-                    null
-                ); 
-                step.distToCenter = (loc[0] ** 2 + loc[1] ** 2) ** 0.5;
-                leafGrowthPlan.steps.push(step);
-            });
-            leafGrowthPlan.steps.sort((a, b) => a.distToCenter - b.distToCenter);
-
-            this.growthPlans.push(leafGrowthPlan);
-        };
-
-        return growthPlan;
+        this.growthPlans.push(growthPlan);
+        growthPlan.postComplete = () => this.growLeafFromNode(newNode, xSize, ySize, deflection / 2);
     }
     
     gp_juvenile() {
         var startRootNode = this.getOriginsForNewGrowth(SUBTYPE_ROOTNODE).at(0);
+        var deflection = randRange(-Math.PI * 0.7, Math.PI * 0.7);
         var growthPlan = new GrowthPlan(
             startRootNode.posX, startRootNode.posY, 
             false, STAGE_ADULT, 
-            -getGlobalThetaBase(), 0, 0,0, 
+            -getGlobalThetaBase(), 0, 0, deflection / 2,deflection / 2, 
             TYPE_TRUNK, 3);
         growthPlan.postConstruct = () => this.originGrowth.addChild(growthPlan.component);
 
@@ -177,7 +116,7 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
                 leafNode.subtype = SUBTYPE_NODE;
                 return leafNode;
             },
-            () => this.growLeafFromNode(leafNode, 5, 15)
+            () => this.growLeafFromNode(leafNode, 5, 15, deflection)
         ));
         var leafNode = null;
         for (let t = 1; t < 20; t++) {
@@ -193,15 +132,14 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
                 null
             ))
         }
-
         return growthPlan;
     }
 
-    growLeafFromNode(stemLeafNode, xSize, ySize) {
+    growLeafFromNode(stemLeafNode, xSize, ySize, twist) {
         var leafGrowthPlan = new GrowthPlan(
             stemLeafNode.posX, stemLeafNode.posY, 
             false, STAGE_ADULT, 
-            0, 0, 0,0,
+            randRange(-Math.PI, Math.PI), twist, 0, 0,0,
             TYPE_LEAF, 1);
 
         // leafGrowthPlan.setBaseRotationOverTime([
