@@ -97,7 +97,12 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
     
     juvenileGrowthPlanning() {
         var startRootNode = this.getOriginsForNewGrowth(SUBTYPE_ROOTNODE).at(0);
-        this.growLeafAndStemFromNode(startRootNode);
+        this.growLeafAndStemFromNode(startRootNode, 
+            randRange(-Math.PI * 0.2, Math.PI * 0.2),
+            randNumber(10, 15),
+            randNumber(4, 6),
+            randNumber(10, 15)
+        );
     }
 
     growLeafFromNode(stemLeafNode, xSize, ySize, twist) {
@@ -163,13 +168,19 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
         }
         rootNodeSq.subtype = SUBTYPE_ROOTNODE;
         rootNodeSq.component = this.originGrowth;
-        var newGrowthPlan = this.growLeafAndStemFromNode(rootNodeSq);
+        var newGrowthPlan = this.growLeafAndStemFromNode(rootNodeSq,
+            randRange(-Math.PI * 0.2, Math.PI * 0.2),
+            randNumber(13, 18),
+            randNumber(4, 6),
+            randNumber(12, 18)
+        );
+
+        
         this.originGrowth.addLifeSquare(rootNodeSq);
         this.originGrowth.addChild(newGrowthPlan.component);
     }
 
-    growLeafAndStemFromNode(startNode) {
-        var deflection = randRange(-Math.PI * 0.2, Math.PI * 0.2);
+    growLeafAndStemFromNode(startNode, deflection, stemLength, leafXSize, leafYSize) {
         var growthPlan = new GrowthPlan(
             startNode.posX, startNode.posY, 
             false, STAGE_ADULT, 
@@ -186,10 +197,10 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
                 leafNode.subtype = SUBTYPE_NODE;
                 return leafNode;
             },
-            () => this.growLeafFromNode(leafNode, 5, 15, deflection)
+            () => this.growLeafFromNode(leafNode, leafXSize, leafYSize, deflection)
         ));
         var leafNode = null;
-        for (let t = 1; t < 20; t++) {
+        for (let t = 1; t < stemLength; t++) {
             growthPlan.steps.push(new GrowthPlanStep(
                 growthPlan,
                 0,
