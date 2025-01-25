@@ -28,7 +28,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
 
         // parameterized growth rules
 
-        this.org_thicknessHeightMult = randRange(3, 4);
+        this.org_thicknessHeightMult = randRange(4, 5);
 
         /* 
         the palm tree rules

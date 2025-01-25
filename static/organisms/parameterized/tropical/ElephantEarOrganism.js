@@ -21,21 +21,13 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
         this.reproductionEnergy = 10 ** 8;
         this.currentHealth = 10 ** 8;
         
-        this.sproutGrowTimeInDays =  10 ** (-2.5);
-        this.leafGrowTimeInDays =    10 ** (-2.5);
-        this.trunkGrowTimeInDays =   10 ** (-2.5);
+        this.sproutGrowTimeInDays =  10 ** (-2.9);
+        this.leafGrowTimeInDays =    10 ** (-2.9);
+        this.trunkGrowTimeInDays =   10 ** (-2.9);
 
         this.side = Math.random() > 0.5 ? -1 : 1;
-
-        // parameterized growth rules
-
-        /* 
-        the elephant ear rules
-        ---------------------- 
-
-        grow a curved stem with a big ol leaf at the end of it at some angle
-        
-        */
+        this.minAngle = -Math.PI * 0.5;
+        this.maxAngle = Math.PI * 0.5;
     }
 
     getLeafLocations(xSize, ySize) {
@@ -71,34 +63,18 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
         return out;
     }
 
-    leafGrowthPlanAtAngle(startLsq, xSize, ySize) {
-        var growthPlan = new GrowthPlan(
-            startLsq.posX, startLsq.posY, 
-            false, STAGE_ADULT, 
-            deflection, 0, 0, deflection,0,
-            TYPE_LEAF, 1);
-        growthPlan.postConstruct = () => startLsq.component.addChild(growthPlan.component);
-
-        var newNode = null;
-        growthPlan.steps.push(new GrowthPlanStep(
-            growthPlan,
-            0,
-            this.leafGrowTimeInDays,
-            () => {
-                newNode = this.growPlantSquare(startLsq, 0, 1);
-                newNode.subtype = SUBTYPE_NODE;
-                return newNode;
-            },
-            null
-        ));
-        this.growthPlans.push(growthPlan);
-        growthPlan.postComplete = () => this.growLeafFromNode(newNode, xSize, ySize, deflection / 2);
+    getNextDeflection() {
+        return randRange(this.minAngle, this.maxAngle);
     }
-    
+    getNextTheta() {
+        return randRange(-Math.PI, Math.PI);
+    }
+
     juvenileGrowthPlanning() {
         var startRootNode = this.getOriginsForNewGrowth(SUBTYPE_ROOTNODE).at(0);
         this.growLeafAndStemFromNode(startRootNode, 
-            randRange(-Math.PI * 0.2, Math.PI * 0.2),
+            this.getNextDeflection(),
+            this.getNextTheta(),
             randNumber(10, 15),
             randNumber(4, 6),
             randNumber(10, 15)
@@ -169,7 +145,8 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
         rootNodeSq.subtype = SUBTYPE_ROOTNODE;
         rootNodeSq.component = this.originGrowth;
         var newGrowthPlan = this.growLeafAndStemFromNode(rootNodeSq,
-            randRange(-Math.PI * 0.5, Math.PI * 0.5),
+            this.getNextDeflection(),
+            this.getNextTheta(),
             randNumber(13, 18),
             randNumber(4, 6),
             randNumber(12, 18)
@@ -180,11 +157,11 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
         this.originGrowth.addChild(newGrowthPlan.component);
     }
 
-    growLeafAndStemFromNode(startNode, deflection, stemLength, leafXSize, leafYSize) {
+    growLeafAndStemFromNode(startNode, deflection, theta, stemLength, leafXSize, leafYSize) {
         var growthPlan = new GrowthPlan(
             startNode.posX, startNode.posY, 
             false, STAGE_ADULT, 
-            0, 0, 0, deflection / 2,deflection / 2, 
+            theta, 0, 0, deflection / 2,deflection / 2, 
             TYPE_TRUNK, 3);
         growthPlan.postConstruct = () => startNode.component.addChild(growthPlan.component);
 
