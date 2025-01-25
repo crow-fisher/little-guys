@@ -6,7 +6,7 @@ export class GenericParameterizedRootSquare extends BaseLifeSquare {
         super(square, organism);
         this.proto = "GenericParameterizedRootSquare";
         this.type = "root";
-        this.opacity = 0.4;
+        this.opacity = this.linkedOrganism.rootOpacity;
         this.colorBase = "#D1E231";
     }
 

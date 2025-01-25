@@ -66,6 +66,8 @@ class BaseOrganism {
         this.deflectionStateTheta = 0;
         this.deflectionStateFunctions = [];
 
+        this.rootOpacity = 0.4;
+
     }
 
     updateDeflectionState() {

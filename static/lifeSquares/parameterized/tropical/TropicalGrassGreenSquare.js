@@ -12,6 +12,7 @@ export class TropicalGrassGreenSquare extends BaseLifeSquare {
         this.width = 0.5;
         this.activeRenderSubtype = null;
         this.opacity = 0.5;
+        this.LSQ_RENDER_SIZE_MULT = 1;
     }
 
     

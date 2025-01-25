@@ -14,9 +14,9 @@ export class TropicalGrassOrganism extends BaseParameterizedOrganism {
         this.trunkMaxThickness = 2;
         this.trunkCurThickness = 1;
 
-        this.airCoef = 0.01;
-        this.waterCoef = 0.01;
-        this.dirtCoef = 0.001;
+        this.airCoef = 0.1;
+        this.waterCoef = 0.1;
+        this.dirtCoef = 0.1;
         this.reproductionEnergy = 10 ** 8;
         this.currentHealth = 10 ** 8;
         
@@ -29,6 +29,8 @@ export class TropicalGrassOrganism extends BaseParameterizedOrganism {
         // parameterized growth rules
 
         this.org_thicknessHeightMult = randRange(4, 5);
+
+        this.rootOpacity = 0.05;
 
         /* 
         the palm tree rules
@@ -51,7 +53,7 @@ export class TropicalGrassOrganism extends BaseParameterizedOrganism {
             randRange(-.2, .2), 
             0, TYPE_TRUNK, 1);
         growthPlan.postConstruct = () => this.originGrowth.addChild(growthPlan.component);
-        for (let t = 1; t < randNumber(8, 15); t++) {
+        for (let t = 1; t < randNumber(2, 4); t++) {
             growthPlan.steps.push(new GrowthPlanStep(
                 growthPlan,
                 0,

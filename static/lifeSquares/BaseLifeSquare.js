@@ -11,7 +11,6 @@ import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_GREEN, RGB_COLOR_BLACK, RGB_
 import { addOrganismSquare } from "./_lsOperations.js";
 import { removeSquare } from "../globalOperations.js";
 
-var LSQ_RENDER_SIZE_MULT = Math.SQRT2;
 
 class BaseLifeSquare {
     constructor(square, organism) {
@@ -95,6 +94,17 @@ class BaseLifeSquare {
         this.accentColor = "#246A73";
         this.accentColor_rgb = hexToRgb(this.accentColor);
         this.accentColorAmount = dirt_accentColorAmount;
+
+        this.LSQ_RENDER_SIZE_MULT = Math.SQRT2;
+
+    }
+
+    getLsqRenderSizeMult() {
+        if (this.type == "green") {
+            return this.LSQ_RENDER_SIZE_MULT;
+        } else {
+            return 1;
+        }
     }
 
     makeRandomsSimilar(otherSquare) {
@@ -265,8 +275,8 @@ class BaseLifeSquare {
         zoomCanvasFillRect(
             this.getPosX() * BASE_SIZE,
             this.getPosY() * BASE_SIZE,
-            this.width * BASE_SIZE * LSQ_RENDER_SIZE_MULT,
-            this.height * BASE_SIZE * LSQ_RENDER_SIZE_MULT
+            this.width * BASE_SIZE * this.getLsqRenderSizeMult(),
+            this.height * BASE_SIZE * this.getLsqRenderSizeMult()
         );
     }
 
@@ -280,8 +290,8 @@ class BaseLifeSquare {
         zoomCanvasFillRect(
             this.getPosX() * BASE_SIZE,
             this.getPosY() * BASE_SIZE,
-            this.width * BASE_SIZE * LSQ_RENDER_SIZE_MULT,
-            this.height * BASE_SIZE * LSQ_RENDER_SIZE_MULT
+            this.width * BASE_SIZE * this.getLsqRenderSizeMult(),
+            this.height * BASE_SIZE * this.getLsqRenderSizeMult()
         );
     }
 
@@ -367,8 +377,8 @@ class BaseLifeSquare {
                     zoomCanvasFillRect(
                         this.getPosX() * BASE_SIZE,
                         this.getPosY() * BASE_SIZE,
-                        this.width * BASE_SIZE * LSQ_RENDER_SIZE_MULT,
-                        this.height * BASE_SIZE * LSQ_RENDER_SIZE_MULT
+                        this.width * BASE_SIZE * this.getLsqRenderSizeMult(),
+                        this.height * BASE_SIZE * this.getLsqRenderSizeMult()
                     );
                     return;
 
@@ -394,8 +404,8 @@ class BaseLifeSquare {
             zoomCanvasFillRect(
                 this.getPosX() * BASE_SIZE,
                 this.getPosY() * BASE_SIZE,
-                this.width * BASE_SIZE * LSQ_RENDER_SIZE_MULT,
-                this.height * BASE_SIZE * LSQ_RENDER_SIZE_MULT
+                this.width * BASE_SIZE * this.getLsqRenderSizeMult(),
+                this.height * BASE_SIZE * this.getLsqRenderSizeMult()
             );
             return;
         }
@@ -439,8 +449,8 @@ class BaseLifeSquare {
         zoomCanvasFillRect(
             this.getPosX() * BASE_SIZE,
             this.getPosY() * BASE_SIZE,
-            this.width * BASE_SIZE * LSQ_RENDER_SIZE_MULT,
-            this.height * BASE_SIZE * LSQ_RENDER_SIZE_MULT
+            this.width * BASE_SIZE * this.getLsqRenderSizeMult(),
+            this.height * BASE_SIZE * this.getLsqRenderSizeMult()
         );
 
         this.darkeningRender();
@@ -471,4 +481,4 @@ class BaseLifeSquare {
     }
 
 }
-export { BaseLifeSquare, LSQ_RENDER_SIZE_MULT }
+export { BaseLifeSquare };

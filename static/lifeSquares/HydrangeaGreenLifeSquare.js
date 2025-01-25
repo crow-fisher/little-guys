@@ -1,5 +1,5 @@
 
-import { BaseLifeSquare, LSQ_RENDER_SIZE_MULT } from "./BaseLifeSquare.js";
+import { BaseLifeSquare } from "./BaseLifeSquare.js";
 import { getDirectNeighbors, getNeighbors } from "../squares/_sqOperations.js";
 import { BASE_SIZE, MAIN_CANVAS, MAIN_CONTEXT, zoomCanvasFillRect } from "../index.js";
 import { loadImage, rgbToRgba } from "../common.js";
