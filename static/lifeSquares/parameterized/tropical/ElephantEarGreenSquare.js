@@ -22,7 +22,7 @@ export class ElephantEarGreenSquare extends BaseLifeSquare {
             case SUBTYPE_STEM:
             case SUBTYPE_NODE:
                 this.baseColor = "#7e8f38";
-                this.darkColor = "#a4b354";
+                this.darkColor = "#646e32";
                 this.accentColor = "#5d6637";
                 break;
             case SUBTYPE_LEAF:
