@@ -25,6 +25,8 @@ class PopGrassOrganism extends BaseOrganism {
 
         this.throttleInterval = 2000;
 
+        this.maxLifeTime *= 2;
+
         this.airCoef = 1;
         this.dirtCoef = 1;
         this.waterCoef = 0.30;
