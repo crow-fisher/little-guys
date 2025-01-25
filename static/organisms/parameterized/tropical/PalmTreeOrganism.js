@@ -49,7 +49,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
             startRootNode.posX, startRootNode.posY, 
             false, STAGE_ADULT, 0, 0, 0, 
             randRange(-.05, .05), 
-            0, TYPE_TRUNK, 1);
+            0, TYPE_TRUNK, 7);
         growthPlan.postConstruct = () => this.originGrowth.addChild(growthPlan.component);
         for (let t = 1; t < randNumber(5, 10); t++) {
             growthPlan.steps.push(new GrowthPlanStep(
@@ -89,7 +89,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         )) * 0.7;
         var maxLeafLength = 3 + trunk.ySizeCur() * 0.4;
 
-        var maxHeight = trunk.xSizeCur() * this.org_thicknessHeightMult;
+        var maxHeight = this.trunkCurThickness * this.org_thicknessHeightMult;
 
         // try to grow additional leaves if we can 
 
@@ -130,8 +130,8 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         })
         var growthPlan = new GrowthPlan(startNode.posX, startNode.posY, 
             false, STAGE_ADULT, 
-            randRange(-Math.PI, Math.PI), 0, 0, randRange(1.5,2.5), 
-            0.1 + Math.random() / 5, TYPE_LEAF, 1);
+            randRange(-Math.PI, Math.PI), 0, 0, randRange(0.8,1.2), 
+            0.1 + Math.random() / 5, TYPE_LEAF, 10);
         growthPlan.postConstruct = () => startComponent.addChild(growthPlan.component);
         for (let t = 1; t < randNumber(0, maxLeafLength); t++) {
             growthPlan.steps.push(new GrowthPlanStep(
@@ -196,7 +196,6 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         if (this.trunkCurThickness >= this.trunkMaxThickness) {
             return;
         }
-        this.trunkCurThickness += 1;
         var xPositions = trunk.xPositions();
         var nextX = (this.trunkCurThickness % 2 > 0 ? this.side : this.side * -1) * Math.ceil(this.trunkCurThickness / 2);
         var trunkMaxY = Math.max(...trunk.yPositions());
@@ -207,6 +206,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
             this.side *= -1;
             return;
         }
+        this.trunkCurThickness += 1;
         rootNodeSq.subtype = SUBTYPE_ROOTNODE;
         trunk.growthPlan.completed = false;
         trunk.growthPlan.postComplete = () => this.redistributeLeaves(trunk);

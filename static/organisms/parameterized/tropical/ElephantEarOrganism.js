@@ -86,7 +86,7 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
             stemLeafNode.posX, stemLeafNode.posY, 
             false, STAGE_ADULT, 
             twist, twist, 0, 0,0,
-            TYPE_LEAF, 1);
+            TYPE_LEAF, 0.15);
 
         leafGrowthPlan.setBaseRotationOverTime([
             [0, 0],
@@ -162,7 +162,7 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
             startNode.posX, startNode.posY, 
             false, STAGE_ADULT, 
             theta, 0, 0, deflection / 2,deflection / 2, 
-            TYPE_TRUNK, 3);
+            TYPE_TRUNK, 0.5);
         growthPlan.postConstruct = () => startNode.component.addChild(growthPlan.component);
 
         growthPlan.steps.push(new GrowthPlanStep(
