@@ -34,6 +34,7 @@ import { clearPrevailingWind, addPrevailingWind, addWindPressure, initializeWind
 import { renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds, addWaterSaturationPascals, addWaterSaturationPascalsSqCoords } from "./temperature_humidity.js";
 import { PalmTreeSeedOrganism } from "./organisms/parameterized/tropical/PalmTreeSeedOrganism.js";
 import { ElephantEarSeedOrganism } from "./organisms/parameterized/tropical/ElephantEarSeedOrganism.js";
+import { TropicalGrassSeedOrganism } from "./organisms/parameterized/tropical/TropicalGrassSeedOrganism.js";
 
 var lastMode = "organism"; // options: "normal", "special", "organism", "blockModification";
 
@@ -971,16 +972,30 @@ function doClickAdd() {
                             }
                             break;
 
-                            case "ElephantEar":
-                                if (organismAddedThisClick) {
-                                    return;
-                                }
+                        case "ElephantEar":
+                            if (organismAddedThisClick) {
+                                return;
+                            }
+                            var sq = addSquare(new SeedSquare(px, py));
+                            if (sq) {
+                                addNewOrganism(new ElephantEarSeedOrganism(sq));
+                                organismAddedThisClick = true;
+                            }
+                            break;
+
+                        case "TropicalGrass":
+                            var chance = Math.random();
+                            if (!organismAddedThisClick) {
+                                chance = 1;
+                            }
+                            if (chance > 0.9) {
                                 var sq = addSquare(new SeedSquare(px, py));
                                 if (sq) {
-                                    addNewOrganism(new ElephantEarSeedOrganism(sq));
+                                    addNewOrganism(new TropicalGrassSeedOrganism(sq));
                                     organismAddedThisClick = true;
                                 }
-                                break;
+                            }
+                            break;
                     }
                 }
             }
