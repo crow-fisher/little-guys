@@ -48,7 +48,7 @@ class BaseOrganism {
         this.maxDistFromOrigin = 0;
 
         // life cycle properties
-        this.maxLifeTime = 3;
+        this.maxLifeTime = 6;
         this.reproductionEnergy = 100    * 0.6
         this.reproductionEnergyUnit = 50 * 0.6;
         this.maximumLifeSquaresOfType = {"green": 100, "root": 100};
