@@ -92,6 +92,9 @@ export class GrowthComponent {
         this.posX = growthPlan.posX;   
         this.posY = growthPlan.posY;
 
+        this.xOffset = 0;
+        this.yOffset = 0;
+
         this.currentDeflection = 0;
         this.deflectionRollingAverage = 10 ** 8;
         this.strength = () => strengthMult * this.lifeSquares.map((lsq) => lsq.strength).reduce(
@@ -300,8 +303,8 @@ export class GrowthComponent {
             var lsqDist = (relLsqX ** 2 + relLsqY ** 2) ** 0.5;
             var currentTheta = startTheta + (lsqDist / length) * thetaDelta;
 
-            var offsetX = relLsqX * Math.cos(currentTheta) - relLsqY * Math.sin(currentTheta);
-            var offsetY = relLsqY * Math.cos(currentTheta) + relLsqX * Math.sin(currentTheta);
+            var offsetX = relLsqX * Math.cos(currentTheta) - relLsqY * Math.sin(currentTheta) + this.xOffset;
+            var offsetY = relLsqY * Math.cos(currentTheta) + relLsqX * Math.sin(currentTheta) + this.yOffset;
 
             this.distToFront = offsetX * Math.cos(this.getTheta());
             lsq.distToFront = this.getDistToFront(); 

@@ -32,6 +32,9 @@ export class TropicalGrassOrganism extends BaseParameterizedOrganism {
 
         this.rootOpacity = 0.05;
 
+        this.maxNumGrass = 5;
+        this.curNumGrass = 0;
+
         /* 
         the palm tree rules
         ------------------- 
@@ -45,15 +48,24 @@ export class TropicalGrassOrganism extends BaseParameterizedOrganism {
         */
     }
 
-    doJuvenileGrowth() {
+    growGrass() {
+        if (this.curNumGrass > this.maxNumGrass) {
+            return;
+        }
+        this.curNumGrass += 1;
+
         var startRootNode = this.getOriginsForNewGrowth(SUBTYPE_ROOTNODE).at(0);
         var growthPlan = new GrowthPlan(
             startRootNode.posX, startRootNode.posY, 
             false, STAGE_ADULT, 0, 0, 0, 
-            randRange(-.2, .2), 
-            0, TYPE_TRUNK, 1);
-        growthPlan.postConstruct = () => this.originGrowth.addChild(growthPlan.component);
-        for (let t = 1; t < randNumber(2, 4); t++) {
+            randRange(-1, 1), 
+            randRange(-0.4, 0.4), TYPE_TRUNK, 1);
+        growthPlan.postConstruct = () => {
+            this.originGrowth.addChild(growthPlan.component);
+            growthPlan.component.xOffset = Math.random() - 0.5;
+            growthPlan.component.yOffset = Math.random() - 0.5;
+        };
+        for (let t = 1; t < randNumber(3,8); t++) {
             growthPlan.steps.push(new GrowthPlanStep(
                 growthPlan,
                 0,
@@ -82,8 +94,6 @@ export class TropicalGrassOrganism extends BaseParameterizedOrganism {
     }
 
     planGrowth() {
-        if (this.stage == STAGE_JUVENILE) {
-            this.doJuvenileGrowth();
-        }
+        this.growGrass();
     }
 }
