@@ -1,10 +1,10 @@
 import { getDirectNeighbors } from "../../../squares/_sqOperations.js";
 import { BaseLifeSquare } from "../../BaseLifeSquare.js";
 
-export class ElephantEarRootSquare extends BaseLifeSquare {
+export class GenericParameterizedRootSquare extends BaseLifeSquare {
     constructor(square, organism) {
         super(square, organism);
-        this.proto = "ElephantEarRootSquare";
+        this.proto = "GenericParameterizedRootSquare";
         this.type = "root";
         this.opacity = 0.4;
         this.colorBase = "#D1E231";
