@@ -21,9 +21,9 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
         this.reproductionEnergy = 10 ** 8;
         this.currentHealth = 10 ** 8;
         
-        this.sproutGrowTimeInDays =  10 ** (-3.3);
-        this.leafGrowTimeInDays =    10 ** (-3.3);
-        this.trunkGrowTimeInDays =   10 ** (-3.3);
+        this.sproutGrowTimeInDays =  10 ** (-2.5);
+        this.leafGrowTimeInDays =    10 ** (-2.5);
+        this.trunkGrowTimeInDays =   10 ** (-2.5);
 
         this.side = Math.random() > 0.5 ? -1 : 1;
 

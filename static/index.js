@@ -344,7 +344,7 @@ function doZoom(deltaY) {
         var dist = ((canvasPos[0] - lsq.getPosX()) ** 2 + (canvasPos[1] - lsq.getPosY()) ** 2) ** 0.5;
         if (dist < 1.4) {
             if (shiftPressed) {
-                lsq.component.twist += deltaY * 0.0003;
+                lsq.component.twist += deltaY * 0.00009;
             } else {
                 lsq.component.theta += deltaY * 0.0003;
             }
