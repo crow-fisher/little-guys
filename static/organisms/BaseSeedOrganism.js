@@ -12,7 +12,7 @@ class BaseSeedOrganism extends BaseOrganism {
         this.proto = "BaseSeedOrganism";
         this.type = "seed";
         this.sproutCtor = null;
-        this.maxLifeTime = 1000 * 60 * 1;
+        this.maxLifeTime = 1
 
     }
     growInitialSquares() {

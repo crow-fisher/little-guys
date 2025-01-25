@@ -26,7 +26,7 @@ import { LilyPadSeedOrganism } from "./organisms/LilyPadSeedOrganism.js";
 import { MossSeedOrganism } from "./organisms/MossSeedOrganism.js";
 import { PlantSquare } from "./squares/PlantSquare.js";
 import { randNumber } from "./common.js";
-import { volcano } from "./saves.js";
+import { volcano, beach } from "./saves.js";
 import { HydrangeaSeedOrganism } from "./organisms/HydrangeaSeedOrganism.js";
 import { MossCoolSeedOrganism } from "./organisms/MossCoolSeedOrganism.js";
 import { SunflowerSeedOrganism } from "./organisms/SunflowerSeedOrganism.js";
@@ -74,8 +74,6 @@ var normalHeader = document.getElementById("normalHeader");
 var normalHeader_ref = "normal"
 var orgWetlandHeader = document.getElementById("orgWetlandHeader");
 var orgWetlandHeader_ref = "organismWetland"
-var orgOtherHeader = document.getElementById("orgOtherHeader");
-var orgOtherHeader_ref = "organismOther"
 var blockModificationHeader = document.getElementById("blockModificationHeader");
 var blockModificationHeader_ref = "blockModification";
 
@@ -93,7 +91,7 @@ var loadSlotC = document.getElementById("loadSlotC");
 var saveSlotC = document.getElementById("saveSlotC");
 
 var loadSlotVolcano = document.getElementById("loadSlotVolcano");
-var loadSlotValley = document.getElementById("loadSlotValley");
+var loadSlotBeach = document.getElementById("loadSlotBeach");
 
 var selectedMaterial = "dirt";
 var selectedViewMode = "normal";
@@ -118,7 +116,6 @@ function styleHeader() {
         specialHeader,
         normalHeader,
         orgWetlandHeader,
-        orgOtherHeader,
         blockModificationHeader
     ]
     var bold_headers = [];
@@ -133,10 +130,6 @@ function styleHeader() {
     if (lastMode == orgWetlandHeader_ref) {
         nonbold_headers = Array.from(nonbold_headers.filter((v) => v != orgWetlandHeader));
         bold_headers.push(orgWetlandHeader);
-    }
-    if (lastMode == orgOtherHeader_ref) {
-        nonbold_headers = Array.from(nonbold_headers.filter((v) => v != orgOtherHeader));
-        bold_headers.push(orgOtherHeader);
     }
     if (lastMode == blockModificationHeader_ref) {
         nonbold_headers = Array.from(nonbold_headers.filter((v) => v != blockModificationHeader));
@@ -186,11 +179,6 @@ organismWetland.addEventListener('change', (e) => {
     lastMode = "organismWetland";
     styleHeader();
     organismWetland_val = e.target.value;
-});
-organismOther.addEventListener('change', (e) => {
-    lastMode = "organismOther";
-    styleHeader();
-    organismOther_val = e.target.value;
 });
 blockModification.addEventListener('change', (e) => {
     lastMode = "blockModification";
@@ -449,6 +437,7 @@ loadSlotC.onclick = (e) => loadSlot("C");
 saveSlotC.onclick = (e) => saveSlot("C");
 
 loadSlotVolcano.onclick = (e) => loadSlotFromSave(volcano);
+loadSlotBeach.onclick = (e) => loadSlotFromSave(beach);
 
 function loadObjArr(sourceObjMap, addFunc) {
     iterateOnSquares((sq) => sq.destroy());

@@ -29,8 +29,6 @@ class CactusOrganism extends BaseOrganism {
 
         this.throttleInterval = 1000;
 
-        this.maxLifeTime = 1000 * 80 * 1;
-
         this.plantLastGrown = getCurTime();
         this.waterLastGrown = getCurTime();
         this.rootLastGrown = getCurTime();
