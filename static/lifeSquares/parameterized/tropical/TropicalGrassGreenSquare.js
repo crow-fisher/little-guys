@@ -9,9 +9,8 @@ export class TropicalGrassGreenSquare extends BaseLifeSquare {
         super(square, organism);
         this.proto = "TropicalGrassGreenSquare";
         this.type = "green";
-        this.width = 0.5;
+        this.width = 0.7;
         this.activeRenderSubtype = null;
-        this.opacity = 0.5;
         this.LSQ_RENDER_SIZE_MULT = 1;
     }
 
