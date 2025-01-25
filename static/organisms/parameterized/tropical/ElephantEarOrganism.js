@@ -12,8 +12,8 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
         this.greenType = ElephantEarGreenSquare;
         this.rootType = ElephantEarRootSquare;
 
-        this.trunkMaxThickness = 2;
-        this.trunkCurThickness = 1;
+        this.maxNumLeaves = 3;
+        this.curNumLeaves = 1;
 
         this.airCoef = 0.01;
         this.waterCoef = 0.01;
@@ -28,8 +28,6 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
         this.side = Math.random() > 0.5 ? -1 : 1;
 
         // parameterized growth rules
-
-        this.org_thicknessHeightMult = randRange(3, 4);
 
         /* 
         the elephant ear rules
@@ -99,7 +97,7 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
     
     gp_juvenile() {
         var startRootNode = this.getOriginsForNewGrowth(SUBTYPE_ROOTNODE).at(0);
-        var deflection = randRange(-Math.PI * 0.7, Math.PI * 0.7);
+        var deflection = randRange(-Math.PI * 0.2, Math.PI * 0.2);
         var growthPlan = new GrowthPlan(
             startRootNode.posX, startRootNode.posY, 
             false, STAGE_ADULT, 
@@ -184,7 +182,41 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
         this.growthPlans.push(leafGrowthPlan);
     }
 
+    thickenTrunkGrowthPlan(trunk) {
+        if (this.curNumLeaves >= this.maxNumLeaves) {
+            return;
+        }
+        this.curNumLeaves += 1;
+        var nextX = (this.curNumLeaves % 2 > 0 ? this.side : this.side * -1) * Math.ceil(this.curNumLeaves / 2);
+        var trunkMaxY = Math.max(...trunk.yPositions());
+        var trunkMinY = Math.min(...trunk.yPositions());
+        var rootNodeSq = this.lifeSquares.find((lsq) => lsq.type == "root" && lsq.posX == trunk.posX + nextX && lsq.posY <= trunkMaxY + 1);
+        if (rootNodeSq == null) {
+            this.side *= -1;
+            return;
+        }
+        rootNodeSq.subtype = SUBTYPE_ROOTNODE;
+        trunk.growthPlan.completed = false;
+        var curY = rootNodeSq.posY - 1;
+        while (curY >= trunkMinY) {
+            trunk.growthPlan.steps.push(new GrowthPlanStep(
+                trunk.growthPlan,
+                0,
+                this.trunkGrowTimeInDays,
+                () => {
+                    var node = this.growPlantSquarePos(rootNodeSq, rootNodeSq.posX, rootNodeSq.posY - 1);
+                    node.subtype = SUBTYPE_TRUNK;
+                    return node;
+                },
+                null
+            ));
+            curY -= 1;
+        };
+    }
+
     adultGrowthPlanning() {
+        var trunk = this.getAllComponentsofType(TYPE_TRUNK).at(0);
+        this.thickenTrunkGrowthPlan(trunk);
     }
 
     planGrowth() {
