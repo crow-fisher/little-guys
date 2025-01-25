@@ -13,7 +13,7 @@ class MossGreenLifeSquare extends BaseLifeSquare {
     constructor(square, organism) {
         super(square, organism);
         this.proto = "MossGreenLifeSquare";
-        this.type = "green";
+        this.type = "root";
 
         this.opacity = 0.3;
 

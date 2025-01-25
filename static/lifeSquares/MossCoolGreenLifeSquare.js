@@ -4,7 +4,7 @@ class MossCoolGreenLifeSquare extends MossGreenLifeSquare {
     constructor(square, organism) {
         super(square, organism);
         this.proto = "MossCoolGreenLifeSquare";
-        this.type = "green";
+        this.type = "root";
 
         this.baseColor = "#4DBB58";
         this.darkColor = "#366847";

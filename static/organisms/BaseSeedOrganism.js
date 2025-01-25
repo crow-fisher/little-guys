@@ -32,9 +32,6 @@ class BaseSeedOrganism extends BaseOrganism {
         if (this.lifeSquares.some((lsq) => lsq.sproutStatus >= 1)) {
             var linkedSquareCache = this.linkedSquare;
             this.destroy();
-            if (this.linkedSquare.currentPressureDirect > 0) {
-                return;                
-            }
             addNewOrganism(this.sproutCtor(linkedSquareCache));
         }
     }

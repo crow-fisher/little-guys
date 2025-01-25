@@ -113,6 +113,10 @@ export class BaseParameterizedOrganism extends BaseOrganism {
     }
 
     gp_sprout() {
+        if (this.linkedSquare.currentPressureDirect > 0) {
+            this.destroy();
+            return;
+        }
         var growthPlan = new GrowthPlan(this.posX, this.posY, true, STAGE_JUVENILE, Math.PI / 2, 0, 0, 0, 0, TYPE_HEART, 10 ** 8);
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
@@ -152,6 +156,9 @@ export class BaseParameterizedOrganism extends BaseOrganism {
     }
 
     executeGrowthPlans() {
+        if (!this.alive) {
+            return;
+        }
         // if (!this.shouldGrow) {
         //     return;
         // }
