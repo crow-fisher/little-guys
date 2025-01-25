@@ -270,9 +270,9 @@ export class GrowthComponent {
 
     getParentDeflection() {
         if (this.parentComponent == null) {
-            return this.currentDeflection + this.baseDeflection;
+            return 0;
         } else {
-            return this.currentDeflection + this.baseDeflection + this.parentComponent.getParentDeflection();
+            return this.parentComponent.currentDeflection + this.parentComponent.getParentDeflection();
         }
     }
 
