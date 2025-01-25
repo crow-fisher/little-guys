@@ -329,7 +329,10 @@ function zoomCanvasFillRect(x, y, dx, dy) {
 
 function zoom(event) {
     event.preventDefault();
+    doZoom(event.deltaY);
+}
 
+function doZoom(deltaY) {
     var totalWidth = CANVAS_SQUARES_X * BASE_SIZE;
     var totalHeight = CANVAS_SQUARES_Y * BASE_SIZE;
 
@@ -340,7 +343,11 @@ function zoom(event) {
         .forEach((lsq) => {
         var dist = ((canvasPos[0] - lsq.getPosX()) ** 2 + (canvasPos[1] - lsq.getPosY()) ** 2) ** 0.5;
         if (dist < 1.4) {
-            lsq.component.theta += event.deltaY * 0.0003;
+            if (shiftPressed) {
+                lsq.component.twist += deltaY * 0.0003;
+            } else {
+                lsq.component.theta += deltaY * 0.0003;
+            }
             lsqFound = true;
         }
     }), 0);
@@ -351,7 +358,7 @@ function zoom(event) {
     var x = 1 - lastMoveOffset.x / totalWidth;
     var y = 1 - lastMoveOffset.y / totalHeight;
     var startZoom = CANVAS_SQUARES_ZOOM;
-    CANVAS_SQUARES_ZOOM = Math.min(Math.max(CANVAS_SQUARES_ZOOM + event.deltaY * -0.001, 1), 100);
+    CANVAS_SQUARES_ZOOM = Math.min(Math.max(CANVAS_SQUARES_ZOOM + deltaY * -0.001, 1), 100);
     var endZoom = CANVAS_SQUARES_ZOOM;
 
     var startWidth = totalWidth / startZoom;
@@ -365,6 +372,30 @@ function zoom(event) {
 
     CANVAS_VIEWPORT_CENTER_X += (widthDiff * (x - 0.5));
     CANVAS_VIEWPORT_CENTER_Y += (heightDiff * (y - 0.5));
+}
+
+function keydown(e) {
+    e.preventDefault();
+    if (e.key == "Shift") {
+        shiftPressed = true;
+    }
+    if (e.key == "w") {
+        doZoom(-100);
+    }
+    if (e.key == "s") {
+        doZoom(100);
+    }
+    if (e.key == "Escape") {
+        CANVAS_VIEWPORT_CENTER_X = (CANVAS_SQUARES_X * BASE_SIZE) / 2;
+        CANVAS_VIEWPORT_CENTER_Y = (CANVAS_SQUARES_Y * BASE_SIZE) / 2;
+        CANVAS_SQUARES_ZOOM = 1;
+    }
+}
+
+function keyup(e) {
+    if (e.key == "Shift") {
+        shiftPressed = false;
+    }
 }
 
 
@@ -389,6 +420,10 @@ document.body.onmouseup = function () {
     organismAddedThisClick = false;
 }
 
+MAIN_CANVAS.onkeydown = keydown;
+MAIN_CANVAS.onkeyup = keyup;
+
+
 var shiftPressed = false;
 
 var TIME_SCALE = 1;
@@ -396,6 +431,7 @@ var MILLIS_PER_TICK = 1;
 
 var rightMouseClicked = false;
 var middleMouseClicked = false;
+var shiftPressed = false;
 
 loadSlotA.onclick = (e) => loadSlot("A");
 saveSlotA.onclick = (e) => saveSlot("A");
@@ -969,24 +1005,8 @@ main()
 
 
 window.onload = function () {
-    document.addEventListener('keydown', function (e) {
-        if (e.code === "ShiftLeft") {
-            shiftPressed = true;
-        }
-    }, false);
-
-    document.addEventListener('keyup', function (e) {
-        if (e.code === "ShiftLeft") {
-            shiftPressed = false;
-        }
-    }, false);
-
-
-    // document.addEventListener('keyup', (e) => {
-    //     if (e.code === "Shift") {
-    //         shiftPressed = false;
-    //     }
-    // });
+    document.addEventListener('keydown', keydown);
+    document.addEventListener('keyup', keyup);
 }
 
 // loadSlotFromSave(volcano);
