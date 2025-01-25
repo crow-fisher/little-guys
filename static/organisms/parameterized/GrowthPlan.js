@@ -176,11 +176,8 @@ export class GrowthComponent {
     }
 
     ySize() {
-        if (this.lifeSquares.length <= 1) {
-            return 1;
-        }
         var yPositions = this.lifeSquares.map((lsq) => lsq.posY);
-        return Math.max(...yPositions) - Math.min(...yPositions);
+        return 1 + Math.max(...yPositions) - Math.min(...yPositions);
     }
 
     xSizeCur() {

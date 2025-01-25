@@ -21,9 +21,9 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
         this.reproductionEnergy = 10 ** 8;
         this.currentHealth = 10 ** 8;
         
-        this.sproutGrowTimeInDays =  10 ** (-3.2);
-        this.leafGrowTimeInDays =    10 ** (-3.2);
-        this.trunkGrowTimeInDays =   10 ** (-3.2);
+        this.sproutGrowTimeInDays =  10 ** (-3.3);
+        this.leafGrowTimeInDays =    10 ** (-3.3);
+        this.trunkGrowTimeInDays =   10 ** (-3.3);
 
         this.side = Math.random() > 0.5 ? -1 : 1;
 
@@ -95,42 +95,9 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
         growthPlan.postComplete = () => this.growLeafFromNode(newNode, xSize, ySize, deflection / 2);
     }
     
-    gp_juvenile() {
+    juvenileGrowthPlanning() {
         var startRootNode = this.getOriginsForNewGrowth(SUBTYPE_ROOTNODE).at(0);
-        var deflection = randRange(-Math.PI * 0.2, Math.PI * 0.2);
-        var growthPlan = new GrowthPlan(
-            startRootNode.posX, startRootNode.posY, 
-            false, STAGE_ADULT, 
-            0, 0, 0, deflection / 2,deflection / 2, 
-            TYPE_TRUNK, 3);
-        growthPlan.postConstruct = () => this.originGrowth.addChild(growthPlan.component);
-
-        growthPlan.steps.push(new GrowthPlanStep(
-            growthPlan,
-            0,
-            this.sproutGrowTimeInDays,
-            () => {
-                leafNode = this.growPlantSquare(startRootNode, 0, 1);
-                leafNode.subtype = SUBTYPE_NODE;
-                return leafNode;
-            },
-            () => this.growLeafFromNode(leafNode, 5, 15, deflection)
-        ));
-        var leafNode = null;
-        for (let t = 1; t < 20; t++) {
-            growthPlan.steps.push(new GrowthPlanStep(
-                growthPlan,
-                0,
-                this.sproutGrowTimeInDays,
-                () => {
-                    var shoot = this.growPlantSquare(startRootNode, 0, 1);
-                    shoot.subtype = SUBTYPE_STEM;
-                    return shoot;
-                },
-                null
-            ))
-        }
-        return growthPlan;
+        this.growLeafAndStemFromNode(startRootNode);
     }
 
     growLeafFromNode(stemLeafNode, xSize, ySize, twist) {
@@ -182,48 +149,70 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
         this.growthPlans.push(leafGrowthPlan);
     }
 
-    thickenTrunkGrowthPlan(trunk) {
+    addNewLeafGrowthPlan() {
         if (this.curNumLeaves >= this.maxNumLeaves) {
             return;
         }
         this.curNumLeaves += 1;
         var nextX = (this.curNumLeaves % 2 > 0 ? this.side : this.side * -1) * Math.ceil(this.curNumLeaves / 2);
-        var trunkMaxY = Math.max(...trunk.yPositions());
-        var trunkMinY = Math.min(...trunk.yPositions());
-        var rootNodeSq = this.lifeSquares.find((lsq) => lsq.type == "root" && lsq.posX == trunk.posX + nextX && lsq.posY <= trunkMaxY + 1);
+        var originGrowthY = Math.max(...this.originGrowth.yPositions());
+        var rootNodeSq = this.lifeSquares.find((lsq) => lsq.type == "root" && lsq.posX == this.originGrowth.posX + nextX && lsq.posY <= originGrowthY);
         if (rootNodeSq == null) {
             this.side *= -1;
             return;
         }
         rootNodeSq.subtype = SUBTYPE_ROOTNODE;
-        trunk.growthPlan.completed = false;
-        var curY = rootNodeSq.posY - 1;
-        while (curY >= trunkMinY) {
-            trunk.growthPlan.steps.push(new GrowthPlanStep(
-                trunk.growthPlan,
+        rootNodeSq.component = this.originGrowth;
+        var newGrowthPlan = this.growLeafAndStemFromNode(rootNodeSq);
+        this.originGrowth.addLifeSquare(rootNodeSq);
+        this.originGrowth.addChild(newGrowthPlan.component);
+    }
+
+    growLeafAndStemFromNode(startNode) {
+        var deflection = randRange(-Math.PI * 0.2, Math.PI * 0.2);
+        var growthPlan = new GrowthPlan(
+            startNode.posX, startNode.posY, 
+            false, STAGE_ADULT, 
+            0, 0, 0, deflection / 2,deflection / 2, 
+            TYPE_TRUNK, 3);
+        growthPlan.postConstruct = () => startNode.component.addChild(growthPlan.component);
+
+        growthPlan.steps.push(new GrowthPlanStep(
+            growthPlan,
+            0,
+            this.sproutGrowTimeInDays,
+            () => {
+                leafNode = this.growPlantSquare(startNode, 0, 1);
+                leafNode.subtype = SUBTYPE_NODE;
+                return leafNode;
+            },
+            () => this.growLeafFromNode(leafNode, 5, 15, deflection)
+        ));
+        var leafNode = null;
+        for (let t = 1; t < 20; t++) {
+            growthPlan.steps.push(new GrowthPlanStep(
+                growthPlan,
                 0,
-                this.trunkGrowTimeInDays,
+                this.sproutGrowTimeInDays,
                 () => {
-                    var node = this.growPlantSquarePos(rootNodeSq, rootNodeSq.posX, rootNodeSq.posY - 1);
-                    node.subtype = SUBTYPE_TRUNK;
-                    return node;
+                    var shoot = this.growPlantSquare(startNode, 0, 1);
+                    shoot.subtype = SUBTYPE_STEM;
+                    return shoot;
                 },
                 null
-            ));
-            curY -= 1;
-        };
+            ))
+        }
+        this.growthPlans.push(growthPlan);
+        return growthPlan;
     }
 
     adultGrowthPlanning() {
-        var trunk = this.getAllComponentsofType(TYPE_TRUNK).at(0);
-        this.thickenTrunkGrowthPlan(trunk);
+        this.addNewLeafGrowthPlan();
     }
 
     planGrowth() {
         if (this.stage == STAGE_JUVENILE) {
-            var plan = this.gp_juvenile();
-            if (plan != null)
-                this.growthPlans.push(plan);
+            this.juvenileGrowthPlanning();
         }
         
         if (this.stage == STAGE_ADULT) {
