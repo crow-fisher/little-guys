@@ -21,6 +21,15 @@ Model ph
 > Will allow for plants to have different colors based on ph (eg, hydrangeas)
 
 
+-- Soil moisture
+
+https://www.youtube.com/watch?app=desktop&v=1ZUtwYj0dvw
+
+Basically, 
+
+
+
+
 
 -- Impact to plants: 
 
