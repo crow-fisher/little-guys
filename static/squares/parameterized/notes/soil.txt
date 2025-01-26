@@ -1,0 +1,60 @@
+https://www.ctahr.hawaii.edu/mauisoil/c_nutrients01.aspx
+
+Soil model
+
+Track particle size by: 
+> Percent sand, silt, clay
+> Impacts to water drainage and how nutrients flow through it
+
+Model "basic" nutrients: 
+> Potassium, Phosphorus, others. These are getting aggregated into one.
+> This will be carried by water, and removed when plants are harvested
+
+Model nitrogen:
+> Allow for nitrogen fixing
+> Nitrogen fixing will be relatively "automaatic"
+  > E.g., legumes are nitrogen fixing with the correct application of rhizobia
+  > but in the game, they'll "just work"
+
+Model ph 
+> Plants will need to be in specific bands of ph. 
+> Will allow for plants to have different colors based on ph (eg, hydrangeas)
+
+
+
+-- Impact to plants: 
+
+NITROGEN
+
+Low: 
+> Lower leaves yellow, higher leaves become pale
+> Poorly developed shoots or branches
+> Decrease in flowering / fruits 
+> Slow growth rate
+
+High:
+> Abnormally dark
+> Overly succulent shoots and leaves
+
+
+POTASSIUM
+
+Low:
+> Tend to wilt more
+> Smaller development
+
+
+
+The size of sand particles range between 2.0 and 0.05 mm; silt, 0.05 mm and 0.002 mm; and clay, less than 0.002 mm. 
+
+Primary nutrients: 
+
+
+
+** Nitrogen
+
+Track carbon-nitrogen ratio
+When the C:N ratio of decomposing organic residues is between 20:1 and 30:1, mineralization and immobilization occur at fairly equal rates.
+Net mineralization occurs at C:N ratios less than 20:1.
+Net immobilization occurs at C:N ratios greater than above 30:1.
+Most well decomposed organic matter in soils have a C:N ration near 10:1
