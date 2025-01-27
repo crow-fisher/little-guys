@@ -3,7 +3,7 @@ import { dirtNutrientValuePerDirectNeighbor } from "../../config/config.js";
 
 import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount } from "../../config/config.js";
 import { getNeighbors } from "../_sqOperations.js";
-import { rgbToHex } from "../../common.js";
+import { hexToRgb, rgbToHex } from "../../common.js";
 import { BASE_SIZE, MAIN_CONTEXT, zoomCanvasFillRect } from "../../index.js";
 
 export class SoilSquare extends BaseSquare {
@@ -22,11 +22,15 @@ export class SoilSquare extends BaseSquare {
         this.accentColor = "#bf9e7c";
         this.accentColorAmount = dirt_accentColorAmount;
 
+        this.clayColorRgb = hexToRgb("#773319");
+        this.siltColorRgb = hexToRgb("#655440");
+        this.sandColorRgb = hexToRgb("#c99060");
 
         // generic loam
         this.sand = 0.40;
         this.silt = 0.40;
         this.clay = 0.20;
+
         this.waterContainment = 0;
 
         // maps in form "water containment" / "matric pressure in atmospheres"
@@ -50,6 +54,84 @@ export class SoilSquare extends BaseSquare {
             [0.40, 0]
         ]
     }
+
+    setType(type) {
+        switch (type) {
+            case "pureclay":
+                this.clay = 100
+                this.silt = 0
+                break;
+            case "clay":
+                this.clay = 60;
+                this.silt = 20;
+                break;
+            case "siltyclay":
+                this.clay = 50;
+                this.silt = 50;
+                break;
+            case "siltyclayloam":
+                this.clay = 35;
+                this.silt = 60;
+                break;
+            case "clayloam":
+                this.clay = 35;
+                this.silt = 35;
+                break;
+            case "siltloam":
+                this.clay = 20;
+                this.silt = 70;
+                break;
+            case "silt":
+                this.silt = 90;
+                this.clay = 5;
+                break;
+            case "sandyclay":
+                this.clay = 40;
+                this.silt = 10;
+                break;
+            case "sandyloam":
+                this.clay = 10;
+                this.silt = 0;
+                break;
+            case "sandyclayloam":
+                this.clay = 30;
+                this.silt = 20;
+                break;
+            case "puresand": 
+                this.clay = 0;
+                this.silt = 0;
+                break;
+            case "loam":
+                this.clay = 20;
+                this.silt = 40;
+                break;
+        }
+        this.clay /= 100;
+        this.silt /= 100;
+        this.sand = 1 - (this.clay + this.silt);
+        this.randomize();
+    }
+
+    randomize() {
+        var rand1 = (Math.random() - 0.5) * 0.3;
+        var rand2 = (Math.random() - 0.5) * 0.3;
+        var rand3 = (Math.random() - 0.5) * 0.3;
+        this.clay *= (1 + rand1);
+        this.silt *= (1 + rand2);
+        this.sand *= (1 + rand3);
+
+        var sum = this.clay + this.silt + this.sand;
+
+        this.clay *= (1 / sum);
+        this.silt *= (1 / sum);
+        this.sand *= (1 / sum);
+
+        this.clay = Math.min(Math.max(this.clay, 0), 1);
+        this.silt = Math.min(Math.max(this.silt, 0), 1);
+        this.sand = Math.min(Math.max(this.sand, 0), 1);
+    }
+
+
 
     loadInverseMatricPressureMap() {
         for (let i = 0; i < 0.5; i += 0.001) {
@@ -155,6 +237,21 @@ export class SoilSquare extends BaseSquare {
         // g = 0;
         b = 0;
         MAIN_CONTEXT.fillStyle = rgbToHex(r, g, b);
+        zoomCanvasFillRect(
+            (this.offsetX + this.posX) * BASE_SIZE,
+            (this.offsetY + this.posY) * BASE_SIZE,
+            BASE_SIZE,
+            BASE_SIZE
+        );
+    }
+
+    renderWithVariedColors() {
+        var outColor = {
+            r: this.clay * this.clayColorRgb.r + this.silt * this.siltColorRgb.r + this.sand * this.sandColorRgb.r, 
+            g: this.clay * this.clayColorRgb.g + this.silt * this.siltColorRgb.g + this.sand * this.sandColorRgb.g, 
+            b: this.clay * this.clayColorRgb.b + this.silt * this.siltColorRgb.b + this.sand * this.sandColorRgb.b
+        }
+        MAIN_CONTEXT.fillStyle = rgbToHex(outColor.r, outColor.g, outColor.b);
         zoomCanvasFillRect(
             (this.offsetX + this.posX) * BASE_SIZE,
             (this.offsetY + this.posY) * BASE_SIZE,

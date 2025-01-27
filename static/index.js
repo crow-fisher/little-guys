@@ -91,8 +91,7 @@ var saveSlotC = document.getElementById("saveSlotC");
 var loadSlotVolcano = document.getElementById("loadSlotVolcano");
 var loadSlotBeach = document.getElementById("loadSlotBeach");
 
-var selectedMaterial = "dirt";
-var selectedViewMode = "watersaturation";
+var selectedViewMode = "normal";
 var global_theta_base = 0;
 const BASE_SIZE = 4;
 
@@ -702,14 +701,32 @@ function addSquareByNameSetTemp(posX, posY, name) {
     }
 }
 
+function addSoilSquare(posX, posY, name) {
+    var square = addSquareOverride(new SoilSquare(posX, posY));
+    if (square)
+        square.setType(name);
+    return square;
+}
+
 function addSquareByName(posX, posY, name) {
     var square; 
     switch (name) {
         case "rock":
             square = addSquareOverride(new RockSquare(posX, posY));
             break;
-        case "dirt":
-            square = addSquareOverride(new SoilSquare(posX, posY));
+        case "pureclay":
+        case "clay":
+        case "siltyclay":
+        case "siltyclayloam":
+        case "siltloam":
+        case "silt":
+        case "clayloam":
+        case "sandyclay":
+        case "sandyclayloam":
+        case "sandyloam":
+        case "puresand":
+        case "loam":
+            square = addSoilSquare(posX, posY, name);
             break;
         case "water":
             square = addSquare(new WaterSquare(posX, posY));
