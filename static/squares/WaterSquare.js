@@ -34,7 +34,7 @@ class WaterSquare extends BaseSquare {
         this.accentColor = "#85B09A";
         this.opacity = 0.5;
 
-        this.blockHealthMax = 40;
+        this.blockHealthMax = 1;
         this.blockHealth = this.blockHealthMax;
 
         // water starts as a liquid 

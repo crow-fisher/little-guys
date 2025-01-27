@@ -58,7 +58,7 @@ var noNutrientValuePerDirectNeighbor = {
 
 var base_waterContainmentMax = {
     name: "base_waterContainmentMax",
-    value: 20
+    value: 0.5
 };  
 
 var base_waterContainmentTransferRate = {
@@ -68,7 +68,7 @@ var base_waterContainmentTransferRate = {
 
 var gravel_waterContainmentMax = {
     name: "gravel_waterContainmentMax",
-    value: 25
+    value: 0.5
 };  
 
 var gravel_waterContainmentTransferRate = {
@@ -78,7 +78,7 @@ var gravel_waterContainmentTransferRate = {
 
 var sand_waterContainmentMax = {
     name: "sand_waterContainmentMax",
-    value: 22
+    value: 0.5
 };  
 
 var sand_waterContainmentTransferRate = {

@@ -102,8 +102,9 @@ export class SoilSquare extends BaseSquare {
             .filter((sq) => sq.proto == this.proto)
             .forEach((sq) => {
                 var thisWaterPressure = this.getSoilWaterPressure();
-                var sqWaterPressure = sq.getSoilWaterPressure();
-                if (thisWaterPressure > sqWaterPressure) {
+                var sqWaterPressure = sq.getSoilWaterPressure(); 
+
+                if (thisWaterPressure < sqWaterPressure) {
                     var diff = (this.waterContainment - sq.waterContainment) / 3;
                     this.waterContainment -= diff;
                     sq.waterContainment += diff;
@@ -112,8 +113,8 @@ export class SoilSquare extends BaseSquare {
     }
 
     renderWaterSaturation() {
-        var v = -this.getSoilWaterPressure();
-        // var v = -this.getMatricPressure();
+        // var v = -this.getSoilWaterPressure();
+        var v = -this.getMatricPressure();
         // var v = -this.getGravitationalPressure();
         v = Math.max(0, Math.min(v, 10));
         
