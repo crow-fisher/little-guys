@@ -94,7 +94,7 @@ var loadSlotVolcano = document.getElementById("loadSlotVolcano");
 var loadSlotBeach = document.getElementById("loadSlotBeach");
 
 var selectedMaterial = "dirt";
-var selectedViewMode = "normal";
+var selectedViewMode = "watersaturation";
 var global_theta_base = 0;
 const BASE_SIZE = 4;
 
@@ -998,7 +998,7 @@ for (let i = 0; i < CANVAS_SQUARES_X; i++) {
     for (let j = 1; j < 10; j++) {
         addSquareByNameSetTemp(i, CANVAS_SQUARES_Y - (1 + j), "dirt");
     }
-    addSquareByNameSetTemp(i, 0, "water");
+    // addSquareByNameSetTemp(i, 0, "water");
 
 }
 

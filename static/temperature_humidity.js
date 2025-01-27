@@ -402,9 +402,10 @@ function renderTemperature() {
 }
 
 function renderWaterSaturation() {
+    return;
     for (let i = 0; i < curSquaresX; i++) {
         for (let j = 0; j < curSquaresY; j++) {
-            if (getPressure(i, j) < 0) {
+            if (getPressure(i, j) <= 0) {
                 continue;
             }
             MAIN_CONTEXT.fillStyle = calculateColor(getHumidity(i, j), 0, 2, c_waterSaturationLowRGB, c_waterSaturationHighRGB);

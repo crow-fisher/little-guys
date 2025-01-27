@@ -28,6 +28,18 @@ https://indico.ictp.it/event/a0261/session/33/contribution/22/material/0/0.pdf
 > -- Gravitational potential: = -10 * 9.8 * (height in meters) and one block is one meter 
 
 
+https://www.nature.com/scitable/knowledge/library/soil-water-dynamics-103089121/
+Permeability Class	Permeability
+(cm/hr)	Textural class
+Very slow	<0.13	clay
+Slow	0.13–0.5	sandy clay, silty clay
+Moderately slow	0.5–2.0	clay loam, sandy clay loam, silty clay loam
+Moderate	2.0–6.3	very fine sandy loam, loam, silt loam, silty clay loam, silt
+Moderately rapid	6.3–12.7	sandy loam, fine sandy loam
+Rapid	12.7–25.4	sand, loamy sand
+Very Rapid	>25.4	coarse sand
+
+
 -- Soil moisture
 
 https://www.youtube.com/watch?app=desktop&v=1ZUtwYj0dvw
