@@ -35,6 +35,7 @@ import { renderTemperature, renderWaterSaturation, tickMaps, addTemperature, add
 import { PalmTreeSeedOrganism } from "./organisms/parameterized/tropical/PalmTreeSeedOrganism.js";
 import { ElephantEarSeedOrganism } from "./organisms/parameterized/tropical/ElephantEarSeedOrganism.js";
 import { TropicalGrassSeedOrganism } from "./organisms/parameterized/tropical/TropicalGrassSeedOrganism.js";
+import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 
 var lastMode = "organism"; // options: "normal", "special", "organism", "blockModification";
 
@@ -1037,3 +1038,10 @@ export {
     zoomCanvasFillRect
 }
 
+
+var ss = new SoilSquare(35, 35);
+
+for (let i = 0; i < 0.5; i+= 0.001) {
+    ss.waterContainment = i;
+    console.log(i, ss.getMatricPressure());
+}

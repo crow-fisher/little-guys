@@ -20,6 +20,13 @@ Model ph
 > Plants will need to be in specific bands of ph. 
 > Will allow for plants to have different colors based on ph (eg, hydrangeas)
 
+Soil water pressure model: 
+https://indico.ictp.it/event/a0261/session/33/contribution/22/material/0/0.pdf
+
+> Calculate the matric potential of the soil based on its components
+> Calculate the gravitational potentail using ψgv g w w = =− ψ ρ ρ g z
+> -- Gravitational potential: = -10 * 9.8 * (height in meters) and one block is one meter 
+
 
 -- Soil moisture
 
