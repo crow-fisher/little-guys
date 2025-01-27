@@ -1,7 +1,6 @@
 import { BaseSquare } from "./BaseSqaure.js";
 
 import {
-    static_sq_waterContainmentMax,
     static_sq_waterContainmentTransferRate,
 } from "../config/config.js"
 
@@ -13,7 +12,7 @@ class RockSquare extends BaseSquare {
         this.proto = "RockSquare";
         this.colorBase = "#000100";
         this.physicsEnabled = false;
-        this.waterContainmentMax = static_sq_waterContainmentMax;
+        this.waterContainmentMax = 0;
         this.waterContainmentTransferRate = static_sq_waterContainmentTransferRate;
         this.darken = false;
         this.baseColor = "#b69e87";

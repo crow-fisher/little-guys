@@ -56,30 +56,17 @@ var noNutrientValuePerDirectNeighbor = {
     value: 0
 };
 
-var base_waterContainmentMax = {
-    name: "base_waterContainmentMax",
-    value: 0.5
-};  
-
 var base_waterContainmentTransferRate = {
     name: "base_waterContainmentTransferRate",
     value: 0.5
 };
 
-var gravel_waterContainmentMax = {
-    name: "gravel_waterContainmentMax",
-    value: 0.5
-};  
 
 var gravel_waterContainmentTransferRate = {
     name: "gravel_waterContainmentTransferRate",
     value: 8
 };
 
-var sand_waterContainmentMax = {
-    name: "sand_waterContainmentMax",
-    value: 0.5
-};  
 
 var sand_waterContainmentTransferRate = {
     name: "sand_waterContainmentTransferRate",
@@ -100,18 +87,9 @@ var b_sq_nutrientValue = {
     name: "b_sq_nutrientValue",
     value: 0
 };
-var static_sq_waterContainmentMax = {
-    name: "static_sq_waterContainmentMax",
-    value: 0.0
-}
 var static_sq_waterContainmentTransferRate = {
     name: "static_sq_waterContainmentTransferRate",
     value: 0
-}
-
-var drain_sq_waterContainmentMax = {
-    name: "drain_sq_waterContainmentMax",
-    value: 40
 }
 
 var drain_sq_waterTransferRate = {
@@ -119,16 +97,10 @@ var drain_sq_waterTransferRate = {
     value: 10
 }
 
-var wds_sq_waterContainmentMax = {
-    name: "wds_sq_waterContainmentMax",
-    value: 1000
-};
-
 var wds_sq_waterTransferRate = {
     name: "waterContainmentTransferRate",
     value: 50
 };
-
 
 var b_sq_darkeningStrength = {
     name: "b_sq_darkeningStrength",
@@ -230,51 +202,7 @@ var plant_deltaWidth = {
     name: "plant_deltaWidth",
     value: 0.003
 };
-addConfig(gravel_waterContainmentTransferRate);
-addConfig(gravel_waterContainmentMax);
 
-
-addConfig(plant_initialWidth);
-addConfig(plant_deltaWidth);
-
-addConfig(dirt_baseColorAmount);
-addConfig(dirt_darkColorAmount);
-addConfig(dirt_accentColorAmount);
-
-addConfig(rock_baseColorAmount);
-addConfig(rock_darkColorAmount);
-addConfig(rock_accentColorAmount);
-
-addConfig(global_plantToRealWaterConversionFactor);
-addConfig(base_waterContainmentMax);
-addConfig(b_sq_nutrientValue);
-addConfig(static_sq_waterContainmentMax);
-addConfig(static_sq_waterContainmentTransferRate);
-addConfig(drain_sq_waterContainmentMax);
-addConfig(drain_sq_waterTransferRate);
-addConfig(wds_sq_waterContainmentMax);
-addConfig(wds_sq_waterTransferRate);
-addConfig(base_waterContainmentTransferRate);
-addConfig(base_waterContainmentEvaporationRate);
-addConfig(b_sq_darkeningStrength);
-addConfig(dirtNutrientValuePerDirectNeighbor);
-addConfig(rain_dropChance);
-addConfig(heavyrain_dropChance);
-addConfig(rain_dropHealth);
-addConfig(water_evaporationRate);
-addConfig(water_viscocity);
-addConfig(water_darkeningStrength);
-addConfig(po_perFrameCostFracPerSquare);
-addConfig(po_greenSquareSizeExponentCost);
-addConfig(po_rootSquareSizeExponentCost);
-addConfig(airNutrientsPerEmptyNeighbor);
-addConfig(p_seed_ls_sproutGrowthRate);
-addConfig(p_seed_ls_neighborWaterContainmentRequiredToGrow);
-addConfig(p_seed_ls_neighborWaterContainmentRequiredToDecay);
-addConfig(p_seed_ls_darkeningStrength);
-
-
-setInterval(displayConfigs, 1);
 
 
 export {
@@ -287,13 +215,9 @@ export {
     rock_darkColorAmount,
     rock_accentColorAmount,
     global_plantToRealWaterConversionFactor,
-    base_waterContainmentMax,
     b_sq_nutrientValue,
-    static_sq_waterContainmentMax,
     static_sq_waterContainmentTransferRate,
-    drain_sq_waterContainmentMax,
     drain_sq_waterTransferRate,
-    wds_sq_waterContainmentMax,
     wds_sq_waterTransferRate,
     base_waterContainmentTransferRate,
     base_waterContainmentEvaporationRate,
@@ -315,8 +239,6 @@ export {
     p_seed_ls_darkeningStrength,
     noNutrientValuePerDirectNeighbor,
     gravel_waterContainmentTransferRate,
-    gravel_waterContainmentMax,
-    sand_waterContainmentMax,
     sand_waterContainmentTransferRate,
     sand_nutrientValue
 

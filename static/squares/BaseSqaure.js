@@ -2,9 +2,7 @@ import {
     dirt_baseColorAmount,
     dirt_darkColorAmount,
     dirt_accentColorAmount,
-    global_plantToRealWaterConversionFactor,
     b_sq_nutrientValue,
-    base_waterContainmentMax,
     base_waterContainmentTransferRate,
     base_waterContainmentEvaporationRate,
     b_sq_darkeningStrength,
@@ -55,7 +53,7 @@ export class BaseSquare {
         this.blockHealth = this.blockHealthMax; // when reaches zero, delete
         // water flow parameters
         this.waterContainment = 0;
-        this.waterContainmentMax = base_waterContainmentMax;
+        this.waterContainmentMax = 0.5;
         this.waterContainmentTransferRate = base_waterContainmentTransferRate;
         this.waterContainmentEvaporationRate = base_waterContainmentEvaporationRate;
         this.speedX = 0;
@@ -164,7 +162,7 @@ export class BaseSquare {
         diff /= 30;
 
         if (this.solid) {
-            diff *= this.waterContainment / this.waterContainmentMax.value;
+            diff *= this.waterContainment / this.waterContainmentMax;
             this.waterContainment -= (diff / pascalsPerWaterSquare); 
             this.temperature -= diff * this.water_vaporHeat;
         } else {
@@ -273,7 +271,7 @@ export class BaseSquare {
     }
 
     renderWaterSaturation() {
-        this.renderSpecialViewModeLinear(this.blockHealth_color1, this.blockHealth_color2, this.waterContainment, this.waterContainmentMax.value);
+        this.renderSpecialViewModeLinear(this.blockHealth_color1, this.blockHealth_color2, this.waterContainment, this.waterContainmentMax);
     }
 
     renderSpecialViewModeLinear(color1, color2, value, valueMax) {
@@ -364,7 +362,7 @@ export class BaseSquare {
     }
 
     waterContainmentDarken() {
-        MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.waterContainment, this.waterContainmentMax.value);
+        MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.waterContainment, this.waterContainmentMax);
         zoomCanvasFillRect(
             (this.offsetX + this.posX) * BASE_SIZE,
             (this.offsetY + this.posY) * BASE_SIZE,
@@ -579,20 +577,20 @@ export class BaseSquare {
     physicsBefore2() { }
 
     percolateFromWater(waterBlock) {
-        if (this.waterContainmentMax.value == 0 || this.waterContainment >= this.waterContainmentMax.value) {
+        if (this.waterContainmentMax == 0 || this.waterContainment >= this.waterContainmentMax) {
             return 0;
         }
         var heightDiff = this.posY - waterBlock.posY; // bigger number == lower, so if this is negative we are percolating up
         var maxAmountToPercolateFromBlock = 0;
         var amountToPercolate = 0;
         if (heightDiff > 0) {
-            maxAmountToPercolateFromBlock = Math.min(this.waterContainmentMax.value - this.waterContainment, this.waterContainmentTransferRate.value);
+            maxAmountToPercolateFromBlock = Math.min(this.waterContainmentMax - this.waterContainment, this.waterContainmentTransferRate.value);
             amountToPercolate = Math.min(maxAmountToPercolateFromBlock, waterBlock.blockHealth);
             this.waterContainment += amountToPercolate;
             // flowing down
             return amountToPercolate;
         } else if (heightDiff == 0) {
-            maxAmountToPercolateFromBlock = Math.min(this.waterContainmentMax.value - this.waterContainment, this.waterContainmentTransferRate.value);
+            maxAmountToPercolateFromBlock = Math.min(this.waterContainmentMax - this.waterContainment, this.waterContainmentTransferRate.value);
             amountToPercolate = Math.min(maxAmountToPercolateFromBlock, waterBlock.blockHealth);
             this.waterContainment += amountToPercolate;
             return amountToPercolate;
@@ -606,7 +604,7 @@ export class BaseSquare {
     percolateFromBlock(otherBlock) {
         var heightDiff = this.posY - otherBlock.posY; // bigger number == lower, so if this is negative we are percolating up
         // water only flows from wet to dry
-        if (moistureDiff > 0 || this.waterContainment >= this.waterContainmentMax.value) {
+        if (moistureDiff > 0 || this.waterContainment >= this.waterContainmentMax) {
             return 0;
         }
 
@@ -641,7 +639,7 @@ export class BaseSquare {
         if (moistureDiff < 0) {
             return 0;
         }
-        var maxAmountToPercolateFromBlock = Math.min(this.waterContainmentMax.value - this.waterContainment, Math.min(this.waterContainmentTransferRate.value, otherBlock.waterContainmentTransferRate.value));
+        var maxAmountToPercolateFromBlock = Math.min(this.waterContainmentMax - this.waterContainment, Math.min(this.waterContainmentTransferRate.value, otherBlock.waterContainmentTransferRate.value));
 
         var amountToPercolate = Math.min(moistureDiff, maxAmountToPercolateFromBlock);
         this.waterContainment += amountToPercolate;
@@ -704,7 +702,7 @@ export class BaseSquare {
     }
 
     doBlockOutflow() {
-        if (this.waterContainment < this.waterContainmentMax.value / 2) {
+        if (this.waterContainment < this.waterContainmentMax / 2) {
             return;
         }
 
@@ -720,7 +718,7 @@ export class BaseSquare {
             }
             if (getNeighbors(this.posX, this.posY)
                 .filter((sq) => sq.group == this.group)
-                .some((sq) => sq.waterContainment != sq.waterContainmentMax.value)) {
+                .some((sq) => sq.waterContainment != sq.waterContainmentMax)) {
                 return;
             }
             var newWater = addSquareByName(this.posX + side, this.posY, "water");

@@ -1,8 +1,6 @@
 import { BaseSquare } from "./BaseSqaure.js";
 import { RockSquare } from "./RockSquare.js";
 import {
-    wds_sq_waterContainmentMax,
-    wds_sq_waterTransferRate,
     rain_dropChance,
     heavyrain_dropChance,
     rain_dropHealth
@@ -95,8 +93,8 @@ class AquiferSquare extends BaseSquare {
         this.physicsEnabled = false;
         this.collision = false;
         this.proto = "AquiferSquare";
-        this.waterContainmentMax = wds_sq_waterContainmentMax;
-        this.waterContainmentTransferRate = wds_sq_waterTransferRate;
+        this.waterContainmentMax = 1;
+        this.waterContainmentTransferRate = 0;
         this.opacity = 0.03;
     }
     physics() {

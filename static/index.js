@@ -6,7 +6,6 @@ import { WaterSquare } from "./squares/WaterSquare.js";
 import { RainSquare } from "./squares/RainSquare.js";
 import { HeavyRainSquare } from "./squares/RainSquare.js";
 import { AquiferSquare } from "./squares/RainSquare.js";
-import { WaterDistributionSquare } from "./squares/WaterDistributionSquare.js";
 import { DrainSquare } from "./squares/DrainSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
 import { PopGrassSeedOrganism } from "./organisms/PopGrassSeedOrganism.js";
@@ -18,7 +17,6 @@ import { getCurDay, getCurTime, updateTime, renderTime } from "./time.js";
 import { doErase } from "./manipulation.js";
 import { ProtoMap } from "./types.js";
 import { GravelSquare } from "./squares/GravelSquare.js";
-import { SandSquare } from "./squares/SandSquare.js";
 import { getOrganismSquaresAtSquare } from "./lifeSquares/_lsOperations.js";
 import { CactusSeedOrganism } from "./organisms/CactusSeedOrganism.js";
 import { LilyPadSeedOrganism } from "./organisms/LilyPadSeedOrganism.js";
@@ -722,9 +720,6 @@ function addSquareByName(posX, posY, name) {
         case "heavy rain":
             square = addSquareOverride(new HeavyRainSquare(posX, posY));
             break;
-        case "water distribution":
-            square = addSquareOverride(new WaterDistributionSquare(posX, posY));
-            break;
         case "drain":
             square = addSquareOverride(new DrainSquare(posX, posY));
             break;
@@ -733,9 +728,6 @@ function addSquareByName(posX, posY, name) {
             break;
         case "gravel":
             square = addSquareOverride(new GravelSquare(posX, posY));
-            break;
-        case "sand":
-            square = addSquareOverride(new SandSquare(posX, posY));
             break;
     };
     return square;

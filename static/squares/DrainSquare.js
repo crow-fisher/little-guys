@@ -1,7 +1,6 @@
 import { BaseSquare } from "./BaseSqaure.js";
 
 import {
-    drain_sq_waterContainmentMax,
     drain_sq_waterTransferRate,
     rock_accentColorAmount,
     rock_baseColorAmount,
@@ -15,7 +14,7 @@ class DrainSquare extends BaseSquare {
         super(posX, posY);
         this.proto = "DrainSquare";
         this.physicsEnabled = false;
-        this.waterContainmentMax = drain_sq_waterContainmentMax;
+        this.waterContainmentMax = 1;
         this.waterContainmentTransferRate = drain_sq_waterTransferRate;
         this.baseColor = "#dbdadf";
         this.baseColorAmount = rock_baseColorAmount;

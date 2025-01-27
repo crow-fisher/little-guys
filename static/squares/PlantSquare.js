@@ -1,6 +1,5 @@
 import { BaseSquare } from "./BaseSqaure.js";
 import {
-    static_sq_waterContainmentMax,
     static_sq_waterContainmentTransferRate
     } from "../config/config.js"
     
@@ -14,7 +13,7 @@ class PlantSquare extends BaseSquare {
         this.darkColor = "#46FF1D";
         this.accentColor = "#246AFF";
 
-        this.waterContainmentMax = static_sq_waterContainmentMax;
+        this.waterContainmentMax = 0;
         this.waterContainmentTransferRate = static_sq_waterContainmentTransferRate;
         this.organic = true;
         this.physicsEnabled = false;
