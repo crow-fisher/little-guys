@@ -2,7 +2,6 @@ import { BaseSquare } from "./squares/BaseSqaure.js";
 import { getNeighbors, getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares, removeSquarePos } from "./squares/_sqOperations.js";
 import { purge, reset, renderWater, renderSquares, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquare } from "./globalOperations.js"
 import { RockSquare } from "./squares/RockSquare.js"
-import { DirtSquare } from "./squares/DirtSquare.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
 import { RainSquare } from "./squares/RainSquare.js";
 import { HeavyRainSquare } from "./squares/RainSquare.js";
@@ -483,9 +482,6 @@ async function loadSlot(slotName) {
     var loaded_ALL_ORGANISMS = JSON.parse(localStorage.getItem("ALL_ORGANISMS_" + slotName));
     var loaded_ALL_ORGANISM_SQUARES = JSON.parse(localStorage.getItem("ALL_ORGANISM_SQUARES_" + slotName));
 
-    // bippity boppity do something like this 
-    // Object.setPrototypeOf(sq, DirtSquare.prototype)
-
     loadObjArr(loaded_ALL_SQUARES, addSquareOverride)
 }
 
@@ -715,7 +711,7 @@ function addSquareByName(posX, posY, name) {
             square = addSquareOverride(new RockSquare(posX, posY));
             break;
         case "dirt":
-            square = addSquareOverride(new DirtSquare(posX, posY));
+            square = addSquareOverride(new SoilSquare(posX, posY));
             break;
         case "water":
             square = addSquare(new WaterSquare(posX, posY));
@@ -1036,12 +1032,4 @@ export {
     getNewBlockTemperatureVal, getNewBlockLockedTemperature,
     getGlobalThetaBase,
     zoomCanvasFillRect
-}
-
-
-var ss = new SoilSquare(35, 35);
-
-for (let i = 0; i < 0.5; i+= 0.001) {
-    ss.waterContainment = i;
-    console.log(i, ss.getMatricPressure());
 }

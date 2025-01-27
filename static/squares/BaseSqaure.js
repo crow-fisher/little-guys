@@ -504,10 +504,9 @@ export class BaseSquare {
     }
 
     physics() {
-        this.evaporateInnerMoisture();
-        this.percolateInnerMoisture();
         this.calculateDirectPressure();
         this.calculateDistToFront();
+        this.percolateInnerMoisture();
         this.waterEvaporationRoutine();
         this.transferHeat();
 
@@ -728,23 +727,6 @@ export class BaseSquare {
             if (newWater) {
                 newWater.blockHealth = this.waterContainmentTransferRate.value;
                 this.waterContainment -= this.waterContainmentTransferRate.value;
-            }
-        }
-    }
-
-    evaporateInnerMoisture() {
-        if (this.waterContainment == 0) {
-            return;
-        }
-
-        var airCounter = getDirectNeighbors(this.posX, this.posY).map((sq) => (sq == null ? 1 : 0)).reduce(
-            (accumulator, currentValue) => accumulator + currentValue,
-            0,
-        );
-
-        for (let i = 0; i < airCounter; i++) {
-            if (Math.random() > (1 - this.waterContainmentTransferRate.value)) {
-                this.waterContainment = Math.max(0, this.waterContainment - this.waterContainmentEvaporationRate.value);
             }
         }
     }

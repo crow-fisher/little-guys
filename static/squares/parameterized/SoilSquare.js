@@ -2,6 +2,7 @@ import { BaseSquare } from "../BaseSqaure.js";
 import { dirtNutrientValuePerDirectNeighbor } from "../../config/config.js";
 
 import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount } from "../../config/config.js";
+import { getNeighbors } from "../_sqOperations.js";
 
 export class SoilSquare extends BaseSquare {
     constructor(posX, posY) {
@@ -24,6 +25,7 @@ export class SoilSquare extends BaseSquare {
         this.sand = 0.40;
         this.silt = 0.40;
         this.clay = 0.20;
+        this.waterContainment = 0;
     }
 
     getPressureGeneric(waterCapacity, refArr) {
@@ -94,4 +96,24 @@ export class SoilSquare extends BaseSquare {
     getSoilWaterPressure() {
         return this.getGravitationalPressure() + this.getMatricPressure();
     }
+
+    percolateInnerMoisture() {
+        getNeighbors(this.posX, this.posY)
+            .filter((sq) => sq.proto == this.proto)
+            .forEach((sq) => {
+                var thisWaterPressure = this.getSoilWaterPressure();
+                var sqWaterPressure = sq.getSoilWaterPressure();
+                sqWaterPressure += -0.98 * (this.posY - sq.posY);
+                if (thisWaterPressure > sqWaterPressure) {
+                    var diff = (this.waterContainment - sq.waterContainment) / 3;
+                    this.waterContainment -= diff;
+                    sq.waterContainment += diff;
+                }
+            })
+    }
+
+    renderWaterSaturation() {
+        this.renderSpecialViewModeLinear(this.blockHealth_color1, this.blockHealth_color2,Math.max(0, 7 + this.getSoilWaterPressure()), 10);
+    }
+
 }
