@@ -3,6 +3,8 @@ import { dirtNutrientValuePerDirectNeighbor } from "../../config/config.js";
 
 import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount } from "../../config/config.js";
 import { getNeighbors } from "../_sqOperations.js";
+import { rgbToHex } from "../../common.js";
+import { BASE_SIZE, MAIN_CONTEXT, zoomCanvasFillRect } from "../../index.js";
 
 export class SoilSquare extends BaseSquare {
     constructor(posX, posY) {
@@ -26,6 +28,38 @@ export class SoilSquare extends BaseSquare {
         this.silt = 0.40;
         this.clay = 0.20;
         this.waterContainment = 0;
+
+        // maps in form "water containment" / "matric pressure in atmospheres"
+        this.clayMap = [
+            [0, -7],
+            [0.28, -4.2],
+            [0.45, -2.5],
+            [0.48, -2],
+            [0.49, 0]
+        ];
+        this.siltMap = [
+            [0, -7],
+            [0.09, -4.2],
+            [0.15, -2.3],
+            [0.26, -2],
+            [0.42, 0]
+        ];
+        this.sandMap = [
+            [0, -7],
+            [0.06, -2],
+            [0.40, 0]
+        ]
+    }
+
+    loadInverseMatricPressureMap() {
+        for (let i = 0; i < 0.5; i += 0.001) {
+            var pressure = this._getMatricPressure(i);
+            this.inverseMatricPressureMap[pressure] = i; 
+        }
+    }
+
+    getInversePressureGeneric(waterCapacity, refArr) {
+        return this.getPressureGeneric(waterCapacity, Array.from(refArr.map((vec) => [vec[1], vec[0]])));
     }
 
     getPressureGeneric(waterCapacity, refArr) {
@@ -58,34 +92,20 @@ export class SoilSquare extends BaseSquare {
         return interpolated;
     }
     
+    getInverseMatricPressure(waterPressure) {
+        return (
+            this.clay * this.getInversePressureGeneric(waterPressure, this.clayMap)
+             + this.silt * this.getInversePressureGeneric(waterPressure, this.siltMap)
+             + this.sand * this.getInversePressureGeneric(waterPressure, this.sandMap)
+        )
+    }
 
     getMatricPressure() {
-        var clayMap = [
-            [0, -7],
-            [0.28, -4.2],
-            [0.45, -2.5],
-            [0.48, -2],
-            [0.49, 0]
-        ];
-        // using "loam" number as silt
-        var siltMap = [
-            [0, -7],
-            [0.09, -4.2],
-            [0.15, -2.3],
-            [0.26, -2],
-            [0.42, 0]
-        ];
-        var sandMap = [
-            [0, -7],
-            [0.06, -2],
-            [0.40, 0]
-        ]
-
         return (
-            this.clay * this.getPressureGeneric(this.waterContainment, clayMap)
-             + this.silt * this.getPressureGeneric(this.waterContainment, siltMap)
-             + this.sand * this.getPressureGeneric(this.waterContainment, sandMap)
-        );
+            this.clay * this.getPressureGeneric(this.waterContainment, this.clayMap)
+             + this.silt * this.getPressureGeneric(this.waterContainment, this.siltMap)
+             + this.sand * this.getPressureGeneric(this.waterContainment, this.sandMap)
+        )
     }
 
     getGravitationalPressure() {
@@ -101,24 +121,46 @@ export class SoilSquare extends BaseSquare {
         getNeighbors(this.posX, this.posY)
             .filter((sq) => sq.proto == this.proto)
             .forEach((sq) => {
-                var thisWaterPressure = this.getSoilWaterPressure();
-                var sqWaterPressure = sq.getSoilWaterPressure(); 
+                var thisWaterPressure = this.getMatricPressure(); 
+                var sqWaterPressure = sq.getMatricPressure() + (sq.getGravitationalPressure() - this.getGravitationalPressure());
 
-                if (thisWaterPressure < sqWaterPressure) {
-                    var diff = (this.waterContainment - sq.waterContainment) / 3;
-                    this.waterContainment -= diff;
-                    sq.waterContainment += diff;
+                if (thisWaterPressure < sqWaterPressure || thisWaterPressure < -2) {
+                    return;
                 }
+                var meanPressure = (thisWaterPressure + sqWaterPressure) / 2;
+                var meanPressureWaterContainment = this.getInverseMatricPressure(meanPressure);
+                var diff = (this.waterContainment - meanPressureWaterContainment) / 20;
+                this.waterContainment -= diff;
+                sq.waterContainment += diff;
             })
     }
 
+    // renderWaterSaturation() {
+    //     // var v = -this.getSoilWaterPressure();
+    //     var v = -this.getMatricPressure();
+    //     // var v = -this.getGravitationalPressure();
+    //     v = Math.max(0, Math.min(v, 10)); 
+
+    //     this.renderSpecialViewModeLinear(this.blockHealth_color2, this.blockHealth_color1,v, 10);
+    // }
+
+    waterEvaporationRoutine() {}
+    
     renderWaterSaturation() {
-        // var v = -this.getSoilWaterPressure();
-        var v = -this.getMatricPressure();
-        // var v = -this.getGravitationalPressure();
-        v = Math.max(0, Math.min(v, 10));
-        
-        this.renderSpecialViewModeLinear(this.blockHealth_color2, this.blockHealth_color1,v, 10);
+        var r = Math.min(((-this.getSoilWaterPressure()) / 7) * 255, 255)
+        var g = Math.min(((-this.getMatricPressure(this.waterContainment)) / 7) * 255, 255)
+        var b = Math.min(((-this.getGravitationalPressure()) / 7) * 255, 255)
+
+        r = 0;
+        // g = 0;
+        b = 0;
+        MAIN_CONTEXT.fillStyle = rgbToHex(r, g, b);
+        zoomCanvasFillRect(
+            (this.offsetX + this.posX) * BASE_SIZE,
+            (this.offsetY + this.posY) * BASE_SIZE,
+            BASE_SIZE,
+            BASE_SIZE
+        );
     }
 
 }
