@@ -211,39 +211,55 @@ export class SoilSquare extends BaseSquare {
                 }
                 var meanPressure = (thisWaterPressure + sqWaterPressure) / 2;
                 var meanPressureWaterContainment = this.getInverseMatricPressure(meanPressure);
-                var diff = (this.waterContainment - meanPressureWaterContainment) / 20;
+                var thisDiff = (this.waterContainment - meanPressureWaterContainment) / this.getWaterflowRate();
+                var sqDiff = (this.waterContainment - meanPressureWaterContainment) / sq.getWaterflowRate();
+                var diff = Math.min(thisDiff, sqDiff) / 2;
                 this.waterContainment -= diff;
                 sq.waterContainment += diff;
             })
     }
 
-    // renderWaterSaturation() {
-    //     // var v = -this.getSoilWaterPressure();
-    //     var v = -this.getMatricPressure();
-    //     // var v = -this.getGravitationalPressure();
-    //     v = Math.max(0, Math.min(v, 10)); 
 
-    //     this.renderSpecialViewModeLinear(this.blockHealth_color2, this.blockHealth_color1,v, 10);
-    // }
 
     waterEvaporationRoutine() {}
     
-    renderWaterSaturation() {
-        var r = Math.min(((-this.getSoilWaterPressure()) / 7) * 255, 255)
-        var g = Math.min(((-this.getMatricPressure(this.waterContainment)) / 7) * 255, 255)
-        var b = Math.min(((-this.getGravitationalPressure()) / 7) * 255, 255)
 
-        r = 0;
-        // g = 0;
-        b = 0;
-        MAIN_CONTEXT.fillStyle = rgbToHex(r, g, b);
-        zoomCanvasFillRect(
-            (this.offsetX + this.posX) * BASE_SIZE,
-            (this.offsetY + this.posY) * BASE_SIZE,
-            BASE_SIZE,
-            BASE_SIZE
-        );
+    getWaterflowRate() {
+        // https://docs.google.com/spreadsheets/d/1MWOde96t-ruC5k1PLL4nex0iBjdyXKOkY7g59cnaEj4/edit?gid=0#gid=0
+        var clayRate = 2;
+        var siltRate = 1.5;
+        var sandRate = 0.92;
+        var power = 10;
+
+        return (this.sand * sandRate + 
+                this.silt * siltRate + 
+                this.clay * clayRate) ** power;
+
     }
+
+
+    renderWaterSaturation() {
+        var v = Math.min(Math.max(this.waterContainment, 0), this.waterContainmentMax);
+        this.renderSpecialViewModeLinear(this.blockHealth_color2, this.blockHealth_color1,v, this.waterContainmentMax);
+    }
+    // renderWaterSaturation() {
+
+
+    //     var r = Math.min(((-this.getSoilWaterPressure()) / 7) * 255, 255)
+    //     var g = Math.min(((-this.getMatricPressure(this.waterContainment)) / 7) * 255, 255)
+    //     var b = Math.min(((-this.getGravitationalPressure()) / 7) * 255, 255)
+
+    //     r = 0;
+    //     // g = 0;
+    //     b = 0;
+    //     MAIN_CONTEXT.fillStyle = rgbToHex(r, g, b);
+    //     zoomCanvasFillRect(
+    //         (this.offsetX + this.posX) * BASE_SIZE,
+    //         (this.offsetY + this.posY) * BASE_SIZE,
+    //         BASE_SIZE,
+    //         BASE_SIZE
+    //     );
+    // }
 
     renderWithVariedColors() {
         var outColor = {

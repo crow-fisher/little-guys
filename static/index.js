@@ -1005,7 +1005,9 @@ for (let i = 0; i < CANVAS_SQUARES_X; i++) {
 
 for (let i = 0; i < CANVAS_SQUARES_X; i++) {
     for (let j = 1; j < 10; j++) {
-        addSquareByNameSetTemp(i, CANVAS_SQUARES_Y - (1 + j), "dirt");
+        var square = addSquareByNameSetTemp(i, CANVAS_SQUARES_Y - (1 + j), "loam");
+        if (square) 
+            square.randomize();
     }
     // addSquareByNameSetTemp(i, 0, "water");
 
