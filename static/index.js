@@ -43,7 +43,7 @@ var material1_val = "dirt";
 var material2 = document.getElementById("material2");
 var material2_val = "sand";
 var mixMaterials = document.getElementById("mixMaterials");
-var mixMaterials_val = true;
+var mixMaterials_val = false;
 var materialSlider = document.getElementById("materialSlider");
 var materialSlider_val = 0;
 var newBlockTemperature = document.getElementById("newBlockTemperature");
@@ -92,6 +92,22 @@ var loadSlotVolcano = document.getElementById("loadSlotVolcano");
 var loadSlotBeach = document.getElementById("loadSlotBeach");
 
 var selectedViewMode = "normal";
+
+const urlParams = new URLSearchParams(window.location.search);
+var viewMode = urlParams.get('mode')
+if (viewMode != null) {
+    switch (viewMode) {
+        case "normal":
+        case "watersaturation":
+            selectedViewMode = viewMode;
+            break;
+        default:
+            alert("invalid, try '?mode=watersaturation'");
+            selectedViewMode = "normal";
+            break;
+    }
+}
+
 var global_theta_base = 0;
 const BASE_SIZE = 4;
 
@@ -403,7 +419,7 @@ MAIN_CANVAS.width = CANVAS_SQUARES_X * BASE_SIZE;
 MAIN_CANVAS.height = CANVAS_SQUARES_Y * BASE_SIZE;
 
 MAIN_CANVAS.onwheel = zoom;
-MAIN_CANVAS.addEventListener('mousemove', handleClick, false);
+document.addEventListener('mousemove', handleClick, false);
 
 document.body.onmousedown = function () {
     mouseDown = 1;
@@ -633,8 +649,17 @@ initializeWindPressureMap();
 
 
 
+var offScreen = false; 
 
 function getOffset(evt) {
+    if (
+        (evt.pageX > (CANVAS_SQUARES_X * 1.5) * BASE_SIZE) || 
+        (evt.pageY > (CANVAS_SQUARES_Y * 1.5) * BASE_SIZE)
+    ) {
+        offScreen = true;
+    } else {
+        offScreen = false;
+    }
     if (evt.offsetX != undefined)
         return { x: evt.offsetX, y: evt.offsetY };
 
@@ -724,7 +749,7 @@ function addSquareByName(posX, posY, name) {
         case "sandyclay":
         case "sandyclayloam":
         case "sandyloam":
-        case "puresand":
+        case "sand":
         case "loam":
             square = addSoilSquare(posX, posY, name);
             break;
@@ -830,6 +855,9 @@ function doBrushFunc(centerX, centerY, func) {
 }
 
 function doClickAdd() {
+    if (offScreen) {
+        return;
+    }
     if (lastMoveEvent == null) {
         return;
     }
@@ -837,6 +865,9 @@ function doClickAdd() {
         return;
     }
     if (mouseDown > 0) {
+        if (lastMoveOffset.x > CANVAS_SQUARES_X * BASE_SIZE || lastMoveOffset > CANVAS_SQUARES_Y * BASE_SIZE) {
+            return;
+        }
         var offsetTransformed = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);
         var offsetX = offsetTransformed[0];
         var offsetY = offsetTransformed[1];
@@ -1003,15 +1034,15 @@ for (let i = 0; i < CANVAS_SQUARES_X; i++) {
     addSquare(new RockSquare(i, CANVAS_SQUARES_Y - 1));
 }
 
-for (let i = 0; i < CANVAS_SQUARES_X; i++) {
-    for (let j = 1; j < 10; j++) {
-        var square = addSquareByNameSetTemp(i, CANVAS_SQUARES_Y - (1 + j), "loam");
-        if (square) 
-            square.randomize();
-    }
-    // addSquareByNameSetTemp(i, 0, "water");
+// for (let i = 0; i < CANVAS_SQUARES_X; i++) {
+//     for (let j = 1; j < 10; j++) {
+//         var square = addSquareByNameSetTemp(i, CANVAS_SQUARES_Y - (1 + j), "loam");
+//         if (square) 
+//             square.randomize();
+//     }
+//     // addSquareByNameSetTemp(i, 0, "water");
 
-}
+// }
 
 // for (let i = 0; i < CANVAS_SQUARES_Y; i++) {
 //     addSquare(new RockSquare(CANVAS_SQUARES_X - 1, i));

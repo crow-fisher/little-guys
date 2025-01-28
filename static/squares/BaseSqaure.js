@@ -275,6 +275,10 @@ export class BaseSquare {
     }
 
     renderSpecialViewModeLinear(color1, color2, value, valueMax) {
+        this.renderSpecialViewModeLinearOpacity(color1, color2, value, valueMax, 1)
+    }
+
+    renderSpecialViewModeLinearOpacity(color1, color2, value, valueMax, opacity) {
         var color1Rgb = hexToRgb(color1);
         var color2Rgb = hexToRgb(color2);
         var frac = value / valueMax;
@@ -283,8 +287,8 @@ export class BaseSquare {
             g: color1Rgb.g * frac + color2Rgb.g * (1 - frac),
             b: color1Rgb.b * frac + color2Rgb.b * (1 - frac)
         }
-        var outHex = rgbToHex(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b));
-        MAIN_CONTEXT.fillStyle = outHex;
+        var outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacity);
+        MAIN_CONTEXT.fillStyle = outRgba;
         zoomCanvasFillRect(
             (this.offsetX + this.posX) * BASE_SIZE,
             (this.offsetY + this.posY) * BASE_SIZE,

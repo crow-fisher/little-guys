@@ -3,8 +3,8 @@ import { dirtNutrientValuePerDirectNeighbor } from "../../config/config.js";
 
 import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount } from "../../config/config.js";
 import { getNeighbors } from "../_sqOperations.js";
-import { hexToRgb, rgbToHex } from "../../common.js";
-import { BASE_SIZE, MAIN_CONTEXT, zoomCanvasFillRect } from "../../index.js";
+import { hexToRgb, rgbToHex, rgbToRgba } from "../../common.js";
+import { BASE_SIZE, MAIN_CONTEXT, selectedViewMode, zoomCanvasFillRect } from "../../index.js";
 
 export class SoilSquare extends BaseSquare {
     constructor(posX, posY) {
@@ -97,9 +97,9 @@ export class SoilSquare extends BaseSquare {
                 this.clay = 30;
                 this.silt = 20;
                 break;
-            case "puresand": 
-                this.clay = 0;
-                this.silt = 0;
+            case "sand": 
+                this.clay = 10;
+                this.silt = 10;
                 break;
             case "loam":
                 this.clay = 20;
@@ -214,6 +214,11 @@ export class SoilSquare extends BaseSquare {
                 var thisDiff = (this.waterContainment - meanPressureWaterContainment) / this.getWaterflowRate();
                 var sqDiff = (this.waterContainment - meanPressureWaterContainment) / sq.getWaterflowRate();
                 var diff = Math.min(thisDiff, sqDiff) / 2;
+
+                var pressureDiff = Math.min(2, Math.abs(thisWaterPressure - sqWaterPressure));
+                var n = 2;
+                diff *= pressureDiff;
+
                 this.waterContainment -= diff;
                 sq.waterContainment += diff;
             })
@@ -230,7 +235,6 @@ export class SoilSquare extends BaseSquare {
         var siltRate = 1.5;
         var sandRate = 0.92;
         var power = 10;
-
         return (this.sand * sandRate + 
                 this.silt * siltRate + 
                 this.clay * clayRate) ** power;
@@ -239,8 +243,9 @@ export class SoilSquare extends BaseSquare {
 
 
     renderWaterSaturation() {
+        this.renderWithVariedColors();
         var v = Math.min(Math.max(this.waterContainment, 0), this.waterContainmentMax);
-        this.renderSpecialViewModeLinear(this.blockHealth_color2, this.blockHealth_color1,v, this.waterContainmentMax);
+        this.renderSpecialViewModeLinearOpacity(this.blockHealth_color2, this.blockHealth_color1,v, this.waterContainmentMax, 0.4);
     }
     // renderWaterSaturation() {
 
@@ -260,7 +265,7 @@ export class SoilSquare extends BaseSquare {
     //         BASE_SIZE
     //     );
     // }
-
+    
     renderWithVariedColors() {
         var outColor = {
             r: this.clay * this.clayColorRgb.r + this.silt * this.siltColorRgb.r + this.sand * this.sandColorRgb.r, 
