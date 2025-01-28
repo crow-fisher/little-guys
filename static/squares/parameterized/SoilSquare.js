@@ -215,6 +215,8 @@ export class SoilSquare extends BaseSquare {
                 var sqDiff = (this.waterContainment - meanPressureWaterContainment) / sq.getWaterflowRate();
                 var diff = Math.min(thisDiff, sqDiff) / 2;
 
+                diff = Math.min(diff, sq.waterContainmentMax - sq.waterContainment);
+
                 var pressureDiff = Math.min(2, Math.abs(thisWaterPressure - sqWaterPressure));
                 var n = 2;
                 diff *= pressureDiff;
@@ -222,6 +224,27 @@ export class SoilSquare extends BaseSquare {
                 this.waterContainment -= diff;
                 sq.waterContainment += diff;
             })
+    }
+    percolateFromWater(waterBlock) {
+        if (this.waterContainmentMax == 0 || this.waterContainment >= this.waterContainmentMax) {
+            return 0;
+        }
+        var heightDiff = this.posY - waterBlock.posY; // bigger number == lower, so if this is negative we are percolating up
+        var maxAmountToPercolateFromBlock = 0;
+        var amountToPercolate = 0;
+        if (heightDiff > 0) {
+            maxAmountToPercolateFromBlock = Math.min(this.waterContainmentMax - this.waterContainment, this.waterContainmentTransferRate.value);
+            amountToPercolate = Math.min(maxAmountToPercolateFromBlock, waterBlock.blockHealth);
+        } else if (heightDiff == 0) {
+            maxAmountToPercolateFromBlock = Math.min(this.waterContainmentMax - this.waterContainment, this.waterContainmentTransferRate.value);
+            amountToPercolate = Math.min(maxAmountToPercolateFromBlock, waterBlock.blockHealth);
+        } else {
+            amountToPercolate = 0;
+        }
+
+        amountToPercolate /= this.getWaterflowRate();
+        this.waterContainment += amountToPercolate;
+        return amountToPercolate;
     }
 
 
