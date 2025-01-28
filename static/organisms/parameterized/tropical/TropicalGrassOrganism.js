@@ -1,6 +1,6 @@
 import { randNumber, randRange } from "../../../common.js";
 import { TropicalGrassGreenSquare } from "../../../lifeSquares/parameterized/tropical/TropicalGrassGreenSquare.js";
-import { GenericParameterizedRootSquare } from "../../../lifeSquares/parameterized/tropical/GenericParameterizedRootSquare.js";
+import { GenericParameterizedRootSquare } from "../../../lifeSquares/parameterized/GenericParameterizedRootSquare.js";
 import { BaseParameterizedOrganism } from "../BaseParameterizedOrganism.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_TRUNK, TYPE_LEAF, TYPE_TRUNK } from "../Stages.js";
@@ -57,7 +57,7 @@ export class TropicalGrassOrganism extends BaseParameterizedOrganism {
         var startRootNode = this.getOriginsForNewGrowth(SUBTYPE_ROOTNODE).at(0);
         var growthPlan = new GrowthPlan(
             startRootNode.posX, startRootNode.posY, 
-            false, STAGE_ADULT, 0, 0, 0, 
+            false, STAGE_ADULT, randRange(-Math.PI, Math.PI), 0, 0, 
             randRange(-1, 1), 
             randRange(-0.4, 0.4), TYPE_TRUNK, 1);
         growthPlan.postConstruct = () => {

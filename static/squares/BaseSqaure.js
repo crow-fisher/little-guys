@@ -461,6 +461,7 @@ export class BaseSquare {
         this.posY = newPosY;
         addSquare(this);
 
+        // this.calculateGroup();
         return true;
     }
 

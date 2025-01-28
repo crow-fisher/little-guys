@@ -322,10 +322,7 @@ export class GrowthComponent {
     }
 
     getTotalStrength() {
-        return Math.max(1, this.strength() + this.children.map((gc) => gc.strength()).reduce(
-            (accumulator, currentValue) => accumulator + currentValue,
-            0,
-        ));
+        return Math.max(1, this.strength());
     }
 
     getTotalLifeSquares() {
@@ -336,6 +333,16 @@ export class GrowthComponent {
     }
 
     getNetWindSpeed() {
+        if (this.parentComponent == null) {
+            return this._getNetWindSpeed();
+        } else {
+            var v1 = this._getNetWindSpeed();
+            var v2 = this.parentComponent.getNetWindSpeed();
+            return [v1[0] + v2[0], v1[1] + v2[1]];
+        }
+    }
+
+    _getNetWindSpeed() {
         return this.lifeSquares.map((lsq) => getWindSpeedAtLocation(lsq.getPosX(), lsq.getPosY())).reduce(
             (accumulator, currentValue) => [accumulator[0] + currentValue[0], accumulator[1] + currentValue[1]],
             [0, 0]

@@ -1,7 +1,7 @@
 import { randNumber, randRange } from "../../../common.js";
 import { getGlobalThetaBase } from "../../../index.js";
+import { GenericParameterizedRootSquare } from "../../../lifeSquares/parameterized/GenericParameterizedRootSquare.js";
 import { ElephantEarGreenSquare } from "../../../lifeSquares/parameterized/tropical/ElephantEarGreenSquare.js";
-import { GenericParameterizedRootSquare } from "../../../lifeSquares/parameterized/tropical/GenericParameterizedRootSquare.js";
 import { BaseParameterizedOrganism } from "../BaseParameterizedOrganism.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_SHOOT, SUBTYPE_STEM, SUBTYPE_TRUNK, TYPE_LEAF, TYPE_TRUNK } from "../Stages.js";
@@ -162,7 +162,7 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
             startNode.posX, startNode.posY, 
             false, STAGE_ADULT, 
             theta, 0, 0, deflection / 2,deflection / 2, 
-            TYPE_TRUNK, 0.5);
+            TYPE_TRUNK, 0.01);
         growthPlan.postConstruct = () => startNode.component.addChild(growthPlan.component);
 
         growthPlan.steps.push(new GrowthPlanStep(

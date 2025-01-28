@@ -2,9 +2,9 @@ import { BaseSquare } from "../BaseSqaure.js";
 import { dirtNutrientValuePerDirectNeighbor } from "../../config/config.js";
 
 import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount } from "../../config/config.js";
-import { getNeighbors } from "../_sqOperations.js";
+import { getNeighbors, getSquares } from "../_sqOperations.js";
 import { hexToRgb, rgbToHex, rgbToRgba } from "../../common.js";
-import { BASE_SIZE, MAIN_CONTEXT, selectedViewMode, zoomCanvasFillRect } from "../../index.js";
+import { addSquareByName, BASE_SIZE, MAIN_CONTEXT, selectedViewMode, zoomCanvasFillRect } from "../../index.js";
 
 export class SoilSquare extends BaseSquare {
     constructor(posX, posY) {
@@ -192,7 +192,7 @@ export class SoilSquare extends BaseSquare {
 
     getGravitationalPressure() {
         // -10 * 9.8 * (height in meters) and one block is one meter for hpa 
-        return -0.1 * 9.8 * this.currentPressureDirect; 
+        return -0.02 * 9.8 * this.currentPressureDirect; 
     }
 
     getSoilWaterPressure() {
@@ -214,16 +214,48 @@ export class SoilSquare extends BaseSquare {
                 var thisDiff = (this.waterContainment - meanPressureWaterContainment) / this.getWaterflowRate();
                 var sqDiff = (this.waterContainment - meanPressureWaterContainment) / sq.getWaterflowRate();
                 var diff = Math.min(thisDiff, sqDiff) / 2;
+                diff *= Math.abs(thisWaterPressure - sqWaterPressure);
 
-                diff = Math.min(diff, sq.waterContainmentMax - sq.waterContainment);
-
-                var pressureDiff = Math.min(2, Math.abs(thisWaterPressure - sqWaterPressure));
-                var n = 2;
-                diff *= pressureDiff;
-
+                diff = Math.min(this.waterContainment, Math.max(0, Math.min(diff, sq.waterContainmentMax - sq.waterContainment)));
                 this.waterContainment -= diff;
                 sq.waterContainment += diff;
-            })
+            });
+        this.doBlockOutflow();
+    }
+
+    doBlockOutflow() {
+        var thisWaterPressure = this.getMatricPressure(); 
+
+        if (thisWaterPressure < -2) {
+            return;
+        }
+
+        for (let side = -1; side <= 1; side += 2) {
+            getSquares(this.posX + side, this.posY).filter((sq) => sq.proto == "WaterSquare")
+                .forEach((sq) => {
+                    sq.frameFrozen = false;
+                    sq.physics();
+                });
+
+            if (getSquares(this.posX + side, this.posY).some((sq) => sq.collision)) {
+                continue;
+            }
+            if (getNeighbors(this.posX, this.posY)
+                .filter((sq) => sq.group == this.group)
+                .some((sq) => sq.waterContainment != sq.waterContainmentMax)) {
+                return;
+            }
+
+            var pressureToOutflowWaterContainment = this.getInverseMatricPressure(thisWaterPressure + 2);
+            var diff = (this.waterContainment - pressureToOutflowWaterContainment) / this.getWaterflowRate();
+            diff *= Math.abs(thisWaterPressure - -2);
+
+            var newWater = addSquareByName(this.posX + side, this.posY, "water");
+            if (newWater) {
+                newWater.blockHealth = diff;
+                this.waterContainment -= diff;
+            }
+        }
     }
     percolateFromWater(waterBlock) {
         if (this.waterContainmentMax == 0 || this.waterContainment >= this.waterContainmentMax) {
@@ -289,10 +321,6 @@ export class SoilSquare extends BaseSquare {
     //     );
     // }
 
-    // #b59971 181 153 113
-    // #eedab7 238 218 183
-    //           .76 .70 0.617
-    //           .24 .30 .383
     renderWithVariedColors() {
         var outColor = {
             r: this.clay * this.clayColorRgb.r + this.silt * this.siltColorRgb.r + this.sand * this.sandColorRgb.r, 

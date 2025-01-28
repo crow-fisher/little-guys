@@ -37,6 +37,29 @@ export class BaseParameterizedOrganism extends BaseOrganism {
         this.rootType = null;
     }
 
+    process() {
+        this.preTick();
+        this.tick();
+        this.postTick();
+    }
+
+    postTick() {
+        this.lifeSquares.forEach((lifeSquare) => {
+        });
+
+        var energyGained = this.law.photosynthesis(this.airNutrients - this.totalEnergy, this.waterNutrients - this.totalEnergy, this.dirtNutrients - this.totalEnergy);
+        energyGained *= this.getHealthEnergyConversionEfficiency();
+
+        this.currentEnergy += energyGained;
+        this.totalEnergy += energyGained;
+
+        var lifeCyclePercentage = this.getLifeCyclePercentage();
+        if (lifeCyclePercentage > 1) {
+            this.destroy();
+        }
+        this.growAndDecay();
+    }
+
     growPlantSquarePos(parentSquare, posX, posY) {
         var newPlantSquare = new PlantSquare(posX, posY);
         if (addSquare(newPlantSquare)) {

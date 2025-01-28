@@ -1,6 +1,6 @@
 import { randNumber, randRange } from "../../../common.js";
+import { GenericParameterizedRootSquare } from "../../../lifeSquares/parameterized/GenericParameterizedRootSquare.js";
 import { PalmTreeGreenSquare } from "../../../lifeSquares/parameterized/tropical/PalmTreeGreenSquare.js";
-import { GenericParameterizedRootSquare } from "../../../lifeSquares/parameterized/tropical/GenericParameterizedRootSquare.js";
 import { BaseParameterizedOrganism } from "../BaseParameterizedOrganism.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_TRUNK, TYPE_LEAF, TYPE_TRUNK } from "../Stages.js";
