@@ -288,13 +288,24 @@ export class SoilSquare extends BaseSquare {
     //         BASE_SIZE
     //     );
     // }
-    
+
+    // #b59971 181 153 113
+    // #eedab7 238 218 183
+    //           .76 .70 0.617
+    //           .24 .30 .383
     renderWithVariedColors() {
         var outColor = {
             r: this.clay * this.clayColorRgb.r + this.silt * this.siltColorRgb.r + this.sand * this.sandColorRgb.r, 
             g: this.clay * this.clayColorRgb.g + this.silt * this.siltColorRgb.g + this.sand * this.sandColorRgb.g, 
             b: this.clay * this.clayColorRgb.b + this.silt * this.siltColorRgb.b + this.sand * this.sandColorRgb.b
         }
+
+        var darkeningColorMult = (this.waterContainment / this.waterContainmentMax);
+
+        outColor.r *= (1 - 0.24 * darkeningColorMult);
+        outColor.g *= (1 - 0.30 * darkeningColorMult);
+        outColor.b *= (1 - 0.383 * darkeningColorMult);
+
         MAIN_CONTEXT.fillStyle = rgbToHex(outColor.r, outColor.g, outColor.b);
         zoomCanvasFillRect(
             (this.offsetX + this.posX) * BASE_SIZE,
