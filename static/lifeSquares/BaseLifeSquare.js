@@ -7,7 +7,7 @@ import { addSquare, getSquares, removeOrganismSquare } from "../squares/_sqOpera
 import { airNutrientsPerEmptyNeighbor } from "../config/config.js";
 
 import { selectedViewMode } from "../index.js";
-import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_GREEN, RGB_COLOR_BLACK, RGB_COLOR_RED } from "../colors.js";
+import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_GREEN, RGB_COLOR_BLACK, RGB_COLOR_RED, COLOR_BLUE, COLOR_GREEN, COLOR_RED } from "../colors.js";
 import { addOrganismSquare } from "./_lsOperations.js";
 import { removeSquare } from "../globalOperations.js";
 
@@ -401,6 +401,46 @@ class BaseLifeSquare {
             }
             var colorProcessed = processColorLerp((val_max - val), -0.5, val_max + 0.5, color);
             MAIN_CONTEXT.fillStyle = rgbToHex(colorProcessed.r, colorProcessed.g, colorProcessed.b);
+            zoomCanvasFillRect(
+                this.getPosX() * BASE_SIZE,
+                this.getPosY() * BASE_SIZE,
+                this.width * BASE_SIZE * this.getLsqRenderSizeMult(),
+                this.height * BASE_SIZE * this.getLsqRenderSizeMult()
+            );
+            return;
+        }
+        if (selectedViewMode == "watersaturation") {
+            var color1 = null;
+            var color2 = null;
+        
+            var val = this.linkedOrganism.waterPressure;
+            var valMin = -100;
+            var valMax = 0;
+
+            if (this.linkedOrganism.waterPressure > -2) {
+                color1 = RGB_COLOR_BLUE;
+                color2 = RGB_COLOR_GREEN;
+                valMin = -2;
+                valMax = this.linkedOrganism.waterPressureOverwaterThresh;
+
+            } else if (this.linkedOrganism.waterPressure > this.linkedOrganism.waterPressureWiltThresh) {
+                color1 = RGB_COLOR_GREEN;
+                color2 = RGB_COLOR_BROWN;
+                valMin = this.linkedOrganism.waterPressureWiltThresh;
+                valMax = -2;
+            } else {
+                color1 = RGB_COLOR_BROWN;
+                color2 = RGB_COLOR_RED;
+                valMin = this.waterPressureDieThresh;
+                valMax = this.linkedOrganism.waterPressureWiltThresh;
+            }
+            var valInvLerp = (val - valMin) / (valMax - valMin);
+            var out = {
+                r: color1.r * valInvLerp + color2.r * (1 - valInvLerp),
+                g: color1.g * valInvLerp + color2.g * (1 - valInvLerp),
+                b: color1.b * valInvLerp + color2.b * (1 - valInvLerp),
+            }
+            MAIN_CONTEXT.fillStyle = rgbToHex(out.r, out.g, out.b);
             zoomCanvasFillRect(
                 this.getPosX() * BASE_SIZE,
                 this.getPosY() * BASE_SIZE,

@@ -39,7 +39,10 @@ export class BaseParameterizedOrganism extends BaseOrganism {
         this.waterPressure = -2;
         this.waterPressureWiltThresh = -3;
         this.waterPressureDieThresh = -5;
+        this.waterPressureOverwaterThresh = -1;
         this.transpirationRate = 0.00001;
+
+        this.rootPower = 0;
     }
 
     process() {
@@ -53,8 +56,12 @@ export class BaseParameterizedOrganism extends BaseOrganism {
         this.waterPressure += this.lifeSquares
             .filter((lsq) => lsq.type == "root")
             .filter((lsq) => lsq.linkedSquare != null) 
-            .filter((lsq) => lsq.linkedSquare.getSoilWaterPressure() > this.waterPressure)
-            .map((lsq) => lsq.linkedSquare.suckWater(this.transpirationRate));
+            .filter((lsq) => (this.rootPower + lsq.linkedSquare.getSoilWaterPressure()) > this.waterPressure)
+            .map((lsq) => lsq.linkedSquare.suckWater(this.transpirationRate))
+            .reduce(
+                (accumulator, currentValue) => accumulator + currentValue,
+                0,
+            );
         this.waterPressure -= (this.lifeSquares.length * this.transpirationRate) / 10;
         this.wilt();
     }
