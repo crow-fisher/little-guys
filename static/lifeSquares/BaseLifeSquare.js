@@ -447,7 +447,7 @@ class BaseLifeSquare {
             }
 
 
-            MAIN_CONTEXT.fillStyle = rgbToHex(out.r, out.g, out.b);
+            MAIN_CONTEXT.fillStyle = rgbToRgba(out.r, out.g, out.b, this.opacity);
             zoomCanvasFillRect(
                 this.getPosX() * BASE_SIZE,
                 this.getPosY() * BASE_SIZE,

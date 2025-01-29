@@ -304,7 +304,7 @@ function renderClouds() {
                 continue;
             }
             var squareHumidity = getHumidity(i, j);
-            if (squareHumidity < 1) {
+            if (squareHumidity < 1.5) {
                 continue;
             }
             if (squareHumidity < (cloudMaxHumidity * cloudRainThresh)) {

@@ -286,8 +286,8 @@ function transformPixelsToCanvasSquares(x, y) {
 }
 
 function zoomCanvasFillRect(x, y, dx, dy) {
-    dx *= CANVAS_SQUARES_ZOOM;
-    dy *= CANVAS_SQUARES_ZOOM;
+    dx *= (CANVAS_SQUARES_ZOOM);
+    dy *= (CANVAS_SQUARES_ZOOM);
 
     var totalWidth = CANVAS_SQUARES_X * BASE_SIZE;
     var totalHeight = CANVAS_SQUARES_Y * BASE_SIZE;
@@ -300,19 +300,6 @@ function zoomCanvasFillRect(x, y, dx, dy) {
 
     var windowWidthEnd = CANVAS_VIEWPORT_CENTER_X + (windowWidth / 2);
     var windowHeightEnd = CANVAS_VIEWPORT_CENTER_Y + (windowHeight / 2); 
-
-    if (x == 0 && y == 0) {
-        x = windowWidthStart;
-        y = windowHeightStart;
-    }
-
-    if (x < windowWidthStart || x > windowWidthEnd) {
-        return;
-    }
-
-    if (y < windowHeightStart || y > windowHeightEnd) {
-        return;
-    }
 
     var xpi = (x - windowWidthStart) / (windowWidthEnd - windowWidthStart);
     var ypi = (y - windowHeightStart) / (windowHeightEnd - windowHeightStart);
