@@ -23,7 +23,7 @@ export class BaseParameterizedOrganism extends BaseOrganism {
         this.shouldGrow = true;
         this.originGrowth = null;
 
-        this.maxSquaresOfTypePerDay = 100;
+        this.maxSquaresOfTypePerDay = 10;
         this.throttleInterval = () => 1 / this.maxSquaresOfTypePerDay;
 
         // organism config in 'days'
@@ -253,7 +253,7 @@ export class BaseParameterizedOrganism extends BaseOrganism {
         }
         if (getCurDay() > this.waterLastGrown + this.throttleInterval()) {
             this.waterLastGrown = getCurDay();
-            this.growRoot((sq) => sq.waterContainment);
+            this.growRoot((sq) => sq.getSoilWaterPressure());
         }
     }
 
