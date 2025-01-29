@@ -1,6 +1,7 @@
 import { randNumber } from "../../common.js";
 import { addOrganismSquare, getOrganismSquaresAtSquareWithEntityId } from "../../lifeSquares/_lsOperations.js";
 import { addSquare, getDirectNeighbors } from "../../squares/_sqOperations.js";
+import { SoilSquare } from "../../squares/parameterized/SoilSquare.js";
 import { PlantSquare } from "../../squares/PlantSquare.js";
 import { getCurDay, getPrevDay } from "../../time.js";
 import { addNewOrganism } from "../_orgOperations.js";
@@ -58,7 +59,7 @@ export class BaseParameterizedOrganism extends BaseOrganism {
         this.growAndDecay();
         this.waterPressure += this.lifeSquares
             .filter((lsq) => lsq.type == "root")
-            .filter((lsq) => lsq.linkedSquare != null) 
+            .filter((lsq) => lsq.linkedSquare != null && lsq.linkedSquare.proto == "SoilSquare") 
             .filter((lsq) => (this.rootPower + lsq.linkedSquare.getSoilWaterPressure()) > this.waterPressure)
             .map((lsq) => {
                 if (this.waterPressure < this.waterPressureTarget) {
@@ -77,9 +78,9 @@ export class BaseParameterizedOrganism extends BaseOrganism {
 
     wilt() {
         if (this.waterPressure < this.waterPressureWiltThresh) {
-            this.curWilt += 0.001;
+            this.curWilt += 0.01;
         } else {
-            this.curWilt -= 0.001;
+            this.curWilt -= 0.01;
         }
 
         if (this.waterPressure > this.waterPressureOverwaterThresh) {

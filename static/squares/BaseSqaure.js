@@ -166,13 +166,13 @@ export class BaseSquare {
             this.waterContainment -= amount;
             this.temperature -= amount * pascalsPerWaterSquare * this.water_vaporHeat;
             addWaterSaturationPascals(x, y, amount * pascalsPerWaterSquare);
-            addWindPressure(x, y, amount * pascalsPerWaterSquare);
+            // addWindPressure(x * 4, y * 4, amount * pascalsPerWaterSquare);
         } else {
             // evaporating water
             this.blockHealth -= (diff / pascalsPerWaterSquare);
             updateSquareTemperature(x, y, getTemperatureAtWindSquare(x, y) - 0.2 * diff * this.water_vaporHeat);
             addWaterSaturationPascals(x, y, diff);
-            addWindPressure(x, y, diff);
+            // addWindPressure(x * 4, y * 4, diff);
 
         }
 

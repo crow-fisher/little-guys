@@ -486,9 +486,6 @@ function addWaterSaturationPascalsSqCoords(x, y, pascals) {
 
 function addWaterSaturationPascals(x, y, pascals) {
     var end = waterSaturationMap[x][y] + pascals;
-    if (end < 0) {
-        // console.warn("Trying to set water saturation pascals to below zero");
-    }
     end = Math.max(0, end);
     waterSaturationMap[x][y] = end;
 }
