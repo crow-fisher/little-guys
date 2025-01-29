@@ -107,6 +107,7 @@ export class GrowthComponent {
         this.setCurrentDeflection(baseDeflection);
         this.distToFront = 0;
         this.spawnTime = getCurDay();
+        
     }
 
     setBaseDeflectionOverTime(deflectionOverTimeList) {
@@ -279,6 +280,11 @@ export class GrowthComponent {
         }
     }
 
+    /**
+     * Override this method directly on a child organism. 
+     * 'curWilt' is a value from 0 to 1, where 0 is least wilted and 1 is most wilted.
+     * This value is applied to the 'curve' of a grown component.
+     */
     getWilt() {
         if (this.baseCurve == 0) {
             return 0;
@@ -311,19 +317,19 @@ export class GrowthComponent {
             var lsqDist = (relLsqX ** 2 + relLsqY ** 2) ** 0.5;
             var currentTheta = startTheta + (lsqDist / length) * thetaDelta;
 
-            var offsetX = relLsqX * Math.cos(currentTheta) - relLsqY * Math.sin(currentTheta) + this.xOffset;
-            var offsetY = relLsqY * Math.cos(currentTheta) + relLsqX * Math.sin(currentTheta) + this.yOffset;
+            var offsetX = relLsqX * Math.cos(currentTheta) - relLsqY * Math.sin(currentTheta);
+            var offsetY = relLsqY * Math.cos(currentTheta) + relLsqX * Math.sin(currentTheta);
 
             this.distToFront = offsetX * Math.cos(this.getTheta());
             lsq.distToFront = this.getDistToFront(); 
             offsetX *= Math.sin(this.getTheta());
             offsetY *= Math.cos(this.getTwist());
 
-            var endX = startDeflectionXOffset + offsetX; 
-            var endY = startDeflectionYOffset + offsetY; 
+            var endX = startDeflectionXOffset + offsetX;
+            var endY = startDeflectionYOffset + offsetY;
 
-            lsq.deflectionXOffset = endX - relLsqX;
-            lsq.deflectionYOffset = endY - relLsqY;
+            lsq.deflectionXOffset = (endX - relLsqX)  + this.xOffset;
+            lsq.deflectionYOffset = (endY - relLsqY)  + this.yOffset;
         })
 
         this.children.forEach((child) => child.applyDeflectionState(this));

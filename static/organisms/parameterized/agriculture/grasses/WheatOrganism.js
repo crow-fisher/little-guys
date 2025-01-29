@@ -35,7 +35,7 @@ export class WheatOrganism extends BaseParameterizedOrganism {
 
         this.rootOpacity = 0.05;
 
-        this.maxNumGrass = 5;
+        this.maxNumGrass = 8;
         this.curNumGrass = 0;
 
         /* 
@@ -65,10 +65,10 @@ export class WheatOrganism extends BaseParameterizedOrganism {
             randRange(-0.4, 0.4), TYPE_TRUNK, 1);
         growthPlan.postConstruct = () => {
             this.originGrowth.addChild(growthPlan.component);
-            growthPlan.component.xOffset = Math.random() - 0.5;
-            growthPlan.component.yOffset = Math.random() - 0.5;
+            growthPlan.component.xOffset = 2 * (Math.random() - 0.5);
+            growthPlan.component.yOffset = 2 * (Math.random() - 0.5);
         };
-        for (let t = 1; t < randNumber(3,8); t++) {
+        for (let t = 1; t < randNumber(7,14); t++) {
             growthPlan.steps.push(new GrowthPlanStep(
                 growthPlan,
                 0,
