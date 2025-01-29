@@ -289,7 +289,7 @@ function doRain() {
                     waterSaturationMap[x][y] -= usedWaterPascalsPerSquare;
                     getMapDirectNeighbors(x, y)
                         .filter((loc) => loc[0] >= 0 && loc[0] < curSquaresX && loc[1] >= 0 && loc[1] < curSquaresY)
-                        .map((loc) => waterSaturationMap[loc[0]][loc[1]] -= usedWaterPascalsPerSquare);
+                        .forEach((loc) => waterSaturationMap[loc[0]][loc[1]] -= usedWaterPascalsPerSquare);
                 }
             }
         }
