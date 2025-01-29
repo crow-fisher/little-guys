@@ -336,9 +336,13 @@ export class GrowthComponent {
         if (this.parentComponent == null) {
             return this._getNetWindSpeed();
         } else {
-            var v1 = this._getNetWindSpeed();
-            var v2 = this.parentComponent.getNetWindSpeed();
-            return [v1[0] + v2[0], v1[1] + v2[1]];
+            var ret = this._getNetWindSpeed();
+            this.children.forEach((child) => {
+                var childWs = child.getNetWindSpeed();
+                ret[0] += childWs[0];
+                ret[1] += childWs[1];
+            });
+            return ret;
         }
     }
 
