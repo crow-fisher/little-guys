@@ -42,7 +42,8 @@ var cloudMaxOpacity = 0.65;
 55345 / 64 = 875 moles per meter cubed gas
 implies pressure of 875 / 44.64 = 19.6 atm or 1.986 * 10 ** 6 pascals
 */
-var pascalsPerWaterSquare = 1.986 * 10 ** 6;
+// var pascalsPerWaterSquare = 1.986 * 10 ** 6;
+var pascalsPerWaterSquare = 1.986 * 10 ** 2;
 // https://www.engineeringtoolbox.com/water-vapor-saturation-pressure-air-d_689.html
 
 

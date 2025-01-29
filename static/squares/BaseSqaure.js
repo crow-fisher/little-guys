@@ -134,7 +134,7 @@ export class BaseSquare {
     }
 
     waterEvaporationRoutine() {
-        if (this.currentPressureDirect != 0 || this.organic) {
+        if (this.organic) {
             return;
         }
 
@@ -159,12 +159,12 @@ export class BaseSquare {
 
         var diff = vaporPressure - waterPascalsAbove;
 
-        diff /= 30;
+        // diff /= 30;
 
         if (this.solid) {
-            diff *= this.waterContainment / this.waterContainmentMax;
-            this.waterContainment -= (diff / pascalsPerWaterSquare); 
-            this.temperature -= diff * this.water_vaporHeat;
+            var amount = Math.min(this.waterContainment, (diff / pascalsPerWaterSquare));
+            this.waterContainment -= amount;
+            this.temperature -= amount * pascalsPerWaterSquare * this.water_vaporHeat;
         } else {
             // evaporating water
             this.blockHealth -= (diff / pascalsPerWaterSquare);

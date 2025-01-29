@@ -279,11 +279,6 @@ export class SoilSquare extends BaseSquare {
         return amountToPercolate;
     }
 
-
-
-    waterEvaporationRoutine() {}
-    
-
     getWaterflowRate() {
         // https://docs.google.com/spreadsheets/d/1MWOde96t-ruC5k1PLL4nex0iBjdyXKOkY7g59cnaEj4/edit?gid=0#gid=0
         var clayRate = 2;
