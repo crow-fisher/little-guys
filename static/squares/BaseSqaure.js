@@ -34,7 +34,7 @@ import { removeOrganism } from "../organisms/_orgOperations.js";
 import { addSquareByName } from "../index.js";
 import { getCurTime, getDaylightStrength } from "../time.js";
 import { addTemperature, addWaterSaturation, addWaterSaturationPascals, applySquareTemperatureDelta, calculateColorTemperature, cloudRainThresh, getTemperatureAtSquare, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, updateSquareTemperature } from "../temperature_humidity.js";
-import { getWindSquareAbove } from "../wind.js";
+import { addWindPressure, getWindSquareAbove } from "../wind.js";
 
 export class BaseSquare {
     constructor(posX, posY) {
@@ -166,11 +166,13 @@ export class BaseSquare {
             this.waterContainment -= amount;
             this.temperature -= amount * pascalsPerWaterSquare * this.water_vaporHeat;
             addWaterSaturationPascals(x, y, amount * pascalsPerWaterSquare);
+            addWindPressure(x, y, amount * pascalsPerWaterSquare);
         } else {
             // evaporating water
             this.blockHealth -= (diff / pascalsPerWaterSquare);
             updateSquareTemperature(x, y, getTemperatureAtWindSquare(x, y) - 0.2 * diff * this.water_vaporHeat);
-            addWaterSaturationPascals(x, y, diff * pascalsPerWaterSquare);
+            addWaterSaturationPascals(x, y, diff);
+            addWindPressure(x, y, diff);
 
         }
 
