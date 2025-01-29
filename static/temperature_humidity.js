@@ -1,5 +1,5 @@
 import { hexToRgb, randNumber, rgbToRgba } from "./common.js";
-import { addSquare } from "./squares/_sqOperations.js";
+import { addSquare, getSquares } from "./squares/_sqOperations.js";
 import { MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, zoomCanvasFillRect } from "./index.js";
 import { addSquareByName } from "./index.js";
 import { base_wind_pressure, getAirSquareDensity, getPressure, initializeWindPressureMap, updateWindPressureByMult, getAirSquareDensityTempAndHumidity, setPressurebyMult } from "./wind.js";
@@ -40,10 +40,10 @@ var cloudMaxOpacity = 0.65;
 55345 moles of water in 1 meter cubed
 44.64 mols per liter at 1 atm
 55345 / 64 = 875 moles per meter cubed gas
+times 4 cubed, because one air square is 4*4*4 normal squares
 implies pressure of 875 / 44.64 = 19.6 atm or 1.986 * 10 ** 6 pascals
 */
-// var pascalsPerWaterSquare = 1.986 * 10 ** 6;
-var pascalsPerWaterSquare = 1.986 * 10 ** 2;
+var pascalsPerWaterSquare = (1.986 * 10 ** 6) * (4 ** 3);
 // https://www.engineeringtoolbox.com/water-vapor-saturation-pressure-air-d_689.html
 
 
@@ -438,6 +438,13 @@ function resetTemperatureAndHumidityAtSquare(x, y) {
     waterSaturationMap[x][y] = saturationPressureOfWaterVapor(start_temperature) * startHumidity;
 }
 
+function doFunctionOnRealSquares(x, y, func) {
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            getSquares(x * 4 + i, y * 4 + j).forEach(func);
+        }
+    }
+}
 
 function addTemperature(x, y, delta) {
     x = Math.floor(x / 4);
@@ -450,6 +457,9 @@ function addTemperature(x, y, delta) {
     var startTemp = temperatureMap[x][y];
     updateSquareTemperature(x, y, Math.max(temperatureMap[x][y] + delta, 0.1));
     var endTemp = temperatureMap[x][y];
+
+    doFunctionOnRealSquares(x, y, (sq) => (sq.collision) ? sq.temperature += delta : null);
+
     if (startTemp != endTemp) {
         var mult = (endTemp - startTemp) / 273;
         updateWindPressureByMult(x, y, (1 + mult));
@@ -464,6 +474,9 @@ function addWaterSaturationPascalsSqCoords(x, y, pascals) {
         return;
     }
     addWaterSaturationPascals(x, y, pascals);
+
+    doFunctionOnRealSquares(x, y, (sq) => (sq.collision) ? sq.waterPressure += 0.01 : null);
+
 }
 
 function addWaterSaturationPascals(x, y, pascals) {
