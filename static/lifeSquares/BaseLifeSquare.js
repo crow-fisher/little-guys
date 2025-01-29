@@ -431,15 +431,22 @@ class BaseLifeSquare {
             } else {
                 color1 = RGB_COLOR_BROWN;
                 color2 = RGB_COLOR_RED;
-                valMin = this.waterPressureDieThresh;
+                valMin = this.linkedOrganism.waterPressureDieThresh;
                 valMax = this.linkedOrganism.waterPressureWiltThresh;
             }
+
+            
+            val = Math.max(valMin, val);
+            val = Math.min(valMax, val);
+
             var valInvLerp = (val - valMin) / (valMax - valMin);
             var out = {
                 r: color1.r * valInvLerp + color2.r * (1 - valInvLerp),
                 g: color1.g * valInvLerp + color2.g * (1 - valInvLerp),
                 b: color1.b * valInvLerp + color2.b * (1 - valInvLerp),
             }
+
+
             MAIN_CONTEXT.fillStyle = rgbToHex(out.r, out.g, out.b);
             zoomCanvasFillRect(
                 this.getPosX() * BASE_SIZE,

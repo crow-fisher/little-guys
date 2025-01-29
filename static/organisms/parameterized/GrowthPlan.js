@@ -279,6 +279,14 @@ export class GrowthComponent {
         }
     }
 
+    getWilt() {
+        if (this.baseCurve == 0) {
+            return 0;
+        } else {
+            return this.lifeSquares.at(0).linkedOrganism.curWilt;
+        }
+    }
+
     applyDeflectionState(parentComponent) {
         var startDeflectionXOffset = 0;
         var startDeflectionYOffset = 0;
@@ -290,7 +298,7 @@ export class GrowthComponent {
         var curve = this.baseCurve + Math.sin(this.currentDeflection) * 0.06 * this.ySizeCur() / this.getTotalStrength();
         
         var startTheta = this.deflectionRollingAverage + this.getParentDeflection();
-        var endTheta = this.currentDeflection + curve + this.getParentDeflection();
+        var endTheta = this.currentDeflection + curve + this.getParentDeflection() + this.getWilt();
 
         var length = this.ySizeCur();
 

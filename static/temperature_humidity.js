@@ -47,8 +47,6 @@ var pascalsPerWaterSquare = (1.986 * 10 ** 6);
 
 
 function saturationPressureOfWaterVapor(t) {
-    if (t > 273 + 200)
-        return 10 ** 100;
     return Math.E ** (77.345 + 0.0057 * t - 7235 / t) / (t ** 8.2);
 }
 
@@ -108,6 +106,9 @@ function init() {
 }
 
 function updateSquareTemperature(x, y, newVal) {
+    if (getPressure(x, y) < 0) {
+        return;
+    }
     if (temperatureMap == null) {
         init();
     }
@@ -269,7 +270,7 @@ function doRain() {
 
             if (adjacentWaterPascals < rainDropPascals)
                 continue;
-            
+
             var adjacentSquaresWithEnoughWater = canSquareRain(x, y, rainDropPascals) + getMapDirectNeighbors(x, y)
                 .filter((loc) => loc[0] >= 0 && loc[0] < curSquaresX && loc[1] >= 0 && loc[1] < curSquaresY)
                 .map((loc) => canSquareRain(loc[0], loc[1], rainDropPascals))
@@ -458,7 +459,11 @@ function addTemperature(x, y, delta) {
     updateSquareTemperature(x, y, Math.max(temperatureMap[x][y] + delta, 0.1));
     var endTemp = temperatureMap[x][y];
 
-    doFunctionOnRealSquares(x, y, (sq) => (sq.collision) ? sq.temperature += delta : null);
+    doFunctionOnRealSquares(x, y, (sq) => {
+        if (sq.collision) {
+            sq.temperature = Math.max(10, sq.temperature + delta);
+        }
+    });
 
     if (startTemp != endTemp) {
         var mult = (endTemp - startTemp) / 273;

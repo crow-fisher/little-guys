@@ -1,7 +1,7 @@
 import { getNeighbors } from "../../../squares/_sqOperations.js";
 import { BaseLifeSquare } from "../../BaseLifeSquare.js";
 import { airNutrientsPerEmptyNeighbor } from "../../../config/config.js";
-import { SUBTYPE_LEAF, SUBTYPE_LEAFSTEM, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_TRUNK } from "../../../organisms/parameterized/Stages.js";
+import { SUBTYPE_DEAD, SUBTYPE_LEAF, SUBTYPE_LEAFSTEM, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_TRUNK } from "../../../organisms/parameterized/Stages.js";
 import { hexToRgb } from "../../../common.js";
 
 export class ElephantEarGreenSquare extends BaseLifeSquare {
@@ -30,6 +30,11 @@ export class ElephantEarGreenSquare extends BaseLifeSquare {
                 this.baseColor = "#80bf08";
                 this.darkColor = "#384e18";
                 this.accentColor = "#798861";
+                break;
+            case SUBTYPE_DEAD:
+                this.baseColor = "#70747e";
+                this.darkColor = "#a1816d";
+                this.accentColor = "#33261d";
                 break;
             default:
                 console.warn("BIPPITY BOPPITY")

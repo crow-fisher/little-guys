@@ -1,3 +1,4 @@
+import { randNumber } from "../../common.js";
 import { addOrganismSquare, getOrganismSquaresAtSquareWithEntityId } from "../../lifeSquares/_lsOperations.js";
 import { addSquare, getDirectNeighbors } from "../../squares/_sqOperations.js";
 import { PlantSquare } from "../../squares/PlantSquare.js";
@@ -5,7 +6,7 @@ import { getCurDay, getPrevDay } from "../../time.js";
 import { addNewOrganism } from "../_orgOperations.js";
 import { BaseOrganism } from "../BaseOrganism.js";
 import { GrowthPlan, GrowthPlanStep } from "./GrowthPlan.js";
-import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_ROOTNODE, SUBTYPE_SPROUT, TYPE_HEART, TYPE_TRUNK } from "./Stages.js";
+import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_DEAD, SUBTYPE_ROOTNODE, SUBTYPE_SPROUT, TYPE_HEART, TYPE_TRUNK } from "./Stages.js";
 
 
 export class BaseParameterizedOrganism extends BaseOrganism {
@@ -23,7 +24,7 @@ export class BaseParameterizedOrganism extends BaseOrganism {
         this.shouldGrow = true;
         this.originGrowth = null;
 
-        this.maxSquaresOfTypePerDay = 10;
+        this.maxSquaresOfTypePerDay = 100;
         this.throttleInterval = () => 1 / this.maxSquaresOfTypePerDay;
 
         // organism config in 'days'
@@ -36,13 +37,15 @@ export class BaseParameterizedOrganism extends BaseOrganism {
         this.greenType = null;
         this.rootType = null;
 
+
+        this.curWilt = 0;
         this.waterPressure = -2;
+        this.waterPressureTarget = -2;
         this.waterPressureWiltThresh = -3;
         this.waterPressureDieThresh = -5;
         this.waterPressureOverwaterThresh = -1;
-        this.transpirationRate = 0.00001;
-
-        this.rootPower = 0;
+        this.transpirationRate = 0.001;
+        this.rootPower = 2;
     }
 
     process() {
@@ -57,7 +60,13 @@ export class BaseParameterizedOrganism extends BaseOrganism {
             .filter((lsq) => lsq.type == "root")
             .filter((lsq) => lsq.linkedSquare != null) 
             .filter((lsq) => (this.rootPower + lsq.linkedSquare.getSoilWaterPressure()) > this.waterPressure)
-            .map((lsq) => lsq.linkedSquare.suckWater(this.transpirationRate))
+            .map((lsq) => {
+                if (this.waterPressure < this.waterPressureTarget) {
+                    return lsq.linkedSquare.suckWater(this.transpirationRate);
+                } else {
+                    return lsq.linkedSquare.suckWater(this.transpirationRate / 3);
+                }
+            })
             .reduce(
                 (accumulator, currentValue) => accumulator + currentValue,
                 0,
@@ -68,8 +77,21 @@ export class BaseParameterizedOrganism extends BaseOrganism {
 
     wilt() {
         if (this.waterPressure < this.waterPressureWiltThresh) {
-            alert("HOLOY FUCK INS");
+            this.curWilt += 0.001;
+        } else {
+            this.curWilt -= 0.001;
         }
+
+        if (this.waterPressure > this.waterPressureOverwaterThresh) {
+            // grab something from the last component
+            var numLifeSquares = this.lifeSquares.length;
+            var lifeSquareToKill = this.lifeSquares.at(randNumber(0, numLifeSquares - 1));
+            lifeSquareToKill.subtype = SUBTYPE_DEAD;
+
+        }
+
+        this.curWilt = Math.max(0, this.curWilt);
+        this.curWilt = Math.min(Math.PI / 2, this.curWilt);
     }
 
     growPlantSquarePos(parentSquare, posX, posY) {
