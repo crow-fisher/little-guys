@@ -2,6 +2,7 @@ import { randNumber, randRange } from "../../../common.js";
 import { getGlobalThetaBase } from "../../../index.js";
 import { GenericParameterizedRootSquare } from "../../../lifeSquares/parameterized/GenericParameterizedRootSquare.js";
 import { ElephantEarGreenSquare } from "../../../lifeSquares/parameterized/tropical/ElephantEarGreenSquare.js";
+import { BaseSeedOrganism } from "../../BaseSeedOrganism.js";
 import { BaseParameterizedOrganism } from "../BaseParameterizedOrganism.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_SHOOT, SUBTYPE_STEM, SUBTYPE_TRUNK, TYPE_LEAF, TYPE_TRUNK } from "../Stages.js";
@@ -206,5 +207,13 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
         if (this.stage == STAGE_ADULT) {
             this.adultGrowthPlanning();
         }
+    }
+}
+
+export class ElephantEarSeedOrganism extends BaseSeedOrganism {
+    constructor(square) {
+        super(square);
+        this.proto = "ElephantEarSeedOrganism";
+        this.sproutCtor = (linkedSquare) => new ElephantEarOrganism(linkedSquare)
     }
 }

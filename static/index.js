@@ -29,10 +29,11 @@ import { MossCoolSeedOrganism } from "./organisms/MossCoolSeedOrganism.js";
 import { SunflowerSeedOrganism } from "./organisms/SunflowerSeedOrganism.js";
 import { clearPrevailingWind, addPrevailingWind, addWindPressure, initializeWindPressureMap, removeWindPressure, renderWindPressureMap, tickWindPressureMap } from "./wind.js";
 import { renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds, addWaterSaturationPascals, addWaterSaturationPascalsSqCoords } from "./temperature_humidity.js";
-import { PalmTreeSeedOrganism } from "./organisms/parameterized/tropical/PalmTreeSeedOrganism.js";
-import { ElephantEarSeedOrganism } from "./organisms/parameterized/tropical/ElephantEarSeedOrganism.js";
+import { PalmTreeSeedOrganism } from "./organisms/parameterized/tropical/PalmTreeOrganism.js";
+import { ElephantEarSeedOrganism } from "./organisms/parameterized/tropical/ElephantEarOrganism.js";
 import { TropicalGrassSeedOrganism } from "./organisms/parameterized/tropical/TropicalGrassSeedOrganism.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
+import { WheatSeedOrganism } from "./organisms/parameterized/agriculture/grasses/WheatOrganism.js";
 
 var lastMode = "organism"; // options: "normal", "special", "organism", "blockModification";
 
@@ -996,7 +997,7 @@ function doClickAdd() {
                             }
                             break;
 
-                        case "TropicalGrass":
+                        case "Wheat":
                             var chance = Math.random();
                             if (!organismAddedThisClick) {
                                 chance = 1;
@@ -1004,7 +1005,7 @@ function doClickAdd() {
                             if (chance > 0.9) {
                                 var sq = addSquare(new SeedSquare(px, py));
                                 if (sq) {
-                                    addNewOrganism(new TropicalGrassSeedOrganism(sq));
+                                    addNewOrganism(new WheatSeedOrganism(sq));
                                     organismAddedThisClick = true;
                                 }
                             }
