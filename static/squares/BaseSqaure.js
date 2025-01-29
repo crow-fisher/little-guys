@@ -165,17 +165,19 @@ export class BaseSquare {
             var amount = Math.min(this.waterContainment, (diff / pascalsPerWaterSquare));
             this.waterContainment -= amount;
             this.temperature -= amount * pascalsPerWaterSquare * this.water_vaporHeat;
+            addWaterSaturationPascals(x, y, amount * pascalsPerWaterSquare);
         } else {
             // evaporating water
             this.blockHealth -= (diff / pascalsPerWaterSquare);
             updateSquareTemperature(x, y, getTemperatureAtWindSquare(x, y) - 0.2 * diff * this.water_vaporHeat);
+            addWaterSaturationPascals(x, y, diff * pascalsPerWaterSquare);
+
         }
 
         if (this.temperature < 0) {
             console.warn("This temperature got under 0");
             this.temperature = 5;
         }
-        addWaterSaturationPascals(x, y, diff);
     }
 
 

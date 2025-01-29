@@ -41,13 +41,14 @@ var cloudMaxOpacity = 0.65;
 44.64 mols per liter at 1 atm
 55345 / 64 = 875 moles per meter cubed gas
 times 4 cubed, because one air square is 4*4*4 normal squares
-implies pressure of 875 / 44.64 = 19.6 atm or 1.986 * 10 ** 6 pascals
 */
-var pascalsPerWaterSquare = (1.986 * 10 ** 6) * (4 ** 3);
+var pascalsPerWaterSquare = (1.986 * 10 ** 6);
 // https://www.engineeringtoolbox.com/water-vapor-saturation-pressure-air-d_689.html
 
 
 function saturationPressureOfWaterVapor(t) {
+    if (t > 273 + 200)
+        return 10 ** 100;
     return Math.E ** (77.345 + 0.0057 * t - 7235 / t) / (t ** 8.2);
 }
 
@@ -403,7 +404,6 @@ function renderTemperature() {
 }
 
 function renderWaterSaturation() {
-    return;
     for (let i = 0; i < curSquaresX; i++) {
         for (let j = 0; j < curSquaresY; j++) {
             if (getPressure(i, j) <= 0) {
@@ -435,7 +435,7 @@ function isPointInBounds(x, y) {
 
 function resetTemperatureAndHumidityAtSquare(x, y) {
     temperatureMap[x][y] = start_temperature;
-    waterSaturationMap[x][y] = saturationPressureOfWaterVapor(start_temperature) * startHumidity;
+    waterSaturationMap[x][y] = 0;
 }
 
 function doFunctionOnRealSquares(x, y, func) {
