@@ -739,7 +739,7 @@ export class BaseSquare {
         if (rootRequestedWater <= 0) {
             return 0;
         }
-        var ret = Math.min(rootRequestedWater, (this.waterContainment / 1000));
+        var ret = Math.min(rootRequestedWater, this.waterContainment);
         this.waterContainment -= ret;
         return ret;
     }

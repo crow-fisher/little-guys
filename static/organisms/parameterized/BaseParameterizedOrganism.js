@@ -35,6 +35,11 @@ export class BaseParameterizedOrganism extends BaseOrganism {
         // fill these out!
         this.greenType = null;
         this.rootType = null;
+
+        this.waterPressure = -2;
+        this.waterPressureWiltThresh = -3;
+        this.waterPressureDieThresh = -5;
+        this.transpirationRate = 0.00001;
     }
 
     process() {
@@ -44,20 +49,20 @@ export class BaseParameterizedOrganism extends BaseOrganism {
     }
 
     postTick() {
-        this.lifeSquares.forEach((lifeSquare) => {
-        });
-
-        var energyGained = this.law.photosynthesis(this.airNutrients - this.totalEnergy, this.waterNutrients - this.totalEnergy, this.dirtNutrients - this.totalEnergy);
-        energyGained *= this.getHealthEnergyConversionEfficiency();
-
-        this.currentEnergy += energyGained;
-        this.totalEnergy += energyGained;
-
-        var lifeCyclePercentage = this.getLifeCyclePercentage();
-        if (lifeCyclePercentage > 1) {
-            this.destroy();
-        }
         this.growAndDecay();
+        this.waterPressure += this.lifeSquares
+            .filter((lsq) => lsq.type == "root")
+            .filter((lsq) => lsq.linkedSquare != null) 
+            .filter((lsq) => lsq.linkedSquare.getSoilWaterPressure() > this.waterPressure)
+            .map((lsq) => lsq.linkedSquare.suckWater(this.transpirationRate));
+        this.waterPressure -= (this.lifeSquares.length * this.transpirationRate) / 10;
+        this.wilt();
+    }
+
+    wilt() {
+        if (this.waterPressure < this.waterPressureWiltThresh) {
+            alert("HOLOY FUCK INS");
+        }
     }
 
     growPlantSquarePos(parentSquare, posX, posY) {
@@ -156,26 +161,6 @@ export class BaseParameterizedOrganism extends BaseOrganism {
         ));
         growthPlan.postConstruct = () => this.originGrowth = growthPlan.component;
         return growthPlan;
-    }
-
-    postTick() {
-        this.lifeSquares.forEach((lifeSquare) => {
-            this.dirtNutrients += lifeSquare.dirtNutrients * this.dirtCoef;
-            this.waterNutrients += lifeSquare.waterNutrients * this.waterCoef;
-            this.airNutrients += lifeSquare.airNutrients * this.airCoef;
-        });
-
-        var energyGained = this.law.photosynthesis(this.airNutrients - this.totalEnergy, this.waterNutrients - this.totalEnergy, this.dirtNutrients - this.totalEnergy);
-        energyGained *= this.getHealthEnergyConversionEfficiency();
-
-        this.currentEnergy += energyGained;
-        this.totalEnergy += energyGained;
-
-        var lifeCyclePercentage = this.getLifeCyclePercentage();
-        if (lifeCyclePercentage > 1) {
-            this.destroy();
-        }
-        this.growAndDecay();
     }
 
     executeGrowthPlans() {

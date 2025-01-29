@@ -9,13 +9,4 @@ export class GenericParameterizedRootSquare extends BaseLifeSquare {
         this.opacity = this.linkedOrganism.rootOpacity;
         this.colorBase = "#D1E231";
     }
-
-    tick() {
-        getDirectNeighbors(this.posX, this.posY)
-            .filter((n) => n.solid)
-            .forEach((neighbor) => {
-                this.addDirtNutrient(neighbor.nutrientValue.value);
-                this.addWaterNutrient(neighbor.suckWater(this.maxWaterDt - this.waterNutrients));
-            });
-    }
 }
