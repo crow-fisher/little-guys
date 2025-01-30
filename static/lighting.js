@@ -27,13 +27,35 @@ export function lightingRegisterLifeSquare(lifeSquare) {
 
 export class LightSource {
     constructor(posX, posY, brightness, color) {
-        this.posX = posX;
-        this.posY = posY;
+        this.posX = posX / lightingSqSize;
+        this.posY = posY / lightingSqSize;
         this.brightness = brightness;
         this.color = color;
+        
+        this.frameLifeSquares = null;
+    }
+
+    preprocessLifeSquares() {
+        this.frameLifeSquares = new Map();
+        var posXKeys = Object.keys(lifeSquarePositions);
+        posXKeys.forEach((lsqPosX) => {
+            var posX = Math.floor(this.posX - lsqPosX);
+            var posYKeys = Object.keys(lifeSquarePositions[lsqPosX]);
+            posYKeys.forEach((lsqPosY) => {
+                var posY = Math.floor(this.posY - lsqPosY);
+                if (!(posX in this.frameLifeSquares)) {
+                    this.frameLifeSquares[posX] = new Map();
+                }
+                if (!(posY in this.frameLifeSquares[posX])) {
+                    this.frameLifeSquares[posX][posY] = new Array();
+                }
+                this.frameLifeSquares[posX][posY].push(...lifeSquarePositions[lsqPosX][lsqPosY]);
+            })
+        })
     }
 
     doRayCasting() {
+        this.preprocessLifeSquares();
         var seenBlockMap = new Set();
         var numRays = 100;
         for (let theta = 0; theta < Math.PI; theta += (Math.PI / numRays)) {
