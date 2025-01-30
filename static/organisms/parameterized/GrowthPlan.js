@@ -285,12 +285,12 @@ export class GrowthComponent {
      * 'curWilt' is a value from 0 to 1, where 0 is least wilted and 1 is most wilted.
      * This value is applied to the 'curve' of a grown component.
      */
+    _getWilt(wilt) {
+        return wilt;
+    }
+
     getWilt() {
-        if (this.baseCurve == 0) {
-            return 0;
-        } else {
-            return this.lifeSquares.at(0).linkedOrganism.curWilt;
-        }
+        return this._getWilt(this.lifeSquares.at(0).linkedOrganism.curWilt);
     }
 
     applyDeflectionState(parentComponent) {
@@ -328,8 +328,8 @@ export class GrowthComponent {
             var endX = startDeflectionXOffset + offsetX;
             var endY = startDeflectionYOffset + offsetY;
 
-            lsq.deflectionXOffset = (endX - relLsqX)  + this.xOffset;
-            lsq.deflectionYOffset = (endY - relLsqY)  + this.yOffset;
+            lsq.deflectionXOffset = (endX - relLsqX) + this.xOffset;
+            lsq.deflectionYOffset = (endY - relLsqY) + this.yOffset;
         })
 
         this.children.forEach((child) => child.applyDeflectionState(this));

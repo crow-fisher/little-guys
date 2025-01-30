@@ -65,10 +65,21 @@ function addSquareOverride(square) {
     return square;
 }
 
+function getSqIterationOrder(ref) {
+    var squareOrder = [];
+    for (let i = 0; i < rootKeys.length; i++) {
+        var subKeys = Object.keys(ALL_SQUARES[rootKeys[i]]);
+        for (let j = 0; j < subKeys.length; j++) {
+            squareOrder.push(...getSquares(rootKeys[i], subKeys[j]));
+        }
+    }
+    squareOrder.sort((b, a) => (a.posX + a.posY * CANVAS_SQUARES_X) - (b.posX + b.posY * CANVAS_SQUARES_X));
+    return squareOrder;
+}
 /**
  * @param {function} func - function with an argumnet of the square it should do the operation on  
  */
-function iterateOnSquares(func, sortRandomness) {
+function iterateOnSquares(func) {
     var rootKeys = Object.keys(ALL_SQUARES);
     var squareOrder = [];
     for (let i = 0; i < rootKeys.length; i++) {

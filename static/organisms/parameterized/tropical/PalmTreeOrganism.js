@@ -52,7 +52,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
             randRange(-.05, .05), 
             0, TYPE_TRUNK, 7);
 
-        growthPlan.component.getWilt = () => 0;
+        growthPlan.component._getWilt = (val) => val / 100;
         growthPlan.postConstruct = () => this.originGrowth.addChild(growthPlan.component);
         for (let t = 1; t < randNumber(5, 10); t++) {
             growthPlan.steps.push(new GrowthPlanStep(
