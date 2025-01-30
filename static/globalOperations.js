@@ -16,6 +16,7 @@ var frame_inorganic_squares = null;
 var frame_solid_squares = null;
 var frame_water_squares = null;
 var frame_physics_squares = null;
+var frame_soil_physics_squares = null;
 
 function purge() {
     iterateOnSquares((sq) => {
@@ -65,7 +66,8 @@ function reset() {
     stats["squareStdev"] = 0;
     resetWaterflowSquares();
     frame_squares = getSqIterationOrder();
-    frame_physics_squares = frame_squares.filter((sq) => sq.physicsEnabled);
+    frame_physics_squares = frame_squares.filter((sq) => sq.physicsEnabled || sq.special);
+    frame_soil_physics_squares = frame_squares.filter((sq) => sq.soilPhysicsEnabled);
     frame_inorganic_squares = frame_squares.filter((sq) => !sq.organic);
     frame_solid_squares = frame_squares.filter((sq) => sq.solid && !sq.organic);
     frame_water_squares = frame_squares.filter((sq) => !sq.solid);
@@ -80,6 +82,7 @@ function renderWater() {
 }
 
 function physics() {
+    frame_soil_physics_squares.forEach((sq) => sq.soilPhysics());
     frame_physics_squares.forEach((sq) => sq.physics());
 }
 function physicsBefore() {

@@ -22,7 +22,7 @@ import { CactusSeedOrganism } from "./organisms/CactusSeedOrganism.js";
 import { LilyPadSeedOrganism } from "./organisms/LilyPadSeedOrganism.js";
 import { MossSeedOrganism } from "./organisms/MossSeedOrganism.js";
 import { PlantSquare } from "./squares/PlantSquare.js";
-import { randNumber } from "./common.js";
+import { randNumber, randRange } from "./common.js";
 import { volcano, beach } from "./saves.js";
 import { HydrangeaSeedOrganism } from "./organisms/HydrangeaSeedOrganism.js";
 import { MossCoolSeedOrganism } from "./organisms/MossCoolSeedOrganism.js";
@@ -34,6 +34,7 @@ import { ElephantEarSeedOrganism } from "./organisms/parameterized/tropical/Elep
 import { TropicalGrassSeedOrganism } from "./organisms/parameterized/tropical/TropicalGrassSeedOrganism.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { WheatSeedOrganism } from "./organisms/parameterized/agriculture/grasses/WheatOrganism.js";
+import { ParameterizedRockSquare } from "./squares/parameterized/RockSquare.js";
 
 var lastMode = "organism"; // options: "normal", "special", "organism", "blockModification";
 
@@ -200,7 +201,6 @@ blockModification.addEventListener('change', (e) => {
     blockModification_val = e.target.value;
 });
 brushStrengthSlider.addEventListener('change', (e) => {
-    lastMode = "normal";
     styleHeader();
     brushStrengthSlider_val = e.target.value;
 });
@@ -691,6 +691,10 @@ function addSquareByNameConfig(posX, posY) {
         return;
     }
     if (lastMode == "special") {
+        if (specialSelect_val == "blur") {
+            doBlockBlur(posX, posY);
+            return;
+        }
         square = addSquareByNameSetTemp(posX, posY, specialSelect_val);
     } else {
         if (!mixMaterials_val) {
@@ -725,7 +729,7 @@ function addSquareByName(posX, posY, name) {
     var square; 
     switch (name) {
         case "rock":
-            square = addSquareOverride(new RockSquare(posX, posY));
+            square = addSquareOverride(new ParameterizedRockSquare(posX, posY));
             break;
         case "pureclay":
         case "clay":
@@ -822,6 +826,27 @@ function getBlockModification_val() {
     if (lastMode == "blockModification")
         return blockModification_val;
     return "";
+}
+
+function doBlockBlur(centerX, centerY) {
+    if (Math.random() > 0.5) {
+        return;
+    }
+    var rx = randNumber(-brushSizeSlider_val / 2,brushSizeSlider_val / 2);
+    var ry = randNumber(-brushSizeSlider_val / 2,brushSizeSlider_val / 2);
+    var len = ((rx ** 2) + (ry ** 2)) ** 0.5;
+
+    if (len > brushSizeSlider_val) {
+        rx /= (brushSizeSlider_val / len);
+        ry /= (brushSizeSlider_val / len);
+    }
+    var otherX = centerX + rx;
+    var otherY = centerY + ry;
+    var middleX = 10 ** 8;
+    var middleY = 10 ** 8;
+    getSquares(otherX, otherY).filter((sq) => sq.gravity != 0).forEach((sq) => sq.updatePosition(middleX, middleY));
+    getSquares(centerX, centerY).filter((sq) => sq.gravity != 0).forEach((sq) => sq.updatePosition(otherX, otherY));
+    getSquares(middleX, middleY).filter((sq) => sq.gravity != 0).forEach((sq) => sq.updatePosition(centerX, centerY));
 }
 
 function doBrushFunc(centerX, centerY, func) {
@@ -1019,7 +1044,7 @@ function doClickAdd() {
 }
 
 for (let i = 0; i < CANVAS_SQUARES_X; i++) {
-    addSquare(new RockSquare(i, CANVAS_SQUARES_Y - 1));
+    addSquare(new ParameterizedRockSquare(i, CANVAS_SQUARES_Y - 1));
 }
 
 // for (let i = 0; i < CANVAS_SQUARES_X; i++) {

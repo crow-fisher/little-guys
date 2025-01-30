@@ -49,6 +49,7 @@ export class BaseSquare {
         this.spawnedEntityId = 0;
         // block properties - overridden by block type
         this.physicsEnabled = true;
+        this.gravity = 1;
         this.blockHealthMax = 1;
         this.blockHealth = this.blockHealthMax; // when reaches zero, delete
         // water flow parameters
@@ -67,6 +68,7 @@ export class BaseSquare {
         this.collision = true;
         this.visible = true;
         this.darken = true;
+        this.special = false;
         this.randoms = [];
         this.linkedOrganism = null;
         this.linkedOrganismSquares = new Array();
@@ -422,11 +424,7 @@ export class BaseSquare {
 
     updatePosition(newPosX, newPosY) {
         if (newPosX == this.posX && newPosY == this.posY) {
-            return;
-        }
-        if (newPosX < 0 || newPosX >= CANVAS_SQUARES_X || newPosY < 0 || newPosY >= CANVAS_SQUARES_Y) {
-            removeSquare(this);
-            return;
+            return true;
         }
         newPosX = Math.floor(newPosX);
         newPosY = Math.floor(newPosY);
@@ -526,11 +524,14 @@ export class BaseSquare {
         }
 
         this.waterSinkPhysics();
+        if (this.gravity == 0) {
+            return;
+        }
         var finalXPos = this.posX;
         var finalYPos = this.posY;
         var bonked = false;
 
-        for (let i = 1; i < this.speedY + 1; i++) {
+        for (let i = 1; i < this.speedY + 1; i += (1 / this.gravity)) {
             for (let j = 0; j < Math.abs(this.speedX) + 1; j++) {
                 var jSigned = (this.speedX > 0) ? j : -j;
                 var jSignedMinusOne = (this.speedX == 0 ? 0 : (this.speedX > 0) ? (j - 1) : -(j - 1));
@@ -564,6 +565,9 @@ export class BaseSquare {
     }
 
     waterSinkPhysics() {
+        if (this.gravity == 0) {
+            return;
+        }
         getSquares(this.posX, this.posY + 1)
             .filter((sq) => sq.proto == "WaterSquare")
             .forEach((sq) => {

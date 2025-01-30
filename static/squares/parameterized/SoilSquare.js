@@ -5,6 +5,7 @@ import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount } fr
 import { getNeighbors, getSquares } from "../_sqOperations.js";
 import { hexToRgb, rgbToHex, rgbToRgba } from "../../common.js";
 import { addSquareByName, BASE_SIZE, MAIN_CONTEXT, selectedViewMode, zoomCanvasFillRect } from "../../index.js";
+import { getDaylightStrength } from "../../time.js";
 
 export class SoilSquare extends BaseSquare {
     constructor(posX, posY) {
@@ -23,8 +24,11 @@ export class SoilSquare extends BaseSquare {
         this.accentColorAmount = dirt_accentColorAmount;
 
         this.clayColorRgb = hexToRgb("#773319");
-        this.siltColorRgb = hexToRgb("#655440");
+        this.siltColorRgb = hexToRgb("#33251b");
         this.sandColorRgb = hexToRgb("#c99060");
+
+        this.lightDarkeningColor = hexToRgb("#3C3A04");
+        this.moonlightColor = hexToRgb("#F0F8FF");
 
         // generic loam
         this.sand = 0.40;
@@ -240,11 +244,6 @@ export class SoilSquare extends BaseSquare {
             if (getSquares(this.posX + side, this.posY).some((sq) => sq.collision)) {
                 continue;
             }
-            if (getNeighbors(this.posX, this.posY)
-                .filter((sq) => sq.group == this.group)
-                .some((sq) => sq.waterContainment != sq.waterContainmentMax)) {
-                return;
-            }
 
             var pressureToOutflowWaterContainment = this.getInverseMatricPressure(thisWaterPressure + 2);
             var diff = (this.waterContainment - pressureToOutflowWaterContainment) / this.getWaterflowRate();
@@ -316,12 +315,27 @@ export class SoilSquare extends BaseSquare {
     //     );
     // }
 
+    processLightDarkening(outColor) {
+        var maxDepth = 10;
+
+        var mult = (1 - ((maxDepth - Math.max(maxDepth, this.currentPressureDirect)) / maxDepth)) * (1.5 - getDaylightStrength());
+        var moonlightMult = (1 - ((maxDepth - Math.max(maxDepth, this.currentPressureDirect)) / maxDepth)) * (0.0325 * (1 - getDaylightStrength()));
+
+        return {
+            r: Math.min(255, Math.max(0, outColor.r - this.lightDarkeningColor.r * mult + this.moonlightColor.r * moonlightMult)),
+            g: Math.min(255, Math.max(0, outColor.g - this.lightDarkeningColor.g * mult + this.moonlightColor.g * moonlightMult)),
+            b: Math.min(255, Math.max(0, outColor.b - this.lightDarkeningColor.b * mult + this.moonlightColor.b * moonlightMult)),
+        }
+    }
+
     renderWithVariedColors() {
         var outColor = {
             r: this.clay * this.clayColorRgb.r + this.silt * this.siltColorRgb.r + this.sand * this.sandColorRgb.r, 
             g: this.clay * this.clayColorRgb.g + this.silt * this.siltColorRgb.g + this.sand * this.sandColorRgb.g, 
             b: this.clay * this.clayColorRgb.b + this.silt * this.siltColorRgb.b + this.sand * this.sandColorRgb.b
         }
+
+        outColor = this.processLightDarkening(outColor);
 
         var darkeningColorMult = (this.waterContainment / this.waterContainmentMax);
 

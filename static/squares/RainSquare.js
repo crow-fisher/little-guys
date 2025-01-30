@@ -18,6 +18,8 @@ class RainSquare extends RockSquare {
         this.baseColor = "#F5F5F5";
         this.darkColor = "#E5E4E2";
         this.accentColor = "#91A3B0";
+        this.special = true;
+
     }
     physics() {
         if (Math.random() > (1 - rain_dropChance.value)) {
@@ -50,6 +52,8 @@ class HeavyRainSquare extends RockSquare {
         this.curRainDrops = this.maxRainDrops / 2;
         this.rainRechargeRate = 0.03;
         this.raining = true;
+        this.special = true;
+
 
     }
     physics() {
@@ -96,6 +100,7 @@ class AquiferSquare extends BaseSquare {
         this.waterContainmentMax = 1;
         this.waterContainmentTransferRate = 0;
         this.opacity = 0.03;
+        this.special = true;
     }
     physics() {
         if (getSquares(this.posX, this.posY + 1).length == 0) {
