@@ -4,7 +4,7 @@ import { getSqIterationOrder } from "./squares/_sqOperations.js";
 
 var lifeSquarePositions = new Map();
 
-var MAX_BRIGHTNESS = 16;
+export var MAX_BRIGHTNESS = 8;
 
 export function lightingClearLifeSquarePositionMap() {
     lifeSquarePositions = new Map();
@@ -31,10 +31,10 @@ export function lightingRegisterLifeSquare(lifeSquare) {
 }
 
 export class LightSource {
-    constructor(posX, posY, brightness, colorFunc, radius) {
+    constructor(posX, posY, brightnessFunc, colorFunc, radius) {
         this.posX = posX;
         this.posY = posY;
-        this.brightness = brightness;
+        this.brightnessFunc = brightnessFunc;
         this.colorFunc = colorFunc;
         this.radius = radius;
 
@@ -105,13 +105,13 @@ export class LightSource {
             });
 
             thetaSquares.sort((a, b) => (a[0] ** 2 + a[1] ** 2) ** 0.5 - (b[0] ** 2 + b[1] ** 2) ** 0.5);
-            var curBrightness = this.brightness;
+            var curBrightness = this.brightnessFunc();
             thetaSquares.forEach((loc) => {
                 this.frameLifeSquares[loc[0]][loc[1]].forEach((lsq) => {
                     this.visitedLifeSquares.add(lsq);
                     lsq.lighting[idx] = [];
                     lsq.lighting[idx][0] = curBrightness / MAX_BRIGHTNESS;
-                    lsq.lighting[idx][1] = this.colorFunc;
+                    lsq.lighting[idx][1] = this.frameColor;
                 });
 
                 var relPosX = loc[0];

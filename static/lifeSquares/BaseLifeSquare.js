@@ -460,19 +460,23 @@ class BaseLifeSquare {
         var altColor1Rgb = hexToRgb(altColor1);
         var altColor2Rgb = hexToRgb(altColor2);
 
-        var outColor = {
-            r: baseColorRgb.r * 0.5 + ((altColor1Rgb.r * rand + altColor2Rgb.r * (1 - rand)) * 0.5),
-            g: baseColorRgb.g * 0.5 + ((altColor1Rgb.g * rand + altColor2Rgb.g * (1 - rand)) * 0.5),
-            b: baseColorRgb.b * 0.5 + ((altColor1Rgb.b * rand + altColor2Rgb.b * (1 - rand)) * 0.5)
+        
+        // the '0.1' is the base darkness
+        var outColorBase = {
+            r: (baseColorRgb.r * 0.5 + ((altColor1Rgb.r * rand + altColor2Rgb.r * (1 - rand)) * 0.5)),
+            g: (baseColorRgb.g * 0.5 + ((altColor1Rgb.g * rand + altColor2Rgb.g * (1 - rand)) * 0.5)),
+            b: (baseColorRgb.b * 0.5 + ((altColor1Rgb.b * rand + altColor2Rgb.b * (1 - rand)) * 0.5))
         }
+
+        var outColor = {r: 0, g: 0, b: 0}
 
         this.lighting.filter((light) => light != null).forEach((light) => {
             var strength = light[0];
             var color = light[1];
             outColor = {
-                r: Math.min(255, outColor.r + strength * color.r),
-                g: Math.min(255, outColor.g + strength * color.g),
-                b: Math.min(255, outColor.b + strength * color.b)
+                r: Math.min(255, outColor.r + (outColorBase.r / 255) * strength * color.r),
+                g: Math.min(255, outColor.g + (outColorBase.g / 255) * strength * color.g),
+                b: Math.min(255, outColor.b + (outColorBase.b / 255) * strength * color.b)
             }
         });
 

@@ -12,7 +12,7 @@ import { PopGrassSeedOrganism } from "./organisms/PopGrassSeedOrganism.js";
 import { addNewOrganism, addOrganism, iterateOnOrganisms } from "./organisms/_orgOperations.js";
 
 import { ALL_ORGANISMS, ALL_ORGANISM_SQUARES, ALL_SQUARES, LIGHT_SOURCES, getNextEntitySpawnId } from "./globals.js";
-import { getCurDay, getCurTime, updateTime, renderTime, getCurrentLightColorTemperature } from "./time.js";
+import { getCurDay, getCurTime, updateTime, renderTime, getCurrentLightColorTemperature, getDaylightStrength } from "./time.js";
 
 import { doErase } from "./manipulation.js";
 import { ProtoMap } from "./types.js";
@@ -35,7 +35,7 @@ import { TropicalGrassSeedOrganism } from "./organisms/parameterized/tropical/Tr
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { WheatSeedOrganism } from "./organisms/parameterized/agriculture/grasses/WheatOrganism.js";
 import { ParameterizedRockSquare } from "./squares/parameterized/RockSquare.js";
-import { LightSource } from "./lighting.js";
+import { LightSource, MAX_BRIGHTNESS } from "./lighting.js";
 import { RGB_COLOR_RED, RGB_COLOR_VERY_FUCKING_RED } from "./colors.js";
 
 var lastMode = "organism"; // options: "normal", "special", "organism", "blockModification";
@@ -580,7 +580,7 @@ document.addEventListener('contextmenu', function (e) {
 });
 
         
-LIGHT_SOURCES.push(new LightSource(Math.floor(CANVAS_SQUARES_X / 2), 20, 4, getCurrentLightColorTemperature, 100))
+LIGHT_SOURCES.push(new LightSource(Math.floor(CANVAS_SQUARES_X / 2), 20, () => getDaylightStrength() * MAX_BRIGHTNESS, getCurrentLightColorTemperature, 100))
 
 function main() {
     if (Date.now() - lastTick > MILLIS_PER_TICK) {
