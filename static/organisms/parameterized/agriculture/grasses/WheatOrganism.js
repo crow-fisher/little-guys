@@ -67,7 +67,7 @@ export class WheatOrganism extends BaseParameterizedOrganism {
         growthPlan.postConstruct = () => {
             this.originGrowth.addChild(growthPlan.component);
             growthPlan.component.xOffset = 2 * (Math.random() - 0.5);
-            growthPlan.component.yOffset = 2 * (Math.random() - 0.5);
+            growthPlan.component.yOffset = -(0.5 + Math.random());
         };
         growthPlan.component._getWilt = (val) => Math.sin(val) / 2; 
         for (let t = 1; t < randNumber(15,30); t++) {

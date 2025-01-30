@@ -80,32 +80,40 @@ export class BaseParameterizedOrganism extends BaseOrganism {
         if (this.lifeSquares.length == 0) {
             return;
         }
+        var greenLifeSquares = Array.from(this.lifeSquares.filter((lsq) => lsq.type == "green"));
+        if (greenLifeSquares.length == 0) {
+            return;
+        }
         if (this.waterPressure < this.waterPressureWiltThresh) {
             this.curWilt += 0.01;
-            var numLifeSquares = this.lifeSquares.length;
-            var lifeSquareToThirstify = this.lifeSquares.at(randNumber(0, numLifeSquares - 1));
+            var lifeSquareToThirstify = greenLifeSquares.at(randNumber(0, greenLifeSquares.length - 1));
             if (lifeSquareToThirstify.state == STATE_HEALTHY) {
                 lifeSquareToThirstify.state = STATE_THIRSTY;
-            // } else if (lifeSquareToThirstify == STATE_THIRSTY) {
-            //     lifeSquareToThirstify.state = STATE_DEAD;
+            } else if (lifeSquareToThirstify.state == STATE_THIRSTY) {
+                lifeSquareToThirstify.state = STATE_DEAD;
             }
         } else {
             this.curWilt -= 0.01;
-            var numLifeSquares = this.lifeSquares.length;
-            var lifeSquareToRevive = this.lifeSquares.at(randNumber(0, numLifeSquares - 1));
+            var lifeSquareToRevive = greenLifeSquares.at(randNumber(0, greenLifeSquares.length - 1));
             if (lifeSquareToRevive.state != STATE_DEAD) {
                 lifeSquareToRevive.state = STATE_HEALTHY;
             }
         }
 
         if (this.waterPressure > this.waterPressureOverwaterThresh) {
-            var numLifeSquares = this.lifeSquares.length;
-            var lifeSquareToKill = this.lifeSquares.at(randNumber(0, numLifeSquares - 1));
+            var lifeSquareToKill = greenLifeSquares.at(randNumber(0, greenLifeSquares.length - 1));
             lifeSquareToKill.state = STATE_DEAD;
         }
 
         this.curWilt = Math.max(0, this.curWilt);
         this.curWilt = Math.min(Math.PI / 2, this.curWilt);
+
+        var totalDead = Array.from(greenLifeSquares.filter((lsq) => lsq.state == STATE_DEAD)).length;
+
+        if (totalDead > greenLifeSquares.length * 0.5) {
+            this.destroy();
+        }
+
     }
 
     growPlantSquarePos(parentSquare, posX, posY) {
