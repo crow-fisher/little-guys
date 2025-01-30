@@ -7,7 +7,7 @@ import { getCurDay, getPrevDay } from "../../time.js";
 import { addNewOrganism } from "../_orgOperations.js";
 import { BaseOrganism } from "../BaseOrganism.js";
 import { GrowthPlan, GrowthPlanStep } from "./GrowthPlan.js";
-import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_DEAD, SUBTYPE_ROOTNODE, SUBTYPE_SPROUT, TYPE_HEART, TYPE_TRUNK } from "./Stages.js";
+import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, STATE_DEAD, STATE_HEALTHY, STATE_THIRSTY, SUBTYPE_DEAD, SUBTYPE_ROOTNODE, SUBTYPE_SPROUT, TYPE_HEART, TYPE_TRUNK } from "./Stages.js";
 
 
 export class BaseParameterizedOrganism extends BaseOrganism {
@@ -77,18 +77,31 @@ export class BaseParameterizedOrganism extends BaseOrganism {
     }
 
     wilt() {
+        if (this.lifeSquares.length == 0) {
+            return;
+        }
         if (this.waterPressure < this.waterPressureWiltThresh) {
             this.curWilt += 0.01;
+            var numLifeSquares = this.lifeSquares.length;
+            var lifeSquareToThirstify = this.lifeSquares.at(randNumber(0, numLifeSquares - 1));
+            if (lifeSquareToThirstify.state == STATE_HEALTHY) {
+                lifeSquareToThirstify.state = STATE_THIRSTY;
+            } else if (lifeSquareToThirstify == STATE_THIRSTY) {
+                lifeSquareToThirstify.state = STATE_DEAD;
+            }
         } else {
             this.curWilt -= 0.01;
+            var numLifeSquares = this.lifeSquares.length;
+            var lifeSquareToRevive = this.lifeSquares.at(randNumber(0, numLifeSquares - 1));
+            if (lifeSquareToRevive.state != STATE_DEAD) {
+                lifeSquareToRevive.state = STATE_HEALTHY;
+            }
         }
 
         if (this.waterPressure > this.waterPressureOverwaterThresh) {
-            // grab something from the last component
             var numLifeSquares = this.lifeSquares.length;
             var lifeSquareToKill = this.lifeSquares.at(randNumber(0, numLifeSquares - 1));
-            lifeSquareToKill.subtype = SUBTYPE_DEAD;
-
+            lifeSquareToKill.state = STATE_DEAD;
         }
 
         this.curWilt = Math.max(0, this.curWilt);

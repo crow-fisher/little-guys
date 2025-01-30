@@ -10,6 +10,7 @@ import { selectedViewMode } from "../index.js";
 import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_GREEN, RGB_COLOR_BLACK, RGB_COLOR_RED, COLOR_BLUE, COLOR_GREEN, COLOR_RED } from "../colors.js";
 import { addOrganismSquare } from "./_lsOperations.js";
 import { removeSquare } from "../globalOperations.js";
+import { STATE_HEALTHY } from "../organisms/parameterized/Stages.js";
 
 
 class BaseLifeSquare {
@@ -55,6 +56,9 @@ class BaseLifeSquare {
         }
 
         this.strength = 1;
+
+        this.state = STATE_HEALTHY;
+        this.activeRenderState = null;
 
         this.opacity = 1;
         this.width = 1;
