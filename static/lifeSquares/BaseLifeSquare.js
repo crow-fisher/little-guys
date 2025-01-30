@@ -11,6 +11,7 @@ import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_GREEN, RGB_COLOR_BLACK, RGB_
 import { addOrganismSquare } from "./_lsOperations.js";
 import { removeSquare } from "../globalOperations.js";
 import { STATE_HEALTHY } from "../organisms/parameterized/Stages.js";
+import { lightingRegisterLifeSquare } from "../lighting.js";
 
 
 class BaseLifeSquare {
@@ -56,6 +57,7 @@ class BaseLifeSquare {
         }
 
         this.strength = 1;
+        this.lighting = 0;
 
         this.state = STATE_HEALTHY;
         this.activeRenderState = null;
@@ -321,6 +323,7 @@ class BaseLifeSquare {
     }
 
     render() {
+        lightingRegisterLifeSquare(this);
         if (selectedViewMode.startsWith("organism") && selectedViewMode != "organismStructure") {
             var color = null;
             var val;
@@ -460,42 +463,44 @@ class BaseLifeSquare {
             );
             return;
         }
-        if (this.cachedRgba) {
-            MAIN_CONTEXT.fillStyle = this.cachedRgba;
+        var res = this.getStaticRand(1) * (parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value) + parseFloat(this.baseColorAmount.value));
+        var primaryColor = null;
+        var altColor1 = null;
+        var altColor2 = null;
+
+        if (res < parseFloat(this.accentColorAmount.value)) {
+            primaryColor = this.accentColor;
+            altColor1 = this.darkColor;
+            altColor2 = this.colorBase;
+        } else if (res < parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value)) {
+            primaryColor = this.darkColor;
+            altColor1 = this.baseColor;
+            altColor2 = this.darkColor;
         } else {
-            var res = this.getStaticRand(1) * (parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value) + parseFloat(this.baseColorAmount.value));
-            var primaryColor = null;
-            var altColor1 = null;
-            var altColor2 = null;
-
-            if (res < parseFloat(this.accentColorAmount.value)) {
-                primaryColor = this.accentColor;
-                altColor1 = this.darkColor;
-                altColor2 = this.colorBase;
-            } else if (res < parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value)) {
-                primaryColor = this.darkColor;
-                altColor1 = this.baseColor;
-                altColor2 = this.darkColor;
-            } else {
-                altColor1 = this.darkColor;
-                altColor2 = this.darkColor;
-                primaryColor = this.baseColor;
-            }
-
-            var rand = this.getStaticRand(2);
-            var baseColorRgb = hexToRgb(primaryColor);
-            var altColor1Rgb = hexToRgb(altColor1);
-            var altColor2Rgb = hexToRgb(altColor2);
-
-            var outColor = {
-                r: baseColorRgb.r * 0.5 + ((altColor1Rgb.r * rand + altColor2Rgb.r * (1 - rand)) * 0.5),
-                g: baseColorRgb.g * 0.5 + ((altColor1Rgb.g * rand + altColor2Rgb.g * (1 - rand)) * 0.5),
-                b: baseColorRgb.b * 0.5 + ((altColor1Rgb.b * rand + altColor2Rgb.b * (1 - rand)) * 0.5)
-            }
-
-            var outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), this.opacity);
-            MAIN_CONTEXT.fillStyle = outRgba;
+            altColor1 = this.darkColor;
+            altColor2 = this.darkColor;
+            primaryColor = this.baseColor;
         }
+
+        var rand = this.getStaticRand(2);
+        var baseColorRgb = hexToRgb(primaryColor);
+        var altColor1Rgb = hexToRgb(altColor1);
+        var altColor2Rgb = hexToRgb(altColor2);
+
+        var outColor = {
+            r: baseColorRgb.r * 0.5 + ((altColor1Rgb.r * rand + altColor2Rgb.r * (1 - rand)) * 0.5),
+            g: baseColorRgb.g * 0.5 + ((altColor1Rgb.g * rand + altColor2Rgb.g * (1 - rand)) * 0.5),
+            b: baseColorRgb.b * 0.5 + ((altColor1Rgb.b * rand + altColor2Rgb.b * (1 - rand)) * 0.5)
+        }
+
+        outColor = {
+            r: Math.min(255, outColor.r + this.lighting * 10),
+            g: Math.min(255, outColor.g + this.lighting * 10),
+            b: Math.min(255, outColor.b + this.lighting * 10)
+        }
+
+        var outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), this.opacity);
+        MAIN_CONTEXT.fillStyle = outRgba;
 
         zoomCanvasFillRect(
             this.getPosX() * BASE_SIZE,

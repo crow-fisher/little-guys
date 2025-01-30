@@ -35,6 +35,7 @@ import { TropicalGrassSeedOrganism } from "./organisms/parameterized/tropical/Tr
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { WheatSeedOrganism } from "./organisms/parameterized/agriculture/grasses/WheatOrganism.js";
 import { ParameterizedRockSquare } from "./squares/parameterized/RockSquare.js";
+import { LightSource } from "./lighting.js";
 
 var lastMode = "organism"; // options: "normal", "special", "organism", "blockModification";
 
@@ -577,7 +578,8 @@ document.addEventListener('contextmenu', function (e) {
     e.preventDefault();
 });
 
-
+        
+var mainLightSource = new LightSource(Math.floor(CANVAS_SQUARES_X / 2), 20, 10, "#FFFFFF")
 function main() {
     if (Date.now() - lastTick > MILLIS_PER_TICK) {
         MAIN_CONTEXT.clearRect(0, 0, CANVAS_SQUARES_X * BASE_SIZE, CANVAS_SQUARES_Y * BASE_SIZE);
@@ -611,6 +613,8 @@ function main() {
         renderSquares();
         renderWater();
         renderOrganisms();
+        
+        mainLightSource.doRayCasting();
 
         if (selectedViewMode == "normal") {
             renderClouds();

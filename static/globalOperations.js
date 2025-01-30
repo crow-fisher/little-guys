@@ -10,6 +10,7 @@ import { getObjectArrFromMap, getStandardDeviation } from "./common.js";
 import { getOrganismSquaresAtSquare } from "./lifeSquares/_lsOperations.js";
 import { removeItemAll } from "./common.js";
 import { removeOrganism } from "./organisms/_orgOperations.js";
+import { lightingClearLifeSquarePositionMap } from "./lighting.js";
 
 var frame_squares = null;
 var frame_inorganic_squares = null;
@@ -65,6 +66,7 @@ function reset() {
     stats["pressure"] = 0;
     stats["squareStdev"] = 0;
     resetWaterflowSquares();
+    lightingClearLifeSquarePositionMap();
     frame_squares = getSqIterationOrder();
     frame_physics_squares = frame_squares.filter((sq) => sq.physicsEnabled || sq.special);
     frame_soil_physics_squares = frame_squares.filter((sq) => sq.soilPhysicsEnabled);
