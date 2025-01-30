@@ -65,7 +65,7 @@ export class LightSource {
                 var posYKeys = Object.keys(this.frameLifeSquares[relPosX]);
                 posYKeys.forEach((relPosY) => {
                     var sqTheta = Math.atan(relPosX / relPosY);
-                    if (Math.abs(sqTheta - theta) < thetaStep * 2) {
+                    if (Math.abs(sqTheta - theta) < 10) {
                         thetaSquares.push([relPosX, relPosY]);
                     }
                 })
