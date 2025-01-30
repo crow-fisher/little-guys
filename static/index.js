@@ -699,6 +699,10 @@ function addSquareByNameConfig(posX, posY) {
             doBlockBlur(posX, posY);
             return;
         }
+        if (specialSelect_val == "light") {
+            mainLightSource.posX = posX;
+            mainLightSource.posY = posY;
+        }
         square = addSquareByNameSetTemp(posX, posY, specialSelect_val);
     } else {
         if (!mixMaterials_val) {

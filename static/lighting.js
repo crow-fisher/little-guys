@@ -31,12 +31,16 @@ export class LightSource {
         this.posY = posY;
         this.brightness = brightness;
         this.color = color;
-        
+
         this.frameLifeSquares = null;
+        this.allLifeSquares = new Array();
+        this.visitedLifeSquares = new Set();
     }
 
     preprocessLifeSquares() {
         this.frameLifeSquares = new Map();
+        this.allLifeSquares = new Array();
+        this.visitedLifeSquares = new Set();
         var posXKeys = Object.keys(lifeSquarePositions);
         posXKeys.forEach((lsqPosX) => {
             var relPosX = Math.floor(this.posX - lsqPosX);
@@ -50,35 +54,39 @@ export class LightSource {
                     this.frameLifeSquares[relPosX][relPosY] = new Array();
                 }
                 this.frameLifeSquares[relPosX][relPosY].push(...lifeSquarePositions[lsqPosX][lsqPosY]);
+                this.allLifeSquares.push(...lifeSquarePositions[lsqPosX][lsqPosY]);
             })
         })
     }
 
     doRayCasting() {
         this.preprocessLifeSquares();
-        var numRays = 100;
+        var numRays = 128;
         var thetaStep = (Math.PI / numRays);
-        for (let theta = 0; theta < Math.PI; theta += thetaStep) {
+        for (let theta = 0; theta < 2 * Math.PI; theta += thetaStep) {
             var thetaSquares = [];
             var posXKeys = Object.keys(this.frameLifeSquares);
             posXKeys.forEach((relPosX) => {
                 var posYKeys = Object.keys(this.frameLifeSquares[relPosX]);
                 posYKeys.forEach((relPosY) => {
                     var sqTheta = Math.atan(relPosX / relPosY);
-                    if (Math.abs(sqTheta - theta) < 10) {
+                    if (Math.abs(Math.abs(sqTheta) - Math.abs(theta)) < thetaStep * 4) {
                         thetaSquares.push([relPosX, relPosY]);
                     }
                 })
             });
 
             thetaSquares.sort((a, b) => (a[0] ** 2 + a[1] ** 2) ** 0.5 - (b[0] ** 2 + b[1] ** 2) ** 0.5);
-
             var curBrightness = this.brightness;
-
             thetaSquares.forEach((loc) => {
-                this.frameLifeSquares[loc[0]][loc[1]].forEach((lsq) => lsq.lighting = curBrightness);
-                curBrightness -= 0.03;
+                this.frameLifeSquares[loc[0]][loc[1]].forEach((lsq) => {
+                    lsq.lighting = curBrightness;
+                    this.visitedLifeSquares.add(lsq);
+                });
+                curBrightness -= 0.05;
             });
         }
+
+        this.allLifeSquares.filter((lsq) => !(this.visitedLifeSquares.has(lsq))).forEach((lsq) => lsq.lighting = 0);
     }
 }
