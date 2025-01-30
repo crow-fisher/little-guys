@@ -35,7 +35,7 @@ export class WheatOrganism extends BaseParameterizedOrganism {
 
         this.rootOpacity = 0.05;
 
-        this.maxNumGrass = 8;
+        this.maxNumGrass = 2;
         this.curNumGrass = 0;
 
         /* 
@@ -58,11 +58,12 @@ export class WheatOrganism extends BaseParameterizedOrganism {
         this.curNumGrass += 1;
 
         var startRootNode = this.getOriginsForNewGrowth(SUBTYPE_ROOTNODE).at(0);
+        var baseDeflection = randRange(0, .1);
         var growthPlan = new GrowthPlan(
             startRootNode.posX, startRootNode.posY, 
-            false, STAGE_ADULT, randRange(-Math.PI, Math.PI), 0, 0, 
-            randRange(-1, 1), 
-            randRange(-0.4, 0.4), TYPE_TRUNK, 1);
+            false, STAGE_ADULT, randRange(-Math.PI, Math.PI), baseDeflection, 0, 
+            baseDeflection, 
+            randRange(0, 0.3), TYPE_TRUNK, 1);
         growthPlan.postConstruct = () => {
             this.originGrowth.addChild(growthPlan.component);
             growthPlan.component.xOffset = 2 * (Math.random() - 0.5);
