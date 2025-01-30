@@ -3,7 +3,7 @@ import { CANVAS_SQUARES_X } from "./index.js";
 
 var lifeSquarePositions = new Map();
 
-const lightingSqSize = 3;
+const lightingSqSize = 2;
 
 export function lightingClearLifeSquarePositionMap() {
     lifeSquarePositions = new Map();
@@ -13,8 +13,8 @@ export function lightingRegisterLifeSquare(lifeSquare) {
     if (lifeSquare.type != "green") {
         return;
     }
-    var posX = Math.floor(lifeSquare.getPosX());
-    var posY = Math.floor(lifeSquare.getPosY());
+    var posX = Math.floor(lifeSquare.getPosX() / lightingSqSize);
+    var posY = Math.floor(lifeSquare.getPosY() / lightingSqSize);
 
     if (!(posX in lifeSquarePositions)) {
         lifeSquarePositions[posX] = new Map();
@@ -39,8 +39,8 @@ export class LightSource {
         for (let theta = 0; theta < Math.PI; theta += (Math.PI / numRays)) {
             var curBrightness = this.brightness;
             for (let curRayLength = 0; curRayLength < 100; curRayLength += 0.5) {
-                var curPosX = Math.floor(this.posX + Math.cos(theta) * curRayLength);
-                var curPosY = Math.floor(this.posY + Math.sin(theta) * curRayLength);
+                var curPosX = Math.floor((this.posX + Math.cos(theta) * curRayLength) / lightingSqSize);
+                var curPosY = Math.floor((this.posY + Math.sin(theta) * curRayLength) / lightingSqSize);
 
                 if (!(curPosX in lifeSquarePositions)) {
                     continue;
@@ -52,7 +52,7 @@ export class LightSource {
                 var lsqs = lifeSquarePositions[curPosX][curPosY];
 
                 lsqs.forEach((lsq) => lsq.lighting = curBrightness);
-                curBrightness -= lsqs.map((lsq) => 0.1).reduce(
+                curBrightness -= lsqs.map((lsq) => 0.03).reduce(
                     (accumulator, currentValue) => accumulator + currentValue,
                     0,
                 );

@@ -579,7 +579,7 @@ document.addEventListener('contextmenu', function (e) {
 });
 
         
-var mainLightSource = new LightSource(Math.floor(CANVAS_SQUARES_X / 2), 20, 10, "#FFFFFF")
+var mainLightSource = new LightSource(Math.floor(CANVAS_SQUARES_X / 2), 70, 10, "#FFFFFF")
 function main() {
     if (Date.now() - lastTick > MILLIS_PER_TICK) {
         MAIN_CONTEXT.clearRect(0, 0, CANVAS_SQUARES_X * BASE_SIZE, CANVAS_SQUARES_Y * BASE_SIZE);
