@@ -86,8 +86,8 @@ export class BaseParameterizedOrganism extends BaseOrganism {
             var lifeSquareToThirstify = this.lifeSquares.at(randNumber(0, numLifeSquares - 1));
             if (lifeSquareToThirstify.state == STATE_HEALTHY) {
                 lifeSquareToThirstify.state = STATE_THIRSTY;
-            } else if (lifeSquareToThirstify == STATE_THIRSTY) {
-                lifeSquareToThirstify.state = STATE_DEAD;
+            // } else if (lifeSquareToThirstify == STATE_THIRSTY) {
+            //     lifeSquareToThirstify.state = STATE_DEAD;
             }
         } else {
             this.curWilt -= 0.01;

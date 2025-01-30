@@ -370,10 +370,10 @@ function keydown(e) {
         shiftPressed = true;
     }
     if (e.key == "w") {
-        doZoom(-100);
+        doZoom(-0.1);
     }
     if (e.key == "s") {
-        doZoom(100);
+        doZoom(0.1);
     }
     if (e.key == "a") {
         global_theta_base += 0.1;
@@ -609,8 +609,8 @@ function main() {
             renderTime();
         }
         renderSquares();
-        renderOrganisms();
         renderWater();
+        renderOrganisms();
 
         if (selectedViewMode == "normal") {
             renderClouds();

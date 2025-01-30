@@ -23,9 +23,9 @@ export class WheatGreenSquare extends BaseLifeSquare {
             this.darkColor = "#a1816d";
             this.accentColor = "#33261d";
         } else if (this.state == STATE_THIRSTY) {
-            this.baseColor = "#796c3b";
-            this.darkColor = "#9c955b";
-            this.accentColor = "#7e5336";
+            this.baseColor = "#6a7831";
+            this.darkColor = "#4a5226";
+            this.accentColor = "#67703f";
         } else {
             switch (this.subtype) {
                 case SUBTYPE_TRUNK:
