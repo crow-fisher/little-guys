@@ -65,7 +65,8 @@ function addSquareOverride(square) {
     return square;
 }
 
-function getSqIterationOrder(ref) {
+function getSqIterationOrder() {
+    var rootKeys = Object.keys(ALL_SQUARES);
     var squareOrder = [];
     for (let i = 0; i < rootKeys.length; i++) {
         var subKeys = Object.keys(ALL_SQUARES[rootKeys[i]]);
@@ -114,4 +115,4 @@ function removeSquarePos(x, y) {
 }
 
 
-export {getNeighbors, getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares, removeOrganismSquare, removeSquarePos};
+export {getSqIterationOrder, getNeighbors, getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares, removeOrganismSquare, removeSquarePos};

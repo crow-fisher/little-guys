@@ -1,4 +1,4 @@
-import { getSquares, iterateOnSquares } from "./squares/_sqOperations.js";
+import { getSqIterationOrder, getSquares, iterateOnSquares } from "./squares/_sqOperations.js";
 import { getOrganismsAtSquare, iterateOnOrganisms } from "./organisms/_orgOperations.js";
 import {
     ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES,
@@ -11,7 +11,11 @@ import { getOrganismSquaresAtSquare } from "./lifeSquares/_lsOperations.js";
 import { removeItemAll } from "./common.js";
 import { removeOrganism } from "./organisms/_orgOperations.js";
 
-
+var frame_squares = null;
+var frame_inorganic_squares = null;
+var frame_solid_squares = null;
+var frame_water_squares = null;
+var frame_physics_squares = null;
 
 function purge() {
     iterateOnSquares((sq) => {
@@ -60,22 +64,27 @@ function reset() {
     stats["pressure"] = 0;
     stats["squareStdev"] = 0;
     resetWaterflowSquares();
+    frame_squares = getSqIterationOrder();
+    frame_physics_squares = frame_squares.filter((sq) => sq.physicsEnabled);
+    frame_inorganic_squares = frame_squares.filter((sq) => !sq.organic);
+    frame_solid_squares = frame_squares.filter((sq) => sq.solid && !sq.organic);
+    frame_water_squares = frame_squares.filter((sq) => !sq.solid);
 }
 
 function renderSquares() {
-    iterateOnSquares((sq) => sq.solid ? sq.render() : null, 0);
+    frame_solid_squares.forEach((sq) => sq.render());
 }
 
 function renderWater() {
-    iterateOnSquares((sq) => !sq.solid ? sq.render() : null, 0);
+    frame_water_squares.forEach((sq) => sq.render());
 }
 
 function physics() {
-    iterateOnSquares((sq) => sq.physics(), 0);
+    frame_physics_squares.forEach((sq) => sq.physics());
 }
 function physicsBefore() {
-    iterateOnSquares((sq) => sq.physicsBefore(), 0);
-    iterateOnSquares((sq) => sq.physicsBefore2(), 0);
+    frame_physics_squares.forEach((sq) => sq.physicsBefore());
+    frame_physics_squares.forEach((sq) => sq.physicsBefore2());
 }
 
 function processOrganisms() {
