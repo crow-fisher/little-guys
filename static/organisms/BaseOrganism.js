@@ -4,6 +4,7 @@ import { getStandardDeviation, randNumber } from "../common.js";
 import { getCurDay, getCurTime } from "../time.js";
 import { getNextEntitySpawnId } from "../globals.js";
 import { getWindSpeedAtLocation } from "../wind.js";
+import { lightingRegisterLifeSquare } from "../lighting.js";
 
 class BaseOrganism {
     constructor(square) {

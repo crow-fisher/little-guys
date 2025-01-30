@@ -57,7 +57,7 @@ class BaseLifeSquare {
         }
 
         this.strength = 1;
-        this.lighting = 0;
+        this.lighting = [];
 
         this.state = STATE_HEALTHY;
         this.activeRenderState = null;
@@ -276,32 +276,6 @@ class BaseLifeSquare {
         return this.posY - (this.deflectionYOffset + this.yOffset);
     }
 
-    darkeningRender() { 
-        MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl((10 - 8 * getDaylightStrength()) + this.linkedSquare.currentPressureDirect, 10);
-        zoomCanvasFillRect(
-            this.getPosX() * BASE_SIZE,
-            this.getPosY() * BASE_SIZE,
-            this.width * BASE_SIZE * this.getLsqRenderSizeMult(),
-            this.height * BASE_SIZE * this.getLsqRenderSizeMult()
-        );
-    }
-
-    distToFrontBlockModDarken() { 
-        // TODO: optimize, this is dinky dinky slow rn
-        return;
-        if (this.linkedOrganism.getLowestGreen() == null) {
-            return;
-        }
-        MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(Math.max(0, this.linkedOrganism.linkedSquare.distToFront - this.linkedOrganism.getLowestGreen().linkedSquare.currentPressureDirect), 32);
-        zoomCanvasFillRect(
-            this.getPosX() * BASE_SIZE,
-            this.getPosY() * BASE_SIZE,
-            this.width * BASE_SIZE * this.getLsqRenderSizeMult(),
-            this.height * BASE_SIZE * this.getLsqRenderSizeMult()
-        );
-    }
-
-
     calculateDarkeningColorImpl(darkVal, darkValMax) {
         var c;
         if (this.flowering) {
@@ -323,7 +297,6 @@ class BaseLifeSquare {
     }
 
     render() {
-        lightingRegisterLifeSquare(this);
         if (selectedViewMode.startsWith("organism") && selectedViewMode != "organismStructure") {
             var color = null;
             var val;
@@ -493,11 +466,15 @@ class BaseLifeSquare {
             b: baseColorRgb.b * 0.5 + ((altColor1Rgb.b * rand + altColor2Rgb.b * (1 - rand)) * 0.5)
         }
 
-        outColor = {
-            r: Math.min(255, outColor.r + this.lighting * 10),
-            g: Math.min(255, outColor.g + this.lighting * 10),
-            b: Math.min(255, outColor.b + this.lighting * 10)
-        }
+        this.lighting.filter((light) => light != null).forEach((light) => {
+            var strength = light[0];
+            var color = light[1];
+            outColor = {
+                r: Math.min(255, outColor.r + strength * color.r),
+                g: Math.min(255, outColor.g + strength * color.g),
+                b: Math.min(255, outColor.b + strength * color.b)
+            }
+        });
 
         var outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), this.opacity);
         MAIN_CONTEXT.fillStyle = outRgba;
@@ -508,9 +485,6 @@ class BaseLifeSquare {
             this.width * BASE_SIZE * this.getLsqRenderSizeMult(),
             this.height * BASE_SIZE * this.getLsqRenderSizeMult()
         );
-
-        this.darkeningRender();
-        this.distToFrontBlockModDarken();
     }
 
     calculateColor() {

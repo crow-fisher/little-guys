@@ -20,6 +20,8 @@ var sky_colorEveningMorningRGB = hexToRgb("#A49F67");
 var sky_colorNearNoonRGB = hexToRgb("#7E9FB1");
 var sky_colorNoonRGB = hexToRgb("#84B2E2");
 
+var currentLightColorTemperature = sky_nightRGB; 
+
 function getTimeSpeedMult() {
     return 8.64 * 10 ** 7 / millis_per_day;
 }
@@ -197,8 +199,10 @@ function renderTime() {
     );
 
     renderSkyBackground(currentTime);
+}
 
-
+export function getCurrentLightColorTemperature() {
+    return currentLightColorTemperature;
 }
 
 // https://www.researchgate.net/publication/328726901_Real-time_adaptable_and_coherent_rendering_for_outdoor_augmented_reality/download
@@ -206,11 +210,12 @@ function renderTime() {
 function calculateTempColor(temperature) {
     temperature /= 100;
     temperature = Math.max(10, temperature);
-    return {
+    currentLightColorTemperature = {
         r: temp_red(temperature),
         g: temp_green(temperature),
         b: temp_blue(temperature)
-    }
+    };
+    return currentLightColorTemperature;
 }
 
 function temp_red(temperature) {

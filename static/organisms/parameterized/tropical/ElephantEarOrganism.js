@@ -29,6 +29,7 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
         this.side = Math.random() > 0.5 ? -1 : 1;
         this.minAngle = -Math.PI * 0.5;
         this.maxAngle = Math.PI * 0.5;
+        this.spinnable = true;
     }
 
     getLeafLocations(xSize, ySize) {

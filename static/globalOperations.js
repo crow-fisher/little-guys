@@ -2,7 +2,7 @@ import { getSqIterationOrder, getSquares, iterateOnSquares } from "./squares/_sq
 import { getOrganismsAtSquare, iterateOnOrganisms } from "./organisms/_orgOperations.js";
 import {
     ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES,
-    getNextGroupId, updateGlobalStatistic, getGlobalStatistic, resetWaterflowSquares
+    getNextGroupId, updateGlobalStatistic, getGlobalStatistic, resetWaterflowSquares, LIGHT_SOURCES
 } from "./globals.js";
 
 import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js";
@@ -10,7 +10,14 @@ import { getObjectArrFromMap, getStandardDeviation } from "./common.js";
 import { getOrganismSquaresAtSquare } from "./lifeSquares/_lsOperations.js";
 import { removeItemAll } from "./common.js";
 import { removeOrganism } from "./organisms/_orgOperations.js";
-import { lightingClearLifeSquarePositionMap } from "./lighting.js";
+import { lightingClearLifeSquarePositionMap, lightingRegisterLifeSquare } from "./lighting.js";
+
+function doLightSourceRaycasting() {
+    iterateOnOrganisms((org) => org.lifeSquares.forEach((lsq) => lightingRegisterLifeSquare(lsq)));
+    for (let i = 0; i < LIGHT_SOURCES.length; i++) {
+        LIGHT_SOURCES[i].doRayCasting(i);
+    }
+}
 
 var frame_squares = null;
 var frame_inorganic_squares = null;
@@ -127,4 +134,4 @@ function doWaterFlow() {
     }
 }
 
-export {purge, reset, renderWater, renderSquares, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquare, getSquareStdevForGetter}
+export {purge, reset, renderWater, renderSquares, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquare, getSquareStdevForGetter, doLightSourceRaycasting}

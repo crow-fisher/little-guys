@@ -5,6 +5,7 @@ var stats = new Map();
 var NUM_GROUPS = 0; 
 var WATERFLOW_TARGET_SQUARES = new Map();
 var WATERFLOW_CANDIDATE_SQUARES = new Set();
+var LIGHT_SOURCES = new Array();
 var curEntitySpawnedId = 0;
 var darkeningColorCache = new Map();
 var waterDarkeningColorCache = new Map();
@@ -44,7 +45,7 @@ function resetWaterflowSquares() {
     WATERFLOW_CANDIDATE_SQUARES = new Set();
 }
 export {
-    ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES, curEntitySpawnedId, darkeningColorCache,
+    ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES, curEntitySpawnedId, darkeningColorCache, LIGHT_SOURCES,
     waterDarkeningColorCache,
     getNextGroupId, updateGlobalStatistic, getGlobalStatistic,
     getNextEntitySpawnId, getCurEntitySpawnId, resetWaterflowSquares

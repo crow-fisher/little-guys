@@ -1,6 +1,6 @@
 import { BaseSquare } from "./squares/BaseSqaure.js";
 import { getNeighbors, getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares, removeSquarePos } from "./squares/_sqOperations.js";
-import { purge, reset, renderWater, renderSquares, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquare } from "./globalOperations.js"
+import { purge, reset, renderWater, renderSquares, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquare, doLightSourceRaycasting } from "./globalOperations.js"
 import { RockSquare } from "./squares/RockSquare.js"
 import { WaterSquare } from "./squares/WaterSquare.js";
 import { RainSquare } from "./squares/RainSquare.js";
@@ -11,8 +11,8 @@ import { SeedSquare } from "./squares/SeedSquare.js";
 import { PopGrassSeedOrganism } from "./organisms/PopGrassSeedOrganism.js";
 import { addNewOrganism, addOrganism, iterateOnOrganisms } from "./organisms/_orgOperations.js";
 
-import { ALL_ORGANISMS, ALL_ORGANISM_SQUARES, ALL_SQUARES, getNextEntitySpawnId } from "./globals.js";
-import { getCurDay, getCurTime, updateTime, renderTime } from "./time.js";
+import { ALL_ORGANISMS, ALL_ORGANISM_SQUARES, ALL_SQUARES, LIGHT_SOURCES, getNextEntitySpawnId } from "./globals.js";
+import { getCurDay, getCurTime, updateTime, renderTime, getCurrentLightColorTemperature } from "./time.js";
 
 import { doErase } from "./manipulation.js";
 import { ProtoMap } from "./types.js";
@@ -36,6 +36,7 @@ import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { WheatSeedOrganism } from "./organisms/parameterized/agriculture/grasses/WheatOrganism.js";
 import { ParameterizedRockSquare } from "./squares/parameterized/RockSquare.js";
 import { LightSource } from "./lighting.js";
+import { RGB_COLOR_RED, RGB_COLOR_VERY_FUCKING_RED } from "./colors.js";
 
 var lastMode = "organism"; // options: "normal", "special", "organism", "blockModification";
 
@@ -330,7 +331,7 @@ function doZoom(deltaY) {
     var canvasPos = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);
 
     var lsqFound = false;
-    iterateOnOrganisms((org) => org.lifeSquares.filter((lsq) => lsq.component != null)
+    iterateOnOrganisms((org) => org.lifeSquares.filter((lsq) => lsq.linkedOrganism.spinnable && lsq.component != null)
         .forEach((lsq) => {
         var dist = ((canvasPos[0] - lsq.getPosX()) ** 2 + (canvasPos[1] - lsq.getPosY()) ** 2) ** 0.5;
         if (dist < 1.4) {
@@ -579,7 +580,8 @@ document.addEventListener('contextmenu', function (e) {
 });
 
         
-var mainLightSource = new LightSource(Math.floor(CANVAS_SQUARES_X / 2), 20, 10, "#FFFFFF")
+LIGHT_SOURCES.push(new LightSource(Math.floor(CANVAS_SQUARES_X / 2), 20, 4, getCurrentLightColorTemperature, 100))
+
 function main() {
     if (Date.now() - lastTick > MILLIS_PER_TICK) {
         MAIN_CONTEXT.clearRect(0, 0, CANVAS_SQUARES_X * BASE_SIZE, CANVAS_SQUARES_Y * BASE_SIZE);
@@ -610,11 +612,14 @@ function main() {
         if (selectedViewMode == "normal") {
             renderTime();
         }
+
+
+        doLightSourceRaycasting(); 
+
         renderSquares();
         renderWater();
         renderOrganisms();
         
-        mainLightSource.doRayCasting();
 
         if (selectedViewMode == "normal") {
             renderClouds();
@@ -700,8 +705,8 @@ function addSquareByNameConfig(posX, posY) {
             return;
         }
         if (specialSelect_val == "light") {
-            mainLightSource.posX = posX;
-            mainLightSource.posY = posY;
+            LIGHT_SOURCES[0].posX = posX;
+            LIGHT_SOURCES[0].posY = posY;
         }
         square = addSquareByNameSetTemp(posX, posY, specialSelect_val);
     } else {

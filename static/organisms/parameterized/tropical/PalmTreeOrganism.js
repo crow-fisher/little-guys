@@ -11,7 +11,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         super(posX, posY);
         this.greenType = PalmTreeGreenSquare;
         this.rootType = GenericParameterizedRootSquare;
-
+        this.spinnable = true;
         this.trunkMaxThickness = 2;
         this.trunkCurThickness = 1;
 
@@ -26,6 +26,7 @@ export class PalmTreeOrganism extends BaseParameterizedOrganism {
         this.trunkGrowTimeInDays =    10 ** (-3);
 
         this.side = Math.random() > 0.5 ? -1 : 1;
+
 
         // parameterized growth rules
 
