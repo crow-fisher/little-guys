@@ -1,9 +1,4 @@
-import { CANVAS_SQUARES_X } from "./index.js";
-
-
 var lifeSquarePositions = new Map();
-
-const lightingSqSize = 2;
 
 export function lightingClearLifeSquarePositionMap() {
     lifeSquarePositions = new Map();
@@ -61,16 +56,16 @@ export class LightSource {
 
     doRayCasting() {
         this.preprocessLifeSquares();
-        var numRays = 128;
-        var thetaStep = (Math.PI / numRays);
-        for (let theta = 0; theta < 2 * Math.PI; theta += thetaStep) {
+        var numRays = 64;
+        var thetaStep = (2 * Math.PI / numRays);
+        for (let theta = -Math.PI; theta < Math.PI; theta += thetaStep) {
             var thetaSquares = [];
             var posXKeys = Object.keys(this.frameLifeSquares);
             posXKeys.forEach((relPosX) => {
                 var posYKeys = Object.keys(this.frameLifeSquares[relPosX]);
                 posYKeys.forEach((relPosY) => {
-                    var sqTheta = Math.atan(relPosX / relPosY);
-                    if (Math.abs(Math.abs(sqTheta) - Math.abs(theta)) < thetaStep * 4) {
+                    var sqTheta = Math.atan(relPosY / relPosX);
+                    if (Math.abs(sqTheta - theta) < thetaStep) {
                         thetaSquares.push([relPosX, relPosY]);
                     }
                 })
@@ -80,11 +75,18 @@ export class LightSource {
             var curBrightness = this.brightness;
             thetaSquares.forEach((loc) => {
                 this.frameLifeSquares[loc[0]][loc[1]].forEach((lsq) => {
-                    lsq.lighting = curBrightness;
                     this.visitedLifeSquares.add(lsq);
+                    lsq.lighting = curBrightness;
                 });
-                curBrightness -= 0.05;
+                
+                var relPosX = loc[0];
+                var relPosY = loc[1];
+                var sqTheta = Math.atan(relPosY / relPosX);
+                var diff = 0.9 + 0.1 * (1 - (Math.abs((theta - sqTheta)) / thetaStep * 2));
+                curBrightness -= 0.1 * diff;
             });
+
+
         }
 
         this.allLifeSquares.filter((lsq) => !(this.visitedLifeSquares.has(lsq))).forEach((lsq) => lsq.lighting = 0);
