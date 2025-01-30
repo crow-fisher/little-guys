@@ -65,7 +65,7 @@ export class BaseParameterizedOrganism extends BaseOrganism {
                 if (this.waterPressure < this.waterPressureTarget) {
                     return lsq.linkedSquare.suckWater(this.transpirationRate);
                 } else {
-                    return lsq.linkedSquare.suckWater(this.transpirationRate / 3);
+                    return lsq.linkedSquare.suckWater(this.transpirationRate / 10);
                 }
             })
             .reduce(
