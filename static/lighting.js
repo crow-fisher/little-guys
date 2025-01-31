@@ -120,7 +120,7 @@ export class LightSource {
                         if (isNaN(sqTheta)) {
                             return;
                         }
-                        if (sqTheta > theta && sqTheta < (thetaProcessed + theta)) {
+                        if (sqTheta > theta && sqTheta < (theta + thetaStep)) {
                             thetaSquares.push([relPosX, relPosY]);
                         }
                     })
