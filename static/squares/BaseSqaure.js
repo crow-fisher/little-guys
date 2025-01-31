@@ -329,8 +329,71 @@ export class BaseSquare {
     }
 
     renderWithVariedColors() {
-    }
+        if (this.cachedRgba != null) {
+            MAIN_CONTEXT.fillStyle = this.cachedRgba;
+        } else {
+            var res = this.getStaticRand(1) * (parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value) + parseFloat(this.baseColorAmount.value));
+            var primaryColor = null;
+            var altColor1 = null;
+            var altColor2 = null;
 
+            if (res < parseFloat(this.accentColorAmount.value)) {
+                primaryColor = this.accentColor;
+                altColor1 = this.darkColor;
+                altColor2 = this.baseColor;
+            } else if (res < parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value)) {
+                primaryColor = this.darkColor;
+                altColor1 = this.baseColor;
+                altColor2 = this.darkColor;
+            } else {
+                altColor1 = this.darkColor;
+                altColor2 = this.darkColor;
+                primaryColor = this.baseColor;
+            }
+
+            var rand = this.getStaticRand(2);
+            var baseColorRgb = hexToRgb(primaryColor);
+            var altColor1Rgb = hexToRgb(altColor1);
+            var altColor2Rgb = hexToRgb(altColor2);
+
+            var outColorBase = {
+                r: baseColorRgb.r * 0.5 + ((altColor1Rgb.r * rand + altColor2Rgb.r * (1 - rand)) * 0.5),
+                g: baseColorRgb.g * 0.5 + ((altColor1Rgb.g * rand + altColor2Rgb.g * (1 - rand)) * 0.5),
+                b: baseColorRgb.b * 0.5 + ((altColor1Rgb.b * rand + altColor2Rgb.b * (1 - rand)) * 0.5)
+            }
+            
+            var outColor = {r: 0, g: 0, b: 0}
+            this.lighting.filter((light) => light != null && light.length == 2).forEach((light) => {
+                var strength = light[0].map((f) => f()).reduce(
+                    (accumulator, currentValue) => accumulator + currentValue,
+                    0,
+                );
+                var color = light[1];
+                outColor = {
+                    r: Math.min(255, outColor.r + (outColorBase.r / 255) * strength * color.r),
+                    g: Math.min(255, outColor.g + (outColorBase.g / 255) * strength * color.g),
+                    b: Math.min(255, outColor.b + (outColorBase.b / 255) * strength * color.b)
+                }
+            });
+
+            var outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), this.opacity);
+            this.cachedRgba = outRgba;
+            // var outHex = rgbToHex(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b));
+            MAIN_CONTEXT.fillStyle = outRgba;
+        }
+
+        zoomCanvasFillRect(
+            (this.offsetX + this.posX) * BASE_SIZE,
+            (this.offsetY + this.posY) * BASE_SIZE,
+            BASE_SIZE,
+            BASE_SIZE
+        );
+        if (this.solid) {
+            this.waterContainmentDarken();
+        }
+        this.blockPressureAndModDarken();
+        this.distToFrontBlockModDarken();
+    }
     waterContainmentDarken() {
         MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.waterContainment, this.waterContainmentMax);
         zoomCanvasFillRect(
