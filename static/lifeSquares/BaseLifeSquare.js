@@ -174,6 +174,7 @@ class BaseLifeSquare {
         lifeSquare.parentLifeSquare = this;
         lifeSquare.deflectionXOffset = this.deflectionXOffset;
         lifeSquare.deflectionYOffset = this.deflectionYOffset;
+        lifeSquare.lighting = this.lighting;
     }
 
     removeChild(lifeSquare) {
@@ -478,7 +479,7 @@ class BaseLifeSquare {
                 (accumulator, currentValue) => accumulator + currentValue,
                 0,
             );
-            
+
             var color = light[1];
             outColor = {
                 r: Math.min(255, outColor.r + (outColorBase.r / 255) * strength * color.r),
