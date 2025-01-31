@@ -100,7 +100,7 @@ export class BaseSquare {
         this.miscBlockPropUpdateInterval = Math.random() * 1000;
 
         this.surface = false;
-        this.lightFilterRate = 0.0005;
+        this.lightFilterRate = 0.00005;
 
         this.temperature = 273 + 20; // start temperature in kelvin 
         this.thermalConductivity = 1;  // watts/meter kelvin. max is 10
@@ -361,14 +361,15 @@ export class BaseSquare {
                 g: baseColorRgb.g * 0.5 + ((altColor1Rgb.g * rand + altColor2Rgb.g * (1 - rand)) * 0.5),
                 b: baseColorRgb.b * 0.5 + ((altColor1Rgb.b * rand + altColor2Rgb.b * (1 - rand)) * 0.5)
             }
-            
-            var outColor = {r: 0, g: 0, b: 0}
+
+            var outColor = {r: outColorBase.r * 0.25, g: outColorBase * 0.25, b: outColorBase.b * 0.25};
+
             this.lighting.filter((light) => light != null && light.length == 2).forEach((light) => {
                 var strength = light[0].map((f) => f()).reduce(
                     (accumulator, currentValue) => accumulator + currentValue,
                     0,
                 );
-                var color = light[1];
+                var color = light[1]();
                 outColor = {
                     r: Math.min(255, outColor.r + (outColorBase.r / 255) * strength * color.r),
                     g: Math.min(255, outColor.g + (outColorBase.g / 255) * strength * color.g),

@@ -582,7 +582,7 @@ document.addEventListener('contextmenu', function (e) {
 });
 
         
-LIGHT_SOURCES.push(new LightGroup(Math.floor(CANVAS_SQUARES_X / 2) - 4, 70, 8, 1, 10, () => 0.3 + 0.7 * getDaylightStrength(), getCurrentLightColorTemperature, CANVAS_SQUARES_X * 2, 77))
+LIGHT_SOURCES.push(new LightGroup(Math.floor(CANVAS_SQUARES_X / 2) - 4, -20, 16, 1, 10, () => 0.1 + 0.9 * getDaylightStrength(), getCurrentLightColorTemperature, CANVAS_SQUARES_X * 2, 77))
 
 
 function main() {

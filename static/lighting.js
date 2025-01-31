@@ -46,7 +46,7 @@ export function lightingPrepareTerrainSquares() {
 export class LightGroup {
     constructor(posX, posY, sizeX, sizeY, scaleMult, brightnessFunc, colorFunc, radius, numRays) {
         this.lightSources = [];
-        var newBrightnessFunc = () => brightnessFunc() / ((sizeX * sizeY) ** 0.35);
+        var newBrightnessFunc = () => brightnessFunc() / ((sizeX * sizeY));
         for (let i = 0; i < sizeX; i++) {
             for (let j = 0; j < sizeY; j++) {
                 this.lightSources.push(new LightSource(posX + (scaleMult * i), posY + (scaleMult * j), newBrightnessFunc, colorFunc, radius, numRays));
@@ -83,7 +83,6 @@ export class LightSource {
         this.frameLifeSquares = new Map();
         this.allLifeSquares = new Array();
         this.visitedLifeSquares = new Set();
-        this.frameColor = this.colorFunc();
         var posXKeys = Object.keys(lifeSquarePositions);
         posXKeys.forEach((lsqPosX) => {
             var relPosX = Math.floor(lsqPosX - this.posX);
@@ -168,7 +167,7 @@ export class LightSource {
                         let curBrightnessCopy = curBrightness;
                         let pointLightSourceFunc = () => (Math.max(0, MAX_BRIGHTNESS * this.brightnessFunc() + curBrightnessCopy)) / MAX_BRIGHTNESS;
                         if (obj.lighting[idx] == null)  {
-                            obj.lighting[idx] = [[pointLightSourceFunc], this.frameColor];
+                            obj.lighting[idx] = [[pointLightSourceFunc], this.colorFunc];
                         } else {
                             obj.lighting[idx][0].push(pointLightSourceFunc);
                         }
