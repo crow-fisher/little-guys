@@ -35,7 +35,7 @@ import { TropicalGrassSeedOrganism } from "./organisms/parameterized/tropical/Tr
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { WheatSeedOrganism } from "./organisms/parameterized/agriculture/grasses/WheatOrganism.js";
 import { ParameterizedRockSquare } from "./squares/parameterized/RockSquare.js";
-import { forceAllLightCalculations, LightSource, MAX_BRIGHTNESS } from "./lighting.js";
+import { default_light_throttle_interval, forceAllLightCalculations, LightGroup, LightSource, MAX_BRIGHTNESS, reduceNextLightUpdateTime } from "./lighting.js";
 import { RGB_COLOR_RED, RGB_COLOR_VERY_FUCKING_RED } from "./colors.js";
 
 var lastMode = "organism"; // options: "normal", "special", "organism", "blockModification";
@@ -580,7 +580,8 @@ document.addEventListener('contextmenu', function (e) {
 });
 
         
-LIGHT_SOURCES.push(new LightSource(Math.floor(CANVAS_SQUARES_X / 2), 20, () => 0.1 + 0.9 * getDaylightStrength(), getCurrentLightColorTemperature, CANVAS_SQUARES_X * 2))
+LIGHT_SOURCES.push(new LightGroup(Math.floor(CANVAS_SQUARES_X / 2) - 4, 70, 7, 1, 10, () => 0.3 + 0.7 * getDaylightStrength(), getCurrentLightColorTemperature, CANVAS_SQUARES_X * 2))
+
 
 function main() {
     if (Date.now() - lastTick > MILLIS_PER_TICK) {
@@ -638,8 +639,8 @@ function main() {
         lastTick = Date.now();
     }
     updateTime();
-    setTimeout(main, 5);
     doMouseHover();
+    setTimeout(main, 0);
 }
 
 initializeWindPressureMap();
@@ -1055,7 +1056,7 @@ function doClickAdd() {
             }
         }
         lastLastMoveOffset = lastMoveOffset;
-        forceAllLightCalculations();
+        reduceNextLightUpdateTime(default_light_throttle_interval / 10);
     }
 }
 

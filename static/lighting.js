@@ -5,10 +5,17 @@ import { getSqIterationOrder, getSquares } from "./squares/_sqOperations.js";
 
 var lifeSquarePositions = new Map();
 
+export var default_light_throttle_interval = 30000;
+
 export var MAX_BRIGHTNESS = 8;
+export var nextLightingUpdate = 0;
+
+export function reduceNextLightUpdateTime(amount) {
+    nextLightingUpdate -= amount;
+}
 
 export function forceAllLightCalculations() {
-    LIGHT_SOURCES.forEach((ls) => ls.lastFullSquareUpdate = 0);
+    LIGHT_SOURCES.forEach((ls) => ls.setLastFullSquareUpdate(0));
 }
 
 export function lightingClearLifeSquarePositionMap() {
@@ -32,6 +39,25 @@ export function lightingRegisterLifeSquare(lifeSquare) {
     lifeSquare.lighting = [];
     while (lifeSquare.lighting.length < LIGHT_SOURCES.length) {
         lifeSquare.lighting.push(null);
+    }
+}
+
+export class LightGroup {
+    constructor(posX, posY, sizeX, sizeY, scaleMult, brightnessFunc, colorFunc, radius) {
+        this.lightSources = [];
+        for (let i = 0; i < sizeX; i++) {
+            for (let j = 0; j < sizeY; j++) {
+                this.lightSources.push(new LightSource(posX + (scaleMult * i), posY + (scaleMult * j), brightnessFunc, colorFunc, radius));
+            }
+        }
+    }
+
+    doRayCasting(i) {
+        this.lightSources.forEach((ls) => ls.doRayCasting(i));
+    }
+
+    setLastFullSquareUpdate(val) {
+        this.lightSources.forEach((ls) => ls.lastFullSquareUpdate = val);
     }
 }
 
@@ -96,15 +122,15 @@ export class LightSource {
     }
 
     doRayCasting(idx) {
-        var shouldDoFullSquareUpdate = (Date.now() - this.lastFullSquareUpdate) > 1000;
+        var shouldDoFullSquareUpdate = Date.now() > nextLightingUpdate; 
         
         this.preprocessLifeSquares();
-        var numRays = 60;
-        var thetaStep = (2 * Math.PI / numRays);
+        var numRays = 11;
+        var thetaStep = ((2 * Math.PI) / numRays);
         var targetLists = [this.frameLifeSquares];
 
         if (shouldDoFullSquareUpdate) {
-            this.lastFullSquareUpdate = Date.now();
+            this.nextLightingUpdate = Date.now() + default_light_throttle_interval;
             this.preprocessTerrainSquares();
             targetLists.push(this.frameTerrainSquares);
         }
@@ -139,8 +165,9 @@ export class LightSource {
                         return;
                     }
                     list[loc[0]][loc[1]].forEach((obj) => {
-                        obj.lighting[idx] = [];
-                        obj.lighting[idx][0] = Math.max(0, curBrightness / MAX_BRIGHTNESS);
+                        if (obj.lighting[idx] == null) 
+                            obj.lighting[idx] = [0, null];
+                        obj.lighting[idx][0] += Math.max(0, curBrightness / MAX_BRIGHTNESS);
                         obj.lighting[idx][1] = this.frameColor;
                         curBrightness -= obj.getLightFilterRate();
                     });
