@@ -6,6 +6,10 @@ var lifeSquarePositions = new Map();
 
 export var MAX_BRIGHTNESS = 8;
 
+export function forceAllLightCalculations() {
+    LIGHT_SOURCES.forEach((ls) => ls.lastFullSquareUpdate = 0);
+}
+
 export function lightingClearLifeSquarePositionMap() {
     lifeSquarePositions = new Map();
 }
@@ -37,12 +41,12 @@ export class LightSource {
         this.brightnessFunc = brightnessFunc;
         this.colorFunc = colorFunc;
         this.radius = radius;
-
         this.frameLifeSquares = null;
         this.frameTerrainSquares = null;
         this.frameColor = RGB_COLOR_BLACK;
         this.allLifeSquares = new Array();
         this.visitedLifeSquares = new Set();
+        this.lastFullSquareUpdate = 0;
     }
 
     preprocessLifeSquares() {
@@ -52,10 +56,10 @@ export class LightSource {
         this.frameColor = this.colorFunc();
         var posXKeys = Object.keys(lifeSquarePositions);
         posXKeys.forEach((lsqPosX) => {
-            var relPosX = Math.floor(this.posX - lsqPosX);
+            var relPosX = Math.floor(lsqPosX - this.posX);
             var posYKeys = Object.keys(lifeSquarePositions[lsqPosX]);
             posYKeys.forEach((lsqPosY) => {
-                var relPosY = Math.floor(this.posY - lsqPosY);
+                var relPosY = Math.floor(lsqPosY - this.posY);
                 if ((relPosX ** 2 + relPosY ** 2) ** 0.5 > this.radius) {
                     return;
                 }
@@ -73,52 +77,76 @@ export class LightSource {
 
     preprocessTerrainSquares() {
         this.frameTerrainSquares = new Map();
+        getSqIterationOrder().forEach((sq) => sq.lighting = []);
         getSqIterationOrder()
+            .filter((sq) => sq.visible)
             .filter((sq) => ((this.posX - sq.posX) ** 2 + (this.posY - sq.posY) ** 2) ** 0.5 < this.radius)
             .forEach((sq) => {
-                if (!(sq.posX in this.frameTerrainSquares)) {
-                    this.frameTerrainSquares[sq.posX] = new Map();
+                var relPosX = sq.posX - this.posX;
+                var relPosY = sq.posY - this.posY;
+                if (!(relPosX in this.frameTerrainSquares)) {
+                    this.frameTerrainSquares[relPosX] = new Map();
                 }
-                if (!(sq.posY in this.frameTerrainSquares[sq.posX])) {
-                    this.frameTerrainSquares[sq.posX][sq.posY] = new Array();
+                if (!(relPosY in this.frameTerrainSquares[relPosX])) {
+                    this.frameTerrainSquares[relPosX][relPosY] = new Array();
                 }
-                this.frameTerrainSquares[sq.posX][sq.posY].push(sq);
+                this.frameTerrainSquares[relPosX][relPosY].push(sq);
             });
     }
 
     doRayCasting(idx) {
+        var shouldDoFullSquareUpdate = (Date.now() - this.lastFullSquareUpdate) > 1000;
+        
         this.preprocessLifeSquares();
-        this.preprocessTerrainSquares();
         var numRays = 64;
         var thetaStep = (2 * Math.PI / numRays);
-        for (let theta = -Math.PI; theta < Math.PI; theta += thetaStep) {
+        var targetLists = [this.frameLifeSquares];
+
+        if (shouldDoFullSquareUpdate) {
+            this.lastFullSquareUpdate = Date.now();
+            this.preprocessTerrainSquares();
+            targetLists.push(this.frameTerrainSquares);
+        }
+
+        for (let theta = -Math.PI + (thetaStep / 2); theta < Math.PI - (thetaStep / 2); theta += thetaStep) {
             var thetaSquares = [];
-            var posXKeys = Object.keys(this.frameLifeSquares);
-            posXKeys.forEach((relPosX) => {
-                var posYKeys = Object.keys(this.frameLifeSquares[relPosX]);
-                posYKeys.forEach((relPosY) => {
-                    var sqTheta = Math.atan(relPosY / relPosX);
-                    if (Math.abs(sqTheta - theta) < thetaStep) {
-                        thetaSquares.push([relPosX, relPosY]);
-                    }
-                })
-            });
-
-            thetaSquares.sort((a, b) => (a[0] ** 2 + a[1] ** 2) ** 0.5 - (b[0] ** 2 + b[1] ** 2) ** 0.5);
-            var curBrightness = this.brightnessFunc();
-            thetaSquares.forEach((loc) => {
-                this.frameLifeSquares[loc[0]][loc[1]].forEach((lsq) => {
-                    this.visitedLifeSquares.add(lsq);
-                    lsq.lighting[idx] = [];
-                    lsq.lighting[idx][0] = curBrightness / MAX_BRIGHTNESS;
-                    lsq.lighting[idx][1] = this.frameColor;
+            targetLists.forEach((list) => {
+                var posXKeys = Object.keys(list);
+                posXKeys.forEach((relPosX) => {
+                    var posYKeys = Object.keys(list[relPosX]);
+                    posYKeys.forEach((relPosY) => {
+                        var sqTheta = Math.atan(relPosY / relPosX);
+                        if (Math.abs(sqTheta - theta) < thetaStep) {
+                            thetaSquares.push([relPosX, relPosY]);
+                        }
+                    })
                 });
+            });
+            thetaSquares = [...new Set(thetaSquares)];
+            thetaSquares.sort((a, b) => (a[0] ** 2 + a[1] ** 2) ** 0.5 - (b[0] ** 2 + b[1] ** 2) ** 0.5);
+            var curBrightness = MAX_BRIGHTNESS * this.brightnessFunc();
 
-                var relPosX = loc[0];
-                var relPosY = loc[1];
-                var sqTheta = Math.atan(relPosY / relPosX);
-                var diff = 0.9 + 0.1 * (1 - (Math.abs((theta - sqTheta)) / thetaStep * 2));
-                curBrightness -= 0.1 * diff;
+            thetaSquares.forEach((loc) => {
+                targetLists.forEach((list) => {
+                    if (!(loc[0] in list)) {
+                        return;
+                    }
+                    if (!(loc[1] in list[loc[0]])) {
+                        return;
+                    }
+                    list[loc[0]][loc[1]].forEach((obj) => {
+                        obj.lighting[idx] = [];
+                        obj.lighting[idx][0] = Math.max(0, curBrightness / MAX_BRIGHTNESS);
+                        obj.lighting[idx][1] = this.frameColor;
+                        if (obj.type != null && obj.type == "green") { // organism square
+                            curBrightness -= 0.007;
+                        } else if (obj.surface == false) {
+                            curBrightness -= .03;
+                        }
+                        // do not go down in brightness for "surface" squares
+                    });
+
+                })
             });
         }
     }

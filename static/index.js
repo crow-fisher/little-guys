@@ -35,7 +35,7 @@ import { TropicalGrassSeedOrganism } from "./organisms/parameterized/tropical/Tr
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { WheatSeedOrganism } from "./organisms/parameterized/agriculture/grasses/WheatOrganism.js";
 import { ParameterizedRockSquare } from "./squares/parameterized/RockSquare.js";
-import { LightSource, MAX_BRIGHTNESS } from "./lighting.js";
+import { forceAllLightCalculations, LightSource, MAX_BRIGHTNESS } from "./lighting.js";
 import { RGB_COLOR_RED, RGB_COLOR_VERY_FUCKING_RED } from "./colors.js";
 
 var lastMode = "organism"; // options: "normal", "special", "organism", "blockModification";
@@ -580,7 +580,7 @@ document.addEventListener('contextmenu', function (e) {
 });
 
         
-LIGHT_SOURCES.push(new LightSource(Math.floor(CANVAS_SQUARES_X / 2), 20, () => getDaylightStrength() * MAX_BRIGHTNESS, getCurrentLightColorTemperature, 100))
+LIGHT_SOURCES.push(new LightSource(Math.floor(CANVAS_SQUARES_X / 2), 20, () => 0.1 + 0.9 * getDaylightStrength(), getCurrentLightColorTemperature, CANVAS_SQUARES_X * 2))
 
 function main() {
     if (Date.now() - lastTick > MILLIS_PER_TICK) {
@@ -707,6 +707,8 @@ function addSquareByNameConfig(posX, posY) {
         if (specialSelect_val == "light") {
             LIGHT_SOURCES[0].posX = posX;
             LIGHT_SOURCES[0].posY = posY;
+            forceAllLightCalculations();
+            return;
         }
         square = addSquareByNameSetTemp(posX, posY, specialSelect_val);
     } else {
@@ -1053,6 +1055,7 @@ function doClickAdd() {
             }
         }
         lastLastMoveOffset = lastMoveOffset;
+        forceAllLightCalculations();
     }
 }
 

@@ -5,6 +5,7 @@ import { getOrganismSquaresAtSquare } from "../lifeSquares/_lsOperations.js";
 import { removeItemAll } from "../common.js";
 import { getOrganismsAtSquare } from "../organisms/_orgOperations.js";
 import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y, getNewBlockLockedTemperature, getNewBlockTemperatureVal } from "../index.js";
+import { forceAllLightCalculations } from "../lighting.js";
 
 var abs = Math.abs;
 

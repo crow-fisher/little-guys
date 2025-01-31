@@ -290,60 +290,31 @@ export class SoilSquare extends BaseSquare {
 
     }
 
-
-    renderWaterSaturation() {
-        this.renderWithVariedColors();
-        var v = Math.min(Math.max(this.waterContainment, 0), this.waterContainmentMax);
-        this.renderSpecialViewModeLinearOpacity(this.blockHealth_color2, this.blockHealth_color1,v, this.waterContainmentMax, 0.4);
-    }
-    // renderWaterSaturation() {
-
-
-    //     var r = Math.min(((-this.getSoilWaterPressure()) / 7) * 255, 255)
-    //     var g = Math.min(((-this.getMatricPressure(this.waterContainment)) / 7) * 255, 255)
-    //     var b = Math.min(((-this.getGravitationalPressure()) / 7) * 255, 255)
-
-    //     r = 0;
-    //     // g = 0;
-    //     b = 0;
-    //     MAIN_CONTEXT.fillStyle = rgbToHex(r, g, b);
-    //     zoomCanvasFillRect(
-    //         (this.offsetX + this.posX) * BASE_SIZE,
-    //         (this.offsetY + this.posY) * BASE_SIZE,
-    //         BASE_SIZE,
-    //         BASE_SIZE
-    //     );
-    // }
-
-    processLightDarkening(outColor) {
-        var maxDepth = 10;
-
-        var mult = (1 - ((maxDepth - Math.max(maxDepth, this.currentPressureDirect)) / maxDepth)) * (1.5 - getDaylightStrength());
-        var moonlightMult = (1 - ((maxDepth - Math.max(maxDepth, this.currentPressureDirect)) / maxDepth)) * (0.0325 * (1 - getDaylightStrength()));
-
-        return {
-            r: Math.min(255, Math.max(0, outColor.r - this.lightDarkeningColor.r * mult + this.moonlightColor.r * moonlightMult)),
-            g: Math.min(255, Math.max(0, outColor.g - this.lightDarkeningColor.g * mult + this.moonlightColor.g * moonlightMult)),
-            b: Math.min(255, Math.max(0, outColor.b - this.lightDarkeningColor.b * mult + this.moonlightColor.b * moonlightMult)),
-        }
-    }
-
     renderWithVariedColors() {
-        var outColor = {
+        var outColorBase = {
             r: this.clay * this.clayColorRgb.r + this.silt * this.siltColorRgb.r + this.sand * this.sandColorRgb.r, 
             g: this.clay * this.clayColorRgb.g + this.silt * this.siltColorRgb.g + this.sand * this.sandColorRgb.g, 
             b: this.clay * this.clayColorRgb.b + this.silt * this.siltColorRgb.b + this.sand * this.sandColorRgb.b
         }
 
-        outColor = this.processLightDarkening(outColor);
+        var outColor = {r: 0, g: 0, b: 0}
+        this.lighting.filter((light) => light != null).forEach((light) => {
+            var strength = light[0];
+            var color = light[1];
+            outColor = {
+                r: Math.min(255, outColor.r + (outColorBase.r / 255) * strength * color.r),
+                g: Math.min(255, outColor.g + (outColorBase.g / 255) * strength * color.g),
+                b: Math.min(255, outColor.b + (outColorBase.b / 255) * strength * color.b)
+            }
+        });
 
-        var darkeningColorMult = (this.waterContainment / this.waterContainmentMax);
+        // var darkeningColorMult = (this.waterContainment / this.waterContainmentMax);
 
-        outColor.r *= (1 - 0.24 * darkeningColorMult);
-        outColor.g *= (1 - 0.30 * darkeningColorMult);
-        outColor.b *= (1 - 0.383 * darkeningColorMult);
+        // outColor.r *= (1 - 0.24 * darkeningColorMult);
+        // outColor.g *= (1 - 0.30 * darkeningColorMult);
+        // outColor.b *= (1 - 0.383 * darkeningColorMult);
 
-        MAIN_CONTEXT.fillStyle = rgbToHex(outColor.r, outColor.g, outColor.b);
+        MAIN_CONTEXT.fillStyle = rgbToHex(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b));
         zoomCanvasFillRect(
             (this.offsetX + this.posX) * BASE_SIZE,
             (this.offsetY + this.posY) * BASE_SIZE,
