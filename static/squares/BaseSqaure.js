@@ -100,6 +100,7 @@ export class BaseSquare {
         this.miscBlockPropUpdateInterval = Math.random() * 1000;
 
         this.surface = false;
+        this.lightFilterRate = 0.005;
 
         this.temperature = 273 + 20; // start temperature in kelvin 
         this.thermalConductivity = 1;  // watts/meter kelvin. max is 10
@@ -116,6 +117,14 @@ export class BaseSquare {
         this.water_fusionTemp = 273;
         this.water_vaporTemp = 373;
     };
+
+    getLightFilterRate() {
+        if (this.surface) {
+            return 0;
+        } else {
+            return this.lightFilterRate;
+        }
+    }
 
     temperatureRoutine() {
         if (this.organic) {

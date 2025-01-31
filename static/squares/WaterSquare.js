@@ -44,6 +44,8 @@ class WaterSquare extends BaseSquare {
 
         this.temperature = 273;
 
+        this.lightFilterRate /= 3;
+
     }
 
     reset() {

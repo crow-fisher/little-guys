@@ -102,6 +102,11 @@ class BaseLifeSquare {
 
         this.LSQ_RENDER_SIZE_MULT = Math.SQRT2;
 
+        this.lightFilterRate = 0.003;
+    }
+
+    getLightFilterRate() {
+        return this.lightFilterRate;
     }
 
     getLsqRenderSizeMult() {

@@ -1,6 +1,7 @@
 import { RGB_COLOR_BLACK } from "./colors.js";
 import { ALL_SQUARES, LIGHT_SOURCES } from "./globals.js";
-import { getSqIterationOrder } from "./squares/_sqOperations.js";
+import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js";
+import { getSqIterationOrder, getSquares } from "./squares/_sqOperations.js";
 
 var lifeSquarePositions = new Map();
 
@@ -98,7 +99,7 @@ export class LightSource {
         var shouldDoFullSquareUpdate = (Date.now() - this.lastFullSquareUpdate) > 1000;
         
         this.preprocessLifeSquares();
-        var numRays = 64;
+        var numRays = 60;
         var thetaStep = (2 * Math.PI / numRays);
         var targetLists = [this.frameLifeSquares];
 
@@ -108,7 +109,7 @@ export class LightSource {
             targetLists.push(this.frameTerrainSquares);
         }
 
-        for (let theta = -Math.PI + (thetaStep / 2); theta < Math.PI - (thetaStep / 2); theta += thetaStep) {
+        for (let theta = -Math.PI; theta < Math.PI; theta += thetaStep) {
             var thetaSquares = [];
             targetLists.forEach((list) => {
                 var posXKeys = Object.keys(list);
@@ -116,7 +117,10 @@ export class LightSource {
                     var posYKeys = Object.keys(list[relPosX]);
                     posYKeys.forEach((relPosY) => {
                         var sqTheta = Math.atan(relPosY / relPosX);
-                        if (Math.abs(sqTheta - theta) < thetaStep) {
+                        if (isNaN(sqTheta)) {
+                            return;
+                        }
+                        if (sqTheta > theta && sqTheta < (thetaProcessed + theta)) {
                             thetaSquares.push([relPosX, relPosY]);
                         }
                     })
@@ -138,14 +142,8 @@ export class LightSource {
                         obj.lighting[idx] = [];
                         obj.lighting[idx][0] = Math.max(0, curBrightness / MAX_BRIGHTNESS);
                         obj.lighting[idx][1] = this.frameColor;
-                        if (obj.type != null && obj.type == "green") { // organism square
-                            curBrightness -= 0.007;
-                        } else if (obj.surface == false) {
-                            curBrightness -= .03;
-                        }
-                        // do not go down in brightness for "surface" squares
+                        curBrightness -= obj.getLightFilterRate();
                     });
-
                 })
             });
         }
