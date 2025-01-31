@@ -205,6 +205,12 @@ export function getCurrentLightColorTemperature() {
     return currentLightColorTemperature;
 }
 
+var moonlightColor = calculateTempColor(4100);
+
+export function getMoonlightColor() {
+    return moonlightColor;
+}
+
 // https://www.researchgate.net/publication/328726901_Real-time_adaptable_and_coherent_rendering_for_outdoor_augmented_reality/download
 
 function calculateTempColor(temperature) {

@@ -12,7 +12,7 @@ import { PopGrassSeedOrganism } from "./organisms/PopGrassSeedOrganism.js";
 import { addNewOrganism, addOrganism, iterateOnOrganisms } from "./organisms/_orgOperations.js";
 
 import { ALL_ORGANISMS, ALL_ORGANISM_SQUARES, ALL_SQUARES, LIGHT_SOURCES, getNextEntitySpawnId } from "./globals.js";
-import { getCurDay, getCurTime, updateTime, renderTime, getCurrentLightColorTemperature, getDaylightStrength } from "./time.js";
+import { getCurDay, getCurTime, updateTime, renderTime, getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "./time.js";
 
 import { doErase } from "./manipulation.js";
 import { ProtoMap } from "./types.js";
@@ -583,6 +583,7 @@ document.addEventListener('contextmenu', function (e) {
 
         
 LIGHT_SOURCES.push(new LightGroup(Math.floor(CANVAS_SQUARES_X / 2) - 4, -20, 16, 1, 10, () => 0.1 + 0.9 * getDaylightStrength(), getCurrentLightColorTemperature, CANVAS_SQUARES_X * 2, 77))
+LIGHT_SOURCES.push(new LightGroup(Math.floor(CANVAS_SQUARES_X / 2) - 4, -20, 16, 1, 10, () => (0.25), getMoonlightColor, CANVAS_SQUARES_X * 2, 77))
 
 
 function main() {
