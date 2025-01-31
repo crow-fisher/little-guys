@@ -10,9 +10,23 @@ import { getObjectArrFromMap, getStandardDeviation } from "./common.js";
 import { getOrganismSquaresAtSquare } from "./lifeSquares/_lsOperations.js";
 import { removeItemAll } from "./common.js";
 import { removeOrganism } from "./organisms/_orgOperations.js";
-import { lightingClearLifeSquarePositionMap, lightingRegisterLifeSquare } from "./lighting.js";
+import { lightingClearLifeSquarePositionMap, lightingPrepareTerrainSquares, lightingRegisterLifeSquare } from "./lighting.js";
+
+export var nextLightingUpdate = 0;
+export var default_light_throttle_interval = 30 * 1000;
+
+export function reduceNextLightUpdateTime(amount) {
+    nextLightingUpdate -= amount;
+}
+
 
 function doLightSourceRaycasting() {
+    var shouldDoFullSquareUpdate = Date.now() > nextLightingUpdate;
+    if (!shouldDoFullSquareUpdate) {
+        return;
+    } 
+    lightingPrepareTerrainSquares();
+    nextLightingUpdate = Date.now() + default_light_throttle_interval;
     iterateOnOrganisms((org) => org.lifeSquares.forEach((lsq) => lightingRegisterLifeSquare(lsq)));
     for (let i = 0; i < LIGHT_SOURCES.length; i++) {
         LIGHT_SOURCES[i].doRayCasting(i);

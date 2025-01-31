@@ -9,15 +9,6 @@ var lifeSquarePositions = new Map();
 export var default_light_throttle_interval = 30000;
 
 export var MAX_BRIGHTNESS = 8;
-export var nextLightingUpdate = 0;
-
-export function reduceNextLightUpdateTime(amount) {
-    nextLightingUpdate -= amount;
-}
-
-export function forceAllLightCalculations() {
-    LIGHT_SOURCES.forEach((ls) => ls.setLastFullSquareUpdate(0));
-}
 
 export function lightingClearLifeSquarePositionMap() {
     lifeSquarePositions = new Map();
@@ -55,11 +46,10 @@ export function lightingPrepareTerrainSquares() {
 export class LightGroup {
     constructor(posX, posY, sizeX, sizeY, scaleMult, brightnessFunc, colorFunc, radius, numRays) {
         this.lightSources = [];
-        var newBrightnessFunc = () => brightnessFunc() / ((sizeX * sizeY) ** 0.5);
+        var newBrightnessFunc = () => brightnessFunc() / ((sizeX * sizeY) ** 0.35);
         for (let i = 0; i < sizeX; i++) {
             for (let j = 0; j < sizeY; j++) {
-                var curNumRays = numRays + randNumber(-3, 3);
-                this.lightSources.push(new LightSource(posX + (scaleMult * i), posY + (scaleMult * j), newBrightnessFunc, colorFunc, radius, curNumRays));
+                this.lightSources.push(new LightSource(posX + (scaleMult * i), posY + (scaleMult * j), newBrightnessFunc, colorFunc, radius, numRays));
             }
         }
     }
@@ -134,18 +124,13 @@ export class LightSource {
     }
 
     doRayCasting(idx) {
-        var shouldDoFullSquareUpdate = Date.now() > nextLightingUpdate; 
-        
         this.preprocessLifeSquares();
-        var thetaStep = ((2 * Math.PI) / this.numRays);
         var targetLists = [this.frameLifeSquares];
 
-        if (shouldDoFullSquareUpdate) {
-            this.nextLightingUpdate = Date.now() + default_light_throttle_interval;
-            this.preprocessTerrainSquares();
-            targetLists.push(this.frameTerrainSquares);
-        }
+        this.preprocessTerrainSquares();
+        targetLists.push(this.frameTerrainSquares);
 
+        var thetaStep = ((2 * Math.PI) / this.numRays);
         for (let theta = -Math.PI; theta < Math.PI; theta += thetaStep) {
             var thetaSquares = [];
             targetLists.forEach((list) => {
@@ -154,10 +139,12 @@ export class LightSource {
                     var posYKeys = Object.keys(list[relPosX]);
                     posYKeys.forEach((relPosY) => {
                         var sqTheta = Math.atan(relPosY / relPosX);
-                        if (isNaN(sqTheta)) {
-                            return;
+                        if (relPosX == 0 && relPosY == 0 && theta == -Math.PI) {
+                            thetaSquares.push([relPosX, relPosY]);
                         }
-                        if (sqTheta > theta && sqTheta < (theta + thetaStep)) {
+                        else if (isNaN(sqTheta)) {
+                            return;
+                        } else if (sqTheta > theta && sqTheta < (theta + thetaStep)) {
                             thetaSquares.push([relPosX, relPosY]);
                         }
                     })
@@ -165,7 +152,7 @@ export class LightSource {
             });
             thetaSquares = [...new Set(thetaSquares)];
             thetaSquares.sort((a, b) => (a[0] ** 2 + a[1] ** 2) ** 0.5 - (b[0] ** 2 + b[1] ** 2) ** 0.5);
-            var curBrightness = MAX_BRIGHTNESS * this.brightnessFunc();
+            var curBrightness = 0;
             thetaSquares.forEach((loc) => {
                 targetLists.forEach((list) => {
                     if (!(loc[0] in list)) {
@@ -175,13 +162,15 @@ export class LightSource {
                         return;
                     }
                     list[loc[0]][loc[1]].forEach((obj) => {
-                        if (curBrightness < 0) {
+                        if (curBrightness < -MAX_BRIGHTNESS) {
                             return;
                         }
+                        let curBrightnessCopy = curBrightness;
+                        let pointLightSourceFunc = () => (Math.max(0, MAX_BRIGHTNESS * this.brightnessFunc() + curBrightnessCopy)) / MAX_BRIGHTNESS;
                         if (obj.lighting[idx] == null)  {
-                            obj.lighting[idx] = [curBrightness / MAX_BRIGHTNESS, this.frameColor];
+                            obj.lighting[idx] = [[pointLightSourceFunc], this.frameColor];
                         } else {
-                            obj.lighting[idx][0] += curBrightness / MAX_BRIGHTNESS;
+                            obj.lighting[idx][0].push(pointLightSourceFunc);
                         }
                         curBrightness -= obj.getLightFilterRate() * this.numRays;
                     });

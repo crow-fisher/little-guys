@@ -474,7 +474,11 @@ class BaseLifeSquare {
         var outColor = {r: 0, g: 0, b: 0}
 
         this.lighting.filter((light) => light != null).forEach((light) => {
-            var strength = light[0];
+            var strength = light[0].map((f) => f()).reduce(
+                (accumulator, currentValue) => accumulator + currentValue,
+                0,
+            );
+            
             var color = light[1];
             outColor = {
                 r: Math.min(255, outColor.r + (outColorBase.r / 255) * strength * color.r),
