@@ -1,4 +1,5 @@
 import { RGB_COLOR_BLACK } from "./colors.js";
+import { randNumber } from "./common.js";
 import { ALL_SQUARES, LIGHT_SOURCES } from "./globals.js";
 import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js";
 import { getSqIterationOrder, getSquares } from "./squares/_sqOperations.js";
@@ -42,12 +43,23 @@ export function lightingRegisterLifeSquare(lifeSquare) {
     }
 }
 
+export function lightingPrepareTerrainSquares() {
+    getSqIterationOrder().forEach((sq) => {
+        sq.lighting = [];
+        for (let i = 0; i < LIGHT_SOURCES; i++) {
+            sq.lighting.push(null);
+        }
+    });
+}
+
 export class LightGroup {
-    constructor(posX, posY, sizeX, sizeY, scaleMult, brightnessFunc, colorFunc, radius) {
+    constructor(posX, posY, sizeX, sizeY, scaleMult, brightnessFunc, colorFunc, radius, numRays) {
         this.lightSources = [];
+        var newBrightnessFunc = () => brightnessFunc() / ((sizeX * sizeY) ** 0.5);
         for (let i = 0; i < sizeX; i++) {
             for (let j = 0; j < sizeY; j++) {
-                this.lightSources.push(new LightSource(posX + (scaleMult * i), posY + (scaleMult * j), brightnessFunc, colorFunc, radius));
+                var curNumRays = numRays + randNumber(-3, 3);
+                this.lightSources.push(new LightSource(posX + (scaleMult * i), posY + (scaleMult * j), newBrightnessFunc, colorFunc, radius, curNumRays));
             }
         }
     }
@@ -62,12 +74,13 @@ export class LightGroup {
 }
 
 export class LightSource {
-    constructor(posX, posY, brightnessFunc, colorFunc, radius) {
+    constructor(posX, posY, brightnessFunc, colorFunc, radius, numRays) {
         this.posX = posX;
         this.posY = posY;
         this.brightnessFunc = brightnessFunc;
         this.colorFunc = colorFunc;
         this.radius = radius;
+        this.numRays = numRays;
         this.frameLifeSquares = null;
         this.frameTerrainSquares = null;
         this.frameColor = RGB_COLOR_BLACK;
@@ -104,7 +117,6 @@ export class LightSource {
 
     preprocessTerrainSquares() {
         this.frameTerrainSquares = new Map();
-        getSqIterationOrder().forEach((sq) => sq.lighting = []);
         getSqIterationOrder()
             .filter((sq) => sq.visible)
             .filter((sq) => ((this.posX - sq.posX) ** 2 + (this.posY - sq.posY) ** 2) ** 0.5 < this.radius)
@@ -125,8 +137,7 @@ export class LightSource {
         var shouldDoFullSquareUpdate = Date.now() > nextLightingUpdate; 
         
         this.preprocessLifeSquares();
-        var numRays = 11;
-        var thetaStep = ((2 * Math.PI) / numRays);
+        var thetaStep = ((2 * Math.PI) / this.numRays);
         var targetLists = [this.frameLifeSquares];
 
         if (shouldDoFullSquareUpdate) {
@@ -155,7 +166,6 @@ export class LightSource {
             thetaSquares = [...new Set(thetaSquares)];
             thetaSquares.sort((a, b) => (a[0] ** 2 + a[1] ** 2) ** 0.5 - (b[0] ** 2 + b[1] ** 2) ** 0.5);
             var curBrightness = MAX_BRIGHTNESS * this.brightnessFunc();
-
             thetaSquares.forEach((loc) => {
                 targetLists.forEach((list) => {
                     if (!(loc[0] in list)) {
@@ -165,11 +175,15 @@ export class LightSource {
                         return;
                     }
                     list[loc[0]][loc[1]].forEach((obj) => {
-                        if (obj.lighting[idx] == null) 
-                            obj.lighting[idx] = [0, null];
-                        obj.lighting[idx][0] += Math.max(0, curBrightness / MAX_BRIGHTNESS);
-                        obj.lighting[idx][1] = this.frameColor;
-                        curBrightness -= obj.getLightFilterRate();
+                        if (curBrightness < 0) {
+                            return;
+                        }
+                        if (obj.lighting[idx] == null)  {
+                            obj.lighting[idx] = [curBrightness / MAX_BRIGHTNESS, this.frameColor];
+                        } else {
+                            obj.lighting[idx][0] += curBrightness / MAX_BRIGHTNESS;
+                        }
+                        curBrightness -= obj.getLightFilterRate() * this.numRays;
                     });
                 })
             });

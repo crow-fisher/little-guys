@@ -35,7 +35,7 @@ import { TropicalGrassSeedOrganism } from "./organisms/parameterized/tropical/Tr
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { WheatSeedOrganism } from "./organisms/parameterized/agriculture/grasses/WheatOrganism.js";
 import { ParameterizedRockSquare } from "./squares/parameterized/RockSquare.js";
-import { default_light_throttle_interval, forceAllLightCalculations, LightGroup, LightSource, MAX_BRIGHTNESS, reduceNextLightUpdateTime } from "./lighting.js";
+import { default_light_throttle_interval, forceAllLightCalculations, LightGroup, lightingPrepareTerrainSquares, LightSource, MAX_BRIGHTNESS, reduceNextLightUpdateTime } from "./lighting.js";
 import { RGB_COLOR_RED, RGB_COLOR_VERY_FUCKING_RED } from "./colors.js";
 
 var lastMode = "organism"; // options: "normal", "special", "organism", "blockModification";
@@ -580,7 +580,7 @@ document.addEventListener('contextmenu', function (e) {
 });
 
         
-LIGHT_SOURCES.push(new LightGroup(Math.floor(CANVAS_SQUARES_X / 2) - 4, 70, 7, 1, 10, () => 0.3 + 0.7 * getDaylightStrength(), getCurrentLightColorTemperature, CANVAS_SQUARES_X * 2))
+LIGHT_SOURCES.push(new LightGroup(Math.floor(CANVAS_SQUARES_X / 2) - 4, 70, 3, 1, 10, () => 0.3 + 0.7 * getDaylightStrength(), getCurrentLightColorTemperature, CANVAS_SQUARES_X * 2, 70))
 
 
 function main() {
@@ -615,6 +615,7 @@ function main() {
         }
 
 
+        lightingPrepareTerrainSquares();
         doLightSourceRaycasting(); 
 
         renderSquares();
