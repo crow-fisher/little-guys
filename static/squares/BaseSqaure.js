@@ -72,7 +72,7 @@ export class BaseSquare {
         this.randoms = [];
         this.linkedOrganism = null;
         this.linkedOrganismSquares = new Array();
-        this.lighting = [];
+        this.lighting = this.getNeighborLightingArr();
         // for ref - values from dirt
         this.baseColor = "#9A8873";
         this.baseColorAmount = dirt_baseColorAmount;
@@ -382,6 +382,13 @@ export class BaseSquare {
         return res;
     }
 
+    getNeighborLightingArr() {
+        var ret = getDirectNeighbors(this.posX, this.posY).map((sq) => sq.lighting).find((light) => light != []);
+        if (ret != null) {
+            return ret;
+        } return [];
+    }
+
     updatePosition(newPosX, newPosY) {
         if (newPosX == this.posX && newPosY == this.posY) {
             return true;
@@ -422,6 +429,8 @@ export class BaseSquare {
         this.posX = newPosX;
         this.posY = newPosY;
         addSquare(this);
+
+        this.lighting = this.getNeighborLightingArr();
 
         // this.calculateGroup();
         return true;
