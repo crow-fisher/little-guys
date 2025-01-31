@@ -2,7 +2,7 @@ import { hexToRgb, randNumber, randRange, rgbToRgba } from "./common.js";
 import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, MAIN_CONTEXT, zoomCanvasFillRect} from "./index.js";
 import { calculateColor, calculateColorProvideOpacity } from "./temperature_humidity.js";
 
-var millis_per_day = 100000;
+var millis_per_day = 10000;
 var curDay = 0.25;
 var prevDay = 0;
 var curTime = 0.2;

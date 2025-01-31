@@ -3,6 +3,7 @@ import { randNumber } from "./common.js";
 import { ALL_SQUARES, LIGHT_SOURCES } from "./globals.js";
 import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js";
 import { getSqIterationOrder, getSquares } from "./squares/_sqOperations.js";
+import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength } from "./time.js";
 
 var lifeSquarePositions = new Map();
 
@@ -43,13 +44,42 @@ export function lightingPrepareTerrainSquares() {
     });
 }
 
+export function createSunLightGroup() {
+    var sizeX = 2;
+    var scaleMult = 50; 
+
+    var sunLightGroup = new LightGroup(
+        0,
+        50, 
+        2, 
+        1,
+        CANVAS_SQUARES_X / (sizeX - 1), 
+        () => 0.1 + 0.9 * getDaylightStrength(), 
+        getCurrentLightColorTemperature, 
+        CANVAS_SQUARES_X * 2,
+        77);
+
+    return sunLightGroup;
+}
+
 export class LightGroup {
     constructor(posX, posY, sizeX, sizeY, scaleMult, brightnessFunc, colorFunc, radius, numRays) {
         this.lightSources = [];
-        var newBrightnessFunc = () => brightnessFunc() / ((sizeX * sizeY));
+        let brigthnessFrac = (sizeX * sizeY) ** 0.5;
         for (let i = 0; i < sizeX; i++) {
             for (let j = 0; j < sizeY; j++) {
-                this.lightSources.push(new LightSource(posX + (scaleMult * i), posY + (scaleMult * j), newBrightnessFunc, colorFunc, radius, numRays));
+                let sourcePosX = posX + (scaleMult * i);
+                let sourcePosY = posY + (scaleMult * j);
+                let sourceBrightnessFunc = () => {
+                    let xFrac = (sourcePosX - posX) / ((sizeX - 1) * scaleMult);
+                    let dayFrac = ((getCurDay() % 1) - 0.25) * 2;
+                    if (dayFrac < 0 || dayFrac > 1) {
+                        return 0;
+                    }
+                    var diff = Math.abs(xFrac - dayFrac);
+                    return brightnessFunc() * (1 - diff);
+                }
+                this.lightSources.push(new LightSource(sourcePosX, sourcePosY, sourceBrightnessFunc, colorFunc, radius, numRays));
             }
         }
     }

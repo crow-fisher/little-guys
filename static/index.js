@@ -35,7 +35,7 @@ import { TropicalGrassSeedOrganism } from "./organisms/parameterized/tropical/Tr
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { WheatSeedOrganism } from "./organisms/parameterized/agriculture/grasses/WheatOrganism.js";
 import { ParameterizedRockSquare } from "./squares/parameterized/RockSquare.js";
-import { default_light_throttle_interval, LightGroup, lightingPrepareTerrainSquares } from "./lighting.js";
+import { createSunLightGroup, default_light_throttle_interval, LightGroup, lightingPrepareTerrainSquares } from "./lighting.js";
 import { RGB_COLOR_RED, RGB_COLOR_VERY_FUCKING_RED } from "./colors.js";
 
 var lastMode = "organism"; // options: "normal", "special", "organism", "blockModification";
@@ -582,10 +582,7 @@ document.addEventListener('contextmenu', function (e) {
 });
 
         
-LIGHT_SOURCES.push(new LightGroup(Math.floor(CANVAS_SQUARES_X / 2) - 4, -20, 16, 1, 10, () => 0.1 + 0.9 * getDaylightStrength(), getCurrentLightColorTemperature, CANVAS_SQUARES_X * 2, 77))
-LIGHT_SOURCES.push(new LightGroup(Math.floor(CANVAS_SQUARES_X / 2) - 4, -20, 16, 1, 10, () => (0.25), getMoonlightColor, CANVAS_SQUARES_X * 2, 77))
-
-
+LIGHT_SOURCES.push(createSunLightGroup());
 function main() {
     if (Date.now() - lastTick > MILLIS_PER_TICK) {
         MAIN_CONTEXT.clearRect(0, 0, CANVAS_SQUARES_X * BASE_SIZE, CANVAS_SQUARES_Y * BASE_SIZE);
@@ -626,7 +623,7 @@ function main() {
         
 
         if (selectedViewMode == "normal") {
-            renderClouds();
+            // renderClouds();
         }
 
 
