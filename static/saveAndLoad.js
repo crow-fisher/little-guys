@@ -136,6 +136,8 @@ async function loadSlotFromSave(slotData) {
 
     orgArr.forEach((org) => {
         org.linkedSquare = sqArr.indexOf(org.linkedSquare);
+        org.growthPlans = Array.from((gp) => growthPlanArr[gp]);
+
         org.growthPlans.forEach((gp) => {
             Object.setPrototypeOf(gp, GrowthPlan.prototype);
             Object.setPrototypeOf(gp.component, GrowthComponent.prototype);
@@ -148,6 +150,7 @@ async function loadSlotFromSave(slotData) {
             lsq.lighting = [];
             lsq.linkedSquare = sqArr[lsq.linkedSquare];
             lsq.linkedOrganism = orgArr[lsq.linkedOrganism];
+            lsq.component = growthPlanComponentArr[lsq.component];
         })
 
         addOrganism(org);
