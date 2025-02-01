@@ -11,7 +11,7 @@ import { Law } from "./Law.js";
 import { AquiferSquare } from "./squares/parameterized/RainSquare.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
-
+    
 
 var ProtoMap = {
     "BaseSquare": BaseSquare.prototype,

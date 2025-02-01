@@ -50,6 +50,22 @@ export async function saveSlot(slotName) {
         growthPlanComponentArr.push(...org.growthPlans.map((gp) => gp.component))
         org.growthPlans.forEach((gp) => growthPlanStepArr.push(...gp.steps));
     });
+    
+    growthPlanStepArr.forEach((gps) => {
+        gps.growthPlan = growthPlanArr.indexOf(gps.growthPlan);
+        gps.completedSquare = lsqArr.indexOf(gps.completedSquare);
+    });
+
+    growthPlanComponentArr.forEach((gpc) => {
+        gpc.growthPlan = growthPlanArr.indexOf(gpc.growthPlan);
+        gpc.lifeSquares = Array.from(gpc.lifeSquares.map((lsq) => lsqArr.indexOf(lsq)));
+        gpc.parentComponent = growthPlanComponentArr.indexOf(gpc.parentComponent);
+    });
+
+    growthPlanArr.forEach((gp) => {
+        gp.steps = Array.from(gp.steps.map((gps) => growthPlanStepArr.indexOf(gps)));
+        gp.component = growthPlanComponentArr.indexOf(gp.component);
+    });
 
     iterateOnSquares((sq) => {
         sq.lighting = [];
@@ -111,17 +127,44 @@ async function loadSlotFromSave(slotData) {
     var lsqArr = slotData.lsqArr;
     var growthPlanArr = slotData.growthPlanArr;
     var growthPlanComponentArr = slotData.growthPlanComponentArr;
+    var growthPlanStepArr = slotData.growthPlanStepArr;
 
-    growthPlanArr.forEach((gp) => gp.component = growthPlanComponentArr[gp.component]);
+    sqArr.forEach((sq) => Object.setPrototypeOf(sq, ProtoMap[sq.proto]));
+    orgArr.forEach((org) => Object.setPrototypeOf(org, ProtoMap[org.proto]));
+    lsqArr.forEach((lsq) => Object.setPrototypeOf(lsq, ProtoMap[lsq.proto]));
+
+    growthPlanArr.forEach((gp) => Object.setPrototypeOf(gp, GrowthPlan.prototype));
+    growthPlanComponentArr.forEach((gpc) => Object.setPrototypeOf(gpc, GrowthComponent.prototype));
+    growthPlanStepArr.forEach((gps) => Object.setPrototypeOf(gps, GrowthPlanStep.prototype));
+
+    growthPlanStepArr.forEach((gps) => {
+        gps.growthPlan = growthPlanArr[gps.growthPlan];
+        if (gps.completedSquare != -1) {
+            gps.completedSquare = lsqArr[gps.completedSquare];
+        }
+    });
+
+    growthPlanComponentArr.forEach((gpc) => {
+        gpc.growthPlan = growthPlanArr[gpc.growthPlan];
+        gpc.lifeSquares = Array.from(gpc.lifeSquares.map((lsq) => lsqArr[lsq]));
+        gpc.parentComponent = growthPlanComponentArr[gpc.parentComponent];
+        gpc.children = Array.from((gpc.children.map((ggpc) => growthPlanComponentArr[ggpc])));
+    });
+
+    growthPlanArr.forEach((gp) => {
+        gp.steps = Array.from(gp.steps.map((gps) => growthPlanStepArr[gps]));
+        gp.component = growthPlanComponentArr[gp.component];
+    });
 
     sqArr.forEach((sq) => {
         if (sq.linkedOrganism == -1) {
             sq.linkedOrganism = null;
+        } else {
+            sq.linkedOrganism = orgArr[sq.linkedOrganism];
         }
-        sq.linkedOrganism = orgArr[sq.linkedOrganism];
         sq.linkedOrganismSquares = Array.from(sq.linkedOrganismSquares.map((lsqIdx) => lsqArr[lsqIdx]));
-        Object.setPrototypeOf(sq, ProtoMap[sq.proto]);
     });
+
     sqArr.forEach(addSquareOverride);
 
     orgArr.forEach((org) => {
