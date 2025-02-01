@@ -100,7 +100,7 @@ export class BaseSquare {
         this.miscBlockPropUpdateInterval = Math.random() * 1000;
 
         this.surface = false;
-        this.lightFilterRate = 0.0002;
+        this.lightFilterRate = 0.0004;
 
         this.temperature = 273 + 20; // start temperature in kelvin 
         this.thermalConductivity = 1;  // watts/meter kelvin. max is 10

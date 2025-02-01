@@ -45,13 +45,11 @@ export function lightingPrepareTerrainSquares() {
 }
 
 export function createSunLightGroup() {
-    var sizeX = 2;
-    var scaleMult = 50; 
-
+    var sizeX = 6;
     var sunLightGroup = new LightGroup(
         0,
         50, 
-        2, 
+        sizeX, 
         1,
         CANVAS_SQUARES_X / (sizeX - 1), 
         () => 0.1 + 0.9 * getDaylightStrength(), 
@@ -66,18 +64,19 @@ export class LightGroup {
     constructor(posX, posY, sizeX, sizeY, scaleMult, brightnessFunc, colorFunc, radius, numRays) {
         this.lightSources = [];
         let brigthnessFrac = (sizeX * sizeY) ** 0.5;
+        let totalSize = posX + ((sizeX - 1) * scaleMult);
         for (let i = 0; i < sizeX; i++) {
             for (let j = 0; j < sizeY; j++) {
                 let sourcePosX = posX + (scaleMult * i);
                 let sourcePosY = posY + (scaleMult * j);
                 let sourceBrightnessFunc = () => {
-                    let xFrac = (sourcePosX - posX) / ((sizeX - 1) * scaleMult);
+                    let xFrac = (sourcePosX - posX) / totalSize;
                     let dayFrac = ((getCurDay() % 1) - 0.25) * 2;
                     if (dayFrac < 0 || dayFrac > 1) {
                         return 0;
                     }
                     var diff = Math.abs(xFrac - dayFrac);
-                    return brightnessFunc() * (1 - diff);
+                    return ( 1 / brigthnessFrac) * brightnessFunc() * (1 - diff);
                 }
                 this.lightSources.push(new LightSource(sourcePosX, sourcePosY, sourceBrightnessFunc, colorFunc, radius, numRays));
             }
