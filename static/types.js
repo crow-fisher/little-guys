@@ -7,11 +7,13 @@ import { BaseLifeSquare } from "./lifeSquares/BaseLifeSquare.js";
 import { BaseOrganism } from "./organisms/BaseOrganism.js";
 import { SeedLifeSquare } from "./lifeSquares/SeedLifeSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
-import { Law } from "./Law.js";
 import { AquiferSquare } from "./squares/parameterized/RainSquare.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
-    
+import { WheatGreenSquare } from "./lifeSquares/parameterized/agriculture/grasses/WheatGreenSquare.js";
+import { GenericParameterizedRootSquare } from "./lifeSquares/parameterized/GenericParameterizedRootSquare.js";
+import { WheatOrganism } from "./organisms/parameterized/agriculture/grasses/WheatOrganism.js";
+
 
 var ProtoMap = {
     "BaseSquare": BaseSquare.prototype,
@@ -26,8 +28,20 @@ var ProtoMap = {
     "BaseOrganism": BaseOrganism.prototype,
     "SeedLifeSquare": SeedLifeSquare.prototype,
     "SeedSquare": SeedSquare.prototype,
-    "Law": Law.prototype,
-    "AquiferSquare": AquiferSquare.prototype
+    "AquiferSquare": AquiferSquare.prototype,
+    "WheatGreenSquare": WheatGreenSquare.prototype,
+    "GenericParameterizedRootSquare": GenericParameterizedRootSquare.prototype,
+    "WheatOrganism": WheatOrganism.prototype
 }
 
-export { ProtoMap }
+var TypeMap = {
+    [GenericParameterizedRootSquare.name]: GenericParameterizedRootSquare,
+    [WheatGreenSquare.name] : WheatGreenSquare
+}
+
+var TypeNameMap = {
+    GenericParameterizedRootSquare: GenericParameterizedRootSquare.name,
+    WheatGreenSquare: WheatGreenSquare.name
+}
+
+export { ProtoMap, TypeMap, TypeNameMap}

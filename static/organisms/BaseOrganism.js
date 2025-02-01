@@ -1,5 +1,4 @@
 import { removeOrganism } from "./_orgOperations.js";
-import { Law } from "../Law.js";
 import { getStandardDeviation, randNumber } from "../common.js";
 import { getCurDay, getCurTime } from "../time.js";
 import { getNextEntitySpawnId } from "../globals.js";
@@ -13,14 +12,12 @@ class BaseOrganism {
         this.posY = square.posY;
         this.lifeSquares = new Array();
         this.type = "base";
-        this.law = new Law();
         this.spawnedEntityId = 0;
         this.width = 0.95;
         this.xOffset = 0.5;
         this.alive = true;
         this.hovered = false;
         this.growthPlans = [];
-
 
         this.airCoef = 1;
         this.dirtCoef = 1;
@@ -497,7 +494,7 @@ class BaseOrganism {
             this.airNutrients += lifeSquare.airNutrients * this.airCoef;
         });
 
-        var energyGained = this.law.photosynthesis(this.airNutrients - this.totalEnergy, this.waterNutrients - this.totalEnergy, this.dirtNutrients - this.totalEnergy);
+        var energyGained = Math.min((this.airNutrients - this.totalEnergy, this.waterNutrients - this.totalEnergy), this.dirtNutrients - this.totalEnergy);
         energyGained *= this.getHealthEnergyConversionEfficiency();
 
         this.currentEnergy += energyGained;

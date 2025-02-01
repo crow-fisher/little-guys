@@ -11,6 +11,7 @@ import { BaseSeedOrganism } from "../../../BaseSeedOrganism.js";
 export class WheatOrganism extends BaseParameterizedOrganism {
     constructor(posX, posY) {
         super(posX, posY);
+        this.proto = "WheatOrganism";
         this.greenType = WheatGreenSquare;
         this.rootType = GenericParameterizedRootSquare;
 

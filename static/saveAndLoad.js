@@ -5,7 +5,7 @@ import { addOrganismSquare } from "./lifeSquares/_lsOperations.js";
 import { addOrganism, iterateOnOrganisms, removeOrganism } from "./organisms/_orgOperations.js";
 import { GrowthComponent, GrowthPlan, GrowthPlanStep } from "./organisms/parameterized/GrowthPlan.js";
 import { addSquare, addSquareOverride, iterateOnSquares, removeOrganismSquare } from "./squares/_sqOperations.js";
-import { ProtoMap } from "./types.js";
+import { ProtoMap, TypeMap, TypeNameMap } from "./types.js";
 
 
 /**'
@@ -35,7 +35,6 @@ export async function loadSlot(slotName) {
 }
 
 export async function saveSlot(slotName) {
-
     var sqArr = new Array();
     var orgArr = new Array(); 
     var lsqArr = new Array();
@@ -60,6 +59,7 @@ export async function saveSlot(slotName) {
         gpc.growthPlan = growthPlanArr.indexOf(gpc.growthPlan);
         gpc.lifeSquares = Array.from(gpc.lifeSquares.map((lsq) => lsqArr.indexOf(lsq)));
         gpc.parentComponent = growthPlanComponentArr.indexOf(gpc.parentComponent);
+        gpc.children = Array.from(gpc.children.map((child) => growthPlanComponentArr.indexOf(child)));
     });
 
     growthPlanArr.forEach((gp) => {
@@ -76,19 +76,6 @@ export async function saveSlot(slotName) {
     });
 
     iterateOnOrganisms((org) => {
-        if (org.linkedSquare == null || org.lifeSquares.length == 0) {
-            return;
-        }
-        org.growthPlans.forEach((gp => {
-            gp.component.lifeSquares = Array.from(gp.component.lifeSquares.map((lsq) => lsqArr.indexOf(lsq)));
-            gp.component.growthPlan = growthPlanArr.indexOf(gp);
-            gp.component.children = Array.from(gp.component.children.map((child) => growthPlanComponentArr.indexOf(child)));
-            gp.component = growthPlanComponentArr.indexOf(gp.component);
-            gp.steps = Array.from(gp.steps.map((step) => growthPlanStepArr.indexOf(step)));
-        }));
-    });
-
-    iterateOnOrganisms((org) => {
         org.lighting = [];
         org.linkedSquare = sqArr.indexOf(org.linkedSquare);
         org.growthPlans = Array.from(org.growthPlans.map((gp) => growthPlanArr.indexOf(gp)));
@@ -100,6 +87,10 @@ export async function saveSlot(slotName) {
         });
         org.lifeSquares = Array.from(org.lifeSquares.map((lsq) => lsqArr.indexOf(lsq)));
         org.originGrowth = growthPlanComponentArr.indexOf(org.originGrowth);
+        if (org.greenType != null) {
+            org.greenType = org.greenType.name;
+            org.rootType = org.rootType.name;
+        }
     })
 
     var saveObj = {
@@ -110,18 +101,22 @@ export async function saveSlot(slotName) {
         growthPlanComponentArr: growthPlanComponentArr,
         growthPlanStepArr: growthPlanStepArr
     }
-    const compressedSave = await gzipToBase64(JSON.stringify(saveObj));
+    var saveString = JSON.stringify(saveObj);
+
+    const compressedSave = await gzipToBase64(saveString);
     localStorage.setItem("save_" + slotName, compressedSave);
-}
 
-
-async function loadSlotFromSave(slotData) {
     iterateOnSquares((sq) => removeSquare(sq));
     iterateOnOrganisms((org) => {
         org.lifeSquares.forEach((lsq) => removeOrganismSquare(lsq));
         removeOrganism(org);
     });
 
+    loadSlotFromSave(JSON.parse(saveString));
+}
+
+
+async function loadSlotFromSave(slotData) {
     var sqArr = slotData.sqArr;
     var orgArr = slotData.orgArr;
     var lsqArr = slotData.lsqArr;
@@ -170,21 +165,17 @@ async function loadSlotFromSave(slotData) {
     orgArr.forEach((org) => {
         org.linkedSquare = sqArr.indexOf(org.linkedSquare);
         org.growthPlans = Array.from(org.growthPlans.map((gp) => growthPlanArr[gp]));
-
-        org.growthPlans.forEach((gp) => {
-            Object.setPrototypeOf(gp, GrowthPlan.prototype);
-            Object.setPrototypeOf(gp.component, GrowthComponent.prototype);
-            gp.steps.forEach((gps) => Object.setPrototypeOf(gps, GrowthPlanStep.prototype));
-            gp.component.lifeSquares = Array.from(gp.component.lifeSquares.map((lsq) => lsqArr[lsq]));
-        })
-
         org.lifeSquares = Array.from(org.lifeSquares.map((lsq) => lsqArr[lsq]));
+        org.originGrowth = growthPlanComponentArr[org.originGrowth];
         org.lifeSquares.forEach((lsq) => {
             lsq.lighting = [];
             lsq.linkedSquare = sqArr[lsq.linkedSquare];
             lsq.linkedOrganism = orgArr[lsq.linkedOrganism];
             lsq.component = growthPlanComponentArr[lsq.component];
-        })
+        });
+        
+        org.greenType = TypeMap[org.greenType];
+        org.rootType = TypeMap[org.rootType];
 
         addOrganism(org);
         org.lifeSquares.forEach(addOrganismSquare);

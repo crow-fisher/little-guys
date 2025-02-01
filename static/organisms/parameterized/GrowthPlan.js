@@ -18,14 +18,21 @@ export class GrowthPlan {
         this.type = type;
         this.completed = false;
         this.stepLastExecuted = 0;
-        this.areStepsCompleted = () => this.steps.every((step) => step.completed);
-        this.postConstruct = () => console.warn("Warning: postconstruct not implemented");
-        this.postComplete = () => null;
         this.component = new GrowthComponent(
             this, 
             this.steps.filter((step) => step.completed).map((step) => step.completedSquare),
              theta, twist, baseRotation, baseDeflection, baseCurve, type, strengthMult)
     }
+
+    areStepsCompleted() {
+        return this.steps.every((step) => step.completed);
+    }
+
+    postConstruct() {
+        console.warn("Warning: postconstruct not implemented");
+    }
+
+    postComplete() {};
 
     setBaseDeflectionOverTime(deflectionOverTimeList) {
         this.deflectionOverTimeList = deflectionOverTimeList;
@@ -97,17 +104,19 @@ export class GrowthComponent {
 
         this.currentDeflection = 0;
         this.deflectionRollingAverage = 10 ** 8;
-        this.strength = () => strengthMult * this.lifeSquares.map((lsq) => lsq.strength).reduce(
-            (accumulator, currentValue) => accumulator + currentValue,
-            0,
-        ) * (this.xSize()) / this.ySize();
-        
+        this.strengthMult = strengthMult;
         this.children = new Array();
         this.parentComponent = null;
         this.setCurrentDeflection(baseDeflection);
         this.distToFront = 0;
         this.spawnTime = getCurDay();
-        
+    }
+    
+    strength() {
+        return this.strengthMult * this.lifeSquares.map((lsq) => lsq.strength).reduce(
+            (accumulator, currentValue) => accumulator + currentValue,
+            0,
+        ) * (this.xSize()) / this.ySize();
     }
 
     setBaseDeflectionOverTime(deflectionOverTimeList) {

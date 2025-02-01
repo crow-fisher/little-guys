@@ -25,7 +25,6 @@ export class BaseParameterizedOrganism extends BaseOrganism {
         this.originGrowth = null;
         this.spinnable = false;
         this.maxSquaresOfTypePerDay = 100;
-        this.throttleInterval = () => 1 / this.maxSquaresOfTypePerDay;
 
         // organism config in 'days'
         this.adultTime = 3;
@@ -37,7 +36,6 @@ export class BaseParameterizedOrganism extends BaseOrganism {
         this.greenType = null;
         this.rootType = null;
 
-
         this.curWilt = 0;
         this.waterPressure = -2;
         this.waterPressureTarget = -2;
@@ -46,6 +44,10 @@ export class BaseParameterizedOrganism extends BaseOrganism {
         this.waterPressureOverwaterThresh = -1;
         this.transpirationRate = 0.001;
         this.rootPower = 2;
+    }
+
+    throttleInterval() {
+        return 1 / this.maxSquaresOfTypePerDay;
     }
 
     process() {
