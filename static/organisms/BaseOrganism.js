@@ -339,6 +339,11 @@ class BaseOrganism {
         this.lifeSquaresCountByType[lifeSquare.type] += 1;
         lifeSquare.distFromOrigin = this.dist(lifeSquare.posX, lifeSquare.posY);
         this.maxDistFromOrigin = Math.max(this.maxDistFromOrigin, lifeSquare.distFromOrigin);
+        
+        var pred = (lsq) => lsq.lighting != null && lsq.lighting.length > 0;
+        if (this.lifeSquares.some(pred)) {
+            lifeSquare.lighting = this.lifeSquares.reverse().find(pred).lighting;
+        }
     }
     removeAssociatedLifeSquare(lifeSquare) {
         this.lifeSquaresCountByType[lifeSquare.type] -= 1;
