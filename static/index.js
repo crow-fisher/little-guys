@@ -22,7 +22,7 @@ import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { createSunLightGroup, default_light_throttle_interval } from "./lighting.js";
 import { loadSlot, saveSlot } from "./saveAndLoad.js";
 
-var lastMode = "normal"; // options: "normal", "special", "organism", "blockModification";
+var lastMode = "organismWetland"; // options: normal, organismWetlandgi
 
 var specialSelect = document.getElementById("specialSelect");
 var specialSelect_val = "water";
@@ -46,7 +46,7 @@ var brushSizeSlider = document.getElementById("brushSizeSlider");
 var brushSizeSlider_val = 3;
 
 var organismWetland = document.getElementById("organismWetland");
-var organismWetland_val;
+var organismWetland_val = "Wheat";
 var organismOther = document.getElementById("organismOther");
 var organismOther_val;
 var blockModification = document.getElementById("blockModification");
