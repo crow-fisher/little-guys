@@ -47,7 +47,6 @@ class BaseLifeSquare {
         this.linkedOrganism = organism;
         this.spawnedEntityId = organism.spawnedEntityId;
         this.childLifeSquares = new Array();
-        this.parentLifeSquare = null;
 
         this.height = BASE_SIZE;
 
@@ -180,7 +179,6 @@ class BaseLifeSquare {
             return;
         }
         this.childLifeSquares.push(lifeSquare);
-        lifeSquare.parentLifeSquare = this;
         lifeSquare.deflectionXOffset = this.deflectionXOffset;
         lifeSquare.deflectionYOffset = this.deflectionYOffset;
         lifeSquare.lighting = this.lighting;
@@ -201,9 +199,6 @@ class BaseLifeSquare {
             this.linkedSquare.destroy();
         } else {
             this.linkedSquare.unlinkOrganismSquare(this);
-        }
-        if (this.parentLifeSquare != null) {
-            this.parentLifeSquare.removeChild(this);
         }
         removeOrganismSquare(this);
     }

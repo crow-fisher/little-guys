@@ -1,10 +1,8 @@
-import {BaseOrganism} from "./BaseOrganism.js"
+import { BaseOrganism } from "./BaseOrganism.js";
 import { SeedLifeSquare } from "../lifeSquares/SeedLifeSquare.js";
-import { PopGrassOrganism } from "./PopGrassOrganism.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
-import { getSquares } from "../squares/_sqOperations.js";
-import { addNewOrganism, addOrganism } from "./_orgOperations.js";
-import { getCurDay, getCurTime } from "../time.js";
+import { addNewOrganism } from "./_orgOperations.js";
+import { getCurDay } from "../time.js";
 
 class BaseSeedOrganism extends BaseOrganism {
     constructor(square) {

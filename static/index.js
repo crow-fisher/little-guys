@@ -1,42 +1,25 @@
-import { BaseSquare } from "./squares/BaseSqaure.js";
-import { getNeighbors, getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares, removeSquarePos } from "./squares/_sqOperations.js";
-import { purge, reset, renderWater, renderSquares, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquare, doLightSourceRaycasting, reduceNextLightUpdateTime } from "./globalOperations.js"
-import { RockSquare } from "./squares/RockSquare.js"
+import { getDirectNeighbors, addSquare, addSquareOverride, getSquares, removeSquarePos } from "./squares/_sqOperations.js";
+import { purge, reset, renderWater, renderSquares, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, doLightSourceRaycasting, reduceNextLightUpdateTime } from "./globalOperations.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
-import { RainSquare } from "./squares/RainSquare.js";
-import { HeavyRainSquare } from "./squares/RainSquare.js";
-import { AquiferSquare } from "./squares/RainSquare.js";
-import { DrainSquare } from "./squares/DrainSquare.js";
+import { RainSquare } from "./squares/parameterized/RainSquare.js";
+import { HeavyRainSquare } from "./squares/parameterized/RainSquare.js";
+import { AquiferSquare } from "./squares/parameterized/RainSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
-import { PopGrassSeedOrganism } from "./organisms/PopGrassSeedOrganism.js";
-import { addNewOrganism, addOrganism, iterateOnOrganisms } from "./organisms/_orgOperations.js";
+import { addNewOrganism, iterateOnOrganisms } from "./organisms/_orgOperations.js";
 
-import { ALL_ORGANISMS, ALL_ORGANISM_SQUARES, ALL_SQUARES, LIGHT_SOURCES, getNextEntitySpawnId } from "./globals.js";
-import { getCurDay, getCurTime, updateTime, renderTime, getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "./time.js";
+import { LIGHT_SOURCES } from "./globals.js";
+import { updateTime, renderTime } from "./time.js";
 
-import { doErase } from "./manipulation.js";
-import { ProtoMap } from "./types.js";
-import { GravelSquare } from "./squares/GravelSquare.js";
 import { getOrganismSquaresAtSquare } from "./lifeSquares/_lsOperations.js";
-import { CactusSeedOrganism } from "./organisms/CactusSeedOrganism.js";
-import { LilyPadSeedOrganism } from "./organisms/LilyPadSeedOrganism.js";
-import { MossSeedOrganism } from "./organisms/MossSeedOrganism.js";
-import { PlantSquare } from "./squares/PlantSquare.js";
-import { randNumber, randRange } from "./common.js";
-import { volcano, beach } from "./saves.js";
-import { HydrangeaSeedOrganism } from "./organisms/HydrangeaSeedOrganism.js";
-import { MossCoolSeedOrganism } from "./organisms/MossCoolSeedOrganism.js";
-import { SunflowerSeedOrganism } from "./organisms/SunflowerSeedOrganism.js";
+import { randNumber } from "./common.js";
 import { clearPrevailingWind, addPrevailingWind, addWindPressure, initializeWindPressureMap, removeWindPressure, renderWindPressureMap, tickWindPressureMap } from "./wind.js";
-import { renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds, addWaterSaturationPascals, addWaterSaturationPascalsSqCoords } from "./temperature_humidity.js";
+import { renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturationPascalsSqCoords } from "./temperature_humidity.js";
 import { PalmTreeSeedOrganism } from "./organisms/parameterized/tropical/PalmTreeOrganism.js";
 import { ElephantEarSeedOrganism } from "./organisms/parameterized/tropical/ElephantEarOrganism.js";
-import { TropicalGrassSeedOrganism } from "./organisms/parameterized/tropical/TropicalGrassSeedOrganism.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { WheatSeedOrganism } from "./organisms/parameterized/agriculture/grasses/WheatOrganism.js";
-import { ParameterizedRockSquare } from "./squares/parameterized/RockSquare.js";
-import { createSunLightGroup, default_light_throttle_interval, LightGroup, lightingPrepareTerrainSquares } from "./lighting.js";
-import { RGB_COLOR_RED, RGB_COLOR_VERY_FUCKING_RED } from "./colors.js";
+import { ParameterizedRockSquare } from "./squares/parameterized/ParameterizedRockSquare.js";
+import { createSunLightGroup, default_light_throttle_interval } from "./lighting.js";
 import { loadSlot, saveSlot } from "./saveAndLoad.js";
 
 var lastMode = "normal"; // options: "normal", "special", "organism", "blockModification";
@@ -662,14 +645,8 @@ function addSquareByName(posX, posY, name) {
         case "heavy rain":
             square = addSquareOverride(new HeavyRainSquare(posX, posY));
             break;
-        case "drain":
-            square = addSquareOverride(new DrainSquare(posX, posY));
-            break;
         case "aquifer":
             square = addSquare(new AquiferSquare(posX, posY));
-            break;
-        case "gravel":
-            square = addSquareOverride(new GravelSquare(posX, posY));
             break;
     };
     return square;
@@ -836,78 +813,9 @@ function doClickAdd() {
                     } else if (lastMode == "organismOther") {
                         selectedOrganism = organismOther_val;
                     }
-
                     switch (selectedOrganism) {
                         // organism sections
                         // in this case we only want to add one per click
-                        case "popgrass":
-                            if (Math.random() > 0.95) {
-                                var sq = addSquare(new SeedSquare(px, py));
-                                if (sq) {
-                                    // organismAddedThisClick = true;
-                                    addNewOrganism(new PopGrassSeedOrganism(sq));
-                                }
-                            }
-                            break;
-
-                        case "cactus":
-                            if (Math.random() > 0.95) {
-                                var sq = addSquare(new SeedSquare(px, py));
-                                if (sq) {
-                                    addNewOrganism(new CactusSeedOrganism(sq));
-                                }
-                            }
-                            break;
-
-                        case "waterlily":
-                            if (Math.random() > 0.95) {
-                                var sq = addSquare(new SeedSquare(px, py));
-                                if (sq) {
-                                    addNewOrganism(new LilyPadSeedOrganism(sq));
-                                }
-                            }
-                            break;
-
-                        case "moss":
-                            if (Math.random() > 0.95) {
-                                var sq = addSquare(new SeedSquare(px, py));
-                                if (sq) {
-                                    addNewOrganism(new MossSeedOrganism(sq));
-                                }
-                            }
-                            break;
-
-                        case "mosscool":
-                            if (Math.random() > 0.95) {
-                                var sq = addSquare(new SeedSquare(px, py));
-                                if (sq) {
-                                    addNewOrganism(new MossCoolSeedOrganism(sq));
-                                }
-                            }
-                            break;
-
-                        case "hydrangea":
-                            if (organismAddedThisClick) {
-                                return;
-                            }
-                            var sq = addSquare(new SeedSquare(px, py));
-                            if (sq) {
-                                addNewOrganism(new HydrangeaSeedOrganism(sq));
-                                organismAddedThisClick = true;
-                            }
-                            break;
-
-                        case "Sunflower":
-                            if (organismAddedThisClick) {
-                                return;
-                            }
-                            var sq = addSquare(new SeedSquare(px, py));
-                            if (sq) {
-                                addNewOrganism(new SunflowerSeedOrganism(sq));
-                                organismAddedThisClick = true;
-                            }
-                            break;
-
                         case "PalmTree":
                             if (organismAddedThisClick) {
                                 return;

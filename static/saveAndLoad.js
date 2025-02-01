@@ -1,6 +1,8 @@
 import { reduceNextLightUpdateTime, removeSquare } from "./globalOperations.js";
-import { ALL_SQUARES } from "./globals.js";
+import { ALL_ORGANISM_SQUARES, ALL_ORGANISMS, ALL_SQUARES } from "./globals.js";
 import { CANVAS_SQUARES_Y } from "./index.js";
+import { addOrganismSquare } from "./lifeSquares/_lsOperations.js";
+import { addOrganism, iterateOnOrganisms } from "./organisms/_orgOperations.js";
 import { addSquare, addSquareOverride, iterateOnSquares } from "./squares/_sqOperations.js";
 import { ProtoMap } from "./types.js";
 
@@ -31,10 +33,19 @@ function loadObjArr(sourceObjMap, addFunc) {
 
 }
 
-async function loadSlotFromSave(slotData) {
-    const loaded_ALL_SQUARES = JSON.parse(await base64ToGzip(slotData));
-    loadObjArr(loaded_ALL_SQUARES, addSquareOverride)
-}
+/**'
+ * 
+ * 
+ * objects will have a 'compression scheme' that tells us how to scrunch them up
+ * 
+ * we need to: 
+ *  * take all of our objects and shove them into big lists
+ *  * pull out all references to other objects and turn them into indexes into our big lists
+ *  * turn all that into an object and serialize and save it
+ * 
+ * why do we do this? because this project is circular reference hell <3
+ */
+
 
 export async function loadSlot(slotName) {
     var sqLoad = localStorage.getItem("ALL_SQUARES_" + slotName);
@@ -50,8 +61,82 @@ export async function loadSlot(slotName) {
 }
 
 export async function saveSlot(slotName) {
-    const compressedSquares = await gzipToBase64(JSON.stringify(ALL_SQUARES));
-    localStorage.setItem("ALL_SQUARES_" + slotName, compressedSquares);
+
+    var sqArr = new Array();
+    var orgArr = new Array(); 
+    var lsqArr = new Array();
+
+    iterateOnSquares((sq) => sqArr.push(sq));
+    iterateOnOrganisms((org) => {
+        orgArr.push(org);
+        lsqArr.push(...org.lifeSquares);
+    });
+
+    iterateOnSquares((sq) => {
+        sq.linkedOrganism = orgArr.indexOf(sq.linkedOrganism);
+        sq.linkedOrganismSquares = Array.from(sq.linkedOrganismSquares.map((lsq) => lsqArr.indexOf(lsq)));
+    });
+
+    iterateOnOrganisms((org) => {
+        org.linkedSquare = sqArr.indexOf(org.linkedSquare);
+
+        org.lifeSquares.forEach((lsq) => {
+            lsq.linkedSquare = sqArr.indexOf(lsq.linkedSquare);
+            lsq.linkedOrganism = orgArr.indexOf(lsq.linkedOrganism);
+            lsq.childLifeSquares = Array.from(lsq.childLifeSquares.map(((llsq) => lsqArr.indexOf(llsq))));
+            lsq.parentL
+        })
+        org.lifeSquares = Array.from(org.lifeSquares.map((lsq) => lsqArr.indexOf(lsq)));
+    });
+
+
+    var saveObj = {
+        sqArr: sqArr,
+        orgArr: orgArr,
+        lsqArr: lsqArr,
+        sqMap: ALL_SQUARES,
+        orgMap: ALL_ORGANISMS,
+        lsqMap: ALL_ORGANISM_SQUARES
+    }
+
+    loadSlotFromSave(saveObj);
+
+    const compressedSave = await gzipToBase64(JSON.stringify(saveObj));
+
+
+    localStorage.setItem("save_" + slotName, compressedSave);
+}
+
+
+async function loadSlotFromSave(slotData) {
+    var sqArr = slotData.sqArr;
+    var orgArr = slotData.orgArr;
+    var lsqArr = slotData.lsqArr;
+    var sqMap = slotData.sqMap;
+    var orgMap = slotData.orgMap;
+    var lsqMap = slotData.lsqMap;
+
+    loadObjArr(sqMap, addSquareOverride)
+    loadObjArr(orgMap, addOrganism)
+    loadObjArr(lsqMap, addOrganismSquare)
+
+    
+    iterateOnSquares((sq) => {
+        if (sq.linkedOrganism == -1) {
+            sq.linkedOrganism = null;
+        }
+
+        sq.linkedOrganism = orgArr[sq.linkedOrganism];
+        sq.linkedOrganismSquares = Array.from(sq.linkedOrganismSquares.map((lsqIdx) => lsqArr[lsqIdx]));
+    });
+    
+    iterateOnOrganisms((org) => {
+        org.linkedSquare = sqArr.indexOf(org.linkedSquare);
+        org.lifeSquares = Array.from(org.lifeSquares.map((lsq) => lsqArr.indexOf(lsq)));
+    });
+
+
+
 }
 
 async function gzipToBase64(inputString) {
@@ -92,3 +177,4 @@ async function base64ToGzip(base64String) {
     const decoder = new TextDecoder();
     return decoder.decode(decompressedArrayBuffer);
 }
+

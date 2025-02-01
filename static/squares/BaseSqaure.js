@@ -695,16 +695,8 @@ export class BaseSquare {
 
     calculateDirectPressure() {
         this.currentPressureDirect = 0;
-        if (this.surface) {
+        if (this.surface || this.organic) {
             return;
-        }
-        if (this.organic) {
-            if (this.linkedOrganismSquares.some((sq) => sq.type == "green" && sq.subtype == "leaf")) {
-                this.linkedOrganismSquares
-                    .filter((lsq) => lsq.type == "green" && lsq.subtype == "leaf")
-                    .forEach((lsq) => this.currentPressureDirect = lsq.parentLifeSquare.linkedSquare.currentPressureDirect);
-                return;
-            }
         }
         getSquares(this.posX, this.posY - 1)
             .filter((sq) => sq.solid)
