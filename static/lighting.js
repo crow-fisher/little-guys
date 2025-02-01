@@ -45,16 +45,16 @@ export function lightingPrepareTerrainSquares() {
 }
 
 export function createSunLightGroup() {
-    var sizeX = 6;
+    var sizeX = 8;
     var sunLightGroup = new LightGroup(
         0,
-        -50, 
+        -100, 
         sizeX, 
         1,
         CANVAS_SQUARES_X / (sizeX - 1), 
         () => 0.1 + 0.9 * getDaylightStrength(), 
         getCurrentLightColorTemperature, 
-        CANVAS_SQUARES_X * 2,
+        10 ** 8,
         77);
 
     return sunLightGroup;
@@ -66,7 +66,7 @@ export class LightGroup {
         let brigthnessFrac = (sizeX * sizeY) ** 0.5;
         let totalSize = posX + ((sizeX - 1) * scaleMult);
 
-        var minTheta = Math.PI * 2;
+        var minTheta = 2 * Math.PI;
         var maxTheta = 0;
 
         for (let i = 0; i < sizeX; i++) {
@@ -74,12 +74,9 @@ export class LightGroup {
                 let sourcePosX = posX + (scaleMult * i);
                 let sourcePosY = posY + (scaleMult * j);
                 [[0, 0], [0, CANVAS_SQUARES_Y], [CANVAS_SQUARES_X, 0], [CANVAS_SQUARES_X, CANVAS_SQUARES_Y]].forEach((loc) => {
-                    var testX = sourcePosX - loc[0];
-                    var testY = sourcePosY - loc[1];
-                    var theta = Math.atan(testX/testY);
-                    if (isNaN(theta)) {
-                        return;
-                    }
+                    var testX = loc[0] - sourcePosX;
+                    var testY = loc[1] - sourcePosY;
+                    var theta = Math.atan(testY / testX);
                     minTheta = Math.min(minTheta, theta);
                     maxTheta = Math.max(maxTheta, theta);
                 })
@@ -181,6 +178,8 @@ export class LightSource {
         targetLists.push(this.frameTerrainSquares);
 
         let thetaStep = (this.maxTheta - this.minTheta) / this.numRays;
+        var seenSquares = new Set();
+
         for (let theta = this.minTheta; theta < this.maxTheta; theta += thetaStep) {
             var thetaSquares = [];
             targetLists.forEach((list) => {
@@ -189,11 +188,8 @@ export class LightSource {
                     var posYKeys = Object.keys(list[relPosX]);
                     posYKeys.forEach((relPosY) => {
                         var sqTheta = Math.atan(relPosY / relPosX);
-                        if (relPosX == 0 && relPosY == 0 && theta == -Math.PI) {
+                        if (relPosX == 0 && relPosY == 0 && theta == this.minTheta) {
                             thetaSquares.push([relPosX, relPosY]);
-                        }
-                        else if (isNaN(sqTheta)) {
-                            return;
                         } else if (sqTheta > theta && sqTheta < (theta + thetaStep)) {
                             thetaSquares.push([relPosX, relPosY]);
                         }
