@@ -48,7 +48,7 @@ export function createSunLightGroup() {
     var sizeX = 8;
     var sunLightGroup = new LightGroup(
         0,
-        -100, 
+        -1, 
         sizeX, 
         1,
         CANVAS_SQUARES_X / (sizeX - 1), 
