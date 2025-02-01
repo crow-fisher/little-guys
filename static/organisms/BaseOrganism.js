@@ -69,6 +69,12 @@ class BaseOrganism {
 
         this.rootOpacity = 0.4;
 
+        // not used as part the organism's rendering directly, but 
+        // used as a hint for growing new life squares
+        if (square.lighting != null && square.lighting.length > 0) {
+            this.lighting = square.lighting;
+        }
+
     }
 
     updateDeflectionState() {

@@ -84,17 +84,8 @@ var canvasHeight = document.getElementById("canvasHeight");
 
 var timeScale = document.getElementById("timeScale");
 var viewmodeSelect = document.getElementById("viewmodeSelect");
-
-var loadSlotA = document.getElementById("loadSlotA");
-var saveSlotA = document.getElementById("saveSlotA");
-var loadSlotB = document.getElementById("loadSlotB");
-var saveSlotB = document.getElementById("saveSlotB");
-var loadSlotC = document.getElementById("loadSlotC");
-var saveSlotC = document.getElementById("saveSlotC");
-
-var loadSlotVolcano = document.getElementById("loadSlotVolcano");
-var loadSlotBeach = document.getElementById("loadSlotBeach");
 var bakelighting = document.getElementById("bakelighting");
+bakelighting.onclick = (e) => reduceNextLightUpdateTime(default_light_throttle_interval);
 
 var selectedViewMode = "normal";
 
@@ -432,118 +423,6 @@ var MILLIS_PER_TICK = 1;
 var rightMouseClicked = false;
 var middleMouseClicked = false;
 var shiftPressed = false;
-
-loadSlotA.onclick = (e) => loadSlot("A");
-saveSlotA.onclick = (e) => saveSlot("A");
-loadSlotB.onclick = (e) => loadSlot("B");
-saveSlotB.onclick = (e) => saveSlot("B");
-loadSlotC.onclick = (e) => loadSlot("C");
-saveSlotC.onclick = (e) => saveSlot("C");
-
-loadSlotVolcano.onclick = (e) => loadSlotFromSave(volcano);
-loadSlotBeach.onclick = (e) => loadSlotFromSave(beach);
-bakelighting.onclick = (e) => reduceNextLightUpdateTime(default_light_throttle_interval);
-
-function loadObjArr(sourceObjMap, addFunc) {
-    iterateOnSquares((sq) => sq.destroy());
-    var sqMaxPosY = 0;
-    var rootKeys = Object.keys(sourceObjMap);
-    for (let i = 0; i < rootKeys.length; i++) {
-        var subObj = sourceObjMap[rootKeys[i]];
-        if (subObj != null) {
-            var subKeys = Object.keys(subObj);
-            for (let j = 0; j < subKeys.length; j++) {
-                sourceObjMap[rootKeys[i]][subKeys[j]].forEach((obj) => {
-                    addFunc(Object.setPrototypeOf(obj, ProtoMap[obj.proto]));
-                    sqMaxPosY = Math.max(sqMaxPosY, obj.posY);
-                });
-            }
-        }
-    }
-    if (sqMaxPosY != CANVAS_SQUARES_Y) {
-        iterateOnSquares((sq) => {
-            removeSquare(sq);
-            sq.posY += (CANVAS_SQUARES_Y - 1) - sqMaxPosY;
-            addSquare(sq)
-        }, 1);
-    }
-
-}
-
-async function loadSlotFromSave(slotData) {
-    const loaded_ALL_SQUARES = JSON.parse(await base64ToGzip(slotData));
-    loadObjArr(loaded_ALL_SQUARES, addSquareOverride)
-}
-
-async function loadSlot(slotName) {
-    var sqLoad = localStorage.getItem("ALL_SQUARES_" + slotName);
-    if (sqLoad == null) {
-        alert("no data to load!!! beep boop :(")
-        return null;
-    }
-    // These are not our 'real' objects - they are JSON objects.
-    // So they don't have functions and such. 
-    const loaded_ALL_SQUARES = JSON.parse(await base64ToGzip(sqLoad));
-    var loaded_ALL_ORGANISMS = JSON.parse(localStorage.getItem("ALL_ORGANISMS_" + slotName));
-    var loaded_ALL_ORGANISM_SQUARES = JSON.parse(localStorage.getItem("ALL_ORGANISM_SQUARES_" + slotName));
-
-    loadObjArr(loaded_ALL_SQUARES, addSquareOverride)
-}
-
-async function saveSlot(slotName) {
-
-    var anyOrganisms = false;
-    iterateOnOrganisms((org) => anyOrganisms = true);
-
-    if (anyOrganisms) {
-        alert("saving not currently supported with organisms :(")
-        return;
-    }
-
-    const compressedSquares = await gzipToBase64(JSON.stringify(ALL_SQUARES));
-    localStorage.setItem("ALL_SQUARES_" + slotName, compressedSquares);
-    // localStorage.setItem("ALL_ORGANISMS_" + slotName, JSON.stringify(ALL_ORGANISMS));
-    // localStorage.setItem("ALL_ORGANISM_SQUARES_" + slotName, JSON.stringify(ALL_ORGANISM_SQUARES));
-}
-
-async function gzipToBase64(inputString) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(inputString);
-
-    const compressionStream = new CompressionStream("gzip");
-    const writer = compressionStream.writable.getWriter();
-    writer.write(data);
-    writer.close();
-
-    const compressedStream = compressionStream.readable;
-    const compressedArrayBuffer = await new Response(compressedStream).arrayBuffer();
-    const compressedUint8Array = new Uint8Array(compressedArrayBuffer);
-
-    // Encode to Base64 in chunks
-    let binaryString = '';
-    for (let i = 0; i < compressedUint8Array.length; i++) {
-        binaryString += String.fromCharCode(compressedUint8Array[i]);
-    }
-
-    return btoa(binaryString);
-}
-
-// Decode Base64 and gunzip
-async function base64ToGzip(base64String) {
-    const binaryString = atob(base64String);
-    const compressedData = Uint8Array.from(binaryString, (char) => char.charCodeAt(0));
-
-    const decompressionStream = new DecompressionStream("gzip");
-    const writer = decompressionStream.writable.getWriter();
-    writer.write(compressedData);
-    writer.close();
-
-    const decompressedStream = decompressionStream.readable;
-    const decompressedArrayBuffer = await new Response(decompressedStream).arrayBuffer();
-
-    const decoder = new TextDecoder();
-    return decoder.decode(decompressedArrayBuffer);
-}
 
 
 function handleMouseDown(e) {

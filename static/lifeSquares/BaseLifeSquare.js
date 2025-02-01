@@ -56,7 +56,6 @@ class BaseLifeSquare {
         }
 
         this.strength = 1;
-        this.lighting = [];
 
         this.state = STATE_HEALTHY;
         this.activeRenderState = null;
@@ -103,6 +102,16 @@ class BaseLifeSquare {
         this.LSQ_RENDER_SIZE_MULT = Math.SQRT2;
 
         this.lightFilterRate = 0.00010;
+
+        
+        if (square.lighting != null && square.lighting.length > 0) {
+            this.lighting = square.lighting;
+        } else if (organism.lighting != null && organism.lighting.length > 0) {
+            this.lighting = organism.lighting;
+        } else {
+            this.lighting = [];
+        }
+
     }
 
     getLightFilterRate() {
