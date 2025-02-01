@@ -472,14 +472,13 @@ class BaseLifeSquare {
             b: (baseColorRgb.b * 0.5 + ((altColor1Rgb.b * rand + altColor2Rgb.b * (1 - rand)) * 0.5))
         }
 
-        var outColor = {r: outColorBase.r * 0.25, g: outColorBase * 0.25, b: outColorBase.b * 0.25};
-
-        this.lighting.filter((light) => light != null).forEach((light) => {
+        var outColor = {r: 0, g: 0, b: 0}
+        
+        this.lighting.filter((light) => light != null && light.length == 2).forEach((light) => {
             var strength = light[0].map((f) => f()).reduce(
                 (accumulator, currentValue) => accumulator + currentValue,
                 0,
             );
-
             var color = light[1]();
             outColor = {
                 r: Math.min(255, outColor.r + (outColorBase.r / 255) * strength * color.r),

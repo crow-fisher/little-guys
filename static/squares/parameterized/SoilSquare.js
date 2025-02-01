@@ -312,11 +312,11 @@ export class SoilSquare extends BaseSquare {
             }
         });
 
-        // var darkeningColorMult = (this.waterContainment / this.waterContainmentMax);
+        var darkeningColorMult = (this.waterContainment / this.waterContainmentMax);
 
-        // outColor.r *= (1 - 0.24 * darkeningColorMult);
-        // outColor.g *= (1 - 0.30 * darkeningColorMult);
-        // outColor.b *= (1 - 0.383 * darkeningColorMult);
+        outColor.r *= (1 - 0.24 * darkeningColorMult);
+        outColor.g *= (1 - 0.30 * darkeningColorMult);
+        outColor.b *= (1 - 0.383 * darkeningColorMult);
 
         MAIN_CONTEXT.fillStyle = rgbToHex(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b));
         zoomCanvasFillRect(
