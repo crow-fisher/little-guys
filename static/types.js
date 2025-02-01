@@ -27,7 +27,7 @@ var ProtoMap = {
     "SeedLifeSquare": SeedLifeSquare.prototype,
     "SeedSquare": SeedSquare.prototype,
     "Law": Law.prototype,
-    "AquiferSquare": AquiferSquare.prototype,
+    "AquiferSquare": AquiferSquare.prototype
 }
 
 export { ProtoMap }

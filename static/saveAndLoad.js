@@ -30,7 +30,7 @@ export async function loadSlot(slotName) {
     }
     const saveData = JSON.parse(await base64ToGzip(save));
     loadSlotFromSave(saveData);
-    
+
     reduceNextLightUpdateTime(10 ** 8);
 }
 
@@ -42,7 +42,6 @@ export async function saveSlot(slotName) {
     var growthPlanArr = new Array();
     var growthPlanComponentArr = new Array();
 
-    iterateOnSquares((sq) => sqArr.push(sq));
     iterateOnOrganisms((org) => {
         orgArr.push(org);
         lsqArr.push(...org.lifeSquares);
@@ -50,34 +49,36 @@ export async function saveSlot(slotName) {
 
     iterateOnSquares((sq) => {
         sq.lighting = [];
-        sq.linkedOrganism = orgArr.indexOf(sq.linkedOrganism);
+        if (sq.linkedOrganism != null)
+            sq.linkedOrganism = orgArr.indexOf(sq.linkedOrganism);
         sq.linkedOrganismSquares = Array.from(sq.linkedOrganismSquares.map((lsq) => lsqArr.indexOf(lsq)));
+        sqArr.push(sq)
     });
 
     iterateOnOrganisms((org) => {
         if (org.linkedSquare == null || org.lifeSquares.length == 0) {
             return;
         }
-        org.lighting = [];
-        org.linkedSquare = sqArr.indexOf(org.linkedSquare);
-
         org.growthPlans.forEach((gp => {
             gp.component.lifeSquares = Array.from(gp.component.lifeSquares.map((lsq) => lsqArr.indexOf(lsq)));
             growthPlanArr.push(gp);
             growthPlanComponentArr.push(gp.component);
             gp.component = growthPlanComponentArr.indexOf(gp.component);
         }));
+    });
 
+    iterateOnOrganisms((org) => {
+        org.lighting = [];
+        org.linkedSquare = sqArr.indexOf(org.linkedSquare);
+        org.growthPlans = Array.from(org.growthPlans.map((gp) => growthPlanArr.indexOf(gp)));
         org.lifeSquares.forEach((lsq) => {
             lsq.lighting = [];
             lsq.linkedSquare = sqArr.indexOf(lsq.linkedSquare);
             lsq.linkedOrganism = orgArr.indexOf(lsq.linkedOrganism);
             lsq.component = growthPlanComponentArr.indexOf(lsq.component);
         });
-    });
-    iterateOnOrganisms((org) => {
         org.lifeSquares = Array.from(org.lifeSquares.map((lsq) => lsqArr.indexOf(lsq)));
-        org.growthPlans = Array.from(org.growthPlans.map((gp) => growthPlanArr.indexOf(gp)));
+        org.originGrowth = growthPlanComponentArr.indexOf(org.originGrowth);
     })
 
     var saveObj = {
@@ -87,8 +88,6 @@ export async function saveSlot(slotName) {
         growthPlanArr: growthPlanArr,
         growthPlanComponentArr: growthPlanComponentArr
     }
-
-    loadSlotFromSave(saveObj);
     const compressedSave = await gzipToBase64(JSON.stringify(saveObj));
     localStorage.setItem("save_" + slotName, compressedSave);
 }
@@ -115,6 +114,7 @@ async function loadSlotFromSave(slotData) {
         }
         sq.linkedOrganism = orgArr[sq.linkedOrganism];
         sq.linkedOrganismSquares = Array.from(sq.linkedOrganismSquares.map((lsqIdx) => lsqArr[lsqIdx]));
+        Object.setPrototypeOf(sq, ProtoMap[sq.proto]);
     });
     sqArr.forEach(addSquareOverride);
 
