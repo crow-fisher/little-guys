@@ -41,10 +41,14 @@ export async function saveSlot(slotName) {
     var lsqArr = new Array();
     var growthPlanArr = new Array();
     var growthPlanComponentArr = new Array();
+    var growthPlanStepArr = new Array();
 
     iterateOnOrganisms((org) => {
         orgArr.push(org);
         lsqArr.push(...org.lifeSquares);
+        growthPlanArr.push(...org.growthPlans);
+        growthPlanComponentArr.push(...org.growthPlans.map((gp) => gp.component))
+        org.growthPlans.forEach((gp) => growthPlanStepArr.push(...gp.steps));
     });
 
     iterateOnSquares((sq) => {
@@ -61,9 +65,10 @@ export async function saveSlot(slotName) {
         }
         org.growthPlans.forEach((gp => {
             gp.component.lifeSquares = Array.from(gp.component.lifeSquares.map((lsq) => lsqArr.indexOf(lsq)));
-            growthPlanArr.push(gp);
-            growthPlanComponentArr.push(gp.component);
+            gp.component.growthPlan = growthPlanArr.indexOf(gp);
+            gp.component.children = Array.from(gp.component.children.map((child) => growthPlanComponentArr.indexOf(child)));
             gp.component = growthPlanComponentArr.indexOf(gp.component);
+            gp.steps = Array.from(gp.steps.map((step) => growthPlanStepArr.indexOf(step)));
         }));
     });
 
@@ -86,7 +91,8 @@ export async function saveSlot(slotName) {
         orgArr: orgArr,
         lsqArr: lsqArr,
         growthPlanArr: growthPlanArr,
-        growthPlanComponentArr: growthPlanComponentArr
+        growthPlanComponentArr: growthPlanComponentArr,
+        growthPlanStepArr: growthPlanStepArr
     }
     const compressedSave = await gzipToBase64(JSON.stringify(saveObj));
     localStorage.setItem("save_" + slotName, compressedSave);
