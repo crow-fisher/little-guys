@@ -3,6 +3,7 @@ import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, MAIN_CONTEXT, zoomCanvas
 import { calculateColor, calculateColorProvideOpacity } from "./temperature_humidity.js";
 
 var millis_per_day = 1000000;
+millis_per_day = 100000;
 var curDay = 0.5;
 var prevDay = 0;
 var curTime = 0.2;

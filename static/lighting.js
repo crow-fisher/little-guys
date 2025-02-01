@@ -55,7 +55,7 @@ export function createSunLightGroup() {
         () => 0.1 + 0.9 * getDaylightStrength(), 
         getCurrentLightColorTemperature, 
         10 ** 8,
-        77);
+        24);
 
     return sunLightGroup;
 }
@@ -74,9 +74,9 @@ export class LightGroup {
                 let sourcePosX = posX + (scaleMult * i);
                 let sourcePosY = posY + (scaleMult * j);
                 [[0, 0], [0, CANVAS_SQUARES_Y], [CANVAS_SQUARES_X, 0], [CANVAS_SQUARES_X, CANVAS_SQUARES_Y]].forEach((loc) => {
-                    var testX = loc[0] - sourcePosX;
-                    var testY = loc[1] - sourcePosY;
-                    var theta = Math.atan(testY / testX);
+                    let testX = Math.abs(loc[0] - sourcePosX);
+                    let testY = loc[1] - sourcePosY;
+                    let theta = Math.atan(testY / testX);
                     minTheta = Math.min(minTheta, theta);
                     maxTheta = Math.max(maxTheta, theta);
                 })
@@ -187,7 +187,7 @@ export class LightSource {
                 posXKeys.forEach((relPosX) => {
                     var posYKeys = Object.keys(list[relPosX]);
                     posYKeys.forEach((relPosY) => {
-                        var sqTheta = Math.atan(relPosY / relPosX);
+                        var sqTheta = Math.atan(relPosY / Math.abs(relPosX));
                         if (relPosX == 0 && relPosY == 0 && theta == this.minTheta) {
                             thetaSquares.push([relPosX, relPosY]);
                         } else if (sqTheta > theta && sqTheta < (theta + thetaStep)) {
