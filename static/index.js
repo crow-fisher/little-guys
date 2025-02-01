@@ -37,6 +37,7 @@ import { WheatSeedOrganism } from "./organisms/parameterized/agriculture/grasses
 import { ParameterizedRockSquare } from "./squares/parameterized/RockSquare.js";
 import { createSunLightGroup, default_light_throttle_interval, LightGroup, lightingPrepareTerrainSquares } from "./lighting.js";
 import { RGB_COLOR_RED, RGB_COLOR_VERY_FUCKING_RED } from "./colors.js";
+import { loadSlot, saveSlot } from "./saveAndLoad.js";
 
 var lastMode = "normal"; // options: "normal", "special", "organism", "blockModification";
 
@@ -117,6 +118,19 @@ function getNewBlockLockedTemperature() {
 }
 
 
+var loadSlotA = document.getElementById("loadSlotA");
+var saveSlotA = document.getElementById("saveSlotA");
+var loadSlotB = document.getElementById("loadSlotB");
+var saveSlotB = document.getElementById("saveSlotB");
+var loadSlotC = document.getElementById("loadSlotC");
+var saveSlotC = document.getElementById("saveSlotC");
+
+loadSlotA.onclick = (e) => loadSlot("A");
+saveSlotA.onclick = (e) => saveSlot("A");
+loadSlotB.onclick = (e) => loadSlot("B");
+saveSlotB.onclick = (e) => saveSlot("B");
+loadSlotC.onclick = (e) => loadSlot("C");
+saveSlotC.onclick = (e) => saveSlot("C");
 
 
 
