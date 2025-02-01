@@ -1,4 +1,4 @@
-import { reduceNextLightUpdateTime, removeSquare } from "./globalOperations.js";
+import { nextLightingUpdate, reduceNextLightUpdateTime, removeSquare } from "./globalOperations.js";
 import { ALL_ORGANISM_SQUARES, ALL_ORGANISMS, ALL_SQUARES } from "./globals.js";
 import { CANVAS_SQUARES_Y } from "./index.js";
 import { addOrganismSquare } from "./lifeSquares/_lsOperations.js";
@@ -7,8 +7,6 @@ import { addSquare, addSquareOverride, iterateOnSquares } from "./squares/_sqOpe
 import { ProtoMap } from "./types.js";
 
 function loadObjArr(sourceObjMap, addFunc) {
-    iterateOnSquares((sq) => sq.destroy());
-    var sqMaxPosY = 0;
     var rootKeys = Object.keys(sourceObjMap);
     for (let i = 0; i < rootKeys.length; i++) {
         var subObj = sourceObjMap[rootKeys[i]];
@@ -16,21 +14,11 @@ function loadObjArr(sourceObjMap, addFunc) {
             var subKeys = Object.keys(subObj);
             for (let j = 0; j < subKeys.length; j++) {
                 sourceObjMap[rootKeys[i]][subKeys[j]].forEach((obj) => {
-                    obj.lighting = null;
                     addFunc(Object.setPrototypeOf(obj, ProtoMap[obj.proto]));
-                    sqMaxPosY = Math.max(sqMaxPosY, obj.posY);
                 });
             }
         }
     }
-    if (sqMaxPosY != CANVAS_SQUARES_Y) {
-        iterateOnSquares((sq) => {
-            removeSquare(sq);
-            sq.posY += (CANVAS_SQUARES_Y - 1) - sqMaxPosY;
-            addSquare(sq)
-        }, 1);
-    }
-
 }
 
 /**'
@@ -73,18 +61,21 @@ export async function saveSlot(slotName) {
     });
 
     iterateOnSquares((sq) => {
+        sq.lighting = [];
         sq.linkedOrganism = orgArr.indexOf(sq.linkedOrganism);
         sq.linkedOrganismSquares = Array.from(sq.linkedOrganismSquares.map((lsq) => lsqArr.indexOf(lsq)));
     });
 
     iterateOnOrganisms((org) => {
+        org.lighting = [];
+
         org.linkedSquare = sqArr.indexOf(org.linkedSquare);
 
         org.lifeSquares.forEach((lsq) => {
+            lsq.lighting = [];
             lsq.linkedSquare = sqArr.indexOf(lsq.linkedSquare);
             lsq.linkedOrganism = orgArr.indexOf(lsq.linkedOrganism);
             lsq.childLifeSquares = Array.from(lsq.childLifeSquares.map(((llsq) => lsqArr.indexOf(llsq))));
-            lsq.parentL
         })
         org.lifeSquares = Array.from(org.lifeSquares.map((lsq) => lsqArr.indexOf(lsq)));
     });
@@ -99,12 +90,14 @@ export async function saveSlot(slotName) {
         lsqMap: ALL_ORGANISM_SQUARES
     }
 
+    // download("mysave.json", JSON.stringify(saveObj,null, 4));
+
     loadSlotFromSave(saveObj);
 
-    const compressedSave = await gzipToBase64(JSON.stringify(saveObj));
+    // const compressedSave = await gzipToBase64(JSON.stringify(saveObj));
 
 
-    localStorage.setItem("save_" + slotName, compressedSave);
+    // localStorage.setItem("save_" + slotName, compressedSave);
 }
 
 
@@ -112,16 +105,11 @@ async function loadSlotFromSave(slotData) {
     var sqArr = slotData.sqArr;
     var orgArr = slotData.orgArr;
     var lsqArr = slotData.lsqArr;
-    var sqMap = slotData.sqMap;
+    
     var orgMap = slotData.orgMap;
     var lsqMap = slotData.lsqMap;
 
-    loadObjArr(sqMap, addSquareOverride)
-    loadObjArr(orgMap, addOrganism)
-    loadObjArr(lsqMap, addOrganismSquare)
-
-    
-    iterateOnSquares((sq) => {
+    sqArr.forEach((sq) => {
         if (sq.linkedOrganism == -1) {
             sq.linkedOrganism = null;
         }
@@ -129,12 +117,18 @@ async function loadSlotFromSave(slotData) {
         sq.linkedOrganism = orgArr[sq.linkedOrganism];
         sq.linkedOrganismSquares = Array.from(sq.linkedOrganismSquares.map((lsqIdx) => lsqArr[lsqIdx]));
     });
-    
-    iterateOnOrganisms((org) => {
+    sqArr.forEach(addSquareOverride);
+
+    orgArr.forEach((org) => {
         org.linkedSquare = sqArr.indexOf(org.linkedSquare);
         org.lifeSquares = Array.from(org.lifeSquares.map((lsq) => lsqArr.indexOf(lsq)));
+        org.lifeSquares.forEach((lsq) => {
+            
+        })
     });
 
+
+    reduceNextLightUpdateTime(10 ** 8);
 
 
 }
@@ -178,3 +172,16 @@ async function base64ToGzip(base64String) {
     return decoder.decode(decompressedArrayBuffer);
 }
 
+
+function download(filename, text) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+  
+    element.style.display = 'none';
+    document.body.appendChild(element);
+  
+    element.click();
+  
+    document.body.removeChild(element);
+  }

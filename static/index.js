@@ -18,7 +18,7 @@ import { PalmTreeSeedOrganism } from "./organisms/parameterized/tropical/PalmTre
 import { ElephantEarSeedOrganism } from "./organisms/parameterized/tropical/ElephantEarOrganism.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { WheatSeedOrganism } from "./organisms/parameterized/agriculture/grasses/WheatOrganism.js";
-import { ParameterizedRockSquare } from "./squares/parameterized/ParameterizedRockSquare.js";
+import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { createSunLightGroup, default_light_throttle_interval } from "./lighting.js";
 import { loadSlot, saveSlot } from "./saveAndLoad.js";
 
@@ -620,7 +620,7 @@ function addSquareByName(posX, posY, name) {
     var square; 
     switch (name) {
         case "rock":
-            square = addSquareOverride(new ParameterizedRockSquare(posX, posY));
+            square = addSquareOverride(new RockSquare(posX, posY));
             break;
         case "pureclay":
         case "clay":
@@ -860,7 +860,7 @@ function doClickAdd() {
 }
 
 for (let i = 0; i < CANVAS_SQUARES_X; i++) {
-    addSquare(new ParameterizedRockSquare(i, CANVAS_SQUARES_Y - 1));
+    addSquare(new RockSquare(i, CANVAS_SQUARES_Y - 1));
 }
 
 // for (let i = 0; i < CANVAS_SQUARES_X; i++) {

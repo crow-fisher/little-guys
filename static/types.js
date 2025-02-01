@@ -10,7 +10,7 @@ import { SeedSquare } from "./squares/SeedSquare.js";
 import { Law } from "./Law.js";
 import { AquiferSquare } from "./squares/parameterized/RainSquare.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
-import { ParameterizedRockSquare } from "./squares/parameterized/ParameterizedRockSquare.js";
+import { RockSquare } from "./squares/parameterized/RockSquare.js";
 
 
 var ProtoMap = {
@@ -18,7 +18,8 @@ var ProtoMap = {
     "PlantSquare": PlantSquare.prototype,
     "RainSquare": RainSquare.prototype,
     "HeavyRainSquare": HeavyRainSquare.prototype,
-    "ParameterizedRockSquare": ParameterizedRockSquare.prototype,
+    "SoilSquare": SoilSquare.prototype,
+    "RockSquare": RockSquare.prototype,
     "SoilSquare": SoilSquare.prototype,
     "WaterSquare": WaterSquare.prototype,
     "BaseLifeSquare": BaseLifeSquare.prototype,

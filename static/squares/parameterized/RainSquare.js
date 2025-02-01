@@ -8,9 +8,9 @@ import {
 import { addSquare, getSquares } from "../_sqOperations.js";
 import { WaterSquare } from "../WaterSquare.js";
 import { randNumber } from "../../common.js";
-import { ParameterizedRockSquare } from "./ParameterizedRockSquare.js";
+import { RockSquare } from "./RockSquare.js";
 
-class RainSquare extends ParameterizedRockSquare {
+class RainSquare extends RockSquare {
     constructor(posX, posY) {
         super(posX, posY);
         this.proto = "RainSquare";
@@ -38,7 +38,7 @@ class RainSquare extends ParameterizedRockSquare {
         this.renderWithVariedColors();
     }
 }
-class HeavyRainSquare extends ParameterizedRockSquare {
+class HeavyRainSquare extends RockSquare {
     constructor(posX, posY) {
         super(posX, posY);
         this.proto = "HeavyRainSquare";
@@ -88,7 +88,7 @@ class HeavyRainSquare extends ParameterizedRockSquare {
     }
 }
 
-class AquiferSquare extends ParameterizedRockSquare {
+class AquiferSquare extends RockSquare {
     constructor(posX, posY) { 
         super(posX, posY);
         this.baseColor = "#E5E4E2";
