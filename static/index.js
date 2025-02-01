@@ -38,14 +38,14 @@ import { ParameterizedRockSquare } from "./squares/parameterized/RockSquare.js";
 import { createSunLightGroup, default_light_throttle_interval, LightGroup, lightingPrepareTerrainSquares } from "./lighting.js";
 import { RGB_COLOR_RED, RGB_COLOR_VERY_FUCKING_RED } from "./colors.js";
 
-var lastMode = "organism"; // options: "normal", "special", "organism", "blockModification";
+var lastMode = "normal"; // options: "normal", "special", "organism", "blockModification";
 
 var specialSelect = document.getElementById("specialSelect");
 var specialSelect_val = "water";
 var material1 = document.getElementById("material1");
-var material1_val = "dirt";
+var material1_val = "pureclay";
 var material2 = document.getElementById("material2");
-var material2_val = "sand";
+var material2_val = "pureclay";
 var mixMaterials = document.getElementById("mixMaterials");
 var mixMaterials_val = false;
 var materialSlider = document.getElementById("materialSlider");
