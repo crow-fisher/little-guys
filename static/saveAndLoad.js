@@ -7,20 +7,6 @@ import { GrowthComponent, GrowthPlan, GrowthPlanStep } from "./organisms/paramet
 import { addSquare, addSquareOverride, iterateOnSquares, removeOrganismSquare } from "./squares/_sqOperations.js";
 import { ProtoMap } from "./types.js";
 
-function loadObjArr(sourceObjMap, addFunc) {
-    var rootKeys = Object.keys(sourceObjMap);
-    for (let i = 0; i < rootKeys.length; i++) {
-        var subObj = sourceObjMap[rootKeys[i]];
-        if (subObj != null) {
-            var subKeys = Object.keys(subObj);
-            for (let j = 0; j < subKeys.length; j++) {
-                sourceObjMap[rootKeys[i]][subKeys[j]].forEach((obj) => {
-                    addFunc(Object.setPrototypeOf(obj, ProtoMap[obj.proto]));
-                });
-            }
-        }
-    }
-}
 
 /**'
  * 
@@ -37,15 +23,14 @@ function loadObjArr(sourceObjMap, addFunc) {
 
 
 export async function loadSlot(slotName) {
-    var sqLoad = localStorage.getItem("ALL_SQUARES_" + slotName);
-    if (sqLoad == null) {
+    var save = localStorage.getItem("save_" + slotName);
+    if (save == null) {
         alert("no data to load!!! beep boop :(")
         return null;
     }
-    // These are not our 'real' objects - they are JSON objects.
-    // So they don't have functions and such. 
-    const loaded_ALL_SQUARES = JSON.parse(await base64ToGzip(sqLoad));
-    loadObjArr(loaded_ALL_SQUARES, addSquareOverride)
+    const saveData = JSON.parse(await base64ToGzip(save));
+    loadSlotFromSave(saveData);
+    
     reduceNextLightUpdateTime(10 ** 8);
 }
 
@@ -89,10 +74,11 @@ export async function saveSlot(slotName) {
             lsq.linkedOrganism = orgArr.indexOf(lsq.linkedOrganism);
             lsq.component = growthPlanComponentArr.indexOf(lsq.component);
         });
-        org.lifeSquares = Array.from(org.lifeSquares.map((lsq) => lsqArr.indexOf(lsq)));
-
-        org.growthPlans = Array.from((gp) => growthPlanArr.indexOf(gp));
     });
+    iterateOnOrganisms((org) => {
+        org.lifeSquares = Array.from(org.lifeSquares.map((lsq) => lsqArr.indexOf(lsq)));
+        org.growthPlans = Array.from(org.growthPlans.map((gp) => growthPlanArr.indexOf(gp)));
+    })
 
     var saveObj = {
         sqArr: sqArr,
@@ -103,10 +89,8 @@ export async function saveSlot(slotName) {
     }
 
     loadSlotFromSave(saveObj);
-
-    // const compressedSave = await gzipToBase64(JSON.stringify(saveObj));
-    // download("mysave.json", JSON.stringify(saveObj,null, 4));
-    // localStorage.setItem("save_" + slotName, compressedSave);
+    const compressedSave = await gzipToBase64(JSON.stringify(saveObj));
+    localStorage.setItem("save_" + slotName, compressedSave);
 }
 
 
@@ -136,7 +120,7 @@ async function loadSlotFromSave(slotData) {
 
     orgArr.forEach((org) => {
         org.linkedSquare = sqArr.indexOf(org.linkedSquare);
-        org.growthPlans = Array.from((gp) => growthPlanArr[gp]);
+        org.growthPlans = Array.from(org.growthPlans.map((gp) => growthPlanArr[gp]));
 
         org.growthPlans.forEach((gp) => {
             Object.setPrototypeOf(gp, GrowthPlan.prototype);
@@ -197,17 +181,3 @@ async function base64ToGzip(base64String) {
     const decoder = new TextDecoder();
     return decoder.decode(decompressedArrayBuffer);
 }
-
-
-function download(filename, text) {
-    var element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-    element.setAttribute('download', filename);
-  
-    element.style.display = 'none';
-    document.body.appendChild(element);
-  
-    element.click();
-  
-    document.body.removeChild(element);
-  }
