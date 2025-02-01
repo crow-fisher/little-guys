@@ -170,15 +170,6 @@ class BaseLifeSquare {
     }
 
     addChild(lifeSquare) {
-        if (lifeSquare == null) {
-            console.warn("lifesquare is null", lifeSquare);
-            return;
-        }
-        if (lifeSquare in this.childLifeSquares) {
-            console.warn("Error state: lifeSquare in this.childLifeSquares");
-            return;
-        }
-        this.childLifeSquares.push(lifeSquare);
         lifeSquare.deflectionXOffset = this.deflectionXOffset;
         lifeSquare.deflectionYOffset = this.deflectionYOffset;
         lifeSquare.lighting = this.lighting;

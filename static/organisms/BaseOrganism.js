@@ -19,6 +19,8 @@ class BaseOrganism {
         this.xOffset = 0.5;
         this.alive = true;
         this.hovered = false;
+        this.growthPlans = [];
+
 
         this.airCoef = 1;
         this.dirtCoef = 1;

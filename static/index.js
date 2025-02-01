@@ -863,15 +863,14 @@ for (let i = 0; i < CANVAS_SQUARES_X; i++) {
     addSquare(new RockSquare(i, CANVAS_SQUARES_Y - 1));
 }
 
-// for (let i = 0; i < CANVAS_SQUARES_X; i++) {
-//     for (let j = 1; j < 10; j++) {
-//         var square = addSquareByNameSetTemp(i, CANVAS_SQUARES_Y - (1 + j), "loam");
-//         if (square) 
-//             square.randomize();
-//     }
-//     // addSquareByNameSetTemp(i, 0, "water");
-
-// }
+for (let i = 0; i < CANVAS_SQUARES_X; i++) {
+    for (let j = 1; j < 10; j++) {
+        var square = addSquareByNameSetTemp(i, CANVAS_SQUARES_Y - (1 + j), "loam");
+        if (square) 
+            square.randomize();
+    }
+    addSquareByNameSetTemp(i, 0, "water");
+}
 
 // for (let i = 0; i < CANVAS_SQUARES_Y; i++) {
 //     addSquare(new RockSquare(CANVAS_SQUARES_X - 1, i));

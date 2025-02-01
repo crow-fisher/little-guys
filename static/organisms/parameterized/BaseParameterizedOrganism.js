@@ -21,7 +21,6 @@ export class BaseParameterizedOrganism extends BaseOrganism {
             STAGE_FLOWER,
             STAGE_FRUIT
         ];
-        this.growthPlans = [];
         this.shouldGrow = true;
         this.originGrowth = null;
         this.spinnable = false;
