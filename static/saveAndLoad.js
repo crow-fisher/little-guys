@@ -2,9 +2,9 @@ import { nextLightingUpdate, reduceNextLightUpdateTime, removeSquare } from "./g
 import { ALL_ORGANISM_SQUARES, ALL_ORGANISMS, ALL_SQUARES } from "./globals.js";
 import { CANVAS_SQUARES_Y } from "./index.js";
 import { addOrganismSquare } from "./lifeSquares/_lsOperations.js";
-import { addOrganism, iterateOnOrganisms } from "./organisms/_orgOperations.js";
+import { addOrganism, iterateOnOrganisms, removeOrganism } from "./organisms/_orgOperations.js";
 import { GrowthComponent, GrowthPlan, GrowthPlanStep } from "./organisms/parameterized/GrowthPlan.js";
-import { addSquare, addSquareOverride, iterateOnSquares } from "./squares/_sqOperations.js";
+import { addSquare, addSquareOverride, iterateOnSquares, removeOrganismSquare } from "./squares/_sqOperations.js";
 import { ProtoMap } from "./types.js";
 
 function loadObjArr(sourceObjMap, addFunc) {
@@ -54,6 +54,8 @@ export async function saveSlot(slotName) {
     var sqArr = new Array();
     var orgArr = new Array(); 
     var lsqArr = new Array();
+    var growthPlanArr = new Array();
+    var growthPlanComponentArr = new Array();
 
     iterateOnSquares((sq) => sqArr.push(sq));
     iterateOnOrganisms((org) => {
@@ -68,48 +70,65 @@ export async function saveSlot(slotName) {
     });
 
     iterateOnOrganisms((org) => {
+        if (org.linkedSquare == null || org.lifeSquares.length == 0) {
+            return;
+        }
         org.lighting = [];
-
         org.linkedSquare = sqArr.indexOf(org.linkedSquare);
+
+        org.growthPlans.forEach((gp => {
+            gp.component.lifeSquares = Array.from(gp.component.lifeSquares.map((lsq) => lsqArr.indexOf(lsq)));
+            growthPlanArr.push(gp);
+            growthPlanComponentArr.push(gp.component);
+            gp.component = growthPlanComponentArr.indexOf(gp.component);
+        }));
 
         org.lifeSquares.forEach((lsq) => {
             lsq.lighting = [];
             lsq.linkedSquare = sqArr.indexOf(lsq.linkedSquare);
             lsq.linkedOrganism = orgArr.indexOf(lsq.linkedOrganism);
-        })
+            lsq.component = growthPlanComponentArr.indexOf(lsq.component);
+        });
         org.lifeSquares = Array.from(org.lifeSquares.map((lsq) => lsqArr.indexOf(lsq)));
-        org.growthPlans.forEach((gp => {
-            gp.component.lifeSquares = Array.from(gp.component.lifeSquares.map((lsq) => lsqArr.indexOf(lsq)));
-        }));
+
+        org.growthPlans = Array.from((gp) => growthPlanArr.indexOf(gp));
     });
 
     var saveObj = {
         sqArr: sqArr,
         orgArr: orgArr,
-        lsqArr: lsqArr
+        lsqArr: lsqArr,
+        growthPlanArr: growthPlanArr,
+        growthPlanComponentArr: growthPlanComponentArr
     }
-
-    // download("mysave.json", JSON.stringify(saveObj,null, 4));
 
     loadSlotFromSave(saveObj);
 
     // const compressedSave = await gzipToBase64(JSON.stringify(saveObj));
-
-
+    // download("mysave.json", JSON.stringify(saveObj,null, 4));
     // localStorage.setItem("save_" + slotName, compressedSave);
 }
 
 
 async function loadSlotFromSave(slotData) {
+    iterateOnSquares((sq) => removeSquare(sq));
+    iterateOnOrganisms((org) => {
+        org.lifeSquares.forEach((lsq) => removeOrganismSquare(lsq));
+        removeOrganism(org);
+    });
+
     var sqArr = slotData.sqArr;
     var orgArr = slotData.orgArr;
     var lsqArr = slotData.lsqArr;
-    
+    var growthPlanArr = slotData.growthPlanArr;
+    var growthPlanComponentArr = slotData.growthPlanComponentArr;
+
+    growthPlanArr.forEach((gp) => gp.component = growthPlanComponentArr[gp.component]);
+
     sqArr.forEach((sq) => {
         if (sq.linkedOrganism == -1) {
             sq.linkedOrganism = null;
         }
-
         sq.linkedOrganism = orgArr[sq.linkedOrganism];
         sq.linkedOrganismSquares = Array.from(sq.linkedOrganismSquares.map((lsqIdx) => lsqArr[lsqIdx]));
     });
@@ -117,8 +136,6 @@ async function loadSlotFromSave(slotData) {
 
     orgArr.forEach((org) => {
         org.linkedSquare = sqArr.indexOf(org.linkedSquare);
-        org.lifeSquares = Array.from(org.lifeSquares.map((lsq) => lsqArr[lsq]));
-
         org.growthPlans.forEach((gp) => {
             Object.setPrototypeOf(gp, GrowthPlan.prototype);
             Object.setPrototypeOf(gp.component, GrowthComponent.prototype);
@@ -126,6 +143,7 @@ async function loadSlotFromSave(slotData) {
             gp.component.lifeSquares = Array.from(gp.component.lifeSquares.map((lsq) => lsqArr[lsq]));
         })
 
+        org.lifeSquares = Array.from(org.lifeSquares.map((lsq) => lsqArr[lsq]));
         org.lifeSquares.forEach((lsq) => {
             lsq.lighting = [];
             lsq.linkedSquare = sqArr[lsq.linkedSquare];
@@ -135,12 +153,7 @@ async function loadSlotFromSave(slotData) {
         addOrganism(org);
         org.lifeSquares.forEach(addOrganismSquare);
     });
-
-    orgArr.forEach(addOrganism);
-
     reduceNextLightUpdateTime(10 ** 8);
-
-
 }
 
 async function gzipToBase64(inputString) {
