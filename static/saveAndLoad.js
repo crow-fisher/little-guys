@@ -220,7 +220,7 @@ function loadSlotFromSave(slotData) {
     sqArr.forEach(addSquareOverride);
 
     orgArr.forEach((org) => {
-        org.linkedSquare = sqArr.indexOf(org.linkedSquare);
+        org.linkedSquare = sqArr[org.linkedSquare];
         org.growthPlans = Array.from(org.growthPlans.map((gp) => growthPlanArr[gp]));
         org.lifeSquares = Array.from(org.lifeSquares.map((lsq) => lsqArr[lsq]));
         org.originGrowth = growthPlanComponentArr[org.originGrowth];
