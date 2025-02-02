@@ -97,6 +97,10 @@ function getCurDay() {
     return curDay;
 }
 
+export function setCurDay(newCurDay) {
+    curDay = newCurDay;
+}
+
 function getPrevDay() {
     return prevDay;
 }

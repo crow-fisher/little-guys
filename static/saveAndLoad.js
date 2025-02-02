@@ -5,6 +5,7 @@ import { addOrganismSquare } from "./lifeSquares/_lsOperations.js";
 import { addOrganism, iterateOnOrganisms, removeOrganism } from "./organisms/_orgOperations.js";
 import { GrowthComponent, GrowthPlan, GrowthPlanStep } from "./organisms/parameterized/GrowthPlan.js";
 import { addSquare, addSquareOverride, iterateOnSquares, removeOrganismSquare } from "./squares/_sqOperations.js";
+import { getCurDay, setCurDay } from "./time.js";
 import { ProtoMap, TypeMap, TypeNameMap } from "./types.js";
 
 
@@ -162,7 +163,8 @@ function getFrameSaveData() {
         lsqArr: lsqArr,
         growthPlanArr: growthPlanArr,
         growthPlanComponentArr: growthPlanComponentArr,
-        growthPlanStepArr: growthPlanStepArr
+        growthPlanStepArr: growthPlanStepArr,
+        curDay: getCurDay()
     }
     return saveObj;
 }
@@ -176,6 +178,8 @@ function loadSlotFromSave(slotData) {
     var growthPlanArr = slotData.growthPlanArr;
     var growthPlanComponentArr = slotData.growthPlanComponentArr;
     var growthPlanStepArr = slotData.growthPlanStepArr;
+    setCurDay(slotData.curDay);
+    
 
     sqArr.forEach((sq) => Object.setPrototypeOf(sq, ProtoMap[sq.proto]));
     orgArr.forEach((org) => Object.setPrototypeOf(org, ProtoMap[org.proto]));
