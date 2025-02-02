@@ -28,11 +28,14 @@ class BaseSeedOrganism extends BaseOrganism {
 
     postTick() {
         var lifeCyclePercentage = (getCurDay() - this.spawnTime) / this.maxLifeTime;
-        if (lifeCyclePercentage > 1 || this.linkedSquare == -1 || this.linkedSquare == null) {
-            this.destroy();
+        if (lifeCyclePercentage > 1) {
             return;
         }
         if (this.lifeSquares.some((lsq) => lsq.sproutStatus >= 1)) {
+            if (this.linkedSquare == -1) {
+                alert("BAD SEED STATE!");
+                return;
+            }
             var linkedSquareCache = this.linkedSquare;
             this.destroy();
             addNewOrganism(new (this.getSproutType())(linkedSquareCache));
