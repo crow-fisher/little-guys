@@ -23,27 +23,82 @@ import { ProtoMap, TypeMap, TypeNameMap } from "./types.js";
 
 
 export async function loadSlot(slotName) {
-    var save = localStorage.getItem("save_" + slotName);
-    if (save == null) {
-        alert("no data to load!!! beep boop :(")
-        return null;
-    }
+    const db = await openDatabase();
+    const transaction = db.transaction("saves", "readonly");
+    const store = transaction.objectStore("saves");
 
+    return new Promise((resolve, reject) => {
+        const request = store.get(slotName);
+        request.onsuccess = async () => {
+            if (request.result) {
+                const decompressedSave = await decompress(request.result.data);
+                const saveObj = JSON.parse(decompressedSave);
+                loadSlotData(saveObj);
+                resolve(saveObj);
+            } else {
+                reject(new Error("Save slot not found"));
+            }
+        };
+        request.onerror = () => reject(request.error);
+    });
+}
+
+function purgeGameState() {
     iterateOnSquares((sq) => removeSquare(sq));
     iterateOnOrganisms((org) => {
         org.lifeSquares.forEach((lsq) => removeOrganismSquare(lsq));
         removeOrganism(org);
     });
+}
 
-
-    const saveData = JSON.parse(await base64ToGzip(save));
-    loadSlotFromSave(saveData);
+function loadSlotData(slotData) {
+    purgeGameState();
+    loadSlotFromSave(slotData);
     reduceNextLightUpdateTime(10 ** 8);
+}
+
+export function saveSlot(slotName) {
+    const saveObj = getFrameSaveData();
+    const saveString = JSON.stringify(saveObj);
+    purgeGameState();
+    doSave(slotName, saveString);
+}
+
+async function doSave(slotName, saveString) {
+    const compressedSave = await compress(saveString);
+
+    const db = await openDatabase();
+    const transaction = db.transaction("saves", "readwrite");
+    const store = transaction.objectStore("saves");
+
+    await new Promise((resolve, reject) => {
+        const request = store.put({ slot: slotName, data: compressedSave });
+        request.onsuccess = resolve;
+        request.onerror = () => reject(request.error);
+    });
+
+    console.log("Game saved to IndexedDB!");
+}
+
+async function openDatabase() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open("GameSavesDB", 1);
+
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains("saves")) {
+                db.createObjectStore("saves", { keyPath: "slot" });
+            }
+        };
+
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
 }
 
 function getFrameSaveData() {
     var sqArr = new Array();
-    var orgArr = new Array(); 
+    var orgArr = new Array();
     var lsqArr = new Array();
     var growthPlanArr = new Array();
     var growthPlanComponentArr = new Array();
@@ -56,7 +111,7 @@ function getFrameSaveData() {
         growthPlanComponentArr.push(...org.growthPlans.map((gp) => gp.component))
         org.growthPlans.forEach((gp) => growthPlanStepArr.push(...gp.steps));
     });
-    
+
     growthPlanStepArr.forEach((gps) => {
         gps.growthPlan = growthPlanArr.indexOf(gps.growthPlan);
         gps.completedSquare = lsqArr.indexOf(gps.completedSquare);
@@ -112,21 +167,6 @@ function getFrameSaveData() {
 }
 
 
-export async function saveSlot(slotName) {
-    var saveObj = getFrameSaveData();
-    var saveString = JSON.stringify(saveObj);
-
-    const compressedSave = await gzipToBase64(saveString);
-    localStorage.setItem("save_" + slotName, compressedSave);
-
-    iterateOnSquares((sq) => removeSquare(sq));
-    iterateOnOrganisms((org) => {
-        org.lifeSquares.forEach((lsq) => removeOrganismSquare(lsq));
-        removeOrganism(org);
-    });
-
-    loadSlotFromSave(JSON.parse(saveString));
-}
 
 function loadSlotFromSave(slotData) {
     var sqArr = slotData.sqArr;
@@ -195,7 +235,7 @@ function loadSlotFromSave(slotData) {
     reduceNextLightUpdateTime(10 ** 8);
 }
 
-async function gzipToBase64(inputString) {
+async function compress(inputString) {
     const encoder = new TextEncoder();
     const data = encoder.encode(inputString);
 
@@ -218,7 +258,7 @@ async function gzipToBase64(inputString) {
 }
 
 // Decode Base64 and gunzip
-async function base64ToGzip(base64String) {
+async function decompress(base64String) {
     const binaryString = atob(base64String);
     const compressedData = Uint8Array.from(binaryString, (char) => char.charCodeAt(0));
 

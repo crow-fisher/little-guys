@@ -28,8 +28,9 @@ class BaseSeedOrganism extends BaseOrganism {
 
     postTick() {
         var lifeCyclePercentage = (getCurDay() - this.spawnTime) / this.maxLifeTime;
-        if (lifeCyclePercentage > 1) {
+        if (lifeCyclePercentage > 1 || this.linkedSquare == -1 || this.linkedSquare == null) {
             this.destroy();
+            return;
         }
         if (this.lifeSquares.some((lsq) => lsq.sproutStatus >= 1)) {
             var linkedSquareCache = this.linkedSquare;
