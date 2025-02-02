@@ -60,6 +60,22 @@ export function createSunLightGroup() {
     return sunLightGroup;
 }
 
+export function createMoonLightGroup {
+    var sizeX = 8;
+    var sunLightGroup = new LightGroup(
+        0,
+        -1, 
+        sizeX, 
+        1,
+        CANVAS_SQUARES_X / (sizeX - 1), 
+        () => 0.1 + 0.9 * getDaylightStrength(), 
+        getCurrentLightColorTemperature, 
+        10 ** 8,
+        24);
+
+    return sunLightGroup;
+}
+
 export class LightGroup {
     constructor(posX, posY, sizeX, sizeY, scaleMult, brightnessFunc, colorFunc, radius, numRays) {
         this.lightSources = [];

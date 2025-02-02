@@ -299,6 +299,9 @@ export class GrowthComponent {
     }
 
     getWilt() {
+        if (this.lifeSquares.length == 0) {
+            return 0;
+        }
         return this._getWilt(this.lifeSquares.at(0).linkedOrganism.curWilt);
     }
 

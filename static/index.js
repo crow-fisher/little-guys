@@ -458,6 +458,7 @@ document.addEventListener('contextmenu', function (e) {
 
         
 LIGHT_SOURCES.push(createSunLightGroup());
+LIGHT_SOURCES.push(createMoonLightGroup());
 function main() {
     if (Date.now() - lastTick > MILLIS_PER_TICK) {
         MAIN_CONTEXT.clearRect(0, 0, CANVAS_SQUARES_X * BASE_SIZE, CANVAS_SQUARES_Y * BASE_SIZE);
