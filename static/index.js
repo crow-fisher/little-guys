@@ -729,6 +729,13 @@ function doBlockBlur(centerX, centerY) {
     var otherY = centerY + ry;
     var middleX = 10 ** 8;
     var middleY = 10 ** 8;
+
+    if (
+        getOrganismSquaresAtSquare(centerX, centerY).length > 0 || 
+        getOrganismSquaresAtSquare(otherX, otherY).length > 0) {
+            return;
+        }
+
     getSquares(otherX, otherY).filter((sq) => sq.gravity != 0).forEach((sq) => sq.updatePosition(middleX, middleY));
     getSquares(centerX, centerY).filter((sq) => sq.gravity != 0).forEach((sq) => sq.updatePosition(otherX, otherY));
     getSquares(middleX, middleY).filter((sq) => sq.gravity != 0).forEach((sq) => sq.updatePosition(centerX, centerY));
