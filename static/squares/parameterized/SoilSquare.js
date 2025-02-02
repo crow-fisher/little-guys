@@ -37,6 +37,8 @@ export class SoilSquare extends BaseSquare {
 
         this.waterContainment = 0;
 
+        this.nitrogen = 
+
         // maps in form "water containment" / "matric pressure in atmospheres"
         this.clayMap = [
             [0, -7],

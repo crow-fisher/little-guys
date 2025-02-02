@@ -1,10 +1,13 @@
 import { nextLightingUpdate, reduceNextLightUpdateTime, removeSquare } from "./globalOperations.js";
 import { ALL_ORGANISM_SQUARES, ALL_ORGANISMS, ALL_SQUARES } from "./globals.js";
-import { CANVAS_SQUARES_Y } from "./index.js";
+import { addSquareByNameSetTemp, CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js";
 import { addOrganismSquare } from "./lifeSquares/_lsOperations.js";
 import { addOrganism, iterateOnOrganisms, removeOrganism } from "./organisms/_orgOperations.js";
 import { GrowthComponent, GrowthPlan, GrowthPlanStep } from "./organisms/parameterized/GrowthPlan.js";
+import { pond } from "./saves.js";
+import { triggerEarlySquareScheduler } from "./scheduler.js";
 import { addSquare, addSquareOverride, iterateOnSquares, removeOrganismSquare } from "./squares/_sqOperations.js";
+import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { getCurDay, setCurDay } from "./time.js";
 import { ProtoMap, TypeMap, TypeNameMap } from "./types.js";
 
@@ -57,7 +60,6 @@ function loadSlotData(slotData) {
     loadSlotFromSave(slotData);
     reduceNextLightUpdateTime(10 ** 8);
 }
-
 export function saveSlot(slotName) {
     const saveObj = getFrameSaveData();
     const saveString = JSON.stringify(saveObj);
@@ -179,7 +181,7 @@ function loadSlotFromSave(slotData) {
     var growthPlanComponentArr = slotData.growthPlanComponentArr;
     var growthPlanStepArr = slotData.growthPlanStepArr;
     setCurDay(slotData.curDay);
-    
+
 
     sqArr.forEach((sq) => Object.setPrototypeOf(sq, ProtoMap[sq.proto]));
     orgArr.forEach((org) => Object.setPrototypeOf(org, ProtoMap[org.proto]));
@@ -237,6 +239,7 @@ function loadSlotFromSave(slotData) {
         addOrganism(org);
         org.lifeSquares.forEach(addOrganismSquare);
     });
+    triggerEarlySquareScheduler();
     reduceNextLightUpdateTime(10 ** 8);
 }
 
@@ -278,3 +281,31 @@ async function decompress(base64String) {
     const decoder = new TextDecoder();
     return decoder.decode(decompressedArrayBuffer);
 }
+
+export async function loadDemoScene() {
+    purgeGameState();
+    let scene = await decompress(pond);
+    loadSlotData(JSON.parse(scene));
+}
+
+export function loadEmptyScene() {
+    purgeGameState();
+    for (let i = 0; i < CANVAS_SQUARES_X; i++) {
+        addSquare(new RockSquare(i, CANVAS_SQUARES_Y - 1));
+    }
+    reduceNextLightUpdateTime(10 ** 8);
+}
+
+export function loadFlatDirtWorld() {
+    loadEmptyScene();
+    for (let i = 0; i < CANVAS_SQUARES_X; i++) {
+        for (let j = 1; j < 10; j++) {
+            var square = addSquareByNameSetTemp(i, CANVAS_SQUARES_Y - (1 + j), "loam");
+            if (square)
+                square.randomize();
+        }
+        addSquareByNameSetTemp(i, 30, "water");
+    }
+
+}
+

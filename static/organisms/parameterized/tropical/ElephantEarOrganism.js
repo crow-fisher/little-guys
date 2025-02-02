@@ -165,7 +165,7 @@ export class ElephantEarOrganism extends BaseParameterizedOrganism {
             startNode.posX, startNode.posY, 
             false, STAGE_ADULT, 
             theta, 0, 0, deflection / 2,deflection / 2, 
-            TYPE_TRUNK, 0.01);
+            TYPE_TRUNK, 5);
         growthPlan.postConstruct = () => startNode.component.addChild(growthPlan.component);
 
         growthPlan.steps.push(new GrowthPlanStep(

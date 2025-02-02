@@ -24,7 +24,7 @@ export class BaseParameterizedOrganism extends BaseOrganism {
         this.shouldGrow = true;
         this.originGrowth = null;
         this.spinnable = false;
-        this.maxSquaresOfTypePerDay = 100;
+        this.maxSquaresOfTypePerDay = 1000;
 
         // organism config in 'days'
         this.adultTime = 3;

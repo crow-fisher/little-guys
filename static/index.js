@@ -20,8 +20,8 @@ import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { WheatSeedOrganism } from "./organisms/parameterized/agriculture/grasses/WheatOrganism.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { createMoonLightGroup, createSunLightGroup, default_light_throttle_interval } from "./lighting.js";
-import { loadSlot, saveSlot } from "./saveAndLoad.js";
-import { scheduler_main } from "./scheduler.js";
+import { loadDemoScene, loadEmptyScene, loadFlatDirtWorld, loadSlot, saveSlot } from "./saveAndLoad.js";
+import { scheduler_main, triggerEarlySquareScheduler } from "./scheduler.js";
 
 var lastMode = "organismWetland"; // options: normal, organismWetlandgi
 
@@ -109,6 +109,9 @@ var saveSlotB = document.getElementById("saveSlotB");
 var loadSlotC = document.getElementById("loadSlotC");
 var saveSlotC = document.getElementById("saveSlotC");
 
+var loadSlotBasic = document.getElementById("loadSlotBasic");
+var loadSlotEmpty = document.getElementById("loadSlotEmpty");
+
 loadSlotA.onclick = (e) => loadSlot("A");
 saveSlotA.onclick = (e) => saveSlot("A");
 loadSlotB.onclick = (e) => loadSlot("B");
@@ -116,7 +119,8 @@ saveSlotB.onclick = (e) => saveSlot("B");
 loadSlotC.onclick = (e) => loadSlot("C");
 saveSlotC.onclick = (e) => saveSlot("C");
 
-
+loadSlotBasic.onclick = (e) => loadFlatDirtWorld();
+loadSlotEmpty.onclick = (e) => loadEmptyScene();
 
 function styleHeader() {
     var nonbold_headers = [
@@ -608,7 +612,7 @@ function addSquareByNameConfig(posX, posY) {
     }
 }
 
-function addSquareByNameSetTemp(posX, posY, name) {
+export function addSquareByNameSetTemp(posX, posY, name) {
     var square = addSquareByName(posX, posY, name);
     if (square && !square.organic) {
         square.temperature = getNewBlockTemperatureVal();
@@ -778,6 +782,9 @@ export function doClickAdd() {
     if (middleMouseClicked) {
         return;
     }
+
+    triggerEarlySquareScheduler(); 
+
     if (mouseDown > 0) {
         if (lastMoveOffset.x > CANVAS_SQUARES_X * BASE_SIZE || lastMoveOffset > CANVAS_SQUARES_Y * BASE_SIZE) {
             return;
@@ -875,23 +882,6 @@ export function doClickAdd() {
     }
 }
 
-for (let i = 0; i < CANVAS_SQUARES_X; i++) {
-    addSquare(new RockSquare(i, CANVAS_SQUARES_Y - 1));
-}
-
-for (let i = 0; i < CANVAS_SQUARES_X; i++) {
-    for (let j = 1; j < 10; j++) {
-        var square = addSquareByNameSetTemp(i, CANVAS_SQUARES_Y - (1 + j), "loam");
-        if (square) 
-            square.randomize();
-    }
-    addSquareByNameSetTemp(i, 30, "water");
-}
-
-// for (let i = 0; i < CANVAS_SQUARES_Y; i++) {
-//     addSquare(new RockSquare(CANVAS_SQUARES_X - 1, i));
-//     addSquare(new RockSquare(0, i));
-// }
 window.oncontextmenu = function () {
     return false;     // cancel default menu
 }
@@ -900,6 +890,7 @@ window.oncontextmenu = function () {
 window.onload = function () {
     document.addEventListener('keydown', keydown);
     document.addEventListener('keyup', keyup);
+    loadDemoScene();
 }
 
 // loadSlotFromSave(volcano);

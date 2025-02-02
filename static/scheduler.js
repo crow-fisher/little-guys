@@ -1,6 +1,6 @@
 import { doLightSourceRaycasting, doWaterFlow, physics, physicsBefore, processOrganisms, purge, renderOrganisms, renderSquares, renderWater, reset } from "./globalOperations.js";
 import { doClickAdd, doMouseHover, getBlockModification_val, getLastMode, getSelectedViewMode } from "./index.js";
-import { renderClouds, tickMaps } from "./temperature_humidity.js";
+import { renderClouds, renderWaterSaturation, tickMaps } from "./temperature_humidity.js";
 import { renderTime, updateTime } from "./time.js";
 import { tickWindPressureMap } from "./wind.js";
 
@@ -12,11 +12,14 @@ let last_org_tick = 0;
 
 let updated = false;
 
+export function triggerEarlySquareScheduler() {
+    last_square_tick = 0;
+}
+
 export function scheduler_main() {
     updateTime();
     doMouseHover();
     doClickAdd();
-    
 
     if (Date.now() - last_square_tick > SQUARE_UPDATE_MILLIS) {
         squareTick();

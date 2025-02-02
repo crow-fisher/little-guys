@@ -2,8 +2,8 @@ import { hexToRgb, randNumber, randRange, rgbToRgba } from "./common.js";
 import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, MAIN_CONTEXT, zoomCanvasFillRect} from "./index.js";
 import { calculateColor, calculateColorProvideOpacity } from "./temperature_humidity.js";
 
-var millis_per_day = 50000;
-var curDay = 0.22;
+var millis_per_day = 300000;
+var curDay = 0.5;
 var prevDay = 0;
 var curTime = 0.2;
 var prevTime = 0;
@@ -111,7 +111,7 @@ function getCurTime() {
 
 function updateTime() {
     var dt = Date.now() - prevRealTime;
-    if (dt > 100) {
+    if (dt > 10000) {
         prevRealTime = Date.now();
     } else {
         prevTime = curTime;
