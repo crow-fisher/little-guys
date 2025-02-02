@@ -26,33 +26,32 @@ class SeedSquare extends BaseSquare {
     }
     physics() {
         super.physics();
-        getSquares(this.posX, this.posY + 1)
+        let sq = getSquares(this.posX, this.posY + 1)
             .filter((sq) => sq.rootable)
-            .forEach((sq) => {
-                var linkedOrganism = this.linkedOrganism;
-                if (this.linkedOrganism == null) {
-                    this.destroy();
-                    return;
-                }
-                if (sq.linkedOrganism == null) {
-                    removeOrganism(linkedOrganism);
-                    linkedOrganism.posY += 1;
-                    linkedOrganism.linkSquare(sq);
-                    addOrganism(linkedOrganism);
+            .at(0);
+        if (sq == null) {
+            return;
+        }
 
-                    linkedOrganism.lifeSquares.forEach((lsq) => {
-                        removeOrganismSquare(lsq);
-                        lsq.posY += 1;
-                        addOrganismSquare(lsq);
-                        lsq.linkSquare(sq);
-                    });
-                    this.destroy();
-                } else {
-                    console.log("Already found an organism here: ", this.posX, this.posY + 1);
-                    this.linkedOrganism.destroy();
-                }
+        var linkedOrganism = this.linkedOrganism;
+        if (sq.linkedOrganism == null) {
+            removeOrganism(linkedOrganism);
+            linkedOrganism.posY += 1;
+            linkedOrganism.linkSquare(sq);
+            addOrganism(linkedOrganism);
+
+            linkedOrganism.lifeSquares.forEach((lsq) => {
+                removeOrganismSquare(lsq);
+                lsq.posY += 1;
+                addOrganismSquare(lsq);
+                lsq.linkSquare(sq);
             });
-        
+            this.destroy();
+        } else {
+            console.log("Already found an organism here: ", this.posX, this.posY + 1);
+            this.linkedOrganism.destroy();
+            this.destroy();
+        }
         getSquares(this.posX, this.posY + 1)
             .filter((sq) => !sq.validPlantHome)
             .filter((sq) => sq.solid)

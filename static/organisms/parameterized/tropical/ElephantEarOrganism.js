@@ -216,7 +216,6 @@ export class ElephantEarSeedOrganism extends BaseSeedOrganism {
     constructor(square) {
         super(square);
         this.proto = "ElephantEarSeedOrganism";
-        this.sproutType = ElephantEarOrganism;
     }
     getSproutType() {
         return ElephantEarOrganism;
