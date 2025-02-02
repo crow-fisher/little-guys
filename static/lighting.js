@@ -3,7 +3,7 @@ import { randNumber } from "./common.js";
 import { ALL_SQUARES, LIGHT_SOURCES } from "./globals.js";
 import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js";
 import { getSqIterationOrder, getSquares } from "./squares/_sqOperations.js";
-import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength } from "./time.js";
+import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "./time.js";
 
 var lifeSquarePositions = new Map();
 
@@ -52,32 +52,34 @@ export function createSunLightGroup() {
         sizeX, 
         1,
         CANVAS_SQUARES_X / (sizeX - 1), 
-        () => 0.1 + 0.9 * getDaylightStrength(), 
+        () => 0.8 * (0.1 + 0.9 * getDaylightStrength()), 
         getCurrentLightColorTemperature, 
         10 ** 8,
-        24);
+        24,
+        "sun");
 
     return sunLightGroup;
 }
 
-export function createMoonLightGroup {
+export function createMoonLightGroup() {
     var sizeX = 8;
-    var sunLightGroup = new LightGroup(
+    var moonlightGroup = new LightGroup(
         0,
         -1, 
         sizeX, 
         1,
         CANVAS_SQUARES_X / (sizeX - 1), 
-        () => 0.1 + 0.9 * getDaylightStrength(), 
-        getCurrentLightColorTemperature, 
+        () => 0.2 * ((1) - (0.1 + 0.9 * getDaylightStrength())), 
+        getMoonlightColor, 
         10 ** 8,
-        24);
+        24,
+        "moon");
 
-    return sunLightGroup;
+    return moonlightGroup;
 }
 
 export class LightGroup {
-    constructor(posX, posY, sizeX, sizeY, scaleMult, brightnessFunc, colorFunc, radius, numRays) {
+    constructor(posX, posY, sizeX, sizeY, scaleMult, brightnessFunc, colorFunc, radius, numRays, mode) {
         this.lightSources = [];
         let brigthnessFrac = (sizeX * sizeY) ** 0.5;
         let totalSize = posX + ((sizeX - 1) * scaleMult);
@@ -96,16 +98,24 @@ export class LightGroup {
                     minTheta = Math.min(minTheta, theta);
                     maxTheta = Math.max(maxTheta, theta);
                 })
-
-                let sourceBrightnessFunc = () => {
-                    let xFrac = (sourcePosX - posX) / totalSize;
-                    let dayFrac = ((getCurDay() % 1) - 0.25) * 2;
-                    if (dayFrac < 0 || dayFrac > 1) {
-                        return 0;
+                
+                let sourceBrightnessFunc = null;
+                
+                
+                if (mode == "sun") {
+                    sourceBrightnessFunc = () => {
+                        let xFrac = (sourcePosX - posX) / totalSize;
+                        let dayFrac = ((getCurDay() % 1) - 0.25) * 2;
+                        if (dayFrac < 0 || dayFrac > 1) {
+                            return 0;
+                        }
+                        var diff = Math.abs(xFrac - dayFrac);
+                        return ( 1 / brigthnessFrac) * brightnessFunc() * (1 - diff);
                     }
-                    var diff = Math.abs(xFrac - dayFrac);
-                    return ( 1 / brigthnessFrac) * brightnessFunc() * (1 - diff);
+                } else {
+                    sourceBrightnessFunc = () => ( 1 / brigthnessFrac) * brightnessFunc();
                 }
+
                 this.lightSources.push(new LightSource(
                     sourcePosX, sourcePosY,
                     sourceBrightnessFunc, colorFunc, radius, 

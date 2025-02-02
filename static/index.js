@@ -19,7 +19,7 @@ import { ElephantEarSeedOrganism } from "./organisms/parameterized/tropical/Elep
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { WheatSeedOrganism } from "./organisms/parameterized/agriculture/grasses/WheatOrganism.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
-import { createSunLightGroup, default_light_throttle_interval } from "./lighting.js";
+import { createMoonLightGroup, createSunLightGroup, default_light_throttle_interval } from "./lighting.js";
 import { loadSlot, saveSlot } from "./saveAndLoad.js";
 
 var lastMode = "organismWetland"; // options: normal, organismWetlandgi
