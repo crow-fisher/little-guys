@@ -299,7 +299,11 @@ export class GrowthComponent {
     }
 
     getWilt() {
-        return this._getWilt(this.lifeSquares.at(0).linkedOrganism.curWilt);
+        if (this.lifeSquares.length > 0) {
+            return this._getWilt(this.lifeSquares.at(0).linkedOrganism.curWilt);
+        } else {
+            return 0;
+        }
     }
 
     applyDeflectionState(parentComponent) {

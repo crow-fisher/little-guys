@@ -62,6 +62,7 @@ export function saveSlot(slotName) {
     const saveString = JSON.stringify(saveObj);
     purgeGameState();
     doSave(slotName, saveString);
+    loadSlotData(saveObj)
 }
 
 async function doSave(slotName, saveString) {
