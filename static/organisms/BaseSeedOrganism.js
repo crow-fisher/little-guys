@@ -9,10 +9,10 @@ class BaseSeedOrganism extends BaseOrganism {
         super(square);
         this.proto = "BaseSeedOrganism";
         this.type = "seed";
-        this.sproutCtor = null;
+        this.sproutType = null;
         this.maxLifeTime = 1
-
     }
+
     growInitialSquares() {
         var newLifeSquare = new SeedLifeSquare(this.linkedSquare, this);
         if (addOrganismSquare(newLifeSquare)) {
@@ -20,6 +20,10 @@ class BaseSeedOrganism extends BaseOrganism {
             this.linkedSquare.linkOrganismSquare(newLifeSquare);
             this.addAssociatedLifeSquare(newLifeSquare);
         }
+    }
+
+    getSproutType() {
+        return null;
     }
 
     postTick() {
@@ -30,7 +34,7 @@ class BaseSeedOrganism extends BaseOrganism {
         if (this.lifeSquares.some((lsq) => lsq.sproutStatus >= 1)) {
             var linkedSquareCache = this.linkedSquare;
             this.destroy();
-            addNewOrganism(this.sproutCtor(linkedSquareCache));
+            addNewOrganism(new (this.getSproutType())(linkedSquareCache));
         }
     }
 }

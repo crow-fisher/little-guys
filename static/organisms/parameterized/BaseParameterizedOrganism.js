@@ -206,7 +206,9 @@ export class BaseParameterizedOrganism extends BaseOrganism {
                 var rootSq = new this.rootType(this.linkedSquare, this);
                 rootSq.linkSquare(this.linkedSquare);
                 rootSq.subtype = SUBTYPE_ROOTNODE;
-                this.linkedSquare.linkOrganismSquare(rootSq);
+                if (this.linkedSquare != null && this.linkedSquare != -1) {
+                    this.linkedSquare.linkOrganismSquare(rootSq);
+                }
                 this.addAssociatedLifeSquare(rootSq);
                 return rootSq;
             }

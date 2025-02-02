@@ -9,6 +9,7 @@ import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, S
 export class PalmTreeOrganism extends BaseParameterizedOrganism {
     constructor(posX, posY) {
         super(posX, posY);
+        this.proto = "PalmTreeOrganism";
         this.greenType = PalmTreeGreenSquare;
         this.rootType = GenericParameterizedRootSquare;
         this.spinnable = true;
@@ -270,6 +271,9 @@ export class PalmTreeSeedOrganism extends BaseSeedOrganism {
     constructor(square) {
         super(square);
         this.proto = "PalmTreeSeedOrganism";
-        this.sproutCtor = (linkedSquare) => new PalmTreeOrganism(linkedSquare)
+    }
+
+    getSproutType() {
+        return PalmTreeOrganism;
     }
 }

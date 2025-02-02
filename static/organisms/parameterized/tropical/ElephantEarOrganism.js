@@ -10,6 +10,7 @@ import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, SUBTYPE_LEAF, S
 export class ElephantEarOrganism extends BaseParameterizedOrganism {
     constructor(posX, posY) {
         super(posX, posY);
+        this.proto = "ElephantEarOrganism";
         this.greenType = ElephantEarGreenSquare;
         this.rootType = GenericParameterizedRootSquare;
 
@@ -215,6 +216,9 @@ export class ElephantEarSeedOrganism extends BaseSeedOrganism {
     constructor(square) {
         super(square);
         this.proto = "ElephantEarSeedOrganism";
-        this.sproutCtor = (linkedSquare) => new ElephantEarOrganism(linkedSquare)
+        this.sproutType = ElephantEarOrganism;
+    }
+    getSproutType() {
+        return ElephantEarOrganism;
     }
 }

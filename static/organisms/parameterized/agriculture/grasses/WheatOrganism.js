@@ -108,6 +108,9 @@ export class WheatSeedOrganism extends BaseSeedOrganism {
     constructor(square) {
         super(square);
         this.proto = "WheatSeedOrganism";
-        this.sproutCtor = (linkedSquare) => new WheatOrganism(linkedSquare)
+    }
+
+    getSproutType() {
+        return WheatOrganism;
     }
 }

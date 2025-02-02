@@ -8,6 +8,7 @@ import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, S
 export class TropicalGrassOrganism extends BaseParameterizedOrganism {
     constructor(posX, posY) {
         super(posX, posY);
+        this.proto = "TropicalGrassOrganism";
         this.greenType = TropicalGrassGreenSquare;
         this.rootType = GenericParameterizedRootSquare;
 

@@ -383,7 +383,7 @@ class BaseOrganism {
     getCountOfAssociatedSquaresOfType(type) {
         return Array.from(this.lifeSquares.filter((org) => org.type == type)).length;
     }
-
+ 
     growInitialSquares() { return new Array(); }
 
     render() {
@@ -394,7 +394,10 @@ class BaseOrganism {
     destroy() {
         this.lifeSquares.forEach((lifeSquare) => lifeSquare.destroy());
         this.alive = false;
-        this.linkedSquare.unlinkOrganism();
+
+        if (this.linkedSquare != null && this.linkedSquare != -1) {
+            this.linkedSquare.unlinkOrganism();
+        }
         removeOrganism(this);
     }
 

@@ -215,8 +215,8 @@ var lastTick = Date.now();
 
 // wind is tiled x4
 
-var CANVAS_SQUARES_X = 6 * 4; // * 8; //6;
-var CANVAS_SQUARES_Y = 6 * 4; // * 8; // 8;
+var CANVAS_SQUARES_X = 20 * 4; // * 8; //6;
+var CANVAS_SQUARES_Y = 20 * 4; // * 8; // 8;
 
 
 function setCanvasSquaresX(val) {
@@ -862,14 +862,14 @@ for (let i = 0; i < CANVAS_SQUARES_X; i++) {
     addSquare(new RockSquare(i, CANVAS_SQUARES_Y - 1));
 }
 
-// for (let i = 0; i < CANVAS_SQUARES_X; i++) {
+for (let i = 0; i < CANVAS_SQUARES_X; i++) {
     for (let j = 1; j < 10; j++) {
-        var square = addSquareByNameSetTemp(6, CANVAS_SQUARES_Y - (1 + j), "loam");
+        var square = addSquareByNameSetTemp(i, CANVAS_SQUARES_Y - (1 + j), "loam");
         if (square) 
             square.randomize();
     }
-    addSquareByNameSetTemp(6, 0, "water");
-// }
+    addSquareByNameSetTemp(i, 30, "water");
+}
 
 // for (let i = 0; i < CANVAS_SQUARES_Y; i++) {
 //     addSquare(new RockSquare(CANVAS_SQUARES_X - 1, i));

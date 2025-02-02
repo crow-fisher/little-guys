@@ -5,6 +5,8 @@ export class TropicalGrassSeedOrganism extends BaseSeedOrganism {
     constructor(square) {
         super(square);
         this.proto = "TropicalGrassSeedOrganism";
-        this.sproutCtor = (linkedSquare) => new TropicalGrassOrganism(linkedSquare)
+    }
+    getSproutType() {
+        return TropicalGrassOrganism;
     }
 }

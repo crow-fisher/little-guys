@@ -12,7 +12,13 @@ import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { WheatGreenSquare } from "./lifeSquares/parameterized/agriculture/grasses/WheatGreenSquare.js";
 import { GenericParameterizedRootSquare } from "./lifeSquares/parameterized/GenericParameterizedRootSquare.js";
-import { WheatOrganism } from "./organisms/parameterized/agriculture/grasses/WheatOrganism.js";
+import { WheatOrganism, WheatSeedOrganism } from "./organisms/parameterized/agriculture/grasses/WheatOrganism.js";
+import { ElephantEarGreenSquare } from "./lifeSquares/parameterized/tropical/ElephantEarGreenSquare.js";
+import { PalmTreeGreenSquare } from "./lifeSquares/parameterized/tropical/PalmTreeGreenSquare.js";
+import { ElephantEarOrganism } from "./organisms/parameterized/tropical/ElephantEarOrganism.js";
+import { TropicalGrassOrganism } from "./organisms/parameterized/tropical/TropicalGrassOrganism.js";
+import { PalmTreeOrganism } from "./organisms/parameterized/tropical/PalmTreeOrganism.js";
+import { TropicalGrassGreenSquare } from "./lifeSquares/parameterized/tropical/TropicalGrassGreenSquare.js";
 
 
 var ProtoMap = {
@@ -31,7 +37,15 @@ var ProtoMap = {
     "AquiferSquare": AquiferSquare.prototype,
     "WheatGreenSquare": WheatGreenSquare.prototype,
     "GenericParameterizedRootSquare": GenericParameterizedRootSquare.prototype,
-    "WheatOrganism": WheatOrganism.prototype
+    "WheatOrganism": WheatOrganism.prototype,
+    "WheatSeedOrganism": WheatSeedOrganism.prototype,
+    "ElephantEarGreenSquare": ElephantEarGreenSquare.prototype,
+    "PalmTreeGreenSquare": PalmTreeGreenSquare.prototype,
+    "TropicalGrassGreenSquare": TropicalGrassGreenSquare.prototype,
+    "ElephantEarOrganism": ElephantEarOrganism.prototype,
+    "TropicalGrassOrganism": TropicalGrassOrganism.prototype,
+    "PalmTreeOrganism": PalmTreeOrganism.prototype
+    
 }
 
 var TypeMap = {

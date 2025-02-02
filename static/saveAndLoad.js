@@ -28,13 +28,20 @@ export async function loadSlot(slotName) {
         alert("no data to load!!! beep boop :(")
         return null;
     }
+
+    iterateOnSquares((sq) => removeSquare(sq));
+    iterateOnOrganisms((org) => {
+        org.lifeSquares.forEach((lsq) => removeOrganismSquare(lsq));
+        removeOrganism(org);
+    });
+
+
     const saveData = JSON.parse(await base64ToGzip(save));
     loadSlotFromSave(saveData);
-
     reduceNextLightUpdateTime(10 ** 8);
 }
 
-export async function saveSlot(slotName) {
+function getFrameSaveData() {
     var sqArr = new Array();
     var orgArr = new Array(); 
     var lsqArr = new Array();
@@ -101,6 +108,12 @@ export async function saveSlot(slotName) {
         growthPlanComponentArr: growthPlanComponentArr,
         growthPlanStepArr: growthPlanStepArr
     }
+    return saveObj;
+}
+
+
+export async function saveSlot(slotName) {
+    var saveObj = getFrameSaveData();
     var saveString = JSON.stringify(saveObj);
 
     const compressedSave = await gzipToBase64(saveString);
@@ -115,8 +128,7 @@ export async function saveSlot(slotName) {
     loadSlotFromSave(JSON.parse(saveString));
 }
 
-
-async function loadSlotFromSave(slotData) {
+function loadSlotFromSave(slotData) {
     var sqArr = slotData.sqArr;
     var orgArr = slotData.orgArr;
     var lsqArr = slotData.lsqArr;
@@ -173,7 +185,7 @@ async function loadSlotFromSave(slotData) {
             lsq.linkedOrganism = orgArr[lsq.linkedOrganism];
             lsq.component = growthPlanComponentArr[lsq.component];
         });
-        
+
         org.greenType = TypeMap[org.greenType];
         org.rootType = TypeMap[org.rootType];
 
