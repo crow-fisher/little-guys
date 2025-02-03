@@ -24,7 +24,7 @@ export class WheatOrganism extends BaseParameterizedOrganism {
         this.reproductionEnergy = 10 ** 8;
         this.currentHealth = 10 ** 8;
 
-        this.maximumLifeSquaresOfType = {"green": 100, "root": 10};
+        this.maximumLifeSquaresOfType = {"green": 100, "root": 25};
         
         this.sproutGrowTimeInDays =  10 ** (-3);
         this.leafGrowTimeInDays =      10 ** (-3);
