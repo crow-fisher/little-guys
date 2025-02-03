@@ -25,7 +25,6 @@ class BaseOrganism {
         this.growthPlans = [];
         this.lastGrownMap = {};
         this.linkSquare(square);
-        this.growInitialSquares();
         this.maxSquaresOfTypePerDay = 1000;
         this.stageTimeMap = { STAGE_SPROUT: 0 };
 
@@ -43,7 +42,7 @@ class BaseOrganism {
 
         this.applyWind = false;
         this.springCoef = 4;
-        this.startDeflectionAngle = 0; 
+        this.startDeflectionAngle = 0;
         this.lastDeflectionStateRollingAverage = 0;
         this.lastDeflectionStateThetaRollingAveragePeriod = 1000;
         this.deflectionIdx = 0;
@@ -53,128 +52,84 @@ class BaseOrganism {
         this.rootOpacity = 0.4;
     }
 
+    // WIND DEFLECTION 
+
+
     updateDeflectionState() {
-        if (!this.applyWind) {
-            return;
+        if (this.originGrowth != null) {
+            this.originGrowth.updateDeflectionState();
         }
-        var highestGreen = this.getHighestGreen();
-
-        if (highestGreen == null) {
-            this.destroy();
-            return;
-        }
-
-        var windVec = getWindSpeedAtLocation(highestGreen.posX + highestGreen.deflectionXOffset, highestGreen.posY + highestGreen.deflectionYOffset);
-        var startTheta = this.lastDeflectionStateRollingAverage;
-        var startSpringForce = Math.sin(startTheta) * this.springCoef;
-        startSpringForce *= 0.70;
-        var windX = windVec[0];
-        var coef = 0.5;
-        var endSpringForce = startSpringForce * (1 - coef) + windX * coef;
-        
-        endSpringForce = Math.min(this.springCoef, endSpringForce);
-        endSpringForce = Math.max(-this.springCoef, endSpringForce);
-
-        
-        var endDeflectionStateTheta = Math.asin(endSpringForce / this.springCoef);
-
-        if (Math.abs(endDeflectionStateTheta - this.deflectionStateTheta) > Math.abs(this.deflectionStateTheta) * 0.1) {
-            this.deflectionStateTheta = this.deflectionStateTheta * 0.9 + endDeflectionStateTheta * 0.1;
-        } else {
-            this.deflectionStateTheta = endDeflectionStateTheta;
-        }
-        
-        this.lastDeflectionStateRollingAverage *= (1 - (1 / this.lastDeflectionStateThetaRollingAveragePeriod));
-        this.lastDeflectionStateRollingAverage += (1 / this.lastDeflectionStateThetaRollingAveragePeriod) * this.deflectionStateTheta;
     }
-
 
     applyDeflectionStateToSquares() {
-        if (!this.applyWind) {
+        if (this.originGrowth != null) {
+            this.originGrowth.applyDeflectionState(null);
+        }
+    }
+
+    // WATER SATURATION
+
+    waterSaturationTick() {
+        this.waterPressure += this.lifeSquares
+            .filter((lsq) => lsq.type == "root")
+            .filter((lsq) => lsq.linkedSquare != null && lsq.linkedSquare.proto == "SoilSquare")
+            .filter((lsq) => (this.rootPower + lsq.linkedSquare.getSoilWaterPressure()) > this.waterPressure)
+            .map((lsq) => {
+                if (this.waterPressure < this.waterPressureTarget) {
+                    return lsq.linkedSquare.suckWater(this.transpirationRate);
+                } else {
+                    return lsq.linkedSquare.suckWater(this.transpirationRate / 10);
+                }
+            })
+            .reduce(
+                (accumulator, currentValue) => accumulator + currentValue,
+                0,
+            );
+        this.waterPressure -= (this.lifeSquares.length * this.transpirationRate) / 10;
+        this.wilt();
+    }
+
+    wilt() {
+        if (this.lifeSquares.length == 0) {
             return;
         }
-        var greenSquares = Array.from(this.lifeSquares.filter((lsq) => lsq.type != "root"));
-
-        var startTheta = this.lastDeflectionStateRollingAverage;
-        var endTheta = this.lastDeflectionStateRollingAverage * 0.75 + this.deflectionStateTheta * 0.25;
-        
-        var currentTheta = startTheta;
-        var thetaDelta = endTheta - startTheta;
-
-        startTheta = endTheta - thetaDelta;
-
-        var hg = this.getHighestGreen();
-
-        if (hg == null) {
+        var greenLifeSquares = Array.from(this.lifeSquares.filter((lsq) => lsq.type == "green"));
+        if (greenLifeSquares.length == 0) {
             return;
         }
-
-        var hgX = this.posX - hg.posX;
-        var hgY = this.posY - hg.posY;
-        
-        var hgDist = (hgX ** 2 + hgY ** 2) ** 0.5;
-
-        for (let i = 0; i < greenSquares.length; i++) {
-            var cs = greenSquares[i];
-
-            // relative to origin
-            
-            var csX = this.posX - cs.posX;
-            var csY = this.posY - cs.posY;
-
-            var csDist = (csX ** 2 + csY ** 2) ** 0.5; 
-
-            var currentTheta = startTheta + (csDist / hgDist) * thetaDelta;
-
-            // https://academo.org/demos/rotation-about-point/
-            var endX = csX * Math.cos(currentTheta) - csY * Math.sin(currentTheta);
-            var endY = csY * Math.cos(currentTheta) + csX * Math.sin(currentTheta);
-
-            cs.deflectionXOffset = endX - csX;
-            cs.deflectionYOffset = endY - csY;
-
-            if (isNaN(cs.deflectionXOffset)) {
-                console.warn("FUCKKKKK");
+        if (this.waterPressure < this.waterPressureWiltThresh) {
+            this.curWilt += 0.01;
+            var lifeSquareToThirstify = greenLifeSquares.at(randNumber(0, greenLifeSquares.length - 1));
+            if (lifeSquareToThirstify.state == STATE_HEALTHY) {
+                lifeSquareToThirstify.state = STATE_THIRSTY;
+            } else if (lifeSquareToThirstify.state == STATE_THIRSTY) {
+                lifeSquareToThirstify.state = STATE_DEAD;
+            }
+        } else {
+            this.curWilt -= 0.01;
+            var lifeSquareToRevive = greenLifeSquares.at(randNumber(0, greenLifeSquares.length - 1));
+            if (lifeSquareToRevive.state != STATE_DEAD) {
+                lifeSquareToRevive.state = STATE_HEALTHY;
             }
         }
-    }
 
-    setHealthAndEnergyColorInSubsquares() {
-        var currentHealthNumSquares = Math.min(1, this.getCurrentHealth()) * this.lifeSquares.length;
-        var currentEnergyNumSquares = Math.min(1, this.getCurrentEnergyFrac()) * this.lifeSquares.length;
-        var currentLifetimeNumSquares = Math.min(1, this.getLifeCyclePercentage()) * this.lifeSquares.length;
-
-        var currentAirNumSquares = this.airNutrients / this.getMeanNutrient() * this.lifeSquares.length;
-        var currentWaterNumSquares = this.waterNutrients / this.getMeanNutrient() * this.lifeSquares.length;
-        var currentDirtNumSquares = this.dirtNutrients / this.getMeanNutrient() * this.lifeSquares.length;
-
-        this.setIndicatorOnSquares(currentHealthNumSquares, (sq, amount) => sq.healthIndicated = amount);
-        this.setIndicatorOnSquares(currentEnergyNumSquares, (sq, amount) => sq.energyIndicated = amount);
-        this.setIndicatorOnSquares(currentLifetimeNumSquares, (sq, amount) => sq.lifetimeIndicated = amount);
-        
-        this.setIndicatorOnSquares(currentAirNumSquares, (sq, amount) => sq.airIndicated += (sq.airIndicated > 0 ? -amount : amount));
-        this.setIndicatorOnSquares(currentWaterNumSquares, (sq, amount) => sq.waterIndicated += (sq.waterIndicated > 0 ? -amount : amount));
-        this.setIndicatorOnSquares(currentDirtNumSquares, (sq, amount) => sq.dirtIndicated += (sq.dirtIndicated > 0 ? -amount : amount));
-    }
-
-    setIndicatorOnSquares(amountToAdd, setter) {
-        var cidx = 0;
-        var amountAdded = 0;
-        while (cidx < amountToAdd && amountAdded < amountToAdd) {
-            var curAmountToAdd = Math.min(1, amountToAdd - amountAdded);
-            setter(this.lifeSquares[cidx % this.lifeSquares.length], curAmountToAdd)
-            amountAdded += curAmountToAdd;
-            cidx += 1;
+        if (this.waterPressure > this.waterPressureOverwaterThresh) {
+            var lifeSquareToKill = greenLifeSquares.at(randNumber(0, greenLifeSquares.length - 1));
+            lifeSquareToKill.state = STATE_DEAD;
         }
+
+        this.curWilt = Math.max(0, this.curWilt);
+        this.curWilt = Math.min(Math.PI / 2, this.curWilt);
+
+        var totalDead = Array.from(greenLifeSquares.filter((lsq) => lsq.state == STATE_DEAD)).length;
+
+        if (totalDead > greenLifeSquares.length * 0.5) {
+            this.destroy();
+        }
+
     }
 
-    canGrowPlant() {
-        return this.lifeSquaresCountByType["green"] <= this.maximumLifeSquaresOfType["green"];
-    }
-    canGrowRoot() {
-        return this.lifeSquaresCountByType["root"] <= this.maximumLifeSquaresOfType["root"]
-    }
-
+    // PHYSICAL SQUARES
     linkSquare(square) {
         this.linkedSquare = square;
         square.linkOrganism(this);
@@ -182,41 +137,168 @@ class BaseOrganism {
     unlinkSquare() {
         this.linkedSquare = null;
     }
-    dist(posX, posY) {
-        return Math.sqrt((this.posX - posX) ** 2 + (this.posY - posY) ** 2);
-    }
+
+    // LIFE SQUARES
     addAssociatedLifeSquare(lifeSquare) {
         this.lifeSquares.push(lifeSquare);
-        if (!(lifeSquare.type in this.lifeSquaresCountByType)) {
-            this.lifeSquaresCountByType[lifeSquare.type] = 0;
-        }
-        this.lifeSquaresCountByType[lifeSquare.type] += 1;
-        lifeSquare.distFromOrigin = this.dist(lifeSquare.posX, lifeSquare.posY);
-        this.maxDistFromOrigin = Math.max(this.maxDistFromOrigin, lifeSquare.distFromOrigin);
-        
         var pred = (lsq) => lsq.lighting != null && lsq.lighting.length > 0;
         if (this.lifeSquares.some(pred)) {
             lifeSquare.lighting = this.lifeSquares.reverse().find(pred).lighting;
         }
     }
     removeAssociatedLifeSquare(lifeSquare) {
-        this.lifeSquaresCountByType[lifeSquare.type] -= 1;
         this.lifeSquares = Array.from(this.lifeSquares.filter((lsq) => lsq != lifeSquare));
         lifeSquare.destroy();
-        this.recentSquareRemovals.push([lifeSquare.posX, lifeSquare.posY]);
     }
 
-    preRender() {
-        this.setHealthAndEnergyColorInSubsquares();
+    // COMPONENT GROWTH
+    growPlantSquarePos(parentSquare, posX, posY) {
+        var newPlantSquare = new PlantSquare(posX, posY);
+        if (addSquare(newPlantSquare)) {
+            var newGreenSquare = addOrganismSquare(new this.greenType(newPlantSquare, this));
+            if (newGreenSquare) {
+                this.addAssociatedLifeSquare(newGreenSquare);
+                newGreenSquare.linkSquare(newPlantSquare);
+                parentSquare.addChild(newPlantSquare);
+                return newGreenSquare;
+            }
+        }
+        return null;
     }
 
-    growInitialSquares() { return new Array(); }
+    growPlantSquare(parentSquare, dx, dy) {
+        var newPlantSquare = new PlantSquare(parentSquare.posX + dx, parentSquare.posY - dy);
+        if (addSquare(newPlantSquare)) {
+            var newGreenSquare = addOrganismSquare(new this.greenType(newPlantSquare, this));
+            if (newGreenSquare) {
+                this.addAssociatedLifeSquare(newGreenSquare);
+                newGreenSquare.linkSquare(newPlantSquare);
+                parentSquare.addChild(newPlantSquare);
+                return newGreenSquare;
+            }
+        }
+        return null;
+    }
 
+    getAllComponentsofType(componentType) {
+        return this._getAllComponentsofType(componentType, this.originGrowth);
+    }
+
+    _getAllComponentsofType(componentType, component) {
+        var out = [];
+        out.push(...component.children.filter((child) => child.type === componentType));
+        component.children.forEach((child) => out.push(...this._getAllComponentsofType(componentType, child)));
+        return out;
+    }
+
+    getOriginsForNewGrowth(subtype) {
+        return this._getOriginForNewGrowth(subtype, this.originGrowth);
+    }
+
+    _getOriginForNewGrowth(subtype, component) {
+        var out = new Array();
+        out.push(...component.lifeSquares.filter((sq) => sq.subtype == subtype))
+        component.children.forEach((child) => out.push(...this._getOriginForNewGrowth(subtype, child)));
+        return out;
+    }
+    gp_sprout() {
+        if (this.linkedSquare.currentPressureDirect > 0) {
+            this.destroy();
+            return;
+        }
+        var growthPlan = new GrowthPlan(this.posX, this.posY, true, STAGE_JUVENILE, Math.PI / 2, 0, 0, 0, 0, TYPE_HEART, 10 ** 8);
+        growthPlan.steps.push(new GrowthPlanStep(
+            growthPlan,
+            0,
+            0,
+            () => {
+                var rootSq = new this.rootType(this.linkedSquare, this);
+                rootSq.linkSquare(this.linkedSquare);
+                rootSq.subtype = SUBTYPE_ROOTNODE;
+                if (this.linkedSquare != null && this.linkedSquare != -1) {
+                    this.linkedSquare.linkOrganismSquare(rootSq);
+                }
+                this.addAssociatedLifeSquare(rootSq);
+                return rootSq;
+            }
+        ));
+        growthPlan.postConstruct = () => this.originGrowth = growthPlan.component;
+        return growthPlan;
+    }
+
+    executeGrowthPlans() {
+        if (!this.alive) {
+            return;
+        }
+        // if (!this.shouldGrow) {
+        //     return;
+        // }
+        var anyStepFound = false;
+        var timeBudget = getCurDay() - getPrevDay();
+        this.growthPlans.filter((gp) => !gp.completed).forEach((growthPlan) => {
+            anyStepFound = true;
+            growthPlan.steps.filter((step) => !step.completed).forEach((step) => {
+                if (
+                    (getCurDay() + timeBudget >= growthPlan.stepLastExecuted + step.timeCost) &&
+                    (this.currentEnergy >= step.energyCost)
+                ) {
+                    step.doAction();
+                    step.growthPlan.stepLastExecuted = getCurDay();
+                    this.currentEnergy -= step.energyCost;
+                    if (this.originGrowth != null) {
+                        this.originGrowth.updateDeflectionState();
+                        this.originGrowth.applyDeflectionState();
+                    }
+                };
+            });
+            if (growthPlan.areStepsCompleted()) {
+                growthPlan.complete();
+                this.stage = growthPlan.endStage;
+            }
+            if (growthPlan.required && growthPlan.steps.some((step) => step.completedSquare == null)) {
+                this.destroy();
+            }
+        });
+
+        if (!anyStepFound) {
+            this.planGrowth();
+        }
+    }
+
+    growRoot(f) {
+        var targetSquare = null;
+        var targetSquareParent = null;
+        this.lifeSquares.filter((lsq) => lsq.type == "root").forEach((lsq) => {
+            getDirectNeighbors(lsq.posX, lsq.posY)
+                .filter((_sq) => _sq != null)
+                .filter((_sq) => _sq.rootable)
+                .filter((_sq) => getOrganismSquaresAtSquareWithEntityId(_sq, this.spawnedEntityId).length == 0)
+                .filter((_sq) => targetSquare == null || f(targetSquare) < f(_sq))
+                .forEach((_sq) => {targetSquare = _sq; targetSquareParent = lsq});
+        });
+        if (targetSquare == null) {
+            return;
+        }
+
+        var newRootLifeSquare = addOrganismSquare(new this.rootType(targetSquare, this));
+        if (newRootLifeSquare) {
+            this.addAssociatedLifeSquare(newRootLifeSquare);
+            newRootLifeSquare.linkSquare(targetSquare);
+            targetSquareParent.addChild(newRootLifeSquare)
+            targetSquare.linkOrganismSquare(newRootLifeSquare);
+        }
+    }
+
+    // -- method implemented by organism implementations
+    planGrowth() {}
+
+
+    // RENDERING
     render() {
-        this.preRender();
         this.lifeSquares.forEach((sp) => sp.render())
     }
 
+    // DESTRUCTION
     destroy() {
         this.lifeSquares.forEach((lifeSquare) => lifeSquare.destroy());
         if (this.linkedSquare != null && this.linkedSquare != -1) {
@@ -225,20 +307,14 @@ class BaseOrganism {
         removeOrganism(this);
     }
 
+    // OUTER TICK METHOD CALLED EACH FRAME 
     process() {
-        this.tick();
-        this.postTick();
-        this.processHealth();
-        this.storeAndRetrieveWater();
-        this.currentEnergy -= this.growFlower();
-    }
-
-    tick() {
         this.lifeSquares.forEach((sp) => sp.tick());
+        this.waterSaturationTick();
         this.updateDeflectionState();
         this.applyDeflectionStateToSquares();
         this.lifeSquares = this.lifeSquares.sort((a, b) => a.distToFront - b.distToFront);
     }
 }
 
-export {BaseOrganism}
+export { BaseOrganism }
