@@ -1,7 +1,7 @@
 
 import { getSquares } from "../_sqOperations.js";
 import { hexToRgb } from "../../common.js";
-import { addSquareByName } from "../../index.js";
+import { addSquareByName, CANVAS_SQUARES_Y } from "../../index.js";
 import { SoilSquare } from "./SoilSquare.js";
 
 export class RockSquare extends SoilSquare {
@@ -44,10 +44,14 @@ export class RockSquare extends SoilSquare {
         var pressureToOutflowWaterContainment = this.getInverseMatricPressure(thisWaterPressure + 2);
         var diff = (this.waterContainment - pressureToOutflowWaterContainment) / this.getWaterflowRate();
         diff *= Math.abs(thisWaterPressure - -2);
-        var newWater = addSquareByName(this.posX, this.posY + 1, "water");
-        if (newWater) {
-            newWater.blockHealth = diff;
+        if ((this.posY + 1) >= CANVAS_SQUARES_Y) {
             this.waterContainment -= diff;
-    }
+        } else {
+            var newWater = addSquareByName(this.posX, this.posY + 1, "water");
+            if (newWater) {
+                newWater.blockHealth = diff;
+                this.waterContainment -= diff;
+            }
+        }
     }
 }

@@ -23,7 +23,7 @@ import { createMoonLightGroup, createSunLightGroup, default_light_throttle_inter
 import { loadDemoScene, loadEmptyScene, loadFlatDirtWorld, loadSlot, saveSlot } from "./saveAndLoad.js";
 import { scheduler_main, triggerEarlySquareScheduler } from "./scheduler.js";
 
-var lastMode = "organismWetland"; // options: normal, organismWetlandgi
+var lastMode = "normal"; // options: normal, organismWetlandgi
 
 var specialSelect = document.getElementById("specialSelect");
 var specialSelect_val = "water";
