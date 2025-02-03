@@ -93,6 +93,10 @@ function renderStarMap(brightnessMult) {
     }
 }
 
+export function getDt() {
+    return curDay - prevDay;
+}
+
 function getCurDay() {
     return curDay;
 }

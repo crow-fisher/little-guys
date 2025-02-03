@@ -40,6 +40,10 @@ class BaseOrganism {
         this.transpirationRate = 0.001;
         this.rootPower = 2;
 
+        this.ph = 7;
+        this.nitrogen = 0;
+        this.phosphorus = 0;
+
         this.applyWind = false;
         this.springCoef = 4;
         this.startDeflectionAngle = 0;
@@ -69,24 +73,41 @@ class BaseOrganism {
 
     // WATER SATURATION
 
-    waterSaturationTick() {
-        this.waterPressure += this.lifeSquares
+    waterSaturationAndPhTick() {
+        let amountOfWaterTransferred = 0;
+        let sumPh = 0;
+        this.lifeSquares
             .filter((lsq) => lsq.type == "root")
             .filter((lsq) => lsq.linkedSquare != null && lsq.linkedSquare.proto == "SoilSquare")
             .filter((lsq) => (this.rootPower + lsq.linkedSquare.getSoilWaterPressure()) > this.waterPressure)
-            .map((lsq) => {
+            .forEach((lsq) => {
+                var amountOfWater = 0;
                 if (this.waterPressure < this.waterPressureTarget) {
-                    return lsq.linkedSquare.suckWater(this.transpirationRate);
+                    amountOfWater = lsq.linkedSquare.suckWater(this.transpirationRate);
                 } else {
-                    return lsq.linkedSquare.suckWater(this.transpirationRate / 10);
-                }
-            })
-            .reduce(
-                (accumulator, currentValue) => accumulator + currentValue,
-                0,
-            );
+                    amountOfWater = lsq.linkedSquare.suckWater(this.transpirationRate / 10);
+                };
+                amountOfWaterTransferred += amountOfWater;
+                sumPh += amountOfWaterTransferred * lsq.linkedSquare.ph;
+            });
+        
+        this.ph = (this.ph * this.waterPressure + sumPh) / (this.waterPressure + amountOfWaterTransferred)
+        this.waterPressure += amountOfWaterTransferred;
+
+        // todo: make this humidfy the air
         this.waterPressure -= (this.lifeSquares.length * this.transpirationRate) / 10;
         this.wilt();
+    }
+
+    nutrientTick() {
+        
+        
+        this.lifeSquares
+            .filter((lsq) => lsq.type == "root")
+            .filter((lsq) => lsq.linkedSquare != null && lsq.linkedSquare.proto == "SoilSquare")
+        
+        
+
     }
 
     wilt() {
@@ -307,13 +328,11 @@ class BaseOrganism {
         removeOrganism(this);
     }
 
-    // ** TICK METHOD IMPLEMENTED BY ORGANISMS 
-    tick() {}
-
-    // ** OUTER TICK METHOD INVOKED EACH FRAME 
+    // ** OUTER TICK METHOD INVOKED EACH FRAME
+    // -- these methods are universal to every organism
     process() {
         this.lifeSquares.forEach((sp) => sp.tick());
-        this.waterSaturationTick();
+        this.waterSaturationAndPhTick();
         this.updateDeflectionState();
         this.applyDeflectionStateToSquares();
         this.lifeSquares = this.lifeSquares.sort((a, b) => a.distToFront - b.distToFront);

@@ -38,9 +38,9 @@ export class SoilSquare extends BaseSquare {
         this.waterContainment = 0;
 
         // normalized to "pounds per acre" of 50 for an average soil 
+        this.ph = 7;
         this.nitrogen = 50;
         this.phosphorus = 25;
-        this.ph = 7;
 
         // maps in form "water containment" / "matric pressure in atmospheres"
         this.clayMap = [
