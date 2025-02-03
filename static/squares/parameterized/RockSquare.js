@@ -30,6 +30,11 @@ export class RockSquare extends SoilSquare {
         this.sand = Math.min(Math.max(this.sand, 0), 1);
     }
 
+    getWaterflowRate() {
+        var base = super.getWaterflowRate();
+        return base * 100;
+    }
+
     doBlockOutflow() {
         super.doBlockOutflow();
         var thisWaterPressure = this.getMatricPressure(); 
