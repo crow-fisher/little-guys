@@ -9,6 +9,13 @@ var windPressureMap;
 var windPressureMapByPressure;
 var windFlowStrength = 0.5;
 
+export function getWindPressureMap() {
+    return windPressureMap;
+}
+export function setWindPressureMap(inMap) {
+    windPressureMap = inMap;
+}
+
 var air_molar_mass = 28.96;
 var water_vapor_molar_mass = 18;
 var stp_pascals_per_meter = 1100;

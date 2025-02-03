@@ -8,8 +8,10 @@ import { pond } from "./saves.js";
 import { triggerEarlySquareScheduler } from "./scheduler.js";
 import { addSquare, addSquareOverride, iterateOnSquares, removeOrganismSquare } from "./squares/_sqOperations.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
+import { getTemperatureMap, getWaterSaturation, getWaterSaturationMap, setTemperatureMap, setWaterSaturationMap } from "./temperature_humidity.js";
 import { getCurDay, setCurDay } from "./time.js";
 import { ProtoMap, TypeMap, TypeNameMap } from "./types.js";
+import { getWindPressureMap, initializeWindPressureMap, setWindPressureMap } from "./wind.js";
 
 
 /**'
@@ -53,6 +55,7 @@ function purgeGameState() {
         org.lifeSquares.forEach((lsq) => removeOrganismSquare(lsq));
         removeOrganism(org);
     });
+    initializeWindPressureMap();
 }
 
 function loadSlotData(slotData) {
@@ -166,7 +169,10 @@ function getFrameSaveData() {
         growthPlanArr: growthPlanArr,
         growthPlanComponentArr: growthPlanComponentArr,
         growthPlanStepArr: growthPlanStepArr,
-        curDay: getCurDay()
+        curDay: getCurDay(),
+        windMap: getWindPressureMap(),
+        temperatureMap: getTemperatureMap(),
+        waterSaturationMap: getWaterSaturationMap()
     }
     return saveObj;
 }
@@ -180,6 +186,19 @@ function loadSlotFromSave(slotData) {
     var growthPlanArr = slotData.growthPlanArr;
     var growthPlanComponentArr = slotData.growthPlanComponentArr;
     var growthPlanStepArr = slotData.growthPlanStepArr;
+
+    var windMap = slotData.windMap;
+    var temperatureMap = slotData.temperatureMap;
+    var waterSaturationMap = slotData.waterSaturationMap;
+
+    if (windMap != null) {
+        setWindPressureMap(windMap);
+        setTemperatureMap(temperatureMap);
+        setWaterSaturationMap(waterSaturationMap);
+    } else {
+        initializeWindPressureMap();
+    }
+
     setCurDay(slotData.curDay);
 
 

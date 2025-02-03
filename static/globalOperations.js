@@ -90,10 +90,6 @@ function reset() {
     resetWaterflowSquares();
     lightingClearLifeSquarePositionMap();
     frame_squares = getSqIterationOrder();
-    frame_physics_squares = frame_squares.filter((sq) => sq.physicsEnabled || sq.special);
-    frame_soil_physics_squares = frame_squares.filter((sq) => sq.soilPhysicsEnabled);
-    frame_organic_squares = frame_squares.filter((sq) => sq.organic);
-    frame_inorganic_squares = frame_squares.filter((sq) => !sq.organic);
     frame_solid_squares = frame_squares.filter((sq) => sq.solid && !sq.organic);
     frame_water_squares = frame_squares.filter((sq) => !sq.solid);
 }
@@ -107,17 +103,15 @@ function renderWater() {
 }
 
 function physics() {
-    frame_soil_physics_squares.forEach((sq) => sq.soilPhysics());
-    frame_physics_squares.forEach((sq) => sq.physics());
+    frame_squares.forEach((sq) => sq.physics());
 }
 function physicsBefore() {
-    frame_physics_squares.forEach((sq) => sq.physicsBefore());
-    frame_physics_squares.forEach((sq) => sq.physicsBefore2());
+    frame_squares.forEach((sq) => sq.physicsBefore());
+    frame_squares.forEach((sq) => sq.physicsBefore2());
 }
 
 function processOrganisms() {
     iterateOnOrganisms((org) => org.process(), 0);
-    frame_organic_squares.forEach((sq) => sq.physics()); 
 }
 
 function renderOrganisms() {

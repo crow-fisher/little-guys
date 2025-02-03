@@ -19,7 +19,13 @@ class PlantSquare extends BaseSquare {
         this.physicsEnabled = false;
         this.collision = false;
         this.visible = false;
+        this.rootable = false;
     }
+
+    // for now
+    physics() {}
+    physicsBefore() {}
+    physicsBefore2() {}
 }
 
 export {PlantSquare}

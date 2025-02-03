@@ -8,6 +8,19 @@ import { getCurTime, getPrevTime, getTimeSpeedMult } from "./time.js";
 var temperatureMap;
 var waterSaturationMap;
 
+export function setTemperatureMap(inMap) {
+    temperatureMap = inMap;
+}
+export function setWaterSaturationMap(inMap) {
+    waterSaturationMap = inMap;
+}
+export function getTemperatureMap() {
+    return temperatureMap;
+}
+export function getWaterSaturationMap() {
+    return waterSaturationMap;
+}
+
 var curSquaresX = 0;
 var curSquaresY = 0;
 

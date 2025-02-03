@@ -2,7 +2,7 @@ import { doLightSourceRaycasting, doWaterFlow, physics, physicsBefore, processOr
 import { doClickAdd, doMouseHover, getBlockModification_val, getLastMode, getSelectedViewMode } from "./index.js";
 import { renderClouds, renderWaterSaturation, tickMaps } from "./temperature_humidity.js";
 import { renderTime, updateTime } from "./time.js";
-import { tickWindPressureMap } from "./wind.js";
+import { renderWindPressureMap, tickWindPressureMap } from "./wind.js";
 
 const SQUARE_UPDATE_MILLIS = 50;
 const ORG_UPDATE_MILLIS = 0;

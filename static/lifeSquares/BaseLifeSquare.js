@@ -186,10 +186,12 @@ class BaseLifeSquare {
         this.linkedSquare = null;
     }
     destroy() {
-        if (this.linkedSquare.organic) {
-            this.linkedSquare.destroy();
-        } else {
-            this.linkedSquare.unlinkOrganismSquare(this);
+        if (this.linkedSquare != null) {
+            if (this.linkedSquare.organic) {
+                this.linkedSquare.destroy();
+            } else {
+                this.linkedSquare.unlinkOrganismSquare(this);
+            }
         }
         removeOrganismSquare(this);
     }
