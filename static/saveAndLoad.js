@@ -14,20 +14,6 @@ import { ProtoMap, TypeMap, TypeNameMap } from "./types.js";
 import { getWindPressureMap, initializeWindPressureMap, setWindPressureMap } from "./wind.js";
 
 
-/**'
- * 
- * 
- * objects will have a 'compression scheme' that tells us how to scrunch them up
- * 
- * we need to: 
- *  * take all of our objects and shove them into big lists
- *  * pull out all references to other objects and turn them into indexes into our big lists
- *  * turn all that into an object and serialize and save it
- * 
- * why do we do this? because this project is circular reference hell <3
- */
-
-
 export async function loadSlot(slotName) {
     const db = await openDatabase();
     const transaction = db.transaction("saves", "readonly");

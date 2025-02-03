@@ -10,52 +10,36 @@ class BaseOrganism {
         this.proto = "BaseOrganism";
         this.posX = square.posX;
         this.posY = square.posY;
+        this.stage = STAGE_SPROUT;
+        this.stages = [
+            STAGE_SPROUT,
+            STAGE_JUVENILE,
+            STAGE_ADULT,
+            STAGE_FLOWER,
+            STAGE_FRUIT
+        ];
+        this.originGrowth = null;
+        this.spinnable = false;
+
         this.lifeSquares = new Array();
-        this.type = "base";
-        this.spawnedEntityId = 0;
-        this.width = 0.95;
-        this.xOffset = 0.5;
-        this.alive = true;
-        this.hovered = false;
         this.growthPlans = [];
-
-        this.airCoef = 1;
-        this.dirtCoef = 1;
-        this.waterCoef = 1;
-
-        this.spawnSeedSpeed = 3;
-
-        this.spawnTime = getCurDay();
-        this.currentEnergy = 0;
-        this.totalEnergy = 0;
-        
-        this.maxHealth = 100;
-        this.perTickDamage = 1;
-        this.currentHealth = this.maxHealth;
-        this.nutrientDiffTolerance = 1.1565;
-        this.nutrientDiffRegainHealth = 1.15;
-
-        this.dirtNutrients = 1;
-        this.airNutrients = 1;
-        this.waterNutrients = 1;
-
-        this.plantLastGrown = 0;
-        this.waterLastGrown = 0;
-        this.rootLastGrown = 0;
-
-        this.recentSquareRemovals = new Array();
-
-        this.maxDistFromOrigin = 0;
-
-        // life cycle properties
-        this.maxLifeTime = 6;
-        this.reproductionEnergy = 100    * 0.6
-        this.reproductionEnergyUnit = 50 * 0.6;
-        this.maximumLifeSquaresOfType = {"green": 100, "root": 100};
-        this.lifeSquaresCountByType = {"green": 0, "root": 0};
-        this.spawnedEntityId = getNextEntitySpawnId();
+        this.lastGrownMap = {};
         this.linkSquare(square);
         this.growInitialSquares();
+        this.maxSquaresOfTypePerDay = 1000;
+        this.stageTimeMap = { STAGE_SPROUT: 0 };
+
+        this.greenType = null;
+        this.rootType = null;
+
+        this.curWilt = 0;
+        this.waterPressure = -2;
+        this.waterPressureTarget = -2;
+        this.waterPressureWiltThresh = -3;
+        this.waterPressureDieThresh = -5;
+        this.waterPressureOverwaterThresh = -1;
+        this.transpirationRate = 0.001;
+        this.rootPower = 2;
 
         this.applyWind = false;
         this.springCoef = 4;
@@ -67,13 +51,6 @@ class BaseOrganism {
         this.deflectionStateFunctions = [];
 
         this.rootOpacity = 0.4;
-
-        // not used as part the organism's rendering directly, but 
-        // used as a hint for growing new life squares
-        if (square.lighting != null && square.lighting.length > 0) {
-            this.lighting = square.lighting;
-        }
-
     }
 
     updateDeflectionState() {
@@ -107,14 +84,8 @@ class BaseOrganism {
             this.deflectionStateTheta = endDeflectionStateTheta;
         }
         
-        if (isNaN(this.lastDeflectionStateRollingAverage)) {
-            console.warn("FUCK 103");
-        }
         this.lastDeflectionStateRollingAverage *= (1 - (1 / this.lastDeflectionStateThetaRollingAveragePeriod));
         this.lastDeflectionStateRollingAverage += (1 / this.lastDeflectionStateThetaRollingAveragePeriod) * this.deflectionStateTheta;
-        if (isNaN(this.lastDeflectionStateRollingAverage)) {
-            console.warn("FUCK 108");
-        }
     }
 
 
@@ -197,133 +168,11 @@ class BaseOrganism {
         }
     }
 
-    getMaxNutrient() {
-        return Math.max(Math.max(this.airNutrients, this.dirtNutrients), this.waterNutrients);
-    }
-
-    getMinNutrient() {
-        return Math.min(Math.min(this.airNutrients, this.dirtNutrients), this.waterNutrients);
-    }
-
-    getMeanNutrient() {
-        return (this.airNutrients + this.dirtNutrients + this.waterNutrients) / 3;
-    }
-
     canGrowPlant() {
         return this.lifeSquaresCountByType["green"] <= this.maximumLifeSquaresOfType["green"];
     }
     canGrowRoot() {
         return this.lifeSquaresCountByType["root"] <= this.maximumLifeSquaresOfType["root"]
-    }
-    
-    getLowestGreen() {
-        return Array.from(this.lifeSquares
-            .filter((sq) => sq.type == "green")).sort((a, b) => b.posY - a.posY)[0];
-    }
-
-    getHighestGreen() {
-        return Array.from(this.lifeSquares
-            .filter((sq) => sq.type == "green")).sort((a, b) => a.posY - b.posY)[0];
-    }
-
-    storeAndRetrieveWater() {
-        let meanNutrient = this.getMeanNutrient(); 
-        if (this.waterNutrients < meanNutrient) {
-            this.lifeSquares.filter((lsq) => lsq.type == "green").forEach((lsq) => {
-                if (this.waterNutrients >= meanNutrient) {
-                    return;
-                }
-                this.waterNutrients += lsq.retrieveWater();
-            })
-        }
-
-        if (this.waterNutrients > meanNutrient) {
-            var amountToStore = (this.waterNutrients - meanNutrient);
-            var amountStored = 0;
-            this.lifeSquares.filter((lsq) => lsq.type == "green").forEach((lsq) => {
-                if (amountStored >= amountToStore) {
-                    return;
-                }
-                amountStored += lsq.storeWater(amountToStore - amountStored);
-            })
-            this.waterNutrients -= amountStored;
-        }
-    }
-
-    getAmountOfDirtNutrientsToCollect() {
-        let meanNutrient = (this.airNutrients + this.dirtNutrients + this.waterNutrients) / 3;
-        return meanNutrient - this.dirtNutrients;
-    }
-
-    
-    growFlower() { return 0; }
-
-
-    processHealth() { 
-        if (this.getLifeCyclePercentage() < 0.05) {
-            return;
-        }
-        let minNutrient = this.getMinNutrient();
-        let meanNutrient = this.getMeanNutrient();
-        let maxNutrient = this.getMaxNutrient();
-
-        if (minNutrient < (meanNutrient / 2) || maxNutrient > (meanNutrient * 1.5)) {
-            this.currentHealth -= this.perTickDamage;
-            this.growAndDecay();
-        }
-
-        if (this.currentHealth < 0) {
-            this.destroy();
-        }
-    }
-    getMaxDirtNutrient() {
-        if (this.maxDirtNutrient != 0) {
-            return this.maxDirtNutrient;
-        }
-        this.maxDirtNutrient = Array.from(this.lifeSquares.map((ls) => ls.dirtNutrients)).sort((a, b) => b - a)[0]
-        return this.maxDirtNutrient;
-    }
-
-    getMaxAirNutrient() {
-        if (this.maxAirNutrient != 0) {
-            return this.maxAirNutrient;
-        }
-        this.maxAirNutrient = Array.from(this.lifeSquares.map((ls) => ls.airNutrients)).sort((a, b) => b - a)[0]
-        return this.maxAirNutrient;
-    }
-    getMaxWaterNutrient() {
-        if (this.maxWaterNutrient != 0) {
-            return this.maxWaterNutrient;
-        }
-        this.maxWaterNutrient = Array.from(this.lifeSquares.map((ls) => ls.waterNutrients)).sort((a, b) => b - a)[0]
-        return this.maxWaterNutrient;
-    }
-
-    getStdevDirtNutrient() {
-        if (this.stdevDirtNutrient != 0) {
-            return this.stdevDirtNutrient;
-        }
-        this.stdevDirtNutrient = getStandardDeviation(Array.from(this.lifeSquares.map((ls) => ls.dirtNutrients)));
-        return this.stdevDirtNutrient;
-    }
-
-    getStdevAirNutrient() {
-        if (this.stdevAirNutrient != 0) {
-            return this.stdevAirNutrient;
-        }
-        this.stdevAirNutrient = getStandardDeviation(Array.from(this.lifeSquares.map((ls) => ls.airNutrients)));
-        return this.stdevAirNutrient;
-    }
-    getStdevWaterNutrient() {
-        if (this.stdevWaterNutrient != 0) {
-            return this.stdevWaterNutrient;
-        }
-        this.stdevWaterNutrient = getStandardDeviation(Array.from(this.lifeSquares.map((ls) => ls.waterNutrients)));
-        return this.stdevWaterNutrient;
-    }
-
-    getCurrentHealth() {
-        return this.currentHealth / this.maxHealth;
     }
 
     linkSquare(square) {
@@ -361,29 +210,6 @@ class BaseOrganism {
         this.setHealthAndEnergyColorInSubsquares();
     }
 
-    spawnSeed() {
-        var seedSquare = this.getSeedSquare();
-        if (seedSquare != null) {
-            while (seedSquare.speedX == 0) {
-                seedSquare.speedX = Math.floor(randNumber(-this.spawnSeedSpeed, this.spawnSeedSpeed));
-            }
-            seedSquare.speedY = Math.floor(randNumber(-this.spawnSeedSpeed, -1));
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    getSeedSquare() {
-    }
-
-    getCountOfAssociatedSquaresOfProto(proto) {
-        return Array.from(this.lifeSquares.filter((org) => org.proto == proto)).length;
-    }
-    getCountOfAssociatedSquaresOfType(type) {
-        return Array.from(this.lifeSquares.filter((org) => org.type == type)).length;
-    }
- 
     growInitialSquares() { return new Array(); }
 
     render() {
@@ -393,8 +219,6 @@ class BaseOrganism {
 
     destroy() {
         this.lifeSquares.forEach((lifeSquare) => lifeSquare.destroy());
-        this.alive = false;
-
         if (this.linkedSquare != null && this.linkedSquare != -1) {
             this.linkedSquare.unlinkOrganism();
         }
@@ -402,33 +226,11 @@ class BaseOrganism {
     }
 
     process() {
-        this.preTick();
         this.tick();
         this.postTick();
         this.processHealth();
         this.storeAndRetrieveWater();
         this.currentEnergy -= this.growFlower();
-    }
-
-    getMaxAllNutrients() {
-        return this.getMaxAirNutrient() + this.getMaxWaterNutrient() + this.getMaxAirNutrient();
-    }
-
-    getStdevAllNutrients() {
-        return Math.sqrt((this.getMaxAirNutrient() ** 2) / 3 + (this.getMaxDirtNutrient() ** 2) / 3 + (this.getMaxWaterNutrient() ** 2) / 3)
-    }
-
-    preTick() {
-        this.maxAirNutrient = 0;
-        this.maxDirtNutrient = 0;
-        this.maxWaterNutrient = 0;
-        this.stdevAirNutrient = 0;
-        this.stdevDirtNutrient = 0;
-        this.stdevWaterNutrient = 0;
-        this.lifeSquares.forEach((sp) => sp.preTick())
-        if (this.recentSquareRemovals.length > 10) {
-            this.recentSquareRemovals = new Array();
-        }
     }
 
     tick() {
@@ -437,102 +239,6 @@ class BaseOrganism {
         this.applyDeflectionStateToSquares();
         this.lifeSquares = this.lifeSquares.sort((a, b) => a.distToFront - b.distToFront);
     }
-
-    getLifeCyclePercentage() {
-        return (getCurDay() - this.spawnTime) / this.maxLifeTime;
-    }
-
-    getCurrentEnergyFrac() {
-        return this.currentEnergy / this.reproductionEnergy;
-    }
-
-    getHealthEnergyConversionEfficiency() {
-        return (
-            ((this.currentHealth + this.maxHealth) / 2) / this.maxHealth
-        );
-    }
-
-    getGrownSquaresByMotivation() {
-        var out = {
-            "dirt": 0,
-            "water": 0,
-            "air": 0
-        };
-        this.lifeSquares.forEach((sq) => {
-            if (sq.motivation in out) {
-                out[sq.motivation] += 1;
-            } else {
-                out[sq.motivation] = 1;
-            }
-        });
-        return out;
-    }
-        
-    growAndDecay() {
-        // make a decision on how to grow based on which of our needs we need the most
-        if (this.currentEnergy < 0) {
-            return;
-        }
-        let minNutrient = this.getMinNutrient();
-        let meanNutrient = this.getMeanNutrient();
-
-        if (this.airNutrients == minNutrient) {
-            this.currentEnergy -= (this.currentEnergy / 10) * this.growNewPlant();
-            return;
-        }
-
-        if (this.dirtNutrients == minNutrient && this.waterNutrients < meanNutrient * 1.1) {
-            this.currentEnergy -= (this.currentEnergy / 10) * this.growDirtRoot();
-        }
-
-        if (this.waterNutrients == minNutrient && this.dirtNutrients < meanNutrient * 1.1) {
-            this.currentEnergy -= (this.currentEnergy / 10) * this.growWaterRoot();
-        }
-    }
-
-    postTick() {
-        this.lifeSquares.forEach((lifeSquare) => {
-            this.dirtNutrients += lifeSquare.dirtNutrients * this.dirtCoef;
-            this.waterNutrients += lifeSquare.waterNutrients * this.waterCoef;
-            this.airNutrients += lifeSquare.airNutrients * this.airCoef;
-        });
-
-        var energyGained = Math.min((this.airNutrients - this.totalEnergy, this.waterNutrients - this.totalEnergy), this.dirtNutrients - this.totalEnergy);
-        energyGained *= this.getHealthEnergyConversionEfficiency();
-
-        this.currentEnergy += energyGained;
-        this.totalEnergy += energyGained;
-
-        var lifeCyclePercentage = this.getLifeCyclePercentage();
-        if (lifeCyclePercentage > 1) {
-            this.destroy();
-        }
-
-        if (this.getCurrentEnergyFrac() > 1) {
-            if (this.spawnSeed()) {
-                this.currentEnergy -= this.reproductionEnergyUnit;
-            }
-            return;
-        }
-
-        if (lifeCyclePercentage < 0.6) {
-            this.growAndDecay();
-            return;
-        }
-
-        var totalEnergyLifeCycleRate = this.totalEnergy / lifeCyclePercentage;
-
-
-
-        var projectedEnergyAtEOL = this.currentEnergy + totalEnergyLifeCycleRate * (1 - lifeCyclePercentage);
-        if (projectedEnergyAtEOL < this.reproductionEnergy * (2 + 10 * Math.max(0, (0.75 - lifeCyclePercentage)))) {
-            this.growAndDecay();
-            return;
-        } else {
-            return;
-        }
-    }
-
 }
 
 export {BaseOrganism}

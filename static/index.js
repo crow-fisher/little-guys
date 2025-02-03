@@ -220,8 +220,8 @@ var lastTick = Date.now();
 
 // wind is tiled x4
 
-var CANVAS_SQUARES_X = (192)/3 * 4; // * 8; //6;
-var CANVAS_SQUARES_Y =  (108)/3 * 4; // * 8; // 8;
+var CANVAS_SQUARES_X = (192)/8 * 4; // * 8; //6;
+var CANVAS_SQUARES_Y =  (108)/6 * 4; // * 8; // 8;
 
 
 function setCanvasSquaresX(val) {
@@ -890,7 +890,8 @@ window.oncontextmenu = function () {
 window.onload = function () {
     document.addEventListener('keydown', keydown);
     document.addEventListener('keyup', keyup);
-    loadDemoScene();
+    // loadDemoScene();
+    loadFlatDirtWorld();
 }
 
 // loadSlotFromSave(volcano);

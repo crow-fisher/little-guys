@@ -13,37 +13,10 @@ import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, S
 export class BaseParameterizedOrganism extends BaseOrganism {
     constructor(posX, posY) {
         super(posX, posY);
-        this.stage = STAGE_SPROUT;
-        this.stages = [
-            STAGE_SPROUT,
-            STAGE_JUVENILE,
-            STAGE_ADULT,
-            STAGE_FLOWER,
-            STAGE_FRUIT
-        ];
-        this.shouldGrow = true;
-        this.originGrowth = null;
-        this.spinnable = false;
-        this.maxSquaresOfTypePerDay = 1000;
-
-        // organism config in 'days'
-        this.adultTime = 3;
-
         // store the actual time we attained them at
-        this.stageTimeMap = { STAGE_SPROUT: 0 };
 
         // fill these out!
-        this.greenType = null;
-        this.rootType = null;
 
-        this.curWilt = 0;
-        this.waterPressure = -2;
-        this.waterPressureTarget = -2;
-        this.waterPressureWiltThresh = -3;
-        this.waterPressureDieThresh = -5;
-        this.waterPressureOverwaterThresh = -1;
-        this.transpirationRate = 0.001;
-        this.rootPower = 2;
     }
 
     throttleInterval() {

@@ -24,7 +24,6 @@ class BaseLifeSquare {
         this.type = "base";
         this.subtype = "";
         this.colorBase = "#1D263B";
-        this.motivation = null; // if specified - 'air', 'water', 'dirt'
         this.spawnTime = getCurTime();
 
         this.maxAirDt = 0.005;
@@ -101,12 +100,11 @@ class BaseLifeSquare {
         this.LSQ_RENDER_SIZE_MULT = Math.SQRT2;
 
         this.lightFilterRate = 0.00010;
-
         
         if (square.lighting != null && square.lighting.length > 0) {
             this.lighting = square.lighting;
-        } else if (organism.lighting != null && organism.lighting.length > 0) {
-            this.lighting = organism.lighting;
+        } else if (organism.linkedSquare.lighting != null && organism.linkedSquare.lighting.length > 0) {
+            this.lighting = organism.linkedSquare.lighting;
         } else {
             this.lighting = [];
         }
