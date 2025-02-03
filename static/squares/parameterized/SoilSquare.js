@@ -37,7 +37,7 @@ export class SoilSquare extends BaseSquare {
 
         this.waterContainment = 0;
 
-        // normalized to "pounds per acre" of 50 for an average soil 
+        // nutrients normalized to "pounds per acre" per farming websites
         this.ph = 7;
         this.nitrogen = 50;
         this.phosphorus = 25;
@@ -330,6 +330,24 @@ export class SoilSquare extends BaseSquare {
             BASE_SIZE,
             BASE_SIZE
         );
+    }
+
+    // soil nutrients
+
+    takeNitrogen(requestedAmount, growthCycleFrac) {
+        let meanAmount = this.nitrogen / growthCycleFrac;
+        requestedAmount = Math.max(meanAmount / 2, requestedAmount);
+        requestedAmount = Math.min(meanAmount * 2, requestedAmount);
+        this.nitrogen -= requestedAmount;
+        return requestedAmount;
+    }
+
+    takePhosphorus(requestedAmount, growthCycleFrac) {
+        let meanAmount = this.phosphorus / growthCycleFrac;
+        requestedAmount = Math.max(meanAmount / 2, requestedAmount);
+        requestedAmount = Math.min(meanAmount * 2, requestedAmount);
+        this.phosphorus -= requestedAmount;
+        return requestedAmount;
     }
 
 }

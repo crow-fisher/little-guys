@@ -1,6 +1,6 @@
 import { removeOrganism } from "./_orgOperations.js";
 import { getStandardDeviation, randNumber } from "../common.js";
-import { getCurDay, getCurTime } from "../time.js";
+import { getCurDay, getCurTime, getDt } from "../time.js";
 import { getNextEntitySpawnId } from "../globals.js";
 import { getWindSpeedAtLocation } from "../wind.js";
 import { lightingRegisterLifeSquare } from "../lighting.js";
@@ -40,9 +40,15 @@ class BaseOrganism {
         this.transpirationRate = 0.001;
         this.rootPower = 2;
 
+        // nutrients normalized to "pounds per acre" per farming websites
         this.ph = 7;
         this.nitrogen = 0;
         this.phosphorus = 0;
+
+        this.growthNumRoots = 10;
+        this.growthNitrogen = 50;
+        this.growthPhosphorus = 25;
+        this.growthCycleLength = 30; // in days
 
         this.applyWind = false;
         this.springCoef = 4;
@@ -100,14 +106,17 @@ class BaseOrganism {
     }
 
     nutrientTick() {
-        
-        
+        let growthCycleFrac = getDt() / this.growthCycleLength;
+        let targetGrowthNitrogen = this.growthNitrogen * growthCycleFrac;
+        let targetGrowthPhosphorus = this.growthPhosphorus * growthCycleFrac;
+
         this.lifeSquares
             .filter((lsq) => lsq.type == "root")
             .filter((lsq) => lsq.linkedSquare != null && lsq.linkedSquare.proto == "SoilSquare")
-        
-        
-
+            .forEach((lsq) => {
+                this.nitrogen += lsq.takeNitrogen(targetGrowthNitrogen, growthCycleFrac);
+                this.phosphorus += lsq.takePhosphorus(targetGrowthPhosphorus, growthCycleFrac);
+            });
     }
 
     wilt() {
