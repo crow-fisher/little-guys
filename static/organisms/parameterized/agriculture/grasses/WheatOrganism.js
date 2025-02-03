@@ -14,44 +14,10 @@ export class WheatOrganism extends BaseParameterizedOrganism {
         this.proto = "WheatOrganism";
         this.greenType = WheatGreenSquare;
         this.rootType = GenericParameterizedRootSquare;
-
-        this.trunkMaxThickness = 2;
-        this.trunkCurThickness = 1;
-
-        this.airCoef = 0.1;
-        this.waterCoef = 0.1;
-        this.dirtCoef = 0.1;
-        this.reproductionEnergy = 10 ** 8;
-        this.currentHealth = 10 ** 8;
-
-        this.maximumLifeSquaresOfType = {"green": 100, "root": 25};
-        
-        this.sproutGrowTimeInDays =  10 ** (-3);
-        this.leafGrowTimeInDays =      10 ** (-3);
-        this.trunkGrowTimeInDays =    10 ** (-3);
-
+        this.grassGrowTimeInDays =  10 ** (-3);
         this.side = Math.random() > 0.5 ? -1 : 1;
-
-        // parameterized growth rules
-
-        this.org_thicknessHeightMult = randRange(4, 5);
-
-        this.rootOpacity = 0.05;
-
         this.maxNumGrass = 2;
         this.curNumGrass = 0;
-
-        /* 
-        the palm tree rules
-        ------------------- 
-
-        each node can only grow so many fronds (fraction of number of life squares in trunk)
-        to grow some height, you must be at least height/n wide
-        to grow a leaf of some length, you must be some fraction of that leaf length tall 
-        as more height is added at the top, if there already 2 or more nodes, the "middle" node gets moved to the side (with all its children) and the new node goes in the middle
-        to grow some width, you must be anchored at the bottom to a SUBTYPE_ROOTNODE root 
-        roots may be promoted to SUBTYPE_ROOTNODE 
-        */
     }
 
     growGrass() {
@@ -77,7 +43,7 @@ export class WheatOrganism extends BaseParameterizedOrganism {
             growthPlan.steps.push(new GrowthPlanStep(
                 growthPlan,
                 0,
-                this.sproutGrowTimeInDays,
+                this.grassGrowTimeInDays,
                 () => {
                     var shoot = this.growPlantSquare(startRootNode, 0, t);
                     shoot.subtype = SUBTYPE_STEM;
@@ -90,7 +56,7 @@ export class WheatOrganism extends BaseParameterizedOrganism {
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
             0,
-            this.sproutGrowTimeInDays,
+            this.grassGrowTimeInDays,
             () => {
                 var node = this.growPlantSquare(startRootNode, 0, growthPlan.steps.length);
                 node.subtype = SUBTYPE_NODE;

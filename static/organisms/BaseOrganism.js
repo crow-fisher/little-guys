@@ -289,7 +289,7 @@ class BaseOrganism {
         }
     }
 
-    // -- method implemented by organism implementations
+    // ** PLAN GROWTH METHOD IMPLEMENTED BY ORGANISMS 
     planGrowth() {}
 
 
@@ -307,7 +307,10 @@ class BaseOrganism {
         removeOrganism(this);
     }
 
-    // OUTER TICK METHOD CALLED EACH FRAME 
+    // ** TICK METHOD IMPLEMENTED BY ORGANISMS 
+    tick() {}
+
+    // ** OUTER TICK METHOD INVOKED EACH FRAME 
     process() {
         this.lifeSquares.forEach((sp) => sp.tick());
         this.waterSaturationTick();
