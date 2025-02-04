@@ -2,12 +2,12 @@ import { randNumber, randRange } from "../../../common.js";
 import { getGlobalThetaBase } from "../../../index.js";
 import { GenericParameterizedRootSquare } from "../../../lifeSquares/parameterized/GenericParameterizedRootSquare.js";
 import { ElephantEarGreenSquare } from "../../../lifeSquares/parameterized/tropical/ElephantEarGreenSquare.js";
+import { BaseOrganism } from "../../BaseOrganism.js";
 import { BaseSeedOrganism } from "../../BaseSeedOrganism.js";
-import { BaseParameterizedOrganism } from "../BaseParameterizedOrganism.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_SHOOT, SUBTYPE_STEM, SUBTYPE_TRUNK, TYPE_LEAF, TYPE_TRUNK } from "../Stages.js";
 
-export class ElephantEarOrganism extends BaseParameterizedOrganism {
+export class ElephantEarOrganism extends BaseOrganism {
     constructor(posX, posY) {
         super(posX, posY);
         this.proto = "ElephantEarOrganism";

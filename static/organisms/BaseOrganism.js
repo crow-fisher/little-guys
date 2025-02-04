@@ -343,15 +343,15 @@ class BaseOrganism {
         let expectedPhosphorus = organismProgressCalculus(this.growthPhosphorus, this.growthCycleLength);
         let expectedLightLevel = organismProgressCalculus(this.growthLightLevel, this.growthCycleLength);
 
-        let minCurNutrient = Math.min(curNitrogenFrac, curPhosphorusFrac, curLightLevel);
-
-        if (curLightLevel < expectedLightLevel) {
-            
+        if (this.waterPressure < this.waterPressureTarget) {
+            this.growRoot((sq) => sq.getSoilWaterPressure());
+        } else if (curNitrogenFrac < expectedNitrogen) {
+            this.growRoot((sq) => sq.nitrogen)
+        } else if (curPhosphorusFrac < expectedPhosphorus) {
+            this.growRoot((sq) => sq.phosphorus)
+        } else if (curLightLevel < expectedLightLevel) {
+            this.executeGrowthPlans();
         }
-
-        let curTimeFrac = (getCurDay() - this.spawnTime()) / this.growthCycleLength;
-        let curNitrogenEnergyFrac = curNitrogenFrac / endStageEnergy;
-
     }
 
     // ** PLAN GROWTH METHOD IMPLEMENTED BY ORGANISMS 

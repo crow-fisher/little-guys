@@ -1,14 +1,13 @@
 import { randNumber, randRange } from "../../../../common.js";
-import { TropicalGrassGreenSquare } from "../../../../lifeSquares/parameterized/tropical/TropicalGrassGreenSquare.js";
 import { GenericParameterizedRootSquare } from "../../../../lifeSquares/parameterized/GenericParameterizedRootSquare.js";
-import { BaseParameterizedOrganism } from "../../BaseParameterizedOrganism.js";
 import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_TRUNK, TYPE_LEAF, TYPE_TRUNK } from "../../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { WheatGreenSquare } from "../../../../lifeSquares/parameterized/agriculture/grasses/WheatGreenSquare.js";
 import { GrowthPlan, GrowthPlanStep } from "../../GrowthPlan.js";
 import { BaseSeedOrganism } from "../../../BaseSeedOrganism.js";
+import { BaseOrganism } from "../../../BaseOrganism.js";
 
-export class WheatOrganism extends BaseParameterizedOrganism {
+export class WheatOrganism extends BaseOrganism {
     constructor(posX, posY) {
         super(posX, posY);
         this.proto = "WheatOrganism";
