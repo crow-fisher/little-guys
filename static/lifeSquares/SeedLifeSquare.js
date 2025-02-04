@@ -15,10 +15,6 @@ class SeedLifeSquare extends BaseLifeSquare {
         super(square, organism);
         this.proto = "SeedLifeSquare";
         this.type = "seed";
-        this.sproutStatus = 0;
-        this.sproutGrowthRate = p_seed_ls_sproutGrowthRate;
-        this.p_seed_ls_neighborWaterContainmentRequiredToGrow = p_seed_ls_neighborWaterContainmentRequiredToGrow;
-        this.colorBase = "#A1CCA5";
         this.height = 0.25;
 
         this.baseColor = "#98817B";

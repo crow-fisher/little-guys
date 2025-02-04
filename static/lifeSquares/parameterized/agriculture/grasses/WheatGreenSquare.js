@@ -1,5 +1,5 @@
 getNeighbors
-import { STATE_DEAD, STATE_THIRSTY, SUBTYPE_DEAD, SUBTYPE_LEAF, SUBTYPE_LEAFSTEM, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_TRUNK } from "../../../../organisms/parameterized/Stages.js";
+import { STATE_DEAD, STATE_THIRSTY, SUBTYPE_DEAD, SUBTYPE_LEAF, SUBTYPE_LEAFSTEM, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_TRUNK } from "../../../../organisms/Stages.js";
 
 import { hexToRgb } from "../../../../common.js";
 import { getNeighbors } from "../../../../squares/_sqOperations.js";

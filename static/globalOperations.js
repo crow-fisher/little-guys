@@ -115,8 +115,7 @@ function processOrganisms() {
 }
 
 function renderOrganisms() {
-    iterateOnOrganisms((org) => org.proto.startsWith("Moss") ? org.render() : null, 0);
-    iterateOnOrganisms((org) => !org.proto.startsWith("Moss") ? org.render() : null, 0);
+    iterateOnOrganisms((org) => org.render(), 0);
 }
 
 function removeSquare(square) {

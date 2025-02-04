@@ -1,11 +1,11 @@
 import { removeOrganism } from "./_orgOperations.js";
 import { getStandardDeviation, organismProgressCalculus, processLighting, randNumber } from "../common.js";
-import { getCurDay, getCurTime, getDt } from "../time.js";
+import { getCurDay, getCurTime, getDt, getPrevDay } from "../time.js";
 import { getNextEntitySpawnId } from "../globals.js";
 import { getWindSpeedAtLocation } from "../wind.js";
 import { lightingRegisterLifeSquare, MAX_BRIGHTNESS } from "../lighting.js";
-import { GrowthPlan, GrowthPlanStep } from "./parameterized/GrowthPlan.js";
-import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE } from "./parameterized/Stages.js";
+import { GrowthPlan, GrowthPlanStep } from "./GrowthPlan.js";
+import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, TYPE_HEART } from "./Stages.js";
 
 class BaseOrganism {
     constructor(square) {
@@ -57,6 +57,8 @@ class BaseOrganism {
         this.deflectionStateFunctions = [];
 
         this.rootOpacity = 0.4;
+
+        this.planGrowth();
     }
 
     // WIND DEFLECTION 
@@ -243,7 +245,7 @@ class BaseOrganism {
         component.children.forEach((child) => out.push(...this._getOriginForNewGrowth(subtype, child)));
         return out;
     }
-    gp_sprout() {
+    addSproutGrowthPlan() {
         if (this.linkedSquare.currentPressureDirect > 0) {
             this.destroy();
             return;
@@ -265,16 +267,10 @@ class BaseOrganism {
             }
         ));
         growthPlan.postConstruct = () => this.originGrowth = growthPlan.component;
-        return growthPlan;
+        this.growthPlans.push(growthPlan);
     }
 
     executeGrowthPlans() {
-        if (!this.alive) {
-            return;
-        }
-        // if (!this.shouldGrow) {
-        //     return;
-        // }
         var anyStepFound = false;
         var timeBudget = getCurDay() - getPrevDay();
         this.growthPlans.filter((gp) => !gp.completed).forEach((growthPlan) => {
@@ -356,7 +352,12 @@ class BaseOrganism {
 
     // ** PLAN GROWTH METHOD IMPLEMENTED BY ORGANISMS 
     // for green growth, roots are handled generically (for now)
-    planGrowth() {}
+    planGrowth() {
+        if (this.stage == STAGE_SPROUT) {
+            this.addSproutGrowthPlan();
+            this.executeGrowthPlans();
+        }
+    }
 
 
     // RENDERING

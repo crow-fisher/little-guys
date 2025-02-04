@@ -10,7 +10,7 @@ import { selectedViewMode } from "../index.js";
 import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_GREEN, RGB_COLOR_BLACK, RGB_COLOR_RED, COLOR_BLUE, COLOR_GREEN, COLOR_RED } from "../colors.js";
 import { addOrganismSquare } from "./_lsOperations.js";
 import { removeSquare } from "../globalOperations.js";
-import { STATE_HEALTHY } from "../organisms/parameterized/Stages.js";
+import { STATE_HEALTHY } from "../organisms/Stages.js";
 import { lightingRegisterLifeSquare } from "../lighting.js";
 
 
@@ -467,22 +467,7 @@ class BaseLifeSquare {
             b: (baseColorRgb.b * 0.5 + ((altColor1Rgb.b * rand + altColor2Rgb.b * (1 - rand)) * 0.5))
         }
         var lightingColor = processLighting(this.lighting);
-
-        var outColor = {r: lightingColor * outColorBase.r, g: lightingColor.g * outColorBase.g, b: lightingColor.b * outColorBase.b};
-        
-        this.lighting.filter((light) => light != null && light.length == 2).forEach((light) => {
-            var strength = light[0].map((f) => f()).reduce(
-                (accumulator, currentValue) => accumulator + currentValue,
-                0,
-            );
-            var color = light[1]();
-            outColor = {
-                r: Math.min(255, outColor.r + (outColorBase.r / 255) * strength * color.r),
-                g: Math.min(255, outColor.g + (outColorBase.g / 255) * strength * color.g),
-                b: Math.min(255, outColor.b + (outColorBase.b / 255) * strength * color.b)
-            }
-        });
-
+        var outColor = {r: lightingColor.r * outColorBase.r, g: lightingColor.g * outColorBase.g, b: lightingColor.b * outColorBase.b};
         var outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), this.opacity);
         MAIN_CONTEXT.fillStyle = outRgba;
 

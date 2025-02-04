@@ -10,7 +10,10 @@ class BaseSeedOrganism extends BaseOrganism {
         this.proto = "BaseSeedOrganism";
         this.type = "seed";
         this.sproutType = null;
-        this.maxLifeTime = 1
+        this.maxLifeTime = 1;
+        this.growInitialSquares();
+        this.startSproutTime = null;
+        this.totalSproutTime = 0.01; // edit this, in days
     }
 
     growInitialSquares() {
@@ -25,6 +28,27 @@ class BaseSeedOrganism extends BaseOrganism {
     getSproutType() {
         return null;
     }
+
+    process() {
+        if (this.linkedSquare.proto != "SoilSquare") {
+            return;
+        }
+        if (this.startSproutTime == null) {
+            if (this.linkedSquare.getSoilWaterPressure() > -3) {
+                this.startSproutTime = getCurDay();
+            }
+        } else {
+            if (this.linkedSquare.getSoilWaterPressure() < -5.5) {
+                console.warn("Seeds got too dry...");
+                this.destroy();
+            } else if (getCurDay() - this.startSproutTime > this.totalSproutTime) {
+                let linkedSquareCache = this.linkedSquare;
+                this.destroy();
+                addNewOrganism(new (this.getSproutType())(linkedSquareCache));
+            }
+        }
+    }
+
 
     postTick() {
         var lifeCyclePercentage = (getCurDay() - this.spawnTime) / this.maxLifeTime;

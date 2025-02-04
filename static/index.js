@@ -14,16 +14,16 @@ import { getOrganismSquaresAtSquare } from "./lifeSquares/_lsOperations.js";
 import { randNumber } from "./common.js";
 import { clearPrevailingWind, addPrevailingWind, addWindPressure, initializeWindPressureMap, removeWindPressure, renderWindPressureMap, tickWindPressureMap } from "./wind.js";
 import { renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturationPascalsSqCoords } from "./temperature_humidity.js";
-import { PalmTreeSeedOrganism } from "./organisms/parameterized/tropical/PalmTreeOrganism.js";
-import { ElephantEarSeedOrganism } from "./organisms/parameterized/tropical/ElephantEarOrganism.js";
+import { PalmTreeSeedOrganism } from "./organisms/tropical/PalmTreeOrganism.js";
+import { ElephantEarSeedOrganism } from "./organisms/tropical/ElephantEarOrganism.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
-import { WheatSeedOrganism } from "./organisms/parameterized/agriculture/grasses/WheatOrganism.js";
+import { WheatSeedOrganism } from "./organisms/grasses/WheatOrganism.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { createMoonLightGroup, createSunLightGroup, default_light_throttle_interval } from "./lighting.js";
 import { loadDemoScene, loadEmptyScene, loadFlatDirtWorld, loadSlot, saveSlot } from "./saveAndLoad.js";
 import { scheduler_main, triggerEarlySquareScheduler } from "./scheduler.js";
 
-var lastMode = "normal"; // options: normal, organismWetlandgi
+var lastMode = "organismWetland"; // options: normal, organismWetlandgi
 
 var specialSelect = document.getElementById("specialSelect");
 var specialSelect_val = "water";
