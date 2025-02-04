@@ -128,8 +128,24 @@ function dec2bin(dec) {
     return (dec >>> 0).toString(2);
   }
 
+function processLighting(lightingMap) {
+    var outColor = {r: 0, g: 0, b: 0}
+    lightingMap.filter((light) => light != null && light.length == 2).forEach((light) => {
+        var strength = light[0].map((f) => f()).reduce(
+            (accumulator, currentValue) => accumulator + currentValue,
+            0,
+        );
+        var color = light[1]();
+        outColor = {
+            r: Math.min(255, outColor.r + strength * color.r),
+            g: Math.min(255, outColor.g + strength * color.g),
+            b: Math.min(255, outColor.b + strength * color.b)
+        }
+    });
+    return outColor;
+}
 
 export { getObjectArrFromMap, removeItemAll, hexToRgb, rgbToHex, rgbToRgba, 
     randNumber, randRange, loadImage, getStandardDeviation, getZPercent,
      processColorStdev, processColorStdevMulticolor, processColorLerp, 
-     processColorLerpBicolor, getDist, dec2bin }
+     processColorLerpBicolor, getDist, dec2bin, processLighting}

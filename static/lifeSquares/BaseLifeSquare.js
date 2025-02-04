@@ -1,5 +1,5 @@
 import { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, zoomCanvasFillRect } from "../index.js";
-import { getZPercent, hexToRgb, processColorLerp, processColorStdev, rgbToHex, rgbToRgba } from "../common.js";
+import { getZPercent, hexToRgb, processColorLerp, processColorStdev, processLighting, rgbToHex, rgbToRgba } from "../common.js";
 
 import { getCurTime, getDaylightStrength } from "../time.js";
 import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount, b_sq_darkeningStrength } from "../config/config.js";
@@ -466,8 +466,9 @@ class BaseLifeSquare {
             g: (baseColorRgb.g * 0.5 + ((altColor1Rgb.g * rand + altColor2Rgb.g * (1 - rand)) * 0.5)),
             b: (baseColorRgb.b * 0.5 + ((altColor1Rgb.b * rand + altColor2Rgb.b * (1 - rand)) * 0.5))
         }
+        var lightingColor = processLighting(this.lighting);
 
-        var outColor = {r: 0, g: 0, b: 0}
+        var outColor = {r: lightingColor * outColorBase.r, g: lightingColor.g * outColorBase.g, b: lightingColor.b * outColorBase.b};
         
         this.lighting.filter((light) => light != null && light.length == 2).forEach((light) => {
             var strength = light[0].map((f) => f()).reduce(

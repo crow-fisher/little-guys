@@ -1,9 +1,9 @@
 import { removeOrganism } from "./_orgOperations.js";
-import { getStandardDeviation, randNumber } from "../common.js";
+import { getStandardDeviation, processLighting, randNumber } from "../common.js";
 import { getCurDay, getCurTime, getDt } from "../time.js";
 import { getNextEntitySpawnId } from "../globals.js";
 import { getWindSpeedAtLocation } from "../wind.js";
-import { lightingRegisterLifeSquare } from "../lighting.js";
+import { lightingRegisterLifeSquare, MAX_BRIGHTNESS } from "../lighting.js";
 
 class BaseOrganism {
     constructor(square) {
@@ -44,10 +44,12 @@ class BaseOrganism {
         this.ph = 7;
         this.nitrogen = 0;
         this.phosphorus = 0;
+        this.lightlevel = 0;
 
         this.growthNumRoots = 10;
         this.growthNitrogen = 50;
         this.growthPhosphorus = 25;
+        this.growthLightLevel = 0.9; // desire mostly full sun 
         this.growthCycleLength = 30; // in days
 
         this.applyWind = false;
@@ -117,6 +119,22 @@ class BaseOrganism {
                 this.nitrogen += lsq.takeNitrogen(targetGrowthNitrogen, growthCycleFrac);
                 this.phosphorus += lsq.takePhosphorus(targetGrowthPhosphorus, growthCycleFrac);
             });
+
+        var growthNumGreen = this.growthPlans.map((gp) => gp.steps.length).reduce(
+            (accumulator, currentValue) => accumulator + currentValue,
+            0,
+        );
+
+        this.lightlevel += this.lifeSquares
+            .filter((lsq) => lsq.type == "green")
+            .map((lsq) => processLighting(lsq.lighting))
+            .map((rgb) => (rgb.r + rgb.b) / (255 * 2))
+            .map((lightlevel) => (lightlevel / growthNumGreen) * growthCycleFrac)
+            .reduce(
+                (accumulator, currentValue) => accumulator + currentValue,
+                0,
+            );
+
     }
 
     wilt() {
