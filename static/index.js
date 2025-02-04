@@ -869,8 +869,12 @@ export function doClickAdd() {
                             if (chance > 0.9) {
                                 var sq = addSquare(new SeedSquare(px, py));
                                 if (sq) {
-                                    addNewOrganism(new WheatSeedOrganism(sq));
-                                    organismAddedThisClick = true;
+                                    var org = addNewOrganism(new WheatSeedOrganism(sq));
+                                    if (org) {
+                                        organismAddedThisClick = true;
+                                    } else {
+                                        sq.destroy();
+                                    }
                                 }
                             }
                             break;

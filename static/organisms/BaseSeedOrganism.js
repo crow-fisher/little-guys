@@ -21,6 +21,8 @@ class BaseSeedOrganism extends BaseOrganism {
             newLifeSquare.linkSquare(this.linkedSquare);
             this.linkedSquare.linkOrganismSquare(newLifeSquare);
             this.addAssociatedLifeSquare(newLifeSquare);
+        } else {
+            this.destroy();
         }
     }
 
@@ -29,9 +31,6 @@ class BaseSeedOrganism extends BaseOrganism {
     }
 
     process() {
-        if (this.linkedSquare.proto != "SoilSquare") {
-            return;
-        }
         if (this.startSproutTime == null) {
             if (this.linkedSquare.getSoilWaterPressure() > -3) {
                 this.startSproutTime = getCurDay();

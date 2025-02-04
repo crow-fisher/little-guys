@@ -118,6 +118,8 @@ export class BaseSquare {
         this.water_vaporTemp = 373;
     };
 
+    getSoilWaterPressure() { return -(10 ** 8); }
+
     getLightFilterRate() {
         if (this.surface) {
             return 0;

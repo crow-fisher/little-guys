@@ -61,7 +61,7 @@ class BaseLifeSquare {
         this.opacity = 1;
         this.width = 1;
         this.height = 1;
-        this.xOffset = 0.5;
+        this.xOffset = 0;
         this.randoms = [];
 
         this.energyIndicated = 0;
@@ -88,13 +88,10 @@ class BaseLifeSquare {
         this.renderWithColorRange = false;
         // for ref - values from plant
         this.baseColor = "#9A8873";
-        this.baseColor_rgb = hexToRgb(this.baseColor);
         this.baseColorAmount = dirt_baseColorAmount;
         this.darkColor = "#46351D";
-        this.darkColor_rgb = hexToRgb(this.darkColor);
         this.darkColorAmount = dirt_darkColorAmount;
         this.accentColor = "#246A73";
-        this.accentColor_rgb = hexToRgb(this.accentColor);
         this.accentColorAmount = dirt_accentColorAmount;
 
         this.LSQ_RENDER_SIZE_MULT = Math.SQRT2;
