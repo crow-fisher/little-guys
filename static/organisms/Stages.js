@@ -1,3 +1,4 @@
+export const STAGE_SEED = "STAGE_SEED";
 export const STAGE_SPROUT = "STAGE_SPROUT";
 export const STAGE_JUVENILE = "STAGE_JUVENILE";
 export const STAGE_ADULT = "STAGE_ADULT";

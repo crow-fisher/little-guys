@@ -27,7 +27,7 @@ class SeedSquare extends BaseSquare {
     physics() {
         super.physics();
         let sq = getSquares(this.posX, this.posY + 1)
-            .filter((sq) => sq.rootable)
+            .filter((sq) => sq.proto == "SoilSquare")
             .at(0);
         if (sq == null) {
             return;
@@ -58,8 +58,7 @@ class SeedSquare extends BaseSquare {
             this.destroy();
         }
         getSquares(this.posX, this.posY + 1)
-            .filter((sq) => !sq.validPlantHome)
-            .filter((sq) => sq.solid)
+            .filter((sq) => sq.proto == "SoilSquare")
             .forEach((sq) => {
                 if (this.linkedOrganism != null) {
                     this.linkedOrganism.destroy();

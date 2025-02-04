@@ -5,14 +5,14 @@ import { getNextEntitySpawnId } from "../globals.js";
 import { getWindSpeedAtLocation } from "../wind.js";
 import { lightingRegisterLifeSquare, MAX_BRIGHTNESS } from "../lighting.js";
 import { GrowthPlan, GrowthPlanStep } from "./GrowthPlan.js";
-import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, TYPE_HEART } from "./Stages.js";
+import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SEED, STAGE_SPROUT, TYPE_HEART } from "./Stages.js";
 
 class BaseOrganism {
     constructor(square) {
         this.proto = "BaseOrganism";
         this.posX = square.posX;
         this.posY = square.posY;
-        this.stage = STAGE_SPROUT;
+        this.stage = STAGE_SEED;
         this.originGrowth = null;
         this.spinnable = false;
 

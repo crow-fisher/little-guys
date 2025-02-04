@@ -8,12 +8,11 @@ class BaseSeedOrganism extends BaseOrganism {
     constructor(square) {
         super(square);
         this.proto = "BaseSeedOrganism";
-        this.type = "seed";
         this.sproutType = null;
         this.maxLifeTime = 1;
-        this.growInitialSquares();
         this.startSproutTime = null;
         this.totalSproutTime = 0.01; // edit this, in days
+        this.growInitialSquares();
     }
 
     growInitialSquares() {
