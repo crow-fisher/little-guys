@@ -1,9 +1,11 @@
 import { removeOrganism } from "./_orgOperations.js";
-import { getStandardDeviation, processLighting, randNumber } from "../common.js";
+import { getStandardDeviation, organismProgressCalculus, processLighting, randNumber } from "../common.js";
 import { getCurDay, getCurTime, getDt } from "../time.js";
 import { getNextEntitySpawnId } from "../globals.js";
 import { getWindSpeedAtLocation } from "../wind.js";
 import { lightingRegisterLifeSquare, MAX_BRIGHTNESS } from "../lighting.js";
+import { GrowthPlan, GrowthPlanStep } from "./parameterized/GrowthPlan.js";
+import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE } from "./parameterized/Stages.js";
 
 class BaseOrganism {
     constructor(square) {
@@ -11,13 +13,6 @@ class BaseOrganism {
         this.posX = square.posX;
         this.posY = square.posY;
         this.stage = STAGE_SPROUT;
-        this.stages = [
-            STAGE_SPROUT,
-            STAGE_JUVENILE,
-            STAGE_ADULT,
-            STAGE_FLOWER,
-            STAGE_FRUIT
-        ];
         this.originGrowth = null;
         this.spinnable = false;
 
@@ -26,7 +21,7 @@ class BaseOrganism {
         this.lastGrownMap = {};
         this.linkSquare(square);
         this.maxSquaresOfTypePerDay = 1000;
-        this.stageTimeMap = { STAGE_SPROUT: 0 };
+        this.spawnTime = getCurDay();
 
         this.greenType = null;
         this.rootType = null;
@@ -79,7 +74,7 @@ class BaseOrganism {
         }
     }
 
-    // WATER SATURATION
+    // WATER SATURATION AND NUTRIENTS 
 
     waterSaturationAndPhTick() {
         let amountOfWaterTransferred = 0;
@@ -134,7 +129,6 @@ class BaseOrganism {
                 (accumulator, currentValue) => accumulator + currentValue,
                 0,
             );
-
     }
 
     wilt() {
@@ -337,7 +331,31 @@ class BaseOrganism {
         }
     }
 
+    doPlantGrowth() {
+        // expect to grow linearly over the course of our growth lifetime 
+
+        // for parts, grow according to the needs of the growth plan and its stages 
+        let curNitrogenFrac = this.nitrogen / this.growthNitrogen;
+        let curPhosphorusFrac = this.phosphorus / this.growthPhosphorus;
+        let curLightLevel = this.lightlevel / this.growthLightLevel;
+
+        let expectedNitrogen = organismProgressCalculus(this.growthNitrogen, this.growthCycleLength);
+        let expectedPhosphorus = organismProgressCalculus(this.growthPhosphorus, this.growthCycleLength);
+        let expectedLightLevel = organismProgressCalculus(this.growthLightLevel, this.growthCycleLength);
+
+        let minCurNutrient = Math.min(curNitrogenFrac, curPhosphorusFrac, curLightLevel);
+
+        if (curLightLevel < expectedLightLevel) {
+            
+        }
+
+        let curTimeFrac = (getCurDay() - this.spawnTime()) / this.growthCycleLength;
+        let curNitrogenEnergyFrac = curNitrogenFrac / endStageEnergy;
+
+    }
+
     // ** PLAN GROWTH METHOD IMPLEMENTED BY ORGANISMS 
+    // for green growth, roots are handled generically (for now)
     planGrowth() {}
 
 
@@ -360,6 +378,8 @@ class BaseOrganism {
     process() {
         this.lifeSquares.forEach((sp) => sp.tick());
         this.waterSaturationAndPhTick();
+        this.nutrientTick();
+        this.doPlantGrowth();
         this.updateDeflectionState();
         this.applyDeflectionStateToSquares();
         this.lifeSquares = this.lifeSquares.sort((a, b) => a.distToFront - b.distToFront);

@@ -48,6 +48,10 @@ function randRange(min, max) {
     return Math.random() * (max - min) + min;
 }
 
+export function organismProgressCalculus(amount, period) {
+    return (amount / (period ** 2)) * 2;
+}
+
 function loadImage(url) {
     let i = new Image();
     i.src = url;
