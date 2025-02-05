@@ -48,7 +48,7 @@ class BaseOrganism {
         this.growthNitrogen = 50;
         this.growthPhosphorus = 25;
         this.growthLightLevel = 0.9; // desire mostly full sun 
-        this.growthCycleLength = 0.5; // in days
+        this.growthCycleLength = 0.05; // in days
 
         this.applyWind = false;
         this.springCoef = 4;
