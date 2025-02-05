@@ -134,6 +134,7 @@ function doWaterFlow() {
         while (true) {
             let currentTarget = targetPressureKeys[i];
             let currentCandidate = candidatePressureKeys[i + candidateOffset];
+            
             if (currentCandidate < currentTarget) {
                 // pair off
                 var targetIdx = 0;

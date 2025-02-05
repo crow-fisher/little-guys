@@ -1,5 +1,7 @@
 // pure functions only
 
+import { reduceNextLightUpdateTime } from "./globalOperations.js";
+
 function getObjectArrFromMap(baseMap, posX, posY) {
     if (!(posX in baseMap)) {
         baseMap[posX] = new Map();
@@ -133,6 +135,13 @@ function dec2bin(dec) {
   }
 
 function processLighting(lightingMap) {
+    if (lightingMap.length == 0) {
+        return {
+            r: 255,
+            g: 255,
+            b: 255
+        }
+    }
     var outColor = {r: 0, g: 0, b: 0}
     lightingMap.filter((light) => light != null && light.length == 2).forEach((light) => {
         var strength = light[0].map((f) => f()).reduce(

@@ -12,7 +12,7 @@ import {
 
 import { MAIN_CONTEXT, BASE_SIZE, selectedViewMode, getBlockModification_val, zoomCanvasFillRect } from "../index.js";
 
-import { hexToRgb, rgbToRgba } from "../common.js";
+import { hexToRgb, processLighting, rgbToRgba } from "../common.js";
 
 import { getOrganismsAtSquare } from "../organisms/_orgOperations.js";
 import { addOrganism } from "../organisms/_orgOperations.js";
@@ -81,7 +81,7 @@ export class BaseSquare {
         this.miscBlockPropUpdateInterval = Math.random() * 1000;
 
         this.surface = false;
-        this.lightFilterRate = 0.0002;
+        this.lightFilterRate = 0.0004;
 
         this.temperature = 273 + 20; // start temperature in kelvin 
         this.thermalConductivity = 1;  // watts/meter kelvin. max is 10
@@ -315,54 +315,46 @@ export class BaseSquare {
         otherSquare.cachedRgba = null;
     }
 
+    getColorBase() {
+        var res = this.getStaticRand(1) * (parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value) + parseFloat(this.baseColorAmount.value));
+        var primaryColor = null;
+        var altColor1 = null;
+        var altColor2 = null;
+
+        if (res < parseFloat(this.accentColorAmount.value)) {
+            primaryColor = this.accentColor;
+            altColor1 = this.darkColor;
+            altColor2 = this.baseColor;
+        } else if (res < parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value)) {
+            primaryColor = this.darkColor;
+            altColor1 = this.baseColor;
+            altColor2 = this.darkColor;
+        } else {
+            altColor1 = this.darkColor;
+            altColor2 = this.darkColor;
+            primaryColor = this.baseColor;
+        }
+
+        var rand = this.getStaticRand(2);
+        var baseColorRgb = hexToRgb(primaryColor);
+        var altColor1Rgb = hexToRgb(altColor1);
+        var altColor2Rgb = hexToRgb(altColor2);
+
+        var outColorBase = {
+            r: baseColorRgb.r * 0.5 + ((altColor1Rgb.r * rand + altColor2Rgb.r * (1 - rand)) * 0.5),
+            g: baseColorRgb.g * 0.5 + ((altColor1Rgb.g * rand + altColor2Rgb.g * (1 - rand)) * 0.5),
+            b: baseColorRgb.b * 0.5 + ((altColor1Rgb.b * rand + altColor2Rgb.b * (1 - rand)) * 0.5)
+        }
+        return outColorBase;
+    }
+
     renderWithVariedColors() {
         if (Date.now() - this.lastColorCacheTime > this.colorCacheHoldTime * 1000) {
             this.lastColorCacheTime = Date.now();
-            var res = this.getStaticRand(1) * (parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value) + parseFloat(this.baseColorAmount.value));
-            var primaryColor = null;
-            var altColor1 = null;
-            var altColor2 = null;
-
-            if (res < parseFloat(this.accentColorAmount.value)) {
-                primaryColor = this.accentColor;
-                altColor1 = this.darkColor;
-                altColor2 = this.baseColor;
-            } else if (res < parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value)) {
-                primaryColor = this.darkColor;
-                altColor1 = this.baseColor;
-                altColor2 = this.darkColor;
-            } else {
-                altColor1 = this.darkColor;
-                altColor2 = this.darkColor;
-                primaryColor = this.baseColor;
-            }
-
-            var rand = this.getStaticRand(2);
-            var baseColorRgb = hexToRgb(primaryColor);
-            var altColor1Rgb = hexToRgb(altColor1);
-            var altColor2Rgb = hexToRgb(altColor2);
-
-            var outColorBase = {
-                r: baseColorRgb.r * 0.5 + ((altColor1Rgb.r * rand + altColor2Rgb.r * (1 - rand)) * 0.5),
-                g: baseColorRgb.g * 0.5 + ((altColor1Rgb.g * rand + altColor2Rgb.g * (1 - rand)) * 0.5),
-                b: baseColorRgb.b * 0.5 + ((altColor1Rgb.b * rand + altColor2Rgb.b * (1 - rand)) * 0.5)
-            }
-
+            var outColorBase = this.getColorBase();
             var outColor = { r: 0, g: 0, b: 0 }
-
-            this.lighting.filter((light) => light != null && light.length == 2).forEach((light) => {
-                var strength = light[0].map((f) => f()).reduce(
-                    (accumulator, currentValue) => accumulator + currentValue,
-                    0,
-                );
-                var color = light[1]();
-                outColor = {
-                    r: Math.min(255, outColor.r + (outColorBase.r / 255) * strength * color.r),
-                    g: Math.min(255, outColor.g + (outColorBase.g / 255) * strength * color.g),
-                    b: Math.min(255, outColor.b + (outColorBase.b / 255) * strength * color.b)
-                }
-            });
-
+            var lightingColor = processLighting(this.lighting);
+            var outColor = {r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255};
             var outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), this.opacity);
             this.cachedRgba = outRgba;
         }
@@ -422,8 +414,6 @@ export class BaseSquare {
         this.posX = newPosX;
         this.posY = newPosY;
         addSquare(this);
-
-        this.lighting = this.getNeighborLightingArr();
 
         return true;
     }
@@ -530,6 +520,11 @@ export class BaseSquare {
     waterSinkPhysics() {
         if (this.gravity == 0) {
             return;
+        }
+        if (!this.solid) {
+            if (Math.random() < 0.9) {
+                return;
+            }
         }
         getSquares(this.posX, this.posY + 1)
             .filter((sq) => sq.proto == "WaterSquare")

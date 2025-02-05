@@ -29,13 +29,9 @@ class WaterSquare extends BaseSquare {
         this.rootable = false;
         this.calculateGroupFlag = true; 
         
-        // this.baseColor = "#60EFFF";
-        // this.darkColor = "#7EF8FA";
-        // this.accentColor = "#3BEBF1";
-
         this.baseColor = "#60EFFF";
-        this.darkColor = "#60EFFF";
-        this.accentColor = "#60EFFF";
+        this.darkColor = "#7EF8FA";
+        this.accentColor = "#3BEBF1";
 
         this.opacity = 0.2;
 
@@ -47,7 +43,7 @@ class WaterSquare extends BaseSquare {
         this.thermalConductivity = 0.6;
         this.thermalMass = 4.2;
         this.temperature = 273;
-        this.lightFilterRate /= 4;
+        this.lightFilterRate /= 2;
     }
 
     reset() {

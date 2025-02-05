@@ -294,41 +294,12 @@ export class SoilSquare extends BaseSquare {
 
     }
 
-    renderWithVariedColors() {
-        var outColorBase = {
+    getColorBase() {
+        return {
             r: this.clay * this.clayColorRgb.r + this.silt * this.siltColorRgb.r + this.sand * this.sandColorRgb.r, 
             g: this.clay * this.clayColorRgb.g + this.silt * this.siltColorRgb.g + this.sand * this.sandColorRgb.g, 
             b: this.clay * this.clayColorRgb.b + this.silt * this.siltColorRgb.b + this.sand * this.sandColorRgb.b
         }
-
-        var outColor = {r: 0, g: 0, b: 0}
-        
-        this.lighting.filter((light) => light != null && light.length == 2).forEach((light) => {
-            var strength = light[0].map((f) => f()).reduce(
-                (accumulator, currentValue) => accumulator + currentValue,
-                0,
-            );
-            var color = light[1]();
-            outColor = {
-                r: Math.min(255, outColor.r + (outColorBase.r / 255) * strength * color.r),
-                g: Math.min(255, outColor.g + (outColorBase.g / 255) * strength * color.g),
-                b: Math.min(255, outColor.b + (outColorBase.b / 255) * strength * color.b)
-            }
-        });
-
-        var darkeningColorMult = (this.waterContainment / this.waterContainmentMax);
-
-        outColor.r *= (1 - 0.24 * darkeningColorMult);
-        outColor.g *= (1 - 0.30 * darkeningColorMult);
-        outColor.b *= (1 - 0.383 * darkeningColorMult);
-
-        MAIN_CONTEXT.fillStyle = rgbToHex(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b));
-        zoomCanvasFillRect(
-            (this.offsetX + this.posX) * BASE_SIZE,
-            (this.offsetY + this.posY) * BASE_SIZE,
-            BASE_SIZE,
-            BASE_SIZE
-        );
     }
 
     // soil nutrients
