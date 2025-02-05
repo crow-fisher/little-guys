@@ -1,6 +1,7 @@
 // pure functions only
 
 import { reduceNextLightUpdateTime } from "./globalOperations.js";
+import { getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "./time.js";
 
 function getObjectArrFromMap(baseMap, posX, posY) {
     if (!(posX in baseMap)) {
@@ -136,10 +137,13 @@ function dec2bin(dec) {
 
 function processLighting(lightingMap) {
     if (lightingMap.length == 0) {
+        var brightness = getDaylightStrength();
+        var daylightColor = getCurrentLightColorTemperature();
+        var moonlightColor = getMoonlightColor();
         return {
-            r: 255,
-            g: 255,
-            b: 255
+            r: (moonlightColor.r * 0.25) + (daylightColor.r * brightness),
+            g: (moonlightColor.g * 0.25) + (daylightColor.g * brightness),
+            b: (moonlightColor.b * 0.25) + (daylightColor.b * brightness)
         }
     }
     var outColor = {r: 0, g: 0, b: 0}
