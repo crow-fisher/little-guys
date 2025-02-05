@@ -1,4 +1,4 @@
-import { addSquare, addSquareOverride, getSquares, removeSquarePos } from "./squares/_sqOperations.js";
+import { addSquare, addSquareOverride, getNeighbors, getSquares, removeSquarePos } from "./squares/_sqOperations.js";
 import { reduceNextLightUpdateTime } from "./globalOperations.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
 import { RainSquare } from "./squares/parameterized/RainSquare.js";
@@ -22,7 +22,7 @@ import { createMoonLightGroup, createSunLightGroup, default_light_throttle_inter
 import { loadEmptyScene, loadFlatDirtWorld, loadSlot, saveSlot } from "./saveAndLoad.js";
 import { scheduler_main, triggerEarlySquareScheduler } from "./scheduler.js";
 
-var lastMode = "organismWetland"; // options: normal, organismWetlandgi
+var lastMode = "normal"; // options: normal, organismWetlandgi
 
 var specialSelect = document.getElementById("specialSelect");
 var specialSelect_val = "water";
@@ -219,7 +219,7 @@ var lastTick = Date.now();
 
 // wind is tiled x4
 
-var CANVAS_SQUARES_X = (192)/4 * 4; // * 8; //6;
+var CANVAS_SQUARES_X = (192)/2 * 4; // * 8; //6;
 var CANVAS_SQUARES_Y =  (108)/4 * 4; // * 8; // 8;
 
 

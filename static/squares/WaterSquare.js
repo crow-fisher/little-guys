@@ -134,16 +134,16 @@ class WaterSquare extends BaseSquare {
                 return;
             }
             if (!(sq.group in perGroupData)) {
-                perGroupData[sq.group] = new Map();
-                perGroupData[sq.group]["minPosY"] = 10 ** 8;
+                perGroupData[sq.group] = 10 ** 8;
             }
-            perGroupData[sq.group]["minPosY"] = Math.min(sq.posY, perGroupData[sq.group]["minPosY"])
-        })
+            perGroupData[sq.group] = Math.min(sq.posY, perGroupData[sq.group])
+        });
+
         iterateOnSquares((sq) => {
             if (sq.proto != this.proto) {
                 return;
             }
-            sq.currentPressureIndirect = Math.max(sq.currentPressureDirect, sq.posY - perGroupData[sq.group]["minPosY"]);
+            sq.currentPressureIndirect = Math.max(sq.currentPressureDirect, sq.posY - perGroupData[sq.group]);
         })
     }
 
