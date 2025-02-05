@@ -47,7 +47,7 @@ class WaterSquare extends BaseSquare {
         this.thermalConductivity = 0.6;
         this.thermalMass = 4.2;
         this.temperature = 273;
-        this.lightFilterRate /= 16;
+        this.lightFilterRate /= 8;
     }
 
     reset() {
@@ -59,7 +59,7 @@ class WaterSquare extends BaseSquare {
     physics() {
         super.physics();
         this.calculateCandidateFlows();
-        // this.doNeighborPercolation();
+        this.doNeighborPercolation();
         this.doLocalColorSwapping();
     }
 
@@ -88,35 +88,26 @@ class WaterSquare extends BaseSquare {
 
     physicsBefore() {
         super.physicsBefore();
-        this.calculateDirectPressure();
-        this.checkAdhesion();
-    }
-
-    physicsBefore2() {
-        super.physicsBefore2();
         this.calculateIndirectPressure();
-        updateGlobalStatistic("pressure", this.currentPressureIndirect);
     }
 
     calculateCandidateFlows() {
-        if (this.currentPressureIndirect == 0) {
-            WATERFLOW_CANDIDATE_SQUARES.add(this);
+        if (!(this.currentPressureIndirect in WATERFLOW_TARGET_SQUARES)) {
+            WATERFLOW_CANDIDATE_SQUARES[this.currentPressureIndirect] = new Array();
         }
+        WATERFLOW_CANDIDATE_SQUARES[this.currentPressureIndirect].push(this);
         if (this.currentPressureIndirect >= this.currentPressureDirect) {
             for (var i = -1; i < 2; i++) {
                 for (var j = (this.currentPressureIndirect > 2 ? -1 : 0); j < 2; j++) {
                     if (Math.abs(i) == Math.abs(j)) {
                         continue;
                     }
-                    if (Array.from(
-                        getSquares(this.posX + i, this.posY + j)
-                            .filter((sq) => sq.collision || sq.proto == this.proto))
-                        .length == 0) {
-
+                    if (!(getSquares(this.posX + i, this.posY + j)
+                            .some((sq) => sq.collision || sq.proto == this.proto))) {
                         if (!(this.currentPressureIndirect in WATERFLOW_TARGET_SQUARES)) {
-                            WATERFLOW_TARGET_SQUARES[this.currentPressureIndirect] = new Set();
+                            WATERFLOW_TARGET_SQUARES[this.currentPressureIndirect] = new Array();
                         }
-                        WATERFLOW_TARGET_SQUARES[this.currentPressureIndirect].add([this.posX + i, this.posY + j, this.group]);
+                        WATERFLOW_TARGET_SQUARES[this.currentPressureIndirect].push([this.posX + i, this.posY + j, this.group]);
                     }
                 }
             }
@@ -158,33 +149,11 @@ class WaterSquare extends BaseSquare {
         })
     }
 
-    checkAdhesion() {
-        for (let side = -1; side <= 1; side += 2) {
-            if (getSquares(this.posX + side, this.posY).some((sq) => sq.collision && sq.solid)) {
-                var shouldFall = false;
-                this.frameFrozen = true;
-                for (let i = 0; i < this.currentPressureDirect; i++) {
-                    shouldFall |= Math.random() > 0.9999;
-                }
-                this.frameFrozen = !shouldFall;
-            }
-        }
-    }
     doNeighborPercolation() {
         getNeighbors(this.posX, this.posY)
             .filter((sq) => sq.collision)
             .filter((sq) => sq.solid)
             .forEach((sq) => this.blockHealth -= sq.percolateFromWater(this));
-
-        getNeighbors(this.posX, this.posY)
-            .filter((sq) => sq.group == this.group)
-            .filter((sq) => sq.blockHealth <= this.blockHealth)
-            .filter((sq) => (sq.blockHealth + this.blockHealth) < this.blockHealthMax)
-            .forEach((sq) => {
-                this.blockHealth += sq.blockHealth;
-                sq.blockHealth = 0;
-                sq.destroy();
-            });
     }
 }
 

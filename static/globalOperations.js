@@ -85,8 +85,6 @@ function getSquareStdevForGetter(valueGetter, valueGetterName) {
 
 function reset() {
     iterateOnSquares((sq) => sq.reset(), 0);
-    stats["pressure"] = 0;
-    stats["squareStdev"] = 0;
     resetWaterflowSquares();
     lightingClearLifeSquarePositionMap();
     frame_squares = getSqIterationOrder();
@@ -124,23 +122,39 @@ function removeSquare(square) {
 
 
 function doWaterFlow() {
-    var movedCandidates = new Set();
-    for (let curWaterflowPressure = 0; curWaterflowPressure < getGlobalStatistic("pressure"); curWaterflowPressure++) {
-        if (!(curWaterflowPressure in WATERFLOW_TARGET_SQUARES)) {
-            continue;
+    let candidatePressureKeys = Array.from(WATERFLOW_CANDIDATE_SQUARES.keys()).sort((a, b) => a - b);
+    let targetPressureKeys = Array.from(WATERFLOW_TARGET_SQUARES.keys()).sort((a, b) => b - a);
+
+    let candidateOffset = 0;
+    let i = 0;
+
+    while (true) {
+        let currentTarget = targetPressureKeys[i];
+        let currentCandidate = candidatePressureKeys[i + candidateOffset];
+        if (currentTarget > currentCandidate) {
+            // pair off
+            var targetIdx = 0;
+            var targetArr = WATERFLOW_TARGET_SQUARES[currentTarget];
+
+            WATERFLOW_CANDIDATE_SQUARES[currentCandidate].forEach((sq) => {
+                if (targetIdx > targetArr.length) {
+                    return;
+                } else {
+                    let targetPos = targetArr[targetIdx];
+                    targetIdx += 1;
+                    if (sq.group == targetPos[2]) {
+                        sq.updatePosition(targetPos[0], targetPos[1])
+                    }
+                }})
+            i += 1;
+            candidateOffset += 1;
+        } else {
+            candidateOffset += 1;
         }
-        Array.from(WATERFLOW_CANDIDATE_SQUARES).filter((candidate) => !(candidate in movedCandidates))
-            .forEach((candidate) => {
-                let curTargetSet = Array.from(WATERFLOW_TARGET_SQUARES[curWaterflowPressure]).filter((arr) => arr[2] == candidate.group);
-                curTargetSet.some((target) => {
-                    if (Math.random() > ((0.998 - (candidate.viscocity.value * curWaterflowPressure)))) {
-                        if (candidate.updatePosition(target[0], target[1])) {
-                            movedCandidates.add(candidate);
-                            return true;
-                        }
-                    } return false;
-                });
-            });
+        
+        if (i >= candidatePressureKeys.length || (i + candidateOffset) >= targetPressureKeys.length) {
+            break;
+        }
     }
 }
 

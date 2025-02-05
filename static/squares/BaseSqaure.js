@@ -478,7 +478,6 @@ export class BaseSquare {
         // minimum is 33 
 
         // free
-        this.calculateDirectPressure();
         this.cacheLifeCycle();
         // soil squares
         // this.percolateInnerMoisture();
@@ -554,8 +553,9 @@ export class BaseSquare {
 
     /* Called before physics(), with blocks in strict order from top left to bottom right. */
     physicsBefore() {
-        this.temperatureRoutine();
         this.calculateGroup();
+        this.temperatureRoutine();
+        this.calculateDirectPressure();
     }
 
     physicsBefore2() { }

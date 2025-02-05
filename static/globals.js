@@ -42,7 +42,7 @@ function getGlobalStatistic(name) {
 
 function resetWaterflowSquares() {
     WATERFLOW_TARGET_SQUARES = new Map();
-    WATERFLOW_CANDIDATE_SQUARES = new Set();
+    WATERFLOW_CANDIDATE_SQUARES = new Map();
 }
 export {
     ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES, curEntitySpawnedId, darkeningColorCache, LIGHT_SOURCES,

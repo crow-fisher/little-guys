@@ -896,7 +896,8 @@ window.onload = function () {
     document.addEventListener('keyup', keyup);
     // loadDemoScene();
     // loadFlatDirtWorld();
-    loadSlot("A");
+    // loadSlot("A");
+    loadEmptyScene();
 }
 
 // loadSlotFromSave(volcano);
