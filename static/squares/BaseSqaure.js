@@ -25,6 +25,7 @@ import { removeOrganism } from "../organisms/_orgOperations.js";
 
 import { addWaterSaturationPascals, calculateColorTemperature, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, updateSquareTemperature } from "../temperature_humidity.js";
 import { getWindSquareAbove } from "../wind.js";
+import { COLOR_RED, RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
 
 export class BaseSquare {
     constructor(posX, posY) {
@@ -100,6 +101,10 @@ export class BaseSquare {
 
         this.lastColorCacheTime = 0;
         this.colorCacheHoldTime = 0.25;
+
+        this.blockHealth_color1 = RGB_COLOR_RED;
+        this.blockHealth_color2 = RGB_COLOR_BLUE
+
     };
 
     getSoilWaterPressure() { return -(10 ** 8); }
@@ -282,13 +287,11 @@ export class BaseSquare {
     }
 
     renderSpecialViewModeLinearOpacity(color1, color2, value, valueMax, opacity) {
-        var color1Rgb = hexToRgb(color1);
-        var color2Rgb = hexToRgb(color2);
         var frac = value / valueMax;
         var outColor = {
-            r: color1Rgb.r * frac + color2Rgb.r * (1 - frac),
-            g: color1Rgb.g * frac + color2Rgb.g * (1 - frac),
-            b: color1Rgb.b * frac + color2Rgb.b * (1 - frac)
+            r: color1.r * frac + color2.r * (1 - frac),
+            g: color1.g * frac + color2.g * (1 - frac),
+            b: color1.b * frac + color2.b * (1 - frac)
         }
         var outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacity);
         MAIN_CONTEXT.fillStyle = outRgba;
