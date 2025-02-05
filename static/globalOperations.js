@@ -143,17 +143,11 @@ function doWaterFlow() {
                     if (targetIdx >= targetArr.length) {
                         return;
                     } else {
-                        if (currentTarget <= 1) {
-                            if (Math.random() > 0.99) {
-                                let targetPos = targetArr[targetIdx];
-                                sq.updatePosition(targetPos[0], targetPos[1])
-                                targetIdx += 1;
-                            }
-                        } else {
+                        if (Math.random() > (0.90) ** (currentTarget - currentCandidate)) {
                             let targetPos = targetArr[targetIdx];
                             sq.updatePosition(targetPos[0], targetPos[1])
-                            targetIdx += 1;
                         }
+                        targetIdx += 1;
                     }
                 })
                 i += 1;
