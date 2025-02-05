@@ -481,8 +481,7 @@ export class BaseSquare {
         this.calculateDirectPressure();
         this.cacheLifeCycle();
         // soil squares
-        this.percolateInnerMoisture();
-
+        // this.percolateInnerMoisture();
         // 51 ms
         this.waterEvaporationRoutine();
         this.transferHeat();
