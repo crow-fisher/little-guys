@@ -92,7 +92,7 @@ class WaterSquare extends BaseSquare {
     }
 
     calculateCandidateFlows() {
-        if (!(this.currentPressureIndirect in WATERFLOW_TARGET_SQUARES)) {
+        if (!(this.currentPressureIndirect in WATERFLOW_CANDIDATE_SQUARES)) {
             WATERFLOW_CANDIDATE_SQUARES[this.currentPressureIndirect] = new Array();
         }
         WATERFLOW_CANDIDATE_SQUARES[this.currentPressureIndirect].push(this);

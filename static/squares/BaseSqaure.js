@@ -452,9 +452,25 @@ export class BaseSquare {
     _percolateGroup(group) {
         if (this.group != group) {
             this.group = group;
+            var toVisit = new Set();
+            var visited = new Set();
+
             getNeighbors(this.posX, this.posY)
                 .filter((sq) => sq.proto == this.proto)
-                .forEach((sq) => sq._percolateGroup(group));
+                .forEach((sq) => toVisit.add(sq));
+
+            toVisit.forEach((sq) => {
+                if (sq == null || sq in visited) {
+                    return;
+                } else {
+                    sq.group = this.group;
+                    visited.add(sq);
+                    getNeighbors(sq.posX, sq.posY)
+                        .filter((ssq) => ssq.proto == sq.proto)
+                        .forEach((ssq) => toVisit.add(ssq));
+                }
+            })
+
         }
     }
 

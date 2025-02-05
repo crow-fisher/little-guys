@@ -122,8 +122,8 @@ function removeSquare(square) {
 
 
 function doWaterFlow() {
-    let candidatePressureKeys = Array.from(WATERFLOW_CANDIDATE_SQUARES.keys()).sort((a, b) => a - b);
-    let targetPressureKeys = Array.from(WATERFLOW_TARGET_SQUARES.keys()).sort((a, b) => b - a);
+    let candidatePressureKeys = Array.from(Object.keys(WATERFLOW_CANDIDATE_SQUARES)).sort((a, b) => a - b);
+    let targetPressureKeys = Array.from(Object.keys(WATERFLOW_TARGET_SQUARES)).sort((a, b) => b - a);
 
     let candidateOffset = 0;
     let i = 0;
@@ -137,7 +137,7 @@ function doWaterFlow() {
             var targetArr = WATERFLOW_TARGET_SQUARES[currentTarget];
 
             WATERFLOW_CANDIDATE_SQUARES[currentCandidate].forEach((sq) => {
-                if (targetIdx > targetArr.length) {
+                if (targetIdx >= targetArr.length) {
                     return;
                 } else {
                     let targetPos = targetArr[targetIdx];
