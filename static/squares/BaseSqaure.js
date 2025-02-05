@@ -106,7 +106,26 @@ export class BaseSquare {
         this.water_vaporHeat = .000047;
         this.water_fusionTemp = 273;
         this.water_vaporTemp = 373;
+        this.cacheLifeCycle();
     };
+
+    cacheLifeCycle() {
+        if (this.cacheLastUpdated == null || Date.now() - 10 > this.cacheLastUpdated) {
+            this.cache = new Map();
+            this.cacheLastUpdated = Date.now();
+        }
+    }
+
+    cached(func) {
+        if (this.cache == null) {
+            this.cache = new Map();
+        }
+        if (func in this.cache) {
+            return this.cache[func];
+        } else {
+            this.cache[func] = func();
+        }
+    }
 
     getSoilWaterPressure() { return -(10 ** 8); }
 
@@ -351,7 +370,7 @@ export class BaseSquare {
             b: baseColorRgb.b * 0.5 + ((altColor1Rgb.b * rand + altColor2Rgb.b * (1 - rand)) * 0.5)
         }
 
-        var outColor = {r: 0, g: 0, b: 0}
+        var outColor = { r: 0, g: 0, b: 0 }
 
         this.lighting.filter((light) => light != null && light.length == 2).forEach((light) => {
             var strength = light[0].map((f) => f()).reduce(
@@ -448,16 +467,27 @@ export class BaseSquare {
         }
         this.group = getNextGroupId();
 
-        
+
         this._percolateGroup(getNextGroupId())
     }
 
+    percolateInnerMoisture() { }
+
     physics() {
+
+        // minimum is 33 
+
+        // free
         this.calculateDirectPressure();
+        this.cacheLifeCycle();
+        // soil squares
         this.percolateInnerMoisture();
+
+        // 51 ms
         this.waterEvaporationRoutine();
         this.transferHeat();
 
+        // 62ms 
         if (!this.physicsEnabled || this.linkedOrganismSquares.some((sq) => sq.type == "root")) {
             return false;
         }
@@ -529,95 +559,24 @@ export class BaseSquare {
         this.calculateGroup();
     }
 
-    /* god i fucking hate water physics */
     physicsBefore2() { }
 
     percolateFromWater(waterBlock) {
-        if (this.waterContainmentMax == 0 || this.waterContainment >= this.waterContainmentMax) {
-            return 0;
-        }
-        var heightDiff = this.posY - waterBlock.posY; // bigger number == lower, so if this is negative we are percolating up
-        var maxAmountToPercolateFromBlock = 0;
-        var amountToPercolate = 0;
-        if (heightDiff > 0) {
-            maxAmountToPercolateFromBlock = Math.min(this.waterContainmentMax - this.waterContainment, this.waterContainmentTransferRate.value);
-            amountToPercolate = Math.min(maxAmountToPercolateFromBlock, waterBlock.blockHealth);
-            this.waterContainment += amountToPercolate;
-            // flowing down
-            return amountToPercolate;
-        } else if (heightDiff == 0) {
-            maxAmountToPercolateFromBlock = Math.min(this.waterContainmentMax - this.waterContainment, this.waterContainmentTransferRate.value);
-            amountToPercolate = Math.min(maxAmountToPercolateFromBlock, waterBlock.blockHealth);
-            this.waterContainment += amountToPercolate;
-            return amountToPercolate;
-        } else {
-            // flowing up
-            // nvm
-            return 0;
-        }
-    }
-
-    percolateFromBlock(otherBlock) {
-        var heightDiff = this.posY - otherBlock.posY; // bigger number == lower, so if this is negative we are percolating up
-        // water only flows from wet to dry
-        if (moistureDiff > 0 || this.waterContainment >= this.waterContainmentMax) {
-            return 0;
-        }
-
-        /* 
-
-        percolation goals: 
-            * water should flow downwards, decaying by 20%
-                * eg., if water is added above some blocks with max water containment 1, 
-                * 
-                * ...
-                * 0.49
-                * 0.7
-                * 1
-            * if water is flowing to the side, tend towards equalization
-            * if water is flowing up, aim for a lower fraction similar to above (eg, mult of 0.5)
-        */
-
-
-        var targetWaterDiff = 0.5; // value between 0 and 1. 
-        // if 0.5, try to balance water equally between this and otherBlock.
-        // if 0, put all water into this. 
-        // if 1, put all water into otherBlock.  
-
-        if (heightDiff > 0) {
-            targetWaterDiff = 0.45;
-        }
-        else if (heightDiff < 0) {
-            targetWaterDiff = 0.55;
-        }
-
-        var moistureDiff = ((otherBlock.waterContainment * (1 - targetWaterDiff)) - (this.waterContainment * targetWaterDiff)) / 2;
-        if (moistureDiff < 0) {
-            return 0;
-        }
-        var maxAmountToPercolateFromBlock = Math.min(this.waterContainmentMax - this.waterContainment, Math.min(this.waterContainmentTransferRate.value, otherBlock.waterContainmentTransferRate.value));
-
-        var amountToPercolate = Math.min(moistureDiff, maxAmountToPercolateFromBlock);
-        this.waterContainment += amountToPercolate;
-        return amountToPercolate;
-
+        return 0;
     }
 
     calculateDirectPressure() {
-        this.currentPressureDirect = 0;
-        if (this.surface || this.organic) {
-            return;
+        if (this.currentPressureDirect != -1) {
+            return this.currentPressureDirect;
+        } else {
+            this.currentPressureDirect = getSquares(this.posX, this.posY - 1)
+                .filter((sq) => sq.collision)
+                .map((sq) => 1 + sq.calculateDirectPressure())
+                .reduce(
+                    (accumulator, currentValue) => accumulator + currentValue,
+                    0,
+                );
         }
-        if (getSquares(this.posX, this.posY - 1).some((sq) => sq.collision)) {
-            this.currentPressureDirect = 1; 
-        }
-    }
-    percolateInnerMoisture() {
-        if (this.waterContainment <= 0) {
-            return 0;
-        }
-        getNeighbors(this.posX, this.posY).filter((sq) => sq.solid).forEach((sq) => this.waterContainment -= sq.percolateFromBlock(this));
-        this.doBlockOutflow();
     }
 
     transferHeat() {
@@ -629,34 +588,6 @@ export class BaseSquare {
                 this.temperature -= diffSmall / this.thermalMass;
                 sq.temperature += diffSmall / sq.thermalMass;
             })
-    }
-
-    doBlockOutflow() {
-        if (this.waterContainment < this.waterContainmentMax / 2) {
-            return;
-        }
-
-        for (let side = -1; side <= 1; side += 2) {
-            getSquares(this.posX + side, this.posY).filter((sq) => sq.proto == "WaterSquare")
-                .forEach((sq) => {
-                    sq.frameFrozen = false;
-                    sq.physics();
-                });
-
-            if (getSquares(this.posX + side, this.posY).some((sq) => sq.collision)) {
-                continue;
-            }
-            if (getNeighbors(this.posX, this.posY)
-                .filter((sq) => sq.group == this.group)
-                .some((sq) => sq.waterContainment != sq.waterContainmentMax)) {
-                return;
-            }
-            var newWater = addSquareByName(this.posX + side, this.posY, "water");
-            if (newWater) {
-                newWater.blockHealth = this.waterContainmentTransferRate.value;
-                this.waterContainment -= this.waterContainmentTransferRate.value;
-            }
-        }
     }
 
     suckWater(rootRequestedWater) {

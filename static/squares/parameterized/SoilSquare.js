@@ -36,6 +36,7 @@ export class SoilSquare extends BaseSquare {
         this.clay = 0.20;
 
         this.waterContainment = 0;
+        this.cache = new Map();
 
         // nutrients normalized to "pounds per acre" per farming websites
         this.ph = 7;
@@ -191,16 +192,18 @@ export class SoilSquare extends BaseSquare {
         )
     }
 
-    getMatricPressure() {
+    _getMatricPressure() {
         return (
             this.clay * this.getPressureGeneric(this.waterContainment, this.clayMap)
              + this.silt * this.getPressureGeneric(this.waterContainment, this.siltMap)
              + this.sand * this.getPressureGeneric(this.waterContainment, this.sandMap)
         )
     }
+    getMatricPressure() {
+        return this.cached(() => this._getMatricPressure());
+    }
 
     getGravitationalPressure() {
-        // -10 * 9.8 * (height in meters) and one block is one meter for hpa 
         return -0.02 * 9.8 * this.currentPressureDirect; 
     }
 
@@ -210,6 +213,7 @@ export class SoilSquare extends BaseSquare {
 
     percolateInnerMoisture() {
         getNeighbors(this.posX, this.posY)
+            .filter((_) => Math.random() > 0.8)
             .filter((sq) => sq.proto == this.proto)
             .forEach((sq) => {
                 var thisWaterPressure = this.getMatricPressure(); 
@@ -269,16 +273,16 @@ export class SoilSquare extends BaseSquare {
         var maxAmountToPercolateFromBlock = 0;
         var amountToPercolate = 0;
         if (heightDiff > 0) {
-            maxAmountToPercolateFromBlock = Math.min(this.waterContainmentMax - this.waterContainment, this.waterContainmentTransferRate.value);
+            maxAmountToPercolateFromBlock = Math.min(this.waterContainmentMax - this.waterContainment, 1);
             amountToPercolate = Math.min(maxAmountToPercolateFromBlock, waterBlock.blockHealth);
         } else if (heightDiff == 0) {
-            maxAmountToPercolateFromBlock = Math.min(this.waterContainmentMax - this.waterContainment, this.waterContainmentTransferRate.value);
+            maxAmountToPercolateFromBlock = Math.min(this.waterContainmentMax - this.waterContainment, 0.5);
             amountToPercolate = Math.min(maxAmountToPercolateFromBlock, waterBlock.blockHealth);
         } else {
             amountToPercolate = 0;
         }
 
-        amountToPercolate /= this.getWaterflowRate();
+        amountToPercolate = this.waterContainmentMax * this.getWaterflowRate();
         this.waterContainment += amountToPercolate;
         return amountToPercolate;
     }
