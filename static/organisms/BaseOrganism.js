@@ -330,6 +330,10 @@ class BaseOrganism {
         if (!this.lifeSquares.some((lsq) => lsq.type == "green")) {
             this.executeGrowthPlans();
         }
+
+        if (this.waterPressure < this.waterPressureWiltThresh) {
+            return;
+        }
         // expect to grow linearly over the course of our growth lifetime 
         // expect to grow linearly over the course of our growth lifetime 
 

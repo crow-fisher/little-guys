@@ -13,7 +13,7 @@ export class WheatOrganism extends BaseOrganism {
         this.proto = "WheatOrganism";
         this.greenType = WheatGreenSquare;
         this.rootType = GenericParameterizedRootSquare;
-        this.grassGrowTimeInDays =  10 ** (-4);
+        this.grassGrowTimeInDays =  10 ** (-3);
         this.side = Math.random() > 0.5 ? -1 : 1;
         this.maxNumGrass = 2;
         this.curNumGrass = 0;
