@@ -70,8 +70,6 @@ function render() {
 }
 
 function orgTick() {
-    tickWindPressureMap();
-    tickMaps();
     processOrganisms();
 }
 

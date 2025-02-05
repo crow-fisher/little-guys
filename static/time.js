@@ -188,17 +188,7 @@ function renderTime() {
         daylightStrength = getDaylightStrength();
     }
 
-    var myTemp = daylightStrength * 6600;
-    var dc = calculateTempColor(myTemp);
-
-    var resColor = {
-        r: Math.floor(dc.r * daylightStrength),
-        g: Math.floor(dc.g * daylightStrength),
-        b: Math.floor(dc.b * daylightStrength),
-    }
-
-
-    MAIN_CONTEXT.fillStyle = rgbToRgba(resColor.r, resColor.g, resColor.b, 0.35);
+    MAIN_CONTEXT.fillStyle = calculateTempColorRgba(daylightStrength);
     zoomCanvasFillRect(
         0,
         0,
@@ -230,6 +220,27 @@ function calculateTempColor(temperature) {
         b: temp_blue(temperature)
     };
     return currentLightColorTemperature;
+}
+
+let tempColorRgbaMap = new Map();
+let tempColorRgbMap = new Map();
+
+function calculateTempColorRgba(daylightStrength) {
+    var temperature = Math.floor(daylightStrength * 6600);
+    if (temperature in tempColorRgbaMap) {
+        currentLightColorTemperature = tempColorRgbMap[temperature];
+        return tempColorRgbaMap[temperature];
+    } else {
+        var dc = calculateTempColor(temperature);
+        var resColor = {
+            r: Math.floor(dc.r * daylightStrength),
+            g: Math.floor(dc.g * daylightStrength),
+            b: Math.floor(dc.b * daylightStrength),
+        }
+        tempColorRgbMap[temperature] = resColor;
+        tempColorRgbaMap[temperature] = rgbToRgba(resColor.r, resColor.g, resColor.b, 0.35);
+        return tempColorRgbaMap[temperature];
+    }
 }
 
 function temp_red(temperature) {
