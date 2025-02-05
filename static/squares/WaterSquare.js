@@ -92,22 +92,31 @@ class WaterSquare extends BaseSquare {
     }
 
     calculateCandidateFlows() {
-        if (!(this.currentPressureIndirect in WATERFLOW_CANDIDATE_SQUARES)) {
-            WATERFLOW_CANDIDATE_SQUARES[this.currentPressureIndirect] = new Array();
+        if (!(this.group in WATERFLOW_CANDIDATE_SQUARES)) {
+            WATERFLOW_CANDIDATE_SQUARES[this.group] = new Map();
         }
-        WATERFLOW_CANDIDATE_SQUARES[this.currentPressureIndirect].push(this);
+        if (!(this.group in WATERFLOW_TARGET_SQUARES)) {
+            WATERFLOW_TARGET_SQUARES[this.group] = new Map();
+        }
+
+        var candidateMap = WATERFLOW_CANDIDATE_SQUARES[this.group];
+        var targetMap = WATERFLOW_TARGET_SQUARES[this.group]
+        if (!(this.currentPressureIndirect in candidateMap)) {
+            candidateMap[this.currentPressureIndirect] = new Array();
+        }
+        candidateMap[this.currentPressureIndirect].push(this);
         if (this.currentPressureIndirect >= this.currentPressureDirect) {
             for (var i = -1; i < 2; i++) {
-                for (var j = (this.currentPressureIndirect > 2 ? -1 : 0); j < 2; j++) {
-                    if (Math.abs(i) == Math.abs(j)) {
-                        continue;
-                    }
+                for (var j = -1; i < 2; i++) {
+                    // if (Math.abs(i) == Math.abs(j)) {
+                    //     continue;
+                    // }
                     if (!(getSquares(this.posX + i, this.posY + j)
                             .some((sq) => sq.collision || sq.proto == this.proto))) {
-                        if (!(this.currentPressureIndirect in WATERFLOW_TARGET_SQUARES)) {
-                            WATERFLOW_TARGET_SQUARES[this.currentPressureIndirect] = new Array();
+                        if (!(this.currentPressureIndirect in targetMap)) {
+                            targetMap[this.currentPressureIndirect] = new Array();
                         }
-                        WATERFLOW_TARGET_SQUARES[this.currentPressureIndirect].push([this.posX + i, this.posY + j, this.group]);
+                        targetMap[this.currentPressureIndirect].push([this.posX + i, this.posY + j]);
                     }
                 }
             }

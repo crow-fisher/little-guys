@@ -106,26 +106,7 @@ export class BaseSquare {
         this.water_vaporHeat = .000047;
         this.water_fusionTemp = 273;
         this.water_vaporTemp = 373;
-        this.cacheLifeCycle();
     };
-
-    cacheLifeCycle() {
-        if (this.cacheLastUpdated == null || Date.now() - 10 > this.cacheLastUpdated) {
-            this.cache = new Map();
-            this.cacheLastUpdated = Date.now();
-        }
-    }
-
-    cached(func) {
-        if (this.cache == null) {
-            this.cache = new Map();
-        }
-        if (func in this.cache) {
-            return this.cache[func];
-        } else {
-            this.cache[func] = func();
-        }
-    }
 
     getSoilWaterPressure() { return -(10 ** 8); }
 
@@ -492,7 +473,6 @@ export class BaseSquare {
         // minimum is 33 
 
         // free
-        this.cacheLifeCycle();
         // soil squares
         // this.percolateInnerMoisture();
         // 51 ms

@@ -36,7 +36,6 @@ export class SoilSquare extends BaseSquare {
         this.clay = 0.20;
 
         this.waterContainment = 0;
-        this.cache = new Map();
 
         // nutrients normalized to "pounds per acre" per farming websites
         this.ph = 7;
@@ -192,17 +191,13 @@ export class SoilSquare extends BaseSquare {
         )
     }
 
-    _getMatricPressure() {
+    getMatricPressure() {
         return (
             this.clay * this.getPressureGeneric(this.waterContainment, this.clayMap)
              + this.silt * this.getPressureGeneric(this.waterContainment, this.siltMap)
              + this.sand * this.getPressureGeneric(this.waterContainment, this.sandMap)
         )
     }
-    getMatricPressure() {
-        return this.cached(() => this._getMatricPressure());
-    }
-
     getGravitationalPressure() {
         return -0.02 * 9.8 * this.currentPressureDirect; 
     }

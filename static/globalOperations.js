@@ -24,7 +24,7 @@ function doLightSourceRaycasting() {
     var shouldDoFullSquareUpdate = Date.now() > nextLightingUpdate;
     if (!shouldDoFullSquareUpdate) {
         return;
-    } 
+    }
     lightingPrepareTerrainSquares();
     nextLightingUpdate = Date.now() + default_light_throttle_interval;
     iterateOnOrganisms((org) => org.lifeSquares.forEach((lsq) => lightingRegisterLifeSquare(lsq)));
@@ -71,7 +71,7 @@ function purge() {
         }
     })
 }
-function getSquareStdevForGetter(valueGetter, valueGetterName) { 
+function getSquareStdevForGetter(valueGetter, valueGetterName) {
     if (valueGetterName in stats && stats[valueGetterName] != 0) {
         return stats[valueGetterName];
     } else {
@@ -122,40 +122,46 @@ function removeSquare(square) {
 
 
 function doWaterFlow() {
-    let candidatePressureKeys = Array.from(Object.keys(WATERFLOW_CANDIDATE_SQUARES)).sort((a, b) => a - b);
-    let targetPressureKeys = Array.from(Object.keys(WATERFLOW_TARGET_SQUARES)).sort((a, b) => b - a);
+    let candidateTargetKeys = Array.from(Object.keys(WATERFLOW_TARGET_SQUARES));
 
-    let candidateOffset = 0;
-    let i = 0;
+    candidateTargetKeys.filter((group) => group in WATERFLOW_CANDIDATE_SQUARES).forEach((targetGroup) => {
+        let candidateGroupMap = WATERFLOW_CANDIDATE_SQUARES[targetGroup];
+        let targetGroupMap = WATERFLOW_TARGET_SQUARES[targetGroup];
 
-    while (true) {
-        let currentTarget = targetPressureKeys[i];
-        let currentCandidate = candidatePressureKeys[i + candidateOffset];
-        if (currentTarget > currentCandidate) {
-            // pair off
-            var targetIdx = 0;
-            var targetArr = WATERFLOW_TARGET_SQUARES[currentTarget];
+        let candidatePressureKeys = Array.from(Object.keys(candidateGroupMap)).sort((a, b) => a - b);
+        let targetPressureKeys = Array.from(Object.keys(targetGroupMap)).sort((a, b) => b - a);
 
-            WATERFLOW_CANDIDATE_SQUARES[currentCandidate].forEach((sq) => {
-                if (targetIdx >= targetArr.length) {
-                    return;
-                } else {
-                    let targetPos = targetArr[targetIdx];
-                    targetIdx += 1;
-                    if (sq.group == targetPos[2]) {
+        let candidateOffset = 0;
+        let i = 0;
+
+        while (true) {
+            let currentTarget = targetPressureKeys[i];
+            let currentCandidate = candidatePressureKeys[i + candidateOffset];
+            if (currentCandidate < currentTarget) {
+                // pair off
+                var targetIdx = 0;
+                var targetArr = targetGroupMap[currentTarget];
+
+                candidateGroupMap[currentCandidate].forEach((sq) => {
+                    if (targetIdx >= targetArr.length) {
+                        return;
+                    } else {
+                        let targetPos = targetArr[targetIdx];
                         sq.updatePosition(targetPos[0], targetPos[1])
+                        targetIdx += 1;
                     }
-                }})
-            i += 1;
-            candidateOffset += 1;
-        } else {
-            candidateOffset += 1;
+                })
+                i += 1;
+                candidateOffset += 1;
+            } else {
+                candidateOffset += 1;
+            }
+            if (i >= candidatePressureKeys.length || (i + candidateOffset) >= targetPressureKeys.length) {
+                break;
+            }
         }
-        
-        if (i >= candidatePressureKeys.length || (i + candidateOffset) >= targetPressureKeys.length) {
-            break;
-        }
-    }
+    });
 }
 
-export {purge, reset, renderWater, renderSquares, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquare, getSquareStdevForGetter, doLightSourceRaycasting}
+
+export { purge, reset, renderWater, renderSquares, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquare, getSquareStdevForGetter, doLightSourceRaycasting }
