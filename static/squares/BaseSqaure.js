@@ -8,7 +8,7 @@ import {
     b_sq_darkeningStrength,
 } from "../config/config.js"
 
-import { getNeighbors, getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares } from "./_sqOperations.js"
+import { getNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares } from "./_sqOperations.js"
 import {
     ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES, darkeningColorCache,
     getNextGroupId, updateGlobalStatistic, getGlobalStatistic
@@ -63,7 +63,6 @@ export class BaseSquare {
         this.rootable = false;
         this.validPlantHome = false;
         this.group = -1;
-        this.calculateGroupFlag = false;
         this.organic = false;
         this.collision = true;
         this.visible = true;
@@ -379,7 +378,7 @@ export class BaseSquare {
     }
 
     getNeighborLightingArr() {
-        var ret = getDirectNeighbors(this.posX, this.posY).map((sq) => sq.lighting).find((light) => light != []);
+        var ret = getNeighbors(this.posX, this.posY).map((sq) => sq.lighting).find((light) => light != []);
         if (ret != null) {
             return ret;
         } return [];
@@ -428,49 +427,29 @@ export class BaseSquare {
 
         this.lighting = this.getNeighborLightingArr();
 
-        // this.calculateGroup();
         return true;
     }
 
+    _percolateGroup(group) {
+        if (this.group != group) {
+            this.group = group;
+            getNeighbors(this.posX, this.posY)
+                .filter((sq) => sq.proto == this.proto)
+                .forEach((sq) => sq._percolateGroup(group));
+        }
+    }
+
     calculateGroup() {
+        if (this.proto != "WaterSquare") {
+            return;
+        }
         if (this.group != -1) {
             return;
         }
-        if (!this.calculateGroupFlag) {
-            return;
-        }
-        var visited = new Set();
-        var groupNeighbors = new Set(getDirectNeighbors(this.posX, this.posY).filter((sq) => this.proto == sq.proto));
-        groupNeighbors.add(this);
-        while (true) {
-            var startGroupNeighborsSize = groupNeighbors.size;
-            groupNeighbors.forEach((neighbor) => {
-                if (neighbor in visited) {
-                    return;
-                }
-                getDirectNeighbors(neighbor.posX, neighbor.posY).filter((sq) => this.proto == sq.proto)
-                    .forEach((neighborGroupNeighbor) => groupNeighbors.add(neighborGroupNeighbor));
+        this.group = getNextGroupId();
 
-                visited.add(neighbor);
-            })
-            var endGroupNeighborsSize = groupNeighbors.size;
-            if (startGroupNeighborsSize == endGroupNeighborsSize) {
-                break;
-            }
-        }
-
-        var group = Array.from(groupNeighbors).map((x) => x.group).find((x) => x != -1);
-        if (group != null) {
-            // then we have already set this group, somehow
-            // probably some physics shenanigans
-            groupNeighbors.forEach((x) => x.group = group);
-            this.group = group;
-            return;
-        }
-
-        var nextGroupId = getNextGroupId();
-        groupNeighbors.forEach((x) => x.group = nextGroupId);
-
+        
+        this._percolateGroup(getNextGroupId())
     }
 
     physics() {
@@ -637,7 +616,7 @@ export class BaseSquare {
         if (this.waterContainment <= 0) {
             return 0;
         }
-        getDirectNeighbors(this.posX, this.posY).filter((sq) => sq.solid).forEach((sq) => this.waterContainment -= sq.percolateFromBlock(this));
+        getNeighbors(this.posX, this.posY).filter((sq) => sq.solid).forEach((sq) => this.waterContainment -= sq.percolateFromBlock(this));
         this.doBlockOutflow();
     }
 

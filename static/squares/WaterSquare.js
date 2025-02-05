@@ -4,7 +4,7 @@ import {
     water_darkeningStrength,
 } from "../config/config.js"
 
-import { getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares, getNeighbors } from "./_sqOperations.js";
+import { addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares, getNeighbors } from "./_sqOperations.js";
 import {
     ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats,
     getNextGroupId, updateGlobalStatistic, getGlobalStatistic,

@@ -22,21 +22,6 @@ function* getNeighbors(x, y) {
     }
 }
 
-function getDirectNeighbors(x, y) {
-    var out = [];
-    for (var i = -1; i < 2; i++) {
-        for (var j = -1; j < 2; j++) {
-            if (i == 0 && j == 0) {
-                continue;
-            }
-            if (abs(i) == abs(j)) {
-                continue;
-            }
-            out.push(...getSquares(x + i, y + j));
-        }
-    }
-    return out;
-}
 
 function addSquare(square) {
     if (!square.organic && square.collision && getSquares(square.posX, square.posY).some((sq) => sq.collision)) {
@@ -116,4 +101,4 @@ function removeSquarePos(x, y) {
 }
 
 
-export {getSqIterationOrder, getNeighbors, getDirectNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares, removeOrganismSquare, removeSquarePos};
+export {getSqIterationOrder, getNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares, removeOrganismSquare, removeSquarePos};

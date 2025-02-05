@@ -1,4 +1,4 @@
-import { getDirectNeighbors, addSquare, addSquareOverride, getSquares, removeSquarePos } from "./squares/_sqOperations.js";
+import { addSquare, addSquareOverride, getSquares, removeSquarePos } from "./squares/_sqOperations.js";
 import { purge, reset, renderWater, renderSquares, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, doLightSourceRaycasting, reduceNextLightUpdateTime } from "./globalOperations.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
 import { RainSquare } from "./squares/parameterized/RainSquare.js";
@@ -670,7 +670,7 @@ function doBlockMod(posX, posY) {
         getSquares(posX, posY)
             .filter((sq) => sq.solid && sq.collision)
             .forEach((sq) => sq.surface = !rightMouseClicked);
-        getDirectNeighbors(posX, posY)
+        getNeighbors(posX, posY)
             .filter((sq) => sq.solid && sq.collision)
             .forEach((sq) => sq.surface = !rightMouseClicked);
     }
@@ -680,13 +680,13 @@ function doBlockMod(posX, posY) {
             getSquares(posX, posY)
                 .forEach((sq) => sq.blockModDarkenVal = sq.blockModDarkenVal == null ? 0 : Math.min(sq.blockModDarkenVal + .01, 1));
 
-            getDirectNeighbors(posX, posY)
+            getNeighbors(posX, posY)
                 .forEach((sq) => sq.blockModDarkenVal = sq.blockModDarkenVal == null ? 0 : Math.min(sq.blockModDarkenVal + .005, 1));
         } else {
             getSquares(posX, posY)
                 .forEach((sq) => sq.blockModDarkenVal = sq.blockModDarkenVal == null ? 0 : Math.max(sq.blockModDarkenVal - .01, -1));
 
-            getDirectNeighbors(posX, posY)
+            getNeighbors(posX, posY)
                 .forEach((sq) => sq.blockModDarkenVal = sq.blockModDarkenVal == null ? 0 : Math.max(sq.blockModDarkenVal - .005, -1));
         }
     }

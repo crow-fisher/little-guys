@@ -6,7 +6,7 @@ import { getWindSpeedAtLocation } from "../wind.js";
 import { lightingRegisterLifeSquare, MAX_BRIGHTNESS } from "../lighting.js";
 import { GrowthPlan, GrowthPlanStep } from "./GrowthPlan.js";
 import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, STATE_DEAD, STATE_HEALTHY, STATE_THIRSTY, SUBTYPE_ROOTNODE, TYPE_HEART } from "./Stages.js";
-import { addSquare, getDirectNeighbors } from "../squares/_sqOperations.js";
+import { addSquare, getNeighbors } from "../squares/_sqOperations.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 import { PlantSquare } from "../squares/PlantSquare.js";
 
@@ -306,7 +306,7 @@ class BaseOrganism {
         var targetSquare = null;
         var targetSquareParent = null;
         this.lifeSquares.filter((lsq) => lsq.type == "root").forEach((lsq) => {
-            getDirectNeighbors(lsq.posX, lsq.posY)
+            getNeighbors(lsq.posX, lsq.posY)
                 .filter((_sq) => _sq != null)
                 .filter((_sq) => _sq.rootable)
                 .filter((_sq) => !(_sq.linkedOrganismSquares.some((llsq => llsq.linkedOrganism == this))))
