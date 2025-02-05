@@ -335,7 +335,7 @@ export class SoilSquare extends BaseSquare {
     // soil nutrients
 
     takeNitrogen(requestedAmount, growthCycleFrac) {
-        let meanAmount = this.nitrogen / growthCycleFrac;
+        let meanAmount = this.nitrogen * growthCycleFrac;
         requestedAmount = Math.max(meanAmount / 2, requestedAmount);
         requestedAmount = Math.min(meanAmount * 2, requestedAmount);
         this.nitrogen -= requestedAmount;
@@ -343,7 +343,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     takePhosphorus(requestedAmount, growthCycleFrac) {
-        let meanAmount = this.phosphorus / growthCycleFrac;
+        let meanAmount = this.phosphorus * growthCycleFrac;
         requestedAmount = Math.max(meanAmount / 2, requestedAmount);
         requestedAmount = Math.min(meanAmount * 2, requestedAmount);
         this.phosphorus -= requestedAmount;

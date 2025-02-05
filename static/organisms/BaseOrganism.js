@@ -5,7 +5,10 @@ import { getNextEntitySpawnId } from "../globals.js";
 import { getWindSpeedAtLocation } from "../wind.js";
 import { lightingRegisterLifeSquare, MAX_BRIGHTNESS } from "../lighting.js";
 import { GrowthPlan, GrowthPlanStep } from "./GrowthPlan.js";
-import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, TYPE_HEART } from "./Stages.js";
+import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, STATE_DEAD, STATE_HEALTHY, STATE_THIRSTY, SUBTYPE_ROOTNODE, TYPE_HEART } from "./Stages.js";
+import { addSquare, getDirectNeighbors } from "../squares/_sqOperations.js";
+import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
+import { PlantSquare } from "../squares/PlantSquare.js";
 
 class BaseOrganism {
     constructor(square) {
@@ -27,9 +30,9 @@ class BaseOrganism {
         this.rootType = null;
 
         this.curWilt = 0;
-        this.waterPressure = -2;
-        this.waterPressureTarget = -2;
-        this.waterPressureWiltThresh = -3;
+        this.waterPressure = -2.5;
+        this.waterPressureTarget = -2.5;
+        this.waterPressureWiltThresh = -3.5;
         this.waterPressureDieThresh = -5;
         this.waterPressureOverwaterThresh = -1;
         this.transpirationRate = 0.001;
@@ -45,7 +48,7 @@ class BaseOrganism {
         this.growthNitrogen = 50;
         this.growthPhosphorus = 25;
         this.growthLightLevel = 0.9; // desire mostly full sun 
-        this.growthCycleLength = 30; // in days
+        this.growthCycleLength = 0.5; // in days
 
         this.applyWind = false;
         this.springCoef = 4;
@@ -55,10 +58,8 @@ class BaseOrganism {
         this.deflectionIdx = 0;
         this.deflectionStateTheta = 0;
         this.deflectionStateFunctions = [];
-
         this.rootOpacity = 0.4;
-
-        this.planGrowth();
+        this.lighting = square.lighting;
     }
 
     // WIND DEFLECTION 
@@ -113,8 +114,8 @@ class BaseOrganism {
             .filter((lsq) => lsq.type == "root")
             .filter((lsq) => lsq.linkedSquare != null && lsq.linkedSquare.proto == "SoilSquare")
             .forEach((lsq) => {
-                this.nitrogen += lsq.takeNitrogen(targetGrowthNitrogen, growthCycleFrac);
-                this.phosphorus += lsq.takePhosphorus(targetGrowthPhosphorus, growthCycleFrac);
+                this.nitrogen += lsq.linkedSquare.takeNitrogen(targetGrowthNitrogen, growthCycleFrac);
+                this.phosphorus += lsq.linkedSquare.takePhosphorus(targetGrowthPhosphorus, growthCycleFrac);
             });
 
         var growthNumGreen = this.growthPlans.map((gp) => gp.steps.length).reduce(
@@ -277,12 +278,10 @@ class BaseOrganism {
             anyStepFound = true;
             growthPlan.steps.filter((step) => !step.completed).forEach((step) => {
                 if (
-                    (getCurDay() + timeBudget >= growthPlan.stepLastExecuted + step.timeCost) &&
-                    (this.currentEnergy >= step.energyCost)
+                    (getCurDay() + timeBudget >= growthPlan.stepLastExecuted + step.timeCost)
                 ) {
                     step.doAction();
                     step.growthPlan.stepLastExecuted = getCurDay();
-                    this.currentEnergy -= step.energyCost;
                     if (this.originGrowth != null) {
                         this.originGrowth.updateDeflectionState();
                         this.originGrowth.applyDeflectionState();
@@ -310,7 +309,7 @@ class BaseOrganism {
             getDirectNeighbors(lsq.posX, lsq.posY)
                 .filter((_sq) => _sq != null)
                 .filter((_sq) => _sq.rootable)
-                .filter((_sq) => getOrganismSquaresAtSquareWithEntityId(_sq, this.spawnedEntityId).length == 0)
+                .filter((_sq) => !(_sq.linkedOrganismSquares.some((llsq => llsq.linkedOrganism == this))))
                 .filter((_sq) => targetSquare == null || f(targetSquare) < f(_sq))
                 .forEach((_sq) => {targetSquare = _sq; targetSquareParent = lsq});
         });
@@ -328,16 +327,24 @@ class BaseOrganism {
     }
 
     doPlantGrowth() {
+        if (!this.lifeSquares.some((lsq) => lsq.type == "green")) {
+            this.executeGrowthPlans();
+        }
         // expect to grow linearly over the course of our growth lifetime 
+        // expect to grow linearly over the course of our growth lifetime 
+
+        // expect to grow linearly over the course of our growth lifetime
 
         // for parts, grow according to the needs of the growth plan and its stages 
         let curNitrogenFrac = this.nitrogen / this.growthNitrogen;
         let curPhosphorusFrac = this.phosphorus / this.growthPhosphorus;
         let curLightLevel = this.lightlevel / this.growthLightLevel;
+        
+        let curLifeFrac = (getCurDay() - this.spawnTime) / this.growthCycleLength; 
 
-        let expectedNitrogen = organismProgressCalculus(this.growthNitrogen, this.growthCycleLength);
-        let expectedPhosphorus = organismProgressCalculus(this.growthPhosphorus, this.growthCycleLength);
-        let expectedLightLevel = organismProgressCalculus(this.growthLightLevel, this.growthCycleLength);
+        let expectedNitrogen = curLifeFrac ** 2 * this.growthNitrogen;
+        let expectedPhosphorus = curLifeFrac ** 2 * this.growthPhosphorus;
+        let expectedLightLevel = curLifeFrac ** 2 * this.growthLightLevel;
 
         if (this.waterPressure < this.waterPressureTarget) {
             this.growRoot((sq) => sq.getSoilWaterPressure());
@@ -355,7 +362,6 @@ class BaseOrganism {
     planGrowth() {
         if (this.stage == STAGE_SPROUT) {
             this.addSproutGrowthPlan();
-            this.executeGrowthPlans();
         }
     }
 
@@ -367,6 +373,7 @@ class BaseOrganism {
 
     // DESTRUCTION
     destroy() {
+        console.warn("KILLING MYSELF")
         this.lifeSquares.forEach((lifeSquare) => lifeSquare.destroy());
         if (this.linkedSquare != null && this.linkedSquare != -1) {
             this.linkedSquare.unlinkOrganism();
@@ -377,7 +384,6 @@ class BaseOrganism {
     // ** OUTER TICK METHOD INVOKED EACH FRAME
     // -- these methods are universal to every organism
     process() {
-        this.lifeSquares.forEach((sp) => sp.tick());
         this.waterSaturationAndPhTick();
         this.nutrientTick();
         this.doPlantGrowth();

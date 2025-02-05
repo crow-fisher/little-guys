@@ -10,7 +10,7 @@ import { selectedViewMode } from "../index.js";
 import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_GREEN, RGB_COLOR_BLACK, RGB_COLOR_RED, COLOR_BLUE, COLOR_GREEN, COLOR_RED } from "../colors.js";
 import { addOrganismSquare } from "./_lsOperations.js";
 import { removeSquare } from "../globalOperations.js";
-import { STATE_HEALTHY } from "../organisms/Stages.js";
+import { STATE_DEAD, STATE_HEALTHY, STATE_THIRSTY, SUBTYPE_TRUNK,SUBTYPE_DEAD,SUBTYPE_LEAF,SUBTYPE_LEAFSTEM,SUBTYPE_NODE,SUBTYPE_ROOTNODE,SUBTYPE_SHOOT,SUBTYPE_SPROUT,SUBTYPE_STEM } from "../organisms/Stages.js";
 import { lightingRegisterLifeSquare } from "../lighting.js";
 
 
@@ -25,6 +25,7 @@ class BaseLifeSquare {
         this.subtype = "";
         this.colorBase = "#1D263B";
         this.spawnTime = getCurTime();
+        this.collision = false;
 
         this.maxAirDt = 0.005;
         this.maxWaterDt = 0.005;
@@ -33,10 +34,6 @@ class BaseLifeSquare {
         this.airNutrients = 0;
         this.waterNutrients = 0;
         this.dirtNutrients = 0;
-
-        this.storedWater = 0;
-        this.storedWaterMax = 5;
-        this.storedWaterTransferRate = 1;
 
         this.deflectionStrength = 0;
         this.deflectionXOffset = 0;
@@ -143,27 +140,6 @@ class BaseLifeSquare {
         return Math.abs(this.posX - testX) + Math.abs(this.posY - testY);
     }
 
-    getCost() {
-        return 1;
-    }
-
-    flower() { }
-
-    storeWater(amountToAdd) {
-        if (this.storedWater >= this.storedWaterMax) {
-            return 0;
-        }
-        var amountToStore = Math.min(this.storedWaterMax - this.storedWater, Math.min(amountToAdd, this.storedWaterTransferRate));
-        this.storedWater += amountToStore;
-        return amountToStore;
-    }
-
-    retrieveWater() {
-        var amountToRetrieve = Math.min(this.storedWaterTransferRate, this.storedWater);
-        this.storedWater -= amountToRetrieve;
-        return amountToRetrieve;
-    }
-
     addChild(lifeSquare) {
         lifeSquare.deflectionXOffset = this.deflectionXOffset;
         lifeSquare.deflectionYOffset = this.deflectionYOffset;
@@ -189,58 +165,6 @@ class BaseLifeSquare {
             }
         }
         removeOrganismSquare(this);
-    }
-
-
-    addDirtNutrient(nutrientAmount) {
-        nutrientAmount = Math.max(nutrientAmount, 0);
-        var amountOfDirtToAdd = this.linkedOrganism.getAmountOfDirtNutrientsToCollect();
-        if (amountOfDirtToAdd < nutrientAmount / 2) {
-            return this._addDirtNutrient(nutrientAmount / 2);
-        } else {
-            if (amountOfDirtToAdd < nutrientAmount) {
-                return this._addDirtNutrient(amountOfDirtToAdd);
-            }
-            return this._addDirtNutrient(nutrientAmount);;
-        }
-    }
-
-    _addDirtNutrient(nutrientAmount) {
-        var start = this.dirtNutrients;
-        this.dirtNutrients += Math.min(this.maxDirtDt, this.dirtNutrients + nutrientAmount);
-        return this.waterNutrients - start;
-    }
-
-    addAirNutrient(nutrientAmount) {
-        nutrientAmount = Math.max(nutrientAmount, 0);
-        var start = this.airNutrients;
-        this.airNutrients += Math.min(this.maxAirDt, this.airNutrients + nutrientAmount);
-        return this.airNutrients - start;
-    }
-
-    addWaterNutrient(nutrientAmount) {
-        nutrientAmount = Math.max(nutrientAmount, 0);
-        var start = this.waterNutrients;
-        this.waterNutrients += Math.min(this.maxWaterDt, this.waterNutrients + nutrientAmount);
-        return this.waterNutrients - start;
-    }
-
-
-    preTick() {
-        this.airNutrients = 0;
-        this.waterNutrients = 0;
-        this.dirtNutrients = 0;
-
-        this.healthIndicated = 0;
-        this.energyIndicated = 0;
-        this.lifetimeIndicated = 0;
-
-        this.waterIndicated = 0;
-        this.airIndicated = 0;
-        this.dirtIndicated = 0;
-    }
-
-    tick() {
     }
 
     getStaticRand(randIdx) {
@@ -293,7 +217,44 @@ class BaseLifeSquare {
         return rgbToRgba(c.r, c.g, c.b, darkeningStrength * this.opacity);
     }
 
+    subtypeColorUpdate() {
+        if (this.type == "root") {
+            return;
+        }
+        if (this.state == STATE_DEAD) {
+            this.baseColor = "#70747e";
+            this.darkColor = "#a1816d";
+            this.accentColor = "#33261d";
+        } else if (this.state == STATE_THIRSTY) {
+            this.baseColor = "#6a7831";
+            this.darkColor = "#4a5226";
+            this.accentColor = "#67703f";
+        } else {
+            switch (this.subtype) {
+                case SUBTYPE_TRUNK:
+                case SUBTYPE_SHOOT:
+                case SUBTYPE_SPROUT:
+                case SUBTYPE_STEM:
+                case SUBTYPE_NODE:
+                    this.baseColor = "#515c24";
+                    this.darkColor = "#353b1a";
+                    this.accentColor = "#5d6637";
+                    break;
+                default:
+                    console.warn("BIPPITY BOPPITY")
+            }
+        }
+        this.activeRenderSubtype = this.subtype;
+        this.activeRenderState = this.state;
+        this.baseColor_rgb = hexToRgb(this.baseColor);
+        this.darkColor_rgb = hexToRgb(this.darkColor);
+        this.accentColor_rgb = hexToRgb(this.accentColor);
+    }
+
     render() {
+        if (this.activeRenderSubtype != this.subtype || this.activeRenderState != this.state) {
+            this.subtypeColorUpdate();
+        }
         if (selectedViewMode.startsWith("organism") && selectedViewMode != "organismStructure") {
             var color = null;
             var val;
@@ -323,21 +284,6 @@ class BaseLifeSquare {
                     color = RGB_COLOR_GREEN;
                     val = this.airNutrients;
                     val_max = this.maxAirDt;
-                    break;
-                case "organismSquareWaterStored":
-                    color = RGB_COLOR_BLUE;
-                    val = this.storedWater;
-                    val_max = this.storedWaterMax;
-                    break;
-                case "organismHealth":
-                    color = RGB_COLOR_RED;
-                    val = this.healthIndicated;
-                    val_max = 1;
-                    break;
-                case "organismEnergy":
-                    color = RGB_COLOR_GREEN;
-                    val = this.energyIndicated;
-                    val_max = 1;
                     break;
                 case "organismLifetime":
                     color = RGB_COLOR_BLACK;
@@ -464,7 +410,7 @@ class BaseLifeSquare {
             b: (baseColorRgb.b * 0.5 + ((altColor1Rgb.b * rand + altColor2Rgb.b * (1 - rand)) * 0.5))
         }
         var lightingColor = processLighting(this.lighting);
-        var outColor = {r: lightingColor.r * outColorBase.r, g: lightingColor.g * outColorBase.g, b: lightingColor.b * outColorBase.b};
+        var outColor = {r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255};
         var outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), this.opacity);
         MAIN_CONTEXT.fillStyle = outRgba;
 
