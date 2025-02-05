@@ -1,5 +1,5 @@
 import { addSquare, addSquareOverride, getSquares, removeSquarePos } from "./squares/_sqOperations.js";
-import { purge, reset, renderWater, renderSquares, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, doLightSourceRaycasting, reduceNextLightUpdateTime } from "./globalOperations.js";
+import { reduceNextLightUpdateTime } from "./globalOperations.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
 import { RainSquare } from "./squares/parameterized/RainSquare.js";
 import { HeavyRainSquare } from "./squares/parameterized/RainSquare.js";
@@ -8,19 +8,18 @@ import { SeedSquare } from "./squares/SeedSquare.js";
 import { addNewOrganism, iterateOnOrganisms } from "./organisms/_orgOperations.js";
 
 import { LIGHT_SOURCES } from "./globals.js";
-import { updateTime, renderTime } from "./time.js";
 
 import { getOrganismSquaresAtSquare } from "./lifeSquares/_lsOperations.js";
 import { randNumber } from "./common.js";
-import { clearPrevailingWind, addPrevailingWind, addWindPressure, initializeWindPressureMap, removeWindPressure, renderWindPressureMap, tickWindPressureMap } from "./wind.js";
-import { renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturationPascalsSqCoords } from "./temperature_humidity.js";
+import { clearPrevailingWind, addPrevailingWind, addWindPressure, initializeWindPressureMap, removeWindPressure } from "./wind.js";
+import { addTemperature, addWaterSaturationPascalsSqCoords } from "./temperature_humidity.js";
 import { PalmTreeSeedOrganism } from "./organisms/tropical/PalmTreeOrganism.js";
 import { ElephantEarSeedOrganism } from "./organisms/tropical/ElephantEarOrganism.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { WheatSeedOrganism } from "./organisms/grasses/WheatOrganism.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { createMoonLightGroup, createSunLightGroup, default_light_throttle_interval } from "./lighting.js";
-import { loadDemoScene, loadEmptyScene, loadFlatDirtWorld, loadSlot, saveSlot } from "./saveAndLoad.js";
+import { loadEmptyScene, loadFlatDirtWorld, loadSlot, saveSlot } from "./saveAndLoad.js";
 import { scheduler_main, triggerEarlySquareScheduler } from "./scheduler.js";
 
 var lastMode = "organismWetland"; // options: normal, organismWetlandgi

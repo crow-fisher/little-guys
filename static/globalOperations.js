@@ -101,11 +101,8 @@ function renderWater() {
 }
 
 function physics() {
-    frame_squares.forEach((sq) => sq.physics());
-}
-function physicsBefore() {
     frame_squares.forEach((sq) => sq.physicsBefore());
-    frame_squares.forEach((sq) => sq.physicsBefore2());
+    frame_squares.forEach((sq) => sq.physics());
 }
 
 function processOrganisms() {
@@ -164,4 +161,4 @@ function doWaterFlow() {
 }
 
 
-export { purge, reset, renderWater, renderSquares, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquare, getSquareStdevForGetter, doLightSourceRaycasting }
+export { purge, reset, renderWater, renderSquares, physics, processOrganisms, renderOrganisms, doWaterFlow, removeSquare, getSquareStdevForGetter, doLightSourceRaycasting }

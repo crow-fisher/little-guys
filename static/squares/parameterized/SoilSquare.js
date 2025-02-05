@@ -208,12 +208,14 @@ export class SoilSquare extends BaseSquare {
 
     percolateInnerMoisture() {
         getNeighbors(this.posX, this.posY)
-            .filter((_) => Math.random() > 0.8)
             .filter((sq) => sq.proto == this.proto)
             .forEach((sq) => {
                 var thisWaterPressure = this.getMatricPressure(); 
                 var sqWaterPressure = sq.getMatricPressure() + (sq.getGravitationalPressure() - this.getGravitationalPressure());
 
+                if (isNaN(thisWaterPressure) || isNaN(sqWaterPressure)) {
+                    return;
+                }
                 if (thisWaterPressure < sqWaterPressure || thisWaterPressure < -2) {
                     return;
                 }
@@ -222,13 +224,11 @@ export class SoilSquare extends BaseSquare {
                 var thisDiff = (this.waterContainment - meanPressureWaterContainment) / this.getWaterflowRate();
                 var sqDiff = (this.waterContainment - meanPressureWaterContainment) / sq.getWaterflowRate();
                 var diff = Math.min(thisDiff, sqDiff) / 2;
-                diff *= Math.abs(thisWaterPressure - sqWaterPressure);
-
                 diff = Math.min(this.waterContainment, Math.max(0, Math.min(diff, sq.waterContainmentMax - sq.waterContainment)));
                 this.waterContainment -= diff;
                 sq.waterContainment += diff;
             });
-        this.doBlockOutflow();
+        // this.doBlockOutflow();
     }
 
     doBlockOutflow() {

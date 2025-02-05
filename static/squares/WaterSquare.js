@@ -47,7 +47,7 @@ class WaterSquare extends BaseSquare {
         this.thermalConductivity = 0.6;
         this.thermalMass = 4.2;
         this.temperature = 273;
-        this.lightFilterRate /= 8;
+        this.lightFilterRate /= 4;
     }
 
     reset() {
@@ -123,17 +123,6 @@ class WaterSquare extends BaseSquare {
         }
     }
 
-    /**
-     * Direct pressure is how many blocks of water are directly above us. 
-     */
-    calculateDirectPressure() {
-        this.currentPressureDirect = 0;
-        getSquares(this.posX, this.posY - 1)
-            .filter((sq) => sq.proto == this.proto)
-            .filter((sq) => sq.group == this.group)
-            .filter((sq) => sq.currentPressureDirect > 0)
-            .forEach((sq) => this.currentPressureDirect = sq.currentPressureDirect + 1);
-    }
     calculateIndirectPressure() {
         if (this.currentPressureIndirect != -1) {
             return;

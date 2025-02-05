@@ -22,10 +22,8 @@ class PlantSquare extends BaseSquare {
         this.rootable = false;
     }
 
-    // for now
     physics() {}
     physicsBefore() {}
-    physicsBefore2() {}
 }
 
 export {PlantSquare}

@@ -2,39 +2,29 @@ import {
     dirt_baseColorAmount,
     dirt_darkColorAmount,
     dirt_accentColorAmount,
-    b_sq_nutrientValue,
-    base_waterContainmentTransferRate,
-    base_waterContainmentEvaporationRate,
-    b_sq_darkeningStrength,
-} from "../config/config.js"
+    b_sq_nutrientValue
+} from "../config/config.js";
 
-import { getNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares } from "./_sqOperations.js"
+import { getNeighbors, addSquare, getSquares } from "./_sqOperations.js";
 import {
-    ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES, darkeningColorCache,
-    getNextGroupId, updateGlobalStatistic, getGlobalStatistic
+    getNextGroupId
 } from "../globals.js";
 
-import { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, selectedViewMode, getBlockModification_val, zoomCanvasFillRect } from "../index.js";
+import { MAIN_CONTEXT, BASE_SIZE, selectedViewMode, getBlockModification_val, zoomCanvasFillRect } from "../index.js";
 
-import { hexToRgb, processColorStdev, processColorStdevMulticolor, rgbToHex, rgbToRgba } from "../common.js";
+import { hexToRgb, rgbToRgba } from "../common.js";
 
-import { getCountOfOrganismsSquaresOfTypeAtPosition } from "../lifeSquares/_lsOperations.js";
-import { getOrganismSquaresAtSquare } from "../lifeSquares/_lsOperations.js";
 import { getOrganismsAtSquare } from "../organisms/_orgOperations.js";
-import { removeItemAll } from "../common.js";
-import { getObjectArrFromMap } from "../common.js";
-import { addOrganism, addNewOrganism } from "../organisms/_orgOperations.js";
+import { addOrganism } from "../organisms/_orgOperations.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 
-import { purge, reset, physics, physicsBefore, processOrganisms, renderOrganisms, doWaterFlow, removeSquare, getSquareStdevForGetter } from "../globalOperations.js"
+import { removeSquare } from "../globalOperations.js";
 
 import { removeOrganismSquare } from "./_sqOperations.js";
 import { removeOrganism } from "../organisms/_orgOperations.js";
 
-import { addSquareByName } from "../index.js";
-import { getCurTime, getDaylightStrength } from "../time.js";
-import { addTemperature, addWaterSaturation, addWaterSaturationPascals, applySquareTemperatureDelta, calculateColorTemperature, cloudRainThresh, getTemperatureAtSquare, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, updateSquareTemperature } from "../temperature_humidity.js";
-import { addWindPressure, getWindSquareAbove } from "../wind.js";
+import { addWaterSaturationPascals, calculateColorTemperature, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, updateSquareTemperature } from "../temperature_humidity.js";
+import { getWindSquareAbove } from "../wind.js";
 
 export class BaseSquare {
     constructor(posX, posY) {
@@ -53,10 +43,11 @@ export class BaseSquare {
         this.blockHealthMax = 1;
         this.blockHealth = this.blockHealthMax; // when reaches zero, delete
         // water flow parameters
+
+        this.currentPressureDirect = -1;
+
         this.waterContainment = 0;
         this.waterContainmentMax = 0.5;
-        this.waterContainmentTransferRate = base_waterContainmentTransferRate;
-        this.waterContainmentEvaporationRate = base_waterContainmentEvaporationRate;
         this.speedX = 0;
         this.speedY = 0;
         this.nutrientValue = b_sq_nutrientValue;
@@ -209,6 +200,7 @@ export class BaseSquare {
         if (this.blockHealth <= 0) {
             removeSquare(this);
         }
+        this.currentPressureDirect = -1;
         this.group = -1;
         this.speedY += 1;
         this.frameFrozen = false;
@@ -474,7 +466,7 @@ export class BaseSquare {
 
         // free
         // soil squares
-        // this.percolateInnerMoisture();
+        this.percolateInnerMoisture();
         // 51 ms
         this.waterEvaporationRoutine();
         this.transferHeat();
@@ -552,8 +544,6 @@ export class BaseSquare {
         this.calculateDirectPressure();
     }
 
-    physicsBefore2() { }
-
     percolateFromWater(waterBlock) {
         return 0;
     }
@@ -562,14 +552,24 @@ export class BaseSquare {
         if (this.currentPressureDirect != -1) {
             return this.currentPressureDirect;
         } else {
-            this.currentPressureDirect = getSquares(this.posX, this.posY - 1)
-                .filter((sq) => sq.collision)
-                .map((sq) => 1 + sq.calculateDirectPressure())
-                .reduce(
-                    (accumulator, currentValue) => accumulator + currentValue,
-                    0,
-                );
+            var filtered = getSquares(this.posX, this.posY - 1)
+                .filter((sq) => sq.collision);
+
+            if (filtered.some((sq) => true)) {
+                this.currentPressureDirect = filtered
+                    .map((sq) => 1 + sq.calculateDirectPressure())
+                    .reduce(
+                        (accumulator, currentValue) => accumulator + currentValue,
+                        0,
+                    );
+            } else {
+                this.currentPressureDirect = 0;
+            }
         }
+        if (isNaN(this.currentPressureDirect)) {
+            console.warn("poopie woopie");
+        }
+        return this.currentPressureDirect;
     }
 
     transferHeat() {

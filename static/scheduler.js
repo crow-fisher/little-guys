@@ -1,4 +1,4 @@
-import { doLightSourceRaycasting, doWaterFlow, physics, physicsBefore, processOrganisms, purge, renderOrganisms, renderSquares, renderWater, reset } from "./globalOperations.js";
+import { doLightSourceRaycasting, doWaterFlow, physics, processOrganisms, purge, renderOrganisms, renderSquares, renderWater, reset } from "./globalOperations.js";
 import { doClickAdd, doMouseHover, getBlockModification_val, getLastMode, getSelectedViewMode } from "./index.js";
 import { renderClouds, renderWaterSaturation, tickMaps } from "./temperature_humidity.js";
 import { renderTime, updateTime } from "./time.js";
@@ -77,7 +77,6 @@ function orgTick() {
 
 function squareTick() {
     reset();
-    physicsBefore();
     physics();
     doWaterFlow();
     purge();
