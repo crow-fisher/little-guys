@@ -88,12 +88,17 @@ class WaterSquare extends BaseSquare {
     }
 
     calculateCandidateFlows() {
+        if (this.speedY > 0) {
+            return;
+        }
+
         if (!(this.group in WATERFLOW_CANDIDATE_SQUARES)) {
             WATERFLOW_CANDIDATE_SQUARES[this.group] = new Map();
         }
         if (!(this.group in WATERFLOW_TARGET_SQUARES)) {
             WATERFLOW_TARGET_SQUARES[this.group] = new Map();
         }
+
 
         var candidateMap = WATERFLOW_CANDIDATE_SQUARES[this.group];
         var targetMap = WATERFLOW_TARGET_SQUARES[this.group]
