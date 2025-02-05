@@ -84,7 +84,7 @@ export class BaseSquare {
         this.waterSinkRate = 0.8;
         this.cachedRgba = null;
         this.frameFrozen = false;
-        
+
         this.distToFront = 0;
         this.distToFrontLastUpdated = -(10 ** 8);
 
@@ -475,7 +475,6 @@ export class BaseSquare {
 
     physics() {
         this.calculateDirectPressure();
-        this.calculateDistToFront();
         this.percolateInnerMoisture();
         this.waterEvaporationRoutine();
         this.transferHeat();
@@ -630,29 +629,10 @@ export class BaseSquare {
         if (this.surface || this.organic) {
             return;
         }
-        getSquares(this.posX, this.posY - 1)
-            .filter((sq) => sq.solid)
-            .forEach((sq) => this.currentPressureDirect = Math.max(this.currentPressureDirect,
-                sq.currentPressureDirect + (sq.organic ? 0.55 : 1)));
-    }
-
-    calculateDistToFront() {
-        if (!this.surface) {
-            return 0;
+        if (getSquares(this.posX, this.posY - 1).some((sq) => sq.collision)) {
+            this.currentPressureDirect = 1; 
         }
-
-        if (getCurTime() < this.distToFrontLastUpdated + this.miscBlockPropUpdateInterval) {
-            return this.distToFront;
-        }
-
-        this.distToFrontLastUpdated = getCurTime();
-        this.distToFront = 0 + Math.max(getSquares(this.posX, this.posY + 1)
-            .filter((sq) => sq.surface && sq.collision)
-            .map((sq) => sq.calculateDistToFront() + 1));
-
-        return this.distToFront;
     }
-
     percolateInnerMoisture() {
         if (this.waterContainment <= 0) {
             return 0;

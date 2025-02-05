@@ -8,17 +8,18 @@ import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y, getNewBlockLockedTemperature, getNe
 
 var abs = Math.abs;
 
-function getNeighbors(x, y) {
-    var out = [];
+function* getNeighbors(x, y) {
     for (var i = -1; i < 2; i++) {
         for (var j = -1; j < 2; j++) {
             if (i == 0 && j == 0) {
                 continue;
             }
-            out.push(...getSquares(x + i, y + j));
+            var squares = getSquares(x + i, y + j);
+            for (let i = 0; i < squares.length; i++) {
+                yield squares[i];
+            };
         }
     }
-    return out;
 }
 
 function getDirectNeighbors(x, y) {
