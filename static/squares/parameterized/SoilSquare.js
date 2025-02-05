@@ -282,7 +282,7 @@ export class SoilSquare extends BaseSquare {
             amountToPercolate = 0;
         }
 
-        amountToPercolate = this.waterContainmentMax * this.getWaterflowRate();
+        amountToPercolate = amountToPercolate /= this.getWaterflowRate();
         this.waterContainment += amountToPercolate;
         return amountToPercolate;
     }

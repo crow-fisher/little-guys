@@ -482,8 +482,6 @@ export class BaseSquare {
             return;
         }
         this.group = getNextGroupId();
-
-
         this._percolateGroup(getNextGroupId())
     }
 
