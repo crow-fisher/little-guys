@@ -29,10 +29,15 @@ class WaterSquare extends BaseSquare {
         this.rootable = false;
         this.calculateGroupFlag = true; 
         
-        this.baseColor = COLOR_BLUE;
-        this.darkColor = "#2774AE";
-        this.accentColor = "#85B09A";
-        this.opacity = 0.5;
+        // this.baseColor = "#60EFFF";
+        // this.darkColor = "#7EF8FA";
+        // this.accentColor = "#3BEBF1";
+
+        this.baseColor = "#60EFFF";
+        this.darkColor = "#60EFFF";
+        this.accentColor = "#60EFFF";
+
+        this.opacity = 0.2;
 
         this.blockHealthMax = 1;
         this.blockHealth = this.blockHealthMax;
@@ -42,7 +47,7 @@ class WaterSquare extends BaseSquare {
         this.thermalConductivity = 0.6;
         this.thermalMass = 4.2;
         this.temperature = 273;
-        this.lightFilterRate /= 3;
+        this.lightFilterRate /= 16;
     }
 
     reset() {
@@ -59,7 +64,7 @@ class WaterSquare extends BaseSquare {
     }
 
     doLocalColorSwapping() {
-        if (Math.random() > 0.99) {
+        if (Math.random() > 0.999) {
             getNeighbors(this.posX, this.posY).filter((sq) => sq.group == this.group).forEach((sq) => {
                 if (Math.random() > 0.75) {
                     this.swapColors(sq);
@@ -79,31 +84,6 @@ class WaterSquare extends BaseSquare {
             BASE_SIZE,
             BASE_SIZE
         );
-    }
-
-    blockPressureAndModDarken() {
-        MAIN_CONTEXT.fillStyle = this.calculateDarkeningColorImpl(this.currentPressureIndirect, 13);
-        zoomCanvasFillRect(
-            this.posX * BASE_SIZE,
-            this.posY * BASE_SIZE,
-            BASE_SIZE,
-            BASE_SIZE
-        );
-    }
-    calculateDarkeningColorImpl(darkVal, darkValMax) {
-        if (darkVal == 0) {
-            return "rgba(73,121,107,0)";
-        }
-        var waterColor255 = Math.floor((darkVal / darkValMax) * 255) * this.opacity;
-        if (waterColor255 in waterDarkeningColorCache) {
-            return waterDarkeningColorCache[waterColor255];
-        }
-        var darkeningStrength = (darkVal / darkValMax) * 0.8;
-        var res = "rgba(73,121,107," + darkeningStrength + ")";
-
-        waterDarkeningColorCache[waterColor255] = res;
-
-        return res;
     }
 
     physicsBefore() {
