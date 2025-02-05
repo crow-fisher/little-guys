@@ -31,11 +31,11 @@ class BaseOrganism {
 
         this.curWilt = 0;
         this.waterPressure = -2.5;
-        this.waterPressureTarget = -2.5;
-        this.waterPressureWiltThresh = -3.5;
+        this.waterPressureTarget = -3;
+        this.waterPressureWiltThresh = -4;
         this.waterPressureDieThresh = -5;
-        this.waterPressureOverwaterThresh = -1;
-        this.transpirationRate = 0.001;
+        this.waterPressureOverwaterThresh = -1.5;
+        this.transpirationRate = 0.01;
         this.rootPower = 2;
 
         // nutrients normalized to "pounds per acre" per farming websites
@@ -48,7 +48,7 @@ class BaseOrganism {
         this.growthNitrogen = 50;
         this.growthPhosphorus = 25;
         this.growthLightLevel = 0.9; // desire mostly full sun 
-        this.growthCycleLength = 0.05; // in days
+        this.growthCycleLength = 1; // in days
 
         this.applyWind = false;
         this.springCoef = 4;
@@ -346,16 +346,28 @@ class BaseOrganism {
         
         let curLifeFrac = (getCurDay() - this.spawnTime) / this.growthCycleLength; 
 
+        if (curLifeFrac > 1) {
+            return;
+        }
+
         let expectedNitrogen = curLifeFrac ** 2 * this.growthNitrogen;
         let expectedPhosphorus = curLifeFrac ** 2 * this.growthPhosphorus;
         let expectedLightLevel = curLifeFrac ** 2 * this.growthLightLevel;
 
-        if (this.waterPressure < this.waterPressureTarget) {
-            this.growRoot((sq) => sq.getSoilWaterPressure());
-        } else if (curNitrogenFrac < expectedNitrogen) {
-            this.growRoot((sq) => sq.nitrogen)
-        } else if (curPhosphorusFrac < expectedPhosphorus) {
-            this.growRoot((sq) => sq.phosphorus)
+        let scoreFunc = (sq) => {
+            var sqScore = 0;
+            if (this.waterPressure < this.waterPressureTarget) {
+                sqScore += sq.getSoilWaterPressure() / this.waterPressure;
+            }
+            if (curNitrogenFrac < expectedNitrogen) {
+                sqScore += sq.nitrogen / this.growthNitrogen;
+            }
+            if (curPhosphorusFrac < expectedPhosphorus) {
+                sqScore += sq.phosphorus / this.growthPhosphorus;
+            }
+        }
+        if (this.waterPressure < this.waterPressureTarget || curNitrogenFrac < expectedNitrogen || curPhosphorusFrac < expectedPhosphorus) {
+            this.growRoot(scoreFunc);
         } else if (curLightLevel < expectedLightLevel) {
             this.executeGrowthPlans();
         }

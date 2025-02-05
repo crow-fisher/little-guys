@@ -99,7 +99,7 @@ export class BaseSquare {
         this.water_vaporTemp = 373;
 
         this.lastColorCacheTime = 0;
-        this.colorCacheHoldTime = 2;
+        this.colorCacheHoldTime = 0.25;
     };
 
     getSoilWaterPressure() { return -(10 ** 8); }

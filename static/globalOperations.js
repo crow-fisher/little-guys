@@ -132,9 +132,8 @@ function doWaterFlow() {
         let i = 0;
 
         while (true) {
-            let currentTarget = targetPressureKeys[i];
-            let currentCandidate = candidatePressureKeys[i + candidateOffset];
-            
+            let currentTarget = parseInt(targetPressureKeys[i]);
+            let currentCandidate = parseInt(candidatePressureKeys[i + candidateOffset]);
             if (currentCandidate < currentTarget) {
                 // pair off
                 var targetIdx = 0;
@@ -144,9 +143,17 @@ function doWaterFlow() {
                     if (targetIdx >= targetArr.length) {
                         return;
                     } else {
-                        let targetPos = targetArr[targetIdx];
-                        sq.updatePosition(targetPos[0], targetPos[1])
-                        targetIdx += 1;
+                        if (currentTarget <= 1) {
+                            if (Math.random() > 0.99) {
+                                let targetPos = targetArr[targetIdx];
+                                sq.updatePosition(targetPos[0], targetPos[1])
+                                targetIdx += 1;
+                            }
+                        } else {
+                            let targetPos = targetArr[targetIdx];
+                            sq.updatePosition(targetPos[0], targetPos[1])
+                            targetIdx += 1;
+                        }
                     }
                 })
                 i += 1;

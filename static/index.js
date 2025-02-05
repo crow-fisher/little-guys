@@ -219,7 +219,7 @@ var lastTick = Date.now();
 
 // wind is tiled x4
 
-var CANVAS_SQUARES_X = (192)/2 * 4; // * 8; //6;
+var CANVAS_SQUARES_X = (192)/4 * 4; // * 8; //6;
 var CANVAS_SQUARES_Y =  (108)/4 * 4; // * 8; // 8;
 
 

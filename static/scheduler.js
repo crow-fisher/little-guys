@@ -45,6 +45,8 @@ function render() {
     var selectedViewMode = getSelectedViewMode();
     var lastMode = getLastMode();
     var blockModification_val = getBlockModification_val();
+    renderTime();
+
     if (selectedViewMode == "temperature") {
         renderTemperature();
     }
@@ -53,9 +55,6 @@ function render() {
     }
     if (selectedViewMode == "watersaturation") {
         renderWaterSaturation();
-    }
-    if (selectedViewMode == "normal") {
-        renderTime();
     }
 
     doLightSourceRaycasting();

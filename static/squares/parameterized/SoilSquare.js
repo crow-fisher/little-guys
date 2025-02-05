@@ -295,11 +295,18 @@ export class SoilSquare extends BaseSquare {
     }
 
     getColorBase() {
-        return {
+        var outColor = {
             r: this.clay * this.clayColorRgb.r + this.silt * this.siltColorRgb.r + this.sand * this.sandColorRgb.r, 
             g: this.clay * this.clayColorRgb.g + this.silt * this.siltColorRgb.g + this.sand * this.sandColorRgb.g, 
             b: this.clay * this.clayColorRgb.b + this.silt * this.siltColorRgb.b + this.sand * this.sandColorRgb.b
         }
+
+        var darkeningColorMult = (this.waterContainment / this.waterContainmentMax);
+
+        outColor.r *= (1 - 0.24 * darkeningColorMult);
+        outColor.g *= (1 - 0.30 * darkeningColorMult);
+        outColor.b *= (1 - 0.383 * darkeningColorMult);
+        return outColor;
     }
 
     // soil nutrients

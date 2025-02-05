@@ -33,7 +33,7 @@ class WaterSquare extends BaseSquare {
         this.darkColor = "#7EF8FA";
         this.accentColor = "#3BEBF1";
 
-        this.opacity = 0.2;
+        this.opacity = 0.4;
 
         this.blockHealthMax = 1;
         this.blockHealth = this.blockHealthMax;
