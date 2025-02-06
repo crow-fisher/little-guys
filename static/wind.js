@@ -2,7 +2,7 @@ import { hexToRgb, randRange, rgbToHex, rgbToRgba } from "./common.js";
 import { getSquares } from "./squares/_sqOperations.js";
 import { MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, zoomCanvasFillRect } from "./index.js";
 import { getCurTime, initializeStarMap } from "./time.js";
-import { COLOR_BLUE, COLOR_BROWN, COLOR_GREEN, COLOR_RED } from "./colors.js";
+import { COLOR_BLUE, COLOR_BROWN, COLOR_OTHER_BLUE, COLOR_RED } from "./colors.js";
 import { addTemperature, addWaterSaturationPascals, calculateColor, getTemperatureAtSquare, getTemperatureAtWindSquare, getWaterSaturation, resetTemperatureAndHumidityAtSquare, updateSquareTemperature } from "./temperature_humidity.js";
 
 var windPressureMap;

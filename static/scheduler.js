@@ -1,10 +1,11 @@
 import { doLightSourceRaycasting, doWaterFlow, physics, processOrganisms, purge, renderOrganisms, renderSquares, renderWater, reset } from "./globalOperations.js";
 import { doClickAdd, doMouseHover, getBlockModification_val, getLastMode, getSelectedViewMode } from "./index.js";
+import { lightingClearLifeSquarePositionMap } from "./lighting.js";
 import { renderClouds, renderWaterSaturation, tickMaps } from "./temperature_humidity.js";
 import { renderTime, updateTime } from "./time.js";
 import { renderWindPressureMap, tickWindPressureMap } from "./wind.js";
 
-const SQUARE_UPDATE_MILLIS = 1000 * 2;
+const SQUARE_UPDATE_MILLIS = 0;
 const ORG_UPDATE_MILLIS = 0;
 
 let last_square_tick = 0;
@@ -54,12 +55,13 @@ function render() {
         renderWindPressureMap();
     }
     if (selectedViewMode == "watersaturation") {
-        renderWaterSaturation();
+        // renderWaterSaturation();
     }
 
     doLightSourceRaycasting();
     renderSquares();
     renderWater();
+    lightingClearLifeSquarePositionMap();
     renderOrganisms();
 
     // if (selectedViewMode == "normal") {

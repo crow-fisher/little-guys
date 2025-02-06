@@ -7,7 +7,6 @@ import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getMoo
 
 var lifeSquarePositions = new Map();
 
-
 export var MAX_BRIGHTNESS = 8;
 
 export function lightingClearLifeSquarePositionMap() {

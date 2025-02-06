@@ -93,7 +93,6 @@ function getSquareStdevForGetter(valueGetter, valueGetterName) {
 function reset() {
     iterateOnSquares((sq) => sq.reset(), 0);
     resetWaterflowSquares();
-    lightingClearLifeSquarePositionMap();
     frame_squares = getSqIterationOrder();
     frame_solid_squares = frame_squares.filter((sq) => sq.solid && !sq.organic);
     frame_water_squares = frame_squares.filter((sq) => !sq.solid);

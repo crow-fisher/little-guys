@@ -15,7 +15,8 @@ import { WATERFLOW_CANDIDATE_SQUARES, WATERFLOW_TARGET_SQUARES } from "../global
 
 import { darkeningColorCache } from "../globals.js";
 import { BASE_SIZE, MAIN_CONTEXT, zoomCanvasFillRect } from "../index.js";
-import { COLOR_BLUE } from "../colors.js";
+import { COLOR_BLUE, COLOR_RED, RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED } from "../colors.js";
+import { rgbToRgba } from "../common.js";
 
 class WaterSquare extends BaseSquare {
     constructor(posX, posY) {
@@ -56,6 +57,7 @@ class WaterSquare extends BaseSquare {
         super.physics();
         this.calculateCandidateFlows();
         this.doNeighborPercolation();
+        this.combineAdjacentNeighbors();
         this.doLocalColorSwapping();
     }
 
@@ -69,11 +71,7 @@ class WaterSquare extends BaseSquare {
         }
     }
     renderWaterSaturation() {
-        this.renderAsGrey();
-    }
-
-    renderAsGrey() {
-        MAIN_CONTEXT.fillStyle = "rgba(102, 81, 196, 0.16)";
+        MAIN_CONTEXT.fillStyle = rgbToRgba(RGB_COLOR_OTHER_BLUE.r, RGB_COLOR_OTHER_BLUE.g, RGB_COLOR_OTHER_BLUE.b, (this.blockHealth / this.blockHealthMax));
         zoomCanvasFillRect(
             this.posX * BASE_SIZE,
             this.posY * BASE_SIZE,
@@ -153,6 +151,20 @@ class WaterSquare extends BaseSquare {
             .filter((sq) => sq.collision)
             .filter((sq) => sq.solid)
             .forEach((sq) => this.blockHealth -= sq.percolateFromWater(this));
+    }
+
+    combineAdjacentNeighbors() {
+        if (this.blockHealth < this.blockHealthMax) {
+            getNeighbors(this.posX, this.posY)
+            .filter((sq) => sq.proto == this.proto)
+            .filter((sq) => sq.posY <= this.posY)
+            .forEach((sq) => {
+                var start = this.blockHealth;
+                this.blockHealth = Math.min(1, this.blockHealth + sq.blockHealth);
+                sq.blockHealth -= this.blockHealth - start;
+            });
+        }
+
     }
 }
 

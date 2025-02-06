@@ -7,7 +7,7 @@ import { addSquare, getSquares, removeOrganismSquare } from "../squares/_sqOpera
 import { airNutrientsPerEmptyNeighbor } from "../config/config.js";
 
 import { selectedViewMode } from "../index.js";
-import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_GREEN, RGB_COLOR_BLACK, RGB_COLOR_RED, COLOR_BLUE, COLOR_GREEN, COLOR_RED } from "../colors.js";
+import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_OTHER_BLUE, RGB_COLOR_BLACK, RGB_COLOR_RED, COLOR_BLUE, COLOR_OTHER_BLUE, COLOR_RED } from "../colors.js";
 import { addOrganismSquare } from "./_lsOperations.js";
 import { removeSquare } from "../globalOperations.js";
 import { STATE_DEAD, STATE_HEALTHY, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_DEAD, SUBTYPE_LEAF, SUBTYPE_LEAFSTEM, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM } from "../organisms/Stages.js";
@@ -227,12 +227,12 @@ class BaseLifeSquare {
 
             if (this.linkedOrganism.waterPressure > -2) {
                 color1 = RGB_COLOR_BLUE;
-                color2 = RGB_COLOR_GREEN;
+                color2 = RGB_COLOR_OTHER_BLUE;
                 valMin = this.linkedOrganism.waterPressureTarget;
                 valMax = this.linkedOrganism.waterPressureOverwaterThresh;
 
             } else if (this.linkedOrganism.waterPressure > this.linkedOrganism.waterPressureWiltThresh) {
-                color1 = RGB_COLOR_GREEN;
+                color1 = RGB_COLOR_OTHER_BLUE;
                 color2 = RGB_COLOR_BROWN;
                 valMin = this.linkedOrganism.waterPressureWiltThresh;
                 valMax = this.linkedOrganism.waterPressureTarget;
