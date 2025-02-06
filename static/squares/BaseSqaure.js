@@ -82,7 +82,7 @@ export class BaseSquare {
         this.miscBlockPropUpdateInterval = Math.random() * 1000;
 
         this.surface = false;
-        this.lightFilterRate = 0.0004;
+        this.lightFilterRate = .0008;
 
         this.temperature = 273 + 20; // start temperature in kelvin 
         this.thermalConductivity = 1;  // watts/meter kelvin. max is 10
@@ -457,17 +457,9 @@ export class BaseSquare {
     percolateInnerMoisture() { }
 
     physics() {
-
-        // minimum is 33 
-
-        // free
-        // soil squares
         this.percolateInnerMoisture();
-        // 51 ms
         this.waterEvaporationRoutine();
         this.transferHeat();
-
-        // 62ms 
         if (!this.physicsEnabled || this.linkedOrganismSquares.some((sq) => sq.type == "root")) {
             return false;
         }
@@ -491,7 +483,6 @@ export class BaseSquare {
                 if (getSquares(this.posX + jSigned, this.posY + i)
                     .some((sq) =>
                         (!this.organic && sq.collision) ||
-                        (this.organic && this.spawnedEntityId == sq.spawnedEntityId) ||
                         this.organic && sq.collision && sq.currentPressureDirect > 0 && Math.random() > 0.9
                     )) {
                     finalYPos = this.posY + (i - 1);

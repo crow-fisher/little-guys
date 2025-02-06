@@ -27,7 +27,7 @@ export class RockSquare extends SoilSquare {
         this.clay = Math.min(Math.max(this.clay, 0), 1);
         this.silt = Math.min(Math.max(this.silt, 0), 1);
         this.sand = Math.min(Math.max(this.sand, 0), 1);
-        this.lightFilterRate *= 4;
+        this.lightFilterRate *= 2;
     }
 
     getWaterflowRate() {

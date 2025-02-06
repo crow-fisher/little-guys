@@ -7,7 +7,6 @@ import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getMoo
 
 var lifeSquarePositions = new Map();
 
-export var default_light_throttle_interval = 30000;
 
 export var MAX_BRIGHTNESS = 8;
 

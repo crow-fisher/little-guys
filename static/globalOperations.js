@@ -11,26 +11,33 @@ import { getOrganismSquaresAtSquare } from "./lifeSquares/_lsOperations.js";
 import { removeItemAll } from "./common.js";
 import { removeOrganism } from "./organisms/_orgOperations.js";
 import { lightingClearLifeSquarePositionMap, lightingPrepareTerrainSquares, lightingRegisterLifeSquare } from "./lighting.js";
+import { getCurDay } from "./time.js";
 
 export var nextLightingUpdate = 0;
-export var default_light_throttle_interval = 30 * 1000;
+export var lastLightingUpdateDay = 0;
+export var lighting_throttle_interval_ms = 30 * 1000;
+export var lighting_throttle_interval_days = 1;
 
 export function reduceNextLightUpdateTime(amount) {
+    if (nextLightingUpdate < Date.now()) {
+        return;
+    }
     nextLightingUpdate -= amount;
 }
 
 
 function doLightSourceRaycasting() {
-    var shouldDoFullSquareUpdate = Date.now() > nextLightingUpdate;
+    var shouldDoFullSquareUpdate = (getCurDay() - lighting_throttle_interval_days) > lastLightingUpdateDay || Date.now() > nextLightingUpdate;
     if (!shouldDoFullSquareUpdate) {
         return;
     }
     lightingPrepareTerrainSquares();
-    nextLightingUpdate = Date.now() + default_light_throttle_interval;
     iterateOnOrganisms((org) => org.lifeSquares.forEach((lsq) => lightingRegisterLifeSquare(lsq)));
     for (let i = 0; i < LIGHT_SOURCES.length; i++) {
         LIGHT_SOURCES[i].doRayCasting(i);
     }
+    nextLightingUpdate = Date.now() + lighting_throttle_interval_ms;
+    lastLightingUpdateDay = getCurDay();
 }
 
 var frame_squares = null;

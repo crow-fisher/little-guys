@@ -1,5 +1,5 @@
 import { addSquare, addSquareOverride, getNeighbors, getSquares, removeSquarePos } from "./squares/_sqOperations.js";
-import { reduceNextLightUpdateTime } from "./globalOperations.js";
+import { lighting_throttle_interval_ms, reduceNextLightUpdateTime } from "./globalOperations.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
 import { RainSquare } from "./squares/parameterized/RainSquare.js";
 import { HeavyRainSquare } from "./squares/parameterized/RainSquare.js";
@@ -18,7 +18,7 @@ import { ElephantEarSeedOrganism } from "./organisms/tropical/ElephantEarOrganis
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { WheatSeedOrganism } from "./organisms/grasses/WheatOrganism.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
-import { createMoonLightGroup, createSunLightGroup, default_light_throttle_interval } from "./lighting.js";
+import { createMoonLightGroup, createSunLightGroup } from "./lighting.js";
 import { loadEmptyScene, loadFlatDirtWorld, loadSlot, saveSlot } from "./saveAndLoad.js";
 import { scheduler_main, triggerEarlySquareScheduler } from "./scheduler.js";
 
@@ -69,7 +69,7 @@ var canvasHeight = document.getElementById("canvasHeight");
 var timeScale = document.getElementById("timeScale");
 var viewmodeSelect = document.getElementById("viewmodeSelect");
 var bakelighting = document.getElementById("bakelighting");
-bakelighting.onclick = (e) => reduceNextLightUpdateTime(default_light_throttle_interval);
+bakelighting.onclick = (e) => reduceNextLightUpdateTime(lighting_throttle_interval_ms);
 
 var selectedViewMode = "normal";
 
@@ -206,7 +206,7 @@ brushSizeSlider.addEventListener('change', (e) => {
 viewmodeSelect.addEventListener('change', (e) => selectedViewMode = e.target.value);
 timeScale.addEventListener("change", (e) => {
     TIME_SCALE = e.target.value;
-    reduceNextLightUpdateTime(10 ** 8);
+    reduceNextLightUpdateTime(lighting_throttle_interval_ms);
 })
 
 canvasWidth.addEventListener('change', (e) => setCanvasSquaresX(e.target.value));

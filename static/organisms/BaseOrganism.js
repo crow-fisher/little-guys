@@ -51,7 +51,7 @@ class BaseOrganism {
         this.growthNumRoots = 10;
         this.growthNitrogen = 50;
         this.growthPhosphorus = 25;
-        this.growthLightLevel = 0.3; // desire mostly full sun 
+        this.growthLightLevel = 0.5; // desire mostly full sun 
         this.growthCycleMaturityLength = 8;
         this.growthCycleLength = 24; // in days
 
@@ -231,6 +231,7 @@ class BaseOrganism {
                 this.addAssociatedLifeSquare(newGreenSquare);
                 newGreenSquare.linkSquare(newPlantSquare);
                 parentSquare.addChild(newPlantSquare);
+                newGreenSquare.lighting = parentSquare.lighting;
                 return newGreenSquare;
             }
         }
@@ -329,7 +330,7 @@ class BaseOrganism {
     }
 
     growRoot(f) {
-        if (getCurDay() < this.rootLastGrown + 0.01) {
+        if (getCurDay() < this.rootLastGrown + (this.growthCycleMaturityLength / this.growthNumRoots)) {
             return;
         }
         this.rootLastGrown = getCurDay();
@@ -415,13 +416,7 @@ class BaseOrganism {
             return;
         }
 
-        let curLifeFrac = (getCurDay() - this.spawnTime) / this.growthCycleLength; 
-        let maturityLifeFrac = (getCurDay() - this.spawnTime) / this.growthCycleMaturityLength; 
-        if (curLifeFrac > 1) {
-            this.destroy();
-            return;
-        }
-
+        let maturityLifeFrac = Math.min(1, (getCurDay() - this.spawnTime) / this.growthCycleMaturityLength); 
         let expectedNitrogen = maturityLifeFrac ** 2 * this.growthNitrogen;
         let expectedPhosphorus = maturityLifeFrac ** 2 * this.growthPhosphorus;
         let expectedLightLevel = maturityLifeFrac ** 2 * this.growthLightLevel;
@@ -439,9 +434,9 @@ class BaseOrganism {
         for (let i = 0; i < this.lifeSquares.length * 2; i++) {
             var sq = this.lifeSquares[i % this.lifeSquares.length];
 
-            let nitrogenToAdd = Math.min(nitrogenMult, 1);
-            let phosphorusToAdd = Math.min(phosphorusMult, 1)
-            let lightLevelToAdd = Math.min(lightLevelMult, 1)
+            let nitrogenToAdd = Math.min(nitrogenMult, 0.5);
+            let phosphorusToAdd = Math.min(phosphorusMult, 0.5)
+            let lightLevelToAdd = Math.min(lightLevelMult, 0.5)
 
             sq.nitrogenIndicated = (sq.nitrogenIndicated + nitrogenToAdd) % 1;
             sq.lightlevelIndicated = (sq.lightlevelIndicated + phosphorusToAdd) % 1;
