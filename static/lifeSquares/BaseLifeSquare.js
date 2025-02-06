@@ -61,29 +61,11 @@ class BaseLifeSquare {
         this.xOffset = 0;
         this.randoms = [];
 
-        this.energyIndicated = 0;
-        this.healthIndicated = 0;
-        this.lifetimeIndicated = 0;
-        this.airIndicated = 0;
-        this.waterIndicated = 0;
-        this.dirtIndicated = 0;
-
         this.cachedRgba = null;
 
-        this.flowering = false;
-        this.flowerColor = "#000000";
-        this.flowerColorRgba = "rgba(0, 0, 0, 0)";
-        this.flowerColorRgb = { r: 0, g: 0, b: 0 };
-        this.shouldFlower = 0;
-        this.shouldFlowerFlag = false;
-        this.numAdjacentFlowers = 0;
-
-        this.distFromOrigin = 0;
         this.distToFront = 0;
         this.component = null;
 
-        this.renderWithColorRange = false;
-        // for ref - values from plant
         this.baseColor = "#9A8873";
         this.baseColorAmount = dirt_baseColorAmount;
         this.darkColor = "#46351D";
@@ -174,47 +156,12 @@ class BaseLifeSquare {
         return this.randoms[randIdx];
     }
 
-    getScore() {
-        var outScore = 0;
-        var orgMeanNutrient = this.linkedOrganism.getMeanNutrient();
-        if (this.linkedOrganism.dirtNutrients < orgMeanNutrient) {
-            outScore += this.dirtNutrients * this.linkedOrganism.dirtCoef;
-        }
-        if (this.linkedOrganism.waterNutrients < orgMeanNutrient) {
-            outScore += this.waterNutrients * this.linkedOrganism.waterCoef;
-        }
-        if (this.linkedOrganism.airNutrients < orgMeanNutrient) {
-            outScore += this.airNutrients * this.linkedOrganism.airCoef;
-        }
-        return outScore;
-    }
-
     getPosX() {
         return this.posX - (this.deflectionXOffset + this.xOffset);
     }
 
     getPosY() {
         return this.posY - (this.deflectionYOffset + this.yOffset);
-    }
-
-    calculateDarkeningColorImpl(darkVal, darkValMax) {
-        var c;
-        if (this.flowering) {
-            c = hexToRgb(this.flowerColor);
-            c.r /= 3;
-            c.g /= 3;
-            c.b /= 3;
-        } else {
-            c = this.darkColor_rgb;
-        }
-        if (darkVal == 0) {
-            return rgbToRgba(c.r, c.g, c.b, 0);
-        }
-        var darkeningStrength = (darkVal / darkValMax) * b_sq_darkeningStrength.value;
-        if (this.flowering) {
-            darkeningStrength /= 3;
-        }
-        return rgbToRgba(c.r, c.g, c.b, darkeningStrength * this.opacity);
     }
 
     subtypeColorUpdate() {

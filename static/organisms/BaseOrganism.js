@@ -9,6 +9,7 @@ import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, S
 import { addSquare, getNeighbors } from "../squares/_sqOperations.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 import { PlantSquare } from "../squares/PlantSquare.js";
+import { selectedViewMode } from "../index.js";
 
 class BaseOrganism {
     constructor(square) {
@@ -109,6 +110,13 @@ class BaseOrganism {
         this.wilt();
     }
 
+    getGrowthNumGreen() {
+        return this.growthPlans.map((gp) => gp.steps.length).reduce(
+            (accumulator, currentValue) => accumulator + currentValue,
+            0,
+        );
+    }
+
     nutrientTick() {
         let growthCycleFrac = getDt() / this.growthCycleLength;
         let targetPerRootNitrogen = this.growthNitrogen * growthCycleFrac / this.growthNumRoots;
@@ -122,10 +130,7 @@ class BaseOrganism {
                 this.phosphorus += lsq.linkedSquare.takePhosphorus(targetPerRootPhosphorus, growthCycleFrac);
             });
 
-        var growthNumGreen = this.growthPlans.map((gp) => gp.steps.length).reduce(
-            (accumulator, currentValue) => accumulator + currentValue,
-            0,
-        );
+        var growthNumGreen = this.getGrowthNumGreen();
 
         this.lightlevel += this.lifeSquares
             .filter((lsq) => lsq.type == "green")
@@ -276,6 +281,21 @@ class BaseOrganism {
     }
 
     executeGrowthPlans() {
+        let curLifeFrac = this.lifeSquares
+            .filter((lsq) => lsq.type == "green")
+            .map((lsq) => 1)
+            .reduce(                
+                (accumulator, currentValue) => accumulator + currentValue,
+                0,
+            ) / Math.max(1, this.getGrowthNumGreen());
+
+        let requiredNitrogen = curLifeFrac * this.growthNitrogen;
+        let requiredPhosphorus = curLifeFrac * this.growthPhosphorus;
+        let requiredLightLevel = curLifeFrac * this.growthLightLevel;
+
+        if (this.nitrogen < requiredNitrogen || this.phosphorus < requiredPhosphorus || this.lightlevel < requiredLightLevel) {
+            return;
+        }
         var anyStepFound = false;
         var timeBudget = getCurDay() - getPrevDay();
         this.growthPlans.filter((gp) => !gp.completed).forEach((growthPlan) => {
@@ -307,7 +327,7 @@ class BaseOrganism {
     }
 
     growRoot(f) {
-        if (getCurDay() < this.rootLastGrown + 0.001) {
+        if (getCurDay() < this.rootLastGrown + 0.01) {
             return;
         }
         this.rootLastGrown = getCurDay();
@@ -346,7 +366,6 @@ class BaseOrganism {
         if (curLifeFrac > 1) {
             return;
         }
-
         let expectedNitrogen = curLifeFrac ** 2 * this.growthNitrogen;
         let expectedPhosphorus = curLifeFrac ** 2 * this.growthPhosphorus;
         let expectedLightLevel = curLifeFrac ** 2 * this.growthLightLevel;
@@ -381,7 +400,48 @@ class BaseOrganism {
 
     // RENDERING
     render() {
+        this.setNutrientIndicators();
         this.lifeSquares.forEach((sp) => sp.render())
+    }
+
+    setNutrientIndicators() {
+        if (selectedViewMode != "organismNutrients") {
+            return;
+        }
+
+        let curLifeFrac = (getCurDay() - this.spawnTime) / this.growthCycleLength; 
+        if (curLifeFrac > 1) {
+            return;
+        }
+        let expectedNitrogen = curLifeFrac ** 2 * this.growthNitrogen;
+        let expectedPhosphorus = curLifeFrac ** 2 * this.growthPhosphorus;
+        let expectedLightLevel = curLifeFrac ** 2 * this.growthLightLevel;
+
+        let nitrogenMult = Math.min(2, this.nitrogen / expectedNitrogen);
+        let phosphorusMult =  Math.min(2, this.phosphorus / expectedPhosphorus);
+        let lightLevelMult =  Math.min(2, this.lightlevel / expectedLightLevel);
+
+        this.lifeSquares.forEach((sq) => {
+            sq.nitrogenIndicated = 0;
+            sq.lightlevelIndicated = 0;
+            sq.phosphorusIndicated = 0;
+        });
+
+        for (let i = 0; i < this.lifeSquares.length * 2; i++) {
+            var sq = this.lifeSquares[i % this.lifeSquares.length];
+
+            let nitrogenToAdd = Math.min(nitrogenMult, 1);
+            let phosphorusToAdd = Math.min(phosphorusMult, 1)
+            let lightLevelToAdd = Math.min(lightLevelMult, 1)
+
+            sq.nitrogenIndicated = (sq.nitrogenIndicated + nitrogenToAdd) % 1;
+            sq.lightlevelIndicated = (sq.lightlevelIndicated + phosphorusToAdd) % 1;
+            sq.phosphorusIndicated = (sq.phosphorusIndicated + lightLevelToAdd) % 1;
+
+            nitrogenMult -= nitrogenToAdd;
+            phosphorusMult -= phosphorusToAdd;
+            lightLevelMult -= lightLevelToAdd;
+        }
     }
 
     // DESTRUCTION
@@ -403,6 +463,7 @@ class BaseOrganism {
         this.updateDeflectionState();
         this.applyDeflectionStateToSquares();
         this.lifeSquares = this.lifeSquares.sort((a, b) => a.distToFront - b.distToFront);
+
     }
 }
 
