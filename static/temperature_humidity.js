@@ -3,7 +3,7 @@ import { addSquare, getSquares } from "./squares/_sqOperations.js";
 import { MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, zoomCanvasFillRect } from "./index.js";
 import { addSquareByName } from "./index.js";
 import { base_wind_pressure, getAirSquareDensity, getPressure, initializeWindPressureMap, updateWindPressureByMult, getAirSquareDensityTempAndHumidity, setPressurebyMult } from "./wind.js";
-import { getCurTime, getPrevTime, getTimeSpeedMult } from "./time.js";
+import { getCurTime, getPrevTime } from "./time.js";
 
 var temperatureMap;
 var waterSaturationMap;
@@ -170,7 +170,7 @@ function temperatureDiffFunction(x, y, x2, y2, high, low) {
 
     air_degrees *= 100;
 
-    return air_degrees * getTimeSpeedMult();
+    return air_degrees;
 }
 
 function humidityDiffFunction(x, y, x2, y2, high, low) {

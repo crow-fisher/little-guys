@@ -907,7 +907,7 @@ function getGlobalThetaBase() {
 }
 
 export {
-    MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, global_theta_base, selectedViewMode, addSquareByName,
+    MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, TIME_SCALE, global_theta_base, selectedViewMode, addSquareByName,
     setCanvasSquaresX, setCanvasSquaresY,
     getCanvasSquaresX, getCanvasSquaresY,
     getBlockModification_val,

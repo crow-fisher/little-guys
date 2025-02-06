@@ -1,5 +1,5 @@
 import { hexToRgb, randNumber, randRange, rgbToRgba } from "./common.js";
-import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, MAIN_CONTEXT, zoomCanvasFillRect} from "./index.js";
+import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, MAIN_CONTEXT, zoomCanvasFillRect, TIME_SCALE} from "./index.js";
 import { calculateColor, calculateColorProvideOpacity } from "./temperature_humidity.js";
 
 var millis_per_day = 100 * 1000;
@@ -22,9 +22,6 @@ var sky_colorNoonRGB = hexToRgb("#84B2E2");
 
 var currentLightColorTemperature = sky_nightRGB; 
 
-function getTimeSpeedMult() {
-    return 8.64 * 10 ** 7 / millis_per_day;
-}
 
 function getPrevTime() {
     return prevTime;
@@ -121,7 +118,7 @@ function updateTime() {
         prevTime = curTime;
         prevDay = curDay;
         curTime += dt; 
-        curDay += dt / millis_per_day;
+        curDay += dt / (millis_per_day / TIME_SCALE);
         prevRealTime = Date.now();
     }
 }
@@ -284,4 +281,4 @@ function temp_blue(temperature) {
 }
 
 
-export { getDaylightStrength, getPrevDay, getCurDay, getCurTime, getPrevTime, updateTime, renderTime, getTimeSpeedMult, initializeStarMap}
+export { getDaylightStrength, getPrevDay, getCurDay, getCurTime, getPrevTime, updateTime, renderTime, initializeStarMap}

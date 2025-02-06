@@ -50,8 +50,8 @@ class BaseOrganism {
         this.growthNumRoots = 10;
         this.growthNitrogen = 50;
         this.growthPhosphorus = 25;
-        this.growthLightLevel = 0.1; // desire mostly full sun 
-        this.growthCycleLength = 0.3; // in days
+        this.growthLightLevel = 0.3; // desire mostly full sun 
+        this.growthCycleLength = 2; // in days
 
         this.applyWind = false;
         this.springCoef = 4;
@@ -291,31 +291,28 @@ class BaseOrganism {
 
         let requiredNitrogen = curLifeFrac * this.growthNitrogen;
         let requiredPhosphorus = curLifeFrac * this.growthPhosphorus;
-        let requiredLightLevel = curLifeFrac * this.growthLightLevel;
+        let requiredLightLevel = curLifeFrac * this.growthLightLevel * .35;
 
         if (this.nitrogen < requiredNitrogen || this.phosphorus < requiredPhosphorus || this.lightlevel < requiredLightLevel) {
             return;
         }
         var anyStepFound = false;
-        var timeBudget = getCurDay() - getPrevDay();
         this.growthPlans.filter((gp) => !gp.completed).forEach((growthPlan) => {
+            let step = growthPlan.steps.filter((step) => !step.completed).at(0);
+            step.doAction();
+            step.growthPlan.stepLastExecuted = getCurDay();
             anyStepFound = true;
-            growthPlan.steps.filter((step) => !step.completed).forEach((step) => {
-                if (
-                    (getCurDay() + timeBudget >= growthPlan.stepLastExecuted + step.timeCost)
-                ) {
-                    step.doAction();
-                    step.growthPlan.stepLastExecuted = getCurDay();
-                    if (this.originGrowth != null) {
-                        this.originGrowth.updateDeflectionState();
-                        this.originGrowth.applyDeflectionState();
-                    }
-                };
-            });
+
+            if (this.originGrowth != null) {
+                this.originGrowth.updateDeflectionState();
+                this.originGrowth.applyDeflectionState();
+            }
+
             if (growthPlan.areStepsCompleted()) {
                 growthPlan.complete();
                 this.stage = growthPlan.endStage;
             }
+             
             if (growthPlan.required && growthPlan.steps.some((step) => step.completedSquare == null)) {
                 this.destroy();
             }
@@ -364,6 +361,7 @@ class BaseOrganism {
         }
         let curLifeFrac = (getCurDay() - this.spawnTime) / this.growthCycleLength; 
         if (curLifeFrac > 1) {
+            this.destroy();
             return;
         }
         let expectedNitrogen = curLifeFrac ** 2 * this.growthNitrogen;
