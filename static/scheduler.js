@@ -4,7 +4,7 @@ import { renderClouds, renderWaterSaturation, tickMaps } from "./temperature_hum
 import { renderTime, updateTime } from "./time.js";
 import { renderWindPressureMap, tickWindPressureMap } from "./wind.js";
 
-const SQUARE_UPDATE_MILLIS = 0;
+const SQUARE_UPDATE_MILLIS = 1000 * 2;
 const ORG_UPDATE_MILLIS = 0;
 
 let last_square_tick = 0;

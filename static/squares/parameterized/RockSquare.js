@@ -14,7 +14,6 @@ export class RockSquare extends SoilSquare {
         this.siltColorRgb = hexToRgb("#664935");
         this.sandColorRgb = hexToRgb("#988570");
 
-
         this.sand = Math.random() * 1.00;
         this.silt = Math.random() * 0.80;
         this.clay = Math.random() * 0.20;
@@ -28,6 +27,7 @@ export class RockSquare extends SoilSquare {
         this.clay = Math.min(Math.max(this.clay, 0), 1);
         this.silt = Math.min(Math.max(this.silt, 0), 1);
         this.sand = Math.min(Math.max(this.sand, 0), 1);
+        this.lightFilterRate *= 4;
     }
 
     getWaterflowRate() {

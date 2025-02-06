@@ -41,7 +41,6 @@ class BaseSeedOrganism extends BaseOrganism {
                 console.warn("Seeds got too dry...");
                 this.destroy();
             } else if (getCurDay() - this.startSproutTime > this.totalSproutTime) {
-                console.log("Seed sprout!")
                 let linkedSquareCache = this.linkedSquare;
                 this.destroy();
                 addNewOrganism(new (this.getSproutType())(linkedSquareCache));

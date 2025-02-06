@@ -2,7 +2,7 @@ import { hexToRgb, randNumber, randRange, rgbToRgba } from "./common.js";
 import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, MAIN_CONTEXT, zoomCanvasFillRect, TIME_SCALE} from "./index.js";
 import { calculateColor, calculateColorProvideOpacity } from "./temperature_humidity.js";
 
-var millis_per_day = 100 * 1000;
+var millis_per_day = 1000 * 1000;
 var curDay = 0.5;
 var prevDay = 0;
 var curTime = 0.2;
@@ -32,12 +32,12 @@ function initializeStarMap() {
     starMapCenterX = randNumber(CANVAS_SQUARES_X / 4, CANVAS_SQUARES_X * 0.75);
     starMapCenterY = randNumber(CANVAS_SQUARES_Y / 4, CANVAS_SQUARES_Y * 0.75);
 
-    var numStars = randNumber(100, 50000);
+    var numStars = randNumber(12000, 13000);
 
     for (let i = 0; i < numStars; i++) {
         var starX = randNumber(-CANVAS_SQUARES_X * 4, CANVAS_SQUARES_X * 4);
         var starY = randNumber(-CANVAS_SQUARES_Y * 4, CANVAS_SQUARES_Y * 4);
-        var starBrightness = Math.random();
+        var starBrightness = Math.random() * 0.7;
 
         if (!(starX in starMap)) {
             starMap[starX] = new Map();
@@ -52,6 +52,7 @@ function renderStarMap(brightnessMult) {
         initializeStarMap();
     }
     
+    brightnessMult /= (2 ** (TIME_SCALE - 1));
 
     var xKeys = Array.from(Object.keys(starMap));
     for (let i = 0; i < xKeys.length; i++) {
@@ -118,7 +119,7 @@ function updateTime() {
         prevTime = curTime;
         prevDay = curDay;
         curTime += dt; 
-        curDay += dt / (millis_per_day / TIME_SCALE);
+        curDay += dt / (millis_per_day / (2 ** (TIME_SCALE - 1)));
         prevRealTime = Date.now();
     }
 }
@@ -236,6 +237,7 @@ function calculateTempColorRgba(daylightStrength) {
         }
         tempColorRgbMap[temperature] = resColor;
         tempColorRgbaMap[temperature] = rgbToRgba(resColor.r, resColor.g, resColor.b, 0.35);
+        currentLightColorTemperature = tempColorRgbMap[temperature];
         return tempColorRgbaMap[temperature];
     }
 }

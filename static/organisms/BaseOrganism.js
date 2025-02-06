@@ -51,7 +51,8 @@ class BaseOrganism {
         this.growthNitrogen = 50;
         this.growthPhosphorus = 25;
         this.growthLightLevel = 0.3; // desire mostly full sun 
-        this.growthCycleLength = 2; // in days
+        this.growthCycleMaturityLength = 8;
+        this.growthCycleLength = 24; // in days
 
         this.applyWind = false;
         this.springCoef = 4;
@@ -118,7 +119,7 @@ class BaseOrganism {
     }
 
     nutrientTick() {
-        let growthCycleFrac = getDt() / this.growthCycleLength;
+        let growthCycleFrac = getDt() / this.growthCycleMaturityLength;
         let targetPerRootNitrogen = this.growthNitrogen * growthCycleFrac / this.growthNumRoots;
         let targetPerRootPhosphorus = this.growthPhosphorus * growthCycleFrac / this.growthNumRoots;
 
@@ -144,6 +145,7 @@ class BaseOrganism {
     }
 
     wilt() {
+        return;
         if (this.lifeSquares.length == 0) {
             return;
         }
@@ -291,7 +293,7 @@ class BaseOrganism {
 
         let requiredNitrogen = curLifeFrac * this.growthNitrogen;
         let requiredPhosphorus = curLifeFrac * this.growthPhosphorus;
-        let requiredLightLevel = curLifeFrac * this.growthLightLevel * .35;
+        let requiredLightLevel = curLifeFrac * this.growthLightLevel * .15;
 
         if (this.nitrogen < requiredNitrogen || this.phosphorus < requiredPhosphorus || this.lightlevel < requiredLightLevel) {
             return;
@@ -359,9 +361,11 @@ class BaseOrganism {
         if (this.waterPressure < this.waterPressureWiltThresh) {
             return;
         }
-        let curLifeFrac = (getCurDay() - this.spawnTime) / this.growthCycleLength; 
+        let curLifeFrac = (getCurDay() - this.spawnTime) / this.growthCycleMaturityLength; 
         if (curLifeFrac > 1) {
-            this.destroy();
+            if (this.nitrogen > this.growthNitrogen && this.phosphorus > this.growthPhosphorus && this.lightlevel > this.growthLightLevel) {
+                // console.log("Would flower");
+            }
             return;
         }
         let expectedNitrogen = curLifeFrac ** 2 * this.growthNitrogen;
@@ -382,7 +386,8 @@ class BaseOrganism {
         }
         if (this.waterPressure < this.waterPressureTarget || this.nitrogen < expectedNitrogen || this.phosphorus < expectedPhosphorus) {
             this.growRoot(scoreFunc);
-        } else if (this.lightlevel < expectedLightLevel) {
+        }
+        if (this.lightlevel < expectedLightLevel) {
             this.executeGrowthPlans();
         }
     }
@@ -408,12 +413,15 @@ class BaseOrganism {
         }
 
         let curLifeFrac = (getCurDay() - this.spawnTime) / this.growthCycleLength; 
+        let maturityLifeFrac = (getCurDay() - this.spawnTime) / this.growthCycleMaturityLength; 
         if (curLifeFrac > 1) {
+            this.destroy();
             return;
         }
-        let expectedNitrogen = curLifeFrac ** 2 * this.growthNitrogen;
-        let expectedPhosphorus = curLifeFrac ** 2 * this.growthPhosphorus;
-        let expectedLightLevel = curLifeFrac ** 2 * this.growthLightLevel;
+
+        let expectedNitrogen = maturityLifeFrac ** 2 * this.growthNitrogen;
+        let expectedPhosphorus = maturityLifeFrac ** 2 * this.growthPhosphorus;
+        let expectedLightLevel = maturityLifeFrac ** 2 * this.growthLightLevel;
 
         let nitrogenMult = Math.min(2, this.nitrogen / expectedNitrogen);
         let phosphorusMult =  Math.min(2, this.phosphorus / expectedPhosphorus);
