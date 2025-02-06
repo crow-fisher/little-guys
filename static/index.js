@@ -204,7 +204,10 @@ brushSizeSlider.addEventListener('change', (e) => {
 });
 
 viewmodeSelect.addEventListener('change', (e) => selectedViewMode = e.target.value);
-timeScale.addEventListener("change", (e) => TIME_SCALE = e.target.value)
+timeScale.addEventListener("change", (e) => {
+    TIME_SCALE = e.target.value;
+    reduceNextLightUpdateTime(10 ** 8);
+})
 
 canvasWidth.addEventListener('change', (e) => setCanvasSquaresX(e.target.value));
 canvasHeight.addEventListener('change', (e) => setCanvasSquaresY(e.target.value));

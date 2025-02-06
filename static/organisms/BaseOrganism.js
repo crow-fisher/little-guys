@@ -10,6 +10,7 @@ import { addSquare, getNeighbors } from "../squares/_sqOperations.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 import { PlantSquare } from "../squares/PlantSquare.js";
 import { selectedViewMode } from "../index.js";
+import { reduceNextLightUpdateTime } from "../globalOperations.js";
 
 class BaseOrganism {
     constructor(square) {
@@ -62,7 +63,7 @@ class BaseOrganism {
         this.deflectionIdx = 0;
         this.deflectionStateTheta = 0;
         this.deflectionStateFunctions = [];
-        this.rootOpacity = 0.4;
+        this.rootOpacity = 0.02;
         this.lighting = square.lighting;
     }
 
@@ -361,16 +362,16 @@ class BaseOrganism {
         if (this.waterPressure < this.waterPressureWiltThresh) {
             return;
         }
-        let curLifeFrac = (getCurDay() - this.spawnTime) / this.growthCycleMaturityLength; 
-        if (curLifeFrac > 1) {
+        let curMaturityFrac = (getCurDay() - this.spawnTime) / this.growthCycleMaturityLength; 
+        if (curMaturityFrac > 1) {
             if (this.nitrogen > this.growthNitrogen && this.phosphorus > this.growthPhosphorus && this.lightlevel > this.growthLightLevel) {
                 // console.log("Would flower");
             }
             return;
         }
-        let expectedNitrogen = curLifeFrac ** 2 * this.growthNitrogen;
-        let expectedPhosphorus = curLifeFrac ** 2 * this.growthPhosphorus;
-        let expectedLightLevel = curLifeFrac ** 2 * this.growthLightLevel;
+        let expectedNitrogen = curMaturityFrac ** 2 * this.growthNitrogen;
+        let expectedPhosphorus = curMaturityFrac ** 2 * this.growthPhosphorus;
+        let expectedLightLevel = curMaturityFrac ** 2 * this.growthLightLevel;
 
         let scoreFunc = (sq) => {
             var sqScore = 0;
