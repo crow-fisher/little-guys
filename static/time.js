@@ -117,7 +117,7 @@ function updateTime() {
         prevTime = curTime;
         prevDay = curDay;
         curTime += dt; 
-        curDay += dt / (millis_per_day / (8 ** (TIME_SCALE - 1)));
+        curDay += dt / (millis_per_day / (6 ** (TIME_SCALE - 1)));
         prevRealTime = Date.now();
     }
 }

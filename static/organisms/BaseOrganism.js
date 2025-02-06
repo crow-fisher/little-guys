@@ -283,15 +283,18 @@ class BaseOrganism {
         this.growthPlans.push(growthPlan);
     }
 
-    executeGrowthPlans() {
-        let curLifeFrac = this.lifeSquares
+    getCurGrowthFrac() {
+        return this.lifeSquares
             .filter((lsq) => lsq.type == "green")
             .map((lsq) => 1)
             .reduce(                
                 (accumulator, currentValue) => accumulator + currentValue,
                 0,
             ) / Math.max(1, this.getGrowthNumGreen());
+    }
 
+    executeGrowthPlans() {
+        let curLifeFrac = this.getCurGrowthFrac();
         let requiredNitrogen = curLifeFrac * this.growthNitrogen;
         let requiredPhosphorus = curLifeFrac * this.growthPhosphorus;
         let requiredLightLevel = curLifeFrac * this.growthLightLevel * .15;

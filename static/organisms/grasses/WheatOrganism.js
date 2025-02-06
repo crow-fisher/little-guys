@@ -68,7 +68,15 @@ export class WheatOrganism extends BaseOrganism {
 
     planGrowth() {
         super.planGrowth();
-        this.growGrass();
+        if (this.curNumGrass == 0) {
+            this.growGrass();
+            return;
+        }
+        if (Math.random() > 0.95) {
+            if (this.getCurGrowthFrac() > 0.2) {
+                this.growGrass();
+            }
+        }
     }
 }
 
