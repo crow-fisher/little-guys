@@ -22,7 +22,7 @@ import { createMoonLightGroup, createSunLightGroup, default_light_throttle_inter
 import { loadEmptyScene, loadFlatDirtWorld, loadSlot, saveSlot } from "./saveAndLoad.js";
 import { scheduler_main, triggerEarlySquareScheduler } from "./scheduler.js";
 
-var lastMode = "normal"; // options: normal, organismWetlandgi
+var lastMode = "organismWetland"; // options: normal, organismWetlandgi
 
 var specialSelect = document.getElementById("specialSelect");
 var specialSelect_val = "water";
@@ -895,8 +895,8 @@ window.onload = function () {
     document.addEventListener('keyup', keyup);
     // loadDemoScene();
     // loadFlatDirtWorld();
-    // loadSlot("A");
-    loadEmptyScene();
+    loadSlot("A");
+    // loadEmptyScene();
 }
 
 // loadSlotFromSave(volcano);

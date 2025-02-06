@@ -32,14 +32,16 @@ class BaseSeedOrganism extends BaseOrganism {
 
     process() {
         if (this.startSproutTime == null) {
-            if (this.linkedSquare.getSoilWaterPressure() > -3) {
+            if (this.linkedSquare.getSoilWaterPressure() > -3.5) {
                 this.startSproutTime = getCurDay();
+                console.log("Seed start...")
             }
         } else {
             if (this.linkedSquare.getSoilWaterPressure() < -5.5) {
                 console.warn("Seeds got too dry...");
                 this.destroy();
             } else if (getCurDay() - this.startSproutTime > this.totalSproutTime) {
+                console.log("Seed sprout!")
                 let linkedSquareCache = this.linkedSquare;
                 this.destroy();
                 addNewOrganism(new (this.getSproutType())(linkedSquareCache));

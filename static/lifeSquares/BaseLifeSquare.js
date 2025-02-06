@@ -10,7 +10,7 @@ import { selectedViewMode } from "../index.js";
 import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_GREEN, RGB_COLOR_BLACK, RGB_COLOR_RED, COLOR_BLUE, COLOR_GREEN, COLOR_RED } from "../colors.js";
 import { addOrganismSquare } from "./_lsOperations.js";
 import { removeSquare } from "../globalOperations.js";
-import { STATE_DEAD, STATE_HEALTHY, STATE_THIRSTY, SUBTYPE_TRUNK,SUBTYPE_DEAD,SUBTYPE_LEAF,SUBTYPE_LEAFSTEM,SUBTYPE_NODE,SUBTYPE_ROOTNODE,SUBTYPE_SHOOT,SUBTYPE_SPROUT,SUBTYPE_STEM } from "../organisms/Stages.js";
+import { STATE_DEAD, STATE_HEALTHY, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_DEAD, SUBTYPE_LEAF, SUBTYPE_LEAFSTEM, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM } from "../organisms/Stages.js";
 import { lightingRegisterLifeSquare } from "../lighting.js";
 
 
@@ -94,7 +94,7 @@ class BaseLifeSquare {
         this.LSQ_RENDER_SIZE_MULT = Math.SQRT2;
 
         this.lightFilterRate = 0.00010;
-        
+
         if (square.lighting != null && square.lighting.length > 0) {
             this.lighting = square.lighting;
         } else if (organism.linkedSquare.lighting != null && organism.linkedSquare.lighting.length > 0) {
@@ -255,75 +255,13 @@ class BaseLifeSquare {
         if (this.activeRenderSubtype != this.subtype || this.activeRenderState != this.state) {
             this.subtypeColorUpdate();
         }
-        if (selectedViewMode.startsWith("organism") && selectedViewMode != "organismStructure") {
-            var color = null;
-            var val;
-            var val_max;
-            var val_stdev;
-            switch (selectedViewMode) {
-                case "organismSquareNutrients":
-                    color = {
-                        r: 255 * (this.dirtNutrients / this.linkedOrganism.getMaxDirtNutrient()),
-                        g: 255 * (this.airNutrients / this.linkedOrganism.getMaxAirNutrient()),
-                        b: 255 * (this.waterNutrients / this.linkedOrganism.getMaxWaterNutrient())
-                    }
-                    val = this.dirtNutrients + this.airNutrients + this.waterNutrients;
-                    val_max = this.maxAirDt + this.maxWaterDt + this.maxDirtDt;
-                    break;
-                case "organismSquareDirt":
-                    color = RGB_COLOR_BROWN;
-                    val = this.dirtNutrients;
-                    val_max = this.maxDirtDt;
-                    break;
-                case "organismSquareWater":
-                    color = RGB_COLOR_BLUE;
-                    val = this.waterNutrients;
-                    val_max = this.maxWaterDt;
-                    break;
-                case "organismSquareAir":
-                    color = RGB_COLOR_GREEN;
-                    val = this.airNutrients;
-                    val_max = this.maxAirDt;
-                    break;
-                case "organismLifetime":
-                    color = RGB_COLOR_BLACK;
-                    val = this.lifetimeIndicated;
-                    val_max = 1;
-                    break;
-                case "organismNutrients":
-                    color = {
-                        r: 100 + (1 - this.dirtIndicated) * 130,
-                        g: 100 + (1 - this.airIndicated) * 130,
-                        b: 100 + (1 - this.waterIndicated) * 130
-                    }
-                    MAIN_CONTEXT.fillStyle = rgbToHex(color.r, color.g, color.b);
-                    zoomCanvasFillRect(
-                        this.getPosX() * BASE_SIZE,
-                        this.getPosY() * BASE_SIZE,
-                        this.width * BASE_SIZE * this.getLsqRenderSizeMult(),
-                        this.height * BASE_SIZE * this.getLsqRenderSizeMult()
-                    );
-                    return;
-
-                case "organismDirt":
-                    color = RGB_COLOR_BROWN;
-                    val = this.dirtIndicated;
-                    val_max = 1;
-                    val_stdev = 2;
-                    break;
-                case "organismWater":
-                    color = RGB_COLOR_BLUE;
-                    val = this.waterIndicated;
-                    val_max = 1;
-                    break;
-                case "organismAir":
-                    color = RGB_COLOR_GREEN;
-                    val = this.airIndicated;
-                    val_max = 1;
-                    break;
+        if (selectedViewMode == "organismNutrients") {
+            let color = {
+                r: 100 + (1 - this.nitrogenIndicated) * 130,
+                g: 100 + (1 - this.lightlevelIndicated) * 130,
+                b: 100 + (1 - this.phosphorusIndicated) * 130
             }
-            var colorProcessed = processColorLerp((val_max - val), -0.5, val_max + 0.5, color);
-            MAIN_CONTEXT.fillStyle = rgbToHex(colorProcessed.r, colorProcessed.g, colorProcessed.b);
+            MAIN_CONTEXT.fillStyle = rgbToHex(color.r, color.g, color.b);
             zoomCanvasFillRect(
                 this.getPosX() * BASE_SIZE,
                 this.getPosY() * BASE_SIZE,
@@ -332,10 +270,10 @@ class BaseLifeSquare {
             );
             return;
         }
-        if (selectedViewMode == "watersaturation") {
+        else if (selectedViewMode == "watersaturation") {
             var color1 = null;
             var color2 = null;
-        
+
             var val = this.linkedOrganism.waterPressure;
             var valMin = -100;
             var valMax = 0;
@@ -343,14 +281,14 @@ class BaseLifeSquare {
             if (this.linkedOrganism.waterPressure > -2) {
                 color1 = RGB_COLOR_BLUE;
                 color2 = RGB_COLOR_GREEN;
-                valMin = -2;
+                valMin = this.linkedOrganism.waterPressureTarget;
                 valMax = this.linkedOrganism.waterPressureOverwaterThresh;
 
             } else if (this.linkedOrganism.waterPressure > this.linkedOrganism.waterPressureWiltThresh) {
                 color1 = RGB_COLOR_GREEN;
                 color2 = RGB_COLOR_BROWN;
                 valMin = this.linkedOrganism.waterPressureWiltThresh;
-                valMax = -2;
+                valMax = this.linkedOrganism.waterPressureTarget;
             } else {
                 color1 = RGB_COLOR_BROWN;
                 color2 = RGB_COLOR_RED;
@@ -358,7 +296,7 @@ class BaseLifeSquare {
                 valMax = this.linkedOrganism.waterPressureWiltThresh;
             }
 
-            
+
             val = Math.max(valMin, val);
             val = Math.min(valMax, val);
 
@@ -379,47 +317,49 @@ class BaseLifeSquare {
             );
             return;
         }
-        var res = this.getStaticRand(1) * (parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value) + parseFloat(this.baseColorAmount.value));
-        var primaryColor = null;
-        var altColor1 = null;
-        var altColor2 = null;
+        else {
+            var res = this.getStaticRand(1) * (parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value) + parseFloat(this.baseColorAmount.value));
+            var primaryColor = null;
+            var altColor1 = null;
+            var altColor2 = null;
+            if (res < parseFloat(this.accentColorAmount.value)) {
+                primaryColor = this.accentColor;
+                altColor1 = this.darkColor;
+                altColor2 = this.colorBase;
+            } else if (res < parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value)) {
+                primaryColor = this.darkColor;
+                altColor1 = this.baseColor;
+                altColor2 = this.darkColor;
+            } else {
+                altColor1 = this.darkColor;
+                altColor2 = this.darkColor;
+                primaryColor = this.baseColor;
+            }
 
-        if (res < parseFloat(this.accentColorAmount.value)) {
-            primaryColor = this.accentColor;
-            altColor1 = this.darkColor;
-            altColor2 = this.colorBase;
-        } else if (res < parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value)) {
-            primaryColor = this.darkColor;
-            altColor1 = this.baseColor;
-            altColor2 = this.darkColor;
-        } else {
-            altColor1 = this.darkColor;
-            altColor2 = this.darkColor;
-            primaryColor = this.baseColor;
+            var rand = this.getStaticRand(2);
+            var baseColorRgb = hexToRgb(primaryColor);
+            var altColor1Rgb = hexToRgb(altColor1);
+            var altColor2Rgb = hexToRgb(altColor2);
+
+            // the '0.1' is the base darkness
+            var outColorBase = {
+                r: (baseColorRgb.r * 0.5 + ((altColor1Rgb.r * rand + altColor2Rgb.r * (1 - rand)) * 0.5)),
+                g: (baseColorRgb.g * 0.5 + ((altColor1Rgb.g * rand + altColor2Rgb.g * (1 - rand)) * 0.5)),
+                b: (baseColorRgb.b * 0.5 + ((altColor1Rgb.b * rand + altColor2Rgb.b * (1 - rand)) * 0.5))
+            }
+            var lightingColor = processLighting(this.lighting);
+            var outColor = { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
+            var outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), this.opacity);
+            MAIN_CONTEXT.fillStyle = outRgba;
+
+            zoomCanvasFillRect(
+                this.getPosX() * BASE_SIZE,
+                this.getPosY() * BASE_SIZE,
+                this.width * BASE_SIZE * this.getLsqRenderSizeMult(),
+                this.height * BASE_SIZE * this.getLsqRenderSizeMult()
+            );
         }
 
-        var rand = this.getStaticRand(2);
-        var baseColorRgb = hexToRgb(primaryColor);
-        var altColor1Rgb = hexToRgb(altColor1);
-        var altColor2Rgb = hexToRgb(altColor2);
-        
-        // the '0.1' is the base darkness
-        var outColorBase = {
-            r: (baseColorRgb.r * 0.5 + ((altColor1Rgb.r * rand + altColor2Rgb.r * (1 - rand)) * 0.5)),
-            g: (baseColorRgb.g * 0.5 + ((altColor1Rgb.g * rand + altColor2Rgb.g * (1 - rand)) * 0.5)),
-            b: (baseColorRgb.b * 0.5 + ((altColor1Rgb.b * rand + altColor2Rgb.b * (1 - rand)) * 0.5))
-        }
-        var lightingColor = processLighting(this.lighting);
-        var outColor = {r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255};
-        var outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), this.opacity);
-        MAIN_CONTEXT.fillStyle = outRgba;
-
-        zoomCanvasFillRect(
-            this.getPosX() * BASE_SIZE,
-            this.getPosY() * BASE_SIZE,
-            this.width * BASE_SIZE * this.getLsqRenderSizeMult(),
-            this.height * BASE_SIZE * this.getLsqRenderSizeMult()
-        );
     }
 
     calculateColor() {

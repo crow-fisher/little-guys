@@ -23,8 +23,8 @@ class BaseOrganism {
         this.growthPlans = [];
         this.lastGrownMap = {};
         this.linkSquare(square);
-        this.maxSquaresOfTypePerDay = 1000;
         this.spawnTime = getCurDay();
+        this.rootLastGrown = getCurDay();
 
         this.greenType = null;
         this.rootType = null;
@@ -35,7 +35,9 @@ class BaseOrganism {
         this.waterPressureWiltThresh = -4;
         this.waterPressureDieThresh = -5;
         this.waterPressureOverwaterThresh = -1.5;
-        this.transpirationRate = 0.01;
+        
+        this.perDayWaterLoss = 0.2;
+
         this.rootPower = 2;
 
         // nutrients normalized to "pounds per acre" per farming websites
@@ -47,8 +49,8 @@ class BaseOrganism {
         this.growthNumRoots = 10;
         this.growthNitrogen = 50;
         this.growthPhosphorus = 25;
-        this.growthLightLevel = 0.9; // desire mostly full sun 
-        this.growthCycleLength = 1; // in days
+        this.growthLightLevel = 0.1; // desire mostly full sun 
+        this.growthCycleLength = 0.3; // in days
 
         this.applyWind = false;
         this.springCoef = 4;
@@ -82,16 +84,18 @@ class BaseOrganism {
     waterSaturationAndPhTick() {
         let amountOfWaterTransferred = 0;
         let sumPh = 0;
+        let maxRootAbsorptionRate = getDt() * this.perDayWaterLoss;
+        
         this.lifeSquares
             .filter((lsq) => lsq.type == "root")
             .filter((lsq) => lsq.linkedSquare != null && lsq.linkedSquare.proto == "SoilSquare")
             .filter((lsq) => (this.rootPower + lsq.linkedSquare.getSoilWaterPressure()) > this.waterPressure)
             .forEach((lsq) => {
                 var amountOfWater = 0;
-                if (this.waterPressure < this.waterPressureTarget) {
-                    amountOfWater = lsq.linkedSquare.suckWater(this.transpirationRate);
+                if (this.waterPressure + amountOfWaterTransferred < this.waterPressureTarget) {
+                    amountOfWater = lsq.linkedSquare.suckWater(maxRootAbsorptionRate);
                 } else {
-                    amountOfWater = lsq.linkedSquare.suckWater(this.transpirationRate / 10);
+                    amountOfWater = lsq.linkedSquare.suckWater(maxRootAbsorptionRate / 10);
                 };
                 amountOfWaterTransferred += amountOfWater;
                 sumPh += amountOfWaterTransferred * lsq.linkedSquare.ph;
@@ -101,21 +105,21 @@ class BaseOrganism {
         this.waterPressure += amountOfWaterTransferred;
 
         // todo: make this humidfy the air
-        this.waterPressure -= (this.lifeSquares.length * this.transpirationRate) / 10;
+        this.waterPressure -= getDt() * this.perDayWaterLoss;
         this.wilt();
     }
 
     nutrientTick() {
         let growthCycleFrac = getDt() / this.growthCycleLength;
-        let targetGrowthNitrogen = this.growthNitrogen * growthCycleFrac;
-        let targetGrowthPhosphorus = this.growthPhosphorus * growthCycleFrac;
+        let targetPerRootNitrogen = this.growthNitrogen * growthCycleFrac / this.growthNumRoots;
+        let targetPerRootPhosphorus = this.growthPhosphorus * growthCycleFrac / this.growthNumRoots;
 
         this.lifeSquares
             .filter((lsq) => lsq.type == "root")
             .filter((lsq) => lsq.linkedSquare != null && lsq.linkedSquare.proto == "SoilSquare")
             .forEach((lsq) => {
-                this.nitrogen += lsq.linkedSquare.takeNitrogen(targetGrowthNitrogen, growthCycleFrac);
-                this.phosphorus += lsq.linkedSquare.takePhosphorus(targetGrowthPhosphorus, growthCycleFrac);
+                this.nitrogen += lsq.linkedSquare.takeNitrogen(targetPerRootNitrogen, growthCycleFrac);
+                this.phosphorus += lsq.linkedSquare.takePhosphorus(targetPerRootPhosphorus, growthCycleFrac);
             });
 
         var growthNumGreen = this.growthPlans.map((gp) => gp.steps.length).reduce(
@@ -303,6 +307,11 @@ class BaseOrganism {
     }
 
     growRoot(f) {
+        if (getCurDay() < this.rootLastGrown + 0.001) {
+            return;
+        }
+        this.rootLastGrown = getCurDay();
+
         var targetSquare = null;
         var targetSquareParent = null;
         this.lifeSquares.filter((lsq) => lsq.type == "root").forEach((lsq) => {
@@ -330,22 +339,10 @@ class BaseOrganism {
         if (!this.lifeSquares.some((lsq) => lsq.type == "green")) {
             this.executeGrowthPlans();
         }
-
         if (this.waterPressure < this.waterPressureWiltThresh) {
             return;
         }
-        // expect to grow linearly over the course of our growth lifetime 
-        // expect to grow linearly over the course of our growth lifetime 
-
-        // expect to grow linearly over the course of our growth lifetime
-
-        // for parts, grow according to the needs of the growth plan and its stages 
-        let curNitrogenFrac = this.nitrogen / this.growthNitrogen;
-        let curPhosphorusFrac = this.phosphorus / this.growthPhosphorus;
-        let curLightLevel = this.lightlevel / this.growthLightLevel;
-        
         let curLifeFrac = (getCurDay() - this.spawnTime) / this.growthCycleLength; 
-
         if (curLifeFrac > 1) {
             return;
         }
@@ -359,16 +356,16 @@ class BaseOrganism {
             if (this.waterPressure < this.waterPressureTarget) {
                 sqScore += sq.getSoilWaterPressure() / this.waterPressure;
             }
-            if (curNitrogenFrac < expectedNitrogen) {
+            if (this.nitrogen < expectedNitrogen) {
                 sqScore += sq.nitrogen / this.growthNitrogen;
             }
-            if (curPhosphorusFrac < expectedPhosphorus) {
+            if (this.phosphorus < expectedPhosphorus) {
                 sqScore += sq.phosphorus / this.growthPhosphorus;
             }
         }
-        if (this.waterPressure < this.waterPressureTarget || curNitrogenFrac < expectedNitrogen || curPhosphorusFrac < expectedPhosphorus) {
+        if (this.waterPressure < this.waterPressureTarget || this.nitrogen < expectedNitrogen || this.phosphorus < expectedPhosphorus) {
             this.growRoot(scoreFunc);
-        } else if (curLightLevel < expectedLightLevel) {
+        } else if (this.lightlevel < expectedLightLevel) {
             this.executeGrowthPlans();
         }
     }
