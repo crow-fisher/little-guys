@@ -2,7 +2,7 @@ import { hexToRgb, randNumber, randRange, rgbToRgba } from "./common.js";
 import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, MAIN_CONTEXT, zoomCanvasFillRect, TIME_SCALE} from "./index.js";
 import { calculateColor, calculateColorProvideOpacity } from "./temperature_humidity.js";
 
-var millis_per_day = 1000 * 1000;
+var millis_per_day = 60 * 60 * 24 * 1000;
 var curDay = 0.5;
 var prevDay = 0;
 var curTime = 0.2;
@@ -52,8 +52,6 @@ function renderStarMap(brightnessMult) {
         initializeStarMap();
     }
     
-    brightnessMult /= (2 ** (TIME_SCALE - 1));
-
     var xKeys = Array.from(Object.keys(starMap));
     for (let i = 0; i < xKeys.length; i++) {
         var yKeys = Array.from(Object.keys(starMap[xKeys[i]]));
@@ -119,7 +117,7 @@ function updateTime() {
         prevTime = curTime;
         prevDay = curDay;
         curTime += dt; 
-        curDay += dt / (millis_per_day / (2 ** (TIME_SCALE - 1)));
+        curDay += dt / (millis_per_day / (8 ** (TIME_SCALE - 1)));
         prevRealTime = Date.now();
     }
 }

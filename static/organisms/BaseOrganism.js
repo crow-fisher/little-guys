@@ -322,7 +322,6 @@ class BaseOrganism {
         });
 
         if (!anyStepFound) {
-            this.planGrowth();
         }
     }
 
@@ -467,6 +466,7 @@ class BaseOrganism {
         this.waterSaturationAndPhTick();
         this.nutrientTick();
         this.doPlantGrowth();
+        this.planGrowth();
         this.updateDeflectionState();
         this.applyDeflectionStateToSquares();
         this.lifeSquares = this.lifeSquares.sort((a, b) => a.distToFront - b.distToFront);

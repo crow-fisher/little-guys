@@ -129,10 +129,6 @@ export class LightGroup {
     doRayCasting(i) {
         this.lightSources.forEach((ls) => ls.doRayCasting(i));
     }
-
-    setLastFullSquareUpdate(val) {
-        this.lightSources.forEach((ls) => ls.lastFullSquareUpdate = val);
-    }
 }
 
 export class LightSource {
@@ -147,16 +143,10 @@ export class LightSource {
         this.numRays = numRays;
         this.frameLifeSquares = null;
         this.frameTerrainSquares = null;
-        this.frameColor = RGB_COLOR_BLACK;
-        this.allLifeSquares = new Array();
-        this.visitedLifeSquares = new Set();
-        this.lastFullSquareUpdate = 0;
     }
 
     preprocessLifeSquares() {
         this.frameLifeSquares = new Map();
-        this.allLifeSquares = new Array();
-        this.visitedLifeSquares = new Set();
         var posXKeys = Object.keys(lifeSquarePositions);
         posXKeys.forEach((lsqPosX) => {
             var relPosX = Math.floor(lsqPosX - this.posX);
@@ -173,7 +163,6 @@ export class LightSource {
                     this.frameLifeSquares[relPosX][relPosY] = new Array();
                 }
                 this.frameLifeSquares[relPosX][relPosY].push(...lifeSquarePositions[lsqPosX][lsqPosY]);
-                this.allLifeSquares.push(...lifeSquarePositions[lsqPosX][lsqPosY]);
             })
         })
     }
@@ -198,13 +187,9 @@ export class LightSource {
 
     doRayCasting(idx) {
         this.preprocessLifeSquares();
-        var targetLists = [this.frameLifeSquares];
-
         this.preprocessTerrainSquares();
-        targetLists.push(this.frameTerrainSquares);
-
+        var targetLists = [this.frameTerrainSquares, this.frameLifeSquares];
         let thetaStep = (this.maxTheta - this.minTheta) / this.numRays;
-        var seenSquares = new Set();
 
         for (let theta = this.minTheta; theta < this.maxTheta; theta += thetaStep) {
             var thetaSquares = [];
@@ -224,6 +209,7 @@ export class LightSource {
             });
             thetaSquares = [...new Set(thetaSquares)];
             thetaSquares.sort((a, b) => (a[0] ** 2 + a[1] ** 2) ** 0.5 - (b[0] ** 2 + b[1] ** 2) ** 0.5);
+            
             var curBrightness = 0;
             thetaSquares.forEach((loc) => {
                 targetLists.forEach((list) => {
