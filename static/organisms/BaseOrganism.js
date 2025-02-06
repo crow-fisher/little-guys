@@ -297,7 +297,7 @@ class BaseOrganism {
         let curLifeFrac = this.getCurGrowthFrac();
         let requiredNitrogen = curLifeFrac * this.growthNitrogen;
         let requiredPhosphorus = curLifeFrac * this.growthPhosphorus;
-        let requiredLightLevel = curLifeFrac * this.growthLightLevel * .15;
+        let requiredLightLevel = curLifeFrac * this.growthLightLevel * .35;
 
         if (this.nitrogen < requiredNitrogen || this.phosphorus < requiredPhosphorus || this.lightlevel < requiredLightLevel) {
             return;

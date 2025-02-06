@@ -209,7 +209,7 @@ export class LightSource {
             });
             thetaSquares = [...new Set(thetaSquares)];
             thetaSquares.sort((a, b) => (a[0] ** 2 + a[1] ** 2) ** 0.5 - (b[0] ** 2 + b[1] ** 2) ** 0.5);
-            
+
             var curBrightness = 0;
             thetaSquares.forEach((loc) => {
                 targetLists.forEach((list) => {
@@ -220,9 +220,6 @@ export class LightSource {
                         return;
                     }
                     list[loc[0]][loc[1]].forEach((obj) => {
-                        if (curBrightness < -MAX_BRIGHTNESS) {
-                            return;
-                        }
                         let curBrightnessCopy = curBrightness;
                         let pointLightSourceFunc = () => (Math.max(0, MAX_BRIGHTNESS * this.brightnessFunc() + curBrightnessCopy)) / MAX_BRIGHTNESS;
                         if (obj.lighting[idx] == null)  {
