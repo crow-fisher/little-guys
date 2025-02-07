@@ -220,12 +220,12 @@ export class BaseSquare {
         this.speedY += 1;
         this.frameFrozen = false;
         
-        if (Math.floor(getCurDay()) != this.lightingSumDay) {
+        if (Math.floor(getCurDay() + 0.15) != this.lightingSumDay) {
             if (this.lightingSum == null) {
                 this.lightingSum = {r: 0, g: 0, b: 0}
                 this.lightingSumCount = 0;
             }
-            let decayFactor = 5;
+            let decayFactor = 3;
 
             this.lightingSum.r /= decayFactor;
             this.lightingSum.g /= decayFactor;

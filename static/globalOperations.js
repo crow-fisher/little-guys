@@ -25,6 +25,10 @@ export function reduceNextLightUpdateTime(amount) {
     nextLightingUpdate -= amount;
 }
 
+export function setNextLightUpdateTime(dt) {
+    nextLightingUpdate = Date.now() + dt;
+}
+
 function doLightSourceRaycasting() {
     var shouldDoFullSquareUpdate = Date.now() > nextLightingUpdate || (
         (getCurDay() - lighting_throttle_interval_days) > lastLightingUpdateDay &&

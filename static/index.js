@@ -1,5 +1,5 @@
 import { addSquare, addSquareOverride, getNeighbors, getSquares, removeSquarePos } from "./squares/_sqOperations.js";
-import { lighting_throttle_interval_ms, reduceNextLightUpdateTime } from "./globalOperations.js";
+import { lighting_throttle_interval_ms, reduceNextLightUpdateTime, setNextLightUpdateTime } from "./globalOperations.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
 import { RainSquare } from "./squares/parameterized/RainSquare.js";
 import { HeavyRainSquare } from "./squares/parameterized/RainSquare.js";
@@ -206,7 +206,7 @@ brushSizeSlider.addEventListener('change', (e) => {
 viewmodeSelect.addEventListener('change', (e) => selectedViewMode = e.target.value);
 timeScale.addEventListener("change", (e) => {
     TIME_SCALE = e.target.value;
-    reduceNextLightUpdateTime(lighting_throttle_interval_ms);
+    setNextLightUpdateTime(2 * 1000);
 })
 
 canvasWidth.addEventListener('change', (e) => setCanvasSquaresX(e.target.value));

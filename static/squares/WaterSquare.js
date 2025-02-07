@@ -40,7 +40,7 @@ class WaterSquare extends BaseSquare {
     }
 
     lightFilterRate() {
-        return super.lightFilterRate() / 2;
+        return super.lightFilterRate() / 12;
     }
 
     reset() {
