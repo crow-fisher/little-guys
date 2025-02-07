@@ -49,7 +49,7 @@ export function createSunLightGroup() {
         CANVAS_SQUARES_X * 10,
         11,
         getCurrentLightColorTemperature, 
-        () => .25 * getDaylightStrength(),
+        () => .35 * getDaylightStrength(),
         () => Math.max(0, (2 * (getCurDay() % 1) - 0.5))
     );
     return sunLightGroup;

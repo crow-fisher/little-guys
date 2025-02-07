@@ -26,6 +26,7 @@ import { removeOrganism } from "../organisms/_orgOperations.js";
 import { addWaterSaturationPascals, calculateColorTemperature, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, updateSquareTemperature } from "../temperature_humidity.js";
 import { getWindSquareAbove } from "../wind.js";
 import { COLOR_RED, RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
+import { getCurDay } from "../time.js";
 
 export class BaseSquare {
     constructor(posX, posY) {
@@ -102,7 +103,12 @@ export class BaseSquare {
         this.colorCacheHoldTime = 0.10;
 
         this.blockHealth_color1 = RGB_COLOR_RED;
-        this.blockHealth_color2 = RGB_COLOR_BLUE
+        this.blockHealth_color2 = RGB_COLOR_BLUE;
+
+        this.lightingSumDay = Math.floor(getCurDay());
+        this.lightingSum = {r: 0, g: 0, b: 0}
+        this.lightingSumCount = 0;
+
     };
     lightFilterRate() {
         return 0.0011;
@@ -213,6 +219,20 @@ export class BaseSquare {
         this.group = -1;
         this.speedY += 1;
         this.frameFrozen = false;
+        
+        if (Math.floor(getCurDay()) != this.lightingSumDay) {
+            if (this.lightingSum == null) {
+                this.lightingSum = {r: 0, g: 0, b: 0}
+                this.lightingSumCount = 0;
+            }
+            let decayFactor = 5;
+
+            this.lightingSum.r /= decayFactor;
+            this.lightingSum.g /= decayFactor;
+            this.lightingSum.b /= decayFactor;
+            this.lightingSumCount /= decayFactor;
+            this.lightingSumDay = Math.floor(getCurDay());
+        }
     }
     render() {
         if (!this.visible) {
@@ -223,6 +243,10 @@ export class BaseSquare {
             if (getBlockModification_val() == "markSurface") {
                 this.renderSurface();
             }
+        }
+        if (selectedViewMode == "squareLighting") {
+            this.renderWithVariedColors();
+            this.renderLightingView();
         }
         else if (selectedViewMode == "watersaturation") {
             this.renderWaterSaturation();
@@ -352,11 +376,35 @@ export class BaseSquare {
         return outColorBase;
     }
 
+    processLighting() {
+        let lighting = processLighting(this.lighting);
+        this.lightingSum.r += lighting.r; 
+        this.lightingSum.g += lighting.g; 
+        this.lightingSum.b += lighting.b;
+        this.lightingSumCount += 1;
+        return lighting;
+    }
+
+    renderLightingView() {
+        var outRgba = rgbToRgba(
+            Math.floor(this.lightingSum.r / this.lightingSumCount), 
+            Math.floor(this.lightingSum.g / this.lightingSumCount), 
+            Math.floor(this.lightingSum.b / this.lightingSumCount), 
+        0.8);
+        MAIN_CONTEXT.fillStyle = outRgba;
+        zoomCanvasFillRect(
+            (this.offsetX + this.posX) * BASE_SIZE,
+            (this.offsetY + this.posY) * BASE_SIZE,
+            BASE_SIZE,
+            BASE_SIZE
+        );
+    }
+
     renderWithVariedColors() {
         this.lastColorCacheTime = Date.now();
         var outColorBase = this.getColorBase();
         var outColor = { r: 0, g: 0, b: 0 }
-        var lightingColor = processLighting(this.lighting);
+        var lightingColor = this.processLighting(); 
         var outColor = {r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255};
         var outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), this.opacity);
         MAIN_CONTEXT.fillStyle = outRgba;
