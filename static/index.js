@@ -465,7 +465,7 @@ document.addEventListener('contextmenu', function (e) {
 
         
 LIGHT_SOURCES.push(createSunLightGroup());
-// LIGHT_SOURCES.push(createMoonLightGroup());
+LIGHT_SOURCES.push(createMoonLightGroup());
 
 export function getSelectedViewMode() {
     return selectedViewMode;

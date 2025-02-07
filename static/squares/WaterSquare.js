@@ -37,7 +37,6 @@ class WaterSquare extends BaseSquare {
         this.thermalConductivity = 0.6;
         this.thermalMass = 4.2;
         this.temperature = 273;
-        this.lightFilterRate = waterLightFilterRate;
     }
 
     lightFilterRate() {
