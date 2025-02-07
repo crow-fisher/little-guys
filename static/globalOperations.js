@@ -25,9 +25,12 @@ export function reduceNextLightUpdateTime(amount) {
     nextLightingUpdate -= amount;
 }
 
-
 function doLightSourceRaycasting() {
-    var shouldDoFullSquareUpdate = (getCurDay() - lighting_throttle_interval_days) > lastLightingUpdateDay || Date.now() > nextLightingUpdate;
+    var shouldDoFullSquareUpdate = Date.now() > nextLightingUpdate || (
+        (getCurDay() - lighting_throttle_interval_days) > lastLightingUpdateDay &&
+        (getCurDay() < 0.25)
+    );
+
     if (!shouldDoFullSquareUpdate) {
         return;
     }

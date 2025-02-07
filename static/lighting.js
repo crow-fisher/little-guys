@@ -46,14 +46,15 @@ export function createSunLightGroup() {
     let sunLightGroup = new MovingLinearLightGroup(
         CANVAS_SQUARES_X / 2,
         -1, 
-        CANVAS_SQUARES_X * 20,
-        10,
+        CANVAS_SQUARES_X * 10,
+        11,
         getCurrentLightColorTemperature, 
-        () => 0.25 * getDaylightStrength(),
-        () => 0.5 // Math.max(0, (2 * (getCurDay() % 1) - 0.5))
+        () => .25 * getDaylightStrength(),
+        () => Math.max(0, (2 * (getCurDay() % 1) - 0.5))
     );
     return sunLightGroup;
 }
+
 
 export function createMoonLightGroup() {
     let moonLightGroup = new MovingLinearLightGroup(
@@ -110,9 +111,8 @@ export class MovingLinearLightGroup {
 
     init() {
         this.lightSources = [];
-        let startX = this.centerX - this.sizeX / 2;
         let step = (this.sizeX / this.numNodes);
-        
+        let startX = this.centerX - (this.sizeX / 2);
         for (let i = 0; i < this.numNodes; i += 1) {
             let posX = startX + i * step;
             let minMaxTheta = this.getMinMaxTheta(posX, this.centerY);
@@ -124,7 +124,7 @@ export class MovingLinearLightGroup {
                 10 ** 8,
                 minMaxTheta[0],
                 minMaxTheta[1],
-                100
+                50
             );
             this.lightSources.push(newLightSource);
         }
