@@ -1,6 +1,10 @@
 import { hexToRgb, randNumber, randRange, rgbToRgba } from "./common.js";
-import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, MAIN_CONTEXT, zoomCanvasFillRect, TIME_SCALE} from "./index.js";
+import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, MAIN_CONTEXT, zoomCanvasFillRect} from "./index.js";
 import { calculateColor, calculateColorProvideOpacity } from "./temperature_humidity.js";
+
+
+
+var TIME_SCALE = 1;
 
 var millis_per_day = 60 * 60 * 24 * 1000;
 var curDay = 0.5;
@@ -22,6 +26,36 @@ var sky_colorNoonRGB = hexToRgb("#84B2E2");
 
 var currentLightColorTemperature = sky_nightRGB; 
 
+export function setTimeScale(timeScale) {
+    TIME_SCALE = timeScale;
+}
+
+// for time skipping 
+var seekTimeTarget = 0;
+
+export function doTimeSeek() {
+    if (getCurDay() > seekTimeTarget) {
+        return;
+    }
+    var dayRemaining = seekTimeTarget - getCurDay();
+    var timeRemaining = millis_per_day * (dayRemaining / getCurTimeScale());
+
+    if (timeRemaining < 2000) {
+        // TIME_SCALE -= 1;
+    } else {
+        // TIME_SCALE += 1;
+    }
+}
+
+// targetTime between 0 and 1
+export function seek(targetTime) {
+    var targetTimeCurDay = Math.floor(getCurDay()) + targetTime;
+    if (targetTimeCurDay < getCurDay()) {
+        seekTimeTarget = targetTimeCurDay + 1;
+    } else {
+        seekTimeTarget = targetTimeCurDay;
+    }
+}
 
 function getPrevTime() {
     return prevTime;
@@ -109,6 +143,10 @@ function getCurTime() {
     return curTime;
 }
 
+function getCurTimeScale() {
+    return (6 ** (TIME_SCALE - 1));
+}
+
 function updateTime() {
     var dt = Date.now() - prevRealTime;
     if (dt > 10000) {
@@ -117,7 +155,7 @@ function updateTime() {
         prevTime = curTime;
         prevDay = curDay;
         curTime += dt; 
-        curDay += dt / (millis_per_day / (6 ** (TIME_SCALE - 1)));
+        curDay += dt / (millis_per_day / getCurTimeScale());
         prevRealTime = Date.now();
     }
 }

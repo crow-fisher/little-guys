@@ -21,6 +21,7 @@ import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { createMoonLightGroup, createSunLightGroup } from "./lighting.js";
 import { loadEmptyScene, loadFlatDirtWorld, loadSlot, saveSlot } from "./saveAndLoad.js";
 import { scheduler_main, triggerEarlySquareScheduler } from "./scheduler.js";
+import { setTimeScale } from "./time.js";
 
 var lastMode = "normal"; // options: normal, organismWetlandgi
 
@@ -205,8 +206,7 @@ brushSizeSlider.addEventListener('change', (e) => {
 
 viewmodeSelect.addEventListener('change', (e) => selectedViewMode = e.target.value);
 timeScale.addEventListener("change", (e) => {
-    TIME_SCALE = e.target.value;
-    setNextLightUpdateTime(2 * 1000);
+    setTimeScale(parseInt(e.target.value));
 })
 
 canvasWidth.addEventListener('change', (e) => setCanvasSquaresX(e.target.value));
@@ -420,8 +420,6 @@ MAIN_CANVAS.onkeyup = keyup;
 
 var shiftPressed = false;
 
-var TIME_SCALE = 1;
-var MILLIS_PER_TICK = 1;
 
 var rightMouseClicked = false;
 var middleMouseClicked = false;
@@ -474,66 +472,6 @@ export function getSelectedViewMode() {
 export function getLastMode() {
     return lastMode;
 }
-// function main() {
-//     if (Date.now() - lastTick > MILLIS_PER_TICK) {
-//         MAIN_CONTEXT.clearRect(0, 0, CANVAS_SQUARES_X * BASE_SIZE, CANVAS_SQUARES_Y * BASE_SIZE);
-//         doClickAdd();
-//         for (let i = 0; i < TIME_SCALE; i++) {
-//             reset();
-//             physicsBefore();
-//             physics();
-//             doWaterFlow();
-//             purge();
-//             processOrganisms();
-//             tickWindPressureMap();
-//             tickMaps();
-//             // global_theta_base += 0.1;
-//         }
-
-//         if (selectedViewMode == "temperature") {
-//             renderTemperature();
-//         }
-//         if (selectedViewMode == "wind" || (lastMode == "blockModification" && (blockModification_val == "windAdd" || blockModification_val == "windClear"))) {
-//             renderWindPressureMap();
-//         }
-//         if (selectedViewMode == "watersaturation") {
-//             renderWaterSaturation();
-//         }
-
-
-//         if (selectedViewMode == "normal") {
-//             renderTime();
-//         }
-
-
-//         doLightSourceRaycasting(); 
-
-//         renderSquares();
-//         renderWater();
-//         renderOrganisms();
-        
-
-//         if (selectedViewMode == "normal") {
-//             // renderClouds();
-//         }
-
-
-//         // if (blockModification_val != null && lastMode == "blockModification" && blockModification_val.startsWith("wind")) {
-//         //     renderWindPressureMap();
-//         // }
-//         // if (blockModification_val != null && lastMode == "blockModification" && blockModification_val.startsWith("temperature")) {
-//         //     renderTemperature();
-//         // }
-//         // if (blockModification_val != null && lastMode == "blockModification" && blockModification_val.startsWith("humidity")) {
-//         //     renderWaterSaturation();
-//         // }
-//         lastTick = Date.now();
-//     }
-//     updateTime();
-//     doMouseHover();
-//     setTimeout(main, 0);
-// }
-
 initializeWindPressureMap();
 scheduler_main();
 
@@ -910,7 +848,7 @@ function getGlobalThetaBase() {
 }
 
 export {
-    MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, TIME_SCALE, global_theta_base, selectedViewMode, addSquareByName,
+    MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, global_theta_base, selectedViewMode, addSquareByName,
     setCanvasSquaresX, setCanvasSquaresY,
     getCanvasSquaresX, getCanvasSquaresY,
     getBlockModification_val,

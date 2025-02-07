@@ -2,7 +2,7 @@ import { doLightSourceRaycasting, doWaterFlow, physics, processOrganisms, purge,
 import { doClickAdd, doMouseHover, getBlockModification_val, getLastMode, getSelectedViewMode } from "./index.js";
 import { lightingClearLifeSquarePositionMap } from "./lighting.js";
 import { renderClouds, renderWaterSaturation, tickMaps } from "./temperature_humidity.js";
-import { renderTime, updateTime } from "./time.js";
+import { doTimeSeek, renderTime, updateTime } from "./time.js";
 import { renderWindPressureMap, tickWindPressureMap } from "./wind.js";
 
 const SQUARE_UPDATE_MILLIS = 0;
@@ -46,6 +46,7 @@ function render() {
     var selectedViewMode = getSelectedViewMode();
     var lastMode = getLastMode();
     var blockModification_val = getBlockModification_val();
+    doTimeSeek();
     renderTime();
 
     if (selectedViewMode == "temperature") {
