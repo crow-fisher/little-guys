@@ -1,21 +1,14 @@
 import { BaseSquare } from "./BaseSqaure.js";
 import {
-    water_viscocity,
-    water_darkeningStrength,
-} from "../config/config.js"
+    water_viscocity
+} from "../config/config.js";
 
-import { addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares, getNeighbors } from "./_sqOperations.js";
-import {
-    ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats,
-    getNextGroupId, updateGlobalStatistic, getGlobalStatistic,
-    waterDarkeningColorCache
-} from "../globals.js";
+import { getSquares, iterateOnSquares, getNeighbors } from "./_sqOperations.js";
 
 import { WATERFLOW_CANDIDATE_SQUARES, WATERFLOW_TARGET_SQUARES } from "../globals.js";
 
-import { darkeningColorCache } from "../globals.js";
 import { BASE_SIZE, MAIN_CONTEXT, zoomCanvasFillRect } from "../index.js";
-import { COLOR_BLUE, COLOR_RED, RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED } from "../colors.js";
+import { RGB_COLOR_OTHER_BLUE } from "../colors.js";
 import { rgbToRgba } from "../common.js";
 
 class WaterSquare extends BaseSquare {
@@ -44,7 +37,11 @@ class WaterSquare extends BaseSquare {
         this.thermalConductivity = 0.6;
         this.thermalMass = 4.2;
         this.temperature = 273;
-        this.lightFilterRate /= 2;
+        this.lightFilterRate = waterLightFilterRate;
+    }
+
+    lightFilterRate() {
+        return super.lightFilterRate() / 2;
     }
 
     reset() {

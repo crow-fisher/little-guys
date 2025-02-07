@@ -82,7 +82,6 @@ export class BaseSquare {
         this.miscBlockPropUpdateInterval = Math.random() * 1000;
 
         this.surface = false;
-        this.lightFilterRate = .0008;
 
         this.temperature = 273 + 20; // start temperature in kelvin 
         this.thermalConductivity = 1;  // watts/meter kelvin. max is 10
@@ -104,8 +103,10 @@ export class BaseSquare {
 
         this.blockHealth_color1 = RGB_COLOR_RED;
         this.blockHealth_color2 = RGB_COLOR_BLUE
-
     };
+    lightFilterRate() {
+        return 0.0011;
+    }
 
     getSoilWaterPressure() { return -(10 ** 8); }
 
@@ -113,7 +114,7 @@ export class BaseSquare {
         if (this.surface) {
             return 0;
         } else {
-            return this.lightFilterRate;
+            return this.lightFilterRate();
         }
     }
 

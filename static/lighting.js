@@ -5,9 +5,9 @@ import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js";
 import { getSqIterationOrder, getSquares } from "./squares/_sqOperations.js";
 import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "./time.js";
 
-var lifeSquarePositions = new Map();
+let lifeSquarePositions = new Map();
 
-export var MAX_BRIGHTNESS = 8;
+export let MAX_BRIGHTNESS = 8;
 
 export function lightingClearLifeSquarePositionMap() {
     lifeSquarePositions = new Map();
@@ -17,8 +17,8 @@ export function lightingRegisterLifeSquare(lifeSquare) {
     if (lifeSquare.type != "green") {
         return;
     }
-    var posX = Math.floor(lifeSquare.getPosX());
-    var posY = Math.floor(lifeSquare.getPosY());
+    let posX = Math.floor(lifeSquare.getPosX());
+    let posY = Math.floor(lifeSquare.getPosY());
 
     if (!(posX in lifeSquarePositions)) {
         lifeSquarePositions[posX] = new Map();
@@ -43,89 +43,96 @@ export function lightingPrepareTerrainSquares() {
 }
 
 export function createSunLightGroup() {
-    var sizeX = 8;
-    var sunLightGroup = new LightGroup(
-        0,
+    let sunLightGroup = new MovingLinearLightGroup(
+        CANVAS_SQUARES_X / 2,
         -1, 
-        sizeX, 
-        1,
-        CANVAS_SQUARES_X / (sizeX - 1), 
-        () => 0.8 * (0.1 + 0.9 * getDaylightStrength()), 
+        CANVAS_SQUARES_X * 20,
+        10,
         getCurrentLightColorTemperature, 
-        10 ** 8,
-        24,
-        "sun");
-
+        () => 0.25 * getDaylightStrength(),
+        () => 0.5 // Math.max(0, (2 * (getCurDay() % 1) - 0.5))
+    );
     return sunLightGroup;
 }
 
 export function createMoonLightGroup() {
-    var sizeX = 8;
-    var moonlightGroup = new LightGroup(
-        0,
+    let moonLightGroup = new MovingLinearLightGroup(
+        CANVAS_SQUARES_X / 2,
         -1, 
-        sizeX, 
+        CANVAS_SQUARES_X * 20,
         1,
-        CANVAS_SQUARES_X / (sizeX - 1), 
-        () => 0.2 * ((1) - (0.1 + 0.9 * getDaylightStrength())), 
         getMoonlightColor, 
-        10 ** 8,
-        24,
-        "moon");
-
-    return moonlightGroup;
+        () => 0.15,
+        () => 1 - (Math.max(0, (2 * (getCurDay() % 1) - 0.5)))
+    );
+    return moonLightGroup;
 }
 
-export class LightGroup {
-    constructor(posX, posY, sizeX, sizeY, scaleMult, brightnessFunc, colorFunc, radius, numRays, mode) {
+export class MovingLinearLightGroup {
+    constructor(centerX, centerY, sizeX, numNodes, colorFunc, brightnessFunc, relPosXFunc) {
         this.lightSources = [];
-        let brigthnessFrac = (sizeX * sizeY) ** 0.5;
-        let totalSize = posX + ((sizeX - 1) * scaleMult);
-
-        var minTheta = 2 * Math.PI;
-        var maxTheta = 0;
-
-        for (let i = 0; i < sizeX; i++) {
-            for (let j = 0; j < sizeY; j++) {
-                let sourcePosX = posX + (scaleMult * i);
-                let sourcePosY = posY + (scaleMult * j);
-                [[0, 0], [0, CANVAS_SQUARES_Y], [CANVAS_SQUARES_X, 0], [CANVAS_SQUARES_X, CANVAS_SQUARES_Y]].forEach((loc) => {
-                    let testX = Math.abs(loc[0] - sourcePosX);
-                    let testY = loc[1] - sourcePosY;
-                    let theta = Math.atan(testY / testX);
-                    minTheta = Math.min(minTheta, theta);
-                    maxTheta = Math.max(maxTheta, theta);
-                })
-                
-                let sourceBrightnessFunc = null;
-                
-                
-                if (mode == "sun") {
-                    sourceBrightnessFunc = () => {
-                        let xFrac = (sourcePosX - posX) / totalSize;
-                        let dayFrac = ((getCurDay() % 1) - 0.25) * 2;
-                        if (dayFrac < 0 || dayFrac > 1) {
-                            return 0;
-                        }
-                        var diff = Math.abs(xFrac - dayFrac);
-                        return ( 1 / brigthnessFrac) * brightnessFunc() * (1 - diff);
-                    }
-                } else {
-                    sourceBrightnessFunc = () => ( 1 / brigthnessFrac) * brightnessFunc();
-                }
-
-                this.lightSources.push(new LightSource(
-                    sourcePosX, sourcePosY,
-                    sourceBrightnessFunc, colorFunc, radius, 
-                    minTheta, maxTheta, numRays));
-            }
-        }
-
-        this.lightSources.forEach((ls) => {ls.minTheta = minTheta; ls.maxTheta = maxTheta});
+        this.centerX = centerX; 
+        this.centerY = centerY;
+        this.sizeX = sizeX;
+        this.numNodes = numNodes;
+        this.colorFunc = colorFunc;
+        this.brightnessFunc = brightnessFunc;
+        this.relPosXFunc = relPosXFunc;
+        this.init();
     }
 
-    doRayCasting(i) {
-        this.lightSources.forEach((ls) => ls.doRayCasting(i));
+    getMinMaxTheta(posX, posY) {
+        let minThetaPoint, maxThetaPoint;
+        if (posX < 0) {
+            minThetaPoint = [0, CANVAS_SQUARES_Y];
+            maxThetaPoint = [CANVAS_SQUARES_X, 0];
+        } else if (posX <= CANVAS_SQUARES_X) {
+            minThetaPoint = [0, 0];
+            maxThetaPoint = [CANVAS_SQUARES_X, 0];
+        } else {
+            minThetaPoint = [0, 0]
+            maxThetaPoint = [CANVAS_SQUARES_X, CANVAS_SQUARES_Y];
+        }
+
+        let relMinThetaPoint = [minThetaPoint[0] - posX, minThetaPoint[1] - posY]
+        let relMaxThetaPoint = [maxThetaPoint[0] - posX, maxThetaPoint[1] - posY]
+
+        let minTheta = Math.atan(relMinThetaPoint[0] / relMinThetaPoint[1]);
+        let maxTheta = Math.atan(relMaxThetaPoint[0] / relMaxThetaPoint[1]);
+
+        return [minTheta, maxTheta];
+    }
+
+    getBrigthnessFunc(i) {
+        let iFrac = i / this.numNodes;
+        return () => this.brightnessFunc() * (1 - Math.abs(iFrac - this.relPosXFunc()));
+    }
+
+    init() {
+        this.lightSources = [];
+        let startX = this.centerX - this.sizeX / 2;
+        let step = (this.sizeX / this.numNodes);
+        
+        for (let i = 0; i < this.numNodes; i += 1) {
+            let posX = startX + i * step;
+            let minMaxTheta = this.getMinMaxTheta(posX, this.centerY);
+            let newLightSource = new LightSource(
+                startX + i * step,
+                this.centerY,
+                this.getBrigthnessFunc(i),
+                this.colorFunc,
+                10 ** 8,
+                minMaxTheta[0],
+                minMaxTheta[1],
+                100
+            );
+            this.lightSources.push(newLightSource);
+        }
+        
+    }
+
+    doRayCasting(idx) {
+        this.lightSources.forEach((ls) => ls.doRayCasting(idx));
     }
 }
 
@@ -145,12 +152,12 @@ export class LightSource {
 
     preprocessLifeSquares() {
         this.frameLifeSquares = new Map();
-        var posXKeys = Object.keys(lifeSquarePositions);
+        let posXKeys = Object.keys(lifeSquarePositions);
         posXKeys.forEach((lsqPosX) => {
-            var relPosX = Math.floor(lsqPosX - this.posX);
-            var posYKeys = Object.keys(lifeSquarePositions[lsqPosX]);
+            let relPosX = Math.floor(lsqPosX - this.posX);
+            let posYKeys = Object.keys(lifeSquarePositions[lsqPosX]);
             posYKeys.forEach((lsqPosY) => {
-                var relPosY = Math.floor(lsqPosY - this.posY);
+                let relPosY = Math.floor(lsqPosY - this.posY);
                 if ((relPosX ** 2 + relPosY ** 2) ** 0.5 > this.radius) {
                     return;
                 }
@@ -171,8 +178,8 @@ export class LightSource {
             .filter((sq) => sq.visible)
             .filter((sq) => ((this.posX - sq.posX) ** 2 + (this.posY - sq.posY) ** 2) ** 0.5 < this.radius)
             .forEach((sq) => {
-                var relPosX = sq.posX - this.posX;
-                var relPosY = sq.posY - this.posY;
+                let relPosX = sq.posX - this.posX;
+                let relPosY = sq.posY - this.posY;
                 if (!(relPosX in this.frameTerrainSquares)) {
                     this.frameTerrainSquares[relPosX] = new Map();
                 }
@@ -186,17 +193,17 @@ export class LightSource {
     doRayCasting(idx) {
         this.preprocessLifeSquares();
         this.preprocessTerrainSquares();
-        var targetLists = [this.frameTerrainSquares, this.frameLifeSquares];
+        let targetLists = [this.frameTerrainSquares, this.frameLifeSquares];
         let thetaStep = (this.maxTheta - this.minTheta) / this.numRays;
 
         for (let theta = this.minTheta; theta < this.maxTheta; theta += thetaStep) {
-            var thetaSquares = [];
+            let thetaSquares = [];
             targetLists.forEach((list) => {
-                var posXKeys = Object.keys(list);
+                let posXKeys = Object.keys(list);
                 posXKeys.forEach((relPosX) => {
-                    var posYKeys = Object.keys(list[relPosX]);
+                    let posYKeys = Object.keys(list[relPosX]);
                     posYKeys.forEach((relPosY) => {
-                        var sqTheta = Math.atan(relPosY / Math.abs(relPosX));
+                        let sqTheta = Math.atan(relPosX / relPosY);
                         if (relPosX == 0 && relPosY == 0 && theta == this.minTheta) {
                             thetaSquares.push([relPosX, relPosY]);
                         } else if (sqTheta > theta && sqTheta < (theta + thetaStep)) {
@@ -208,7 +215,7 @@ export class LightSource {
             thetaSquares = [...new Set(thetaSquares)];
             thetaSquares.sort((a, b) => (a[0] ** 2 + a[1] ** 2) ** 0.5 - (b[0] ** 2 + b[1] ** 2) ** 0.5);
 
-            var curBrightness = 0;
+            let curBrightness = 0;
             thetaSquares.forEach((loc) => {
                 targetLists.forEach((list) => {
                     if (!(loc[0] in list)) {

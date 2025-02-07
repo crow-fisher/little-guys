@@ -22,7 +22,7 @@ import { createMoonLightGroup, createSunLightGroup } from "./lighting.js";
 import { loadEmptyScene, loadFlatDirtWorld, loadSlot, saveSlot } from "./saveAndLoad.js";
 import { scheduler_main, triggerEarlySquareScheduler } from "./scheduler.js";
 
-var lastMode = "special"; // options: normal, organismWetlandgi
+var lastMode = "normal"; // options: normal, organismWetlandgi
 
 var specialSelect = document.getElementById("specialSelect");
 var specialSelect_val = "water";
