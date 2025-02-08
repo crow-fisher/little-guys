@@ -3,6 +3,7 @@ import { doClickAdd, doMouseHover, getBlockModification_val, getLastMode, getSel
 import { lightingClearLifeSquarePositionMap } from "./lighting.js";
 import { renderClouds, renderWaterSaturation, tickMaps } from "./temperature_humidity.js";
 import { doTimeSeek, renderTime, updateTime } from "./time.js";
+import { weather } from "./weather.js";
 import { renderWindPressureMap, tickWindPressureMap } from "./wind.js";
 
 const SQUARE_UPDATE_MILLIS = 0;
@@ -71,6 +72,12 @@ function render() {
 
 }
 
+function windMapsTick() {
+    weather();
+    tickWindPressureMap();
+    tickMaps();
+}
+
 function orgTick() {
     processOrganisms();
 }
@@ -80,6 +87,5 @@ function squareTick() {
     physics();
     doWaterFlow();
     purge();
-    tickWindPressureMap();
-    tickMaps();
+    windMapsTick();
 }

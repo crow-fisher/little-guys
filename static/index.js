@@ -845,9 +845,8 @@ window.oncontextmenu = function () {
 window.onload = function () {
     document.addEventListener('keydown', keydown);
     document.addEventListener('keyup', keyup);
-    // loadFlatDirtWorld();
+    loadFlatDirtWorld();
     // loadSlot("A");
-    loadDemoScene();
     // loadEmptyScene();
 }
 

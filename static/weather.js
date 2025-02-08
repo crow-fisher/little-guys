@@ -25,6 +25,9 @@ class Cloud {
     }
 
     tick() {
+        if (getCurDay() < this.startDay) {
+            return;
+        }
         var startElipse, endElipse;
         var durationFrac = (getCurDay() - this.startDay) / this.duration;
 
@@ -41,10 +44,10 @@ class Cloud {
         curDuration *= 2;
 
         var curElipse = [
-            startElipse[0] * (1 - curDuration) + endElipse[0] * (1 - curDuration),
-            startElipse[1] * (1 - curDuration) + endElipse[1] * (1 - curDuration),
-            startElipse[2] * (1 - curDuration) + endElipse[2] * (1 - curDuration),
-            startElipse[3] * (1 - curDuration) + endElipse[3] * (1 - curDuration)
+            startElipse[0] * (1 - curDuration) + endElipse[0] * (curDuration),
+            startElipse[1] * (1 - curDuration) + endElipse[1] * (curDuration),
+            startElipse[2] * (1 - curDuration) + endElipse[2] * (curDuration),
+            startElipse[3] * (1 - curDuration) + endElipse[3] * (curDuration)
         ];
 
         for (let i = 0; i < this.sizeX; i++) {
@@ -54,9 +57,9 @@ class Cloud {
                 } 
                 for (let xside = -1; xside <= 1; xside += 2) {
                     for (let yside = -1; yside <= 1; yside += 2) {
-                        var wx = this.posX + (xside * i);
-                        var wy = this.posX + (yside * j);
-                        addWaterSaturationPascals(wx, wy, 10 ** 8);
+                        var wx = this.centerX + (xside * i);
+                        var wy = this.centerY + (yside * j);
+                        addWaterSaturationPascals(wx, wy, 10 ** 3);
                     }
                 }
             }
@@ -68,7 +71,7 @@ class Cloud {
 
 var ALL_CLOUDS = [];
 
-ALL_CLOUDS.push(new Cloud(CANVAS_SQUARES_X / 8, CANVAS_SQUARES_Y / 8, 5, 3, getCurDay(), 1, 100));
+ALL_CLOUDS.push(new Cloud(10, 10, 5, 3, getCurDay() + 0.00001, 1, 100));
 
 export function weather() {
     ALL_CLOUDS.forEach((cloud) => cloud.tick());
