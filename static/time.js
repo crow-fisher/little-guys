@@ -27,6 +27,7 @@ var sky_colorNoonRGB = hexToRgb("#84B2E2");
 var currentLightColorTemperature = sky_nightRGB; 
 
 export function setTimeScale(timeScale) {
+    seekTimeTarget = 0;
     TIME_SCALE = timeScale;
 }
 
@@ -34,22 +35,36 @@ export function setTimeScale(timeScale) {
 var seekTimeTarget = 0;
 
 export function doTimeSeek() {
+    if (seekTimeTarget == 0) {
+        return;
+    }
+    if (TIME_SCALE <= 1) {
+        seekTimeTarget = 0;
+        return;
+    }
     if (getCurDay() > seekTimeTarget) {
+        TIME_SCALE -= 1;
+        if (TIME_SCALE == 1) {
+            seekTimeTarget = 0;
+        }
         return;
     }
     var dayRemaining = seekTimeTarget - getCurDay();
     var timeRemaining = millis_per_day * (dayRemaining / getCurTimeScale());
 
-    if (timeRemaining < 2000) {
-        // TIME_SCALE -= 1;
+    if (timeRemaining < 500) {
+        TIME_SCALE -= 1;
     } else {
-        // TIME_SCALE += 1;
+        TIME_SCALE += 1;
     }
+
+    TIME_SCALE = Math.min(TIME_SCALE, 9);
 }
 
 // targetTime between 0 and 1
 export function seek(targetTime) {
     var targetTimeCurDay = Math.floor(getCurDay()) + targetTime;
+    TIME_SCALE = 2;
     if (targetTimeCurDay < getCurDay()) {
         seekTimeTarget = targetTimeCurDay + 1;
     } else {
@@ -144,7 +159,7 @@ function getCurTime() {
 }
 
 function getCurTimeScale() {
-    return (6 ** (TIME_SCALE - 1));
+    return (5 ** (TIME_SCALE - 1));
 }
 
 function updateTime() {

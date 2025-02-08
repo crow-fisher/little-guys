@@ -19,9 +19,9 @@ import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { WheatSeedOrganism } from "./organisms/grasses/WheatOrganism.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { createMoonLightGroup, createSunLightGroup } from "./lighting.js";
-import { loadEmptyScene, loadFlatDirtWorld, loadSlot, saveSlot } from "./saveAndLoad.js";
+import { loadDemoScene, loadEmptyScene, loadFlatDirtWorld, loadSlot, saveSlot } from "./saveAndLoad.js";
 import { scheduler_main, triggerEarlySquareScheduler } from "./scheduler.js";
-import { setTimeScale } from "./time.js";
+import { seek, setTimeScale } from "./time.js";
 
 var lastMode = "normal"; // options: normal, organismWetlandgi
 
@@ -109,6 +109,12 @@ var saveSlotB = document.getElementById("saveSlotB");
 var loadSlotC = document.getElementById("loadSlotC");
 var saveSlotC = document.getElementById("saveSlotC");
 
+
+var ts0 = document.getElementById("ts0");
+var ts25 = document.getElementById("ts25");
+var ts50 = document.getElementById("ts50");
+var ts70 = document.getElementById("ts70");
+
 var loadSlotBasic = document.getElementById("loadSlotBasic");
 var loadSlotEmpty = document.getElementById("loadSlotEmpty");
 
@@ -121,6 +127,11 @@ saveSlotC.onclick = (e) => saveSlot("C");
 
 loadSlotBasic.onclick = (e) => loadFlatDirtWorld();
 loadSlotEmpty.onclick = (e) => loadEmptyScene();
+
+ts0.onclick = (e) => seek(0.0);
+ts25.onclick = (e) => seek(0.25);
+ts50.onclick = (e) => seek(0.50);
+ts70.onclick = (e) => seek(0.70);
 
 function styleHeader() {
     var nonbold_headers = [
@@ -834,9 +845,9 @@ window.oncontextmenu = function () {
 window.onload = function () {
     document.addEventListener('keydown', keydown);
     document.addEventListener('keyup', keyup);
-    // loadDemoScene();
+    loadDemoScene();
     // loadFlatDirtWorld();
-    loadSlot("A");
+    // loadSlot("A");
     // loadEmptyScene();
 }
 

@@ -111,14 +111,14 @@ export class BaseSquare {
 
     };
     lightFilterRate() {
-        return 0.0025;
+        return 0.0008;
     }
 
     getSoilWaterPressure() { return -(10 ** 8); }
 
     getLightFilterRate() {
         if (this.surface) {
-            return 0;
+            return this.lightFilterRate() / 1.5;
         } else {
             return this.lightFilterRate();
         }

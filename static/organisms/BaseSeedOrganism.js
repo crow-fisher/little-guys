@@ -31,6 +31,10 @@ class BaseSeedOrganism extends BaseOrganism {
     }
 
     process() {
+        if (this.linkedSquare == null) {
+            this.destroy();
+            return;
+        }
         if (this.startSproutTime == null) {
             if (this.linkedSquare.getSoilWaterPressure() > -3.5) {
                 this.startSproutTime = getCurDay();

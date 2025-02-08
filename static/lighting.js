@@ -124,7 +124,7 @@ export class MovingLinearLightGroup {
                 10 ** 8,
                 minMaxTheta[0],
                 minMaxTheta[1],
-                20
+                100
             );
             this.lightSources.push(newLightSource);
         }

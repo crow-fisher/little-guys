@@ -1,18 +1,16 @@
-import { nextLightingUpdate, reduceNextLightUpdateTime, removeSquare } from "./globalOperations.js";
-import { ALL_ORGANISM_SQUARES, ALL_ORGANISMS, ALL_SQUARES } from "./globals.js";
+import { reduceNextLightUpdateTime, removeSquare } from "./globalOperations.js";
 import { addSquareByNameSetTemp, CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js";
 import { addOrganismSquare } from "./lifeSquares/_lsOperations.js";
 import { addOrganism, iterateOnOrganisms, removeOrganism } from "./organisms/_orgOperations.js";
 import { GrowthComponent, GrowthPlan, GrowthPlanStep } from "./organisms/GrowthPlan.js";
-import { pond } from "./saves.js";
+import { lush } from "./saves.js";
 import { triggerEarlySquareScheduler } from "./scheduler.js";
 import { addSquare, addSquareOverride, iterateOnSquares, removeOrganismSquare } from "./squares/_sqOperations.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
-import { getTemperatureMap, getWaterSaturation, getWaterSaturationMap, setTemperatureMap, setWaterSaturationMap } from "./temperature_humidity.js";
+import { getTemperatureMap, getWaterSaturationMap, setTemperatureMap, setWaterSaturationMap } from "./temperature_humidity.js";
 import { getCurDay, setCurDay } from "./time.js";
-import { ProtoMap, TypeMap, TypeNameMap } from "./types.js";
+import { ProtoMap, TypeMap } from "./types.js";
 import { getWindPressureMap, initializeWindPressureMap, setWindPressureMap } from "./wind.js";
-
 
 export async function loadSlot(slotName) {
     const db = await openDatabase();
@@ -289,7 +287,7 @@ async function decompress(base64String) {
 
 export async function loadDemoScene() {
     purgeGameState();
-    let scene = await decompress(pond);
+    let scene = await decompress(lush);
     loadSlotData(JSON.parse(scene));
 }
 

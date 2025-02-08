@@ -8,7 +8,6 @@
 
 <body>
     <canvas tabindex='1' id="main"></canvas>
-    <input type="number" id="timeScale" value=1>time scale</input>
 
     <table id="mainControlTable">
         <tr>
@@ -102,8 +101,8 @@
                 <select id="organismWetland">
                     <option value="">please select</option>
                     <option value="Wheat">wheat</option>
-                    <option value="ElephantEar">elephant ear</option>
-                    <option value="PalmTree">palm tree</option>
+                    <option hidden value="ElephantEar">elephant ear</option>
+                    <option hidden value="PalmTree">palm tree</option>
                 </select>
             </td>
             <td>
@@ -161,6 +160,12 @@
             </td>
             <td>
                 <div class="centerContents">
+                    <input type="number" id="timeScale" value=1>time scale</input>
+                    <button type="button" id="ts0" value=1>skip to midnight</input>
+                    <button type="button" id="ts25" value=1>skip to dawn</input>
+                    <button type="button" id="ts50" value=1>skip to noon</input>
+                    <button type="button" id="ts70" value=1>skip to dusk</input>
+
                 </div>
             </td>
             <td style="min-width: 230px;">
@@ -219,6 +224,7 @@
             </li>
         </ul>
         <br />
+        <p><strong>new:</strong> time is scaled to real life. plants take several days to grow and sprout.</p>
     </div>
 </body>
 <script type="module" src="./static/index.js"></script>
