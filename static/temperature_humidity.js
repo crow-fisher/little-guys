@@ -45,9 +45,8 @@ var c_cloudMinRGB = hexToRgb("#f1f0f6");
 var c_cloudMidRGB = hexToRgb("#dbdce1")
 var c_cloudMaxRGB = hexToRgb("#818398");
 
-var cloudMaxHumidity = 4;
-var cloudRainThresh = 2;
-var cloudRainMax = 8;
+var cloudRainThresh = 1;
+var cloudRainMax = 2;
 var cloudMaxOpacity = 0.65;
 
 
@@ -320,13 +319,13 @@ function renderClouds() {
                 continue;
             }
             var squareHumidity = getHumidity(i, j);
-            if (squareHumidity < 10) {
+            if (squareHumidity < 1) {
                 continue;
             }
-            if (squareHumidity < (cloudMaxHumidity * cloudRainThresh)) {
-                MAIN_CONTEXT.fillStyle = calculateColorOpacity(squareHumidity, 0, cloudMaxHumidity * cloudRainThresh, c_cloudMinRGB, c_cloudMidRGB);
+            if (squareHumidity < (1 * cloudRainThresh)) {
+                MAIN_CONTEXT.fillStyle = calculateColorOpacity(squareHumidity, 0, 1 * cloudRainThresh, c_cloudMinRGB, c_cloudMidRGB);
             } else {
-                MAIN_CONTEXT.fillStyle = calculateColor(squareHumidity, cloudMaxHumidity * cloudRainThresh, cloudMaxHumidity * cloudRainMax * 4, c_cloudMidRGB, c_cloudMaxRGB);
+                MAIN_CONTEXT.fillStyle = calculateColor(squareHumidity, 1 * cloudRainThresh, 1 * cloudRainMax * 4, c_cloudMidRGB, c_cloudMaxRGB);
             }
             zoomCanvasFillRect(
                 4 * i * BASE_SIZE,
@@ -353,7 +352,10 @@ function tickMaps() {
     doRain();
 }
 
-function getHumidity(x, y) {
+export function getHumidity(x, y) {
+    if (waterSaturationMap == null) {
+        return 0;
+    }
     return waterSaturationMap[x][y] / saturationPressureOfWaterVapor(temperatureMap[x][y]);
 }
 

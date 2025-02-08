@@ -1,16 +1,18 @@
 import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js";
-import { addWaterSaturationPascals } from "./temperature_humidity.js";
+import { addWaterSaturationPascals, getHumidity, getWaterSaturation } from "./temperature_humidity.js";
 import { getCurDay } from "./time.js";
 
 class Cloud {
-    constructor(centerX, centerY, sizeX, sizeY, startDay, duration, rainFallAmount) {
+    constructor(centerX, centerY, sizeX, sizeY, startDay, duration, targetHumidity, strength) {
         this.centerX = centerX;
         this.centerY = centerY;
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         this.startDay = startDay; 
         this.duration = duration;
-        this.rainFallAmount = rainFallAmount;
+        this.targetHumidity = targetHumidity;
+        this.strength = strength;
+
 
         this.startElipse = [];
         this.centerElipse = [];
@@ -60,7 +62,12 @@ class Cloud {
                     for (let yside = -1; yside <= 1; yside += 2) {
                         var wx = this.centerX + (xside * i);
                         var wy = this.centerY + (yside * j);
-                        addWaterSaturationPascals(wx, wy, 10 ** 5);
+                        var cur = getHumidity(wx, wy);
+                        if (cur > this.targetHumidity) {
+                            return;
+                        }
+                        var pascals = (this.targetHumidity - cur) * (getWaterSaturation(wx, wy) / cur) * this.strength;
+                        addWaterSaturationPascals(wx, wy, pascals);
                     }
                 }
             }
@@ -72,7 +79,10 @@ class Cloud {
 
 var ALL_CLOUDS = [];
 
-ALL_CLOUDS.push(new Cloud(10, 10, 5, 3, getCurDay() + 0.00001, .001, 100));
+ALL_CLOUDS.push(new Cloud(
+    10, 10, 5, 3, 
+    getCurDay() + 0.00001, .001, 
+    1.05, 1));
 
 export function weather() {
     ALL_CLOUDS.forEach((cloud) => cloud.tick());
