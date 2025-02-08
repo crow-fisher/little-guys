@@ -846,7 +846,8 @@ window.onload = function () {
     document.addEventListener('keydown', keydown);
     document.addEventListener('keyup', keyup);
     // loadFlatDirtWorld();
-    loadSlot("A");
+    // loadSlot("A");
+    loadDemoScene();
     // loadEmptyScene();
 }
 
