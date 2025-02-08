@@ -65,9 +65,9 @@ function render() {
     lightingClearLifeSquarePositionMap();
     renderOrganisms();
 
-    // if (selectedViewMode == "normal") {
-    //     renderClouds();
-    // }
+    if (selectedViewMode == "normal") {
+        renderClouds();
+    }
 
 }
 
