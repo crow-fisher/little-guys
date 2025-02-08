@@ -146,7 +146,6 @@ class BaseOrganism {
     }
 
     wilt() {
-        return;
         if (this.lifeSquares.length == 0) {
             return;
         }
