@@ -158,7 +158,8 @@ function doWaterFlow() {
                     } else {
                         if (Math.random() > (0.90) ** (currentTarget - currentCandidate)) {
                             let targetPos = targetArr[targetIdx];
-                            sq.updatePosition(targetPos[0], targetPos[1])
+                            sq.updatePosition(targetPos[0], targetPos[1]);
+                            sq.speedX = targetPos[2] * (Math.floor((currentTarget - currentCandidate) ** 0.25));
                         }
                         targetIdx += 1;
                     }

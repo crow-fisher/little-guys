@@ -111,7 +111,7 @@ class WaterSquare extends BaseSquare {
                         if (!(this.currentPressureIndirect in targetMap)) {
                             targetMap[this.currentPressureIndirect] = new Array();
                         }
-                        targetMap[this.currentPressureIndirect].push([this.posX + i, this.posY + j]);
+                        targetMap[this.currentPressureIndirect].push([this.posX + i, this.posY + j, i]);
                     }
                 }
             }
