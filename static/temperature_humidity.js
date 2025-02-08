@@ -8,6 +8,9 @@ import { getCurTime, getPrevTime } from "./time.js";
 var temperatureMap;
 var waterSaturationMap;
 
+var restingHumidity = 0.5;
+var restingTemperature = 273 + 30;
+
 export function setTemperatureMap(inMap) {
     temperatureMap = inMap;
 }
@@ -514,5 +517,26 @@ function _addWaterSaturation(x, y) {
     waterSaturationMap[x][y] += 0.10 * saturationPressureOfWaterVapor(temperatureMap[x][y]);
 }
 
+export function setRestingHumidity(newVal) {
+    restingHumidity = newVal;
+}
+
+export function setRestingTemperature(newVal) {
+    restingTemperature = newVal;
+}
+
+export function restingValues() {
+    for (let i = 0; i < curSquaresX; i++) {
+        for (let j = 0; j < curSquaresY; j++) {
+            var curHumidity = getHumidity(i, j);
+            var diffHumidity = restingHumidity - curHumidity;
+            waterSaturationMap[i][j] += diffHumidity * waterSaturationMap[i][j] * .001;
+
+            var curTemp = temperatureMap[i][j];
+            var diffTemp = restingTemperature - curTemp;
+            temperatureMap[i][j] += diffTemp * 0.001;
+        }
+    }
+}
 
 export { calculateColorProvideOpacity, pascalsPerWaterSquare, cloudRainThresh, calculateColor, calculateColorTemperature, addWaterSaturationPascals, addWaterSaturationPascalsSqCoords, saturationPressureOfWaterVapor, resetTemperatureAndHumidityAtSquare, getWaterSaturation, getTemperatureAtWindSquare, updateSquareTemperature, applySquareTemperatureDelta, renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds, getTemperatureAtSquare }

@@ -1,7 +1,7 @@
 import { doLightSourceRaycasting, doWaterFlow, physics, processOrganisms, purge, renderOrganisms, renderSquares, renderWater, reset } from "./globalOperations.js";
 import { doClickAdd, doMouseHover, getBlockModification_val, getLastMode, getSelectedViewMode } from "./index.js";
 import { lightingClearLifeSquarePositionMap } from "./lighting.js";
-import { renderClouds, renderWaterSaturation, tickMaps } from "./temperature_humidity.js";
+import { renderClouds, renderWaterSaturation, restingValues, tickMaps } from "./temperature_humidity.js";
 import { doTimeSeek, renderTime, updateTime } from "./time.js";
 import { weather } from "./weather.js";
 import { renderWindPressureMap, tickWindPressureMap } from "./wind.js";
@@ -76,6 +76,7 @@ function windMapsTick() {
     weather();
     tickWindPressureMap();
     tickMaps();
+    restingValues();
 }
 
 function orgTick() {

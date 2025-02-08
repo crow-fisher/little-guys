@@ -60,7 +60,7 @@ class Cloud {
                     for (let yside = -1; yside <= 1; yside += 2) {
                         var wx = this.centerX + (xside * i);
                         var wy = this.centerY + (yside * j);
-                        addWaterSaturationPascals(wx, wy, 10 ** 3);
+                        addWaterSaturationPascals(wx, wy, 10 ** 5);
                     }
                 }
             }
@@ -72,8 +72,11 @@ class Cloud {
 
 var ALL_CLOUDS = [];
 
-ALL_CLOUDS.push(new Cloud(10, 10, 5, 3, getCurDay() + 0.00001, 1, 100));
+ALL_CLOUDS.push(new Cloud(10, 10, 5, 3, getCurDay() + 0.00001, .001, 100));
 
 export function weather() {
     ALL_CLOUDS.forEach((cloud) => cloud.tick());
+    if (ALL_CLOUDS.some((cloud) => getCurDay() > cloud.startDay + cloud.duration)) {
+        ALL_CLOUDS = Array.from(ALL_CLOUDS.filter((cloud) => getCurDay() < cloud.startDay + cloud.duration));
+    }
 }
