@@ -57,7 +57,7 @@ function render() {
         renderWindPressureMap();
     }
     if (selectedViewMode == "watersaturation") {
-        // renderWaterSaturation();
+        renderWaterSaturation();
     }
 
     doLightSourceRaycasting();

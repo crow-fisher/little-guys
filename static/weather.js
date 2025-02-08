@@ -52,9 +52,10 @@ class Cloud {
 
         for (let i = 0; i < this.sizeX; i++) {
             for (let j = 0; j < this.sizeY; j++) {
-                if ((i**2 + j**2) ** 0.5 > (curElipse[3] ** 2 + curElipse[4] ** 2) ** 0.5) {
+                let curLoc = (i/curElipse[2]) ** 2 + (j/curElipse[3]) ** 2;
+                if (curLoc > 1) {
                     continue;
-                } 
+                }
                 for (let xside = -1; xside <= 1; xside += 2) {
                     for (let yside = -1; yside <= 1; yside += 2) {
                         var wx = this.centerX + (xside * i);
