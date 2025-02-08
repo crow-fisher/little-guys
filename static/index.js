@@ -71,6 +71,7 @@ var timeScale = document.getElementById("timeScale");
 var viewmodeSelect = document.getElementById("viewmodeSelect");
 var bakelighting = document.getElementById("bakelighting");
 bakelighting.onclick = (e) => reduceNextLightUpdateTime(lighting_throttle_interval_ms);
+var zoomMultiplier = document.getElementById("zoomMultiplier");
 
 var selectedViewMode = "normal";
 
@@ -220,6 +221,10 @@ timeScale.addEventListener("change", (e) => {
     setTimeScale(parseInt(e.target.value));
 })
 
+zoomMultiplier.addEventListener("change", (e) => {
+    ZOOM_MULTIPLIER = parseInt(e.target.value);
+});
+
 canvasWidth.addEventListener('change', (e) => setCanvasSquaresX(e.target.value));
 canvasHeight.addEventListener('change', (e) => setCanvasSquaresY(e.target.value));
 
@@ -271,6 +276,7 @@ var CANVAS_VIEWPORT_CENTER_X = CANVAS_SQUARES_X * BASE_SIZE / 2;
 var CANVAS_VIEWPORT_CENTER_Y = CANVAS_SQUARES_Y * BASE_SIZE / 2;
 
 var CANVAS_SQUARES_ZOOM = 1; // higher is farther in. 1/n etc etc 
+var ZOOM_MULTIPLIER = 1;
 
 function transformPixelsToCanvasSquares(x, y) {
     var totalWidth = CANVAS_SQUARES_X * BASE_SIZE;
@@ -356,7 +362,7 @@ function doZoom(deltaY) {
     var x = 1 - lastMoveOffset.x / totalWidth;
     var y = 1 - lastMoveOffset.y / totalHeight;
     var startZoom = CANVAS_SQUARES_ZOOM;
-    CANVAS_SQUARES_ZOOM = Math.min(Math.max(CANVAS_SQUARES_ZOOM + deltaY * -0.001, 1), 100);
+    CANVAS_SQUARES_ZOOM = Math.min(Math.max(CANVAS_SQUARES_ZOOM + deltaY * -0.001 * ZOOM_MULTIPLIER, 1), 100);
     var endZoom = CANVAS_SQUARES_ZOOM;
 
     var startWidth = totalWidth / startZoom;
@@ -378,10 +384,10 @@ function keydown(e) {
         shiftPressed = true;
     }
     if (e.key == "w") {
-        doZoom(-0.1);
+        doZoom(-100);
     }
     if (e.key == "s") {
-        doZoom(0.1);
+        doZoom(100);
     }
     if (e.key == "a") {
         global_theta_base += 0.1;
