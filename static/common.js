@@ -146,7 +146,7 @@ function processLighting(lightingMap) {
             b: (moonlightColor.b * 0.25) + (daylightColor.b * brightness)
         }
     }
-    var minBrigtness = 45 * getDaylightStrength();
+    var minBrightness = 55 * getDaylightStrength();
     var outColor = {r: 0, g: 0, b: 0}
     lightingMap.filter((light) => light != null && light.length == 2).forEach((light) => {
         var strength = light[0].map((f) => f()).reduce(
@@ -161,9 +161,9 @@ function processLighting(lightingMap) {
         }
     });
 
-    outColor.r = Math.max(outColor.r, minBrigtness);
-    outColor.g = Math.max(outColor.g, minBrigtness);
-    outColor.b = Math.max(outColor.b, minBrigtness);
+    outColor.r = Math.max(outColor.r, minBrightness);
+    outColor.g = Math.max(outColor.g, minBrightness);
+    outColor.b = Math.max(outColor.b, minBrightness);
     return outColor;
 }
 

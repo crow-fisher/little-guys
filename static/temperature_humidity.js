@@ -209,6 +209,10 @@ function updateSquareTemperature(x, y, newVal) {
     var end = temperatureMap[x][y];
     setPressurebyMult(x, y, (end / start));
 }
+ 
+function timeScaleFactor() {
+    return (105 - (Math.min(100, getCurTimeScale())));;
+}
 
 function temperatureDiffFunction(x, y, x2, y2, high, low) {
     if (getPressure(x, y) < 0) {
@@ -218,8 +222,7 @@ function temperatureDiffFunction(x, y, x2, y2, high, low) {
         return 0;
     }
     var diff = (high - low) / 2;
-    diff /= (105 - (Math.min(100, getCurTimeScale())));
-
+    diff /= timeScaleFactor();
     return diff;
 }
 
@@ -234,7 +237,7 @@ function humidityDiffFunction(x, y, x2, y2, high, low) {
 
     var minPascalsForHumidityDiff = Math.min(square1PascalsForHumidityDiff, square2PascalsForHumidityDiff)
 
-    minPascalsForHumidityDiff *= 0.001;
+    minPascalsForHumidityDiff /= timeScaleFactor();
 
     if (humidityDiff > 0) {
         return minPascalsForHumidityDiff;

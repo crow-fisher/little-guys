@@ -160,6 +160,7 @@ function rainyWeather() {
     if (ALL_CLOUDS.length > 5) {
         return;
     }
+    return;
     spawnNimbusCloud();
 }
 
