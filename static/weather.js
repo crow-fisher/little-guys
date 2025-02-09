@@ -93,7 +93,12 @@ class Cloud {
 
 // https://www.noaa.gov/jetstream/clouds/four-core-types-of-clouds
 function spawnCumulusCloud() {
-
+    ALL_CLOUDS.push(new Cloud(
+        randRange(-CANVAS_SQUARES_X/4, CANVAS_SQUARES_X * (0.75)),
+        randRange(4, 8),
+        randRange(8, 12), randRange(4, 8), 
+        getCurDay() + 0.00001 * randRange(1, 30), .1 * randRange(2, 4), 
+        randRange(1.02, 1.05), 0.1 * randRange(0.02, 0.2)));
 }
 
 function spawnStratusCloud() {
@@ -103,7 +108,7 @@ function spawnStratusCloud() {
 function spawnNimbusCloud() {
     ALL_CLOUDS.push(new Cloud(
         randRange(-CANVAS_SQUARES_X/4, CANVAS_SQUARES_X * (0.75)),
-        randRange(3, 7),
+        randRange(4, 6),
         randRange(12, 17), randRange(2, 4), 
         getCurDay() + 0.00001 * randRange(1, 30), .1 * randRange(2, 4), 
         randRange(1.02, 1.05), 0.1 * randRange(0.02, 0.2)));
@@ -124,14 +129,14 @@ var partlyCloudyTemperatureGradient = [
     [0.5, 273 + 20],
     [1, 273 + 30]
 ]
-function partlyCloudyWeather() {
+function mostlyCloudyWeather() {
     setRestingHumidityGradient(partlyCloudyHumidityGradient);
     setRestingTemperatureGradient(partlyCloudyTemperatureGradient);
 
     if (ALL_CLOUDS.length > 3) {
         return;
     }
-    spawnNimbusCloud();
+    spawnCumulusCloud();
 }
 
 
@@ -152,10 +157,11 @@ var rainyTemperatureGradient = [
 function rainyWeather() {
     setRestingHumidityGradient(rainyHumidityGradient);
     setRestingTemperatureGradient(rainyTemperatureGradient);
-
+q
     if (ALL_CLOUDS.length > 3) {
         return;
     }
+    spawnNimbusCloud();
 }
 
 export function weather() {
@@ -177,8 +183,15 @@ export function weather() {
             curWeatherStartTime = getCurDay();
         }
     }
-    if (curWeather == WEATHER_RAINY) {
-        rainyWeather();
+    rainyWeather();
+    return;
+    switch (curWeather) {
+        
+        case WEATHER_RAINY:
+            rainyWeather();
+            break;
+        case WEATHER_MOSTLYCLOUDY:
+            mostlyCloudyWeather();
+            break;
     }
-
 }
