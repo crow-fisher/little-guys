@@ -313,7 +313,9 @@ function doRain() {
             if (adjacentHumidity < (5 * cloudRainThresh))
                 continue;
 
-            var rainDropHealth = 0.05;
+            var rainDropPascals = waterSaturationMap[x][y]
+            var rainDropHealth = 0.001;
+
             var rainDropPascals = pascalsPerWaterSquare * rainDropHealth;
             var usedWaterPascalsPerSquare = rainDropPascals / 5;
 
