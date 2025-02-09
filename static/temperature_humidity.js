@@ -214,20 +214,7 @@ function temperatureDiffFunction(x, y, x2, y2, high, low) {
         return 0;
     }
 
-    /* 
-    'high' and 'low' are temperature values of adjacent 4x4 cubes of air 
-    
-    air_specificHeat = 
-
-    getPressure returns pascals for 64 meter cubed
-
-    44.64 moles per 1 atm 
-    
-    get our fraction of our air pressure against 1 atm
-    */
-
     var watts_transferRate = (high - low) * air_thermalConductivity;
-    // total watts transferred by air component
     var joules_transferredEnergy = watts_transferRate * ((getCurTime() - getPrevTime()) / 1000);
     var air_molesMult = getAirSquareDensityTempAndHumidity(x, y);
 
@@ -310,11 +297,6 @@ function tickMap(
 
                         update_function(x, y, map[x][y] - diff);
                         update_function(x2, y2, map[x2][y2] + diff);
-
-                        // if positive, heat rising
-                        // if negative, cold falling
-
-                        // do the transform here to make sure that's what you're doing
                     }));
         }
     }

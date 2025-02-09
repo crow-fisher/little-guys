@@ -506,9 +506,9 @@ export class BaseSquare {
     percolateInnerMoisture() { }
 
     physics() {
-        this.percolateInnerMoisture();
-        this.waterEvaporationRoutine();
-        this.transferHeat();
+        // this.percolateInnerMoisture();
+        // this.waterEvaporationRoutine();
+        // this.transferHeat();
         if (!this.physicsEnabled || this.linkedOrganismSquares.some((sq) => sq.type == "root")) {
             return false;
         }
