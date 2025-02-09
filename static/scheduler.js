@@ -2,7 +2,7 @@ import { doLightSourceRaycasting, doWaterFlow, physics, processOrganisms, purge,
 import { doClickAdd, doMouseHover, getBlockModification_val, getLastMode, getSelectedViewMode } from "./index.js";
 import { lightingClearLifeSquarePositionMap } from "./lighting.js";
 import { renderClouds, renderTemperature, renderWaterSaturation, restingValues, tickMaps } from "./temperature_humidity.js";
-import { doTimeSeek, renderTime, updateTime } from "./time.js";
+import { doTimeSeek, getTimeScale, renderTime, updateTime } from "./time.js";
 import { weather } from "./weather.js";
 import { renderWindPressureMap, tickWindPressureMap } from "./wind.js";
 
@@ -10,7 +10,7 @@ const SQUARE_UPDATE_MILLIS = 0;
 const ORG_UPDATE_MILLIS = 0;
 
 let last_square_tick = 0;
-let last_org_tick = 0; 
+let last_org_tick = 0;
 
 let updated = false;
 
@@ -23,15 +23,17 @@ export function scheduler_main() {
     doMouseHover();
     doClickAdd();
 
-    if (Date.now() - last_square_tick > SQUARE_UPDATE_MILLIS) {
-        squareTick();
-        last_square_tick = Date.now();
-        updated = true;
-    }
-    if (Date.now() - last_org_tick > ORG_UPDATE_MILLIS) {
-        orgTick();
-        last_org_tick = Date.now();
-        updated = true;
+    if (getTimeScale() != 0) {
+        if (Date.now() - last_square_tick > SQUARE_UPDATE_MILLIS) {
+            squareTick();
+            last_square_tick = Date.now();
+            updated = true;
+        }
+        if (Date.now() - last_org_tick > ORG_UPDATE_MILLIS) {
+            orgTick();
+            last_org_tick = Date.now();
+            updated = true;
+        }
     }
 
     if (updated) {
@@ -39,7 +41,7 @@ export function scheduler_main() {
         updated = false;
     }
 
-    setTimeout(scheduler_main, 0);    
+    setTimeout(scheduler_main, 0);
 }
 
 

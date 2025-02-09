@@ -258,7 +258,7 @@ function tickMap(
         for (let j = 0; j < yKeys.length; j++) {
             var x = parseInt(xKeys[i]);
             var y = parseInt(yKeys[j]);
-            if (getPressure(x, y) < 0) {
+            if (getPressure(x, y) <= 0) {
                 continue;
             }
             getMapDirectNeighbors(x, y)
@@ -296,10 +296,6 @@ function tickMap(
                 });
         }
     }
-}
-
-function canSquareRain(x, y, minPascals) {
-    return (waterSaturationMap[x][y] > minPascals) ? 1 : 0;
 }
 
 function getAdjacentProp(x, y, func) {

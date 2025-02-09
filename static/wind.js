@@ -152,32 +152,20 @@ function getTempMolarMult(x, y) {
 
 function tickWindPressureMap() {
     windPressureMapByPressure = new Map();
-
     if (WIND_SQUARES_X() != curWindSquaresX || WIND_SQUARES_Y() != curWindSquaresY) {
         initializeWindPressureMap();
     }
 
-
     for (let i = 0; i < curWindSquaresX; i++) {
         for (let j = 0; j < curWindSquaresY; j++) {
-            if (isNaN(windPressureMap[i][j]) || i >= curWindSquaresX || j >= curWindSquaresY) {
-                initializeWindPressureMap();
-                return;
-            }
-
             var prevailingWind = prevailingWindMap[i][j];
             if (prevailingWind != -1) {
                 var prevailingWindPressure = prevailingWindStartPressureMap[i][j] * (prevailingWind_minAtm * (1 - prevailingWind) + prevailingWind_maxAtm * prevailingWind)
-
                 var start = windPressureMap[i][j];
-                var startWater = getWaterSaturation(i, j);
-
                 windPressureMap[i][j] = prevailingWindPressure;
                 var mult = windPressureMap[i][j] / start;
-                
-                addWaterSaturationPascals(i, j, -Math.abs((1 - mult) * startWater));
+                addWaterSaturationPascals(i, j, mult * getWaterSaturation(i, j));
             }
-
             if (checkIfCollisionAtWindSquare(i, j)) {
                 windPressureMap[i][j] = -1;
             } else {
@@ -191,7 +179,6 @@ function tickWindPressureMap() {
                     })) {
                         windPressureMap[i][j] = base_wind_pressure;
                     }
-                    resetTemperatureAndHumidityAtSquare(i, j);
                 }
             }
             var pressure = Math.floor(windPressureMap[i][j]);
@@ -418,8 +405,6 @@ function _getWindSpeedAtLocation(x, y) {
 }
 
 function windSpeedFromPressure(pascals, sourcePressure) {
-    //  √(2 * 100 Pa / 1.225 kg/m³)
-    // sketchy gen ai shit 
     return (2 * pascals / (1.225 * sourcePressure / base_wind_pressure)) ** 0.5;
 
 }

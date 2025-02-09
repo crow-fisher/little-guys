@@ -162,6 +162,10 @@ export function getCurTimeScale() {
     return (5 ** (TIME_SCALE - 1));
 }
 
+export function getTimeScale() {
+    return TIME_SCALE;
+}
+
 function updateTime() {
     var dt = Date.now() - prevRealTime;
     if (dt > 10000) {

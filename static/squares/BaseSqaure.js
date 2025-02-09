@@ -84,7 +84,9 @@ export class BaseSquare {
 
         this.surface = false;
 
-        this.temperature = 273 + 20; // start temperature in kelvin 
+        this.temperature = 273;
+
+        
         this.thermalConductivity = 1;  // watts/meter kelvin. max is 10
         this.thermalMass = 2; // e.g., '2' means one degree of this would equal 2 degrees of air temp for a wind square 
 
@@ -109,9 +111,23 @@ export class BaseSquare {
         this.lightingSum = {r: 0, g: 0, b: 0}
         this.lightingSumCount = 0;
 
+        this.initTemperature();
+
     };
     lightFilterRate() {
         return 0.0008;
+    }
+
+    initTemperature() {
+        var adjacentWindSquare = getWindSquareAbove(this.posX, this.posY);
+
+        var x = adjacentWindSquare[0];
+        var y = adjacentWindSquare[1];
+
+        if (x < 0 || y < 0) {
+            return;
+        }
+        this.temperature = getTemperatureAtWindSquare(x, y);
     }
 
     getSoilWaterPressure() { return -(10 ** 8); }
@@ -144,11 +160,6 @@ export class BaseSquare {
     }
 
     waterEvaporationRoutine() {
-        if (this.organic) {
-            return;
-        }
-
-        
     }
 
 
