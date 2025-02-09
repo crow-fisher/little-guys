@@ -299,59 +299,44 @@ function canSquareRain(x, y, minPascals) {
     return (waterSaturationMap[x][y] > minPascals) ? 1 : 0;
 }
 
+function getAdjacentProp(x, y, func) {
+    return func(x, y) + getMapDirectNeighbors(x, y)
+    .filter((loc) => loc[0] >= 0 && loc[0] < curSquaresX && loc[1] >= 0 && loc[1] < curSquaresY)
+    .map((loc) => func(loc[0], loc[1]))
+    .reduce(
+        (accumulator, currentValue) => accumulator + currentValue,
+        0,
+    );
+}
+
 function doRain() {
     for (let x = 0; x < curSquaresX; x++) {
         for (let y = 0; y < curSquaresY; y++) {
-            var adjacentHumidity = getHumidity(x, y) + getMapDirectNeighbors(x, y)
-                .filter((loc) => loc[0] >= 0 && loc[0] < curSquaresX && loc[1] >= 0 && loc[1] < curSquaresY)
-                .map((loc) => getHumidity(loc[0], loc[1]))
-                .reduce(
-                    (accumulator, currentValue) => accumulator + currentValue,
-                    0,
-                );
-
-            if (adjacentHumidity < (5 * cloudRainThresh))
+            var adjacentHumidity = getAdjacentProp(x, y, getHumidity) / 5;
+            if (adjacentHumidity < (cloudRainThresh))
                 continue;
-
-            var rainDropPascals = waterSaturationMap[x][y]
-            var rainDropHealth = 0.001;
-
-            var rainDropPascals = pascalsPerWaterSquare * rainDropHealth;
-            var usedWaterPascalsPerSquare = rainDropPascals / 5;
-
-            var adjacentWaterPascals = waterSaturationMap[x][y] + getMapDirectNeighbors(x, y)
-                .filter((loc) => loc[0] >= 0 && loc[0] < curSquaresX && loc[1] >= 0 && loc[1] < curSquaresY)
-                .map((loc) => waterSaturationMap[loc[0]][loc[1]])
-                .reduce(
-                    (accumulator, currentValue) => accumulator + currentValue,
-                    0,
-                );
-
-            if (adjacentWaterPascals < rainDropPascals)
+            var rainDropProbability = ((adjacentHumidity - cloudRainThresh) / (cloudRainMax - cloudRainThresh));
+            if (Math.random() < rainDropProbability) {
                 continue;
+            }
 
-            var adjacentSquaresWithEnoughWater = canSquareRain(x, y, rainDropPascals) + getMapDirectNeighbors(x, y)
-                .filter((loc) => loc[0] >= 0 && loc[0] < curSquaresX && loc[1] >= 0 && loc[1] < curSquaresY)
-                .map((loc) => canSquareRain(loc[0], loc[1], rainDropPascals))
-                .reduce(
-                    (accumulator, currentValue) => accumulator + currentValue,
-                    0,
-                );
+            var adjacentTemperature = getAdjacentProp(x, y, getTemperatureAtWindSquare) / 5;
+            var expectedPascals = saturationPressureOfWaterVapor(adjacentTemperature) * cloudRainThresh;
+            var adjacentPascals = getAdjacentProp(x, y, (x, y) => waterSaturationMap[x][y]) / 5;
 
-            if (adjacentSquaresWithEnoughWater < 5)
-                continue;
+            var dropPascals = (adjacentPascals - expectedPascals) * 0.25;
+            var usedWaterPascalsPerSquare = dropPascals / 5;
+            var dropHealth = dropPascals / pascalsPerWaterSquare;
 
-            if (Math.random() > 0.90) {
-                var sq = addSquareByName(x * 4 + randNumber(0, 3), y * 4 + randNumber(0, 3), "water");
-                if (sq) {
-                    sq.blockHealth = rainDropHealth;
-                    sq.temperature = temperatureMap[x][y];
-                    logRainFall(sq.blockHealth);
-                    waterSaturationMap[x][y] -= usedWaterPascalsPerSquare;
-                    getMapDirectNeighbors(x, y)
-                        .filter((loc) => loc[0] >= 0 && loc[0] < curSquaresX && loc[1] >= 0 && loc[1] < curSquaresY)
-                        .forEach((loc) => waterSaturationMap[loc[0]][loc[1]] -= usedWaterPascalsPerSquare);
-                }
+            var sq = addSquareByName(x * 4 + randNumber(0, 3), y * 4 + randNumber(0, 3), "water");
+            if (sq) {
+                sq.blockHealth = dropHealth;
+                sq.temperature = temperatureMap[x][y];
+                logRainFall(sq.blockHealth);
+                waterSaturationMap[x][y] -= usedWaterPascalsPerSquare;
+                getMapDirectNeighbors(x, y)
+                    .filter((loc) => loc[0] >= 0 && loc[0] < curSquaresX && loc[1] >= 0 && loc[1] < curSquaresY)
+                    .forEach((loc) => waterSaturationMap[loc[0]][loc[1]] -= usedWaterPascalsPerSquare);
             }
         }
     }
