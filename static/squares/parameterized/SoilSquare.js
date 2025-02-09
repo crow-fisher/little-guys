@@ -6,6 +6,8 @@ import { getNeighbors, getSquares } from "../_sqOperations.js";
 import { hexToRgb, rgbToHex, rgbToRgba } from "../../common.js";
 import { addSquareByName, BASE_SIZE, MAIN_CONTEXT, selectedViewMode, zoomCanvasFillRect } from "../../index.js";
 import { getDaylightStrength } from "../../time.js";
+import { getWindSquareAbove } from "../../wind.js";
+import { addWaterSaturationPascals, getTemperatureAtWindSquare, getWaterSaturation, saturationPressureOfWaterVapor, updateSquareTemperature } from "../../temperature_humidity.js";
 
 export class SoilSquare extends BaseSquare {
     constructor(posX, posY) {
@@ -315,4 +317,24 @@ export class SoilSquare extends BaseSquare {
         return requestedAmount;
     }
 
+    waterEvaporationRoutine() {
+        var adjacentWindSquare = getWindSquareAbove(this.posX, this.posY);
+
+        var x = adjacentWindSquare[0];
+        var y = adjacentWindSquare[1];
+
+        if (x < 0 || y < 0) {
+            return;
+        }
+        var waterPascalsAbove = getWaterSaturation(x, y);
+        var vaporPressure = saturationPressureOfWaterVapor(this.temperature);
+        if (waterPascalsAbove > vaporPressure) {
+            return;
+        }
+        var diff = (waterPascalsAbove - vaporPressure) / this.getSoilWaterPressure();
+        var amount = Math.min(this.waterContainment, (diff / pascalsPerWaterSquare));
+        this.waterContainment -= amount;
+        this.temperature -= amount * this.water_vaporHeat;
+        addWaterSaturationPascals(x, y, amount * pascalsPerWaterSquare);
+    }
 }

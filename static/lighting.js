@@ -46,8 +46,8 @@ export function createSunLightGroup() {
     let sunLightGroup = new MovingLinearLightGroup(
         CANVAS_SQUARES_X / 2,
         -1, 
-        CANVAS_SQUARES_X * 10,
-        11,
+        CANVAS_SQUARES_X * 5,
+        15,
         getCurrentLightColorTemperature, 
         () => .25 * getDaylightStrength(),
         () => Math.max(0, (2 * (getCurDay() % 1) - 0.5))

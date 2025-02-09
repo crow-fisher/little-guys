@@ -148,48 +148,7 @@ export class BaseSquare {
             return;
         }
 
-        var adjacentWindSquare = getWindSquareAbove(this.posX, this.posY);
-
-        var x = adjacentWindSquare[0];
-        var y = adjacentWindSquare[1];
-
-        if (x < 0 || y < 0) {
-            return;
-        }
-
-        var waterPascalsAbove = getWaterSaturation(x, y);
-        var vaporPressure = saturationPressureOfWaterVapor(this.temperature);
-
-        if (waterPascalsAbove < 0) {
-            console.warn("Water pressure above was below zero!")
-        }
-        if (waterPascalsAbove > vaporPressure) {
-            return;
-        }
-
-        var diff = vaporPressure - waterPascalsAbove;
-
-        // diff /= 30;
-
-        if (this.solid) {
-            var amount = Math.min(this.waterContainment, (diff / pascalsPerWaterSquare));
-            this.waterContainment -= amount;
-            this.temperature -= amount * pascalsPerWaterSquare * this.water_vaporHeat;
-            addWaterSaturationPascals(x, y, amount * pascalsPerWaterSquare);
-            // addWindPressure(x * 4, y * 4, amount * pascalsPerWaterSquare);
-        } else {
-            // evaporating water
-            this.blockHealth -= (diff / pascalsPerWaterSquare);
-            updateSquareTemperature(x, y, getTemperatureAtWindSquare(x, y) - 0.2 * diff * this.water_vaporHeat);
-            addWaterSaturationPascals(x, y, diff);
-            // addWindPressure(x * 4, y * 4, diff);
-
-        }
-
-        if (this.temperature < 0) {
-            console.warn("This temperature got under 0");
-            this.temperature = 5;
-        }
+        
     }
 
 
@@ -506,9 +465,9 @@ export class BaseSquare {
     percolateInnerMoisture() { }
 
     physics() {
-        // this.percolateInnerMoisture();
-        // this.waterEvaporationRoutine();
-        // this.transferHeat();
+        this.percolateInnerMoisture();
+        this.waterEvaporationRoutine();
+        this.transferHeat();
         if (!this.physicsEnabled || this.linkedOrganismSquares.some((sq) => sq.type == "root")) {
             return false;
         }
