@@ -1,13 +1,14 @@
+import { randRange } from "./common.js";
 import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js";
-import { addWaterSaturationPascals, getHumidity, getWaterSaturation, isPointInWindBounds } from "./temperature_humidity.js";
+import { addWaterSaturationPascals, getHumidity, getWaterSaturation, getWindSquaresX, isPointInWindBounds, setRestingHumidityGradient, setRestingTemperatureGradient } from "./temperature_humidity.js";
 import { getCurDay } from "./time.js";
 
 class Cloud {
     constructor(centerX, centerY, sizeX, sizeY, startDay, duration, targetHumidity, strength) {
-        this.centerX = centerX;
-        this.centerY = centerY;
-        this.sizeX = sizeX;
-        this.sizeY = sizeY;
+        this.centerX = Math.floor(centerX);
+        this.centerY = Math.floor(centerY);
+        this.sizeX = Math.floor(sizeX);
+        this.sizeY = Math.floor(sizeY);
         this.startDay = startDay; 
         this.duration = duration;
         this.targetHumidity = targetHumidity;
@@ -83,14 +84,38 @@ class Cloud {
 
 var ALL_CLOUDS = [];
 
-ALL_CLOUDS.push(new Cloud(
-    10, 3, 7, 4, 
-    getCurDay() + 0.00001, .001, 
-    1.05, .1));
+
+var partlyCloudyHumidityGradient = [
+    [0, 0.95],
+    [0.15, 0.99],
+    [0.25, 0.95],
+    [1, 0.75]
+]
+var partlyCloudyTemperatureGradient = [
+    [0, 273 + 10],
+    [0.5, 273 + 20],
+    [1, 273 + 30]
+]
+function partlyCloudyWeather() {
+    setRestingHumidityGradient(partlyCloudyHumidityGradient);
+    setRestingTemperatureGradient(partlyCloudyTemperatureGradient);
+
+    if (ALL_CLOUDS.length > 3) {
+        return;
+    }
+    ALL_CLOUDS.push(new Cloud(
+        randRange(0, getWindSquaresX()), randRange(3, 7), randRange(5, 7), randRange(2, 4), 
+        getCurDay() + 0.00001 * randRange(1, 30), .1 * randRange(1, 10), 
+        1.01 * randRange(1, 5), 0.1 * randRange(0.1, 0.5)));
+    
+}
 
 export function weather() {
     ALL_CLOUDS.forEach((cloud) => cloud.tick());
     if (ALL_CLOUDS.some((cloud) => getCurDay() > cloud.startDay + cloud.duration)) {
         ALL_CLOUDS = Array.from(ALL_CLOUDS.filter((cloud) => getCurDay() < cloud.startDay + cloud.duration));
     }
+
+    partlyCloudyWeather();
+
 }

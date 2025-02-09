@@ -27,6 +27,13 @@ export function getWaterSaturationMap() {
 var curSquaresX = 0;
 var curSquaresY = 0;
 
+export function getWindSquaresX() {
+    return curSquaresX;
+}
+export function getWindSquaresY() {
+    return curSquaresY;
+}
+
 var start_temperature = 273 + 20;
 
 var air_thermalConductivity = 0.024; // watts per meter kelvin
@@ -51,28 +58,29 @@ var cloudMaxOpacity = 0.65;
 
 var restingTemperatureGradient = [
     [0, 273 + 10],
-    [0.5, 273 + 20],
     [1, 273 + 30]
 ];
 
 var restingHumidityGradient = [
     [0, 0.95],
-    [0.15, 0.99],
-    [0.25, 0.85],
     [1, 0.75]
 ]
 var reverseRestingHumidityGradient = Array.from(restingHumidityGradient).reverse();
 var reverseRestingTemperatureGradient = Array.from(restingTemperatureGradient).reverse();
 
 
-function setRestingTemperatureGradient(inGrad) {
-    restingTemperatureGradient = inGrad;
-    reverse_restingTemperatureGradient = Array.from(...restingTemperatureGradient).reverse();
+export function setRestingTemperatureGradient(inGrad) {
+    if (inGrad != restingTemperatureGradient) {
+        restingTemperatureGradient = inGrad;
+        reverseRestingTemperatureGradient = Array.from(restingTemperatureGradient).reverse();
+    }
 }
 
-function setRestingHumidityGradient(inGrad) {
-    restingHumidityGradient = inGrad;
-    reverse_restingHumidityGradient = Array.from(...restingHumidityGradient).reverse();
+export function setRestingHumidityGradient(inGrad) {
+    if (inGrad != restingHumidityGradient) {
+        restingHumidityGradient = inGrad;
+        reverseRestingHumidityGradient = Array.from(restingHumidityGradient).reverse();
+    }
 }
 
 function getRestingHumidityAtSq(x, y) {
