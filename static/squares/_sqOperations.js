@@ -1,10 +1,9 @@
 import { getObjectArrFromMap } from "../common.js";
-import { ALL_SQUARES, ALL_ORGANISM_SQUARES, stats } from "../globals.js";
+import { ALL_SQUARES, ALL_ORGANISM_SQUARES } from "../globals.js";
 import { removeSquare } from "../globalOperations.js";
-import { getOrganismSquaresAtSquare } from "../lifeSquares/_lsOperations.js";
 import { removeItemAll } from "../common.js";
 import { getOrganismsAtSquare } from "../organisms/_orgOperations.js";
-import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y, getNewBlockLockedTemperature, getNewBlockTemperatureVal } from "../index.js";
+import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "../index.js";
 
 var abs = Math.abs;
 

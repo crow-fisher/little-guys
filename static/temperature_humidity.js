@@ -210,7 +210,7 @@ function updateSquareTemperature(x, y, newVal) {
     setPressurebyMult(x, y, (end / start));
 }
  
-function timeScaleFactor() {
+export function timeScaleFactor() {
     return (105 - (Math.min(100, getCurTimeScale())));;
 }
 

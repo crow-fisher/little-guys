@@ -35,10 +35,6 @@ var mixMaterials = document.getElementById("mixMaterials");
 var mixMaterials_val = false;
 var materialSlider = document.getElementById("materialSlider");
 var materialSlider_val = 0;
-var newBlockTemperature = document.getElementById("newBlockTemperature");
-var newBlockTemperature_val = 273 + 20;
-var lockTemperature = document.getElementById("lockTemperature");
-var lockTemperature_val = false;
 
 var brushStrengthSlider = document.getElementById("brushStrengthSlider");
 var brushStrengthSlider_val = 100;
@@ -92,16 +88,6 @@ if (viewMode != null) {
 
 var global_theta_base = 0;
 const BASE_SIZE = 4;
-
-
-function getNewBlockTemperatureVal() {
-    return newBlockTemperature_val;
-}
-
-function getNewBlockLockedTemperature() {
-    return lockTemperature_val;
-}
-
 
 var loadSlotA = document.getElementById("loadSlotA");
 var saveSlotA = document.getElementById("saveSlotA");
@@ -189,14 +175,6 @@ materialSlider.addEventListener('change', (e) => {
     lastMode = "normal";
     styleHeader();
     materialSlider_val = parseInt(e.target.value);
-});
-newBlockTemperature.addEventListener('change', (e) => {
-    styleHeader();
-    newBlockTemperature_val = 273 + parseInt(e.target.value);
-});
-lockTemperature.addEventListener('change', (e) => {
-    styleHeader();
-    lockTemperature_val = e.target.checked;
 });
 organismWetland.addEventListener('change', (e) => {
     lastMode = "organismWetland";
@@ -551,25 +529,15 @@ function addSquareByNameConfig(posX, posY) {
             LIGHT_SOURCES[0].posY = posY;
             return;
         }
-        square = addSquareByNameSetTemp(posX, posY, specialSelect_val);
+        square = addSquareByName(posX, posY, specialSelect_val);
     } else {
         if (!mixMaterials_val) {
-            square = addSquareByNameSetTemp(posX, posY, material1_val);
+            square = addSquareByName(posX, posY, material1_val);
         }
         if (Math.random() * 100 > materialSlider_val) {
-            square = addSquareByNameSetTemp(posX, posY, material1_val);
+            square = addSquareByName(posX, posY, material1_val);
         } else {
-            square = addSquareByNameSetTemp(posX, posY, material2_val);
-        }
-    }
-}
-
-export function addSquareByNameSetTemp(posX, posY, name) {
-    var square = addSquareByName(posX, posY, name);
-    if (square && !square.organic) {
-        square.temperature = getNewBlockTemperatureVal();
-        if (getNewBlockLockedTemperature()) {
-            square.thermalMass = 10 ** 8;
+            square = addSquareByName(posX, posY, material2_val);
         }
     }
 }
@@ -863,7 +831,6 @@ export {
     setCanvasSquaresX, setCanvasSquaresY,
     getCanvasSquaresX, getCanvasSquaresY,
     getBlockModification_val,
-    getNewBlockTemperatureVal, getNewBlockLockedTemperature,
     getGlobalThetaBase,
     zoomCanvasFillRect
 }

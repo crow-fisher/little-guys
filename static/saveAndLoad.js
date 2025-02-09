@@ -1,5 +1,5 @@
 import { reduceNextLightUpdateTime, removeSquare } from "./globalOperations.js";
-import { addSquareByNameSetTemp, CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js";
+import { addSquareByName, CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js";
 import { addOrganismSquare } from "./lifeSquares/_lsOperations.js";
 import { addOrganism, iterateOnOrganisms, removeOrganism } from "./organisms/_orgOperations.js";
 import { GrowthComponent, GrowthPlan, GrowthPlanStep } from "./organisms/GrowthPlan.js";
@@ -303,11 +303,11 @@ export function loadFlatDirtWorld() {
     loadEmptyScene();
     for (let i = 0; i < CANVAS_SQUARES_X; i++) {
         for (let j = 1; j < 10; j++) {
-            var square = addSquareByNameSetTemp(i, CANVAS_SQUARES_Y - (1 + j), "loam");
+            var square = addSquareByName(i, CANVAS_SQUARES_Y - (1 + j), "loam");
             if (square)
                 square.randomize();
         }
-        addSquareByNameSetTemp(i, 30, "water");
+        addSquareByName(i, 30, "water");
     }
 
 }
