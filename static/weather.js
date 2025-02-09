@@ -106,7 +106,7 @@ function spawnNimbusCloud() {
         randRange(3, 7),
         randRange(12, 17), randRange(2, 4), 
         getCurDay() + 0.00001 * randRange(1, 30), .1 * randRange(2, 4), 
-        1.01 * randRange(1, 2), 0.1 * randRange(0.02, 0.2)));
+        randRange(1.02, 1.05), 0.1 * randRange(0.02, 0.2)));
 }
 
 

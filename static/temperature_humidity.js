@@ -53,8 +53,8 @@ var c_cloudMinRGB = hexToRgb("#f1f0f6");
 var c_cloudMidRGB = hexToRgb("#dbdce1")
 var c_cloudMaxRGB = hexToRgb("#818398");
 
-var cloudRainThresh = 1;
-var cloudRainMax = 2;
+var cloudRainThresh = 1.01;
+var cloudRainMax = 1.05;
 var cloudMaxOpacity = 0.65;
 
 var restingTemperatureGradient = [
