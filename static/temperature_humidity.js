@@ -1,9 +1,10 @@
 import { hexToRgb, randNumber, rgbToRgba } from "./common.js";
-import { addSquare, getSquares } from "./squares/_sqOperations.js";
+import { getSquares } from "./squares/_sqOperations.js";
 import { MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, zoomCanvasFillRect } from "./index.js";
 import { addSquareByName } from "./index.js";
-import { base_wind_pressure, getAirSquareDensity, getPressure, initializeWindPressureMap, updateWindPressureByMult, getAirSquareDensityTempAndHumidity, setPressurebyMult } from "./wind.js";
-import { getCurTime, getPrevTime } from "./time.js";
+import { getPressure, updateWindPressureByMult, getAirSquareDensityTempAndHumidity, setPressurebyMult } from "./wind.js";
+import { getCurTime, getCurTimeScale, getPrevTime } from "./time.js";
+import { logRainFall } from "./weather.js";
 
 
 // decent reference https://web.gps.caltech.edu/~xun/course/GEOL1350/Lecture5.pdf
@@ -100,17 +101,19 @@ function getRestingTemperatureAtSq(x, y) {
 }
 
 export function restingValues() {
+    let applicationStrength = Math.min(1, 0.1 * getCurTimeScale());
+
     for (let i = 0; i < curSquaresX; i++) {
         for (let j = 0; j < curSquaresY; j++) {
             var curHumidity = getHumidity(i, j);
             var restingHumidity = getRestingHumidityAtSq(i, j);
             var diffHumidity = restingHumidity - curHumidity;
-            waterSaturationMap[i][j] += diffHumidity * waterSaturationMap[i][j] * .1;
+            waterSaturationMap[i][j] += diffHumidity * waterSaturationMap[i][j] * applicationStrength;
 
             var curTemp = temperatureMap[i][j];
             var restingTemp = getRestingTemperatureAtSq(i, j);
             var diffTemp = restingTemp - curTemp;
-            temperatureMap[i][j] += diffTemp * 0.01;
+            temperatureMap[i][j] += diffTemp * applicationStrength;
         }
     }
 }
@@ -167,8 +170,8 @@ function applySquareTemperatureDelta(x, y, val) {
 function init() {
     temperatureMap = new Map();
     waterSaturationMap = new Map();
-    curSquaresX = Math.ceil(CANVAS_SQUARES_X / 4)
-    curSquaresY = Math.ceil(CANVAS_SQUARES_Y / 4)
+    curSquaresX = Math.ceil(CANVAS_SQUARES_X / 4);
+    curSquaresY = Math.ceil(CANVAS_SQUARES_Y / 4);
 
     var start_watersaturation = saturationPressureOfWaterVapor(start_temperature) * startHumidity;
 
@@ -366,6 +369,7 @@ function doRain() {
                 if (sq) {
                     sq.blockHealth = rainDropHealth;
                     sq.temperature = temperatureMap[x][y];
+                    logRainFall(sq.blockHealth);
                     waterSaturationMap[x][y] -= usedWaterPascalsPerSquare;
                     getMapDirectNeighbors(x, y)
                         .filter((loc) => loc[0] >= 0 && loc[0] < curSquaresX && loc[1] >= 0 && loc[1] < curSquaresY)

@@ -1,7 +1,17 @@
 import { randRange } from "./common.js";
 import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js";
-import { addWaterSaturationPascals, getHumidity, getWaterSaturation, getWindSquaresX, isPointInWindBounds, setRestingHumidityGradient, setRestingTemperatureGradient } from "./temperature_humidity.js";
+import { addWaterSaturationPascals, getHumidity, getWaterSaturation, getWindSquaresX, getWindSquaresY, isPointInWindBounds, setRestingHumidityGradient, setRestingTemperatureGradient } from "./temperature_humidity.js";
 import { getCurDay } from "./time.js";
+
+
+const WEATHER_RAINY = "WEATHER_RAINY";
+const WEATHER_MOSTLYCLOUDY = "WEATHER_MOSTLYCLOUDY";
+
+
+var curRainFallAmount = 0;
+var curWeatherStartTime = 0;
+var curWeatherInterval = 2;
+var curWeather = WEATHER_RAINY;
 
 class Cloud {
     constructor(centerX, centerY, sizeX, sizeY, startDay, duration, targetHumidity, strength) {
@@ -81,6 +91,24 @@ class Cloud {
     }
 }
 
+// https://www.noaa.gov/jetstream/clouds/four-core-types-of-clouds
+function spawnCumulusCloud() {
+
+}
+
+function spawnStratusCloud() {
+
+}
+
+function spawnNimbusCloud() {
+    ALL_CLOUDS.push(new Cloud(
+        randRange(-CANVAS_SQUARES_X/4, CANVAS_SQUARES_X * (0.75)),
+        randRange(3, 7),
+        randRange(12, 17), randRange(2, 4), 
+        getCurDay() + 0.00001 * randRange(1, 30), .1 * randRange(2, 4), 
+        1.01 * randRange(1, 2), 0.1 * randRange(0.02, 0.2)));
+}
+
 
 var ALL_CLOUDS = [];
 
@@ -103,11 +131,31 @@ function partlyCloudyWeather() {
     if (ALL_CLOUDS.length > 3) {
         return;
     }
-    ALL_CLOUDS.push(new Cloud(
-        randRange(0, getWindSquaresX()), randRange(3, 7), randRange(5, 7), randRange(2, 4), 
-        getCurDay() + 0.00001 * randRange(1, 30), .1 * randRange(1, 10), 
-        1.01 * randRange(1, 5), 0.1 * randRange(0.1, 0.5)));
-    
+    spawnNimbusCloud();
+}
+
+
+export function logRainFall(amount) {
+    curRainFallAmount += amount;
+}
+
+var rainyHumidityGradient = [
+    [0, 1],
+    [0.25, 1],
+    [1, 0.9]
+]
+var rainyTemperatureGradient = [
+    [0, 273 + 25],
+    [0.5, 273 + 30],
+    [1, 273 + 35]
+]
+function rainyWeather() {
+    setRestingHumidityGradient(rainyHumidityGradient);
+    setRestingTemperatureGradient(rainyTemperatureGradient);
+
+    if (ALL_CLOUDS.length > 3) {
+        return;
+    }
 }
 
 export function weather() {
@@ -116,6 +164,21 @@ export function weather() {
         ALL_CLOUDS = Array.from(ALL_CLOUDS.filter((cloud) => getCurDay() < cloud.startDay + cloud.duration));
     }
 
-    partlyCloudyWeather();
+    if (getCurDay() > curWeatherStartTime + curWeatherInterval) {
+        if (curWeather == WEATHER_MOSTLYCLOUDY) {
+            console.log("Starting rain...");
+            curWeather = WEATHER_RAINY;
+            curRainFallAmount = 0;
+            curWeatherStartTime = getCurDay();
+        }
+        else if (curWeather == WEATHER_RAINY) {
+            console.log("Rainfall finished; rained this amount:", curRainFallAmount);
+            curWeather = WEATHER_MOSTLYCLOUDY;
+            curWeatherStartTime = getCurDay();
+        }
+    }
+    if (curWeather == WEATHER_RAINY) {
+        rainyWeather();
+    }
 
 }

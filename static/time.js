@@ -158,7 +158,7 @@ function getCurTime() {
     return curTime;
 }
 
-function getCurTimeScale() {
+export function getCurTimeScale() {
     return (5 ** (TIME_SCALE - 1));
 }
 
