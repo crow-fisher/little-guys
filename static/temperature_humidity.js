@@ -214,20 +214,10 @@ function temperatureDiffFunction(x, y, x2, y2, high, low) {
     if (getPressure(x2, y2) < 0) {
         return 0;
     }
+    var diff = (high - low) / 2;
+    diff /= (105 - (Math.min(100, getCurTimeScale())));
 
-    var watts_transferRate = (high - low) * air_thermalConductivity;
-    var joules_transferredEnergy = watts_transferRate * ((getCurTime() - getPrevTime()) / 1000);
-    var air_molesMult = getAirSquareDensityTempAndHumidity(x, y);
-
-    var air_molesTotal = air_molesMult * 44.64;
-    var air_grams = air_molesTotal * air_atomicWeight;
-
-    var air_joules_per_degree = air_grams / air_specificHeat;
-    var air_degrees = joules_transferredEnergy / air_joules_per_degree;
-
-    air_degrees *= 100;
-
-    return air_degrees;
+    return diff;
 }
 
 function humidityDiffFunction(x, y, x2, y2, high, low) {
@@ -265,40 +255,39 @@ function tickMap(
             if (getPressure(x, y) < 0) {
                 continue;
             }
-            [getMapDirectNeighbors].forEach((f) =>
-                f(x, y)
-                    .filter((loc) => isPointInWindBounds(loc[0], loc[1]))
-                    .filter((loc) => getPressure(loc[0], loc[1]) > 0)
-                    .forEach((loc) => {
-                        var x2 = loc[0];
-                        var y2 = loc[1];
-                        var diff = diff_function(x, y, x2, y2, map[x][y], map[x2][y2]);
+            getMapDirectNeighbors(x, y)
+                .filter((loc) => isPointInWindBounds(loc[0], loc[1]))
+                .filter((loc) => getPressure(loc[0], loc[1]) > 0)
+                .forEach((loc) => {
+                    var x2 = loc[0];
+                    var y2 = loc[1];
+                    var diff = diff_function(x, y, x2, y2, map[x][y], map[x2][y2]);
 
-                        if (y == y2) {
-                            update_function(x, y, map[x][y] - diff);
-                            update_function(x2, y2, map[x2][y2] + diff);
-                            return;
-                        }
-
-                        var side = 1;
-                        if (y2 < y) {
-                            side *= -1;
-                        }
-                        if (diff < 0) {
-                            side *= -1;
-                        }
-
-                        var vertMult = 5;
-
-                        if (side == 1) {
-                            diff /= vertMult;
-                        } else {
-                            diff *= vertMult;
-                        }
-
+                    if (y == y2) {
                         update_function(x, y, map[x][y] - diff);
                         update_function(x2, y2, map[x2][y2] + diff);
-                    }));
+                        return;
+                    }
+
+                    var side = 1;
+                    if (y2 < y) {
+                        side *= -1;
+                    }
+                    if (diff < 0) {
+                        side *= -1;
+                    }
+
+                    var vertMult = 5;
+
+                    if (side == 1) {
+                        diff /= vertMult;
+                    } else {
+                        diff *= vertMult;
+                    }
+
+                    update_function(x, y, map[x][y] - diff);
+                    update_function(x2, y2, map[x2][y2] + diff);
+                });
         }
     }
 }
