@@ -157,7 +157,6 @@ var rainyTemperatureGradient = [
 function rainyWeather() {
     setRestingHumidityGradient(rainyHumidityGradient);
     setRestingTemperatureGradient(rainyTemperatureGradient);
-q
     if (ALL_CLOUDS.length > 3) {
         return;
     }

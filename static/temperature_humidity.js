@@ -101,6 +101,7 @@ function getRestingTemperatureAtSq(x, y) {
 }
 
 export function restingValues() {
+    return;
     let applicationStrength = Math.min(1, 0.1 * getCurTimeScale());
 
     for (let i = 0; i < curSquaresX; i++) {
