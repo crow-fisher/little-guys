@@ -1,5 +1,5 @@
 import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js";
-import { addWaterSaturationPascals, getHumidity, getWaterSaturation } from "./temperature_humidity.js";
+import { addWaterSaturationPascals, getHumidity, getWaterSaturation, isPointInWindBounds } from "./temperature_humidity.js";
 import { getCurDay } from "./time.js";
 
 class Cloud {
@@ -62,6 +62,10 @@ class Cloud {
                     for (let yside = -1; yside <= 1; yside += 2) {
                         var wx = this.centerX + (xside * i);
                         var wy = this.centerY + (yside * j);
+                        if (!isPointInWindBounds(wx, wy)) {
+                            continue;
+                        }
+
                         var cur = getHumidity(wx, wy);
                         if (cur > this.targetHumidity) {
                             return;
@@ -80,9 +84,9 @@ class Cloud {
 var ALL_CLOUDS = [];
 
 ALL_CLOUDS.push(new Cloud(
-    10, 10, 5, 3, 
+    10, 3, 7, 4, 
     getCurDay() + 0.00001, .001, 
-    1.05, 1));
+    1.05, .1));
 
 export function weather() {
     ALL_CLOUDS.forEach((cloud) => cloud.tick());

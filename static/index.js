@@ -79,6 +79,7 @@ var viewMode = urlParams.get('mode')
 if (viewMode != null) {
     switch (viewMode) {
         case "normal":
+        case "temperature":
         case "watersaturation":
             selectedViewMode = viewMode;
             break;
@@ -845,9 +846,9 @@ window.oncontextmenu = function () {
 window.onload = function () {
     document.addEventListener('keydown', keydown);
     document.addEventListener('keyup', keyup);
-    loadFlatDirtWorld();
+    // loadFlatDirtWorld();
     // loadSlot("A");
-    // loadEmptyScene();
+    loadEmptyScene();
 }
 
 // loadSlotFromSave(volcano);
