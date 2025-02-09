@@ -101,20 +101,23 @@ function getRestingTemperatureAtSq(x, y) {
 }
 
 export function restingValues() {
-    return;
-    let applicationStrength = Math.min(1, 0.1 * getCurTimeScale());
+    let applicationStrength = Math.min(1, 0.001 * getCurTimeScale()) * 0.5;
 
     for (let i = 0; i < curSquaresX; i++) {
         for (let j = 0; j < curSquaresY; j++) {
-            var curHumidity = getHumidity(i, j);
-            var restingHumidity = getRestingHumidityAtSq(i, j);
-            var diffHumidity = restingHumidity - curHumidity;
-            waterSaturationMap[i][j] += diffHumidity * waterSaturationMap[i][j] * applicationStrength;
-
             var curTemp = temperatureMap[i][j];
             var restingTemp = getRestingTemperatureAtSq(i, j);
             var diffTemp = restingTemp - curTemp;
             temperatureMap[i][j] += diffTemp * applicationStrength;
+
+            var curHumidity = getHumidity(i, j);
+            var restingHumidity = getRestingHumidityAtSq(i, j);
+            var diffHumidity = (restingHumidity - curHumidity);
+
+            var curTempPascals = saturationPressureOfWaterVapor(temperatureMap[i][j]);
+            var targetTempPascals = saturationPressureOfWaterVapor(restingTemp);
+            waterSaturationMap[i][j] += diffHumidity * Math.min(curTempPascals, targetTempPascals) * applicationStrength;
+
         }
     }
 }
