@@ -9,6 +9,27 @@ import { getDaylightStrength } from "../../time.js";
 import { getAdjacentWindSquareToRealSquare, getWindSquareAbove } from "../../wind.js";
 import { addWaterSaturationPascals, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, timeScaleFactor, updateSquareTemperature } from "../../temperatureHumidity.js";
 
+// maps in form "water containment" / "matric pressure in atmospheres"
+const clayMap = [
+    [0, -7],
+    [0.28, -4.2],
+    [0.45, -2.5],
+    [0.48, -2],
+    [0.49, 0]
+];
+const siltMap = [
+    [0, -7],
+    [0.09, -4.2],
+    [0.15, -2.3],
+    [0.26, -2],
+    [0.42, 0]
+];
+const sandMap = [
+    [0, -7],
+    [0.06, -2],
+    [0.40, 0]
+]
+
 export class SoilSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
@@ -36,34 +57,10 @@ export class SoilSquare extends BaseSquare {
         this.sand = 0.40;
         this.silt = 0.40;
         this.clay = 0.20;
-
-        this.waterContainment = 0;
-
         // nutrients normalized to "pounds per acre" per farming websites
         this.ph = 7;
         this.nitrogen = 50;
         this.phosphorus = 25;
-
-        // maps in form "water containment" / "matric pressure in atmospheres"
-        this.clayMap = [
-            [0, -7],
-            [0.28, -4.2],
-            [0.45, -2.5],
-            [0.48, -2],
-            [0.49, 0]
-        ];
-        this.siltMap = [
-            [0, -7],
-            [0.09, -4.2],
-            [0.15, -2.3],
-            [0.26, -2],
-            [0.42, 0]
-        ];
-        this.sandMap = [
-            [0, -7],
-            [0.06, -2],
-            [0.40, 0]
-        ]
     }
 
     setType(type) {
@@ -140,8 +137,13 @@ export class SoilSquare extends BaseSquare {
         this.clay = Math.min(Math.max(this.clay, 0), 1);
         this.silt = Math.min(Math.max(this.silt, 0), 1);
         this.sand = Math.min(Math.max(this.sand, 0), 1);
+
+        this.initWaterContainment();
     }
 
+    initWaterContainment() {
+        this.waterContainment = this.getInverseMatricPressure(-2);
+    }
 
 
     loadInverseMatricPressureMap() {
@@ -187,17 +189,17 @@ export class SoilSquare extends BaseSquare {
     
     getInverseMatricPressure(waterPressure) {
         return (
-            this.clay * this.getInversePressureGeneric(waterPressure, this.clayMap)
-             + this.silt * this.getInversePressureGeneric(waterPressure, this.siltMap)
-             + this.sand * this.getInversePressureGeneric(waterPressure, this.sandMap)
+            this.clay * this.getInversePressureGeneric(waterPressure, clayMap)
+             + this.silt * this.getInversePressureGeneric(waterPressure, siltMap)
+             + this.sand * this.getInversePressureGeneric(waterPressure, sandMap)
         )
     }
 
     getMatricPressure() {
         return (
-            this.clay * this.getPressureGeneric(this.waterContainment, this.clayMap)
-             + this.silt * this.getPressureGeneric(this.waterContainment, this.siltMap)
-             + this.sand * this.getPressureGeneric(this.waterContainment, this.sandMap)
+            this.clay * this.getPressureGeneric(this.waterContainment, clayMap)
+             + this.silt * this.getPressureGeneric(this.waterContainment, siltMap)
+             + this.sand * this.getPressureGeneric(this.waterContainment, sandMap)
         )
     }
     getGravitationalPressure() {
