@@ -101,14 +101,14 @@ function getRestingTemperatureAtSq(x, y) {
 }
 
 export function restingValues() {
-    let applicationStrength = Math.min(1, 0.001 * getCurTimeScale()) * 0.5;
+    let applicationStrength = timeScaleFactor();
 
     for (let i = 0; i < curSquaresX; i++) {
         for (let j = 0; j < curSquaresY; j++) {
             var curTemp = temperatureMap[i][j];
             var restingTemp = getRestingTemperatureAtSq(i, j);
             var diffTemp = restingTemp - curTemp;
-            temperatureMap[i][j] += diffTemp * applicationStrength;
+            temperatureMap[i][j] += diffTemp / applicationStrength;
 
             var curHumidity = getHumidity(i, j);
             var restingHumidity = getRestingHumidityAtSq(i, j);
@@ -116,7 +116,7 @@ export function restingValues() {
 
             var curTempPascals = saturationPressureOfWaterVapor(temperatureMap[i][j]);
             var targetTempPascals = saturationPressureOfWaterVapor(restingTemp);
-            waterSaturationMap[i][j] += diffHumidity * Math.min(curTempPascals, targetTempPascals) * applicationStrength;
+            waterSaturationMap[i][j] += diffHumidity * Math.min(curTempPascals, targetTempPascals) / applicationStrength;
 
         }
     }
@@ -330,7 +330,7 @@ function doRain() {
             var dropPascals = (adjacentPascals - expectedPascals) * 0.25;
             var usedWaterPascalsPerSquare = dropPascals / 5;
             var dropHealth = dropPascals / pascalsPerWaterSquare;
-            dropHealth = Math.max(0.1, dropHealth * getCurTimeScale())
+            dropHealth = Math.min(0.1, dropHealth * getCurTimeScale())
 
             var sq = addSquareByName(x * 4 + randNumber(0, 3), y * 4 + randNumber(0, 3), "water");
             if (sq) {

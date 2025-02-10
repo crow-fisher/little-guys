@@ -6,7 +6,7 @@ import { getNeighbors, getSquares } from "../_sqOperations.js";
 import { hexToRgb, rgbToHex, rgbToRgba } from "../../common.js";
 import { addSquareByName, BASE_SIZE, MAIN_CONTEXT, selectedViewMode, zoomCanvasFillRect } from "../../index.js";
 import { getDaylightStrength } from "../../time.js";
-import { getWindSquareAbove } from "../../wind.js";
+import { getAdjacentWindSquareToRealSquare, getWindSquareAbove } from "../../wind.js";
 import { addWaterSaturationPascals, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, timeScaleFactor, updateSquareTemperature } from "../../temperatureHumidity.js";
 
 export class SoilSquare extends BaseSquare {
@@ -318,7 +318,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     waterEvaporationRoutine() {
-        var adjacentWindSquare = getWindSquareAbove(this.posX, this.posY);
+        var adjacentWindSquare = getAdjacentWindSquareToRealSquare(this.posX, this.posY);
 
         var x = adjacentWindSquare[0];
         var y = adjacentWindSquare[1];

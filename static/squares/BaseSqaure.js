@@ -24,7 +24,7 @@ import { removeOrganismSquare } from "./_sqOperations.js";
 import { removeOrganism } from "../organisms/_orgOperations.js";
 
 import { addWaterSaturationPascals, calculateColorTemperature, getTemperatureAtSquare, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, timeScaleFactor, updateSquareTemperature } from "../temperatureHumidity.js";
-import { getWindSquareAbove } from "../wind.js";
+import { getAdjacentWindSquareToRealSquare, getWindSquareAbove } from "../wind.js";
 import { COLOR_RED, RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
 import { getCurDay, getCurTimeScale, getTimeScale } from "../time.js";
 
@@ -118,7 +118,7 @@ export class BaseSquare {
     }
 
     initTemperature() {
-        var adjacentWindSquare = getWindSquareAbove(this.posX, this.posY);
+        var adjacentWindSquare = getAdjacentWindSquareToRealSquare(this.posX, this.posY);
 
         var x = adjacentWindSquare[0];
         var y = adjacentWindSquare[1];
@@ -153,7 +153,8 @@ export class BaseSquare {
         }
 
         var adjacentTemp = getTemperatureAtWindSquare(x, y);
-        var diff = this.thermalConductivity * ((adjacentTemp - this.temperature) / 100);
+        var diff = this.thermalConductivity * ((adjacentTemp - this.temperature));
+        diff /= timeScaleFactor();
         this.temperature += diff / this.thermalMass;
         updateSquareTemperature(x, y, getTemperatureAtWindSquare(x, y) - diff);
     }
