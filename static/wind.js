@@ -2,7 +2,7 @@ import { hexToRgb, rgbToRgba } from "./common.js";
 import { getSquares } from "./squares/_sqOperations.js";
 import { MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, zoomCanvasFillRect } from "./index.js";
 import { initializeStarMap } from "./time.js";
-import { addWaterSaturationPascals, calculateColor, getTemperatureAtWindSquare, getWaterSaturation, updateSquareTemperature } from "./temperature_humidity.js";
+import { addWaterSaturationPascals, calculateColor, getTemperatureAtWindSquare, getWaterSaturation, updateSquareTemperature } from "./temperatureHumidity.js";
 
 var windPressureMap;
 var windPressureMapByPressure;

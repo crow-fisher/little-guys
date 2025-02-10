@@ -23,7 +23,7 @@ import { removeSquare } from "../globalOperations.js";
 import { removeOrganismSquare } from "./_sqOperations.js";
 import { removeOrganism } from "../organisms/_orgOperations.js";
 
-import { addWaterSaturationPascals, calculateColorTemperature, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, updateSquareTemperature } from "../temperature_humidity.js";
+import { addWaterSaturationPascals, calculateColorTemperature, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, updateSquareTemperature } from "../temperatureHumidity.js";
 import { getWindSquareAbove } from "../wind.js";
 import { COLOR_RED, RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
 import { getCurDay } from "../time.js";

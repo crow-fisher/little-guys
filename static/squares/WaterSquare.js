@@ -102,9 +102,6 @@ class WaterSquare extends BaseSquare {
         if (this.currentPressureIndirect >= this.currentPressureDirect) {
             for (var i = -1; i < 2; i++) {
                 for (var j = -1; i < 2; i++) {
-                    // if (Math.abs(i) == Math.abs(j)) {
-                    //     continue;
-                    // }
                     if (!(getSquares(this.posX + i, this.posY + j)
                             .some((sq) => sq.collision || sq.proto == this.proto))) {
                         if (!(this.currentPressureIndirect in targetMap)) {

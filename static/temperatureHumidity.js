@@ -258,7 +258,7 @@ function tickMap(
         for (let j = 0; j < yKeys.length; j++) {
             var x = parseInt(xKeys[i]);
             var y = parseInt(yKeys[j]);
-            if (getPressure(x, y) <= 0) {
+            if (getPressure(x, y) < 0) {
                 continue;
             }
             getMapDirectNeighbors(x, y)

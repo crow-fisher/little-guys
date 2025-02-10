@@ -7,7 +7,7 @@ import { lush } from "./saves.js";
 import { triggerEarlySquareScheduler } from "./scheduler.js";
 import { addSquare, addSquareOverride, iterateOnSquares, removeOrganismSquare } from "./squares/_sqOperations.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
-import { getTemperatureMap, getWaterSaturationMap, setTemperatureMap, setWaterSaturationMap } from "./temperature_humidity.js";
+import { getTemperatureMap, getWaterSaturationMap, setTemperatureMap, setWaterSaturationMap } from "./temperatureHumidity.js";
 import { getCurDay, setCurDay } from "./time.js";
 import { ProtoMap, TypeMap } from "./types.js";
 import { getWindPressureMap, initializeWindPressureMap, setWindPressureMap } from "./wind.js";

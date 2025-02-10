@@ -1,6 +1,6 @@
 import { hexToRgb, randNumber, randRange, rgbToRgba } from "./common.js";
 import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, MAIN_CONTEXT, zoomCanvasFillRect} from "./index.js";
-import { calculateColor, calculateColorProvideOpacity } from "./temperature_humidity.js";
+import { calculateColor, calculateColorProvideOpacity } from "./temperatureHumidity.js";
 
 
 

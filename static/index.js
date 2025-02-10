@@ -12,7 +12,7 @@ import { LIGHT_SOURCES } from "./globals.js";
 import { getOrganismSquaresAtSquare } from "./lifeSquares/_lsOperations.js";
 import { randNumber } from "./common.js";
 import { clearPrevailingWind, addPrevailingWind, addWindPressure, initializeWindPressureMap, removeWindPressure } from "./wind.js";
-import { addTemperature, addWaterSaturationPascalsSqCoords } from "./temperature_humidity.js";
+import { addTemperature, addWaterSaturationPascalsSqCoords } from "./temperatureHumidity.js";
 import { PalmTreeSeedOrganism } from "./organisms/tropical/PalmTreeOrganism.js";
 import { ElephantEarSeedOrganism } from "./organisms/tropical/ElephantEarOrganism.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";

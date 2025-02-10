@@ -1,6 +1,6 @@
 import { randRange } from "./common.js";
 import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js";
-import { addWaterSaturationPascals, getHumidity, getWaterSaturation, getWindSquaresX, getWindSquaresY, isPointInWindBounds, setRestingHumidityGradient, setRestingTemperatureGradient } from "./temperature_humidity.js";
+import { addWaterSaturationPascals, getHumidity, getWaterSaturation, getWindSquaresX, getWindSquaresY, isPointInWindBounds, setRestingHumidityGradient, setRestingTemperatureGradient } from "./temperatureHumidity.js";
 import { getCurDay } from "./time.js";
 
 
