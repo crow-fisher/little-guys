@@ -1,6 +1,6 @@
 import { randRange } from "./common.js";
 import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js";
-import { addWaterSaturationPascals, getHumidity, getWaterSaturation, getWindSquaresX, getWindSquaresY, isPointInWindBounds, setRestingHumidityGradient, setRestingTemperatureGradient } from "./temperatureHumidity.js";
+import { addWaterSaturationPascals, getHumidity, getWaterSaturation, getWindSquaresX, getWindSquaresY, isPointInWindBounds, setRestingHumidityGradient, setRestingTemperatureGradient, timeScaleFactor } from "./temperatureHumidity.js";
 import { getCurDay } from "./time.js";
 
 
@@ -81,7 +81,7 @@ class Cloud {
                         if (cur > this.targetHumidity) {
                             return;
                         }
-                        var pascals = (this.targetHumidity - cur) * (getWaterSaturation(wx, wy) / cur) * this.strength;
+                        var pascals = (this.targetHumidity - cur) * (getWaterSaturation(wx, wy) / cur) * this.strength / timeScaleFactor();
                         addWaterSaturationPascals(wx, wy, pascals);
                     }
                 }
@@ -111,7 +111,7 @@ function spawnNimbusCloud() {
         randRange(4, 6),
         randRange(12, 17), randRange(2, 4), 
         getCurDay() + 0.00001 * randRange(1, 30), .01 * randRange(2, 4), 
-        randRange(1.02, 1.05), 0.1 * randRange(0.02, 0.2)));
+        randRange(1.5, 2.05), 1));
 }
 
 

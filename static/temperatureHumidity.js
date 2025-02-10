@@ -311,7 +311,11 @@ function getAdjacentProp(x, y, func) {
 function doRain() {
     for (let x = 0; x < curSquaresX; x++) {
         for (let y = 0; y < curSquaresY; y++) {
-            var adjacentHumidity = Math.max(cloudRainMax, getAdjacentProp(x, y, getHumidity) / 5);
+            if (getAdjacentProp(x, y, (x, y) => (getHumidity(x, y) > cloudRainThresh ? 1 : 0)) < 5) {
+                continue;
+            };
+
+            var adjacentHumidity = Math.min(cloudRainMax, getAdjacentProp(x, y, getHumidity) / 5);
             if (adjacentHumidity < (cloudRainThresh))
                 continue;
             var rainDropProbability = ((adjacentHumidity - cloudRainThresh) / (cloudRainMax - cloudRainThresh));
@@ -352,9 +356,9 @@ function renderClouds() {
                 continue;
             }
             if (squareHumidity < (1 * cloudRainThresh)) {
-                MAIN_CONTEXT.fillStyle = calculateColorOpacity(squareHumidity, 0, 1 * cloudRainThresh, c_cloudMinRGB, c_cloudMidRGB);
+                MAIN_CONTEXT.fillStyle = calculateColorOpacity(squareHumidity, 1, cloudRainThresh, c_cloudMinRGB, c_cloudMidRGB);
             } else {
-                MAIN_CONTEXT.fillStyle = calculateColor(squareHumidity, 1 * cloudRainThresh, 1 * cloudRainMax * 4, c_cloudMidRGB, c_cloudMaxRGB);
+                MAIN_CONTEXT.fillStyle = calculateColor(squareHumidity, cloudRainThresh, cloudRainMax, c_cloudMidRGB, c_cloudMaxRGB);
             }
             zoomCanvasFillRect(
                 4 * i * BASE_SIZE,
