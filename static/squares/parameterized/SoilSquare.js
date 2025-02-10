@@ -266,8 +266,8 @@ export class SoilSquare extends BaseSquare {
         if (this.waterContainmentMax == 0 || this.waterContainment >= this.waterContainmentMax) {
             return 0;
         }
-        var amountToPercolate = Math.min(waterBlock.blockHealth, this.waterContainmentMax - this.waterContainment);
-        amountToPercolate = amountToPercolate /= this.getWaterflowRate();
+        var maxWaterflowRate = (this.waterContainmentMax - this.waterContainment) / (this.getWaterflowRate() ** 0.5);
+        var amountToPercolate = Math.min(waterBlock.blockHealth, maxWaterflowRate);
         this.waterContainment += amountToPercolate;
         return amountToPercolate;
     }
