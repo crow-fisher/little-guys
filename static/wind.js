@@ -2,7 +2,7 @@ import { hexToRgb, rgbToRgba } from "./common.js";
 import { getSquares } from "./squares/_sqOperations.js";
 import { MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, zoomCanvasFillRect } from "./index.js";
 import { initializeStarMap } from "./time.js";
-import { addWaterSaturationPascals, calculateColor, getTemperatureAtWindSquare, getWaterSaturation, updateSquareTemperature } from "./temperatureHumidity.js";
+import { addWaterSaturationPascals, calculateColor, getTemperatureAtWindSquare, getWaterSaturation, initTemperatureHumidity, updateSquareTemperature } from "./temperatureHumidity.js";
 
 var windPressureMap;
 var windPressureMapByPressure;
@@ -36,6 +36,13 @@ var prevailingWind_minAtm = 0.8;
 var prevailingWind_minColorRGB = hexToRgb("#3d05dd")
 var prevailingWind_maxColorRGB = hexToRgb("#fcb0f3")
 
+export function getWindSquaresX() {
+    return curWindSquaresX;
+}
+export function getWindSquaresY() {
+    return curWindSquaresY;
+}
+
 function getAirSquareDensity(x, y) {
     return ((windPressureMap[x][y] / base_wind_pressure) * (air_molar_mass / getTempMolarMult(x, y)) + (getWaterSaturation(x, y) / base_wind_pressure) * (water_vapor_molar_mass / getTempMolarMult(x, y))) / air_molar_mass;
 }
@@ -52,6 +59,10 @@ function getPressure(x, y) {
         return -1;
     }
     return windPressureMap[x][y];
+}
+
+export function isPointInWindBounds(x, y) {
+    return x >= 0 && x < curWindSquaresX && y >= 0 && y < curWindSquaresY;
 }
 
 export function getAdjacentWindSquareToRealSquare(squareX, squareY) {
@@ -129,8 +140,6 @@ function initializeWindPressureMap() {
     prevailingWindStartPressureMap = new Map();
     windSpeedSmoothingMap = new Map();
 
-    initializeStarMap();
-
     curWindSquaresX = WIND_SQUARES_X();
     curWindSquaresY = WIND_SQUARES_Y();
 
@@ -164,6 +173,7 @@ function tickWindPressureMap() {
     windPressureMapByPressure = new Map();
     if (WIND_SQUARES_X() != curWindSquaresX || WIND_SQUARES_Y() != curWindSquaresY) {
         initializeWindPressureMap();
+        initTemperatureHumidity();
     }
 
     for (let i = 0; i < curWindSquaresX; i++) {

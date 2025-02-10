@@ -1,7 +1,8 @@
 import { randRange } from "./common.js";
-import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js";
-import { addWaterSaturationPascals, getHumidity, getWaterSaturation, getWindSquaresX, getWindSquaresY, isPointInWindBounds, setRestingHumidityGradient, setRestingTemperatureGradient, timeScaleFactor } from "./temperatureHumidity.js";
-import { getCurDay } from "./time.js";
+import { CANVAS_SQUARES_X } from "./index.js";
+import { addWaterSaturationPascals, getHumidity, getWaterSaturation, setRestingHumidityGradient, setRestingTemperatureGradient } from "./temperatureHumidity.js";
+import { getCurDay, timeScaleFactor } from "./time.js";
+import { getPressure, isPointInWindBounds } from "./wind.js";
 
 
 const WEATHER_RAINY = "WEATHER_RAINY";
@@ -73,7 +74,7 @@ class Cloud {
                     for (let yside = -1; yside <= 1; yside += 2) {
                         var wx = this.centerX + (xside * i);
                         var wy = this.centerY + (yside * j);
-                        if (!isPointInWindBounds(wx, wy)) {
+                        if (!isPointInWindBounds(wx, wy) || getPressure(wx, wy) < 0) {
                             continue;
                         }
 

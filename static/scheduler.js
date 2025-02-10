@@ -1,10 +1,10 @@
 import { doLightSourceRaycasting, doWaterFlow, physics, processOrganisms, purge, renderOrganisms, renderSquares, renderWater, reset } from "./globalOperations.js";
 import { doClickAdd, doMouseHover, getBlockModification_val, getLastMode, getSelectedViewMode } from "./index.js";
 import { lightingClearLifeSquarePositionMap } from "./lighting.js";
-import { renderClouds, renderTemperature, renderWaterSaturation, restingValues, tickMaps } from "./temperatureHumidity.js";
-import { doTimeSeek, getTimeScale, renderTime, updateTime } from "./time.js";
+import { initTemperatureHumidity, renderClouds, renderTemperature, renderWaterSaturation, restingValues, tickMaps } from "./temperatureHumidity.js";
+import { doTimeSeek, getTimeScale, initializeStarMap, renderTime, updateTime } from "./time.js";
 import { weather } from "./weather.js";
-import { renderWindPressureMap, tickWindPressureMap } from "./wind.js";
+import { initializeWindPressureMap, renderWindPressureMap, tickWindPressureMap } from "./wind.js";
 
 const SQUARE_UPDATE_MILLIS = 0;
 const ORG_UPDATE_MILLIS = 0;
@@ -13,12 +13,16 @@ let last_square_tick = 0;
 let last_org_tick = 0;
 
 let updated = false;
+let firstTime = true;
 
 export function triggerEarlySquareScheduler() {
     last_square_tick = 0;
 }
 
 export function scheduler_main() {
+    if (firstTime) {
+        init();
+    }
     updateTime();
     doMouseHover();
     doClickAdd();
@@ -40,10 +44,14 @@ export function scheduler_main() {
         render();
         updated = false;
     }
-
     setTimeout(scheduler_main, 0);
 }
 
+function init() {
+    initTemperatureHumidity();
+    initializeWindPressureMap();
+    initializeStarMap();
+}
 
 function render() {
     var selectedViewMode = getSelectedViewMode();

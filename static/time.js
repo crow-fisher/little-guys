@@ -166,6 +166,10 @@ export function getTimeScale() {
     return TIME_SCALE;
 }
 
+export function timeScaleFactor() {
+    return (105 - (Math.min(100, getCurTimeScale())));;
+}
+
 function updateTime() {
     var dt = Date.now() - prevRealTime;
     if (dt > 10000) {

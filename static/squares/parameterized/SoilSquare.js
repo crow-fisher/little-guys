@@ -5,9 +5,9 @@ import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount } fr
 import { getNeighbors, getSquares } from "../_sqOperations.js";
 import { hexToRgb, rgbToHex, rgbToRgba } from "../../common.js";
 import { addSquareByName, BASE_SIZE, MAIN_CONTEXT, selectedViewMode, zoomCanvasFillRect } from "../../index.js";
-import { getDaylightStrength } from "../../time.js";
+import { getDaylightStrength, timeScaleFactor } from "../../time.js";
 import { getAdjacentWindSquareToRealSquare, getWindSquareAbove } from "../../wind.js";
-import { addWaterSaturationPascals, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, timeScaleFactor, updateSquareTemperature } from "../../temperatureHumidity.js";
+import { addWaterSaturationPascals, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, updateSquareTemperature } from "../../temperatureHumidity.js";
 
 // maps in form "water containment" / "matric pressure in atmospheres"
 const clayMap = [
@@ -142,7 +142,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     initWaterContainment() {
-        this.waterContainment = this.getInverseMatricPressure(-2);
+        this.waterContainment = this.getInverseMatricPressure(0);
     }
 
 

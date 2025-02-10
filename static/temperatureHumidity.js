@@ -1,9 +1,9 @@
 import { hexToRgb, randNumber, rgbToRgba } from "./common.js";
 import { getSquares } from "./squares/_sqOperations.js";
-import { MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, zoomCanvasFillRect } from "./index.js";
+import { MAIN_CONTEXT, BASE_SIZE, zoomCanvasFillRect } from "./index.js";
 import { addSquareByName } from "./index.js";
-import { getPressure, updateWindPressureByMult, getAirSquareDensityTempAndHumidity, setPressurebyMult } from "./wind.js";
-import { getCurTime, getCurTimeScale, getPrevTime } from "./time.js";
+import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds } from "./wind.js";
+import { getCurTimeScale, timeScaleFactor } from "./time.js";
 import { logRainFall } from "./weather.js";
 
 
@@ -11,37 +11,6 @@ import { logRainFall } from "./weather.js";
 
 var temperatureMap;
 var waterSaturationMap;
-
-export function setTemperatureMap(inMap) {
-    temperatureMap = inMap;
-}
-export function setWaterSaturationMap(inMap) {
-    waterSaturationMap = inMap;
-}
-export function getTemperatureMap() {
-    return temperatureMap;
-}
-export function getWaterSaturationMap() {
-    return waterSaturationMap;
-}
-
-var curSquaresX = 0;
-var curSquaresY = 0;
-
-export function getWindSquaresX() {
-    return curSquaresX;
-}
-export function getWindSquaresY() {
-    return curSquaresY;
-}
-
-var start_temperature = 273 + 20;
-
-var air_thermalConductivity = 0.024; // watts per meter kelvin
-var air_specificHeat = 1.005; // joules per gram degrees c 
-var air_atomicWeight = 28.96;
-var waterVapor_specificHeat = 1.9;  // ...
-var startHumidity = 0.5;
 
 var c_tempLowRGB = hexToRgb("#1dbde6");
 var c_tempHighRGB = hexToRgb("#f1515e");
@@ -57,6 +26,8 @@ var cloudRainThresh = 1.01;
 var cloudRainMax = 1.05;
 var cloudMaxOpacity = 0.65;
 
+var pascalsPerWaterSquare = (1.986 * 10 ** 6);
+
 var restingTemperatureGradient = [
     [0, 273 + 10],
     [1, 273 + 30]
@@ -69,6 +40,18 @@ var restingHumidityGradient = [
 var reverseRestingHumidityGradient = Array.from(restingHumidityGradient).reverse();
 var reverseRestingTemperatureGradient = Array.from(restingTemperatureGradient).reverse();
 
+export function setTemperatureMap(inMap) {
+    temperatureMap = inMap;
+}
+export function setWaterSaturationMap(inMap) {
+    waterSaturationMap = inMap;
+}
+export function getTemperatureMap() {
+    return temperatureMap;
+}
+export function getWaterSaturationMap() {
+    return waterSaturationMap;
+}
 
 export function setRestingTemperatureGradient(inGrad) {
     if (inGrad != restingTemperatureGradient) {
@@ -85,7 +68,7 @@ export function setRestingHumidityGradient(inGrad) {
 }
 
 function getRestingHumidityAtSq(x, y) {
-    y /= curSquaresY;
+    y /= getWindSquaresY();
     var lower = reverseRestingHumidityGradient.find((arr) => arr[0] <= y);
     var upper = restingHumidityGradient.find((arr) => arr[0] > y);
     var pos = (y - lower[0]) / (upper[0] - lower[0]);
@@ -93,7 +76,7 @@ function getRestingHumidityAtSq(x, y) {
 }
 
 function getRestingTemperatureAtSq(x, y) {
-    y /= curSquaresY;
+    y /= getWindSquaresY();
     var lower = reverseRestingTemperatureGradient.find((arr) => arr[0] <= y);
     var upper = restingTemperatureGradient.find((arr) => arr[0] > y);
     var pos = (y - lower[0]) / (upper[0] - lower[0]);
@@ -103,8 +86,8 @@ function getRestingTemperatureAtSq(x, y) {
 export function restingValues() {
     let applicationStrength = timeScaleFactor();
 
-    for (let i = 0; i < curSquaresX; i++) {
-        for (let j = 0; j < curSquaresY; j++) {
+    for (let i = 0; i < getWindSquaresX(); i++) {
+        for (let j = 0; j < getWindSquaresY(); j++) {
             var curTemp = temperatureMap[i][j];
             var restingTemp = getRestingTemperatureAtSq(i, j);
             var diffTemp = restingTemp - curTemp;
@@ -122,97 +105,46 @@ export function restingValues() {
     }
 }
 
-
-/*
-1 meter water 
-55345 moles of water in 1 meter cubed
-44.64 mols per liter at 1 atm
-55345 / 64 = 875 moles per meter cubed gas
-times 4 cubed, because one air square is 4*4*4 normal squares
-*/
-var pascalsPerWaterSquare = (1.986 * 10 ** 6);
-
-// https://www.engineeringtoolbox.com/water-vapor-saturation-pressure-air-d_689.html
 function saturationPressureOfWaterVapor(t) {
+    // https://www.engineeringtoolbox.com/water-vapor-saturation-pressure-air-d_689.html
     return Math.E ** (77.345 + 0.0057 * t - 7235 / t) / (t ** 8.2);
 }
 
-function getTemperatureAtWindSquare(x, y) {
-    if (temperatureMap == null) {
-        init();
-    }
+export function getTemperatureAtWindSquare(x, y) {
     return temperatureMap[x][y];
 }
 
-function getTemperatureAtSquare(x, y) {
-    x /= 4;
-    y /= 4;
-
-    x = Math.floor(x);
-    y = Math.floor(y);
-
-    if (!isPointInWindBounds(x, y)) {
-        return 273;
-    }
-
-    return temperatureMap[x][y];
-}
-
-function applySquareTemperatureDelta(x, y, val) {
-    x /= 4;
-    y /= 4;
-
-    x = Math.floor(x);
-    y = Math.floor(y);
-
-    if (!isPointInWindBounds(x, y)) {
-        return 0;
-    }
-    updateSquareTemperature(x, y, temperatureMap[x][y] + val)
-}
-
-function init() {
+export function initTemperatureHumidity() {
     temperatureMap = new Map();
     waterSaturationMap = new Map();
-    curSquaresX = Math.ceil(CANVAS_SQUARES_X / 4);
-    curSquaresY = Math.ceil(CANVAS_SQUARES_Y / 4);
 
-    var start_watersaturation = saturationPressureOfWaterVapor(start_temperature) * startHumidity;
-
-    for (let i = 0; i < curSquaresX; i++) {
-        for (let j = 0; j < curSquaresY; j++) {
+    for (let i = 0; i < getWindSquaresX(); i++) {
+        for (let j = 0; j < getWindSquaresY(); j++) {
             if (!(i in temperatureMap)) {
                 temperatureMap[i] = new Map();
                 waterSaturationMap[i] = new Map();
             }
-            temperatureMap[i][j] = start_temperature;
-            waterSaturationMap[i][j] = start_watersaturation;
+            temperatureMap[i][j] = getRestingTemperatureAtSq(i, j);
+            waterSaturationMap[i][j] = saturationPressureOfWaterVapor(temperatureMap[i][j]) * getRestingHumidityAtSq(i, j);
         }
     }
 }
 
-function updateSquareTemperature(x, y, newVal) {
+function updateWindSquareTemperature(x, y, newVal) {
     if (getPressure(x, y) < 0) {
         return;
-    }
-    if (temperatureMap == null) {
-        init();
     }
     if (isNaN(newVal) || !isFinite(newVal)) {
         console.warn("Trying to set invalid temperature ", newVal);
         newVal = 273;
     }
-    newVal = Math.max(newVal, 10);
-    newVal = Math.min(newVal, start_temperature * 2);
     var start = temperatureMap[x][y];
     temperatureMap[x][y] = newVal;
     var end = temperatureMap[x][y];
     setPressurebyMult(x, y, (end / start));
 }
  
-export function timeScaleFactor() {
-    return (105 - (Math.min(100, getCurTimeScale())));;
-}
+
 
 function temperatureDiffFunction(x, y, x2, y2, high, low) {
     if (getPressure(x, y) < 0) {
@@ -300,7 +232,7 @@ function tickMap(
 
 function getAdjacentProp(x, y, func) {
     return func(x, y) + getMapDirectNeighbors(x, y)
-    .filter((loc) => loc[0] >= 0 && loc[0] < curSquaresX && loc[1] >= 0 && loc[1] < curSquaresY)
+    .filter((loc) => loc[0] >= 0 && loc[0] < getWindSquaresX() && loc[1] >= 0 && loc[1] < getWindSquaresY())
     .map((loc) => func(loc[0], loc[1]))
     .reduce(
         (accumulator, currentValue) => accumulator + currentValue,
@@ -309,8 +241,8 @@ function getAdjacentProp(x, y, func) {
 }
 
 function doRain() {
-    for (let x = 0; x < curSquaresX; x++) {
-        for (let y = 0; y < curSquaresY; y++) {
+    for (let x = 0; x < getWindSquaresX(); x++) {
+        for (let y = 0; y < getWindSquaresY(); y++) {
             if (getAdjacentProp(x, y, (x, y) => (getHumidity(x, y) > cloudRainThresh ? 1 : 0)) < 5) {
                 continue;
             };
@@ -339,7 +271,7 @@ function doRain() {
                 logRainFall(sq.blockHealth);
                 waterSaturationMap[x][y] -= usedWaterPascalsPerSquare;
                 getMapDirectNeighbors(x, y)
-                    .filter((loc) => loc[0] >= 0 && loc[0] < curSquaresX && loc[1] >= 0 && loc[1] < curSquaresY)
+                    .filter((loc) => loc[0] >= 0 && loc[0] < getWindSquaresX() && loc[1] >= 0 && loc[1] < getWindSquaresY())
                     .forEach((loc) => waterSaturationMap[loc[0]][loc[1]] -= usedWaterPascalsPerSquare);
             }
         }
@@ -347,8 +279,8 @@ function doRain() {
 }
 
 function renderClouds() {
-    for (let i = 0; i < curSquaresX; i++) {
-        for (let j = 0; j < curSquaresY; j++) {
+    for (let i = 0; i < getWindSquaresX(); i++) {
+        for (let j = 0; j < getWindSquaresY(); j++) {
             if (getPressure(i, j) < 0) {
                 continue;
             }
@@ -373,10 +305,7 @@ function renderClouds() {
 }
 
 function tickMaps() {
-    if (temperatureMap == null || waterSaturationMap == null) {
-        init();
-    }
-    tickMap(temperatureMap, temperatureDiffFunction, updateSquareTemperature);
+    tickMap(temperatureMap, temperatureDiffFunction, updateWindSquareTemperature);
     tickMap(waterSaturationMap, humidityDiffFunction, (x, y, v) => {
         if (v < 0) {
             console.warn("V is less than zero in tickMap!");
@@ -394,14 +323,6 @@ export function getHumidity(x, y) {
 }
 
 function getWaterSaturation(x, y) {
-    if (waterSaturationMap == null) {
-        init();
-    }
-    var ret = waterSaturationMap[x][y];
-    if (ret < 0) {
-        console.warn("Tried to return water saturation below zero: ", ret, x, y);
-        resetTemperatureAndHumidityAtSquare(x, y);
-    }
     return waterSaturationMap[x][y];
 }
 
@@ -443,8 +364,8 @@ function calculateColorProvideOpacity(val, valMin, valMax, colorMin, colorMax, o
 }
 
 function renderTemperature() {
-    for (let i = 0; i < curSquaresX; i++) {
-        for (let j = 0; j < curSquaresY; j++) {
+    for (let i = 0; i < getWindSquaresX(); i++) {
+        for (let j = 0; j < getWindSquaresY(); j++) {
             MAIN_CONTEXT.fillStyle = calculateColorTemperature(temperatureMap[i][j]);
             zoomCanvasFillRect(
                 4 * i * BASE_SIZE,
@@ -457,12 +378,12 @@ function renderTemperature() {
 }
 
 function renderWaterSaturation() {
-    for (let i = 0; i < curSquaresX; i++) {
-        for (let j = 0; j < curSquaresY; j++) {
+    for (let i = 0; i < getWindSquaresX(); i++) {
+        for (let j = 0; j < getWindSquaresY(); j++) {
             if (getPressure(i, j) <= 0) {
                 continue;
             }
-            MAIN_CONTEXT.fillStyle = calculateColor(getHumidity(i, j), 0.5, 1.5, c_waterSaturationLowRGB, c_waterSaturationHighRGB);
+            MAIN_CONTEXT.fillStyle = calculateColor(getHumidity(i, j), 1, 1.1, c_waterSaturationLowRGB, c_waterSaturationHighRGB);
             zoomCanvasFillRect(
                 4 * i * BASE_SIZE,
                 4 * j * BASE_SIZE,
@@ -482,14 +403,7 @@ function getMapDirectNeighbors(x, y) {
     ]
 }
 
-export function isPointInWindBounds(x, y) {
-    return x >= 0 && x < curSquaresX && y >= 0 && y < curSquaresY;
-}
 
-function resetTemperatureAndHumidityAtSquare(x, y) {
-    temperatureMap[x][y] = start_temperature;
-    waterSaturationMap[x][y] = 0;
-}
 
 function doFunctionOnRealSquares(x, y, func) {
     for (let i = 0; i < 4; i++) {
@@ -508,7 +422,7 @@ function addTemperature(x, y, delta) {
     }
 
     var startTemp = temperatureMap[x][y];
-    updateSquareTemperature(x, y, Math.max(temperatureMap[x][y] + delta, 0.1));
+    updateWindSquareTemperature(x, y, Math.max(temperatureMap[x][y] + delta, 0.1));
     var endTemp = temperatureMap[x][y];
 
     doFunctionOnRealSquares(x, y, (sq) => {
@@ -548,10 +462,10 @@ function addWaterSaturation(x, y) {
 }
 
 function _addWaterSaturation(x, y) {
-    x = (Math.floor(x) + curSquaresX) % curSquaresX;
-    y = (Math.floor(y) + curSquaresY) % curSquaresY;
+    x = (Math.floor(x) + getWindSquaresX()) % getWindSquaresX();
+    y = (Math.floor(y) + getWindSquaresY()) % getWindSquaresY();
     waterSaturationMap[x][y] += 0.10 * saturationPressureOfWaterVapor(temperatureMap[x][y]);
 }
 
 
-export { calculateColorProvideOpacity, pascalsPerWaterSquare, cloudRainThresh, calculateColor, calculateColorTemperature, addWaterSaturationPascals, addWaterSaturationPascalsSqCoords, saturationPressureOfWaterVapor, resetTemperatureAndHumidityAtSquare, getWaterSaturation, getTemperatureAtWindSquare, updateSquareTemperature, applySquareTemperatureDelta, renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds, getTemperatureAtSquare }
+export { calculateColorProvideOpacity, pascalsPerWaterSquare, cloudRainThresh, calculateColor, calculateColorTemperature, addWaterSaturationPascals, addWaterSaturationPascalsSqCoords, saturationPressureOfWaterVapor, getWaterSaturation, updateWindSquareTemperature as updateSquareTemperature, renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds }

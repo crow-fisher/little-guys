@@ -23,10 +23,10 @@ import { removeSquare } from "../globalOperations.js";
 import { removeOrganismSquare } from "./_sqOperations.js";
 import { removeOrganism } from "../organisms/_orgOperations.js";
 
-import { addWaterSaturationPascals, calculateColorTemperature, getTemperatureAtSquare, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, timeScaleFactor, updateSquareTemperature } from "../temperatureHumidity.js";
+import { calculateColorTemperature, getTemperatureAtWindSquare, updateSquareTemperature } from "../temperatureHumidity.js";
 import { getAdjacentWindSquareToRealSquare, getWindSquareAbove } from "../wind.js";
-import { COLOR_RED, RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
-import { getCurDay, getCurTimeScale, getTimeScale } from "../time.js";
+import { RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
+import { getCurDay, timeScaleFactor } from "../time.js";
 
 export class BaseSquare {
     constructor(posX, posY) {
@@ -126,7 +126,7 @@ export class BaseSquare {
         if (x < 0 || y < 0) {
             return;
         }
-        this.temperature = getTemperatureAtSquare(x, y);
+        this.temperature = getTemperatureAtWindSquare(x, y);
 
         if (this.solid) {
             // hotfix for really annoying cloud bug
