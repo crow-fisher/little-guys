@@ -107,7 +107,7 @@ function spawnStratusCloud() {
 
 function spawnNimbusCloud() {
     ALL_CLOUDS.push(new Cloud(
-        randRange(-CANVAS_SQUARES_X/4, CANVAS_SQUARES_X * 0.5),
+        randRange(CANVAS_SQUARES_X/16, CANVAS_SQUARES_X * (0.75/4)),
         randRange(4, 6),
         randRange(12, 17), randRange(2, 4), 
         getCurDay() + 0.00001 * randRange(1, 30), .01 * randRange(2, 4), 
@@ -160,7 +160,6 @@ function rainyWeather() {
     if (ALL_CLOUDS.length > 5) {
         return;
     }
-    return;
     spawnNimbusCloud();
 }
 

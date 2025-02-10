@@ -23,10 +23,10 @@ import { removeSquare } from "../globalOperations.js";
 import { removeOrganismSquare } from "./_sqOperations.js";
 import { removeOrganism } from "../organisms/_orgOperations.js";
 
-import { addWaterSaturationPascals, calculateColorTemperature, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, updateSquareTemperature } from "../temperatureHumidity.js";
+import { addWaterSaturationPascals, calculateColorTemperature, getTemperatureAtSquare, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, timeScaleFactor, updateSquareTemperature } from "../temperatureHumidity.js";
 import { getWindSquareAbove } from "../wind.js";
 import { COLOR_RED, RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
-import { getCurDay } from "../time.js";
+import { getCurDay, getCurTimeScale, getTimeScale } from "../time.js";
 
 export class BaseSquare {
     constructor(posX, posY) {
@@ -126,7 +126,7 @@ export class BaseSquare {
         if (x < 0 || y < 0) {
             return;
         }
-        this.temperature = getTemperatureAtWindSquare(x, y);
+        this.temperature = getTemperatureAtSquare(x, y);
     }
 
     getSoilWaterPressure() { return -(10 ** 8); }
@@ -588,9 +588,9 @@ export class BaseSquare {
             .filter((sq) => sq.collision)
             .forEach((sq) => {
                 var diff = this.temperature - sq.temperature;
-                var diffSmall = diff / 10;
-                this.temperature -= diffSmall / this.thermalMass;
-                sq.temperature += diffSmall / sq.thermalMass;
+                diff /= timeScaleFactor();
+                this.temperature -= diff / this.thermalMass;
+                sq.temperature += diff / sq.thermalMass;
             })
     }
 

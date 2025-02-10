@@ -311,11 +311,11 @@ function getAdjacentProp(x, y, func) {
 function doRain() {
     for (let x = 0; x < curSquaresX; x++) {
         for (let y = 0; y < curSquaresY; y++) {
-            var adjacentHumidity = getAdjacentProp(x, y, getHumidity) / 5;
+            var adjacentHumidity = Math.max(cloudRainMax, getAdjacentProp(x, y, getHumidity) / 5);
             if (adjacentHumidity < (cloudRainThresh))
                 continue;
             var rainDropProbability = ((adjacentHumidity - cloudRainThresh) / (cloudRainMax - cloudRainThresh));
-            if (Math.random() < rainDropProbability) {
+            if (Math.random() > rainDropProbability) {
                 continue;
             }
 
