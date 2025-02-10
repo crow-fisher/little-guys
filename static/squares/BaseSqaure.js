@@ -127,6 +127,11 @@ export class BaseSquare {
             return;
         }
         this.temperature = getTemperatureAtSquare(x, y);
+
+        if (this.solid) {
+            // hotfix for really annoying cloud bug
+            this.temperature += 5;
+        }
     }
 
     getSoilWaterPressure() { return -(10 ** 8); }
