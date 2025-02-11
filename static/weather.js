@@ -161,7 +161,7 @@ function rainyWeather() {
     if (ALL_CLOUDS.length > 5) {
         return;
     }
-    // spawnNimbusCloud();
+    spawnNimbusCloud();
 }
 
 export function weather() {

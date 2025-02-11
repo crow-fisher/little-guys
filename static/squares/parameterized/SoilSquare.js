@@ -232,7 +232,7 @@ export class SoilSquare extends BaseSquare {
                 this.waterContainment -= diff;
                 sq.waterContainment += diff;
             });
-        // this.doBlockOutflow();
+        this.doBlockOutflow();
     }
 
     doBlockOutflow() {
