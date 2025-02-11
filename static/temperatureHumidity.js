@@ -84,8 +84,7 @@ function getRestingTemperatureAtSq(x, y) {
 }
 
 export function restingValues() {
-    let applicationStrength = timeScaleFactor();
-
+    let applicationStrength = 0.01 * timeScaleFactor();
     for (let i = 0; i < getWindSquaresX(); i++) {
         for (let j = 0; j < getWindSquaresY(); j++) {
             var curTemp = temperatureMap[i][j];
@@ -420,16 +419,18 @@ function addTemperature(x, y, delta) {
     if (!isPointInWindBounds(x, y)) {
         return;
     }
+    doFunctionOnRealSquares(x, y, (sq) => {
+        if (sq.collision) {
+            sq.temperature = Math.max(10, sq.temperature + delta * 10);
+        }
+    });
+    return;
 
     var startTemp = temperatureMap[x][y];
     updateWindSquareTemperature(x, y, Math.max(temperatureMap[x][y] + delta, 0.1));
     var endTemp = temperatureMap[x][y];
 
-    doFunctionOnRealSquares(x, y, (sq) => {
-        if (sq.collision) {
-            sq.temperature = Math.max(10, sq.temperature + delta);
-        }
-    });
+
 
     if (startTemp != endTemp) {
         var mult = (endTemp - startTemp) / 273;

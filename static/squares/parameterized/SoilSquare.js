@@ -332,7 +332,8 @@ export class SoilSquare extends BaseSquare {
         if (airWaterPressure > myVaporPressure) {
             return;
         }
-        var diff = (airWaterPressure - myVaporPressure) / 1000;
+        var diff = (myVaporPressure - airWaterPressure) / 10;
+        diff /= (this.getSoilWaterPressure()) ** 2;
         diff /= timeScaleFactor();
         var amount = Math.min(this.waterContainment, (diff / pascalsPerWaterSquare));
         this.waterContainment -= amount;
