@@ -108,9 +108,9 @@ function spawnStratusCloud() {
 
 function spawnNimbusCloud() {
     ALL_CLOUDS.push(new Cloud(
-        randRange(CANVAS_SQUARES_X/16, CANVAS_SQUARES_X * (0.75/4)),
+        randRange(-CANVAS_SQUARES_X/4, CANVAS_SQUARES_X*0.6),
         randRange(4, 6),
-        randRange(12, 17), randRange(2, 4), 
+        randRange(23, 35), randRange(3, 5), 
         getCurDay() + 0.00001 * randRange(1, 30), .01 * randRange(2, 4), 
         randRange(1.01, 1.05), 0.8));
 }
@@ -169,7 +169,6 @@ export function weather() {
     if (ALL_CLOUDS.some((cloud) => getCurDay() > cloud.startDay + cloud.duration)) {
         ALL_CLOUDS = Array.from(ALL_CLOUDS.filter((cloud) => getCurDay() < cloud.startDay + cloud.duration));
     }
-
     if (getCurDay() > curWeatherStartTime + curWeatherInterval) {
         if (curWeather == WEATHER_MOSTLYCLOUDY) {
             console.log("Starting rain...");
@@ -183,10 +182,7 @@ export function weather() {
             curWeatherStartTime = getCurDay();
         }
     }
-    rainyWeather();
-    return;
     switch (curWeather) {
-        
         case WEATHER_RAINY:
             rainyWeather();
             break;

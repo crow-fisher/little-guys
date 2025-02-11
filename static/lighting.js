@@ -48,7 +48,7 @@ export function createSunLightGroup() {
     let sunLightGroup = new MovingLinearLightGroup(
         CANVAS_SQUARES_X / 2,
         -1, 
-        CANVAS_SQUARES_X * 5,
+        CANVAS_SQUARES_X * 2,
         15,
         getCurrentLightColorTemperature, 
         () => .25 * getDaylightStrength(),
@@ -168,7 +168,7 @@ export class LightSource {
             let outLightColor = {r: 255, g: 255, b: 255};
             this.windSquareLocations[rayTheta].forEach((loc) => {
                 let windSquareCloudColor = getCloudColorAtPos(loc[0], loc[1]);
-                let opacity = windSquareCloudColor.a * 0.4;
+                let opacity = windSquareCloudColor.a * 0.1;
                 outLightColor.r *= (windSquareCloudColor.r / 255) * opacity + (1 - opacity)
                 outLightColor.g *= (windSquareCloudColor.g / 255) * opacity + (1 - opacity)
                 outLightColor.b *= (windSquareCloudColor.b / 255) * opacity + (1 - opacity)
@@ -202,15 +202,18 @@ export class LightSource {
             let c = this.colorFunc();
             let cc = this._windSquareColorMults[theta];
             if (cc == null) {
-                this.initWindSquareLocations();
                 this.calculateFrameCloudCover();
                 return this.getWindSquareColorFunc(theta);
             }
-            return {
+            var out = {
                 r: c.r / 255 * cc.r,
                 g: c.g / 255 * cc.g,
                 b: c.b / 255 * cc.b
             }
+            out.r = Math.max(c.r * 0.9, out.r);
+            out.g = Math.max(c.g * 0.9, out.g);
+            out.b = Math.max(c.b * 0.9, out.b);
+            return out;
         }
     }
     preprocessLifeSquares() {

@@ -114,7 +114,7 @@ export class BaseSquare {
 
     };
     lightFilterRate() {
-        return 0.0008;
+        return 0.0007;
     }
 
     initTemperature() {
