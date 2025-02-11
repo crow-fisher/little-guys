@@ -468,4 +468,4 @@ function _addWaterSaturation(x, y) {
 }
 
 
-export { calculateColorProvideOpacity, pascalsPerWaterSquare, cloudRainThresh, calculateColor, calculateColorTemperature, addWaterSaturationPascals, addWaterSaturationPascalsSqCoords, saturationPressureOfWaterVapor, getWaterSaturation, updateWindSquareTemperature as updateSquareTemperature, renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds }
+export { calculateColorProvideOpacity, pascalsPerWaterSquare, cloudRainThresh, calculateColor, calculateColorTemperature, addWaterSaturationPascals, addWaterSaturationPascalsSqCoords, saturationPressureOfWaterVapor, getWaterSaturation, updateWindSquareTemperature, renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds }

@@ -23,7 +23,7 @@ import { removeSquare } from "../globalOperations.js";
 import { removeOrganismSquare } from "./_sqOperations.js";
 import { removeOrganism } from "../organisms/_orgOperations.js";
 
-import { calculateColorTemperature, getTemperatureAtWindSquare, updateSquareTemperature } from "../temperatureHumidity.js";
+import { calculateColorTemperature, getTemperatureAtWindSquare, updateWindSquareTemperature } from "../temperatureHumidity.js";
 import { getAdjacentWindSquareToRealSquare, getWindSquareAbove } from "../wind.js";
 import { RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
 import { getCurDay, timeScaleFactor } from "../time.js";
@@ -158,10 +158,14 @@ export class BaseSquare {
         }
 
         var adjacentTemp = getTemperatureAtWindSquare(x, y);
+        if (isNaN(adjacentTemp)) {
+            console.warn('adjacent temp is nan');
+        }
         var diff = this.thermalConductivity * ((adjacentTemp - this.temperature));
         diff /= timeScaleFactor();
+        diff /= (1 + this.currentPressureDirect);
         this.temperature += diff / this.thermalMass;
-        updateSquareTemperature(x, y, getTemperatureAtWindSquare(x, y) - diff);
+        updateWindSquareTemperature(x, y, getTemperatureAtWindSquare(x, y) - diff);
     }
 
     waterEvaporationRoutine() {
@@ -480,11 +484,7 @@ export class BaseSquare {
 
     percolateInnerMoisture() { }
 
-    physics() {
-        this.percolateInnerMoisture();
-        this.waterEvaporationRoutine();
-        this.temperatureRoutine();
-        this.transferHeat();
+    gravityPhysics() {
         if (!this.physicsEnabled || this.linkedOrganismSquares.some((sq) => sq.type == "root")) {
             return false;
         }
@@ -493,7 +493,6 @@ export class BaseSquare {
             return;
         }
 
-        this.waterSinkPhysics();
         if (this.gravity == 0) {
             return;
         }
@@ -529,8 +528,15 @@ export class BaseSquare {
         if (finalXPos != this.posX | this.posY != finalYPos) {
             this.updatePosition(finalXPos, finalYPos);
         }
+    }
 
-        return true;
+    physics() {
+        this.percolateInnerMoisture();
+        this.waterEvaporationRoutine();
+        this.temperatureRoutine();
+        this.transferHeat();
+        this.waterSinkPhysics();
+        this.gravityPhysics();
     }
 
     waterSinkPhysics() {

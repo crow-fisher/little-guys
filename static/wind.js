@@ -2,7 +2,7 @@ import { hexToRgb, rgbToRgba } from "./common.js";
 import { getSquares } from "./squares/_sqOperations.js";
 import { MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, zoomCanvasFillRect } from "./index.js";
 import { initializeStarMap } from "./time.js";
-import { addWaterSaturationPascals, calculateColor, getTemperatureAtWindSquare, getWaterSaturation, initTemperatureHumidity, updateSquareTemperature } from "./temperatureHumidity.js";
+import { addWaterSaturationPascals, calculateColor, getTemperatureAtWindSquare, getWaterSaturation, initTemperatureHumidity, updateWindSquareTemperature } from "./temperatureHumidity.js";
 
 var windPressureMap;
 var windPressureMapByPressure;
@@ -247,7 +247,7 @@ function tickWindPressureMap() {
 
                             // if (Math.abs(plTemp - splTemp) > 1) 
                             //     console.log(x2, y2, splTemp, endSplTemp);
-                            updateSquareTemperature(x2, y2, endSplTemp);
+                            updateWindSquareTemperature(x2, y2, endSplTemp);
 
                             var plWaterPressure = getWaterSaturation(x, y);
                             var splWaterPressure = getWaterSaturation(x2, y2);

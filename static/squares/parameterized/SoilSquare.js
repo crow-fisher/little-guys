@@ -7,7 +7,7 @@ import { hexToRgb, rgbToHex, rgbToRgba } from "../../common.js";
 import { addSquareByName, BASE_SIZE, MAIN_CONTEXT, selectedViewMode, zoomCanvasFillRect } from "../../index.js";
 import { getDaylightStrength, timeScaleFactor } from "../../time.js";
 import { getAdjacentWindSquareToRealSquare, getWindSquareAbove } from "../../wind.js";
-import { addWaterSaturationPascals, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, updateSquareTemperature } from "../../temperatureHumidity.js";
+import { addWaterSaturationPascals, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, updateWindSquareTemperature } from "../../temperatureHumidity.js";
 
 // maps in form "water containment" / "matric pressure in atmospheres"
 const clayMap = [
@@ -142,7 +142,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     initWaterContainment() {
-        this.waterContainment = this.getInverseMatricPressure(0);
+        this.waterContainment = this.getInverseMatricPressure(-3);
     }
 
 
@@ -321,19 +321,18 @@ export class SoilSquare extends BaseSquare {
 
     waterEvaporationRoutine() {
         var adjacentWindSquare = getAdjacentWindSquareToRealSquare(this.posX, this.posY);
-
         var x = adjacentWindSquare[0];
         var y = adjacentWindSquare[1];
 
         if (x < 0 || y < 0) {
             return;
         }
-        var waterPascalsAbove = getWaterSaturation(x, y);
-        var vaporPressure = saturationPressureOfWaterVapor(this.temperature);
-        if (waterPascalsAbove > vaporPressure) {
+        var airWaterPressure = getWaterSaturation(x, y);
+        var myVaporPressure = saturationPressureOfWaterVapor(this.temperature);
+        if (airWaterPressure > myVaporPressure) {
             return;
         }
-        var diff = (waterPascalsAbove - vaporPressure) / this.getSoilWaterPressure();
+        var diff = (airWaterPressure - myVaporPressure) / 1000;
         diff /= timeScaleFactor();
         var amount = Math.min(this.waterContainment, (diff / pascalsPerWaterSquare));
         this.waterContainment -= amount;

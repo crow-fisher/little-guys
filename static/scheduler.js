@@ -22,6 +22,7 @@ export function triggerEarlySquareScheduler() {
 export function scheduler_main() {
     if (firstTime) {
         init();
+        firstTime = false;
     }
     updateTime();
     doMouseHover();
