@@ -440,6 +440,7 @@ export class BaseSquare {
         this.posY = newPosY;
         addSquare(this);
 
+        this.initTemperature();
         return true;
     }
 
