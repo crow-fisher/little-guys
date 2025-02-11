@@ -84,7 +84,7 @@ function getRestingTemperatureAtSq(x, y) {
 }
 
 export function restingValues() {
-    let applicationStrength = 0.01 * timeScaleFactor();
+    let applicationStrength = 100 * timeScaleFactor();
     for (let i = 0; i < getWindSquaresX(); i++) {
         for (let j = 0; j < getWindSquaresY(); j++) {
             var curTemp = temperatureMap[i][j];
@@ -426,12 +426,10 @@ function addTemperature(x, y, delta) {
     });
     return;
 
+    // wind square portion, this needs to get fractured into two methods
     var startTemp = temperatureMap[x][y];
     updateWindSquareTemperature(x, y, Math.max(temperatureMap[x][y] + delta, 0.1));
     var endTemp = temperatureMap[x][y];
-
-
-
     if (startTemp != endTemp) {
         var mult = (endTemp - startTemp) / 273;
         updateWindPressureByMult(x, y, (1 + mult));

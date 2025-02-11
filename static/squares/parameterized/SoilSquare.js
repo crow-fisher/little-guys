@@ -320,6 +320,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     waterEvaporationRoutine() {
+        return;
         var adjacentWindSquare = getAdjacentWindSquareToRealSquare(this.posX, this.posY);
         var x = adjacentWindSquare[0];
         var y = adjacentWindSquare[1];

@@ -158,9 +158,6 @@ export class BaseSquare {
         }
 
         var adjacentTemp = getTemperatureAtWindSquare(x, y);
-        if (isNaN(adjacentTemp)) {
-            console.warn('adjacent temp is nan');
-        }
         var diff = this.thermalConductivity * ((adjacentTemp - this.temperature));
         diff /= timeScaleFactor();
         diff /= (1 + this.currentPressureDirect);
