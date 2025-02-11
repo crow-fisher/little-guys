@@ -161,6 +161,9 @@ export class LightSource {
     calculateFrameCloudCover() {
         this._windSquareColorMults = new Map();
         let rayKeys = Object.keys(this.windSquareLocations);
+        if (rayKeys.length != this.numRays) {
+            this.initWindSquareLocations();
+        }
         rayKeys.forEach((rayTheta) => {
             let outLightColor = {r: 255, g: 255, b: 255};
             this.windSquareLocations[rayTheta].forEach((loc) => {
@@ -181,15 +184,13 @@ export class LightSource {
             for (let j = 0; j < getWindSquaresY(); j++) {
                 let relPosX = (i * 4) + 2 - this.posX;
                 let relPosY = (j * 4) + 2 - this.posY;
-                let iCopy = i;
-                let jCopy = j;
                 let sqTheta = Math.atan(relPosX / relPosY);
                 for (let theta = this.minTheta; theta < this.maxTheta; theta += thetaStep) {
                     if (!(theta in this.windSquareLocations)) {
                         this.windSquareLocations[theta] = new Array();
                     }
                     if (sqTheta > theta && sqTheta < (theta + thetaStep)) {
-                        this.windSquareLocations[theta].push([iCopy, jCopy]);
+                        this.windSquareLocations[theta].push([i, j]);
                     }
                 }
             }
@@ -288,10 +289,9 @@ export class LightSource {
                     }
                     list[loc[0]][loc[1]].forEach((obj) => {
                         let curBrightnessCopy = curBrightness;
-                        let curThetaCopy = theta;
                         let pointLightSourceFunc = () => (Math.max(0, MAX_BRIGHTNESS * this.brightnessFunc() + curBrightnessCopy)) / MAX_BRIGHTNESS;
                         if (obj.lighting[idx] == null)  {
-                            obj.lighting[idx] = [[pointLightSourceFunc], this.getWindSquareColorFunc(curThetaCopy)];
+                            obj.lighting[idx] = [[pointLightSourceFunc], this.getWindSquareColorFunc(theta)];
                         } else {
                             obj.lighting[idx][0].push(pointLightSourceFunc);
                         }
