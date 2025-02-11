@@ -291,9 +291,10 @@ export class LightSource {
                         let curBrightnessCopy = curBrightness;
                         let pointLightSourceFunc = () => (Math.max(0, MAX_BRIGHTNESS * this.brightnessFunc() + curBrightnessCopy)) / MAX_BRIGHTNESS;
                         if (obj.lighting[idx] == null)  {
-                            obj.lighting[idx] = [[pointLightSourceFunc], this.getWindSquareColorFunc(theta)];
+                            obj.lighting[idx] = [[pointLightSourceFunc], [this.getWindSquareColorFunc(theta)]];
                         } else {
                             obj.lighting[idx][0].push(pointLightSourceFunc);
+                            obj.lighting[idx][1].push(this.getWindSquareColorFunc(theta));
                         }
                         curBrightness -= obj.getLightFilterRate() * this.numRays;
                     });
