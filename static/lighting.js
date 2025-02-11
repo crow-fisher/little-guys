@@ -3,7 +3,9 @@ import { randNumber } from "./common.js";
 import { ALL_SQUARES, LIGHT_SOURCES } from "./globals.js";
 import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js";
 import { getSqIterationOrder, getSquares } from "./squares/_sqOperations.js";
+import { getCloudColorAtPos, getCloudColorAtSqPos } from "./temperatureHumidity.js";
 import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "./time.js";
+import { getWindSquaresX, getWindSquaresY } from "./wind.js";
 
 let lifeSquarePositions = new Map();
 
@@ -134,6 +136,10 @@ export class MovingLinearLightGroup {
     doRayCasting(idx) {
         this.lightSources.forEach((ls) => ls.doRayCasting(idx));
     }
+
+    preRender() {
+        this.lightSources.forEach((ls) => ls.calculateFrameCloudCover());
+    }
 }
 
 export class LightSource {
@@ -148,8 +154,64 @@ export class LightSource {
         this.numRays = numRays;
         this.frameLifeSquares = null;
         this.frameTerrainSquares = null;
+        this.windSquareLocations = new Map();
+        this._windSquareColorMults = new Map();
     }
 
+    calculateFrameCloudCover() {
+        this._windSquareColorMults = new Map();
+        let rayKeys = Object.keys(this.windSquareLocations);
+        rayKeys.forEach((rayTheta) => {
+            let outLightColor = {r: 255, g: 255, b: 255};
+            this.windSquareLocations[rayTheta].forEach((loc) => {
+                let windSquareCloudColor = getCloudColorAtPos(loc[0], loc[1]);
+                let opacity = windSquareCloudColor.a;
+                outLightColor.r *=(((windSquareCloudColor.r) * opacity + (255 * (1 - opacity)))) / 255; 
+                outLightColor.g *=(((windSquareCloudColor.g) * opacity + (255 * (1 - opacity)))) / 255; 
+                outLightColor.b *=(((windSquareCloudColor.b) * opacity + (255 * (1 - opacity)))) / 255;
+            });
+            this._windSquareColorMults[rayTheta] = outLightColor;
+        });
+    }
+
+    initWindSquareLocations() {
+        this.windSquareLocations = new Map();
+        let thetaStep = (this.maxTheta - this.minTheta) / this.numRays;
+        for (let i = 0; i < getWindSquaresX(); i++) {
+            for (let j = 0; j < getWindSquaresY(); j++) {
+                let relPosX = (i * 4) + 2 - this.posX;
+                let relPosY = (j * 4) + 2 - this.posY;
+                let iCopy = i;
+                let jCopy = j;
+                let sqTheta = Math.atan(relPosX / relPosY);
+                for (let theta = this.minTheta; theta < this.maxTheta; theta += thetaStep) {
+                    if (!(theta in this.windSquareLocations)) {
+                        this.windSquareLocations[theta] = new Array();
+                    }
+                    if (sqTheta > theta && sqTheta < (theta + thetaStep)) {
+                        this.windSquareLocations[theta].push([iCopy, jCopy]);
+                    }
+                }
+            }
+        }
+    }
+
+    getWindSquareColorFunc(theta) {
+        return () => {
+            let c = this.colorFunc();
+            let cc = this._windSquareColorMults[theta];
+            if (cc == null) {
+                this.initWindSquareLocations();
+                this.calculateFrameCloudCover();
+                return this.getWindSquareColorFunc(theta);
+            }
+            return {
+                r: c.r / 255 * cc.r,
+                g: c.g / 255 * cc.g,
+                b: c.b / 255 * cc.b
+            }
+        }
+    }
     preprocessLifeSquares() {
         this.frameLifeSquares = new Map();
         let posXKeys = Object.keys(lifeSquarePositions);
@@ -192,7 +254,7 @@ export class LightSource {
 
     doRayCasting(idx) {
         this.preprocessLifeSquares();
-        this.preprocessTerrainSquares();
+        this.preprocessTerrainSquares();    
         let targetLists = [this.frameTerrainSquares, this.frameLifeSquares];
         let thetaStep = (this.maxTheta - this.minTheta) / this.numRays;
 
@@ -226,9 +288,10 @@ export class LightSource {
                     }
                     list[loc[0]][loc[1]].forEach((obj) => {
                         let curBrightnessCopy = curBrightness;
+                        let curThetaCopy = theta;
                         let pointLightSourceFunc = () => (Math.max(0, MAX_BRIGHTNESS * this.brightnessFunc() + curBrightnessCopy)) / MAX_BRIGHTNESS;
                         if (obj.lighting[idx] == null)  {
-                            obj.lighting[idx] = [[pointLightSourceFunc], this.colorFunc];
+                            obj.lighting[idx] = [[pointLightSourceFunc], this.getWindSquareColorFunc(curThetaCopy)];
                         } else {
                             obj.lighting[idx][0].push(pointLightSourceFunc);
                         }

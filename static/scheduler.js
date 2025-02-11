@@ -1,4 +1,5 @@
-import { doLightSourceRaycasting, doWaterFlow, physics, processOrganisms, purge, renderOrganisms, renderSquares, renderWater, reset } from "./globalOperations.js";
+import { doLightSourceRaycasting, doWaterFlow, lightingPreRender, physics, processOrganisms, purge, renderOrganisms, renderSquares, renderWater, reset } from "./globalOperations.js";
+import { LIGHT_SOURCES } from "./globals.js";
 import { doClickAdd, doMouseHover, getBlockModification_val, getLastMode, getSelectedViewMode } from "./index.js";
 import { lightingClearLifeSquarePositionMap } from "./lighting.js";
 import { initTemperatureHumidity, renderClouds, renderTemperature, renderWaterSaturation, restingValues, tickMaps } from "./temperatureHumidity.js";
@@ -54,6 +55,10 @@ function init() {
     initializeStarMap();
 }
 
+function preRender() {
+    lightingPreRender();
+}
+
 function render() {
     var selectedViewMode = getSelectedViewMode();
     var lastMode = getLastMode();
@@ -71,6 +76,7 @@ function render() {
         renderWaterSaturation();
     }
 
+    preRender();
     doLightSourceRaycasting();
     renderSquares();
     renderWater();
@@ -82,6 +88,8 @@ function render() {
     }
 
 }
+
+
 
 function windMapsTick() {
     weather();

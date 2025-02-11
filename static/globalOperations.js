@@ -47,6 +47,10 @@ function doLightSourceRaycasting() {
     lastLightingUpdateDay = getCurDay();
 }
 
+export function lightingPreRender() {
+    LIGHT_SOURCES.forEach((ls) => ls.preRender());
+}
+
 var frame_squares = null;
 var frame_organic_squares = null;
 var frame_inorganic_squares = null;

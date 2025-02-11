@@ -276,21 +276,41 @@ function doRain() {
     }
 }
 
+export function getCloudColorAtSqPos(x, y) {
+    var x = Math.floor(x / 4);
+    var y = Math.floor(y / 4);
+    return getCloudColorAtPos(x, y);
+}
+
+export function getCloudColorAtPos(x, y) {
+    if (!isPointInWindBounds(x, y)) {
+        return {r: 255, g: 255, b: 255, a: 0};
+    }
+    var squareHumidity = getHumidity(x, y);
+    if (squareHumidity < 1) {
+        return {r: 255, g: 255, b: 255, a: 0};
+    }
+    var outColor;
+    var opacity;
+    if (squareHumidity < (1 * cloudRainThresh)) {
+        outColor = calculateColorRGB(squareHumidity, 1, cloudRainThresh, c_cloudMinRGB, c_cloudMidRGB);
+        opacity = (squareHumidity - 1) / (cloudRainThresh - 1);
+    } else {
+        outColor = calculateColorRGB(squareHumidity, cloudRainThresh, cloudRainMax, c_cloudMidRGB, c_cloudMaxRGB);
+        opacity = 1;
+    }
+    outColor.a = opacity * 0.7;
+    return outColor;
+}
+
 function renderClouds() {
     for (let i = 0; i < getWindSquaresX(); i++) {
         for (let j = 0; j < getWindSquaresY(); j++) {
             if (getPressure(i, j) < 0) {
                 continue;
             }
-            var squareHumidity = getHumidity(i, j);
-            if (squareHumidity < 1) {
-                continue;
-            }
-            if (squareHumidity < (1 * cloudRainThresh)) {
-                MAIN_CONTEXT.fillStyle = calculateColorOpacity(squareHumidity, 1, cloudRainThresh, c_cloudMinRGB, c_cloudMidRGB);
-            } else {
-                MAIN_CONTEXT.fillStyle = calculateColor(squareHumidity, cloudRainThresh, cloudRainMax, c_cloudMidRGB, c_cloudMaxRGB);
-            }
+            var cloudColorRGBA = getCloudColorAtPos(i, j);
+            MAIN_CONTEXT.fillStyle = rgbToRgba(cloudColorRGBA.r, cloudColorRGBA.b, cloudColorRGBA.g, cloudColorRGBA.a);
             zoomCanvasFillRect(
                 4 * i * BASE_SIZE,
                 4 * j * BASE_SIZE,
@@ -328,6 +348,15 @@ function calculateColorTemperature(val) {
     return calculateColor(val, 273, 273 + 70, c_tempLowRGB, c_tempHighRGB);
 }
 
+function calculateColorRGB(val, valMin, valMax, colorMin, colorMax) {
+    val = Math.min(val, valMax);
+    var normalized = (val - valMin) / (valMax - valMin);
+    return {
+        r: Math.floor(colorMax.r * normalized + colorMin.r * (1 - normalized)),
+        g: Math.floor(colorMax.g * normalized + colorMin.g * (1 - normalized)),
+        b: Math.floor(colorMax.b * normalized + colorMin.b * (1 - normalized))
+    }
+}
 
 function calculateColor(val, valMin, valMax, colorMin, colorMax) {
     val = Math.min(val, valMax);
@@ -337,16 +366,6 @@ function calculateColor(val, valMin, valMax, colorMin, colorMax) {
         Math.floor(colorMax.g * normalized + colorMin.g * (1 - normalized)),
         Math.floor(colorMax.b * normalized + colorMin.b * (1 - normalized)),
         cloudMaxOpacity
-    );
-}
-
-function calculateColorOpacity(val, valMin, valMax, colorMin, colorMax) {
-    var normalized = Math.max(Math.min(1, (val - valMin) / (valMax - valMin)), 0);
-    return rgbToRgba(
-        Math.floor(colorMax.r * normalized + colorMin.r * (1 - normalized)),
-        Math.floor(colorMax.g * normalized + colorMin.g * (1 - normalized)),
-        Math.floor(colorMax.b * normalized + colorMin.b * (1 - normalized)),
-        normalized * cloudMaxOpacity
     );
 }
 
@@ -450,7 +469,7 @@ function addWaterSaturationPascalsSqCoords(x, y, pascals) {
 
 function addWaterSaturationPascals(x, y, pascals) {
     var end = waterSaturationMap[x][y] + pascals;
-    end = Math.max(0, end);
+    end = Math.max(10, end);
     waterSaturationMap[x][y] = end;
 }
 
@@ -463,6 +482,7 @@ function _addWaterSaturation(x, y) {
     x = (Math.floor(x) + getWindSquaresX()) % getWindSquaresX();
     y = (Math.floor(y) + getWindSquaresY()) % getWindSquaresY();
     waterSaturationMap[x][y] += 0.10 * saturationPressureOfWaterVapor(temperatureMap[x][y]);
+    waterSaturationMap[x][y] = Math.min(waterSaturationMap[x][y], 10);
 }
 
 
