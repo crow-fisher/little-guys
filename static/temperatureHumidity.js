@@ -99,7 +99,6 @@ export function restingValues() {
             var curTempPascals = saturationPressureOfWaterVapor(temperatureMap[i][j]);
             var targetTempPascals = saturationPressureOfWaterVapor(restingTemp);
             waterSaturationMap[i][j] += diffHumidity * Math.min(curTempPascals, targetTempPascals) / applicationStrength;
-
         }
     }
 }
