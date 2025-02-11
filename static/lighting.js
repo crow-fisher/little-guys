@@ -155,13 +155,13 @@ export class LightSource {
         this.frameLifeSquares = null;
         this.frameTerrainSquares = null;
         this.windSquareLocations = new Map();
-        this._windSquareColorMults = new Map();
+        this.windSquareBrigthnessMults = new Map();
     }
 
     calculateFrameCloudCover() {
-        this._windSquareColorMults = new Map();
+        this.windSquareBrigthnessMults = new Map();
         let rayKeys = Object.keys(this.windSquareLocations);
-        if (rayKeys.length != this.numRays) {
+        if (rayKeys.length < (this.numRays - 1)) {
             this.initWindSquareLocations();
         }
         rayKeys.forEach((rayTheta) => {
@@ -173,7 +173,8 @@ export class LightSource {
                 outLightColor.g *= (windSquareCloudColor.g / 255) * opacity + (1 - opacity)
                 outLightColor.b *= (windSquareCloudColor.b / 255) * opacity + (1 - opacity)
             });
-            this._windSquareColorMults[rayTheta] = outLightColor;
+            var brightnessDrop = (outLightColor.r + outLightColor.g + outLightColor.b) / (255 * 3);
+            this.windSquareBrigthnessMults[rayTheta] = brightnessDrop ** 8;
         });
     }
 
@@ -197,23 +198,14 @@ export class LightSource {
         }
     }
 
-    getWindSquareColorFunc(theta) {
+    getWindSquareBrightnessFunc(theta) {
         return () => {
-            let c = this.colorFunc();
-            let cc = this._windSquareColorMults[theta];
-            if (cc == null) {
+            let ret = this.windSquareBrigthnessMults[theta];
+            if (ret == null) {
                 this.calculateFrameCloudCover();
-                return this.getWindSquareColorFunc(theta);
+                return this.getWindSquareBrightnessFunc(theta);
             }
-            var out = {
-                r: c.r / 255 * cc.r,
-                g: c.g / 255 * cc.g,
-                b: c.b / 255 * cc.b
-            }
-            out.r = Math.max(c.r * 0.9, out.r);
-            out.g = Math.max(c.g * 0.9, out.g);
-            out.b = Math.max(c.b * 0.9, out.b);
-            return out;
+            return ret;
         }
     }
     preprocessLifeSquares() {
@@ -292,12 +284,11 @@ export class LightSource {
                     }
                     list[loc[0]][loc[1]].forEach((obj) => {
                         let curBrightnessCopy = curBrightness;
-                        let pointLightSourceFunc = () => (Math.max(0, MAX_BRIGHTNESS * this.brightnessFunc() + curBrightnessCopy)) / MAX_BRIGHTNESS;
+                        let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(theta)() * (Math.max(0, MAX_BRIGHTNESS * this.brightnessFunc() + curBrightnessCopy)) / MAX_BRIGHTNESS;
                         if (obj.lighting[idx] == null)  {
-                            obj.lighting[idx] = [[pointLightSourceFunc], [this.getWindSquareColorFunc(theta)]];
+                            obj.lighting[idx] = [[pointLightSourceFunc], this.colorFunc];
                         } else {
                             obj.lighting[idx][0].push(pointLightSourceFunc);
-                            obj.lighting[idx][1].push(this.getWindSquareColorFunc(theta));
                         }
                         curBrightness -= obj.getLightFilterRate() * this.numRays;
                     });

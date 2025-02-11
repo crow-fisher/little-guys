@@ -153,16 +153,7 @@ function processLighting(lightingMap) {
             (accumulator, currentValue) => accumulator + currentValue,
             0,
         );
-        var color = light[1].map((f) => f()).reduce(
-            (accumulator, currentValue) => {
-                return {
-                    r: accumulator.r * (currentValue.r / 255),
-                    g: accumulator.g * (currentValue.g / 255),
-                    b: accumulator.b * (currentValue.b / 255)
-                }
-            }, 
-            {r: 255, g: 255, b: 255}
-        );
+        var color = light[1]();
         outColor = {
             r: Math.min(255, outColor.r + strength * color.r),
             g: Math.min(255, outColor.g + strength * color.g),
