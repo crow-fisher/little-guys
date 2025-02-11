@@ -168,10 +168,10 @@ export class LightSource {
             let outLightColor = {r: 255, g: 255, b: 255};
             this.windSquareLocations[rayTheta].forEach((loc) => {
                 let windSquareCloudColor = getCloudColorAtPos(loc[0], loc[1]);
-                let opacity = windSquareCloudColor.a;
-                outLightColor.r *=(((windSquareCloudColor.r) * opacity + (255 * (1 - opacity)))) / 255; 
-                outLightColor.g *=(((windSquareCloudColor.g) * opacity + (255 * (1 - opacity)))) / 255; 
-                outLightColor.b *=(((windSquareCloudColor.b) * opacity + (255 * (1 - opacity)))) / 255;
+                let opacity = windSquareCloudColor.a * 0.4;
+                outLightColor.r *= (windSquareCloudColor.r / 255) * opacity + (1 - opacity)
+                outLightColor.g *= (windSquareCloudColor.g / 255) * opacity + (1 - opacity)
+                outLightColor.b *= (windSquareCloudColor.b / 255) * opacity + (1 - opacity)
             });
             this._windSquareColorMults[rayTheta] = outLightColor;
         });
