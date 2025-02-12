@@ -70,12 +70,12 @@ export function createSunLightGroup() {
 
 export function createMoonLightGroup() {
     let moonLightGroup = new MovingLinearLightGroup(
-        1000,
-        -1000, 
-        1,
-        1,
+        CANVAS_SQUARES_X / 2,
+        -CANVAS_SQUARES_Y, 
+        100,
+        7,
         getMoonlightColor, 
-        () => 0.35,
+        () => sunBrightness * 0.5,
         () => 0.5
     );
     return moonLightGroup;

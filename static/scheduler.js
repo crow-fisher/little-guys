@@ -1,4 +1,4 @@
-import { doLightSourceRaycasting, doWaterFlow, lightingPreRender, physics, processOrganisms, purge, renderOrganisms, renderSquares, reset } from "./globalOperations.js";
+import { doLightSourceRaycasting, doWaterFlow, lightingPreRender, physics, processOrganisms, purge, renderOrganisms, renderSolidSquares, renderSquares, renderWaterSquares, reset } from "./globalOperations.js";
 import { doClickAdd, doMouseHover, getBlockModification_val, getLastMode, getSelectedViewMode } from "./index.js";
 import { lightingClearLifeSquarePositionMap } from "./lighting.js";
 import { resetFrameDivMult } from "./lightingProcessing.js";
@@ -81,11 +81,11 @@ function render() {
     doLightSourceRaycasting();
     lightingClearLifeSquarePositionMap();
 
-
+    renderWaterSquares();
     if (selectedViewMode == "normal") {
         renderClouds();
     }
-    renderSquares();
+    renderSolidSquares();
     renderOrganisms();
 
 }
