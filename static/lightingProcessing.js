@@ -10,7 +10,7 @@ export function resetFrameDivMult() {
         (accumulator, currentValue) => accumulator + currentValue,
         0,
     ) / curFrameValues.length;
-    prevFrameDivMult = 0.99 + 0.01 * (mean + 0.7 * stdev);
+    prevFrameDivMult = 0.6 + 0.4 * (mean + 0.7 * stdev);
     curFrameValues = [1];
 }
 
