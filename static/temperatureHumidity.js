@@ -85,7 +85,8 @@ function getRestingTemperatureAtSq(x, y) {
 }
 
 export function restingValues() {
-    let applicationStrength = 1000 * timeScaleFactor();
+    let applicationStrength = 1 * timeScaleFactor();
+    // let applicationStrength = 1000 * timeScaleFactor();
     for (let i = 0; i < getWindSquaresX(); i++) {
         for (let j = 0; j < getWindSquaresY(); j++) {
             var curTemp = temperatureMap[i][j];
@@ -261,7 +262,7 @@ function doRain() {
             var dropPascals = (adjacentPascals - expectedPascals) * 0.25;
             var usedWaterPascalsPerSquare = dropPascals / 5;
             var dropHealth = dropPascals / pascalsPerWaterSquare;
-            dropHealth = Math.min(0.1, dropHealth * getCurTimeScale())
+            dropHealth /= timeScaleFactor();
 
             var sq = addSquareByName(x * 4 + randNumber(0, 3), y * 4 + randNumber(0, 3), "water");
             if (sq) {
@@ -467,7 +468,7 @@ function addTemperature(x, y, delta) {
     }
     doFunctionOnRealSquares(x, y, (sq) => {
         if (sq.collision) {
-            sq.temperature = Math.min(273 + 60, Math.max(10, sq.temperature + delta * 10));
+            sq.temperature = Math.min(273 + 100, Math.max(10, sq.temperature + delta * 10));
         }
     });
     return;
