@@ -266,6 +266,7 @@ function doRain() {
             if (sq) {
                 sq.blockHealth = dropHealth;
                 sq.temperature = temperatureMap[x][y];
+                sq.opacity *= 0.5;
                 logRainFall(sq.blockHealth);
                 waterSaturationMap[x][y] -= usedWaterPascalsPerSquare;
                 getMapDirectNeighbors(x, y)
@@ -292,7 +293,7 @@ export function getCloudColorAtPos(x, y) {
     }
     var outColor;
     var opacity;
-    if (squareHumidity < (1 * cloudRainThresh)) {
+    if (squareHumidity < (cloudRainThresh)) {
         outColor = calculateColorRGB(squareHumidity, 1, cloudRainThresh, c_cloudMinRGB, c_cloudMidRGB);
         opacity = (squareHumidity - 1) / (cloudRainThresh - 1);
     } else {
@@ -310,7 +311,7 @@ function renderClouds() {
                 continue;
             }
             var cloudColorRGBA = getCloudColorAtPos(i, j);
-            MAIN_CONTEXT.fillStyle = rgbToRgba(cloudColorRGBA.r, cloudColorRGBA.b, cloudColorRGBA.g, cloudColorRGBA.a);
+            MAIN_CONTEXT.fillStyle = rgbToRgba(cloudColorRGBA.r, cloudColorRGBA.g, cloudColorRGBA.b, cloudColorRGBA.a);
             zoomCanvasFillRect(
                 4 * i * BASE_SIZE,
                 4 * j * BASE_SIZE,

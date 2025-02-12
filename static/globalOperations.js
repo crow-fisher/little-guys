@@ -15,7 +15,7 @@ import { getCurDay } from "./time.js";
 
 export var nextLightingUpdate = 0;
 export var lastLightingUpdateDay = 0;
-export var lighting_throttle_interval_ms = 30 * 1000;
+export var lighting_throttle_interval_ms = 30 * 1000 * 10 ** 8;
 export var lighting_throttle_interval_days = 1;
 
 export function reduceNextLightUpdateTime(amount) {

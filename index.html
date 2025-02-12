@@ -124,38 +124,30 @@
                     <select id="viewmodeSelect">
                         <option value="normal">normal</option>
                         <option value="squareLighting">square lighting</option>
-                        <option value="organismNutrients">organism nutrients (composite)</option>
-
+                        <option value="organismNutrients">nutrients</option>
                         <option value="wind">wind</option>
                         <option value="temperature">temperature</option>
                         <option value="watersaturation">water saturation</option>
-                        <option value="surface">see surface squares</option>
-
+                        <option value="surface">surface squares</option>
                         <option value="organismStructure">organism structures</option>
-                        <option value="organismSquareNutrients">nutrients by square</option>
-                        <option value="organismSquareDirt">organism square dirt nutrients</option>
-                        <option value="organismSquareWater">organism square water nutrients</option>
-                        <option value="organismSquareAir">organism square air nutrients</option>
-
-                        <option value="organismDirt">organism dirt nutrients</option>
-                        <option value="organismWater">organism water nutrients</option>
-                        <option value="organismAir">organism air nutrients</option>
-                        <option value="organismSquareWaterStored">organism water stored</option>
-
-                        <option value="organismHealth">organism health</option>
-                        <option value="organismEnergy">organism energy</option>
-                        <option value="organismLifetime"> organism lifetime</option>
                     </select>
                 </div>
             </td>
             <td>
                 <div class="centerContents">
-                    <input type="number" id="timeScale" value=1 min="0" max="9">time scale</input>
-                    <button type="button" id="ts0" value=1>skip to midnight</input>
-                    <button type="button" id="ts25" value=1>skip to dawn</input>
-                    <button type="button" id="ts50" value=1>skip to noon</input>
-                    <button type="button" id="ts70" value=1>skip to dusk</input>
-
+                <input type="number" id="timeScale" value=1 min="0" max="9">time scale</input>
+                </div>
+                <div class="centerContents">
+                    <button type="button" id="ts0" value=1>midnight</input>
+                    <button type="button" id="ts25" value=1>dawn</input>
+                    <button type="button" id="ts50" value=1>noon</input>
+                    <button type="button" id="ts70" value=1>dusk</input>
+                </div>
+                <div class="centerContents">
+                    <button type="button" id="w1" value=1>sunny</input>
+                    <button type="button" id="w2" value=1>cloudy</input>
+                    <button type="button" id="w3" value=1>light rain</input>
+                    <button type="button" id="w4" value=1>heavy rain</input>
                 </div>
             </td>
             <td style="min-width: 230px;">

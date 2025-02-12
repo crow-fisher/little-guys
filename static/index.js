@@ -22,6 +22,7 @@ import { createMoonLightGroup, createSunLightGroup } from "./lighting.js";
 import { loadDemoScene, loadEmptyScene, loadFlatDirtWorld, loadSlot, saveSlot } from "./saveAndLoad.js";
 import { scheduler_main, triggerEarlySquareScheduler } from "./scheduler.js";
 import { seek, setTimeScale } from "./time.js";
+import { setWeather } from "./weather.js";
 
 var lastMode = "normal"; // options: normal, organismWetlandgi
 
@@ -102,6 +103,11 @@ var ts25 = document.getElementById("ts25");
 var ts50 = document.getElementById("ts50");
 var ts70 = document.getElementById("ts70");
 
+var w1 = document.getElementById("w1");
+var w2 = document.getElementById("w2");
+var w3 = document.getElementById("w3");
+var w4 = document.getElementById("w4");
+
 var loadSlotBasic = document.getElementById("loadSlotBasic");
 var loadSlotEmpty = document.getElementById("loadSlotEmpty");
 
@@ -111,6 +117,11 @@ loadSlotB.onclick = (e) => loadSlot("B");
 saveSlotB.onclick = (e) => saveSlot("B");
 loadSlotC.onclick = (e) => loadSlot("C");
 saveSlotC.onclick = (e) => saveSlot("C");
+
+w1.onclick = (e) => setWeather(1);
+w2.onclick = (e) => setWeather(2);
+w3.onclick = (e) => setWeather(3);
+w4.onclick = (e) => setWeather(4);
 
 loadSlotBasic.onclick = (e) => loadFlatDirtWorld();
 loadSlotEmpty.onclick = (e) => loadEmptyScene();

@@ -236,6 +236,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     doBlockOutflow() {
+        return;
         var thisWaterPressure = this.getMatricPressure(); 
 
         if (thisWaterPressure < -2) {

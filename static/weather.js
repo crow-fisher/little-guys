@@ -4,15 +4,18 @@ import { addWaterSaturationPascals, getHumidity, getWaterSaturation, setRestingH
 import { getCurDay, timeScaleFactor } from "./time.js";
 import { getPressure, isPointInWindBounds } from "./wind.js";
 
+const WEATHER_SUNNY = "WEATHER_SUNNY";
+const WEATHER_CLOUDY = "WEATHER_CLOUDY";
+const WEATHER_LIGHTRAIN = "WEATHER_LIGHTRAIN";
+const WEATHER_HEAVYRAIN = "WEATHER_HEAVYRAIN";
 
-const WEATHER_RAINY = "WEATHER_RAINY";
-const WEATHER_MOSTLYCLOUDY = "WEATHER_MOSTLYCLOUDY";
-
+var weatherSunny, weatherCloudy, weatherLightRain, weatherHeavyRain;
 
 var curRainFallAmount = 0;
 var curWeatherStartTime = 0;
 var curWeatherInterval = 2;
-var curWeather = WEATHER_RAINY;
+var curWeather = null;
+var curClouds = [];
 
 class Cloud {
     constructor(centerX, centerY, sizeX, sizeY, startDay, duration, targetHumidity, strength) {
@@ -92,9 +95,22 @@ class Cloud {
     }
 }
 
+class Weather {
+    constructor(hg, tg, f) {
+        this.hg = hg;
+        this.tg = tg;
+        this.f = f;
+    }
+    weather() {
+        setRestingHumidityGradient(this.hg);
+        setRestingTemperatureGradient(this.tg);
+        this.f();
+    }
+}
+
 // https://www.noaa.gov/jetstream/clouds/four-core-types-of-clouds
 function spawnCumulusCloud() {
-    ALL_CLOUDS.push(new Cloud(
+    curClouds.push(new Cloud(
         randRange(-CANVAS_SQUARES_X/4, CANVAS_SQUARES_X * (0.75)),
         randRange(4, 8),
         randRange(8, 12), randRange(4, 8), 
@@ -103,43 +119,58 @@ function spawnCumulusCloud() {
 }
 
 function spawnStratusCloud() {
-
 }
 
-function spawnNimbusCloud() {
-    ALL_CLOUDS.push(new Cloud(
+function spawnNimbusCloud(rainFactor) {
+    curClouds.push(new Cloud(
         randRange(-CANVAS_SQUARES_X/4, CANVAS_SQUARES_X*0.6),
         randRange(4, 6),
         randRange(23, 35), randRange(3, 5), 
         getCurDay() + 0.00001 * randRange(1, 30), .01 * randRange(2, 4), 
-        randRange(1.01, 1.05), 0.8));
+        1 + 0.05 * rainFactor, 0.8));
 }
 
 
-var ALL_CLOUDS = [];
+// WEATHER_SUNNY
 
-
-var partlyCloudyHumidityGradient = [
+var sunnyHg = [
     [0, 0.95],
     [0.15, 0.99],
     [0.25, 0.95],
     [1, 0.75]
 ]
-var partlyCloudyTemperatureGradient = [
+var sunnyTg = [
+    [0, 273 + 25],
+    [0.5, 273 + 30],
+    [1, 273 + 35]
+]
+
+function sunnyWeather() {
+    curClouds = new Array();
+}
+
+weatherSunny = new Weather(sunnyHg, sunnyTg, sunnyWeather);
+
+
+var cloudyHg = [
+    [0, 0.95],
+    [0.15, 0.99],
+    [0.25, 0.95],
+    [1, 0.75]
+]
+var cloudyTg = [
     [0, 273 + 10],
     [0.5, 273 + 20],
     [1, 273 + 30]
 ]
-function mostlyCloudyWeather() {
-    setRestingHumidityGradient(partlyCloudyHumidityGradient);
-    setRestingTemperatureGradient(partlyCloudyTemperatureGradient);
 
-    if (ALL_CLOUDS.length > 3) {
+function cloudyWeather() {
+    if (curClouds.length > 3) {
         return;
     }
     spawnCumulusCloud();
 }
-
+weatherCloudy = new Weather(cloudyHg, cloudyTg, cloudyWeather);
 
 export function logRainFall(amount) {
     curRainFallAmount += amount;
@@ -155,39 +186,48 @@ var rainyTemperatureGradient = [
     [0.5, 273 + 30],
     [1, 273 + 35]
 ]
-function rainyWeather() {
-    setRestingHumidityGradient(rainyHumidityGradient);
-    setRestingTemperatureGradient(rainyTemperatureGradient);
-    if (ALL_CLOUDS.length > 5) {
-        return;
+function generalRainyWeather(rainFactor) {
+    return () => {
+        if (curClouds.length > 5) {
+            return;
+        }
+        spawnNimbusCloud(rainFactor);
     }
-    spawnNimbusCloud();
+}
+
+weatherLightRain = new Weather(rainyHumidityGradient, rainyTemperatureGradient, generalRainyWeather(0.25));
+weatherHeavyRain = new Weather(rainyHumidityGradient, rainyTemperatureGradient, generalRainyWeather(1));
+
+function weatherChange() {
+    if (curWeather == null) {
+        curWeather = weatherSunny; 
+    }
+}
+
+export function setWeather(w) {
+    switch (w) {
+        case 1: 
+            curWeather = weatherSunny;
+            break;
+        case 2:
+            curWeather = weatherCloudy;
+            break;
+        case 3:
+            curWeather = weatherLightRain;
+            break;
+        case 4:
+            curWeather = weatherHeavyRain;
+            break;
+        default:
+            curWeather = weatherSunny;
+    }
 }
 
 export function weather() {
-    ALL_CLOUDS.forEach((cloud) => cloud.tick());
-    if (ALL_CLOUDS.some((cloud) => getCurDay() > cloud.startDay + cloud.duration)) {
-        ALL_CLOUDS = Array.from(ALL_CLOUDS.filter((cloud) => getCurDay() < cloud.startDay + cloud.duration));
+    curClouds.forEach((cloud) => cloud.tick());
+    if (curClouds.some((cloud) => getCurDay() > cloud.startDay + cloud.duration)) {
+        curClouds = Array.from(curClouds.filter((cloud) => getCurDay() < cloud.startDay + cloud.duration));
     }
-    if (getCurDay() > curWeatherStartTime + curWeatherInterval) {
-        if (curWeather == WEATHER_MOSTLYCLOUDY) {
-            console.log("Starting rain...");
-            curWeather = WEATHER_RAINY;
-            curRainFallAmount = 0;
-            curWeatherStartTime = getCurDay();
-        }
-        else if (curWeather == WEATHER_RAINY) {
-            console.log("Rainfall finished; rained this amount:", curRainFallAmount);
-            curWeather = WEATHER_MOSTLYCLOUDY;
-            curWeatherStartTime = getCurDay();
-        }
-    }
-    switch (curWeather) {
-        case WEATHER_RAINY:
-            rainyWeather();
-            break;
-        case WEATHER_MOSTLYCLOUDY:
-            mostlyCloudyWeather();
-            break;
-    }
+    weatherChange();
+    curWeather.weather();
 }

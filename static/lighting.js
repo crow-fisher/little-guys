@@ -48,7 +48,7 @@ export function createSunLightGroup() {
     let sunLightGroup = new MovingLinearLightGroup(
         CANVAS_SQUARES_X / 2,
         -1, 
-        CANVAS_SQUARES_X * 2,
+        CANVAS_SQUARES_X * 0.5,
         15,
         getCurrentLightColorTemperature, 
         () => .25 * getDaylightStrength(),
@@ -183,17 +183,27 @@ export class LightSource {
         let thetaStep = (this.maxTheta - this.minTheta) / this.numRays;
         for (let i = 0; i < getWindSquaresX(); i++) {
             for (let j = 0; j < getWindSquaresY(); j++) {
-                let relPosX = (i * 4) + 2 - this.posX;
-                let relPosY = (j * 4) + 2 - this.posY;
-                let sqTheta = Math.atan(relPosX / relPosY);
-                for (let theta = this.minTheta; theta < this.maxTheta; theta += thetaStep) {
-                    if (!(theta in this.windSquareLocations)) {
-                        this.windSquareLocations[theta] = new Array();
-                    }
-                    if (sqTheta > theta && sqTheta < (theta + thetaStep)) {
-                        this.windSquareLocations[theta].push([i, j]);
+                let loc = [i, j];
+
+                for (let ii = 0; ii < 4; ii++) {
+                    for (let jj = 0; jj < 4; jj++) {
+                        let relPosX = (i * 4) + ii - this.posX;
+                        let relPosY = (j * 4) + jj - this.posY;
+                        let sqTheta = Math.atan(relPosX / relPosY);
+
+                        for (let theta = this.minTheta; theta < this.maxTheta; theta += thetaStep) {
+                            if (!(theta in this.windSquareLocations)) {
+                                this.windSquareLocations[theta] = new Array();
+                            }
+                            if (this.windSquareLocations[theta].includes(loc)) {
+                                continue;
+                            } else if (sqTheta > theta && sqTheta < (theta + thetaStep)) {
+                                this.windSquareLocations[theta].push(loc);
+                            }
+                        }
                     }
                 }
+                
             }
         }
     }
