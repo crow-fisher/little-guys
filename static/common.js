@@ -167,6 +167,22 @@ function processLighting(lightingMap) {
     return outColor;
 }
 
+
+// yeah thanks to this person don't understand what the fuck is happening here but don't care 
+// https://stackoverflow.com/questions/8022885/rgb-to-hsv-color-in-javascript
+
+// input: r,g,b in [0,1], out: h in [0,360) and s,v in [0,1]
+export function rgb2hsv(r,g,b) {
+    let v=Math.max(r,g,b), c=v-Math.min(r,g,b);
+    let h= c && ((v==r) ? (g-b)/c : ((v==g) ? 2+(b-r)/c : 4+(r-g)/c)); 
+    return [60*(h<0?h+6:h), v&&c/v, v];
+  }
+// input: h in [0,360] and s,v in [0,1] - output: r,g,b in [0,1]
+export function hsv2rgb(h,s,v) 
+{                              
+  let f= (n,k=(n+h/60)%6) => v - v*s*Math.max( Math.min(k,4-k,1), 0);     
+  return [f(5),f(3),f(1)];       
+}   
 export { getObjectArrFromMap, removeItemAll, hexToRgb, rgbToHex, rgbToRgba, 
     randNumber, randRange, loadImage, getStandardDeviation, getZPercent,
      processColorStdev, processColorStdevMulticolor, processColorLerp, 

@@ -1,6 +1,6 @@
-import { hexToRgb, randNumber, randRange, rgbToRgba } from "./common.js";
+import { hexToRgb, hsv2rgb, randNumber, randRange, rgb2hsv, rgbToRgba } from "./common.js";
 import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, MAIN_CONTEXT, zoomCanvasFillRect} from "./index.js";
-import { calculateColor, calculateColorProvideOpacity } from "./temperatureHumidity.js";
+import { calculateColor, calculateColorProvideOpacity, calculateColorRGB, getFrameRelCloud } from "./temperatureHumidity.js";
 
 
 
@@ -214,8 +214,21 @@ function renderSkyBackground(time) {
         min = nearNoon; 
         max = noon;
     }
+    var processedColor = calculateColorRGB(processed, min, max, minColor, maxColor);
+    var frameCloudColor = getFrameRelCloud();
 
-    MAIN_CONTEXT.fillStyle = calculateColorProvideOpacity(processed, min, max, minColor, maxColor, 0.8);
+    var frameCloudMult = Math.min(1, (frameCloudColor.r + frameCloudColor.g + frameCloudColor.b) / (3 * 255) * 5);
+
+    var processedColorHsv = rgb2hsv(processedColor.r, processedColor.g, processedColor.b);
+    processedColorHsv[1] *= (1 - frameCloudMult);
+
+    var processedColorRGBArr = hsv2rgb(processedColorHsv[0], processedColorHsv[1], processedColorHsv[2]);
+
+    processedColor.r = processedColorRGBArr[0] - (frameCloudColor.r)
+    processedColor.g = processedColorRGBArr[1] - (frameCloudColor.g)
+    processedColor.b = processedColorRGBArr[2] - (frameCloudColor.b)
+
+    MAIN_CONTEXT.fillStyle = rgbToRgba(Math.floor(processedColor.r), Math.floor(processedColor.g), Math.floor(processedColor.b), 0.8);
     zoomCanvasFillRect(
         0,
         0,

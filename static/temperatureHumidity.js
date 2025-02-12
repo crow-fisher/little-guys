@@ -304,13 +304,32 @@ export function getCloudColorAtPos(x, y) {
     return outColor;
 }
 
+var frameCloudSum = {r: 0, g: 0, b: 0};;
+var frameCloudSumCount = 1;
+
+export function getFrameRelCloud() {
+    return {
+        r: frameCloudSum.r / frameCloudSumCount,
+        g: frameCloudSum.g / frameCloudSumCount,
+        b: frameCloudSum.b / frameCloudSumCount
+    }
+}
+
 function renderClouds() {
+    frameCloudSum = {r: 0, g: 0, b: 0};
+    frameCloudSumCount = 0;
     for (let i = 0; i < getWindSquaresX(); i++) {
         for (let j = 0; j < getWindSquaresY(); j++) {
             if (getPressure(i, j) < 0) {
                 continue;
             }
             var cloudColorRGBA = getCloudColorAtPos(i, j);
+
+            frameCloudSum.r += cloudColorRGBA.r * cloudColorRGBA.a;
+            frameCloudSum.g += cloudColorRGBA.g * cloudColorRGBA.a;
+            frameCloudSum.b += cloudColorRGBA.b * cloudColorRGBA.a;
+            frameCloudSumCount += 1;
+
             MAIN_CONTEXT.fillStyle = rgbToRgba(cloudColorRGBA.r, cloudColorRGBA.g, cloudColorRGBA.b, cloudColorRGBA.a);
             zoomCanvasFillRect(
                 4 * i * BASE_SIZE,
@@ -349,7 +368,7 @@ function calculateColorTemperature(val) {
     return calculateColor(val, 273, 273 + 70, c_tempLowRGB, c_tempHighRGB);
 }
 
-function calculateColorRGB(val, valMin, valMax, colorMin, colorMax) {
+export function calculateColorRGB(val, valMin, valMax, colorMin, colorMax) {
     val = Math.min(val, valMax);
     var normalized = (val - valMin) / (valMax - valMin);
     return {
