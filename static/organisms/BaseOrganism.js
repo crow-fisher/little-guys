@@ -1,5 +1,5 @@
 import { removeOrganism } from "./_orgOperations.js";
-import { getStandardDeviation, organismProgressCalculus, processLighting, randNumber } from "../common.js";
+import { getStandardDeviation, organismProgressCalculus, randNumber } from "../common.js";
 import { getCurDay, getCurTime, getDt, getPrevDay } from "../time.js";
 import { getNextEntitySpawnId } from "../globals.js";
 import { getWindSpeedAtLocation } from "../wind.js";
@@ -11,6 +11,7 @@ import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 import { PlantSquare } from "../squares/PlantSquare.js";
 import { selectedViewMode } from "../index.js";
 import { reduceNextLightUpdateTime } from "../globalOperations.js";
+import { processLighting } from "../lightingProcessing.js";
 
 class BaseOrganism {
     constructor(square) {

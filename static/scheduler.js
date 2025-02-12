@@ -2,6 +2,7 @@ import { doLightSourceRaycasting, doWaterFlow, lightingPreRender, physics, proce
 import { LIGHT_SOURCES } from "./globals.js";
 import { doClickAdd, doMouseHover, getBlockModification_val, getLastMode, getSelectedViewMode } from "./index.js";
 import { lightingClearLifeSquarePositionMap } from "./lighting.js";
+import { resetFrameDivMult } from "./lightingProcessing.js";
 import { initTemperatureHumidity, renderClouds, renderTemperature, renderWaterSaturation, restingValues, tickMaps } from "./temperatureHumidity.js";
 import { doTimeSeek, getTimeScale, initializeStarMap, renderTime, updateTime } from "./time.js";
 import { weather } from "./weather.js";
@@ -63,6 +64,7 @@ function render() {
     var selectedViewMode = getSelectedViewMode();
     var lastMode = getLastMode();
     var blockModification_val = getBlockModification_val();
+    resetFrameDivMult();
     doTimeSeek();
     renderTime();
 

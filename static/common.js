@@ -135,37 +135,6 @@ function dec2bin(dec) {
     return (dec >>> 0).toString(2);
   }
 
-function processLighting(lightingMap) {
-    if (lightingMap.length == 0) {
-        var brightness = getDaylightStrength();
-        var daylightColor = getCurrentLightColorTemperature();
-        var moonlightColor = getMoonlightColor();
-        return {
-            r: (moonlightColor.r * 0.25) + (daylightColor.r * brightness),
-            g: (moonlightColor.g * 0.25) + (daylightColor.g * brightness),
-            b: (moonlightColor.b * 0.25) + (daylightColor.b * brightness)
-        }
-    }
-    var minBrightness = 55 * getDaylightStrength();
-    var outColor = {r: 0, g: 0, b: 0}
-    lightingMap.filter((light) => light != null && light.length == 2).forEach((light) => {
-        var strength = light[0].map((f) => f()).reduce(
-            (accumulator, currentValue) => accumulator + currentValue,
-            0,
-        );
-        var color = light[1]();
-        outColor = {
-            r: Math.min(255, outColor.r + strength * color.r),
-            g: Math.min(255, outColor.g + strength * color.g),
-            b: Math.min(255, outColor.b + strength * color.b)
-        }
-    });
-
-    outColor.r = Math.max(outColor.r, minBrightness);
-    outColor.g = Math.max(outColor.g, minBrightness);
-    outColor.b = Math.max(outColor.b, minBrightness);
-    return outColor;
-}
 
 
 // yeah thanks to this person don't understand what the fuck is happening here but don't care 
@@ -186,4 +155,4 @@ export function hsv2rgb(h,s,v)
 export { getObjectArrFromMap, removeItemAll, hexToRgb, rgbToHex, rgbToRgba, 
     randNumber, randRange, loadImage, getStandardDeviation, getZPercent,
      processColorStdev, processColorStdevMulticolor, processColorLerp, 
-     processColorLerpBicolor, getDist, dec2bin, processLighting}
+     processColorLerpBicolor, getDist, dec2bin}

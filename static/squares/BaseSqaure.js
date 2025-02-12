@@ -12,7 +12,7 @@ import {
 
 import { MAIN_CONTEXT, BASE_SIZE, selectedViewMode, getBlockModification_val, zoomCanvasFillRect } from "../index.js";
 
-import { hexToRgb, processLighting, rgbToRgba } from "../common.js";
+import { hexToRgb, rgbToRgba } from "../common.js";
 
 import { getOrganismsAtSquare } from "../organisms/_orgOperations.js";
 import { addOrganism } from "../organisms/_orgOperations.js";
@@ -27,6 +27,7 @@ import { calculateColorTemperature, getTemperatureAtWindSquare, updateWindSquare
 import { getAdjacentWindSquareToRealSquare, getWindSquareAbove } from "../wind.js";
 import { RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
 import { getCurDay, timeScaleFactor } from "../time.js";
+import { processLighting } from "../lightingProcessing.js";
 
 export class BaseSquare {
     constructor(posX, posY) {
@@ -114,7 +115,7 @@ export class BaseSquare {
 
     };
     lightFilterRate() {
-        return 0.00037;
+        return 0.00017;
     }
 
     initTemperature() {
