@@ -76,16 +76,17 @@ function render() {
     if (selectedViewMode == "watersaturation") {
         renderWaterSaturation();
     }
-
     preRender();
+
     doLightSourceRaycasting();
-    renderSquares();
     lightingClearLifeSquarePositionMap();
-    renderOrganisms();
+
 
     if (selectedViewMode == "normal") {
         renderClouds();
     }
+    renderSquares();
+    renderOrganisms();
 
 }
 

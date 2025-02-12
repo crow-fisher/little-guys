@@ -29,6 +29,7 @@ var cloudMaxOpacity = 0.65;
 
 var pascalsPerWaterSquare = (1.986 * 10 ** 6);
 
+var restingGradientStrength = 1000;
 var restingTemperatureGradient = [
     [0, 273 + 10],
     [1, 273 + 30]
@@ -38,6 +39,7 @@ var restingHumidityGradient = [
     [0, 0.95],
     [1, 0.75]
 ]
+
 var reverseRestingHumidityGradient = Array.from(restingHumidityGradient).reverse();
 var reverseRestingTemperatureGradient = Array.from(restingTemperatureGradient).reverse();
 
@@ -46,6 +48,9 @@ export function setTemperatureMap(inMap) {
 }
 export function setWaterSaturationMap(inMap) {
     waterSaturationMap = inMap;
+}
+export function setRestingGradientStrength(inValue) {
+    restingGradientStrength = inValue;
 }
 export function getTemperatureMap() {
     return temperatureMap;
@@ -85,8 +90,7 @@ function getRestingTemperatureAtSq(x, y) {
 }
 
 export function restingValues() {
-    let applicationStrength = 1 * timeScaleFactor();
-    // let applicationStrength = 1000 * timeScaleFactor();
+    let applicationStrength = restingGradientStrength * timeScaleFactor();
     for (let i = 0; i < getWindSquaresX(); i++) {
         for (let j = 0; j < getWindSquaresY(); j++) {
             var curTemp = temperatureMap[i][j];
@@ -262,7 +266,7 @@ function doRain() {
             var dropPascals = (adjacentPascals - expectedPascals) * 0.25;
             var usedWaterPascalsPerSquare = dropPascals / 5;
             var dropHealth = dropPascals / pascalsPerWaterSquare;
-            dropHealth /= timeScaleFactor();
+            dropHealth *= Math.min(1000, getCurTimeScale());
 
             var sq = addSquareByName(x * 4 + randNumber(0, 3), y * 4 + randNumber(0, 3), "water");
             if (sq) {

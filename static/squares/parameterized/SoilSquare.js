@@ -6,7 +6,7 @@ import { getNeighbors, getSquares } from "../_sqOperations.js";
 import { hexToRgb, rgbToHex, rgbToRgba } from "../../common.js";
 import { addSquareByName, BASE_SIZE, MAIN_CONTEXT, selectedViewMode, zoomCanvasFillRect } from "../../index.js";
 import { getDaylightStrength, timeScaleFactor } from "../../time.js";
-import { getAdjacentWindSquareToRealSquare, getWindSquareAbove } from "../../wind.js";
+import { getAdjacentWindSquareToRealSquare, getPressure, getWindSquareAbove } from "../../wind.js";
 import { addWaterSaturationPascals, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, updateWindSquareTemperature } from "../../temperatureHumidity.js";
 
 // maps in form "water containment" / "matric pressure in atmospheres"
@@ -142,7 +142,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     initWaterContainment() {
-        this.waterContainment = this.getInverseMatricPressure(-3);
+        this.waterContainment = this.getInverseMatricPressure(-5);
     }
 
 
@@ -325,15 +325,27 @@ export class SoilSquare extends BaseSquare {
         var x = adjacentWindSquare[0];
         var y = adjacentWindSquare[1];
 
+        var xd = this.posX % 4;
+        var yd = this.posY % 4;
+
         if (x < 0 || y < 0 || this.waterContainment <= 0.01) {
             return;
         }
+
+        if (getPressure(x + xd, y + yd) > 0) {
+            x += xd;
+            y += yd;
+        }
+
         var airWaterPressure = getWaterSaturation(x, y);
-        var myVaporPressure = saturationPressureOfWaterVapor(this.temperature) / ((this.currentPressureDirect + 1) ** 0.2);
+        var myVaporPressure = (this.waterContainment / this.waterContainmentMax) * saturationPressureOfWaterVapor(this.temperature) / ((this.currentPressureDirect + 1) ** 0.2);
         if (airWaterPressure > myVaporPressure) {
             return;
         }
+        
         var pascals = (myVaporPressure - airWaterPressure);
+        pascals /= timeScaleFactor();
+
         var amount = Math.min(this.waterContainment, (pascals / (pascalsPerWaterSquare / timeScaleFactor())));
         this.waterContainment -= amount;
         addWaterSaturationPascals(x, y, pascals);

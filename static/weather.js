@@ -1,6 +1,6 @@
 import { randRange } from "./common.js";
 import { CANVAS_SQUARES_X } from "./index.js";
-import { addWaterSaturationPascals, getHumidity, getWaterSaturation, setRestingHumidityGradient, setRestingTemperatureGradient } from "./temperatureHumidity.js";
+import { addWaterSaturationPascals, getHumidity, getWaterSaturation, setRestingGradientStrength, setRestingHumidityGradient, setRestingTemperatureGradient } from "./temperatureHumidity.js";
 import { getCurDay, timeScaleFactor } from "./time.js";
 import { getPressure, isPointInWindBounds } from "./wind.js";
 
@@ -96,14 +96,16 @@ class Cloud {
 }
 
 class Weather {
-    constructor(hg, tg, f) {
+    constructor(hg, tg, strength, f) {
         this.hg = hg;
         this.tg = tg;
+        this.strength = strength;
         this.f = f;
     }
     weather() {
         setRestingHumidityGradient(this.hg);
         setRestingTemperatureGradient(this.tg);
+        setRestingGradientStrength(this.strength);
         this.f();
     }
 }
@@ -113,9 +115,9 @@ function spawnCumulusCloud() {
     curClouds.push(new Cloud(
         randRange(-CANVAS_SQUARES_X/4, CANVAS_SQUARES_X * (0.75)),
         randRange(4, 8),
-        randRange(8, 12), randRange(3, 9), 
+        randRange(4, 8), randRange(3, 5), 
         getCurDay() + 0.00001 * randRange(1, 30), .1 * randRange(2, 4), 
-        randRange(1.0, 1.01), 0.8 * randRange(1, 2)));
+        randRange(1.0, 1.00999), 0.8 * randRange(1, 2)));
 }
 
 function spawnStratusCloud() {
@@ -123,7 +125,7 @@ function spawnStratusCloud() {
 
 function spawnNimbusCloud(rainFactor) {
     curClouds.push(new Cloud(
-        randRange(-CANVAS_SQUARES_X/4, CANVAS_SQUARES_X*0.6),
+        randRange(0, CANVAS_SQUARES_X * 0.25),
         randRange(4, 6),
         randRange(23, 35), randRange(3, 5), 
         getCurDay() + 0.00001 * randRange(1, 30), .01 * randRange(2, 4), 
@@ -149,12 +151,12 @@ function sunnyWeather() {
     curClouds = new Array();
 }
 
-weatherSunny = new Weather(sunnyHg, sunnyTg, sunnyWeather);
+weatherSunny = new Weather(sunnyHg, sunnyTg, 100, sunnyWeather);
 
 var cloudyHg = [
-    [0, 0.95],
-    [0.15, 0.99],
-    [0.25, 0.95],
+    [0, 0.999],
+    [0.15, 0.999],
+    [0.25, 0.98],
     [1, 0.75]
 ]
 var cloudyTg = [
@@ -164,12 +166,12 @@ var cloudyTg = [
 ]
 
 function cloudyWeather() {
-    if (curClouds.length > 5) {
+    if (curClouds.length > 15) {
         return;
     }
     spawnCumulusCloud();
 }
-weatherCloudy = new Weather(cloudyHg, cloudyTg, cloudyWeather);
+weatherCloudy = new Weather(cloudyHg, cloudyTg, 100, cloudyWeather);
 
 export function logRainFall(amount) {
     curRainFallAmount += amount;
@@ -194,8 +196,8 @@ function generalRainyWeather(rainFactor) {
     }
 }
 
-weatherLightRain = new Weather(rainyHumidityGradient, rainyTemperatureGradient, generalRainyWeather(0.25));
-weatherHeavyRain = new Weather(rainyHumidityGradient, rainyTemperatureGradient, generalRainyWeather(1));
+weatherLightRain = new Weather(rainyHumidityGradient, rainyTemperatureGradient, 100, generalRainyWeather(0.25));
+weatherHeavyRain = new Weather(rainyHumidityGradient, rainyTemperatureGradient, 100, generalRainyWeather(1));
 
 function weatherChange() {
     if (curWeather == null) {
