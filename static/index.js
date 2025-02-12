@@ -18,7 +18,7 @@ import { ElephantEarSeedOrganism } from "./organisms/tropical/ElephantEarOrganis
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { WheatSeedOrganism } from "./organisms/grasses/WheatOrganism.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
-import { createMoonLightGroup, createSunLightGroup } from "./lighting.js";
+import { createMoonLightGroup, createSunLightGroup, setSunBrightness } from "./lighting.js";
 import { loadDemoScene, loadEmptyScene, loadFlatDirtWorld, loadSlot, saveSlot } from "./saveAndLoad.js";
 import { scheduler_main, triggerEarlySquareScheduler } from "./scheduler.js";
 import { seek, setTimeScale } from "./time.js";
@@ -65,6 +65,7 @@ var canvasWidth = document.getElementById("canvasWidth");
 var canvasHeight = document.getElementById("canvasHeight");
 
 var timeScale = document.getElementById("timeScale");
+var sunBright = document.getElementById("sunBright");
 var viewmodeSelect = document.getElementById("viewmodeSelect");
 var bakelighting = document.getElementById("bakelighting");
 bakelighting.onclick = (e) => reduceNextLightUpdateTime(lighting_throttle_interval_ms);
@@ -209,6 +210,11 @@ viewmodeSelect.addEventListener('change', (e) => selectedViewMode = e.target.val
 timeScale.addEventListener("change", (e) => {
     setTimeScale(parseInt(e.target.value));
 })
+
+sunBright.addEventListener("change", (e) => {
+    setSunBrightness(parseInt(e.target.value) / 100);
+})
+
 
 canvasWidth.addEventListener('change', (e) => setCanvasSquaresX(e.target.value));
 canvasHeight.addEventListener('change', (e) => setCanvasSquaresY(e.target.value));

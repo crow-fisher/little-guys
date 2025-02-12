@@ -11,6 +11,16 @@ let lifeSquarePositions = new Map();
 
 export let MAX_BRIGHTNESS = 8;
 
+var sunBrightness = 0.27;
+
+export function setSunBrightness(newVal) {
+    sunBrightness = newVal;
+}
+
+export function getSunBrightness() {
+    return sunBrightness;
+}
+
 export function lightingClearLifeSquarePositionMap() {
     lifeSquarePositions = new Map();
 }
@@ -51,7 +61,7 @@ export function createSunLightGroup() {
         CANVAS_SQUARES_X * 0.5,
         15,
         getCurrentLightColorTemperature, 
-        () => .25 * getDaylightStrength(),
+        () => sunBrightness * getDaylightStrength(),
         () => Math.max(0, (2 * (getCurDay() % 1) - 0.5))
     );
     return sunLightGroup;

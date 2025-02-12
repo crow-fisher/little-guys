@@ -1,6 +1,7 @@
-import { reduceNextLightUpdateTime, removeSquare } from "./globalOperations.js";
+import { reduceNextLightUpdateTime, removeSquare, setNextLightUpdateTime } from "./globalOperations.js";
 import { addSquareByName, CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js";
 import { addOrganismSquare } from "./lifeSquares/_lsOperations.js";
+import { getSunBrightness, setSunBrightness } from "./lighting.js";
 import { addOrganism, iterateOnOrganisms, removeOrganism } from "./organisms/_orgOperations.js";
 import { GrowthComponent, GrowthPlan, GrowthPlanStep } from "./organisms/GrowthPlan.js";
 import { lush } from "./saves.js";
@@ -45,7 +46,7 @@ function purgeGameState() {
 function loadSlotData(slotData) {
     purgeGameState();
     loadSlotFromSave(slotData);
-    reduceNextLightUpdateTime(10 ** 8);
+    setNextLightUpdateTime(0);
 }
 export function saveSlot(slotName) {
     const saveObj = getFrameSaveData();
@@ -156,7 +157,8 @@ function getFrameSaveData() {
         curDay: getCurDay(),
         windMap: getWindPressureMap(),
         temperatureMap: getTemperatureMap(),
-        waterSaturationMap: getWaterSaturationMap()
+        waterSaturationMap: getWaterSaturationMap(),
+        sunBrightness: getSunBrightness()
     }
     return saveObj;
 }
@@ -175,15 +177,12 @@ function loadSlotFromSave(slotData) {
     var temperatureMap = slotData.temperatureMap;
     var waterSaturationMap = slotData.waterSaturationMap;
 
-    if (windMap != null) {
-        setWindPressureMap(windMap);
-        setTemperatureMap(temperatureMap);
-        setWaterSaturationMap(waterSaturationMap);
-    } else {
-        initializeWindPressureMap();
-    }
+    setWindPressureMap(windMap);
+    setTemperatureMap(temperatureMap);
+    setWaterSaturationMap(waterSaturationMap);
 
     setCurDay(slotData.curDay);
+    setSunBrightness(slotData.sunBrightness);
 
 
     sqArr.forEach((sq) => Object.setPrototypeOf(sq, ProtoMap[sq.proto]));

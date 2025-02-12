@@ -113,9 +113,9 @@ function spawnCumulusCloud() {
     curClouds.push(new Cloud(
         randRange(-CANVAS_SQUARES_X/4, CANVAS_SQUARES_X * (0.75)),
         randRange(4, 8),
-        randRange(8, 12), randRange(4, 8), 
+        randRange(8, 12), randRange(3, 9), 
         getCurDay() + 0.00001 * randRange(1, 30), .1 * randRange(2, 4), 
-        randRange(1.0, 1.01), 0.1 * randRange(0.02, 0.2)));
+        randRange(1.0, 1.01), 0.8 * randRange(1, 2)));
 }
 
 function spawnStratusCloud() {
@@ -134,15 +134,15 @@ function spawnNimbusCloud(rainFactor) {
 // WEATHER_SUNNY
 
 var sunnyHg = [
-    [0, 0.95],
-    [0.15, 0.99],
-    [0.25, 0.95],
-    [1, 0.75]
+    [0, 0.10],
+    [0.15, 0.15],
+    [0.25, 0.15],
+    [1, 0.30]
 ]
 var sunnyTg = [
-    [0, 273 + 25],
-    [0.5, 273 + 30],
-    [1, 273 + 35]
+    [0, 273 + 30],
+    [0.5, 273 + 35],
+    [1, 273 + 40]
 ]
 
 function sunnyWeather() {
@@ -151,7 +151,6 @@ function sunnyWeather() {
 
 weatherSunny = new Weather(sunnyHg, sunnyTg, sunnyWeather);
 
-
 var cloudyHg = [
     [0, 0.95],
     [0.15, 0.99],
@@ -159,13 +158,13 @@ var cloudyHg = [
     [1, 0.75]
 ]
 var cloudyTg = [
-    [0, 273 + 10],
-    [0.5, 273 + 20],
-    [1, 273 + 30]
+    [0, 273 + 25],
+    [0.5, 273 + 30],
+    [1, 273 + 35]
 ]
 
 function cloudyWeather() {
-    if (curClouds.length > 3) {
+    if (curClouds.length > 5) {
         return;
     }
     spawnCumulusCloud();

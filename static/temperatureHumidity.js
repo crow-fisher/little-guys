@@ -84,7 +84,7 @@ function getRestingTemperatureAtSq(x, y) {
 }
 
 export function restingValues() {
-    let applicationStrength = 100 * timeScaleFactor();
+    let applicationStrength = 1000 * timeScaleFactor();
     for (let i = 0; i < getWindSquaresX(); i++) {
         for (let j = 0; j < getWindSquaresY(); j++) {
             var curTemp = temperatureMap[i][j];

@@ -23,11 +23,11 @@ class WaterSquare extends BaseSquare {
         this.rootable = false;
         this.calculateGroupFlag = true; 
         
-        this.baseColor = "#60EFFF";
-        this.darkColor = "#7EF8FA";
-        this.accentColor = "#3BEBF1";
+        this.baseColor = "#31539D";
+        this.darkColor = "#296CA5";
+        this.accentColor = "#428889";
 
-        this.opacity = 0.4;
+        this.opacity = 0.8;
 
         this.blockHealthMax = 1;
         this.blockHealth = this.blockHealthMax;
@@ -39,7 +39,7 @@ class WaterSquare extends BaseSquare {
     }
 
     lightFilterRate() {
-        return super.lightFilterRate() / 12;
+        return super.lightFilterRate() * 3;
     }
 
     reset() {
