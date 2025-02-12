@@ -76,7 +76,6 @@ class BaseLifeSquare {
 
         this.LSQ_RENDER_SIZE_MULT = Math.SQRT2;
 
-        this.lightFilterRate = 0.00035;
 
         if (square.lighting != null && square.lighting.length > 0) {
             this.lighting = square.lighting;
@@ -89,7 +88,8 @@ class BaseLifeSquare {
     }
 
     getLightFilterRate() {
-        return this.lightFilterRate;
+        return 0.00025;
+
     }
 
     getLsqRenderSizeMult() {

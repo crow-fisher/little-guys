@@ -212,7 +212,7 @@ timeScale.addEventListener("change", (e) => {
 })
 
 sunBright.addEventListener("change", (e) => {
-    setSunBrightness(parseInt(e.target.value) / 100);
+    setSunBrightness(parseInt(e.target.value) / 1000);
 })
 
 

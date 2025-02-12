@@ -33,7 +33,7 @@ export class RockSquare extends SoilSquare {
     }
 
     lightFilterRate() {
-        return super.lightFilterRate() * 2;
+        return super.lightFilterRate() * 4;
     }
 
     getWaterflowRate() {

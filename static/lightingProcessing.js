@@ -3,8 +3,6 @@ import { getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor
 
 var curFrameValues = [1];
 var prevFrameDivMult = 1;
-var targetNumEntries = 100;
-var curProbability = 1;
 
 export function resetFrameDivMult() {
     var stdev = getStandardDeviation(curFrameValues);
@@ -12,13 +10,7 @@ export function resetFrameDivMult() {
         (accumulator, currentValue) => accumulator + currentValue,
         0,
     ) / curFrameValues.length;
-    prevFrameDivMult = 0.3 + 0.7 * (mean + 2 * stdev);
-
-    if (curFrameValues.length > targetNumEntries) {
-        curProbability *= 0.99;
-    } else {
-        curProbability *= 1.01;
-    }
+    prevFrameDivMult = 0.99 + 0.01 * (mean + 0.7 * stdev);
     curFrameValues = [1];
 }
 

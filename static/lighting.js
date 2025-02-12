@@ -11,7 +11,7 @@ let lifeSquarePositions = new Map();
 
 export let MAX_BRIGHTNESS = 8;
 
-var sunBrightness = 0.27;
+var sunBrightness = 0.02;
 
 export function setSunBrightness(newVal) {
     sunBrightness = newVal;
@@ -75,7 +75,7 @@ export function createMoonLightGroup() {
         100,
         7,
         getMoonlightColor, 
-        () => sunBrightness * 0.5,
+        () => sunBrightness * 0.001,
         () => 0.5
     );
     return moonLightGroup;
@@ -293,7 +293,7 @@ export class LightSource {
             thetaSquares = [...new Set(thetaSquares)];
             thetaSquares.sort((a, b) => (a[0] ** 2 + a[1] ** 2) ** 0.5 - (b[0] ** 2 + b[1] ** 2) ** 0.5);
 
-            let curBrightness = 0;
+            let curBrightness = 1;
             thetaSquares.forEach((loc) => {
                 targetLists.forEach((list) => {
                     if (!(loc[0] in list)) {
@@ -310,7 +310,7 @@ export class LightSource {
                         } else {
                             obj.lighting[idx][0].push(pointLightSourceFunc);
                         }
-                        curBrightness -= obj.getLightFilterRate() * this.numRays;
+                        curBrightness *= (1 - obj.getLightFilterRate() * this.numRays);
                     });
                 })
             });
