@@ -467,7 +467,7 @@ function addTemperature(x, y, delta) {
     }
     doFunctionOnRealSquares(x, y, (sq) => {
         if (sq.collision) {
-            sq.temperature = Math.max(10, sq.temperature + delta * 10);
+            sq.temperature = Math.min(273 + 60, Math.max(10, sq.temperature + delta * 10));
         }
     });
     return;

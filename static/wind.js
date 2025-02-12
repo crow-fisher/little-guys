@@ -68,7 +68,9 @@ export function isPointInWindBounds(x, y) {
 export function getAdjacentWindSquareToRealSquare(squareX, squareY) {
     var x = Math.floor(squareX / 4);
     var y = Math.floor(squareY / 4);
-    var ret = getWindDirectNeighbors(x, y).find((loc) => isPointInBounds(loc[0], loc[1]));
+    var ret = getWindDirectNeighbors(x, y)
+        .filter((loc) => getPressure(x, y) > 0)
+        .find((loc) => isPointInBounds(loc[0], loc[1]));
     if (ret != null) {
         return ret;
     } else {

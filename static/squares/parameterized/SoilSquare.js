@@ -321,25 +321,22 @@ export class SoilSquare extends BaseSquare {
     }
 
     waterEvaporationRoutine() {
-        return;
         var adjacentWindSquare = getAdjacentWindSquareToRealSquare(this.posX, this.posY);
         var x = adjacentWindSquare[0];
         var y = adjacentWindSquare[1];
 
-        if (x < 0 || y < 0) {
+        if (x < 0 || y < 0 || this.waterContainment <= 0.01) {
             return;
         }
         var airWaterPressure = getWaterSaturation(x, y);
-        var myVaporPressure = saturationPressureOfWaterVapor(this.temperature);
+        var myVaporPressure = saturationPressureOfWaterVapor(this.temperature) * (this.waterContainment / this.waterContainmentMax);
         if (airWaterPressure > myVaporPressure) {
             return;
         }
-        var diff = (myVaporPressure - airWaterPressure) / 10;
-        diff /= (this.getSoilWaterPressure()) ** 2;
-        diff /= timeScaleFactor();
-        var amount = Math.min(this.waterContainment, (diff / pascalsPerWaterSquare));
+        var pascals = (myVaporPressure - airWaterPressure);
+        // diff /= timeScaleFactor();
+        var amount = Math.min(this.waterContainment, (pascals / pascalsPerWaterSquare));
         this.waterContainment -= amount;
-        this.temperature -= amount * this.water_vaporHeat;
-        addWaterSaturationPascals(x, y, amount * pascalsPerWaterSquare);
+        addWaterSaturationPascals(x, y, pascals);
     }
 }
