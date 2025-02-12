@@ -1,5 +1,5 @@
 import { getStandardDeviation } from "./common.js";
-import { getCurrentLightColorTemperature, getDaylightStrength } from "./time.js";
+import { getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "./time.js";
 
 var curFrameValues = [1];
 var prevFrameDivMult = 1;
@@ -22,15 +22,21 @@ export function resetFrameDivMult() {
     curFrameValues = [1];
 }
 
+export function getDefaultLighting() {
+    var brightness = getDaylightStrength();
+    var daylightColor = getCurrentLightColorTemperature();
+    var moonlightColor = getMoonlightColor();
+
+    return {
+        r: Math.min(255, moonlightColor.r * 0.3 + (daylightColor.r * brightness)),
+        g: Math.min(255, moonlightColor.g * 0.3 + (daylightColor.g * brightness)),
+        b: Math.min(255, moonlightColor.b * 0.3 + (daylightColor.b * brightness))
+    }
+}
+
 export function processLighting(lightingMap) {
     if (lightingMap.length == 0) {
-        var brightness = getDaylightStrength();
-        var daylightColor = getCurrentLightColorTemperature();
-        return {
-            r: (daylightColor.r * brightness),
-            g: (daylightColor.g * brightness),
-            b: (daylightColor.b * brightness)
-        }
+        return getDefaultLighting();
     }
     var outColor = {r: 0, g: 0, b: 0}
     lightingMap.filter((light) => light != null && light.length == 2).forEach((light) => {

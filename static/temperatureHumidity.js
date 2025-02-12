@@ -5,6 +5,7 @@ import { addSquareByName } from "./index.js";
 import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds } from "./wind.js";
 import { getCurTimeScale, timeScaleFactor } from "./time.js";
 import { logRainFall } from "./weather.js";
+import { getDefaultLighting } from "./lightingProcessing.js";
 
 
 // decent reference https://web.gps.caltech.edu/~xun/course/GEOL1350/Lecture5.pdf
@@ -318,6 +319,8 @@ export function getFrameRelCloud() {
 function renderClouds() {
     frameCloudSum = {r: 0, g: 0, b: 0};
     frameCloudSumCount = 0;
+    let frameLighting = getDefaultLighting();
+
     for (let i = 0; i < getWindSquaresX(); i++) {
         for (let j = 0; j < getWindSquaresY(); j++) {
             if (getPressure(i, j) < 0) {
@@ -330,7 +333,12 @@ function renderClouds() {
             frameCloudSum.b += cloudColorRGBA.b * cloudColorRGBA.a;
             frameCloudSumCount += 1;
 
-            MAIN_CONTEXT.fillStyle = rgbToRgba(cloudColorRGBA.r, cloudColorRGBA.g, cloudColorRGBA.b, cloudColorRGBA.a);
+
+            MAIN_CONTEXT.fillStyle = rgbToRgba(
+                cloudColorRGBA.r * (frameLighting.r / 255), 
+                cloudColorRGBA.g * (frameLighting.g / 255), 
+                cloudColorRGBA.b * (frameLighting.b / 255), 
+                cloudColorRGBA.a);
             zoomCanvasFillRect(
                 4 * i * BASE_SIZE,
                 4 * j * BASE_SIZE,
