@@ -16,7 +16,7 @@ import { getCurDay } from "./time.js";
 export var nextLightingUpdate = 0;
 export var lastLightingUpdateDay = 0;
 export var lighting_throttle_interval_ms = 30 * 1000 * 10 ** 8;
-export var lighting_throttle_interval_days = 1;
+export var lighting_throttle_interval_days = 3;
 
 export function reduceNextLightUpdateTime(amount) {
     if (nextLightingUpdate < Date.now()) {
@@ -30,12 +30,9 @@ export function setNextLightUpdateTime(dt) {
 }
 
 function doLightSourceRaycasting() {
-    var shouldDoFullSquareUpdate = Date.now() > nextLightingUpdate || (
-        (getCurDay() - lighting_throttle_interval_days) > lastLightingUpdateDay &&
-        (getCurDay() < 0.25)
-    );
-
-    if (!shouldDoFullSquareUpdate) {
+    if (Date.now() < nextLightingUpdate && (
+        (getCurDay() - lighting_throttle_interval_days) < lastLightingUpdateDay && (getCurDay() > 0.25)
+    )) {
         return;
     }
     lightingPrepareTerrainSquares();
