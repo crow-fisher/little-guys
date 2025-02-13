@@ -114,7 +114,7 @@
     <table id="secondaryControlTable">
         <tr>
             <th>view mode</th>
-            <th>time scale</th>
+            <th>time/lighting</th>
             <th>save and load</th>
             <th>canvas scale</th>
         </tr>
@@ -135,8 +135,11 @@
             </td>
             <td>
                 <div class="centerContents">
-                <input type="number" id="timeScale" value=1 min="0" max="9">time scale</input>
-                <input type="number" id="sunBright" value=129 min="1" max="200">sun brightness</input>
+                <input type="number" id="timeScale" value=1 min="0" max="9">time</input>
+                <input type="number" id="sunBright" value=129 min="1" max="200">sun</input>
+                <input type="number" id="rockBright" value=10 min="1" max="200">rock</input>
+                <input type="number" id="waterBright" value=10 min="1" max="100">water</input>
+                <input type="number" id="decayFactor" value=1000 min="1" max="10000">decay</input>
                 </div>
                 <div class="centerContents">
                     <button type="button" id="ts0" value=1>midnight</input>

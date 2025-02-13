@@ -3,6 +3,7 @@ import { getSquares } from "../_sqOperations.js";
 import { hexToRgb } from "../../common.js";
 import { addSquareByName, CANVAS_SQUARES_Y } from "../../index.js";
 import { SoilSquare } from "./SoilSquare.js";
+import { getRockLightDecayFactor } from "../../lighting.js";
 
 export class RockSquare extends SoilSquare {
     constructor(posX, posY) {
@@ -33,7 +34,7 @@ export class RockSquare extends SoilSquare {
     }
 
     lightFilterRate() {
-        return super.lightFilterRate() * 4;
+        return super.lightFilterRate() * getRockLightDecayFactor();
     }
 
     getWaterflowRate() {

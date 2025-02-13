@@ -213,6 +213,7 @@ export class SoilSquare extends BaseSquare {
     percolateInnerMoisture() {
         getNeighbors(this.posX, this.posY)
             .filter((sq) => sq.proto == this.proto)
+            .filter((sq) => sq.waterContainment < sq.waterContainmentMax)
             .forEach((sq) => {
                 var thisWaterPressure = this.getMatricPressure(); 
                 var sqWaterPressure = sq.getMatricPressure() + (sq.getGravitationalPressure() - this.getGravitationalPressure());

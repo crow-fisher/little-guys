@@ -10,6 +10,7 @@ import { WATERFLOW_CANDIDATE_SQUARES, WATERFLOW_TARGET_SQUARES } from "../global
 import { BASE_SIZE, MAIN_CONTEXT, zoomCanvasFillRect } from "../index.js";
 import { RGB_COLOR_OTHER_BLUE } from "../colors.js";
 import { rgbToRgba } from "../common.js";
+import { getWaterLightDecayFactor } from "../lighting.js";
 
 class WaterSquare extends BaseSquare {
     constructor(posX, posY) {
@@ -25,7 +26,7 @@ class WaterSquare extends BaseSquare {
         
         this.baseColor = "#31539D";
         this.darkColor = "#296CA5";
-        this.accentColor = "#428889";
+        this.accentColor = "#296CA5";
 
         this.opacity = 0.8;
 
@@ -39,7 +40,7 @@ class WaterSquare extends BaseSquare {
     }
 
     lightFilterRate() {
-        return super.lightFilterRate() * 3;
+        return super.lightFilterRate() * getWaterLightDecayFactor();
     }
 
     reset() {

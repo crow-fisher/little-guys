@@ -1,4 +1,4 @@
-import { randRange } from "./common.js";
+import { randNumber, randRange } from "./common.js";
 import { CANVAS_SQUARES_X } from "./index.js";
 import { addWaterSaturationPascals, getHumidity, getWaterSaturation, setRestingGradientStrength, setRestingHumidityGradient, setRestingTemperatureGradient } from "./temperatureHumidity.js";
 import { getCurDay, timeScaleFactor } from "./time.js";
@@ -13,8 +13,9 @@ var weatherSunny, weatherCloudy, weatherLightRain, weatherHeavyRain;
 
 var curRainFallAmount = 0;
 var curWeatherStartTime = 0;
-var curWeatherInterval = 2;
+var curWeatherInterval = 1;
 var curWeather = null;
+var curClimate = null;
 var curClouds = [];
 
 class Cloud {
@@ -96,7 +97,8 @@ class Cloud {
 }
 
 class Weather {
-    constructor(hg, tg, strength, f) {
+    constructor(type, hg, tg, strength, f) {
+        this.type = type;
         this.hg = hg;
         this.tg = tg;
         this.strength = strength;
@@ -151,7 +153,7 @@ function sunnyWeather() {
     curClouds = new Array();
 }
 
-weatherSunny = new Weather(sunnyHg, sunnyTg, 100, sunnyWeather);
+weatherSunny = new Weather(WEATHER_SUNNY, sunnyHg, sunnyTg, 100, sunnyWeather);
 
 var cloudyHg = [
     [0, 0.999],
@@ -160,7 +162,7 @@ var cloudyHg = [
     [1, 0.75]
 ]
 var cloudyTg = [
-    [0, 273 + 25],
+    [0, 273 + 30],
     [0.5, 273 + 30],
     [1, 273 + 35]
 ]
@@ -171,7 +173,7 @@ function cloudyWeather() {
     }
     spawnCumulusCloud();
 }
-weatherCloudy = new Weather(cloudyHg, cloudyTg, 100, cloudyWeather);
+weatherCloudy = new Weather(WEATHER_CLOUDY, cloudyHg, cloudyTg, 100, cloudyWeather);
 
 export function logRainFall(amount) {
     curRainFallAmount += amount;
@@ -196,31 +198,94 @@ function generalRainyWeather(rainFactor) {
     }
 }
 
-weatherLightRain = new Weather(rainyHumidityGradient, rainyTemperatureGradient, 100, generalRainyWeather(0.25));
-weatherHeavyRain = new Weather(rainyHumidityGradient, rainyTemperatureGradient, 100, generalRainyWeather(1));
+weatherLightRain = new Weather(WEATHER_LIGHTRAIN, rainyHumidityGradient, rainyTemperatureGradient, 100, generalRainyWeather(0.25));
+weatherHeavyRain = new Weather(WEATHER_HEAVYRAIN, rainyHumidityGradient, rainyTemperatureGradient, 100, generalRainyWeather(1));
+
+var weatherMap = {
+    WEATHER_SUNNY: weatherSunny,
+    WEATHER_CLOUDY: weatherCloudy,
+    WEATHER_LIGHTRAIN: weatherLightRain,
+    WEATHER_HEAVYRAIN: weatherHeavyRain
+}
+
+var climateDry = {
+    WEATHER_SUNNY: 70,
+    WEATHER_CLOUDY: 20,
+    WEATHER_LIGHTRAIN: 10,
+    WEATHER_HEAVYRAIN: 1
+
+}
+
+var climateTemperate = {
+    WEATHER_SUNNY: 60,
+    WEATHER_CLOUDY: 30,
+    WEATHER_LIGHTRAIN: 20,
+    WEATHER_HEAVYRAIN: 10 
+
+}
+
+var climateMoist = {
+    WEATHER_SUNNY: 50,
+    WEATHER_CLOUDY: 60,
+    WEATHER_LIGHTRAIN: 40,
+    WEATHER_HEAVYRAIN: 30
+}
+
+var climateWet = {
+    WEATHER_SUNNY: 30,
+    WEATHER_CLOUDY: 35,
+    WEATHER_LIGHTRAIN: 45,
+    WEATHER_HEAVYRAIN: 45
+
+}
+
+curWeather = weatherSunny;
+curClimate = climateDry;
 
 function weatherChange() {
-    if (curWeather == null) {
-        curWeather = weatherSunny; 
+    if (getCurDay() < curWeatherStartTime + curWeatherInterval) {
+        return;
     }
+    var sum = Object.values(curClimate).reduce(
+        (accumulator, currentValue) => accumulator + currentValue,
+        0,
+    );
+    var target = Math.floor(Math.random() * sum);
+    var cur = 0;
+    var nextWeather = Object.keys(curClimate).find((key) => {
+        if (target <= cur) {
+            return true;
+        };
+        cur += curClimate[key];
+        if (target <= cur) {
+            return true;
+        };
+        return false;
+    });
+    curWeather = weatherMap[nextWeather];
+    curWeatherInterval = randRange(0, 2);
+    curWeatherStartTime = getCurDay();
+    console.log("Next weather: ", nextWeather + ", for " + Math.round(curWeatherInterval * 100) / 100 + " days") 
+
 }
 
 export function setWeather(w) {
+    curWeatherInterval = 0;
     switch (w) {
         case 1: 
-            curWeather = weatherSunny;
+            curClimate = climateDry;
             break;
         case 2:
-            curWeather = weatherCloudy;
+            curClimate = climateTemperate;
             break;
         case 3:
-            curWeather = weatherLightRain;
+            curClimate = climateMoist;
             break;
         case 4:
-            curWeather = weatherHeavyRain;
+            curClimate = climateWet;
             break;
         default:
-            curWeather = weatherSunny;
+            curClimate = climateDry;
     }
 }
 

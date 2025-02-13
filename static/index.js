@@ -18,7 +18,7 @@ import { ElephantEarSeedOrganism } from "./organisms/tropical/ElephantEarOrganis
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { WheatSeedOrganism } from "./organisms/grasses/WheatOrganism.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
-import { createMoonLightGroup, createSunLightGroup, setSunBrightness } from "./lighting.js";
+import { createMoonLightGroup, createSunLightGroup, setDecayFactorMult, setRockLightDecayFactor, setSunBrightness, setWaterLightDecayFactor } from "./lighting.js";
 import { loadDemoScene, loadEmptyScene, loadFlatDirtWorld, loadSlot, saveSlot } from "./saveAndLoad.js";
 import { scheduler_main, triggerEarlySquareScheduler } from "./scheduler.js";
 import { seek, setTimeScale } from "./time.js";
@@ -66,6 +66,9 @@ var canvasHeight = document.getElementById("canvasHeight");
 
 var timeScale = document.getElementById("timeScale");
 var sunBright = document.getElementById("sunBright");
+var rockBright = document.getElementById("rockBright");
+var waterBright = document.getElementById("waterBright");
+var decayFactor = document.getElementById("decayFactor");
 var viewmodeSelect = document.getElementById("viewmodeSelect");
 var bakelighting = document.getElementById("bakelighting");
 bakelighting.onclick = (e) => reduceNextLightUpdateTime(lighting_throttle_interval_ms);
@@ -214,7 +217,15 @@ timeScale.addEventListener("change", (e) => {
 sunBright.addEventListener("change", (e) => {
     setSunBrightness(parseInt(e.target.value) / 1000);
 })
-
+waterBright.addEventListener("change", (e) => {
+    setWaterLightDecayFactor(parseInt(e.target.value) / 10);
+})
+rockBright.addEventListener("change", (e) => {
+    setRockLightDecayFactor(parseInt(e.target.value) / 10);
+})
+decayFactor.addEventListener("change", (e) => {
+    setDecayFactorMult(parseInt(e.target.value) / 1000);
+})
 
 canvasWidth.addEventListener('change', (e) => setCanvasSquaresX(e.target.value));
 canvasHeight.addEventListener('change', (e) => setCanvasSquaresY(e.target.value));
