@@ -10,7 +10,7 @@ import { selectedViewMode } from "../index.js";
 import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_OTHER_BLUE, RGB_COLOR_BLACK, RGB_COLOR_RED, COLOR_BLUE, COLOR_OTHER_BLUE, COLOR_RED } from "../colors.js";
 import { addOrganismSquare } from "./_lsOperations.js";
 import { removeSquare } from "../globalOperations.js";
-import { STATE_DEAD, STATE_HEALTHY, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_DEAD, SUBTYPE_LEAF, SUBTYPE_LEAFSTEM, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM } from "../organisms/Stages.js";
+import { STATE_DEAD, STATE_HEALTHY, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_DEAD, SUBTYPE_LEAF, SUBTYPE_LEAFSTEM, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, STATE_DESTROYED } from "../organisms/Stages.js";
 import { lightingRegisterLifeSquare } from "../lighting.js";
 import { processLighting } from "../lightingProcessing.js";
 
@@ -96,12 +96,12 @@ class BaseLifeSquare {
     }
 
     doGroundDecay() {
-        if (this.groundTouchSquare() != null) {
-            this.touchingGround.nitrogen += this.linkedOrganism.getDecayNitrogen();
-            this.touchingGround.phosphorus += this.linkedOrganism.getDecayPhosphorus();
+        var sq = this.groundTouchSquare();
+        if (sq != null) {
+            sq.nitrogen += this.linkedOrganism.getDecayNitrogen();
+            sq.phosphorus += this.linkedOrganism.getDecayPhosphorus();
             this.linkedOrganism.removeAssociatedLifeSquare(this);
-            if (this.component != null)
-                this.component.removeLifeSquare(this);
+            this.state = STATE_DESTROYED;
         }
     }
 

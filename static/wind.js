@@ -381,7 +381,6 @@ function _getWindSpeedAtLocation(x, y) {
         return [0, 0];
     }
     if (isNaN(x) || isNaN(y)) {
-        console.warn("NAN?? ");
         return [0, 0];
     }
     var netPresX = 0;

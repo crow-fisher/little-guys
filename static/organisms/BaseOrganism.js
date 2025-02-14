@@ -466,7 +466,7 @@ class BaseOrganism {
         if (this._lifeSquaresCount == -1) {
             this._lifeSquaresCount = this.lifeSquares.length;
         }
-        // this.lifeSquares.filter((lsq) => lsq.type == "root").forEach((lsq) => lsq.doGroundDecay());
+        this.lifeSquares.filter((lsq) => lsq.type == "root").forEach((lsq) => lsq.doGroundDecay());
         this.originGrowth.decay(Math.PI);
         if (this.lifeSquares.length <= 2) {
             this.destroy();

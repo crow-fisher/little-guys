@@ -22,4 +22,5 @@ export const SUBTYPE_DEAD = "SUBTYPE_DEAD";
 
 export const STATE_HEALTHY = "STATE_HEALTHY";
 export const STATE_DEAD = "STATE_DEAD";
+export const STATE_DESTROYED = "STATE_DESTROYED";
 export const STATE_THIRSTY = "STATE_THIRSTY";

@@ -1,7 +1,7 @@
 import { getGlobalThetaBase } from "../index.js";
 import { getCurDay, getDt } from "../time.js";
 import { getWindSpeedAtLocation } from "../wind.js";
-import { STATE_DEAD } from "./Stages.js";
+import { STATE_DEAD, STATE_DESTROYED, STATE_HEALTHY, STATE_THIRSTY } from "./Stages.js";
 
 const ROLLING_AVERAGE_PERIOD = 200;
 
@@ -140,10 +140,6 @@ export class GrowthComponent {
             });
 
         this.lifeSquares.push(newLsq);
-    }
-
-    removeLifeSquare(newLsq) {
-        this.lifeSquares = Array.from(this.lifeSquares.filter((lsq) => lsq != newLsq));
     }
 
     updatePosition(newPosX, newPosY) {
@@ -431,14 +427,17 @@ export class GrowthComponent {
     }
 
     someSquareTouchingGround() {
-        return this.lifeSquares.filter((lsq) => lsq.groundTouchSquare() != null) || this.children.some((child) => child.someSquareTouchingGround());
+        return this.lifeSquares.some((lsq) => 
+            lsq.type == "green" && 
+            lsq.state != STATE_DESTROYED && 
+            lsq.groundTouchSquare() != null)
+        || this.children.some((child) => child.someSquareTouchingGround());
     }
 
     decay(amount) {
         amount *= getDt();
         var livingLifeSquares = Array.from(this.lifeSquares
-            .filter((lsq) => lsq.state != STATE_DEAD));
-
+            .filter((lsq) => lsq.state == STATE_HEALTHY || lsq.state == STATE_THIRSTY));
         if (livingLifeSquares.length > 0) {
             livingLifeSquares.filter((lsq) => Math.random() > 1 - 0.05).forEach((lsq) => lsq.state = STATE_DEAD);
         }
@@ -446,9 +445,9 @@ export class GrowthComponent {
             this.baseDeflection += amount;
         }
         this.children.forEach((child) => child.decay(amount));
-        this.lifeSquares
-            .filter((lsq) => lsq.groundTouchSquare() != null)
-            .filter((lsq) => lsq.state == STATE_DEAD)
-            // .forEach((lsq) => lsq.doGroundDecay());
+        this.lifeSquares.filter((lsq) => 
+            lsq.type == "green" && 
+            lsq.state == STATE_DEAD && 
+            lsq.groundTouchSquare() != null).forEach((lsq) => lsq.doGroundDecay());
     }
 }
