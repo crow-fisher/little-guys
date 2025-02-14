@@ -380,6 +380,10 @@ function _getWindSpeedAtLocation(x, y) {
     if (getPressure(x, y) < 0) {
         return [0, 0];
     }
+    if (isNaN(x) || isNaN(y)) {
+        console.warn("NAN?? ");
+        return [0, 0];
+    }
     var netPresX = 0;
     var netPresY = 0;
 

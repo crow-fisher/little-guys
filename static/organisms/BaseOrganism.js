@@ -1,11 +1,11 @@
 import { removeOrganism } from "./_orgOperations.js";
 import { getStandardDeviation, organismProgressCalculus, randNumber } from "../common.js";
-import { getCurDay, getCurTime, getDt, getPrevDay } from "../time.js";
+import { getCurDay, getCurTime, getDt, getPrevDay, getTimeScale } from "../time.js";
 import { getNextEntitySpawnId } from "../globals.js";
 import { getWindSpeedAtLocation } from "../wind.js";
 import { lightingRegisterLifeSquare, MAX_BRIGHTNESS } from "../lighting.js";
 import { GrowthPlan, GrowthPlanStep } from "./GrowthPlan.js";
-import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, STATE_DEAD, STATE_HEALTHY, STATE_THIRSTY, SUBTYPE_ROOTNODE, TYPE_HEART } from "./Stages.js";
+import { STAGE_ADULT, STAGE_DEAD, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, STATE_DEAD, STATE_HEALTHY, STATE_THIRSTY, SUBTYPE_ROOTNODE, TYPE_HEART } from "./Stages.js";
 import { addSquare, getNeighbors } from "../squares/_sqOperations.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 import { PlantSquare } from "../squares/PlantSquare.js";
@@ -23,6 +23,7 @@ class BaseOrganism {
         this.spinnable = false;
 
         this.lifeSquares = new Array();
+        this._lifeSquaresCount = -1;
         this.growthPlans = [];
         this.lastGrownMap = {};
         this.linkSquare(square);
@@ -49,7 +50,7 @@ class BaseOrganism {
         this.phosphorus = 0;
         this.lightlevel = 0;
 
-        this.growthNumRoots = 10;
+        this.growthNumRoots = 30;
         this.growthNitrogen = 50;
         this.growthPhosphorus = 25;
         this.growthLightLevel = 0.5; // desire mostly full sun 
@@ -70,6 +71,14 @@ class BaseOrganism {
 
     // WIND DEFLECTION 
 
+
+    getDecayNitrogen() {
+        return this.nitrogen / this._lifeSquaresCount;
+    }
+
+    getDecayPhosphorus() {
+        return this.phosphorus / this._lifeSquaresCount;
+    }
 
     updateDeflectionState() {
         if (this.originGrowth != null) {
@@ -181,7 +190,7 @@ class BaseOrganism {
         var totalDead = Array.from(greenLifeSquares.filter((lsq) => lsq.state == STATE_DEAD)).length;
 
         if (totalDead > greenLifeSquares.length * 0.5) {
-            this.destroy();
+            this.stage = STAGE_DEAD;
         }
 
     }
@@ -448,9 +457,25 @@ class BaseOrganism {
         }
     }
 
+
+
+    doDecay() {
+        if (this.stage != STAGE_DEAD) {
+            return;
+        }
+        if (this._lifeSquaresCount == -1) {
+            this._lifeSquaresCount = this.lifeSquares.length;
+        }
+        // this.lifeSquares.filter((lsq) => lsq.type == "root").forEach((lsq) => lsq.doGroundDecay());
+        this.originGrowth.decay(Math.PI);
+        if (this.lifeSquares.length <= 2) {
+            this.destroy();
+        }
+
+    }
+
     // DESTRUCTION
     destroy() {
-        console.warn("KILLING MYSELF")
         this.lifeSquares.forEach((lifeSquare) => lifeSquare.destroy());
         if (this.linkedSquare != null && this.linkedSquare != -1) {
             this.linkedSquare.unlinkOrganism();
@@ -467,6 +492,7 @@ class BaseOrganism {
         this.planGrowth();
         this.updateDeflectionState();
         this.applyDeflectionStateToSquares();
+        this.doDecay();
         this.lifeSquares = this.lifeSquares.sort((a, b) => a.distToFront - b.distToFront);
 
     }

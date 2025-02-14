@@ -76,7 +76,6 @@ class BaseLifeSquare {
 
         this.LSQ_RENDER_SIZE_MULT = Math.SQRT2;
 
-
         if (square.lighting != null && square.lighting.length > 0) {
             this.lighting = square.lighting;
         } else if (organism.linkedSquare.lighting != null && organism.linkedSquare.lighting.length > 0) {
@@ -85,6 +84,25 @@ class BaseLifeSquare {
             this.lighting = [];
         }
 
+        this.touchingGround = null;
+    }
+
+    groundTouchSquare() {
+        if (this.touchingGround != null) {
+            return this.touchingGround;
+        }
+        this.touchingGround = getSquares(Math.floor(this.getPosX()), Math.floor(this.getPosY())).find((sq) => sq.collision);
+        return this.touchingGround;
+    }
+
+    doGroundDecay() {
+        if (this.groundTouchSquare() != null) {
+            this.touchingGround.nitrogen += this.linkedOrganism.getDecayNitrogen();
+            this.touchingGround.phosphorus += this.linkedOrganism.getDecayPhosphorus();
+            this.linkedOrganism.removeAssociatedLifeSquare(this);
+            if (this.component != null)
+                this.component.removeLifeSquare(this);
+        }
     }
 
     getLightFilterRate() {
@@ -297,7 +315,12 @@ class BaseLifeSquare {
             }
             var lightingColor = processLighting(this.lighting);
             var outColor = { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
-            var outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), this.opacity);
+            
+            var opacity = this.opacity;
+            if (selectedViewMode == "organismStructure") {
+                opacity = Math.max(0.25, this.opacity);
+            }
+            var outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacity);
             MAIN_CONTEXT.fillStyle = outRgba;
 
             zoomCanvasFillRect(

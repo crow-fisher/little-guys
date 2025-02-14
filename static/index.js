@@ -23,6 +23,7 @@ import { loadDemoScene, loadEmptyScene, loadFlatDirtWorld, loadSlot, saveSlot } 
 import { scheduler_main, triggerEarlySquareScheduler } from "./scheduler.js";
 import { seek, setTimeScale } from "./time.js";
 import { setWeather } from "./weather.js";
+import { STAGE_DEAD } from "./organisms/Stages.js";
 
 var lastMode = "normal"; // options: normal, organismWetlandgi
 
@@ -71,7 +72,10 @@ var waterBright = document.getElementById("waterBright");
 var decayFactor = document.getElementById("decayFactor");
 var viewmodeSelect = document.getElementById("viewmodeSelect");
 var bakelighting = document.getElementById("bakelighting");
+var kill = document.getElementById("kill");
+
 bakelighting.onclick = (e) => reduceNextLightUpdateTime(lighting_throttle_interval_ms);
+kill.onclick = (e) => iterateOnOrganisms((org) => org.stage = STAGE_DEAD, 0);
 
 var selectedViewMode = "normal";
 

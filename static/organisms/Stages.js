@@ -3,6 +3,7 @@ export const STAGE_JUVENILE = "STAGE_JUVENILE";
 export const STAGE_ADULT = "STAGE_ADULT";
 export const STAGE_FLOWER = "STAGE_FLOWER";
 export const STAGE_FRUIT = "STAGE_FRUIT";
+export const STAGE_DEAD = "STAGE_DEAD";
 
 export const TYPE_ROOT = "TYPE_ROOT";
 export const TYPE_HEART = "TYPE_HEART";

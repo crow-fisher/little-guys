@@ -1,6 +1,7 @@
 import { getGlobalThetaBase } from "../index.js";
-import { getCurDay } from "../time.js";
+import { getCurDay, getDt } from "../time.js";
 import { getWindSpeedAtLocation } from "../wind.js";
+import { STATE_DEAD } from "./Stages.js";
 
 const ROLLING_AVERAGE_PERIOD = 200;
 
@@ -139,6 +140,10 @@ export class GrowthComponent {
             });
 
         this.lifeSquares.push(newLsq);
+    }
+
+    removeLifeSquare(newLsq) {
+        this.lifeSquares = Array.from(this.lifeSquares.filter((lsq) => lsq != newLsq));
     }
 
     updatePosition(newPosX, newPosY) {
@@ -423,5 +428,27 @@ export class GrowthComponent {
         } else {
             this.deflectionRollingAverage = this.deflectionRollingAverage * ((ROLLING_AVERAGE_PERIOD - 1) / ROLLING_AVERAGE_PERIOD) + deflection * (1 / ROLLING_AVERAGE_PERIOD);
         }
+    }
+
+    someSquareTouchingGround() {
+        return this.lifeSquares.filter((lsq) => lsq.groundTouchSquare() != null) || this.children.some((child) => child.someSquareTouchingGround());
+    }
+
+    decay(amount) {
+        amount *= getDt();
+        var livingLifeSquares = Array.from(this.lifeSquares
+            .filter((lsq) => lsq.state != STATE_DEAD));
+
+        if (livingLifeSquares.length > 0) {
+            livingLifeSquares.filter((lsq) => Math.random() > 1 - 0.05).forEach((lsq) => lsq.state = STATE_DEAD);
+        }
+        if (!this.someSquareTouchingGround()) {
+            this.baseDeflection += amount;
+        }
+        this.children.forEach((child) => child.decay(amount));
+        this.lifeSquares
+            .filter((lsq) => lsq.groundTouchSquare() != null)
+            .filter((lsq) => lsq.state == STATE_DEAD)
+            // .forEach((lsq) => lsq.doGroundDecay());
     }
 }
