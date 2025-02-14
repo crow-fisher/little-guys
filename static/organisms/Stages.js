@@ -7,6 +7,7 @@ export const STAGE_DEAD = "STAGE_DEAD";
 
 export const TYPE_ROOT = "TYPE_ROOT";
 export const TYPE_HEART = "TYPE_HEART";
+export const TYPE_STEM = "TYPE_STEM";
 export const TYPE_TRUNK = "TYPE_TRUNK";
 export const TYPE_LEAF = "TYPE_LEAF";
 
