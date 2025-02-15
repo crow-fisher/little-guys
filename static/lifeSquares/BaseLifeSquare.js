@@ -59,6 +59,7 @@ class BaseLifeSquare {
         this.opacity = 1;
         this.width = 1;
         this.height = 1;
+        this.strength = 1;
         this.xOffset = 0;
         this.randoms = [];
 
@@ -202,6 +203,7 @@ class BaseLifeSquare {
                 case SUBTYPE_SPROUT:
                 case SUBTYPE_STEM:
                 case SUBTYPE_NODE:
+                case SUBTYPE_LEAF:
                     this.baseColor = "#515c24";
                     this.darkColor = "#353b1a";
                     this.accentColor = "#5d6637";

@@ -11,7 +11,7 @@ export class WheatGreenSquare extends BaseLifeSquare {
         super(square, organism);
         this.proto = "WheatGreenSquare";
         this.type = "green";
-        this.width = 0.7;
+        this.width = 1;
         this.activeRenderSubtype = null;
         this.LSQ_RENDER_SIZE_MULT = 1;
     }

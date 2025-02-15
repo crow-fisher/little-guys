@@ -41,7 +41,7 @@ export class WheatOrganism extends BaseOrganism {
             startNode.posX, startNode.posY, 
             false, STAGE_ADULT, 
             theta, 0, 0, 0, 
-            randRange(0, 0.05), TYPE_STEM, 100);
+            randRange(0, 0.05), TYPE_STEM, 10);
 
         growthPlan.postConstruct = () => {
             parent.addChild(growthPlan.component);

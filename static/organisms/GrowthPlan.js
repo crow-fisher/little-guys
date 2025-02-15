@@ -172,7 +172,7 @@ export class GrowthComponent {
             return 1;
         }
         var xPositions = this.lifeSquares.map((lsq) => lsq.posX);
-        return Math.max(...xPositions) - Math.min(...xPositions);
+        return 1 + Math.max(...xPositions) - Math.min(...xPositions);
     }
 
     getTheta() {
