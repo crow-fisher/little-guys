@@ -16,7 +16,7 @@ import { addTemperature, addWaterSaturationPascalsSqCoords } from "./temperature
 import { PalmTreeSeedOrganism } from "./organisms/tropical/PalmTreeOrganism.js";
 import { ElephantEarSeedOrganism } from "./organisms/tropical/ElephantEarOrganism.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
-import { WheatSeedOrganism } from "./organisms/grasses/WheatOrganism.js";
+import { WheatSeedOrganism } from "./organisms/agriculture/WheatOrganism.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { createMoonLightGroup, createSunLightGroup, setDecayFactorMult, setRockLightDecayFactor, setSunBrightness, setWaterLightDecayFactor } from "./lighting.js";
 import { loadDemoScene, loadEmptyScene, loadFlatDirtWorld, loadSlot, saveSlot } from "./saveAndLoad.js";
