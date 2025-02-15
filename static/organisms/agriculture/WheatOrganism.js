@@ -28,42 +28,26 @@ export class WheatOrganism extends BaseOrganism {
         this.maxNumLeaves = 5;
         
         this.curLeafLength = 0;
-        this.targetLeafLength = 5;
-        this.targetStemLength = 5;
+        this.targetLeafLength = 8;
+        this.targetStemLength = 3;
 
     }
 
-    growStem(parent, startNode) {
+    growStem(parent, startNode, theta) {
         if (parent == null || startNode == null) {
             return;
         }
-        var baseDeflection = randRange(0, 0);
         var growthPlan = new GrowthPlan(
             startNode.posX, startNode.posY, 
-            false, STAGE_ADULT, 0, baseDeflection, 0, 
-            baseDeflection, 
-            randRange(-0.1, 0.1), TYPE_STEM, 1);
+            false, STAGE_ADULT, 
+            theta, 0, 0, 0, 
+            randRange(0, 0.05), TYPE_STEM, 100);
 
         growthPlan.postConstruct = () => {
             parent.addChild(growthPlan.component);
             this.stems.push(growthPlan.component);
         };
-        growthPlan.component._getWilt = (val) => Math.sin(val) / 2; 
-
-        for (let t = 1; t < randNumber(1, 2); t++) {
-            growthPlan.steps.push(new GrowthPlanStep(
-                growthPlan,
-                0,
-                this.grassGrowTimeInDays,
-                () => {
-                    var shoot = this.growPlantSquare(startNode, 0, t);
-                    shoot.subtype = SUBTYPE_STEM;
-                    return shoot;
-                },
-                null
-            ))
-        }
-
+        growthPlan.component._getWilt = (val) => Math.sin(val) / 2;
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
             0,
@@ -79,17 +63,94 @@ export class WheatOrganism extends BaseOrganism {
         this.growthPlans.push(growthPlan);
     }
 
+    growLeaf(parent, startNode) {
+        if (parent == null || startNode == null) {
+            return;
+        }
+        var growthPlan = new GrowthPlan(
+            startNode.posX, startNode.posY, 
+            false, STAGE_ADULT, randRange(0, Math.PI * 2), 0, 0, 
+            randRange(0.2, 0.4), 
+            randRange(0.7, 1.3), TYPE_LEAF, 1);
+
+        growthPlan.postConstruct = () => {
+            parent.addChild(growthPlan.component);
+            this.leaves.push(growthPlan.component);
+        };
+        growthPlan.component._getWilt = (val) => Math.sin(val) / 2;
+        growthPlan.steps.push(new GrowthPlanStep(
+            growthPlan,
+            0,
+            this.grassGrowTimeInDays,
+            () => {
+                var node = this.growPlantSquare(startNode, 0,growthPlan.steps.length);
+                node.subtype = SUBTYPE_LEAF;
+                return node;
+            },
+            null
+        ))
+        this.curNumLeaves += 1;
+        this.growthPlans.push(growthPlan);
+    }
+
     adultGrowStem() {
         var parent = this.stems[this.stems.length - 1];
-        this.growStem(parent, parent.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_NODE));
+        this.growStem(parent, parent.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_NODE), 0);
     }
-    growLeaf() {}
-    lengthenStems() {} 
-    lengthenLeaves() {}
+
+    adultGrowLeaf() {
+        var parent = this.stems.find((stem) => !stem.children.some((child) => child.growthPlan.type == TYPE_LEAF));
+        if (parent == null) {
+            return;
+        }
+        this.growLeaf(parent, parent.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_NODE));
+    }
+
+    lengthenStems() {
+        this.stems.filter((stem) => stem.growthPlan.steps.length < this.targetStemLength)
+        .forEach((stem) => {
+            let startNode = stem.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_NODE)
+            for (let i = 0; i < this.targetStemLength - stem.growthPlan.steps.length; i++) {
+                stem.growthPlan.steps.push(new GrowthPlanStep(
+                    stem.growthPlan,
+                    0,
+                    this.grassGrowTimeInDays,
+                    () => {
+                        var shoot = this.growPlantSquare(startNode, 0, 0);
+                        shoot.subtype = SUBTYPE_STEM;
+                        return shoot;
+                    },
+                    null
+                ))
+            };
+            stem.growthPlan.completed = false;
+        })
+    } 
+    lengthenLeaves() {
+        this.leaves.filter((leaf) => leaf.growthPlan.steps.length < this.targetLeafLength)
+        .forEach((leaf) => {
+            let startNode = leaf.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_LEAF)
+            for (let i = 0; i < this.targetLeafLength - leaf.growthPlan.steps.length; i++) {
+                leaf.growthPlan.steps.push(new GrowthPlanStep(
+                    leaf.growthPlan,
+                    0,
+                    this.grassGrowTimeInDays,
+                    () => {
+                        var leaf = this.growPlantSquare(startNode, 0, 0);
+                        leaf.subtype = SUBTYPE_LEAF;
+                        return leaf;
+                    },
+                    null
+                ))
+            };
+            leaf.growthPlan.completed = false;
+        })
+    }
+
     growFlower() {}
 
     juvenileGrowthPlanning() {
-        this.growStem(this.originGrowth, this.originGrowth.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_ROOTNODE));
+        this.growStem(this.originGrowth, this.originGrowth.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_ROOTNODE), randRange(0, Math.PI * 2));
     }
 
     adultGrowthPlanning() {
@@ -98,13 +159,13 @@ export class WheatOrganism extends BaseOrganism {
             return;
         }
 
-        if (this.curNumLeaves == this.leaves.length && this.curNumLeaves < this.targetNumLeaves) {
-            this.growLeaf();
+        if (this.stems.some((stem) => stem.growthPlan.steps.length < this.targetStemLength)) {
+            this.lengthenStems();
             return;
         }
 
-        if (this.stems.some((stem) => stem.growthPlan.steps.length < this.targetStemLength)) {
-            this.lengthenStems();
+        if (this.curNumLeaves == this.leaves.length && this.curNumLeaves < this.targetNumLeaves) {
+            this.adultGrowLeaf();
             return;
         }
 
