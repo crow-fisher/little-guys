@@ -18,25 +18,31 @@ export class WheatOrganism extends BaseOrganism {
         this.side = Math.random() > 0.5 ? -1 : 1;
 
         this.stems = [];
+        this.curNumStems = 0;
         this.targetNumStems = 5;
         this.maxNumStems = 5;
 
         this.leaves = [];
+        this.curNumLeaves = 0;
         this.targetNumLeaves = 5;
         this.maxNumLeaves = 5;
         
+        this.curLeafLength = 0;
         this.targetLeafLength = 5;
         this.targetStemLength = 5;
 
     }
 
     growStem(parent, startNode) {
-        var baseDeflection = randRange(0, .1);
+        if (parent == null || startNode == null) {
+            return;
+        }
+        var baseDeflection = randRange(0, 0);
         var growthPlan = new GrowthPlan(
             startNode.posX, startNode.posY, 
-            false, STAGE_ADULT, randRange(-Math.PI, Math.PI), baseDeflection, 0, 
+            false, STAGE_ADULT, 0, baseDeflection, 0, 
             baseDeflection, 
-            randRange(0, 0.3), TYPE_STEM, 1);
+            randRange(-0.1, 0.1), TYPE_STEM, 1);
 
         growthPlan.postConstruct = () => {
             parent.addChild(growthPlan.component);
@@ -63,12 +69,13 @@ export class WheatOrganism extends BaseOrganism {
             0,
             this.grassGrowTimeInDays,
             () => {
-                var node = this.growPlantSquare(startNode, 0, growthPlan.steps.length);
+                var node = this.growPlantSquare(startNode, 0,growthPlan.steps.length);
                 node.subtype = SUBTYPE_NODE;
                 return node;
             },
             null
         ))
+        this.curNumStems += 1;
         this.growthPlans.push(growthPlan);
     }
 
@@ -86,12 +93,12 @@ export class WheatOrganism extends BaseOrganism {
     }
 
     adultGrowthPlanning() {
-        if (this.stems.length < this.targetNumStems) {
+        if (this.curNumStems == this.stems.length && this.curNumStems < this.targetNumStems) {
             this.adultGrowStem();
             return;
         }
 
-        if (this.leaves.length < this.targetNumLeaves) {
+        if (this.curNumLeaves == this.leaves.length && this.curNumLeaves < this.targetNumLeaves) {
             this.growLeaf();
             return;
         }
@@ -126,6 +133,14 @@ export class WheatOrganism extends BaseOrganism {
 
         
 
+    }
+
+    process() {
+        super.process();
+        this.nitrogen = 10 ** 8;
+        this.phosphorus = 10 ** 8;
+        this.lightlevel = 10 ** 8;
+        this.executeGrowthPlans();
     }
 }
 

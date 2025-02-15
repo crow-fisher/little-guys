@@ -91,7 +91,7 @@ class BaseLifeSquare {
         if (this.touchingGround != null) {
             return this.touchingGround;
         }
-        this.touchingGround = getSquares(Math.floor(this.getPosX()), Math.floor(this.getPosY())).find((sq) => sq.collision);
+        this.touchingGround = getSquares(Math.floor(this.getPosX()), Math.floor(this.getPosY())).find((sq) => sq.collision && sq.solid);
         return this.touchingGround;
     }
 
