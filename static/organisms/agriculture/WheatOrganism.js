@@ -18,19 +18,22 @@ export class WheatOrganism extends BaseOrganism {
         this.side = Math.random() > 0.5 ? -1 : 1;
 
         this.stems = [];
-        this.curNumStems = 0;
-        this.targetNumStems = 5;
-        this.maxNumStems = 5;
-
         this.leaves = [];
-        this.curNumLeaves = 0;
-        this.targetNumLeaves = 5;
-        this.maxNumLeaves = 5;
-        
-        this.curLeafLength = 0;
-        this.targetLeafLength = 8;
-        this.targetStemLength = 3;
 
+        this.curLeafTheta = 0;
+
+        this.maxNumNodes = 7;
+        this.maxStemLength = 4;
+        this.maxLeafLength = 8;
+
+        this.curNumStems = 0;
+        this.curNumLeaves = 0;
+        this.curLeafLength = 0;
+
+        this.targetNumStems = 1;
+        this.targetNumLeaves = 1;
+        this.targetLeafLength = 1;
+        this.targetStemLength = 1;
     }
 
     growStem(parent, startNode, theta) {
@@ -69,9 +72,9 @@ export class WheatOrganism extends BaseOrganism {
         }
         var growthPlan = new GrowthPlan(
             startNode.posX, startNode.posY, 
-            false, STAGE_ADULT, randRange(0, Math.PI * 2), 0, 0, 
-            randRange(0.2, 0.4), 
-            randRange(0.7, 1.3), TYPE_LEAF, 1);
+            false, STAGE_ADULT, this.curLeafTheta, 0, 0, 
+            randRange(0.1, 0.3), 
+            randRange(1, 1.3), TYPE_LEAF, 1);
 
         growthPlan.postConstruct = () => {
             parent.addChild(growthPlan.component);
@@ -91,6 +94,7 @@ export class WheatOrganism extends BaseOrganism {
         ))
         this.curNumLeaves += 1;
         this.growthPlans.push(growthPlan);
+        this.curLeafTheta += randRange(Math.PI / 2, Math.PI);
     }
 
     adultGrowStem() {
@@ -107,24 +111,20 @@ export class WheatOrganism extends BaseOrganism {
     }
 
     lengthenStems() {
-        this.stems.filter((stem) => stem.growthPlan.steps.length < this.targetStemLength)
-        .forEach((stem) => {
-            let startNode = stem.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_NODE)
-            for (let i = 0; i < this.targetStemLength - stem.growthPlan.steps.length; i++) {
-                stem.growthPlan.steps.push(new GrowthPlanStep(
-                    stem.growthPlan,
-                    0,
-                    this.grassGrowTimeInDays,
-                    () => {
-                        var shoot = this.growPlantSquare(startNode, 0, 0);
-                        shoot.subtype = SUBTYPE_STEM;
-                        return shoot;
-                    },
-                    null
-                ))
-            };
-            stem.growthPlan.completed = false;
-        })
+        let stem = this.stems.filter((stem) => stem.growthPlan.steps.length < this.targetStemLength).at(0);
+        let startNode = stem.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_NODE)
+        stem.growthPlan.steps.push(new GrowthPlanStep(
+            stem.growthPlan,
+            0,
+            this.grassGrowTimeInDays,
+            () => {
+                var shoot = this.growPlantSquare(startNode, 0, 0);
+                shoot.subtype = SUBTYPE_STEM;
+                return shoot;
+            },
+            null
+        ))
+        stem.growthPlan.completed = false;
     } 
     lengthenLeaves() {
         this.leaves.filter((leaf) => leaf.growthPlan.steps.length < this.targetLeafLength)
@@ -154,6 +154,11 @@ export class WheatOrganism extends BaseOrganism {
     }
 
     adultGrowthPlanning() {
+        if (this.growthPlans.some((gp) => !gp.completed)) {
+            this.executeGrowthPlans();
+            return;
+        }
+
         if (this.curNumStems == this.stems.length && this.curNumStems < this.targetNumStems) {
             this.adultGrowStem();
             return;
@@ -169,14 +174,31 @@ export class WheatOrganism extends BaseOrganism {
             return;
         }
 
-        if (this.leaves.some((leaf) => leaf.growthPlan.steps.length < this.targetLeafLength)) {
+        if (this.leaves.some((leaf) => leaf.growthPlan.steps.length < Math.min(this.targetStemLength * (this.maxLeafLength / this.maxStemLength), this.targetLeafLength))) {
             this.lengthenLeaves();
             return;
         }
 
-        if (this.nitrogen > this.growthNitrogen && this.phosphorus > this.growthPhosphorus && this.lightlevel > this.growthLightLevel) {
-            this.growFlower();
+        // if (
+        //     this.nitrogen > this.growthNitrogen && 
+        //     this.phosphorus > this.growthPhosphorus && 
+        //     this.lightlevel > this.growthLightLevel) 
+        // {
+        //     this.growFlower();
+        //     return;
+        // }
+
+        if (this.targetNumStems < this.maxNumNodes) {
+            this.targetNumStems += 1;
+            this.targetNumLeaves += 1;
             return;
+        }
+        if (this.targetLeafLength < this.maxLeafLength) {
+            this.targetLeafLength += 1;
+            return;
+        }
+        if (this.targetStemLength < this.maxStemLength && this.targetLeafLength == this.maxLeafLength) {
+            this.targetStemLength += 1;
         }
     }
 
@@ -191,17 +213,6 @@ export class WheatOrganism extends BaseOrganism {
         if (this.stage == STAGE_ADULT) {
             this.adultGrowthPlanning();
         }
-
-        
-
-    }
-
-    process() {
-        super.process();
-        this.nitrogen = 10 ** 8;
-        this.phosphorus = 10 ** 8;
-        this.lightlevel = 10 ** 8;
-        this.executeGrowthPlans();
     }
 }
 

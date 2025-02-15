@@ -107,8 +107,7 @@ class BaseLifeSquare {
     }
 
     getLightFilterRate() {
-        return 0.00025;
-
+        return 0.00015;
     }
 
     getLsqRenderSizeMult() {

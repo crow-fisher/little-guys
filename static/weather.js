@@ -138,10 +138,10 @@ function spawnNimbusCloud(rainFactor) {
 // WEATHER_SUNNY
 
 var sunnyHg = [
-    [0, 0.10],
-    [0.15, 0.15],
-    [0.25, 0.15],
-    [1, 0.30]
+    [0, 0.50],
+    [0.15, 0.50],
+    [0.25, 0.50],
+    [1, 0.60]
 ]
 var sunnyTg = [
     [0, 273 + 30],

@@ -142,7 +142,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     initWaterContainment() {
-        this.waterContainment = this.getInverseMatricPressure(-5);
+        this.waterContainment = this.getInverseMatricPressure(-2);
     }
 
 

@@ -314,7 +314,7 @@ export class GrowthComponent {
             startDeflectionYOffset = parentComponent.getDeflectionYAtPosition(this.posX, this.posY);
         }
 
-        var curve = this.baseCurve + Math.sin(this.currentDeflection) * 0.06 * this.ySizeCur() / this.getTotalStrength();
+        var curve = this.baseCurve + Math.sin(this.currentDeflection) * 0.06 * (this.ySizeCur() - 1) / this.getTotalStrength();
         
         var startTheta = this.deflectionRollingAverage + this.getParentDeflection();
         var endTheta = this.currentDeflection + curve + this.getParentDeflection() + this.getWilt();

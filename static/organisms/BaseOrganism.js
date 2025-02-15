@@ -50,11 +50,12 @@ class BaseOrganism {
         this.phosphorus = 0;
         this.lightlevel = 0;
 
+        this.growthNumGreen = 20;
         this.growthNumRoots = 30;
         this.growthNitrogen = 50;
         this.growthPhosphorus = 25;
-        this.growthLightLevel = 0.5; // desire mostly full sun 
-        this.growthCycleMaturityLength = 8;
+        this.growthLightLevel = 0.25; // desire mostly full sun 
+        this.growthCycleMaturityLength = 2;
         this.growthCycleLength = 24; // in days
 
         this.applyWind = false;
@@ -122,13 +123,6 @@ class BaseOrganism {
         this.wilt();
     }
 
-    getGrowthNumGreen() {
-        return this.growthPlans.map((gp) => gp.steps.length).reduce(
-            (accumulator, currentValue) => accumulator + currentValue,
-            0,
-        );
-    }
-
     nutrientTick() {
         let growthCycleFrac = getDt() / this.growthCycleMaturityLength;
         let targetPerRootNitrogen = this.growthNitrogen * growthCycleFrac / this.growthNumRoots;
@@ -142,7 +136,7 @@ class BaseOrganism {
                 this.phosphorus += lsq.linkedSquare.takePhosphorus(targetPerRootPhosphorus, growthCycleFrac);
             });
 
-        var growthNumGreen = this.getGrowthNumGreen();
+        var growthNumGreen = this.growthNumGreen;
 
         this.lightlevel += this.lifeSquares
             .filter((lsq) => lsq.type == "green")
@@ -302,7 +296,7 @@ class BaseOrganism {
             .reduce(                
                 (accumulator, currentValue) => accumulator + currentValue,
                 0,
-            ) / Math.max(1, this.getGrowthNumGreen());
+            ) / Math.max(1, this.growthNumGreen);
     }
 
     executeGrowthPlans() {
