@@ -68,8 +68,5 @@ export class SoilPickerElement extends WindowElement {
                 saveUI(UI_SOIL_COMPOSITION, this.getSquareComposition(posX, posY))
             }
         }
-
     }
-
 }
-

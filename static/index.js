@@ -1,5 +1,5 @@
 import { addSquare, addSquareOverride, getNeighbors, getSquares, removeSquarePos } from "./squares/_sqOperations.js";
-import { lighting_throttle_interval_ms, reduceNextLightUpdateTime, setNextLightUpdateTime } from "./globalOperations.js";
+import { lighting_throttle_interval_ms, reduceNextLightUpdateTime } from "./globalOperations.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
 import { RainSquare } from "./squares/parameterized/RainSquare.js";
 import { HeavyRainSquare } from "./squares/parameterized/RainSquare.js";
@@ -19,7 +19,7 @@ import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { WheatSeedOrganism } from "./organisms/agriculture/WheatOrganism.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { createMoonLightGroup, createSunLightGroup, setDecayFactorMult, setRockLightDecayFactor, setSunBrightness, setWaterLightDecayFactor } from "./lighting.js";
-import { loadDemoScene, loadEmptyScene, loadFlatDirtWorld, loadSlot, saveSlot } from "./saveAndLoad.js";
+import { loadEmptyScene, loadFlatDirtWorld, loadSlot, saveSlot } from "./saveAndLoad.js";
 import { scheduler_main, triggerEarlySquareScheduler } from "./scheduler.js";
 import { seek, setTimeScale } from "./time.js";
 import { setWeather } from "./weather.js";
