@@ -56,6 +56,8 @@ export class Window {
         var x = curMouseLocation.x;
         var y = curMouseLocation.y;
 
+        this.hoverWindowFrame(x, y);
+
         var curX1 = this.posX;
         var curY1 = this.posY;
         var curX2, curY2;
@@ -66,10 +68,9 @@ export class Window {
                 el.hover(x - curX1, y - curY1);
             }
             if (this.dir == 0)
-                curX1 = curX2;
+                curX1 = curX2 + this.padding;
             else
-                curY1 = curY2;
-
+                curY1 = curY2 + this.padding;
         });
     }
 
@@ -79,6 +80,19 @@ export class Window {
             this.posX - this.padding, this.posY - this.padding, 
             this.endX - this.posX + this.padding * 2, 
             this.endY - this.posY + this.padding * 2);
+    }
+
+    hoverWindowFrame(x, y) {
+        if (
+            x < this.posX - this.padding ||
+            x > this.endX + this.padding * 2 || 
+            y < this.posY - this.padding || 
+            y > this.endY + this.padding * 2
+        ) {
+            return;
+        }
+        setWindowHovered();
+
     }
 }
 
