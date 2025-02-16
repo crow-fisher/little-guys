@@ -60,6 +60,7 @@ export class SoilPickerElement extends WindowElement {
     }
 
     hover(posX, posY) {
+        super.hover(posX, posY);
         var c = this.getSquareColor(posX, posY);
         if (c != null) {
             this.hoverColor = c;

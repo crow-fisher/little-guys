@@ -24,6 +24,7 @@ import { scheduler_main, triggerEarlySquareScheduler } from "./scheduler.js";
 import { seek, setTimeScale } from "./time.js";
 import { setWeather } from "./weather.js";
 import { STAGE_DEAD } from "./organisms/Stages.js";
+import { isWindowHovered } from "./ui/WindowManager.js";
 
 var lastMode = "normal"; // options: normal, organismWetlandgi
 
@@ -540,16 +541,6 @@ export function getLastMoveOffset() {
     return lastMoveOffset;
 }
 
-export function doMouseHover() {
-    if (lastMoveEvent == null) {
-        return;
-    }
-    var px = lastMoveEvent.x / BASE_SIZE;
-    var py = lastMoveEvent.y / BASE_SIZE;
-    iterateOnOrganisms((org) => org.hovered = false);
-    getOrganismSquaresAtSquare(Math.floor(px), Math.floor(py)).forEach((orgSq) => orgSq.linkedOrganism.hovered = true);
-}
-
 function addSquareByNameConfig(posX, posY) {
     var square = null;
     if (Math.random() * 100 < (100 - brushStrengthSlider_val)) {
@@ -738,6 +729,10 @@ export function doClickAdd() {
         return;
     }
     if (middleMouseClicked) {
+        return;
+    }
+
+    if (isWindowHovered()) {
         return;
     }
 

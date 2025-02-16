@@ -1,10 +1,10 @@
-import { doLightSourceRaycasting, doWaterFlow, lightingPreRender, physics, processOrganisms, purge, renderOrganisms, renderSolidSquares, renderSquares, renderWaterSquares, reset } from "./globalOperations.js";
-import { doClickAdd, doMouseHover, getBlockModification_val, getLastMode, getSelectedViewMode } from "./index.js";
+import { doLightSourceRaycasting, doWaterFlow, lightingPreRender, physics, processOrganisms, purge, renderOrganisms, renderSolidSquares, renderWaterSquares, reset } from "./globalOperations.js";
+import { doClickAdd, getBlockModification_val, getLastMode, getSelectedViewMode } from "./index.js";
 import { lightingClearLifeSquarePositionMap } from "./lighting.js";
 import { resetFrameDivMult } from "./lightingProcessing.js";
 import { initTemperatureHumidity, renderClouds, renderTemperature, renderWaterSaturation, restingValues, tickMaps } from "./temperatureHumidity.js";
 import { doTimeSeek, getTimeScale, initializeStarMap, renderTime, updateTime } from "./time.js";
-import { renderWindows, updateWindows } from "./ui/WindowManager.js";
+import { renderWindows, resetWindowHovered, updateWindows } from "./ui/WindowManager.js";
 import { weather } from "./weather.js";
 import { initializeWindPressureMap, renderWindPressureMap, tickWindPressureMap } from "./wind.js";
 
@@ -27,8 +27,9 @@ export function scheduler_main() {
         firstTime = false;
     }
     updateTime();
-    doMouseHover();
+
     doClickAdd();
+    resetWindowHovered(); 
 
     if (getTimeScale() != 0) {
         if (Date.now() - last_square_tick > SQUARE_UPDATE_MILLIS) {
@@ -49,7 +50,6 @@ export function scheduler_main() {
     }
 
     updateWindows();
-
     setTimeout(scheduler_main, 0);
 }
 
@@ -91,9 +91,7 @@ function render() {
     }
     renderSolidSquares();
     renderOrganisms();
-
     renderWindows();
-
 }
 
 

@@ -1,8 +1,10 @@
 import { COLOR_BLACK, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { isLeftMouseClicked, MAIN_CONTEXT } from "../../index.js";
+import { WindowElement } from "../Window.js";
 
-export class Radio {
+export class Radio extends WindowElement {
     constructor(sizeX, sizeY, keyName, choices) {
+        super(sizeX, sizeY);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         this.keyName = keyName;
@@ -29,6 +31,7 @@ export class Radio {
     }
 
     hover(posX, posY) {
+        super.hover(posX, posY);
         if (!isLeftMouseClicked()) {
             return;
         }

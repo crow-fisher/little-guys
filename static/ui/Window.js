@@ -1,5 +1,6 @@
 import { COLOR_OTHER_BLUE, COLOR_RED } from "../colors.js";
 import { getLastMoveOffset, MAIN_CONTEXT } from "../index.js";
+import { setWindowHovered } from "./WindowManager.js";
 
 export class Window {
     constructor(posX, posY, dir) {
@@ -69,5 +70,7 @@ export class WindowElement {
 
     render(startX, startY) {}
 
-    hover(posX, posY) {}
+    hover(posX, posY) {
+        setWindowHovered();
+    }
 }
