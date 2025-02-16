@@ -1,5 +1,5 @@
 import { COLOR_BLACK, COLOR_BROWN, COLOR_OTHER_BLUE, COLOR_RED } from "../colors.js";
-import { getLastMoveOffset, MAIN_CONTEXT } from "../index.js";
+import { getLastMoveOffset, isLeftMouseClicked, MAIN_CONTEXT } from "../index.js";
 import { setWindowHovered } from "./WindowManager.js";
 
 export class Window {
@@ -13,6 +13,11 @@ export class Window {
         this.endX = posX;
         this.endY = posY;
         this.dir = dir;
+
+        this.clicked = false;
+
+        this.clickStartX = -1;
+        this.clickStartY = -1;
     }
 
     addElement(newElement) {
@@ -92,6 +97,19 @@ export class Window {
             return;
         }
         setWindowHovered();
+
+        if (isLeftMouseClicked()) {
+            if (this.clicked) {
+                this.posX = x - this.clickStartX;
+                this.posY = y - this.clickStartY;
+            } else {
+                this.clicked = true;
+                this.clickStartX = x - this.posX;
+                this.clickStartY = y - this.posY;
+            }
+        } else {
+            this.clicked = false;
+        }
 
     }
 }
