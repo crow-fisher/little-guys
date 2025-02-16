@@ -1,3 +1,6 @@
+import { COLOR_OTHER_BLUE, COLOR_RED } from "../colors.js";
+import { getLastMoveOffset, MAIN_CONTEXT } from "../index.js";
+
 export class Window {
     constructor(posX, posY, dir) {
         this.clickElements = new Array();
@@ -31,14 +34,40 @@ export class Window {
         });
     }
 
+    update() {
+        var curMouseLocation = getLastMoveOffset();
+        if (curMouseLocation == null) {
+            return;
+        }
+        var x = curMouseLocation.x;
+        var y = curMouseLocation.y;
+
+        var curX1 = this.posX;
+        var curY1 = this.posY;
+        var curX2, curY2;
+        this.elements.forEach((el) => {
+            curX2 = curX1 + el.sizeX;
+            curY2 = curY1 + el.sizeY;
+            if (x > curX1 && x < curX2 && y > curY1 && y < curY2) {
+                el.hover(x - curX1, y - curY1);
+            }
+            if (this.dir == 0)
+                curX1 = curX2;
+            else
+                curY1 = curY2;
+
+        });
+
+    }
 }
 
 export class WindowElement { 
-    constructor(sizeX, sizeY, handleClick) {
+    constructor(sizeX, sizeY) {
         this.sizeX = sizeX;
         this.sizeY = sizeY;
-        this.handleClick = handleClick;
     }
 
     render(startX, startY) {}
+
+    hover(posX, posY) {}
 }

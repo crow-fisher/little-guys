@@ -1,19 +1,34 @@
 import { rgbToHex } from "../common.js";
-import { MAIN_CANVAS, MAIN_CONTEXT } from "../index.js";
-import { getBaseSoilColor } from "../squares/parameterized/SoilSquare.js";
+import { isLeftMouseClicked, MAIN_CANVAS, MAIN_CONTEXT } from "../index.js";
+import { clayColorRgb, getBaseSoilColor, sandColorRgb } from "../squares/parameterized/SoilSquare.js";
 import { WindowElement } from "./Window.js";
 
 export class SoilPickerElement extends WindowElement {
+    constructor(sizeX, sizeY) {
+        super(sizeX, sizeY);
+        this.pickerSize = Math.min(sizeX, sizeY);
+
+        this.hoverColor = sandColorRgb;
+        this.clickColor = clayColorRgb;
+    }
+
     render(startX, startY) {
-        for (let i = 0; i < this.sizeX; i++) {
-            for (let j = 0; j < this.sizeY; j++) {
+        for (let i = 0; i < this.pickerSize; i++) {
+            for (let j = 0; j < this.pickerSize; j++) {
                 this.renderSingleSquare(startX, startY, i, j);
             }
         }
+        var colorSize = (this.sizeX - this.pickerSize) / 2;
+
+        MAIN_CONTEXT.fillStyle = rgbToHex(this.hoverColor.r, this.hoverColor.g, this.hoverColor.b);
+        MAIN_CONTEXT.fillRect(startX + this.pickerSize, startY, colorSize, this.sizeY);
+        MAIN_CONTEXT.fillStyle = rgbToHex(this.clickColor.r, this.clickColor.g, this.clickColor.b);
+        MAIN_CONTEXT.fillRect(startX + this.pickerSize + colorSize, startY, colorSize, this.sizeY);
     }
-    renderSingleSquare(startX, startY, i, j) {
-        var xp = i / this.sizeX;
-        var yp = j / this.sizeY;
+
+    getSquareColor(i, j) {
+        var xp = i / this.pickerSize;
+        var yp = j / this.pickerSize;
         var clayPercent = 1 - yp;
         
         var xp50 = (0.5 - xp);
@@ -24,9 +39,27 @@ export class SoilPickerElement extends WindowElement {
         var siltPercent = (1 - clayPercent) * xp;
         var sandPercent = (1 - clayPercent) - siltPercent;
 
-        var colorRGB = getBaseSoilColor(sandPercent, siltPercent, clayPercent);
-        MAIN_CONTEXT.fillStyle = rgbToHex(colorRGB.r, colorRGB.g, colorRGB.b);
-        MAIN_CONTEXT.fillRect(startX + i, startY + j, 1, 1);
+        return getBaseSoilColor(sandPercent, siltPercent, clayPercent);
     }
+    renderSingleSquare(startX, startY, i, j) {
+        var colorRGB = this.getSquareColor(i, j);
+        if (colorRGB != null) {
+            MAIN_CONTEXT.fillStyle = rgbToHex(colorRGB.r, colorRGB.g, colorRGB.b);
+            MAIN_CONTEXT.fillRect(startX + i, startY + j, 1, 1);
+        }
+       
+    }
+
+    hover(posX, posY) {
+        var c = this.getSquareColor(posX, posY);
+        if (c != null) {
+            this.hoverColor = c;
+            if (isLeftMouseClicked()) {
+                this.clickColor = c;
+            }
+        }
+
+    }
+
 }
 

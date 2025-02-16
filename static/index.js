@@ -536,6 +536,10 @@ function handleClick(event) {
     }
 }
 
+export function getLastMoveOffset() {
+    return lastMoveOffset;
+}
+
 export function doMouseHover() {
     if (lastMoveEvent == null) {
         return;
@@ -722,6 +726,10 @@ function doBrushFunc(centerX, centerY, func) {
             func(centerX + i, centerY + j);
         }
     }
+}
+
+export function isLeftMouseClicked() {
+    return mouseDown > 0 && !rightMouseClicked && !middleMouseClicked;
 }
 
 export function doClickAdd() {
