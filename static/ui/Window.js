@@ -10,6 +10,8 @@ export class Window {
         this.posY = posY;
         this.padding = padding;
 
+        this.sizeX = 0;
+        this.sizeY = 0;
         this.endX = posX;
         this.endY = posY;
         this.dir = dir;
@@ -34,6 +36,7 @@ export class Window {
 
     render() {
         this.renderWindowFrame();
+
         var curX = this.posX;
         var curY = this.posY;
         
@@ -50,6 +53,9 @@ export class Window {
                 curY += el.sizeY + this.padding;
             }
         });
+        this.sizeX = this.endX - this.posX;
+        this.sizeY = this.endY - this.posY;
+
 
     }
 
@@ -83,16 +89,16 @@ export class Window {
         MAIN_CONTEXT.fillStyle = COLOR_BLACK;
         MAIN_CONTEXT.fillRect(
             this.posX - this.padding, this.posY - this.padding, 
-            this.endX - this.posX + this.padding * 2, 
-            this.endY - this.posY + this.padding * 2);
+            this.sizeX + this.padding * 2, 
+            this.sizeY + this.padding * 2);
     }
 
     hoverWindowFrame(x, y) {
         if (
             x < this.posX - this.padding ||
-            x > this.endX + this.padding * 2 || 
+            x > this.posX + this.sizeX + this.padding || 
             y < this.posY - this.padding || 
-            y > this.endY + this.padding * 2
+            y > this.posY + this.sizeY + this.padding 
         ) {
             return;
         }
