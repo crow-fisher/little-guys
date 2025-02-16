@@ -3,32 +3,44 @@ import { dirtNutrientValuePerDirectNeighbor } from "../../config/config.js";
 
 import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount } from "../../config/config.js";
 import { getNeighbors, getSquares } from "../_sqOperations.js";
-import { hexToRgb, rgbToHex, rgbToRgba } from "../../common.js";
-import { addSquareByName, BASE_SIZE, MAIN_CONTEXT, selectedViewMode, zoomCanvasFillRect } from "../../index.js";
-import { getDaylightStrength, timeScaleFactor } from "../../time.js";
-import { getAdjacentWindSquareToRealSquare, getPressure, getWindSquareAbove } from "../../wind.js";
-import { addWaterSaturationPascals, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, updateWindSquareTemperature } from "../../temperatureHumidity.js";
+import { hexToRgb } from "../../common.js";
+import { addSquareByName } from "../../index.js";
+import { timeScaleFactor } from "../../time.js";
+import { getPressure, getWindSquareAbove } from "../../wind.js";
+import { addWaterSaturationPascals, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor } from "../../temperatureHumidity.js";
 
 // maps in form "water containment" / "matric pressure in atmospheres"
-const clayMap = [
+export const clayMatricPressureMap = [
     [0, -7],
     [0.28, -4.2],
     [0.45, -2.5],
     [0.48, -2],
     [0.49, 0]
 ];
-const siltMap = [
+export const siltMatricPressureMap = [
     [0, -7],
     [0.09, -4.2],
     [0.15, -2.3],
     [0.26, -2],
     [0.42, 0]
 ];
-const sandMap = [
+export const sandMatricPressureMap = [
     [0, -7],
     [0.06, -2],
     [0.40, 0]
 ]
+
+export const clayColorRgb = hexToRgb("#773319");
+export const siltColorRgb = hexToRgb("#33251b");
+export const sandColorRgb = hexToRgb("#c99060");
+
+export function getBaseSoilColor(sand, silt, clay) {
+    return {
+        r: clay * clayColorRgb.r + silt * siltColorRgb.r + sand * sandColorRgb.r, 
+        g: clay * clayColorRgb.g + silt * siltColorRgb.g + sand * sandColorRgb.g, 
+        b: clay * clayColorRgb.b + silt * siltColorRgb.b + sand * sandColorRgb.b
+    }
+}
 
 export class SoilSquare extends BaseSquare {
     constructor(posX, posY) {
@@ -38,17 +50,10 @@ export class SoilSquare extends BaseSquare {
         this.nutrientValue = dirtNutrientValuePerDirectNeighbor;
         this.rootable = true;
         this.validPlantHome = true;
-        
-        this.baseColor = "#b88a5f";
-        this.baseColorAmount = dirt_baseColorAmount;
-        this.darkColor = "#855c48";
-        this.darkColorAmount = dirt_darkColorAmount;
-        this.accentColor = "#bf9e7c";
-        this.accentColorAmount = dirt_accentColorAmount;
 
-        this.clayColorRgb = hexToRgb("#773319");
-        this.siltColorRgb = hexToRgb("#33251b");
-        this.sandColorRgb = hexToRgb("#c99060");
+        this.clayColorRgb = clayColorRgb;
+        this.siltColorRgb = siltColorRgb;
+        this.sandColorRgb = sandColorRgb;
 
         this.lightDarkeningColor = hexToRgb("#3C3A04");
         this.moonlightColor = hexToRgb("#F0F8FF");
@@ -189,17 +194,17 @@ export class SoilSquare extends BaseSquare {
     
     getInverseMatricPressure(waterPressure) {
         return (
-            this.clay * this.getInversePressureGeneric(waterPressure, clayMap)
-             + this.silt * this.getInversePressureGeneric(waterPressure, siltMap)
-             + this.sand * this.getInversePressureGeneric(waterPressure, sandMap)
+            this.clay * this.getInversePressureGeneric(waterPressure, clayMatricPressureMap)
+             + this.silt * this.getInversePressureGeneric(waterPressure, siltMatricPressureMap)
+             + this.sand * this.getInversePressureGeneric(waterPressure, sandMatricPressureMap)
         )
     }
 
     getMatricPressure() {
         return (
-            this.clay * this.getPressureGeneric(this.waterContainment, clayMap)
-             + this.silt * this.getPressureGeneric(this.waterContainment, siltMap)
-             + this.sand * this.getPressureGeneric(this.waterContainment, sandMap)
+            this.clay * this.getPressureGeneric(this.waterContainment, clayMatricPressureMap)
+             + this.silt * this.getPressureGeneric(this.waterContainment, siltMatricPressureMap)
+             + this.sand * this.getPressureGeneric(this.waterContainment, sandMatricPressureMap)
         )
     }
     getGravitationalPressure() {
@@ -289,12 +294,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     getColorBase() {
-        var outColor = {
-            r: this.clay * this.clayColorRgb.r + this.silt * this.siltColorRgb.r + this.sand * this.sandColorRgb.r, 
-            g: this.clay * this.clayColorRgb.g + this.silt * this.siltColorRgb.g + this.sand * this.sandColorRgb.g, 
-            b: this.clay * this.clayColorRgb.b + this.silt * this.siltColorRgb.b + this.sand * this.sandColorRgb.b
-        }
-
+        var outColor = getBaseSoilColor(this.sand, this.silt, this.clay);
         var darkeningColorMult = (this.waterContainment / this.waterContainmentMax);
 
         outColor.r *= (1 - 0.24 * darkeningColorMult);
