@@ -35,6 +35,9 @@ export const siltColorRgb = hexToRgb("#33251b");
 export const sandColorRgb = hexToRgb("#c99060");
 
 export function getBaseSoilColor(sand, silt, clay) {
+    if (Math.abs(1 - (sand + silt + clay)) > 0.01) {
+        console.warn("FUCKED UP SOIL DUDE");
+    }
     return {
         r: clay * clayColorRgb.r + silt * siltColorRgb.r + sand * sandColorRgb.r, 
         g: clay * clayColorRgb.g + silt * siltColorRgb.g + sand * sandColorRgb.g, 

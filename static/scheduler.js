@@ -4,6 +4,7 @@ import { lightingClearLifeSquarePositionMap } from "./lighting.js";
 import { resetFrameDivMult } from "./lightingProcessing.js";
 import { initTemperatureHumidity, renderClouds, renderTemperature, renderWaterSaturation, restingValues, tickMaps } from "./temperatureHumidity.js";
 import { doTimeSeek, getTimeScale, initializeStarMap, renderTime, updateTime } from "./time.js";
+import { renderWindows } from "./ui/WindowManager.js";
 import { weather } from "./weather.js";
 import { initializeWindPressureMap, renderWindPressureMap, tickWindPressureMap } from "./wind.js";
 
@@ -87,6 +88,8 @@ function render() {
     }
     renderSolidSquares();
     renderOrganisms();
+
+    renderWindows();
 
 }
 

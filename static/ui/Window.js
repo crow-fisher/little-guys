@@ -1,4 +1,4 @@
-class Window {
+export class Window {
     constructor(posX, posY, dir) {
         this.clickElements = new Array();
         this.elements = new Array();
@@ -24,7 +24,7 @@ class Window {
         var curY = this.posY;
         this.elements.forEach((el) => {
             el.render(curX, curY);
-            if (dir == 0)
+            if (this.dir == 0)
                 curX += el.sizeX;
             else
                 curY += el.sizeY;

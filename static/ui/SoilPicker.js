@@ -1,12 +1,13 @@
+import { rgbToHex } from "../common.js";
 import { MAIN_CANVAS, MAIN_CONTEXT } from "../index.js";
 import { getBaseSoilColor } from "../squares/parameterized/SoilSquare.js";
 import { WindowElement } from "./Window.js";
 
-class SoilPickerElement extends WindowElement {
+export class SoilPickerElement extends WindowElement {
     render(startX, startY) {
         for (let i = 0; i < this.sizeX; i++) {
             for (let j = 0; j < this.sizeY; j++) {
-                this.renderSingleSquare(startX, startY, i, j, color);
+                this.renderSingleSquare(startX, startY, i, j);
             }
         }
     }
@@ -16,7 +17,7 @@ class SoilPickerElement extends WindowElement {
         var clayPercent = 1 - yp;
         
         var xp50 = (0.5 - xp);
-        if (Math.abs(xp50) > 1 - clayPercent) {
+        if (2 * (Math.abs(xp50)) > 1 - clayPercent) {
             return;
         }
 
@@ -24,8 +25,8 @@ class SoilPickerElement extends WindowElement {
         var sandPercent = (1 - clayPercent) - siltPercent;
 
         var colorRGB = getBaseSoilColor(sandPercent, siltPercent, clayPercent);
-        MAIN_CANVAS.fillStyle = rgbToHex(colorRGB);
-        MAIN_CANVAS.fillRect(startX + i, startY + j, 1, 1);
+        MAIN_CONTEXT.fillStyle = rgbToHex(colorRGB.r, colorRGB.g, colorRGB.b);
+        MAIN_CONTEXT.fillRect(startX + i, startY + j, 1, 1);
     }
 }
 
