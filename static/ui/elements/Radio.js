@@ -14,7 +14,7 @@ export class Radio extends WindowElement {
 
     render(startX, startY) {
         var curX = 0;
-        MAIN_CONTEXT.font = this.sizeY + "px courier"
+        MAIN_CONTEXT.font = this.sizeY - 10 + "px courier"
         MAIN_CONTEXT.textAlign = 'center';
         MAIN_CONTEXT.textBaseline = 'middle';
         let step = this.sizeX / this.choices.length;
@@ -25,7 +25,7 @@ export class Radio extends WindowElement {
                 MAIN_CONTEXT.fillStyle = COLOR_OTHER_BLUE;
             }
             MAIN_CONTEXT.fillRect(startX + curX, startY, step, this.sizeY);
-            MAIN_CONTEXT.strokeText(this.choices[i], startX + (i * step) + step / 2, startY + (this.sizeY / 2))
+            MAIN_CONTEXT.strokeText(this.choices[i], startX + (i * step) + step / 2, 2 + startY + (this.sizeY / 2))
             curX += step;
         }
     }

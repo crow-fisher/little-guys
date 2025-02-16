@@ -4,11 +4,11 @@ import { Window } from "./Window.js";
 
 var all_windows = [];
 var windowHovered = false;
-var window = new Window(100, 100, 1);
+var window = new Window(100, 100, 10, 1);
 all_windows.push(window);
 
 window.addElement(new SoilPickerElement(200, 100));
-window.addElement(new Radio(200, 50, "FUCK", ["c1", "c2"]));
+window.addElement(new Radio(200, 35, "FUCK", ["🎨", "💦", "⚡"]));
 
 export function renderWindows() {
     all_windows.forEach((window) => window.render());
