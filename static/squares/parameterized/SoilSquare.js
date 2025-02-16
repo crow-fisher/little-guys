@@ -8,6 +8,7 @@ import { addSquareByName } from "../../index.js";
 import { timeScaleFactor } from "../../time.js";
 import { getPressure, getWindSquareAbove } from "../../wind.js";
 import { addWaterSaturationPascals, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor } from "../../temperatureHumidity.js";
+import { loadUI, UI_SOIL_COMPOSITION } from "../../ui/UIData.js";
 
 // maps in form "water containment" / "matric pressure in atmospheres"
 export const clayMatricPressureMap = [
@@ -69,62 +70,15 @@ export class SoilSquare extends BaseSquare {
         this.ph = 7;
         this.nitrogen = 50;
         this.phosphorus = 25;
+
+        this.setVariant();
     }
 
-    setType(type) {
-        switch (type) {
-            case "pureclay":
-                this.clay = 100
-                this.silt = 0
-                break;
-            case "clay":
-                this.clay = 60;
-                this.silt = 20;
-                break;
-            case "siltyclay":
-                this.clay = 50;
-                this.silt = 50;
-                break;
-            case "siltyclayloam":
-                this.clay = 35;
-                this.silt = 60;
-                break;
-            case "clayloam":
-                this.clay = 35;
-                this.silt = 35;
-                break;
-            case "siltloam":
-                this.clay = 20;
-                this.silt = 70;
-                break;
-            case "silt":
-                this.silt = 90;
-                this.clay = 5;
-                break;
-            case "sandyclay":
-                this.clay = 40;
-                this.silt = 10;
-                break;
-            case "sandyloam":
-                this.clay = 10;
-                this.silt = 0;
-                break;
-            case "sandyclayloam":
-                this.clay = 30;
-                this.silt = 20;
-                break;
-            case "sand": 
-                this.clay = 10;
-                this.silt = 10;
-                break;
-            case "loam":
-                this.clay = 20;
-                this.silt = 40;
-                break;
-        }
-        this.clay /= 100;
-        this.silt /= 100;
-        this.sand = 1 - (this.clay + this.silt);
+    setVariant() {
+        let arr = loadUI(UI_SOIL_COMPOSITION);
+        this.sand = arr[0];
+        this.silt = arr[1];
+        this.clay = arr[2];
         this.randomize();
     }
 

@@ -580,8 +580,6 @@ function addSquareByNameConfig(posX, posY) {
 
 function addSoilSquare(posX, posY, name) {
     var square = addSquareOverride(new SoilSquare(posX, posY));
-    if (square)
-        square.setType(name);
     return square;
 }
 

@@ -1,6 +1,7 @@
 import { rgbToHex } from "../common.js";
 import { isLeftMouseClicked, MAIN_CANVAS, MAIN_CONTEXT } from "../index.js";
 import { clayColorRgb, getBaseSoilColor, sandColorRgb } from "../squares/parameterized/SoilSquare.js";
+import { saveUI, UI_SOIL_COMPOSITION } from "./UIData.js";
 import { WindowElement } from "./Window.js";
 
 export class SoilPickerElement extends WindowElement {
@@ -26,7 +27,7 @@ export class SoilPickerElement extends WindowElement {
         MAIN_CONTEXT.fillRect(startX + this.pickerSize + colorSize, startY, colorSize, this.sizeY);
     }
 
-    getSquareColor(i, j) {
+    getSquareComposition(i, j) {
         var xp = i / this.pickerSize;
         var yp = j / this.pickerSize;
         var clayPercent = 1 - yp;
@@ -39,8 +40,16 @@ export class SoilPickerElement extends WindowElement {
         var siltPercent = (1 - clayPercent) * xp;
         var sandPercent = (1 - clayPercent) - siltPercent;
 
-        return getBaseSoilColor(sandPercent, siltPercent, clayPercent);
+        return [sandPercent, siltPercent, clayPercent];
     }
+
+    getSquareColor(i, j) {
+        var arr = this.getSquareComposition(i, j);
+        if (arr != null) {
+            return getBaseSoilColor(arr[0], arr[1], arr[2]);
+        }
+    }
+
     renderSingleSquare(startX, startY, i, j) {
         var colorRGB = this.getSquareColor(i, j);
         if (colorRGB != null) {
@@ -56,6 +65,7 @@ export class SoilPickerElement extends WindowElement {
             this.hoverColor = c;
             if (isLeftMouseClicked()) {
                 this.clickColor = c;
+                saveUI(UI_SOIL_COMPOSITION, this.getSquareComposition(posX, posY))
             }
         }
 
