@@ -98,6 +98,7 @@ export class SoilPickerElement extends WindowElement {
         if (c != null) {
             this.hoverColor = c;
             if (isLeftMouseClicked()) {
+                this.window.locked = true;
                 this.clickColor = c;
                 saveUI(this.key, this.getSquareComposition(posX, posY))
             }

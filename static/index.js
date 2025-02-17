@@ -25,6 +25,7 @@ import { seek, setTimeScale } from "./time.js";
 import { setWeather } from "./weather.js";
 import { STAGE_DEAD } from "./organisms/Stages.js";
 import { isWindowHovered } from "./ui/WindowManager.js";
+import { loadUI, UI_BB_MODE, UI_BB_SIZE, UI_BB_STRENGTH, UI_MODE_ROCK, UI_MODE_SOIL } from "./ui/UIData.js";
 
 var lastMode = "normal"; // options: normal, organismWetlandgi
 
@@ -543,7 +544,7 @@ export function getLastMoveOffset() {
 
 function addSquareByNameConfig(posX, posY) {
     var square = null;
-    if (Math.random() * 100 < (100 - brushStrengthSlider_val)) {
+    if (Math.random() > loadUI(UI_BB_STRENGTH)) {
         return;
     }
     if (lastMode == "special") {
@@ -558,13 +559,10 @@ function addSquareByNameConfig(posX, posY) {
         }
         square = addSquareByName(posX, posY, specialSelect_val);
     } else {
-        if (!mixMaterials_val) {
-            square = addSquareByName(posX, posY, material1_val);
-        }
-        if (Math.random() * 100 > materialSlider_val) {
-            square = addSquareByName(posX, posY, material1_val);
-        } else {
-            square = addSquareByName(posX, posY, material2_val);
+        if (loadUI(UI_BB_MODE) == UI_MODE_SOIL) {
+            square = addSquareByName(posX, posY, "soil");
+        } else if (loadUI(UI_BB_MODE) == UI_MODE_ROCK) {
+            square = addSquareByName(posX, posY, "rock");
         }
     }
 }
@@ -580,18 +578,7 @@ function addSquareByName(posX, posY, name) {
         case "rock":
             square = addSquareOverride(new RockSquare(posX, posY));
             break;
-        case "pureclay":
-        case "clay":
-        case "siltyclay":
-        case "siltyclayloam":
-        case "siltloam":
-        case "silt":
-        case "clayloam":
-        case "sandyclay":
-        case "sandyclayloam":
-        case "sandyloam":
-        case "sand":
-        case "loam":
+        case "soil":
             square = addSoilSquare(posX, posY, name);
             break;
         case "water":
@@ -700,16 +687,14 @@ function doBlockBlur(centerX, centerY) {
 }
 
 function doBrushFunc(centerX, centerY, func) {
-    var workingRadius = brushSizeSlider_val * 2 + 1;
-
+    var radius = Math.floor(loadUI(UI_BB_SIZE));
     if (lastMode == "special" && specialSelect_val != "water") {
         func(centerX, centerY);
         return;
     }
-    var start = (workingRadius + 1) / 2;
-    for (var i = -start; i < start; i++) {
-        for (var j = -start; j < start; j++) {
-            if (Math.abs(i) + Math.abs(j) + 2 > (start ** 2 + start ** 2) ** 0.5) {
+    for (var i = -radius; i < radius; i++) {
+        for (var j = -radius; j < radius; j++) {
+            if (Math.abs(i) + Math.abs(j) + 2 > (radius ** 2 + radius ** 2) ** 0.5) {
                 continue;
             }
             func(centerX + i, centerY + j);
