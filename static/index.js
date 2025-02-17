@@ -29,6 +29,12 @@ import { loadUI, UI_BB_MODE, UI_BB_SIZE, UI_BB_STRENGTH, UI_MODE_ROCK, UI_MODE_S
 
 var lastMode = "normal"; // options: normal, organismWetlandgi
 
+var lastMouseDownStart = Date.now(); 
+
+export function getLastMouseDown() {
+    return lastMouseDownStart;
+}
+
 var specialSelect = document.getElementById("specialSelect");
 var specialSelect_val = "water";
 var material1 = document.getElementById("material1");
@@ -432,6 +438,7 @@ document.addEventListener('mousemove', handleClick, false);
 
 document.body.onmousedown = function () {
     mouseDown = 1;
+    lastMouseDownStart = Date.now();
 }
 document.body.onmouseup = function () {
     mouseDown = 0;

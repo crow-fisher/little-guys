@@ -12,6 +12,8 @@ export const UI_ROCK_COMPOSITION = "UI_ROCK_COMPOSITION";
 export const UI_SOIL_VIEWMODE = "UI_SOIL_VIEWMODE";
 export const UI_SOIL_INITALWATER = "UI_SOIL_INITALWATER";
 
+export const UI_SM_BB = "UI_SM_BB";
+
 export const UI_TOOL_MODE_LEFT = "UI_TOOL_MODE_LEFT";
 export const UI_TOOL_MODE_RIGHT = "UI_TOO_MODE_RIGHT";
 export const UI_TOOL_MIX = "mix";
