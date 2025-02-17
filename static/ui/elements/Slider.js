@@ -27,9 +27,6 @@ export class Slider extends WindowElement {
         MAIN_CONTEXT.fillStyle = COLOR_VERY_FUCKING_RED;
 
         let block_size = this.window.padding;
-        MAIN_CONTEXT.fillRect(p1x - block_size / 2, py - block_size / 2, block_size, block_size);
-        MAIN_CONTEXT.fillRect(p2x - block_size / 2, py - block_size / 2, block_size, block_size);
-
         MAIN_CONTEXT.fillStyle = COLOR_BLUE;
 
         var p = (this.cur - this.min) / (this.max - this.min);
