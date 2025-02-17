@@ -1,6 +1,5 @@
 import { COLOR_BLACK, COLOR_BROWN, COLOR_OTHER_BLUE, COLOR_RED } from "../colors.js";
 import { getLastMoveOffset, isLeftMouseClicked, MAIN_CONTEXT } from "../index.js";
-import { setWindowHovered } from "./WindowManager.js";
 
 export class Window {
     constructor(posX, posY, padding, dir) {
@@ -16,6 +15,7 @@ export class Window {
         this.endY = posY;
         this.dir = dir;
 
+        this.hovered = false;
         this.clicked = false;
 
         this.clickStartX = -1;
@@ -102,7 +102,7 @@ export class Window {
         ) {
             return;
         }
-        setWindowHovered();
+        this.hovered = true;
 
         if (isLeftMouseClicked()) {
             if (this.clicked) {
@@ -121,14 +121,14 @@ export class Window {
 }
 
 export class WindowElement { 
-    constructor(sizeX, sizeY) {
+    constructor(window, sizeX, sizeY) {
+        this.window = window;
         this.sizeX = sizeX;
         this.sizeY = sizeY;
     }
-
     render(startX, startY) {}
 
     hover(posX, posY) {
-        setWindowHovered();
+        this.window.hovered = true;
     }
 }

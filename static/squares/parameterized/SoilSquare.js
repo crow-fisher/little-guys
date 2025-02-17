@@ -46,6 +46,21 @@ export function getBaseSoilColor(sand, silt, clay) {
     }
 }
 
+// https://docs.google.com/spreadsheets/d/1MWOde96t-ruC5k1PLL4nex0iBjdyXKOkY7g59cnaEj4/edit?gid=0#gid=0
+export function getBasePercolationRate(sand, silt, clay) {
+    var clayRate = 2;
+    var siltRate = 1.5;
+    var sandRate = 0.92;
+    var power = 10;
+    return (sand * sandRate +
+        silt * siltRate +
+        clay * clayRate) ** power;
+}
+
+export function getBaseNutrientRate(sand, silt, clay) {
+    return sand + silt * 2 + clay * 4
+}
+
 export class SoilSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);

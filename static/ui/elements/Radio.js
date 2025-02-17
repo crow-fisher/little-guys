@@ -1,13 +1,14 @@
 import { COLOR_BLACK, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { isLeftMouseClicked, MAIN_CONTEXT } from "../../index.js";
+import { saveUI } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class Radio extends WindowElement {
-    constructor(sizeX, sizeY, keyName, choices) {
-        super(sizeX, sizeY);
+    constructor(window, sizeX, sizeY, key, choices) {
+        super(window, sizeX, sizeY);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
-        this.keyName = keyName;
+        this.key = key;
         this.choices = choices;
         this.selected = 0;
     }
@@ -40,6 +41,7 @@ export class Radio extends WindowElement {
         for (let i = 0; i < this.choices.length; i++) {
             if (posX > curX && posX < curX + step) {
                 this.selected = i;
+                saveUI(this.key, this.choices[i]);
             }
             curX += step;
         }
