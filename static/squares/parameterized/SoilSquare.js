@@ -8,7 +8,7 @@ import { addSquareByName } from "../../index.js";
 import { timeScaleFactor } from "../../time.js";
 import { getPressure, getWindSquareAbove } from "../../wind.js";
 import { addWaterSaturationPascals, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor } from "../../temperatureHumidity.js";
-import { loadUI, UI_SOIL_COMPOSITION } from "../../ui/UIData.js";
+import { loadUI, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER } from "../../ui/UIData.js";
 
 // maps in form "water containment" / "matric pressure in atmospheres"
 export const clayMatricPressureMap = [
@@ -119,7 +119,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     initWaterContainment() {
-        this.waterContainment = this.getInverseMatricPressure(-2);
+        this.waterContainment = this.getInverseMatricPressure(loadUI(UI_SOIL_INITALWATER));
     }
 
 

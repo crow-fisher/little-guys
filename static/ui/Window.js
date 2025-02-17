@@ -67,22 +67,24 @@ export class Window {
         var x = curMouseLocation.x;
         var y = curMouseLocation.y;
 
-        this.hoverWindowFrame(x, y);
 
         var curX1 = this.posX;
         var curY1 = this.posY;
         var curX2, curY2;
-        this.elements.forEach((el) => {
+        if (!(this.elements.some((el) => {
             curX2 = curX1 + el.sizeX;
             curY2 = curY1 + el.sizeY;
             if (x > curX1 && x < curX2 && y > curY1 && y < curY2) {
                 el.hover(x - curX1, y - curY1);
+                return true;
             }
             if (this.dir == 0)
                 curX1 = curX2 + this.padding;
             else
                 curY1 = curY2 + this.padding;
-        });
+        }))) {
+            this.hoverWindowFrame(x, y);
+        }
     }
 
     renderWindowFrame() {
@@ -94,11 +96,12 @@ export class Window {
     }
 
     hoverWindowFrame(x, y) {
+        var hoverP = this.padding * 2;
         if (
-            x < this.posX - this.padding ||
-            x > this.posX + this.sizeX + this.padding || 
-            y < this.posY - this.padding || 
-            y > this.posY + this.sizeY + this.padding 
+            x < this.posX - hoverP ||
+            x > this.posX + this.sizeX + hoverP || 
+            y < this.posY - hoverP || 
+            y > this.posY + this.sizeY + hoverP 
         ) {
             return;
         }
