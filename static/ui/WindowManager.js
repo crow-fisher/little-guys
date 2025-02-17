@@ -1,4 +1,5 @@
 import { BlockBuildingComponent } from "./components/BlockBuildingComponent.js";
+import { LightingComponent } from "./components/LightingComponent.js";
 import { SubMenuComponent } from "./components/SubMenuComponent.js";
 import { Radio } from "./elements/Radio.js";
 import { Slider } from "./elements/Slider.js";
@@ -21,6 +22,7 @@ export function isWindowHovered() {
 }
 
 all_components.push(new BlockBuildingComponent());
+all_components.push(new LightingComponent());
 all_components.push(new SubMenuComponent());
 // var window = new Window(100, 100, 10, 1);
 // all_windows.push(window);

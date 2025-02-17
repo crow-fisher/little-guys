@@ -13,6 +13,7 @@ export const UI_SOIL_VIEWMODE = "UI_SOIL_VIEWMODE";
 export const UI_SOIL_INITALWATER = "UI_SOIL_INITALWATER";
 
 export const UI_SM_BB = "UI_SM_BB";
+export const UI_SM_LIGHTING = "UI_SM_LIGHTING";
 
 export const UI_TOOL_MODE_LEFT = "UI_TOOL_MODE_LEFT";
 export const UI_TOOL_MODE_RIGHT = "UI_TOO_MODE_RIGHT";
@@ -25,6 +26,8 @@ var UI_DATA = {
     UI_BB_MODE: UI_MODE_SOIL,
     UI_BB_SIZE: 3,
     UI_BB_STRENGTH: 1,
+    UI_SM_BB: false,
+    UI_SM_LIGHTING: true,
     UI_SOIL_COMPOSITION: [40, 40, 20],
     UI_ROCK_COMPOSITION: [40, 40, 20],
     UI_SOIL_VIEWMODE: "🎨",
