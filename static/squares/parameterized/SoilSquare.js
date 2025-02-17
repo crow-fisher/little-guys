@@ -9,6 +9,7 @@ import { timeScaleFactor } from "../../time.js";
 import { getPressure, getWindSquareAbove } from "../../wind.js";
 import { addWaterSaturationPascals, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor } from "../../temperatureHumidity.js";
 import { loadUI, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER } from "../../ui/UIData.js";
+import { getActiveClimate } from "../../climateManager.js";
 
 // maps in form "water containment" / "matric pressure in atmospheres"
 export const clayMatricPressureMap = [
@@ -31,14 +32,10 @@ export const sandMatricPressureMap = [
     [0.40, 0]
 ]
 
-export const clayColorRgb = hexToRgb("#773319");
-export const siltColorRgb = hexToRgb("#33251b");
-export const sandColorRgb = hexToRgb("#c99060");
-
 export function getBaseSoilColor(sand, silt, clay) {
-    if (Math.abs(1 - (sand + silt + clay)) > 0.01) {
-        console.warn("FUCKED UP SOIL DUDE");
-    }
+    let clayColorRgb = getActiveClimate().soilColorClay;
+    let siltColorRgb = getActiveClimate().soilColorSilt;
+    let sandColorRgb = getActiveClimate().soilColorSand;
     return {
         r: clay * clayColorRgb.r + silt * siltColorRgb.r + sand * sandColorRgb.r, 
         g: clay * clayColorRgb.g + silt * siltColorRgb.g + sand * sandColorRgb.g, 
@@ -70,9 +67,9 @@ export class SoilSquare extends BaseSquare {
         this.rootable = true;
         this.validPlantHome = true;
 
-        this.clayColorRgb = clayColorRgb;
-        this.siltColorRgb = siltColorRgb;
-        this.sandColorRgb = sandColorRgb;
+        this.clayColorRgb = getActiveClimate().clayColorRgb;
+        this.siltColorRgb = getActiveClimate().siltColorRgb;
+        this.sandColorRgb = getActiveClimate().sandColorRgb;
 
         this.lightDarkeningColor = hexToRgb("#3C3A04");
         this.moonlightColor = hexToRgb("#F0F8FF");
@@ -262,7 +259,6 @@ export class SoilSquare extends BaseSquare {
         return (this.sand * sandRate + 
                 this.silt * siltRate + 
                 this.clay * clayRate) ** power;
-
     }
 
     getColorBase() {

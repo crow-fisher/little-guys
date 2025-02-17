@@ -4,11 +4,10 @@ import { loadUI, saveUI } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class Slider extends WindowElement {
-    constructor(window, sizeX, sizeY, key, min, max) {
-        super(window, sizeX, sizeY);
+    constructor(window, key, sizeX, sizeY, min, max) {
+        super(window, key, sizeX, sizeY);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
-        this.key = key;
         this.min = min;
         this.max = max;
         this.cur = loadUI(key);

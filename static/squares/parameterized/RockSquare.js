@@ -4,6 +4,20 @@ import { hexToRgb } from "../../common.js";
 import { addSquareByName, CANVAS_SQUARES_Y } from "../../index.js";
 import { SoilSquare } from "./SoilSquare.js";
 import { getRockLightDecayFactor } from "../../lighting.js";
+import { getActiveClimate } from "../../climateManager.js";
+import { loadUI, UI_ROCK_COMPOSITION } from "../../ui/UIData.js";
+
+
+export function getBaseRockColor(sand, silt, clay) {
+    let clayColorRgb = getActiveClimate().rockColorClay;
+    let siltColorRgb = getActiveClimate().rockColorSilt;
+    let sandColorRgb = getActiveClimate().rockColorSand;
+    return {
+        r: clay * clayColorRgb.r + silt * siltColorRgb.r + sand * sandColorRgb.r, 
+        g: clay * clayColorRgb.g + silt * siltColorRgb.g + sand * sandColorRgb.g, 
+        b: clay * clayColorRgb.b + silt * siltColorRgb.b + sand * sandColorRgb.b
+    }
+}
 
 export class RockSquare extends SoilSquare {
     constructor(posX, posY) {
@@ -11,35 +25,35 @@ export class RockSquare extends SoilSquare {
         this.proto = "RockSquare";
         this.gravity = 0;
 
-        this.clayColorRgb = hexToRgb("#ba9670");
-        this.siltColorRgb = hexToRgb("#664935");
-        this.sandColorRgb = hexToRgb("#988570");
-
-        this.sand = Math.random() * 1.00;
-        this.silt = Math.random() * 0.80;
-        this.clay = Math.random() * 0.20;
-
-        var sum = this.clay + this.silt + this.sand;
-
-        this.clay *= (1 / sum);
-        this.silt *= (1 / sum);
-        this.sand *= (1 / sum);
-
-        this.clay = Math.min(Math.max(this.clay, 0), 1);
-        this.silt = Math.min(Math.max(this.silt, 0), 1);
-        this.sand = Math.min(Math.max(this.sand, 0), 1);
+        this.clayColorRgb = getActiveClimate().rockColorClay;
+        this.siltColorRgb = getActiveClimate().rockColorSilt;
+        this.sandColorRgb = getActiveClimate().rockColorSand;
     }
+
+    getColorBase() {
+        var outColor = getBaseRockColor(this.sand, this.silt, this.clay);
+        var darkeningColorMult = (this.waterContainment / this.waterContainmentMax);
+
+        outColor.r *= (1 - 0.24 * darkeningColorMult);
+        outColor.g *= (1 - 0.30 * darkeningColorMult);
+        outColor.b *= (1 - 0.383 * darkeningColorMult);
+        return outColor;
+    }
+
+    setVariant() {
+        let arr = loadUI(UI_ROCK_COMPOSITION);
+        this.sand = arr[0];
+        this.silt = arr[1];
+        this.clay = arr[2];
+        this.randomize();
+    }
+
     initWaterContainment() {
         this.waterContainment = 0;
     }
 
     lightFilterRate() {
         return super.lightFilterRate() * getRockLightDecayFactor();
-    }
-
-    getWaterflowRate() {
-        var base = super.getWaterflowRate();
-        return base * 100;
     }
 
     doBlockOutflow() {

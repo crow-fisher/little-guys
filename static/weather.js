@@ -112,7 +112,6 @@ class Weather {
     }
 }
 
-// https://www.noaa.gov/jetstream/clouds/four-core-types-of-clouds
 function spawnCumulusCloud() {
     curClouds.push(new Cloud(
         randRange(-CANVAS_SQUARES_X/4, CANVAS_SQUARES_X * (0.75)),
@@ -120,9 +119,6 @@ function spawnCumulusCloud() {
         randRange(4, 8), randRange(3, 5), 
         getCurDay() + 0.00001 * randRange(1, 30), .1 * randRange(2, 4), 
         randRange(1.0, 1.00999), 0.8 * randRange(1, 2)));
-}
-
-function spawnStratusCloud() {
 }
 
 function spawnNimbusCloud(rainFactor) {

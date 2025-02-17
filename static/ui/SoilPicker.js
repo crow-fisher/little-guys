@@ -1,6 +1,7 @@
 import { rgbToHex } from "../common.js";
-import { isLeftMouseClicked, MAIN_CANVAS, MAIN_CONTEXT } from "../index.js";
-import { clayColorRgb, getBaseNutrientRate, getBasePercolationRate, getBaseSoilColor, sandColorRgb } from "../squares/parameterized/SoilSquare.js";
+import { isLeftMouseClicked, MAIN_CONTEXT } from "../index.js";
+import { getBaseRockColor } from "../squares/parameterized/RockSquare.js";
+import { getBaseNutrientRate, getBasePercolationRate, getBaseSoilColor } from "../squares/parameterized/SoilSquare.js";
 import { loadUI, saveUI, UI_SOIL_COMPOSITION, UI_SOIL_VIEWMODE } from "./UIData.js";
 import { WindowElement } from "./Window.js";
 
@@ -9,12 +10,12 @@ export const R_PERCOLATION_RATE = "💦";
 export const R_NUTRIENTS = "⚡";
 
 export class SoilPickerElement extends WindowElement {
-    constructor(window, sizeX, sizeY) {
-        super(window, sizeX, sizeY);
+    constructor(window, key, sizeX, sizeY) {
+        super(window, key, sizeX, sizeY);
         this.pickerSize = Math.min(sizeX, sizeY);
 
-        this.hoverColor = sandColorRgb;
-        this.clickColor = clayColorRgb;
+        this.hoverColor = {r: 100, g: 100, b: 100};
+        this.clickColor = {r: 100, g: 100, b: 100};
     }
 
     render(startX, startY) {
@@ -47,13 +48,21 @@ export class SoilPickerElement extends WindowElement {
         return [sandPercent, siltPercent, clayPercent];
     }
 
+    getBaseColor(sand, silt, clay) {
+        if (this.key == UI_SOIL_COMPOSITION) {
+            return getBaseSoilColor(sand, silt, clay);
+        } else {
+            return getBaseRockColor(sand, silt, clay);
+        }
+    }
+
     getSquareColor(i, j) {
         var arr = this.getSquareComposition(i, j);
         if (arr != null) {
             let val, val_max, mult;
             switch (loadUI(UI_SOIL_VIEWMODE)) {
                 case R_COLORS:
-                    return getBaseSoilColor(arr[0], arr[1], arr[2]);
+                    return this.getBaseColor(arr[0], arr[1], arr[2]);
                 case R_PERCOLATION_RATE:
                     val = getBasePercolationRate(arr[0], arr[1], arr[2]);
                     val_max = getBasePercolationRate(0, 0, 1);
@@ -91,7 +100,7 @@ export class SoilPickerElement extends WindowElement {
             this.hoverColor = c;
             if (isLeftMouseClicked()) {
                 this.clickColor = c;
-                saveUI(UI_SOIL_COMPOSITION, this.getSquareComposition(posX, posY))
+                saveUI(this.key, this.getSquareComposition(posX, posY))
             }
         }
     }
