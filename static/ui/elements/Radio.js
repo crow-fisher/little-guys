@@ -1,6 +1,6 @@
 import { COLOR_BLACK, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { isLeftMouseClicked, MAIN_CONTEXT } from "../../index.js";
-import { saveUI } from "../UIData.js";
+import { loadUI, saveUI } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class Radio extends WindowElement {
@@ -10,7 +10,7 @@ export class Radio extends WindowElement {
         this.sizeY = sizeY;
         this.key = key;
         this.choices = choices;
-        this.selected = 0;
+        this.selected = this.choices.indexOf(loadUI(this.key));
     }
 
     render(startX, startY) {
@@ -29,6 +29,7 @@ export class Radio extends WindowElement {
             MAIN_CONTEXT.strokeText(this.choices[i], startX + (i * step) + step / 2, 2 + startY + (this.sizeY / 2))
             curX += step;
         }
+        return [this.sizeX, this.sizeY];
     }
 
     hover(posX, posY) {

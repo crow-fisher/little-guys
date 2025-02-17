@@ -3,7 +3,6 @@ import { getLastMoveOffset, isLeftMouseClicked, MAIN_CONTEXT } from "../index.js
 
 export class Window {
     constructor(posX, posY, padding, dir) {
-        this.clickElements = new Array();
         this.elements = new Array();
         this.posX = posX;
         this.posY = posY;
@@ -24,14 +23,10 @@ export class Window {
 
     addElement(newElement) {
         this.elements.push(newElement);
-        if (newElement.handleClick) {
-            this.clickElements.push(newElement);
-        }
     }
 
     removeElement(elementToRemove) {
         this.elements = Array.from(this.elements.filter((el) => el != elementToRemove));
-        this.clickElements = Array.from(this.clickElements.filter((el) => el != elementToRemove));
     }
 
     render() {
@@ -44,19 +39,17 @@ export class Window {
         this.endY = 0;
 
         this.elements.forEach((el) => {
-            el.render(curX, curY);
-            this.endX = Math.max(curX + el.sizeX, this.endX);
-            this.endY = Math.max(curY + el.sizeY, this.endY);
+            let elSize = el.render(curX, curY);
+            this.endX = Math.max(curX + elSize[0], this.endX);
+            this.endY = Math.max(curY + elSize[1], this.endY);
             if (this.dir == 0) {
-                curX += el.sizeX + this.padding;
+                curX += elSize[0] + this.padding;
             } else {
-                curY += el.sizeY + this.padding;
+                curY += elSize[1] + this.padding;
             }
         });
         this.sizeX = this.endX - this.posX;
         this.sizeY = this.endY - this.posY;
-
-
     }
 
     update() {
@@ -67,10 +60,10 @@ export class Window {
         var x = curMouseLocation.x;
         var y = curMouseLocation.y;
 
-
         var curX1 = this.posX;
         var curY1 = this.posY;
         var curX2, curY2;
+        
         if (!(this.elements.some((el) => {
             curX2 = curX1 + el.sizeX;
             curY2 = curY1 + el.sizeY;
@@ -130,7 +123,9 @@ export class WindowElement {
         this.sizeX = sizeX;
         this.sizeY = sizeY;
     }
-    render(startX, startY) {}
+    render(startX, startY) {
+        return [this.sizeX, this.sizeY];
+    }
 
     hover(posX, posY) {
         this.window.hovered = true;

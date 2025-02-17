@@ -1,9 +1,9 @@
-import { rgbToHex } from "../common.js";
-import { isLeftMouseClicked, MAIN_CONTEXT } from "../index.js";
-import { getBaseRockColor } from "../squares/parameterized/RockSquare.js";
-import { getBaseNutrientRate, getBasePercolationRate, getBaseSoilColor } from "../squares/parameterized/SoilSquare.js";
-import { loadUI, saveUI, UI_SOIL_COMPOSITION, UI_SOIL_VIEWMODE } from "./UIData.js";
-import { WindowElement } from "./Window.js";
+import { rgbToHex } from "../../common.js";
+import { isLeftMouseClicked, MAIN_CONTEXT } from "../../index.js";
+import { getBaseRockColor } from "../../squares/parameterized/RockSquare.js";
+import { getBaseNutrientRate, getBasePercolationRate, getBaseSoilColor } from "../../squares/parameterized/SoilSquare.js";
+import { loadUI, saveUI, UI_SOIL_COMPOSITION, UI_SOIL_VIEWMODE } from "../UIData.js";
+import { WindowElement } from "../Window.js";
 
 export const R_COLORS = "🎨";
 export const R_PERCOLATION_RATE = "💦";
