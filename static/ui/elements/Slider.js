@@ -38,9 +38,8 @@ export class Slider extends WindowElement {
         if (!isLeftMouseClicked()) {
             return;
         }
+        this.window.locked = true;
         var py = this.sizeY / 2;
-        var p1x = this.window.padding; 
-        var p2x = this.sizeX - this.window.padding;
         if (Math.abs(posY - py) > this.window.padding) {
             return;
         }

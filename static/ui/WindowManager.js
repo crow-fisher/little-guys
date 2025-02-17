@@ -5,18 +5,21 @@ import { SoilPickerElement } from "./elements/SoilPicker.js";
 import { UI_ROCK_COMPOSITION, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER, UI_SOIL_VIEWMODE } from "./UIData.js";
 import { Window } from "./Window.js";
 
-var all_windows = [];
+var all_components = [];
 var windowHovered = false;
 
 export function resetWindowHovered() {
-    all_windows.forEach((window) => window.hovered = false);
+    all_components.forEach((component) => {
+        component.window.hovered = false;
+        component.window.locked = false;
+    
+    });
 }
 export function isWindowHovered() {
-    return all_windows.some((window) => window.hovered);
+    return all_components.some((component) => component.window.hovered);
 }
 
-
-all_windows.push(new BlockBuildingComponent());
+all_components.push(new BlockBuildingComponent());
 // var window = new Window(100, 100, 10, 1);
 // all_windows.push(window);
 
@@ -26,9 +29,9 @@ all_windows.push(new BlockBuildingComponent());
 // window.addElement(new Slider(window, 200, 35, UI_SOIL_INITALWATER, -15, -2));
 
 export function renderWindows() {
-    all_windows.forEach((window) => window.render());
+    all_components.forEach((window) => window.render());
 }
 export function updateWindows() {
-    all_windows.forEach((window) => window.update());
+    all_components.forEach((window) => window.update());
 }
 

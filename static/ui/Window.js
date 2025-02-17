@@ -16,6 +16,7 @@ export class Window {
 
         this.hovered = false;
         this.clicked = false;
+        this.locked = false;
 
         this.clickStartX = -1;
         this.clickStartY = -1;
@@ -63,7 +64,8 @@ export class Window {
         var curX1 = this.posX;
         var curY1 = this.posY;
         var curX2, curY2;
-        
+
+
         if (!(this.elements.some((el) => {
             curX2 = curX1 + el.sizeX;
             curY2 = curY1 + el.sizeY;
@@ -76,8 +78,10 @@ export class Window {
             else
                 curY1 = curY2 + this.padding;
         }))) {
-            this.hoverWindowFrame(x, y);
         }
+
+        this.hoverWindowFrame(x, y);
+
     }
 
     renderWindowFrame() {
@@ -89,6 +93,10 @@ export class Window {
     }
 
     hoverWindowFrame(x, y) {
+        if (this.locked) {
+            return;
+        }
+
         var hoverP = this.padding * 2;
         if (
             x < this.posX - hoverP ||

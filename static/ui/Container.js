@@ -13,9 +13,6 @@ export class Container extends WindowElement {
         this.endY = 0;
         this.dir = dir;
 
-        this.hovered = false;
-        this.clicked = false;
-
         this.clickStartX = -1;
         this.clickStartY = -1;
     }

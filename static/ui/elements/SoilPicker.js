@@ -13,7 +13,6 @@ export class SoilPickerElement extends WindowElement {
     constructor(window, key, sizeX, sizeY) {
         super(window, key, sizeX, sizeY);
         this.pickerSize = Math.min(sizeX, sizeY);
-
         this.hoverColor = {r: 100, g: 100, b: 100};
         this.clickColor = {r: 100, g: 100, b: 100};
     }

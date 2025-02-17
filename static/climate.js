@@ -2,9 +2,9 @@ import { hexToRgb } from "./common.js";
 
 export class Climate {
     constructor() {
-        this.soilColorSand = hexToRgb("#773319");
-        this.soilColorClay = hexToRgb("#33251b");
-        this.soilColorSilt = hexToRgb("#c99060");
+        this.soilColorSand = hexToRgb("#c99060");
+        this.soilColorClay = hexToRgb("#773319");
+        this.soilColorSilt = hexToRgb("#33251b");
 
         this.rockColorSand = hexToRgb("#ba9670");
         this.rockColorClay = hexToRgb("#664935");
