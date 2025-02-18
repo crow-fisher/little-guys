@@ -1,5 +1,6 @@
 import { setNextLightUpdateTime } from "../globalOperations.js";
 import { isLeftMouseClicked } from "../index.js";
+import { AquiferSquare } from "../squares/parameterized/RainSquare.js";
 import { R_COLORS } from "./elements/SoilPicker.js";
 
 export const UI_MODE_SOIL = "soil";
@@ -16,6 +17,7 @@ export const UI_SOIL_INITALWATER = "UI_SOIL_INITALWATER";
 
 export const UI_SM_BB = "UI_SM_BB";
 export const UI_SM_LIGHTING = "UI_SM_LIGHTING";
+export const UI_SM_SPECIAL = "UI_SM_SPECIAL";
 
 export const UI_LIGHTING_SUN = "UI_LIGHTING_SUN";
 export const UI_LIGHTING_MOON = "UI_LIGHTING_MOON";
@@ -24,11 +26,15 @@ export const UI_LIGHTING_ROCK = "UI_LIGHTING_ROCK";
 export const UI_LIGHTING_PLANT = "UI_LIGHTING_PLANT";
 export const UI_LIGHTING_DECAY = "UI_LIGHTING_DECAY";
 
+export const UI_SPECIAL_SELECT = "UI_SPECIAL_SELECT";
+
+export const UI_SPECIAL_WATER = "water"
+export const UI_SPECIAL_AQUIFER = "aquifer"
+export const UI_SPECIAL_MIX = "mix"
+export const UI_SPECIAL_BLUR = "blur"
+
 export const UI_TOOL_MODE_LEFT = "UI_TOOL_MODE_LEFT";
 export const UI_TOOL_MODE_RIGHT = "UI_TOO_MODE_RIGHT";
-export const UI_TOOL_MIX = "mix";
-export const UI_TOOL_BLUR = "blur";
-export const UI_TOOL_ERASE = "erase";
 
 // put default values in here
 var UI_DATA = {
@@ -36,7 +42,8 @@ var UI_DATA = {
     UI_BB_SIZE: 3,
     UI_BB_STRENGTH: 1,
     UI_SM_BB: false,
-    UI_SM_LIGHTING: true,
+    UI_SM_LIGHTING: false,
+    UI_SM_SPECIAL: true,
     UI_SOIL_COMPOSITION: [40, 40, 20],
     UI_ROCK_COMPOSITION: [40, 40, 20],
     UI_SOIL_VIEWMODE: "🎨",
@@ -81,7 +88,7 @@ export function executeFunctionQueue() {
     if (isLeftMouseClicked()) {
         return;
     }
-    
+
     functionQueue.forEach((f) => f());
     functionQueue = new Array();
 }

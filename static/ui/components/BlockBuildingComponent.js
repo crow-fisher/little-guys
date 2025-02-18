@@ -5,8 +5,7 @@ import { Radio } from "../elements/Radio.js";
 import { Slider } from "../elements/Slider.js";
 import { SoilPickerElement } from "../elements/SoilPicker.js";
 import { Text } from "../elements/Text.js";
-import { loadUI, UI_BB_MODE, UI_BB_SIZE, UI_BB_STRENGTH, UI_MODE_ROCK, UI_MODE_SOIL, UI_ROCK_COMPOSITION, UI_SM_BB, UI_SOIL_COMPOSITION, UI_TOOL_BLUR, UI_TOOL_ERASE, UI_TOOL_MIX, UI_TOOL_MODE_LEFT } from "../UIData.js";
-
+import { loadUI, UI_BB_MODE, UI_BB_SIZE, UI_BB_STRENGTH, UI_MODE_ROCK, UI_MODE_SOIL, UI_ROCK_COMPOSITION, UI_SM_BB, UI_SOIL_COMPOSITION } from "../UIData.js";
 
 let padding = 10;
 export class BlockBuildingComponent extends Component {
