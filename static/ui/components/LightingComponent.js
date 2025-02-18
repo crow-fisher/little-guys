@@ -34,7 +34,7 @@ export class LightingComponent extends Component {
         leftContainer.addElement(new Slider(this.window, UI_LIGHTING_PLANT, sizeX,  35, 0.1, 10));
 
         rightContainer.addElement(new Text(this.window, sizeX,  15, "decay"));
-        rightContainer.addElement(new Slider(this.window, UI_LIGHTING_DECAY, sizeX,  35, .90, .9999));
+        rightContainer.addElement(new Slider(this.window, UI_LIGHTING_DECAY, sizeX,  35, .99, .999999));
 
     }
 

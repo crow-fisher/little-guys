@@ -4,6 +4,7 @@ import { lightingClearLifeSquarePositionMap } from "./lighting.js";
 import { resetFrameDivMult } from "./lightingProcessing.js";
 import { initTemperatureHumidity, renderClouds, renderTemperature, renderWaterSaturation, restingValues, tickMaps } from "./temperatureHumidity.js";
 import { doTimeSeek, getTimeScale, initializeStarMap, renderTime, updateTime } from "./time.js";
+import { executeFunctionQueue } from "./ui/UIData.js";
 import { renderWindows, resetWindowHovered, updateWindows } from "./ui/WindowManager.js";
 import { weather } from "./weather.js";
 import { initializeWindPressureMap, renderWindPressureMap, tickWindPressureMap } from "./wind.js";
@@ -50,6 +51,7 @@ export function scheduler_main() {
     }
 
     updateWindows();
+    executeFunctionQueue();
     setTimeout(scheduler_main, 0);
 }
 

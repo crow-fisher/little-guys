@@ -1,4 +1,5 @@
 import { setNextLightUpdateTime } from "../globalOperations.js";
+import { isLeftMouseClicked } from "../index.js";
 import { R_COLORS } from "./elements/SoilPicker.js";
 
 export const UI_MODE_SOIL = "soil";
@@ -45,7 +46,7 @@ var UI_DATA = {
     UI_LIGHTING_WATER: 1,
     UI_LIGHTING_ROCK: 1,
     UI_LIGHTING_PLANT: 1,
-    UI_LIGHTING_DECAY: 1.1
+    UI_LIGHTING_DECAY: .999
 };
 
 var UI_FUNCTION_MAP = {
@@ -55,10 +56,12 @@ var UI_FUNCTION_MAP = {
     UI_LIGHTING_DECAY: () => setNextLightUpdateTime(0)
 }
 
+var functionQueue = [];
+
 export function saveUI(key, value) {
     UI_DATA[key] = value;
     if (key in UI_FUNCTION_MAP) {
-        UI_FUNCTION_MAP[key]();
+        functionQueue.push(UI_FUNCTION_MAP[key]);
     }
 }
 
@@ -72,4 +75,13 @@ export function saveUIMap(map) {
 
 export function getUIMap() {
     return UI_DATA;
+}
+
+export function executeFunctionQueue() {
+    if (isLeftMouseClicked()) {
+        return;
+    }
+    
+    functionQueue.forEach((f) => f());
+    functionQueue = new Array();
 }
