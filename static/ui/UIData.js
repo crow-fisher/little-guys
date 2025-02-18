@@ -31,7 +31,7 @@ export const UI_SPECIAL_SELECT = "UI_SPECIAL_SELECT";
 export const UI_SPECIAL_WATER = "water"
 export const UI_SPECIAL_AQUIFER = "aquifer"
 export const UI_SPECIAL_MIX = "mix"
-export const UI_SPECIAL_BLUR = "blur"
+export const UI_SPECIAL_SURFACE = "surface"
 
 export const UI_TOOL_MODE_LEFT = "UI_TOOL_MODE_LEFT";
 export const UI_TOOL_MODE_RIGHT = "UI_TOO_MODE_RIGHT";
@@ -43,7 +43,7 @@ var UI_DATA = {
     UI_BB_STRENGTH: 1,
     UI_SM_BB: false,
     UI_SM_LIGHTING: false,
-    UI_SM_SPECIAL: true,
+    UI_SM_SPECIAL: false,
     UI_SOIL_COMPOSITION: [40, 40, 20],
     UI_ROCK_COMPOSITION: [40, 40, 20],
     UI_SOIL_VIEWMODE: "🎨",
@@ -63,9 +63,18 @@ var UI_FUNCTION_MAP = {
     UI_LIGHTING_DECAY: () => setNextLightUpdateTime(0)
 }
 
+var UI_SINGLE_GROUPS = [
+    [UI_SM_BB, UI_SM_SPECIAL, UI_SM_LIGHTING]
+]
+
 var functionQueue = [];
 
 export function saveUI(key, value) {
+    let singleGroup = (UI_SINGLE_GROUPS.find((group) => group.indexOf(key) > -1));
+    if (singleGroup != null) {
+        singleGroup.filter((k) => loadUI(k)).forEach((k) => UI_DATA[k] = false);
+    }
+
     UI_DATA[key] = value;
     if (key in UI_FUNCTION_MAP) {
         functionQueue.push(UI_FUNCTION_MAP[key]);
