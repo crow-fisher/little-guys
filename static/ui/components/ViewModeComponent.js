@@ -14,13 +14,9 @@ import {
     UI_VIEWMODE_ORGANISMS, UI_SPECIAL_SELECT, UI_NULL,
     UI_SM_VIEWMODE
 } from "../UIData.js";
-
-
-let padding = 10;
 export class ViewModeComponent extends Component {
-    constructor() {
-        super();
-
+    constructor(posX, posY, padding, dir, key) {
+        super(posX, posY, padding, dir, key);
         var sizeX = 150;
         let container = new Container(this.window, UI_NULL, sizeX * 2, 100, padding, 1);
         this.window.addElement(container);
@@ -36,19 +32,5 @@ export class ViewModeComponent extends Component {
             UI_VIEWMODE_SURFACE,
             UI_VIEWMODE_ORGANISMS
         ]));
-    }
-
-    render() {
-        if (!loadUI(UI_SM_VIEWMODE)) {
-            return;
-        }
-        super.render();
-    }
-
-    update() {
-        if (!loadUI(UI_SM_VIEWMODE)) {
-            return;
-        }
-        super.update();
     }
 }

@@ -7,8 +7,8 @@ import { loadUI, UI_LIGHTING_SUN, UI_LIGHTING_MOON, UI_LIGHTING_WATER, UI_LIGHTI
 
 let padding = 10;
 export class LightingComponent extends Component {
-    constructor() {
-        super();
+    constructor(posX, posY, padding, dir, key) {
+        super(posX, posY, padding, dir, key);
 
         var sizeX = 100;
 
@@ -38,17 +38,4 @@ export class LightingComponent extends Component {
 
     }
 
-    render() {
-        if (!loadUI(UI_SM_LIGHTING)) {
-            return;
-        }
-        super.render();
-    }
-    
-    update() {
-        if (!loadUI(UI_SM_LIGHTING)) {
-            return;
-        }
-        super.update();
-    }
 }

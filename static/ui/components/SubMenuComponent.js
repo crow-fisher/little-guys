@@ -6,8 +6,8 @@ import { UI_SM_BB, UI_SM_LIGHTING, UI_SM_SPECIAL, UI_SM_VIEWMODE, UI_SOIL_COMPOS
 
 let padding = 10;
 export class SubMenuComponent extends Component {
-    constructor() {
-        super();
+    constructor(posX, posY, padding, dir, key) {
+        super(posX, posY, padding, dir, key);
         let subMenuContainer = new Container(this.window, UI_SOIL_COMPOSITION, 100, 100, padding, 1);
         this.window.addElement(subMenuContainer);
 

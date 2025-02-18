@@ -5,12 +5,12 @@ import { Radio } from "../elements/Radio.js";
 import { Slider } from "../elements/Slider.js";
 import { SoilPickerElement } from "../elements/SoilPicker.js";
 import { Text } from "../elements/Text.js";
-import { loadUI, UI_BB_MODE, UI_BB_SIZE, UI_BB_STRENGTH, UI_MODE_ROCK, UI_MODE_SOIL, UI_ROCK_COMPOSITION, UI_SM_BB, UI_SOIL_COMPOSITION } from "../UIData.js";
+import { loadUI, UI_BB_MODE, UI_BB_SIZE, UI_BB_STRENGTH, UI_MODE_ROCK, UI_MODE_SOIL, UI_ROCK_COMPOSITION, UI_SOIL_COMPOSITION } from "../UIData.js";
 
 let padding = 10;
 export class BlockBuildingComponent extends Component {
-    constructor() {
-        super();
+    constructor(posX, posY, padding, dir, key) {
+        super(posX, posY, padding, dir, key);
         let sizeX = 100;
         let container = new Container(this.window, UI_SOIL_COMPOSITION, 100, 100, padding, 1);
         this.window.addElement(container);
@@ -35,19 +35,5 @@ export class BlockBuildingComponent extends Component {
 
         strengthContainer.addElement(new Text(this.window, sizeX, 15, "strength"));
         strengthContainer.addElement(new Slider(this.window, UI_BB_STRENGTH, sizeX, 35, 0, 1));
-    }
-
-    render() {
-        if (!loadUI(UI_SM_BB)) {
-            return;
-        }
-        super.render();
-    }
-
-    update() {
-        if (!loadUI(UI_SM_BB)) {
-            return;
-        }
-        super.update();
     }
 }

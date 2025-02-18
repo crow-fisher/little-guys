@@ -1,15 +1,21 @@
+import { loadUI } from "./UIData.js";
 import { Window } from "./Window.js";
 
 export class Component {
-    constructor() {
-        this.window = new Window(100, 100, 10, 0);
+    constructor(posX, posY, padding, dir, key) {
+        this.window = new Window(posX, posY, padding, dir);
+        this.key = key;
     }
 
     render() {
-        this.window.render();
+        if (loadUI(this.key)) {
+            this.window.render();
+        }
     }
 
     update() {
-        this.window.update();
+        if (loadUI(this.key)) {
+            this.window.update();
+        }
     }
 }

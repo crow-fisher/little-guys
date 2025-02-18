@@ -8,8 +8,8 @@ import { loadUI, UI_SPECIAL_WATER, UI_SPECIAL_AQUIFER, UI_SPECIAL_MIX, UI_SPECIA
 
 let padding = 10;
 export class SpecialBlockComponent extends Component {
-    constructor() {
-        super();
+    constructor(posX, posY, padding, dir, key) {
+        super(posX, posY, padding, dir, key);
 
         var sizeX = 100;
         let container = new Container(this.window, UI_SOIL_COMPOSITION, sizeX * 2, 100, padding, 1);
@@ -38,19 +38,5 @@ export class SpecialBlockComponent extends Component {
 
         strengthContainer.addElement(new Text(this.window, sizeX, 15, "strength"));
         strengthContainer.addElement(new Slider(this.window, UI_BB_STRENGTH, sizeX, 35, 0, 1));
-    }
-
-    render() {
-        if (!loadUI(UI_SM_SPECIAL)) {
-            return;
-        }
-        super.render();
-    }
-
-    update() {
-        if (!loadUI(UI_SM_SPECIAL)) {
-            return;
-        }
-        super.update();
     }
 }
