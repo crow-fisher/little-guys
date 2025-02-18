@@ -3,11 +3,10 @@ import { addSquareByName, CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js"
 import { addOrganismSquare } from "./lifeSquares/_lsOperations.js";
 import { addOrganism, iterateOnOrganisms, removeOrganism } from "./organisms/_orgOperations.js";
 import { GrowthComponent, GrowthPlan, GrowthPlanStep } from "./organisms/GrowthPlan.js";
-import { lush } from "./saves.js";
 import { triggerEarlySquareScheduler } from "./scheduler.js";
 import { addSquare, addSquareOverride, iterateOnSquares, removeOrganismSquare } from "./squares/_sqOperations.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
-import { getTemperatureMap, getWaterSaturationMap, setTemperatureMap, setWaterSaturationMap } from "./temperatureHumidity.js";
+import { getTemperatureMap, getWaterSaturationMap, setTemperatureMap, setWaterSaturationMap } from "./climate/temperatureHumidity.js";
 import { getCurDay, setCurDay } from "./climate/time.js";
 import { ProtoMap, TypeMap } from "./types.js";
 import { getWindPressureMap, initWindPressure, setWindPressureMap } from "./climate/wind.js";
@@ -279,11 +278,6 @@ async function decompress(base64String) {
     return decoder.decode(decompressedArrayBuffer);
 }
 
-export async function loadDemoScene() {
-    purgeGameState();
-    let scene = await decompress(lush);
-    loadSlotData(JSON.parse(scene));
-}
 
 export function loadEmptyScene() {
     purgeGameState();

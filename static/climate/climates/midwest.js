@@ -1,3 +1,3 @@
-import { Climate } from "../../climate.js";
+import { Climate } from "../climate.js"
 
 export class Midwest extends Climate {}

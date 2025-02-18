@@ -1,25 +1,18 @@
 import { BaseSquare } from "./BaseSqaure.js";
-import {
-    dirtNutrientValuePerDirectNeighbor
-    } from "../config/config.js"
     
-    import { addOrganism, getOrganismsAtSquare } from "../organisms/_orgOperations.js";
-    import { removeOrganism } from "../organisms/_orgOperations.js";
-    import { removeSquare } from "../globalOperations.js";
-    import { getObjectArrFromMap } from "../common.js";
-    import { addSquare, getSquares, removeOrganismSquare } from "./_sqOperations.js";
-    import { ALL_ORGANISMS } from "../globals.js";
+import { addOrganism } from "../organisms/_orgOperations.js";
+import { removeOrganism } from "../organisms/_orgOperations.js";
+import { getSquares, removeOrganismSquare } from "./_sqOperations.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 class SeedSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
         this.proto = "SeedSquare";
-
+        
         this.baseColor = "#0088FF";
         this.darkColor = "#00001D";
         this.accentColor = "#FF6A00";
 
-        this.nutrientValue = dirtNutrientValuePerDirectNeighbor;
         this.rootable = true;
         this.organic = true;
         this.visible = false;

@@ -1,4 +1,4 @@
-import { hexToRgb } from "./common.js";
+import { hexToRgb } from "../common.js";
 
 export class Climate {
     constructor() {

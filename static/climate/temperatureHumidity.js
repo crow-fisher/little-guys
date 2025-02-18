@@ -1,11 +1,11 @@
-import { hexToRgb, randNumber, rgbToRgba } from "./common.js";
-import { getSquares } from "./squares/_sqOperations.js";
-import { MAIN_CONTEXT, BASE_SIZE, zoomCanvasFillRect } from "./index.js";
-import { addSquareByName } from "./index.js";
+import { hexToRgb, randNumber, rgbToRgba } from "../common.js";
+import { getSquares } from "../squares/_sqOperations.js";
+import { MAIN_CONTEXT, BASE_SIZE, zoomCanvasFillRect } from "../index.js";
+import { addSquareByName } from "../index.js";
 import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds } from "./wind.js";
-import { getCurTimeScale, timeScaleFactor } from "./time.js";
-import { logRainFall } from "./weather.js";
-import { getDefaultLighting } from "./lightingProcessing.js";
+import { getCurTimeScale, timeScaleFactor } from "../climate/time.js";
+import { logRainFall } from "../climate/weather.js";
+import { getDefaultLighting } from "../lighting/lightingProcessing.js";
 
 
 // decent reference https://web.gps.caltech.edu/~xun/course/GEOL1350/Lecture5.pdf

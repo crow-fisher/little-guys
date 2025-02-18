@@ -1,15 +1,12 @@
 import { BaseSquare } from "../BaseSqaure.js";
-import { dirtNutrientValuePerDirectNeighbor } from "../../config/config.js";
-
-import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount } from "../../config/config.js";
 import { getNeighbors, getSquares } from "../_sqOperations.js";
 import { hexToRgb } from "../../common.js";
 import { addSquareByName } from "../../index.js";
 import { timeScaleFactor } from "../../climate/time.js";
 import { getPressure, getWindSquareAbove } from "../../climate/wind.js";
-import { addWaterSaturationPascals, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor } from "../../temperatureHumidity.js";
+import { addWaterSaturationPascals, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor } from "../../climate/temperatureHumidity.js";
 import { loadUI, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER } from "../../ui/UIData.js";
-import { getActiveClimate } from "../../climateManager.js";
+import { getActiveClimate } from "../../climate/climateManager.js";
 
 // maps in form "water containment" / "matric pressure in atmospheres"
 export const clayMatricPressureMap = [
@@ -63,7 +60,6 @@ export class SoilSquare extends BaseSquare {
         super(posX, posY);
         this.proto = "SoilSquare";
         this.colorBase = "#B06C49";
-        this.nutrientValue = dirtNutrientValuePerDirectNeighbor;
         this.rootable = true;
         this.validPlantHome = true;
 

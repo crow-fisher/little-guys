@@ -9,7 +9,6 @@ import { getCanvasHeight, getCanvasWidth } from "./canvas.js";
 export var MAIN_CANVAS = document.getElementById("main");
 export var MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
 
-
 MAIN_CANVAS.addEventListener('mousemove', handleClick, false);
 MAIN_CANVAS.addEventListener('mousedown', handleMouseDown);
 MAIN_CANVAS.addEventListener('mouseup', handleMouseUp);

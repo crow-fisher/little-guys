@@ -1,16 +1,9 @@
 import { BaseSquare } from "./BaseSqaure.js";
-import {
-    water_viscocity
-} from "../config/config.js";
-
 import { getSquares, iterateOnSquares, getNeighbors } from "./_sqOperations.js";
-
 import { WATERFLOW_CANDIDATE_SQUARES, WATERFLOW_TARGET_SQUARES } from "../globals.js";
-
 import { BASE_SIZE, MAIN_CONTEXT, zoomCanvasFillRect } from "../index.js";
 import { RGB_COLOR_OTHER_BLUE } from "../colors.js";
 import { rgbToRgba } from "../common.js";
-import { getWaterLightDecayFactor } from "../lighting/lighting.js";
 import { loadUI, UI_LIGHTING_WATER } from "../ui/UIData.js";
 
 class WaterSquare extends BaseSquare {
@@ -19,7 +12,6 @@ class WaterSquare extends BaseSquare {
         this.proto = "WaterSquare";
         this.boundedTop = false;
         this.solid = false;
-        this.viscocity = water_viscocity;
         this.currentPressureDirect = -1;
         this.currentPressureIndirect = -1;
         this.rootable = false;

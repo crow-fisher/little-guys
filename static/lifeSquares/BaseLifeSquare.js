@@ -1,17 +1,14 @@
-import { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, zoomCanvasFillRect } from "../index.js";
-import { getZPercent, hexToRgb, processColorLerp, processColorStdev, rgbToHex, rgbToRgba } from "../common.js";
+import { MAIN_CONTEXT, BASE_SIZE, zoomCanvasFillRect } from "../index.js";
+import { hexToRgb, rgbToHex, rgbToRgba } from "../common.js";
 
-import { getCurTime, getDaylightStrength } from "../climate/time.js";
-import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount, b_sq_darkeningStrength } from "../config/config.js";
+import { getCurTime } from "../climate/time.js";
 import { addSquare, getSquares, removeOrganismSquare } from "../squares/_sqOperations.js";
-import { airNutrientsPerEmptyNeighbor } from "../config/config.js";
 
 import { selectedViewMode } from "../index.js";
-import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_OTHER_BLUE, RGB_COLOR_BLACK, RGB_COLOR_RED, COLOR_BLUE, COLOR_OTHER_BLUE, COLOR_RED } from "../colors.js";
+import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED } from "../colors.js";
 import { addOrganismSquare } from "./_lsOperations.js";
 import { removeSquare } from "../globalOperations.js";
-import { STATE_DEAD, STATE_HEALTHY, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_DEAD, SUBTYPE_LEAF, SUBTYPE_LEAFSTEM, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, STATE_DESTROYED } from "../organisms/Stages.js";
-import { lightingRegisterLifeSquare } from "../lighting/lighting.js";
+import { STATE_DEAD, STATE_HEALTHY, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, STATE_DESTROYED } from "../organisms/Stages.js";
 import { processLighting } from "../lighting/lightingProcessing.js";
 
 
@@ -67,13 +64,6 @@ class BaseLifeSquare {
 
         this.distToFront = 0;
         this.component = null;
-
-        this.baseColor = "#9A8873";
-        this.baseColorAmount = dirt_baseColorAmount;
-        this.darkColor = "#46351D";
-        this.darkColorAmount = dirt_darkColorAmount;
-        this.accentColor = "#246A73";
-        this.accentColorAmount = dirt_accentColorAmount;
 
         this.LSQ_RENDER_SIZE_MULT = Math.SQRT2;
 

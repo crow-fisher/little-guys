@@ -4,7 +4,7 @@ import { setNextLightUpdateTime } from "../globalOperations.js";
 import { ALL_SQUARES, LIGHT_SOURCES } from "../globals.js";
 import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "../index.js";
 import { getSqIterationOrder, getSquares } from "../squares/_sqOperations.js";
-import { getCloudColorAtPos, getCloudColorAtSqPos } from "./temperatureHumidity.js";
+import { getCloudColorAtPos, getCloudColorAtSqPos } from "../climate/temperatureHumidity.js";
 import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "../climate/time.js";
 import { loadUI, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_SUN } from "../ui/UIData.js";
 import { getWindSquaresX, getWindSquaresY } from "../climate/wind.js";

@@ -1,9 +1,4 @@
-import {
-    dirt_baseColorAmount,
-    dirt_darkColorAmount,
-    dirt_accentColorAmount,
-    b_sq_nutrientValue
-} from "../config/config.js";
+
 
 import { getNeighbors, addSquare, getSquares } from "./_sqOperations.js";
 import {
@@ -23,7 +18,7 @@ import { removeSquare } from "../globalOperations.js";
 import { removeOrganismSquare } from "./_sqOperations.js";
 import { removeOrganism } from "../organisms/_orgOperations.js";
 
-import { calculateColorTemperature, getTemperatureAtWindSquare, updateWindSquareTemperature } from "../temperatureHumidity.js";
+import { calculateColorTemperature, getTemperatureAtWindSquare, updateWindSquareTemperature } from "../climate/temperatureHumidity.js";
 import { getAdjacentWindSquareToRealSquare, getWindSquareAbove } from "../climate/wind.js";
 import { RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
 import { getCurDay, timeScaleFactor } from "../climate/time.js";
@@ -53,7 +48,6 @@ export class BaseSquare {
         this.waterContainmentMax = 0.5;
         this.speedX = 0;
         this.speedY = 0;
-        this.nutrientValue = b_sq_nutrientValue;
         this.rootable = false;
         this.validPlantHome = false;
         this.group = -1;
@@ -67,12 +61,6 @@ export class BaseSquare {
         this.linkedOrganismSquares = new Array();
         this.lighting = this.getNeighborLightingArr();
         // for ref - values from dirt
-        this.baseColor = "#7FDDDF";
-        this.baseColorAmount = dirt_baseColorAmount;
-        this.darkColor = "#29CEB8";
-        this.darkColorAmount = dirt_darkColorAmount;
-        this.accentColor = "#63E8F7";
-        this.accentColorAmount = dirt_accentColorAmount;
         this.opacity = 1;
         this.waterSinkRate = 0.8;
         this.cachedRgba = null;
