@@ -10,6 +10,8 @@ export const UI_BB_MODE = "UI_BB_MODE";
 export const UI_BB_SIZE = "UI_BB_SIZE";
 export const UI_BB_STRENGTH = "UI_BB_STRENGTH";
 
+export const UI_NULL = "UI_NULL";
+
 export const UI_SOIL_COMPOSITION = "UI_SOIL_COMPOSITION";
 export const UI_ROCK_COMPOSITION = "UI_ROCK_COMPOSITION";
 export const UI_SOIL_VIEWMODE = "UI_SOIL_VIEWMODE";
@@ -18,6 +20,7 @@ export const UI_SOIL_INITALWATER = "UI_SOIL_INITALWATER";
 export const UI_SM_BB = "UI_SM_BB";
 export const UI_SM_LIGHTING = "UI_SM_LIGHTING";
 export const UI_SM_SPECIAL = "UI_SM_SPECIAL";
+export const UI_SM_VIEWMODE = "UI_SM_VIEWMODE";
 
 export const UI_LIGHTING_SUN = "UI_LIGHTING_SUN";
 export const UI_LIGHTING_MOON = "UI_LIGHTING_MOON";
@@ -33,6 +36,18 @@ export const UI_SPECIAL_AQUIFER = "aquifer"
 export const UI_SPECIAL_MIX = "mix"
 export const UI_SPECIAL_SURFACE = "surface"
 
+export const UI_VIEWMODE_SELECT = "UI_VIEWMODE_SELECT";
+
+export const UI_VIEWMODE_NORMAL = "normal";
+export const UI_VIEWMODE_LIGHTIHNG = "lighting";
+export const UI_VIEWMODE_NITROGEN = "nitrogen";
+export const UI_VIEWMODE_PHOSPHORUS = "phosphorus";
+export const UI_VIEWMODE_WIND = "wind";
+export const UI_VIEWMODE_TEMPERATURE = "temperature";
+export const UI_VIEWMODE_MOISTURE = "moisture";
+export const UI_VIEWMODE_SURFACE = "surface";
+export const UI_VIEWMODE_ORGANISMS = "organisms";
+
 export const UI_TOOL_MODE_LEFT = "UI_TOOL_MODE_LEFT";
 export const UI_TOOL_MODE_RIGHT = "UI_TOO_MODE_RIGHT";
 
@@ -44,6 +59,7 @@ var UI_DATA = {
     UI_SM_BB: false,
     UI_SM_LIGHTING: false,
     UI_SM_SPECIAL: false,
+    UI_SM_VIEWMODE: false,
     UI_SOIL_COMPOSITION: [40, 40, 20],
     UI_ROCK_COMPOSITION: [40, 40, 20],
     UI_SOIL_VIEWMODE: "🎨",
@@ -53,7 +69,8 @@ var UI_DATA = {
     UI_LIGHTING_WATER: 1,
     UI_LIGHTING_ROCK: 1,
     UI_LIGHTING_PLANT: 1,
-    UI_LIGHTING_DECAY: .999
+    UI_LIGHTING_DECAY: .999,
+    UI_VIEWMODE_SELECT: UI_VIEWMODE_NORMAL
 };
 
 var UI_FUNCTION_MAP = {
