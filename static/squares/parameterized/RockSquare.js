@@ -3,7 +3,7 @@ import { getSquares } from "../_sqOperations.js";
 import { hexToRgb } from "../../common.js";
 import { addSquareByName, CANVAS_SQUARES_Y } from "../../index.js";
 import { SoilSquare } from "./SoilSquare.js";
-import { getRockLightDecayFactor } from "../../lighting.js";
+import { getRockLightDecayFactor } from "../../lighting/lighting.js";
 import { getActiveClimate } from "../../climateManager.js";
 import { loadUI, UI_LIGHTING_ROCK, UI_ROCK_COMPOSITION } from "../../ui/UIData.js";
 

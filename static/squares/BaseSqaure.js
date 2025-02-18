@@ -24,10 +24,10 @@ import { removeOrganismSquare } from "./_sqOperations.js";
 import { removeOrganism } from "../organisms/_orgOperations.js";
 
 import { calculateColorTemperature, getTemperatureAtWindSquare, updateWindSquareTemperature } from "../temperatureHumidity.js";
-import { getAdjacentWindSquareToRealSquare, getWindSquareAbove } from "../wind.js";
+import { getAdjacentWindSquareToRealSquare, getWindSquareAbove } from "../climate/wind.js";
 import { RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
-import { getCurDay, timeScaleFactor } from "../time.js";
-import { processLighting } from "../lightingProcessing.js";
+import { getCurDay, timeScaleFactor } from "../climate/time.js";
+import { processLighting } from "../lighting/lightingProcessing.js";
 
 export class BaseSquare {
     constructor(posX, posY) {

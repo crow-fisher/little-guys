@@ -10,7 +10,7 @@ import { WATERFLOW_CANDIDATE_SQUARES, WATERFLOW_TARGET_SQUARES } from "../global
 import { BASE_SIZE, MAIN_CONTEXT, zoomCanvasFillRect } from "../index.js";
 import { RGB_COLOR_OTHER_BLUE } from "../colors.js";
 import { rgbToRgba } from "../common.js";
-import { getWaterLightDecayFactor } from "../lighting.js";
+import { getWaterLightDecayFactor } from "../lighting/lighting.js";
 import { loadUI, UI_LIGHTING_WATER } from "../ui/UIData.js";
 
 class WaterSquare extends BaseSquare {

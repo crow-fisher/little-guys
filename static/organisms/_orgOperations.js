@@ -1,6 +1,5 @@
-import { ALL_ORGANISMS, curEntitySpawnedId, getNextEntitySpawnId } from "../globals.js";
+import { ALL_ORGANISMS } from "../globals.js";
 import { getObjectArrFromMap } from "../common.js";
-import { getCollidableSquareAtLocation } from "../squares/_sqOperations.js";
 import { removeItemAll } from "../common.js";
 
 function addNewOrganism(organism) {

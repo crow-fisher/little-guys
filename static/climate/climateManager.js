@@ -1,4 +1,4 @@
-import { Midwest } from "./climates/midwest.js";
+import { Midwest } from "./climate/climates/midwest.js";
 
 
 var climate_midwest = new Midwest();

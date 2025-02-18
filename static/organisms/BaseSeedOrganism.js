@@ -2,7 +2,7 @@ import { BaseOrganism } from "./BaseOrganism.js";
 import { SeedLifeSquare } from "../lifeSquares/SeedLifeSquare.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 import { addNewOrganism } from "./_orgOperations.js";
-import { getCurDay } from "../time.js";
+import { getCurDay } from "../climate/time.js";
 
 class BaseSeedOrganism extends BaseOrganism {
     constructor(square) {

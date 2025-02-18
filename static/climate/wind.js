@@ -1,6 +1,6 @@
-import { hexToRgb, rgbToRgba } from "./common.js";
-import { getSquares } from "./squares/_sqOperations.js";
-import { MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, zoomCanvasFillRect } from "./index.js";
+import { hexToRgb, rgbToRgba } from "../common.js";
+import { getSquares } from "../squares/_sqOperations.js";
+import { MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, zoomCanvasFillRect } from "../index.js";
 import { initializeStarMap } from "./time.js";
 import { addWaterSaturationPascals, calculateColor, getTemperatureAtWindSquare, getWaterSaturation, initTemperatureHumidity, updateWindSquareTemperature } from "./temperatureHumidity.js";
 
@@ -135,7 +135,7 @@ function checkIfCollisionAtWindSquare(x, y) {
     return false;
 }
 
-function initializeWindPressureMap() {
+function initWindPressure() {
     windPressureMap = new Map();
     windPressureMapByPressure = new Map();
     prevailingWindMap = new Map();
@@ -174,7 +174,7 @@ function getTempMolarMult(x, y) {
 function tickWindPressureMap() {
     windPressureMapByPressure = new Map();
     if (WIND_SQUARES_X() != curWindSquaresX || WIND_SQUARES_Y() != curWindSquaresY) {
-        initializeWindPressureMap();
+        initWindPressure();
         initTemperatureHumidity();
     }
 
@@ -499,6 +499,6 @@ function addPrevailingWind(posX, posY, d) {
     }
 }
 
-initializeWindPressureMap();
+initWindPressure();
 
-export { clearPrevailingWind, addPrevailingWind, getWindSquareAbove, setPressurebyMult, getPressure, getAirSquareDensity, getWindSpeedAtLocation, renderWindPressureMap, initializeWindPressureMap, tickWindPressureMap, addWindPressure, removeWindPressure, updateWindPressureByMult, getAirSquareDensityTempAndHumidity, base_wind_pressure }
+export { clearPrevailingWind, addPrevailingWind, getWindSquareAbove, setPressurebyMult, getPressure, getAirSquareDensity, getWindSpeedAtLocation, renderWindPressureMap, initWindPressure, tickWindPressureMap, addWindPressure, removeWindPressure, updateWindPressureByMult, getAirSquareDensityTempAndHumidity, base_wind_pressure }

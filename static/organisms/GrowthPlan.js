@@ -1,6 +1,6 @@
 import { getGlobalThetaBase } from "../index.js";
-import { getCurDay, getDt } from "../time.js";
-import { getWindSpeedAtLocation } from "../wind.js";
+import { getCurDay, getDt } from "../climate/time.js";
+import { getWindSpeedAtLocation } from "../climate/wind.js";
 import { STATE_DEAD, STATE_DESTROYED, STATE_HEALTHY, STATE_THIRSTY } from "./Stages.js";
 
 const ROLLING_AVERAGE_PERIOD = 200;

@@ -1,13 +1,13 @@
-import { RGB_COLOR_BLACK } from "./colors.js";
-import { randNumber } from "./common.js";
-import { setNextLightUpdateTime } from "./globalOperations.js";
-import { ALL_SQUARES, LIGHT_SOURCES } from "./globals.js";
-import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js";
-import { getSqIterationOrder, getSquares } from "./squares/_sqOperations.js";
+import { RGB_COLOR_BLACK } from "../colors.js";
+import { randNumber } from "../common.js";
+import { setNextLightUpdateTime } from "../globalOperations.js";
+import { ALL_SQUARES, LIGHT_SOURCES } from "../globals.js";
+import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "../index.js";
+import { getSqIterationOrder, getSquares } from "../squares/_sqOperations.js";
 import { getCloudColorAtPos, getCloudColorAtSqPos } from "./temperatureHumidity.js";
-import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "./time.js";
-import { loadUI, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_SUN } from "./ui/UIData.js";
-import { getWindSquaresX, getWindSquaresY } from "./wind.js";
+import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "../climate/time.js";
+import { loadUI, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_SUN } from "../ui/UIData.js";
+import { getWindSquaresX, getWindSquaresY } from "../climate/wind.js";
 
 let lifeSquarePositions = new Map();
 
@@ -16,7 +16,6 @@ export let MAX_BRIGHTNESS = 8;
 var sunBrightness = 0.129;
 var rockLightDecayFactor = 3;
 var waterLightDecayFactor = 1;
-var decayFactorMult = 1;
 
 export function setSunBrightness(newVal) {
     sunBrightness = newVal;

@@ -1,5 +1,5 @@
-import { hexToRgb, hsv2rgb, randNumber, randRange, rgb2hsv, rgbToRgba } from "./common.js";
-import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, MAIN_CONTEXT, zoomCanvasFillRect} from "./index.js";
+import { hexToRgb, hsv2rgb, randNumber, randRange, rgb2hsv, rgbToRgba } from "../common.js";
+import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, MAIN_CONTEXT, zoomCanvasFillRect} from "../index.js";
 import { calculateColor, calculateColorProvideOpacity, calculateColorRGB, getFrameRelCloud } from "./temperatureHumidity.js";
 
 
@@ -95,7 +95,6 @@ function initializeStarMap() {
         starMap[starX][starY] = starBrightness;
     }
 }
-
 
 function renderStarMap(brightnessMult) {
     if (starMap == null) {

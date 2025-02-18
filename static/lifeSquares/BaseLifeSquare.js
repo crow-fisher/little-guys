@@ -1,7 +1,7 @@
 import { MAIN_CANVAS, MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, zoomCanvasFillRect } from "../index.js";
 import { getZPercent, hexToRgb, processColorLerp, processColorStdev, rgbToHex, rgbToRgba } from "../common.js";
 
-import { getCurTime, getDaylightStrength } from "../time.js";
+import { getCurTime, getDaylightStrength } from "../climate/time.js";
 import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount, b_sq_darkeningStrength } from "../config/config.js";
 import { addSquare, getSquares, removeOrganismSquare } from "../squares/_sqOperations.js";
 import { airNutrientsPerEmptyNeighbor } from "../config/config.js";
@@ -11,8 +11,8 @@ import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_OTHER_BLUE, RGB_COLOR_BLACK,
 import { addOrganismSquare } from "./_lsOperations.js";
 import { removeSquare } from "../globalOperations.js";
 import { STATE_DEAD, STATE_HEALTHY, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_DEAD, SUBTYPE_LEAF, SUBTYPE_LEAFSTEM, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, STATE_DESTROYED } from "../organisms/Stages.js";
-import { lightingRegisterLifeSquare } from "../lighting.js";
-import { processLighting } from "../lightingProcessing.js";
+import { lightingRegisterLifeSquare } from "../lighting/lighting.js";
+import { processLighting } from "../lighting/lightingProcessing.js";
 
 
 class BaseLifeSquare {

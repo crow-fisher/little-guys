@@ -1,5 +1,5 @@
-import { randNumber, randRange } from "./common.js";
-import { CANVAS_SQUARES_X } from "./index.js";
+import { randNumber, randRange } from "../common.js";
+import { CANVAS_SQUARES_X } from "../index.js";
 import { addWaterSaturationPascals, getHumidity, getWaterSaturation, setRestingGradientStrength, setRestingHumidityGradient, setRestingTemperatureGradient } from "./temperatureHumidity.js";
 import { getCurDay, timeScaleFactor } from "./time.js";
 import { getPressure, isPointInWindBounds } from "./wind.js";

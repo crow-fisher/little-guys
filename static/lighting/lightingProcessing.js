@@ -1,5 +1,5 @@
-import { getStandardDeviation } from "./common.js";
-import { getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "./time.js";
+import { getStandardDeviation } from "../common.js";
+import { getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "../climate/time.js";
 
 var curFrameValues = [1];
 var prevFrameDivMult = 1;

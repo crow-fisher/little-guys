@@ -1,62 +1,18 @@
-import { getSqIterationOrder, getSquares, iterateOnSquares } from "./squares/_sqOperations.js";
-import { getOrganismsAtSquare, iterateOnOrganisms } from "./organisms/_orgOperations.js";
+import { getSqIterationOrder, iterateOnSquares } from "./squares/_sqOperations.js";
+import { iterateOnOrganisms } from "./organisms/_orgOperations.js";
 import {
-    ALL_SQUARES, ALL_ORGANISMS, ALL_ORGANISM_SQUARES, stats, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES,
-    getNextGroupId, updateGlobalStatistic, getGlobalStatistic, resetWaterflowSquares, LIGHT_SOURCES
+    ALL_SQUARES, ALL_ORGANISM_SQUARES, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES, resetWaterflowSquares
 } from "./globals.js";
 
 import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js";
-import { getObjectArrFromMap, getStandardDeviation } from "./common.js";
-import { getOrganismSquaresAtSquare } from "./lifeSquares/_lsOperations.js";
+import { getObjectArrFromMap } from "./common.js";
 import { removeItemAll } from "./common.js";
-import { removeOrganism } from "./organisms/_orgOperations.js";
-import { lightingClearLifeSquarePositionMap, lightingPrepareTerrainSquares, lightingRegisterLifeSquare } from "./lighting.js";
-import { getCurDay } from "./time.js";
-
-export var nextLightingUpdate = 0;
-export var lastLightingUpdateDay = 0;
-export var lighting_throttle_interval_ms = 30 * 1000 * 10 ** 8;
-export var lighting_throttle_interval_days = 3;
-
-export function reduceNextLightUpdateTime(amount) {
-    if (nextLightingUpdate < Date.now()) {
-        return;
-    }
-    nextLightingUpdate -= amount;
-}
-
-export function setNextLightUpdateTime(dt) {
-    nextLightingUpdate = Date.now() + dt;
-}
-
-function doLightSourceRaycasting() {
-    if (Date.now() < nextLightingUpdate && (
-        (getCurDay() - lighting_throttle_interval_days) < lastLightingUpdateDay && (getCurDay() > 0.25)
-    )) {
-        return;
-    }
-    lightingPrepareTerrainSquares();
-    iterateOnOrganisms((org) => org.lifeSquares.forEach((lsq) => lightingRegisterLifeSquare(lsq)));
-    for (let i = 0; i < LIGHT_SOURCES.length; i++) {
-        LIGHT_SOURCES[i].doRayCasting(i);
-    }
-    nextLightingUpdate = Date.now() + lighting_throttle_interval_ms;
-    lastLightingUpdateDay = getCurDay();
-}
-
-export function lightingPreRender() {
-    LIGHT_SOURCES.forEach((ls) => ls.preRender());
-}
 
 var frame_squares = null;
-var frame_organic_squares = null;
-var frame_inorganic_squares = null;
 var frame_solid_squares = null;
 var frame_water_squares = null;
-var frame_physics_squares = null;
-var frame_soil_physics_squares = null;
 
-function purge() {
+export function purge() {
     iterateOnSquares((sq) => {
         var ret = true;
         ret &= sq.posX >= 0;
@@ -86,19 +42,8 @@ function purge() {
         }
     })
 }
-function getSquareStdevForGetter(valueGetter, valueGetterName) {
-    if (valueGetterName in stats && stats[valueGetterName] != 0) {
-        return stats[valueGetterName];
-    } else {
-        var all_squares = [];
-        iterateOnSquares((sq) => all_squares.push(sq), 0);
-        var stdev = getStandardDeviation(all_squares.map(valueGetter));
-        stats[valueGetterName] = stdev;
-        return stdev;
-    }
-}
 
-function reset() {
+export function reset() {
     iterateOnSquares((sq) => sq.reset(), 0);
     resetWaterflowSquares();
     frame_squares = getSqIterationOrder();
@@ -106,7 +51,7 @@ function reset() {
     frame_water_squares = frame_squares.filter((sq) => !sq.solid);
 }
 
-function renderSquares() {
+export function renderSquares() {
     frame_squares.forEach((sq) => sq.render());
 }
 
@@ -118,27 +63,25 @@ export function renderWaterSquares() {
     frame_water_squares.forEach((sq) => sq.render());
 }
 
-
-
-function physics() {
+export function physics() {
     frame_squares.forEach((sq) => sq.physicsBefore());
     frame_squares.forEach((sq) => sq.physics());
 }
 
-function processOrganisms() {
+export function processOrganisms() {
     iterateOnOrganisms((org) => org.process(), 0);
 }
 
-function renderOrganisms() {
+export function renderOrganisms() {
     iterateOnOrganisms((org) => org.render(), 0);
 }
 
-function removeSquare(square) {
+export function removeSquare(square) {
     removeItemAll(getObjectArrFromMap(ALL_SQUARES, square.posX, square.posY), square);
 }
 
 
-function doWaterFlow() {
+export function doWaterFlow() {
     let candidateTargetKeys = Array.from(Object.keys(WATERFLOW_TARGET_SQUARES));
 
     candidateTargetKeys.filter((group) => group in WATERFLOW_CANDIDATE_SQUARES).forEach((targetGroup) => {
@@ -182,6 +125,3 @@ function doWaterFlow() {
         }
     });
 }
-
-
-export { purge, reset, renderSquares, physics, processOrganisms, renderOrganisms, doWaterFlow, removeSquare, getSquareStdevForGetter, doLightSourceRaycasting }

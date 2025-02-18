@@ -5,8 +5,8 @@ import { dirt_baseColorAmount, dirt_darkColorAmount, dirt_accentColorAmount } fr
 import { getNeighbors, getSquares } from "../_sqOperations.js";
 import { hexToRgb } from "../../common.js";
 import { addSquareByName } from "../../index.js";
-import { timeScaleFactor } from "../../time.js";
-import { getPressure, getWindSquareAbove } from "../../wind.js";
+import { timeScaleFactor } from "../../climate/time.js";
+import { getPressure, getWindSquareAbove } from "../../climate/wind.js";
 import { addWaterSaturationPascals, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor } from "../../temperatureHumidity.js";
 import { loadUI, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER } from "../../ui/UIData.js";
 import { getActiveClimate } from "../../climateManager.js";

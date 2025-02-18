@@ -1,13 +1,15 @@
 import { doLightSourceRaycasting, doWaterFlow, lightingPreRender, physics, processOrganisms, purge, renderOrganisms, renderSolidSquares, renderWaterSquares, reset } from "./globalOperations.js";
 import { doClickAdd, getBlockModification_val, getLastMode, getSelectedViewMode } from "./index.js";
-import { lightingClearLifeSquarePositionMap } from "./lighting.js";
-import { resetFrameDivMult } from "./lightingProcessing.js";
+import { lightingClearLifeSquarePositionMap } from "./lighting/lighting.js";
+import { resetFrameDivMult } from "./lighting/lightingProcessing.js";
 import { initTemperatureHumidity, renderClouds, renderTemperature, renderWaterSaturation, restingValues, tickMaps } from "./temperatureHumidity.js";
-import { doTimeSeek, getTimeScale, initializeStarMap, renderTime, updateTime } from "./time.js";
+import { doTimeSeek, getTimeScale, initializeStarMap, renderTime, updateTime } from "./climate/time.js";
 import { executeFunctionQueue } from "./ui/UIData.js";
 import { renderWindows, resetWindowHovered, updateWindows } from "./ui/WindowManager.js";
-import { weather } from "./weather.js";
-import { initializeWindPressureMap, renderWindPressureMap, tickWindPressureMap } from "./wind.js";
+import { weather } from "./climate/weather.js";
+import { initWindPressure, renderWindPressureMap, tickWindPressureMap } from "./climate/wind.js";
+import { LightingHandler } from "./lighting/lightingHandler.js";
+import { ClimateHandler } from "./climate/climateHandler.js";
 
 const SQUARE_UPDATE_MILLIS = 0;
 const ORG_UPDATE_MILLIS = 0;
@@ -17,6 +19,9 @@ let last_org_tick = 0;
 
 let updated = false;
 let firstTime = true;
+
+const lightingHandler = new LightingHandler();
+const climateHandler = new ClimateHandler();
 
 export function triggerEarlySquareScheduler() {
     last_square_tick = 0;
@@ -28,7 +33,6 @@ export function scheduler_main() {
         firstTime = false;
     }
     updateTime();
-
     doClickAdd();
     resetWindowHovered(); 
 
@@ -57,12 +61,12 @@ export function scheduler_main() {
 
 function init() {
     initTemperatureHumidity();
-    initializeWindPressureMap();
+    initWindPressure();
     initializeStarMap();
 }
 
 function preRender() {
-    lightingPreRender();
+    lightingHandler.preRender();
 }
 
 function render() {
@@ -82,10 +86,7 @@ function render() {
     if (selectedViewMode == "watersaturation") {
         renderWaterSaturation();
     }
-    preRender();
-
-    doLightSourceRaycasting();
-    lightingClearLifeSquarePositionMap();
+    lightingHandler.lightingTick();
 
     renderWaterSquares();
     if (selectedViewMode == "normal") {
@@ -97,14 +98,6 @@ function render() {
 }
 
 
-
-function windMapsTick() {
-    weather();
-    tickWindPressureMap();
-    tickMaps();
-    restingValues();
-}
-
 function orgTick() {
     processOrganisms();
 }
@@ -114,5 +107,6 @@ function squareTick() {
     physics();
     doWaterFlow();
     purge();
-    windMapsTick();
+
+    climateHandler.climateTick();
 }

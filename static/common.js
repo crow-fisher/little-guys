@@ -1,7 +1,7 @@
 // pure functions only
 
 import { reduceNextLightUpdateTime } from "./globalOperations.js";
-import { getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "./time.js";
+import { getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "./climate/time.js";
 
 function getObjectArrFromMap(baseMap, posX, posY) {
     if (!(posX in baseMap)) {

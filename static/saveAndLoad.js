@@ -8,9 +8,9 @@ import { triggerEarlySquareScheduler } from "./scheduler.js";
 import { addSquare, addSquareOverride, iterateOnSquares, removeOrganismSquare } from "./squares/_sqOperations.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { getTemperatureMap, getWaterSaturationMap, setTemperatureMap, setWaterSaturationMap } from "./temperatureHumidity.js";
-import { getCurDay, setCurDay } from "./time.js";
+import { getCurDay, setCurDay } from "./climate/time.js";
 import { ProtoMap, TypeMap } from "./types.js";
-import { getWindPressureMap, initializeWindPressureMap, setWindPressureMap } from "./wind.js";
+import { getWindPressureMap, initWindPressure, setWindPressureMap } from "./climate/wind.js";
 
 export async function loadSlot(slotName) {
     const db = await openDatabase();
@@ -39,7 +39,7 @@ function purgeGameState() {
         org.lifeSquares.forEach((lsq) => removeOrganismSquare(lsq));
         removeOrganism(org);
     });
-    initializeWindPressureMap();
+    initWindPressure();
 }
 
 function loadSlotData(slotData) {
