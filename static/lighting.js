@@ -6,6 +6,7 @@ import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js";
 import { getSqIterationOrder, getSquares } from "./squares/_sqOperations.js";
 import { getCloudColorAtPos, getCloudColorAtSqPos } from "./temperatureHumidity.js";
 import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "./time.js";
+import { loadUI, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_SUN } from "./ui/UIData.js";
 import { getWindSquaresX, getWindSquaresY } from "./wind.js";
 
 let lifeSquarePositions = new Map();
@@ -39,15 +40,6 @@ export function getWaterLightDecayFactor() {
 }
 export function setWaterLightDecayFactor(newVal) {
     waterLightDecayFactor = newVal;
-    setNextLightUpdateTime(0);
-}
-
-export function getDecayFactorMult() {
-    return decayFactorMult;
-}
-
-export function setDecayFactorMult(newVal) {
-    decayFactorMult = newVal;
     setNextLightUpdateTime(0);
 }
 
@@ -91,7 +83,7 @@ export function createSunLightGroup() {
         CANVAS_SQUARES_X * 0.5,
         1,
         getCurrentLightColorTemperature, 
-        () => 10 * sunBrightness * getDaylightStrength(),
+        () => 10 * loadUI(UI_LIGHTING_SUN) * getDaylightStrength(),
         () => Math.max(0, (2 * (getCurDay() % 1) - 0.5))
     );
     return sunLightGroup;
@@ -105,7 +97,7 @@ export function createMoonLightGroup() {
         100,
         7,
         getMoonlightColor, 
-        () => sunBrightness * .35,
+        () => loadUI(UI_LIGHTING_MOON), 
         () => 0.5
     );
     return moonLightGroup;
@@ -340,7 +332,7 @@ export class LightSource {
                         } else {
                             obj.lighting[idx][0].push(pointLightSourceFunc);
                         }
-                        curBrightness *= decayFactorMult * (1 - obj.getLightFilterRate() * this.numRays);
+                        curBrightness *= loadUI(UI_LIGHTING_DECAY) * (1 - obj.getLightFilterRate() * this.numRays);
                     });
                 })
             });

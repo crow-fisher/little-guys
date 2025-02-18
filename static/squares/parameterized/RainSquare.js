@@ -1,92 +1,7 @@
-import { BaseSquare } from "../BaseSqaure.js";
-import {
-    rain_dropChance,
-    heavyrain_dropChance,
-    rain_dropHealth
-    } from "../../config/config.js"
-    
 import { addSquare, getSquares } from "../_sqOperations.js";
 import { WaterSquare } from "../WaterSquare.js";
 import { randNumber } from "../../common.js";
 import { RockSquare } from "./RockSquare.js";
-
-class RainSquare extends RockSquare {
-    constructor(posX, posY) {
-        super(posX, posY);
-        this.proto = "RainSquare";
-        this.collision = false;
-        this.baseColor = "#F5F5F5";
-        this.darkColor = "#E5E4E2";
-        this.accentColor = "#91A3B0";
-        this.special = true;
-
-    }
-    physics() {
-        if (Math.random() > (1 - rain_dropChance.value)) {
-            var newSq = addSquare(new WaterSquare(this.posX, this.posY + 1));
-            if (newSq) {
-                newSq.blockHealth = rain_dropHealth.value;
-                newSq.temperature = this.temperature;
-                newSq.speedX = randNumber(-1, 1);
-            };
-        }
-    }
-    render() {
-        if (!this.visible) {
-            return;
-        }
-        this.renderWithVariedColors();
-    }
-}
-class HeavyRainSquare extends RockSquare {
-    constructor(posX, posY) {
-        super(posX, posY);
-        this.proto = "HeavyRainSquare";
-        this.collision = false;
-    
-        this.baseColor = "#C0C0C0";
-        this.darkColor = "#91A3B0";
-        this.accentColor = "#BEBFC5";
-
-        this.maxRainDrops = 30;
-        this.curRainDrops = this.maxRainDrops / 2;
-        this.rainRechargeRate = 0.03;
-        this.raining = true;
-        this.special = true;
-
-
-    }
-    physics() {
-        if (this.raining) {
-            if (this.curRainDrops < 0) {
-                this.raining = false;
-                return;
-            }
-            if (Math.random() > (1 - heavyrain_dropChance.value)) {
-                var newSq = addSquare(new WaterSquare(this.posX, this.posY + 1));
-                if (newSq) {
-                    newSq.blockHealth = rain_dropHealth.value;
-                    newSq.speedX = randNumber(-2, 2);
-                    newSq.temperature = this.temperature;
-
-                    this.curRainDrops -= 1;
-                };
-            }
-        } else {
-            if (this.curRainDrops > this.maxRainDrops) {
-                this.raining = true;
-            } else {
-                this.curRainDrops += this.rainRechargeRate;
-            }
-        }
-    }
-    render() {
-        if (!this.visible) {
-            return;
-        }
-        this.renderWithVariedColors();
-    }
-}
 
 class AquiferSquare extends RockSquare {
     constructor(posX, posY) { 
@@ -119,4 +34,4 @@ class AquiferSquare extends RockSquare {
     }
 }
 
-export {RainSquare, HeavyRainSquare, AquiferSquare}
+export {AquiferSquare}

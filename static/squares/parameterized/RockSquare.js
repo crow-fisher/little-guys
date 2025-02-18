@@ -5,7 +5,7 @@ import { addSquareByName, CANVAS_SQUARES_Y } from "../../index.js";
 import { SoilSquare } from "./SoilSquare.js";
 import { getRockLightDecayFactor } from "../../lighting.js";
 import { getActiveClimate } from "../../climateManager.js";
-import { loadUI, UI_ROCK_COMPOSITION } from "../../ui/UIData.js";
+import { loadUI, UI_LIGHTING_ROCK, UI_ROCK_COMPOSITION } from "../../ui/UIData.js";
 
 
 export function getBaseRockColor(sand, silt, clay) {
@@ -53,7 +53,7 @@ export class RockSquare extends SoilSquare {
     }
 
     lightFilterRate() {
-        return super.lightFilterRate() * getRockLightDecayFactor();
+        return super.lightFilterRate() * loadUI(UI_LIGHTING_ROCK);
     }
 
     doBlockOutflow() {

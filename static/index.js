@@ -1,8 +1,6 @@
 import { addSquare, addSquareOverride, getNeighbors, getSquares, removeSquarePos } from "./squares/_sqOperations.js";
 import { lighting_throttle_interval_ms, reduceNextLightUpdateTime } from "./globalOperations.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
-import { RainSquare } from "./squares/parameterized/RainSquare.js";
-import { HeavyRainSquare } from "./squares/parameterized/RainSquare.js";
 import { AquiferSquare } from "./squares/parameterized/RainSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
 import { addNewOrganism, iterateOnOrganisms } from "./organisms/_orgOperations.js";
@@ -18,7 +16,7 @@ import { ElephantEarSeedOrganism } from "./organisms/tropical/ElephantEarOrganis
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { WheatSeedOrganism } from "./organisms/agriculture/WheatOrganism.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
-import { createMoonLightGroup, createSunLightGroup, setDecayFactorMult, setRockLightDecayFactor, setSunBrightness, setWaterLightDecayFactor } from "./lighting.js";
+import { createMoonLightGroup, createSunLightGroup } from "./lighting.js";
 import { loadEmptyScene, loadFlatDirtWorld, loadSlot, saveSlot } from "./saveAndLoad.js";
 import { scheduler_main, triggerEarlySquareScheduler } from "./scheduler.js";
 import { seek, setTimeScale } from "./time.js";
@@ -178,65 +176,9 @@ function styleHeader() {
 
 styleHeader();
 
-specialSelect.addEventListener('change', (e) => {
-    lastMode = "special";
-    styleHeader();
-    specialSelect_val = e.target.value;
-});
-material1.addEventListener('change', (e) => {
-    lastMode = "normal";
-    styleHeader();
-    material1_val = e.target.value;
-});
-material2.addEventListener('change', (e) => {
-    lastMode = "normal";
-    styleHeader();
-    material2_val = e.target.value;
-});
-mixMaterials.addEventListener('change', (e) => {
-    lastMode = "normal";
-    styleHeader();
-    mixMaterials_val = e.target.checked;
-});
-materialSlider.addEventListener('change', (e) => {
-    lastMode = "normal";
-    styleHeader();
-    materialSlider_val = parseInt(e.target.value);
-});
-organismWetland.addEventListener('change', (e) => {
-    lastMode = "organismWetland";
-    styleHeader();
-    organismWetland_val = e.target.value;
-});
-blockModification.addEventListener('change', (e) => {
-    lastMode = "blockModification";
-    styleHeader();
-    blockModification_val = e.target.value;
-});
-brushStrengthSlider.addEventListener('change', (e) => {
-    styleHeader();
-    brushStrengthSlider_val = e.target.value;
-});
-brushSizeSlider.addEventListener('change', (e) => {
-    brushSizeSlider_val = e.target.value;
-});
-
 viewmodeSelect.addEventListener('change', (e) => selectedViewMode = e.target.value);
 timeScale.addEventListener("change", (e) => {
     setTimeScale(parseInt(e.target.value));
-})
-
-sunBright.addEventListener("change", (e) => {
-    setSunBrightness(parseInt(e.target.value) / 1000);
-})
-waterBright.addEventListener("change", (e) => {
-    setWaterLightDecayFactor(parseInt(e.target.value) / 10);
-})
-rockBright.addEventListener("change", (e) => {
-    setRockLightDecayFactor(parseInt(e.target.value) / 10);
-})
-decayFactor.addEventListener("change", (e) => {
-    setDecayFactorMult(parseInt(e.target.value) / 1000);
 })
 
 canvasWidth.addEventListener('change', (e) => setCanvasSquaresX(e.target.value));
@@ -590,12 +532,6 @@ function addSquareByName(posX, posY, name) {
             break;
         case "water":
             square = addSquare(new WaterSquare(posX, posY));
-            break;
-        case "rain":
-            square = addSquareOverride(new RainSquare(posX, posY));
-            break;
-        case "heavy rain":
-            square = addSquareOverride(new HeavyRainSquare(posX, posY));
             break;
         case "aquifer":
             square = addSquare(new AquiferSquare(posX, posY));

@@ -11,6 +11,7 @@ import { BASE_SIZE, MAIN_CONTEXT, zoomCanvasFillRect } from "../index.js";
 import { RGB_COLOR_OTHER_BLUE } from "../colors.js";
 import { rgbToRgba } from "../common.js";
 import { getWaterLightDecayFactor } from "../lighting.js";
+import { loadUI, UI_LIGHTING_WATER } from "../ui/UIData.js";
 
 class WaterSquare extends BaseSquare {
     constructor(posX, posY) {
@@ -40,7 +41,7 @@ class WaterSquare extends BaseSquare {
     }
 
     lightFilterRate() {
-        return super.lightFilterRate() * getWaterLightDecayFactor();
+        return super.lightFilterRate() * loadUI(UI_LIGHTING_WATER);
     }
 
     reset() {

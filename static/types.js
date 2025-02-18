@@ -1,7 +1,5 @@
 import { BaseSquare } from "./squares/BaseSqaure.js";
 import { PlantSquare } from "./squares/PlantSquare.js";
-import { RainSquare } from "./squares/parameterized/RainSquare.js";
-import { HeavyRainSquare } from "./squares/parameterized/RainSquare.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
 import { BaseLifeSquare } from "./lifeSquares/BaseLifeSquare.js";
 import { BaseOrganism } from "./organisms/BaseOrganism.js";
@@ -22,8 +20,6 @@ import { PalmTreeOrganism, PalmTreeSeedOrganism } from "./organisms/tropical/Pal
 var ProtoMap = {
     "BaseSquare": BaseSquare.prototype,
     "PlantSquare": PlantSquare.prototype,
-    "RainSquare": RainSquare.prototype,
-    "HeavyRainSquare": HeavyRainSquare.prototype,
     "SoilSquare": SoilSquare.prototype,
     "RockSquare": RockSquare.prototype,
     "SoilSquare": SoilSquare.prototype,

@@ -1,7 +1,6 @@
 import { reduceNextLightUpdateTime, removeSquare, setNextLightUpdateTime } from "./globalOperations.js";
 import { addSquareByName, CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js";
 import { addOrganismSquare } from "./lifeSquares/_lsOperations.js";
-import { getDecayFactorMult, getRockLightDecayFactor, getSunBrightness, getWaterLightDecayFactor, setDecayFactorMult, setRockLightDecayFactor, setSunBrightness, setWaterLightDecayFactor } from "./lighting.js";
 import { addOrganism, iterateOnOrganisms, removeOrganism } from "./organisms/_orgOperations.js";
 import { GrowthComponent, GrowthPlan, GrowthPlanStep } from "./organisms/GrowthPlan.js";
 import { lush } from "./saves.js";
@@ -158,10 +157,6 @@ function getFrameSaveData() {
         windMap: getWindPressureMap(),
         temperatureMap: getTemperatureMap(),
         waterSaturationMap: getWaterSaturationMap(),
-        sunBrightness: getSunBrightness(),
-        rockLightingMult: getRockLightDecayFactor(),
-        waterLightingMult: getWaterLightDecayFactor(),
-        decayFactorMult: getDecayFactorMult()
     }
     return saveObj;
 }
@@ -183,12 +178,7 @@ function loadSlotFromSave(slotData) {
     setWindPressureMap(windMap);
     setTemperatureMap(temperatureMap);
     setWaterSaturationMap(waterSaturationMap);
-
     setCurDay(slotData.curDay);
-    setSunBrightness(slotData.sunBrightness);
-    setWaterLightDecayFactor(slotData.waterLightingMult);
-    setRockLightDecayFactor(slotData.rockLightingMult);
-    setDecayFactorMult(slotData.decayFactorMult);
 
     sqArr.forEach((sq) => Object.setPrototypeOf(sq, ProtoMap[sq.proto]));
     orgArr.forEach((org) => Object.setPrototypeOf(org, ProtoMap[org.proto]));

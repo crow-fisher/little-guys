@@ -1,3 +1,4 @@
+import { setNextLightUpdateTime } from "../globalOperations.js";
 import { R_COLORS } from "./elements/SoilPicker.js";
 
 export const UI_MODE_SOIL = "soil";
@@ -15,6 +16,13 @@ export const UI_SOIL_INITALWATER = "UI_SOIL_INITALWATER";
 export const UI_SM_BB = "UI_SM_BB";
 export const UI_SM_LIGHTING = "UI_SM_LIGHTING";
 
+export const UI_LIGHTING_SUN = "UI_LIGHTING_SUN";
+export const UI_LIGHTING_MOON = "UI_LIGHTING_MOON";
+export const UI_LIGHTING_WATER = "UI_LIGHTING_WATER";
+export const UI_LIGHTING_ROCK = "UI_LIGHTING_ROCK";
+export const UI_LIGHTING_PLANT = "UI_LIGHTING_PLANT";
+export const UI_LIGHTING_DECAY = "UI_LIGHTING_DECAY";
+
 export const UI_TOOL_MODE_LEFT = "UI_TOOL_MODE_LEFT";
 export const UI_TOOL_MODE_RIGHT = "UI_TOO_MODE_RIGHT";
 export const UI_TOOL_MIX = "mix";
@@ -31,11 +39,27 @@ var UI_DATA = {
     UI_SOIL_COMPOSITION: [40, 40, 20],
     UI_ROCK_COMPOSITION: [40, 40, 20],
     UI_SOIL_VIEWMODE: "🎨",
-    UI_SOIL_INITALWATER: -5
+    UI_SOIL_INITALWATER: -5,
+    UI_LIGHTING_SUN: .129,
+    UI_LIGHTING_MOON: .05,
+    UI_LIGHTING_WATER: 1,
+    UI_LIGHTING_ROCK: 1,
+    UI_LIGHTING_PLANT: 1,
+    UI_LIGHTING_DECAY: 1.1
 };
+
+var UI_FUNCTION_MAP = {
+    UI_LIGHTING_WATER: () => setNextLightUpdateTime(0),
+    UI_LIGHTING_ROCK: () => setNextLightUpdateTime(0),
+    UI_LIGHTING_PLANT: () => setNextLightUpdateTime(0),
+    UI_LIGHTING_DECAY: () => setNextLightUpdateTime(0)
+}
 
 export function saveUI(key, value) {
     UI_DATA[key] = value;
+    if (key in UI_FUNCTION_MAP) {
+        UI_FUNCTION_MAP[key]();
+    }
 }
 
 export function loadUI(key) {
