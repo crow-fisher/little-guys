@@ -4,7 +4,7 @@ import { getCloudColorAtPos } from "../climate/temperatureHumidity.js";
 import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "../climate/time.js";
 import { loadUI, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_SUN } from "../ui/UIData.js";
 import { getWindSquaresX, getWindSquaresY } from "../climate/wind.js";
-import { getCanvasSquaresX } from "../canvas.js";
+import { getCanvasSquaresX, getCanvasSquaresY } from "../canvas.js";
 import { setNextLightUpdateTime } from "../main.js";
 
 let lifeSquarePositions = new Map();
@@ -90,7 +90,7 @@ export function createSunLightGroup() {
 export function createMoonLightGroup() {
     let moonLightGroup = new MovingLinearLightGroup(
         getCanvasSquaresX() / 2,
-        -CANVAS_SQUARES_Y, 
+        -getCanvasSquaresY(), 
         100,
         7,
         getMoonlightColor, 

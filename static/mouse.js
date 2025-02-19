@@ -1,4 +1,4 @@
-import { resetZoom } from "./canvas.js";
+import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, resetZoom } from "./canvas.js";
 
 var leftMouseClicked = false;
 var rightMouseClicked = false;
@@ -73,12 +73,12 @@ export function handleClick(event) {
 
 export function getOffset(evt) {
     if (
-        (evt.pageX > (CANVAS_SQUARES_X * 1.5) * BASE_SIZE) || 
-        (evt.pageY > (CANVAS_SQUARES_Y * 1.5) * BASE_SIZE)
+        (evt.pageX > (getCanvasSquaresX) * getBaseSize()) || 
+        (evt.pageY > (getCanvasSquaresY) * getBaseSize())
     ) {
-        offScreen = true;
-    } else {
-        offScreen = false;
+        leftMouseClicked = false;
+        rightMouseClicked = false;
+        middleMouseClicked = false;
     }
     if (evt.offsetX != undefined)
         return { x: evt.offsetX, y: evt.offsetY };

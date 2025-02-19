@@ -24,6 +24,7 @@ import { RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
 import { getCurDay, timeScaleFactor } from "../climate/time.js";
 import { processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
+import { loadUI, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE } from "../ui/UIData.js";
 
 export class BaseSquare {
     constructor(posX, posY) {
@@ -206,33 +207,24 @@ export class BaseSquare {
         if (!this.visible) {
             return;
         }
-        if (selectedViewMode == "normal") {
+        let selectedViewMode = loadUI(UI_VIEWMODE_SELECT);
+        if (selectedViewMode == UI_VIEWMODE_NORMAL) {
             this.renderWithVariedColors();
-            if (getBlockModification_val() == "markSurface") {
-                this.renderSurface();
-            }
         }
-        if (selectedViewMode == "squareLighting") {
+        if (selectedViewMode == UI_VIEWMODE_LIGHTIHNG) {
             this.renderWithVariedColors();
             this.renderLightingView();
         }
-        else if (selectedViewMode == "watersaturation") {
+        else if (selectedViewMode == UI_VIEWMODE_MOISTURE) {
             this.renderWaterSaturation();
         }
         else if (selectedViewMode.startsWith("organism")) {
             this.renderAsGrey();
-        } else if (selectedViewMode == "surface") {
+        } else if (selectedViewMode == UI_VIEWMODE_SURFACE) {
             this.renderWithVariedColors();
             this.renderSurface();
         }
-        else if (selectedViewMode == "blockhealthliquid") {
-            if (this.solid) {
-                this.renderAsGrey();
-            } else {
-                this.renderBlockHealth();
-            }
-        }
-        else if (selectedViewMode == "temperature") {
+        else if (selectedViewMode == UI_VIEWMODE_TEMPERATURE) {
             this.renderTemperature();
         }
     };

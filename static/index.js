@@ -4,7 +4,7 @@ import { loadEmptyScene } from "./saveAndLoad.js";
 import { scheduler_main } from "./main.js";
 import { keydown, keyup } from "./keyboard.js";
 import { handleClick, handleMouseDown, handleMouseUp } from "./mouse.js";
-import { getCanvasHeight, getCanvasWidth } from "./canvas.js";
+import { getCanvasHeight, getCanvasWidth, zoom } from "./canvas.js";
 
 export var MAIN_CANVAS = document.getElementById("main");
 export var MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');

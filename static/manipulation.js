@@ -1,11 +1,13 @@
 var ERASE_RADIUS = 2;
 
-import { getLastMoveOffset, isLeftMouseClicked } from "./mouse.js";
+import { triggerEarlySquareScheduler } from "./main.js";
+import { getLastMoveOffset, isLeftMouseClicked, isMiddleMouseClicked, isRightMouseClicked } from "./mouse.js";
 import { addSquare, addSquareOverride, removeSquarePos } from "./squares/_sqOperations.js";
 import { AquiferSquare } from "./squares/parameterized/RainSquare.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
+import { loadUI, UI_BB_MODE, UI_MODE_ROCK, UI_MODE_SOIL, UI_SM_BB, UI_SM_SPECIAL } from "./ui/UIData.js";
 import { isWindowHovered } from "./ui/WindowManager.js";
 var prevManipulationOffset;
 
@@ -106,13 +108,13 @@ function doBlockMod(posX, posY) {
 
 export function doClickAdd() {
     let lastMoveOffset = getLastMoveOffset();
-    if (lastMoveOffset == null || middleMouseClicked || isWindowHovered()) {
+    if (lastMoveOffset == null || isMiddleMouseClicked() || isWindowHovered()) {
         return;
     }
 
     triggerEarlySquareScheduler(); 
 
-    if (isLeftMouseClicked > 0) {
+    if (isLeftMouseClicked() || isRightMouseClicked()) {
         if (lastMoveOffset.x > CANVAS_SQUARES_X * BASE_SIZE || lastMoveOffset > CANVAS_SQUARES_Y * BASE_SIZE) {
             return;
         }
@@ -146,15 +148,22 @@ export function doClickAdd() {
         var totalCount = Math.max(1, Math.round(dz));
         var ddx = dx / totalCount;
         var ddy = dy / totalCount;
+
         for (let i = 0; i < totalCount; i += 0.5) {
             var px = Math.floor(x1 + ddx * i);
             var py = Math.floor(y1 + ddy * i);
-            if (rightMouseClicked && (lastMode == "normal" || lastMode == "special")) {
+            if (isRightMouseClicked()) {
                 doBrushFunc(px, py, (x, y) => removeSquarePos(x, y));
             } else {
-                if (lastMode == "normal" || lastMode == "special") {
-                    doBrushFunc(px, py, (x, y) => addSquareByNameConfig(x, y));
-                } else if (lastMode == "blockModification") {
+                if (loadUI(UI_SM_BB)) {
+                    let mode = loadUI(UI_BB_MODE);
+                    if (mode == UI_MODE_SOIL) {
+                        doBrushFunc(px, py, (x, y) => addSquareByName(x, y, "soil"));
+                    } else if (mode == UI_MODE_ROCK) {
+                        doBrushFunc(px, py, (x, y) => addSquareByName(x, y, "rock"));
+                    }
+                }
+                if (loadUI(UI_SM_SPECIAL)) {
                     doBrushFunc(px, py, (x, y) => doBlockMod(x, y));
                 } else if (lastMode.startsWith("organism")) {
                     var selectedOrganism;

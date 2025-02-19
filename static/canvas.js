@@ -1,3 +1,5 @@
+import { MAIN_CONTEXT } from "./index.js";
+
 var BASE_SIZE = 4;
 var CANVAS_SQUARES_X = 192; 
 var CANVAS_SQUARES_Y = 108;

@@ -108,10 +108,6 @@ export function getUIMap() {
 }
 
 export function executeFunctionQueue() {
-    if (isLeftMouseClicked()) {
-        return;
-    }
-
     functionQueue.forEach((f) => f());
     functionQueue = new Array();
 }

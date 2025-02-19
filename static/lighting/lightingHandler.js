@@ -1,4 +1,6 @@
-import { createMoonLightGroup, createSunLightGroup, lightingClearLifeSquarePositionMap } from "./lighting.js";
+import { getCurDay } from "../climate/time.js";
+import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
+import { createMoonLightGroup, createSunLightGroup, lightingClearLifeSquarePositionMap, lightingPrepareTerrainSquares } from "./lighting.js";
 
 export class LightingHandler {
     constructor() {
