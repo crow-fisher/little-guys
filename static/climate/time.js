@@ -3,10 +3,20 @@ import { hexToRgb, hsv2rgb, randNumber, rgb2hsv, rgbToRgba } from "../common.js"
 import { MAIN_CONTEXT } from "../index.js";
 import { calculateColorRGB, getFrameRelCloud } from "./temperatureHumidity.js";
 import { zoomCanvasFillRect } from "../canvas.js";
+import { loadUI, UI_SPEED_1, UI_SPEED_2, UI_SPEED_3,
+    UI_SPEED_4,
+    UI_SPEED_5,
+    UI_SPEED_6,
+    UI_SPEED_7,
+    UI_SPEED_8,
+    UI_SPEED_9,
+    UI_SPEED
+ } from "../ui/UIData.js";
 
 var TIME_SCALE = 1;
+var curUIKey = UI_SPEED_1;
 
-var millis_per_day = 60 * 60 * 24 * 1000;
+export var millis_per_day = 60 * 60 * 24 * 1000;
 var curDay = 0.5;
 var prevDay = 0;
 var curTime = 0.2;
@@ -171,6 +181,42 @@ export function timeScaleFactor() {
 }
 
 function updateTime() {
+    if (curUIKey != loadUI(UI_SPEED)) {
+        switch (loadUI(UI_SPEED)) {
+            case UI_SPEED_1:
+                TIME_SCALE = 1;
+                break;
+            case UI_SPEED_2:
+                TIME_SCALE = 2;
+                break;
+            case UI_SPEED_3:
+                TIME_SCALE = 3;
+                break;
+            case UI_SPEED_4:
+                TIME_SCALE = 4;
+                break;
+            case UI_SPEED_5:
+                TIME_SCALE = 5;
+                break;
+            case UI_SPEED_6:
+                TIME_SCALE = 6;
+                break;
+            case UI_SPEED_7:
+                TIME_SCALE = 7;
+                break;
+            case UI_SPEED_8:
+                TIME_SCALE = 8;
+                break;
+            case UI_SPEED_9:
+                TIME_SCALE = 9;
+                break;
+            default:
+                TIME_SCALE = 1;
+                break;
+        }
+        curUIKey = loadUI(UI_SPEED);
+    }
+
     var dt = Date.now() - prevRealTime;
     if (dt > 10000) {
         prevRealTime = Date.now();

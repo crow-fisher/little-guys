@@ -15,7 +15,6 @@ export class Toggle extends WindowElement {
     }
 
     render(startX, startY) {
-        var curX = 0;
         MAIN_CONTEXT.font = this.sizeY - 10 + "px courier"
         MAIN_CONTEXT.textAlign = 'center';
         MAIN_CONTEXT.textBaseline = 'middle';

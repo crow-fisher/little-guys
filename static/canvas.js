@@ -1,6 +1,6 @@
 import { MAIN_CONTEXT } from "./index.js";
 
-var BASE_SIZE = 6;
+var BASE_SIZE = 12;
 var CANVAS_SQUARES_X = 192; 
 var CANVAS_SQUARES_Y = 108;
 var CANVAS_VIEWPORT_CENTER_X = CANVAS_SQUARES_X * BASE_SIZE / 2;

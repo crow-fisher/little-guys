@@ -50,8 +50,23 @@ export const UI_VIEWMODE_MOISTURE = "moisture";
 export const UI_VIEWMODE_SURFACE = "surface";
 export const UI_VIEWMODE_ORGANISMS = "organisms";
 
+export const UI_TOPBAR = "UI_TOPBAR";
 export const UI_TOOL_MODE_LEFT = "UI_TOOL_MODE_LEFT";
 export const UI_TOOL_MODE_RIGHT = "UI_TOO_MODE_RIGHT";
+
+export const UI_SPEED = "UI_SPEED";
+export const UI_SPEED_1 = "UI_SPEED_1";
+export const UI_SPEED_2 = "UI_SPEED_2";
+export const UI_SPEED_3 = "UI_SPEED_3";
+export const UI_SPEED_4 = "UI_SPEED_4";
+export const UI_SPEED_5 = "UI_SPEED_5";
+export const UI_SPEED_6 = "UI_SPEED_6";
+export const UI_SPEED_7 = "UI_SPEED_7";
+export const UI_SPEED_8 = "UI_SPEED_8";
+export const UI_SPEED_9 = "UI_SPEED_9";
+
+export const UI_SPEEDS = [UI_SPEED_1, UI_SPEED_2, UI_SPEED_3, UI_SPEED_4, UI_SPEED_5, UI_SPEED_6, UI_SPEED_7, UI_SPEED_8, UI_SPEED_9]
+
 
 // put default values in here
 var UI_DATA = {
@@ -63,6 +78,7 @@ var UI_DATA = {
     UI_SM_LIGHTING: false,
     UI_SM_SPECIAL: false,
     UI_SM_VIEWMODE: false,
+    UI_SPECIAL_SELECT: UI_SPECIAL_WATER,
     UI_SOIL_COMPOSITION: [40, 40, 20],
     UI_ROCK_COMPOSITION: [40, 40, 20],
     UI_SOIL_VIEWMODE: "🎨",
@@ -73,7 +89,9 @@ var UI_DATA = {
     UI_LIGHTING_ROCK: 1,
     UI_LIGHTING_PLANT: 1,
     UI_LIGHTING_DECAY: .999,
-    UI_VIEWMODE_SELECT: UI_VIEWMODE_NORMAL
+    UI_VIEWMODE_SELECT: UI_VIEWMODE_NORMAL,
+    UI_TOPBAR: true,
+    UI_SPEED: UI_SPEED_1
 };
 
 var UI_FUNCTION_MAP = {
