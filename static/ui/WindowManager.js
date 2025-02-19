@@ -8,7 +8,7 @@ import { UI_SM_BB, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_SM_SM, UI_SM_SPECIAL, UI_S
 
 var all_components = [];
 
-all_components.push(new BlockBuildingComponent(100, 20, 10, 0, UI_SM_BB));
+all_components.push(new BlockBuildingComponent(150, 20, 10, 0, UI_SM_BB));
 all_components.push(new LightingComponent(300, 20, 10, 0, UI_SM_LIGHTING));
 all_components.push(new SpecialBlockComponent(200, 20, 10, 0, UI_SM_SPECIAL));
 all_components.push(new ViewModeComponent(300, 20, 10, 0, UI_SM_VIEWMODE));

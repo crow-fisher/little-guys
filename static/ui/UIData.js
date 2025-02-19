@@ -59,7 +59,7 @@ var UI_DATA = {
     UI_BB_SIZE: 3,
     UI_BB_STRENGTH: 1,
     UI_SM_SM: true,
-    UI_SM_BB: false,
+    UI_SM_BB: true,
     UI_SM_LIGHTING: false,
     UI_SM_SPECIAL: false,
     UI_SM_VIEWMODE: false,
