@@ -41,6 +41,7 @@ export function handleMouseDown(e) {
             break; 
         case 0:
         default:
+            lastMouseDownStart = Date.now();
             leftMouseClicked = true;
             break;
     }

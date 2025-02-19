@@ -16,6 +16,7 @@ export const UI_SM_SM = "UI_SM_SM";
 export const UI_SM_BB = "UI_SM_BB";
 export const UI_SM_LIGHTING = "UI_SM_LIGHTING";
 export const UI_SM_SPECIAL = "UI_SM_SPECIAL";
+export const UI_SM_ORGANISM = "UI_SM_ORGANISM";
 export const UI_SM_VIEWMODE = "UI_SM_VIEWMODE";
 
 export const UI_LIGHTING_SUN = "UI_LIGHTING_SUN";
@@ -31,6 +32,9 @@ export const UI_SPECIAL_WATER = "water"
 export const UI_SPECIAL_AQUIFER = "aquifer"
 export const UI_SPECIAL_MIX = "mix"
 export const UI_SPECIAL_SURFACE = "surface"
+
+export const UI_ORGANISM_SELECT = "UI_ORGANISM_SELECT";
+export const UI_ORGANISM_WHEAT = "wheat";
 
 export const UI_VIEWMODE_SELECT = "UI_VIEWMODE_SELECT";
 

@@ -1,7 +1,7 @@
 import { Component } from "../Component.js";
 import { Container } from "../Container.js";
 import { Toggle } from "../elements/Toggle.js";
-import { UI_SM_BB, UI_SM_LIGHTING, UI_SM_SPECIAL, UI_SM_VIEWMODE, UI_SOIL_COMPOSITION } from "../UIData.js";
+import { UI_SM_BB, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_SM_SPECIAL, UI_SM_VIEWMODE, UI_SOIL_COMPOSITION } from "../UIData.js";
 
 
 let padding = 10;
@@ -15,6 +15,9 @@ export class SubMenuComponent extends Component {
         subMenuContainer.addElement(new Toggle(this.window, 75, 25, UI_SM_SPECIAL, "special"));
         subMenuContainer.addElement(new Toggle(this.window, 75, 25, UI_SM_LIGHTING, "lighting"));
         subMenuContainer.addElement(new Toggle(this.window, 75, 25, UI_SM_VIEWMODE, "viewmode"));
+        subMenuContainer.addElement(new Toggle(this.window, 75, 25, UI_SM_ORGANISM, "plants"));
+
+        
         
     }
 

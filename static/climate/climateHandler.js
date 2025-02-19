@@ -6,6 +6,7 @@ import { initWindPressure, tickWindPressureMap } from "./wind.js";
 export class ClimateHandler {
     constructor() {
         initWindPressure();
+        weather();
         initTemperatureHumidity();
         initializeStarMap();
     }
