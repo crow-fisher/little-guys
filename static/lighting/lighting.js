@@ -1,13 +1,11 @@
-import { RGB_COLOR_BLACK } from "../colors.js";
-import { randNumber } from "../common.js";
-import { setNextLightUpdateTime } from "../globalOperations.js";
-import { ALL_SQUARES, LIGHT_SOURCES } from "../globals.js";
-import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "../index.js";
-import { getSqIterationOrder, getSquares } from "../squares/_sqOperations.js";
-import { getCloudColorAtPos, getCloudColorAtSqPos } from "../climate/temperatureHumidity.js";
+import { LIGHT_SOURCES } from "../globals.js";
+import { getSqIterationOrder } from "../squares/_sqOperations.js";
+import { getCloudColorAtPos } from "../climate/temperatureHumidity.js";
 import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "../climate/time.js";
 import { loadUI, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_SUN } from "../ui/UIData.js";
 import { getWindSquaresX, getWindSquaresY } from "../climate/wind.js";
+import { getCanvasSquaresX } from "../canvas.js";
+import { setNextLightUpdateTime } from "../main.js";
 
 let lifeSquarePositions = new Map();
 
@@ -77,9 +75,9 @@ export function lightingPrepareTerrainSquares() {
 
 export function createSunLightGroup() {
     let sunLightGroup = new MovingLinearLightGroup(
-        CANVAS_SQUARES_X / 2,
+        getCanvasSquaresX() / 2,
         -1, 
-        CANVAS_SQUARES_X * 0.5,
+        getCanvasSquaresX() * 0.5,
         1,
         getCurrentLightColorTemperature, 
         () => 10 * loadUI(UI_LIGHTING_SUN) * getDaylightStrength(),
@@ -91,7 +89,7 @@ export function createSunLightGroup() {
 
 export function createMoonLightGroup() {
     let moonLightGroup = new MovingLinearLightGroup(
-        CANVAS_SQUARES_X / 2,
+        getCanvasSquaresX() / 2,
         -CANVAS_SQUARES_Y, 
         100,
         7,
@@ -119,13 +117,13 @@ export class MovingLinearLightGroup {
         let minThetaPoint, maxThetaPoint;
         if (posX < 0) {
             minThetaPoint = [0, CANVAS_SQUARES_Y];
-            maxThetaPoint = [CANVAS_SQUARES_X, 0];
-        } else if (posX <= CANVAS_SQUARES_X) {
+            maxThetaPoint = [getCanvasSquaresX(), 0];
+        } else if (posX <= getCanvasSquaresX()) {
             minThetaPoint = [0, 0];
-            maxThetaPoint = [CANVAS_SQUARES_X, 0];
+            maxThetaPoint = [getCanvasSquaresX(), 0];
         } else {
             minThetaPoint = [0, 0]
-            maxThetaPoint = [CANVAS_SQUARES_X, CANVAS_SQUARES_Y];
+            maxThetaPoint = [getCanvasSquaresX(), CANVAS_SQUARES_Y];
         }
 
         let relMinThetaPoint = [minThetaPoint[0] - posX, minThetaPoint[1] - posY]

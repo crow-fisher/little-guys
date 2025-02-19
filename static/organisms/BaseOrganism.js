@@ -1,16 +1,11 @@
 import { removeOrganism } from "./_orgOperations.js";
-import { getStandardDeviation, organismProgressCalculus, randNumber } from "../common.js";
-import { getCurDay, getCurTime, getDt, getPrevDay, getTimeScale } from "../climate/time.js";
-import { getNextEntitySpawnId } from "../globals.js";
-import { getWindSpeedAtLocation } from "../climate/wind.js";
-import { lightingRegisterLifeSquare, MAX_BRIGHTNESS } from "../lighting/lighting.js";
+import { randNumber } from "../common.js";
+import { getCurDay, getDt } from "../climate/time.js";
 import { GrowthPlan, GrowthPlanStep } from "./GrowthPlan.js";
-import { STAGE_ADULT, STAGE_DEAD, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, STATE_DEAD, STATE_HEALTHY, STATE_THIRSTY, SUBTYPE_ROOTNODE, TYPE_HEART } from "./Stages.js";
+import { STAGE_DEAD, STAGE_JUVENILE, STAGE_SPROUT, STATE_DEAD, STATE_HEALTHY, STATE_THIRSTY, SUBTYPE_ROOTNODE, TYPE_HEART } from "./Stages.js";
 import { addSquare, getNeighbors } from "../squares/_sqOperations.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 import { PlantSquare } from "../squares/PlantSquare.js";
-import { selectedViewMode } from "../index.js";
-import { reduceNextLightUpdateTime } from "../globalOperations.js";
 import { processLighting } from "../lighting/lightingProcessing.js";
 
 class BaseOrganism {

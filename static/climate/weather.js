@@ -1,5 +1,5 @@
+import { getCanvasSquaresX } from "../canvas.js";
 import { randNumber, randRange } from "../common.js";
-import { CANVAS_SQUARES_X } from "../index.js";
 import { addWaterSaturationPascals, getHumidity, getWaterSaturation, setRestingGradientStrength, setRestingHumidityGradient, setRestingTemperatureGradient } from "./temperatureHumidity.js";
 import { getCurDay, timeScaleFactor } from "./time.js";
 import { getPressure, isPointInWindBounds } from "./wind.js";
@@ -114,7 +114,7 @@ class Weather {
 
 function spawnCumulusCloud() {
     curClouds.push(new Cloud(
-        randRange(-CANVAS_SQUARES_X/4, CANVAS_SQUARES_X * (0.75)),
+        randRange(-getCanvasSquaresX()/4, getCanvasSquaresX() * (0.75)),
         randRange(4, 8),
         randRange(4, 8), randRange(3, 5), 
         getCurDay() + 0.00001 * randRange(1, 30), .1 * randRange(2, 4), 
@@ -123,7 +123,7 @@ function spawnCumulusCloud() {
 
 function spawnNimbusCloud(rainFactor) {
     curClouds.push(new Cloud(
-        randRange(0, CANVAS_SQUARES_X * 0.25),
+        randRange(0, getCanvasSquaresX() * 0.25),
         randRange(4, 6),
         randRange(23, 35), randRange(3, 5), 
         getCurDay() + 0.00001 * randRange(1, 30), .01 * randRange(2, 4), 

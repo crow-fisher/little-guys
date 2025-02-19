@@ -4,9 +4,9 @@ import {
     ALL_SQUARES, ALL_ORGANISM_SQUARES, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES, resetWaterflowSquares
 } from "./globals.js";
 
-import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js";
 import { getObjectArrFromMap } from "./common.js";
 import { removeItemAll } from "./common.js";
+import { getCanvasSquaresX, getCanvasSquaresY } from "./canvas.js";
 
 var frame_squares = null;
 var frame_solid_squares = null;
@@ -16,9 +16,9 @@ export function purge() {
     iterateOnSquares((sq) => {
         var ret = true;
         ret &= sq.posX >= 0;
-        ret &= sq.posX < CANVAS_SQUARES_X;
+        ret &= sq.posX < getCanvasSquaresX();
         ret &= sq.posY >= 0;
-        ret &= sq.posY < CANVAS_SQUARES_Y;
+        ret &= sq.posY < getCanvasSquaresY();
         ret &= sq.blockHealth > 0;
         if (!ret) {
             removeSquare(sq);
@@ -28,16 +28,16 @@ export function purge() {
     iterateOnOrganisms((org) => {
         var ret = true;
         ret &= org.posX >= 0;
-        ret &= org.posX < CANVAS_SQUARES_X;
+        ret &= org.posX < getCanvasSquaresX();
         ret &= org.posY >= 0;
-        ret &= org.posY < CANVAS_SQUARES_Y;
+        ret &= org.posY < getCanvasSquaresY();
         if (!ret) {
             org.destroy();
         }
     })
 
     Object.keys(ALL_ORGANISM_SQUARES).forEach((key) => {
-        if (key < 0 || key >= CANVAS_SQUARES_X) {
+        if (key < 0 || key >= getCanvasSquaresX()) {
             ALL_ORGANISM_SQUARES.delete(key);
         }
     })

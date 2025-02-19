@@ -1,15 +1,16 @@
-import { MAIN_CONTEXT, BASE_SIZE, zoomCanvasFillRect } from "../index.js";
+import { MAIN_CONTEXT } from "../index.js";
 import { hexToRgb, rgbToHex, rgbToRgba } from "../common.js";
 
 import { getCurTime } from "../climate/time.js";
 import { addSquare, getSquares, removeOrganismSquare } from "../squares/_sqOperations.js";
 
-import { selectedViewMode } from "../index.js";
 import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED } from "../colors.js";
 import { addOrganismSquare } from "./_lsOperations.js";
 import { removeSquare } from "../globalOperations.js";
 import { STATE_DEAD, STATE_HEALTHY, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, STATE_DESTROYED } from "../organisms/Stages.js";
 import { processLighting } from "../lighting/lightingProcessing.js";
+import { getBaseSize } from "../canvas.js";
+import { loadUI, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
 
 
 class BaseLifeSquare {
@@ -42,7 +43,7 @@ class BaseLifeSquare {
         this.spawnedEntityId = organism.spawnedEntityId;
         this.childLifeSquares = new Array();
 
-        this.height = BASE_SIZE;
+        this.height = getBaseSize();
 
         if (square.organic) {
             square.spawnedEntityId = organism.spawnedEntityId;
@@ -212,7 +213,8 @@ class BaseLifeSquare {
         if (this.activeRenderSubtype != this.subtype || this.activeRenderState != this.state) {
             this.subtypeColorUpdate();
         }
-        if (selectedViewMode == "organismNutrients") {
+        let selectedViewMode = loadUI(UI_VIEWMODE_SELECT);
+        if (selectedViewMode == UI_VIEWMODE_NITROGEN) {
             let color = {
                 r: 100 + (1 - this.nitrogenIndicated) * 130,
                 g: 100 + (1 - this.lightlevelIndicated) * 130,
@@ -220,14 +222,14 @@ class BaseLifeSquare {
             }
             MAIN_CONTEXT.fillStyle = rgbToHex(color.r, color.g, color.b);
             zoomCanvasFillRect(
-                this.getPosX() * BASE_SIZE,
-                this.getPosY() * BASE_SIZE,
-                this.width * BASE_SIZE * this.getLsqRenderSizeMult(),
-                this.height * BASE_SIZE * this.getLsqRenderSizeMult()
+                this.getPosX() * getBaseSize(),
+                this.getPosY() * getBaseSize(),
+                this.width * getBaseSize() * this.getLsqRenderSizeMult(),
+                this.height * getBaseSize() * this.getLsqRenderSizeMult()
             );
             return;
         }
-        else if (selectedViewMode == "watersaturation") {
+        else if (selectedViewMode == UI_VIEWMODE_MOISTURE) {
             var color1 = null;
             var color2 = null;
 
@@ -267,10 +269,10 @@ class BaseLifeSquare {
 
             MAIN_CONTEXT.fillStyle = rgbToRgba(out.r, out.g, out.b, this.opacity);
             zoomCanvasFillRect(
-                this.getPosX() * BASE_SIZE,
-                this.getPosY() * BASE_SIZE,
-                this.width * BASE_SIZE * this.getLsqRenderSizeMult(),
-                this.height * BASE_SIZE * this.getLsqRenderSizeMult()
+                this.getPosX() * getBaseSize(),
+                this.getPosY() * getBaseSize(),
+                this.width * getBaseSize() * this.getLsqRenderSizeMult(),
+                this.height * getBaseSize() * this.getLsqRenderSizeMult()
             );
             return;
         }
@@ -315,10 +317,10 @@ class BaseLifeSquare {
             MAIN_CONTEXT.fillStyle = outRgba;
 
             zoomCanvasFillRect(
-                this.getPosX() * BASE_SIZE,
-                this.getPosY() * BASE_SIZE,
-                this.width * BASE_SIZE * this.getLsqRenderSizeMult(),
-                this.height * BASE_SIZE * this.getLsqRenderSizeMult()
+                this.getPosX() * getBaseSize(),
+                this.getPosY() * getBaseSize(),
+                this.width * getBaseSize() * this.getLsqRenderSizeMult(),
+                this.height * getBaseSize() * this.getLsqRenderSizeMult()
             );
         }
 

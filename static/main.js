@@ -1,5 +1,5 @@
 import { doWaterFlow, physics, processOrganisms, purge, renderOrganisms, renderSolidSquares, renderWaterSquares, reset } from "./globalOperations.js";
-import { doClickAdd, getBlockModification_val, getLastMode, getSelectedViewMode } from "./index.js";
+import { doClickAdd } from "./manipulation.js";
 import { resetFrameDivMult } from "./lighting/lightingProcessing.js";
 import { renderClouds, renderTemperature, renderWaterSaturation } from "./climate/temperatureHumidity.js";
 import { doTimeSeek, getTimeScale, renderTime, updateTime } from "./climate/time.js";
@@ -19,6 +19,10 @@ let updated = false;
 
 const lightingHandler = new LightingHandler();
 const climateHandler = new ClimateHandler();
+
+export function setNextLightUpdateTime(t) {
+    lightingHandler.setNextLightingUpdateTime(t);
+}
 
 export function triggerEarlySquareScheduler() {
     last_square_tick = 0;

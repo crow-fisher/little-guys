@@ -1,5 +1,6 @@
-import { COLOR_BLACK, COLOR_BROWN, COLOR_OTHER_BLUE, COLOR_RED } from "../colors.js";
-import { getLastMoveOffset, isLeftMouseClicked, MAIN_CONTEXT } from "../index.js";
+import { COLOR_BLACK } from "../colors.js";
+import { MAIN_CONTEXT } from "../index.js";
+import { getLastMoveOffset } from "../mouse.js";
 
 export class Window {
     constructor(posX, posY, padding, dir) {

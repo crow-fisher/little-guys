@@ -1,7 +1,7 @@
 
 
 import { loadEmptyScene } from "./saveAndLoad.js";
-import { scheduler_main } from "./scheduler.js";
+import { scheduler_main } from "./main.js";
 import { keydown, keyup } from "./keyboard.js";
 import { handleClick, handleMouseDown, handleMouseUp } from "./mouse.js";
 import { getCanvasHeight, getCanvasWidth } from "./canvas.js";

@@ -3,7 +3,7 @@ import { ALL_SQUARES, ALL_ORGANISM_SQUARES } from "../globals.js";
 import { removeSquare } from "../globalOperations.js";
 import { removeItemAll } from "../common.js";
 import { getOrganismsAtSquare } from "../organisms/_orgOperations.js";
-import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "../index.js";
+import { getCanvasSquaresX, getCanvasSquaresY } from "../canvas.js";
 
 var abs = Math.abs;
 
@@ -39,7 +39,7 @@ function addSquareOverride(square) {
         addSquare(square);
         return;
     }
-    var bottomLayer = Array.from(existingSquares.filter((sq) => sq.collision && sq.posY == (CANVAS_SQUARES_Y - 1)));
+    var bottomLayer = Array.from(existingSquares.filter((sq) => sq.collision && sq.posY == (getCanvasSquaresY() - 1)));
     if (bottomLayer.length > 0) {
         return;
     }
@@ -59,7 +59,7 @@ function getSqIterationOrder() {
             squareOrder.push(...getSquares(rootKeys[i], subKeys[j]));
         }
     }
-    squareOrder.sort((b, a) => (a.posX + a.posY * CANVAS_SQUARES_X) - (b.posX + b.posY * CANVAS_SQUARES_X));
+    squareOrder.sort((b, a) => (a.posX + a.posY * getCanvasSquaresX()) - (b.posX + b.posY * getCanvasSquaresX()));
     return squareOrder;
 }
 /**
@@ -74,7 +74,7 @@ function iterateOnSquares(func) {
             squareOrder.push(...getSquares(rootKeys[i], subKeys[j]));
         }
     }
-    squareOrder.sort((b, a) => (a.posX + a.posY * CANVAS_SQUARES_X) - (b.posX + b.posY * CANVAS_SQUARES_X));
+    squareOrder.sort((b, a) => (a.posX + a.posY * getCanvasSquaresX()) - (b.posX + b.posY * getCanvasSquaresX()));
     squareOrder.forEach(func);
 }
 

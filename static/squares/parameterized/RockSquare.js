@@ -1,9 +1,10 @@
 
 import { getSquares } from "../_sqOperations.js";
-import { addSquareByName, CANVAS_SQUARES_Y } from "../../index.js";
 import { SoilSquare } from "./SoilSquare.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { loadUI, UI_LIGHTING_ROCK, UI_ROCK_COMPOSITION } from "../../ui/UIData.js";
+import { getCanvasSquaresY } from "../../canvas.js";
+import { addSquareByName } from "../../manipulation.js";
 
 
 export function getBaseRockColor(sand, silt, clay) {
@@ -68,7 +69,7 @@ export class RockSquare extends SoilSquare {
         var pressureToOutflowWaterContainment = this.getInverseMatricPressure(thisWaterPressure + 2);
         var diff = (this.waterContainment - pressureToOutflowWaterContainment) / this.getWaterflowRate();
         diff *= Math.abs(thisWaterPressure - -2);
-        if ((this.posY + 1) >= CANVAS_SQUARES_Y) {
+        if ((this.posY + 1) >= getCanvasSquaresY()) {
             this.waterContainment -= diff;
         } else {
             var newWater = addSquareByName(this.posX, this.posY + 1, "water");

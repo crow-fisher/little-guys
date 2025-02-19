@@ -1,5 +1,6 @@
 import { rgbToHex } from "../../common.js";
-import { isLeftMouseClicked, MAIN_CONTEXT } from "../../index.js";
+import { MAIN_CONTEXT } from "../../index.js";
+import { isLeftMouseClicked } from "../../mouse.js";
 import { getBaseRockColor } from "../../squares/parameterized/RockSquare.js";
 import { getBaseNutrientRate, getBasePercolationRate, getBaseSoilColor } from "../../squares/parameterized/SoilSquare.js";
 import { loadUI, saveUI, UI_SOIL_COMPOSITION, UI_SOIL_VIEWMODE } from "../UIData.js";

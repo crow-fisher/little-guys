@@ -1,5 +1,6 @@
 import { resetZoom } from "./canvas.js";
 
+var leftMouseClicked = false;
 var rightMouseClicked = false;
 var middleMouseClicked = false;
 var lastMouseDownStart = Date.now(); 
@@ -7,6 +8,10 @@ var mouseDown = 0;
 var lastMoveEvent = null;
 var lastMoveOffset = null;
 var lastLastMoveOffset = null;
+
+export function getLastMoveOffset() {
+    return lastMoveOffset;
+}
 
 export function isLeftMouseClicked() {
     return leftMouseClicked;

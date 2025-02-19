@@ -5,7 +5,7 @@ import {
     getNextGroupId
 } from "../globals.js";
 
-import { MAIN_CONTEXT, BASE_SIZE, selectedViewMode, getBlockModification_val, zoomCanvasFillRect } from "../index.js";
+import { MAIN_CONTEXT } from "../index.js";
 
 import { hexToRgb, rgbToRgba } from "../common.js";
 
@@ -23,6 +23,7 @@ import { getAdjacentWindSquareToRealSquare, getWindSquareAbove } from "../climat
 import { RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
 import { getCurDay, timeScaleFactor } from "../climate/time.js";
 import { processLighting } from "../lighting/lightingProcessing.js";
+import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
 
 export class BaseSquare {
     constructor(posX, posY) {
@@ -32,6 +33,8 @@ export class BaseSquare {
 
         this.offsetX = posX % 1;
         this.offsetY = posY % 1;
+
+        this.color = hexToRgb("#00FFFF");
 
         this.solid = true;
         this.spawnedEntityId = 0;
@@ -237,30 +240,30 @@ export class BaseSquare {
     renderTemperature() {
         MAIN_CONTEXT.fillStyle = calculateColorTemperature(this.temperature);
         zoomCanvasFillRect(
-            this.posX * BASE_SIZE,
-            this.posY * BASE_SIZE,
-            BASE_SIZE,
-            BASE_SIZE
+            this.posX * getBaseSize(),
+            this.posY * getBaseSize(),
+            getBaseSize(),
+            getBaseSize()
         );
     }
 
     renderSurface() {
         MAIN_CONTEXT.fillStyle = this.surface ? "rgba(172, 35, 226, 0.25)" : "rgba(30, 172, 58, 0.25)";
         zoomCanvasFillRect(
-            (this.offsetX + this.posX) * BASE_SIZE,
-            (this.offsetY + this.posY) * BASE_SIZE,
-            BASE_SIZE,
-            BASE_SIZE
+            (this.offsetX + this.posX) * getBaseSize(),
+            (this.offsetY + this.posY) * getBaseSize(),
+            getBaseSize(),
+            getBaseSize()
         );
     }
 
     renderAsGrey() {
         MAIN_CONTEXT.fillStyle = "rgba(50, 50, 50, 0.2)";
         zoomCanvasFillRect(
-            (this.offsetX + this.posX) * BASE_SIZE,
-            (this.offsetY + this.posY) * BASE_SIZE,
-            BASE_SIZE,
-            BASE_SIZE
+            (this.offsetX + this.posX) * getBaseSize(),
+            (this.offsetY + this.posY) * getBaseSize(),
+            getBaseSize(),
+            getBaseSize()
         );
     }
 
@@ -286,10 +289,10 @@ export class BaseSquare {
         var outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacity);
         MAIN_CONTEXT.fillStyle = outRgba;
         zoomCanvasFillRect(
-            (this.offsetX + this.posX) * BASE_SIZE,
-            (this.offsetY + this.posY) * BASE_SIZE,
-            BASE_SIZE,
-            BASE_SIZE
+            (this.offsetX + this.posX) * getBaseSize(),
+            (this.offsetY + this.posY) * getBaseSize(),
+            getBaseSize(),
+            getBaseSize()
         );
     }
 
@@ -309,36 +312,7 @@ export class BaseSquare {
     }
 
     getColorBase() {
-        var res = this.getStaticRand(1) * (parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value) + parseFloat(this.baseColorAmount.value));
-        var primaryColor = null;
-        var altColor1 = null;
-        var altColor2 = null;
-
-        if (res < parseFloat(this.accentColorAmount.value)) {
-            primaryColor = this.accentColor;
-            altColor1 = this.darkColor;
-            altColor2 = this.baseColor;
-        } else if (res < parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value)) {
-            primaryColor = this.darkColor;
-            altColor1 = this.baseColor;
-            altColor2 = this.darkColor;
-        } else {
-            altColor1 = this.darkColor;
-            altColor2 = this.darkColor;
-            primaryColor = this.baseColor;
-        }
-
-        var rand = this.getStaticRand(2);
-        var baseColorRgb = hexToRgb(primaryColor);
-        var altColor1Rgb = hexToRgb(altColor1);
-        var altColor2Rgb = hexToRgb(altColor2);
-
-        var outColorBase = {
-            r: baseColorRgb.r * 0.5 + ((altColor1Rgb.r * rand + altColor2Rgb.r * (1 - rand)) * 0.5),
-            g: baseColorRgb.g * 0.5 + ((altColor1Rgb.g * rand + altColor2Rgb.g * (1 - rand)) * 0.5),
-            b: baseColorRgb.b * 0.5 + ((altColor1Rgb.b * rand + altColor2Rgb.b * (1 - rand)) * 0.5)
-        }
-        return outColorBase;
+        return this.color;
     }
 
     processLighting() {
@@ -358,10 +332,10 @@ export class BaseSquare {
         0.8);
         MAIN_CONTEXT.fillStyle = outRgba;
         zoomCanvasFillRect(
-            (this.offsetX + this.posX) * BASE_SIZE,
-            (this.offsetY + this.posY) * BASE_SIZE,
-            BASE_SIZE,
-            BASE_SIZE
+            (this.offsetX + this.posX) * getBaseSize(),
+            (this.offsetY + this.posY) * getBaseSize(),
+            getBaseSize(),
+            getBaseSize()
         );
     }
 
@@ -374,10 +348,10 @@ export class BaseSquare {
         var outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), this.opacity);
         MAIN_CONTEXT.fillStyle = outRgba;
         zoomCanvasFillRect(
-            (this.offsetX + this.posX) * BASE_SIZE,
-            (this.offsetY + this.posY) * BASE_SIZE,
-            BASE_SIZE,
-            BASE_SIZE
+            (this.offsetX + this.posX) * getBaseSize(),
+            (this.offsetY + this.posY) * getBaseSize(),
+            getBaseSize(),
+            getBaseSize()
         );
     }
 

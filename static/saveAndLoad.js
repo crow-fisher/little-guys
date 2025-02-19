@@ -1,15 +1,16 @@
-import { reduceNextLightUpdateTime, removeSquare, setNextLightUpdateTime } from "./globalOperations.js";
-import { addSquareByName, CANVAS_SQUARES_X, CANVAS_SQUARES_Y } from "./index.js";
+import { removeSquare } from "./globalOperations.js";
 import { addOrganismSquare } from "./lifeSquares/_lsOperations.js";
 import { addOrganism, iterateOnOrganisms, removeOrganism } from "./organisms/_orgOperations.js";
 import { GrowthComponent, GrowthPlan, GrowthPlanStep } from "./organisms/GrowthPlan.js";
-import { triggerEarlySquareScheduler } from "./scheduler.js";
+import { setNextLightUpdateTime, triggerEarlySquareScheduler } from "./main.js";
 import { addSquare, addSquareOverride, iterateOnSquares, removeOrganismSquare } from "./squares/_sqOperations.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { getTemperatureMap, getWaterSaturationMap, setTemperatureMap, setWaterSaturationMap } from "./climate/temperatureHumidity.js";
 import { getCurDay, setCurDay } from "./climate/time.js";
 import { ProtoMap, TypeMap } from "./types.js";
 import { getWindPressureMap, initWindPressure, setWindPressureMap } from "./climate/wind.js";
+import { getCanvasSquaresX, getCanvasSquaresY } from "./canvas.js";
+import { addSquareByName } from "./manipulation.js";
 
 export async function loadSlot(slotName) {
     const db = await openDatabase();
@@ -281,17 +282,17 @@ async function decompress(base64String) {
 
 export function loadEmptyScene() {
     purgeGameState();
-    for (let i = 0; i < CANVAS_SQUARES_X; i++) {
-        addSquare(new RockSquare(i, CANVAS_SQUARES_Y - 1));
+    for (let i = 0; i < getCanvasSquaresX(); i++) {
+        addSquare(new RockSquare(i, getCanvasSquaresY() - 1));
     }
-    reduceNextLightUpdateTime(10 ** 8);
+    setNextLightUpdateTime(0);
 }
 
 export function loadFlatDirtWorld() {
     loadEmptyScene();
-    for (let i = 0; i < CANVAS_SQUARES_X; i++) {
+    for (let i = 0; i < getCanvasSquaresX(); i++) {
         for (let j = 1; j < 10; j++) {
-            var square = addSquareByName(i, CANVAS_SQUARES_Y - (1 + j), "loam");
+            var square = addSquareByName(i, getCanvasSquaresY() - (1 + j), "loam");
             if (square)
                 square.randomize();
         }

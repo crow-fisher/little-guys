@@ -1,8 +1,8 @@
 import { hexToRgb, rgbToRgba } from "../common.js";
 import { getSquares } from "../squares/_sqOperations.js";
-import { MAIN_CONTEXT, CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, zoomCanvasFillRect } from "../index.js";
-import { initializeStarMap } from "./time.js";
+import {  MAIN_CONTEXT } from "../index.js";
 import { addWaterSaturationPascals, calculateColor, getTemperatureAtWindSquare, getWaterSaturation, initTemperatureHumidity, updateWindSquareTemperature } from "./temperatureHumidity.js";
+import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillRect } from "../canvas.js";
 
 var windPressureMap;
 var windPressureMapByPressure;
@@ -23,8 +23,8 @@ var base_wind_pressure = 101325; // 1 atm in pascals
 var windSpeedSmoothingMap = new Map();
 
 var clickAddPressure = base_wind_pressure * 0.01;
-var WIND_SQUARES_X = () => Math.ceil(CANVAS_SQUARES_X / 4);
-var WIND_SQUARES_Y = () => Math.ceil(CANVAS_SQUARES_Y / 4);
+var WIND_SQUARES_X = () => Math.ceil(getCanvasSquaresX() / 4);
+var WIND_SQUARES_Y = () => Math.ceil(getCanvasSquaresY() / 4);
 
 var curWindSquaresX = -1;
 var curWindSquaresY = -1;
@@ -312,8 +312,8 @@ function getExpectedPressureDifferential(x, y, x2, y2) {
 function renderWindPressureMap() {
     for (let i = 0; i < curWindSquaresX; i++) {
         for (let j = 0; j < curWindSquaresY; j++) {
-            var presure_min = base_wind_pressure - stp_pascals_per_meter / 2 * CANVAS_SQUARES_Y;
-            var pressure_max = base_wind_pressure + stp_pascals_per_meter / 2 * CANVAS_SQUARES_Y;
+            var presure_min = base_wind_pressure - stp_pascals_per_meter / 2 * getCanvasSquaresY();
+            var pressure_max = base_wind_pressure + stp_pascals_per_meter / 2 * getCanvasSquaresY();
             var p = getPressure(i, j);
             var s = _getWindSpeedAtLocation(i, j);
 
@@ -321,19 +321,19 @@ function renderWindPressureMap() {
 
             MAIN_CONTEXT.fillStyle = rgbToRgba(255 - pressure_255, 255 - pressure_255, 255 - pressure_255, .3);
             zoomCanvasFillRect(
-                4 * i * BASE_SIZE,
-                4 * j * BASE_SIZE,
-                4 * BASE_SIZE,
-                4 * BASE_SIZE
+                4 * i * getBaseSize(),
+                4 * j * getBaseSize(),
+                4 * getBaseSize(),
+                4 * getBaseSize()
             );
 
             if (prevailingWindMap[i][j] != -1) {
                 MAIN_CONTEXT.fillStyle = calculateColor(prevailingWindMap[i][j], 0, 1, prevailingWind_minColorRGB, prevailingWind_maxColorRGB);
                 zoomCanvasFillRect(
-                    4 * i * BASE_SIZE,
-                    4 * j * BASE_SIZE,
-                    4 * BASE_SIZE,
-                    4 * BASE_SIZE
+                    4 * i * getBaseSize(),
+                    4 * j * getBaseSize(),
+                    4 * getBaseSize(),
+                    4 * getBaseSize()
                 );
 
             }
@@ -342,8 +342,8 @@ function renderWindPressureMap() {
                 continue;
             }
 
-            var startX = 4 * i * BASE_SIZE;
-            var startY = 4 * j * BASE_SIZE;
+            var startX = 4 * i * getBaseSize();
+            var startY = 4 * j * getBaseSize();
 
             MAIN_CONTEXT.beginPath();
             MAIN_CONTEXT.lineWidth = 1;

@@ -1,8 +1,8 @@
-import { hexToRgb, hsv2rgb, randNumber, randRange, rgb2hsv, rgbToRgba } from "../common.js";
-import { CANVAS_SQUARES_X, CANVAS_SQUARES_Y, BASE_SIZE, MAIN_CONTEXT, zoomCanvasFillRect} from "../index.js";
-import { calculateColor, calculateColorProvideOpacity, calculateColorRGB, getFrameRelCloud } from "./temperatureHumidity.js";
-
-
+import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY } from "../canvas.js";
+import { hexToRgb, hsv2rgb, randNumber, rgb2hsv, rgbToRgba } from "../common.js";
+import { MAIN_CONTEXT } from "../index.js";
+import { calculateColorRGB, getFrameRelCloud } from "./temperatureHumidity.js";
+import { zoomCanvasFillRect } from "../canvas.js";
 
 var TIME_SCALE = 1;
 
@@ -79,14 +79,14 @@ function getPrevTime() {
 
 function initializeStarMap() {
     starMap = new Map();
-    starMapCenterX = randNumber(CANVAS_SQUARES_X / 4, CANVAS_SQUARES_X * 0.75);
-    starMapCenterY = randNumber(CANVAS_SQUARES_Y / 4, CANVAS_SQUARES_Y * 0.75);
+    starMapCenterX = randNumber(getCanvasSquaresX() / 4, getCanvasSquaresX() * 0.75);
+    starMapCenterY = randNumber(getCanvasSquaresY() / 4, getCanvasSquaresY() * 0.75);
 
     var numStars = randNumber(12000, 13000);
 
     for (let i = 0; i < numStars; i++) {
-        var starX = randNumber(-CANVAS_SQUARES_X * 4, CANVAS_SQUARES_X * 4);
-        var starY = randNumber(-CANVAS_SQUARES_Y * 4, CANVAS_SQUARES_Y * 4);
+        var starX = randNumber(-getCanvasSquaresX() * 4, getCanvasSquaresX() * 4);
+        var starY = randNumber(-getCanvasSquaresY() * 4, getCanvasSquaresY() * 4);
         var starBrightness = Math.random() * 0.7;
 
         if (!(starX in starMap)) {
@@ -123,16 +123,16 @@ function renderStarMap(brightnessMult) {
             if (endX < 0 || endY < 0) {
                 continue;
             }
-            if (endX > CANVAS_SQUARES_X || endY > CANVAS_SQUARES_Y) {
+            if (endX > getCanvasSquaresX() || endY > getCanvasSquaresY()) {
                 continue;
             }
 
             MAIN_CONTEXT.fillStyle = rgbToRgba(255, 255, 255, starbrightness);
             zoomCanvasFillRect(
-                endX * BASE_SIZE,
-                endY * BASE_SIZE,
-                starbrightness * BASE_SIZE,
-                starbrightness * BASE_SIZE
+                endX * getBaseSize(),
+                endY * getBaseSize(),
+                starbrightness * getBaseSize(),
+                starbrightness * getBaseSize()
             );
         }
     }
@@ -233,8 +233,8 @@ function renderSkyBackground(time) {
     zoomCanvasFillRect(
         0,
         0,
-        CANVAS_SQUARES_X * BASE_SIZE,
-        CANVAS_SQUARES_Y * BASE_SIZE
+        getCanvasSquaresX() * getBaseSize(),
+        getCanvasSquaresY() * getBaseSize()
     );
 
     renderStarMap(1 - getDaylightStrength());
@@ -270,8 +270,8 @@ function renderTime() {
     zoomCanvasFillRect(
         0,
         0,
-        CANVAS_SQUARES_X * BASE_SIZE,
-        CANVAS_SQUARES_Y * BASE_SIZE
+        getCanvasSquaresX() * getBaseSize(),
+        getCanvasSquaresY() * getBaseSize()
     );
 
     renderSkyBackground(currentTime);

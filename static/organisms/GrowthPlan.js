@@ -1,10 +1,9 @@
-import { getGlobalThetaBase } from "../index.js";
 import { getCurDay, getDt } from "../climate/time.js";
 import { getWindSpeedAtLocation } from "../climate/wind.js";
 import { STATE_DEAD, STATE_DESTROYED, STATE_HEALTHY, STATE_THIRSTY } from "./Stages.js";
+import { getGlobalThetaBase } from "../globals.js";
 
 const ROLLING_AVERAGE_PERIOD = 200;
-
 export class GrowthPlan {
     constructor(posX, posY, required, endStage, theta, twist, baseRotation, baseDeflection, baseCurve, type, strengthMult) {
         this.posX = posX;

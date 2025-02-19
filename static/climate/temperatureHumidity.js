@@ -1,13 +1,12 @@
 import { hexToRgb, randNumber, rgbToRgba } from "../common.js";
 import { getSquares } from "../squares/_sqOperations.js";
-import { MAIN_CONTEXT, BASE_SIZE, zoomCanvasFillRect } from "../index.js";
-import { addSquareByName } from "../index.js";
+import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
+import { MAIN_CONTEXT } from "../index.js";
 import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds } from "./wind.js";
 import { getCurTimeScale, timeScaleFactor } from "../climate/time.js";
 import { logRainFall } from "../climate/weather.js";
 import { getDefaultLighting } from "../lighting/lightingProcessing.js";
-
-
+import { addSquareByName } from "../manipulation.js";
 // decent reference https://web.gps.caltech.edu/~xun/course/GEOL1350/Lecture5.pdf
 
 var temperatureMap;
@@ -345,10 +344,10 @@ function renderClouds() {
                 cloudColorRGBA.b * (frameLighting.b / 255), 
                 cloudColorRGBA.a);
             zoomCanvasFillRect(
-                4 * i * BASE_SIZE,
-                4 * j * BASE_SIZE,
-                4 * BASE_SIZE,
-                4 * BASE_SIZE
+                4 * i * getBaseSize(),
+                4 * j * getBaseSize(),
+                4 * getBaseSize(),
+                4 * getBaseSize()
             );
         }
     }
@@ -418,10 +417,10 @@ function renderTemperature() {
         for (let j = 0; j < getWindSquaresY(); j++) {
             MAIN_CONTEXT.fillStyle = calculateColorTemperature(temperatureMap[i][j]);
             zoomCanvasFillRect(
-                4 * i * BASE_SIZE,
-                4 * j * BASE_SIZE,
-                4 * BASE_SIZE,
-                4 * BASE_SIZE
+                4 * i * getBaseSize(),
+                4 * j * getBaseSize(),
+                4 * getBaseSize(),
+                4 * getBaseSize()
             );
         }
     }
@@ -435,10 +434,10 @@ function renderWaterSaturation() {
             }
             MAIN_CONTEXT.fillStyle = calculateColor(getHumidity(i, j), 1, 1.1, c_waterSaturationLowRGB, c_waterSaturationHighRGB);
             zoomCanvasFillRect(
-                4 * i * BASE_SIZE,
-                4 * j * BASE_SIZE,
-                4 * BASE_SIZE,
-                4 * BASE_SIZE
+                4 * i * getBaseSize(),
+                4 * j * getBaseSize(),
+                4 * getBaseSize(),
+                4 * getBaseSize()
             );
         }
     }

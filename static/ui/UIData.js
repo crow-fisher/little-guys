@@ -1,8 +1,3 @@
-import { setNextLightUpdateTime } from "../globalOperations.js";
-import { isLeftMouseClicked } from "../index.js";
-import { AquiferSquare } from "../squares/parameterized/RainSquare.js";
-import { R_COLORS } from "./elements/SoilPicker.js";
-
 export const UI_MODE_SOIL = "soil";
 export const UI_MODE_ROCK = "rock";
 

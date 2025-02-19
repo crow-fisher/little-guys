@@ -1,5 +1,4 @@
 import { randNumber, randRange } from "../../common.js";
-import { getGlobalThetaBase } from "../../index.js";
 import { GenericParameterizedRootSquare } from "../../lifeSquares/parameterized/GenericParameterizedRootSquare.js";
 import { ElephantEarGreenSquare } from "../../lifeSquares/parameterized/tropical/ElephantEarGreenSquare.js";
 import { BaseOrganism } from "../BaseOrganism.js";

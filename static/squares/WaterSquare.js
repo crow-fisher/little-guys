@@ -1,11 +1,11 @@
 import { BaseSquare } from "./BaseSqaure.js";
 import { getSquares, iterateOnSquares, getNeighbors } from "./_sqOperations.js";
 import { WATERFLOW_CANDIDATE_SQUARES, WATERFLOW_TARGET_SQUARES } from "../globals.js";
-import { BASE_SIZE, MAIN_CONTEXT, zoomCanvasFillRect } from "../index.js";
+import { MAIN_CONTEXT } from "../index.js";
 import { RGB_COLOR_OTHER_BLUE } from "../colors.js";
-import { rgbToRgba } from "../common.js";
+import { hexToRgb, rgbToRgba } from "../common.js";
 import { loadUI, UI_LIGHTING_WATER } from "../ui/UIData.js";
-
+import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
 class WaterSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
@@ -17,9 +17,7 @@ class WaterSquare extends BaseSquare {
         this.rootable = false;
         this.calculateGroupFlag = true; 
         
-        this.baseColor = "#31539D";
-        this.darkColor = "#296CA5";
-        this.accentColor = "#296CA5";
+        this.color = hexToRgb("#31539D");
 
         this.opacity = 0.8;
 
@@ -62,10 +60,10 @@ class WaterSquare extends BaseSquare {
     renderWaterSaturation() {
         MAIN_CONTEXT.fillStyle = rgbToRgba(RGB_COLOR_OTHER_BLUE.r, RGB_COLOR_OTHER_BLUE.g, RGB_COLOR_OTHER_BLUE.b, (this.blockHealth / this.blockHealthMax));
         zoomCanvasFillRect(
-            this.posX * BASE_SIZE,
-            this.posY * BASE_SIZE,
-            BASE_SIZE,
-            BASE_SIZE
+            this.posX * getBaseSize(),
+            this.posY * getBaseSize(),
+            getBaseSize(),
+            getBaseSize()
         );
     }
 

@@ -1,5 +1,6 @@
-import { COLOR_BLACK, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
-import { getLastMode, getLastMouseDown, isLeftMouseClicked, MAIN_CONTEXT } from "../../index.js";
+import { COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
+import { MAIN_CONTEXT } from "../../index.js";
+import { getLastMouseDown, isLeftMouseClicked } from "../../mouse.js";
 import { loadUI, saveUI } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 

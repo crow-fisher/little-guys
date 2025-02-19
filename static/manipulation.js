@@ -1,10 +1,12 @@
 var ERASE_RADIUS = 2;
 
-import { getLastMoveOffset } from "./index.js";
-import { isLeftMouseClicked } from "./mouse.js";
-import { removeSquarePos } from "./squares/_sqOperations.js";
+import { getLastMoveOffset, isLeftMouseClicked } from "./mouse.js";
+import { addSquare, addSquareOverride, removeSquarePos } from "./squares/_sqOperations.js";
+import { AquiferSquare } from "./squares/parameterized/RainSquare.js";
+import { RockSquare } from "./squares/parameterized/RockSquare.js";
+import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
+import { WaterSquare } from "./squares/WaterSquare.js";
 import { isWindowHovered } from "./ui/WindowManager.js";
-
 var prevManipulationOffset;
 
 function doBlockBlur(centerX, centerY) {
@@ -52,20 +54,20 @@ function doBrushFunc(centerX, centerY, func) {
     }
 }
 
-function addSquareByName(posX, posY, name) {
+export function addSquareByName(posX, posY, name) {
     var square; 
     switch (name) {
         case "rock":
             square = addSquareOverride(new RockSquare(posX, posY));
             break;
         case "soil":
-            square = addSoilSquare(posX, posY, name);
+            square = addSquare(new SoilSquare(posX, posY));
             break;
         case "water":
             square = addSquare(new WaterSquare(posX, posY));
             break;
         case "aquifer":
-            square = addSquare(new AquiferSquare(posX, posY));
+            square = addSquare(AquiferSquare(posX, posY));
             break;
     };
     return square;
