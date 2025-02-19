@@ -1,3 +1,5 @@
+import { setNextLightUpdateTime } from "../main.js";
+
 export const UI_MODE_SOIL = "soil";
 export const UI_MODE_ROCK = "rock";
 
@@ -82,10 +84,10 @@ var UI_FUNCTION_MAP = {
 }
 
 var UI_SINGLE_GROUPS = [
-    [UI_SM_BB, UI_SM_SPECIAL, UI_SM_LIGHTING]
+    [UI_SM_BB, UI_SM_SPECIAL, UI_SM_LIGHTING, UI_SM_VIEWMODE, UI_SM_ORGANISM],
 ]
 
-var functionQueue = [];
+var queuedFunction = null;
 
 export function saveUI(key, value) {
     let singleGroup = (UI_SINGLE_GROUPS.find((group) => group.indexOf(key) > -1));
@@ -95,7 +97,7 @@ export function saveUI(key, value) {
 
     UI_DATA[key] = value;
     if (key in UI_FUNCTION_MAP) {
-        functionQueue.push(UI_FUNCTION_MAP[key]);
+        queuedFunction = UI_FUNCTION_MAP[key];
     }
 }
 
@@ -112,6 +114,8 @@ export function getUIMap() {
 }
 
 export function executeFunctionQueue() {
-    functionQueue.forEach((f) => f());
-    functionQueue = new Array();
+    if (queuedFunction != null) {
+        queuedFunction();
+    }
+    queuedFunction = null;
 }

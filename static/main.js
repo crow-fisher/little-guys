@@ -8,6 +8,7 @@ import { renderWindows, resetWindowHovered, updateWindows } from "./ui/WindowMan
 import { renderWindPressureMap } from "./climate/wind.js";
 import { LightingHandler } from "./lighting/lightingHandler.js";
 import { ClimateHandler } from "./climate/climateHandler.js";
+import { isLeftMouseClicked } from "./mouse.js";
  
 const SQUARE_UPDATE_MILLIS = 0;
 const ORG_UPDATE_MILLIS = 0;
@@ -52,7 +53,9 @@ export function scheduler_main() {
     }
 
     updateWindows();
-    executeFunctionQueue();
+    if (!isLeftMouseClicked()) 
+        executeFunctionQueue();
+    
     setTimeout(scheduler_main, 0);
 }
 

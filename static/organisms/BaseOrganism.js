@@ -7,6 +7,7 @@ import { addSquare, getNeighbors } from "../squares/_sqOperations.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 import { PlantSquare } from "../squares/PlantSquare.js";
 import { processLighting } from "../lighting/lightingProcessing.js";
+import { loadUI } from "../ui/UIData.js";
 
 class BaseOrganism {
     constructor(square) {
@@ -412,10 +413,7 @@ class BaseOrganism {
     }
 
     setNutrientIndicators() {
-        if (selectedViewMode != "organismNutrients") {
-            return;
-        }
-
+        return;
         let maturityLifeFrac = Math.min(1, (getCurDay() - this.spawnTime) / this.growthCycleMaturityLength); 
         let expectedNitrogen = maturityLifeFrac ** 2 * this.growthNitrogen;
         let expectedPhosphorus = maturityLifeFrac ** 2 * this.growthPhosphorus;

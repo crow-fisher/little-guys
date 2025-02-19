@@ -9,7 +9,7 @@ import { addOrganismSquare } from "./_lsOperations.js";
 import { removeSquare } from "../globalOperations.js";
 import { STATE_DEAD, STATE_HEALTHY, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, STATE_DESTROYED } from "../organisms/Stages.js";
 import { processLighting } from "../lighting/lightingProcessing.js";
-import { getBaseSize } from "../canvas.js";
+import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
 import { loadUI, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
 
 
@@ -22,17 +22,16 @@ class BaseLifeSquare {
         this.yOffset = 0;
         this.type = "base";
         this.subtype = "";
-        this.colorBase = "#1D263B";
+
+        this.baseColor = "#515c24";
+        this.darkColor = "#353b1a";
+        this.accentColor = "#5d6637";
+
+        this.baseColorAmount = 80;
+        this.darkColorAmount = 60;
+        this.accentColorAmount = 20;
+
         this.spawnTime = getCurTime();
-        this.collision = false;
-
-        this.maxAirDt = 0.005;
-        this.maxWaterDt = 0.005;
-        this.maxDirtDt = 0.005;
-
-        this.airNutrients = 0;
-        this.waterNutrients = 0;
-        this.dirtNutrients = 0;
 
         this.deflectionStrength = 0;
         this.deflectionXOffset = 0;
@@ -42,8 +41,6 @@ class BaseLifeSquare {
         this.linkedOrganism = organism;
         this.spawnedEntityId = organism.spawnedEntityId;
         this.childLifeSquares = new Array();
-
-        this.height = getBaseSize();
 
         if (square.organic) {
             square.spawnedEntityId = organism.spawnedEntityId;
@@ -75,6 +72,8 @@ class BaseLifeSquare {
         } else {
             this.lighting = [];
         }
+
+        
 
         this.touchingGround = null;
     }
@@ -277,7 +276,7 @@ class BaseLifeSquare {
             return;
         }
         else {
-            var res = this.getStaticRand(1) * (parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value) + parseFloat(this.baseColorAmount.value));
+            var res = this.getStaticRand(1) * (parseFloat(this.accentColorAmount) + parseFloat(this.darkColorAmount) + parseFloat(this.baseColorAmount));
             var primaryColor = null;
             var altColor1 = null;
             var altColor2 = null;
@@ -285,7 +284,7 @@ class BaseLifeSquare {
                 primaryColor = this.accentColor;
                 altColor1 = this.darkColor;
                 altColor2 = this.colorBase;
-            } else if (res < parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount.value)) {
+            } else if (res < parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount)) {
                 primaryColor = this.darkColor;
                 altColor1 = this.baseColor;
                 altColor2 = this.darkColor;

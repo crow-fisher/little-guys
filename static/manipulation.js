@@ -1,31 +1,33 @@
 var ERASE_RADIUS = 2;
 
-import { getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, transformPixelsToCanvasSquares } from "./canvas.js";
+import { getCanvasHeight, getCanvasWidth, transformPixelsToCanvasSquares } from "./canvas.js";
+import { randNumber } from "./common.js";
+import { getOrganismSquaresAtSquare } from "./lifeSquares/_lsOperations.js";
 import { triggerEarlySquareScheduler } from "./main.js";
 import { getLastMoveOffset, isLeftMouseClicked, isMiddleMouseClicked, isRightMouseClicked } from "./mouse.js";
 import { addNewOrganism } from "./organisms/_orgOperations.js";
 import { WheatSeedOrganism } from "./organisms/agriculture/WheatOrganism.js";
-import { addSquare, addSquareOverride, removeSquarePos } from "./squares/_sqOperations.js";
+import { addSquare, addSquareOverride, getSquares, removeSquarePos } from "./squares/_sqOperations.js";
 import { AquiferSquare } from "./squares/parameterized/RainSquare.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
-import { loadUI, UI_BB_MODE, UI_BB_SIZE, UI_MODE_ROCK, UI_MODE_SOIL, UI_ORGANISM_SELECT, UI_SM_BB, UI_SM_ORGANISM, UI_SM_SPECIAL } from "./ui/UIData.js";
+import { loadUI, saveUI, UI_BB_MODE, UI_BB_SIZE, UI_MODE_ROCK, UI_MODE_SOIL, UI_ORGANISM_SELECT, UI_SM_BB, UI_SM_ORGANISM, UI_SM_SPECIAL, UI_SM_VIEWMODE, UI_SPECIAL_AQUIFER, UI_SPECIAL_MIX, UI_SPECIAL_SELECT, UI_SPECIAL_SURFACE, UI_SPECIAL_WATER, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE } from "./ui/UIData.js";
 import { isWindowHovered } from "./ui/WindowManager.js";
 var prevManipulationOffset;
 
-function doBlockBlur(centerX, centerY) {
+function doBlockBlur(centerX, centerY, size) {
     if (Math.random() > 0.5) {
         return;
     }
-    var rx = randNumber(-brushSizeSlider_val / 2, brushSizeSlider_val / 2);
-    var ry = randNumber(-brushSizeSlider_val / 2, brushSizeSlider_val / 2);
+    var rx = randNumber(-size / 2, size / 2);
+    var ry = randNumber(-size / 2, size / 2);
     var len = ((rx ** 2) + (ry ** 2)) ** 0.5;
 
-    if (len > brushSizeSlider_val) {
-        rx /= (brushSizeSlider_val / len);
-        ry /= (brushSizeSlider_val / len);
+    if (len > size) {
+        rx /= (size / len);
+        ry /= (size / len);
     }
     var otherX = centerX + rx;
     var otherY = centerY + ry;
@@ -69,7 +71,7 @@ export function addSquareByName(posX, posY, name) {
             square = addSquare(new WaterSquare(posX, posY));
             break;
         case "aquifer":
-            square = addSquare(AquiferSquare(posX, posY));
+            square = addSquare(new AquiferSquare(posX, posY));
             break;
     };
     return square;
@@ -164,24 +166,37 @@ export function doClickAdd() {
                     }
                 }
                 if (loadUI(UI_SM_SPECIAL)) {
-                    doBrushFunc(px, py, (x, y) => doBlockMod(x, y));
+                    let mode = loadUI(UI_SPECIAL_SELECT);
+                    if (mode == UI_SPECIAL_WATER) {
+                        doBrushFunc(px, py, (x, y) => addSquareByName(x, y, "water"));
+                    } else if (mode == UI_SPECIAL_AQUIFER) {
+                        addSquareByName(px, py, "aquifer")
+                    } else if (mode == UI_SPECIAL_SURFACE) {
+                        saveUI(UI_SM_VIEWMODE, true);
+                        saveUI(UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE);
+                        doBrushFunc(px, py, (x, y) => getSquares(x, y)
+                            .filter((sq) => sq.solid && sq.collision)
+                            .forEach((sq) => sq.surface = !isRightMouseClicked()));
+                    } else if (mode == UI_SPECIAL_MIX) {
+                        doBlockBlur(px, py, loadUI(UI_BB_SIZE));
+                    }
                 }
                 if (loadUI(UI_SM_ORGANISM)) {
                     var selectedOrganism = loadUI(UI_ORGANISM_SELECT);
-                }
-                switch (selectedOrganism) {
-                    case "Wheat":
-                        var chance = Math.random();
-                        if (chance > 0.9) {
-                            var sq = addSquare(new SeedSquare(px, py));
-                            if (sq) {
-                                var orgAdded = addNewOrganism(new WheatSeedOrganism(sq));
-                                if (!orgAdded) {
-                                    sq.destroy();
+                    switch (selectedOrganism) {
+                        case "wheat":
+                            var chance = Math.random();
+                            if (chance > 0.9) {
+                                var sq = addSquare(new SeedSquare(px, py));
+                                if (sq) {
+                                    var orgAdded = addNewOrganism(new WheatSeedOrganism(sq));
+                                    if (!orgAdded) {
+                                        sq.destroy();
+                                    }
                                 }
                             }
-                        }
-                        break;
+                            break;
+                    }
                 }
             }
         }
