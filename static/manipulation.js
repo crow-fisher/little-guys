@@ -65,7 +65,7 @@ export function addSquareByName(posX, posY, name) {
             square = addSquareOverride(new RockSquare(posX, posY));
             break;
         case "soil":
-            square = addSquare(new SoilSquare(posX, posY));
+            square = addSquareOverride(new SoilSquare(posX, posY));
             break;
         case "water":
             square = addSquare(new WaterSquare(posX, posY));

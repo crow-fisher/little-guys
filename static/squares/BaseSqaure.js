@@ -500,6 +500,17 @@ export class BaseSquare {
             if (Math.random() < 0.9) {
                 return;
             }
+            getSquares(this.posX + 1, this.posY)
+                .filter((sq) => sq.proto == "WaterSquare")
+                .forEach((sq) => {
+                    if (Math.random() > this.waterSinkRate) {
+                        removeSquare(sq);
+                        sq.posX -= 1;
+                        this.updatePosition(this.posX + 1, this.posY);
+                        addSquare(sq);
+                    }
+                });
+            return;
         }
         getSquares(this.posX, this.posY + 1)
             .filter((sq) => sq.proto == "WaterSquare")
