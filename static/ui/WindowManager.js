@@ -8,7 +8,7 @@ import { TopBarComponent } from "./topbar/TopBarComponent.js";
 import { ViewModeComponent } from "./components/ViewModeComponent.js";
 import { UI_SM_BB, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_SM_SM, UI_SM_SPECIAL, UI_SM_VIEWMODE, UI_TOPBAR } from "./UIData.js";
 
-var topBarComponent = new TopBarComponent(UI_TOPBAR);
+var topBarComponent = new TopBarComponent("UI_TOPBAR");
 
 var all_components = [];
 

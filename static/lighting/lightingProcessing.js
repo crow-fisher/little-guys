@@ -1,5 +1,7 @@
 import { getStandardDeviation } from "../common.js";
 import { getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "../climate/time.js";
+import { addUIFunctionMap, loadUI, UI_LIGHTING_DECAY, UI_LIGHTING_PLANT, UI_LIGHTING_ROCK, UI_LIGHTING_WATER, UI_TOPBAR_TOGGLELIGHTING } from "../ui/UIData.js";
+import { setNextLightUpdateTime } from "../main.js";
 
 var curFrameValues = [1];
 var prevFrameDivMult = 1;
@@ -27,7 +29,7 @@ export function getDefaultLighting() {
 }
 
 export function processLighting(lightingMap) {
-    if (lightingMap.length == 0) {
+    if (!loadUI(UI_TOPBAR_TOGGLELIGHTING) || lightingMap.length == 0) {
         return getDefaultLighting();
     }
     var outColor = {r: 0, g: 0, b: 0}
@@ -49,3 +51,9 @@ export function processLighting(lightingMap) {
     outColor.b /= prevFrameDivMult;
     return outColor;
 }
+
+addUIFunctionMap(UI_LIGHTING_WATER, () => setNextLightUpdateTime(0))
+addUIFunctionMap(UI_LIGHTING_ROCK, () => setNextLightUpdateTime(0))
+addUIFunctionMap(UI_LIGHTING_PLANT, () => setNextLightUpdateTime(0))
+addUIFunctionMap(UI_LIGHTING_DECAY, () => setNextLightUpdateTime(0))
+addUIFunctionMap(UI_TOPBAR_TOGGLELIGHTING, () => setNextLightUpdateTime(0))

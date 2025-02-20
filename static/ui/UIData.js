@@ -1,4 +1,3 @@
-import { setNextLightUpdateTime } from "../main.js";
 
 export const UI_MODE_SOIL = "soil";
 export const UI_MODE_ROCK = "rock";
@@ -102,19 +101,17 @@ var UI_DATA = {
     UI_TOPBAR: true,
     UI_SPEED: UI_SPEED_1
 };
-
-var UI_FUNCTION_MAP = {
-    UI_LIGHTING_WATER: () => setNextLightUpdateTime(0),
-    UI_LIGHTING_ROCK: () => setNextLightUpdateTime(0),
-    UI_LIGHTING_PLANT: () => setNextLightUpdateTime(0),
-    UI_LIGHTING_DECAY: () => setNextLightUpdateTime(0)
-}
+var UI_FUNCTION_MAP = new Map();
 
 var UI_SINGLE_GROUPS = [
     [UI_SM_BB, UI_SM_SPECIAL, UI_SM_LIGHTING, UI_SM_VIEWMODE, UI_SM_ORGANISM],
 ]
 
 var queuedFunction = null;
+
+export function addUIFunctionMap(key, value) {
+    UI_FUNCTION_MAP[key] = value;
+}
 
 export function saveUI(key, value) {
     let singleGroup = (UI_SINGLE_GROUPS.find((group) => group.indexOf(key) > -1));
