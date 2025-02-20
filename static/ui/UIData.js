@@ -54,6 +54,8 @@ export const UI_TOPBAR = "UI_TOPBAR";
 export const UI_TOOL_MODE_LEFT = "UI_TOOL_MODE_LEFT";
 export const UI_TOOL_MODE_RIGHT = "UI_TOO_MODE_RIGHT";
 
+
+export const UI_TOPBAR_MAINMENU = "UI_TOPBAR_MAINMENU";
 export const UI_SPEED = "UI_SPEED";
 export const UI_SPEED_0 = "UI_SPEED_0";
 export const UI_SPEED_1 = "UI_SPEED_1";
@@ -66,7 +68,12 @@ export const UI_SPEED_7 = "UI_SPEED_7";
 export const UI_SPEED_8 = "UI_SPEED_8";
 export const UI_SPEED_9 = "UI_SPEED_9";
 
+
+
 export const UI_SPEEDS = [UI_SPEED_1, UI_SPEED_2, UI_SPEED_3, UI_SPEED_4, UI_SPEED_5, UI_SPEED_6, UI_SPEED_7, UI_SPEED_8, UI_SPEED_9]
+
+
+export const UI_BOOLEAN = "UI_BOOLEAN";
 
 
 // put default values in here

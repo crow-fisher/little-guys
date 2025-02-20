@@ -24,7 +24,4 @@ export function keydown(e) {
 }
 
 export function keyup(e) {
-    if (e.key == "Shift") {
-        shiftPressed = false;
-    }
 }

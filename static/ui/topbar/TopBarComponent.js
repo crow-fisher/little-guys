@@ -20,7 +20,11 @@ UI_SPEED_9,
 UI_LIGHTING_SUN, UI_LIGHTING_MOON, UI_LIGHTING_WATER, UI_LIGHTING_ROCK, UI_LIGHTING_PLANT, UI_LIGHTING_DECAY, UI_SM_LIGHTING, UI_SOIL_COMPOSITION, UI_NULL, UI_TOPBAR, 
 UI_SPEEDS,
 UI_SPEED,
-UI_SPEED_0} from "../UIData.js";
+UI_SPEED_0,
+UI_TOPBAR_MAINMENU,
+UI_BOOLEAN,
+UI_SM_BB,
+UI_SM_SM} from "../UIData.js";
 import { TopBarToggle } from "./TopBarToggle.js";
 import { getLastMoveOffset, isLeftMouseClicked } from "../../mouse.js";
 import { isWindowHovered } from "../WindowManager.js";
@@ -34,20 +38,24 @@ export class TopBarComponent {
         this.elements[1] = [new TopBarTime(getBaseSize() * 2)];
 
         this.elements[0.75] = new Array();
-        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2, UI_SPEED, UI_SPEED_0, "⏸"));
-        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2, UI_SPEED, UI_SPEED_1, "▶"));
-        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2, UI_SPEED, UI_SPEED_2, "▶"));
-        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2, UI_SPEED, UI_SPEED_3, "▶"));
-        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2, UI_SPEED, UI_SPEED_4, "▶"));
-        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2, UI_SPEED, UI_SPEED_5, "▶"));
-        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2, UI_SPEED, UI_SPEED_6, "▶"));
-        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2, UI_SPEED, UI_SPEED_7, "▶"));
-        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2, UI_SPEED, UI_SPEED_8, "▶"));
-        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2, UI_SPEED, UI_SPEED_9, "▶"));
+        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_0, "⏸"));
+        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_1, "▶"));
+        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_2, "▶"));
+        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_3, "▶"));
+        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_4, "▶"));
+        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_5, "▶"));
+        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_6, "▶"));
+        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_7, "▶"));
+        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_8, "▶"));
+        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_9, "▶"));
+        this.elements[0] = [
+            new TopBarToggle(getBaseSize() * 2, "left", UI_TOPBAR_MAINMENU, UI_BOOLEAN, "main menu  "),
+            new TopBarToggle(getBaseSize() * 2, "left", UI_SM_SM, UI_BOOLEAN, "block menu")
+        ];
 
         this.maxHeight = 0;
         this.padding = 4;
-    }
+    }   
 
     render() {
         if (!loadUI(this.key)) {
@@ -85,7 +93,7 @@ export class TopBarComponent {
         var x = curMouseLocation.x;
         var y = curMouseLocation.y;
 
-        if (y > this.maxHeight) {
+        if (y > this.maxHeight + (getBaseSize() * 2)) {
             return;
         }
 
@@ -97,7 +105,11 @@ export class TopBarComponent {
             elements.forEach((element) => {
                 let measurements = element.measure();
                 let width = measurements[0] + this.padding;
-                if (x > startX - width && x < startX) {
+
+                let lb = (x > startX && x < startX + width);
+                let ub = (x > startX - width && x < startX);
+
+                if ((key < 0.5 && lb) || (key >= 0.5 && ub)) {
                     element.hover(x - startX, y);
                     this.hovered = true;
                 }
