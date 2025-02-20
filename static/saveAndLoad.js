@@ -237,7 +237,7 @@ function loadSlotFromSave(slotData) {
         org.lifeSquares.forEach(addOrganismSquare);
     });
     triggerEarlySquareScheduler();
-    reduceNextLightUpdateTime(10 ** 8);
+    setNextLightUpdateTime(0);
 }
 
 async function compress(inputString) {

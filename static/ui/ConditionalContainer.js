@@ -36,7 +36,7 @@ export class ConditionalContainer extends Container {
         this.endX = 0;
         this.endY = 0;
 
-        this.elements[loadUI(this.key)].forEach((el) => {
+        this.elements[loadUI(this.func)].forEach((el) => {
             el.render(curX, curY);
             this.endX = Math.max(curX + el.sizeX, this.endX);
             this.endY = Math.max(curY + el.sizeY, this.endY);
@@ -59,7 +59,7 @@ export class ConditionalContainer extends Container {
         var curY1 = 0;
         var curX2, curY2;
 
-        if (!(this.elements[loadUI(this.key)].some((el) => {
+        if (!(this.elements[loadUI(this.func)].some((el) => {
             curX2 = curX1 + el.sizeX;
             curY2 = curY1 + el.sizeY;
             if (posX > curX1 && posX < curX2 && posY > curY1 && posY < curY2) {

@@ -81,8 +81,8 @@ var UI_DATA = {
     UI_BB_MODE: UI_MODE_SOIL,
     UI_BB_SIZE: 3,
     UI_BB_STRENGTH: 1,
-    UI_SM_SM: true,
-    UI_SM_BB: true,
+    UI_SM_SM: false,
+    UI_SM_BB: false,
     UI_SM_LIGHTING: false,
     UI_SM_SPECIAL: false,
     UI_SM_VIEWMODE: false,
@@ -91,12 +91,12 @@ var UI_DATA = {
     UI_ROCK_COMPOSITION: [40, 40, 20],
     UI_SOIL_VIEWMODE: "🎨",
     UI_SOIL_INITALWATER: -5,
-    UI_LIGHTING_SUN: .129,
+    UI_LIGHTING_SUN: .329,
     UI_LIGHTING_MOON: .05,
     UI_LIGHTING_WATER: 1,
     UI_LIGHTING_ROCK: 1,
     UI_LIGHTING_PLANT: 1,
-    UI_LIGHTING_DECAY: .999,
+    UI_LIGHTING_DECAY: .98,
     UI_VIEWMODE_SELECT: UI_VIEWMODE_NORMAL,
     UI_TOPBAR: true,
     UI_SPEED: UI_SPEED_1
@@ -104,7 +104,7 @@ var UI_DATA = {
 var UI_FUNCTION_MAP = new Map();
 
 var UI_SINGLE_GROUPS = [
-    [UI_SM_BB, UI_SM_SPECIAL, UI_SM_LIGHTING, UI_SM_VIEWMODE, UI_SM_ORGANISM],
+    [UI_SM_BB, UI_SM_SPECIAL, UI_SM_LIGHTING, UI_SM_ORGANISM],
 ]
 
 var queuedFunction = null;

@@ -48,7 +48,7 @@ export class Slider extends WindowElement {
         let max = this.sizeX - this.window.padding / 2;
         let p = (posX - min) / (max - min);
         this.cur = this.min + p * (this.max - this.min);
-        saveUI(this.key, this.cur);
+        saveUI(this.func, this.cur);
     }
 
 }

@@ -5,40 +5,9 @@ import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getMoo
 import { loadUI, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_SUN } from "../ui/UIData.js";
 import { getWindSquaresX, getWindSquaresY } from "../climate/wind.js";
 import { getCanvasSquaresX, getCanvasSquaresY } from "../canvas.js";
-import { setNextLightUpdateTime } from "../main.js";
 
 let lifeSquarePositions = new Map();
-
 export let MAX_BRIGHTNESS = 8;
-
-var sunBrightness = 0.129;
-var rockLightDecayFactor = 3;
-var waterLightDecayFactor = 1;
-
-export function setSunBrightness(newVal) {
-    sunBrightness = newVal;
-}
-
-export function getSunBrightness() {
-    return sunBrightness;
-}
-
-export function getRockLightDecayFactor() {
-    return rockLightDecayFactor;
-}
-
-export function setRockLightDecayFactor(newVal) {
-    rockLightDecayFactor = newVal;
-    setNextLightUpdateTime(0);
-}
-
-export function getWaterLightDecayFactor() {
-    return waterLightDecayFactor;
-}
-export function setWaterLightDecayFactor(newVal) {
-    waterLightDecayFactor = newVal;
-    setNextLightUpdateTime(0);
-}
 
 export function lightingClearLifeSquarePositionMap() {
     lifeSquarePositions = new Map();
@@ -78,9 +47,9 @@ export function createSunLightGroup() {
         getCanvasSquaresX() / 2,
         -1, 
         getCanvasSquaresX() * 0.5,
-        1,
+        4,
         getCurrentLightColorTemperature, 
-        () => 10 * loadUI(UI_LIGHTING_SUN) * getDaylightStrength(),
+        () => loadUI(UI_LIGHTING_SUN) * getDaylightStrength(),
         () => Math.max(0, (2 * (getCurDay() % 1) - 0.5))
     );
     return sunLightGroup;
@@ -329,7 +298,7 @@ export class LightSource {
                         } else {
                             obj.lighting[idx][0].push(pointLightSourceFunc);
                         }
-                        curBrightness *= loadUI(UI_LIGHTING_DECAY) * (1 - obj.getLightFilterRate() * this.numRays);
+                        curBrightness *= loadUI(UI_LIGHTING_DECAY) * (1 - obj.getLightFilterRate());
                     });
                 })
             });

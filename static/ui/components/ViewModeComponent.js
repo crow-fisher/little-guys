@@ -1,3 +1,4 @@
+import { getBaseSize } from "../../canvas.js";
 import { Component } from "../Component.js";
 import { Container } from "../Container.js";
 import { RowedRadio } from "../elements/RowedRadio.js";
@@ -12,16 +13,17 @@ import {
     UI_VIEWMODE_MOISTURE,
     UI_VIEWMODE_SURFACE,
     UI_VIEWMODE_ORGANISMS, UI_SPECIAL_SELECT, UI_NULL,
-    UI_SM_VIEWMODE
+    UI_SM_VIEWMODE,
+    UI_VIEWMODE_SELECT
 } from "../UIData.js";
 export class ViewModeComponent extends Component {
     constructor(posX, posY, padding, dir, key) {
         super(posX, posY, padding, dir, key);
-        var sizeX = 150;
+        var sizeX = getBaseSize() * 22;
         let container = new Container(this.window, UI_NULL, sizeX * 2, 100, padding, 1);
         this.window.addElement(container);
-        container.addElement(new Text(this.window, sizeX * 2, 15, "view mode"));
-        container.addElement(new RowedRadio(this.window, sizeX * 2, 50, UI_SPECIAL_SELECT, 3, [
+        container.addElement(new Text(this.window, sizeX * 2, getBaseSize() * 1.5, "view mode"));
+        container.addElement(new RowedRadio(this.window, sizeX * 2, getBaseSize() * 6, UI_VIEWMODE_SELECT, 3, [
             UI_VIEWMODE_NORMAL,
             UI_VIEWMODE_LIGHTIHNG,
             UI_VIEWMODE_NITROGEN,
