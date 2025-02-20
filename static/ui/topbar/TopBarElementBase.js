@@ -11,4 +11,5 @@ export class TopBarElementBase {
     }
     measure() { return [0, 0] }
     render() {}
+    hover(posX, posY) {}
 }

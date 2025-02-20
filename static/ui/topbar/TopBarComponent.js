@@ -5,7 +5,7 @@ import { Component } from "../Component.js";
 import { Container } from "../Container.js";
 import { Slider } from "../elements/Slider.js";
 import { Text } from "../elements/Text.js";
-import { Time } from "./Time.js";
+import { TopBarTime } from "./TopBarTime.js";
 import { Toggle } from "../elements/Toggle.js";
 import { loadUI, 
     UI_SPEED_1,
@@ -19,17 +19,22 @@ UI_SPEED_8,
 UI_SPEED_9,
 UI_LIGHTING_SUN, UI_LIGHTING_MOON, UI_LIGHTING_WATER, UI_LIGHTING_ROCK, UI_LIGHTING_PLANT, UI_LIGHTING_DECAY, UI_SM_LIGHTING, UI_SOIL_COMPOSITION, UI_NULL, UI_TOPBAR, 
 UI_SPEEDS,
-UI_SPEED} from "../UIData.js";
+UI_SPEED,
+UI_SPEED_0} from "../UIData.js";
 import { TopBarToggle } from "./TopBarToggle.js";
 import { getLastMoveOffset, isLeftMouseClicked } from "../../mouse.js";
+import { isWindowHovered } from "../WindowManager.js";
 
 export class TopBarComponent {
     constructor(key) {
         this.key = key;
+        this.hovered = false;
+
         this.elements = new Map();
-        this.elements[1] = [new Time(getBaseSize() * 2)];
+        this.elements[1] = [new TopBarTime(getBaseSize() * 2)];
 
         this.elements[0.75] = new Array();
+        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2, UI_SPEED, UI_SPEED_0, "⏸"));
         this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2, UI_SPEED, UI_SPEED_1, "▶"));
         this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2, UI_SPEED, UI_SPEED_2, "▶"));
         this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2, UI_SPEED, UI_SPEED_3, "▶"));
@@ -94,6 +99,7 @@ export class TopBarComponent {
                 let width = measurements[0] + this.padding;
                 if (x > startX - width && x < startX) {
                     element.hover(x - startX, y);
+                    this.hovered = true;
                 }
                 startX += width;
             });

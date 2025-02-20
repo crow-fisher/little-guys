@@ -47,10 +47,8 @@ export function scheduler_main() {
         }
     }
 
-    if (updated) {
-        render();
-        updated = false;
-    }
+    render();
+    renderWindows();
 
     updateWindows();
     if (!isLeftMouseClicked()) 

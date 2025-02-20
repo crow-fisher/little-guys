@@ -2,7 +2,7 @@ import { getCurDay, millis_per_day } from "../../climate/time.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { TopBarElementBase } from "./TopBarElementBase.js";
 
-export class Time extends TopBarElementBase {
+export class TopBarTime extends TopBarElementBase {
     constructor(fontSize) {
         super(fontSize);
     }
@@ -18,9 +18,10 @@ export class Time extends TopBarElementBase {
     render(startX, startY) {
         this.prepareStyle();
         let curDay = getCurDay();
-        let curDate = new Date(curDay * millis_per_day);
-        let text = curDate.toLocaleString();
+        let curDate = new Date(curDay * millis_per_day)
+        let text = curDate.toLocaleString("en-US", {timeZone: 'UTC'});
         MAIN_CONTEXT.fillStyle = "#FFFFFF"
         MAIN_CONTEXT.fillText(text, startX, startY)
     }
+
 }

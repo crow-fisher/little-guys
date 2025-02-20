@@ -10,7 +10,8 @@ import { loadUI, UI_SPEED_1, UI_SPEED_2, UI_SPEED_3,
     UI_SPEED_7,
     UI_SPEED_8,
     UI_SPEED_9,
-    UI_SPEED
+    UI_SPEED,
+    UI_SPEED_0
  } from "../ui/UIData.js";
 
 var TIME_SCALE = 1;
@@ -169,7 +170,7 @@ function getCurTime() {
 }
 
 export function getCurTimeScale() {
-    return (5 ** (TIME_SCALE - 1));
+    return (3.5 ** (TIME_SCALE - 1));
 }
 
 export function getTimeScale() {
@@ -183,6 +184,9 @@ export function timeScaleFactor() {
 function updateTime() {
     if (curUIKey != loadUI(UI_SPEED)) {
         switch (loadUI(UI_SPEED)) {
+            case UI_SPEED_0:
+                TIME_SCALE = 0;
+                break;
             case UI_SPEED_1:
                 TIME_SCALE = 1;
                 break;
@@ -217,6 +221,9 @@ function updateTime() {
         curUIKey = loadUI(UI_SPEED);
     }
 
+    if (TIME_SCALE == 0) {
+        return;
+    }
     var dt = Date.now() - prevRealTime;
     if (dt > 10000) {
         prevRealTime = Date.now();

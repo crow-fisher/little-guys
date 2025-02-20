@@ -8,7 +8,6 @@ import { TopBarComponent } from "./topbar/TopBarComponent.js";
 import { ViewModeComponent } from "./components/ViewModeComponent.js";
 import { UI_SM_BB, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_SM_SM, UI_SM_SPECIAL, UI_SM_VIEWMODE, UI_TOPBAR } from "./UIData.js";
 
-
 var topBarComponent = new TopBarComponent(UI_TOPBAR);
 
 var all_components = [];
@@ -33,9 +32,9 @@ export function resetWindowHovered() {
     all_components.forEach((component) => {
         component.window.hovered = false;
         component.window.locked = false;
-    
     });
+    topBarComponent.hovered = false;
 }
 export function isWindowHovered() {
-    return all_components.some((component) => component.window.hovered);
+    return all_components.some((component) => component.window.hovered) || topBarComponent.hovered;
 }
