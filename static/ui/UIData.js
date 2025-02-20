@@ -55,7 +55,8 @@ export const UI_TOOL_MODE_LEFT = "UI_TOOL_MODE_LEFT";
 export const UI_TOOL_MODE_RIGHT = "UI_TOO_MODE_RIGHT";
 
 
-export const UI_TOPBAR_MAINMENU = "UI_TOPBAR_MAINMENU";
+export const UI_TOPBAR_MAINMENU = "UI_TOPBAR_MAINMENU"; 
+export const UI_TOPBAR_TOGGLELIGHTING = "UI_TOPBAR_TOGGLELIGHTING";
 export const UI_SPEED = "UI_SPEED";
 export const UI_SPEED_0 = "UI_SPEED_0";
 export const UI_SPEED_1 = "UI_SPEED_1";

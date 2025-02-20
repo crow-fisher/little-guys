@@ -22,7 +22,13 @@ export class TopBarToggle extends TopBarElementBase{
     render(startX, startY) {
         this.prepareStyle();
 
-        if (loadUI(this.key) == this.value)
+        let checked = false;
+        if (this.value == UI_BOOLEAN) {
+            checked = loadUI(this.key);
+        } else {
+            checked = loadUI(this.key) == this.value;
+        }
+        if (checked)
             MAIN_CONTEXT.fillStyle = "#FFFFFF";
         else
             MAIN_CONTEXT.fillStyle = "#999999";
