@@ -1,14 +1,13 @@
 import { WindowElement } from "./Window.js";
 
-export class Container extends WindowElement {
-    constructor(window, key, sizeX, sizeY, padding, dir) {
-        super(window, key, sizeX, sizeY);
-
+export class Container {
+    constructor(window, padding, dir) {
+        this.window = window;
         this.elements = new Array();
         this.padding = padding;
 
-        this.sizeX = 0;
-        this.sizeY = 0;
+        this.sizeX = 1;
+        this.sizeY = 1;
         this.endX = 0;
         this.endY = 0;
         this.dir = dir;
@@ -21,6 +20,10 @@ export class Container extends WindowElement {
         this.elements.push(newElement);
     }
 
+    size() {
+        return [this.sizeX, this.sizeY];
+    }
+
     render(startX, startY) {
         var curX = startX;
         var curY = startY;
@@ -29,19 +32,21 @@ export class Container extends WindowElement {
         this.endY = 0;
 
         this.elements.forEach((el) => {
+            let elSize = el.size()
+            if (elSize[0] == 0) {
+                return;
+            }
             el.render(curX, curY);
-            this.endX = Math.max(curX + el.sizeX, this.endX);
-            this.endY = Math.max(curY + el.sizeY, this.endY);
+            this.endX = Math.max(curX + elSize[0], this.endX);
+            this.endY = Math.max(curY + elSize[1], this.endY);
             if (this.dir == 0) {
-                curX += el.sizeX + this.padding;
+                curX += elSize[0] + this.padding;
             } else {
-                curY += el.sizeY + this.padding;
+                curY += elSize[1] + this.padding;
             }
         });
         this.sizeX = this.endX - startX;
         this.sizeY = this.endY - startY;
-
-        return [this.sizeX, this.sizeY];
     }
 
     hover(posX, posY) {
@@ -52,8 +57,9 @@ export class Container extends WindowElement {
         var curX2, curY2;
 
         if (!(this.elements.some((el) => {
-            curX2 = curX1 + el.sizeX;
-            curY2 = curY1 + el.sizeY;
+            let elSize = el.size();
+            curX2 = curX1 + elSize[0];
+            curY2 = curY1 + elSize[1];
             if (posX > curX1 && posX < curX2 && posY > curY1 && posY < curY2) {
                 el.hover(posX - curX1, posY - curY1);
                 return true;
@@ -64,4 +70,6 @@ export class Container extends WindowElement {
                 curY1 = curY2 + this.padding;
         })));
     }
+
+    
 }

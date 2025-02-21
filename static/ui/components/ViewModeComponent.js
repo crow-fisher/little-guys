@@ -21,7 +21,8 @@ export class ViewModeComponent extends Component {
         super(posX, posY, padding, dir, key);
         var sizeX = getBaseSize() * 22;
         let container = new Container(this.window, UI_NULL, sizeX * 2, 100, padding, 1);
-        this.window.addElement(container);
+        this.window.container = container;
+        
         container.addElement(new Text(this.window, sizeX * 2, getBaseSize() * 1.5, "view mode"));
         container.addElement(new RowedRadio(this.window, sizeX * 2, getBaseSize() * 6, UI_VIEWMODE_SELECT, 3, [
             UI_VIEWMODE_NORMAL,

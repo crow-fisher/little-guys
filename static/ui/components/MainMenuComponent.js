@@ -10,7 +10,7 @@ export class MainMenuComponent extends Component {
     constructor(posX, posY, padding, dir, key) {
         super(posX, posY, padding, dir, key);
         let subMenuContainer = new Container(this.window, UI_NULL, 150, 100, padding, 1);
-        this.window.addElement(subMenuContainer);
+        this.window.container = subMenuContainer;
         // subMenuContainer.addElement(new Button(this.window, 150, 25, () => loadSlot("A"), "save slot A"));
         // subMenuContainer.addElement(new Button(this.window, 150, 25, () => saveSlot("A"), "save slot A"));
         // subMenuContainer.addElement(new Button(this.window, 150, 25, () => loadSlot("B"), "save slot B"));

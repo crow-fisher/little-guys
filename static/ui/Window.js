@@ -4,7 +4,7 @@ import { getLastMoveOffset, isLeftMouseClicked } from "../mouse.js";
 
 export class Window {
     constructor(posX, posY, padding, dir) {
-        this.elements = new Array();
+        this.container = null;
         this.posX = posX;
         this.posY = posY;
         this.padding = padding;
@@ -23,35 +23,12 @@ export class Window {
         this.clickStartY = -1;
     }
 
-    addElement(newElement) {
-        this.elements.push(newElement);
-    }
-
-    removeElement(elementToRemove) {
-        this.elements = Array.from(this.elements.filter((el) => el != elementToRemove));
-    }
-
     render() {
         this.renderWindowFrame();
-
-        var curX = this.posX;
-        var curY = this.posY;
-        
-        this.endX = 0;
-        this.endY = 0;
-
-        this.elements.forEach((el) => {
-            let elSize = el.render(curX, curY);
-            this.endX = Math.max(curX + elSize[0], this.endX);
-            this.endY = Math.max(curY + elSize[1], this.endY);
-            if (this.dir == 0) {
-                curX += elSize[0] + this.padding;
-            } else {
-                curY += elSize[1] + this.padding;
-            }
-        });
-        this.sizeX = this.endX - this.posX;
-        this.sizeY = this.endY - this.posY;
+        let containerSize = this.container.size();
+        this.sizeX = containerSize[0];
+        this.sizeY = containerSize[1];
+        this.container.render(this.posX, this.posY);
     }
 
     update() {
@@ -59,30 +36,16 @@ export class Window {
         if (curMouseLocation == null) {
             return;
         }
-        var x = curMouseLocation.x;
-        var y = curMouseLocation.y;
+        let x = curMouseLocation.x;
+        let y = curMouseLocation.y;
+        
+        let relX = x - this.posX;
+        let relY = y - this.posY;
 
-        var curX1 = this.posX;
-        var curY1 = this.posY;
-        var curX2, curY2;
-
-
-        if (!(this.elements.some((el) => {
-            curX2 = curX1 + el.sizeX;
-            curY2 = curY1 + el.sizeY;
-            if (x > curX1 && x < curX2 && y > curY1 && y < curY2) {
-                el.hover(x - curX1, y - curY1);
-                return true;
-            }
-            if (this.dir == 0)
-                curX1 = curX2 + this.padding;
-            else
-                curY1 = curY2 + this.padding;
-        }))) {
+        if (relX > 0 && relX < this.sizeX && relY > 0 && relY < this.sizeY) {
+            this.container.hover(relX, relY);
         }
-
         this.hoverWindowFrame(x, y);
-
     }
 
     renderWindowFrame() {
@@ -132,11 +95,12 @@ export class WindowElement {
         this.sizeX = sizeX;
         this.sizeY = sizeY;
     }
-    render(startX, startY) {
-        return [this.sizeX, this.sizeY];
-    }
+    render(startX, startY) {}
 
     hover(posX, posY) {
         this.window.hovered = true;
+    }
+    size() {
+        return [this.sizeX, this.sizeY];
     }
 }

@@ -31,6 +31,7 @@ export class ToolPickerElement extends WindowElement {
         MAIN_CONTEXT.fillRect(startX + this.pickerSize, startY, colorSize, this.sizeY);
         MAIN_CONTEXT.fillStyle = rgbToHex(this.clickColor.r, this.clickColor.g, this.clickColor.b);
         MAIN_CONTEXT.fillRect(startX + this.pickerSize + colorSize, startY, colorSize, this.sizeY);
+        return [this.sizeX, this.sizeY];
     }
 
     getSquareComposition(i, j) {

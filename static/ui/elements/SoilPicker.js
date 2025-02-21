@@ -1,3 +1,4 @@
+import { COLOR_BLACK } from "../../colors.js";
 import { rgbToHex } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
@@ -16,6 +17,7 @@ export class SoilPickerElement extends WindowElement {
         this.pickerSize = Math.min(sizeX, sizeY);
         this.hoverColor = {r: 100, g: 100, b: 100};
         this.clickColor = {r: 100, g: 100, b: 100};
+        this.clickLoc = null;
     }
 
     render(startX, startY) {
@@ -24,12 +26,19 @@ export class SoilPickerElement extends WindowElement {
                 this.renderSingleSquare(startX, startY, i, j);
             }
         }
+
+        if (this.clickLoc != null) {
+            MAIN_CONTEXT.fillStyle = COLOR_BLACK;
+            MAIN_CONTEXT.fillRect(startX + this.clickLoc[0] - 2, startY + this.clickLoc[1] - 2, 4, 4);
+        }
+
         var colorSize = (this.sizeX - this.pickerSize) / 2;
 
         MAIN_CONTEXT.fillStyle = rgbToHex(this.hoverColor.r, this.hoverColor.g, this.hoverColor.b);
         MAIN_CONTEXT.fillRect(startX + this.pickerSize, startY, colorSize, this.sizeY);
         MAIN_CONTEXT.fillStyle = rgbToHex(this.clickColor.r, this.clickColor.g, this.clickColor.b);
         MAIN_CONTEXT.fillRect(startX + this.pickerSize + colorSize, startY, colorSize, this.sizeY);
+        return [this.sizeX, this.sizeY]
     }
 
     getSquareComposition(i, j) {
@@ -90,7 +99,6 @@ export class SoilPickerElement extends WindowElement {
             MAIN_CONTEXT.fillStyle = rgbToHex(colorRGB.r, colorRGB.g, colorRGB.b);
             MAIN_CONTEXT.fillRect(startX + i, startY + j, 1, 1);
         }
-       
     }
 
     hover(posX, posY) {
@@ -101,6 +109,7 @@ export class SoilPickerElement extends WindowElement {
             if (isLeftMouseClicked()) {
                 this.window.locked = true;
                 this.clickColor = c;
+                this.clickLoc = [posX, posY];
                 saveUI(this.func, this.getSquareComposition(posX, posY))
             }
         }

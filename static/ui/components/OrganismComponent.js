@@ -10,7 +10,7 @@ export class OrganismComponent extends Component {
         super(posX, posY, padding, dir, key);
         var sizeX = 100;
         let container = new Container(this.window, UI_SOIL_COMPOSITION, sizeX * 2, 100, padding, 1);
-        this.window.addElement(container);
+        this.window.container = container;
         container.addElement(new Text(this.window, sizeX * 2, 15, "plants"));
         container.addElement(new RowedRadio(this.window, sizeX * 2, 50, UI_ORGANISM_SELECT, 2, [
             UI_ORGANISM_WHEAT,

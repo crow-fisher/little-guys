@@ -32,6 +32,7 @@ export class Slider extends WindowElement {
         var p = (this.cur - this.min) / (this.max - this.min);
         var x = p1x + p * (p2x - p1x)
         MAIN_CONTEXT.fillRect(x - block_size / 2, py - block_size / 2, block_size, block_size);
+        return [this.sizeX, this.sizeY]
     }
 
     hover(posX, posY) {

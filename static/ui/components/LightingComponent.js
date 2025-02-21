@@ -10,14 +10,16 @@ let padding = 10;
 export class LightingComponent extends Component {
     constructor(posX, posY, padding, dir, key) {
         super(posX, posY, padding, dir, key);
+        let container = new Container(this.window, 0, 0);
+        this.window.container = container;
 
         var sizeX = 100;
 
         let leftContainer = new Container(this.window, UI_SOIL_COMPOSITION, sizeX, 100, padding, 1);
         let rightContainer = new Container(this.window, UI_SOIL_COMPOSITION, sizeX, 100, padding, 1);
 
-        this.window.addElement(leftContainer);
-        this.window.addElement(rightContainer);
+        container.addElement(leftContainer);
+        container.addElement(rightContainer);
 
         leftContainer.addElement(new Text(this.window, sizeX,  getBaseSize() * 1.5, "sun"));
         leftContainer.addElement(new Slider(this.window, UI_LIGHTING_SUN, sizeX,  35, .329 / 4, .329 * 4));

@@ -1,6 +1,7 @@
 
 export const UI_MODE_SOIL = "soil";
 export const UI_MODE_ROCK = "rock";
+export const UI_MODE_EYEDROPPER = "picker";
 
 export const UI_BB_MODE = "UI_BB_MODE";
 export const UI_BB_SIZE = "UI_BB_SIZE";
