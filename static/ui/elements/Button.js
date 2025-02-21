@@ -9,7 +9,7 @@ export class Button extends WindowElement {
         super(window, sizeX, sizeY);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
-        this.func = func;
+        this.key = func;
         this.label = label;
         this.lastClick = 0;
     }
@@ -30,7 +30,7 @@ export class Button extends WindowElement {
             return;
         } 
         if (this.lastClick != getLastMouseDown()) {
-            this.func();
+            this.key();
             this.lastClick = getLastMouseDown();
         }
     }

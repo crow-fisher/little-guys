@@ -1,4 +1,4 @@
-import { COLOR_BLACK } from "../../colors.js";
+import { COLOR_BLACK, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { rgbToHex } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
@@ -17,6 +17,7 @@ export class SoilPickerElement extends WindowElement {
         this.pickerSize = Math.min(sizeX, sizeY);
         this.hoverColor = {r: 100, g: 100, b: 100};
         this.clickColor = {r: 100, g: 100, b: 100};
+        this.hoverLoc = null;
         this.clickLoc = null;
     }
 
@@ -28,8 +29,13 @@ export class SoilPickerElement extends WindowElement {
         }
 
         if (this.clickLoc != null) {
-            MAIN_CONTEXT.fillStyle = COLOR_BLACK;
+            MAIN_CONTEXT.fillStyle = COLOR_VERY_FUCKING_RED;
             MAIN_CONTEXT.fillRect(startX + this.clickLoc[0] - 2, startY + this.clickLoc[1] - 2, 4, 4);
+        }
+
+        if (this.hoverLoc != null) {
+            MAIN_CONTEXT.fillStyle = COLOR_BLACK;
+            MAIN_CONTEXT.fillRect(startX + this.hoverLoc[0] - 2, startY + this.hoverLoc[1] - 2, 4, 4);
         }
 
         var colorSize = (this.sizeX - this.pickerSize) / 2;
@@ -58,7 +64,7 @@ export class SoilPickerElement extends WindowElement {
     }
 
     getBaseColor(sand, silt, clay) {
-        if (this.func == UI_SOIL_COMPOSITION) {
+        if (this.key == UI_SOIL_COMPOSITION) {
             return getBaseSoilColor(sand, silt, clay);
         } else {
             return getBaseRockColor(sand, silt, clay);
@@ -110,8 +116,24 @@ export class SoilPickerElement extends WindowElement {
                 this.window.locked = true;
                 this.clickColor = c;
                 this.clickLoc = [posX, posY];
-                saveUI(this.func, this.getSquareComposition(posX, posY))
+                saveUI(this.key, this.getSquareComposition(posX, posY))
+            } else {
+                this.hoverLoc = [posX, posY];
             }
         }
+    }
+    derivePosition(sand, silt, clay) {
+        let y = 1 - clay;
+        let x = silt / (silt + sand);
+        return [x * this.pickerSize, y * this.pickerSize];
+    }
+    setHover(sand, silt, clay) {
+        this.hoverLoc = this.derivePosition(sand, silt, clay);
+        this.hoverColor = this.getBaseColor(sand, silt, clay);
+    }
+    setClick(sand, silt, clay) {
+        this.clickLoc = this.derivePosition(sand, silt, clay);
+        this.clickColor = this.getBaseColor(sand, silt, clay);
+        saveUI(this.key, [sand, silt, clay]);
     }
 }

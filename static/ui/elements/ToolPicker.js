@@ -51,7 +51,7 @@ export class ToolPickerElement extends WindowElement {
     }
 
     getBaseColor(sand, silt, clay) {
-        if (this.func == UI_SOIL_COMPOSITION) {
+        if (this.key == UI_SOIL_COMPOSITION) {
             return getBaseSoilColor(sand, silt, clay);
         } else {
             return getBaseRockColor(sand, silt, clay);
@@ -102,7 +102,7 @@ export class ToolPickerElement extends WindowElement {
             this.hoverColor = c;
             if (isLeftMouseClicked()) {
                 this.clickColor = c;
-                saveUI(this.func, this.getSquareComposition(posX, posY))
+                saveUI(this.key, this.getSquareComposition(posX, posY))
             }
         }
     }

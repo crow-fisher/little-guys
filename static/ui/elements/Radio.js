@@ -9,9 +9,9 @@ export class Radio extends WindowElement {
         super(window, sizeX, sizeY);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
-        this.func = key;
+        this.key = key;
         this.choices = choices;
-        this.selected = this.choices.indexOf(loadUI(this.func));
+        this.selected = this.choices.indexOf(loadUI(this.key));
     }
 
     render(startX, startY) {
@@ -43,7 +43,7 @@ export class Radio extends WindowElement {
         for (let i = 0; i < this.choices.length; i++) {
             if (posX > curX && posX < curX + step) {
                 this.selected = i;
-                saveUI(this.func, this.choices[i]);
+                saveUI(this.key, this.choices[i]);
             }
             curX += step;
         }

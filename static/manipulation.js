@@ -13,8 +13,8 @@ import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
-import { loadUI, saveUI, UI_BB_MODE, UI_BB_SIZE, UI_MODE_ROCK, UI_MODE_SOIL, UI_ORGANISM_SELECT, UI_SM_BB, UI_SM_ORGANISM, UI_SM_SPECIAL, UI_SM_VIEWMODE, UI_SPECIAL_AQUIFER, UI_SPECIAL_MIX, UI_SPECIAL_SELECT, UI_SPECIAL_SURFACE, UI_SPECIAL_WATER, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE } from "./ui/UIData.js";
-import { isWindowHovered } from "./ui/WindowManager.js";
+import { loadUI, saveUI, UI_BB_EYEDROPPER, UI_BB_MODE, UI_BB_SIZE, UI_MODE_ROCK, UI_MODE_SOIL, UI_ORGANISM_SELECT, UI_SM_BB, UI_SM_ORGANISM, UI_SM_SPECIAL, UI_SM_VIEWMODE, UI_SPECIAL_AQUIFER, UI_SPECIAL_MIX, UI_SPECIAL_SELECT, UI_SPECIAL_SURFACE, UI_SPECIAL_WATER, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE } from "./ui/UIData.js";
+import { eyedropperBlockClick, eyedropperBlockHover, isWindowHovered } from "./ui/WindowManager.js";
 var prevManipulationOffset;
 
 function doBlockBlur(centerX, centerY, size) {
@@ -124,6 +124,11 @@ export function doClickAdd() {
         var offsetX = offsetTransformed[0];
         var offsetY = offsetTransformed[1];
 
+        if (loadUI(UI_BB_EYEDROPPER)) {
+            eyedropperBlockClick(offsetX, offsetY);
+            return;
+        }
+
         var prevOffsetX;
         var prevOffsetY;
 
@@ -200,6 +205,15 @@ export function doClickAdd() {
                 }
             }
         }
+    } else {
+        doBlockHover(lastMoveOffset);
     }
     prevManipulationOffset = lastMoveOffset;
+}
+
+function doBlockHover(lastMoveOffset) {
+    var offsetTransformed = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);
+    var offsetX = offsetTransformed[0];
+    var offsetY = offsetTransformed[1];
+    eyedropperBlockHover(offsetX, offsetY);
 }

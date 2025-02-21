@@ -14,17 +14,17 @@ export class BlockBuildingComponent extends Component {
         super(posX, posY, padding, dir, key);
         let sizeX = getBaseSize() * 32;
         let halfSizeX = sizeX / 2;
-
         let container = new Container(this.window, padding, 1);
         this.window.container = container;
+
+        this.soilPickerElement = new SoilPickerElement(this.window, UI_SOIL_COMPOSITION, sizeX, halfSizeX);
+        this.rockPickerElement = new SoilPickerElement(this.window, UI_ROCK_COMPOSITION, sizeX, halfSizeX);
         
         container.addElement(new Radio(this.window, sizeX, getBaseSize() * 3, UI_BB_MODE, [UI_MODE_SOIL, UI_MODE_ROCK]));
-
         let soilConditionalContainer = new ConditionalContainer(this.window, padding, 1, () => loadUI(UI_BB_MODE) == UI_MODE_SOIL);
-        soilConditionalContainer.addElement(new SoilPickerElement(this.window, UI_SOIL_COMPOSITION, sizeX, halfSizeX));
-
+        soilConditionalContainer.addElement(this.soilPickerElement);
         let rockConditionalContainer = new ConditionalContainer(this.window, padding, 1, () => loadUI(UI_BB_MODE) == UI_MODE_ROCK);
-        rockConditionalContainer.addElement(new SoilPickerElement(this.window, UI_ROCK_COMPOSITION, sizeX, halfSizeX));
+        rockConditionalContainer.addElement(this.rockPickerElement);
 
         container.addElement(soilConditionalContainer);
         container.addElement(rockConditionalContainer);
@@ -43,6 +43,22 @@ export class BlockBuildingComponent extends Component {
         strengthContainer.addElement(new Text(this.window, halfSizeX, getBaseSize() * 1.5, "strength"));
         strengthContainer.addElement(new Slider(this.window, UI_BB_STRENGTH, halfSizeX, getBaseSize() * 3, 0, 1));
         container.addElement(new Toggle(this.window,sizeX, getBaseSize() * 3, UI_BB_EYEDROPPER , "eyedropper"))
+    }
 
+    setHover(sand, silt, clay) {
+        if (loadUI(UI_BB_MODE) == UI_MODE_SOIL) {
+            this.soilPickerElement.setHover(sand, silt, clay);
+        }
+        if (loadUI(UI_BB_MODE) == UI_MODE_ROCK) {
+            this.rockPickerElement.setHover(sand, silt, clay);
+        }
+    }
+    setClick(sand, silt, clay) {
+        if (loadUI(UI_BB_MODE) == UI_MODE_SOIL) {
+            this.soilPickerElement.setClick(sand, silt, clay);
+        }
+        if (loadUI(UI_BB_MODE) == UI_MODE_ROCK) {
+            this.rockPickerElement.setClick(sand, silt, clay);
+        }
     }
 }
