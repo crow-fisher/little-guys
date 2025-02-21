@@ -58,6 +58,9 @@ export class Container {
 
         if (!(this.elements.some((el) => {
             let elSize = el.size();
+            if (elSize[0] == 0) {
+                return;
+            }
             curX2 = curX1 + elSize[0];
             curY2 = curY1 + elSize[1];
             if (posX > curX1 && posX < curX2 && posY > curY1 && posY < curY2) {

@@ -1,7 +1,9 @@
 import { MAIN_CONTEXT } from "./index.js";
+import { getLastMoveOffset, isMiddleMouseClicked } from "./mouse.js";
+import { iterateOnOrganisms } from "./organisms/_orgOperations.js";
 
 var BASE_SIZE = 12;
-var CANVAS_SQUARES_X = 192; 
+var CANVAS_SQUARES_X = 108;//192; 
 var CANVAS_SQUARES_Y = 108;
 var CANVAS_VIEWPORT_CENTER_X = CANVAS_SQUARES_X * BASE_SIZE / 2;
 var CANVAS_VIEWPORT_CENTER_Y = CANVAS_SQUARES_Y * BASE_SIZE / 2;
@@ -92,27 +94,31 @@ export function zoom(event) {
     doZoom(event.deltaY);
 }
 export function doZoom(deltaY) {
+    let lastMoveOffset = getLastMoveOffset();
+    if (lastMoveOffset == null || isMiddleMouseClicked()) {
+        return;
+    }
+
     var totalWidth = CANVAS_SQUARES_X * BASE_SIZE;
     var totalHeight = CANVAS_SQUARES_Y * BASE_SIZE;
 
-    var canvasPos = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);
-
-    var lsqFound = false;
-    iterateOnOrganisms((org) => org.lifeSquares.filter((lsq) => lsq.linkedOrganism.spinnable && lsq.component != null)
-        .forEach((lsq) => {
-        var dist = ((canvasPos[0] - lsq.getPosX()) ** 2 + (canvasPos[1] - lsq.getPosY()) ** 2) ** 0.5;
-        if (dist < 1.4) {
-            if (shiftPressed) {
-                lsq.component.twist += deltaY * 0.00009;
-            } else {
-                lsq.component.theta += deltaY * 0.0003;
-            }
-            lsqFound = true;
-        }
-    }), 0);
-    if (lsqFound) {
-        return;
-    }
+    // var canvasPos = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);
+    // var lsqFound = false;-
+    // iterateOnOrganisms((org) => org.lifeSquares.filter((lsq) => lsq.linkedOrganism.spinnable && lsq.component != null)
+    //     .forEach((lsq) => {
+    //     var dist = ((canvasPos[0] - lsq.getPosX()) ** 2 + (canvasPos[1] - lsq.getPosY()) ** 2) ** 0.5;
+    //     if (dist < 1.4) {
+    //         if (shiftPressed) {
+    //             lsq.component.twist += deltaY * 0.00009;
+    //         } else {
+    //             lsq.component.theta += deltaY * 0.0003;
+    //         }
+    //         lsqFound = true;
+    //     }
+    // }), 0);
+    // if (lsqFound) {
+    //     return;
+    // }
 
     var x = 1 - lastMoveOffset.x / totalWidth;
     var y = 1 - lastMoveOffset.y / totalHeight;

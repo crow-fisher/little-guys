@@ -66,9 +66,8 @@ export class RockSquare extends SoilSquare {
             return;
         }
 
-        var pressureToOutflowWaterContainment = this.getInverseMatricPressure(thisWaterPressure + 2);
+        var pressureToOutflowWaterContainment = this.getInverseMatricPressure(thisWaterPressure - 2);
         var diff = (this.waterContainment - pressureToOutflowWaterContainment) / this.getWaterflowRate();
-        diff *= Math.abs(thisWaterPressure - -2);
         if ((this.posY + 1) >= getCanvasSquaresY()) {
             this.waterContainment -= diff;
         } else {

@@ -7,7 +7,7 @@ import { Slider } from "../elements/Slider.js";
 import { SoilPickerElement } from "../elements/SoilPicker.js";
 import { Text } from "../elements/Text.js";
 import { Toggle } from "../elements/Toggle.js";
-import { loadUI, UI_BB_EYEDROPPER, UI_BB_MODE, UI_BB_SIZE, UI_BB_STRENGTH, UI_MODE_ROCK, UI_MODE_SOIL, UI_ROCK_COMPOSITION, UI_SOIL_COMPOSITION } from "../UIData.js";
+import { loadUI, saveUI, UI_BB_EYEDROPPER, UI_BB_MODE, UI_BB_SIZE, UI_BB_STRENGTH, UI_MODE_ROCK, UI_MODE_SOIL, UI_ROCK_COMPOSITION, UI_SOIL_COMPOSITION } from "../UIData.js";
 
 export class BlockBuildingComponent extends Component {
     constructor(posX, posY, padding, dir, key) {
@@ -60,5 +60,6 @@ export class BlockBuildingComponent extends Component {
         if (loadUI(UI_BB_MODE) == UI_MODE_ROCK) {
             this.rockPickerElement.setClick(sand, silt, clay);
         }
+        saveUI(UI_BB_EYEDROPPER, false);
     }
 }

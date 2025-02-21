@@ -53,7 +53,6 @@ export class BaseSquare {
         this.speedX = 0;
         this.speedY = 0;
         this.rootable = false;
-        this.validPlantHome = false;
         this.group = -1;
         this.organic = false;
         this.collision = true;
@@ -68,7 +67,6 @@ export class BaseSquare {
         this.opacity = 1;
         this.waterSinkRate = 0.8;
         this.cachedRgba = null;
-        this.frameFrozen = false;
 
         this.distToFront = 0;
         this.distToFrontLastUpdated = -(10 ** 8);
@@ -187,7 +185,6 @@ export class BaseSquare {
         this.currentPressureDirect = -1;
         this.group = -1;
         this.speedY += 1;
-        this.frameFrozen = false;
         
         if (Math.floor(getCurDay() + 0.15) != this.lightingSumDay) {
             if (this.lightingSum == null) {
@@ -440,10 +437,6 @@ export class BaseSquare {
     gravityPhysics() {
         if (!this.physicsEnabled || this.linkedOrganismSquares.some((sq) => sq.type == "root")) {
             return false;
-        }
-
-        if (this.frameFrozen) {
-            return;
         }
 
         if (this.gravity == 0) {

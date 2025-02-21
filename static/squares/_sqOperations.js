@@ -13,6 +13,9 @@ function* getNeighbors(x, y) {
             if (i == 0 && j == 0) {
                 continue;
             }
+            if (abs(i) == abs(j)) {
+                continue;
+            }
             var squares = getSquares(x + i, y + j);
             for (let i = 0; i < squares.length; i++) {
                 yield squares[i];

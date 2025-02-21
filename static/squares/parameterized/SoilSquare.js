@@ -61,7 +61,6 @@ export class SoilSquare extends BaseSquare {
         this.proto = "SoilSquare";
         this.colorBase = "#B06C49";
         this.rootable = true;
-        this.validPlantHome = true;
 
         this.clayColorRgb = getActiveClimate().clayColorRgb;
         this.siltColorRgb = getActiveClimate().siltColorRgb;
@@ -207,7 +206,6 @@ export class SoilSquare extends BaseSquare {
     }
 
     doBlockOutflow() {
-        return;
         var thisWaterPressure = this.getMatricPressure(); 
 
         if (thisWaterPressure < -2) {
@@ -217,7 +215,6 @@ export class SoilSquare extends BaseSquare {
         for (let side = -1; side <= 1; side += 2) {
             getSquares(this.posX + side, this.posY).filter((sq) => sq.proto == "WaterSquare")
                 .forEach((sq) => {
-                    sq.frameFrozen = false;
                     sq.physics();
                 });
 
@@ -225,9 +222,8 @@ export class SoilSquare extends BaseSquare {
                 continue;
             }
 
-            var pressureToOutflowWaterContainment = this.getInverseMatricPressure(thisWaterPressure + 2);
+            var pressureToOutflowWaterContainment = this.getInverseMatricPressure(thisWaterPressure - 2);
             var diff = (this.waterContainment - pressureToOutflowWaterContainment) / this.getWaterflowRate();
-            diff *= Math.abs(thisWaterPressure - -2);
 
             var newWater = addSquareByName(this.posX + side, this.posY, "water");
             if (newWater) {

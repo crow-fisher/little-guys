@@ -15,8 +15,8 @@ export class LightingComponent extends Component {
 
         var sizeX = 100;
 
-        let leftContainer = new Container(this.window, UI_SOIL_COMPOSITION, sizeX, 100, padding, 1);
-        let rightContainer = new Container(this.window, UI_SOIL_COMPOSITION, sizeX, 100, padding, 1);
+        let leftContainer = new Container(this.window,  padding, 1);
+        let rightContainer = new Container(this.window, padding, 1);
 
         container.addElement(leftContainer);
         container.addElement(rightContainer);

@@ -38,17 +38,17 @@ export class TopBarComponent {
         this.elements = new Map();
         this.elements[1] = [new TopBarTime(getBaseSize() * 2)];
 
-        this.elements[0.75] = new Array();
-        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_0, "⏸"));
-        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_1, "▶"));
-        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_2, "▶"));
-        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_3, "▶"));
-        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_4, "▶"));
-        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_5, "▶"));
-        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_6, "▶"));
-        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_7, "▶"));
-        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_8, "▶"));
-        this.elements[0.75].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_9, "▶"));
+        this.elements[0.5] = new Array();
+        this.elements[0.5].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_0, "⏸"));
+        this.elements[0.5].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_1, "▶"));
+        this.elements[0.5].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_2, "▶"));
+        this.elements[0.5].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_3, "▶"));
+        this.elements[0.5].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_4, "▶"));
+        this.elements[0.5].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_5, "▶"));
+        this.elements[0.5].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_6, "▶"));
+        this.elements[0.5].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_7, "▶"));
+        this.elements[0.5].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_8, "▶"));
+        this.elements[0.5].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_9, "▶"));
         this.elements[0] = [
 
             new TopBarToggle(getBaseSize() * 2, "left", UI_TOPBAR_MAINMENU, UI_BOOLEAN, "main menu  "),
