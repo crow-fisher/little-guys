@@ -78,7 +78,38 @@ export class SoilSquare extends BaseSquare {
         this.nitrogen = 50;
         this.phosphorus = 25;
 
+        this.soilWaterPressureAbove = -1;
+
         this.setVariant();
+    }
+
+    reset() {
+        super.reset();
+        this.soilWaterPressureAbove = -1;
+    }
+
+    calculateWaterPressureAboveFieldCapacity() {
+        return Math.max(0, this.getSoilWaterPressure() + 2);
+    }
+
+    getSoilWaterPressureAbove() {
+        this.soilWaterPressureAbove = 0;
+        if (getSquares(this.posX, this.posY - 1).some((sq) => sq.proto == "WaterSquare")) {
+            this.soilWaterPressureAbove = 2;
+        }
+        else if (this.currentPressureDirect != 0) {
+            this.soilWaterPressureAbove = 0;
+            getSquares(this.posX, this.posY - 1)
+                .filter((sq) => sq.proto == "SoilSquare" || sq.proto == "RockSquare")
+                .forEach((sq) => {
+                    let sqAboveExtraPressure = sq.calculateWaterPressureAboveFieldCapacity();
+                    if (sqAboveExtraPressure == 0) {
+                        return;
+                    }
+                    this.soilWaterPressureAbove = sqAboveExtraPressure + sq.getSoilWaterPressureAbove();
+                });
+        }
+        return this.soilWaterPressureAbove;
     }
 
     setVariant() {
@@ -112,14 +143,6 @@ export class SoilSquare extends BaseSquare {
 
     initWaterContainment() {
         this.waterContainment = this.getInverseMatricPressure(loadUI(UI_SOIL_INITALWATER));
-    }
-
-
-    loadInverseMatricPressureMap() {
-        for (let i = 0; i < 0.5; i += 0.001) {
-            var pressure = this._getMatricPressure(i);
-            this.inverseMatricPressureMap[pressure] = i; 
-        }
     }
 
     getInversePressureGeneric(waterCapacity, refArr) {
@@ -184,8 +207,9 @@ export class SoilSquare extends BaseSquare {
             .filter((sq) => sq.proto == this.proto)
             .filter((sq) => sq.waterContainment < sq.waterContainmentMax)
             .forEach((sq) => {
-                var thisWaterPressure = this.getMatricPressure(); 
-                var sqWaterPressure = sq.getMatricPressure() + (sq.getGravitationalPressure() - this.getGravitationalPressure());
+                var thisWaterPressure = this.getMatricPressure();
+                var sqWaterPressure = sq.getMatricPressure() + 
+                    (sq.getGravitationalPressure() - this.getGravitationalPressure());
 
                 if (isNaN(thisWaterPressure) || isNaN(sqWaterPressure)) {
                     return;
@@ -206,6 +230,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     doBlockOutflow() {
+        return;
         var thisWaterPressure = this.getMatricPressure(); 
 
         if (thisWaterPressure < -2) {
@@ -262,7 +287,6 @@ export class SoilSquare extends BaseSquare {
         outColor.b *= (1 - 0.383 * darkeningColorMult);
         return outColor;
     }
-
     // soil nutrients
 
     takeNitrogen(requestedAmount, growthCycleFrac) {
