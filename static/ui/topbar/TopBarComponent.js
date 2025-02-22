@@ -50,7 +50,6 @@ export class TopBarComponent {
         this.elements[0.5].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_8, "▶"));
         this.elements[0.5].push(new TopBarToggle(getBaseSize() * 2,"center", UI_SPEED, UI_SPEED_9, "▶"));
         this.elements[0] = [
-
             new TopBarToggle(getBaseSize() * 2, "left", UI_TOPBAR_MAINMENU, UI_BOOLEAN, "main menu  "),
             new TopBarToggle(getBaseSize() * 2, "left", UI_SM_SM, UI_BOOLEAN, "block menu   "),
             new TopBarToggle(getBaseSize() * 2, "left", UI_TOPBAR_TOGGLELIGHTING, UI_BOOLEAN, "toggle lighting")

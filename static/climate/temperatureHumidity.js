@@ -271,7 +271,6 @@ function doRain() {
             if (sq) {
                 sq.blockHealth = dropHealth;
                 sq.temperature = temperatureMap[x][y];
-                sq.opacity *= 0.5;
                 logRainFall(sq.blockHealth);
                 waterSaturationMap[x][y] -= usedWaterPascalsPerSquare;
                 getMapDirectNeighbors(x, y)

@@ -78,14 +78,11 @@ export class SoilSquare extends BaseSquare {
         this.nitrogen = 50;
         this.phosphorus = 25;
 
-        this.soilWaterPressureAbove = -1;
-
         this.setVariant();
     }
 
     reset() {
         super.reset();
-        this.soilWaterPressureAbove = -1;
     }
 
     setVariant() {
