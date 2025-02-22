@@ -2,7 +2,7 @@ import { getBaseSize } from "../../canvas.js";
 import { Component } from "../Component.js";
 import { Container } from "../Container.js";
 import { Toggle } from "../elements/Toggle.js";
-import { UI_SM_BB, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_SM_SPECIAL, UI_SM_VIEWMODE, UI_SOIL_COMPOSITION } from "../UIData.js";
+import { UI_SM_BB, UI_SM_CLIMATE, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_SM_SPECIAL, UI_SM_VIEWMODE, UI_SOIL_COMPOSITION } from "../UIData.js";
 
 
 export class SubMenuComponent extends Component {
@@ -16,8 +16,9 @@ export class SubMenuComponent extends Component {
         subMenuContainer.addElement(new Toggle(this.window, getBaseSize() * 11, getBaseSize() * 3, UI_SM_LIGHTING, "lighting"));
         subMenuContainer.addElement(new Toggle(this.window, getBaseSize() * 11, getBaseSize() * 3, UI_SM_VIEWMODE, "viewmode"));
         subMenuContainer.addElement(new Toggle(this.window, getBaseSize() * 11, getBaseSize() * 3, UI_SM_ORGANISM, "plants"));
+        subMenuContainer.addElement(new Toggle(this.window, getBaseSize() * 11, getBaseSize() * 3, UI_SM_GODMODE, "god mode"));
+        subMenuContainer.addElement(new Toggle(this.window, getBaseSize() * 11, getBaseSize() * 3, UI_SM_CLIMATE, "climate"));
 
-        
         
     }
 

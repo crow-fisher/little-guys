@@ -6,9 +6,11 @@ import { SpecialBlockComponent } from "./components/SpecialBlockComponent.js";
 import { SubMenuComponent } from "./components/SubMenuComponent.js";
 import { TopBarComponent } from "./topbar/TopBarComponent.js";
 import { ViewModeComponent } from "./components/ViewModeComponent.js";
-import { loadUI, UI_BB_MODE, UI_MODE_ROCK, UI_MODE_SOIL, UI_SM_BB, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_SM_SM, UI_SM_SPECIAL, UI_SM_VIEWMODE, UI_TOPBAR, UI_TOPBAR_MAINMENU } from "./UIData.js";
+import { loadUI, UI_BB_MODE, UI_MODE_ROCK, UI_MODE_SOIL, UI_SM_BB, UI_SM_CLIMATE, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_SM_SM, UI_SM_SPECIAL, UI_SM_VIEWMODE, UI_TOPBAR, UI_TOPBAR_MAINMENU } from "./UIData.js";
 import { MainMenuComponent } from "./components/MainMenuComponent.js";
 import { getSquares } from "../squares/_sqOperations.js";
+import { GodModeComponent } from "./components/GodModeComponent.js";
+import { ClimateComponent } from "./components/ClimateComponent.js";
 
 var topBarComponent = new TopBarComponent("UI_TOPBAR");
 var blockBuildingComponent = new BlockBuildingComponent(getBaseSize() * 34, getBaseSize() * 6, 10, 0, UI_SM_BB);
@@ -22,6 +24,8 @@ all_components.push(new SpecialBlockComponent(getBaseSize() * 34, getBaseSize() 
 all_components.push(new LightingComponent(getBaseSize() * 34, getBaseSize() * 6, 10, 0, UI_SM_LIGHTING));
 all_components.push(new ViewModeComponent(getBaseSize() * 64, getBaseSize() * 6, 10, 0, UI_SM_VIEWMODE));
 all_components.push(new OrganismComponent(getBaseSize() * 34, getBaseSize() * 6, 10, 0, UI_SM_ORGANISM));
+all_components.push(new GodModeComponent(getBaseSize() * 34, getBaseSize() * 6, 10, 0, UI_SM_GODMODE));
+all_components.push(new ClimateComponent(getBaseSize() * 34, getBaseSize() * 6, 10, 0, UI_SM_CLIMATE));
 
 export function renderWindows() {
     topBarComponent.render();

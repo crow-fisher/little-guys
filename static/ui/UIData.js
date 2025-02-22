@@ -20,6 +20,8 @@ export const UI_SM_LIGHTING = "UI_SM_LIGHTING";
 export const UI_SM_SPECIAL = "UI_SM_SPECIAL";
 export const UI_SM_ORGANISM = "UI_SM_ORGANISM";
 export const UI_SM_VIEWMODE = "UI_SM_VIEWMODE";
+export const UI_SM_GODMODE = "UI_SM_GODMODE";
+export const UI_SM_CLIMATE = "UI_SM_CLIMATE";
 
 export const UI_LIGHTING_SUN = "UI_LIGHTING_SUN";
 export const UI_LIGHTING_MOON = "UI_LIGHTING_MOON";
@@ -54,6 +56,22 @@ export const UI_TOPBAR = "UI_TOPBAR";
 export const UI_TOOL_MODE_LEFT = "UI_TOOL_MODE_LEFT";
 export const UI_TOOL_MODE_RIGHT = "UI_TOO_MODE_RIGHT";
 
+export const UI_GODMODE_SELECT = "UI_GODMODE_SELECT";
+export const UI_GODMODE_WIND = "wind";
+export const UI_GODMODE_TEMPERATURE = "temperature";
+export const UI_GODMODE_MOISTURE = "moisture";
+export const UI_GODMODE_KILL = "kill";
+
+
+export const UI_CLIMATE_SELECT = "UI_CLIMATE_SELECT";
+export const UI_CLIMATE_MIDWEST = "midwest";
+export const UI_CLIMATE_DESERT = "desert";
+export const UI_CLIMATE_FANTASY = "fantasy";
+
+export const UI_CLIMATE_WEATHER_SUNNY = "sunny";
+export const UI_CLIMATE_WEATHER_CLOUDY = "cloudy";
+export const UI_CLIMATE_WEATHER_LIGHTRAIN = "light rain";
+export const UI_CLIMATE_WEATHER_HEAVYRAIN = "heavy rain";
 
 export const UI_TOPBAR_MAINMENU = "UI_TOPBAR_MAINMENU"; 
 export const UI_TOPBAR_TOGGLELIGHTING = "UI_TOPBAR_TOGGLELIGHTING";

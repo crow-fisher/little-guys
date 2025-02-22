@@ -265,7 +265,7 @@ function weatherChange() {
 
 }
 
-export function setWeather(w) {
+export function setClimate(w) {
     curWeatherInterval = 0;
     switch (w) {
         case 1: 
