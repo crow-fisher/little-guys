@@ -92,26 +92,6 @@ export class SoilSquare extends BaseSquare {
         return Math.max(0, this.getSoilWaterPressure() + 2);
     }
 
-    getSoilWaterPressureAbove() {
-        this.soilWaterPressureAbove = 0;
-        if (getSquares(this.posX, this.posY - 1).some((sq) => sq.proto == "WaterSquare")) {
-            this.soilWaterPressureAbove = 2;
-        }
-        else if (this.currentPressureDirect != 0) {
-            this.soilWaterPressureAbove = 0;
-            getSquares(this.posX, this.posY - 1)
-                .filter((sq) => sq.proto == "SoilSquare" || sq.proto == "RockSquare")
-                .forEach((sq) => {
-                    let sqAboveExtraPressure = sq.calculateWaterPressureAboveFieldCapacity();
-                    if (sqAboveExtraPressure == 0) {
-                        return;
-                    }
-                    this.soilWaterPressureAbove = sqAboveExtraPressure + sq.getSoilWaterPressureAbove();
-                });
-        }
-        return this.soilWaterPressureAbove;
-    }
-
     setVariant() {
         let arr = loadUI(UI_SOIL_COMPOSITION);
         this.sand = arr[0];
@@ -145,11 +125,11 @@ export class SoilSquare extends BaseSquare {
         this.waterContainment = this.getInverseMatricPressure(loadUI(UI_SOIL_INITALWATER));
     }
 
-    getInversePressureGeneric(waterCapacity, refArr) {
-        return this.getPressureGeneric(waterCapacity, Array.from(refArr.map((vec) => [vec[1], vec[0]])));
+    getInversePressureGeneric(waterContainment, refArr) {
+        return this.getPressureGeneric(waterContainment, Array.from(refArr.map((vec) => [vec[1], vec[0]])));
     }
 
-    getPressureGeneric(waterCapacity, refArr) {
+    getPressureGeneric(waterContainment, refArr) {
         if (refArr.length === 0) {
             return 0;
         }
@@ -157,24 +137,24 @@ export class SoilSquare extends BaseSquare {
         var lower = refArr[0];
         var upper = refArr[refArr.length - 1];
 
-        if (waterCapacity <= lower[0]) {
+        if (waterContainment <= lower[0]) {
             return lower[1];
         }
-        if (waterCapacity >= upper[0]) {
+        if (waterContainment >= upper[0]) {
             return upper[1];
         }
     
         for (var i = 0; i < refArr.length; i++) {
             var entry = refArr[i];
-            if (entry[0] < waterCapacity && entry[0] > lower[0]) {
+            if (entry[0] < waterContainment && entry[0] > lower[0]) {
                 lower = entry;
             }
-            if (entry[0] > waterCapacity && entry[0] < upper[0]) {
+            if (entry[0] > waterContainment && entry[0] < upper[0]) {
                 upper = entry;
             }
         }
     
-        var t = (waterCapacity - lower[0]) / (upper[0] - lower[0]);
+        var t = (waterContainment - lower[0]) / (upper[0] - lower[0]);
         var interpolated = lower[1] + t * (upper[1] - lower[1]);
         return interpolated;
     }
@@ -187,29 +167,38 @@ export class SoilSquare extends BaseSquare {
         )
     }
 
-    getMatricPressure() {
+    getMatricPressure(waterContainment) {
         return (
-            this.clay * this.getPressureGeneric(this.waterContainment, clayMatricPressureMap)
-             + this.silt * this.getPressureGeneric(this.waterContainment, siltMatricPressureMap)
-             + this.sand * this.getPressureGeneric(this.waterContainment, sandMatricPressureMap)
+            this.clay * this.getPressureGeneric(waterContainment, clayMatricPressureMap)
+             + this.silt * this.getPressureGeneric(waterContainment, siltMatricPressureMap)
+             + this.sand * this.getPressureGeneric(waterContainment, sandMatricPressureMap)
         )
     }
     getGravitationalPressure() {
-        return -0.02 * 9.8 * this.currentPressureDirect; 
+        return -0.02 * 9.8 * this.posY; 
     }
 
     getSoilWaterPressure() {
-        return this.getGravitationalPressure() + this.getMatricPressure();
+        return this.getGravitationalPressure() + this.getMatricPressure(this.waterContainment);
     }
 
     percolateInnerMoisture() {
+        let saturatedNeighbors = 0;
+        let unsaturatedNeighbors = 0;
+
         getNeighbors(this.posX, this.posY)
             .filter((sq) => sq.proto == this.proto)
-            .filter((sq) => sq.waterContainment < sq.waterContainmentMax)
+            .filter((sq) => {
+                if (sq.waterContainment < sq.waterContainmentMax) {
+                    unsaturatedNeighbors += 1;
+                    return true;
+                } else {
+                    saturatedNeighbors += 1;
+                    return false;
+                }})
             .forEach((sq) => {
-                var thisWaterPressure = this.getMatricPressure();
-                var sqWaterPressure = sq.getMatricPressure() + 
-                    (sq.getGravitationalPressure() - this.getGravitationalPressure());
+                var thisWaterPressure = this.getMatricPressure(this.waterContainment);
+                var sqWaterPressure = sq.getMatricPressure(sq.waterContainment) + (sq.getGravitationalPressure() - this.getGravitationalPressure());
 
                 if (isNaN(thisWaterPressure) || isNaN(sqWaterPressure)) {
                     return;
@@ -226,37 +215,47 @@ export class SoilSquare extends BaseSquare {
                 this.waterContainment -= diff;
                 sq.waterContainment += diff;
             });
-        this.doBlockOutflow();
+
+        this.doBlockOutflow(unsaturatedNeighbors);
     }
 
-    doBlockOutflow() {
-        return;
-        var thisWaterPressure = this.getMatricPressure(); 
-
+    doBlockOutflow(unsaturatedNeighbors) {
+        var thisWaterPressure = this.getMatricPressure(this.waterContainment); 
         if (thisWaterPressure < -2) {
             return;
         }
-
         for (let side = -1; side <= 1; side += 2) {
-            getSquares(this.posX + side, this.posY).filter((sq) => sq.proto == "WaterSquare")
-                .forEach((sq) => {
-                    sq.physics();
-                });
-
-            if (getSquares(this.posX + side, this.posY).some((sq) => sq.collision)) {
-                continue;
-            }
-
-            var pressureToOutflowWaterContainment = this.getInverseMatricPressure(thisWaterPressure - 2);
-            var diff = (this.waterContainment - pressureToOutflowWaterContainment) / this.getWaterflowRate();
-
-            var newWater = addSquareByName(this.posX + side, this.posY, "water");
-            if (newWater) {
-                newWater.blockHealth = diff;
-                this.waterContainment -= diff;
-            }
+            if (unsaturatedNeighbors == 0)
+                this.outflowNewWaterToLocation(this.posX + side, this.posY)
+            this.outflowWaterToWaterLocation(this.posX + side, this.posY);
         }
     }
+
+    outflowNewWaterToLocation(posX, posY) {
+        if (getSquares(posX, posY).some((sq) => sq.collision)) {
+            return;
+        }
+        var outflowWaterAmount = (this.waterContainment - this.getInverseMatricPressure(-2)) / this.getWaterflowRate();
+        if (outflowWaterAmount < Math.random() * 0.125) {
+            return;
+        }
+        var newWater = addSquareByName(posX, posY, "water");
+        if (newWater) {
+            newWater.blockHealth = outflowWaterAmount;
+            this.waterContainment -= outflowWaterAmount;
+        }
+    }
+    
+    outflowWaterToWaterLocation(posX, posY) {
+        getSquares(posX, posY).filter((sq) => sq.proto == "WaterSquare")
+        .filter((sq) => sq.currentPressureDirect == 0)
+        .forEach((sq) => {
+            let outflowWaterAmount = (this.waterContainment - this.getInverseMatricPressure(-2)) / this.getWaterflowRate();
+            sq.blockHealth += outflowWaterAmount;
+            this.waterContainment -= outflowWaterAmount;
+        });
+    }
+
     percolateFromWater(waterBlock) {
         if (this.waterContainmentMax == 0 || this.waterContainment >= this.waterContainmentMax) {
             return 0;
@@ -273,7 +272,7 @@ export class SoilSquare extends BaseSquare {
         var siltRate = 1.5;
         var sandRate = 0.92;
         var power = 10;
-        return (this.sand * sandRate + 
+        return 4 * (this.sand * sandRate + 
                 this.silt * siltRate + 
                 this.clay * clayRate) ** power;
     }

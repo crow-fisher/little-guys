@@ -57,25 +57,6 @@ export class RockSquare extends SoilSquare {
 
     doBlockOutflow() {
         super.doBlockOutflow();
-        var thisWaterPressure = this.getMatricPressure(); 
-        if (thisWaterPressure < -2) {
-            return;
-        }
-
-        if (getSquares(this.posX, this.posY + 1).some((sq) => sq.collision)) {
-            return;
-        }
-
-        var pressureToOutflowWaterContainment = this.getInverseMatricPressure(thisWaterPressure - 2);
-        var diff = (this.waterContainment - pressureToOutflowWaterContainment) / this.getWaterflowRate();
-        if ((this.posY + 1) >= getCanvasSquaresY()) {
-            this.waterContainment -= diff;
-        } else {
-            var newWater = addSquareByName(this.posX, this.posY + 1, "water");
-            if (newWater) {
-                newWater.blockHealth = diff;
-                this.waterContainment -= diff;
-            }
-        }
+        this.outflowNewWaterToLocation(this.posX, this.posY + 1);
     }
 }

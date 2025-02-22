@@ -6,8 +6,10 @@ import { getOrganismsAtSquare } from "../organisms/_orgOperations.js";
 import { getCanvasSquaresX, getCanvasSquaresY } from "../canvas.js";
 
 var abs = Math.abs;
+let dir = -1;
 
 function* getNeighbors(x, y) {
+    dir *= -1;
     for (var i = -1; i < 2; i++) {
         for (var j = -1; j < 2; j++) {
             if (i == 0 && j == 0) {
@@ -16,7 +18,8 @@ function* getNeighbors(x, y) {
             if (abs(i) == abs(j)) {
                 continue;
             }
-            var squares = getSquares(x + i, y + j);
+            
+            var squares = getSquares(x + (i * dir), y + (j * dir));
             for (let i = 0; i < squares.length; i++) {
                 yield squares[i];
             };
@@ -53,6 +56,19 @@ function addSquareOverride(square) {
     return square;
 }
 
+function getFrameIterationOrder() {
+    let out = [];
+    let order = [];
+    for (let i = 0; i < getCanvasSquaresX(); i++) {
+        out.push(i);
+        order.push(Math.random());
+    }
+
+    out.sort((a, b) => order[a] - order[b]);
+    return out;
+}
+
+let frameOrder = getFrameIterationOrder();
 function getSqIterationOrder() {
     var rootKeys = Object.keys(ALL_SQUARES);
     var squareOrder = [];
@@ -62,7 +78,10 @@ function getSqIterationOrder() {
             squareOrder.push(...getSquares(rootKeys[i], subKeys[j]));
         }
     }
-    squareOrder.sort((b, a) => (a.posX + a.posY * getCanvasSquaresX()) - (b.posX + b.posY * getCanvasSquaresX()));
+    let cmp = (sq) => (frameOrder[sq.posX] + sq.posY * getCanvasSquaresX())
+    squareOrder.sort((b, a) => cmp(a) - cmp(b));
+    // squareOrder.sort((b, a) => (a.posX + a.posY * getCanvasSquaresX()) - (b.posX + b.posY * getCanvasSquaresX()));
+
     return squareOrder;
 }
 /**
