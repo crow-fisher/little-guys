@@ -10,7 +10,7 @@ import { removeSquare } from "../globalOperations.js";
 import { STATE_DEAD, STATE_HEALTHY, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, STATE_DESTROYED } from "../organisms/Stages.js";
 import { processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
-import { loadUI, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
+import { loadUI, UI_LIGHTING_PLANT, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
 
 
 class BaseLifeSquare {
@@ -97,7 +97,7 @@ class BaseLifeSquare {
     }
 
     getLightFilterRate() {
-        return 0.00015;
+        return 0.00015 * loadUI(UI_LIGHTING_PLANT);
     }
 
     getLsqRenderSizeMult() {

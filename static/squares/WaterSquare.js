@@ -30,8 +30,8 @@ class WaterSquare extends BaseSquare {
         this.thermalMass = 4.2;
     }
 
-    lightFilterRate() {
-        return super.lightFilterRate() * loadUI(UI_LIGHTING_WATER);
+    getLightFilterRate() {
+        return super.getLightFilterRate() * loadUI(UI_LIGHTING_WATER);
     }
 
     reset() {

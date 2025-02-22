@@ -104,9 +104,6 @@ export class BaseSquare {
         this.initTemperature();
 
     };
-    lightFilterRate() {
-        return 0.00017;
-    }
 
     initTemperature() {
         var adjacentWindSquare = getAdjacentWindSquareToRealSquare(this.posX, this.posY);
@@ -129,9 +126,9 @@ export class BaseSquare {
 
     getLightFilterRate() {
         if (this.surface) {
-            return this.lightFilterRate() / 1.5;
+            return 0.00017 / 1.5;
         } else {
-            return this.lightFilterRate();
+            return 0.00017;
         }
     }
 

@@ -51,8 +51,8 @@ export class RockSquare extends SoilSquare {
         this.waterContainment = 0;
     }
 
-    lightFilterRate() {
-        return super.lightFilterRate() * loadUI(UI_LIGHTING_ROCK);
+    getLightFilterRate() {
+        return super.getLightFilterRate() * loadUI(UI_LIGHTING_ROCK);
     }
 
     doBlockOutflow() {

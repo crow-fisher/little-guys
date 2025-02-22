@@ -21,3 +21,7 @@ export function resetWaterflowSquares() {
 export function getGlobalThetaBase() {
     return global_theta_base;
 }
+
+export function setGlobalThetaBase(inVal) {
+    global_theta_base = inVal;
+}

@@ -1,7 +1,7 @@
 import { BaseSquare } from "../BaseSqaure.js";
 import { getNeighbors, getSquares } from "../_sqOperations.js";
 import { hexToRgb } from "../../common.js";
-import { timeScaleFactor } from "../../climate/time.js";
+import { getCurTimeScale, timeScaleFactor } from "../../climate/time.js";
 import { getPressure, getWindSquareAbove } from "../../climate/wind.js";
 import { addWaterSaturationPascals, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor } from "../../climate/temperatureHumidity.js";
 import { loadUI, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER } from "../../ui/UIData.js";
@@ -86,10 +86,6 @@ export class SoilSquare extends BaseSquare {
     reset() {
         super.reset();
         this.soilWaterPressureAbove = -1;
-    }
-
-    calculateWaterPressureAboveFieldCapacity() {
-        return Math.max(0, this.getSoilWaterPressure() + 2);
     }
 
     setVariant() {
@@ -179,7 +175,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     getSoilWaterPressure() {
-        return this.getGravitationalPressure() + this.getMatricPressure(this.waterContainment);
+        return this.getMatricPressure(this.waterContainment);
     }
 
     percolateInnerMoisture() {
@@ -272,9 +268,15 @@ export class SoilSquare extends BaseSquare {
         var siltRate = 1.5;
         var sandRate = 0.92;
         var power = 10;
-        return 4 * (this.sand * sandRate + 
+
+        let baseRet = (this.sand * sandRate + 
                 this.silt * siltRate + 
                 this.clay * clayRate) ** power;
+
+        let sandMult = 1 + Math.max(0, this.sand - 0.9) * 40;
+        baseRet *= sandMult;
+        baseRet = Math.max(1, baseRet / getCurTimeScale());
+        return baseRet;
     }
 
     getColorBase() {
