@@ -4,7 +4,7 @@ import { TopBarElementBase } from "./TopBarElementBase.js";
 
 export class TopBarTime extends TopBarElementBase {
     constructor(fontSize) {
-        super(fontSize, "right");
+        super(fontSize, "left");
     }
     measure() {
         this.prepareStyle();

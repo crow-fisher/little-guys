@@ -3,7 +3,7 @@ import { getLastMoveOffset, isMiddleMouseClicked } from "./mouse.js";
 import { iterateOnOrganisms } from "./organisms/_orgOperations.js";
 
 var BASE_SIZE = 12;
-var CANVAS_SQUARES_X = 108;//192; 
+var CANVAS_SQUARES_X = 192; 
 var CANVAS_SQUARES_Y = 108;
 var CANVAS_VIEWPORT_CENTER_X = CANVAS_SQUARES_X * BASE_SIZE / 2;
 var CANVAS_VIEWPORT_CENTER_Y = CANVAS_SQUARES_Y * BASE_SIZE / 2;
