@@ -31,7 +31,7 @@ export class SpecialBlockComponent extends Component {
         strengthSizeContainer.addElement(sizeContainer);
 
         sizeContainer.addElement(new Text(this.window, sizeX, 15, "size"));
-        sizeContainer.addElement(new Slider(this.window, UI_BB_SIZE, sizeX, 35, 2, 10));
+        sizeContainer.addElement(new Slider(this.window, UI_BB_SIZE, sizeX, 35, 2, 14));
 
         let strengthContainer = new Container(this.window, padding, 1);
         strengthSizeContainer.addElement(strengthContainer);

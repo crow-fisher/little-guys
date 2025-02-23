@@ -51,9 +51,9 @@ function doBlockBlur(centerX, centerY, size) {
 
 function doBrushFunc(centerX, centerY, func) {
     var radius = Math.floor(loadUI(UI_BB_SIZE));
-    for (var i = -radius; i < radius; i++) {
-        for (var j = -radius; j < radius; j++) {
-            if (Math.abs(i) + Math.abs(j) + 2 > (radius ** 2 + radius ** 2) ** 0.5) {
+    for (var i = -radius; i <= radius; i++) {
+        for (var j = -radius; j <= radius; j++) {
+            if ( Math.ceil((i ** 2 + j ** 2) * 0.5) > radius) {
                 continue;
             }
             func(centerX + i, centerY + j);
