@@ -15,8 +15,9 @@ import {
     UI_SPEED_9, UI_SPEED,
     UI_SPEED_0,
     UI_TOPBAR_MAINMENU,
-    UI_BOOLEAN, UI_SM_SM,
-    UI_TOPBAR_TOGGLELIGHTING
+    UI_BOOLEAN, UI_TOPBAR_SM,
+    UI_TOPBAR_TOGGLELIGHTING,
+    UI_TOPBAR_VIEWMODE
 } from "../UIData.js";
 import { TopBarToggle } from "./TopBarToggle.js";
 import { getLastMoveOffset } from "../../mouse.js";
@@ -42,8 +43,9 @@ export class TopBarComponent {
         this.elements[1].push(new TopBarTime(getBaseSize() * 2));
 
         this.elements[0] = [
-            new TopBarToggle(getBaseSize() * 2, "left", UI_TOPBAR_MAINMENU, UI_BOOLEAN, "main menu  "),
-            new TopBarToggle(getBaseSize() * 2, "left", UI_SM_SM, UI_BOOLEAN, "block menu   "),
+            new TopBarToggle(getBaseSize() * 2, "left", UI_TOPBAR_MAINMENU, UI_BOOLEAN, " main menu | "),
+            new TopBarToggle(getBaseSize() * 2, "left", UI_TOPBAR_SM, UI_BOOLEAN, "block menu | "),
+            new TopBarToggle(getBaseSize() * 2, "left", UI_TOPBAR_VIEWMODE, UI_BOOLEAN, "select viewmode | "),
             new TopBarToggle(getBaseSize() * 2, "left", UI_TOPBAR_TOGGLELIGHTING, UI_BOOLEAN, "toggle lighting")
         ];
 
@@ -70,8 +72,6 @@ export class TopBarComponent {
 
             if (key >= 0.5) {
                 startX -= totalElementsSizeX;
-            } else {
-                startX += this.padding * 4;
             }
 
             elements.forEach((element) => {

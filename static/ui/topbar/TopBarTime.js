@@ -10,7 +10,7 @@ export class TopBarTime extends TopBarElementBase {
         this.prepareStyle();
         let curDay = getCurDay();
         let curDate = new Date(curDay * millis_per_day);
-        let text = curDate.toLocaleString();
+        let text = curDate.toLocaleString() + " ";
         var measured = MAIN_CONTEXT.measureText(text);
         return [measured.width, measured.fontBoundingBoxAscent];
     }

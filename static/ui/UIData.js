@@ -14,7 +14,6 @@ export const UI_ROCK_COMPOSITION = "UI_ROCK_COMPOSITION";
 export const UI_SOIL_VIEWMODE = "UI_SOIL_VIEWMODE";
 export const UI_SOIL_INITALWATER = "UI_SOIL_INITALWATER";
 
-export const UI_SM_SM = "UI_SM_SM";
 export const UI_SM_BB = "UI_SM_BB";
 export const UI_SM_LIGHTING = "UI_SM_LIGHTING";
 export const UI_SM_SPECIAL = "UI_SM_SPECIAL";
@@ -74,7 +73,9 @@ export const UI_CLIMATE_WEATHER_LIGHTRAIN = "light rain";
 export const UI_CLIMATE_WEATHER_HEAVYRAIN = "heavy rain";
 
 export const UI_TOPBAR_MAINMENU = "UI_TOPBAR_MAINMENU"; 
+export const UI_TOPBAR_SM = "UI_TOPBAR_SM";
 export const UI_TOPBAR_TOGGLELIGHTING = "UI_TOPBAR_TOGGLELIGHTING";
+export const UI_TOPBAR_VIEWMODE = "UI_TOPBAR_VIEWMODE";
 export const UI_SPEED = "UI_SPEED";
 export const UI_SPEED_0 = "UI_SPEED_0";
 export const UI_SPEED_1 = "UI_SPEED_1";
@@ -100,16 +101,12 @@ var UI_DATA = {
     UI_BB_MODE: UI_MODE_SOIL,
     UI_BB_SIZE: 3,
     UI_BB_STRENGTH: 1,
-    UI_SM_SM: false,
-    UI_SM_BB: false,
-    UI_SM_LIGHTING: false,
-    UI_SM_SPECIAL: false,
-    UI_SM_VIEWMODE: false,
+    UI_TOPBAR_SM: false,
     UI_SPECIAL_SELECT: UI_SPECIAL_WATER,
     UI_SOIL_COMPOSITION: [40, 40, 20],
     UI_ROCK_COMPOSITION: [40, 40, 20],
     UI_SOIL_VIEWMODE: "🎨",
-    UI_SOIL_INITALWATER: -2,
+    UI_SOIL_INITALWATER: -3,
     UI_LIGHTING_SUN: .329,
     UI_LIGHTING_MOON: .05,
     UI_LIGHTING_WATER: 1,
@@ -123,7 +120,7 @@ var UI_DATA = {
 var UI_FUNCTION_MAP = new Map();
 
 var UI_SINGLE_GROUPS = [
-    [UI_SM_BB, UI_SM_SPECIAL, UI_SM_LIGHTING, UI_SM_ORGANISM],
+    [UI_SM_BB, UI_SM_SPECIAL, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_SM_GODMODE, UI_SM_CLIMATE],
 ]
 
 var queuedFunction = null;
