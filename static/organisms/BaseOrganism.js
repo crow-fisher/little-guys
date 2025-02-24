@@ -460,6 +460,9 @@ class BaseOrganism {
         if (this.lifeSquares.length <= 2) {
             this.destroy();
         }
+        if (this.originGrowth.baseDeflection > Math.PI * 1.5) {
+            this.destroy();
+        }
 
     }
 

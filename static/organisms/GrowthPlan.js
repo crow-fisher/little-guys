@@ -77,6 +77,8 @@ export class GrowthPlanStep {
             }
             this.growthPlan.executePostConstruct();
             this.growthPlan.component.addLifeSquare(newLifeSquare);
+        } else {
+            this.completed = true;
         }
         if (this.otherAction != null) {
             this.otherAction();
@@ -470,5 +472,6 @@ export class GrowthComponent {
             lsq.type == "green" &&
             lsq.state == STATE_DEAD &&
             lsq.groundTouchSquare() != null).forEach((lsq) => lsq.doGroundDecay());
+            
     }
 }

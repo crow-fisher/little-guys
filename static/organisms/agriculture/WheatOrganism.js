@@ -48,9 +48,7 @@ export class WheatOrganism extends BaseOrganism {
 
         growthPlan.postConstruct = () => {
             parent.addChild(growthPlan.component);
-            this.stems.push(growthPlan.component);
-            console.log("Growing stem: ");
-            console.log(this.originGrowth.getChildPath(growthPlan.component));
+            this.stems.push(this.originGrowth.getChildPath(growthPlan.component));
         };
         growthPlan.component._getWilt = (val) => Math.sin(val) / 2;
         growthPlan.steps.push(new GrowthPlanStep(
@@ -80,9 +78,7 @@ export class WheatOrganism extends BaseOrganism {
 
         growthPlan.postConstruct = () => {
             parent.addChild(growthPlan.component);
-            this.leaves.push(growthPlan.component);
-            console.log("Growing leaf: ");
-            console.log(this.originGrowth.getChildPath(growthPlan.component));
+            this.leaves.push(this.originGrowth.getChildPath(growthPlan.component));
         };
         growthPlan.component._getWilt = (val) => Math.sin(val) / 2;
         growthPlan.steps.push(new GrowthPlanStep(
@@ -102,12 +98,15 @@ export class WheatOrganism extends BaseOrganism {
     }
 
     adultGrowStem() {
-        var parent = this.stems[this.stems.length - 1];
+        let parentPath = this.stems[this.stems.length - 1];
+        let parent = this.originGrowth.getChildFromPath(parentPath);
         this.growStem(parent, parent.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_NODE), 0);
     }
 
     adultGrowLeaf() {
-        var parent = this.stems.find((stem) => !stem.children.some((child) => child.growthPlan.type == TYPE_LEAF));
+        var parent = this.stems
+            .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
+            .find((stem) => !stem.children.some((child) => child.growthPlan.type == TYPE_LEAF));
         if (parent == null) {
             return;
         }
@@ -115,7 +114,9 @@ export class WheatOrganism extends BaseOrganism {
     }
 
     lengthenStems() {
-        let stem = this.stems.filter((stem) => stem.growthPlan.steps.length < this.targetStemLength).at(0);
+        let stem = this.stems
+            .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
+            .filter((stem) => stem.growthPlan.steps.length < this.targetStemLength).at(0);
         let startNode = stem.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_NODE)
         stem.growthPlan.steps.push(new GrowthPlanStep(
             stem.growthPlan,
@@ -131,24 +132,26 @@ export class WheatOrganism extends BaseOrganism {
         stem.growthPlan.completed = false;
     } 
     lengthenLeaves() {
-        this.leaves.filter((leaf) => leaf.growthPlan.steps.length < this.targetLeafLength)
-        .forEach((leaf) => {
-            let startNode = leaf.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_LEAF)
-            for (let i = 0; i < this.targetLeafLength - leaf.growthPlan.steps.length; i++) {
-                leaf.growthPlan.steps.push(new GrowthPlanStep(
-                    leaf.growthPlan,
-                    0,
-                    this.grassGrowTimeInDays,
-                    () => {
-                        var leaf = this.growPlantSquare(startNode, 0, 0);
-                        leaf.subtype = SUBTYPE_LEAF;
-                        return leaf;
-                    },
-                    null
-                ))
-            };
-            leaf.growthPlan.completed = false;
-        })
+        this.leaves
+            .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
+            .filter((leaf) => leaf.growthPlan.steps.length < this.targetLeafLength)
+            .forEach((leaf) => {
+                let startNode = leaf.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_LEAF)
+                for (let i = 0; i < this.targetLeafLength - leaf.growthPlan.steps.length; i++) {
+                    leaf.growthPlan.steps.push(new GrowthPlanStep(
+                        leaf.growthPlan,
+                        0,
+                        this.grassGrowTimeInDays,
+                        () => {
+                            var leaf = this.growPlantSquare(startNode, 0, 0);
+                            leaf.subtype = SUBTYPE_LEAF;
+                            return leaf;
+                        },
+                        null
+                    ))
+                };
+                leaf.growthPlan.completed = false;
+            })
     }
 
     growFlower() {}
@@ -168,7 +171,9 @@ export class WheatOrganism extends BaseOrganism {
             return;
         }
 
-        if (this.stems.some((stem) => stem.growthPlan.steps.length < this.targetStemLength)) {
+        if (this.stems
+                .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
+                .some((stem) => stem.growthPlan.steps.length < this.targetStemLength)) {
             this.lengthenStems();
             return;
         }
@@ -178,7 +183,9 @@ export class WheatOrganism extends BaseOrganism {
             return;
         }
 
-        if (this.leaves.some((leaf) => leaf.growthPlan.steps.length < Math.min(this.targetStemLength * (this.maxLeafLength / this.maxStemLength), this.targetLeafLength))) {
+        if (this.leaves
+                .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
+                .some((leaf) => leaf.growthPlan.steps.length < Math.min(this.targetStemLength * (this.maxLeafLength / this.maxStemLength), this.targetLeafLength))) {
             this.lengthenLeaves();
             return;
         }
