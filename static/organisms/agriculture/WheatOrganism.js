@@ -49,6 +49,8 @@ export class WheatOrganism extends BaseOrganism {
         growthPlan.postConstruct = () => {
             parent.addChild(growthPlan.component);
             this.stems.push(growthPlan.component);
+            console.log("Growing stem: ");
+            console.log(this.originGrowth.getChildPath(growthPlan.component));
         };
         growthPlan.component._getWilt = (val) => Math.sin(val) / 2;
         growthPlan.steps.push(new GrowthPlanStep(
@@ -79,6 +81,8 @@ export class WheatOrganism extends BaseOrganism {
         growthPlan.postConstruct = () => {
             parent.addChild(growthPlan.component);
             this.leaves.push(growthPlan.component);
+            console.log("Growing leaf: ");
+            console.log(this.originGrowth.getChildPath(growthPlan.component));
         };
         growthPlan.component._getWilt = (val) => Math.sin(val) / 2;
         growthPlan.steps.push(new GrowthPlanStep(

@@ -19,9 +19,9 @@ export class GrowthPlan {
         this.completed = false;
         this.stepLastExecuted = 0;
         this.component = new GrowthComponent(
-            this, 
+            this,
             this.steps.filter((step) => step.completed).map((step) => step.completedSquare),
-             theta, twist, baseRotation, baseDeflection, baseCurve, type, strengthMult)
+            theta, twist, baseRotation, baseDeflection, baseCurve, type, strengthMult)
     }
 
     areStepsCompleted() {
@@ -32,7 +32,7 @@ export class GrowthPlan {
         console.warn("Warning: postconstruct not implemented");
     }
 
-    postComplete() {};
+    postComplete() { };
 
     setBaseDeflectionOverTime(deflectionOverTimeList) {
         this.deflectionOverTimeList = deflectionOverTimeList;
@@ -45,7 +45,7 @@ export class GrowthPlan {
     }
 
     complete() {
-        this.completed = true; 
+        this.completed = true;
         this.postComplete();
     }
 
@@ -84,7 +84,7 @@ export class GrowthPlanStep {
         }
     }
 }
-    
+
 export class GrowthComponent {
     constructor(growthPlan, lifeSquares, theta, twist, baseRotation, baseDeflection, baseCurve, type, strengthMult) {
         this.growthPlan = growthPlan;
@@ -96,7 +96,7 @@ export class GrowthComponent {
         this.baseCurve = baseCurve;
         this.type = type;
 
-        this.posX = growthPlan.posX;   
+        this.posX = growthPlan.posX;
         this.posY = growthPlan.posY;
 
         this.xOffset = 0;
@@ -111,7 +111,29 @@ export class GrowthComponent {
         this.distToFront = 0;
         this.spawnTime = getCurDay();
     }
-    
+
+    getChildPath(searchChild) {
+        for (let i = 0; i < this.children.length; i++) {
+            let child = this.children[i];
+            if (child == searchChild) {
+                return [i];
+            }
+            let childSearch = child.getChildPath(searchChild);
+            if (childSearch !== -1) {
+                return [i, ...childSearch]
+            }
+        }
+        return -1;
+    }
+
+    getChildFromPath(childPath) {
+        if (childPath.length == 1) {
+            return this.children.at(childPath);
+        } else {
+            return this.children.at(childPath.at(0)).getChildFromPath(childPath.slice(1));
+        }
+    }
+
     strength() {
         return this.strengthMult * this.lifeSquares.map((lsq) => lsq.strength).reduce(
             (accumulator, currentValue) => accumulator + currentValue,
@@ -144,7 +166,7 @@ export class GrowthComponent {
     updatePosition(newPosX, newPosY) {
         var dx = newPosX - this.posX;
         var dy = newPosY - this.posY;
-        
+
         this.lifeSquares.forEach((lsq) => lsq.updatePositionDifferential(dx, dy));
         this.children.forEach((child) => child.updatePosition(newPosX, newPosY));
 
@@ -314,7 +336,7 @@ export class GrowthComponent {
         }
 
         var curve = this.baseCurve + Math.sin(this.currentDeflection) * 0.06 * (this.ySizeCur() - 1) / this.getTotalStrength();
-        
+
         var startTheta = this.deflectionRollingAverage + this.getParentDeflection();
         var endTheta = this.currentDeflection + curve + this.getParentDeflection() + this.getWilt();
 
@@ -333,7 +355,7 @@ export class GrowthComponent {
             var offsetY = relLsqY * Math.cos(currentTheta) + relLsqX * Math.sin(currentTheta);
 
             this.distToFront = offsetX * Math.cos(this.getTheta());
-            lsq.distToFront = this.getDistToFront(); 
+            lsq.distToFront = this.getDistToFront();
             offsetX *= Math.sin(this.getTheta());
             offsetY *= Math.cos(this.getTwist());
 
@@ -426,11 +448,11 @@ export class GrowthComponent {
     }
 
     someSquareTouchingGround() {
-        return this.lifeSquares.some((lsq) => 
-            lsq.type == "green" && 
-            lsq.state != STATE_DESTROYED && 
+        return this.lifeSquares.some((lsq) =>
+            lsq.type == "green" &&
+            lsq.state != STATE_DESTROYED &&
             lsq.groundTouchSquare() != null)
-        || this.children.some((child) => child.someSquareTouchingGround());
+            || this.children.some((child) => child.someSquareTouchingGround());
     }
 
     decay(amount) {
@@ -444,9 +466,9 @@ export class GrowthComponent {
             this.baseDeflection += amount;
         }
         this.children.forEach((child) => child.decay(amount));
-        this.lifeSquares.filter((lsq) => 
-            lsq.type == "green" && 
-            lsq.state == STATE_DEAD && 
+        this.lifeSquares.filter((lsq) =>
+            lsq.type == "green" &&
+            lsq.state == STATE_DEAD &&
             lsq.groundTouchSquare() != null).forEach((lsq) => lsq.doGroundDecay());
     }
 }
