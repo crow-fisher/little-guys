@@ -69,7 +69,7 @@ export class GrowthPlanStep {
 
     doAction() {
         if (this.growSqAction != null) {
-            var newLifeSquare = this.growSqAction();
+            var newLifeSquare = this.growSqAction(); // TODO: This can't be a lambda! Saving and loading breaks it.
             this.completed = true;
             if (newLifeSquare) {
                 this.completedSquare = newLifeSquare;
