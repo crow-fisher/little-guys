@@ -1,5 +1,6 @@
 import { doZoom, resetZoom } from "./canvas.js";
 import { getGlobalThetaBase, setGlobalThetaBase } from "./globals.js";
+import { saveUI, UI_BB_EYEDROPPER } from "./ui/UIData.js";
 
 export function keydown(e) {
     e.preventDefault();
@@ -16,6 +17,9 @@ export function keydown(e) {
         setGlobalThetaBase(getGlobalThetaBase() - 0.1);
     }
 
+    if (e.key == 'e') {
+        saveUI(UI_BB_EYEDROPPER, true);
+    }
     if (e.key == "Escape") {
         resetZoom();
     }
