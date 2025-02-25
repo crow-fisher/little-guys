@@ -87,7 +87,6 @@ export function mixerBlockClick(posX, posY) {
     if (sq == null) {
         return;
     }
-
     let sqComp = [sq.sand, sq.silt, sq.clay];
     if (!getMixArr().some((arr) => arr[0] == sqComp[0] && arr[1] == sqComp[1] && arr[2] == sqComp[2])) {
         getMixArr()[getCurMixIdx() % getMixArrLen()] = sqComp; 
@@ -96,10 +95,12 @@ export function mixerBlockClick(posX, posY) {
     }
     if (getCurMixIdx() == getTargetMixIdx()) {
         let comp = getMixArr().reduce(
-            (a, b) => [(a[0] + b[0]) / getMixArrLen(), (a[1] + b[1]) / getMixArrLen(), (a[2] + b[2]) / getMixArrLen()],
+            (a, b) => [(a[0] + b[0]), (a[1] + b[1]), (a[2] + b[2])],
             [0, 0, 0],
         );
-        blockBuildingComponent.setClick(comp[0], comp[1], comp[2]);
+
+        let sum = comp[0] + comp[1] + comp[2];
+        blockBuildingComponent.setClick(comp[0] / sum, comp[1] / sum, comp[2] / sum);
         saveUI(UI_BB_MIXER, false);
         return;
     }
