@@ -6,7 +6,7 @@ import { SpecialBlockComponent } from "./components/SpecialBlockComponent.js";
 import { SubMenuComponent } from "./components/SubMenuComponent.js";
 import { TopBarComponent } from "./topbar/TopBarComponent.js";
 import { ViewModeComponent } from "./components/ViewModeComponent.js";
-import { loadUI, UI_BB_MODE, UI_MODE_ROCK, UI_MODE_SOIL, UI_SM_BB, UI_SM_CLIMATE, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_SM, UI_SM_SPECIAL, UI_SM_VIEWMODE, UI_TOPBAR, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE } from "./UIData.js";
+import { loadUI, UI_BB_MODE, UI_MODE_ROCK, UI_MODE_SOIL, UI_SM_BB, UI_SM_CLIMATE, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_SM, UI_SM_SPECIAL, UI_SM_VIEWMODE, UI_TOPBAR, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveUI, UI_BB_MIXER } from "./UIData.js";
 import { MainMenuComponent } from "./components/MainMenuComponent.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import { GodModeComponent } from "./components/GodModeComponent.js";
@@ -72,4 +72,51 @@ export function eyedropperBlockClick(posX, posY) {
     getSquares(posX, posY).filter((sq) => sq.proto == targetProto).forEach((sq) => {
         blockBuildingComponent.setClick(sq.sand, sq.silt, sq.clay);
     });
+}
+
+let curMixIdx = 0;
+let targetMixIdx = 2;
+let mixArrLen = 2; 
+let mixArr = new Array(mixArrLen);
+
+export function getCurMixIdx() {
+    return curMixIdx;
+}
+export function getTargetMixIdx() {
+    return targetMixIdx;
+}
+export function getMixArrLen() {
+    return mixArrLen;
+}
+export function mixerBlockClick(posX, posY) {
+    let targetProto;
+    if (loadUI(UI_BB_MODE) == UI_MODE_ROCK) 
+        targetProto = "RockSquare";
+    else if (loadUI(UI_BB_MODE) == UI_MODE_SOIL)
+        targetProto = "SoilSquare";
+    else 
+        return; 
+    let sq = getSquares(posX, posY).filter((sq) => sq.proto == targetProto).at(0);
+    if (sq == null) {
+        return;
+    }
+
+    if (curMixIdx == targetMixIdx) {
+        let comp = mixArr.reduce(
+            (a, b) => [(a[0] + b[0]) / mixArrLen, (a[1] + b[1]) / mixArrLen, (a[2] + b[2]) / mixArrLen],
+            [0, 0, 0],
+        );
+        blockBuildingComponent.setClick(comp[0], comp[1], comp[2]);
+        targetMixIdx = curMixIdx + 2;
+        curMixIdx += 1;
+        saveUI(UI_BB_MIXER, false);
+        return;
+    }
+    let sqComp = [sq.sand, sq.silt, sq.clay];
+    if (!mixArr.some((arr) => arr[0] == sqComp[0] && arr[1] == sqComp[1] && arr[2] == sqComp[2])) {
+        mixArr[curMixIdx % mixArrLen] = sqComp; 
+        sq.mixIdx = curMixIdx;
+        curMixIdx += 1;
+    }
+
 }

@@ -7,7 +7,7 @@ import { Slider } from "../elements/Slider.js";
 import { SoilPickerElement } from "../elements/SoilPicker.js";
 import { Text } from "../elements/Text.js";
 import { Toggle } from "../elements/Toggle.js";
-import { loadUI, saveUI, UI_BB_EYEDROPPER, UI_BB_MODE, UI_BB_SIZE, UI_BB_STRENGTH, UI_MODE_ROCK, UI_MODE_SOIL, UI_ROCK_COMPOSITION, UI_SOIL_COMPOSITION } from "../UIData.js";
+import { loadUI, saveUI, UI_BB_EYEDROPPER, UI_BB_MIXER, UI_BB_MODE, UI_BB_SIZE, UI_BB_STRENGTH, UI_MODE_ROCK, UI_MODE_SOIL, UI_ROCK_COMPOSITION, UI_SOIL_COMPOSITION } from "../UIData.js";
 
 export class BlockBuildingComponent extends Component {
     constructor(posX, posY, padding, dir, key) {
@@ -42,7 +42,10 @@ export class BlockBuildingComponent extends Component {
 
         strengthContainer.addElement(new Text(this.window, halfSizeX, getBaseSize() * 1.5, "strength"));
         strengthContainer.addElement(new Slider(this.window, UI_BB_STRENGTH, halfSizeX, getBaseSize() * 3, 0, 1));
-        container.addElement(new Toggle(this.window,sizeX, getBaseSize() * 3, UI_BB_EYEDROPPER , "eyedropper"))
+        let specialToolContainer = new Container(this.window, padding, 0);
+        container.addElement(specialToolContainer);
+        specialToolContainer.addElement(new Toggle(this.window,sizeX / 2, getBaseSize() * 2.5, UI_BB_EYEDROPPER , "q | eyedropper"))
+        specialToolContainer.addElement(new Toggle(this.window,sizeX / 2, getBaseSize() * 2.5, UI_BB_MIXER , "w | mixer"))
     }
 
     setHover(sand, silt, clay) {

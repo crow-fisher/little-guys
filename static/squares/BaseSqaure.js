@@ -23,8 +23,9 @@ import { getAdjacentWindSquareToRealSquare, getWindSquareAbove } from "../climat
 import { RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
 import { getCurDay, timeScaleFactor } from "../climate/time.js";
 import { processLighting } from "../lighting/lightingProcessing.js";
-import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
+import { getBaseSize, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
 import { loadUI, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE } from "../ui/UIData.js";
+import { getMixArrLen, getTargetMixIdx } from "../ui/WindowManager.js";
 
 export class BaseSquare {
     constructor(posX, posY) {
@@ -100,6 +101,8 @@ export class BaseSquare {
         this.lightingSumDay = Math.floor(getCurDay());
         this.lightingSum = {r: 0, g: 0, b: 0}
         this.lightingSumCount = 0;
+
+        this.mixIdx = -1;
 
         this.initTemperature();
 
@@ -339,6 +342,14 @@ export class BaseSquare {
             getBaseSize(),
             getBaseSize()
         );
+        if (this.mixIdx > (getTargetMixIdx() - getMixArrLen())) {
+            MAIN_CONTEXT.font = getBaseSize() + "px courier"
+            MAIN_CONTEXT.textAlign = 'center';
+            MAIN_CONTEXT.textBaseline = 'middle';
+            zoomCanvasSquareText((this.offsetX + this.posX) * getBaseSize(),
+            (this.offsetY + this.posY) * getBaseSize(),
+            this.mixIdx % getMixArrLen());
+        }
     }
 
     getNeighborLightingArr() {

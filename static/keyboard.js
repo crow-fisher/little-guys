@@ -1,24 +1,27 @@
 import { doZoom, resetZoom } from "./canvas.js";
 import { getGlobalThetaBase, setGlobalThetaBase } from "./globals.js";
-import { saveUI, UI_BB_EYEDROPPER } from "./ui/UIData.js";
+import { loadUI, saveUI, UI_BB_EYEDROPPER, UI_BB_MIXER } from "./ui/UIData.js";
 
 export function keydown(e) {
     e.preventDefault();
-    if (e.key == "w") {
+    if (e.key == "s") {
         doZoom(-0.1);
     }
-    if (e.key == "s") {
+    if (e.key == "x") {
         doZoom(0.1);
     }
-    if (e.key == "a") {
+    if (e.key == "z") {
         setGlobalThetaBase(getGlobalThetaBase() + 0.1);
     }
-    if (e.key == "d") {
+    if (e.key == "c") {
         setGlobalThetaBase(getGlobalThetaBase() - 0.1);
     }
 
-    if (e.key == 'e') {
-        saveUI(UI_BB_EYEDROPPER, true);
+    if (e.key == 'q') {
+        saveUI(UI_BB_EYEDROPPER, !loadUI(UI_BB_EYEDROPPER));
+    }
+    if (e.key == 'w') {
+        saveUI(UI_BB_MIXER, !loadUI(UI_BB_MIXER));
     }
     if (e.key == "Escape") {
         resetZoom();

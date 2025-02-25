@@ -6,7 +6,7 @@ import { addWindPressure, removeWindPressure } from "./climate/wind.js";
 import { randNumber } from "./common.js";
 import { getOrganismSquaresAtSquare } from "./lifeSquares/_lsOperations.js";
 import { triggerEarlySquareScheduler } from "./main.js";
-import { getLastMoveOffset, isLeftMouseClicked, isMiddleMouseClicked, isRightMouseClicked } from "./mouse.js";
+import { getLastMoveOffset, getLeftMouseUpEvent, isLeftMouseClicked, isMiddleMouseClicked, isRightMouseClicked } from "./mouse.js";
 import { addNewOrganism } from "./organisms/_orgOperations.js";
 import { WheatSeedOrganism } from "./organisms/agriculture/WheatOrganism.js";
 import { STAGE_DEAD } from "./organisms/Stages.js";
@@ -16,8 +16,8 @@ import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
-import { loadUI, saveUI, UI_BB_EYEDROPPER, UI_BB_MODE, UI_BB_SIZE, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_TEMPERATURE, UI_GODMODE_WIND, UI_MODE_ROCK, UI_MODE_SOIL, UI_ORGANISM_SELECT, UI_SM_BB, UI_SM_GODMODE, UI_SM_ORGANISM, UI_SM_SPECIAL, UI_SM_VIEWMODE, UI_SPECIAL_AQUIFER, UI_SPECIAL_MIX, UI_SPECIAL_SELECT, UI_SPECIAL_SURFACE, UI_SPECIAL_WATER, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE } from "./ui/UIData.js";
-import { eyedropperBlockClick, eyedropperBlockHover, isWindowHovered } from "./ui/WindowManager.js";
+import { loadUI, saveUI, UI_BB_EYEDROPPER, UI_BB_MIXER, UI_BB_MODE, UI_BB_SIZE, UI_BB_STRENGTH, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_TEMPERATURE, UI_GODMODE_WIND, UI_MODE_ROCK, UI_MODE_SOIL, UI_ORGANISM_SELECT, UI_SM_BB, UI_SM_GODMODE, UI_SM_ORGANISM, UI_SM_SPECIAL, UI_SM_VIEWMODE, UI_SPECIAL_AQUIFER, UI_SPECIAL_MIX, UI_SPECIAL_SELECT, UI_SPECIAL_SURFACE, UI_SPECIAL_WATER, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE } from "./ui/UIData.js";
+import { eyedropperBlockClick, eyedropperBlockHover, isWindowHovered, mixerBlockClick } from "./ui/WindowManager.js";
 var prevManipulationOffset;
 
 function doBlockBlur(centerX, centerY, size) {
@@ -54,6 +54,9 @@ function doBrushFunc(centerX, centerY, func) {
     for (var i = -radius; i <= radius; i++) {
         for (var j = -radius; j <= radius; j++) {
             if ( Math.ceil((i ** 2 + j ** 2) * 0.5) > radius) {
+                continue;
+            }
+            if (Math.random() > loadUI(UI_BB_STRENGTH) ** 2) {
                 continue;
             }
             func(centerX + i, centerY + j);
@@ -112,6 +115,33 @@ function doBlockMod(posX, posY) {
     }
 }
 
+export function doClickAddEyedropperMixer() {
+    if (!getLeftMouseUpEvent()) {
+        return;
+    }
+    let lastMoveOffset = getLastMoveOffset();
+    if (lastMoveOffset == null || isMiddleMouseClicked() || isWindowHovered()) {
+        return;
+    }
+    triggerEarlySquareScheduler();
+    if (lastMoveOffset.x > getCanvasWidth() || lastMoveOffset > getCanvasHeight()) {
+        return;
+    }
+    var offsetTransformed = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);
+    var offsetX = offsetTransformed[0];
+    var offsetY = offsetTransformed[1];
+
+    if (loadUI(UI_BB_EYEDROPPER)) {
+        eyedropperBlockClick(offsetX, offsetY);
+        return;
+    }
+    if (loadUI(UI_BB_MIXER)) {
+        mixerBlockClick(offsetX, offsetY);
+        return;
+    }
+}
+
+
 export function doClickAdd() {
     let lastMoveOffset = getLastMoveOffset();
     if (lastMoveOffset == null || isMiddleMouseClicked() || isWindowHovered()) {
@@ -128,8 +158,7 @@ export function doClickAdd() {
         var offsetX = offsetTransformed[0];
         var offsetY = offsetTransformed[1];
 
-        if (loadUI(UI_BB_EYEDROPPER)) {
-            eyedropperBlockClick(offsetX, offsetY);
+        if (loadUI(UI_BB_EYEDROPPER) || loadUI(UI_BB_MIXER)) {
             return;
         }
 
@@ -169,7 +198,6 @@ export function doClickAdd() {
             else if (isRightMouseClicked()) {
                 doBrushFunc(px, py, (x, y) => removeSquarePos(x, y));
             } else {
-
                 if (loadUI(UI_SM_BB)) {
                     let mode = loadUI(UI_BB_MODE);
                     if (mode == UI_MODE_SOIL) {

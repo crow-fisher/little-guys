@@ -47,7 +47,7 @@ export function createSunLightGroup() {
         getCanvasSquaresX() / 2,
         -1, 
         getCanvasSquaresX() * 0.5,
-        4,
+        7,
         getCurrentLightColorTemperature, 
         () => loadUI(UI_LIGHTING_SUN) * getDaylightStrength(),
         () => Math.max(0, (2 * (getCurDay() % 1) - 0.5))
@@ -85,14 +85,14 @@ export class MovingLinearLightGroup {
     getMinMaxTheta(posX, posY) {
         let minThetaPoint, maxThetaPoint;
         if (posX < 0) {
-            minThetaPoint = [0, CANVAS_SQUARES_Y];
+            minThetaPoint = [0, getCanvasSquaresY()];
             maxThetaPoint = [getCanvasSquaresX(), 0];
         } else if (posX <= getCanvasSquaresX()) {
             minThetaPoint = [0, 0];
             maxThetaPoint = [getCanvasSquaresX(), 0];
         } else {
             minThetaPoint = [0, 0]
-            maxThetaPoint = [getCanvasSquaresX(), CANVAS_SQUARES_Y];
+            maxThetaPoint = [getCanvasSquaresX(), getCanvasSquaresY()];
         }
 
         let relMinThetaPoint = [minThetaPoint[0] - posX, minThetaPoint[1] - posY]

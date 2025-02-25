@@ -89,6 +89,38 @@ export function zoomCanvasFillRect(x, y, dx, dy) {
         dy
     );
 }
+
+export function zoomCanvasSquareText(x, y, text) {
+    let dx = CANVAS_SQUARES_ZOOM;
+    let dy = CANVAS_SQUARES_ZOOM;
+
+    var totalWidth = CANVAS_SQUARES_X * BASE_SIZE;
+    var totalHeight = CANVAS_SQUARES_Y * BASE_SIZE;
+
+    var windowWidth = totalWidth / CANVAS_SQUARES_ZOOM;
+    var windowHeight = totalHeight / CANVAS_SQUARES_ZOOM;
+
+    var windowWidthStart = CANVAS_VIEWPORT_CENTER_X - (windowWidth / 2);
+    var windowHeightStart = CANVAS_VIEWPORT_CENTER_Y - (windowHeight / 2); 
+
+    var windowWidthEnd = CANVAS_VIEWPORT_CENTER_X + (windowWidth / 2);
+    var windowHeightEnd = CANVAS_VIEWPORT_CENTER_Y + (windowHeight / 2); 
+
+    var xpi = (x - windowWidthStart) / (windowWidthEnd - windowWidthStart);
+    var ypi = (y - windowHeightStart) / (windowHeightEnd - windowHeightStart);
+
+    var xpl = xpi * totalWidth;
+    var ypl = ypi * totalHeight;
+    
+    MAIN_CONTEXT.strokeText(
+        text,
+        xpl + dx / 2,
+        ypl + dy / 2
+    );
+}
+
+
+
 export function zoom(event) {
     event.preventDefault();
     doZoom(event.deltaY);

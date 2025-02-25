@@ -6,9 +6,9 @@ export class Climate {
         this.soilColorClay = hexToRgb("#773319");
         this.soilColorSilt = hexToRgb("#33251b");
 
-        this.rockColorSand = hexToRgb("#ba9670");
-        this.rockColorClay = hexToRgb("#664935");
-        this.rockColorSilt = hexToRgb("#988570");
+        this.rockColorSand = hexToRgb("#666264");
+        this.rockColorClay = hexToRgb("#020204");
+        this.rockColorSilt = hexToRgb("#c4bebe");
     }
 
     setSoilColors(sandColor, clayColor, siltColor) {

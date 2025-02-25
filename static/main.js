@@ -1,5 +1,5 @@
 import { doWaterFlow, physics, processOrganisms, purge, renderOrganisms, renderSolidSquares, renderWaterSquares, reset } from "./globalOperations.js";
-import { doClickAdd } from "./manipulation.js";
+import { doClickAdd, doClickAddEyedropperMixer } from "./manipulation.js";
 import { resetFrameDivMult } from "./lighting/lightingProcessing.js";
 import { renderClouds, renderTemperature, renderWaterSaturation } from "./climate/temperatureHumidity.js";
 import { doTimeSeek, getTimeScale, renderTime, updateTime } from "./climate/time.js";
@@ -32,6 +32,7 @@ export function triggerEarlySquareScheduler() {
 export function scheduler_main() {
     updateTime();
     doClickAdd();
+    doClickAddEyedropperMixer();
     resetWindowHovered(); 
 
     if (getTimeScale() != 0) {

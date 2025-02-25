@@ -6,6 +6,7 @@ export const UI_BB_MODE = "UI_BB_MODE";
 export const UI_BB_SIZE = "UI_BB_SIZE";
 export const UI_BB_STRENGTH = "UI_BB_STRENGTH";
 export const UI_BB_EYEDROPPER = "UI_BB_EYEDROPPER";
+export const UI_BB_MIXER = "UI_BB_MIXER";
 
 export const UI_NULL = "UI_NULL";
 
@@ -122,7 +123,8 @@ var UI_FUNCTION_MAP = new Map();
 
 var UI_SINGLE_GROUPS = [
     [UI_SM_BB, UI_SM_SPECIAL, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_SM_GODMODE, UI_SM_CLIMATE],
-    [UI_TOPBAR_MAINMENU, UI_TOPBAR_SM]
+    [UI_TOPBAR_MAINMENU, UI_TOPBAR_SM],
+    [UI_BB_MIXER, UI_BB_EYEDROPPER]
 ]
 
 var queuedFunction = null;

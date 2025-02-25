@@ -1,8 +1,10 @@
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, resetZoom } from "./canvas.js";
+import { loadUI, UI_BB_EYEDROPPER, UI_BB_MIXER } from "./ui/UIData.js";
 
 var leftMouseClicked = false;
 var rightMouseClicked = false;
 var middleMouseClicked = false;
+var leftMouseUpEvent = true;
 var lastMouseDownStart = Date.now(); 
 var mouseDown = 0;
 var lastMoveEvent = null;
@@ -29,6 +31,14 @@ export function getLastMouseDown() {
     return lastMouseDownStart;
 }
 
+export function getLeftMouseUpEvent() {
+    if (leftMouseUpEvent) {
+        leftMouseUpEvent = false;
+        return true;
+    }
+    return false;
+}
+
 export function handleMouseDown(e) {
     e.preventDefault();
     switch (e.button) {
@@ -49,6 +59,7 @@ export function handleMouseDown(e) {
 
 export function handleMouseUp(e) {
     e.preventDefault();
+    let leftMouseWasClicked = leftMouseClicked;
     switch (e.button) {
         case 2: 
             rightMouseClicked = false;
@@ -60,6 +71,9 @@ export function handleMouseUp(e) {
         default:
             leftMouseClicked = false;
             break;
+    }
+    if (loadUI(UI_BB_EYEDROPPER) || loadUI(UI_BB_MIXER)) {
+        leftMouseUpEvent = leftMouseWasClicked;
     }
 }
 
