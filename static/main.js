@@ -1,9 +1,9 @@
-import { doWaterFlow, physics, processOrganisms, purge, renderOrganisms, renderSolidSquares, renderWaterSquares, reset } from "./globalOperations.js";
+import { doWaterFlow, physics, physicsOnlyGravity, physicsOnlyWater, processOrganisms, purge, renderOrganisms, renderSolidSquares, renderWaterSquares, reset } from "./globalOperations.js";
 import { doClickAdd, doClickAddEyedropperMixer } from "./manipulation.js";
 import { resetFrameDivMult } from "./lighting/lightingProcessing.js";
 import { renderClouds, renderTemperature, renderWaterSaturation } from "./climate/temperatureHumidity.js";
 import { doTimeSeek, getTimeScale, renderTime, updateTime } from "./climate/time.js";
-import { executeFunctionQueue, loadUI, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_WIND } from "./ui/UIData.js";
+import { executeFunctionQueue, loadUI, UI_TOPBAR_DESIGNERMODE, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_WIND } from "./ui/UIData.js";
 import { renderWindows, resetWindowHovered, updateWindows } from "./ui/WindowManager.js";
 import { renderWindPressureMap } from "./climate/wind.js";
 import { LightingHandler } from "./lighting/lightingHandler.js";
@@ -35,16 +35,20 @@ export function scheduler_main() {
     doClickAddEyedropperMixer();
     resetWindowHovered(); 
 
-    if (getTimeScale() != 0) {
-        if (Date.now() - last_square_tick > SQUARE_UPDATE_MILLIS) {
-            squareTick();
-            last_square_tick = Date.now();
-            updated = true;
-        }
-        if (Date.now() - last_org_tick > ORG_UPDATE_MILLIS) {
-            orgTick();
-            last_org_tick = Date.now();
-            updated = true;
+    if (loadUI(UI_TOPBAR_DESIGNERMODE)) {
+        squareTickSimplePhysics();
+    } else {
+        if (getTimeScale() != 0) {
+            if (Date.now() - last_square_tick > SQUARE_UPDATE_MILLIS) {
+                squareTick();
+                last_square_tick = Date.now();
+                updated = true;
+            }
+            if (Date.now() - last_org_tick > ORG_UPDATE_MILLIS) {
+                orgTick();
+                last_org_tick = Date.now();
+                updated = true;
+            }
         }
     }
 
@@ -87,6 +91,14 @@ function render() {
 
 function orgTick() {
     processOrganisms();
+}
+
+function squareTickSimplePhysics() {
+    reset();
+    physicsOnlyGravity();
+    physicsOnlyWater();
+    doWaterFlow();
+    purge();
 }
 
 function squareTick() {

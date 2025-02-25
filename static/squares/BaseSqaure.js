@@ -185,7 +185,7 @@ export class BaseSquare {
         }
         this.currentPressureDirect = -1;
         this.group = -1;
-        this.speedY += 1;
+        this.speedY += (1 / this.gravity);
         
         if (Math.floor(getCurDay() + 0.15) != this.lightingSumDay) {
             if (this.lightingSum == null) {
@@ -468,6 +468,7 @@ export class BaseSquare {
                     finalXPos = this.posX + jSignedMinusOne;
                     this.speedX = 0;
                     this.speedY = 0;
+                    this.offsetY = 0;
                     bonked = true;
                 }
                 if (bonked)
@@ -481,7 +482,10 @@ export class BaseSquare {
         }
 
         if (finalXPos != this.posX | this.posY != finalYPos) {
-            this.updatePosition(finalXPos, finalYPos);
+            let finalYPosFloor = Math.floor(finalYPos);
+            let finalYPosFrac = finalYPos - finalYPosFloor;
+            this.offsetY = finalYPosFrac;
+            this.updatePosition(finalXPos, finalYPosFloor);
         }
     }
 

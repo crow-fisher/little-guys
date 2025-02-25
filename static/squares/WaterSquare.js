@@ -16,7 +16,8 @@ class WaterSquare extends BaseSquare {
         this.currentPressureIndirect = -1;
         this.rootable = false;
         this.calculateGroupFlag = true; 
-        
+        this.gravity = 1;
+
         this.color = hexToRgb("#31539D");
 
         this.opacity = 0.8;
