@@ -2,7 +2,9 @@
 
 import { getNeighbors, addSquare, getSquares } from "./_sqOperations.js";
 import {
-    getNextGroupId
+    getNextGroupId,
+    getMixArrLen,
+    getTargetMixIdx
 } from "../globals.js";
 
 import { MAIN_CONTEXT } from "../index.js";
@@ -25,7 +27,6 @@ import { getCurDay, timeScaleFactor } from "../climate/time.js";
 import { processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
 import { loadUI, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE } from "../ui/UIData.js";
-import { getMixArrLen, getTargetMixIdx } from "../ui/WindowManager.js";
 
 export class BaseSquare {
     constructor(posX, posY) {
@@ -342,12 +343,12 @@ export class BaseSquare {
             getBaseSize(),
             getBaseSize()
         );
-        if (this.mixIdx > (getTargetMixIdx() - getMixArrLen())) {
+        if (this.mixIdx >= (getTargetMixIdx() - getMixArrLen())) {
             MAIN_CONTEXT.font = getBaseSize() + "px courier"
             MAIN_CONTEXT.textAlign = 'center';
             MAIN_CONTEXT.textBaseline = 'middle';
-            zoomCanvasSquareText((this.offsetX + this.posX) * getBaseSize(),
-            (this.offsetY + this.posY) * getBaseSize(),
+            zoomCanvasSquareText(((this.offsetX + this.posX) + 0.5)* getBaseSize(),
+            ((this.offsetY + this.posY) + 0.5)* getBaseSize(),
             this.mixIdx % getMixArrLen());
         }
     }

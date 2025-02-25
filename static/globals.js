@@ -8,6 +8,30 @@ export var WATERFLOW_CANDIDATE_SQUARES = new Set();
 export var LIGHT_SOURCES = new Array();
 export var global_theta_base = 0;
 
+let curMixIdx = 0;
+let mixArrLen = 3; 
+let targetMixIdx = mixArrLen;
+let mixArr = new Array(mixArrLen);
+
+export function getCurMixIdx() {
+    return curMixIdx;
+}
+export function setCurMixIdx(inVal) {
+    curMixIdx = inVal;
+}
+export function getTargetMixIdx() {
+    return targetMixIdx;
+}
+export function setTargetMixIdx(inVal) {
+    targetMixIdx = inVal;
+}
+export function getMixArrLen() {
+    return mixArrLen;
+}
+export function getMixArr() {
+    return mixArr;
+}
+
 export function getNextGroupId() {
     NUM_GROUPS += 1;
     return NUM_GROUPS;
