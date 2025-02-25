@@ -11,7 +11,6 @@ export class Radio extends WindowElement {
         this.sizeY = sizeY;
         this.key = key;
         this.choices = choices;
-        this.selected = this.choices.indexOf(loadUI(this.key));
     }
 
     render(startX, startY) {
@@ -21,7 +20,7 @@ export class Radio extends WindowElement {
         MAIN_CONTEXT.textBaseline = 'middle';
         let step = this.sizeX / this.choices.length;
         for (let i = 0; i < this.choices.length; i++) {
-            if (i == this.selected) {
+            if (i == this.choices.indexOf(loadUI(this.key))) {
                 MAIN_CONTEXT.fillStyle = COLOR_VERY_FUCKING_RED;
             } else {
                 MAIN_CONTEXT.fillStyle = COLOR_OTHER_BLUE;
@@ -42,7 +41,6 @@ export class Radio extends WindowElement {
         let step = this.sizeX / this.choices.length;
         for (let i = 0; i < this.choices.length; i++) {
             if (posX > curX && posX < curX + step) {
-                this.selected = i;
                 saveUI(this.key, this.choices[i]);
             }
             curX += step;

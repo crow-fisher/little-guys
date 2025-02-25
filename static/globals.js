@@ -8,9 +8,10 @@ export var WATERFLOW_CANDIDATE_SQUARES = new Set();
 export var LIGHT_SOURCES = new Array();
 export var global_theta_base = 0;
 
-let curMixIdx = 0;
 let mixArrLen = 3; 
-let targetMixIdx = mixArrLen;
+let curMixIdx = Math.floor(Date.now());
+curMixIdx -= curMixIdx % mixArrLen;
+let targetMixIdx = curMixIdx + mixArrLen;
 let mixArr = new Array(mixArrLen);
 
 export function getCurMixIdx() {

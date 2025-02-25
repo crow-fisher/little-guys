@@ -80,7 +80,7 @@ function render() {
     lightingHandler.lightingTick();
 
     renderWaterSquares();
-    if (selectedViewMode == UI_VIEWMODE_NORMAL) {
+    if (selectedViewMode == UI_VIEWMODE_NORMAL && !loadUI(UI_TOPBAR_DESIGNERMODE)) {
         renderClouds();
     }
     renderSolidSquares();

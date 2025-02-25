@@ -4,6 +4,7 @@ import { getCanvasHeight, getCanvasWidth, transformPixelsToCanvasSquares } from 
 import { addTemperature, addWaterSaturationPascalsSqCoords } from "./climate/temperatureHumidity.js";
 import { addWindPressure, removeWindPressure } from "./climate/wind.js";
 import { randNumber } from "./common.js";
+import { removeSquare } from "./globalOperations.js";
 import { getOrganismSquaresAtSquare } from "./lifeSquares/_lsOperations.js";
 import { triggerEarlySquareScheduler } from "./main.js";
 import { getLastMoveOffset, getLeftMouseUpEvent, isLeftMouseClicked, isMiddleMouseClicked, isRightMouseClicked } from "./mouse.js";
@@ -71,7 +72,8 @@ export function addSquareByName(posX, posY, name) {
             square = addSquareOverride(new RockSquare(posX, posY));
             break;
         case "soil":
-            square = addSquareOverride(new SoilSquare(posX, posY));
+            getSquares(posX, posY).filter((sq) => sq.proto == "SoilSquare").forEach(removeSquare);
+            square = addSquare(new SoilSquare(posX, posY));
             break;
         case "water":
             square = addSquare(new WaterSquare(posX, posY));
