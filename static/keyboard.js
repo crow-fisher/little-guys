@@ -2,8 +2,22 @@ import { doZoom, resetZoom } from "./canvas.js";
 import { getGlobalThetaBase, setGlobalThetaBase } from "./globals.js";
 import { loadUI, saveUI, UI_BB_EYEDROPPER, UI_BB_MIXER, UI_BB_MODE, UI_MODE_ROCK, UI_MODE_SOIL, UI_SM_BB, UI_TOPBAR_SM } from "./ui/UIData.js";
 
+export const KEY_CONTROL = "Control";
+export const KEY_SHIFT = "Shift";
+
+let keyPressMap = {};
+
+export function isKeyPressed(keyName) {
+    if (keyName in keyPressMap) {
+        return keyPressMap[keyName];
+    }
+    return false;
+}
+
 export function keydown(e) {
     e.preventDefault();
+    keyPressMap[e.key] = true;
+
     if (e.key == "s") {
         doZoom(-0.1);
     }
@@ -41,4 +55,7 @@ export function keydown(e) {
 }
 
 export function keyup(e) {
+    if (e.key in keyPressMap) {
+        keyPressMap[e.key] = false;
+    }
 }

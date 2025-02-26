@@ -9,6 +9,9 @@ import { Text } from "../elements/Text.js";
 import { Toggle } from "../elements/Toggle.js";
 import { loadUI, saveUI, UI_BB_EYEDROPPER, UI_BB_MIXER, UI_BB_MODE, UI_BB_SIZE, UI_BB_STRENGTH, UI_MODE_ROCK, UI_MODE_SOIL, UI_ROCK_COMPOSITION, UI_SOIL_COMPOSITION } from "../UIData.js";
 
+export const BB_SIZE_MIN = 1;
+export const BB_SIZE_MAX = 14;
+
 export class BlockBuildingComponent extends Component {
     constructor(posX, posY, padding, dir, key) {
         super(posX, posY, padding, dir, key);
@@ -35,7 +38,7 @@ export class BlockBuildingComponent extends Component {
         strengthSizeContainer.addElement(sizeContainer);
 
         sizeContainer.addElement(new Text(this.window, halfSizeX, getBaseSize() * 1.5, "size"));
-        sizeContainer.addElement(new Slider(this.window, UI_BB_SIZE, halfSizeX, getBaseSize() * 3, 2, 14));
+        sizeContainer.addElement(new Slider(this.window, UI_BB_SIZE, halfSizeX, getBaseSize() * 3, BB_SIZE_MIN, BB_SIZE_MAX));
 
         let strengthContainer = new Container(this.window, padding, 1);
         strengthSizeContainer.addElement(strengthContainer);

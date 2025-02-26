@@ -11,7 +11,6 @@ export class Slider extends WindowElement {
         this.sizeY = sizeY;
         this.min = min;
         this.max = max;
-        this.cur = loadUI(key);
     }
 
     render(startX, startY) {
@@ -29,7 +28,7 @@ export class Slider extends WindowElement {
         let block_size = this.window.padding;
         MAIN_CONTEXT.fillStyle = COLOR_BLUE;
 
-        var p = (this.cur - this.min) / (this.max - this.min);
+        var p = (loadUI(this.key) - this.min) / (this.max - this.min);
         var x = p1x + p * (p2x - p1x)
         MAIN_CONTEXT.fillRect(x - block_size / 2, py - block_size / 2, block_size, block_size);
         return [this.sizeX, this.sizeY]
@@ -48,8 +47,7 @@ export class Slider extends WindowElement {
         let min = this.window.padding / 2;
         let max = this.sizeX - this.window.padding / 2;
         let p = (posX - min) / (max - min);
-        this.cur = this.min + p * (this.max - this.min);
-        saveUI(this.key, this.cur);
+        saveUI(this.key, this.min + p * (this.max - this.min));
     }
 
 }
