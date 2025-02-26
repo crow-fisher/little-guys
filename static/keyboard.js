@@ -10,10 +10,10 @@ export function keydown(e) {
     if (e.key == "x") {
         doZoom(0.1);
     }
-    if (e.key == "z") {
+    if (e.key == "a") {
         setGlobalThetaBase(getGlobalThetaBase() + 0.1);
     }
-    if (e.key == "c") {
+    if (e.key == "d") {
         setGlobalThetaBase(getGlobalThetaBase() - 0.1);
     }
 
