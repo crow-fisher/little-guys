@@ -272,7 +272,8 @@ export class SoilSquare extends BaseSquare {
 
         let sandMult = 1 + Math.max(0, this.sand - 0.9) * 40;
         baseRet *= sandMult;
-        baseRet = Math.max(1, baseRet / getCurTimeScale());
+        baseRet /= Math.min(getCurTimeScale(), 20);
+        baseRet = Math.max(1, baseRet);
         return baseRet;
     }
 

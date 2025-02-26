@@ -3,8 +3,6 @@ import { loadEmptyScene, loadSlot, saveSlot } from "../../saveAndLoad.js";
 import { Component } from "../Component.js";
 import { Container } from "../Container.js";
 import { Button } from "../elements/Button.js";
-import { Toggle } from "../elements/Toggle.js";
-import { UI_NULL, UI_SM_BB, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_SM_SPECIAL, UI_SM_VIEWMODE, UI_SOIL_COMPOSITION } from "../UIData.js";
 
 
 export class MainMenuComponent extends Component {

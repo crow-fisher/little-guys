@@ -17,7 +17,7 @@ import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
-import { loadUI, saveUI, UI_BB_EYEDROPPER, UI_BB_MIXER, UI_BB_MODE, UI_BB_SIZE, UI_BB_STRENGTH, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_TEMPERATURE, UI_GODMODE_WIND, UI_MODE_ROCK, UI_MODE_SOIL, UI_ORGANISM_SELECT, UI_SM_BB, UI_SM_GODMODE, UI_SM_ORGANISM, UI_SM_SPECIAL, UI_SM_VIEWMODE, UI_SPECIAL_AQUIFER, UI_SPECIAL_MIX, UI_SPECIAL_SELECT, UI_SPECIAL_SURFACE, UI_SPECIAL_WATER, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE } from "./ui/UIData.js";
+import { loadUI, saveUI, UI_BB_EYEDROPPER, UI_BB_MIXER, UI_BB_MODE, UI_BB_SIZE, UI_BB_STRENGTH, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_TEMPERATURE, UI_GODMODE_WIND, UI_MODE_ROCK, UI_MODE_SOIL, UI_ORGANISM_SELECT, UI_SM_BB, UI_SM_GODMODE, UI_SM_ORGANISM, UI_SM_SPECIAL, UI_SPECIAL_AQUIFER, UI_SPECIAL_MIX, UI_SPECIAL_SELECT, UI_SPECIAL_SURFACE, UI_SPECIAL_WATER, UI_TOPBAR_VIEWMODE, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE } from "./ui/UIData.js";
 import { eyedropperBlockClick, eyedropperBlockHover, isWindowHovered, mixerBlockClick } from "./ui/WindowManager.js";
 var prevManipulationOffset;
 
@@ -215,8 +215,6 @@ export function doClickAdd() {
                     } else if (mode == UI_SPECIAL_AQUIFER) {
                         addSquareByName(px, py, "aquifer")
                     } else if (mode == UI_SPECIAL_SURFACE) {
-                        saveUI(UI_SM_VIEWMODE, true);
-                        saveUI(UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE);
                         doBrushFunc(px, py, (x, y) => getSquares(x, y)
                             .filter((sq) => sq.solid && sq.collision)
                             .forEach((sq) => sq.surface = !isRightMouseClicked()));

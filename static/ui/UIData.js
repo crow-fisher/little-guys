@@ -19,7 +19,6 @@ export const UI_SM_BB = "UI_SM_BB";
 export const UI_SM_LIGHTING = "UI_SM_LIGHTING";
 export const UI_SM_SPECIAL = "UI_SM_SPECIAL";
 export const UI_SM_ORGANISM = "UI_SM_ORGANISM";
-export const UI_SM_VIEWMODE = "UI_SM_VIEWMODE";
 export const UI_SM_GODMODE = "UI_SM_GODMODE";
 export const UI_SM_CLIMATE = "UI_SM_CLIMATE";
 

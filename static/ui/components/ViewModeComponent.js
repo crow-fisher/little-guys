@@ -4,7 +4,7 @@ import { Container } from "../Container.js";
 import { RowedRadio } from "../elements/RowedRadio.js";
 import { Text } from "../elements/Text.js";
 import {
-    loadUI, UI_VIEWMODE_NORMAL,
+    UI_VIEWMODE_NORMAL,
     UI_VIEWMODE_LIGHTIHNG,
     UI_VIEWMODE_NITROGEN,
     UI_VIEWMODE_PHOSPHORUS,
@@ -12,9 +12,7 @@ import {
     UI_VIEWMODE_TEMPERATURE,
     UI_VIEWMODE_MOISTURE,
     UI_VIEWMODE_SURFACE,
-    UI_VIEWMODE_ORGANISMS, UI_SPECIAL_SELECT, UI_NULL,
-    UI_SM_VIEWMODE,
-    UI_VIEWMODE_SELECT
+    UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT
 } from "../UIData.js";
 export class ViewModeComponent extends Component {
     constructor(posX, posY, padding, dir, key) {
