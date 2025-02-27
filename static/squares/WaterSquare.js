@@ -144,8 +144,8 @@ class WaterSquare extends BaseSquare {
             .filter((sq) => sq.proto == this.proto)
             .filter((sq) => sq.posY < this.posY)
             .forEach((sq) => {
-                var start = this.blockHealth;
-                this.blockHealth = Math.min(1, this.blockHealth + sq.blockHealth / 2);
+                let start = this.blockHealth;
+                this.blockHealth = Math.min(this.blockHealthMax, this.blockHealth + sq.blockHealth / 2);
                 sq.blockHealth -= this.blockHealth - start;
             });
         }

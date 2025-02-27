@@ -244,8 +244,9 @@ export class SoilSquare extends BaseSquare {
         .filter((sq) => sq.currentPressureDirect == 0)
         .forEach((sq) => {
             let outflowWaterAmount = (this.waterContainment - this.getInverseMatricPressure(-2)) / this.getWaterflowRate();
-            sq.blockHealth += outflowWaterAmount;
-            this.waterContainment -= outflowWaterAmount;
+            let start = sq.blockHealth;
+            sq.blockHealth = Math.min(1, sq.blockHealth + outflowWaterAmount);
+            this.waterContainment -= sq.blockHealth - start;
         });
     }
 
