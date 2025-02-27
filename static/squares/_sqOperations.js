@@ -78,7 +78,7 @@ function getSqIterationOrder() {
             squareOrder.push(...getSquares(rootKeys[i], subKeys[j]));
         }
     }
-    let cmp = (sq) => (frameOrder[sq.posX] + sq.posY * getCanvasSquaresX())
+    let cmp = (sq) => ((sq.solid ? frameOrder[sq.posX] : sq.posX) + sq.posY * getCanvasSquaresX())
     squareOrder.sort((b, a) => cmp(a) - cmp(b));
     // squareOrder.sort((b, a) => (a.posX + a.posY * getCanvasSquaresX()) - (b.posX + b.posY * getCanvasSquaresX()));
 
