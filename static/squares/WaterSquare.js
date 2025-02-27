@@ -142,7 +142,7 @@ class WaterSquare extends BaseSquare {
         if (this.blockHealth < this.blockHealthMax) {
             getNeighbors(this.posX, this.posY)
             .filter((sq) => sq.proto == this.proto)
-            .filter((sq) => sq.posY < this.posY)
+            .filter((sq) => (sq.posY < this.posY || (sq.posY == this.posY && Math.random() > 0.5))) 
             .forEach((sq) => {
                 let start = this.blockHealth;
                 this.blockHealth = Math.min(this.blockHealthMax, this.blockHealth + sq.blockHealth / 2);

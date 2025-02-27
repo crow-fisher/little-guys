@@ -335,7 +335,7 @@ export class BaseSquare {
         var outColor = { r: 0, g: 0, b: 0 }
         var lightingColor = this.processLighting(); 
         var outColor = {r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255};
-        var outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), this.opacity);
+        var outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), this.opacity * (this.blockHealth ** 0.2));
         MAIN_CONTEXT.fillStyle = outRgba;
         zoomCanvasFillRect(
             (this.offsetX + this.posX) * getBaseSize(),
