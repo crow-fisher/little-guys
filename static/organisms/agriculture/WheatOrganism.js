@@ -27,7 +27,6 @@ export class WheatOrganism extends BaseOrganism {
         this.maxLeafLength = 8;
 
         this.curNumStems = 0;
-        this.curNumLeaves = 0;
         this.curLeafLength = 0;
 
         this.targetNumStems = 1;
@@ -92,7 +91,6 @@ export class WheatOrganism extends BaseOrganism {
             },
             null
         ))
-        this.curNumLeaves += 1;
         this.growthPlans.push(growthPlan);
         this.curLeafTheta += randRange(Math.PI / 2, Math.PI);
     }
@@ -117,7 +115,11 @@ export class WheatOrganism extends BaseOrganism {
         let stem = this.stems
             .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .filter((stem) => stem.growthPlan.steps.length < this.targetStemLength).at(0);
-        let startNode = stem.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_NODE)
+        let startNode = stem.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_NODE);
+        if (startNode == null) {
+            this.growthPlans = Array.from(this.growthPlans.filter((gp) => gp != stem.growthPlan));
+            return;
+        }
         stem.growthPlan.steps.push(new GrowthPlanStep(
             stem.growthPlan,
             0,
@@ -136,7 +138,12 @@ export class WheatOrganism extends BaseOrganism {
             .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .filter((leaf) => leaf.growthPlan.steps.length < this.targetLeafLength)
             .forEach((leaf) => {
-                let startNode = leaf.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_LEAF)
+                let startNode = leaf.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_LEAF);
+                if (startNode == null) {
+                    this.growthPlans = Array.from(this.growthPlans.filter((gp) => gp != leaf.growthPlan));
+                    return;
+                }
+
                 for (let i = 0; i < this.targetLeafLength - leaf.growthPlan.steps.length; i++) {
                     leaf.growthPlan.steps.push(new GrowthPlanStep(
                         leaf.growthPlan,
@@ -166,7 +173,7 @@ export class WheatOrganism extends BaseOrganism {
             return;
         }
 
-        if (this.curNumStems == this.stems.length && this.curNumStems < this.targetNumStems) {
+        if (this.stems.length < this.targetNumStems) {
             this.adultGrowStem();
             return;
         }
@@ -178,7 +185,7 @@ export class WheatOrganism extends BaseOrganism {
             return;
         }
 
-        if (this.curNumLeaves == this.leaves.length && this.curNumLeaves < this.targetNumLeaves) {
+        if (this.leaves.length < this.targetNumLeaves) {
             this.adultGrowLeaf();
             return;
         }

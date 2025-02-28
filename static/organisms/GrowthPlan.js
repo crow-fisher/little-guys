@@ -78,7 +78,7 @@ export class GrowthPlanStep {
             this.growthPlan.executePostConstruct();
             this.growthPlan.component.addLifeSquare(newLifeSquare);
         } else {
-            this.completed = true;
+            this.growthPlan.steps = Array.from(this.growthPlan.steps.filter((step) => step != this));
         }
         if (this.otherAction != null) {
             this.otherAction();

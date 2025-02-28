@@ -470,6 +470,19 @@ export class BaseSquare {
                     this.speedY = 0;
                     this.offsetY = 0;
                     bonked = true;
+
+                    if (!this.solid) {
+                        if (getSquares(this.posX + jSigned, this.posY + i)
+                            .filter((sq) => sq.proto == this.proto)
+                            .filter((sq) => sq.blockHealth + this.blockHealth < sq.blockHealthMax)
+                            .some((sq) => {
+                                sq.blockHealth = sq.blockHealth + this.blockHealth;
+                                this.destroy();
+                                return true;
+                            })) {
+                                return;
+                            }
+                    }
                 }
                 if (bonked)
                     break;
