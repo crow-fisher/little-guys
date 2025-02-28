@@ -1,6 +1,6 @@
 import { randNumber, randRange } from "../../common.js";
 import { GenericParameterizedRootSquare } from "../../lifeSquares/parameterized/GenericParameterizedRootSquare.js";
-import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_TRUNK, TYPE_LEAF, TYPE_STEM, TYPE_TRUNK } from "../Stages.js";
+import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_FLOWER, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_TRUNK, TYPE_FLOWER, TYPE_LEAF, TYPE_STEM, TYPE_TRUNK } from "../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { WheatGreenSquare } from "../../lifeSquares/parameterized/agriculture/grasses/WheatGreenSquare.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
@@ -19,20 +19,20 @@ export class WheatOrganism extends BaseOrganism {
 
         this.stems = [];
         this.leaves = [];
+        this.flower = null;
 
         this.curLeafTheta = 0;
 
         this.maxNumNodes = 7;
         this.maxStemLength = 4;
         this.maxLeafLength = 8;
-
-        this.curNumStems = 0;
-        this.curLeafLength = 0;
+        this.maxFlowerLength = 6;
 
         this.targetNumStems = 1;
         this.targetNumLeaves = 1;
         this.targetLeafLength = 1;
         this.targetStemLength = 1;
+        this.targetFlowerLength = this.maxFlowerLength;
     }
 
     growStem(parent, startNode, theta) {
@@ -61,7 +61,6 @@ export class WheatOrganism extends BaseOrganism {
             },
             null
         ))
-        this.curNumStems += 1;
         this.growthPlans.push(growthPlan);
     }
 
@@ -118,6 +117,7 @@ export class WheatOrganism extends BaseOrganism {
         let startNode = stem.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_NODE);
         if (startNode == null) {
             this.growthPlans = Array.from(this.growthPlans.filter((gp) => gp != stem.growthPlan));
+            this.stems = Array.from(this.stems.filter((st) => this.originGrowth.getChildFromPath(st) != stem));
             return;
         }
         stem.growthPlan.steps.push(new GrowthPlanStep(
@@ -141,6 +141,7 @@ export class WheatOrganism extends BaseOrganism {
                 let startNode = leaf.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_LEAF);
                 if (startNode == null) {
                     this.growthPlans = Array.from(this.growthPlans.filter((gp) => gp != leaf.growthPlan));
+                    this.leaves = Array.from(this.leaves.filter((le) => this.originGrowth.getChildFromPath(le) != leaf));
                     return;
                 }
 
@@ -161,7 +162,58 @@ export class WheatOrganism extends BaseOrganism {
             })
     }
 
-    growFlower() {}
+    growFlower() {
+        let parentPath = this.stems[this.stems.length - 1];
+        let parent = this.originGrowth.getChildFromPath(parentPath);
+        let startNode = parent.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_NODE);
+        let theta = 0;
+
+        var growthPlan = new GrowthPlan(
+            startNode.posX, startNode.posY, 
+            false, STAGE_ADULT, 
+            theta, 0, 0, 0, 
+            randRange(0, 0.05), TYPE_FLOWER, 10);
+
+        growthPlan.postConstruct = () => {
+            parent.addChild(growthPlan.component);
+            this.flower = this.originGrowth.getChildPath(growthPlan.component);
+        };
+        growthPlan.component._getWilt = (val) => Math.sin(val) / 2;
+        growthPlan.steps.push(new GrowthPlanStep(
+            growthPlan,
+            0,
+            this.grassGrowTimeInDays,
+            () => {
+                var node = this.growPlantSquare(startNode, 0,growthPlan.steps.length);
+                node.subtype = SUBTYPE_NODE;
+                return node;
+            },
+            null
+        ))
+        this.growthPlans.push(growthPlan);
+    }
+
+    lengthenFlower() {
+        let flowerComponent = this.originGrowth.getChildFromPath(this.flower);
+        let startNode = flowerComponent.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_NODE);
+        if (startNode == null) {
+            this.growthPlans = Array.from(this.growthPlans.filter((gp) => gp != flowerComponent.growthPlan));
+            this.flower = null;
+            return;
+        }
+        flowerComponent.growthPlan.steps.push(new GrowthPlanStep(
+            flowerComponent.growthPlan,
+            0,
+            this.grassGrowTimeInDays,
+            () => {
+                var flower = this.growPlantSquare(startNode, 0, 0);
+                flower.subtype = SUBTYPE_FLOWER;
+                return flower;
+            },
+            null
+        ))
+        flowerComponent.growthPlan.completed = false;
+    }
 
     juvenileGrowthPlanning() {
         this.growStem(this.originGrowth, this.originGrowth.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_ROOTNODE), randRange(0, Math.PI * 2));
@@ -197,15 +249,6 @@ export class WheatOrganism extends BaseOrganism {
             return;
         }
 
-        // if (
-        //     this.nitrogen > this.growthNitrogen && 
-        //     this.phosphorus > this.growthPhosphorus && 
-        //     this.lightlevel > this.growthLightLevel) 
-        // {
-        //     this.growFlower();
-        //     return;
-        // }
-
         if (this.targetNumStems < this.maxNumNodes) {
             this.targetNumStems += 1;
             this.targetNumLeaves += 1;
@@ -217,7 +260,25 @@ export class WheatOrganism extends BaseOrganism {
         }
         if (this.targetStemLength < this.maxStemLength && this.targetLeafLength == this.maxLeafLength) {
             this.targetStemLength += 1;
+            return;
         }
+        
+        if (
+            this.flower == null && 
+            this.nitrogen > this.growthNitrogen && 
+            this.phosphorus > this.growthPhosphorus && 
+            this.lightlevel > this.growthLightLevel) 
+        {
+            this.growFlower();
+            return;
+        }
+
+        let flowerComponent = this.originGrowth.getChildFromPath(this.flower);
+        if (flowerComponent.growthPlan.steps.length < this.targetFlowerLength) {
+            this.lengthenFlower();
+            return;
+        }
+
     }
 
     planGrowth() {

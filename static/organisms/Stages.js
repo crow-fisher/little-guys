@@ -10,6 +10,7 @@ export const TYPE_HEART = "TYPE_HEART";
 export const TYPE_STEM = "TYPE_STEM";
 export const TYPE_TRUNK = "TYPE_TRUNK";
 export const TYPE_LEAF = "TYPE_LEAF";
+export const TYPE_FLOWER = "TYPE_FLOWER";
 
 export const SUBTYPE_SPROUT = "SUBTYPE_SPROUT";
 export const SUBTYPE_ROOTNODE = "SUBTYPE_ROOTNODE";
@@ -19,6 +20,7 @@ export const SUBTYPE_STEM = "SUBTYPE_STEM";
 export const SUBTYPE_TRUNK = "SUBTYPE_TRUNK";
 export const SUBTYPE_LEAFSTEM = "SUBTYPE_LEAFSTEM";
 export const SUBTYPE_LEAF = "SUBTYPE_LEAF";
+export const SUBTYPE_FLOWER = "SUBTYPE_FLOWER";
 export const SUBTYPE_DEAD = "SUBTYPE_DEAD";
 
 export const STATE_HEALTHY = "STATE_HEALTHY";
