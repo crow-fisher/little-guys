@@ -34,7 +34,6 @@ export function scheduler_main() {
     doClickAdd();
     doClickAddEyedropperMixer();
     resetWindowHovered(); 
-
     if (loadUI(UI_TOPBAR_DESIGNERMODE)) {
         squareTickSimplePhysics();
     } else {
@@ -54,7 +53,6 @@ export function scheduler_main() {
 
     render();
     renderWindows();
-
     updateWindows();
     if (!isLeftMouseClicked()) 
         executeFunctionQueue();

@@ -28,4 +28,5 @@ window.onload = function () {
     document.addEventListener('keyup', keyup);
     loadEmptyScene();
 }
-scheduler_main();
+
+setTimeout(scheduler_main, 0);
