@@ -1,5 +1,9 @@
 import { BaseLifeSquare } from "../../../BaseLifeSquare.js";
 import { STATE_DEAD, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE } from "../../../../organisms/Stages.js";
+import { addNewOrganism } from "../../../../organisms/_orgOperations.js";
+import { WheatSeedOrganism } from "../../../../organisms/agriculture/WheatOrganism.js";
+import { addSquare } from "../../../../squares/_sqOperations.js";
+import { SeedSquare } from "../../../../squares/SeedSquare.js";
 
 export class WheatGreenSquare extends BaseLifeSquare {
     constructor(square, organism) {
@@ -43,5 +47,23 @@ export class WheatGreenSquare extends BaseLifeSquare {
                     console.warn("Subtype doesn't have a display configuration!")
             }
         }
+    }
+
+    doGroundDecay() {
+        if (this.subtype == SUBTYPE_FLOWER || this.subtype == SUBTYPE_FLOWERNODE) {
+            let groundSquare = this.groundTouchSquare();
+            let offsetY = -1;
+            if (groundSquare.currentPressureDirect > 0) {
+                offsetY -= (groundSquare.currentPressureDirect + 1);
+            }
+            var sq = addSquare(new SeedSquare(groundSquare.posX, groundSquare.posY - 1));
+            if (sq) {
+                var orgAdded = addNewOrganism(new WheatSeedOrganism(sq));
+                if (!orgAdded) {
+                    sq.destroy();
+                }
+            }
+        }
+
     }
 }

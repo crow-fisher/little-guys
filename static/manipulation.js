@@ -72,7 +72,7 @@ export function addSquareByName(posX, posY, name) {
             square = addSquareOverride(new RockSquare(posX, posY));
             break;
         case "soil":
-            getSquares(posX, posY).filter((sq) => sq.proto == "SoilSquare").forEach(removeSquare);
+            getSquares(posX, posY).filter((sq) => sq.proto == "SoilSquare" || sq.proto == "WaterSquare").forEach(removeSquare);
             square = addSquare(new SoilSquare(posX, posY));
             break;
         case "water":

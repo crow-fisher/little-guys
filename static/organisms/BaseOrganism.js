@@ -453,11 +453,11 @@ class BaseOrganism {
             this._lifeSquaresCount = this.lifeSquares.length;
         }
         this.lifeSquares.filter((lsq) => lsq.type == "root").forEach((lsq) => lsq.doGroundDecay());
-        this.originGrowth.decay(Math.PI);
+        this.originGrowth.decay(Math.PI * 2 * 100);
         if (this.lifeSquares.length <= 2) {
             this.destroy();
         }
-        if (this.originGrowth.baseDeflection > Math.PI * 1.5) {
+        if (this.originGrowth.baseDeflection > Math.PI / 2) {
             this.destroy();
         }
 
@@ -475,9 +475,9 @@ class BaseOrganism {
     doGodModePlantGrowth() {
         if (loadUI(UI_GODMODE_FASTPLANT)) {
             this.executeGrowthPlans();
-            this.nitrogen += this.growthNitrogen / 100;
-            this.phosphorus += this.growthPhosphorus / 100;
-            this.lightlevel += this.growthLightLevel / 100;
+            this.nitrogen += this.growthNitrogen / 10;
+            this.phosphorus += this.growthPhosphorus / 10;
+            this.lightlevel += this.growthLightLevel / 10;
         }
     }
 
