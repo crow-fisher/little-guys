@@ -1,6 +1,6 @@
 import { removeOrganism } from "./_orgOperations.js";
 import { randNumber } from "../common.js";
-import { getCurDay, getDt } from "../climate/time.js";
+import { getCurDay, getCurTimeScale, getDt } from "../climate/time.js";
 import { GrowthPlan, GrowthPlanStep } from "./GrowthPlan.js";
 import { STAGE_DEAD, STAGE_JUVENILE, STAGE_SPROUT, STATE_DEAD, STATE_HEALTHY, STATE_THIRSTY, SUBTYPE_ROOTNODE, TYPE_HEART } from "./Stages.js";
 import { addSquare, getNeighbors } from "../squares/_sqOperations.js";
@@ -51,8 +51,9 @@ class BaseOrganism {
         this.growthNitrogen = 50;
         this.growthPhosphorus = 25;
         this.growthLightLevel = 0.8; // desire mostly full sun 
-        this.growthCycleMaturityLength = 2;
-        this.growthCycleLength = 24; // in days
+        this.growthCycleMaturityLength = 0.8;
+        this.growthCycleLength = 5 + Math.random(); // in days
+        this.numGrowthCycles = 1;
 
         this.applyWind = false;
         this.springCoef = 4;
@@ -453,7 +454,7 @@ class BaseOrganism {
             this._lifeSquaresCount = this.lifeSquares.length;
         }
         this.lifeSquares.filter((lsq) => lsq.type == "root").forEach((lsq) => lsq.doGroundDecay());
-        this.originGrowth.decay(Math.PI * 2 * 100);
+        this.originGrowth.decay(Math.PI);
         if (this.lifeSquares.length <= 2) {
             this.destroy();
         }
@@ -481,6 +482,13 @@ class BaseOrganism {
         }
     }
 
+    hasPlantLivedTooLong() {
+        let max = this.spawnTime + this.growthCycleLength * this.numGrowthCycles;
+        if (getCurDay() > max) {
+            this.stage = STAGE_DEAD;
+        }
+    }
+
     // ** OUTER TICK METHOD INVOKED EACH FRAME
     // -- these methods are universal to every organism
     process() {
@@ -491,6 +499,7 @@ class BaseOrganism {
         this.planGrowth();
         this.updateDeflectionState();
         this.applyDeflectionStateToSquares();
+        this.hasPlantLivedTooLong();
         this.doDecay();
         this.lifeSquares = this.lifeSquares.sort((a, b) => a.distToFront - b.distToFront);
 

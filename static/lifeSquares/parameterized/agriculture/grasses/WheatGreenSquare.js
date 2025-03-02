@@ -52,12 +52,13 @@ export class WheatGreenSquare extends BaseLifeSquare {
     doGroundDecay() {
         if (this.subtype == SUBTYPE_FLOWER || this.subtype == SUBTYPE_FLOWERNODE) {
             let groundSquare = this.groundTouchSquare();
-            let offsetY = -1;
+            let offsetY = 1;
             if (groundSquare.currentPressureDirect > 0) {
-                offsetY -= (groundSquare.currentPressureDirect + 1);
+                offsetY += (groundSquare.currentPressureDirect + 1);
             }
-            var sq = addSquare(new SeedSquare(groundSquare.posX, groundSquare.posY - 1));
+            var sq = addSquare(new SeedSquare(groundSquare.posX, groundSquare.posY - offsetY));
             if (sq) {
+                sq.opacity = 0;
                 var orgAdded = addNewOrganism(new WheatSeedOrganism(sq));
                 if (!orgAdded) {
                     sq.destroy();

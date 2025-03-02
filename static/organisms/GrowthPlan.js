@@ -458,7 +458,7 @@ export class GrowthComponent {
     }
 
     decay(amount) {
-        amount *= getDt();
+        amount *= Math.min(0.01, getDt());
         var livingLifeSquares = Array.from(this.lifeSquares
             .filter((lsq) => lsq.state == STATE_HEALTHY || lsq.state == STATE_THIRSTY));
         if (livingLifeSquares.length > 0) {
