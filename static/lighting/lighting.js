@@ -35,13 +35,16 @@ export function lightingRegisterLifeSquare(lifeSquare) {
 }
 
 export function createSunLightGroup() {
+    let numNodes = 1;
+    let maxNumNodes = 10;
+
     let sunLightGroup = new MovingLinearLightGroup(
         getCanvasSquaresX() / 2,
         -1,
         getCanvasSquaresX() * 0.5,
-        7,
+        numNodes,
         getCurrentLightColorTemperature,
-        () => loadUI(UI_LIGHTING_SUN) * getDaylightStrength(),
+        () => (maxNumNodes / numNodes) * loadUI(UI_LIGHTING_SUN) * getDaylightStrength(),
         () => Math.max(0, (2 * (getCurDay() % 1) - 0.5))
     );
     return sunLightGroup;
@@ -128,10 +131,11 @@ export class MovingLinearLightGroup {
         if (this.idxCompletionMap[idx] === false) {
             return false;
         }
+
+        iterateOnSquares((sq) => sq.nextlighting = []);
         console.log("started root raycasting for idx: ", idx)
         this.idxCompletionMap[idx] = false;
         let completionMap = new Map();
-        iterateOnSquares((sq) => sq.nextLighting[idx] = null);
         for (let i = 0; i < this.lightSources.length; i++) {
             completionMap[i] = false;
             this.lightSources[i].doRayCasting(idx, i, () => completionMap[i] = true);
@@ -140,7 +144,7 @@ export class MovingLinearLightGroup {
             if (Object.values(completionMap).every((val) => val)) {
                 iterateOnSquares((sq) => {
                     if (sq.nextLighting[idx] != null) {
-                        sq.lighting[idx] = sq.nextLighting[idx]
+                        sq.lighting[idx] = sq.nextLighting[idx];
                     }
                 });
                 console.log("All entries completed; copied nextLighting to Lighting for idx ", idx);
@@ -173,7 +177,7 @@ export class LightSource {
         this.frameTerrainSquares = null;
         this.windSquareLocations = new Map();
         this.windSquareBrigthnessMults = new Map();
-        
+
         this.num_tasks = 10;
         this.num_completed = {};
     }
@@ -309,11 +313,11 @@ export class LightSource {
                 }
                 list[loc[0]][loc[1]].forEach((obj) => {
                     let curBrightnessCopy = curBrightness;
-                    let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(theta)() * curBrightnessCopy * (Math.max(0, MAX_BRIGHTNESS * this.brightnessFunc())) / MAX_BRIGHTNESS;
-                    if (obj.nextLighting[idx] == null) {
-                        obj.nextLighting[idx] = [[pointLightSourceFunc], this.colorFunc];
+                    let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(theta)() * curBrightnessCopy * this.brightnessFunc();
+                    if (obj.lighting[idx] == null) {
+                        obj.lighting[idx] = [[pointLightSourceFunc], this.colorFunc];
                     } else {
-                        obj.nextLighting[idx][0].push(pointLightSourceFunc);
+                        obj.lighting[idx][0].push(pointLightSourceFunc);
                     }
                     curBrightness *= loadUI(UI_LIGHTING_DECAY) * (1 - obj.getLightFilterRate());
                 });
@@ -322,11 +326,11 @@ export class LightSource {
     }
     doRayCasting(idx, jobIdx, onComplete) {
         console.log("Started doRayCasting submethod for idx ", idx, ", jobIdx ", jobIdx);
-        if (this.num_completed[idx] == null) { 
+        if (this.num_completed[idx] == null) {
             this.num_completed[idx] = new Map();
         }
         this.num_completed[idx][jobIdx] = 0;
-        
+
         let thetaStep = (this.maxTheta - this.minTheta) / this.numRays;
         let a0 = [];
 

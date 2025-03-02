@@ -8,7 +8,7 @@ export class LightingHandler {
         this.nextLightingUpdate = 0;
         this.lightSources = [];
         this.lightSources.push(createSunLightGroup());
-        this.lightSources.push(createMoonLightGroup());
+        // this.lightSources.push(createMoonLightGroup());
     }
 
     setNextLightingUpdateTime(newTime) {
