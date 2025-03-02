@@ -108,8 +108,8 @@ export class BaseSquare {
         this.initTemperature();
     };
 
-    initLightingFromNeighborBelow() {
-        let neighborBelow = null;
+    initLightingFromNeighbors() {
+        let neighborBelow = getNeighbors(this.posX, this.posY).find((sq) => sq.lighting.length > 0);
         let curY = this.posY + 1;
         while (neighborBelow == null) {
             neighborBelow = getSquares(this.posX, curY).find((sq) => sq.lighting.length > 0);
@@ -323,7 +323,7 @@ export class BaseSquare {
 
     processLighting() {
         if (this.lighting.length == 0) {
-            this.initLightingFromNeighborBelow();
+            this.initLightingFromNeighbors();
         }
         let lighting = processLighting(this.lighting);
         this.lightingSum.r += lighting.r; 
@@ -482,7 +482,7 @@ export class BaseSquare {
                     this.offsetY = 0;
                     bonked = true;
                     if (this.lighting.length == 0) {
-                        this.initLightingFromNeighborBelow();
+                        this.initLightingFromNeighbors();
                     }
 
                     if (!this.solid) {

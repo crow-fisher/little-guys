@@ -25,7 +25,7 @@ export class LightingComponent extends Component {
         leftContainer.addElement(new Slider(this.window, UI_LIGHTING_SUN, sizeX,  35, .329 / 4, .329 * 4));
 
         rightContainer.addElement(new Text(this.window, sizeX,  getBaseSize() * 1.5, "moon"));
-        rightContainer.addElement(new Slider(this.window, UI_LIGHTING_MOON, sizeX,  35, .005, .1));
+        rightContainer.addElement(new Slider(this.window, UI_LIGHTING_MOON, sizeX,  35, .005, 1));
 
         leftContainer.addElement(new Text(this.window, sizeX,  getBaseSize() * 1.5, "water"));
         leftContainer.addElement(new Slider(this.window, UI_LIGHTING_WATER, sizeX,  35, 0.01, 200));
