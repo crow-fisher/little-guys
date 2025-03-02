@@ -1,6 +1,6 @@
 import { randNumber, randRange } from "../../common.js";
 import { GenericParameterizedRootSquare } from "../../lifeSquares/parameterized/GenericParameterizedRootSquare.js";
-import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_FLOWER, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_TRUNK, TYPE_FLOWER, TYPE_LEAF, TYPE_STEM, TYPE_TRUNK } from "../Stages.js";
+import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_TRUNK, TYPE_FLOWER, TYPE_LEAF, TYPE_STEM, TYPE_TRUNK } from "../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { WheatGreenSquare } from "../../lifeSquares/parameterized/agriculture/grasses/WheatGreenSquare.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
@@ -71,8 +71,8 @@ export class WheatOrganism extends BaseOrganism {
         var growthPlan = new GrowthPlan(
             startNode.posX, startNode.posY, 
             false, STAGE_ADULT, this.curLeafTheta, 0, 0, 
-            randRange(0.1, 0.3), 
-            randRange(1, 1.3), TYPE_LEAF, 1);
+            randRange(0.5, 0.8), 
+            randRange(.3, .6), TYPE_LEAF, 1);
 
         growthPlan.postConstruct = () => {
             parent.addChild(growthPlan.component);
@@ -166,13 +166,12 @@ export class WheatOrganism extends BaseOrganism {
         let parentPath = this.stems[this.stems.length - 1];
         let parent = this.originGrowth.getChildFromPath(parentPath);
         let startNode = parent.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_NODE);
-        let theta = 0;
 
         var growthPlan = new GrowthPlan(
             startNode.posX, startNode.posY, 
             false, STAGE_ADULT, 
-            theta, 0, 0, 0, 
-            randRange(0, 0.05), TYPE_FLOWER, 10);
+            this.curLeafTheta, 0, 0, .05, 
+            randRange(0.15, 0.25), TYPE_FLOWER, 1);
 
         growthPlan.postConstruct = () => {
             parent.addChild(growthPlan.component);
@@ -185,7 +184,7 @@ export class WheatOrganism extends BaseOrganism {
             this.grassGrowTimeInDays,
             () => {
                 var node = this.growPlantSquare(startNode, 0,growthPlan.steps.length);
-                node.subtype = SUBTYPE_NODE;
+                node.subtype = SUBTYPE_FLOWERNODE;
                 return node;
             },
             null
@@ -195,7 +194,7 @@ export class WheatOrganism extends BaseOrganism {
 
     lengthenFlower() {
         let flowerComponent = this.originGrowth.getChildFromPath(this.flower);
-        let startNode = flowerComponent.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_NODE);
+        let startNode = flowerComponent.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_FLOWERNODE);
         if (startNode == null) {
             this.growthPlans = Array.from(this.growthPlans.filter((gp) => gp != flowerComponent.growthPlan));
             this.flower = null;

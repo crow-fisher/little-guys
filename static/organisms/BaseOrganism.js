@@ -7,7 +7,7 @@ import { addSquare, getNeighbors } from "../squares/_sqOperations.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 import { PlantSquare } from "../squares/PlantSquare.js";
 import { processLighting } from "../lighting/lightingProcessing.js";
-import { loadUI } from "../ui/UIData.js";
+import { loadUI, UI_GODMODE_FASTPLANT } from "../ui/UIData.js";
 
 class BaseOrganism {
     constructor(square) {
@@ -36,7 +36,7 @@ class BaseOrganism {
         this.waterPressureDieThresh = -5;
         this.waterPressureOverwaterThresh = -1.5;
         
-        this.perDayWaterLoss = 0.2;
+        this.perDayWaterLoss = 0.1;
 
         this.rootPower = 2;
 
@@ -325,9 +325,6 @@ class BaseOrganism {
                 this.destroy();
             }
         });
-
-        if (!anyStepFound) {
-        }
     }
 
     growRoot(f) {
@@ -475,12 +472,22 @@ class BaseOrganism {
         removeOrganism(this);
     }
 
+    doGodModePlantGrowth() {
+        if (loadUI(UI_GODMODE_FASTPLANT)) {
+            this.executeGrowthPlans();
+            this.nitrogen += this.growthNitrogen / 100;
+            this.phosphorus += this.growthPhosphorus / 100;
+            this.lightlevel += this.growthLightLevel / 100;
+        }
+    }
+
     // ** OUTER TICK METHOD INVOKED EACH FRAME
     // -- these methods are universal to every organism
     process() {
         this.waterSaturationAndPhTick();
         this.nutrientTick();
         this.doPlantGrowth();
+        this.doGodModePlantGrowth();
         this.planGrowth();
         this.updateDeflectionState();
         this.applyDeflectionStateToSquares();

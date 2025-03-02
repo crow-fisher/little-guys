@@ -1,9 +1,11 @@
 import { getBaseSize } from "../../canvas.js";
 import { Component } from "../Component.js";
 import { Container } from "../Container.js";
+import { Button } from "../elements/Button.js";
 import { RowedRadio } from "../elements/RowedRadio.js";
 import { Slider } from "../elements/Slider.js";
 import { Text } from "../elements/Text.js";
+import { Toggle } from "../elements/Toggle.js";
 import {
     UI_GODMODE_SELECT,
     UI_GODMODE_WIND,
@@ -11,7 +13,10 @@ import {
     UI_GODMODE_MOISTURE,
     UI_GODMODE_KILL,
     UI_BB_SIZE,
-    UI_BB_STRENGTH
+    UI_BB_STRENGTH,
+    saveUI,
+    loadUI,
+    UI_GODMODE_FASTPLANT
 } from "../UIData.js";
 export class GodModeComponent extends Component {
     constructor(posX, posY, padding, dir, key) {
@@ -42,5 +47,8 @@ export class GodModeComponent extends Component {
             UI_GODMODE_MOISTURE,
             UI_GODMODE_KILL
         ]));
+
+        container.addElement(new Toggle(this.window, getBaseSize() * 16, getBaseSize() * 3, UI_GODMODE_FASTPLANT, "fast plant"));
+        
     }
 }

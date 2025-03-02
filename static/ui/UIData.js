@@ -60,6 +60,7 @@ export const UI_GODMODE_WIND = "wind";
 export const UI_GODMODE_TEMPERATURE = "temperature";
 export const UI_GODMODE_MOISTURE = "moisture";
 export const UI_GODMODE_KILL = "kill";
+export const UI_GODMODE_FASTPLANT = "UI_GODMODE_FASTPLANT";
 
 
 export const UI_CLIMATE_SELECT = "UI_CLIMATE_SELECT";
@@ -90,10 +91,7 @@ export const UI_SPEED_7 = "UI_SPEED_7";
 export const UI_SPEED_8 = "UI_SPEED_8";
 export const UI_SPEED_9 = "UI_SPEED_9";
 
-
-
 export const UI_SPEEDS = [UI_SPEED_1, UI_SPEED_2, UI_SPEED_3, UI_SPEED_4, UI_SPEED_5, UI_SPEED_6, UI_SPEED_7, UI_SPEED_8, UI_SPEED_9]
-
 
 export const UI_BOOLEAN = "UI_BOOLEAN";
 
@@ -109,7 +107,7 @@ var UI_DATA = {
     UI_ROCK_COMPOSITION: [40, 40, 20],
     UI_SOIL_VIEWMODE: "🎨",
     UI_SOIL_INITALWATER: -2,
-    UI_LIGHTING_SUN: .329,
+    UI_LIGHTING_SUN: .259,
     UI_LIGHTING_MOON: .05,
     UI_LIGHTING_WATER: 1,
     UI_LIGHTING_ROCK: 1,

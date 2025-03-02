@@ -160,7 +160,7 @@ export function doClickAdd() {
         var offsetX = offsetTransformed[0];
         var offsetY = offsetTransformed[1];
 
-        if (loadUI(UI_BB_EYEDROPPER) || loadUI(UI_BB_MIXER)) {
+        if (loadUI(UI_SM_BB) && (loadUI(UI_BB_EYEDROPPER) || loadUI(UI_BB_MIXER))) {
             return;
         }
 

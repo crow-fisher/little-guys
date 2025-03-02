@@ -97,7 +97,7 @@ class BaseLifeSquare {
     }
 
     getLightFilterRate() {
-        return 0.00015 * loadUI(UI_LIGHTING_PLANT);
+        return 0.00015 * this.width * loadUI(UI_LIGHTING_PLANT);
     }
 
     getLsqRenderSizeMult() {
@@ -164,48 +164,28 @@ class BaseLifeSquare {
         }
         return this.randoms[randIdx];
     }
-
+    
+    calculateWidthXOffset() {
+        return -(0.5 - (this.width / 2));
+    }
     getPosX() {
-        return this.posX - (this.deflectionXOffset + this.xOffset);
+        return this.posX - (this.deflectionXOffset + this.xOffset + this.calculateWidthXOffset());
     }
 
     getPosY() {
         return this.posY - (this.deflectionYOffset + this.yOffset);
     }
 
+    applySubtypeRenderConfig() {
+
+    }
+
     subtypeColorUpdate() {
         if (this.type == "root") {
             return;
         }
-        if (this.state == STATE_DEAD) {
-            this.baseColor = "#70747e";
-            this.darkColor = "#a1816d";
-            this.accentColor = "#33261d";
-        } else if (this.state == STATE_THIRSTY) {
-            this.baseColor = "#6a7831";
-            this.darkColor = "#4a5226";
-            this.accentColor = "#67703f";
-        } else {
-            switch (this.subtype) {
-                case SUBTYPE_FLOWER:
-                    this.baseColor = "#FF0000";
-                    this.darkColor = "#00FF00";
-                    this.accentColor = "#0000FF";
-                    break;
-                case SUBTYPE_TRUNK:
-                case SUBTYPE_SHOOT:
-                case SUBTYPE_SPROUT:
-                case SUBTYPE_STEM:
-                case SUBTYPE_NODE:
-                case SUBTYPE_LEAF:
-                    this.baseColor = "#515c24";
-                    this.darkColor = "#353b1a";
-                    this.accentColor = "#5d6637";
-                    break;
-                default:
-                    console.warn("BIPPITY BOPPITY")
-            }
-        }
+        
+        this.applySubtypeRenderConfig();
         this.activeRenderSubtype = this.subtype;
         this.activeRenderState = this.state;
         this.baseColor_rgb = hexToRgb(this.baseColor);
