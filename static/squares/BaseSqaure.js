@@ -108,6 +108,17 @@ export class BaseSquare {
         this.initTemperature();
     };
 
+    initLightingFromNeighborArr() {
+        var neighbor = getNeighbors(this.posX, this.posY).find((sq) => sq.lighting.length > 0);
+        if (neighbor == null) {
+            return [];
+        };
+        this.lighting = new Array();
+        neighbor.lighting.forEach((light) => {
+            this.lighting.push([Array.from(light[0].map((x) => x)), light[1]])
+        });
+    }
+
     initTemperature() {
         var adjacentWindSquare = getAdjacentWindSquareToRealSquare(this.posX, this.posY);
 
@@ -461,6 +472,9 @@ export class BaseSquare {
                     this.speedY = 0;
                     this.offsetY = 0;
                     bonked = true;
+                    if (this.lighting.length == 0) {
+                        this.initLightingFromNeighborArr();
+                    }
 
                     if (!this.solid) {
                         if (getSquares(this.posX + jSigned, this.posY + i)
