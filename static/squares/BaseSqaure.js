@@ -25,7 +25,7 @@ import { getAdjacentWindSquareToRealSquare, getWindSquareAbove } from "../climat
 import { RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
 import { getCurDay, timeScaleFactor } from "../climate/time.js";
 import { processLighting } from "../lighting/lightingProcessing.js";
-import { getBaseSize, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
+import { getBaseSize, getCanvasSquaresY, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
 import { loadUI, UI_SM_SPECIAL, UI_SPECIAL_SELECT, UI_SPECIAL_SURFACE, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE } from "../ui/UIData.js";
 
 export class BaseSquare {
@@ -108,13 +108,19 @@ export class BaseSquare {
         this.initTemperature();
     };
 
-    initLightingFromNeighborArr() {
-        var neighbor = getNeighbors(this.posX, this.posY).find((sq) => sq.lighting.length > 0);
-        if (neighbor == null) {
-            return [];
-        };
+    initLightingFromNeighborBelow() {
+        let neighborBelow = null;
+        let curY = this.posY + 1;
+        while (neighborBelow == null) {
+            neighborBelow = getSquares(this.posX, curY).find((sq) => sq.lighting.length > 0);
+            curY += 1;
+            if (curY > getCanvasSquaresY()) {
+                this.lighting = [];
+                return;
+            }
+        }
         this.lighting = new Array();
-        neighbor.lighting.forEach((light) => {
+        neighborBelow.lighting.forEach((light) => {
             this.lighting.push([Array.from(light[0].map((x) => x)), light[1]])
         });
     }
@@ -316,6 +322,9 @@ export class BaseSquare {
     }
 
     processLighting() {
+        if (this.lighting.length == 0) {
+            this.initLightingFromNeighborBelow();
+        }
         let lighting = processLighting(this.lighting);
         this.lightingSum.r += lighting.r; 
         this.lightingSum.g += lighting.g; 
@@ -473,7 +482,7 @@ export class BaseSquare {
                     this.offsetY = 0;
                     bonked = true;
                     if (this.lighting.length == 0) {
-                        this.initLightingFromNeighborArr();
+                        this.initLightingFromNeighborBelow();
                     }
 
                     if (!this.solid) {
