@@ -81,8 +81,20 @@ function getSqIterationOrder() {
     let cmp = (sq) => ((sq.solid ? frameOrder[sq.posX] : sq.posX) + sq.posY * getCanvasSquaresX())
     squareOrder.sort((b, a) => cmp(a) - cmp(b));
     // squareOrder.sort((b, a) => (a.posX + a.posY * getCanvasSquaresX()) - (b.posX + b.posY * getCanvasSquaresX()));
-
     return squareOrder;
+}
+
+export function* getAllSquares() {
+    var rootKeys = Object.keys(ALL_SQUARES);
+    for (let i = 0; i < rootKeys.length; i++) {
+        var subKeys = Object.keys(ALL_SQUARES[rootKeys[i]]);
+        for (let j = 0; j < subKeys.length; j++) {
+            let squares = getSquares(rootKeys[i], subKeys[j]);
+            for (let k = 0; k < squares.length; k++) {
+                yield squares[k];
+            }
+        }
+    }
 }
 /**
  * @param {function} func - applies provided function to all squares

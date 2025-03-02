@@ -1,7 +1,7 @@
 import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
 import { createMoonLightGroup, createSunLightGroup, lightingClearLifeSquarePositionMap, lightingRegisterLifeSquare } from "./lighting.js";
 
-export const lighting_retrace_interval = 1000;
+export const lighting_retrace_interval = 1500;
 
 export class LightingHandler {
     constructor() {
@@ -30,7 +30,7 @@ export class LightingHandler {
                 console.log("Invoked raycasting for idx: ", i);
             }
         }
-        this.nextLightingUpdate = Date.now() + lighting_retrace_interval;
+        this.nextLightingUpdate = Date.now() + 100;
         lightingClearLifeSquarePositionMap();
     }
 }

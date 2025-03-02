@@ -1,5 +1,5 @@
 import { LIGHT_SOURCES } from "../globals.js";
-import { getSqIterationOrder, iterateOnSquares } from "../squares/_sqOperations.js";
+import { getAllSquares, getSqIterationOrder, iterateOnSquares } from "../squares/_sqOperations.js";
 import { getCloudColorAtPos } from "../climate/temperatureHumidity.js";
 import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "../climate/time.js";
 import { loadUI, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_SUN } from "../ui/UIData.js";
@@ -31,7 +31,7 @@ export function lightingRegisterLifeSquare(lifeSquare) {
 }
 
 export function createSunLightGroup() {
-    let numNodes = 1;
+    let numNodes = 10;
     let maxNumNodes = 10;
 
     let sunLightGroup = new MovingLinearLightGroup(
@@ -128,7 +128,6 @@ export class MovingLinearLightGroup {
             return false;
         }
 
-        console.log("started root raycasting for idx: ", idx)
         this.idxCompletionMap[idx] = false;
         let completionMap = new Map();
         for (let i = 0; i < this.lightSources.length; i++) {
@@ -137,14 +136,12 @@ export class MovingLinearLightGroup {
         };
         let timeoutFunction = () => {
             if (Object.values(completionMap).every((val) => val)) {
-                console.log("All entries completed", idx);
                 this.idxCompletionMap[idx] = true;
             } else {
-                console.log("completionMap not ready yet for idx ", idx);
-                setTimeout(timeoutFunction, 500);
+                setTimeout(timeoutFunction, 100);
             }
         }
-        setTimeout(timeoutFunction, lighting_retrace_interval);
+        setTimeout(timeoutFunction, 100);
         return true;
     }
 
@@ -256,7 +253,7 @@ export class LightSource {
 
     preprocessTerrainSquares() {
         this.frameTerrainSquares = new Map();
-        getSqIterationOrder()
+        getAllSquares()
             .filter((sq) => sq.visible)
             .filter((sq) => ((this.posX - sq.posX) ** 2 + (this.posY - sq.posY) ** 2) ** 0.5 < this.radius)
             .forEach((sq) => {
@@ -304,20 +301,19 @@ export class LightSource {
                 list[loc[0]][loc[1]].forEach((obj) => {
                     let curBrightnessCopy = curBrightness;
                     let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(theta)() * curBrightnessCopy * this.brightnessFunc();
+                    curBrightness *= loadUI(UI_LIGHTING_DECAY) * (1 - obj.getLightFilterRate());
                     if (obj.lighting[idx] == null) {
                         obj.lighting[idx] = [[pointLightSourceFunc], this.colorFunc];
-                    } else if (obj.lighting[idx][0].length < jobIdx) {
-                        obj.lighting[idx][0].push(pointLightSourceFunc)
-                    } else {
+                    } else if (obj.lighting[idx][0].length >= jobIdx) {
                         obj.lighting[idx][0][jobIdx] = pointLightSourceFunc;
+                    } else {
+                        obj.lighting[idx][0].push(pointLightSourceFunc);
                     }
-                    curBrightness *= loadUI(UI_LIGHTING_DECAY) * (1 - obj.getLightFilterRate());
                 });
             })
         });
     }
     doRayCasting(idx, jobIdx, onComplete) {
-        console.log("Started doRayCasting submethod for idx ", idx, ", jobIdx ", jobIdx);
         if (this.num_completed[idx] == null) {
             this.num_completed[idx] = new Map();
         }
@@ -336,15 +332,12 @@ export class LightSource {
         for (let i = 0; i < this.num_tasks; i++) {
             let startIdx = Math.floor(i * tasksPerThread);
             let endIdx = Math.ceil((i + 1) * (tasksPerThread));
-            console.log("Setting timeout for idx ", idx, ", jobIdx ", jobIdx, "startIdx ", startIdx, ", ", "endIdx ", endIdx);
             setTimeout(() => {
-                console.log("started: idx ", idx, ", jobIdx ", jobIdx, "this.num_completed[idx][jobIdx]", this.num_completed[idx][jobIdx]);
                 for (let i = startIdx; i < Math.min(endIdx, a0.length); i++) {
                     this.rayCastingForTheta(idx, jobIdx, a0[i], thetaStep);
                 }
                 this.num_completed[idx][jobIdx] += 1;
                 if (this.num_completed[idx][jobIdx] == this.num_tasks) {
-                    console.log("completed: idx ", idx, ", jobIdx ", jobIdx);
                     onComplete();
                 }
             }, Math.random() * lighting_retrace_interval);

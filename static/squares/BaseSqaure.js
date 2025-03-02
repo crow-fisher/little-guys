@@ -66,7 +66,6 @@ export class BaseSquare {
         this.linkedOrganismSquares = new Array();
         this.lighting = new Array();
 
-
         // for ref - values from dirt
         this.opacity = 1;
         this.waterSinkRate = 0.8;
@@ -352,14 +351,6 @@ export class BaseSquare {
             this.mixIdx % getMixArrLen());
         }
     }
-
-    getNeighborLightingArr() {
-        var ret = getNeighbors(this.posX, this.posY).map((sq) => sq.lighting).find((light) => light != []);
-        if (ret != null) {
-            return ret;
-        } return [];
-    }
-
     updatePosition(newPosX, newPosY) {
         if (newPosX == this.posX && newPosY == this.posY) {
             return true;
