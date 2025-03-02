@@ -64,7 +64,7 @@ export class BaseSquare {
         this.randoms = [];
         this.linkedOrganism = null;
         this.linkedOrganismSquares = new Array();
-        this.lighting = this.getNeighborLightingArr();
+        this.lighting = new Array();
 
 
         // for ref - values from dirt
@@ -106,7 +106,6 @@ export class BaseSquare {
         this.lightingSumCount = 0;
 
         this.mixIdx = -1;
-        this.nextLighting = [];
         this.initTemperature();
     };
 
