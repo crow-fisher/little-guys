@@ -50,7 +50,7 @@ class BaseOrganism {
         this.growthNumRoots = 30;
         this.growthNitrogen = 50;
         this.growthPhosphorus = 25;
-        this.growthLightLevel = 0.25; // desire mostly full sun 
+        this.growthLightLevel = 0.8; // desire mostly full sun 
         this.growthCycleMaturityLength = 2;
         this.growthCycleLength = 24; // in days
 

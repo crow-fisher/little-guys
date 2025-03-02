@@ -8,7 +8,7 @@ export class LightingHandler {
         this.lastLightingUpdateDay = 0;
 
         this.lighting_throttle_interval_ms = 10 ** 8;
-        this.lighting_throttle_interval_days = 3;
+        this.lighting_throttle_interval_days = 1;
 
         this.lightSources = [];
         this.lightSources.push(createSunLightGroup());
