@@ -73,8 +73,7 @@ class BaseLifeSquare {
             this.lighting = [];
         }
 
-        
-
+        this.nextLighting = [];
         this.touchingGround = null;
     }
 

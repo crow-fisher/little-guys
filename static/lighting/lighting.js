@@ -1,10 +1,12 @@
 import { LIGHT_SOURCES } from "../globals.js";
-import { getSqIterationOrder } from "../squares/_sqOperations.js";
+import { getSqIterationOrder, iterateOnSquares } from "../squares/_sqOperations.js";
 import { getCloudColorAtPos } from "../climate/temperatureHumidity.js";
 import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "../climate/time.js";
 import { loadUI, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_SUN } from "../ui/UIData.js";
 import { getWindSquaresX, getWindSquaresY } from "../climate/wind.js";
 import { getCanvasSquaresX, getCanvasSquaresY } from "../canvas.js";
+import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
+import { lighting_retrace_interval } from "./lightingHandler.js";
 
 let lifeSquarePositions = new Map();
 export let MAX_BRIGHTNESS = 8;
@@ -27,7 +29,7 @@ export function lightingRegisterLifeSquare(lifeSquare) {
         lifeSquarePositions[posX][posY] = new Array();
     }
     lifeSquarePositions[posX][posY].push(lifeSquare);
-    lifeSquare.lighting = [];
+    lifeSquare.nextlighting = [];
     while (lifeSquare.lighting.length < LIGHT_SOURCES.length) {
         lifeSquare.lighting.push(null);
     }
@@ -35,7 +37,7 @@ export function lightingRegisterLifeSquare(lifeSquare) {
 
 export function lightingPrepareTerrainSquares() {
     getSqIterationOrder().forEach((sq) => {
-        sq.lighting = [];
+        sq.nextlighting = [];
         for (let i = 0; i < LIGHT_SOURCES; i++) {
             sq.lighting.push(null);
         }
@@ -156,6 +158,9 @@ export class LightSource {
         this.frameTerrainSquares = null;
         this.windSquareLocations = new Map();
         this.windSquareBrigthnessMults = new Map();
+        
+        this.num_tasks = 10;
+        this.num_completed = {};
     }
 
     calculateFrameCloudCover() {
@@ -290,10 +295,10 @@ export class LightSource {
                 list[loc[0]][loc[1]].forEach((obj) => {
                     let curBrightnessCopy = curBrightness;
                     let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(theta)() * curBrightnessCopy * (Math.max(0, MAX_BRIGHTNESS * this.brightnessFunc())) / MAX_BRIGHTNESS;
-                    if (obj.lighting[idx] == null) {
-                        obj.lighting[idx] = [[pointLightSourceFunc], this.colorFunc];
+                    if (obj.nextLighting[idx] == null) {
+                        obj.nextLighting[idx] = [[pointLightSourceFunc], this.colorFunc];
                     } else {
-                        obj.lighting[idx][0].push(pointLightSourceFunc);
+                        obj.nextLighting[idx][0].push(pointLightSourceFunc);
                     }
                     curBrightness *= loadUI(UI_LIGHTING_DECAY) * (1 - obj.getLightFilterRate());
                 });
@@ -301,31 +306,46 @@ export class LightSource {
         });
     }
     doRayCasting(idx) {
-        this.preprocessLifeSquares();
-        this.preprocessTerrainSquares();
-        let thetaStep = (this.maxTheta - this.minTheta) / this.numRays;
+        if (this.num_completed[idx] == null) {
+            this.num_completed[idx] = 0;
+        }
 
+        let thetaStep = (this.maxTheta - this.minTheta) / this.numRays;
         let a0 = [];
-        let a1 = [];
-        let a2 = [];
 
         for (let theta = this.minTheta; theta < this.maxTheta; theta += thetaStep) {
             a0.push(theta);
-            a1.push(thetaStep);
-            a2.push(idx);
         }
 
-        let num_tasks = 10;
-        let tasksPerThread = a0.length / num_tasks;
+        let tasksPerThread = a0.length / this.num_tasks;
+        
+        if (this.num_completed[idx] != this.num_tasks) {
+            return;
+        }
+        iterateOnSquares((sq) => sq.nextLighting[idx] = null);
+        this.preprocessTerrainSquares();
+        this.preprocessLifeSquares();
 
-        for (let i = 0; i < num_tasks; i++) {
+        this.num_completed[idx] = 0;
+        for (let i = 0; i < this.num_tasks; i++) {
             let startIdx = Math.floor(i * tasksPerThread);
             let endIdx = Math.ceil((i + 1) * (tasksPerThread));
             setTimeout(() => {
                 for (let i = startIdx; i <= Math.min(endIdx, a0.length); i++) {
-                    this.rayCastingForTheta(a0[i], a1[i], a2[i]);
+                    this.rayCastingForTheta(a0[i], thetaStep, idx);
                 }
-            }, Math.random() * 10000);
+                this.num_completed[idx] += 1;
+                if (this.num_completed[idx] == this.num_tasks) {
+                    iterateOnSquares((sq) => {
+                        sq.lighting = new Array();
+                        for (let i = 0 ; i < sq.nextLighting.length; i++) {
+                            sq.lighting[idx] = [new Array(), null];
+                            sq.lighting[idx][0] = sq.nextLighting[idx][0];
+                            sq.lighting[idx][1] = sq.nextLighting[idx][1];
+                        }
+                    });
+                }
+            }, Math.random() * lighting_retrace_interval);
         }
     }
 }

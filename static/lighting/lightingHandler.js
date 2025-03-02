@@ -2,12 +2,14 @@ import { getCurDay } from "../climate/time.js";
 import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
 import { createMoonLightGroup, createSunLightGroup, lightingClearLifeSquarePositionMap, lightingPrepareTerrainSquares, lightingRegisterLifeSquare } from "./lighting.js";
 
+export const lighting_retrace_interval = 1000;
+
 export class LightingHandler {
     constructor() {
         this.nextLightingUpdate = 0;
         this.lastLightingUpdateDay = 0;
 
-        this.lighting_throttle_interval_ms = 10 ** 8;
+        this.lighting_throttle_interval_ms = lighting_retrace_interval;
         this.lighting_throttle_interval_days = 1;
 
         this.lightSources = [];

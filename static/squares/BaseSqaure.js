@@ -65,6 +65,8 @@ export class BaseSquare {
         this.linkedOrganism = null;
         this.linkedOrganismSquares = new Array();
         this.lighting = this.getNeighborLightingArr();
+
+
         // for ref - values from dirt
         this.opacity = 1;
         this.waterSinkRate = 0.8;
@@ -104,9 +106,8 @@ export class BaseSquare {
         this.lightingSumCount = 0;
 
         this.mixIdx = -1;
-
+        this.nextLighting = [];
         this.initTemperature();
-
     };
 
     initTemperature() {
