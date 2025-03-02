@@ -7,11 +7,6 @@ export const lighting_retrace_interval = 1000;
 export class LightingHandler {
     constructor() {
         this.nextLightingUpdate = 0;
-        this.lastLightingUpdateDay = 0;
-
-        this.lighting_throttle_interval_ms = lighting_retrace_interval;
-        this.lighting_throttle_interval_days = 1;
-
         this.lightSources = [];
         this.lightSources.push(createSunLightGroup());
         this.lightSources.push(createMoonLightGroup());
@@ -27,19 +22,17 @@ export class LightingHandler {
 
     lightingTick() {
         this.lightSources.forEach((ls) => ls.preRender());
-        if (Date.now() < this.nextLightingUpdate && (
-            (getCurDay() - this.lighting_throttle_interval_days) < this.lastLightingUpdateDay && (getCurDay() > 0.25)
-        )) {
+        if (Date.now() < this.nextLightingUpdate) {
             return;
         }
-        lightingPrepareTerrainSquares();
+        // lightingPrepareTerrainSquares();
         iterateOnOrganisms((org) => org.lifeSquares.forEach((lsq) => lightingRegisterLifeSquare(lsq)));
         for (let i = 0; i < this.lightSources.length; i++) {
-            this.lightSources[i].doRayCasting(i);
+            if (this.lightSources[i].doRayCasting(i)) {
+                console.log("Invoked raycasting for idx: ", i);
+            }
         }
-        this.nextLightingUpdate = Date.now() + this.lighting_throttle_interval_ms;
-        this.lastLightingUpdateDay = getCurDay(); 
+        this.nextLightingUpdate = Date.now() + lighting_retrace_interval;
         lightingClearLifeSquarePositionMap();
-
     }
 }
