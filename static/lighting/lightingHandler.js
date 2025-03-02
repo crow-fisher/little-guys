@@ -1,6 +1,5 @@
-import { getCurDay } from "../climate/time.js";
 import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
-import { createMoonLightGroup, createSunLightGroup, lightingClearLifeSquarePositionMap, lightingPrepareTerrainSquares, lightingRegisterLifeSquare } from "./lighting.js";
+import { createMoonLightGroup, createSunLightGroup, lightingClearLifeSquarePositionMap, lightingRegisterLifeSquare } from "./lighting.js";
 
 export const lighting_retrace_interval = 1000;
 
@@ -25,7 +24,6 @@ export class LightingHandler {
         if (Date.now() < this.nextLightingUpdate) {
             return;
         }
-        // lightingPrepareTerrainSquares();
         iterateOnOrganisms((org) => org.lifeSquares.forEach((lsq) => lightingRegisterLifeSquare(lsq)));
         for (let i = 0; i < this.lightSources.length; i++) {
             if (this.lightSources[i].doRayCasting(i)) {

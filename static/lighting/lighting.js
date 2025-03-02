@@ -34,15 +34,6 @@ export function lightingRegisterLifeSquare(lifeSquare) {
     }
 }
 
-export function lightingPrepareTerrainSquares() {
-    getSqIterationOrder().forEach((sq) => {
-        sq.nextlighting = new Array();
-        for (let i = 0; i < LIGHT_SOURCES; i++) {
-            sq.nextlighting.push(null);
-        }
-    });
-}
-
 export function createSunLightGroup() {
     let sunLightGroup = new MovingLinearLightGroup(
         getCanvasSquaresX() / 2,
@@ -345,11 +336,14 @@ export class LightSource {
         let tasksPerThread = a0.length / this.num_tasks;
         this.preprocessTerrainSquares();
         this.preprocessLifeSquares();
+
         for (let i = 0; i < this.num_tasks; i++) {
             let startIdx = Math.floor(i * tasksPerThread);
             let endIdx = Math.ceil((i + 1) * (tasksPerThread));
+            console.log("Setting timeout for idx ", idx, ", jobIdx ", jobIdx, "startIdx ", startIdx, ", ", "endIdx ", endIdx);
             setTimeout(() => {
-                for (let i = startIdx; i <= Math.min(endIdx, a0.length); i++) {
+                console.log("started: idx ", idx, ", jobIdx ", jobIdx, "this.num_completed[idx][jobIdx]", this.num_completed[idx][jobIdx]);
+                for (let i = startIdx; i < Math.min(endIdx, a0.length); i++) {
                     this.rayCastingForTheta(a0[i], thetaStep, idx);
                 }
                 this.num_completed[idx][jobIdx] += 1;
