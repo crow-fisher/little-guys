@@ -1,4 +1,5 @@
 import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
+import { loadUI, UI_TOPBAR_TOGGLELIGHTING } from "../ui/UIData.js";
 import { createMoonLightGroup, createSunLightGroup, lightingClearLifeSquarePositionMap, lightingRegisterLifeSquare } from "./lighting.js";
 
 
@@ -32,6 +33,9 @@ export class LightingHandler {
         this.lightSources.push(createMoonLightGroup());
     }
     lightingTick() {
+        if (!loadUI(UI_TOPBAR_TOGGLELIGHTING)) {
+            return;
+        }
         this.lightSources.forEach((ls) => ls.preRender());
         if (Date.now() < this.nextLightingUpdate) {
             return;
