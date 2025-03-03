@@ -31,15 +31,6 @@ export class LightingHandler {
         this.lightSources.push(createSunLightGroup());
         this.lightSources.push(createMoonLightGroup());
     }
-
-    setNextLightingUpdateTime(newTime) {
-        this.nextLightingUpdate = newTime;
-    }
-
-    getNextLightingUpdateTime() {
-        return this.nextLightingUpdate;
-    }
-
     lightingTick() {
         this.lightSources.forEach((ls) => ls.preRender());
         if (Date.now() < this.nextLightingUpdate) {

@@ -50,6 +50,7 @@ export class WheatGreenSquare extends BaseLifeSquare {
     }
 
     doGroundDecay() {
+        super.doGroundDecay();
         if (this.subtype == SUBTYPE_FLOWER || this.subtype == SUBTYPE_FLOWERNODE) {
             let groundSquare = this.groundTouchSquare();
             let offsetY = 1;

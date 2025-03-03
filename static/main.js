@@ -21,10 +21,6 @@ let updated = false;
 const lightingHandler = new LightingHandler();
 const climateHandler = new ClimateHandler();
 
-export function setNextLightUpdateTime(t) {
-    lightingHandler.setNextLightingUpdateTime(t);
-}
-
 export function triggerEarlySquareScheduler() {
     last_square_tick = 0;
 }

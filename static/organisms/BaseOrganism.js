@@ -231,7 +231,10 @@ class BaseOrganism {
                 this.addAssociatedLifeSquare(newGreenSquare);
                 newGreenSquare.linkSquare(newPlantSquare);
                 parentSquare.addChild(newPlantSquare);
-                newGreenSquare.lighting = parentSquare.lighting;
+                newGreenSquare.lighting = new Array();
+                parentSquare.lighting.forEach((light) => {
+                    newGreenSquare.lighting.push([Array.from(light[0].map((x) => x)), light[1]])
+                });
                 return newGreenSquare;
             }
         }

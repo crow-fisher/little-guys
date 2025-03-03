@@ -33,6 +33,9 @@ export class WheatOrganism extends BaseOrganism {
         this.targetLeafLength = 1;
         this.targetStemLength = 1;
         this.targetFlowerLength = this.maxFlowerLength;
+
+        this.growthNumGreen = this.maxNumNodes * (this.maxStemLength + this.maxLeafLength);
+    
     }
 
     growStem(parent, startNode, theta) {
@@ -262,22 +265,19 @@ export class WheatOrganism extends BaseOrganism {
             return;
         }
         
-        if (
-            this.flower == null && 
-            this.nitrogen > this.growthNitrogen && 
+        if (this.nitrogen > this.growthNitrogen && 
             this.phosphorus > this.growthPhosphorus && 
-            this.lightlevel > this.growthLightLevel) 
-        {
-            this.growFlower();
-            return;
+            this.lightlevel > this.growthLightLevel) {
+            if (this.flower == null) {
+                this.growFlower();
+                return;
+            }
+            let flowerComponent = this.originGrowth.getChildFromPath(this.flower);
+            if (flowerComponent.growthPlan.steps.length < this.targetFlowerLength) {
+                this.lengthenFlower();
+                return;
+            }
         }
-
-        let flowerComponent = this.originGrowth.getChildFromPath(this.flower);
-        if (flowerComponent.growthPlan.steps.length < this.targetFlowerLength) {
-            this.lengthenFlower();
-            return;
-        }
-
     }
 
     planGrowth() {

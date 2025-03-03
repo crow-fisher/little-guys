@@ -2,7 +2,7 @@ import { removeSquare } from "./globalOperations.js";
 import { addOrganismSquare } from "./lifeSquares/_lsOperations.js";
 import { addOrganism, iterateOnOrganisms, removeOrganism } from "./organisms/_orgOperations.js";
 import { GrowthComponent, GrowthPlan, GrowthPlanStep } from "./organisms/GrowthPlan.js";
-import { setNextLightUpdateTime, triggerEarlySquareScheduler } from "./main.js";
+import { triggerEarlySquareScheduler } from "./main.js";
 import { addSquare, addSquareOverride, iterateOnSquares, removeOrganismSquare } from "./squares/_sqOperations.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { getTemperatureMap, getWaterSaturationMap, setTemperatureMap, setWaterSaturationMap } from "./climate/temperatureHumidity.js";
@@ -45,7 +45,6 @@ function purgeGameState() {
 function loadSlotData(slotData) {
     purgeGameState();
     loadSlotFromSave(slotData);
-    setNextLightUpdateTime(0);
 }
 export function saveSlot(slotName) {
     const saveObj = getFrameSaveData();
@@ -237,7 +236,6 @@ function loadSlotFromSave(slotData) {
         org.lifeSquares.forEach(addOrganismSquare);
     });
     triggerEarlySquareScheduler();
-    setNextLightUpdateTime(0);
 }
 
 async function compress(inputString) {
@@ -285,7 +283,6 @@ export function loadEmptyScene() {
     for (let i = 0; i < getCanvasSquaresX(); i++) {
         addSquare(new RockSquare(i, getCanvasSquaresY() - 1));
     }
-    setNextLightUpdateTime(0);
 }
 
 export function loadFlatDirtWorld() {

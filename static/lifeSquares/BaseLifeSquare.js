@@ -27,9 +27,9 @@ class BaseLifeSquare {
         this.darkColor = "#353b1a";
         this.accentColor = "#5d6637";
 
-        this.baseColorAmount = 80;
-        this.darkColorAmount = 60;
-        this.accentColorAmount = 20;
+        this.baseColorAmount = 33;
+        this.darkColorAmount = 33;
+        this.accentColorAmount = 33;
 
         this.spawnTime = getCurTime();
 
@@ -65,13 +65,7 @@ class BaseLifeSquare {
 
         this.LSQ_RENDER_SIZE_MULT = Math.SQRT2;
 
-        if (square.lighting != null && square.lighting.length > 0) {
-            this.lighting = square.lighting;
-        } else if (organism.linkedSquare.lighting != null && organism.linkedSquare.lighting.length > 0) {
-            this.lighting = organism.linkedSquare.lighting;
-        } else {
-            this.lighting = [];
-        }
+        this.lighting = [];
         this.touchingGround = null;
     }
 
@@ -258,20 +252,20 @@ class BaseLifeSquare {
             return;
         }
         else {
-            var res = this.getStaticRand(1) * (parseFloat(this.accentColorAmount) + parseFloat(this.darkColorAmount) + parseFloat(this.baseColorAmount));
+            var res = this.getStaticRand(1) * this.accentColorAmount + this.darkColorAmount + this.baseColorAmount;
             var primaryColor = null;
             var altColor1 = null;
             var altColor2 = null;
-            if (res < parseFloat(this.accentColorAmount.value)) {
+            if (res < this.accentColorAmount) {
                 primaryColor = this.accentColor;
                 altColor1 = this.darkColor;
                 altColor2 = this.colorBase;
-            } else if (res < parseFloat(this.accentColorAmount.value) + parseFloat(this.darkColorAmount)) {
-                primaryColor = this.darkColor;
+            } else if (res < this.accentColorAmount + this.darkColorAmount) {
+                primaryColor = this.accentColor;
                 altColor1 = this.baseColor;
                 altColor2 = this.darkColor;
             } else {
-                altColor1 = this.darkColor;
+                altColor1 = this.accentColor;
                 altColor2 = this.darkColor;
                 primaryColor = this.baseColor;
             }
