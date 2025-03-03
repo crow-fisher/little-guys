@@ -6,7 +6,7 @@ import { STAGE_DEAD, STAGE_JUVENILE, STAGE_SPROUT, STATE_DEAD, STATE_HEALTHY, ST
 import { addSquare, getNeighbors } from "../squares/_sqOperations.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 import { PlantSquare } from "../squares/PlantSquare.js";
-import { processLighting } from "../lighting/lightingProcessing.js";
+import { applyLightingFromSource, processLighting } from "../lighting/lightingProcessing.js";
 import { loadUI, UI_GODMODE_FASTPLANT } from "../ui/UIData.js";
 
 class BaseOrganism {
@@ -222,13 +222,22 @@ class BaseOrganism {
                 let refSquare = null;
                 if (parentSquare.lighting.length > 0) {
                     refSquare = parentSquare;
+                    console.log("Taking refsquare from parentSquare")
                 } else {
-                    refSquare = this.linkedSquare;
+                    for (let i = this.lifeSquares.length -1 ; i >= 0; i--) {
+                        let lsq = this.lifeSquares.at(i);
+                        if (lsq.lighting.length > 0) {
+                            refSquare = lsq;
+                            console.log("Taking refSquare from lsq;")
+                            break;
+                        }
+                    }
+                    if (refSquare == null) {
+                        console.log("Taking refsquare from this.linkedSquare")
+                        refSquare = this.linkedSquare;
+                    }
                 }
-
-                parentSquare.lighting.forEach((light) => {
-                    newGreenSquare.lighting.push([Array.from(light[0].map((x) => x)), light[1]])
-                });
+                applyLightingFromSource(refSquare, newGreenSquare);
                 return newGreenSquare;
             }
         }
@@ -473,9 +482,9 @@ class BaseOrganism {
     doGodModePlantGrowth() {
         if (loadUI(UI_GODMODE_FASTPLANT)) {
             this.executeGrowthPlans();
-            this.nitrogen += this.growthNitrogen / 10;
-            this.phosphorus += this.growthPhosphorus / 10;
-            this.lightlevel += this.growthLightLevel / 10;
+            this.nitrogen += this.growthNitrogen / 40;
+            this.phosphorus += this.growthPhosphorus / 40;
+            this.lightlevel += this.growthLightLevel / 40;
         }
     }
 

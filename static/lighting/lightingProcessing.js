@@ -52,6 +52,17 @@ export function processLighting(lightingMap) {
     return outColor;
 }
 
+export function applyLightingFromSource(source, dest) {
+    if (source.lighting.length == 0) {
+        console.warn("Invalid argument to applyLightingFromSource; source doesn't have a lighting arr instantaited")
+        return;
+    }
+    dest.lighting = [];
+    source.lighting.forEach((light) => {
+        dest.lighting.push([Array.from(light[0].map((x) => x)), light[1]])
+    });
+}
+
 addUIFunctionMap(UI_TOPBAR_FASTLIGHTING, () => {
     if (loadUI(UI_TOPBAR_FASTLIGHTING)) {
         setRestingLightingInterval(FAST_LIGHTING_INTERVAL);
