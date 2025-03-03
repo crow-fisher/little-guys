@@ -72,13 +72,12 @@ function render() {
         renderWaterSaturation();
     }
     lightingHandler.lightingTick();
-
+    renderOrganisms();
     renderWaterSquares();
     if (selectedViewMode == UI_VIEWMODE_NORMAL && !loadUI(UI_TOPBAR_DESIGNERMODE)) {
         renderClouds();
     }
     renderSolidSquares();
-    renderOrganisms();
     renderWindows();
 }
 

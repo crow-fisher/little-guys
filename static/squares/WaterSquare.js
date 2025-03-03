@@ -20,7 +20,7 @@ class WaterSquare extends BaseSquare {
 
         this.color = hexToRgb("#31539D");
 
-        this.opacity = 0.8;
+        this.opacity = 0.5;
 
         this.blockHealthMax = 1;
         this.blockHealth = this.blockHealthMax;
