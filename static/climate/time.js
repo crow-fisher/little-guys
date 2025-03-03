@@ -18,7 +18,7 @@ var TIME_SCALE = 1;
 var curUIKey = UI_SPEED_1;
 
 export var millis_per_day = 60 * 60 * 24 * 1000;
-var curDay = 0;
+var curDay = 0.28   ;
 var prevDay = 0;
 var curTime = 0.8;
 var prevTime = 0;
@@ -334,7 +334,10 @@ export function getCurrentLightColorTemperature() {
     return currentLightColorTemperature;
 }
 
-var moonlightColor = calculateTempColor(4100);
+var moonlightColor = calculateTempColor(6599);
+moonlightColor.r *= 0.9;
+moonlightColor.g *= 0.9;
+
 
 export function getMoonlightColor() {
     return moonlightColor;

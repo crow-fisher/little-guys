@@ -1,7 +1,28 @@
 import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
 import { createMoonLightGroup, createSunLightGroup, lightingClearLifeSquarePositionMap, lightingRegisterLifeSquare } from "./lighting.js";
 
-export const lighting_retrace_interval = 5000;
+
+export const SLOW_LIGHTING_INTERVAL = 3000;
+export const FAST_LIGHTING_INTERVAL = 1000;
+
+let restingLightingInterval = SLOW_LIGHTING_INTERVAL;
+let curLightingInterval = restingLightingInterval;
+
+export function getCurLightingInterval() {
+    return curLightingInterval;
+}
+
+export function setNextLightingInterval(inVal) {
+    curLightingInterval = inVal;
+}
+
+export function setRestingLightingInterval(inVal) {
+    curLightingInterval = inVal;
+}
+
+export function getRestingLightingInterval() {
+    return restingLightingInterval;
+}
 
 export class LightingHandler {
     constructor() {

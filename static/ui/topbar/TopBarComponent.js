@@ -18,7 +18,8 @@ import {
     UI_BOOLEAN, UI_TOPBAR_SM,
     UI_TOPBAR_TOGGLELIGHTING,
     UI_TOPBAR_VIEWMODE,
-    UI_TOPBAR_DESIGNERMODE
+    UI_TOPBAR_DESIGNERMODE,
+    UI_TOPBAR_FASTLIGHTING
 } from "../UIData.js";
 import { TopBarToggle } from "./TopBarToggle.js";
 import { getLastMoveOffset } from "../../mouse.js";
@@ -48,6 +49,7 @@ export class TopBarComponent {
             new TopBarToggle(getBaseSize() * 2, "left", UI_TOPBAR_SM, UI_BOOLEAN, "block menu | "),
             new TopBarToggle(getBaseSize() * 2, "left", UI_TOPBAR_VIEWMODE, UI_BOOLEAN, "select viewmode | "),
             new TopBarToggle(getBaseSize() * 2, "left", UI_TOPBAR_TOGGLELIGHTING, UI_BOOLEAN, "toggle lighting | "),
+            new TopBarToggle(getBaseSize() * 2, "left", UI_TOPBAR_FASTLIGHTING, UI_BOOLEAN, "fast lighting | "),
             new TopBarToggle(getBaseSize() * 2, "left", UI_TOPBAR_DESIGNERMODE, UI_BOOLEAN, "designer mode")
         ];
 

@@ -1,11 +1,10 @@
-import { LIGHT_SOURCES } from "../globals.js";
-import { getAllSquares, getSqIterationOrder, iterateOnSquares } from "../squares/_sqOperations.js";
+import { getAllSquares } from "../squares/_sqOperations.js";
 import { getCloudColorAtPos } from "../climate/temperatureHumidity.js";
 import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "../climate/time.js";
 import { loadUI, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_SUN } from "../ui/UIData.js";
 import { getWindSquaresX, getWindSquaresY } from "../climate/wind.js";
 import { getCanvasSquaresX, getCanvasSquaresY } from "../canvas.js";
-import { lighting_retrace_interval } from "./lightingHandler.js";
+import { getCurLightingInterval, getRestingLightingInterval, setNextLightingInterval } from "./lightingHandler.js";
 
 let lifeSquarePositions = new Map();
 export let MAX_BRIGHTNESS = 8;
@@ -115,7 +114,7 @@ export class StationaryLightGroup {
             return 0;
         }
         let curFrac = (curTime - st) / (et - st);
-        return (0.5 - Math.abs((curFrac - 0.5))) * 2;
+        return Math.cos(Math.abs((curFrac - 0.5)) * Math.PI);
     }
 
     init() {
@@ -457,7 +456,7 @@ export class LightSource {
         let tasksPerThread = a0.length / this.num_tasks;
         this.preprocessTerrainSquares();
         this.preprocessLifeSquares();
-
+        let timeInterval = getCurLightingInterval();
         for (let i = 0; i < this.num_tasks; i++) {
             let startIdx = Math.floor(i * tasksPerThread);
             let endIdx = Math.ceil((i + 1) * (tasksPerThread));
@@ -469,7 +468,7 @@ export class LightSource {
                 if (this.num_completed[idx][jobIdx] == this.num_tasks) {
                     onComplete();
                 }
-            }, Math.random() * lighting_retrace_interval);
+            }, i * (timeInterval / this.num_tasks));
         }
     }
 }
