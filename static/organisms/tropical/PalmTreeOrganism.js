@@ -223,7 +223,7 @@ export class PalmTreeOrganism extends BaseOrganism {
                 0,
                 this.trunkGrowTimeInDays,
                 () => {
-                    var node = this.growPlantSquarePos(rootNodeSq, rootNodeSq.posX, rootNodeSq.posY - 1);
+                    // var node = this.growPlantSquarePos(rootNodeSq, rootNodeSq.posX, rootNodeSq.posY - 1);
                     node.subtype = SUBTYPE_TRUNK;
                     return node;
                 },

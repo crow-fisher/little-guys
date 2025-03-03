@@ -6,17 +6,21 @@ import { WheatGreenSquare } from "../../lifeSquares/parameterized/agriculture/gr
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
 import { BaseOrganism } from "../BaseOrganism.js";
+import { BasicGrassGreenSquare } from "../../lifeSquares/parameterized/agriculture/grasses/BasicGrassGreenSquare.js";
 
 export class BasicGrassOrganism extends BaseOrganism {
     constructor(posX, posY) {
         super(posX, posY);
-        this.proto = "WheatOrganism";
-        this.greenType = WheatGreenSquare;
+        this.proto = "BasicGrassOrganism";
+        this.greenType = BasicGrassGreenSquare;
         this.rootType = GenericParameterizedRootSquare;
         this.grassGrowTimeInDays =  0.01;
         this.side = Math.random() > 0.5 ? -1 : 1;
         this.maxNumGrass = 2;
         this.curNumGrass = 0;
+        this.numGrowthCycles = 10 ** 8; // grass never dies
+        this.growthCycleMaturityLength = 10;
+        this.growthCycleLength = 10;
     }
 
     growGrass() {
@@ -83,7 +87,7 @@ export class BasicGrassOrganism extends BaseOrganism {
     }
 }
 
-export class WheatSeedOrganism extends BaseSeedOrganism {
+export class BasicGrassSeedOrganism extends BaseSeedOrganism {
     constructor(square) {
         super(square);
         this.proto = "WheatSeedOrganism";

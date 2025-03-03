@@ -209,20 +209,6 @@ class BaseOrganism {
     }
 
     // COMPONENT GROWTH
-    growPlantSquarePos(parentSquare, posX, posY) {
-        var newPlantSquare = new PlantSquare(posX, posY);
-        if (addSquare(newPlantSquare)) {
-            var newGreenSquare = addOrganismSquare(new this.greenType(newPlantSquare, this));
-            if (newGreenSquare) {
-                this.addAssociatedLifeSquare(newGreenSquare);
-                newGreenSquare.linkSquare(newPlantSquare);
-                parentSquare.addChild(newPlantSquare);
-                return newGreenSquare;
-            }
-        }
-        return null;
-    }
-
     growPlantSquare(parentSquare, dx, dy) {
         var newPlantSquare = new PlantSquare(parentSquare.posX + dx, parentSquare.posY - dy);
         if (addSquare(newPlantSquare)) {
@@ -232,6 +218,14 @@ class BaseOrganism {
                 newGreenSquare.linkSquare(newPlantSquare);
                 parentSquare.addChild(newPlantSquare);
                 newGreenSquare.lighting = new Array();
+
+                let refSquare = null;
+                if (parentSquare.lighting.length > 0) {
+                    refSquare = parentSquare;
+                } else {
+                    refSquare = this.linkedSquare;
+                }
+
                 parentSquare.lighting.forEach((light) => {
                     newGreenSquare.lighting.push([Array.from(light[0].map((x) => x)), light[1]])
                 });

@@ -10,6 +10,7 @@ import { triggerEarlySquareScheduler } from "./main.js";
 import { getLastMoveOffset, getLeftMouseUpEvent, isLeftMouseClicked, isMiddleMouseClicked, isRightMouseClicked } from "./mouse.js";
 import { addNewOrganism } from "./organisms/_orgOperations.js";
 import { WheatSeedOrganism } from "./organisms/agriculture/WheatOrganism.js";
+import { BasicGrassSeedOrganism } from "./organisms/grasses/BasicGrassOrganism.js";
 import { STAGE_DEAD } from "./organisms/Stages.js";
 import { addSquare, addSquareOverride, getSquares, removeSquarePos } from "./squares/_sqOperations.js";
 import { AquiferSquare } from "./squares/parameterized/RainSquare.js";
@@ -227,10 +228,22 @@ export function doClickAdd() {
                     switch (selectedOrganism) {
                         case "wheat":
                             var chance = Math.random();
-                            if (chance > 0.9) {
+                            if (chance > 0.99) {
                                 var sq = addSquare(new SeedSquare(px, py));
                                 if (sq) {
                                     var orgAdded = addNewOrganism(new WheatSeedOrganism(sq));
+                                    if (!orgAdded) {
+                                        sq.destroy();
+                                    }
+                                }
+                            }
+                            break;
+                        case "grass":
+                            var chance = Math.random();
+                            if (chance > 0.95) {
+                                var sq = addSquare(new SeedSquare(px, py));
+                                if (sq) {
+                                    var orgAdded = addNewOrganism(new BasicGrassSeedOrganism(sq));
                                     if (!orgAdded) {
                                         sq.destroy();
                                     }
