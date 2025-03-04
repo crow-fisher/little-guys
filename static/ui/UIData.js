@@ -38,7 +38,8 @@ export const UI_SPECIAL_SURFACE = "surface"
 
 export const UI_ORGANISM_SELECT = "UI_ORGANISM_SELECT";
 export const UI_ORGANISM_WHEAT = "wheat";
-export const UI_ORGANISM_GRASS = "grass";
+export const UI_ORGANISM_GRASS = "k. bluegrass";
+export const UI_ORGANISM_CATTAIL = "cattail"
 
 export const UI_VIEWMODE_SELECT = "UI_VIEWMODE_SELECT";
 

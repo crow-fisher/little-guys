@@ -8,7 +8,7 @@ import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { getTemperatureMap, getWaterSaturationMap, setTemperatureMap, setWaterSaturationMap } from "./climate/temperatureHumidity.js";
 import { getCurDay, setCurDay } from "./climate/time.js";
 import { ProtoMap, TypeMap } from "./types.js";
-import { getWindPressureMap, initWindPressure, setWindPressureMap } from "./climate/wind.js";
+import { getWindPressureMap, getWindSquaresX, initWindPressure, setWindPressureMap } from "./climate/wind.js";
 import { getCanvasSquaresX, getCanvasSquaresY } from "./canvas.js";
 import { addSquareByName } from "./manipulation.js";
 
@@ -174,9 +174,10 @@ function loadSlotFromSave(slotData) {
     var temperatureMap = slotData.temperatureMap;
     var waterSaturationMap = slotData.waterSaturationMap;
 
-    setWindPressureMap(windMap);
-    setTemperatureMap(temperatureMap);
-    setWaterSaturationMap(waterSaturationMap);
+
+    // setWindPressureMap(windMap);
+    // setTemperatureMap(temperatureMap);
+    // setWaterSaturationMap(waterSaturationMap);
     setCurDay(slotData.curDay);
 
     sqArr.forEach((sq) => Object.setPrototypeOf(sq, ProtoMap[sq.proto]));

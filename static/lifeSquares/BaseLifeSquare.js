@@ -88,7 +88,7 @@ class BaseLifeSquare {
     }
 
     getLightFilterRate() {
-        return 0.00015 * this.width * loadUI(UI_LIGHTING_PLANT);
+        return 0.00015 * (this.width ** 3) * loadUI(UI_LIGHTING_PLANT);
     }
 
     getLsqRenderSizeMult() {

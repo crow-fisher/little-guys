@@ -1,14 +1,14 @@
-import { BaseLifeSquare } from "../../../BaseLifeSquare.js";
-import { STATE_DEAD, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE } from "../../../../organisms/Stages.js";
-import { addNewOrganism } from "../../../../organisms/_orgOperations.js";
-import { WheatSeedOrganism } from "../../../../organisms/agriculture/WheatOrganism.js";
-import { addSquare } from "../../../../squares/_sqOperations.js";
-import { SeedSquare } from "../../../../squares/SeedSquare.js";
+import { BaseLifeSquare } from "../../BaseLifeSquare.js";
+import { STATE_DEAD, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE } from "../../../organisms/Stages.js";
+import { addNewOrganism } from "../../../organisms/_orgOperations.js";
+import { WheatSeedOrganism } from "../../../organisms/agriculture/WheatOrganism.js";
+import { addSquare } from "../../../squares/_sqOperations.js";
+import { SeedSquare } from "../../../squares/SeedSquare.js";
 
-export class BasicGrassGreenSquare extends BaseLifeSquare {
+export class CattailGreenSquare extends BaseLifeSquare {
     constructor(square, organism) {
         super(square, organism);
-        this.proto = "BasicGrassGreenSquare";
+        this.proto = "CattailGreenSquare";
         this.type = "green";
         this.width = 1;
         this.activeRenderSubtype = null;

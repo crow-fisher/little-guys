@@ -1,23 +1,24 @@
 import { randNumber, randRange } from "../../common.js";
 import { GenericParameterizedRootSquare } from "../../lifeSquares/parameterized/GenericParameterizedRootSquare.js";
-import { STAGE_ADULT, STAGE_FLOWER, STAGE_FRUIT, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_TRUNK, TYPE_LEAF, TYPE_TRUNK } from "../Stages.js";
+import { STAGE_ADULT, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_TRUNK } from "../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
-import { WheatGreenSquare } from "../../lifeSquares/parameterized/agriculture/grasses/WheatGreenSquare.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
 import { BaseOrganism } from "../BaseOrganism.js";
-import { BasicGrassGreenSquare } from "../../lifeSquares/parameterized/agriculture/grasses/BasicGrassGreenSquare.js";
+import { KentuckyBluegrassGreenSquare } from "../../lifeSquares/parameterized/agriculture/grasses/KentuckyBluegrassGreenSquare.js";
 
-export class BasicGrassOrganism extends BaseOrganism {
+export class KentuckyBluegrassOrganism extends BaseOrganism {
     constructor(posX, posY) {
         super(posX, posY);
-        this.proto = "BasicGrassOrganism";
-        this.greenType = BasicGrassGreenSquare;
+        this.proto = "KentuckyBluegrassOrganism";
+        this.greenType = KentuckyBluegrassGreenSquare;
         this.rootType = GenericParameterizedRootSquare;
         this.grassGrowTimeInDays =  0.01;
         this.side = Math.random() > 0.5 ? -1 : 1;
-        this.maxNumGrass = 2;
+        this.maxNumGrass = 24;
         this.curNumGrass = 0;
+        this.grassLengthMin = 2;
+        this.grassLengthMax = 8;
         this.numGrowthCycles = 10 ** 8; // grass never dies
         this.growthCycleMaturityLength = 10;
         this.growthCycleLength = 10;
@@ -38,11 +39,11 @@ export class BasicGrassOrganism extends BaseOrganism {
             randRange(0, 0.3), TYPE_TRUNK, 1);
         growthPlan.postConstruct = () => {
             this.originGrowth.addChild(growthPlan.component);
-            growthPlan.component.xOffset = 2 * (Math.random() - 0.5);
-            growthPlan.component.yOffset = -(0.5 + Math.random());
+            growthPlan.component.xOffset = 4 * (Math.random() - 0.5);
+            growthPlan.component.yOffset = - (4 * (0.5 + Math.random()));
         };
         growthPlan.component._getWilt = (val) => Math.sin(val) / 2; 
-        for (let t = 1; t < randNumber(15,30); t++) {
+        for (let t = 1; t < randNumber(this.grassLengthMin, this.grassLengthMax); t++) {
             growthPlan.steps.push(new GrowthPlanStep(
                 growthPlan,
                 0,
@@ -79,21 +80,17 @@ export class BasicGrassOrganism extends BaseOrganism {
             this.growGrass();
             return;
         }
-        if (Math.random() > 0.95) {
-            if (this.getCurGrowthFrac() > 0.2) {
-                this.growGrass();
-            }
-        }
+        this.growGrass();
     }
 }
 
-export class BasicGrassSeedOrganism extends BaseSeedOrganism {
+export class KentuckyBluegrassSeedOrganism extends BaseSeedOrganism {
     constructor(square) {
         super(square);
-        this.proto = "WheatSeedOrganism";
+        this.proto = "KentuckyBluegrassSeedOrganism";
     }
 
     getSproutType() {
-        return BasicGrassOrganism;
+        return KentuckyBluegrassOrganism;
     }
 }
