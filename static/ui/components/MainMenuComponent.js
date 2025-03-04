@@ -20,9 +20,14 @@ export class MainMenuComponent extends Component {
         subMenuContainer.addElement(new Button(this.window, getBaseSize() * 16, getBaseSize() * 3, () => saveSlot("B"), "save slot B"));
         subMenuContainer.addElement(new Button(this.window, getBaseSize() * 16, getBaseSize() * 3, () => saveSlot("C"), "save slot C"));
         subMenuContainer.addElement(new Button(this.window, getBaseSize() * 16, getBaseSize() * 3, () => loadEmptyScene(), "empty scene"));
-        subMenuContainer.addElement(new RowedRadio(this.window, getBaseSize() * 16, getBaseSize() * 6, UI_DISPLAY_SIZEY, 2,
+        
+        subMenuContainer.addElement(new RowedRadio(this.window, getBaseSize() * 16, getBaseSize() * (3 * 6), UI_DISPLAY_SIZEY, 6,
         [75, 100, 125,
-                 150, 175, 200]));
+                 150, 175, 200,
+                 225, 250, 275,
+                 300, 325, 350,
+                 375, 400, 425,
+                 450, 475, 500]));
 
     }
 
