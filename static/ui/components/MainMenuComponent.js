@@ -24,10 +24,10 @@ export class MainMenuComponent extends Component {
         subMenuContainer.addElement(new RowedRadio(this.window, getBaseSize() * 16, getBaseSize() * (3 * 6), UI_DISPLAY_SIZEY, 6,
         [75, 100, 125,
                  150, 175, 200,
-                 225, 250, 275,
-                 300, 325, 350,
-                 375, 400, 425,
-                 450, 475, 500]));
+                 250, 300, 350,
+                 400, 450, 500,
+                 550, 600, 650,
+                 700, 750, 800]));
 
     }
 

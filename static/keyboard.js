@@ -1,6 +1,6 @@
 import { doZoom, resetZoom } from "./canvas.js";
 import { getGlobalThetaBase, setGlobalThetaBase } from "./globals.js";
-import { loadUI, saveUI, UI_BB_EYEDROPPER, UI_BB_MIXER, UI_BB_MODE, UI_MODE_ROCK, UI_MODE_SOIL, UI_SM_BB, UI_TOPBAR_SM } from "./ui/UIData.js";
+import { loadUI, saveUI, UI_BB_EYEDROPPER, UI_BB_MIXER, UI_BB_MODE, UI_MODE_ROCK, UI_MODE_SOIL, UI_SM_BB, UI_SM_SPECIAL, UI_SPECIAL_SELECT, UI_SPECIAL_WATER, UI_TOPBAR_SM } from "./ui/UIData.js";
 
 export const KEY_CONTROL = "Control";
 export const KEY_SHIFT = "Shift";
@@ -41,6 +41,12 @@ export function keydown(e) {
         saveUI(UI_TOPBAR_SM, true);
         saveUI(UI_SM_BB, true);
         saveUI(UI_BB_MODE, UI_MODE_ROCK);
+    }
+
+    if (e.key == '3') {
+        saveUI(UI_TOPBAR_SM, true);
+        saveUI(UI_SM_SPECIAL, true);
+        saveUI(UI_SPECIAL_SELECT, UI_SPECIAL_WATER);
     }
 
     if (e.key == 'q') {
