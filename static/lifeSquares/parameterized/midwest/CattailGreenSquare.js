@@ -4,6 +4,7 @@ import { addNewOrganism } from "../../../organisms/_orgOperations.js";
 import { WheatSeedOrganism } from "../../../organisms/agriculture/WheatOrganism.js";
 import { addSquare } from "../../../squares/_sqOperations.js";
 import { SeedSquare } from "../../../squares/SeedSquare.js";
+import { CattailSeedOrganism } from "../../../organisms/midwest/CattailOrganism.js";
 
 export class CattailGreenSquare extends BaseLifeSquare {
     constructor(square, organism) {
@@ -28,10 +29,10 @@ export class CattailGreenSquare extends BaseLifeSquare {
             switch (this.subtype) {
                 case SUBTYPE_FLOWERNODE:
                 case SUBTYPE_FLOWER:
-                    this.baseColor = "#668553";
-                    this.darkColor = "#717A4A";
-                    this.accentColor = "#525A2F";
-                    this.width = 0.35 + 0.1 * Math.random();
+                    this.baseColor = "#542f1f";
+                    this.darkColor = "#301a11";
+                    this.accentColor = "#3b231a";
+                    this.width = 1.4 + (0.1 * Math.random())
                     break;
                 case SUBTYPE_TRUNK:
                 case SUBTYPE_SHOOT:
@@ -60,7 +61,7 @@ export class CattailGreenSquare extends BaseLifeSquare {
             var sq = addSquare(new SeedSquare(groundSquare.posX, groundSquare.posY - offsetY));
             if (sq) {
                 sq.opacity = 0;
-                var orgAdded = addNewOrganism(new WheatSeedOrganism(sq));
+                var orgAdded = addNewOrganism(new CattailSeedOrganism(sq));
                 if (!orgAdded) {
                     sq.destroy();
                 }
