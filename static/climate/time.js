@@ -1,6 +1,6 @@
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY } from "../canvas.js";
 import { hexToRgb, hsv2rgb, randNumber, rgb2hsv, rgbToRgba } from "../common.js";
-import { MAIN_CONTEXT } from "../index.js";
+import { MAIN_CONTEXT, setBackgroundColor } from "../index.js";
 import { calculateColorRGB, getFrameRelCloud } from "./temperatureHumidity.js";
 import { zoomCanvasFillRect } from "../canvas.js";
 import { loadUI, UI_SPEED_1, UI_SPEED_2, UI_SPEED_3,
@@ -282,7 +282,10 @@ function renderSkyBackground(time) {
     processedColor.g = processedColorRGBArr[1] - (frameCloudColor.g)
     processedColor.b = processedColorRGBArr[2] - (frameCloudColor.b)
 
-    MAIN_CONTEXT.fillStyle = rgbToRgba(Math.floor(processedColor.r), Math.floor(processedColor.g), Math.floor(processedColor.b), 0.8);
+    let processedColorRgba = rgbToRgba(Math.floor(processedColor.r), Math.floor(processedColor.g), Math.floor(processedColor.b), 0.8);
+    MAIN_CONTEXT.fillStyle = processedColorRgba;
+    setBackgroundColor(processedColorRgba);
+
     zoomCanvasFillRect(
         0,
         0,

@@ -4,12 +4,14 @@ import { loadEmptyScene } from "./saveAndLoad.js";
 import { scheduler_main } from "./main.js";
 import { keydown, keyup } from "./keyboard.js";
 import { handleClick, handleMouseDown, handleMouseUp } from "./mouse.js";
-import { getCanvasHeight, getCanvasWidth, resetZoom, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, zoom } from "./canvas.js";
+import { getBaseSize, getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, resetZoom, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, zoom } from "./canvas.js";
 import { addUIFunctionMap, loadUI, UI_DISPLAY_SIZEY } from "./ui/UIData.js";
 import { initUI } from "./ui/WindowManager.js";
 
 export var MAIN_CANVAS = document.getElementById("main");
 export var MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
+
+const body = document.getElementById("body");
 
 MAIN_CANVAS.addEventListener('mousemove', handleClick, false);
 MAIN_CANVAS.addEventListener('mousedown', handleMouseDown);
@@ -35,20 +37,24 @@ window.onload = function () {
 setTimeout(scheduler_main, 0);
 
 function indexCanvasSize() {
-    let margin = 25;
+    let margin = 5;
     let width = Math.floor(window.innerWidth - margin);
     let height = Math.floor(window.innerHeight - margin);
 
-    let c_baseSize = Math.ceil(height / loadUI(UI_DISPLAY_SIZEY));
+    let c_baseSize = Math.floor(height / loadUI(UI_DISPLAY_SIZEY));
     setCanvasSquaresY(loadUI(UI_DISPLAY_SIZEY));
-    setCanvasSquaresX(width / c_baseSize);      
+    setCanvasSquaresX(Math.floor(width / c_baseSize));      
     setBaseSize(c_baseSize);
 
-    MAIN_CANVAS.width = width;
-    MAIN_CANVAS.height = height; 
+    MAIN_CANVAS.width = getBaseSize() * getCanvasSquaresX();
+    MAIN_CANVAS.height = getBaseSize() * getCanvasSquaresY(); 
     initUI();
     resetZoom();
 }
 addUIFunctionMap(UI_DISPLAY_SIZEY, indexCanvasSize)
+
+export function setBackgroundColor(hexColor) {
+    body.style = "background-color: " + hexColor
+}
 
 window.onresize = indexCanvasSize;
