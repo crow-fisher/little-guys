@@ -5,7 +5,7 @@ import { scheduler_main } from "./main.js";
 import { keydown, keyup } from "./keyboard.js";
 import { handleClick, handleMouseDown, handleMouseUp } from "./mouse.js";
 import { getCanvasHeight, getCanvasWidth, resetZoom, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, zoom } from "./canvas.js";
-import { loadUI, UI_DISPLAY_SIZEY } from "./ui/UIData.js";
+import { addUIFunctionMap, loadUI, UI_DISPLAY_SIZEY } from "./ui/UIData.js";
 import { initUI } from "./ui/WindowManager.js";
 
 export var MAIN_CANVAS = document.getElementById("main");
@@ -35,13 +35,13 @@ window.onload = function () {
 setTimeout(scheduler_main, 0);
 
 function indexCanvasSize() {
-    let margin = 50;
-    let width = window.innerWidth - margin;
-    let height = window.innerHeight - margin;
+    let margin = 25;
+    let width = Math.floor(window.innerWidth - margin);
+    let height = Math.floor(window.innerHeight - margin);
 
     let c_baseSize = Math.ceil(height / loadUI(UI_DISPLAY_SIZEY));
     setCanvasSquaresY(loadUI(UI_DISPLAY_SIZEY));
-    setCanvasSquaresX(width / c_baseSize);
+    setCanvasSquaresX(width / c_baseSize);      
     setBaseSize(c_baseSize);
 
     MAIN_CANVAS.width = width;
@@ -49,6 +49,6 @@ function indexCanvasSize() {
     initUI();
     resetZoom();
 }
-// addUIFunctionMap(UI_DISPLAY_SIZEY)
+addUIFunctionMap(UI_DISPLAY_SIZEY, indexCanvasSize)
 
 window.onresize = indexCanvasSize;
