@@ -97,6 +97,7 @@ export const UI_SPEEDS = [UI_SPEED_1, UI_SPEED_2, UI_SPEED_3, UI_SPEED_4, UI_SPE
 
 export const UI_BOOLEAN = "UI_BOOLEAN";
 
+export const UI_DISPLAY_SIZEY = "UI_DISPLAY_SIZEY";
 
 // put default values in here
 var UI_DATA = {
@@ -118,7 +119,9 @@ var UI_DATA = {
     UI_VIEWMODE_SELECT: UI_VIEWMODE_NORMAL,
     UI_TOPBAR: true,
     UI_SPEED: UI_SPEED_1,
-    UI_CLIMATE_SELECT: UI_CLIMATE_MIDWEST
+    UI_CLIMATE_SELECT: UI_CLIMATE_MIDWEST,
+    UI_DISPLAY_SIZEY: 100
+
 };
 var UI_FUNCTION_MAP = new Map();
 

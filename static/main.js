@@ -4,7 +4,7 @@ import { resetFrameDivMult } from "./lighting/lightingProcessing.js";
 import { renderClouds, renderTemperature, renderWaterSaturation } from "./climate/temperatureHumidity.js";
 import { doTimeSeek, getTimeScale, renderTime, updateTime } from "./climate/time.js";
 import { executeFunctionQueue, loadUI, UI_TOPBAR_DESIGNERMODE, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_WIND } from "./ui/UIData.js";
-import { renderWindows, resetWindowHovered, updateWindows } from "./ui/WindowManager.js";
+import { initUI, renderWindows, resetWindowHovered, updateWindows } from "./ui/WindowManager.js";
 import { renderWindPressureMap } from "./climate/wind.js";
 import { LightingHandler } from "./lighting/lightingHandler.js";
 import { ClimateHandler } from "./climate/climateHandler.js";
@@ -17,6 +17,8 @@ let last_square_tick = 0;
 let last_org_tick = 0;
 
 let updated = false;
+
+initUI();
 
 const lightingHandler = new LightingHandler();
 const climateHandler = new ClimateHandler();

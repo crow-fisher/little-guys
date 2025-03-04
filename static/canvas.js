@@ -3,7 +3,7 @@ import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "./keyboard.js";
 import { getLastMoveOffset, isMiddleMouseClicked } from "./mouse.js";
 import { loadUI, saveUI, UI_BB_SIZE, UI_BB_STRENGTH, UI_SM_BB } from "./ui/UIData.js";
 
-var BASE_SIZE = 12;
+var BASE_SIZE = 1;
 var CANVAS_SQUARES_X = 192; 
 var CANVAS_SQUARES_Y = 108;
 var CANVAS_VIEWPORT_CENTER_X = CANVAS_SQUARES_X * BASE_SIZE / 2;
@@ -18,24 +18,12 @@ export function setBaseSize(newSize) {
 }
 export function setCanvasSquaresX(val) {
     CANVAS_SQUARES_X = Math.floor(val);
-    MAIN_CANVAS.width = CANVAS_SQUARES_X * BASE_SIZE;
-    MAIN_CANVAS.height = CANVAS_SQUARES_Y * BASE_SIZE;
-    for (let i = 0; i < CANVAS_SQUARES_X; i++) {
-        addSquare(new RockSquare(i, CANVAS_SQUARES_Y - 1));
-    }
 }
 export function getCanvasSquaresX() {
     return CANVAS_SQUARES_X;
 }
 export function setCanvasSquaresY(val) {
     CANVAS_SQUARES_Y = Math.floor(val);
-    MAIN_CANVAS.width = CANVAS_SQUARES_X * BASE_SIZE;
-    MAIN_CANVAS.height = CANVAS_SQUARES_Y * BASE_SIZE;
-    mainControlTable.setAttribute("width", CANVAS_SQUARES_X * BASE_SIZE);
-    secondaryControlTable.setAttribute("width", CANVAS_SQUARES_X * BASE_SIZE);
-    for (let i = 0; i < CANVAS_SQUARES_X; i++) {
-        addSquare(new RockSquare(i, CANVAS_SQUARES_Y - 1));
-    }
 }
 export function getCanvasSquaresY() {
     return CANVAS_SQUARES_Y;
