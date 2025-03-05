@@ -135,6 +135,10 @@ function checkIfCollisionAtWindSquare(x, y) {
     return false;
 }
 
+export function getBaseAirPressureAtYPosition(posY) {
+    return base_wind_pressure + (stp_pascals_per_meter * 4 * posY);
+}
+
 function initWindPressure() {
     windPressureMap = new Map();
     windPressureMapByPressure = new Map();
@@ -145,8 +149,6 @@ function initWindPressure() {
     curWindSquaresX = WIND_SQUARES_X();
     curWindSquaresY = WIND_SQUARES_Y();
 
-    var start_pressure = base_wind_pressure;
-    windPressureMapByPressure[start_pressure] = new Array();
     for (let i = 0; i < curWindSquaresX; i++) {
         for (let j = 0; j < curWindSquaresY; j++) {
             if (!(i in windPressureMap)) {
@@ -160,8 +162,7 @@ function initWindPressure() {
             if (checkIfCollisionAtWindSquare(i, j)) {
                 windPressureMap[i][j] = -1;
             } else {
-                windPressureMap[i][j] = start_pressure + (stp_pascals_per_meter * 4 * j);
-                windPressureMapByPressure[start_pressure].push([i, j]);
+                windPressureMap[i][j] = getBaseAirPressureAtYPosition(j);
             }
         }
     }
@@ -451,13 +452,7 @@ function removeWindPressure(x, y) {
         return;
     }
 
-    windPressureMap[x][y] = Math.max(1, windPressureMap[x][y] - clickAddPressure);
-    getWindDirectNeighbors(x, y).forEach(
-        (loc) => {
-            var x2 = loc[0];
-            var y2 = loc[1];
-            windPressureMap[x2][y2] = Math.max(1, windPressureMap[x2][y2] - clickAddPressure);
-        });
+    windPressureMap[x][y] = Math.max(base_wind_pressure * 0.1, windPressureMap[x][y] - clickAddPressure);
 }
 
 function updateWindPressureByMult(x, y, m) {

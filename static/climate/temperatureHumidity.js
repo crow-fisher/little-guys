@@ -2,7 +2,7 @@ import { hexToRgb, randNumber, rgbToRgba } from "../common.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
 import { MAIN_CONTEXT } from "../index.js";
-import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds } from "./wind.js";
+import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds, getBaseAirPressureAtYPosition } from "./wind.js";
 import { getCurTimeScale, timeScaleFactor } from "../climate/time.js";
 import { logRainFall } from "../climate/weather.js";
 import { getDefaultLighting } from "../lighting/lightingProcessing.js";
@@ -368,7 +368,7 @@ export function getHumidity(x, y) {
     if (waterSaturationMap == null) {
         return 0;
     }
-    return waterSaturationMap[x][y] / saturationPressureOfWaterVapor(temperatureMap[x][y]);
+    return waterSaturationMap[x][y] / saturationPressureOfWaterVapor(temperatureMap[x][y]) * (getBaseAirPressureAtYPosition(y) / getPressure(x, y));
 }
 
 function getWaterSaturation(x, y) {

@@ -334,7 +334,7 @@ function renderTime() {
         0,
         getTotalCanvasPixelWidth(),
         getTotalCanvasPixelHeight()
-    );
+        );  
 
     renderSkyBackground(currentTime);
 }
