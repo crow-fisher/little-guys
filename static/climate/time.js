@@ -1,9 +1,10 @@
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY } from "../canvas.js";
 import { hexToRgb, hsv2rgb, randNumber, rgb2hsv, rgbToRgba } from "../common.js";
-import { MAIN_CONTEXT, setBackgroundColor } from "../index.js";
+import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth, MAIN_CONTEXT, setBackgroundColor } from "../index.js";
 import { calculateColorRGB, getFrameRelCloud } from "./temperatureHumidity.js";
 import { zoomCanvasFillRect } from "../canvas.js";
-import { loadUI, UI_SPEED_1, UI_SPEED_2, UI_SPEED_3,
+import {
+    loadUI, UI_SPEED_1, UI_SPEED_2, UI_SPEED_3,
     UI_SPEED_4,
     UI_SPEED_5,
     UI_SPEED_6,
@@ -12,7 +13,7 @@ import { loadUI, UI_SPEED_1, UI_SPEED_2, UI_SPEED_3,
     UI_SPEED_9,
     UI_SPEED,
     UI_SPEED_0
- } from "../ui/UIData.js";
+} from "../ui/UIData.js";
 
 var TIME_SCALE = 1;
 var curUIKey = UI_SPEED_1;
@@ -286,11 +287,11 @@ function renderSkyBackground(time) {
     MAIN_CONTEXT.fillStyle = processedColorRgba;
     setBackgroundColor(processedColorRgba);
 
-    zoomCanvasFillRect(
+    MAIN_CONTEXT.fillRect(
         0,
         0,
-        getCanvasSquaresX() * getBaseSize(),
-        getCanvasSquaresY() * getBaseSize()
+        getTotalCanvasPixelWidth(),
+        getTotalCanvasPixelHeight()
     );
 
     renderStarMap(1 - getDaylightStrength());
@@ -323,11 +324,11 @@ function renderTime() {
     }
 
     MAIN_CONTEXT.fillStyle = calculateTempColorRgba(daylightStrength);
-    zoomCanvasFillRect(
+    MAIN_CONTEXT.fillRect(
         0,
         0,
-        getCanvasSquaresX() * getBaseSize(),
-        getCanvasSquaresY() * getBaseSize()
+        getTotalCanvasPixelWidth(),
+        getTotalCanvasPixelHeight()
     );
 
     renderSkyBackground(currentTime);

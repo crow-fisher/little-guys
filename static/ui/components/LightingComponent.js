@@ -1,4 +1,4 @@
-import { getBaseSize } from "../../canvas.js";
+import { getBaseUISize } from "../../canvas.js";
 import { Component } from "../Component.js";
 import { Container } from "../Container.js";
 import { Slider } from "../elements/Slider.js";
@@ -21,22 +21,22 @@ export class LightingComponent extends Component {
         container.addElement(leftContainer);
         container.addElement(rightContainer);
 
-        leftContainer.addElement(new Text(this.window, sizeX,  getBaseSize() * 1.5, "sun"));
+        leftContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, "sun"));
         leftContainer.addElement(new Slider(this.window, UI_LIGHTING_SUN, sizeX,  35, .329 / 4, .329 * 4));
 
-        rightContainer.addElement(new Text(this.window, sizeX,  getBaseSize() * 1.5, "moon"));
+        rightContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, "moon"));
         rightContainer.addElement(new Slider(this.window, UI_LIGHTING_MOON, sizeX,  35, .005, 1));
 
-        leftContainer.addElement(new Text(this.window, sizeX,  getBaseSize() * 1.5, "water"));
+        leftContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, "water"));
         leftContainer.addElement(new Slider(this.window, UI_LIGHTING_WATER, sizeX,  35, 0.01, 200));
 
-        rightContainer.addElement(new Text(this.window, sizeX,  getBaseSize() * 1.5, "rock"));
+        rightContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, "rock"));
         rightContainer.addElement(new Slider(this.window, UI_LIGHTING_ROCK, sizeX,  35, 0.1, 10));
 
-        leftContainer.addElement(new Text(this.window, sizeX,  getBaseSize() * 1.5, "plant"));
+        leftContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, "plant"));
         leftContainer.addElement(new Slider(this.window, UI_LIGHTING_PLANT, sizeX,  35, 0.1, 10));
 
-        rightContainer.addElement(new Text(this.window, sizeX,  getBaseSize() * 1.5, "decay"));
+        rightContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, "decay"));
         rightContainer.addElement(new Slider(this.window, UI_LIGHTING_DECAY, sizeX,  35, .95, 1));
 
     }

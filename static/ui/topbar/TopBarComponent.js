@@ -1,4 +1,4 @@
-import { getBaseSize, getCanvasWidth } from "../../canvas.js";
+import { getBaseUISize, getCanvasWidth } from "../../canvas.js";
 import { COLOR_BLACK } from "../../colors.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { TopBarTime } from "./TopBarTime.js";
@@ -32,25 +32,25 @@ export class TopBarComponent {
         this.elements = new Map();
         this.elements[1] = new Array();
 
-        this.elements[1].push(new TopBarToggle(getBaseSize() * 2,"left", UI_SPEED, UI_SPEED_0, "⏸"));
-        this.elements[1].push(new TopBarToggle(getBaseSize() * 2,"left", UI_SPEED, UI_SPEED_1, "▶"));
-        this.elements[1].push(new TopBarToggle(getBaseSize() * 2,"left", UI_SPEED, UI_SPEED_2, "▶"));
-        this.elements[1].push(new TopBarToggle(getBaseSize() * 2,"left", UI_SPEED, UI_SPEED_3, "▶"));
-        this.elements[1].push(new TopBarToggle(getBaseSize() * 2,"left", UI_SPEED, UI_SPEED_4, "▶"));
-        this.elements[1].push(new TopBarToggle(getBaseSize() * 2,"left", UI_SPEED, UI_SPEED_5, "▶"));
-        this.elements[1].push(new TopBarToggle(getBaseSize() * 2,"left", UI_SPEED, UI_SPEED_6, "▶"));
-        this.elements[1].push(new TopBarToggle(getBaseSize() * 2,"left", UI_SPEED, UI_SPEED_7, "▶"));
-        this.elements[1].push(new TopBarToggle(getBaseSize() * 2,"left", UI_SPEED, UI_SPEED_8, "▶"));
-        this.elements[1].push(new TopBarToggle(getBaseSize() * 2,"left", UI_SPEED, UI_SPEED_9, "▶\t"));
-        this.elements[1].push(new TopBarTime(getBaseSize() * 2));
+        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_0, "⏸"));
+        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_1, "▶"));
+        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_2, "▶"));
+        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_3, "▶"));
+        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_4, "▶"));
+        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_5, "▶"));
+        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_6, "▶"));
+        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_7, "▶"));
+        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_8, "▶"));
+        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_9, "▶\t"));
+        this.elements[1].push(new TopBarTime(getBaseUISize() * 2));
 
         this.elements[0] = [
-            new TopBarToggle(getBaseSize() * 2, "left", UI_TOPBAR_MAINMENU, UI_BOOLEAN, " main menu | "),
-            new TopBarToggle(getBaseSize() * 2, "left", UI_TOPBAR_SM, UI_BOOLEAN, "block menu | "),
-            new TopBarToggle(getBaseSize() * 2, "left", UI_TOPBAR_VIEWMODE, UI_BOOLEAN, "select viewmode | "),
-            new TopBarToggle(getBaseSize() * 2, "left", UI_TOPBAR_TOGGLELIGHTING, UI_BOOLEAN, "toggle lighting | "),
-            new TopBarToggle(getBaseSize() * 2, "left", UI_TOPBAR_FASTLIGHTING, UI_BOOLEAN, "fast lighting | "),
-            new TopBarToggle(getBaseSize() * 2, "left", UI_TOPBAR_DESIGNERMODE, UI_BOOLEAN, "designer mode")
+            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_MAINMENU, UI_BOOLEAN, " main menu | "),
+            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_SM, UI_BOOLEAN, "block menu | "),
+            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_VIEWMODE, UI_BOOLEAN, "select viewmode | "),
+            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_TOGGLELIGHTING, UI_BOOLEAN, "toggle lighting | "),
+            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_FASTLIGHTING, UI_BOOLEAN, "fast lighting | "),
+            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_DESIGNERMODE, UI_BOOLEAN, "designer mode")
         ];
 
         this.maxHeight = 0;
@@ -100,7 +100,7 @@ export class TopBarComponent {
         var x = curMouseLocation.x;
         var y = curMouseLocation.y;
 
-        if (y > this.maxHeight + (getBaseSize() * 2)) {
+        if (y > this.maxHeight + (getBaseUISize() * 2)) {
             return;
         }
 

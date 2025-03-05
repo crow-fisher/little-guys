@@ -1,4 +1,4 @@
-import { getBaseSize } from "../../canvas.js";
+import { getBaseUISize } from "../../canvas.js";
 import { Component } from "../Component.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
 import { Container } from "../Container.js";
@@ -15,7 +15,7 @@ export const BB_SIZE_MAX = 14;
 export class BlockBuildingComponent extends Component {
     constructor(posX, posY, padding, dir, key) {
         super(posX, posY, padding, dir, key);
-        let sizeX = getBaseSize() * 32;
+        let sizeX = getBaseUISize() * 32;
         let halfSizeX = sizeX / 2;
         let container = new Container(this.window, padding, 1);
         this.window.container = container;
@@ -23,7 +23,7 @@ export class BlockBuildingComponent extends Component {
         this.soilPickerElement = new SoilPickerElement(this.window, UI_SOIL_COMPOSITION, sizeX, halfSizeX);
         this.rockPickerElement = new SoilPickerElement(this.window, UI_ROCK_COMPOSITION, sizeX, halfSizeX);
         
-        container.addElement(new Radio(this.window, sizeX, getBaseSize() * 3, UI_BB_MODE, [UI_MODE_SOIL, UI_MODE_ROCK]));
+        container.addElement(new Radio(this.window, sizeX, getBaseUISize() * 3, UI_BB_MODE, [UI_MODE_SOIL, UI_MODE_ROCK]));
         let soilConditionalContainer = new ConditionalContainer(this.window, padding, 1, () => loadUI(UI_BB_MODE) == UI_MODE_SOIL);
         soilConditionalContainer.addElement(this.soilPickerElement);
         let rockConditionalContainer = new ConditionalContainer(this.window, padding, 1, () => loadUI(UI_BB_MODE) == UI_MODE_ROCK);
@@ -37,18 +37,18 @@ export class BlockBuildingComponent extends Component {
         let sizeContainer = new Container(this.window, padding, 1);
         strengthSizeContainer.addElement(sizeContainer);
 
-        sizeContainer.addElement(new Text(this.window, halfSizeX, getBaseSize() * 1.5, "size"));
-        sizeContainer.addElement(new Slider(this.window, UI_BB_SIZE, halfSizeX, getBaseSize() * 3, BB_SIZE_MIN, BB_SIZE_MAX));
+        sizeContainer.addElement(new Text(this.window, halfSizeX, getBaseUISize() * 1.5, "size"));
+        sizeContainer.addElement(new Slider(this.window, UI_BB_SIZE, halfSizeX, getBaseUISize() * 3, BB_SIZE_MIN, BB_SIZE_MAX));
 
         let strengthContainer = new Container(this.window, padding, 1);
         strengthSizeContainer.addElement(strengthContainer);
 
-        strengthContainer.addElement(new Text(this.window, halfSizeX, getBaseSize() * 1.5, "strength"));
-        strengthContainer.addElement(new Slider(this.window, UI_BB_STRENGTH, halfSizeX, getBaseSize() * 3, 0, 1));
+        strengthContainer.addElement(new Text(this.window, halfSizeX, getBaseUISize() * 1.5, "strength"));
+        strengthContainer.addElement(new Slider(this.window, UI_BB_STRENGTH, halfSizeX, getBaseUISize() * 3, 0, 1));
         let specialToolContainer = new Container(this.window, padding, 0);
         container.addElement(specialToolContainer);
-        specialToolContainer.addElement(new Toggle(this.window,sizeX / 2, getBaseSize() * 2.5, UI_BB_EYEDROPPER , "q | eyedropper"))
-        specialToolContainer.addElement(new Toggle(this.window,sizeX / 2, getBaseSize() * 2.5, UI_BB_MIXER , "w | mixer"))
+        specialToolContainer.addElement(new Toggle(this.window,sizeX / 2, getBaseUISize() * 2.5, UI_BB_EYEDROPPER , "q | eyedropper"))
+        specialToolContainer.addElement(new Toggle(this.window,sizeX / 2, getBaseUISize() * 2.5, UI_BB_MIXER , "w | mixer"))
     }
 
     setHover(sand, silt, clay) {

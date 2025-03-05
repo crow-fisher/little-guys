@@ -1,7 +1,7 @@
 import { MAIN_CONTEXT } from "./index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "./keyboard.js";
 import { getLastMoveOffset, isMiddleMouseClicked } from "./mouse.js";
-import { loadUI, saveUI, UI_BB_SIZE, UI_BB_STRENGTH, UI_SM_BB } from "./ui/UIData.js";
+import { loadUI, saveUI, UI_BB_SIZE, UI_BB_STRENGTH, UI_SIZE, UI_SM_BB } from "./ui/UIData.js";
 
 var BASE_SIZE = 1;
 var CANVAS_SQUARES_X = 192; 
@@ -16,6 +16,11 @@ export function getBaseSize() {
 export function setBaseSize(newSize) {
     BASE_SIZE = newSize;
 }
+
+export function getBaseUISize() {
+    return loadUI(UI_SIZE);
+}
+
 export function setCanvasSquaresX(val) {
     CANVAS_SQUARES_X = Math.floor(val);
 }

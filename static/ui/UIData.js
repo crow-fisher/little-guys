@@ -10,6 +10,8 @@ export const UI_BB_MIXER = "UI_BB_MIXER";
 
 export const UI_NULL = "UI_NULL";
 
+export const UI_SIZE = "UI_SIZE";
+
 export const UI_SOIL_COMPOSITION = "UI_SOIL_COMPOSITION";
 export const UI_ROCK_COMPOSITION = "UI_ROCK_COMPOSITION";
 export const UI_SOIL_VIEWMODE = "UI_SOIL_VIEWMODE";
@@ -121,8 +123,8 @@ var UI_DATA = {
     UI_TOPBAR: true,
     UI_SPEED: UI_SPEED_1,
     UI_CLIMATE_SELECT: UI_CLIMATE_MIDWEST,
-    UI_DISPLAY_SIZEY: 100
-
+    UI_DISPLAY_SIZEY: 100,
+    UI_SIZE: 12
 };
 var UI_FUNCTION_MAP = new Map();
 

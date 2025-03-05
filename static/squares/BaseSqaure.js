@@ -215,7 +215,7 @@ export class BaseSquare {
         }
     }
     render() {
-        if (!this.visible) {
+        if (!this.visible || this.posY >= getCanvasSquaresY()) {
             return;
         }
         let selectedViewMode = loadUI(UI_VIEWMODE_SELECT);

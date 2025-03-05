@@ -1,4 +1,4 @@
-import { getBaseSize } from "../canvas.js";
+import { getBaseUISize } from "../canvas.js";
 import { BlockBuildingComponent } from "./components/BlockBuildingComponent.js";
 import { LightingComponent } from "./components/LightingComponent.js";
 import { OrganismComponent } from "./components/OrganismComponent.js";
@@ -19,22 +19,22 @@ var all_components;
 
 all_components = [];
 topBarComponent = new TopBarComponent("UI_TOPBAR");
-blockBuildingComponent = new BlockBuildingComponent(getBaseSize() * 34, getBaseSize() * 6, 10, 0, UI_SM_BB);
+blockBuildingComponent = new BlockBuildingComponent(getBaseUISize() * 34, getBaseUISize() * 6, 10, 0, UI_SM_BB);
 export function initUI() {
     all_components = [];
     topBarComponent = new TopBarComponent("UI_TOPBAR");
-    blockBuildingComponent = new BlockBuildingComponent(getBaseSize() * 34, getBaseSize() * 6, 10, 0, UI_SM_BB);
+    blockBuildingComponent = new BlockBuildingComponent(getBaseUISize() * 34, getBaseUISize() * 6, 10, 0, UI_SM_BB);
     
-    all_components.push(new MainMenuComponent(getBaseSize() * 2, getBaseSize() * 6, 10, 0, UI_TOPBAR_MAINMENU));
-    all_components.push(new SubMenuComponent(getBaseSize() * 18, getBaseSize() * 6, 10, 0, UI_TOPBAR_SM));
-    all_components.push(new ViewModeComponent(getBaseSize() * 64, getBaseSize() * 6, 10, 0, UI_TOPBAR_VIEWMODE));
+    all_components.push(new MainMenuComponent(getBaseUISize() * 2, getBaseUISize() * 6, 10, 0, UI_TOPBAR_MAINMENU));
+    all_components.push(new SubMenuComponent(getBaseUISize() * 18, getBaseUISize() * 6, 10, 0, UI_TOPBAR_SM));
+    all_components.push(new ViewModeComponent(getBaseUISize() * 64, getBaseUISize() * 6, 10, 0, UI_TOPBAR_VIEWMODE));
 
     all_components.push(blockBuildingComponent);
-    all_components.push(new SpecialBlockComponent(getBaseSize() * 34, getBaseSize() * 6, 10, 0, UI_SM_SPECIAL));
-    all_components.push(new LightingComponent(getBaseSize() * 34, getBaseSize() * 6, 10, 0, UI_SM_LIGHTING));
-    all_components.push(new OrganismComponent(getBaseSize() * 34, getBaseSize() * 6, 10, 0, UI_SM_ORGANISM));
-    all_components.push(new GodModeComponent(getBaseSize() * 34, getBaseSize() * 6, 10, 0, UI_SM_GODMODE));
-    all_components.push(new ClimateComponent(getBaseSize() * 34, getBaseSize() * 6, 10, 0, UI_SM_CLIMATE));
+    all_components.push(new SpecialBlockComponent(getBaseUISize() * 34, getBaseUISize() * 6, 10, 0, UI_SM_SPECIAL));
+    all_components.push(new LightingComponent(getBaseUISize() * 34, getBaseUISize() * 6, 10, 0, UI_SM_LIGHTING));
+    all_components.push(new OrganismComponent(getBaseUISize() * 34, getBaseUISize() * 6, 10, 0, UI_SM_ORGANISM));
+    all_components.push(new GodModeComponent(getBaseUISize() * 34, getBaseUISize() * 6, 10, 0, UI_SM_GODMODE));
+    all_components.push(new ClimateComponent(getBaseUISize() * 34, getBaseUISize() * 6, 10, 0, UI_SM_CLIMATE));
 
 }
 

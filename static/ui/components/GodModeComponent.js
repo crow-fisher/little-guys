@@ -1,4 +1,4 @@
-import { getBaseSize } from "../../canvas.js";
+import { getBaseUISize } from "../../canvas.js";
 import { Component } from "../Component.js";
 import { Container } from "../Container.js";
 import { Button } from "../elements/Button.js";
@@ -21,7 +21,7 @@ import {
 export class GodModeComponent extends Component {
     constructor(posX, posY, padding, dir, key) {
         super(posX, posY, padding, dir, key);
-        let sizeX = getBaseSize() * 26;
+        let sizeX = getBaseUISize() * 26;
         let halfSizeX = sizeX / 2;
         let container = new Container(this.window, padding, 1);
         this.window.container = container;
@@ -31,24 +31,24 @@ export class GodModeComponent extends Component {
         let sizeContainer = new Container(this.window, padding, 1);
         strengthSizeContainer.addElement(sizeContainer);
 
-        sizeContainer.addElement(new Text(this.window, halfSizeX, getBaseSize() * 1.5, "size"));
-        sizeContainer.addElement(new Slider(this.window, UI_BB_SIZE, halfSizeX, getBaseSize() * 3, 2, 14));
+        sizeContainer.addElement(new Text(this.window, halfSizeX, getBaseUISize() * 1.5, "size"));
+        sizeContainer.addElement(new Slider(this.window, UI_BB_SIZE, halfSizeX, getBaseUISize() * 3, 2, 14));
 
         let strengthContainer = new Container(this.window, padding, 1);
         strengthSizeContainer.addElement(strengthContainer);
 
-        strengthContainer.addElement(new Text(this.window, halfSizeX, getBaseSize() * 1.5, "strength"));
-        strengthContainer.addElement(new Slider(this.window, UI_BB_STRENGTH, halfSizeX, getBaseSize() * 3, 0, 1));
+        strengthContainer.addElement(new Text(this.window, halfSizeX, getBaseUISize() * 1.5, "strength"));
+        strengthContainer.addElement(new Slider(this.window, UI_BB_STRENGTH, halfSizeX, getBaseUISize() * 3, 0, 1));
 
-        container.addElement(new Text(this.window, sizeX, getBaseSize() * 1.5, "god tool select"));
-        container.addElement(new RowedRadio(this.window, sizeX, getBaseSize() * 5, UI_GODMODE_SELECT, 2, [
+        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 1.5, "god tool select"));
+        container.addElement(new RowedRadio(this.window, sizeX, getBaseUISize() * 5, UI_GODMODE_SELECT, 2, [
             UI_GODMODE_WIND,
             UI_GODMODE_TEMPERATURE,
             UI_GODMODE_MOISTURE,
             UI_GODMODE_KILL
         ]));
 
-        container.addElement(new Toggle(this.window, getBaseSize() * 16, getBaseSize() * 3, UI_GODMODE_FASTPLANT, "fast plant"));
+        container.addElement(new Toggle(this.window, getBaseUISize() * 16, getBaseUISize() * 3, UI_GODMODE_FASTPLANT, "fast plant"));
         
     }
 }

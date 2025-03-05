@@ -1,4 +1,4 @@
-import { getBaseSize } from "../../canvas.js";
+import { getBaseUISize } from "../../canvas.js";
 import { setClimate } from "../../climate/weather.js";
 import { Component } from "../Component.js";
 import { Container } from "../Container.js";
@@ -19,11 +19,11 @@ import {
 export class ClimateComponent extends Component {
     constructor(posX, posY, padding, dir, key) {
         super(posX, posY, padding, dir, key);
-        var sizeX = getBaseSize() * 16;
+        var sizeX = getBaseUISize() * 16;
         let container = new Container(this.window, padding, 1);
         this.window.container = container;
-        container.addElement(new Text(this.window, sizeX * 2, getBaseSize() * 1.5, "climate select"));
-        container.addElement(new Radio(this.window, sizeX * 2, getBaseSize() * 3, UI_CLIMATE_SELECT, [
+        container.addElement(new Text(this.window, sizeX * 2, getBaseUISize() * 1.5, "climate select"));
+        container.addElement(new Radio(this.window, sizeX * 2, getBaseUISize() * 3, UI_CLIMATE_SELECT, [
             UI_CLIMATE_MIDWEST,
             UI_CLIMATE_DESERT,
             UI_CLIMATE_FANTASY
