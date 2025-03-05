@@ -18,7 +18,7 @@ import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
-import { loadUI, UI_BB_EYEDROPPER, UI_BB_MIXER, UI_BB_MODE, UI_BB_SIZE, UI_BB_STRENGTH, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_TEMPERATURE, UI_GODMODE_WIND, UI_MODE_ROCK, UI_MODE_SOIL, UI_ORGANISM_SELECT, UI_SM_BB, UI_SM_GODMODE, UI_SM_ORGANISM, UI_SM_SPECIAL, UI_SPECIAL_AQUIFER, UI_SPECIAL_MIX, UI_SPECIAL_SELECT, UI_SPECIAL_SURFACE, UI_SPECIAL_WATER } from "./ui/UIData.js";
+import { loadUI, UI_BB_EYEDROPPER, UI_BB_MIXER, UI_BB_MODE, UI_BB_SIZE, UI_BB_STRENGTH, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_STRENGTH, UI_GODMODE_TEMPERATURE, UI_GODMODE_WIND, UI_MODE_ROCK, UI_MODE_SOIL, UI_ORGANISM_SELECT, UI_SM_BB, UI_SM_GODMODE, UI_SM_ORGANISM, UI_SM_SPECIAL, UI_SPECIAL_AQUIFER, UI_SPECIAL_MIX, UI_SPECIAL_SELECT, UI_SPECIAL_SURFACE, UI_SPECIAL_WATER } from "./ui/UIData.js";
 import { eyedropperBlockClick, eyedropperBlockHover, isWindowHovered, mixerBlockClick } from "./ui/WindowManager.js";
 import { CattailSeedOrganism } from "./organisms/midwest/CattailOrganism.js";
 var prevManipulationOffset;
@@ -107,12 +107,12 @@ function doBlockMod(posX, posY) {
             addTemperature(posX, posY, .5);
         else
             addTemperature(posX, posY, -0.5);
-    }
+    }   
     if (loadUI(UI_GODMODE_SELECT) == UI_GODMODE_MOISTURE) {
         if (!isRightMouseClicked())
-            addWaterSaturationPascalsSqCoords(posX, posY, 100);
+            addWaterSaturationPascalsSqCoords(posX, posY, 10 * loadUI(UI_GODMODE_STRENGTH));
         else
-            addWaterSaturationPascalsSqCoords(posX, posY, -100);
+            addWaterSaturationPascalsSqCoords(posX, posY, -10 * loadUI(UI_GODMODE_STRENGTH));
     }
     if (loadUI(UI_GODMODE_SELECT) == UI_GODMODE_KILL) {
         killOrganismsAtSquare(posX, posY);

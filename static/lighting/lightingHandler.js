@@ -1,29 +1,17 @@
+import { getFrameDt } from "../climate/time.js";
 import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
-import { loadUI, UI_TOPBAR_TOGGLELIGHTING } from "../ui/UIData.js";
+import { loadUI, UI_LIGHTING_FASTUPDATERATE, UI_LIGHTING_SLOWUPDATERATE, UI_TOPBAR_FASTLIGHTING, UI_TOPBAR_TOGGLELIGHTING } from "../ui/UIData.js";
 import { createMoonLightGroup, createSunLightGroup, lightingClearLifeSquarePositionMap, lightingRegisterLifeSquare } from "./lighting.js";
 
 
-export const SLOW_LIGHTING_INTERVAL = 3000;
-export const FAST_LIGHTING_INTERVAL = 1000;
-
-let restingLightingInterval = SLOW_LIGHTING_INTERVAL;
-let curLightingInterval = restingLightingInterval;
-
 export function getCurLightingInterval() {
-    return curLightingInterval;
+    return (loadUI(UI_TOPBAR_FASTLIGHTING) ? loadUI(UI_LIGHTING_FASTUPDATERATE) : loadUI(UI_LIGHTING_SLOWUPDATERATE)) * getFrameDt();
 }
 
 export function setNextLightingInterval(inVal) {
     curLightingInterval = inVal;
 }
 
-export function setRestingLightingInterval(inVal) {
-    curLightingInterval = inVal;
-}
-
-export function getRestingLightingInterval() {
-    return restingLightingInterval;
-}
 
 export class LightingHandler {
     constructor() {

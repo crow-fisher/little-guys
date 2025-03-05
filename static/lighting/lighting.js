@@ -4,7 +4,7 @@ import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getMoo
 import { loadUI, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_SUN } from "../ui/UIData.js";
 import { getWindSquaresX, getWindSquaresY } from "../climate/wind.js";
 import { getCanvasSquaresX, getCanvasSquaresY } from "../canvas.js";
-import { getCurLightingInterval, getRestingLightingInterval, setNextLightingInterval } from "./lightingHandler.js";
+import { getCurLightingInterval } from "./lightingHandler.js";
 
 let lifeSquarePositions = new Map();
 export let MAX_BRIGHTNESS = 8;
@@ -457,9 +457,11 @@ export class LightSource {
         this.preprocessTerrainSquares();
         this.preprocessLifeSquares();
         let timeInterval = getCurLightingInterval();
+        let scheduledTime = 0;
         for (let i = 0; i < this.num_tasks; i++) {
             let startIdx = Math.floor(i * tasksPerThread);
             let endIdx = Math.ceil((i + 1) * (tasksPerThread));
+            scheduledTime = i * (timeInterval / this.num_tasks)
             setTimeout(() => {
                 for (let i = startIdx; i < Math.min(endIdx, a0.length); i++) {
                     this.rayCastingForTheta(idx, jobIdx, a0[i], thetaStep);
@@ -468,7 +470,7 @@ export class LightSource {
                 if (this.num_completed[idx][jobIdx] == this.num_tasks) {
                     onComplete();
                 }
-            }, i * (timeInterval / this.num_tasks));
+            }, scheduledTime);
         }
     }
 }

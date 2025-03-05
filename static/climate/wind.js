@@ -160,7 +160,7 @@ function initWindPressure() {
             if (checkIfCollisionAtWindSquare(i, j)) {
                 windPressureMap[i][j] = -1;
             } else {
-                windPressureMap[i][j] = start_pressure;
+                windPressureMap[i][j] = start_pressure + (stp_pascals_per_meter * 4 * j);
                 windPressureMapByPressure[start_pressure].push([i, j]);
             }
         }

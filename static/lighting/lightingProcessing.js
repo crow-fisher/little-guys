@@ -1,7 +1,6 @@
 import { getStandardDeviation } from "../common.js";
 import { getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "../climate/time.js";
-import { addUIFunctionMap, loadUI, UI_TOPBAR_FASTLIGHTING, UI_TOPBAR_TOGGLELIGHTING } from "../ui/UIData.js";
-import { FAST_LIGHTING_INTERVAL, setRestingLightingInterval, SLOW_LIGHTING_INTERVAL } from "./lightingHandler.js";
+import { loadUI, UI_TOPBAR_TOGGLELIGHTING } from "../ui/UIData.js";
 
 var curFrameValues = [1];
 var prevFrameDivMult = 1;
@@ -62,11 +61,3 @@ export function applyLightingFromSource(source, dest) {
         dest.lighting.push([Array.from(light[0].map((x) => x)), light[1]])
     });
 }
-
-addUIFunctionMap(UI_TOPBAR_FASTLIGHTING, () => {
-    if (loadUI(UI_TOPBAR_FASTLIGHTING)) {
-        setRestingLightingInterval(FAST_LIGHTING_INTERVAL);
-    } else {
-        setRestingLightingInterval(SLOW_LIGHTING_INTERVAL);
-    }
-})

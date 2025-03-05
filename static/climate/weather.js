@@ -221,8 +221,8 @@ var climateTemperate = {
 }
 
 var climateMoist = {
-    WEATHER_SUNNY: 50,
-    WEATHER_CLOUDY: 60,
+    WEATHER_SUNNY: 0,
+    WEATHER_CLOUDY: 600,
     WEATHER_LIGHTRAIN: 40,
     WEATHER_HEAVYRAIN: 30
 }
@@ -236,7 +236,7 @@ var climateWet = {
 }
 
 curWeather = weatherSunny;
-curClimate = climateDry;
+curClimate = climateMoist;
 
 function weatherChange() {
     if (getCurDay() < curWeatherStartTime + curWeatherInterval) {

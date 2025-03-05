@@ -16,7 +16,8 @@ import {
     UI_BB_STRENGTH,
     saveUI,
     loadUI,
-    UI_GODMODE_FASTPLANT
+    UI_GODMODE_FASTPLANT,
+    UI_GODMODE_STRENGTH
 } from "../UIData.js";
 export class GodModeComponent extends Component {
     constructor(posX, posY, padding, dir, key) {
@@ -32,13 +33,13 @@ export class GodModeComponent extends Component {
         strengthSizeContainer.addElement(sizeContainer);
 
         sizeContainer.addElement(new Text(this.window, halfSizeX, getBaseUISize() * 1.5, "size"));
-        sizeContainer.addElement(new Slider(this.window, UI_BB_SIZE, halfSizeX, getBaseUISize() * 3, 2, 14));
+        sizeContainer.addElement(new Slider(this.window, UI_BB_SIZE, halfSizeX, getBaseUISize() * 3, 2, 50));
 
         let strengthContainer = new Container(this.window, padding, 1);
         strengthSizeContainer.addElement(strengthContainer);
 
         strengthContainer.addElement(new Text(this.window, halfSizeX, getBaseUISize() * 1.5, "strength"));
-        strengthContainer.addElement(new Slider(this.window, UI_BB_STRENGTH, halfSizeX, getBaseUISize() * 3, 0, 1));
+        strengthContainer.addElement(new Slider(this.window, UI_GODMODE_STRENGTH, halfSizeX, getBaseUISize() * 3, 0, 1));
 
         container.addElement(new Text(this.window, sizeX, getBaseUISize() * 1.5, "god tool select"));
         container.addElement(new RowedRadio(this.window, sizeX, getBaseUISize() * 5, UI_GODMODE_SELECT, 2, [

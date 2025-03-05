@@ -281,21 +281,4 @@ async function decompress(base64String) {
 
 export function loadEmptyScene() {
     purgeGameState();
-    for (let i = 0; i < getCanvasSquaresX(); i++) {
-        addSquare(new RockSquare(i, getCanvasSquaresY() - 1));
-    }
 }
-
-export function loadFlatDirtWorld() {
-    loadEmptyScene();
-    for (let i = 0; i < getCanvasSquaresX(); i++) {
-        for (let j = 1; j < 10; j++) {
-            var square = addSquareByName(i, getCanvasSquaresY() - (1 + j), "loam");
-            if (square)
-                square.randomize();
-        }
-        addSquareByName(i, 30, "water");
-    }
-
-}
-

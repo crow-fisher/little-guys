@@ -44,11 +44,12 @@ export function purge() {
 }
 
 export function reset() {
-    iterateOnSquares((sq) => sq.reset(), 0);
     resetWaterflowSquares();
     frame_squares = getSqIterationOrder();
     frame_solid_squares = frame_squares.filter((sq) => sq.solid);
     frame_water_squares = frame_squares.filter((sq) => !sq.solid);
+    frame_squares.forEach((sq) => sq.reset());
+
 }
 
 export function renderSquares() {

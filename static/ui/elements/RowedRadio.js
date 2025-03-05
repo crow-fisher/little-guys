@@ -17,7 +17,7 @@ export class RowedRadio extends WindowElement {
 
     render(startX, startY) {
         var curX = 0;
-        MAIN_CONTEXT.font = (this.sizeY / this.rows) - 10 + "px courier"
+        MAIN_CONTEXT.font = (this.sizeY / this.rows) * 0.75 + "px courier"
         MAIN_CONTEXT.textAlign = 'center';
         MAIN_CONTEXT.textBaseline = 'middle';
         let xStep = (this.rows * this.sizeX) / this.choices.length;

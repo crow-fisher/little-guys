@@ -25,6 +25,11 @@ var curTime = 0.8;
 var prevTime = 0;
 
 var prevRealTime = Date.now();
+var dt = 0;
+
+export function getFrameDt() {
+    return dt;
+}
 
 var starMap;
 var starMapCenterX;
@@ -225,7 +230,7 @@ function updateTime() {
     if (TIME_SCALE == 0) {
         return;
     }
-    var dt = Date.now() - prevRealTime;
+    dt = Date.now() - prevRealTime;
     if (dt > 10000) {
         prevRealTime = Date.now();
     } else {

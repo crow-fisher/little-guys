@@ -23,7 +23,7 @@ var c_cloudMidRGB = hexToRgb("#dbdce1")
 var c_cloudMaxRGB = hexToRgb("#818398");
 
 var cloudRainThresh = 1.01;
-var cloudRainMax = 1.05;
+var cloudRainMax = 1.1;
 var cloudMaxOpacity = 0.65;
 
 var pascalsPerWaterSquare = (1.986 * 10 ** 6);
@@ -262,7 +262,7 @@ function doRain() {
             var expectedPascals = saturationPressureOfWaterVapor(adjacentTemperature) * cloudRainThresh;
             var adjacentPascals = getAdjacentProp(x, y, (x, y) => waterSaturationMap[x][y]) / 5;
 
-            var dropPascals = (adjacentPascals - expectedPascals) * 0.25;
+            var dropPascals = (adjacentPascals - expectedPascals) * 0.05;
             var usedWaterPascalsPerSquare = dropPascals / 5;
             var dropHealth = dropPascals / pascalsPerWaterSquare;
             dropHealth *= Math.min(1000, getCurTimeScale());
@@ -493,9 +493,6 @@ function addWaterSaturationPascalsSqCoords(x, y, pascals) {
         return;
     }
     addWaterSaturationPascals(x, y, pascals);
-
-    doFunctionOnRealSquares(x, y, (sq) => (sq.collision) ? sq.waterPressure += 0.01 : null);
-
 }
 
 function addWaterSaturationPascals(x, y, pascals) {
