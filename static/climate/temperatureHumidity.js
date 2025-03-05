@@ -2,7 +2,7 @@ import { hexToRgb, randNumber, rgbToRgba } from "../common.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
 import { MAIN_CONTEXT } from "../index.js";
-import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds, getBaseAirPressureAtYPosition } from "./wind.js";
+import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds, getBaseAirPressureAtYPosition, getAirSquareDensity, getWindPressureSquareDensity } from "./wind.js";
 import { getCurTimeScale, timeScaleFactor } from "../climate/time.js";
 import { logRainFall } from "../climate/weather.js";
 import { getDefaultLighting } from "../lighting/lightingProcessing.js";
@@ -262,7 +262,7 @@ function doRain() {
             var expectedPascals = saturationPressureOfWaterVapor(adjacentTemperature) * cloudRainThresh;
             var adjacentPascals = getAdjacentProp(x, y, (x, y) => waterSaturationMap[x][y]) / 5;
 
-            var dropPascals = (adjacentPascals - expectedPascals) * 0.05;
+            var dropPascals = (adjacentPascals - expectedPascals) * 0.005;
             var usedWaterPascalsPerSquare = dropPascals / 5;
             var dropHealth = dropPascals / pascalsPerWaterSquare;
             dropHealth *= Math.min(1000, getCurTimeScale());
@@ -368,11 +368,14 @@ export function getHumidity(x, y) {
     if (waterSaturationMap == null) {
         return 0;
     }
-    return waterSaturationMap[x][y] / saturationPressureOfWaterVapor(temperatureMap[x][y]) * (getBaseAirPressureAtYPosition(y) / getPressure(x, y));
+    return waterSaturationMap[x][y] / saturationPressureOfWaterVapor(temperatureMap[x][y]) / getWindPressureSquareDensity(x, y);
 }
 
-function getWaterSaturation(x, y) {
+export function getWaterSaturation(x, y) {
     return waterSaturationMap[x][y];
+}
+export function setWaterSaturation(x, y, v) {
+    waterSaturationMap[x][y] = v;
 }
 
 function calculateColorTemperature(val) {
@@ -514,4 +517,4 @@ function _addWaterSaturation(x, y) {
 }
 
 
-export { calculateColorProvideOpacity, pascalsPerWaterSquare, cloudRainThresh, calculateColor, calculateColorTemperature, addWaterSaturationPascals, addWaterSaturationPascalsSqCoords, saturationPressureOfWaterVapor, getWaterSaturation, updateWindSquareTemperature, renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds }
+export { calculateColorProvideOpacity, pascalsPerWaterSquare, cloudRainThresh, calculateColor, calculateColorTemperature, addWaterSaturationPascals, addWaterSaturationPascalsSqCoords, saturationPressureOfWaterVapor, updateWindSquareTemperature, renderTemperature, renderWaterSaturation, tickMaps, addTemperature, addWaterSaturation, renderClouds }
