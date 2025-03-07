@@ -106,20 +106,20 @@ export function zoomCanvasFillRectTheta(x, y, dx, dy, theta) {
     var xpl = xpi * totalWidth;
     var ypl = ypi * totalHeight;
 
-    let xMid = xpl + (dx / 2);
-    let yMid = ypl + (dy / 2);
+    let xRef = xpl;
+    let yRef = ypl + dy;
 
-    let p1x = xpl - xMid;
-    let p1y = ypl - yMid;
+    let p1x = xpl - xRef;
+    let p1y = ypl - yRef;
 
-    let p2x = xpl + dx - xMid;
-    let p2y = ypl - yMid;
+    let p2x = xpl + dx - xRef;
+    let p2y = ypl - yRef;
 
-    let p3x = xpl + dx - xMid; 
-    let p3y = ypl + dy - yMid;
+    let p3x = xpl + dx - xRef; 
+    let p3y = ypl + dy - yRef;
 
-    let p4x = xpl - xMid; 
-    let p4y = ypl + dy - yMid;
+    let p4x = xpl - xRef; 
+    let p4y = ypl + dy - yRef;
 
     let p1xR = p1x * Math.cos(theta) - p1y * Math.sin(theta);
     let p1yR = p1y * Math.cos(theta) + p1x * Math.sin(theta);
@@ -131,15 +131,16 @@ export function zoomCanvasFillRectTheta(x, y, dx, dy, theta) {
     let p4yR = p4y * Math.cos(theta) + p4x * Math.sin(theta);
 
     MAIN_CONTEXT.beginPath()
-    MAIN_CONTEXT.moveTo(xMid + p1xR, yMid + p1yR);
-    MAIN_CONTEXT.lineTo(xMid + p2xR, yMid + p2yR);
-    MAIN_CONTEXT.lineTo(xMid + p3xR, yMid + p3yR);
-    MAIN_CONTEXT.lineTo(xMid + p4xR, yMid + p4yR);
-    MAIN_CONTEXT.lineTo(xMid + p1xR, yMid + p1yR);
-
+    MAIN_CONTEXT.moveTo(xRef + p1xR, yRef + p1yR);
+    MAIN_CONTEXT.lineTo(xRef + p2xR, yRef + p2yR);
+    MAIN_CONTEXT.lineTo(xRef + p3xR, yRef + p3yR);
+    MAIN_CONTEXT.lineTo(xRef + p4xR, yRef + p4yR);
+    MAIN_CONTEXT.lineTo(xRef + p1xR, yRef + p1yR);
     MAIN_CONTEXT.closePath();
     // MAIN_CONTEXT.stroke();
     MAIN_CONTEXT.fill();
+
+
 }
 
 
