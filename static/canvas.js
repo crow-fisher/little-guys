@@ -84,6 +84,65 @@ export function zoomCanvasFillRect(x, y, dx, dy) {
     );
 }
 
+export function zoomCanvasFillRectTheta(x, y, dx, dy, theta) {
+    dx *= (CANVAS_SQUARES_ZOOM);
+    dy *= (CANVAS_SQUARES_ZOOM);
+
+    var totalWidth = CANVAS_SQUARES_X * BASE_SIZE;
+    var totalHeight = CANVAS_SQUARES_Y * BASE_SIZE;
+
+    var windowWidth = totalWidth / CANVAS_SQUARES_ZOOM;
+    var windowHeight = totalHeight / CANVAS_SQUARES_ZOOM;
+
+    var windowWidthStart = CANVAS_VIEWPORT_CENTER_X - (windowWidth / 2);
+    var windowHeightStart = CANVAS_VIEWPORT_CENTER_Y - (windowHeight / 2); 
+
+    var windowWidthEnd = CANVAS_VIEWPORT_CENTER_X + (windowWidth / 2);
+    var windowHeightEnd = CANVAS_VIEWPORT_CENTER_Y + (windowHeight / 2); 
+
+    var xpi = (x - windowWidthStart) / (windowWidthEnd - windowWidthStart);
+    var ypi = (y - windowHeightStart) / (windowHeightEnd - windowHeightStart);
+
+    var xpl = xpi * totalWidth;
+    var ypl = ypi * totalHeight;
+
+    let xMid = xpl + (dx / 2);
+    let yMid = ypl + (dy / 2);
+
+    let p1x = xpl - xMid;
+    let p1y = ypl - yMid;
+
+    let p2x = xpl + dx - xMid;
+    let p2y = ypl - yMid;
+
+    let p3x = xpl + dx - xMid; 
+    let p3y = ypl + dy - yMid;
+
+    let p4x = xpl - xMid; 
+    let p4y = ypl + dy - yMid;
+
+    let p1xR = p1x * Math.cos(theta) - p1y * Math.sin(theta);
+    let p1yR = p1y * Math.cos(theta) + p1x * Math.sin(theta);
+    let p2xR = p2x * Math.cos(theta) - p2y * Math.sin(theta);
+    let p2yR = p2y * Math.cos(theta) + p2x * Math.sin(theta);
+    let p3xR = p3x * Math.cos(theta) - p3y * Math.sin(theta);
+    let p3yR = p3y * Math.cos(theta) + p3x * Math.sin(theta);
+    let p4xR = p4x * Math.cos(theta) - p4y * Math.sin(theta);
+    let p4yR = p4y * Math.cos(theta) + p4x * Math.sin(theta);
+
+    MAIN_CONTEXT.beginPath()
+    MAIN_CONTEXT.moveTo(xMid + p1xR, yMid + p1yR);
+    MAIN_CONTEXT.lineTo(xMid + p2xR, yMid + p2yR);
+    MAIN_CONTEXT.lineTo(xMid + p3xR, yMid + p3yR);
+    MAIN_CONTEXT.lineTo(xMid + p4xR, yMid + p4yR);
+    MAIN_CONTEXT.lineTo(xMid + p1xR, yMid + p1yR);
+
+    MAIN_CONTEXT.closePath();
+    // MAIN_CONTEXT.stroke();
+    MAIN_CONTEXT.fill();
+}
+
+
 export function zoomCanvasSquareText(x, y, text) {
     let dx = CANVAS_SQUARES_ZOOM;
     let dy = CANVAS_SQUARES_ZOOM;

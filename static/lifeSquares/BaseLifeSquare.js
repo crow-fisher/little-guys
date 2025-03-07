@@ -9,7 +9,7 @@ import { addOrganismSquare } from "./_lsOperations.js";
 import { removeSquare } from "../globalOperations.js";
 import { STATE_DEAD, STATE_HEALTHY, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, STATE_DESTROYED, SUBTYPE_FLOWER } from "../organisms/Stages.js";
 import { processLighting } from "../lighting/lightingProcessing.js";
-import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
+import { getBaseSize, zoomCanvasFillRect, zoomCanvasFillRectTheta } from "../canvas.js";
 import { loadUI, UI_LIGHTING_PLANT, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
 
 
@@ -22,6 +22,7 @@ class BaseLifeSquare {
         this.yOffset = 0;
         this.type = "base";
         this.subtype = "";
+        this.theta = 0;
 
         this.baseColor = "#515c24";
         this.darkColor = "#353b1a";
@@ -196,11 +197,12 @@ class BaseLifeSquare {
                 b: 100 + (1 - this.phosphorusIndicated) * 130
             }
             MAIN_CONTEXT.fillStyle = rgbToHex(color.r, color.g, color.b);
-            zoomCanvasFillRect(
+            zoomCanvasFillRectTheta(
                 this.getPosX() * getBaseSize(),
                 this.getPosY() * getBaseSize(),
                 this.width * getBaseSize() * this.getLsqRenderSizeMult(),
-                this.height * getBaseSize() * this.getLsqRenderSizeMult()
+                this.height * getBaseSize() * this.getLsqRenderSizeMult(),
+                this.theta
             );
             return;
         }
@@ -243,11 +245,12 @@ class BaseLifeSquare {
 
 
             MAIN_CONTEXT.fillStyle = rgbToRgba(out.r, out.g, out.b, this.opacity);
-            zoomCanvasFillRect(
+            zoomCanvasFillRectTheta(
                 this.getPosX() * getBaseSize(),
                 this.getPosY() * getBaseSize(),
                 this.width * getBaseSize() * this.getLsqRenderSizeMult(),
-                this.height * getBaseSize() * this.getLsqRenderSizeMult()
+                this.height * getBaseSize() * this.getLsqRenderSizeMult(),
+                this.theta
             );
             return;
         }
@@ -291,11 +294,12 @@ class BaseLifeSquare {
             var outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacity);
             MAIN_CONTEXT.fillStyle = outRgba;
 
-            zoomCanvasFillRect(
+            zoomCanvasFillRectTheta(
                 this.getPosX() * getBaseSize(),
                 this.getPosY() * getBaseSize(),
                 this.width * getBaseSize() * this.getLsqRenderSizeMult(),
-                this.height * getBaseSize() * this.getLsqRenderSizeMult()
+                this.height * getBaseSize() * this.getLsqRenderSizeMult(),
+                this.theta
             );
         }
 

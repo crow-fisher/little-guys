@@ -366,6 +366,7 @@ export class GrowthComponent {
 
             lsq.deflectionXOffset = (endX - relLsqX) + this.xOffset;
             lsq.deflectionYOffset = (endY - relLsqY) + this.yOffset;
+            lsq.theta = currentTheta; 
         })
 
         this.children.forEach((child) => child.applyDeflectionState(this));
