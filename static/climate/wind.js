@@ -22,7 +22,7 @@ var base_wind_pressure = 101325; // 1 atm in pascals
 
 var windSpeedSmoothingMap = new Map();
 
-var clickAddPressure = base_wind_pressure * 0.01;
+var clickAddPressure = 0.01;
 var WIND_SQUARES_X = () => Math.ceil(getCanvasSquaresX() / 4);
 var WIND_SQUARES_Y = () => Math.ceil(getCanvasSquaresY() / 4);
 
@@ -435,7 +435,7 @@ function windSpeedFromPressure(pascals, sourcePressure) {
 
 export function getWindPressureSquareDensity(x, y) {
     let p = getPressure(x, y);
-    if (p == 0) {
+    if (p <= 0) {
         return 1;
     } else {
         return p / getBaseAirPressureAtYPosition(y);
@@ -448,7 +448,9 @@ function manipulateWindPressureMaintainHumidity(posX, posY, amount) {
         return;
     }
     let start = windPressureMap[x][y];
-    windPressureMap[x][y] = Math.max(getBaseAirPressureAtYPosition(y), windPressureMap[x][y] + amount);
+    let pascals = start * amount;
+    windPressureMap[x][y] = Math.max(getBaseAirPressureAtYPosition(y), windPressureMap[x][y] + pascals);
+    windPressureMap[x][y] = Math.min(getBaseAirPressureAtYPosition(y) * 100, windPressureMap[x][y] + pascals);
     let end = windPressureMap[x][y];
     setWaterSaturation(x, y, getWaterSaturation(x, y) * (end / start));
 }
