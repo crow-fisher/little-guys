@@ -5,6 +5,7 @@ import { Container } from "../Container.js";
 import { Button } from "../elements/Button.js";
 import { Radio } from "../elements/Radio.js";
 import { RowedRadio } from "../elements/RowedRadio.js";
+import { Slider } from "../elements/Slider.js";
 import { Text } from "../elements/Text.js";
 import { Toggle } from "../elements/Toggle.js";
 import {
@@ -15,7 +16,8 @@ import {
     UI_CLIMATE_WEATHER_SUNNY,
     UI_CLIMATE_WEATHER_CLOUDY,
     UI_CLIMATE_WEATHER_LIGHTRAIN,
-    UI_CLIMATE_WEATHER_HEAVYRAIN
+    UI_CLIMATE_WEATHER_HEAVYRAIN,
+    UI_CLIMATE_RAINFALL_DENSITY
 } from "../UIData.js";
 export class ClimateComponent extends Component {
     constructor(posX, posY, padding, dir, key) {
@@ -40,5 +42,9 @@ export class ClimateComponent extends Component {
         weatherDryContainer.addElement(new Toggle(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 2.5, UI_CLIMATE_WEATHER_CLOUDY , "cloudy"))
         weatherWetContainer.addElement(new Toggle(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 2.5, UI_CLIMATE_WEATHER_LIGHTRAIN , "light rain"))
         weatherWetContainer.addElement(new Toggle(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 2.5, UI_CLIMATE_WEATHER_HEAVYRAIN , "heavy rain"))
+
+        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 2, "rainfall density"));
+        container.addElement(new Slider(this.window,UI_CLIMATE_RAINFALL_DENSITY, sizeX, getBaseUISize() * 2, 1.001, 20));
+
     }
 }

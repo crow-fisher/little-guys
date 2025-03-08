@@ -7,6 +7,7 @@ import { getCurTimeScale, timeScaleFactor } from "../climate/time.js";
 import { logRainFall } from "../climate/weather.js";
 import { getDefaultLighting } from "../lighting/lightingProcessing.js";
 import { addSquareByName } from "../manipulation.js";
+import { loadUI, UI_CLIMATE_RAINFALL_DENSITY } from "../ui/UIData.js";
 // decent reference https://web.gps.caltech.edu/~xun/course/GEOL1350/Lecture5.pdf
 
 var temperatureMap;
@@ -276,6 +277,7 @@ function doRain() {
             if (adjacentHumidity < (cloudRainThresh))
                 continue;
             var rainDropProbability = ((adjacentHumidity - cloudRainThresh) / (cloudRainMax - cloudRainThresh));
+            rainDropProbability /= loadUI(UI_CLIMATE_RAINFALL_DENSITY);
             if (Math.random() > rainDropProbability) {
                 continue;
             }
@@ -285,9 +287,12 @@ function doRain() {
             var adjacentPascals = getAdjacentProp(x, y, (x, y) => waterSaturationMap[x][y]) / 5;
 
             var dropPascals = (adjacentPascals - expectedPascals) * 0.005;
+
             var usedWaterPascalsPerSquare = dropPascals / 5;
             var dropHealth = dropPascals / pascalsPerWaterSquare;
             dropHealth *= Math.min(1000, getCurTimeScale());
+
+            dropHealth = Math.min(1, dropHealth * loadUI(UI_CLIMATE_RAINFALL_DENSITY));
 
             var sq = addSquareByName(x * 4 + randNumber(0, 3), y * 4 + randNumber(0, 3), "water");
             if (sq) {
