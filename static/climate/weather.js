@@ -1,8 +1,8 @@
 import { getCanvasSquaresX } from "../canvas.js";
 import { randNumber, randRange } from "../common.js";
-import { addWaterSaturationPascals, getHumidity, getWaterSaturation, setRestingGradientStrength, setRestingHumidityGradient, setRestingTemperatureGradient } from "./temperatureHumidity.js";
-import { getCurDay, timeScaleFactor } from "./time.js";
-import { getPressure, isPointInWindBounds } from "./wind.js";
+import { addWaterSaturationPascals, cloudRainThresh, getHumidity, getWaterSaturation, setRestingGradientStrength, setRestingHumidityGradient, setRestingTemperatureGradient } from "./temperatureHumidity.js";
+import { getCurDay, getDt, timeScaleFactor } from "./time.js";
+import { getPressure, getWindSquaresX, getWindSquaresY, isPointInWindBounds } from "./wind.js";
 
 const WEATHER_SUNNY = "WEATHER_SUNNY";
 const WEATHER_CLOUDY = "WEATHER_CLOUDY";
@@ -105,20 +105,26 @@ class Weather {
         this.f = f;
     }
     weather() {
+        this.setRestingValues();
+        this.f();
+    }
+
+    setRestingValues() {
         setRestingHumidityGradient(this.hg);
         setRestingTemperatureGradient(this.tg);
         setRestingGradientStrength(this.strength);
-        this.f();
     }
 }
 
 function spawnCumulusCloud() {
+    let wsx = getWindSquaresX();
+    let wsy = getWindSquaresY();
     curClouds.push(new Cloud(
-        randRange(-getCanvasSquaresX()/4, getCanvasSquaresX() * (0.75)),
-        randRange(4, 8),
-        randRange(4, 8), randRange(3, 5), 
-        getCurDay() + 0.00001 * randRange(1, 30), .1 * randRange(2, 4), 
-        randRange(1.0, 1.00999), 0.8 * randRange(1, 2)));
+        randRange(0, wsx),
+        randRange(0, wsy),
+        randRange(0.1, 0.3) * wsx, randRange(0.05, 0.15) * wsx, 
+        getCurDay() + 0.00069444444 * randRange(0.5, 4), 0.00069444444 * randRange(0.5, 4), 
+        randRange(1.001, cloudRainThresh), 0.8 * randRange(1, 2)));
 }
 
 function spawnNimbusCloud(rainFactor) {
@@ -164,7 +170,7 @@ var cloudyTg = [
 ]
 
 function cloudyWeather() {
-    if (curClouds.length > 15) {
+    if (curClouds.length > 35) {
         return;
     }
     spawnCumulusCloud();
@@ -197,11 +203,18 @@ function generalRainyWeather(rainFactor) {
 weatherLightRain = new Weather(WEATHER_LIGHTRAIN, rainyHumidityGradient, rainyTemperatureGradient, 100, generalRainyWeather(0.25));
 weatherHeavyRain = new Weather(WEATHER_HEAVYRAIN, rainyHumidityGradient, rainyTemperatureGradient, 100, generalRainyWeather(1));
 
+// var weatherMap = {
+//     WEATHER_SUNNY: weatherSunny,
+//     WEATHER_CLOUDY: weatherCloudy,
+//     WEATHER_LIGHTRAIN: weatherLightRain,
+//     WEATHER_HEAVYRAIN: weatherHeavyRain
+// }
+
 var weatherMap = {
-    WEATHER_SUNNY: weatherSunny,
+    WEATHER_SUNNY: weatherCloudy,
     WEATHER_CLOUDY: weatherCloudy,
-    WEATHER_LIGHTRAIN: weatherLightRain,
-    WEATHER_HEAVYRAIN: weatherHeavyRain
+    WEATHER_LIGHTRAIN: weatherCloudy,
+    WEATHER_HEAVYRAIN: weatherCloudy
 }
 
 var climateDry = {
@@ -234,9 +247,6 @@ var climateWet = {
     WEATHER_HEAVYRAIN: 45
 
 }
-
-curWeather = weatherSunny;
-curClimate = climateMoist;
 
 function weatherChange() {
     if (getCurDay() < curWeatherStartTime + curWeatherInterval) {
@@ -292,4 +302,10 @@ export function weather() {
     }
     weatherChange();
     curWeather.weather();
+}
+
+export function initWeather() {
+    curClimate = climateTemperate;
+    weatherChange();
+    curWeather.setRestingValues();
 }

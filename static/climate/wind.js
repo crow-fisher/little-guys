@@ -441,26 +441,35 @@ export function getWindPressureSquareDensity(x, y) {
         return p / getBaseAirPressureAtYPosition(y);
     }
 }
-function manipulateWindPressureMaintainHumidity(posX, posY, amount) {
-    var x = Math.floor(posX / 4);
-    var y = Math.floor(posY / 4);
+
+export function manipulateWindPressureMaintainHumidityWindSquare(x, y, target) {
     if (!isPointInBounds(x, y)) {
         return;
     }
     let start = windPressureMap[x][y];
-    let pascals = start * amount;
-    windPressureMap[x][y] = Math.max(getBaseAirPressureAtYPosition(y), windPressureMap[x][y] + pascals);
-    windPressureMap[x][y] = Math.min(getBaseAirPressureAtYPosition(y) * 100, windPressureMap[x][y] + pascals);
+    windPressureMap[x][y] = Math.max(getBaseAirPressureAtYPosition(y) * 0.5, target);
+    windPressureMap[x][y] = Math.min(getBaseAirPressureAtYPosition(y) * 100, target);
     let end = windPressureMap[x][y];
     setWaterSaturation(x, y, getWaterSaturation(x, y) * (end / start));
 }
 
+export function manipulateWindPressureMaintainHumidityBlockSquare(posX, posY, amount) {
+    var x = Math.floor(posX / 4);
+    var y = Math.floor(posY / 4);
+    let start = windPressureMap[x][y];
+    if (start <= 0) {
+        return;
+    }
+    let pascals = start * amount;
+    manipulateWindPressureMaintainHumidityWindSquare(x, y, windPressureMap[x][y] + pascals);
+}
+
 function addWindPressure(posX, posY) {
-    manipulateWindPressureMaintainHumidity(posX, posY, clickAddPressure);
+    manipulateWindPressureMaintainHumidityBlockSquare(posX, posY, clickAddPressure);
 }
 
 function removeWindPressure(posX, posY) {
-    manipulateWindPressureMaintainHumidity(posX, posY, -clickAddPressure);
+    manipulateWindPressureMaintainHumidityBlockSquare(posX, posY, -clickAddPressure);
 }
 
 function updateWindPressureByMult(x, y, m) {
@@ -471,37 +480,6 @@ function isPointInBounds(x, y) {
     return x >= 0 && x < curWindSquaresX && y >= 0 && y < curWindSquaresY;
 }
 
-function clearPrevailingWind(posX, posY) {
-    var x = Math.floor(posX / 4);
-    var y = Math.floor(posY / 4);
-    if (!isPointInBounds(x, y)) {
-        return;
-    }
-    prevailingWindMap[x][y] = -1;
-}
-
-function addPrevailingWind(posX, posY, d) {
-    var x = Math.floor(posX / 4);
-    var y = Math.floor(posY / 4);
-    if (!isPointInBounds(x, y)) {
-        return;
-    }
-    var start = prevailingWindMap[x][y];
-    if (start == -1) {
-        start = 0.5;
-        prevailingWindStartPressureMap[x][y] = windPressureMap[x][y];
-    }
-    var delta = d / 10;
-    var end = start + delta; 
-    end = Math.min(end, 1);
-    end = Math.max(end, 0);
-    if (end == 0.5) {
-        prevailingWindMap[x][y] = -1;
-    } else {
-        prevailingWindMap[x][y] = end;
-    }
-}
-
 initWindPressure();
 
-export { clearPrevailingWind, addPrevailingWind, getWindSquareAbove, setPressurebyMult, getPressure, getAirSquareDensity, getWindSpeedAtLocation, renderWindPressureMap, initWindPressure, tickWindPressureMap, addWindPressure, removeWindPressure, updateWindPressureByMult, getAirSquareDensityTempAndHumidity, base_wind_pressure }
+export { getWindSquareAbove, setPressurebyMult, getPressure, getAirSquareDensity, getWindSpeedAtLocation, renderWindPressureMap, initWindPressure, tickWindPressureMap, addWindPressure, removeWindPressure, updateWindPressureByMult, getAirSquareDensityTempAndHumidity, base_wind_pressure }

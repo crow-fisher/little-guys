@@ -2,7 +2,7 @@ import { hexToRgb, randNumber, rgbToRgba } from "../common.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
 import { MAIN_CONTEXT } from "../index.js";
-import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds, getBaseAirPressureAtYPosition, getAirSquareDensity, getWindPressureSquareDensity } from "./wind.js";
+import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds, getBaseAirPressureAtYPosition, getAirSquareDensity, getWindPressureSquareDensity, base_wind_pressure, manipulateWindPressureMaintainHumidityWindSquare } from "./wind.js";
 import { getCurTimeScale, timeScaleFactor } from "../climate/time.js";
 import { logRainFall } from "../climate/weather.js";
 import { getDefaultLighting } from "../lighting/lightingProcessing.js";
@@ -23,7 +23,7 @@ var c_cloudMidRGB = hexToRgb("#dbdce1")
 var c_cloudMaxRGB = hexToRgb("#818398");
 
 var cloudRainThresh = 1.01;
-var cloudRainMax = 1.1;
+export var cloudRainMax = 1.1;
 var cloudMaxOpacity = 0.65;
 
 var pascalsPerWaterSquare = (1.986 * 10 ** 6);
@@ -37,7 +37,8 @@ var restingTemperatureGradient = [
 var restingHumidityGradient = [
     [0, 0.95],
     [1, 0.75]
-]
+];
+var restingAirPressure = 1;
 
 var reverseRestingHumidityGradient = Array.from(restingHumidityGradient).reverse();
 var reverseRestingTemperatureGradient = Array.from(restingTemperatureGradient).reverse();
@@ -56,6 +57,12 @@ export function getTemperatureMap() {
 }
 export function getWaterSaturationMap() {
     return waterSaturationMap;
+}
+export function getRestingAirPressure() {
+    return restingAirPressure;
+}
+export function setRestingAirPressure(inVal) {
+    restingAirPressure = inVal;
 }
 
 export function setRestingTemperatureGradient(inGrad) {
@@ -88,10 +95,25 @@ function getRestingTemperatureAtSq(x, y) {
     return lower[1] * (1 - pos) + upper[1] * pos;
 }
 
+function getRestingAirPressureAtSq(y) {
+    return getBaseAirPressureAtYPosition(y) + ((restingAirPressure - 1) * base_wind_pressure);
+}
+
 export function restingValues() {
     let applicationStrength = restingGradientStrength * timeScaleFactor();
     for (let i = 0; i < getWindSquaresX(); i++) {
         for (let j = 0; j < getWindSquaresY(); j++) {
+
+            var curPressure = getPressure(i, j); 
+
+            if (curPressure <= 0)
+                continue;
+             
+            var pressureRestingMult = 0.0001;
+
+            var restingPressureTarget = getRestingAirPressureAtSq(j) * pressureRestingMult + curPressure * (1 - pressureRestingMult);
+            manipulateWindPressureMaintainHumidityWindSquare(i, j, restingPressureTarget);
+
             var curTemp = temperatureMap[i][j];
             var restingTemp = getRestingTemperatureAtSq(i, j);
             var diffTemp = restingTemp - curTemp;
