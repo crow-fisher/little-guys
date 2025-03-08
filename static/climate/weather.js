@@ -1,15 +1,12 @@
 import { getCanvasSquaresX } from "../canvas.js";
 import { randNumber, randRange } from "../common.js";
+import { addUIFunctionMap, UI_CLIMATE_WEATHER_SUNNY, UI_CLIMATE_WEATHER_CLOUDY, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_HEAVYRAIN, loadUI, saveUI } from "../ui/UIData.js";
 import { addWaterSaturationPascals, cloudRainThresh, getHumidity, getWaterSaturation, setRestingGradientStrength, setRestingHumidityGradient, setRestingTemperatureGradient } from "./temperatureHumidity.js";
 import { getCurDay, getDt, timeScaleFactor } from "./time.js";
 import { getPressure, getWindSquaresX, getWindSquaresY, isPointInWindBounds } from "./wind.js";
 
-const WEATHER_SUNNY = "WEATHER_SUNNY";
-const WEATHER_CLOUDY = "WEATHER_CLOUDY";
-const WEATHER_LIGHTRAIN = "WEATHER_LIGHTRAIN";
-const WEATHER_HEAVYRAIN = "WEATHER_HEAVYRAIN";
-
 var weatherSunny, weatherCloudy, weatherLightRain, weatherHeavyRain;
+var ui_weatherMap = new Map();
 
 var curRainFallAmount = 0;
 var curWeatherStartTime = 0;
@@ -137,7 +134,7 @@ function spawnNimbusCloud(rainFactor) {
 }
 
 
-// WEATHER_SUNNY
+// UI_CLIMATE_WEATHER_SUNNY
 
 var sunnyHg = [
     [0, 0.50],
@@ -155,7 +152,7 @@ function sunnyWeather() {
     curClouds = new Array();
 }
 
-weatherSunny = new Weather(WEATHER_SUNNY, sunnyHg, sunnyTg, 100, sunnyWeather);
+weatherSunny = new Weather(UI_CLIMATE_WEATHER_SUNNY, sunnyHg, sunnyTg, 100, sunnyWeather);
 
 var cloudyHg = [
     [0, 0.999],
@@ -175,7 +172,7 @@ function cloudyWeather() {
     }
     spawnCumulusCloud();
 }
-weatherCloudy = new Weather(WEATHER_CLOUDY, cloudyHg, cloudyTg, 100, cloudyWeather);
+weatherCloudy = new Weather(UI_CLIMATE_WEATHER_CLOUDY, cloudyHg, cloudyTg, 100, cloudyWeather);
 
 export function logRainFall(amount) {
     curRainFallAmount += amount;
@@ -200,51 +197,42 @@ function generalRainyWeather(rainFactor) {
     }
 }
 
-weatherLightRain = new Weather(WEATHER_LIGHTRAIN, rainyHumidityGradient, rainyTemperatureGradient, 100, generalRainyWeather(0.25));
-weatherHeavyRain = new Weather(WEATHER_HEAVYRAIN, rainyHumidityGradient, rainyTemperatureGradient, 100, generalRainyWeather(1));
+weatherLightRain = new Weather(UI_CLIMATE_WEATHER_LIGHTRAIN, rainyHumidityGradient, rainyTemperatureGradient, 100, generalRainyWeather(0.25));
+weatherHeavyRain = new Weather(UI_CLIMATE_WEATHER_HEAVYRAIN, rainyHumidityGradient, rainyTemperatureGradient, 100, generalRainyWeather(1));
 
-// var weatherMap = {
-//     WEATHER_SUNNY: weatherSunny,
-//     WEATHER_CLOUDY: weatherCloudy,
-//     WEATHER_LIGHTRAIN: weatherLightRain,
-//     WEATHER_HEAVYRAIN: weatherHeavyRain
-// }
-
-var weatherMap = {
-    WEATHER_SUNNY: weatherCloudy,
-    WEATHER_CLOUDY: weatherCloudy,
-    WEATHER_LIGHTRAIN: weatherCloudy,
-    WEATHER_HEAVYRAIN: weatherCloudy
-}
+ui_weatherMap.set(UI_CLIMATE_WEATHER_SUNNY, weatherSunny)
+ui_weatherMap.set(UI_CLIMATE_WEATHER_CLOUDY, weatherCloudy)
+ui_weatherMap.set(UI_CLIMATE_WEATHER_LIGHTRAIN, weatherLightRain)
+ui_weatherMap.set(UI_CLIMATE_WEATHER_HEAVYRAIN, weatherHeavyRain)
 
 var climateDry = {
-    WEATHER_SUNNY: 70,
-    WEATHER_CLOUDY: 20,
-    WEATHER_LIGHTRAIN: 10,
-    WEATHER_HEAVYRAIN: 1
+    UI_CLIMATE_WEATHER_SUNNY: 70,
+    UI_CLIMATE_WEATHER_CLOUDY: 20,
+    UI_CLIMATE_WEATHER_LIGHTRAIN: 10,
+    UI_CLIMATE_WEATHER_HEAVYRAIN: 1
 
 }
 
 var climateTemperate = {
-    WEATHER_SUNNY: 60,
-    WEATHER_CLOUDY: 30,
-    WEATHER_LIGHTRAIN: 20,
-    WEATHER_HEAVYRAIN: 10 
+    UI_CLIMATE_WEATHER_SUNNY: 60,
+    UI_CLIMATE_WEATHER_CLOUDY: 30,
+    UI_CLIMATE_WEATHER_LIGHTRAIN: 20,
+    UI_CLIMATE_WEATHER_HEAVYRAIN: 10 
 
 }
 
 var climateMoist = {
-    WEATHER_SUNNY: 0,
-    WEATHER_CLOUDY: 600,
-    WEATHER_LIGHTRAIN: 40,
-    WEATHER_HEAVYRAIN: 30
+    UI_CLIMATE_WEATHER_SUNNY: 0,
+    UI_CLIMATE_WEATHER_CLOUDY: 600,
+    UI_CLIMATE_WEATHER_LIGHTRAIN: 40,
+    UI_CLIMATE_WEATHER_HEAVYRAIN: 30
 }
 
 var climateWet = {
-    WEATHER_SUNNY: 30,
-    WEATHER_CLOUDY: 35,
-    WEATHER_LIGHTRAIN: 45,
-    WEATHER_HEAVYRAIN: 45
+    UI_CLIMATE_WEATHER_SUNNY: 30,
+    UI_CLIMATE_WEATHER_CLOUDY: 35,
+    UI_CLIMATE_WEATHER_LIGHTRAIN: 45,
+    UI_CLIMATE_WEATHER_HEAVYRAIN: 45
 
 }
 
@@ -268,10 +256,7 @@ function weatherChange() {
         };
         return false;
     });
-    curWeather = weatherMap[nextWeather];
-    curWeatherInterval = randRange(0, 2);
-    curWeatherStartTime = getCurDay();
-    console.log("Next weather: ", nextWeather + ", for " + Math.round(curWeatherInterval * 100) / 100 + " days") 
+    saveUI(nextWeather, true);
 
 }
 
@@ -307,5 +292,23 @@ export function weather() {
 export function initWeather() {
     curClimate = climateTemperate;
     weatherChange();
+    saveUI(UI_CLIMATE_WEATHER_SUNNY, true);
+    curWeather = weatherSunny;
     curWeather.setRestingValues();
 }
+
+function applyUIWeatherChange() {
+    ui_weatherMap.keys().forEach((key) => {
+        if (loadUI(key)) {
+            curWeather = ui_weatherMap.get(key);
+            curWeatherInterval = randRange(0, 0.1);
+            curWeatherStartTime = getCurDay();      
+            console.log("Next weather: ", curWeather.type + ", for " + Math.round(curWeatherInterval * 100) / 100 + " days") 
+        }
+    });
+}
+
+addUIFunctionMap(UI_CLIMATE_WEATHER_SUNNY, applyUIWeatherChange);
+addUIFunctionMap(UI_CLIMATE_WEATHER_CLOUDY, applyUIWeatherChange);
+addUIFunctionMap(UI_CLIMATE_WEATHER_LIGHTRAIN, applyUIWeatherChange);
+addUIFunctionMap(UI_CLIMATE_WEATHER_HEAVYRAIN, applyUIWeatherChange);
