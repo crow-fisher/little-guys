@@ -1,5 +1,5 @@
-import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY } from "../canvas.js";
-import { hexToRgb, hsv2rgb, randNumber, rgb2hsv, rgbToRgba } from "../common.js";
+import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillCircle, zoomCanvasFillRectTheta } from "../canvas.js";
+import { hexToRgb, hsv2rgb, randNumber, randRange, rgb2hsv, rgbToRgba } from "../common.js";
 import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth, MAIN_CONTEXT, setBackgroundColor } from "../index.js";
 import { calculateColorRGB, getFrameRelCloud } from "./temperatureHumidity.js";
 import { zoomCanvasFillRect } from "../canvas.js";
@@ -19,7 +19,7 @@ var TIME_SCALE = 1;
 var curUIKey = UI_SPEED_1;
 
 export var millis_per_day = 60 * 60 * 24 * 1000;
-var curDay = 0.28   ;
+var curDay = 0.88   ;
 var prevDay = 0;
 var curTime = 0.8;
 var prevTime = 0;
@@ -32,7 +32,8 @@ export function getFrameDt() {
 }
 
 var starMap;
-var starMapCenterX;
+var starColorTemperatureMap;
+    var starMapCenterX;
 var starMapCenterY;
 // https://coolors.co/gradient-maker/18254c-5a4d41-a49f67-7e9fb1-84b2e2?position=0,43,53,73,100&opacity=100,100,100,100,100&type=linear&rotation=90
 var sky_nightRGB = hexToRgb("#121622");
@@ -96,20 +97,23 @@ function getPrevTime() {
 
 function initializeStarMap() {
     starMap = new Map();
+    starColorTemperatureMap = new Map();
     starMapCenterX = randNumber(getCanvasSquaresX() / 4, getCanvasSquaresX() * 0.75);
     starMapCenterY = randNumber(getCanvasSquaresY() / 4, getCanvasSquaresY() * 0.75);
 
-    var numStars = randNumber(12000, 13000);
+    var numStars = randNumber(22000, 33000);
 
     for (let i = 0; i < numStars; i++) {
         var starX = randNumber(-getCanvasSquaresX() * 4, getCanvasSquaresX() * 4);
         var starY = randNumber(-getCanvasSquaresY() * 4, getCanvasSquaresY() * 4);
-        var starBrightness = Math.random() * 0.7;
+        var starBrightness = (Math.random() ** 0.7) * 0.3;
 
         if (!(starX in starMap)) {
             starMap[starX] = new Map();
+            starColorTemperatureMap[starX] = new Map();
         }
         starMap[starX][starY] = starBrightness;
+        starColorTemperatureMap[starX][starY] = randRange(0.63, 1);
     }
 }
 
@@ -144,16 +148,18 @@ function renderStarMap(brightnessMult) {
                 continue;
             }
 
-            MAIN_CONTEXT.fillStyle = rgbToRgba(255, 255, 255, starbrightness);
-            zoomCanvasFillRect(
+            let r = 0.4;
+            let b = (starbrightness) * r + (1) * (1 - r);
+            MAIN_CONTEXT.fillStyle = calculateTempColorRgba(starColorTemperatureMap[starX][starY], b);
+            zoomCanvasFillCircle(
                 endX * getBaseSize(),
                 endY * getBaseSize(),
-                starbrightness * getBaseSize(),
                 starbrightness * getBaseSize()
             );
         }
     }
 }
+
 
 export function getDt() {
     return curDay - prevDay;
@@ -328,7 +334,7 @@ function renderTime() {
         daylightStrength = getDaylightStrength();
     }
 
-    MAIN_CONTEXT.fillStyle = calculateTempColorRgba(daylightStrength);
+    MAIN_CONTEXT.fillStyle = calculateTempColorRgba(daylightStrength, 0.35);
     MAIN_CONTEXT.fillRect(
         0,
         0,
@@ -368,7 +374,7 @@ function calculateTempColor(temperature) {
 let tempColorRgbaMap = new Map();
 let tempColorRgbMap = new Map();
 
-function calculateTempColorRgba(daylightStrength) {
+function calculateTempColorRgba(daylightStrength, opacity) {
     var temperature = Math.floor(daylightStrength * 6600);
     if (temperature in tempColorRgbaMap) {
         currentLightColorTemperature = tempColorRgbMap[temperature];
@@ -381,7 +387,7 @@ function calculateTempColorRgba(daylightStrength) {
             b: Math.floor(dc.b * daylightStrength),
         }
         tempColorRgbMap[temperature] = resColor;
-        tempColorRgbaMap[temperature] = rgbToRgba(resColor.r, resColor.g, resColor.b, 0.35);
+        tempColorRgbaMap[temperature] = rgbToRgba(resColor.r, resColor.g, resColor.b, opacity);
         currentLightColorTemperature = tempColorRgbMap[temperature];
         return tempColorRgbaMap[temperature];
     }

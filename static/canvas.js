@@ -84,6 +84,28 @@ export function zoomCanvasFillRect(x, y, dx, dy) {
     );
 }
 
+export function zoomCanvasFillCircle(x, y, size) {
+    var totalWidth = CANVAS_SQUARES_X * BASE_SIZE;
+    var totalHeight = CANVAS_SQUARES_Y * BASE_SIZE;
+
+    var windowWidth = totalWidth / CANVAS_SQUARES_ZOOM;
+    var windowHeight = totalHeight / CANVAS_SQUARES_ZOOM;
+
+    var windowWidthStart = CANVAS_VIEWPORT_CENTER_X - (windowWidth / 2);
+    var windowHeightStart = CANVAS_VIEWPORT_CENTER_Y - (windowHeight / 2); 
+
+    var windowWidthEnd = CANVAS_VIEWPORT_CENTER_X + (windowWidth / 2);
+    var windowHeightEnd = CANVAS_VIEWPORT_CENTER_Y + (windowHeight / 2); 
+
+    var xpi = (x - windowWidthStart) / (windowWidthEnd - windowWidthStart);
+    var ypi = (y - windowHeightStart) / (windowHeightEnd - windowHeightStart);
+    var xpl = xpi * totalWidth;
+    var ypl = ypi * totalHeight;
+    MAIN_CONTEXT.beginPath(); 
+    MAIN_CONTEXT.arc(xpl, ypl, size * CANVAS_SQUARES_ZOOM, 0, 2 * Math.PI, false);
+    MAIN_CONTEXT.fill();  
+}
+
 export function zoomCanvasFillRectTheta(x, y, dx, dy, xRef, yRef, theta) {
     dx *= (CANVAS_SQUARES_ZOOM);
     dy *= (CANVAS_SQUARES_ZOOM);
@@ -139,9 +161,8 @@ export function zoomCanvasFillRectTheta(x, y, dx, dy, xRef, yRef, theta) {
     MAIN_CONTEXT.closePath();
     // MAIN_CONTEXT.stroke();
     MAIN_CONTEXT.fill();
-
-
 }
+
 
 
 export function zoomCanvasSquareText(x, y, text) {
