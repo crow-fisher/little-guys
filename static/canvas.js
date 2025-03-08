@@ -84,7 +84,7 @@ export function zoomCanvasFillRect(x, y, dx, dy) {
     );
 }
 
-export function zoomCanvasFillRectTheta(x, y, dx, dy, theta) {
+export function zoomCanvasFillRectTheta(x, y, dx, dy, xRef, yRef, theta) {
     dx *= (CANVAS_SQUARES_ZOOM);
     dy *= (CANVAS_SQUARES_ZOOM);
 
@@ -106,8 +106,8 @@ export function zoomCanvasFillRectTheta(x, y, dx, dy, theta) {
     var xpl = xpi * totalWidth;
     var ypl = ypi * totalHeight;
 
-    let xRef = xpl;
-    let yRef = ypl + dy;
+    xRef = xpl + xRef
+    yRef = ypl + dy + yRef;
 
     let p1x = xpl - xRef;
     let p1y = ypl - yRef;

@@ -20,6 +20,8 @@ class BaseLifeSquare {
         this.posY = square.posY;
         this.xOffset = 0;
         this.yOffset = 0;
+        this.xRef = 0;
+        this.yRef = 0;
         this.type = "base";
         this.subtype = "";
         this.theta = 0;
@@ -202,6 +204,8 @@ class BaseLifeSquare {
                 this.getPosY() * getBaseSize(),
                 this.width * getBaseSize() * this.getLsqRenderSizeMult(),
                 this.height * getBaseSize() * this.getLsqRenderSizeMult(),
+                this.xRef,
+                this.yRef,
                 this.theta
             );
             return;
@@ -250,6 +254,8 @@ class BaseLifeSquare {
                 this.getPosY() * getBaseSize(),
                 this.width * getBaseSize() * this.getLsqRenderSizeMult(),
                 this.height * getBaseSize() * this.getLsqRenderSizeMult(),
+                this.xRef,
+                this.yRef,
                 this.theta
             );
             return;
@@ -299,6 +305,8 @@ class BaseLifeSquare {
                 this.getPosY() * getBaseSize(),
                 this.width * getBaseSize() * this.getLsqRenderSizeMult(),
                 this.height * getBaseSize() * this.getLsqRenderSizeMult(),
+                this.xRef,
+                this.yRef,
                 this.theta
             );
         }
