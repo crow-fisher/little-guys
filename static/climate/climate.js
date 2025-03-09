@@ -1,4 +1,4 @@
-import { hexToRgb, rgbToHex } from "../common.js";
+import { hexToRgb, hsv2rgb, rgb2hsv, rgbToHex } from "../common.js";
 import { UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_HEAVYRAIN, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_SUNNY } from "../ui/UIData.js";
 
 export class Climate {
@@ -19,11 +19,17 @@ export class Climate {
         this.weatherPatternMap.set(UI_CLIMATE_WEATHER_LIGHTRAIN, 30);
         this.weatherPatternMap.set(UI_CLIMATE_WEATHER_HEAVYRAIN, 10);
     }
+    processColor(rgb) {
+        let hsv = rgb2hsv(rgb.r, rgb.g, rgb.b);
+        let frac = 0.6
+        hsv[2] =  (255 * (1 - frac)) + (hsv[2] * frac);
+        rgb = hsv2rgb(hsv[0], hsv[1], hsv[2]);
+        return rgbToHex(Math.floor(rgb[0]), Math.floor(rgb[1]), Math.floor(rgb[2]));
+    }
 
     getUIColorInactive() {
         if (this.uci == null) {
-            let rgb = this.getBaseSoilColor(0.2, 0.70, 0.10);
-            this.uci = rgbToHex(Math.floor(rgb.r), Math.floor(rgb.g), Math.floor(rgb.b));
+            this.uci = this.processColor(this.getBaseSoilColor(0, 0.70, 0.10));
             return this.uci;
         }
         return this.uci;
@@ -31,8 +37,7 @@ export class Climate {
 
     getUIColorActive() {
         if (this.uca == null) {
-            let rgb = this.getBaseSoilColor(0.0, 0.10, 0.90);
-            this.uca = rgbToHex(Math.floor(rgb.r), Math.floor(rgb.g), Math.floor(rgb.b));
+            this.uca = this.processColor(this.getBaseSoilColor(0, 0.10, 0.90));
             return this.uca;
         }
         return this.uca;
@@ -40,8 +45,7 @@ export class Climate {
 
     getUIColorTransient() {
         if (this.uct == null) {
-            let rgb = this.getBaseSoilColor(0.40, 0.40, 0.20);
-            this.uct = rgbToHex(Math.floor(rgb.r), Math.floor(rgb.g), Math.floor(rgb.b));
+            this.uct = this.processColor(this.getBaseSoilColor(0.40, 0.40, 0.20))
             return this.uct;
         }
         return this.uct;
