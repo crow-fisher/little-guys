@@ -6,7 +6,6 @@ various inorganic blocks are included with various properties. broadly, dirt is 
 
 current ecosystems:
 * wetland:
-  * moss
   * water lillies
   * pop grass
 * other:

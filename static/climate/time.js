@@ -12,7 +12,9 @@ import {
     UI_SPEED_8,
     UI_SPEED_9,
     UI_SPEED,
-    UI_SPEED_0
+    UI_SPEED_0,
+    UI_LIGHTING_SUN,
+    UI_LIGHTING_MOON
 } from "../ui/UIData.js";
 
 var TIME_SCALE = 1;
@@ -334,7 +336,7 @@ function renderTime() {
         daylightStrength = getDaylightStrength();
     }
 
-    MAIN_CONTEXT.fillStyle = calculateTempColorRgba(daylightStrength, 0.35);
+    MAIN_CONTEXT.fillStyle = calculateTempColorRgbaCache(daylightStrength, 0.35);
     MAIN_CONTEXT.fillRect(
         0,
         0,
@@ -363,18 +365,17 @@ export function getMoonlightColor() {
 function calculateTempColor(temperature) {
     temperature /= 100;
     temperature = Math.max(10, temperature);
-    currentLightColorTemperature = {
+    return {
         r: temp_red(temperature),
         g: temp_green(temperature),
         b: temp_blue(temperature)
     };
-    return currentLightColorTemperature;
 }
 
 let tempColorRgbaMap = new Map();
 let tempColorRgbMap = new Map();
 
-function calculateTempColorRgba(daylightStrength, opacity) {
+function calculateTempColorRgbaCache(daylightStrength, opacity) {
     var temperature = Math.floor(daylightStrength * 6600);
     if (temperature in tempColorRgbaMap) {
         currentLightColorTemperature = tempColorRgbMap[temperature];

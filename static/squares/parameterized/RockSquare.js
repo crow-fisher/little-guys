@@ -55,6 +55,10 @@ export class RockSquare extends SoilSquare {
         return super.getLightFilterRate() * loadUI(UI_LIGHTING_ROCK);
     }
 
+    getWaterflowRate() {
+        return super.getWaterflowRate() * 100;
+    }
+
     doBlockOutflow() {
         super.doBlockOutflow();
         this.outflowNewWaterToLocation(this.posX, this.posY + 1);
