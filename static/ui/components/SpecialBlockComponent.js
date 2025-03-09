@@ -1,4 +1,5 @@
 import { getBaseUISize } from "../../canvas.js";
+import { getActiveClimate } from "../../climate/climateManager.js";
 import { Component } from "../Component.js";
 import { Container } from "../Container.js";
 import { RowedRadio } from "../elements/RowedRadio.js";
@@ -22,8 +23,7 @@ export class SpecialBlockComponent extends Component {
             UI_SPECIAL_AQUIFER,
             UI_SPECIAL_MIX,
             UI_SPECIAL_SURFACE,
-            
-        ]));
+        ],() => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
 
         let strengthSizeContainer = new Container(this.window, padding, 0);
         container.addElement(strengthSizeContainer);
@@ -32,12 +32,12 @@ export class SpecialBlockComponent extends Component {
         strengthSizeContainer.addElement(sizeContainer);
 
         sizeContainer.addElement(new Text(this.window, sizeX, getBaseUISize() * 1.5, "size"));
-        sizeContainer.addElement(new Slider(this.window, UI_BB_SIZE, sizeX, getBaseUISize() * 3, 2, 14));
+        sizeContainer.addElement(new Slider(this.window, UI_BB_SIZE, sizeX, getBaseUISize() * 3, 2, 14, () => getActiveClimate().getUIColorTransient()));
 
         let strengthContainer = new Container(this.window, padding, 1);
         strengthSizeContainer.addElement(strengthContainer);
 
         strengthContainer.addElement(new Text(this.window, sizeX, getBaseUISize() * 1.5, "strength"));
-        strengthContainer.addElement(new Slider(this.window, UI_BB_STRENGTH, sizeX, getBaseUISize() * 3, 0, 1));
+        strengthContainer.addElement(new Slider(this.window, UI_BB_STRENGTH, sizeX, getBaseUISize() * 3, 0, 1,  () => getActiveClimate().getUIColorTransient()));
     }
 }

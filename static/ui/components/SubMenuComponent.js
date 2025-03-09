@@ -1,4 +1,5 @@
 import { getBaseUISize } from "../../canvas.js";
+import { getActiveClimate } from "../../climate/climateManager.js";
 import { Component } from "../Component.js";
 import { Container } from "../Container.js";
 import { Toggle } from "../elements/Toggle.js";
@@ -11,12 +12,12 @@ export class SubMenuComponent extends Component {
         let subMenuContainer = new Container(this.window, getBaseUISize(), 1);
         this.window.container = subMenuContainer;
 
-        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 11, getBaseUISize() * 3, UI_SM_BB, "ground"));
-        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 11, getBaseUISize() * 3, UI_SM_SPECIAL, "special"));
-        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 11, getBaseUISize() * 3, UI_SM_LIGHTING, "lighting"));
-        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 11, getBaseUISize() * 3, UI_SM_ORGANISM, "plants"));
-        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 11, getBaseUISize() * 3, UI_SM_GODMODE, "god mode"));
-        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 11, getBaseUISize() * 3, UI_SM_CLIMATE, "climate"));
+        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 11, getBaseUISize() * 3, UI_SM_BB, "ground",() => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
+        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 11, getBaseUISize() * 3, UI_SM_SPECIAL, "special",() => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
+        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 11, getBaseUISize() * 3, UI_SM_LIGHTING, "lighting",() => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
+        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 11, getBaseUISize() * 3, UI_SM_ORGANISM, "plants",() => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
+        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 11, getBaseUISize() * 3, UI_SM_GODMODE, "god mode",() => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
+        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 11, getBaseUISize() * 3, UI_SM_CLIMATE, "climate",() => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
 
         
     }

@@ -5,20 +5,21 @@ import { loadUI, saveUI } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class Button extends WindowElement {
-    constructor(window, sizeX, sizeY, func, label) {
+    constructor(window, sizeX, sizeY, func, label, colorFunc) {
         super(window, sizeX, sizeY);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         this.key = func;
         this.label = label;
         this.lastClick = 0;
+        this.colorFunc = colorFunc;
     }
 
     render(startX, startY) {
         MAIN_CONTEXT.font = this.sizeY * 0.75 + "px courier"
         MAIN_CONTEXT.textAlign = 'center';
         MAIN_CONTEXT.textBaseline = 'middle';
-        MAIN_CONTEXT.fillStyle = COLOR_OTHER_BLUE;
+        MAIN_CONTEXT.fillStyle = this.colorFunc();
         MAIN_CONTEXT.fillRect(startX, startY, this.sizeX, this.sizeY);
         MAIN_CONTEXT.strokeText(this.label, startX + this.sizeX / 2, startY + this.sizeY / 2);
         return [this.sizeX, this.sizeY];

@@ -5,12 +5,13 @@ import { loadUI, saveUI } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class Slider extends WindowElement {
-    constructor(window, key, sizeX, sizeY, min, max) {
+    constructor(window, key, sizeX, sizeY, min, max, blockColorFunc) {
         super(window, key, sizeX, sizeY);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         this.min = min;
         this.max = max;
+        this.blockColorFunc = blockColorFunc;
     }
 
     render(startX, startY) {
@@ -23,10 +24,8 @@ export class Slider extends WindowElement {
         MAIN_CONTEXT.lineTo(p2x, py);
         MAIN_CONTEXT.stroke();
 
-        MAIN_CONTEXT.fillStyle = COLOR_VERY_FUCKING_RED;
-
         let block_size = this.window.padding;
-        MAIN_CONTEXT.fillStyle = COLOR_BLUE;
+        MAIN_CONTEXT.fillStyle = this.blockColorFunc();
 
         var p = (loadUI(this.key) - this.min) / (this.max - this.min);
         var x = p1x + p * (p2x - p1x)

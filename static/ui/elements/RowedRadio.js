@@ -5,7 +5,7 @@ import { loadUI, saveUI } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class RowedRadio extends WindowElement {
-    constructor(window, sizeX, sizeY, key, rows, choices) {
+    constructor(window, sizeX, sizeY, key, rows, choices, colorInactiveFunc, colorActiveFunc) {
         super(window, sizeX, sizeY);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
@@ -13,6 +13,8 @@ export class RowedRadio extends WindowElement {
         this.rows = rows;
         this.choices = choices;
         this.selected = this.choices.indexOf(loadUI(this.key));
+        this.colorActiveFunc = colorActiveFunc;
+        this.colorInactiveFunc = colorInactiveFunc;
     }
 
     render(startX, startY) {
@@ -25,9 +27,10 @@ export class RowedRadio extends WindowElement {
         
         for (let i = 0; i < this.choices.length; i++) {
             if (i == this.selected) {
-                MAIN_CONTEXT.fillStyle = COLOR_VERY_FUCKING_RED;
+                MAIN_CONTEXT.fillStyle = this.colorActiveFunc();
+
             } else {
-                MAIN_CONTEXT.fillStyle = COLOR_OTHER_BLUE;
+                MAIN_CONTEXT.fillStyle = this.colorInactiveFunc();
             }
             var leftX = startX + xStep * (i % (this.choices.length / this.rows));
             var topY = startY + Math.floor(((this.rows * i) / this.choices.length)) * yStep;

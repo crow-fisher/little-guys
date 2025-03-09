@@ -1,4 +1,5 @@
 import { getBaseUISize } from "../../canvas.js";
+import { getActiveClimate } from "../../climate/climateManager.js";
 import { Component } from "../Component.js";
 import { Container } from "../Container.js";
 import { RowedRadio } from "../elements/RowedRadio.js";
@@ -32,6 +33,6 @@ export class ViewModeComponent extends Component {
             UI_VIEWMODE_MOISTURE,
             UI_VIEWMODE_SURFACE,
             UI_VIEWMODE_ORGANISMS
-        ]));
+        ],() => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
     }
 }
