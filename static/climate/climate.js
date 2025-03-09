@@ -22,7 +22,7 @@ export class Climate {
 
     getUIColorInactive() {
         if (this.uci == null) {
-            let rgb = this.getBaseSoilColor(0.0, 0.90, 0.10);
+            let rgb = this.getBaseSoilColor(0.2, 0.70, 0.10);
             this.uci = rgbToHex(Math.floor(rgb.r), Math.floor(rgb.g), Math.floor(rgb.b));
             return this.uci;
         }
