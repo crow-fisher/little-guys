@@ -1,10 +1,7 @@
 import { getBaseUISize } from "../../canvas.js";
-import { setClimate, weather } from "../../climate/weather.js";
 import { Component } from "../Component.js";
 import { Container } from "../Container.js";
-import { Button } from "../elements/Button.js";
 import { Radio } from "../elements/Radio.js";
-import { RowedRadio } from "../elements/RowedRadio.js";
 import { Slider } from "../elements/Slider.js";
 import { Text } from "../elements/Text.js";
 import { Toggle } from "../elements/Toggle.js";
@@ -14,10 +11,12 @@ import {
     UI_CLIMATE_DESERT,
     UI_CLIMATE_FANTASY,
     UI_CLIMATE_WEATHER_SUNNY,
-    UI_CLIMATE_WEATHER_CLOUDY,
     UI_CLIMATE_WEATHER_LIGHTRAIN,
     UI_CLIMATE_WEATHER_HEAVYRAIN,
-    UI_CLIMATE_RAINFALL_DENSITY
+    UI_CLIMATE_RAINFALL_DENSITY,
+    UI_CLIMATE_WEATHER_PARTLY_CLOUDY,
+    UI_CLIMATE_WEATHER_MOSTLY_CLOUDY,
+    UI_CLIMATE_WEATHER_FOGGY
 } from "../UIData.js";
 export class ClimateComponent extends Component {
     constructor(posX, posY, padding, dir, key) {
@@ -32,16 +31,20 @@ export class ClimateComponent extends Component {
             UI_CLIMATE_FANTASY
         ]));
 
-        let weatherDryContainer = new Container(this.window, padding, 0);
-        let weatherWetContainer = new Container(this.window, padding, 0);
+        let weatherRow1 = new Container(this.window, padding, 0);
+        let weatherRow2 = new Container(this.window, padding, 0);
+        let weatherRow3 = new Container(this.window, padding, 0);
 
-        container.addElement(weatherDryContainer);   
-        container.addElement(weatherWetContainer);
+        container.addElement(weatherRow1);
+        container.addElement(weatherRow2);
+        container.addElement(weatherRow3);
 
-        weatherDryContainer.addElement(new Toggle(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 2.5, UI_CLIMATE_WEATHER_SUNNY , "sunny"))
-        weatherDryContainer.addElement(new Toggle(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 2.5, UI_CLIMATE_WEATHER_CLOUDY , "cloudy"))
-        weatherWetContainer.addElement(new Toggle(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 2.5, UI_CLIMATE_WEATHER_LIGHTRAIN , "light rain"))
-        weatherWetContainer.addElement(new Toggle(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 2.5, UI_CLIMATE_WEATHER_HEAVYRAIN , "heavy rain"))
+        weatherRow1.addElement(new Toggle(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 2.5, UI_CLIMATE_WEATHER_SUNNY , "sunny"))
+        weatherRow1.addElement(new Toggle(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 2.5, UI_CLIMATE_WEATHER_PARTLY_CLOUDY , "partly cloudy"))
+        weatherRow2.addElement(new Toggle(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 2.5, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY , "mostly cloudy"))
+        weatherRow2.addElement(new Toggle(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 2.5, UI_CLIMATE_WEATHER_FOGGY , "foggy"))
+        weatherRow3.addElement(new Toggle(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 2.5, UI_CLIMATE_WEATHER_LIGHTRAIN , "light rain"))
+        weatherRow3.addElement(new Toggle(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 2.5, UI_CLIMATE_WEATHER_HEAVYRAIN , "heavy rain"))
 
         container.addElement(new Text(this.window, sizeX, getBaseUISize() * 2, "rainfall density"));
         container.addElement(new Slider(this.window,UI_CLIMATE_RAINFALL_DENSITY, sizeX, getBaseUISize() * 2, 1.001, 20));

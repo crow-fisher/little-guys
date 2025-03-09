@@ -1,11 +1,12 @@
 import { getCanvasSquaresX } from "../canvas.js";
 import { randNumber, randRange } from "../common.js";
-import { addUIFunctionMap, UI_CLIMATE_WEATHER_SUNNY, UI_CLIMATE_WEATHER_CLOUDY, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_HEAVYRAIN, loadUI, saveUI } from "../ui/UIData.js";
+import { addUIFunctionMap, UI_CLIMATE_WEATHER_SUNNY, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_HEAVYRAIN, loadUI, saveUI, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_FOGGY } from "../ui/UIData.js";
+import { getActiveClimate } from "./climateManager.js";
 import { addWaterSaturationPascals, cloudRainThresh, getHumidity, getWaterSaturation, setRestingGradientStrength, setRestingHumidityGradient, setRestingTemperatureGradient } from "./temperatureHumidity.js";
 import { getCurDay, getDt, timeScaleFactor } from "./time.js";
 import { getPressure, getWindSquaresX, getWindSquaresY, isPointInWindBounds } from "./wind.js";
 
-var weatherSunny, weatherCloudy, weatherLightRain, weatherHeavyRain;
+var weatherSunny, weatherPartlyCloudy, weatherMostlyCloudy, weatherFoggy, weatherLightRain, weatherHeavyRain;
 var ui_weatherMap = new Map();
 
 var curRainFallAmount = 0;
@@ -21,7 +22,7 @@ class Cloud {
         this.centerY = Math.floor(centerY);
         this.sizeX = Math.floor(sizeX);
         this.sizeY = Math.floor(sizeY);
-        this.startDay = startDay; 
+        this.startDay = startDay;
         this.duration = duration;
         this.targetHumidity = targetHumidity;
         this.strength = strength;
@@ -67,7 +68,7 @@ class Cloud {
 
         for (let i = 0; i < this.sizeX; i++) {
             for (let j = 0; j < this.sizeY; j++) {
-                let curLoc = (i/curElipse[2]) ** 2 + (j/curElipse[3]) ** 2;
+                let curLoc = (i / curElipse[2]) ** 2 + (j / curElipse[3]) ** 2;
                 if (curLoc > 1) {
                     continue;
                 }
@@ -113,14 +114,25 @@ class Weather {
     }
 }
 
-function spawnCumulusCloud() {
+function spawnFogCloud() {
     let wsx = getWindSquaresX();
     let wsy = getWindSquaresY();
     curClouds.push(new Cloud(
         randRange(0, wsx),
         randRange(0, wsy),
-        randRange(0.1, 0.3) * wsx, randRange(0.05, 0.15) * wsx, 
-        getCurDay() + 0.00069444444 * randRange(0.5, 4), 0.00069444444 * randRange(0.5, 4), 
+        randRange(0.1, 0.3) * wsx, randRange(0.05, 0.15) * wsx,
+        getCurDay() + 0.00069444444 * randRange(0.5, 4), 0.00069444444 * randRange(0.5, 4),
+        randRange(1.001, cloudRainThresh), 0.8 * randRange(1, 2)));
+}
+
+function spawnCumulusCloud() {
+    let wsx = getWindSquaresX();
+    let wsy = getWindSquaresY();
+    curClouds.push(new Cloud(
+        randRange(0, wsx),
+        randRange(0, wsy / 3),
+        randRange(0.1, 0.3) * wsx, randRange(0.05, 0.15) * (wsx / 3),
+        getCurDay() + 0.00069444444 * randRange(0.5, 4), 0.00069444444 * randRange(0.5, 4),
         randRange(1.001, cloudRainThresh), 0.8 * randRange(1, 2)));
 }
 
@@ -128,8 +140,8 @@ function spawnNimbusCloud(rainFactor) {
     curClouds.push(new Cloud(
         randRange(0, getCanvasSquaresX() * 0.25),
         randRange(4, 6),
-        randRange(23, 35), randRange(3, 5), 
-        getCurDay() + 0.00001 * randRange(1, 30), .01 * randRange(2, 4), 
+        randRange(23, 35), randRange(3, 5),
+        getCurDay() + 0.00001 * randRange(1, 30), .01 * randRange(2, 4),
         1 + 0.05 * rainFactor, 0.8));
 }
 
@@ -166,13 +178,25 @@ var cloudyTg = [
     [1, 273 + 35]
 ]
 
-function cloudyWeather() {
+function cloudyWeather(cloudCount) {
+    return () => {
+        if (curClouds.length > 35) {
+            return;
+        }
+        spawnCumulusCloud();
+    }
+}
+
+function foggyWeather() {
     if (curClouds.length > 35) {
         return;
     }
-    spawnCumulusCloud();
+    spawnFogCloud();
 }
-weatherCloudy = new Weather(UI_CLIMATE_WEATHER_CLOUDY, cloudyHg, cloudyTg, 100, cloudyWeather);
+
+weatherPartlyCloudy = new Weather(UI_CLIMATE_WEATHER_PARTLY_CLOUDY, cloudyHg, cloudyTg, 100, cloudyWeather(15));
+weatherMostlyCloudy = new Weather(UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, cloudyHg, cloudyTg, 100, cloudyWeather(35));
+weatherFoggy = new Weather(UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, cloudyHg, cloudyTg, 100, foggyWeather);
 
 export function logRainFall(amount) {
     curRainFallAmount += amount;
@@ -201,56 +225,28 @@ weatherLightRain = new Weather(UI_CLIMATE_WEATHER_LIGHTRAIN, rainyHumidityGradie
 weatherHeavyRain = new Weather(UI_CLIMATE_WEATHER_HEAVYRAIN, rainyHumidityGradient, rainyTemperatureGradient, 100, generalRainyWeather(1));
 
 ui_weatherMap.set(UI_CLIMATE_WEATHER_SUNNY, weatherSunny)
-ui_weatherMap.set(UI_CLIMATE_WEATHER_CLOUDY, weatherCloudy)
+ui_weatherMap.set(UI_CLIMATE_WEATHER_PARTLY_CLOUDY, weatherPartlyCloudy)
+ui_weatherMap.set(UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, weatherMostlyCloudy)
+ui_weatherMap.set(UI_CLIMATE_WEATHER_FOGGY, weatherFoggy)
 ui_weatherMap.set(UI_CLIMATE_WEATHER_LIGHTRAIN, weatherLightRain)
 ui_weatherMap.set(UI_CLIMATE_WEATHER_HEAVYRAIN, weatherHeavyRain)
-
-var climateDry = {
-    UI_CLIMATE_WEATHER_SUNNY: 70,
-    UI_CLIMATE_WEATHER_CLOUDY: 20,
-    UI_CLIMATE_WEATHER_LIGHTRAIN: 10,
-    UI_CLIMATE_WEATHER_HEAVYRAIN: 1
-
-}
-
-var climateTemperate = {
-    UI_CLIMATE_WEATHER_SUNNY: 60,
-    UI_CLIMATE_WEATHER_CLOUDY: 30,
-    UI_CLIMATE_WEATHER_LIGHTRAIN: 20,
-    UI_CLIMATE_WEATHER_HEAVYRAIN: 10 
-
-}
-
-var climateMoist = {
-    UI_CLIMATE_WEATHER_SUNNY: 0,
-    UI_CLIMATE_WEATHER_CLOUDY: 600,
-    UI_CLIMATE_WEATHER_LIGHTRAIN: 40,
-    UI_CLIMATE_WEATHER_HEAVYRAIN: 30
-}
-
-var climateWet = {
-    UI_CLIMATE_WEATHER_SUNNY: 30,
-    UI_CLIMATE_WEATHER_CLOUDY: 35,
-    UI_CLIMATE_WEATHER_LIGHTRAIN: 45,
-    UI_CLIMATE_WEATHER_HEAVYRAIN: 45
-
-}
 
 function weatherChange() {
     if (getCurDay() < curWeatherStartTime + curWeatherInterval) {
         return;
     }
-    var sum = Object.values(curClimate).reduce(
+    let curWeatherPatternMap = getActiveClimate().weatherPatternMap;
+    var sum = Object.values(curWeatherPatternMap).reduce(
         (accumulator, currentValue) => accumulator + currentValue,
         0,
     );
     var target = Math.floor(Math.random() * sum);
     var cur = 0;
-    var nextWeather = Object.keys(curClimate).find((key) => {
+    var nextWeather = Object.keys(curWeatherPatternMap).find((key) => {
         if (target <= cur) {
             return true;
         };
-        cur += curClimate[key];
+        cur += curWeatherPatternMap[key];
         if (target <= cur) {
             return true;
         };
@@ -260,25 +256,6 @@ function weatherChange() {
 
 }
 
-export function setClimate(w) {
-    curWeatherInterval = 0;
-    switch (w) {
-        case 1: 
-            curClimate = climateDry;
-            break;
-        case 2:
-            curClimate = climateTemperate;
-            break;
-        case 3:
-            curClimate = climateMoist;
-            break;
-        case 4:
-            curClimate = climateWet;
-            break;
-        default:
-            curClimate = climateDry;
-    }
-}
 
 export function weather() {
     curClouds.forEach((cloud) => cloud.tick());
@@ -290,7 +267,6 @@ export function weather() {
 }
 
 export function initWeather() {
-    curClimate = climateTemperate;
     weatherChange();
     saveUI(UI_CLIMATE_WEATHER_SUNNY, true);
     curWeather = weatherSunny;
@@ -302,13 +278,14 @@ function applyUIWeatherChange() {
         if (loadUI(key)) {
             curWeather = ui_weatherMap.get(key);
             curWeatherInterval = randRange(0, 0.1);
-            curWeatherStartTime = getCurDay();      
-            console.log("Next weather: ", curWeather.type + ", for " + Math.round(curWeatherInterval * 100) / 100 + " days") 
+            curWeatherStartTime = getCurDay();
+            console.log("Next weather: ", curWeather.type + ", for " + Math.round(curWeatherInterval * 100) / 100 + " days")
         }
     });
 }
-
 addUIFunctionMap(UI_CLIMATE_WEATHER_SUNNY, applyUIWeatherChange);
-addUIFunctionMap(UI_CLIMATE_WEATHER_CLOUDY, applyUIWeatherChange);
+addUIFunctionMap(UI_CLIMATE_WEATHER_PARTLY_CLOUDY, applyUIWeatherChange);
+addUIFunctionMap(UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, applyUIWeatherChange);
+addUIFunctionMap(UI_CLIMATE_WEATHER_FOGGY, applyUIWeatherChange);
 addUIFunctionMap(UI_CLIMATE_WEATHER_LIGHTRAIN, applyUIWeatherChange);
 addUIFunctionMap(UI_CLIMATE_WEATHER_HEAVYRAIN, applyUIWeatherChange);
