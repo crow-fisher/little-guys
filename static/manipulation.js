@@ -1,6 +1,6 @@
 var ERASE_RADIUS = 2;
 
-import { getCanvasHeight, getCanvasWidth, transformPixelsToCanvasSquares } from "./canvas.js";
+import { getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, transformPixelsToCanvasSquares } from "./canvas.js";
 import { addTemperature, addWaterSaturationPascalsSqCoords } from "./climate/temperatureHumidity.js";
 import { addWindPerssureMaintainHumidity, addWindPressureCloud, addWindPressureDryAir } from "./climate/wind.js";
 import { randNumber } from "./common.js";
@@ -116,6 +116,10 @@ function doBlockMod(posX, posY) {
 }
 
 function doClimateMod(posX, posY) {
+    if (posX < 0 || posY < 0 || posX >= getCanvasSquaresX() || posY >= getCanvasSquaresY()) {
+        return;
+    }
+
     let pressure = (isRightMouseClicked() ? -1 : 1) * loadUI(UI_CLIMATE_WEATHER_TOOL_STRENGTH)
     switch (loadUI(UI_CLIMATE_WEATHER_TOOL_SELECT)) {
         case UI_CLIMATE_WEATHER_TOOL_DRYAIR:

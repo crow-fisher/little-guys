@@ -70,13 +70,15 @@ function getFrameIterationOrder() {
 
 let frameOrder = getFrameIterationOrder();
 
+
 function getSqIterationOrder() {
-    var rootKeys = Object.keys(ALL_SQUARES);
+    if (frameOrder.length != getCanvasSquaresX()) {
+        frameOrder = getFrameIterationOrder();
+    }
     var squareOrder = [];
-    for (let i = 0; i < rootKeys.length; i++) {
-        var subKeys = Object.keys(ALL_SQUARES[rootKeys[i]]);
-        for (let j = 0; j < subKeys.length; j++) {
-            squareOrder.push(...getSquares(rootKeys[i], subKeys[j]))
+    for (let i = 0; i < getCanvasSquaresX(); i++) {
+        for (let j = 0; j < getCanvasSquaresY(); j++) {
+            squareOrder.push(...getSquares(i, j))
         }
     }
     let cmp = (sq) => ((sq.solid ? frameOrder[sq.posX] : sq.posX) + sq.posY * getCanvasSquaresX())
