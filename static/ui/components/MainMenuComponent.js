@@ -30,13 +30,11 @@ export class MainMenuComponent extends Component {
         subMenuContainer.addElement(new Radio(this.window, sizeX, getBaseUISize() * 3, UI_SIZE, [8, 12, 16, 20], () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
 
         subMenuContainer.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, "size"))
-        subMenuContainer.addElement(new RowedRadio(this.window, sizeX, getBaseUISize() * (3 * 6), UI_DISPLAY_SIZEY, 6,
+        subMenuContainer.addElement(new RowedRadio(this.window, sizeX, getBaseUISize() * (3 * 4), UI_DISPLAY_SIZEY, 4,
         [75, 100, 125,
                  150, 175, 200,
                  250, 300, 350,
-                 400, 450, 500,
-                 550, 600, 650,
-                 700, 750, 800], () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
+                 400, 450, 500], () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
 
         subMenuContainer.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, "fast speed"))
         subMenuContainer.addElement(new Radio(this.window, sizeX, getBaseUISize() * 3, UI_LIGHTING_FASTUPDATERATE, 
