@@ -2,7 +2,7 @@ var ERASE_RADIUS = 2;
 
 import { getCanvasHeight, getCanvasWidth, transformPixelsToCanvasSquares } from "./canvas.js";
 import { addTemperature, addWaterSaturationPascalsSqCoords } from "./climate/temperatureHumidity.js";
-import { addWindPressure, removeWindPressure } from "./climate/wind.js";
+import { addWindPerssureMaintainHumidity, addWindPressureCloud, addWindPressureDryAir } from "./climate/wind.js";
 import { randNumber } from "./common.js";
 import { removeSquare } from "./globalOperations.js";
 import { getOrganismSquaresAtSquare } from "./lifeSquares/_lsOperations.js";
@@ -18,7 +18,7 @@ import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
-import { loadUI, UI_BB_EYEDROPPER, UI_BB_MIXER, UI_BB_MODE, UI_BB_SIZE, UI_BB_STRENGTH, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_STRENGTH, UI_GODMODE_TEMPERATURE, UI_GODMODE_WIND, UI_MODE_ROCK, UI_MODE_SOIL, UI_ORGANISM_SELECT, UI_SM_BB, UI_SM_GODMODE, UI_SM_ORGANISM, UI_SM_SPECIAL, UI_SPECIAL_AQUIFER, UI_SPECIAL_MIX, UI_SPECIAL_SELECT, UI_SPECIAL_SURFACE, UI_SPECIAL_WATER } from "./ui/UIData.js";
+import { loadUI, UI_BB_EYEDROPPER, UI_BB_MIXER, UI_BB_MODE, UI_BB_SIZE, UI_BB_STRENGTH, UI_CLIMATE_WEATHER_TOOL_LIGHTCLOUD, UI_CLIMATE_SELECT, UI_CLIMATE_WEATHER_TOOL_DRYAIR, UI_CLIMATE_WEATHER_TOOL_HEAVYCLOUD, UI_CLIMATE_WEATHER_TOOL_MATCHEDAIR, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_STRENGTH, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_STRENGTH, UI_GODMODE_TEMPERATURE, UI_GODMODE_WIND, UI_MODE_ROCK, UI_MODE_SOIL, UI_ORGANISM_SELECT, UI_SM_BB, UI_SM_CLIMATE, UI_SM_GODMODE, UI_SM_ORGANISM, UI_SM_SPECIAL, UI_SPECIAL_AQUIFER, UI_SPECIAL_MIX, UI_SPECIAL_SELECT, UI_SPECIAL_SURFACE, UI_SPECIAL_WATER } from "./ui/UIData.js";
 import { eyedropperBlockClick, eyedropperBlockHover, isWindowHovered, mixerBlockClick } from "./ui/WindowManager.js";
 import { CattailSeedOrganism } from "./organisms/midwest/CattailOrganism.js";
 var prevManipulationOffset;
@@ -54,6 +54,9 @@ function doBlockBlur(centerX, centerY, size) {
 
 function doBrushFunc(centerX, centerY, func) {
     var radius = Math.floor(loadUI(UI_BB_SIZE));
+    if (loadUI(UI_SM_CLIMATE)) {
+        radius *= 4;
+    }
     for (var i = -radius; i <= radius; i++) {
         for (var j = -radius; j <= radius; j++) {
             if ( Math.ceil((i ** 2 + j ** 2) * 0.5) > radius) {
@@ -95,13 +98,6 @@ function killOrganismsAtSquare(posX, posY) {
 
 
 function doBlockMod(posX, posY) {
-    if (loadUI(UI_GODMODE_SELECT) == UI_GODMODE_WIND) {
-        if (!isRightMouseClicked())
-            addWindPressure(posX, posY);
-        else
-            removeWindPressure(posX, posY);
-    }
-
     if (loadUI(UI_GODMODE_SELECT) == UI_GODMODE_TEMPERATURE) {
         if (!isRightMouseClicked())
             addTemperature(posX, posY, .5);
@@ -116,6 +112,26 @@ function doBlockMod(posX, posY) {
     }
     if (loadUI(UI_GODMODE_SELECT) == UI_GODMODE_KILL) {
         killOrganismsAtSquare(posX, posY);
+    }
+}
+
+function doClimateMod(posX, posY) {
+    let pressure = (isRightMouseClicked() ? -1 : 1) * loadUI(UI_CLIMATE_WEATHER_TOOL_STRENGTH)
+    switch (loadUI(UI_CLIMATE_WEATHER_TOOL_SELECT)) {
+        case UI_CLIMATE_WEATHER_TOOL_DRYAIR:
+            addWindPressureDryAir(posX, posY, pressure);
+            break;
+        case UI_CLIMATE_WEATHER_TOOL_MATCHEDAIR:
+            addWindPerssureMaintainHumidity(posX, posY, pressure);
+            break;
+            
+        case UI_CLIMATE_WEATHER_TOOL_LIGHTCLOUD:
+            addWindPressureCloud(posX, posY, pressure, 1.01);
+            break;
+        
+        case UI_CLIMATE_WEATHER_TOOL_HEAVYCLOUD:
+            addWindPressureCloud(posX, posY, pressure, 1.1);
+            break;
     }
 }
 
@@ -196,6 +212,9 @@ export function doClickAdd() {
         for (let i = 0; i < totalCount; i += 0.5) {
             var px = Math.floor(x1 + ddx * i);
             var py = Math.floor(y1 + ddy * i);
+            if (loadUI(UI_SM_CLIMATE)) {
+                doBrushFunc(px, py, (x, y) => doClimateMod(x, y));
+            }
             if (loadUI(UI_SM_GODMODE)) {
                 doBrushFunc(px, py, (x, y) => doBlockMod(x, y));
             }

@@ -1,7 +1,7 @@
 import { hexToRgb, rgbToRgba } from "../common.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import {  MAIN_CONTEXT } from "../index.js";
-import { addWaterSaturation, addWaterSaturationPascals, calculateColor, getTemperatureAtWindSquare, getWaterSaturation, initTemperatureHumidity, setWaterSaturation, setWaterSaturationMap, updateWindSquareTemperature } from "./temperatureHumidity.js";
+import { addWaterSaturation, addWaterSaturationPascals, calculateColor, getHumidity, getTemperatureAtWindSquare, getWaterSaturation, initTemperatureHumidity, setWaterSaturation, setWaterSaturationMap, updateWindSquareTemperature } from "./temperatureHumidity.js";
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillRect } from "../canvas.js";
 
 var windPressureMap;
@@ -464,12 +464,35 @@ export function manipulateWindPressureMaintainHumidityBlockSquare(posX, posY, am
     manipulateWindPressureMaintainHumidityWindSquare(x, y, windPressureMap[x][y] + pascals);
 }
 
-function addWindPressure(posX, posY) {
-    manipulateWindPressureMaintainHumidityBlockSquare(posX, posY, clickAddPressure);
+export function addWindPressureDryAir(posX, posY, amount) {
+    var x = Math.floor(posX / 4);
+    var y = Math.floor(posY / 4);
+    let start = windPressureMap[x][y];
+    if (start <= 0) {
+        return;
+    }
+    let pascals = getBaseAirPressureAtYPosition(y) * amount;
+    let target = windPressureMap[x][y] + pascals;
+    windPressureMap[x][y] = Math.max(getBaseAirPressureAtYPosition(y) * 0.5, target);
+    windPressureMap[x][y] = Math.min(getBaseAirPressureAtYPosition(y) * 100, target);
 }
 
-function removeWindPressure(posX, posY) {
-    manipulateWindPressureMaintainHumidityBlockSquare(posX, posY, -clickAddPressure);
+export function addWindPerssureMaintainHumidity(posX, posY, amount) {
+    manipulateWindPressureMaintainHumidityBlockSquare(posX, posY, amount);
+}
+
+export function addWindPressureCloud(posX, posY, amount, cloud) {
+    addWindPressureDryAir(posX, posY, amount);
+    var x = Math.floor(posX / 4);
+    var y = Math.floor(posY / 4);
+    let start = windPressureMap[x][y];
+    if (start <= 0) {
+        return;
+    }
+    let curHumidity = getHumidity(x, y);
+    let targetHumidity = cloud;
+    let curWaterPascals = getWaterSaturation(x, y);
+    setWaterSaturation(x, y, (curWaterPascals * (targetHumidity / curHumidity)));
 }
 
 function updateWindPressureByMult(x, y, m) {
@@ -482,4 +505,4 @@ function isPointInBounds(x, y) {
 
 initWindPressure();
 
-export { getWindSquareAbove, setPressurebyMult, getPressure, getAirSquareDensity, getWindSpeedAtLocation, renderWindPressureMap, initWindPressure, tickWindPressureMap, addWindPressure, removeWindPressure, updateWindPressureByMult, getAirSquareDensityTempAndHumidity, base_wind_pressure }
+export { getWindSquareAbove, setPressurebyMult, getPressure, getAirSquareDensity, getWindSpeedAtLocation, renderWindPressureMap, initWindPressure, tickWindPressureMap, updateWindPressureByMult, getAirSquareDensityTempAndHumidity, base_wind_pressure }

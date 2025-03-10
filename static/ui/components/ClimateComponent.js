@@ -3,6 +3,7 @@ import { getActiveClimate } from "../../climate/climateManager.js";
 import { Component } from "../Component.js";
 import { Container } from "../Container.js";
 import { Radio } from "../elements/Radio.js";
+import { RowedRadio } from "../elements/RowedRadio.js";
 import { Slider } from "../elements/Slider.js";
 import { Text } from "../elements/Text.js";
 import { Toggle } from "../elements/Toggle.js";
@@ -18,15 +19,20 @@ import {
     UI_CLIMATE_WEATHER_PARTLY_CLOUDY,
     UI_CLIMATE_WEATHER_MOSTLY_CLOUDY,
     UI_CLIMATE_WEATHER_FOGGY,
-    UI_CLIMATE_WEATHER_DRYAIR,
-    UI_CLIMATE_WEATHER_MATCHEDAIR,
-    UI_CILMATE_WEATHER_LIGTHCLOUD,
-    UI_CLIMATE_WEATHER_HEAVYCLOUD
+    UI_CLIMATE_WEATHER_TOOL_DRYAIR,
+    UI_CLIMATE_WEATHER_TOOL_MATCHEDAIR,
+    UI_CLIMATE_WEATHER_TOOL_LIGHTCLOUD,
+    UI_CLIMATE_WEATHER_TOOL_HEAVYCLOUD,
+    UI_CLIMATE_WEATHER_TOOL_SELECT,
+    UI_BB_SIZE,
+    UI_CLIMATE_WEATHER_TOOL_STRENGTH
 } from "../UIData.js";
+import { BB_SIZE_MAX, BB_SIZE_MIN } from "./BlockBuildingComponent.js";
 export class ClimateComponent extends Component {
     constructor(posX, posY, padding, dir, key) {
         super(posX, posY, padding, dir, key);
         var sizeX = getBaseUISize() * 32;
+        let halfSizeX = sizeX / 2;
         let container = new Container(this.window, padding, 1);
         this.window.container = container;
         container.addElement(new Text(this.window, sizeX, getBaseUISize() * 2, "cilmate select"));
@@ -57,16 +63,22 @@ export class ClimateComponent extends Component {
         container.addElement(new Slider(this.window,UI_CLIMATE_RAINFALL_DENSITY, sizeX, getBaseUISize() * 2, 1.001, 20, () => getActiveClimate().getUIColorTransient()));
 
         container.addElement(new Text(this.window, sizeX, getBaseUISize() * 2, "climate brushes"));
-        let brushRow1 = new Container(this.window, padding, 0);
-        let brushRow2 = new Container(this.window, padding, 0);
-
-        container.addElement(brushRow1);
-        container.addElement(brushRow2);
+        let brushLabelRow = new Container(this.window, padding, 0);
+        let brushControlRow = new Container(this.window, padding, 0);
+        container.addElement(brushLabelRow);
+        container.addElement(brushControlRow);
+        brushControlRow.addElement(new Slider(this.window, UI_BB_SIZE, halfSizeX, getBaseUISize() * 3, BB_SIZE_MIN, BB_SIZE_MAX, () => getActiveClimate().getUIColorTransient()));
+        brushControlRow.addElement(new Slider(this.window, UI_CLIMATE_WEATHER_TOOL_STRENGTH, halfSizeX, getBaseUISize() * 3, 0.01, 0.1, () => getActiveClimate().getUIColorTransient()));
         
-        brushRow1.addElement(new Toggle(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 2.5, UI_CLIMATE_WEATHER_DRYAIR, "dry air",() => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
-        brushRow1.addElement(new Toggle(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 2.5, UI_CLIMATE_WEATHER_MATCHEDAIR, "matched air",() => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
-        brushRow2.addElement(new Toggle(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 2.5, UI_CILMATE_WEATHER_LIGTHCLOUD, "light cloud",() => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
-        brushRow2.addElement(new Toggle(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 2.5, UI_CLIMATE_WEATHER_HEAVYCLOUD, "heavy cloud",() => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
+        brushLabelRow.addElement(new Text(this.window, halfSizeX, getBaseUISize() * 2, "brush size"));
+        brushLabelRow.addElement(new Text(this.window, halfSizeX, getBaseUISize() * 2, "brush strength"));
+
+        container.addElement(new RowedRadio(this.window, sizeX, getBaseUISize() * 5, UI_CLIMATE_WEATHER_TOOL_SELECT, 2, [
+            UI_CLIMATE_WEATHER_TOOL_DRYAIR,
+            UI_CLIMATE_WEATHER_TOOL_MATCHEDAIR,
+            UI_CLIMATE_WEATHER_TOOL_LIGHTCLOUD,
+            UI_CLIMATE_WEATHER_TOOL_HEAVYCLOUD
+        ], () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
 
     }
 }
