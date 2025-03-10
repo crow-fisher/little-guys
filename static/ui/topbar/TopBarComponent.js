@@ -23,39 +23,85 @@ import {
 } from "../UIData.js";
 import { TopBarToggle } from "./TopBarToggle.js";
 import { getLastMoveOffset } from "../../mouse.js";
+import { getCurDay, millis_per_day } from "../../climate/time.js";
 
 export class TopBarComponent {
     constructor(key) {
         this.key = key;
         this.hovered = false;
+        this.compact = false;
 
         this.elements = new Map();
         this.elements[1] = new Array();
 
-        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_0, "⏸"));
-        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_1, "▶"));
-        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_2, "▶"));
-        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_3, "▶"));
-        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_4, "▶"));
-        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_5, "▶"));
-        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_6, "▶"));
-        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_7, "▶"));
-        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_8, "▶"));
-        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_9, "▶\t"));
-        this.elements[1].push(new TopBarTime(getBaseUISize() * 2));
+        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_0, () => "⏸"));
+        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_1, () => "▶"));
+        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_2, () => "▶"));
+        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_3, () => "▶"));
+        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_4, () => "▶"));
+        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_5, () => "▶"));
+        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_6, () => "▶"));
+        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_7, () => "▶"));
+        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_8, () => "▶"));
+        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_9, () => "▶\t"));
+        this.elements[1].push(new TopBarTime(getBaseUISize() * 2, () => this.textDateTime()));
 
         this.elements[0] = [
-            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_MAINMENU, UI_BOOLEAN, " main menu | "),
-            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_SM, UI_BOOLEAN, "block menu | "),
-            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_VIEWMODE, UI_BOOLEAN, "select viewmode | "),
-            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_TOGGLELIGHTING, UI_BOOLEAN, "toggle lighting | "),
-            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_FASTLIGHTING, UI_BOOLEAN, "fast lighting | "),
-            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_DESIGNERMODE, UI_BOOLEAN, "designer mode")
+            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_MAINMENU, UI_BOOLEAN, () => this.textMainMenu()),
+            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_SM, UI_BOOLEAN, () => this.textBlockMenu()),
+            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_VIEWMODE, UI_BOOLEAN, () => this.textViewMode()),
+            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_TOGGLELIGHTING, UI_BOOLEAN, () => this.textToggleLighting()),
+            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_FASTLIGHTING, UI_BOOLEAN, () => this.textFastLighting()),
+            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_DESIGNERMODE, UI_BOOLEAN, () => this.textDesignerMode())
         ];
 
         this.maxHeight = 0;
         this.padding = 4;
-    }   
+    }
+
+    textMainMenu() {
+        if (this.compact)
+            return " main | "
+        return " main menu | "
+    }
+
+    textBlockMenu() {
+        if (this.compact)
+            return "block | "
+        return "block menu | "
+    }
+
+    textViewMode() {
+        if (this.compact)
+            return "viewmode | "
+        return "select viewmode | "
+    }
+    textToggleLighting() {
+        if (this.compact) 
+            return "lighting | " 
+        return "toggle lighting | "
+    }
+    textFastLighting() {
+        if (this.compact)
+            return "fast | "
+        return "fast lighting | "
+    }
+    textDesignerMode() {
+        if (this.compact) 
+            return "designer"
+        return "designer mode"
+    }
+
+    textDateTime() {
+        let curDay = getCurDay();
+        let curDate = new Date(curDay * millis_per_day);
+        if (this.compact) {
+            return curDate.toLocaleTimeString() + " ";
+        } else {
+            return curDate.toLocaleString() + " ";
+        }
+    }
+
 
     render() {
         if (!loadUI(this.key)) {
@@ -66,6 +112,7 @@ export class TopBarComponent {
         MAIN_CONTEXT.fillRect(0, 0, getCanvasWidth(), this.maxHeight + 3 * this.padding);
 
         let keys = Object.keys(this.elements);
+        let curEndX = 0;
         keys.map(parseFloat).forEach((key) => {
             let elements = this.elements[key];
             let startX = getCanvasWidth() * key;
@@ -78,10 +125,16 @@ export class TopBarComponent {
                 startX -= totalElementsSizeX;
             }
 
+            if (startX < curEndX) {
+                this.compact = true;
+                return;
+            }
+
             elements.forEach((element) => {
                 let measurements = element.measure();
                 element.render(startX, this.padding + measurements[1]);
                 startX += measurements[0] + this.padding;
+                curEndX = startX;
                 this.maxHeight = Math.max(measurements[1], this.maxHeight);
             })
         })

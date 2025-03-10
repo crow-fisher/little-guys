@@ -5,21 +5,28 @@ import { loadUI, saveUI, UI_BOOLEAN } from "../UIData.js";
 import { TopBarElementBase } from "./TopBarElementBase.js";
 
 export class TopBarToggle extends TopBarElementBase{
-    constructor(fontSize, textAlign, key, value, label) {
+    constructor(fontSize, textAlign, key, value, labelFunc) {
         super(fontSize, textAlign);
         this.key = key;
         this.value = value;
-        this.label = label;
+        this.labelFunc = labelFunc;
         this.lastClick = 0;
     }
 
     measure() {
+        if (this.labelFunc() == "") {
+            return [0, 0];
+        }
         this.prepareStyle();
-        var measured = MAIN_CONTEXT.measureText(this.label);
+        var measured = MAIN_CONTEXT.measureText(this.labelFunc());
         return [measured.width, measured.fontBoundingBoxAscent];
     }
 
     render(startX, startY) {
+        if (this.labelFunc() == "") {
+            return;
+        }
+        
         this.prepareStyle();
 
         let checked = false;
@@ -32,7 +39,7 @@ export class TopBarToggle extends TopBarElementBase{
             MAIN_CONTEXT.fillStyle = "#FFFFFF";
         else
             MAIN_CONTEXT.fillStyle = "#999999";
-        MAIN_CONTEXT.fillText(this.label, startX, startY)
+        MAIN_CONTEXT.fillText(this.labelFunc(), startX, startY)
     }
 
     hover(posX, posY) {
