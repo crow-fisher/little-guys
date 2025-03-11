@@ -1,14 +1,15 @@
-import { COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
+import { COLOR_BLACK, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { getLastMouseDown, isLeftMouseClicked } from "../../mouse.js";
-import { loadUI, saveUI } from "../UIData.js";
+import { loadUI, saveUI, UI_CENTER } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class Toggle extends WindowElement {
-    constructor(window, sizeX, sizeY, key, label, colorInactiveFunc, colorActiveFunc) {
+    constructor(window, sizeX, sizeY, offsetX, key, label, colorInactiveFunc, colorActiveFunc) {
         super(window, sizeX, sizeY);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
+        this.offsetX = offsetX;
         this.key = key;
         this.label = label;
         this.lastClick = 0;
@@ -26,7 +27,14 @@ export class Toggle extends WindowElement {
             MAIN_CONTEXT.fillStyle = this.colorInactiveFunc();
         }
         MAIN_CONTEXT.fillRect(startX, startY, this.sizeX, this.sizeY);
-        MAIN_CONTEXT.strokeText(this.label, startX + this.sizeX / 2, startY + this.sizeY / 2);
+
+        if (this.offsetX == UI_CENTER) {
+            MAIN_CONTEXT.textAlign = 'center';
+            MAIN_CONTEXT.strokeText(this.label, startX + this.sizeX / 2, startY + (this.sizeY / 2))
+        } else {
+            MAIN_CONTEXT.textAlign = 'left';
+            MAIN_CONTEXT.strokeText(this.label, startX + this.offsetX, startY + (this.sizeY / 2))
+        }
         return [this.sizeX, this.sizeY];
     }
 

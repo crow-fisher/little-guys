@@ -11,7 +11,7 @@ import { loadUI, UI_CENTER, UI_DISPLAY_SIZEY, UI_LIGHTING_FASTUPDATERATE, UI_LIG
 import { SubTreeComponent } from "./SubTreeComponent.js";
 
 
-export class MainMenuSubtreeComponent extends SubTreeComponent {
+export class MainMenuComponent extends SubTreeComponent {
     constructor(posXFunc, posYFunc, padding, dir, key) {
         super(posXFunc, posYFunc, padding, dir, key);
         let subMenuContainer = new Container(this.window, padding, 1);

@@ -3,7 +3,7 @@ import { BlockBuildingComponent } from "./components/BlockBuildingComponent.js";
 import { LightingComponent } from "./components/LightingComponent.js";
 import { OrganismComponent } from "./components/OrganismComponent.js";
 import { SpecialBlockComponent } from "./components/SpecialBlockComponent.js";
-import { SubMenuComponent } from "./components/SubMenuComponent.js";
+import { BlockMenuComponent } from "./components/BlockMenuComponent.js";
 import { TopBarComponent } from "./topbar/TopBarComponent.js";
 import { ViewModeComponent } from "./components/ViewModeComponent.js";
 import { loadUI, UI_BB_MODE, UI_MODE_ROCK, UI_MODE_SOIL, UI_SM_BB, UI_SM_CLIMATE, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_SM, UI_SM_SPECIAL, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveUI, UI_BB_MIXER, addUIFunctionMap } from "./UIData.js";
@@ -11,7 +11,7 @@ import { getSquares } from "../squares/_sqOperations.js";
 import { GodModeComponent } from "./components/GodModeComponent.js";
 import { ClimateComponent } from "./components/ClimateComponent.js";
 import { getCurMixIdx, getMixArr, getMixArrLen, getTargetMixIdx, setCurMixIdx, setTargetMixIdx } from "../globals.js";
-import { MainMenuSubtreeComponent } from "./components/MainMenuSubtreeComponent.js";
+import { MainMenuComponent } from "./components/MainMenuComponent.js";
 
 var topBarComponent;
 var blockBuildingComponent;
@@ -25,8 +25,9 @@ export function initUI() {
     topBarComponent = new TopBarComponent("UI_TOPBAR");
     blockBuildingComponent = new BlockBuildingComponent(getBaseUISize() * 34, getBaseUISize() * 6, 10, 0, UI_SM_BB);
     
-    all_components.push(new MainMenuSubtreeComponent(() => 0, () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_MAINMENU));
-    all_components.push(new SubMenuComponent(() => topBarComponent.getElementXPositionFunc(0, 1), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_SM));
+    all_components.push(new MainMenuComponent(() => 0, () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_MAINMENU));
+    
+    all_components.push(new BlockMenuComponent(() => topBarComponent.getElementXPositionFunc(0, 1), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_SM));
     all_components.push(new ViewModeComponent(() => topBarComponent.getElementXPositionFunc(0, 2), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_VIEWMODE));
     all_components.push(blockBuildingComponent);
     all_components.push(new SpecialBlockComponent(getBaseUISize() * 34, getBaseUISize() * 6, 10, 0, UI_SM_SPECIAL));

@@ -152,7 +152,10 @@ export class TopBarComponent {
 
     // yeah i'm pretty sorry about this one
     getElementXPositionFunc(elementKey, elementIdx) {
-        return this.elementPositions[elementKey][elementIdx];
+        if (elementIdx == 0) {
+            return 0;
+        }
+        return this.elementPositions[elementKey][elementIdx] - getBaseUISize() * 0.8;
     }
 
     update() {
