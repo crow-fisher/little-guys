@@ -2,14 +2,15 @@ import { getBaseUISize } from "../../canvas.js";
 import { COLOR_BLACK, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
-import { loadUI, saveUI } from "../UIData.js";
+import { loadUI, saveUI, UI_CENTER } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class RowedRadio extends WindowElement {
-    constructor(window, sizeX, sizeY, key, rows, choices, colorInactiveFunc, colorActiveFunc) {
+    constructor(window, sizeX, sizeY, elementOffsetX, key, rows, choices, colorInactiveFunc, colorActiveFunc) {
         super(window, sizeX, sizeY);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
+        this.elementOffsetX = elementOffsetX;
         this.key = key;
         this.rows = rows;
         this.choices = choices;
@@ -37,7 +38,14 @@ export class RowedRadio extends WindowElement {
             var topY = startY + Math.floor(((this.rows * i) / this.choices.length)) * yStep;
 
             MAIN_CONTEXT.fillRect(leftX, topY, xStep, yStep);
-            MAIN_CONTEXT.strokeText(this.choices[i], leftX + (xStep / getBaseUISize() * 0.8), topY + yStep / 2)
+
+            if (this.elementOffsetX == UI_CENTER) {
+                MAIN_CONTEXT.textAlign = 'center';
+                MAIN_CONTEXT.strokeText(this.choices[i], leftX + xStep / 2, topY + yStep / 2);
+            } else {
+                MAIN_CONTEXT.textAlign = 'left';
+                MAIN_CONTEXT.strokeText(this.choices[i], leftX + xStep / 2 + this.elementOffsetX, topY + yStep / 2);
+            }
             curX += xStep;
         }
         return [this.sizeX, this.sizeY];

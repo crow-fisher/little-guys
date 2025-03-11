@@ -16,6 +16,10 @@ export class Button extends WindowElement {
         this.colorFunc = colorFunc;
     }
 
+    size() {
+        return [this.sizeX + this.offsetX, this.sizeY];
+    }
+
     render(startX, startY) {
         MAIN_CONTEXT.font = this.sizeY * 0.75 + "px courier"
         MAIN_CONTEXT.textAlign = 'left';

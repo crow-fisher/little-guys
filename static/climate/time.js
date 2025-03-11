@@ -30,7 +30,7 @@ var prevRealTime = Date.now();
 var dt = 0;
 
 export function getFrameDt() {
-    return dt;
+    return Math.min(100, dt);
 }
 
 var starMap;

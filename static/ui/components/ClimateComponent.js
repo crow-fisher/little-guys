@@ -25,7 +25,8 @@ import {
     UI_CLIMATE_WEATHER_TOOL_HEAVYCLOUD,
     UI_CLIMATE_WEATHER_TOOL_SELECT,
     UI_BB_SIZE,
-    UI_CLIMATE_WEATHER_TOOL_STRENGTH
+    UI_CLIMATE_WEATHER_TOOL_STRENGTH,
+    UI_CENTER
 } from "../UIData.js";
 import { BB_SIZE_MAX, BB_SIZE_MIN } from "./BlockBuildingComponent.js";
 export class ClimateComponent extends Component {
@@ -73,7 +74,7 @@ export class ClimateComponent extends Component {
         brushLabelRow.addElement(new Text(this.window, halfSizeX, getBaseUISize() * 2, "brush size"));
         brushLabelRow.addElement(new Text(this.window, halfSizeX, getBaseUISize() * 2, "brush strength"));
 
-        container.addElement(new RowedRadio(this.window, sizeX, getBaseUISize() * 5, UI_CLIMATE_WEATHER_TOOL_SELECT, 2, [
+        container.addElement(new RowedRadio(this.window, sizeX, getBaseUISize() * 5, UI_CENTER, UI_CLIMATE_WEATHER_TOOL_SELECT, 2, [
             UI_CLIMATE_WEATHER_TOOL_DRYAIR,
             UI_CLIMATE_WEATHER_TOOL_MATCHEDAIR,
             UI_CLIMATE_WEATHER_TOOL_LIGHTCLOUD,

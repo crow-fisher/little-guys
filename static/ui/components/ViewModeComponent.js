@@ -13,7 +13,8 @@ import {
     UI_VIEWMODE_TEMPERATURE,
     UI_VIEWMODE_MOISTURE,
     UI_VIEWMODE_SURFACE,
-    UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT
+    UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT,
+    UI_CENTER
 } from "../UIData.js";
 import { SubTreeComponent } from "./SubTreeComponent.js";
 export class ViewModeComponent extends SubTreeComponent {
@@ -22,7 +23,7 @@ export class ViewModeComponent extends SubTreeComponent {
         var sizeX = getBaseUISize() * 9;
         let container = new Container(this.window, padding, 1);
         this.window.container = container;
-        container.addElement(new RowedRadio(this.window, sizeX * 2, getBaseUISize() * 24, UI_VIEWMODE_SELECT, 9, [
+        container.addElement(new RowedRadio(this.window, sizeX * 2, getBaseUISize() * 24, UI_CENTER, UI_VIEWMODE_SELECT, 9, [
             UI_VIEWMODE_NORMAL,
             UI_VIEWMODE_LIGHTIHNG,
             UI_VIEWMODE_NITROGEN,

@@ -5,7 +5,7 @@ import { Container } from "../Container.js";
 import { RowedRadio } from "../elements/RowedRadio.js";
 import { Slider } from "../elements/Slider.js";
 import { Text } from "../elements/Text.js";
-import { loadUI, UI_SPECIAL_WATER, UI_SPECIAL_AQUIFER, UI_SPECIAL_MIX, UI_SPECIAL_SURFACE, UI_SOIL_COMPOSITION, UI_SPECIAL_SELECT, UI_BB_SIZE, UI_BB_STRENGTH, UI_SM_SPECIAL } from "../UIData.js";
+import { loadUI, UI_SPECIAL_WATER, UI_SPECIAL_AQUIFER, UI_SPECIAL_MIX, UI_SPECIAL_SURFACE, UI_SOIL_COMPOSITION, UI_SPECIAL_SELECT, UI_BB_SIZE, UI_BB_STRENGTH, UI_SM_SPECIAL, UI_CENTER } from "../UIData.js";
 
 
 let padding = 10;
@@ -18,7 +18,7 @@ export class SpecialBlockComponent extends Component {
         this.window.container = container;
 
         container.addElement(new Text(this.window, sizeX * 2, getBaseUISize() * 3, "special blocks"));
-        container.addElement(new RowedRadio(this.window, sizeX * 2, getBaseUISize() * 6, UI_SPECIAL_SELECT, 2, [
+        container.addElement(new RowedRadio(this.window, sizeX * 2, getBaseUISize() * 6, UI_CENTER, UI_SPECIAL_SELECT, 2, [
             UI_SPECIAL_WATER,
             UI_SPECIAL_AQUIFER,
             UI_SPECIAL_MIX,

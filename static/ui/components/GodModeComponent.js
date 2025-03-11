@@ -18,7 +18,8 @@ import {
     saveUI,
     loadUI,
     UI_GODMODE_FASTPLANT,
-    UI_GODMODE_STRENGTH
+    UI_GODMODE_STRENGTH,
+    UI_CENTER
 } from "../UIData.js";
 export class GodModeComponent extends Component {
     constructor(posX, posY, padding, dir, key) {
@@ -43,7 +44,7 @@ export class GodModeComponent extends Component {
         strengthContainer.addElement(new Slider(this.window, UI_GODMODE_STRENGTH, halfSizeX, getBaseUISize() * 3, 0, 1, () => getActiveClimate().getUIColorTransient()));
 
         container.addElement(new Text(this.window, sizeX, getBaseUISize() * 1.5, "god tool select"));
-        container.addElement(new RowedRadio(this.window, sizeX, getBaseUISize() * 5, UI_GODMODE_SELECT, 2, [
+        container.addElement(new RowedRadio(this.window, sizeX, getBaseUISize() * 5,UI_CENTER,  UI_GODMODE_SELECT, 2, [
             UI_GODMODE_WIND,
             UI_GODMODE_TEMPERATURE,
             UI_GODMODE_MOISTURE,
