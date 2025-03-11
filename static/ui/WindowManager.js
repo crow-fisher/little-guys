@@ -12,6 +12,7 @@ import { getSquares } from "../squares/_sqOperations.js";
 import { GodModeComponent } from "./components/GodModeComponent.js";
 import { ClimateComponent } from "./components/ClimateComponent.js";
 import { getCurMixIdx, getMixArr, getMixArrLen, getTargetMixIdx, setCurMixIdx, setTargetMixIdx } from "../globals.js";
+import { MainMenuSubtreeComponent } from "./components/MainMenuSubtreeComponent.js";
 
 var topBarComponent;
 var blockBuildingComponent;
@@ -25,7 +26,7 @@ export function initUI() {
     topBarComponent = new TopBarComponent("UI_TOPBAR");
     blockBuildingComponent = new BlockBuildingComponent(getBaseUISize() * 34, getBaseUISize() * 6, 10, 0, UI_SM_BB);
     
-    all_components.push(new MainMenuComponent(getBaseUISize() * 2, getBaseUISize() * 6, 10, 0, UI_TOPBAR_MAINMENU));
+    all_components.push(new MainMenuSubtreeComponent(() => 0, () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_MAINMENU));
     all_components.push(new SubMenuComponent(getBaseUISize() * 18, getBaseUISize() * 6, 10, 0, UI_TOPBAR_SM));
     all_components.push(new ViewModeComponent(getBaseUISize() * 64, getBaseUISize() * 6, 10, 0, UI_TOPBAR_VIEWMODE));
 

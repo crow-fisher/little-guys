@@ -103,13 +103,16 @@ export class TopBarComponent {
     }
 
 
+    ySize() {
+        return this.maxHeight + 3 * this.padding;
+    }
     render() {
         if (!loadUI(this.key)) {
             return;
         }
 
         MAIN_CONTEXT.fillStyle = COLOR_BLACK;
-        MAIN_CONTEXT.fillRect(0, 0, getCanvasWidth(), this.maxHeight + 3 * this.padding);
+        MAIN_CONTEXT.fillRect(0, 0, getCanvasWidth(), this.ySize());
 
         let keys = Object.keys(this.elements);
         let curEndX = 0;
