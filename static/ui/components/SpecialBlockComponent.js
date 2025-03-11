@@ -17,7 +17,6 @@ export class SpecialBlockComponent extends Component {
         let container = new Container(this.window, padding, 1);
         this.window.container = container;
 
-        container.addElement(new Text(this.window, sizeX * 2, getBaseUISize() * 3, "special blocks"));
         container.addElement(new RowedRadio(this.window, sizeX * 2, getBaseUISize() * 6, UI_CENTER, UI_SPECIAL_SELECT, 2, [
             UI_SPECIAL_WATER,
             UI_SPECIAL_AQUIFER,
@@ -31,13 +30,13 @@ export class SpecialBlockComponent extends Component {
         let sizeContainer = new Container(this.window, padding, 1);
         strengthSizeContainer.addElement(sizeContainer);
 
-        sizeContainer.addElement(new Text(this.window, sizeX, getBaseUISize() * 1.5, "size"));
+        sizeContainer.addElement(new Text(this.window, sizeX, getBaseUISize() * 1.5, UI_CENTER, "size"));
         sizeContainer.addElement(new Slider(this.window, UI_BB_SIZE, sizeX, getBaseUISize() * 3, 2, 14, () => getActiveClimate().getUIColorTransient()));
 
         let strengthContainer = new Container(this.window, padding, 1);
         strengthSizeContainer.addElement(strengthContainer);
 
-        strengthContainer.addElement(new Text(this.window, sizeX, getBaseUISize() * 1.5, "strength"));
+        strengthContainer.addElement(new Text(this.window, sizeX, getBaseUISize() * 1.5, UI_CENTER, "strength"));
         strengthContainer.addElement(new Slider(this.window, UI_BB_STRENGTH, sizeX, getBaseUISize() * 3, 0, 1,  () => getActiveClimate().getUIColorTransient()));
     }
 }

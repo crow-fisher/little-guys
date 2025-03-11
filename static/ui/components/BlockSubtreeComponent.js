@@ -7,7 +7,7 @@ import { UI_SM_BB, UI_SM_CLIMATE, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM,
 import { SubTreeComponent } from "./SubTreeComponent.js";
 
 
-export class BlockMenuComponent extends SubTreeComponent {
+export class BlockSubtreeComponent extends SubTreeComponent {
     constructor(posXFunc, posYFunc, padding, dir, key) {
         super(posXFunc, posYFunc, padding, dir, key);
         let subMenuContainer = new Container(this.window, 0, 1);

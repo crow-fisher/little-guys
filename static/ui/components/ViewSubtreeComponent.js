@@ -17,7 +17,7 @@ import {
     UI_CENTER
 } from "../UIData.js";
 import { SubTreeComponent } from "./SubTreeComponent.js";
-export class ViewModeComponent extends SubTreeComponent {
+export class ViewSubtreeComponent extends SubTreeComponent {
     constructor(posXFunc, posYFunc, padding, dir, key) {
         super(posXFunc, posYFunc, padding, dir, key);
         var sizeX = getBaseUISize() * 14;

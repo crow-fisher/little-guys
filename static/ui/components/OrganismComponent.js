@@ -14,7 +14,7 @@ export class OrganismComponent extends Component {
         
         let container = new Container(this.window, padding, 1);
         this.window.container = container;
-        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 2, "plants"));
+        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 2, UI_CENTER, "midwest"));
         container.addElement(new RowedRadio(this.window, sizeX, getBaseUISize() * 4, UI_CENTER, UI_ORGANISM_SELECT, 2, [
             UI_ORGANISM_WHEAT,
             UI_ORGANISM_GRASS,
