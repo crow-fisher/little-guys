@@ -1,3 +1,4 @@
+import { getBaseUISize } from "../../canvas.js";
 import { COLOR_BLACK, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
@@ -20,7 +21,7 @@ export class RowedRadio extends WindowElement {
     render(startX, startY) {
         var curX = 0;
         MAIN_CONTEXT.font = (this.sizeY / this.rows) * 0.75 + "px courier"
-        MAIN_CONTEXT.textAlign = 'center';
+        MAIN_CONTEXT.textAlign = 'left';
         MAIN_CONTEXT.textBaseline = 'middle';
         let xStep = (this.rows * this.sizeX) / this.choices.length;
         var yStep = this.sizeY / this.rows;
@@ -36,7 +37,7 @@ export class RowedRadio extends WindowElement {
             var topY = startY + Math.floor(((this.rows * i) / this.choices.length)) * yStep;
 
             MAIN_CONTEXT.fillRect(leftX, topY, xStep, yStep);
-            MAIN_CONTEXT.strokeText(this.choices[i], leftX + (xStep / 2), topY + yStep / 2)
+            MAIN_CONTEXT.strokeText(this.choices[i], leftX + (xStep / getBaseUISize() * 0.8), topY + yStep / 2)
             curX += xStep;
         }
         return [this.sizeX, this.sizeY];

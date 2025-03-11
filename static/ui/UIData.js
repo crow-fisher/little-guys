@@ -12,6 +12,7 @@ export const UI_GODMODE_STRENGTH = "UI_GODMODE_STRENGTH";
 
 export const UI_NULL = "UI_NULL";
 export const UI_SIZE = "UI_SIZE";
+export const UI_CENTER = "UI_CENTER"
 
 export const UI_SOIL_COMPOSITION = "UI_SOIL_COMPOSITION";
 export const UI_ROCK_COMPOSITION = "UI_ROCK_COMPOSITION";

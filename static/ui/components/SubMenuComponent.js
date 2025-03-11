@@ -4,12 +4,13 @@ import { Component } from "../Component.js";
 import { Container } from "../Container.js";
 import { Toggle } from "../elements/Toggle.js";
 import { UI_SM_BB, UI_SM_CLIMATE, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_SM_SPECIAL } from "../UIData.js";
+import { SubTreeComponent } from "./SubTreeComponent.js";
 
 
-export class SubMenuComponent extends Component {
-    constructor(posX, posY, padding, dir, key) {
-        super(posX, posY, padding, dir, key);
-        let subMenuContainer = new Container(this.window, getBaseUISize(), 1);
+export class SubMenuComponent extends SubTreeComponent {
+    constructor(posXFunc, posYFunc, padding, dir, key) {
+        super(posXFunc, posYFunc, padding, dir, key);
+        let subMenuContainer = new Container(this.window, 0, 1);
         this.window.container = subMenuContainer;
 
         subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 11, getBaseUISize() * 3, UI_SM_BB, "ground",() => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));

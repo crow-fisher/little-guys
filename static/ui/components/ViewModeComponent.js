@@ -15,15 +15,14 @@ import {
     UI_VIEWMODE_SURFACE,
     UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT
 } from "../UIData.js";
-export class ViewModeComponent extends Component {
-    constructor(posX, posY, padding, dir, key) {
-        super(posX, posY, padding, dir, key);
-        var sizeX = getBaseUISize() * 22;
+import { SubTreeComponent } from "./SubTreeComponent.js";
+export class ViewModeComponent extends SubTreeComponent {
+    constructor(posXFunc, posYFunc, padding, dir, key) {
+        super(posXFunc, posYFunc, padding, dir, key);
+        var sizeX = getBaseUISize() * 9;
         let container = new Container(this.window, padding, 1);
         this.window.container = container;
-
-        container.addElement(new Text(this.window, sizeX * 2, getBaseUISize() * 1.5, "view mode"));
-        container.addElement(new RowedRadio(this.window, sizeX * 2, getBaseUISize() * 6, UI_VIEWMODE_SELECT, 3, [
+        container.addElement(new RowedRadio(this.window, sizeX * 2, getBaseUISize() * 24, UI_VIEWMODE_SELECT, 9, [
             UI_VIEWMODE_NORMAL,
             UI_VIEWMODE_LIGHTIHNG,
             UI_VIEWMODE_NITROGEN,

@@ -3,11 +3,12 @@ import { MAIN_CONTEXT } from "../index.js";
 import { getLastMoveOffset, isLeftMouseClicked } from "../mouse.js";
 
 export class Window {
-    constructor(posX, posY, padding, dir) {
+    constructor(posX, posY, padding, dir, grounded) {
         this.container = null;
         this.posX = posX;
         this.posY = posY;
         this.padding = padding;
+        this.grounded = grounded;
 
         this.sizeX = 0;
         this.sizeY = 0;
@@ -57,7 +58,7 @@ export class Window {
     }
 
     hoverWindowFrame(x, y) {
-        if (this.locked) {
+        if (this.locked || this.grounded) {
             return;
         }
 
