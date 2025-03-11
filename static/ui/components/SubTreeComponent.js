@@ -1,5 +1,6 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
+import { MAIN_CONTEXT } from "../../index.js";
 import { loadEmptyScene, loadSlot, saveSlot } from "../../saveAndLoad.js";
 import { Component } from "../Component.js";
 import { Container } from "../Container.js";
@@ -22,6 +23,22 @@ export class SubTreeComponent {
     render() {
         if (loadUI(this.key)) {
             this.window.render();
+            let size = getBaseUISize() * 0.4;
+            MAIN_CONTEXT.fillStyle = getActiveClimate().getUIColorInactiveCustom(0.99);
+            MAIN_CONTEXT.fillRect(
+                this.window.posX,
+                this.window.posY + this.window.sizeY,
+                this.window.sizeX + size,
+                (size * 0.7)
+            );
+
+            MAIN_CONTEXT.fillStyle = getActiveClimate().getUIColorInactiveCustom(0.8);
+            MAIN_CONTEXT.fillRect(
+                this.window.posX + this.window.sizeX,
+                this.window.posY,
+                size,
+                this.window.sizeY
+            );
         }
     }
 

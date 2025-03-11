@@ -1,5 +1,7 @@
-import { getBaseUISize } from "../../canvas.js";
+import { getBaseUISize, getCanvasHeight, getCanvasWidth } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
+import { COLOR_VERY_FUCKING_RED } from "../../colors.js";
+import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth, MAIN_CANVAS, MAIN_CONTEXT } from "../../index.js";
 import { loadEmptyScene, loadSlot, saveSlot } from "../../saveAndLoad.js";
 import { Component } from "../Component.js";
 import { Container } from "../Container.js";
@@ -41,7 +43,10 @@ export class MainMenuComponent extends SubTreeComponent {
                  150, 175, 200,
                  250, 300, 350,
                  400, 450, 500], () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
+    }
 
+    render() {
+        super.render();
         
     }
 }

@@ -45,8 +45,9 @@ export function initUI() {
 }
 
 export function renderWindows() {
-    topBarComponent.render();
     all_components.forEach((window) => window.render());
+    topBarComponent.render();
+
 }
 export function updateWindows() {
     topBarComponent.update();

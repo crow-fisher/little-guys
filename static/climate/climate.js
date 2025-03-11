@@ -18,26 +18,32 @@ export class Climate {
         this.weatherPatternMap.set(UI_CLIMATE_WEATHER_FOGGY, 10);
         this.weatherPatternMap.set(UI_CLIMATE_WEATHER_LIGHTRAIN, 30);
         this.weatherPatternMap.set(UI_CLIMATE_WEATHER_HEAVYRAIN, 10);
+
+        this.uci = new Map();
     }
-    processColor(rgb) {
+    processColor(rgb, frac) {
         let hsv = rgb2hsv(rgb.r, rgb.g, rgb.b);
-        let frac = 0.6
         hsv[2] =  (255 * (1 - frac)) + (hsv[2] * frac);
         rgb = hsv2rgb(hsv[0], hsv[1], hsv[2]);
         return rgbToHex(Math.floor(rgb[0]), Math.floor(rgb[1]), Math.floor(rgb[2]));
     }
 
-    getUIColorInactive() {
-        if (this.uci == null) {
-            this.uci = this.processColor(this.getBaseSoilColor(0, 0.70, 0.10));
-            return this.uci;
+    getUIColorInactiveCustom(frac) {
+        if (this.uci[frac] == null) {
+            this.uci[frac] = this.processColor(this.getBaseSoilColor(0, 0.70, 0.10), frac);
+            return this.uci[frac];
         }
-        return this.uci;
+        return this.uci[frac];
+    }
+
+
+    getUIColorInactive() {
+        return this.getUIColorInactiveCustom(0.6);
     }
 
     getUIColorActive() {
         if (this.uca == null) {
-            this.uca = this.processColor(this.getBaseSoilColor(0, 0.10, 0.90));
+            this.uca = this.processColor(this.getBaseSoilColor(0, 0.10, 0.90), 0.6);
             return this.uca;
         }
         return this.uca;
@@ -45,7 +51,7 @@ export class Climate {
 
     getUIColorTransient() {
         if (this.uct == null) {
-            this.uct = this.processColor(this.getBaseSoilColor(0.40, 0.40, 0.20))
+            this.uct = this.processColor(this.getBaseSoilColor(0.40, 0.40, 0.20), 0.6)
             return this.uct;
         }
         return this.uct;
