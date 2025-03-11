@@ -42,12 +42,6 @@ export class MainMenuComponent extends SubTreeComponent {
                  250, 300, 350,
                  400, 450, 500], () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
 
-        subMenuContainer.addElement(new Text(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, UI_CENTER, "fast speed"))
-        subMenuContainer.addElement(new Radio(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, UI_CENTER, UI_LIGHTING_FASTUPDATERATE, 
-                [2, 5, 8, 10], () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
-            
-        subMenuContainer.addElement(new Text(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, UI_CENTER, "slow speed"))
-        subMenuContainer.addElement(new Radio(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, UI_CENTER, UI_LIGHTING_SLOWUPDATERATE, 
-            [10, 20, 40, 60], () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
+        
     }
 }

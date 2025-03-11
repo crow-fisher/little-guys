@@ -44,7 +44,7 @@ export class RowedRadio extends WindowElement {
                 MAIN_CONTEXT.strokeText(this.choices[i], leftX + xStep / 2, topY + yStep / 2);
             } else {
                 MAIN_CONTEXT.textAlign = 'left';
-                MAIN_CONTEXT.strokeText(this.choices[i], leftX + xStep / 2 + this.elementOffsetX, topY + yStep / 2);
+                MAIN_CONTEXT.strokeText(this.choices[i], leftX + this.elementOffsetX, topY + yStep / 2);
             }
             curX += xStep;
         }

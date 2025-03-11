@@ -26,7 +26,7 @@ import { RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
 import { getCurDay, getCurrentLightColorTemperature, timeScaleFactor } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasSquaresY, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
-import { loadUI, UI_SM_SPECIAL, UI_SPECIAL_SELECT, UI_SPECIAL_SURFACE, UI_TOPBAR_TOGGLELIGHTING, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE } from "../ui/UIData.js";
+import { loadUI, UI_SM_SPECIAL, UI_SPECIAL_SELECT, UI_SPECIAL_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE } from "../ui/UIData.js";
 
 export class BaseSquare {
     constructor(posX, posY) {
@@ -319,7 +319,7 @@ export class BaseSquare {
     }
 
     processLighting() {
-        if (!loadUI(UI_TOPBAR_TOGGLELIGHTING)) {
+        if (!loadUI(UI_LIGHTING_ENABLED)) {
             return getDefaultLighting();
         }
 
@@ -482,7 +482,7 @@ export class BaseSquare {
                     this.speedY = 0;
                     this.offsetY = 0;
                     bonked = true;
-                    if (this.lighting.length == 0 && loadUI(UI_TOPBAR_TOGGLELIGHTING)) {
+                    if (this.lighting.length == 0 && loadUI(UI_LIGHTING_ENABLED)) {
                         this.initLightingFromNeighbors();
                     }
 

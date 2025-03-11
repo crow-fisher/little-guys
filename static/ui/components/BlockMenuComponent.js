@@ -15,12 +15,11 @@ export class BlockMenuComponent extends SubTreeComponent {
 
         let textAlignOffsetX = getBaseUISize() * 1.91;
 
-        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 11 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_SM_BB, "ground",() => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
-        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 11 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_SM_SPECIAL, "special",() => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
-        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 11 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_SM_LIGHTING, "lighting",() => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
-        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 11 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_SM_ORGANISM, "plants",() => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
-        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 11 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_SM_GODMODE, "god mode",() => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
-        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 11 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_SM_CLIMATE, "climate",() => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
+        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 13 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_SM_BB, "ground",() => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
+        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 13 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_SM_SPECIAL, "special",() => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
+        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 13 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_SM_ORGANISM, "plants",() => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
+        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 13 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_SM_GODMODE, "god mode",() => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
+        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 13 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_SM_CLIMATE, "climate",() => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
 
         
     }

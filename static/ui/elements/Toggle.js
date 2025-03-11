@@ -1,3 +1,4 @@
+import { getBaseUISize } from "../../canvas.js";
 import { COLOR_BLACK, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { getLastMouseDown, isLeftMouseClicked } from "../../mouse.js";
@@ -18,7 +19,7 @@ export class Toggle extends WindowElement {
     }
 
     render(startX, startY) {
-        MAIN_CONTEXT.font = this.sizeY - 10 + "px courier"
+        MAIN_CONTEXT.font = this.sizeY * 0.75 + "px courier"
         MAIN_CONTEXT.textAlign = 'center';
         MAIN_CONTEXT.textBaseline = 'middle';
         if (loadUI(this.key)) {

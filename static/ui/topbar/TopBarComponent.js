@@ -15,11 +15,12 @@ import {
     UI_SPEED_9, UI_SPEED,
     UI_SPEED_0,
     UI_TOPBAR_MAINMENU,
-    UI_BOOLEAN, UI_TOPBAR_SM,
-    UI_TOPBAR_TOGGLELIGHTING,
+    UI_BOOLEAN, UI_TOPBAR_BLOCK,
+    UI_LIGHTING_ENABLED,
     UI_TOPBAR_VIEWMODE,
-    UI_TOPBAR_DESIGNERMODE,
-    UI_TOPBAR_FASTLIGHTING
+    UI_TOPBAR_PERFORMANCE,
+    UI_LIGHTING_FASTLIGHTING,
+    UI_TOPBAR_LIGHTING
 } from "../UIData.js";
 import { TopBarToggle } from "./TopBarToggle.js";
 import { getLastMoveOffset } from "../../mouse.js";
@@ -50,11 +51,10 @@ export class TopBarComponent {
 
         this.elements[0] = [
             new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_MAINMENU, UI_BOOLEAN, () => this.textMainMenu()),
-            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_SM, UI_BOOLEAN, () => this.textBlockMenu()),
+            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_BLOCK, UI_BOOLEAN, () => this.textBlockMenu()),
             new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_VIEWMODE, UI_BOOLEAN, () => this.textViewMode()),
-            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_TOGGLELIGHTING, UI_BOOLEAN, () => this.textToggleLighting()),
-            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_FASTLIGHTING, UI_BOOLEAN, () => this.textFastLighting()),
-            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_DESIGNERMODE, UI_BOOLEAN, () => this.textDesignerMode())
+            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_LIGHTING, UI_BOOLEAN, () => this.textToggleLighting()),
+            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_PERFORMANCE, UI_BOOLEAN, () => this.textDesignerMode())
         ];
 
         this.elementPositions[1] = new Array(this.elements[1].length);
@@ -82,19 +82,12 @@ export class TopBarComponent {
         return " select viewmode |"
     }
     textToggleLighting() {
-        if (this.compact) 
-            return "lighting | " 
-        return "toggle lighting | "
-    }
-    textFastLighting() {
-        if (this.compact)
-            return "fast | "
-        return "fast lighting | "
+        return " lighting |" 
     }
     textDesignerMode() {
         if (this.compact) 
-            return "designer"
-        return "designer mode"
+            return " simulation"
+        return " simulation settings"
     }
 
     textDateTime() {

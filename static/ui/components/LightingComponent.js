@@ -4,10 +4,8 @@ import { Component } from "../Component.js";
 import { Container } from "../Container.js";
 import { Slider } from "../elements/Slider.js";
 import { Text } from "../elements/Text.js";
-import { loadUI, UI_LIGHTING_SUN, UI_LIGHTING_MOON, UI_LIGHTING_WATER, UI_LIGHTING_ROCK, UI_LIGHTING_PLANT, UI_LIGHTING_DECAY, UI_SM_LIGHTING, UI_SOIL_COMPOSITION } from "../UIData.js";
+import { loadUI, UI_LIGHTING_SUN, UI_LIGHTING_MOON, UI_LIGHTING_WATER, UI_LIGHTING_ROCK, UI_LIGHTING_PLANT, UI_LIGHTING_DECAY, UI_SM_LIGHTING, UI_SOIL_COMPOSITION, UI_CENTER } from "../UIData.js";
 
-
-let padding = 10;
 export class LightingComponent extends Component {
     constructor(posX, posY, padding, dir, key) {
         super(posX, posY, padding, dir, key);
@@ -22,24 +20,22 @@ export class LightingComponent extends Component {
         container.addElement(leftContainer);
         container.addElement(rightContainer);
 
-        leftContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, "sun"));
+        leftContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, UI_CENTER, "sun"));
         leftContainer.addElement(new Slider(this.window, UI_LIGHTING_SUN, sizeX,  35, .329 / 4, .329 * 4, () => getActiveClimate().getUIColorTransient()));
 
-        rightContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, "moon"));
+        rightContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, UI_CENTER, "moon"));
         rightContainer.addElement(new Slider(this.window, UI_LIGHTING_MOON, sizeX,  35, .005, 1, () => getActiveClimate().getUIColorTransient()));
 
-        leftContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, "water"));
+        leftContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, UI_CENTER, "water"));
         leftContainer.addElement(new Slider(this.window, UI_LIGHTING_WATER, sizeX,  35, 0.01, 200, () => getActiveClimate().getUIColorTransient()));
 
-        rightContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, "rock"));
+        rightContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, UI_CENTER, "rock"));
         rightContainer.addElement(new Slider(this.window, UI_LIGHTING_ROCK, sizeX,  35, 0.1, 10, () => getActiveClimate().getUIColorTransient()));
 
-        leftContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, "plant"));
+        leftContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, UI_CENTER, "plant"));
         leftContainer.addElement(new Slider(this.window, UI_LIGHTING_PLANT, sizeX,  35, 0.1, 10, () => getActiveClimate().getUIColorTransient()));
 
-        rightContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, "decay"));
+        rightContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, UI_CENTER, "decay"));
         rightContainer.addElement(new Slider(this.window, UI_LIGHTING_DECAY, sizeX,  35, .95, 1, () => getActiveClimate().getUIColorTransient()));
-
     }
-
 }
