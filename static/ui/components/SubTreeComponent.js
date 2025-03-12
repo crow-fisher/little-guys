@@ -27,19 +27,13 @@ export class SubTreeComponent {
 
             let py = this.window.posY + this.window.sizeY;
             let my = getCanvasHeight() * 0.9;
-            if (py > my) {
-                return;
-            }
 
             let yFactor = ((my - py) / my);
             let sizeYProcessed = size * yFactor;
 
             let px = this.window.posX + this.window.sizeX;
             let mx = getCanvasWidth() * 0.5; 
-            if (px > mx) {
-                return;
-            }
-            let xFactor =  0.5 + (((mx - px) / mx)) / 2;
+            let xFactor =  0.5 + (((mx - px) / mx)) * 0.2;
             let sizeXProcessed = size * xFactor;
 
             MAIN_CONTEXT.fillStyle = getActiveClimate().getUIColorInactiveCustom(.95);
@@ -63,7 +57,7 @@ export class SubTreeComponent {
 
             // right side
 
-            MAIN_CONTEXT.fillStyle = getActiveClimate().getUIColorInactiveCustom(0.75);
+            MAIN_CONTEXT.fillStyle = getActiveClimate().getUIColorInactiveCustom((.83 - (xFactor * 0.1)));
             MAIN_CONTEXT.fillRect(
                 this.window.posX + this.window.sizeX,
                 this.window.posY,
