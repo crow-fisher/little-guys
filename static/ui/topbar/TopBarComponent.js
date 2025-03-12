@@ -1,7 +1,6 @@
 import { getBaseUISize, getCanvasWidth } from "../../canvas.js";
-import { COLOR_BLACK, COLOR_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
+import { COLOR_BLACK } from "../../colors.js";
 import { MAIN_CONTEXT } from "../../index.js";
-import { TopBarTime } from "./TopBarTime.js";
 import {
     loadUI,
     UI_SPEED_1,
@@ -15,17 +14,15 @@ import {
     UI_SPEED_9, UI_SPEED,
     UI_SPEED_0,
     UI_TOPBAR_MAINMENU,
-    UI_BOOLEAN, UI_TOPBAR_BLOCK,
-    UI_LIGHTING_ENABLED,
-    UI_TOPBAR_VIEWMODE,
-    UI_TOPBAR_SIMULATION,
-    UI_LIGHTING_FASTLIGHTING,
-    UI_TOPBAR_LIGHTING,
-    UI_TOPBAR_TIME
+    UI_BOOLEAN, UI_TOPBAR_BLOCK, UI_TOPBAR_VIEWMODE,
+    UI_TOPBAR_SIMULATION, UI_TOPBAR_LIGHTING,
+    UI_TOPBAR_TIME,
+    UI_NAME
 } from "../UIData.js";
 import { TopBarToggle } from "./TopBarToggle.js";
 import { getLastMoveOffset } from "../../mouse.js";
 import { getCurDay, millis_per_day } from "../../climate/time.js";
+import { TopBarWorldName } from "./TopBarWorldName.js";
 
 export class TopBarComponent {
     constructor(key) {
@@ -35,31 +32,30 @@ export class TopBarComponent {
 
         this.elements = new Map();
         this.elementPositions = new Map();
-        this.elements[1] = new Array();
-
-        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_0, () => "⏸"));
-        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_1, () => "▶"));
-        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_2, () => "▶"));
-        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_3, () => "▶"));
-        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_4, () => "▶"));
-        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_5, () => "▶"));
-        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_6, () => "▶"));
-        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_7, () => "▶"));
-        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_8, () => "▶"));
-        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_9, () => "▶\t"));
-        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_TIME, UI_BOOLEAN,() => this.textDateTime()));
-
-
+        this.elements[1] = [
+            new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_0, () => "⏸"),
+            new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_1, () => "▶"),
+            new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_2, () => "▶"),
+            new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_3, () => "▶"),
+            new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_4, () => "▶"),
+            new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_5, () => "▶"),
+            new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_6, () => "▶"),
+            new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_7, () => "▶"),
+            new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_8, () => "▶"),
+            new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_9, () => "▶\t"),
+            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_TIME, UI_BOOLEAN,() => this.textDateTime()),
+            new TopBarWorldName(getBaseUISize() * 2, "left", () => this.textWorldName())
+        ]
+        
         this.elements[0] = [
             new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_MAINMENU, UI_BOOLEAN, () => this.textMainMenu()),
             new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_BLOCK, UI_BOOLEAN, () => this.textBlockMenu()),
             new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_VIEWMODE, UI_BOOLEAN, () => this.textViewMode()),
             new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_LIGHTING, UI_BOOLEAN, () => this.textToggleLighting()),
-            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_SIMULATION, UI_BOOLEAN, () => this.textDesignerMode())
+            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_SIMULATION, UI_BOOLEAN, () => this.textDesignerMode()),
         ];
 
-        this.elementPositions[1] = new Array(this.elements[1].length);
-        this.elementPositions[0] = new Array(this.elements[0].length);
+        Object.keys(this.elements).forEach((key) => this.elementPositions[key] = new Array(this.elements[key].length));
 
         this.maxHeight = 0;
         this.padding = 4;
@@ -87,17 +83,22 @@ export class TopBarComponent {
     }
     textDesignerMode() {
         if (this.compact) 
-            return " simulation"
-        return " simulation settings"
+            return " simulation |"
+        return " simulation settings |"
+    }
+    textWorldName() {
+        if (this.compact)
+            return "" + loadUI(UI_NAME);
+        return "world: " + loadUI(UI_NAME);
     }
 
     textDateTime() {
         let curDay = getCurDay();
         let curDate = new Date(curDay * millis_per_day);
         if (this.compact) {
-            return curDate.toLocaleTimeString("en-US", {timeZone: 'UTC'}) + " ";
+            return curDate.toLocaleTimeString("en-US", {timeZone: 'UTC'}) + " | ";
         } else {
-            return curDate.toLocaleString("en-US", {timeZone: 'UTC'}) + " ";
+            return curDate.toLocaleString("en-US", {timeZone: 'UTC'}) + " | ";
         }
     }
 
@@ -113,9 +114,10 @@ export class TopBarComponent {
         MAIN_CONTEXT.fillStyle = COLOR_BLACK;
         MAIN_CONTEXT.fillRect(0, 0, getCanvasWidth(), this.ySize());
 
-        let keys = Object.keys(this.elements);
+        let order = Array.from(Object.keys(this.elements).map(parseFloat)).sort()
         let curEndX = 0;
-        keys.map(parseFloat).forEach((key) => {
+
+        order.forEach((key) => {
             let elements = this.elements[key];
             let startX = getCanvasWidth() * key;
             let totalElementsSizeX = elements.map((element) => element.measure()).map((measurements) => measurements[0] + this.padding).reduce(

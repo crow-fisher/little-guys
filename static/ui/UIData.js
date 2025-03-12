@@ -97,6 +97,8 @@ export const UI_TOPBAR_VIEWMODE = "UI_TOPBAR_VIEWMODE";
 export const UI_TOPBAR_SIMULATION = "UI_TOPBAR_SIMULATION";
 export const UI_TOPBAR_TIME = "UI_TOPBAR_TIME";
 
+export const UI_NAME = "UI_NAME";
+
 export const UI_SPEED = "UI_SPEED";
 export const UI_SPEED_0 = "UI_SPEED_0";
 export const UI_SPEED_1 = "UI_SPEED_1";
@@ -125,6 +127,7 @@ export const UI_DISPLAY_SIZEY = "UI_DISPLAY_SIZEY";
 // saved directly
 
 var UI_DATA = {
+    UI_NAME: "plymouth",
     UI_BB_MODE: UI_MODE_SOIL,
     UI_BB_SIZE: 6,
     UI_BB_STRENGTH: 1,
