@@ -48,15 +48,15 @@ export const UI_ORGANISM_CATTAIL = "cattail"
 
 export const UI_VIEWMODE_SELECT = "UI_VIEWMODE_SELECT";
 
-export const UI_VIEWMODE_NORMAL = "normal";
-export const UI_VIEWMODE_LIGHTIHNG = "lighting";
-export const UI_VIEWMODE_NITROGEN = "nitrogen";
-export const UI_VIEWMODE_PHOSPHORUS = "phosphorus";
-export const UI_VIEWMODE_WIND = "wind";
-export const UI_VIEWMODE_TEMPERATURE = "temperature";
-export const UI_VIEWMODE_MOISTURE = "moisture";
-export const UI_VIEWMODE_SURFACE = "surface";
-export const UI_VIEWMODE_ORGANISMS = "organisms";
+export const UI_VIEWMODE_NORMAL = "UI_VIEWMODE_NORMAL";
+export const UI_VIEWMODE_LIGHTIHNG = "UI_VIEWMODE_LIGHTIHNG";
+export const UI_VIEWMODE_NITROGEN = "UI_VIEWMODE_NITROGEN";
+export const UI_VIEWMODE_PHOSPHORUS = "UI_VIEWMODE_PHOSPHORUS";
+export const UI_VIEWMODE_WIND = "UI_VIEWMODE_WIND";
+export const UI_VIEWMODE_TEMPERATURE = "UI_VIEWMODE_TEMPERATURE";
+export const UI_VIEWMODE_MOISTURE = "UI_VIEWMODE_MOISTURE";
+export const UI_VIEWMODE_SURFACE = "UI_VIEWMODE_SURFACE";
+export const UI_VIEWMODE_ORGANISMS = "UI_VIEWMODE_ORGANISMS";
 
 export const UI_TOPBAR = "UI_TOPBAR";
 export const UI_TOOL_MODE_LEFT = "UI_TOOL_MODE_LEFT";

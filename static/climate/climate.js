@@ -36,7 +36,6 @@ export class Climate {
         return this.uci[frac];
     }
 
-
     getUIColorInactive() {
         return this.getUIColorInactiveCustom(0.6);
     }
