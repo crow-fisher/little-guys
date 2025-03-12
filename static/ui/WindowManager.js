@@ -5,7 +5,7 @@ import { SpecialBlockComponent } from "./components/SpecialBlockComponent.js";
 import { BlockSubtreeComponent as BlockSubtree } from "./components/BlockSubtreeComponent.js";
 import { TopBarComponent } from "./topbar/TopBarComponent.js";
 import { ViewSubtreeComponent } from "./components/ViewSubtreeComponent.js";
-import { loadUI, UI_BB_MODE, UI_MODE_ROCK, UI_MODE_SOIL, UI_SM_BB, UI_SM_CLIMATE, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_BLOCK, UI_SM_SPECIAL, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveUI, UI_BB_MIXER, addUIFunctionMap, UI_LIGHTING_ENABLED, UI_TOPBAR_LIGHTING, UI_TOPBAR_SIMULATION } from "./UIData.js";
+import { loadUI, UI_BB_MODE, UI_MODE_ROCK, UI_MODE_SOIL, UI_SM_BB, UI_SM_CLIMATE, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_BLOCK, UI_SM_SPECIAL, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveUI, UI_BB_MIXER, addUIFunctionMap, UI_LIGHTING_ENABLED, UI_TOPBAR_LIGHTING, UI_TOPBAR_SIMULATION, UI_TOPBAR_TIME } from "./UIData.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import { GodModeComponent } from "./components/GodModeComponent.js";
 import { ClimateComponent } from "./components/ClimateComponent.js";
@@ -14,6 +14,7 @@ import { MainMenuComponent as MainMenuSubtree } from "./components/MainMenuCompo
 import { LightingSubtree } from "./components/LightingSubtree.js";
 import { LightingComponent } from "./components/LightingComponent.js"
 import { SimulationSubtree } from "./components/SimulationSubtree.js";
+import { TimeSubtree } from "./components/TimeSubtree.js";
 
 var topBarComponent;
 var blockBuildingComponent;
@@ -41,6 +42,8 @@ export function initUI() {
     all_components.push(new OrganismComponent(getBaseUISize() * 34, getBaseUISize() * 6, 10, 0, UI_SM_ORGANISM));
     all_components.push(new GodModeComponent(getBaseUISize() * 34, getBaseUISize() * 6, 10, 0, UI_SM_GODMODE));
     all_components.push(new ClimateComponent(getBaseUISize() * 34, getBaseUISize() * 6, 10, 0, UI_SM_CLIMATE));
+
+    all_components.push(new TimeSubtree(() => topBarComponent.getElementXPositionFunc(1, 10), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_TIME));
 
 }
 

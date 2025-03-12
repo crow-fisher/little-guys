@@ -95,6 +95,7 @@ export const UI_TOPBAR_BLOCK = "UI_TOPBAR_BLOCK";
 export const UI_TOPBAR_LIGHTING = "UI_TOPBAR_LIGHTING";
 export const UI_TOPBAR_VIEWMODE = "UI_TOPBAR_VIEWMODE";
 export const UI_TOPBAR_SIMULATION = "UI_TOPBAR_SIMULATION";
+export const UI_TOPBAR_TIME = "UI_TOPBAR_TIME";
 
 export const UI_SPEED = "UI_SPEED";
 export const UI_SPEED_0 = "UI_SPEED_0";

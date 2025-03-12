@@ -20,7 +20,8 @@ import {
     UI_TOPBAR_VIEWMODE,
     UI_TOPBAR_SIMULATION,
     UI_LIGHTING_FASTLIGHTING,
-    UI_TOPBAR_LIGHTING
+    UI_TOPBAR_LIGHTING,
+    UI_TOPBAR_TIME
 } from "../UIData.js";
 import { TopBarToggle } from "./TopBarToggle.js";
 import { getLastMoveOffset } from "../../mouse.js";
@@ -46,7 +47,7 @@ export class TopBarComponent {
         this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_7, () => "▶"));
         this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_8, () => "▶"));
         this.elements[1].push(new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_9, () => "▶\t"));
-        this.elements[1].push(new TopBarTime(getBaseUISize() * 2, () => this.textDateTime()));
+        this.elements[1].push(new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_TIME, UI_BOOLEAN,() => this.textDateTime()));
 
 
         this.elements[0] = [
