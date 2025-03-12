@@ -18,12 +18,12 @@ export class TimeSubtree extends SubTreeComponent {
         this.window.container = subMenuContainer;
 
         let textAlignOffsetX = getBaseUISize() * 1.91;
-        let sizeX = getBaseUISize() * 22;
+        let sizeX = getBaseUISize() * 11;
 
-        subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => seek(0), "skip to midnight",() => getActiveClimate().getUIColorInactive()));
-        subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => seek(0.25), "skip to dawn",() => getActiveClimate().getUIColorInactive()));
-        subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => seek(0.5), "skip to noon",() => getActiveClimate().getUIColorInactive()));
-        subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => seek(0.75), "skip to dusk",() => getActiveClimate().getUIColorInactive()));
+        subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => seek(0), "midnight",() => getActiveClimate().getUIColorInactive()));
+        subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => seek(0.25), "dawn",() => getActiveClimate().getUIColorInactive()));
+        subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => seek(0.5), "noon",() => getActiveClimate().getUIColorInactive()));
+        subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => seek(0.75), "dusk",() => getActiveClimate().getUIColorInactive()));
     }
 
 }

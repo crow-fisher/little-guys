@@ -1,5 +1,5 @@
 import { getBaseUISize, getCanvasWidth } from "../../canvas.js";
-import { COLOR_BLACK } from "../../colors.js";
+import { COLOR_BLACK, COLOR_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { TopBarTime } from "./TopBarTime.js";
 import {
@@ -121,7 +121,7 @@ export class TopBarComponent {
             let totalElementsSizeX = elements.map((element) => element.measure()).map((measurements) => measurements[0] + this.padding).reduce(
                 (accumulator, currentValue) => accumulator + currentValue,
                 0,
-            ) + this.padding * 4;
+            );
 
             if (key >= 0.5) {
                 startX -= totalElementsSizeX;
@@ -165,7 +165,7 @@ export class TopBarComponent {
         var x = curMouseLocation.x;
         var y = curMouseLocation.y;
 
-        if (y > this.maxHeight + (getBaseUISize() * 2)) {
+        if (y > this.maxHeight + (getBaseUISize())) {
             return;
         }
 
@@ -176,7 +176,7 @@ export class TopBarComponent {
             let totalElementsSizeX = elements.map((element) => element.measure()).map((measurements) => measurements[0] + this.padding).reduce(
                 (accumulator, currentValue) => accumulator + currentValue,
                 0,
-            ) - this.padding * 2;
+            );
 
             if (key >= 0.5) {
                 startX -= totalElementsSizeX;
@@ -187,10 +187,7 @@ export class TopBarComponent {
                 let measurements = element.measure();
                 let width = measurements[0] + this.padding;
 
-                let lb = (x > startX && x < startX + width);
-                let ub = (x > startX - width && x < startX);
-
-                if ((key < 0.5 && lb) || (key >= 0.5 && ub)) {
+                if (x > startX && x < startX + measurements[0]) {
                     element.hover(x - startX, y);
                     this.hovered = true;
                 }
