@@ -3,7 +3,7 @@ import { doClickAdd, doClickAddEyedropperMixer } from "./manipulation.js";
 import { resetFrameDivMult } from "./lighting/lightingProcessing.js";
 import { renderClouds, renderTemperature, renderWaterSaturation } from "./climate/temperatureHumidity.js";
 import { doTimeSeek, getTimeScale, renderTime, updateTime } from "./climate/time.js";
-import { executeFunctionQueue, loadUI, UI_PERFORMANCE_CLOUDS, UI_PERFORMANCE_SIMPLESQUARE, UI_TOPBAR_PERFORMANCE, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_WIND } from "./ui/UIData.js";
+import { executeFunctionQueue, loadUI, UI_SIMULATION_CLOUDS, UI_SIMULATION_SIMPLESQUARE, UI_TOPBAR_SIMULATION, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_WIND } from "./ui/UIData.js";
 import { initUI, renderWindows, resetWindowHovered, updateWindows } from "./ui/WindowManager.js";
 import { renderWindPressureMap } from "./climate/wind.js";
 import { LightingHandler } from "./lighting/lightingHandler.js";
@@ -32,7 +32,7 @@ export function scheduler_main() {
     doClickAdd();
     doClickAddEyedropperMixer();
     resetWindowHovered(); 
-    if (loadUI(UI_PERFORMANCE_SIMPLESQUARE)) {
+    if (loadUI(UI_SIMULATION_SIMPLESQUARE)) {
         squareTickSimplePhysics();
     } else {
         if (getTimeScale() != 0) {
@@ -78,7 +78,7 @@ function render() {
     renderSolidSquares();
     renderOrganisms();
     renderWaterSquares();
-    if (selectedViewMode == UI_VIEWMODE_NORMAL && loadUI(UI_PERFORMANCE_CLOUDS)) {
+    if (selectedViewMode == UI_VIEWMODE_NORMAL && loadUI(UI_SIMULATION_CLOUDS)) {
         renderClouds();
     }
     renderWindows();
@@ -96,7 +96,7 @@ function squareTickSimplePhysics() {
     doWaterFlow();
     purge();
 
-    if (loadUI(UI_PERFORMANCE_CLOUDS)) {
+    if (loadUI(UI_SIMULATION_CLOUDS)) {
         climateHandler.climateTick();
     }
 }
@@ -107,7 +107,7 @@ function squareTick() {
     doWaterFlow();
     purge();
 
-    if (loadUI(UI_PERFORMANCE_CLOUDS)) {
+    if (loadUI(UI_SIMULATION_CLOUDS)) {
         climateHandler.climateTick();
     }
 }

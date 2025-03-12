@@ -18,7 +18,7 @@ import {
     UI_BOOLEAN, UI_TOPBAR_BLOCK,
     UI_LIGHTING_ENABLED,
     UI_TOPBAR_VIEWMODE,
-    UI_TOPBAR_PERFORMANCE,
+    UI_TOPBAR_SIMULATION,
     UI_LIGHTING_FASTLIGHTING,
     UI_TOPBAR_LIGHTING
 } from "../UIData.js";
@@ -54,7 +54,7 @@ export class TopBarComponent {
             new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_BLOCK, UI_BOOLEAN, () => this.textBlockMenu()),
             new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_VIEWMODE, UI_BOOLEAN, () => this.textViewMode()),
             new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_LIGHTING, UI_BOOLEAN, () => this.textToggleLighting()),
-            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_PERFORMANCE, UI_BOOLEAN, () => this.textDesignerMode())
+            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_SIMULATION, UI_BOOLEAN, () => this.textDesignerMode())
         ];
 
         this.elementPositions[1] = new Array(this.elements[1].length);

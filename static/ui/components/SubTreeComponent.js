@@ -1,4 +1,4 @@
-import { getBaseUISize, getCanvasWidth } from "../../canvas.js";
+import { getBaseUISize, getCanvasHeight, getCanvasWidth } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { loadEmptyScene, loadSlot, saveSlot } from "../../saveAndLoad.js";
@@ -23,39 +23,61 @@ export class SubTreeComponent {
     render() {
         if (loadUI(this.key)) {
             this.window.render();
-            let size = getBaseUISize() * 1.3;
+            let size = getBaseUISize() * 1;
 
             let py = this.window.posY + this.window.sizeY;
-            let my = getCanvasWidth() / 2;
+            let my = getCanvasHeight() * 0.9;
             if (py > my) {
                 return;
             }
-            let sizeYProcessed = size * ((my - py) / my);
+
+            let yFactor = ((my - py) / my);
+            let sizeYProcessed = size * yFactor;
 
             let px = this.window.posX + this.window.sizeX;
-            let mx = getCanvasWidth() * 0.66; 
+            let mx = getCanvasWidth() * 0.5; 
             if (px > mx) {
                 return;
             }
-            let sizeXProcessed = size * ((mx - px) / mx)
+            let xFactor =  0.5 + (((mx - px) / mx)) / 2;
+            let sizeXProcessed = size * xFactor;
 
-            MAIN_CONTEXT.fillStyle = getActiveClimate().getUIColorInactiveCustom(0.99);
+            MAIN_CONTEXT.fillStyle = getActiveClimate().getUIColorInactiveCustom(.95);
+
+            // bottom rectangle
             MAIN_CONTEXT.fillRect(
                 this.window.posX,
                 this.window.posY + this.window.sizeY,
-                this.window.sizeX + sizeXProcessed,
+                this.window.sizeX,
                 sizeYProcessed
             );
+            // bottom triangle
+
+            MAIN_CONTEXT.beginPath();
+            MAIN_CONTEXT.moveTo(this.window.posX + this.window.sizeX, this.window.posY + this.window.sizeY);
+            MAIN_CONTEXT.lineTo(this.window.posX + this.window.sizeX + sizeXProcessed, this.window.posY + this.window.sizeY + sizeYProcessed);
+            MAIN_CONTEXT.lineTo(this.window.posX + this.window.sizeX, this.window.posY + this.window.sizeY + sizeYProcessed);
+            MAIN_CONTEXT.lineTo(this.window.posX + this.window.sizeX, this.window.posY + this.window.sizeY);
+            MAIN_CONTEXT.closePath();
+            MAIN_CONTEXT.fill();
 
             // right side
 
-            MAIN_CONTEXT.fillStyle = getActiveClimate().getUIColorInactiveCustom(0.8);
+            MAIN_CONTEXT.fillStyle = getActiveClimate().getUIColorInactiveCustom(0.75);
             MAIN_CONTEXT.fillRect(
                 this.window.posX + this.window.sizeX,
                 this.window.posY,
                 sizeXProcessed,
                 this.window.sizeY
             );
+
+            MAIN_CONTEXT.beginPath();
+            MAIN_CONTEXT.moveTo(this.window.posX + this.window.sizeX, this.window.posY + this.window.sizeY);
+            MAIN_CONTEXT.lineTo(this.window.posX + this.window.sizeX + sizeXProcessed, this.window.posY + this.window.sizeY + sizeYProcessed);
+            MAIN_CONTEXT.lineTo(this.window.posX + this.window.sizeX + sizeXProcessed, this.window.posY + this.window.sizeY);
+            MAIN_CONTEXT.lineTo(this.window.posX + this.window.sizeX, this.window.posY + this.window.sizeY);
+            MAIN_CONTEXT.closePath();
+            MAIN_CONTEXT.fill();
         }
     }
 

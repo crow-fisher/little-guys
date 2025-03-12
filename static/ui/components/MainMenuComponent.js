@@ -36,13 +36,6 @@ export class MainMenuComponent extends SubTreeComponent {
          
         subMenuContainer.addElement(new Text(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, UI_CENTER, "ui scale"))
         subMenuContainer.addElement(new Radio(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, UI_CENTER, UI_SIZE, [8, 12, 16, 20], () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
-
-        subMenuContainer.addElement(new Text(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, UI_CENTER, "size"))
-        subMenuContainer.addElement(new RowedRadio(this.window, sizeX + textAlignOffsetX, getBaseUISize() * (3 * 4), UI_CENTER, UI_DISPLAY_SIZEY, 4,
-        [75, 100, 125,
-                 150, 175, 200,
-                 250, 300, 350,
-                 400, 450, 500], () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
     }
 
     render() {
