@@ -121,6 +121,8 @@ export const UI_SIMULATION_CLOUDS = "UI_SIMULATION_CLOUDS";
 export const UI_DISPLAY_SIZEY = "UI_DISPLAY_SIZEY";
 
 // put default values in here
+// saved directly
+
 var UI_DATA = {
     UI_BB_MODE: UI_MODE_SOIL,
     UI_BB_SIZE: 6,
@@ -150,6 +152,13 @@ var UI_DATA = {
     UI_CLIMATE_RAINFALL_DENSITY: 10,
     UI_CLIMATE_WEATHER_TOOL_STRENGTH: 0.01
 };
+export function getUI_DATA() {
+    return UI_DATA;
+}
+export function setUI_DATA(inVal) {
+    UI_DATA = inVal;
+}
+
 var UI_FUNCTION_MAP = new Map();
 
 var UI_SINGLE_GROUPS = [

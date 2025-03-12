@@ -2,7 +2,7 @@ import { hexToRgb, randNumber, rgbToRgba } from "../common.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
 import { MAIN_CONTEXT } from "../index.js";
-import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds, getBaseAirPressureAtYPosition, getAirSquareDensity, getWindPressureSquareDensity, base_wind_pressure, manipulateWindPressureMaintainHumidityWindSquare } from "./wind.js";
+import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds, getBaseAirPressureAtYPosition, getAirSquareDensity, getWindPressureSquareDensity, base_wind_pressure, manipulateWindPressureMaintainHumidityWindSquare, initWindPressure } from "./wind.js";
 import { getCurTimeScale, timeScaleFactor } from "../climate/time.js";
 import { logRainFall } from "../climate/weather.js";
 import { getDefaultLighting } from "../lighting/lightingProcessing.js";

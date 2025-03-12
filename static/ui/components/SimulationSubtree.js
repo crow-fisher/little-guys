@@ -17,7 +17,7 @@ export class SimulationSubtree extends SubTreeComponent {
         this.window.container = subMenuContainer;
         let textAlignOffsetX = getBaseUISize() * 1.91;
         let sizeX = getBaseUISize() * 22;
-        subMenuContainer.addElement(new Toggle(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_LIGHTING_FASTLIGHTING, "fast lighting",() => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
+        subMenuContainer.addElement(new Toggle(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_LIGHTING_ENABLED, "enable lighting",() => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
         subMenuContainer.addElement(new Toggle(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_SIMULATION_CLOUDS, "enable clouds",() => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
         subMenuContainer.addElement(new Toggle(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_SIMULATION_SIMPLESQUARE, "simple physics",() => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
     

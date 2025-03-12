@@ -23,6 +23,10 @@ initUI();
 const lightingHandler = new LightingHandler();
 const climateHandler = new ClimateHandler();
 
+export function resetClimate() {
+    climateHandler.reset();
+}
+
 export function triggerEarlySquareScheduler() {
     last_square_tick = 0;
 }

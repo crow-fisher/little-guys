@@ -1,12 +1,13 @@
 
 
 import { loadEmptyScene } from "./saveAndLoad.js";
-import { scheduler_main } from "./main.js";
+import { resetClimate, scheduler_main } from "./main.js";
 import { keydown, keyup } from "./keyboard.js";
 import { handleClick, handleMouseDown, handleMouseUp } from "./mouse.js";
 import { getBaseSize, getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, resetZoom, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, zoom } from "./canvas.js";
 import { addUIFunctionMap, loadUI, UI_DISPLAY_SIZEY, UI_SIZE } from "./ui/UIData.js";
 import { initUI } from "./ui/WindowManager.js";
+import { initTemperatureHumidity } from "./climate/temperatureHumidity.js";
 
 export var MAIN_CANVAS = document.getElementById("main");
 export var MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
@@ -42,7 +43,7 @@ let height = 0;
 export function getTotalCanvasPixelWidth() { return width; }
 export function getTotalCanvasPixelHeight() { return height; }
 
-function indexCanvasSize() {
+export function indexCanvasSize() {
     let margin = 5;
     width = Math.floor(window.innerWidth - margin);
     height = Math.floor(window.innerHeight - margin);
@@ -52,6 +53,7 @@ function indexCanvasSize() {
     setCanvasSquaresX(Math.floor(width / c_baseSize));      
     setBaseSize(c_baseSize);
 
+    resetClimate();
     MAIN_CANVAS.width = getBaseSize() * getCanvasSquaresX();
     MAIN_CANVAS.height = height; 
     initUI();

@@ -11,6 +11,8 @@ import { ProtoMap, TypeMap } from "./types.js";
 import { getWindPressureMap, getWindSquaresX, initWindPressure, setWindPressureMap } from "./climate/wind.js";
 import { getCanvasSquaresX, getCanvasSquaresY } from "./canvas.js";
 import { addSquareByName } from "./manipulation.js";
+import { getUI_DATA, setUI_DATA } from "./ui/UIData.js";
+import { indexCanvasSize } from "./index.js";
 
 export async function loadSlot(slotName) {
     const db = await openDatabase();
@@ -156,6 +158,7 @@ function getFrameSaveData() {
         windMap: getWindPressureMap(),
         temperatureMap: getTemperatureMap(),
         waterSaturationMap: getWaterSaturationMap(),
+        ui: getUI_DATA()
     }
     return saveObj;
 }
@@ -179,6 +182,7 @@ function loadSlotFromSave(slotData) {
     // setTemperatureMap(temperatureMap);
     // setWaterSaturationMap(waterSaturationMap);
     setCurDay(slotData.curDay);
+    setUI_DATA(slotData.ui)
 
     sqArr.forEach((sq) => Object.setPrototypeOf(sq, ProtoMap[sq.proto]));
     orgArr.forEach((org) => Object.setPrototypeOf(org, ProtoMap[org.proto]));
@@ -236,7 +240,9 @@ function loadSlotFromSave(slotData) {
         addOrganism(org);
         org.lifeSquares.forEach(addOrganismSquare);
     });
-    triggerEarlySquareScheduler();
+
+    indexCanvasSize();
+
 }
 
 async function compress(inputString) {

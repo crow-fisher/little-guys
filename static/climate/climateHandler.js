@@ -11,6 +11,13 @@ export class ClimateHandler {
         initializeStarMap();
     }
 
+    reset() {
+        initWindPressure();
+        initWeather();
+        initTemperatureHumidity();
+        initializeStarMap();
+    }
+
     climateTick() {
         weather();
         tickWindPressureMap();
