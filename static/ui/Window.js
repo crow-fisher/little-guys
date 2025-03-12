@@ -1,3 +1,5 @@
+import { getBaseUISize, getCanvasHeight, getCanvasWidth } from "../canvas.js";
+import { getActiveClimate } from "../climate/climateManager.js";
 import { COLOR_BLACK } from "../colors.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { getLastMoveOffset, isLeftMouseClicked } from "../mouse.js";
@@ -30,6 +32,59 @@ export class Window {
         this.sizeX = containerSize[0];
         this.sizeY = containerSize[1];
         this.container.render(this.posX, this.posY);
+        this.renderWindowBorder()
+    }
+
+    renderWindowBorder() {
+        let size = getBaseUISize() * 0.8;
+
+        let py = this.posY + this.sizeY;
+        let my = getCanvasHeight() * 1.5;
+
+        let yFactor = ((my - py) / my);
+        let sizeYProcessed = size * yFactor;
+
+        let px = this.posX + this.sizeX;
+        let mx = getCanvasWidth() * 1.5; 
+        let xFactor = (((mx - px) / mx));
+        let sizeXProcessed = size * xFactor;
+
+        MAIN_CONTEXT.fillStyle = getActiveClimate().getUIColorInactiveCustom(.95);
+
+        // bottom rectangle
+        MAIN_CONTEXT.fillRect(
+            this.posX,
+            this.posY + this.sizeY,
+            this.sizeX,
+            sizeYProcessed
+        );
+        // bottom triangle
+
+        MAIN_CONTEXT.beginPath();
+        MAIN_CONTEXT.moveTo(this.posX + this.sizeX, this.posY + this.sizeY);
+        MAIN_CONTEXT.lineTo(this.posX + this.sizeX + sizeXProcessed, this.posY + this.sizeY + sizeYProcessed);
+        MAIN_CONTEXT.lineTo(this.posX + this.sizeX, this.posY + this.sizeY + sizeYProcessed);
+        MAIN_CONTEXT.lineTo(this.posX + this.sizeX, this.posY + this.sizeY);
+        MAIN_CONTEXT.closePath();
+        MAIN_CONTEXT.fill();
+
+        // right side
+
+        MAIN_CONTEXT.fillStyle = getActiveClimate().getUIColorInactiveCustom((.83 - (xFactor * 0.1)));
+        MAIN_CONTEXT.fillRect(
+            this.posX + this.sizeX,
+            this.posY,
+            sizeXProcessed,
+            this.sizeY
+        );
+
+        MAIN_CONTEXT.beginPath();
+        MAIN_CONTEXT.moveTo(this.posX + this.sizeX, this.posY + this.sizeY);
+        MAIN_CONTEXT.lineTo(this.posX + this.sizeX + sizeXProcessed, this.posY + this.sizeY + sizeYProcessed);
+        MAIN_CONTEXT.lineTo(this.posX + this.sizeX + sizeXProcessed, this.posY + this.sizeY);
+        MAIN_CONTEXT.lineTo(this.posX + this.sizeX, this.posY + this.sizeY);
+        MAIN_CONTEXT.closePath();
+        MAIN_CONTEXT.fill();
     }
 
     update() {
@@ -99,7 +154,7 @@ export class WindowElement {
     render(startX, startY) {}
 
     hover(posX, posY) {
-        this.window.hovered = true;
+        this.hovered = true;
     }
     size() {
         return [this.sizeX, this.sizeY];

@@ -21,13 +21,13 @@ var TIME_SCALE = 1;
 var curUIKey = UI_SPEED_1;
 
 export var millis_per_day = 60 * 60 * 24 * 1000;
-var curDay = 0.3   ;
+var curDay = 0.9   ;
 var prevDay = 0;
 var curTime = 0.8;
 var prevTime = 0;
 
 var prevRealTime = Date.now();
-var dt = 0;
+var dt = 0; 
 
 export function getFrameDt() {
     return Math.min(100, dt);
@@ -123,6 +123,9 @@ function renderStarMap(brightnessMult) {
     if (starMap == null) {
         initializeStarMap();
     }
+
+    var frameCloudColor = getFrameRelCloud();
+    var frameCloudMult = Math.min(1, ((frameCloudColor.r + frameCloudColor.g + frameCloudColor.b) / (3 * 255) * 20));
     
     var xKeys = Array.from(Object.keys(starMap));
     for (let i = 0; i < xKeys.length; i++) {
@@ -152,7 +155,7 @@ function renderStarMap(brightnessMult) {
 
             let r = 0.4;
             let b = (starbrightness) * r + (1) * (1 - r);
-            MAIN_CONTEXT.fillStyle = calculateTempColorRgbaNoCache(starColorTemperatureMap[starX][starY], b);
+            MAIN_CONTEXT.fillStyle = calculateTempColorRgbaNoCache(starColorTemperatureMap[starX][starY], (b * (1 - frameCloudMult)));
             zoomCanvasFillCircle(
                 endX * getBaseSize(),
                 endY * getBaseSize(),
@@ -284,7 +287,6 @@ function renderSkyBackground(time) {
     }
     var processedColor = calculateColorRGB(processed, min, max, minColor, maxColor);
     var frameCloudColor = getFrameRelCloud();
-
     var frameCloudMult = Math.min(1, (frameCloudColor.r + frameCloudColor.g + frameCloudColor.b) / (3 * 255) * 5);
 
     var processedColorHsv = rgb2hsv(processedColor.r, processedColor.g, processedColor.b);
@@ -396,19 +398,13 @@ function calculateTempColorRgbaCache(daylightStrength, opacity) {
 
 function calculateTempColorRgbaNoCache(daylightStrength, opacity) {
     var temperature = Math.floor(daylightStrength * 6600);
-    if (temperature in tempColorRgbaMap) {
-        return tempColorRgbaMap[temperature];
-    } else {
-        var dc = calculateTempColor(temperature);
-        var resColor = {
-            r: Math.floor(dc.r * daylightStrength),
-            g: Math.floor(dc.g * daylightStrength),
-            b: Math.floor(dc.b * daylightStrength),
-        }
-        tempColorRgbMap[temperature] = resColor;
-        tempColorRgbaMap[temperature] = rgbToRgba(resColor.r, resColor.g, resColor.b, opacity);
-        return tempColorRgbaMap[temperature];
+    var dc = calculateTempColor(temperature);
+    var resColor = {
+        r: Math.floor(dc.r * daylightStrength),
+        g: Math.floor(dc.g * daylightStrength),
+        b: Math.floor(dc.b * daylightStrength),
     }
+    return rgbToRgba(resColor.r, resColor.g, resColor.b, opacity);
 }
 
 function temp_red(temperature) {

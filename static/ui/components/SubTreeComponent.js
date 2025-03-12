@@ -23,55 +23,7 @@ export class SubTreeComponent {
     render() {
         if (loadUI(this.key)) {
             this.window.render();
-            let size = getBaseUISize() * 1;
-
-            let py = this.window.posY + this.window.sizeY;
-            let my = getCanvasHeight() * 0.9;
-
-            let yFactor = ((my - py) / my);
-            let sizeYProcessed = size * yFactor;
-
-            let px = this.window.posX + this.window.sizeX;
-            let mx = getCanvasWidth() * 0.5; 
-            let xFactor =  0.5 + (((mx - px) / mx)) * 0.2;
-            let sizeXProcessed = size * xFactor;
-
-            MAIN_CONTEXT.fillStyle = getActiveClimate().getUIColorInactiveCustom(.95);
-
-            // bottom rectangle
-            MAIN_CONTEXT.fillRect(
-                this.window.posX,
-                this.window.posY + this.window.sizeY,
-                this.window.sizeX,
-                sizeYProcessed
-            );
-            // bottom triangle
-
-            MAIN_CONTEXT.beginPath();
-            MAIN_CONTEXT.moveTo(this.window.posX + this.window.sizeX, this.window.posY + this.window.sizeY);
-            MAIN_CONTEXT.lineTo(this.window.posX + this.window.sizeX + sizeXProcessed, this.window.posY + this.window.sizeY + sizeYProcessed);
-            MAIN_CONTEXT.lineTo(this.window.posX + this.window.sizeX, this.window.posY + this.window.sizeY + sizeYProcessed);
-            MAIN_CONTEXT.lineTo(this.window.posX + this.window.sizeX, this.window.posY + this.window.sizeY);
-            MAIN_CONTEXT.closePath();
-            MAIN_CONTEXT.fill();
-
-            // right side
-
-            MAIN_CONTEXT.fillStyle = getActiveClimate().getUIColorInactiveCustom((.83 - (xFactor * 0.1)));
-            MAIN_CONTEXT.fillRect(
-                this.window.posX + this.window.sizeX,
-                this.window.posY,
-                sizeXProcessed,
-                this.window.sizeY
-            );
-
-            MAIN_CONTEXT.beginPath();
-            MAIN_CONTEXT.moveTo(this.window.posX + this.window.sizeX, this.window.posY + this.window.sizeY);
-            MAIN_CONTEXT.lineTo(this.window.posX + this.window.sizeX + sizeXProcessed, this.window.posY + this.window.sizeY + sizeYProcessed);
-            MAIN_CONTEXT.lineTo(this.window.posX + this.window.sizeX + sizeXProcessed, this.window.posY + this.window.sizeY);
-            MAIN_CONTEXT.lineTo(this.window.posX + this.window.sizeX, this.window.posY + this.window.sizeY);
-            MAIN_CONTEXT.closePath();
-            MAIN_CONTEXT.fill();
+            
         }
     }
 
