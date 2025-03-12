@@ -74,8 +74,10 @@ export function doTimeSeek() {
     var dayRemaining = seekTimeTarget - getCurDay();
     var timeRemaining = millis_per_day * (dayRemaining / getCurTimeScale());
 
-    if (timeRemaining < 500) {
+    if (timeRemaining < getFrameDt() * 2) {
         TIME_SCALE -= 1;
+    } else if (timeRemaining < 500) {
+        // do nothing
     } else {
         TIME_SCALE += 1;
     }
