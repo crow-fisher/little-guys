@@ -82,11 +82,9 @@ export function doTimeSeek() {
         TIME_SCALE += 1;
     }
     TIME_SCALE = Math.min(TIME_SCALE, 9);
+    TIME_SCALE = Math.max(TIME_SCALE, 1);
 
     switch (TIME_SCALE) {
-        case 0:
-            saveUI(UI_SPEED, UI_SPEED_0);
-            break;
         case 1:
             saveUI(UI_SPEED, UI_SPEED_1);
             break;
@@ -222,7 +220,7 @@ function getCurTime() {
 }
 
 export function getCurTimeScale() {
-    return (3.5 ** (TIME_SCALE - 1));
+    return (3.8 ** (TIME_SCALE - 1));
 }
 
 export function getTimeScale() {
