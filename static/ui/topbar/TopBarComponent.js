@@ -17,7 +17,8 @@ import {
     UI_BOOLEAN, UI_TOPBAR_BLOCK, UI_TOPBAR_VIEWMODE,
     UI_TOPBAR_SIMULATION, UI_TOPBAR_LIGHTING,
     UI_TOPBAR_TIME,
-    UI_NAME
+    UI_NAME,
+    UI_TOPBAR_CLIMATE
 } from "../UIData.js";
 import { TopBarToggle } from "./TopBarToggle.js";
 import { getLastMoveOffset } from "../../mouse.js";
@@ -33,6 +34,16 @@ export class TopBarComponent {
         this.elements = new Map();
         this.elementPositions = new Map();
         this.elements[1] = [
+            new TopBarWorldName(getBaseUISize() * 2, "left", () => this.textWorldName())
+        ]
+        
+        this.elements[0] = [
+            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_MAINMENU, UI_BOOLEAN, () => this.textMainMenu()),
+            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_BLOCK, UI_BOOLEAN, () => this.textBlockMenu()),
+            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_CLIMATE, UI_BOOLEAN, () => this.textClimateMenu()),
+            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_VIEWMODE, UI_BOOLEAN, () => this.textViewMode()),
+            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_LIGHTING, UI_BOOLEAN, () => this.textToggleLighting()),
+            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_SIMULATION, UI_BOOLEAN, () => this.textDesignerMode()),
             new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_0, () => "⏸"),
             new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_1, () => "▶"),
             new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_2, () => "▶"),
@@ -42,17 +53,8 @@ export class TopBarComponent {
             new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_6, () => "▶"),
             new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_7, () => "▶"),
             new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_8, () => "▶"),
-            new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_9, () => "▶\t"),
+            new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_9, () => "▶\t|\t"),
             new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_TIME, UI_BOOLEAN,() => this.textDateTime()),
-            new TopBarWorldName(getBaseUISize() * 2, "left", () => this.textWorldName())
-        ]
-        
-        this.elements[0] = [
-            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_MAINMENU, UI_BOOLEAN, () => this.textMainMenu()),
-            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_BLOCK, UI_BOOLEAN, () => this.textBlockMenu()),
-            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_VIEWMODE, UI_BOOLEAN, () => this.textViewMode()),
-            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_LIGHTING, UI_BOOLEAN, () => this.textToggleLighting()),
-            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_SIMULATION, UI_BOOLEAN, () => this.textDesignerMode()),
         ];
 
         Object.keys(this.elements).forEach((key) => this.elementPositions[key] = new Array(this.elements[key].length));
@@ -72,7 +74,11 @@ export class TopBarComponent {
             return " block |"
         return " block menu |"
     }
-
+    textClimateMenu() {
+        if (this.compact)
+            return " climate |"
+        return " climate control |"
+    }
     textViewMode() {
         if (this.compact)
             return " viewmode |"
@@ -96,9 +102,9 @@ export class TopBarComponent {
         let curDay = getCurDay();
         let curDate = new Date(curDay * millis_per_day);
         if (this.compact) {
-            return curDate.toLocaleTimeString("en-US", {timeZone: 'UTC'}) + " | ";
+            return curDate.toLocaleTimeString("en-US", {timeZone: 'UTC'});
         } else {
-            return curDate.toLocaleString("en-US", {timeZone: 'UTC'}) + " | ";
+            return curDate.toLocaleString("en-US", {timeZone: 'UTC'});
         }
     }
 
