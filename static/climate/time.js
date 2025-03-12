@@ -14,7 +14,8 @@ import {
     UI_SPEED,
     UI_SPEED_0,
     UI_LIGHTING_SUN,
-    UI_LIGHTING_MOON
+    UI_LIGHTING_MOON,
+    saveUI
 } from "../ui/UIData.js";
 
 var TIME_SCALE = 1;
@@ -78,8 +79,40 @@ export function doTimeSeek() {
     } else {
         TIME_SCALE += 1;
     }
-
     TIME_SCALE = Math.min(TIME_SCALE, 9);
+
+    switch (TIME_SCALE) {
+        case 0:
+            saveUI(UI_SPEED, UI_SPEED_0);
+            break;
+        case 1:
+            saveUI(UI_SPEED, UI_SPEED_1);
+            break;
+        case 2:
+            saveUI(UI_SPEED, UI_SPEED_2);
+            break;
+        case 3:
+            saveUI(UI_SPEED, UI_SPEED_3);
+            break;
+        case 4:
+            saveUI(UI_SPEED, UI_SPEED_4);
+            break;
+        case 5:
+            saveUI(UI_SPEED, UI_SPEED_5);
+            break;
+        case 6:
+            saveUI(UI_SPEED, UI_SPEED_6);
+            break;
+        case 7:
+            saveUI(UI_SPEED, UI_SPEED_7);
+            break;
+        case 8:
+            saveUI(UI_SPEED, UI_SPEED_8);
+            break;
+        case 9:
+            saveUI(UI_SPEED, UI_SPEED_9);
+            break;
+    }
 }
 
 // targetTime between 0 and 1
