@@ -1,4 +1,4 @@
-import { doWaterFlow, physics, physicsOnlyGravity, physicsOnlyWater, processOrganisms, purge, renderOrganisms, renderSolidSquares, renderWaterSquares, reset } from "./globalOperations.js";
+import { doWaterFlow, physics, physicsOnlyGravity, physicsOnlyWater, physicsWaterSimplePhysics, processOrganisms, purge, renderOrganisms, renderSolidSquares, renderWaterSquares, reset } from "./globalOperations.js";
 import { doClickAdd, doClickAddEyedropperMixer } from "./manipulation.js";
 import { resetFrameDivMult } from "./lighting/lightingProcessing.js";
 import { renderClouds, renderTemperature, renderWaterSaturation } from "./climate/temperatureHumidity.js";
@@ -93,10 +93,12 @@ function orgTick() {
     processOrganisms();
 }
 
+
+
 function squareTickSimplePhysics() {
     reset();
     physicsOnlyGravity();
-    physicsOnlyWater();
+    physicsWaterSimplePhysics();
     doWaterFlow();
     purge();
 

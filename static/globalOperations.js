@@ -77,6 +77,11 @@ export function physicsOnlyWater() {
     frame_water_squares.forEach((sq) => sq.physics());
 }
 
+export function physicsWaterSimplePhysics() {
+    frame_water_squares.forEach((sq) => sq.physicsBefore());
+    frame_water_squares.forEach((sq) => sq.physicsSimple());
+}
+
 export function processOrganisms() {
     iterateOnOrganisms((org) => org.process(), 0);
 }

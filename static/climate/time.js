@@ -22,7 +22,7 @@ var TIME_SCALE = 1;
 var curUIKey = UI_SPEED_1;
 
 export var millis_per_day = 60 * 60 * 24 * 1000;
-var curDay = 0.9   ;
+var curDay = 0.5;
 var prevDay = 0;
 var curTime = 0.8;
 var prevTime = 0;
@@ -136,7 +136,7 @@ function initializeStarMap() {
     starMapCenterX = randNumber(getCanvasSquaresX() / 4, getCanvasSquaresX() * 0.75);
     starMapCenterY = randNumber(getCanvasSquaresY() / 4, getCanvasSquaresY() * 0.75);
 
-    var numStars = randNumber(22000, 33000);
+    var numStars = randNumber(22000, 33000) * ((getCanvasSquaresY() / 100) ** 0.1);
 
     for (let i = 0; i < numStars; i++) {
         var starX = randNumber(-getCanvasSquaresX() * 4, getCanvasSquaresX() * 4);
@@ -160,6 +160,11 @@ function renderStarMap(brightnessMult) {
     var frameCloudColor = getFrameRelCloud();
     var frameCloudMult = Math.min(1, ((frameCloudColor.r + frameCloudColor.g + frameCloudColor.b) / (3 * 255) * 20));
     
+
+    if (getDaylightStrength() > 0.85) {
+        return;
+    }
+
     var xKeys = Array.from(Object.keys(starMap));
     for (let i = 0; i < xKeys.length; i++) {
         var yKeys = Array.from(Object.keys(starMap[xKeys[i]]));
@@ -192,7 +197,7 @@ function renderStarMap(brightnessMult) {
             zoomCanvasFillCircle(
                 endX * getBaseSize(),
                 endY * getBaseSize(),
-                starbrightness * getBaseSize()
+                starbrightness * getBaseSize() * (getCanvasSquaresY() / 100)
             );
         }
     }

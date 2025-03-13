@@ -49,6 +49,11 @@ class WaterSquare extends BaseSquare {
         this.doLocalColorSwapping();
     }
 
+    physicsSimple() {
+        this.gravityPhysics();
+        this.calculateCandidateFlows();
+    }
+
     doLocalColorSwapping() {
         if (Math.random() > 0.999) {
             getNeighbors(this.posX, this.posY).filter((sq) => sq.group == this.group).forEach((sq) => {
