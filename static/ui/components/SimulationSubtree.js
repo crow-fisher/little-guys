@@ -1,13 +1,10 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
-import { Component } from "../Component.js";
 import { Container } from "../Container.js";
-import { Radio } from "../elements/Radio.js";
 import { RadioToggle } from "../elements/RadioToggle.js";
-import { RowedRadio } from "../elements/RowedRadio.js";
 import { Text } from "../elements/Text.js";
 import { Toggle } from "../elements/Toggle.js";
-import { loadUI, UI_CENTER, UI_DISPLAY_SIZEY as UI_SIMULATION_HEIGHT, UI_LIGHTING_ENABLED, UI_LIGHTING_FASTLIGHTING, UI_LIGHTING_FASTUPDATERATE, UI_LIGHTING_SLOWUPDATERATE, UI_SIMULATION_CLOUDS, UI_SIMULATION_SIMPLESQUARE, UI_SM_BB, UI_SM_CLIMATE, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_SM_SPECIAL } from "../UIData.js";
+import { UI_CENTER, UI_DISPLAY_SIZEY as UI_SIMULATION_HEIGHT, UI_SIMULATION_CLOUDS, UI_SIMULATION_SIMPLESQUARE } from "../UIData.js";
 import { SubTreeComponent } from "./SubTreeComponent.js";
 
 
@@ -16,11 +13,11 @@ export class SimulationSubtree extends SubTreeComponent {
         super(posXFunc, posYFunc, padding, dir, key);
         let subMenuContainer = new Container(this.window, 0, 1);
         this.window.container = subMenuContainer;
-        let textAlignOffsetX = getBaseUISize() * 1.94;
+        let textAlignOffsetX = getBaseUISize() * 1.93;
         let sizeX = getBaseUISize() * 21;
         let radioSizeX = sizeX / 3;
-        subMenuContainer.addElement(new Toggle(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_SIMULATION_CLOUDS, "enable clouds",() => getActiveClimate().getUIColorInactiveCustom(0.57), () => getActiveClimate().getUIColorActive()));
-        subMenuContainer.addElement(new Toggle(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_SIMULATION_SIMPLESQUARE, "simple physics",() => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorActive()));
+        subMenuContainer.addElement(new Toggle(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_SIMULATION_CLOUDS, "enable clouds",() => getActiveClimate().getUIColorInactiveCustom(0.56), () => getActiveClimate().getUIColorActive()));
+        subMenuContainer.addElement(new Toggle(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_SIMULATION_SIMPLESQUARE, "simple physics",() => getActiveClimate().getUIColorInactiveCustom(0.61), () => getActiveClimate().getUIColorActive()));
         subMenuContainer.addElement(new Text(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, UI_CENTER, "size"))
 
         let row1 =  new Container(this.window, 0, 0);
@@ -33,10 +30,10 @@ export class SimulationSubtree extends SubTreeComponent {
         row1.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 3), getBaseUISize() * 3, UI_CENTER, UI_SIMULATION_HEIGHT, 125,() => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorActive()));
         row2.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 3), getBaseUISize() * 3, UI_CENTER, UI_SIMULATION_HEIGHT, 150,() => getActiveClimate().getUIColorInactiveCustom(0.58), () => getActiveClimate().getUIColorActive()));
         row2.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 3), getBaseUISize() * 3, UI_CENTER, UI_SIMULATION_HEIGHT, 175,() => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));
-        row2.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 3), getBaseUISize() * 3, UI_CENTER, UI_SIMULATION_HEIGHT, 200,() => getActiveClimate().getUIColorInactiveCustom(0.52), () => getActiveClimate().getUIColorActive()));
+        row2.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 3), getBaseUISize() * 3, UI_CENTER, UI_SIMULATION_HEIGHT, 200,() => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
         row3.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 3), getBaseUISize() * 3, UI_CENTER, UI_SIMULATION_HEIGHT, 225,() => getActiveClimate().getUIColorInactiveCustom(0.63), () => getActiveClimate().getUIColorActive()));
         row3.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 3), getBaseUISize() * 3, UI_CENTER, UI_SIMULATION_HEIGHT, 250,() => getActiveClimate().getUIColorInactiveCustom(0.59), () => getActiveClimate().getUIColorActive()));
-        row3.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 3), getBaseUISize() * 3, UI_CENTER, UI_SIMULATION_HEIGHT, 275,() => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive()));
+        row3.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 3), getBaseUISize() * 3, UI_CENTER, UI_SIMULATION_HEIGHT, 275,() => getActiveClimate().getUIColorInactiveCustom(0.64), () => getActiveClimate().getUIColorActive()));
         row4.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 3), getBaseUISize() * 3, UI_CENTER, UI_SIMULATION_HEIGHT, 400,() => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorActive()));
         row4.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 3), getBaseUISize() * 3, UI_CENTER, UI_SIMULATION_HEIGHT, 450,() => getActiveClimate().getUIColorInactiveCustom(0.56), () => getActiveClimate().getUIColorActive()));
         row4.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 3), getBaseUISize() * 3, UI_CENTER, UI_SIMULATION_HEIGHT, 500,() => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));

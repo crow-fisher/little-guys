@@ -3,6 +3,7 @@ import { getActiveClimate } from "../../climate/climateManager.js";
 import { Component } from "../Component.js";
 import { Container } from "../Container.js";
 import { Radio } from "../elements/Radio.js";
+import { RadioToggle } from "../elements/RadioToggle.js";
 import { Text } from "../elements/Text.js";
 import { Toggle } from "../elements/Toggle.js";
 import { loadUI, UI_CENTER, UI_LIGHTING_ENABLED, UI_LIGHTING_FASTLIGHTING, UI_LIGHTING_FASTUPDATERATE, UI_LIGHTING_SLOWUPDATERATE, UI_SM_BB, UI_SM_CLIMATE, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_SM_SPECIAL } from "../UIData.js";
@@ -17,18 +18,31 @@ export class LightingSubtree extends SubTreeComponent {
 
         let textAlignOffsetX = getBaseUISize() * 1.91;
         let sizeX = getBaseUISize() * 22;
+        let radioSizeX = sizeX / 4;
+
 
         subMenuContainer.addElement(new Toggle(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_LIGHTING_ENABLED, "enable lighting",() => getActiveClimate().getUIColorInactiveCustom(0.55), () =>    getActiveClimate().getUIColorActive()));
         subMenuContainer.addElement(new Toggle(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_LIGHTING_FASTLIGHTING, "fast lighting",() => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));
         subMenuContainer.addElement(new Toggle(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_SM_LIGHTING, "lighting editor",() => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
 
+        let row1 =  new Container(this.window, 0, 0);
+        let row2 =  new Container(this.window, 0, 0);
+
         subMenuContainer.addElement(new Text(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, UI_CENTER, "fast speed"))
-        subMenuContainer.addElement(new Radio(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, UI_CENTER, UI_LIGHTING_FASTUPDATERATE, 
-                [2, 5, 8, 10], () => getActiveClimate().getUIColorInactive(), () => (loadUI(UI_LIGHTING_FASTLIGHTING) ? getActiveClimate().getUIColorActive() : getActiveClimate().getUIColorTransient())));
-            
+        subMenuContainer.addElement(row1);
         subMenuContainer.addElement(new Text(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, UI_CENTER, "slow speed"))
-        subMenuContainer.addElement(new Radio(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, UI_CENTER, UI_LIGHTING_SLOWUPDATERATE, 
-            [10, 20, 40, 60], () => getActiveClimate().getUIColorInactive(), () => (loadUI(UI_LIGHTING_FASTLIGHTING) ? getActiveClimate().getUIColorTransient() : getActiveClimate().getUIColorActive())));
+        subMenuContainer.addElement(row2);
+
+        row1.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 4), getBaseUISize() * 3, UI_CENTER, UI_LIGHTING_FASTUPDATERATE, 2,() => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));
+        row1.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 4), getBaseUISize() * 3, UI_CENTER, UI_LIGHTING_FASTUPDATERATE, 5,() => getActiveClimate().getUIColorInactiveCustom(0.53), () => getActiveClimate().getUIColorActive()));
+        row1.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 4), getBaseUISize() * 3, UI_CENTER, UI_LIGHTING_FASTUPDATERATE, 8,() => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorActive()));
+        row1.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 4), getBaseUISize() * 3, UI_CENTER, UI_LIGHTING_FASTUPDATERATE, 10,() => getActiveClimate().getUIColorInactiveCustom(0.64), () => getActiveClimate().getUIColorActive()));
+        
+        row2.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 4), getBaseUISize() * 3, UI_CENTER, UI_LIGHTING_SLOWUPDATERATE, 10,() => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
+        row2.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 4), getBaseUISize() * 3, UI_CENTER, UI_LIGHTING_SLOWUPDATERATE, 20,() => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorActive()));
+        row2.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 4), getBaseUISize() * 3, UI_CENTER, UI_LIGHTING_SLOWUPDATERATE, 40,() => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
+        row2.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 4), getBaseUISize() * 3, UI_CENTER, UI_LIGHTING_SLOWUPDATERATE, 60,() => getActiveClimate().getUIColorInactiveCustom(0.59), () => getActiveClimate().getUIColorActive()));
+        
     }
 
 }
