@@ -9,7 +9,7 @@ export class Climate {
         ]
         this.rockColors = [
             [hexToRgb("#666264"), hexToRgb("#020204"), hexToRgb("#c4bebe")],
-            [hexToRgb("#666264"), hexToRgb("#020204"), hexToRgb("#c4bebe")]
+            [hexToRgb("#8b5759"), hexToRgb("#432e26"), hexToRgb("#ce9a8b")]
         ]
 
         this.waterColor = hexToRgb("#31539D");
@@ -103,6 +103,13 @@ export class Climate {
         return this.processColor(this.getBaseSoilColor(loadUI(UI_PALETTE_SOILIDX), .4, .4, .2), 1);
     }
 
+    getBaseActiveToolBrightness(arr, brightness) {
+        if (loadUI(UI_PALETTE_ROCKMODE)) {
+            return this.processColor(this.getBaseRockColor(loadUI(UI_PALETTE_ROCKIDX), ...arr), brightness);
+        } else {
+            return this.processColor(this.getBaseSoilColor(loadUI(UI_PALETTE_SOILIDX), ...arr), brightness);
+        }
+    }
 
     getBaseSoilColorBrightness(arr, brightness) {
         return this.processColor(this.getBaseSoilColor(loadUI(UI_PALETTE_SOILIDX), ...arr), brightness);
@@ -112,6 +119,13 @@ export class Climate {
     }
     getBaseRockColorBrightnessIdx(idx, arr, brightness) {
         return this.processColor(this.getBaseRockColor(idx, ...arr), brightness);
+    }
+    getBaseActiveToolColorActiveIdx(brightness) {
+        if (loadUI(UI_PALETTE_ROCKMODE)) {
+            return this.processColor(this.getBaseRockColor(loadUI(UI_PALETTE_ROCKIDX), .4, .4, .2), brightness);
+        } else {
+            return this.processColor(this.getBaseSoilColor(loadUI(UI_PALETTE_SOILIDX), .4, .4, .2), brightness);
+        }
     }
 
     getBaseSoilColor(idx, sand, silt, clay) {

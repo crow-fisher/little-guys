@@ -1,32 +1,28 @@
-import { COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
+import { getBaseUISize } from "../../canvas.js";
+import { COLOR_BLACK, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { getLastMouseDown, isLeftMouseClicked } from "../../mouse.js";
-import { loadUI, saveUI } from "../UIData.js";
+import { loadUI, saveUI, UI_CENTER } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
-export class Button extends WindowElement {
-    constructor(window, sizeX, sizeY, offsetX, func, label, colorFunc) {
+export class PageButton extends WindowElement {
+    constructor(window, sizeX, sizeY, offsetX, keyFunc, colorFunc, textSizeMult = 0.75) {
         super(window, sizeX, sizeY);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         this.offsetX = offsetX;
-        this.func = func;
-        this.label = label;
-        this.lastClick = 0;
+        this.keyFunc = keyFunc;
         this.colorFunc = colorFunc;
-    }
-
-    size() {
-        return [this.sizeX + this.offsetX, this.sizeY];
+        this.textSizeMult = textSizeMult; 
+        this.lastClick = 0;
     }
 
     render(startX, startY) {
-        MAIN_CONTEXT.font = this.sizeY * 0.75 + "px courier"
-        MAIN_CONTEXT.textAlign = 'left';
+        MAIN_CONTEXT.font = this.sizeY * this.textSizeMult + "px courier"
+        MAIN_CONTEXT.textAlign = 'center';
         MAIN_CONTEXT.textBaseline = 'middle';
         MAIN_CONTEXT.fillStyle = this.colorFunc();
-        MAIN_CONTEXT.fillRect(startX, startY, this.sizeX + this.offsetX, this.sizeY);
-        MAIN_CONTEXT.strokeText(this.label, startX + this.offsetX, startY + this.sizeY / 2);
+        MAIN_CONTEXT.fillRect(startX, startY, this.sizeX, this.sizeY);
         return [this.sizeX, this.sizeY];
     }
 
@@ -36,7 +32,7 @@ export class Button extends WindowElement {
             return;
         } 
         if (this.lastClick != getLastMouseDown()) {
-            this.func();
+            saveUI(this.keyFunc(), loadUI(this.keyFunc()) + 1);
             this.lastClick = getLastMouseDown();
         }
     }
