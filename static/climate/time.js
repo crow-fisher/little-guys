@@ -25,7 +25,7 @@ export var millis_per_day = 60 * 60 * 24 * 1000;
 var curDay = 0.5;
 var prevDay = 0;
 var curTime = 0.8;
-var prevTime = 0;
+var prevTime = 0;   
 
 var prevRealTime = Date.now();
 var dt = 0; 

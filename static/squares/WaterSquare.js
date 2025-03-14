@@ -6,6 +6,7 @@ import { RGB_COLOR_OTHER_BLUE } from "../colors.js";
 import { hexToRgb, rgbToRgba } from "../common.js";
 import { loadUI, UI_LIGHTING_WATER } from "../ui/UIData.js";
 import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
+import { getActiveClimate } from "../climate/climateManager.js";
 class WaterSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
@@ -18,7 +19,7 @@ class WaterSquare extends BaseSquare {
         this.calculateGroupFlag = true; 
         this.gravity = 1;
 
-        this.color = hexToRgb("#31539D");
+        this.color = getActiveClimate().waterColor;
 
         this.opacity = 0.5;
 
@@ -33,6 +34,10 @@ class WaterSquare extends BaseSquare {
 
     getLightFilterRate() {
         return super.getLightFilterRate() * loadUI(UI_LIGHTING_WATER);
+    }
+
+    getColorBase() {
+        return getActiveClimate().waterColor;
     }
 
     reset() {

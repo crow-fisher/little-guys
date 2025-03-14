@@ -71,8 +71,8 @@ export class TopBarComponent {
 
     textBlockMenu() {
         if (this.compact)
-            return " block |"
-        return " block menu |"
+            return " place |"
+        return " place menu |"
     }
     textClimateMenu() {
         if (this.compact)

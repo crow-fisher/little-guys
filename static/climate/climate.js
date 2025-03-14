@@ -11,6 +11,10 @@ export class Climate {
         this.rockColorClay = hexToRgb("#020204");
         this.rockColorSilt = hexToRgb("#c4bebe");
 
+        this.waterColor = hexToRgb("#31539D");
+        this.surfaceOnColor = {r: 172, g: 35, b: 226};
+        this.surfaceOffColor = {r: 30, g: 172, b: 58};
+
         this.weatherPatternMap = new Map();
         this.weatherPatternMap.set(UI_CLIMATE_WEATHER_SUNNY, 60);
         this.weatherPatternMap.set(UI_CLIMATE_WEATHER_PARTLY_CLOUDY, 30);
@@ -21,6 +25,23 @@ export class Climate {
 
         this.uci = new Map();
     }
+
+    getWaterColor() {
+        return this.processColor(this.waterColor, 0.5);
+    }
+
+    getWaterColorDark() {
+        return this.processColor(this.waterColor, 0.7);
+    }
+
+    getSurfaceOnColor() {
+        return this.processColor(this.surfaceOnColor, 0.5);
+    }
+
+    getSufaceOffColor() {
+        return this.processColor(this.surfaceOffColor, 0.5);
+    }
+
     processColor(rgb, frac) {
         let hsv = rgb2hsv(rgb.r, rgb.g, rgb.b);
         hsv[2] =  (255 * (1 - frac)) + (hsv[2] * frac);
@@ -35,6 +56,23 @@ export class Climate {
         }
         return this.uci[frac];
     }
+
+    getUIColorStoneButton(frac) {
+        if (this.uci[frac] == null) {
+            this.uci[frac] = this.processColor(this.getBaseSoilColor(0, 0.70, 0.10), frac);
+            return this.uci[frac];
+        }
+        return this.uci[frac];
+    }
+
+    getUIColorDirtButton(frac) {
+        if (this.uci[frac] == null) {
+            this.uci[frac] = this.processColor(this.getBaseSoilColor(0, 0.70, 0.10), frac);
+            return this.uci[frac];
+        }
+        return this.uci[frac];
+    }
+
 
     getUIColorInactive() {
         return this.getUIColorInactiveCustom(0.6);
@@ -55,7 +93,20 @@ export class Climate {
         }
         return this.uct;
     }
+
+    getBaseSoilColorBrightness(arr, brigthness) {
+        return this.processColor(this.getBaseSoilColor(...arr), brigthness);
+    }
+
     getBaseSoilColor(sand, silt, clay) {
+        return {
+            r: clay * this.soilColorClay.r + silt * this.soilColorSilt.r + sand * this.soilColorSand.r, 
+            g: clay * this.soilColorClay.g + silt * this.soilColorSilt.g + sand * this.soilColorSand.g, 
+            b: clay * this.soilColorClay.b + silt * this.soilColorSilt.b + sand * this.soilColorSand.b
+        }
+    }
+
+    getBaseStoneColor(sand, silt, clay) {
         return {
             r: clay * this.soilColorClay.r + silt * this.soilColorSilt.r + sand * this.soilColorSand.r, 
             g: clay * this.soilColorClay.g + silt * this.soilColorSilt.g + sand * this.soilColorSand.g, 

@@ -12,5 +12,8 @@ export class Fantasy extends Climate {
         this.rockColorSilt = hexToRgb("#666012");
         this.rockColorClay = hexToRgb("#c6ad49");
 
+        this.waterColor = hexToRgb("#999AC6");
+
+
     }
 }
