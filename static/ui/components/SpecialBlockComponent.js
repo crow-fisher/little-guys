@@ -2,12 +2,13 @@ import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { Component } from "../Component.js";
 import { Container } from "../Container.js";
+import { PageButton } from "../elements/PageButton.js";
 import { RadioToggle } from "../elements/RadioToggle.js";
 import { RowedRadio } from "../elements/RowedRadio.js";
 import { Slider } from "../elements/Slider.js";
 import { Text } from "../elements/Text.js";
 import { TextBackground } from "../elements/TextBackground.js";
-import { loadUI, UI_SPECIAL_WATER, UI_SPECIAL_AQUIFER, UI_SPECIAL_MIX, UI_SPECIAL_SURFACE, UI_SOIL_COMPOSITION, UI_SPECIAL_SELECT, UI_BB_SIZE, UI_BB_STRENGTH, UI_SM_SPECIAL, UI_CENTER } from "../UIData.js";
+import { loadUI, UI_SPECIAL_WATER, UI_SPECIAL_AQUIFER, UI_SPECIAL_MIX, UI_SPECIAL_SURFACE, UI_SOIL_COMPOSITION, UI_SPECIAL_SELECT, UI_BB_SIZE, UI_BB_STRENGTH, UI_SM_SPECIAL, UI_CENTER, UI_PALLATE_VARIANT } from "../UIData.js";
 
 export class BlockPallate extends Component {
     constructor(posX, posY, padding, dir, key) {
@@ -16,35 +17,56 @@ export class BlockPallate extends Component {
         this.initPallate();
 
         var sizeX = getBaseUISize() * 24;
+        var half = sizeX / 2;
+        var third = sizeX / 3;
+        var quarter = sizeX / 4;
+
         let container = new Container(this.window, 0, 1);
         this.window.container = container;
 
         container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 0.5, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.65), 0.75," "))
         container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 3.3, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.8, "block pallate"))
         let row1 = new Container(this.window, 0, 0);
+        let row2 = new Container(this.window, 0, 0);
         container.addElement(row1);
+        container.addElement(row2);
 
-        let buttonWidth = sizeX / 4;
         let buttonHeight = getBaseUISize() * 3;
-        row1.addElement(new RadioToggle(this.window, buttonWidth, buttonHeight, UI_CENTER, UI_SPECIAL_SELECT, UI_SPECIAL_WATER
+
+        row1.addElement(new RadioToggle(this.window, third, buttonHeight, UI_CENTER, UI_SPECIAL_SELECT, UI_SPECIAL_WATER
         , () => getActiveClimate().getWaterColor(), () => getActiveClimate().getWaterColor(), 0.5));
-        row1.addElement(new RadioToggle(this.window, buttonWidth, buttonHeight, UI_CENTER, UI_SPECIAL_SELECT, UI_SPECIAL_AQUIFER,
+        row1.addElement(new RadioToggle(this.window, third, buttonHeight, UI_CENTER, UI_SPECIAL_SELECT, UI_SPECIAL_AQUIFER,
          () => getActiveClimate().getWaterColorDark(), () => getActiveClimate().getWaterColor(), 0.5));
-        row1.addElement(new RadioToggle(this.window, buttonWidth, buttonHeight, UI_CENTER, UI_SPECIAL_SELECT, UI_SPECIAL_SURFACE,
+        row1.addElement(new RadioToggle(this.window, third, buttonHeight, UI_CENTER, UI_SPECIAL_SELECT, UI_SPECIAL_SURFACE,
          () => getActiveClimate().getSurfaceOnColor(), () => getActiveClimate().getWaterColor(), 0.5));
-        row1.addElement(new RadioToggle(this.window, buttonWidth, buttonHeight, UI_CENTER, UI_SPECIAL_SELECT, "stone",
-            () => getActiveClimate().getSurfaceOnColor(), () => getActiveClimate().getWaterColor(), 0.5));
+
+
+        row2.addElement(new PageButton(this.window, half, buttonHeight, UI_CENTER, UI_PALLATE_VARIANT, 
+            () => getActiveClimate().getBaseSoilColorBrightnessIdx(
+                loadUI(UI_PALLATE_VARIANT) + 1,
+                [.40, .40, .20],
+                0.5 
+            ), 0.5
+        ));
+
+        row2.addElement(new PageButton(this.window, half, buttonHeight, UI_CENTER, UI_PALLATE_VARIANT, 
+            () => getActiveClimate().getBaseSoilColorBrightnessIdx(
+                loadUI(UI_PALLATE_VARIANT) + 1,
+                [.40, .40, .20],
+                0.5
+            ), 0.5
+        ));
 
         for (let i = 0; i < this.numSoilRows; i++) {
             let row = new Container(this.window, 0, 0);
             container.addElement(row);
-            row.addElement(new RadioToggle(this.window, buttonWidth, buttonHeight, UI_CENTER, UI_SPECIAL_SELECT, 
+            row.addElement(new RadioToggle(this.window, quarter, buttonHeight, UI_CENTER, UI_SPECIAL_SELECT, 
             "", () => getActiveClimate().getBaseSoilColorBrightness(this.pallate[i][0], 0.5),() => getActiveClimate().getBaseSoilColorBrightness(this.pallate[i][0], 1), 0.5));
-            row.addElement(new RadioToggle(this.window, buttonWidth, buttonHeight, UI_CENTER, UI_SPECIAL_SELECT, 
+            row.addElement(new RadioToggle(this.window, quarter, buttonHeight, UI_CENTER, UI_SPECIAL_SELECT, 
             "", () => getActiveClimate().getBaseSoilColorBrightness(this.pallate[i][1], 0.5),() => getActiveClimate().getBaseSoilColorBrightness(this.pallate[i][1], 1), 0.5));
-            row.addElement(new RadioToggle(this.window, buttonWidth, buttonHeight, UI_CENTER, UI_SPECIAL_SELECT, 
+            row.addElement(new RadioToggle(this.window, quarter, buttonHeight, UI_CENTER, UI_SPECIAL_SELECT, 
             "", () => getActiveClimate().getBaseSoilColorBrightness(this.pallate[i][2], 0.5),() => getActiveClimate().getBaseSoilColorBrightness(this.pallate[i][2], 1), 0.5));
-            row.addElement(new RadioToggle(this.window, buttonWidth, buttonHeight, UI_CENTER, UI_SPECIAL_SELECT, 
+            row.addElement(new RadioToggle(this.window, quarter, buttonHeight, UI_CENTER, UI_SPECIAL_SELECT, 
                 "", () => getActiveClimate().getBaseSoilColorBrightness(this.pallate[i][3], 0.5),() => getActiveClimate().getBaseSoilColorBrightness(this.pallate[i][3], 1), 0.5));
         }
 

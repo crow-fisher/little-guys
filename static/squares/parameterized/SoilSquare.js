@@ -29,17 +29,6 @@ export const sandMatricPressureMap = [
     [0.40, 0]
 ]
 
-export function getBaseSoilColor(sand, silt, clay) {
-    let clayColorRgb = getActiveClimate().soilColorClay;
-    let siltColorRgb = getActiveClimate().soilColorSilt;
-    let sandColorRgb = getActiveClimate().soilColorSand;
-    return {
-        r: clay * clayColorRgb.r + silt * siltColorRgb.r + sand * sandColorRgb.r, 
-        g: clay * clayColorRgb.g + silt * siltColorRgb.g + sand * sandColorRgb.g, 
-        b: clay * clayColorRgb.b + silt * siltColorRgb.b + sand * sandColorRgb.b
-    }
-}
-
 // https://docs.google.com/spreadsheets/d/1MWOde96t-ruC5k1PLL4nex0iBjdyXKOkY7g59cnaEj4/edit?gid=0#gid=0
 export function getBasePercolationRate(sand, silt, clay) {
     var clayRate = 2;
@@ -68,6 +57,8 @@ export class SoilSquare extends BaseSquare {
 
         this.lightDarkeningColor = hexToRgb("#3C3A04");
         this.moonlightColor = hexToRgb("#F0F8FF");
+
+        this.colorVariant = loadUI(UI_PALLATE_VARIANT) % 2;
 
         // generic loam
         this.sand = 0.40;
@@ -279,7 +270,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     getColorBase() {
-        var outColor = getBaseSoilColor(this.sand, this.silt, this.clay);
+        var outColor = getActiveClimate().getBaseSoilColor(this.sand, this.silt, this.clay);
         var darkeningColorMult = (this.waterContainment / this.waterContainmentMax);
 
         outColor.r *= (1 - 0.24 * darkeningColorMult);

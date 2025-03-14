@@ -1,10 +1,10 @@
+import { getActiveClimate } from "../../climate/climateManager.js";
 import { COLOR_BLACK, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { rgbToHex } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
-import { getBaseRockColor } from "../../squares/parameterized/RockSquare.js";
-import { getBaseNutrientRate, getBasePercolationRate, getBaseSoilColor } from "../../squares/parameterized/SoilSquare.js";
-import { loadUI, saveUI, UI_SOIL_COMPOSITION, UI_SOIL_VIEWMODE } from "../UIData.js";
+import { getBaseNutrientRate, getBasePercolationRate } from "../../squares/parameterized/SoilSquare.js";
+import { loadUI, saveUI, UI_PALLATE_VARIANT, UI_SOIL_COMPOSITION, UI_SOIL_VIEWMODE } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export const R_COLORS = "🎨";
@@ -65,9 +65,9 @@ export class SoilPickerElement extends WindowElement {
 
     getBaseColor(sand, silt, clay) {
         if (this.key == UI_SOIL_COMPOSITION) {
-            return getBaseSoilColor(sand, silt, clay);
+            return getActiveClimate().getBaseSoilColor((loadUI(UI_PALLATE_VARIANT), sand, silt, clay));
         } else {
-            return getBaseRockColor(sand, silt, clay);
+            return getActiveClimate().getBaseRockColor((loadUI(UI_PALLATE_VARIANT), sand, silt, clay));
         }
     }
 

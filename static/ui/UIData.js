@@ -127,6 +127,8 @@ export const UI_SIMULATION_SIMPLESQUARE = "UI_SIMULATION_SIMPLESQUARE";
 export const UI_SIMULATION_CLOUDS = "UI_SIMULATION_CLOUDS";
 export const UI_DISPLAY_SIZEY = "UI_DISPLAY_SIZEY";
 
+export const UI_PALLATE_VARIANT = "UI_PALLATE_VARIANT";
+
 // put default values in here
 // saved directly
 
@@ -158,7 +160,8 @@ var UI_DATA = {
     UI_TOPBAR_BLOCK: false,
     UI_SM_GODMODE: false,
     UI_CLIMATE_RAINFALL_DENSITY: 10,
-    UI_CLIMATE_WEATHER_TOOL_STRENGTH: 0.01
+    UI_CLIMATE_WEATHER_TOOL_STRENGTH: 0.01,
+    UI_PALLATE_VARIANT: 0
 };
 export function getUI_DATA() {
     return UI_DATA;

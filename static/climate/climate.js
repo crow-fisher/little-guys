@@ -1,11 +1,12 @@
 import { hexToRgb, hsv2rgb, rgb2hsv, rgbToHex } from "../common.js";
-import { UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_HEAVYRAIN, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_SUNNY } from "../ui/UIData.js";
+import { loadUI, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_HEAVYRAIN, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_SUNNY, UI_PALLATE_VARIANT } from "../ui/UIData.js";
 
 export class Climate {
     constructor() {
-        this.soilColorSand = hexToRgb("#c99060");
-        this.soilColorClay = hexToRgb("#773319");
-        this.soilColorSilt = hexToRgb("#33251b");
+        this.soilColors = [
+            [hexToRgb("#c99060"), hexToRgb("#773319"), hexToRgb("#33251b")],
+            [hexToRgb("#93a2c3"), hexToRgb("#3e4e80"), hexToRgb("#31284f")]
+        ]
 
         this.rockColorSand = hexToRgb("#666264");
         this.rockColorClay = hexToRgb("#020204");
@@ -51,7 +52,7 @@ export class Climate {
 
     getUIColorInactiveCustom(frac) {
         if (this.uci[frac] == null) {
-            this.uci[frac] = this.processColor(this.getBaseSoilColor(0, 0.70, 0.10), frac);
+            this.uci[frac] = this.processColor(this.getBaseSoilColor(0, 0, 0.70, 0.10), frac);
             return this.uci[frac];
         }
         return this.uci[frac];
@@ -59,7 +60,7 @@ export class Climate {
 
     getUIColorStoneButton(frac) {
         if (this.uci[frac] == null) {
-            this.uci[frac] = this.processColor(this.getBaseSoilColor(0, 0.70, 0.10), frac);
+            this.uci[frac] = this.processColor(this.getBaseSoilColor(0, 0, 0.70, 0.10), frac);
             return this.uci[frac];
         }
         return this.uci[frac];
@@ -67,7 +68,7 @@ export class Climate {
 
     getUIColorDirtButton(frac) {
         if (this.uci[frac] == null) {
-            this.uci[frac] = this.processColor(this.getBaseSoilColor(0, 0.70, 0.10), frac);
+            this.uci[frac] = this.processColor(this.getBaseSoilColor(0, 0, 0.70, 0.10), frac);
             return this.uci[frac];
         }
         return this.uci[frac];
@@ -80,7 +81,7 @@ export class Climate {
 
     getUIColorActive() {
         if (this.uca == null) {
-            this.uca = this.processColor(this.getBaseSoilColor(0, 0.10, 0.90), 0.6);
+            this.uca = this.processColor(this.getBaseSoilColor(0, 0, 0.10, 0.90), 0.6);
             return this.uca;
         }
         return this.uca;
@@ -88,30 +89,25 @@ export class Climate {
 
     getUIColorTransient() {
         if (this.uct == null) {
-            this.uct = this.processColor(this.getBaseSoilColor(0.40, 0.40, 0.20), 0.6)
+            this.uct = this.processColor(this.getBaseSoilColor(0, 0.40, 0.40, 0.20), 0.6)
             return this.uct;
         }
         return this.uct;
     }
 
-    getBaseSoilColorBrightness(arr, brigthness) {
-        return this.processColor(this.getBaseSoilColor(...arr), brigthness);
+    getBaseSoilColorBrightness(arr, brightness) {
+        return this.processColor(this.getBaseSoilColor(loadUI(UI_PALLATE_VARIANT), ...arr), brightness);
+    }
+    getBaseSoilColorBrightnessIdx(idx, arr, brightness) {
+        return this.processColor(this.getBaseSoilColor(idx, ...arr), brightness);
     }
 
-    getBaseSoilColor(sand, silt, clay) {
+    getBaseSoilColor(idx, sand, silt, clay) {
+        idx = idx % this.soilColors.length;
         return {
-            r: clay * this.soilColorClay.r + silt * this.soilColorSilt.r + sand * this.soilColorSand.r, 
-            g: clay * this.soilColorClay.g + silt * this.soilColorSilt.g + sand * this.soilColorSand.g, 
-            b: clay * this.soilColorClay.b + silt * this.soilColorSilt.b + sand * this.soilColorSand.b
+            r: sand * this.soilColors[idx][0].r + silt * this.soilColors[idx][1].r + clay * this.soilColors[idx][2].r, 
+            g: sand * this.soilColors[idx][0].g + silt * this.soilColors[idx][1].g + clay * this.soilColors[idx][2].g, 
+            b: sand * this.soilColors[idx][0].b + silt * this.soilColors[idx][1].b + clay * this.soilColors[idx][2].b
         }
     }
-
-    getBaseStoneColor(sand, silt, clay) {
-        return {
-            r: clay * this.soilColorClay.r + silt * this.soilColorSilt.r + sand * this.soilColorSand.r, 
-            g: clay * this.soilColorClay.g + silt * this.soilColorSilt.g + sand * this.soilColorSand.g, 
-            b: clay * this.soilColorClay.b + silt * this.soilColorSilt.b + sand * this.soilColorSand.b
-        }
-    }
-    
 }

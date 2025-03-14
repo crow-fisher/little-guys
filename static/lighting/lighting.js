@@ -291,13 +291,13 @@ export class LightSource {
         this.frameLifeSquares = null;
         this.frameTerrainSquares = null;
         this.windSquareLocations = new Map();
-        this.windSquareBrigthnessMults = new Map();
+        this.windSquarebrightnessMults = new Map();
         this.num_tasks = 10;
         this.num_completed = {};
     }
 
     calculateFrameCloudCover() {
-        this.windSquareBrigthnessMults = new Map();
+        this.windSquarebrightnessMults = new Map();
         let rayKeys = Object.keys(this.windSquareLocations);
         if (rayKeys.length < (this.numRays - 1)) {
             this.initWindSquareLocations();
@@ -312,7 +312,7 @@ export class LightSource {
                 outLightColor.b *= (windSquareCloudColor.b / 255) * opacity + (1 - opacity)
             });
             var brightnessDrop = (outLightColor.r + outLightColor.g + outLightColor.b) / (255 * 3);
-            this.windSquareBrigthnessMults[rayTheta] = (brightnessDrop ** 8);
+            this.windSquarebrightnessMults[rayTheta] = (brightnessDrop ** 8);
         });
     }
 
@@ -348,7 +348,7 @@ export class LightSource {
 
     getWindSquareBrightnessFunc(theta) {
         return () => {
-            let ret = this.windSquareBrigthnessMults[theta];
+            let ret = this.windSquarebrightnessMults[theta];
             if (ret == null) {
                 this.calculateFrameCloudCover();
                 return this.getWindSquareBrightnessFunc(theta);
