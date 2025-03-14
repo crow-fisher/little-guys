@@ -4,7 +4,7 @@ import { rgbToHex } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
 import { getBaseNutrientRate, getBasePercolationRate } from "../../squares/parameterized/SoilSquare.js";
-import { loadUI, saveUI, UI_PALLATE_VARIANT, UI_SOIL_COMPOSITION, UI_SOIL_VIEWMODE } from "../UIData.js";
+import { loadUI, saveUI, UI_PALETTE_SOILIDX, UI_SOIL_COMPOSITION, UI_SOIL_VIEWMODE } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export const R_COLORS = "🎨";
@@ -64,10 +64,10 @@ export class SoilPickerElement extends WindowElement {
     }
 
     getBaseColor(sand, silt, clay) {
-        if (this.key == UI_SOIL_COMPOSITION) {
-            return getActiveClimate().getBaseSoilColor((loadUI(UI_PALLATE_VARIANT), sand, silt, clay));
+        if (this.keyFunc == UI_SOIL_COMPOSITION) {
+            return getActiveClimate().getBaseSoilColor((loadUI(UI_PALETTE_SOILIDX), sand, silt, clay));
         } else {
-            return getActiveClimate().getBaseRockColor((loadUI(UI_PALLATE_VARIANT), sand, silt, clay));
+            return getActiveClimate().getBaseRockColor((loadUI(UI_PALETTE_SOILIDX), sand, silt, clay));
         }
     }
 
@@ -116,7 +116,7 @@ export class SoilPickerElement extends WindowElement {
                 this.window.locked = true;
                 this.clickColor = c;
                 this.clickLoc = [posX, posY];
-                saveUI(this.key, this.getSquareComposition(posX, posY))
+                saveUI(this.keyFunc, this.getSquareComposition(posX, posY))
             } else {
                 this.hoverLoc = [posX, posY];
             }
@@ -134,6 +134,6 @@ export class SoilPickerElement extends WindowElement {
     setClick(sand, silt, clay) {
         this.clickLoc = this.derivePosition(sand, silt, clay);
         this.clickColor = this.getBaseColor(sand, silt, clay);
-        saveUI(this.key, [sand, silt, clay]);
+        saveUI(this.keyFunc, [sand, silt, clay]);
     }
 }

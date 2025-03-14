@@ -10,7 +10,7 @@ export class Button extends WindowElement {
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         this.offsetX = offsetX;
-        this.key = func;
+        this.keyFunc = func;
         this.label = label;
         this.lastClick = 0;
         this.colorFunc = colorFunc;
@@ -36,7 +36,7 @@ export class Button extends WindowElement {
             return;
         } 
         if (this.lastClick != getLastMouseDown()) {
-            this.key();
+            this.keyFunc();
             this.lastClick = getLastMouseDown();
         }
     }

@@ -11,10 +11,10 @@ export class RowedRadio extends WindowElement {
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         this.elementOffsetX = elementOffsetX;
-        this.key = key;
+        this.keyFunc = key;
         this.rows = rows;
         this.choices = choices;
-        this.selected = this.choices.indexOf(loadUI(this.key));
+        this.selected = this.choices.indexOf(loadUI(this.keyFunc));
         this.colorActiveFunc = colorActiveFunc;
         this.colorInactiveFunc = colorInactiveFunc;
     }
@@ -63,7 +63,7 @@ export class RowedRadio extends WindowElement {
             var topY = Math.floor(((this.rows * i) / this.choices.length)) * yStep;
             if (posX > leftX && posX < leftX + xStep && posY > topY && posY < topY + yStep) {
                 this.selected = i;
-                saveUI(this.key, this.choices[i]);
+                saveUI(this.keyFunc, this.choices[i]);
             }
         }
     }

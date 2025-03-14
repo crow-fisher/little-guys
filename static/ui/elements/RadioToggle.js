@@ -11,7 +11,7 @@ export class RadioToggle extends WindowElement {
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         this.offsetX = offsetX;
-        this.key = key;
+        this.keyFunc = key;
         this.value = value;
         this.lastClick = 0;
         this.colorActiveFunc = colorActiveFunc;
@@ -23,7 +23,7 @@ export class RadioToggle extends WindowElement {
         MAIN_CONTEXT.font = this.sizeY * this.textSizeMult + "px courier"
         MAIN_CONTEXT.textAlign = 'center';
         MAIN_CONTEXT.textBaseline = 'middle';
-        if (loadUI(this.key) == this.value) {
+        if (loadUI(this.keyFunc) == this.value) {
             MAIN_CONTEXT.fillStyle = this.colorActiveFunc();
         } else {
             MAIN_CONTEXT.fillStyle = this.colorInactiveFunc();
@@ -46,7 +46,7 @@ export class RadioToggle extends WindowElement {
             return;
         } 
         if (this.lastClick != getLastMouseDown()) {
-            saveUI(this.key, this.value);
+            saveUI(this.keyFunc, this.value);
             this.lastClick = getLastMouseDown();
         }
     }

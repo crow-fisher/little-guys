@@ -10,7 +10,7 @@ export class Radio extends WindowElement {
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         this.elementOffsetX = elementOffsetX;
-        this.key = key;
+        this.keyFunc = key;
         this.choices = choices;
         this.colorActiveFunc = colorActiveFunc;
         this.colorInactiveFunc = colorInactiveFunc;
@@ -22,7 +22,7 @@ export class Radio extends WindowElement {
         MAIN_CONTEXT.textBaseline = 'middle';
         let step = this.sizeX / this.choices.length;
         for (let i = 0; i < this.choices.length; i++) {
-            if (i == this.choices.indexOf(loadUI(this.key))) {
+            if (i == this.choices.indexOf(loadUI(this.keyFunc))) {
                 MAIN_CONTEXT.fillStyle = this.colorActiveFunc();
             } else {
                 MAIN_CONTEXT.fillStyle = this.colorInactiveFunc();
@@ -49,7 +49,7 @@ export class Radio extends WindowElement {
         let step = this.sizeX / this.choices.length;
         for (let i = 0; i < this.choices.length; i++) {
             if (posX > curX && posX < curX + step) {
-                saveUI(this.key, this.choices[i]);
+                saveUI(this.keyFunc, this.choices[i]);
             }
             curX += step;
         }

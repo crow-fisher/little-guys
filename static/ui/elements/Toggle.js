@@ -11,7 +11,7 @@ export class Toggle extends WindowElement {
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         this.offsetX = offsetX;
-        this.key = key;
+        this.keyFunc = key;
         this.label = label;
         this.lastClick = 0;
         this.colorActiveFunc = colorActiveFunc;
@@ -22,7 +22,7 @@ export class Toggle extends WindowElement {
         MAIN_CONTEXT.font = this.sizeY * 0.75 + "px courier"
         MAIN_CONTEXT.textAlign = 'center';
         MAIN_CONTEXT.textBaseline = 'middle';
-        if (loadUI(this.key)) {
+        if (loadUI(this.keyFunc)) {
             MAIN_CONTEXT.fillStyle = this.colorActiveFunc();
         } else {
             MAIN_CONTEXT.fillStyle = this.colorInactiveFunc();
@@ -45,7 +45,7 @@ export class Toggle extends WindowElement {
             return;
         } 
         if (this.lastClick != getLastMouseDown()) {
-            saveUI(this.key, !loadUI(this.key));
+            saveUI(this.keyFunc, !loadUI(this.keyFunc));
             this.lastClick = getLastMouseDown();
         }
     }

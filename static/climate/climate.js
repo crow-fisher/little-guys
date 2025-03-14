@@ -1,16 +1,16 @@
 import { hexToRgb, hsv2rgb, rgb2hsv, rgbToHex } from "../common.js";
-import { loadUI, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_HEAVYRAIN, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_SUNNY, UI_PALLATE_VARIANT } from "../ui/UIData.js";
+import { loadUI, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_HEAVYRAIN, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_SUNNY, UI_PALETTE_ROCKIDX, UI_PALETTE_ROCKMODE, UI_PALETTE_SOILIDX } from "../ui/UIData.js";
 
 export class Climate {
     constructor() {
         this.soilColors = [
             [hexToRgb("#c99060"), hexToRgb("#773319"), hexToRgb("#33251b")],
-            [hexToRgb("#93a2c3"), hexToRgb("#3e4e80"), hexToRgb("#31284f")]
+            [hexToRgb("#c99660"), hexToRgb("#693714"), hexToRgb("#382c1f")]
         ]
-
-        this.rockColorSand = hexToRgb("#666264");
-        this.rockColorClay = hexToRgb("#020204");
-        this.rockColorSilt = hexToRgb("#c4bebe");
+        this.rockColors = [
+            [hexToRgb("#666264"), hexToRgb("#020204"), hexToRgb("#c4bebe")],
+            [hexToRgb("#666264"), hexToRgb("#020204"), hexToRgb("#c4bebe")]
+        ]
 
         this.waterColor = hexToRgb("#31539D");
         this.surfaceOnColor = {r: 172, g: 35, b: 226};
@@ -95,11 +95,23 @@ export class Climate {
         return this.uct;
     }
 
+    getPaletteRockColor() {
+        return this.processColor(this.getBaseRockColor(loadUI(UI_PALETTE_ROCKIDX), .4, .4, .2), 1);
+    }
+
+    getPaletteSoilColor() {
+        return this.processColor(this.getBaseSoilColor(loadUI(UI_PALETTE_SOILIDX), .4, .4, .2), 1);
+    }
+
+
     getBaseSoilColorBrightness(arr, brightness) {
-        return this.processColor(this.getBaseSoilColor(loadUI(UI_PALLATE_VARIANT), ...arr), brightness);
+        return this.processColor(this.getBaseSoilColor(loadUI(UI_PALETTE_SOILIDX), ...arr), brightness);
     }
     getBaseSoilColorBrightnessIdx(idx, arr, brightness) {
         return this.processColor(this.getBaseSoilColor(idx, ...arr), brightness);
+    }
+    getBaseRockColorBrightnessIdx(idx, arr, brightness) {
+        return this.processColor(this.getBaseRockColor(idx, ...arr), brightness);
     }
 
     getBaseSoilColor(idx, sand, silt, clay) {
@@ -108,6 +120,14 @@ export class Climate {
             r: sand * this.soilColors[idx][0].r + silt * this.soilColors[idx][1].r + clay * this.soilColors[idx][2].r, 
             g: sand * this.soilColors[idx][0].g + silt * this.soilColors[idx][1].g + clay * this.soilColors[idx][2].g, 
             b: sand * this.soilColors[idx][0].b + silt * this.soilColors[idx][1].b + clay * this.soilColors[idx][2].b
+        }
+    }
+    getBaseRockColor(idx, sand, silt, clay) {
+        idx = idx % this.rockColors.length;
+        return {
+            r: sand * this.rockColors[idx][0].r + silt * this.rockColors[idx][1].r + clay * this.rockColors[idx][2].r, 
+            g: sand * this.rockColors[idx][0].g + silt * this.rockColors[idx][1].g + clay * this.rockColors[idx][2].g, 
+            b: sand * this.rockColors[idx][0].b + silt * this.rockColors[idx][1].b + clay * this.rockColors[idx][2].b
         }
     }
 }
