@@ -23,7 +23,7 @@ export class RockSquare extends SoilSquare {
         super(posX, posY);
         this.proto = "RockSquare";
         this.gravity = 0;
-        this.colorVariant = loadUI(UI_PALETTE_ROCKIDX) % 2;
+        this.colorVariant = loadUI(UI_PALETTE_ROCKIDX) % getActiveClimate().soilColors.length;
         this.clayColorRgb = getActiveClimate().rockColorClay;
         this.siltColorRgb = getActiveClimate().rockColorSilt;
         this.sandColorRgb = getActiveClimate().rockColorSand;

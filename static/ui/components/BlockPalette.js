@@ -37,9 +37,39 @@ export class BlockPalette extends Component {
         let buttonHeight = getBaseUISize() * 3;
         toolRow.addElement(new ToggleFunctional(this.window, half, buttonHeight, UI_CENTER, UI_PALETTE_ROCKMODE, () => loadUI(UI_PALETTE_ROCKMODE) ? "soil" : "rock",
             () => getActiveClimate().getPaletteRockColor(), () => getActiveClimate().getPaletteSoilColor()), 0.5);
-        toolRow.addElement(new PageButton(this.window, half, buttonHeight, UI_CENTER, 
-            () => loadUI(UI_PALETTE_ROCKMODE) ? UI_PALETTE_ROCKIDX : UI_PALETTE_SOILIDX, 
-            () => getActiveClimate().getBaseActiveToolBrightness(loadUI(UI_PALETTE_COMPOSITION), 1)));
+
+
+
+        // palette picker stuff
+
+        let count = 0;
+        for (let i = 0; i < getActiveClimate().soilColors.length; i++) {
+            let key = loadUI(UI_PALETTE_ROCKMODE) ? UI_PALETTE_SELECTEDROCK : UI_PALETTE_SELECTEDSOIL;
+            if (!loadUI(key)[i]) {
+                count += 1;
+            }
+        }
+
+        if (count == 0) {
+            container.addElement(new Text(this.window, sizeX, buttonHeight, "please add a palette"));
+            return;
+        }
+
+        for (let i = 0; i < getActiveClimate().soilColors.length; i++) {
+            toolRow.addElement(new Button(this.window, half / count, buttonHeight, 0, 
+                () => {
+                    let key = loadUI(UI_PALETTE_ROCKMODE) ? UI_PALETTE_ROCKIDX : UI_PALETTE_SOILIDX;
+                    saveUI(key, i)
+                },
+                "", () => getActiveClimate().getBaseActiveToolBrightnessIdx(i, [.4, .4, .2], 1)));
+        }
+
+        // toolRow.addElement(new PageButton(this.window, half, buttonHeight, UI_CENTER, 
+        //     () => loadUI(UI_PALETTE_ROCKMODE) ? UI_PALETTE_ROCKIDX : UI_PALETTE_SOILIDX, 
+        //     () => getActiveClimate().getBaseActiveToolBrightness(loadUI(UI_PALETTE_COMPOSITION), 1)));
+
+        container.addElement(new Text(this.window, sizeX / 8, getBaseUISize() * 0.5, 0, ""));
+
 
         for (let i = 0; i < this.numSoilRows; i++) {
             let row = new Container(this.window, 0, 0);

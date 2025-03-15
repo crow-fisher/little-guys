@@ -58,7 +58,7 @@ export class SoilSquare extends BaseSquare {
         this.lightDarkeningColor = hexToRgb("#3C3A04");
         this.moonlightColor = hexToRgb("#F0F8FF");
 
-        this.colorVariant = loadUI(UI_PALETTE_SOILIDX) % 2;
+        this.colorVariant = loadUI(UI_PALETTE_SOILIDX) % getActiveClimate().soilColors.length;
 
         // generic loam
         this.sand = 0.40;

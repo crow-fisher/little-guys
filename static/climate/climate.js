@@ -5,11 +5,15 @@ export class Climate {
     constructor() {
         this.soilColors = [
             [hexToRgb("#c99060"), hexToRgb("#773319"), hexToRgb("#33251b")],
-            [hexToRgb("#c99660"), hexToRgb("#693714"), hexToRgb("#382c1f")]
+            [hexToRgb("#c99660"), hexToRgb("#693714"), hexToRgb("#382c1f")],
+            [hexToRgb("#c98360"), hexToRgb("#692b14"), hexToRgb("#38281f")]
+
         ]
         this.rockColors = [
             [hexToRgb("#666264"), hexToRgb("#020204"), hexToRgb("#c4bebe")],
-            [hexToRgb("#8b5759"), hexToRgb("#432e26"), hexToRgb("#ce9a8b")]
+            [hexToRgb("#8b5759"), hexToRgb("#432e26"), hexToRgb("#ce9a8b")],
+            [hexToRgb("#4e6160"), hexToRgb("#422643"), hexToRgb("#a3b0a0")],
+            
         ]
 
         this.waterColor = hexToRgb("#31539D");
