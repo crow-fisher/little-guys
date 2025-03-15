@@ -11,7 +11,7 @@ export class PageButton extends WindowElement {
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         this.offsetX = offsetX;
-        this.keyFunc = keyFunc;
+        this.key = keyFunc;
         this.colorFunc = colorFunc;
         this.textSizeMult = textSizeMult; 
         this.lastClick = 0;
@@ -32,7 +32,7 @@ export class PageButton extends WindowElement {
             return;
         } 
         if (this.lastClick != getLastMouseDown()) {
-            saveUI(this.keyFunc(), loadUI(this.keyFunc()) + 1);
+            saveUI(this.key(), loadUI(this.key()) + 1);
             this.lastClick = getLastMouseDown();
         }
     }

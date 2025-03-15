@@ -3,8 +3,7 @@ import { COLOR_BLACK, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { rgbToHex } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
-import { getBaseNutrientRate, getBasePercolationRate } from "../../squares/parameterized/SoilSquare.js";
-import { loadUI, saveUI, UI_PALETTE_SOILIDX, UI_SOIL_COMPOSITION, UI_SOIL_VIEWMODE } from "../UIData.js";
+import { loadUI, saveUI, UI_PALETTE_ROCKIDX, UI_PALETTE_ROCKMODE, UI_PALETTE_SOILIDX } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export const R_COLORS = "🎨";
@@ -19,11 +18,18 @@ export class SoilPickerElement extends WindowElement {
         this.clickColor = {r: 100, g: 100, b: 100};
         this.hoverLoc = null;
         this.clickLoc = null;
+
+        this.colorCache = new Map();
+        this.colorCache[true] = new Map(); // rockmode
+        this.colorCache[false] = new Map();
+
+        this.blockSize = 8;
+
     }
 
     render(startX, startY) {
-        for (let i = 0; i < this.pickerSize; i++) {
-            for (let j = 0; j < this.pickerSize; j++) {
+        for (let i = 0; i < this.pickerSize; i += this.blockSize) {
+            for (let j = 0; j < this.pickerSize; j += this.blockSize) {
                 this.renderSingleSquare(startX, startY, i, j);
             }
         }
@@ -64,46 +70,39 @@ export class SoilPickerElement extends WindowElement {
     }
 
     getBaseColor(sand, silt, clay) {
-        if (this.keyFunc == UI_SOIL_COMPOSITION) {
-            return getActiveClimate().getBaseSoilColor((loadUI(UI_PALETTE_SOILIDX), sand, silt, clay));
-        } else {
-            return getActiveClimate().getBaseRockColor((loadUI(UI_PALETTE_SOILIDX), sand, silt, clay));
-        }
+        return getActiveClimate().getBaseColorActiveToolActivePalette([sand, silt, clay]);
     }
 
     getSquareColor(i, j) {
-        var arr = this.getSquareComposition(i, j);
-        if (arr != null) {
-            let val, val_max, mult;
-            switch (loadUI(UI_SOIL_VIEWMODE)) {
-                case R_COLORS:
-                    return this.getBaseColor(arr[0], arr[1], arr[2]);
-                case R_PERCOLATION_RATE:
-                    val = getBasePercolationRate(arr[0], arr[1], arr[2]);
-                    val_max = getBasePercolationRate(0, 0, 1);
-                    mult = (val / val_max) ** 0.4;
-                    break;
-                case R_NUTRIENTS:
-                default:
-                    val = getBaseNutrientRate(arr[0], arr[1], arr[2]);
-                    val_max = getBaseNutrientRate(0, 0, 1);
-                    mult = val / val_max;
-                    break;
-            }
-            return {
-                r: Math.floor(mult * 255),
-                g: Math.floor(mult * 255),
-                b: Math.floor(mult * 255)
-            }
-
+        let cacheMap = this.colorCache[loadUI(UI_PALETTE_ROCKMODE)];
+        let cacheMapIdx = loadUI(loadUI(UI_PALETTE_ROCKMODE) ? UI_PALETTE_ROCKIDX : UI_PALETTE_SOILIDX);
+        if (cacheMap[cacheMapIdx] == null) {
+            cacheMap[cacheMapIdx] = new Map();
         }
+
+        if (cacheMap[cacheMapIdx][i] == null) {
+            cacheMap[cacheMapIdx][i] = new Map();
+        }
+        let cached = cacheMap[cacheMapIdx][i][j];
+        if (cached != null) {
+            return cached;
+        }
+        var arr = this.getSquareComposition(i, j);
+        if (arr != null)
+            cacheMap[cacheMapIdx][i][j] = this.getBaseColor(arr[0], arr[1], arr[2]);
+            return cacheMap[cacheMapIdx][i][j]
     }
 
     renderSingleSquare(startX, startY, i, j) {
         var colorRGB = this.getSquareColor(i, j);
         if (colorRGB != null) {
             MAIN_CONTEXT.fillStyle = rgbToHex(colorRGB.r, colorRGB.g, colorRGB.b);
-            MAIN_CONTEXT.fillRect(startX + i, startY + j, 1, 1);
+ 
+            MAIN_CONTEXT.beginPath();
+            MAIN_CONTEXT.arc(startX + i, startY + j, this.blockSize / 1.2, 0, 2 * Math.PI, false);
+            MAIN_CONTEXT.fill();
+            
+            // MAIN_CONTEXT.fillRect(startX + i, startY + j, this.blockSize + 1, this.blockSize + 1);
         }
     }
 
@@ -116,7 +115,7 @@ export class SoilPickerElement extends WindowElement {
                 this.window.locked = true;
                 this.clickColor = c;
                 this.clickLoc = [posX, posY];
-                saveUI(this.keyFunc, this.getSquareComposition(posX, posY))
+                saveUI(this.key, this.getSquareComposition(posX, posY))
             } else {
                 this.hoverLoc = [posX, posY];
             }
@@ -134,6 +133,6 @@ export class SoilPickerElement extends WindowElement {
     setClick(sand, silt, clay) {
         this.clickLoc = this.derivePosition(sand, silt, clay);
         this.clickColor = this.getBaseColor(sand, silt, clay);
-        saveUI(this.keyFunc, [sand, silt, clay]);
+        saveUI(this.key, [sand, silt, clay]);
     }
 }

@@ -4,7 +4,7 @@ import { hexToRgb } from "../../common.js";
 import { getCurTimeScale, timeScaleFactor } from "../../climate/time.js";
 import { getPressure, getWindSquareAbove } from "../../climate/wind.js";
 import { addWaterSaturationPascals, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor } from "../../climate/temperatureHumidity.js";
-import { loadUI, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER } from "../../ui/UIData.js";
+import { loadUI, UI_PALETTE_COMPOSITION, UI_PALETTE_SOILIDX, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER } from "../../ui/UIData.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { addSquareByName } from "../../manipulation.js";
 
@@ -77,7 +77,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     setVariant() {
-        let arr = loadUI(UI_SOIL_COMPOSITION);
+        let arr = loadUI(UI_PALETTE_COMPOSITION);
         this.sand = arr[0];
         this.silt = arr[1];
         this.clay = arr[2];
@@ -270,7 +270,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     getColorBase() {
-        var outColor = getActiveClimate().getBaseSoilColor(this.sand, this.silt, this.clay);
+        var outColor = getActiveClimate().getBaseSoilColor(this.colorVariant, this.sand, this.silt, this.clay);
         var darkeningColorMult = (this.waterContainment / this.waterContainmentMax);
 
         outColor.r *= (1 - 0.24 * darkeningColorMult);

@@ -26,7 +26,7 @@ import { RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
 import { getCurDay, getCurrentLightColorTemperature, timeScaleFactor } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasSquaresY, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
-import { loadUI, UI_SM_SPECIAL, UI_SPECIAL_SELECT, UI_SPECIAL_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE } from "../ui/UIData.js";
+import { loadUI, UI_SM_SPECIAL, UI_PALETTE_SELECT, UI_SPECIAL_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE } from "../ui/UIData.js";
 
 export class BaseSquare {
     constructor(posX, posY) {
@@ -231,7 +231,7 @@ export class BaseSquare {
         }
         else if (selectedViewMode.startsWith("organism")) {
             this.renderAsGrey();
-        } else if (selectedViewMode == UI_VIEWMODE_SURFACE || (loadUI(UI_SM_SPECIAL) && loadUI(UI_SPECIAL_SELECT) == UI_SPECIAL_SURFACE)) {
+        } else if (selectedViewMode == UI_VIEWMODE_SURFACE || (loadUI(UI_SM_SPECIAL) && loadUI(UI_PALETTE_SELECT) == UI_SPECIAL_SURFACE)) {
             this.renderWithVariedColors();
             this.renderSurface();
         }

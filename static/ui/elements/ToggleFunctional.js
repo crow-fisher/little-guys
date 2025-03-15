@@ -5,14 +5,14 @@ import { getLastMouseDown, isLeftMouseClicked } from "../../mouse.js";
 import { loadUI, saveUI, UI_CENTER } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
-export class Toggle extends WindowElement {
-    constructor(window, sizeX, sizeY, offsetX, key, label, colorInactiveFunc, colorActiveFunc) {
+export class ToggleFunctional extends WindowElement {
+    constructor(window, sizeX, sizeY, offsetX, key, labelFunc, colorInactiveFunc, colorActiveFunc) {
         super(window, sizeX, sizeY);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         this.offsetX = offsetX;
         this.key = key;
-        this.label = label;
+        this.labelFunc = labelFunc;
         this.lastClick = 0;
         this.colorActiveFunc = colorActiveFunc;
         this.colorInactiveFunc = colorInactiveFunc;
@@ -31,10 +31,10 @@ export class Toggle extends WindowElement {
 
         if (this.offsetX == UI_CENTER) {
             MAIN_CONTEXT.textAlign = 'center';
-            MAIN_CONTEXT.strokeText(this.label, startX + this.sizeX / 2, startY + (this.sizeY / 2))
+            MAIN_CONTEXT.strokeText(this.labelFunc(), startX + this.sizeX / 2, startY + (this.sizeY / 2))
         } else {
             MAIN_CONTEXT.textAlign = 'left';
-            MAIN_CONTEXT.strokeText(this.label, startX + this.offsetX, startY + (this.sizeY / 2))
+            MAIN_CONTEXT.strokeText(this.labelFunc(), startX + this.offsetX, startY + (this.sizeY / 2))
         }
         return [this.sizeX, this.sizeY];
     }

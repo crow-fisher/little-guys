@@ -103,6 +103,22 @@ export class Climate {
         return this.processColor(this.getBaseSoilColor(loadUI(UI_PALETTE_SOILIDX), .4, .4, .2), 1);
     }
 
+    getBaseColorActiveToolActivePalette(arr) {
+        if (loadUI(UI_PALETTE_ROCKMODE)) {
+            return this.getBaseRockColor(loadUI(UI_PALETTE_ROCKIDX), ...arr);
+        } else {
+            return this.getBaseSoilColor(loadUI(UI_PALETTE_SOILIDX), ...arr);
+        }
+    }
+
+    getBaseActiveToolBrightnessIdx(idx, arr, brightness) {
+        if (loadUI(UI_PALETTE_ROCKMODE)) {
+            return this.processColor(this.getBaseRockColor(idx, ...arr), brightness);
+        } else {
+            return this.processColor(this.getBaseSoilColor(idx, ...arr), brightness);
+        }
+    }
+
     getBaseActiveToolBrightness(arr, brightness) {
         if (loadUI(UI_PALETTE_ROCKMODE)) {
             return this.processColor(this.getBaseRockColor(loadUI(UI_PALETTE_ROCKIDX), ...arr), brightness);
