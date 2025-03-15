@@ -87,7 +87,7 @@ export class BlockPalette extends Component {
         sizeContainer.addElement(new Slider(this.window, UI_BB_SIZE, sizeX / 2, getBaseUISize() * 3, 2, 14, () => getActiveClimate().getUIColorTransient()));
 
         let strengthContainer = new Container(this.window, padding, 1);
-        strengthSizeContainer.addElement(strengthContainer);
+        strengthSizeContainer.addElement(strengthContainer);    
 
         strengthContainer.addElement(new Text(this.window, sizeX / 2, getBaseUISize() * 1.5, UI_CENTER, "strength"));
         strengthContainer.addElement(new Slider(this.window, UI_BB_STRENGTH, sizeX / 2, getBaseUISize() * 3, 0, 1,  () => getActiveClimate().getUIColorTransient()));

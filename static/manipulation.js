@@ -74,7 +74,7 @@ export function addActivePaletteToolSquare(posX, posY) {
     if (loadUI(UI_PALETTE_ROCKMODE)) {
         addSquareOverride(new RockSquare(posX, posY));
     } else {
-        addSquare(new SoilSquare(posX, posY));
+        addSquareOverride(new SoilSquare(posX, posY));
     }
 }
     
