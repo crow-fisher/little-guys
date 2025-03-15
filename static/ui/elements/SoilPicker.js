@@ -3,7 +3,7 @@ import { COLOR_BLACK, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { rgbToHex } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
-import { loadUI, saveUI, UI_PALETTE_ROCKIDX, UI_PALETTE_ROCKMODE, UI_PALETTE_SOILIDX } from "../UIData.js";
+import { loadUI, saveUI, UI_PALETTE_COMPOSITION, UI_PALETTE_ROCKIDX, UI_PALETTE_ROCKMODE, UI_PALETTE_SOILIDX } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export const R_COLORS = "🎨";
@@ -17,7 +17,6 @@ export class SoilPickerElement extends WindowElement {
         this.hoverColor = {r: 100, g: 100, b: 100};
         this.clickColor = {r: 100, g: 100, b: 100};
         this.hoverLoc = null;
-        this.clickLoc = null;
 
         this.colorCache = new Map();
         this.colorCache[true] = new Map(); // rockmode
@@ -28,17 +27,16 @@ export class SoilPickerElement extends WindowElement {
     }
 
     render(startX, startY) {
-        for (let i = 0; i < this.pickerSize; i += this.blockSize) {
-            for (let j = 0; j < this.pickerSize; j += this.blockSize) {
+        for (let i = 0; i <= this.pickerSize; i += this.blockSize) {
+            for (let j = 0; j <= this.pickerSize; j += this.blockSize) {
                 let rowXOffset = ((j / this.blockSize) % 2) * (this.blockSize / 2)
                 this.renderSingleSquare(startX, startY, i + rowXOffset, j);
             }
         }
 
-        if (this.clickLoc != null) {
-            MAIN_CONTEXT.fillStyle = COLOR_VERY_FUCKING_RED;
-            MAIN_CONTEXT.fillRect(startX + this.clickLoc[0] - 2, startY + this.clickLoc[1] - 2, 4, 4);
-        }
+        let loc = this.derivePosition(...loadUI(UI_PALETTE_COMPOSITION));
+        MAIN_CONTEXT.fillStyle = "#FFFFFF";
+        MAIN_CONTEXT.fillRect(startX + loc[0] - 2, startY + loc[1] - 2, 4, 4);
 
         if (this.hoverLoc != null) {
             MAIN_CONTEXT.fillStyle = COLOR_BLACK;
@@ -60,7 +58,7 @@ export class SoilPickerElement extends WindowElement {
         var clayPercent = 1 - yp;
         
         var xp50 = (0.5 - xp);
-        if (2 * (Math.abs(xp50)) > 1 - clayPercent) {
+        if (2 * (Math.abs(xp50)) >= 1 - clayPercent) {
             return;
         }
 
@@ -96,11 +94,11 @@ export class SoilPickerElement extends WindowElement {
 
     renderSingleSquare(startX, startY, i, j) {
         var colorRGB = this.getSquareColor(i, j);
+        let radius = this.blockSize / (1.2);
         if (colorRGB != null) {
             MAIN_CONTEXT.fillStyle = rgbToHex(colorRGB.r, colorRGB.g, colorRGB.b);
- 
             MAIN_CONTEXT.beginPath();
-            MAIN_CONTEXT.arc(startX + i, startY + j, this.blockSize / 1.2, 0, 2 * Math.PI, false);
+            MAIN_CONTEXT.arc(startX + i - (radius), startY + j - (radius), radius, 0, 2 * Math.PI, false);
             MAIN_CONTEXT.fill();
             
             // MAIN_CONTEXT.fillRect(startX + i, startY + j, this.blockSize + 1, this.blockSize + 1);
@@ -132,8 +130,6 @@ export class SoilPickerElement extends WindowElement {
         this.hoverColor = this.getBaseColor(sand, silt, clay);
     }
     setClick(sand, silt, clay) {
-        this.clickLoc = this.derivePosition(sand, silt, clay);
-        this.clickColor = this.getBaseColor(sand, silt, clay);
         saveUI(this.key, [sand, silt, clay]);
     }
 }

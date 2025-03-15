@@ -4,15 +4,17 @@ import { loadUI, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_HEAVYRAIN, UI_CLIM
 export class Climate {
     constructor() {
         this.soilColors = [
-            [hexToRgb("#c99060"), hexToRgb("#773319"), hexToRgb("#33251b")],
-            [hexToRgb("#c99660"), hexToRgb("#693714"), hexToRgb("#382c1f")],
-            [hexToRgb("#c98360"), hexToRgb("#692b14"), hexToRgb("#38281f")]
+            [hexToRgb("#c99060"), hexToRgb("#33251b"), hexToRgb("#773319")],
+            [hexToRgb("#c99660"), hexToRgb("#382c1f"), hexToRgb("#693714")],
+            [hexToRgb("#c98360"), hexToRgb("#38281f"), hexToRgb("#692b14")],
+            [hexToRgb("#c98360"), hexToRgb("#38281f"), hexToRgb("#692b14")]
 
         ]
         this.rockColors = [
-            [hexToRgb("#666264"), hexToRgb("#020204"), hexToRgb("#c4bebe")],
-            [hexToRgb("#8b5759"), hexToRgb("#432e26"), hexToRgb("#ce9a8b")],
-            [hexToRgb("#4e6160"), hexToRgb("#422643"), hexToRgb("#a3b0a0")],
+            [hexToRgb("#a8927b"), hexToRgb("#8c9a9b"), hexToRgb("#a0b9c1")],
+            [hexToRgb("#7e8097"), hexToRgb("#4d5469"), hexToRgb("#141114")],
+            [hexToRgb("#626665"), hexToRgb("#534938"), hexToRgb("#756d5f")],
+            [hexToRgb("#a6bdcb"), hexToRgb("#5c5a6a"), hexToRgb("#a3b4c5")],
             
         ]
 
@@ -151,9 +153,9 @@ export class Climate {
     getBaseSoilColor(idx, sand, silt, clay) {
         idx = idx % this.soilColors.length;
         return {
-            r: sand * this.soilColors[idx][0].r + silt * this.soilColors[idx][1].r + clay * this.soilColors[idx][2].r, 
-            g: sand * this.soilColors[idx][0].g + silt * this.soilColors[idx][1].g + clay * this.soilColors[idx][2].g, 
-            b: sand * this.soilColors[idx][0].b + silt * this.soilColors[idx][1].b + clay * this.soilColors[idx][2].b
+            r: this.soilColors[idx][0].r * sand + this.soilColors[idx][1].r * silt + this.soilColors[idx][2].r * clay, 
+            g: this.soilColors[idx][0].g * sand + this.soilColors[idx][1].g * silt + this.soilColors[idx][2].g * clay, 
+            b: this.soilColors[idx][0].b * sand + this.soilColors[idx][1].b * silt + this.soilColors[idx][2].b * clay
         }
     }
     getBaseRockColor(idx, sand, silt, clay) {
