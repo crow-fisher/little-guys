@@ -44,17 +44,10 @@ export class BlockPalette extends Component {
         for (let i = 0; i < this.numSoilRows; i++) {
             let row = new Container(this.window, 0, 0);
             container.addElement(row);
-            row.addElement(new Button(
-                this.window, quarter, buttonHeight, 0, () => saveUI(UI_PALETTE_COMPOSITION, this.palette[i][0]), 
-            "", () => getActiveClimate().getBaseActiveToolBrightness(this.palette[i][0], 1),() => getActiveClimate().getBaseActiveToolBrightness(this.palette[i][0], 1), 1));
-            row.addElement(new Button(
-                this.window, quarter, buttonHeight, 0, () => saveUI(UI_PALETTE_COMPOSITION, this.palette[i][1]), 
-            "", () => getActiveClimate().getBaseActiveToolBrightness(this.palette[i][1], 1),() => getActiveClimate().getBaseActiveToolBrightness(this.palette[i][1], 1), 1));
-            row.addElement(new Button(
-                this.window, quarter, buttonHeight, 0, () => saveUI(UI_PALETTE_COMPOSITION, this.palette[i][2]), 
-            "", () => getActiveClimate().getBaseActiveToolBrightness(this.palette[i][2], 1),() => getActiveClimate().getBaseActiveToolBrightness(this.palette[i][2], 1), 1));
-            row.addElement(new Button(this.window, quarter, buttonHeight, 0, () => saveUI(UI_PALETTE_COMPOSITION, this.palette[i][3]), 
-                "", () => getActiveClimate().getBaseActiveToolBrightness(this.palette[i][3], 0.5),() => getActiveClimate().getBaseActiveToolBrightness(this.palette[i][3], 1), 1));
+            for (let j = 0; j < this.palette[i].length; j++) {
+                row.addElement(new Button(this.window, sizeX / this.palette[i].length, buttonHeight, 0, () => saveUI(UI_PALETTE_COMPOSITION, this.palette[i][j]), 
+                "", () => getActiveClimate().getBaseActiveToolBrightness(this.palette[i][j], 1)))
+            }
         }
 
         
@@ -76,9 +69,14 @@ export class BlockPalette extends Component {
                 },
                 "", () => getActiveClimate().getBaseActiveToolBrightnessIdx(i, [.4, .4, .2], 1)));
         }
+        palletePickerConditionalContainer.addElement(new Text(this.window, sizeX, getBaseUISize() * 2, 0, ""));
+        let palletePickerRow = new Container(this.window, 0, 0);
+        palletePickerConditionalContainer.addElement(palletePickerRow);
 
+        palletePickerRow.addElement(new Text(this.window, sizeX / 8, getBaseUISize() * 2, 0, ""));
+        palletePickerRow.addElement(new SoilPickerElement(this.window, UI_PALETTE_COMPOSITION, sizeX * 0.75, sizeX))
+        palletePickerRow.addElement(new Text(this.window, sizeX / 8, getBaseUISize() * 2, 0, ""));
 
-        palletePickerConditionalContainer.addElement(new SoilPickerElement(this.window, UI_PALETTE_COMPOSITION, sizeX, sizeX))
         let strengthSizeContainer = new Container(this.window, padding, 0);
         container.addElement(strengthSizeContainer);
 

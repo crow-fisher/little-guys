@@ -23,14 +23,15 @@ export class SoilPickerElement extends WindowElement {
         this.colorCache[true] = new Map(); // rockmode
         this.colorCache[false] = new Map();
 
-        this.blockSize = 8;
+        this.blockSize = 7.999;
 
     }
 
     render(startX, startY) {
         for (let i = 0; i < this.pickerSize; i += this.blockSize) {
             for (let j = 0; j < this.pickerSize; j += this.blockSize) {
-                this.renderSingleSquare(startX, startY, i, j);
+                let rowXOffset = ((j / this.blockSize) % 2) * (this.blockSize / 2)
+                this.renderSingleSquare(startX, startY, i + rowXOffset, j);
             }
         }
 
