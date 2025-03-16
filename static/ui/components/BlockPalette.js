@@ -13,7 +13,7 @@ import { TextBackground } from "../elements/TextBackground.js";
 import { Toggle } from "../elements/Toggle.js";
 import { ToggleFunctional } from "../elements/ToggleFunctional.js";
 import { ToggleFunctionalText } from "../elements/ToggleFunctionalText.js";
-import { loadUI, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CENTER, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKMODE, UI_PALETTE_ROCKIDX, UI_PALETTE_COMPOSITION, saveUI, UI_PALETTE_SHOWPICKER, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE } from "../UIData.js";
+import { loadUI, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CENTER, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKMODE, UI_PALETTE_ROCKIDX, UI_PALETTE_COMPOSITION, saveUI, UI_PALETTE_SHOWPICKER, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, addUIFunctionMap, UI_PALETTE_SOILROCK } from "../UIData.js";
 
 export class BlockPalette extends Component {
     constructor(posX, posY, padding, dir, key) {
@@ -105,11 +105,11 @@ export class BlockPalette extends Component {
         let waterRow = new Container(this.window, 0, 0);
         container.addElement(waterRow);
         waterRow.addElement(new RadioToggleFunctionalText(this.window, third, buttonHeight, UI_CENTER, UI_PALETTE_SELECT, UI_PALETTE_WATER
-        , () => ((loadUI(UI_PALETTE_SELECT) == UI_PALETTE_WATER) ? "▶ " : "") +"water", () => getActiveClimate().getWaterColor(), () => getActiveClimate().getWaterColor(), 0.5));
+        , () => ((loadUI(UI_PALETTE_SELECT) == UI_PALETTE_WATER) ? "▶ " : "") +"water", () => getActiveClimate().getWaterColor(), () => getActiveClimate().getWaterColor(), 0.4));
         waterRow.addElement(new RadioToggleFunctionalText(this.window, third, buttonHeight, UI_CENTER, UI_PALETTE_SELECT, UI_PALETTE_AQUIFER,
-        () => ((loadUI (UI_PALETTE_SELECT) == UI_PALETTE_AQUIFER) ? "▶ " : "") +"aquifer", () => getActiveClimate().getWaterColorDark(), () => getActiveClimate().getWaterColor(), 0.5));
+        () => ((loadUI (UI_PALETTE_SELECT) == UI_PALETTE_AQUIFER) ? "▶ " : "") +"aquifer", () => getActiveClimate().getWaterColorDark(), () => getActiveClimate().getWaterColor(), 0.4));
         waterRow.addElement(new RadioToggleFunctionalText(this.window, third, buttonHeight, UI_CENTER, UI_PALETTE_SELECT, UI_PALETTE_SURFACE,
-         () => ((loadUI(UI_PALETTE_SELECT) == UI_PALETTE_SURFACE) ? "▶ " : "") +"surface", () => getActiveClimate().getSurfaceOnColor(), () => getActiveClimate().getWaterColor(), 0.5));
+         () => ((loadUI(UI_PALETTE_SELECT) == UI_PALETTE_SURFACE) ? "▶ " : "") +"surface", () => getActiveClimate().getSurfaceOnColor(), () => getActiveClimate().getSufaceOffColor(), 0.4));
     }
 
     initPallate() {
@@ -125,3 +125,11 @@ export class BlockPalette extends Component {
         saveUI(UI_PALETTE_COMPOSITION, [sand, silt, clay]);
     }
 }
+
+addUIFunctionMap(UI_PALETTE_COMPOSITION, () => saveUI(UI_PALETTE_SELECT, UI_PALETTE_SOILROCK));
+addUIFunctionMap(UI_PALETTE_EYEDROPPER, () => saveUI(UI_PALETTE_SELECT, UI_PALETTE_SOILROCK));
+addUIFunctionMap(UI_PALETTE_MIXER, () => saveUI(UI_PALETTE_SELECT, UI_PALETTE_SOILROCK));
+addUIFunctionMap(UI_PALETTE_SOILROCK, () => saveUI(UI_PALETTE_SELECT, UI_PALETTE_SOILROCK));
+addUIFunctionMap(UI_PALETTE_ROCKMODE, () => saveUI(UI_PALETTE_SELECT, UI_PALETTE_SOILROCK));
+addUIFunctionMap(UI_PALETTE_SOILIDX, () => saveUI(UI_PALETTE_SELECT, UI_PALETTE_SOILROCK));
+addUIFunctionMap(UI_PALETTE_ROCKIDX, () => saveUI(UI_PALETTE_SELECT, UI_PALETTE_SOILROCK));

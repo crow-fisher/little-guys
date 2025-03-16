@@ -19,8 +19,8 @@ export class Climate {
         ]
 
         this.waterColor = hexToRgb("#31539D");
-        this.surfaceOnColor = {r: 172, g: 35, b: 226};
-        this.surfaceOffColor = {r: 30, g: 172, b: 58};
+        this.surfaceOnColor = hexToRgb("#50545e");
+        this.surfaceOffColor = hexToRgb("#c3cde6");
 
         this.weatherPatternMap = new Map();
         this.weatherPatternMap.set(UI_CLIMATE_WEATHER_SUNNY, 60);
