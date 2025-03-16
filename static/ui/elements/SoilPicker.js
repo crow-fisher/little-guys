@@ -22,7 +22,7 @@ export class SoilPickerElement extends WindowElement {
         this.colorCache[true] = new Map(); // rockmode
         this.colorCache[false] = new Map();
 
-        this.blockSize = 7.999;
+        this.blockSize = 5;
 
     }
 
@@ -98,9 +98,9 @@ export class SoilPickerElement extends WindowElement {
             MAIN_CONTEXT.fillStyle = rgbToHex(colorRGB.r, colorRGB.g, colorRGB.b);
             MAIN_CONTEXT.beginPath();
             let scale = this.blockSize * 1.2;
-            let a1 = [-0.866 * scale, -0.5 * scale]
-            let a2 = [0.866 * scale, -0.5 * scale]
-            let a3 = [0.0 * scale, 1.0 * scale]
+            let a1 = [-0.866 * scale, 0.5 * scale]
+            let a2 = [0.866 * scale, 0.5 * scale]
+            let a3 = [0.0 * scale, -1.0 * scale]
 
             MAIN_CONTEXT.moveTo(startX + i + a1[0], startY + j + a1[1]);
             MAIN_CONTEXT.lineTo(startX + i + a2[0], startY + j + a2[1]);
