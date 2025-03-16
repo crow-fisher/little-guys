@@ -75,6 +75,7 @@ export function eyedropperBlockClick(posX, posY) {
         blockPalette.setClick(sq.sand, sq.silt, sq.clay);
     });
     saveUI(UI_PALETTE_EYEDROPPER, false);
+    setTargetMixIdx(getCurMixIdx() + 4);
 }
 
 export function mixerBlockClick(posX, posY) {
