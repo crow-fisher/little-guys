@@ -22,7 +22,7 @@ export class SoilPickerElement extends WindowElement {
         this.colorCache[true] = new Map(); // rockmode
         this.colorCache[false] = new Map();
 
-        this.blockSize = 5;
+        this.blockSize = 4.99999;
 
     }
 
