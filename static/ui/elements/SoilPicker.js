@@ -94,11 +94,18 @@ export class SoilPickerElement extends WindowElement {
 
     renderSingleSquare(startX, startY, i, j) {
         var colorRGB = this.getSquareColor(i, j);
-        let radius = this.blockSize / (1.2);
         if (colorRGB != null) {
             MAIN_CONTEXT.fillStyle = rgbToHex(colorRGB.r, colorRGB.g, colorRGB.b);
             MAIN_CONTEXT.beginPath();
-            MAIN_CONTEXT.arc(startX + i - (radius), startY + j - (radius), radius, 0, 2 * Math.PI, false);
+            let scale = this.blockSize * 1.2;
+            let a1 = [-0.866 * scale, -0.5 * scale]
+            let a2 = [0.866 * scale, -0.5 * scale]
+            let a3 = [0.0 * scale, 1.0 * scale]
+
+            MAIN_CONTEXT.moveTo(startX + i + a1[0], startY + j + a1[1]);
+            MAIN_CONTEXT.lineTo(startX + i + a2[0], startY + j + a2[1]);
+            MAIN_CONTEXT.lineTo(startX + i + a3[0], startY + j + a3[1]);
+            MAIN_CONTEXT.lineTo(startX + i + a1[0], startY + j + a1[1]);
             MAIN_CONTEXT.fill();
             
             // MAIN_CONTEXT.fillRect(startX + i, startY + j, this.blockSize + 1, this.blockSize + 1);
