@@ -5,8 +5,8 @@ import { getLastMouseDown, isLeftMouseClicked } from "../../mouse.js";
 import { loadUI, saveUI, UI_CENTER } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
-export class ToggleFunctional extends WindowElement {
-    constructor(window, sizeX, sizeY, offsetX, key, labelFunc, colorInactiveFunc, colorActiveFunc, textSize = 0.75) {
+export class ToggleFunctionalText extends WindowElement {
+    constructor(window, sizeX, sizeY, offsetX, key, labelFunc, colorInactiveFunc, colorActiveFunc, textSize) {
         super(window, sizeX, sizeY);
         this.sizeX = sizeX;
         this.sizeY = sizeY;

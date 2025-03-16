@@ -7,7 +7,7 @@ export class Climate {
             [hexToRgb("#c99060"), hexToRgb("#33251b"), hexToRgb("#773319")],
             [hexToRgb("#c99660"), hexToRgb("#382c1f"), hexToRgb("#693714")],
             [hexToRgb("#c98360"), hexToRgb("#38281f"), hexToRgb("#692b14")],
-            [hexToRgb("#c98360"), hexToRgb("#38281f"), hexToRgb("#692b14")]
+            [hexToRgb("#b36a5b"), hexToRgb("#362621"), hexToRgb("#632419")]
 
         ]
         this.rockColors = [
