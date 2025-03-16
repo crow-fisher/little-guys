@@ -168,6 +168,7 @@ var UI_DATA = {
     UI_PALETTE_SOILIDX: 0,
     UI_PALETTE_ROCKIDX: 0,
     UI_PALETTE_ROCKMODE: false,
+    UI_SIMULATION_CLOUDS: true  
 };
 export function getUI_DATA() {
     return UI_DATA;
