@@ -51,7 +51,7 @@ export class BlockPalette extends Component {
                 "", () => getActiveClimate().getBaseActiveToolBrightnessIdx(i, [.4, .4, .2], 1)));
         }
         container.addElement(new Text(this.window, sizeX / 8, buttonHeight / 4, 0, ""));
-        for (let i = 0; i < this.numSoilRows; i++) {
+        for (let i = 0; i <= this.numSoilRows; i++) {
             let row = new Container(this.window, 0, 0);
             container.addElement(row);
             for (let j = 0; j < this.palette[i].length; j++) {
@@ -83,8 +83,8 @@ export class BlockPalette extends Component {
         
         let eyedropperMixerButtonsRow = new Container(this.window, 0, 0);
         container.addElement(eyedropperMixerButtonsRow);
-        eyedropperMixerButtonsRow.addElement(new Toggle(this.window,half, buttonHeight, UI_CENTER,UI_PALETTE_EYEDROPPER , "eyedropper", () => getActiveClimate().getUIColorInactiveCustom(0.6), () => getActiveClimate().getUIColorTransient(), 0.5));
-        eyedropperMixerButtonsRow.addElement(new Toggle(this.window,half, buttonHeight, UI_CENTER,UI_PALETTE_MIXER , "mixer", () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorTransient(), 0.5));
+        eyedropperMixerButtonsRow.addElement(new Toggle(this.window,half, buttonHeight, UI_CENTER,UI_PALETTE_EYEDROPPER , "eyedropper", () => getActiveClimate().getUIColorStoneButton(0.9), () => getActiveClimate().getUIColorStoneButton(0.5), 0.5));
+        eyedropperMixerButtonsRow.addElement(new Toggle(this.window,half, buttonHeight, UI_CENTER,UI_PALETTE_MIXER , "mixer", () => getActiveClimate().getUIColorStoneButton(0.95), () => getActiveClimate().getUIColorStoneButton(0.57), 0.5));
     
 
         let strengthSizeContainer = new Container(this.window, padding, 0);
@@ -114,9 +114,9 @@ export class BlockPalette extends Component {
 
     initPallate() {
         this.palette = new Map();
-        let step = 1 / (this.numSoilRows + 1);
-        let curClay = step / 2;
-        for (let i = 0; i < this.numSoilRows; i++) {
+        let clayStep = 1 / (this.numSoilRows + 1);
+        let curClay = clayStep / 2;
+        for (let i = this.numSoilRows; i >= 0; i--) {
             let remaining = (1 - curClay);
             let remMid = remaining / 2;
             let start = 0.5 - remMid;
@@ -124,11 +124,11 @@ export class BlockPalette extends Component {
             let steps = 5;
             let step = (end - start) / steps;
             let arr = [];
-            for (let j = 0; j < 5; j++) {
+            for (let j = 0; j <= 5; j++) {
                 arr.push(this.getSquareComposition(start + step * j, curClay));
             }
             this.palette[i] = arr;
-            curClay += step;
+            curClay += clayStep;
         }
     }
     setHover(sand, silt, clay) {
@@ -138,8 +138,7 @@ export class BlockPalette extends Component {
         saveUI(UI_PALETTE_COMPOSITION, [sand, silt, clay]);
     }
 
-    getSquareComposition(xp, yp) {
-        var clayPercent = 1 - yp;
+    getSquareComposition(xp, clayPercent) {
         var siltPercent = (1 - clayPercent) * xp;
         var sandPercent = (1 - clayPercent) - siltPercent;
         return [sandPercent, siltPercent, clayPercent];

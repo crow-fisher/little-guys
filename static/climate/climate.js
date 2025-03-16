@@ -65,11 +65,7 @@ export class Climate {
     }
 
     getUIColorStoneButton(frac) {
-        if (this.uci[frac] == null) {
-            this.uci[frac] = this.processColor(this.getBaseSoilColor(0, 0, 0.70, 0.10), frac);
-            return this.uci[frac];
-        }
-        return this.uci[frac];
+        return this.processColor(this.getBaseRockColor(0, 0, 0.70, 0.10), frac);
     }
 
     getUIColorDirtButton(frac) {
