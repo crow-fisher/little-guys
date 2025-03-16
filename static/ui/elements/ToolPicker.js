@@ -34,21 +34,6 @@ export class ToolPickerElement extends WindowElement {
         return [this.sizeX, this.sizeY];
     }
 
-    getSquareComposition(i, j) {
-        var xp = i / this.pickerSize;
-        var yp = j / this.pickerSize;
-        var clayPercent = 1 - yp;
-        
-        var xp50 = (0.5 - xp);
-        if (2 * (Math.abs(xp50)) > 1 - clayPercent) {
-            return;
-        }
-
-        var siltPercent = (1 - clayPercent) * xp;
-        var sandPercent = (1 - clayPercent) - siltPercent;
-
-        return [sandPercent, siltPercent, clayPercent];
-    }
 
     getBaseColor(sand, silt, clay) {
         if (this.keyFunc == UI_SOIL_COMPOSITION) {

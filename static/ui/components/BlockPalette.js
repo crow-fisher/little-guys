@@ -18,7 +18,7 @@ import { loadUI, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CENTER, UI_PALETTE_SOI
 export class BlockPalette extends Component {
     constructor(posX, posY, padding, dir, key) {
         super(posX, posY, padding, dir, key);
-        this.numSoilRows = 3;
+        this.numSoilRows = 5;
         this.initPallate();
 
         var sizeX = getBaseUISize() * 24;
@@ -114,15 +114,35 @@ export class BlockPalette extends Component {
 
     initPallate() {
         this.palette = new Map();
-        this.palette[0] = [[.60, .20, .20], [.40, .20, .40], [.40, .40, .20],  [.40, .40, .20]];
-        this.palette[1] = [[.75, .15, .10], [.40, .10, .50], [.30, .60, .10],  [.40, .50, .10]];
-        this.palette[2] = [[.60, .20, .20], [.40, .20, .40], [.15, .65, .20],  [.10, .85, .05]];
+        let step = 1 / (this.numSoilRows + 1);
+        let curClay = step / 2;
+        for (let i = 0; i < this.numSoilRows; i++) {
+            let remaining = (1 - curClay);
+            let remMid = remaining / 2;
+            let start = 0.5 - remMid;
+            let end = 0.5 + remMid;
+            let steps = 5;
+            let step = (end - start) / steps;
+            let arr = [];
+            for (let j = 0; j < 5; j++) {
+                arr.push(this.getSquareComposition(start + step * j, curClay));
+            }
+            this.palette[i] = arr;
+            curClay += step;
+        }
     }
     setHover(sand, silt, clay) {
         this.soilPickerElement.setHover(sand, silt, clay);
     }
     setClick(sand, silt, clay) {
         saveUI(UI_PALETTE_COMPOSITION, [sand, silt, clay]);
+    }
+
+    getSquareComposition(xp, yp) {
+        var clayPercent = 1 - yp;
+        var siltPercent = (1 - clayPercent) * xp;
+        var sandPercent = (1 - clayPercent) - siltPercent;
+        return [sandPercent, siltPercent, clayPercent];
     }
 }
 
