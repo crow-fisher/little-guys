@@ -1,6 +1,6 @@
 import { doZoom, resetZoom } from "./canvas.js";
 import { getGlobalThetaBase, setGlobalThetaBase } from "./globals.js";
-import { loadUI, saveUI, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_BB_MODE, UI_MODE_ROCK, UI_MODE_SOIL, UI_SM_BB, UI_SM_SPECIAL, UI_PALETTE_SELECT, UI_SPECIAL_WATER, UI_TOPBAR_BLOCK } from "./ui/UIData.js";
+import { loadUI, saveUI, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_BB_MODE, UI_MODE_ROCK, UI_MODE_SOIL, UI_SM_BB, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_TOPBAR_BLOCK, UI_PALETTE_ROCKMODE } from "./ui/UIData.js";
 
 export const KEY_CONTROL = "Control";
 export const KEY_SHIFT = "Shift";
@@ -33,20 +33,20 @@ export function keydown(e) {
 
     if (e.key == '1') {
         saveUI(UI_TOPBAR_BLOCK, true);
-        saveUI(UI_SM_BB, true);
-        saveUI(UI_BB_MODE, UI_MODE_SOIL);
+        saveUI(UI_PALETTE_ACTIVE, true);
+        saveUI(UI_PALETTE_ROCKMODE, false);
     }
 
     if (e.key == '2') {
         saveUI(UI_TOPBAR_BLOCK, true);
-        saveUI(UI_SM_BB, true);
-        saveUI(UI_BB_MODE, UI_MODE_ROCK);
+        saveUI(UI_PALETTE_ACTIVE, true);
+        saveUI(UI_PALETTE_ROCKMODE, true);
     }
 
     if (e.key == '3') {
         saveUI(UI_TOPBAR_BLOCK, true);
-        saveUI(UI_SM_SPECIAL, true);
-        saveUI(UI_PALETTE_SELECT, UI_SPECIAL_WATER);
+        saveUI(UI_PALETTE_ACTIVE, true);
+        saveUI(UI_PALETTE_SELECT, UI_PALETTE_WATER);
     }
 
     if (e.key == 'q') {

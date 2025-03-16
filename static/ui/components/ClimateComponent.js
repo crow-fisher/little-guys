@@ -24,7 +24,7 @@ import {
     UI_CLIMATE_WEATHER_TOOL_LIGHTCLOUD,
     UI_CLIMATE_WEATHER_TOOL_HEAVYCLOUD,
     UI_CLIMATE_WEATHER_TOOL_SELECT,
-    UI_BB_SIZE,
+    UI_PALETTE_SIZE,
     UI_CLIMATE_WEATHER_TOOL_STRENGTH,
     UI_CENTER
 } from "../UIData.js";
@@ -67,7 +67,7 @@ export class ClimateComponent extends Component {
         let brushControlRow = new Container(this.window, padding, 0);
         container.addElement(brushLabelRow);
         container.addElement(brushControlRow);
-        brushControlRow.addElement(new Slider(this.window, UI_BB_SIZE, halfSizeX, getBaseUISize() * 3, 5, 100, () => getActiveClimate().getUIColorTransient()));
+        brushControlRow.addElement(new Slider(this.window, UI_PALETTE_SIZE, halfSizeX, getBaseUISize() * 3, 5, 100, () => getActiveClimate().getUIColorTransient()));
         brushControlRow.addElement(new Slider(this.window, UI_CLIMATE_WEATHER_TOOL_STRENGTH, halfSizeX, getBaseUISize() * 3, 0.01, 0.1, () => getActiveClimate().getUIColorTransient()));
         
         brushLabelRow.addElement(new Text(this.window, halfSizeX, getBaseUISize() * 2, UI_CENTER, "brush size"));

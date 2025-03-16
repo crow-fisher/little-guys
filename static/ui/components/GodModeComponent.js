@@ -13,8 +13,8 @@ import {
     UI_GODMODE_TEMPERATURE,
     UI_GODMODE_MOISTURE,
     UI_GODMODE_KILL,
-    UI_BB_SIZE,
-    UI_BB_STRENGTH,
+    UI_PALETTE_SIZE,
+    UI_PALETTE_STRENGTH,
     saveUI,
     loadUI,
     UI_GODMODE_FASTPLANT,
@@ -35,7 +35,7 @@ export class GodModeComponent extends Component {
         strengthSizeContainer.addElement(sizeContainer);
 
         sizeContainer.addElement(new Text(this.window, halfSizeX, getBaseUISize() * 1.5, "size"));
-        sizeContainer.addElement(new Slider(this.window, UI_BB_SIZE, halfSizeX, getBaseUISize() * 3, 2, 50, () => getActiveClimate().getUIColorTransient()));
+        sizeContainer.addElement(new Slider(this.window, UI_PALETTE_SIZE, halfSizeX, getBaseUISize() * 3, 2, 50, () => getActiveClimate().getUIColorTransient()));
 
         let strengthContainer = new Container(this.window, padding, 1);
         strengthSizeContainer.addElement(strengthContainer);
