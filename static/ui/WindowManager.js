@@ -4,7 +4,7 @@ import { BlockPalette } from "./components/BlockPalette.js";
 import { BlockSubtreeComponent as BlockSubtree } from "./components/BlockSubtreeComponent.js";
 import { TopBarComponent } from "./topbar/TopBarComponent.js";
 import { ViewSubtreeComponent } from "./components/ViewSubtreeComponent.js";
-import { loadUI, UI_BB_MODE, UI_MODE_ROCK, UI_MODE_SOIL, UI_SM_CLIMATE, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_BLOCK, UI_SM_SPECIAL, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveUI, UI_BB_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_SIMULATION, UI_TOPBAR_TIME, UI_TOPBAR_CLIMATE } from "./UIData.js";
+import { loadUI, UI_BB_MODE, UI_MODE_ROCK, UI_MODE_SOIL, UI_SM_CLIMATE, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_BLOCK, UI_SM_SPECIAL, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveUI, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_SIMULATION, UI_TOPBAR_TIME, UI_TOPBAR_CLIMATE, UI_PALETTE_ROCKMODE, UI_PALETTE_EYEDROPPER } from "./UIData.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import { GodModeComponent } from "./components/GodModeComponent.js";
 import { ClimateComponent } from "./components/ClimateComponent.js";
@@ -17,7 +17,7 @@ import { TimeSubtree } from "./components/TimeSubtree.js";
 import { ClimateSubtreeComponent } from "./components/ClimateSubtreeComponent.js";
 
 var topBarComponent;
-var blockBuildingComponent;
+var blockPalette;
 var all_components;
 
 all_components = [];
@@ -29,7 +29,8 @@ export function initUI() {
     all_components.push(new BlockSubtree(() => topBarComponent.getElementXPositionFunc(0, 1), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_BLOCK));
     all_components.push(new ClimateSubtreeComponent(() => topBarComponent.getElementXPositionFunc(0, 2), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_CLIMATE));
     all_components.push(new ViewSubtreeComponent(() => topBarComponent.getElementXPositionFunc(0, 3), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_VIEWMODE));
-    all_components.push(new BlockPalette(getBaseUISize() * 34, getBaseUISize() * 6, 0, 0, UI_SM_SPECIAL));
+    blockPalette = new BlockPalette(getBaseUISize() * 34, getBaseUISize() * 6, 0, 0, UI_SM_SPECIAL)
+    all_components.push(blockPalette);
     all_components.push(new LightingComponent(getBaseUISize() * 10, getBaseUISize() * 10, 0, 0, UI_SM_LIGHTING));
     all_components.push(new LightingSubtree(() => topBarComponent.getElementXPositionFunc(0, 4), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_LIGHTING));
     all_components.push(new SimulationSubtree(() => topBarComponent.getElementXPositionFunc(0, 5), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_SIMULATION));
@@ -62,40 +63,23 @@ export function isWindowHovered() {
 }
 
 export function eyedropperBlockHover(posX, posY) {
-    let targetProto;
-    if (loadUI(UI_BB_MODE) == UI_MODE_ROCK) 
-        targetProto = "RockSquare";
-    else if (loadUI(UI_BB_MODE) == UI_MODE_SOIL)
-        targetProto = "SoilSquare";
-    else 
-        return; 
-    getSquares(posX, posY).filter((sq) => sq.proto == targetProto).forEach((sq) => {
-        blockBuildingComponent.setHover(sq.sand, sq.silt, sq.clay);
+    let targetProto = loadUI(UI_PALETTE_ROCKMODE) ? "RockSquare" : "SoilSquare";
+    getSquares(Math.floor(posX), Math.floor(posY)).filter((sq) => sq.proto == targetProto).forEach((sq) => {
+        blockPalette.setHover(sq.sand, sq.silt, sq.clay);
     });
 }
 
 export function eyedropperBlockClick(posX, posY) {
-    let targetProto;
-    if (loadUI(UI_BB_MODE) == UI_MODE_ROCK) 
-        targetProto = "RockSquare";
-    else if (loadUI(UI_BB_MODE) == UI_MODE_SOIL)
-        targetProto = "SoilSquare";
-    else 
-        return; 
+    let targetProto = loadUI(UI_PALETTE_ROCKMODE) ? "RockSquare" : "SoilSquare";
     getSquares(posX, posY).filter((sq) => sq.proto == targetProto).forEach((sq) => {
-        blockBuildingComponent.setClick(sq.sand, sq.silt, sq.clay);
+        blockPalette.setClick(sq.sand, sq.silt, sq.clay);
     });
+    saveUI(UI_PALETTE_EYEDROPPER, false);
 }
 
 export function mixerBlockClick(posX, posY) {
-    let targetProto;
-    if (loadUI(UI_BB_MODE) == UI_MODE_ROCK) 
-        targetProto = "RockSquare";
-    else if (loadUI(UI_BB_MODE) == UI_MODE_SOIL)
-        targetProto = "SoilSquare";
-    else 
-        return; 
-    let sq = getSquares(posX, posY).filter((sq) => sq.proto == targetProto).at(0);
+    let targetProto = loadUI(UI_PALETTE_ROCKMODE) ? "RockSquare" : "SoilSquare";
+    let sq = getSquares(Math.floor(posX), Math.floor(posY)).filter((sq) => sq.proto == targetProto).at(0);
     if (sq == null) {
         return;
     }
@@ -112,10 +96,10 @@ export function mixerBlockClick(posX, posY) {
         );
 
         let sum = comp[0] + comp[1] + comp[2];
-        blockBuildingComponent.setClick(comp[0] / sum, comp[1] / sum, comp[2] / sum);
-        saveUI(UI_BB_MIXER, false);
+        blockPalette.setClick(comp[0] / sum, comp[1] / sum, comp[2] / sum);
+        saveUI(UI_PALETTE_MIXER, false);
         return;
     }
 }
 
-addUIFunctionMap(UI_BB_MIXER, () => setTargetMixIdx(getCurMixIdx() + getMixArrLen()));
+addUIFunctionMap(UI_PALETTE_MIXER, () => {setCurMixIdx(getCurMixIdx() - (getCurMixIdx() % 3) + 1); setTargetMixIdx(getCurMixIdx() + getMixArrLen()); });

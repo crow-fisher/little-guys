@@ -1,6 +1,6 @@
 import { doZoom, resetZoom } from "./canvas.js";
 import { getGlobalThetaBase, setGlobalThetaBase } from "./globals.js";
-import { loadUI, saveUI, UI_BB_EYEDROPPER, UI_BB_MIXER, UI_BB_MODE, UI_MODE_ROCK, UI_MODE_SOIL, UI_SM_BB, UI_SM_SPECIAL, UI_PALETTE_SELECT, UI_SPECIAL_WATER, UI_TOPBAR_BLOCK } from "./ui/UIData.js";
+import { loadUI, saveUI, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_BB_MODE, UI_MODE_ROCK, UI_MODE_SOIL, UI_SM_BB, UI_SM_SPECIAL, UI_PALETTE_SELECT, UI_SPECIAL_WATER, UI_TOPBAR_BLOCK } from "./ui/UIData.js";
 
 export const KEY_CONTROL = "Control";
 export const KEY_SHIFT = "Shift";
@@ -50,10 +50,10 @@ export function keydown(e) {
     }
 
     if (e.key == 'q') {
-        saveUI(UI_BB_EYEDROPPER, !loadUI(UI_BB_EYEDROPPER));
+        saveUI(UI_PALETTE_EYEDROPPER, !loadUI(UI_PALETTE_EYEDROPPER));
     }
     if (e.key == 'w') {
-        saveUI(UI_BB_MIXER, !loadUI(UI_BB_MIXER));
+        saveUI(UI_PALETTE_MIXER, !loadUI(UI_PALETTE_MIXER));
     }
     if (e.key == "Escape") {
         resetZoom();

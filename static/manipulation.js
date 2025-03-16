@@ -18,7 +18,7 @@ import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
-import { loadUI, UI_BB_EYEDROPPER, UI_BB_MIXER, UI_BB_MODE, UI_BB_SIZE, UI_BB_STRENGTH, UI_CLIMATE_WEATHER_TOOL_LIGHTCLOUD, UI_CLIMATE_SELECT, UI_CLIMATE_WEATHER_TOOL_DRYAIR, UI_CLIMATE_WEATHER_TOOL_HEAVYCLOUD, UI_CLIMATE_WEATHER_TOOL_MATCHEDAIR, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_STRENGTH, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_STRENGTH, UI_GODMODE_TEMPERATURE, UI_GODMODE_WIND, UI_MODE_ROCK, UI_MODE_SOIL, UI_ORGANISM_SELECT, UI_SM_BB, UI_SM_CLIMATE, UI_SM_GODMODE, UI_SM_ORGANISM, UI_SM_SPECIAL, UI_SPECIAL_AQUIFER, UI_SPECIAL_MIX, UI_PALETTE_SELECT, UI_SPECIAL_SURFACE, UI_SPECIAL_WATER, UI_PALETTE_ROCKMODE } from "./ui/UIData.js";
+import { loadUI, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_BB_MODE, UI_BB_SIZE, UI_BB_STRENGTH, UI_CLIMATE_WEATHER_TOOL_LIGHTCLOUD, UI_CLIMATE_SELECT, UI_CLIMATE_WEATHER_TOOL_DRYAIR, UI_CLIMATE_WEATHER_TOOL_HEAVYCLOUD, UI_CLIMATE_WEATHER_TOOL_MATCHEDAIR, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_STRENGTH, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_STRENGTH, UI_GODMODE_TEMPERATURE, UI_GODMODE_WIND, UI_MODE_ROCK, UI_MODE_SOIL, UI_ORGANISM_SELECT, UI_SM_BB, UI_SM_CLIMATE, UI_SM_GODMODE, UI_SM_ORGANISM, UI_SM_SPECIAL, UI_SPECIAL_AQUIFER, UI_SPECIAL_MIX, UI_PALETTE_SELECT, UI_SPECIAL_SURFACE, UI_SPECIAL_WATER, UI_PALETTE_ROCKMODE } from "./ui/UIData.js";
 import { eyedropperBlockClick, eyedropperBlockHover, isWindowHovered, mixerBlockClick } from "./ui/WindowManager.js";
 import { CattailSeedOrganism } from "./organisms/midwest/CattailOrganism.js";
 var prevManipulationOffset;
@@ -163,11 +163,11 @@ export function doClickAddEyedropperMixer() {
     var offsetX = offsetTransformed[0];
     var offsetY = offsetTransformed[1];
 
-    if (loadUI(UI_BB_EYEDROPPER)) {
+    if (loadUI(UI_PALETTE_EYEDROPPER)) {
         eyedropperBlockClick(offsetX, offsetY);
         return;
     }
-    if (loadUI(UI_BB_MIXER)) {
+    if (loadUI(UI_PALETTE_MIXER)) {
         mixerBlockClick(offsetX, offsetY);
         return;
     }
@@ -190,7 +190,7 @@ export function doClickAdd() {
         var offsetX = offsetTransformed[0];
         var offsetY = offsetTransformed[1];
 
-        if (loadUI(UI_SM_BB) && (loadUI(UI_BB_EYEDROPPER) || loadUI(UI_BB_MIXER))) {
+        if (loadUI(UI_SM_SPECIAL) && (loadUI(UI_PALETTE_EYEDROPPER) || loadUI(UI_PALETTE_MIXER))) {
             return;
         }
 

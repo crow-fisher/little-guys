@@ -1,5 +1,5 @@
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, resetZoom } from "./canvas.js";
-import { loadUI, UI_BB_EYEDROPPER, UI_BB_MIXER } from "./ui/UIData.js";
+import { loadUI, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER } from "./ui/UIData.js";
 
 var leftMouseClicked = false;
 var rightMouseClicked = false;
@@ -72,7 +72,7 @@ export function handleMouseUp(e) {
             leftMouseClicked = false;
             break;
     }
-    if (loadUI(UI_BB_EYEDROPPER) || loadUI(UI_BB_MIXER)) {
+    if (loadUI(UI_PALETTE_EYEDROPPER) || loadUI(UI_PALETTE_MIXER)) {
         leftMouseUpEvent = leftMouseWasClicked;
     }
 }

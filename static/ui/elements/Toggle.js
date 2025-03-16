@@ -6,7 +6,7 @@ import { loadUI, saveUI, UI_CENTER } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class Toggle extends WindowElement {
-    constructor(window, sizeX, sizeY, offsetX, key, label, colorInactiveFunc, colorActiveFunc) {
+    constructor(window, sizeX, sizeY, offsetX, key, label, colorInactiveFunc, colorActiveFunc, textSize = 0.75) {
         super(window, sizeX, sizeY);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
@@ -16,10 +16,11 @@ export class Toggle extends WindowElement {
         this.lastClick = 0;
         this.colorActiveFunc = colorActiveFunc;
         this.colorInactiveFunc = colorInactiveFunc;
+        this.textSize = textSize;
     }
 
     render(startX, startY) {
-        MAIN_CONTEXT.font = this.sizeY * 0.75 + "px courier"
+        MAIN_CONTEXT.font = this.sizeY * this.textSize + "px courier"
         MAIN_CONTEXT.textAlign = 'center';
         MAIN_CONTEXT.textBaseline = 'middle';
         if (loadUI(this.key)) {

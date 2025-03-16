@@ -11,7 +11,7 @@ import { TextBackground } from "../elements/TextBackground.js";
 import { Toggle } from "../elements/Toggle.js";
 import { ToggleFunctional } from "../elements/ToggleFunctional.js";
 import { ToggleFunctionalText } from "../elements/ToggleFunctionalText.js";
-import { loadUI, UI_BB_SIZE, UI_BB_STRENGTH, UI_CENTER, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKMODE, UI_PALETTE_ROCKIDX, UI_PALETTE_COMPOSITION, saveUI, UI_PALETTE_SHOWPICKER } from "../UIData.js";
+import { loadUI, UI_BB_SIZE, UI_BB_STRENGTH, UI_CENTER, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKMODE, UI_PALETTE_ROCKIDX, UI_PALETTE_COMPOSITION, saveUI, UI_PALETTE_SHOWPICKER, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER } from "../UIData.js";
 
 export class BlockPalette extends Component {
     constructor(posX, posY, padding, dir, key) {
@@ -34,7 +34,7 @@ export class BlockPalette extends Component {
 
         let toolRow = new Container(this.window, 0, 0);
 
-        container.addElement(new Text(this.window, sizeX / 8, buttonHeight / 2, 0, ""));
+        container.addElement(new Text(this.window, sizeX / 8, buttonHeight / 4, 0, ""));
         container.addElement(toolRow); 
 
         toolRow.addElement(new ToggleFunctional(this.window, half, buttonHeight, UI_CENTER, UI_PALETTE_ROCKMODE, () => ("" + (loadUI(UI_PALETTE_ROCKMODE) ? "soil ●" : "● rock")),
@@ -66,6 +66,7 @@ export class BlockPalette extends Component {
         }
         
         let palleteSelectAdvancedRow = new Container(this.window, 0, 0);
+        container.addElement(new Text(this.window, sizeX / 8, buttonHeight / 4, 0, ""));
         container.addElement(palleteSelectAdvancedRow);
 
         container.addElement(new Text(this.window, sizeX / 8, buttonHeight / 4, 0, ""));
@@ -80,8 +81,16 @@ export class BlockPalette extends Component {
         palletePickerConditionalContainer.addElement(palletePickerRow);
 
         palletePickerRow.addElement(new Text(this.window, sizeX / 8, getBaseUISize() * 2, 0, ""));
-        palletePickerRow.addElement(new SoilPickerElement(this.window, UI_PALETTE_COMPOSITION, sizeX * 0.75, sizeX))
+        this.soilPickerElement = new SoilPickerElement(this.window, UI_PALETTE_COMPOSITION, sizeX * 0.75, sizeX)
+        palletePickerRow.addElement(this.soilPickerElement);
         palletePickerRow.addElement(new Text(this.window, sizeX / 8, getBaseUISize() * 2, 0, ""));
+
+        
+        let eyedropperMixerButtonsRow = new Container(this.window, 0, 0);
+        container.addElement(eyedropperMixerButtonsRow);
+        eyedropperMixerButtonsRow.addElement(new Toggle(this.window,half, buttonHeight, UI_CENTER,UI_PALETTE_EYEDROPPER , "eyedropper", () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient(), 0.5));
+        eyedropperMixerButtonsRow.addElement(new Toggle(this.window,half, buttonHeight, UI_CENTER,UI_PALETTE_MIXER , "mixer", () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient(), 0.5));
+    
 
         let strengthSizeContainer = new Container(this.window, padding, 0);
         container.addElement(strengthSizeContainer);
@@ -113,5 +122,11 @@ export class BlockPalette extends Component {
         this.palette[0] = [[.60, .20, .20], [.40, .20, .40], [.40, .40, .20],  [.40, .40, .20]];
         this.palette[1] = [[.75, .15, .10], [.40, .10, .50], [.30, .60, .10],  [.40, .50, .10]];
         this.palette[2] = [[.60, .20, .20], [.40, .20, .40], [.15, .65, .20],  [.10, .85, .05]];
+    }
+    setHover(sand, silt, clay) {
+        this.soilPickerElement.setHover(sand, silt, clay);
+    }
+    setClick(sand, silt, clay) {
+        saveUI(UI_PALETTE_COMPOSITION, [sand, silt, clay]);
     }
 }
