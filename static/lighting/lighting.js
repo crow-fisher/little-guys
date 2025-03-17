@@ -429,7 +429,7 @@ export class LightSource {
                 list[loc[0]][loc[1]].forEach((obj) => {
                     let curBrightnessCopy = curBrightness;
                     let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(theta)() * curBrightnessCopy * this.brightnessFunc() * this.thetaBrightnessFunc(theta);
-                    curBrightness *= loadUI(UI_LIGHTING_DECAY) * (1 - obj.getLightFilterRate());
+                    curBrightness *= (1 - (obj.getLightFilterRate() * loadUI(UI_LIGHTING_DECAY)));
                     if (obj.lighting[idx] == null) {
                         obj.lighting[idx] = [[pointLightSourceFunc], this.colorFunc];
                     } else if (obj.lighting[idx][0].length >= jobIdx) {

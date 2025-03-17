@@ -34,16 +34,16 @@ export class GodModeComponent extends Component {
         let sizeContainer = new Container(this.window, padding, 1);
         strengthSizeContainer.addElement(sizeContainer);
 
-        sizeContainer.addElement(new Text(this.window, halfSizeX, getBaseUISize() * 1.5, "size"));
+        sizeContainer.addElement(new Text(this.window, halfSizeX, getBaseUISize() * 1.5, UI_CENTER, "size"));
         sizeContainer.addElement(new Slider(this.window, UI_PALETTE_SIZE, halfSizeX, getBaseUISize() * 3, 2, 50, () => getActiveClimate().getUIColorTransient()));
 
         let strengthContainer = new Container(this.window, padding, 1);
         strengthSizeContainer.addElement(strengthContainer);
 
-        strengthContainer.addElement(new Text(this.window, halfSizeX, getBaseUISize() * 1.5, "strength"));
+        strengthContainer.addElement(new Text(this.window, halfSizeX, getBaseUISize() * 1.5, UI_CENTER, "strength"));
         strengthContainer.addElement(new Slider(this.window, UI_GODMODE_STRENGTH, halfSizeX, getBaseUISize() * 3, 0, 1, () => getActiveClimate().getUIColorTransient()));
 
-        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 1.5, "god tool select"));
+        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 1.5, UI_CENTER, "god tool select"));
         container.addElement(new RowedRadio(this.window, sizeX, getBaseUISize() * 5,UI_CENTER,  UI_GODMODE_SELECT, 2, [
             UI_GODMODE_WIND,
             UI_GODMODE_TEMPERATURE,
@@ -51,7 +51,8 @@ export class GodModeComponent extends Component {
             UI_GODMODE_KILL
         ], () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
 
-        container.addElement(new Toggle(this.window, getBaseUISize() * 16, getBaseUISize() * 3, UI_GODMODE_FASTPLANT, "fast plant", () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
+        container.addElement(new Toggle(this.window, getBaseUISize() * 16, getBaseUISize() * 3, UI_CENTER, UI_GODMODE_FASTPLANT, "fast plant",
+         () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
         
     }
 }

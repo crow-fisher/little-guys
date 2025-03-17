@@ -45,6 +45,7 @@ export class Slider extends WindowElement {
         let min = this.blockSize / 2;
         let max = this.sizeX - this.blockSize / 2;
         let p = (posX - min) / (max - min);
+        p = Math.min(Math.max(0, p), 1)
         saveUI(this.key, this.min + p * (this.max - this.min));
     }
 

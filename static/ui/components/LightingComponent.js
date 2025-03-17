@@ -27,7 +27,7 @@ export class LightingComponent extends Component {
         rightContainer.addElement(new Slider(this.window, UI_LIGHTING_MOON, sizeX,  35, .005, 1, () => getActiveClimate().getUIColorTransient()));
 
         leftContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, UI_CENTER, "water"));
-        leftContainer.addElement(new Slider(this.window, UI_LIGHTING_WATER, sizeX,  35, 0.01, 200, () => getActiveClimate().getUIColorTransient()));
+        leftContainer.addElement(new Slider(this.window, UI_LIGHTING_WATER, sizeX,  35, 0.01, 2, () => getActiveClimate().getUIColorTransient()));
 
         rightContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, UI_CENTER, "rock"));
         rightContainer.addElement(new Slider(this.window, UI_LIGHTING_ROCK, sizeX,  35, 0.1, 10, () => getActiveClimate().getUIColorTransient()));
@@ -36,6 +36,6 @@ export class LightingComponent extends Component {
         leftContainer.addElement(new Slider(this.window, UI_LIGHTING_PLANT, sizeX,  35, 0.1, 10, () => getActiveClimate().getUIColorTransient()));
 
         rightContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, UI_CENTER, "decay"));
-        rightContainer.addElement(new Slider(this.window, UI_LIGHTING_DECAY, sizeX,  35, .95, 1, () => getActiveClimate().getUIColorTransient()));
+        rightContainer.addElement(new Slider(this.window, UI_LIGHTING_DECAY, sizeX,  35, 0.5, 200, () => getActiveClimate().getUIColorTransient()));
     }
 }

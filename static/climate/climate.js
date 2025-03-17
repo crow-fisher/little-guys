@@ -5,11 +5,13 @@ export class Climate {
     constructor() {
         let soilColorBaseArr = ["#c99060", "#33251b", "#773319"];
         this.soilColors = [
-            this.hueShiftColorArr(soilColorBaseArr, -20, 0, -10),
+            this.hueShiftColorArr(soilColorBaseArr, -15, 0, -10),
             this.hueShiftColorArr(soilColorBaseArr, -10, 0, -10),
+            this.hueShiftColorArr(soilColorBaseArr, -5, 0, -10),
             this.hueShiftColorArr(soilColorBaseArr, -0, 0, -10),
+            this.hueShiftColorArr(soilColorBaseArr, 5, 0, -10),
             this.hueShiftColorArr(soilColorBaseArr, 10, 0, -20),
-            this.hueShiftColorArr(soilColorBaseArr, 20, 0, -30)
+            this.hueShiftColorArr(soilColorBaseArr, 15, 0, -30)
 
         ]
         this.rockColors = [
