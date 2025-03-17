@@ -1,20 +1,23 @@
-import { hexToRgb, hsv2rgb, rgb2hsv, rgbToHex } from "../common.js";
+import { hexToRgb, hexToRgbArr, hsv2rgb, rgb2hsv, rgbToHex } from "../common.js";
 import { loadUI, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_HEAVYRAIN, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_SUNNY, UI_PALETTE_ROCKIDX, UI_PALETTE_ROCKMODE, UI_PALETTE_SOILIDX } from "../ui/UIData.js";
 
 export class Climate {
     constructor() {
+        let soilColorBaseArr = ["#c99060", "#33251b", "#773319"];
         this.soilColors = [
-            [hexToRgb("#c99060"), hexToRgb("#33251b"), hexToRgb("#773319")],
-            [hexToRgb("#c99660"), hexToRgb("#382c1f"), hexToRgb("#693714")],
-            [hexToRgb("#c98360"), hexToRgb("#38281f"), hexToRgb("#692b14")],
-            [hexToRgb("#b36a5b"), hexToRgb("#362621"), hexToRgb("#632419")]
+            this.hueShiftColorArr(soilColorBaseArr, -20, 0, -10),
+            this.hueShiftColorArr(soilColorBaseArr, -10, 0, -10),
+            this.hueShiftColorArr(soilColorBaseArr, -0, 0, -10),
+            this.hueShiftColorArr(soilColorBaseArr, 10, 0, -20),
+            this.hueShiftColorArr(soilColorBaseArr, 20, 0, -30)
 
         ]
         this.rockColors = [
-            [hexToRgb("#a8927b"), hexToRgb("#8c9a9b"), hexToRgb("#a0b9c1")],
-            [hexToRgb("#7e8097"), hexToRgb("#4d5469"), hexToRgb("#141114")],
-            [hexToRgb("#626665"), hexToRgb("#534938"), hexToRgb("#756d5f")],
-            [hexToRgb("#a6bdcb"), hexToRgb("#5c5a6a"), hexToRgb("#a3b4c5")],
+            [hexToRgb("#a0b9c1"), hexToRgb("#303536"), hexToRgb("#a8927b")],
+            [hexToRgb("#2b2f3d"), hexToRgb("#141114"), hexToRgb("#7e8097")],
+            [hexToRgb("#949c9a"), hexToRgb("#534938"), hexToRgb("#a89065")],
+            [hexToRgb("#a6bdcb"), hexToRgb("#2f2d3d"), hexToRgb("#a3b4c5")],
+            [hexToRgb("#957068"), hexToRgb("#332b2a"), hexToRgb("#733016")],
             
         ]
 
@@ -31,6 +34,20 @@ export class Climate {
         this.weatherPatternMap.set(UI_CLIMATE_WEATHER_HEAVYRAIN, 10);
 
         this.uci = new Map();
+    }
+
+    hueShiftColorArr(arr, hueShift, saturationShift, valueShift) {
+        return [this.hueShiftColor(arr[0], hueShift, saturationShift, valueShift), this.hueShiftColor(arr[1], hueShift, saturationShift, valueShift), this.hueShiftColor(arr[2], hueShift, saturationShift, valueShift)]
+    }
+
+    hueShiftColor(hex, hueShift, saturationShift, valueShift) {
+        let hsv = rgb2hsv(...hexToRgbArr(hex))
+        hsv[0] += hueShift;
+        hsv[1] += saturationShift;
+        hsv[2] += valueShift;
+        let rgb = hsv2rgb(...hsv);
+
+        return {r: rgb[0], g: rgb[1], b: rgb[2]};
     }
 
     getWaterColor() {
@@ -57,11 +74,7 @@ export class Climate {
     }
 
     getUIColorInactiveCustom(frac) {
-        if (this.uci[frac] == null) {
-            this.uci[frac] = this.processColor(this.getBaseSoilColor(0, 0, 0.70, 0.10), frac);
-            return this.uci[frac];
-        }
-        return this.uci[frac];
+        return this.processColor(this.getBaseSoilColor(loadUI(UI_PALETTE_SOILIDX), 0, 0.70, 0.10), frac);
     }
 
     getUIColorStoneButton(frac) {
@@ -82,11 +95,7 @@ export class Climate {
     }
 
     getUIColorActive() {
-        if (this.uca == null) {
-            this.uca = this.processColor(this.getBaseSoilColor(0, 0, 0.10, 0.90), 0.6);
-            return this.uca;
-        }
-        return this.uca;
+        return this.processColor(this.getBaseSoilColor(loadUI(UI_PALETTE_SOILIDX), 0, 0.10, 0.90), 0.6);
     }
 
     getUIColorTransient() {

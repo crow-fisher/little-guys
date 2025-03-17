@@ -238,7 +238,7 @@ export function doClickAdd() {
                     if (mode == UI_PALETTE_SOILROCK) {
                         doBrushFunc(px, py, (x, y) => addActivePaletteToolSquare(x, y));
                     } else if (mode == UI_PALETTE_WATER) {
-                        addSquareByName(px, py, "water")
+                        doBrushFunc(px, py, (x, y) => addSquareByName(x, y, "water"));
                     } else if (mode == UI_PALETTE_AQUIFER) {
                         addSquareByName(px, py, "aquifer")
                     } else if (mode == UI_PALETTE_SURFACE) {
