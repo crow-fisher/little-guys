@@ -21,6 +21,7 @@ import { WaterSquare } from "./squares/WaterSquare.js";
 import { loadUI, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CLIMATE_WEATHER_TOOL_LIGHTCLOUD, UI_CLIMATE_WEATHER_TOOL_DRYAIR, UI_CLIMATE_WEATHER_TOOL_HEAVYCLOUD, UI_CLIMATE_WEATHER_TOOL_MATCHEDAIR, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_STRENGTH, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_STRENGTH, UI_GODMODE_TEMPERATURE, UI_ORGANISM_SELECT, UI_SM_CLIMATE, UI_SM_GODMODE, UI_SM_ORGANISM, UI_PALETTE_ACTIVE, UI_PALETTE_AQUIFER, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_PALETTE_ROCKMODE, UI_PALETTE_SOILROCK, UI_PALETTE_WATER } from "./ui/UIData.js";
 import { eyedropperBlockClick, eyedropperBlockHover, isWindowHovered, mixerBlockClick } from "./ui/WindowManager.js";
 import { CattailSeedOrganism } from "./organisms/midwest/CattailOrganism.js";
+import { MushroomSeedOrganism } from "./organisms/fantasy/MushroomOrganism.js";
 var prevManipulationOffset;
 
 function doBlockBlur(centerX, centerY, size) {
@@ -291,7 +292,7 @@ export function doClickAdd() {
                             if (chance > 0.95) {
                                 var sq = addSquare(new SeedSquare(px, py));
                                 if (sq) {
-                                    var orgAdded = addNewOrganism(new CattailSeedOrganism(sq));
+                                    var orgAdded = addNewOrganism(new MushroomSeedOrganism(sq));
                                     if (!orgAdded) {
                                         sq.destroy();
                                     }

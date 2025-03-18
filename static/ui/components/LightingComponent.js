@@ -33,7 +33,7 @@ export class LightingComponent extends Component {
         rightContainer.addElement(new Slider(this.window, UI_LIGHTING_ROCK, sizeX,  35, 0.1, 10, () => getActiveClimate().getUIColorTransient()));
 
         leftContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, UI_CENTER, "plant"));
-        leftContainer.addElement(new Slider(this.window, UI_LIGHTING_PLANT, sizeX,  35, 0.1, 10, () => getActiveClimate().getUIColorTransient()));
+        leftContainer.addElement(new Slider(this.window, UI_LIGHTING_PLANT, sizeX,  35, 0.01, 2, () => getActiveClimate().getUIColorTransient()));
 
         rightContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, UI_CENTER, "decay"));
         rightContainer.addElement(new Slider(this.window, UI_LIGHTING_DECAY, sizeX,  35, 0.5, 200, () => getActiveClimate().getUIColorTransient()));

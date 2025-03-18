@@ -5,6 +5,7 @@ import { WheatSeedOrganism } from "../../../organisms/agriculture/WheatOrganism.
 import { addSquare } from "../../../squares/_sqOperations.js";
 import { SeedSquare } from "../../../squares/SeedSquare.js";
 import { CattailSeedOrganism } from "../../../organisms/midwest/CattailOrganism.js";
+import { MushroomSeedOrganism } from "../../../organisms/fantasy/MushroomOrganism.js";
 
 export class MushroomGreenSquare extends BaseLifeSquare {
     constructor(square, organism) {
@@ -38,11 +39,15 @@ export class MushroomGreenSquare extends BaseLifeSquare {
                 case SUBTYPE_SHOOT:
                 case SUBTYPE_SPROUT:
                 case SUBTYPE_STEM:
+                    this.baseColor = "#def6fc";
+                    this.darkColor = "#7290ba";
+                    this.accentColor = "#657373";
+                    break;
                 case SUBTYPE_NODE:
                 case SUBTYPE_LEAF:
-                    this.baseColor = "#5f633b";
-                    this.darkColor = "#4e5234";
-                    this.accentColor = "#6b704f";
+                    this.baseColor = "#13346d";
+                    this.darkColor = "#0e55ae";
+                    this.accentColor = "#6da6e3";
                     break;
                 default:
                     console.warn("Subtype doesn't have a display configuration!")
@@ -61,7 +66,7 @@ export class MushroomGreenSquare extends BaseLifeSquare {
             var sq = addSquare(new SeedSquare(groundSquare.posX, groundSquare.posY - offsetY));
             if (sq) {
                 sq.opacity = 0;
-                var orgAdded = addNewOrganism(new CattailSeedOrganism(sq));
+                var orgAdded = addNewOrganism(new MushroomSeedOrganism(sq));
                 if (!orgAdded) {
                     sq.destroy();
                 }
