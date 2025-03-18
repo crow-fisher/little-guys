@@ -4,7 +4,7 @@ import { Component } from "../Component.js";
 import { Container } from "../Container.js";
 import { RowedRadio } from "../elements/RowedRadio.js";
 import { Text } from "../elements/Text.js";
-import { UI_ORGANISM_SELECT, UI_ORGANISM_WHEAT, UI_ORGANISM_GRASS, UI_ORGANISM_CATTAIL, UI_CENTER } from "../UIData.js";
+import { UI_ORGANISM_SELECT, UI_ORGANISM_WHEAT, UI_ORGANISM_GRASS, UI_ORGANISM_CATTAIL, UI_CENTER, UI_ORGANISM_MUSHROOM } from "../UIData.js";
 
 export class OrganismComponent extends Component {
     constructor(posX, posY, padding, dir, key) {
@@ -18,7 +18,7 @@ export class OrganismComponent extends Component {
             UI_ORGANISM_WHEAT,
             UI_ORGANISM_GRASS,
             UI_ORGANISM_CATTAIL,
-            UI_ORGANISM_GRASS
+            UI_ORGANISM_MUSHROOM
         ], () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
 
     }

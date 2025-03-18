@@ -286,6 +286,18 @@ export function doClickAdd() {
                                 }
                             }
                             break; 
+                        case "mushroom":
+                            var chance = Math.random();
+                            if (chance > 0.95) {
+                                var sq = addSquare(new SeedSquare(px, py));
+                                if (sq) {
+                                    var orgAdded = addNewOrganism(new CattailSeedOrganism(sq));
+                                    if (!orgAdded) {
+                                        sq.destroy();
+                                    }
+                                }
+                            }
+                            break; 
                     }
                 }
             }
