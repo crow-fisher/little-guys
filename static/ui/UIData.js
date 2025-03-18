@@ -140,7 +140,6 @@ export const UI_PALETTE_SURFACE = "UI_PALETTE_SURFACE";
 // saved directly
 
 var UI_DATA = {
-    UI_GODMODE_FASTPLANT: true,
     UI_NAME: "plymouth",
     UI_PALETTE_SIZE: 6,
     UI_PALETTE_STRENGTH: 1,

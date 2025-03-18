@@ -1,4 +1,4 @@
-import { randRange } from "../../common.js";
+import { hueShiftColor, hueShiftColorArr, randNumber, randRange, rgbToHex } from "../../common.js";
 import { GenericParameterizedRootSquare } from "../../lifeSquares/parameterized/GenericParameterizedRootSquare.js";
 import { STAGE_ADULT, STAGE_JUVENILE, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_FLOWER, TYPE_LEAF, TYPE_STEM } from "../Stages.js";
 
@@ -7,6 +7,10 @@ import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
 import { BaseOrganism } from "../BaseOrganism.js";
 import { MushroomGreenSquare } from "../../lifeSquares/parameterized/fantasy/MushroomGreenSquare.js";
+import { SeedSquare } from "../../squares/SeedSquare.js";
+import { addSquare } from "../../squares/_sqOperations.js";
+import { addNewOrganism } from "../_orgOperations.js";
+import { getCurDay } from "../../climate/time.js";
 
 export class MushroomOrganism extends BaseOrganism {
     constructor(posX, posY) {
@@ -17,13 +21,18 @@ export class MushroomOrganism extends BaseOrganism {
         this.grassGrowTimeInDays =  0.01;
         this.side = Math.random() > 0.5 ? -1 : 1;
 
+        this.numGrowthCycles = 5;
+
+        this.growthCycleMaturityLength = 1;
+        this.growthCycleLength = 1;
+
         this.stems = [];
         this.leaves = [];
         this.flower = null;
 
         this.curLeafTheta = 0;
 
-        this.maxNumLeaves = 30;
+        this.maxNumLeaves = 10;
         this.maxStemLength = 20;
         this.maxLeafLength = 10;
         this.maxFlowerLength = 6;
@@ -33,6 +42,8 @@ export class MushroomOrganism extends BaseOrganism {
         this.targetLeafLength = 1;
         this.targetStemLength = 1;
         this.targetFlowerLength = this.maxFlowerLength;
+
+        this.curGrowthCycleNum = 0;
 
         this.growthNumGreen = this.maxNumLeaves * (this.maxLeafLength) + this.maxStemLength;
     }
@@ -159,13 +170,33 @@ export class MushroomOrganism extends BaseOrganism {
                     ))
                 };
                 leaf.growthPlan.completed = false;
-            })
+            });
     }
 
     juvenileGrowthPlanning() {
         this.growStem(this.originGrowth, this.originGrowth.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_ROOTNODE), randRange(0, Math.PI * 2));
     }
 
+    executeGrowthPlans() {
+        super.executeGrowthPlans();
+        if (this.originGrowth != null && this.stems.length > 0) {
+            let stem = this.originGrowth.getChildFromPath(this.stems[0]);
+            if (stem != null) {
+                stem.lifeSquares.forEach((lsq) => lsq.width = 1 + (this.targetStemLength / this.maxStemLength));
+            }
+        }
+        let start = this.spawnTime;
+        let age = getCurDay() - start;
+        let cycles = age / this.growthCycleLength;
+        if (Math.floor(cycles) != this.curGrowthCycleNum) {
+            this.curGrowthCycleNum = Math.floor(cycles);
+            this.lifeSquares.forEach((lsq) => {
+                lsq.accentColor = rgbToHex(...hueShiftColorArr(lsq.accentColor, 50, 0, 0));
+                lsq.darkColor = rgbToHex(...hueShiftColorArr(lsq.darkColor, 50, 0, 0));
+                lsq.baseColor = rgbToHex(...hueShiftColorArr(lsq.baseColor, 50, 0, 0));
+            });
+        }
+    }
     adultGrowthPlanning() {
         if (this.growthPlans.some((gp) => !gp.completed)) {
             this.executeGrowthPlans();
@@ -184,7 +215,7 @@ export class MushroomOrganism extends BaseOrganism {
             return;
         }
 
-        if (this.leaves.length < this.targetNumLeaves) {
+        if (this.leaves.length < (this.targetStemLength / this.maxStemLength) * this.targetNumLeaves) {
             this.adultGrowLeaf();
             return;
         }
@@ -207,6 +238,31 @@ export class MushroomOrganism extends BaseOrganism {
             this.targetStemLength += 1;
             return;
         }
+
+        if (this.nitrogen > this.growthNitrogen && 
+            this.phosphorus > this.growthPhosphorus && 
+            this.lightlevel > this.growthLightLevel) {
+                this.spawnSeed();
+        }
+    }
+
+    spawnSeed() {
+        let chosen = this.leaves.at(randNumber(0, this.leaves.length - 1));
+        let comp = this.originGrowth.getChildFromPath(chosen);
+        let lsq = comp.lifeSquares.at(comp.lifeSquares.length - 1);
+
+        var seedSquare = addSquare(new SeedSquare(lsq.getPosX(), lsq.getPosY()));
+        seedSquare.gravity = 4;
+
+        if (seedSquare) {
+            var orgAdded = addNewOrganism(new MushroomSeedOrganism(seedSquare));
+            if (!orgAdded) {
+                seedSquare.destroy();
+            }
+        }
+        this.nitrogen *= 0.5;
+        this.phosphorus *= 0.5;
+        this.lightlevel *= 0.5;
     }
 
     planGrowth() {

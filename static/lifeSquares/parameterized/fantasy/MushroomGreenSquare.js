@@ -41,13 +41,15 @@ export class MushroomGreenSquare extends BaseLifeSquare {
                 case SUBTYPE_STEM:
                     this.baseColor = "#def6fc";
                     this.darkColor = "#7290ba";
-                    this.accentColor = "#657373";
+                    this.accentColor = "#657373"; 
                     break;
                 case SUBTYPE_NODE:
                 case SUBTYPE_LEAF:
                     this.baseColor = "#13346d";
                     this.darkColor = "#0e55ae";
                     this.accentColor = "#6da6e3";
+                    this.width = 1
+
                     break;
                 default:
                     console.warn("Subtype doesn't have a display configuration!")

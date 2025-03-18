@@ -2,7 +2,7 @@ import { BaseOrganism } from "./BaseOrganism.js";
 import { SeedLifeSquare } from "../lifeSquares/SeedLifeSquare.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 import { addNewOrganism } from "./_orgOperations.js";
-import { getCurDay } from "../climate/time.js";
+import { getCurDay, getTimeScale } from "../climate/time.js";
 
 class BaseSeedOrganism extends BaseOrganism {
     constructor(square) {
@@ -11,7 +11,7 @@ class BaseSeedOrganism extends BaseOrganism {
         this.sproutType = null;
         this.maxLifeTime = 1;
         this.startSproutTime = null;
-        this.totalSproutTime = 0.01; // edit this, in days
+        this.totalSproutTime = 3 * (getTimeScale() / 86400); 
         this.growInitialSquares();
     }
 

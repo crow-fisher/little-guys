@@ -1,4 +1,4 @@
-import { hexToRgb, hexToRgbArr, hsv2rgb, rgb2hsv, rgbToHex } from "../common.js";
+import { hexToRgb, hexToRgbArr, hsv2rgb, hueShiftColor, rgb2hsv, rgbToHex } from "../common.js";
 import { loadUI, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_HEAVYRAIN, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_SUNNY, UI_PALETTE_ROCKIDX, UI_PALETTE_ROCKMODE, UI_PALETTE_SOILIDX } from "../ui/UIData.js";
 
 export class Climate {
@@ -39,18 +39,9 @@ export class Climate {
     }
 
     hueShiftColorArr(arr, hueShift, saturationShift, valueShift) {
-        return [this.hueShiftColor(arr[0], hueShift, saturationShift, valueShift), this.hueShiftColor(arr[1], hueShift, saturationShift, valueShift), this.hueShiftColor(arr[2], hueShift, saturationShift, valueShift)]
+        return [hueShiftColor(arr[0], hueShift, saturationShift, valueShift), hueShiftColor(arr[1], hueShift, saturationShift, valueShift), hueShiftColor(arr[2], hueShift, saturationShift, valueShift)]
     }
 
-    hueShiftColor(hex, hueShift, saturationShift, valueShift) {
-        let hsv = rgb2hsv(...hexToRgbArr(hex))
-        hsv[0] += hueShift;
-        hsv[1] += saturationShift;
-        hsv[2] += valueShift;
-        let rgb = hsv2rgb(...hsv);
-
-        return {r: rgb[0], g: rgb[1], b: rgb[2]};
-    }
 
     getWaterColor() {
         return this.processColor(this.waterColor, 0.5);

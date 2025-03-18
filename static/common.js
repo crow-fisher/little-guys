@@ -49,6 +49,25 @@ function rgbToRgba(r, g, b, a) {
     return "rgba(" + r + "," + g + "," + b + "," + a + ")";
 }
 
+
+export function hueShiftColor(hex, hueShift, saturationShift, valueShift) {
+    let hsv = rgb2hsv(...hexToRgbArr(hex))
+    hsv[0] += hueShift;
+    hsv[1] += saturationShift;
+    hsv[2] += valueShift;
+    let rgb = hsv2rgb(...hsv);
+    return {r: rgb[0], g: rgb[1], b: rgb[2]};
+}
+
+export function hueShiftColorArr(hex, hueShift, saturationShift, valueShift) {
+    let hsv = rgb2hsv(...hexToRgbArr(hex))
+    hsv[0] += hueShift;
+    hsv[1] += saturationShift;
+    hsv[2] += valueShift;
+    return hsv2rgb(...hsv);
+}
+
+
 function randNumber(min, max) {
     max += 1;
     return Math.floor(Math.random() * (max - min) + min);

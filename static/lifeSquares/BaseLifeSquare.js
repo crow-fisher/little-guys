@@ -91,7 +91,7 @@ class BaseLifeSquare {
     }
 
     getLightFilterRate() {
-        return 0.0015 * (this.width ** 2) * loadUI(UI_LIGHTING_PLANT);
+        return 0.00015 * (this.width ** 2) * loadUI(UI_LIGHTING_PLANT);
     }
 
     getLsqRenderSizeMult() {
@@ -268,7 +268,7 @@ class BaseLifeSquare {
             if (res < this.accentColorAmount) {
                 primaryColor = this.accentColor;
                 altColor1 = this.darkColor;
-                altColor2 = this.colorBase;
+                altColor2 = this.baseColor;
             } else if (res < this.accentColorAmount + this.darkColorAmount) {
                 primaryColor = this.accentColor;
                 altColor1 = this.baseColor;
