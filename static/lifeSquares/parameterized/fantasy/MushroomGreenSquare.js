@@ -6,6 +6,8 @@ import { addSquare } from "../../../squares/_sqOperations.js";
 import { SeedSquare } from "../../../squares/SeedSquare.js";
 import { CattailSeedOrganism } from "../../../organisms/midwest/CattailOrganism.js";
 import { MushroomSeedOrganism } from "../../../organisms/fantasy/MushroomOrganism.js";
+import { getCurDay } from "../../../climate/time.js";
+import { hueShiftColorArr, rgbToHex } from "../../../common.js";
 
 export class MushroomGreenSquare extends BaseLifeSquare {
     constructor(square, organism) {
@@ -49,12 +51,18 @@ export class MushroomGreenSquare extends BaseLifeSquare {
                     this.darkColor = "#0e55ae";
                     this.accentColor = "#6da6e3";
                     this.width = 1
-
                     break;
                 default:
                     console.warn("Subtype doesn't have a display configuration!")
             }
         }
+        let start = this.linkedOrganism.spawnTime;
+        let age = getCurDay() - start;
+        let cycles = age / this.linkedOrganism.growthCycleLength;
+        let hueShift = 50 * cycles;
+        this.accentColor = rgbToHex(...hueShiftColorArr(this.accentColor, hueShift, 0, 0));
+        this.darkColor = rgbToHex(...hueShiftColorArr(this.darkColor, hueShift, 0, 0));
+        this.baseColor = rgbToHex(...hueShiftColorArr(this.baseColor, hueShift, 0, 0));
     }
 
     doGroundDecay() {

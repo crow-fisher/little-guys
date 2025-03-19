@@ -26,6 +26,8 @@ class BaseOrganism {
         this.spawnTime = getCurDay();
         this.rootLastGrown = getCurDay();
 
+        this.evolutionParameters = null;
+
         this.greenType = null;
         this.rootType = null;
 
@@ -50,7 +52,7 @@ class BaseOrganism {
         this.growthNumRoots = 30;
         this.growthNitrogen = 50;
         this.growthPhosphorus = 25;
-        this.growthLightLevel = 0.8; // desire mostly full sun 
+        this.growthLightLevel = 0.5; 
         this.growthCycleMaturityLength = 0.8;
         this.growthCycleLength = 5 + Math.random(); // in days
         this.numGrowthCycles = 1;
@@ -65,10 +67,19 @@ class BaseOrganism {
         this.deflectionStateFunctions = [];
         this.rootOpacity = 0.02;
         this.lighting = square.lighting;
+        this.evolutionParameters = [0.5, 0.5]
     }
 
-    // WIND DEFLECTION 
+    setEvolutionParameters(evolutionParameters) {
+        this.evolutionParameters = evolutionParameters;
+        this.processGenetics();
+    }
 
+    getNextGenetics() {
+        return Array.from(this.evolutionParameters.map((v) => v += (Math.random() - 0.5) * 0.3));
+    }
+
+    processGenetics() {} // fill this out in your implementation class!
 
     getDecayNitrogen() {
         return this.nitrogen / this._lifeSquaresCount;
@@ -222,18 +233,15 @@ class BaseOrganism {
                 let refSquare = null;
                 if (parentSquare.lighting.length > 0) {
                     refSquare = parentSquare;
-                    console.log("Taking refsquare from parentSquare")
                 } else {
                     for (let i = this.lifeSquares.length -1 ; i >= 0; i--) {
                         let lsq = this.lifeSquares.at(i);
                         if (lsq.lighting.length > 0) {
                             refSquare = lsq;
-                            console.log("Taking refSquare from lsq;")
                             break;
                         }
                     }
                     if (refSquare == null) {
-                        console.log("Taking refsquare from this.linkedSquare")
                         refSquare = this.linkedSquare;
                     }
                 }

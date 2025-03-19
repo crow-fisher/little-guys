@@ -5,13 +5,14 @@ import { addNewOrganism } from "./_orgOperations.js";
 import { getCurDay, getTimeScale } from "../climate/time.js";
 
 class BaseSeedOrganism extends BaseOrganism {
-    constructor(square) {
+    constructor(square, evolutionParameters = null) {
         super(square);
         this.proto = "BaseSeedOrganism";
         this.sproutType = null;
         this.maxLifeTime = 1;
         this.startSproutTime = null;
-        this.totalSproutTime = 3 * (getTimeScale() / 86400); 
+        this.totalSproutTime = 3 * (getTimeScale() / 86400);
+        this.evolutionParameters = evolutionParameters;
         this.growInitialSquares();
     }
 
@@ -47,9 +48,16 @@ class BaseSeedOrganism extends BaseOrganism {
             } else if (getCurDay() - this.startSproutTime > this.totalSproutTime) {
                 let linkedSquareCache = this.linkedSquare;
                 this.destroy();
-                addNewOrganism(new (this.getSproutType())(linkedSquareCache));
+                this.applyEvolutionParameters(addNewOrganism(new (this.getSproutType())(linkedSquareCache)));
             }
         }
+    }
+
+    applyEvolutionParameters(org) {
+        if (org == null || this.evolutionParameters == null) {
+            return;
+        }
+        org.setEvolutionParameters(this.evolutionParameters);
     }
 
 
@@ -65,7 +73,7 @@ class BaseSeedOrganism extends BaseOrganism {
             }
             var linkedSquareCache = this.linkedSquare;
             this.destroy();
-            addNewOrganism(new (this.getSproutType())(linkedSquareCache));
+            this.applyEvolutionParameters(addNewOrganism(new (this.getSproutType())(linkedSquareCache)));
         }
     }
 }
