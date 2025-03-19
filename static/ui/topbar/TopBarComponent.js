@@ -118,7 +118,7 @@ export class TopBarComponent {
         }
 
         MAIN_CONTEXT.fillStyle = COLOR_BLACK;
-        MAIN_CONTEXT.fillRect(0, 0, getCanvasWidth(), this.ySize());
+        MAIN_CONTEXT.fillRect(0, 0, getCanvasWidth() + 5, this.ySize());
 
         let order = Array.from(Object.keys(this.elements).map(parseFloat)).sort()
         let curEndX = 0;

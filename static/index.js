@@ -44,7 +44,7 @@ export function getTotalCanvasPixelWidth() { return width; }
 export function getTotalCanvasPixelHeight() { return height; }
 
 export function indexCanvasSize() {
-    let margin = 5;
+    let margin = 0;
     width = Math.floor(window.innerWidth - margin);
     height = Math.floor(window.innerHeight - margin);
 
@@ -54,7 +54,7 @@ export function indexCanvasSize() {
     setBaseSize(c_baseSize);
 
     resetClimate();
-    MAIN_CANVAS.width = getBaseSize() * getCanvasSquaresX();
+    MAIN_CANVAS.width = width;
     MAIN_CANVAS.height = height; 
     initUI();
     resetZoom();
@@ -67,3 +67,4 @@ export function setBackgroundColor(hexColor) {
 }
 
 window.onresize = indexCanvasSize;
+document.documentElement.style.overflow = 'hidden';  // firefox, chrome
