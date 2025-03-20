@@ -1,5 +1,5 @@
 import { MAIN_CONTEXT } from "../index.js";
-import { hexToRgb, rgb2hsv, rgbToHex, rgbToRgba } from "../common.js";
+import { hexToRgb, hsv2rgb, rgb2hsv, rgbToHex, rgbToRgba } from "../common.js";
 
 import { getCurTime } from "../climate/time.js";
 import { addSquare, getSquares, removeOrganismSquare } from "../squares/_sqOperations.js";
@@ -27,10 +27,15 @@ class BaseLifeSquare {
         this.theta = 0;
 
         this.lightHealth = 1;
+        this.prevLightHealth = 1;
 
         this.baseColor = "#515c24";
         this.darkColor = "#353b1a";
         this.accentColor = "#5d6637";
+
+        this.baseColor_rgb = hexToRgb(this.baseColor); 
+        this.darkColor_rgb = hexToRgb(this.darkColor); 
+        this.accentColor_rgb = hexToRgb(this.accentColor); 
 
         this.baseColorAmount = 33;
         this.darkColorAmount = 33;
@@ -178,6 +183,13 @@ class BaseLifeSquare {
 
     }
 
+    processLightHealth(rgb) {
+        let hsv = rgb2hsv(rgb.r, rgb.g, rgb.b);
+        hsv[1] *= this.lightHealth;
+        let rgbArr = hsv2rgb(...hsv);
+        return {r: rgbArr[0], g: rgbArr[1], b: rgbArr[2]};
+    }
+
     subtypeColorUpdate() {
         if (this.type == "root") {
             return;
@@ -186,19 +198,18 @@ class BaseLifeSquare {
         this.applySubtypeRenderConfig();
         this.activeRenderSubtype = this.subtype;
         this.activeRenderState = this.state;
-        this.baseColor_rgb = hexToRgb(this.baseColor);
-        this.darkColor_rgb = hexToRgb(this.darkColor);
-        this.accentColor_rgb = hexToRgb(this.accentColor);
+        this.prevLightHealth = this.lightHealth;
+        this.baseColor_rgb = this.processLightHealth(hexToRgb(this.baseColor));
+        this.darkColor_rgb = this.processLightHealth(hexToRgb(this.darkColor));
+        this.accentColor_rgb = this.processLightHealth(hexToRgb(this.accentColor));
     }
 
     render() {
-        if (this.activeRenderSubtype != this.subtype || this.activeRenderState != this.state) {
+        if (this.lightHealth != this.prevLightHealth || this.activeRenderSubtype != this.subtype || this.activeRenderState != this.state) {
             this.subtypeColorUpdate();
         }
         if (this.linkedOrganism.stage == STAGE_DEAD) {
             this.opacity *= 0.99;
-        } else {
-            this.opacity = this.lightHealth;
         }
         let selectedViewMode = loadUI(UI_VIEWMODE_SELECT);
         if (selectedViewMode == UI_VIEWMODE_NITROGEN) {
@@ -271,33 +282,29 @@ class BaseLifeSquare {
         }
         else {
             var res = this.getStaticRand(1) * this.accentColorAmount + this.darkColorAmount + this.baseColorAmount;
-            var primaryColor = null;
+            var baseColor = null;
             var altColor1 = null;
             var altColor2 = null;
             if (res < this.accentColorAmount) {
-                primaryColor = this.accentColor;
-                altColor1 = this.darkColor;
-                altColor2 = this.baseColor;
+                baseColor = this.accentColor_rgb;
+                altColor1 = this.darkColor_rgb;
+                altColor2 = this.baseColor_rgb;
             } else if (res < this.accentColorAmount + this.darkColorAmount) {
-                primaryColor = this.accentColor;
-                altColor1 = this.baseColor;
-                altColor2 = this.darkColor;
+                baseColor = this.accentColor_rgb;
+                altColor1 = this.baseColor_rgb;
+                altColor2 = this.darkColor_rgb;
             } else {
-                altColor1 = this.accentColor;
-                altColor2 = this.darkColor;
-                primaryColor = this.baseColor;
+                altColor1 = this.accentColor_rgb;
+                altColor2 = this.darkColor_rgb;
+                baseColor = this.baseColor_rgb;
             }
 
             var rand = this.getStaticRand(2);
-            var baseColorRgb = hexToRgb(primaryColor);
-            var altColor1Rgb = hexToRgb(altColor1);
-            var altColor2Rgb = hexToRgb(altColor2);
-
             // the '0.1' is the base darkness
             var outColorBase = {
-                r: (baseColorRgb.r * 0.5 + ((altColor1Rgb.r * rand + altColor2Rgb.r * (1 - rand)) * 0.5)),
-                g: (baseColorRgb.g * 0.5 + ((altColor1Rgb.g * rand + altColor2Rgb.g * (1 - rand)) * 0.5)),
-                b: (baseColorRgb.b * 0.5 + ((altColor1Rgb.b * rand + altColor2Rgb.b * (1 - rand)) * 0.5))
+                r: (baseColor.r * 0.5 + ((altColor1.r * rand + altColor2.r * (1 - rand)) * 0.5)),
+                g: (baseColor.g * 0.5 + ((altColor1.g * rand + altColor2.g * (1 - rand)) * 0.5)),
+                b: (baseColor.b * 0.5 + ((altColor1.b * rand + altColor2.b * (1 - rand)) * 0.5))
             }
             var lightingColor = processLighting(this.lighting);
             var outColor = { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
