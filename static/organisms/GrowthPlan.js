@@ -469,7 +469,8 @@ export class GrowthComponent {
             livingLifeSquares.filter((lsq) => Math.random() > 1 - 0.05).forEach((lsq) => lsq.state = STATE_DEAD);
         }
         this.baseDeflection += amount;
-        this.children.forEach((child) => child.decay(amount / 2));
+        this.deflectionRollingAverage += amount;
+        // this.children.forEach((child) => child.decay(amount / 2));
         this.lifeSquares.filter((lsq) =>
             lsq.type == "green" &&
             lsq.state == STATE_DEAD &&

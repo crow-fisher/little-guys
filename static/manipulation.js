@@ -292,7 +292,7 @@ export function doClickAdd() {
                             if (chance > 0.95) {
                                 var sq = addSquare(new SeedSquare(px, py));
                                 if (sq) {
-                                    var orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [0, 0]));
+                                    var orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [Math.random(), 0]));
                                     if (!orgAdded) {
                                         sq.destroy();
                                     }
@@ -304,7 +304,7 @@ export function doClickAdd() {
                             if (chance > 0.95) {
                                 var sq = addSquare(new SeedSquare(px, py));
                                 if (sq) {
-                                    var orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [0.5, 0.5]));
+                                    var orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [Math.random(), 1]));
                                     if (!orgAdded) {
                                         sq.destroy();
                                     }
@@ -316,7 +316,7 @@ export function doClickAdd() {
                             if (chance > 0.95) {
                                 var sq = addSquare(new SeedSquare(px, py));
                                 if (sq) {
-                                    var orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [1, 1]));
+                                    var orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [1]));
                                     if (!orgAdded) {
                                         sq.destroy();
                                     }
@@ -328,7 +328,7 @@ export function doClickAdd() {
                             if (chance > 0.95) {
                                 var sq = addSquare(new SeedSquare(px, py));
                                 if (sq) {
-                                    var orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [Math.random(), Math.random()]));
+                                    var orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [Math.random()]));
                                     if (!orgAdded) {
                                         sq.destroy();
                                     }

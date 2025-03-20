@@ -7,7 +7,7 @@ import { SeedSquare } from "../../../squares/SeedSquare.js";
 import { CattailSeedOrganism } from "../../../organisms/midwest/CattailOrganism.js";
 import { MushroomSeedOrganism } from "../../../organisms/fantasy/MushroomOrganism.js";
 import { getCurDay } from "../../../climate/time.js";
-import { hueShiftColorArr, rgbToHex } from "../../../common.js";
+import { hueShiftColorArr, rgbToHex, rgbToRgba } from "../../../common.js";
 
 export class MushroomGreenSquare extends BaseLifeSquare {
     constructor(square, organism) {
@@ -20,68 +20,43 @@ export class MushroomGreenSquare extends BaseLifeSquare {
     }
 
     applySubtypeRenderConfig() {
-        if (this.state == STATE_DEAD) {
-            this.baseColor = "#70747e";
-            this.darkColor = "#a1816d";
-            this.accentColor = "#33261d";
-        } else if (this.state == STATE_THIRSTY) {
-            this.baseColor = "#6a7831";
-            this.darkColor = "#4a5226";
-            this.accentColor = "#67703f";
-        } else {
-            switch (this.subtype) {
-                case SUBTYPE_FLOWERNODE:
-                case SUBTYPE_FLOWER:
-                    this.baseColor = "#542f1f";
-                    this.darkColor = "#301a11";
-                    this.accentColor = "#3b231a";
-                    this.width = 1.4 + (0.1 * Math.random())
-                    break;
-                case SUBTYPE_TRUNK:
-                case SUBTYPE_SHOOT:
-                case SUBTYPE_SPROUT:
-                case SUBTYPE_STEM:
+        switch (this.subtype) {
+            case SUBTYPE_FLOWERNODE:
+            case SUBTYPE_FLOWER:
+                this.baseColor = "#542f1f";
+                this.darkColor = "#301a11";
+                this.accentColor = "#3b231a";
+                this.width = 1.4 + (0.1 * Math.random())
+                break;
+            case SUBTYPE_TRUNK:
+            case SUBTYPE_SHOOT:
+            case SUBTYPE_SPROUT:
+            case SUBTYPE_STEM:
+                if (this.linkedOrganism.evolutionParameters[1] == 0) {
                     this.baseColor = "#def6fc";
                     this.darkColor = "#7290ba";
                     this.accentColor = "#657373"; 
-                    break;
-                case SUBTYPE_NODE:
-                case SUBTYPE_LEAF:
-                    this.baseColor = "#13346d";
-                    this.darkColor = "#0e55ae";
-                    this.accentColor = "#6da6e3";
-                    this.width = 1
-                    break;
-                default:
-                    console.warn("Subtype doesn't have a display configuration!")
-            }
-        }
-        let start = this.linkedOrganism.spawnTime;
-        let age = getCurDay() - start;
-        let cycles = age / this.linkedOrganism.growthCycleLength;
-        let hueShift = 50 * cycles;
-        this.accentColor = rgbToHex(...hueShiftColorArr(this.accentColor, hueShift, 0, 0));
-        this.darkColor = rgbToHex(...hueShiftColorArr(this.darkColor, hueShift, 0, 0));
-        this.baseColor = rgbToHex(...hueShiftColorArr(this.baseColor, hueShift, 0, 0));
-    }
-
-    doGroundDecay() {
-        super.doGroundDecay();
-        if (this.subtype == SUBTYPE_FLOWER || this.subtype == SUBTYPE_FLOWERNODE) {
-            let groundSquare = this.groundTouchSquare();
-            let offsetY = 1;
-            if (groundSquare.currentPressureDirect > 0) {
-                offsetY += (groundSquare.currentPressureDirect + 1);
-            }
-            var sq = addSquare(new SeedSquare(groundSquare.posX, groundSquare.posY - offsetY));
-            if (sq) {
-                sq.opacity = 0;
-                var orgAdded = addNewOrganism(new MushroomSeedOrganism(sq));
-                if (!orgAdded) {
-                    sq.destroy();
+                } else {
+                    this.baseColor = "#450c1f";
+                    this.darkColor = "#380726";
+                    this.accentColor = "#400622"; 
                 }
-            }
+                break;
+            case SUBTYPE_NODE:
+            case SUBTYPE_LEAF:
+                this.baseColor = "#13346d";
+                this.darkColor = "#0e55ae";
+                this.accentColor = "#6da6e3";
+                this.width = 1
+                break;
+            default:
+                console.warn("Subtype doesn't have a display configuration!")
         }
-
+        if (this.subtype != SUBTYPE_STEM) {
+            let hueShift = ((this.linkedOrganism.evolutionParameters[1] == 1) ? 100 : 0) + 100 * this.linkedOrganism.evolutionParameters[0];
+            this.accentColor = rgbToHex(...hueShiftColorArr(this.accentColor, hueShift, 0,0));
+            this.darkColor = rgbToHex(...hueShiftColorArr(this.darkColor, hueShift, 0, 0));
+            this.baseColor = rgbToHex(...hueShiftColorArr(this.baseColor, hueShift, 0, 0));
+        }
     }
 }

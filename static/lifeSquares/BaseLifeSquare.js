@@ -1,5 +1,5 @@
 import { MAIN_CONTEXT } from "../index.js";
-import { hexToRgb, rgbToHex, rgbToRgba } from "../common.js";
+import { hexToRgb, rgb2hsv, rgbToHex, rgbToRgba } from "../common.js";
 
 import { getCurTime } from "../climate/time.js";
 import { addSquare, getSquares, removeOrganismSquare } from "../squares/_sqOperations.js";
@@ -7,7 +7,7 @@ import { addSquare, getSquares, removeOrganismSquare } from "../squares/_sqOpera
 import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED } from "../colors.js";
 import { addOrganismSquare } from "./_lsOperations.js";
 import { removeSquare } from "../globalOperations.js";
-import { STATE_DEAD, STATE_HEALTHY, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, STATE_DESTROYED, SUBTYPE_FLOWER } from "../organisms/Stages.js";
+import { STATE_DEAD, STATE_HEALTHY, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, STATE_DESTROYED, SUBTYPE_FLOWER, STAGE_DEAD } from "../organisms/Stages.js";
 import { processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, zoomCanvasFillRect, zoomCanvasFillRectTheta } from "../canvas.js";
 import { loadUI, UI_LIGHTING_PLANT, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
@@ -25,6 +25,8 @@ class BaseLifeSquare {
         this.type = "base";
         this.subtype = "";
         this.theta = 0;
+
+        this.lightHealth = 1;
 
         this.baseColor = "#515c24";
         this.darkColor = "#353b1a";
@@ -70,6 +72,8 @@ class BaseLifeSquare {
 
         this.lighting = [];
         this.touchingGround = null;
+
+
     }
 
     groundTouchSquare() {
@@ -91,7 +95,7 @@ class BaseLifeSquare {
     }
 
     getLightFilterRate() {
-        return 0.00015 * (this.width ** 2) * loadUI(UI_LIGHTING_PLANT);
+        return 0.00013 * (this.width ** 2) * loadUI(UI_LIGHTING_PLANT);
     }
 
     getLsqRenderSizeMult() {
@@ -190,6 +194,11 @@ class BaseLifeSquare {
     render() {
         if (this.activeRenderSubtype != this.subtype || this.activeRenderState != this.state) {
             this.subtypeColorUpdate();
+        }
+        if (this.linkedOrganism.stage == STAGE_DEAD) {
+            this.opacity *= 0.99;
+        } else {
+            this.opacity = this.lightHealth;
         }
         let selectedViewMode = loadUI(UI_VIEWMODE_SELECT);
         if (selectedViewMode == UI_VIEWMODE_NITROGEN) {

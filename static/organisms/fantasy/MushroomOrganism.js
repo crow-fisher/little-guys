@@ -20,9 +20,9 @@ export class MushroomOrganism extends BaseOrganism {
         this.rootType = GenericParameterizedRootSquare;
         this.grassGrowTimeInDays =  0.01;
 
-        this.numGrowthCycles = 20 * Math.random();
-        this.growthCycleMaturityLength = .0005;
-        this.growthCycleLength = .0005;
+        this.numGrowthCycles = 1;
+        this.growthCycleMaturityLength = .0015 * (1 + Math.random());
+        this.growthCycleLength = this.growthCycleMaturityLength * 1.5;
         this.growthNitrogen = 25;
         this.growthPhosphorus = 25;
         this.growthLightLevel = 0.5; 
@@ -33,15 +33,16 @@ export class MushroomOrganism extends BaseOrganism {
 
         this.curLeafTheta = 0;
 
-        this.maxNumLeaves = 10;
-        this.maxStemLength = 30;
-        this.maxLeafLength = 20;
+        this.maxNumLeaves = 4;
+        this.maxStemLength = 25;
+        this.maxLeafLength = 15;
 
         this.targetNumStems = 1;
         this.targetNumLeaves = 1;
         this.targetLeafLength = 1;
         this.targetStemLength = 1;
         this.curGrowthCycleNum = 0;
+
         this.growthNumGreen = this.maxNumLeaves * (this.maxLeafLength) + this.maxStemLength;
     }
 
@@ -49,28 +50,22 @@ export class MushroomOrganism extends BaseOrganism {
         // param 0 - shady and squat or bright and tall 
         // will also impact life cycle
         this.evolutionParameters[0] = Math.min(Math.max(this.evolutionParameters[0], 0), 1)
-        this.evolutionParameters[1] = Math.min(Math.max(this.evolutionParameters[1], 0), 1)
 
-        let p0 = .5 + this.evolutionParameters[0] / 2;
-        let p1 = .5 + this.evolutionParameters[1] / 2;
+        let p0 = .1 + this.evolutionParameters[0] * 0.9;
+        let p1 = this.evolutionParameters[1];
+        this.growthLightLevel = p0 + 0.1;
 
-        // if p0 is high, live longer 
-        this.growthCycleLength *= p0;
-        this.growthCycleMaturityLength *= p0;
-        this.growthLightLevel = (p0 / 2);
-        this.maxStemLength *= p0;
-
-        // // p1 is for leaf length and leaf count
-        this.maxNumLeaves = Math.floor(this.maxNumLeaves * p1);
-        this.maxLeafLength = Math.floor(this.maxLeafLength * p1);
-        
-        console.log("Applied evolution parameters: ", p0, p1, this.growthCycleLength,
-            this.growthCycleMaturityLength,
-            this.growthLightLevel,
-            this.maxStemLength,
-            this.maxNumLeaves,
-            this.maxLeafLength
-        )
+        if (p1 == 0) {
+            // "correct" case - as p0 gets higher, grow taller with longer leaves and require more light
+            this.maxStemLength *= p0;
+            this.maxLeafLength = Math.floor(this.maxLeafLength * p0);
+        } else {
+            // "incorrect case" - as p0 gets higher, grow squatter with shorter leaves and require more light
+            let p0i = 1 - p0;
+            this.maxStemLength *= p0i;
+            this.maxLeafLength = Math.floor(this.maxLeafLength * p0i);
+        }
+        this.growthNumGreen = this.maxNumLeaves * (this.maxLeafLength) + this.maxStemLength;
     }
 
 
@@ -208,7 +203,7 @@ export class MushroomOrganism extends BaseOrganism {
         if (this.originGrowth != null && this.stems.length > 0) {
             let stem = this.originGrowth.getChildFromPath(this.stems[0]);
             if (stem != null) {
-                stem.lifeSquares.forEach((lsq) => lsq.width = 1 + (this.targetStemLength / this.maxStemLength));
+                stem.lifeSquares.forEach((lsq) => lsq.width = .5 + .3 * Math.log(1 + this.targetStemLength));
             }
         }
 

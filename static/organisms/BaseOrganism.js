@@ -67,7 +67,7 @@ class BaseOrganism {
         this.deflectionStateFunctions = [];
         this.rootOpacity = 0.02;
         this.lighting = square.lighting;
-        this.evolutionParameters = [0.5, 0.5]
+        this.evolutionParameters = [0.5]
     }
 
     setEvolutionParameters(evolutionParameters) {
@@ -76,7 +76,7 @@ class BaseOrganism {
     }
 
     getNextGenetics() {
-        return Array.from(this.evolutionParameters.map((v) => v += (Math.random() - 0.5) * 0.3));
+        return Array.from(this.evolutionParameters.map((v) => (v == 1 || v == 0) ? v : v += (Math.random() - 0.5) * 0.3));
     }
 
     processGenetics() {} // fill this out in your implementation class!
@@ -148,8 +148,8 @@ class BaseOrganism {
 
         this.lightlevel += this.lifeSquares
             .filter((lsq) => lsq.type == "green")
-            .map((lsq) => processLighting(lsq.lighting))
-            .map((rgb) => (rgb.r + rgb.b) / (255 * 2))
+            .map((lsq) => [processLighting(lsq.lighting), lsq.lightHealth])
+            .map((argb) => argb[1] * (argb[0].r + argb[0].b) / (255 * 2))
             .map((lightlevel) => (lightlevel / growthNumGreen) * growthCycleFrac)
             .reduce(
                 (accumulator, currentValue) => accumulator + currentValue,
@@ -388,6 +388,10 @@ class BaseOrganism {
         let expectedNitrogen = curMaturityFrac ** 2 * this.growthNitrogen;
         let expectedPhosphorus = curMaturityFrac ** 2 * this.growthPhosphorus;
         let expectedLightLevel = curMaturityFrac ** 2 * this.growthLightLevel;
+
+        if (this.growthLightLevel > expectedLightLevel) {
+            this.lifeSquares.forEach((lsq) => lsq.lightHealth *= (1 - (getDt() / this.growthCycleMaturityLength)));
+        }
 
         let scoreFunc = (sq) => {
             var sqScore = 0;
