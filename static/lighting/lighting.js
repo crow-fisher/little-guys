@@ -1,7 +1,7 @@
 import { getAllSquares } from "../squares/_sqOperations.js";
 import { getCloudColorAtPos } from "../climate/temperatureHumidity.js";
 import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "../climate/time.js";
-import { loadUI, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_SUN } from "../ui/UIData.js";
+import { loadUI, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_SUNNODES, UI_LIGHTING_SUN } from "../ui/UIData.js";
 import { getWindSquaresX, getWindSquaresY } from "../climate/wind.js";
 import { getCanvasSquaresX, getCanvasSquaresY } from "../canvas.js";
 import { getCurLightingInterval } from "./lightingHandler.js";
@@ -30,15 +30,14 @@ export function lightingRegisterLifeSquare(lifeSquare) {
 }
 
 export function createSunLightGroup() {
-    let numNodes = 10;
-
+    let numNodes = loadUI(UI_LIGHTING_SUNNODES);
     let sunLightGroup = new MovingLinearLightGroup(
-        getCanvasSquaresX(),
+        getCanvasSquaresX() / 2,
         -1,
         getCanvasSquaresX(),
         numNodes,
         getCurrentLightColorTemperature,
-        () => loadUI(UI_LIGHTING_SUN) * getDaylightStrength(),
+        () => loadUI(UI_LIGHTING_SUN) * getDaylightStrength() / numNodes,
         1,
         0.15,
         -1,

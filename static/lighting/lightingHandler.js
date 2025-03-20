@@ -1,11 +1,11 @@
 import { getFrameDt } from "../climate/time.js";
 import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
-import { loadUI, UI_LIGHTING_FASTUPDATERATE, UI_LIGHTING_SLOWUPDATERATE, UI_LIGHTING_FASTLIGHTING, UI_LIGHTING_ENABLED } from "../ui/UIData.js";
+import { loadUI, UI_LIGHTING_UPDATERATE, UI_LIGHTING_SUNNODES, UI_LIGHTING_FASTLIGHTING, UI_LIGHTING_ENABLED } from "../ui/UIData.js";
 import { createMoonLightGroup, createSunLightGroup, lightingClearLifeSquarePositionMap, lightingRegisterLifeSquare } from "./lighting.js";
 
 
 export function getCurLightingInterval() {
-    return (loadUI(UI_LIGHTING_FASTLIGHTING) ? loadUI(UI_LIGHTING_FASTUPDATERATE) : loadUI(UI_LIGHTING_SLOWUPDATERATE)) * getFrameDt();
+    return loadUI(UI_LIGHTING_UPDATERATE) * getFrameDt();
 }
 
 export function setNextLightingInterval(inVal) {

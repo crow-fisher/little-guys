@@ -7,7 +7,7 @@ import { Button } from "../elements/Button.js";
 import { Radio } from "../elements/Radio.js";
 import { Text } from "../elements/Text.js";
 import { Toggle } from "../elements/Toggle.js";
-import { loadUI, UI_CENTER, UI_LIGHTING_ENABLED, UI_LIGHTING_FASTLIGHTING, UI_LIGHTING_FASTUPDATERATE, UI_LIGHTING_SLOWUPDATERATE, UI_SM_BB, UI_SM_CLIMATE, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_PALETTE_ACTIVE } from "../UIData.js";
+import { loadUI, UI_CENTER, UI_LIGHTING_ENABLED, UI_LIGHTING_FASTLIGHTING, UI_LIGHTING_UPDATERATE, UI_LIGHTING_SUNNODES, UI_SM_BB, UI_SM_CLIMATE, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_PALETTE_ACTIVE } from "../UIData.js";
 import { SubTreeComponent } from "./SubTreeComponent.js";
 
 

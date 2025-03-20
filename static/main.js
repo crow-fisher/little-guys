@@ -20,11 +20,12 @@ let updated = false;
 
 initUI();
 
-const lightingHandler = new LightingHandler();
-const climateHandler = new ClimateHandler();
+let lightingHandler = new LightingHandler();
+let climateHandler = new ClimateHandler();
 
-export function resetClimate() {
-    climateHandler.reset();
+export function resetClimateAndLighting() {
+    lightingHandler = new LightingHandler();
+    climateHandler = new ClimateHandler();
 }
 
 export function triggerEarlySquareScheduler() {

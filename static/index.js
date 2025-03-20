@@ -1,13 +1,14 @@
 
 
 import { loadEmptyScene } from "./saveAndLoad.js";
-import { resetClimate, scheduler_main } from "./main.js";
+import { resetClimateAndLighting, scheduler_main } from "./main.js";
 import { keydown, keyup } from "./keyboard.js";
 import { handleClick, handleMouseDown, handleMouseUp } from "./mouse.js";
 import { getBaseSize, getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, resetZoom, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, zoom } from "./canvas.js";
 import { addUIFunctionMap, loadUI, UI_DISPLAY_SIZEY, UI_SIZE } from "./ui/UIData.js";
 import { initUI } from "./ui/WindowManager.js";
 import { initTemperatureHumidity } from "./climate/temperatureHumidity.js";
+import { iterateOnSquares } from "./squares/_sqOperations.js";
 
 export var MAIN_CANVAS = document.getElementById("main");
 export var MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
@@ -52,8 +53,10 @@ export function indexCanvasSize() {
     setCanvasSquaresY(loadUI(UI_DISPLAY_SIZEY));
     setCanvasSquaresX(Math.floor(width / c_baseSize));      
     setBaseSize(c_baseSize);
+    resetClimateAndLighting();
 
-    resetClimate();
+    iterateOnSquares((sq) => sq.lighting = new Array());
+
     MAIN_CANVAS.width = width;
     MAIN_CANVAS.height = height; 
     initUI();
