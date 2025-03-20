@@ -60,7 +60,7 @@ function doBrushFunc(centerX, centerY, func) {
     }
     for (var i = -radius; i <= radius; i++) {
         for (var j = -radius; j <= radius; j++) {
-            if ( Math.ceil((i ** 2 + j ** 2) * 0.5) > radius) {
+            if (Math.ceil((i ** 2 + j ** 2) * 0.5) > radius) {
                 continue;
             }
             if (Math.random() > loadUI(UI_PALETTE_STRENGTH) ** 2) {
@@ -78,7 +78,7 @@ export function addActivePaletteToolSquare(posX, posY) {
         addSquareOverride(new SoilSquare(posX, posY));
     }
 }
-    
+
 export function addSquareByName(posX, posY, name) {
     var square;
     switch (name) {
@@ -112,7 +112,7 @@ function doBlockMod(posX, posY) {
             addTemperature(posX, posY, .5);
         else
             addTemperature(posX, posY, -0.5);
-    }   
+    }
     if (loadUI(UI_GODMODE_SELECT) == UI_GODMODE_MOISTURE) {
         if (!isRightMouseClicked())
             addWaterSaturationPascalsSqCoords(posX, posY, 10 * loadUI(UI_GODMODE_STRENGTH));
@@ -137,11 +137,11 @@ function doClimateMod(posX, posY) {
         case UI_CLIMATE_WEATHER_TOOL_MATCHEDAIR:
             addWindPerssureMaintainHumidity(posX, posY, pressure);
             break;
-            
+
         case UI_CLIMATE_WEATHER_TOOL_LIGHTCLOUD:
             addWindPressureCloud(posX, posY, pressure, 1.01);
             break;
-        
+
         case UI_CLIMATE_WEATHER_TOOL_HEAVYCLOUD:
             addWindPressureCloud(posX, posY, pressure, 1.1);
             break;
@@ -286,8 +286,20 @@ export function doClickAdd() {
                                     }
                                 }
                             }
-                            break; 
-                        case "mushroom":
+                            break;
+                        case "mushroom1":
+                            var chance = Math.random();
+                            if (chance > 0.95) {
+                                var sq = addSquare(new SeedSquare(px, py));
+                                if (sq) {
+                                    var orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [0, 0]));
+                                    if (!orgAdded) {
+                                        sq.destroy();
+                                    }
+                                }
+                            }
+                            break;
+                        case "mushroom2":
                             var chance = Math.random();
                             if (chance > 0.95) {
                                 var sq = addSquare(new SeedSquare(px, py));
@@ -298,7 +310,31 @@ export function doClickAdd() {
                                     }
                                 }
                             }
-                            break; 
+                            break;
+                        case "mushroom3":
+                            var chance = Math.random();
+                            if (chance > 0.95) {
+                                var sq = addSquare(new SeedSquare(px, py));
+                                if (sq) {
+                                    var orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [1, 1]));
+                                    if (!orgAdded) {
+                                        sq.destroy();
+                                    }
+                                }
+                            }
+                            break;
+                        case "mushroom4":
+                            var chance = Math.random();
+                            if (chance > 0.95) {
+                                var sq = addSquare(new SeedSquare(px, py));
+                                if (sq) {
+                                    var orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [Math.random(), Math.random()]));
+                                    if (!orgAdded) {
+                                        sq.destroy();
+                                    }
+                                }
+                            }
+                            break;
                     }
                 }
             }

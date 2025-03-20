@@ -20,9 +20,9 @@ export class MushroomOrganism extends BaseOrganism {
         this.rootType = GenericParameterizedRootSquare;
         this.grassGrowTimeInDays =  0.01;
 
-        this.numGrowthCycles = 5;
-        this.growthCycleMaturityLength = 2;
-        this.growthCycleLength = 2;
+        this.numGrowthCycles = 20 * Math.random();
+        this.growthCycleMaturityLength = .0005;
+        this.growthCycleLength = .0005;
         this.growthNitrogen = 25;
         this.growthPhosphorus = 25;
         this.growthLightLevel = 0.5; 
@@ -36,13 +36,11 @@ export class MushroomOrganism extends BaseOrganism {
         this.maxNumLeaves = 10;
         this.maxStemLength = 30;
         this.maxLeafLength = 20;
-        this.maxFlowerLength = 6;
 
         this.targetNumStems = 1;
         this.targetNumLeaves = 1;
         this.targetLeafLength = 1;
         this.targetStemLength = 1;
-        this.targetFlowerLength = this.maxFlowerLength;
         this.curGrowthCycleNum = 0;
         this.growthNumGreen = this.maxNumLeaves * (this.maxLeafLength) + this.maxStemLength;
     }
@@ -50,18 +48,21 @@ export class MushroomOrganism extends BaseOrganism {
     processGenetics() {
         // param 0 - shady and squat or bright and tall 
         // will also impact life cycle
-        let p0 = this.evolutionParameters[0];
-        let p1 = this.evolutionParameters[1];
+        this.evolutionParameters[0] = Math.min(Math.max(this.evolutionParameters[0], 0), 1)
+        this.evolutionParameters[1] = Math.min(Math.max(this.evolutionParameters[1], 0), 1)
+
+        let p0 = .5 + this.evolutionParameters[0] / 2;
+        let p1 = .5 + this.evolutionParameters[1] / 2;
 
         // if p0 is high, live longer 
         this.growthCycleLength *= p0;
         this.growthCycleMaturityLength *= p0;
-        this.growthLightLevel = p0;
+        this.growthLightLevel = (p0 / 2);
         this.maxStemLength *= p0;
 
-        // p1 is for leaf length and leaf count
-        this.maxNumLeaves *= p1;
-        this.maxLeafLength *= p1;
+        // // p1 is for leaf length and leaf count
+        this.maxNumLeaves = Math.floor(this.maxNumLeaves * p1);
+        this.maxLeafLength = Math.floor(this.maxLeafLength * p1);
         
         console.log("Applied evolution parameters: ", p0, p1, this.growthCycleLength,
             this.growthCycleMaturityLength,

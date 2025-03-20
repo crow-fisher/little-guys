@@ -57,7 +57,7 @@ export class BlockPalette extends Component {
             for (let j = 0; j < this.palette[i].length; j++) {
                 row.addElement(new Button(this.window, sizeX / this.palette[i].length, buttonHeight, 0, () => saveUI(UI_PALETTE_COMPOSITION, this.palette[i][j]), 
                 "", () => getActiveClimate().getBaseActiveToolBrightness(this.palette[i][j], 1)))
-            }
+            }   
         }
         
         let palleteSelectAdvancedRow = new Container(this.window, 0, 0);

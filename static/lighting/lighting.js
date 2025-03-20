@@ -31,10 +31,9 @@ export function lightingRegisterLifeSquare(lifeSquare) {
 
 export function createSunLightGroup() {
     let numNodes = 10;
-    let maxNumNodes = 10;
 
     let sunLightGroup = new MovingLinearLightGroup(
-        getCanvasSquaresX() / 2,
+        getCanvasSquaresX(),
         -1,
         getCanvasSquaresX(),
         numNodes,
@@ -207,6 +206,7 @@ export class MovingLinearLightGroup {
     }
 
     thetaBrightnessFunc(theta) {
+        return 1;
         let curTime = getCurDay() % 1;
         let st = this.startTime;
         let et = this.endTime;
@@ -235,7 +235,7 @@ export class MovingLinearLightGroup {
             let posX = startX + i * step;
             let minMaxTheta = this.getMinMaxTheta(posX, this.centerY);
             let newLightSource = new LightSource(
-                startX + i * step,
+                posX,
                 this.centerY,
                 this.brightnessFunc,
                 (theta) => this.thetaBrightnessFunc(theta),
