@@ -9,6 +9,7 @@ import { renderWindPressureMap } from "./climate/wind.js";
 import { LightingHandler } from "./lighting/lightingHandler.js";
 import { ClimateHandler } from "./climate/climateHandler.js";
 import { isLeftMouseClicked } from "./mouse.js";
+import { LightingThreadHandler } from "./lighting/lightingThreadHandler.js";
  
 const SQUARE_UPDATE_MILLIS = 0;
 const ORG_UPDATE_MILLIS = 0;
@@ -22,6 +23,7 @@ initUI();
 
 const lightingHandler = new LightingHandler();
 const climateHandler = new ClimateHandler();
+const lightingThreadHandler = new LightingThreadHandler();
 
 export function resetClimate() {
     climateHandler.reset();
