@@ -414,9 +414,7 @@ export class LightSource {
                 })
             });
         });
-        thetaSquares = [...new Set(thetaSquares)];
         thetaSquares.sort((a, b) => (a[0] ** 2 + a[1] ** 2) ** 0.5 - (b[0] ** 2 + b[1] ** 2) ** 0.5);
-
         let curBrightness = 1;
         thetaSquares.forEach((loc) => {
             targetLists.forEach((list) => {
