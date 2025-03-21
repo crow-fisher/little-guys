@@ -66,7 +66,7 @@ class BaseOrganism {
         this.deflectionIdx = 0;
         this.deflectionStateTheta = 0;
         this.deflectionStateFunctions = [];
-        this.rootOpacity = 0.02;
+        this.rootOpacity = 0.15;
         this.lighting = square.lighting;
         this.evolutionParameters = [0.5]
     }
@@ -406,14 +406,15 @@ class BaseOrganism {
                 sqScore += sq.getSoilWaterPressure() / this.waterPressure;
             }
             if (this.nitrogen < expectedNitrogen) {
-                sqScore += sq.nitrogen / this.growthNitrogen;
+                sqScore += (sq.nitrogen / this.growthNitrogen) / (sq.linkedOrganismSquares.length + 1);
             }
             if (this.phosphorus < expectedPhosphorus) {
-                sqScore += sq.phosphorus / this.growthPhosphorus;
+                sqScore += (sq.phosphorus / this.growthPhosphorus) / (sq.linkedOrganismSquares.length + 1);
             }
         }
         if (this.waterPressure < this.waterPressureTarget || this.nitrogen < expectedNitrogen || this.phosphorus < expectedPhosphorus) {
             this.growRoot(scoreFunc);
+            return;
         }
         if (this.lightlevel < expectedLightLevel) {
             this.executeGrowthPlans();
@@ -509,7 +510,8 @@ class BaseOrganism {
     }
 
     hasPlantLivedTooLong() {
-        let max = this.spawnTime + this.growthCycleLength * (this.numGrowthCycles + 1);
+        let count = (this.numGrowthCycles == 1 ? 3 : (this.numGrowthCycles));
+        let max = this.spawnTime + this.growthCycleLength * count;
         if (getCurDay() > max) {
             this.stage = STAGE_DEAD;
         }

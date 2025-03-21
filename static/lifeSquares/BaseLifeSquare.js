@@ -10,7 +10,7 @@ import { removeSquare } from "../globalOperations.js";
 import { STATE_DEAD, STATE_HEALTHY, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, STATE_DESTROYED, SUBTYPE_FLOWER, STAGE_DEAD } from "../organisms/Stages.js";
 import { processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, zoomCanvasFillRect, zoomCanvasFillRectTheta } from "../canvas.js";
-import { loadUI, UI_LIGHTING_PLANT, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
+import { loadUI, UI_LIGHTING_PLANT, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
 
 
 class BaseLifeSquare {
@@ -309,11 +309,16 @@ class BaseLifeSquare {
                 g: (baseColor.g * 0.5 + ((altColor1.g * rand + altColor2.g * (1 - rand)) * 0.5)),
                 b: (baseColor.b * 0.5 + ((altColor1.b * rand + altColor2.b * (1 - rand)) * 0.5))
             }
-            var lightingColor = processLighting(this.lighting);
+            let lightingColor; 
+            if (this.type == "root")
+                lightingColor = processLighting(this.linkedSquare.lighting);
+            else    
+                lightingColor = processLighting(this.lighting);
+            
             var outColor = { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
             
             var opacity = this.opacity;
-            if (selectedViewMode == "organismStructure") {
+            if (selectedViewMode == UI_VIEWMODE_ORGANISMS) {
                 opacity = Math.max(0.25, this.opacity);
             }
             var outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacity);

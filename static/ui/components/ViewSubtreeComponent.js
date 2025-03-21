@@ -2,6 +2,8 @@ import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { Component } from "../Component.js";
 import { Container } from "../Container.js";
+import { RadioToggle } from "../elements/RadioToggle.js";
+import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
 import { RowedRadio } from "../elements/RowedRadio.js";
 import { Text } from "../elements/Text.js";
 import { Toggle } from "../elements/Toggle.js";
@@ -26,14 +28,14 @@ export class ViewSubtreeComponent extends SubTreeComponent {
         this.window.container = container;
         let textAlignOffsetX = getBaseUISize() * 1.99;
 
-        container.addElement(new Toggle(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_VIEWMODE_NORMAL, "normal",() => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
-        container.addElement(new Toggle(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_VIEWMODE_LIGHTIHNG, "lighting",() => getActiveClimate().getUIColorInactiveCustom(0.63), () => getActiveClimate().getUIColorActive()));
-        container.addElement(new Toggle(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_VIEWMODE_NITROGEN, "nitrogen",() => getActiveClimate().getUIColorInactiveCustom(0.58), () => getActiveClimate().getUIColorActive()));
-        container.addElement(new Toggle(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_VIEWMODE_PHOSPHORUS, "phosphorus",() => getActiveClimate().getUIColorInactiveCustom(0.64), () => getActiveClimate().getUIColorActive()));
-        container.addElement(new Toggle(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_VIEWMODE_WIND, "wind",() => getActiveClimate().getUIColorInactiveCustom(0.57), () => getActiveClimate().getUIColorActive()));
-        container.addElement(new Toggle(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_VIEWMODE_TEMPERATURE, "temperature",() => getActiveClimate().getUIColorInactive(0.55), () => getActiveClimate().getUIColorActive()));
-        container.addElement(new Toggle(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_VIEWMODE_MOISTURE, "moisture",() => getActiveClimate().getUIColorInactiveCustom(0.67), () => getActiveClimate().getUIColorActive()));
-        container.addElement(new Toggle(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_VIEWMODE_SURFACE, "surface",() => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorActive()));
-        container.addElement(new Toggle(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_VIEWMODE_ORGANISMS, "organisms",() => getActiveClimate().getUIColorInactiveCustom(0.66), () => getActiveClimate().getUIColorActive()));
+        container.addElement(new RadioToggleLabel(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX,"normal",  UI_VIEWMODE_SELECT, UI_VIEWMODE_NORMAL,() => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
+        container.addElement(new RadioToggleLabel(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX,"lighting",  UI_VIEWMODE_SELECT, UI_VIEWMODE_LIGHTIHNG,() => getActiveClimate().getUIColorInactiveCustom(0.63), () => getActiveClimate().getUIColorActive()));
+        container.addElement(new RadioToggleLabel(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX,"nitrogen",  UI_VIEWMODE_SELECT, UI_VIEWMODE_NITROGEN,() => getActiveClimate().getUIColorInactiveCustom(0.58), () => getActiveClimate().getUIColorActive()));
+        container.addElement(new RadioToggleLabel(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX,"phosphorus",  UI_VIEWMODE_SELECT, UI_VIEWMODE_PHOSPHORUS,() => getActiveClimate().getUIColorInactiveCustom(0.64), () => getActiveClimate().getUIColorActive()));
+        container.addElement(new RadioToggleLabel(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX,"wind",  UI_VIEWMODE_SELECT, UI_VIEWMODE_WIND,() => getActiveClimate().getUIColorInactiveCustom(0.57), () => getActiveClimate().getUIColorActive()));
+        container.addElement(new RadioToggleLabel(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX,"temperature",  UI_VIEWMODE_SELECT, UI_VIEWMODE_TEMPERATURE,() => getActiveClimate().getUIColorInactive(0.55), () => getActiveClimate().getUIColorActive()));
+        container.addElement(new RadioToggleLabel(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX,"moisture",  UI_VIEWMODE_SELECT, UI_VIEWMODE_MOISTURE,() => getActiveClimate().getUIColorInactiveCustom(0.67), () => getActiveClimate().getUIColorActive()));
+        container.addElement(new RadioToggleLabel(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX,"surface",  UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE,() => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorActive()));
+        container.addElement(new RadioToggleLabel(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX,"organisms",  UI_VIEWMODE_SELECT, UI_VIEWMODE_ORGANISMS,() => getActiveClimate().getUIColorInactiveCustom(0.66), () => getActiveClimate().getUIColorActive()));
     }
 }

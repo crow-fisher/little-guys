@@ -26,7 +26,7 @@ import { RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
 import { getCurDay, getCurrentLightColorTemperature, timeScaleFactor } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasSquaresY, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
-import { loadUI, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE } from "../ui/UIData.js";
+import { loadUI, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS } from "../ui/UIData.js";
 
 export class BaseSquare {
     constructor(posX, posY) {
@@ -220,19 +220,20 @@ export class BaseSquare {
         }
         let selectedViewMode = loadUI(UI_VIEWMODE_SELECT);
         if (selectedViewMode == UI_VIEWMODE_NORMAL) {
-            this.renderWithVariedColors();
+            this.renderWithVariedColors(1);
+        }
+        else if (selectedViewMode == UI_VIEWMODE_ORGANISMS) {
+            this.renderWithVariedColors(0.35);
+
         }
         if (selectedViewMode == UI_VIEWMODE_LIGHTIHNG) {
-            this.renderWithVariedColors();
+            this.renderWithVariedColors(1);
             this.renderLightingView();
         }
         else if (selectedViewMode == UI_VIEWMODE_MOISTURE) {
             this.renderWaterSaturation();
-        }
-        else if (selectedViewMode.startsWith("organism")) {
-            this.renderAsGrey();
         } else if (selectedViewMode == UI_VIEWMODE_SURFACE || (loadUI(UI_PALETTE_ACTIVE) && loadUI(UI_PALETTE_SELECT) == UI_PALETTE_SURFACE)) {
-            this.renderWithVariedColors();
+            this.renderWithVariedColors(1);
             this.renderSurface();
         }
         else if (selectedViewMode == UI_VIEWMODE_TEMPERATURE) {
@@ -349,14 +350,14 @@ export class BaseSquare {
         );
     }
 
-    renderWithVariedColors() {
+    renderWithVariedColors(opacityMult) {
         if (Date.now() > this.lastColorCacheTime + 500 * Math.random()) {
             this.lastColorCacheTime = Date.now();
             var outColorBase = this.getColorBase();
             var outColor = { r: 0, g: 0, b: 0 }
             var lightingColor = this.processLighting(); 
             var outColor = {r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255};
-            this.cachedRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), this.opacity * (this.blockHealth ** 0.2));
+            this.cachedRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacityMult * this.opacity * (this.blockHealth ** 0.2));
         }
         MAIN_CONTEXT.fillStyle = this.cachedRgba;
         zoomCanvasFillRect(

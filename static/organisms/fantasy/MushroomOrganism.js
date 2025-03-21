@@ -66,6 +66,7 @@ export class MushroomOrganism extends BaseOrganism {
             this.maxLeafLength = Math.floor(this.maxLeafLength * p0i);
         }
         this.growthNumGreen = (this.maxNumLeaves * (this.maxLeafLength) + this.maxStemLength);
+        this.growthNumRoots = this.growthNumGreen;
     }
 
 
