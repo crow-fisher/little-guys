@@ -8,7 +8,7 @@ import { initUI, renderWindows, resetWindowHovered, updateWindows } from "./ui/W
 import { renderWindPressureMap } from "./climate/wind.js";
 import { LightingHandler } from "./lighting/lightingHandler.js";
 import { ClimateHandler } from "./climate/climateHandler.js";
-import { isLeftMouseClicked } from "./mouse.js";
+import { isLeftMouseClicked, isRightMouseClicked } from "./mouse.js";
  
 const SQUARE_UPDATE_MILLIS = 0;
 const ORG_UPDATE_MILLIS = 0;
@@ -24,7 +24,7 @@ let lightingHandler = new LightingHandler();
 let climateHandler = new ClimateHandler();
 
 export function resetClimateAndLighting() {
-    lightingHandler = new LightingHandler();
+    // lightingHandler = new LightingHandler();
     climateHandler = new ClimateHandler();
 }
 
@@ -37,7 +37,7 @@ export function scheduler_main() {
     doClickAdd();
     doClickAddEyedropperMixer();
     resetWindowHovered(); 
-    if (loadUI(UI_SIMULATION_SIMPLESQUARE)) {
+    if (loadUI(UI_SIMULATION_SIMPLESQUARE) || isLeftMouseClicked() || isRightMouseClicked()) {
         squareTickSimplePhysics();
     } else {
         if (getTimeScale() != 0) {

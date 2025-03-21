@@ -348,8 +348,8 @@ export class GrowthComponent {
 
         this.lifeSquares.forEach((lsq) => {
             // relative to origin
-            var relLsqX = this.posX - lsq.posX;
-            var relLsqY = this.posY - lsq.posY;
+            var relLsqX = 0.85 * (this.posX - lsq.posX);
+            var relLsqY = 0.85 * (this.posY - lsq.posY);
             var lsqDist = (relLsqX ** 2 + relLsqY ** 2) ** 0.5;
             var currentTheta = startTheta + (lsqDist / length) * thetaDelta;
 
@@ -366,7 +366,7 @@ export class GrowthComponent {
 
             lsq.deflectionXOffset = (endX - relLsqX) + this.xOffset;
             lsq.deflectionYOffset = (endY - relLsqY) + this.yOffset;
-            lsq.theta = currentTheta * Math.sin(this.getTheta());
+            lsq.theta = 0;
 
             lsq.xRef = 1;
             lsq.yRef = 0.5;

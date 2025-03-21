@@ -5,6 +5,7 @@ import { loadUI, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_SUNNODES, UI_L
 import { getWindSquaresX, getWindSquaresY } from "../climate/wind.js";
 import { getCanvasSquaresX, getCanvasSquaresY } from "../canvas.js";
 import { getCurLightingInterval } from "./lightingHandler.js";
+import { isLeftMouseClicked, isRightMouseClicked } from "../mouse.js";
 
 let lifeSquarePositions = new Map();
 export let MAX_BRIGHTNESS = 8;
@@ -396,7 +397,7 @@ export class LightSource {
             });
     }
 
-    rayCastingForTheta(idx, jobIdx, theta, thetaStep) {
+    async rayCastingForTheta(idx, jobIdx, theta, thetaStep) {
         let targetLists = [this.frameTerrainSquares, this.frameLifeSquares];
         let thetaSquares = [];
         targetLists.forEach((list) => {
@@ -460,7 +461,10 @@ export class LightSource {
         for (let i = 0; i < this.num_tasks; i++) {
             let startIdx = Math.floor(i * tasksPerThread);
             let endIdx = Math.ceil((i + 1) * (tasksPerThread));
-            scheduledTime = i * (timeInterval / this.num_tasks)
+            scheduledTime = i * (timeInterval / this.num_tasks);
+            if (isLeftMouseClicked() || isRightMouseClicked()) {
+                scheduledTime *= 3;
+            }
             setTimeout(() => {
                 for (let i = startIdx; i < Math.min(endIdx, a0.length); i++) {
                     this.rayCastingForTheta(idx, jobIdx, a0[i], thetaStep);

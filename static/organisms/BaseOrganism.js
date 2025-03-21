@@ -377,6 +377,9 @@ class BaseOrganism {
         if (this.waterPressure < this.waterPressureWiltThresh) {
             return;
         }
+        if (this.stage == STAGE_DEAD) {
+            return;
+        }
         let curMaturityFrac = (getCurDay() - this.spawnTime) / this.growthCycleMaturityLength; 
         if (curMaturityFrac > 1) {
             if (this.nitrogen > this.growthNitrogen && this.phosphorus > this.growthPhosphorus && this.lightlevel > this.growthLightLevel) {

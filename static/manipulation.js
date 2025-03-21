@@ -315,7 +315,7 @@ export function doClickAdd() {
                             if (chance > 0.95) {
                                 var sq = addSquare(new SeedSquare(px, py));
                                 if (sq) {
-                                    var orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [1]));
+                                    var orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [0.0001, 0]));
                                     if (!orgAdded) {
                                         sq.destroy();
                                     }
@@ -327,7 +327,7 @@ export function doClickAdd() {
                             if (chance > 0.95) {
                                 var sq = addSquare(new SeedSquare(px, py));
                                 if (sq) {
-                                    var orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [Math.random()]));
+                                    var orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [.9999, 0]));
                                     if (!orgAdded) {
                                         sq.destroy();
                                     }
