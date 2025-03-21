@@ -68,7 +68,8 @@ class BaseOrganism {
         this.deflectionStateFunctions = [];
         this.rootOpacity = 0.15;
         this.lighting = square.lighting;
-        this.evolutionParameters = [0.5]
+        this.evolutionParameters = [0.5];
+        this.deathProgress = 0;
     }
 
     setEvolutionParameters(evolutionParameters) {
@@ -77,7 +78,12 @@ class BaseOrganism {
     }
 
     getNextGenetics() {
-        return Array.from(this.evolutionParameters.map((v) => (v == 1 || v == 0) ? v : v += (Math.random() - 0.5) * 0.3));
+        return Array.from(this.evolutionParameters.map((v) => {
+            if (v === 1 || v === 0)
+                return v;
+            v = v + (Math.random() - 0.5) * .2;
+            return Math.min(Math.max(0.0001, v), 0.9999);
+        }));
     }
 
     processGenetics() {} // fill this out in your implementation class!
@@ -395,7 +401,7 @@ class BaseOrganism {
             this.lifeSquares.forEach((lsq) => lsq.lightHealth *= 0.9);
             this.growthLightLevel = expectedLightLevel;
             this.lightDamageCount += 1;
-            if (this.lightDamageCount > (this.lifeSquares.length / 2) ) {
+            if (this.lightDamageCount > 10 ) {
                 this.stage = STAGE_DEAD;
             }
         }
@@ -476,14 +482,11 @@ class BaseOrganism {
         if (this.stage != STAGE_DEAD) {
             return;
         }
-        if (this._lifeSquaresCount == -1) {
-            this._lifeSquaresCount = this.lifeSquares.length;
+        this.deathProgress += .01;
+        if (this.originGrowth == null || this.deathProgress >= 1) { 
+            this.destroy();
         }
         this.lifeSquares.filter((lsq) => lsq.type == "root").forEach((lsq) => lsq.doGroundDecay());
-        if (this.originGrowth == null || this.lifeSquares.length <= 2) {
-            this.destroy();
-            return;
-        }
         // this.originGrowth.decay((2 * Math.PI) / this.growthCycleLength);
         // if (this.originGrowth.baseDeflection > Math.PI / 2) {
         //     this.destroy();

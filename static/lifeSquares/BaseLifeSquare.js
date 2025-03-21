@@ -209,10 +209,7 @@ class BaseLifeSquare {
             this.subtypeColorUpdate();
         }
         if (this.linkedOrganism.stage == STAGE_DEAD) {
-            this.opacity -= 0.1;
-            if (this.opacity <= 0) {
-                this.linkedOrganism.removeAssociatedLifeSquare(this);
-            }
+            this.opacity = 1 - this.linkedOrganism.deathProgress; 
         }
         let selectedViewMode = loadUI(UI_VIEWMODE_SELECT);
         if (selectedViewMode == UI_VIEWMODE_NITROGEN) {

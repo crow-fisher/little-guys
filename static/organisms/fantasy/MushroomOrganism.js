@@ -22,7 +22,7 @@ export class MushroomOrganism extends BaseOrganism {
 
         this.numGrowthCycles = 1;
         this.growthCycleMaturityLength = .0015 * (1 + Math.random());
-        this.growthCycleLength = this.growthCycleMaturityLength * 1.5;
+        this.growthCycleLength = this.growthCycleMaturityLength * 2;
         this.growthNitrogen = 25;
         this.growthPhosphorus = 25;
         this.growthLightLevel = 0.5; 
@@ -49,7 +49,7 @@ export class MushroomOrganism extends BaseOrganism {
     processGenetics() {
         // param 0 - shady and squat or bright and tall 
         // will also impact life cycle
-        this.evolutionParameters[0] = Math.min(Math.max(this.evolutionParameters[0], 0), 1)
+        this.evolutionParameters[0] = Math.min(Math.max(this.evolutionParameters[0], 0.00001), .99999)
 
         let p0 = .1 + this.evolutionParameters[0] * 0.9;
         let p1 = this.evolutionParameters[1];

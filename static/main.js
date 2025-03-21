@@ -24,7 +24,7 @@ let lightingHandler = new LightingHandler();
 let climateHandler = new ClimateHandler();
 
 export function resetClimateAndLighting() {
-    // lightingHandler = new LightingHandler();
+    lightingHandler = new LightingHandler();
     climateHandler = new ClimateHandler();
 }
 
