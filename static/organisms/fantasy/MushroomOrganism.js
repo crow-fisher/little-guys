@@ -53,7 +53,7 @@ export class MushroomOrganism extends BaseOrganism {
 
         let p0 = .1 + this.evolutionParameters[0] * 0.9;
         let p1 = this.evolutionParameters[1];
-        this.growthLightLevel = p0 + 0.1;
+        this.growthLightLevel = .03 + p0 * 0.7;
 
         if (p1 == 0) {
             // "correct" case - as p0 gets higher, grow taller with longer leaves and require more light
@@ -65,7 +65,7 @@ export class MushroomOrganism extends BaseOrganism {
             this.maxStemLength *= p0i;
             this.maxLeafLength = Math.floor(this.maxLeafLength * p0i);
         }
-        this.growthNumGreen = this.maxNumLeaves * (this.maxLeafLength) + this.maxStemLength;
+        this.growthNumGreen = (this.maxNumLeaves * (this.maxLeafLength) + this.maxStemLength);
     }
 
 
@@ -209,6 +209,10 @@ export class MushroomOrganism extends BaseOrganism {
 
     }
     adultGrowthPlanning() {
+        if ((getCurDay() - this.spawnTime) > (this.spawnTime + this.growthCycleLength)) {
+            return;
+        }
+
         if (this.growthPlans.some((gp) => !gp.completed)) {
             this.executeGrowthPlans();
             return;
@@ -264,6 +268,8 @@ export class MushroomOrganism extends BaseOrganism {
 
         var seedSquare = addSquare(new SeedSquare(lsq.getPosX(), lsq.getPosY()));
         seedSquare.gravity = 4;
+        seedSquare.speedY = -Math.round(randRange(-2, -5));
+        seedSquare.speedX = Math.round(randRange(-5, 5));
 
         if (seedSquare) {
             var orgAdded = addNewOrganism(new MushroomSeedOrganism(seedSquare, this.getNextGenetics()));
@@ -271,9 +277,10 @@ export class MushroomOrganism extends BaseOrganism {
                 seedSquare.destroy();
             }
         }
-        this.nitrogen *= 0.5;
-        this.phosphorus *= 0.5;
-        this.lightlevel *= 0.5;
+        let reduction = 0.8
+        this.nitrogen *= (1 - reduction);
+        this.phosphorus *= (1 - reduction);
+        this.lightlevel *= (1 - reduction);
     }
 
     planGrowth() {

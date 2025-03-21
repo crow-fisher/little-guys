@@ -123,7 +123,7 @@ function checkIfCollisionAtWindSquare(x, y) {
             var ar = getSquares(x * 4 + i, y * 4 + j);
             if (ar.length > 0) {
                 someSquareFound = true;
-                every = every && ar.some((sq) => (!sq.surface) && sq.collision);
+                every = every && ar.some((sq) => sq.collision);
             } else {
                 every = false;
             }

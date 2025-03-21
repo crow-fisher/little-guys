@@ -227,14 +227,9 @@ export function doClickAdd() {
             var py = Math.floor(y1 + ddy * i);
             if (loadUI(UI_SM_CLIMATE)) {
                 doBrushFunc(px, py, (x, y) => doClimateMod(x, y));
-            }
-            if (loadUI(UI_SM_GODMODE)) {
+            } else if (loadUI(UI_SM_GODMODE)) {
                 doBrushFunc(px, py, (x, y) => doBlockMod(x, y));
-            }
-            else if (isRightMouseClicked()) {
-                doBrushFunc(px, py, (x, y) => removeSquarePos(x, y));
-            } else {
-                if (loadUI(UI_PALETTE_ACTIVE)) {
+            } else if (loadUI(UI_PALETTE_ACTIVE)) {
                     let mode = loadUI(UI_PALETTE_SELECT);
                     if (mode == UI_PALETTE_SOILROCK) {
                         doBrushFunc(px, py, (x, y) => addActivePaletteToolSquare(x, y));
@@ -246,9 +241,13 @@ export function doClickAdd() {
                         doBrushFunc(px, py, (x, y) => getSquares(x, y)
                             .filter((sq) => sq.solid && sq.collision)
                             .forEach((sq) => sq.surface = !isRightMouseClicked()));
+                            continue;
                     }
-                }
-                if (loadUI(UI_SM_ORGANISM)) {
+
+                    if (isRightMouseClicked()) {
+                        doBrushFunc(px, py, (x, y) => removeSquarePos(x, y));
+                    } 
+            } else if (loadUI(UI_SM_ORGANISM)) {
                     var selectedOrganism = loadUI(UI_ORGANISM_SELECT);
                     switch (selectedOrganism) {
                         case "wheat":
@@ -337,7 +336,6 @@ export function doClickAdd() {
                             break;
                     }
                 }
-            }
         }
     } else {
         doBlockHover(lastMoveOffset);

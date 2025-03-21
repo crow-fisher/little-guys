@@ -100,7 +100,7 @@ class BaseLifeSquare {
     }
 
     getLightFilterRate() {
-        return 0.00013 * (this.width ** 2) * loadUI(UI_LIGHTING_PLANT);
+        return 0.00023 * (this.width ** 2) * loadUI(UI_LIGHTING_PLANT);
     }
 
     getLsqRenderSizeMult() {
@@ -209,7 +209,10 @@ class BaseLifeSquare {
             this.subtypeColorUpdate();
         }
         if (this.linkedOrganism.stage == STAGE_DEAD) {
-            this.opacity *= 0.99;
+            this.opacity -= 0.1;
+            if (this.opacity <= 0) {
+                this.linkedOrganism.removeAssociatedLifeSquare(this);
+            }
         }
         let selectedViewMode = loadUI(UI_VIEWMODE_SELECT);
         if (selectedViewMode == UI_VIEWMODE_NITROGEN) {

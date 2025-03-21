@@ -21,7 +21,7 @@ export class LightingComponent extends Component {
         container.addElement(rightContainer);
 
         leftContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, UI_CENTER, "sun"));
-        leftContainer.addElement(new Slider(this.window, UI_LIGHTING_SUN, sizeX,  35, .329 / 4, .329 * 4, () => getActiveClimate().getUIColorTransient()));
+        leftContainer.addElement(new Slider(this.window, UI_LIGHTING_SUN, sizeX,  35, 1, 10, () => getActiveClimate().getUIColorTransient()));
 
         rightContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, UI_CENTER, "moon"));
         rightContainer.addElement(new Slider(this.window, UI_LIGHTING_MOON, sizeX,  35, .005, 1, () => getActiveClimate().getUIColorTransient()));
