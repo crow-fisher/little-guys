@@ -350,13 +350,15 @@ export class BaseSquare {
     }
 
     renderWithVariedColors() {
-        this.lastColorCacheTime = Date.now();
-        var outColorBase = this.getColorBase();
-        var outColor = { r: 0, g: 0, b: 0 }
-        var lightingColor = this.processLighting(); 
-        var outColor = {r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255};
-        var outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), this.opacity * (this.blockHealth ** 0.2));
-        MAIN_CONTEXT.fillStyle = outRgba;
+        if (Date.now() > this.lastColorCacheTime + 500 * Math.random()) {
+            this.lastColorCacheTime = Date.now();
+            var outColorBase = this.getColorBase();
+            var outColor = { r: 0, g: 0, b: 0 }
+            var lightingColor = this.processLighting(); 
+            var outColor = {r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255};
+            this.cachedRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), this.opacity * (this.blockHealth ** 0.2));
+        }
+        MAIN_CONTEXT.fillStyle = this.cachedRgba;
         zoomCanvasFillRect(
             (this.offsetX + this.posX) * getBaseSize(),
             (this.offsetY + this.posY) * getBaseSize(),
