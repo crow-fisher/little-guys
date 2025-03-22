@@ -191,7 +191,7 @@ var UI_SINGLE_GROUPS = [
     [UI_CLIMATE_WEATHER_SUNNY, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_HEAVYRAIN],
 ]
 
-var queuedFunction = null;
+var queuedFunctionArr = new Array();
 
 export function addUIFunctionMap(key, value) {
     UI_FUNCTION_MAP[key] = value;
@@ -205,7 +205,7 @@ export function saveUI(key, value) {
 
     UI_DATA[key] = value;
     if (key in UI_FUNCTION_MAP) {
-        queuedFunction = UI_FUNCTION_MAP[key];
+        queuedFunctionArr.push(UI_FUNCTION_MAP[key]);
     }
 }
 
@@ -222,8 +222,8 @@ export function getUIMap() {
 }
 
 export function executeFunctionQueue() {
-    if (queuedFunction != null) {
-        queuedFunction();
+    if (queuedFunctionArr.length != 0) {
+        queuedFunctionArr.forEach((f) => f());
+        queuedFunctionArr = new Array();
     }
-    queuedFunction = null;
 }
