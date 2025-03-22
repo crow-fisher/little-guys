@@ -50,10 +50,10 @@ export class SimulationSubtree extends SubTreeComponent {
         subMenuContainer.addElement(row5);
         subMenuContainer.addElement(row6);
 
-        row5.addElement(new RadioToggleLabel(this.window, sizeX / 2 + (textAlignOffsetX / 2), getBaseUISize() * 3, UI_CENTER, "weeks", UI_SIMULATION_GENS_PER_DAY, 1 / 7,() => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorActive()));
-        row5.addElement(new RadioToggleLabel(this.window, sizeX / 2 + (textAlignOffsetX / 2), getBaseUISize() * 3, UI_CENTER, "days", UI_SIMULATION_GENS_PER_DAY, 1,() => getActiveClimate().getUIColorInactiveCustom(0.56), () => getActiveClimate().getUIColorActive()));
-        row6.addElement(new RadioToggleLabel(this.window, sizeX / 2 + (textAlignOffsetX / 2), getBaseUISize() * 3, UI_CENTER, "hours", UI_SIMULATION_GENS_PER_DAY, 24,() => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));
-        row6.addElement(new RadioToggleLabel(this.window, sizeX / 2 + (textAlignOffsetX / 2), getBaseUISize() * 3, UI_CENTER, "minutes", UI_SIMULATION_GENS_PER_DAY, 400,() => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));
+        row5.addElement(new RadioToggleLabel(this.window, sizeX / 2 + (textAlignOffsetX / 2), getBaseUISize() * 3, UI_CENTER, "weeks", UI_SIMULATION_GENS_PER_DAY, 1 / 4,() => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorActive()));
+        row5.addElement(new RadioToggleLabel(this.window, sizeX / 2 + (textAlignOffsetX / 2), getBaseUISize() * 3, UI_CENTER, "days", UI_SIMULATION_GENS_PER_DAY, 1 / 2,() => getActiveClimate().getUIColorInactiveCustom(0.56), () => getActiveClimate().getUIColorActive()));
+        row6.addElement(new RadioToggleLabel(this.window, sizeX / 2 + (textAlignOffsetX / 2), getBaseUISize() * 3, UI_CENTER, "hours", UI_SIMULATION_GENS_PER_DAY, 10,() => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));
+        row6.addElement(new RadioToggleLabel(this.window, sizeX / 2 + (textAlignOffsetX / 2), getBaseUISize() * 3, UI_CENTER, "minutes", UI_SIMULATION_GENS_PER_DAY, 1000,() => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));
 
 
     }

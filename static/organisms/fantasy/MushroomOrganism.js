@@ -21,8 +21,8 @@ export class MushroomOrganism extends BaseOrganism {
         this.grassGrowTimeInDays =  0.01;
 
         this.numGrowthCycles = 1;
-        this.growthCycleMaturityLength = (1 + Math.random());
-        this.growthCycleLength = this.growthCycleMaturityLength * 2;
+        this.growthCycleMaturityLength = (Math.random());
+        this.growthCycleLength = this.growthCycleMaturityLength * 4;
         this.growthNitrogen = 25;
         this.growthPhosphorus = 25;
         this.growthLightLevel = 0.5; 
@@ -210,10 +210,6 @@ export class MushroomOrganism extends BaseOrganism {
 
     }
     adultGrowthPlanning() {
-        if ((getCurDay() - this.spawnTime) > (this.spawnTime + this.growthCycleLength)) {
-            return;
-        }
-
         if (this.growthPlans.some((gp) => !gp.completed)) {
             this.executeGrowthPlans();
             return;
@@ -253,12 +249,6 @@ export class MushroomOrganism extends BaseOrganism {
         if (this.targetStemLength < this.maxStemLength && this.targetLeafLength == this.maxLeafLength) {
             this.targetStemLength += 1;
             return;
-        }
-
-        if (this.nitrogen > this.growthNitrogen && 
-            this.phosphorus > this.growthPhosphorus && 
-            this.lightlevel > this.getGrowthLightLevel()) {
-                this.spawnSeed();
         }
     }
 

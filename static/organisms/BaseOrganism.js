@@ -80,7 +80,7 @@ class BaseOrganism {
     }
     getGrowthLightLevel() {
         if (loadUI(UI_SIMULATION_GENS_PER_DAY) > 1) {
-            return this.growthLightLevel * 0.4; // (because night)
+            return this.growthLightLevel * 0.5; // (because night)
         }
         return this.growthLightLevel;
     }
@@ -402,7 +402,7 @@ class BaseOrganism {
         let curMaturityFrac = (getCurDay() - this.spawnTime) / this.getGrowthCycleMaturityLength(); 
         if (curMaturityFrac > 1) {
             if (this.nitrogen > this.growthNitrogen && this.phosphorus > this.growthPhosphorus && this.lightlevel > this.getGrowthLightLevel()) {
-                // console.log("Would flower");
+                this.spawnSeed();
             }
             return;
         }
@@ -431,9 +431,8 @@ class BaseOrganism {
                 sqScore += (sq.phosphorus / this.growthPhosphorus) / (sq.linkedOrganismSquares.length + 1);
             }
         }
-        if (this.waterPressure < this.waterPressureTarget || this.nitrogen < expectedNitrogen || this.phosphorus < expectedPhosphorus) {
+        if ((this.waterPressure < this.waterPressureTarget || this.nitrogen < expectedNitrogen || this.phosphorus < expectedPhosphorus)) {
             this.growRoot(scoreFunc);
-            return;
         }
         if (this.lightlevel < expectedLightLevel) {
             this.executeGrowthPlans();
@@ -526,8 +525,7 @@ class BaseOrganism {
     }
 
     hasPlantLivedTooLong() {
-        let count = (this.numGrowthCycles == 1 ? 3 : (this.numGrowthCycles));
-        let max = this.spawnTime + this.getGrowthCycleLength() * count;
+        let max = this.spawnTime + this.getGrowthCycleLength() * this.numGrowthCycles;
         if (getCurDay() > max) {
             this.stage = STAGE_DEAD;
         }

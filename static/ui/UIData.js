@@ -171,7 +171,7 @@ var UI_DATA = {
     UI_PALETTE_ROCKMODE: false,
     UI_SIMULATION_CLOUDS: true,
     UI_LIGHTING_ENABLED: true,
-    UI_SIMULATION_GENS_PER_DAY: 400
+    UI_SIMULATION_GENS_PER_DAY: 1000
 };
 export function getUI_DATA() {
     return UI_DATA;

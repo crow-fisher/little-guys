@@ -27,6 +27,7 @@ export class RockSquare extends SoilSquare {
         this.clayColorRgb = getActiveClimate().rockColorClay;
         this.siltColorRgb = getActiveClimate().rockColorSilt;
         this.sandColorRgb = getActiveClimate().rockColorSand;
+        this.rootable = false;
     }
 
     getColorBase() {
