@@ -4,10 +4,11 @@ import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds, getBaseAirPressureAtYPosition, getAirSquareDensity, getWindPressureSquareDensity, base_wind_pressure, manipulateWindPressureMaintainHumidityWindSquare, initWindPressure } from "./wind.js";
 import { getCurTimeScale, timeScaleFactor } from "../climate/time.js";
-import { logRainFall } from "../climate/weather.js";
+import { logRainFall } from "./weather/weatherManager.js";
 import { getDefaultLighting } from "../lighting/lightingProcessing.js";
 import { addSquareByName } from "../manipulation.js";
 import { loadUI, UI_CLIMATE_RAINFALL_DENSITY } from "../ui/UIData.js";
+import { isLeftMouseClicked, isRightMouseClicked } from "../mouse.js";
 // decent reference https://web.gps.caltech.edu/~xun/course/GEOL1350/Lecture5.pdf
 
 var temperatureMap;
@@ -267,6 +268,9 @@ function getAdjacentProp(x, y, func) {
 }
 
 function doRain() {
+    if (isLeftMouseClicked() || isRightMouseClicked()) {
+        return;
+    }
     for (let x = 0; x < getWindSquaresX(); x++) {
         for (let y = 0; y < getWindSquaresY(); y++) {
             if (getAdjacentProp(x, y, (x, y) => (getHumidity(x, y) > cloudRainThresh ? 1 : 0)) < 5) {
@@ -286,11 +290,12 @@ function doRain() {
             var expectedPascals = saturationPressureOfWaterVapor(adjacentTemperature) * cloudRainThresh;
             var adjacentPascals = getAdjacentProp(x, y, (x, y) => waterSaturationMap[x][y]) / 5;
 
-            var dropPascals = (adjacentPascals - expectedPascals) * 0.005;
+            var dropPascals = (adjacentPascals - expectedPascals) * 0.0005;
 
             var usedWaterPascalsPerSquare = dropPascals / 5;
             var dropHealth = dropPascals / pascalsPerWaterSquare;
-            dropHealth *= Math.min(1000, getCurTimeScale());
+
+            dropHealth *= Math.min(105, getCurTimeScale());
 
             dropHealth = Math.min(1, dropHealth * loadUI(UI_CLIMATE_RAINFALL_DENSITY));
 

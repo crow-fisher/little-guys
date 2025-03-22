@@ -532,6 +532,9 @@ class BaseOrganism {
     }
 
     hasPlantLivedTooLong() {
+        if (this.stage == STAGE_DEAD) {
+            return;
+        }
         let max = this.spawnTime + this.getGrowthCycleLength() * this.numGrowthCycles;
         if (getCurDay() > max) {
             this.stage = STAGE_DEAD;
