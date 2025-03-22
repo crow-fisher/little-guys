@@ -21,7 +21,7 @@ export class MushroomOrganism extends BaseOrganism {
         this.grassGrowTimeInDays =  0.01;
 
         this.numGrowthCycles = 1;
-        this.growthCycleMaturityLength = (Math.random());
+        this.growthCycleMaturityLength = 1 + (Math.random());
         this.growthCycleLength = this.growthCycleMaturityLength * 4;
         this.growthNitrogen = 25;
         this.growthPhosphorus = 25;
@@ -253,6 +253,9 @@ export class MushroomOrganism extends BaseOrganism {
     }
 
     spawnSeed() {
+        if (this.originGrowth ==null || this.leaves.length == 0) {
+            return;
+        }
         let chosen = this.leaves.at(randNumber(0, this.leaves.length - 1));
         let comp = this.originGrowth.getChildFromPath(chosen);
         let lsq = comp.lifeSquares.at(comp.lifeSquares.length - 1);

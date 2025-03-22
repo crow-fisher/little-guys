@@ -9,7 +9,7 @@ class BaseSeedOrganism extends BaseOrganism {
         super(square);
         this.proto = "BaseSeedOrganism";
         this.sproutType = null;
-        this.maxLifeTime = 1;
+        this.maxLifeTime = 10;
         this.startSproutTime = null;
         this.totalSproutTime = 3 * (getTimeScale() / 86400);
         this.evolutionParameters = evolutionParameters;

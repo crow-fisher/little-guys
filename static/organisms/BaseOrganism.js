@@ -58,6 +58,8 @@ class BaseOrganism {
         this.growthCycleLength = 1.5;
         this.numGrowthCycles = 1;
 
+        this.curNumRoots = 0;
+
         this.applyWind = false;
         this.springCoef = 4;
         this.startDeflectionAngle = 0;
@@ -79,8 +81,8 @@ class BaseOrganism {
         return this.growthCycleMaturityLength / loadUI(UI_SIMULATION_GENS_PER_DAY);
     }
     getGrowthLightLevel() {
-        if (loadUI(UI_SIMULATION_GENS_PER_DAY) > 1) {
-            return this.growthLightLevel * 0.5; // (because night)
+        if (loadUI(UI_SIMULATION_GENS_PER_DAY) < 1) {
+            return this.growthLightLevel * 0.4; // (because night)
         }
         return this.growthLightLevel;
     }
@@ -176,6 +178,7 @@ class BaseOrganism {
     }
 
     wilt() {
+        return;
         if (this.lifeSquares.length == 0) {
             return;
         }
@@ -211,6 +214,7 @@ class BaseOrganism {
 
         if (totalDead > greenLifeSquares.length * 0.5) {
             this.stage = STAGE_DEAD;
+            console.log("wilt death");
         }
 
     }
@@ -365,6 +369,7 @@ class BaseOrganism {
             return;
         }
         this.rootLastGrown = getCurDay();
+        this.curNumRoots += 1;
 
         var targetSquare = null;
         var targetSquareParent = null;
@@ -409,6 +414,7 @@ class BaseOrganism {
         let expectedNitrogen = curMaturityFrac ** 2 * this.growthNitrogen;
         let expectedPhosphorus = curMaturityFrac ** 2 * this.growthPhosphorus;
         let expectedLightLevel = curMaturityFrac ** 2 * this.getGrowthLightLevel();
+        let expectedNumRoots = curMaturityFrac * this.growthNumRoots;
 
         if (this.lightlevel > (expectedLightLevel * 1.1) && curMaturityFrac > 0.25) {
             this.lifeSquares.forEach((lsq) => lsq.lightHealth *= 0.9);
@@ -416,6 +422,7 @@ class BaseOrganism {
             this.lightDamageCount += 1;
             if (this.lightDamageCount > 10 ) {
                 this.stage = STAGE_DEAD;
+                console.log("light damage death");
             }
         }
 
@@ -431,7 +438,7 @@ class BaseOrganism {
                 sqScore += (sq.phosphorus / this.growthPhosphorus) / (sq.linkedOrganismSquares.length + 1);
             }
         }
-        if ((this.waterPressure < this.waterPressureTarget || this.nitrogen < expectedNitrogen || this.phosphorus < expectedPhosphorus)) {
+        if ((this.curNumRoots < expectedNumRoots) && (this.waterPressure < this.waterPressureTarget || this.nitrogen < expectedNitrogen || this.phosphorus < expectedPhosphorus)) {
             this.growRoot(scoreFunc);
         }
         if (this.lightlevel < expectedLightLevel) {
@@ -528,6 +535,7 @@ class BaseOrganism {
         let max = this.spawnTime + this.getGrowthCycleLength() * this.numGrowthCycles;
         if (getCurDay() > max) {
             this.stage = STAGE_DEAD;
+            console.log("has plant lived too long death");
         }
     }
 
