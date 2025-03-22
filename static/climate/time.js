@@ -46,11 +46,14 @@ var sky_colorNearNoonRGB = hexToRgb("#7E9FB1");
 var sky_colorNoonRGB = hexToRgb("#84B2E2");
 
 var currentLightColorTemperature = sky_nightRGB; 
-var _cdaylightStrength = null;
-
+var _cdaylightStrength, _prevDaylightStrength;
 export function setTimeScale(timeScale) {
     seekTimeTarget = 0;
     TIME_SCALE = timeScale;
+}
+
+export function getDaylightStrengthFrameDiff() {
+    return _cdaylightStrength - _prevDaylightStrength;
 }
 
 // for time skipping 
@@ -225,7 +228,7 @@ function getCurTime() {
 }
 
 export function getCurTimeScale() {
-    return (2.1 ** (TIME_SCALE - 1));
+    return (3.5 ** (TIME_SCALE - 1));
 }
 
 export function getTimeScale() {
@@ -288,6 +291,7 @@ function updateTime() {
         curTime += dt; 
         curDay += dt / (millis_per_day / getCurTimeScale());
         prevRealTime = Date.now();
+        _prevDaylightStrength = _cdaylightStrength;
         _cdaylightStrength = null;
     }
 }

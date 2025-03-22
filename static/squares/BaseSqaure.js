@@ -23,7 +23,7 @@ import { removeOrganism } from "../organisms/_orgOperations.js";
 import { calculateColorTemperature, getTemperatureAtWindSquare, updateWindSquareTemperature } from "../climate/temperatureHumidity.js";
 import { getAdjacentWindSquareToRealSquare, getWindSquareAbove } from "../climate/wind.js";
 import { RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
-import { getCurDay, getCurrentLightColorTemperature, timeScaleFactor } from "../climate/time.js";
+import { getCurDay, getCurrentLightColorTemperature, getDaylightStrengthFrameDiff, timeScaleFactor } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasSquaresY, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
 import { loadUI, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS } from "../ui/UIData.js";
@@ -351,7 +351,9 @@ export class BaseSquare {
     }
 
     renderWithVariedColors(opacityMult) {
-        if (Date.now() > this.lastColorCacheTime + 500 * Math.random()) {
+        if (
+            (Date.now() > this.lastColorCacheTime + 500 * Math.random()) ||
+            Math.abs(getDaylightStrengthFrameDiff()) > 0.01) {
             this.lastColorCacheTime = Date.now();
             var outColorBase = this.getColorBase();
             var outColor = { r: 0, g: 0, b: 0 }

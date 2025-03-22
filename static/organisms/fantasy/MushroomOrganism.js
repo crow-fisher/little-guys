@@ -21,7 +21,7 @@ export class MushroomOrganism extends BaseOrganism {
         this.grassGrowTimeInDays =  0.01;
 
         this.numGrowthCycles = 1;
-        this.growthCycleMaturityLength = .0015 * (1 + Math.random());
+        this.growthCycleMaturityLength = (1 + Math.random());
         this.growthCycleLength = this.growthCycleMaturityLength * 2;
         this.growthNitrogen = 25;
         this.growthPhosphorus = 25;
@@ -257,7 +257,7 @@ export class MushroomOrganism extends BaseOrganism {
 
         if (this.nitrogen > this.growthNitrogen && 
             this.phosphorus > this.growthPhosphorus && 
-            this.lightlevel > this.growthLightLevel) {
+            this.lightlevel > this.getGrowthLightLevel()) {
                 this.spawnSeed();
         }
     }

@@ -17,8 +17,8 @@ class SeedSquare extends BaseSquare {
         this.organic = true;
         this.visible = false;
     }
-    physics() {
-        super.physics();
+    gravityPhysics() {
+        super.gravityPhysics();
         let sq = getSquares(this.posX, this.posY + 1)
             .find((sq) => sq.proto == "SoilSquare");
         if (sq == null) {
