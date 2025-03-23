@@ -176,7 +176,7 @@ export class MovingLinearLightGroup {
         this.colorFunc = colorFunc;
         this.brightnessFunc = brightnessFunc;
         this.startTheta = startTheta;
-        this.endTheta = endTheta; 
+        this.endTheta = endTheta;
         this.startTime = startTime;
         this.endTime = endTime;
         this.init();
@@ -322,26 +322,20 @@ export class LightSource {
         for (let i = 0; i < getWindSquaresX(); i++) {
             for (let j = 0; j < getWindSquaresY(); j++) {
                 let loc = [i, j];
+                let relPosX = (i * 4) + 2 - this.posX;
+                let relPosY = (j * 4) + 2 - this.posY;
+                let sqTheta = Math.atan(relPosX / relPosY);
 
-                for (let ii = 0; ii < 4; ii++) {
-                    for (let jj = 0; jj < 4; jj++) {
-                        let relPosX = (i * 4) + ii - this.posX;
-                        let relPosY = (j * 4) + jj - this.posY;
-                        let sqTheta = Math.atan(relPosX / relPosY);
-
-                        for (let theta = this.minTheta; theta < this.maxTheta; theta += thetaStep) {
-                            if (!(theta in this.windSquareLocations)) {
-                                this.windSquareLocations[theta] = new Array();
-                            }
-                            if (this.windSquareLocations[theta].includes(loc)) {
-                                continue;
-                            } else if (sqTheta > theta && sqTheta < (theta + thetaStep)) {
-                                this.windSquareLocations[theta].push(loc);
-                            }
-                        }
+                for (let theta = this.minTheta; theta < this.maxTheta; theta += thetaStep) {
+                    if (!(theta in this.windSquareLocations)) {
+                        this.windSquareLocations[theta] = new Array();
+                    }
+                    if (this.windSquareLocations[theta].includes(loc)) {
+                        continue;
+                    } else if (sqTheta > theta && sqTheta < (theta + thetaStep)) {
+                        this.windSquareLocations[theta].push(loc);
                     }
                 }
-
             }
         }
     }
@@ -429,7 +423,7 @@ export class LightSource {
                     let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(theta)() * curBrightnessCopy * this.brightnessFunc() * this.thetaBrightnessFunc(theta);
                     if (!obj.surface)
                         curBrightness *= (1 - (obj.getLightFilterRate() * loadUI(UI_LIGHTING_DECAY)));
-                    
+
                     if (obj.lighting[idx] == null) {
                         obj.lighting[idx] = [[pointLightSourceFunc], this.colorFunc];
                     } else if (obj.lighting[idx][0].length >= jobIdx) {
