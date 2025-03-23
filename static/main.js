@@ -40,20 +40,9 @@ export function scheduler_main() {
     if (loadUI(UI_SIMULATION_SIMPLESQUARE) || isLeftMouseClicked() || isRightMouseClicked()) {
         squareTickSimplePhysics();
     } else {
-        if (getTimeScale() != 0) {
-            if (Date.now() - last_square_tick > SQUARE_UPDATE_MILLIS) {
-                squareTick();
-                last_square_tick = Date.now();
-                updated = true;
-            }
-            if (Date.now() - last_org_tick > ORG_UPDATE_MILLIS) {
-                orgTick();
-                last_org_tick = Date.now();
-                updated = true;
-            }
-        }
+        squareTick();
     }
-
+    orgTick();
     render();
     renderWindows();
     updateWindows();

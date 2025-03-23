@@ -51,14 +51,14 @@ function getAirSquareDensityTempAndHumidity(x, y) {
     return getTempMolarMult(x, y); // ((air_molar_mass / getTempMolarMult(x, y)) + (getWaterSaturation(x, y) / base_wind_pressure) * (water_vapor_molar_mass / getTempMolarMult(x, y))) / air_molar_mass;
 }
 
-function getPressure(x, y) {
-    if (isNaN(x) || isNaN(y)) {
+function getPressure(wx, wy) {
+    if (isNaN(wx) || isNaN(wy)) {
         return 0;
     }
-    if (!isPointInBounds(x, y)) {
+    if (!isPointInBounds(wx, wy)) {
         return -1;
     }
-    return windPressureMap[x][y];
+    return windPressureMap[wx][wy];
 }
 
 export function isPointInWindBounds(x, y) {
@@ -493,6 +493,18 @@ export function addWindPressureCloud(posX, posY, amount, cloud) {
     let targetHumidity = cloud;
     let curWaterPascals = getWaterSaturation(x, y);
     setWaterSaturation(x, y, (curWaterPascals * (targetHumidity / curHumidity)));
+}
+
+export function addWindPressureDryAirWindSquare(wx, wy, pascals) {
+    let start = windPressureMap[wx][wy];
+    if (start <= 0) {
+        return;
+    }
+    let target = windPressureMap[wx][wy] + pascals;
+
+    windPressureMap[wx][wy] = target;
+    windPressureMap[wx][wy] = Math.max(getBaseAirPressureAtYPosition(wy) * 0.5, windPressureMap[wx][wy]);
+    windPressureMap[wx][wy] = Math.min(getBaseAirPressureAtYPosition(wy) * 100, windPressureMap[wx][wy]);
 }
 
 function updateWindPressureByMult(x, y, m) {

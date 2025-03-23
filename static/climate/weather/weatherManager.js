@@ -16,7 +16,9 @@ var curWeatherStartTime = 0;
 var curWeatherInterval = 1;
 var curWeather = null;
 var curClimate = null;
+
 var curClouds = [];
+var curWinds = [];
 
 function spawnFogCloud() {
     let wsx = getWindSquaresX();
@@ -51,6 +53,16 @@ function spawnNimbusCloud(rainFactor) {
         1 + 0.05 * rainFactor, 0.8));
 }
 
+function spawnWindGust() {
+    let wsx = getWindSquaresX();
+    let wsy = getWindSquaresY();
+    curClouds.push(new Cloud(
+        randRange(-wsx, wsx),
+        randRange(-wsy, wsy),
+        randRange(0, 0.2) * wsx, randRange(0.05, 0.1) * wsy,
+        getCurDay(), .0001 * randRange(2, 4),
+        -1, 0.8));
+}
 
 // UI_CLIMATE_WEATHER_SUNNY
 var sunnyHg = [
@@ -83,12 +95,22 @@ var cloudyTg = [
     [1, 273 + 30]
 ]
 
+function windyWeather(windAmount) {
+    return () => {
+        if (curWinds.length > windAmount) {
+            return;
+        }
+        spawnWindGust();
+    }
+}
+
 function cloudyWeather(cloudCount) {
     return () => {
-        if (curClouds.length > 35) {
+        if (curClouds.length > cloudCount) {
             return;
         }
         spawnCumulusCloud();
+        windyWeather(10);
     }
 }
 
@@ -124,6 +146,7 @@ function generalRainyWeather(rainFactor) {
             return;
         }
         spawnNimbusCloud(rainFactor);
+        windyWeather(10);
     }
 }
 
@@ -165,6 +188,7 @@ function weatherChange() {
 
 export function weather() {
     curClouds.forEach((cloud) => cloud.tick());
+    curWinds.forEach((wind) => wind.tick());
     if (curClouds.some((cloud) => getCurDay() > cloud.startDay + cloud.duration)) {
         curClouds = Array.from(curClouds.filter((cloud) => getCurDay() < cloud.startDay + cloud.duration));
     }

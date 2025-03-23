@@ -1,11 +1,10 @@
 import { addWaterSaturationPascals, getHumidity, getWaterSaturation } from "../temperatureHumidity.js";
 import { getCurDay, getCurTimeScale, timeScaleFactor } from "../time.js";
-import { addWindPerssureMaintainHumidity, addWindPressureDryAir, getPressure, getWindSquaresX, isPointInWindBounds } from "../wind.js";
-
+import { addWindPerssureMaintainHumidity, addWindPressureDryAir, addWindPressureDryAirWindSquare, getBaseAirPressureAtYPosition, getPressure, getWindSquaresX, isPointInWindBounds } from "../wind.js";
 
 
 export class Cloud {
-    constructor(centerX, centerY, sizeX, sizeY, startDay, duration, targetHumidity, strength, airPressure=1.02) {
+    constructor(centerX, centerY, sizeX, sizeY, startDay, duration, targetHumidity, strength, airPressure=1.3) {
         this.centerX = Math.floor(centerX) - (getWindSquaresX() / 2);
         this.centerY = Math.floor(centerY);
         this.sizeX = Math.floor(sizeX);
@@ -67,12 +66,15 @@ export class Cloud {
                         if (!isPointInWindBounds(wx, wy) || getPressure(wx, wy) < 0) {
                             continue;
                         }
-                        addWindPressureDryAir(wx, wy, getPressure(wx, wy) * this.airPressure);
-                        var cur = getHumidity(wx, wy);
-                        var pascals = (this.targetHumidity - cur) * (getWaterSaturation(wx, wy) / cur) * this.strength;
-                        pascals /= timeScaleFactor();
+                        addWindPressureDryAirWindSquare(wx, wy, (getBaseAirPressureAtYPosition(wy) * this.airPressure - getPressure(wx, wy)));
 
-                        addWaterSaturationPascals(wx, wy, pascals);
+                        if (this.targetHumidity != -1) {
+                            var cur = getHumidity(wx, wy);
+                            var pascals = (this.targetHumidity - cur) * (getWaterSaturation(wx, wy) / cur) * this.strength;
+                            pascals /= timeScaleFactor();
+                            addWaterSaturationPascals(wx, wy, pascals);
+                        }
+         
                     }
                 }
             }
