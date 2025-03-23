@@ -4,7 +4,7 @@ import { addWindPerssureMaintainHumidity, addWindPressureDryAir, addWindPressure
 
 
 export class Cloud {
-    constructor(centerX, centerY, sizeX, sizeY, startDay, duration, targetHumidity, strength, airPressure=1.3) {
+    constructor(centerX, centerY, sizeX, sizeY, startDay, duration, targetHumidity, strength, airPressure=1) {
         this.centerX = Math.floor(centerX) - (getWindSquaresX() / 2);
         this.centerY = Math.floor(centerY);
         this.sizeX = Math.floor(sizeX);

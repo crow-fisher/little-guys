@@ -12,37 +12,6 @@ var frame_squares = null;
 var frame_solid_squares = null;
 var frame_water_squares = null;
 
-export function purge() {
-    iterateOnSquares((sq) => {
-        var ret = true;
-        ret &= sq.posX >= 0;
-        ret &= sq.posX < getCanvasSquaresX();
-        ret &= sq.posY >= 0;
-        ret &= sq.posY < getCanvasSquaresY();
-        ret &= sq.blockHealth > 0;
-        if (!ret) {
-            removeSquare(sq);
-        }
-    });
-
-    iterateOnOrganisms((org) => {
-        var ret = true;
-        ret &= org.posX >= 0;
-        ret &= org.posX < getCanvasSquaresX();
-        ret &= org.posY >= 0;
-        ret &= org.posY < getCanvasSquaresY();
-        if (!ret) {
-            org.destroy();
-        }
-    })
-
-    Object.keys(ALL_ORGANISM_SQUARES).forEach((key) => {
-        if (key < 0 || key >= getCanvasSquaresX()) {
-            ALL_ORGANISM_SQUARES.delete(key);
-        }
-    })
-}
-
 export function reset() {
     resetWaterflowSquares();
     frame_squares = getSqIterationOrder();

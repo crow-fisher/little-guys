@@ -25,7 +25,7 @@ import { getAdjacentWindSquareToRealSquare, getWindSquareAbove } from "../climat
 import { RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
 import { getCurDay, getCurrentLightColorTemperature, getDaylightStrengthFrameDiff, timeScaleFactor } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
-import { getBaseSize, getCanvasSquaresY, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
+import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
 import { loadUI, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS } from "../ui/UIData.js";
 import { isLeftMouseClicked } from "../mouse.js";
 
@@ -469,10 +469,10 @@ export class BaseSquare {
         if (this.gravity == 0) {
             return;
         }
+
         var finalXPos = this.posX;
         var finalYPos = this.posY;
         var bonked = false;
-
         for (let i = 1; i < this.speedY + 1; i += (1 / this.gravity)) {
             for (let j = 0; j < Math.abs(this.speedX) + 1; j++) {
                 var jSigned = (this.speedX > 0) ? j : -j;
@@ -516,6 +516,10 @@ export class BaseSquare {
         }
 
         if (finalXPos != this.posX | this.posY != finalYPos) {
+            if (finalXPos < 0 || finalXPos > getCanvasSquaresX() || finalYPos < 0 || finalYPos >= getCanvasSquaresY()) {
+                this.destroy();
+                return;
+            }
             let finalYPosFloor = Math.floor(finalYPos);
             let finalYPosFrac = finalYPos - finalYPosFloor;
             this.offsetY = finalYPosFrac;

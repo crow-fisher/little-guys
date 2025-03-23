@@ -1,6 +1,6 @@
 import { getCanvasSquaresX } from "../../canvas.js";
 import { randRange } from "../../common.js";
-import { addUIFunctionMap, UI_CLIMATE_WEATHER_SUNNY, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_HEAVYRAIN, loadUI, saveUI, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_FOGGY } from "../../ui/UIData.js";
+import { addUIFunctionMap, UI_CLIMATE_WEATHER_SUNNY, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_HEAVYRAIN, loadUI, saveUI, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_DURATION } from "../../ui/UIData.js";
 import { getActiveClimate } from "../climateManager.js";
 import { cloudRainThresh, setRestingGradientStrength, setRestingHumidityGradient, setRestingTemperatureGradient } from "../temperatureHumidity.js";
 import { getCurDay } from "../time.js";
@@ -26,9 +26,9 @@ function spawnFogCloud() {
     curClouds.push(new Cloud(
         randRange(0, wsx),
         randRange(0, wsy),
-        randRange(0.1, 0.3) * wsx, randRange(0.05, 0.15) * wsx,
+        randRange(0.4, 0.9) * wsx, randRange(0.3, 0.7) * wsy,
         getCurDay() + 0.00069444444 * randRange(0.5, 4), 0.00069444444 * randRange(0.5, 4),
-        randRange(0.999, 1), 0.8 * randRange(1, 2)));
+        randRange(1, 1.001), randRange(0, .3)));
 }
 
 function spawnCumulusCloud() {
@@ -46,7 +46,7 @@ function spawnNimbusCloud(rainFactor) {
     let wsx = getWindSquaresX();
     let wsy = getWindSquaresY();
     curClouds.push(new Cloud(
-        randRange(-wsx, wsx),
+        randRange(0, wsx),
         2,
         randRange(0.5, 0.7) * wsx, randRange(0.05, 0.1) * wsy,
         getCurDay() + 0.00001 * randRange(1, 30), .01 * randRange(2, 4),
@@ -90,9 +90,33 @@ var cloudyHg = [
     [1, 0.75]
 ]
 var cloudyTg = [
-    [0, 273 + 25],
-    [0.5, 273 + 25],
-    [1, 273 + 30]
+    [0, 273 + 30],
+    [0.5, 273 + 35],
+    [1, 273 + 40]
+]
+
+
+var foggyHg = [
+    [0, 1],
+    [0.15, 1],
+    [0.25, 1],
+    [1, 0.99]
+]
+var foggyTg = [
+    [0, 273 + 30],
+    [0.5, 273 + 35],
+    [1, 273 + 40]
+]
+var rainyHumidityGradient = [
+    [0, 1],
+    [0.25, 1],
+    [0.5, 0.85],
+    [1, .7]
+]
+var rainyTemperatureGradient = [
+    [0, 273 + 30],
+    [0.5, 273 + 35],
+    [1, 273 + 40]
 ]
 
 function windyWeather(windAmount) {
@@ -123,23 +147,13 @@ function foggyWeather() {
 
 weatherPartlyCloudy = new Weather(UI_CLIMATE_WEATHER_PARTLY_CLOUDY, cloudyHg, cloudyTg, 100, cloudyWeather(15));
 weatherMostlyCloudy = new Weather(UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, cloudyHg, cloudyTg, 100, cloudyWeather(35));
-weatherFoggy = new Weather(UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, cloudyHg, cloudyTg, 100, foggyWeather);
+weatherFoggy = new Weather(UI_CLIMATE_WEATHER_FOGGY, foggyHg, foggyTg, 100, foggyWeather);
 
 export function logRainFall(amount) {
     curRainFallAmount += amount;
 }
 
-var rainyHumidityGradient = [
-    [0, 1],
-    [0.25, 1],
-    [0.5, 0.85],
-    [1, .7]
-]
-var rainyTemperatureGradient = [
-    [0, 273 + 25],
-    [0.5, 273 + 25],
-    [1, 273 + 35]
-]
+
 function generalRainyWeather(rainFactor) {
     return () => {
         if (curClouds.length > 5) {
@@ -207,9 +221,9 @@ function applyUIWeatherChange() {
     ui_weatherMap.keys().forEach((key) => {
         if (loadUI(key)) {
             curWeather = ui_weatherMap.get(key);
-            curWeatherInterval = randRange(	0.00416667, 	0.0416667);
+            curWeatherInterval = randRange(	loadUI(UI_CLIMATE_WEATHER_DURATION) / 4, loadUI(UI_CLIMATE_WEATHER_DURATION));
             curWeatherStartTime = getCurDay();
-            console.log("Next weather: ", curWeather.type + ", for " + Math.round(curWeatherInterval * 100) / 100 + " days")
+            console.log("Next weather: ", curWeather.type + ", for " + Math.round(curWeatherInterval / 0.000694444) + " minutes")
         }
     });
 }
@@ -219,3 +233,4 @@ addUIFunctionMap(UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, applyUIWeatherChange);
 addUIFunctionMap(UI_CLIMATE_WEATHER_FOGGY, applyUIWeatherChange);
 addUIFunctionMap(UI_CLIMATE_WEATHER_LIGHTRAIN, applyUIWeatherChange);
 addUIFunctionMap(UI_CLIMATE_WEATHER_HEAVYRAIN, applyUIWeatherChange);
+addUIFunctionMap(UI_CLIMATE_WEATHER_DURATION, applyUIWeatherChange);
