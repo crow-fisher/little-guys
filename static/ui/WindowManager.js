@@ -4,10 +4,9 @@ import { BlockPalette } from "./components/BlockPalette.js";
 import { BlockSubtreeComponent as BlockSubtree } from "./components/BlockSubtreeComponent.js";
 import { TopBarComponent } from "./topbar/TopBarComponent.js";
 import { ViewSubtreeComponent } from "./components/ViewSubtreeComponent.js";
-import { loadUI, UI_BB_MODE, UI_MODE_ROCK, UI_MODE_SOIL, UI_SM_CLIMATE, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_BLOCK, UI_PALETTE_ACTIVE, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveUI, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_SIMULATION, UI_TOPBAR_TIME, UI_TOPBAR_CLIMATE, UI_PALETTE_ROCKMODE, UI_PALETTE_EYEDROPPER } from "./UIData.js";
+import { loadUI, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_BLOCK, UI_PALETTE_ACTIVE, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveUI, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_SIMULATION, UI_TOPBAR_TIME, UI_TOPBAR_CLIMATE, UI_PALETTE_ROCKMODE, UI_PALETTE_EYEDROPPER, UI_CLIMATE_SELECT_MENU, UI_CILMATE_SELECT_WEATHER, UI_CLIMATE_SELECT_CLOUDS } from "./UIData.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import { GodModeComponent } from "./components/GodModeComponent.js";
-import { ClimateComponent } from "./components/ClimateComponent.js";
 import { getCurMixIdx, getMixArr, getMixArrLen, getTargetMixIdx, setCurMixIdx, setTargetMixIdx } from "../globals.js";
 import { MainMenuComponent as MainMenuSubtree } from "./components/MainMenuComponent.js";
 import { LightingSubtree } from "./components/LightingSubtree.js";
@@ -15,6 +14,9 @@ import { LightingComponent } from "./components/LightingComponent.js";
 import { SimulationSubtree } from "./components/SimulationSubtree.js";
 import { TimeSubtree } from "./components/TimeSubtree.js";
 import { ClimateSubtreeComponent } from "./components/ClimateSubtreeComponent.js";
+import { ClimateSelectionComponent } from "./components/ClimateSelectionComponent.js";
+import { WeatherSelectionComponent } from "./components/WeatherSelectionComponent.js";
+import { CloudControlComponent } from "./components/CloudControlComponent.js";
 
 var topBarComponent;
 var blockPalette;
@@ -27,16 +29,22 @@ export function initUI() {
     topBarComponent = new TopBarComponent("UI_TOPBAR");
     all_components.push(new MainMenuSubtree(() => 0, () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_MAINMENU));
     all_components.push(new BlockSubtree(() => topBarComponent.getElementXPositionFunc(0, 1), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_BLOCK));
-    all_components.push(new ClimateSubtreeComponent(() => topBarComponent.getElementXPositionFunc(0, 2), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_CLIMATE));
+    
+    let climateSubtreeComponent = new ClimateSubtreeComponent(() => topBarComponent.getElementXPositionFunc(0, 2), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_CLIMATE);
+    all_components.push(climateSubtreeComponent);
+    all_components.push(new ClimateSelectionComponent(() => topBarComponent.getElementXPositionFunc(0, 2) + climateSubtreeComponent.window.sizeX + getBaseUISize(), () => topBarComponent.ySize() + getBaseUISize() * 3, 0, 0, UI_CLIMATE_SELECT_MENU));
+    all_components.push(new WeatherSelectionComponent(() => topBarComponent.getElementXPositionFunc(0, 2) + climateSubtreeComponent.window.sizeX + getBaseUISize(), () => topBarComponent.ySize() + getBaseUISize() * 6, 0, 0, UI_CILMATE_SELECT_WEATHER));
+    all_components.push(new CloudControlComponent(() => topBarComponent.getElementXPositionFunc(0, 2) + climateSubtreeComponent.window.sizeX + getBaseUISize(), () => topBarComponent.ySize() + getBaseUISize() * 9, 0, 0, UI_CLIMATE_SELECT_CLOUDS));
+
     all_components.push(new ViewSubtreeComponent(() => topBarComponent.getElementXPositionFunc(0, 3), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_VIEWMODE));
     blockPalette = new BlockPalette(getBaseUISize() * 34, getBaseUISize() * 6, 0, 0, UI_PALETTE_ACTIVE)
     all_components.push(blockPalette);
+
     all_components.push(new LightingComponent(getBaseUISize() * 10, getBaseUISize() * 10, 0, 0, UI_SM_LIGHTING));
     all_components.push(new LightingSubtree(() => topBarComponent.getElementXPositionFunc(0, 4), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_LIGHTING));
     all_components.push(new SimulationSubtree(() => topBarComponent.getElementXPositionFunc(0, 5), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_SIMULATION));
     all_components.push(new OrganismComponent(getBaseUISize() * 34, getBaseUISize() * 6, 10, 0, UI_SM_ORGANISM));
     all_components.push(new GodModeComponent(getBaseUISize() * 34, getBaseUISize() * 6, 10, 0, UI_SM_GODMODE));
-    all_components.push(new ClimateComponent(getBaseUISize() * 34, getBaseUISize() * 6, 10, 0, UI_SM_CLIMATE));
     all_components.push(new TimeSubtree(() => topBarComponent.getElementXPositionFunc(0, 16), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_TIME));
 
 }

@@ -63,9 +63,9 @@ export const UI_CLIMATE_SELECT_CLOUDS = "UI_CLIMATE_SELECT_CLOUDS";
 export const UI_CILMATE_SELECT_WEATHER = "UI_CLIMATE_SELECT_WEATHER";
 
 export const UI_CLIMATE_SELECT = "UI_CLIMATE_SELECT";
-export const UI_CLIMATE_MIDWEST = "midwest";
-export const UI_CLIMATE_DESERT = "desert";
-export const UI_CLIMATE_FANTASY = "fantasy";
+export const UI_CLIMATE_MIDWEST = "UI_CLIMATE_MIDWEST";
+export const UI_CLIMATE_DESERT = "UI_CLIMATE_DESERT";
+export const UI_CLIMATE_FANTASY = "UI_CLIMATE_FANTASY";
 
 export const UI_CLIMATE_WEATHER_SUNNY = "UI_CLIMATE_WEATHER_SUNNY";
 export const UI_CLIMATE_WEATHER_PARTLY_CLOUDY = "UI_CLIMATE_WEATHER_PARTLY_CLOUDY";
@@ -189,7 +189,13 @@ var UI_SINGLE_GROUPS = [
     [UI_TOPBAR_BLOCK, UI_TOPBAR_MAINMENU],
     [UI_SM_ORGANISM, UI_TOPBAR_SIMULATION],
     [UI_CLIMATE_WEATHER_SUNNY, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_HEAVYRAIN],
+    [UI_CLIMATE_SELECT_MENU, UI_CLIMATE_SELECT_CLOUDS, UI_CILMATE_SELECT_WEATHER]
 ]
+
+var UI_AUTOCLOSE = {
+    UI_TOPBAR_CLIMATE: [UI_CLIMATE_SELECT_MENU, UI_CLIMATE_SELECT_CLOUDS, UI_CILMATE_SELECT_WEATHER],
+    UI_TOPBAR_BLOCK: [UI_PALETTE_ACTIVE, UI_SM_ORGANISM, UI_SM_GODMODE]
+}
 
 var queuedFunctionArr = new Array();
 
@@ -200,12 +206,19 @@ export function addUIFunctionMap(key, value) {
 export function saveUI(key, value) {
     let singleGroup = (UI_SINGLE_GROUPS.find((group) => group.indexOf(key) > -1));
     if (singleGroup != null) {
-        singleGroup.filter((k) => loadUI(k)).forEach((k) => UI_DATA[k] = false);
+        singleGroup.filter((k) => loadUI(k)).forEach((key) => {
+            UI_DATA[key] = false;
+            if (key in UI_AUTOCLOSE)
+                UI_AUTOCLOSE[key].forEach((key2) => saveUI(key2, false));
+        });
     }
 
     UI_DATA[key] = value;
     if (key in UI_FUNCTION_MAP) {
         queuedFunctionArr.push(UI_FUNCTION_MAP[key]);
+    }
+    if (!value && key in UI_AUTOCLOSE) {
+        UI_AUTOCLOSE[key].forEach((key) => saveUI(key, false));
     }
 }
 

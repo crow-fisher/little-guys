@@ -14,12 +14,10 @@ export class ClimateSubtreeComponent extends SubTreeComponent {
 
         let textAlignOffsetX = getBaseUISize() * 1.91;
 
-        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 25 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_SM_CLIMATE, "old climate menu",() => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
         subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 25 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_CLIMATE_SELECT_MENU, "cilmate selection",() => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
         subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 25 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_CILMATE_SELECT_WEATHER, "weather control",() => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive()));
         subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 25 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_CLIMATE_SELECT_CLOUDS, "cloud control",() => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
 
-        
     }
 
 }

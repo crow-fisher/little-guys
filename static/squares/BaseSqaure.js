@@ -27,6 +27,7 @@ import { getCurDay, getCurrentLightColorTemperature, getDaylightStrengthFrameDif
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasSquaresY, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
 import { loadUI, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS } from "../ui/UIData.js";
+import { isLeftMouseClicked } from "../mouse.js";
 
 export class BaseSquare {
     constructor(posX, posY) {
@@ -352,7 +353,7 @@ export class BaseSquare {
 
     renderWithVariedColors(opacityMult) {
         if (
-            (Date.now() > this.lastColorCacheTime + 500 * Math.random()) ||
+            (Date.now() > this.lastColorCacheTime + (isLeftMouseClicked() ? 250 : 500) * Math.random()) ||
             Math.abs(getDaylightStrengthFrameDiff()) > 0.01) {
             this.lastColorCacheTime = Date.now();
             var outColorBase = this.getColorBase();

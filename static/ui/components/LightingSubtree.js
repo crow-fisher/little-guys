@@ -34,10 +34,10 @@ export class LightingSubtree extends SubTreeComponent {
         subMenuContainer.addElement(new Text(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, UI_CENTER, "number of suns"))
         subMenuContainer.addElement(row2);
 
-        row1.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 4), getBaseUISize() * 3, UI_CENTER, UI_LIGHTING_UPDATERATE, 10,() => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));
-        row1.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 4), getBaseUISize() * 3, UI_CENTER, UI_LIGHTING_UPDATERATE, 15,() => getActiveClimate().getUIColorInactiveCustom(0.53), () => getActiveClimate().getUIColorActive()));
-        row1.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 4), getBaseUISize() * 3, UI_CENTER, UI_LIGHTING_UPDATERATE, 20,() => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorActive()));
-        row1.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 4), getBaseUISize() * 3, UI_CENTER, UI_LIGHTING_UPDATERATE, 30,() => getActiveClimate().getUIColorInactiveCustom(0.64), () => getActiveClimate().getUIColorActive()));
+        row1.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 4), getBaseUISize() * 3, UI_CENTER, UI_LIGHTING_UPDATERATE, 8,() => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));
+        row1.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 4), getBaseUISize() * 3, UI_CENTER, UI_LIGHTING_UPDATERATE, 12,() => getActiveClimate().getUIColorInactiveCustom(0.53), () => getActiveClimate().getUIColorActive()));
+        row1.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 4), getBaseUISize() * 3, UI_CENTER, UI_LIGHTING_UPDATERATE, 16,() => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorActive()));
+        row1.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 4), getBaseUISize() * 3, UI_CENTER, UI_LIGHTING_UPDATERATE, 20,() => getActiveClimate().getUIColorInactiveCustom(0.64), () => getActiveClimate().getUIColorActive()));
         
         row2.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 4), getBaseUISize() * 3, UI_CENTER, UI_LIGHTING_SUNNODES, 2,() => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
         row2.addElement(new RadioToggle(this.window, radioSizeX + (textAlignOffsetX / 4), getBaseUISize() * 3, UI_CENTER, UI_LIGHTING_SUNNODES, 3,() => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorActive()));

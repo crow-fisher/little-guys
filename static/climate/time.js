@@ -22,7 +22,7 @@ var TIME_SCALE = 1;
 var curUIKey = UI_SPEED_1;
 
 export var millis_per_day = 60 * 60 * 24 * 1000;
-var curDay = 0.35;
+var curDay = 0.20;
 var prevDay = 0;
 var curTime = 0.8;
 var prevTime = 0;   
