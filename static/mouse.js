@@ -41,6 +41,8 @@ export function getLeftMouseUpEvent() {
 
 export function handleMouseDown(e) {
     e.preventDefault();
+    lastMouseDownStart = Date.now();
+
     switch (e.button) {
         case 2: 
             rightMouseClicked = true;
@@ -51,7 +53,6 @@ export function handleMouseDown(e) {
             break; 
         case 0:
         default:
-            lastMouseDownStart = Date.now();
             leftMouseClicked = true;
             break;
     }

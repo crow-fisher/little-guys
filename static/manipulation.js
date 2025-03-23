@@ -7,7 +7,7 @@ import { randNumber } from "./common.js";
 import { removeSquare } from "./globalOperations.js";
 import { getOrganismSquaresAtSquare } from "./lifeSquares/_lsOperations.js";
 import { triggerEarlySquareScheduler } from "./main.js";
-import { getLastMoveOffset, getLeftMouseUpEvent, isLeftMouseClicked, isMiddleMouseClicked, isRightMouseClicked } from "./mouse.js";
+import { getLastMouseDown, getLastMoveOffset, getLeftMouseUpEvent, isLeftMouseClicked, isMiddleMouseClicked, isRightMouseClicked } from "./mouse.js";
 import { addNewOrganism } from "./organisms/_orgOperations.js";
 import { WheatSeedOrganism } from "./organisms/agriculture/WheatOrganism.js";
 import { KentuckyBluegrassSeedOrganism } from "./organisms/agriculture/KentuckyBluegrassOrganism.js";
@@ -24,35 +24,27 @@ import { CattailSeedOrganism } from "./organisms/midwest/CattailOrganism.js";
 import { MushroomSeedOrganism } from "./organisms/fantasy/MushroomOrganism.js";
 var prevManipulationOffset;
 
-function doBlockBlur(centerX, centerY, size) {
-    if (Math.random() > 0.5) {
-        return;
-    }
-    var rx = randNumber(-size / 2, size / 2);
-    var ry = randNumber(-size / 2, size / 2);
-    var len = ((rx ** 2) + (ry ** 2)) ** 0.5;
 
-    if (len > size) {
-        rx /= (size / len);
-        ry /= (size / len);
-    }
-    var otherX = centerX + rx;
-    var otherY = centerY + ry;
-    var middleX = 10 ** 8;
-    var middleY = 10 ** 8;
+var prevClickTime = 0;
+var prevClickMap = new Map();
 
-    if (
-        getOrganismSquaresAtSquare(centerX, centerY).length > 0 ||
-        getOrganismSquaresAtSquare(otherX, otherY).length > 0) {
-        return;
+function doBrushFuncClickThrottle(x, y, func) {
+    if (prevClickTime != getLastMouseDown()) {
+        prevClickMap = new Map();
+        prevClickTime = getLastMouseDown();
     }
-
-    getSquares(otherX, otherY).filter((sq) => sq.gravity != 0).forEach((sq) => sq.updatePosition(middleX, middleY));
-    getSquares(centerX, centerY).filter((sq) => sq.gravity != 0).forEach((sq) => sq.updatePosition(otherX, otherY));
-    getSquares(middleX, middleY).filter((sq) => sq.gravity != 0).forEach((sq) => sq.updatePosition(centerX, centerY));
+    if (prevClickMap[x] == null)
+        prevClickMap[x] = new Map(); 
+    
+    if (prevClickMap[x][y]) {
+        if (Math.random() > 0.90) {
+            func(x, y);
+        }
+    } else {
+        prevClickMap[x][y] = true;
+        func(x, y);
+    }
 }
-
-
 function doBrushFunc(centerX, centerY, func) {
     var radius = Math.floor(loadUI(UI_PALETTE_SIZE));
     if (loadUI(UI_SM_CLIMATE)) {
@@ -66,7 +58,7 @@ function doBrushFunc(centerX, centerY, func) {
             if (Math.random() > loadUI(UI_PALETTE_STRENGTH) ** 2) {
                 continue;
             }
-            func(centerX + i, centerY + j);
+            doBrushFuncClickThrottle(centerX + i, centerY + j, func);
         }
     }
 }
