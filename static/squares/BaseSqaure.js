@@ -515,11 +515,15 @@ export class BaseSquare {
             finalYPos = this.posY + this.speedY;
         }
 
-        if (finalXPos != this.posX | this.posY != finalYPos) {
-            if (finalXPos < 0 || finalXPos > getCanvasSquaresX() || finalYPos < 0 || finalYPos >= getCanvasSquaresY()) {
-                this.destroy();
-                return;
+        if (finalXPos < 0 || finalXPos > getCanvasSquaresX() || finalYPos < 0 || finalYPos >= getCanvasSquaresY()) {
+            this.destroy(); 
+            if (this.linkedOrganism != null) {
+                this.linkedOrganism.destroy();
             }
+            return;
+        }
+
+        if (finalXPos != this.posX | this.posY != finalYPos) {
             let finalYPosFloor = Math.floor(finalYPos);
             let finalYPosFrac = finalYPos - finalYPosFloor;
             this.offsetY = finalYPosFrac;
