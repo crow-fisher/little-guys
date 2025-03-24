@@ -23,7 +23,7 @@ import { SubTreeComponent } from "./SubTreeComponent.js";
 export class ViewSubtreeComponent extends SubTreeComponent {
     constructor(posXFunc, posYFunc, padding, dir, key) {
         super(posXFunc, posYFunc, padding, dir, key);
-        var sizeX = getBaseUISize() * 16;
+        let sizeX = getBaseUISize() * 16;
         let container = new Container(this.window, padding, 1);
         this.window.container = container;
         let textAlignOffsetX = getBaseUISize() * 1.99;

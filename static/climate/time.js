@@ -18,17 +18,17 @@ import {
     saveUI
 } from "../ui/UIData.js";
 
-var TIME_SCALE = 1;
-var curUIKey = UI_SPEED_1;
+let TIME_SCALE = 1;
+let curUIKey = UI_SPEED_1;
 
-export var millis_per_day = 60 * 60 * 24 * 1000;
+export let millis_per_day = 60 * 60 * 24 * 1000;
 var curDay = 0.20;
 var prevDay = 0;
 var curTime = 0.8;
 var prevTime = 0;   
 
-var prevRealTime = Date.now();
-var dt = 0; 
+let prevRealTime = Date.now();
+let dt = 0; 
 
 export function getFrameDt() {
     return Math.min(100, dt);
@@ -39,14 +39,14 @@ var starColorTemperatureMap;
 var starMapCenterX;
 var starMapCenterY;
 // https://coolors.co/gradient-maker/18254c-5a4d41-a49f67-7e9fb1-84b2e2?position=0,43,53,73,100&opacity=100,100,100,100,100&type=linear&rotation=90
-var sky_nightRGB = hexToRgb("#121622");
-var sky_duskRGB = hexToRgb("#5A4D41");
-var sky_colorEveningMorningRGB = hexToRgb("#A49F67");
-var sky_colorNearNoonRGB = hexToRgb("#7E9FB1");
-var sky_colorNoonRGB = hexToRgb("#84B2E2");
+let sky_nightRGB = hexToRgb("#121622");
+let sky_duskRGB = hexToRgb("#5A4D41");
+let sky_colorEveningMorningRGB = hexToRgb("#A49F67");
+let sky_colorNearNoonRGB = hexToRgb("#7E9FB1");
+let sky_colorNoonRGB = hexToRgb("#84B2E2");
 
-var currentLightColorTemperature = sky_nightRGB; 
-var _cdaylightStrength, _prevDaylightStrength;
+let currentLightColorTemperature = sky_nightRGB; 
+let _cdaylightStrength, _prevDaylightStrength;
 export function setTimeScale(timeScale) {
     seekTimeTarget = 0;
     TIME_SCALE = timeScale;
@@ -57,7 +57,7 @@ export function getDaylightStrengthFrameDiff() {
 }
 
 // for time skipping 
-var seekTimeTarget = 0;
+let seekTimeTarget = 0;
 
 export function doTimeSeek() {
     if (seekTimeTarget == 0) {
@@ -74,8 +74,8 @@ export function doTimeSeek() {
         }
         return;
     }
-    var dayRemaining = seekTimeTarget - getCurDay();
-    var timeRemaining = millis_per_day * (dayRemaining / getCurTimeScale());
+    let dayRemaining = seekTimeTarget - getCurDay();
+    let timeRemaining = millis_per_day * (dayRemaining / getCurTimeScale());
 
     if (timeRemaining < getFrameDt() * 2) {
         TIME_SCALE -= 1;
@@ -120,7 +120,7 @@ export function doTimeSeek() {
 
 // targetTime between 0 and 1
 export function seek(targetTime) {
-    var targetTimeCurDay = Math.floor(getCurDay()) + targetTime;
+    let targetTimeCurDay = Math.floor(getCurDay()) + targetTime;
     TIME_SCALE = 2;
     if (targetTimeCurDay < getCurDay()) {
         seekTimeTarget = targetTimeCurDay + 1;
@@ -139,12 +139,12 @@ function initializeStarMap() {
     starMapCenterX = randNumber(getCanvasSquaresX() / 4, getCanvasSquaresX() * 0.75);
     starMapCenterY = randNumber(getCanvasSquaresY() / 4, getCanvasSquaresY() * 0.75);
 
-    var numStars = randNumber(22000, 33000) * ((getCanvasSquaresY() / 100) ** 0.1);
+    let numStars = randNumber(22000, 33000) * ((getCanvasSquaresY() / 100) ** 0.1);
 
     for (let i = 0; i < numStars; i++) {
-        var starX = randNumber(-getCanvasSquaresX() * 4, getCanvasSquaresX() * 4);
-        var starY = randNumber(-getCanvasSquaresY() * 4, getCanvasSquaresY() * 4);
-        var starBrightness = (Math.random() ** 0.7) * 0.3;
+        let starX = randNumber(-getCanvasSquaresX() * 4, getCanvasSquaresX() * 4);
+        let starY = randNumber(-getCanvasSquaresY() * 4, getCanvasSquaresY() * 4);
+        let starBrightness = (Math.random() ** 0.7) * 0.3;
 
         if (!(starX in starMap)) {
             starMap[starX] = new Map();
@@ -160,32 +160,32 @@ function renderStarMap(brightnessMult) {
         initializeStarMap();
     }
 
-    var frameCloudColor = getFrameRelCloud();
-    var frameCloudMult = Math.min(1, ((frameCloudColor.r + frameCloudColor.g + frameCloudColor.b) / (3 * 255) * 20));
+    let frameCloudColor = getFrameRelCloud();
+    let frameCloudMult = Math.min(1, ((frameCloudColor.r + frameCloudColor.g + frameCloudColor.b) / (3 * 255) * 20));
     
 
     if (getDaylightStrength() > 0.85) {
         return;
     }
 
-    var xKeys = Array.from(Object.keys(starMap));
+    let xKeys = Array.from(Object.keys(starMap));
     for (let i = 0; i < xKeys.length; i++) {
-        var yKeys = Array.from(Object.keys(starMap[xKeys[i]]));
+        let yKeys = Array.from(Object.keys(starMap[xKeys[i]]));
         for (let j = 0; j < yKeys.length; j++) {
-            var starX = xKeys[i];
-            var starY = yKeys[j];
-            var starbrightness = starMap[starX][starY] * Math.max(brightnessMult, 0);
+            let starX = xKeys[i];
+            let starY = yKeys[j];
+            let starbrightness = starMap[starX][starY] * Math.max(brightnessMult, 0);
 
-            var starXRelOrigin = starX - starMapCenterX;
-            var starYRelOrigin = starY - starMapCenterY;
+            let starXRelOrigin = starX - starMapCenterX;
+            let starYRelOrigin = starY - starMapCenterY;
 
-            var dayTheta = (getCurDay() % 1) * 2 * Math.PI;
+            let dayTheta = (getCurDay() % 1) * 2 * Math.PI;
 
-            var rotatedX = starXRelOrigin * Math.cos(dayTheta) - starYRelOrigin * Math.sin(dayTheta);
-            var rotatedY = starYRelOrigin * Math.cos(dayTheta) + starXRelOrigin * Math.sin(dayTheta);
+            let rotatedX = starXRelOrigin * Math.cos(dayTheta) - starYRelOrigin * Math.sin(dayTheta);
+            let rotatedY = starYRelOrigin * Math.cos(dayTheta) + starXRelOrigin * Math.sin(dayTheta);
 
-            var endX = rotatedX + starMapCenterX;
-            var endY = rotatedY + starMapCenterX;
+            let endX = rotatedX + starMapCenterX;
+            let endY = rotatedY + starMapCenterX;
 
             if (endX < 0 || endY < 0) {
                 continue;
@@ -211,7 +211,7 @@ export function getDt() {
     return curDay - prevDay;
 }
 
-function getCurDay() {
+export function getCurDay() {
     return curDay;
 }
 
@@ -297,13 +297,13 @@ function updateTime() {
 }
 
 function renderSkyBackground(time) {
-    var processed = Math.max(0, (1 - Math.abs(0.5 - time) * 2) * 2.5 - 1)
-    var minColor, maxColor, min, max, starBrightness;
+    let processed = Math.max(0, (1 - Math.abs(0.5 - time) * 2) * 2.5 - 1)
+    let minColor, maxColor, min, max, starBrightness;
 
-    var duskEnd = 0.2;
-    var morningEnd = 0.5;
-    var nearNoon = 0.8;
-    var noon = 1.5;
+    let duskEnd = 0.2;
+    let morningEnd = 0.5;
+    let nearNoon = 0.8;
+    let noon = 1.5;
 
     if (processed < duskEnd) {
         minColor = sky_nightRGB;
@@ -327,14 +327,14 @@ function renderSkyBackground(time) {
         min = nearNoon; 
         max = noon;
     }
-    var processedColor = calculateColorRGB(processed, min, max, minColor, maxColor);
-    var frameCloudColor = getFrameRelCloud();
-    var frameCloudMult = Math.min(1, (frameCloudColor.r + frameCloudColor.g + frameCloudColor.b) / (3 * 255) * 5);
+    let processedColor = calculateColorRGB(processed, min, max, minColor, maxColor);
+    let frameCloudColor = getFrameRelCloud();
+    let frameCloudMult = Math.min(1, (frameCloudColor.r + frameCloudColor.g + frameCloudColor.b) / (3 * 255) * 5);
 
-    var processedColorHsv = rgb2hsv(processedColor.r, processedColor.g, processedColor.b);
+    let processedColorHsv = rgb2hsv(processedColor.r, processedColor.g, processedColor.b);
     processedColorHsv[1] *= (1 - frameCloudMult);
 
-    var processedColorRGBArr = hsv2rgb(processedColorHsv[0], processedColorHsv[1], processedColorHsv[2]);
+    let processedColorRGBArr = hsv2rgb(processedColorHsv[0], processedColorHsv[1], processedColorHsv[2]);
 
     processedColor.r = processedColorRGBArr[0] - (frameCloudColor.r)
     processedColor.g = processedColorRGBArr[1] - (frameCloudColor.g)
@@ -362,9 +362,9 @@ function getDaylightStrength() {
 }
 
 function _getDaylightStrength() {
-    var currentTime = getCurDay() % 1;
+    let currentTime = getCurDay() % 1;
 
-    var darkness = 0.05;
+    let darkness = 0.05;
     if (currentTime < 0.25 || currentTime > 0.75) {
         return darkness;
     }
@@ -373,8 +373,8 @@ function _getDaylightStrength() {
 
 function renderTime() {
     // 0.5 is noon, 0.25 is sunrise, 0.75 is sunset
-    var daylightStrength = 0;
-    var currentTime = getCurDay() % 1;
+    let daylightStrength = 0;
+    let currentTime = getCurDay() % 1;
 
     if (currentTime > 0.25 && currentTime < 0.75) {
         daylightStrength = getDaylightStrength();
@@ -395,7 +395,7 @@ export function getCurrentLightColorTemperature() {
     return currentLightColorTemperature;
 }
 
-var moonlightColor = calculateTempColor(6599);
+let moonlightColor = calculateTempColor(6599);
 moonlightColor.r *= 0.9;
 moonlightColor.g *= 0.9;
 
@@ -420,13 +420,13 @@ let tempColorRgbaMap = new Map();
 let tempColorRgbMap = new Map();
 
 function calculateTempColorRgbaCache(daylightStrength, opacity) {
-    var temperature = Math.floor(daylightStrength * 6600);
+    let temperature = Math.floor(daylightStrength * 6600);
     if (temperature in tempColorRgbaMap) {
         currentLightColorTemperature = tempColorRgbMap[temperature];
         return tempColorRgbaMap[temperature];
     } else {
-        var dc = calculateTempColor(temperature);
-        var resColor = {
+        let dc = calculateTempColor(temperature);
+        let resColor = {
             r: Math.floor(dc.r * daylightStrength),
             g: Math.floor(dc.g * daylightStrength),
             b: Math.floor(dc.b * daylightStrength),
@@ -439,9 +439,9 @@ function calculateTempColorRgbaCache(daylightStrength, opacity) {
 }
 
 function calculateTempColorRgbaNoCache(daylightStrength, opacity) {
-    var temperature = Math.floor(daylightStrength * 6600);
-    var dc = calculateTempColor(temperature);
-    var resColor = {
+    let temperature = Math.floor(daylightStrength * 6600);
+    let dc = calculateTempColor(temperature);
+    let resColor = {
         r: Math.floor(dc.r * daylightStrength),
         g: Math.floor(dc.g * daylightStrength),
         b: Math.floor(dc.b * daylightStrength),
@@ -450,7 +450,7 @@ function calculateTempColorRgbaNoCache(daylightStrength, opacity) {
 }
 
 function temp_red(temperature) {
-    var red;
+    let red;
     if (temperature < 66) {
         red = 255;
     } else {
@@ -463,7 +463,7 @@ function temp_red(temperature) {
 }
 
 function temp_green(temperature) {
-    var green = 0;
+    let green = 0;
     if (temperature < 66) {
         green = temperature;
         green = 99.4708 * Math.log(green) - 161.1195;
@@ -477,7 +477,7 @@ function temp_green(temperature) {
 }
 
 function temp_blue(temperature) {
-    var blue = 0;
+    let blue = 0;
     if (temperature >= 66) {
         blue = 255;
     } else {
@@ -490,4 +490,4 @@ function temp_blue(temperature) {
 }
 
 
-export { getDaylightStrength, getPrevDay, getCurDay, getCurTime, getPrevTime, updateTime, renderTime, initializeStarMap}
+export { getDaylightStrength, getPrevDay, getCurTime, getPrevTime, updateTime, renderTime, initializeStarMap}

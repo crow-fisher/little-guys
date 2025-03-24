@@ -14,21 +14,21 @@ import { isLeftMouseClicked, isRightMouseClicked } from "../mouse.js";
 var temperatureMap;
 var waterSaturationMap;
 
-var c_tempLowRGB = hexToRgb("#1dbde6");
-var c_tempHighRGB = hexToRgb("#f1515e");
+let c_tempLowRGB = hexToRgb("#1dbde6");
+let c_tempHighRGB = hexToRgb("#f1515e");
 
-var c_waterSaturationLowRGB = hexToRgb("#9bafd9");
-var c_waterSaturationHighRGB = hexToRgb("#103783");
+let c_waterSaturationLowRGB = hexToRgb("#9bafd9");
+let c_waterSaturationHighRGB = hexToRgb("#103783");
 
-var c_cloudMinRGB = hexToRgb("#f1f0f6");
-var c_cloudMidRGB = hexToRgb("#dbdce1")
-var c_cloudMaxRGB = hexToRgb("#818398");
+let c_cloudMinRGB = hexToRgb("#f1f0f6");
+let c_cloudMidRGB = hexToRgb("#dbdce1")
+let c_cloudMaxRGB = hexToRgb("#818398");
 
-var cloudRainThresh = 1.01;
-export var cloudRainMax = 1.1;
-var cloudMaxOpacity = 0.65;
+let cloudRainThresh = 1.01;
+export let cloudRainMax = 1.1;
+let cloudMaxOpacity = 0.65;
 
-var pascalsPerWaterSquare = (1.986 * 10 ** 6);
+let pascalsPerWaterSquare = (1.986 * 10 ** 6);
 
 var restingGradientStrength = 1000;
 var restingTemperatureGradient = [
@@ -40,7 +40,7 @@ var restingHumidityGradient = [
     [0, 0.95],
     [1, 0.75]
 ];
-var restingAirPressure = 1;
+let restingAirPressure = 1;
 
 var reverseRestingHumidityGradient = Array.from(restingHumidityGradient).reverse();
 var reverseRestingTemperatureGradient = Array.from(restingTemperatureGradient).reverse();
@@ -83,17 +83,17 @@ export function setRestingHumidityGradient(inGrad) {
 
 function getRestingHumidityAtSq(x, y) {
     y /= getWindSquaresY();
-    var lower = reverseRestingHumidityGradient.find((arr) => arr[0] <= y);
-    var upper = restingHumidityGradient.find((arr) => arr[0] > y);
-    var pos = (y - lower[0]) / (upper[0] - lower[0]);
+    let lower = reverseRestingHumidityGradient.find((arr) => arr[0] <= y);
+    let upper = restingHumidityGradient.find((arr) => arr[0] > y);
+    let pos = (y - lower[0]) / (upper[0] - lower[0]);
     return lower[1] * (1 - pos) + upper[1] * pos;
 }
 
 function getRestingTemperatureAtSq(x, y) {
     y /= getWindSquaresY();
-    var lower = reverseRestingTemperatureGradient.find((arr) => arr[0] <= y);
-    var upper = restingTemperatureGradient.find((arr) => arr[0] > y);
-    var pos = (y - lower[0]) / (upper[0] - lower[0]);
+    let lower = reverseRestingTemperatureGradient.find((arr) => arr[0] <= y);
+    let upper = restingTemperatureGradient.find((arr) => arr[0] > y);
+    let pos = (y - lower[0]) / (upper[0] - lower[0]);
     return lower[1] * (1 - pos) + upper[1] * pos;
 }
 
@@ -106,27 +106,27 @@ export function restingValues() {
     for (let i = 0; i < getWindSquaresX(); i++) {
         for (let j = 0; j < getWindSquaresY(); j++) {
 
-            var curPressure = getPressure(i, j); 
+            let curPressure = getPressure(i, j); 
 
             if (curPressure <= 0)
                 continue;
              
-            var pressureRestingMult = 0.0001;
+            let pressureRestingMult = 0.0001;
 
-            var restingPressureTarget = getRestingAirPressureAtSq(j) * pressureRestingMult + curPressure * (1 - pressureRestingMult);
+            let restingPressureTarget = getRestingAirPressureAtSq(j) * pressureRestingMult + curPressure * (1 - pressureRestingMult);
             manipulateWindPressureMaintainHumidityWindSquare(i, j, restingPressureTarget);
 
-            var curTemp = temperatureMap[i][j];
-            var restingTemp = getRestingTemperatureAtSq(i, j);
-            var diffTemp = restingTemp - curTemp;
+            let curTemp = temperatureMap[i][j];
+            let restingTemp = getRestingTemperatureAtSq(i, j);
+            let diffTemp = restingTemp - curTemp;
             temperatureMap[i][j] += diffTemp / applicationStrength;
 
-            var curHumidity = getHumidity(i, j);
-            var restingHumidity = getRestingHumidityAtSq(i, j);
-            var diffHumidity = (restingHumidity - curHumidity);
+            let curHumidity = getHumidity(i, j);
+            let restingHumidity = getRestingHumidityAtSq(i, j);
+            let diffHumidity = (restingHumidity - curHumidity);
 
-            var curTempPascals = saturationPressureOfWaterVapor(temperatureMap[i][j]);
-            var targetTempPascals = saturationPressureOfWaterVapor(restingTemp);
+            let curTempPascals = saturationPressureOfWaterVapor(temperatureMap[i][j]);
+            let targetTempPascals = saturationPressureOfWaterVapor(restingTemp);
             waterSaturationMap[i][j] += diffHumidity * Math.min(curTempPascals, targetTempPascals) / applicationStrength;
         }
     }
@@ -165,9 +165,9 @@ function updateWindSquareTemperature(x, y, newVal) {
         console.warn("Trying to set invalid temperature ", newVal);
         newVal = 273;
     }
-    var start = temperatureMap[x][y];
+    let start = temperatureMap[x][y];
     temperatureMap[x][y] = newVal;
-    var end = temperatureMap[x][y];
+    let end = temperatureMap[x][y];
     setPressurebyMult(x, y, (end / start));
 }
  
@@ -180,21 +180,21 @@ function temperatureDiffFunction(x, y, x2, y2, high, low) {
     if (getPressure(x2, y2) < 0) {
         return 0;
     }
-    var diff = (high - low) / 2;
+    let diff = (high - low) / 2;
     diff /= timeScaleFactor();
     return diff;
 }
 
 function humidityDiffFunction(x, y, x2, y2, high, low) {
-    var humidity1 = getHumidity(x, y); // 0.2
-    var humidity2 = getHumidity(x2, y2); // 0.8
+    let humidity1 = getHumidity(x, y); // 0.2
+    let humidity2 = getHumidity(x2, y2); // 0.8
 
-    var humidityDiff = humidity1 - humidity2; // 0.2 - 0.8 = -0.6;
+    let humidityDiff = humidity1 - humidity2; // 0.2 - 0.8 = -0.6;
 
-    var square1PascalsForHumidityDiff = getWindPressureSquareDensity(x, y) * saturationPressureOfWaterVapor(temperatureMap[x][y]) * Math.abs(humidityDiff / 2);
-    var square2PascalsForHumidityDiff = getWindPressureSquareDensity(x2, y2) * saturationPressureOfWaterVapor(temperatureMap[x2][y2]) * Math.abs(humidityDiff / 2);
+    let square1PascalsForHumidityDiff = getWindPressureSquareDensity(x, y) * saturationPressureOfWaterVapor(temperatureMap[x][y]) * Math.abs(humidityDiff / 2);
+    let square2PascalsForHumidityDiff = getWindPressureSquareDensity(x2, y2) * saturationPressureOfWaterVapor(temperatureMap[x2][y2]) * Math.abs(humidityDiff / 2);
 
-    var minPascalsForHumidityDiff = Math.min(square1PascalsForHumidityDiff, square2PascalsForHumidityDiff)
+    let minPascalsForHumidityDiff = Math.min(square1PascalsForHumidityDiff, square2PascalsForHumidityDiff)
 
     minPascalsForHumidityDiff /= timeScaleFactor();
 
@@ -211,12 +211,12 @@ function tickMap(
     diff_function,
     update_function
 ) {
-    var xKeys = Array.from(Object.keys(map));
+    let xKeys = Array.from(Object.keys(map));
     for (let i = 0; i < xKeys.length; i++) {
-        var yKeys = Array.from(Object.keys(map[xKeys[i]]));
+        let yKeys = Array.from(Object.keys(map[xKeys[i]]));
         for (let j = 0; j < yKeys.length; j++) {
-            var x = parseInt(xKeys[i]);
-            var y = parseInt(yKeys[j]);
+            let x = parseInt(xKeys[i]);
+            let y = parseInt(yKeys[j]);
             if (getPressure(x, y) < 0) {
                 continue;
             }
@@ -224,9 +224,9 @@ function tickMap(
                 .filter((loc) => isPointInWindBounds(loc[0], loc[1]))
                 .filter((loc) => getPressure(loc[0], loc[1]) > 0)
                 .forEach((loc) => {
-                    var x2 = loc[0];
-                    var y2 = loc[1];
-                    var diff = diff_function(x, y, x2, y2, map[x][y], map[x2][y2]);
+                    let x2 = loc[0];
+                    let y2 = loc[1];
+                    let diff = diff_function(x, y, x2, y2, map[x][y], map[x2][y2]);
 
                     if (y == y2) {
                         update_function(x, y, map[x][y] - diff);
@@ -234,7 +234,7 @@ function tickMap(
                         return;
                     }
 
-                    var side = 1;
+                    let side = 1;
                     if (y2 < y) {
                         side *= -1;
                     }
@@ -242,7 +242,7 @@ function tickMap(
                         side *= -1;
                     }
 
-                    var vertMult = 5;
+                    let vertMult = 5;
 
                     if (side == 1) {
                         diff /= vertMult;
@@ -277,29 +277,29 @@ function doRain() {
                 continue;
             };
 
-            var adjacentHumidity = Math.min(cloudRainMax, getAdjacentProp(x, y, getHumidity) / 5);
+            let adjacentHumidity = Math.min(cloudRainMax, getAdjacentProp(x, y, getHumidity) / 5);
             if (adjacentHumidity < (cloudRainThresh))
                 continue;
-            var rainDropProbability = ((adjacentHumidity - cloudRainThresh) / (cloudRainMax - cloudRainThresh));
+            let rainDropProbability = ((adjacentHumidity - cloudRainThresh) / (cloudRainMax - cloudRainThresh));
             rainDropProbability /= loadUI(UI_CLIMATE_RAINFALL_DENSITY);
             if (Math.random() > rainDropProbability) {
                 continue;
             }
 
-            var adjacentTemperature = getAdjacentProp(x, y, getTemperatureAtWindSquare) / 5;
-            var expectedPascals = saturationPressureOfWaterVapor(adjacentTemperature) * cloudRainThresh;
-            var adjacentPascals = getAdjacentProp(x, y, (x, y) => waterSaturationMap[x][y]) / 5;
+            let adjacentTemperature = getAdjacentProp(x, y, getTemperatureAtWindSquare) / 5;
+            let expectedPascals = saturationPressureOfWaterVapor(adjacentTemperature) * cloudRainThresh;
+            let adjacentPascals = getAdjacentProp(x, y, (x, y) => waterSaturationMap[x][y]) / 5;
 
-            var dropPascals = (adjacentPascals - expectedPascals) * 0.005;
+            let dropPascals = (adjacentPascals - expectedPascals) * 0.005;
 
-            var usedWaterPascalsPerSquare = dropPascals / 5;
-            var dropHealth = dropPascals / pascalsPerWaterSquare;
+            let usedWaterPascalsPerSquare = dropPascals / 5;
+            let dropHealth = dropPascals / pascalsPerWaterSquare;
 
             dropHealth *= Math.min(105, getCurTimeScale());
 
             dropHealth = Math.min(1, dropHealth * loadUI(UI_CLIMATE_RAINFALL_DENSITY));
 
-            var sq = addSquareByName(x * 4 + randNumber(0, 3), y * 4 + randNumber(0, 3), "water");
+            let sq = addSquareByName(x * 4 + randNumber(0, 3), y * 4 + randNumber(0, 3), "water");
             if (sq) {
                 sq.blockHealth = dropHealth;
                 sq.temperature = temperatureMap[x][y];
@@ -314,21 +314,21 @@ function doRain() {
 }
 
 export function getCloudColorAtSqPos(x, y) {
-    var x = Math.floor(x / 4);
-    var y = Math.floor(y / 4);
-    return getCloudColorAtPos(x, y);
+    let wx = Math.floor(x / 4);
+    let wy = Math.floor(y / 4);
+    return getCloudColorAtPos(wx, wy);
 }
 
 export function getCloudColorAtPos(x, y) {
     if (!isPointInWindBounds(x, y)) {
         return {r: 255, g: 255, b: 255, a: 0};
     }
-    var squareHumidity = getHumidity(x, y);
+    let squareHumidity = getHumidity(x, y);
     if (squareHumidity < 1) {
         return {r: 255, g: 255, b: 255, a: 0};
     }
-    var outColor;
-    var opacity;
+    let outColor;
+    let opacity;
     if (squareHumidity < (cloudRainThresh)) {
         outColor = calculateColorRGB(squareHumidity, 1, cloudRainThresh, c_cloudMinRGB, c_cloudMidRGB);
         opacity = (squareHumidity - 1) / (cloudRainThresh - 1);
@@ -340,8 +340,8 @@ export function getCloudColorAtPos(x, y) {
     return outColor;
 }
 
-var frameCloudSum = {r: 0, g: 0, b: 0};;
-var frameCloudSumCount = 1;
+let frameCloudSum = {r: 0, g: 0, b: 0};;
+let frameCloudSumCount = 1;
 
 export function getFrameRelCloud() {
     return {
@@ -361,7 +361,7 @@ function renderClouds() {
             if (getPressure(i, j) < 0) {
                 continue;
             }
-            var cloudColorRGBA = getCloudColorAtPos(i, j);
+            let cloudColorRGBA = getCloudColorAtPos(i, j);
 
             frameCloudSum.r += cloudColorRGBA.r * cloudColorRGBA.a;
             frameCloudSum.g += cloudColorRGBA.g * cloudColorRGBA.a;
@@ -416,7 +416,7 @@ function calculateColorTemperature(val) {
 
 export function calculateColorRGB(val, valMin, valMax, colorMin, colorMax) {
     val = Math.min(val, valMax);
-    var normalized = (val - valMin) / (valMax - valMin);
+    let normalized = (val - valMin) / (valMax - valMin);
     return {
         r: Math.floor(colorMax.r * normalized + colorMin.r * (1 - normalized)),
         g: Math.floor(colorMax.g * normalized + colorMin.g * (1 - normalized)),
@@ -426,7 +426,7 @@ export function calculateColorRGB(val, valMin, valMax, colorMin, colorMax) {
 
 function calculateColor(val, valMin, valMax, colorMin, colorMax) {
     val = Math.min(val, valMax);
-    var normalized = (val - valMin) / (valMax - valMin);
+    let normalized = (val - valMin) / (valMax - valMin);
     return rgbToRgba(
         Math.floor(colorMax.r * normalized + colorMin.r * (1 - normalized)),
         Math.floor(colorMax.g * normalized + colorMin.g * (1 - normalized)),
@@ -437,7 +437,7 @@ function calculateColor(val, valMin, valMax, colorMin, colorMax) {
 
 function calculateColorProvideOpacity(val, valMin, valMax, colorMin, colorMax, opacity) {
     val = Math.min(val, valMax);
-    var normalized = (val - valMin) / (valMax - valMin);
+    let normalized = (val - valMin) / (valMax - valMin);
     return rgbToRgba(
         Math.floor(colorMax.r * normalized + colorMin.r * (1 - normalized)),
         Math.floor(colorMax.g * normalized + colorMin.g * (1 - normalized)),
@@ -511,11 +511,11 @@ function addTemperature(x, y, delta) {
     return;
 
     // wind square portion, this needs to get fractured into two methods
-    var startTemp = temperatureMap[x][y];
+    let startTemp = temperatureMap[x][y];
     updateWindSquareTemperature(x, y, Math.max(temperatureMap[x][y] + delta, 0.1));
-    var endTemp = temperatureMap[x][y];
+    let endTemp = temperatureMap[x][y];
     if (startTemp != endTemp) {
-        var mult = (endTemp - startTemp) / 273;
+        let mult = (endTemp - startTemp) / 273;
         updateWindPressureByMult(x, y, (1 + mult));
     }
 }
@@ -531,7 +531,7 @@ function addWaterSaturationPascalsSqCoords(x, y, pascals) {
 }
 
 function addWaterSaturationPascals(x, y, pascals) {
-    var end = waterSaturationMap[x][y] + pascals;
+    let end = waterSaturationMap[x][y] + pascals;
     end = Math.max(10, end);
     waterSaturationMap[x][y] = end;
 }

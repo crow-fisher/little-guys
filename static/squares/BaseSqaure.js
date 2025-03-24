@@ -124,10 +124,10 @@ export class BaseSquare {
     }
 
     initTemperature() {
-        var adjacentWindSquare = getAdjacentWindSquareToRealSquare(this.posX, this.posY);
+        let adjacentWindSquare = getAdjacentWindSquareToRealSquare(this.posX, this.posY);
 
-        var x = adjacentWindSquare[0];
-        var y = adjacentWindSquare[1];
+        let x = adjacentWindSquare[0];
+        let y = adjacentWindSquare[1];
 
         if (x < 0 || y < 0) {
             return;
@@ -154,17 +154,17 @@ export class BaseSquare {
         if (this.organic) {
             return;
         }
-        var adjacentWindSquare = getWindSquareAbove(this.posX, this.posY);
+        let adjacentWindSquare = getWindSquareAbove(this.posX, this.posY);
 
-        var x = adjacentWindSquare[0];
-        var y = adjacentWindSquare[1];
+        let x = adjacentWindSquare[0];
+        let y = adjacentWindSquare[1];
 
         if (x < 0 || y < 0) {
             return;
         }
 
-        var adjacentTemp = getTemperatureAtWindSquare(x, y);
-        var diff = this.thermalConductivity * ((adjacentTemp - this.temperature));
+        let adjacentTemp = getTemperatureAtWindSquare(x, y);
+        let diff = this.thermalConductivity * ((adjacentTemp - this.temperature));
         diff /= timeScaleFactor();
         diff /= (1 + this.currentPressureDirect);
         this.temperature += diff / this.thermalMass;
@@ -285,13 +285,13 @@ export class BaseSquare {
     }
 
     renderSpecialViewModeLinearOpacity(color1, color2, value, valueMax, opacity) {
-        var frac = value / valueMax;
-        var outColor = {
+        let frac = value / valueMax;
+        let outColor = {
             r: color1.r * frac + color2.r * (1 - frac),
             g: color1.g * frac + color2.g * (1 - frac),
             b: color1.b * frac + color2.b * (1 - frac)
         }
-        var outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacity);
+        let outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacity);
         MAIN_CONTEXT.fillStyle = outRgba;
         zoomCanvasFillRect(
             (this.offsetX + this.posX) * getBaseSize(),
@@ -309,7 +309,7 @@ export class BaseSquare {
     }
 
     swapColors(otherSquare) {
-        var t1 = this.randoms;
+        let t1 = this.randoms;
         this.randoms = otherSquare.randoms;
         otherSquare.randoms = t1;
         this.cachedRgba = null;
@@ -337,7 +337,7 @@ export class BaseSquare {
     }
 
     renderLightingView() {
-        var outRgba = rgbToRgba(
+        let outRgba = rgbToRgba(
             Math.floor(this.lightingSum.r / this.lightingSumCount), 
             Math.floor(this.lightingSum.g / this.lightingSumCount), 
             Math.floor(this.lightingSum.b / this.lightingSumCount), 
@@ -356,10 +356,9 @@ export class BaseSquare {
             (Date.now() > this.lastColorCacheTime + (isLeftMouseClicked() ? 250 : 500) * Math.random()) ||
             Math.abs(getDaylightStrengthFrameDiff()) > 0.01) {
             this.lastColorCacheTime = Date.now();
-            var outColorBase = this.getColorBase();
-            var outColor = { r: 0, g: 0, b: 0 }
-            var lightingColor = this.processLighting(); 
-            var outColor = {r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255};
+            let outColorBase = this.getColorBase();
+            let lightingColor = this.processLighting(); 
+            let outColor = {r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255};
             this.cachedRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacityMult * this.opacity * (this.blockHealth ** 0.2));
         }
         MAIN_CONTEXT.fillStyle = this.cachedRgba;
@@ -426,8 +425,8 @@ export class BaseSquare {
     _percolateGroup(group) {
         if (this.group != group) {
             this.group = group;
-            var toVisit = new Set();
-            var visited = new Set();
+            let toVisit = new Set();
+            let visited = new Set();
 
             getNeighbors(this.posX, this.posY)
                 .filter((sq) => sq.proto == this.proto)
@@ -470,13 +469,13 @@ export class BaseSquare {
             return;
         }
 
-        var finalXPos = this.posX;
-        var finalYPos = this.posY;
-        var bonked = false;
+        let finalXPos = this.posX;
+        let finalYPos = this.posY;
+        let bonked = false;
         for (let i = 1; i < this.speedY + 1; i += (1 / this.gravity)) {
             for (let j = 0; j < Math.abs(this.speedX) + 1; j++) {
-                var jSigned = (this.speedX > 0) ? j : -j;
-                var jSignedMinusOne = (this.speedX == 0 ? 0 : (this.speedX > 0) ? (j - 1) : -(j - 1));
+                let jSigned = (this.speedX > 0) ? j : -j;
+                let jSignedMinusOne = (this.speedX == 0 ? 0 : (this.speedX > 0) ? (j - 1) : -(j - 1));
                 if (getSquares(this.posX + jSigned, this.posY + i)
                     .some((sq) =>
                         (!this.organic && sq.collision) ||
@@ -590,7 +589,7 @@ export class BaseSquare {
         if (this.currentPressureDirect != -1) {
             return this.currentPressureDirect;
         } else {
-            var filtered = getSquares(this.posX, this.posY - 1)
+            let filtered = getSquares(this.posX, this.posY - 1)
                 .filter((sq) => sq.collision);
 
             if (filtered.some((sq) => true)) {
@@ -611,7 +610,7 @@ export class BaseSquare {
         getNeighbors(this.posX, this.posY)
             .filter((sq) => sq.collision)
             .forEach((sq) => {
-                var diff = this.temperature - sq.temperature;
+                let diff = this.temperature - sq.temperature;
                 diff /= timeScaleFactor();
                 this.temperature -= diff / this.thermalMass;
                 sq.temperature += diff / sq.thermalMass;
@@ -622,7 +621,7 @@ export class BaseSquare {
         if (rootRequestedWater <= 0) {
             return 0;
         }
-        var ret = Math.min(rootRequestedWater, this.waterContainment);
+        let ret = Math.min(rootRequestedWater, this.waterContainment);
         this.waterContainment -= ret;
         return ret;
     }

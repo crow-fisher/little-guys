@@ -5,13 +5,13 @@ import { removeItemAll } from "../common.js";
 import { getOrganismsAtSquare } from "../organisms/_orgOperations.js";
 import { getCanvasSquaresX, getCanvasSquaresY } from "../canvas.js";
 
-var abs = Math.abs;
+let abs = Math.abs;
 let dir = -1;
 
 function* getNeighbors(x, y) {
     dir *= -1;
-    for (var i = -1; i < 2; i++) {
-        for (var j = -1; j < 2; j++) {
+    for (let i = -1; i < 2; i++) {
+        for (let j = -1; j < 2; j++) {
             if (i == 0 && j == 0) {
                 continue;
             }
@@ -19,7 +19,7 @@ function* getNeighbors(x, y) {
                 continue;
             }
             
-            var squares = getSquares(x + (i * dir), y + (j * dir));
+            let squares = getSquares(x + (i * dir), y + (j * dir));
             for (let i = 0; i < squares.length; i++) {
                 yield squares[i];
             };
@@ -40,12 +40,12 @@ function addSquare(square) {
 }
 
 function addSquareOverride(square) {
-    var existingSquares = getSquares(square.posX, square.posY);
+    let existingSquares = getSquares(square.posX, square.posY);
     if (Array.from(existingSquares.filter((sq) => sq.collision)).length == 0) {
         addSquare(square);
         return;
     }
-    var bottomLayer = Array.from(existingSquares.filter((sq) => sq.collision && sq.posY == (getCanvasSquaresY() - 1)));
+    let bottomLayer = Array.from(existingSquares.filter((sq) => sq.collision && sq.posY == (getCanvasSquaresY() - 1)));
     if (bottomLayer.length > 0) {
         return;
     }
@@ -75,7 +75,7 @@ function getSqIterationOrder() {
     if (frameOrder.length != getCanvasSquaresX()) {
         frameOrder = getFrameIterationOrder();
     }
-    var squareOrder = [];
+    let squareOrder = [];
     for (let i = 0; i < getCanvasSquaresX(); i++) {
         for (let j = 0; j < getCanvasSquaresY(); j++) {
             squareOrder.push(...getSquares(i, j))
@@ -88,9 +88,9 @@ function getSqIterationOrder() {
 }
 
 export function* getAllSquares() {
-    var rootKeys = Object.keys(ALL_SQUARES);
+    let rootKeys = Object.keys(ALL_SQUARES);
     for (let i = 0; i < rootKeys.length; i++) {
-        var subKeys = Object.keys(ALL_SQUARES[rootKeys[i]]);
+        let subKeys = Object.keys(ALL_SQUARES[rootKeys[i]]);
         for (let j = 0; j < subKeys.length; j++) {
             let squares = getSquares(rootKeys[i], subKeys[j]);
             for (let k = 0; k < squares.length; k++) {
@@ -103,9 +103,9 @@ export function* getAllSquares() {
  * @param {function} func - applies provided function to all squares
  */
 function iterateOnSquares(func) {
-    var rootKeys = Object.keys(ALL_SQUARES);
+    let rootKeys = Object.keys(ALL_SQUARES);
     for (let i = 0; i < rootKeys.length; i++) {
-        var subKeys = Object.keys(ALL_SQUARES[rootKeys[i]]);
+        let subKeys = Object.keys(ALL_SQUARES[rootKeys[i]]);
         for (let j = 0; j < subKeys.length; j++) {
             getSquares(rootKeys[i], subKeys[j]).forEach((func));
         }

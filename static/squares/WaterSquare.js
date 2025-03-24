@@ -96,15 +96,15 @@ class WaterSquare extends BaseSquare {
         }
 
 
-        var candidateMap = WATERFLOW_CANDIDATE_SQUARES[this.group];
-        var targetMap = WATERFLOW_TARGET_SQUARES[this.group]
+        let candidateMap = WATERFLOW_CANDIDATE_SQUARES[this.group];
+        let targetMap = WATERFLOW_TARGET_SQUARES[this.group]
         if (!(this.currentPressureIndirect in candidateMap)) {
             candidateMap[this.currentPressureIndirect] = new Array();
         }
         candidateMap[this.currentPressureIndirect].push(this);
         if (this.currentPressureIndirect >= this.currentPressureDirect) {
-            for (var i = -1; i < 2; i++) {
-                for (var j = -1; i < 2; i++) {
+            for (let i = -1; i < 2; i++) {
+                for (let j = -1; i < 2; i++) {
                     if (!(getSquares(this.posX + i, this.posY + j)
                             .some((sq) => sq.collision || sq.proto == this.proto))) {
                         if (!(this.currentPressureIndirect in targetMap)) {
@@ -122,7 +122,7 @@ class WaterSquare extends BaseSquare {
             return;
         }
 
-        var perGroupData = new Map();
+        let perGroupData = new Map();
         iterateOnSquares((sq) => {
             if (sq.proto != this.proto) {
                 return;

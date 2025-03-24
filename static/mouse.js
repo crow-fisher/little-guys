@@ -1,15 +1,15 @@
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, resetZoom } from "./canvas.js";
 import { loadUI, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER } from "./ui/UIData.js";
 
-var leftMouseClicked = false;
-var rightMouseClicked = false;
-var middleMouseClicked = false;
-var leftMouseUpEvent = true;
-var lastMouseDownStart = Date.now(); 
-var mouseDown = 0;
-var lastMoveEvent = null;
-var lastMoveOffset = null;
-var lastLastMoveOffset = null;
+let leftMouseClicked = false;
+let rightMouseClicked = false;
+let middleMouseClicked = false;
+let leftMouseUpEvent = true;
+let lastMouseDownStart = Date.now(); 
+let mouseDown = 0;
+let lastMoveEvent = null;
+let lastMoveOffset = null;
+let lastLastMoveOffset = null;
 
 export function getLastMoveOffset() {
     return lastMoveOffset;
@@ -99,8 +99,8 @@ export function getOffset(evt) {
     if (evt.offsetX != undefined)
         return { x: evt.offsetX, y: evt.offsetY };
 
-    var el = evt.target;
-    var offset = { x: 0, y: 0 };
+    let el = evt.target;
+    let offset = { x: 0, y: 0 };
 
     while (el.offsetParent) {
         offset.x += el.offsetLeft;

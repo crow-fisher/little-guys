@@ -18,9 +18,9 @@ import { ClimateSelectionComponent } from "./components/ClimateSelectionComponen
 import { WeatherSelectionComponent } from "./components/WeatherSelectionComponent.js";
 import { CloudControlComponent } from "./components/CloudControlComponent.js";
 
-var topBarComponent;
-var blockPalette;
-var all_components;
+let topBarComponent;
+let blockPalette;
+let all_components;
 
 all_components = [];
 topBarComponent = new TopBarComponent("UI_TOPBAR");

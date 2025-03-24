@@ -141,7 +141,7 @@ export const UI_PALETTE_SURFACE = "UI_PALETTE_SURFACE";
 // put default values in here
 // saved directly
 
-var UI_DATA = {
+let UI_DATA = {
     UI_NAME: "plymouth",
     UI_PALETTE_SIZE: 6,
     UI_PALETTE_STRENGTH: 1,
@@ -185,9 +185,9 @@ export function setUI_DATA(inVal) {
     UI_DATA = inVal;
 }
 
-var UI_FUNCTION_MAP = new Map();
+let UI_FUNCTION_MAP = new Map();
 
-var UI_SINGLE_GROUPS = [
+let UI_SINGLE_GROUPS = [
     [UI_SM_BB, UI_PALETTE_ACTIVE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_SM_GODMODE, UI_SM_CLIMATE],
     [UI_TOPBAR_MAINMENU, UI_TOPBAR_BLOCK, UI_TOPBAR_VIEWMODE, UI_TOPBAR_LIGHTING, UI_TOPBAR_SIMULATION, UI_TOPBAR_CLIMATE],
     [UI_PALETTE_MIXER, UI_PALETTE_EYEDROPPER],
@@ -196,12 +196,12 @@ var UI_SINGLE_GROUPS = [
     [UI_CLIMATE_SELECT_MENU, UI_CLIMATE_SELECT_CLOUDS, UI_CILMATE_SELECT_WEATHER],
 ]
 
-var UI_AUTOCLOSE = {
+let UI_AUTOCLOSE = {
     UI_TOPBAR_CLIMATE: [UI_CLIMATE_SELECT_MENU, UI_CLIMATE_SELECT_CLOUDS, UI_CILMATE_SELECT_WEATHER],
     UI_TOPBAR_BLOCK: [UI_PALETTE_ACTIVE, UI_SM_ORGANISM]
 }
 
-var queuedFunctionArr = new Array();
+let queuedFunctionArr = new Array();
 
 export function addUIFunctionMap(key, value) {
     UI_FUNCTION_MAP[key] = value;

@@ -135,7 +135,7 @@ class BaseOrganism {
             .filter((lsq) => lsq.linkedSquare != null && lsq.linkedSquare.proto == "SoilSquare")
             .filter((lsq) => (this.rootPower + lsq.linkedSquare.getSoilWaterPressure()) > this.waterPressure)
             .forEach((lsq) => {
-                var amountOfWater = 0;
+                let amountOfWater = 0;
                 if (this.waterPressure + amountOfWaterTransferred < this.waterPressureTarget) {
                     amountOfWater = lsq.linkedSquare.suckWater(maxRootAbsorptionRate);
                 } else {
@@ -182,13 +182,13 @@ class BaseOrganism {
         if (this.lifeSquares.length == 0) {
             return;
         }
-        var greenLifeSquares = Array.from(this.lifeSquares.filter((lsq) => lsq.type == "green"));
+        let greenLifeSquares = Array.from(this.lifeSquares.filter((lsq) => lsq.type == "green"));
         if (greenLifeSquares.length == 0) {
             return;
         }
         if (this.waterPressure < this.waterPressureWiltThresh) {
             this.curWilt += 0.01;
-            var lifeSquareToThirstify = greenLifeSquares.at(randNumber(0, greenLifeSquares.length - 1));
+            let lifeSquareToThirstify = greenLifeSquares.at(randNumber(0, greenLifeSquares.length - 1));
             if (lifeSquareToThirstify.state == STATE_HEALTHY) {
                 lifeSquareToThirstify.state = STATE_THIRSTY;
             } else if (lifeSquareToThirstify.state == STATE_THIRSTY) {
@@ -196,21 +196,21 @@ class BaseOrganism {
             }
         } else {
             this.curWilt -= 0.01;
-            var lifeSquareToRevive = greenLifeSquares.at(randNumber(0, greenLifeSquares.length - 1));
+            let lifeSquareToRevive = greenLifeSquares.at(randNumber(0, greenLifeSquares.length - 1));
             if (lifeSquareToRevive.state != STATE_DEAD) {
                 lifeSquareToRevive.state = STATE_HEALTHY;
             }
         }
 
         if (this.waterPressure > this.waterPressureOverwaterThresh) {
-            var lifeSquareToKill = greenLifeSquares.at(randNumber(0, greenLifeSquares.length - 1));
+            let lifeSquareToKill = greenLifeSquares.at(randNumber(0, greenLifeSquares.length - 1));
             lifeSquareToKill.state = STATE_DEAD;
         }
 
         this.curWilt = Math.max(0, this.curWilt);
         this.curWilt = Math.min(Math.PI / 2, this.curWilt);
 
-        var totalDead = Array.from(greenLifeSquares.filter((lsq) => lsq.state == STATE_DEAD)).length;
+        let totalDead = Array.from(greenLifeSquares.filter((lsq) => lsq.state == STATE_DEAD)).length;
 
         if (totalDead > greenLifeSquares.length * 0.5) {
             this.stage = STAGE_DEAD;
@@ -231,7 +231,7 @@ class BaseOrganism {
     // LIFE SQUARES
     addAssociatedLifeSquare(lifeSquare) {
         this.lifeSquares.push(lifeSquare);
-        var pred = (lsq) => lsq.lighting != null && lsq.lighting.length > 0;
+        let pred = (lsq) => lsq.lighting != null && lsq.lighting.length > 0;
         if (this.lifeSquares.some(pred)) {
             lifeSquare.lighting = this.lifeSquares.reverse().find(pred).lighting;
         }
@@ -243,9 +243,9 @@ class BaseOrganism {
 
     // COMPONENT GROWTH
     growPlantSquare(parentSquare, dx, dy) {
-        var newPlantSquare = new PlantSquare(parentSquare.posX + dx, parentSquare.posY - dy);
+        let newPlantSquare = new PlantSquare(parentSquare.posX + dx, parentSquare.posY - dy);
         if (addSquare(newPlantSquare)) {
-            var newGreenSquare = addOrganismSquare(new this.greenType(newPlantSquare, this));
+            let newGreenSquare = addOrganismSquare(new this.greenType(newPlantSquare, this));
             if (newGreenSquare) {
                 this.addAssociatedLifeSquare(newGreenSquare);
                 newGreenSquare.linkSquare(newPlantSquare);
@@ -279,7 +279,7 @@ class BaseOrganism {
     }
 
     _getAllComponentsofType(componentType, component) {
-        var out = [];
+        let out = [];
         out.push(...component.children.filter((child) => child.type === componentType));
         component.children.forEach((child) => out.push(...this._getAllComponentsofType(componentType, child)));
         return out;
@@ -290,7 +290,7 @@ class BaseOrganism {
     }
 
     _getOriginForNewGrowth(subtype, component) {
-        var out = new Array();
+        let out = new Array();
         out.push(...component.lifeSquares.filter((sq) => sq.subtype == subtype))
         component.children.forEach((child) => out.push(...this._getOriginForNewGrowth(subtype, child)));
         return out;
@@ -300,7 +300,7 @@ class BaseOrganism {
             this.destroy();
             return;
         }
-        var growthPlan = new GrowthPlan(this.posX, this.posY, 
+        let growthPlan = new GrowthPlan(this.posX, this.posY, 
             true, STAGE_JUVENILE, Math.PI / 2, 0, 0, 
             0, 0, TYPE_HEART, 10 ** 8);
         growthPlan.steps.push(new GrowthPlanStep(
@@ -308,7 +308,7 @@ class BaseOrganism {
             0,
             0,
             () => {
-                var rootSq = new this.rootType(this.linkedSquare, this);
+                let rootSq = new this.rootType(this.linkedSquare, this);
                 rootSq.linkSquare(this.linkedSquare);
                 rootSq.subtype = SUBTYPE_ROOTNODE;
                 if (this.linkedSquare != null && this.linkedSquare != -1) {
@@ -341,7 +341,7 @@ class BaseOrganism {
         if (this.nitrogen < requiredNitrogen || this.phosphorus < requiredPhosphorus || this.lightlevel < requiredLightLevel) {
             return;
         }
-        var anyStepFound = false;
+        let anyStepFound = false;
         this.growthPlans.filter((gp) => !gp.completed).forEach((growthPlan) => {
             let step = growthPlan.steps.filter((step) => !step.completed).at(0);
             step.doAction();
@@ -371,8 +371,8 @@ class BaseOrganism {
         this.rootLastGrown = getCurDay();
         this.curNumRoots += 1;
 
-        var targetSquare = null;
-        var targetSquareParent = null;
+        let targetSquare = null;
+        let targetSquareParent = null;
         this.lifeSquares.filter((lsq) => lsq.type == "root").forEach((lsq) => {
             getNeighbors(lsq.posX, lsq.posY)
                 .filter((_sq) => _sq != null)
@@ -385,7 +385,7 @@ class BaseOrganism {
             return;
         }
 
-        var newRootLifeSquare = addOrganismSquare(new this.rootType(targetSquare, this));
+        let newRootLifeSquare = addOrganismSquare(new this.rootType(targetSquare, this));
         if (newRootLifeSquare) {
             this.addAssociatedLifeSquare(newRootLifeSquare);
             newRootLifeSquare.linkSquare(targetSquare);
@@ -427,7 +427,7 @@ class BaseOrganism {
         }
 
         let scoreFunc = (sq) => {
-            var sqScore = 0;
+            let sqScore = 0;
             if (this.waterPressure < this.waterPressureTarget) {
                 sqScore += sq.getSoilWaterPressure() / this.waterPressure;
             }
@@ -479,7 +479,7 @@ class BaseOrganism {
         });
 
         for (let i = 0; i < this.lifeSquares.length * 2; i++) {
-            var sq = this.lifeSquares[i % this.lifeSquares.length];
+            let sq = this.lifeSquares[i % this.lifeSquares.length];
 
             let nitrogenToAdd = Math.min(nitrogenMult, 0.5);
             let phosphorusToAdd = Math.min(phosphorusMult, 0.5)

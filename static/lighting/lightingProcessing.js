@@ -2,12 +2,12 @@ import { getStandardDeviation } from "../common.js";
 import { getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "../climate/time.js";
 import { loadUI, UI_LIGHTING_ENABLED } from "../ui/UIData.js";
 
-var curFrameValues = [1];
-var prevFrameDivMult = 1;
+let curFrameValues = [1];
+let prevFrameDivMult = 1;
 
 export function resetFrameDivMult() {
-    var stdev = getStandardDeviation(curFrameValues);
-    var mean = curFrameValues.reduce(                
+    let stdev = getStandardDeviation(curFrameValues);
+    let mean = curFrameValues.reduce(                
         (accumulator, currentValue) => accumulator + currentValue,
         0,
     ) / curFrameValues.length;
@@ -16,9 +16,9 @@ export function resetFrameDivMult() {
 }
 
 export function getDefaultLighting() {
-    var brightness = getDaylightStrength();
-    var daylightColor = getCurrentLightColorTemperature();
-    var moonlightColor = getMoonlightColor();
+    let brightness = getDaylightStrength();
+    let daylightColor = getCurrentLightColorTemperature();
+    let moonlightColor = getMoonlightColor();
 
     return {
         r: Math.min(255, moonlightColor.r * 0.3 + (daylightColor.r * brightness)),
@@ -31,13 +31,13 @@ export function processLighting(lightingMap) {
     if (!loadUI(UI_LIGHTING_ENABLED) || lightingMap.length == 0) {
         return getDefaultLighting();
     }
-    var outColor = {r: 0, g: 0, b: 0}
+    let outColor = {r: 0, g: 0, b: 0}
     lightingMap.filter((light) => light != null && light.length == 2).forEach((light) => {
-        var strength = light[0].map((f) => f()).reduce(
+        let strength = light[0].map((f) => f()).reduce(
             (accumulator, currentValue) => accumulator + currentValue,
             0,
         );
-        var color = light[1]();
+        let color = light[1]();
         outColor = {
             r: outColor.r + strength * color.r,
             g: outColor.g + strength * color.g,

@@ -17,17 +17,17 @@ export class Slider extends WindowElement {
     }
 
     render(startX, startY) {
-        var py = startY + this.sizeY / 2;
-        var p1x = startX + this.blockSize; 
-        var p2x = startX + this.sizeX - this.blockSize;
+        let py = startY + this.sizeY / 2;
+        let p1x = startX + this.blockSize; 
+        let p2x = startX + this.sizeX - this.blockSize;
 
         MAIN_CONTEXT.beginPath();
         MAIN_CONTEXT.moveTo(p1x, py);
         MAIN_CONTEXT.lineTo(p2x, py);
         MAIN_CONTEXT.stroke();
         MAIN_CONTEXT.fillStyle = this.blockColorFunc();
-        var p = (loadUI(this.key) - this.min) / (this.max - this.min);
-        var x = p1x + p * (p2x - p1x)
+        let p = (loadUI(this.key) - this.min) / (this.max - this.min);
+        let x = p1x + p * (p2x - p1x)
         MAIN_CONTEXT.fillRect(x - this.blockSize / 2, py - this.blockSize / 2, this.blockSize, this.blockSize);
         return [this.sizeX, this.sizeY]
     }
@@ -38,7 +38,7 @@ export class Slider extends WindowElement {
             return;
         }
         this.window.locked = true;
-        var py = this.sizeY / 2;
+        let py = this.sizeY / 2;
         if (Math.abs(posY - py) > this.blockSize) {
             return;
         }

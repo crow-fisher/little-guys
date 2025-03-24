@@ -17,7 +17,7 @@ export class Radio extends WindowElement {
     }
 
     render(startX, startY) {
-        var curX = 0;
+        let curX = 0;
         MAIN_CONTEXT.font = this.sizeY - 10 + "px courier"
         MAIN_CONTEXT.textBaseline = 'middle';
         let step = this.sizeX / this.choices.length;
@@ -45,7 +45,7 @@ export class Radio extends WindowElement {
         if (!isLeftMouseClicked()) {
             return;
         }
-        var curX = 0;
+        let curX = 0;
         let step = this.sizeX / this.choices.length;
         for (let i = 0; i < this.choices.length; i++) {
             if (posX > curX && posX < curX + step) {

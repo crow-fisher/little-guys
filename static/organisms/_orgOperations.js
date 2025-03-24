@@ -28,10 +28,10 @@ function getOrganismsAtSquare(posX, posY) {
 }
 
 function iterateOnOrganisms(func, sortRandomness) {
-    var rootKeys = Object.keys(ALL_ORGANISMS);
-    var organismOrder = [];
+    let rootKeys = Object.keys(ALL_ORGANISMS);
+    let organismOrder = [];
     for (let i = 0; i < rootKeys.length; i++) {
-        var subKeys = Object.keys(ALL_ORGANISMS[rootKeys[i]]);
+        let subKeys = Object.keys(ALL_ORGANISMS[rootKeys[i]]);
         for (let j = 0; j < subKeys.length; j++) {
             organismOrder.push(...getOrganismsAtSquare(rootKeys[i], subKeys[j]));
         }

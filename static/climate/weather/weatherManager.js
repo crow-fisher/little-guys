@@ -8,14 +8,14 @@ import { getWindSquaresX, getWindSquaresY } from "../wind.js";
 import { Cloud } from "./cloud.js";
 import { Weather } from "./weather.js";
 
-var weatherSunny, weatherPartlyCloudy, weatherMostlyCloudy, weatherFoggy, weatherLightRain, weatherHeavyRain;
-var ui_weatherMap = new Map();
+let weatherSunny, weatherPartlyCloudy, weatherMostlyCloudy, weatherFoggy, weatherLightRain, weatherHeavyRain;
+let ui_weatherMap = new Map();
 
-var curRainFallAmount = 0;
-var curWeatherStartTime = 0;
-var curWeatherInterval = 1;
-var curWeather = null;
-var curClimate = null;
+let curRainFallAmount = 0;
+let curWeatherStartTime = 0;
+let curWeatherInterval = 1;
+let curWeather = null;
+let curClimate = null;
 
 export function getCurWeather() {
     return curWeather;
@@ -24,8 +24,8 @@ export function getCurWeatherInterval() {
     return Math.round((curWeatherInterval - (getCurDay() - curWeatherStartTime)) / 0.000694444);
 }
 
-var curClouds = [];
-var curWinds = [];
+let curClouds = [];
+let curWinds = [];
 
 function spawnFogCloud() {
     let wsx = getWindSquaresX();
@@ -72,13 +72,13 @@ function spawnWindGust() {
 }
 
 // UI_CLIMATE_WEATHER_SUNNY
-var sunnyHg = [
+let sunnyHg = [
     [0, 0.2],
     [0.15, 0.3],
     [0.25, 0.3],
     [1, 0.4]
 ]
-var sunnyTg = [
+let sunnyTg = [
     [0, 273 + 30],
     [0.5, 273 + 35],
     [1, 273 + 40]
@@ -90,37 +90,37 @@ function sunnyWeather() {
 
 weatherSunny = new Weather(UI_CLIMATE_WEATHER_SUNNY, sunnyHg, sunnyTg, 100, sunnyWeather);
 
-var cloudyHg = [
+let cloudyHg = [
     [0, 0.999],
     [0.15, 0.999],
     [0.25, 0.98],
     [1, 0.75]
 ]
-var cloudyTg = [
+let cloudyTg = [
     [0, 273 + 30],
     [0.5, 273 + 35],
     [1, 273 + 40]
 ]
 
 
-var foggyHg = [
+let foggyHg = [
     [0, 1],
     [0.15, 1],
     [0.25, 1],
     [1, 0.99]
 ]
-var foggyTg = [
+let foggyTg = [
     [0, 273 + 30],
     [0.5, 273 + 35],
     [1, 273 + 40]
 ]
-var rainyHumidityGradient = [
+let rainyHumidityGradient = [
     [0, 1],
     [0.25, 1],
     [0.5, 0.85],
     [1, .7]
 ]
-var rainyTemperatureGradient = [
+let rainyTemperatureGradient = [
     [0, 273 + 30],
     [0.5, 273 + 35],
     [1, 273 + 40]
@@ -197,13 +197,13 @@ function weatherChange() {
         return;
     }
     let curWeatherPatternMap = getActiveClimate().weatherPatternMap;
-    var sum = curWeatherPatternMap.values().reduce(
+    let sum = curWeatherPatternMap.values().reduce(
         (accumulator, currentValue) => accumulator + currentValue,
         0,
     );
-    var target = Math.floor(Math.random() * sum);
-    var cur = 0;
-    var nextWeather = curWeatherPatternMap.keys().find((key) => {
+    let target = Math.floor(Math.random() * sum);
+    let cur = 0;
+    let nextWeather = curWeatherPatternMap.keys().find((key) => {
         if (target <= cur) {
             return true;
         };

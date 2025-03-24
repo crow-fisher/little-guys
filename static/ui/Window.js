@@ -88,7 +88,7 @@ export class Window {
     }
 
     update() {
-        var curMouseLocation = getLastMoveOffset();
+        let curMouseLocation = getLastMoveOffset();
         if (curMouseLocation == null) {
             return;
         }
@@ -117,7 +117,7 @@ export class Window {
             return;
         }
 
-        var hoverP = this.padding * 2;
+        let hoverP = this.padding * 2;
         if (
             x < this.posX - hoverP ||
             x > this.posX + this.sizeX + hoverP || 

@@ -20,7 +20,7 @@ import { KentuckyBluegrassOrganism, KentuckyBluegrassSeedOrganism } from "./orga
 import { MushroomGreenSquare } from "./lifeSquares/parameterized/fantasy/MushroomGreenSquare.js";
 import { MushroomOrganism, MushroomSeedOrganism } from "./organisms/fantasy/MushroomOrganism.js";
 
-var ProtoMap = {
+let ProtoMap = {
     "BaseSquare": BaseSquare.prototype,
     "PlantSquare": PlantSquare.prototype,
     "SoilSquare": SoilSquare.prototype,
@@ -49,7 +49,7 @@ var ProtoMap = {
     
 }
 
-var TypeMap = {
+let TypeMap = {
     [GenericParameterizedRootSquare.name]: GenericParameterizedRootSquare,
     [WheatGreenSquare.name] : WheatGreenSquare,
     [ElephantEarGreenSquare.name]: ElephantEarGreenSquare,
@@ -57,7 +57,7 @@ var TypeMap = {
     [MushroomGreenSquare.name]: MushroomGreenSquare,
 }
 
-var TypeNameMap = {
+let TypeNameMap = {
     GenericParameterizedRootSquare: GenericParameterizedRootSquare.name,
     WheatGreenSquare: WheatGreenSquare.name,
     ElephantEarGreenSquare: ElephantEarGreenSquare.name,

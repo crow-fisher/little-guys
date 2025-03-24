@@ -311,7 +311,7 @@ export class LightSource {
                 outLightColor.g *= (windSquareCloudColor.g / 255) * opacity + (1 - opacity)
                 outLightColor.b *= (windSquareCloudColor.b / 255) * opacity + (1 - opacity)
             });
-            var brightnessDrop = (outLightColor.r + outLightColor.g + outLightColor.b) / (255 * 3);
+            let brightnessDrop = (outLightColor.r + outLightColor.g + outLightColor.b) / (255 * 3);
             this.windSquarebrightnessMults[rayTheta] = (brightnessDrop ** 8);
         });
     }

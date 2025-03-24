@@ -20,12 +20,12 @@ export class RowedRadio extends WindowElement {
     }
 
     render(startX, startY) {
-        var curX = 0;
+        let curX = 0;
         MAIN_CONTEXT.font = (this.sizeY / this.rows) * 0.75 + "px courier"
         MAIN_CONTEXT.textAlign = 'left';
         MAIN_CONTEXT.textBaseline = 'middle';
         let xStep = (this.rows * this.sizeX) / this.choices.length;
-        var yStep = this.sizeY / this.rows;
+        let yStep = this.sizeY / this.rows;
         
         for (let i = 0; i < this.choices.length; i++) {
             if (i == this.selected) {
@@ -34,8 +34,8 @@ export class RowedRadio extends WindowElement {
             } else {
                 MAIN_CONTEXT.fillStyle = this.colorInactiveFunc();
             }
-            var leftX = startX + xStep * (i % (this.choices.length / this.rows));
-            var topY = startY + Math.floor(((this.rows * i) / this.choices.length)) * yStep;
+            let leftX = startX + xStep * (i % (this.choices.length / this.rows));
+            let topY = startY + Math.floor(((this.rows * i) / this.choices.length)) * yStep;
 
             MAIN_CONTEXT.fillRect(leftX, topY, xStep, yStep);
 
@@ -57,10 +57,10 @@ export class RowedRadio extends WindowElement {
             return;
         }
         let xStep = (this.rows * this.sizeX) / this.choices.length;
-        var yStep = this.sizeY / this.rows;
+        let yStep = this.sizeY / this.rows;
         for (let i = 0; i < this.choices.length; i++) {
-            var leftX = xStep * (i % (this.choices.length / this.rows));
-            var topY = Math.floor(((this.rows * i) / this.choices.length)) * yStep;
+            let leftX = xStep * (i % (this.choices.length / this.rows));
+            let topY = Math.floor(((this.rows * i) / this.choices.length)) * yStep;
             if (posX > leftX && posX < leftX + xStep && posY > topY && posY < topY + yStep) {
                 this.selected = i;
                 saveUI(this.key, this.choices[i]);

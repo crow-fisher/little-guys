@@ -10,8 +10,8 @@ import { initUI } from "./ui/WindowManager.js";
 import { initTemperatureHumidity } from "./climate/temperatureHumidity.js";
 import { iterateOnSquares } from "./squares/_sqOperations.js";
 
-export var MAIN_CANVAS = document.getElementById("main");
-export var MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
+export let MAIN_CANVAS = document.getElementById("main");
+export let MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
 
 const body = document.getElementById("body");
 

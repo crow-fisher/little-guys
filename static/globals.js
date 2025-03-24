@@ -1,12 +1,12 @@
-export var ALL_SQUARES = new Map();
-export var ALL_ORGANISMS = new Map();
-export var ALL_ORGANISM_SQUARES = new Map();
-export var stats = new Map();
-export var NUM_GROUPS = 0; 
-export var WATERFLOW_TARGET_SQUARES = new Map();
-export var WATERFLOW_CANDIDATE_SQUARES = new Set();
-export var LIGHT_SOURCES = new Array();
-export var global_theta_base = 0;
+export let ALL_SQUARES = new Map();
+export let ALL_ORGANISMS = new Map();
+export let ALL_ORGANISM_SQUARES = new Map();
+export let stats = new Map();
+export let NUM_GROUPS = 0; 
+export let WATERFLOW_TARGET_SQUARES = new Map();
+export let WATERFLOW_CANDIDATE_SQUARES = new Set();
+export let LIGHT_SOURCES = new Array();
+export let global_theta_base = 0;
 
 let mixArrLen = 3; 
 let curMixIdx = Math.floor(Date.now());

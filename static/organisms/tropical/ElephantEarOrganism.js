@@ -33,28 +33,28 @@ export class ElephantEarOrganism extends BaseOrganism {
     }
 
     getLeafLocations(xSize, ySize) {
-        var locs = new Array();
-        var step = 0.01;
-        var yIntercept = 0.7;
+        let locs = new Array();
+        let step = 0.01;
+        let yIntercept = 0.7;
         for (let x = -2; x < 2; x += step) {
             for (let y = 0; y < 5; y += step) {
-                var elipseVal = (1.8 * x) ** 2 + (y ** 0.6 - 1) ** 2; 
-                var triangleVal = -Math.abs(2*x) + yIntercept;
+                let elipseVal = (1.8 * x) ** 2 + (y ** 0.6 - 1) ** 2; 
+                let triangleVal = -Math.abs(2*x) + yIntercept;
                 if (elipseVal <= 2 && y >= triangleVal) {
                     locs.push([x, y]);
                 }
             }
         }
 
-        var maxX = Math.max(...locs.map((loc) => loc[0]));
-        var maxY = Math.max(...locs.map((loc) => loc[1]));
+        let maxX = Math.max(...locs.map((loc) => loc[0]));
+        let maxY = Math.max(...locs.map((loc) => loc[1]));
 
-        var out = new Array();
+        let out = new Array();
         for (let i = 0; i <= xSize; i++) {
             for (let j = 0; j < ySize; j++) {
-                var ip = (i / xSize) * maxX;
-                var jp = (j / ySize) * maxY;
-                var minDist = Math.min(...locs.map((loc) => ((loc[0] - ip) ** 2 + (loc[1] - jp) ** 2) ** 0.5));
+                let ip = (i / xSize) * maxX;
+                let jp = (j / ySize) * maxY;
+                let minDist = Math.min(...locs.map((loc) => ((loc[0] - ip) ** 2 + (loc[1] - jp) ** 2) ** 0.5));
                 if (minDist < step * Math.SQRT2) {
                     out.push([i, j]);
                     if (i != 0) 
@@ -73,7 +73,7 @@ export class ElephantEarOrganism extends BaseOrganism {
     }
 
     juvenileGrowthPlanning() {
-        var startRootNode = this.getOriginsForNewGrowth(SUBTYPE_ROOTNODE).at(0);
+        let startRootNode = this.getOriginsForNewGrowth(SUBTYPE_ROOTNODE).at(0);
         this.growLeafAndStemFromNode(startRootNode, 
             this.getNextDeflection(),
             this.getNextTheta(),
@@ -84,7 +84,7 @@ export class ElephantEarOrganism extends BaseOrganism {
     }
 
     growLeafFromNode(stemLeafNode, xSize, ySize, twist) {
-        var leafGrowthPlan = new GrowthPlan(
+        let leafGrowthPlan = new GrowthPlan(
             stemLeafNode.posX, stemLeafNode.posY, 
             false, STAGE_ADULT, 
             twist, twist, 0, 0,0,
@@ -96,14 +96,14 @@ export class ElephantEarOrganism extends BaseOrganism {
         ]);
 
         leafGrowthPlan.postConstruct = () => stemLeafNode.component.addChild(leafGrowthPlan.component);
-        var leafLocations = this.getLeafLocations(xSize, ySize);
+        let leafLocations = this.getLeafLocations(xSize, ySize);
         for (let t = 0; t < Math.min(...leafLocations.filter((loc) => loc[0] == 0).map((loc) => loc[1])); t++) {
-            var step = new GrowthPlanStep(
+            let step = new GrowthPlanStep(
                 leafGrowthPlan,
                 0,
                 this.leafGrowTimeInDays,
                 () => {
-                    var shoot = this.growPlantSquare(stemLeafNode, 0, t);
+                    let shoot = this.growPlantSquare(stemLeafNode, 0, t);
                     shoot.subtype = SUBTYPE_STEM;
                     return shoot;
                 },
@@ -114,12 +114,12 @@ export class ElephantEarOrganism extends BaseOrganism {
         };
         
         leafLocations.forEach((loc) => {
-            var step = new GrowthPlanStep(
+            let step = new GrowthPlanStep(
                 leafGrowthPlan,
                 0,
                 this.leafGrowTimeInDays,
                 () => {
-                    var shoot = this.growPlantSquare(stemLeafNode, loc[0], loc[1]);
+                    let shoot = this.growPlantSquare(stemLeafNode, loc[0], loc[1]);
                     shoot.subtype = SUBTYPE_LEAF;
                     return shoot;
                 },
@@ -137,16 +137,16 @@ export class ElephantEarOrganism extends BaseOrganism {
             return;
         }
         this.curNumLeaves += 1;
-        var nextX = (this.curNumLeaves % 2 > 0 ? this.side : this.side * -1) * Math.ceil(this.curNumLeaves / 2);
-        var originGrowthY = Math.max(...this.originGrowth.yPositions());
-        var rootNodeSq = this.lifeSquares.find((lsq) => lsq.type == "root" && lsq.posX == this.originGrowth.posX + nextX && lsq.posY <= originGrowthY);
+        let nextX = (this.curNumLeaves % 2 > 0 ? this.side : this.side * -1) * Math.ceil(this.curNumLeaves / 2);
+        let originGrowthY = Math.max(...this.originGrowth.yPositions());
+        let rootNodeSq = this.lifeSquares.find((lsq) => lsq.type == "root" && lsq.posX == this.originGrowth.posX + nextX && lsq.posY <= originGrowthY);
         if (rootNodeSq == null) {
             this.side *= -1;
             return;
         }
         rootNodeSq.subtype = SUBTYPE_ROOTNODE;
         rootNodeSq.component = this.originGrowth;
-        var newGrowthPlan = this.growLeafAndStemFromNode(rootNodeSq,
+        let newGrowthPlan = this.growLeafAndStemFromNode(rootNodeSq,
             this.getNextDeflection(),
             this.getNextTheta(),
             randNumber(13, 18),
@@ -160,7 +160,7 @@ export class ElephantEarOrganism extends BaseOrganism {
     }
 
     growLeafAndStemFromNode(startNode, deflection, theta, stemLength, leafXSize, leafYSize) {
-        var growthPlan = new GrowthPlan(
+        let growthPlan = new GrowthPlan(
             startNode.posX, startNode.posY, 
             false, STAGE_ADULT, 
             theta, 0, 0, deflection / 2,deflection / 2, 
@@ -178,14 +178,14 @@ export class ElephantEarOrganism extends BaseOrganism {
             },
             () => this.growLeafFromNode(leafNode, leafXSize, leafYSize, deflection)
         ));
-        var leafNode = null;
+        let leafNode = null;
         for (let t = 1; t < stemLength; t++) {
             growthPlan.steps.push(new GrowthPlanStep(
                 growthPlan,
                 0,
                 this.sproutGrowTimeInDays,
                 () => {
-                    var shoot = this.growPlantSquare(startNode, 0, 1);
+                    let shoot = this.growPlantSquare(startNode, 0, 1);
                     shoot.subtype = SUBTYPE_STEM;
                     return shoot;
                 },

@@ -31,10 +31,10 @@ export const sandMatricPressureMap = [
 
 // https://docs.google.com/spreadsheets/d/1MWOde96t-ruC5k1PLL4nex0iBjdyXKOkY7g59cnaEj4/edit?gid=0#gid=0
 export function getBasePercolationRate(sand, silt, clay) {
-    var clayRate = 2;
-    var siltRate = 1.5;
-    var sandRate = 0.92;
-    var power = 10;
+    let clayRate = 2;
+    let siltRate = 1.5;
+    let sandRate = 0.92;
+    let power = 10;
     return (sand * sandRate +
         silt * siltRate +
         clay * clayRate) ** power;
@@ -85,14 +85,14 @@ export class SoilSquare extends BaseSquare {
     }
 
     randomize() {
-        var rand1 = (Math.random() - 0.5) * 0.3;
-        var rand2 = (Math.random() - 0.5) * 0.3;
-        var rand3 = (Math.random() - 0.5) * 0.3;
+        let rand1 = (Math.random() - 0.5) * 0.3;
+        let rand2 = (Math.random() - 0.5) * 0.3;
+        let rand3 = (Math.random() - 0.5) * 0.3;
         this.clay *= (1 + rand1);
         this.silt *= (1 + rand2);
         this.sand *= (1 + rand3);
 
-        var sum = this.clay + this.silt + this.sand;
+        let sum = this.clay + this.silt + this.sand;
 
         this.clay *= (1 / sum);
         this.silt *= (1 / sum);
@@ -118,8 +118,8 @@ export class SoilSquare extends BaseSquare {
             return 0;
         }
     
-        var lower = refArr[0];
-        var upper = refArr[refArr.length - 1];
+        let lower = refArr[0];
+        let upper = refArr[refArr.length - 1];
 
         if (waterContainment <= lower[0]) {
             return lower[1];
@@ -128,8 +128,8 @@ export class SoilSquare extends BaseSquare {
             return upper[1];
         }
     
-        for (var i = 0; i < refArr.length; i++) {
-            var entry = refArr[i];
+        for (let i = 0; i < refArr.length; i++) {
+            let entry = refArr[i];
             if (entry[0] < waterContainment && entry[0] > lower[0]) {
                 lower = entry;
             }
@@ -138,8 +138,8 @@ export class SoilSquare extends BaseSquare {
             }
         }
     
-        var t = (waterContainment - lower[0]) / (upper[0] - lower[0]);
-        var interpolated = lower[1] + t * (upper[1] - lower[1]);
+        let t = (waterContainment - lower[0]) / (upper[0] - lower[0]);
+        let interpolated = lower[1] + t * (upper[1] - lower[1]);
         return interpolated;
     }
     
@@ -181,8 +181,8 @@ export class SoilSquare extends BaseSquare {
                     return false;
                 }})
             .forEach((sq) => {
-                var thisWaterPressure = this.getMatricPressure(this.waterContainment);
-                var sqWaterPressure = sq.getMatricPressure(sq.waterContainment) + (sq.getGravitationalPressure() - this.getGravitationalPressure());
+                let thisWaterPressure = this.getMatricPressure(this.waterContainment);
+                let sqWaterPressure = sq.getMatricPressure(sq.waterContainment) + (sq.getGravitationalPressure() - this.getGravitationalPressure());
 
                 if (isNaN(thisWaterPressure) || isNaN(sqWaterPressure)) {
                     return;
@@ -190,11 +190,11 @@ export class SoilSquare extends BaseSquare {
                 if (thisWaterPressure < sqWaterPressure || thisWaterPressure < -2) {
                     return;
                 }
-                var meanPressure = (thisWaterPressure + sqWaterPressure) / 2;
-                var meanPressureWaterContainment = this.getInverseMatricPressure(meanPressure);
-                var thisDiff = (this.waterContainment - meanPressureWaterContainment) / this.getWaterflowRate();
-                var sqDiff = (this.waterContainment - meanPressureWaterContainment) / sq.getWaterflowRate();
-                var diff = Math.min(thisDiff, sqDiff) / 2;
+                let meanPressure = (thisWaterPressure + sqWaterPressure) / 2;
+                let meanPressureWaterContainment = this.getInverseMatricPressure(meanPressure);
+                let thisDiff = (this.waterContainment - meanPressureWaterContainment) / this.getWaterflowRate();
+                let sqDiff = (this.waterContainment - meanPressureWaterContainment) / sq.getWaterflowRate();
+                let diff = Math.min(thisDiff, sqDiff) / 2;
                 diff = Math.min(this.waterContainment, Math.max(0, Math.min(diff, sq.waterContainmentMax - sq.waterContainment)));
                 this.waterContainment -= diff;
                 sq.waterContainment += diff;
@@ -204,7 +204,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     doBlockOutflow(unsaturatedNeighbors) {
-        var thisWaterPressure = this.getMatricPressure(this.waterContainment); 
+        let thisWaterPressure = this.getMatricPressure(this.waterContainment); 
         if (thisWaterPressure < -2) {
             return;
         }
@@ -219,11 +219,11 @@ export class SoilSquare extends BaseSquare {
         if (getSquares(posX, posY).some((sq) => sq.collision)) {
             return;
         }
-        var outflowWaterAmount = (this.waterContainment - this.getInverseMatricPressure(-2)) / this.getWaterflowRate();
+        let outflowWaterAmount = (this.waterContainment - this.getInverseMatricPressure(-2)) / this.getWaterflowRate();
         if (outflowWaterAmount < Math.random() * 0.125) {
             return;
         }
-        var newWater = addSquareByName(posX, posY, "water");
+        let newWater = addSquareByName(posX, posY, "water");
         if (newWater) {
             newWater.blockHealth = outflowWaterAmount;
             this.waterContainment -= outflowWaterAmount;
@@ -245,18 +245,18 @@ export class SoilSquare extends BaseSquare {
         if (this.waterContainmentMax == 0 || this.waterContainment >= this.waterContainmentMax) {
             return 0;
         }
-        var maxWaterflowRate = (this.waterContainmentMax - this.waterContainment) / (this.getWaterflowRate() ** 0.5);
-        var amountToPercolate = Math.min(waterBlock.blockHealth, maxWaterflowRate);
+        let maxWaterflowRate = (this.waterContainmentMax - this.waterContainment) / (this.getWaterflowRate() ** 0.5);
+        let amountToPercolate = Math.min(waterBlock.blockHealth, maxWaterflowRate);
         this.waterContainment += amountToPercolate;
         return amountToPercolate;
     }
 
     getWaterflowRate() {
         // https://docs.google.com/spreadsheets/d/1MWOde96t-ruC5k1PLL4nex0iBjdyXKOkY7g59cnaEj4/edit?gid=0#gid=0
-        var clayRate = 2;
-        var siltRate = 1.5;
-        var sandRate = 0.92;
-        var power = 10;
+        let clayRate = 2;
+        let siltRate = 1.5;
+        let sandRate = 0.92;
+        let power = 10;
 
         let baseRet = (this.sand * sandRate + 
                 this.silt * siltRate + 
@@ -270,8 +270,8 @@ export class SoilSquare extends BaseSquare {
     }
 
     getColorBase() {
-        var outColor = getActiveClimate().getBaseSoilColor(this.colorVariant, this.sand, this.silt, this.clay);
-        var darkeningColorMult = (this.waterContainment / this.waterContainmentMax);
+        let outColor = getActiveClimate().getBaseSoilColor(this.colorVariant, this.sand, this.silt, this.clay);
+        let darkeningColorMult = (this.waterContainment / this.waterContainmentMax);
 
         outColor.r *= (1 - 0.24 * darkeningColorMult);
         outColor.g *= (1 - 0.30 * darkeningColorMult);
@@ -299,12 +299,12 @@ export class SoilSquare extends BaseSquare {
     }
 
     waterEvaporationRoutine() {
-        var adjacentWindSquare = getWindSquareAbove(this.posX, this.posY);
-        var x = adjacentWindSquare[0];
-        var y = adjacentWindSquare[1];
+        let adjacentWindSquare = getWindSquareAbove(this.posX, this.posY);
+        let x = adjacentWindSquare[0];
+        let y = adjacentWindSquare[1];
 
-        var xd = this.posX % 4;
-        var yd = this.posY % 4;
+        let xd = this.posX % 4;
+        let yd = this.posY % 4;
 
         if (x < 0 || y < 0 || this.waterContainment <= 0.01) {
             return;
@@ -315,16 +315,16 @@ export class SoilSquare extends BaseSquare {
             y += yd;
         }
 
-        var airWaterPressure = getWaterSaturation(x, y);
-        var myVaporPressure = (this.waterContainment / this.waterContainmentMax) * saturationPressureOfWaterVapor(this.temperature) / ((this.currentPressureDirect + 1) ** 0.2);
+        let airWaterPressure = getWaterSaturation(x, y);
+        let myVaporPressure = (this.waterContainment / this.waterContainmentMax) * saturationPressureOfWaterVapor(this.temperature) / ((this.currentPressureDirect + 1) ** 0.2);
         if (airWaterPressure > myVaporPressure) {
             return;
         }
         
-        var pascals = (myVaporPressure - airWaterPressure);
+        let pascals = (myVaporPressure - airWaterPressure);
         pascals /= timeScaleFactor();
 
-        var amount = Math.min(this.waterContainment, (pascals / (pascalsPerWaterSquare / timeScaleFactor())));
+        let amount = Math.min(this.waterContainment, (pascals / (pascalsPerWaterSquare / timeScaleFactor())));
         this.waterContainment -= amount;
         addWaterSaturationPascals(x, y, pascals);
     }

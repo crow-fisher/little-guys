@@ -12,7 +12,7 @@ import { UI_ORGANISM_SELECT, UI_ORGANISM_WHEAT, UI_ORGANISM_GRASS, UI_ORGANISM_C
 export class OrganismComponent extends Component {
     constructor(posX, posY, padding, dir, key) {
         super(posX, posY, padding, dir, key);
-        var sizeX = getBaseUISize() * 24;
+        let sizeX = getBaseUISize() * 24;
         let buttonHeight = getBaseUISize() * 2; 
         
         let container = new Container(this.window, padding, 1);

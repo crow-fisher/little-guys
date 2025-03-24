@@ -25,7 +25,7 @@ export class ToolPickerElement extends WindowElement {
                 this.renderSingleSquare(startX, startY, i, j);
             }
         }
-        var colorSize = (this.sizeX - this.pickerSize) / 2;
+        let colorSize = (this.sizeX - this.pickerSize) / 2;
 
         MAIN_CONTEXT.fillStyle = rgbToHex(this.hoverColor.r, this.hoverColor.g, this.hoverColor.b);
         MAIN_CONTEXT.fillRect(startX + this.pickerSize, startY, colorSize, this.sizeY);
@@ -44,7 +44,7 @@ export class ToolPickerElement extends WindowElement {
     }
 
     getSquareColor(i, j) {
-        var arr = this.getSquareComposition(i, j);
+        let arr = this.getSquareComposition(i, j);
         if (arr != null) {
             let val, val_max, mult;
             switch (loadUI(UI_SOIL_VIEWMODE)) {
@@ -72,7 +72,7 @@ export class ToolPickerElement extends WindowElement {
     }
 
     renderSingleSquare(startX, startY, i, j) {
-        var colorRGB = this.getSquareColor(i, j);
+        let colorRGB = this.getSquareColor(i, j);
         if (colorRGB != null) {
             MAIN_CONTEXT.fillStyle = rgbToHex(colorRGB.r, colorRGB.g, colorRGB.b);
             MAIN_CONTEXT.fillRect(startX + i, startY + j, 1, 1);
@@ -82,7 +82,7 @@ export class ToolPickerElement extends WindowElement {
 
     hover(posX, posY) {
         super.hover(posX, posY);
-        var c = this.getSquareColor(posX, posY);
+        let c = this.getSquareColor(posX, posY);
         if (c != null) {
             this.hoverColor = c;
             if (isLeftMouseClicked()) {

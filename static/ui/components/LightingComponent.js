@@ -12,7 +12,7 @@ export class LightingComponent extends Component {
         let container = new Container(this.window, 0, 0);
         this.window.container = container;
 
-        var sizeX = getBaseUISize() * 12;
+        let sizeX = getBaseUISize() * 12;
 
         let leftContainer = new Container(this.window,  padding, 1);
         let rightContainer = new Container(this.window, padding, 1);

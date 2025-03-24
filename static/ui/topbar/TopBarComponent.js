@@ -167,13 +167,13 @@ export class TopBarComponent {
             return;
         }
         
-        var curMouseLocation = getLastMoveOffset();
+        let curMouseLocation = getLastMoveOffset();
         if (curMouseLocation == null) {
             return;
         }
         
-        var x = curMouseLocation.x;
-        var y = curMouseLocation.y;
+        let x = curMouseLocation.x;
+        let y = curMouseLocation.y;
 
         if (y > this.maxHeight + (getBaseUISize())) {
             return;

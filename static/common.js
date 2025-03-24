@@ -12,7 +12,7 @@ function getObjectArrFromMap(baseMap, posX, posY) {
 }
 
 function removeItemAll(arr, value) {
-    var i = 0;
+    let i = 0;
     while (i < arr.length) {
         if (arr[i] === value) {
             arr.splice(i, 1);
@@ -24,7 +24,7 @@ function removeItemAll(arr, value) {
 }
 
 function hexToRgb(hex) {
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result ? {
         r: parseInt(result[1], 16),
         g: parseInt(result[2], 16),
@@ -33,7 +33,7 @@ function hexToRgb(hex) {
 }
 
 export function hexToRgbArr(hex) {
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result ? [
         parseInt(result[1], 16),
         parseInt(result[2], 16),
@@ -102,7 +102,7 @@ function processColorLerp(val, val_min, val_max, color) {
 }
 
 function processColorLerpBicolor(val, val_min, val_max, color1, color2) {
-    var p = (val - val_min) / (val_max - val_min);
+    let p = (val - val_min) / (val_max - val_min);
     return {
         r: Math.floor(color1.r * (1 - p) + color2.r * (p)),
         g: Math.floor(color1.g * (1 - p) + color2.g * (p)),
@@ -111,8 +111,8 @@ function processColorLerpBicolor(val, val_min, val_max, color1, color2) {
 }
 
 function processColorStdevMulticolor(val_max, val, val_stdev, color1, color2) {
-    var z = (val_max - val) / val_stdev;
-    var p = getZPercent(z);
+    let z = (val_max - val) / val_stdev;
+    let p = getZPercent(z);
     return {
         r: Math.floor(color1.r * (1 - p) + color2.r * (p)),
         g: Math.floor(color1.g * (1 - p) + color2.g * (p)),
@@ -135,11 +135,11 @@ function getZPercent(z) {
         return 1.0;
     }
 
-    var factK = 1;
-    var sum = 0;
-    var term = 1;
-    var k = 0;
-    var loopStop = Math.exp(-23);
+    let factK = 1;
+    let sum = 0;
+    let term = 1;
+    let k = 0;
+    let loopStop = Math.exp(-23);
 
     while (Math.abs(term) > loopStop) {
         term = .3989422804 * Math.pow(-1, k) * Math.pow(z, k) / (2 * k + 1) / Math.pow(2, k) * Math.pow(z, k + 1) / factK;

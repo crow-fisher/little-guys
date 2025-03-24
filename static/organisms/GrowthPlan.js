@@ -69,7 +69,7 @@ export class GrowthPlanStep {
 
     doAction() {
         if (this.growSqAction != null) {
-            var newLifeSquare = this.growSqAction(); // TODO: This can't be a lambda! Saving and loading breaks it.
+            let newLifeSquare = this.growSqAction(); // TODO: This can't be a lambda! Saving and loading breaks it.
             this.completed = true;
             if (newLifeSquare) {
                 this.completedSquare = newLifeSquare;
@@ -166,8 +166,8 @@ export class GrowthComponent {
     }
 
     updatePosition(newPosX, newPosY) {
-        var dx = newPosX - this.posX;
-        var dy = newPosY - this.posY;
+        let dx = newPosX - this.posX;
+        let dy = newPosY - this.posY;
 
         this.lifeSquares.forEach((lsq) => lsq.updatePositionDifferential(dx, dy));
         this.children.forEach((child) => child.updatePosition(newPosX, newPosY));
@@ -194,7 +194,7 @@ export class GrowthComponent {
         if (this.lifeSquares.length <= 1) {
             return 1;
         }
-        var xPositions = this.lifeSquares.map((lsq) => lsq.posX);
+        let xPositions = this.lifeSquares.map((lsq) => lsq.posX);
         return 1 + Math.max(...xPositions) - Math.min(...xPositions);
     }
 
@@ -213,7 +213,7 @@ export class GrowthComponent {
     }
 
     ySize() {
-        var yPositions = this.lifeSquares.map((lsq) => lsq.posY);
+        let yPositions = this.lifeSquares.map((lsq) => lsq.posY);
         return 1 + Math.max(...yPositions) - Math.min(...yPositions);
     }
 
@@ -234,13 +234,13 @@ export class GrowthComponent {
     }
 
     updateDeflectionState() {
-        var strength = this.getTotalStrength();
-        var windVec = this.getNetWindSpeed();
-        var startSpringForce = this.getStartSpringForce();
-        var windX = Math.sin(this.getTheta()) * windVec[0] * 0.1;
-        var coef = 0.05;
+        let strength = this.getTotalStrength();
+        let windVec = this.getNetWindSpeed();
+        let startSpringForce = this.getStartSpringForce();
+        let windX = Math.sin(this.getTheta()) * windVec[0] * 0.1;
+        let coef = 0.05;
 
-        var endSpringForce = startSpringForce * (1 - coef) + windX * coef;
+        let endSpringForce = startSpringForce * (1 - coef) + windX * coef;
         endSpringForce = Math.min(endSpringForce, strength);
         endSpringForce = Math.max(endSpringForce, -strength);
         this.setCurrentDeflection(Math.asin(endSpringForce / (strength)));
@@ -264,7 +264,7 @@ export class GrowthComponent {
     }
 
     getBaseRotation() {
-        var ret = this._getBaseRotation();
+        let ret = this._getBaseRotation();
         if (this.parentComponent != null) {
             ret += this.parentComponent.getBaseRotation();
         }
@@ -278,12 +278,12 @@ export class GrowthComponent {
             if (this.rotationOverTimeList.length != 2) {
                 alert("just fyi, this is not implemented yet. just send 2 for now and update them through your growth cycles");
             }
-            var mapped = this.rotationOverTimeList.map((l) => l[0]);
+            let mapped = this.rotationOverTimeList.map((l) => l[0]);
 
-            var min = Math.min(...mapped);
-            var max = Math.max(...mapped);
+            let min = Math.min(...mapped);
+            let max = Math.max(...mapped);
 
-            var ot = getCurDay() - this.spawnTime;
+            let ot = getCurDay() - this.spawnTime;
 
             if (ot > max) {
                 return this.rotationOverTimeList[this.rotationOverTimeList.length - 1][1];
@@ -291,7 +291,7 @@ export class GrowthComponent {
             if (ot < min) {
                 return this.rotationOverTimeList[0][1];
             } else { // assuming this has two entries at the moment
-                var rel = (ot - min) / (max - min);
+                let rel = (ot - min) / (max - min);
                 return this.rotationOverTimeList[0][1] * (1 - rel) + this.rotationOverTimeList[1][1] * rel;
             }
         }
@@ -330,39 +330,39 @@ export class GrowthComponent {
     }
 
     applyDeflectionState(parentComponent) {
-        var startDeflectionXOffset = 0;
-        var startDeflectionYOffset = 0;
+        let startDeflectionXOffset = 0;
+        let startDeflectionYOffset = 0;
         if (parentComponent != null) {
             startDeflectionXOffset = parentComponent.getDeflectionXAtPosition(this.posX, this.posY);
             startDeflectionYOffset = parentComponent.getDeflectionYAtPosition(this.posX, this.posY);
         }
 
-        var curve = this.baseCurve + Math.sin(this.currentDeflection) * 0.06 * (this.ySizeCur() - 1) / this.getTotalStrength();
+        let curve = this.baseCurve + Math.sin(this.currentDeflection) * 0.06 * (this.ySizeCur() - 1) / this.getTotalStrength();
 
-        var startTheta = this.deflectionRollingAverage + this.getParentDeflection();
-        var endTheta = this.currentDeflection + curve + this.getParentDeflection() + this.getWilt();
+        let startTheta = this.deflectionRollingAverage + this.getParentDeflection();
+        let endTheta = this.currentDeflection + curve + this.getParentDeflection() + this.getWilt();
 
-        var length = this.ySizeCur();
+        let length = this.ySizeCur();
 
-        var thetaDelta = endTheta - startTheta;
+        let thetaDelta = endTheta - startTheta;
 
         this.lifeSquares.forEach((lsq) => {
             // relative to origin
-            var relLsqX = 0.85 * (this.posX - lsq.posX);
-            var relLsqY = 0.85 * (this.posY - lsq.posY);
-            var lsqDist = (relLsqX ** 2 + relLsqY ** 2) ** 0.5;
-            var currentTheta = startTheta + (lsqDist / length) * thetaDelta;
+            let relLsqX = 0.85 * (this.posX - lsq.posX);
+            let relLsqY = 0.85 * (this.posY - lsq.posY);
+            let lsqDist = (relLsqX ** 2 + relLsqY ** 2) ** 0.5;
+            let currentTheta = startTheta + (lsqDist / length) * thetaDelta;
 
-            var offsetX = relLsqX * Math.cos(currentTheta) - relLsqY * Math.sin(currentTheta);
-            var offsetY = relLsqY * Math.cos(currentTheta) + relLsqX * Math.sin(currentTheta);
+            let offsetX = relLsqX * Math.cos(currentTheta) - relLsqY * Math.sin(currentTheta);
+            let offsetY = relLsqY * Math.cos(currentTheta) + relLsqX * Math.sin(currentTheta);
 
             this.distToFront = offsetX * Math.cos(this.getTheta());
             lsq.distToFront = this.getDistToFront();
             offsetX *= Math.sin(this.getTheta());
             offsetY *= Math.cos(this.getTwist());
 
-            var endX = startDeflectionXOffset + offsetX;
-            var endY = startDeflectionYOffset + offsetY;
+            let endX = startDeflectionXOffset + offsetX;
+            let endY = startDeflectionYOffset + offsetY;
 
             lsq.deflectionXOffset = (endX - relLsqX) + this.xOffset;
             lsq.deflectionYOffset = (endY - relLsqY) + this.yOffset;
@@ -390,9 +390,9 @@ export class GrowthComponent {
         if (this.parentComponent == null) {
             return this._getNetWindSpeed();
         } else {
-            var ret = this._getNetWindSpeed();
+            let ret = this._getNetWindSpeed();
             this.children.forEach((child) => {
-                var childWs = child.getNetWindSpeed();
+                let childWs = child.getNetWindSpeed();
                 ret[0] += childWs[0];
                 ret[1] += childWs[1];
             });
@@ -425,12 +425,12 @@ export class GrowthComponent {
             if (this.deflectionOverTimeList.length != 2) {
                 alert("just fyi, this is not implemented yet. just send 2 for now and update them through your growth cycles");
             }
-            var mapped = this.deflectionOverTimeList.map((l) => l[0]);
+            let mapped = this.deflectionOverTimeList.map((l) => l[0]);
 
-            var min = Math.min(...mapped);
-            var max = Math.max(...mapped);
+            let min = Math.min(...mapped);
+            let max = Math.max(...mapped);
 
-            var ot = getCurDay() - this.spawnTime;
+            let ot = getCurDay() - this.spawnTime;
 
             if (ot > max) {
                 return this.deflectionOverTimeList[this.deflectionOverTimeList.length - 1][1];
@@ -438,7 +438,7 @@ export class GrowthComponent {
             if (ot < min) {
                 return this.deflectionOverTimeList[0][1];
             } else {
-                var rel = (ot - min) / (max - min);
+                let rel = (ot - min) / (max - min);
                 return this.deflectionOverTimeList[0][1] * (1 - rel) + this.deflectionOverTimeList[1][1] * rel;
             }
         }
@@ -463,7 +463,7 @@ export class GrowthComponent {
 
     decay(amount) {
         amount *= Math.min(0.01, getDt());
-        var livingLifeSquares = Array.from(this.lifeSquares
+        let livingLifeSquares = Array.from(this.lifeSquares
             .filter((lsq) => lsq.state == STATE_HEALTHY || lsq.state == STATE_THIRSTY));
         if (livingLifeSquares.length > 0) {
             livingLifeSquares.filter((lsq) => Math.random() > 1 - 0.05).forEach((lsq) => lsq.state = STATE_DEAD);

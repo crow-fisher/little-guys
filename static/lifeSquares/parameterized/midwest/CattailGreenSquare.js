@@ -58,10 +58,10 @@ export class CattailGreenSquare extends BaseLifeSquare {
             if (groundSquare.currentPressureDirect > 0) {
                 offsetY += (groundSquare.currentPressureDirect + 1);
             }
-            var sq = addSquare(new SeedSquare(groundSquare.posX, groundSquare.posY - offsetY));
+            let sq = addSquare(new SeedSquare(groundSquare.posX, groundSquare.posY - offsetY));
             if (sq) {
                 sq.opacity = 0;
-                var orgAdded = addNewOrganism(new CattailSeedOrganism(sq));
+                let orgAdded = addNewOrganism(new CattailSeedOrganism(sq));
                 if (!orgAdded) {
                     sq.destroy();
                 }

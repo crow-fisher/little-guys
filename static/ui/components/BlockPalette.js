@@ -21,10 +21,10 @@ export class BlockPalette extends Component {
         this.numSoilRows = 5;
         this.initPallate();
 
-        var sizeX = getBaseUISize() * 24;
-        var half = sizeX / 2;
-        var third = sizeX / 3;
-        var quarter = sizeX / 4;
+        let sizeX = getBaseUISize() * 24;
+        let half = sizeX / 2;
+        let third = sizeX / 3;
+        let quarter = sizeX / 4;
 
         let container = new Container(this.window, 0, 1);
         this.window.container = container;
@@ -139,8 +139,8 @@ export class BlockPalette extends Component {
     }
 
     getSquareComposition(xp, clayPercent) {
-        var siltPercent = (1 - clayPercent) * xp;
-        var sandPercent = (1 - clayPercent) - siltPercent;
+        let siltPercent = (1 - clayPercent) * xp;
+        let sandPercent = (1 - clayPercent) - siltPercent;
         return [sandPercent, siltPercent, clayPercent];
     }
 }

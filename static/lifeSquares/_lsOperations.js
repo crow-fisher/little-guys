@@ -16,14 +16,14 @@ function getOrganismSquaresAtSquareOfProto(posX, posY, proto) {
 }
 
 function getCountOfOrganismsSquaresOfProtoAtPosition(posX, posY, proto) {
-    var existingOrganismSquares = getOrganismSquaresAtSquare(posX, posY);
-    var existingOrganismSquaresOfSameProtoArray = Array.from(existingOrganismSquares.filter((org) => org.proto == proto));
+    let existingOrganismSquares = getOrganismSquaresAtSquare(posX, posY);
+    let existingOrganismSquaresOfSameProtoArray = Array.from(existingOrganismSquares.filter((org) => org.proto == proto));
     return existingOrganismSquaresOfSameProtoArray.length;
 }
 
 function getCountOfOrganismsSquaresOfTypeAtPosition(posX, posY, type) {
-    var existingOrganismSquares = getOrganismSquaresAtSquare(posX, posY);
-    var existingOrganismSquaresOfSameTypeArray = Array.from(existingOrganismSquares.filter((org) => org.type == type));
+    let existingOrganismSquares = getOrganismSquaresAtSquare(posX, posY);
+    let existingOrganismSquaresOfSameTypeArray = Array.from(existingOrganismSquares.filter((org) => org.type == type));
     return existingOrganismSquaresOfSameTypeArray.length;
 }
 

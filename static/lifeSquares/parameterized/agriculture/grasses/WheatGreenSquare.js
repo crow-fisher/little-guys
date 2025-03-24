@@ -57,10 +57,10 @@ export class WheatGreenSquare extends BaseLifeSquare {
             if (groundSquare.currentPressureDirect > 0) {
                 offsetY += (groundSquare.currentPressureDirect + 1);
             }
-            var sq = addSquare(new SeedSquare(groundSquare.posX, groundSquare.posY - offsetY));
+            let sq = addSquare(new SeedSquare(groundSquare.posX, groundSquare.posY - offsetY));
             if (sq) {
                 sq.opacity = 0;
-                var orgAdded = addNewOrganism(new WheatSeedOrganism(sq));
+                let orgAdded = addNewOrganism(new WheatSeedOrganism(sq));
                 if (!orgAdded) {
                     sq.destroy();
                 }

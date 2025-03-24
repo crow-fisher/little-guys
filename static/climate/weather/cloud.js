@@ -31,10 +31,10 @@ export class Cloud {
         if (getCurDay() < this.startDay) {
             return;
         }
-        var startElipse, endElipse;
-        var durationFrac = (getCurDay() - this.startDay) / this.duration;
+        let startElipse, endElipse;
+        let durationFrac = (getCurDay() - this.startDay) / this.duration;
 
-        var curDuration;
+        let curDuration;
         if (durationFrac > 0.5) {
             startElipse = this.centerElipse;
             endElipse = this.endElipse;
@@ -46,7 +46,7 @@ export class Cloud {
         }
         curDuration *= 2;
 
-        var curElipse = [
+        let curElipse = [
             startElipse[0] * (1 - curDuration) + endElipse[0] * (curDuration),
             startElipse[1] * (1 - curDuration) + endElipse[1] * (curDuration),
             startElipse[2] * (1 - curDuration) + endElipse[2] * (curDuration),
@@ -61,8 +61,8 @@ export class Cloud {
                 }
                 for (let xside = -1; xside <= 1; xside += 2) {
                     for (let yside = -1; yside <= 1; yside += 2) {
-                        var wx = Math.round(this.centerX + (xside * i));
-                        var wy = Math.round(this.centerY + (yside * j));
+                        let wx = Math.round(this.centerX + (xside * i));
+                        let wy = Math.round(this.centerY + (yside * j));
                         if (!isPointInWindBounds(wx, wy) || getPressure(wx, wy) < 0) {
                             continue;
                         }
@@ -72,8 +72,8 @@ export class Cloud {
                         addWindPressureDryAirWindSquare(wx, wy, airPascals);
 
                         if (this.targetHumidity != -1) {
-                            var cur = getHumidity(wx, wy);
-                            var waterPascals = (this.targetHumidity - cur) * (getWaterSaturation(wx, wy) / cur) * this.strength;
+                            let cur = getHumidity(wx, wy);
+                            let waterPascals = (this.targetHumidity - cur) * (getWaterSaturation(wx, wy) / cur) * this.strength;
                             waterPascals /= timeScaleFactor();
                             addWaterSaturationPascals(wx, wy, waterPascals);
                         }

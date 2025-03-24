@@ -16,7 +16,7 @@ export class TopBarText extends TopBarElementBase{
             return [0, 0];
         }
         this.prepareStyle();
-        var measured = MAIN_CONTEXT.measureText(this.labelFunc());
+        let measured = MAIN_CONTEXT.measureText(this.labelFunc());
         return [measured.width, measured.fontBoundingBoxAscent];
     }
 

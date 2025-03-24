@@ -20,7 +20,7 @@ export class CloudControlComponent extends LockedComponent {
     constructor(posXFunc, posYFunc, padding, dir, key) {
         super(posXFunc, posYFunc, padding, dir, key);
 
-        var sizeX = getBaseUISize() * 32;   
+        let sizeX = getBaseUISize() * 32;   
         let halfSizeX = sizeX / 2;
         let container = new Container(this.window, padding, 1);
         this.window.container = container;

@@ -53,7 +53,7 @@ export function scheduler_main() {
 }
 
 function render() {
-    var selectedViewMode = loadUI(UI_VIEWMODE_SELECT);
+    let selectedViewMode = loadUI(UI_VIEWMODE_SELECT);
     resetFrameDivMult();
     doTimeSeek();
     renderTime();

@@ -17,7 +17,7 @@ class BaseSeedOrganism extends BaseOrganism {
     }
 
     growInitialSquares() {
-        var newLifeSquare = new SeedLifeSquare(this.linkedSquare, this);
+        let newLifeSquare = new SeedLifeSquare(this.linkedSquare, this);
         if (addOrganismSquare(newLifeSquare)) {
             newLifeSquare.linkSquare(this.linkedSquare);
             this.linkedSquare.linkOrganismSquare(newLifeSquare);
@@ -62,7 +62,7 @@ class BaseSeedOrganism extends BaseOrganism {
 
 
     postTick() {
-        var lifeCyclePercentage = (getCurDay() - this.spawnTime) / this.maxLifeTime;
+        let lifeCyclePercentage = (getCurDay() - this.spawnTime) / this.maxLifeTime;
         if (lifeCyclePercentage > 1) {
             return;
         }
@@ -71,7 +71,7 @@ class BaseSeedOrganism extends BaseOrganism {
                 console.warn("BAD SEED STATE!");
                 return;
             }
-            var linkedSquareCache = this.linkedSquare;
+            let linkedSquareCache = this.linkedSquare;
             this.destroy();
             this.applyEvolutionParameters(addNewOrganism(new (this.getSproutType())(linkedSquareCache)));
         }

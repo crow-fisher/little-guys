@@ -8,9 +8,9 @@ import { getObjectArrFromMap } from "./common.js";
 import { removeItemAll } from "./common.js";
 import { getCanvasSquaresX, getCanvasSquaresY } from "./canvas.js";
 
-var frame_squares = null;
-var frame_solid_squares = null;
-var frame_water_squares = null;
+let frame_squares = null;
+let frame_solid_squares = null;
+let frame_water_squares = null;
 
 export function reset() {
     resetWaterflowSquares();
@@ -83,8 +83,8 @@ export function doWaterFlow() {
             let currentCandidate = parseInt(candidatePressureKeys[i + candidateOffset]);
             if (currentCandidate < currentTarget) {
                 // pair off
-                var targetIdx = 0;
-                var targetArr = targetGroupMap[currentTarget];
+                let targetIdx = 0;
+                let targetArr = targetGroupMap[currentTarget];
 
                 candidateGroupMap[currentCandidate].forEach((sq) => {
                     if (targetIdx >= targetArr.length) {

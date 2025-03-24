@@ -43,7 +43,7 @@ export class SoilPickerElement extends WindowElement {
             MAIN_CONTEXT.fillRect(startX + this.hoverLoc[0] - 2, startY + this.hoverLoc[1] - 2, 4, 4);
         }
 
-        var colorSize = (this.sizeX - this.pickerSize) / 2;
+        let colorSize = (this.sizeX - this.pickerSize) / 2;
 
         MAIN_CONTEXT.fillStyle = rgbToHex(this.hoverColor.r, this.hoverColor.g, this.hoverColor.b);
         MAIN_CONTEXT.fillRect(startX + this.pickerSize, startY, colorSize, this.sizeY);
@@ -53,17 +53,17 @@ export class SoilPickerElement extends WindowElement {
     }
 
     getSquareComposition(i, j) {
-        var xp = i / this.pickerSize;
-        var yp = j / this.pickerSize;
-        var clayPercent = 1 - yp;
+        let xp = i / this.pickerSize;
+        let yp = j / this.pickerSize;
+        let clayPercent = 1 - yp;
         
-        var xp50 = (0.5 - xp);
+        let xp50 = (0.5 - xp);
         if (2 * (Math.abs(xp50)) >= 1 - clayPercent) {
             return;
         }
 
-        var siltPercent = (1 - clayPercent) * xp;
-        var sandPercent = (1 - clayPercent) - siltPercent;
+        let siltPercent = (1 - clayPercent) * xp;
+        let sandPercent = (1 - clayPercent) - siltPercent;
 
         return [sandPercent, siltPercent, clayPercent];
     }
@@ -86,14 +86,14 @@ export class SoilPickerElement extends WindowElement {
         if (cached != null) {
             return cached;
         }
-        var arr = this.getSquareComposition(i, j);
+        let arr = this.getSquareComposition(i, j);
         if (arr != null)
             cacheMap[cacheMapIdx][i][j] = this.getBaseColor(arr[0], arr[1], arr[2]);
             return cacheMap[cacheMapIdx][i][j]
     }
 
     renderSingleSquare(startX, startY, i, j) {
-        var colorRGB = this.getSquareColor(i, j);
+        let colorRGB = this.getSquareColor(i, j);
         if (colorRGB != null) {
             MAIN_CONTEXT.fillStyle = rgbToHex(colorRGB.r, colorRGB.g, colorRGB.b);
             MAIN_CONTEXT.beginPath();
@@ -114,7 +114,7 @@ export class SoilPickerElement extends WindowElement {
 
     hover(posX, posY) {
         super.hover(posX, posY);
-        var c = this.getSquareColor(posX, posY);
+        let c = this.getSquareColor(posX, posY);
         if (c != null) {
             this.hoverColor = c;
             if (isLeftMouseClicked()) {

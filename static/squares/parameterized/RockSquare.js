@@ -31,8 +31,8 @@ export class RockSquare extends SoilSquare {
     }
 
     getColorBase() {
-        var outColor = getActiveClimate().getBaseRockColor(this.colorVariant, this.sand, this.silt, this.clay);
-        var darkeningColorMult = (this.waterContainment / this.waterContainmentMax);
+        let outColor = getActiveClimate().getBaseRockColor(this.colorVariant, this.sand, this.silt, this.clay);
+        let darkeningColorMult = (this.waterContainment / this.waterContainmentMax);
         outColor.r *= (1 - 0.24 * darkeningColorMult);
         outColor.g *= (1 - 0.30 * darkeningColorMult);
         outColor.b *= (1 - 0.383 * darkeningColorMult);

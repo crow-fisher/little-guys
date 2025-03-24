@@ -74,7 +74,7 @@ export class MushroomOrganism extends BaseOrganism {
         if (parent == null || startNode == null) {
             return;
         }
-        var growthPlan = new GrowthPlan(
+        let growthPlan = new GrowthPlan(
             startNode.posX, startNode.posY,
             false, STAGE_ADULT,
             theta, 0, 0, 0,
@@ -90,7 +90,7 @@ export class MushroomOrganism extends BaseOrganism {
             0,
             this.grassGrowTimeInDays,
             () => {
-                var node = this.growPlantSquare(startNode, 0, growthPlan.steps.length);
+                let node = this.growPlantSquare(startNode, 0, growthPlan.steps.length);
                 node.subtype = SUBTYPE_NODE;
                 return node;
             },
@@ -103,7 +103,7 @@ export class MushroomOrganism extends BaseOrganism {
         if (parent == null || startNode == null) {
             return;
         }
-        var growthPlan = new GrowthPlan(
+        let growthPlan = new GrowthPlan(
             startNode.posX, startNode.posY,
             false, STAGE_ADULT, this.curLeafTheta, 0, 0,
             randRange(1, 1.4),
@@ -119,7 +119,7 @@ export class MushroomOrganism extends BaseOrganism {
             0,
             this.grassGrowTimeInDays,
             () => {
-                var node = this.growPlantSquare(startNode, 0, growthPlan.steps.length);
+                let node = this.growPlantSquare(startNode, 0, growthPlan.steps.length);
                 node.subtype = SUBTYPE_LEAF;
                 return node;
             },
@@ -136,7 +136,7 @@ export class MushroomOrganism extends BaseOrganism {
     }
 
     adultGrowLeaf() {
-        var parent = this.originGrowth.getChildFromPath(this.stems[this.stems.length - 1]);
+        let parent = this.originGrowth.getChildFromPath(this.stems[this.stems.length - 1]);
         if (parent == null) {
             return;
         }
@@ -158,7 +158,7 @@ export class MushroomOrganism extends BaseOrganism {
             0,
             this.grassGrowTimeInDays,
             () => {
-                var shoot = this.growPlantSquare(startNode, 0, 0);
+                let shoot = this.growPlantSquare(startNode, 0, 0);
                 shoot.subtype = SUBTYPE_STEM;
                 return shoot;
             },
@@ -184,7 +184,7 @@ export class MushroomOrganism extends BaseOrganism {
                         0,
                         this.grassGrowTimeInDays,
                         () => {
-                            var leaf = this.growPlantSquare(startNode, 0, 0);
+                            let leaf = this.growPlantSquare(startNode, 0, 0);
                             leaf.subtype = SUBTYPE_LEAF;
                             return leaf;
                         },
@@ -260,12 +260,12 @@ export class MushroomOrganism extends BaseOrganism {
         let comp = this.originGrowth.getChildFromPath(chosen);
         let lsq = comp.lifeSquares.at(comp.lifeSquares.length - 1);
 
-        var seedSquare = addSquare(new SeedSquare(lsq.getPosX(), lsq.getPosY()));
+        let seedSquare = addSquare(new SeedSquare(lsq.getPosX(), lsq.getPosY()));
         seedSquare.speedY = -Math.round(randRange(-2, -5));
         seedSquare.speedX = Math.round(randRange(-5, 5));
 
         if (seedSquare) {
-            var orgAdded = addNewOrganism(new MushroomSeedOrganism(seedSquare, this.getNextGenetics()));
+            let orgAdded = addNewOrganism(new MushroomSeedOrganism(seedSquare, this.getNextGenetics()));
             if (!orgAdded) {
                 seedSquare.destroy();
             }

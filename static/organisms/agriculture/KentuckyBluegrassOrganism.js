@@ -30,9 +30,9 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
         }
         this.curNumGrass += 1;
 
-        var startRootNode = this.getOriginsForNewGrowth(SUBTYPE_ROOTNODE).at(0);
-        var baseDeflection = randRange(0, .1);
-        var growthPlan = new GrowthPlan(
+        let startRootNode = this.getOriginsForNewGrowth(SUBTYPE_ROOTNODE).at(0);
+        let baseDeflection = randRange(0, .1);
+        let growthPlan = new GrowthPlan(
             startRootNode.posX, startRootNode.posY, 
             false, STAGE_ADULT, randRange(-Math.PI, Math.PI), baseDeflection, 0, 
             baseDeflection, 
@@ -49,7 +49,7 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
                 0,
                 this.grassGrowTimeInDays,
                 () => {
-                    var shoot = this.growPlantSquare(startRootNode, 0, t);
+                    let shoot = this.growPlantSquare(startRootNode, 0, t);
                     shoot.subtype = SUBTYPE_STEM;
                     return shoot;
                 },
@@ -62,7 +62,7 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
             0,
             this.grassGrowTimeInDays,
             () => {
-                var node = this.growPlantSquare(startRootNode, 0, growthPlan.steps.length);
+                let node = this.growPlantSquare(startRootNode, 0, growthPlan.steps.length);
                 node.subtype = SUBTYPE_NODE;
                 return node;
             },

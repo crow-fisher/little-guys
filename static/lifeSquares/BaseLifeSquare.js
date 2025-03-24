@@ -90,7 +90,7 @@ class BaseLifeSquare {
     }
 
     doGroundDecay() {
-        var sq = this.groundTouchSquare();
+        let sq = this.groundTouchSquare();
         if (sq != null) {
             sq.nitrogen += this.linkedOrganism.getDecayNitrogen();
             sq.phosphorus += this.linkedOrganism.getDecayPhosphorus();
@@ -231,12 +231,12 @@ class BaseLifeSquare {
             return;
         }
         else if (selectedViewMode == UI_VIEWMODE_MOISTURE) {
-            var color1 = null;
-            var color2 = null;
+            let color1 = null;
+            let color2 = null;
 
-            var val = this.linkedOrganism.waterPressure;
-            var valMin = -100;
-            var valMax = 0;
+            let val = this.linkedOrganism.waterPressure;
+            let valMin = -100;
+            let valMax = 0;
 
             if (this.linkedOrganism.waterPressure > -2) {
                 color1 = RGB_COLOR_BLUE;
@@ -260,8 +260,8 @@ class BaseLifeSquare {
             val = Math.max(valMin, val);
             val = Math.min(valMax, val);
 
-            var valInvLerp = (val - valMin) / (valMax - valMin);
-            var out = {
+            let valInvLerp = (val - valMin) / (valMax - valMin);
+            let out = {
                 r: color1.r * valInvLerp + color2.r * (1 - valInvLerp),
                 g: color1.g * valInvLerp + color2.g * (1 - valInvLerp),
                 b: color1.b * valInvLerp + color2.b * (1 - valInvLerp),
@@ -281,10 +281,10 @@ class BaseLifeSquare {
             return;
         }
         else {
-            var res = this.getStaticRand(1) * this.accentColorAmount + this.darkColorAmount + this.baseColorAmount;
-            var baseColor = null;
-            var altColor1 = null;
-            var altColor2 = null;
+            let res = this.getStaticRand(1) * this.accentColorAmount + this.darkColorAmount + this.baseColorAmount;
+            let baseColor = null;
+            let altColor1 = null;
+            let altColor2 = null;
             if (res < this.accentColorAmount) {
                 baseColor = this.accentColor_rgb;
                 altColor1 = this.darkColor_rgb;
@@ -299,9 +299,9 @@ class BaseLifeSquare {
                 baseColor = this.baseColor_rgb;
             }
 
-            var rand = this.getStaticRand(2);
+            let rand = this.getStaticRand(2);
             // the '0.1' is the base darkness
-            var outColorBase = {
+            let outColorBase = {
                 r: (baseColor.r * 0.5 + ((altColor1.r * rand + altColor2.r * (1 - rand)) * 0.5)),
                 g: (baseColor.g * 0.5 + ((altColor1.g * rand + altColor2.g * (1 - rand)) * 0.5)),
                 b: (baseColor.b * 0.5 + ((altColor1.b * rand + altColor2.b * (1 - rand)) * 0.5))
@@ -312,13 +312,13 @@ class BaseLifeSquare {
             else    
                 lightingColor = processLighting(this.lighting);
             
-            var outColor = { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
+            let outColor = { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
             
-            var opacity = this.opacity;
+            let opacity = this.opacity;
             if (selectedViewMode == UI_VIEWMODE_ORGANISMS) {
                 opacity = Math.max(0.25, this.opacity);
             }
-            var outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacity);
+            let outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacity);
             MAIN_CONTEXT.fillStyle = outRgba;
 
             zoomCanvasFillRectTheta(
@@ -335,7 +335,7 @@ class BaseLifeSquare {
     }
 
     calculateColor() {
-        var baseColorRGB = hexToRgb(this.colorBase);
+        let baseColorRGB = hexToRgb(this.colorBase);
         return rgbToHex(Math.floor(baseColorRGB.r), Math.floor(baseColorRGB.g), Math.floor(baseColorRGB.b));
     }
 

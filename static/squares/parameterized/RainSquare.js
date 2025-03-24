@@ -19,7 +19,7 @@ class AquiferSquare extends RockSquare {
     }
     physics() {
         if (getSquares(this.posX, this.posY + 1).length == 0) {
-            var sq = addSquare(new WaterSquare(this.posX, this.posY + 1));
+            let sq = addSquare(new WaterSquare(this.posX, this.posY + 1));
             if (sq) {
                 sq.speedX = randNumber(-2, 2);
                 sq.temperature = this.temperature;

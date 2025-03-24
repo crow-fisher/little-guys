@@ -1,4 +1,4 @@
-var ERASE_RADIUS = 2;
+let ERASE_RADIUS = 2;
 
 import { getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, transformPixelsToCanvasSquares } from "./canvas.js";
 import { addTemperature, addWaterSaturationPascalsSqCoords } from "./climate/temperatureHumidity.js";
@@ -22,11 +22,11 @@ import { loadUI, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SIZE, UI_PA
 import { eyedropperBlockClick, eyedropperBlockHover, isWindowHovered, mixerBlockClick } from "./ui/WindowManager.js";
 import { CattailSeedOrganism } from "./organisms/midwest/CattailOrganism.js";
 import { MushroomSeedOrganism } from "./organisms/fantasy/MushroomOrganism.js";
-var prevManipulationOffset;
+let prevManipulationOffset;
 
 
-var prevClickTime = 0;
-var prevClickMap = new Map();
+let prevClickTime = 0;
+let prevClickMap = new Map();
 
 function doBrushFuncClickThrottle(x, y, func) {
     if (prevClickTime != getLastMouseDown()) {
@@ -46,12 +46,12 @@ function doBrushFuncClickThrottle(x, y, func) {
     }
 }
 function doBrushFunc(centerX, centerY, func) {
-    var radius = Math.floor(loadUI(UI_PALETTE_SIZE));
+    let radius = Math.floor(loadUI(UI_PALETTE_SIZE));
     if (loadUI(UI_SM_CLIMATE)) {
         radius *= 4;
     }
-    for (var i = -radius; i <= radius; i++) {
-        for (var j = -radius; j <= radius; j++) {
+    for (let i = -radius; i <= radius; i++) {
+        for (let j = -radius; j <= radius; j++) {
             if (Math.ceil((i ** 2 + j ** 2) * 0.5) > radius) {
                 continue;
             }
@@ -72,7 +72,7 @@ export function addActivePaletteToolSquare(posX, posY) {
 }
 
 export function addSquareByName(posX, posY, name) {
-    var square;
+    let square;
     switch (name) {
         case "rock":
             square = addSquareOverride(new RockSquare(posX, posY));
@@ -152,9 +152,9 @@ export function doClickAddEyedropperMixer() {
     if (lastMoveOffset.x > getCanvasWidth() || lastMoveOffset > getCanvasHeight()) {
         return;
     }
-    var offsetTransformed = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);
-    var offsetX = offsetTransformed[0];
-    var offsetY = offsetTransformed[1];
+    let offsetTransformed = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);
+    let offsetX = offsetTransformed[0];
+    let offsetY = offsetTransformed[1];
 
     if (loadUI(UI_PALETTE_EYEDROPPER)) {
         eyedropperBlockClick(offsetX, offsetY);
@@ -179,44 +179,44 @@ export function doClickAdd() {
         if (lastMoveOffset.x > getCanvasWidth() || lastMoveOffset > getCanvasHeight()) {
             return;
         }
-        var offsetTransformed = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);
-        var offsetX = offsetTransformed[0];
-        var offsetY = offsetTransformed[1];
+        let offsetTransformed = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);
+        let offsetX = offsetTransformed[0];
+        let offsetY = offsetTransformed[1];
 
         if (loadUI(UI_PALETTE_ACTIVE) && (loadUI(UI_PALETTE_EYEDROPPER) || loadUI(UI_PALETTE_MIXER))) {
             return;
         }
 
-        var prevOffsetX;
-        var prevOffsetY;
+        let prevOffsetX;
+        let prevOffsetY;
 
         if (prevManipulationOffset == null) {
             prevOffsetX = offsetX;
             prevOffsetY = offsetY;
         } else {
-            var prevOffsets = transformPixelsToCanvasSquares(prevManipulationOffset.x, prevManipulationOffset.y);
+            let prevOffsets = transformPixelsToCanvasSquares(prevManipulationOffset.x, prevManipulationOffset.y);
             prevOffsetX = prevOffsets[0];
             prevOffsetY = prevOffsets[1];
         }
 
         // point slope motherfuckers 
 
-        var x1 = prevOffsetX;
-        var x2 = offsetX;
-        var y1 = prevOffsetY;
-        var y2 = offsetY;
+        let x1 = prevOffsetX;
+        let x2 = offsetX;
+        let y1 = prevOffsetY;
+        let y2 = offsetY;
 
-        var dx = x2 - x1;
-        var dy = y2 - y1;
-        var dz = Math.pow(dx ** 2 + dy ** 2, 0.5);
+        let dx = x2 - x1;
+        let dy = y2 - y1;
+        let dz = Math.pow(dx ** 2 + dy ** 2, 0.5);
 
-        var totalCount = Math.max(1, Math.round(dz));
-        var ddx = dx / totalCount;
-        var ddy = dy / totalCount;
+        let totalCount = Math.max(1, Math.round(dz));
+        let ddx = dx / totalCount;
+        let ddy = dy / totalCount;
 
         for (let i = 0; i < totalCount; i += 0.5) {
-            var px = Math.floor(x1 + ddx * i);
-            var py = Math.floor(y1 + ddy * i);
+            let px = Math.floor(x1 + ddx * i);
+            let py = Math.floor(y1 + ddy * i);
             if (loadUI(UI_CLIMATE_SELECT_CLOUDS)) {
                 doBrushFunc(px, py, (x, y) => doClimateMod(x, y));
             } else if (loadUI(UI_SM_GODMODE)) {
@@ -240,14 +240,14 @@ export function doClickAdd() {
                         addSquareByName(px, py, "aquifer")
                     }
             } else if (loadUI(UI_SM_ORGANISM)) {
-                    var selectedOrganism = loadUI(UI_ORGANISM_SELECT);
+                    let selectedOrganism = loadUI(UI_ORGANISM_SELECT);
+                    let chance = Math.random();
                     switch (selectedOrganism) {
                         case "wheat":
-                            var chance = Math.random();
                             if (chance > 0.99) {
-                                var sq = addSquare(new SeedSquare(px, py));
+                                let sq = addSquare(new SeedSquare(px, py));
                                 if (sq) {
-                                    var orgAdded = addNewOrganism(new WheatSeedOrganism(sq));
+                                    let orgAdded = addNewOrganism(new WheatSeedOrganism(sq));
                                     if (!orgAdded) {
                                         sq.destroy();
                                     }
@@ -255,11 +255,10 @@ export function doClickAdd() {
                             }
                             break;
                         case "k. bluegrass":
-                            var chance = Math.random();
                             if (chance > 0.95) {
-                                var sq = addSquare(new SeedSquare(px, py));
+                                let sq = addSquare(new SeedSquare(px, py));
                                 if (sq) {
-                                    var orgAdded = addNewOrganism(new KentuckyBluegrassSeedOrganism(sq));
+                                    let orgAdded = addNewOrganism(new KentuckyBluegrassSeedOrganism(sq));
                                     if (!orgAdded) {
                                         sq.destroy();
                                     }
@@ -267,11 +266,10 @@ export function doClickAdd() {
                             }
                             break;
                         case "cattail":
-                            var chance = Math.random();
                             if (chance > 0.95) {
-                                var sq = addSquare(new SeedSquare(px, py));
+                                let sq = addSquare(new SeedSquare(px, py));
                                 if (sq) {
-                                    var orgAdded = addNewOrganism(new CattailSeedOrganism(sq));
+                                    let orgAdded = addNewOrganism(new CattailSeedOrganism(sq));
                                     if (!orgAdded) {
                                         sq.destroy();
                                     }
@@ -279,11 +277,10 @@ export function doClickAdd() {
                             }
                             break;
                         case "mushroom1":
-                            var chance = Math.random();
                             if (chance > 0.95) {
-                                var sq = addSquare(new SeedSquare(px, py));
+                                let sq = addSquare(new SeedSquare(px, py));
                                 if (sq) {
-                                    var orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [Math.random(), 0]));
+                                    let orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [Math.random(), 0]));
                                     if (!orgAdded) {
                                         sq.destroy();
                                     }
@@ -291,11 +288,10 @@ export function doClickAdd() {
                             }
                             break;
                         case "mushroom2":
-                            var chance = Math.random();
                             if (chance > 0.95) {
-                                var sq = addSquare(new SeedSquare(px, py));
+                                let sq = addSquare(new SeedSquare(px, py));
                                 if (sq) {
-                                    var orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [Math.random(), 1]));
+                                    let orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [Math.random(), 1]));
                                     if (!orgAdded) {
                                         sq.destroy();
                                     }
@@ -303,11 +299,10 @@ export function doClickAdd() {
                             }
                             break;
                         case "mushroom3":
-                            var chance = Math.random();
                             if (chance > 0.95) {
-                                var sq = addSquare(new SeedSquare(px, py));
+                                let sq = addSquare(new SeedSquare(px, py));
                                 if (sq) {
-                                    var orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [0.0001 + .25 * Math.random(), 0]));
+                                    let orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [0.0001 + .25 * Math.random(), 0]));
                                     if (!orgAdded) {
                                         sq.destroy();
                                     }
@@ -315,11 +310,10 @@ export function doClickAdd() {
                             }
                             break;
                         case "mushroom4":
-                            var chance = Math.random();
                             if (chance > 0.95) {
-                                var sq = addSquare(new SeedSquare(px, py));
+                                let sq = addSquare(new SeedSquare(px, py));
                                 if (sq) {
-                                    var orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [.749999 + 0.25 * Math.random(), 0]));
+                                    let orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [.749999 + 0.25 * Math.random(), 0]));
                                     if (!orgAdded) {
                                         sq.destroy();
                                     }
@@ -336,8 +330,8 @@ export function doClickAdd() {
 }
 
 function doBlockHover(lastMoveOffset) {
-    var offsetTransformed = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);
-    var offsetX = offsetTransformed[0];
-    var offsetY = offsetTransformed[1];
+    let offsetTransformed = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);
+    let offsetX = offsetTransformed[0];
+    let offsetY = offsetTransformed[1];
     eyedropperBlockHover(offsetX, offsetY);
 }

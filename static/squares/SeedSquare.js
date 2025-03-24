@@ -28,7 +28,7 @@ class SeedSquare extends BaseSquare {
             this.destroy();
             return;
         }
-        var linkedOrganism = this.linkedOrganism;
+        let linkedOrganism = this.linkedOrganism;
         if (sq.linkedOrganism == null) {
             removeOrganism(linkedOrganism);
             linkedOrganism.posY += 1;

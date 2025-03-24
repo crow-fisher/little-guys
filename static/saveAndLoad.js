@@ -89,12 +89,12 @@ async function openDatabase() {
 }
 
 function getFrameSaveData() {
-    var sqArr = new Array();
-    var orgArr = new Array();
-    var lsqArr = new Array();
-    var growthPlanArr = new Array();
-    var growthPlanComponentArr = new Array();
-    var growthPlanStepArr = new Array();
+    let sqArr = new Array();
+    let orgArr = new Array();
+    let lsqArr = new Array();
+    let growthPlanArr = new Array();
+    let growthPlanComponentArr = new Array();
+    let growthPlanStepArr = new Array();
 
     iterateOnOrganisms((org) => {
         orgArr.push(org);
@@ -147,7 +147,7 @@ function getFrameSaveData() {
         }
     })
 
-    var saveObj = {
+    let saveObj = {
         sqArr: sqArr,
         orgArr: orgArr,
         lsqArr: lsqArr,
@@ -166,16 +166,16 @@ function getFrameSaveData() {
 
 
 function loadSlotFromSave(slotData) {
-    var sqArr = slotData.sqArr;
-    var orgArr = slotData.orgArr;
-    var lsqArr = slotData.lsqArr;
-    var growthPlanArr = slotData.growthPlanArr;
-    var growthPlanComponentArr = slotData.growthPlanComponentArr;
-    var growthPlanStepArr = slotData.growthPlanStepArr;
+    let sqArr = slotData.sqArr;
+    let orgArr = slotData.orgArr;
+    let lsqArr = slotData.lsqArr;
+    let growthPlanArr = slotData.growthPlanArr;
+    let growthPlanComponentArr = slotData.growthPlanComponentArr;
+    let growthPlanStepArr = slotData.growthPlanStepArr;
 
-    var windMap = slotData.windMap;
-    var temperatureMap = slotData.temperatureMap;
-    var waterSaturationMap = slotData.waterSaturationMap;
+    let windMap = slotData.windMap;
+    let temperatureMap = slotData.temperatureMap;
+    let waterSaturationMap = slotData.waterSaturationMap;
 
 
     // setWindPressureMap(windMap);

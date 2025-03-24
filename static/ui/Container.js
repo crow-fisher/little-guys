@@ -25,8 +25,8 @@ export class Container {
     }
 
     render(startX, startY) {
-        var curX = startX;
-        var curY = startY;
+        let curX = startX;
+        let curY = startY;
 
         this.endX = 0;
         this.endY = 0;
@@ -52,9 +52,9 @@ export class Container {
     hover(posX, posY) {
         this.window.hovered = true;
         
-        var curX1 = 0;
-        var curY1 = 0;
-        var curX2, curY2;
+        let curX1 = 0;
+        let curY1 = 0;
+        let curX2, curY2;
 
         if (!(this.elements.some((el) => {
             let elSize = el.size();

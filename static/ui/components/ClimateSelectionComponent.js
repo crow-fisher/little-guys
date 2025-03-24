@@ -13,7 +13,7 @@ import {
 export class ClimateSelectionComponent extends LockedComponent {
     constructor(posXFunc, posYFunc, padding, dir, key) {
         super(posXFunc, posYFunc, padding, dir, key);
-        var sizeX = getBaseUISize() * 20;
+        let sizeX = getBaseUISize() * 20;
         let halfSizeX = sizeX / 2;
         let container = new Container(this.window, padding, 1);
         this.window.container = container; 
