@@ -290,7 +290,7 @@ function doRain() {
             var expectedPascals = saturationPressureOfWaterVapor(adjacentTemperature) * cloudRainThresh;
             var adjacentPascals = getAdjacentProp(x, y, (x, y) => waterSaturationMap[x][y]) / 5;
 
-            var dropPascals = (adjacentPascals - expectedPascals) * 0.0005;
+            var dropPascals = (adjacentPascals - expectedPascals) * 0.005;
 
             var usedWaterPascalsPerSquare = dropPascals / 5;
             var dropHealth = dropPascals / pascalsPerWaterSquare;
