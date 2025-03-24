@@ -18,12 +18,14 @@ import {
     UI_TOPBAR_SIMULATION, UI_TOPBAR_LIGHTING,
     UI_TOPBAR_TIME,
     UI_NAME,
-    UI_TOPBAR_CLIMATE
+    UI_TOPBAR_CLIMATE,
+    UI_NULL
 } from "../UIData.js";
 import { TopBarToggle } from "./TopBarToggle.js";
 import { getLastMoveOffset } from "../../mouse.js";
 import { getCurDay, millis_per_day } from "../../climate/time.js";
-import { TopBarWorldName } from "./TopBarWorldName.js";
+import { TopBarText } from "./TopBarText.js";
+import { getCurWeather } from "../../climate/weather/weatherManager.js";
 
 export class TopBarComponent {
     constructor(key) {
@@ -34,7 +36,7 @@ export class TopBarComponent {
         this.elements = new Map();
         this.elementPositions = new Map();
         this.elements[1] = [
-            new TopBarWorldName(getBaseUISize() * 2, "left", () => this.textWorldName())
+            new TopBarText(getBaseUISize() * 2, "left", () => this.textWorldName())
         ]
         
         this.elements[0] = [
@@ -54,7 +56,9 @@ export class TopBarComponent {
             new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_7, () => "▶"),
             new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_8, () => "▶"),
             new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_9, () => "▶\t|\t"),
-            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_TIME, UI_BOOLEAN,() => this.textDateTime()),
+            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_TIME, UI_BOOLEAN,() => this.textDateTime() + " |"),
+            new TopBarText(getBaseUISize() * 2, "left", () => " " + this.textWeather()),
+            
         ];
 
         Object.keys(this.elements).forEach((key) => this.elementPositions[key] = new Array(this.elements[key].length));
@@ -64,38 +68,36 @@ export class TopBarComponent {
     }
 
     textMainMenu() {
-        if (this.compact)
-            return " main |"
-        return " main menu |"
+        return " main |"
     }
 
     textBlockMenu() {
-        if (this.compact)
-            return " place |"
-        return " place menu |"
+        return " place |"
     }
     textClimateMenu() {
-        if (this.compact)
-            return " climate |"
-        return " climate control |"
+        return " climate |"
     }
     textViewMode() {
-        if (this.compact)
-            return " viewmode |"
-        return " select viewmode |"
+        return " viewmode |"
     }
     textToggleLighting() {
         return " lighting |" 
     }
     textDesignerMode() {
-        if (this.compact) 
-            return " simulation |"
-        return " simulation settings |"
+        return " simulation |"
     }
     textWorldName() {
         if (this.compact)
             return "" + loadUI(UI_NAME);
         return "world: " + loadUI(UI_NAME);
+    }
+
+    textWeather() {
+        if (this.compact) {
+            return getCurWeather().weatherStringShort();
+        } else {
+            return getCurWeather().weatherStringLong();
+        }
     }
 
     textDateTime() {

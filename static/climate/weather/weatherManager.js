@@ -1,6 +1,6 @@
 import { getCanvasSquaresX } from "../../canvas.js";
 import { randRange } from "../../common.js";
-import { addUIFunctionMap, UI_CLIMATE_WEATHER_SUNNY, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_HEAVYRAIN, loadUI, saveUI, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_DURATION } from "../../ui/UIData.js";
+import { addUIFunctionMap, UI_CLIMATE_WEATHER_SUNNY, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_HEAVYRAIN, loadUI, saveUI, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_DURATION, UI_CLIMATE_WEATHER_ACTIVE } from "../../ui/UIData.js";
 import { getActiveClimate } from "../climateManager.js";
 import { cloudRainThresh, setRestingGradientStrength, setRestingHumidityGradient, setRestingTemperatureGradient } from "../temperatureHumidity.js";
 import { getCurDay } from "../time.js";
@@ -17,6 +17,13 @@ var curWeatherInterval = 1;
 var curWeather = null;
 var curClimate = null;
 
+export function getCurWeather() {
+    return curWeather;
+}
+export function getCurWeatherInterval() {
+    return Math.round((curWeatherInterval - (getCurDay() - curWeatherStartTime)) / 0.000694444);
+}
+
 var curClouds = [];
 var curWinds = [];
 
@@ -26,9 +33,9 @@ function spawnFogCloud() {
     curClouds.push(new Cloud(
         randRange(0, wsx),
         randRange(0, wsy),
-        randRange(0.4, 0.9) * wsx, randRange(0.3, 0.7) * wsy,
-        getCurDay() + 0.00069444444 * randRange(0.5, 4), 0.00069444444 * randRange(0.5, 4),
-        randRange(1, 1.001), randRange(0, .3)));
+        randRange(0.4, 0.9) * wsx, randRange(0.2, 0.35) * wsy,
+        getCurDay(), Math.min(0.5, curWeatherInterval) * randRange(0.1, 0.5),
+        randRange(1, 1.003), randRange(0, .3)));
 }
 
 function spawnCumulusCloud() {
@@ -36,9 +43,9 @@ function spawnCumulusCloud() {
     let wsy = getWindSquaresY();
     curClouds.push(new Cloud(
         randRange(0, wsx),
-        randRange(0, wsy / 3),
-        randRange(0.1, 0.3) * wsx, randRange(0.05, 0.15) * (wsx / 3),
-        getCurDay() + 0.00069444444 * randRange(0.5, 4), 0.00069444444 * randRange(0.5, 4),
+        randRange(0, wsy / 8),
+        randRange(0.4, 0.9) * wsy, randRange(0.2, 0.35) * wsy,
+        getCurDay(), Math.min(0.5, curWeatherInterval) * randRange(0.1, 0.5),
         randRange(1.001, cloudRainThresh), 0.8 * randRange(1, 2)));
 }
 
@@ -47,9 +54,9 @@ function spawnNimbusCloud(rainFactor) {
     let wsy = getWindSquaresY();
     curClouds.push(new Cloud(
         randRange(0, wsx),
-        2,
-        randRange(0.5, 0.7) * wsx, randRange(0.05, 0.1) * wsy,
-        getCurDay() + 0.00001 * randRange(1, 30), .01 * randRange(2, 4),
+        randRange(0, wsy / 8),
+        randRange(0.4, 0.9) * wsy, randRange(0.15, 0.25) * wsy,
+        getCurDay(), Math.min(0.5, curWeatherInterval) * randRange(0.1, 0.5),
         1 + 0.05 * rainFactor, 0.8));
 }
 
@@ -60,7 +67,7 @@ function spawnWindGust() {
         randRange(-wsx, wsx),
         randRange(-wsy, wsy),
         randRange(0, 0.2) * wsx, randRange(0.05, 0.1) * wsy,
-        getCurDay(), .0001 * randRange(2, 4),
+        getCurDay(), Math.min(0.5, curWeatherInterval) * randRange(0.01, 0.1),
         -1, 0.8));
 }
 
@@ -119,12 +126,17 @@ var rainyTemperatureGradient = [
     [1, 273 + 40]
 ]
 
+function spawnRateThrottle() {
+    return Math.random() > 0.9
+}
+
 function windyWeather(windAmount) {
     return () => {
         if (curWinds.length > windAmount) {
             return;
         }
-        spawnWindGust();
+        if (spawnRateThrottle())
+            spawnWindGust();
     }
 }
 
@@ -133,20 +145,24 @@ function cloudyWeather(cloudCount) {
         if (curClouds.length > cloudCount) {
             return;
         }
-        spawnCumulusCloud();
+        if (spawnRateThrottle()) {
+            spawnCumulusCloud();
+        }
         windyWeather(10);
     }
 }
 
 function foggyWeather() {
-    if (curClouds.length > 35) {
+    if (curClouds.length > 10) {
         return;
     }
-    spawnFogCloud();
+    if (spawnRateThrottle()) {
+        spawnFogCloud();
+    }
 }
 
-weatherPartlyCloudy = new Weather(UI_CLIMATE_WEATHER_PARTLY_CLOUDY, cloudyHg, cloudyTg, 100, cloudyWeather(15));
-weatherMostlyCloudy = new Weather(UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, cloudyHg, cloudyTg, 100, cloudyWeather(35));
+weatherPartlyCloudy = new Weather(UI_CLIMATE_WEATHER_PARTLY_CLOUDY, cloudyHg, cloudyTg, 100, cloudyWeather(6));
+weatherMostlyCloudy = new Weather(UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, cloudyHg, cloudyTg, 100, cloudyWeather(10));
 weatherFoggy = new Weather(UI_CLIMATE_WEATHER_FOGGY, foggyHg, foggyTg, 100, foggyWeather);
 
 export function logRainFall(amount) {
@@ -156,10 +172,12 @@ export function logRainFall(amount) {
 
 function generalRainyWeather(rainFactor) {
     return () => {
-        if (curClouds.length > 5) {
+        if (curClouds.length > 10) {
             return;
         }
-        spawnNimbusCloud(rainFactor);
+        if (spawnRateThrottle()) {
+            spawnNimbusCloud(rainFactor);
+        }
         windyWeather(10);
     }
 }
@@ -195,8 +213,7 @@ function weatherChange() {
         };
         return false;
     });
-    saveUI(nextWeather, true);
-
+    saveUI(UI_CLIMATE_WEATHER_ACTIVE, nextWeather);
 }
 
 
@@ -206,31 +223,26 @@ export function weather() {
     if (curClouds.some((cloud) => getCurDay() > cloud.startDay + cloud.duration)) {
         curClouds = Array.from(curClouds.filter((cloud) => getCurDay() < cloud.startDay + cloud.duration));
     }
+    if (curWinds.some((wind) => getCurDay() > wind.startDay + wind.duration)) {
+        curWinds = Array.from(curWinds.filter((wind) => getCurDay() < wind.startDay + wind.duration));
+    }
+
     weatherChange();
     curWeather.weather();
 }
 
 export function initWeather() {
     weatherChange();
-    saveUI(UI_CLIMATE_WEATHER_SUNNY, true);
     curWeather = weatherSunny;
     curWeather.setRestingValues();
 }
 
 function applyUIWeatherChange() {
-    ui_weatherMap.keys().forEach((key) => {
-        if (loadUI(key)) {
-            curWeather = ui_weatherMap.get(key);
-            curWeatherInterval = randRange(	loadUI(UI_CLIMATE_WEATHER_DURATION) / 4, loadUI(UI_CLIMATE_WEATHER_DURATION));
-            curWeatherStartTime = getCurDay();
-            console.log("Next weather: ", curWeather.type + ", for " + Math.round(curWeatherInterval / 0.000694444) + " minutes")
-        }
-    });
+    curWeather = ui_weatherMap.get(loadUI(UI_CLIMATE_WEATHER_ACTIVE));
+    curWeatherInterval = randRange(	loadUI(UI_CLIMATE_WEATHER_DURATION) / 4, loadUI(UI_CLIMATE_WEATHER_DURATION));
+    curWeatherStartTime = getCurDay();
+    console.log("Next weather: ", curWeather.type + ", for " + Math.round(curWeatherInterval / 0.000694444) + " minutes")
 }
-addUIFunctionMap(UI_CLIMATE_WEATHER_SUNNY, applyUIWeatherChange);
-addUIFunctionMap(UI_CLIMATE_WEATHER_PARTLY_CLOUDY, applyUIWeatherChange);
-addUIFunctionMap(UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, applyUIWeatherChange);
-addUIFunctionMap(UI_CLIMATE_WEATHER_FOGGY, applyUIWeatherChange);
-addUIFunctionMap(UI_CLIMATE_WEATHER_LIGHTRAIN, applyUIWeatherChange);
-addUIFunctionMap(UI_CLIMATE_WEATHER_HEAVYRAIN, applyUIWeatherChange);
+
+addUIFunctionMap(UI_CLIMATE_WEATHER_ACTIVE, applyUIWeatherChange);
 addUIFunctionMap(UI_CLIMATE_WEATHER_DURATION, applyUIWeatherChange);

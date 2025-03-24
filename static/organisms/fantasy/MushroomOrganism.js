@@ -261,7 +261,6 @@ export class MushroomOrganism extends BaseOrganism {
         let lsq = comp.lifeSquares.at(comp.lifeSquares.length - 1);
 
         var seedSquare = addSquare(new SeedSquare(lsq.getPosX(), lsq.getPosY()));
-        seedSquare.gravity = 4;
         seedSquare.speedY = -Math.round(randRange(-2, -5));
         seedSquare.speedX = Math.round(randRange(-5, 5));
 

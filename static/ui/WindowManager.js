@@ -37,7 +37,7 @@ export function initUI() {
     all_components.push(new CloudControlComponent(() => topBarComponent.getElementXPositionFunc(0, 2) + climateSubtreeComponent.window.sizeX + getBaseUISize(), () => topBarComponent.ySize() + getBaseUISize() * 9, 0, 0, UI_CLIMATE_SELECT_CLOUDS));
 
     all_components.push(new ViewSubtreeComponent(() => topBarComponent.getElementXPositionFunc(0, 3), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_VIEWMODE));
-    blockPalette = new BlockPalette(getBaseUISize() * 34, getBaseUISize() * 6, 0, 0, UI_PALETTE_ACTIVE)
+    blockPalette = new BlockPalette(getBaseUISize() * 1, getBaseUISize() * 13, 0, 0, UI_PALETTE_ACTIVE)
     all_components.push(blockPalette);
 
     all_components.push(new LightingComponent(getBaseUISize() * 10, getBaseUISize() * 10, 0, 0, UI_SM_LIGHTING));

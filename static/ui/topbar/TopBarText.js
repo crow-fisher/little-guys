@@ -4,7 +4,7 @@ import { getLastMouseDown, isLeftMouseClicked } from "../../mouse.js";
 import { loadUI, saveUI, UI_BOOLEAN } from "../UIData.js";
 import { TopBarElementBase } from "./TopBarElementBase.js";
 
-export class TopBarWorldName extends TopBarElementBase{
+export class TopBarText extends TopBarElementBase{
     constructor(fontSize, textAlign, labelFunc) {
         super(fontSize, textAlign);
         this.labelFunc = labelFunc;

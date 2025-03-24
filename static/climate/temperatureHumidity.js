@@ -102,7 +102,7 @@ function getRestingAirPressureAtSq(y) {
 }
 
 export function restingValues() {
-    let applicationStrength = restingGradientStrength * timeScaleFactor();
+    let applicationStrength = 10 * restingGradientStrength * timeScaleFactor();
     for (let i = 0; i < getWindSquaresX(); i++) {
         for (let j = 0; j < getWindSquaresY(); j++) {
 

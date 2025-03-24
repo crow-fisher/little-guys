@@ -162,7 +162,7 @@ function initWindPressure() {
             if (checkIfCollisionAtWindSquare(i, j)) {
                 windPressureMap[i][j] = -1;
             } else {
-                windPressureMap[i][j] = getBaseAirPressureAtYPosition(j);
+                windPressureMap[i][j] = getBaseAirPressureAtYPosition(j) * 1.05;
             }
         }
     }
