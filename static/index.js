@@ -9,6 +9,7 @@ import { addUIFunctionMap, loadUI, UI_DISPLAY_SIZEY, UI_SIZE } from "./ui/UIData
 import { initUI } from "./ui/WindowManager.js";
 import { initTemperatureHumidity } from "./climate/temperatureHumidity.js";
 import { iterateOnSquares } from "./squares/_sqOperations.js";
+import { purgeCanvasFrameLimit } from "./globalOperations.js";
 
 export let MAIN_CANVAS = document.getElementById("main");
 export let MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
@@ -54,7 +55,7 @@ export function indexCanvasSize() {
     setCanvasSquaresX(Math.floor(width / c_baseSize));      
     setBaseSize(c_baseSize);
     resetClimateAndLighting();
-
+    purgeCanvasFrameLimit();
     iterateOnSquares((sq) => sq.lighting = new Array());
 
     MAIN_CANVAS.width = width;

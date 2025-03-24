@@ -175,7 +175,10 @@ export class BaseSquare {
     }
 
 
-    destroy() {
+    destroy(deep=false) {
+        if (deep && this.linkedOrganism != null) {
+            this.linkedOrganism.destroy();
+        }
         removeSquare(this);
     }
     linkOrganism(organism) {
@@ -515,10 +518,7 @@ export class BaseSquare {
         }
 
         if (finalXPos < 0 || finalXPos > getCanvasSquaresX() || finalYPos < 0 || finalYPos >= getCanvasSquaresY()) {
-            this.destroy(); 
-            if (this.linkedOrganism != null) {
-                this.linkedOrganism.destroy();
-            }
+            this.destroy(true); 
             return;
         }
 

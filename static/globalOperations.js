@@ -18,7 +18,6 @@ export function reset() {
     frame_solid_squares = frame_squares.filter((sq) => sq.solid);
     frame_water_squares = frame_squares.filter((sq) => !sq.solid);
     frame_squares.forEach((sq) => sq.reset());
-
 }
 
 export function renderSquares() {
@@ -62,6 +61,27 @@ export function renderOrganisms() {
 
 export function removeSquare(square) {
     removeItemAll(getObjectArrFromMap(ALL_SQUARES, square.posX, square.posY), square);
+}
+
+export function purgeCanvasFrameLimit() {
+    let rootKeys = Object.keys(ALL_SQUARES);
+    rootKeys.forEach((key) => {
+        let subkeys = Object.keys(ALL_SQUARES[parseFloat(key)]);
+        subkeys.forEach((subkey) => {
+            if (subkey >= 0 && subkey < getCanvasSquaresY()) {
+                return;
+            }
+            ALL_SQUARES[parseFloat(key)][parseFloat(subkey)].forEach((sq) => sq.destroy(true));
+            ALL_SQUARES[key].delete(subkey);
+        });
+        if (key < 0 || key >= getCanvasSquaresX()) {
+            subkeys.forEach((subkey) => {
+                ALL_SQUARES[parseFloat(key)][parseFloat(subkey)].forEach((sq) => sq.destroy(true));
+                ALL_SQUARES[key].delete(subkey);
+            });
+            ALL_SQUARES.delete(key);
+        }
+    });
 }
 
 
