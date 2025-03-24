@@ -54,7 +54,7 @@ class BaseSeedOrganism extends BaseOrganism {
     }
 
     applyEvolutionParameters(org) {
-        if (org == null || this.evolutionParameters == null) {
+        if (org == false || org == null || this.evolutionParameters == null) {
             return;
         }
         org.setEvolutionParameters(this.evolutionParameters);
