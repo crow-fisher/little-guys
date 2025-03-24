@@ -13,6 +13,7 @@ import { getCanvasSquaresX, getCanvasSquaresY } from "./canvas.js";
 import { addSquareByName } from "./manipulation.js";
 import { getUI_DATA, setUI_DATA } from "./ui/UIData.js";
 import { indexCanvasSize } from "./index.js";
+import { STAGE_DEAD } from "./organisms/Stages.js";
 
 export async function loadSlot(slotName) {
     const db = await openDatabase();
@@ -97,11 +98,13 @@ function getFrameSaveData() {
     let growthPlanStepArr = new Array();
 
     iterateOnOrganisms((org) => {
-        orgArr.push(org);
-        lsqArr.push(...org.lifeSquares);
-        growthPlanArr.push(...org.growthPlans);
-        growthPlanComponentArr.push(...org.growthPlans.map((gp) => gp.component))
-        org.growthPlans.forEach((gp) => growthPlanStepArr.push(...gp.steps));
+        if (org.stage != STAGE_DEAD) {
+            orgArr.push(org);
+            lsqArr.push(...org.lifeSquares);
+            growthPlanArr.push(...org.growthPlans);
+            growthPlanComponentArr.push(...org.growthPlans.map((gp) => gp.component))
+            org.growthPlans.forEach((gp) => growthPlanStepArr.push(...gp.steps));
+        }
     });
 
     growthPlanStepArr.forEach((gps) => {

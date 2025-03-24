@@ -22,12 +22,20 @@ class SeedSquare extends BaseSquare {
         let sq = getSquares(this.posX, this.posY + 1)
             .find((sq) => sq.proto == "SoilSquare");
         if (sq == null) {
+            let rockSq = getSquares(this.posX, this.posY + 1)
+                .find((sq) => sq.proto == "RockSquare");
+            if (rockSq != null) {
+                this.destroy(true);
+                return;
+            }
             return;
         }
+
         if (this.linkedOrganism == null) {
             this.destroy();
             return;
         }
+
         let linkedOrganism = this.linkedOrganism;
         if (sq.linkedOrganism == null) {
             removeOrganism(linkedOrganism);
