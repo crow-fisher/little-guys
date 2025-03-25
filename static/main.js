@@ -9,6 +9,7 @@ import { renderWindPressureMap } from "./climate/wind.js";
 import { LightingHandler } from "./lighting/lightingHandler.js";
 import { ClimateHandler } from "./climate/climateHandler.js";
 import { isLeftMouseClicked, isRightMouseClicked } from "./mouse.js";
+import { iterateOnSquares } from "./squares/_sqOperations.js";
  
 const SQUARE_UPDATE_MILLIS = 0;
 const ORG_UPDATE_MILLIS = 0;
@@ -26,6 +27,7 @@ let climateHandler = new ClimateHandler();
 export function resetClimateAndLighting() {
     lightingHandler = new LightingHandler();
     climateHandler = new ClimateHandler();
+    iterateOnSquares((sq) => sq.lighting = new Array());
 }
 
 export function triggerEarlySquareScheduler() {

@@ -1,7 +1,7 @@
 import { getAllSquares } from "../squares/_sqOperations.js";
 import { getCloudColorAtPos } from "../climate/temperatureHumidity.js";
-import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "../climate/time.js";
-import { loadUI, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_SUNNODES, UI_LIGHTING_SUN } from "../ui/UIData.js";
+import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getFrameDt, getMoonlightColor } from "../climate/time.js";
+import { loadUI, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_QUALITY, UI_LIGHTING_SUN } from "../ui/UIData.js";
 import { getWindSquaresX, getWindSquaresY } from "../climate/wind.js";
 import { getCanvasSquaresX, getCanvasSquaresY } from "../canvas.js";
 import { getCurLightingInterval } from "./lightingHandler.js";
@@ -31,7 +31,7 @@ export function lightingRegisterLifeSquare(lifeSquare) {
 }
 
 export function createSunLightGroup() {
-    let numNodes = loadUI(UI_LIGHTING_SUNNODES);
+    let numNodes = loadUI(UI_LIGHTING_QUALITY);
     let sunLightGroup = new MovingLinearLightGroup(
         getCanvasSquaresX() / 2,
         -1,
@@ -243,7 +243,7 @@ export class MovingLinearLightGroup {
                 10 ** 8,
                 minMaxTheta[0],
                 minMaxTheta[1],
-                100
+                (100 / 7) * loadUI(UI_LIGHTING_QUALITY)
             );
             this.lightSources.push(newLightSource);
         }
@@ -422,8 +422,7 @@ export class LightSource {
                     let curBrightnessCopy = curBrightness;
                     let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(theta)() * curBrightnessCopy * this.brightnessFunc() * this.thetaBrightnessFunc(theta);
                     if (!obj.surface)
-                        curBrightness *= (1 - (obj.getLightFilterRate() * loadUI(UI_LIGHTING_DECAY)));
-
+                        curBrightness *= (1 - (obj.getLightFilterRate() * loadUI(UI_LIGHTING_DECAY) * (loadUI(UI_LIGHTING_QUALITY)) / 9));
                     if (obj.lighting[idx] == null) {
                         obj.lighting[idx] = [[pointLightSourceFunc], this.colorFunc];
                     } else if (obj.lighting[idx][0].length >= jobIdx) {
@@ -450,12 +449,14 @@ export class LightSource {
         let tasksPerThread = a0.length / this.num_tasks;
         this.preprocessTerrainSquares();
         this.preprocessLifeSquares();
+
         let timeInterval = getCurLightingInterval();
         let scheduledTime = 0;
         for (let i = 0; i < this.num_tasks; i++) {
             let startIdx = Math.floor(i * tasksPerThread);
             let endIdx = Math.ceil((i + 1) * (tasksPerThread));
             scheduledTime = i * (timeInterval / this.num_tasks);
+            let stCopy = scheduledTime;
             if (isLeftMouseClicked() || isRightMouseClicked()) {
                 scheduledTime *= 3;
             }
@@ -467,7 +468,7 @@ export class LightSource {
                 if (this.num_completed[idx][jobIdx] == this.num_tasks) {
                     onComplete();
                 }
-            }, scheduledTime);
+            }, stCopy);
         }
     }
 }

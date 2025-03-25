@@ -22,16 +22,17 @@ let TIME_SCALE = 1;
 let curUIKey = UI_SPEED_1;
 
 export let millis_per_day = 60 * 60 * 24 * 1000;
-var curDay = 0.20;
+var curDay = 0.4;
 var prevDay = 0;
 var curTime = 0.8;
 var prevTime = 0;   
 
 let prevRealTime = Date.now();
-let dt = 0; 
+let dt = 0;
+let dtRollingAverage = dt;
 
 export function getFrameDt() {
-    return Math.min(100, dt);
+    return dtRollingAverage;
 }
 
 var starMap;
@@ -283,6 +284,12 @@ function updateTime() {
         return;
     }
     dt = Date.now() - prevRealTime;
+    if (dtRollingAverage == 0) {
+        dtRollingAverage = dt;
+    } else {
+        dtRollingAverage *= 0.99;
+        dtRollingAverage += .01 * dt;
+    }
     if (dt > 10000) {
         prevRealTime = Date.now();
     } else {

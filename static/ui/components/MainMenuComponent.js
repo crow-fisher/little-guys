@@ -9,7 +9,7 @@ import { Button } from "../elements/Button.js";
 import { Radio } from "../elements/Radio.js";
 import { RowedRadio } from "../elements/RowedRadio.js";
 import { Text } from "../elements/Text.js";
-import { loadUI, UI_CENTER, UI_DISPLAY_SIZEY, UI_LIGHTING_UPDATERATE, UI_LIGHTING_SUNNODES, UI_SIZE } from "../UIData.js";
+import { loadUI, UI_CENTER, UI_DISPLAY_SIZEY, UI_LIGHTING_UPDATERATE, UI_LIGHTING_QUALITY, UI_SIZE } from "../UIData.js";
 import { SubTreeComponent } from "./SubTreeComponent.js";
 
 
