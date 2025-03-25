@@ -292,6 +292,7 @@ function updateTime() {
     }
     if (dt > 10000) {
         prevRealTime = Date.now();
+        dtRollingAverage = 0;
     } else {
         prevTime = curTime;
         prevDay = curDay;

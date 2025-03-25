@@ -80,7 +80,7 @@ export class BaseSquare {
         this.surface = false;
 
         this.temperature = 273;
-        
+
         this.thermalConductivity = 1;  // watts/meter kelvin. max is 10
         this.thermalMass = 2; // e.g., '2' means one degree of this would equal 2 degrees of air temp for a wind square 
 
@@ -102,7 +102,7 @@ export class BaseSquare {
         this.blockHealth_color2 = RGB_COLOR_BLUE;
 
         this.lightingSumDay = Math.floor(getCurDay());
-        this.lightingSum = {r: 0, g: 0, b: 0}
+        this.lightingSum = { r: 0, g: 0, b: 0 }
         this.lightingSumCount = 0;
 
         this.mixIdx = -1;
@@ -175,7 +175,7 @@ export class BaseSquare {
     }
 
 
-    destroy(deep=false) {
+    destroy(deep = false) {
         if (deep && this.linkedOrganism != null) {
             this.linkedOrganism.destroy();
         }
@@ -203,10 +203,10 @@ export class BaseSquare {
         this.currentPressureDirect = -1;
         this.group = -1;
         this.speedY += (1 / this.gravity);
-        
+
         if (Math.floor(getCurDay() + 0.15) != this.lightingSumDay) {
             if (this.lightingSum == null) {
-                this.lightingSum = {r: 0, g: 0, b: 0}
+                this.lightingSum = { r: 0, g: 0, b: 0 }
                 this.lightingSumCount = 0;
             }
             let decayFactor = 3;
@@ -332,8 +332,8 @@ export class BaseSquare {
             this.initLightingFromNeighbors();
         }
         let lighting = processLighting(this.lighting);
-        this.lightingSum.r += lighting.r; 
-        this.lightingSum.g += lighting.g; 
+        this.lightingSum.r += lighting.r;
+        this.lightingSum.g += lighting.g;
         this.lightingSum.b += lighting.b;
         this.lightingSumCount += 1;
         return lighting;
@@ -341,10 +341,10 @@ export class BaseSquare {
 
     renderLightingView() {
         let outRgba = rgbToRgba(
-            Math.floor(this.lightingSum.r / this.lightingSumCount), 
-            Math.floor(this.lightingSum.g / this.lightingSumCount), 
-            Math.floor(this.lightingSum.b / this.lightingSumCount), 
-        0.8);
+            Math.floor(this.lightingSum.r / this.lightingSumCount),
+            Math.floor(this.lightingSum.g / this.lightingSumCount),
+            Math.floor(this.lightingSum.b / this.lightingSumCount),
+            0.8);
         MAIN_CONTEXT.fillStyle = outRgba;
         zoomCanvasFillRect(
             (this.offsetX + this.posX) * getBaseSize(),
@@ -360,8 +360,8 @@ export class BaseSquare {
             Math.abs(getDaylightStrengthFrameDiff()) > 0.01) {
             this.lastColorCacheTime = Date.now();
             let outColorBase = this.getColorBase();
-            let lightingColor = this.processLighting(); 
-            let outColor = {r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255};
+            let lightingColor = this.processLighting();
+            let outColor = { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
             this.cachedRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacityMult * this.opacity * (this.blockHealth ** 0.2));
         }
         MAIN_CONTEXT.fillStyle = this.cachedRgba;
@@ -375,9 +375,9 @@ export class BaseSquare {
             MAIN_CONTEXT.font = getBaseSize() + "px courier"
             MAIN_CONTEXT.textAlign = 'center';
             MAIN_CONTEXT.textBaseline = 'middle';
-            zoomCanvasSquareText(((this.offsetX + this.posX) + 0.5)* getBaseSize(),
-            ((this.offsetY + this.posY) + 0.5)* getBaseSize(),
-            this.mixIdx % getMixArrLen());
+            zoomCanvasSquareText(((this.offsetX + this.posX) + 0.5) * getBaseSize(),
+                ((this.offsetY + this.posY) + 0.5) * getBaseSize(),
+                this.mixIdx % getMixArrLen());
         }
     }
     updatePosition(newPosX, newPosY) {
@@ -387,17 +387,11 @@ export class BaseSquare {
         newPosX = Math.floor(newPosX);
         newPosY = Math.floor(newPosY);
 
-        if (getSquares(newPosX, newPosY)
-            .some((sq) => this.collision && sq.collision && !sq.surface)) {
-            return false;
-        }
-
         if (this.linkedOrganism != null) {
             if (getOrganismsAtSquare(newPosX, newPosY).some((org) => true)) {
                 console.log("Found an existing organism at target block; destroying this organism");
                 console.log(this.linkedOrganism);
                 this.linkedOrganism.destroy()
-
                 return false;
             }
         }
@@ -480,10 +474,25 @@ export class BaseSquare {
                 let jSigned = (this.speedX > 0) ? j : -j;
                 let jSignedMinusOne = (this.speedX == 0 ? 0 : (this.speedX > 0) ? (j - 1) : -(j - 1));
                 if (getSquares(this.posX + jSigned, this.posY + i)
-                    .some((sq) =>
-                        (!this.organic && sq.collision) ||
-                        this.organic && sq.collision && sq.currentPressureDirect > 0 && Math.random() > 0.9
-                    )) {
+                    .some((sq) => {
+                        if (this.organic) {
+                            if (sq.collision && sq.currentPressureDirect > 0 && Math.random() > 0.9) {
+                                return true;
+                            }
+                            return false;
+                        }
+                        if (!this.solid) {
+                            if (!sq.solid) {
+                                return true;
+                            } else {
+                                if (sq.surface) {
+                                    return false;
+                                }
+                                return true;
+                            }
+                        }
+                        return true;
+                    })) {
                     finalYPos = this.posY + (i - 1);
                     finalXPos = this.posX + jSignedMinusOne;
                     this.speedX = 0;
@@ -503,8 +512,8 @@ export class BaseSquare {
                                 this.destroy();
                                 return true;
                             })) {
-                                return;
-                            }
+                            return;
+                        }
                     }
                 }
                 if (bonked)
@@ -518,7 +527,7 @@ export class BaseSquare {
         }
 
         if (finalXPos < 0 || finalXPos > getCanvasSquaresX() || finalYPos < 0 || finalYPos >= getCanvasSquaresY()) {
-            this.destroy(true); 
+            this.destroy(true);
             return;
         }
 
@@ -540,7 +549,7 @@ export class BaseSquare {
     }
 
     waterSinkPhysics() {
-        if (this.gravity == 0) {
+        if (this.gravity == 0 || this.surface) {
             return;
         }
         if (!this.solid) {
@@ -559,6 +568,11 @@ export class BaseSquare {
                 });
             return;
         }
+        if (getSquares(this.posX, this.posY + 1)
+            .some((sq) => sq.solid && sq.surface)) {
+            return; 
+        };
+
         getSquares(this.posX, this.posY + 1)
             .filter((sq) => sq.proto == "WaterSquare")
             .forEach((sq) => {
