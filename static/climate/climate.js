@@ -1,5 +1,5 @@
 import { hexToRgb, hexToRgbArr, hsv2rgb, hueShiftColor, rgb2hsv, rgbToHex } from "../common.js";
-import { loadUI, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_HEAVYRAIN, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_SUNNY, UI_PALETTE_ROCKIDX, UI_PALETTE_ROCKMODE, UI_PALETTE_SOILIDX } from "../ui/UIData.js";
+import { loadGD, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_HEAVYRAIN, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_SUNNY, UI_PALETTE_ROCKIDX, UI_PALETTE_ROCKMODE, UI_PALETTE_SOILIDX } from "../ui/UIData.js";
 
 export class Climate {
     constructor() {
@@ -67,7 +67,7 @@ export class Climate {
     }
 
     getUIColorInactiveCustom(frac) {
-        return this.processColor(this.getBaseSoilColor(loadUI(UI_PALETTE_SOILIDX), 0, 0.70, 0.10), frac);
+        return this.processColor(this.getBaseSoilColor(loadGD(UI_PALETTE_SOILIDX), 0, 0.70, 0.10), frac);
     }
 
     getUIColorStoneButton(frac) {
@@ -88,7 +88,7 @@ export class Climate {
     }
 
     getUIColorActive() {
-        return this.processColor(this.getBaseSoilColor(loadUI(UI_PALETTE_SOILIDX), 0, 0.10, 0.90), 0.6);
+        return this.processColor(this.getBaseSoilColor(loadGD(UI_PALETTE_SOILIDX), 0, 0.10, 0.90), 0.6);
     }
 
     getUIColorTransient() {
@@ -100,23 +100,23 @@ export class Climate {
     }
 
     getPaletteRockColor() {
-        return this.processColor(this.getBaseRockColor(loadUI(UI_PALETTE_ROCKIDX), .4, .4, .2), 1);
+        return this.processColor(this.getBaseRockColor(loadGD(UI_PALETTE_ROCKIDX), .4, .4, .2), 1);
     }
 
     getPaletteSoilColor() {
-        return this.processColor(this.getBaseSoilColor(loadUI(UI_PALETTE_SOILIDX), .4, .4, .2), 1);
+        return this.processColor(this.getBaseSoilColor(loadGD(UI_PALETTE_SOILIDX), .4, .4, .2), 1);
     }
 
     getBaseColorActiveToolActivePalette(arr) {
-        if (loadUI(UI_PALETTE_ROCKMODE)) {
-            return this.getBaseRockColor(loadUI(UI_PALETTE_ROCKIDX), ...arr);
+        if (loadGD(UI_PALETTE_ROCKMODE)) {
+            return this.getBaseRockColor(loadGD(UI_PALETTE_ROCKIDX), ...arr);
         } else {
-            return this.getBaseSoilColor(loadUI(UI_PALETTE_SOILIDX), ...arr);
+            return this.getBaseSoilColor(loadGD(UI_PALETTE_SOILIDX), ...arr);
         }
     }
 
     getBaseActiveToolBrightnessIdx(idx, arr, brightness) {
-        if (loadUI(UI_PALETTE_ROCKMODE)) {
+        if (loadGD(UI_PALETTE_ROCKMODE)) {
             return this.processColor(this.getBaseRockColor(idx, ...arr), brightness);
         } else {
             return this.processColor(this.getBaseSoilColor(idx, ...arr), brightness);
@@ -124,15 +124,15 @@ export class Climate {
     }
 
     getBaseActiveToolBrightness(arr, brightness) {
-        if (loadUI(UI_PALETTE_ROCKMODE)) {
-            return this.processColor(this.getBaseRockColor(loadUI(UI_PALETTE_ROCKIDX), ...arr), brightness);
+        if (loadGD(UI_PALETTE_ROCKMODE)) {
+            return this.processColor(this.getBaseRockColor(loadGD(UI_PALETTE_ROCKIDX), ...arr), brightness);
         } else {
-            return this.processColor(this.getBaseSoilColor(loadUI(UI_PALETTE_SOILIDX), ...arr), brightness);
+            return this.processColor(this.getBaseSoilColor(loadGD(UI_PALETTE_SOILIDX), ...arr), brightness);
         }
     }
 
     getBaseSoilColorBrightness(arr, brightness) {
-        return this.processColor(this.getBaseSoilColor(loadUI(UI_PALETTE_SOILIDX), ...arr), brightness);
+        return this.processColor(this.getBaseSoilColor(loadGD(UI_PALETTE_SOILIDX), ...arr), brightness);
     }
     getBaseSoilColorBrightnessIdx(idx, arr, brightness) {
         return this.processColor(this.getBaseSoilColor(idx, ...arr), brightness);
@@ -141,10 +141,10 @@ export class Climate {
         return this.processColor(this.getBaseRockColor(idx, ...arr), brightness);
     }
     getBaseActiveToolColorActiveIdx(brightness) {
-        if (loadUI(UI_PALETTE_ROCKMODE)) {
-            return this.processColor(this.getBaseRockColor(loadUI(UI_PALETTE_ROCKIDX), .4, .4, .2), brightness);
+        if (loadGD(UI_PALETTE_ROCKMODE)) {
+            return this.processColor(this.getBaseRockColor(loadGD(UI_PALETTE_ROCKIDX), .4, .4, .2), brightness);
         } else {
-            return this.processColor(this.getBaseSoilColor(loadUI(UI_PALETTE_SOILIDX), .4, .4, .2), brightness);
+            return this.processColor(this.getBaseSoilColor(loadGD(UI_PALETTE_SOILIDX), .4, .4, .2), brightness);
         }
     }
 

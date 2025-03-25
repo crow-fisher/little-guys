@@ -3,7 +3,7 @@ import { COLOR_BLACK, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { rgbToHex } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
-import { loadUI, saveUI, UI_PALETTE_COMPOSITION, UI_PALETTE_ROCKIDX, UI_PALETTE_ROCKMODE, UI_PALETTE_SOILIDX } from "../UIData.js";
+import { loadGD, saveGD, UI_PALETTE_COMPOSITION, UI_PALETTE_ROCKIDX, UI_PALETTE_ROCKMODE, UI_PALETTE_SOILIDX } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export const R_COLORS = "🎨";
@@ -34,7 +34,7 @@ export class SoilPickerElement extends WindowElement {
             }
         }
 
-        let loc = this.derivePosition(...loadUI(UI_PALETTE_COMPOSITION));
+        let loc = this.derivePosition(...loadGD(UI_PALETTE_COMPOSITION));
         MAIN_CONTEXT.fillStyle = "#FFFFFF";
         MAIN_CONTEXT.fillRect(startX + loc[0] - 2, startY + loc[1] - 2, 4, 4);
 
@@ -73,8 +73,8 @@ export class SoilPickerElement extends WindowElement {
     }
 
     getSquareColor(i, j) {
-        let cacheMap = this.colorCache[loadUI(UI_PALETTE_ROCKMODE)];
-        let cacheMapIdx = loadUI(loadUI(UI_PALETTE_ROCKMODE) ? UI_PALETTE_ROCKIDX : UI_PALETTE_SOILIDX);
+        let cacheMap = this.colorCache[loadGD(UI_PALETTE_ROCKMODE)];
+        let cacheMapIdx = loadGD(loadGD(UI_PALETTE_ROCKMODE) ? UI_PALETTE_ROCKIDX : UI_PALETTE_SOILIDX);
         if (cacheMap[cacheMapIdx] == null) {
             cacheMap[cacheMapIdx] = new Map();
         }
@@ -121,7 +121,7 @@ export class SoilPickerElement extends WindowElement {
                 this.window.locked = true;
                 this.clickColor = c;
                 this.clickLoc = [posX, posY];
-                saveUI(this.key, this.getSquareComposition(posX, posY))
+                saveGD(this.key, this.getSquareComposition(posX, posY))
             } else {
                 this.hoverLoc = [posX, posY];
             }
@@ -137,6 +137,6 @@ export class SoilPickerElement extends WindowElement {
         this.hoverColor = this.getBaseColor(sand, silt, clay);
     }
     setClick(sand, silt, clay) {
-        saveUI(this.key, [sand, silt, clay]);
+        saveGD(this.key, [sand, silt, clay]);
     }
 }

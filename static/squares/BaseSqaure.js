@@ -26,7 +26,7 @@ import { RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
 import { getCurDay, getCurrentLightColorTemperature, getDaylightStrengthFrameDiff, timeScaleFactor } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
-import { loadUI, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS } from "../ui/UIData.js";
+import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS } from "../ui/UIData.js";
 import { isLeftMouseClicked } from "../mouse.js";
 
 export class BaseSquare {
@@ -222,7 +222,7 @@ export class BaseSquare {
         if (!this.visible || this.posY >= getCanvasSquaresY()) {
             return;
         }
-        let selectedViewMode = loadUI(UI_VIEWMODE_SELECT);
+        let selectedViewMode = loadGD(UI_VIEWMODE_SELECT);
         if (selectedViewMode == UI_VIEWMODE_NORMAL) {
             this.renderWithVariedColors(1);
         }
@@ -236,7 +236,7 @@ export class BaseSquare {
         }
         else if (selectedViewMode == UI_VIEWMODE_MOISTURE) {
             this.renderWaterSaturation();
-        } else if (selectedViewMode == UI_VIEWMODE_SURFACE || (loadUI(UI_PALETTE_ACTIVE) && loadUI(UI_PALETTE_SELECT) == UI_PALETTE_SURFACE)) {
+        } else if (selectedViewMode == UI_VIEWMODE_SURFACE || (loadGD(UI_PALETTE_ACTIVE) && loadGD(UI_PALETTE_SELECT) == UI_PALETTE_SURFACE)) {
             this.renderWithVariedColors(1);
             this.renderSurface();
         }
@@ -324,7 +324,7 @@ export class BaseSquare {
     }
 
     processLighting() {
-        if (!loadUI(UI_LIGHTING_ENABLED)) {
+        if (!loadGD(UI_LIGHTING_ENABLED)) {
             return getDefaultLighting();
         }
 
@@ -499,7 +499,7 @@ export class BaseSquare {
                     this.speedY = 0;
                     this.offsetY = 0;
                     bonked = true;
-                    if (this.lighting.length == 0 && loadUI(UI_LIGHTING_ENABLED)) {
+                    if (this.lighting.length == 0 && loadGD(UI_LIGHTING_ENABLED)) {
                         this.initLightingFromNeighbors();
                     }
 

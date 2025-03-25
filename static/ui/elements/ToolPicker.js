@@ -3,7 +3,7 @@ import { MAIN_CONTEXT } from "../../index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
 import { getBaseRockColor } from "../../squares/parameterized/RockSquare.js";
 import { getBaseNutrientRate, getBasePercolationRate, getBaseSoilColor } from "../../squares/parameterized/SoilSquare.js";
-import { loadUI, saveUI, UI_SOIL_COMPOSITION, UI_SOIL_VIEWMODE } from "../UIData.js";
+import { loadGD, saveGD, UI_SOIL_COMPOSITION, UI_SOIL_VIEWMODE } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export const R_COLORS = "🎨";
@@ -47,7 +47,7 @@ export class ToolPickerElement extends WindowElement {
         let arr = this.getSquareComposition(i, j);
         if (arr != null) {
             let val, val_max, mult;
-            switch (loadUI(UI_SOIL_VIEWMODE)) {
+            switch (loadGD(UI_SOIL_VIEWMODE)) {
                 case R_COLORS:
                     return this.getBaseColor(arr[0], arr[1], arr[2]);
                 case R_PERCOLATION_RATE:
@@ -87,7 +87,7 @@ export class ToolPickerElement extends WindowElement {
             this.hoverColor = c;
             if (isLeftMouseClicked()) {
                 this.clickColor = c;
-                saveUI(this.keyFunc, this.getSquareComposition(posX, posY))
+                saveGD(this.keyFunc, this.getSquareComposition(posX, posY))
             }
         }
     }

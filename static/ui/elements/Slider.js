@@ -2,7 +2,7 @@ import { getBaseUISize } from "../../canvas.js";
 import { COLOR_BLACK, COLOR_BLUE, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
-import { loadUI, saveUI } from "../UIData.js";
+import { loadGD, saveGD } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class Slider extends WindowElement {
@@ -26,7 +26,7 @@ export class Slider extends WindowElement {
         MAIN_CONTEXT.lineTo(p2x, py);
         MAIN_CONTEXT.stroke();
         MAIN_CONTEXT.fillStyle = this.blockColorFunc();
-        let p = (loadUI(this.key) - this.min) / (this.max - this.min);
+        let p = (loadGD(this.key) - this.min) / (this.max - this.min);
         let x = p1x + p * (p2x - p1x)
         MAIN_CONTEXT.fillRect(x - this.blockSize / 2, py - this.blockSize / 2, this.blockSize, this.blockSize);
         return [this.sizeX, this.sizeY]
@@ -46,7 +46,7 @@ export class Slider extends WindowElement {
         let max = this.sizeX - this.blockSize / 2;
         let p = (posX - min) / (max - min);
         p = Math.min(Math.max(0, p), 1)
-        saveUI(this.key, this.min + p * (this.max - this.min));
+        saveGD(this.key, this.min + p * (this.max - this.min));
     }
 
 }

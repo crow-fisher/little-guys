@@ -2,7 +2,7 @@ import { getBaseUISize, getCanvasWidth } from "../../canvas.js";
 import { COLOR_BLACK } from "../../colors.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import {
-    loadUI,
+    loadGD,
     UI_SPEED_1,
     UI_SPEED_2,
     UI_SPEED_3,
@@ -88,8 +88,8 @@ export class TopBarComponent {
     }
     textWorldName() {
         if (this.compact)
-            return "" + loadUI(UI_NAME);
-        return "world: " + loadUI(UI_NAME);
+            return "" + loadGD(UI_NAME);
+        return "world: " + loadGD(UI_NAME);
     }
 
     textWeather() {
@@ -115,7 +115,7 @@ export class TopBarComponent {
         return this.maxHeight + 3 * this.padding;
     }
     render() {
-        if (!loadUI(this.key)) {
+        if (!loadGD(this.key)) {
             return;
         }
 
@@ -163,7 +163,7 @@ export class TopBarComponent {
     }
 
     update() {
-        if (!loadUI(this.key)) {
+        if (!loadGD(this.key)) {
             return;
         }
         

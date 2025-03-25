@@ -8,7 +8,7 @@ import { Button } from "../elements/Button.js";
 import { Radio } from "../elements/Radio.js";
 import { RowedRadio } from "../elements/RowedRadio.js";
 import { Text } from "../elements/Text.js";
-import { loadUI, UI_DISPLAY_SIZEY, UI_LIGHTING_UPDATERATE, UI_LIGHTING_QUALITY, UI_SIZE } from "../UIData.js";
+import { loadGD, UI_DISPLAY_SIZEY, UI_LIGHTING_UPDATERATE, UI_LIGHTING_QUALITY, UI_SIZE } from "../UIData.js";
 import { Window } from "../Window.js";
 
 
@@ -21,7 +21,7 @@ export class SubTreeComponent {
     }
 
     render() {
-        if (loadUI(this.key)) {
+        if (loadGD(this.key)) {
             this.window.render();
             
         }
@@ -30,7 +30,7 @@ export class SubTreeComponent {
     update() {
         this.window.posX = this.posXFunc();
         this.window.posY = this.posYFunc();
-        if (loadUI(this.key)) {
+        if (loadGD(this.key)) {
             this.window.update();
         }
     }

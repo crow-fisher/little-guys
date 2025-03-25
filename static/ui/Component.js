@@ -1,4 +1,4 @@
-import { loadUI } from "./UIData.js";
+import { loadGD } from "./UIData.js";
 import { Window } from "./Window.js";
 
 export class Component {
@@ -8,13 +8,13 @@ export class Component {
     }
 
     render() {
-        if (loadUI(this.key)) {
+        if (loadGD(this.key)) {
             this.window.render();
         }
     }
 
     update() {
-        if (loadUI(this.key)) {
+        if (loadGD(this.key)) {
             this.window.update();
         }
     }

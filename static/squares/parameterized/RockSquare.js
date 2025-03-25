@@ -2,7 +2,7 @@
 import { getSquares } from "../_sqOperations.js";
 import { SoilSquare } from "./SoilSquare.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
-import { loadUI, UI_LIGHTING_ROCK, UI_PALETTE_COMPOSITION, UI_PALETTE_ROCKIDX, UI_ROCK_COMPOSITION, UI_SOIL_COMPOSITION } from "../../ui/UIData.js";
+import { loadGD, UI_LIGHTING_ROCK, UI_PALETTE_COMPOSITION, UI_PALETTE_ROCKIDX, UI_ROCK_COMPOSITION, UI_SOIL_COMPOSITION } from "../../ui/UIData.js";
 import { getCanvasSquaresY } from "../../canvas.js";
 import { addSquareByName } from "../../manipulation.js";
 
@@ -23,7 +23,7 @@ export class RockSquare extends SoilSquare {
         super(posX, posY);
         this.proto = "RockSquare";
         this.gravity = 0;
-        this.colorVariant = loadUI(UI_PALETTE_ROCKIDX) % getActiveClimate().soilColors.length;
+        this.colorVariant = loadGD(UI_PALETTE_ROCKIDX) % getActiveClimate().soilColors.length;
         this.clayColorRgb = getActiveClimate().rockColorClay;
         this.siltColorRgb = getActiveClimate().rockColorSilt;
         this.sandColorRgb = getActiveClimate().rockColorSand;
@@ -40,7 +40,7 @@ export class RockSquare extends SoilSquare {
     }
 
     setVariant() {
-        let arr = loadUI(UI_PALETTE_COMPOSITION);
+        let arr = loadGD(UI_PALETTE_COMPOSITION);
         this.sand = arr[0];
         this.silt = arr[1];
         this.clay = arr[2];
@@ -52,7 +52,7 @@ export class RockSquare extends SoilSquare {
     }
 
     getLightFilterRate() {
-        return super.getLightFilterRate() * loadUI(UI_LIGHTING_ROCK);
+        return super.getLightFilterRate() * loadGD(UI_LIGHTING_ROCK);
     }
 
     getWaterflowRate() {

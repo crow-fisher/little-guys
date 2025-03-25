@@ -7,7 +7,7 @@ import { getCurTimeScale, timeScaleFactor } from "../climate/time.js";
 import { logRainFall } from "./weather/weatherManager.js";
 import { getDefaultLighting } from "../lighting/lightingProcessing.js";
 import { addSquareByName } from "../manipulation.js";
-import { loadUI, UI_CLIMATE_RAINFALL_DENSITY } from "../ui/UIData.js";
+import { loadGD, UI_CLIMATE_RAINFALL_DENSITY } from "../ui/UIData.js";
 import { isLeftMouseClicked, isRightMouseClicked } from "../mouse.js";
 // decent reference https://web.gps.caltech.edu/~xun/course/GEOL1350/Lecture5.pdf
 
@@ -281,7 +281,7 @@ function doRain() {
             if (adjacentHumidity < (cloudRainThresh))
                 continue;
             let rainDropProbability = ((adjacentHumidity - cloudRainThresh) / (cloudRainMax - cloudRainThresh));
-            rainDropProbability /= loadUI(UI_CLIMATE_RAINFALL_DENSITY);
+            rainDropProbability /= loadGD(UI_CLIMATE_RAINFALL_DENSITY);
             if (Math.random() > rainDropProbability) {
                 continue;
             }
@@ -297,7 +297,7 @@ function doRain() {
 
             dropHealth *= Math.min(105, getCurTimeScale());
 
-            dropHealth = Math.min(1, dropHealth * loadUI(UI_CLIMATE_RAINFALL_DENSITY));
+            dropHealth = Math.min(1, dropHealth * loadGD(UI_CLIMATE_RAINFALL_DENSITY));
 
             let sq = addSquareByName(x * 4 + randNumber(0, 3), y * 4 + randNumber(0, 3), "water");
             if (sq) {

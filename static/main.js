@@ -3,7 +3,7 @@ import { doClickAdd, doClickAddEyedropperMixer } from "./manipulation.js";
 import { resetFrameDivMult } from "./lighting/lightingProcessing.js";
 import { renderClouds, renderTemperature, renderWaterSaturation } from "./climate/temperatureHumidity.js";
 import { doTimeSeek, renderTime, updateTime } from "./climate/time.js";
-import { executeFunctionQueue, loadUI, UI_SIMULATION_CLOUDS, UI_SIMULATION_SIMPLESQUARE, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_WIND } from "./ui/UIData.js";
+import { executeFunctionQueue, loadGD, UI_SIMULATION_CLOUDS, UI_SIMULATION_SIMPLESQUARE, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_WIND } from "./ui/UIData.js";
 import { initUI, renderWindows, resetWindowHovered, updateWindows } from "./ui/WindowManager.js";
 import { renderWindPressureMap } from "./climate/wind.js";
 import { LightingHandler } from "./lighting/lightingHandler.js";
@@ -49,7 +49,7 @@ export function scheduler_main() {
     doClickAdd();
     doClickAddEyedropperMixer();
     resetWindowHovered(); 
-    if (loadUI(UI_SIMULATION_SIMPLESQUARE) || isLeftMouseClicked() || isRightMouseClicked()) {
+    if (loadGD(UI_SIMULATION_SIMPLESQUARE) || isLeftMouseClicked() || isRightMouseClicked()) {
         squareTickSimplePhysics();
     } else {
         squareTick();
@@ -65,7 +65,7 @@ export function scheduler_main() {
 }
 
 function render() {
-    let selectedViewMode = loadUI(UI_VIEWMODE_SELECT);
+    let selectedViewMode = loadGD(UI_VIEWMODE_SELECT);
     resetFrameDivMult();
     doTimeSeek();
     renderTime();
@@ -84,7 +84,7 @@ function render() {
     renderSolidSquares();
     renderOrganisms();
     renderWaterSquares();
-    if (selectedViewMode == UI_VIEWMODE_NORMAL && loadUI(UI_SIMULATION_CLOUDS)) {
+    if (selectedViewMode == UI_VIEWMODE_NORMAL && loadGD(UI_SIMULATION_CLOUDS)) {
         renderClouds();
     }
     renderWindows();
@@ -96,14 +96,13 @@ function orgTick() {
 }
 
 
-
 function squareTickSimplePhysics() {
     reset();
     physicsOnlyGravity();
     physicsWaterSimplePhysics();
     doWaterFlow();
 
-    if (loadUI(UI_SIMULATION_CLOUDS)) {
+    if (loadGD(UI_SIMULATION_CLOUDS)) {
         climateHandler.climateTick();
     }
 }
@@ -113,7 +112,7 @@ function squareTick() {
     physics();
     doWaterFlow();
 
-    if (loadUI(UI_SIMULATION_CLOUDS)) {
+    if (loadGD(UI_SIMULATION_CLOUDS)) {
         climateHandler.climateTick();
     }
 }

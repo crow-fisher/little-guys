@@ -2,7 +2,7 @@ import { getBaseUISize } from "../../canvas.js";
 import { COLOR_BLACK, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
-import { loadUI, saveUI, UI_CENTER } from "../UIData.js";
+import { loadGD, saveGD, UI_CENTER } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class RowedRadio extends WindowElement {
@@ -14,7 +14,7 @@ export class RowedRadio extends WindowElement {
         this.key = key;
         this.rows = rows;
         this.choices = choices;
-        this.selected = this.choices.indexOf(loadUI(this.key));
+        this.selected = this.choices.indexOf(loadGD(this.key));
         this.colorActiveFunc = colorActiveFunc;
         this.colorInactiveFunc = colorInactiveFunc;
     }
@@ -63,7 +63,7 @@ export class RowedRadio extends WindowElement {
             let topY = Math.floor(((this.rows * i) / this.choices.length)) * yStep;
             if (posX > leftX && posX < leftX + xStep && posY > topY && posY < topY + yStep) {
                 this.selected = i;
-                saveUI(this.key, this.choices[i]);
+                saveGD(this.key, this.choices[i]);
             }
         }
     }

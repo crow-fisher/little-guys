@@ -4,7 +4,7 @@ import { WATERFLOW_CANDIDATE_SQUARES, WATERFLOW_TARGET_SQUARES } from "../global
 import { MAIN_CONTEXT } from "../index.js";
 import { RGB_COLOR_OTHER_BLUE } from "../colors.js";
 import { hexToRgb, rgbToRgba } from "../common.js";
-import { loadUI, UI_LIGHTING_WATER } from "../ui/UIData.js";
+import { loadGD, UI_LIGHTING_WATER } from "../ui/UIData.js";
 import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
 import { getActiveClimate } from "../climate/climateManager.js";
 class WaterSquare extends BaseSquare {
@@ -33,7 +33,7 @@ class WaterSquare extends BaseSquare {
     }
 
     getLightFilterRate() {
-        return super.getLightFilterRate() * loadUI(UI_LIGHTING_WATER);
+        return super.getLightFilterRate() * loadGD(UI_LIGHTING_WATER);
     }
 
     getColorBase() {

@@ -11,7 +11,7 @@ import { ProtoMap, TypeMap } from "./types.js";
 import { getWindPressureMap, getWindSquaresX, initWindPressure, setWindPressureMap } from "./climate/wind.js";
 import { getCanvasSquaresX, getCanvasSquaresY } from "./canvas.js";
 import { addSquareByName } from "./manipulation.js";
-import { getUI_DATA, setUI_DATA } from "./ui/UIData.js";
+import { getGAMEDATA, saveUI, setGAMEDATA, UI_SIZE } from "./ui/UIData.js";
 import { indexCanvasSize } from "./index.js";
 import { STAGE_DEAD } from "./organisms/Stages.js";
 
@@ -34,6 +34,32 @@ export async function loadSlot(slotName) {
         };
         request.onerror = () => reject(request.error);
     });
+}
+
+export async function loadUserSettings() {
+    try {
+        const db = await openDatabase();
+        const transaction = db.transaction("settings", "readonly");
+        const store = transaction.objectStore("settings");
+        return new Promise((resolve, reject) => {
+            const request = store.get("UI");
+            request.onsuccess = async () => {
+                if (request.result) {
+                    const decompressedSave = await decompress(request.result.data);
+                    const saveObj = JSON.parse(decompressedSave);
+    
+                    resolve(saveObj);
+                } else {
+                    reject(new Error("Save slot not found"));
+                }
+            };
+            request.onerror = () => reject(request.error);
+        });
+    } catch {
+        console.log("No existing UI save data found.");
+        saveUI(UI_SIZE, 12);
+    }
+    
 }
 
 function purgeGameState() {
@@ -88,6 +114,7 @@ async function openDatabase() {
         request.onerror = () => reject(request.error);
     });
 }
+
 
 function getFrameSaveData() {
     let sqArr = new Array();
@@ -161,7 +188,7 @@ function getFrameSaveData() {
         windMap: getWindPressureMap(),
         temperatureMap: getTemperatureMap(),
         waterSaturationMap: getWaterSaturationMap(),
-        ui: getUI_DATA()
+        ui: getGAMEDATA()
     }
     return saveObj;
 }
@@ -185,7 +212,7 @@ function loadSlotFromSave(slotData) {
     // setTemperatureMap(temperatureMap);
     // setWaterSaturationMap(waterSaturationMap);
     setCurDay(slotData.curDay);
-    setUI_DATA(slotData.ui)
+    setGAMEDATA(slotData.ui)
 
     sqArr.forEach((sq) => Object.setPrototypeOf(sq, ProtoMap[sq.proto]));
     orgArr.forEach((org) => Object.setPrototypeOf(org, ProtoMap[org.proto]));
@@ -286,6 +313,7 @@ async function decompress(base64String) {
     const decoder = new TextDecoder();
     return decoder.decode(decompressedArrayBuffer);
 }
+
 
 
 export function loadEmptyScene() {

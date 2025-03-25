@@ -1,7 +1,7 @@
 import { getAllSquares } from "../squares/_sqOperations.js";
 import { getCloudColorAtPos } from "../climate/temperatureHumidity.js";
 import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getFrameDt, getMoonlightColor } from "../climate/time.js";
-import { loadUI, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_QUALITY, UI_LIGHTING_SUN } from "../ui/UIData.js";
+import { loadGD, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_QUALITY, UI_LIGHTING_SUN } from "../ui/UIData.js";
 import { getWindSquaresX, getWindSquaresY } from "../climate/wind.js";
 import { getCanvasSquaresX, getCanvasSquaresY } from "../canvas.js";
 import { getCurLightingInterval } from "./lightingHandler.js";
@@ -32,14 +32,14 @@ export function lightingRegisterLifeSquare(lifeSquare) {
 }
 
 export function createSunLightGroup() {
-    let numNodes = loadUI(UI_LIGHTING_QUALITY);
+    let numNodes = loadGD(UI_LIGHTING_QUALITY);
     let sunLightGroup = new MovingLinearLightGroup(
         getCanvasSquaresX() / 2,
         -getCanvasSquaresY(),
         getCanvasSquaresX(),
         numNodes,
         getCurrentLightColorTemperature,
-        () => loadUI(UI_LIGHTING_SUN) * getDaylightStrength() / numNodes,
+        () => loadGD(UI_LIGHTING_SUN) * getDaylightStrength() / numNodes,
         1,
         0.15,
         -1,
@@ -56,7 +56,7 @@ export function createMoonLightGroup() {
         100,
         2,
         getMoonlightColor,
-        () => loadUI(UI_LIGHTING_MOON),
+        () => loadGD(UI_LIGHTING_MOON),
         0.51,
         0.49
     );
@@ -244,7 +244,7 @@ export class MovingLinearLightGroup {
                 10 ** 8,
                 minMaxTheta[0],
                 minMaxTheta[1],
-                (100 / 7) * loadUI(UI_LIGHTING_QUALITY)
+                (100 / 7) * loadGD(UI_LIGHTING_QUALITY)
             );
             this.lightSources.push(newLightSource);
         }
@@ -423,7 +423,7 @@ export class LightSource {
                     let curBrightnessCopy = curBrightness;
                     let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(theta)() * curBrightnessCopy * this.brightnessFunc() * this.thetaBrightnessFunc(theta);
                     if (!obj.surface)
-                        curBrightness *= (1 - (obj.getLightFilterRate() * loadUI(UI_LIGHTING_DECAY) * (loadUI(UI_LIGHTING_QUALITY)) / 9));
+                        curBrightness *= (1 - (obj.getLightFilterRate() * loadGD(UI_LIGHTING_DECAY) * (loadGD(UI_LIGHTING_QUALITY)) / 9));
                     if (obj.lighting[idx] == null) {
                         obj.lighting[idx] = [[pointLightSourceFunc], this.colorFunc];
                     } else if (obj.lighting[idx][0].length >= jobIdx) {

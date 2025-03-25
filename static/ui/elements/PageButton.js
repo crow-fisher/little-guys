@@ -2,7 +2,7 @@ import { getBaseUISize } from "../../canvas.js";
 import { COLOR_BLACK, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { getLastMouseDown, isLeftMouseClicked } from "../../mouse.js";
-import { loadUI, saveUI, UI_CENTER } from "../UIData.js";
+import { loadGD, saveGD, UI_CENTER } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class PageButton extends WindowElement {
@@ -32,7 +32,7 @@ export class PageButton extends WindowElement {
             return;
         } 
         if (this.lastClick != getLastMouseDown()) {
-            saveUI(this.key(), loadUI(this.key()) + 1);
+            saveGD(this.key(), loadGD(this.key()) + 1);
             this.lastClick = getLastMouseDown();
         }
     }

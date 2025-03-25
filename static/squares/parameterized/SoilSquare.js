@@ -4,7 +4,7 @@ import { hexToRgb } from "../../common.js";
 import { getCurTimeScale, timeScaleFactor } from "../../climate/time.js";
 import { getPressure, getWindSquareAbove } from "../../climate/wind.js";
 import { addWaterSaturationPascals, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor } from "../../climate/temperatureHumidity.js";
-import { loadUI, UI_PALETTE_COMPOSITION, UI_PALETTE_SOILIDX, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER } from "../../ui/UIData.js";
+import { loadGD, UI_PALETTE_COMPOSITION, UI_PALETTE_SOILIDX, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER } from "../../ui/UIData.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { addSquareByName } from "../../manipulation.js";
 
@@ -58,7 +58,7 @@ export class SoilSquare extends BaseSquare {
         this.lightDarkeningColor = hexToRgb("#3C3A04");
         this.moonlightColor = hexToRgb("#F0F8FF");
 
-        this.colorVariant = loadUI(UI_PALETTE_SOILIDX) % getActiveClimate().soilColors.length;
+        this.colorVariant = loadGD(UI_PALETTE_SOILIDX) % getActiveClimate().soilColors.length;
 
         // generic loam
         this.sand = 0.40;
@@ -77,7 +77,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     setVariant() {
-        let arr = loadUI(UI_PALETTE_COMPOSITION);
+        let arr = loadGD(UI_PALETTE_COMPOSITION);
         this.sand = arr[0];
         this.silt = arr[1];
         this.clay = arr[2];
@@ -106,7 +106,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     initWaterContainment() {
-        this.waterContainment = this.getInverseMatricPressure(loadUI(UI_SOIL_INITALWATER));
+        this.waterContainment = this.getInverseMatricPressure(loadGD(UI_SOIL_INITALWATER));
     }
 
     getInversePressureGeneric(waterContainment, refArr) {

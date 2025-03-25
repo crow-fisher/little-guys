@@ -1,6 +1,6 @@
 import { getStandardDeviation } from "../common.js";
 import { getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "../climate/time.js";
-import { loadUI, UI_LIGHTING_ENABLED } from "../ui/UIData.js";
+import { loadGD, UI_LIGHTING_ENABLED } from "../ui/UIData.js";
 
 let curFrameValues = [1];
 let prevFrameDivMult = 1;
@@ -28,7 +28,7 @@ export function getDefaultLighting() {
 }
 
 export function processLighting(lightingMap) {
-    if (!loadUI(UI_LIGHTING_ENABLED) || lightingMap.length == 0) {
+    if (!loadGD(UI_LIGHTING_ENABLED) || lightingMap.length == 0) {
         return getDefaultLighting();
     }
     let outColor = {r: 0, g: 0, b: 0}

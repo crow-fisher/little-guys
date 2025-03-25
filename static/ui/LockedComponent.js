@@ -1,4 +1,4 @@
-import { loadUI } from "./UIData.js";
+import { loadGD } from "./UIData.js";
 import { Window } from "./Window.js";
 
 export class LockedComponent {
@@ -10,7 +10,7 @@ export class LockedComponent {
     }
 
     render() {
-        if (loadUI(this.key)) {
+        if (loadGD(this.key)) {
             this.window.render();
             
         }
@@ -19,7 +19,7 @@ export class LockedComponent {
     update() {
         this.window.posX = this.posXFunc();
         this.window.posY = this.posYFunc();
-        if (loadUI(this.key)) {
+        if (loadGD(this.key)) {
             this.window.update();
         }
     }

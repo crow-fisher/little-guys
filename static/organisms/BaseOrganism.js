@@ -7,7 +7,7 @@ import { addSquare, getNeighbors } from "../squares/_sqOperations.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 import { PlantSquare } from "../squares/PlantSquare.js";
 import { applyLightingFromSource, processLighting } from "../lighting/lightingProcessing.js";
-import { loadUI, UI_GODMODE_FASTPLANT, UI_SIMULATION_GENS_PER_DAY } from "../ui/UIData.js";
+import { loadGD, UI_GODMODE_FASTPLANT, UI_SIMULATION_GENS_PER_DAY } from "../ui/UIData.js";
 
 class BaseOrganism {
     constructor(square) {
@@ -75,13 +75,13 @@ class BaseOrganism {
     }
 
     getGrowthCycleLength() {
-        return this.growthCycleLength / loadUI(UI_SIMULATION_GENS_PER_DAY);
+        return this.growthCycleLength / loadGD(UI_SIMULATION_GENS_PER_DAY);
     }
     getGrowthCycleMaturityLength() {
-        return this.growthCycleMaturityLength / loadUI(UI_SIMULATION_GENS_PER_DAY);
+        return this.growthCycleMaturityLength / loadGD(UI_SIMULATION_GENS_PER_DAY);
     }
     getGrowthLightLevel() {
-        if (loadUI(UI_SIMULATION_GENS_PER_DAY) < 1) {
+        if (loadGD(UI_SIMULATION_GENS_PER_DAY) < 1) {
             return this.growthLightLevel * 0.4; // (because night)
         }
         return this.growthLightLevel;
@@ -523,7 +523,7 @@ class BaseOrganism {
     }
 
     doGodModePlantGrowth() {
-        if (loadUI(UI_GODMODE_FASTPLANT)) {
+        if (loadGD(UI_GODMODE_FASTPLANT)) {
             this.executeGrowthPlans();
             this.nitrogen += this.growthNitrogen / 40;
             this.phosphorus += this.growthPhosphorus / 40;

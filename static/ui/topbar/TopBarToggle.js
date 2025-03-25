@@ -1,7 +1,7 @@
 import { COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { getLastMouseDown, isLeftMouseClicked } from "../../mouse.js";
-import { loadUI, saveUI, UI_BOOLEAN } from "../UIData.js";
+import { loadGD, saveGD, UI_BOOLEAN } from "../UIData.js";
 import { TopBarElementBase } from "./TopBarElementBase.js";
 
 export class TopBarToggle extends TopBarElementBase{
@@ -31,9 +31,9 @@ export class TopBarToggle extends TopBarElementBase{
 
         let checked = false;
         if (this.value == UI_BOOLEAN) {
-            checked = loadUI(this.key);
+            checked = loadGD(this.key);
         } else {
-            checked = loadUI(this.key) == this.value;
+            checked = loadGD(this.key) == this.value;
         }
         if (checked)
             MAIN_CONTEXT.fillStyle = "#FFFFFF";
@@ -49,9 +49,9 @@ export class TopBarToggle extends TopBarElementBase{
         if (this.lastClick != getLastMouseDown()) {
             this.lastClick = getLastMouseDown();
             if (this.value == UI_BOOLEAN) {
-                saveUI(this.key, !loadUI(this.key));
+                saveGD(this.key, !loadGD(this.key));
             } else {
-                saveUI(this.key, this.value);
+                saveGD(this.key, this.value);
             }
         }
     }

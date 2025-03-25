@@ -4,7 +4,7 @@ import { Component } from "../Component.js";
 import { Container } from "../Container.js";
 import { Slider } from "../elements/Slider.js";
 import { Text } from "../elements/Text.js";
-import { loadUI, UI_LIGHTING_SUN, UI_LIGHTING_MOON, UI_LIGHTING_WATER, UI_LIGHTING_ROCK, UI_LIGHTING_PLANT, UI_LIGHTING_DECAY, UI_SM_LIGHTING, UI_SOIL_COMPOSITION, UI_CENTER } from "../UIData.js";
+import { loadGD, UI_LIGHTING_SUN, UI_LIGHTING_MOON, UI_LIGHTING_WATER, UI_LIGHTING_ROCK, UI_LIGHTING_PLANT, UI_LIGHTING_DECAY, UI_SM_LIGHTING, UI_SOIL_COMPOSITION, UI_CENTER } from "../UIData.js";
 
 export class LightingComponent extends Component {
     constructor(posX, posY, padding, dir, key) {

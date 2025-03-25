@@ -10,7 +10,7 @@ import { removeSquare } from "../globalOperations.js";
 import { STATE_DEAD, STATE_HEALTHY, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, STATE_DESTROYED, SUBTYPE_FLOWER, STAGE_DEAD } from "../organisms/Stages.js";
 import { processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, zoomCanvasFillRect, zoomCanvasFillRectTheta } from "../canvas.js";
-import { loadUI, UI_LIGHTING_PLANT, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
+import { loadGD, UI_LIGHTING_PLANT, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
 
 
 class BaseLifeSquare {
@@ -100,7 +100,7 @@ class BaseLifeSquare {
     }
 
     getLightFilterRate() {
-        return 0.00023 * (this.width ** 2) * loadUI(UI_LIGHTING_PLANT);
+        return 0.00023 * (this.width ** 2) * loadGD(UI_LIGHTING_PLANT);
     }
 
     getLsqRenderSizeMult() {
@@ -211,7 +211,7 @@ class BaseLifeSquare {
         if (this.linkedOrganism.stage == STAGE_DEAD) {
             this.opacity = 1 - this.linkedOrganism.deathProgress; 
         }
-        let selectedViewMode = loadUI(UI_VIEWMODE_SELECT);
+        let selectedViewMode = loadGD(UI_VIEWMODE_SELECT);
         if (selectedViewMode == UI_VIEWMODE_NITROGEN) {
             let color = {
                 r: 100 + (1 - this.nitrogenIndicated) * 130,

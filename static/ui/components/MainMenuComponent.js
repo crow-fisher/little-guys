@@ -9,7 +9,7 @@ import { Button } from "../elements/Button.js";
 import { Radio } from "../elements/Radio.js";
 import { RowedRadio } from "../elements/RowedRadio.js";
 import { Text } from "../elements/Text.js";
-import { loadUI, UI_CENTER, UI_DISPLAY_SIZEY, UI_LIGHTING_UPDATERATE, UI_LIGHTING_QUALITY, UI_SIZE } from "../UIData.js";
+import { loadGD, UI_CENTER, UI_DISPLAY_SIZEY, UI_LIGHTING_UPDATERATE, UI_LIGHTING_QUALITY, UI_SIZE, GAMEDATA, UICONFIG } from "../UIData.js";
 import { SubTreeComponent } from "./SubTreeComponent.js";
 
 
@@ -18,6 +18,9 @@ export class MainMenuComponent extends SubTreeComponent {
         super(posXFunc, posYFunc, padding, dir, key);
         let subMenuContainer = new Container(this.window, padding, 1);
         this.window.container = subMenuContainer;   
+
+        // this.window.sizeX = getBaseUISize() * 16;
+        // this.window.sizeY = getBaseUISize() * 27;
 
         let sizeX = getBaseUISize() * 16;
 
@@ -35,7 +38,7 @@ export class MainMenuComponent extends SubTreeComponent {
         subMenuContainer.addElement(new Button(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX, () => loadEmptyScene(), "empty scene", () => getActiveClimate().getUIColorActive()));
          
         subMenuContainer.addElement(new Text(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, UI_CENTER, "ui scale"))
-        subMenuContainer.addElement(new Radio(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, UI_CENTER, UI_SIZE, [8, 12, 16, 20], () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
+        subMenuContainer.addElement(new Radio(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, UI_CENTER, UICONFIG, UI_SIZE, [8, 12, 16, 20], () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
     }
 
     render() {

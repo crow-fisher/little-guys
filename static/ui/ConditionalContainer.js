@@ -1,5 +1,5 @@
 import { Container } from "./Container.js";
-import { loadUI } from "./UIData.js";
+import { loadGD } from "./UIData.js";
 import { WindowElement } from "./Window.js";
 
 export class ConditionalContainer extends Container {

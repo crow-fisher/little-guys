@@ -15,8 +15,8 @@ import {
     UI_GODMODE_KILL,
     UI_PALETTE_SIZE,
     UI_PALETTE_STRENGTH,
-    saveUI,
-    loadUI,
+    saveGD,
+    loadGD,
     UI_GODMODE_FASTPLANT,
     UI_GODMODE_STRENGTH,
     UI_CENTER

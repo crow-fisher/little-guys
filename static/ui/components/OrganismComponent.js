@@ -7,7 +7,7 @@ import { RadioToggle } from "../elements/RadioToggle.js";
 import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
 import { RowedRadio } from "../elements/RowedRadio.js";
 import { Text } from "../elements/Text.js";
-import { UI_ORGANISM_SELECT, UI_ORGANISM_WHEAT, UI_ORGANISM_GRASS, UI_ORGANISM_CATTAIL, UI_CENTER, UI_ORGANISM_MUSHROOM, saveUI } from "../UIData.js";
+import { UI_ORGANISM_SELECT, UI_ORGANISM_WHEAT, UI_ORGANISM_GRASS, UI_ORGANISM_CATTAIL, UI_CENTER, UI_ORGANISM_MUSHROOM, saveGD } from "../UIData.js";
 
 export class OrganismComponent extends Component {
     constructor(posX, posY, padding, dir, key) {

@@ -18,7 +18,7 @@ import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
-import { loadUI, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CLIMATE_WEATHER_TOOL_LIGHTCLOUD, UI_CLIMATE_WEATHER_TOOL_DRYAIR, UI_CLIMATE_WEATHER_TOOL_HEAVYCLOUD, UI_CLIMATE_WEATHER_TOOL_MATCHEDAIR, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_STRENGTH, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_STRENGTH, UI_GODMODE_TEMPERATURE, UI_ORGANISM_SELECT, UI_SM_CLIMATE, UI_SM_GODMODE, UI_SM_ORGANISM, UI_PALETTE_ACTIVE, UI_PALETTE_AQUIFER, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_PALETTE_ROCKMODE, UI_PALETTE_SOILROCK, UI_PALETTE_WATER, UI_CLIMATE_SELECT_CLOUDS } from "./ui/UIData.js";
+import { loadGD, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CLIMATE_WEATHER_TOOL_LIGHTCLOUD, UI_CLIMATE_WEATHER_TOOL_DRYAIR, UI_CLIMATE_WEATHER_TOOL_HEAVYCLOUD, UI_CLIMATE_WEATHER_TOOL_MATCHEDAIR, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_STRENGTH, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_STRENGTH, UI_GODMODE_TEMPERATURE, UI_ORGANISM_SELECT, UI_SM_CLIMATE, UI_SM_GODMODE, UI_SM_ORGANISM, UI_PALETTE_ACTIVE, UI_PALETTE_AQUIFER, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_PALETTE_ROCKMODE, UI_PALETTE_SOILROCK, UI_PALETTE_WATER, UI_CLIMATE_SELECT_CLOUDS } from "./ui/UIData.js";
 import { eyedropperBlockClick, eyedropperBlockHover, isWindowHovered, mixerBlockClick } from "./ui/WindowManager.js";
 import { CattailSeedOrganism } from "./organisms/midwest/CattailOrganism.js";
 import { MushroomSeedOrganism } from "./organisms/fantasy/MushroomOrganism.js";
@@ -46,8 +46,8 @@ function doBrushFuncClickThrottle(x, y, func) {
     }
 }
 function doBrushFunc(centerX, centerY, func) {
-    let radius = Math.floor(loadUI(UI_PALETTE_SIZE));
-    if (loadUI(UI_SM_CLIMATE)) {
+    let radius = Math.floor(loadGD(UI_PALETTE_SIZE));
+    if (loadGD(UI_SM_CLIMATE)) {
         radius *= 4;
     }
     for (let i = -radius; i <= radius; i++) {
@@ -55,7 +55,7 @@ function doBrushFunc(centerX, centerY, func) {
             if (Math.ceil((i ** 2 + j ** 2) * 0.5) > radius) {
                 continue;
             }
-            if (Math.random() > loadUI(UI_PALETTE_STRENGTH) ** 2) {
+            if (Math.random() > loadGD(UI_PALETTE_STRENGTH) ** 2) {
                 continue;
             }
             doBrushFuncClickThrottle(centerX + i, centerY + j, func);
@@ -64,7 +64,7 @@ function doBrushFunc(centerX, centerY, func) {
 }
 
 export function addActivePaletteToolSquare(posX, posY) {
-    if (loadUI(UI_PALETTE_ROCKMODE)) {
+    if (loadGD(UI_PALETTE_ROCKMODE)) {
         addSquareOverride(new RockSquare(posX, posY));
     } else {
         addSquareOverride(new SoilSquare(posX, posY));
@@ -99,19 +99,19 @@ function killOrganismsAtSquare(posX, posY) {
 
 
 function doBlockMod(posX, posY) {
-    if (loadUI(UI_GODMODE_SELECT) == UI_GODMODE_TEMPERATURE) {
+    if (loadGD(UI_GODMODE_SELECT) == UI_GODMODE_TEMPERATURE) {
         if (!isRightMouseClicked())
             addTemperature(posX, posY, .5);
         else
             addTemperature(posX, posY, -0.5);
     }
-    if (loadUI(UI_GODMODE_SELECT) == UI_GODMODE_MOISTURE) {
+    if (loadGD(UI_GODMODE_SELECT) == UI_GODMODE_MOISTURE) {
         if (!isRightMouseClicked())
-            addWaterSaturationPascalsSqCoords(posX, posY, 10 * loadUI(UI_GODMODE_STRENGTH));
+            addWaterSaturationPascalsSqCoords(posX, posY, 10 * loadGD(UI_GODMODE_STRENGTH));
         else
-            addWaterSaturationPascalsSqCoords(posX, posY, -10 * loadUI(UI_GODMODE_STRENGTH));
+            addWaterSaturationPascalsSqCoords(posX, posY, -10 * loadGD(UI_GODMODE_STRENGTH));
     }
-    if (loadUI(UI_GODMODE_SELECT) == UI_GODMODE_KILL) {
+    if (loadGD(UI_GODMODE_SELECT) == UI_GODMODE_KILL) {
         killOrganismsAtSquare(posX, posY);
     }
 }
@@ -121,8 +121,8 @@ function doClimateMod(posX, posY) {
         return;
     }
 
-    let pressure = (isRightMouseClicked() ? -1 : 1) * loadUI(UI_CLIMATE_WEATHER_TOOL_STRENGTH)
-    switch (loadUI(UI_CLIMATE_WEATHER_TOOL_SELECT)) {
+    let pressure = (isRightMouseClicked() ? -1 : 1) * loadGD(UI_CLIMATE_WEATHER_TOOL_STRENGTH)
+    switch (loadGD(UI_CLIMATE_WEATHER_TOOL_SELECT)) {
         case UI_CLIMATE_WEATHER_TOOL_DRYAIR:
             addWindPressureDryAir(posX, posY, pressure);
             break;
@@ -156,11 +156,11 @@ export function doClickAddEyedropperMixer() {
     let offsetX = offsetTransformed[0];
     let offsetY = offsetTransformed[1];
 
-    if (loadUI(UI_PALETTE_EYEDROPPER)) {
+    if (loadGD(UI_PALETTE_EYEDROPPER)) {
         eyedropperBlockClick(offsetX, offsetY);
         return;
     }
-    if (loadUI(UI_PALETTE_MIXER)) {
+    if (loadGD(UI_PALETTE_MIXER)) {
         mixerBlockClick(offsetX, offsetY);
         return;
     }
@@ -183,7 +183,7 @@ export function doClickAdd() {
         let offsetX = offsetTransformed[0];
         let offsetY = offsetTransformed[1];
 
-        if (loadUI(UI_PALETTE_ACTIVE) && (loadUI(UI_PALETTE_EYEDROPPER) || loadUI(UI_PALETTE_MIXER))) {
+        if (loadGD(UI_PALETTE_ACTIVE) && (loadGD(UI_PALETTE_EYEDROPPER) || loadGD(UI_PALETTE_MIXER))) {
             return;
         }
 
@@ -217,12 +217,12 @@ export function doClickAdd() {
         for (let i = 0; i < totalCount; i += 0.5) {
             let px = Math.floor(x1 + ddx * i);
             let py = Math.floor(y1 + ddy * i);
-            if (loadUI(UI_CLIMATE_SELECT_CLOUDS)) {
+            if (loadGD(UI_CLIMATE_SELECT_CLOUDS)) {
                 doBrushFunc(px, py, (x, y) => doClimateMod(x, y));
-            } else if (loadUI(UI_SM_GODMODE)) {
+            } else if (loadGD(UI_SM_GODMODE)) {
                 doBrushFunc(px, py, (x, y) => doBlockMod(x, y));
-            } else if (loadUI(UI_PALETTE_ACTIVE)) {
-                    let mode = loadUI(UI_PALETTE_SELECT);
+            } else if (loadGD(UI_PALETTE_ACTIVE)) {
+                    let mode = loadGD(UI_PALETTE_SELECT);
                     if (mode == UI_PALETTE_SURFACE) {
                         doBrushFunc(px, py, (x, y) => getSquares(x, y)
                             .filter((sq) => sq.solid && sq.collision)
@@ -239,8 +239,8 @@ export function doClickAdd() {
                     } else if (mode == UI_PALETTE_AQUIFER) {
                         addSquareByName(px, py, "aquifer")
                     }
-            } else if (loadUI(UI_SM_ORGANISM)) {
-                    let selectedOrganism = loadUI(UI_ORGANISM_SELECT);
+            } else if (loadGD(UI_SM_ORGANISM)) {
+                    let selectedOrganism = loadGD(UI_ORGANISM_SELECT);
                     let chance = Math.random();
                     switch (selectedOrganism) {
                         case "wheat":

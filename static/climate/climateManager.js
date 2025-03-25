@@ -1,4 +1,4 @@
-import { loadUI, UI_CLIMATE_DESERT, UI_CLIMATE_FANTASY, UI_CLIMATE_MIDWEST, UI_CLIMATE_SELECT } from "../ui/UIData.js";
+import { loadGD, UI_CLIMATE_DESERT, UI_CLIMATE_FANTASY, UI_CLIMATE_MIDWEST, UI_CLIMATE_SELECT } from "../ui/UIData.js";
 import { Desert } from "./climates/desert.js";
 import { Fantasy } from "./climates/fantasy.js";
 import { Midwest } from "./climates/midwest.js"
@@ -14,5 +14,5 @@ all_climates.set(UI_CLIMATE_DESERT, climate_desert);
 all_climates.set(UI_CLIMATE_FANTASY, climate_fantasy);
 
 export function getActiveClimate() {
-    return all_climates.get(loadUI(UI_CLIMATE_SELECT));
+    return all_climates.get(loadGD(UI_CLIMATE_SELECT));
 }

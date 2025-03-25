@@ -1,11 +1,11 @@
 
 
-import { loadEmptyScene } from "./saveAndLoad.js";
+import { loadEmptyScene, loadUserSettings } from "./saveAndLoad.js";
 import { clearTimeouts, resetClimateAndLighting, scheduler_main } from "./main.js";
 import { keydown, keyup } from "./keyboard.js";
 import { handleClick, handleMouseDown, handleMouseUp } from "./mouse.js";
 import { getBaseSize, getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, resetZoom, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, zoom } from "./canvas.js";
-import { addUIFunctionMap, loadUI, UI_DISPLAY_SIZEY, UI_SIZE } from "./ui/UIData.js";
+import { addUIFunctionMap, loadGD, UI_DISPLAY_SIZEY, UI_SIZE } from "./ui/UIData.js";
 import { initUI } from "./ui/WindowManager.js";
 import { initTemperatureHumidity } from "./climate/temperatureHumidity.js";
 import { iterateOnSquares } from "./squares/_sqOperations.js";
@@ -33,6 +33,7 @@ window.oncontextmenu = () => false;
 window.onload = function () {
     document.addEventListener('keydown', keydown);
     document.addEventListener('keyup', keyup);
+    loadUserSettings();
     loadEmptyScene();
     indexCanvasSize();
 }
@@ -50,8 +51,8 @@ export function indexCanvasSize() {
     width = Math.floor(window.innerWidth - margin);
     height = Math.floor(window.innerHeight - margin);
 
-    let c_baseSize = Math.floor(height / loadUI(UI_DISPLAY_SIZEY));
-    setCanvasSquaresY(loadUI(UI_DISPLAY_SIZEY));
+    let c_baseSize = Math.floor(height / loadGD(UI_DISPLAY_SIZEY));
+    setCanvasSquaresY(loadGD(UI_DISPLAY_SIZEY));
     setCanvasSquaresX(Math.floor(width / c_baseSize));      
     setBaseSize(c_baseSize);
     clearTimeouts();
@@ -64,8 +65,9 @@ export function indexCanvasSize() {
     initUI();
     resetZoom();
 }
+
 addUIFunctionMap(UI_DISPLAY_SIZEY, indexCanvasSize)
-addUIFunctionMap(UI_SIZE    , indexCanvasSize)
+addUIFunctionMap(UI_SIZE, initUI)
 
 export function setBackgroundColor(hexColor) {
     body.style = "background-color: " + hexColor

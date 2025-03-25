@@ -1,15 +1,16 @@
 import { COLOR_BLACK, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
-import { loadUI, saveUI, UI_CENTER } from "../UIData.js";
+import { getMapEntry, loadGD, saveGD, saveMapEntry, UI_CENTER } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class Radio extends WindowElement {
-    constructor(window, sizeX, sizeY, elementOffsetX, key, choices, colorInactiveFunc, colorActiveFunc) {
+    constructor(window, sizeX, sizeY, elementOffsetX, map, key, choices, colorInactiveFunc, colorActiveFunc) {
         super(window, sizeX, sizeY);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         this.elementOffsetX = elementOffsetX;
+        this.map = map;
         this.key = key;
         this.choices = choices;
         this.colorActiveFunc = colorActiveFunc;
@@ -22,7 +23,7 @@ export class Radio extends WindowElement {
         MAIN_CONTEXT.textBaseline = 'middle';
         let step = this.sizeX / this.choices.length;
         for (let i = 0; i < this.choices.length; i++) {
-            if (i == this.choices.indexOf(loadUI(this.key))) {
+            if (i == this.choices.indexOf(getMapEntry(this.map, this.key))) {
                 MAIN_CONTEXT.fillStyle = this.colorActiveFunc();
             } else {
                 MAIN_CONTEXT.fillStyle = this.colorInactiveFunc();
@@ -49,7 +50,7 @@ export class Radio extends WindowElement {
         let step = this.sizeX / this.choices.length;
         for (let i = 0; i < this.choices.length; i++) {
             if (posX > curX && posX < curX + step) {
-                saveUI(this.key, this.choices[i]);
+                saveMapEntry(this.map, this.key, this.choices[i]);
             }
             curX += step;
         }

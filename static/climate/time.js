@@ -4,7 +4,7 @@ import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth, MAIN_CONTEXT, setB
 import { calculateColorRGB, getFrameRelCloud } from "./temperatureHumidity.js";
 import { zoomCanvasFillRect } from "../canvas.js";
 import {
-    loadUI, UI_SPEED_1, UI_SPEED_2, UI_SPEED_3,
+    loadGD, UI_SPEED_1, UI_SPEED_2, UI_SPEED_3,
     UI_SPEED_4,
     UI_SPEED_5,
     UI_SPEED_6,
@@ -15,7 +15,7 @@ import {
     UI_SPEED_0,
     UI_LIGHTING_SUN,
     UI_LIGHTING_MOON,
-    saveUI
+    saveGD
 } from "../ui/UIData.js";
 
 let TIME_SCALE = 1;
@@ -90,31 +90,31 @@ export function doTimeSeek() {
 
     switch (TIME_SCALE) {
         case 1:
-            saveUI(UI_SPEED, UI_SPEED_1);
+            saveGD(UI_SPEED, UI_SPEED_1);
             break;
         case 2:
-            saveUI(UI_SPEED, UI_SPEED_2);
+            saveGD(UI_SPEED, UI_SPEED_2);
             break;
         case 3:
-            saveUI(UI_SPEED, UI_SPEED_3);
+            saveGD(UI_SPEED, UI_SPEED_3);
             break;
         case 4:
-            saveUI(UI_SPEED, UI_SPEED_4);
+            saveGD(UI_SPEED, UI_SPEED_4);
             break;
         case 5:
-            saveUI(UI_SPEED, UI_SPEED_5);
+            saveGD(UI_SPEED, UI_SPEED_5);
             break;
         case 6:
-            saveUI(UI_SPEED, UI_SPEED_6);
+            saveGD(UI_SPEED, UI_SPEED_6);
             break;
         case 7:
-            saveUI(UI_SPEED, UI_SPEED_7);
+            saveGD(UI_SPEED, UI_SPEED_7);
             break;
         case 8:
-            saveUI(UI_SPEED, UI_SPEED_8);
+            saveGD(UI_SPEED, UI_SPEED_8);
             break;
         case 9:
-            saveUI(UI_SPEED, UI_SPEED_9);
+            saveGD(UI_SPEED, UI_SPEED_9);
             break;
     }
 }
@@ -241,8 +241,8 @@ export function timeScaleFactor() {
 }
 
 function updateTime() {
-    if (curUIKey != loadUI(UI_SPEED)) {
-        switch (loadUI(UI_SPEED)) {
+    if (curUIKey != loadGD(UI_SPEED)) {
+        switch (loadGD(UI_SPEED)) {
             case UI_SPEED_0:
                 TIME_SCALE = 0;
                 break;
@@ -277,7 +277,7 @@ function updateTime() {
                 TIME_SCALE = 1;
                 break;
         }
-        curUIKey = loadUI(UI_SPEED);
+        curUIKey = loadGD(UI_SPEED);
     }
 
     if (TIME_SCALE == 0) {

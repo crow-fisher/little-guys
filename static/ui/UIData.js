@@ -140,7 +140,7 @@ export const UI_PALETTE_SURFACE = "UI_PALETTE_SURFACE";
 // put default values in here
 // saved directly
 
-let UI_DATA = {
+let _GAMEDATA = {
     UI_NAME: "plymouth",
     UI_PALETTE_SIZE: 6,
     UI_PALETTE_STRENGTH: 1,
@@ -159,7 +159,6 @@ let UI_DATA = {
     UI_SPEED: UI_SPEED_1,
     UI_CLIMATE_SELECT: UI_CLIMATE_MIDWEST,
     UI_DISPLAY_SIZEY: 100,
-    UI_SIZE: 12,
 
     UI_LIGHTING_UPDATERATE: 20,
     UI_LIGHTING_QUALITY: 5,
@@ -177,11 +176,31 @@ let UI_DATA = {
     UI_CLIMATE_WEATHER_DURATION: 0.000694444 * 60 * 6,
     UI_CLIMATE_WEATHER_ACTIVE: UI_CLIMATE_WEATHER_SUNNY
 };
-export function getUI_DATA() {
-    return UI_DATA;
+
+let _UICONFIG = {
+    UI_SIZE: 12,
 }
-export function setUI_DATA(inVal) {
-    UI_DATA = inVal;
+
+export const GAMEDATA = "GAMEDATA";
+export const UICONFIG = "UICONFIG";
+
+let ROOT = {
+    GAMEDATA: _GAMEDATA,
+    UICONFIG: _UICONFIG
+}
+
+export function getGAMEDATA() {
+    return _GAMEDATA;
+}
+export function setGAMEDATA(inVal) {
+    _GAMEDATA = inVal;
+}
+
+export function getUICONFIG() {
+    return _UICONFIG;
+}
+export function setUICONFIG(inVal) {
+    _UICONFIG = inVal;
 }
 
 let UI_FUNCTION_MAP = new Map();
@@ -196,8 +215,8 @@ let UI_SINGLE_GROUPS = [
 ]
 
 let UI_AUTOCLOSE = {
-    UI_TOPBAR_CLIMATE: [UI_CLIMATE_SELECT_MENU, UI_CLIMATE_SELECT_CLOUDS, UI_CILMATE_SELECT_WEATHER],
-    UI_TOPBAR_BLOCK: [UI_PALETTE_ACTIVE, UI_SM_ORGANISM]
+    UI_TOPBAR_CLIMATE: {GAMEDATA: [UI_CLIMATE_SELECT_MENU, UI_CLIMATE_SELECT_CLOUDS, UI_CILMATE_SELECT_WEATHER]},
+    UI_TOPBAR_BLOCK: {GAMEDATA: [UI_PALETTE_ACTIVE, UI_SM_ORGANISM]}
 }
 
 let queuedFunctionArr = new Array();
@@ -206,36 +225,53 @@ export function addUIFunctionMap(key, value) {
     UI_FUNCTION_MAP[key] = value;
 }
 
+export function saveGD(key, value) {
+    return saveGeneral(_GAMEDATA, key, value);
+}
+
 export function saveUI(key, value) {
+    return saveGeneral(_UICONFIG, key, value);
+}
+
+export function loadGD(key) {
+    return _GAMEDATA[key];
+}
+
+export function saveGDMap(map) {
+    _GAMEDATA = map;
+}
+
+export function loadUI(key) {
+    return _UICONFIG[key];
+}
+
+export function getMapEntry(map, key) {
+    return ROOT[map][key]
+}
+export function saveMapEntry(map, key, value) {
+    saveGeneral(ROOT[map], key, value);
+}
+
+function saveGeneral(map, key, value) {
     let singleGroup = (UI_SINGLE_GROUPS.find((group) => group.indexOf(key) > -1));
     if (singleGroup != null) {
-        singleGroup.filter((k) => loadUI(k)).forEach((key) => {
-            UI_DATA[key] = false;
-            if (key in UI_AUTOCLOSE)
-                UI_AUTOCLOSE[key].forEach((key2) => saveUI(key2, false));
+        singleGroup.filter((k) => loadGD(k)).forEach((key) => {
+            map[key] = false;
         });
     }
+    if (key in UI_AUTOCLOSE)
+        Object.keys(UI_AUTOCLOSE[key]).forEach((key2) => UI_AUTOCLOSE[key][key2].forEach((key3) => saveGeneral(ROOT[key2], key3, false)));
 
-    UI_DATA[key] = value;
+    map[key] = value;
     if (key in UI_FUNCTION_MAP) {
         queuedFunctionArr.push(UI_FUNCTION_MAP[key]);
     }
     if (!value && key in UI_AUTOCLOSE) {
-        UI_AUTOCLOSE[key].forEach((key) => saveUI(key, false));
+        UI_AUTOCLOSE[key].forEach((key) => saveGD(key, false));
     }
 }
 
-export function loadUI(key) {
-    return UI_DATA[key];
-}
 
-export function saveUIMap(map) {
-    UI_DATA = map;
-}
-
-export function getUIMap() {
-    return UI_DATA;
-}
 
 export function executeFunctionQueue() {
     if (queuedFunctionArr.length != 0) {

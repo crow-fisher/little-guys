@@ -1,11 +1,11 @@
 import { getFrameDt } from "../climate/time.js";
 import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
-import { loadUI, UI_LIGHTING_UPDATERATE, UI_LIGHTING_ENABLED } from "../ui/UIData.js";
+import { loadGD, UI_LIGHTING_UPDATERATE, UI_LIGHTING_ENABLED } from "../ui/UIData.js";
 import { createMoonLightGroup, createSunLightGroup, lightingClearLifeSquarePositionMap, lightingRegisterLifeSquare } from "./lighting.js";
 
 
 export function getCurLightingInterval() {
-    return (loadUI(UI_LIGHTING_UPDATERATE) - 1) * getFrameDt();
+    return (loadGD(UI_LIGHTING_UPDATERATE) - 1) * getFrameDt();
 }
 
 export function setNextLightingInterval(inVal) {
@@ -21,7 +21,7 @@ export class LightingHandler {
         this.lightSources.push(createMoonLightGroup());
     }
     lightingTick() {
-        if (!loadUI(UI_LIGHTING_ENABLED)) {
+        if (!loadGD(UI_LIGHTING_ENABLED)) {
             return;
         }
         this.lightSources.forEach((ls) => ls.preRender());
