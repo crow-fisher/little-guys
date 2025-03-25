@@ -1,6 +1,6 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
-import { seek } from "../../climate/time.js";
+import { doTimeSkipToNow, seek } from "../../climate/time.js";
 import { Container } from "../Container.js";
 import { Button } from "../elements/Button.js";
 import { SubTreeComponent } from "./SubTreeComponent.js";
@@ -19,6 +19,7 @@ export class TimeSubtree extends SubTreeComponent {
         subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => seek(0.25), "dawn",() => getActiveClimate().getUIColorInactiveCustom(0.56)));
         subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => seek(0.5), "noon",() => getActiveClimate().getUIColorInactiveCustom(0.58)));
         subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => seek(0.75), "dusk",() => getActiveClimate().getUIColorInactiveCustom(0.61)));
+        subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => doTimeSkipToNow(), "now",() => getActiveClimate().getUIColorInactiveCustom(0.61)));
     }
 
 }

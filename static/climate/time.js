@@ -130,6 +130,11 @@ export function seek(targetTime) {
     }
 }
 
+export function doTimeSkipToNow() {
+    curDay = Date.now() / millis_per_day - (Date.now() % millis_per_day) - 1
+    seek(((Date.now() - new Date().getTimezoneOffset() * 60000) % millis_per_day) / millis_per_day);
+}
+
 function getPrevTime() {
     return prevTime;
 }
