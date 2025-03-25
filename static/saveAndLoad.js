@@ -11,9 +11,10 @@ import { ProtoMap, TypeMap } from "./types.js";
 import { getWindPressureMap, getWindSquaresX, initWindPressure, setWindPressureMap } from "./climate/wind.js";
 import { getCanvasSquaresX, getCanvasSquaresY } from "./canvas.js";
 import { addSquareByName } from "./manipulation.js";
-import { getGAMEDATA, saveUI, setGAMEDATA, UI_SIZE } from "./ui/UIData.js";
-import { indexCanvasSize } from "./index.js";
+import { getGAMEDATA, getUICONFIG, saveMapEntry, saveUI, setGAMEDATA, setUICONFIG, UI_SIZE, UICONFIG } from "./ui/UIData.js";
+import { getTotalCanvasPixelWidth, indexCanvasSize, MAIN_CANVAS } from "./index.js";
 import { STAGE_DEAD } from "./organisms/Stages.js";
+import { initUI } from "./ui/WindowManager.js";
 
 export async function loadSlot(slotName) {
     const db = await openDatabase();
@@ -47,19 +48,47 @@ export async function loadUserSettings() {
                 if (request.result) {
                     const decompressedSave = await decompress(request.result.data);
                     const saveObj = JSON.parse(decompressedSave);
-    
+                    setUICONFIG(saveObj);
+                    initUI();
                     resolve(saveObj);
                 } else {
-                    reject(new Error("Save slot not found"));
+                    console.log("No existing UI save data found.");
+                    let w = getTotalCanvasPixelWidth();
+                    if (w < 1500) {
+                        saveMapEntry(UICONFIG, UI_SIZE, 8);
+                    } else if (w < 2000) {
+                        saveMapEntry(UICONFIG, UI_SIZE, 12);
+                    } else {
+                        saveMapEntry(UICONFIG, UI_SIZE, 16);
+                    }
+                    initUI();
                 }
             };
             request.onerror = () => reject(request.error);
         });
     } catch {
         console.log("No existing UI save data found.");
-        saveUI(UI_SIZE, 12);
+        if (getTotalCanvasPixelWidth() < 1500) {
+            saveMapEntry(UICONFIG, UI_SIZE, 8);
+        } else {
+            saveMapEntry(UICONFIG, UI_SIZE, 12);
+        }
+        initUI();
     }
-    
+}
+export async function saveUserSettings() {
+    const compressedSave = await compress(JSON.stringify(getUICONFIG()));
+    const db = await openDatabase();
+    const transaction = db.transaction("settings", "readwrite");
+    const store = transaction.objectStore("settings");
+
+    await new Promise((resolve, reject) => {
+        const request = store.put({ slot: "UI", data: compressedSave });
+        request.onsuccess = resolve;
+        request.onerror = () => reject(request.error);
+    });
+
+    console.log("Game saved to IndexedDB!");
 }
 
 function purgeGameState() {
@@ -75,6 +104,7 @@ function loadSlotData(slotData) {
     purgeGameState();
     loadSlotFromSave(slotData);
 }
+
 export function saveSlot(slotName) {
     const saveObj = getFrameSaveData();
     const saveString = JSON.stringify(saveObj);
@@ -101,15 +131,16 @@ async function doSave(slotName, saveString) {
 
 async function openDatabase() {
     return new Promise((resolve, reject) => {
-        const request = indexedDB.open("GameSavesDB", 1);
-
+        const request = indexedDB.open("lgdb", 1);
         request.onupgradeneeded = (event) => {
             const db = event.target.result;
             if (!db.objectStoreNames.contains("saves")) {
                 db.createObjectStore("saves", { keyPath: "slot" });
             }
+            if (!db.objectStoreNames.contains("settings")) {
+                db.createObjectStore("settings", { keyPath: "slot" });
+            }
         };
-
         request.onsuccess = () => resolve(request.result);
         request.onerror = () => reject(request.error);
     });

@@ -1,3 +1,4 @@
+import { saveUserSettings } from "../saveAndLoad.js";
 
 export const UI_MODE_SOIL = "soil";
 export const UI_MODE_ROCK = "rock";
@@ -178,7 +179,6 @@ let _GAMEDATA = {
 };
 
 let _UICONFIG = {
-    UI_SIZE: 12,
 }
 
 export const GAMEDATA = "GAMEDATA";
@@ -190,17 +190,17 @@ let ROOT = {
 }
 
 export function getGAMEDATA() {
-    return _GAMEDATA;
+    return ROOT[GAMEDATA];
 }
 export function setGAMEDATA(inVal) {
-    _GAMEDATA = inVal;
+    ROOT[GAMEDATA] = inVal;
 }
 
 export function getUICONFIG() {
-    return _UICONFIG;
+    return ROOT[UICONFIG];
 }
 export function setUICONFIG(inVal) {
-    _UICONFIG = inVal;
+    ROOT[UICONFIG] = inVal;
 }
 
 let UI_FUNCTION_MAP = new Map();
@@ -242,7 +242,7 @@ export function saveGDMap(map) {
 }
 
 export function loadUI(key) {
-    return _UICONFIG[key];
+    return ROOT[UICONFIG][key];
 }
 
 export function getMapEntry(map, key) {
@@ -268,6 +268,9 @@ function saveGeneral(map, key, value) {
     }
     if (!value && key in UI_AUTOCLOSE) {
         UI_AUTOCLOSE[key].forEach((key) => saveGD(key, false));
+    }
+    if (map == ROOT[UICONFIG]) {
+        saveUserSettings();
     }
 }
 

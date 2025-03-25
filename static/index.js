@@ -4,10 +4,9 @@ import { loadEmptyScene, loadUserSettings } from "./saveAndLoad.js";
 import { clearTimeouts, resetClimateAndLighting, scheduler_main } from "./main.js";
 import { keydown, keyup } from "./keyboard.js";
 import { handleClick, handleMouseDown, handleMouseUp, handleTouchEnd, handleTouchMove, handleTouchStart } from "./mouse.js";
-import { getBaseSize, getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, resetZoom, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, zoom } from "./canvas.js";
+import { getCanvasHeight, getCanvasWidth, resetZoom, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, zoom } from "./canvas.js";
 import { addUIFunctionMap, loadGD, UI_DISPLAY_SIZEY, UI_SIZE } from "./ui/UIData.js";
 import { initUI } from "./ui/WindowManager.js";
-import { initTemperatureHumidity } from "./climate/temperatureHumidity.js";
 import { iterateOnSquares } from "./squares/_sqOperations.js";
 import { purgeCanvasFrameLimit } from "./globalOperations.js";
 

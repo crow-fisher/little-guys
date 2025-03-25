@@ -1,15 +1,11 @@
-import { getBaseUISize, getCanvasHeight, getCanvasWidth } from "../../canvas.js";
+import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
-import { COLOR_VERY_FUCKING_RED } from "../../colors.js";
-import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth, MAIN_CANVAS, MAIN_CONTEXT } from "../../index.js";
 import { loadEmptyScene, loadSlot, saveSlot } from "../../saveAndLoad.js";
-import { Component } from "../Component.js";
 import { Container } from "../Container.js";
 import { Button } from "../elements/Button.js";
 import { Radio } from "../elements/Radio.js";
-import { RowedRadio } from "../elements/RowedRadio.js";
 import { Text } from "../elements/Text.js";
-import { loadGD, UI_CENTER, UI_DISPLAY_SIZEY, UI_LIGHTING_UPDATERATE, UI_LIGHTING_QUALITY, UI_SIZE, GAMEDATA, UICONFIG } from "../UIData.js";
+import { UI_CENTER, UI_SIZE, UICONFIG } from "../UIData.js";
 import { SubTreeComponent } from "./SubTreeComponent.js";
 
 
@@ -18,9 +14,6 @@ export class MainMenuComponent extends SubTreeComponent {
         super(posXFunc, posYFunc, padding, dir, key);
         let subMenuContainer = new Container(this.window, padding, 1);
         this.window.container = subMenuContainer;   
-
-        // this.window.sizeX = getBaseUISize() * 16;
-        // this.window.sizeY = getBaseUISize() * 27;
 
         let sizeX = getBaseUISize() * 16;
 

@@ -1,14 +1,4 @@
-import { getBaseUISize, getCanvasHeight, getCanvasWidth } from "../../canvas.js";
-import { getActiveClimate } from "../../climate/climateManager.js";
-import { MAIN_CONTEXT } from "../../index.js";
-import { loadEmptyScene, loadSlot, saveSlot } from "../../saveAndLoad.js";
-import { Component } from "../Component.js";
-import { Container } from "../Container.js";
-import { Button } from "../elements/Button.js";
-import { Radio } from "../elements/Radio.js";
-import { RowedRadio } from "../elements/RowedRadio.js";
-import { Text } from "../elements/Text.js";
-import { loadGD, UI_DISPLAY_SIZEY, UI_LIGHTING_UPDATERATE, UI_LIGHTING_QUALITY, UI_SIZE } from "../UIData.js";
+import { loadGD } from "../UIData.js";
 import { Window } from "../Window.js";
 
 
