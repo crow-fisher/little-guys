@@ -3,7 +3,7 @@
 import { loadEmptyScene, loadUserSettings } from "./saveAndLoad.js";
 import { clearTimeouts, resetClimateAndLighting, scheduler_main } from "./main.js";
 import { keydown, keyup } from "./keyboard.js";
-import { handleClick, handleMouseDown, handleMouseUp } from "./mouse.js";
+import { handleClick, handleMouseDown, handleMouseUp, handleTouchEnd, handleTouchMove, handleTouchStart } from "./mouse.js";
 import { getBaseSize, getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, resetZoom, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, zoom } from "./canvas.js";
 import { addUIFunctionMap, loadGD, UI_DISPLAY_SIZEY, UI_SIZE } from "./ui/UIData.js";
 import { initUI } from "./ui/WindowManager.js";
@@ -28,6 +28,10 @@ MAIN_CANVAS.width = getCanvasWidth();
 MAIN_CANVAS.height = getCanvasHeight();
 
 document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+document.addEventListener('touchstart', handleTouchStart, { passive: false });
+document.addEventListener('touchend', handleTouchEnd, { passive: false });
+document.addEventListener('touchmove', handleTouchMove, { passive: false });
 
 window.oncontextmenu = () => false;
 window.onload = function () {
