@@ -6,6 +6,7 @@ import { getWindSquaresX, getWindSquaresY } from "../climate/wind.js";
 import { getCanvasSquaresX, getCanvasSquaresY } from "../canvas.js";
 import { getCurLightingInterval } from "./lightingHandler.js";
 import { isLeftMouseClicked, isRightMouseClicked } from "../mouse.js";
+import { addTimeout } from "../main.js";
 
 let lifeSquarePositions = new Map();
 export let MAX_BRIGHTNESS = 8;
@@ -232,7 +233,7 @@ export class MovingLinearLightGroup {
         let step = (this.sizeX / this.numNodes);
         let startX = this.centerX - (this.sizeX / 2);
         for (let i = 0; i < this.numNodes; i += 1) {
-            let posX = startX + i * step;
+            let posX = startX + i * step + step * 0.5;
             let minMaxTheta = this.getMinMaxTheta(posX, this.centerY);
             let newLightSource = new LightSource(
                 posX,
@@ -460,7 +461,7 @@ export class LightSource {
             if (isLeftMouseClicked() || isRightMouseClicked()) {
                 scheduledTime *= 3;
             }
-            setTimeout(() => {
+            addTimeout(setTimeout(() => {
                 for (let i = startIdx; i < Math.min(endIdx, a0.length); i++) {
                     this.rayCastingForTheta(idx, jobIdx, a0[i], thetaStep);
                 }
@@ -468,7 +469,7 @@ export class LightSource {
                 if (this.num_completed[idx][jobIdx] == this.num_tasks) {
                     onComplete();
                 }
-            }, stCopy);
+            }, stCopy));
         }
     }
 }

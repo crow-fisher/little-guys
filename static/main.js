@@ -24,6 +24,15 @@ initUI();
 let lightingHandler = new LightingHandler();
 let climateHandler = new ClimateHandler();
 
+let liveTimeouts = new Array();
+
+export function addTimeout(timeout) {
+    liveTimeouts.push(timeout);
+}
+export function clearTimeouts() {
+    liveTimeouts.forEach((timeout) => clearTimeout(timeout));
+}
+
 export function resetClimateAndLighting() {
     lightingHandler = new LightingHandler();
     climateHandler = new ClimateHandler();

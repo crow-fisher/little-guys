@@ -1,7 +1,7 @@
 
 
 import { loadEmptyScene } from "./saveAndLoad.js";
-import { resetClimateAndLighting, scheduler_main } from "./main.js";
+import { clearTimeouts, resetClimateAndLighting, scheduler_main } from "./main.js";
 import { keydown, keyup } from "./keyboard.js";
 import { handleClick, handleMouseDown, handleMouseUp } from "./mouse.js";
 import { getBaseSize, getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, resetZoom, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, zoom } from "./canvas.js";
@@ -54,6 +54,7 @@ export function indexCanvasSize() {
     setCanvasSquaresY(loadUI(UI_DISPLAY_SIZEY));
     setCanvasSquaresX(Math.floor(width / c_baseSize));      
     setBaseSize(c_baseSize);
+    clearTimeouts();
     resetClimateAndLighting();
     purgeCanvasFrameLimit();
     iterateOnSquares((sq) => sq.lighting = new Array());
