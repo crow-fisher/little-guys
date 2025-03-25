@@ -31,6 +31,7 @@ export function addTimeout(timeout) {
 }
 export function clearTimeouts() {
     liveTimeouts.forEach((timeout) => clearTimeout(timeout));
+    liveTimeouts = new Array();
 }
 
 export function resetClimateAndLighting() {
