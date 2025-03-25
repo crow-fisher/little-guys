@@ -35,7 +35,7 @@ export function createSunLightGroup() {
     let numNodes = loadUI(UI_LIGHTING_QUALITY);
     let sunLightGroup = new MovingLinearLightGroup(
         getCanvasSquaresX() / 2,
-        -1,
+        -getCanvasSquaresY(),
         getCanvasSquaresX(),
         numNodes,
         getCurrentLightColorTemperature,
