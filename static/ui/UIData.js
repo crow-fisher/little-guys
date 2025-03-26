@@ -257,6 +257,9 @@ function saveGeneral(map, key, value) {
     if (singleGroup != null) {
         singleGroup.filter((k) => loadGD(k)).forEach((k) => {
             ROOT[GAMEDATA][k] = false;
+            if (k in UI_AUTOCLOSE) {
+                UI_AUTOCLOSE[k][GAMEDATA].forEach((key2) => saveGD(key2, false));
+            }
         });
     }
     if (key in UI_AUTOCLOSE)
