@@ -17,6 +17,7 @@ import {
     UI_LIGHTING_MOON,
     saveGD
 } from "../ui/UIData.js";
+import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
 
 let TIME_SCALE = 1;
 let curUIKey = UI_SPEED_1;
@@ -58,20 +59,30 @@ export function getDaylightStrengthFrameDiff() {
 }
 
 // for time skipping 
+let startSeekTime = 0;
 let seekTimeTarget = 0;
+
+export function isTimeSeeking() {
+    return !(seekTimeTarget == 0);
+}
+
+function endTimeSeek() {
+    iterateOnOrganisms((org) => org.curLifeTimeOffset += (seekTimeTarget - startSeekTime))
+    seekTimeTarget = 0;
+}
 
 export function doTimeSeek() {
     if (seekTimeTarget == 0) {
         return;
     }
     if (TIME_SCALE <= 1) {
-        seekTimeTarget = 0;
+        endTimeSeek();
         return;
     }
     if (getCurDay() > seekTimeTarget) {
         TIME_SCALE -= 1;
         if (TIME_SCALE == 1) {
-            seekTimeTarget = 0;
+            endTimeSeek();
         }
         return;
     }
@@ -128,15 +139,18 @@ export function seek(targetTime) {
     } else {
         seekTimeTarget = targetTimeCurDay;
     }
+    startSeekTime = getCurDay();
 }
 
 export function doTimeSkipToNow() {
     let nowLocalTimeMillis = Date.now() - new Date().getTimezoneOffset() * 60000;
     let timeOffset = (nowLocalTimeMillis % millis_per_day) / millis_per_day;
+    let start = curDay;
     curDay = nowLocalTimeMillis / millis_per_day - timeOffset;
     if (curTime > timeOffset) {
         curDay -= 1;
     }
+    iterateOnOrganisms((org) => org.curLifeTimeOffset += (curDay - start))
     seek(timeOffset);
 }
 

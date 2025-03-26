@@ -489,6 +489,9 @@ export class BaseSquare {
                             return false;
                         }
                         if (!this.solid) {
+                            if (!sq.collision) {
+                                return false;
+                            }
                             if (!sq.solid) {
                                 return true;
                             } else {

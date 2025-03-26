@@ -25,6 +25,7 @@ class BaseOrganism {
         this.linkSquare(square);
         this.spawnTime = getCurDay();
         this.rootLastGrown = getCurDay();
+        this.curLifeTimeOffset = 0;
 
         this.evolutionParameters = null;
 
@@ -393,6 +394,10 @@ class BaseOrganism {
             targetSquare.linkOrganismSquare(newRootLifeSquare);
         }
     }
+    
+    getAge() {
+        return (getCurDay() - this.spawnTime) - this.curLifeTimeOffset;
+    }
 
     doPlantGrowth() {
         if (!this.lifeSquares.some((lsq) => lsq.type == "green")) {
@@ -404,7 +409,7 @@ class BaseOrganism {
         if (this.stage == STAGE_DEAD) {
             return;
         }
-        let curMaturityFrac = (getCurDay() - this.spawnTime) / this.getGrowthCycleMaturityLength(); 
+        let curMaturityFrac = this.getAge() / this.getGrowthCycleMaturityLength(); 
         if (curMaturityFrac > 1) {
             if (this.nitrogen > this.growthNitrogen && this.phosphorus > this.growthPhosphorus && this.lightlevel > this.getGrowthLightLevel()) {
                 this.spawnSeed();
@@ -463,7 +468,7 @@ class BaseOrganism {
 
     setNutrientIndicators() {
         return;
-        let maturityLifeFrac = Math.min(1, (getCurDay() - this.spawnTime) / this.getGrowthCycleMaturityLength()); 
+        let maturityLifeFrac = Math.min(1, this.getAge() / this.getGrowthCycleMaturityLength()); 
         let expectedNitrogen = maturityLifeFrac ** 2 * this.growthNitrogen;
         let expectedPhosphorus = maturityLifeFrac ** 2 * this.growthPhosphorus;
         let expectedLightLevel = maturityLifeFrac ** 2 * this.getGrowthLightLevel();
@@ -535,7 +540,7 @@ class BaseOrganism {
         if (this.stage == STAGE_DEAD) {
             return;
         }
-        let max = this.spawnTime + this.getGrowthCycleLength() * this.numGrowthCycles;
+        let max = this.spawnTime + this.curLifeTimeOffset + this.getGrowthCycleLength() * this.numGrowthCycles;
         if (getCurDay() > max) {
             this.stage = STAGE_DEAD;
             console.log("has plant lived too long death");

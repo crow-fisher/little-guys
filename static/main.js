@@ -2,7 +2,7 @@ import { doWaterFlow, physics, physicsOnlyGravity, physicsWaterSimplePhysics, pr
 import { doClickAdd, doClickAddEyedropperMixer } from "./manipulation.js";
 import { resetFrameDivMult } from "./lighting/lightingProcessing.js";
 import { renderClouds, renderTemperature, renderWaterSaturation } from "./climate/temperatureHumidity.js";
-import { doTimeSeek, renderTime, updateTime } from "./climate/time.js";
+import { doTimeSeek, isTimeSeeking, renderTime, updateTime } from "./climate/time.js";
 import { executeFunctionQueue, loadGD, UI_SIMULATION_CLOUDS, UI_SIMULATION_SIMPLESQUARE, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_WIND } from "./ui/UIData.js";
 import { initUI, renderWindows, resetWindowHovered, updateWindows } from "./ui/WindowManager.js";
 import { renderWindPressureMap } from "./climate/wind.js";
@@ -92,7 +92,8 @@ function render() {
 
 
 function orgTick() {
-    processOrganisms();
+    if (!isTimeSeeking())
+        processOrganisms();
 }
 
 
