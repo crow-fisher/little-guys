@@ -237,7 +237,11 @@ export class BaseSquare {
         else if (selectedViewMode == UI_VIEWMODE_MOISTURE) {
             this.renderWaterSaturation();
         } else if (selectedViewMode == UI_VIEWMODE_SURFACE || (loadGD(UI_PALETTE_ACTIVE) && loadGD(UI_PALETTE_SELECT) == UI_PALETTE_SURFACE)) {
-            this.renderWithVariedColors(1);
+            if (this.solid) {
+                this.renderWithVariedColors(1);
+            } else {
+                this.renderWithVariedColors(0.25);
+            }
             this.renderSurface();
         }
         else if (selectedViewMode == UI_VIEWMODE_TEMPERATURE) {
