@@ -2,8 +2,9 @@ import { addSquare, getSquares } from "../_sqOperations.js";
 import { WaterSquare } from "../WaterSquare.js";
 import { randNumber } from "../../common.js";
 import { RockSquare } from "./RockSquare.js";
+import { BaseSquare } from "../BaseSqaure.js";
 
-class AquiferSquare extends RockSquare {
+class AquiferSquare extends BaseSquare {
     constructor(posX, posY) { 
         super(posX, posY);
         this.baseColor = "#E5E4E2";
@@ -14,10 +15,10 @@ class AquiferSquare extends RockSquare {
         this.proto = "AquiferSquare";
         this.waterContainmentMax = 1;
         this.waterContainmentTransferRate = 0;
-        this.opacity = 0.03;
-        this.special = true;
+        this.opacity = 0.003;
     }
-    physics() {
+    waterSinkPhysics() {}
+    gravityPhysics() {
         if (getSquares(this.posX, this.posY + 1).length == 0) {
             let sq = addSquare(new WaterSquare(this.posX, this.posY + 1));
             if (sq) {
@@ -30,7 +31,7 @@ class AquiferSquare extends RockSquare {
         if (!this.visible) {
             return;
         }
-        this.renderWithVariedColors();
+        this.renderWithVariedColors(1);
     }
 }
 

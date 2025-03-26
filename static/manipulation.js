@@ -224,10 +224,13 @@ export function doClickAdd() {
             } else if (loadGD(UI_PALETTE_ACTIVE)) {
                     let mode = loadGD(UI_PALETTE_SELECT);
                     if (mode == UI_PALETTE_SURFACE) {
-                        doBrushFunc(px, py, (x, y) => getSquares(x, y)
-                            .filter((sq) => sq.solid && sq.collision)
-                            .forEach((sq) => sq.surface = !isRightMouseClicked()));
-                            continue;
+                        doBrushFunc(px, py, (x, y) => {
+                            let squares = getSquares(x, y);
+                            if (!isRightMouseClicked() && (squares.some((sq) => sq.solid && sq.surface))) {
+                                squares.filter((sq) => !sq.solid).forEach((sq) => sq.destroy())
+                            }
+                            squares.filter((sq) => sq.solid).forEach((sq) => sq.surface = !isRightMouseClicked());
+                        });
                     }
                     else if (isRightMouseClicked()) {
                         doBrushFunc(px, py, (x, y) => removeSquarePos(x, y));
