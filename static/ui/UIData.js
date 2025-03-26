@@ -148,7 +148,7 @@ let _GAMEDATA = {
     UI_PALETTE_SELECT: UI_PALETTE_SOILROCK,
     UI_PALETTE_COMPOSITION: [.40, .40, .20],
     UI_SOIL_VIEWMODE: "🎨",
-    UI_SOIL_INITALWATER: -2,
+    UI_SOIL_INITALWATER: -0.1,
     UI_LIGHTING_SUN: 1.8,
     UI_LIGHTING_MOON: .15,
     UI_LIGHTING_WATER: 1,
@@ -255,8 +255,8 @@ export function saveMapEntry(map, key, value) {
 function saveGeneral(map, key, value) {
     let singleGroup = (UI_SINGLE_GROUPS.find((group) => group.indexOf(key) > -1));
     if (singleGroup != null) {
-        singleGroup.filter((k) => loadGD(k)).forEach((key) => {
-            map[key] = false;
+        singleGroup.filter((k) => loadGD(k)).forEach((k) => {
+            ROOT[GAMEDATA][k] = false;
         });
     }
     if (key in UI_AUTOCLOSE)
@@ -267,7 +267,7 @@ function saveGeneral(map, key, value) {
         queuedFunctionArr.push(UI_FUNCTION_MAP[key]);
     }
     if (!value && key in UI_AUTOCLOSE) {
-        UI_AUTOCLOSE[key].forEach((key) => saveGD(key, false));
+        Object.keys(UI_AUTOCLOSE[key]).forEach((key2) => saveGD(key2, false));
     }
     if (map == ROOT[UICONFIG]) {
         saveUserSettings();

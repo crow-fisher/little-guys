@@ -1,5 +1,4 @@
 import { hexToRgb } from "../../common.js";
-import { getNeighbors } from "../../squares/_sqOperations.js";
 import { BaseLifeSquare } from "../BaseLifeSquare.js";
 
 export class GenericParameterizedRootSquare extends BaseLifeSquare {
