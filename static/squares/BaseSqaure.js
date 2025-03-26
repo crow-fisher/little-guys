@@ -480,6 +480,9 @@ export class BaseSquare {
                 if (getSquares(this.posX + jSigned, this.posY + i)
                     .some((sq) => {
                         if (this.organic) {
+                            if (!sq.surface && sq.collision) {
+                                return true;
+                            }
                             if (sq.collision && sq.currentPressureDirect > 0 && Math.random() > 0.9) {
                                 return true;
                             }
