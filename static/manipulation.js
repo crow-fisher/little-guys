@@ -226,7 +226,7 @@ export function doClickAdd() {
                     if (mode == UI_PALETTE_SURFACE) {
                         doBrushFunc(px, py, (x, y) => {
                             let squares = getSquares(x, y);
-                            if (!isRightMouseClicked() && (squares.some((sq) => sq.solid && sq.surface))) {
+                            if (isRightMouseClicked() && (squares.some((sq) => sq.solid && sq.surface))) {
                                 squares.filter((sq) => !sq.solid).forEach((sq) => sq.destroy())
                             }
                             squares.filter((sq) => sq.solid).forEach((sq) => sq.surface = !isRightMouseClicked());

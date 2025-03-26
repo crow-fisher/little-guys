@@ -52,11 +52,8 @@ function addSquareOverride(square) {
         addSquare(square);
         return;
     }
-    let bottomLayer = Array.from(existingSquares.filter((sq) => sq.collision && sq.posY == (getCanvasSquaresY() - 1)));
-    if (bottomLayer.length > 0) {
-        return;
-    }
     if (square.collision) {
+        square.surface = existingSquares.some((sq) => sq.surface);
         existingSquares.filter((sq) => sq.collision).forEach((sq) => removeSquare(sq));
     }
     addSquare(square);
