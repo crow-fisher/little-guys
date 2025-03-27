@@ -197,13 +197,13 @@ function weatherChange() {
         return;
     }
     let curWeatherPatternMap = getActiveClimate().weatherPatternMap;
-    let sum = Array.from(curWeatherPatternMap.values()).reduce(
+    let sum = curWeatherPatternMap.values().reduce(
         (accumulator, currentValue) => accumulator + currentValue,
         0,
     );
     let target = Math.floor(Math.random() * sum);
     let cur = 0;
-    let nextWeather = Array.from(curWeatherPatternMap.keys()).find((key) => {
+    let nextWeather = curWeatherPatternMap.keys().find((key) => {
         if (target <= cur) {
             return true;
         };
