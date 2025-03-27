@@ -197,7 +197,7 @@ function weatherChange() {
         return;
     }
     let curWeatherPatternMap = getActiveClimate().weatherPatternMap;
-    let sum = curWeatherPatternMap.values().reduce(
+    let sum = Array.from(curWeatherPatternMap.values()).reduce(
         (accumulator, currentValue) => accumulator + currentValue,
         0,
     );
