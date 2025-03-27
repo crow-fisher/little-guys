@@ -203,7 +203,7 @@ function weatherChange() {
     );
     let target = Math.floor(Math.random() * sum);
     let cur = 0;
-    let nextWeather = curWeatherPatternMap.keys().find((key) => {
+    let nextWeather = Array.from(curWeatherPatternMap.keys()).find((key) => {
         if (target <= cur) {
             return true;
         };
