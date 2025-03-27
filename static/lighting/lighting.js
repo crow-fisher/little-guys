@@ -376,7 +376,7 @@ export class LightSource {
 
     preprocessTerrainSquares() {
         this.frameTerrainSquares = new Map();
-        getAllSquares()
+        Array.from(getAllSquares())
             .filter((sq) => sq.visible)
             .filter((sq) => ((this.posX - sq.posX) ** 2 + (this.posY - sq.posY) ** 2) ** 0.5 < this.radius)
             .forEach((sq) => {
