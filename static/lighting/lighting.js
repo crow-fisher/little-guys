@@ -9,29 +9,7 @@ import { isLeftMouseClicked, isRightMouseClicked } from "../mouse.js";
 import { addTimeout } from "../main.js";
 import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
 
-let lifeSquarePositions = new Map();
 export let MAX_BRIGHTNESS = 8;
-
-export function lightingClearLifeSquarePositionMap() {
-    lifeSquarePositions = new Map();
-}
-
-export function lightingRegisterLifeSquare(lifeSquare) {
-    if (lifeSquare.type != "green") {
-        return;
-    }
-    let posX = Math.floor(lifeSquare.getPosX());
-    let posY = Math.floor(lifeSquare.getPosY());
-
-    if (!(posX in lifeSquarePositions)) {
-        lifeSquarePositions[posX] = new Map();
-    }
-    if (!(posY in lifeSquarePositions[posX])) {
-        lifeSquarePositions[posX][posY] = new Array();
-    }
-    lifeSquarePositions[posX][posY].push(lifeSquare);
-}
-
 export function createSunLightGroup() {
     let numNodes = loadGD(UI_LIGHTING_QUALITY);
     let sunLightGroup = new MovingLinearLightGroup(
@@ -48,7 +26,6 @@ export function createSunLightGroup() {
     );
     return sunLightGroup;
 }
-
 
 export function createMoonLightGroup() {
     let moonLightGroup = new StationaryLightGroup(
@@ -297,23 +274,19 @@ export class LightSource {
         this.minTheta = minTheta;
         this.maxTheta = maxTheta;
         this.numRays = numRays;
-        this.frameLifeSquares = null;
-        this.frameTerrainSquares = null;
         this.windSquareLocations = new Map();
-        this.windSquarebrightnessMults = new Map();
-        this.num_tasks = 10;
-        this.num_completed = {};
+        this.windSquareBrightnessMults = new Map();
+        this.numTasks = 10;
+        this.numTasksCompleted = {};
     }
 
     destroy() {
-        this.frameLifeSquares = null;
-        this.frameTerrainSquares = null;
         this.windSquareLocations = null;
-        this.windSquarebrightnessMults = null;
+        this.windSquareBrightnessMults = null;
     }
 
     calculateFrameCloudCover() {
-        this.windSquarebrightnessMults = new Map();
+        this.windSquareBrightnessMults = new Map();
         let rayKeys = Object.keys(this.windSquareLocations);
         if (rayKeys.length < (this.numRays - 1)) {
             this.initWindSquareLocations();
@@ -328,7 +301,7 @@ export class LightSource {
                 outLightColor.b *= (windSquareCloudColor.b / 255) * opacity + (1 - opacity)
             });
             let brightnessDrop = (outLightColor.r + outLightColor.g + outLightColor.b) / (255 * 3);
-            this.windSquarebrightnessMults[rayTheta] = (brightnessDrop ** 8);
+            this.windSquareBrightnessMults[rayTheta] = (brightnessDrop ** 8);
         });
     }
 
@@ -358,7 +331,7 @@ export class LightSource {
 
     getWindSquareBrightnessFunc(theta) {
         return () => {
-            let ret = this.windSquarebrightnessMults[theta];
+            let ret = this.windSquareBrightnessMults[theta];
             if (ret == null) {
                 this.calculateFrameCloudCover();
                 return this.getWindSquareBrightnessFunc(theta);
@@ -367,65 +340,10 @@ export class LightSource {
             return ret;
         }
     }
-    preprocessLifeSquares() {
-        this.frameLifeSquares = new Map();
-        let posXKeys = Object.keys(lifeSquarePositions);
-        posXKeys.forEach((lsqPosX) => {
-            let relPosX = Math.floor(lsqPosX - this.posX);
-            let posYKeys = Object.keys(lifeSquarePositions[lsqPosX]);
-            posYKeys.forEach((lsqPosY) => {
-                let relPosY = Math.floor(lsqPosY - this.posY);
-                if ((relPosX ** 2 + relPosY ** 2) ** 0.5 > this.radius) {
-                    return;
-                }
-                if (!(relPosX in this.frameLifeSquares)) {
-                    this.frameLifeSquares[relPosX] = new Map();
-                }
-                if (!(relPosY in this.frameLifeSquares[relPosX])) {
-                    this.frameLifeSquares[relPosX][relPosY] = new Array();
-                }
-                this.frameLifeSquares[relPosX][relPosY].push(...lifeSquarePositions[lsqPosX][lsqPosY]);
-            })
-        })
-    }
 
-    preprocessTerrainSquares() {
-        this.frameTerrainSquares = new Map();
-        getAllSquares()
-            .filter((sq) => sq.visible)
-            .filter((sq) => ((this.posX - sq.posX) ** 2 + (this.posY - sq.posY) ** 2) ** 0.5 < this.radius)
-            .forEach((sq) => {
-                let relPosX = sq.posX - this.posX;
-                let relPosY = sq.posY - this.posY;
-                if (!(relPosX in this.frameTerrainSquares)) {
-                    this.frameTerrainSquares[relPosX] = new Map();
-                }
-                if (!(relPosY in this.frameTerrainSquares[relPosX])) {
-                    this.frameTerrainSquares[relPosX][relPosY] = new Array();
-                }
-                this.frameTerrainSquares[relPosX][relPosY].push(sq);
-            });
-    }
 
     async rayCastingForTheta(idx, jobIdx, theta, thetaStep) {
-        let targetLists = [this.frameTerrainSquares, this.frameLifeSquares];
-        let thetaSquares = [];
-        // targetLists.forEach((list) => {
-        //     let posXKeys = Object.keys(list);
-        //     posXKeys.forEach((relPosX) => {
-        //         let posYKeys = Object.keys(list[relPosX]);
-        //         posYKeys.forEach((relPosY) => {
-        //             let sqTheta = Math.atan(relPosX / relPosY);
-        //             if (relPosX == 0 && relPosY == 0 && theta == this.minTheta) {
-        //                 thetaSquares.push([relPosX, relPosY]);
-        //             } else if (sqTheta > theta && sqTheta < (theta + thetaStep)) {
-        //                 thetaSquares.push([relPosX, relPosY]);
-        //             }
-        //         })
-        //     });
-        // });
-
-
+        let thetaSquares = new Array();
         iterateOnSquares((sq) => {
             let relPosX = sq.posX - this.posX;
             let relPosY = sq.posY - this.posY;
@@ -449,41 +367,28 @@ export class LightSource {
                 }
             })
         })
-
-
-
-
         thetaSquares.sort((a, b) => (a[0] ** 2 + a[1] ** 2) ** 0.5 - (b[0] ** 2 + b[1] ** 2) ** 0.5);
         let curBrightness = 1;
-        thetaSquares.forEach((loc) => {
-            targetLists.forEach((list) => {
-                if (!(loc[0] in list)) {
-                    return;
-                }
-                if (!(loc[1] in list[loc[0]])) {
-                    return;
-                }
-                list[loc[0]][loc[1]].forEach((obj) => {
-                    let curBrightnessCopy = curBrightness;
-                    let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(theta)() * curBrightnessCopy * this.brightnessFunc() * this.thetaBrightnessFunc(theta);
-                    if (!obj.surface)
-                        curBrightness *= (1 - (obj.getLightFilterRate() * loadGD(UI_LIGHTING_DECAY) * (loadGD(UI_LIGHTING_QUALITY)) / 9));
-                    if (obj.lighting[idx] == null) {
-                        obj.lighting[idx] = [[pointLightSourceFunc], this.colorFunc];
-                    } else if (obj.lighting[idx][0].length >= jobIdx) {
-                        obj.lighting[idx][0][jobIdx] = pointLightSourceFunc;
-                    } else {
-                        obj.lighting[idx][0].push(pointLightSourceFunc);
-                    }
-                });
-            })
+        thetaSquares.forEach((arr) => {
+            let obj = arr[2];
+            let curBrightnessCopy = curBrightness;
+            let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(theta)() * curBrightnessCopy * this.brightnessFunc() * this.thetaBrightnessFunc(theta);
+            if (!obj.surface)
+                curBrightness *= (1 - (obj.getLightFilterRate() * loadGD(UI_LIGHTING_DECAY) * (loadGD(UI_LIGHTING_QUALITY)) / 9));
+            if (obj.lighting[idx] == null) {
+                obj.lighting[idx] = [[pointLightSourceFunc], this.colorFunc];
+            } else if (obj.lighting[idx][0].length >= jobIdx) {
+                obj.lighting[idx][0][jobIdx] = pointLightSourceFunc;
+            } else {
+                obj.lighting[idx][0].push(pointLightSourceFunc);
+            }
         });
-    }
+    };
     doRayCasting(idx, jobIdx, onComplete) {
-        if (this.num_completed[idx] == null) {
-            this.num_completed[idx] = new Map();
+        if (this.numTasksCompleted[idx] == null) {
+            this.numTasksCompleted[idx] = new Map();
         }
-        this.num_completed[idx][jobIdx] = 0;
+        this.numTasksCompleted[idx][jobIdx] = 0;
 
         let thetaStep = (this.maxTheta - this.minTheta) / this.numRays;
         let a0 = [];
@@ -491,16 +396,14 @@ export class LightSource {
         for (let theta = this.minTheta; theta < this.maxTheta; theta += thetaStep) {
             a0.push(theta);
         }
-        let tasksPerThread = a0.length / this.num_tasks;
-        this.preprocessTerrainSquares();
-        this.preprocessLifeSquares();
+        let tasksPerThread = a0.length / this.numTasks;
 
         let timeInterval = getCurLightingInterval();
         let scheduledTime = 0;
-        for (let i = 0; i < this.num_tasks; i++) {
+        for (let i = 0; i < this.numTasks; i++) {
             let startIdx = Math.floor(i * tasksPerThread);
             let endIdx = Math.ceil((i + 1) * (tasksPerThread));
-            scheduledTime = i * (timeInterval / this.num_tasks);
+            scheduledTime = i * (timeInterval / this.numTasks);
             let stCopy = scheduledTime;
             if (isLeftMouseClicked() || isRightMouseClicked()) {
                 scheduledTime *= 3;
@@ -509,8 +412,8 @@ export class LightSource {
                 for (let i = startIdx; i < Math.min(endIdx, a0.length); i++) {
                     this.rayCastingForTheta(idx, jobIdx, a0[i], thetaStep);
                 }
-                this.num_completed[idx][jobIdx] += 1;
-                if (this.num_completed[idx][jobIdx] == this.num_tasks) {
+                this.numTasksCompleted[idx][jobIdx] += 1;
+                if (this.numTasksCompleted[idx][jobIdx] == this.numTasks) {
                     onComplete();
                 }
             }, stCopy));
