@@ -8,7 +8,6 @@ import { BaseOrganism } from "../BaseOrganism.js";
 import { KentuckyBluegrassGreenSquare } from "../../lifeSquares/parameterized/agriculture/grasses/KentuckyBluegrassGreenSquare.js";
 import { addSquare } from "../../squares/_sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
-import { MushroomSeedOrganism } from "../fantasy/MushroomOrganism.js";
 import { addNewOrganism } from "../_orgOperations.js";
 
 export class KentuckyBluegrassOrganism extends BaseOrganism {
@@ -19,13 +18,13 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
         this.rootType = GenericParameterizedRootSquare;
         this.grassGrowTimeInDays =  0.01;
         this.side = Math.random() > 0.5 ? -1 : 1;
-        this.maxNumGrass = 24;
+        this.maxNumGrass = 3;
         this.curNumGrass = 0;
         this.grassLengthMin = 2;
         this.grassLengthMax = 8;
         this.numGrowthCycles = 1; 
         this.growthCycleMaturityLength = 1 + (Math.random());
-        this.growthCycleLength = this.growthCycleMaturityLength * 2;
+        this.growthCycleLength = this.growthCycleMaturityLength * 4;
     }
 
     spawnSeed() {
@@ -53,8 +52,8 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
 
     processGenetics() {
         this.evolutionParameters[0] = Math.min(Math.max(this.evolutionParameters[0], 0.00001), .99999)
-        let p0 = .1 + this.evolutionParameters[0] * 0.9;
-        this.growthLightLevel = .1 + p0 * 0.3;
+        let p0 = .3 + this.evolutionParameters[0] * 0.9;
+        this.growthLightLevel = .03 + p0 * 0.7;
 
         this.maxNumGrass = Math.floor(this.maxNumGrass * p0);
         this.grassLengthMax = Math.floor(this.grassLengthMax * p0);
@@ -78,8 +77,8 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
             randRange(0, 0.3), TYPE_TRUNK, 1);
         growthPlan.postConstruct = () => {
             this.originGrowth.addChild(growthPlan.component);
-            growthPlan.component.xOffset = 4 * (Math.random() - 0.5);
-            growthPlan.component.yOffset = - (4 * (0.5 + Math.random()));
+            growthPlan.component.xOffset = 2 * (Math.random() - 0.5);
+            growthPlan.component.yOffset = - (1 * (0.5 + Math.random()));
         };
         growthPlan.component._getWilt = (val) => Math.sin(val) / 2; 
         for (let t = 1; t < randNumber(this.grassLengthMin, this.grassLengthMax); t++) {

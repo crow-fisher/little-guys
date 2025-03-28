@@ -10,7 +10,7 @@ export class KentuckyBluegrassGreenSquare extends BaseLifeSquare {
         super(square, organism);
         this.proto = "KentuckyBluegrassGreenSquare";
         this.type = "green";
-        this.width = 0.3;
+        this.width = 0.7;
         this.activeRenderSubtype = null;
         this.LSQ_RENDER_SIZE_MULT = 1;
     }
