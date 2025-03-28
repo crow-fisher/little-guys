@@ -1,4 +1,4 @@
-import { getAllSquares } from "../squares/_sqOperations.js";
+import { getAllSquares, iterateOnSquares } from "../squares/_sqOperations.js";
 import { getCloudColorAtPos } from "../climate/temperatureHumidity.js";
 import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getFrameDt, getMoonlightColor } from "../climate/time.js";
 import { loadGD, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_QUALITY, UI_LIGHTING_SUN } from "../ui/UIData.js";
@@ -7,6 +7,7 @@ import { getCanvasSquaresX, getCanvasSquaresY } from "../canvas.js";
 import { getCurLightingInterval } from "./lightingHandler.js";
 import { isLeftMouseClicked, isRightMouseClicked } from "../mouse.js";
 import { addTimeout } from "../main.js";
+import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
 
 let lifeSquarePositions = new Map();
 export let MAX_BRIGHTNESS = 8;
@@ -62,9 +63,19 @@ export function createMoonLightGroup() {
     );
     return moonLightGroup;
 }
-export class StationaryLightGroup {
-    constructor(centerX, centerY, sizeX, numNodes, colorFunc, brightnessFunc, startTime, endTime) {
+
+class LightGroup {
+    constructor() {
         this.lightSources = [];
+    }
+    destroy() {
+        this.lightSources.forEach((ls) => ls.destroy());
+    }
+}
+
+export class StationaryLightGroup extends LightGroup {
+    constructor(centerX, centerY, sizeX, numNodes, colorFunc, brightnessFunc, startTime, endTime) {
+        super();
         this.centerX = centerX;
         this.centerY = centerY;
         this.sizeX = sizeX;
@@ -167,9 +178,9 @@ export class StationaryLightGroup {
     }
 }
 
-export class MovingLinearLightGroup {
+export class MovingLinearLightGroup extends LightGroup {
     constructor(centerX, centerY, sizeX, numNodes, colorFunc, brightnessFunc, startTheta, startTime, endTheta, endTime) {
-        this.lightSources = [];
+        super();
         this.centerX = centerX;
         this.centerY = centerY;
         this.sizeX = sizeX;
@@ -260,16 +271,13 @@ export class MovingLinearLightGroup {
         let completionMap = new Map();
         for (let i = 0; i < this.lightSources.length; i++) {
             completionMap[i] = false;
-            this.lightSources[i].doRayCasting(idx, i, () => completionMap[i] = true);
+            this.lightSources[i].doRayCasting(idx, i, () => {
+                completionMap[i] = true;
+                if (completionMap.values().every((val) => val)) {
+                    this.idxCompletionMap[idx] = true;
+                }
+            });
         };
-        let timeoutFunction = () => {
-            if (Object.values(completionMap).every((val) => val)) {
-                this.idxCompletionMap[idx] = true;
-            } else {
-                setTimeout(timeoutFunction, 100);
-            }
-        }
-        setTimeout(timeoutFunction, 100);
         return true;
     }
 
@@ -295,6 +303,13 @@ export class LightSource {
         this.windSquarebrightnessMults = new Map();
         this.num_tasks = 10;
         this.num_completed = {};
+    }
+
+    destroy() {
+        this.frameLifeSquares = null;
+        this.frameTerrainSquares = null;
+        this.windSquareLocations = null;
+        this.windSquarebrightnessMults = null;
     }
 
     calculateFrameCloudCover() {
@@ -395,20 +410,49 @@ export class LightSource {
     async rayCastingForTheta(idx, jobIdx, theta, thetaStep) {
         let targetLists = [this.frameTerrainSquares, this.frameLifeSquares];
         let thetaSquares = [];
-        targetLists.forEach((list) => {
-            let posXKeys = Object.keys(list);
-            posXKeys.forEach((relPosX) => {
-                let posYKeys = Object.keys(list[relPosX]);
-                posYKeys.forEach((relPosY) => {
-                    let sqTheta = Math.atan(relPosX / relPosY);
-                    if (relPosX == 0 && relPosY == 0 && theta == this.minTheta) {
-                        thetaSquares.push([relPosX, relPosY]);
-                    } else if (sqTheta > theta && sqTheta < (theta + thetaStep)) {
-                        thetaSquares.push([relPosX, relPosY]);
-                    }
-                })
-            });
+        // targetLists.forEach((list) => {
+        //     let posXKeys = Object.keys(list);
+        //     posXKeys.forEach((relPosX) => {
+        //         let posYKeys = Object.keys(list[relPosX]);
+        //         posYKeys.forEach((relPosY) => {
+        //             let sqTheta = Math.atan(relPosX / relPosY);
+        //             if (relPosX == 0 && relPosY == 0 && theta == this.minTheta) {
+        //                 thetaSquares.push([relPosX, relPosY]);
+        //             } else if (sqTheta > theta && sqTheta < (theta + thetaStep)) {
+        //                 thetaSquares.push([relPosX, relPosY]);
+        //             }
+        //         })
+        //     });
+        // });
+
+
+        iterateOnSquares((sq) => {
+            let relPosX = sq.posX - this.posX;
+            let relPosY = sq.posY - this.posY;
+            let sqTheta = Math.atan(relPosX / relPosY);
+            if (relPosX == 0 && relPosY == 0 && theta == this.minTheta) {
+                thetaSquares.push([relPosX, relPosY, sq]);
+            } else if (sqTheta > theta && sqTheta < (theta + thetaStep)) {
+                thetaSquares.push([relPosX, relPosY, sq]);
+            }
         });
+
+        iterateOnOrganisms((org) => {
+            org.lifeSquares.forEach((lsq) => {
+                let relPosX = lifeSquare.getPosX() - this.posX;
+                let relPosY = lifeSquare.getPosY() - this.posY;
+                let sqTheta = Math.atan(relPosX / relPosY);
+                if (relPosX == 0 && relPosY == 0 && theta == this.minTheta) {
+                    thetaSquares.push([relPosX, relPosY, lsq]);
+                } else if (sqTheta > theta && sqTheta < (theta + thetaStep)) {
+                    thetaSquares.push([relPosX, relPosY, lsq]);
+                }
+            })
+        })
+
+
+
+
         thetaSquares.sort((a, b) => (a[0] ** 2 + a[1] ** 2) ** 0.5 - (b[0] ** 2 + b[1] ** 2) ** 0.5);
         let curBrightness = 1;
         thetaSquares.forEach((loc) => {

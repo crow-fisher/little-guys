@@ -35,4 +35,7 @@ export class LightingHandler {
         this.nextLightingUpdate = Date.now() + 100;
         lightingClearLifeSquarePositionMap();
     }
+    destroy() {
+        this.lightSources.forEach((ls) => ls.destroy());
+    }
 }

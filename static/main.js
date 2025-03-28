@@ -35,7 +35,9 @@ export function clearTimeouts() {
 }
 
 export function resetClimateAndLighting() {
+    lightingHandler.destroy();
     lightingHandler = new LightingHandler();
+    
     climateHandler = new ClimateHandler();
     iterateOnSquares((sq) => sq.lighting = new Array());
 }

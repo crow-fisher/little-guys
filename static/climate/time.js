@@ -188,7 +188,6 @@ function renderStarMap(brightnessMult) {
     let frameCloudColor = getFrameRelCloud();
     let frameCloudMult = Math.min(1, ((frameCloudColor.r + frameCloudColor.g + frameCloudColor.b) / (3 * 255) * 20));
 
-
     if (getDaylightStrength() > 0.85) {
         return;
     }
