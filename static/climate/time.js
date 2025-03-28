@@ -26,7 +26,7 @@ export let millis_per_day = 60 * 60 * 24 * 1000;
 var curDay = 0.4;
 var prevDay = 0;
 var curTime = 0.8;
-var prevTime = 0;   
+var prevTime = 0;
 
 let prevRealTime = Date.now();
 let dt = 0;
@@ -47,7 +47,7 @@ let sky_colorEveningMorningRGB = hexToRgb("#A49F67");
 let sky_colorNearNoonRGB = hexToRgb("#7E9FB1");
 let sky_colorNoonRGB = hexToRgb("#84B2E2");
 
-let currentLightColorTemperature = sky_nightRGB; 
+let currentLightColorTemperature = sky_nightRGB;
 let _cdaylightStrength, _prevDaylightStrength;
 export function setTimeScale(timeScale) {
     seekTimeTarget = 0;
@@ -187,7 +187,7 @@ function renderStarMap(brightnessMult) {
 
     let frameCloudColor = getFrameRelCloud();
     let frameCloudMult = Math.min(1, ((frameCloudColor.r + frameCloudColor.g + frameCloudColor.b) / (3 * 255) * 20));
-    
+
 
     if (getDaylightStrength() > 0.85) {
         return;
@@ -310,7 +310,7 @@ function updateTime() {
     dt = Date.now() - prevRealTime;
     if (dtRollingAverage == 0) {
         dtRollingAverage = dt;
-    } else {
+    } else if (document.hasFocus()) {
         dtRollingAverage *= 0.99;
         dtRollingAverage += .01 * dt;
     }
@@ -321,7 +321,7 @@ function updateTime() {
     } else {
         prevTime = curTime;
         prevDay = curDay;
-        curTime += dt; 
+        curTime += dt;
         curDay += dt / (millis_per_day / getCurTimeScale());
         prevRealTime = Date.now();
         _prevDaylightStrength = _cdaylightStrength;
@@ -357,7 +357,7 @@ function renderSkyBackground(time) {
     } else {
         minColor = sky_colorNearNoonRGB
         maxColor = sky_colorNoonRGB;
-        min = nearNoon; 
+        min = nearNoon;
         max = noon;
     }
     let processedColor = calculateColorRGB(processed, min, max, minColor, maxColor);
@@ -419,7 +419,7 @@ function renderTime() {
         0,
         getTotalCanvasPixelWidth(),
         getTotalCanvasPixelHeight()
-        );  
+    );
 
     renderSkyBackground(currentTime);
 }
@@ -514,7 +514,7 @@ function temp_blue(temperature) {
     if (temperature >= 66) {
         blue = 255;
     } else {
-        blue = temperature -10;
+        blue = temperature - 10;
     }
     blue = 138.517 * Math.log(blue) - 305.0447;
     blue = Math.max(0, blue);
@@ -523,4 +523,4 @@ function temp_blue(temperature) {
 }
 
 
-export { getDaylightStrength, getPrevDay, getCurTime, getPrevTime, updateTime, renderTime, initializeStarMap}
+export { getDaylightStrength, getPrevDay, getCurTime, getPrevTime, updateTime, renderTime, initializeStarMap }

@@ -399,7 +399,9 @@ class BaseOrganism {
         return (getCurDay() - this.spawnTime) - this.curLifeTimeOffset;
     }
 
-    spawnSeed() {}
+    spawnSeed() {
+        console.log("Would spawn seed")
+    }
 
     doPlantGrowth() {
         if (!this.lifeSquares.some((lsq) => lsq.type == "green")) {

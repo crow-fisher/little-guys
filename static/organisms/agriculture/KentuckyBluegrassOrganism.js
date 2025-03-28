@@ -6,6 +6,10 @@ import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
 import { BaseOrganism } from "../BaseOrganism.js";
 import { KentuckyBluegrassGreenSquare } from "../../lifeSquares/parameterized/agriculture/grasses/KentuckyBluegrassGreenSquare.js";
+import { addSquare } from "../../squares/_sqOperations.js";
+import { SeedSquare } from "../../squares/SeedSquare.js";
+import { MushroomSeedOrganism } from "../fantasy/MushroomOrganism.js";
+import { addNewOrganism } from "../_orgOperations.js";
 
 export class KentuckyBluegrassOrganism extends BaseOrganism {
     constructor(posX, posY) {
@@ -21,7 +25,30 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
         this.grassLengthMax = 8;
         this.numGrowthCycles = 1; 
         this.growthCycleMaturityLength = 1 + (Math.random());
-        this.growthCycleLength = this.growthCycleMaturityLength * 1;
+        this.growthCycleLength = this.growthCycleMaturityLength * 2;
+    }
+
+    spawnSeed() {
+        if (this.originGrowth == null) 
+            return;
+        
+        let comp = this.originGrowth.children.at(randNumber(0, this.originGrowth.children.length - 1));
+        let lsq = comp.lifeSquares.at(comp.lifeSquares.length - 1);
+
+        let seedSquare = addSquare(new SeedSquare(lsq.getPosX(), lsq.getPosY() - 4));
+        seedSquare.speedY = -Math.round(randRange(-2, -5));
+        seedSquare.speedX = Math.round(randRange(-5, 5));
+
+        if (seedSquare) {
+            let orgAdded = addNewOrganism(new KentuckyBluegrassSeedOrganism(seedSquare, this.getNextGenetics()));
+            if (!orgAdded) {
+                seedSquare.destroy();
+            }
+        }
+        let reduction = 0.8
+        this.nitrogen *= (1 - reduction);
+        this.phosphorus *= (1 - reduction);
+        this.lightlevel *= (1 - reduction);
     }
 
     processGenetics() {
