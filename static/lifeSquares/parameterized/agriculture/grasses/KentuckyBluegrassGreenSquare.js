@@ -4,6 +4,7 @@ import { addNewOrganism } from "../../../../organisms/_orgOperations.js";
 import { WheatSeedOrganism } from "../../../../organisms/agriculture/WheatOrganism.js";
 import { addSquare } from "../../../../squares/_sqOperations.js";
 import { SeedSquare } from "../../../../squares/SeedSquare.js";
+import { hueShiftColorArr, rgbToHex } from "../../../../common.js";
 
 export class KentuckyBluegrassGreenSquare extends BaseLifeSquare {
     constructor(square, organism) {
@@ -40,6 +41,15 @@ export class KentuckyBluegrassGreenSquare extends BaseLifeSquare {
                 default:
                     console.warn("Subtype doesn't have a display configuration!")
             }
+        }
+
+        if (this.subtype == SUBTYPE_STEM) {
+            let hueShift = 20 * (this.linkedOrganism.evolutionParameters[0] - 0.5);
+            let saturationShift = 0.2 * (this.linkedOrganism.evolutionParameters[0] - 0.5);
+            let valueShift = 0.2 * (this.linkedOrganism.evolutionParameters[0] - 0.5);
+            this.accentColor = rgbToHex(...hueShiftColorArr(this.accentColor, hueShift, saturationShift, valueShift));
+            this.darkColor = rgbToHex(...hueShiftColorArr(this.darkColor, hueShift, saturationShift, valueShift));
+            this.baseColor = rgbToHex(...hueShiftColorArr(this.baseColor, hueShift, saturationShift, valueShift));
         }
     }
 

@@ -18,13 +18,19 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
         this.rootType = GenericParameterizedRootSquare;
         this.grassGrowTimeInDays =  0.01;
         this.side = Math.random() > 0.5 ? -1 : 1;
+
+        this.targetNumGrass = 1;
         this.maxNumGrass = 3;
-        this.curNumGrass = 0;
-        this.grassLengthMin = 2;
-        this.grassLengthMax = 8;
+
+        this.targetGrassLength = 1;
+        this.maxGrassLength = 8;
+
         this.numGrowthCycles = 1; 
         this.growthCycleMaturityLength = 1 + (Math.random());
         this.growthCycleLength = this.growthCycleMaturityLength * 4;
+
+        this.grasses = [];
+        
     }
 
     spawnSeed() {
@@ -56,18 +62,24 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
         this.growthLightLevel = .03 + p0 * 0.7;
 
         this.maxNumGrass = Math.floor(this.maxNumGrass * p0);
-        this.grassLengthMax = Math.floor(this.grassLengthMax * p0);
+        this.maxGrassLength = Math.floor(this.maxGrassLength * p0);
 
-        this.growthNumGreen = this.maxNumGrass * this.grassLengthMax;
+        this.growthNumGreen = this.maxNumGrass * this.maxGrassLength;
         this.growthNumRoots = this.growthNumGreen / 4;
     }
 
-    growGrass() {
-        if (this.curNumGrass > this.maxNumGrass) {
-            return;
-        }
-        this.curNumGrass += 1;
+    executeGrowthPlans() {
+        super.executeGrowthPlans();
+        if (this.originGrowth != null) {
+            this.grasses.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
+            .forEach((grass) => {
+                grass.lifeSquares.forEach((lsq) => lsq.width = .3 + .3 * Math.log(1 + grass.lifeSquares.length));
 
+            })
+        }
+    }
+
+    growGrass() {
         let startRootNode = this.getOriginsForNewGrowth(SUBTYPE_ROOTNODE).at(0);
         let baseDeflection = randRange(0, .1);
         let growthPlan = new GrowthPlan(
@@ -77,36 +89,51 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
             randRange(0, 0.3), TYPE_TRUNK, 1);
         growthPlan.postConstruct = () => {
             this.originGrowth.addChild(growthPlan.component);
+            this.grasses.push(this.originGrowth.getChildPath(growthPlan.component))
             growthPlan.component.xOffset = 2 * (Math.random() - 0.5);
             growthPlan.component.yOffset = - (1 * (0.5 + Math.random()));
         };
         growthPlan.component._getWilt = (val) => Math.sin(val) / 2; 
-        for (let t = 1; t < randNumber(this.grassLengthMin, this.grassLengthMax); t++) {
-            growthPlan.steps.push(new GrowthPlanStep(
-                growthPlan,
-                0,
-                this.grassGrowTimeInDays,
-                () => {
-                    let shoot = this.growPlantSquare(startRootNode, 0, t);
-                    shoot.subtype = SUBTYPE_STEM;
-                    return shoot;
-                },
-                null
-            ))
-        }
-
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
             0,
             this.grassGrowTimeInDays,
             () => {
-                let node = this.growPlantSquare(startRootNode, 0, growthPlan.steps.length);
-                node.subtype = SUBTYPE_NODE;
-                return node;
+                let shoot = this.growPlantSquare(startRootNode, 0, 0);
+                shoot.subtype = SUBTYPE_STEM;
+                return shoot;
             },
             null
         ))
         this.growthPlans.push(growthPlan);
+    }
+
+    lengthenGrass() {
+        this.grasses
+            .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
+            .filter((grass) => grass.growthPlan.steps.length < this.targetGrassLength)
+            .forEach((grass) => {
+                let startNode = grass.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_STEM);
+                if (startNode == null) {
+                    this.growthPlans = Array.from(this.growthPlans.filter((gp) => gp != grass.growthPlan));
+                    this.leaves = Array.from(this.leaves.filter((le) => this.originGrowth.getChildFromPath(le) != grass));
+                    return;
+                }
+                for (let i = 0; i < this.targetGrassLength - grass.growthPlan.steps.length; i++) {
+                    grass.growthPlan.steps.push(new GrowthPlanStep(
+                        grass.growthPlan,
+                        0,
+                        this.grassGrowTimeInDays,
+                        () => {
+                            let newGrassNode = this.growPlantSquare(startNode, 0, 0);
+                            newGrassNode.subtype = SUBTYPE_STEM;
+                            return newGrassNode;
+                        },
+                        null
+                    ))
+                };
+                grass.growthPlan.completed = false;
+            });
     }
 
     planGrowth() {
@@ -114,11 +141,32 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
         if (this.originGrowth == null) {
             return;
         }
-        if (this.curNumGrass == 0) {
+
+        if (this.growthPlans.some((gp) => !gp.completed)) {
+            this.executeGrowthPlans();
+            return;
+        }
+
+        if (this.grasses.length < this.targetNumGrass) {
             this.growGrass();
             return;
         }
-        this.growGrass();
+
+        if (this.grasses
+            .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
+            .some((grass) => grass.growthPlan.steps.length < this.targetGrassLength)) {
+            this.lengthenGrass();
+            return;
+        }
+
+        if (this.targetNumGrass < this.maxNumGrass) {
+            this.targetNumGrass += 1;
+            return;
+        }
+        if (this.targetGrassLength < this.maxGrassLength) {
+            this.targetGrassLength += 1;
+            return;
+        }
     }
 }
 

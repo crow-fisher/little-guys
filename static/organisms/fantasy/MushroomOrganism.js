@@ -207,7 +207,6 @@ export class MushroomOrganism extends BaseOrganism {
                 stem.lifeSquares.forEach((lsq) => lsq.width = .5 + .3 * Math.log(1 + this.targetStemLength));
             }
         }
-
     }
     adultGrowthPlanning() {
         if (this.growthPlans.some((gp) => !gp.completed)) {
@@ -253,7 +252,7 @@ export class MushroomOrganism extends BaseOrganism {
     }
 
     spawnSeed() {
-        if (this.originGrowth ==null || this.leaves.length == 0) {
+        if (this.originGrowth == null || this.leaves.length == 0) {
             return;
         }
         let chosen = this.leaves.at(randNumber(0, this.leaves.length - 1));

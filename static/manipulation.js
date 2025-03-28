@@ -261,7 +261,7 @@ export function doClickAdd() {
                             if (chance > 0.95) {
                                 let sq = addSquare(new SeedSquare(px, py));
                                 if (sq) {
-                                    let orgAdded = addNewOrganism(new KentuckyBluegrassSeedOrganism(sq, [.749999 + 0.25 * Math.random()]));
+                                    let orgAdded = addNewOrganism(new KentuckyBluegrassSeedOrganism(sq, [Math.random()]));
                                     if (!orgAdded) {
                                         sq.destroy();
                                     }
