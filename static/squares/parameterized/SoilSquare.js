@@ -299,6 +299,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     waterEvaporationRoutine() {
+        return;
         let adjacentWindSquare = getWindSquareAbove(this.posX, this.posY);
         let x = adjacentWindSquare[0];
         let y = adjacentWindSquare[1];
