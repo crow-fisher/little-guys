@@ -146,7 +146,7 @@ export function doTimeSkipToNow() {
     let nowLocalTimeMillis = Date.now() - new Date().getTimezoneOffset() * 60000;
     let timeOffset = (nowLocalTimeMillis % millis_per_day) / millis_per_day;
     let start = curDay;
-    curDay = nowLocalTimeMillis / millis_per_day - timeOffset;
+    curDay = (nowLocalTimeMillis / millis_per_day - timeOffset) + (start % 1);
     if (curTime > timeOffset) {
         curDay -= 1;
     }

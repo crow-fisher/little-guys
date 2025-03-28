@@ -96,6 +96,7 @@ export class BaseSquare {
         this.water_vaporTemp = 373;
 
         this.lastColorCacheTime = 0;
+        this.lastColorCacheOpacity = 1;
         this.colorCacheHoldTime = 0.10;
 
         this.blockHealth_color1 = RGB_COLOR_RED;
@@ -239,10 +240,10 @@ export class BaseSquare {
         } else if (selectedViewMode == UI_VIEWMODE_SURFACE || (loadGD(UI_PALETTE_ACTIVE) && loadGD(UI_PALETTE_SELECT) == UI_PALETTE_SURFACE)) {
             if (this.solid) {
                 this.renderWithVariedColors(1);
+                this.renderSurface();
             } else {
                 this.renderWithVariedColors(0.25);
             }
-            this.renderSurface();
         }
         else if (selectedViewMode == UI_VIEWMODE_TEMPERATURE) {
             this.renderTemperature();
@@ -360,6 +361,7 @@ export class BaseSquare {
 
     renderWithVariedColors(opacityMult) {
         if (
+            (opacityMult != this.lastColorCacheOpacity) ||
             (Date.now() > this.lastColorCacheTime + (isLeftMouseClicked() ? 250 : 500) * Math.random()) ||
             Math.abs(getDaylightStrengthFrameDiff()) > 0.01) {
             this.lastColorCacheTime = Date.now();
@@ -367,6 +369,7 @@ export class BaseSquare {
             let lightingColor = this.processLighting();
             let outColor = { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
             this.cachedRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacityMult * this.opacity * (this.blockHealth ** 0.2));
+            this.lastColorCacheOpacity = opacityMult;
         }
         MAIN_CONTEXT.fillStyle = this.cachedRgba;
         zoomCanvasFillRect(

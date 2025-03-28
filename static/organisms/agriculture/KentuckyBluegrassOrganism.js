@@ -19,9 +19,21 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
         this.curNumGrass = 0;
         this.grassLengthMin = 2;
         this.grassLengthMax = 8;
-        this.numGrowthCycles = 10 ** 8; // grass never dies
-        this.growthCycleMaturityLength = 10;
-        this.growthCycleLength = 10;
+        this.numGrowthCycles = 1; 
+        this.growthCycleMaturityLength = 1 + (Math.random());
+        this.growthCycleLength = this.growthCycleMaturityLength * 1;
+    }
+
+    processGenetics() {
+        this.evolutionParameters[0] = Math.min(Math.max(this.evolutionParameters[0], 0.00001), .99999)
+        let p0 = .1 + this.evolutionParameters[0] * 0.9;
+        this.growthLightLevel = .1 + p0 * 0.3;
+
+        this.maxNumGrass = Math.floor(this.maxNumGrass * p0);
+        this.grassLengthMax = Math.floor(this.grassLengthMax * p0);
+
+        this.growthNumGreen = this.maxNumGrass * this.grassLengthMax;
+        this.growthNumRoots = this.growthNumGreen / 4;
     }
 
     growGrass() {
@@ -85,8 +97,8 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
 }
 
 export class KentuckyBluegrassSeedOrganism extends BaseSeedOrganism {
-    constructor(square) {
-        super(square);
+    constructor(square, evolutionParameters) {
+        super(square, evolutionParameters);
         this.proto = "KentuckyBluegrassSeedOrganism";
     }
 
