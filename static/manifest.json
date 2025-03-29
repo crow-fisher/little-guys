@@ -1,15 +1,19 @@
 {
     "name": "little guys",
-    "short_name": "littleguys",
     "description": "watch the world of your dreams grow",
     "start_url": "/",
-    "display": "standalone",
+    "display": "fullscreen",
     "background_color": "#000000",
     "theme_color": "#000000",
     "icons": [
       {
-        "src": "/static/media/icons/pwaicon512.png",
+        "src": "/static/media/icons/pwa512.png",
         "sizes": "512x512",
+        "type": "image/png"
+      },
+      {
+        "src": "/static/media/icons/pwa192.png",
+        "sizes": "192x192",
         "type": "image/png"
       }
     ]
