@@ -3,7 +3,7 @@ import { getObjectArrFromMap } from "../common.js";
 import { removeItemAll } from "../common.js";
 
 function addNewOrganism(organism) {
-    if (getOrganismsAtSquare(organism.posX, organism.posY).length > 0) {
+    if (getOrganismsAtSquare(organism.posX, organism.posY, true).length > 0) {
         console.warn("Weird state; tried to add an organism to an existing square.")
         console.log(getOrganismsAtSquare(organism.posX, organism.posY));
         console.log(organism);
@@ -19,12 +19,12 @@ function addNewOrganism(organism) {
 }
 
 function addOrganism(organism) {
-    getObjectArrFromMap(ALL_ORGANISMS, organism.posX, organism.posY).push(organism);
+    getObjectArrFromMap(ALL_ORGANISMS, organism.posX, organism.posY, true).push(organism);
     return organism;
 }
 
-function getOrganismsAtSquare(posX, posY) {
-    return getObjectArrFromMap(ALL_ORGANISMS, posX, posY);
+function getOrganismsAtSquare(posX, posY, create=false) {
+    return getObjectArrFromMap(ALL_ORGANISMS, posX, posY, create);
 }
 
 function iterateOnOrganisms(func) {
