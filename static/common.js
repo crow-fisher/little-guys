@@ -1,11 +1,15 @@
 // pure functions only
 
 
-function getObjectArrFromMap(baseMap, posX, posY) {
+function getObjectArrFromMap(baseMap, posX, posY, create=false) {
     if (!(posX in baseMap)) {
+        if (!create)
+            return new Array();
         baseMap[posX] = new Map();
     }
     if (!(posY in baseMap[posX])) {
+        if (!create)
+            return new Array();
         baseMap[posX][posY] = new Array();
     }
     return baseMap[posX][posY];

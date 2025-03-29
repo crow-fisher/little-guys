@@ -60,7 +60,10 @@ export function renderOrganisms() {
 }
 
 export function removeSquare(square) {
-    removeItemAll(getObjectArrFromMap(ALL_SQUARES, square.posX, square.posY), square);
+    let arr = removeItemAll(getObjectArrFromMap(ALL_SQUARES, square.posX, square.posY), square);
+    if (arr.length === 0) {
+        ALL_SQUARES[square.posX].delete(square.posY);
+    }
 }
 
 export function purgeCanvasFrameLimit() {

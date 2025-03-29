@@ -42,7 +42,7 @@ function addSquare(square) {
     if (!square.organic && getSquares(square.posX, square.posY).some((sq) => sq.proto == square.proto)) {
         return false; 
     }
-    getSquares(square.posX, square.posY).push(square);
+    getSquares(square.posX, square.posY, true).push(square);
     return square;
 }
 
@@ -117,8 +117,8 @@ function iterateOnSquares(func) {
 }
 
 
-function getSquares(posX, posY) {
-    return getObjectArrFromMap(ALL_SQUARES, Math.floor(posX), Math.floor(posY));
+function getSquares(posX, posY, create=false) {
+    return getObjectArrFromMap(ALL_SQUARES, Math.floor(posX), Math.floor(posY), create);
 }
 
 function getCollidableSquareAtLocation(posX, posY) {
