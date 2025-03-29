@@ -78,3 +78,9 @@ export function setBackgroundColor(hexColor) {
 
 window.onresize = indexCanvasSize;
 document.documentElement.style.overflow = 'hidden';  // firefox, chrome
+
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/static/service-worker.js")
+      .then(reg => console.log("Service Worker registered!", reg))
+      .catch(err => console.log("Service Worker registration failed!", err));
+  }
