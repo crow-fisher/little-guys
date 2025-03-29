@@ -331,6 +331,9 @@ export class LightSource {
 
     getWindSquareBrightnessFunc(theta) {
         return () => {
+            if (this.windSquareBrightnessMults == null) {
+                return 1;
+            }
             let ret = this.windSquareBrightnessMults[theta];
             if (ret == null) {
                 this.calculateFrameCloudCover();
@@ -357,8 +360,8 @@ export class LightSource {
 
         iterateOnOrganisms((org) => {
             org.lifeSquares.forEach((lsq) => {
-                let relPosX = lifeSquare.getPosX() - this.posX;
-                let relPosY = lifeSquare.getPosY() - this.posY;
+                let relPosX = lsq.getPosX() - this.posX;
+                let relPosY = lsq.getPosY() - this.posY;
                 let sqTheta = Math.atan(relPosX / relPosY);
                 if (relPosX == 0 && relPosY == 0 && theta == this.minTheta) {
                     thetaSquares.push([relPosX, relPosY, lsq]);
