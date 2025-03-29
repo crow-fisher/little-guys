@@ -90,8 +90,8 @@ export function handleClick(event) {
 // Handle Touch Events
 export function handleTouchStart(e) {
     e.preventDefault();
+    handleTouchMove(e, true);
     lastMouseDownStart = Date.now();
-    handleTouchMove(e);
     
     // We can simulate mouse down events for the first touch
     let touch = e.touches[0];
@@ -124,13 +124,23 @@ export function handleTouchEnd(e) {
     }
 }
 
-export function handleTouchMove(e) {
+let mouseTouchStartCallback = null;
+export function setMouseTouchStartCallback(f) {
+    mouseTouchStartCallback = f
+}
+
+export function handleTouchMove(e, fromTouchStart=false) {
     e.preventDefault();
     lastMoveEvent = e;
 
     // We track the first touch as mouse move
     let touch = e.touches[0];
     lastMoveOffset = getOffset(touch);
+    if (fromTouchStart) {
+        if (mouseTouchStartCallback != null) {
+            mouseTouchStartCallback(lastMoveOffset);
+        }
+    }
 
     if (!rightMouseClicked && mouseDown <= 0) {
         lastLastMoveOffset = lastMoveOffset;

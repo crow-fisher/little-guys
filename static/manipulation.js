@@ -7,7 +7,7 @@ import { randNumber } from "./common.js";
 import { removeSquare } from "./globalOperations.js";
 import { getOrganismSquaresAtSquare } from "./lifeSquares/_lsOperations.js";
 import { triggerEarlySquareScheduler } from "./main.js";
-import { getLastMouseDown, getLastMoveOffset, getLeftMouseUpEvent, isLeftMouseClicked, isMiddleMouseClicked, isRightMouseClicked } from "./mouse.js";
+import { getLastMouseDown, getLastMoveOffset, getLeftMouseUpEvent, isLeftMouseClicked, isMiddleMouseClicked, isRightMouseClicked, setMouseTouchStartCallback } from "./mouse.js";
 import { addNewOrganism } from "./organisms/_orgOperations.js";
 import { WheatSeedOrganism } from "./organisms/agriculture/WheatOrganism.js";
 import { KentuckyBluegrassSeedOrganism } from "./organisms/agriculture/KentuckyBluegrassOrganism.js";
@@ -24,6 +24,7 @@ import { CattailSeedOrganism } from "./organisms/midwest/CattailOrganism.js";
 import { MushroomSeedOrganism } from "./organisms/fantasy/MushroomOrganism.js";
 let prevManipulationOffset;
 
+setMouseTouchStartCallback((inVal) => prevManipulationOffset = inVal);
 
 let prevClickTime = 0;
 let prevClickMap = new Map();
@@ -166,6 +167,9 @@ export function doClickAddEyedropperMixer() {
     }
 }
 
+export function setPrevManipulationOffset(inLoc) {
+    prevManipulationOffset = inLoc;
+}
 
 export function doClickAdd() {
     let lastMoveOffset = getLastMoveOffset();
