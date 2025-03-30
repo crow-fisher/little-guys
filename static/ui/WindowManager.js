@@ -32,10 +32,9 @@ export function initUI() {
     
     let climateSubtreeComponent = new ClimateSubtreeComponent(() => topBarComponent.getElementXPositionFunc(0, 3), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_CLIMATE);
     all_components.push(climateSubtreeComponent);
-    all_components.push(new ClimateSelectionComponent(() => topBarComponent.getElementXPositionFunc(0, 4) + climateSubtreeComponent.window.sizeX + getBaseUISize(), () => topBarComponent.ySize() + getBaseUISize() * 3, 0, 0, UI_CLIMATE_SELECT_MENU));
-    all_components.push(new WeatherSelectionComponent(() => topBarComponent.getElementXPositionFunc(0, 4) + climateSubtreeComponent.window.sizeX + getBaseUISize(), () => topBarComponent.ySize() + getBaseUISize() * 6, 0, 0, UI_CILMATE_SELECT_WEATHER));
-    all_components.push(new CloudControlComponent(() => topBarComponent.getElementXPositionFunc(0, 4) + climateSubtreeComponent.window.sizeX + getBaseUISize(), () => topBarComponent.ySize() + getBaseUISize() * 9, 0, 0, UI_CLIMATE_SELECT_CLOUDS));
-
+    all_components.push(new ClimateSelectionComponent(() => topBarComponent.getElementXPositionFunc(0, 3) + climateSubtreeComponent.window.sizeX + getBaseUISize() * 0.5, () => topBarComponent.ySize(), 0, 0, UI_CLIMATE_SELECT_MENU));
+    all_components.push(new WeatherSelectionComponent(() => topBarComponent.getElementXPositionFunc(0, 3) + climateSubtreeComponent.window.sizeX + getBaseUISize() * 0.5, () => topBarComponent.ySize(), 0, 0, UI_CILMATE_SELECT_WEATHER));
+    all_components.push(new CloudControlComponent(() => topBarComponent.getElementXPositionFunc(0, 3) + climateSubtreeComponent.window.sizeX + getBaseUISize() * 0.5, () => topBarComponent.ySize(), 0, 0, UI_CLIMATE_SELECT_CLOUDS));
     all_components.push(new ViewSubtreeComponent(() => topBarComponent.getElementXPositionFunc(0, 5), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_VIEWMODE));
     blockPalette = new BlockPalette(getBaseUISize() * 1, getBaseUISize() * 10, 0, 0, UI_PALETTE_ACTIVE)
     all_components.push(blockPalette);

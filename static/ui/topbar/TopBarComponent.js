@@ -216,11 +216,12 @@ export class TopBarComponent {
         let shouldRenderAsTwoRows = getCanvasWidth() < this.viewAsTwoRowsWidthCutoff;
         MAIN_CONTEXT.fillStyle = COLOR_BLACK;
         MAIN_CONTEXT.fillRect(0, 0, getCanvasWidth() + 10, this.ySize());
-        if (shouldRenderAsTwoRows) {
-            this.render2Row();
-        } else {
-            this.render1Row();
-        }
+        this.render1Row();
+        // if (shouldRenderAsTwoRows) {
+        //     this.render2Row();
+        // } else {
+        //     this.render1Row();
+        // }
         
     }
 

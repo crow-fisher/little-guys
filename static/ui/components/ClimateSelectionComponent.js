@@ -18,12 +18,11 @@ export class ClimateSelectionComponent extends LockedComponent {
         let container = new Container(this.window, padding, 1);
         this.window.container = container; 
         let row = new Container(this.window, padding, 0);
-        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 2.5, UI_CENTER, "cilmate select"));
         container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "midwest", UI_CLIMATE_SELECT, UI_CLIMATE_MIDWEST, 
-        () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
+        () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
         container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "desert", UI_CLIMATE_SELECT, UI_CLIMATE_DESERT, 
-        () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
+        () => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));
         container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "fantasy", UI_CLIMATE_SELECT, UI_CLIMATE_FANTASY, 
-        () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
+        () => getActiveClimate().getUIColorInactiveCustom(0.58), () => getActiveClimate().getUIColorActive()));
     }
 }
