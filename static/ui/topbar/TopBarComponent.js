@@ -111,6 +111,7 @@ export class TopBarComponent {
         return "simulation"
     }
     textWorldName() {
+        return "little guys"
         if (this.compact)
             return "" + loadGD(UI_NAME);
         return "world: " + loadGD(UI_NAME);
