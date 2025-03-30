@@ -12,9 +12,6 @@ function getObjectArrFromMap(baseMap, posX, posY, create=false) {
             return new Array();
         baseMap.get(posX).set(posY, new Array());
     }
-    if (!create && baseMap.get(posX).get(posY).length == 0) {
-        // baseMap.get(posX).delete(posY)
-    }
     return baseMap.get(posX).get(posY);
 }
 

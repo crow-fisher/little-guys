@@ -28,13 +28,7 @@ function getOrganismsAtSquare(posX, posY, create=false) {
 }
 
 function iterateOnOrganisms(func) {
-    let rootKeys = Object.keys(ALL_ORGANISMS);
-    for (let i = 0; i < rootKeys.length; i++) {
-        let subKeys = Object.keys(ALL_ORGANISMS[rootKeys[i]]);
-        for (let j = 0; j < subKeys.length; j++) {
-            getOrganismsAtSquare(rootKeys[i], subKeys[j]).forEach(func);
-        }
-    }
+    ALL_ORGANISMS.keys().forEach((key) => ALL_ORGANISMS.get(key).keys().forEach((subkey) => ALL_ORGANISMS.get(key).get(subkey).forEach((func))));
 }
 
 function removeOrganism(organism) {
