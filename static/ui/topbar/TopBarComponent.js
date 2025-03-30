@@ -32,6 +32,9 @@ export class TopBarComponent {
         this.key = key;
         this.hovered = false;
         this.compact = false;
+        
+        this.viewAsTwoRowsWidthCutoff = getBaseUISize() * 135;
+        this.veryCompactWidthCutoff = getBaseUISize() * 70;
 
         this.elements = new Map();
         this.elementPositions = new Map();
@@ -75,15 +78,27 @@ export class TopBarComponent {
         return " place |"
     }
     textClimateMenu() {
+        if (this.veryCompact) {
+            return "clim |"
+        }
         return " climate |"
     }
     textViewMode() {
+        if (this.veryCompact) {
+            return "view |"
+        }
         return " viewmode |"
     }
     textToggleLighting() {
+        if (this.veryCompact) {
+            return "light |"
+        }
         return " lighting |" 
     }
     textDesignerMode() {
+        if (this.veryCompact) {
+            return "sim |"
+        }
         return " simulation |"
     }
     textWorldName() {
@@ -114,17 +129,54 @@ export class TopBarComponent {
     ySize() {
         return this.maxHeight + 3 * this.padding;
     }
-    render() {
-        if (!loadGD(this.key)) {
-            return;
+
+    render2Row() {
+        this.compact = true;
+        if (getCanvasWidth() < this.veryCompactWidthCutoff) {
+            this.veryCompact = true;
         }
 
-        MAIN_CONTEXT.fillStyle = COLOR_BLACK;
-        MAIN_CONTEXT.fillRect(0, 0, getCanvasWidth() + 10, this.ySize());
+        let curEndX = 0;
+        let curStartY = 0;
+        let key = 0;
+        let elements = this.elements[key];
+        let startX = getCanvasWidth() * key;
+        let totalElementsSizeX = elements.map((element) => element.measure()).map((measurements) => measurements[0] + this.padding).reduce(
+            (accumulator, currentValue) => accumulator + currentValue,
+            0,
+        );
 
+        if (key >= 0.5) {
+            startX -= totalElementsSizeX;
+        }
+
+            
+        for (let i = 0; i < elements.length; i++) {
+            let element = elements[i];
+            let measurements = element.measure();
+            element.render(startX, curStartY + this.padding + measurements[1]);
+            this.elementPositions[key][i] = startX;
+            startX += measurements[0] + this.padding;
+
+            if (key == 0 && i == 5) {
+                curStartY += getBaseUISize() * 2.6 * 1.3;
+                let totalElementsSizeX = elements.slice(5).map((element) => element.measure()).map((measurements) => measurements[0] + this.padding).reduce(
+                    (accumulator, currentValue) => accumulator + currentValue,
+                    0,
+                );
+                startX = Math.max(getBaseUISize() * 1, getCanvasWidth() * 1 - totalElementsSizeX )
+            }
+            curEndX = startX;
+            this.maxHeight = Math.max(measurements[1] + getBaseUISize() * 4.2, this.maxHeight);
+            if (key == 0 && startX > getCanvasWidth()) {
+                this.prevFrameBoink = true;
+            }
+        }
+    }
+
+    render1Row() {
         let order = Array.from(Object.keys(this.elements).map(parseFloat)).sort()
         let curEndX = 0;
-
         order.forEach((key) => {
             let elements = this.elements[key];
             let startX = getCanvasWidth() * key;
@@ -152,6 +204,21 @@ export class TopBarComponent {
                 this.maxHeight = Math.max(measurements[1], this.maxHeight);
             }
         })
+    }
+    render() {
+        if (!loadGD(this.key)) {
+            return;
+        }
+
+        let shouldRenderAsTwoRows = getCanvasWidth() < this.viewAsTwoRowsWidthCutoff;
+        MAIN_CONTEXT.fillStyle = COLOR_BLACK;
+        MAIN_CONTEXT.fillRect(0, 0, getCanvasWidth() + 10, this.ySize());
+        if (shouldRenderAsTwoRows) {
+            this.render2Row();
+        } else {
+            this.render1Row();
+        }
+        
     }
 
     // yeah i'm pretty sorry about this one
