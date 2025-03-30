@@ -348,8 +348,18 @@ export class LightSource {
     async rayCastingForTheta(idx, jobIdx, theta, thetaStep) {
         let thetaSquares = new Array();
         iterateOnSquares((sq) => {
-            let relPosX = sq.posX - this.posX;
-            let relPosY = sq.posY - this.posY;
+            let relPosX, relPosY;
+            if (sq.proto == "PlantSquare") {
+                if (sq.linkedOrganismSquares.length > 0) {
+                    relPosX = sq.linkedOrganismSquares.at(0).getPosX() - this.posX;
+                    relPosY = sq.linkedOrganismSquares.at(0).getPosY() - this.posY;
+                } else {
+                    return;
+                }
+            } else {
+                relPosX = sq.posX - this.posX;
+                relPosY = sq.posY - this.posY;
+            }
             let sqTheta = Math.atan(relPosX / relPosY);
             if (relPosX == 0 && relPosY == 0 && theta == this.minTheta) {
                 thetaSquares.push([relPosX, relPosY, sq]);
@@ -358,18 +368,18 @@ export class LightSource {
             }
         });
 
-        iterateOnOrganisms((org) => {
-            org.lifeSquares.forEach((lsq) => {
-                let relPosX = lsq.getPosX() - this.posX;
-                let relPosY = lsq.getPosY() - this.posY;
-                let sqTheta = Math.atan(relPosX / relPosY);
-                if (relPosX == 0 && relPosY == 0 && theta == this.minTheta) {
-                    thetaSquares.push([relPosX, relPosY, lsq]);
-                } else if (sqTheta > theta && sqTheta < (theta + thetaStep)) {
-                    thetaSquares.push([relPosX, relPosY, lsq]);
-                }
-            })
-        })
+        // iterateOnOrganisms((org) => {
+        //     org.lifeSquares.forEach((lsq) => {
+        //         let relPosX = lsq.getPosX() - this.posX;
+        //         let relPosY = lsq.getPosY() - this.posY;
+        //         let sqTheta = Math.atan(relPosX / relPosY);
+        //         if (relPosX == 0 && relPosY == 0 && theta == this.minTheta) {
+        //             thetaSquares.push([relPosX, relPosY, lsq]);
+        //         } else if (sqTheta > theta && sqTheta < (theta + thetaStep)) {
+        //             thetaSquares.push([relPosX, relPosY, lsq]);
+        //         }
+        //     })
+        // })
         thetaSquares.sort((a, b) => (a[0] ** 2 + a[1] ** 2) ** 0.5 - (b[0] ** 2 + b[1] ** 2) ** 0.5);
         let curBrightness = 1;
         thetaSquares.forEach((arr) => {

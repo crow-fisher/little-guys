@@ -107,7 +107,7 @@ function loadSlotData(slotData) {
 export function saveSlot(slotName) {
     const saveObj = getFrameSaveData();
     const saveString = JSON.stringify(saveObj);
-    purgeGameState();
+    purgeMaps();
     doSave(slotName, saveString);
     loadSlotData(saveObj)
 }

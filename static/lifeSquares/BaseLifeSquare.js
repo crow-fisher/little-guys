@@ -54,6 +54,7 @@ class BaseLifeSquare {
 
         if (square.organic) {
             square.spawnedEntityId = organism.spawnedEntityId;
+            square.linkOrganismSquare(this);
         }
 
         this.strength = 1;
