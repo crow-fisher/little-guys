@@ -8,6 +8,12 @@ export let WATERFLOW_CANDIDATE_SQUARES = new Set();
 export let LIGHT_SOURCES = new Array();
 export let global_theta_base = 0;
 
+export function purgeMaps() {
+    ALL_SQUARES = new Map();
+    ALL_ORGANISMS = new Map();
+    ALL_ORGANISM_SQUARES = new Map();
+}
+
 let mixArrLen = 3; 
 let curMixIdx = Math.floor(Date.now());
 curMixIdx -= curMixIdx % mixArrLen;

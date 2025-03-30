@@ -32,7 +32,10 @@ function iterateOnOrganisms(func) {
 }
 
 function removeOrganism(organism) {
-    removeItemAll(getObjectArrFromMap(ALL_ORGANISMS, organism.posX, organism.posY), organism);
+    let arr = removeItemAll(getObjectArrFromMap(ALL_ORGANISMS, organism.posX, organism.posY), organism);
+    if (arr.length === 0) {
+        ALL_ORGANISMS.get(organism.posX).delete(organism.posY);
+    }
 }
 
 export {addNewOrganism, addOrganism, getOrganismsAtSquare, iterateOnOrganisms, removeOrganism}

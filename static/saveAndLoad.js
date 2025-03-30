@@ -15,6 +15,7 @@ import { getGAMEDATA, getUICONFIG, saveMapEntry, saveUI, setGAMEDATA, setUICONFI
 import { getTotalCanvasPixelWidth, indexCanvasSize, MAIN_CANVAS } from "./index.js";
 import { STAGE_DEAD } from "./organisms/Stages.js";
 import { initUI } from "./ui/WindowManager.js";
+import { purgeMaps } from "./globals.js";
 
 export async function loadSlot(slotName) {
     const db = await openDatabase();
@@ -92,11 +93,9 @@ export async function saveUserSettings() {
 }
 
 function purgeGameState() {
-    iterateOnSquares((sq) => removeSquare(sq));
-    iterateOnOrganisms((org) => {
-        org.lifeSquares.forEach((lsq) => removeOrganismSquare(lsq));
-        removeOrganism(org);
-    });
+    iterateOnSquares((sq) => sq.destroy());
+    iterateOnOrganisms((org) => org.destroy());
+    purgeMaps();
     initWindPressure();
 }
 

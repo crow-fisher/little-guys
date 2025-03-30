@@ -41,14 +41,22 @@ export class TopBarComponent {
         this.elements[1] = [
             new TopBarText(getBaseUISize() * 2, "left", () => this.textWorldName())
         ]
+
+        this.midSpacingEl = new TopBarText(getBaseUISize() * 2, "left", () => " | ")
         
         this.elements[0] = [
             new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_MAINMENU, UI_BOOLEAN, () => this.textMainMenu()),
+            this.midSpacingEl,
             new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_BLOCK, UI_BOOLEAN, () => this.textBlockMenu()),
+            this.midSpacingEl,
             new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_CLIMATE, UI_BOOLEAN, () => this.textClimateMenu()),
+            this.midSpacingEl,
             new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_VIEWMODE, UI_BOOLEAN, () => this.textViewMode()),
+            this.midSpacingEl,
             new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_LIGHTING, UI_BOOLEAN, () => this.textToggleLighting()),
-            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_SIMULATION, UI_BOOLEAN, () => this.textDesignerMode()),
+            this.midSpacingEl,
+            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_SIMULATION, UI_BOOLEAN, () => this.textSimulation()),
+            this.midSpacingEl,
             new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_0, () => "⏸"),
             new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_1, () => "▶"),
             new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_2, () => "▶"),
@@ -71,35 +79,35 @@ export class TopBarComponent {
     }
 
     textMainMenu() {
-        return " main |"
+        return "main"
     }
 
     textBlockMenu() {
-        return " place |"
+        return "place"
     }
     textClimateMenu() {
         if (this.veryCompact) {
-            return "clim |"
+            return "clim"
         }
-        return " climate |"
+        return "climate"
     }
     textViewMode() {
         if (this.veryCompact) {
-            return "view |"
+            return "view"
         }
-        return " viewmode |"
+        return "viewmode"
     }
     textToggleLighting() {
         if (this.veryCompact) {
-            return "light |"
+            return "light"
         }
-        return " lighting |" 
+        return "lighting" 
     }
-    textDesignerMode() {
+    textSimulation() {
         if (this.veryCompact) {
-            return "sim |"
+            return "sim"
         }
-        return " simulation |"
+        return "simulation"
     }
     textWorldName() {
         if (this.compact)
@@ -150,28 +158,22 @@ export class TopBarComponent {
             startX -= totalElementsSizeX;
         }
 
-            
-        for (let i = 0; i < elements.length; i++) {
-            let element = elements[i];
-            let measurements = element.measure();
-            element.render(startX, curStartY + this.padding + measurements[1]);
-            this.elementPositions[key][i] = startX;
-            startX += measurements[0] + this.padding;
 
-            if (key == 0 && i == 5) {
-                curStartY += getBaseUISize() * 2.6 * 1.3;
-                let totalElementsSizeX = elements.slice(5).map((element) => element.measure()).map((measurements) => measurements[0] + this.padding).reduce(
-                    (accumulator, currentValue) => accumulator + currentValue,
-                    0,
-                );
-                startX = Math.max(getBaseUISize() * 1, getCanvasWidth() * 1 - totalElementsSizeX )
-            }
-            curEndX = startX;
-            this.maxHeight = Math.max(measurements[1] + getBaseUISize() * 4.2, this.maxHeight);
-            if (key == 0 && startX > getCanvasWidth()) {
-                this.prevFrameBoink = true;
-            }
-        }
+        let topBarElements = elements.slice(0, 11);
+        let topBarElementsToRender = Array.from(topBarElements.filter((el) => el != this.midSpacingEl));
+        topBarElementsToRender.forEach((el) => el.textAlign = "center")
+        let step = getCanvasWidth() / topBarElementsToRender.length;
+
+        for (let i = 0; i < topBarElementsToRender.length; i++) {
+            let element = topBarElementsToRender[i];
+            let measurements = element.measure();
+            element.render(startX + step/2, curStartY + this.padding + measurements[1]);
+            startX += step;
+            // startX += measurements[0] + this.padding;
+
+            this.maxHeight = Math.max(measurements[1], this.maxHeight);
+
+        }        
     }
 
     render1Row() {
@@ -179,7 +181,7 @@ export class TopBarComponent {
         let curEndX = 0;
         order.forEach((key) => {
             let elements = this.elements[key];
-            let startX = getCanvasWidth() * key;
+            let startX = (key == 0 ? getBaseUISize() * 1 : 0) + getCanvasWidth() * key;
             let totalElementsSizeX = elements.map((element) => element.measure()).map((measurements) => measurements[0] + this.padding).reduce(
                 (accumulator, currentValue) => accumulator + currentValue,
                 0,
