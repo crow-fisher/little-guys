@@ -62,7 +62,8 @@ export function renderOrganisms() {
 export function removeSquare(square) {
     let arr = removeItemAll(getObjectArrFromMap(ALL_SQUARES, square.posX, square.posY), square);
     if (arr.length === 0) {
-        ALL_SQUARES.get(square.posX).delete(square.posY);
+        if ((ALL_SQUARES).has(square.posX) && ALL_SQUARES.get(square.posX).has(square.posY))
+            ALL_SQUARES.get(square.posX).delete(square.posY);
     }
 }
 
