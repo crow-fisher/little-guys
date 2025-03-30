@@ -17,7 +17,6 @@ export class BlockSubtreeComponent extends SubTreeComponent {
 
         subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 13 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_PALETTE_ACTIVE, "blocks",() => getActiveClimate().getUIColorInactiveCustom(0.66), () => getActiveClimate().getUIColorActive()));
         subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 13 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_SM_ORGANISM, "plants",() => getActiveClimate().getUIColorInactiveCustom(0.59), () => getActiveClimate().getUIColorActive()));
-
         
     }
 
