@@ -2,20 +2,20 @@
 
 
 function getObjectArrFromMap(baseMap, posX, posY, create=false) {
-    if (!(posX in baseMap)) {
+    if (!(baseMap.has(posX))) {
         if (!create)
             return new Array();
-        baseMap[posX] = new Map();
+        baseMap.set(posX, new Map());
     }
-    if (!(posY in baseMap[posX])) {
+    if (!(baseMap.get(posX).has(posY))) {
         if (!create)
             return new Array();
-        baseMap[posX][posY] = new Array();
+        baseMap.get(posX).set(posY, new Array());
     }
-    if (!create && baseMap[posX][posY].length == 0) {
-        baseMap[posX].delete(posY)
+    if (!create && baseMap.get(posX).get(posY).length == 0) {
+        // baseMap.get(posX).delete(posY)
     }
-    return baseMap[posX][posY];
+    return baseMap.get(posX).get(posY);
 }
 
 function removeItemAll(arr, value) {

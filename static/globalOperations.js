@@ -62,25 +62,25 @@ export function renderOrganisms() {
 export function removeSquare(square) {
     let arr = removeItemAll(getObjectArrFromMap(ALL_SQUARES, square.posX, square.posY), square);
     if (arr.length === 0) {
-        ALL_SQUARES[square.posX].delete(square.posY);
+        ALL_SQUARES.get(square.posX).delete(square.posY);
     }
 }
 
 export function purgeCanvasFrameLimit() {
-    let rootKeys = Object.keys(ALL_SQUARES);
+    let rootKeys = ALL_SQUARES.keys();
     rootKeys.forEach((key) => {
-        let subkeys = Object.keys(ALL_SQUARES[parseFloat(key)]);
+        let subkeys = ALL_SQUARES.get(key).keys();
         subkeys.forEach((subkey) => {
             if (subkey >= 0 && subkey < getCanvasSquaresY()) {
                 return;
             }
-            ALL_SQUARES[parseFloat(key)][parseFloat(subkey)].forEach((sq) => sq.destroy(true));
-            ALL_SQUARES[key].delete(subkey);
+            ALL_SQUARES.get(key).get(subkey).forEach((sq) => sq.destroy(true));
+            ALL_SQUARES.get(key).delete(subkey);
         });
         if (key < 0 || key >= getCanvasSquaresX()) {
             subkeys.forEach((subkey) => {
-                ALL_SQUARES[parseFloat(key)][parseFloat(subkey)].forEach((sq) => sq.destroy(true));
-                ALL_SQUARES[key].delete(subkey);
+                ALL_SQUARES.get(key).get(subkey).forEach((sq) => sq.destroy(true));
+                ALL_SQUARES.get(key).delete(subkey);
             });
             ALL_SQUARES.delete(key);
         }

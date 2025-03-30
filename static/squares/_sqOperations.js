@@ -90,29 +90,12 @@ function getSqIterationOrder() {
     return squareOrder;
 }
 
-export function* getAllSquares() {
-    let rootKeys = Object.keys(ALL_SQUARES);
-    for (let i = 0; i < rootKeys.length; i++) {
-        let subKeys = Object.keys(ALL_SQUARES[rootKeys[i]]);
-        for (let j = 0; j < subKeys.length; j++) {
-            let squares = getSquares(rootKeys[i], subKeys[j]);
-            for (let k = 0; k < squares.length; k++) {
-                yield squares[k];
-            }
-        }
-    }
-}
+
 /**
  * @param {function} func - applies provided function to all squares
  */
 function iterateOnSquares(func) {
-    let rootKeys = Object.keys(ALL_SQUARES);
-    for (let i = 0; i < rootKeys.length; i++) {
-        let subKeys = Object.keys(ALL_SQUARES[rootKeys[i]]);
-        for (let j = 0; j < subKeys.length; j++) {
-            getSquares(rootKeys[i], subKeys[j]).forEach((func));
-        }
-    }
+    ALL_SQUARES.keys().forEach((key) => ALL_SQUARES.get(key).keys().forEach((subkey) => ALL_SQUARES.get(key).get(subkey).forEach((func))));
 }
 
 
