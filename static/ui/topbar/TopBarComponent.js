@@ -66,7 +66,8 @@ export class TopBarComponent {
             new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_6, () => "▶"),
             new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_7, () => "▶"),
             new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_8, () => "▶"),
-            new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_9, () => "▶\t|\t"),
+            new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_9, () => "▶"),
+            this.midSpacingEl,
             new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_TIME, UI_BOOLEAN,() => this.textDateTime() + " |"),
             new TopBarText(getBaseUISize() * 2, "left", () => " " + this.textWeather()),
             
@@ -228,7 +229,7 @@ export class TopBarComponent {
         if (elementIdx == 0) {
             return 0;
         }
-        return this.elementPositions[elementKey][elementIdx] - getBaseUISize() * 0.8;
+        return this.elementPositions[elementKey][elementIdx] + getBaseUISize() * 1.7;
     }
 
     update() {
