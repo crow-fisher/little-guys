@@ -285,3 +285,10 @@ export function executeFunctionQueue() {
         queuedFunctionArr = new Array();
     }
 }
+
+export function closeEyedropperMixer() {
+    if (loadGD(UI_PALETTE_MIXER) || loadGD(UI_PALETTE_EYEDROPPER)) {
+        saveGD(UI_PALETTE_MIXER, false);
+        saveGD(UI_PALETTE_EYEDROPPER, false);
+    }
+}

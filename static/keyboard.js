@@ -1,6 +1,6 @@
 import { doZoom, resetZoom } from "./canvas.js";
 import { getGlobalThetaBase, setGlobalThetaBase } from "./globals.js";
-import { loadGD, saveGD, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_BB_MODE, UI_MODE_ROCK, UI_MODE_SOIL, UI_SM_BB, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_TOPBAR_BLOCK, UI_PALETTE_ROCKMODE, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE } from "./ui/UIData.js";
+import { loadGD, saveGD, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_BB_MODE, UI_MODE_ROCK, UI_MODE_SOIL, UI_SM_BB, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_TOPBAR_BLOCK, UI_PALETTE_ROCKMODE, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, closeEyedropperMixer } from "./ui/UIData.js";
 
 export const KEY_CONTROL = "Control";
 export const KEY_SHIFT = "Shift";
@@ -13,6 +13,8 @@ export function isKeyPressed(keyName) {
     }
     return false;
 }
+
+
 
 export function keydown(e) {
     e.preventDefault();
@@ -35,24 +37,26 @@ export function keydown(e) {
         saveGD(UI_TOPBAR_BLOCK, true);
         saveGD(UI_PALETTE_ACTIVE, true);
         saveGD(UI_PALETTE_ROCKMODE, false);
-        saveGD(UI_PALETTE_MIXER, false);
-        saveGD(UI_PALETTE_EYEDROPPER, false);
+        closeEyedropperMixer();
+
     }
 
     if (e.key == '2') {
         saveGD(UI_TOPBAR_BLOCK, true);
         saveGD(UI_PALETTE_ACTIVE, true);
         saveGD(UI_PALETTE_ROCKMODE, true);
-        saveGD(UI_PALETTE_MIXER, false);
-        saveGD(UI_PALETTE_EYEDROPPER, false);
+        closeEyedropperMixer();
+
+
     }
 
     if (e.key == '3') {
         saveGD(UI_TOPBAR_BLOCK, true);
         saveGD(UI_PALETTE_ACTIVE, true);
         saveGD(UI_PALETTE_SELECT, UI_PALETTE_WATER);
-        saveGD(UI_PALETTE_MIXER, false);
-        saveGD(UI_PALETTE_EYEDROPPER, false);
+        closeEyedropperMixer();
+
+
     }
 
     
@@ -60,16 +64,17 @@ export function keydown(e) {
         saveGD(UI_TOPBAR_BLOCK, true);
         saveGD(UI_PALETTE_ACTIVE, true);
         saveGD(UI_PALETTE_SELECT, UI_PALETTE_AQUIFER);
-        saveGD(UI_PALETTE_MIXER, false);
-        saveGD(UI_PALETTE_EYEDROPPER, false);
+        closeEyedropperMixer();
+
+
     }
 
     if (e.key == '5') {
         saveGD(UI_TOPBAR_BLOCK, true);
         saveGD(UI_PALETTE_ACTIVE, true);
         saveGD(UI_PALETTE_SELECT, UI_PALETTE_SURFACE);
-        saveGD(UI_PALETTE_MIXER, false);
-        saveGD(UI_PALETTE_EYEDROPPER, false);
+        closeEyedropperMixer();
+
     }
 
 
