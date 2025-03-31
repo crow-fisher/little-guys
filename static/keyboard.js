@@ -35,18 +35,24 @@ export function keydown(e) {
         saveGD(UI_TOPBAR_BLOCK, true);
         saveGD(UI_PALETTE_ACTIVE, true);
         saveGD(UI_PALETTE_ROCKMODE, false);
+        saveGD(UI_PALETTE_MIXER, false);
+        saveGD(UI_PALETTE_EYEDROPPER, false);
     }
 
     if (e.key == '2') {
         saveGD(UI_TOPBAR_BLOCK, true);
         saveGD(UI_PALETTE_ACTIVE, true);
         saveGD(UI_PALETTE_ROCKMODE, true);
+        saveGD(UI_PALETTE_MIXER, false);
+        saveGD(UI_PALETTE_EYEDROPPER, false);
     }
 
     if (e.key == '3') {
         saveGD(UI_TOPBAR_BLOCK, true);
         saveGD(UI_PALETTE_ACTIVE, true);
         saveGD(UI_PALETTE_SELECT, UI_PALETTE_WATER);
+        saveGD(UI_PALETTE_MIXER, false);
+        saveGD(UI_PALETTE_EYEDROPPER, false);
     }
 
     
@@ -54,12 +60,16 @@ export function keydown(e) {
         saveGD(UI_TOPBAR_BLOCK, true);
         saveGD(UI_PALETTE_ACTIVE, true);
         saveGD(UI_PALETTE_SELECT, UI_PALETTE_AQUIFER);
+        saveGD(UI_PALETTE_MIXER, false);
+        saveGD(UI_PALETTE_EYEDROPPER, false);
     }
 
     if (e.key == '5') {
         saveGD(UI_TOPBAR_BLOCK, true);
         saveGD(UI_PALETTE_ACTIVE, true);
         saveGD(UI_PALETTE_SELECT, UI_PALETTE_SURFACE);
+        saveGD(UI_PALETTE_MIXER, false);
+        saveGD(UI_PALETTE_EYEDROPPER, false);
     }
 
 

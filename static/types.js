@@ -55,6 +55,7 @@ let TypeMap = {
     [ElephantEarGreenSquare.name]: ElephantEarGreenSquare,
     [PalmTreeGreenSquare.name]: PalmTreeGreenSquare,
     [MushroomGreenSquare.name]: MushroomGreenSquare,
+    [KentuckyBluegrassGreenSquare.name]: KentuckyBluegrassGreenSquare
 }
 
 let TypeNameMap = {
@@ -63,6 +64,7 @@ let TypeNameMap = {
     ElephantEarGreenSquare: ElephantEarGreenSquare.name,
     PalmTreeGreenSquare: PalmTreeGreenSquare.name,
     MushroomGreenSquare: MushroomGreenSquare.name,
+    KentuckyBluegrassGreenSquare: KentuckyBluegrassGreenSquare.name
 }
 
 export { ProtoMap, TypeMap, TypeNameMap}
