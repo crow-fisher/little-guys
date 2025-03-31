@@ -1,7 +1,7 @@
 import { addOrganismSquare } from "./lifeSquares/_lsOperations.js";
 import { addOrganism, iterateOnOrganisms } from "./organisms/_orgOperations.js";
 import { GrowthComponent, GrowthPlan, GrowthPlanStep } from "./organisms/GrowthPlan.js";
-import { addSquareOverride, iterateOnSquares } from "./squares/_sqOperations.js";
+import { addSquare, addSquareOverride, iterateOnSquares } from "./squares/_sqOperations.js";
 import { getTemperatureMap, getWaterSaturationMap } from "./climate/temperatureHumidity.js";
 import { getCurDay, setCurDay } from "./climate/time.js";
 import { ProtoMap, TypeMap } from "./types.js";
@@ -275,7 +275,7 @@ function loadSlotFromSave(slotData) {
         sq.linkedOrganismSquares = Array.from(sq.linkedOrganismSquares.map((lsqIdx) => lsqArr[lsqIdx]));
     });
 
-    sqArr.forEach(addSquareOverride);
+    sqArr.forEach(addSquare);
 
     orgArr.forEach((org) => {
         org.linkedSquare = sqArr[org.linkedSquare];

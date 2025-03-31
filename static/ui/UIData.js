@@ -28,6 +28,7 @@ export const UI_LIGHTING_WATER = "UI_LIGHTING_WATER";
 export const UI_LIGHTING_ROCK = "UI_LIGHTING_ROCK";
 export const UI_LIGHTING_PLANT = "UI_LIGHTING_PLANT";
 export const UI_LIGHTING_DECAY = "UI_LIGHTING_DECAY";
+export const UI_LIGHTING_SURFACE = "UI_LIGHTING_SURFACE";
 
 
 export const UI_ORGANISM_SELECT = "UI_ORGANISM_SELECT";
@@ -141,7 +142,7 @@ export const UI_PALETTE_SURFACE = "UI_PALETTE_SURFACE";
 // put default values in here
 // saved directly
 
-let _GAMEDATA = {
+let _GAMEDATA_DEFAULT = {
     UI_NAME: "plymouth",
     UI_PALETTE_SIZE: 6,
     UI_PALETTE_STRENGTH: 1,
@@ -160,7 +161,7 @@ let _GAMEDATA = {
     UI_SPEED: UI_SPEED_1,
     UI_CLIMATE_SELECT: UI_CLIMATE_MIDWEST,
     UI_DISPLAY_SIZEY: 100,
-
+    UI_LIGHTING_SURFACE: 0.1,
     UI_LIGHTING_UPDATERATE: 20,
     UI_LIGHTING_QUALITY: 5,
     UI_GODMODE_STRENGTH: 0.5,
@@ -178,15 +179,12 @@ let _GAMEDATA = {
     UI_CLIMATE_WEATHER_ACTIVE: UI_CLIMATE_WEATHER_SUNNY
 };
 
-let _UICONFIG = {
-}
-
 export const GAMEDATA = "GAMEDATA";
 export const UICONFIG = "UICONFIG";
 
 let ROOT = {
-    GAMEDATA: _GAMEDATA,
-    UICONFIG: _UICONFIG
+    GAMEDATA: structuredClone(_GAMEDATA_DEFAULT),
+    UICONFIG: {}
 }
 
 export function getGAMEDATA() {
@@ -194,6 +192,12 @@ export function getGAMEDATA() {
 }
 export function setGAMEDATA(inVal) {
     ROOT[GAMEDATA] = inVal;
+
+    Object.keys(_GAMEDATA_DEFAULT).forEach((key) => {
+        if (ROOT[GAMEDATA][key] != null)
+            return;
+        ROOT[GAMEDATA][key] = _GAMEDATA_DEFAULT[key];
+    })
 }
 
 export function getUICONFIG() {
@@ -226,15 +230,15 @@ export function addUIFunctionMap(key, value) {
 }
 
 export function saveGD(key, value) {
-    return saveGeneral(_GAMEDATA, key, value);
+    return saveGeneral(ROOT[GAMEDATA], key, value);
 }
 
 export function saveUI(key, value) {
-    return saveGeneral(_UICONFIG, key, value);
+    return saveGeneral(ROOT[UICONFIG], key, value);
 }
 
 export function loadGD(key) {
-    return _GAMEDATA[key];
+    return ROOT[GAMEDATA][key];
 }
 
 export function saveGDMap(map) {

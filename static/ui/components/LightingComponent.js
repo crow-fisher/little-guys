@@ -4,7 +4,7 @@ import { Component } from "../Component.js";
 import { Container } from "../Container.js";
 import { Slider } from "../elements/Slider.js";
 import { Text } from "../elements/Text.js";
-import { loadGD, UI_LIGHTING_SUN, UI_LIGHTING_MOON, UI_LIGHTING_WATER, UI_LIGHTING_ROCK, UI_LIGHTING_PLANT, UI_LIGHTING_DECAY, UI_SM_LIGHTING, UI_SOIL_COMPOSITION, UI_CENTER } from "../UIData.js";
+import { loadGD, UI_LIGHTING_SUN, UI_LIGHTING_MOON, UI_LIGHTING_WATER, UI_LIGHTING_ROCK, UI_LIGHTING_PLANT, UI_LIGHTING_DECAY, UI_SM_LIGHTING, UI_SOIL_COMPOSITION, UI_CENTER, UI_LIGHTING_SURFACE } from "../UIData.js";
 
 export class LightingComponent extends Component {
     constructor(posX, posY, padding, dir, key) {
@@ -37,5 +37,10 @@ export class LightingComponent extends Component {
 
         rightContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, UI_CENTER, "decay"));
         rightContainer.addElement(new Slider(this.window, UI_LIGHTING_DECAY, sizeX,  35, 0.5, 200, () => getActiveClimate().getUIColorTransient()));
+
+        leftContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, UI_CENTER, "surface"));
+        leftContainer.addElement(new Slider(this.window, UI_LIGHTING_SURFACE, sizeX,  35, 0.0, 1, () => getActiveClimate().getUIColorTransient()));
+
+
     }
 }

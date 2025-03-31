@@ -1,7 +1,7 @@
 import { iterateOnSquares } from "../squares/_sqOperations.js";
 import { getCloudColorAtPos } from "../climate/temperatureHumidity.js";
 import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "../climate/time.js";
-import { loadGD, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_QUALITY, UI_LIGHTING_SUN } from "../ui/UIData.js";
+import { loadGD, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_QUALITY, UI_LIGHTING_SUN, UI_LIGHTING_SURFACE } from "../ui/UIData.js";
 import { getWindSquaresX, getWindSquaresY } from "../climate/wind.js";
 import { getCanvasSquaresX, getCanvasSquaresY } from "../canvas.js";
 import { getCurLightingInterval } from "./lightingHandler.js";
@@ -379,8 +379,7 @@ export class LightSource {
             let obj = arr[2];
             let curBrightnessCopy = curBrightness;
             let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(theta)() * curBrightnessCopy * this.brightnessFunc() * this.thetaBrightnessFunc(theta);
-            if (!obj.surface)
-                curBrightness *= (1 - (obj.getLightFilterRate() * loadGD(UI_LIGHTING_DECAY) * (loadGD(UI_LIGHTING_QUALITY)) / 9));
+            curBrightness *= (1 - (obj.surface ? loadGD(UI_LIGHTING_SURFACE) : 1) * (obj.getLightFilterRate() * loadGD(UI_LIGHTING_DECAY) * (loadGD(UI_LIGHTING_QUALITY)) / 9));
             if (obj.lighting[idx] == null) {
                 obj.lighting[idx] = [[pointLightSourceFunc], this.colorFunc];
             } else if (obj.lighting[idx][0].length >= jobIdx) {
