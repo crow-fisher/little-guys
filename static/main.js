@@ -11,19 +11,9 @@ import { ClimateHandler } from "./climate/climateHandler.js";
 import { isLeftMouseClicked, isRightMouseClicked } from "./mouse.js";
 import { iterateOnSquares } from "./squares/_sqOperations.js";
  
-const SQUARE_UPDATE_MILLIS = 0;
-const ORG_UPDATE_MILLIS = 0;
-
-let last_square_tick = 0;
-let last_org_tick = 0;
-
-let updated = false;
-
 initUI();
-
 let lightingHandler = new LightingHandler();
 let climateHandler = new ClimateHandler();
-
 let liveTimeouts = new Array();
 
 export function addTimeout(timeout) {
@@ -42,9 +32,6 @@ export function resetClimateAndLighting() {
     iterateOnSquares((sq) => sq.lighting = new Array());
 }
 
-export function triggerEarlySquareScheduler() {
-    last_square_tick = 0;
-}
 
 export function scheduler_main() {
     updateTime();

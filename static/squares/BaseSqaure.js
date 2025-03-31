@@ -394,6 +394,9 @@ export class BaseSquare {
         newPosX = Math.floor(newPosX);
         newPosY = Math.floor(newPosY);
 
+        if (getSquares(newPosX, newPosY).some((sq) => this.testCollidesWithSquare(sq)))
+            return false;
+
         if (this.linkedOrganism != null) {
             if (getOrganismsAtSquare(newPosX, newPosY).some((org) => true)) {
                 console.log("Found an existing organism at target block; destroying this organism");
@@ -464,6 +467,41 @@ export class BaseSquare {
 
     percolateInnerMoisture() { }
 
+    testCollidesWithSquare(sq) {
+        if (this.organic) {
+            if (!sq.surface && sq.collision) {
+                return true;
+            }
+            if (sq.collision && sq.currentPressureDirect > 0 && Math.random() > 0.9) {
+                return true;
+            }
+            return false;
+        }
+        if (this.solid) {
+            if (!sq.solid) {
+                if (this.surface) {
+                    return false;
+                }
+                return true;
+            }
+            return true;
+        }
+        if (!this.solid) {
+            if (!sq.collision) {
+                return false;
+            }
+            if (!sq.solid) {
+                return true;
+            } else {
+                if (sq.surface) {
+                    return false;
+                }
+                return true;
+            }
+        }
+        return true;
+    }
+
     gravityPhysics() {
         if (!this.physicsEnabled || this.linkedOrganismSquares.some((sq) => sq.type == "root")) {
             return false;
@@ -472,7 +510,6 @@ export class BaseSquare {
         if (this.gravity == 0) {
             return;
         }
-
         let finalXPos = this.posX;
         let finalYPos = this.posY;
         let bonked = false;
@@ -481,31 +518,7 @@ export class BaseSquare {
                 let jSigned = (this.speedX > 0) ? j : -j;
                 let jSignedMinusOne = (this.speedX == 0 ? 0 : (this.speedX > 0) ? (j - 1) : -(j - 1));
                 if (getSquares(this.posX + jSigned, this.posY + i)
-                    .some((sq) => {
-                        if (this.organic) {
-                            if (!sq.surface && sq.collision) {
-                                return true;
-                            }
-                            if (sq.collision && sq.currentPressureDirect > 0 && Math.random() > 0.9) {
-                                return true;
-                            }
-                            return false;
-                        }
-                        if (!this.solid) {
-                            if (!sq.collision) {
-                                return false;
-                            }
-                            if (!sq.solid) {
-                                return true;
-                            } else {
-                                if (sq.surface) {
-                                    return false;
-                                }
-                                return true;
-                            }
-                        }
-                        return true;
-                    })) {
+                    .some((sq) => this.testCollidesWithSquare(sq))) {
                     finalYPos = this.posY + (i - 1);
                     finalXPos = this.posX + jSignedMinusOne;
                     this.speedX = 0;

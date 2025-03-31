@@ -91,7 +91,6 @@ export function purgeCanvasFrameLimit() {
 
 export function doWaterFlow() {
     let candidateTargetKeys = Array.from(Object.keys(WATERFLOW_TARGET_SQUARES));
-
     candidateTargetKeys.filter((group) => group in WATERFLOW_CANDIDATE_SQUARES).forEach((targetGroup) => {
         let candidateGroupMap = WATERFLOW_CANDIDATE_SQUARES[targetGroup];
         let targetGroupMap = WATERFLOW_TARGET_SQUARES[targetGroup];

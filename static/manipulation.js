@@ -3,10 +3,8 @@ let ERASE_RADIUS = 2;
 import { getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, transformPixelsToCanvasSquares } from "./canvas.js";
 import { addTemperature, addWaterSaturationPascalsSqCoords } from "./climate/temperatureHumidity.js";
 import { addWindPerssureMaintainHumidity, addWindPressureCloud, addWindPressureDryAir } from "./climate/wind.js";
-import { randNumber } from "./common.js";
 import { removeSquare } from "./globalOperations.js";
 import { getOrganismSquaresAtSquare } from "./lifeSquares/_lsOperations.js";
-import { triggerEarlySquareScheduler } from "./main.js";
 import { getLastMouseDown, getLastMoveOffset, getLeftMouseUpEvent, isLeftMouseClicked, isMiddleMouseClicked, isRightMouseClicked, setMouseTouchStartCallback } from "./mouse.js";
 import { addNewOrganism } from "./organisms/_orgOperations.js";
 import { WheatSeedOrganism } from "./organisms/agriculture/WheatOrganism.js";
@@ -149,7 +147,6 @@ export function doClickAddEyedropperMixer() {
     if (lastMoveOffset == null || isMiddleMouseClicked() || isWindowHovered()) {
         return;
     }
-    triggerEarlySquareScheduler();
     if (lastMoveOffset.x > getCanvasWidth() || lastMoveOffset > getCanvasHeight()) {
         return;
     }
@@ -177,7 +174,6 @@ export function doClickAdd() {
         return;
     }
 
-    triggerEarlySquareScheduler();
 
     if (isLeftMouseClicked() || isRightMouseClicked()) {
         if (lastMoveOffset.x > getCanvasWidth() || lastMoveOffset > getCanvasHeight()) {
