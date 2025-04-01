@@ -53,7 +53,6 @@ export function processLighting(lightingMap) {
 
 export function applyLightingFromSource(source, dest) {
     if (source.lighting.length == 0) {
-        console.warn("Invalid argument to applyLightingFromSource; source doesn't have a lighting arr instantaited")
         return;
     }
     dest.lighting = [];

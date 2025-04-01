@@ -4,9 +4,6 @@ import { removeItemAll } from "../common.js";
 
 function addNewOrganism(organism) {
     if (getOrganismsAtSquare(organism.posX, organism.posY, true).length > 0) {
-        console.warn("Weird state; tried to add an organism to an existing square.")
-        console.log(getOrganismsAtSquare(organism.posX, organism.posY));
-        console.log(organism);
         organism.destroy();
         return false;
     }

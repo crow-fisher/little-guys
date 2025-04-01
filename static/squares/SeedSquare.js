@@ -51,7 +51,6 @@ class SeedSquare extends BaseSquare {
             });
             this.destroy();
         } else {
-            console.log("Already found an organism here: ", this.posX, this.posY + 1);
             this.linkedOrganism.destroy();
             this.destroy();
         }

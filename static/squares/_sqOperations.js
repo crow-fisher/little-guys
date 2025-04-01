@@ -29,14 +29,10 @@ function* getNeighbors(x, y) {
 
 
 function addSquare(square) {
-    if (!square.organic && square.collision && getSquares(square.posX, square.posY).some((sq) => {
-        if (square.solid && sq.collision) {
-            return true;
-        } else if (!square.solid && !sq.surface) {
-            return true;
-        }
-        return false;
-    })) {
+    // if (getSquares(square.posX, square.posY).some((sq) => sq.testCollidesWithSquare(square))) {
+    //     return false;
+    // }
+    if (!square.organic && square.collision && getSquares(square.posX, square.posY).some((sq) => sq.testCollidesWithSquare(square))) {
         return false;
     }
     if (!square.organic && getSquares(square.posX, square.posY).some((sq) => sq.proto == square.proto)) {

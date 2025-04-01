@@ -9,7 +9,7 @@ import {
 
 import { MAIN_CONTEXT } from "../index.js";
 
-import { hexToRgb, rgbToRgba } from "../common.js";
+import { hexToRgb, hsv2rgb, rgb2hsv, rgbToRgba } from "../common.js";
 
 import { getOrganismsAtSquare } from "../organisms/_orgOperations.js";
 import { addOrganism } from "../organisms/_orgOperations.js";
@@ -26,7 +26,7 @@ import { RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
 import { getCurDay, getCurrentLightColorTemperature, getDaylightStrengthFrameDiff, timeScaleFactor } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
-import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS } from "../ui/UIData.js";
+import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_LIGHTING_WATER_VALUE, UI_LIGHTING_WATER_SATURATION, UI_LIGHTING_WATER_HUE } from "../ui/UIData.js";
 import { isLeftMouseClicked } from "../mouse.js";
 
 export class BaseSquare {
@@ -106,6 +106,8 @@ export class BaseSquare {
         this.lightingSum = { r: 0, g: 0, b: 0 }
         this.lightingSumCount = 0;
 
+        this.surfaceLightingFactor = 0.1;
+
         this.mixIdx = -1;
         this.initTemperature();
     };
@@ -144,11 +146,7 @@ export class BaseSquare {
     getSoilWaterPressure() { return -(10 ** 8); }
 
     getLightFilterRate() {
-        if (this.surface) {
-            return 0.00017 / 1.5;
-        } else {
-            return 0.00017;
-        }
+        return 0.00017;
     }
 
     temperatureRoutine() {
@@ -261,7 +259,8 @@ export class BaseSquare {
     }
 
     renderSurface() {
-        MAIN_CONTEXT.fillStyle = this.surface ? "rgba(172, 35, 226, 0.25)" : "rgba(30, 172, 58, 0.25)";
+        // MAIN_CONTEXT.fillStyle = this.surface ? "rgba(172, 35, 226, 0.12)" : "rgba(30, 172, 58, 0.12)";
+        MAIN_CONTEXT.fillStyle = this.surface ? "rgba(172, 35, 226, 0)" : "rgba(30, 172, 58, 0)";
         zoomCanvasFillRect(
             (this.offsetX + this.posX) * getBaseSize(),
             (this.offsetY + this.posY) * getBaseSize(),
@@ -360,6 +359,9 @@ export class BaseSquare {
     }
 
     renderWithVariedColors(opacityMult) {
+        if (this.proto == "WaterSquare") {
+            this.opacity = loadGD(UI_LIGHTING_WATER_OPACITY);
+        }
         if (
             (opacityMult != this.lastColorCacheOpacity) ||
             (Date.now() > this.lastColorCacheTime + (isLeftMouseClicked() ? 250 : 500) * Math.random()) ||
@@ -368,8 +370,18 @@ export class BaseSquare {
             let outColorBase = this.getColorBase();
             let lightingColor = this.processLighting();
             let outColor = { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
-            this.cachedRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacityMult * this.opacity * (this.blockHealth ** 0.2));
+            
+            if (this.proto == "WaterSquare") {
+                let hsv = rgb2hsv(outColor.r, outColor.g, outColor.b);
+                hsv[1] = loadGD(UI_LIGHTING_WATER_VALUE);
+                hsv[2] = 255 * loadGD(UI_LIGHTING_WATER_SATURATION);
+                hsv[0] += 65 * loadGD(UI_LIGHTING_WATER_HUE);
+                let rgb = hsv2rgb(...hsv);
+                outColor = {r: rgb[0], g: rgb[1], b: rgb[2]}
+            }
+
             this.lastColorCacheOpacity = opacityMult;
+            this.cachedRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacityMult * this.opacity * (this.blockHealth ** 0.2));
         }
         MAIN_CONTEXT.fillStyle = this.cachedRgba;
         zoomCanvasFillRect(
@@ -394,13 +406,12 @@ export class BaseSquare {
         newPosX = Math.floor(newPosX);
         newPosY = Math.floor(newPosY);
 
-        if (getSquares(newPosX, newPosY).some((sq) => this.testCollidesWithSquare(sq)))
+        if (getSquares(newPosX, newPosY).some((sq) => this.testCollidesWithSquare(sq))) {
             return false;
+        }
 
         if (this.linkedOrganism != null) {
             if (getOrganismsAtSquare(newPosX, newPosY).some((org) => true)) {
-                console.log("Found an existing organism at target block; destroying this organism");
-                console.log(this.linkedOrganism);
                 this.linkedOrganism.destroy()
                 return false;
             }
@@ -469,6 +480,9 @@ export class BaseSquare {
 
     testCollidesWithSquare(sq) {
         if (this.organic) {
+            if (!sq.solid) {
+                return false;
+            }
             if (!sq.surface && sq.collision) {
                 return true;
             }
@@ -503,10 +517,9 @@ export class BaseSquare {
     }
 
     gravityPhysics() {
-        if (!this.physicsEnabled || this.linkedOrganismSquares.some((sq) => sq.type == "root")) {
+        if (!this.physicsEnabled) {
             return false;
         }
-
         if (this.gravity == 0) {
             return;
         }

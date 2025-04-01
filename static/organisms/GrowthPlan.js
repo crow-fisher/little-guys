@@ -29,7 +29,6 @@ export class GrowthPlan {
     }
 
     postConstruct() {
-        console.warn("Warning: postconstruct not implemented");
     }
 
     postComplete() { };

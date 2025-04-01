@@ -431,7 +431,6 @@ class BaseOrganism {
             this.lightDamageCount += 1;
             if (this.lightDamageCount > 10 ) {
                 this.stage = STAGE_DEAD;
-                console.log("light damage death");
             }
         }
 
@@ -547,7 +546,6 @@ class BaseOrganism {
         let max = this.spawnTime + this.curLifeTimeOffset + this.getGrowthCycleLength() * this.numGrowthCycles;
         if (getCurDay() > max) {
             this.stage = STAGE_DEAD;
-            console.log("has plant lived too long death");
         }
     }
 
