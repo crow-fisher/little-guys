@@ -369,16 +369,6 @@ export class BaseSquare {
             let outColorBase = this.getColorBase();
             let lightingColor = this.processLighting();
             let outColor = { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
-            
-            if (this.proto == "WaterSquare") {
-                let hsv = rgb2hsv(outColor.r, outColor.g, outColor.b);
-                hsv[1] = loadGD(UI_LIGHTING_WATER_VALUE);
-                hsv[2] = 255 * loadGD(UI_LIGHTING_WATER_SATURATION);
-                hsv[0] += 355 * loadGD(UI_LIGHTING_WATER_HUE);
-                let rgb = hsv2rgb(...hsv);
-                outColor = {r: rgb[0], g: rgb[1], b: rgb[2]}
-            }
-
             this.lastColorCacheOpacity = opacityMult;
             this.cachedRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacityMult * this.opacity * (this.blockHealth ** 0.2));
         }
