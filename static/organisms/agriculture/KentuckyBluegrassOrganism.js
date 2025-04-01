@@ -9,6 +9,7 @@ import { KentuckyBluegrassGreenSquare } from "../../lifeSquares/parameterized/ag
 import { addSquare } from "../../squares/_sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
 import { addNewOrganism } from "../_orgOperations.js";
+import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
 
 export class KentuckyBluegrassOrganism extends BaseOrganism {
     constructor(posX, posY) {
@@ -48,6 +49,8 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
             let orgAdded = addNewOrganism(new KentuckyBluegrassSeedOrganism(seedSquare, this.getNextGenetics()));
             if (!orgAdded) {
                 seedSquare.destroy();
+            } else {
+                applyLightingFromSource(this.lifeSquares.at(0), orgAdded.lifeSquares.at(0));
             }
         }
         let reduction = 0.8

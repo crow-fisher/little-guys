@@ -2,7 +2,7 @@ import { BaseSquare } from "./BaseSqaure.js";
     
 import { addOrganism } from "../organisms/_orgOperations.js";
 import { removeOrganism } from "../organisms/_orgOperations.js";
-import { getSquares, removeOrganismSquare } from "./_sqOperations.js";
+import { getSquares } from "./_sqOperations.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 class SeedSquare extends BaseSquare {
     constructor(posX, posY) {
@@ -44,7 +44,6 @@ class SeedSquare extends BaseSquare {
             addOrganism(linkedOrganism);
 
             linkedOrganism.lifeSquares.forEach((lsq) => {
-                removeOrganismSquare(lsq);
                 lsq.posY += 1;
                 addOrganismSquare(lsq);
                 lsq.linkSquare(sq);

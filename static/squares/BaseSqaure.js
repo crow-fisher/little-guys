@@ -17,7 +17,6 @@ import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 
 import { removeSquare } from "../globalOperations.js";
 
-import { removeOrganismSquare } from "./_sqOperations.js";
 import { removeOrganism } from "../organisms/_orgOperations.js";
 
 import { calculateColorTemperature, getTemperatureAtWindSquare, updateWindSquareTemperature } from "../climate/temperatureHumidity.js";
@@ -375,7 +374,7 @@ export class BaseSquare {
                 let hsv = rgb2hsv(outColor.r, outColor.g, outColor.b);
                 hsv[1] = loadGD(UI_LIGHTING_WATER_VALUE);
                 hsv[2] = 255 * loadGD(UI_LIGHTING_WATER_SATURATION);
-                hsv[0] += 65 * loadGD(UI_LIGHTING_WATER_HUE);
+                hsv[0] += 355 * loadGD(UI_LIGHTING_WATER_HUE);
                 let rgb = hsv2rgb(...hsv);
                 outColor = {r: rgb[0], g: rgb[1], b: rgb[2]}
             }
@@ -418,10 +417,10 @@ export class BaseSquare {
         }
 
         this.linkedOrganismSquares.forEach((lsq) => {
-            removeOrganismSquare(lsq);
-            lsq.posX = newPosX;
-            lsq.posY = newPosY;
-            addOrganismSquare(lsq);
+            if (lsq != null && lsq.posX != null) {
+                lsq.posX = newPosX;
+                lsq.posY = newPosY;
+            }
         })
 
         if (this.linkedOrganism != null) {

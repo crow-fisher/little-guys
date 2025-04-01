@@ -103,10 +103,6 @@ function getCollidableSquareAtLocation(posX, posY) {
     return getSquares(posX, posY).filter((sq) => sq.collision);
 }
 
-function removeOrganismSquare(organismSquare) {
-    removeItemAll(getObjectArrFromMap(ALL_ORGANISM_SQUARES, organismSquare.posX, organismSquare.posY), organismSquare);
-}
-
 // Does not remove organic squares.
 function removeSquarePos(x, y) {
     x = Math.floor(x);
@@ -116,4 +112,4 @@ function removeSquarePos(x, y) {
 }
 
 
-export {getSqIterationOrder, getNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares, removeOrganismSquare, removeSquarePos};
+export {getSqIterationOrder, getNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares, removeSquarePos};

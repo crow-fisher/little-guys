@@ -52,7 +52,7 @@ export function processLighting(lightingMap) {
 }
 
 export function applyLightingFromSource(source, dest) {
-    if (source.lighting.length == 0) {
+    if (source == null || source.lighting == null || source.lighting.length == 0) {
         return;
     }
     dest.lighting = [];

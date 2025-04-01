@@ -2,14 +2,13 @@ import { MAIN_CONTEXT } from "../index.js";
 import { hexToRgb, hsv2rgb, rgb2hsv, rgbToHex, rgbToRgba } from "../common.js";
 
 import { getCurTime } from "../climate/time.js";
-import { addSquare, getSquares, removeOrganismSquare } from "../squares/_sqOperations.js";
+import { addSquare, getSquares } from "../squares/_sqOperations.js";
 
 import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED } from "../colors.js";
-import { addOrganismSquare } from "./_lsOperations.js";
 import { removeSquare } from "../globalOperations.js";
-import { STATE_DEAD, STATE_HEALTHY, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, STATE_DESTROYED, SUBTYPE_FLOWER, STAGE_DEAD } from "../organisms/Stages.js";
+import { STATE_HEALTHY, STATE_DESTROYED, STAGE_DEAD } from "../organisms/Stages.js";
 import { processLighting } from "../lighting/lightingProcessing.js";
-import { getBaseSize, zoomCanvasFillRect, zoomCanvasFillRectTheta } from "../canvas.js";
+import { getBaseSize, zoomCanvasFillRectTheta } from "../canvas.js";
 import { loadGD, UI_LIGHTING_PLANT, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
 
 
@@ -119,11 +118,9 @@ class BaseLifeSquare {
     }
 
     updatePositionDifferential(dx, dy) {
-        removeOrganismSquare(this);
         removeSquare(this.linkedSquare);
         this.posX += dx;
         this.posY += dy;
-        addOrganismSquare(this);
         addSquare(this.linkedSquare);
     }
 
@@ -159,7 +156,6 @@ class BaseLifeSquare {
                 this.linkedSquare.unlinkOrganismSquare(this);
             }
         }
-        removeOrganismSquare(this);
     }
 
     getStaticRand(randIdx) {

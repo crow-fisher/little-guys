@@ -141,6 +141,7 @@ export const UI_PALETTE_SOILROCK = "UI_PALETTE_SOILROCK";
 export const UI_PALETTE_WATER = "UI_PALETTE_WATER";
 export const UI_PALETTE_AQUIFER = "UI_PALETTE_AQUIFER";
 export const UI_PALETTE_SURFACE = "UI_PALETTE_SURFACE";
+export const UI_PALETTE_ERASE = "UI_PALETTE_ERASE";
 
 // put default values in here
 // saved directly

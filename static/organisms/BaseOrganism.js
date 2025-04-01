@@ -509,7 +509,7 @@ class BaseOrganism {
         if (this.stage != STAGE_DEAD) {
             return;
         }
-        this.deathProgress += .01;
+        this.deathProgress += (getDt()) * loadGD(UI_SIMULATION_GENS_PER_DAY);
         if (this.originGrowth == null || this.deathProgress >= 1) { 
             this.destroy();
         }
