@@ -22,7 +22,7 @@ export class MushroomOrganism extends BaseOrganism {
 
         this.numGrowthCycles = 1;
         this.growthCycleMaturityLength = 4 * (1 + (Math.random()));
-        this.growthCycleLength = this.growthCycleMaturityLength * 2.8;
+        this.growthCycleLength = this.growthCycleMaturityLength * 3.0;
         this.growthNitrogen = 25;
         this.growthPhosphorus = 25;
         this.growthLightLevel = 0.5; 
@@ -53,7 +53,7 @@ export class MushroomOrganism extends BaseOrganism {
 
         let p0 = this.evolutionParameters[0];
         let p1 = this.evolutionParameters[1];
-        this.growthLightLevel = .3 + p0 * 0.9;
+        this.growthLightLevel = .4 + p0 * 0.9;
 
         if (p1 == 0) {
             // "correct" case - as p0 gets higher, grow taller with longer leaves and require more light
