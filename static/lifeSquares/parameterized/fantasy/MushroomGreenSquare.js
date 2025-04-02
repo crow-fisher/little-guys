@@ -1,13 +1,7 @@
 import { BaseLifeSquare } from "../../BaseLifeSquare.js";
-import { STATE_DEAD, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE } from "../../../organisms/Stages.js";
-import { addNewOrganism } from "../../../organisms/_orgOperations.js";
-import { WheatSeedOrganism } from "../../../organisms/agriculture/WheatOrganism.js";
-import { addSquare } from "../../../squares/_sqOperations.js";
-import { SeedSquare } from "../../../squares/SeedSquare.js";
-import { CattailSeedOrganism } from "../../../organisms/midwest/CattailOrganism.js";
-import { MushroomSeedOrganism } from "../../../organisms/fantasy/MushroomOrganism.js";
-import { getCurDay } from "../../../climate/time.js";
-import { hueShiftColorArr, rgbToHex, rgbToRgba } from "../../../common.js";
+import { SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE } from "../../../organisms/Stages.js";
+import { hueShiftColorArr, rgbToHex } from "../../../common.js";
+import { loadGD, UI_LIGHTING_PLANT_TREE } from "../../../ui/UIData.js";
 
 export class MushroomGreenSquare extends BaseLifeSquare {
     constructor(square, organism) {
@@ -58,5 +52,9 @@ export class MushroomGreenSquare extends BaseLifeSquare {
             this.darkColor = rgbToHex(...hueShiftColorArr(this.darkColor, hueShift, 0, 0));
             this.baseColor = rgbToHex(...hueShiftColorArr(this.baseColor, hueShift, 0, 0));
         }
+    }
+
+    getLightFilterRate() {
+        return super.getLightFilterRate() * loadGD(UI_LIGHTING_PLANT_TREE);
     }
 }

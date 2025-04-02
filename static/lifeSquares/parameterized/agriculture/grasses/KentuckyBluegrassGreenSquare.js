@@ -5,6 +5,7 @@ import { WheatSeedOrganism } from "../../../../organisms/agriculture/WheatOrgani
 import { addSquare } from "../../../../squares/_sqOperations.js";
 import { SeedSquare } from "../../../../squares/SeedSquare.js";
 import { hueShiftColorArr, rgbToHex } from "../../../../common.js";
+import { loadGD, UI_LIGHTING_PLANT_GRASS } from "../../../../ui/UIData.js";
 
 export class KentuckyBluegrassGreenSquare extends BaseLifeSquare {
     constructor(square, organism) {
@@ -51,6 +52,10 @@ export class KentuckyBluegrassGreenSquare extends BaseLifeSquare {
             this.darkColor = rgbToHex(...hueShiftColorArr(this.darkColor, hueShift, saturationShift, valueShift));
             this.baseColor = rgbToHex(...hueShiftColorArr(this.baseColor, hueShift, saturationShift, valueShift));
         }
+    }
+
+    getLightFilterRate() {
+        return super.getLightFilterRate() * loadGD(UI_LIGHTING_PLANT_GRASS)
     }
 
     doGroundDecay() {
