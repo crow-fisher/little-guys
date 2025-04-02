@@ -1,3 +1,4 @@
+import { getCurTimeScaleVal } from "../climate/time.js";
 import { saveUserSettings } from "../saveAndLoad.js";
 
 export const UI_MODE_SOIL = "soil";
@@ -182,7 +183,7 @@ let _GAMEDATA_DEFAULT = {
     UI_PALETTE_ROCKMODE: false,
     UI_SIMULATION_CLOUDS: true,
     UI_LIGHTING_ENABLED: true,
-    UI_SIMULATION_GENS_PER_DAY: 5000,
+    UI_SIMULATION_GENS_PER_DAY: getCurTimeScaleVal(9),
     UI_CLIMATE_WEATHER_DURATION: 0.000694444 * 60 * 6,
     UI_CLIMATE_WEATHER_ACTIVE: UI_CLIMATE_WEATHER_SUNNY,
     UI_LIGHTING_WATER_HUE: -.1,

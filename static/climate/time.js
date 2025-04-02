@@ -251,8 +251,12 @@ function getCurTime() {
     return curTime;
 }
 
+export function getCurTimeScaleVal(v) {
+    return (3.5 ** (v - 1));
+}
+
 export function getCurTimeScale() {
-    return (3.5 ** (TIME_SCALE - 1));
+    return getCurTimeScaleVal(TIME_SCALE);
 }
 
 export function getTimeScale() {
