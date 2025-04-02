@@ -1,4 +1,3 @@
-import { getCurTimeScaleVal } from "../climate/time.js";
 import { saveUserSettings } from "../saveAndLoad.js";
 
 export const UI_MODE_SOIL = "soil";
@@ -148,6 +147,10 @@ export const UI_PALETTE_ERASE = "UI_PALETTE_ERASE";
 
 // put default values in here
 // saved directly
+
+function getCurTimeScaleVal(v) {
+    return (3.5 ** (v - 1));
+}
 
 let _GAMEDATA_DEFAULT = {
     UI_NAME: "plymouth",
