@@ -3,6 +3,7 @@ import { SeedLifeSquare } from "../lifeSquares/SeedLifeSquare.js";
 import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 import { addNewOrganism } from "./_orgOperations.js";
 import { getCurDay, getTimeScale } from "../climate/time.js";
+import { loadGD, UI_SIMULATION_GENS_PER_DAY } from "../ui/UIData.js";
 
 class BaseSeedOrganism extends BaseOrganism {
     constructor(square, evolutionParameters = null) {
@@ -32,6 +33,10 @@ class BaseSeedOrganism extends BaseOrganism {
     }
 
     process() {
+        if (this.getAge() > loadGD(UI_SIMULATION_GENS_PER_DAY) * 2) {
+            this.destroy();
+            return;
+        }
         if (this.linkedSquare == null) {
             this.destroy();
             return;
