@@ -35,9 +35,6 @@ function addSquare(square) {
     if (!square.organic && square.collision && getSquares(square.posX, square.posY).some((sq) => sq.testCollidesWithSquare(square))) {
         return false;
     }
-    if (!square.organic && getSquares(square.posX, square.posY).some((sq) => sq.proto == square.proto)) {
-        return false; 
-    }
     getSquares(square.posX, square.posY, true).push(square);
     return square;
 }

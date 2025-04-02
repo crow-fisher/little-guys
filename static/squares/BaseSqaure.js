@@ -481,6 +481,9 @@ export class BaseSquare {
             }
             return false;
         }
+        if (sq.proto === this.proto) {
+            return true;
+        }
         if (this.solid) {
             if (!sq.solid) {
                 if (this.surface) {
