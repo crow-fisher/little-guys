@@ -18,7 +18,7 @@ export function createSunLightGroup() {
         getCanvasSquaresX(),
         numNodes,
         getCurrentLightColorTemperature,
-        () => loadGD(UI_LIGHTING_SUN) * getDaylightStrength() / numNodes,
+        () => Math.exp(loadGD(UI_LIGHTING_SUN)) * getDaylightStrength() / numNodes,
         1,
         0.15,
         -1,
@@ -34,7 +34,7 @@ export function createMoonLightGroup() {
         100,
         2,
         getMoonlightColor,
-        () => loadGD(UI_LIGHTING_MOON),
+        () => Math.exp(loadGD(UI_LIGHTING_MOON)),
         0.51,
         0.49
     );

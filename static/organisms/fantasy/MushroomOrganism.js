@@ -21,7 +21,7 @@ export class MushroomOrganism extends BaseOrganism {
         this.grassGrowTimeInDays =  0.01;
 
         this.numGrowthCycles = 1;
-        this.growthCycleMaturityLength = 1 + (Math.random());
+        this.growthCycleMaturityLength = 4 * (1 + (Math.random()));
         this.growthCycleLength = this.growthCycleMaturityLength * 4;
         this.growthNitrogen = 25;
         this.growthPhosphorus = 25;
@@ -255,20 +255,25 @@ export class MushroomOrganism extends BaseOrganism {
         if (this.originGrowth == null || this.leaves.length == 0) {
             return;
         }
-        let chosen = this.leaves.at(randNumber(0, this.leaves.length - 1));
-        let comp = this.originGrowth.getChildFromPath(chosen);
-        let lsq = comp.lifeSquares.at(comp.lifeSquares.length - 1);
 
-        let seedSquare = addSquare(new SeedSquare(lsq.getPosX(), lsq.getPosY()));
-        seedSquare.speedY = -Math.round(randRange(-2, -5));
-        seedSquare.speedX = Math.round(randRange(-5, 5));
+        let num = randNumber(1, 2)
+        for (let i = 0; i < num; i++) {
+            let chosen = this.leaves.at(randNumber(0, this.leaves.length - 1));
+            let comp = this.originGrowth.getChildFromPath(chosen);
+            let lsq = comp.lifeSquares.at(comp.lifeSquares.length - 1);
+            let seedSquare = addSquare(new SeedSquare(lsq.getPosX(), lsq.getPosY()));
 
-        if (seedSquare) {
-            let orgAdded = addNewOrganism(new MushroomSeedOrganism(seedSquare, this.getNextGenetics()));
-            if (!orgAdded) {
-                seedSquare.destroy();
+            seedSquare.speedY = -Math.round(randRange(-2, -5));
+            seedSquare.speedX = Math.round(randRange(-5, 5));
+
+            if (seedSquare) {
+                let orgAdded = addNewOrganism(new MushroomSeedOrganism(seedSquare, this.getNextGenetics()));
+                if (!orgAdded) {
+                    seedSquare.destroy();
+                }
             }
         }
+
         let reduction = 0.8
         this.nitrogen *= (1 - reduction);
         this.phosphorus *= (1 - reduction);
