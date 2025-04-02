@@ -21,10 +21,10 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
         this.side = Math.random() > 0.5 ? -1 : 1;
 
         this.targetNumGrass = 1;
-        this.maxNumGrass = 3;
+        this.maxNumGrass = 2;
 
         this.targetGrassLength = 1;
-        this.maxGrassLength = 8;
+        this.maxGrassLength = 5;
 
         this.numGrowthCycles = 1; 
         this.growthCycleMaturityLength = 1 + (Math.random());
@@ -95,8 +95,8 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
         growthPlan.postConstruct = () => {
             this.originGrowth.addChild(growthPlan.component);
             this.grasses.push(this.originGrowth.getChildPath(growthPlan.component))
-            growthPlan.component.xOffset = 2 * (Math.random() - 0.5);
-            growthPlan.component.yOffset = - (1 * (0.5 + Math.random()));
+            growthPlan.component.xOffset = 3 * (Math.random() - 0.5);
+            growthPlan.component.yOffset = - (.5 * (0.5 + Math.random()));
         };
         growthPlan.component._getWilt = (val) => Math.sin(val) / 2; 
         growthPlan.steps.push(new GrowthPlanStep(
