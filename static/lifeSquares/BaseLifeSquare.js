@@ -156,6 +156,7 @@ class BaseLifeSquare {
                 this.linkedSquare.unlinkOrganismSquare(this);
             }
         }
+        this.lighting = [];
     }
 
     getStaticRand(randIdx) {

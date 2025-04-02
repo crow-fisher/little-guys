@@ -178,6 +178,7 @@ export class BaseSquare {
             this.linkedOrganism.destroy();
         }
         removeSquare(this);
+        this.lighting = [];
     }
     linkOrganism(organism) {
         this.linkedOrganism = organism;
