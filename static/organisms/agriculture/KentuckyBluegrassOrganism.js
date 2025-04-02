@@ -28,7 +28,7 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
 
         this.numGrowthCycles = 1; 
         this.growthCycleMaturityLength = 1 + (Math.random());
-        this.growthCycleLength = this.growthCycleMaturityLength * 4;
+        this.growthCycleLength = this.growthCycleMaturityLength * 2.5;
 
         this.grasses = [];
         
