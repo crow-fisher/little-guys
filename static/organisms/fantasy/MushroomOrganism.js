@@ -53,7 +53,7 @@ export class MushroomOrganism extends BaseOrganism {
 
         let p0 = this.evolutionParameters[0];
         let p1 = this.evolutionParameters[1];
-        this.growthLightLevel = .3 + p0;
+        this.growthLightLevel = .3 + p0 * 0.9;
 
         if (p1 == 0) {
             // "correct" case - as p0 gets higher, grow taller with longer leaves and require more light
