@@ -22,7 +22,7 @@ export class MushroomOrganism extends BaseOrganism {
 
         this.numGrowthCycles = 1;
         this.growthCycleMaturityLength = 4 * (1 + (Math.random()));
-        this.growthCycleLength = this.growthCycleMaturityLength * 4;
+        this.growthCycleLength = this.growthCycleMaturityLength * 3;
         this.growthNitrogen = 25;
         this.growthPhosphorus = 25;
         this.growthLightLevel = 0.5; 
