@@ -38,7 +38,7 @@ class BaseOrganism {
         this.waterPressureWiltThresh = -1;
         this.waterPressure = 0;
         this.waterPressureChangeRate = .01;
-        this.waterPressureSoilTarget = -2.5;
+        this.waterPressureSoilTarget = -4;
 
         // nutrients normalized to "pounds per acre" per farming websites
         this.ph = 7;
