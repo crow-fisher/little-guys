@@ -4,7 +4,7 @@ import { hexToRgb, hsv2rgb, rgb2hsv, rgbToHex, rgbToRgba } from "../common.js";
 import { getCurTime } from "../climate/time.js";
 import { addSquare, getSquares } from "../squares/_sqOperations.js";
 
-import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED } from "../colors.js";
+import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED, RGB_COLOR_VERY_FUCKING_GREEN } from "../colors.js";
 import { removeSquare } from "../globalOperations.js";
 import { STATE_HEALTHY, STATE_DESTROYED, STAGE_DEAD } from "../organisms/Stages.js";
 import { processLighting } from "../lighting/lightingProcessing.js";
@@ -79,24 +79,6 @@ class BaseLifeSquare {
         this.touchingGround = null;
 
 
-    }
-
-    groundTouchSquare() {
-        if (this.touchingGround != null) {
-            return this.touchingGround;
-        }
-        this.touchingGround = getSquares(Math.floor(this.getPosX()), Math.floor(this.getPosY())).find((sq) => sq.collision && sq.solid);
-        return this.touchingGround;
-    }
-
-    doGroundDecay() {
-        let sq = this.groundTouchSquare();
-        if (sq != null) {
-            sq.nitrogen += this.linkedOrganism.getDecayNitrogen();
-            sq.phosphorus += this.linkedOrganism.getDecayPhosphorus();
-            this.linkedOrganism.removeAssociatedLifeSquare(this);
-            this.state = STATE_DESTROYED;
-        }
     }
 
     getLightFilterRate() {
@@ -203,11 +185,12 @@ class BaseLifeSquare {
     }
 
     render() {
+        let frameOpacity = this.opacity;
         if (this.lightHealth != this.prevLightHealth || this.activeRenderSubtype != this.subtype || this.activeRenderState != this.state) {
             this.subtypeColorUpdate();
         }
         if (this.linkedOrganism.stage == STAGE_DEAD) {
-            this.opacity = 1 - this.linkedOrganism.deathProgress; 
+            frameOpacity *= 1 - this.linkedOrganism.deathProgress; 
         }
         let selectedViewMode = loadGD(UI_VIEWMODE_SELECT);
         if (selectedViewMode == UI_VIEWMODE_NITROGEN) {
@@ -232,32 +215,20 @@ class BaseLifeSquare {
             let color1 = null;
             let color2 = null;
 
-            let val = this.linkedOrganism.waterPressure;
-            let valMin = -100;
-            let valMax = 0;
+            let val = this.linkedOrganism.getWilt();
+            let valMin, valMax;
 
-            if (this.linkedOrganism.waterPressure > -2) {
-                color1 = RGB_COLOR_BLUE;
-                color2 = RGB_COLOR_OTHER_BLUE;
-                valMin = this.linkedOrganism.waterPressureTarget;
-                valMax = this.linkedOrganism.waterPressureOverwaterThresh;
-
-            } else if (this.linkedOrganism.waterPressure > this.linkedOrganism.waterPressureWiltThresh) {
+            if (val > 0) {
                 color1 = RGB_COLOR_OTHER_BLUE;
-                color2 = RGB_COLOR_BROWN;
-                valMin = this.linkedOrganism.waterPressureWiltThresh;
-                valMax = this.linkedOrganism.waterPressureTarget;
+                color2 = RGB_COLOR_VERY_FUCKING_GREEN;
+                valMin = 0;
+                valMax = 1;
             } else {
-                color1 = RGB_COLOR_BROWN;
+                color1 = RGB_COLOR_VERY_FUCKING_GREEN;
                 color2 = RGB_COLOR_RED;
-                valMin = this.linkedOrganism.waterPressureDieThresh;
-                valMax = this.linkedOrganism.waterPressureWiltThresh;
+                valMin = -1;
+                valMax = 0;
             }
-
-
-            val = Math.max(valMin, val);
-            val = Math.min(valMax, val);
-
             let valInvLerp = (val - valMin) / (valMax - valMin);
             let out = {
                 r: color1.r * valInvLerp + color2.r * (1 - valInvLerp),
@@ -265,8 +236,7 @@ class BaseLifeSquare {
                 b: color1.b * valInvLerp + color2.b * (1 - valInvLerp),
             }
 
-
-            MAIN_CONTEXT.fillStyle = rgbToRgba(out.r, out.g, out.b, this.opacity);
+            MAIN_CONTEXT.fillStyle = rgbToRgba(out.r, out.g, out.b, frameOpacity);
             zoomCanvasFillRectTheta(
                 this.getPosX() * getBaseSize(),
                 this.getPosY() * getBaseSize(),
@@ -312,11 +282,10 @@ class BaseLifeSquare {
             
             let outColor = { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
             
-            let opacity = this.opacity;
             if (selectedViewMode == UI_VIEWMODE_ORGANISMS) {
-                opacity = Math.max(0.25, this.opacity);
+                frameOpacity = Math.max(0.25, this.opacity);
             }
-            let outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacity);
+            let outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), frameOpacity);
             MAIN_CONTEXT.fillStyle = outRgba;
 
             zoomCanvasFillRectTheta(

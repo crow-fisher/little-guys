@@ -48,9 +48,10 @@ export class MushroomGreenSquare extends BaseLifeSquare {
         }
         if (this.subtype != SUBTYPE_STEM) {
             let hueShift = ((this.linkedOrganism.evolutionParameters[1] == 1) ? 100 : 0) + 100 * this.linkedOrganism.evolutionParameters[0];
-            this.accentColor = rgbToHex(...hueShiftColorArr(this.accentColor, hueShift, 0,0));
-            this.darkColor = rgbToHex(...hueShiftColorArr(this.darkColor, hueShift, 0, 0));
-            this.baseColor = rgbToHex(...hueShiftColorArr(this.baseColor, hueShift, 0, 0));
+            let saturationShift = this.linkedOrganism.getWilt();
+            this.accentColor = rgbToHex(...hueShiftColorArr(this.accentColor, hueShift, saturationShift,0));
+            this.darkColor = rgbToHex(...hueShiftColorArr(this.darkColor, hueShift, saturationShift, 0));
+            this.baseColor = rgbToHex(...hueShiftColorArr(this.baseColor, hueShift, saturationShift, 0));
         }
     }
 

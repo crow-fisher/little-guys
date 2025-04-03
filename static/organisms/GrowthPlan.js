@@ -312,11 +312,6 @@ export class GrowthComponent {
         }
     }
 
-    /**
-     * Override this method directly on a child organism. 
-     * 'curWilt' is a value from 0 to 1, where 0 is least wilted and 1 is most wilted.
-     * This value is applied to the 'curve' of a grown component.
-     */
     _getWilt(wilt) {
         return wilt;
     }
@@ -325,7 +320,7 @@ export class GrowthComponent {
         if (this.lifeSquares.length == 0) {
             return 0;
         }
-        return this._getWilt(this.lifeSquares.at(0).linkedOrganism.curWilt);
+        return this._getWilt(this.lifeSquares.at(0).linkedOrganism.getWilt());
     }
 
     applyDeflectionState(parentComponent) {
@@ -339,7 +334,7 @@ export class GrowthComponent {
         let curve = this.baseCurve + Math.sin(this.currentDeflection) * 0.06 * (this.ySizeCur() - 1) / this.getTotalStrength();
 
         let startTheta = this.deflectionRollingAverage + this.getParentDeflection();
-        let endTheta = this.currentDeflection + curve + this.getParentDeflection() + this.getWilt();
+        let endTheta = this.currentDeflection + curve + this.getParentDeflection() - this.baseCurve * this.getWilt();
 
         let length = this.ySizeCur();
 
@@ -458,22 +453,5 @@ export class GrowthComponent {
             lsq.state != STATE_DESTROYED &&
             lsq.groundTouchSquare() != null)
             || this.children.some((child) => child.someSquareTouchingGround());
-    }
-
-    decay(amount) {
-        amount *= Math.min(0.01, getDt());
-        let livingLifeSquares = Array.from(this.lifeSquares
-            .filter((lsq) => lsq.state == STATE_HEALTHY || lsq.state == STATE_THIRSTY));
-        if (livingLifeSquares.length > 0) {
-            livingLifeSquares.filter((lsq) => Math.random() > 1 - 0.05).forEach((lsq) => lsq.state = STATE_DEAD);
-        }
-        this.baseDeflection += amount;
-        this.deflectionRollingAverage += amount;
-        // this.children.forEach((child) => child.decay(amount / 2));
-        this.lifeSquares.filter((lsq) =>
-            lsq.type == "green" &&
-            lsq.state == STATE_DEAD &&
-            lsq.groundTouchSquare() != null).forEach((lsq) => lsq.doGroundDecay());
-            
     }
 }

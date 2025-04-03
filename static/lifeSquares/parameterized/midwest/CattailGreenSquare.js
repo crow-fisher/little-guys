@@ -49,24 +49,4 @@ export class CattailGreenSquare extends BaseLifeSquare {
             }
         }
     }
-
-    doGroundDecay() {
-        super.doGroundDecay();
-        if (this.subtype == SUBTYPE_FLOWER || this.subtype == SUBTYPE_FLOWERNODE) {
-            let groundSquare = this.groundTouchSquare();
-            let offsetY = 1;
-            if (groundSquare.currentPressureDirect > 0) {
-                offsetY += (groundSquare.currentPressureDirect + 1);
-            }
-            let sq = addSquare(new SeedSquare(groundSquare.posX, groundSquare.posY - offsetY));
-            if (sq) {
-                sq.opacity = 0;
-                let orgAdded = addNewOrganism(new CattailSeedOrganism(sq));
-                if (!orgAdded) {
-                    sq.destroy();
-                }
-            }
-        }
-
-    }
 }

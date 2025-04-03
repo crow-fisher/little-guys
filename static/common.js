@@ -65,9 +65,9 @@ export function hueShiftColor(hex, hueShift, saturationShift, valueShift) {
 
 export function hueShiftColorArr(hex, hueShift, saturationShift, valueShift) {
     let hsv = rgb2hsv(...hexToRgbArr(hex))
-    hsv[0] += hueShift;
-    hsv[1] += saturationShift;
-    hsv[2] += valueShift;
+    hsv[0] = Math.max(0, Math.min(255, hsv[0] + hueShift));
+    hsv[1] = hsv[1] ** (1 + saturationShift)
+    hsv[2] = hsv[2] ** (1 + valueShift)
     return hsv2rgb(...hsv);
 }
 

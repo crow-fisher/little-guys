@@ -288,7 +288,7 @@ export class BaseSquare {
     }
 
     renderSpecialViewModeLinear(color1, color2, value, valueMax) {
-        this.renderSpecialViewModeLinearOpacity(color1, color2, value, valueMax, 1)
+        this.renderSpecialViewModeLinearOpacity(color1, color2, value, valueMax, 0.4)
     }
 
     renderSpecialViewModeLinearOpacity(color1, color2, value, valueMax, opacity) {
@@ -500,7 +500,7 @@ export class BaseSquare {
             if (!sq.solid) {
                 return true;
             } else {
-                if (sq.surface) {
+                if ((sq.surface && sq.waterContainment == sq.waterContainmentMax)) {
                     return false;
                 }
                 return true;
@@ -663,13 +663,5 @@ export class BaseSquare {
             })
     }
 
-    suckWater(rootRequestedWater) {
-        if (rootRequestedWater <= 0) {
-            return 0;
-        }
-        let ret = Math.min(rootRequestedWater, this.waterContainment);
-        this.waterContainment -= ret;
-        return ret;
-    }
 }
 

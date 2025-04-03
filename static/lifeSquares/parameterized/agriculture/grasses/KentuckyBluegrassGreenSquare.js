@@ -15,6 +15,7 @@ export class KentuckyBluegrassGreenSquare extends BaseLifeSquare {
         this.width = 0.7;
         this.activeRenderSubtype = null;
         this.LSQ_RENDER_SIZE_MULT = 1;
+        this.waterPressureSoilTarget = -4.5;
     }
 
     applySubtypeRenderConfig() {
@@ -56,25 +57,5 @@ export class KentuckyBluegrassGreenSquare extends BaseLifeSquare {
 
     getLightFilterRate() {
         return super.getLightFilterRate() * loadGD(UI_LIGHTING_PLANT_GRASS)
-    }
-
-    doGroundDecay() {
-        super.doGroundDecay();
-        if (this.subtype == SUBTYPE_FLOWER || this.subtype == SUBTYPE_FLOWERNODE) {
-            let groundSquare = this.groundTouchSquare();
-            let offsetY = 1;
-            if (groundSquare.currentPressureDirect > 0) {
-                offsetY += (groundSquare.currentPressureDirect + 1);
-            }
-            let sq = addSquare(new SeedSquare(groundSquare.posX, groundSquare.posY - offsetY));
-            if (sq) {
-                sq.opacity = 0;
-                let orgAdded = addNewOrganism(new WheatSeedOrganism(sq));
-                if (!orgAdded) {
-                    sq.destroy();
-                }
-            }
-        }
-
     }
 }

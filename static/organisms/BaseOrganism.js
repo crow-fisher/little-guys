@@ -32,16 +32,13 @@ class BaseOrganism {
         this.greenType = null;
         this.rootType = null;
 
-        this.curWilt = 0;
-        this.waterPressure = -2.5;
-        this.waterPressureTarget = -3;
-        this.waterPressureWiltThresh = -4;
-        this.waterPressureDieThresh = -5;
-        this.waterPressureOverwaterThresh = -1.5;
         
-        this.perDayWaterLoss = 0.1;
-
-        this.rootPower = 2;
+        this.waterPressureOverwaterThresh = 1
+        this.waterPressureTarget = 0;
+        this.waterPressureWiltThresh = -1;
+        this.waterPressure = 0;
+        this.waterPressureChangeRate = .01;
+        this.waterPressureSoilTarget = -2.5;
 
         // nutrients normalized to "pounds per acre" per farming websites
         this.ph = 7;
@@ -104,13 +101,6 @@ class BaseOrganism {
 
     processGenetics() {} // fill this out in your implementation class!
 
-    getDecayNitrogen() {
-        return this.nitrogen / this._lifeSquaresCount;
-    }
-
-    getDecayPhosphorus() {
-        return this.phosphorus / this._lifeSquaresCount;
-    }
 
     updateDeflectionState() {
         if (this.originGrowth != null) {
@@ -126,32 +116,20 @@ class BaseOrganism {
 
     // WATER SATURATION AND NUTRIENTS 
 
-    waterSaturationAndPhTick() {
-        let amountOfWaterTransferred = 0;
-        let sumPh = 0;
-        let maxRootAbsorptionRate = getDt() * this.perDayWaterLoss;
-        
-        this.lifeSquares
-            .filter((lsq) => lsq.type == "root")
-            .filter((lsq) => lsq.linkedSquare != null && lsq.linkedSquare.proto == "SoilSquare")
-            .filter((lsq) => (this.rootPower + lsq.linkedSquare.getSoilWaterPressure()) > this.waterPressure)
-            .forEach((lsq) => {
-                let amountOfWater = 0;
-                if (this.waterPressure + amountOfWaterTransferred < this.waterPressureTarget) {
-                    amountOfWater = lsq.linkedSquare.suckWater(maxRootAbsorptionRate);
-                } else {
-                    amountOfWater = lsq.linkedSquare.suckWater(maxRootAbsorptionRate / 10);
-                };
-                amountOfWaterTransferred += amountOfWater;
-                sumPh += amountOfWaterTransferred * lsq.linkedSquare.ph;
-            });
-        
-        this.ph = (this.ph * this.waterPressure + sumPh) / (this.waterPressure + amountOfWaterTransferred)
-        this.waterPressure += amountOfWaterTransferred;
+    waterPressureTick() {
+        let roots = this.lifeSquares
+            .filter((lsq) => lsq.type == "root");
+        let numRoots = roots.map((lsq) => 1).reduce(
+            (accumulator, currentValue) => accumulator + currentValue,
+            0);
+        this.waterPressure += this.waterPressureChangeRate * roots.filter((lsq) => lsq.linkedSquare != null && lsq.linkedSquare.proto == "SoilSquare")
+             .map((lsq) => (lsq.linkedSquare.getSoilWaterPressure() - this.waterPressureSoilTarget) / (numRoots))
+             .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+        this.waterPressure -= this.waterPressureChangeRate;
 
-        // todo: make this humidfy the air
-        this.waterPressure -= getDt() * this.perDayWaterLoss;
-        this.wilt();
+        if (this.waterPressure > this.waterPressureTarget) {
+            this.waterPressure -= 5 * this.getWilt() * this.waterPressureChangeRate;
+        }
     }
 
     nutrientTick() {
@@ -163,61 +141,40 @@ class BaseOrganism {
             .filter((lsq) => lsq.type == "root")
             .filter((lsq) => lsq.linkedSquare != null && lsq.linkedSquare.proto == "SoilSquare")
             .forEach((lsq) => {
-                this.nitrogen += lsq.linkedSquare.takeNitrogen(targetPerRootNitrogen, growthCycleFrac);
-                this.phosphorus += lsq.linkedSquare.takePhosphorus(targetPerRootPhosphorus, growthCycleFrac);
+                this.nitrogen += this.wiltEfficiency() * lsq.linkedSquare.takeNitrogen(targetPerRootNitrogen, growthCycleFrac);
+                this.phosphorus += this.wiltEfficiency() * lsq.linkedSquare.takePhosphorus(targetPerRootPhosphorus, growthCycleFrac);
             });
 
         this.lightlevel += this.lifeSquares
             .filter((lsq) => lsq.type == "green")
             .map((lsq) => [processLighting(lsq.lighting), lsq.lightHealth ** 4])
             .map((argb) => argb[1] * (argb[0].r + argb[0].b) / (255 * 2))
-            .map((lightlevel) => (lightlevel / this.growthNumGreen) * growthCycleFrac)
+            .map((lightlevel) => this.wiltEfficiency() * (lightlevel / this.growthNumGreen) * growthCycleFrac)
             .reduce(
                 (accumulator, currentValue) => accumulator + currentValue,
                 0,
             );
     }
 
-    wilt() {
-        return;
+    wiltEfficiency() {
+        return (.3) + 0.7 * (1 - Math.abs(this.getWilt()));
+    }
+
+    getWilt() {
         if (this.lifeSquares.length == 0) {
             return;
         }
         let greenLifeSquares = Array.from(this.lifeSquares.filter((lsq) => lsq.type == "green"));
         if (greenLifeSquares.length == 0) {
-            return;
+            return 0;
         }
-        if (this.waterPressure < this.waterPressureWiltThresh) {
-            this.curWilt += 0.01;
-            let lifeSquareToThirstify = greenLifeSquares.at(randNumber(0, greenLifeSquares.length - 1));
-            if (lifeSquareToThirstify.state == STATE_HEALTHY) {
-                lifeSquareToThirstify.state = STATE_THIRSTY;
-            } else if (lifeSquareToThirstify.state == STATE_THIRSTY) {
-                lifeSquareToThirstify.state = STATE_DEAD;
-            }
+        if (this.waterPressure > this.waterPressureTarget) {
+            return Math.min(1, (this.waterPressure - this.waterPressureTarget) / (this.waterPressureOverwaterThresh - this.waterPressureTarget)); 
+        } else if (this.waterPressure > this.waterPressureWiltThresh) {
+            return (this.waterPressure - this.waterPressureWiltThresh) / (this.waterPressureTarget - this.waterPressureWiltThresh) - 1; 
         } else {
-            this.curWilt -= 0.01;
-            let lifeSquareToRevive = greenLifeSquares.at(randNumber(0, greenLifeSquares.length - 1));
-            if (lifeSquareToRevive.state != STATE_DEAD) {
-                lifeSquareToRevive.state = STATE_HEALTHY;
-            }
+            return -1;
         }
-
-        if (this.waterPressure > this.waterPressureOverwaterThresh) {
-            let lifeSquareToKill = greenLifeSquares.at(randNumber(0, greenLifeSquares.length - 1));
-            lifeSquareToKill.state = STATE_DEAD;
-        }
-
-        this.curWilt = Math.max(0, this.curWilt);
-        this.curWilt = Math.min(Math.PI / 2, this.curWilt);
-
-        let totalDead = Array.from(greenLifeSquares.filter((lsq) => lsq.state == STATE_DEAD)).length;
-
-        if (totalDead > greenLifeSquares.length * 0.5) {
-            this.stage = STAGE_DEAD;
-            console.log("wilt death");
-        }
-
     }
 
     // PHYSICAL SQUARES
@@ -407,9 +364,6 @@ class BaseOrganism {
         if (!this.lifeSquares.some((lsq) => lsq.type == "green")) {
             this.executeGrowthPlans();
         }
-        if (this.waterPressure < this.waterPressureWiltThresh) {
-            return;
-        }
         if (this.stage == STAGE_DEAD) {
             return;
         }
@@ -437,7 +391,7 @@ class BaseOrganism {
         let scoreFunc = (sq) => {
             let sqScore = 0;
             if (this.waterPressure < this.waterPressureTarget) {
-                sqScore += sq.getSoilWaterPressure() / this.waterPressure;
+                sqScore += sq.getSoilWaterPressure() - this.waterPressureSoilTarget;
             }
             if (this.nitrogen < expectedNitrogen) {
                 sqScore += (sq.nitrogen / this.growthNitrogen) / (sq.linkedOrganismSquares.length + 1);
@@ -446,7 +400,7 @@ class BaseOrganism {
                 sqScore += (sq.phosphorus / this.growthPhosphorus) / (sq.linkedOrganismSquares.length + 1);
             }
         }
-        if ((this.curNumRoots < expectedNumRoots) && (this.waterPressure < this.waterPressureTarget || this.nitrogen < expectedNitrogen || this.phosphorus < expectedPhosphorus)) {
+        if ((this.curNumRoots < expectedNumRoots) && (this.nitrogen < expectedNitrogen || this.phosphorus < expectedPhosphorus)) {
             this.growRoot(scoreFunc);
         }
         if (this.lightlevel < expectedLightLevel) {
@@ -513,12 +467,6 @@ class BaseOrganism {
         if (this.originGrowth == null || this.deathProgress >= 1) { 
             this.destroy();
         }
-        this.lifeSquares.filter((lsq) => lsq.type == "root").forEach((lsq) => lsq.doGroundDecay());
-        // this.originGrowth.decay((2 * Math.PI) / this.getGrowthCycleLength());
-        // if (this.originGrowth.baseDeflection > Math.PI / 2) {
-        //     this.destroy();
-        // }
-
     }
 
     // DESTRUCTION
@@ -552,7 +500,7 @@ class BaseOrganism {
     // ** OUTER TICK METHOD INVOKED EACH FRAME
     // -- these methods are universal to every organism
     process() {
-        this.waterSaturationAndPhTick();
+        this.waterPressureTick();
         this.nutrientTick();
         this.doPlantGrowth();
         this.doGodModePlantGrowth();

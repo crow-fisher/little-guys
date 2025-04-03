@@ -216,7 +216,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     outflowNewWaterToLocation(posX, posY) {
-        if (getSquares(posX, posY).some((sq) => sq.collision)) {
+        if (getSquares(posX, posY).some((sq) => !sq.surface && sq.collision)) {
             return;
         }
         let outflowWaterAmount = (this.waterContainment - this.getInverseMatricPressure(-2)) / this.getWaterflowRate();
