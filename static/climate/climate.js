@@ -35,6 +35,9 @@ export class Climate {
         this.weatherPatternMap.set(UI_CLIMATE_WEATHER_LIGHTRAIN, 30);
         this.weatherPatternMap.set(UI_CLIMATE_WEATHER_HEAVYRAIN, 10);
 
+        this.lat = 41.8781;
+        this.lng = -87.6298;
+
         this.uci = new Map();
     }
 

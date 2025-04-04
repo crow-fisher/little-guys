@@ -438,6 +438,10 @@ function calculateColorTemperature(val) {
 
 export function calculateColorRGB(val, valMin, valMax, colorMin, colorMax) {
     val = Math.min(val, valMax);
+    val -= valMin;
+    valMax -= valMin;
+    valMin = 0;
+    
     let normalized = (val - valMin) / (valMax - valMin);
     return {
         r: Math.floor(colorMax.r * normalized + colorMin.r * (1 - normalized)),

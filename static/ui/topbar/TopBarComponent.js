@@ -129,9 +129,9 @@ export class TopBarComponent {
         let curDay = getCurDay();
         let curDate = new Date(curDay * millis_per_day);
         if (this.compact) {
-            return curDate.toLocaleTimeString("en-US", {timeZone: 'UTC'});
+            return curDate.toLocaleTimeString("en-US");
         } else {
-            return curDate.toLocaleString("en-US", {timeZone: 'UTC'});
+            return curDate.toLocaleString("en-US");
         }
     }
 

@@ -18,6 +18,8 @@ import {
     saveGD
 } from "../ui/UIData.js";
 import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
+import { SunCalc } from "./suncalc/suncalc.js";
+import { getActiveClimate } from "./climateManager.js";
 
 let TIME_SCALE = 1;
 let curUIKey = UI_SPEED_1;
@@ -131,6 +133,17 @@ export function doTimeSeek() {
 }
 
 // targetTime between 0 and 1
+
+export function seekDateLabel(label) {
+    let curDay = getCurDay();
+    let curDate = new Date(curDay * millis_per_day);
+    let times = SunCalc.getTimes(curDate, getActiveClimate().lat, getActiveClimate().lng);
+    let targetDate = null;
+    targetDate = times[label];
+    let seekDay = targetDate.getTime() / millis_per_day;
+    seek(seekDay % 1);
+}
+
 export function seek(targetTime) {
     let targetTimeCurDay = Math.floor(getCurDay()) + targetTime;
     TIME_SCALE = 2;
@@ -332,38 +345,68 @@ function updateTime() {
     }
 }
 
-function renderSkyBackground(time) {
-    let processed = Math.max(0, (1 - Math.abs(0.5 - time) * 2) * 2.5 - 1)
-    let minColor, maxColor, min, max, starBrightness;
+function renderSkyBackground() {
 
-    let duskEnd = 0.2;
-    let morningEnd = 0.5;
-    let nearNoon = 0.8;
-    let noon = 1.5;
+    let curDay = getCurDay();
+    let curMillis = curDay * millis_per_day;
+    let curDate = new Date(curMillis);
+    let times = SunCalc.getTimes(curDate, getActiveClimate().lat, getActiveClimate().lng);
+    let startOfDay = new Date(curMillis - (curMillis % millis_per_day));
 
-    if (processed < duskEnd) {
-        minColor = sky_nightRGB;
-        maxColor = sky_duskRGB;
-        min = 0;
-        max = duskEnd;
-    } else if (processed < morningEnd) {
-        minColor = sky_duskRGB;
-        maxColor = sky_colorEveningMorningRGB;
-        min = duskEnd;
-        max = morningEnd;
-        starBrightness = 1 - ((processed - min) / (max - min));
-    } else if (processed < nearNoon) {
-        minColor = sky_colorEveningMorningRGB;
-        maxColor = sky_colorNearNoonRGB;
-        min = morningEnd;
-        max = nearNoon;
-    } else {
-        minColor = sky_colorNearNoonRGB
-        maxColor = sky_colorNoonRGB;
-        min = nearNoon;
-        max = noon;
+    let nextDateStartOfDay = new Date(curMillis - (curMillis % millis_per_day) + millis_per_day);
+    let nextDateStartOfDay2 = new Date(curMillis - (curMillis % millis_per_day) + 2 * millis_per_day);
+
+    // sunrise
+    // goldenHourEnd
+    // solarNoon
+    // goldenHour
+    // sunsetStart
+    // night
+
+    let timesArr = Array.from([times.sunrise, times.goldenHourEnd, times.solarNoon, times.sunsetStart, times.night, times.nadir, nextDateStartOfDay2, nextDateStartOfDay2]).sort((a, b) => a.getTime() - b.getTime());
+    
+    let arrColorMap = {
+        0: {
+            minColor: sky_nightRGB,
+            maxColor: sky_duskRGB
+        },
+        1: {
+            minColor: sky_duskRGB,
+            maxColor: sky_colorEveningMorningRGB
+        },
+        2: {
+            minColor: sky_colorEveningMorningRGB,
+            maxColor: sky_colorNearNoonRGB
+        },
+        3: {
+            minColor: sky_colorNearNoonRGB,
+            maxColor: sky_colorNearNoonRGB
+        },
+        4: {
+            minColor: sky_colorNearNoonRGB,
+            maxColor: sky_colorEveningMorningRGB
+        },
+        5: {
+            minColor: sky_colorEveningMorningRGB,
+            maxColor: sky_duskRGB
+        },
+        6: {
+            minColor: sky_duskRGB,
+            maxColor: sky_nightRGB
+        },
+        7: {
+            minColor: sky_nightRGB,
+            maxColor: sky_nightRGB
+        }
     }
-    let processedColor = calculateColorRGB(processed, min, max, minColor, maxColor);
+    // let minColor, maxColor, min, max, starBrightness;
+
+    let idx = timesArr.findIndex((testTime) => curDate < testTime);
+    let min = timesArr[Math.max(0, idx - 1)];
+    let max = timesArr[idx];
+    let minColor = arrColorMap[idx].minColor;
+    let maxColor = arrColorMap[idx].maxColor;
+    let processedColor = calculateColorRGB(curDate.getTime(), min.getTime(), max.getTime(), minColor, maxColor);
     let frameCloudColor = getFrameRelCloud();
     let frameCloudMult = Math.min(1, (frameCloudColor.r + frameCloudColor.g + frameCloudColor.b) / (3 * 255) * 5);
 
@@ -391,32 +434,20 @@ function renderSkyBackground(time) {
 }
 
 function getDaylightStrength() {
-    if (_cdaylightStrength == null) {
-        _cdaylightStrength = _getDaylightStrength();
-    };
-    return _cdaylightStrength;
-}
-
-function _getDaylightStrength() {
     let currentTime = getCurDay() % 1;
-
-    let darkness = 0.05;
-    if (currentTime < 0.25 || currentTime > 0.75) {
-        return darkness;
+    let curDay = getCurDay();
+    let curDate = new Date(curDay * millis_per_day);
+    let sunData = SunCalc.getPosition(curDate, getActiveClimate().lat, getActiveClimate().lng);
+    let strength = sunData;
+    if (sunData.altitude < 0) {
+        return 0;
     }
-    return darkness + (Math.sin(currentTime * 2 * Math.PI - (Math.PI / 2)) ** 0.35) * (1 - darkness);
+    return Math.cos(sunData.altitude);
 }
 
 function renderTime() {
     // 0.5 is noon, 0.25 is sunrise, 0.75 is sunset
-    let daylightStrength = 0;
-    let currentTime = getCurDay() % 1;
-
-    if (currentTime > 0.25 && currentTime < 0.75) {
-        daylightStrength = getDaylightStrength();
-    }
-
-    MAIN_CONTEXT.fillStyle = calculateTempColorRgbaCache(daylightStrength, 0.35);
+    MAIN_CONTEXT.fillStyle = calculateTempColorRgbaCache(getDaylightStrength(), 0.35);
     MAIN_CONTEXT.fillRect(
         0,
         0,
@@ -424,7 +455,7 @@ function renderTime() {
         getTotalCanvasPixelHeight()
     );
 
-    renderSkyBackground(currentTime);
+    renderSkyBackground();
 }
 
 export function getCurrentLightColorTemperature() {

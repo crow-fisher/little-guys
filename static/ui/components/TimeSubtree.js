@@ -1,6 +1,6 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
-import { doTimeSkipToNow, seek } from "../../climate/time.js";
+import { doTimeSkipToNow, seekDateLabel } from "../../climate/time.js";
 import { Container } from "../Container.js";
 import { Button } from "../elements/Button.js";
 import { SubTreeComponent } from "./SubTreeComponent.js";
@@ -14,12 +14,21 @@ export class TimeSubtree extends SubTreeComponent {
 
         let textAlignOffsetX = getBaseUISize() * 1.91;
         let sizeX = getBaseUISize() * 11;
-
-        subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => seek(0), "midnight",() => getActiveClimate().getUIColorInactiveCustom(0.60)));
-        subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => seek(0.25), "dawn",() => getActiveClimate().getUIColorInactiveCustom(0.56)));
-        subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => seek(0.5), "noon",() => getActiveClimate().getUIColorInactiveCustom(0.58)));
-        subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => seek(0.75), "dusk",() => getActiveClimate().getUIColorInactiveCustom(0.61)));
         subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => doTimeSkipToNow(), "now",() => getActiveClimate().getUIColorInactiveCustom(0.61)));
+        subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => seekDateLabel("sunrise"), "sunrise",() => getActiveClimate().getUIColorInactiveCustom(0.60)));
+        subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => seekDateLabel("sunriseEnd"), "sunriseEnd",() => getActiveClimate().getUIColorInactiveCustom(0.56)));
+        subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => seekDateLabel("goldenHourEnd"), "goldenHourEnd",() => getActiveClimate().getUIColorInactiveCustom(0.58)));
+        subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => seekDateLabel("solarNoon"), "solarNoon",() => getActiveClimate().getUIColorInactiveCustom(0.61)));
+        subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => seekDateLabel("goldenHour"), "goldenHour",() => getActiveClimate().getUIColorInactiveCustom(0.61)));
+        subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => seekDateLabel("sunsetStart"), "sunsetStart",() => getActiveClimate().getUIColorInactiveCustom(0.61)));
+        subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => seekDateLabel("sunset"), "sunset",() => getActiveClimate().getUIColorInactiveCustom(0.61)));
+        subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => seekDateLabel("dusk"), "dusk",() => getActiveClimate().getUIColorInactiveCustom(0.61)));
+        subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => seekDateLabel("nauticalDusk"), "nauticalDusk",() => getActiveClimate().getUIColorInactiveCustom(0.61)));
+        subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => seekDateLabel("night"), "night",() => getActiveClimate().getUIColorInactiveCustom(0.61)));
+        subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => seekDateLabel("nadir"), "nadir",() => getActiveClimate().getUIColorInactiveCustom(0.61)));
+        subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => seekDateLabel("nightEnd"), "nightEnd",() => getActiveClimate().getUIColorInactiveCustom(0.61)));
+        subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => seekDateLabel("nauticalDawn"), "nauticalDawn",() => getActiveClimate().getUIColorInactiveCustom(0.61)));
+        subMenuContainer.addElement(new Button(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, () => seekDateLabel("dawn"), "dawn",() => getActiveClimate().getUIColorInactiveCustom(0.61)));
     }
 
 }
