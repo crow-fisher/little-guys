@@ -9,6 +9,7 @@ import { addSquareByName } from "../manipulation.js";
 import { loadGD, UI_CLIMATE_RAINFALL_DENSITY } from "../ui/UIData.js";
 import { isLeftMouseClicked, isRightMouseClicked } from "../mouse.js";
 import { RGB_COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_GREEN, RGB_COLOR_RED } from "../colors.js";
+import { millis_per_day } from "./time.js";
 // decent reference https://web.gps.caltech.edu/~xun/course/GEOL1350/Lecture5.pdf
 
 
@@ -437,11 +438,9 @@ function calculateColorTemperature(val) {
 }
 
 export function calculateColorRGB(val, valMin, valMax, colorMin, colorMax) {
-    val = Math.min(val, valMax);
     val -= valMin;
     valMax -= valMin;
     valMin = 0;
-    
     let normalized = (val - valMin) / (valMax - valMin);
     return {
         r: Math.floor(colorMax.r * normalized + colorMin.r * (1 - normalized)),

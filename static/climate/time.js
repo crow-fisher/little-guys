@@ -346,67 +346,44 @@ function updateTime() {
 }
 
 function renderSkyBackground() {
-
     let curDay = getCurDay();
     let curMillis = curDay * millis_per_day;
     let curDate = new Date(curMillis);
-    let times = SunCalc.getTimes(curDate, getActiveClimate().lat, getActiveClimate().lng);
-    let startOfDay = new Date(curMillis - (curMillis % millis_per_day));
+    let nextDate = new Date(curMillis + millis_per_day);
+    let prevDate = new Date(curMillis - millis_per_day);
 
-    let nextDateStartOfDay = new Date(curMillis - (curMillis % millis_per_day) + millis_per_day);
-    let nextDateStartOfDay2 = new Date(curMillis - (curMillis % millis_per_day) + 2 * millis_per_day);
+    let prevTimes = SunCalc.getTimes(prevDate, getActiveClimate().lat, getActiveClimate().lng);
+    let curTimes = SunCalc.getTimes(curDate, getActiveClimate().lat, getActiveClimate().lng);
+    let nextTimes = SunCalc.getTimes(nextDate, getActiveClimate().lat, getActiveClimate().lng);
 
-    // sunrise
-    // goldenHourEnd
-    // solarNoon
-    // goldenHour
-    // sunsetStart
-    // night
-
-    let timesArr = Array.from([times.sunrise, times.goldenHourEnd, times.solarNoon, times.sunsetStart, times.night, times.nadir, nextDateStartOfDay2, nextDateStartOfDay2]).sort((a, b) => a.getTime() - b.getTime());
-    
-    let arrColorMap = {
-        0: {
-            minColor: sky_nightRGB,
-            maxColor: sky_duskRGB
-        },
-        1: {
-            minColor: sky_duskRGB,
-            maxColor: sky_colorEveningMorningRGB
-        },
-        2: {
-            minColor: sky_colorEveningMorningRGB,
-            maxColor: sky_colorNearNoonRGB
-        },
-        3: {
-            minColor: sky_colorNearNoonRGB,
-            maxColor: sky_colorNearNoonRGB
-        },
-        4: {
-            minColor: sky_colorNearNoonRGB,
-            maxColor: sky_colorEveningMorningRGB
-        },
-        5: {
-            minColor: sky_colorEveningMorningRGB,
-            maxColor: sky_duskRGB
-        },
-        6: {
-            minColor: sky_duskRGB,
-            maxColor: sky_nightRGB
-        },
-        7: {
-            minColor: sky_nightRGB,
-            maxColor: sky_nightRGB
-        }
+    let timeColors = {
+        dawn: sky_duskRGB,
+        sunrise: sky_colorEveningMorningRGB,
+        goldenHourEnd: sky_colorNearNoonRGB,
+        solarNoon: sky_colorNoonRGB,
+        goldenHour: sky_colorNearNoonRGB,
+        sunsetStart: sky_colorEveningMorningRGB,
+        dusk: sky_duskRGB,
+        night: sky_nightRGB
     }
-    // let minColor, maxColor, min, max, starBrightness;
+    let timesArr = new Array();
 
-    let idx = timesArr.findIndex((testTime) => curDate < testTime);
-    let min = timesArr[Math.max(0, idx - 1)];
-    let max = timesArr[idx];
-    let minColor = arrColorMap[idx].minColor;
-    let maxColor = arrColorMap[idx].maxColor;
+    [prevTimes, curTimes, nextTimes].forEach((times) => Object.keys(timeColors).forEach((key) => {
+        timesArr.push([times[key], timeColors[key], key]);
+    }));
+
+    timesArr.sort((a, b) => a[0].getTime() - b[0].getTime());
+
+    // let minColor, maxColor, min, max, starBrightness;
+    let idx = timesArr.findIndex((arr) => curDate < arr[0]);
+    let minArr = timesArr[idx - 1];
+    let maxArr = timesArr[idx];
+    let min = minArr[0];
+    let max = maxArr[0];
+    let minColor = minArr[1];
+    let maxColor = maxArr[1];
     let processedColor = calculateColorRGB(curDate.getTime(), min.getTime(), max.getTime(), minColor, maxColor);
+
     let frameCloudColor = getFrameRelCloud();
     let frameCloudMult = Math.min(1, (frameCloudColor.r + frameCloudColor.g + frameCloudColor.b) / (3 * 255) * 5);
 
@@ -434,15 +411,19 @@ function renderSkyBackground() {
 }
 
 function getDaylightStrength() {
-    let currentTime = getCurDay() % 1;
+    if (_cdaylightStrength != null) {
+        return _cdaylightStrength;
+    }
     let curDay = getCurDay();
     let curDate = new Date(curDay * millis_per_day);
     let sunData = SunCalc.getPosition(curDate, getActiveClimate().lat, getActiveClimate().lng);
-    let strength = sunData;
+    // console.log(sunData.altitude, Math.sin(sunData.altitude));
+
     if (sunData.altitude < 0) {
         return 0;
     }
-    return Math.cos(sunData.altitude);
+    _cdaylightStrength = Math.sin(sunData.altitude);
+    return _cdaylightStrength;
 }
 
 function renderTime() {
