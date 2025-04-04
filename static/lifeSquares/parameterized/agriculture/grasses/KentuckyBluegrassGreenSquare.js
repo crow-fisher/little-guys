@@ -56,6 +56,6 @@ export class KentuckyBluegrassGreenSquare extends BaseLifeSquare {
     }
 
     getLightFilterRate() {
-        return super.getLightFilterRate() * loadGD(UI_LIGHTING_PLANT_GRASS)
+        return super.getLightFilterRate() * Math.exp(loadGD(UI_LIGHTING_PLANT_GRASS))
     }
 }

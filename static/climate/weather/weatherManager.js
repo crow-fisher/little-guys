@@ -79,9 +79,9 @@ let sunnyHg = [
     [1, 0.4]
 ]
 let sunnyTg = [
-    [0, 273 + 30],
-    [0.5, 273 + 35],
-    [1, 273 + 40]
+    [0, 273 + 10],
+    [0.5, 273 + 10],
+    [1, 273 + 10]
 ]
 
 function sunnyWeather() {
@@ -97,9 +97,9 @@ let cloudyHg = [
     [1, 0.75]
 ]
 let cloudyTg = [
-    [0, 273 + 30],
-    [0.5, 273 + 35],
-    [1, 273 + 40]
+    [0, 273 + 10],
+    [0.5, 273 + 10],
+    [1, 273 + 10]
 ]
 
 
@@ -110,9 +110,9 @@ let foggyHg = [
     [1, 0.99]
 ]
 let foggyTg = [
-    [0, 273 + 30],
-    [0.5, 273 + 35],
-    [1, 273 + 40]
+    [0, 273 + 10],
+    [0.5, 273 + 10],
+    [1, 273 + 10]
 ]
 let rainyHumidityGradient = [
     [0, 1],
@@ -121,9 +121,9 @@ let rainyHumidityGradient = [
     [1, .7]
 ]
 let rainyTemperatureGradient = [
-    [0, 273 + 30],
-    [0.5, 273 + 35],
-    [1, 273 + 40]
+    [0, 273 + 10],
+    [0.5, 273 + 10],
+    [1, 273 + 10]
 ]
 
 function spawnRateThrottle() {

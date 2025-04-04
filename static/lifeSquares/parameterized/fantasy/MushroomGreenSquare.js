@@ -56,6 +56,6 @@ export class MushroomGreenSquare extends BaseLifeSquare {
     }
 
     getLightFilterRate() {
-        return super.getLightFilterRate() * loadGD(UI_LIGHTING_PLANT_TREE);
+        return super.getLightFilterRate() * Math.exp(loadGD(UI_LIGHTING_PLANT_TREE));
     }
 }

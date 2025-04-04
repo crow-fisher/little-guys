@@ -4,7 +4,7 @@ import { hexToRgb, hsv2rgb, rgb2hsv, rgbToHex, rgbToRgba } from "../common.js";
 import { getCurTime } from "../climate/time.js";
 import { addSquare, getSquares } from "../squares/_sqOperations.js";
 
-import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED, RGB_COLOR_VERY_FUCKING_GREEN } from "../colors.js";
+import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED, RGB_COLOR_GREEN } from "../colors.js";
 import { removeSquare } from "../globalOperations.js";
 import { STATE_HEALTHY, STATE_DESTROYED, STAGE_DEAD } from "../organisms/Stages.js";
 import { processLighting } from "../lighting/lightingProcessing.js";
@@ -82,7 +82,7 @@ class BaseLifeSquare {
     }
 
     getLightFilterRate() {
-        return 0.00023 * (this.width ** 2) * loadGD(UI_LIGHTING_PLANT);
+        return 0.00023 * (this.width ** 2) * Math.exp(loadGD(UI_LIGHTING_PLANT));
     }
 
     getLsqRenderSizeMult() {
@@ -220,11 +220,11 @@ class BaseLifeSquare {
 
             if (val > 0) {
                 color1 = RGB_COLOR_OTHER_BLUE;
-                color2 = RGB_COLOR_VERY_FUCKING_GREEN;
+                color2 = RGB_COLOR_GREEN;
                 valMin = 0;
                 valMax = 1;
             } else {
-                color1 = RGB_COLOR_VERY_FUCKING_GREEN;
+                color1 = RGB_COLOR_GREEN;
                 color2 = RGB_COLOR_RED;
                 valMin = -1;
                 valMax = 0;

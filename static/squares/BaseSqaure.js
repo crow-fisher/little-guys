@@ -19,13 +19,13 @@ import { removeSquare } from "../globalOperations.js";
 
 import { removeOrganism } from "../organisms/_orgOperations.js";
 
-import { calculateColorTemperature, getTemperatureAtWindSquare, updateWindSquareTemperature } from "../climate/temperatureHumidity.js";
+import { calculateColorTemperature, getRestingTemperatureAtSq, getTemperatureAtWindSquare, updateWindSquareTemperature } from "../climate/temperatureHumidity.js";
 import { getAdjacentWindSquareToRealSquare, getWindSquareAbove } from "../climate/wind.js";
 import { RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
-import { getCurDay, getCurrentLightColorTemperature, getDaylightStrengthFrameDiff, timeScaleFactor } from "../climate/time.js";
+import { getCurDay, getCurrentLightColorTemperature, getDaylightStrengthFrameDiff, getTimeScale, timeScaleFactor } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
-import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_LIGHTING_WATER_VALUE, UI_LIGHTING_WATER_SATURATION, UI_LIGHTING_WATER_HUE } from "../ui/UIData.js";
+import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_LIGHTING_WATER_VALUE, UI_LIGHTING_WATER_SATURATION, UI_LIGHTING_WATER_HUE, UI_LIGHTING_SUN } from "../ui/UIData.js";
 import { isLeftMouseClicked } from "../mouse.js";
 
 export class BaseSquare {
@@ -80,7 +80,6 @@ export class BaseSquare {
 
         this.temperature = 273;
 
-        this.thermalConductivity = 1;  // watts/meter kelvin. max is 10
         this.thermalMass = 2; // e.g., '2' means one degree of this would equal 2 degrees of air temp for a wind square 
 
         this.state = 0; // 0 = solid, 1 = liquid
@@ -109,6 +108,8 @@ export class BaseSquare {
 
         this.mixIdx = -1;
         this.initTemperature();
+
+        this.frameLighting = {r: 0, g: 0, b: 0};
     };
 
     initLightingFromNeighbors() {
@@ -126,20 +127,21 @@ export class BaseSquare {
     }
 
     initTemperature() {
-        let adjacentWindSquare = getAdjacentWindSquareToRealSquare(this.posX, this.posY);
-
+        let adjacentWindSquare = getWindSquareAbove(this.posX, this.posY);
         let x = adjacentWindSquare[0];
         let y = adjacentWindSquare[1];
 
         if (x < 0 || y < 0) {
             return;
         }
-        this.temperature = getTemperatureAtWindSquare(x, y);
+        this.temperature = 273 + 10;
+    }
 
-        if (this.solid) {
-            // hotfix for really annoying cloud bug
-            this.temperature += 5;
-        }
+    processFrameLightingTemperature() {
+        let lightingColor = this.processLighting();
+        let lightingApplied = Math.max(0, lightingColor.r + lightingColor.g + lightingColor.b);
+        lightingApplied /= 20000;
+        this.temperature = Math.min(370, this.temperature + lightingApplied);
     }
 
     getSoilWaterPressure() { return -(10 ** 8); }
@@ -160,13 +162,12 @@ export class BaseSquare {
         if (x < 0 || y < 0) {
             return;
         }
-
         let adjacentTemp = getTemperatureAtWindSquare(x, y);
-        let diff = this.thermalConductivity * ((adjacentTemp - this.temperature));
-        diff /= timeScaleFactor();
+        let diff = (adjacentTemp - this.temperature);
+        diff /= 2;
         diff /= (1 + this.currentPressureDirect);
-        this.temperature += diff / this.thermalMass;
-        updateWindSquareTemperature(x, y, getTemperatureAtWindSquare(x, y) - diff);
+        this.temperature += diff;
+        updateWindSquareTemperature(x, y, getTemperatureAtWindSquare(x, y) - (diff / 1));
     }
 
     waterEvaporationRoutine() {
@@ -572,12 +573,15 @@ export class BaseSquare {
     }
 
     physics() {
-        this.percolateInnerMoisture();
-        this.waterEvaporationRoutine();
-        this.temperatureRoutine();
-        this.transferHeat();
-        this.waterSinkPhysics();
-        this.gravityPhysics();
+        if (getTimeScale() != 0) {
+            this.percolateInnerMoisture();
+            this.waterEvaporationRoutine();
+            this.temperatureRoutine();
+            this.transferHeat();
+            this.waterSinkPhysics();
+            this.gravityPhysics();
+            this.processFrameLightingTemperature();
+        }
     }
 
     waterSinkPhysics() {

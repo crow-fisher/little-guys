@@ -3,14 +3,18 @@ import { getSquares } from "../squares/_sqOperations.js";
 import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds, getBaseAirPressureAtYPosition, getAirSquareDensity, getWindPressureSquareDensity, base_wind_pressure, manipulateWindPressureMaintainHumidityWindSquare, initWindPressure } from "./wind.js";
-import { getCurTimeScale, timeScaleFactor } from "../climate/time.js";
 import { logRainFall } from "./weather/weatherManager.js";
 import { getDefaultLighting } from "../lighting/lightingProcessing.js";
 import { addSquareByName } from "../manipulation.js";
 import { loadGD, UI_CLIMATE_RAINFALL_DENSITY } from "../ui/UIData.js";
 import { isLeftMouseClicked, isRightMouseClicked } from "../mouse.js";
+import { RGB_COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_GREEN, RGB_COLOR_RED } from "../colors.js";
 // decent reference https://web.gps.caltech.edu/~xun/course/GEOL1350/Lecture5.pdf
 
+
+function temperatureFlowrateFactor() {
+    return 24;
+}
 var temperatureMap;
 var waterSaturationMap;
 
@@ -89,7 +93,7 @@ function getRestingHumidityAtSq(x, y) {
     return lower[1] * (1 - pos) + upper[1] * pos;
 }
 
-function getRestingTemperatureAtSq(x, y) {
+export function getRestingTemperatureAtSq(x, y) {
     y /= getWindSquaresY();
     let lower = reverseRestingTemperatureGradient.find((arr) => arr[0] <= y);
     let upper = restingTemperatureGradient.find((arr) => arr[0] > y);
@@ -102,7 +106,8 @@ function getRestingAirPressureAtSq(y) {
 }
 
 export function restingValues() {
-    let applicationStrength = 10 * restingGradientStrength * timeScaleFactor();
+    let temperatureStrength = 18;
+    let humidityStrength = 60; 
     for (let i = 0; i < getWindSquaresX(); i++) {
         for (let j = 0; j < getWindSquaresY(); j++) {
 
@@ -119,7 +124,7 @@ export function restingValues() {
             let curTemp = temperatureMap[i][j];
             let restingTemp = getRestingTemperatureAtSq(i, j);
             let diffTemp = restingTemp - curTemp;
-            temperatureMap[i][j] += diffTemp / applicationStrength;
+            temperatureMap[i][j] += diffTemp / temperatureStrength;
 
             let curHumidity = getHumidity(i, j);
             let restingHumidity = getRestingHumidityAtSq(i, j);
@@ -127,7 +132,7 @@ export function restingValues() {
 
             let curTempPascals = saturationPressureOfWaterVapor(temperatureMap[i][j]);
             let targetTempPascals = saturationPressureOfWaterVapor(restingTemp);
-            waterSaturationMap[i][j] += diffHumidity * Math.min(curTempPascals, targetTempPascals) / applicationStrength;
+            waterSaturationMap[i][j] += diffHumidity * Math.min(curTempPascals, targetTempPascals) / humidityStrength;
         }
     }
 }
@@ -181,7 +186,7 @@ function temperatureDiffFunction(x, y, x2, y2, high, low) {
         return 0;
     }
     let diff = (high - low) / 2;
-    diff /= timeScaleFactor();
+    diff /= temperatureFlowrateFactor();
     return diff;
 }
 
@@ -196,7 +201,7 @@ function humidityDiffFunction(x, y, x2, y2, high, low) {
 
     let minPascalsForHumidityDiff = Math.min(square1PascalsForHumidityDiff, square2PascalsForHumidityDiff)
 
-    minPascalsForHumidityDiff /= timeScaleFactor();
+    minPascalsForHumidityDiff /= temperatureFlowrateFactor();
 
     if (humidityDiff > 0) {
         return minPascalsForHumidityDiff;
@@ -294,8 +299,6 @@ function doRain() {
 
             let usedWaterPascalsPerSquare = dropPascals / 5;
             let dropHealth = dropPascals / pascalsPerWaterSquare;
-
-            dropHealth *= Math.min(105, getCurTimeScale());
 
             dropHealth = Math.min(1, dropHealth * loadGD(UI_CLIMATE_RAINFALL_DENSITY));
 
@@ -411,7 +414,26 @@ export function setWaterSaturation(x, y, v) {
 }
 
 function calculateColorTemperature(val) {
-    return calculateColor(val, 273, 273 + 70, c_tempLowRGB, c_tempHighRGB);
+    let colorMin, colorMax, min, max;
+    val -= 273;
+    if (val < 20) {
+        min = 0;
+        max = 20;
+        colorMin = RGB_COLOR_BLACK;
+        colorMax = RGB_COLOR_BLUE;
+    }
+    else if (val < 40) {
+        min = 20;
+        max = 40;
+        colorMin = RGB_COLOR_BLACK;
+        colorMax = RGB_COLOR_GREEN;
+    } else {
+        min = 40;
+        max = 60;
+        colorMin = RGB_COLOR_BLACK;
+        colorMax = RGB_COLOR_RED;
+    }
+    return calculateColor(val, min, max, colorMin, colorMax);
 }
 
 export function calculateColorRGB(val, valMin, valMax, colorMin, colorMax) {

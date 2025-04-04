@@ -21,7 +21,7 @@ export class LightingComponent extends Component {
         container.addElement(rightContainer);
 
         leftContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, UI_CENTER, "sun"));
-        leftContainer.addElement(new Slider(this.window, UI_LIGHTING_SUN, sizeX,  35, -1, 2, () => getActiveClimate().getUIColorTransient()));
+        leftContainer.addElement(new Slider(this.window, UI_LIGHTING_SUN, sizeX,  35, -4, 4, () => getActiveClimate().getUIColorTransient()));
 
         rightContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, UI_CENTER, "moon"));
         rightContainer.addElement(new Slider(this.window, UI_LIGHTING_MOON, sizeX,  35, -2, 2, () => getActiveClimate().getUIColorTransient()));
@@ -33,16 +33,16 @@ export class LightingComponent extends Component {
         rightContainer.addElement(new Slider(this.window, UI_LIGHTING_ROCK, sizeX,  35, 0.1, 10, () => getActiveClimate().getUIColorTransient()));
 
         leftContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, UI_CENTER, "plant"));
-        leftContainer.addElement(new Slider(this.window, UI_LIGHTING_PLANT, sizeX,  35, 0.01, 2, () => getActiveClimate().getUIColorTransient()));
+        leftContainer.addElement(new Slider(this.window, UI_LIGHTING_PLANT, sizeX,  35, -2, 2, () => getActiveClimate().getUIColorTransient()));
 
         rightContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, UI_CENTER, "decay"));
         rightContainer.addElement(new Slider(this.window, UI_LIGHTING_DECAY, sizeX,  35, 3, 8, () => getActiveClimate().getUIColorTransient()));
 
         leftContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, UI_CENTER, "grass"));
-        leftContainer.addElement(new Slider(this.window, UI_LIGHTING_PLANT_GRASS, sizeX,  35, 0.01, 2, () => getActiveClimate().getUIColorTransient()));
+        leftContainer.addElement(new Slider(this.window, UI_LIGHTING_PLANT_GRASS, sizeX,  35, -2, 2, () => getActiveClimate().getUIColorTransient()));
 
         rightContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, UI_CENTER, "tree"));
-        rightContainer.addElement(new Slider(this.window, UI_LIGHTING_PLANT_TREE, sizeX,  35, 0.01, 2, () => getActiveClimate().getUIColorTransient()));
+        rightContainer.addElement(new Slider(this.window, UI_LIGHTING_PLANT_TREE, sizeX,  35, -2, 2, () => getActiveClimate().getUIColorTransient()));
 
         rightContainer.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, UI_CENTER, "water opacity"));
         rightContainer.addElement(new Slider(this.window, UI_LIGHTING_WATER_OPACITY, sizeX,  35, 0.0, 1, () => getActiveClimate().getUIColorTransient()));
