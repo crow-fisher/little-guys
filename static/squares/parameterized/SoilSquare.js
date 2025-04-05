@@ -207,23 +207,14 @@ export class SoilSquare extends BaseSquare {
                 sq.waterContainment += diff;
             });
 
-        this.doBlockOutflow(unsaturatedNeighbors);
-    }
-
-    doBlockOutflow(unsaturatedNeighbors) {
-        let thisWaterPressure = this.getMatricPressure(this.waterContainment); 
-        if (thisWaterPressure < -2) {
+        if (this.waterContainment < this.waterContainmentMax) {
             return;
         }
-        for (let side = -1; side <= 1; side += 2) {
-            if (unsaturatedNeighbors == 0)
-                this.outflowNewWaterToLocation(this.posX + side, this.posY)
-            this.outflowWaterToWaterLocation(this.posX + side, this.posY);
-        }
+        this.outflowNewWaterToLocation(this.posX, this.posY)
     }
 
     outflowNewWaterToLocation(posX, posY) {
-        if (getSquares(posX, posY).some((sq) => !sq.surface && sq.collision)) {
+        if (getSquares(posX, posY).some((sq) => (!sq.surface && sq.collision))) {
             return;
         }
         let outflowWaterAmount = (this.waterContainment - this.getInverseMatricPressure(-2)) / this.getWaterflowRate();
@@ -237,23 +228,13 @@ export class SoilSquare extends BaseSquare {
         }
     }
     
-    outflowWaterToWaterLocation(posX, posY) {
-        getSquares(posX, posY).filter((sq) => sq.proto == "WaterSquare")
-        .filter((sq) => sq.currentPressureDirect == 0)
-        .forEach((sq) => {
-            let outflowWaterAmount = (this.waterContainment - this.getInverseMatricPressure(-2)) / this.getWaterflowRate();
-            let start = sq.blockHealth;
-            sq.blockHealth = Math.min(1, sq.blockHealth + outflowWaterAmount);
-            this.waterContainment -= sq.blockHealth - start;
-        });
-    }
-
     percolateFromWater(waterBlock) {
         if (this.waterContainmentMax == 0 || this.waterContainment >= this.waterContainmentMax) {
             return 0;
         }
-        let maxWaterflowRate = (this.waterContainmentMax - this.waterContainment) / (this.getWaterflowRate() ** 0.5);
-        let amountToPercolate = Math.min(waterBlock.blockHealth, maxWaterflowRate);
+        let maxWaterflowRate = (this.waterContainmentMax) / this.getWaterflowRate();
+        maxWaterflowRate /= 5;
+        let amountToPercolate = Math.min(this.waterContainmentMax - this.waterContainment, Math.min(waterBlock.blockHealth, maxWaterflowRate));
         this.waterContainment += amountToPercolate;
         return amountToPercolate;
     }
