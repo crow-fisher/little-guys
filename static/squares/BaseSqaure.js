@@ -375,7 +375,7 @@ export class BaseSquare {
         if (
             (opacityMult != this.lastColorCacheOpacity) ||
             (Date.now() > this.lastColorCacheTime + (isLeftMouseClicked() ? 5000 : 10000) * Math.random()) ||
-            Math.abs(getDaylightStrengthFrameDiff()) > 0.01) {
+            Math.abs(getDaylightStrengthFrameDiff()) > 0.005) {
             this.lastColorCacheTime = Date.now();
             let outColorBase = this.getColorBase();
 
@@ -668,12 +668,15 @@ export class BaseSquare {
         return this.currentPressureDirect;
     }
 
-    transferHeat() {
+    transferHeat() { 
+        if (Math.random() < 0.75) {
+            return;
+        }
         getNeighbors(this.posX, this.posY)
             .filter((sq) => sq.collision)
             .forEach((sq) => {
                 let diff = this.temperature - sq.temperature;
-                diff /= timeScaleFactor();
+                diff /= 8;
                 this.temperature -= diff / this.thermalMass;
                 sq.temperature += diff / sq.thermalMass;
             })

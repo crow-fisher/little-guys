@@ -436,7 +436,7 @@ function renderSkyBackground() {
         getTotalCanvasPixelHeight()
     );
 
-    renderStarMap(1 - getDaylightStrength());
+    renderStarMap(Math.min(1, Math.exp(-7 * getDaylightStrength())));
 }
 
 function getDaylightStrength() {
