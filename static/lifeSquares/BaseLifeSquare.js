@@ -82,7 +82,7 @@ class BaseLifeSquare {
         this.lighting = [];
         this.touchingGround = null;
 
-        this.renderMode = LSQ_RENDERMODE_SQUARE;
+        this.renderMode = LSQ_RENDERMODE_THETA;
     }
 
     getLightFilterRate() {
