@@ -155,8 +155,37 @@ export function seek(targetTime) {
     startSeekTime = getCurDay();
 }
 
-export function doTimeSkipToNow() {
-    let nowLocalTimeMillis = Date.now() - new Date().getTimezoneOffset() * 60000;
+export function doTimeSkipToDate(dateName) {
+    seekTimeTarget = 0;
+    let date = new Date();
+    switch (dateName) {
+        case "spring":
+            date.setMonth(3);
+            date.setDate(20);
+            break;
+        case "summer":
+            date.setMonth(6);
+            date.setDate(20);
+            break;
+        case "fall":
+            date.setMonth(9);
+            date.setDate(21);
+            break;
+        default:
+        case "winter":
+            date.setMonth(12);
+            date.setDate(21);
+            break;
+    }
+    curDay = Math.floor(date.getTime() / millis_per_day) + (curDay % 1);
+}
+
+export function doTimeSkipToNow(instant=false) {
+    let nowLocalTimeMillis = Date.now();
+    if (instant) {
+        curDay = nowLocalTimeMillis / millis_per_day;
+        return;
+    }
     let timeOffset = (nowLocalTimeMillis % millis_per_day) / millis_per_day;
     let start = curDay;
     curDay = (nowLocalTimeMillis / millis_per_day - timeOffset) + (start % 1);
