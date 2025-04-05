@@ -8,10 +8,13 @@ import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED, R
 import { removeSquare } from "../globalOperations.js";
 import { STATE_HEALTHY, STATE_DESTROYED, STAGE_DEAD } from "../organisms/Stages.js";
 import { processLighting } from "../lighting/lightingProcessing.js";
-import { getBaseSize, zoomCanvasFillRectTheta } from "../canvas.js";
+import { getBaseSize, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasFillRectTheta } from "../canvas.js";
 import { loadGD, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
 import { isLeftMouseClicked } from "../mouse.js";
 
+export const LSQ_RENDERMODE_SQUARE = "LSQ_RENDERMODE_SQUARE";
+export const LSQ_RENDERMODE_CIRCLE = "LSQ_RENDERMODE_CIRCLE";
+export const LSQ_RENDERMODE_THETA = "LSQ_RENDERMODE_THETA";
 
 class BaseLifeSquare {
     constructor(square, organism) {
@@ -79,7 +82,7 @@ class BaseLifeSquare {
         this.lighting = [];
         this.touchingGround = null;
 
-
+        this.renderMode = LSQ_RENDERMODE_SQUARE;
     }
 
     getLightFilterRate() {
@@ -185,6 +188,33 @@ class BaseLifeSquare {
         this.accentColor_rgb = this.processLightHealth(hexToRgb(this.accentColor));
     }
 
+    renderToCanvas() {
+        if (this.renderMode == LSQ_RENDERMODE_THETA) {
+            zoomCanvasFillRectTheta(
+                this.getPosX() * getBaseSize(),
+                this.getPosY() * getBaseSize(),
+                this.width * getBaseSize() * this.getLsqRenderSizeMult(),
+                this.height * getBaseSize() * this.getLsqRenderSizeMult(),
+                this.xRef,
+                this.yRef,
+                this.theta
+            );
+        } else if (this.renderMode == LSQ_RENDERMODE_CIRCLE) {
+            zoomCanvasFillCircle(
+                (this.getPosX() + 0.5) * getBaseSize(),
+                (this.getPosY() + 0.5) * getBaseSize(),
+                Math.max(this.width, this.height) * getBaseSize() / 2
+            );
+        } else {
+            zoomCanvasFillRect(
+                this.getPosX() * getBaseSize(),
+                this.getPosY() * getBaseSize(),
+                this.width * getBaseSize() * this.getLsqRenderSizeMult(),
+                this.height * getBaseSize() * this.getLsqRenderSizeMult()
+            );
+        }
+    }
+
     render() {
         let frameOpacity = this.opacity;
         if (this.lightHealth != this.prevLightHealth || this.activeRenderSubtype != this.subtype || this.activeRenderState != this.state) {
@@ -201,15 +231,7 @@ class BaseLifeSquare {
                 b: 100 + (1 - this.phosphorusIndicated) * 130
             }
             MAIN_CONTEXT.fillStyle = rgbToHex(color.r, color.g, color.b);
-            zoomCanvasFillRectTheta(
-                this.getPosX() * getBaseSize(),
-                this.getPosY() * getBaseSize(),
-                this.width * getBaseSize() * this.getLsqRenderSizeMult(),
-                this.height * getBaseSize() * this.getLsqRenderSizeMult(),
-                this.xRef,
-                this.yRef,
-                this.theta
-            );
+
             return;
         }
         else if (selectedViewMode == UI_VIEWMODE_MOISTURE) {
@@ -238,15 +260,7 @@ class BaseLifeSquare {
             }
 
             MAIN_CONTEXT.fillStyle = rgbToRgba(out.r, out.g, out.b, frameOpacity);
-            zoomCanvasFillRectTheta(
-                this.getPosX() * getBaseSize(),
-                this.getPosY() * getBaseSize(),
-                this.width * getBaseSize() * this.getLsqRenderSizeMult(),
-                this.height * getBaseSize() * this.getLsqRenderSizeMult(),
-                this.xRef,
-                this.yRef,
-                this.theta
-            );
+            this.renderToCanvas();
             return;
         }
         else {
@@ -312,15 +326,7 @@ class BaseLifeSquare {
             this.cachedRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), frameOpacity);
         }
         MAIN_CONTEXT.fillStyle = this.cachedRgba;
-        zoomCanvasFillRectTheta(
-            this.getPosX() * getBaseSize(),
-            this.getPosY() * getBaseSize(),
-            this.width * getBaseSize() * this.getLsqRenderSizeMult(),
-            this.height * getBaseSize() * this.getLsqRenderSizeMult(),
-            this.xRef,
-            this.yRef,
-            this.theta
-        );
+        this.renderToCanvas();
 
     }
 

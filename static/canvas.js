@@ -128,8 +128,8 @@ export function zoomCanvasFillRectTheta(x, y, dx, dy, xRef, yRef, theta) {
     let xpl = xpi * totalWidth;
     let ypl = ypi * totalHeight;
 
-    xRef = xpl + xRef
-    yRef = ypl + dy + yRef;
+    xRef = xpl + dx/2;
+    yRef = ypl + dy/2;
 
     let p1x = xpl - xRef;
     let p1y = ypl - yRef;
@@ -159,8 +159,13 @@ export function zoomCanvasFillRectTheta(x, y, dx, dy, xRef, yRef, theta) {
     MAIN_CONTEXT.lineTo(xRef + p4xR, yRef + p4yR);
     MAIN_CONTEXT.lineTo(xRef + p1xR, yRef + p1yR);
     MAIN_CONTEXT.closePath();
-    // MAIN_CONTEXT.stroke();
     MAIN_CONTEXT.fill();
+
+    // MAIN_CONTEXT.arc(xRef, yRef, 10, 0, 2 * Math.PI, false);
+
+    // MAIN_CONTEXT.stroke();
+
+
 }
 
 

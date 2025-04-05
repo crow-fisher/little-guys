@@ -159,6 +159,12 @@ export class GrowthComponent {
             });
 
         this.lifeSquares.push(newLsq);
+        let compareFunc = (lsq) => {
+            let relLsqX = (this.posX - lsq.posX);
+            let relLsqY = (this.posY - lsq.posY);
+            return (relLsqX ** 2 + relLsqY ** 2) ** 0.5;
+        }
+        this.lifeSquares.sort((a, b) => compareFunc(a) - compareFunc(b));
     }
 
     updatePosition(newPosX, newPosY) {
@@ -337,6 +343,9 @@ export class GrowthComponent {
 
         let thetaDelta = endTheta - startTheta;
 
+        let prevX = this.posX;
+        let prevY = this.posY;
+
         this.lifeSquares.forEach((lsq) => {
             // relative to origin
             let relLsqX = 0.85 * (this.posX - lsq.posX);
@@ -357,7 +366,11 @@ export class GrowthComponent {
 
             lsq.deflectionXOffset = (endX - relLsqX) + this.xOffset;
             lsq.deflectionYOffset = (endY - relLsqY) + this.yOffset;
-            lsq.theta = 0;
+
+            lsq.theta = Math.atan((lsq.getPosY() - prevY) / (lsq.getPosX() - prevX)) + Math.PI / 2;
+
+            prevX = lsq.getPosX();
+            prevY = lsq.getPosY();
 
             lsq.xRef = 1;
             lsq.yRef = 0.5;

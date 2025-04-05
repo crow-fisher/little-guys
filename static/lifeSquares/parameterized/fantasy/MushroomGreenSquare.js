@@ -1,4 +1,4 @@
-import { BaseLifeSquare } from "../../BaseLifeSquare.js";
+import { BaseLifeSquare, LSQ_RENDERMODE_CIRCLE, LSQ_RENDERMODE_THETA } from "../../BaseLifeSquare.js";
 import { SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE } from "../../../organisms/Stages.js";
 import { hueShiftColorArr, rgbToHex } from "../../../common.js";
 import { loadGD, UI_LIGHTING_PLANT_TREE } from "../../../ui/UIData.js";
@@ -21,6 +21,7 @@ export class MushroomGreenSquare extends BaseLifeSquare {
                 this.darkColor = "#301a11";
                 this.accentColor = "#3b231a";
                 this.width = 1.4 + (0.1 * Math.random())
+                this.renderMode = LSQ_RENDERMODE_CIRCLE;
                 break;
             case SUBTYPE_TRUNK:
             case SUBTYPE_SHOOT:
@@ -35,6 +36,7 @@ export class MushroomGreenSquare extends BaseLifeSquare {
                     this.darkColor = "#380726";
                     this.accentColor = "#400622"; 
                 }
+                this.renderMode = LSQ_RENDERMODE_THETA;
                 break;
             case SUBTYPE_NODE:
             case SUBTYPE_LEAF:
@@ -42,6 +44,7 @@ export class MushroomGreenSquare extends BaseLifeSquare {
                 this.darkColor = "#0e55ae";
                 this.accentColor = "#6da6e3";
                 this.width = 1
+                this.renderMode = LSQ_RENDERMODE_CIRCLE;
                 break;
             default:
                 console.warn("Subtype doesn't have a display configuration!")
