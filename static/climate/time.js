@@ -481,6 +481,35 @@ export function getMoonlightColor() {
     return moonlightColor;
 }
 
+export function getMoonlightBrightness() {
+    let curDay = getCurDay();
+    let curMillis = curDay * millis_per_day;
+    let curDate = new Date(curMillis);
+    let moonTimes = SunCalc.getMoonTimes(curDate, getActiveClimate().lat, getActiveClimate().lng);
+    let moonFraction = SunCalc.getMoonIllumination(curDate).fraction;
+    
+    if (moonTimes.alwaysUp) {
+        return moonFraction;
+    }
+    if (moonTimes.alwaysDown) {
+        return 0;
+    } else {
+        if (moonTimes.rise < moonTimes.set) {
+            if (curDate > moonTimes.rise && curDate < moonTimes.set) {
+                return moonFraction;
+            } else {
+                return 0;
+            }
+        } else {
+            if (curDate > moonTimes.set || curDate > moonTimes.rise) {
+                return moonFraction;
+            } else {
+                return 0;
+            }
+        }
+    }
+}
+
 // https://www.researchgate.net/publication/328726901_Real-time_adaptable_and_coherent_rendering_for_outdoor_augmented_reality/download
 
 function calculateTempColor(temperature) {

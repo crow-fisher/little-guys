@@ -138,9 +138,13 @@ export class BaseSquare {
     }
 
     processFrameLightingTemperature() {
+        let tickFrac = 4;
+        if (Math.random() < 1 - (1 / tickFrac)) {
+            return;
+        }
         let lightingColor = this.processLighting();
-        let lightingApplied = Math.max(0, lightingColor.r + lightingColor.g + lightingColor.b);
-        lightingApplied /= 20000;
+        let lightingApplied = Math.max(0, lightingColor.r + lightingColor.g / 2 + lightingColor.b / 4);
+        lightingApplied /= (10000 / tickFrac);
         this.temperature = Math.min(370, this.temperature + lightingApplied);
     }
 
@@ -203,7 +207,6 @@ export class BaseSquare {
         this.currentPressureDirect = -1;
         this.group = -1;
         this.speedY += (1 / this.gravity);
-
         if (Math.floor(getCurDay() + 0.15) != this.lightingSumDay) {
             if (this.lightingSum == null) {
                 this.lightingSum = { r: 0, g: 0, b: 0 }
@@ -329,19 +332,25 @@ export class BaseSquare {
     }
 
     processLighting() {
+        if (this.frameCacheLighting != null) {
+            return this.frameCacheLighting;
+        }
+        // console.log(335);
+
         if (!loadGD(UI_LIGHTING_ENABLED)) {
-            return getDefaultLighting();
+            this.frameCacheLighting = getDefaultLighting();
+            return this.frameCacheLighting;
         }
 
         if (this.lighting.length == 0) {
             this.initLightingFromNeighbors();
         }
-        let lighting = processLighting(this.lighting);
-        this.lightingSum.r += lighting.r;
-        this.lightingSum.g += lighting.g;
-        this.lightingSum.b += lighting.b;
+        this.frameCacheLighting = processLighting(this.lighting);
+        this.lightingSum.r += this.frameCacheLighting.r;
+        this.lightingSum.g += this.frameCacheLighting.g;
+        this.lightingSum.b += this.frameCacheLighting.b;
         this.lightingSumCount += 1;
-        return lighting;
+        return this.frameCacheLighting;
     }
 
     renderLightingView() {
@@ -365,11 +374,14 @@ export class BaseSquare {
         }
         if (
             (opacityMult != this.lastColorCacheOpacity) ||
-            (Date.now() > this.lastColorCacheTime + (isLeftMouseClicked() ? 250 : 500) * Math.random()) ||
+            (Date.now() > this.lastColorCacheTime + (isLeftMouseClicked() ? 2500 : 5000) * Math.random()) ||
             Math.abs(getDaylightStrengthFrameDiff()) > 0.01) {
             this.lastColorCacheTime = Date.now();
             let outColorBase = this.getColorBase();
+
+            this.frameCacheLighting = null;
             let lightingColor = this.processLighting();
+            
             let outColor = { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
             this.lastColorCacheOpacity = opacityMult;
             this.cachedRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacityMult * this.opacity * (this.blockHealth ** 0.2));

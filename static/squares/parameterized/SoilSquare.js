@@ -4,7 +4,7 @@ import { hexToRgb } from "../../common.js";
 import { getCurTimeScale, timeScaleFactor } from "../../climate/time.js";
 import { getPressure, getWindSquareAbove } from "../../climate/wind.js";
 import { addWaterSaturationPascals, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor } from "../../climate/temperatureHumidity.js";
-import { loadGD, UI_PALETTE_COMPOSITION, UI_PALETTE_SOILIDX, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER } from "../../ui/UIData.js";
+import { loadGD, UI_LIGHTING_SURFACE, UI_PALETTE_COMPOSITION, UI_PALETTE_SOILIDX, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER } from "../../ui/UIData.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { addSquareByName } from "../../manipulation.js";
 
@@ -68,6 +68,9 @@ export class SoilSquare extends BaseSquare {
         this.ph = 7;
         this.nitrogen = 50;
         this.phosphorus = 25;
+
+        this.surface = true;
+        this.surfaceLightingFactor = loadGD(UI_LIGHTING_SURFACE);
 
         this.setVariant();
     }
@@ -170,6 +173,10 @@ export class SoilSquare extends BaseSquare {
         let saturatedNeighbors = 0;
         let unsaturatedNeighbors = 0;
 
+        if (Math.random() < 0.5) {
+            return;
+        }
+
         getNeighbors(this.posX, this.posY)
             .filter((sq) => sq.proto == this.proto)
             .filter((sq) => {
@@ -264,7 +271,6 @@ export class SoilSquare extends BaseSquare {
 
         let sandMult = 1 + Math.max(0, this.sand - 0.9) * 40;
         baseRet *= sandMult;
-        baseRet /= Math.min(getCurTimeScale(), 20);
         baseRet = Math.max(1, baseRet);
         return baseRet;
     }
