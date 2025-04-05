@@ -374,7 +374,7 @@ export class BaseSquare {
         }
         if (
             (opacityMult != this.lastColorCacheOpacity) ||
-            (Date.now() > this.lastColorCacheTime + (isLeftMouseClicked() ? 2500 : 5000) * Math.random()) ||
+            (Date.now() > this.lastColorCacheTime + (isLeftMouseClicked() ? 5000 : 10000) * Math.random()) ||
             Math.abs(getDaylightStrengthFrameDiff()) > 0.01) {
             this.lastColorCacheTime = Date.now();
             let outColorBase = this.getColorBase();

@@ -136,10 +136,7 @@ export class GrowthComponent {
     }
 
     strength() {
-        return this.strengthMult * this.lifeSquares.map((lsq) => lsq.strength).reduce(
-            (accumulator, currentValue) => accumulator + currentValue,
-            0,
-        ) * (this.xSize()) / this.ySize();
+        return this.strengthMult * (this.xSize()) / this.ySize();
     }
 
     setBaseDeflectionOverTime(deflectionOverTimeList) {
@@ -370,7 +367,7 @@ export class GrowthComponent {
     }
 
     getTotalStrength() {
-        return Math.max(1, this.strength());
+        return Math.min(1, this.strength());
     }
 
     getTotalLifeSquares() {

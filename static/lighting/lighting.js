@@ -32,7 +32,7 @@ export function createMoonLightGroup() {
         getCanvasSquaresX() / 2,
         -getCanvasSquaresY(),
         50,
-        4,
+        3,
         getMoonlightColor,
         () => getMoonlightBrightness() * Math.exp(loadGD(UI_LIGHTING_MOON)),
         0.51,
@@ -129,6 +129,9 @@ export class StationaryLightGroup extends LightGroup {
     }
 
     doRayCasting(idx) {
+        if (this.brightnessFunc() == 0) {
+            return;
+        }
         if (this.idxCompletionMap[idx] === false) {
             return false;
         }

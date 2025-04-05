@@ -156,7 +156,7 @@ class BaseOrganism {
 
         this.lightlevel += this.lifeSquares
             .filter((lsq) => lsq.type == "green")
-            .map((lsq) => [processLighting(lsq.lighting), lsq.lightHealth ** 4])
+            .map((lsq) => [lsq.processLighting(), lsq.lightHealth ** 4])
             .map((argb) => argb[1] * (argb[0].r + argb[0].b) / (255 * 2))
             .map((lightlevel) => this.wiltEfficiency() * (lightlevel / this.growthNumGreen) * growthCycleFrac)
             .reduce(

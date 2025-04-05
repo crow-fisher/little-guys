@@ -1,7 +1,7 @@
 import { MAIN_CONTEXT } from "../index.js";
 import { hexToRgb, hsv2rgb, rgb2hsv, rgbToHex, rgbToRgba } from "../common.js";
 
-import { getCurTime } from "../climate/time.js";
+import { getCurTime, getDaylightStrengthFrameDiff } from "../climate/time.js";
 import { addSquare, getSquares } from "../squares/_sqOperations.js";
 
 import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED, RGB_COLOR_GREEN } from "../colors.js";
@@ -9,7 +9,8 @@ import { removeSquare } from "../globalOperations.js";
 import { STATE_HEALTHY, STATE_DESTROYED, STAGE_DEAD } from "../organisms/Stages.js";
 import { processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, zoomCanvasFillRectTheta } from "../canvas.js";
-import { loadGD, UI_LIGHTING_PLANT, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
+import { loadGD, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
+import { isLeftMouseClicked } from "../mouse.js";
 
 
 class BaseLifeSquare {
@@ -32,9 +33,9 @@ class BaseLifeSquare {
         this.darkColor = "#353b1a";
         this.accentColor = "#5d6637";
 
-        this.baseColor_rgb = hexToRgb(this.baseColor); 
-        this.darkColor_rgb = hexToRgb(this.darkColor); 
-        this.accentColor_rgb = hexToRgb(this.accentColor); 
+        this.baseColor_rgb = hexToRgb(this.baseColor);
+        this.darkColor_rgb = hexToRgb(this.darkColor);
+        this.accentColor_rgb = hexToRgb(this.accentColor);
 
         this.baseColorAmount = 33;
         this.darkColorAmount = 33;
@@ -147,7 +148,7 @@ class BaseLifeSquare {
         }
         return this.randoms[randIdx];
     }
-    
+
     calculateWidthXOffset() {
         return -(0.5 - (this.width / 2));
     }
@@ -167,14 +168,14 @@ class BaseLifeSquare {
         let hsv = rgb2hsv(rgb.r, rgb.g, rgb.b);
         hsv[1] *= this.lightHealth;
         let rgbArr = hsv2rgb(...hsv);
-        return {r: rgbArr[0], g: rgbArr[1], b: rgbArr[2]};
+        return { r: rgbArr[0], g: rgbArr[1], b: rgbArr[2] };
     }
 
     subtypeColorUpdate() {
         if (this.type == "root") {
             return;
         }
-        
+
         this.applySubtypeRenderConfig();
         this.activeRenderSubtype = this.subtype;
         this.activeRenderState = this.state;
@@ -190,7 +191,7 @@ class BaseLifeSquare {
             this.subtypeColorUpdate();
         }
         if (this.linkedOrganism.stage == STAGE_DEAD) {
-            frameOpacity *= 1 - this.linkedOrganism.deathProgress; 
+            frameOpacity *= 1 - this.linkedOrganism.deathProgress;
         }
         let selectedViewMode = loadGD(UI_VIEWMODE_SELECT);
         if (selectedViewMode == UI_VIEWMODE_NITROGEN) {
@@ -249,6 +250,37 @@ class BaseLifeSquare {
             return;
         }
         else {
+            if (selectedViewMode == UI_VIEWMODE_ORGANISMS) {
+                if (this.opacity < 0.25) {
+                    frameOpacity *= 4;
+                }
+            } 
+            this.renderWithVariedColors(frameOpacity);
+        }
+    }
+
+    processLighting() {
+        if (this.frameCacheLighting != null) {
+            return this.frameCacheLighting;
+        }
+        if (!loadGD(UI_LIGHTING_ENABLED)) {
+            this.frameCacheLighting = getDefaultLighting();
+            return this.frameCacheLighting;
+        }
+        if (this.type == "root")
+            this.frameCacheLighting = processLighting(this.linkedSquare.lighting);
+        else
+            this.frameCacheLighting = processLighting(this.lighting);
+        return this.frameCacheLighting;
+    }
+
+    renderWithVariedColors(frameOpacity) {
+        if (
+            (frameOpacity != this.lastColorCacheOpacity) ||
+            (Date.now() > this.lastColorCacheTime + 2500 * Math.random()) ||
+            Math.abs(getDaylightStrengthFrameDiff()) > 0.01) {
+            this.lastColorCacheTime = Date.now();
+            this.lastColorCacheOpacity = frameOpacity;
             let res = this.getStaticRand(1) * this.accentColorAmount + this.darkColorAmount + this.baseColorAmount;
             let baseColor = null;
             let altColor1 = null;
@@ -274,30 +306,21 @@ class BaseLifeSquare {
                 g: (baseColor.g * 0.5 + ((altColor1.g * rand + altColor2.g * (1 - rand)) * 0.5)),
                 b: (baseColor.b * 0.5 + ((altColor1.b * rand + altColor2.b * (1 - rand)) * 0.5))
             }
-            let lightingColor; 
-            if (this.type == "root")
-                lightingColor = processLighting(this.linkedSquare.lighting);
-            else    
-                lightingColor = processLighting(this.lighting);
-            
+            this.frameCacheLighting = null;
+            let lightingColor = this.processLighting();
             let outColor = { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
-            
-            if (selectedViewMode == UI_VIEWMODE_ORGANISMS) {
-                frameOpacity = Math.max(0.25, this.opacity);
-            }
-            let outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), frameOpacity);
-            MAIN_CONTEXT.fillStyle = outRgba;
-
-            zoomCanvasFillRectTheta(
-                this.getPosX() * getBaseSize(),
-                this.getPosY() * getBaseSize(),
-                this.width * getBaseSize() * this.getLsqRenderSizeMult(),
-                this.height * getBaseSize() * this.getLsqRenderSizeMult(),
-                this.xRef,
-                this.yRef,
-                this.theta
-            );
+            this.cachedRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), frameOpacity);
         }
+        MAIN_CONTEXT.fillStyle = this.cachedRgba;
+        zoomCanvasFillRectTheta(
+            this.getPosX() * getBaseSize(),
+            this.getPosY() * getBaseSize(),
+            this.width * getBaseSize() * this.getLsqRenderSizeMult(),
+            this.height * getBaseSize() * this.getLsqRenderSizeMult(),
+            this.xRef,
+            this.yRef,
+            this.theta
+        );
 
     }
 

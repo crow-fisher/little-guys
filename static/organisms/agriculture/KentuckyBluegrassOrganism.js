@@ -91,7 +91,7 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
             startRootNode.posX, startRootNode.posY, 
             false, STAGE_ADULT, randRange(-Math.PI, Math.PI), baseDeflection, 0, 
             baseDeflection, 
-            randRange(0, 0.3), TYPE_TRUNK, 1);
+            randRange(0, 0.3), TYPE_TRUNK, .7);
         growthPlan.postConstruct = () => {
             this.originGrowth.addChild(growthPlan.component);
             this.grasses.push(this.originGrowth.getChildPath(growthPlan.component))

@@ -1,6 +1,5 @@
 import { doWaterFlow, physics, physicsOnlyGravity, physicsWaterSimplePhysics, processOrganisms, renderOrganisms, renderSolidSquares, renderWaterSquares, reset } from "./globalOperations.js";
 import { doClickAdd, doClickAddEyedropperMixer } from "./manipulation.js";
-import { resetFrameDivMult } from "./lighting/lightingProcessing.js";
 import { renderClouds, renderTemperature, renderWaterSaturation } from "./climate/temperatureHumidity.js";
 import { doTimeSeek, doTimeSkipToNow, getTimeScale, isTimeSeeking, renderTime, updateTime } from "./climate/time.js";
 import { executeFunctionQueue, loadGD, UI_SIMULATION_CLOUDS, UI_SIMULATION_SIMPLESQUARE, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_WIND } from "./ui/UIData.js";
@@ -57,7 +56,6 @@ export function scheduler_main() {
 
 function render() {
     let selectedViewMode = loadGD(UI_VIEWMODE_SELECT);
-    resetFrameDivMult();
     doTimeSeek();
     renderTime();
 
