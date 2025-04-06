@@ -12,7 +12,9 @@ import { RGB_COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_GREEN, RGB_COLOR_RED } from 
 import { millis_per_day } from "./time.js";
 // decent reference https://web.gps.caltech.edu/~xun/course/GEOL1350/Lecture5.pdf
 
-
+function temperatureHumidityFlowrateFactor() {
+    return 24;
+}
 
 var temperatureMap;
 var waterSaturationMap;
@@ -181,7 +183,7 @@ function temperatureDiffFunction(x, y, x2, y2, high, low) {
         return 0;
     }
     let diff = (high - low) / 2;
-    diff /= windFlowrateFactor();
+    diff /= temperatureHumidityFlowrateFactor();
     return diff;
 }
 
@@ -199,7 +201,7 @@ function humidityDiffFunction(x, y, x2, y2, high, low) {
 
     let minPascalsForHumidityDiff = Math.min(square1PascalsForHumidityDiff, square2PascalsForHumidityDiff)
 
-    minPascalsForHumidityDiff /= windFlowrateFactor();
+    minPascalsForHumidityDiff /= temperatureHumidityFlowrateFactor();
 
     if (humidityDiff > 0) {
         return minPascalsForHumidityDiff;

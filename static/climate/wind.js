@@ -9,7 +9,7 @@ let windPressureMapByPressure;
 let windPressureBlockOcclusionMap;
 
 export function windFlowrateFactor() {
-    return 24;
+    return 1;
 }
 
 export function getWindPressureMap() {
@@ -175,7 +175,16 @@ function tickWindPressureMap() {
 
     for (let i = 0; i < curWindSquaresX; i++) {
         for (let j = 0; j < curWindSquaresY; j++) {
-            windPressureBlockOcclusionMap[i][j] = checkIfCollisionAtWindSquare(i, j);
+            let coll = checkIfCollisionAtWindSquare(i, j);
+            if (coll) {
+                if (!(windPressureBlockOcclusionMap[i][j])) {
+                    let h = getHumidity(i, j);
+                    if (h > 1) {
+                        setWaterSaturation(i, j, 0.8 / h)
+                    }
+                }
+            }
+            windPressureBlockOcclusionMap[i][j] = coll;
             let pressure = Math.floor(windPressureMap[i][j]);
             if (!(pressure in windPressureMapByPressure)) {
                 windPressureMapByPressure[pressure] = new Array();
