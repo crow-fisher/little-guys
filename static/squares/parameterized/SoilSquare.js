@@ -210,7 +210,10 @@ export class SoilSquare extends BaseSquare {
         if (this.waterContainment < this.waterContainmentMax) {
             return;
         }
-        this.outflowNewWaterToLocation(this.posX, this.posY)
+        this.outflowNewWaterToLocation(this.posX, this.posY);
+        this.outflowNewWaterToLocation(this.posX + 1, this.posY);
+        this.outflowNewWaterToLocation(this.posX - 1, this.posY);
+
     }
 
     outflowNewWaterToLocation(posX, posY) {

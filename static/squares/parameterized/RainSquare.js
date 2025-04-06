@@ -16,6 +16,7 @@ class AquiferSquare extends BaseSquare {
         this.waterContainmentMax = 1;
         this.waterContainmentTransferRate = 0;
         this.opacity = 0.003;
+        this.solid = false;
     }
     waterSinkPhysics() {}
     gravityPhysics() {
