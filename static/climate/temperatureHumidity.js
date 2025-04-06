@@ -2,7 +2,7 @@ import { hexToRgb, randNumber, rgbToRgba } from "../common.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
 import { MAIN_CONTEXT } from "../index.js";
-import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds, getBaseAirPressureAtYPosition, getAirSquareDensity, getWindPressureSquareDensity, base_wind_pressure, manipulateWindPressureMaintainHumidityWindSquare, initWindPressure, isWindSquareBlocked } from "./wind.js";
+import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds, getBaseAirPressureAtYPosition, getAirSquareDensity, getWindPressureSquareDensity, base_wind_pressure, manipulateWindPressureMaintainHumidityWindSquare, initWindPressure, isWindSquareBlocked, windFlowrateFactor } from "./wind.js";
 import { logRainFall } from "./weather/weatherManager.js";
 import { getDefaultLighting } from "../lighting/lightingProcessing.js";
 import { addSquareByName } from "../manipulation.js";
@@ -13,9 +13,7 @@ import { millis_per_day } from "./time.js";
 // decent reference https://web.gps.caltech.edu/~xun/course/GEOL1350/Lecture5.pdf
 
 
-function temperatureFlowrateFactor() {
-    return 24;
-}
+
 var temperatureMap;
 var waterSaturationMap;
 
@@ -183,7 +181,7 @@ function temperatureDiffFunction(x, y, x2, y2, high, low) {
         return 0;
     }
     let diff = (high - low) / 2;
-    diff /= temperatureFlowrateFactor();
+    diff /= windFlowrateFactor();
     return diff;
 }
 
@@ -201,7 +199,7 @@ function humidityDiffFunction(x, y, x2, y2, high, low) {
 
     let minPascalsForHumidityDiff = Math.min(square1PascalsForHumidityDiff, square2PascalsForHumidityDiff)
 
-    minPascalsForHumidityDiff /= temperatureFlowrateFactor();
+    minPascalsForHumidityDiff /= windFlowrateFactor();
 
     if (humidityDiff > 0) {
         return minPascalsForHumidityDiff;

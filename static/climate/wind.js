@@ -7,7 +7,10 @@ import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillRect, 
 let windPressureMap;
 let windPressureMapByPressure;
 let windPressureBlockOcclusionMap;
-let windFlowStrength = 0.5;
+
+export function windFlowrateFactor() {
+    return 24;
+}
 
 export function getWindPressureMap() {
     return windPressureMap;
@@ -28,9 +31,6 @@ let WIND_SQUARES_Y = () => Math.ceil(getCanvasSquaresY() / 4);
 
 let curWindSquaresX = -1;
 let curWindSquaresY = -1;
-
-let prevailingWind_minColorRGB = hexToRgb("#3d05dd")
-let prevailingWind_maxColorRGB = hexToRgb("#fcb0f3")
 
 export function getWindSquaresX() {
     return curWindSquaresX;
@@ -99,8 +99,8 @@ function getWindPressureDiff(w1, w2) {
         console.log("FUCK!!!!");
         return 0;
     }
-    let diff = w1 - w2;
-    diff *= windFlowStrength;
+    let diff = (w1 - w2) / 2;
+    diff /= windFlowrateFactor();
     return diff;
 }
 
