@@ -2,10 +2,11 @@ import { hexToRgb, rgbToRgba } from "../common.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import {  MAIN_CONTEXT } from "../index.js";
 import { addWaterSaturation, addWaterSaturationPascals, calculateColor, getHumidity, getTemperatureAtWindSquare, getWaterSaturation, initTemperatureHumidity, setWaterSaturation, setWaterSaturationMap, updateWindSquareTemperature } from "./temperatureHumidity.js";
-import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillRect } from "../canvas.js";
+import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillRect, zoomCanvasFillRectTheta } from "../canvas.js";
 
 let windPressureMap;
 let windPressureMapByPressure;
+let windPressureBlockOcclusionMap;
 let windFlowStrength = 0.5;
 
 export function getWindPressureMap() {
@@ -22,17 +23,12 @@ let base_wind_pressure = 101325; // 1 atm in pascals
 
 let windSpeedSmoothingMap = new Map();
 
-let clickAddPressure = 0.01;
 let WIND_SQUARES_X = () => Math.ceil(getCanvasSquaresX() / 4);
 let WIND_SQUARES_Y = () => Math.ceil(getCanvasSquaresY() / 4);
 
 let curWindSquaresX = -1;
 let curWindSquaresY = -1;
 
-let prevailingWindMap = new Map();
-let prevailingWindStartPressureMap = new Map();
-let prevailingWind_maxAtm = 1.2;
-let prevailingWind_minAtm = 0.8;
 let prevailingWind_minColorRGB = hexToRgb("#3d05dd")
 let prevailingWind_maxColorRGB = hexToRgb("#fcb0f3")
 
@@ -135,6 +131,10 @@ function checkIfCollisionAtWindSquare(x, y) {
     return false;
 }
 
+export function isWindSquareBlocked(x, y) {
+    return windPressureBlockOcclusionMap[x][y];
+}
+
 export function getBaseAirPressureAtYPosition(posY) {
     return base_wind_pressure + (stp_pascals_per_meter * 4 * posY);
 }
@@ -142,8 +142,7 @@ export function getBaseAirPressureAtYPosition(posY) {
 function initWindPressure() {
     windPressureMap = new Map();
     windPressureMapByPressure = new Map();
-    prevailingWindMap = new Map();
-    prevailingWindStartPressureMap = new Map();
+    windPressureBlockOcclusionMap = new Map();
     windSpeedSmoothingMap = new Map();
 
     curWindSquaresX = WIND_SQUARES_X();
@@ -153,17 +152,12 @@ function initWindPressure() {
         for (let j = 0; j < curWindSquaresY; j++) {
             if (!(i in windPressureMap)) {
                 windPressureMap[i] = new Map();
-                prevailingWindMap[i] = new Map();
                 windSpeedSmoothingMap[i] = new Map();
-                prevailingWindStartPressureMap[i] = new Map();
+                windPressureBlockOcclusionMap[i] = new Map();
             }
-            prevailingWindMap[i][j] = -1;
             windSpeedSmoothingMap[i][j] = new Array();
-            if (checkIfCollisionAtWindSquare(i, j)) {
-                windPressureMap[i][j] = -1;
-            } else {
-                windPressureMap[i][j] = getBaseAirPressureAtYPosition(j) * 1.05;
-            }
+            windPressureMap[i][j] = getBaseAirPressureAtYPosition(j);
+            windPressureBlockOcclusionMap[i][j] = checkIfCollisionAtWindSquare(i, j);
         }
     }
 }
@@ -181,29 +175,7 @@ function tickWindPressureMap() {
 
     for (let i = 0; i < curWindSquaresX; i++) {
         for (let j = 0; j < curWindSquaresY; j++) {
-            let prevailingWind = prevailingWindMap[i][j];
-            if (prevailingWind != -1) {
-                let prevailingWindPressure = prevailingWindStartPressureMap[i][j] * (prevailingWind_minAtm * (1 - prevailingWind) + prevailingWind_maxAtm * prevailingWind)
-                let start = windPressureMap[i][j];
-                windPressureMap[i][j] = prevailingWindPressure;
-                let mult = windPressureMap[i][j] / start;
-                addWaterSaturationPascals(i, j, mult * getWaterSaturation(i, j));
-            }
-            if (checkIfCollisionAtWindSquare(i, j)) {
-                windPressureMap[i][j] = -1;
-            } else {
-                if (windPressureMap[i][j] == -1) {
-                    if (!getWindDirectNeighbors(i, j).some((sq) => {
-                        if (getPressure(sq[0], sq[1]) != -1) {
-                            windPressureMap[i][j] = getPressure(sq[0], sq[1]);
-                            return true;
-                        }
-                        return false;
-                    })) {
-                        windPressureMap[i][j] = base_wind_pressure;
-                    }
-                }
-            }
+            windPressureBlockOcclusionMap[i][j] = checkIfCollisionAtWindSquare(i, j);
             let pressure = Math.floor(windPressureMap[i][j]);
             if (!(pressure in windPressureMapByPressure)) {
                 windPressureMapByPressure[pressure] = new Array();
@@ -211,9 +183,7 @@ function tickWindPressureMap() {
             windPressureMapByPressure[pressure].push([i, j]);
         }
     }
-
     let windPressureMapKeys = Array.from(Object.keys(windPressureMapByPressure)).sort((a, b) => b - a);
-
     windPressureMapKeys
         .filter((pressure) => pressure > 0)
         .forEach((pressure) => {
@@ -222,13 +192,19 @@ function tickWindPressureMap() {
                 .forEach((pl) => {
                     let x = pl[0];
                     let y = pl[1];
+                    if (isWindSquareBlocked(x, y)) {
+                        return;
+                    }
                     getWindDirectNeighbors(x, y)
                         .filter((spl) => isPointInBounds(spl[0], spl[1]))
-                        .filter((spl) => getPressure(spl[0], spl[1]) > 0)
                         .forEach((spl) => {
                             let x2 = spl[0];
                             let y2 = spl[1];
-                            
+
+                            if (isWindSquareBlocked(x2, y2)) {
+                                return;
+                            }
+                        
                             let plPressure = windPressureMap[x][y]
                             let splPressure = windPressureMap[x2][y2];
                         
@@ -236,7 +212,6 @@ function tickWindPressureMap() {
                             let splTemp = getTemperatureAtWindSquare(x2, y2);
 
                             let windPressureDiff = getExpectedPressureDifferential(x, y, x2, y2);
-
                             if (windPressureDiff == 0) {
                                 return;
                             }
@@ -276,19 +251,12 @@ function tickWindPressureMap() {
 };
 
 function getExpectedPressureDifferential(x, y, x2, y2) {
-    if (!isPointInBounds(x, y) || !isPointInBounds(x2, y2)) {
+    if (!isPointInBounds(x, y) || !isPointInBounds(x2, y2) || isWindSquareBlocked(x, y) || isWindSquareBlocked(x2, y2)) {
         return 0;
     }
-
     let plPressure = windPressureMap[x][y];
     let splPressure = windPressureMap[x2][y2];
-
-    if (splPressure < 0 || plPressure < 0) {
-        return 0;
-    }
-
     // now, process plPressure and splPressure
-
     let plDensity = getAirSquareDensityTempAndHumidity(x, y);
     let splDensity = getAirSquareDensityTempAndHumidity(x2, y2);
 
@@ -319,23 +287,15 @@ function renderWindPressureMap() {
             let pressure_255 = (p - 1) * 122;
 
             MAIN_CONTEXT.fillStyle = rgbToRgba(255 - pressure_255, 255 - pressure_255, 255 - pressure_255, .3);
-            zoomCanvasFillRect(
+            zoomCanvasFillRectTheta(
                 4 * i * getBaseSize(),
                 4 * j * getBaseSize(),
                 4 * getBaseSize(),
-                4 * getBaseSize()
+                4 * getBaseSize(),
+                2,
+                2,
+                0
             );
-
-            if (prevailingWindMap[i][j] != -1) {
-                MAIN_CONTEXT.fillStyle = calculateColor(prevailingWindMap[i][j], 0, 1, prevailingWind_minColorRGB, prevailingWind_maxColorRGB);
-                zoomCanvasFillRect(
-                    4 * i * getBaseSize(),
-                    4 * j * getBaseSize(),
-                    4 * getBaseSize(),
-                    4 * getBaseSize()
-                );
-
-            }
 
             if ((i * j) % 32 != 0) {
                 continue;
@@ -467,13 +427,12 @@ export function manipulateWindPressureMaintainHumidityBlockSquare(posX, posY, am
 export function addWindPressureDryAir(posX, posY, amount) {
     let x = Math.floor(posX / 4);
     let y = Math.floor(posY / 4);
-    let start = windPressureMap[x][y];
-    if (start <= 0) {
+    if (isWindSquareBlocked(x, y)) {
         return;
     }
     let pascals = getBaseAirPressureAtYPosition(y) * amount;
     let target = windPressureMap[x][y] + pascals;
-    windPressureMap[x][y] = Math.max(getBaseAirPressureAtYPosition(y) * 0.5, target);
+    windPressureMap[x][y] = Math.max(getBaseAirPressureAtYPosition(y) * 1, target);
     windPressureMap[x][y] = Math.min(getBaseAirPressureAtYPosition(y) * 100, target);
 }
 
@@ -485,8 +444,7 @@ export function addWindPressureCloud(posX, posY, amount, cloud) {
     addWindPressureDryAir(posX, posY, amount);
     let x = Math.floor(posX / 4);
     let y = Math.floor(posY / 4);
-    let start = windPressureMap[x][y];
-    if (start <= 0) {
+    if (isWindSquareBlocked(x, y)) {
         return;
     }
     let curHumidity = getHumidity(x, y);
@@ -501,7 +459,6 @@ export function addWindPressureDryAirWindSquare(wx, wy, pascals) {
         return;
     }
     let target = windPressureMap[wx][wy] + pascals;
-
     windPressureMap[wx][wy] = target;
     windPressureMap[wx][wy] = Math.max(getBaseAirPressureAtYPosition(wy) * 0.5, windPressureMap[wx][wy]);
     windPressureMap[wx][wy] = Math.min(getBaseAirPressureAtYPosition(wy) * 100, windPressureMap[wx][wy]);

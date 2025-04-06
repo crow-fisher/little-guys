@@ -35,7 +35,7 @@ let dt = 0;
 let dtRollingAverage = dt;
 
 export function getFrameDt() {
-    return dtRollingAverage;
+    return Math.min(100, dtRollingAverage);
 }
 
 var starMap;

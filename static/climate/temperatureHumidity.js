@@ -2,7 +2,7 @@ import { hexToRgb, randNumber, rgbToRgba } from "../common.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
 import { MAIN_CONTEXT } from "../index.js";
-import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds, getBaseAirPressureAtYPosition, getAirSquareDensity, getWindPressureSquareDensity, base_wind_pressure, manipulateWindPressureMaintainHumidityWindSquare, initWindPressure } from "./wind.js";
+import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds, getBaseAirPressureAtYPosition, getAirSquareDensity, getWindPressureSquareDensity, base_wind_pressure, manipulateWindPressureMaintainHumidityWindSquare, initWindPressure, isWindSquareBlocked } from "./wind.js";
 import { logRainFall } from "./weather/weatherManager.js";
 import { getDefaultLighting } from "../lighting/lightingProcessing.js";
 import { addSquareByName } from "../manipulation.js";
@@ -111,11 +111,10 @@ export function restingValues() {
     let humidityStrength = 60; 
     for (let i = 0; i < getWindSquaresX(); i++) {
         for (let j = 0; j < getWindSquaresY(); j++) {
-
-            let curPressure = getPressure(i, j); 
-
-            if (curPressure <= 0)
+            if (isWindSquareBlocked(i, j)) {
                 continue;
+            }
+            let curPressure = getPressure(i, j); 
              
             let pressureRestingMult = 0.0001;
 
@@ -180,10 +179,7 @@ function updateWindSquareTemperature(x, y, newVal) {
 
 
 function temperatureDiffFunction(x, y, x2, y2, high, low) {
-    if (getPressure(x, y) < 0) {
-        return 0;
-    }
-    if (getPressure(x2, y2) < 0) {
+    if (isWindSquareBlocked(x, y) || isWindSquareBlocked(x2, y2)) {
         return 0;
     }
     let diff = (high - low) / 2;
@@ -192,6 +188,9 @@ function temperatureDiffFunction(x, y, x2, y2, high, low) {
 }
 
 function humidityDiffFunction(x, y, x2, y2, high, low) {
+    if (isWindSquareBlocked(x, y) || isWindSquareBlocked(x2, y2)) {
+        return 0;
+    }
     let humidity1 = getHumidity(x, y); // 0.2
     let humidity2 = getHumidity(x2, y2); // 0.8
 
@@ -223,8 +222,8 @@ function tickMap(
         for (let j = 0; j < yKeys.length; j++) {
             let x = parseInt(xKeys[i]);
             let y = parseInt(yKeys[j]);
-            if (getPressure(x, y) < 0) {
-                continue;
+            if (isWindSquareBlocked(x, y)) {
+                return 0;
             }
             getMapDirectNeighbors(x, y)
                 .filter((loc) => isPointInWindBounds(loc[0], loc[1]))
@@ -232,6 +231,9 @@ function tickMap(
                 .forEach((loc) => {
                     let x2 = loc[0];
                     let y2 = loc[1];
+                    if (isWindSquareBlocked(x2, y2)) {
+                        return;
+                    }
                     let diff = diff_function(x, y, x2, y2, map[x][y], map[x2][y2]);
 
                     if (y == y2) {
