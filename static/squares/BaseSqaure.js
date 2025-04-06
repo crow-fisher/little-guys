@@ -593,7 +593,6 @@ export class BaseSquare {
             this.processFrameLightingTemperature();
         }
     }
-
     /* Called before physics(), with blocks in strict order from top left to bottom right. */
     physicsBefore() {
         this.calculateGroup();

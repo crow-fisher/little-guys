@@ -129,6 +129,11 @@ class WaterSquare extends BaseSquare {
             return;
         }
 
+        if (this.blockHealth < this.blockHealthMax / 10) {
+            this.currentPressureIndirect = 10 ** 8;
+            return;
+        }
+
         let perGroupData = new Map();
         iterateOnSquares((sq) => {
             if (sq.proto != this.proto) {
