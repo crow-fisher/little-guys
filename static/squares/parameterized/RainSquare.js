@@ -18,7 +18,6 @@ class AquiferSquare extends BaseSquare {
         this.opacity = 0.003;
         this.solid = false;
     }
-    waterSinkPhysics() {}
     gravityPhysics() {
         let sq = addSquare(new WaterSquare(this.posX, this.posY + 1));
         if (sq) {

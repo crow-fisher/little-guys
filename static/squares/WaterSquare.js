@@ -54,10 +54,10 @@ class WaterSquare extends BaseSquare {
 
     physics() {
         super.physics();
-        this.calculateCandidateFlows();
         this.doNeighborPercolation();
         this.combineAdjacentNeighbors();
-        this.doLocalColorSwapping();
+        this.doLocalColorSwapping();9
+        this.calculateCandidateFlows();
     }
 
     physicsSimple() {

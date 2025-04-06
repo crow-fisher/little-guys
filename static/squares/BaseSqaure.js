@@ -68,7 +68,6 @@ export class BaseSquare {
 
         // for ref - values from dirt
         this.opacity = 1;
-        this.waterSinkRate = 0.8;
         this.cachedRgba = null;
 
         this.distToFront = 0;
@@ -500,7 +499,7 @@ export class BaseSquare {
         if (this.solid) {
             if (!sq.solid) {
                 if (this.surface) {
-                    return false;
+                    return !(this.waterContainment == this.waterContainmentMax);
                 }
                 return true;
             }
@@ -590,47 +589,9 @@ export class BaseSquare {
             this.waterEvaporationRoutine();
             this.temperatureRoutine();
             this.transferHeat();
-            this.waterSinkPhysics();
             this.gravityPhysics();
             this.processFrameLightingTemperature();
         }
-    }
-
-    waterSinkPhysics() {
-        if (this.gravity == 0 || this.surface) {
-            return;
-        }
-        if (!this.solid) {
-            if (Math.random() < 0.9) {
-                return;
-            }
-            getSquares(this.posX + 1, this.posY)
-                .filter((sq) => sq.proto == "WaterSquare")
-                .forEach((sq) => {
-                    if (Math.random() > this.waterSinkRate) {
-                        removeSquare(sq);
-                        sq.posX -= 1;
-                        this.updatePosition(this.posX + 1, this.posY);
-                        addSquare(sq);
-                    }
-                });
-            return;
-        }
-        if (getSquares(this.posX, this.posY + 1)
-            .some((sq) => sq.solid && sq.surface)) {
-            return; 
-        };
-
-        getSquares(this.posX, this.posY + 1)
-            .filter((sq) => sq.proto == "WaterSquare")
-            .forEach((sq) => {
-                if (Math.random() > this.waterSinkRate) {
-                    removeSquare(sq);
-                    sq.posY -= 1;
-                    this.updatePosition(this.posX, this.posY + 1);
-                    addSquare(sq);
-                }
-            });
     }
 
     /* Called before physics(), with blocks in strict order from top left to bottom right. */
