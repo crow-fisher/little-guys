@@ -456,7 +456,6 @@ function getDaylightStrength() {
 }
 
 function renderTime() {
-    // 0.5 is noon, 0.25 is sunrise, 0.75 is sunset
     MAIN_CONTEXT.fillStyle = calculateTempColorRgbaCache(getDaylightStrength(), 0.35);
     MAIN_CONTEXT.fillRect(
         0,

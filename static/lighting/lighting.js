@@ -87,24 +87,6 @@ export class StationaryLightGroup extends LightGroup {
         return [minTheta, maxTheta];
     }
 
-    thetaBrightnessFunc(theta) {
-        let curTime = getCurDay() % 1;
-        let st = this.startTime;
-        let et = this.endTime;
-
-        if (et < st) {
-            if (curTime < et) {
-                curTime += 1;
-            }
-            et += 1;
-        }
-        if ((curTime < st || curTime > et)) {
-            return 0;
-        }
-        let curFrac = (curTime - st) / (et - st);
-        return Math.cos(Math.abs((curFrac - 0.5)) * Math.PI);
-    }
-
     init() {
         this.lightSources = [];
         let step = (this.sizeX / this.numNodes);
@@ -381,7 +363,7 @@ export class LightSource {
         thetaSquares.forEach((arr) => {
             let obj = arr[2];
             let curBrightnessCopy = curBrightness;
-            let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(theta)() * curBrightnessCopy * this.brightnessFunc() * this.thetaBrightnessFunc(theta);
+            let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(theta)() * curBrightnessCopy * this.brightnessFunc();
             curBrightness *= (1 - (obj.surface ? (obj.surfaceLightingFactor ?? 1) : 1) * (obj.getLightFilterRate() * Math.exp(loadGD(UI_LIGHTING_DECAY)) * (loadGD(UI_LIGHTING_QUALITY)) / 9));
             if (obj.lighting[idx] == null) {
                 obj.lighting[idx] = [[pointLightSourceFunc], this.colorFunc];

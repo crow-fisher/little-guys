@@ -1,6 +1,6 @@
-import { getCurDay, getDt } from "../climate/time.js";
+import { getCurDay } from "../climate/time.js";
 import { getWindSpeedAtLocation } from "../climate/wind.js";
-import { STATE_DEAD, STATE_DESTROYED, STATE_HEALTHY, STATE_THIRSTY } from "./Stages.js";
+import { STATE_DESTROYED } from "./Stages.js";
 import { getGlobalThetaBase } from "../globals.js";
 
 const ROLLING_AVERAGE_PERIOD = 200;
@@ -343,8 +343,8 @@ export class GrowthComponent {
 
         let thetaDelta = endTheta - startTheta;
 
-        let prevX = this.posX;
-        let prevY = this.posY;
+        let prevX = -1;
+        let prevY = -1;
 
         this.lifeSquares.forEach((lsq) => {
             // relative to origin
@@ -367,7 +367,9 @@ export class GrowthComponent {
             lsq.deflectionXOffset = (endX - relLsqX) + this.xOffset;
             lsq.deflectionYOffset = (endY - relLsqY) + this.yOffset;
 
-            lsq.theta = Math.atan((lsq.getPosY() - prevY) / (lsq.getPosX() - prevX)) + Math.PI / 2;
+            if (prevX != -1) {
+                lsq.theta = Math.atan((lsq.getPosY() - prevY) / (lsq.getPosX() - prevX)) + Math.PI / 2;
+            }
 
             prevX = lsq.getPosX();
             prevY = lsq.getPosY();
