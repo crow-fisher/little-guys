@@ -263,10 +263,10 @@ export class SoilSquare extends BaseSquare {
         if (Date.now() < this.spawnTime + 100) {
             return;
         }
-        let numParticles = (bonkSpeed / (this.getWaterflowRate() ** 0.5));
+        let numParticles = (bonkSpeed / (this.getWaterflowRate() ** 0.3));
 
         for (let i = 0; i < numParticles; i++) {
-            let speed = bonkSpeed ** 0.20;
+            let speed = (bonkSpeed ** 0.25) - 1;
             let theta = randRange(0, 2 * Math.PI);
             let speedX = speed * Math.cos(theta);
             let speedY = speed * Math.sin(theta);

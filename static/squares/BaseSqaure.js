@@ -373,17 +373,6 @@ export class BaseSquare {
     }
 
     triggerParticles(bonkSpeed) {
-        if (Date.now() < this.spawnTime + 100) {
-            return;
-        }
-        for (let i = 0; i < bonkSpeed ** 0.5; i++) {
-            let speed = bonkSpeed ** 0.20;
-            let theta = randRange(0, 2 * Math.PI);
-            let speedX = speed * Math.cos(theta);
-            let speedY = speed * Math.sin(theta);
-            let size = randRange(2, 4);
-            this.activeParticles.push([this.posX, this.posY, theta, speedX, speedY, size])
-        }
     }
 
     processParticles() {
@@ -391,7 +380,8 @@ export class BaseSquare {
         this.activeParticles.forEach((partArr) => {
             partArr[0] += partArr[3]; // px
             partArr[1] += partArr[4]; // py
-            partArr[4] += 0.5;
+            partArr[4] += 0.05;
+            partArr[3] *= 0.99;
 
             let x = Math.round(partArr[0]);
             let y = Math.round(partArr[1]);

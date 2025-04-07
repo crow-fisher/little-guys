@@ -3,7 +3,7 @@ import { getSquares, iterateOnSquares, getNeighbors } from "./_sqOperations.js";
 import { WATERFLOW_CANDIDATE_SQUARES, WATERFLOW_TARGET_SQUARES } from "../globals.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { RGB_COLOR_OTHER_BLUE } from "../colors.js";
-import { hexToRgb, hsv2rgb, rgb2hsv, rgbToRgba } from "../common.js";
+import { hexToRgb, hsv2rgb, randRange, rgb2hsv, rgbToRgba } from "../common.js";
 import { loadGD, UI_LIGHTING_WATER, UI_LIGHTING_WATER_HUE, UI_LIGHTING_WATER_SATURATION, UI_LIGHTING_WATER_VALUE } from "../ui/UIData.js";
 import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
 import { getActiveClimate } from "../climate/climateManager.js";
@@ -87,6 +87,20 @@ class WaterSquare extends BaseSquare {
     physicsBefore() {
         super.physicsBefore();
         this.calculateIndirectPressure();
+    }
+
+    triggerParticles(bonkSpeed) {
+        if (Date.now() < this.spawnTime + 100) {
+            return;
+        }
+        for (let i = 0; i < bonkSpeed ** 0.8; i++) {
+            let speed = bonkSpeed ** 0.05;
+            let theta = randRange(0, 2 * Math.PI);
+            let speedX = speed * Math.cos(theta);
+            let speedY = speed * Math.sin(theta);
+            let size = randRange(2, 4);
+            this.activeParticles.push([this.posX, this.posY, theta, speedX, speedY, size])
+        }
     }
 
     calculateCandidateFlows() {
