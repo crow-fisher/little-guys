@@ -538,7 +538,7 @@ export class BaseSquare {
         if (this.solid) {
             if (!sq.solid) {
                 if (this.surface) {
-                    return !(this.waterContainment == this.waterContainmentMax);
+                    return !((this.waterContainment == this.waterContainmentMax || this.gravity == 0));
                 }
                 return true;
             }
@@ -551,7 +551,7 @@ export class BaseSquare {
             if (!sq.solid) {
                 return true;
             } else {
-                if ((sq.surface && sq.waterContainment == sq.waterContainmentMax)) {
+                if ((sq.surface && (sq.waterContainment == sq.waterContainmentMax || sq.gravity == 0))) {
                     return false;
                 }
                 return true;

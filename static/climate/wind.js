@@ -81,7 +81,7 @@ function getWindSquareAbove(squareX, squareY) {
     if (!isPointInBounds(x, y)) {
         return [-1, -1];
     }
-    while (getPressure(x, y) < 0 && isPointInBounds(x, y - 1)) {
+    while (isWindSquareBlocked(x, y) && isPointInBounds(x, y - 1)) {
         y -= 1;
     }
 

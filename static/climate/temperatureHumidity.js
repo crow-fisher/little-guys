@@ -12,7 +12,7 @@ import { RGB_COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_GREEN, RGB_COLOR_RED } from 
 import { millis_per_day } from "./time.js";
 // decent reference https://web.gps.caltech.edu/~xun/course/GEOL1350/Lecture5.pdf
 
-function temperatureHumidityFlowrateFactor() {
+export function temperatureHumidityFlowrateFactor() {
     return 24;
 }
 
@@ -111,9 +111,6 @@ export function restingValues() {
     let humidityStrength = 60; 
     for (let i = 0; i < getWindSquaresX(); i++) {
         for (let j = 0; j < getWindSquaresY(); j++) {
-            if (isWindSquareBlocked(i, j)) {
-                continue;
-            }
             let curPressure = getPressure(i, j); 
              
             let pressureRestingMult = 0.0001;
@@ -222,19 +219,16 @@ function tickMap(
         for (let j = 0; j < yKeys.length; j++) {
             let x = parseInt(xKeys[i]);
             let y = parseInt(yKeys[j]);
-            if (isWindSquareBlocked(x, y)) {
-                return 0;
-            }
             getMapDirectNeighbors(x, y)
                 .filter((loc) => isPointInWindBounds(loc[0], loc[1]))
                 .filter((loc) => getPressure(loc[0], loc[1]) > 0)
                 .forEach((loc) => {
                     let x2 = loc[0];
                     let y2 = loc[1];
-                    if (isWindSquareBlocked(x2, y2)) {
+                    let diff = diff_function(x, y, x2, y2, map[x][y], map[x2][y2]);
+                    if (diff == 0) {
                         return;
                     }
-                    let diff = diff_function(x, y, x2, y2, map[x][y], map[x2][y2]);
 
                     if (y == y2) {
                         update_function(x, y, map[x][y] - diff);
