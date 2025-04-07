@@ -1,7 +1,7 @@
 
 
 import { loadEmptyScene, loadUserSettings } from "./saveAndLoad.js";
-import { clearTimeouts, resetClimateAndLighting, scheduler_main } from "./main.js";
+import { clearTimeouts, resetClimateAndLighting, resetLighting, scheduler_main } from "./main.js";
 import { keydown, keyup } from "./keyboard.js";
 import { handleClick, handleMouseDown, handleMouseUp, handleTouchEnd, handleTouchMove, handleTouchStart } from "./mouse.js";
 import { getCanvasHeight, getCanvasWidth, resetZoom, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, zoom } from "./canvas.js";
@@ -69,6 +69,8 @@ export function indexCanvasSize() {
     resetZoom();
 }
 
+
+
 addUIFunctionMap(UI_DISPLAY_SIZEY, indexCanvasSize)
 addUIFunctionMap(UI_SIZE, initUI)
 
@@ -77,4 +79,6 @@ export function setBackgroundColor(hexColor) {
 }
 
 window.onresize = indexCanvasSize;
+window.onblur = resetLighting;
+window.onfocus = resetLighting;
 document.documentElement.style.overflow = 'hidden';  // firefox, chrome

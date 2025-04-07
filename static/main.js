@@ -23,6 +23,13 @@ export function clearTimeouts() {
     liveTimeouts.forEach((timeout) => clearTimeout(timeout));
     liveTimeouts = new Array();
 }
+
+export function resetLighting() {
+    liveTimeouts.forEach((timeout) => clearTimeout(timeout));
+    liveTimeouts = new Array();
+    lightingHandler.destroy();
+    lightingHandler = new LightingHandler();
+}
     
 export function resetClimateAndLighting() {
     lightingHandler.destroy();
