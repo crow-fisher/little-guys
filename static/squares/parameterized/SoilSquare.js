@@ -1,6 +1,6 @@
 import { BaseSquare } from "../BaseSqaure.js";
 import { getNeighbors, getSquares } from "../_sqOperations.js";
-import { hexToRgb } from "../../common.js";
+import { hexToRgb, randRange } from "../../common.js";
 import { getCurTimeScale, timeScaleFactor } from "../../climate/time.js";
 import { getPressure, getWindSquareAbove } from "../../climate/wind.js";
 import { addWaterSaturationPascals, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor } from "../../climate/temperatureHumidity.js";
@@ -257,6 +257,23 @@ export class SoilSquare extends BaseSquare {
         baseRet *= sandMult;
         baseRet = Math.max(1, baseRet);
         return baseRet;
+    }
+
+    triggerParticles(bonkSpeed) {
+        if (Date.now() < this.spawnTime + 100) {
+            return;
+        }
+        let numParticles = (bonkSpeed / (this.getWaterflowRate() ** 0.5));
+
+        for (let i = 0; i < numParticles; i++) {
+            let speed = bonkSpeed ** 0.20;
+            let theta = randRange(0, 2 * Math.PI);
+            let speedX = speed * Math.cos(theta);
+            let speedY = speed * Math.sin(theta);
+            let wrp = (this.getWaterflowRate() * 0.1 + 40 * 0.9) ** 0.2;
+            let size = randRange(wrp * 0.5, wrp * 2);
+            this.activeParticles.push([this.posX, this.posY, theta, speedX, speedY, size])
+        }
     }
 
     getColorBase() {

@@ -9,7 +9,7 @@ import {
 
 import { MAIN_CONTEXT } from "../index.js";
 
-import { hexToRgb, hsv2rgb, rgb2hsv, rgbToRgba } from "../common.js";
+import { hexToRgb, hsv2rgb, randRange, rgb2hsv, rgbToRgba } from "../common.js";
 
 import { getOrganismsAtSquare } from "../organisms/_orgOperations.js";
 import { addOrganism } from "../organisms/_orgOperations.js";
@@ -24,7 +24,7 @@ import { getAdjacentWindSquareToRealSquare, getWindSquareAbove } from "../climat
 import { RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
 import { getCurDay, getCurrentLightColorTemperature, getDaylightStrengthFrameDiff, getTimeScale, timeScaleFactor } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
-import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
+import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
 import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_LIGHTING_WATER_VALUE, UI_LIGHTING_WATER_SATURATION, UI_LIGHTING_WATER_HUE, UI_LIGHTING_SUN, UI_VIEWMODE_WIND } from "../ui/UIData.js";
 import { isLeftMouseClicked } from "../mouse.js";
 
@@ -65,6 +65,7 @@ export class BaseSquare {
         this.linkedOrganism = null;
         this.linkedOrganismSquares = new Array();
         this.lighting = new Array();
+        this.spawnTime = Date.now();
 
         // for ref - values from dirt
         this.opacity = 1;
@@ -109,6 +110,8 @@ export class BaseSquare {
         this.initTemperature();
 
         this.frameLighting = {r: 0, g: 0, b: 0};
+
+        this.activeParticles = new Array();
     };
 
     initLightingFromNeighbors() {
@@ -369,6 +372,48 @@ export class BaseSquare {
         );
     }
 
+    triggerParticles(bonkSpeed) {
+        if (Date.now() < this.spawnTime + 100) {
+            return;
+        }
+        for (let i = 0; i < bonkSpeed ** 0.5; i++) {
+            let speed = bonkSpeed ** 0.20;
+            let theta = randRange(0, 2 * Math.PI);
+            let speedX = speed * Math.cos(theta);
+            let speedY = speed * Math.sin(theta);
+            let size = randRange(2, 4);
+            this.activeParticles.push([this.posX, this.posY, theta, speedX, speedY, size])
+        }
+    }
+
+    processParticles() {
+        let next = new Array();
+        this.activeParticles.forEach((partArr) => {
+            partArr[0] += partArr[3]; // px
+            partArr[1] += partArr[4]; // py
+            partArr[4] += 0.5;
+
+            let x = Math.round(partArr[0]);
+            let y = Math.round(partArr[1]);
+            if (x < 0 || y < 0 || x >= getCanvasSquaresX() || y >= getCanvasSquaresY() || getSquares(x, y).length > 0) {
+                return;
+            } else {
+                next.push(partArr);
+            }
+        });
+        this.activeParticles = next;
+    }
+
+    renderParticles() {
+        MAIN_CONTEXT.fillStyle = this.cachedRgba;
+        this.activeParticles.forEach((partArr) => {
+            let px = partArr[0];
+            let py = partArr[1];
+            let size = partArr[5];
+            zoomCanvasFillCircle(px * getBaseSize(), py * getBaseSize(), size)
+        });
+    }
+
     renderWithVariedColors(opacityMult) {
         if (this.proto == "WaterSquare") {
             this.opacity = loadGD(UI_LIGHTING_WATER_OPACITY);
@@ -386,6 +431,7 @@ export class BaseSquare {
             let outColor = { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
             this.lastColorCacheOpacity = opacityMult;
             this.cachedRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacityMult * this.opacity * (this.blockHealth ** 0.2));
+            this.cachedRgbaParticle = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), .5 * (opacityMult * this.opacity * (this.blockHealth ** 0.2)));
         }
         MAIN_CONTEXT.fillStyle = this.cachedRgba;
         zoomCanvasFillRect(
@@ -402,6 +448,7 @@ export class BaseSquare {
                 ((this.offsetY + this.posY) + 0.5) * getBaseSize(),
                 this.mixIdx % getMixArrLen());
         }
+        this.renderParticles();
     }
     updatePosition(newPosX, newPosY) {
         if (newPosX == this.posX && newPosY == this.posY) {
@@ -533,6 +580,7 @@ export class BaseSquare {
         let finalXPos = this.posX;
         let finalYPos = this.posY;
         let bonked = false;
+        let particleSpeed = Math.sqrt(this.speedX ** 2 + this.speedY ** 2);
         for (let i = 1; i < this.speedY + 1; i += (1 / this.gravity)) {
             for (let j = 0; j < Math.abs(this.speedX) + 1; j++) {
                 let jSigned = (this.speedX > 0) ? j : -j;
@@ -572,6 +620,8 @@ export class BaseSquare {
             finalYPos = this.posY + this.speedY;
         }
 
+
+
         if (finalXPos < 0 || finalXPos > getCanvasSquaresX() || finalYPos < 0 || finalYPos >= getCanvasSquaresY()) {
             this.destroy(true);
             return;
@@ -582,7 +632,12 @@ export class BaseSquare {
             let finalYPosFrac = finalYPos - finalYPosFloor;
             this.offsetY = finalYPosFrac;
             this.updatePosition(finalXPos, finalYPosFloor);
+
+            if (bonked) {
+                this.triggerParticles(particleSpeed);
+            }
         }
+        this.processParticles();
     }
 
     physics() {
@@ -592,6 +647,7 @@ export class BaseSquare {
             this.temperatureRoutine();
             this.transferHeat();
             this.gravityPhysics();
+            this.processParticles();
             this.processFrameLightingTemperature();
         }
     }
