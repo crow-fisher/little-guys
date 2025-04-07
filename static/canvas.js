@@ -1,7 +1,7 @@
 import { MAIN_CONTEXT } from "./index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "./keyboard.js";
 import { getLastMoveOffset, isMiddleMouseClicked } from "./mouse.js";
-import { loadGD, saveGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_SIZE, UI_PALETTE_ACTIVE, loadUI } from "./ui/UIData.js";
+import { loadGD, saveGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_SIZE, UI_PALETTE_ACTIVE, loadUI, UI_PALETTE_SURFACE, UI_LIGHTING_SURFACE } from "./ui/UIData.js";
 
 let BASE_SIZE = 1;
 let CANVAS_SQUARES_X = 192; 
@@ -204,7 +204,10 @@ export function zoomCanvasSquareText(x, y, text) {
 export function zoom(event) {
     event.preventDefault();
     if (loadGD(UI_PALETTE_ACTIVE)) {
-        if (isKeyPressed(KEY_CONTROL) || isKeyPressed(KEY_SHIFT)) {
+        if (loadGD(UI_PALETTE_SURFACE) == loadGD(UI_PALETTE_SURFACE)) {
+            saveGD(UI_LIGHTING_SURFACE, Math.max(.0000001, Math.min(.999999999, loadGD(UI_LIGHTING_SURFACE) + event.deltaY * .00005)));
+
+        } else if (isKeyPressed(KEY_CONTROL) || isKeyPressed(KEY_SHIFT)) {
             let size = loadGD(UI_PALETTE_SIZE);
             size += event.deltaY * 0.005;
             size = Math.min(Math.max(size, 1), 14)

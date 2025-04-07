@@ -21,7 +21,7 @@ import { removeOrganism } from "../organisms/_orgOperations.js";
 
 import { calculateColorTemperature, getRestingTemperatureAtSq, getTemperatureAtWindSquare, updateWindSquareTemperature } from "../climate/temperatureHumidity.js";
 import { getAdjacentWindSquareToRealSquare, getWindSquareAbove } from "../climate/wind.js";
-import { RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
+import { COLOR_GREEN, RGB_COLOR_BLUE, RGB_COLOR_GREEN, RGB_COLOR_RED, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
 import { getCurDay, getCurrentLightColorTemperature, getDaylightStrengthFrameDiff, getTimeScale, timeScaleFactor } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
@@ -268,13 +268,18 @@ export class BaseSquare {
 
     renderSurface() {
         // MAIN_CONTEXT.fillStyle = this.surface ? "rgba(172, 35, 226, 0.12)" : "rgba(30, 172, 58, 0.12)";
-        MAIN_CONTEXT.fillStyle = this.surface ? "rgba(172, 35, 226, 0)" : "rgba(30, 172, 58, 0)";
-        zoomCanvasFillRect(
-            (this.offsetX + this.posX) * getBaseSize(),
-            (this.offsetY + this.posY) * getBaseSize(),
-            getBaseSize(),
-            getBaseSize()
-        );
+        if (!this.surface) {
+            MAIN_CONTEXT.fillStyle = "rgba(90, 71, 97, 0.3)"
+            zoomCanvasFillRect(
+                (this.offsetX + this.posX) * getBaseSize(),
+                (this.offsetY + this.posY) * getBaseSize(),
+                getBaseSize(),
+                getBaseSize()
+            );
+        } else {
+            this.renderSpecialViewModeLinearOpacity(RGB_COLOR_VERY_FUCKING_RED, RGB_COLOR_GREEN, this.surfaceLightingFactor, 1, 0.3);   
+        }
+
     }
 
     renderAsGrey() {
