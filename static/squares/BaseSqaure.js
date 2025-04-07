@@ -380,7 +380,7 @@ export class BaseSquare {
         this.activeParticles.forEach((partArr) => {
             partArr[0] += partArr[3]; // px
             partArr[1] += partArr[4]; // py
-            partArr[4] += 0.05;
+            partArr[4] += 0.15;
             partArr[3] *= 0.99;
 
             let x = Math.round(partArr[0]);

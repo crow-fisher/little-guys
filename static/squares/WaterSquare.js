@@ -98,7 +98,7 @@ class WaterSquare extends BaseSquare {
             let theta = randRange(0, 2 * Math.PI);
             let speedX = speed * Math.cos(theta);
             let speedY = speed * Math.sin(theta);
-            let size = randRange(3, 5);
+            let size = randRange(getBaseSize() * 0.2, getBaseSize() * 0.4);
             this.activeParticles.push([this.posX, this.posY, theta, speedX, speedY, size])
         }
     }

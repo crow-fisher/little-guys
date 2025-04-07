@@ -7,6 +7,7 @@ import { addWaterSaturationPascals, getWaterSaturation, pascalsPerWaterSquare, s
 import { loadGD, UI_LIGHTING_SURFACE, UI_PALETTE_COMPOSITION, UI_PALETTE_SOILIDX, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER } from "../../ui/UIData.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { addSquareByName } from "../../manipulation.js";
+import { getBaseSize } from "../../canvas.js";
 
 // maps in form "water containment" / "matric pressure in atmospheres"
 export const clayMatricPressureMap = [
@@ -266,11 +267,11 @@ export class SoilSquare extends BaseSquare {
         let numParticles = (bonkSpeed / (this.getWaterflowRate() ** 0.3));
 
         for (let i = 0; i < numParticles; i++) {
-            let speed = (bonkSpeed ** 0.25) - 1;
+            let speed = randRange(0, (bonkSpeed ** 0.22) - 1);
             let theta = randRange(0, 2 * Math.PI);
             let speedX = speed * Math.cos(theta);
             let speedY = speed * Math.sin(theta);
-            let wrp = (this.getWaterflowRate() * 0.1 + 40 * 0.9) ** 0.2;
+            let wrp = (getBaseSize() * (this.getWaterflowRate() * 0.1 + 40 * 0.9) / 30) ** 0.2;
             let size = randRange(wrp * 0.5, wrp * 2);
             this.activeParticles.push([this.posX, this.posY, theta, speedX, speedY, size])
         }
