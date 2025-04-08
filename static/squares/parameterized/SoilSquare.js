@@ -252,7 +252,7 @@ export class SoilSquare extends BaseSquare {
             return;
         }
 
-        if (this.linkedOrganismSquares.length > 0) {
+        if (this.linkedOrganismSquares.length > 0 || this.linkedOrganism != null) {
             return;
         }
 
@@ -270,11 +270,11 @@ export class SoilSquare extends BaseSquare {
         }
 
         if (shouldDo) {
-            if (this.updatePosition(this.posX - 1, this.posY) || this.updatePosition(this.posX + 1, this.posY)) {
-                return;
-            }
+            if (getSquares(this.posX - 1, this.posY).length == 0)
+                this.updatePosition(this.posX - 1, this.posY);
+            else if (getSquares(this.posX + 1, this.posY).length == 0)
+                this.updatePosition(this.posX + 1, this.posY);
         }
-
     }
 
     getWaterflowRate() {

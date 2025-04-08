@@ -79,6 +79,5 @@ export function setBackgroundColor(hexColor) {
 }
 
 window.onresize = indexCanvasSize;
-window.onblur = resetLighting;
 window.onfocus = resetLighting;
 document.documentElement.style.overflow = 'hidden';  // firefox, chrome

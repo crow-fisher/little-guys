@@ -146,6 +146,10 @@ export class BaseSquare {
         }
         let lightingColor = this.processLighting();
         let lightingApplied = Math.max(0, lightingColor.r + lightingColor.g / 2 + lightingColor.b / 4);
+
+        if (isNaN(lightingApplied)) {
+            return;
+        }
         lightingApplied /= (15000 / tickFrac);
         this.temperature = Math.min(370, this.temperature + lightingApplied);
     }

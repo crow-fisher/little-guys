@@ -37,7 +37,7 @@ export function applyLightingFromSource(source, dest) {
     if (source == null || source.lighting == null || source.lighting.length == 0) {
         return;
     }
-    dest.lighting = [];
+    dest.lighting = new Array();
     source.lighting.forEach((light) => {
         dest.lighting.push([Array.from(light[0].map((x) => x)), light[1]])
     });
