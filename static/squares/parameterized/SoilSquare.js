@@ -248,6 +248,10 @@ export class SoilSquare extends BaseSquare {
             return;
         }
 
+        if (Date.now() < this.spawnTime + 100) {
+            return;
+        }
+
         if (this.linkedOrganismSquares.length > 0) {
             return;
         }
