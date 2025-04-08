@@ -118,18 +118,18 @@ export function restingValues() {
             let restingPressureTarget = getRestingAirPressureAtSq(j) * pressureRestingMult + curPressure * (1 - pressureRestingMult);
             manipulateWindPressureMaintainHumidityWindSquare(i, j, restingPressureTarget);
 
-            let curTemp = temperatureMap[i][j];
+            let startTemp = temperatureMap[i][j];
             let restingTemp = getRestingTemperatureAtSq(i, j);
-            let diffTemp = restingTemp - curTemp;
-            temperatureMap[i][j] += diffTemp / temperatureStrength;
+            let diffTemp = restingTemp - startTemp; 
+            let curTempPascals = saturationPressureOfWaterVapor(temperatureMap[i][j]);
 
             let curHumidity = getHumidity(i, j);
             let restingHumidity = getRestingHumidityAtSq(i, j);
             let diffHumidity = (restingHumidity - curHumidity);
 
-            let curTempPascals = saturationPressureOfWaterVapor(temperatureMap[i][j]);
-            let targetTempPascals = saturationPressureOfWaterVapor(restingTemp);
-            waterSaturationMap[i][j] += diffHumidity * Math.min(curTempPascals, targetTempPascals) / humidityStrength;
+            temperatureMap[i][j] += diffTemp / temperatureStrength;
+            waterSaturationMap[i][j] += diffHumidity * curTempPascals / humidityStrength;
+            waterSaturationMap[i][j] *= temperatureMap[i][j] / startTemp;
         }
     }
 }

@@ -129,14 +129,7 @@ export class BaseSquare {
     }
 
     initTemperature() {
-        let adjacentWindSquare = getWindSquareAbove(this.posX, this.posY);
-        let x = adjacentWindSquare[0];
-        let y = adjacentWindSquare[1];
-
-        if (x < 0 || y < 0) {
-            return;
-        }
-        this.temperature = 273 + 10;
+        this.temperature = 273 + 25;
     }
 
     processFrameLightingTemperature() {
@@ -485,7 +478,6 @@ export class BaseSquare {
         this.posY = newPosY;
         addSquare(this);
 
-        this.initTemperature();
         return true;
     }
 
@@ -650,9 +642,9 @@ export class BaseSquare {
             this.temperatureRoutine();
             this.transferHeat();
             this.gravityPhysics();
+            this.slopePhysics();
             this.processParticles();
             this.processFrameLightingTemperature();
-            this.slopePhysics();
         }
     }
     /* Called before physics(), with blocks in strict order from top left to bottom right. */
