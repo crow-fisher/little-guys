@@ -634,6 +634,11 @@ export class BaseSquare {
         this.processParticles();
     }
 
+    slopePhysics() {
+        return;
+
+    }
+
     physics() {
         if (getTimeScale() != 0) {
             this.percolateInnerMoisture();
@@ -643,6 +648,7 @@ export class BaseSquare {
             this.gravityPhysics();
             this.processParticles();
             this.processFrameLightingTemperature();
+            this.slopePhysics();
         }
     }
     /* Called before physics(), with blocks in strict order from top left to bottom right. */
@@ -656,10 +662,6 @@ export class BaseSquare {
     }
 
     calculateDirectPressure() {
-        if (this.surface) {
-            this.currentPressureDirect = 0;
-            return 0;
-        }
         if (this.currentPressureDirect != -1) {
             return this.currentPressureDirect;
         } else {

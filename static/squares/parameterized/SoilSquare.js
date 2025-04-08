@@ -243,6 +243,36 @@ export class SoilSquare extends BaseSquare {
         return amountToPercolate;
     }
 
+    slopePhysics() {
+        if (this.gravity == 0) {
+            return;
+        }
+
+        if (this.linkedOrganismSquares.length > 0) {
+            return;
+        }
+
+        let min = 0.7 * (this.getWaterflowRate() ** 0.3);
+        let max = 1.1 * (this.getWaterflowRate() ** 0.3);
+
+        if (this.currentPressureDirect < min) {
+            return;
+        }
+        let shouldDo = false;
+        if (this.currentPressureDirect > max) {
+            shouldDo = true;
+        } else {
+            shouldDo = Math.random() < (this.currentPressureDirect - min) / (max - min);
+        }
+
+        if (shouldDo) {
+            if (this.updatePosition(this.posX - 1, this.posY) || this.updatePosition(this.posX + 1, this.posY)) {
+                return;
+            }
+        }
+
+    }
+
     getWaterflowRate() {
         // https://docs.google.com/spreadsheets/d/1MWOde96t-ruC5k1PLL4nex0iBjdyXKOkY7g59cnaEj4/edit?gid=0#gid=0
         let clayRate = 2;
