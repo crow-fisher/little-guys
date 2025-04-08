@@ -93,11 +93,11 @@ class WaterSquare extends BaseSquare {
         if (Date.now() < this.spawnTime + 100) {
             return;
         }
-        for (let i = 0; i < 10; i += Math.random()) {
+        for (let i = 0; i < 4; i += Math.random()) {
             let speed = randRange(0, (bonkSpeed ** 0.25) - 1);
             let theta = randRange(0, 2 * Math.PI);
             let speedX = speed * Math.cos(theta);
-            let speedY = speed * Math.sin(theta);
+            let speedY = Math.max(speed * Math.sin(theta), 0) / 4;
             let size = randRange(getBaseSize() * 0.2, getBaseSize() * 0.6);
             this.activeParticles.push([this.posX, this.posY, theta, speedX, speedY, size])
         }

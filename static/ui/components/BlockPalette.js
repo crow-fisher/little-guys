@@ -13,7 +13,7 @@ import { TextBackground } from "../elements/TextBackground.js";
 import { Toggle } from "../elements/Toggle.js";
 import { ToggleFunctional } from "../elements/ToggleFunctional.js";
 import { ToggleFunctionalText } from "../elements/ToggleFunctionalText.js";
-import { loadGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CENTER, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKMODE, UI_PALETTE_ROCKIDX, UI_PALETTE_COMPOSITION, saveGD, UI_PALETTE_SHOWPICKER, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, addUIFunctionMap, UI_PALETTE_SOILROCK, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE } from "../UIData.js";
+import { loadGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CENTER, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKMODE, UI_PALETTE_ROCKIDX, UI_PALETTE_COMPOSITION, saveGD, UI_PALETTE_SHOWPICKER, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, addUIFunctionMap, UI_PALETTE_SOILROCK, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF } from "../UIData.js";
 
 export class BlockPalette extends Component {
     constructor(posX, posY, padding, dir, key) {
@@ -66,9 +66,12 @@ export class BlockPalette extends Component {
 
         container.addElement(new Text(this.window, sizeX / 8, buttonHeight / 4, 0, ""));
 
-        palleteSelectAdvancedRow.addElement(new ToggleFunctionalText(this.window, sizeX, buttonHeight, UI_CENTER, UI_PALETTE_SHOWPICKER, 
+        palleteSelectAdvancedRow.addElement(new ToggleFunctionalText(this.window, half, buttonHeight, UI_CENTER, UI_PALETTE_SHOWPICKER, 
             () => (loadGD(UI_PALETTE_SHOWPICKER) ? "hide" : "show") + " picker", () => getActiveClimate().getBaseActiveToolBrightness(loadGD(UI_PALETTE_COMPOSITION), 1),
             () => getActiveClimate().getBaseActiveToolBrightness(loadGD(UI_PALETTE_COMPOSITION), 1), 0.5));
+        palleteSelectAdvancedRow.addElement(new RadioToggleFunctionalText(this.window, half, buttonHeight, UI_CENTER, UI_PALETTE_SELECT, UI_PALETTE_ERASE,
+            () => ((loadGD(UI_PALETTE_SELECT) == UI_PALETTE_ERASE) ? "▶ " : "") +"erase", () => getActiveClimate().getSurfaceOnColor(), () => getActiveClimate().getSufaceOffColor(), 0.4));
+        
         let palletePickerConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_PALETTE_SHOWPICKER));
         container.addElement(palletePickerConditionalContainer);
         palletePickerConditionalContainer.addElement(new Text(this.window, sizeX, getBaseUISize() * 2, 0, ""));
@@ -114,9 +117,9 @@ export class BlockPalette extends Component {
         () => ((loadGD (UI_PALETTE_SELECT) == UI_PALETTE_AQUIFER) ? "▶ " : "") +"aquifer", () => getActiveClimate().getWaterColorDark(), () => getActiveClimate().getWaterColor(), 0.4));
         row2.addElement(new RadioToggleFunctionalText(this.window, half, buttonHeight, UI_CENTER, UI_PALETTE_SELECT, UI_PALETTE_SURFACE,
          () => ((loadGD(UI_PALETTE_SELECT) == UI_PALETTE_SURFACE) ? "▶ " : "") +"surface", () => getActiveClimate().getSurfaceOnColor(), () => getActiveClimate().getSufaceOffColor(), 0.4));
-        row2.addElement(new RadioToggleFunctionalText(this.window, half, buttonHeight, UI_CENTER, UI_PALETTE_SELECT, UI_PALETTE_ERASE,
-            () => ((loadGD(UI_PALETTE_SELECT) == UI_PALETTE_ERASE) ? "▶ " : "") +"erase", () => getActiveClimate().getSurfaceOnColor(), () => getActiveClimate().getSufaceOffColor(), 0.4));
-    
+        row2.addElement(new RadioToggleFunctionalText(this.window, half, buttonHeight, UI_CENTER, UI_PALETTE_SELECT, UI_PALETTE_SURFACE_OFF,
+            () => ((loadGD(UI_PALETTE_SELECT) == UI_PALETTE_SURFACE_OFF) ? "▶ " : "") +"surface off", () => getActiveClimate().getSurfaceOnColor(), () => getActiveClimate().getSufaceOffColor(), 0.4));
+
         container.addElement(new Text(this.window, sizeX,  getBaseUISize() * 1.5, UI_CENTER, "surface"));
         container.addElement(new Slider(this.window, UI_LIGHTING_SURFACE, sizeX,  35, 0.0, 1, () => getActiveClimate().getUIColorTransient()));
     

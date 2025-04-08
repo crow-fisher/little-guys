@@ -25,7 +25,7 @@ import { COLOR_GREEN, RGB_COLOR_BLUE, RGB_COLOR_GREEN, RGB_COLOR_RED, RGB_COLOR_
 import { getCurDay, getCurrentLightColorTemperature, getDaylightStrengthFrameDiff, getTimeScale, timeScaleFactor } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
-import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_LIGHTING_WATER_VALUE, UI_LIGHTING_WATER_SATURATION, UI_LIGHTING_WATER_HUE, UI_LIGHTING_SUN, UI_VIEWMODE_WIND } from "../ui/UIData.js";
+import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_LIGHTING_WATER_VALUE, UI_LIGHTING_WATER_SATURATION, UI_LIGHTING_WATER_HUE, UI_LIGHTING_SUN, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF } from "../ui/UIData.js";
 import { isLeftMouseClicked } from "../mouse.js";
 
 export class BaseSquare {
@@ -173,7 +173,7 @@ export class BaseSquare {
         diff /= 2;
         diff /= (1 + this.currentPressureDirect);
         this.temperature += diff;
-        updateWindSquareTemperature(x, y, getTemperatureAtWindSquare(x, y) - (diff / 1));
+        updateWindSquareTemperature(x, y, getTemperatureAtWindSquare(x, y) - (diff / 4));
     }
 
     waterEvaporationRoutine() {
@@ -241,7 +241,7 @@ export class BaseSquare {
         }
         else if (selectedViewMode == UI_VIEWMODE_MOISTURE) {
             this.renderWaterSaturation();
-        } else if (selectedViewMode == UI_VIEWMODE_SURFACE || (loadGD(UI_PALETTE_ACTIVE) && loadGD(UI_PALETTE_SELECT) == UI_PALETTE_SURFACE)) {
+        } else if (selectedViewMode == UI_VIEWMODE_SURFACE || (loadGD(UI_PALETTE_ACTIVE) && (loadGD(UI_PALETTE_SELECT) == UI_PALETTE_SURFACE || loadGD(UI_PALETTE_SELECT) == UI_PALETTE_SURFACE_OFF))) {
             if (this.solid) {
                 this.renderWithVariedColors(1);
                 this.renderSurface();

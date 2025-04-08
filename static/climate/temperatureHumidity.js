@@ -358,7 +358,7 @@ function renderClouds() {
 
     for (let i = 0; i < getWindSquaresX(); i++) {
         for (let j = 0; j < getWindSquaresY(); j++) {
-            if (getPressure(i, j) < 0) {
+            if (isWindSquareBlocked(i, j)) {
                 continue;
             }
             let cloudColorRGBA = getCloudColorAtPos(i, j);
