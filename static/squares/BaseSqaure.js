@@ -19,7 +19,7 @@ import { removeSquare } from "../globalOperations.js";
 
 import { removeOrganism } from "../organisms/_orgOperations.js";
 
-import { calculateColorTemperature, getRestingTemperatureAtSq, getTemperatureAtWindSquare, updateWindSquareTemperature } from "../climate/temperatureHumidity.js";
+import { calculateColorTemperature, getRestingTemperatureAtSq, getTemperatureAtWindSquare, temperatureHumidityFlowrateFactor, updateWindSquareTemperature } from "../climate/temperatureHumidity.js";
 import { getAdjacentWindSquareToRealSquare, getWindSquareAbove } from "../climate/wind.js";
 import { COLOR_GREEN, RGB_COLOR_BLUE, RGB_COLOR_GREEN, RGB_COLOR_RED, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
 import { getCurDay, getCurrentLightColorTemperature, getDaylightStrengthFrameDiff, getTimeScale, timeScaleFactor } from "../climate/time.js";
@@ -170,7 +170,7 @@ export class BaseSquare {
         }
         let adjacentTemp = getTemperatureAtWindSquare(x, y);
         let diff = (adjacentTemp - this.temperature);
-        diff /= 2;
+        diff /= temperatureHumidityFlowrateFactor();
         diff /= (1 + this.currentPressureDirect);
         this.temperature += diff;
         updateWindSquareTemperature(x, y, getTemperatureAtWindSquare(x, y) - (diff / 4));
@@ -178,7 +178,6 @@ export class BaseSquare {
 
     waterEvaporationRoutine() {
     }
-
 
     destroy(deep = false) {
         if (deep && this.linkedOrganism != null) {

@@ -75,7 +75,7 @@ class WaterSquare extends BaseSquare {
         }
     }
     renderWaterSaturation() {
-        MAIN_CONTEXT.fillStyle = rgbToRgba(RGB_COLOR_OTHER_BLUE.r, RGB_COLOR_OTHER_BLUE.g, RGB_COLOR_OTHER_BLUE.b, (this.blockHealth / this.blockHealthMax));
+        MAIN_CONTEXT.fillStyle = rgbToRgba(RGB_COLOR_OTHER_BLUE.r, RGB_COLOR_OTHER_BLUE.g, RGB_COLOR_OTHER_BLUE.b, 0.25 * (this.blockHealth / this.blockHealthMax));
         zoomCanvasFillRect(
             this.posX * getBaseSize(),
             this.posY * getBaseSize(),
@@ -169,7 +169,6 @@ class WaterSquare extends BaseSquare {
 
     doNeighborPercolation() {
         getNeighbors(this.posX, this.posY)
-            .filter((sq) => sq.collision)
             .filter((sq) => sq.solid)
             .forEach((sq) => this.blockHealth -= sq.percolateFromWater(this));
     }
