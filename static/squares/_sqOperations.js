@@ -46,7 +46,6 @@ function addSquareOverride(square) {
         return;
     }
     if (square.collision) {
-        square.surface = existingSquares.some((sq) => sq.surface);
         existingSquares.filter((sq) => sq.collision).forEach((sq) => removeSquare(sq));
     }
     addSquare(square);
