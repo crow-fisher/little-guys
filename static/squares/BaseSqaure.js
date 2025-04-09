@@ -586,7 +586,6 @@ export class BaseSquare {
                     if (this.lighting.length == 0 && loadGD(UI_LIGHTING_ENABLED)) {
                         this.initLightingFromNeighbors();
                     }
-
                     if (!this.solid) {
                         if (getSquares(this.posX + jSigned, this.posY + i)
                             .filter((sq) => sq.proto == this.proto)
@@ -610,8 +609,6 @@ export class BaseSquare {
             finalYPos = this.posY + this.speedY;
         }
 
-
-
         if (finalXPos < 0 || finalXPos > getCanvasSquaresX() || finalYPos < 0 || finalYPos >= getCanvasSquaresY()) {
             this.destroy(true);
             return;
@@ -632,17 +629,16 @@ export class BaseSquare {
 
     slopePhysics() {
         return;
-
     }
 
     physics() {
         if (getTimeScale() != 0) {
+            this.gravityPhysics();
+            this.slopePhysics();
             this.percolateInnerMoisture();
             this.waterEvaporationRoutine();
             this.temperatureRoutine();
             this.transferHeat();
-            this.gravityPhysics();
-            this.slopePhysics();
             this.processParticles();
             this.processFrameLightingTemperature();
         }
@@ -658,11 +654,15 @@ export class BaseSquare {
     }
 
     calculateDirectPressure() {
+        if (this.gravity == 0) {
+            this.currentPressureDirect = 0;
+            return this.currentPressureDirect;
+        }
         if (this.currentPressureDirect != -1) {
             return this.currentPressureDirect;
         } else {
             let filtered = getSquares(this.posX, this.posY - 1)
-                .filter((sq) => sq.collision);
+                .filter((sq) => sq.collision && sq.gravity > 0)
 
             if (filtered.some((sq) => true)) {
                 this.currentPressureDirect = filtered

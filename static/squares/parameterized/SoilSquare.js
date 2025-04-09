@@ -257,7 +257,7 @@ export class SoilSquare extends BaseSquare {
         }
 
         let min = 0.7 * (this.getWaterflowRate() ** 0.3);
-        let max = 1.1 * (this.getWaterflowRate() ** 0.3);
+        let max = 1.5 * (this.getWaterflowRate() ** 0.3);
 
         if (this.currentPressureDirect < min) {
             return;
@@ -266,7 +266,7 @@ export class SoilSquare extends BaseSquare {
         if (this.currentPressureDirect > max) {
             shouldDo = true;
         } else {
-            shouldDo = Math.random() < (this.currentPressureDirect - min) / (max - min);
+            shouldDo = Math.random() < ((this.currentPressureDirect - min) / (max - min) ** 4);
         }
 
         if (shouldDo) {

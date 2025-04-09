@@ -263,7 +263,7 @@ class BaseOrganism {
         return out;
     }
     addSproutGrowthPlan() {
-        if (this.linkedSquare.currentPressureDirect > 0) {
+        if (!this.linkedSquare.surface) {
             this.destroy();
             return;
         }
