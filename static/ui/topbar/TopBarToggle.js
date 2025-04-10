@@ -11,6 +11,7 @@ export class TopBarToggle extends TopBarElementBase{
         this.value = value;
         this.labelFunc = labelFunc;
         this.lastClick = 0;
+        this.maxWidth = 0;
     }
 
     measure() {
@@ -19,7 +20,8 @@ export class TopBarToggle extends TopBarElementBase{
         }
         this.prepareStyle();
         let measured = MAIN_CONTEXT.measureText(this.labelFunc());
-        return [measured.width, measured.fontBoundingBoxAscent];
+        this.maxWidth = Math.max(measured.width, this.maxWidth);
+        return [this.maxWidth, measured.fontBoundingBoxAscent];
     }
 
     render(startX, startY) {

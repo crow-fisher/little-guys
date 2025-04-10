@@ -8,6 +8,7 @@ import { MAIN_CONTEXT } from "../../index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
 import { loadGD, saveGD, UI_PALETTE_COMPOSITION, UI_PALETTE_ROCKIDX, UI_PALETTE_ROCKMODE, UI_PALETTE_SOILIDX } from "../UIData.js";
 import { WindowElement } from "../Window.js";
+import { getTopBarComponent } from "../WindowManager.js";
 
 export const R_COLORS = "🎨";
 export const R_PERCOLATION_RATE = "💦";
@@ -26,12 +27,13 @@ export class TimeSkipElement extends WindowElement {
             "dawn"
         ]
         this.times = new Array();
-
         this.startTime = 0.13;
 
+        this.sideInset = getBaseUISize() * 0.5;
     }
 
     render(startX, startY) {
+        this.sizeX = getTopBarComponent().getElementXPositionFunc(0, 24) - getTopBarComponent().getElementXPositionFunc(0, 22) + getBaseUISize() * 0.1;
         let curMillis = getCurDay() * millis_per_day;
         let curDate = new Date(curMillis);
         let nextDate = new Date(curMillis + millis_per_day);
@@ -53,7 +55,7 @@ export class TimeSkipElement extends WindowElement {
         const b = 0.9; // vertical max height
 
     
-        for (let i = 0; i < this.sizeX; i++) {
+        for (let i = this.sideInset; i < this.sizeX - this.sideInset; i++) {
             let renderLineCurDay = getCurDay() - this.startTime + (i / this.sizeX);
             let xd = Math.abs(0.5 - (i / this.sizeX)); 
             let height = Math.sqrt(1 - (xd / a) ** 2) * b;

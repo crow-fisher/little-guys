@@ -68,8 +68,8 @@ export class TopBarComponent {
             new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_8, () => "▶"),
             new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_9, () => "▶"),
             this.midSpacingEl,
-            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_TIME, UI_BOOLEAN,() => this.textDateTime() + " |"),
-            new TopBarText(getBaseUISize() * 2, "left", () => " " + this.textWeather()),
+            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_TIME, UI_BOOLEAN,() => this.textDateTime()),
+            new TopBarText(getBaseUISize() * 2, "left", () => " | " + this.textWeather()),
             
         ];
 
