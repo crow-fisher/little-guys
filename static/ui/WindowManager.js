@@ -17,6 +17,7 @@ import { ClimateSubtreeComponent } from "./components/ClimateSubtreeComponent.js
 import { ClimateSelectionComponent } from "./components/ClimateSelectionComponent.js";
 import { WeatherSelectionComponent } from "./components/WeatherSelectionComponent.js";
 import { CloudControlComponent } from "./components/CloudControlComponent.js";
+import { TimeSkipComponent } from "./components/TimeSkipComponent.js";
 
 let topBarComponent;
 let blockPalette;
@@ -34,6 +35,7 @@ export function initUI() {
     all_components.push(climateSubtreeComponent);
     all_components.push(new ClimateSelectionComponent(() => topBarComponent.getElementXPositionFunc(0, 3) + climateSubtreeComponent.window.sizeX + getBaseUISize() * 0.5, () => topBarComponent.ySize(), 0, 0, UI_CLIMATE_SELECT_MENU));
     all_components.push(new WeatherSelectionComponent(() => topBarComponent.getElementXPositionFunc(0, 3) + climateSubtreeComponent.window.sizeX + getBaseUISize() * 0.5, () => topBarComponent.ySize(), 0, 0, UI_CILMATE_SELECT_WEATHER));
+    
     all_components.push(new CloudControlComponent(() => topBarComponent.getElementXPositionFunc(0, 3) + climateSubtreeComponent.window.sizeX + getBaseUISize() * 0.5, () => topBarComponent.ySize(), 0, 0, UI_CLIMATE_SELECT_CLOUDS));
     all_components.push(new ViewSubtreeComponent(() => topBarComponent.getElementXPositionFunc(0, 5), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_VIEWMODE));
     blockPalette = new BlockPalette(getBaseUISize() * 24, getBaseUISize() * 3, 0, 0, UI_PALETTE_ACTIVE)
@@ -44,7 +46,8 @@ export function initUI() {
     all_components.push(new SimulationSubtree(() => topBarComponent.getElementXPositionFunc(0, 9), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_SIMULATION));
     all_components.push(new OrganismComponent(getBaseUISize() * 1, getBaseUISize() * 10, 0, 0, UI_SM_ORGANISM));
     all_components.push(new GodModeComponent(getBaseUISize() * 34, getBaseUISize() * 6, 10, 0, UI_SM_GODMODE));
-    all_components.push(new TimeSubtree(() => topBarComponent.getElementXPositionFunc(0, 22), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_TIME));
+    all_components.push(new TimeSubtree(() => topBarComponent.getElementXPositionFunc(0, 15), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_TIME));
+    all_components.push(new TimeSkipComponent(() => topBarComponent.getElementXPositionFunc(0, 22), () => topBarComponent.ySize() + getBaseUISize() * 4, 0, 0, UI_TOPBAR_TIME));
 
 }
 

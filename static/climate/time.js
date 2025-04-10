@@ -374,8 +374,8 @@ function updateTime() {
     }
 }
 
-function renderSkyBackground() {
-    let curDay = getCurDay();
+export function getSkyBackgroundColorForDay(curDay) {
+    // pull out of the shit below and do that there
     let curMillis = curDay * millis_per_day;
     let curDate = new Date(curMillis);
     let nextDate = new Date(curMillis + millis_per_day);
@@ -425,7 +425,12 @@ function renderSkyBackground() {
     processedColor.g = processedColorRGBArr[1] - (frameCloudColor.g)
     processedColor.b = processedColorRGBArr[2] - (frameCloudColor.b)
 
-    let processedColorRgba = rgbToRgba(Math.floor(processedColor.r), Math.floor(processedColor.g), Math.floor(processedColor.b), 1);
+    return rgbToRgba(Math.floor(processedColor.r), Math.floor(processedColor.g), Math.floor(processedColor.b), 1);
+}
+
+function renderSkyBackground() {
+    let curDay = getCurDay();
+    let processedColorRgba = getSkyBackgroundColorForDay(curDay);
     MAIN_CONTEXT.fillStyle = processedColorRgba;
     setBackgroundColor(processedColorRgba);
 

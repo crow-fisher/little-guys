@@ -145,9 +145,8 @@ export class Window {
 }
 
 export class WindowElement { 
-    constructor(window, key, sizeX, sizeY) {
+    constructor(window, sizeX, sizeY) {
         this.window = window;
-        this.key = key;
         this.sizeX = sizeX;
         this.sizeY = sizeY;
     }
