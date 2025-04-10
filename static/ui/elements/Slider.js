@@ -7,7 +7,8 @@ import { WindowElement } from "../Window.js";
 
 export class Slider extends WindowElement {
     constructor(window, key, sizeX, sizeY, min, max, blockColorFunc, blockSize = getBaseUISize()) {
-        super(window, key, sizeX, sizeY);
+        super(window, sizeX, sizeY);
+        this.key = key;
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         this.min = min;
