@@ -46,8 +46,8 @@ export function initUI() {
     all_components.push(new SimulationSubtree(() => topBarComponent.getElementXPositionFunc(0, 9), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_SIMULATION));
     all_components.push(new OrganismComponent(getBaseUISize() * 1, getBaseUISize() * 10, 0, 0, UI_SM_ORGANISM));
     all_components.push(new GodModeComponent(getBaseUISize() * 34, getBaseUISize() * 6, 10, 0, UI_SM_GODMODE));
-    all_components.push(new TimeSubtree(() => topBarComponent.getElementXPositionFunc(0, 15), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_TIME));
-    all_components.push(new TimeSkipComponent(() => topBarComponent.getElementXPositionFunc(0, 22), () => topBarComponent.ySize() + getBaseUISize() * 4, 0, 0, UI_TOPBAR_TIME));
+    // all_components.push(new TimeSubtree(() => topBarComponent.getElementXPositionFunc(0, 15), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_TIME));
+    all_components.push(new TimeSkipComponent(() => topBarComponent.getElementXPositionFunc(0, 22), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_TIME));
 
 }
 

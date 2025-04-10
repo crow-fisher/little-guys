@@ -19,11 +19,8 @@ export class TimeSkipElement extends WindowElement {
 
         this.labels = [
             "sunrise",
-            "goldenHourEnd",
             "solarNoon",
-            "goldenHour",
             "sunsetStart",
-            "dusk",
             "night",
             "nadir",
             "dawn"
