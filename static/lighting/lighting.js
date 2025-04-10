@@ -34,7 +34,7 @@ export function createMoonLightGroup() {
         50,
         3,
         getMoonlightColor,
-        () => getMoonlightBrightness() * Math.exp(loadGD(UI_LIGHTING_MOON)),
+        () => Math.exp(loadGD(UI_LIGHTING_MOON)),
         0.51,
         0.49
     );

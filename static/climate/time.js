@@ -147,7 +147,7 @@ export function seekDateLabel(label) {
 export function explicitSeek(targetDate) {
     seekTimeTarget = targetDate;
     startSeekTime = getCurDay();
-    TIME_SCALE = 2;
+    TIME_SCALE = Math.max(TIME_SCALE, 2);
 }
 
 export function seek(targetTime) {

@@ -26,6 +26,9 @@ export class TimeSkipElement extends WindowElement {
             "dawn"
         ]
         this.times = new Array();
+
+        this.startTime = 0.13;
+
     }
 
     render(startX, startY) {
@@ -48,9 +51,10 @@ export class TimeSkipElement extends WindowElement {
     
         const a = 0.8; // horizontal "radius"
         const b = 0.9; // vertical max height
+
     
         for (let i = 0; i < this.sizeX; i++) {
-            let renderLineCurDay = getCurDay() - 0.5 + (i / this.sizeX);
+            let renderLineCurDay = getCurDay() - this.startTime + (i / this.sizeX);
             let xd = Math.abs(0.5 - (i / this.sizeX)); 
             let height = Math.sqrt(1 - (xd / a) ** 2) * b;
             let offset = (1 - height);
@@ -106,7 +110,7 @@ export class TimeSkipElement extends WindowElement {
         if (!isLeftMouseClicked()) {
             return;
         }
-        let hoverCurDay = getCurDay() + (posX / this.sizeX) - 0.5;
+        let hoverCurDay = getCurDay() + (posX / this.sizeX) - this.startTime;
         if (hoverCurDay < getCurDay()) {
             return;
         }

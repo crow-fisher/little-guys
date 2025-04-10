@@ -576,7 +576,9 @@ export class BaseSquare {
                 let jSigned = (this.speedX > 0) ? j : -j;
                 let jSignedMinusOne = (this.speedX == 0 ? 0 : (this.speedX > 0) ? (j - 1) : -(j - 1));
                 if (getSquares(this.posX + jSigned, this.posY + i)
-                    .some((sq) => this.testCollidesWithSquare(sq))) {
+                    .some((sq) => this.testCollidesWithSquare(sq) || 
+                    (this.proto == "WaterSquare" && sq.proto == "SoilSquare" && Math.random() > (1 / sq.getWaterflowRate()))
+                )) {
                     finalYPos = this.posY + (i - 1);
                     finalXPos = this.posX + jSignedMinusOne;
                     this.speedX = 0;
