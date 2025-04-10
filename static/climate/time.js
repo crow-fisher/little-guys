@@ -144,6 +144,12 @@ export function seekDateLabel(label) {
     seek(seekDay % 1);
 }
 
+export function explicitSeek(targetDate) {
+    seekTimeTarget = targetDate;
+    startSeekTime = getCurDay();
+    TIME_SCALE = 2;
+}
+
 export function seek(targetTime) {
     let targetTimeCurDay = Math.floor(getCurDay()) + targetTime;
     TIME_SCALE = 2;

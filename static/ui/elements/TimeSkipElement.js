@@ -1,7 +1,7 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { SunCalc } from "../../climate/suncalc/suncalc.js";
-import { getCurDay, getSkyBackgroundColorForDay, millis_per_day } from "../../climate/time.js";
+import { explicitSeek, getCurDay, getSkyBackgroundColorForDay, millis_per_day, seek } from "../../climate/time.js";
 import { COLOR_BLACK, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { rgbToHex, rgbToRgba } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
@@ -40,36 +40,45 @@ export class TimeSkipElement extends WindowElement {
         let prevTimes = SunCalc.getTimes(prevDate, getActiveClimate().lat, getActiveClimate().lng);
         let curTimes = SunCalc.getTimes(curDate, getActiveClimate().lat, getActiveClimate().lng);
         let nextTimes = SunCalc.getTimes(nextDate, getActiveClimate().lat, getActiveClimate().lng);
-
+    
         this.times = new Array();
-        
+    
         this.labels.forEach((label) => this.times.push(prevTimes[label].getTime() / millis_per_day));
         this.labels.forEach((label) => this.times.push(curTimes[label].getTime() / millis_per_day));
         this.labels.forEach((label) => this.times.push(nextTimes[label].getTime() / millis_per_day));
-
+    
         let toRender = new Array();
+    
+        const a = 0.8; // horizontal "radius"
+        const b = 0.9; // vertical max height
+    
         for (let i = 0; i < this.sizeX; i++) {
             let renderLineCurDay = getCurDay() - 0.5 + (i / this.sizeX);
             let xd = Math.abs(0.5 - (i / this.sizeX)); 
-            let height = 0.9 -.4 * xd ** 2;
+            let height = Math.sqrt(1 - (xd / a) ** 2) * b;
             let offset = (1 - height);
+    
             MAIN_CONTEXT.beginPath();
             MAIN_CONTEXT.moveTo(i + startX, startY + this.sizeY * offset);
             MAIN_CONTEXT.lineTo(i + startX, startY + this.sizeY - this.sizeY * offset);
-
+    
             let strokeStyle = getSkyBackgroundColorForDay(renderLineCurDay);
             let strokeStyleStart = strokeStyle;
-
+    
             for (let i = 0; i < this.times.length; i++) {
                 let time = this.times[i];
                 if (Math.abs(renderLineCurDay - time) < (.5 / this.sizeX)) {
-                    strokeStyle = getActiveClimate().getUIColorInactiveCustom(0.55);
+                    if (renderLineCurDay < getCurDay())
+                        strokeStyle = getActiveClimate().getUIColorInactiveCustom(0.65);
+                    else
+                        strokeStyle = getActiveClimate().getUIColorInactiveCustom(0.55);
                 }
             }
+    
             if (Math.abs(renderLineCurDay - getCurDay()) < (1 / this.sizeX)) {
                 strokeStyle = getActiveClimate().getUIColorActive();
             }
-
+    
             if (strokeStyle != strokeStyleStart) {
                 toRender.push([i, strokeStyle]);
             } else {
@@ -77,16 +86,14 @@ export class TimeSkipElement extends WindowElement {
                 MAIN_CONTEXT.lineWidth = getBaseUISize() * 0.1;  
                 MAIN_CONTEXT.stroke();
             }
-        };
-
+        }
+    
         toRender.forEach((arr) => {
             let i = arr[0];
             let strokeStyle = arr[1];
-
             let xd = Math.abs(0.5 - (i / this.sizeX)); 
-            let height = 0.9 -.4 * xd ** 2;
+            let height = Math.sqrt(1 - (xd / a) ** 2) * b;
             let offset = (1 - height);
-
             MAIN_CONTEXT.beginPath();
             MAIN_CONTEXT.moveTo(i + startX, startY + this.sizeY * offset);
             MAIN_CONTEXT.lineTo(i + startX, startY + this.sizeY - this.sizeY * offset);
@@ -94,10 +101,19 @@ export class TimeSkipElement extends WindowElement {
             MAIN_CONTEXT.lineWidth = getBaseUISize() * 0.2;  
             MAIN_CONTEXT.stroke();
         });
-        return [this.sizeX, this.sizeY]
+        return [this.sizeX, this.sizeY];
     }
 
     hover(posX, posY) {
         super.hover(posX, posY);
+        if (!isLeftMouseClicked()) {
+            return;
+        }
+        let hoverCurDay = getCurDay() + (posX / this.sizeX) - 0.5;
+        if (hoverCurDay < getCurDay()) {
+            return;
+        }
+        explicitSeek(hoverCurDay);
+
     }
 }
