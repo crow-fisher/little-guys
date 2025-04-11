@@ -5,7 +5,8 @@ import { Container } from "../Container.js";
 import { Button } from "../elements/Button.js";
 import { Radio } from "../elements/Radio.js";
 import { Text } from "../elements/Text.js";
-import { UI_CENTER, UI_SIZE, UICONFIG } from "../UIData.js";
+import { Toggle } from "../elements/Toggle.js";
+import { UI_CENTER, UI_MAIN_NEWWORLD, UI_SIZE, UICONFIG } from "../UIData.js";
 import { SubTreeComponent } from "./SubTreeComponent.js";
 
 
@@ -22,7 +23,7 @@ export class MainMenuComponent extends SubTreeComponent {
 
         let sizeElementOffsetX = getBaseUISize() * 1;
 
-        subMenuContainer.addElement(new Button(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX, () => loadSlot("A"), "load slot A", () => getActiveClimate().getUIColorActive()));
+        subMenuContainer.addElement(new Toggle(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX, UI_MAIN_NEWWORLD, "new world", () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
         subMenuContainer.addElement(new Button(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX, () => loadSlot("B"), "load slot B", () => getActiveClimate().getUIColorActive()));
         subMenuContainer.addElement(new Button(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX, () => loadSlot("C"), "load slot C", () => getActiveClimate().getUIColorActive()));
         subMenuContainer.addElement(new Button(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX, () => saveSlot("A"), "save slot A", () => getActiveClimate().getUIColorActive()));
@@ -30,9 +31,9 @@ export class MainMenuComponent extends SubTreeComponent {
         subMenuContainer.addElement(new Button(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX, () => saveSlot("C"), "save slot C", () => getActiveClimate().getUIColorActive()));
         subMenuContainer.addElement(new Button(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX, () => loadEmptyScene(), "empty scene", () => getActiveClimate().getUIColorActive()));
          
-        subMenuContainer.addElement(new Text(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, UI_CENTER, "ui scale"))
-        subMenuContainer.addElement(new Radio(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, UI_CENTER, UICONFIG, UI_SIZE, [8, 12, 16, 20], () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
-        subMenuContainer.addElement(new Radio(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, UI_CENTER, UICONFIG, UI_SIZE, [24, 28, 32, 40], () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
+        subMenuContainer.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "ui scale"))
+        subMenuContainer.addElement(new Radio(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, UICONFIG, UI_SIZE, [8, 12, 16, 20], () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
+        subMenuContainer.addElement(new Radio(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, UICONFIG, UI_SIZE, [24, 28, 32, 40], () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
     }
 
     render() {

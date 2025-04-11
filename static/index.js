@@ -5,7 +5,7 @@ import { clearTimeouts, resetClimateAndLighting, resetLighting, scheduler_main }
 import { keydown, keyup } from "./keyboard.js";
 import { handleClick, handleMouseDown, handleMouseUp, handleTouchEnd, handleTouchMove, handleTouchStart } from "./mouse.js";
 import { getCanvasHeight, getCanvasWidth, resetZoom, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, zoom } from "./canvas.js";
-import { addUIFunctionMap, loadGD, UI_DISPLAY_SIZEY, UI_SIZE } from "./ui/UIData.js";
+import { addUIFunctionMap, loadGD, UI_SIMULATION_HEIGHT, UI_SIZE } from "./ui/UIData.js";
 import { initUI } from "./ui/WindowManager.js";
 import { iterateOnSquares } from "./squares/_sqOperations.js";
 import { purgeCanvasFrameLimit } from "./globalOperations.js";
@@ -54,8 +54,8 @@ export function indexCanvasSize() {
     width = Math.floor(window.innerWidth - margin);
     height = Math.floor(window.innerHeight - margin);
 
-    let c_baseSize = Math.floor(height / loadGD(UI_DISPLAY_SIZEY));
-    setCanvasSquaresY(loadGD(UI_DISPLAY_SIZEY));
+    let c_baseSize = Math.floor(height / loadGD(UI_SIMULATION_HEIGHT));
+    setCanvasSquaresY(loadGD(UI_SIMULATION_HEIGHT));
     setCanvasSquaresX(Math.floor(width / c_baseSize));      
     setBaseSize(c_baseSize);
     clearTimeouts();
@@ -71,7 +71,7 @@ export function indexCanvasSize() {
 
 
 
-addUIFunctionMap(UI_DISPLAY_SIZEY, indexCanvasSize)
+addUIFunctionMap(UI_SIMULATION_HEIGHT, indexCanvasSize)
 addUIFunctionMap(UI_SIZE, initUI)
 
 export function setBackgroundColor(hexColor) {

@@ -1,10 +1,10 @@
-import { getBaseUISize } from "../canvas.js";
+import { getBaseUISize, getCanvasHeight, getCanvasWidth } from "../canvas.js";
 import { OrganismComponent } from "./components/OrganismComponent.js";
 import { BlockPalette } from "./components/BlockPalette.js";
 import { BlockSubtreeComponent as BlockSubtree } from "./components/BlockSubtreeComponent.js";
 import { TopBarComponent } from "./topbar/TopBarComponent.js";
 import { ViewSubtreeComponent } from "./components/ViewSubtreeComponent.js";
-import { loadGD, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_BLOCK, UI_PALETTE_ACTIVE, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveGD, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_SIMULATION, UI_TOPBAR_TIME, UI_TOPBAR_CLIMATE, UI_PALETTE_ROCKMODE, UI_PALETTE_EYEDROPPER, UI_CLIMATE_SELECT_MENU, UI_CILMATE_SELECT_WEATHER, UI_CLIMATE_SELECT_CLOUDS } from "./UIData.js";
+import { loadGD, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_BLOCK, UI_PALETTE_ACTIVE, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveGD, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_SIMULATION, UI_TOPBAR_TIME, UI_TOPBAR_CLIMATE, UI_PALETTE_ROCKMODE, UI_PALETTE_EYEDROPPER, UI_CLIMATE_SELECT_MENU, UI_CILMATE_SELECT_WEATHER, UI_CLIMATE_SELECT_CLOUDS, UI_MAIN_NEWWORLD } from "./UIData.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import { GodModeComponent } from "./components/GodModeComponent.js";
 import { getCurMixIdx, getMixArr, getMixArrLen, getTargetMixIdx, setCurMixIdx, setTargetMixIdx } from "../globals.js";
@@ -17,6 +17,7 @@ import { ClimateSelectionComponent } from "./components/ClimateSelectionComponen
 import { WeatherSelectionComponent } from "./components/WeatherSelectionComponent.js";
 import { CloudControlComponent } from "./components/CloudControlComponent.js";
 import { TimeSkipComponent } from "./components/TimeSkipComponent.js";
+import { WorldSetupComponent } from "./components/NewWorldComponent.js";
 
 let topBarComponent;
 let blockPalette;
@@ -47,6 +48,7 @@ export function initUI() {
     all_components.push(new GodModeComponent(getBaseUISize() * 34, getBaseUISize() * 6, 10, 0, UI_SM_GODMODE));
     all_components.push(new TimeSkipComponent(() => topBarComponent.getElementXPositionFunc(0, 22), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_TIME));
 
+    all_components.push(new WorldSetupComponent(() => getCanvasWidth() / 2, () => getCanvasHeight() / 3, 0, 0, UI_MAIN_NEWWORLD));
 }
 
 export function getTopBarComponent() {

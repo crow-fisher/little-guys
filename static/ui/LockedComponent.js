@@ -12,7 +12,6 @@ export class LockedComponent {
     render() {
         if (loadGD(this.key)) {
             this.window.render();
-            
         }
     }
 
