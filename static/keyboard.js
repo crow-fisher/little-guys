@@ -1,6 +1,6 @@
 import { doZoom, resetZoom } from "./canvas.js";
 import { getGlobalThetaBase, setGlobalThetaBase } from "./globals.js";
-import { loadGD, saveGD, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_BB_MODE, UI_MODE_ROCK, UI_MODE_SOIL, UI_SM_BB, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_TOPBAR_BLOCK, UI_PALETTE_ROCKMODE, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, closeEyedropperMixer, UI_PALETTE_ERASE, UI_TEXTEDIT_ACTIVE } from "./ui/UIData.js";
+import { loadGD, saveGD, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_BB_MODE, UI_MODE_ROCK, UI_MODE_SOIL, UI_SM_BB, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_TOPBAR_BLOCK, UI_PALETTE_ROCKMODE, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, closeEyedropperMixer, UI_PALETTE_ERASE, UI_TEXTEDIT_ACTIVE, UI_REGEX } from "./ui/UIData.js";
 
 export const KEY_CONTROL = "Control";
 export const KEY_SHIFT = "Shift";
@@ -22,14 +22,20 @@ export function getTimeSinceLastKeypress() {
 
 
 function doKeyboardInput(e) {
-    let curText = loadGD(loadGD(UI_TEXTEDIT_ACTIVE));
+    let curId = loadGD(UI_TEXTEDIT_ACTIVE);
+    let curText = loadGD(curId);
+    let curRegex = UI_REGEX[curId];
     if (e.key == "Backspace") {
-        saveGD(loadGD(UI_TEXTEDIT_ACTIVE), curText.substr(0, curText.length - 1));
+        saveGD(curId, curText.substr(0, curText.length - 1));
     } else {
         if (e.key.length > 1) {
             return;
         }
-        saveGD(loadGD(UI_TEXTEDIT_ACTIVE), curText + e.key);
+        let newText = curText + e.key;
+        let regex = new RegExp("^" + curRegex + "$"); // ensure full match
+        if (regex.test(newText)) {
+            saveGD(curId, newText);
+        }
     }
 }
 

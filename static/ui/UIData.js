@@ -157,6 +157,10 @@ export const UI_PALETTE_SURFACE = "UI_PALETTE_SURFACE";
 export const UI_PALETTE_SURFACE_OFF = "UI_PALETTE_SURFACE_OFF";
 export const UI_PALETTE_ERASE = "UI_PALETTE_ERASE";
 
+
+export const UI_REGEX = {
+    UI_MAIN_NEWWORLD_NAME: ".{0,19}"
+}
 // put default values in here
 // saved directly
 
