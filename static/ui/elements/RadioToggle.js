@@ -20,7 +20,7 @@ export class RadioToggle extends WindowElement {
     }
 
     render(startX, startY) {
-        MAIN_CONTEXT.font = this.sizeY * this.textSizeMult + "px courier"
+        MAIN_CONTEXT.font = this.sizeY * this.textSizeMult + "px customCourier"
         MAIN_CONTEXT.textAlign = 'center';
         MAIN_CONTEXT.textBaseline = 'middle';
         if (loadGD(this.key) == this.value) {

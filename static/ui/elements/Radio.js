@@ -19,7 +19,7 @@ export class Radio extends WindowElement {
 
     render(startX, startY) {
         let curX = 0;
-        MAIN_CONTEXT.font = this.sizeY - 10 + "px courier"
+        MAIN_CONTEXT.font = this.sizeY - 10 + "px customCourier"
         MAIN_CONTEXT.textBaseline = 'middle';
         let step = this.sizeX / this.choices.length;
         for (let i = 0; i < this.choices.length; i++) {

@@ -21,7 +21,7 @@ export class Button extends WindowElement {
     }
 
     render(startX, startY) {
-        MAIN_CONTEXT.font = this.sizeY * 0.75 + "px courier"
+        MAIN_CONTEXT.font = this.sizeY * 0.75 + "px customCourier"
         MAIN_CONTEXT.textBaseline = 'middle';
         MAIN_CONTEXT.fillStyle = this.colorFunc();
         MAIN_CONTEXT.fillRect(startX, startY, this.sizeX, this.sizeY);

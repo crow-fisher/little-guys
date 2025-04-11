@@ -26,7 +26,7 @@ export class OrganismComponent extends Component {
         ], () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
 
 
-        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 2, UI_CENTER, "fantasy"));
+        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 2, UI_CENTER, "palm tree"));
         
         let row1 = new Container(this.window, 0, 0);
         let row2 = new Container(this.window, 0, 0);
@@ -38,6 +38,20 @@ export class OrganismComponent extends Component {
         row1.addElement(new RadioToggleLabel(this.window, sizeX / 2, buttonHeight, UI_CENTER, "flipped mush", UI_ORGANISM_SELECT, "mushroom2", () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive()));
         row2.addElement(new RadioToggleLabel(this.window, sizeX / 2, buttonHeight, UI_CENTER, "short mush", UI_ORGANISM_SELECT, "mushroom3", () => getActiveClimate().getUIColorInactiveCustom(0.58), () => getActiveClimate().getUIColorActive()));
         row2.addElement(new RadioToggleLabel(this.window, sizeX / 2, buttonHeight, UI_CENTER, "tall mush", UI_ORGANISM_SELECT, "mushroom4", () => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));
+
+        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 2, UI_CENTER, "moss"));
+        
+        let row3 = new Container(this.window, 0, 0);
+        let row4 = new Container(this.window, 0, 0);
+
+        container.addElement(row3);
+        container.addElement(row4);
+
+        row3.addElement(new RadioToggleLabel(this.window, sizeX / 2, buttonHeight, UI_CENTER, "random mush", UI_ORGANISM_SELECT, "mushroom1", () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
+        row3.addElement(new RadioToggleLabel(this.window, sizeX / 2, buttonHeight, UI_CENTER, "flipped mush", UI_ORGANISM_SELECT, "mushroom2", () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive()));
+        row4.addElement(new RadioToggleLabel(this.window, sizeX / 2, buttonHeight, UI_CENTER, "short mush", UI_ORGANISM_SELECT, "mushroom3", () => getActiveClimate().getUIColorInactiveCustom(0.58), () => getActiveClimate().getUIColorActive()));
+        row4.addElement(new RadioToggleLabel(this.window, sizeX / 2, buttonHeight, UI_CENTER, "tall mush", UI_ORGANISM_SELECT, "mushroom4", () => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));
+
 
 
 
