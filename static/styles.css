@@ -5,11 +5,18 @@
    }
    
 @font-face {
-    font-family: 'couier';
+    font-family: 'courier';
     src: url('./fonts/CourierPrime-Regular.ttf')
 }
-
 @font-face {
-    font-family: 'couierBold';
+    font-family: 'courierBold';
     src: url('./fonts/CourierPrime-Bold.ttf')
+}
+@font-face {
+    font-family: 'courierBoldItalic';
+    src: url('./fonts/CourierPrime-BoldItalic.ttf')
+}
+@font-face {
+    font-family: 'courierItalic';
+    src: url('./fonts/CourierPrime-Italic.ttf')
 }

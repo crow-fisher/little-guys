@@ -21,11 +21,11 @@ export class Button extends WindowElement {
     }
 
     render(startX, startY) {
-        MAIN_CONTEXT.font = this.sizeY * 0.75 + "px couier"
+        MAIN_CONTEXT.font = this.sizeY * 0.75 + "px courier"
         MAIN_CONTEXT.textBaseline = 'middle';
         MAIN_CONTEXT.fillStyle = this.colorFunc();
         MAIN_CONTEXT.fillRect(startX, startY, this.sizeX, this.sizeY);
-        MAIN_CONTEXT.strokeStyle = COLOR_BLACK;
+        MAIN_CONTEXT.fillStyle = COLOR_BLACK;
 
         if (this.offsetX == UI_CENTER) {
             MAIN_CONTEXT.textAlign = 'center';

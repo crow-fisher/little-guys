@@ -15,7 +15,7 @@ export class Text extends WindowElement {
     }
 
     render(startX, startY) {
-        MAIN_CONTEXT.font = this.sizeY * this.fontSizeMult + "px couier"
+        MAIN_CONTEXT.font = this.sizeY * this.fontSizeMult + "px courier"
         MAIN_CONTEXT.textBaseline = 'middle';
         MAIN_CONTEXT.fillStyle = "#FFFFFF";
         if (this.offsetX == UI_CENTER) {

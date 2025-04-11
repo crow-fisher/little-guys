@@ -20,7 +20,7 @@ export class ToggleFunctional extends WindowElement {
     }
 
     render(startX, startY) {
-        MAIN_CONTEXT.font = this.sizeY * this.textSize + "px couier"
+        MAIN_CONTEXT.font = this.sizeY * this.textSize + "px courier"
         MAIN_CONTEXT.textAlign = 'center';
         MAIN_CONTEXT.textBaseline = 'middle';
         if (loadGD(this.key)) {

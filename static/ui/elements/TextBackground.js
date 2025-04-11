@@ -16,7 +16,7 @@ export class TextBackground extends WindowElement {
     }
 
     render(startX, startY) {
-        MAIN_CONTEXT.font = this.sizeY * this.sizeMult + "px couier"
+        MAIN_CONTEXT.font = this.sizeY * this.sizeMult + "px courier"
         MAIN_CONTEXT.textBaseline = 'middle';
         MAIN_CONTEXT.fillStyle = this.colorFunc();
         MAIN_CONTEXT.fillRect(startX, startY, this.sizeX, this.sizeY);
