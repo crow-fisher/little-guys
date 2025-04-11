@@ -14,7 +14,7 @@ initUI();
 let lightingHandler = new LightingHandler();
 let climateHandler = new ClimateHandler();
 let liveTimeouts = new Array();
-doTimeSkipToNow(true);
+doTimeSkipToNow();
 
 export function addTimeout(timeout) {
     liveTimeouts.push(timeout);

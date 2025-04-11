@@ -186,20 +186,16 @@ export function doTimeSkipToDate(dateName) {
     curDay = Math.floor(date.getTime() / millis_per_day) + (curDay % 1);
 }
 
-export function doTimeSkipToNow(instant=false) {
-    let nowLocalTimeMillis = Date.now();
-    if (instant) {
-        curDay = nowLocalTimeMillis / millis_per_day;
-        return;
-    }
-    let timeOffset = (nowLocalTimeMillis % millis_per_day) / millis_per_day;
+export function setCurDay(newCurDay) {
     let start = curDay;
-    curDay = (nowLocalTimeMillis / millis_per_day - timeOffset) + (start % 1);
-    if (curTime > timeOffset) {
-        curDay -= 1;
-    }
+    curDay = newCurDay;
+    seekTimeTarget = 0;
     iterateOnOrganisms((org) => org.curLifeTimeOffset += (curDay - start))
-    seek(timeOffset);
+}
+
+export function doTimeSkipToNow() {
+    setCurDay(Date.now() / millis_per_day)
+    return;
 }
 
 function getPrevTime() {
@@ -285,10 +281,6 @@ export function getDt() {
 
 export function getCurDay() {
     return curDay;
-}
-
-export function setCurDay(newCurDay) {
-    curDay = newCurDay;
 }
 
 function getPrevDay() {

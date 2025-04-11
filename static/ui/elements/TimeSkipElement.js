@@ -33,7 +33,7 @@ export class TimeSkipElement extends WindowElement {
     }
 
     render(startX, startY) {
-        this.sizeX = getTopBarComponent().getElementXPositionFunc(0, 24) - getTopBarComponent().getElementXPositionFunc(0, 22) + getBaseUISize() * 0.1;
+        this.sizeX = getBaseUISize() * (26.404296875 + 4);
         let curMillis = getCurDay() * millis_per_day;
         let curDate = new Date(curMillis);
         let nextDate = new Date(curMillis + millis_per_day);

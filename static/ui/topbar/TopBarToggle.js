@@ -1,3 +1,4 @@
+import { getBaseUISize } from "../../canvas.js";
 import { COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { getLastMouseDown, isLeftMouseClicked } from "../../mouse.js";
@@ -5,13 +6,13 @@ import { loadGD, saveGD, UI_BOOLEAN } from "../UIData.js";
 import { TopBarElementBase } from "./TopBarElementBase.js";
 
 export class TopBarToggle extends TopBarElementBase{
-    constructor(fontSize, textAlign, key, value, labelFunc) {
+    constructor(fontSize, textAlign, key, value, labelFunc, startMaxWidth=0) {
         super(fontSize, textAlign);
         this.key = key;
         this.value = value;
         this.labelFunc = labelFunc;
         this.lastClick = 0;
-        this.maxWidth = 0;
+        this.maxWidth = startMaxWidth;
     }
 
     measure() {
@@ -20,6 +21,10 @@ export class TopBarToggle extends TopBarElementBase{
         }
         this.prepareStyle();
         let measured = MAIN_CONTEXT.measureText(this.labelFunc());
+
+        if (measured.width > this.maxWidth) {
+            console.log(this.maxWidth / getBaseUISize());
+        }
         this.maxWidth = Math.max(measured.width, this.maxWidth);
         return [this.maxWidth, measured.fontBoundingBoxAscent];
     }

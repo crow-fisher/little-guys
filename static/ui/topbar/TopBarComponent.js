@@ -68,7 +68,7 @@ export class TopBarComponent {
             new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_8, () => "▶"),
             new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_9, () => "▶"),
             this.midSpacingEl,
-            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_TIME, UI_BOOLEAN,() => this.textDateTime()),
+            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_TIME, UI_BOOLEAN,() => this.textDateTime(), getBaseUISize() * 26.404296875),
             new TopBarText(getBaseUISize() * 2, "left", () => " | " + this.textWeather()),
             
         ];
@@ -128,10 +128,10 @@ export class TopBarComponent {
     textDateTime() {
         let curDay = getCurDay();
         let curDate = new Date(curDay * millis_per_day);
+        return curDate.toLocaleString("en-US");
         if (this.compact) {
             return curDate.toLocaleTimeString("en-US");
         } else {
-            return curDate.toLocaleString("en-US");
         }
     }
 
