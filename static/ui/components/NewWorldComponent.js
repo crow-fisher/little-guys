@@ -1,11 +1,12 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { Container } from "../Container.js";
+import { EditableText } from "../elements/EditableText.js";
 import { RadioToggle } from "../elements/RadioToggle.js";
 import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
 import { Text } from "../elements/Text.js";
 import { PopupComponent } from "../PopupComponent.js";
-import { UI_CENTER, UI_MAIN_NEWWORLD_CLOUDS, UI_SIMULATION_HEIGHT, UI_MAIN_NEWWORLD_CUSTOM, UI_MAIN_NEWWORLD_TYPE_BLOCKS, UI_MAIN_NEWWORLD_TYPE_PLANTS, UI_MAIN_NEWWORLD_TYPE_SELECT } from "../UIData.js";
+import { UI_CENTER, UI_MAIN_NEWWORLD_CLOUDS, UI_SIMULATION_HEIGHT, UI_MAIN_NEWWORLD_CUSTOM, UI_MAIN_NEWWORLD_TYPE_BLOCKS, UI_MAIN_NEWWORLD_TYPE_PLANTS, UI_MAIN_NEWWORLD_TYPE_SELECT, UI_MAIN_NEWWORLD_NAME } from "../UIData.js";
 export class WorldSetupComponent extends PopupComponent {
     constructor(posXFunc, posYFunc, padding, dir, key) {
         super(posXFunc, posYFunc, padding, dir, key);
@@ -19,7 +20,7 @@ export class WorldSetupComponent extends PopupComponent {
         let row2 = new Container(this.window, padding, 0);
         let row3 = new Container(this.window, padding, 0);
 
-        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 4, UI_CENTER, "new world"));
+        container.addElement(new EditableText(this.window, sizeX, getBaseUISize() * 4, UI_CENTER, UI_MAIN_NEWWORLD_NAME, "*"));
         container.addElement(new Text(this.window, sizeX, getBaseUISize() * 2, UI_CENTER, "optimize for"));
         container.addElement(new Text(this.window, sizeX, getBaseUISize() * .5, UI_CENTER, ""));
 
