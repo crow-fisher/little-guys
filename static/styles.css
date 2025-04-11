@@ -8,15 +8,3 @@
     font-family: 'courier';
     src: url('./fonts/VeraMono.ttf')
 }
-@font-face {
-    font-family: 'courierBold';
-    src: url('./fonts/CourierPrime-Bold.ttf')
-}
-@font-face {
-    font-family: 'courierBoldItalic';
-    src: url('./fonts/CourierPrime-BoldItalic.ttf')
-}
-@font-face {
-    font-family: 'courierItalic';
-    src: url('./fonts/CourierPrime-Italic.ttf')
-}
