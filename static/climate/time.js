@@ -20,6 +20,7 @@ import {
 import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
 import { SunCalc } from "./suncalc/suncalc.js";
 import { getActiveClimate } from "./climateManager.js";
+import { triggerWeatherChange } from "./weather/weatherManager.js";
 
 let TIME_SCALE = 1;
 let curUIKey = UI_SPEED_1;
@@ -166,31 +167,30 @@ export function doTimeSkipToDate(dateName) {
     let date = new Date();
     switch (dateName) {
         case "spring":
-            date.setMonth(3);
-            date.setDate(20);
+            date.setMonth(2, 20);
+            console.log("bop");
+            console.log(date);
             break;
         case "summer":
-            date.setMonth(6);
-            date.setDate(20);
+            date.setMonth(5, 20);
             break;
         case "fall":
-            date.setMonth(9);
-            date.setDate(21);
+            date.setMonth(8, 21);
             break;
         default:
         case "winter":
-            date.setMonth(12);
-            date.setDate(21);
+            date.setMonth(11, 21);
             break;
     }
-    curDay = Math.floor(date.getTime() / millis_per_day) + (curDay % 1);
+    setCurDay(Math.floor(date.getTime() / millis_per_day) + (curDay % 1));
 }
 
 export function setCurDay(newCurDay) {
     let start = curDay;
     curDay = newCurDay;
     seekTimeTarget = 0;
-    iterateOnOrganisms((org) => org.curLifeTimeOffset += (curDay - start))
+    iterateOnOrganisms((org) => org.curLifeTimeOffset += (curDay - start));
+    triggerWeatherChange();
 }
 
 export function doTimeSkipToNow() {

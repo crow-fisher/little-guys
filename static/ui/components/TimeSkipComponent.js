@@ -29,11 +29,11 @@ export class TimeSkipComponent extends LockedComponent {
         row1.addElement(new Button(this.window, sizeX / 2, getBaseUISize() * 3, UI_CENTER, () => doTimeSkipToDate("winter"),
         "winter",() => getActiveClimate().getUIColorInactiveCustom(0.66)));
         row1.addElement(new Button(this.window, sizeX / 2, getBaseUISize() * 3, UI_CENTER, () => doTimeSkipToDate("spring"),
-            "spring",() => getActiveClimate().getUIColorInactiveCustom(0.62)));
-            row2.addElement(new Button(this.window, sizeX / 2, getBaseUISize() * 3, UI_CENTER, () => doTimeSkipToDate("summer"),
-            "summer",() => getActiveClimate().getUIColorInactiveCustom(0.56)));
+        "spring",() => getActiveClimate().getUIColorInactiveCustom(0.62)));
+        row2.addElement(new Button(this.window, sizeX / 2, getBaseUISize() * 3, UI_CENTER, () => doTimeSkipToDate("summer"),
+        "summer",() => getActiveClimate().getUIColorInactiveCustom(0.56)));
         row2.addElement(new Button(this.window, sizeX / 2, getBaseUISize() * 3, UI_CENTER, () => doTimeSkipToDate("fall"),
-            "fall",() => getActiveClimate().getUIColorInactiveCustom(0.58)));
+        "fall",() => getActiveClimate().getUIColorInactiveCustom(0.58)));
 
         container.addElement(row1);
         container.addElement(row2);

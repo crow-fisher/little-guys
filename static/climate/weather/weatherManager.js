@@ -24,6 +24,12 @@ export function getCurWeatherInterval() {
     return Math.round((curWeatherInterval - (getCurDay() - curWeatherStartTime)) / 0.000694444);
 }
 
+export function triggerWeatherChange() {
+    curWeatherStartTime = 0;
+    curWeatherInterval = 0;
+    weatherChange();
+}
+
 let curClouds = [];
 let curWinds = [];
 
