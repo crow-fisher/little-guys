@@ -27,9 +27,10 @@ export const UI_MAIN_NEWWORLD = "UI_MAIN_NEWWORLD";
 export const UI_MAIN_NEWWORLD_TYPE_SELECT = "UI_MAIN_NEWWORLD_TYPE_SELECT";
 export const UI_MAIN_NEWWORLD_TYPE_PLANTS = "UI_MAIN_NEWWORLD_TYPE_PLANTS";
 export const UI_MAIN_NEWWORLD_TYPE_BLOCKS = "UI_MAIN_NEWWORLD_TYPE_BLOCKS";
-export const UI_MAIN_NEWWORLD_CLOUDS = "UI_MAIN_NEWWORLD_CLOUDS";
+export const UI_MAIN_NEWWORLD_TYPE_CLOUDS = "UI_MAIN_NEWWORLD_TYPE_CLOUDS";
 export const UI_MAIN_NEWWORLD_CUSTOM = "UI_MAIN_NEWWORLD_CUSTOM";
 export const UI_MAIN_NEWWORLD_NAME = "UI_MAIN_NEWWORLD_NAME";
+export const UI_MAIN_NEWWORLD_SIMHEIGHT = "UI_MAIN_NEWWORLD_SIMHEIGHT";
 
 export const UI_LIGHTING_SUN = "UI_LIGHTING_SUN";
 export const UI_LIGHTING_MOON = "UI_LIGHTING_MOON";
@@ -165,7 +166,9 @@ function getCurTimeScaleVal(v) {
 
 let _GAMEDATA_DEFAULT = {
     UI_NAME: "plymouth",
-    UI_MAIN_NEWWORLD_NAME: "new world",
+    UI_MAIN_NEWWORLD_NAME: "click to edit",
+    UI_MAIN_NEWWORLD_TYPE_SELECT: UI_MAIN_NEWWORLD_TYPE_PLANTS,
+    UI_MAIN_NEWWORLD_SIMHEIGHT: 100,
     UI_TEXTEDIT_ACTIVE: null,
     UI_PALETTE_SIZE: 6,
     UI_PALETTE_STRENGTH: 1,
@@ -252,6 +255,8 @@ let UI_AUTOCLOSE = {
     UI_TOPBAR_BLOCK: {GAMEDATA: [UI_PALETTE_ACTIVE, UI_SM_ORGANISM]}
 }
 
+let UI_KEYBOARDINPUTS = [UI_MAIN_NEWWORLD_NAME]
+
 let queuedFunctionArr = new Array();
 
 export function addUIFunctionMap(key, value) {
@@ -298,6 +303,10 @@ function saveGeneral(map, key, value) {
     if (key in UI_AUTOCLOSE)
         Object.keys(UI_AUTOCLOSE[key]).forEach((key2) => UI_AUTOCLOSE[key][key2].forEach((key3) => saveGeneral(ROOT[key2], key3, false)));
 
+
+    if (key != UI_TEXTEDIT_ACTIVE && !UI_KEYBOARDINPUTS.some((k) => k == key))
+        saveGD(UI_TEXTEDIT_ACTIVE, null);
+    
     map[key] = value;
     if (key in UI_FUNCTION_MAP) {
         queuedFunctionArr.push(UI_FUNCTION_MAP[key]);

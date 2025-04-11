@@ -6,7 +6,7 @@ import { RadioToggle } from "../elements/RadioToggle.js";
 import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
 import { Text } from "../elements/Text.js";
 import { PopupComponent } from "../PopupComponent.js";
-import { UI_CENTER, UI_MAIN_NEWWORLD_CLOUDS, UI_SIMULATION_HEIGHT, UI_MAIN_NEWWORLD_CUSTOM, UI_MAIN_NEWWORLD_TYPE_BLOCKS, UI_MAIN_NEWWORLD_TYPE_PLANTS, UI_MAIN_NEWWORLD_TYPE_SELECT, UI_MAIN_NEWWORLD_NAME } from "../UIData.js";
+import { UI_CENTER, UI_MAIN_NEWWORLD_TYPE_CLOUDS, UI_SIMULATION_HEIGHT, UI_MAIN_NEWWORLD_CUSTOM, UI_MAIN_NEWWORLD_TYPE_BLOCKS, UI_MAIN_NEWWORLD_TYPE_PLANTS, UI_MAIN_NEWWORLD_TYPE_SELECT, UI_MAIN_NEWWORLD_NAME, UI_MAIN_NEWWORLD_SIMHEIGHT, addUIFunctionMap, loadGD, saveGD } from "../UIData.js";
 export class WorldSetupComponent extends PopupComponent {
     constructor(posXFunc, posYFunc, padding, dir, key) {
         super(posXFunc, posYFunc, padding, dir, key);
@@ -28,16 +28,12 @@ export class WorldSetupComponent extends PopupComponent {
         container.addElement(row2);
         // container.addElement(row3);
 
-        row1.addElement(new RadioToggleLabel(this.window, half, getBaseUISize() * 4, UI_CENTER,"plants", UI_MAIN_NEWWORLD_TYPE_SELECT, 
-            UI_MAIN_NEWWORLD_TYPE_PLANTS, () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive()));
-        row1.addElement(new RadioToggleLabel(this.window, half, getBaseUISize() * 4, UI_CENTER, "blocks",UI_MAIN_NEWWORLD_TYPE_SELECT, 
-            UI_MAIN_NEWWORLD_TYPE_BLOCKS, () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive()));
-
+        row1.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 4, UI_CENTER,"plants (all)", UI_MAIN_NEWWORLD_TYPE_SELECT, 
+            UI_MAIN_NEWWORLD_TYPE_PLANTS, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
+        row2.addElement(new RadioToggleLabel(this.window, half, getBaseUISize() * 4, UI_CENTER, "blocks",UI_MAIN_NEWWORLD_TYPE_SELECT, 
+            UI_MAIN_NEWWORLD_TYPE_BLOCKS, () => getActiveClimate().getUIColorInactiveCustom(0.59), () => getActiveClimate().getUIColorActive()));
         row2.addElement(new RadioToggleLabel(this.window, half, getBaseUISize() * 4, UI_CENTER,"clouds", UI_MAIN_NEWWORLD_TYPE_SELECT, 
-        UI_MAIN_NEWWORLD_CLOUDS, () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive()));
-        row2.addElement(new RadioToggleLabel(this.window, half, getBaseUISize() * 4, UI_CENTER, "custom",UI_MAIN_NEWWORLD_TYPE_SELECT, 
-        UI_MAIN_NEWWORLD_CUSTOM, () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive()));
-
+        UI_MAIN_NEWWORLD_TYPE_CLOUDS, () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive()));
 
         container.addElement(new Text(this.window, sizeX, getBaseUISize() * 2, UI_CENTER, "world size"));
             
@@ -47,28 +43,41 @@ export class WorldSetupComponent extends PopupComponent {
         let sizeRow4 =  new Container(this.window, 0, 0);
         let sizeRow5 =  new Container(this.window, 0, 0);
 
-        sizeRow1.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_SIMULATION_HEIGHT, 75,() => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));
-        sizeRow1.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_SIMULATION_HEIGHT, 100,() => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
-        sizeRow1.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_SIMULATION_HEIGHT, 125,() => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorActive()));
-        sizeRow2.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_SIMULATION_HEIGHT, 150,() => getActiveClimate().getUIColorInactiveCustom(0.58), () => getActiveClimate().getUIColorActive()));
-        sizeRow2.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_SIMULATION_HEIGHT, 175,() => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));
-        sizeRow2.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_SIMULATION_HEIGHT, 200,() => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
-        sizeRow3.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_SIMULATION_HEIGHT, 225,() => getActiveClimate().getUIColorInactiveCustom(0.63), () => getActiveClimate().getUIColorActive()));
-        sizeRow3.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_SIMULATION_HEIGHT, 250,() => getActiveClimate().getUIColorInactiveCustom(0.59), () => getActiveClimate().getUIColorActive()));
-        sizeRow3.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_SIMULATION_HEIGHT, 275,() => getActiveClimate().getUIColorInactiveCustom(0.64), () => getActiveClimate().getUIColorActive()));
-        sizeRow4.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_SIMULATION_HEIGHT, 300,() => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorActive()));
-        sizeRow4.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_SIMULATION_HEIGHT, 350,() => getActiveClimate().getUIColorInactiveCustom(0.56), () => getActiveClimate().getUIColorActive()));
-        sizeRow4.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_SIMULATION_HEIGHT, 400,() => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));
-        sizeRow5.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_SIMULATION_HEIGHT, 450,() => getActiveClimate().getUIColorInactiveCustom(0.57), () => getActiveClimate().getUIColorActive()));
-        sizeRow5.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_SIMULATION_HEIGHT, 500,() => getActiveClimate().getUIColorInactiveCustom(0.61), () => getActiveClimate().getUIColorActive()));
-        sizeRow5.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_SIMULATION_HEIGHT, 550,() => getActiveClimate().getUIColorInactiveCustom(0.58), () => getActiveClimate().getUIColorActive()));
+        sizeRow1.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 75,() => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));
+        sizeRow1.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 100,() => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
+        sizeRow1.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 125,() => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorActive()));
+        sizeRow2.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 150,() => getActiveClimate().getUIColorInactiveCustom(0.58), () => getActiveClimate().getUIColorActive()));
+        sizeRow2.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 175,() => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));
+        sizeRow2.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 200,() => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
+        sizeRow3.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 225,() => getActiveClimate().getUIColorInactiveCustom(0.63), () => getActiveClimate().getUIColorActive()));
+        sizeRow3.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 250,() => getActiveClimate().getUIColorInactiveCustom(0.59), () => getActiveClimate().getUIColorActive()));
+        sizeRow3.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 275,() => getActiveClimate().getUIColorInactiveCustom(0.64), () => getActiveClimate().getUIColorActive()));
+        sizeRow4.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 300,() => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorActive()));
+        sizeRow4.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 350,() => getActiveClimate().getUIColorInactiveCustom(0.56), () => getActiveClimate().getUIColorActive()));
+        sizeRow4.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 400,() => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));
+        sizeRow5.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 450,() => getActiveClimate().getUIColorInactiveCustom(0.57), () => getActiveClimate().getUIColorActive()));
+        sizeRow5.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 500,() => getActiveClimate().getUIColorInactiveCustom(0.61), () => getActiveClimate().getUIColorActive()));
+        sizeRow5.addElement(new RadioToggle(this.window, third, getBaseUISize() * 3, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 550,() => getActiveClimate().getUIColorInactiveCustom(0.58), () => getActiveClimate().getUIColorActive()));
         
-
         container.addElement(sizeRow1);
         container.addElement(sizeRow2);
         container.addElement(sizeRow3);
         container.addElement(sizeRow4);
         container.addElement(sizeRow5);
-
     }
 }
+
+addUIFunctionMap(UI_MAIN_NEWWORLD_TYPE_SELECT, () => {
+    switch (loadGD(UI_MAIN_NEWWORLD_TYPE_SELECT)) {
+        case UI_MAIN_NEWWORLD_TYPE_PLANTS:
+            saveGD(UI_MAIN_NEWWORLD_SIMHEIGHT, 125);
+            return;
+        case UI_MAIN_NEWWORLD_TYPE_BLOCKS:
+            saveGD(UI_MAIN_NEWWORLD_SIMHEIGHT, 300);
+            return;
+        case UI_MAIN_NEWWORLD_TYPE_CLOUDS:
+        default:
+            saveGD(UI_MAIN_NEWWORLD_SIMHEIGHT, 400);
+            return;
+    }
+})
