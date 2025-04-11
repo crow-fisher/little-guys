@@ -21,7 +21,7 @@ export class RadioToggleFunctionalText extends WindowElement {
     }
 
     render(startX, startY) {
-        MAIN_CONTEXT.font = this.sizeY * this.textSizeMult + "px customCourier"
+        MAIN_CONTEXT.font = this.sizeY * this.textSizeMult + "px couier"
         MAIN_CONTEXT.textAlign = 'center';
         MAIN_CONTEXT.textBaseline = 'middle';
         if (loadGD(this.key) == this.value) {
@@ -30,13 +30,13 @@ export class RadioToggleFunctionalText extends WindowElement {
             MAIN_CONTEXT.fillStyle = this.colorInactiveFunc();
         }
         MAIN_CONTEXT.fillRect(startX, startY, this.sizeX, this.sizeY);
-
+        MAIN_CONTEXT.fillStyle = COLOR_BLACK;
         if (this.offsetX == UI_CENTER) {
             MAIN_CONTEXT.textAlign = 'center';
-            MAIN_CONTEXT.strokeText(this.textFunc(), startX + this.sizeX / 2, startY + (this.sizeY / 2))
+            MAIN_CONTEXT.fillText(this.textFunc(), startX + this.sizeX / 2, startY + (this.sizeY / 2))
         } else {
             MAIN_CONTEXT.textAlign = 'left';
-            MAIN_CONTEXT.strokeText(this.textFunc(), startX + this.offsetX, startY + (this.sizeY / 2))
+            MAIN_CONTEXT.fillText(this.textFunc(), startX + this.offsetX, startY + (this.sizeY / 2))
         }
         return [this.sizeX, this.sizeY];
     }

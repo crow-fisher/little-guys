@@ -192,7 +192,7 @@ export function zoomCanvasSquareText(x, y, text) {
     let xpl = xpi * totalWidth;
     let ypl = ypi * totalHeight;
     
-    MAIN_CONTEXT.strokeText(
+    MAIN_CONTEXT.fillText(
         text,
         xpl + dx / 2,
         ypl + dy / 2

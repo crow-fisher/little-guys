@@ -21,7 +21,7 @@ export class RowedRadio extends WindowElement {
 
     render(startX, startY) {
         let curX = 0;
-        MAIN_CONTEXT.font = (this.sizeY / this.rows) * 0.75 + "px customCourier"
+        MAIN_CONTEXT.font = (this.sizeY / this.rows) * 0.75 + "px couier"
         MAIN_CONTEXT.textAlign = 'left';
         MAIN_CONTEXT.textBaseline = 'middle';
         let xStep = (this.rows * this.sizeX) / this.choices.length;
@@ -38,13 +38,14 @@ export class RowedRadio extends WindowElement {
             let topY = startY + Math.floor(((this.rows * i) / this.choices.length)) * yStep;
 
             MAIN_CONTEXT.fillRect(leftX, topY, xStep, yStep);
+            MAIN_CONTEXT.fillStyle = COLOR_BLACK;
 
             if (this.elementOffsetX == UI_CENTER) {
                 MAIN_CONTEXT.textAlign = 'center';
-                MAIN_CONTEXT.strokeText(this.choices[i], leftX + xStep / 2, topY + yStep / 2);
+                MAIN_CONTEXT.fillText(this.choices[i], leftX + xStep / 2, topY + yStep / 2);
             } else {
                 MAIN_CONTEXT.textAlign = 'left';
-                MAIN_CONTEXT.strokeText(this.choices[i], leftX + this.elementOffsetX, topY + yStep / 2);
+                MAIN_CONTEXT.fillText(this.choices[i], leftX + this.elementOffsetX, topY + yStep / 2);
             }
             curX += xStep;
         }

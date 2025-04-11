@@ -432,7 +432,7 @@ export class BaseSquare {
             getBaseSize()
         );
         if (this.mixIdx >= (getTargetMixIdx() - getMixArrLen())) {
-            MAIN_CONTEXT.font = getBaseSize() + "px customCourier"
+            MAIN_CONTEXT.font = getBaseSize() + "px couier"
             MAIN_CONTEXT.textAlign = 'center';
             MAIN_CONTEXT.textBaseline = 'middle';
             zoomCanvasSquareText(((this.offsetX + this.posX) + 0.5) * getBaseSize(),

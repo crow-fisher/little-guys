@@ -16,7 +16,7 @@ export class TextBackground extends WindowElement {
     }
 
     render(startX, startY) {
-        MAIN_CONTEXT.font = this.sizeY * this.sizeMult + "px customCourier"
+        MAIN_CONTEXT.font = this.sizeY * this.sizeMult + "px couier"
         MAIN_CONTEXT.textBaseline = 'middle';
         MAIN_CONTEXT.fillStyle = this.colorFunc();
         MAIN_CONTEXT.fillRect(startX, startY, this.sizeX, this.sizeY);
@@ -24,10 +24,10 @@ export class TextBackground extends WindowElement {
         MAIN_CONTEXT.strokeStyle = "#000000"
         if (this.offsetX == UI_CENTER) {
             MAIN_CONTEXT.textAlign = 'center';
-            MAIN_CONTEXT.strokeText(this.text, startX + this.sizeX / 2, startY + (this.sizeY / 2))
+            MAIN_CONTEXT.fillText(this.text, startX + this.sizeX / 2, startY + (this.sizeY / 2))
         } else {
             MAIN_CONTEXT.textAlign = 'left';
-            MAIN_CONTEXT.strokeText(this.text, startX + this.offsetX, startY + (this.sizeY / 2))
+            MAIN_CONTEXT.fillText(this.text, startX + this.offsetX, startY + (this.sizeY / 2))
         }
         return [this.sizeX, this.sizeY];
     }

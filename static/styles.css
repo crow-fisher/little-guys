@@ -1,4 +1,15 @@
+* {
+    padding: 0px;
+    margin: 0px;
+    border: 0px
+   }
+   
 @font-face {
-    font-family: 'customCourier';
+    font-family: 'couier';
     src: url('./fonts/CourierPrime-Regular.ttf')
+}
+
+@font-face {
+    font-family: 'couierBold';
+    src: url('./fonts/CourierPrime-Bold.ttf')
 }

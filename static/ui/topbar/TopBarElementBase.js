@@ -6,7 +6,7 @@ export class TopBarElementBase {
         this.textAlign = textAlign;
     }
     prepareStyle() {
-        MAIN_CONTEXT.font = this.fontSize + "px customCourier"
+        MAIN_CONTEXT.font = this.fontSize + "px couier"
         MAIN_CONTEXT.textAlign = this.textAlign;
         MAIN_CONTEXT.textBaseline = 'alphabetic';
     }

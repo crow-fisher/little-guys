@@ -19,7 +19,7 @@ export class Radio extends WindowElement {
 
     render(startX, startY) {
         let curX = 0;
-        MAIN_CONTEXT.font = this.sizeY - 10 + "px customCourier"
+        MAIN_CONTEXT.font = this.sizeY - 10 + "px couier"
         MAIN_CONTEXT.textBaseline = 'middle';
         let step = this.sizeX / this.choices.length;
         for (let i = 0; i < this.choices.length; i++) {
@@ -29,12 +29,14 @@ export class Radio extends WindowElement {
                 MAIN_CONTEXT.fillStyle = this.colorInactiveFunc();
             }
             MAIN_CONTEXT.fillRect(startX + curX, startY, step, this.sizeY);
+            MAIN_CONTEXT.fillStyle = COLOR_BLACK;
+
             if (this.elementOffsetX == UI_CENTER) {
                 MAIN_CONTEXT.textAlign = 'center';
-                MAIN_CONTEXT.strokeText(this.choices[i], startX + (i * step) + step / 2, 2 + startY + (this.sizeY / 2))
+                MAIN_CONTEXT.fillText(this.choices[i], startX + (i * step) + step / 2, 2 + startY + (this.sizeY / 2))
             } else {
                 MAIN_CONTEXT.textAlign = 'left';
-                MAIN_CONTEXT.strokeText(this.choices[i], startX + (i * step) + this.elementOffsetX, 2 + startY + (this.sizeY / 2))
+                MAIN_CONTEXT.fillText(this.choices[i], startX + (i * step) + this.elementOffsetX, 2 + startY + (this.sizeY / 2))
             }
             curX += step;
         }

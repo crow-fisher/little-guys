@@ -18,7 +18,7 @@ export class PageButton extends WindowElement {
     }
 
     render(startX, startY) {
-        MAIN_CONTEXT.font = this.sizeY * this.textSizeMult + "px customCourier"
+        MAIN_CONTEXT.font = this.sizeY * this.textSizeMult + "px couier"
         MAIN_CONTEXT.textAlign = 'center';
         MAIN_CONTEXT.textBaseline = 'middle';
         MAIN_CONTEXT.fillStyle = this.colorFunc();
