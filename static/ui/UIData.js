@@ -12,8 +12,11 @@ export const UI_NULL = "UI_NULL";
 export const UI_UI_SIZE = "UI_UI_SIZE";
 export const UI_UI_NEXTWORLD = "UI_UI_NEXTWORLD";
 export const UI_UI_CURWORLD = "UI_UI_CURWORLD";
+export const UI_UI_LASTSAVED = "UI_UI_LASTSAVED";
 
-export const UI_ISWORLDHIDDEN = "UI_ISWORLDHIDDEN";
+export const UI_UI_WORLDHIDDEN = "UI_UI_WORLDHIDDEN";
+export const UI_UI_WORLDNAME = "UI_UI_WORLDNAME";
+
 export const UI_CENTER = "UI_CENTER"
 
 export const UI_SOIL_COMPOSITION = "UI_SOIL_COMPOSITION";
@@ -178,7 +181,6 @@ function getCurTimeScaleVal(v) {
 
 let _GAMEDATA_DEFAULT = {
     UI_NAME: "plymouth",
-    UI_ISWORLDHIDDEN: false,
     UI_MAIN_NEWWORLD_NAME: "name (click to edit)",
     UI_MAIN_NEWWORLD_TYPE_SELECT: UI_MAIN_NEWWORLD_TYPE_PLANTS,
     UI_MAIN_NEWWORLD_SIMHEIGHT: 125,
@@ -229,7 +231,10 @@ let _GAMEDATA_DEFAULT = {
 let _UI_DEFAULT = {
     UI_UI_SIZE: 12,
     UI_UI_NEXTWORLD: 0,
-    UI_UI_CURWORLD: null
+    UI_UI_CURWORLD: null,
+    UI_UI_WORLDHIDDEN: {},
+    UI_UI_WORLDNAME: {},
+    UI_UI_LASTSAVED: Date.now()
 }
 
 export const GAMEDATA = "GAMEDATA";
@@ -275,6 +280,8 @@ let UI_AUTOCLOSE = {
     UI_TOPBAR_CLIMATE: {GAMEDATA: [UI_CLIMATE_SELECT_MENU, UI_CLIMATE_SELECT_CLOUDS, UI_CILMATE_SELECT_WEATHER]},
     UI_TOPBAR_BLOCK: {GAMEDATA: [UI_PALETTE_ACTIVE, UI_SM_ORGANISM]}
 }
+
+let UI_NEWWORLD_ALLOWLIST = [UI_TEXTEDIT_ACTIVE, UI_MAIN_NEWWORLD, UI_MAIN_NEWWORLD_LATITUDE, UI_MAIN_NEWWORLD_LONGITUDE, UI_MAIN_NEWWORLD_NAME, UI_MAIN_NEWWORLD_TYPE_SELECT, UI_MAIN_NEWWORLD_SIMHEIGHT]
 
 let queuedFunctionArr = new Array();
 
@@ -332,6 +339,11 @@ function saveGeneral(map, key, value) {
     }
     if (!value && key in UI_AUTOCLOSE) {
         Object.keys(UI_AUTOCLOSE[key]).forEach((key2) => saveGD(key2, false));
+    }
+    if (!(UI_NEWWORLD_ALLOWLIST.some((k) => key == k))) {
+        console.log(key);
+        saveGD(UI_MAIN_NEWWORLD, false);
+        console.log(key);
     }
     if (map == ROOT[UICONFIG]) {
         saveUserSettings();

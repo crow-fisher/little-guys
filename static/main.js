@@ -9,6 +9,7 @@ import { LightingHandler } from "./lighting/lightingHandler.js";
 import { ClimateHandler } from "./climate/climateHandler.js";
 import { isLeftMouseClicked, isRightMouseClicked } from "./mouse.js";
 import { iterateOnSquares } from "./squares/_sqOperations.js";
+import { doPeriodicSave } from "./saveAndLoad.js";
  
 initUI();
 let lightingHandler = new LightingHandler();
@@ -39,7 +40,6 @@ export function resetClimateAndLighting() {
     iterateOnSquares((sq) => sq.lighting = new Array());
 }
 
-
 export function scheduler_main() {
     updateTime();
     doClickAdd();
@@ -58,6 +58,7 @@ export function scheduler_main() {
     if (!isLeftMouseClicked()) 
         executeFunctionQueue();
     
+    doPeriodicSave();
     setTimeout(scheduler_main, 0);
 }
 

@@ -17,7 +17,7 @@ import { ClimateSelectionComponent } from "./components/ClimateSelectionComponen
 import { WeatherSelectionComponent } from "./components/WeatherSelectionComponent.js";
 import { CloudControlComponent } from "./components/CloudControlComponent.js";
 import { TimeSkipComponent } from "./components/TimeSkipComponent.js";
-import { WorldSetupComponent } from "./components/NewWorldComponent.js";
+import { WorldSetupComponent } from "./components/WorldSetupComponent.js";
 
 let topBarComponent;
 let blockPalette;

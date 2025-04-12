@@ -1,6 +1,6 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
-import { createNewWorld } from "../../saveAndLoad.js";
+import { createNewWorld, editCurrentWorld } from "../../saveAndLoad.js";
 import { Container } from "../Container.js";
 import { Button } from "../elements/Button.js";
 import { EditableText } from "../elements/EditableText.js";
@@ -85,7 +85,10 @@ export class WorldSetupComponent extends PopupComponent {
         locRow2.addElement(new EditableText(this.window, half, h2, UI_CENTER, UI_MAIN_NEWWORLD_LATITUDE, "*"));
         locRow2.addElement(new EditableText(this.window, half, h2, UI_CENTER, UI_MAIN_NEWWORLD_LONGITUDE, "*"));
 
-        container.addElement(new Button(this.window, sizeX, h1, UI_CENTER, () => createNewWorld(), "create new world", () => getActiveClimate().getUIColorActive()))
+        let newEditRow = new Container(this.window, padding, 0);
+        newEditRow.addElement(new Button(this.window, half, h1, UI_CENTER, () => editCurrentWorld(), "edit current", () => getActiveClimate().getUIColorInactiveCustom(0.65), 0.65));
+        newEditRow.addElement(new Button(this.window, half, h1, UI_CENTER, () => createNewWorld(), "create new", () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.65));
+        container.addElement(newEditRow);
     }
 }
 

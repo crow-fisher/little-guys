@@ -5,7 +5,7 @@ import { loadGD, saveGD, UI_CENTER } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class Button extends WindowElement {
-    constructor(window, sizeX, sizeY, offsetX, func, label, colorFunc) {
+    constructor(window, sizeX, sizeY, offsetX, func, label, colorFunc, textSizeMult=0.75) {
         super(window, sizeX, sizeY);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
@@ -14,6 +14,7 @@ export class Button extends WindowElement {
         this.label = label;
         this.lastClick = 0;
         this.colorFunc = colorFunc;
+        this.textSizeMult = textSizeMult;
     }
 
     size() {
@@ -21,7 +22,7 @@ export class Button extends WindowElement {
     }
 
     render(startX, startY) {
-        MAIN_CONTEXT.font = this.sizeY * 0.75 + "px courier"
+        MAIN_CONTEXT.font = this.sizeY * this.textSizeMult + "px courier"
         MAIN_CONTEXT.textBaseline = 'middle';
         MAIN_CONTEXT.fillStyle = this.colorFunc();
         MAIN_CONTEXT.fillRect(startX, startY, this.sizeX, this.sizeY);
