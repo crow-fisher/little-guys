@@ -9,7 +9,11 @@ export const UI_TEXTEDIT_ACTIVE = "UI_TEXTEDIT_ACTIVE";
 export const UI_GODMODE_STRENGTH = "UI_GODMODE_STRENGTH";
 
 export const UI_NULL = "UI_NULL";
-export const UI_SIZE = "UI_SIZE";
+export const UI_UI_SIZE = "UI_UI_SIZE";
+export const UI_UI_NEXTWORLD = "UI_UI_NEXTWORLD";
+export const UI_UI_CURWORLD = "UI_UI_CURWORLD";
+
+export const UI_ISWORLDHIDDEN = "UI_ISWORLDHIDDEN";
 export const UI_CENTER = "UI_CENTER"
 
 export const UI_SOIL_COMPOSITION = "UI_SOIL_COMPOSITION";
@@ -31,6 +35,8 @@ export const UI_MAIN_NEWWORLD_TYPE_CLOUDS = "UI_MAIN_NEWWORLD_TYPE_CLOUDS";
 export const UI_MAIN_NEWWORLD_CUSTOM = "UI_MAIN_NEWWORLD_CUSTOM";
 export const UI_MAIN_NEWWORLD_NAME = "UI_MAIN_NEWWORLD_NAME";
 export const UI_MAIN_NEWWORLD_SIMHEIGHT = "UI_MAIN_NEWWORLD_SIMHEIGHT";
+export const UI_MAIN_NEWWORLD_LATITUDE = "UI_MAIN_NEWWORLD_LATITUDE";
+export const UI_MAIN_NEWWORLD_LONGITUDE = "UI_MAIN_NEWWORLD_LONGITUDE";
 
 export const UI_LIGHTING_SUN = "UI_LIGHTING_SUN";
 export const UI_LIGHTING_MOON = "UI_LIGHTING_MOON";
@@ -159,7 +165,9 @@ export const UI_PALETTE_ERASE = "UI_PALETTE_ERASE";
 
 
 export const UI_REGEX = {
-    UI_MAIN_NEWWORLD_NAME: ".{0,19}"
+    UI_MAIN_NEWWORLD_NAME: ".{0,20}",
+    UI_MAIN_NEWWORLD_LATITUDE: "^(-?(90(\\.0{0,2})?|[0-8]?\\d?(\\.\\d{0,2})?))?$",
+    UI_MAIN_NEWWORLD_LONGITUDE: "^(-?(180(\\.0{0,2})?|((1[0-7]\\d)|([1-9]?\\d))?(\\.\\d{0,2})?))?$"
 }
 // put default values in here
 // saved directly
@@ -170,9 +178,12 @@ function getCurTimeScaleVal(v) {
 
 let _GAMEDATA_DEFAULT = {
     UI_NAME: "plymouth",
-    UI_MAIN_NEWWORLD_NAME: "click to edit",
+    UI_ISWORLDHIDDEN: false,
+    UI_MAIN_NEWWORLD_NAME: "name (click to edit)",
     UI_MAIN_NEWWORLD_TYPE_SELECT: UI_MAIN_NEWWORLD_TYPE_PLANTS,
-    UI_MAIN_NEWWORLD_SIMHEIGHT: 100,
+    UI_MAIN_NEWWORLD_SIMHEIGHT: 125,
+    UI_MAIN_NEWWORLD_LATITUDE: "42.04", 
+    UI_MAIN_NEWWORLD_LONGITUDE: "-87.78",
     UI_TEXTEDIT_ACTIVE: null,
     UI_PALETTE_SIZE: 6,
     UI_PALETTE_STRENGTH: 1,
@@ -215,12 +226,18 @@ let _GAMEDATA_DEFAULT = {
     UI_LIGHTING_WATER_VALUE: .5
 };
 
+let _UI_DEFAULT = {
+    UI_UI_SIZE: 12,
+    UI_UI_NEXTWORLD: 0,
+    UI_UI_CURWORLD: null
+}
+
 export const GAMEDATA = "GAMEDATA";
 export const UICONFIG = "UICONFIG";
 
 let ROOT = {
     GAMEDATA: structuredClone(_GAMEDATA_DEFAULT),
-    UICONFIG: {}
+    UICONFIG: structuredClone(_UI_DEFAULT)
 }
 
 export function getGAMEDATA() {
@@ -258,8 +275,6 @@ let UI_AUTOCLOSE = {
     UI_TOPBAR_CLIMATE: {GAMEDATA: [UI_CLIMATE_SELECT_MENU, UI_CLIMATE_SELECT_CLOUDS, UI_CILMATE_SELECT_WEATHER]},
     UI_TOPBAR_BLOCK: {GAMEDATA: [UI_PALETTE_ACTIVE, UI_SM_ORGANISM]}
 }
-
-let UI_KEYBOARDINPUTS = [UI_MAIN_NEWWORLD_NAME]
 
 let queuedFunctionArr = new Array();
 
@@ -308,7 +323,7 @@ function saveGeneral(map, key, value) {
         Object.keys(UI_AUTOCLOSE[key]).forEach((key2) => UI_AUTOCLOSE[key][key2].forEach((key3) => saveGeneral(ROOT[key2], key3, false)));
 
 
-    if (key != UI_TEXTEDIT_ACTIVE && !UI_KEYBOARDINPUTS.some((k) => k == key))
+    if (key != UI_TEXTEDIT_ACTIVE && !(Object.keys(UI_REGEX).some((k) => k == key)))
         saveGD(UI_TEXTEDIT_ACTIVE, null);
     
     map[key] = value;

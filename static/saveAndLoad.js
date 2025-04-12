@@ -6,11 +6,12 @@ import { getTemperatureMap, getWaterSaturationMap } from "./climate/temperatureH
 import { getCurDay, setCurDay } from "./climate/time.js";
 import { ProtoMap, TypeMap } from "./types.js";
 import { getWindPressureMap, initWindPressure } from "./climate/wind.js";
-import { getGAMEDATA, getUICONFIG, saveMapEntry, setGAMEDATA, setUICONFIG, UI_SIZE, UICONFIG } from "./ui/UIData.js";
+import { getGAMEDATA, getUICONFIG, loadGD, loadUI, saveGD, saveMapEntry, saveUI, setGAMEDATA, setUICONFIG, UI_MAIN_NEWWORLD, UI_MAIN_NEWWORLD_LATITUDE, UI_MAIN_NEWWORLD_LONGITUDE, UI_MAIN_NEWWORLD_NAME, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_NAME, UI_SIMULATION_HEIGHT, UI_UI_CURWORLD, UI_UI_NEXTWORLD, UI_UI_SIZE, UICONFIG } from "./ui/UIData.js";
 import { getTotalCanvasPixelWidth, indexCanvasSize } from "./index.js";
 import { STAGE_DEAD } from "./organisms/Stages.js";
 import { initUI } from "./ui/WindowManager.js";
 import { purgeMaps } from "./globals.js";
+import { getActiveClimate } from "./climate/climateManager.js";
 
 export async function loadSlot(slotName) {
     const db = await openDatabase();
@@ -45,17 +46,23 @@ export async function loadUserSettings() {
                     const decompressedSave = await decompress(request.result.data);
                     const saveObj = JSON.parse(decompressedSave);
                     setUICONFIG(saveObj);
+                    if (loadUI(UI_UI_CURWORLD < 0)) {
+                        loadEmptyScene();
+                    } else {
+                        loadSlot(loadUI(UI_UI_CURWORLD));
+                    }
+                    saveGD(UI_MAIN_NEWWORLD, false);
                     initUI();
                     resolve(saveObj);
                 } else {
                     console.log("No existing UI save data found.");
                     let w = getTotalCanvasPixelWidth();
                     if (w < 1500) {
-                        saveMapEntry(UICONFIG, UI_SIZE, 8);
+                        saveMapEntry(UICONFIG, UI_UI_SIZE, 8);
                     } else if (w < 2000) {
-                        saveMapEntry(UICONFIG, UI_SIZE, 12);
+                        saveMapEntry(UICONFIG, UI_UI_SIZE, 12);
                     } else {
-                        saveMapEntry(UICONFIG, UI_SIZE, 16);
+                        saveMapEntry(UICONFIG, UI_UI_SIZE, 16);
                     }
                     initUI();
                 }
@@ -65,9 +72,9 @@ export async function loadUserSettings() {
     } catch {
         console.log("No existing UI save data found.");
         if (getTotalCanvasPixelWidth() < 1500) {
-            saveMapEntry(UICONFIG, UI_SIZE, 8);
+            saveMapEntry(UICONFIG, UI_UI_SIZE, 8);
         } else {
-            saveMapEntry(UICONFIG, UI_SIZE, 12);
+            saveMapEntry(UICONFIG, UI_UI_SIZE, 12);
         }
         initUI();
     }
@@ -218,6 +225,18 @@ function getFrameSaveData() {
     return saveObj;
 }
 
+export function createNewWorld() {
+    let slot = loadUI(UI_UI_NEXTWORLD);
+    loadEmptyScene();
+    saveGD(UI_NAME, loadGD(UI_MAIN_NEWWORLD_NAME));
+    saveGD(UI_SIMULATION_HEIGHT, loadGD(UI_MAIN_NEWWORLD_SIMHEIGHT));
+    getActiveClimate().lat = loadGD(UI_MAIN_NEWWORLD_LATITUDE);
+    getActiveClimate().lng = loadGD(UI_MAIN_NEWWORLD_LONGITUDE);
+    saveSlot(slot);
+    saveUI(UI_UI_CURWORLD, slot);
+    saveUI(UI_UI_NEXTWORLD, slot + 1);
+    saveGD(UI_MAIN_NEWWORLD, false);
+}
 
 
 function loadSlotFromSave(slotData) {
@@ -228,14 +247,6 @@ function loadSlotFromSave(slotData) {
     let growthPlanComponentArr = slotData.growthPlanComponentArr;
     let growthPlanStepArr = slotData.growthPlanStepArr;
 
-    let windMap = slotData.windMap;
-    let temperatureMap = slotData.temperatureMap;
-    let waterSaturationMap = slotData.waterSaturationMap;
-
-
-    // setWindPressureMap(windMap);
-    // setTemperatureMap(temperatureMap);
-    // setWaterSaturationMap(waterSaturationMap);
     setCurDay(slotData.curDay);
     setGAMEDATA(slotData.ui)
 

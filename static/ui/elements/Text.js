@@ -5,19 +5,20 @@ import { loadGD, saveGD, UI_CENTER } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class Text extends WindowElement {
-    constructor(window, sizeX, sizeY, offsetX, text, fontSizeMult=0.75) {
+    constructor(window, sizeX, sizeY, offsetX, text, fontSizeMult=0.75, fillStyle="#FFFFFF") {
         super(window, sizeX, sizeY);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         this.offsetX = offsetX;
         this.text = text;
         this.fontSizeMult = fontSizeMult;
+        this.fillStyle = fillStyle;
     }
 
     render(startX, startY) {
         MAIN_CONTEXT.font = this.sizeY * this.fontSizeMult + "px courier"
         MAIN_CONTEXT.textBaseline = 'middle';
-        MAIN_CONTEXT.fillStyle = "#FFFFFF";
+        MAIN_CONTEXT.fillStyle = this.fillStyle;
         if (this.offsetX == UI_CENTER) {
             MAIN_CONTEXT.textAlign = 'center';
             MAIN_CONTEXT.fillText(this.text, startX + this.sizeX / 2, startY + (this.sizeY / 2))

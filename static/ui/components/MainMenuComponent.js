@@ -6,7 +6,7 @@ import { Button } from "../elements/Button.js";
 import { Radio } from "../elements/Radio.js";
 import { Text } from "../elements/Text.js";
 import { Toggle } from "../elements/Toggle.js";
-import { UI_CENTER, UI_MAIN_NEWWORLD, UI_SIZE, UICONFIG } from "../UIData.js";
+import { UI_CENTER, UI_MAIN_NEWWORLD, UI_UI_SIZE, UICONFIG } from "../UIData.js";
 import { SubTreeComponent } from "./SubTreeComponent.js";
 
 
@@ -32,8 +32,8 @@ export class MainMenuComponent extends SubTreeComponent {
         subMenuContainer.addElement(new Button(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX, () => loadEmptyScene(), "empty scene", () => getActiveClimate().getUIColorActive()));
          
         subMenuContainer.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "ui scale"))
-        subMenuContainer.addElement(new Radio(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, UICONFIG, UI_SIZE, [8, 12, 16, 20], () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
-        subMenuContainer.addElement(new Radio(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, UICONFIG, UI_SIZE, [24, 28, 32, 40], () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
+        subMenuContainer.addElement(new Radio(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, UICONFIG, UI_UI_SIZE, [8, 12, 16, 20], () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
+        subMenuContainer.addElement(new Radio(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, UICONFIG, UI_UI_SIZE, [24, 28, 32, 40], () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
     }
 
     render() {

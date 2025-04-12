@@ -5,7 +5,7 @@ import { clearTimeouts, resetClimateAndLighting, resetLighting, scheduler_main }
 import { keydown, keyup } from "./keyboard.js";
 import { handleClick, handleMouseDown, handleMouseUp, handleTouchEnd, handleTouchMove, handleTouchStart } from "./mouse.js";
 import { getCanvasHeight, getCanvasWidth, resetZoom, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, zoom } from "./canvas.js";
-import { addUIFunctionMap, loadGD, UI_SIMULATION_HEIGHT, UI_SIZE } from "./ui/UIData.js";
+import { addUIFunctionMap, loadGD, UI_SIMULATION_HEIGHT, UI_UI_SIZE } from "./ui/UIData.js";
 import { initUI } from "./ui/WindowManager.js";
 import { iterateOnSquares } from "./squares/_sqOperations.js";
 import { purgeCanvasFrameLimit } from "./globalOperations.js";
@@ -72,7 +72,7 @@ export function indexCanvasSize() {
 
 
 addUIFunctionMap(UI_SIMULATION_HEIGHT, indexCanvasSize)
-addUIFunctionMap(UI_SIZE, initUI)
+addUIFunctionMap(UI_UI_SIZE, initUI)
 
 export function setBackgroundColor(hexColor) {
     body.style = "background-color: " + hexColor

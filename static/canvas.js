@@ -1,7 +1,7 @@
 import { MAIN_CONTEXT } from "./index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "./keyboard.js";
 import { getLastMoveOffset, isMiddleMouseClicked } from "./mouse.js";
-import { loadGD, saveGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_SIZE, UI_PALETTE_ACTIVE, loadUI, UI_PALETTE_SURFACE, UI_LIGHTING_SURFACE, UI_PALETTE_SELECT } from "./ui/UIData.js";
+import { loadGD, saveGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_UI_SIZE, UI_PALETTE_ACTIVE, loadUI, UI_PALETTE_SURFACE, UI_LIGHTING_SURFACE, UI_PALETTE_SELECT } from "./ui/UIData.js";
 
 let BASE_SIZE = 1;
 let CANVAS_SQUARES_X = 192; 
@@ -18,7 +18,7 @@ export function setBaseSize(newSize) {
 }
 
 export function getBaseUISize() {
-    return loadUI(UI_SIZE);
+    return loadUI(UI_UI_SIZE);
 }
 
 export function setCanvasSquaresX(val) {

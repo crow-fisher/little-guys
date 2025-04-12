@@ -22,7 +22,7 @@ export class EditableText extends WindowElement {
         MAIN_CONTEXT.fillStyle = "#FFFFFF";
 
         let renderLine = (loadGD(UI_TEXTEDIT_ACTIVE) == this.key) && ((getTimeSinceLastKeypress() < 500 || ((Date.now() % 1000) < 500)));
-        let renderedText = " " + (renderLine ? loadGD(this.key) + "|" : loadGD(this.key) + " ");
+        let renderedText = "·" + (renderLine ? loadGD(this.key) + "|" : loadGD(this.key) + " ");
         if (this.offsetX == UI_CENTER) {
             MAIN_CONTEXT.textAlign = 'center';
             MAIN_CONTEXT.fillText(renderedText, startX + this.sizeX / 2, startY + (this.sizeY / 2))
