@@ -1,7 +1,7 @@
 import { BaseSquare } from "../BaseSqaure.js";
 import { getNeighbors, getSquares } from "../_sqOperations.js";
 import { hexToRgb, randRange } from "../../common.js";
-import { getCurTimeScale, getDt, timeScaleFactor } from "../../climate/time.js";
+import { getCurTimeScale, getDt, getFrameDt, timeScaleFactor } from "../../climate/time.js";
 import { getPressure, getWindSquareAbove } from "../../climate/wind.js";
 import { addWaterSaturationPascals, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, temperatureHumidityFlowrateFactor } from "../../climate/temperatureHumidity.js";
 import { loadGD, UI_LIGHTING_SURFACE, UI_PALETTE_COMPOSITION, UI_PALETTE_SOILIDX, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER } from "../../ui/UIData.js";
@@ -250,7 +250,7 @@ export class SoilSquare extends BaseSquare {
             return;
         }
 
-        if (Date.now() < this.spawnTime + (getDt() * 10)) {
+        if (!this.hasBonked) {
             return;
         }
 

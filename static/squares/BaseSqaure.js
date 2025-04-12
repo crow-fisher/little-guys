@@ -44,6 +44,7 @@ export class BaseSquare {
         // block properties - overridden by block type
         this.physicsEnabled = true;
         this.gravity = 1;
+        this.hasBonked = false;
         this.blockHealthMax = 1;
         this.blockHealth = this.blockHealthMax; // when reaches zero, delete
         // water flow parameters
@@ -585,6 +586,7 @@ export class BaseSquare {
                     this.speedY = 0;
                     this.offsetY = 0;
                     bonked = true;
+                    this.hasBonked = true;
                     if (this.lighting.length == 0 && loadGD(UI_LIGHTING_ENABLED)) {
                         this.initLightingFromNeighbors();
                     }

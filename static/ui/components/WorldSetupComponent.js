@@ -102,7 +102,7 @@ addUIFunctionMap(UI_MAIN_NEWWORLD_TYPE_SELECT, () => {
             return;
         case UI_MAIN_NEWWORLD_TYPE_CLOUDS:
         default:
-            saveGD(UI_MAIN_NEWWORLD_SIMHEIGHT, 400);
+            saveGD(UI_MAIN_NEWWORLD_SIMHEIGHT, 300);
             return;
     }
 })
