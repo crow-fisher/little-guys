@@ -19,6 +19,7 @@ export class MainMenuComponent extends SubTreeComponent {
         let textAlignOffsetX = getBaseUISize() * 0.91;
         subMenuContainer.addElement(new Button(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX, saveCurGame, "save game", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
         subMenuContainer.addElement(new Toggle(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX, UI_MAIN_NEWWORLD, "new/edit world", () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive()));
+        subMenuContainer.addElement(new Button(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX, loadEmptyScene, "empty scene", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
         subMenuContainer.addElement(new Text(this.window, sizeX, getBaseUISize() * 1, textAlignOffsetX, ""));
         for (let i = 0; i < loadUI(UI_UI_NEXTWORLD); i++) {
             if (loadUI(UI_UI_WORLDHIDDEN)[i]) {
@@ -40,6 +41,7 @@ export class MainMenuComponent extends SubTreeComponent {
         subMenuContainer.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "ui scale"))
         subMenuContainer.addElement(new Radio(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, UICONFIG, UI_UI_SIZE, [8, 12, 16, 20], () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
         subMenuContainer.addElement(new Radio(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, UICONFIG, UI_UI_SIZE, [24, 28, 32, 40], () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
+        
     }
 
     render() {
