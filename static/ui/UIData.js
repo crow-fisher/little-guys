@@ -106,11 +106,13 @@ export const UI_CLIMATE_RAINFALL_DENSITY = "UI_CLIMATE_RAINFALL_DENSITY";
 export const UI_CLIMATE_WEATHER_DURATION = "UI_CLIMATE_WEATHER_DURATION";
 
 export const UI_CLIMATE_WEATHER_TOOL_STRENGTH = "UI_CLIMATE_WEATHER_TOOL_STRENGTH";
+export const UI_CLIMATE_TOOL_SIZE = "UI_CLIMATE_TOOL_SIZE";
 export const UI_CLIMATE_WEATHER_TOOL_SELECT = "UI_CLIMATE_WEATHER_TOOL_SELECT";
 export const UI_CLIMATE_WEATHER_TOOL_DRYAIR = "dry air";
 export const UI_CLIMATE_WEATHER_TOOL_MATCHEDAIR = "matched air";
 export const UI_CLIMATE_WEATHER_TOOL_LIGHTCLOUD = "light cloud";
 export const UI_CLIMATE_WEATHER_TOOL_HEAVYCLOUD = "heavy cloud";
+
 
 export const UI_TOPBAR_MAINMENU = "UI_TOPBAR_MAINMENU"; 
 export const UI_TOPBAR_BLOCK = "UI_TOPBAR_BLOCK";
@@ -214,6 +216,7 @@ let _GAMEDATA_DEFAULT = {
     UI_SM_GODMODE: false,
     UI_CLIMATE_RAINFALL_DENSITY: 10,
     UI_CLIMATE_WEATHER_TOOL_STRENGTH: 0.01,
+    UI_CLIMATE_TOOL_SIZE: 20,
     UI_PALETTE_SOILIDX: 3,
     UI_PALETTE_ROCKIDX: 0,
     UI_PALETTE_ROCKMODE: false,
@@ -341,9 +344,7 @@ function saveGeneral(map, key, value) {
         Object.keys(UI_AUTOCLOSE[key]).forEach((key2) => saveGD(key2, false));
     }
     if (!(UI_NEWWORLD_ALLOWLIST.some((k) => key == k))) {
-        console.log(key);
         saveGD(UI_MAIN_NEWWORLD, false);
-        console.log(key);
     }
     if (map == ROOT[UICONFIG]) {
         saveUserSettings();

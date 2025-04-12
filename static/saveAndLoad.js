@@ -6,7 +6,7 @@ import { getTemperatureMap, getWaterSaturationMap } from "./climate/temperatureH
 import { getCurDay, setCurDay } from "./climate/time.js";
 import { ProtoMap, TypeMap } from "./types.js";
 import { getWindPressureMap, initWindPressure } from "./climate/wind.js";
-import { getGAMEDATA, getUICONFIG, loadGD, loadUI, saveGD, saveMapEntry, saveUI, setGAMEDATA, setUICONFIG, UI_CLIMATE_SELECT, UI_CLIMATE_SELECT_CLOUDS, UI_LIGHTING_ENABLED, UI_MAIN_NEWWORLD, UI_MAIN_NEWWORLD_LATITUDE, UI_MAIN_NEWWORLD_LONGITUDE, UI_MAIN_NEWWORLD_NAME, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_MAIN_NEWWORLD_TYPE_BLOCKS, UI_MAIN_NEWWORLD_TYPE_CLOUDS, UI_MAIN_NEWWORLD_TYPE_SELECT, UI_NAME, UI_SIMULATION_CLOUDS, UI_SIMULATION_HEIGHT, UI_SIMULATION_SIMPLESQUARE, UI_TOPBAR_CLIMATE, UI_UI_CURWORLD, UI_UI_LASTSAVED, UI_UI_NEXTWORLD, UI_UI_SIZE, UI_UI_WORLDHIDDEN, UI_UI_WORLDNAME, UICONFIG } from "./ui/UIData.js";
+import { getGAMEDATA, getUICONFIG, loadGD, loadUI, saveGD, saveMapEntry, saveUI, setGAMEDATA, setUICONFIG, UI_CLIMATE_SELECT, UI_CLIMATE_SELECT_CLOUDS, UI_CLIMATE_TOOL_SIZE, UI_CLIMATE_WEATHER_TOOL_HEAVYCLOUD, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_LIGHTING_ENABLED, UI_MAIN_NEWWORLD, UI_MAIN_NEWWORLD_LATITUDE, UI_MAIN_NEWWORLD_LONGITUDE, UI_MAIN_NEWWORLD_NAME, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_MAIN_NEWWORLD_TYPE_BLOCKS, UI_MAIN_NEWWORLD_TYPE_CLOUDS, UI_MAIN_NEWWORLD_TYPE_SELECT, UI_NAME, UI_SIMULATION_CLOUDS, UI_SIMULATION_HEIGHT, UI_SIMULATION_SIMPLESQUARE, UI_TOPBAR_CLIMATE, UI_TOPBAR_MAINMENU, UI_UI_CURWORLD, UI_UI_LASTSAVED, UI_UI_NEXTWORLD, UI_UI_SIZE, UI_UI_WORLDHIDDEN, UI_UI_WORLDNAME, UICONFIG } from "./ui/UIData.js";
 import { getTotalCanvasPixelWidth, indexCanvasSize } from "./index.js";
 import { STAGE_DEAD } from "./organisms/Stages.js";
 import { initUI } from "./ui/WindowManager.js";
@@ -87,7 +87,6 @@ export async function saveUserSettings() {
     const db = await openDatabase();
     const transaction = db.transaction("settings", "readwrite");
     const store = transaction.objectStore("settings");
-
     await new Promise((resolve, reject) => {
         const request = store.put({ slot: "UI", data: compressedSave });
         request.onsuccess = resolve;
@@ -250,6 +249,7 @@ function getFrameSaveData() {
 }
 
 export function createNewWorld() {
+    saveCurGame();
     let slot = loadUI(UI_UI_NEXTWORLD);
     loadEmptyScene();
     saveGD(UI_NAME, loadGD(UI_MAIN_NEWWORLD_NAME));
@@ -268,10 +268,16 @@ export function createNewWorld() {
         case (UI_MAIN_NEWWORLD_TYPE_CLOUDS):
             saveGD(UI_SIMULATION_SIMPLESQUARE, true);
             saveGD(UI_LIGHTING_ENABLED, false);
+            saveGD(UI_SIMULATION_CLOUDS, true);
             saveGD(UI_TOPBAR_CLIMATE, true);
             saveGD(UI_CLIMATE_SELECT_CLOUDS, true);
-                break;
+            saveGD(UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_HEAVYCLOUD);
+            saveGD(UI_CLIMATE_TOOL_SIZE, 50);
+            break;
         default:
+            saveGD(UI_LIGHTING_ENABLED, true);
+            saveGD(UI_SIMULATION_CLOUDS, true);
+            saveGD(UI_SIMULATION_SIMPLESQUARE, false);
             break;
     };
     saveGame(slot);

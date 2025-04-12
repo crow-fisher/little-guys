@@ -2,7 +2,7 @@ import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { Container } from "../Container.js";
 import { LockedComponent } from "../LockedComponent.js";
-import { UI_CENTER } from "../UIData.js";
+import { UI_CENTER, UI_CLIMATE_TOOL_SIZE } from "../UIData.js";
 import { RowedRadio } from "../elements/RowedRadio.js";
 import { Slider } from "../elements/Slider.js";
 import {
@@ -45,7 +45,7 @@ export class CloudControlComponent extends LockedComponent {
         row2.addElement(new RadioToggle(this.window, halfSizeX, getBaseUISize() * 3, UI_CENTER, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_HEAVYCLOUD, 
         () => getActiveClimate().getUIColorInactiveCustom(0.64), () => getActiveClimate().getUIColorActive()));
 
-        brushControlRow.addElement(new Slider(this.window, UI_PALETTE_SIZE, halfSizeX, getBaseUISize() * 3, 5, 100, () => getActiveClimate().getUIColorTransient()));
+        brushControlRow.addElement(new Slider(this.window, UI_CLIMATE_TOOL_SIZE, halfSizeX, getBaseUISize() * 3, 10, 100, () => getActiveClimate().getUIColorTransient()));
         brushControlRow.addElement(new Slider(this.window, UI_CLIMATE_WEATHER_TOOL_STRENGTH, halfSizeX, getBaseUISize() * 3, 0.01, 0.1, () => getActiveClimate().getUIColorTransient()));
         
         brushLabelRow.addElement(new Text(this.window, halfSizeX, getBaseUISize() * 2, UI_CENTER, "brush size"));
