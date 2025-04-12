@@ -48,7 +48,7 @@ export function initUI() {
     all_components.push(new GodModeComponent(getBaseUISize() * 34, getBaseUISize() * 6, 10, 0, UI_SM_GODMODE));
     all_components.push(new TimeSkipComponent(() => topBarComponent.getElementXPositionFunc(0, 22), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_TIME));
 
-    all_components.push(new WorldSetupComponent(() => getCanvasWidth() / 2, () => getCanvasHeight() / 3, 0, 0, UI_MAIN_NEWWORLD));
+    all_components.push(new WorldSetupComponent(() => getCanvasWidth() / 2, () => getBaseUISize() * 30, 0, 0, UI_MAIN_NEWWORLD));
 }
 
 export function getTopBarComponent() {
