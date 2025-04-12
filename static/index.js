@@ -1,11 +1,11 @@
 
 
-import { loadEmptyScene, loadUserSettings } from "./saveAndLoad.js";
+import { loadEmptyScene, loadUserSettings, saveCurGame } from "./saveAndLoad.js";
 import { clearTimeouts, resetClimateAndLighting, resetLighting, scheduler_main } from "./main.js";
 import { keydown, keyup } from "./keyboard.js";
 import { handleClick, handleMouseDown, handleMouseUp, handleTouchEnd, handleTouchMove, handleTouchStart } from "./mouse.js";
 import { getCanvasHeight, getCanvasWidth, resetZoom, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, zoom } from "./canvas.js";
-import { addUIFunctionMap, loadGD, UI_SIMULATION_HEIGHT, UI_UI_SIZE } from "./ui/UIData.js";
+import { addUIFunctionMap, loadGD, saveGD, saveUI, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_SIMULATION_HEIGHT, UI_UI_SIZE } from "./ui/UIData.js";
 import { initUI } from "./ui/WindowManager.js";
 import { iterateOnSquares } from "./squares/_sqOperations.js";
 import { purgeCanvasFrameLimit } from "./globalOperations.js";
@@ -64,14 +64,17 @@ export function indexCanvasSize() {
     iterateOnSquares((sq) => sq.lighting = new Array());
 
     MAIN_CANVAS.width = width;
-    MAIN_CANVAS.height = height; 
+    MAIN_CANVAS.height = height;
+    
     initUI();
     resetZoom();
 }
 
+addUIFunctionMap(UI_SIMULATION_HEIGHT, () => {
+    saveGD(UI_MAIN_NEWWORLD_SIMHEIGHT, loadGD(UI_SIMULATION_HEIGHT));
+    indexCanvasSize();
+});
 
-
-addUIFunctionMap(UI_SIMULATION_HEIGHT, indexCanvasSize)
 addUIFunctionMap(UI_UI_SIZE, initUI)
 
 export function setBackgroundColor(hexColor) {
@@ -80,4 +83,5 @@ export function setBackgroundColor(hexColor) {
 
 window.onresize = indexCanvasSize;
 window.onfocus = resetLighting;
+window.onblur = saveCurGame;
 document.documentElement.style.overflow = 'hidden';  // firefox, chrome

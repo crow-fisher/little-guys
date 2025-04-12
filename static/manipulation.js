@@ -214,7 +214,12 @@ export function doClickAdd() {
         let ddx = dx / totalCount;
         let ddy = dy / totalCount;
 
-        for (let i = 0; i < totalCount; i += 0.5) {
+        let iAdd = 0.5;
+        if (loadGD(UI_CLIMATE_SELECT_CLOUDS)) {
+            iAdd *= 32;
+        }
+
+        for (let i = 0; i < totalCount; i += iAdd) {
             let px = Math.floor(x1 + ddx * i);
             let py = Math.floor(y1 + ddy * i);
             if (loadGD(UI_CLIMATE_SELECT_CLOUDS)) {
