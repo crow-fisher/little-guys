@@ -36,8 +36,8 @@ function doBrushFuncClickThrottle(x, y, func) {
         prevClickMap[x] = new Map(); 
 
     if (prevClickMap[x][y]) {
-        if (Math.random() > 0.99) {
-            // func(x, y);
+        if (Math.random() > 0.90) {
+            func(x, y);
         }
     } else {
         prevClickMap[x][y] = true;
