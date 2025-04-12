@@ -57,7 +57,7 @@ export class TopBarComponent {
             this.midSpacingEl,
             new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_SIMULATION, UI_BOOLEAN, () => this.textSimulation()),
             this.midSpacingEl,
-            new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_0, () => "⏸"),
+            new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_0, () => "\u23F8\uFE0E"),
             new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_1, () => "▶"),
             new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_2, () => "▶"),
             new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_3, () => "▶"),
@@ -111,7 +111,10 @@ export class TopBarComponent {
         return "simulation"
     }
     textWorldName() {
-        return loadGD(UI_NAME);
+        return "little guys"
+        if (this.compact)
+            return "" + loadGD(UI_NAME);
+        return "world: " + loadGD(UI_NAME);
     }
 
     textWeather() {

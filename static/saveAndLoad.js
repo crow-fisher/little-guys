@@ -107,6 +107,10 @@ function loadSlotData(slotData) {
     purgeGameState();
     loadSlotFromSave(slotData);
     saveGD(UI_MAIN_NEWWORLD, false);
+    saveGD(UI_MAIN_NEWWORLD_LATITUDE, getActiveClimate().lat);
+    saveGD(UI_MAIN_NEWWORLD_LONGITUDE, getActiveClimate().lng);
+    saveGD(UI_MAIN_NEWWORLD_NAME, loadGD(UI_NAME));
+    saveGD(UI_MAIN_NEWWORLD_SIMHEIGHT, loadGD(UI_SIMULATION_HEIGHT));
 }
 
 export function hideWorld(slotName) {
