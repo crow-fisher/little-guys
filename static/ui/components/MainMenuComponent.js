@@ -22,7 +22,7 @@ export class MainMenuComponent extends SubTreeComponent {
         this.window.container = subMenuContainer;   
         this.sizeX = getBaseUISize() * 48;
         this.textAlignOffsetX = getBaseUISize() * 0.91;
-        let numWorldsPerPage = 10;
+        let numWorldsPerPage = 5;
         this.lastClick = Date.now();
 
 

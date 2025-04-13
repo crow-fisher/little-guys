@@ -116,8 +116,12 @@ function purgeGameState() {
 }
 
 function loadSlotData(slotData) {
+
+    let topBarMainCache = loadGD(UI_TOPBAR_MAINMENU);
+
     purgeGameState();
     loadSlotFromSave(slotData);
+    saveGD(UI_TOPBAR_MAINMENU, topBarMainCache);
     saveGD(UI_MAIN_NEWWORLD, false);
     saveGD(UI_MAIN_NEWWORLD_LATITUDE, getActiveClimate().lat);
     saveGD(UI_MAIN_NEWWORLD_LONGITUDE, getActiveClimate().lng);
@@ -391,8 +395,7 @@ function loadSlotFromSave(slotData) {
         addOrganism(org);
         org.lifeSquares.forEach(addOrganismSquare);
     });
-
-    indexCanvasSize();
+    indexCanvasSize(false);
 
 }
 

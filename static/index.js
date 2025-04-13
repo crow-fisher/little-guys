@@ -46,7 +46,7 @@ let height = 0;
 export function getTotalCanvasPixelWidth() { return width; }
 export function getTotalCanvasPixelHeight() { return height; }
 
-export function indexCanvasSize() {
+export function indexCanvasSize(shouldInitUI=true) {
     let margin = 0;
     width = Math.floor(window.innerWidth - margin);
     height = Math.floor(window.innerHeight - margin);
@@ -62,7 +62,9 @@ export function indexCanvasSize() {
     MAIN_CANVAS.width = width;
     MAIN_CANVAS.height = height;
     
-    initUI();
+    if (shouldInitUI) {
+        initUI();
+    }
     resetZoom();
 }
 
