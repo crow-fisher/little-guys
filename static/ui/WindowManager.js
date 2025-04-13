@@ -8,7 +8,7 @@ import { loadGD, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_BLOCK,
 import { getSquares } from "../squares/_sqOperations.js";
 import { GodModeComponent } from "./components/GodModeComponent.js";
 import { getCurMixIdx, getMixArr, getMixArrLen, getTargetMixIdx, setCurMixIdx, setTargetMixIdx } from "../globals.js";
-import { MainMenuComponent as MainMenuSubtree } from "./components/MainMenuComponent.js";
+import { MainMenuComponent } from "./components/MainMenuComponent.js";
 import { LightingSubtree } from "./components/LightingSubtree.js";
 import { LightingComponent } from "./components/LightingComponent.js";
 import { SimulationSubtree } from "./components/SimulationSubtree.js";
@@ -20,6 +20,7 @@ import { TimeSkipComponent } from "./components/TimeSkipComponent.js";
 import { WorldSetupComponent } from "./components/WorldSetupComponent.js";
 
 let topBarComponent;
+let mainMenuComponent;
 let blockPalette;
 let all_components;
 
@@ -28,9 +29,9 @@ topBarComponent = new TopBarComponent("UI_TOPBAR");
 export function initUI() {
     all_components = [];
     topBarComponent = new TopBarComponent("UI_TOPBAR");
-    all_components.push(new MainMenuSubtree(() => 0, () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_MAINMENU));
+    mainMenuComponent = new MainMenuComponent(() => 0, () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_MAINMENU);
+    all_components.push(mainMenuComponent);
     all_components.push(new BlockSubtree(() => topBarComponent.getElementXPositionFunc(0, 1), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_BLOCK));
-    
     let climateSubtreeComponent = new ClimateSubtreeComponent(() => topBarComponent.getElementXPositionFunc(0, 3), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_CLIMATE);
     all_components.push(climateSubtreeComponent);
     all_components.push(new ClimateSelectionComponent(() => topBarComponent.getElementXPositionFunc(0, 3) + climateSubtreeComponent.window.sizeX + getBaseUISize() * 0.5, () => topBarComponent.ySize(), 0, 0, UI_CLIMATE_SELECT_MENU));
@@ -47,8 +48,11 @@ export function initUI() {
     all_components.push(new OrganismComponent(getBaseUISize() * 1, getBaseUISize() * 10, 0, 0, UI_SM_ORGANISM));
     all_components.push(new GodModeComponent(getBaseUISize() * 34, getBaseUISize() * 6, 10, 0, UI_SM_GODMODE));
     all_components.push(new TimeSkipComponent(() => topBarComponent.getElementXPositionFunc(0, 22), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_TIME));
-
     all_components.push(new WorldSetupComponent(() => getCanvasWidth() / 2, () => getBaseUISize() * 30, 0, 0, UI_MAIN_NEWWORLD));
+}
+
+export function triggerMainMenuWorldListReload() {
+    mainMenuComponent.reInitWorldsContainer();
 }
 
 export function getTopBarComponent() {

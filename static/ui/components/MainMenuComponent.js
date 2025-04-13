@@ -63,28 +63,28 @@ export class MainMenuComponent extends SubTreeComponent {
 
     reInitWorldsContainer() {
         this.worldsContainer.elements = new Array();
-        let numWorlds = loadGD(UI_MAIN_SHOWHIDDEN) ? loadUI(UI_UI_NEXTWORLD) : (loadUI(UI_UI_NEXTWORLD) - Object.values(loadUI(UI_UI_WORLDHIDDEN)).map((v) => 1).reduce((a, v) => a + v, 0));
+        let numWorlds = loadGD(UI_MAIN_SHOWHIDDEN) ? loadUI(UI_UI_NEXTWORLD) : (loadUI(UI_UI_NEXTWORLD) - Object.values(loadUI(UI_UI_WORLDHIDDEN)).map((v) => v ? 1 : 0).reduce((a, v) => a + v, 0));
         let numWorldsPerPage = 10; 
-        for (let i = 0; i < numWorldsPerPage; i++) {
+        for (let i = 0; i <= Math.min(numWorlds, numWorldsPerPage); i++) {
             let idx = (numWorldsPerPage * loadUI(UI_UI_WORLDPAGE)) + i;
             if (!loadGD(UI_MAIN_SHOWHIDDEN) && loadUI(UI_UI_WORLDHIDDEN)[idx]) {
-                // continue;
+                continue;
             }
             let row = new Container(this.window, 0, 0);
             this.worldsContainer.addElement(row);
             let colorFunc1 = null;
             let colorFunc2 = null;
-            if (loadUI(UI_UI_CURWORLD) == i) {
+            if (loadUI(UI_UI_CURWORLD) == idx) {
                 row.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, () => null, loadUI(UI_UI_WORLDNAME)[idx], () => getActiveClimate().getUIColorActive()));
             } else {
                 colorFunc1 = () => getActiveClimate().getUIColorInactiveCustom([0.65, 0.55, 0.62, 0.58, 0.61, 0.67][i % 6])
                 colorFunc2 = () => getActiveClimate().getUIColorInactiveCustom(0.1 + [0.65, 0.55, 0.62, 0.58, 0.61, 0.67][i % 6])
-                row.addElement(new Button(this.window, this.sizeX * (4/5), getBaseUISize() * 3, this.textAlignOffsetX, () => {saveCurGame(); loadSlot(i);}, loadUI(UI_UI_WORLDNAME)[idx], colorFunc1));
-                row.addElement(new Button(this.window, this.sizeX * (1/5), getBaseUISize() * 3, this.textAlignOffsetX, () => hideWorld(i), "hide", colorFunc2));
+                row.addElement(new Button(this.window, this.sizeX * (4/5), getBaseUISize() * 3, this.textAlignOffsetX, () => {saveCurGame(); loadSlot(idx);}, loadUI(UI_UI_WORLDNAME)[idx], colorFunc1));
+                row.addElement(new Button(this.window, this.sizeX * (1/5), getBaseUISize() * 3, this.textAlignOffsetX, () => hideWorld(idx), "hide", colorFunc2));
             }
         }
 
-        let numPages = Math.ceil(numWorlds / numWorldsPerPage);
+        let numPages = Math.floor(numWorlds / numWorldsPerPage);
         let pagesRow = new Container(this.window, 0, 0);
         this.worldsContainer.addElement(pagesRow);
         pagesRow.addElement(new Button(this.window, this.sizeX / 4, getBaseUISize() * 3, UI_CENTER, () => {this.reInitWorldsContainer(); saveUI(UI_UI_WORLDPAGE, Math.max(0, loadUI(UI_UI_WORLDPAGE) - 1))}, "-", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
