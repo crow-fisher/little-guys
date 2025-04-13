@@ -1,5 +1,8 @@
 // pure functions only
 
+export const UI_TINYDOT = "·";
+export const UI_BIGDOTSOLID = "◉";
+export const UI_BIGDOTHOLLOW = "•";
 
 function getObjectArrFromMap(baseMap, posX, posY, create=false) {
     if (!(baseMap.has(posX))) {

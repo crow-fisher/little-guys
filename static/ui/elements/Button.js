@@ -1,4 +1,5 @@
 import { COLOR_BLACK, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
+import { UI_TINYDOT } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { getLastMouseDown, isLeftMouseClicked } from "../../mouse.js";
 import { loadGD, saveGD, UI_CENTER } from "../UIData.js";

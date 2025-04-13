@@ -52,6 +52,8 @@ export async function gameUserStateLoad() {
                     if (loadUI(UI_UI_CURWORLD < 0)) {
                         loadEmptyScene();
                         saveGD(UI_MAIN_NEWWORLD, true);
+                        initUI();
+                        indexCanvasSize();
                     } else {
                         let p = loadSlot(loadUI(UI_UI_CURWORLD));
                         await p; 
@@ -62,9 +64,9 @@ export async function gameUserStateLoad() {
                         saveGD(UI_TOPBAR_SIMULATION, false);
                         saveGD(UI_TOPBAR_TIME, false);
                         saveGD(UI_TOPBAR_CLIMATE, false);
+                        initUI();
+                        indexCanvasSize();
                     }
-                    initUI();
-                    indexCanvasSize();
                     resolve(saveObj);
                 } else {
                     console.log("No existing UI save data found.");
@@ -139,10 +141,12 @@ export function saveCurGame(reload=true) {
     saveGame(loadUI(UI_UI_CURWORLD), reload);
 }
 
-export function saveGame(slotName, reload) {
+export async function saveGame(slotName, reload) {
     const saveObj = getFrameSaveData();
     const saveString = JSON.stringify(saveObj);
-    doSave(slotName, saveString);
+    let savePromise = doSave(slotName, saveString);
+    await savePromise;
+    
     loadUI(UI_UI_WORLDNAME)[slotName] = loadGD(UI_NAME);
     saveUI(UI_UI_LASTSAVED, Date.now());
 
