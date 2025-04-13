@@ -7,6 +7,7 @@ import {
 import { getObjectArrFromMap } from "./common.js";
 import { removeItemAll } from "./common.js";
 import { getCanvasSquaresX, getCanvasSquaresY } from "./canvas.js";
+import { loadGD, UI_GAME_MAX_CANVAS_SQUARES_Y } from "./ui/UIData.js";
 
 let frame_squares = null;
 let frame_solid_squares = null;
@@ -65,27 +66,6 @@ export function removeSquare(square) {
         if ((ALL_SQUARES).has(square.posX) && ALL_SQUARES.get(square.posX).has(square.posY))
             ALL_SQUARES.get(square.posX).delete(square.posY);
     }
-}
-
-export function purgeCanvasFrameLimit() {
-    let rootKeys = ALL_SQUARES.keys();
-    rootKeys.forEach((key) => {
-        let subkeys = ALL_SQUARES.get(key).keys();
-        subkeys.forEach((subkey) => {
-            if (subkey >= 0 && subkey < getCanvasSquaresY()) {
-                return;
-            }
-            ALL_SQUARES.get(key).get(subkey).forEach((sq) => sq.destroy(true));
-            ALL_SQUARES.get(key).delete(subkey);
-        });
-        if (key < 0 || key >= getCanvasSquaresX()) {
-            subkeys.forEach((subkey) => {
-                ALL_SQUARES.get(key).get(subkey).forEach((sq) => sq.destroy(true));
-                ALL_SQUARES.get(key).delete(subkey);
-            });
-            ALL_SQUARES.delete(key);
-        }
-    });
 }
 
 

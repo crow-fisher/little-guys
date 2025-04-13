@@ -5,10 +5,9 @@ import { clearTimeouts, resetClimateAndLighting, resetLighting, scheduler_main }
 import { keydown, keyup } from "./keyboard.js";
 import { handleClick, handleMouseDown, handleMouseUp, handleTouchEnd, handleTouchMove, handleTouchStart } from "./mouse.js";
 import { getCanvasHeight, getCanvasWidth, resetZoom, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, zoom } from "./canvas.js";
-import { addUIFunctionMap, loadGD, saveGD, saveUI, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_SIMULATION_HEIGHT, UI_UI_SIZE } from "./ui/UIData.js";
+import { addUIFunctionMap, loadGD, saveGD, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_SIMULATION_HEIGHT, UI_UI_SIZE } from "./ui/UIData.js";
 import { initUI } from "./ui/WindowManager.js";
 import { iterateOnSquares } from "./squares/_sqOperations.js";
-import { purgeCanvasFrameLimit } from "./globalOperations.js";
 
 export let MAIN_CANVAS = document.getElementById("main");
 export let MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
@@ -60,7 +59,6 @@ export function indexCanvasSize() {
     setBaseSize(c_baseSize);
     clearTimeouts();
     resetClimateAndLighting();
-    purgeCanvasFrameLimit();
     iterateOnSquares((sq) => sq.lighting = new Array());
 
     MAIN_CANVAS.width = width;
