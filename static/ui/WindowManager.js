@@ -4,7 +4,7 @@ import { BlockPalette } from "./components/BlockPalette.js";
 import { BlockSubtreeComponent as BlockSubtree } from "./components/BlockSubtreeComponent.js";
 import { TopBarComponent } from "./topbar/TopBarComponent.js";
 import { ViewSubtreeComponent } from "./components/ViewSubtreeComponent.js";
-import { loadGD, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_BLOCK, UI_PALETTE_ACTIVE, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveGD, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_SIMULATION, UI_TOPBAR_TIME, UI_TOPBAR_CLIMATE, UI_PALETTE_ROCKMODE, UI_PALETTE_EYEDROPPER, UI_CLIMATE_SELECT_MENU, UI_CILMATE_SELECT_WEATHER, UI_CLIMATE_SELECT_CLOUDS, UI_MAIN_NEWWORLD, UI_UI_SHOWHIDDEN } from "./UIData.js";
+import { loadGD, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_BLOCK, UI_PALETTE_ACTIVE, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveGD, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_SIMULATION, UI_TOPBAR_TIME, UI_TOPBAR_CLIMATE, UI_PALETTE_ROCKMODE, UI_PALETTE_EYEDROPPER, UI_CLIMATE_SELECT_MENU, UI_CILMATE_SELECT_WEATHER, UI_CLIMATE_SELECT_CLOUDS, UI_MAIN_NEWWORLD, UI_UI_SHOWHIDDEN, saveUI, UI_UI_SIZE } from "./UIData.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import { GodModeComponent } from "./components/GodModeComponent.js";
 import { getCurMixIdx, getMixArr, getMixArrLen, getTargetMixIdx, setCurMixIdx, setTargetMixIdx } from "../globals.js";
@@ -26,7 +26,13 @@ let all_components;
 
 all_components = [];
 topBarComponent = new TopBarComponent("UI_TOPBAR");
+
 export function initUI() {
+    
+    if (getBaseUISize() * 70 > getCanvasHeight() && getCanvasHeight() > 500) {
+        saveUI(UI_UI_SIZE, 8);
+    }
+
     all_components = [];
     topBarComponent = new TopBarComponent("UI_TOPBAR");
     mainMenuComponent = new MainMenuComponent(() => 0, () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_MAINMENU);
@@ -49,10 +55,6 @@ export function initUI() {
     all_components.push(new GodModeComponent(getBaseUISize() * 34, getBaseUISize() * 6, 10, 0, UI_SM_GODMODE));
     all_components.push(new TimeSkipComponent(() => topBarComponent.getElementXPositionFunc(0, 22), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_TIME));
     all_components.push(new WorldSetupComponent(() => getCanvasWidth() / 2, () => getBaseUISize() * 30, 0, 0, UI_MAIN_NEWWORLD));
-}
-
-export function triggerMainMenuWorldListReload() {
-    mainMenuComponent.reInitWorldsContainer();
 }
 
 export function getTopBarComponent() {
@@ -122,5 +124,3 @@ export function mixerBlockClick(posX, posY) {
 }
 
 addUIFunctionMap(UI_PALETTE_MIXER, () => {setCurMixIdx(getCurMixIdx() - (getCurMixIdx() % 3) + 1); setTargetMixIdx(getCurMixIdx() + getMixArrLen()); });
-
-addUIFunctionMap(UI_UI_SHOWHIDDEN, triggerMainMenuWorldListReload);
