@@ -307,7 +307,7 @@ export class SoilSquare extends BaseSquare {
             let theta = randRange(0, 2 * Math.PI);
             let speedX = speed * Math.cos(theta);
             let speedY = speed * Math.sin(theta);
-            let wrp = (getBaseSize() * (this.getWaterflowRate() * 0.1 + 40 * 0.9) / 30) ** 0.2;
+            let wrp = 0.7 * (getBaseSize() * (this.getWaterflowRate() * 0.1 + 40 * 0.9) / 30) ** 0.2;
             let size = randRange(wrp * 0.5, wrp * 2);
             this.activeParticles.push([this.posX, this.posY, theta, speedX, speedY, size])
         }

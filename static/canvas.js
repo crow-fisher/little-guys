@@ -23,14 +23,15 @@ export function getBaseUISize() {
 
 export function setCanvasSquaresX(val) {
     CANVAS_SQUARES_X = Math.floor(val);
-    saveGD(UI_GAME_MAX_CANVAS_SQUARES_X, CANVAS_SQUARES_X);
+    saveGD(UI_GAME_MAX_CANVAS_SQUARES_X, Math.max(loadGD(UI_GAME_MAX_CANVAS_SQUARES_X), (CANVAS_SQUARES_X + 1)));
 }
 export function getCanvasSquaresX() {
     return CANVAS_SQUARES_X;
 }
 export function setCanvasSquaresY(val) {
     CANVAS_SQUARES_Y = Math.floor(val);
-    saveGD(UI_GAME_MAX_CANVAS_SQUARES_Y, CANVAS_SQUARES_Y);
+    saveGD(UI_GAME_MAX_CANVAS_SQUARES_Y, Math.max(loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y), (CANVAS_SQUARES_Y + 1)));
+
 }
 export function getCanvasSquaresY() {
     return CANVAS_SQUARES_Y;

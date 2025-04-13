@@ -1,12 +1,14 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
+import { purgeCanvasFrameLimit } from "../../globalOperations.js";
 import { hideWorld, loadEmptyScene, loadSlot, saveCurGame, saveGame } from "../../saveAndLoad.js";
+import { ConditionalContainer } from "../ConditionalContainer.js";
 import { Container } from "../Container.js";
 import { Button } from "../elements/Button.js";
 import { Radio } from "../elements/Radio.js";
 import { Text } from "../elements/Text.js";
 import { Toggle } from "../elements/Toggle.js";
-import { loadUI, UI_CENTER, UI_MAIN_NEWWORLD, UI_UI_CURWORLD, UI_UI_NEXTWORLD, UI_UI_SIZE, UI_UI_WORLDHIDDEN, UI_UI_WORLDNAME, UICONFIG } from "../UIData.js";
+import { loadGD, loadUI, UI_CENTER, UI_MAIN_NEWWORLD, UI_MAIN_SHOWHIDDEN, UI_MAIN_SHOWMORE, UI_UI_CURWORLD, UI_UI_NEXTWORLD, UI_UI_SIZE, UI_UI_WORLDHIDDEN, UI_UI_WORLDNAME, UICONFIG } from "../UIData.js";
 import { SubTreeComponent } from "./SubTreeComponent.js";
 
 
@@ -42,6 +44,16 @@ export class MainMenuComponent extends SubTreeComponent {
         subMenuContainer.addElement(new Radio(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, UICONFIG, UI_UI_SIZE, [8, 12, 16, 20], () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
         subMenuContainer.addElement(new Radio(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, UICONFIG, UI_UI_SIZE, [24, 28, 32, 40], () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
         
+        subMenuContainer.addElement(new Text(this.window, sizeX, getBaseUISize() * 0.25, UI_CENTER, ""))
+        subMenuContainer.addElement(new Toggle(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, UI_MAIN_SHOWMORE, "more",  () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()))
+
+        let moreConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_MAIN_SHOWMORE));
+        subMenuContainer.addElement(moreConditionalContainer);
+
+        moreConditionalContainer.addElement( new Button(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX, purgeCanvasFrameLimit, "purge off-screen blocks", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
+        moreConditionalContainer.addElement( new Toggle(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, UI_MAIN_SHOWHIDDEN, "show hidden worlds",  () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
+        moreConditionalContainer.addElement( new Button(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX, purgeCanvasFrameLimit, "delete hidden worlds", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
+
     }
 
     render() {

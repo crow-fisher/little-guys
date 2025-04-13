@@ -21,10 +21,6 @@ export class TopBarToggle extends TopBarElementBase{
         }
         this.prepareStyle();
         let measured = MAIN_CONTEXT.measureText(this.labelFunc());
-
-        if (measured.width > this.maxWidth) {
-            console.log(this.maxWidth / getBaseUISize());
-        }
         this.maxWidth = Math.max(measured.width, this.maxWidth);
         return [this.maxWidth, measured.fontBoundingBoxAscent];
     }

@@ -7,7 +7,7 @@ import {
 import { getObjectArrFromMap } from "./common.js";
 import { removeItemAll } from "./common.js";
 import { getCanvasSquaresX, getCanvasSquaresY } from "./canvas.js";
-import { loadGD, UI_GAME_MAX_CANVAS_SQUARES_Y } from "./ui/UIData.js";
+import { loadGD, saveGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "./ui/UIData.js";
 
 let frame_squares = null;
 let frame_solid_squares = null;
@@ -40,7 +40,7 @@ export function physics() {
 
 export function physicsOnlyGravity() {
     frame_squares.forEach((sq) => sq.physicsBefore());
-    frame_solid_squares.forEach((sq) => {sq.gravityPhysics(); sq.slopePhysics();});
+    frame_solid_squares.forEach((sq) => sq.physicsSimple());
 }
 export function physicsOnlyWater() {
     frame_water_squares.forEach((sq) => sq.physicsBefore());
@@ -68,6 +68,28 @@ export function removeSquare(square) {
     }
 }
 
+export function purgeCanvasFrameLimit() {
+    let rootKeys = ALL_SQUARES.keys();
+    rootKeys.forEach((key) => {
+        let subkeys = ALL_SQUARES.get(key).keys();
+        subkeys.forEach((subkey) => {
+            if (subkey >= 0 && subkey < getCanvasSquaresY()) {
+                return;
+            }
+            ALL_SQUARES.get(key).get(subkey).forEach((sq) => sq.destroy(true));
+            ALL_SQUARES.get(key).delete(subkey);
+        });
+        if (key < 0 || key >= getCanvasSquaresX()) {
+            subkeys.forEach((subkey) => {
+                ALL_SQUARES.get(key).get(subkey).forEach((sq) => sq.destroy(true));
+                ALL_SQUARES.get(key).delete(subkey);
+            });
+            ALL_SQUARES.delete(key);
+        }
+    });
+    saveGD(UI_GAME_MAX_CANVAS_SQUARES_X, getCanvasSquaresX() + 1);
+    saveGD(UI_GAME_MAX_CANVAS_SQUARES_Y, getCanvasSquaresY() + 1);
+}
 
 export function doWaterFlow() {
     let candidateTargetKeys = Array.from(Object.keys(WATERFLOW_TARGET_SQUARES));

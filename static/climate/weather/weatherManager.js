@@ -1,8 +1,7 @@
-import { getCanvasSquaresX } from "../../canvas.js";
 import { randRange } from "../../common.js";
 import { addUIFunctionMap, UI_CLIMATE_WEATHER_SUNNY, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_HEAVYRAIN, loadGD, saveGD, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_DURATION, UI_CLIMATE_WEATHER_ACTIVE } from "../../ui/UIData.js";
 import { getActiveClimate } from "../climateManager.js";
-import { cloudRainThresh, setRestingGradientStrength, setRestingHumidityGradient, setRestingTemperatureGradient } from "../temperatureHumidity.js";
+import { cloudRainThresh } from "../temperatureHumidity.js";
 import { getCurDay } from "../time.js";
 import { getWindSquaresX, getWindSquaresY } from "../wind.js";
 import { Cloud } from "./cloud.js";

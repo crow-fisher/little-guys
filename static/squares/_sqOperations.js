@@ -1,9 +1,8 @@
 import { getObjectArrFromMap } from "../common.js";
-import { ALL_SQUARES, ALL_ORGANISM_SQUARES } from "../globals.js";
+import { ALL_SQUARES } from "../globals.js";
 import { removeSquare } from "../globalOperations.js";
-import { removeItemAll } from "../common.js";
 import { getOrganismsAtSquare } from "../organisms/_orgOperations.js";
-import { getCanvasSquaresX, getCanvasSquaresY } from "../canvas.js";
+import { loadGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "../ui/UIData.js";
 
 let abs = Math.abs;
 let dir = -1;
@@ -29,9 +28,6 @@ function* getNeighbors(x, y) {
 
 
 function addSquare(square) {
-    // if (getSquares(square.posX, square.posY).some((sq) => sq.testCollidesWithSquare(square))) {
-    //     return false;
-    // }
     if (!square.organic && square.collision && getSquares(square.posX, square.posY).some((sq) => sq.testCollidesWithSquare(square))) {
         return false;
     }
@@ -55,7 +51,7 @@ function addSquareOverride(square) {
 function getFrameIterationOrder() {
     let out = [];
     let order = [];
-    for (let i = 0; i < getCanvasSquaresX(); i++) {
+    for (let i = 0; i < loadGD(UI_GAME_MAX_CANVAS_SQUARES_X); i++) {
         out.push(i);
         order.push(Math.random());
     }
@@ -68,16 +64,16 @@ let frameOrder = getFrameIterationOrder();
 
 
 function getSqIterationOrder() {
-    if (frameOrder.length != getCanvasSquaresX()) {
+    if (frameOrder.length != loadGD(UI_GAME_MAX_CANVAS_SQUARES_X)) {
         frameOrder = getFrameIterationOrder();
     }
     let squareOrder = [];
-    for (let i = 0; i < getCanvasSquaresX(); i++) {
-        for (let j = 0; j < getCanvasSquaresY(); j++) {
+    for (let i = 0; i < loadGD(UI_GAME_MAX_CANVAS_SQUARES_X); i++) {
+        for (let j = 0; j < loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y); j++) {
             squareOrder.push(...getSquares(i, j))
         }
     }
-    let cmp = (sq) => ((sq.solid ? frameOrder[sq.posX] : sq.posX) + sq.posY * getCanvasSquaresX())
+    let cmp = (sq) => ((sq.solid ? frameOrder[sq.posX] : sq.posX) + sq.posY * loadGD(UI_GAME_MAX_CANVAS_SQUARES_X))
     squareOrder.sort((b, a) => cmp(a) - cmp(b));
     return squareOrder;
 }

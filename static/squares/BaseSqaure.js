@@ -9,23 +9,22 @@ import {
 
 import { MAIN_CONTEXT } from "../index.js";
 
-import { hexToRgb, hsv2rgb, randRange, rgb2hsv, rgbToRgba } from "../common.js";
+import { hexToRgb, rgbToRgba } from "../common.js";
 
 import { getOrganismsAtSquare } from "../organisms/_orgOperations.js";
 import { addOrganism } from "../organisms/_orgOperations.js";
-import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 
 import { removeSquare } from "../globalOperations.js";
 
 import { removeOrganism } from "../organisms/_orgOperations.js";
 
-import { calculateColorTemperature, getRestingTemperatureAtSq, getTemperatureAtWindSquare, temperatureHumidityFlowrateFactor, updateWindSquareTemperature } from "../climate/temperatureHumidity.js";
-import { getAdjacentWindSquareToRealSquare, getWindSquareAbove } from "../climate/wind.js";
-import { COLOR_GREEN, RGB_COLOR_BLUE, RGB_COLOR_GREEN, RGB_COLOR_RED, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
-import { getCurDay, getCurrentLightColorTemperature, getDaylightStrengthFrameDiff, getTimeScale, timeScaleFactor } from "../climate/time.js";
+import { calculateColorTemperature, getTemperatureAtWindSquare, temperatureHumidityFlowrateFactor, updateWindSquareTemperature } from "../climate/temperatureHumidity.js";
+import { getWindSquareAbove } from "../climate/wind.js";
+import { RGB_COLOR_BLUE, RGB_COLOR_GREEN, RGB_COLOR_RED, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
+import { getCurDay, getDaylightStrengthFrameDiff, getTimeScale } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
-import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_LIGHTING_WATER_VALUE, UI_LIGHTING_WATER_SATURATION, UI_LIGHTING_WATER_HUE, UI_LIGHTING_SUN, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF } from "../ui/UIData.js";
+import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "../ui/UIData.js";
 import { isLeftMouseClicked } from "../mouse.js";
 
 export class BaseSquare {
@@ -205,7 +204,10 @@ export class BaseSquare {
         }
         this.currentPressureDirect = -1;
         this.group = -1;
-        this.speedY += (1 / this.gravity);
+
+        if (getTimeScale() != 0) {
+            this.speedY += (1 / this.gravity);
+        }
         if (Math.floor(getCurDay() + 0.15) != this.lightingSumDay) {
             if (this.lightingSum == null) {
                 this.lightingSum = { r: 0, g: 0, b: 0 }
@@ -264,7 +266,6 @@ export class BaseSquare {
     }
 
     renderSurface() {
-        // MAIN_CONTEXT.fillStyle = this.surface ? "rgba(172, 35, 226, 0.12)" : "rgba(30, 172, 58, 0.12)";
         if (!this.surface) {
             MAIN_CONTEXT.fillStyle = "rgba(90, 71, 97, 0.3)"
             zoomCanvasFillRect(
@@ -613,7 +614,7 @@ export class BaseSquare {
             finalYPos = this.posY + this.speedY;
         }
 
-        if (finalXPos < 0 || finalXPos > getCanvasSquaresX() || finalYPos < 0 || finalYPos >= getCanvasSquaresY()) {
+        if (finalXPos < 0 || finalXPos > loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) || finalYPos < 0 || finalYPos >= loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y)) {
             this.destroy(true);
             return;
         }
@@ -647,6 +648,15 @@ export class BaseSquare {
             this.processFrameLightingTemperature();
         }
     }
+
+    physicsSimple() {
+        if (getTimeScale() != 0) {
+            this.gravityPhysics();
+            this.slopePhysics();
+            this.processParticles();
+        }
+    }
+
     /* Called before physics(), with blocks in strict order from top left to bottom right. */
     physicsBefore() {
         this.calculateGroup();
