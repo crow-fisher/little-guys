@@ -275,6 +275,11 @@ export function getUICONFIG() {
 }
 export function setUICONFIG(inVal) {
     ROOT[UICONFIG] = inVal;
+    Object.keys(_UI_DEFAULT).forEach((key) => {
+        if (ROOT[UICONFIG][key] != null)
+            return;
+        ROOT[UICONFIG][key] = _UI_DEFAULT[key];
+    })
 }
 
 let UI_FUNCTION_MAP = new Map();
