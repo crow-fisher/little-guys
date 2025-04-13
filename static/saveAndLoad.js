@@ -6,7 +6,7 @@ import { getTemperatureMap, getWaterSaturationMap } from "./climate/temperatureH
 import { getCurDay, setCurDay } from "./climate/time.js";
 import { ProtoMap, TypeMap } from "./types.js";
 import { getWindPressureMap, initWindPressure } from "./climate/wind.js";
-import { getGAMEDATA, getUICONFIG, loadGD, loadUI, saveGD, saveMapEntry, saveUI, setGAMEDATA, setUICONFIG, UI_CLIMATE_SELECT, UI_CLIMATE_SELECT_CLOUDS, UI_CLIMATE_TOOL_SIZE, UI_CLIMATE_WEATHER_TOOL_HEAVYCLOUD, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_STRENGTH, UI_LIGHTING_ENABLED, UI_MAIN_NEWWORLD, UI_MAIN_NEWWORLD_LATITUDE, UI_MAIN_NEWWORLD_LONGITUDE, UI_MAIN_NEWWORLD_NAME, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_MAIN_NEWWORLD_TYPE_BLOCKS, UI_MAIN_NEWWORLD_TYPE_CLOUDS, UI_MAIN_NEWWORLD_TYPE_SELECT, UI_NAME, UI_SIMULATION_CLOUDS, UI_SIMULATION_HEIGHT, UI_SIMULATION_SIMPLESQUARE, UI_TOPBAR_BLOCK, UI_TOPBAR_CLIMATE, UI_TOPBAR_LIGHTING, UI_TOPBAR_MAINMENU, UI_TOPBAR_SIMULATION, UI_TOPBAR_TIME, UI_TOPBAR_VIEWMODE, UI_UI_CURWORLD, UI_UI_LASTSAVED, UI_UI_NEXTWORLD, UI_UI_SIZE, UI_UI_WORLDHIDDEN, UI_UI_WORLDNAME, UICONFIG } from "./ui/UIData.js";
+import { getGAMEDATA, getUICONFIG, loadGD, loadUI, saveGD, saveMapEntry, saveUI, setGAMEDATA, setUICONFIG, UI_CLIMATE_SELECT, UI_CLIMATE_SELECT_CLOUDS, UI_CLIMATE_TOOL_SIZE, UI_CLIMATE_WEATHER_TOOL_HEAVYCLOUD, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_STRENGTH, UI_LIGHTING_ENABLED, UI_MAIN_NEWWORLD, UI_MAIN_NEWWORLD_LATITUDE, UI_MAIN_NEWWORLD_LONGITUDE, UI_MAIN_NEWWORLD_NAME, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_MAIN_NEWWORLD_TYPE_BLOCKS, UI_MAIN_NEWWORLD_TYPE_CLOUDS, UI_MAIN_NEWWORLD_TYPE_SELECT, UI_NAME, UI_SIMULATION_CLOUDS, UI_SIMULATION_HEIGHT, UI_SIMULATION_SIMPLESQUARE, UI_TOPBAR_BLOCK, UI_TOPBAR_CLIMATE, UI_TOPBAR_LIGHTING, UI_TOPBAR_MAINMENU, UI_TOPBAR_SIMULATION, UI_TOPBAR_TIME, UI_TOPBAR_VIEWMODE, UI_UI_CURWORLD, UI_UI_LASTSAVED, UI_UI_NEXTWORLD, UI_UI_SIZE, UI_UI_WORLDDELETED, UI_UI_WORLDHIDDEN, UI_UI_WORLDNAME, UICONFIG } from "./ui/UIData.js";
 import { getTotalCanvasPixelWidth, indexCanvasSize } from "./index.js";
 import { STAGE_DEAD } from "./organisms/Stages.js";
 import { initUI, triggerMainMenuWorldListReload } from "./ui/WindowManager.js";
@@ -14,6 +14,7 @@ import { purgeMaps } from "./globals.js";
 import { getActiveClimate } from "./climate/climateManager.js";
 
 export async function loadSlot(slotName) {
+    console.log("Loading slot: ", slotName);
     slotName = "" + slotName;
     const db = await openDatabase();
     const transaction = db.transaction("saves", "readonly");
@@ -104,7 +105,7 @@ export async function saveUserSettings() {
         request.onerror = () => reject(request.error);
     });
 
-    console.log("Game saved to IndexedDB!");
+    console.log("saveUserSettings completed.");
 }
 
 function purgeGameState() {
@@ -124,10 +125,21 @@ function loadSlotData(slotData) {
     saveGD(UI_MAIN_NEWWORLD_SIMHEIGHT, loadGD(UI_SIMULATION_HEIGHT));
 }
 
+export function unhideWorld(slotName) {
+    loadUI(UI_UI_WORLDHIDDEN)[slotName] = false;
+    saveUserSettings();
+    initUI();
+}
+
 export function hideWorld(slotName) {
     loadUI(UI_UI_WORLDHIDDEN)[slotName] = true;
     saveUserSettings();
-    console.log(loadUI(UI_UI_WORLDHIDDEN));
+    initUI();
+}
+
+export function deleteHiddenWorlds(slotName) {
+    Object.keys(loadUI(UI_UI_WORLDHIDDEN)).forEach((key) => loadUI(UI_UI_WORLDDELETED)[key] = true);
+    saveUserSettings();
     initUI();
 }
 
@@ -146,7 +158,7 @@ export async function saveGame(slotName, reload) {
     const saveString = JSON.stringify(saveObj);
     let savePromise = doSave(slotName, saveString);
     await savePromise;
-    
+    console.log("Saving slot name " + slotName + " as " + loadGD(UI_NAME));
     loadUI(UI_UI_WORLDNAME)[slotName] = loadGD(UI_NAME);
     saveUI(UI_UI_LASTSAVED, Date.now());
 
@@ -280,6 +292,7 @@ export function createNewWorld() {
     getActiveClimate().lng = loadGD(UI_MAIN_NEWWORLD_LONGITUDE);
     saveUI(UI_UI_CURWORLD, slot);
     saveUI(UI_UI_NEXTWORLD, slot + 1);
+    
     saveGD(UI_MAIN_NEWWORLD, false);
     switch (loadGD(UI_MAIN_NEWWORLD_TYPE_SELECT)) {
         case (UI_MAIN_NEWWORLD_TYPE_BLOCKS):
@@ -301,7 +314,7 @@ export function createNewWorld() {
             saveGD(UI_SIMULATION_SIMPLESQUARE, false);
             break;
     };
-    saveGame(slot);
+    saveCurGame();
 
 }
 
@@ -311,7 +324,7 @@ export function editCurrentWorld() {
     saveGD(UI_SIMULATION_HEIGHT, loadGD(UI_MAIN_NEWWORLD_SIMHEIGHT));
     getActiveClimate().lat = loadGD(UI_MAIN_NEWWORLD_LATITUDE);
     getActiveClimate().lng = loadGD(UI_MAIN_NEWWORLD_LONGITUDE);
-    saveGame(slot);
+    saveCurGame();
 }
 
 function loadSlotFromSave(slotData) {
