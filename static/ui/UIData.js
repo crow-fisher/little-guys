@@ -240,7 +240,7 @@ let _GAMEDATA_DEFAULT = {
 let _UI_DEFAULT = {
     UI_UI_SIZE: 12,
     UI_UI_NEXTWORLD: 0,
-    UI_UI_CURWORLD: null,
+    UI_UI_CURWORLD: -1,
     UI_UI_WORLDHIDDEN: {},
     UI_UI_WORLDNAME: {},
     UI_UI_LASTSAVED: Date.now()

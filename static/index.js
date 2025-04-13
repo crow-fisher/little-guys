@@ -1,11 +1,11 @@
 
 
-import { loadEmptyScene, loadUserSettings, saveCurGame } from "./saveAndLoad.js";
+import { loadEmptyScene, gameUserStateLoad, saveCurGame } from "./saveAndLoad.js";
 import { clearTimeouts, resetClimateAndLighting, resetLighting, scheduler_main } from "./main.js";
 import { keydown, keyup } from "./keyboard.js";
 import { handleClick, handleMouseDown, handleMouseUp, handleTouchEnd, handleTouchMove, handleTouchStart } from "./mouse.js";
 import { getCanvasHeight, getCanvasWidth, resetZoom, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, zoom } from "./canvas.js";
-import { addUIFunctionMap, loadGD, saveGD, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_SIMULATION_HEIGHT, UI_UI_SIZE } from "./ui/UIData.js";
+import { addUIFunctionMap, loadGD, saveGD, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_SIMULATION_HEIGHT, UI_TOPBAR_MAINMENU, UI_UI_SIZE } from "./ui/UIData.js";
 import { initUI } from "./ui/WindowManager.js";
 import { iterateOnSquares } from "./squares/_sqOperations.js";
 
@@ -35,9 +35,7 @@ window.oncontextmenu = () => false;
 window.onload = function () {
     document.addEventListener('keydown', keydown);
     document.addEventListener('keyup', keyup);
-    loadUserSettings();
-    loadEmptyScene();
-    indexCanvasSize();
+    gameUserStateLoad();
 }
 
 setTimeout(scheduler_main, 0);
@@ -70,7 +68,6 @@ export function indexCanvasSize() {
 
 addUIFunctionMap(UI_SIMULATION_HEIGHT, () => {
     saveGD(UI_MAIN_NEWWORLD_SIMHEIGHT, loadGD(UI_SIMULATION_HEIGHT));
-    indexCanvasSize();
 });
 
 addUIFunctionMap(UI_UI_SIZE, initUI)
