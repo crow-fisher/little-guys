@@ -11,7 +11,7 @@ import { RadioToggle } from "../elements/RadioToggle.js";
 import { Text } from "../elements/Text.js";
 import { TextFunctionalBackground } from "../elements/TextFunctionalBackground.js";
 import { Toggle } from "../elements/Toggle.js";
-import { loadGD, loadUI, saveUI, UI_CENTER, UI_MAIN_NEWWORLD, UI_UI_SHOWHIDDEN, UI_UI_WORLDPAGE, UI_UI_CURWORLD, UI_UI_NEXTWORLD, UI_UI_SIZE, UI_UI_WORLDHIDDEN, UI_UI_WORLDNAME, UICONFIG, UI_UI_WORLDDELETED } from "../UIData.js";
+import { loadGD, loadUI, saveUI, UI_CENTER, UI_MAIN_NEWWORLD, UI_UI_SHOWHIDDEN, UI_UI_WORLDPAGE, UI_UI_CURWORLD, UI_UI_NEXTWORLD, UI_UI_SIZE, UI_UI_WORLDHIDDEN, UI_UI_WORLDNAME, UICONFIG, UI_UI_WORLDDELETED, saveGD } from "../UIData.js";
 import { SubTreeComponent } from "./SubTreeComponent.js";
 
 
@@ -29,7 +29,8 @@ export class MainMenuComponent extends SubTreeComponent {
 
 
         subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, saveCurGame, "save game", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
-        subMenuContainer.addElement(new Toggle(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, UI_MAIN_NEWWORLD, "new/edit world", () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive(), 0.75, false));
+        subMenuContainer.addElement(new Toggle(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, UI_MAIN_NEWWORLD, "new/edit world", 
+        () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive(), 0.75, false));
         subMenuContainer.addElement(new Text(this.window, this.sizeX, getBaseUISize() * .5, this.textAlignOffsetX, ""));
         subMenuContainer.addElement(new Text(this.window, this.sizeX, getBaseUISize() * 2.5, UI_CENTER, "your worlds"))
         subMenuContainer.addElement(new Text(this.window, this.sizeX, getBaseUISize() * 1, this.textAlignOffsetX, ""));
@@ -129,6 +130,10 @@ export class MainMenuComponent extends SubTreeComponent {
 
     getNumPages() {
         let numPages = Math.floor( (this.getIterWorlds().length - 1) / this.numWorldsPerPage);
+
+        if (numPages < 0) {
+            numPages = 0;
+        }
         if (loadUI(UI_UI_WORLDPAGE) > numPages) {
             saveUI(UI_UI_WORLDPAGE, Math.max(0, numPages));
         }
