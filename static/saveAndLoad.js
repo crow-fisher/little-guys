@@ -54,7 +54,6 @@ export async function gameUserStateLoad() {
                     setUICONFIG(saveObj);
                     if (loadUI(UI_UI_CURWORLD < 0)) {
                         loadEmptyScene();
-                        saveGD(UI_MAIN_NEWWORLD, true);
                         initUI();
                         indexCanvasSize();
                     } else {
@@ -81,7 +80,10 @@ export async function gameUserStateLoad() {
                     } else {
                         saveMapEntry(UICONFIG, UI_UI_SIZE, 16);
                     }
-                    initUI();
+                    let promise = createNewWorld();
+                    await promise;
+                    indexCanvasSize(true);
+
                 }
             };
             request.onerror = () => reject(request.error);
