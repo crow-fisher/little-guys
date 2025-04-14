@@ -35,7 +35,6 @@ export function resetLighting() {
 export function resetClimateAndLighting() {
     lightingHandler.destroy();
     lightingHandler = new LightingHandler();
-    
     climateHandler = new ClimateHandler();
     iterateOnSquares((sq) => sq.lighting = new Array());
 }

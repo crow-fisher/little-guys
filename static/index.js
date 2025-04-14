@@ -70,6 +70,7 @@ export function indexCanvasSize(shouldInitUI=true) {
 
 addUIFunctionMap(UI_SIMULATION_HEIGHT, () => {
     saveGD(UI_MAIN_NEWWORLD_SIMHEIGHT, loadGD(UI_SIMULATION_HEIGHT));
+    indexCanvasSize(false);
 });
 
 addUIFunctionMap(UI_UI_SIZE, initUI)

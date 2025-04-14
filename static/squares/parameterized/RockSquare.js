@@ -29,6 +29,7 @@ export class RockSquare extends SoilSquare {
         this.sandColorRgb = getActiveClimate().rockColorSand;
         this.rootable = false;
         this.surface = false;
+        this.waterContainment = 0;
     }
 
     getColorBase() {
@@ -38,6 +39,12 @@ export class RockSquare extends SoilSquare {
         outColor.g *= (1 - 0.30 * darkeningColorMult);
         outColor.b *= (1 - 0.383 * darkeningColorMult);
         return outColor;
+    }
+
+    percolateInnerMoisture() { }
+
+    percolateFromWater(waterBlock) {
+        return 0;
     }
 
     setVariant() {
