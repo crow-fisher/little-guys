@@ -57,6 +57,10 @@ export function initUI() {
     all_components.push(new WorldSetupComponent(() => getCanvasWidth() / 2, () => getBaseUISize() * 30, 0, 0, UI_MAIN_NEWWORLD));
 }
 
+export function getMainMenuComponent() {
+    return mainMenuComponent;
+}
+
 export function getTopBarComponent() {
     return topBarComponent;
 }

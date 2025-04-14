@@ -11,6 +11,17 @@ let lastMoveEvent = null;
 let lastMoveOffset = null;
 let lastLastMoveOffset = null;
 
+let mouseEventCounter = new Map();
+
+export function doSingleTimeMouseEvent(event, func) {
+    if (mouseEventCounter.has(event)) {
+        return;
+    } else {
+        mouseEventCounter[event] = 1;
+        return func();
+    }
+}
+
 export function getLastMoveOffset() {
     return lastMoveOffset;
 }
@@ -43,6 +54,7 @@ export function handleMouseDown(e) {
     e.preventDefault();
     if (!isLeftMouseClicked()) {
         lastMouseDownStart = Date.now();
+        mouseEventCounter.clear();
     }
 
     switch (e.button) {

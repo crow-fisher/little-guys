@@ -16,13 +16,15 @@ import { SubTreeComponent } from "./SubTreeComponent.js";
 
 
 export class MainMenuComponent extends SubTreeComponent {
+
+
     constructor(posXFunc, posYFunc, padding, dir, key) {
         super(posXFunc, posYFunc, padding, dir, key);
         let subMenuContainer = new Container(this.window, padding, 1);
         this.window.container = subMenuContainer;   
         this.sizeX = getBaseUISize() * 48;
         this.textAlignOffsetX = getBaseUISize() * 0.91;
-        let numWorldsPerPage = 5;
+        this.numWorldsPerPage = 5;
         this.lastClick = Date.now();
 
 
@@ -34,42 +36,12 @@ export class MainMenuComponent extends SubTreeComponent {
 
         this.worldsContainer = new Container(this.window, 0, 1);
         subMenuContainer.addElement(this.worldsContainer);
-
-        function getIterWorlds() {
-            let iterWorlds = new Array(); 
-            for (let i = 0; i < loadUI(UI_UI_NEXTWORLD); i++) {
-                if (loadUI(UI_UI_WORLDDELETED)[i]) {
-                    continue;
-                }
-                if (!loadGD(UI_UI_SHOWHIDDEN)) {
-                    if (loadUI(UI_UI_WORLDHIDDEN)[i]) {
-                        continue;
-                    }
-                }
-                iterWorlds.push(i)
-            }
-            return iterWorlds;
-        }
-
-        function getWorldFromI(i) {
-            let iterWorlds = getIterWorlds();
-            let iterWorldListIdx = (numWorldsPerPage * loadUI(UI_UI_WORLDPAGE)) + i;
-            console.log(iterWorlds[iterWorldListIdx]);
-            return iterWorlds[iterWorldListIdx];
-        }
         
-        function getNumPages() {
-            let numPages = (Math.min(1, Math.floor(getIterWorlds().length / numWorldsPerPage)));
-            if (loadUI(UI_UI_WORLDPAGE) > numPages) {
-                saveUI(UI_UI_WORLDPAGE, numPages);
-            }
-            return numPages;
-        }
-        for (let i = 0; i < numWorldsPerPage; i++) {
+        for (let i = 0; i < this.numWorldsPerPage; i++) {
             let iCopy = i;
 
-            let slotFilledConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => getIterWorlds().length > loadUI(UI_UI_WORLDPAGE) * numWorldsPerPage + iCopy);
-            let slotEmptyConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => getIterWorlds().length <= loadUI(UI_UI_WORLDPAGE) * numWorldsPerPage + iCopy);
+            let slotFilledConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => this.getIterWorlds().length > loadUI(UI_UI_WORLDPAGE) * this.numWorldsPerPage + iCopy);
+            let slotEmptyConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => this.getIterWorlds().length <= loadUI(UI_UI_WORLDPAGE) * this.numWorldsPerPage + iCopy);
 
             this.worldsContainer.addElement(slotFilledConditionalContainer);
             this.worldsContainer.addElement(slotEmptyConditionalContainer);
@@ -78,27 +50,27 @@ export class MainMenuComponent extends SubTreeComponent {
             let row = new Container(this.window, 0, 0);
             slotFilledConditionalContainer.addElement(row);
 
-            let colorFunc1 = () => (loadUI(UI_UI_CURWORLD) == getWorldFromI(iCopy)) ? getActiveClimate().getUIColorActive() : getActiveClimate().getUIColorInactiveCustom([0.65, 0.55, 0.62, 0.58, 0.61, 0.67][i % 6]);
+            let colorFunc1 = () => (loadUI(UI_UI_CURWORLD) == this.getWorldFromI(iCopy)) ? getActiveClimate().getUIColorActive() : getActiveClimate().getUIColorInactiveCustom([0.65, 0.55, 0.62, 0.58, 0.61, 0.67][i % 6]);
             let colorFunc2 = () => getActiveClimate().getUIColorInactiveCustom(0.1 + [0.65, 0.55, 0.62, 0.58, 0.61, 0.67][i % 6]);
 
-            console.log(loadUI(UI_UI_WORLDNAME)[getWorldFromI(iCopy)]);
+            console.log(loadUI(UI_UI_WORLDNAME)[this.getWorldFromI(iCopy)]);
             console.log(iCopy)
 
-            row.addElement(new ButtonFunctionalText(this.window, this.sizeX * (4/5), getBaseUISize() * 3, this.textAlignOffsetX, () => loadSlot( getWorldFromI(iCopy)), 
-                () => loadUI(UI_UI_WORLDNAME)[getWorldFromI(iCopy)], colorFunc1));
+            row.addElement(new ButtonFunctionalText(this.window, this.sizeX * (4/5), getBaseUISize() * 3, this.textAlignOffsetX, () => loadSlot( this.getWorldFromI(iCopy)), 
+                () => loadUI(UI_UI_WORLDNAME)[this.getWorldFromI(iCopy)], colorFunc1));
             row.addElement(new ButtonFunctionalText(this.window, this.sizeX * (1/5), getBaseUISize() * 3, this.textAlignOffsetX, 
                 () => (this.lastClick != getLastMouseDown() ? 
-                    (loadUI(UI_UI_WORLDHIDDEN)[getWorldFromI(iCopy)] ? unhideWorld( getWorldFromI(iCopy)) : hideWorld( getWorldFromI(iCopy)))
+                    (loadUI(UI_UI_WORLDHIDDEN)[this.getWorldFromI(iCopy)] ? unhideWorld( this.getWorldFromI(iCopy)) : hideWorld( this.getWorldFromI(iCopy)))
                     : null),
-            () => loadUI(UI_UI_WORLDHIDDEN)[getWorldFromI(iCopy)] ? "unhide" : "hide", colorFunc2));
+            () => loadUI(UI_UI_WORLDHIDDEN)[this.getWorldFromI(iCopy)] ? "unhide" : "hide", colorFunc2));
         }
 
         let pagesRow = new Container(this.window, 0, 0);
         subMenuContainer.addElement(pagesRow);
         pagesRow.addElement(new Button(this.window, this.sizeX / 4, getBaseUISize() * 3, UI_CENTER, () => saveUI(UI_UI_WORLDPAGE, Math.max(0, loadUI(UI_UI_WORLDPAGE) - 1)), "-", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
         pagesRow.addElement(new TextFunctionalBackground(this.window, this.sizeX / 2, getBaseUISize() * 3, UI_CENTER,
-         () => "page " + (loadUI(UI_UI_WORLDPAGE) + 1) + " of " + (getNumPages() + 1), getActiveClimate().getUIColorInactiveCustom(0.55), 0.75));
-        pagesRow.addElement(new Button(this.window, this.sizeX / 4, getBaseUISize() * 3, UI_CENTER, () => saveUI(UI_UI_WORLDPAGE, Math.min(getNumPages(), loadUI(UI_UI_WORLDPAGE) + 1)), "+", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
+         () => "page " + (loadUI(UI_UI_WORLDPAGE) + 1) + " of " + (this.getNumPages() + 1), getActiveClimate().getUIColorInactiveCustom(0.55), 0.75));
+        pagesRow.addElement(new Button(this.window, this.sizeX / 4, getBaseUISize() * 3, UI_CENTER, () => saveUI(UI_UI_WORLDPAGE, Math.min(this.getNumPages(), loadUI(UI_UI_WORLDPAGE) + 1)), "+", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
     
         subMenuContainer.addElement(new Text(this.window, this.sizeX, getBaseUISize() * .5, this.textAlignOffsetX, ""));
         subMenuContainer.addElement(new Text(this.window, this.sizeX, getBaseUISize() * 2.5, UI_CENTER, "ui scale"))
@@ -130,6 +102,36 @@ export class MainMenuComponent extends SubTreeComponent {
         subMenuContainer.addElement( new Toggle(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, UI_UI_SHOWHIDDEN, "show hidden worlds",  () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
         subMenuContainer.addElement( new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, deleteHiddenWorlds, "delete hidden worlds", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
 
+    }
+
+    getIterWorlds() {
+        let iterWorlds = new Array(); 
+        for (let i = 0; i < loadUI(UI_UI_NEXTWORLD); i++) {
+            if (loadUI(UI_UI_WORLDDELETED)[i]) {
+                continue;
+            }
+            if (!loadGD(UI_UI_SHOWHIDDEN)) {
+                if (loadUI(UI_UI_WORLDHIDDEN)[i]) {
+                    continue;
+                }
+            }
+            iterWorlds.push(i)
+        }
+        return iterWorlds;
+    }
+
+    getWorldFromI(i) {
+        let iterWorlds = this.getIterWorlds();
+        let iterWorldListIdx = (this.numWorldsPerPage * loadUI(UI_UI_WORLDPAGE)) + i;
+        return iterWorlds[iterWorldListIdx];
+    }
+
+    getNumPages() {
+        let numPages = Math.floor( (this.getIterWorlds().length - 1) / this.numWorldsPerPage);
+        if (loadUI(UI_UI_WORLDPAGE) > numPages) {
+            saveUI(UI_UI_WORLDPAGE, numPages);
+        }
+        return numPages; 
     }
 
     update() {

@@ -4,6 +4,8 @@ export const UI_TINYDOT = "·";
 export const UI_BIGDOTSOLID = "◉";
 export const UI_BIGDOTHOLLOW = "•";
 
+export const MOUSEEVENT_UNHIDE = "MOSUEEVENT_UNHIDE";
+
 function getObjectArrFromMap(baseMap, posX, posY, create=false) {
     if (!(baseMap.has(posX))) {
         if (!create)

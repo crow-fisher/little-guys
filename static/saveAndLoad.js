@@ -6,12 +6,14 @@ import { getTemperatureMap, getWaterSaturationMap } from "./climate/temperatureH
 import { getCurDay, setCurDay } from "./climate/time.js";
 import { ProtoMap, TypeMap } from "./types.js";
 import { getWindPressureMap, initWindPressure } from "./climate/wind.js";
-import { getGAMEDATA, getUICONFIG, loadGD, loadUI, saveGD, saveMapEntry, saveUI, setGAMEDATA, setUICONFIG, UI_CLIMATE_TOOL_SIZE, UI_CLIMATE_WEATHER_TOOL_HEAVYCLOUD, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_STRENGTH, UI_LIGHTING_ENABLED, UI_MAIN_NEWWORLD, UI_MAIN_NEWWORLD_LATITUDE, UI_MAIN_NEWWORLD_LONGITUDE, UI_MAIN_NEWWORLD_NAME, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_MAIN_NEWWORLD_TYPE_BLOCKS, UI_MAIN_NEWWORLD_TYPE_CLOUDS, UI_MAIN_NEWWORLD_TYPE_SELECT, UI_NAME, UI_SIMULATION_CLOUDS, UI_SIMULATION_HEIGHT, UI_SIMULATION_SIMPLESQUARE, UI_TOPBAR_BLOCK, UI_TOPBAR_CLIMATE, UI_TOPBAR_LIGHTING, UI_TOPBAR_MAINMENU, UI_TOPBAR_SIMULATION, UI_TOPBAR_TIME, UI_TOPBAR_VIEWMODE, UI_UI_CURWORLD, UI_UI_LASTSAVED, UI_UI_NEXTWORLD, UI_UI_SIZE, UI_UI_WORLDDELETED, UI_UI_WORLDHIDDEN, UI_UI_WORLDNAME, UICONFIG } from "./ui/UIData.js";
+import { getGAMEDATA, getUICONFIG, loadGD, loadUI, saveGD, saveMapEntry, saveUI, setGAMEDATA, setUICONFIG, UI_CLIMATE_TOOL_SIZE, UI_CLIMATE_WEATHER_TOOL_HEAVYCLOUD, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_STRENGTH, UI_LIGHTING_ENABLED, UI_MAIN_NEWWORLD, UI_MAIN_NEWWORLD_LATITUDE, UI_MAIN_NEWWORLD_LONGITUDE, UI_MAIN_NEWWORLD_NAME, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_MAIN_NEWWORLD_TYPE_BLOCKS, UI_MAIN_NEWWORLD_TYPE_CLOUDS, UI_MAIN_NEWWORLD_TYPE_SELECT, UI_NAME, UI_SIMULATION_CLOUDS, UI_SIMULATION_HEIGHT, UI_SIMULATION_SIMPLESQUARE, UI_TOPBAR_BLOCK, UI_TOPBAR_CLIMATE, UI_TOPBAR_LIGHTING, UI_TOPBAR_MAINMENU, UI_TOPBAR_SIMULATION, UI_TOPBAR_TIME, UI_TOPBAR_VIEWMODE, UI_UI_CURWORLD, UI_UI_LASTSAVED, UI_UI_NEXTWORLD, UI_UI_SIZE, UI_UI_WORLDDELETED, UI_UI_WORLDHIDDEN, UI_UI_WORLDNAME, UI_UI_WORLDPAGE, UICONFIG } from "./ui/UIData.js";
 import { getTotalCanvasPixelWidth, indexCanvasSize } from "./index.js";
 import { STAGE_DEAD } from "./organisms/Stages.js";
-import { initUI } from "./ui/WindowManager.js";
+import { getMainMenuComponent, initUI } from "./ui/WindowManager.js";
 import { purgeMaps } from "./globals.js";
 import { getActiveClimate } from "./climate/climateManager.js";
+import { doSingleTimeMouseEvent } from "./mouse.js";
+import { MOUSEEVENT_UNHIDE } from "./common.js";
 
 export async function loadSlot(slotName) {
     console.log("Loading slot: ", slotName);
@@ -116,9 +118,7 @@ function purgeGameState() {
 }
 
 function loadSlotData(slotData) {
-
     let topBarMainCache = loadGD(UI_TOPBAR_MAINMENU);
-
     purgeGameState();
     loadSlotFromSave(slotData);
     saveGD(UI_TOPBAR_MAINMENU, topBarMainCache);
@@ -132,17 +132,17 @@ function loadSlotData(slotData) {
 export function unhideWorld(slotName) {
     loadUI(UI_UI_WORLDHIDDEN)[slotName] = false;
     saveUserSettings();
-    initUI();
 }
 
 export function hideWorld(slotName) {
-    loadUI(UI_UI_WORLDHIDDEN)[slotName] = true;
-    saveUserSettings();
-    initUI();
+    doSingleTimeMouseEvent(MOUSEEVENT_UNHIDE, () => {
+        loadUI(UI_UI_WORLDHIDDEN)[slotName] = true;
+        saveUserSettings();
+    });
 }
 
 export function deleteHiddenWorlds() {
-    Object.keys(loadUI(UI_UI_WORLDHIDDEN)).forEach((key) => loadUI(UI_UI_WORLDDELETED)[key] = true);
+    Object.keys(loadUI(UI_UI_WORLDHIDDEN)).forEach((key) => loadUI(UI_UI_WORLDDELETED)[key] = loadUI(UI_UI_WORLDHIDDEN)[key]);
     saveUserSettings();
 }
 
@@ -152,8 +152,10 @@ export function doPeriodicSave() {
     }
 }
 
-export function saveCurGame(reload=true) {
-    saveGame(loadUI(UI_UI_CURWORLD), reload);
+export async function saveCurGame(reload=false) {
+    console.log("save cur game\t", loadUI(UI_UI_CURWORLD));
+    let savePromise = saveGame(loadUI(UI_UI_CURWORLD), reload);
+    await savePromise;
 }
 
 export async function saveGame(slotName, reload) {
@@ -283,8 +285,12 @@ function getFrameSaveData() {
     return saveObj;
 }
 
-export function createNewWorld() {
-    saveCurGame(false);
+export async function createNewWorld() {
+    let saveCurGamePromise = saveCurGame(false);
+    await saveCurGamePromise;
+
+    let startNumPages = getMainMenuComponent().getNumPages();
+
     let slot = loadUI(UI_UI_NEXTWORLD);
     loadEmptyScene();
     saveGD(UI_NAME, loadGD(UI_MAIN_NEWWORLD_NAME));
@@ -293,7 +299,6 @@ export function createNewWorld() {
     getActiveClimate().lng = loadGD(UI_MAIN_NEWWORLD_LONGITUDE);
     saveUI(UI_UI_CURWORLD, slot);
     saveUI(UI_UI_NEXTWORLD, slot + 1);
-    
     saveGD(UI_MAIN_NEWWORLD, false);
     switch (loadGD(UI_MAIN_NEWWORLD_TYPE_SELECT)) {
         case (UI_MAIN_NEWWORLD_TYPE_BLOCKS):
@@ -316,7 +321,10 @@ export function createNewWorld() {
             break;
     };
     saveCurGame();
-
+    let endNumPages = getMainMenuComponent().getNumPages();
+    if (endNumPages > startNumPages) {
+        saveUI(UI_UI_WORLDPAGE, loadUI(UI_UI_WORLDPAGE) + 1);
+    }
 }
 
 export function editCurrentWorld() {
