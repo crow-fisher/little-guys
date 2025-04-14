@@ -99,7 +99,8 @@ export class MainMenuComponent extends SubTreeComponent {
 
         subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, loadEmptyScene, "empty scene", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
         subMenuContainer.addElement( new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, purgeCanvasFrameLimit, "purge off-screen blocks", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
-        subMenuContainer.addElement( new Toggle(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, UI_UI_SHOWHIDDEN, "show hidden worlds",  () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient()));
+        subMenuContainer.addElement( new Toggle(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, UI_UI_SHOWHIDDEN, 
+        "show hidden worlds",  () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient(), 0.75, true, UICONFIG));
         subMenuContainer.addElement( new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, deleteHiddenWorlds, "delete hidden worlds", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
 
     }
@@ -110,7 +111,7 @@ export class MainMenuComponent extends SubTreeComponent {
             if (loadUI(UI_UI_WORLDDELETED)[i]) {
                 continue;
             }
-            if (!loadGD(UI_UI_SHOWHIDDEN)) {
+            if (!loadUI(UI_UI_SHOWHIDDEN)) {
                 if (loadUI(UI_UI_WORLDHIDDEN)[i]) {
                     continue;
                 }
@@ -129,7 +130,7 @@ export class MainMenuComponent extends SubTreeComponent {
     getNumPages() {
         let numPages = Math.floor( (this.getIterWorlds().length - 1) / this.numWorldsPerPage);
         if (loadUI(UI_UI_WORLDPAGE) > numPages) {
-            saveUI(UI_UI_WORLDPAGE, numPages);
+            saveUI(UI_UI_WORLDPAGE, Math.max(0, numPages));
         }
         return numPages; 
     }

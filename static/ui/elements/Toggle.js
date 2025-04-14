@@ -3,11 +3,11 @@ import { COLOR_BLACK, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../col
 import { UI_BIGDOTHOLLOW, UI_BIGDOTSOLID } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { getLastMouseDown, isLeftMouseClicked } from "../../mouse.js";
-import { loadGD, saveGD, UI_CENTER } from "../UIData.js";
+import { GAMEDATA, getMapEntry, loadGD, saveGD, saveMapEntry, UI_CENTER } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class Toggle extends WindowElement {
-    constructor(window, sizeX, sizeY, offsetX, key, label, colorInactiveFunc, colorActiveFunc, textSize = 0.75, showStartChar=true) {
+    constructor(window, sizeX, sizeY, offsetX, key, label, colorInactiveFunc, colorActiveFunc, textSize = 0.75, showStartChar=true, map=GAMEDATA) {
         super(window, sizeX, sizeY);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
@@ -19,6 +19,7 @@ export class Toggle extends WindowElement {
         this.colorInactiveFunc = colorInactiveFunc;
         this.textSize = textSize;
         this.showStartChar = showStartChar;
+        this.map = map;
     }
 
     render(startX, startY) {
@@ -26,7 +27,7 @@ export class Toggle extends WindowElement {
         MAIN_CONTEXT.textAlign = 'center';
         MAIN_CONTEXT.textBaseline = 'middle';
         let startChar = UI_BIGDOTHOLLOW;
-        if (loadGD(this.key)) {
+        if (getMapEntry(this.map, this.key)) {
             MAIN_CONTEXT.fillStyle = this.colorActiveFunc();
             startChar = UI_BIGDOTSOLID;
         } else {
@@ -55,7 +56,7 @@ export class Toggle extends WindowElement {
             return;
         } 
         if (this.lastClick != getLastMouseDown()) {
-            saveGD(this.key, !loadGD(this.key));
+            saveMapEntry(this.map, this.key, !getMapEntry(this.map, this.key));
             this.lastClick = getLastMouseDown();
         }
     }
