@@ -206,7 +206,9 @@ export class BaseSquare {
         this.group = -1;
 
         if (getTimeScale() != 0) {
-            this.speedY += (1 / this.gravity);
+            if (this.shouldFallThisFrame()) {
+                this.speedY += (1 / this.gravity);
+            }
         }
         if (Math.floor(getCurDay() + 0.15) != this.lightingSumDay) {
             if (this.lightingSum == null) {
@@ -522,6 +524,9 @@ export class BaseSquare {
     percolateInnerMoisture() { }
 
     testCollidesWithSquare(sq) {
+        if (!this.collision || !sq.collision) {
+            return false;
+        }
         if (this.organic) {
             if (!sq.solid) {
                 return false;
@@ -562,11 +567,21 @@ export class BaseSquare {
         return true;
     }
 
-    gravityPhysics() {
+    shouldFallThisFrame() {
         if (!this.physicsEnabled) {
             return false;
         }
         if (this.gravity == 0) {
+            return false;
+        }
+        if (this.proto == "SoilSquare" && this.linkedOrganismSquares.length > 0) {
+            return false;
+        }
+        return true;
+    }
+
+    gravityPhysics() {
+        if (!this.shouldFallThisFrame()) {
             return;
         }
         let finalXPos = this.posX;

@@ -121,8 +121,8 @@ export async function saveUserSettings() {
 }
 
 function purgeGameState() {
-    iterateOnSquares((sq) => sq.destroy());
     iterateOnOrganisms((org) => org.destroy());
+    iterateOnSquares((sq) => sq.destroy());
     purgeMaps();
 }
 
@@ -132,10 +132,6 @@ function loadSlotData(slotData) {
     loadSlotFromSave(slotData);
     saveGD(UI_TOPBAR_MAINMENU, topBarMainCache);
     saveGD(UI_MAIN_NEWWORLD, false);
-    // saveGD(UI_MAIN_NEWWORLD_LATITUDE, getActiveClimate().lat);
-    // saveGD(UI_MAIN_NEWWORLD_LONGITUDE, getActiveClimate().lng);
-    // saveGD(UI_MAIN_NEWWORLD_NAME, loadGD(UI_NAME));
-    // saveGD(UI_MAIN_NEWWORLD_SIMHEIGHT, loadGD(UI_SIMULATION_HEIGHT));
     saveOrLoadInProgress = false;
 }
 
@@ -171,8 +167,8 @@ export async function saveGame(slotName, reload) {
     saveOrLoadInProgress = true;
     const saveObj = getFrameSaveData();
     const saveString = JSON.stringify(saveObj);
-    await doSave(slotName, saveString);
     console.log("Saving slot name " + slotName + " as " + loadGD(UI_NAME));
+    await doSave(slotName, saveString);
     loadUI(UI_UI_WORLDNAME)[slotName] = loadGD(UI_NAME);
     saveUI(UI_UI_LASTSAVED, Date.now());
     purgeMaps();
@@ -229,6 +225,8 @@ function getFrameSaveData() {
             growthPlanArr.push(...org.growthPlans);
             growthPlanComponentArr.push(...org.growthPlans.map((gp) => gp.component))
             org.growthPlans.forEach((gp) => growthPlanStepArr.push(...gp.steps));
+        } else {
+            org.destroy();
         }
     });
 

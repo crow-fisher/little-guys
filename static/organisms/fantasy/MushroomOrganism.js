@@ -1,6 +1,6 @@
 import { hueShiftColor, hueShiftColorArr, randNumber, randRange, rgbToHex } from "../../common.js";
 import { GenericParameterizedRootSquare } from "../../lifeSquares/parameterized/GenericParameterizedRootSquare.js";
-import { STAGE_ADULT, STAGE_JUVENILE, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_FLOWER, TYPE_LEAF, TYPE_STEM } from "../Stages.js";
+import { STAGE_ADULT, STAGE_DEAD, STAGE_JUVENILE, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_FLOWER, TYPE_LEAF, TYPE_STEM } from "../Stages.js";
 
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
@@ -66,7 +66,7 @@ export class MushroomOrganism extends BaseOrganism {
             this.maxLeafLength = 1 + Math.floor(this.maxLeafLength * p0i);
         }
         this.growthNumGreen = (this.maxNumLeaves * (this.maxLeafLength) + this.maxStemLength);
-        this.growthNumRoots = this.growthNumGreen;
+        this.growthNumRoots = this.growthNumGreen / 6;
     }
 
 
@@ -130,6 +130,10 @@ export class MushroomOrganism extends BaseOrganism {
     }
 
     adultGrowStem() {
+        if (this.stems.length == 0) {
+            this.stage = STAGE_DEAD;
+            return;
+        }
         let parentPath = this.stems[this.stems.length - 1];
         let parent = this.originGrowth.getChildFromPath(parentPath);
         this.growStem(parent, parent.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_NODE), 0);
