@@ -132,10 +132,10 @@ function loadSlotData(slotData) {
     loadSlotFromSave(slotData);
     saveGD(UI_TOPBAR_MAINMENU, topBarMainCache);
     saveGD(UI_MAIN_NEWWORLD, false);
-    saveGD(UI_MAIN_NEWWORLD_LATITUDE, getActiveClimate().lat);
-    saveGD(UI_MAIN_NEWWORLD_LONGITUDE, getActiveClimate().lng);
-    saveGD(UI_MAIN_NEWWORLD_NAME, loadGD(UI_NAME));
-    saveGD(UI_MAIN_NEWWORLD_SIMHEIGHT, loadGD(UI_SIMULATION_HEIGHT));
+    // saveGD(UI_MAIN_NEWWORLD_LATITUDE, getActiveClimate().lat);
+    // saveGD(UI_MAIN_NEWWORLD_LONGITUDE, getActiveClimate().lng);
+    // saveGD(UI_MAIN_NEWWORLD_NAME, loadGD(UI_NAME));
+    // saveGD(UI_MAIN_NEWWORLD_SIMHEIGHT, loadGD(UI_SIMULATION_HEIGHT));
     saveOrLoadInProgress = false;
 }
 
@@ -171,8 +171,7 @@ export async function saveGame(slotName, reload) {
     saveOrLoadInProgress = true;
     const saveObj = getFrameSaveData();
     const saveString = JSON.stringify(saveObj);
-    let savePromise = doSave(slotName, saveString);
-    await savePromise;
+    await doSave(slotName, saveString);
     console.log("Saving slot name " + slotName + " as " + loadGD(UI_NAME));
     loadUI(UI_UI_WORLDNAME)[slotName] = loadGD(UI_NAME);
     saveUI(UI_UI_LASTSAVED, Date.now());
@@ -293,8 +292,7 @@ function getFrameSaveData() {
 }
 
 export async function createNewWorld() {
-    let saveCurGamePromise = saveCurGame(false);
-    await saveCurGamePromise;
+    await saveCurGame(false);
 
     let startNumPages = getMainMenuComponent().getNumPages();
 
