@@ -246,7 +246,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     slopePhysics() {
-        if (this.gravity == 0) {
+        if (this.gravity == 0 || this.speedY > 0) {
             return;
         }
 
