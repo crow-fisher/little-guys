@@ -8,6 +8,7 @@ import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 import { PlantSquare } from "../squares/PlantSquare.js";
 import { applyLightingFromSource, processLighting } from "../lighting/lightingProcessing.js";
 import { loadGD, UI_GODMODE_FASTPLANT, UI_SIMULATION_GENS_PER_DAY } from "../ui/UIData.js";
+import { isSaveOrLoadInProgress } from "../saveAndLoad.js";
 
 class BaseOrganism {
     constructor(square) {

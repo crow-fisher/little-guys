@@ -8,6 +8,7 @@ import { getCurLightingInterval } from "./lightingHandler.js";
 import { isLeftMouseClicked, isRightMouseClicked } from "../mouse.js";
 import { addTimeout } from "../main.js";
 import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
+import { isSaveOrLoadInProgress } from "../saveAndLoad.js";
 
 export let MAX_BRIGHTNESS = 8;
 export function createSunLightGroup() {
@@ -331,6 +332,9 @@ export class LightSource {
 
 
     async rayCastingForTheta(idx, jobIdx, theta, thetaStep) {
+        if (isSaveOrLoadInProgress()) {
+            return;
+        }
         let thetaSquares = new Array();
         iterateOnSquares((sq) => {
             if (!sq.visible) {

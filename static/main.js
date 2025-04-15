@@ -9,7 +9,7 @@ import { LightingHandler } from "./lighting/lightingHandler.js";
 import { ClimateHandler } from "./climate/climateHandler.js";
 import { isLeftMouseClicked, isRightMouseClicked } from "./mouse.js";
 import { iterateOnSquares } from "./squares/_sqOperations.js";
-import { doPeriodicSave } from "./saveAndLoad.js";
+import { doPeriodicSave, isSaveOrLoadInProgress } from "./saveAndLoad.js";
  
 initUI();
 let lightingHandler = new LightingHandler();
@@ -40,24 +40,26 @@ export function resetClimateAndLighting() {
 }
 
 export function scheduler_main() {
-    updateTime();
-    doClickAdd();
-    doClickAddEyedropperMixer();
-    resetWindowHovered(); 
-
-    if (loadGD(UI_SIMULATION_SIMPLESQUARE)) {
-        squareTickSimplePhysics();
-    } else {
-        squareTick();
-    }
-    orgTick();
-    render();
-    renderWindows();
-    updateWindows();
-    if (!isLeftMouseClicked()) 
-        executeFunctionQueue();
+    if (!isSaveOrLoadInProgress()) {
+        updateTime();
+        doClickAdd();
+        doClickAddEyedropperMixer();
+        resetWindowHovered(); 
     
-    doPeriodicSave();
+        if (loadGD(UI_SIMULATION_SIMPLESQUARE)) {
+            squareTickSimplePhysics();
+        } else {
+            squareTick();
+        }
+        orgTick();
+        render();
+        renderWindows();
+        updateWindows();
+        if (!isLeftMouseClicked()) 
+            executeFunctionQueue();
+        
+        doPeriodicSave();
+    }
     setTimeout(scheduler_main, 0);
 }
 

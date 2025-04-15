@@ -1,4 +1,5 @@
 import { getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "../climate/time.js";
+import { isSaveOrLoadInProgress } from "../saveAndLoad.js";
 import { loadGD, UI_LIGHTING_ENABLED } from "../ui/UIData.js";
 
 export function getDefaultLighting() {

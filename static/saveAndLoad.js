@@ -15,9 +15,17 @@ import { getActiveClimate } from "./climate/climateManager.js";
 import { doSingleTimeMouseEvent } from "./mouse.js";
 import { MOUSEEVENT_UNHIDE } from "./common.js";
 
+
+let saveOrLoadInProgress = false;
+
+export function isSaveOrLoadInProgress() {
+    return saveOrLoadInProgress;
+}
+
 export async function loadSlot(slotName) {
     console.log("Loading slot: ", slotName);
     slotName = "" + slotName;
+    saveOrLoadInProgress = true;
     const db = await openDatabase();
     const transaction = db.transaction("saves", "readonly");
     const store = transaction.objectStore("saves");
@@ -129,6 +137,7 @@ function loadSlotData(slotData) {
     saveGD(UI_MAIN_NEWWORLD_LONGITUDE, getActiveClimate().lng);
     saveGD(UI_MAIN_NEWWORLD_NAME, loadGD(UI_NAME));
     saveGD(UI_MAIN_NEWWORLD_SIMHEIGHT, loadGD(UI_SIMULATION_HEIGHT));
+    saveOrLoadInProgress = false;
 }
 
 export function unhideWorld(slotName) {
@@ -149,18 +158,18 @@ export function deleteHiddenWorlds() {
 }
 
 export function doPeriodicSave() {
-    if (loadUI(UI_UI_LASTSAVED) < (Date.now() - 1000 * 60 * 15)) {
-        saveCurGame();
+    if (loadUI(UI_UI_LASTSAVED) < (Date.now() - (1000 * 60 * 5))) {
+        saveCurGame(false);
     }
 }
 
 export async function saveCurGame(reload=false) {
     console.log("save cur game\t", loadUI(UI_UI_CURWORLD));
-    let savePromise = saveGame(loadUI(UI_UI_CURWORLD), reload);
-    await savePromise;
+    await saveGame(loadUI(UI_UI_CURWORLD), reload);
 }
 
 export async function saveGame(slotName, reload) {
+    saveOrLoadInProgress = true;
     const saveObj = getFrameSaveData();
     const saveString = JSON.stringify(saveObj);
     let savePromise = doSave(slotName, saveString);
@@ -168,11 +177,8 @@ export async function saveGame(slotName, reload) {
     console.log("Saving slot name " + slotName + " as " + loadGD(UI_NAME));
     loadUI(UI_UI_WORLDNAME)[slotName] = loadGD(UI_NAME);
     saveUI(UI_UI_LASTSAVED, Date.now());
-
-    if (reload) {
-        purgeMaps();
-        loadSlotData(saveObj)
-    }
+    purgeMaps();
+    loadSlotData(saveObj);
 }
 
 async function doSave(slotName, saveString) {
