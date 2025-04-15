@@ -1,6 +1,6 @@
 import { getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "../climate/time.js";
 import { isSaveOrLoadInProgress } from "../saveAndLoad.js";
-import { loadGD, UI_LIGHTING_ENABLED } from "../ui/UIData.js";
+import { loadGD, UI_LIGHTING_ENABLED, UI_LIGHTING_MOON, UI_LIGHTING_SUN } from "../ui/UIData.js";
 
 export function getDefaultLighting() {
     let brightness = getDaylightStrength();
@@ -8,9 +8,9 @@ export function getDefaultLighting() {
     let moonlightColor = getMoonlightColor();
 
     return {
-        r: Math.min(255, moonlightColor.r * 0.3 + (daylightColor.r * brightness)),
-        g: Math.min(255, moonlightColor.g * 0.3 + (daylightColor.g * brightness)),
-        b: Math.min(255, moonlightColor.b * 0.3 + (daylightColor.b * brightness))
+        r: moonlightColor.r * 2.3 * Math.exp(loadGD(UI_LIGHTING_MOON)) + 0.5 * Math.exp(loadGD(UI_LIGHTING_SUN)) * (daylightColor.r * brightness),
+        g: moonlightColor.g * 2.3 * Math.exp(loadGD(UI_LIGHTING_MOON)) + 0.5 * Math.exp(loadGD(UI_LIGHTING_SUN)) * (daylightColor.g * brightness),
+        b: moonlightColor.b * 2.3 * Math.exp(loadGD(UI_LIGHTING_MOON)) + 0.5 * Math.exp(loadGD(UI_LIGHTING_SUN)) * (daylightColor.b * brightness)
     }
 }
 

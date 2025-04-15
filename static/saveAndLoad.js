@@ -124,7 +124,6 @@ function purgeGameState() {
     iterateOnSquares((sq) => sq.destroy());
     iterateOnOrganisms((org) => org.destroy());
     purgeMaps();
-    initWindPressure();
 }
 
 function loadSlotData(slotData) {
