@@ -7,7 +7,7 @@ import { addSquare, getSquares } from "../squares/_sqOperations.js";
 import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED, RGB_COLOR_GREEN } from "../colors.js";
 import { removeSquare } from "../globalOperations.js";
 import { STATE_HEALTHY, STATE_DESTROYED, STAGE_DEAD } from "../organisms/Stages.js";
-import { processLighting } from "../lighting/lightingProcessing.js";
+import { getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasFillRectTheta } from "../canvas.js";
 import { loadGD, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
 import { isLeftMouseClicked } from "../mouse.js";
@@ -281,8 +281,14 @@ class BaseLifeSquare {
             this.frameCacheLighting = getDefaultLighting();
             return this.frameCacheLighting;
         }
-        if (this.type == "root")
-            this.frameCacheLighting = processLighting(this.linkedSquare.lighting);
+        if (this.type == "root") {
+            if (this.linkedSquare != null) {
+                this.frameCacheLighting = processLighting(this.linkedSquare.lighting);
+            } else {
+                this.linkedOrganism.removeAssociatedLifeSquare(this);
+                return getDefaultLighting();
+            }
+        }
         else
             this.frameCacheLighting = processLighting(this.lighting);
         return this.frameCacheLighting;
