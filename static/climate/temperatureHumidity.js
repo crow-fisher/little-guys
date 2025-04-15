@@ -121,7 +121,7 @@ export function restingValues() {
             let startTemp = temperatureMap[i][j];
             let restingTemp = getRestingTemperatureAtSq(i, j);
             let diffTemp = restingTemp - startTemp; 
-            let curTempPascals = saturationPressureOfWaterVapor(temperatureMap[i][j]);
+            let curTempPascals = saturationPressureOfWaterVapor((restingTemp * 0.8 + temperatureMap[i][j] * 0.2));
 
             let curHumidity = getHumidity(i, j);
             let restingHumidity = getRestingHumidityAtSq(i, j);
