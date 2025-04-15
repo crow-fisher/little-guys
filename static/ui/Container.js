@@ -33,7 +33,7 @@ export class Container {
 
         this.elements.forEach((el) => {
             let elSize = el.size()
-            if (elSize[0] == 0) {
+            if (elSize[0] == 0 || isNaN(elSize[0] || isNaN(elSize[1]))) {
                 return;
             }
             el.render(curX, curY);
@@ -45,8 +45,8 @@ export class Container {
                 curY += elSize[1] + this.padding;
             }
         });
-        this.sizeX = Math.max(this.sizeX, this.endX - startX);
-        this.sizeY = Math.max(this.sizeY, this.endY - startY);
+        this.sizeX = this.endX - startX;
+        this.sizeY = this.endY - startY;
     }
 
     hover(posX, posY) {

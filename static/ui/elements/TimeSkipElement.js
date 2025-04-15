@@ -28,8 +28,8 @@ export class TimeSkipElement extends WindowElement {
         ]
         this.times = new Array();
         this.startTime = 0.13;
-
         this.sideInset = getBaseUISize() * 0.5;
+        this.sizeX = getBaseUISize() * (26.404296875 + 4);
     }
 
     render(startX, startY) {
