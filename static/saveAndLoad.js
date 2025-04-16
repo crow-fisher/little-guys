@@ -153,7 +153,7 @@ export function deleteHiddenWorlds() {
 }
 
 export function doPeriodicSave() {
-    if (loadUI(UI_UI_LASTSAVED) < (Date.now() - (1000 * 60 * 5))) {
+    if (loadUI(UI_UI_LASTSAVED) < (Date.now() - (1000 * 60 * 60))) {
         saveCurGame(false);
     }
 }
