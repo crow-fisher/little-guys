@@ -692,6 +692,7 @@ export class BaseSquare {
         } else {
             let filtered = getSquares(this.posX, this.posY - 1)
                 .filter((sq) => sq.collision && sq.gravity > 0)
+                .filter((sq) => sq.solid == this.solid);
 
             if (filtered.some((sq) => true)) {
                 this.currentPressureDirect = filtered

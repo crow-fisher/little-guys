@@ -108,30 +108,43 @@ class WaterSquare extends BaseSquare {
             return;
         }
 
-        if (!(this.group in WATERFLOW_CANDIDATE_SQUARES)) {
-            WATERFLOW_CANDIDATE_SQUARES[this.group] = new Map();
+        if (!WATERFLOW_CANDIDATE_SQUARES.has(this.group)) {
+            WATERFLOW_CANDIDATE_SQUARES.set(this.group, new Map());
         }
-        if (!(this.group in WATERFLOW_TARGET_SQUARES)) {
-            WATERFLOW_TARGET_SQUARES[this.group] = new Map();
+        if (!WATERFLOW_TARGET_SQUARES.has(this.group)) {
+            WATERFLOW_TARGET_SQUARES.set(this.group, new Map());
         }
+        let candidateMap = WATERFLOW_CANDIDATE_SQUARES.get(this.group);
+        let targetMap = WATERFLOW_TARGET_SQUARES.get(this.group);
 
-        let candidateMap = WATERFLOW_CANDIDATE_SQUARES[this.group];
-        let targetMap = WATERFLOW_TARGET_SQUARES[this.group]
-        if (!(this.currentPressureIndirect in candidateMap)) {
-            candidateMap[this.currentPressureIndirect] = new Array();
-        }
+        let candidatePressure = this.currentPressureIndirect;
+
         if (!(getSquares(this.posX, this.posY).some((sq) => sq.surface))) {
-            candidateMap[this.currentPressureIndirect].push(this);
+            if (!candidateMap.has(candidatePressure)) {
+                candidateMap.set(candidatePressure, new Array());
+            }
+            candidateMap.get(candidatePressure).push(this);
+        } else {
+            let sq = getSquares(this.posX, this.posY).find((sq) => sq.proto == "SoilSquare");
+            if (sq != null) {
+                if (Math.random() > (1 / sq.getWaterflowRate())) {
+                    if (!candidateMap.has(candidatePressure)) {
+                        candidateMap.set(candidatePressure, new Array());
+                    }
+                    candidateMap.get(candidatePressure).push(this);
+                }
+            }
         }
-        if (this.currentPressureIndirect >= this.currentPressureDirect) {
+        if (this.currentPressureIndirect > this.currentPressureDirect) {
             for (let i = -1; i < 2; i++) {
-                for (let j = -1; i < 2; i++) {
+                for (let j = -1; j < 2; j++) {
+                    let pressure = this.currentPressureIndirect + j;
                     if (!(getSquares(this.posX + i, this.posY + j)
                             .some((sq) => (!sq.surface && sq.collision) || (sq.surface && (sq.waterContainment < sq.waterContainmentMax)) || sq.proto == this.proto))) {
-                        if (!(this.currentPressureIndirect in targetMap)) {
-                            targetMap[this.currentPressureIndirect] = new Array();
+                        if (!targetMap.has(pressure)) {
+                            targetMap.set(pressure, new Array());
                         }
-                        targetMap[this.currentPressureIndirect].push([this.posX + i, this.posY + j, i]);
+                        targetMap.get(pressure).push([this.posX + i, this.posY + j, i]);
                     }
                 }
             }
