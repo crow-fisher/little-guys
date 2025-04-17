@@ -20,7 +20,7 @@ import { removeOrganism } from "../organisms/_orgOperations.js";
 
 import { calculateColorTemperature, getTemperatureAtWindSquare, temperatureHumidityFlowrateFactor, updateWindSquareTemperature } from "../climate/temperatureHumidity.js";
 import { getWindSquareAbove } from "../climate/wind.js";
-import { RGB_COLOR_BLUE, RGB_COLOR_GREEN, RGB_COLOR_RED, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
+import { COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_GREEN, RGB_COLOR_RED, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
 import { getCurDay, getDaylightStrengthFrameDiff, getTimeScale } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
@@ -439,6 +439,7 @@ export class BaseSquare {
             MAIN_CONTEXT.font = getBaseSize() + "px courier"
             MAIN_CONTEXT.textAlign = 'center';
             MAIN_CONTEXT.textBaseline = 'middle';
+            MAIN_CONTEXT.fillStyle = COLOR_BLACK;
             zoomCanvasSquareText(((this.offsetX + this.posX) + 0.5) * getBaseSize(),
                 ((this.offsetY + this.posY) + 0.5) * getBaseSize(),
                 this.mixIdx % getMixArrLen());
