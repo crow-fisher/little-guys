@@ -98,41 +98,50 @@ export function doWaterFlow() {
         let targetGroupMap = WATERFLOW_TARGET_SQUARES.get(targetGroup);
 
         let candidatePressureKeys = Array.from(candidateGroupMap.keys()).sort((a, b) => a - b);
-        let targetPressureKeys = Array.from(targetGroupMap.keys()).sort((b, a) => b - a);
+        let targetPressureKeys = Array.from(targetGroupMap.keys()).sort((a, b) => b - a);
 
         let candidateOffset = 0;
         let i = 0;
 
-        let candidate, pCand, PTarg;
+        let candidate, candidateArr, pCand, PTarg;
 
         targetPressureKeys.forEach((targetPressure) => {
             let targetPosArr = targetGroupMap.get(targetPressure);
             let curTargetIdx = 0;
 
-            let curTarget = targetPosArr[curTargetIdx];
-            while (candidatePressureKeys.length > 0) {
-                let candidatePressure = candidatePressureKeys.find((candidatePressure) => candidatePressure < targetPressure);
-                if (candidatePressure == null) {
+            while (curTargetIdx < targetPosArr.length) {
+                let curTarget = targetPosArr[curTargetIdx];
+                while (candidatePressureKeys.length > 0) {
+                    let candidatePressure = candidatePressureKeys.find((candidatePressure) => candidatePressure < targetPressure);
+                    if (candidatePressure == null) {
+                        return;
+                    }
+                    if (candidateGroupMap.get(candidatePressure).length == 0) {
+                        candidatePressureKeys = removeItemAll(candidatePressureKeys, candidatePressure);
+                        curTargetIdx += 1;
+                        continue;
+                    }
+                    candidateArr = candidateGroupMap.get(candidatePressure);
+                    candidate = candidateArr.at(0);
+                    pCand = candidatePressure;
+                    PTarg = targetPressure;
+                    break;
+                }
+                curTargetIdx += 1;
+
+                removeItemAll(candidateArr, candidate);
+                if (curTarget[1] >= getCanvasSquaresY()) {
+                    candidate.destroy();
                     return;
                 }
-                if (candidateGroupMap.get(candidatePressure).length == 0) {
-                    candidatePressureKeys = removeItemAll(candidatePressureKeys, candidatePressure);
-                    continue;
-                }
-                let candidateArr = candidateGroupMap.get(candidatePressure);
-                candidate = candidateArr.at(0);
-                removeItemAll(candidateArr, candidate);
-                pCand = candidatePressure;
-                PTarg = targetPressure;
-                curTargetIdx += 1;
-                break;
-            }
 
-            if (Math.random() > (0.9) ** (PTarg - pCand)) {
-                if (candidate.updatePosition(curTarget[0], curTarget[1])) {
-                    candidate.speedX = curTarget[2] * (Math.floor((PTarg - pCand) ** 0.25));
+                if (Math.random() > (0.8) ** (PTarg - pCand)) {
+                    if (candidate.updatePosition(curTarget[0], curTarget[1])) {
+                        candidate.speedX = curTarget[2] * (Math.floor((PTarg - pCand) ** 0.25));
+                    }
                 }
             }
         });
+
     });
 }

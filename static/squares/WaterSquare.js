@@ -141,10 +141,12 @@ class WaterSquare extends BaseSquare {
                     let pressure = this.currentPressureIndirect + j;
                     if (!(getSquares(this.posX + i, this.posY + j)
                             .some((sq) => (!sq.surface && sq.collision) || (sq.surface && (sq.waterContainment < sq.waterContainmentMax)) || sq.proto == this.proto))) {
-                        if (!targetMap.has(pressure)) {
-                            targetMap.set(pressure, new Array());
+                        if (Math.random() > (1 - 0.2 * Math.log(pressure))) {
+                            if (!targetMap.has(pressure)) {
+                                targetMap.set(pressure, new Array());
+                            }
+                            targetMap.get(pressure).push([this.posX + i, this.posY + j, i]);
                         }
-                        targetMap.get(pressure).push([this.posX + i, this.posY + j, i]);
                     }
                 }
             }
