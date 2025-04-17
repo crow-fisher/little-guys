@@ -4,6 +4,8 @@ import { loadGD, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_HEAVYRAIN, UI_CLIM
 export class Climate {
     constructor() {
         let soilColorBaseArr = ["#c99060", "#33251b", "#773319"];
+        let rockColorBaseArr = ["#2b2f3d", "#141114", "#7e8097"];
+
         this.soilColors = [
             this.hueShiftColorArr(soilColorBaseArr, -15, 0, -10),
             this.hueShiftColorArr(soilColorBaseArr, -10, 0, -10),
@@ -15,12 +17,13 @@ export class Climate {
 
         ]
         this.rockColors = [
-            [hexToRgb("#a0b9c1"), hexToRgb("#303536"), hexToRgb("#a8927b")],
-            [hexToRgb("#2b2f3d"), hexToRgb("#141114"), hexToRgb("#7e8097")],
-            [hexToRgb("#949c9a"), hexToRgb("#534938"), hexToRgb("#a89065")],
-            [hexToRgb("#a6bdcb"), hexToRgb("#2f2d3d"), hexToRgb("#a3b4c5")],
-            [hexToRgb("#957068"), hexToRgb("#332b2a"), hexToRgb("#733016")],
-            
+            this.hueShiftColorArr(rockColorBaseArr, -150, -.2, 0),
+            this.hueShiftColorArr(rockColorBaseArr, -100, -.1, 0),
+            this.hueShiftColorArr(rockColorBaseArr, -50, -.05, 0),
+            this.hueShiftColorArr(rockColorBaseArr, -0, -.15, 0),
+            this.hueShiftColorArr(rockColorBaseArr, 50, -.13, 0),
+            this.hueShiftColorArr(rockColorBaseArr, 100, -.1, 0),
+            this.hueShiftColorArr(rockColorBaseArr, 150, -.05, 0),
         ]
 
         this.waterColor = hexToRgb("#31539D");

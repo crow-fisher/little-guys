@@ -127,10 +127,8 @@ function purgeGameState() {
 }
 
 function loadSlotData(slotData) {
-    let topBarMainCache = loadGD(UI_TOPBAR_MAINMENU);
     purgeGameState();
     loadSlotFromSave(slotData);
-    saveGD(UI_TOPBAR_MAINMENU, topBarMainCache);
     saveGD(UI_MAIN_NEWWORLD, false);
     saveOrLoadInProgress = false;
 }
