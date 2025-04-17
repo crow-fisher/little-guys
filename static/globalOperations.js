@@ -128,6 +128,9 @@ export function doWaterFlow() {
                     break;
                 }
                 curTargetIdx += 1;
+                if (candidate == null) {
+                    return;
+                }
 
                 removeItemAll(candidateArr, candidate);
                 if (curTarget[1] >= getCanvasSquaresY()) {
