@@ -297,7 +297,11 @@ export class BaseSquare {
     }
 
     renderWaterSaturation() {
-        this.renderSpecialViewModeLinear(this.blockHealth_color1, this.blockHealth_color2, this.waterContainment, this.waterContainmentMax);
+        if (this.percolationFactor == null) {
+            // this.renderSpecialViewModeLinear(this.blockHealth_color1, this.blockHealth_color2, this.waterContainment, this.waterContainmentMax);
+        } else {
+            this.renderSpecialViewModeLinear(this.blockHealth_color1, this.blockHealth_color2, this.percolationFactor, 1);
+        }
     }
 
     renderSpecialViewModeLinear(color1, color2, value, valueMax) {

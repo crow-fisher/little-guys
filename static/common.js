@@ -211,7 +211,7 @@ export function cachedGetWaterflowRate(sand, silt, clay) {
     baseRet *= sandMult;
     baseRet = Math.max(1, baseRet);
 
-    baseRet = 1 + baseRet ** 0.7;
+    baseRet = baseRet ** 0.7;
     getWaterflowRateCache.set(key, baseRet);
     return baseRet;
 }

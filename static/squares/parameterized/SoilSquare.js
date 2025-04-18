@@ -73,6 +73,7 @@ export class SoilSquare extends BaseSquare {
 
         this.surface = true;
         this.surfaceLightingFactor = loadGD(UI_LIGHTING_SURFACE);
+        this.percolationFactor = 0.5;
 
         this.setVariant();
     }
@@ -149,35 +150,19 @@ export class SoilSquare extends BaseSquare {
     }
     
     getInverseMatricPressure(waterPressure) {
-        if (this._ipc == null || this._ipc.has == null) {
-            this._ipc = new Map();
-        }
-        if (this._ipc.has(waterPressure)) {
-            return this._ipc.get(waterPressure);
-        }
-        let r = (
+        return (
             this.clay * this.getInversePressureGeneric(waterPressure, clayMatricPressureMap)
              + this.silt * this.getInversePressureGeneric(waterPressure, siltMatricPressureMap)
              + this.sand * this.getInversePressureGeneric(waterPressure, sandMatricPressureMap)
         );
-        this._ipc.set(waterPressure, r);
-        return r;
     }
 
     getMatricPressure(waterContainment) {
-        if (this._mpc == null || this._mpc.has == null) {
-            this._mpc = new Map();
-        }
-        if (this._mpc.has(waterContainment)) {
-            return this._mpc.get(waterContainment);
-        }
-        let r = (
+        return (
             this.clay * this.getPressureGeneric(waterContainment, clayMatricPressureMap)
              + this.silt * this.getPressureGeneric(waterContainment, siltMatricPressureMap)
              + this.sand * this.getPressureGeneric(waterContainment, sandMatricPressureMap)
         );
-        this._mpc.set(waterContainment, r);
-        return r;
     }
     getGravitationalPressure() {
         return -0.02 * 9.8 * this.posY; 
@@ -188,21 +173,16 @@ export class SoilSquare extends BaseSquare {
     }
 
     percolateInnerMoisture() {
-        let saturatedNeighbors = 0;
-        let unsaturatedNeighbors = 0;
-
-        if (Math.random() < 0.5) {
+        if (Math.random() < this.percolationFactor) {
             return;
         }
-
+        let startWaterContainment = this.waterContainment;
         getNeighbors(this.posX, this.posY)
             .filter((sq) => sq.proto == this.proto)
             .filter((sq) => {
                 if (sq.waterContainment < sq.waterContainmentMax) {
-                    unsaturatedNeighbors += 1;
                     return true;
                 } else {
-                    saturatedNeighbors += 1;
                     return false;
                 }})
             .forEach((sq) => {
@@ -225,12 +205,29 @@ export class SoilSquare extends BaseSquare {
                 sq.waterContainment += diff;
             });
 
+        let endWaterContainment = this.waterContainment;
+        let diff = startWaterContainment - endWaterContainment;
+
+        let min = 0.00001;
+        let max = 0.001;
+        let minP = 0.99;
+        let maxP = 0.5;
+        if (diff < min) {
+            this.percolationFactor = minP;
+        } else if (diff > max) {
+            this.percolationFactor = maxP;
+        } else {
+            let invLerp = (diff - min) / (max - min);
+            this.percolationFactor = (maxP - minP) * invLerp + minP;
+        }
+
         if (this.waterContainment < this.waterContainmentMax) {
             return;
         }
         this.outflowNewWaterToLocation(this.posX, this.posY);
         this.outflowNewWaterToLocation(this.posX + 1, this.posY);
         this.outflowNewWaterToLocation(this.posX - 1, this.posY);
+
 
     }
 
