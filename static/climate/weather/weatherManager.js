@@ -1,8 +1,8 @@
 import { randRange } from "../../common.js";
-import { addUIFunctionMap, UI_CLIMATE_WEATHER_SUNNY, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_HEAVYRAIN, loadGD, saveGD, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_DURATION, UI_CLIMATE_WEATHER_ACTIVE } from "../../ui/UIData.js";
+import { addUIFunctionMap, UI_CLIMATE_WEATHER_SUNNY, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_HEAVYRAIN, loadGD, saveGD, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_DURATION, UI_CLIMATE_WEATHER_ACTIVE, UI_SIMULATION_GENS_PER_DAY } from "../../ui/UIData.js";
 import { getActiveClimate } from "../climateManager.js";
 import { cloudRainThresh } from "../temperatureHumidity.js";
-import { getCurDay } from "../time.js";
+import { getCurDay, getDt } from "../time.js";
 import { getWindSquaresX, getWindSquaresY } from "../wind.js";
 import { Cloud } from "./cloud.js";
 import { Weather } from "./weather.js";
@@ -20,7 +20,7 @@ export function getCurWeather() {
     return curWeather;
 }
 export function getCurWeatherInterval() {
-    return Math.round((curWeatherInterval - (getCurDay() - curWeatherStartTime)) / 0.000694444);
+    return (curWeatherInterval - (getCurDay() - curWeatherStartTime)) / 0.000694444;
 }
 
 export function triggerWeatherChange() {
@@ -198,7 +198,7 @@ ui_weatherMap.set(UI_CLIMATE_WEATHER_LIGHTRAIN, weatherLightRain)
 ui_weatherMap.set(UI_CLIMATE_WEATHER_HEAVYRAIN, weatherHeavyRain)
 
 function weatherChange() {
-    if (getCurDay() < curWeatherStartTime + curWeatherInterval) {
+    if (getCurDay() - getDt() < curWeatherStartTime + curWeatherInterval) {
         return;
     }
     let curWeatherPatternMap = getActiveClimate().weatherPatternMap;
@@ -244,10 +244,11 @@ export function initWeather() {
 
 function applyUIWeatherChange() {
     curWeather = ui_weatherMap.get(loadGD(UI_CLIMATE_WEATHER_ACTIVE));
-    curWeatherInterval = randRange(	loadGD(UI_CLIMATE_WEATHER_DURATION) / 4, loadGD(UI_CLIMATE_WEATHER_DURATION));
+    curWeatherInterval = randRange(	10 / loadGD(UI_SIMULATION_GENS_PER_DAY), 40 / loadGD(UI_SIMULATION_GENS_PER_DAY));
     curWeatherStartTime = getCurDay();
     console.log("Next weather: ", curWeather.type + ", for " + Math.round(curWeatherInterval / 0.000694444) + " minutes")
 }
 
 addUIFunctionMap(UI_CLIMATE_WEATHER_ACTIVE, applyUIWeatherChange);
 addUIFunctionMap(UI_CLIMATE_WEATHER_DURATION, applyUIWeatherChange);
+addUIFunctionMap(UI_SIMULATION_GENS_PER_DAY, applyUIWeatherChange);

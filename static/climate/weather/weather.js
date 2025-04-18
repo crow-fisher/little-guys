@@ -28,25 +28,21 @@ export class Weather {
     }
 }
 
-export function convertMinutesToTimeUnit(minutes, short=false) {
-    const days = Math.floor(minutes / 1440); // 1440 minutes in a day
-    const hours = Math.floor((minutes % 1440) / 60); // 60 minutes in an hour
-    const mins = minutes % 60; // remaining minutes
+export function convertMinutesToTimeUnit(minutes, short = false) {
+    minutes = Math.max(0, minutes);
+    const totalSeconds = Math.floor(minutes * 60); // convert total minutes to total seconds
+    const days = Math.floor(totalSeconds / 86400); // 86400 seconds in a day
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const mins = Math.floor((totalSeconds % 3600) / 60);
+    const secs = totalSeconds % 60;
 
     if (days > 0) {
-        return days + " day" + (days > 1 ? "s" : "");
+        return days + (short ? " day" : " day" + (days > 1 ? "s" : ""));
     } else if (hours > 0) {
-        if (short)
-            return hours + " hr" + (hours > 1 ? "s" : "");
-        return hours + " hour" + (hours > 1 ? "s" : "");
+        return hours + (short ? " hr" : " hour" + (hours > 1 ? "s" : ""));
     } else if (mins > 0) {
-        if (short)
-            return mins + " min"  + (mins > 1 ? "s" : "");
-        return mins + " minute" + (mins > 1 ? "s" : "");
+        return mins + (short ? " min" : " minute" + (mins > 1 ? "s" : ""));
     } else {
-        if (short)
-            return "0 min";
-
-        return "0 minutes";
+        return secs + (short ? " sec" : " second" + (secs !== 1 ? "s" : ""));
     }
 }
