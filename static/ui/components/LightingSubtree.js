@@ -16,11 +16,9 @@ export class LightingSubtree extends SubTreeComponent {
         let subMenuContainer = new Container(this.window, 0, 1);
         this.window.container = subMenuContainer;
 
-        let textAlignOffsetX = getBaseUISize() * 1.91;
-        let sizeX = getBaseUISize() * 22;
+        let textAlignOffsetX = getBaseUISize() * .8;
+        let sizeX = getBaseUISize() * 25;
         let radioSizeX = sizeX / 2;
-
-
         subMenuContainer.addElement(new Toggle(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_LIGHTING_ENABLED, "enable lighting",() => getActiveClimate().getUIColorInactiveCustom(0.55), () =>    getActiveClimate().getUIColorActive()));
         subMenuContainer.addElement(new Toggle(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_SM_LIGHTING, "lighting editor",() => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
 

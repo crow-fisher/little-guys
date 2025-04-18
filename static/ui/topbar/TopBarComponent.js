@@ -17,9 +17,7 @@ import {
     UI_BOOLEAN, UI_TOPBAR_BLOCK, UI_TOPBAR_VIEWMODE,
     UI_TOPBAR_SIMULATION, UI_TOPBAR_LIGHTING,
     UI_TOPBAR_TIME,
-    UI_NAME,
-    UI_TOPBAR_CLIMATE,
-    UI_NULL
+    UI_NAME, UI_TOPBAR_WEATHER
 } from "../UIData.js";
 import { TopBarToggle } from "./TopBarToggle.js";
 import { getLastMoveOffset } from "../../mouse.js";
@@ -38,38 +36,38 @@ export class TopBarComponent {
 
         this.elements = new Map();
         this.elementPositions = new Map();
+
+        let fontSize = getBaseUISize() * 3 * 0.75;
         this.elements[1] = [
-            new TopBarText(getBaseUISize() * 2, "left", () => this.textWorldName())
+            new TopBarText(fontSize, "left", () => this.textWorldName())
         ]
 
-        this.midSpacingEl = new TopBarText(getBaseUISize() * 2, "left", () => " | ")
+        this.midSpacingEl = new TopBarText(fontSize, "left", () => " | ")
         
         this.elements[0] = [
-            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_MAINMENU, UI_BOOLEAN, () => this.textMainMenu()),
+            new TopBarToggle(fontSize, "left", UI_TOPBAR_MAINMENU, UI_BOOLEAN, () => this.textMainMenu()),
             this.midSpacingEl,
-            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_BLOCK, UI_BOOLEAN, () => this.textBlockMenu()),
+            new TopBarToggle(fontSize, "left", UI_TOPBAR_BLOCK, UI_BOOLEAN, () => this.textBlockMenu()),
             this.midSpacingEl,
-            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_CLIMATE, UI_BOOLEAN, () => this.textClimateMenu()),
+            new TopBarToggle(fontSize, "left", UI_TOPBAR_VIEWMODE, UI_BOOLEAN, () => this.textViewMode()),
             this.midSpacingEl,
-            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_VIEWMODE, UI_BOOLEAN, () => this.textViewMode()),
+            new TopBarToggle(fontSize, "left", UI_TOPBAR_LIGHTING, UI_BOOLEAN, () => this.textToggleLighting()),
             this.midSpacingEl,
-            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_LIGHTING, UI_BOOLEAN, () => this.textToggleLighting()),
+            new TopBarToggle(fontSize, "left", UI_TOPBAR_SIMULATION, UI_BOOLEAN, () => this.textSimulation()),
             this.midSpacingEl,
-            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_SIMULATION, UI_BOOLEAN, () => this.textSimulation()),
+            new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_0, () => "\u23F8\uFE0E"),
+            new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_1, () => "▶"),
+            new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_2, () => "▶"),
+            new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_3, () => "▶"),
+            new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_4, () => "▶"),
+            new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_5, () => "▶"),
+            new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_6, () => "▶"),
+            new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_7, () => "▶"),
+            new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_8, () => "▶"),
+            new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_9, () => "▶"),
             this.midSpacingEl,
-            new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_0, () => "\u23F8\uFE0E"),
-            new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_1, () => "▶"),
-            new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_2, () => "▶"),
-            new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_3, () => "▶"),
-            new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_4, () => "▶"),
-            new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_5, () => "▶"),
-            new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_6, () => "▶"),
-            new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_7, () => "▶"),
-            new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_8, () => "▶"),
-            new TopBarToggle(getBaseUISize() * 2,"left", UI_SPEED, UI_SPEED_9, () => "▶"),
-            this.midSpacingEl,
-            new TopBarToggle(getBaseUISize() * 2, "left", UI_TOPBAR_TIME, UI_BOOLEAN,() => this.textDateTime(), getBaseUISize() * 26.404296875),
-            new TopBarText(getBaseUISize() * 2, "left", () => " | " + this.textWeather()),
+            new TopBarToggle(fontSize, "left", UI_TOPBAR_TIME, UI_BOOLEAN,() => this.textDateTime(), getBaseUISize() * 26.404296875),
+            new TopBarToggle(fontSize, "left", UI_TOPBAR_WEATHER, UI_BOOLEAN, () => " | " + this.textWeather()),
             
         ];
 

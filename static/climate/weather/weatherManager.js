@@ -32,6 +32,8 @@ export function triggerWeatherChange() {
 let curClouds = [];
 let curWinds = [];
 
+let cloudDuration = randRange(0.5, 2) / loadGD(UI_SIMULATION_GENS_PER_DAY);
+
 function spawnFogCloud() {
     let wsx = getWindSquaresX();
     let wsy = getWindSquaresY();
@@ -39,7 +41,7 @@ function spawnFogCloud() {
         randRange(0, wsx),
         randRange(0, wsy),
         randRange(0.4, 0.9) * wsx, randRange(0.2, 0.35) * wsy,
-        getCurDay(), Math.min(0.5, curWeatherInterval) * randRange(0.1, 0.5),
+        getCurDay(), cloudDuration,
         randRange(1, 1.003), randRange(0, .3)));
 }
 
@@ -50,7 +52,7 @@ function spawnCumulusCloud() {
         randRange(0, wsx),
         randRange(0, wsy / 8),
         randRange(0.4, 0.9) * wsy, randRange(0.2, 0.35) * wsy,
-        getCurDay(), Math.min(0.5, curWeatherInterval) * randRange(0.1, 0.5),
+        getCurDay(), cloudDuration,
         randRange(1.001, cloudRainThresh), 0.8 * randRange(1, 2)));
 }
 
@@ -61,7 +63,7 @@ function spawnNimbusCloud(rainFactor) {
         randRange(0, wsx),
         randRange(0, wsy / 8),
         randRange(0.4, 0.9) * wsy, randRange(0.15, 0.25) * wsy,
-        getCurDay(), Math.min(0.5, curWeatherInterval) * randRange(0.1, 0.5),
+        getCurDay(), cloudDuration,
         1 + 0.05 * rainFactor, 0.8));
 }
 
@@ -72,7 +74,7 @@ function spawnWindGust() {
         randRange(-wsx, wsx),
         randRange(-wsy, wsy),
         randRange(0, 0.2) * wsx, randRange(0.05, 0.1) * wsy,
-        getCurDay(), Math.min(0.5, curWeatherInterval) * randRange(0.01, 0.1),
+        getCurDay(), cloudDuration,
         -1, 0.8));
 }
 
@@ -188,7 +190,7 @@ function generalRainyWeather(rainFactor) {
 }
 
 weatherLightRain = new Weather(UI_CLIMATE_WEATHER_LIGHTRAIN, rainyHumidityGradient, rainyTemperatureGradient, 100, generalRainyWeather(0.25));
-weatherHeavyRain = new Weather(UI_CLIMATE_WEATHER_HEAVYRAIN, rainyHumidityGradient, rainyTemperatureGradient, 100, generalRainyWeather(1));
+weatherHeavyRain = new Weather(UI_CLIMATE_WEATHER_HEAVYRAIN, rainyHumidityGradient, rainyTemperatureGradient, 100, generalRainyWeather(2));
 
 ui_weatherMap.set(UI_CLIMATE_WEATHER_SUNNY, weatherSunny)
 ui_weatherMap.set(UI_CLIMATE_WEATHER_PARTLY_CLOUDY, weatherPartlyCloudy)
@@ -238,13 +240,13 @@ export function weather() {
 
 export function initWeather() {
     weatherChange();
-    curWeather = weatherSunny;
+    curWeather = ui_weatherMap.get(loadGD(UI_CLIMATE_WEATHER_ACTIVE));
     curWeather.setRestingValues();
 }
 
 function applyUIWeatherChange() {
     curWeather = ui_weatherMap.get(loadGD(UI_CLIMATE_WEATHER_ACTIVE));
-    curWeatherInterval = randRange(	10 / loadGD(UI_SIMULATION_GENS_PER_DAY), 40 / loadGD(UI_SIMULATION_GENS_PER_DAY));
+    curWeatherInterval = randRange(	3 / loadGD(UI_SIMULATION_GENS_PER_DAY), 10 / loadGD(UI_SIMULATION_GENS_PER_DAY));
     curWeatherStartTime = getCurDay();
     console.log("Next weather: ", curWeather.type + ", for " + Math.round(curWeatherInterval / 0.000694444) + " minutes")
 }

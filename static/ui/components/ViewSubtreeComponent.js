@@ -23,15 +23,13 @@ import { SubTreeComponent } from "./SubTreeComponent.js";
 export class ViewSubtreeComponent extends SubTreeComponent {
     constructor(posXFunc, posYFunc, padding, dir, key) {
         super(posXFunc, posYFunc, padding, dir, key);
-        let sizeX = getBaseUISize() * 16;
+        let sizeX = getBaseUISize() * 18;
         let container = new Container(this.window, padding, 1);
         this.window.container = container;
-        let textAlignOffsetX = getBaseUISize() * 1.99;
+        let textAlignOffsetX = getBaseUISize() * 0.8;
 
         container.addElement(new RadioToggleLabel(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX,"normal",  UI_VIEWMODE_SELECT, UI_VIEWMODE_NORMAL,() => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
         container.addElement(new RadioToggleLabel(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX,"lighting",  UI_VIEWMODE_SELECT, UI_VIEWMODE_LIGHTIHNG,() => getActiveClimate().getUIColorInactiveCustom(0.63), () => getActiveClimate().getUIColorActive()));
-        container.addElement(new RadioToggleLabel(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX,"nitrogen",  UI_VIEWMODE_SELECT, UI_VIEWMODE_NITROGEN,() => getActiveClimate().getUIColorInactiveCustom(0.58), () => getActiveClimate().getUIColorActive()));
-        container.addElement(new RadioToggleLabel(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX,"phosphorus",  UI_VIEWMODE_SELECT, UI_VIEWMODE_PHOSPHORUS,() => getActiveClimate().getUIColorInactiveCustom(0.64), () => getActiveClimate().getUIColorActive()));
         container.addElement(new RadioToggleLabel(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX,"wind",  UI_VIEWMODE_SELECT, UI_VIEWMODE_WIND,() => getActiveClimate().getUIColorInactiveCustom(0.57), () => getActiveClimate().getUIColorActive()));
         container.addElement(new RadioToggleLabel(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX,"temperature",  UI_VIEWMODE_SELECT, UI_VIEWMODE_TEMPERATURE,() => getActiveClimate().getUIColorInactive(0.55), () => getActiveClimate().getUIColorActive()));
         container.addElement(new RadioToggleLabel(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX,"moisture",  UI_VIEWMODE_SELECT, UI_VIEWMODE_MOISTURE,() => getActiveClimate().getUIColorInactiveCustom(0.67), () => getActiveClimate().getUIColorActive()));
