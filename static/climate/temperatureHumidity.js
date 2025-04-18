@@ -270,9 +270,6 @@ function getAdjacentProp(x, y, func) {
 }
 
 function doRain() {
-    if (isLeftMouseClicked() || isRightMouseClicked()) {
-        return;
-    }
     for (let x = 0; x < getWindSquaresX(); x++) {
         for (let y = 0; y < getWindSquaresY(); y++) {
             if (getAdjacentProp(x, y, (x, y) => (getHumidity(x, y) > cloudRainThresh ? 1 : 0)) < 5) {
@@ -292,12 +289,12 @@ function doRain() {
             let expectedPascals = saturationPressureOfWaterVapor(adjacentTemperature) * cloudRainThresh;
             let adjacentPascals = getAdjacentProp(x, y, (x, y) => waterSaturationMap[x][y]) / 5;
 
-            let dropPascals = (adjacentPascals - expectedPascals) * 0.05;
+            let dropPascals = (adjacentPascals - expectedPascals) * 0.005;
 
             let usedWaterPascalsPerSquare = dropPascals / 5;
             let dropHealth = dropPascals / pascalsPerWaterSquare;
 
-            dropHealth = Math.min(1, dropHealth * loadGD(UI_CLIMATE_RAINFALL_DENSITY));
+            dropHealth = Math.min(1, dropHealth * loadGD(UI_CLIMATE_RAINFALL_DENSITY) * 2500);
 
             let sq = addSquareByName(x * 4 + randNumber(0, 3), y * 4 + randNumber(0, 3), "water");
             if (sq) {
