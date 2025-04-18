@@ -1,8 +1,7 @@
-import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillCircle, zoomCanvasFillRectTheta } from "../canvas.js";
+import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillCircle } from "../canvas.js";
 import { hexToRgb, hsv2rgb, randNumber, randRange, rgb2hsv, rgbToRgba } from "../common.js";
 import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth, MAIN_CONTEXT, setBackgroundColor } from "../index.js";
 import { calculateColorRGB, getFrameRelCloud } from "./temperatureHumidity.js";
-import { zoomCanvasFillRect } from "../canvas.js";
 import {
     loadGD, UI_SPEED_1, UI_SPEED_2, UI_SPEED_3,
     UI_SPEED_4,
@@ -12,15 +11,11 @@ import {
     UI_SPEED_8,
     UI_SPEED_9,
     UI_SPEED,
-    UI_SPEED_0,
-    UI_LIGHTING_SUN,
-    UI_LIGHTING_MOON,
-    saveGD
+    UI_SPEED_0, saveGD
 } from "../ui/UIData.js";
 import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
 import { SunCalc } from "./suncalc/suncalc.js";
 import { getActiveClimate } from "./climateManager.js";
-import { triggerWeatherChange } from "./weather/weatherManager.js";
 
 let TIME_SCALE = 1;
 let curUIKey = UI_SPEED_1;
@@ -190,7 +185,6 @@ export function setCurDay(newCurDay) {
     curDay = newCurDay;
     seekTimeTarget = 0;
     iterateOnOrganisms((org) => org.curLifeTimeOffset += (curDay - start));
-    triggerWeatherChange();
 }
 
 export function doTimeSkipToNow() {

@@ -23,12 +23,6 @@ export function getCurWeatherInterval() {
     return (curWeatherInterval - (getCurDay() - curWeatherStartTime)) / 0.000694444;
 }
 
-export function triggerWeatherChange() {
-    curWeatherStartTime = 0;
-    curWeatherInterval = 0;
-    weatherChange();
-}
-
 let curClouds = [];
 let curWinds = [];
 
@@ -200,7 +194,10 @@ ui_weatherMap.set(UI_CLIMATE_WEATHER_LIGHTRAIN, weatherLightRain)
 ui_weatherMap.set(UI_CLIMATE_WEATHER_HEAVYRAIN, weatherHeavyRain)
 
 function weatherChange() {
-    if (getCurDay() - getDt() < curWeatherStartTime + curWeatherInterval) {
+    curWeatherStartTime = Math.min(curWeatherStartTime, getCurDay());
+    curWeather = ui_weatherMap.get(loadGD(UI_CLIMATE_WEATHER_ACTIVE));
+
+    if (getCurDay() - getDt() < Math.min(curWeatherStartTime + curWeatherInterval)) {
         return;
     }
     let curWeatherPatternMap = getActiveClimate().weatherPatternMap;
