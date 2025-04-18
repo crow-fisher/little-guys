@@ -73,7 +73,6 @@ export async function gameUserStateLoad() {
                         saveGD(UI_TOPBAR_SIMULATION, false);
                         saveGD(UI_TOPBAR_TIME, false);
                         initUI();
-                        indexCanvasSize();
                     }
                     resolve(saveObj);
                 } else {
@@ -128,6 +127,7 @@ function loadSlotData(slotData) {
     purgeGameState();
     loadSlotFromSave(slotData);
     saveGD(UI_MAIN_NEWWORLD, false);
+    saveGD(UI_TOPBAR_MAINMENU, true);
     saveOrLoadInProgress = false;
 }
 

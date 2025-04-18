@@ -1,6 +1,6 @@
 import { BaseSquare } from "../BaseSqaure.js";
 import { getNeighbors, getSquares } from "../_sqOperations.js";
-import { hexToRgb, randRange } from "../../common.js";
+import { cachedGetWaterflowRate, hexToRgb, randRange } from "../../common.js";
 import { getCurTimeScale, getDt, getFrameDt, timeScaleFactor } from "../../climate/time.js";
 import { getPressure, getWindSquareAbove } from "../../climate/wind.js";
 import { addWaterSaturationPascals, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, temperatureHumidityFlowrateFactor } from "../../climate/temperatureHumidity.js";
@@ -149,19 +149,35 @@ export class SoilSquare extends BaseSquare {
     }
     
     getInverseMatricPressure(waterPressure) {
-        return (
+        if (this._ipc == null || this._ipc.has == null) {
+            this._ipc = new Map();
+        }
+        if (this._ipc.has(waterPressure)) {
+            return this._ipc.get(waterPressure);
+        }
+        let r = (
             this.clay * this.getInversePressureGeneric(waterPressure, clayMatricPressureMap)
              + this.silt * this.getInversePressureGeneric(waterPressure, siltMatricPressureMap)
              + this.sand * this.getInversePressureGeneric(waterPressure, sandMatricPressureMap)
-        )
+        );
+        this._ipc.set(waterPressure, r);
+        return r;
     }
 
     getMatricPressure(waterContainment) {
-        return (
+        if (this._mpc == null || this._mpc.has == null) {
+            this._mpc = new Map();
+        }
+        if (this._mpc.has(waterContainment)) {
+            return this._mpc.get(waterContainment);
+        }
+        let r = (
             this.clay * this.getPressureGeneric(waterContainment, clayMatricPressureMap)
              + this.silt * this.getPressureGeneric(waterContainment, siltMatricPressureMap)
              + this.sand * this.getPressureGeneric(waterContainment, sandMatricPressureMap)
-        )
+        );
+        this._mpc.set(waterContainment, r);
+        return r;
     }
     getGravitationalPressure() {
         return -0.02 * 9.8 * this.posY; 
@@ -239,8 +255,8 @@ export class SoilSquare extends BaseSquare {
             return 0;
         }
         let maxWaterflowRate = (this.waterContainmentMax) / this.getWaterflowRate();
-        maxWaterflowRate /= 5;
-        let amountToPercolate = Math.min(this.waterContainmentMax - this.waterContainment, Math.min(waterBlock.blockHealth, maxWaterflowRate));
+        maxWaterflowRate /= .05;
+        let amountToPercolate = Math.min(this.waterContainmentMax - this.waterContainment, Math.min(waterBlock.blockHealth)); //, maxWaterflowRate));
         this.waterContainment += amountToPercolate;
         return amountToPercolate;
     }
@@ -280,26 +296,8 @@ export class SoilSquare extends BaseSquare {
     }
 
     getWaterflowRate() {
-        return this._getWaterflowRate(this.sand, this.silt, this.clay);
+        return cachedGetWaterflowRate(this.sand, this.silt, this.clay);
     }
-
-    _getWaterflowRate(sand, silt, clay) {
-        // https://docs.google.com/spreadsheets/d/1MWOde96t-ruC5k1PLL4nex0iBjdyXKOkY7g59cnaEj4/edit?gid=0#gid=0
-        let clayRate = 2;
-        let siltRate = 1.5;
-        let sandRate = 0.92;
-        let power = 10;
-
-        let baseRet = (sand * sandRate + 
-                silt * siltRate + 
-                clay * clayRate) ** power;
-
-        let sandMult = 1 + Math.max(0, sand - 0.9) * 40;
-        baseRet *= sandMult;
-        baseRet = Math.max(1, baseRet);
-        return baseRet;
-    }
-
     triggerParticles(bonkSpeed) {
         if (Date.now() < this.spawnTime + 100) {
             return;

@@ -26,7 +26,7 @@ export class ViewSubtreeComponent extends SubTreeComponent {
         let sizeX = getBaseUISize() * 18;
         let container = new Container(this.window, padding, 1);
         this.window.container = container;
-        let textAlignOffsetX = getBaseUISize() * 0.8;
+        let textAlignOffsetX = getBaseUISize() * 0.58;
 
         container.addElement(new RadioToggleLabel(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX,"normal",  UI_VIEWMODE_SELECT, UI_VIEWMODE_NORMAL,() => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
         container.addElement(new RadioToggleLabel(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX,"lighting",  UI_VIEWMODE_SELECT, UI_VIEWMODE_LIGHTIHNG,() => getActiveClimate().getUIColorInactiveCustom(0.63), () => getActiveClimate().getUIColorActive()));

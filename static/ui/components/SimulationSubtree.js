@@ -15,7 +15,7 @@ export class SimulationSubtree extends SubTreeComponent {
         super(posXFunc, posYFunc, padding, dir, key);
         let subMenuContainer = new Container(this.window, 0, 1);
         this.window.container = subMenuContainer;
-        let textAlignOffsetX = getBaseUISize() * .8;
+        let textAlignOffsetX = getBaseUISize() * 0.58;
 
         let sizeX = getBaseUISize() * 21;
         let radioSizeX = sizeX / 3;

@@ -128,7 +128,7 @@ class BaseOrganism {
                     if (diffToTarget <= 0) {
                         return 0;
                     }
-                    sq.waterContainment -= (1 / (numRoots * this.waterPressureLossRate));
+                    sq.waterContainment -= (2 / (numRoots * this.waterPressureLossRate));
                     return (diffToTarget / numRoots);
                 })
                 .reduce((accumulator, currentValue) => accumulator + currentValue, 0);

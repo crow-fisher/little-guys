@@ -46,7 +46,7 @@ export class MainMenuComponent extends SubTreeComponent {
 
             this.worldsContainer.addElement(slotFilledConditionalContainer);
             this.worldsContainer.addElement(slotEmptyConditionalContainer);
-            slotEmptyConditionalContainer.addElement(new Text(this.window, this.sizeX, getBaseUISize() * 2.5, UI_CENTER, "slot empty"));
+            slotEmptyConditionalContainer.addElement(new Text(this.window, this.sizeX, getBaseUISize() * 2.5, UI_CENTER, " - slot empty - ", 0.75, "#999999", "courierItalic"));
 
             let row = new Container(this.window, 0, 0);
             slotFilledConditionalContainer.addElement(row);
@@ -70,7 +70,7 @@ export class MainMenuComponent extends SubTreeComponent {
         subMenuContainer.addElement(pagesRow);
         pagesRow.addElement(new Button(this.window, this.sizeX / 4, getBaseUISize() * 3, UI_CENTER, () => saveUI(UI_UI_WORLDPAGE, Math.max(0, loadUI(UI_UI_WORLDPAGE) - 1)), "-", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
         pagesRow.addElement(new TextFunctionalBackground(this.window, this.sizeX / 2, getBaseUISize() * 3, UI_CENTER,
-         () => "page " + (loadUI(UI_UI_WORLDPAGE) + 1) + " of " + (this.getNumPages() + 1), getActiveClimate().getUIColorInactiveCustom(0.55), 0.75));
+            () => "page " + (loadUI(UI_UI_WORLDPAGE) + 1) + " of " + (this.getNumPages() + 1), () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.75));
         pagesRow.addElement(new Button(this.window, this.sizeX / 4, getBaseUISize() * 3, UI_CENTER, () => saveUI(UI_UI_WORLDPAGE, Math.min(this.getNumPages(), loadUI(UI_UI_WORLDPAGE) + 1)), "+", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
     
         subMenuContainer.addElement(new Text(this.window, this.sizeX, getBaseUISize() * .5, this.textAlignOffsetX, ""));

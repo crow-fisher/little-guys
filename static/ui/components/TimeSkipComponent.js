@@ -22,18 +22,18 @@ export class TimeSkipComponent extends LockedComponent {
         this.window.container = container;
         this.timeSkipElement = new TimeSkipElement(this.window, halfSizeX, getBaseUISize() * 3);
         container.addElement(this.timeSkipElement);
-        container.addElement(new Button(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, () => doTimeSkipToNow(), "now",() => getActiveClimate().getUIColorInactiveCustom(0.55)));
+        container.addElement(new Button(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, () => doTimeSkipToNow(), "now",() => getActiveClimate().getUIColorInactiveCustom(0.52)));
        
         let row1 =  new Container(this.window, 0, 0);
         let row2 =  new Container(this.window, 0, 0);
-        row1.addElement(new Button(this.window, sizeX / 2, getBaseUISize() * 3, UI_CENTER, () => doTimeSkipToDate("winter"),
-        "winter",() => getActiveClimate().getUIColorInactiveCustom(0.66)));
         row1.addElement(new Button(this.window, sizeX / 2, getBaseUISize() * 3, UI_CENTER, () => doTimeSkipToDate("spring"),
         "spring",() => getActiveClimate().getUIColorInactiveCustom(0.62)));
-        row2.addElement(new Button(this.window, sizeX / 2, getBaseUISize() * 3, UI_CENTER, () => doTimeSkipToDate("summer"),
-        "summer",() => getActiveClimate().getUIColorInactiveCustom(0.56)));
+        row1.addElement(new Button(this.window, sizeX / 2, getBaseUISize() * 3, UI_CENTER, () => doTimeSkipToDate("summer"),
+        "summer",() => getActiveClimate().getUIColorInactiveCustom(0.58)));
         row2.addElement(new Button(this.window, sizeX / 2, getBaseUISize() * 3, UI_CENTER, () => doTimeSkipToDate("fall"),
-        "fall",() => getActiveClimate().getUIColorInactiveCustom(0.58)));
+        "fall",() => getActiveClimate().getUIColorInactiveCustom(0.55)));
+        row2.addElement(new Button(this.window, sizeX / 2, getBaseUISize() * 3, UI_CENTER, () => doTimeSkipToDate("winter"),
+        "winter",() => getActiveClimate().getUIColorInactiveCustom(0.66)));
 
         container.addElement(row1);
         container.addElement(row2);

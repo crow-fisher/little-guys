@@ -187,6 +187,50 @@ export function hsv2rgb(h,s,v)
   let f= (n,k=(n+h/60)%6) => v - v*s*Math.max( Math.min(k,4-k,1), 0);     
   return [f(5),f(3),f(1)];       
 }   
+
+
+
+let getWaterflowRateCache = new Map();
+export function cachedGetWaterflowRate(sand, silt, clay) {
+    let key = sand * 1000 + silt * 10 + clay;
+    if (getWaterflowRateCache.has(key)) {
+        return getWaterflowRateCache.get(key);
+    }
+
+    // https://docs.google.com/spreadsheets/d/1MWOde96t-ruC5k1PLL4nex0iBjdyXKOkY7g59cnaEj4/edit?gid=0#gid=0
+    let clayRate = 2;
+    let siltRate = 1.5;
+    let sandRate = 0.92;
+    let power = 10;
+
+    let baseRet = (sand * sandRate + 
+            silt * siltRate + 
+            clay * clayRate) ** power;
+
+    let sandMult = 1 + Math.max(0, sand - 0.9) * 40;
+    baseRet *= sandMult;
+    baseRet = Math.max(1, baseRet);
+
+    baseRet = 1 + baseRet ** 0.7;
+    getWaterflowRateCache.set(key, baseRet);
+    return baseRet;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 export { getObjectArrFromMap, removeItemAll, hexToRgb, rgbToHex, rgbToRgba, 
     randNumber, randRange, loadImage, getStandardDeviation, getZPercent,
      processColorStdev, processColorStdevMulticolor, processColorLerp, 

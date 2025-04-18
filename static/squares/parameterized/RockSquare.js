@@ -5,6 +5,7 @@ import { getActiveClimate } from "../../climate/climateManager.js";
 import { loadGD, UI_LIGHTING_ROCK, UI_PALETTE_COMPOSITION, UI_PALETTE_ROCKIDX, UI_ROCK_COMPOSITION, UI_SOIL_COMPOSITION } from "../../ui/UIData.js";
 import { getCanvasSquaresY } from "../../canvas.js";
 import { addSquareByName } from "../../manipulation.js";
+import { cachedGetWaterflowRate } from "../../common.js";
 
 
 export function getBaseRockColor(sand, silt, clay) {
@@ -58,7 +59,7 @@ export class RockSquare extends SoilSquare {
     }
 
     getWaterflowRate() {
-        return super._getWaterflowRate(0, 0, 1);
+        return cachedGetWaterflowRate(0, 0, 1);
     }
 
     doBlockOutflow() {

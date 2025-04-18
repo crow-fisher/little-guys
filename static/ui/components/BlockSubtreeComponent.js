@@ -13,7 +13,7 @@ export class BlockSubtreeComponent extends SubTreeComponent {
         let subMenuContainer = new Container(this.window, 0, 1);
         this.window.container = subMenuContainer;
 
-        let textAlignOffsetX = getBaseUISize() * 1.91;
+        let textAlignOffsetX = getBaseUISize() * 0.58;
 
         subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 13 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_PALETTE_ACTIVE, "blocks",() => getActiveClimate().getUIColorInactiveCustom(0.66), () => getActiveClimate().getUIColorActive()));
         subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 13 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_SM_ORGANISM, "plants",() => getActiveClimate().getUIColorInactiveCustom(0.59), () => getActiveClimate().getUIColorActive()));

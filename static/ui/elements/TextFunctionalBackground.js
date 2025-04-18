@@ -5,19 +5,19 @@ import { loadGD, saveGD, UI_CENTER } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class TextFunctionalBackground extends WindowElement {
-    constructor(window, sizeX, sizeY, offsetX, textFunc, fillFillStyle, fontSizeMult=0.75, textFillStyle=COLOR_BLACK) {
+    constructor(window, sizeX, sizeY, offsetX, textFunc, fillFillStyleFunc, fontSizeMult=0.75, textFillStyle=COLOR_BLACK) {
         super(window, sizeX, sizeY);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         this.offsetX = offsetX;
         this.textFunc = textFunc;
-        this.fillFillStyle = fillFillStyle;
+        this.fillFillStyleFunc = fillFillStyleFunc;
         this.fontSizeMult = fontSizeMult;
         this.textFillStyle = textFillStyle;
     }
 
     render(startX, startY) {
-        MAIN_CONTEXT.fillStyle = this.fillFillStyle;
+        MAIN_CONTEXT.fillStyle = this.fillFillStyleFunc();
         MAIN_CONTEXT.fillRect(startX, startY, this.sizeX, this.sizeY);
         MAIN_CONTEXT.font = this.sizeY * this.fontSizeMult + "px courier"
         MAIN_CONTEXT.textBaseline = 'middle';

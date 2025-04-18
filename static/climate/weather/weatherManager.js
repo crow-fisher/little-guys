@@ -44,10 +44,10 @@ function spawnCumulusCloud() {
     let wsy = getWindSquaresY();
     curClouds.push(new Cloud(
         randRange(0, wsx),
-        randRange(0, wsy / 8),
-        randRange(0.4, 0.9) * wsy, randRange(0.2, 0.35) * wsy,
+        randRange(0, wsy / 4),
+        randRange(0.4, 0.9) * wsx, randRange(0.3, 0.45) * wsy,
         getCurDay(), cloudDuration,
-        randRange(1.001, cloudRainThresh), 0.8 * randRange(1, 2)));
+        randRange((1 + cloudRainThresh) / 2, cloudRainThresh), 0.8));
 }
 
 function spawnNimbusCloud(rainFactor) {
@@ -74,10 +74,10 @@ function spawnWindGust() {
 
 // UI_CLIMATE_WEATHER_SUNNY
 let sunnyHg = [
-    [0, 0.2],
-    [0.15, 0.3],
-    [0.25, 0.3],
-    [1, 0.4]
+    [0, 0.9],
+    [0.15, 0.9],
+    [0.25, 0.9],
+    [1, 0.9]
 ]
 let sunnyTg = [
     [0, 273 + 10],
@@ -86,7 +86,6 @@ let sunnyTg = [
 ]
 
 function sunnyWeather() {
-    curClouds = new Array();
 }
 
 weatherSunny = new Weather(UI_CLIMATE_WEATHER_SUNNY, sunnyHg, sunnyTg, 100, sunnyWeather);
@@ -163,7 +162,7 @@ function foggyWeather() {
 }
 
 weatherPartlyCloudy = new Weather(UI_CLIMATE_WEATHER_PARTLY_CLOUDY, cloudyHg, cloudyTg, 100, cloudyWeather(6));
-weatherMostlyCloudy = new Weather(UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, cloudyHg, cloudyTg, 100, cloudyWeather(10));
+weatherMostlyCloudy = new Weather(UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, cloudyHg, cloudyTg, 100, cloudyWeather(20));
 weatherFoggy = new Weather(UI_CLIMATE_WEATHER_FOGGY, foggyHg, foggyTg, 100, foggyWeather);
 
 export function logRainFall(amount) {
@@ -183,7 +182,7 @@ function generalRainyWeather(rainFactor) {
     }
 }
 
-weatherLightRain = new Weather(UI_CLIMATE_WEATHER_LIGHTRAIN, rainyHumidityGradient, rainyTemperatureGradient, 100, generalRainyWeather(0.25));
+weatherLightRain = new Weather(UI_CLIMATE_WEATHER_LIGHTRAIN, rainyHumidityGradient, rainyTemperatureGradient, 100, generalRainyWeather(0.6));
 weatherHeavyRain = new Weather(UI_CLIMATE_WEATHER_HEAVYRAIN, rainyHumidityGradient, rainyTemperatureGradient, 100, generalRainyWeather(2));
 
 ui_weatherMap.set(UI_CLIMATE_WEATHER_SUNNY, weatherSunny)
