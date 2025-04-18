@@ -1,4 +1,3 @@
-import { addOrganismSquare } from "./lifeSquares/_lsOperations.js";
 import { addOrganism, iterateOnOrganisms } from "./organisms/_orgOperations.js";
 import { GrowthComponent, GrowthPlan, GrowthPlanStep } from "./organisms/GrowthPlan.js";
 import { addSquare, iterateOnSquares } from "./squares/_sqOperations.js";
@@ -401,7 +400,6 @@ function loadSlotFromSave(slotData) {
         org.rootType = TypeMap[org.rootType];
 
         addOrganism(org);
-        org.lifeSquares.forEach(addOrganismSquare);
     });
     indexCanvasSize(false);
 

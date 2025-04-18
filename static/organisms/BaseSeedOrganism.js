@@ -1,6 +1,5 @@
 import { BaseOrganism } from "./BaseOrganism.js";
 import { SeedLifeSquare } from "../lifeSquares/SeedLifeSquare.js";
-import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 import { addNewOrganism } from "./_orgOperations.js";
 import { getCurDay, getTimeScale } from "../climate/time.js";
 import { loadGD, UI_SIMULATION_GENS_PER_DAY } from "../ui/UIData.js";
@@ -19,13 +18,9 @@ class BaseSeedOrganism extends BaseOrganism {
 
     growInitialSquares() {
         let newLifeSquare = new SeedLifeSquare(this.linkedSquare, this);
-        if (addOrganismSquare(newLifeSquare)) {
-            newLifeSquare.linkSquare(this.linkedSquare);
-            this.linkedSquare.linkOrganismSquare(newLifeSquare);
-            this.addAssociatedLifeSquare(newLifeSquare);
-        } else {
-            this.destroy();
-        }
+        newLifeSquare.linkSquare(this.linkedSquare);
+        this.linkedSquare.linkOrganismSquare(newLifeSquare);
+        this.addAssociatedLifeSquare(newLifeSquare);
     }
 
     getSproutType() {

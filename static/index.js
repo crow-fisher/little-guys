@@ -46,7 +46,7 @@ let height = 0;
 export function getTotalCanvasPixelWidth() { return width; }
 export function getTotalCanvasPixelHeight() { return height; }
 
-export function indexCanvasSize(shouldInitUI=true) {
+export function indexCanvasSize(shouldInitUIClimateAndLighting=true) {
     let margin = 0;
     width = Math.floor(window.innerWidth - margin);
     height = Math.floor(window.innerHeight - margin);
@@ -55,14 +55,14 @@ export function indexCanvasSize(shouldInitUI=true) {
     setCanvasSquaresY(loadGD(UI_SIMULATION_HEIGHT));
     setCanvasSquaresX(Math.floor(width / c_baseSize));      
     setBaseSize(c_baseSize);
-    clearTimeouts();
-    resetClimateAndLighting();
     iterateOnSquares((sq) => sq.lighting = new Array());
 
     MAIN_CANVAS.width = width;
     MAIN_CANVAS.height = height;
     
-    if (shouldInitUI) {
+    if (shouldInitUIClimateAndLighting) {
+        clearTimeouts();
+        resetClimateAndLighting();
         initUI();
     }
     resetZoom();

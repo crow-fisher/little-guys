@@ -1,13 +1,13 @@
-import { getSqIterationOrder, iterateOnSquares } from "./squares/_sqOperations.js";
+import { getSqIterationOrder } from "./squares/_sqOperations.js";
 import { iterateOnOrganisms } from "./organisms/_orgOperations.js";
 import {
-    ALL_SQUARES, ALL_ORGANISM_SQUARES, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES, resetWaterflowSquares
+    ALL_SQUARES, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES, resetWaterflowSquares
 } from "./globals.js";
 
 import { getObjectArrFromMap } from "./common.js";
 import { removeItemAll } from "./common.js";
 import { getCanvasSquaresX, getCanvasSquaresY } from "./canvas.js";
-import { loadGD, saveGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "./ui/UIData.js";
+import { saveGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "./ui/UIData.js";
 
 let frame_squares = null;
 let frame_solid_squares = null;

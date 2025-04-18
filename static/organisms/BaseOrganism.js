@@ -1,14 +1,11 @@
 import { removeOrganism } from "./_orgOperations.js";
-import { randNumber } from "../common.js";
-import { getCurDay, getCurTimeScale, getDt } from "../climate/time.js";
+import { getCurDay, getDt } from "../climate/time.js";
 import { GrowthPlan, GrowthPlanStep } from "./GrowthPlan.js";
-import { STAGE_DEAD, STAGE_JUVENILE, STAGE_SPROUT, STATE_DEAD, STATE_HEALTHY, STATE_THIRSTY, SUBTYPE_ROOTNODE, TYPE_HEART } from "./Stages.js";
+import { STAGE_DEAD, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_ROOTNODE, TYPE_HEART } from "./Stages.js";
 import { addSquare, getNeighbors } from "../squares/_sqOperations.js";
-import { addOrganismSquare } from "../lifeSquares/_lsOperations.js";
 import { PlantSquare } from "../squares/PlantSquare.js";
-import { applyLightingFromSource, processLighting } from "../lighting/lightingProcessing.js";
+import { applyLightingFromSource } from "../lighting/lightingProcessing.js";
 import { loadGD, UI_GODMODE_FASTPLANT, UI_SIMULATION_GENS_PER_DAY } from "../ui/UIData.js";
-import { isSaveOrLoadInProgress } from "../saveAndLoad.js";
 
 class BaseOrganism {
     constructor(square) {
@@ -213,31 +210,29 @@ class BaseOrganism {
     growPlantSquare(parentSquare, dx, dy) {
         let newPlantSquare = new PlantSquare(parentSquare.posX + dx, parentSquare.posY - dy);
         if (addSquare(newPlantSquare)) {
-            let newGreenSquare = addOrganismSquare(new this.greenType(newPlantSquare, this));
-            if (newGreenSquare) {
-                this.addAssociatedLifeSquare(newGreenSquare);
-                newGreenSquare.linkSquare(newPlantSquare);
-                parentSquare.addChild(newPlantSquare);
-                newGreenSquare.lighting = new Array();
+            let newGreenSquare = new this.greenType(newPlantSquare, this);
+            this.addAssociatedLifeSquare(newGreenSquare);
+            newGreenSquare.linkSquare(newPlantSquare);
+            parentSquare.addChild(newPlantSquare);
+            newGreenSquare.lighting = new Array();
 
-                let refSquare = null;
-                if (parentSquare.lighting.length > 0) {
-                    refSquare = parentSquare;
-                } else {
-                    for (let i = this.lifeSquares.length - 1; i >= 0; i--) {
-                        let lsq = this.lifeSquares.at(i);
-                        if (lsq.lighting.length > 0) {
-                            refSquare = lsq;
-                            break;
-                        }
-                    }
-                    if (refSquare == null) {
-                        refSquare = this.linkedSquare;
+            let refSquare = null;
+            if (parentSquare.lighting.length > 0) {
+                refSquare = parentSquare;
+            } else {
+                for (let i = this.lifeSquares.length - 1; i >= 0; i--) {
+                    let lsq = this.lifeSquares.at(i);
+                    if (lsq.lighting.length > 0) {
+                        refSquare = lsq;
+                        break;
                     }
                 }
-                applyLightingFromSource(refSquare, newGreenSquare);
-                return newGreenSquare;
+                if (refSquare == null) {
+                    refSquare = this.linkedSquare;
+                }
             }
+            applyLightingFromSource(refSquare, newGreenSquare);
+            return newGreenSquare;
         }
         return null;
     }
@@ -354,13 +349,11 @@ class BaseOrganism {
             return;
         }
 
-        let newRootLifeSquare = addOrganismSquare(new this.rootType(targetSquare, this));
-        if (newRootLifeSquare) {
-            this.addAssociatedLifeSquare(newRootLifeSquare);
-            newRootLifeSquare.linkSquare(targetSquare);
-            targetSquareParent.addChild(newRootLifeSquare)
-            targetSquare.linkOrganismSquare(newRootLifeSquare);
-        }
+        let newRootLifeSquare = new this.rootType(targetSquare, this);
+        this.addAssociatedLifeSquare(newRootLifeSquare);
+        newRootLifeSquare.linkSquare(targetSquare);
+        targetSquareParent.addChild(newRootLifeSquare)
+        targetSquare.linkOrganismSquare(newRootLifeSquare);
     }
 
     getAge() {

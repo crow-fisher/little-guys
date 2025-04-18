@@ -41,12 +41,6 @@ export class RockSquare extends SoilSquare {
         return outColor;
     }
 
-    percolateInnerMoisture() { }
-
-    percolateFromWater(waterBlock) {
-        return 0;
-    }
-
     setVariant() {
         let arr = loadGD(UI_PALETTE_COMPOSITION);
         this.sand = arr[0];
@@ -64,7 +58,7 @@ export class RockSquare extends SoilSquare {
     }
 
     getWaterflowRate() {
-        return super.getWaterflowRate() * 100;
+        return super._getWaterflowRate(0, 0, 1);
     }
 
     doBlockOutflow() {

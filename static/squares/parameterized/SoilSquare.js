@@ -280,17 +280,21 @@ export class SoilSquare extends BaseSquare {
     }
 
     getWaterflowRate() {
+        return this._getWaterflowRate(this.sand, this.silt, this.clay);
+    }
+
+    _getWaterflowRate(sand, silt, clay) {
         // https://docs.google.com/spreadsheets/d/1MWOde96t-ruC5k1PLL4nex0iBjdyXKOkY7g59cnaEj4/edit?gid=0#gid=0
         let clayRate = 2;
         let siltRate = 1.5;
         let sandRate = 0.92;
         let power = 10;
 
-        let baseRet = (this.sand * sandRate + 
-                this.silt * siltRate + 
-                this.clay * clayRate) ** power;
+        let baseRet = (sand * sandRate + 
+                silt * siltRate + 
+                clay * clayRate) ** power;
 
-        let sandMult = 1 + Math.max(0, this.sand - 0.9) * 40;
+        let sandMult = 1 + Math.max(0, sand - 0.9) * 40;
         baseRet *= sandMult;
         baseRet = Math.max(1, baseRet);
         return baseRet;
