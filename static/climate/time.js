@@ -178,6 +178,8 @@ export function doTimeSkipToDate(dateName) {
             break;
     }
     setCurDay(Math.floor(date.getTime() / millis_per_day) + (curDay % 1));
+    saveGD(UI_SPEED, UI_SPEED_1);
+
 }
 
 export function setCurDay(newCurDay) {
@@ -188,7 +190,8 @@ export function setCurDay(newCurDay) {
 }
 
 export function doTimeSkipToNow() {
-    setCurDay(Date.now() / millis_per_day)
+    setCurDay(Date.now() / millis_per_day);
+    saveGD(UI_SPEED, UI_SPEED_1);
     return;
 }
 

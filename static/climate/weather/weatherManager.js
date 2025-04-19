@@ -34,9 +34,9 @@ function spawnFogCloud() {
     curClouds.push(new Cloud(
         randRange(0, wsx),
         randRange(0, wsy),
-        randRange(0.4, 0.9) * wsx, randRange(0.2, 0.35) * wsy,
+        randRange(0.4, 0.9) * wsx, randRange(0.4, 0.55) * wsy,
         getCurDay(), cloudDuration,
-        randRange(1, 1.003), randRange(0, .3)));
+        randRange(1.004, 1.006), 0.8));
 }
 
 function spawnCumulusCloud() {
