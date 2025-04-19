@@ -7,7 +7,7 @@ import { loadGD, saveGD, UI_CENTER } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class RadioToggleLabel extends WindowElement {
-    constructor(window, sizeX, sizeY, offsetX, label, key, value, colorInactiveFunc, colorActiveFunc, textSizeMult = 0.75) {
+    constructor(window, sizeX, sizeY, offsetX, label, key, value, colorInactiveFunc, colorActiveFunc, textSizeMult = 0.75, startChars = [UI_BIGDOTHOLLOW, UI_BIGDOTSOLID]) {
         super(window, sizeX, sizeY);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
@@ -19,16 +19,17 @@ export class RadioToggleLabel extends WindowElement {
         this.colorActiveFunc = colorActiveFunc;
         this.colorInactiveFunc = colorInactiveFunc;
         this.textSizeMult = textSizeMult;
+        this.startChars = startChars;
     }
 
     render(startX, startY) {
         MAIN_CONTEXT.font = this.sizeY * this.textSizeMult + "px courier"
         MAIN_CONTEXT.textAlign = 'center';
         MAIN_CONTEXT.textBaseline = 'middle';
-        let startChar = UI_BIGDOTHOLLOW;
+        let startChar = this.startChars[0];
         if (loadGD(this.key) == this.value) {
             MAIN_CONTEXT.fillStyle = this.colorActiveFunc();
-            startChar = UI_BIGDOTSOLID;
+            startChar = this.startChars[1];
         } else {
             MAIN_CONTEXT.fillStyle = this.colorInactiveFunc();
         }

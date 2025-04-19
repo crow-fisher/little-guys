@@ -24,15 +24,15 @@ export class WeatherSelectionComponent extends LockedComponent {
         let container = new Container(this.window, padding, 1);
         this.window.container = container; 
 
-        let textAlignOffsetX = getBaseUISize() * .20;
+        let textAlignOffsetX = getBaseUISize() * .67;
 
         let spacingMult = 1.12;
 
         container.addElement(new ToggleFunctionalText(this.window, sizeX, getBaseUISize() * 3 * spacingMult, textAlignOffsetX, UI_SIMULATION_CLOUDS, () => {
             if (loadGD(UI_SIMULATION_CLOUDS)) {
-                return UI_BIGDOTSOLID + "disable weather"
+                return UI_BIGDOTHOLLOW + "disable weather"
              } else {
-                return UI_BIGDOTHOLLOW + "enable weather";
+                return UI_TINYDOT + "enable weather";
              }
             },() => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.75 / spacingMult));
 
@@ -44,14 +44,11 @@ export class WeatherSelectionComponent extends LockedComponent {
         container.addElement(weatherRow2);
         container.addElement(weatherRow3);
 
-
-        let dda = () => loadGD(UI_SIMULATION_CLOUDS) ? 0 : 0.2;
-
-        weatherRow1.addElement(new RadioToggleLabel(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 3, textAlignOffsetX, "sunny",UI_CLIMATE_WEATHER_ACTIVE, UI_CLIMATE_WEATHER_SUNNY, () => getActiveClimate().getUIColorInactiveCustom(0.54 + dda()), () => getActiveClimate().getUIColorTransient()));
-        weatherRow1.addElement(new RadioToggleLabel(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 3, textAlignOffsetX, "partly cloudy",UI_CLIMATE_WEATHER_ACTIVE, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, () => getActiveClimate().getUIColorInactiveCustom(0.56 + dda()), () => getActiveClimate().getUIColorTransient()));
-        weatherRow2.addElement(new RadioToggleLabel(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 3, textAlignOffsetX, "mostly cloudy",UI_CLIMATE_WEATHER_ACTIVE, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, () => getActiveClimate().getUIColorInactiveCustom(0.60 + dda()), () => getActiveClimate().getUIColorTransient()));
-        weatherRow2.addElement(new RadioToggleLabel(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 3, textAlignOffsetX, "foggy",UI_CLIMATE_WEATHER_ACTIVE, UI_CLIMATE_WEATHER_FOGGY, () => getActiveClimate().getUIColorInactiveCustom(0.59 + dda()), () => getActiveClimate().getUIColorTransient()));
-        weatherRow3.addElement(new RadioToggleLabel(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 3, textAlignOffsetX, "light rain",UI_CLIMATE_WEATHER_ACTIVE, UI_CLIMATE_WEATHER_LIGHTRAIN, () => getActiveClimate().getUIColorInactiveCustom(0.58 + dda()), () => getActiveClimate().getUIColorTransient()));
-        weatherRow3.addElement(new RadioToggleLabel(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 3, textAlignOffsetX, "heavy rain",UI_CLIMATE_WEATHER_ACTIVE, UI_CLIMATE_WEATHER_HEAVYRAIN, () => getActiveClimate().getUIColorInactiveCustom(0.55 + dda()), () => getActiveClimate().getUIColorTransient()));
+        weatherRow1.addElement(new RadioToggleLabel(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 3, textAlignOffsetX, "sunny",UI_CLIMATE_WEATHER_ACTIVE, UI_CLIMATE_WEATHER_SUNNY, () => getActiveClimate().getUIColorInactiveCustom(0.54 + 0.2), () => getActiveClimate().getUIColorInactiveCustom(0.54), 0.75, [UI_TINYDOT, UI_BIGDOTHOLLOW]));
+        weatherRow1.addElement(new RadioToggleLabel(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 3, textAlignOffsetX, "partly cloudy",UI_CLIMATE_WEATHER_ACTIVE, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, () => getActiveClimate().getUIColorInactiveCustom(0.56 + 0.2), () => getActiveClimate().getUIColorInactiveCustom(0.56), 0.75, [UI_TINYDOT, UI_BIGDOTHOLLOW]));
+        weatherRow2.addElement(new RadioToggleLabel(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 3, textAlignOffsetX, "mostly cloudy",UI_CLIMATE_WEATHER_ACTIVE, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, () => getActiveClimate().getUIColorInactiveCustom(0.60 + 0.2), () => getActiveClimate().getUIColorInactiveCustom(0.60), 0.75, [UI_TINYDOT, UI_BIGDOTHOLLOW]));
+        weatherRow2.addElement(new RadioToggleLabel(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 3, textAlignOffsetX, "foggy",UI_CLIMATE_WEATHER_ACTIVE, UI_CLIMATE_WEATHER_FOGGY, () => getActiveClimate().getUIColorInactiveCustom(0.59 + 0.2), () => getActiveClimate().getUIColorInactiveCustom(0.59), 0.75, [UI_TINYDOT, UI_BIGDOTHOLLOW]));
+        weatherRow3.addElement(new RadioToggleLabel(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 3, textAlignOffsetX, "light rain",UI_CLIMATE_WEATHER_ACTIVE, UI_CLIMATE_WEATHER_LIGHTRAIN, () => getActiveClimate().getUIColorInactiveCustom(0.58 + 0.2), () => getActiveClimate().getUIColorInactiveCustom(0.58), 0.75, [UI_TINYDOT, UI_BIGDOTHOLLOW]));
+        weatherRow3.addElement(new RadioToggleLabel(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 3, textAlignOffsetX, "heavy rain",UI_CLIMATE_WEATHER_ACTIVE, UI_CLIMATE_WEATHER_HEAVYRAIN, () => getActiveClimate().getUIColorInactiveCustom(0.55 + 0.2), () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.75, [UI_TINYDOT, UI_BIGDOTHOLLOW]));
     }
 }
