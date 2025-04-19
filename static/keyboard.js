@@ -1,4 +1,4 @@
-import { doZoom, resetZoom } from "./canvas.js";
+import { doZoom, moveCamera, resetZoom } from "./canvas.js";
 import { getGlobalThetaBase, setGlobalThetaBase } from "./globals.js";
 import { loadGD, saveGD, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_BB_MODE, UI_MODE_ROCK, UI_MODE_SOIL, UI_SM_BB, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_TOPBAR_BLOCK, UI_PALETTE_ROCKMODE, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, closeEyedropperMixer, UI_PALETTE_ERASE, UI_TEXTEDIT_ACTIVE, UI_REGEX } from "./ui/UIData.js";
 
@@ -54,12 +54,26 @@ export function keydown(e) {
     if (e.key == "x") {
         doZoom(0.1);
     }
-    if (e.key == "a") {
+    if (e.key == "q") {
         setGlobalThetaBase(getGlobalThetaBase() + 0.1);
     }
-    if (e.key == "d") {
+    if (e.key == "e") {
         setGlobalThetaBase(getGlobalThetaBase() - 0.1);
     }
+
+    if (e.key == "w") {
+        moveCamera(0, 1);
+    }
+    if (e.key == "s") {
+        moveCamera(0, -1);
+    }
+    if (e.key == "a") {
+        moveCamera(-1, 0);
+    }
+    if (e.key == "d") {
+        moveCamera(1, 0);
+    }
+
 
     if (e.key == '1') {
         saveGD(UI_TOPBAR_BLOCK, true);

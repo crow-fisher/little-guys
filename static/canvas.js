@@ -284,7 +284,11 @@ export function resetZoom() {
     CANVAS_VIEWPORT_CENTER_Y = (CANVAS_SQUARES_Y * BASE_SIZE) / 2;
     CANVAS_SQUARES_ZOOM = 1;
     zoom_idx = 0;
+}
 
+export function moveCamera(x, y) {
+    CANVAS_VIEWPORT_CENTER_X += x * 4;
+    CANVAS_VIEWPORT_CENTER_Y += y * 4;
 }
 export function getCanvasWidth() {
     return CANVAS_SQUARES_X * BASE_SIZE;
