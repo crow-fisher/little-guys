@@ -248,7 +248,7 @@ export function doZoom(deltaY) {
     let y = 1 - lastMoveOffset.y / totalHeight;
     let startZoom = CANVAS_SQUARES_ZOOM;
 
-    if (deltaY > 0) {
+    if (deltaY < 0) {
         zoom_idx = Math.min(zoom_arr.length - 1, zoom_idx + 1);
     } else {
         zoom_idx = Math.max(0, zoom_idx - 1);
@@ -274,6 +274,8 @@ export function resetZoom() {
     CANVAS_VIEWPORT_CENTER_X = (CANVAS_SQUARES_X * BASE_SIZE) / 2;
     CANVAS_VIEWPORT_CENTER_Y = (CANVAS_SQUARES_Y * BASE_SIZE) / 2;
     CANVAS_SQUARES_ZOOM = 1;
+    zoom_idx = 0;
+
 }
 export function getCanvasWidth() {
     return CANVAS_SQUARES_X * BASE_SIZE;
