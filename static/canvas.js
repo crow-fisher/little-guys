@@ -233,7 +233,7 @@ export function zoom(event) {
 let zoom_arr = new Array();
 let zoom_idx = 0;
 
-for (let i = 0; i < 10; i++) {
+for (let i = 0; i < 20; i++) {
     zoom_arr.push(getBaseSize() + i / getBaseSize());
 }
 
