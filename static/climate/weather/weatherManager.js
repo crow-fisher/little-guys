@@ -26,7 +26,7 @@ export function getCurWeatherInterval() {
 let curClouds = [];
 let curWinds = [];
 
-let cloudDuration = randRange(0.5, 2) / loadGD(UI_SIMULATION_GENS_PER_DAY);
+let cloudDuration = randRange(2, 4) / loadGD(UI_SIMULATION_GENS_PER_DAY);
 
 function spawnFogCloud() {
     let wsx = getWindSquaresX();
@@ -91,10 +91,10 @@ function sunnyWeather() {
 weatherSunny = new Weather(UI_CLIMATE_WEATHER_SUNNY, sunnyHg, sunnyTg, 100, sunnyWeather);
 
 let cloudyHg = [
-    [0, 0.999],
-    [0.15, 0.999],
-    [0.25, 0.98],
-    [1, 0.75]
+    [0, 1],
+    [0.15, 1],
+    [0.25, 1],
+    [1, 0.95]
 ]
 let cloudyTg = [
     [0, 273 + 10],
@@ -117,8 +117,8 @@ let foggyTg = [
 let rainyHumidityGradient = [
     [0, 1],
     [0.25, 1],
-    [0.5, 0.85],
-    [1, .7]
+    [0.5, 1],
+    [1, .99]
 ]
 let rainyTemperatureGradient = [
     [0, 273 + 10],
@@ -153,7 +153,7 @@ function cloudyWeather(cloudCount) {
 }
 
 function foggyWeather() {
-    if (curClouds.length > 10) {
+    if (curClouds.length > 20) {
         return;
     }
     if (spawnRateThrottle()) {
@@ -161,9 +161,9 @@ function foggyWeather() {
     }
 }
 
-weatherPartlyCloudy = new Weather(UI_CLIMATE_WEATHER_PARTLY_CLOUDY, cloudyHg, cloudyTg, 100, cloudyWeather(6));
-weatherMostlyCloudy = new Weather(UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, cloudyHg, cloudyTg, 100, cloudyWeather(20));
-weatherFoggy = new Weather(UI_CLIMATE_WEATHER_FOGGY, foggyHg, foggyTg, 100, foggyWeather);
+weatherPartlyCloudy = new Weather(UI_CLIMATE_WEATHER_PARTLY_CLOUDY, cloudyHg, cloudyTg, 1, cloudyWeather(6));
+weatherMostlyCloudy = new Weather(UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, cloudyHg, cloudyTg, 1, cloudyWeather(20));
+weatherFoggy = new Weather(UI_CLIMATE_WEATHER_FOGGY, foggyHg, foggyTg, 1, foggyWeather);
 
 export function logRainFall(amount) {
     curRainFallAmount += amount;
@@ -182,8 +182,8 @@ function generalRainyWeather(rainFactor) {
     }
 }
 
-weatherLightRain = new Weather(UI_CLIMATE_WEATHER_LIGHTRAIN, rainyHumidityGradient, rainyTemperatureGradient, 100, generalRainyWeather(0.6));
-weatherHeavyRain = new Weather(UI_CLIMATE_WEATHER_HEAVYRAIN, rainyHumidityGradient, rainyTemperatureGradient, 100, generalRainyWeather(2));
+weatherLightRain = new Weather(UI_CLIMATE_WEATHER_LIGHTRAIN, rainyHumidityGradient, rainyTemperatureGradient, 1, generalRainyWeather(0.6));
+weatherHeavyRain = new Weather(UI_CLIMATE_WEATHER_HEAVYRAIN, rainyHumidityGradient, rainyTemperatureGradient, 1, generalRainyWeather(2));
 
 ui_weatherMap.set(UI_CLIMATE_WEATHER_SUNNY, weatherSunny)
 ui_weatherMap.set(UI_CLIMATE_WEATHER_PARTLY_CLOUDY, weatherPartlyCloudy)

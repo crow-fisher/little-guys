@@ -2,7 +2,7 @@ import { hexToRgb, randNumber, rgbToRgba } from "../common.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
 import { MAIN_CONTEXT } from "../index.js";
-import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds, getBaseAirPressureAtYPosition, getAirSquareDensity, getWindPressureSquareDensity, base_wind_pressure, manipulateWindPressureMaintainHumidityWindSquare, initWindPressure, isWindSquareBlocked, windFlowrateFactor } from "./wind.js";
+import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds, getBaseAirPressureAtYPosition, getAirSquareDensity, getWindPressureSquareDensity, base_wind_pressure, manipulateWindPressureMaintainHumidityWindSquare, initWindPressure, isWindSquareBlocked, windFlowrateFactor, getWindSquareAbove } from "./wind.js";
 import { logRainFall } from "./weather/weatherManager.js";
 import { getDefaultLighting } from "../lighting/lightingProcessing.js";
 import { addSquareByName } from "../manipulation.js";
@@ -35,7 +35,7 @@ let cloudMaxOpacity = 0.65;
 
 let pascalsPerWaterSquare = (1.986 * 10 ** 6);
 
-var restingGradientStrength = 1000;
+var restingGradientStrength = 1;
 var restingTemperatureGradient = [
     [0, 273 + 10],
     [1, 273 + 30]
@@ -107,8 +107,8 @@ function getRestingAirPressureAtSq(y) {
 }
 
 export function restingValues() {
-    let temperatureStrength = 18;
-    let humidityStrength = 60; 
+    let temperatureStrength = 18 * restingGradientStrength;
+    let humidityStrength = 60 * restingGradientStrength; 
     for (let i = 0; i < getWindSquaresX(); i++) {
         for (let j = 0; j < getWindSquaresY(); j++) {
             let curPressure = getPressure(i, j); 
@@ -355,10 +355,16 @@ function renderClouds() {
 
     for (let i = 0; i < getWindSquaresX(); i++) {
         for (let j = 0; j < getWindSquaresY(); j++) {
+            let x = i;
+            let y = j;
+
             if (isWindSquareBlocked(i, j)) {
-                continue;
+                let adj = getWindSquareAbove(i * 4, j * 4);
+                x = adj[0];
+                y = adj[1];
             }
-            let cloudColorRGBA = getCloudColorAtPos(i, j);
+
+            let cloudColorRGBA = getCloudColorAtPos(x, y);
 
             frameCloudSum.r += cloudColorRGBA.r * cloudColorRGBA.a;
             frameCloudSum.g += cloudColorRGBA.g * cloudColorRGBA.a;

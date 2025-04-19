@@ -1,6 +1,6 @@
 import { addWaterSaturationPascals, getHumidity, getWaterSaturation } from "../temperatureHumidity.js";
 import { getCurDay, timeScaleFactor } from "../time.js";
-import { addWindPressureDryAirWindSquare, getBaseAirPressureAtYPosition, getPressure, isPointInWindBounds } from "../wind.js";
+import { addWindPressureDryAirWindSquare, getBaseAirPressureAtYPosition, getPressure, isPointInWindBounds, manipulateWindPressureMaintainHumidityWindSquare } from "../wind.js";
 
 
 export class Cloud {
@@ -66,16 +66,14 @@ export class Cloud {
                         if (!isPointInWindBounds(wx, wy) || getPressure(wx, wy) < 0) {
                             continue;
                         }
-                        let airPascals = (getBaseAirPressureAtYPosition(wy) * this.airPressure - getPressure(wx, wy));
-                        airPascals /= 100;
-                        airPascals /= timeScaleFactor();
-                        addWindPressureDryAirWindSquare(wx, wy, airPascals);
-
                         if (this.targetHumidity != -1) {
                             let cur = getHumidity(wx, wy);
                             let waterPascals = (this.targetHumidity - cur) * (getWaterSaturation(wx, wy) / cur) * this.strength;
-                            waterPascals /= timeScaleFactor();
+                            waterPascals /= 100;
                             addWaterSaturationPascals(wx, wy, waterPascals);
+                        } else {
+                            let airPascals = (getBaseAirPressureAtYPosition(wy) * this.airPressure - getPressure(wx, wy));
+                            manipulateWindPressureMaintainHumidityWindSquare(wx, wy, getPressure(wx, wy) + airPascals);
                         }
          
                     }
