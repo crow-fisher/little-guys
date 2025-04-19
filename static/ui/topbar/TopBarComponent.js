@@ -122,7 +122,9 @@ export class TopBarComponent {
 
     textDateTime() {
         let curDay = getCurDay();
-        let curDate = new Date(curDay * millis_per_day);
+        let dayMillis = curDay * millis_per_day;
+        dayMillis -= (dayMillis % 1000);
+        let curDate = new Date(dayMillis);
         return curDate.toLocaleString("en-US");
         if (this.compact) {
             return curDate.toLocaleTimeString("en-US");

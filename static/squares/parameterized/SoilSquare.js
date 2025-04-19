@@ -73,7 +73,7 @@ export class SoilSquare extends BaseSquare {
 
         this.surface = true;
         this.surfaceLightingFactor = loadGD(UI_LIGHTING_SURFACE);
-        this.percolationFactor = 0.5;
+        this.percolationFactor = 0.99;
 
         this.setVariant();
     }
@@ -211,15 +211,20 @@ export class SoilSquare extends BaseSquare {
         let min = 0.00001;
         let max = 0.001;
         let minP = 0.99;
-        let maxP = 0.5;
+        let maxP = 0;
+
+        let nextPercolationFactor = null;
         if (diff < min) {
-            this.percolationFactor = minP;
+            nextPercolationFactor = minP;
         } else if (diff > max) {
-            this.percolationFactor = maxP;
+            nextPercolationFactor = maxP;
         } else {
             let invLerp = (diff - min) / (max - min);
-            this.percolationFactor = (maxP - minP) * invLerp + minP;
+            nextPercolationFactor = (maxP - minP) * invLerp + minP;
         }
+
+        nextPercolationFactor ** 0.1;
+        this.percolationFactor = this.percolationFactor * 0.5 + 0.5 * nextPercolationFactor;
 
         if (this.waterContainment < this.waterContainmentMax) {
             return;

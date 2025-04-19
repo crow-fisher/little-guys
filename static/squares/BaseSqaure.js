@@ -24,7 +24,7 @@ import { COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_GREEN, RGB_COLOR_RED, RGB_COLOR_
 import { getCurDay, getDaylightStrengthFrameDiff, getTimeScale } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
-import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "../ui/UIData.js";
+import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE } from "../ui/UIData.js";
 import { isLeftMouseClicked } from "../mouse.js";
 
 export class BaseSquare {
@@ -242,6 +242,8 @@ export class BaseSquare {
         }
         else if (selectedViewMode == UI_VIEWMODE_MOISTURE) {
             this.renderWaterSaturation();
+        } else if (selectedViewMode == UI_VIEWMODE_WATERTICKRATE) {
+            this.renderWaterTickrate();
         } else if (selectedViewMode == UI_VIEWMODE_SURFACE || (loadGD(UI_PALETTE_ACTIVE) && (loadGD(UI_PALETTE_SELECT) == UI_PALETTE_SURFACE || loadGD(UI_PALETTE_SELECT) == UI_PALETTE_SURFACE_OFF))) {
             if (this.solid) {
                 this.renderWithVariedColors(1);
@@ -296,10 +298,13 @@ export class BaseSquare {
         this.renderSpecialViewModeLinear(this.waterSaturation_color1, this.waterSaturation_color2, this.blockHealth, this.blockHealthMax);
     }
 
+    
     renderWaterSaturation() {
-        if (this.percolationFactor == null) {
-            // this.renderSpecialViewModeLinear(this.blockHealth_color1, this.blockHealth_color2, this.waterContainment, this.waterContainmentMax);
-        } else {
+        this.renderSpecialViewModeLinear(this.blockHealth_color1, this.blockHealth_color2, this.waterContainment, this.waterContainmentMax);
+    }
+
+    renderWaterTickrate() {
+        if (this.percolationFactor != null) {
             this.renderSpecialViewModeLinear(this.blockHealth_color1, this.blockHealth_color2, this.percolationFactor, 1);
         }
     }
