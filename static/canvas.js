@@ -201,9 +201,6 @@ export function zoomCanvasSquareText(x, y, text) {
     );
 }
 
-
-
-
 export function zoom(event) {
     event.preventDefault();
     if (loadGD(UI_PALETTE_ACTIVE)) {
@@ -231,6 +228,14 @@ export function zoom(event) {
     }
     doZoom(event.deltaY);
 }
+
+let zoom_arr = new Array();
+let zoom_idx = 0;
+
+for (let i = 0; i < 10; i++) {
+    zoom_arr.push(getBaseSize() + i / getBaseSize());
+}
+
 export function doZoom(deltaY) {
     let lastMoveOffset = getLastMoveOffset();
     if (lastMoveOffset == null || isMiddleMouseClicked()) {
@@ -242,7 +247,15 @@ export function doZoom(deltaY) {
     let x = 1 - lastMoveOffset.x / totalWidth;
     let y = 1 - lastMoveOffset.y / totalHeight;
     let startZoom = CANVAS_SQUARES_ZOOM;
-    CANVAS_SQUARES_ZOOM = Math.min(Math.max(CANVAS_SQUARES_ZOOM + deltaY * -0.001, 1), 100);
+
+    if (deltaY > 0) {
+        zoom_idx = Math.min(zoom_arr.length - 1, zoom_idx + 1);
+    } else {
+        zoom_idx = Math.max(0, zoom_idx - 1);
+    }
+
+    CANVAS_SQUARES_ZOOM = zoom_arr.at(zoom_idx);
+    //  Math.min(Math.max(CANVAS_SQUARES_ZOOM + deltaY * -0.001, 1), 100);
     let endZoom = CANVAS_SQUARES_ZOOM;
 
     let startWidth = totalWidth / startZoom;
@@ -254,8 +267,8 @@ export function doZoom(deltaY) {
     let widthDiff = endWidth - startWidth;
     let heightDiff = endHeight - startHeight;
 
-    CANVAS_VIEWPORT_CENTER_X += (widthDiff * (x - 0.5));
-    CANVAS_VIEWPORT_CENTER_Y += (heightDiff * (y - 0.5));
+    CANVAS_VIEWPORT_CENTER_X += Math.floor((widthDiff * (x - 0.5)));
+    CANVAS_VIEWPORT_CENTER_Y += Math.floor((heightDiff * (y - 0.5)));
 }
 export function resetZoom() {
     CANVAS_VIEWPORT_CENTER_X = (CANVAS_SQUARES_X * BASE_SIZE) / 2;
