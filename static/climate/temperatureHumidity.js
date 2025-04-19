@@ -444,9 +444,9 @@ export function calculateColorRGB(val, valMin, valMax, colorMin, colorMax) {
     valMin = 0;
     let normalized = (val - valMin) / (valMax - valMin);
     return {
-        r: Math.floor(colorMax.r * normalized + colorMin.r * (1 - normalized)),
-        g: Math.floor(colorMax.g * normalized + colorMin.g * (1 - normalized)),
-        b: Math.floor(colorMax.b * normalized + colorMin.b * (1 - normalized))
+        r: Math.round(colorMax.r * normalized + colorMin.r * (1 - normalized)),
+        g: Math.round(colorMax.g * normalized + colorMin.g * (1 - normalized)),
+        b: Math.round(colorMax.b * normalized + colorMin.b * (1 - normalized))
     }
 }
 

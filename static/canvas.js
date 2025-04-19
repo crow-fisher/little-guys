@@ -231,7 +231,12 @@ export function zoom(event) {
 }
 
 let zoom_arr = new Array();
-let zoom_idx = 0;
+let zoom_idx = 3;
+zoom_arr.push(.5);
+zoom_arr.push(.6);
+zoom_arr.push(.7);
+zoom_arr.push(.8);
+zoom_arr.push(.9);
 
 for (let i = 0; i < 20; i++) {
     zoom_arr.push(getBaseSize() + i / getBaseSize());
@@ -257,7 +262,7 @@ export function doZoom(deltaY) {
 
     CANVAS_SQUARES_ZOOM = zoom_arr.at(zoom_idx);
     if (zoom_idx == 0) {
-        resetZoom();
+        // resetZoom();
     }
     //  Math.min(Math.max(CANVAS_SQUARES_ZOOM + deltaY * -0.001, 1), 100);
     let endZoom = CANVAS_SQUARES_ZOOM;
