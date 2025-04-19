@@ -1,5 +1,5 @@
 import { hexToRgb, hexToRgbArr, hsv2rgb, hueShiftColor, rgb2hsv, rgbToHex } from "../common.js";
-import { loadGD, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_HEAVYRAIN, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_SUNNY, UI_PALETTE_ROCKIDX, UI_PALETTE_ROCKMODE, UI_PALETTE_SOILIDX } from "../ui/UIData.js";
+import { loadGD, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_HEAVYRAIN, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_CLEAR, UI_PALETTE_ROCKIDX, UI_PALETTE_ROCKMODE, UI_PALETTE_SOILIDX } from "../ui/UIData.js";
 
 export class Climate {
     constructor() {
@@ -31,12 +31,12 @@ export class Climate {
         this.surfaceOffColor = hexToRgb("#c3cde6");
 
         this.weatherPatternMap = new Map();
-        this.weatherPatternMap.set(UI_CLIMATE_WEATHER_SUNNY, 10);
-        this.weatherPatternMap.set(UI_CLIMATE_WEATHER_PARTLY_CLOUDY, 10);
+        this.weatherPatternMap.set(UI_CLIMATE_WEATHER_CLEAR, 25);
+        this.weatherPatternMap.set(UI_CLIMATE_WEATHER_PARTLY_CLOUDY, 15);
         this.weatherPatternMap.set(UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, 10);
         this.weatherPatternMap.set(UI_CLIMATE_WEATHER_FOGGY, 10);
         this.weatherPatternMap.set(UI_CLIMATE_WEATHER_LIGHTRAIN, 10);
-        this.weatherPatternMap.set(UI_CLIMATE_WEATHER_HEAVYRAIN, 10);
+        this.weatherPatternMap.set(UI_CLIMATE_WEATHER_HEAVYRAIN, 6);
 
         this.lat = 42.04;
         this.lng = -87.78;

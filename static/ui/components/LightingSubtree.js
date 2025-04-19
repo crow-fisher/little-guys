@@ -1,6 +1,6 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
-import { indexCanvasSize } from "../../index.js";
+import { _resetLighting, indexCanvasSize } from "../../index.js";
 import { Container } from "../Container.js";
 import { RadioToggle } from "../elements/RadioToggle.js";
 import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
@@ -57,5 +57,5 @@ export class LightingSubtree extends SubTreeComponent {
 
 }
 
-addUIFunctionMap(UI_LIGHTING_QUALITY, indexCanvasSize)
-addUIFunctionMap(UI_LIGHTING_UPDATERATE, indexCanvasSize)
+addUIFunctionMap(UI_LIGHTING_QUALITY, _resetLighting)
+addUIFunctionMap(UI_LIGHTING_UPDATERATE, _resetLighting)

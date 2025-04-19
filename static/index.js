@@ -46,6 +46,10 @@ let height = 0;
 export function getTotalCanvasPixelWidth() { return width; }
 export function getTotalCanvasPixelHeight() { return height; }
 
+export function _resetLighting() {
+    resetLighting();
+}
+
 export function indexCanvasSize(shouldInitUIClimateAndLighting=true) {
     let margin = 0;
     width = Math.floor(window.innerWidth - margin);

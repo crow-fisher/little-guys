@@ -359,9 +359,11 @@ function renderClouds() {
             let y = j;
 
             if (isWindSquareBlocked(i, j)) {
-                let adj = getWindSquareAbove(i * 4, j * 4);
-                x = adj[0];
-                y = adj[1];
+                if (!isWindSquareBlocked(i, j + 1) && getHumidity(i, j + 1) > 1) {
+                    let adj = getWindSquareAbove(i * 4, j * 4);
+                    x = adj[0];
+                    y = adj[1];
+                }
             }
 
             let cloudColorRGBA = getCloudColorAtPos(x, y);

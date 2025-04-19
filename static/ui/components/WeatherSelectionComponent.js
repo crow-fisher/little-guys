@@ -7,7 +7,7 @@ import { TextFunctionalBackground } from "../elements/TextFunctionalBackground.j
 import { ToggleFunctionalText } from "../elements/ToggleFunctionalText.js";
 import { LockedComponent } from "../LockedComponent.js";
 import {
-    UI_CLIMATE_WEATHER_SUNNY,
+    UI_CLIMATE_WEATHER_CLEAR,
     UI_CLIMATE_WEATHER_LIGHTRAIN,
     UI_CLIMATE_WEATHER_HEAVYRAIN, UI_CLIMATE_WEATHER_PARTLY_CLOUDY,
     UI_CLIMATE_WEATHER_MOSTLY_CLOUDY,
@@ -44,7 +44,7 @@ export class WeatherSelectionComponent extends LockedComponent {
         container.addElement(weatherRow2);
         container.addElement(weatherRow3);
 
-        weatherRow1.addElement(new RadioToggleLabel(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 3, textAlignOffsetX, "sunny",UI_CLIMATE_WEATHER_ACTIVE, UI_CLIMATE_WEATHER_SUNNY, () => getActiveClimate().getUIColorInactiveCustom(0.54 + 0.2), () => getActiveClimate().getUIColorInactiveCustom(0.54), 0.75, [UI_TINYDOT, UI_BIGDOTHOLLOW]));
+        weatherRow1.addElement(new RadioToggleLabel(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 3, textAlignOffsetX, "clear",UI_CLIMATE_WEATHER_ACTIVE, UI_CLIMATE_WEATHER_CLEAR, () => getActiveClimate().getUIColorInactiveCustom(0.54 + 0.2), () => getActiveClimate().getUIColorInactiveCustom(0.54), 0.75, [UI_TINYDOT, UI_BIGDOTHOLLOW]));
         weatherRow1.addElement(new RadioToggleLabel(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 3, textAlignOffsetX, "partly cloudy",UI_CLIMATE_WEATHER_ACTIVE, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, () => getActiveClimate().getUIColorInactiveCustom(0.56 + 0.2), () => getActiveClimate().getUIColorInactiveCustom(0.56), 0.75, [UI_TINYDOT, UI_BIGDOTHOLLOW]));
         weatherRow2.addElement(new RadioToggleLabel(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 3, textAlignOffsetX, "mostly cloudy",UI_CLIMATE_WEATHER_ACTIVE, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, () => getActiveClimate().getUIColorInactiveCustom(0.60 + 0.2), () => getActiveClimate().getUIColorInactiveCustom(0.60), 0.75, [UI_TINYDOT, UI_BIGDOTHOLLOW]));
         weatherRow2.addElement(new RadioToggleLabel(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 3, textAlignOffsetX, "foggy",UI_CLIMATE_WEATHER_ACTIVE, UI_CLIMATE_WEATHER_FOGGY, () => getActiveClimate().getUIColorInactiveCustom(0.59 + 0.2), () => getActiveClimate().getUIColorInactiveCustom(0.59), 0.75, [UI_TINYDOT, UI_BIGDOTHOLLOW]));

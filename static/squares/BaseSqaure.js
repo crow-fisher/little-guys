@@ -168,6 +168,7 @@ export class BaseSquare {
         let adjacentTemp = getTemperatureAtWindSquare(x, y);
         let diff = (adjacentTemp - this.temperature);
         diff /= temperatureHumidityFlowrateFactor();
+        diff /= 50;
         diff /= (1 + this.currentPressureDirect);
         this.temperature += diff;
         updateWindSquareTemperature(x, y, getTemperatureAtWindSquare(x, y) - (diff / 4));
@@ -447,12 +448,25 @@ export class BaseSquare {
             this.cachedRgbaParticle = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), .5 * (opacityMult * this.opacity * (this.blockHealth ** 0.2)));
         }
         MAIN_CONTEXT.fillStyle = this.cachedRgba;
-        zoomCanvasFillRect(
+
+        if (this.proto == "WaterSquare" && this.blockHealth < 0.5 && this.speedY > 1) {
+            let size = this.blockHealth; 
+            if (size < 0.3) {
+                size = 20 * (this.blockHealth);
+            }
+            zoomCanvasFillCircle(
             (this.offsetX + this.posX) * getBaseSize(),
             (this.offsetY + this.posY) * getBaseSize(),
-            getBaseSize(),
-            getBaseSize()
-        );
+            getBaseSize() * Math.max(this.blockHealth, 0.3));
+        } else {
+            zoomCanvasFillRect(
+                (this.offsetX + this.posX) * getBaseSize(),
+                (this.offsetY + this.posY) * getBaseSize(),
+                getBaseSize(),
+                getBaseSize()
+            );
+        }
+
         if (this.mixIdx >= (getTargetMixIdx() - getMixArrLen())) {
             MAIN_CONTEXT.font = getBaseSize() + "px courier"
             MAIN_CONTEXT.textAlign = 'center';
@@ -571,6 +585,9 @@ export class BaseSquare {
             return true;
         }
         if (!this.solid) {
+            if (!this.hasBonked || !sq.hasBonked || this.speedY > 0 || sq.speedY > 0) {
+                return false;
+            }
             if (!sq.collision) {
                 return false;
             }

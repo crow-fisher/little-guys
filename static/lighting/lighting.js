@@ -325,7 +325,8 @@ export class LightSource {
                 this.calculateFrameCloudCover();
                 return this.getWindSquareBrightnessFunc(theta);
             }
-            ret = (ret + 3) / 4;
+            let m = .5; 
+            ret = (ret + m) / (m + 1);
             return ret;
         }
     }
@@ -368,7 +369,7 @@ export class LightSource {
             let obj = arr[2];
             let curBrightnessCopy = curBrightness;
             let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(theta)() * curBrightnessCopy * this.brightnessFunc();
-            curBrightness *= (1 - (obj.surface ? (obj.surfaceLightingFactor ?? 1) : 1) * (obj.getLightFilterRate() * Math.exp(loadGD(UI_LIGHTING_DECAY)) * (loadGD(UI_LIGHTING_QUALITY)) / 9));
+            curBrightness *= (1 - (obj.surface ? (obj.surfaceLightingFactor ?? 1) : 1) * (obj.blockHealth ?? 1) * (obj.getLightFilterRate() * Math.exp(loadGD(UI_LIGHTING_DECAY)) * (loadGD(UI_LIGHTING_QUALITY)) / 9));
             if (obj.lighting[idx] == null) {
                 obj.lighting[idx] = [[pointLightSourceFunc], this.colorFunc];
             } else if (obj.lighting[idx][0].length >= jobIdx) {
