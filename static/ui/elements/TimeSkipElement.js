@@ -28,7 +28,8 @@ export class TimeSkipElement extends WindowElement {
         ]
         this.times = new Array();
         this.startTime = 0.13;
-        this.sideInset = getBaseUISize() * 0.5;
+        this.sideInset = getBaseUISize() * .8;
+        this.topInset = getBaseUISize() * 0.5;
         this.sizeX = getBaseUISize() * (26.404296875 + 4);
     }
 
@@ -52,21 +53,12 @@ export class TimeSkipElement extends WindowElement {
         this.labels.forEach((label) => this.times.push(nextTimes[label].getTime() / millis_per_day));
     
         let toRender = new Array();
-    
-        const a = 0.8; // horizontal "radius"
-        const b = 0.9; // vertical max height
 
-    
         for (let i = this.sideInset; i < this.sizeX - this.sideInset; i++) {
             let renderLineCurDay = getCurDay() - this.startTime + (i / this.sizeX);
-            let xd = Math.abs(0.5 - (i / this.sizeX)); 
-            let height = Math.sqrt(1 - (xd / a) ** 2) * b;
-            let offset = (1 - height);
-    
             MAIN_CONTEXT.beginPath();
-            MAIN_CONTEXT.moveTo(i + startX, startY + this.sizeY * offset);
-            MAIN_CONTEXT.lineTo(i + startX, startY + this.sizeY - this.sizeY * offset);
-    
+            MAIN_CONTEXT.moveTo(i + startX, startY + this.topInset);
+            MAIN_CONTEXT.lineTo(i + startX, startY + this.sizeY - this.topInset);
             let strokeStyle = getSkyBackgroundColorForDay(renderLineCurDay);
             let strokeStyleStart = strokeStyle;
     
@@ -96,12 +88,9 @@ export class TimeSkipElement extends WindowElement {
         toRender.forEach((arr) => {
             let i = arr[0];
             let strokeStyle = arr[1];
-            let xd = Math.abs(0.5 - (i / this.sizeX)); 
-            let height = Math.sqrt(1 - (xd / a) ** 2) * b;
-            let offset = (1 - height);
             MAIN_CONTEXT.beginPath();
-            MAIN_CONTEXT.moveTo(i + startX, startY + this.sizeY * offset);
-            MAIN_CONTEXT.lineTo(i + startX, startY + this.sizeY - this.sizeY * offset);
+            MAIN_CONTEXT.moveTo(i + startX, startY + this.topInset);
+            MAIN_CONTEXT.lineTo(i + startX, startY + this.sizeY - this.topInset);
             MAIN_CONTEXT.strokeStyle = strokeStyle;
             MAIN_CONTEXT.lineWidth = getBaseUISize() * 0.2;  
             MAIN_CONTEXT.stroke();
