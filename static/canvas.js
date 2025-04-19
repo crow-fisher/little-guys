@@ -1,3 +1,4 @@
+import { reset } from "./globalOperations.js";
 import { MAIN_CONTEXT } from "./index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "./keyboard.js";
 import { getLastMoveOffset, isMiddleMouseClicked } from "./mouse.js";
@@ -255,6 +256,9 @@ export function doZoom(deltaY) {
     }
 
     CANVAS_SQUARES_ZOOM = zoom_arr.at(zoom_idx);
+    if (zoom_idx == 0) {
+        resetZoom();
+    }
     //  Math.min(Math.max(CANVAS_SQUARES_ZOOM + deltaY * -0.001, 1), 100);
     let endZoom = CANVAS_SQUARES_ZOOM;
 
