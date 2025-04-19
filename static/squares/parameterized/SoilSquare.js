@@ -112,7 +112,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     initWaterContainment() {
-        this.waterContainment = this.getInverseMatricPressure(loadGD(UI_SOIL_INITALWATER));
+        this.waterContainment = this.getInverseMatricPressure(-2);
     }
 
     getInversePressureGeneric(waterContainment, refArr) {
@@ -210,7 +210,7 @@ export class SoilSquare extends BaseSquare {
 
         let min = 0.00001;
         let max = 0.001;
-        let minP = 0.99;
+        let minP = 0.97;
         let maxP = 0;
 
         let nextPercolationFactor = null;
@@ -288,6 +288,8 @@ export class SoilSquare extends BaseSquare {
         } else {
             shouldDo = Math.random() < ((this.currentPressureDirect - min) / (max - min) ** 4);
         }
+
+        shouldDo &= (Math.random() > 0.99 * (this.waterContainment / this.waterContainmentMax));
 
         if (shouldDo) {
             if (getSquares(this.posX - 1, this.posY).length == 0)

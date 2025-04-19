@@ -108,6 +108,7 @@ export const UI_CLIMATE_WEATHER_MOSTLY_CLOUDY = "mostly cloudy";
 export const UI_CLIMATE_WEATHER_FOGGY = "foggy";
 export const UI_CLIMATE_WEATHER_LIGHTRAIN = "light rain";
 export const UI_CLIMATE_WEATHER_HEAVYRAIN = "heavy rain";
+export const UI_CLIMATE_WEATHER_NULL = "null weather";
 export const UI_CLIMATE_RAINFALL_DENSITY = "UI_CLIMATE_RAINFALL_DENSITY"; 
 
 export const UI_CLIMATE_WEATHER_DURATION = "UI_CLIMATE_WEATHER_DURATION";

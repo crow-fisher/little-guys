@@ -19,8 +19,6 @@ export class SimulationSubtree extends SubTreeComponent {
 
         let sizeX = getBaseUISize() * 21;
         let radioSizeX = sizeX / 3;
-        subMenuContainer.addElement(new Toggle(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_SIMULATION_CLOUDS, "enable clouds",() => getActiveClimate().getUIColorInactiveCustom(0.56), () => getActiveClimate().getUIColorActive()));
-        subMenuContainer.addElement(new Toggle(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_SIMULATION_SIMPLESQUARE, "simple physics",() => getActiveClimate().getUIColorInactiveCustom(0.61), () => getActiveClimate().getUIColorActive()));
         subMenuContainer.addElement(new Text(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, UI_CENTER, "size"))
 
     

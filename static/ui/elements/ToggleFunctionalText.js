@@ -22,7 +22,7 @@ export class ToggleFunctionalText extends WindowElement {
     render(startX, startY) {
         MAIN_CONTEXT.font = this.sizeY * this.textSize + "px courier"
         MAIN_CONTEXT.textAlign = 'center';
-        MAIN_CONTEXT.textBaseline = 'middle';
+        MAIN_CONTEXT.textBaseline = "middle";
         if (loadGD(this.key)) {
             MAIN_CONTEXT.fillStyle = this.colorActiveFunc();
         } else {

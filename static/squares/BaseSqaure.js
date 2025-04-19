@@ -24,7 +24,7 @@ import { COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_GREEN, RGB_COLOR_RED, RGB_COLOR_
 import { getCurDay, getDaylightStrengthFrameDiff, getTimeScale } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
-import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE } from "../ui/UIData.js";
+import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS } from "../ui/UIData.js";
 import { isLeftMouseClicked } from "../mouse.js";
 
 export class BaseSquare {
@@ -666,11 +666,16 @@ export class BaseSquare {
             this.gravityPhysics();
             this.slopePhysics();
             this.percolateInnerMoisture();
-            this.waterEvaporationRoutine();
-            this.temperatureRoutine();
-            this.transferHeat();
+            
+            if (loadGD(UI_SIMULATION_CLOUDS)) {
+                this.waterEvaporationRoutine();
+                this.temperatureRoutine();
+            }
+            if (loadGD(UI_LIGHTING_ENABLED)) {
+                this.transferHeat();
+                this.processFrameLightingTemperature();
+            }
             this.processParticles();
-            this.processFrameLightingTemperature();
         }
     }
 

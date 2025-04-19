@@ -53,8 +53,6 @@ export class TopBarComponent {
             this.midSpacingEl,
             new TopBarToggle(fontSize, "left", UI_TOPBAR_LIGHTING, UI_BOOLEAN, () => this.textToggleLighting()),
             this.midSpacingEl,
-            new TopBarToggle(fontSize, "left", UI_TOPBAR_SIMULATION, UI_BOOLEAN, () => this.textSimulation()),
-            this.midSpacingEl,
             new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_0, () => "\u23F8\uFE0E"),
             new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_1, () => "▶"),
             new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_2, () => "▶"),

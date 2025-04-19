@@ -1,5 +1,5 @@
 import { randRange } from "../../common.js";
-import { addUIFunctionMap, UI_CLIMATE_WEATHER_SUNNY, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_HEAVYRAIN, loadGD, saveGD, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_DURATION, UI_CLIMATE_WEATHER_ACTIVE, UI_SIMULATION_GENS_PER_DAY } from "../../ui/UIData.js";
+import { addUIFunctionMap, UI_CLIMATE_WEATHER_SUNNY, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_HEAVYRAIN, loadGD, saveGD, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_DURATION, UI_CLIMATE_WEATHER_ACTIVE, UI_SIMULATION_GENS_PER_DAY, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_SIMULATION_CLOUDS, UI_CLIMATE_WEATHER_NULL } from "../../ui/UIData.js";
 import { getActiveClimate } from "../climateManager.js";
 import { cloudRainThresh } from "../temperatureHumidity.js";
 import { getCurDay, getDt } from "../time.js";
@@ -20,7 +20,7 @@ export function getCurWeather() {
     return curWeather;
 }
 export function getCurWeatherInterval() {
-    return (curWeatherInterval - (getCurDay() - curWeatherStartTime)) / 0.000694444;
+    return ((curWeatherInterval) - (getCurDay() - curWeatherStartTime)) / 0.000694444;
 }
 
 let curClouds = [];
@@ -191,6 +191,7 @@ ui_weatherMap.set(UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, weatherMostlyCloudy)
 ui_weatherMap.set(UI_CLIMATE_WEATHER_FOGGY, weatherFoggy)
 ui_weatherMap.set(UI_CLIMATE_WEATHER_LIGHTRAIN, weatherLightRain)
 ui_weatherMap.set(UI_CLIMATE_WEATHER_HEAVYRAIN, weatherHeavyRain)
+ui_weatherMap.set(UI_CLIMATE_WEATHER_NULL, weatherSunny)
 
 function weatherChange() {
     curWeatherStartTime = Math.min(curWeatherStartTime, getCurDay());
@@ -250,3 +251,11 @@ function applyUIWeatherChange() {
 addUIFunctionMap(UI_CLIMATE_WEATHER_ACTIVE, applyUIWeatherChange);
 addUIFunctionMap(UI_CLIMATE_WEATHER_DURATION, applyUIWeatherChange);
 addUIFunctionMap(UI_SIMULATION_GENS_PER_DAY, applyUIWeatherChange);
+addUIFunctionMap(UI_SIMULATION_CLOUDS, () => {
+    if (!loadGD(UI_SIMULATION_CLOUDS)) {
+        saveGD(UI_CLIMATE_WEATHER_ACTIVE, UI_CLIMATE_WEATHER_NULL);
+    } else {
+        saveGD(UI_CLIMATE_WEATHER_ACTIVE, UI_CLIMATE_WEATHER_SUNNY);
+        weatherChange();
+    }
+})
