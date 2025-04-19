@@ -34,7 +34,7 @@ export class WeatherSelectionComponent extends LockedComponent {
              } else {
                 return UI_TINYDOT + "enable weather";
              }
-            },() => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.75 / spacingMult));
+            },() => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorInactiveCustom(0.68), 0.75 / spacingMult));
 
         let weatherRow1 = new Container(this.window, padding, 0);
         let weatherRow2 = new Container(this.window, padding, 0);

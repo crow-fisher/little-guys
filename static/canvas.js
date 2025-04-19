@@ -239,24 +239,6 @@ export function doZoom(deltaY) {
     let totalWidth = CANVAS_SQUARES_X * BASE_SIZE;
     let totalHeight = CANVAS_SQUARES_Y * BASE_SIZE;
 
-    // let canvasPos = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);
-    // let lsqFound = false;-
-    // iterateOnOrganisms((org) => org.lifeSquares.filter((lsq) => lsq.linkedOrganism.spinnable && lsq.component != null)
-    //     .forEach((lsq) => {
-    //     let dist = ((canvasPos[0] - lsq.getPosX()) ** 2 + (canvasPos[1] - lsq.getPosY()) ** 2) ** 0.5;
-    //     if (dist < 1.4) {
-    //         if (shiftPressed) {
-    //             lsq.component.twist += deltaY * 0.00009;
-    //         } else {
-    //             lsq.component.theta += deltaY * 0.0003;
-    //         }
-    //         lsqFound = true;
-    //     }
-    // }), 0);
-    // if (lsqFound) {
-    //     return;
-    // }
-
     let x = 1 - lastMoveOffset.x / totalWidth;
     let y = 1 - lastMoveOffset.y / totalHeight;
     let startZoom = CANVAS_SQUARES_ZOOM;

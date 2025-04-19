@@ -236,6 +236,10 @@ export class GrowthComponent {
     }
 
     updateDeflectionState() {
+        if (this.lifeSquares.some((lsq) => lsq == null)) {
+            return;
+        }
+
         let strength = this.getTotalStrength();
         let windVec = this.getNetWindSpeed();
         let startSpringForce = this.getStartSpringForce();
@@ -327,6 +331,10 @@ export class GrowthComponent {
     }
 
     applyDeflectionState(parentComponent) {
+        if (this.lifeSquares.some((lsq) => lsq == null)) {
+            return;
+        }
+        
         let startDeflectionXOffset = 0;
         let startDeflectionYOffset = 0;
         if (parentComponent != null) {

@@ -56,24 +56,9 @@ class WaterSquare extends BaseSquare {
         super.physics();
         this.doNeighborPercolation();
         this.combineAdjacentNeighbors();
-        this.doLocalColorSwapping();9
         this.calculateCandidateFlows();
     }
 
-    physicsSimple() {
-        this.gravityPhysics();
-        this.calculateCandidateFlows();
-    }
-
-    doLocalColorSwapping() {
-        if (Math.random() > 0.999) {
-            getNeighbors(this.posX, this.posY).filter((sq) => sq.group == this.group).forEach((sq) => {
-                if (Math.random() > 0.75) {
-                    this.swapColors(sq);
-                }
-            });
-        }
-    }
     renderWaterSaturation() {
         MAIN_CONTEXT.fillStyle = rgbToRgba(RGB_COLOR_OTHER_BLUE.r, RGB_COLOR_OTHER_BLUE.g, RGB_COLOR_OTHER_BLUE.b, this.blockHealth ** 0.2);
         zoomCanvasFillRect(

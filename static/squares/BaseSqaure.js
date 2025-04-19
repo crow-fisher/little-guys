@@ -667,24 +667,18 @@ export class BaseSquare {
             this.slopePhysics();
             this.percolateInnerMoisture();
             
-            if (loadGD(UI_SIMULATION_CLOUDS)) {
-                this.waterEvaporationRoutine();
-                this.temperatureRoutine();
+            if (this.speedY > 0) {
+                if (loadGD(UI_SIMULATION_CLOUDS)) {
+                    this.waterEvaporationRoutine();
+                    this.temperatureRoutine();
+                }
+                if (loadGD(UI_LIGHTING_ENABLED)) {
+                    this.transferHeat();
+                    this.processFrameLightingTemperature();
+                }
             }
-            if (loadGD(UI_LIGHTING_ENABLED)) {
-                this.transferHeat();
-                this.processFrameLightingTemperature();
-            }
-            this.processParticles();
         }
-    }
-
-    physicsSimple() {
-        if (getTimeScale() != 0) {
-            this.gravityPhysics();
-            this.slopePhysics();
-            this.processParticles();
-        }
+        this.processParticles();
     }
 
     /* Called before physics(), with blocks in strict order from top left to bottom right. */
