@@ -33,6 +33,8 @@ export class TimeSkipElement extends WindowElement {
     }
 
     render(startX, startY) {
+        MAIN_CONTEXT.fillStyle = getActiveClimate().getUIColorInactiveCustom(0.90);
+        MAIN_CONTEXT.fillRect(startX, startY, this.sizeX, this.sizeY);
         this.sizeX = getBaseUISize() * (26.404296875 + 4);
         let curMillis = getCurDay() * millis_per_day;
         let curDate = new Date(curMillis);

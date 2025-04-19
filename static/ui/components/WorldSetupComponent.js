@@ -8,7 +8,7 @@ import { RadioToggle } from "../elements/RadioToggle.js";
 import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
 import { Text } from "../elements/Text.js";
 import { PopupComponent } from "../PopupComponent.js";
-import { UI_CENTER, UI_MAIN_NEWWORLD_TYPE_CLOUDS, UI_MAIN_NEWWORLD_TYPE_BLOCKS, UI_MAIN_NEWWORLD_TYPE_PLANTS, UI_MAIN_NEWWORLD_TYPE_SELECT, UI_MAIN_NEWWORLD_NAME, UI_MAIN_NEWWORLD_SIMHEIGHT, addUIFunctionMap, loadGD, saveGD, UI_MAIN_NEWWORLD_LATITUDE, UI_MAIN_NEWWORLD_LONGITUDE } from "../UIData.js";
+import { UI_CENTER, UI_MAIN_NEWWORLD_TYPE_CLOUDS, UI_MAIN_NEWWORLD_TYPE_BLOCKS, UI_MAIN_NEWWORLD_TYPE_PLANTS, UI_MAIN_NEWWORLD_TYPE_SELECT, UI_MAIN_NEWWORLD_NAME, UI_MAIN_NEWWORLD_SIMHEIGHT, addUIFunctionMap, loadGD, saveGD, UI_MAIN_NEWWORLD_LATITUDE, UI_MAIN_NEWWORLD_LONGITUDE, UI_MAIN_NEWWORLD } from "../UIData.js";
 export class WorldSetupComponent extends PopupComponent {
     constructor(posXFunc, posYFunc, padding, dir, key) {
         super(posXFunc, posYFunc, padding, dir, key);
@@ -28,19 +28,7 @@ export class WorldSetupComponent extends PopupComponent {
         let br = getBaseUISize() * .5;
 
         container.addElement(new EditableText(this.window, sizeX, h1, UI_CENTER, UI_MAIN_NEWWORLD_NAME, "*"));
-        container.addElement(new Text(this.window, sizeX, h2, UI_CENTER, "optimize for"));
         container.addElement(new Text(this.window, sizeX, br, UI_CENTER, ""));
-
-        container.addElement(row1);
-        container.addElement(row2);
-        // container.addElement(row3);
-
-        row1.addElement(new RadioToggleLabel(this.window, sizeX, h1, UI_CENTER,"plants (all)", UI_MAIN_NEWWORLD_TYPE_SELECT, 
-            UI_MAIN_NEWWORLD_TYPE_PLANTS, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
-        row2.addElement(new RadioToggleLabel(this.window, half, h1, UI_CENTER, "blocks",UI_MAIN_NEWWORLD_TYPE_SELECT, 
-            UI_MAIN_NEWWORLD_TYPE_BLOCKS, () => getActiveClimate().getUIColorInactiveCustom(0.59), () => getActiveClimate().getUIColorActive()));
-        row2.addElement(new RadioToggleLabel(this.window, half, h1, UI_CENTER,"clouds", UI_MAIN_NEWWORLD_TYPE_SELECT, 
-        UI_MAIN_NEWWORLD_TYPE_CLOUDS, () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive()));
 
         container.addElement(new Text(this.window, sizeX, h2, UI_CENTER, "world height"));
             
@@ -86,9 +74,12 @@ export class WorldSetupComponent extends PopupComponent {
         locRow2.addElement(new EditableText(this.window, half, h2, UI_CENTER, UI_MAIN_NEWWORLD_LONGITUDE, "*"));
 
         let newEditRow = new Container(this.window, padding, 0);
+        let newEditRow2 = new Container(this.window, padding, 0);
+        newEditRow.addElement(new Button(this.window, half, h1, UI_CENTER, () => saveGD(UI_MAIN_NEWWORLD, false), "close", () => getActiveClimate().getUIColorInactiveCustom(0.62), 0.65));
         newEditRow.addElement(new Button(this.window, half, h1, UI_CENTER, () => editCurrentWorld(), "edit current", () => getActiveClimate().getUIColorInactiveCustom(0.65), 0.65));
-        newEditRow.addElement(new Button(this.window, half, h1, UI_CENTER, () => createNewWorld(), "create new", () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.65));
+        newEditRow2.addElement(new Button(this.window, sizeX, h1, UI_CENTER, () => createNewWorld(), "create new", () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.65));
         container.addElement(newEditRow);
+        container.addElement(newEditRow2);
     }
 }
 

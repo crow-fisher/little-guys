@@ -363,7 +363,7 @@ export class SoilSquare extends BaseSquare {
         pascals /= (8 * temperatureHumidityFlowrateFactor());
         
         pascals *= Math.exp(-0.01 * (this.posY - (y * 4)));
-        let amount = Math.min(this.waterContainment, pascals / pascalsPerWaterSquare)
+        let amount = Math.min(this.waterContainment, (10 * pascals) / pascalsPerWaterSquare)
         this.waterContainment -= amount;
         addWaterSaturationPascals(x, y, pascals);
     }
