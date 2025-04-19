@@ -47,13 +47,12 @@ export function keydown(e) {
         return;
     }
     keyPressMap[e.key] = true;
-
-    if (e.key == "s") {
-        doZoom(-0.1);
-    }
-    if (e.key == "x") {
-        doZoom(0.1);
-    }
+    // if (e.key == "s") {
+    //     doZoom(-0.1);
+    // }
+    // if (e.key == "x") {
+    //     doZoom(0.1);
+    // }
     if (e.key == "q") {
         setGlobalThetaBase(getGlobalThetaBase() + 0.1);
     }
@@ -62,10 +61,10 @@ export function keydown(e) {
     }
 
     if (e.key == "w") {
-        moveCamera(0, 1);
+        moveCamera(0, -1);
     }
     if (e.key == "s") {
-        moveCamera(0, -1);
+        moveCamera(0, 1);
     }
     if (e.key == "a") {
         moveCamera(-1, 0);

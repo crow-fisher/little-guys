@@ -29,6 +29,8 @@ export function initUI() {
         saveUI(UI_UI_SIZE, 8);
     }
 
+    const palette_y_offset = getBaseUISize() * 4;
+
     all_components = [];
     topBarComponent = new TopBarComponent("UI_TOPBAR");
     mainMenuComponent = new MainMenuComponent(() => 0, () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_MAINMENU);
@@ -36,12 +38,12 @@ export function initUI() {
     all_components.push(new BlockSubtree(() => topBarComponent.getElementXPositionFunc(0, 1), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_BLOCK));
     // all_components.push(new CloudControlComponent(() => topBarComponent.getElementXPositionFunc(0, 3) + climateSubtreeComponent.window.sizeX + getBaseUISize() * 0.5, () => topBarComponent.ySize(), 0, 0, UI_CLIMATE_SELECT_CLOUDS));
     all_components.push(new ViewSubtreeComponent(() => topBarComponent.getElementXPositionFunc(0, 3), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_VIEWMODE));
-    blockPalette = new BlockPalette(getBaseUISize() * 24, getBaseUISize() * 3, 0, 0, UI_PALETTE_ACTIVE)
+    blockPalette = new BlockPalette(getBaseUISize() * 24, palette_y_offset, 0, 0, UI_PALETTE_ACTIVE)
     all_components.push(blockPalette);
 
-    all_components.push(new LightingComponent(getBaseUISize() * 10, getBaseUISize() * 10, 0, 0, UI_SM_LIGHTING));
+    all_components.push(new LightingComponent(getBaseUISize() * 63, palette_y_offset, 0, 0, UI_SM_LIGHTING));
     all_components.push(new LightingSubtree(() => topBarComponent.getElementXPositionFunc(0, 5), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_LIGHTING));
-    all_components.push(new OrganismComponent(getBaseUISize() * 1, getBaseUISize() * 10, 0, 0, UI_SM_ORGANISM));
+    all_components.push(new OrganismComponent(getBaseUISize() * 24, palette_y_offset, 0, 0, UI_SM_ORGANISM));
     all_components.push(new GodModeComponent(getBaseUISize() * 34, getBaseUISize() * 6, 10, 0, UI_SM_GODMODE));
     all_components.push(new TimeSkipComponent(() => topBarComponent.getElementXPositionFunc(0, 18), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_TIME));
     all_components.push(new WeatherSelectionComponent(() => topBarComponent.getElementXPositionFunc(0,20), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_WEATHER));
