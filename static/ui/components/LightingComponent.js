@@ -78,31 +78,33 @@ export class LightingComponent extends Component {
         container.addElement(plantConditionalContainer);
 
         let h1 = getBaseUISize() * 3;
-        let h2 = getBaseUISize() * 2.5;
+        let h2 = getBaseUISize() * 3;
         let br = getBaseUISize() * .5;
-        sceneConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX,  br, UI_CENTER, () => "", () => getActiveClimate().getUIColorInactiveCustom(0.85)));
-        sceneConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX,  h1, UI_CENTER, () => "source brightness",() => getActiveClimate().getUIColorInactiveCustom(0.55)));
 
-        sceneConditionalContainer.addElement(new Text(this.window, sizeX,  h2, UI_CENTER, "sun"));
+        let offsetX = getBaseUISize() * 0.8;
+
+        sceneConditionalContainer.addElement(new Text(this.window, sizeX,  br, UI_CENTER, ""));
+        sceneConditionalContainer.addElement(new Text(this.window, sizeX,  h1, UI_CENTER, "source brightness"));
+
+        sceneConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX,  h2, offsetX, () => "sun", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
         sceneConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_SUN, sizeX,  35, -4, 4, () => "#000000",() => "#FFF0FF"));
 
-        sceneConditionalContainer.addElement(new Text(this.window, sizeX,  h2, UI_CENTER, "moon"));
+        sceneConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX,  h2, offsetX, () => "moon", () => getActiveClimate().getUIColorInactiveCustom(0.62)));
         sceneConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_MOON, sizeX,  35, -3, 0, () => "#000000", () => getMoonlightColorRgb()));
 
+        sceneConditionalContainer.addElement(new Text(this.window, sizeX,  br, UI_CENTER, ""));
+        sceneConditionalContainer.addElement(new Text(this.window, sizeX,  h1, UI_CENTER, "decay settings"));
         
-        sceneConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX,  br, UI_CENTER, () => "", () => getActiveClimate().getUIColorInactiveCustom(0.85)));
-        sceneConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX,  h1, UI_CENTER, () => "decay settings",() => getActiveClimate().getUIColorInactiveCustom(0.55)));
-        
-        sceneConditionalContainer.addElement(new Text(this.window, sizeX,  h2, UI_CENTER, "global"));
+        sceneConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX,  h2, offsetX, () => "global", () => getActiveClimate().getUIColorInactiveCustom(0.64)));
         sceneConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_DECAY, sizeX,  35, 3, 8, () => "#000000",() => "#FFF0FF"));
 
-        sceneConditionalContainer.addElement(new Text(this.window, sizeX,  h2, UI_CENTER, "water"));
+        sceneConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX,  h2, offsetX, () => "water", () => getActiveClimate().getUIColorInactiveCustom(0.66)));
         sceneConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_WATER, sizeX,  35, -4, 2, getWaterColorDark, getWaterColor));
 
-        sceneConditionalContainer.addElement(new Text(this.window, sizeX,  h2, UI_CENTER, "rock"));
+        sceneConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX,  h2, offsetX, () => "rock", () => getActiveClimate().getUIColorInactiveCustom(0.63)));
         sceneConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_ROCK, sizeX,  35, -4, 4, getRockColorDark, getRockColor));
 
-        sceneConditionalContainer.addElement(new Text(this.window, sizeX,  h2, UI_CENTER, "plant"));
+        sceneConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX,  h2, offsetX, () => "plant", () => getActiveClimate().getUIColorInactiveCustom(0.58)));
         sceneConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_PLANT, sizeX,  35, -2, 2, getPlantColorDark, getPlantColor));
 
         plantConditionalContainer.addElement(new Text(this.window, sizeX,  h2, UI_CENTER, "grass"));
