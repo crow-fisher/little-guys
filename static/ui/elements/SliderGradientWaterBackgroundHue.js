@@ -3,25 +3,28 @@ import { calculateColor } from "../../climate/temperatureHumidity.js";
 import { COLOR_BLACK, COLOR_BLUE, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
+import { getWaterColorTransformed, NULL } from "../components/LightingComponent.js";
 import { loadGD, saveGD } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
-export class SliderGradientBackground extends WindowElement {
-    constructor(window, key, sizeX, sizeY, min, max, minColorFunc, maxColorFunc) {
+export class SliderGradientBackgroundWaterHue extends WindowElement {
+    constructor(window, key, sizeX, sizeY, min, max) {
         super(window, sizeX, sizeY);
         this.key = key;
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         this.min = min;
         this.max = max;
-        this.minColorFunc = minColorFunc;
-        this.maxColorFunc = maxColorFunc;
     }
 
     render(startX, startY) {
         let gradient = MAIN_CONTEXT.createLinearGradient(startX, startY, this.sizeX + startX, startY);
-        gradient.addColorStop(0, this.minColorFunc());
-        gradient.addColorStop(1, this.maxColorFunc());
+
+        let steps = 10;
+        for (let i = 0; i <= steps; i++) {
+            let frac = i / steps;
+            gradient.addColorStop(frac, getWaterColorTransformed(frac - 0.5, NULL, NULL, NULL))
+        }
         MAIN_CONTEXT.fillStyle = gradient;
         MAIN_CONTEXT.fillRect(startX, startY, this.sizeX, this.sizeY);
 
@@ -29,7 +32,7 @@ export class SliderGradientBackground extends WindowElement {
         let invlerp = (loadGD(this.key) - this.min) / (this.max - this.min);
         let lerp = invlerp * this.sizeX;
 
-        MAIN_CONTEXT.fillStyle = calculateColor(invlerp, 0, 1, this.minColorFunc, this.maxColorFunc);
+        MAIN_CONTEXT.fillStyle = getWaterColorTransformed(NULL, NULL, NULL, NULL);
         MAIN_CONTEXT.fillRect(startX + lerp - (blockSize / 2), startY, blockSize, this.sizeY);
         MAIN_CONTEXT.fill();
 

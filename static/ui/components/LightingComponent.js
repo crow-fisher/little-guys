@@ -8,11 +8,12 @@ import { ConditionalContainer } from "../ConditionalContainer.js";
 import { Container } from "../Container.js";
 import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
 import { Slider } from "../elements/Slider.js";
+import { SliderGradientBackgroundWaterHue } from "../elements/SliderGradientWaterBackgroundHue.js";
 import { SliderGradientBackground } from "../elements/SliderGradientBackground.js";
 import { Text } from "../elements/Text.js";
 import { TextBackground } from "../elements/TextBackground.js";
 import { TextFunctionalBackground } from "../elements/TextFunctionalBackground.js";
-import { loadGD, UI_LIGHTING_SUN, UI_LIGHTING_MOON, UI_LIGHTING_WATER, UI_LIGHTING_ROCK, UI_LIGHTING_PLANT, UI_LIGHTING_DECAY, UI_SM_LIGHTING, UI_SOIL_COMPOSITION, UI_CENTER, UI_LIGHTING_SURFACE, UI_LIGHTING_WATER_OPACITY, UI_LIGHTING_WATER_SATURATION, UI_LIGHTING_WATER_VALUE, UI_LIGHTING_WATER_HUE, UI_LIGHTING_PLANT_GRASS, UI_LIGHTING_PLANT_TREE, UI_LIGHTING_SCENE_MODE, UI_LIGHTING_SCENE_MODE_SCENE, UI_LIGHTING_SCENE_MODE_WATER, UI_LIGHTING_SCENE_MODE_PLANT } from "../UIData.js";
+import { loadGD, UI_LIGHTING_SUN, UI_LIGHTING_MOON, UI_LIGHTING_WATER, UI_LIGHTING_ROCK, UI_LIGHTING_PLANT, UI_LIGHTING_DECAY, UI_SM_LIGHTING, UI_SOIL_COMPOSITION, UI_CENTER, UI_LIGHTING_SURFACE, UI_LIGHTING_WATER_OPACITY, UI_LIGHTING_WATER_VALUE, UI_LIGHTING_WATER_SATURATION, UI_LIGHTING_WATER_HUE, UI_LIGHTING_PLANT_GRASS, UI_LIGHTING_PLANT_TREE, UI_LIGHTING_SCENE_MODE, UI_LIGHTING_SCENE_MODE_SCENE, UI_LIGHTING_SCENE_MODE_WATER, UI_LIGHTING_SCENE_MODE_PLANT } from "../UIData.js";
 
 function getWaterColor() {
     let s = new WaterSquare(-1, -1);
@@ -26,6 +27,25 @@ function getWaterColorDark() {
     let waterHsv = rgb2hsv(rgb.r, rgb.g, rgb.b);
     waterHsv[2] *= 0.15;
     return rgbToHex(...hsv2rgb(...waterHsv));
+}
+
+export const NULL = -(10 ** 8);
+export function getWaterColorTransformed(h, s, v, a) {
+    if (h == NULL)
+        h = loadGD(UI_LIGHTING_WATER_HUE);
+    if (s == NULL) 
+        s = loadGD(UI_LIGHTING_WATER_SATURATION);
+    if (v == NULL)
+        v = loadGD(UI_LIGHTING_WATER_VALUE);
+    if (a == NULL)
+        a = 1;
+
+    let rgb = getActiveClimate().waterColor;
+    let waterHsv = rgb2hsv(rgb.r, rgb.g, rgb.b);
+    waterHsv[0] += 380 * h;
+    waterHsv[1] = s;
+    waterHsv[2] = 255 * v;
+    return rgbToRgba(...hsv2rgb(...waterHsv), a);
 }
 
 function getRockColor() {
@@ -46,6 +66,15 @@ function getPlantColor() {
 
 function getPlantColorDark() {
     return "#243b1c";
+}
+
+
+function getTreeColor() {
+    return "#5c370a";
+}
+
+function getTreeColorDark() {
+    return "#1c1307";
 }
 
 export class LightingComponent extends Component {
@@ -107,23 +136,23 @@ export class LightingComponent extends Component {
         sceneConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX,  h2, offsetX, () => "plant", () => getActiveClimate().getUIColorInactiveCustom(0.58)));
         sceneConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_PLANT, sizeX,  35, -2, 2, getPlantColorDark, getPlantColor));
 
-        plantConditionalContainer.addElement(new Text(this.window, sizeX,  h2, UI_CENTER, "grass"));
-        plantConditionalContainer.addElement(new Slider(this.window, UI_LIGHTING_PLANT_GRASS, sizeX,  35, -2, 2, () => getActiveClimate().getUIColorTransient()));
+        plantConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX,  h2, UI_CENTER, () => "grass", () => getActiveClimate().getUIColorInactiveCustom(0.58)));
+        plantConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_PLANT_GRASS, sizeX,  35, -2, 2, getPlantColorDark, getPlantColor));
 
-        plantConditionalContainer.addElement(new Text(this.window, sizeX,  h2, UI_CENTER, "tree"));
-        plantConditionalContainer.addElement(new Slider(this.window, UI_LIGHTING_PLANT_TREE, sizeX,  35, -2, 2, () => getActiveClimate().getUIColorTransient()));
+        plantConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX,  h2, UI_CENTER, () => "tree", () => getActiveClimate().getUIColorInactiveCustom(0.58)));
+        plantConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_PLANT_TREE, sizeX,  35, -2, 2, getTreeColorDark, getTreeColor));
 
-        waterConditionalContainer.addElement(new Text(this.window, sizeX,  h2, UI_CENTER, "water opacity"));
-        waterConditionalContainer.addElement(new Slider(this.window, UI_LIGHTING_WATER_OPACITY, sizeX,  35, 0.0, 1, () => getActiveClimate().getUIColorTransient()));
+        waterConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX,  h2, UI_CENTER, () => "water opacity",() => getActiveClimate().getUIColorInactiveCustom(0.58)));
+        waterConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_WATER_OPACITY,sizeX,  35, 0, 1, () => getWaterColorTransformed(NULL, 0, .5, .5), () => getWaterColorTransformed(NULL, NULL, NULL, 1)));
 
-        waterConditionalContainer.addElement(new Text(this.window, sizeX,  h2, UI_CENTER, "water value"));
-        waterConditionalContainer.addElement(new Slider(this.window, UI_LIGHTING_WATER_SATURATION, sizeX,  35, 0.0, 1, () => getActiveClimate().getUIColorTransient()));
+        waterConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX,  h2, UI_CENTER, () => "water value",() => getActiveClimate().getUIColorInactiveCustom(0.58)));
+        waterConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_WATER_VALUE, sizeX,  35, 0.0, 1, () => getWaterColorTransformed(NULL, NULL, 0, NULL), () => getWaterColorTransformed(NULL, NULL, 1, NULL)));
 
-        waterConditionalContainer.addElement(new Text(this.window, sizeX,  h2, UI_CENTER, "water satuation"));
-        waterConditionalContainer.addElement(new Slider(this.window, UI_LIGHTING_WATER_VALUE, sizeX,  35, 0.0, 1, () => getActiveClimate().getUIColorTransient()));
+        waterConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX,  h2, UI_CENTER, () => "water satuation",() => getActiveClimate().getUIColorInactiveCustom(0.58)));
+        waterConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_WATER_SATURATION, sizeX,  35, 0.0, 1, () => getWaterColorTransformed(NULL, 0, NULL, NULL), () => getWaterColorTransformed(NULL, 1, NULL, NULL)));
 
-        waterConditionalContainer.addElement(new Text(this.window, sizeX,  h2, UI_CENTER, "water hue"));
-        waterConditionalContainer.addElement(new Slider(this.window, UI_LIGHTING_WATER_HUE, sizeX,  35, -.5, .5, () => getActiveClimate().getUIColorTransient()));
+        waterConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX,  h2, UI_CENTER, () => "water hue",() => getActiveClimate().getUIColorInactiveCustom(0.58)));
+        waterConditionalContainer.addElement(new SliderGradientBackgroundWaterHue(this.window, UI_LIGHTING_WATER_HUE, sizeX,  35, -.5, .5));
 
     }
 }

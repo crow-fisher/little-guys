@@ -4,7 +4,7 @@ import { WATERFLOW_CANDIDATE_SQUARES, WATERFLOW_TARGET_SQUARES } from "../global
 import { MAIN_CONTEXT } from "../index.js";
 import { RGB_COLOR_OTHER_BLUE } from "../colors.js";
 import { hexToRgb, hsv2rgb, randRange, rgb2hsv, rgbToRgba } from "../common.js";
-import { loadGD, UI_LIGHTING_WATER, UI_LIGHTING_WATER_HUE, UI_LIGHTING_WATER_SATURATION, UI_LIGHTING_WATER_VALUE } from "../ui/UIData.js";
+import { loadGD, UI_LIGHTING_WATER, UI_LIGHTING_WATER_HUE, UI_LIGHTING_WATER_VALUE, UI_LIGHTING_WATER_SATURATION } from "../ui/UIData.js";
 import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
 import { getActiveClimate } from "../climate/climateManager.js";
 class WaterSquare extends BaseSquare {
@@ -39,9 +39,9 @@ class WaterSquare extends BaseSquare {
     getColorBase() {
         let base = getActiveClimate().waterColor;
         let hsv = rgb2hsv(base.r, base.g, base.b);
-        hsv[1] = loadGD(UI_LIGHTING_WATER_VALUE);
-        hsv[2] = 255 * loadGD(UI_LIGHTING_WATER_SATURATION);
-        hsv[0] += 355 * loadGD(UI_LIGHTING_WATER_HUE);
+        hsv[0] += 380 * loadGD(UI_LIGHTING_WATER_HUE);
+        hsv[1] = loadGD(UI_LIGHTING_WATER_SATURATION);
+        hsv[2] = 255 * loadGD(UI_LIGHTING_WATER_VALUE);
         let rgb = hsv2rgb(...hsv);
         return {r: rgb[0], g: rgb[1], b: rgb[2]}
     }
