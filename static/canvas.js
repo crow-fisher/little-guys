@@ -13,6 +13,7 @@ export function getBaseSize() {
 }
 export function setBaseSize(newSize) {
     BASE_SIZE = newSize;
+    resetZoomArr();
 }
 
 export function getBaseUISize() {
@@ -227,15 +228,21 @@ export function zoom(event) {
 }
 
 let zoom_arr = new Array();
-let zoom_idx = 3;
-zoom_arr.push(.5);
-zoom_arr.push(.6);
-zoom_arr.push(.7);
-zoom_arr.push(.8);
-zoom_arr.push(.9);
+let neutral_zoom_idx = zoom_arr.length;
+let zoom_idx = neutral_zoom_idx;
 
-for (let i = 0; i < 20; i++) {
-    zoom_arr.push(getBaseSize() + i / getBaseSize());
+function resetZoomArr() {
+    zoom_arr = new Array();
+    zoom_arr.push(6/7);
+    zoom_arr.push(7/8);
+    zoom_arr.push(8/9);
+    zoom_arr.push(9/10);
+
+    neutral_zoom_idx = zoom_arr.length;
+    zoom_idx = neutral_zoom_idx;
+    for (let i = 1; i < 20; i += 1) {
+        zoom_arr.push(i);
+    }
 }
 
 export function doZoom(deltaY) {
@@ -280,7 +287,7 @@ export function resetZoom() {
     saveGD(UI_CANVAS_VIEWPORT_CENTER_X, (CANVAS_SQUARES_X * BASE_SIZE) / 2);
     saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, (CANVAS_SQUARES_Y * BASE_SIZE) / 2);
     saveGD(UI_CANVAS_SQUARES_ZOOM, 1);
-    zoom_idx = 0;
+    zoom_idx = neutral_zoom_idx;
 }
 
 export function moveCamera(x, y) {
