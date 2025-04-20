@@ -11,6 +11,7 @@ import { Slider } from "../elements/Slider.js";
 import { SliderGradientBackground } from "../elements/SliderGradientBackground.js";
 import { Text } from "../elements/Text.js";
 import { TextBackground } from "../elements/TextBackground.js";
+import { TextFunctionalBackground } from "../elements/TextFunctionalBackground.js";
 import { loadGD, UI_LIGHTING_SUN, UI_LIGHTING_MOON, UI_LIGHTING_WATER, UI_LIGHTING_ROCK, UI_LIGHTING_PLANT, UI_LIGHTING_DECAY, UI_SM_LIGHTING, UI_SOIL_COMPOSITION, UI_CENTER, UI_LIGHTING_SURFACE, UI_LIGHTING_WATER_OPACITY, UI_LIGHTING_WATER_SATURATION, UI_LIGHTING_WATER_VALUE, UI_LIGHTING_WATER_HUE, UI_LIGHTING_PLANT_GRASS, UI_LIGHTING_PLANT_TREE, UI_LIGHTING_SCENE_MODE, UI_LIGHTING_SCENE_MODE_SCENE, UI_LIGHTING_SCENE_MODE_WATER, UI_LIGHTING_SCENE_MODE_PLANT } from "../UIData.js";
 
 function getWaterColor() {
@@ -65,8 +66,8 @@ export class LightingComponent extends Component {
         container.addElement(modeSelectRow);
 
         modeSelectRow.addElement(new RadioToggleLabel(this.window, third, getBaseUISize() * 3, UI_CENTER, "scene", UI_LIGHTING_SCENE_MODE, UI_LIGHTING_SCENE_MODE_SCENE, () => getActiveClimate().getUIColorInactiveCustom(0.66), () => getActiveClimate().getUIColorInactiveCustom(0.55)));
-        modeSelectRow.addElement(new RadioToggleLabel(this.window, third, getBaseUISize() * 3, UI_CENTER, "water", UI_LIGHTING_SCENE_MODE, UI_LIGHTING_SCENE_MODE_WATER, () => getActiveClimate().getUIColorInactiveCustom(0.68), () => getActiveClimate().getUIColorInactiveCustom(0.59)));
-        modeSelectRow.addElement(new RadioToggleLabel(this.window, third, getBaseUISize() * 3, UI_CENTER, "plant", UI_LIGHTING_SCENE_MODE, UI_LIGHTING_SCENE_MODE_PLANT, () => getActiveClimate().getUIColorInactiveCustom(0.64), () => getActiveClimate().getUIColorInactiveCustom(0.56)));
+        modeSelectRow.addElement(new RadioToggleLabel(this.window, third, getBaseUISize() * 3, UI_CENTER, "water", UI_LIGHTING_SCENE_MODE, UI_LIGHTING_SCENE_MODE_WATER, () => getActiveClimate().getUIColorInactiveCustom(0.72), () => getActiveClimate().getUIColorInactiveCustom(0.59)));
+        modeSelectRow.addElement(new RadioToggleLabel(this.window, third, getBaseUISize() * 3, UI_CENTER, "plant", UI_LIGHTING_SCENE_MODE, UI_LIGHTING_SCENE_MODE_PLANT, () => getActiveClimate().getUIColorInactiveCustom(0.69), () => getActiveClimate().getUIColorInactiveCustom(0.56)));
 
         let sceneConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_LIGHTING_SCENE_MODE) == UI_LIGHTING_SCENE_MODE_SCENE);
         let waterConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_LIGHTING_SCENE_MODE) == UI_LIGHTING_SCENE_MODE_WATER);
@@ -79,18 +80,18 @@ export class LightingComponent extends Component {
         let h1 = getBaseUISize() * 3;
         let h2 = getBaseUISize() * 2.5;
         let br = getBaseUISize() * .5;
-        sceneConditionalContainer.addElement(new Text(this.window, sizeX,  br, UI_CENTER, ""));
-        sceneConditionalContainer.addElement(new Text(this.window, sizeX,  h1, UI_CENTER, "source brightness"));
-        sceneConditionalContainer.addElement(new Text(this.window, sizeX,  br, UI_CENTER, ""));
+        sceneConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX,  br, UI_CENTER, () => "", () => getActiveClimate().getUIColorInactiveCustom(0.85)));
+        sceneConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX,  h1, UI_CENTER, () => "source brightness",() => getActiveClimate().getUIColorInactiveCustom(0.55)));
 
         sceneConditionalContainer.addElement(new Text(this.window, sizeX,  h2, UI_CENTER, "sun"));
         sceneConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_SUN, sizeX,  35, -4, 4, () => "#000000",() => "#FFF0FF"));
 
         sceneConditionalContainer.addElement(new Text(this.window, sizeX,  h2, UI_CENTER, "moon"));
         sceneConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_MOON, sizeX,  35, -3, 0, () => "#000000", () => getMoonlightColorRgb()));
-        sceneConditionalContainer.addElement(new Text(this.window, sizeX,  br, UI_CENTER, ""));
-        sceneConditionalContainer.addElement(new Text(this.window, sizeX,  h1, UI_CENTER, "decay settings"));
-        sceneConditionalContainer.addElement(new Text(this.window, sizeX,  br, UI_CENTER, ""));
+
+        
+        sceneConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX,  br, UI_CENTER, () => "", () => getActiveClimate().getUIColorInactiveCustom(0.85)));
+        sceneConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX,  h1, UI_CENTER, () => "decay settings",() => getActiveClimate().getUIColorInactiveCustom(0.55)));
         
         sceneConditionalContainer.addElement(new Text(this.window, sizeX,  h2, UI_CENTER, "global"));
         sceneConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_DECAY, sizeX,  35, 3, 8, () => "#000000",() => "#FFF0FF"));
