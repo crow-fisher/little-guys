@@ -54,21 +54,14 @@ export function indexCanvasSize(shouldInitUIClimateAndLighting=true) {
     let margin = 0;
     width = Math.floor(window.innerWidth - margin);
     height = Math.floor(window.innerHeight - margin);
-
     let c_baseSize = Math.floor(height / loadGD(UI_SIMULATION_HEIGHT));
     setCanvasSquaresY(loadGD(UI_SIMULATION_HEIGHT));
     setCanvasSquaresX(Math.floor(width / c_baseSize));      
     setBaseSize(c_baseSize);
-    iterateOnSquares((sq) => sq.lighting = new Array());
-
     MAIN_CANVAS.width = width;
     MAIN_CANVAS.height = height;
-    
-    if (shouldInitUIClimateAndLighting) {
-        clearTimeouts();
-        resetClimateAndLighting();
-        initUI();
-    }
+    resetClimateAndLighting();
+    initUI();
 }
 
 addUIFunctionMap(UI_SIMULATION_HEIGHT, () => {

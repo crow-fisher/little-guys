@@ -26,17 +26,15 @@ export function clearTimeouts() {
 }
 
 export function resetLighting() {
-    liveTimeouts.forEach((timeout) => clearTimeout(timeout));
-    liveTimeouts = new Array();
     lightingHandler.destroy();
+    clearTimeouts();
+    iterateOnSquares((sq) => sq.lighting = new Array());
     lightingHandler = new LightingHandler();
 }
     
 export function resetClimateAndLighting() {
-    lightingHandler.destroy();
-    lightingHandler = new LightingHandler();
+    resetLighting();
     climateHandler = new ClimateHandler();
-    iterateOnSquares((sq) => sq.lighting = new Array());
 }
 
 export function scheduler_main() {
