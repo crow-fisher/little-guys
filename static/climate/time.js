@@ -1,5 +1,5 @@
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillCircle } from "../canvas.js";
-import { hexToRgb, hsv2rgb, randNumber, randRange, rgb2hsv, rgbToRgba } from "../common.js";
+import { hexToRgb, hsv2rgb, randNumber, randRange, rgb2hsv, rgbToHex, rgbToRgba } from "../common.js";
 import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth, MAIN_CONTEXT, setBackgroundColor } from "../index.js";
 import { calculateColorRGB, getFrameRelCloud } from "./temperatureHumidity.js";
 import {
@@ -478,6 +478,11 @@ moonlightColor.g *= 0.9;
 
 export function getMoonlightColor() {
     return moonlightColor;
+}
+
+export function getMoonlightColorRgb() {
+    let rgb = getMoonlightColor();
+    return rgbToHex(rgb.r, rgb.b, rgb.b);
 }
 
 export function getMoonlightBrightness() {
