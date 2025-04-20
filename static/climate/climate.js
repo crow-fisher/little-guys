@@ -105,7 +105,7 @@ export class Climate {
     }
 
     getPaletteRockColor() {
-        return this.processColor(this.getBaseRockColor(loadGD(UI_PALETTE_ROCKIDX), .4, .4, .2), 1);
+        return this.processColor(this.getBaseRockColor(loadGD(UI_PALETTE_ROCKIDX), .1, .1, .8), 1);
     }
 
     getPaletteSoilColor() {

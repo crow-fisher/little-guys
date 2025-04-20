@@ -33,7 +33,7 @@ class WaterSquare extends BaseSquare {
     }
 
     getLightFilterRate() {
-        return super.getLightFilterRate() * loadGD(UI_LIGHTING_WATER);
+        return super.getLightFilterRate() * Math.exp(-loadGD(UI_LIGHTING_WATER));
     }
 
     getColorBase() {

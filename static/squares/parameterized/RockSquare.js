@@ -53,9 +53,9 @@ export class RockSquare extends SoilSquare {
     initWaterContainment() {
         this.waterContainment = 0;
     }
-
+    
     getLightFilterRate() {
-        return super.getLightFilterRate() * loadGD(UI_LIGHTING_ROCK);
+        return super.getLightFilterRate() * Math.exp(-loadGD(UI_LIGHTING_ROCK));
     }
 
     getWaterflowRate() {

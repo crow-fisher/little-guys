@@ -3,6 +3,7 @@ import { getSquares } from "../squares/_sqOperations.js";
 import {  MAIN_CONTEXT } from "../index.js";
 import { addWaterSaturation, addWaterSaturationPascals, calculateColor, getHumidity, getTemperatureAtWindSquare, getWaterSaturation, initTemperatureHumidity, setWaterSaturation, setWaterSaturationMap, updateWindSquareTemperature } from "./temperatureHumidity.js";
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillRect, zoomCanvasFillRectTheta } from "../canvas.js";
+import { loadGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "../ui/UIData.js";
 
 let windPressureMap;
 let windPressureMapByPressure;
@@ -26,8 +27,8 @@ let base_wind_pressure = 101325; // 1 atm in pascals
 
 let windSpeedSmoothingMap = new Map();
 
-let WIND_SQUARES_X = () => Math.ceil(getCanvasSquaresX() / 4);
-let WIND_SQUARES_Y = () => Math.ceil(getCanvasSquaresY() / 4);
+let WIND_SQUARES_X = () => Math.ceil(loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) / 4);
+let WIND_SQUARES_Y = () => Math.ceil(loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y) / 4);
 
 let curWindSquaresX = -1;
 let curWindSquaresY = -1;

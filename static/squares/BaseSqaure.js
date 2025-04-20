@@ -585,7 +585,7 @@ export class BaseSquare {
             return true;
         }
         if (!this.solid) {
-            if (!this.hasBonked || !sq.hasBonked || this.speedY > 0 || sq.speedY > 0) {
+            if ((!sq.solid) && (!this.hasBonked || !sq.hasBonked || this.speedY > 0 || sq.speedY > 0)) {
                 return false;
             }
             if (!sq.collision) {
