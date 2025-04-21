@@ -19,10 +19,10 @@ export class OrganismComponent extends Component {
         this.window.container = container;
         container.addElement(new Text(this.window, sizeX, getBaseUISize() * 2, UI_CENTER, "midwest"));
         container.addElement(new RowedRadio(this.window, sizeX, getBaseUISize() * 4, UI_CENTER, UI_ORGANISM_SELECT, 2, [
-            UI_ORGANISM_WHEAT,
             UI_ORGANISM_GRASS,
-            UI_ORGANISM_CATTAIL,
-            UI_ORGANISM_MUSHROOM
+            UI_ORGANISM_GRASS,
+            UI_ORGANISM_GRASS,
+            UI_ORGANISM_GRASS
         ], () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorActive()));
 
 

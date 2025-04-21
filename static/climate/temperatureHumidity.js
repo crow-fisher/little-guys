@@ -280,7 +280,7 @@ function doRain() {
             if (adjacentHumidity < (cloudRainThresh))
                 continue;
             let rainDropProbability = ((adjacentHumidity - cloudRainThresh) / (cloudRainMax - cloudRainThresh));
-            rainDropProbability /= loadGD(UI_CLIMATE_RAINFALL_DENSITY);
+            rainDropProbability /= 10; // loadGD(UI_CLIMATE_RAINFALL_DENSITY);
             if (Math.random() > rainDropProbability) {
                 continue;
             }
