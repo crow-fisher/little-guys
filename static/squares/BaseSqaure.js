@@ -206,11 +206,7 @@ export class BaseSquare {
         this.currentPressureDirect = -1;
         this.group = -1;
 
-        if (getTimeScale() != 0) {
-            if (this.shouldFallThisFrame()) {
-                this.speedY += (1 / this.gravity);
-            }
-        }
+
         if (Math.floor(getCurDay() + 0.15) != this.lightingSumDay) {
             if (this.lightingSum == null) {
                 this.lightingSum = { r: 0, g: 0, b: 0 }
@@ -621,8 +617,13 @@ export class BaseSquare {
             return;
         }
         if (this.currentPressureDirect > 10) {
-            if (Math.random() < 0.95) {
+            if (Math.random() < 1 - (1 / this.currentPressureDirect) && !getSquares(this.posX, this.posY + 2).some((sq) => sq.testCollidesWithSquare(this))) {
                 return;
+            }
+        }
+        if (getTimeScale() != 0) {
+            if (this.shouldFallThisFrame()) {
+                this.speedY += (1 / this.gravity);
             }
         }
         let finalXPos = this.posX;

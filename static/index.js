@@ -76,6 +76,5 @@ export function setBackgroundColor(hexColor) {
 }
 
 window.onresize = indexCanvasSize;
-window.onfocus = resetLighting;
-window.onblur = saveCurGame;
+// window.onblur = saveCurGame;
 document.documentElement.style.overflow = 'hidden';  // firefox, chrome

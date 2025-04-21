@@ -120,6 +120,7 @@ export class StationaryLightGroup extends LightGroup {
 
         this.idxCompletionMap[idx] = false;
         let completionMap = new Map();
+
         for (let i = 0; i < this.lightSources.length; i++) {
             completionMap[i] = false;
             this.lightSources[i].doRayCasting(idx, i, () => completionMap[i] = true);
@@ -380,6 +381,7 @@ export class LightSource {
             } else {
                 obj.lighting[idx][0].push(pointLightSourceFunc);
             }
+            obj.lighting[idx][1] = this.colorFunc;
         });
     };
     doRayCasting(idx, jobIdx, onComplete) {
