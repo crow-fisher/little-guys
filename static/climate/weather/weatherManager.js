@@ -247,7 +247,13 @@ function applyUIWeatherChange() {
     console.log("Next weather: ", curWeather.type + ", for " + Math.round(curWeatherInterval / 0.000694444) + " minutes")
 }
 
-addUIFunctionMap(UI_CLIMATE_WEATHER_ACTIVE, applyUIWeatherChange);
+addUIFunctionMap(UI_CLIMATE_WEATHER_ACTIVE, () => {
+    if (!loadGD(UI_SIMULATION_CLOUDS) && loadGD(UI_CLIMATE_WEATHER_ACTIVE) != UI_CLIMATE_WEATHER_NULL) {
+        saveGD(UI_SIMULATION_CLOUDS, true);
+    }
+    applyUIWeatherChange();
+});
+
 addUIFunctionMap(UI_CLIMATE_WEATHER_DURATION, applyUIWeatherChange);
 addUIFunctionMap(UI_SIMULATION_GENS_PER_DAY, applyUIWeatherChange);
 addUIFunctionMap(UI_SIMULATION_CLOUDS, () => {
