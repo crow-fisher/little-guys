@@ -26,10 +26,10 @@ export function clearTimeouts() {
 }
 
 export function resetLighting() {
-    lightingHandler.destroy();
-    clearTimeouts();
-    iterateOnSquares((sq) => sq.lighting = new Array());
-    lightingHandler = new LightingHandler();
+    // lightingHandler.destroy();
+    // clearTimeouts();
+    // iterateOnSquares((sq) => sq.lighting = new Array());
+    // lightingHandler = new LightingHandler();
 }
     
 export function resetClimateAndLighting() {
