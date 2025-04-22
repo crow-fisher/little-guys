@@ -1,4 +1,4 @@
-import { getBaseUISize } from "../../canvas.js";
+import { getBaseUISize, resetZoom } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { purgeCanvasFrameLimit } from "../../globalOperations.js";
 import { getLastMouseDown } from "../../mouse.js";
@@ -16,8 +16,6 @@ import { SubTreeComponent } from "./SubTreeComponent.js";
 
 
 export class MainMenuComponent extends SubTreeComponent {
-
-
     constructor(posXFunc, posYFunc, padding, dir, key) {
         super(posXFunc, posYFunc, padding, dir, key);
         let subMenuContainer = new Container(this.window, padding, 1);
@@ -98,11 +96,12 @@ export class MainMenuComponent extends SubTreeComponent {
         subMenuContainer.addElement(new Text(this.window, this.sizeX, getBaseUISize() * 2.5, UI_CENTER, "more tools"))
         subMenuContainer.addElement(new Text(this.window, this.sizeX, getBaseUISize() * .5, this.textAlignOffsetX, ""));
 
-        subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, loadEmptyScene, "empty scene", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
+        subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, loadEmptyScene, "empty scene", () => getActiveClimate().getUIColorInactiveCustom(0.61)));
         subMenuContainer.addElement( new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, purgeCanvasFrameLimit, "purge off-screen blocks", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
         subMenuContainer.addElement( new Toggle(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, UI_UI_SHOWHIDDEN, 
         "show hidden worlds",  () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient(), 0.75, true, UICONFIG));
         subMenuContainer.addElement( new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, deleteHiddenWorlds, "delete hidden worlds", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
+        subMenuContainer.addElement( new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, resetZoom, "reset zoom", () => getActiveClimate().getUIColorInactiveCustom(0.60)));
 
     }
 

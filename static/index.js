@@ -62,6 +62,7 @@ export function indexCanvasSize(shouldInitUIClimateAndLighting=true) {
     MAIN_CANVAS.height = height;
     resetClimateAndLighting();
     initUI();
+    resetZoom();
 }
 
 addUIFunctionMap(UI_SIMULATION_HEIGHT, () => {
