@@ -554,11 +554,11 @@ export class BaseSquare {
         let prob = 1;
         if (this.proto == "RockSquare") {
             if (this.group != -1) {
-                prob = 0.0001;
+                prob = 0.001;
             }
         } else if (this.proto == "WaterSquare") {
             if (this.group != -1) {
-                prob = 0.0001;
+                prob = 0.001;
             }
         }
         if (Math.random() > prob) {
@@ -566,7 +566,7 @@ export class BaseSquare {
         }
         if (this.group != -1) {
             if (this.proto == "RockSquare") {
-                setGroupGrounded(this.group, false);
+                setTimeout(() => setGroupGrounded(this.group, false), 1000);
             }
         }
         this.group = getNextGroupId();
