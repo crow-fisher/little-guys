@@ -4,7 +4,9 @@ import { getNeighbors, addSquare, getSquares } from "./_sqOperations.js";
 import {
     getNextGroupId,
     getMixArrLen,
-    getTargetMixIdx
+    getTargetMixIdx,
+    setGroupGrounded,
+    isGroupGrounded
 } from "../globals.js";
 
 import { MAIN_CONTEXT } from "../index.js";
@@ -204,8 +206,6 @@ export class BaseSquare {
             removeSquare(this);
         }
         this.currentPressureDirect = -1;
-        this.group = -1;
-
 
         if (Math.floor(getCurDay() + 0.15) != this.lightingSumDay) {
             if (this.lightingSum == null) {
@@ -510,7 +510,6 @@ export class BaseSquare {
         this.posX = newPosX;
         this.posY = newPosY;
         addSquare(this);
-
         return true;
     }
 
@@ -521,7 +520,7 @@ export class BaseSquare {
             let visited = new Set();
 
             getNeighbors(this.posX, this.posY)
-                .filter((sq) => sq.proto == this.proto)
+                .filter((sq) => sq.proto == this.proto || (this.sand != null && sq.sand != null))
                 .forEach((sq) => toVisit.add(sq));
 
             toVisit.forEach((sq) => {
@@ -531,7 +530,7 @@ export class BaseSquare {
                     sq.group = this.group;
                     visited.add(sq);
                     getNeighbors(sq.posX, sq.posY)
-                        .filter((ssq) => ssq.proto == sq.proto)
+                        .filter((ssq) => ssq.proto == sq.proto || (ssq.sand != null && sq.sand != null))
                         .forEach((ssq) => toVisit.add(ssq));
                 }
             })
@@ -540,14 +539,14 @@ export class BaseSquare {
     }
 
     calculateGroup() {
-        if (this.proto != "WaterSquare") {
-            return;
-        }
-        if (this.group != -1) {
+        if (Math.random() > 0.5 || this.group != -1 || (!this.hasBonked && this.proto != "RockSquare")) {
             return;
         }
         this.group = getNextGroupId();
-        this._percolateGroup(getNextGroupId())
+        this._percolateGroup(this.group);
+        if (this.proto == "RockSquare") {
+            setGroupGrounded(this.group)
+        }
     }
 
     percolateInnerMoisture() { }
@@ -616,7 +615,7 @@ export class BaseSquare {
         if (!this.shouldFallThisFrame()) {
             return;
         }
-        if (this.currentPressureDirect > 10) {
+        if (isGroupGrounded(this.group) && this.currentPressureDirect > 10) {
             if (Math.random() < 1 - (1 / this.currentPressureDirect) && !getSquares(this.posX, this.posY + 2).some((sq) => sq.testCollidesWithSquare(this))) {
                 return;
             }
@@ -634,10 +633,10 @@ export class BaseSquare {
             for (let j = 0; j < Math.abs(this.speedX) + 1; j++) {
                 let jSigned = (this.speedX > 0) ? j : -j;
                 let jSignedMinusOne = (this.speedX == 0 ? 0 : (this.speedX > 0) ? (j - 1) : -(j - 1));
-                if (getSquares(this.posX + jSigned, this.posY + i)
-                    .some((sq) => this.testCollidesWithSquare(sq) || 
-                    (this.proto == "WaterSquare" && sq.proto == "SoilSquare" && Math.random() > (1 / sq.getWaterflowRate()))
-                )) {
+                let bonkSquare = getSquares(this.posX + jSigned, this.posY + i)
+                    .find((sq) => this.testCollidesWithSquare(sq) || 
+                    (this.proto == "WaterSquare" && sq.proto == "SoilSquare" && Math.random() > (1 / sq.getWaterflowRate())));
+                if (bonkSquare) {
                     finalYPos = this.posY + (i - 1);
                     finalXPos = this.posX + jSignedMinusOne;
                     this.speedX = 0;
@@ -645,6 +644,10 @@ export class BaseSquare {
                     this.offsetY = 0;
                     bonked = true;
                     this.hasBonked = true;
+                    if (bonkSquare.proto == this.proto || (this.sand != null && bonkSquare.sand != null)) {
+                        this.group = bonkSquare.group;
+                    };
+
                     if (this.lighting.length == 0 && loadGD(UI_LIGHTING_ENABLED)) {
                         this.initLightingFromNeighbors();
                     }
