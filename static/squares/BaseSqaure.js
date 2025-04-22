@@ -22,11 +22,11 @@ import { removeOrganism } from "../organisms/_orgOperations.js";
 
 import { calculateColorTemperature, getTemperatureAtWindSquare, temperatureHumidityFlowrateFactor, updateWindSquareTemperature } from "../climate/temperatureHumidity.js";
 import { getWindSquareAbove } from "../climate/wind.js";
-import { COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_GREEN, RGB_COLOR_RED, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
+import { COLOR_BLACK, COLOR_BLUE, COLOR_GREEN, COLOR_OTHER_BLUE, COLOR_RED, COLOR_VERY_FUCKING_RED, RGB_COLOR_BLUE, RGB_COLOR_GREEN, RGB_COLOR_RED, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
 import { getCurDay, getDaylightStrengthFrameDiff, getTimeScale } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
-import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_PALETTE_SIZE } from "../ui/UIData.js";
+import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_PALETTE_SIZE, UI_VIEWMODE_DEV_PLACEHOLDER } from "../ui/UIData.js";
 import { isLeftMouseClicked } from "../mouse.js";
 
 export class BaseSquare {
@@ -228,16 +228,14 @@ export class BaseSquare {
         let selectedViewMode = loadGD(UI_VIEWMODE_SELECT);
         if (selectedViewMode == UI_VIEWMODE_NORMAL) {
             this.renderWithVariedColors(1);
-        }
-        else if (selectedViewMode == UI_VIEWMODE_ORGANISMS) {
+        } else if (selectedViewMode == UI_VIEWMODE_ORGANISMS) {
             this.renderWithVariedColors(0.35);
-
-        }
-        if (selectedViewMode == UI_VIEWMODE_LIGHTIHNG) {
+        } else if (selectedViewMode == UI_VIEWMODE_DEV_PLACEHOLDER) {
+            this.renderGroup();
+        } else if (selectedViewMode == UI_VIEWMODE_LIGHTIHNG) {
             this.renderWithVariedColors(1);
             this.renderLightingView();
-        }
-        else if (selectedViewMode == UI_VIEWMODE_MOISTURE) {
+        } else if (selectedViewMode == UI_VIEWMODE_MOISTURE) {
             this.renderWaterSaturation();
         } else if (selectedViewMode == UI_VIEWMODE_WATERTICKRATE) {
             this.renderWaterTickrate();
@@ -257,6 +255,18 @@ export class BaseSquare {
             this.renderWithVariedColors(0.25);
         }
     };
+
+    renderGroup() {
+        let colorArr = [COLOR_BLACK, COLOR_BLUE, COLOR_GREEN, COLOR_OTHER_BLUE, COLOR_RED, COLOR_VERY_FUCKING_RED];
+        MAIN_CONTEXT.fillStyle = colorArr[this.group % colorArr.length];
+        zoomCanvasFillRect(
+            this.posX * getBaseSize(),
+            this.posY * getBaseSize(),
+            getBaseSize(),
+            getBaseSize()
+        );
+
+    }
 
     renderTemperature() {
         MAIN_CONTEXT.fillStyle = calculateColorTemperature(this.temperature);
@@ -513,34 +523,51 @@ export class BaseSquare {
         return true;
     }
 
-    _percolateGroup(group) {
-        if (this.group != group) {
-            this.group = group;
-            let toVisit = new Set();
-            let visited = new Set();
+    _percolateGroup() {
+        let toVisit = new Set();
+        let visited = new Set();
 
-            getNeighbors(this.posX, this.posY)
-                .filter((sq) => sq.proto == this.proto || (this.sand != null && sq.sand != null))
-                .forEach((sq) => toVisit.add(sq));
+        getNeighbors(this.posX, this.posY)
+            .filter((sq) => sq.proto == this.proto || (this.sand != null && sq.sand != null))
+            .filter((sq) => sq.posY <= this.posY) 
+            .forEach((sq) => toVisit.add(sq));
 
-            toVisit.forEach((sq) => {
-                if (sq == null || sq in visited) {
-                    return;
-                } else {
-                    sq.group = this.group;
-                    visited.add(sq);
-                    getNeighbors(sq.posX, sq.posY)
-                        .filter((ssq) => ssq.proto == sq.proto || (ssq.sand != null && sq.sand != null))
-                        .forEach((ssq) => toVisit.add(ssq));
-                }
-            })
-
-        }
+        toVisit.forEach((sq) => {
+            if (sq == null || sq in visited) {
+                return;
+            } else {
+                sq.group = this.group;
+                visited.add(sq);
+                getNeighbors(sq.posX, sq.posY)
+                    .filter((ssq) => ssq.proto == sq.proto || (ssq.sand != null && sq.sand != null))
+                    .filter((sq) => sq.posY <= this.posY) 
+                    .forEach((ssq) => toVisit.add(ssq));
+            }
+        })
     }
 
     calculateGroup() {
-        if (Math.random() > 0.5 || this.group != -1 || (!this.hasBonked && this.proto != "RockSquare")) {
+        if (this.proto == "SoilSquare") {
             return;
+        }
+
+        let prob = 1;
+        if (this.proto == "RockSquare") {
+            if (this.group != -1) {
+                prob = 0.0001;
+            }
+        } else if (this.proto == "WaterSquare") {
+            if (this.group != -1) {
+                prob = 0.0001;
+            }
+        }
+        if (Math.random() > prob) {
+            return;
+        }
+        if (this.group != -1) {
+            if (this.proto == "RockSquare") {
+                setGroupGrounded(this.group, false);
+            }
         }
         this.group = getNextGroupId();
         this._percolateGroup(this.group);

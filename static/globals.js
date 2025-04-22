@@ -46,8 +46,8 @@ export function getNextGroupId() {
 export function isGroupGrounded(group) {
     return groundedMap.get(group);
 }
-export function setGroupGrounded(group) {
-    groundedMap.set(group, true);
+export function setGroupGrounded(group, value=true) {
+    groundedMap.set(group, value);
 }
 
 export function resetWaterflowSquares() {
