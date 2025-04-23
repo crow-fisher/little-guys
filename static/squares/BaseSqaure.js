@@ -540,7 +540,8 @@ export class BaseSquare {
                 visited.add(sq);
                 getNeighbors(sq.posX, sq.posY)
                     .filter((ssq) => ssq.proto == sq.proto || (ssq.sand != null && sq.sand != null))
-                    .filter((sq) => sq.posY <= this.posY) 
+                    .filter((sq) => sq.posY <= this.posY)
+                    .filter((sq) => Math.random() > 0.99)
                     .forEach((ssq) => toVisit.add(ssq));
             }
         })
