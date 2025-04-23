@@ -528,7 +528,7 @@ export class BaseSquare {
         let visited = new Set();
 
         getNeighbors(this.posX, this.posY)
-            .filter((sq) => sq.proto == this.proto || (this.sand != null && sq.sand != null))
+            .filter((sq) => sq.proto == this.proto)
             .filter((sq) => sq.posY <= this.posY) 
             .forEach((sq) => toVisit.add(sq));
 
@@ -539,9 +539,8 @@ export class BaseSquare {
                 sq.group = this.group;
                 visited.add(sq);
                 getNeighbors(sq.posX, sq.posY)
-                    .filter((ssq) => ssq.proto == sq.proto || (ssq.sand != null && sq.sand != null))
-                    .filter((sq) => sq.posY <= this.posY)
-                    .filter((sq) => Math.random() > 0.99)
+                    .filter((ssq) => ssq.proto == sq.proto)
+                    .filter((sq) => !sq.solid || sq.posY <= this.posY)
                     .forEach((ssq) => toVisit.add(ssq));
             }
         })
@@ -551,25 +550,10 @@ export class BaseSquare {
         if (this.proto == "SoilSquare") {
             return;
         }
-
-        let prob = 1;
-        if (this.proto == "RockSquare") {
-            if (this.group != -1) {
-                prob = 0.001;
-            }
-        } else if (this.proto == "WaterSquare") {
-            if (this.group != -1) {
-                prob = 0.001;
-            }
-        }
-        if (Math.random() > prob) {
+        if (this.group != -1) {
             return;
         }
-        if (this.group != -1) {
-            if (this.proto == "RockSquare") {
-                setTimeout(() => setGroupGrounded(this.group, false), 1000);
-            }
-        }
+
         this.group = getNextGroupId();
         this._percolateGroup(this.group);
         if (this.proto == "RockSquare") {
@@ -643,10 +627,12 @@ export class BaseSquare {
         if (!this.shouldFallThisFrame()) {
             return;
         }
+        let shouldResetGroup = false;
         if (isGroupGrounded(this.group) && this.currentPressureDirect > 10) {
             if (Math.random() < 1 - (1 / this.currentPressureDirect) && !getSquares(this.posX, this.posY + 2).some((sq) => sq.testCollidesWithSquare(this))) {
                 return;
             }
+            shouldResetGroup = true;
         }
         if (getTimeScale() != 0) {
             if (this.shouldFallThisFrame()) {
@@ -713,6 +699,10 @@ export class BaseSquare {
             this.offsetY = finalYPosFrac;
             this.updatePosition(finalXPos, finalYPosFloor);
 
+            if (shouldResetGroup && Math.random() > 0.99) {
+                this.group = getNextGroupId();
+                this._percolateGroup();
+            }
             if (bonked) {
                 this.triggerParticles(particleSpeed);
             }
