@@ -6,6 +6,7 @@ import { Container } from "../Container.js";
 import { Button } from "../elements/Button.js";
 import { RadioToggle } from "../elements/RadioToggle.js";
 import { RadioToggleFunctionalText } from "../elements/RadioToggleFunctionalText.js";
+import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
 import { Slider } from "../elements/Slider.js";
 import { SoilPickerElement } from "../elements/SoilPicker.js";
 import { Text } from "../elements/Text.js";
@@ -21,36 +22,52 @@ export class BlockPalette extends Component {
         this.numSoilRows = 5;
         this.initPallate();
 
-        let sizeX = getBaseUISize() * 24;
-        let half = sizeX / 2;
-        let third = sizeX / 3;
-        let quarter = sizeX / 4;
-
         let container = new Container(this.window, 0, 1);
         this.window.container = container;
 
-        container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 0.5, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.65), 0.75," "))
-        container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 2.8, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.9, "block palette"))
+        let sizeX = getBaseUISize() * 36;
+        let half = sizeX / 2;
+        let third = sizeX / 3;
+        let quarter = sizeX / 4;
+        let offsetX = getBaseUISize() * 0.8;
+
+        let h1 = getBaseUISize() * 3;
+        let h2 = getBaseUISize() * 3;
+        let br = getBaseUISize() * .5;
+
+
+        container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.75), 0.75," "))
+        container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 3.8, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.66315, "block editor"))
+
+        container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""));
+
         
+        let modeSelectRow1 = new Container(this.window, 0, 0);
+        container.addElement(modeSelectRow1);
+
+        modeSelectRow1.addElement(new RadioToggleLabel(this.window, half, getBaseUISize() * 3, offsetX, "soil", UI_PALETTE_ROCKMODE, false, () => getActiveClimate().getPaletteSoilColor(0.9), () => getActiveClimate().getPaletteSoilColor(0.7)));
+        modeSelectRow1.addElement(new RadioToggleLabel(this.window, half, getBaseUISize() * 3, offsetX, "rock", UI_PALETTE_ROCKMODE, true,() => getActiveClimate().getPaletteRockColor(1.1), () => getActiveClimate().getPaletteRockColor(0.55)));
+
+
         let buttonHeight = getBaseUISize() * 3;
 
-        let toolRow = new Container(this.window, 0, 0);
+        // let toolRow = new Container(this.window, 0, 0);
 
-        container.addElement(new Text(this.window, sizeX / 8, buttonHeight / 4, 0, ""));
-        container.addElement(toolRow); 
+        // container.addElement(new Text(this.window, sizeX / 8, buttonHeight / 4, 0, ""));
+        // container.addElement(toolRow); 
 
-        toolRow.addElement(new ToggleFunctional(this.window, half, buttonHeight, UI_CENTER, UI_PALETTE_ROCKMODE, () => ("" + (loadGD(UI_PALETTE_ROCKMODE) ? "soil ●" : "● rock")),
-            () => getActiveClimate().getPaletteRockColor(), () => getActiveClimate().getPaletteSoilColor(), 0.5));
+        // toolRow.addElement(new ToggleFunctional(this.window, half, buttonHeight, UI_CENTER, UI_PALETTE_ROCKMODE, () => ("" + (loadGD(UI_PALETTE_ROCKMODE) ? "soil ●" : "● rock")),
+        //     () => getActiveClimate().getPaletteRockColor(), () => getActiveClimate().getPaletteSoilColor(), 0.5));
 
-        for (let i = 0; i < getActiveClimate().soilColors.length; i++) {
-            toolRow.addElement(new Button(this.window, half / getActiveClimate().soilColors.length, buttonHeight, 0, 
-                () => {
-                    let key = loadGD(UI_PALETTE_ROCKMODE) ? UI_PALETTE_ROCKIDX : UI_PALETTE_SOILIDX;
-                    saveGD(key, i)
-                },
-                "", () => getActiveClimate().getBaseActiveToolBrightnessIdx(i, [.4, .4, .2], 1)));
-        }
-        container.addElement(new Text(this.window, sizeX / 8, buttonHeight / 4, 0, ""));
+        // for (let i = 0; i < getActiveClimate().soilColors.length; i++) {
+        //     toolRow.addElement(new Button(this.window, half / getActiveClimate().soilColors.length, buttonHeight, 0, 
+        //         () => {
+        //             let key = loadGD(UI_PALETTE_ROCKMODE) ? UI_PALETTE_ROCKIDX : UI_PALETTE_SOILIDX;
+        //             saveGD(key, i)
+        //         },
+        //         "", () => getActiveClimate().getBaseActiveToolBrightnessIdx(i, [.4, .4, .2], 1)));
+        // }
+        // container.addElement(new Text(this.window, sizeX / 8, buttonHeight / 4, 0, ""));
         for (let i = 0; i <= this.numSoilRows; i++) {
             let row = new Container(this.window, 0, 0);
             container.addElement(row);
@@ -130,15 +147,16 @@ export class BlockPalette extends Component {
         this.palette = new Map();
         let clayStep = 1 / (this.numSoilRows + 1);
         let curClay = clayStep / 2;
+        let cols = 7;
         for (let i = this.numSoilRows; i >= 0; i--) {
             let remaining = (1 - curClay);
             let remMid = remaining / 2;
             let start = 0.5 - remMid;
             let end = 0.5 + remMid;
-            let steps = 5;
+            let steps = cols;
             let step = (end - start) / steps;
             let arr = [];
-            for (let j = 0; j <= 5; j++) {
+            for (let j = 0; j <= cols; j++) {
                 arr.push(this.getSquareComposition(start + step * j, curClay));
             }
             this.palette[i] = arr;

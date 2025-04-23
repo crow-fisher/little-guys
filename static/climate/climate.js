@@ -88,12 +88,12 @@ export class Climate {
     }
 
 
-    getUIColorInactive() {
-        return this.getUIColorInactiveCustom(0.6);
+    getUIColorInactive(frac=0.6) {
+        return this.getUIColorInactiveCustom(frac);
     }
 
-    getUIColorActive() {
-        return this.processColor(this.getBaseSoilColor(loadGD(UI_PALETTE_SOILIDX), 0, 0.10, 0.90), 0.6);
+    getUIColorActive(frac=0.6) {
+        return this.processColor(this.getBaseSoilColor(loadGD(UI_PALETTE_SOILIDX), 0, 0.10, 0.90), frac);
     }
 
     getUIColorTransient() {
@@ -104,12 +104,12 @@ export class Climate {
         return this.uct;
     }
 
-    getPaletteRockColor() {
-        return this.processColor(this.getBaseRockColor(loadGD(UI_PALETTE_ROCKIDX), .1, .1, .8), 1);
+    getPaletteRockColor(frac=1) {
+        return this.processColor(this.getBaseRockColor(loadGD(UI_PALETTE_ROCKIDX), .1, .1, .8), frac);
     }
 
-    getPaletteSoilColor() {
-        return this.processColor(this.getBaseSoilColor(loadGD(UI_PALETTE_SOILIDX), .4, .4, .2), 1);
+    getPaletteSoilColor(frac=1) {
+        return this.processColor(this.getBaseSoilColor(loadGD(UI_PALETTE_SOILIDX), .4, .4, .2), frac);
     }
 
     getBaseColorActiveToolActivePalette(arr) {

@@ -147,8 +147,8 @@ export class Window {
 export class WindowElement { 
     constructor(window, sizeX, sizeY) {
         this.window = window;
-        this.sizeX = sizeX;
-        this.sizeY = sizeY;
+        this.sizeX = Math.floor(sizeX);
+        this.sizeY = Math.floor(sizeY);
     }
     render(startX, startY) {}
 

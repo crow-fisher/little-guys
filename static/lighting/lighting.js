@@ -16,7 +16,7 @@ export function createSunLightGroup() {
     let sunLightGroup = new MovingLinearLightGroup(
         getCanvasSquaresX() / 2,
         -getCanvasSquaresY(),
-        getCanvasSquaresX(),
+        loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) * 2,
         numNodes,
         getCurrentLightColorTemperature,
         () => Math.exp(loadGD(UI_LIGHTING_SUN)) * getDaylightStrength() / numNodes,
