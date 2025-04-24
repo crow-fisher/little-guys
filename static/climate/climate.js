@@ -1,5 +1,5 @@
 import { hexToRgb, hexToRgbArr, hsv2rgb, hueShiftColor, rgb2hsv, rgbToHex } from "../common.js";
-import { loadGD, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_HEAVYRAIN, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_CLEAR, UI_PALETTE_ROCKIDX, UI_PALETTE_ROCKMODE, UI_PALETTE_SOILIDX } from "../ui/UIData.js";
+import { loadGD, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_HEAVYRAIN, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_CLEAR, UI_PALETTE_ROCKIDX, UI_PALETTE_ROCKMODE, UI_PALETTE_SOILIDX, UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK } from "../ui/UIData.js";
 
 export class Climate {
     constructor() {
@@ -113,7 +113,7 @@ export class Climate {
     }
 
     getBaseColorActiveToolActivePalette(arr) {
-        if (loadGD(UI_PALETTE_ROCKMODE)) {
+        if (loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK) {
             return this.getBaseRockColor(loadGD(UI_PALETTE_ROCKIDX), ...arr);
         } else {
             return this.getBaseSoilColor(loadGD(UI_PALETTE_SOILIDX), ...arr);
@@ -121,7 +121,7 @@ export class Climate {
     }
 
     getBaseActiveToolBrightnessIdx(idx, arr, brightness) {
-        if (loadGD(UI_PALETTE_ROCKMODE)) {
+        if (loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK) {
             return this.processColor(this.getBaseRockColor(idx, ...arr), brightness);
         } else {
             return this.processColor(this.getBaseSoilColor(idx, ...arr), brightness);
@@ -129,7 +129,7 @@ export class Climate {
     }
 
     getBaseActiveToolBrightness(arr, brightness) {
-        if (loadGD(UI_PALETTE_ROCKMODE)) {
+        if (loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK) {
             return this.processColor(this.getBaseRockColor(loadGD(UI_PALETTE_ROCKIDX), ...arr), brightness);
         } else {
             return this.processColor(this.getBaseSoilColor(loadGD(UI_PALETTE_SOILIDX), ...arr), brightness);
@@ -146,7 +146,7 @@ export class Climate {
         return this.processColor(this.getBaseRockColor(idx, ...arr), brightness);
     }
     getBaseActiveToolColorActiveIdx(brightness) {
-        if (loadGD(UI_PALETTE_ROCKMODE)) {
+        if (loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK) {
             return this.processColor(this.getBaseRockColor(loadGD(UI_PALETTE_ROCKIDX), .4, .4, .2), brightness);
         } else {
             return this.processColor(this.getBaseSoilColor(loadGD(UI_PALETTE_SOILIDX), .4, .4, .2), brightness);
