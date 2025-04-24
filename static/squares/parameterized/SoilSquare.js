@@ -8,7 +8,7 @@ import { loadGD, UI_LIGHTING_SURFACE, UI_PALETTE_COMPOSITION, UI_PALETTE_SOILIDX
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { addSquareByName } from "../../manipulation.js";
 import { getBaseSize } from "../../canvas.js";
-import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
+import { applyLightingFromSource, getDefaultLighting } from "../../lighting/lightingProcessing.js";
 
 // maps in form "water containment" / "matric pressure in atmospheres"
 export const clayMatricPressureMap = [
@@ -247,7 +247,8 @@ export class SoilSquare extends BaseSquare {
             newWater.blockHealth = outflowWaterAmount;
             this.waterContainment -= outflowWaterAmount;
             applyLightingFromSource(this, newWater);
-            newWater.frameCacheLighting = this.frameCacheLighting;
+            newWater.frameCacheLighting = null;
+            newWater.processLighting(true);
         }
     }
     

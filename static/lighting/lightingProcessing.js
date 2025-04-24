@@ -15,11 +15,7 @@ export function getDefaultLighting() {
 }
 
 export function processLighting(lightingMap) {
-    if (!loadGD(UI_LIGHTING_ENABLED) || lightingMap.length == 0) {
-        return getDefaultLighting();
-    }
     let outColor = {r: 0, g: 0, b: 0}
-
     lightingMap.filter((light) => light != null && light.length == 2).forEach((light) => {
         let strength = light[0].filter((f) => f != null).map((f) => f()).reduce(
             (accumulator, currentValue) => accumulator + currentValue,

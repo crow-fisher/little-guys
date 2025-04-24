@@ -7,16 +7,14 @@ import { hexToRgb, hsv2rgb, randRange, rgb2hsv, rgbToRgba } from "../common.js";
 import { loadGD, UI_LIGHTING_WATER, UI_LIGHTING_WATER_HUE, UI_LIGHTING_WATER_VALUE, UI_LIGHTING_WATER_SATURATION } from "../ui/UIData.js";
 import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
 import { getActiveClimate } from "../climate/climateManager.js";
+import { getDefaultLighting } from "../lighting/lightingProcessing.js";
 class WaterSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
         this.proto = "WaterSquare";
-        this.boundedTop = false;
         this.solid = false;
         this.currentPressureDirect = -1;
         this.currentPressureIndirect = -1;
-        this.rootable = false;
-        this.calculateGroupFlag = true; 
         this.gravity = 1;
 
         this.color = getActiveClimate().waterColor;

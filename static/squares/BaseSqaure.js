@@ -51,7 +51,6 @@ export class BaseSquare {
         // water flow parameters
 
         this.currentPressureDirect = -1;
-
         this.waterContainment = 0;
         this.waterContainmentMax = 0.5;
         this.speedX = 0;
@@ -72,10 +71,8 @@ export class BaseSquare {
         // for ref - values from dirt
         this.opacity = 1;
         this.cachedRgba = null;
-
         this.distToFront = 0;
         this.distToFrontLastUpdated = -(10 ** 8);
-
         this.miscBlockPropUpdateInterval = Math.random() * 1000;
 
         this.surface = false;
@@ -101,16 +98,9 @@ export class BaseSquare {
 
         this.blockHealth_color1 = RGB_COLOR_RED;
         this.blockHealth_color2 = RGB_COLOR_BLUE;
-
-        this.lightingSum = { r: 0, g: 0, b: 0 }
-
         this.surfaceLightingFactor = 0.1;
-
         this.mixIdx = -1;
         this.initTemperature();
-
-        this.frameLighting = {r: 0, g: 0, b: 0};
-
         this.activeParticles = new Array();
     };
 
@@ -210,6 +200,10 @@ export class BaseSquare {
         if (!this.visible || this.posY >= getCanvasSquaresY()) {
             return;
         }
+        if (loadGD(UI_LIGHTING_ENABLED) && this.lighting.length == 0) {
+            this.initLightingFromNeighbors();
+        }
+
         let selectedViewMode = loadGD(UI_VIEWMODE_SELECT);
         if (selectedViewMode == UI_VIEWMODE_NORMAL) {
             this.renderWithVariedColors(1);
@@ -354,32 +348,23 @@ export class BaseSquare {
         return this.color;
     }
 
-    processLighting() {
-        if (this.frameCacheLighting != null) {
+    processLighting(override=false) {
+        if (this.frameCacheLighting != null && !override) {
             return this.frameCacheLighting;
         }
-        // console.log(335);
-
         if (!loadGD(UI_LIGHTING_ENABLED)) {
             this.frameCacheLighting = getDefaultLighting();
             return this.frameCacheLighting;
         }
-
-        if (this.lighting.length == 0) {
-            // this.initLightingFromNeighbors();
-        }
         this.frameCacheLighting = processLighting(this.lighting);
-        this.lightingSum.r = this.frameCacheLighting.r;
-        this.lightingSum.g = this.frameCacheLighting.g;
-        this.lightingSum.b = this.frameCacheLighting.b;
         return this.frameCacheLighting;
     }
 
     renderLightingView() {
         let outRgba = rgbToRgba(
-            Math.floor(this.lightingSum.r),
-            Math.floor(this.lightingSum.g),
-            Math.floor(this.lightingSum.b),
+            Math.floor(this.frameCacheLighting.r),
+            Math.floor(this.frameCacheLighting.g),
+            Math.floor(this.frameCacheLighting.b),
             0.8);
         MAIN_CONTEXT.fillStyle = outRgba;
         zoomCanvasFillRect(
@@ -432,8 +417,7 @@ export class BaseSquare {
             Math.abs(getDaylightStrengthFrameDiff()) > 0.005) {
             this.lastColorCacheTime = Date.now();
             let outColorBase = this.getColorBase();
-            this.frameCacheLighting = null;
-            let lightingColor = this.processLighting();
+            let lightingColor = this.processLighting(true);
             this.frameCacheLighting = lightingColor;
             let outColor = { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
             this.lastColorCacheOpacity = opacityMult;
@@ -647,7 +631,6 @@ export class BaseSquare {
                     if (bonkSquare.proto == this.proto || (this.sand != null && bonkSquare.sand != null)) {
                         this.group = bonkSquare.group;
                     };
-
                     if (this.lighting.length == 0 && loadGD(UI_LIGHTING_ENABLED)) {
                         this.initLightingFromNeighbors();
                     }
@@ -705,7 +688,6 @@ export class BaseSquare {
             this.gravityPhysics();
             this.slopePhysics();
             this.percolateInnerMoisture();
-            
             if (this.speedY > 0) {
                 if (loadGD(UI_SIMULATION_CLOUDS)) {
                     this.waterEvaporationRoutine();
