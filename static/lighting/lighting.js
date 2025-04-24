@@ -24,13 +24,14 @@ export function createSunLightGroup() {
 }
 
 export function createMoonLightGroup() {
+    let numNodes = Math.ceil(loadGD(UI_LIGHTING_QUALITY) / 2);
     let moonLightGroup = new StationaryWideLightGroup(
         loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) / 2,
         -loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y),
         50,
-        3,
+        Math.ceil(loadGD(UI_LIGHTING_QUALITY) / 2),
         getMoonlightColor,
-        () => Math.exp(loadGD(UI_LIGHTING_MOON))
+        () => Math.exp(loadGD(UI_LIGHTING_MOON)) / numNodes
     );
     return moonLightGroup;
 }

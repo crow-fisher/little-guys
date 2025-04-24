@@ -448,17 +448,15 @@ export class BaseSquare {
             Math.abs(getDaylightStrengthFrameDiff()) > 0.005) {
             this.lastColorCacheTime = Date.now();
             let outColorBase = this.getColorBase();
-
             this.frameCacheLighting = null;
             let lightingColor = this.processLighting();
-            
+            this.frameCacheLighting = lightingColor;
             let outColor = { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
             this.lastColorCacheOpacity = opacityMult;
             this.cachedRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacityMult * this.opacity * (this.blockHealth ** 0.2));
-            this.cachedRgbaParticle = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), .5 * (opacityMult * this.opacity * (this.blockHealth ** 0.2)));
+            this.cachedRgbaParticle = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), .2 * (opacityMult * this.opacity * (this.blockHealth ** 0.2)));
         }
         MAIN_CONTEXT.fillStyle = this.cachedRgba;
-
         if (this.proto == "WaterSquare" && this.blockHealth < 0.5 && this.speedY > 1) {
             let size = this.blockHealth; 
             if (size < 0.3) {

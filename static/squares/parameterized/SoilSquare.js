@@ -232,8 +232,6 @@ export class SoilSquare extends BaseSquare {
         this.outflowNewWaterToLocation(this.posX, this.posY);
         this.outflowNewWaterToLocation(this.posX + 1, this.posY);
         this.outflowNewWaterToLocation(this.posX - 1, this.posY);
-
-
     }
 
     outflowNewWaterToLocation(posX, posY) {
@@ -249,6 +247,8 @@ export class SoilSquare extends BaseSquare {
             newWater.blockHealth = outflowWaterAmount;
             this.waterContainment -= outflowWaterAmount;
             applyLightingFromSource(this, newWater);
+            newWater.frameCacheLighting = this.frameCacheLighting;
+            newWater.processLighting();
         }
     }
     
