@@ -26,9 +26,12 @@ export class Climate {
             this.hueShiftColorArr(rockColorBaseArr, 150, -.05, 0),
         ]
 
+        this.surfaceOnColorHex = "#50545e";
+        this.surfaceOffColorHex = "#c3cde6";
+
         this.waterColor = hexToRgb("#31539D");
-        this.surfaceOnColor = hexToRgb("#50545e");
-        this.surfaceOffColor = hexToRgb("#c3cde6");
+        this.surfaceOnColor = hexToRgb(this.surfaceOnColorHex);
+        this.surfaceOffColor = hexToRgb(this.surfaceOffColorHex);
 
         this.weatherPatternMap = new Map();
         this.weatherPatternMap.set(UI_CLIMATE_WEATHER_CLEAR, 25);

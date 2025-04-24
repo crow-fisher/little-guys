@@ -21,10 +21,7 @@ export function processLighting(lightingMap) {
     let outColor = {r: 0, g: 0, b: 0}
 
     lightingMap.filter((light) => light != null && light.length == 2).forEach((light) => {
-        if (light[0].length > 3)
-            light[0] = light[0].slice(0, 2);
-
-        let strength = light[0].map((f) => f()).reduce(
+        let strength = light[0].filter((f) => f != null).map((f) => f()).reduce(
             (accumulator, currentValue) => accumulator + currentValue,
             0,
         );

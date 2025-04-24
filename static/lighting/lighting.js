@@ -1,9 +1,8 @@
 import { iterateOnSquares } from "../squares/_sqOperations.js";
 import { getCloudColorAtPos } from "../climate/temperatureHumidity.js";
-import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getMoonlightBrightness, getMoonlightColor } from "../climate/time.js";
-import { loadGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_QUALITY, UI_LIGHTING_SUN, UI_LIGHTING_SURFACE, UI_SIMULATION_CLOUDS } from "../ui/UIData.js";
+import { getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "../climate/time.js";
+import { loadGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_QUALITY, UI_LIGHTING_SUN, UI_SIMULATION_CLOUDS } from "../ui/UIData.js";
 import { getWindSquaresX, getWindSquaresY } from "../climate/wind.js";
-import { getCanvasSquaresX, getCanvasSquaresY } from "../canvas.js";
 import { getCurLightingInterval } from "./lightingHandler.js";
 import { isLeftMouseClicked, isRightMouseClicked } from "../mouse.js";
 import { addTimeout } from "../main.js";
@@ -13,31 +12,25 @@ import { isSaveOrLoadInProgress } from "../saveAndLoad.js";
 export let MAX_BRIGHTNESS = 8;
 export function createSunLightGroup() {
     let numNodes = loadGD(UI_LIGHTING_QUALITY);
-    let sunLightGroup = new MovingLinearLightGroup(
-        getCanvasSquaresX() / 2,
-        -getCanvasSquaresY(),
-        loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) * 2,
+    let sunLightGroup = new StationaryWideLightGroup(
+        loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) / 2,
+        -loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y),
+        1000,
         numNodes,
         getCurrentLightColorTemperature,
-        () => Math.exp(loadGD(UI_LIGHTING_SUN)) * getDaylightStrength() / numNodes,
-        1,
-        0.15,
-        -1,
-        0.85
+        () => Math.exp(loadGD(UI_LIGHTING_SUN)) * getDaylightStrength() / numNodes
     );
     return sunLightGroup;
 }
 
 export function createMoonLightGroup() {
-    let moonLightGroup = new StationaryLightGroup(
-        getCanvasSquaresX() / 2,
-        -getCanvasSquaresY(),
+    let moonLightGroup = new StationaryWideLightGroup(
+        loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) / 2,
+        -loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y),
         50,
         3,
         getMoonlightColor,
-        () => Math.exp(loadGD(UI_LIGHTING_MOON)),
-        0.51,
-        0.49
+        () => Math.exp(loadGD(UI_LIGHTING_MOON))
     );
     return moonLightGroup;
 }
@@ -51,8 +44,8 @@ class LightGroup {
     }
 }
 
-export class StationaryLightGroup extends LightGroup {
-    constructor(centerX, centerY, sizeX, numNodes, colorFunc, brightnessFunc, startTime, endTime) {
+export class StationaryWideLightGroup extends LightGroup {
+    constructor(centerX, centerY, sizeX, numNodes, colorFunc, brightnessFunc) {
         super();
         this.centerX = centerX;
         this.centerY = centerY;
@@ -60,8 +53,6 @@ export class StationaryLightGroup extends LightGroup {
         this.numNodes = numNodes;
         this.colorFunc = colorFunc;
         this.brightnessFunc = brightnessFunc;
-        this.startTime = startTime;
-        this.endTime = endTime;
         this.init();
         this.idxCompletionMap = new Map();
     }
@@ -78,98 +69,6 @@ export class StationaryLightGroup extends LightGroup {
             minThetaPoint = [0, 0]
             maxThetaPoint = [loadGD(UI_GAME_MAX_CANVAS_SQUARES_X), loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y)];
         }
-        let relMinThetaPoint = [minThetaPoint[0] - posX, minThetaPoint[1] - posY]
-        let relMaxThetaPoint = [maxThetaPoint[0] - posX, maxThetaPoint[1] - posY]
-
-        let minTheta = Math.atan(relMinThetaPoint[0] / relMinThetaPoint[1]);
-        let maxTheta = Math.atan(relMaxThetaPoint[0] / relMaxThetaPoint[1]);
-
-        return [minTheta, maxTheta];
-    }
-
-    init() {
-        this.lightSources = [];
-        let step = (this.sizeX / this.numNodes);
-        let startX = this.centerX - (this.sizeX / 2);
-        for (let i = 0; i < this.numNodes; i += 1) {
-            let posX = startX + i * step;
-            let minMaxTheta = this.getMinMaxTheta(posX, this.centerY);
-            let newLightSource = new LightSource(
-                startX + i * step,
-                this.centerY,
-                this.brightnessFunc,
-                (theta) => this.thetaBrightnessFunc(theta),
-                this.colorFunc,
-                10 ** 8,
-                minMaxTheta[0],
-                minMaxTheta[1],
-                (150 / 7) * loadGD(UI_LIGHTING_QUALITY)
-            );
-            this.lightSources.push(newLightSource);
-        }
-
-    }
-
-    doRayCasting(idx) {
-        if (this.brightnessFunc() == 0) {
-            return;
-        }
-        if (this.idxCompletionMap[idx] === false) {
-            return false;
-        }
-
-        this.idxCompletionMap[idx] = false;
-        let completionMap = new Map();
-
-        for (let i = 0; i < this.lightSources.length; i++) {
-            completionMap[i] = false;
-            this.lightSources[i].doRayCasting(idx, i, () => completionMap[i] = true);
-        };
-        let timeoutFunction = () => {
-            if (Object.values(completionMap).every((val) => val)) {
-                this.idxCompletionMap[idx] = true;
-            } else {
-                setTimeout(timeoutFunction, 100);
-            }
-        }
-        setTimeout(timeoutFunction, 100);
-        return true;
-    }
-
-    preRender() {
-        this.lightSources.forEach((ls) => ls.calculateFrameCloudCover());
-    }
-}
-
-export class MovingLinearLightGroup extends LightGroup {
-    constructor(centerX, centerY, sizeX, numNodes, colorFunc, brightnessFunc, startTheta, startTime, endTheta, endTime) {
-        super();
-        this.centerX = centerX;
-        this.centerY = centerY;
-        this.sizeX = sizeX;
-        this.numNodes = numNodes;
-        this.colorFunc = colorFunc;
-        this.brightnessFunc = brightnessFunc;
-        this.startTheta = startTheta;
-        this.endTheta = endTheta;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.init();
-        this.idxCompletionMap = new Map();
-    }
-
-    getMinMaxTheta(posX, posY) {
-        let minThetaPoint, maxThetaPoint;
-        if (posX < 0) {
-            minThetaPoint = [0, getCanvasSquaresY()];
-            maxThetaPoint = [getCanvasSquaresX(), 0];
-        } else if (posX <= getCanvasSquaresX()) {
-            minThetaPoint = [0, 0];
-            maxThetaPoint = [getCanvasSquaresX(), 0];
-        } else {
-            minThetaPoint = [0, 0]
-            maxThetaPoint = [getCanvasSquaresX(), getCanvasSquaresY()];
-        }
 
         let relMinThetaPoint = [minThetaPoint[0] - posX, minThetaPoint[1] - posY]
         let relMaxThetaPoint = [maxThetaPoint[0] - posX, maxThetaPoint[1] - posY]
@@ -178,28 +77,6 @@ export class MovingLinearLightGroup extends LightGroup {
         let maxTheta = Math.atan(relMaxThetaPoint[0] / relMaxThetaPoint[1]);
 
         return [minTheta, maxTheta];
-    }
-
-    thetaBrightnessFunc(theta) {
-        return 1;
-        let curTime = getCurDay() % 1;
-        let st = this.startTime;
-        let et = this.endTime;
-
-        if (et < st) {
-            if (curTime > st) {
-                curTime += 1;
-            }
-            et += 1;
-        }
-
-        if ((curTime < st || curTime > et)) {
-            return 0;
-        }
-
-        let curFrac = (curTime - st) / (et - st);
-        let curAngle = curFrac * (this.endTheta - this.startTheta) + this.startTheta;
-        return Math.max(0, (1 - (Math.abs(curAngle - theta)))) ** 0.5;
     }
 
     init() {
@@ -213,7 +90,6 @@ export class MovingLinearLightGroup extends LightGroup {
                 posX,
                 this.centerY,
                 this.brightnessFunc,
-                (theta) => this.thetaBrightnessFunc(theta),
                 this.colorFunc,
                 10 ** 8,
                 minMaxTheta[0],
@@ -229,7 +105,6 @@ export class MovingLinearLightGroup extends LightGroup {
         if (this.idxCompletionMap[idx] === false) {
             return false;
         }
-
         this.idxCompletionMap[idx] = false;
         let completionMap = new Map();
         for (let i = 0; i < this.lightSources.length; i++) {
@@ -243,18 +118,16 @@ export class MovingLinearLightGroup extends LightGroup {
         };
         return true;
     }
-
     preRender() {
         this.lightSources.forEach((ls) => ls.calculateFrameCloudCover());
     }
 }
 
 export class LightSource {
-    constructor(posX, posY, brightnessFunc, thetaBrightnessFunc, colorFunc, radius, minTheta, maxTheta, numRays) {
+    constructor(posX, posY, brightnessFunc, colorFunc, radius, minTheta, maxTheta, numRays) {
         this.posX = posX;
         this.posY = posY;
         this.brightnessFunc = brightnessFunc;
-        this.thetaBrightnessFunc = thetaBrightnessFunc;
         this.colorFunc = colorFunc;
         this.radius = radius;
         this.minTheta = minTheta;
@@ -376,12 +249,10 @@ export class LightSource {
             curBrightness *= (1 - (obj.surface ? (obj.surfaceLightingFactor ?? 1) : 1) * (obj.blockHealth ?? 1) * (obj.getLightFilterRate() * Math.exp(8 - loadGD(UI_LIGHTING_DECAY)) * (loadGD(UI_LIGHTING_QUALITY)) / 9));
             if (obj.lighting[idx] == null) {
                 obj.lighting[idx] = [[pointLightSourceFunc], this.colorFunc];
-            } else if (obj.lighting[idx][0].length >= jobIdx) {
-                obj.lighting[idx][0][jobIdx] = pointLightSourceFunc;
             } else {
-                obj.lighting[idx][0].push(pointLightSourceFunc);
+                obj.lighting[idx][1] = this.colorFunc;
+                obj.lighting[idx][0][jobIdx] = pointLightSourceFunc;
             }
-            obj.lighting[idx][1] = this.colorFunc;
         });
     };
     doRayCasting(idx, jobIdx, onComplete) {

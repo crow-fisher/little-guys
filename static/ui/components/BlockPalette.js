@@ -1,5 +1,6 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
+import { COLOR_BLACK, COLOR_GREEN, COLOR_VERY_FUCKING_RED, RGB_COLOR_GREEN, RGB_COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { hexToRgb, hueShiftColor, rgbToHex } from "../../common.js";
 import { Component } from "../Component.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
@@ -9,6 +10,7 @@ import { RadioToggle } from "../elements/RadioToggle.js";
 import { RadioToggleFunctionalText } from "../elements/RadioToggleFunctionalText.js";
 import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
 import { Slider } from "../elements/Slider.js";
+import { SliderGradientBackground } from "../elements/SliderGradientBackground.js";
 import { SoilPickerElement } from "../elements/SoilPicker.js";
 import { Text } from "../elements/Text.js";
 import { TextBackground } from "../elements/TextBackground.js";
@@ -168,8 +170,10 @@ export class BlockPalette extends Component {
             () => ((loadGD(UI_PALETTE_SELECT) == UI_PALETTE_SURFACE) ? "▶ " : "") + "surface", () => getActiveClimate().getSurfaceOnColor(), () => getActiveClimate().getSufaceOffColor(), 0.4));
         row2.addElement(new RadioToggleFunctionalText(this.window, half, buttonHeight, UI_CENTER, UI_PALETTE_SELECT, UI_PALETTE_SURFACE_OFF,
             () => ((loadGD(UI_PALETTE_SELECT) == UI_PALETTE_SURFACE_OFF) ? "▶ " : "") + "surface off", () => getActiveClimate().getSurfaceOnColor(), () => getActiveClimate().getSufaceOffColor(), 0.4));
-        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 1.5, UI_CENTER, "surface"));
-        container.addElement(new Slider(this.window, UI_LIGHTING_SURFACE, sizeX, 35, 0.0, 1, () => getActiveClimate().getUIColorTransient()));
+
+
+        specialContainer.addElement(new Text(this.window, sizeX, getBaseUISize() * 1.5, UI_CENTER, "surface"));
+        specialContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_SURFACE, sizeX, 35, 0.0, 1, () => "", () => "rgba(0, 0, 0, 0)"));
     }
 
     initPallate() {
