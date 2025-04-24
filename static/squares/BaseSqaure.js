@@ -26,7 +26,7 @@ import { COLOR_BLACK, COLOR_BLUE, COLOR_GREEN, COLOR_OTHER_BLUE, COLOR_RED, COLO
 import { getCurDay, getDaylightStrengthFrameDiff, getFrameDt, getTimeScale } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
-import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_PALETTE_SIZE, UI_VIEWMODE_DEV_PLACEHOLDER, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_SIMULATION_GENS_PER_DAY } from "../ui/UIData.js";
+import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_PALETTE_SIZE, UI_VIEWMODE_DEV_PLACEHOLDER, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_SIMULATION_GENS_PER_DAY, UI_LIGHTING_UPDATERATE } from "../ui/UIData.js";
 import { isLeftMouseClicked } from "../mouse.js";
 
 export class BaseSquare {
@@ -302,7 +302,7 @@ export class BaseSquare {
     }
 
     renderMatricPressure() {
-        if (this.proto == "SoilSquare") {
+        if (this.proto == "SoilSquare" || this.proto == "RockSquare") {
             let sp = Math.abs(this.getSoilWaterPressure());
             this.renderSpecialViewModeLinear(this.blockHealth_color2, this.blockHealth_color1, sp, 5);
         }
@@ -411,10 +411,14 @@ export class BaseSquare {
         if (this.proto == "WaterSquare") {
             this.opacity = loadGD(UI_LIGHTING_WATER_OPACITY);
         }
+
+        let minTime = 2000;
+        
         if (
             (opacityMult != this.lastColorCacheOpacity) ||
-            (Date.now() > this.lastColorCacheTime + (isLeftMouseClicked() ? 2500 : 3000) * Math.random()) ||
+            (Date.now() > this.lastColorCacheTime + minTime * Math.random()) ||
             Math.abs(getDaylightStrengthFrameDiff()) > 0.005) {
+
             this.lastColorCacheTime = Date.now();
             let outColorBase = this.getColorBase();
             let lightingColor = this.processLighting(true);

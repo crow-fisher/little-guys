@@ -257,7 +257,7 @@ export class SoilSquare extends BaseSquare {
             return 0;
         }
         let maxWaterflowRate = (this.waterContainmentMax) / (this.getWaterflowRate() ** 0.2);
-        let amountToPercolate = Math.min(this.waterContainmentMax - this.waterContainment, Math.min(waterBlock.blockHealth)); //, maxWaterflowRate));
+        let amountToPercolate = Math.min(this.waterContainmentMax - this.waterContainment, Math.min(waterBlock.blockHealth), maxWaterflowRate);
         this.waterContainment += amountToPercolate;
         return amountToPercolate;
     }

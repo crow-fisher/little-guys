@@ -4,7 +4,7 @@ import { WATERFLOW_CANDIDATE_SQUARES, WATERFLOW_TARGET_SQUARES } from "../global
 import { MAIN_CONTEXT } from "../index.js";
 import { RGB_COLOR_OTHER_BLUE } from "../colors.js";
 import { hexToRgb, hsv2rgb, randRange, rgb2hsv, rgbToRgba } from "../common.js";
-import { loadGD, UI_LIGHTING_WATER, UI_LIGHTING_WATER_HUE, UI_LIGHTING_WATER_VALUE, UI_LIGHTING_WATER_SATURATION } from "../ui/UIData.js";
+import { loadGD, UI_LIGHTING_WATER, UI_LIGHTING_WATER_HUE, UI_LIGHTING_WATER_VALUE, UI_LIGHTING_WATER_SATURATION, UI_LIGHTING_WATER_OPACITY } from "../ui/UIData.js";
 import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
 import { getActiveClimate } from "../climate/climateManager.js";
 import { getDefaultLighting } from "../lighting/lightingProcessing.js";
@@ -58,13 +58,20 @@ class WaterSquare extends BaseSquare {
     }
 
     renderWaterSaturation() {
-        MAIN_CONTEXT.fillStyle = rgbToRgba(RGB_COLOR_OTHER_BLUE.r, RGB_COLOR_OTHER_BLUE.g, RGB_COLOR_OTHER_BLUE.b, this.blockHealth ** 0.2);
+        MAIN_CONTEXT.fillStyle = rgbToRgba(RGB_COLOR_OTHER_BLUE.r, RGB_COLOR_OTHER_BLUE.g, RGB_COLOR_OTHER_BLUE.b, loadGD(UI_LIGHTING_WATER_OPACITY) * this.blockHealth ** 0.2);
         zoomCanvasFillRect(
             this.posX * getBaseSize(),
             this.posY * getBaseSize(),
             getBaseSize(),
             getBaseSize()
         );
+    }
+
+    renderWaterTickrate() {
+        this.renderWaterSaturation();
+    }
+    renderMatricPressure() {
+        this.renderWaterSaturation();
     }
 
     physicsBefore() {
