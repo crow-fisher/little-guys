@@ -8,6 +8,7 @@ import { getObjectArrFromMap } from "./common.js";
 import { removeItemAll } from "./common.js";
 import { getCanvasSquaresX, getCanvasSquaresY } from "./canvas.js";
 import { saveGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "./ui/UIData.js";
+import { indexCanvasSize } from "./index.js";
 
 let frame_squares = null;
 let frame_solid_squares = null;
@@ -75,6 +76,7 @@ export function purgeCanvasFrameLimit() {
     });
     saveGD(UI_GAME_MAX_CANVAS_SQUARES_X, getCanvasSquaresX() + 1);
     saveGD(UI_GAME_MAX_CANVAS_SQUARES_Y, getCanvasSquaresY() + 1);
+    indexCanvasSize();
 }
 
 export function doWaterFlow() {
