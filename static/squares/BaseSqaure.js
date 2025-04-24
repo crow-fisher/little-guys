@@ -23,10 +23,10 @@ import { removeOrganism } from "../organisms/_orgOperations.js";
 import { calculateColorTemperature, getTemperatureAtWindSquare, temperatureHumidityFlowrateFactor, updateWindSquareTemperature } from "../climate/temperatureHumidity.js";
 import { getWindSquareAbove } from "../climate/wind.js";
 import { COLOR_BLACK, COLOR_BLUE, COLOR_GREEN, COLOR_OTHER_BLUE, COLOR_RED, COLOR_VERY_FUCKING_RED, RGB_COLOR_BLUE, RGB_COLOR_GREEN, RGB_COLOR_RED, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
-import { getCurDay, getDaylightStrengthFrameDiff, getTimeScale } from "../climate/time.js";
+import { getCurDay, getDaylightStrengthFrameDiff, getFrameDt, getTimeScale } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
-import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_PALETTE_SIZE, UI_VIEWMODE_DEV_PLACEHOLDER, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL } from "../ui/UIData.js";
+import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_PALETTE_SIZE, UI_VIEWMODE_DEV_PLACEHOLDER, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_SIMULATION_GENS_PER_DAY } from "../ui/UIData.js";
 import { isLeftMouseClicked } from "../mouse.js";
 
 export class BaseSquare {
@@ -102,9 +102,7 @@ export class BaseSquare {
         this.blockHealth_color1 = RGB_COLOR_RED;
         this.blockHealth_color2 = RGB_COLOR_BLUE;
 
-        this.lightingSumDay = Math.floor(getCurDay());
         this.lightingSum = { r: 0, g: 0, b: 0 }
-        this.lightingSumCount = 0;
 
         this.surfaceLightingFactor = 0.1;
 
@@ -207,19 +205,6 @@ export class BaseSquare {
         }
         this.currentPressureDirect = -1;
 
-        if (Math.floor(getCurDay() + 0.15) != this.lightingSumDay) {
-            if (this.lightingSum == null) {
-                this.lightingSum = { r: 0, g: 0, b: 0 }
-                this.lightingSumCount = 0;
-            }
-            let decayFactor = 3;
-
-            this.lightingSum.r /= decayFactor;
-            this.lightingSum.g /= decayFactor;
-            this.lightingSum.b /= decayFactor;
-            this.lightingSumCount /= decayFactor;
-            this.lightingSumDay = Math.floor(getCurDay());
-        }
     }
     render() {
         if (!this.visible || this.posY >= getCanvasSquaresY()) {
@@ -384,18 +369,17 @@ export class BaseSquare {
             // this.initLightingFromNeighbors();
         }
         this.frameCacheLighting = processLighting(this.lighting);
-        this.lightingSum.r += this.frameCacheLighting.r;
-        this.lightingSum.g += this.frameCacheLighting.g;
-        this.lightingSum.b += this.frameCacheLighting.b;
-        this.lightingSumCount += 1;
+        this.lightingSum.r = this.frameCacheLighting.r;
+        this.lightingSum.g = this.frameCacheLighting.g;
+        this.lightingSum.b = this.frameCacheLighting.b;
         return this.frameCacheLighting;
     }
 
     renderLightingView() {
         let outRgba = rgbToRgba(
-            Math.floor(this.lightingSum.r / this.lightingSumCount),
-            Math.floor(this.lightingSum.g / this.lightingSumCount),
-            Math.floor(this.lightingSum.b / this.lightingSumCount),
+            Math.floor(this.lightingSum.r),
+            Math.floor(this.lightingSum.g),
+            Math.floor(this.lightingSum.b),
             0.8);
         MAIN_CONTEXT.fillStyle = outRgba;
         zoomCanvasFillRect(
@@ -453,11 +437,11 @@ export class BaseSquare {
             this.frameCacheLighting = lightingColor;
             let outColor = { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
             this.lastColorCacheOpacity = opacityMult;
-            this.cachedRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacityMult * this.opacity * (this.blockHealth ** 0.2));
+            this.cachedRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacityMult * this.opacity * this.blockHealth ** 0.2);
             this.cachedRgbaParticle = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), .2 * (opacityMult * this.opacity * (this.blockHealth ** 0.2)));
         }
         MAIN_CONTEXT.fillStyle = this.cachedRgba;
-        if (this.proto == "WaterSquare" && this.blockHealth < 0.5 && this.speedY > 1) {
+        if (this.proto == "WaterSquare" && this.blockHealth < 0.5 && this.speedY > 2) {
             let size = this.blockHealth; 
             if (size < 0.3) {
                 size = 20 * (this.blockHealth);

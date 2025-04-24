@@ -248,7 +248,6 @@ export class SoilSquare extends BaseSquare {
             this.waterContainment -= outflowWaterAmount;
             applyLightingFromSource(this, newWater);
             newWater.frameCacheLighting = this.frameCacheLighting;
-            newWater.processLighting();
         }
     }
     
