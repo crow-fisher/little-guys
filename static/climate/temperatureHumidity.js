@@ -350,7 +350,7 @@ export function getFrameRelCloud() {
 
 function renderClouds() {
     frameCloudSum = {r: 0, g: 0, b: 0};
-    frameCloudSumCount = 0;
+    frameCloudSumCount = 1;
     let frameLighting = getDefaultLighting();
 
     for (let i = 0; i < getWindSquaresX(); i++) {

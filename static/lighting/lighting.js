@@ -1,6 +1,6 @@
 import { iterateOnSquares } from "../squares/_sqOperations.js";
 import { getCloudColorAtPos } from "../climate/temperatureHumidity.js";
-import { getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "../climate/time.js";
+import { getCurrentLightColorTemperature, getDaylightStrength, getFrameDt, getMoonlightColor } from "../climate/time.js";
 import { loadGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_QUALITY, UI_LIGHTING_SUN, UI_SIMULATION_CLOUDS } from "../ui/UIData.js";
 import { getWindSquaresX, getWindSquaresY } from "../climate/wind.js";
 import { getCurLightingInterval } from "./lightingHandler.js";
@@ -275,7 +275,7 @@ export class LightSource {
             let startIdx = Math.floor(i * tasksPerThread);
             let endIdx = Math.ceil((i + 1) * (tasksPerThread));
             scheduledTime = i * (timeInterval / this.numTasks);
-            let stCopy = scheduledTime;
+            let stCopy = scheduledTime + (getFrameDt() * jobIdx)
             if (isLeftMouseClicked() || isRightMouseClicked()) {
                 scheduledTime *= 3;
             }

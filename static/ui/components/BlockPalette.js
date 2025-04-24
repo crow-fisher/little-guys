@@ -173,7 +173,7 @@ export class BlockPalette extends Component {
 
 
         specialContainer.addElement(new Text(this.window, sizeX, getBaseUISize() * 1.5, UI_CENTER, "surface"));
-        specialContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_SURFACE, sizeX, 35, 0.0, 1, () => "", () => "rgba(0, 0, 0, 0)"));
+        specialContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_SURFACE, sizeX, 35, 0.0, 1, () => "#FFFFFF", () => "rgba(0, 0, 0, 0)"));
     }
 
     initPallate() {

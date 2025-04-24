@@ -15,7 +15,6 @@ import {
     UI_VIEWMODE_WIND,
     UI_VIEWMODE_TEMPERATURE,
     UI_VIEWMODE_MOISTURE,
-    UI_VIEWMODE_SURFACE,
     UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT,
     UI_CENTER,
     UI_VIEWMODE_WATERTICKRATE,
@@ -38,7 +37,6 @@ export class ViewSubtreeComponent extends SubTreeComponent {
         container.addElement(new RadioToggleLabel(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX,"moisture",  UI_VIEWMODE_SELECT, UI_VIEWMODE_MOISTURE,() => getActiveClimate().getUIColorInactiveCustom(0.67), () => getActiveClimate().getUIColorActive()));
         container.addElement(new RadioToggleLabel(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX,"pressure",  UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC,() => getActiveClimate().getUIColorInactiveCustom(0.67), () => getActiveClimate().getUIColorActive()));
         container.addElement(new RadioToggleLabel(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX,"tickrate",  UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERTICKRATE,() => getActiveClimate().getUIColorInactiveCustom(0.67), () => getActiveClimate().getUIColorActive()));
-        container.addElement(new RadioToggleLabel(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX,"surface",  UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE,() => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorActive()));
         container.addElement(new RadioToggleLabel(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX,"organisms",  UI_VIEWMODE_SELECT, UI_VIEWMODE_ORGANISMS,() => getActiveClimate().getUIColorInactiveCustom(0.66), () => getActiveClimate().getUIColorActive()));
         container.addElement(new RadioToggleLabel(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX,"dev placeholder",  UI_VIEWMODE_SELECT, UI_VIEWMODE_DEV_PLACEHOLDER,() => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));
     
