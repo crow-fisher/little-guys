@@ -1,6 +1,6 @@
 import { doZoom, moveCamera, resetZoom } from "./canvas.js";
 import { getGlobalThetaBase, setGlobalThetaBase } from "./globals.js";
-import { loadGD, saveGD, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_BB_MODE, UI_MODE_ROCK, UI_MODE_SOIL, UI_SM_BB, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_TOPBAR_BLOCK, UI_PALETTE_ROCKMODE, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, closeEyedropperMixer, UI_PALETTE_ERASE, UI_TEXTEDIT_ACTIVE, UI_REGEX } from "./ui/UIData.js";
+import { loadGD, saveGD, UI_PALETTE_EYEDROPPER, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_MIXER, UI_BB_MODE, UI_MODE_ROCK, UI_MODE_SOIL, UI_SM_BB, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_TOPBAR_BLOCK, UI_PALETTE_ROCKMODE, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, closeEyedropperMixer, UI_PALETTE_ERASE, UI_TEXTEDIT_ACTIVE, UI_REGEX, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK } from "./ui/UIData.js";
 
 export const KEY_CONTROL = "Control";
 export const KEY_SHIFT = "Shift";
@@ -77,6 +77,7 @@ export function keydown(e) {
     if (e.key == '1') {
         saveGD(UI_TOPBAR_BLOCK, true);
         saveGD(UI_PALETTE_ACTIVE, true);
+        saveGD(UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL);
         saveGD(UI_PALETTE_ROCKMODE, false);
         closeEyedropperMixer();
 
@@ -85,6 +86,7 @@ export function keydown(e) {
     if (e.key == '2') {
         saveGD(UI_TOPBAR_BLOCK, true);
         saveGD(UI_PALETTE_ACTIVE, true);
+        saveGD(UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK);
         saveGD(UI_PALETTE_ROCKMODE, true);
         closeEyedropperMixer();
 
@@ -94,20 +96,18 @@ export function keydown(e) {
     if (e.key == '3') {
         saveGD(UI_TOPBAR_BLOCK, true);
         saveGD(UI_PALETTE_ACTIVE, true);
+        saveGD(UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL);
         saveGD(UI_PALETTE_SELECT, UI_PALETTE_WATER);
         closeEyedropperMixer();
-
-
     }
 
     
     if (e.key == '4') {
         saveGD(UI_TOPBAR_BLOCK, true);
         saveGD(UI_PALETTE_ACTIVE, true);
+        saveGD(UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL);
         saveGD(UI_PALETTE_SELECT, UI_PALETTE_AQUIFER);
         closeEyedropperMixer();
-
-
     }
 
     if (e.key == '5') {

@@ -235,7 +235,7 @@ export function doClickAdd() {
                             }
                             squares.filter((sq) => sq.solid).forEach((sq) => {
                                 sq.surface = !isRightMouseClicked();
-                                sq.surfaceLightingFactor = loadGD(UI_LIGHTING_SURFACE);
+                                sq.surfaceLightingFactor = (1 - loadGD(UI_LIGHTING_SURFACE));
                             });
                         });
                     } else if (mode == UI_PALETTE_SURFACE_OFF) {

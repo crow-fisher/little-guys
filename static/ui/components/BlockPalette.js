@@ -17,12 +17,13 @@ import { TextBackground } from "../elements/TextBackground.js";
 import { Toggle } from "../elements/Toggle.js";
 import { ToggleFunctional } from "../elements/ToggleFunctional.js";
 import { ToggleFunctionalText } from "../elements/ToggleFunctionalText.js";
-import { loadGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CENTER, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKMODE, UI_PALETTE_ROCKIDX, UI_PALETTE_COMPOSITION, saveGD, UI_PALETTE_SHOWPICKER, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, addUIFunctionMap, UI_PALETTE_SOILROCK, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_SPECIAL_SHOWINDICATOR } from "../UIData.js";
+import { loadGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CENTER, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKMODE, UI_PALETTE_ROCKIDX, UI_PALETTE_COMPOSITION, saveGD, UI_PALETTE_SHOWPICKER, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, addUIFunctionMap, UI_PALETTE_SOILROCK, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_AQUIFER_FLOWRATE } from "../UIData.js";
+import { getWaterColor, getWaterColorDark } from "./LightingComponent.js";
 
 
 // const specialHueShift = -35;
 const specialHueShift = -295;
-function getSpecialColor(value=0.55) {
+function getSpecialColor(value = 0.55) {
     let hueShifted = hueShiftColor(getActiveClimate().getUIColorInactiveCustom(value), specialHueShift, -.1, 0);
     return rgbToHex(hueShifted.r, hueShifted.g, hueShifted.b);
 }
@@ -48,8 +49,10 @@ export class BlockPalette extends Component {
         let offsetX = getBaseUISize() * 0.8;
 
         let h1 = getBaseUISize() * 3;
-        let h2 = getBaseUISize() * 3;
+        let h2 = getBaseUISize() * 2.5;
         let br = getBaseUISize() * .5;
+
+        let textAlignOffsetX = getBaseUISize() * 0.64;
 
         container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.75), 0.75, " "))
         container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 3.8, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.66315, "block editor"))
@@ -60,11 +63,11 @@ export class BlockPalette extends Component {
         let modeSelectRow1 = new Container(this.window, 0, 0);
         container.addElement(modeSelectRow1);
 
-        modeSelectRow1.addElement(new RadioToggleLabel(this.window, third, getBaseUISize() * 3, offsetX, "soil", UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, () => getActiveClimate().getPaletteSoilColor(0.9), () => getActiveClimate().getPaletteSoilColor(0.7)));
-        modeSelectRow1.addElement(new RadioToggleLabel(this.window, third, getBaseUISize() * 3, offsetX, "rock", UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK, () => getActiveClimate().getPaletteRockColor(1.1), () => getActiveClimate().getPaletteRockColor(0.55)));
-        modeSelectRow1.addElement(new RadioToggleLabel(this.window, third, getBaseUISize() * 3, offsetX, "special", UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, getSpecialColor, getSpecialColorDark));
+        modeSelectRow1.addElement(new RadioToggleLabel(this.window, third, h1, offsetX, "soil", UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, () => getActiveClimate().getPaletteSoilColor(0.9), () => getActiveClimate().getPaletteSoilColor(0.7)));
+        modeSelectRow1.addElement(new RadioToggleLabel(this.window, third, h1, offsetX, "rock", UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK, () => getActiveClimate().getPaletteRockColor(1.1), () => getActiveClimate().getPaletteRockColor(0.55)));
+        modeSelectRow1.addElement(new RadioToggleLabel(this.window, third, h1, offsetX, "special", UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, getSpecialColor, getSpecialColorDark));
 
-        let buttonHeight = getBaseUISize() * 3;
+        let buttonHeight = h1;
 
         // let toolRow = new Container(this.window, 0, 0);
 
@@ -99,20 +102,31 @@ export class BlockPalette extends Component {
             }
         }
 
-        let specialRow1 = new Container(this.window, 0, 0); 
-        let specialRow2 = new Container(this.window, 0, 0); 
 
-        specialContainer.addElement(specialRow1);
-        specialContainer.addElement(specialRow2);
+        // surface 
+        specialContainer.addElement(new Text(this.window, sizeX, h1, UI_CENTER, "surface"))
+        let surfaceRow = new Container(this.window, 0, 0);
+        specialContainer.addElement(surfaceRow);
+        surfaceRow.addElement(new RadioToggleLabel(this.window, half, h1, UI_CENTER, "brush on", UI_PALETTE_SELECT, UI_PALETTE_SURFACE,
+            () => getActiveClimate().getUIColorInactiveCustom(0.58), () => getActiveClimate().getUIColorActive()));
+        surfaceRow.addElement(new RadioToggleLabel(this.window, half, h1, UI_CENTER, "brush off", UI_PALETTE_SELECT, UI_PALETTE_SURFACE_OFF,
+            () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive()));
+        specialContainer.addElement(new Toggle(this.window, sizeX, h1, UI_CENTER, UI_PALETTE_SPECIAL_SHOWINDICATOR,
+            "show surface indicator", () => getSpecialColor(0.55), () => getSpecialColor(0.35)));
+        specialContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_SURFACE, sizeX, 35, 0.0, 1, () => "rgba(0, 0, 0, 0)", () => "#FFFFFF",));
+        // end surface
 
-        // let specialRow3 = new Container(this.window, 0, 0); 
+        // water
+        specialContainer.addElement(new Text(this.window, sizeX, h1, UI_CENTER, "water"))
+        let waterRow = new Container(this.window, 0, 0);
+        specialContainer.addElement(waterRow);
+        waterRow.addElement(new RadioToggleLabel(this.window, half, h1, UI_CENTER, "water", UI_PALETTE_SELECT, UI_PALETTE_WATER,
+            () => getWaterColor(1.5), () => getWaterColor(1.05)));
+        waterRow.addElement(new RadioToggleLabel(this.window, half, h1, UI_CENTER, "aquifer", UI_PALETTE_SELECT, UI_PALETTE_AQUIFER,
+            () => getWaterColor(1.4), () => getWaterColor(1)));
 
-        specialRow1.addElement(new RadioToggleLabel(this.window, half, getBaseUISize() * 6, UI_CENTER, "surface on", UI_PALETTE_SELECT, UI_PALETTE_SURFACE, () => getSpecialColor(0.55), () => getSpecialColor(0.35), 0.35));
-        specialRow1.addElement(new RadioToggleLabel(this.window, half, getBaseUISize() * 6, UI_CENTER, "surface off", UI_PALETTE_SELECT, UI_PALETTE_SURFACE_OFF, () => getSpecialColor(0.55), () => getSpecialColor(0.35), 0.35));
-
-        specialRow2.addElement(new Toggle(this.window, half, getBaseUISize() * 6, UI_CENTER, UI_PALETTE_SPECIAL_SHOWINDICATOR, "show surface indicator", () => getSpecialColor(0.55), () => getSpecialColor(0.35), 0.35));
-        // specialRow2.addElement(new RadioToggleLabel(this.window, half, getBaseUISize() * 6, UI_CENTER, "surface off", UI_PALETTE_SELECT, UI_PALETTE_AQUIFER, () => getSpecialColor(0.55), () => getSpecialColor(0.35), 0.45));
-
+        specialContainer.addElement(new Text(this.window, sizeX, h2, UI_CENTER, "aquifer flowrate"))
+        specialContainer.addElement(new SliderGradientBackground(this.window, UI_PALETTE_AQUIFER_FLOWRATE, sizeX, 35, 0.0, 1, getWaterColorDark, getWaterColor,));
 
         let palleteSelectAdvancedRow = new Container(this.window, 0, 0);
         container.addElement(new Text(this.window, sizeX / 8, buttonHeight / 4, 0, ""));
@@ -120,8 +134,8 @@ export class BlockPalette extends Component {
 
         container.addElement(new Text(this.window, sizeX / 8, buttonHeight / 4, 0, ""));
 
-        palleteSelectAdvancedRow.addElement(new RadioToggleFunctionalText(this.window, half, buttonHeight, UI_CENTER, UI_PALETTE_SELECT, UI_PALETTE_ERASE,
-            () => ((loadGD(UI_PALETTE_SELECT) == UI_PALETTE_ERASE) ? "▶ " : "") + "erase", () => getActiveClimate().getSurfaceOnColor(), () => getActiveClimate().getSufaceOffColor(), 0.4));
+        palleteSelectAdvancedRow.addElement(new RadioToggleLabel(this.window, sizeX, h1, UI_CENTER, "erase", UI_PALETTE_SELECT, UI_PALETTE_ERASE,
+            () => getActiveClimate().getSurfaceOnColor(), () => getActiveClimate().getSufaceOffColor()));
 
         let palletePickerConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_PALETTE_SHOWPICKER));
         container.addElement(palletePickerConditionalContainer);
@@ -136,10 +150,9 @@ export class BlockPalette extends Component {
 
 
         let eyedropperMixerButtonsRow = new Container(this.window, 0, 0);
-        container.addElement(eyedropperMixerButtonsRow);
-        eyedropperMixerButtonsRow.addElement(new Toggle(this.window, half, buttonHeight, UI_CENTER, UI_PALETTE_EYEDROPPER, "eyedropper", () => getActiveClimate().getUIColorStoneButton(0.9), () => getActiveClimate().getUIColorStoneButton(0.5), 0.5));
-        eyedropperMixerButtonsRow.addElement(new Toggle(this.window, half, buttonHeight, UI_CENTER, UI_PALETTE_MIXER, "mixer", () => getActiveClimate().getUIColorStoneButton(0.95), () => getActiveClimate().getUIColorStoneButton(0.57), 0.5));
-
+        soilRockContainer.addElement(eyedropperMixerButtonsRow);
+        eyedropperMixerButtonsRow.addElement(new Toggle(this.window, half, h1, UI_CENTER, UI_PALETTE_EYEDROPPER, "eyedropper", () => getActiveClimate().getUIColorStoneButton(0.7), () => getActiveClimate().getUIColorStoneButton(0.5)));
+        eyedropperMixerButtonsRow.addElement(new Toggle(this.window, half, h1, UI_CENTER, UI_PALETTE_MIXER, "mixer", () => getActiveClimate().getUIColorStoneButton(0.8), () => getActiveClimate().getUIColorStoneButton(0.57)));
 
         let strengthSizeContainer = new Container(this.window, padding, 0);
         container.addElement(strengthSizeContainer);
@@ -148,32 +161,14 @@ export class BlockPalette extends Component {
         strengthSizeContainer.addElement(sizeContainer);
 
         sizeContainer.addElement(new Text(this.window, sizeX / 2, buttonHeight * 0.6, UI_CENTER, "size"));
-        sizeContainer.addElement(new Slider(this.window, UI_PALETTE_SIZE, sizeX / 2, getBaseUISize() * 3, 2, 14, () => getActiveClimate().getUIColorTransient(), getBaseUISize() * 1));
+        sizeContainer.addElement(new Slider(this.window, UI_PALETTE_SIZE, sizeX / 2, h1, 2, 14, () => getActiveClimate().getUIColorTransient(), getBaseUISize() * 1));
 
         let strengthContainer = new Container(this.window, padding, 1);
         strengthSizeContainer.addElement(strengthContainer);
 
         strengthContainer.addElement(new Text(this.window, sizeX / 2, buttonHeight * 0.6, UI_CENTER, "strength"));
-        strengthContainer.addElement(new Slider(this.window, UI_PALETTE_STRENGTH, sizeX / 2, getBaseUISize() * 3, 0, 1, () => getActiveClimate().getUIColorTransient(), getBaseUISize() * 1));
+        strengthContainer.addElement(new Slider(this.window, UI_PALETTE_STRENGTH, sizeX / 2, h1, 0, 1, () => getActiveClimate().getUIColorTransient(), getBaseUISize() * 1));
 
-        let row1 = new Container(this.window, 0, 0);
-        let row2 = new Container(this.window, 0, 0);
-
-        container.addElement(row1);
-        container.addElement(row2);
-
-        row1.addElement(new RadioToggleFunctionalText(this.window, half, buttonHeight, UI_CENTER, UI_PALETTE_SELECT, UI_PALETTE_WATER
-            , () => ((loadGD(UI_PALETTE_SELECT) == UI_PALETTE_WATER) ? "▶ " : "") + "water", () => getActiveClimate().getWaterColor(), () => getActiveClimate().getWaterColor(), 0.4));
-        row1.addElement(new RadioToggleFunctionalText(this.window, half, buttonHeight, UI_CENTER, UI_PALETTE_SELECT, UI_PALETTE_AQUIFER,
-            () => ((loadGD(UI_PALETTE_SELECT) == UI_PALETTE_AQUIFER) ? "▶ " : "") + "aquifer", () => getActiveClimate().getWaterColorDark(), () => getActiveClimate().getWaterColor(), 0.4));
-        row2.addElement(new RadioToggleFunctionalText(this.window, half, buttonHeight, UI_CENTER, UI_PALETTE_SELECT, UI_PALETTE_SURFACE,
-            () => ((loadGD(UI_PALETTE_SELECT) == UI_PALETTE_SURFACE) ? "▶ " : "") + "surface", () => getActiveClimate().getSurfaceOnColor(), () => getActiveClimate().getSufaceOffColor(), 0.4));
-        row2.addElement(new RadioToggleFunctionalText(this.window, half, buttonHeight, UI_CENTER, UI_PALETTE_SELECT, UI_PALETTE_SURFACE_OFF,
-            () => ((loadGD(UI_PALETTE_SELECT) == UI_PALETTE_SURFACE_OFF) ? "▶ " : "") + "surface off", () => getActiveClimate().getSurfaceOnColor(), () => getActiveClimate().getSufaceOffColor(), 0.4));
-
-
-        specialContainer.addElement(new Text(this.window, sizeX, getBaseUISize() * 1.5, UI_CENTER, "surface"));
-        specialContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_SURFACE, sizeX, 35, 0.0, 1, () => "#FFFFFF", () => "rgba(0, 0, 0, 0)"));
     }
 
     initPallate() {

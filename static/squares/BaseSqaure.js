@@ -271,7 +271,7 @@ export class BaseSquare {
                 getBaseSize()
             );
         } else {
-            this.renderSpecialViewModeLinearOpacity({r: 255, g: 255, b: 255}, {r: 0, g: 0, b: 0}, this.surfaceLightingFactor, 1, 0.3);   
+            this.renderSpecialViewModeLinearOpacity({r: 255, g: 255, b: 255}, {r: 0, g: 0, b: 0}, 1 - this.surfaceLightingFactor, 1, 0.3);   
         }
 
     }

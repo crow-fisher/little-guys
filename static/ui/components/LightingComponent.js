@@ -14,17 +14,19 @@ import { TextFunctionalBackground } from "../elements/TextFunctionalBackground.j
 import { loadGD, UI_LIGHTING_SUN, UI_LIGHTING_MOON, UI_LIGHTING_WATER, UI_LIGHTING_ROCK, UI_LIGHTING_PLANT, UI_LIGHTING_DECAY, UI_CENTER, UI_LIGHTING_WATER_OPACITY, UI_LIGHTING_WATER_VALUE, UI_LIGHTING_WATER_SATURATION, UI_LIGHTING_WATER_HUE, UI_LIGHTING_PLANT_GRASS, UI_LIGHTING_PLANT_TREE, UI_LIGHTING_SCENE_MODE, UI_LIGHTING_SCENE_MODE_WATER, UI_LIGHTING_SCENE_MODE_PLANT, UI_LIGHTING_SCENE_MODE_BRIGHTNESS, UI_LIGHTING_SCENE_MODE_DECAY } from "../UIData.js";
 import { Text } from "../elements/Text.js";
 
-function getWaterColor() {
-    let s = new WaterSquare(-1, -1);
-    let rgb = s.getColorBase();
-    return rgbToHex(rgb.r, rgb.g, rgb.b);
-}
-
-function getWaterColorDark() {
+export function getWaterColorDark() {
     let s = new WaterSquare(-1, -1);
     let rgb = s.getColorBase();
     let waterHsv = rgb2hsv(rgb.r, rgb.g, rgb.b);
     waterHsv[2] *= 0.15;
+    return rgbToHex(...hsv2rgb(...waterHsv));
+}
+
+export function getWaterColor(mult=1) {
+    let s = new WaterSquare(-1, -1);
+    let rgb = s.getColorBase();
+    let waterHsv = rgb2hsv(rgb.r, rgb.g, rgb.b);
+    waterHsv[2] *= mult;
     return rgbToHex(...hsv2rgb(...waterHsv));
 }
 
