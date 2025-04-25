@@ -1,7 +1,7 @@
 import { iterateOnSquares } from "../squares/_sqOperations.js";
 import { getCloudColorAtPos } from "../climate/temperatureHumidity.js";
 import { getCurrentLightColorTemperature, getDaylightStrength, getFrameDt, getMoonlightColor } from "../climate/time.js";
-import { loadGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_QUALITY, UI_LIGHTING_SUN, UI_SIMULATION_CLOUDS } from "../ui/UIData.js";
+import { loadGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_QUALITY, UI_LIGHTING_SUN, UI_LIGHTING_UPDATERATE, UI_SIMULATION_CLOUDS } from "../ui/UIData.js";
 import { getWindSquaresX, getWindSquaresY } from "../climate/wind.js";
 import { getCurLightingInterval } from "./lightingHandler.js";
 import { isLeftMouseClicked, isRightMouseClicked } from "../mouse.js";
@@ -103,17 +103,17 @@ export class StationaryWideLightGroup extends LightGroup {
     }
 
     doRayCasting(idx) {
-        if (this.idxCompletionMap[idx] === false) {
+        if (this.idxCompletionMap.get(idx) === false) {
             return false;
         }
-        this.idxCompletionMap[idx] = false;
+        this.idxCompletionMap.set(idx, false)
         let completionMap = new Map();
         for (let i = 0; i < this.lightSources.length; i++) {
-            completionMap[i] = false;
+            completionMap.set(i, false);
             this.lightSources[i].doRayCasting(idx, i, () => {
-                completionMap[i] = true;
+                completionMap.set(i, true);
                 if (completionMap.values().every((val) => val)) {
-                    this.idxCompletionMap[idx] = true;
+                    this.idxCompletionMap.set(idx, true);
                 }
             });
         };
@@ -269,17 +269,11 @@ export class LightSource {
             a0.push(theta);
         }
         let tasksPerThread = a0.length / this.numTasks;
-
-        let timeInterval = getCurLightingInterval();
-        let scheduledTime = 0;
+        let timeInterval = (getCurLightingInterval() / this.numTasks);
         for (let i = 0; i < this.numTasks; i++) {
             let startIdx = Math.floor(i * tasksPerThread);
             let endIdx = Math.ceil((i + 1) * (tasksPerThread));
-            scheduledTime = i * (timeInterval / this.numTasks);
-            let stCopy = scheduledTime + (getFrameDt() * jobIdx)
-            if (isLeftMouseClicked() || isRightMouseClicked()) {
-                scheduledTime *= 3;
-            }
+            let scheduledTime = i * timeInterval + (getFrameDt() * (jobIdx % loadGD(UI_LIGHTING_UPDATERATE)));
             addTimeout(setTimeout(() => {
                 for (let i = startIdx; i < Math.min(endIdx, a0.length); i++) {
                     this.rayCastingForTheta(idx, jobIdx, a0[i], thetaStep);
@@ -288,7 +282,7 @@ export class LightSource {
                 if (this.numTasksCompleted[idx][jobIdx] == this.numTasks) {
                     onComplete();
                 }
-            }, stCopy));
+            }, scheduledTime));
         }
     }
 }
