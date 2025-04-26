@@ -1,4 +1,5 @@
 import { loadSlot, saveCurGame } from "./saveAndLoad.js";
+import { iterateOnSquares } from "./squares/_sqOperations.js";
 
 export let ALL_SQUARES = new Map();
 export let ALL_ORGANISMS = new Map();
@@ -31,15 +32,14 @@ export function initGroupList() {
 }
 
 export function regSquareToGroup(group, reg=1) {
-    if (group >= groupSizeListSize) {
-        saveCurGame();
-        return;
+    if (group == (groupSizeListSize + 1)) {
+        initGroupList();
     }
-    groupSizeList[group] += reg;
+    groupSizeList[group % groupSizeListSize] += reg;
 }
 
 export function getGroupSize(group) {
-    return groupSizeList[group];
+    return groupSizeList[group % groupSizeListSize];
 }
 
 export function getCurMixIdx() {
