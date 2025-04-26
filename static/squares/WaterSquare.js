@@ -1,6 +1,6 @@
 import { BaseSquare } from "./BaseSqaure.js";
 import { getSquares, iterateOnSquares, getNeighbors } from "./_sqOperations.js";
-import { WATERFLOW_CANDIDATE_SQUARES, WATERFLOW_TARGET_SQUARES } from "../globals.js";
+import { getGroupSize, WATERFLOW_CANDIDATE_SQUARES, WATERFLOW_TARGET_SQUARES } from "../globals.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { RGB_COLOR_OTHER_BLUE } from "../colors.js";
 import { hexToRgb, hsv2rgb, randRange, rgb2hsv, rgbToRgba } from "../common.js";
@@ -130,9 +130,14 @@ class WaterSquare extends BaseSquare {
                 let pressure = this.currentPressureIndirect + j;
                 if (getSquares(this.posX + i, this.posY + j)
                     .some((sq) => (sq.collision))) {
-                    if (getSquares(this.posX + i, this.posY + j)
-                        .some((sq) => (sq.proto == this.proto && sq.group != this.group))) {
-                        this._percolateGroup();
+                    let found = getSquares(this.posX + i, this.posY + j)
+                        .find((sq) => (sq.proto == this.proto && sq.group != this.group));
+                    if (found != null) {
+                        if (getGroupSize(this.group) > getGroupSize(found.group)) {
+                            this._percolateGroup();
+                        } else {
+                            found._percolateGroup();
+                        }
                     }
                     continue;
                 }

@@ -65,8 +65,6 @@ export class BlockPalette extends Component {
 
         let buttonHeight = h1;
 
-
-
         let soilRockContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_SOIL || loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK);
         let specialContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_PALETTE_MODE) == UI_PALLETE_MODE_SPECIAL);
 

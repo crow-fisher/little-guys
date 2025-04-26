@@ -1,3 +1,5 @@
+import { loadSlot, saveCurGame } from "./saveAndLoad.js";
+
 export let ALL_SQUARES = new Map();
 export let ALL_ORGANISMS = new Map();
 export let stats = new Map();
@@ -18,6 +20,27 @@ curMixIdx -= curMixIdx % mixArrLen;
 let targetMixIdx = curMixIdx + mixArrLen;
 let mixArr = new Array(mixArrLen);
 let groundedMap = new Map();
+
+let groupSizeListSize = 100000;
+let groupSizeList = new Array(groupSizeListSize);
+
+export function initGroupList() {
+    for (let i = 0; i < groupSizeListSize; i++) {
+        groupSizeList[i] = 0;
+    }
+}
+
+export function regSquareToGroup(group, reg=1) {
+    if (group >= groupSizeListSize) {
+        saveCurGame();
+        return;
+    }
+    groupSizeList[group] += reg;
+}
+
+export function getGroupSize(group) {
+    return groupSizeList[group];
+}
 
 export function getCurMixIdx() {
     return curMixIdx;

@@ -9,7 +9,7 @@ import { getGAMEDATA, getUICONFIG, loadGD, loadUI, saveGD, saveMapEntry, saveUI,
 import { getTotalCanvasPixelWidth, indexCanvasSize } from "./index.js";
 import { STAGE_DEAD } from "./organisms/Stages.js";
 import { getMainMenuComponent, initUI } from "./ui/WindowManager.js";
-import { purgeMaps } from "./globals.js";
+import { initGroupList, purgeMaps, regSquareToGroup } from "./globals.js";
 import { getActiveClimate } from "./climate/climateManager.js";
 import { doSingleTimeMouseEvent } from "./mouse.js";
 import { MOUSEEVENT_UNHIDE } from "./common.js";
@@ -336,6 +336,8 @@ export function editCurrentWorld() {
 }
 
 function loadSlotFromSave(slotData) {
+    initGroupList();
+
     let sqArr = slotData.sqArr;
     let orgArr = slotData.orgArr;
     let lsqArr = slotData.lsqArr;
@@ -380,6 +382,7 @@ function loadSlotFromSave(slotData) {
             sq.linkedOrganism = orgArr[sq.linkedOrganism];
         }
         sq.linkedOrganismSquares = Array.from(sq.linkedOrganismSquares.map((lsqIdx) => lsqArr[lsqIdx]));
+        regSquareToGroup(sq.group);
     });
 
     sqArr.forEach(addSquare);

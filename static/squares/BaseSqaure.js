@@ -6,7 +6,8 @@ import {
     getMixArrLen,
     getTargetMixIdx,
     setGroupGrounded,
-    isGroupGrounded
+    isGroupGrounded,
+    regSquareToGroup
 } from "../globals.js";
 
 import { MAIN_CONTEXT } from "../index.js";
@@ -510,7 +511,9 @@ export class BaseSquare {
             if (sq == null || sq in visited) {
                 return;
             } else {
+                regSquareToGroup(sq.group, -1);
                 sq.group = this.group;
+                regSquareToGroup(sq.group);
                 visited.add(sq);
                 getNeighbors(sq.posX, sq.posY)
                     .filter((ssq) => ssq.proto == sq.proto)
@@ -529,6 +532,8 @@ export class BaseSquare {
         }
 
         this.group = getNextGroupId();
+        regSquareToGroup(this.group);
+
         this._percolateGroup(this.group);
         if (this.proto == "RockSquare") {
             setGroupGrounded(this.group)
