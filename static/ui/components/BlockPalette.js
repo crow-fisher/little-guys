@@ -1,10 +1,11 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
-import { hueShiftColor, rgbToHex } from "../../common.js";
+import { hueShiftColor, rgbToHex, UI_BIGDOTHOLLOW, UI_BIGDOTSOLID, UI_TINYDOT } from "../../common.js";
 import { Component } from "../Component.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
 import { Container } from "../Container.js";
 import { Button } from "../elements/Button.js";
+import { ButtonFunctionalText } from "../elements/ButtonFunctionalText.js";
 import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
 import { Slider } from "../elements/Slider.js";
 import { SliderGradientBackground } from "../elements/SliderGradientBackground.js";
@@ -87,12 +88,26 @@ export class BlockPalette extends Component {
         soilRockContainer.addElement(toolRow); 
 
         for (let i = 0; i < getActiveClimate().soilColors.length; i++) {
-            toolRow.addElement(new Button(this.window, sizeX / getActiveClimate().soilColors.length, buttonHeight, 0, 
+            toolRow.addElement(new ButtonFunctionalText(this.window, sizeX / getActiveClimate().soilColors.length, buttonHeight, UI_CENTER, 
                 () => {
                     let key = loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK ? UI_PALETTE_ROCKIDX : UI_PALETTE_SOILIDX;
                     saveGD(key, i)
                 },
-                "", () => getActiveClimate().getBaseActiveToolBrightnessIdx(i, [.4, .4, .2], 1)));
+                () => {
+                    let key = loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK ? UI_PALETTE_ROCKIDX : UI_PALETTE_SOILIDX;
+                    let curVal = loadGD(key);
+                    if (curVal != i) {
+                        return UI_BIGDOTHOLLOW;
+                    } else {
+                        return UI_BIGDOTSOLID;
+                    }
+                }, () => {
+                    let arr = [.4, .4, .2];
+                    if (loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK) {
+                        arr = [.2, .2, .6];
+                    };
+                    return getActiveClimate().getBaseActiveToolBrightnessIdx(i, arr, 1);
+                }));
         }
         container.addElement(new Text(this.window, sizeX / 8, buttonHeight / 4, 0, ""));
         specialContainer.addElement(new Text(this.window, sizeX, h1, UI_CENTER, "surface"))
