@@ -3,7 +3,7 @@ import { WaterSquare } from "../WaterSquare.js";
 import { hexToRgb, processColorLerp, processColorLerpBicolor, randNumber } from "../../common.js";
 import { RockSquare } from "./RockSquare.js";
 import { BaseSquare } from "../BaseSqaure.js";
-import { loadGD, UI_PALETTE_AQUIFER, UI_PALETTE_AQUIFER_FLOWRATE, UI_PALETTE_ERASE, UI_PALETTE_SELECT } from "../../ui/UIData.js";
+import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_AQUIFER, UI_PALETTE_AQUIFER_FLOWRATE, UI_PALETTE_ERASE, UI_PALETTE_SELECT } from "../../ui/UIData.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { getWaterColor, getWaterColorDark } from "../../ui/components/LightingComponent.js";
@@ -37,7 +37,9 @@ class AquiferSquare extends BaseSquare {
         }
     }
     render() {
-        if (loadGD(UI_PALETTE_SELECT) == UI_PALETTE_AQUIFER || loadGD(UI_PALETTE_SELECT) == UI_PALETTE_ERASE) {
+        if (
+            loadGD(UI_PALETTE_ACTIVE) && (
+            loadGD(UI_PALETTE_SELECT) == UI_PALETTE_AQUIFER || loadGD(UI_PALETTE_SELECT) == UI_PALETTE_ERASE)) {
             MAIN_CONTEXT.fillStyle = calculateColor(this.flowrate, 0, 1, hexToRgb(getWaterColorDark()), hexToRgb(getWaterColor()));
             zoomCanvasFillRect(
                 this.posX * getBaseSize(),
