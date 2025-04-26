@@ -41,7 +41,7 @@ class WaterSquare extends BaseSquare {
         hsv[1] = loadGD(UI_LIGHTING_WATER_SATURATION);
         hsv[2] = 255 * loadGD(UI_LIGHTING_WATER_VALUE);
         let rgb = hsv2rgb(...hsv);
-        return {r: rgb[0], g: rgb[1], b: rgb[2]}
+        return { r: rgb[0], g: rgb[1], b: rgb[2] }
     }
 
     reset() {
@@ -125,20 +125,22 @@ class WaterSquare extends BaseSquare {
                 }
             }
         }
-        if (this.currentPressureIndirect > this.currentPressureDirect) {
-            for (let i = -1; i < 2; i++) {
-                for (let j = -1; j < 2; j++) {
-                    let pressure = this.currentPressureIndirect + j;
+        for (let i = -1; i < 2; i++) {
+            for (let j = -1; j < 2; j++) {
+                let pressure = this.currentPressureIndirect + j;
+                if (getSquares(this.posX + i, this.posY + j)
+                    .some((sq) => (sq.collision))) {
                     if (getSquares(this.posX + i, this.posY + j)
-                            .some((sq) => (sq.collision))) {
-                        continue;
+                        .some((sq) => (sq.proto == this.proto && sq.group != this.group))) {
+                        this._percolateGroup();
                     }
-                    if (Math.random() > (1 - 0.2 * Math.log(pressure))) {
-                        if (!targetMap.has(pressure)) {
-                            targetMap.set(pressure, new Array());
-                        }
-                        targetMap.get(pressure).push([this.posX + i, this.posY + j, i]);
+                    continue;
+                }
+                if (Math.random() > (1 - 0.2 * Math.log(pressure))) {
+                    if (!targetMap.has(pressure)) {
+                        targetMap.set(pressure, new Array());
                     }
+                    targetMap.get(pressure).push([this.posX + i, this.posY + j, i]);
                 }
             }
         }
@@ -182,13 +184,13 @@ class WaterSquare extends BaseSquare {
     combineAdjacentNeighbors() {
         if (this.blockHealth < this.blockHealthMax) {
             getNeighbors(this.posX, this.posY)
-            .filter((sq) => sq.proto == this.proto)
-            .filter((sq) => (sq.posY < this.posY || (sq.posY == this.posY && Math.random() > 0.5))) 
-            .forEach((sq) => {
-                let start = this.blockHealth;
-                this.blockHealth = Math.min(this.blockHealthMax, this.blockHealth + sq.blockHealth / 2);
-                sq.blockHealth -= this.blockHealth - start;
-            });
+                .filter((sq) => sq.proto == this.proto)
+                .filter((sq) => (sq.posY < this.posY || (sq.posY == this.posY && Math.random() > 0.5)))
+                .forEach((sq) => {
+                    let start = this.blockHealth;
+                    this.blockHealth = Math.min(this.blockHealthMax, this.blockHealth + sq.blockHealth / 2);
+                    sq.blockHealth -= this.blockHealth - start;
+                });
         }
 
     }
