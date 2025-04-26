@@ -125,9 +125,9 @@ export class BlockPalette extends Component {
         let waterRow = new Container(this.window, 0, 0);
         specialContainer.addElement(waterRow);
         waterRow.addElement(new RadioToggleLabel(this.window, half, h1, UI_CENTER, "water", UI_PALETTE_SELECT, UI_PALETTE_WATER,
-            () => getWaterColor(1.5), () => getWaterColor(1.05)));
+            () => getWaterColor(1.05), () => getWaterColor(1.5)));
         waterRow.addElement(new RadioToggleLabel(this.window, half, h1, UI_CENTER, "aquifer", UI_PALETTE_SELECT, UI_PALETTE_AQUIFER,
-            () => getWaterColor(1.4), () => getWaterColor(1)));
+            () => getWaterColor(1), () => getWaterColor(1.4)));
 
         specialContainer.addElement(new Text(this.window, sizeX, h2, UI_CENTER, "aquifer flowrate"))
         specialContainer.addElement(new SliderGradientBackground(this.window, UI_PALETTE_AQUIFER_FLOWRATE, sizeX, 35, 0.0, 1, getWaterColorDark, getWaterColor,));
