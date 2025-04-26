@@ -1,13 +1,10 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
-import { COLOR_BLACK, COLOR_GREEN, COLOR_VERY_FUCKING_RED, RGB_COLOR_GREEN, RGB_COLOR_VERY_FUCKING_RED } from "../../colors.js";
-import { hexToRgb, hueShiftColor, rgbToHex } from "../../common.js";
+import { hueShiftColor, rgbToHex } from "../../common.js";
 import { Component } from "../Component.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
 import { Container } from "../Container.js";
 import { Button } from "../elements/Button.js";
-import { RadioToggle } from "../elements/RadioToggle.js";
-import { RadioToggleFunctionalText } from "../elements/RadioToggleFunctionalText.js";
 import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
 import { Slider } from "../elements/Slider.js";
 import { SliderGradientBackground } from "../elements/SliderGradientBackground.js";
@@ -15,9 +12,7 @@ import { SoilPickerElement } from "../elements/SoilPicker.js";
 import { Text } from "../elements/Text.js";
 import { TextBackground } from "../elements/TextBackground.js";
 import { Toggle } from "../elements/Toggle.js";
-import { ToggleFunctional } from "../elements/ToggleFunctional.js";
-import { ToggleFunctionalText } from "../elements/ToggleFunctionalText.js";
-import { loadGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CENTER, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKMODE, UI_PALETTE_ROCKIDX, UI_PALETTE_COMPOSITION, saveGD, UI_PALETTE_SHOWPICKER, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, addUIFunctionMap, UI_PALETTE_SOILROCK, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_AQUIFER_FLOWRATE } from "../UIData.js";
+import { loadGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CENTER, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_PALETTE_COMPOSITION, saveGD, UI_PALETTE_SHOWPICKER, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, addUIFunctionMap, UI_PALETTE_SOILROCK, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_AQUIFER_FLOWRATE } from "../UIData.js";
 import { getWaterColor, getWaterColorDark } from "./LightingComponent.js";
 
 
@@ -69,23 +64,7 @@ export class BlockPalette extends Component {
 
         let buttonHeight = h1;
 
-        // let toolRow = new Container(this.window, 0, 0);
 
-        // container.addElement(new Text(this.window, sizeX / 8, buttonHeight / 4, 0, ""));
-        // container.addElement(toolRow); 
-
-        // toolRow.addElement(new ToggleFunctional(this.window, half, buttonHeight, UI_CENTER, UI_PALETTE_ROCKMODE, () => ("" + (loadGD(UI_PALETTE_ROCKMODE) ? "soil ●" : "● rock")),
-        //     () => getActiveClimate().getPaletteRockColor(), () => getActiveClimate().getPaletteSoilColor(), 0.5));
-
-        // for (let i = 0; i < getActiveClimate().soilColors.length; i++) {
-        //     toolRow.addElement(new Button(this.window, half / getActiveClimate().soilColors.length, buttonHeight, 0, 
-        //         () => {
-        //             let key = loadGD(UI_PALETTE_ROCKMODE) ? UI_PALETTE_ROCKIDX : UI_PALETTE_SOILIDX;
-        //             saveGD(key, i)
-        //         },
-        //         "", () => getActiveClimate().getBaseActiveToolBrightnessIdx(i, [.4, .4, .2], 1)));
-        // }
-        // container.addElement(new Text(this.window, sizeX / 8, buttonHeight / 4, 0, ""));
 
         let soilRockContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_SOIL || loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK);
         let specialContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_PALETTE_MODE) == UI_PALLETE_MODE_SPECIAL);
@@ -102,17 +81,29 @@ export class BlockPalette extends Component {
             }
         }
 
+        let toolRow = new Container(this.window, 0, 0);
 
-        // surface 
+        soilRockContainer.addElement(new Text(this.window, sizeX, h2, UI_CENTER, "color palette"));
+        soilRockContainer.addElement(toolRow); 
+
+        for (let i = 0; i < getActiveClimate().soilColors.length; i++) {
+            toolRow.addElement(new Button(this.window, sizeX / getActiveClimate().soilColors.length, buttonHeight, 0, 
+                () => {
+                    let key = loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK ? UI_PALETTE_ROCKIDX : UI_PALETTE_SOILIDX;
+                    saveGD(key, i)
+                },
+                "", () => getActiveClimate().getBaseActiveToolBrightnessIdx(i, [.4, .4, .2], 1)));
+        }
+        container.addElement(new Text(this.window, sizeX / 8, buttonHeight / 4, 0, ""));
         specialContainer.addElement(new Text(this.window, sizeX, h1, UI_CENTER, "surface"))
         let surfaceRow = new Container(this.window, 0, 0);
         specialContainer.addElement(surfaceRow);
         surfaceRow.addElement(new RadioToggleLabel(this.window, half, h1, UI_CENTER, "brush on", UI_PALETTE_SELECT, UI_PALETTE_SURFACE,
-            () => getActiveClimate().getUIColorInactiveCustom(0.58), () => getActiveClimate().getUIColorActive()));
+            () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
         surfaceRow.addElement(new RadioToggleLabel(this.window, half, h1, UI_CENTER, "brush off", UI_PALETTE_SELECT, UI_PALETTE_SURFACE_OFF,
             () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive()));
         specialContainer.addElement(new Toggle(this.window, sizeX, h1, UI_CENTER, UI_PALETTE_SPECIAL_SHOWINDICATOR,
-            "show surface indicator", () => getSpecialColor(0.55), () => getSpecialColor(0.35)));
+            "show surface indicator", () => getActiveClimate().getUIColorInactiveCustom(0.60), () =>getActiveClimate().getUIColorTransient()));
         specialContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_SURFACE, sizeX, 35, 0.0, 1, () => "rgba(0, 0, 0, 0)", () => "#FFFFFF",));
         // end surface
 
@@ -209,6 +200,5 @@ addUIFunctionMap(UI_PALETTE_COMPOSITION, () => saveGD(UI_PALETTE_SELECT, UI_PALE
 addUIFunctionMap(UI_PALETTE_EYEDROPPER, () => saveGD(UI_PALETTE_SELECT, UI_PALETTE_SOILROCK));
 addUIFunctionMap(UI_PALETTE_MIXER, () => saveGD(UI_PALETTE_SELECT, UI_PALETTE_SOILROCK));
 addUIFunctionMap(UI_PALETTE_SOILROCK, () => saveGD(UI_PALETTE_SELECT, UI_PALETTE_SOILROCK));
-addUIFunctionMap(UI_PALETTE_ROCKMODE, () => saveGD(UI_PALETTE_SELECT, UI_PALETTE_SOILROCK));
 addUIFunctionMap(UI_PALETTE_SOILIDX, () => saveGD(UI_PALETTE_SELECT, UI_PALETTE_SOILROCK));
 addUIFunctionMap(UI_PALETTE_ROCKIDX, () => saveGD(UI_PALETTE_SELECT, UI_PALETTE_SOILROCK));

@@ -1,9 +1,9 @@
 import { getActiveClimate } from "../../climate/climateManager.js";
-import { COLOR_BLACK, COLOR_VERY_FUCKING_RED } from "../../colors.js";
+import { COLOR_BLACK } from "../../colors.js";
 import { rgbToHex } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
-import { loadGD, saveGD, UI_PALETTE_COMPOSITION, UI_PALETTE_ROCKIDX, UI_PALETTE_ROCKMODE, UI_PALETTE_SOILIDX } from "../UIData.js";
+import { loadGD, saveGD, UI_PALETTE_COMPOSITION, UI_PALETTE_ROCKIDX, UI_PALETTE_SOILIDX } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export const R_COLORS = "🎨";
@@ -20,7 +20,7 @@ export class SoilPickerElement extends WindowElement {
         this.hoverLoc = null;
 
         this.colorCache = new Map();
-        this.colorCache[true] = new Map(); // rockmode
+        this.colorCache[true] = new Map();
         this.colorCache[false] = new Map();
 
         this.blockSize = 4.99999;
@@ -74,8 +74,8 @@ export class SoilPickerElement extends WindowElement {
     }
 
     getSquareColor(i, j) {
-        let cacheMap = this.colorCache[loadGD(UI_PALETTE_ROCKMODE)];
-        let cacheMapIdx = loadGD(loadGD(UI_PALETTE_ROCKMODE) ? UI_PALETTE_ROCKIDX : UI_PALETTE_SOILIDX);
+        let cacheMap = this.colorCache[loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK];
+        let cacheMapIdx = loadGD(loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK ? UI_PALETTE_ROCKIDX : UI_PALETTE_SOILIDX);
         if (cacheMap[cacheMapIdx] == null) {
             cacheMap[cacheMapIdx] = new Map();
         }

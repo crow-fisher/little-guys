@@ -1,14 +1,10 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { SunCalc } from "../../climate/suncalc/suncalc.js";
-import { explicitSeek, getCurDay, getSkyBackgroundColorForDay, millis_per_day, seek } from "../../climate/time.js";
-import { COLOR_BLACK, COLOR_VERY_FUCKING_RED } from "../../colors.js";
-import { rgbToHex, rgbToRgba } from "../../common.js";
+import { explicitSeek, getCurDay, getSkyBackgroundColorForDay, millis_per_day } from "../../climate/time.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
-import { loadGD, saveGD, UI_PALETTE_COMPOSITION, UI_PALETTE_ROCKIDX, UI_PALETTE_ROCKMODE, UI_PALETTE_SOILIDX } from "../UIData.js";
 import { WindowElement } from "../Window.js";
-import { getTopBarComponent } from "../WindowManager.js";
 
 export const R_COLORS = "🎨";
 export const R_PERCOLATION_RATE = "💦";
