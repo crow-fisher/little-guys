@@ -15,7 +15,7 @@ import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
-import { loadGD, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CLIMATE_WEATHER_TOOL_LIGHTCLOUD, UI_CLIMATE_WEATHER_TOOL_DRYAIR, UI_CLIMATE_WEATHER_TOOL_HEAVYCLOUD, UI_CLIMATE_WEATHER_TOOL_MATCHEDAIR, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_STRENGTH, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_STRENGTH, UI_GODMODE_TEMPERATURE, UI_ORGANISM_SELECT, UI_SM_GODMODE, UI_SM_ORGANISM, UI_PALETTE_ACTIVE, UI_PALETTE_AQUIFER, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_PALETTE_SOILROCK, UI_PALETTE_WATER, UI_CLIMATE_SELECT_CLOUDS, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_CLIMATE_TOOL_SIZE, UI_PALETTE_MODE_ROCK, UI_PALETTE_MODE } from "./ui/UIData.js";
+import { loadGD, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CLIMATE_WEATHER_TOOL_LIGHTCLOUD, UI_CLIMATE_WEATHER_TOOL_DRYAIR, UI_CLIMATE_WEATHER_TOOL_HEAVYCLOUD, UI_CLIMATE_WEATHER_TOOL_MATCHEDAIR, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_STRENGTH, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_STRENGTH, UI_GODMODE_TEMPERATURE, UI_ORGANISM_SELECT, UI_SM_GODMODE, UI_SM_ORGANISM, UI_PALETTE_ACTIVE, UI_PALETTE_AQUIFER, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_PALETTE_SOILROCK, UI_PALETTE_WATER, UI_CLIMATE_SELECT_CLOUDS, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_CLIMATE_TOOL_SIZE, UI_PALETTE_MODE_ROCK, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALLETE_MODE_SPECIAL } from "./ui/UIData.js";
 import { eyedropperBlockClick, eyedropperBlockHover, isWindowHovered, mixerBlockClick } from "./ui/WindowManager.js";
 import { CattailSeedOrganism } from "./organisms/midwest/CattailOrganism.js";
 import { MushroomSeedOrganism } from "./organisms/fantasy/MushroomOrganism.js";
@@ -32,7 +32,7 @@ function doBrushFuncClickThrottle(x, y, func) {
         prevClickTime = getLastMouseDown();
     }
     if (prevClickMap[x] == null)
-        prevClickMap[x] = new Map(); 
+        prevClickMap[x] = new Map();
 
     if (prevClickMap[x][y]) {
         if (Math.random() > 0.90) {
@@ -226,8 +226,15 @@ export function doClickAdd() {
             } else if (loadGD(UI_SM_GODMODE)) {
                 doBrushFunc(px, py, (x, y) => doBlockMod(x, y));
             } else if (loadGD(UI_PALETTE_ACTIVE)) {
-                    let mode = loadGD(UI_PALETTE_SELECT);
-                    if (mode == UI_PALETTE_SURFACE) {
+                let mode = loadGD(UI_PALETTE_MODE);
+                let selectMode = loadGD(UI_PALETTE_SELECT);
+                if (selectMode == UI_PALETTE_ERASE || isRightMouseClicked()) {
+                    doBrushFunc(px, py, (x, y) => removeSquarePos(x, y));
+                    continue;
+                } else if (mode == UI_PALETTE_MODE_SOIL || mode == UI_PALETTE_MODE_ROCK) {
+                    doBrushFunc(px, py, (x, y) => addActivePaletteToolSquare(x, y));
+                } else if (mode == UI_PALLETE_MODE_SPECIAL) {
+                    if (selectMode == UI_PALETTE_SURFACE) {
                         doBrushFunc(px, py, (x, y) => {
                             let squares = getSquares(x, y);
                             if (isRightMouseClicked() && (squares.some((sq) => sq.solid && sq.surface))) {
@@ -238,7 +245,7 @@ export function doClickAdd() {
                                 sq.surfaceLightingFactor = (1 - loadGD(UI_LIGHTING_SURFACE));
                             });
                         });
-                    } else if (mode == UI_PALETTE_SURFACE_OFF) {
+                    } else if (selectMode == UI_PALETTE_SURFACE_OFF) {
                         doBrushFunc(px, py, (x, y) => {
                             let squares = getSquares(x, y);
                             if ((squares.some((sq) => sq.solid && sq.surface))) {
@@ -248,100 +255,97 @@ export function doClickAdd() {
                                 sq.surface = false;
                             });
                         });
-                    }
-                    else if (mode == UI_PALETTE_ERASE || isRightMouseClicked()) {
-                        doBrushFunc(px, py, (x, y) => removeSquarePos(x, y));
-                        continue;
-                    } else if (mode == UI_PALETTE_SOILROCK) {
-                        doBrushFunc(px, py, (x, y) => addActivePaletteToolSquare(x, y));
-                    } else if (mode == UI_PALETTE_WATER) {
+                    } else if (selectMode == UI_PALETTE_WATER) {
                         doBrushFunc(px, py, (x, y) => addSquareByName(x, y, "water"));
-                    } else if (mode == UI_PALETTE_AQUIFER) {
+                    } else if (selectMode == UI_PALETTE_AQUIFER) {
                         addSquareByName(px, py, "aquifer")
                     }
-            } else if (loadGD(UI_SM_ORGANISM)) {
-                    let selectedOrganism = loadGD(UI_ORGANISM_SELECT);
-                    let chance = Math.random();
-                    switch (selectedOrganism) {
-                        case "wheat":
-                            if (chance > 0.99) {
-                                let sq = addSquare(new SeedSquare(px, py));
-                                if (sq) {
-                                    let orgAdded = addNewOrganism(new WheatSeedOrganism(sq));
-                                    if (!orgAdded) {
-                                        sq.destroy();
-                                    }
-                                }
-                            }
-                            break;
-                        case "k. bluegrass":
-                            if (chance > 0.95) {
-                                let sq = addSquare(new SeedSquare(px, py));
-                                if (sq) {
-                                    let orgAdded = addNewOrganism(new KentuckyBluegrassSeedOrganism(sq, [Math.random()]));
-                                    if (!orgAdded) {
-                                        sq.destroy();
-                                    }
-                                }
-                            }
-                            break;
-                        case "cattail":
-                            if (chance > 0.95) {
-                                let sq = addSquare(new SeedSquare(px, py));
-                                if (sq) {
-                                    let orgAdded = addNewOrganism(new CattailSeedOrganism(sq));
-                                    if (!orgAdded) {
-                                        sq.destroy();
-                                    }
-                                }
-                            }
-                            break;
-                        case "mushroom1":
-                            if (chance > 0.95) {
-                                let sq = addSquare(new SeedSquare(px, py));
-                                if (sq) {
-                                    let orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [Math.random(), 0]));
-                                    if (!orgAdded) {
-                                        sq.destroy();
-                                    }
-                                }
-                            }
-                            break;
-                        case "mushroom2":
-                            if (chance > 0.95) {
-                                let sq = addSquare(new SeedSquare(px, py));
-                                if (sq) {
-                                    let orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [Math.random(), 1]));
-                                    if (!orgAdded) {
-                                        sq.destroy();
-                                    }
-                                }
-                            }
-                            break;
-                        case "mushroom3":
-                            if (chance > 0.95) {
-                                let sq = addSquare(new SeedSquare(px, py));
-                                if (sq) {
-                                    let orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [0.0001 + .25 * Math.random(), 0]));
-                                    if (!orgAdded) {
-                                        sq.destroy();
-                                    }
-                                }
-                            }
-                            break;
-                        case "mushroom4":
-                            if (chance > 0.95) {
-                                let sq = addSquare(new SeedSquare(px, py));
-                                if (sq) {
-                                    let orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [.749999 + 0.25 * Math.random(), 0]));
-                                    if (!orgAdded) {
-                                        sq.destroy();
-                                    }
-                                }
-                            }
-                            break;
-                    }
                 }
+
+
+            } else if (loadGD(UI_SM_ORGANISM)) {
+                let selectedOrganism = loadGD(UI_ORGANISM_SELECT);
+                let chance = Math.random();
+                switch (selectedOrganism) {
+                    case "wheat":
+                        if (chance > 0.99) {
+                            let sq = addSquare(new SeedSquare(px, py));
+                            if (sq) {
+                                let orgAdded = addNewOrganism(new WheatSeedOrganism(sq));
+                                if (!orgAdded) {
+                                    sq.destroy();
+                                }
+                            }
+                        }
+                        break;
+                    case "k. bluegrass":
+                        if (chance > 0.95) {
+                            let sq = addSquare(new SeedSquare(px, py));
+                            if (sq) {
+                                let orgAdded = addNewOrganism(new KentuckyBluegrassSeedOrganism(sq, [Math.random()]));
+                                if (!orgAdded) {
+                                    sq.destroy();
+                                }
+                            }
+                        }
+                        break;
+                    case "cattail":
+                        if (chance > 0.95) {
+                            let sq = addSquare(new SeedSquare(px, py));
+                            if (sq) {
+                                let orgAdded = addNewOrganism(new CattailSeedOrganism(sq));
+                                if (!orgAdded) {
+                                    sq.destroy();
+                                }
+                            }
+                        }
+                        break;
+                    case "mushroom1":
+                        if (chance > 0.95) {
+                            let sq = addSquare(new SeedSquare(px, py));
+                            if (sq) {
+                                let orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [Math.random(), 0]));
+                                if (!orgAdded) {
+                                    sq.destroy();
+                                }
+                            }
+                        }
+                        break;
+                    case "mushroom2":
+                        if (chance > 0.95) {
+                            let sq = addSquare(new SeedSquare(px, py));
+                            if (sq) {
+                                let orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [Math.random(), 1]));
+                                if (!orgAdded) {
+                                    sq.destroy();
+                                }
+                            }
+                        }
+                        break;
+                    case "mushroom3":
+                        if (chance > 0.95) {
+                            let sq = addSquare(new SeedSquare(px, py));
+                            if (sq) {
+                                let orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [0.0001 + .25 * Math.random(), 0]));
+                                if (!orgAdded) {
+                                    sq.destroy();
+                                }
+                            }
+                        }
+                        break;
+                    case "mushroom4":
+                        if (chance > 0.95) {
+                            let sq = addSquare(new SeedSquare(px, py));
+                            if (sq) {
+                                let orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [.749999 + 0.25 * Math.random(), 0]));
+                                if (!orgAdded) {
+                                    sq.destroy();
+                                }
+                            }
+                        }
+                        break;
+                }
+            }
         }
     } else {
         doBlockHover(lastMoveOffset);
