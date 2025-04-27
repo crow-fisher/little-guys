@@ -208,10 +208,3 @@ export class BlockPalette extends Component {
         return [sandPercent, siltPercent, clayPercent];
     }
 }
-
-addUIFunctionMap(UI_PALETTE_COMPOSITION, () => saveGD(UI_PALETTE_SELECT, UI_PALETTE_SOILROCK));
-addUIFunctionMap(UI_PALETTE_EYEDROPPER, () => saveGD(UI_PALETTE_SELECT, UI_PALETTE_SOILROCK));
-addUIFunctionMap(UI_PALETTE_MIXER, () => saveGD(UI_PALETTE_SELECT, UI_PALETTE_SOILROCK));
-addUIFunctionMap(UI_PALETTE_SOILROCK, () => saveGD(UI_PALETTE_SELECT, UI_PALETTE_SOILROCK));
-addUIFunctionMap(UI_PALETTE_SOILIDX, () => saveGD(UI_PALETTE_SELECT, UI_PALETTE_SOILROCK));
-addUIFunctionMap(UI_PALETTE_ROCKIDX, () => saveGD(UI_PALETTE_SELECT, UI_PALETTE_SOILROCK));

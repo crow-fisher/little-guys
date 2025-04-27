@@ -190,7 +190,7 @@ async function doSave(slotName, saveString) {
 
 async function openDatabase() {
     return new Promise((resolve, reject) => {
-        const request = indexedDB.open("lgdb", 3);
+        const request = indexedDB.open("lgdb2", 4);
         request.onupgradeneeded = (event) => {
             const db = event.target.result;
             if (!db.objectStoreNames.contains("saves")) {
@@ -280,7 +280,7 @@ function getFrameSaveData() {
         windMap: getWindPressureMap(),
         temperatureMap: getTemperatureMap(),
         waterSaturationMap: getWaterSaturationMap(),
-        ui: getGAMEDATA()
+        gamedata: getGAMEDATA()
     }
     return saveObj;
 }
@@ -299,26 +299,8 @@ export async function createNewWorld() {
     saveUI(UI_UI_CURWORLD, slot);
     saveUI(UI_UI_NEXTWORLD, slot + 1);
     saveGD(UI_MAIN_NEWWORLD, false);
-    switch (loadGD(UI_MAIN_NEWWORLD_TYPE_SELECT)) {
-        case (UI_MAIN_NEWWORLD_TYPE_BLOCKS):
-            saveGD(UI_SIMULATION_SIMPLESQUARE, true);
-            saveGD(UI_SIMULATION_CLOUDS, false);
-            saveGD(UI_LIGHTING_ENABLED, false);
-            break;
-        case (UI_MAIN_NEWWORLD_TYPE_CLOUDS):
-            saveGD(UI_SIMULATION_SIMPLESQUARE, true);
-            saveGD(UI_LIGHTING_ENABLED, false);
-            saveGD(UI_SIMULATION_CLOUDS, true);
-            saveGD(UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_HEAVYCLOUD);
-            saveGD(UI_CLIMATE_TOOL_SIZE, 100);
-            saveGD(UI_CLIMATE_WEATHER_TOOL_STRENGTH, 0.1);
-            break;
-        default:
-            saveGD(UI_LIGHTING_ENABLED, true);
-            saveGD(UI_SIMULATION_CLOUDS, true);
-            saveGD(UI_SIMULATION_SIMPLESQUARE, false);
-            break;
-    };
+    saveGD(UI_LIGHTING_ENABLED, true);
+    saveGD(UI_SIMULATION_CLOUDS, true);
     saveCurGame();
     let endNumPages = getMainMenuComponent().getNumPages();
     if (endNumPages > startNumPages) {
@@ -346,7 +328,7 @@ function loadSlotFromSave(slotData) {
     let growthPlanStepArr = slotData.growthPlanStepArr;
 
     setCurDay(slotData.curDay);
-    setGAMEDATA(slotData.ui)
+    setGAMEDATA(slotData.gamedata)
 
     sqArr.forEach((sq) => Object.setPrototypeOf(sq, ProtoMap[sq.proto]));
     orgArr.forEach((org) => Object.setPrototypeOf(org, ProtoMap[org.proto]));

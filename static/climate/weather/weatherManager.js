@@ -193,6 +193,9 @@ ui_weatherMap.set(UI_CLIMATE_WEATHER_HEAVYRAIN, weatherHeavyRain)
 ui_weatherMap.set(UI_CLIMATE_WEATHER_NULL, weatherClear)
 
 function weatherChange() {
+    if (!loadGD(UI_SIMULATION_CLOUDS)) {
+        return;
+    }
     curWeatherStartTime = Math.min(curWeatherStartTime, getCurDay());
     curWeather = ui_weatherMap.get(loadGD(UI_CLIMATE_WEATHER_ACTIVE));
 
