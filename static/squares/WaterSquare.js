@@ -179,6 +179,7 @@ class WaterSquare extends BaseSquare {
         })
     }
 
+
     updatePosition(newPosX, newPosY) {
         deregisterSquare(this.posX, this.posY, this.group);
         super.updatePosition(newPosX, newPosY);
