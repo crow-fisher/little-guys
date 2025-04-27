@@ -29,6 +29,7 @@ import { applyLightingFromSource, getDefaultLighting, processLighting } from "..
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
 import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTIHNG, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_PALETTE_SIZE, UI_VIEWMODE_DEV_PLACEHOLDER, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_SIMULATION_GENS_PER_DAY, UI_LIGHTING_UPDATERATE } from "../ui/UIData.js";
 import { isLeftMouseClicked } from "../mouse.js";
+import { deregisterSquare, registerSquare } from "../waterGraph.js";
 
 export class BaseSquare {
     constructor(posX, posY) {
@@ -512,8 +513,11 @@ export class BaseSquare {
                 return;
             } else {
                 regSquareToGroup(sq.group, -1);
+                deregisterSquare(sq.posX, sq.posY, sq.group);
                 sq.group = this.group;
                 regSquareToGroup(sq.group);
+                registerSquare(sq.posX, sq.posY, sq.group);
+
                 visited.add(sq);
                 getNeighbors(sq.posX, sq.posY)
                     .filter((ssq) => ssq.proto == sq.proto)

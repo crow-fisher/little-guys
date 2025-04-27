@@ -9,6 +9,7 @@ import { removeItemAll } from "./common.js";
 import { getCanvasSquaresX, getCanvasSquaresY } from "./canvas.js";
 import { saveGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "./ui/UIData.js";
 import { indexCanvasSize } from "./index.js";
+import { resetFrameGroupCache } from "./waterGraph.js";
 
 let frame_squares = null;
 let frame_solid_squares = null;
@@ -16,6 +17,7 @@ let frame_water_squares = null;
 
 export function reset() {
     resetWaterflowSquares();
+    resetFrameGroupCache();
     frame_squares = getSqIterationOrder();
     frame_solid_squares = frame_squares.filter((sq) => sq.solid);
     frame_water_squares = frame_squares.filter((sq) => !sq.solid);

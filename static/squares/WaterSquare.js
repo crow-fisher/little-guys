@@ -1,6 +1,6 @@
 import { BaseSquare } from "./BaseSqaure.js";
 import { getSquares, iterateOnSquares, getNeighbors } from "./_sqOperations.js";
-import { getGroupSize, WATERFLOW_CANDIDATE_SQUARES, WATERFLOW_TARGET_SQUARES } from "../globals.js";
+import { getGroupSize, getNextGroupId, WATERFLOW_CANDIDATE_SQUARES, WATERFLOW_TARGET_SQUARES } from "../globals.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { RGB_COLOR_OTHER_BLUE } from "../colors.js";
 import { hexToRgb, hsv2rgb, randRange, rgb2hsv, rgbToRgba } from "../common.js";
@@ -8,6 +8,7 @@ import { loadGD, UI_LIGHTING_WATER, UI_LIGHTING_WATER_HUE, UI_LIGHTING_WATER_VAL
 import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
 import { getActiveClimate } from "../climate/climateManager.js";
 import { getDefaultLighting } from "../lighting/lightingProcessing.js";
+import { deregisterSquare, isGroupContiguous, registerSquare } from "../waterGraph.js";
 class WaterSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
@@ -176,6 +177,20 @@ class WaterSquare extends BaseSquare {
             }
             sq.currentPressureIndirect = Math.max(sq.currentPressureDirect, sq.posY - perGroupData[sq.group]);
         })
+    }
+
+    updatePosition(newPosX, newPosY) {
+        deregisterSquare(this.posX, this.posY, this.group);
+        super.updatePosition(newPosX, newPosY);
+        registerSquare(this.posX, this.posY, this.group);
+
+        
+        if (Math.random() > 0.99) {
+            if (!isGroupContiguous(this.group)) {
+                this.group = getNextGroupId();
+                this._percolateGroup();
+            }
+        }
     }
 
     doNeighborPercolation() {
