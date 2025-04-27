@@ -8,6 +8,7 @@ import { getCanvasHeight, getCanvasWidth, resetZoom, setBaseSize, setCanvasSquar
 import { addUIFunctionMap, loadGD, saveGD, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_SIMULATION_HEIGHT, UI_UI_SIZE } from "./ui/UIData.js";
 import { initUI } from "./ui/WindowManager.js";
 import { iterateOnSquares } from "./squares/_sqOperations.js";
+import { waterGraphReset } from "./waterGraph.js";
 
 export let MAIN_CANVAS = document.getElementById("main");
 export let MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
@@ -61,6 +62,7 @@ export function indexCanvasSize(shouldInitUIClimateAndLighting=true) {
     MAIN_CANVAS.width = width;
     MAIN_CANVAS.height = height;
     resetClimateAndLighting();
+    waterGraphReset();
     initUI();
     resetZoom();
 }

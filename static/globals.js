@@ -1,5 +1,6 @@
 import { loadSlot, saveCurGame } from "./saveAndLoad.js";
 import { iterateOnSquares } from "./squares/_sqOperations.js";
+import { removeGroupFromGraph } from "./waterGraph.js";
 
 export let ALL_SQUARES = new Map();
 export let ALL_ORGANISMS = new Map();
@@ -36,6 +37,10 @@ export function regSquareToGroup(group, reg=1) {
         initGroupList();
     }
     groupSizeList[group % groupSizeListSize] += reg;
+
+    if (groupSizeList[group % groupSizeListSize] == 0) {
+        removeGroupFromGraph(group);
+    }
 }
 
 export function getGroupSize(group) {
