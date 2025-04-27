@@ -34,7 +34,7 @@ export function resetFrameGroupCache() {
     frameGroupCache.clear();
 }
 
-export function isGroupContiguous(group) {
+export function _isGroupContiguous(group) {
     if (frameGroupCache.has(group))
         return frameGroupCache.get(group);
 
@@ -42,17 +42,11 @@ export function isGroupContiguous(group) {
     return frameGroupCache.get(group);
 }
 
-export function _isGroupContiguous(group) {
-    let xWidth = loadGD(UI_GAME_MAX_CANVAS_SQUARES_X);
+export function isGroupContiguous(group) {
     let groupSquares = groupMap.get(group);
-
-    if (groupSquares.size < 5 ) {
-        return true;
+    if (groupSquares == null || groupSquares.size < 5) {
+        return true; 
     }
-    if (groupSquares == null) {
-        return true; // (theoretically) unreachable 
-    }
-
     let posMap = Array.from(groupSquares.values()).sort();
 
     let c1, c2;
@@ -60,7 +54,7 @@ export function _isGroupContiguous(group) {
         c1 = posMap[i];
         c2 = posMap[i + 1];
         let diff = (c2 - c1);
-        if (diff != 1 && diff != xWidth)
+        if (diff != 1 && diff != squaresX)
             continue; 
         return false;
     }

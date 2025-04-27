@@ -506,6 +506,7 @@ export class BaseSquare {
         getNeighbors(this.posX, this.posY)
             .filter((sq) => sq.proto == this.proto)
             .filter((sq) => sq.posY <= this.posY) 
+            .filter((sq) => sq.group != this.group)
             .forEach((sq) => toVisit.add(sq));
 
         toVisit.forEach((sq) => {
@@ -521,7 +522,8 @@ export class BaseSquare {
                 visited.add(sq);
                 getNeighbors(sq.posX, sq.posY)
                     .filter((ssq) => ssq.proto == sq.proto)
-                    .filter((sq) => !sq.solid || sq.posY <= this.posY)
+                    .filter((sq) => !sq.solid || sq.posY <= this.posY) 
+                    .filter((sq) => sq.group != this.group)
                     .forEach((ssq) => toVisit.add(ssq));
             }
         })
@@ -610,13 +612,18 @@ export class BaseSquare {
         if (!this.shouldFallThisFrame()) {
             return;
         }
+
         let shouldResetGroup = false;
-        if (isGroupGrounded(this.group) && this.currentPressureDirect > 10) {
-            if (Math.random() < 1 - (1 / this.currentPressureDirect) && !getSquares(this.posX, this.posY + 2).some((sq) => sq.testCollidesWithSquare(this))) {
-                return;
+        // caviation physics
+        if (this.proto != "WaterSquare") {
+            if (isGroupGrounded(this.group) && this.currentPressureDirect > 7) {
+                if (Math.random() < 1 - (1 / this.currentPressureDirect) && !getSquares(this.posX, this.posY + 2).some((sq) => sq.testCollidesWithSquare(this))) {
+                    return;
+                }
+                shouldResetGroup = true;
             }
-            shouldResetGroup = true;
         }
+
         if (getTimeScale() != 0) {
             if (this.shouldFallThisFrame()) {
                 this.speedY += (1 / this.gravity);
