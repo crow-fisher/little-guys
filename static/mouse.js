@@ -146,8 +146,6 @@ export function setMouseTouchStartCallback(f) {
 export function handleTouchMove(e, fromTouchStart=false) {
     e.preventDefault();
     lastMoveEvent = e;
-
-    // We track the first touch as mouse move
     let touch = e.touches[0];
     lastMoveOffset = getOffset(touch);
     if (fromTouchStart) {

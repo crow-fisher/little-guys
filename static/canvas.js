@@ -203,15 +203,11 @@ export function zoomCanvasSquareText(x, y, text) {
 export function zoom(event) {
     event.preventDefault();
     if (loadGD(UI_PALETTE_ACTIVE)) {
-        if (loadGD(UI_PALETTE_SELECT) == loadGD(UI_PALETTE_SURFACE)) {
-            saveGD(UI_LIGHTING_SURFACE, Math.max(.0000001, Math.min(.999999999, loadGD(UI_LIGHTING_SURFACE) + event.deltaY * .00005)));
-
-        } else if (isKeyPressed(KEY_CONTROL) || isKeyPressed(KEY_SHIFT)) {
-            let size = loadGD(UI_PALETTE_SIZE);
-            size += event.deltaY * 0.005;
-            size = Math.min(Math.max(size, 1), 14)
-            saveGD(UI_PALETTE_SIZE, size);
-        } else {
+        if (isKeyPressed(KEY_SHIFT)) {
+            if (loadGD(UI_PALETTE_SELECT) == loadGD(UI_PALETTE_SURFACE)) {
+                saveGD(UI_LIGHTING_SURFACE, Math.max(.0000001, Math.min(.999999999, loadGD(UI_LIGHTING_SURFACE) + event.deltaY * .00005)));
+                return;
+            }
             let strength = loadGD(UI_PALETTE_STRENGTH);
             if (event.deltaY > 0) {
                 strength *= (0.999 ** event.deltaY); 
@@ -221,8 +217,16 @@ export function zoom(event) {
                 }
             }
             saveGD(UI_PALETTE_STRENGTH, strength);
+            return;
         }
-        return;
+
+        if (isKeyPressed(KEY_CONTROL)) {
+            let size = loadGD(UI_PALETTE_SIZE);
+            size += event.deltaY * 0.005;
+            size = Math.min(Math.max(size, 1), 14)
+            saveGD(UI_PALETTE_SIZE, size);
+            return;
+        } 
     }
     doZoom(event.deltaY);
 }

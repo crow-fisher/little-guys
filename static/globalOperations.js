@@ -128,9 +128,11 @@ export function doWaterFlow() {
                     return;
                 }
 
-                if (Math.random() > (0.8) ** (PTarg - pCand)) {
+                if (PTarg < 2 || Math.random() > (0.8) ** (PTarg - pCand)) {
+                    let startX = candidate.posX;
                     if (candidate.updatePosition(curTarget[0], curTarget[1])) {
-                        candidate.speedX = curTarget[2] * (Math.floor((PTarg - pCand) ** 0.25));
+                        let side = (curTarget[0] - startX) > 0 ? 1 : -1;
+                        candidate.speedX = side * curTarget[2] * (Math.floor((PTarg - pCand) ** 0.1));
                     }
                 }
             }

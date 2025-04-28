@@ -182,7 +182,7 @@ class WaterSquare extends BaseSquare {
 
     updatePosition(newPosX, newPosY) {
         deregisterSquare(this.posX, this.posY, this.group);
-        super.updatePosition(newPosX, newPosY);
+        let ret = super.updatePosition(newPosX, newPosY);
         registerSquare(this.posX, this.posY, this.group);
         
         if (Math.random() > 0.997) {
@@ -191,6 +191,7 @@ class WaterSquare extends BaseSquare {
                 this._percolateGroup();
             }
         }
+        return ret;
     }
 
     doNeighborPercolation() {
