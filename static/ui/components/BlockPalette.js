@@ -1,6 +1,8 @@
-import { getBaseUISize } from "../../canvas.js";
+import { getBaseUISize, zoomCanvasFillCircle } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
+import { COLOR_BLACK } from "../../colors.js";
 import { hueShiftColor, rgbToHex, UI_BIGDOTHOLLOW, UI_BIGDOTSOLID, UI_TINYDOT } from "../../common.js";
+import { MAIN_CONTEXT } from "../../index.js";
 import { Component } from "../Component.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
 import { Container } from "../Container.js";
@@ -13,7 +15,7 @@ import { SoilPickerElement } from "../elements/SoilPicker.js";
 import { Text } from "../elements/Text.js";
 import { TextBackground } from "../elements/TextBackground.js";
 import { Toggle } from "../elements/Toggle.js";
-import { loadGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CENTER, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_PALETTE_COMPOSITION, saveGD, UI_PALETTE_SHOWPICKER, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, addUIFunctionMap, UI_PALETTE_SOILROCK, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_AQUIFER_FLOWRATE } from "../UIData.js";
+import { loadGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CENTER, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_PALETTE_COMPOSITION, saveGD, UI_PALETTE_SHOWPICKER, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, addUIFunctionMap, UI_PALETTE_SOILROCK, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_AQUIFER_FLOWRATE, UI_SOIL_COMPOSITION } from "../UIData.js";
 import { getWaterColor, getWaterColorDark } from "./LightingComponent.js";
 
 
@@ -70,19 +72,51 @@ export class BlockPalette extends Component {
 
         container.addElement(soilRockContainer);
         container.addElement(specialContainer);
-
+        
         for (let i = 0; i <= this.numSoilRows; i++) {
             let row = new Container(this.window, 0, 0);
             soilRockContainer.addElement(row);
             for (let j = 0; j < this.palette[i].length; j++) {
-                row.addElement(new Button(this.window, sizeX / this.palette[i].length, buttonHeight / 2, 0, () => saveGD(UI_PALETTE_COMPOSITION, this.palette[i][j]),
-                    "", () => getActiveClimate().getBaseActiveToolBrightness(this.palette[i][j], 1)))
+                let ic = i, jc = j;
+                let labelFunc = () => {
+                    let ref = this.palette[ic][jc];
+                    let cur = loadGD(UI_PALETTE_COMPOSITION);
+                    let diff = Math.abs(ref[0] - cur[0]) + Math.abs(ref[1] - cur[1]) + Math.abs(ref[2] - cur[2]); 
+                    let mid = 1 -( Math.max(...cur) + Math.min(...cur));
+                    diff /= mid;
+                    if (diff < 0.05) {
+                        return UI_BIGDOTSOLID;
+                    } else {
+                        return "";
+                    }
+                }
+                row.addElement(new ButtonFunctionalText(this.window, sizeX / this.palette[i].length, buttonHeight / 2, UI_CENTER, () => saveGD(UI_PALETTE_COMPOSITION, this.palette[i][j]),
+                labelFunc, () => getActiveClimate().getBaseActiveToolBrightness(this.palette[i][j], 1), 1, getBaseUISize() * 0.15))
             }
         }
+        
+        // // rendering our active selection dot
+        // if (soilRockContainer.func()) {
+        //     let startY = getBaseUISize() * 35;
+        //     let arr = loadGD(UI_PALETTE_COMPOSITION);
+        //     let sumClaySilt = arr[0] + arr[1];
+
+        //     let x = 0.5;
+        //     let y = startY;
+            
+        //     if (sumClaySilt != 0) {
+                
+        //     }
+
+        //     MAIN_CONTEXT.fillStyle = COLOR_BLACK;
+        //     MAIN_CONTEXT.beginPath(); 
+        //     MAIN_CONTEXT.arc(x * sizeX, y, getBaseUISize() * 4, 0, 2 * Math.PI, false);
+        //     MAIN_CONTEXT.fill();  
+        // }
 
         let toolRow = new Container(this.window, 0, 0);
 
-        soilRockContainer.addElement(new Text(this.window, sizeX, h2, UI_CENTER, "color palette"));
+        soilRockContainer.addElement(new Text(this.window, sizeX, h2, UI_CENTER, "palette"));
         soilRockContainer.addElement(toolRow); 
 
         for (let i = 0; i < getActiveClimate().soilColors.length; i++) {
@@ -152,8 +186,8 @@ export class BlockPalette extends Component {
         palletePickerRow.addElement(this.soilPickerElement);
         palletePickerRow.addElement(new Text(this.window, sizeX / 8, getBaseUISize() * 2, 0, ""));
 
-
         let eyedropperMixerButtonsRow = new Container(this.window, 0, 0);
+        soilRockContainer.addElement(new Text(this.window, sizeX, h2, UI_CENTER, "picker tools"))
         soilRockContainer.addElement(eyedropperMixerButtonsRow);
         eyedropperMixerButtonsRow.addElement(new Toggle(this.window, half, h1, UI_CENTER, UI_PALETTE_EYEDROPPER, "eyedropper", () => getActiveClimate().getUIColorStoneButton(0.7), () => getActiveClimate().getUIColorStoneButton(0.5)));
         eyedropperMixerButtonsRow.addElement(new Toggle(this.window, half, h1, UI_CENTER, UI_PALETTE_MIXER, "mixer", () => getActiveClimate().getUIColorStoneButton(0.8), () => getActiveClimate().getUIColorStoneButton(0.57)));

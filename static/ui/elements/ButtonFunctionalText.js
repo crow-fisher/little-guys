@@ -6,7 +6,7 @@ import { loadGD, saveGD, UI_CENTER } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class ButtonFunctionalText extends WindowElement {
-    constructor(window, sizeX, sizeY, offsetX, func, labelFunc, colorFunc, textSizeMult=0.75) {
+    constructor(window, sizeX, sizeY, offsetX, func, labelFunc, colorFunc, textSizeMult=0.75, textOffsetY=0) {
         super(window, sizeX, sizeY);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
@@ -16,6 +16,7 @@ export class ButtonFunctionalText extends WindowElement {
         this.lastClick = 0;
         this.colorFunc = colorFunc;
         this.textSizeMult = textSizeMult;
+        this.textOffsetY = textOffsetY;
     }
 
     size() {
@@ -31,10 +32,10 @@ export class ButtonFunctionalText extends WindowElement {
 
         if (this.offsetX == UI_CENTER) {
             MAIN_CONTEXT.textAlign = 'center';
-            MAIN_CONTEXT.fillText(this.labelFunc(), startX + this.sizeX / 2, startY + this.sizeY / 2);
+            MAIN_CONTEXT.fillText(this.labelFunc(), startX + this.sizeX / 2, startY + this.textOffsetY + this.sizeY / 2);
         } else {
             MAIN_CONTEXT.textAlign = 'left';
-            MAIN_CONTEXT.fillText(this.labelFunc(), startX + this.offsetX, startY + this.sizeY / 2);
+            MAIN_CONTEXT.fillText(this.labelFunc(), startX + this.offsetX, startY + this.textOffsetY + this.sizeY / 2);
         }
         return [this.sizeX, this.sizeY];
     }
