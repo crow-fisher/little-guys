@@ -1,8 +1,8 @@
 let ERASE_RADIUS = 2;
 
 import { getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, transformPixelsToCanvasSquares } from "./canvas.js";
-import { addTemperature, addWaterSaturationPascalsSqCoords } from "./climate/temperatureHumidity.js";
-import { addWindPerssureMaintainHumidity, addWindPressureCloud, addWindPressureDryAir } from "./climate/wind.js";
+import { addTemperature, addWaterSaturationPascalsSqCoords } from "./climate/simulation/temperatureHumidity.js";
+import { addWindPerssureMaintainHumidity, addWindPressureCloud, addWindPressureDryAir } from "./climate/simulation/wind.js";
 import { removeSquare } from "./globalOperations.js";
 import { getLastMouseDown, getLastMoveOffset, getLeftMouseUpEvent, isLeftMouseClicked, isMiddleMouseClicked, isRightMouseClicked, setMouseTouchStartCallback } from "./mouse.js";
 import { addNewOrganism, getOrganismsAtSquare } from "./organisms/_orgOperations.js";

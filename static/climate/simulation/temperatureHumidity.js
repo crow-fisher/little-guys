@@ -1,15 +1,16 @@
-import { hexToRgb, randNumber, rgbToRgba } from "../common.js";
-import { getSquares } from "../squares/_sqOperations.js";
-import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
-import { MAIN_CONTEXT } from "../index.js";
+import { hexToRgb, randNumber, rgbToRgba } from "../../common.js";
+import { getSquares } from "../../squares/_sqOperations.js";
+import { getBaseSize, zoomCanvasFillRect } from "../../canvas.js";
+import { MAIN_CONTEXT } from "../../index.js";
 import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds, getBaseAirPressureAtYPosition, getAirSquareDensity, getWindPressureSquareDensity, base_wind_pressure, manipulateWindPressureMaintainHumidityWindSquare, initWindPressure, isWindSquareBlocked, windFlowrateFactor, getWindSquareAbove } from "./wind.js";
-import { logRainFall } from "./weather/weatherManager.js";
-import { getDefaultLighting } from "../lighting/lightingProcessing.js";
-import { addSquareByName } from "../manipulation.js";
-import { loadGD, UI_CLIMATE_RAINFALL_DENSITY } from "../ui/UIData.js";
-import { isLeftMouseClicked, isRightMouseClicked } from "../mouse.js";
-import { RGB_COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_GREEN, RGB_COLOR_RED } from "../colors.js";
-import { millis_per_day } from "./time.js";
+import { logRainFall } from "../weather/weatherManager.js";
+import { getDefaultLighting } from "../../lighting/lightingProcessing.js";
+import { addSquareByName } from "../../manipulation.js";
+import { loadGD, UI_CLIMATE_RAINFALL_DENSITY } from "../../ui/UIData.js";
+import { isLeftMouseClicked, isRightMouseClicked } from "../../mouse.js";
+import { RGB_COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_GREEN, RGB_COLOR_RED } from "../../colors.js";
+import { millis_per_day } from "../time.js";
+import { getWindThrottleVal, registerWindThrottlerOutput } from "./throttler.js";
 // decent reference https://web.gps.caltech.edu/~xun/course/GEOL1350/Lecture5.pdf
 
 export function temperatureHumidityFlowrateFactor() {
@@ -219,6 +220,11 @@ function tickMap(
         for (let j = 0; j < yKeys.length; j++) {
             let x = parseInt(xKeys[i]);
             let y = parseInt(yKeys[j]);
+            let throttleVal = getWindThrottleVal(x, y);
+            if (throttleVal < 0) {
+                continue;
+            }
+
             getMapDirectNeighbors(x, y)
                 .filter((loc) => isPointInWindBounds(loc[0], loc[1]))
                 .filter((loc) => getPressure(loc[0], loc[1]) > 0)
@@ -229,6 +235,7 @@ function tickMap(
                     if (diff == 0) {
                         return;
                     }
+                    // registerWindThrottlerOutput(x, y, map[x][y], map[x][y] - diff)
 
                     if (y == y2) {
                         update_function(x, y, map[x][y] - diff);
@@ -270,6 +277,7 @@ function getAdjacentProp(x, y, func) {
 }
 
 function doRain() {
+    return;
     for (let x = 0; x < getWindSquaresX(); x++) {
         for (let y = 0; y < getWindSquaresY(); y++) {
             if (getAdjacentProp(x, y, (x, y) => (getHumidity(x, y) > cloudRainThresh ? 1 : 0)) < 5) {

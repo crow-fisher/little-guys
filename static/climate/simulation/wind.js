@@ -1,9 +1,10 @@
-import { hexToRgb, rgbToRgba } from "../common.js";
-import { getSquares } from "../squares/_sqOperations.js";
-import {  MAIN_CONTEXT } from "../index.js";
+import { hexToRgb, rgbToRgba } from "../../common.js";
+import { getSquares } from "../../squares/_sqOperations.js";
+import {  MAIN_CONTEXT } from "../../index.js";
 import { addWaterSaturation, addWaterSaturationPascals, calculateColor, getHumidity, getTemperatureAtWindSquare, getWaterSaturation, initTemperatureHumidity, setWaterSaturation, setWaterSaturationMap, updateWindSquareTemperature } from "./temperatureHumidity.js";
-import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillRect, zoomCanvasFillRectTheta } from "../canvas.js";
-import { loadGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "../ui/UIData.js";
+import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillRect, zoomCanvasFillRectTheta } from "../../canvas.js";
+import { loadGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "../../ui/UIData.js";
+import { getWindThrottleVal, registerWindThrottlerOutput } from "./throttler.js";
 
 let windPressureMap;
 let windPressureMapByPressure;
@@ -206,6 +207,11 @@ function tickWindPressureMap() {
                     if (isWindSquareBlocked(x, y)) {
                         return;
                     }
+                    let throttleVal = getWindThrottleVal(x, y);
+                    if (throttleVal < 0) {
+                        return;
+                    }
+                    let start = windPressureMap[x][y]; 
                     getWindDirectNeighbors(x, y)
                         .filter((spl) => isPointInBounds(spl[0], spl[1]))
                         .forEach((spl) => {
@@ -226,6 +232,7 @@ function tickWindPressureMap() {
                             if (windPressureDiff == 0) {
                                 return;
                             }
+
 
                             let plEnergyLost = windPressureDiff * plTemp;
                             let startSplEnergy = splPressure * splTemp;
@@ -257,6 +264,10 @@ function tickWindPressureMap() {
                             windPressureMap[x][y] -= windPressureDiff;
                             windPressureMap[x2][y2] += windPressureDiff;
                         });
+                    
+                    let end = windPressureMap[x][y]; 
+                    registerWindThrottlerOutput(x, y, start, end);
+
                 });
         });
 };
@@ -321,8 +332,6 @@ function renderWindPressureMap() {
             MAIN_CONTEXT.lineTo(startX + s[0] * 3, startY + s[1] * 3);
             MAIN_CONTEXT.stroke();
             MAIN_CONTEXT.closePath();
-
-
         }
     }
 }

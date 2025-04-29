@@ -1,6 +1,6 @@
-import { addWaterSaturationPascals, getHumidity, getWaterSaturation } from "../temperatureHumidity.js";
+import { addWaterSaturationPascals, getHumidity, getWaterSaturation } from "../simulation/temperatureHumidity.js";
 import { getCurDay, timeScaleFactor } from "../time.js";
-import { addWindPressureDryAirWindSquare, getBaseAirPressureAtYPosition, getPressure, isPointInWindBounds, manipulateWindPressureMaintainHumidityWindSquare } from "../wind.js";
+import { addWindPressureDryAirWindSquare, getBaseAirPressureAtYPosition, getPressure, isPointInWindBounds, manipulateWindPressureMaintainHumidityWindSquare } from "../simulation/wind.js";
 
 
 export class Cloud {

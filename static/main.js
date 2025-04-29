@@ -1,15 +1,16 @@
 import { doWaterFlow, physics, processOrganisms, renderOrganisms, renderSolidSquares, renderWaterSquares, reset } from "./globalOperations.js";
 import { doClickAdd, doClickAddEyedropperMixer } from "./manipulation.js";
-import { renderClouds, renderTemperature, renderWaterSaturation } from "./climate/temperatureHumidity.js";
+import { renderClouds, renderTemperature, renderWaterSaturation } from "./climate/simulation/temperatureHumidity.js";
 import { doTimeSeek, doTimeSkipToNow, isTimeSeeking, renderTime, updateTime } from "./climate/time.js";
-import { executeFunctionQueue, loadGD, UI_SIMULATION_CLOUDS, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_WIND } from "./ui/UIData.js";
+import { executeFunctionQueue, loadGD, UI_SIMULATION_CLOUDS, UI_VIEWMODE_AIRTICKRATE, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_WIND } from "./ui/UIData.js";
 import { initUI, renderWindows, resetWindowHovered, updateWindows } from "./ui/WindowManager.js";
-import { renderWindPressureMap } from "./climate/wind.js";
+import { renderWindPressureMap } from "./climate/simulation/wind.js";
 import { LightingHandler } from "./lighting/lightingHandler.js";
 import { ClimateHandler } from "./climate/climateHandler.js";
 import { isLeftMouseClicked } from "./mouse.js";
 import { iterateOnSquares } from "./squares/_sqOperations.js";
 import { doPeriodicSave, isSaveOrLoadInProgress } from "./saveAndLoad.js";
+import { renderThrottleMap } from "./climate/simulation/throttler.js";
  
 initUI();
 let lightingHandler = new LightingHandler();
@@ -71,6 +72,9 @@ function render() {
     if (selectedViewMode == UI_VIEWMODE_MOISTURE) {
         renderWaterSaturation();
         renderWindPressureMap();
+    }
+    if (selectedViewMode == UI_VIEWMODE_AIRTICKRATE) {
+        renderThrottleMap();
     }
     lightingHandler.lightingTick();
 

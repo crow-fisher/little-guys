@@ -1,5 +1,5 @@
 import { getBaseUISize } from "../../canvas.js";
-import { calculateColor } from "../../climate/temperatureHumidity.js";
+import { calculateColor } from "../../climate/simulation/temperatureHumidity.js";
 import { COLOR_BLACK, COLOR_BLUE, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { isLeftMouseClicked } from "../../mouse.js";

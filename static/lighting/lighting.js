@@ -1,8 +1,8 @@
 import { iterateOnSquares } from "../squares/_sqOperations.js";
-import { getCloudColorAtPos } from "../climate/temperatureHumidity.js";
+import { getCloudColorAtPos } from "../climate/simulation/temperatureHumidity.js";
 import { getCurrentLightColorTemperature, getDaylightStrength, getFrameDt, getMoonlightColor } from "../climate/time.js";
 import { loadGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_QUALITY, UI_LIGHTING_SUN, UI_LIGHTING_UPDATERATE, UI_SIMULATION_CLOUDS } from "../ui/UIData.js";
-import { getWindSquaresX, getWindSquaresY } from "../climate/wind.js";
+import { getWindSquaresX, getWindSquaresY } from "../climate/simulation/wind.js";
 import { getCurLightingInterval } from "./lightingHandler.js";
 import { isLeftMouseClicked, isRightMouseClicked } from "../mouse.js";
 import { addTimeout } from "../main.js";

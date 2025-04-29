@@ -1,5 +1,5 @@
 import { getCurDay } from "../climate/time.js";
-import { getWindSpeedAtLocation } from "../climate/wind.js";
+import { getWindSpeedAtLocation } from "../climate/simulation/wind.js";
 import { STATE_DESTROYED } from "./Stages.js";
 import { getGlobalThetaBase } from "../globals.js";
 

@@ -1,9 +1,9 @@
 import { gaussianRandom, randRange } from "../../common.js";
 import { addUIFunctionMap, UI_CLIMATE_WEATHER_CLEAR, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_HEAVYRAIN, loadGD, saveGD, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_DURATION, UI_CLIMATE_WEATHER_ACTIVE, UI_SIMULATION_GENS_PER_DAY, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_SIMULATION_CLOUDS, UI_CLIMATE_WEATHER_NULL } from "../../ui/UIData.js";
 import { getActiveClimate } from "../climateManager.js";
-import { cloudRainThresh } from "../temperatureHumidity.js";
+import { cloudRainThresh } from "../simulation/temperatureHumidity.js";
 import { getCurDay, getDt } from "../time.js";
-import { getWindSquaresX, getWindSquaresY } from "../wind.js";
+import { getWindSquaresX, getWindSquaresY } from "../simulation/wind.js";
 import { Cloud } from "./cloud.js";
 import { Weather } from "./weather.js";
 

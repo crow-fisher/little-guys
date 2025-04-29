@@ -9,7 +9,7 @@ import { getActiveClimate } from "../../climate/climateManager.js";
 import { getWaterColor, getWaterColorDark } from "../../ui/components/LightingComponent.js";
 import { getBaseSize, getBaseUISize, zoomCanvasFillRect } from "../../canvas.js";
 import { COLOR_BLACK } from "../../colors.js";
-import { calculateColor } from "../../climate/temperatureHumidity.js";
+import { calculateColor } from "../../climate/simulation/temperatureHumidity.js";
 
 class AquiferSquare extends BaseSquare {
     constructor(posX, posY) { 
