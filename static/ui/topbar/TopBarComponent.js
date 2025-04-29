@@ -72,7 +72,7 @@ export class TopBarComponent {
         Object.keys(this.elements).forEach((key) => this.elementPositions[key] = new Array(this.elements[key].length));
 
         this.maxHeight = 0;
-        this.padding = 4;
+        this.padding = getBaseUISize() * (4/10);
     }
 
     textMainMenu() {

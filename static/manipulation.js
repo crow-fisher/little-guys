@@ -15,7 +15,7 @@ import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
-import { loadGD, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CLIMATE_WEATHER_TOOL_LIGHTCLOUD, UI_CLIMATE_WEATHER_TOOL_DRYAIR, UI_CLIMATE_WEATHER_TOOL_HEAVYCLOUD, UI_CLIMATE_WEATHER_TOOL_MATCHEDAIR, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_STRENGTH, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_STRENGTH, UI_GODMODE_TEMPERATURE, UI_ORGANISM_SELECT, UI_SM_GODMODE, UI_SM_ORGANISM, UI_PALETTE_ACTIVE, UI_PALETTE_AQUIFER, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_PALETTE_SOILROCK, UI_PALETTE_WATER, UI_CLIMATE_SELECT_CLOUDS, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_CLIMATE_TOOL_SIZE, UI_PALETTE_MODE_ROCK, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALLETE_MODE_SPECIAL } from "./ui/UIData.js";
+import { loadGD, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CLIMATE_WEATHER_TOOL_LIGHTCLOUD, UI_CLIMATE_WEATHER_TOOL_DRYAIR, UI_CLIMATE_WEATHER_TOOL_HEAVYCLOUD, UI_CLIMATE_WEATHER_TOOL_MATCHEDAIR, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_STRENGTH, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_STRENGTH, UI_GODMODE_TEMPERATURE, UI_ORGANISM_SELECT, UI_SM_GODMODE, UI_SM_ORGANISM, UI_PALETTE_ACTIVE, UI_PALETTE_AQUIFER, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_PALETTE_SOILROCK, UI_PALETTE_WATER, UI_CLIMATE_SELECT_CLOUDS, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_CLIMATE_TOOL_SIZE, UI_PALETTE_MODE_ROCK, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALLETE_MODE_SPECIAL, isEyedropperOrMixerClicked } from "./ui/UIData.js";
 import { eyedropperBlockClick, eyedropperBlockHover, isWindowHovered, mixerBlockClick } from "./ui/WindowManager.js";
 import { CattailSeedOrganism } from "./organisms/midwest/CattailOrganism.js";
 import { MushroomSeedOrganism } from "./organisms/fantasy/MushroomOrganism.js";
@@ -76,8 +76,13 @@ export function addSquareByName(posX, posY, name) {
             square = addSquareOverride(new RockSquare(posX, posY));
             break;
         case "soil":
-            getSquares(posX, posY).filter((sq) => sq.proto == "SoilSquare" || sq.proto == "WaterSquare").forEach(removeSquare);
+            let prevSurfaceLightingFactor = 
+            getSquares(posX, posY).filter((sq) => sq.proto == "SoilSquare" || sq.proto == "WaterSquare").forEach((sq) => {
+                prevSurfaceLightingFactor = sq.surfaceLightingFactor;
+                removeSquare(sq);
+            });
             square = addSquare(new SoilSquare(posX, posY));
+            square.surfaceLightingFactor = prevSurfaceLightingFactor;
             break;
         case "water":
             square = addSquare(new WaterSquare(posX, posY));
@@ -153,11 +158,11 @@ export function doClickAddEyedropperMixer() {
     let offsetX = offsetTransformed[0];
     let offsetY = offsetTransformed[1];
 
-    if (loadGD(UI_PALETTE_EYEDROPPER)) {
+    if (loadGD(UI_PALETTE_SELECT) == UI_PALETTE_EYEDROPPER) {
         eyedropperBlockClick(offsetX, offsetY);
         return;
     }
-    if (loadGD(UI_PALETTE_MIXER)) {
+    if (loadGD(UI_PALETTE_SELECT) == UI_PALETTE_MIXER) {
         mixerBlockClick(offsetX, offsetY);
         return;
     }
@@ -173,7 +178,6 @@ export function doClickAdd() {
         return;
     }
 
-
     if (isLeftMouseClicked() || isRightMouseClicked()) {
         if (lastMoveOffset.x > getCanvasWidth() || lastMoveOffset > getCanvasHeight()) {
             return;
@@ -182,7 +186,7 @@ export function doClickAdd() {
         let offsetX = offsetTransformed[0];
         let offsetY = offsetTransformed[1];
 
-        if (loadGD(UI_PALETTE_ACTIVE) && (loadGD(UI_PALETTE_EYEDROPPER) || loadGD(UI_PALETTE_MIXER))) {
+        if (loadGD(UI_PALETTE_ACTIVE) && isEyedropperOrMixerClicked()) {
             return;
         }
 
@@ -231,7 +235,7 @@ export function doClickAdd() {
                 if (selectMode == UI_PALETTE_ERASE || isRightMouseClicked()) {
                     doBrushFunc(px, py, (x, y) => removeSquarePos(x, y));
                     continue;
-                } else if (mode == UI_PALETTE_MODE_SOIL || mode == UI_PALETTE_MODE_ROCK) {
+                } else if (selectMode == UI_PALETTE_SOILROCK) {
                     doBrushFunc(px, py, (x, y) => addActivePaletteToolSquare(x, y));
                 } else if (mode == UI_PALLETE_MODE_SPECIAL) {
                     if (selectMode == UI_PALETTE_SURFACE) {

@@ -12,6 +12,7 @@ import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
 import { Slider } from "../elements/Slider.js";
 import { SliderGradientBackground } from "../elements/SliderGradientBackground.js";
 import { SoilPickerElement } from "../elements/SoilPicker.js";
+import { SoilPickerDotElement } from "../elements/SoilPickerDotElement.js";
 import { Text } from "../elements/Text.js";
 import { TextBackground } from "../elements/TextBackground.js";
 import { Toggle } from "../elements/Toggle.js";
@@ -72,55 +73,26 @@ export class BlockPalette extends Component {
 
         container.addElement(soilRockContainer);
         container.addElement(specialContainer);
-        
+
         for (let i = 0; i <= this.numSoilRows; i++) {
             let row = new Container(this.window, 0, 0);
             soilRockContainer.addElement(row);
-            for (let j = 0; j < this.palette[i].length; j++) {
-                let ic = i, jc = j;
-                let labelFunc = () => {
-                    let ref = this.palette[ic][jc];
-                    let cur = loadGD(UI_PALETTE_COMPOSITION);
-                    let diff = Math.abs(ref[0] - cur[0]) + Math.abs(ref[1] - cur[1]) + Math.abs(ref[2] - cur[2]); 
-                    let mid = 1 -( Math.max(...cur) + Math.min(...cur));
-                    diff /= mid;
-                    if (diff < 0.05) {
-                        return UI_BIGDOTSOLID;
-                    } else {
-                        return "";
-                    }
-                }
-                row.addElement(new ButtonFunctionalText(this.window, sizeX / this.palette[i].length, buttonHeight / 2, UI_CENTER, () => saveGD(UI_PALETTE_COMPOSITION, this.palette[i][j]),
-                labelFunc, () => getActiveClimate().getBaseActiveToolBrightness(this.palette[i][j], 1), 1, getBaseUISize() * 0.15))
+            for (let j = 0; j < this.palette.get(i).length; j++) {
+                let labelFunc = () => ""
+                row.addElement(new ButtonFunctionalText(this.window, sizeX / this.palette.get(i).length, h2, UI_CENTER, () => {
+                    saveGD(UI_PALETTE_COMPOSITION, this.palette.get(i).at(j));
+                    saveGD(UI_PALETTE_SELECT, UI_PALETTE_SOILROCK)
+                }, labelFunc, () => getActiveClimate().getBaseActiveToolBrightness(this.palette.get(i).at(j), 1), 1, getBaseUISize() * 0.15))
             }
         }
-        
-        // // rendering our active selection dot
-        // if (soilRockContainer.func()) {
-        //     let startY = getBaseUISize() * 35;
-        //     let arr = loadGD(UI_PALETTE_COMPOSITION);
-        //     let sumClaySilt = arr[0] + arr[1];
-
-        //     let x = 0.5;
-        //     let y = startY;
-            
-        //     if (sumClaySilt != 0) {
-                
-        //     }
-
-        //     MAIN_CONTEXT.fillStyle = COLOR_BLACK;
-        //     MAIN_CONTEXT.beginPath(); 
-        //     MAIN_CONTEXT.arc(x * sizeX, y, getBaseUISize() * 4, 0, 2 * Math.PI, false);
-        //     MAIN_CONTEXT.fill();  
-        // }
-
+        soilRockContainer.addElement(new SoilPickerDotElement(this.window, sizeX, (this.numSoilRows + 1) * h2));
         let toolRow = new Container(this.window, 0, 0);
 
         soilRockContainer.addElement(new Text(this.window, sizeX, h2, UI_CENTER, "palette"));
-        soilRockContainer.addElement(toolRow); 
+        soilRockContainer.addElement(toolRow);
 
         for (let i = 0; i < getActiveClimate().soilColors.length; i++) {
-            toolRow.addElement(new ButtonFunctionalText(this.window, sizeX / getActiveClimate().soilColors.length, buttonHeight, UI_CENTER, 
+            toolRow.addElement(new ButtonFunctionalText(this.window, sizeX / getActiveClimate().soilColors.length, buttonHeight, UI_CENTER,
                 () => {
                     let key = loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK ? UI_PALETTE_ROCKIDX : UI_PALETTE_SOILIDX;
                     saveGD(key, i)
@@ -150,7 +122,7 @@ export class BlockPalette extends Component {
         surfaceRow.addElement(new RadioToggleLabel(this.window, half, h1, UI_CENTER, "brush off", UI_PALETTE_SELECT, UI_PALETTE_SURFACE_OFF,
             () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive()));
         specialContainer.addElement(new Toggle(this.window, sizeX, h1, UI_CENTER, UI_PALETTE_SPECIAL_SHOWINDICATOR,
-            "show surface indicator", () => getActiveClimate().getUIColorInactiveCustom(0.60), () =>getActiveClimate().getUIColorTransient()));
+            "show surface indicator", () => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorTransient()));
         specialContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_SURFACE, sizeX, 35, 0.0, 1, () => "rgba(0, 0, 0, 0)", () => "#FFFFFF",));
         // end surface
 
@@ -189,8 +161,8 @@ export class BlockPalette extends Component {
         let eyedropperMixerButtonsRow = new Container(this.window, 0, 0);
         soilRockContainer.addElement(new Text(this.window, sizeX, h2, UI_CENTER, "picker tools"))
         soilRockContainer.addElement(eyedropperMixerButtonsRow);
-        eyedropperMixerButtonsRow.addElement(new Toggle(this.window, half, h1, UI_CENTER, UI_PALETTE_EYEDROPPER, "eyedropper", () => getActiveClimate().getUIColorStoneButton(0.7), () => getActiveClimate().getUIColorStoneButton(0.5)));
-        eyedropperMixerButtonsRow.addElement(new Toggle(this.window, half, h1, UI_CENTER, UI_PALETTE_MIXER, "mixer", () => getActiveClimate().getUIColorStoneButton(0.8), () => getActiveClimate().getUIColorStoneButton(0.57)));
+        eyedropperMixerButtonsRow.addElement(new RadioToggleLabel(this.window, half, h1, UI_CENTER, "eyedropper", UI_PALETTE_SELECT, UI_PALETTE_EYEDROPPER, () => getActiveClimate().getUIColorStoneButton(0.7), () => getActiveClimate().getUIColorStoneButton(0.5)));
+        eyedropperMixerButtonsRow.addElement(new RadioToggleLabel(this.window, half, h1, UI_CENTER, "mixer", UI_PALETTE_SELECT, UI_PALETTE_MIXER, () => getActiveClimate().getUIColorStoneButton(0.8), () => getActiveClimate().getUIColorStoneButton(0.57)));
 
         let strengthSizeContainer = new Container(this.window, padding, 0);
         container.addElement(strengthSizeContainer);
@@ -221,11 +193,11 @@ export class BlockPalette extends Component {
             let end = 0.5 + remMid;
             let steps = cols;
             let step = (end - start) / steps;
-            let arr = [];
+            let arr = new Array();
             for (let j = 0; j <= cols; j++) {
                 arr.push(this.getSquareComposition(start + step * j, curClay));
             }
-            this.palette[i] = arr;
+            this.palette.set(i, arr);
             curClay += clayStep;
         }
     }

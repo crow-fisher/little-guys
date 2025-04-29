@@ -2,7 +2,7 @@ import { getObjectArrFromMap } from "../common.js";
 import { ALL_SQUARES } from "../globals.js";
 import { removeSquare } from "../globalOperations.js";
 import { getOrganismsAtSquare } from "../organisms/_orgOperations.js";
-import { loadGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "../ui/UIData.js";
+import { loadGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_LIGHTING_SURFACE } from "../ui/UIData.js";
 
 let abs = Math.abs;
 let dir = -1;
@@ -41,10 +41,16 @@ function addSquareOverride(square) {
         addSquare(square);
         return;
     }
+    let prevSurfaceLightingFactor = loadGD(UI_LIGHTING_SURFACE);
     if (square.collision) {
-        existingSquares.filter((sq) => sq.collision).forEach((sq) => removeSquare(sq));
+        existingSquares.filter((sq) => sq.collision).forEach((sq) => {
+            if (sq.proto == square.proto) {
+                prevSurfaceLightingFactor = sq.surfaceLightingFactor; 
+                removeSquare(sq)
+        }});
     }
-    addSquare(square);
+    addSquare(square); 
+    square.surfaceLightingFactor = prevSurfaceLightingFactor;
     return square;
 }
 

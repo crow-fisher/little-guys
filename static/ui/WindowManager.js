@@ -4,7 +4,7 @@ import { BlockPalette } from "./components/BlockPalette.js";
 import { BlockSubtreeComponent as BlockSubtree } from "./components/BlockSubtreeComponent.js";
 import { TopBarComponent } from "./topbar/TopBarComponent.js";
 import { ViewSubtreeComponent } from "./components/ViewSubtreeComponent.js";
-import { loadGD, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_BLOCK, UI_PALETTE_ACTIVE, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveGD, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_TIME, UI_PALETTE_EYEDROPPER, UI_TOPBAR_WEATHER, UI_MAIN_NEWWORLD, saveUI, UI_UI_SIZE, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_CLIMATE_SELECT_CLOUDS, UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK } from "./UIData.js";
+import { loadGD, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_BLOCK, UI_PALETTE_ACTIVE, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveGD, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_TIME, UI_PALETTE_EYEDROPPER, UI_TOPBAR_WEATHER, UI_MAIN_NEWWORLD, saveUI, UI_UI_SIZE, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_CLIMATE_SELECT_CLOUDS, UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK, UI_PALETTE_SELECT, UI_PALETTE_SOILROCK } from "./UIData.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import { GodModeComponent } from "./components/GodModeComponent.js";
 import { getCurMixIdx, getMixArr, getMixArrLen, getTargetMixIdx, setCurMixIdx, setTargetMixIdx } from "../globals.js";
@@ -95,11 +95,8 @@ export function eyedropperBlockClick(posX, posY) {
         blockPalette.setClick(sq.sand, sq.silt, sq.clay);
         saveGD(targetIdx, sq.colorVariant);
     });
-
-    saveGD(UI_PALETTE_EYEDROPPER, false);
-
-
-    setTargetMixIdx(getCurMixIdx() + 4);
+    saveGD(UI_PALETTE_SELECT, UI_PALETTE_SOILROCK);
+    mixerReset();
 }
 
 export function mixerBlockClick(posX, posY) {
@@ -122,12 +119,17 @@ export function mixerBlockClick(posX, posY) {
             (a, b) => [(a[0] + b[0]), (a[1] + b[1]), (a[2] + b[2])],
             [0, 0, 0],
         );
-
         let sum = comp[0] + comp[1] + comp[2];
         blockPalette.setClick(comp[0] / sum, comp[1] / sum, comp[2] / sum);
-        saveGD(UI_PALETTE_MIXER, false);
+        saveGD(UI_PALETTE_SELECT, UI_PALETTE_SOILROCK);
+        mixerReset();
         return;
     }
 }
 
 addUIFunctionMap(UI_PALETTE_MIXER, () => {setCurMixIdx(getCurMixIdx() - (getCurMixIdx() % 3) + 1); setTargetMixIdx(getCurMixIdx() + getMixArrLen()); });
+
+export function mixerReset() {
+    setCurMixIdx(getCurMixIdx() - (getCurMixIdx() % 3) + 1);
+    setTargetMixIdx(getCurMixIdx() + getMixArrLen()); 
+}

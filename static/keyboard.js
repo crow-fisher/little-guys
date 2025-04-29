@@ -125,10 +125,10 @@ export function keydown(e) {
 
 
     if (e.key == 'q') {
-        saveGD(UI_PALETTE_EYEDROPPER, !loadGD(UI_PALETTE_EYEDROPPER));
+        saveGD(UI_PALETTE_SELECT, UI_PALETTE_EYEDROPPER);
     }
     if (e.key == 'w') {
-        saveGD(UI_PALETTE_MIXER, !loadGD(UI_PALETTE_MIXER));
+        saveGD(UI_PALETTE_SELECT, UI_PALETTE_MIXER);
     }
     if (e.key == "Escape") {
         resetZoom();
