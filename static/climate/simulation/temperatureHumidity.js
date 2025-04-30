@@ -277,7 +277,6 @@ function getAdjacentProp(x, y, func) {
 }
 
 function doRain() {
-    return;
     for (let x = 0; x < getWindSquaresX(); x++) {
         for (let y = 0; y < getWindSquaresY(); y++) {
             if (getAdjacentProp(x, y, (x, y) => (getHumidity(x, y) > cloudRainThresh ? 1 : 0)) < 5) {
