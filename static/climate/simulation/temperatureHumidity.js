@@ -287,7 +287,10 @@ function doRain() {
             if (adjacentHumidity < (cloudRainThresh))
                 continue;
             let rainDropProbability = ((adjacentHumidity - cloudRainThresh) / (cloudRainMax - cloudRainThresh));
-            rainDropProbability /= 10; // loadGD(UI_CLIMATE_RAINFALL_DENSITY);
+
+            let density = Math.exp(loadGD(UI_CLIMATE_RAINFALL_DENSITY));
+
+            rainDropProbability /= density;
             if (Math.random() > rainDropProbability) {
                 continue;
             }
@@ -301,7 +304,7 @@ function doRain() {
             let usedWaterPascalsPerSquare = dropPascals / 5;
             let dropHealth = dropPascals / pascalsPerWaterSquare;
 
-            dropHealth = Math.min(1, dropHealth * loadGD(UI_CLIMATE_RAINFALL_DENSITY) * 5000);
+            dropHealth = Math.min(1, dropHealth * density * 5000);
 
             let sq = addSquareByName(x * 4 + randNumber(0, 3), y * 4 + randNumber(0, 3), "water");
             if (sq) {
