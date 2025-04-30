@@ -17,20 +17,24 @@ import {
     UI_BOOLEAN, UI_TOPBAR_BLOCK, UI_TOPBAR_VIEWMODE,
     UI_TOPBAR_SIMULATION, UI_TOPBAR_LIGHTING,
     UI_TOPBAR_TIME,
-    UI_NAME, UI_TOPBAR_WEATHER
+    UI_NAME, UI_TOPBAR_WEATHER,
+    loadUI,
+    UI_UI_PHONEMODE
 } from "../UIData.js";
 import { TopBarToggle } from "./TopBarToggle.js";
 import { getLastMoveOffset } from "../../mouse.js";
 import { getCurDay, getFrameDt, millis_per_day } from "../../climate/time.js";
 import { TopBarText } from "./TopBarText.js";
 import { getCurWeather } from "../../climate/weather/weatherManager.js";
+import { getWindSquareAbove } from "../../climate/simulation/wind.js";
 
 export class TopBarComponent {
     constructor(key) {
         this.key = key;
         this.hovered = false;
         this.compact = false;
-        
+        this.phoneModeOffset = 0;
+
         this.viewAsTwoRowsWidthCutoff = getBaseUISize() * 135;
         this.veryCompactWidthCutoff = getBaseUISize() * 70;
 
@@ -138,7 +142,7 @@ export class TopBarComponent {
 
 
     ySize() {
-        return this.maxHeight + 3 * this.padding;
+        return this.maxHeight + 3 * this.padding + this.phoneModeOffset;
     }
 
     render2Row() {
@@ -150,6 +154,7 @@ export class TopBarComponent {
         let curEndX = 0;
         let curStartY = 0;
         let key = 0;
+
         let elements = this.elements[key];
         let startX = getCanvasWidth() * key;
         let totalElementsSizeX = elements.map((element) => element.measure()).map((measurements) => measurements[0] + this.padding).reduce(
@@ -202,7 +207,7 @@ export class TopBarComponent {
             for (let i = 0; i < elements.length; i++) {
                 let element = elements[i];
                 let measurements = element.measure();
-                element.render(startX, this.padding + measurements[1]);
+                element.render(startX, this.phoneModeOffset + this.padding + measurements[1]);
                 this.elementPositions[key][i] = startX;
                 startX += measurements[0] + this.padding;
                 curEndX = startX;
@@ -214,10 +219,12 @@ export class TopBarComponent {
         if (!loadGD(this.key)) {
             return;
         }
+        
+        this.phoneModeOffset = (loadUI(UI_UI_PHONEMODE) ? getBaseUISize() * 3 : 0);
 
         let shouldRenderAsTwoRows = getCanvasWidth() < this.viewAsTwoRowsWidthCutoff;
         MAIN_CONTEXT.fillStyle = COLOR_BLACK;
-        MAIN_CONTEXT.fillRect(0, 0, getCanvasWidth() + 10, this.ySize());
+        MAIN_CONTEXT.fillRect(0, this.phoneModeOffset, getCanvasWidth() + 10, this.ySize() - this.phoneModeOffset);
         this.render1Row();
         // if (shouldRenderAsTwoRows) {
         //     this.render2Row();
@@ -246,7 +253,7 @@ export class TopBarComponent {
         }
         
         let x = curMouseLocation.x;
-        let y = curMouseLocation.y;
+        let y = curMouseLocation.y - this.phoneModeOffset;
 
         if (y > this.maxHeight + (getBaseUISize())) {
             return;
