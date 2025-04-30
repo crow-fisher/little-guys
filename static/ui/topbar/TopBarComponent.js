@@ -21,7 +21,7 @@ import {
 } from "../UIData.js";
 import { TopBarToggle } from "./TopBarToggle.js";
 import { getLastMoveOffset } from "../../mouse.js";
-import { getCurDay, millis_per_day } from "../../climate/time.js";
+import { getCurDay, getFrameDt, millis_per_day } from "../../climate/time.js";
 import { TopBarText } from "./TopBarText.js";
 import { getCurWeather } from "../../climate/weather/weatherManager.js";
 
@@ -66,7 +66,7 @@ export class TopBarComponent {
             this.midSpacingEl,
             new TopBarToggle(fontSize, "left", UI_TOPBAR_TIME, UI_BOOLEAN,() => this.textDateTime(), getBaseUISize() * 26.404296875),
             new TopBarToggle(fontSize, "left", UI_TOPBAR_WEATHER, UI_BOOLEAN, () => " | " + this.textWeather()),
-            
+            new TopBarText(fontSize, "left", () => " | " + this.textFps())
         ];
 
         Object.keys(this.elements).forEach((key) => this.elementPositions[key] = new Array(this.elements[key].length));
@@ -128,6 +128,12 @@ export class TopBarComponent {
             return curDate.toLocaleTimeString("en-US");
         } else {
         }
+    }
+
+    textFps() {
+        let frameTime = getFrameDt();
+        let fps = (1 / (frameTime / 1000));
+        return fps.toFixed(1) + " fps"
     }
 
 

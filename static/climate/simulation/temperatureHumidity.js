@@ -193,7 +193,7 @@ function humidityDiffFunction(x, y, x2, y2, high, low) {
     let humidity2 = getHumidity(x2, y2); // 0.8
 
     let humidityDiff = humidity1 - humidity2; // 0.2 - 0.8 = -0.6;
-
+    
     let square1PascalsForHumidityDiff = getWindPressureSquareDensity(x, y) * saturationPressureOfWaterVapor(temperatureMap[x][y]) * Math.abs(humidityDiff / 2);
     let square2PascalsForHumidityDiff = getWindPressureSquareDensity(x2, y2) * saturationPressureOfWaterVapor(temperatureMap[x2][y2]) * Math.abs(humidityDiff / 2);
 

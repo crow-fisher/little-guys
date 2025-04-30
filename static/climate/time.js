@@ -351,8 +351,8 @@ function updateTime() {
     if (dtRollingAverage == 0) {
         dtRollingAverage = dt;
     } else if (document.hasFocus()) {
-        dtRollingAverage *= 0.99;
-        dtRollingAverage += .01 * dt;
+        dtRollingAverage *= 0.95;
+        dtRollingAverage += .05 * dt;
     }
     if (dt > 10000) {
         prevRealTime = Date.now();

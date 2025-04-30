@@ -5,7 +5,7 @@ import { getWindSquaresX, getWindSquaresY } from "./wind.js";
 
 
 let windThrottleMap = new Map();
-let maxDiff = 0.0001;
+let maxDiff = 0.001;
 let rollPeriod = 2;
 
 export function initWindThrottleMap() {
@@ -23,7 +23,7 @@ export function registerWindThrottlerOutput(x, y, start, end) {
     diff = Math.min(diff, maxDiff);
     let p = diff / maxDiff;
     let cur = windThrottleMap.get(x).get(y);
-    cur = Math.max(0.2, (cur * (rollPeriod - 1) + p) / rollPeriod);
+    cur = Math.max(0.05, (cur * (rollPeriod - 1) + p) / rollPeriod);
     windThrottleMap.get(x).set(y, cur);
 }
 
