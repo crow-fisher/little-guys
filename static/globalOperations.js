@@ -1,4 +1,4 @@
-import { getSqIterationOrder } from "./squares/_sqOperations.js";
+import { getSqIterationOrder, iterateOnSquares } from "./squares/_sqOperations.js";
 import { iterateOnOrganisms } from "./organisms/_orgOperations.js";
 import {
     ALL_SQUARES, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES, resetWaterflowSquares
@@ -14,6 +14,23 @@ import { resetFrameGroupCache } from "./waterGraph.js";
 let frame_squares = null;
 let frame_solid_squares = null;
 let frame_water_squares = null;
+
+let groupMinPosYMap = new Map();
+
+export function getGroupMinPosY(group) {
+    return groupMinPosYMap.get(group);
+}
+
+export function saveGroupMinHeight(group, posY) {
+    groupMinPosYMap.set(group, Math.min((groupMinPosYMap.get(group) ?? 10 ** 8), posY));
+}
+
+export function periodicPurgeOldGroupData() {
+    if (groupMinPosYMap.size() > 10000) {
+        groupMinPosYMap.clear();
+        iterateOnSquares((sq) => saveGroupMinHeight(sq.group, sq.posY));
+    }
+}
 
 export function reset() {
     resetWaterflowSquares();

@@ -9,6 +9,7 @@ import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
 import { getActiveClimate } from "../climate/climateManager.js";
 import { getDefaultLighting } from "../lighting/lightingProcessing.js";
 import { deregisterSquare, isGroupContiguous, registerSquare } from "../waterGraph.js";
+import { getGroupMinPosY } from "../globalOperations.js";
 class WaterSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
@@ -151,32 +152,7 @@ class WaterSquare extends BaseSquare {
     }
 
     calculateIndirectPressure() {
-        if (this.currentPressureIndirect != -1) {
-            return;
-        }
-
-        if (this.blockHealth < this.blockHealthMax / 10) {
-            this.currentPressureIndirect = 10 ** 8;
-            return;
-        }
-
-        let perGroupData = new Map();
-        iterateOnSquares((sq) => {
-            if (sq.proto != this.proto) {
-                return;
-            }
-            if (!(sq.group in perGroupData)) {
-                perGroupData[sq.group] = 10 ** 8;
-            }
-            perGroupData[sq.group] = Math.min(sq.posY, perGroupData[sq.group])
-        });
-
-        iterateOnSquares((sq) => {
-            if (sq.proto != this.proto) {
-                return;
-            }
-            sq.currentPressureIndirect = Math.max(sq.currentPressureDirect, sq.posY - perGroupData[sq.group]);
-        })
+        this.currentPressureIndirect = this.posY - getGroupMinPosY(this.group);
     }
 
 
