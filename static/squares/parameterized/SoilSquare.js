@@ -275,6 +275,14 @@ export class SoilSquare extends BaseSquare {
             return;
         }
 
+        if (this.currentPressureDirect > 7) {
+            return;
+        }
+
+        if (Math.random() < 0.8) {
+            return;
+        }
+
         let min = 0.7 * (this.getWaterflowRate() ** 0.3);
         let max = 1.5 * (this.getWaterflowRate() ** 0.3);
 
@@ -302,6 +310,7 @@ export class SoilSquare extends BaseSquare {
         return cachedGetWaterflowRate(this.sand, this.silt, this.clay);
     }
     triggerParticles(bonkSpeed) {
+        return;
         if (Date.now() < this.spawnTime + 100) {
             return;
         }

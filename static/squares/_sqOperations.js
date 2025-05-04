@@ -27,14 +27,14 @@ function* getNeighbors(x, y) {
 }
 
 
-function addSquare(square) {
-    if (!square.organic && square.collision && getSquares(square.posX, square.posY).some((sq) => sq.testCollidesWithSquare(square))) {
+function addSquare(sq) {
+    if (!sq.organic && sq.collision && getSquares(sq.posX, sq.posY).some((sq) => sq.testCollidesWithSquare(sq))) {
         return false;
     }
-    getSquares(square.posX, square.posY, true).push(square);
-    registerSqIterationRowChange(square.posY);
-
-    return square;
+    getSquares(sq.posX, sq.posY, true).push(sq);
+    registerSqIterationRowChange(sq.posY);
+    registerSqColChange(sq.posX);
+    return sq;
 }
 
 function addSquareOverride(square) {
@@ -93,6 +93,10 @@ function processSqIterationOrderChanges() {
     }
 }
 
+export function isSqRowChanged(y) {
+    return sqIterationOrderChangeMap.get(y);
+}
+
 function sqIterationRowChange(y) {
     sqIterationOrderMap.set(y, new Array());
     for (let i = 0; i < loadGD(UI_GAME_MAX_CANVAS_SQUARES_X); i++) {
@@ -111,6 +115,24 @@ export function* getSqIterationOrder() {
             }
         }
     }
+}
+
+const sqColChangeMap = new Map();
+
+export function isSqColChanged(x) {
+    return sqColChangeMap.get(x) > 0;
+}
+
+export function registerSqColChange(x) {
+    if (!sqColChangeMap.has(x)) {
+        sqColChangeMap.set(x, 0);
+    }
+    sqColChangeMap.set(x,  Math.min(2, sqColChangeMap.get(x) + 1));
+}
+
+
+export function resetSqColChangeMap() {
+    sqColChangeMap.keys().forEach((key) => sqColChangeMap.set(key, Math.max(0, sqColChangeMap.get(key) - 1)));
 }
 
 /**

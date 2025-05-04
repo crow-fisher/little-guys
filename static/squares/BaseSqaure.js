@@ -1,6 +1,6 @@
 
 
-import { getNeighbors, addSquare, getSquares } from "./_sqOperations.js";
+import { getNeighbors, addSquare, getSquares, isSqColChanged, isSqRowChanged } from "./_sqOperations.js";
 import {
     getNextGroupId,
     getMixArrLen,
@@ -196,7 +196,6 @@ export class BaseSquare {
         if (this.blockHealth <= 0) {
             removeSquare(this);
         }
-        this.currentPressureDirect = -1;
         this.groupSetThisFrame = false;
 
     }
@@ -389,6 +388,7 @@ export class BaseSquare {
     }
 
     processParticles() {
+        return;
         let next = new Array();
         this.activeParticles.forEach((partArr) => {
             partArr[0] += partArr[3]; // px
@@ -422,7 +422,13 @@ export class BaseSquare {
             this.opacity = loadGD(UI_LIGHTING_WATER_OPACITY);
         }
 
-        let minTime = 2000;
+        let minTime = 8000;
+        if (isSqColChanged(this.posX)) {
+            minTime /= 4;
+        }
+        if (isSqRowChanged(this.posY)) {
+            minTime /= 4;
+        }
         
         if (
             (opacityMult != this.lastColorCacheOpacity) ||
@@ -504,6 +510,8 @@ export class BaseSquare {
         this.posX = newPosX;
         this.posY = newPosY;
         addSquare(this);
+
+        this.shouldDefinitelyFall = true;
         return true;
     }
 
@@ -617,9 +625,12 @@ export class BaseSquare {
     }
 
     gravityPhysics() {
+        if (!this.shouldDefinitelyFall && !isSqColChanged(this.posX) && Math.random() < 0.9) 
+            return;
         if (!this.shouldFallThisFrame()) {
             return;
         }
+        this.shouldDefinitelyFall = false;
         let shouldResetGroup = false;
         if (isGroupGrounded(this.group) && this.currentPressureDirect > 10) {
             if (Math.random() < 1 - (1 / this.currentPressureDirect) && !getSquares(this.posX, this.posY + 2).some((sq) => sq.testCollidesWithSquare(this))) {
@@ -736,27 +747,27 @@ export class BaseSquare {
     }
 
     calculateDirectPressure() {
+        if (!isSqColChanged(this.posX)) {
+            return;
+        }
+        this.currentPressureDirect = -1;
         if (this.gravity == 0) {
             this.currentPressureDirect = 0;
             return this.currentPressureDirect;
         }
-        if (this.currentPressureDirect != -1) {
-            return this.currentPressureDirect;
-        } else {
-            let filtered = getSquares(this.posX, this.posY - 1)
-                .filter((sq) => sq.collision && sq.gravity > 0)
-                .filter((sq) => sq.solid == this.solid);
+        let filtered = getSquares(this.posX, this.posY - 1)
+            .filter((sq) => sq.collision && sq.gravity > 0)
+            .filter((sq) => sq.solid == this.solid);
 
-            if (filtered.some((sq) => true)) {
-                this.currentPressureDirect = filtered
-                    .map((sq) => 1 + sq.calculateDirectPressure())
-                    .reduce(
-                        (accumulator, currentValue) => accumulator + currentValue,
-                        0,
-                    );
-            } else {
-                this.currentPressureDirect = 0;
-            }
+        if (filtered.some((sq) => true)) {
+            this.currentPressureDirect = filtered
+                .map((sq) => 1 + sq.calculateDirectPressure())
+                .reduce(
+                    (accumulator, currentValue) => accumulator + currentValue,
+                    0,
+                );
+        } else {
+            this.currentPressureDirect = 0;
         }
         return this.currentPressureDirect;
     }

@@ -8,7 +8,7 @@ import { renderWindPressureMap } from "./climate/simulation/wind.js";
 import { LightingHandler } from "./lighting/lightingHandler.js";
 import { ClimateHandler } from "./climate/climateHandler.js";
 import { isLeftMouseClicked } from "./mouse.js";
-import { iterateOnSquares } from "./squares/_sqOperations.js";
+import { iterateOnSquares, resetSqColChangeMap } from "./squares/_sqOperations.js";
 import { doPeriodicSave, isSaveOrLoadInProgress } from "./saveAndLoad.js";
 import { renderThrottleMap } from "./climate/simulation/throttler.js";
  
@@ -40,6 +40,7 @@ export function resetClimateAndLighting() {
 
 export function scheduler_main() {
     if (!isSaveOrLoadInProgress()) {
+        resetSqColChangeMap();
         updateTime();
         doClickAdd();
         doClickAddEyedropperMixer();
