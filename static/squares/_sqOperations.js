@@ -32,6 +32,8 @@ function addSquare(square) {
         return false;
     }
     getSquares(square.posX, square.posY, true).push(square);
+    registerSqIterationRowChange(square.posY);
+
     return square;
 }
 
@@ -68,22 +70,48 @@ function getFrameIterationOrder() {
 
 let frameOrder = getFrameIterationOrder();
 
+const sqIterationOrderMap = new Map();
+const sqIterationOrderChangeMap = new Map();
 
-function getSqIterationOrder() {
+function sqOrderCmp(sq) {
     if (frameOrder.length != loadGD(UI_GAME_MAX_CANVAS_SQUARES_X)) {
         frameOrder = getFrameIterationOrder();
     }
-    let squareOrder = [];
-    for (let i = 0; i < loadGD(UI_GAME_MAX_CANVAS_SQUARES_X); i++) {
-        for (let j = 0; j < loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y); j++) {
-            squareOrder.push(...getSquares(i, j))
-        }
-    }
-    let cmp = (sq) => ((sq.solid ? frameOrder[sq.posX] : sq.posX) + sq.posY * loadGD(UI_GAME_MAX_CANVAS_SQUARES_X))
-    squareOrder.sort((b, a) => cmp(a) - cmp(b));
-    return squareOrder;
+    return ((sq.solid ? frameOrder[sq.posX] : sq.posX) + sq.posY * loadGD(UI_GAME_MAX_CANVAS_SQUARES_X));
 }
 
+export function registerSqIterationRowChange(y) {
+    sqIterationOrderChangeMap.set(y, true);
+}
+
+function processSqIterationOrderChanges() {
+    for (let y = 0; y < loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y); y++) {
+        if (sqIterationOrderChangeMap.get(y)) {
+            sqIterationRowChange(y);
+            sqIterationOrderChangeMap.set(y, false);
+        }
+    }
+}
+
+function sqIterationRowChange(y) {
+    sqIterationOrderMap.set(y, new Array());
+    for (let i = 0; i < loadGD(UI_GAME_MAX_CANVAS_SQUARES_X); i++) {
+        sqIterationOrderMap.get(y).push(...getSquares(i, y));
+    }
+    sqIterationOrderMap.get(y).sort((b, a) => sqOrderCmp(a) - sqOrderCmp(b));
+}
+
+export function* getSqIterationOrder() {
+    processSqIterationOrderChanges();
+    for (let y = loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y); y >= 0; y--) {
+        if (sqIterationOrderMap.has(y)) {
+            let arr = sqIterationOrderMap.get(y);
+            for (let i = 0; i < arr.length; i++) {
+                yield arr[i];
+            }
+        }
+    }
+}
 
 /**
  * @param {function} func - applies provided function to all squares
@@ -110,4 +138,4 @@ function removeSquarePos(x, y) {
 }
 
 
-export {getSqIterationOrder, getNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares, removeSquarePos};
+export {getNeighbors, addSquare, addSquareOverride, getSquares, getCollidableSquareAtLocation, iterateOnSquares, removeSquarePos};

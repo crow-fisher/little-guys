@@ -18,7 +18,7 @@ let frame_water_squares = null;
 export function reset() {
     resetWaterflowSquares();
     resetFrameGroupCache();
-    frame_squares = getSqIterationOrder();
+    frame_squares = Array.from(getSqIterationOrder());
     frame_solid_squares = frame_squares.filter((sq) => sq.solid);
     frame_water_squares = frame_squares.filter((sq) => !sq.solid);
     frame_squares.forEach((sq) => sq.reset());
