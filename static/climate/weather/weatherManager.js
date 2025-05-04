@@ -20,7 +20,9 @@ export function getCurWeather() {
     return curWeather;
 }
 export function getCurWeatherInterval() {
-    return ((curWeatherInterval) - (getCurDay() - curWeatherStartTime)) / 0.000694444;
+    let int = ((curWeatherInterval) - (getCurDay() - curWeatherStartTime)) / 0.000694444;
+    int -= getCurDay() % (0.000694444 / 60);
+    return int;
 }
 
 let curClouds = [];
@@ -246,7 +248,11 @@ export function initWeather() {
 function applyUIWeatherChange() {
     curWeather = ui_weatherMap.get(loadGD(UI_CLIMATE_WEATHER_ACTIVE));
     curWeatherInterval = randRange(	7 / loadGD(UI_SIMULATION_GENS_PER_DAY), 16 / loadGD(UI_SIMULATION_GENS_PER_DAY));
+    curWeatherInterval -= curWeatherInterval % (0.000694444 / 60);
+
     curWeatherStartTime = getCurDay();
+    curWeatherStartTime -= curWeatherStartTime % (0.000694444 / 60);
+
     console.log("Next weather: ", curWeather.type + ", for " + Math.round(curWeatherInterval / 0.000694444) + " minutes")
 }
 

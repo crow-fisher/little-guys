@@ -116,6 +116,18 @@ export class TopBarComponent {
     }
 
     textWeather() {
+        if (this.weatherStringCache == null) {
+            this.weatherStringCache = this._textWeather();
+            this.nextWeatherStringCache = this._textWeather();
+        }
+        if (this.shouldUpdate) {
+            this.weatherStringCache = this.nextWeatherStringCache;
+            this.nextWeatherStringCache = this._textWeather();
+        }
+        return this.weatherStringCache;
+    }
+
+    _textWeather() {
         if (this.compact) {
             return getCurWeather().weatherStringShort();
         } else {
@@ -128,6 +140,16 @@ export class TopBarComponent {
         let dayMillis = curDay * millis_per_day;
         dayMillis -= (dayMillis % 1000);
         let curDate = new Date(dayMillis);
+        let curSecond = Math.floor(curDate.getSeconds());
+        let test = this.numSquareCountSecond == null || curSecond != this.numSquareCountSecond;
+        if (test) {
+            this.shouldUpdate = 2;
+            this.numSquareCountSecond = curSecond;
+        } else {
+            this.shouldUpdate = Math.max(0, this.shouldUpdate - 1);
+        }
+        console.log("root set " + this.shouldUpdate);
+
         return curDate.toLocaleString("en-US");
         if (this.compact) {
             return curDate.toLocaleTimeString("en-US");
@@ -136,21 +158,13 @@ export class TopBarComponent {
     }
 
     textFps() {
+        console.log("fps " + this.shouldUpdate);
         let frameTime = getFrameDt();
         let fps = (1 / (frameTime / 1000));
 
-        let curDay = getCurDay();
-        let dayMillis = curDay * millis_per_day;
-        // dayMillis -= (dayMillis % 1000);
-        let curDate = new Date(dayMillis);
-        let curSecond = Math.floor(curDate.getSeconds() * 2);
-        
-        let shouldUpdate = (this.numSquareCount == null) || curSecond != this.numSquareCountSecond;
-
-        if (shouldUpdate) {
+        if (this.shouldUpdate) {
             this.numSquareCount = Array.from(getSqIterationOrder()).length;
-            this.numSquareCountSecond = curSecond;
-            this.fpsCache = fps.toFixed(1);
+            this.fpsCache = Math.round(fps);
         }
 
         return this.fpsCache + " fps" + " | " + this.numSquareCount + " squares"
