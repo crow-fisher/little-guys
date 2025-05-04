@@ -28,8 +28,8 @@ let base_wind_pressure = 101325; // 1 atm in pascals
 
 let windSpeedSmoothingMap = new Map();
 
-let WIND_SQUARES_X = () => Math.ceil(loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) / 4);
-let WIND_SQUARES_Y = () => Math.ceil(loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y) / 4);
+let WIND_SQUARES_X = () => Math.ceil(getCanvasSquaresX() / 4);
+let WIND_SQUARES_Y = () => Math.ceil(getCanvasSquaresY() / 4);
 
 let curWindSquaresX = -1;
 let curWindSquaresY = -1;
