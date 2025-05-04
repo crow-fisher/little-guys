@@ -46,10 +46,9 @@ function addSquareOverride(square) {
     let prevSurfaceLightingFactor = loadGD(UI_LIGHTING_SURFACE);
     if (square.collision) {
         existingSquares.filter((sq) => sq.collision).forEach((sq) => {
-            if (sq.proto == square.proto) {
-                prevSurfaceLightingFactor = sq.surfaceLightingFactor; 
-                removeSquare(sq)
-        }});
+            prevSurfaceLightingFactor = sq.surfaceLightingFactor; 
+            removeSquare(sq)
+        });
     }
     addSquare(square); 
     square.surfaceLightingFactor = prevSurfaceLightingFactor;

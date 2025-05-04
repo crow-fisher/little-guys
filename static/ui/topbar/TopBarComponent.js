@@ -27,6 +27,7 @@ import { getCurDay, getFrameDt, millis_per_day } from "../../climate/time.js";
 import { TopBarText } from "./TopBarText.js";
 import { getCurWeather } from "../../climate/weather/weatherManager.js";
 import { getWindSquareAbove } from "../../climate/simulation/wind.js";
+import { getSqIterationOrder } from "../../squares/_sqOperations.js";
 
 export class TopBarComponent {
     constructor(key) {
@@ -137,7 +138,22 @@ export class TopBarComponent {
     textFps() {
         let frameTime = getFrameDt();
         let fps = (1 / (frameTime / 1000));
-        return fps.toFixed(1) + " fps"
+
+        let curDay = getCurDay();
+        let dayMillis = curDay * millis_per_day;
+        // dayMillis -= (dayMillis % 1000);
+        let curDate = new Date(dayMillis);
+        let curSecond = Math.floor(curDate.getSeconds() * 2);
+        
+        let shouldUpdate = (this.numSquareCount == null) || curSecond != this.numSquareCountSecond;
+
+        if (shouldUpdate) {
+            this.numSquareCount = Array.from(getSqIterationOrder()).length;
+            this.numSquareCountSecond = curSecond;
+            this.fpsCache = fps.toFixed(1);
+        }
+
+        return this.fpsCache + " fps" + " | " + this.numSquareCount + " squares"
     }
 
 

@@ -1,4 +1,4 @@
-import { getSqIterationOrder, iterateOnSquares, registerSqColChange } from "./squares/_sqOperations.js";
+import { getSqIterationOrder, iterateOnSquares, registerSqColChange, registerSqIterationRowChange } from "./squares/_sqOperations.js";
 import { iterateOnOrganisms } from "./organisms/_orgOperations.js";
 import {
     ALL_SQUARES, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES, resetWaterflowSquares
@@ -73,6 +73,7 @@ export function removeSquare(sq) {
             ALL_SQUARES.get(sq.posX).delete(sq.posY);
     }
     registerSqColChange(sq.posX);
+    registerSqIterationRowChange(sq.posY);
 }
 
 export function purgeCanvasFrameLimit() {
