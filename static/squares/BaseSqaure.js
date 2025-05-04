@@ -59,6 +59,7 @@ export class BaseSquare {
         this.speedY = 0;
         this.rootable = false;
         this.group = -1;
+        this.groupSetThisFrame =false;
         this.organic = false;
         this.collision = true;
         this.visible = true;
@@ -196,6 +197,7 @@ export class BaseSquare {
             removeSquare(this);
         }
         this.currentPressureDirect = -1;
+        this.groupSetThisFrame = false;
 
     }
     render() {
@@ -511,7 +513,8 @@ export class BaseSquare {
 
         getNeighbors(this.posX, this.posY)
             .filter((sq) => sq.proto == this.proto)
-            .filter((sq) => sq.posY <= this.posY) 
+            .filter((sq) => sq.posY <= this.posY)
+            .filter((sq) => !sq.groupSetThisFrame)
             .forEach((sq) => toVisit.add(sq));
 
         toVisit.forEach((sq) => {
@@ -521,13 +524,14 @@ export class BaseSquare {
                 regSquareToGroup(sq.group, -1);
                 deregisterSquare(sq.posX, sq.posY, sq.group);
                 sq.group = this.group;
+                sq.groupSetThisFrame = true;
                 regSquareToGroup(sq.group);
                 registerSquare(sq.posX, sq.posY, sq.group);
-
                 visited.add(sq);
                 getNeighbors(sq.posX, sq.posY)
                     .filter((ssq) => ssq.proto == sq.proto)
                     .filter((sq) => !sq.solid || sq.posY <= this.posY)
+                    .filter((sq) => !sq.groupSetThisFrame)
                     .forEach((ssq) => toVisit.add(ssq));
             }
         })
