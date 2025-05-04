@@ -279,6 +279,7 @@ let _UI_DEFAULT = {
     UI_UI_WORLDNAME: {},
     UI_UI_LASTSAVED: Date.now(),
     UI_UI_WORLDPAGE: 0,
+    UI_PALETTE_SPECIAL_SHOWINDICATOR: true
 }
 
 export const GAMEDATA = "GAMEDATA";

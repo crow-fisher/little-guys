@@ -148,7 +148,6 @@ export class TopBarComponent {
         } else {
             this.shouldUpdate = Math.max(0, this.shouldUpdate - 1);
         }
-        console.log("root set " + this.shouldUpdate);
 
         return curDate.toLocaleString("en-US");
         if (this.compact) {
@@ -158,7 +157,6 @@ export class TopBarComponent {
     }
 
     textFps() {
-        console.log("fps " + this.shouldUpdate);
         let frameTime = getFrameDt();
         let fps = (1 / (frameTime / 1000));
 

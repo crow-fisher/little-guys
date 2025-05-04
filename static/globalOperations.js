@@ -147,7 +147,7 @@ export function doWaterFlow() {
                     return;
                 }
 
-                if (PTarg < 2 || Math.random() > (0.8) ** (PTarg - pCand)) {
+                if (PTarg < 2 || Math.random() > (0.99) ** (PTarg - pCand)) {
                     let startX = candidate.posX;
                     if (candidate.updatePosition(curTarget[0], curTarget[1])) {
                         let side = (curTarget[0] - startX) > 0 ? 1 : -1;

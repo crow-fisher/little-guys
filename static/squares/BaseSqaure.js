@@ -162,7 +162,7 @@ export class BaseSquare {
         let diff = (adjacentTemp - this.temperature);
         diff /= temperatureHumidityFlowrateFactor();
         diff /= 50;
-        diff /= (1 + this.currentPressureDirect);
+        diff /= Math.max(1, (1 + this.currentPressureDirect));
         this.temperature += diff;
         updateWindSquareTemperature(x, y, getTemperatureAtWindSquare(x, y) - (diff / 4));
     }
