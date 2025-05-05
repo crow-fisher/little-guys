@@ -275,10 +275,6 @@ export class SoilSquare extends BaseSquare {
             return;
         }
 
-        if (this.currentPressureDirect > 7) {
-            return;
-        }
-
         if (Math.random() < 0.8) {
             return;
         }

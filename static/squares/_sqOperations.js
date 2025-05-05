@@ -32,8 +32,11 @@ function addSquare(sq) {
         return false;
     }
     getSquares(sq.posX, sq.posY, true).push(sq);
-    registerSqIterationRowChange(sq.posY);
-    registerSqColChange(sq.posX);
+
+    if ((sq.proto != "PlantSquare")) {
+        registerSqIterationRowChange(sq.posY);
+        registerSqColChange(sq.posX);
+    }
     return sq;
 }
 

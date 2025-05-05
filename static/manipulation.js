@@ -232,7 +232,7 @@ export function doClickAdd() {
             } else if (loadGD(UI_PALETTE_ACTIVE)) {
                 let mode = loadGD(UI_PALETTE_MODE);
                 let selectMode = loadGD(UI_PALETTE_SELECT);
-                if (selectMode == UI_PALETTE_ERASE || isRightMouseClicked()) {
+                if (selectMode != UI_PALETTE_SURFACE && (selectMode == UI_PALETTE_ERASE || isRightMouseClicked())) {
                     doBrushFunc(px, py, (x, y) => removeSquarePos(x, y));
                     continue;
                 } else if (selectMode == UI_PALETTE_SOILROCK) {

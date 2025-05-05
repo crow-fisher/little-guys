@@ -633,7 +633,7 @@ export class BaseSquare {
         this.shouldDefinitelyFall = false;
         let shouldResetGroup = false;
         if (isGroupGrounded(this.group) && this.currentPressureDirect > 10) {
-            if (Math.random() < 1 - (1 / this.currentPressureDirect) && !getSquares(this.posX, this.posY + 2).some((sq) => sq.testCollidesWithSquare(this))) {
+            if ((Math.random() * 1.5) < 1 - (1 / this.currentPressureDirect) && !getSquares(this.posX, this.posY + 2).some((sq) => sq.testCollidesWithSquare(this))) {
                 return;
             }
             shouldResetGroup = true;
@@ -642,7 +642,7 @@ export class BaseSquare {
             if (this.shouldFallThisFrame()) {
                 this.speedY += (1 / this.gravity);
             }
-        }
+        }1
         let finalXPos = this.posX;
         let finalYPos = this.posY;
         let bonked = false;

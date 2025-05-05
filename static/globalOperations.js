@@ -72,8 +72,10 @@ export function removeSquare(sq) {
         if ((ALL_SQUARES).has(sq.posX) && ALL_SQUARES.get(sq.posX).has(sq.posY))
             ALL_SQUARES.get(sq.posX).delete(sq.posY);
     }
-    registerSqColChange(sq.posX);
-    registerSqIterationRowChange(sq.posY);
+    if (sq.proto != "PlantSquare") {
+        registerSqIterationRowChange(sq.posY);
+        registerSqColChange(sq.posX);
+    }
 }
 
 export function purgeCanvasFrameLimit() {

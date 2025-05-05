@@ -2,7 +2,7 @@ import { MAIN_CONTEXT } from "../index.js";
 import { hexToRgb, hsv2rgb, rgb2hsv, rgbToHex, rgbToRgba } from "../common.js";
 
 import { getCurTime, getDaylightStrengthFrameDiff } from "../climate/time.js";
-import { addSquare, getSquares } from "../squares/_sqOperations.js";
+import { addSquare, getSquares, isSqColChanged, isSqRowChanged } from "../squares/_sqOperations.js";
 
 import { RGB_COLOR_BLUE, RGB_COLOR_BROWN, RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED, RGB_COLOR_GREEN } from "../colors.js";
 import { removeSquare } from "../globalOperations.js";
@@ -295,9 +295,18 @@ class BaseLifeSquare {
     }
 
     renderWithVariedColors(frameOpacity) {
+
+        let minTime = 8000;
+        if (isSqColChanged(Math.floor(this.getPosX()))) {
+            minTime /= 4;
+        }
+        if (isSqRowChanged(Math.floor(this.getPosY()))) {
+            minTime /= 4;
+        }
+
         if (
             (frameOpacity != this.lastColorCacheOpacity) ||
-            (Date.now() > this.lastColorCacheTime + 2500 * Math.random()) ||
+            (Date.now() > this.lastColorCacheTime + minTime * Math.random()) ||
             Math.abs(getDaylightStrengthFrameDiff()) > 0.01) {
             this.lastColorCacheTime = Date.now();
             this.lastColorCacheOpacity = frameOpacity;
