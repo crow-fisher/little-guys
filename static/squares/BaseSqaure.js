@@ -422,7 +422,7 @@ export class BaseSquare {
             this.opacity = loadGD(UI_LIGHTING_WATER_OPACITY);
         }
 
-        let minTime = 8000;
+        let minTime = getFrameDt() * 128;
         if (isSqColChanged(this.posX)) {
             minTime /= 4;
         }
@@ -472,7 +472,7 @@ export class BaseSquare {
                 ((this.offsetY + this.posY) + 0.5) * getBaseSize(),
                 this.mixIdx % getMixArrLen());
         }
-        this.renderParticles();
+        // this.renderParticles();
     }
     updatePosition(newPosX, newPosY) {
         if (newPosX == this.posX && newPosY == this.posY) {
@@ -625,12 +625,14 @@ export class BaseSquare {
     }
 
     gravityPhysics() {
-        if (!this.shouldDefinitelyFall && !isSqColChanged(this.posX) && Math.random() < 0.9) 
-            return;
         if (!this.shouldFallThisFrame()) {
             return;
         }
-        this.shouldDefinitelyFall = false;
+        if (getSquares(this.posX, this.posY + 1).some((sq) => sq.testCollidesWithSquare(this))) {
+            this.speedY = 0;
+            this.speedX = 0;
+            return;
+        }
         let shouldResetGroup = false;
         if (isGroupGrounded(this.group) && this.currentPressureDirect > 10) {
             if ((Math.random() * 1.5) < 1 - (1 / this.currentPressureDirect) && !getSquares(this.posX, this.posY + 2).some((sq) => sq.testCollidesWithSquare(this))) {
@@ -756,19 +758,13 @@ export class BaseSquare {
             return this.currentPressureDirect;
         }
         let filtered = getSquares(this.posX, this.posY - 1)
-            .filter((sq) => sq.collision && sq.gravity > 0)
-            .filter((sq) => sq.solid == this.solid);
-
-        if (filtered.some((sq) => true)) {
-            this.currentPressureDirect = filtered
-                .map((sq) => 1 + sq.calculateDirectPressure())
-                .reduce(
-                    (accumulator, currentValue) => accumulator + currentValue,
-                    0,
-                );
+            .find((sq) => sq.proto == this.proto);
+        if (filtered != null) {
+            this.currentPressureDirect = filtered.calculateDirectPressure() + 1;
         } else {
             this.currentPressureDirect = 0;
         }
+
         return this.currentPressureDirect;
     }
 

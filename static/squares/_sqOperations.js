@@ -129,7 +129,7 @@ export function registerSqColChange(x) {
     if (!sqColChangeMap.has(x)) {
         sqColChangeMap.set(x, 0);
     }
-    sqColChangeMap.set(x,  Math.min(2, sqColChangeMap.get(x) + 1));
+    sqColChangeMap.set(x,  Math.min(10, sqColChangeMap.get(x) + 1));
 }
 
 
