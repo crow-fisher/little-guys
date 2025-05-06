@@ -510,8 +510,6 @@ export class BaseSquare {
         this.posX = newPosX;
         this.posY = newPosY;
         addSquare(this);
-
-        this.shouldDefinitelyFall = true;
         return true;
     }
 
