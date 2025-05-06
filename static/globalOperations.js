@@ -74,7 +74,7 @@ export function removeSquare(sq) {
     }
     if (sq.proto != "PlantSquare") {
         registerSqIterationRowChange(sq.posY);
-        registerSqColChange(sq.posX);
+        registerSqColChange(sq.posX, sq.posY);
     }
 }
 

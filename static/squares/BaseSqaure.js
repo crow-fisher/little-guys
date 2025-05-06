@@ -629,6 +629,7 @@ export class BaseSquare {
         if (getSquares(this.posX, this.posY + 1).some((sq) => sq.testCollidesWithSquare(this))) {
             this.speedY = 0;
             this.speedX = 0;
+            this.hasBonked = true;
             return;
         }
         let shouldResetGroup = false;
@@ -719,8 +720,8 @@ export class BaseSquare {
 
     physics() {
         if (getTimeScale() != 0) {
-            this.gravityPhysics();
             this.slopePhysics();
+            this.gravityPhysics();
             this.percolateInnerMoisture();
             if (this.speedY > 0) {
                 if (loadGD(UI_SIMULATION_CLOUDS)) {
@@ -747,12 +748,15 @@ export class BaseSquare {
     }
 
     calculateDirectPressure() {
-        if (!isSqColChanged(this.posX) || this.posY > getSqColChangeLocation(this.posX)) {
-            return;
-        }
-        this.currentPressureDirect = -1;
         if (this.gravity == 0) {
             this.currentPressureDirect = 0;
+            return this.currentPressureDirect;
+        }
+
+        if (
+            (!isSqColChanged(this.posX) || this.posY > getSqColChangeLocation(this.posX))
+            && Math.random() < 0.95
+        ) {
             return this.currentPressureDirect;
         }
         let filtered = getSquares(this.posX, this.posY - 1)
@@ -762,7 +766,6 @@ export class BaseSquare {
         } else {
             this.currentPressureDirect = 0;
         }
-
         return this.currentPressureDirect;
     }
 

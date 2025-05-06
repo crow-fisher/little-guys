@@ -31,7 +31,7 @@ function addSquare(sq) {
     getSquares(sq.posX, sq.posY, true).push(sq);
     if ((sq.proto != "PlantSquare")) {
         registerSqIterationRowChange(sq.posY);
-        registerSqColChange(sq.posX);
+        registerSqColChange(sq.posX, sq.posY);
     }
     return sq;
 }
@@ -125,9 +125,10 @@ export function isSqColChanged(x) {
 export function registerSqColChange(x, y) {
     if (!sqColChangeMap.has(x)) {
         sqColChangeMap.set(x, 0);
+        sqColChangeLocationMap.set(x, 0);
     }
     sqColChangeMap.set(x,  Math.min(10, sqColChangeMap.get(x) + 1));
-    sqColChangeLocationMap.set(y, Math.max(sqColChangeLocationMap.get(x)));
+    sqColChangeLocationMap.set(x, Math.max(sqColChangeLocationMap.get(y)));
 }
 
 

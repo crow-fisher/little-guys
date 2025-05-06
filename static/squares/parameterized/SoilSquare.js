@@ -267,6 +267,10 @@ export class SoilSquare extends BaseSquare {
             return;
         }
 
+        if (Math.random() < 0.2) {
+            return;
+        }
+
         if (!this.hasBonked) {
             return;
         }
@@ -275,7 +279,10 @@ export class SoilSquare extends BaseSquare {
             return;
         }
 
-        if (Math.random() < 0.8) {
+        if (
+            getSquares(this.posX + 1, this.posY).some((sq) => sq.testCollidesWithSquare(this)) && 
+            getSquares(this.posX - 1, this.posY).some((sq) => sq.testCollidesWithSquare(this))
+        ) {
             return;
         }
 
