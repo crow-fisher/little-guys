@@ -77,6 +77,13 @@ export function zoomCanvasFillRect(x, y, dx, dy) {
 
     let xpl = xpi * totalWidth;
     let ypl = ypi * totalHeight;
+
+    if ((xpl + dx < 0) || xpl > getCanvasWidth()) {
+        return;
+    }
+    if ((ypl + dy < 0) || (ypl > getCanvasHeight())) {
+        return;
+    } 
     
     MAIN_CONTEXT.fillRect(
         xpl, 

@@ -629,11 +629,13 @@ export class BaseSquare {
         if (!this.shouldFallThisFrame()) {
             return;
         }
-        if (getSquares(this.posX, this.posY + 1).some((sq) => sq.testCollidesWithSquare(this))) {
-            this.speedY = 0;
-            this.speedX = 0;
-            this.hasBonked = true;
-            return;
+        if (!this.organic) {
+            if (getSquares(this.posX, this.posY + 1).some((sq) => sq.testCollidesWithSquare(this))) {
+                this.speedY = 0;
+                this.speedX = 0;
+                this.hasBonked = true;
+                return;
+            }
         }
         let shouldResetGroup = false;
         if (isGroupGrounded(this.group) && this.currentPressureDirect > 10) {
