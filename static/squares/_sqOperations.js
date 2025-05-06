@@ -120,23 +120,32 @@ export function* getSqIterationOrder() {
 }
 
 const sqColChangeMap = new Map();
+const sqColChangeLocationMap = new Map();
 
 export function isSqColChanged(x) {
     return sqColChangeMap.get(x) > 0;
 }
 
-export function registerSqColChange(x) {
+export function registerSqColChange(x, y) {
     if (!sqColChangeMap.has(x)) {
         sqColChangeMap.set(x, 0);
     }
     sqColChangeMap.set(x,  Math.min(10, sqColChangeMap.get(x) + 1));
+    sqColChangeLocationMap.set(y, Math.max(sqColChangeLocationMap.get(x)));
 }
 
 
 export function resetSqColChangeMap() {
     sqColChangeMap.keys().forEach((key) => sqColChangeMap.set(key, Math.max(0, sqColChangeMap.get(key) - 1)));
+    sqColChangeLocationMap.keys().forEach((key) => sqColChangeLocationMap.set(key, 0));
 }
 
+export function getSqColChangeLocation(posX) {
+    if (!sqColChangeLocationMap.has(posX)) {
+        sqColChangeLocationMap.set(posX, 0);
+    }
+    return sqColChangeLocationMap.get(posX);
+}
 /**
  * @param {function} func - applies provided function to all squares
  */

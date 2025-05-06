@@ -1,6 +1,6 @@
 
 
-import { getNeighbors, addSquare, getSquares, isSqColChanged, isSqRowChanged } from "./_sqOperations.js";
+import { getNeighbors, addSquare, getSquares, isSqColChanged, isSqRowChanged, getSqColChangeLocation } from "./_sqOperations.js";
 import {
     getNextGroupId,
     getMixArrLen,
@@ -749,7 +749,7 @@ export class BaseSquare {
     }
 
     calculateDirectPressure() {
-        if (!isSqColChanged(this.posX)) {
+        if (!isSqColChanged(this.posX) || this.posY > getSqColChangeLocation(this.posX)) {
             return;
         }
         this.currentPressureDirect = -1;
