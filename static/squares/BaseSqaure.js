@@ -196,7 +196,10 @@ export class BaseSquare {
         if (this.blockHealth <= 0) {
             removeSquare(this);
         }
-        this.groupSetThisFrame = false;
+
+        if (Math.random() > 0.5) {
+            this.groupSetThisFrame = false;
+        }
 
     }
     render() {
