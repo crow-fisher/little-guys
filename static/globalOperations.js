@@ -1,4 +1,4 @@
-import { getSqIterationOrder, iterateOnSquares, registerSqColChange, registerSqIterationRowChange } from "./squares/_sqOperations.js";
+import { getSqIterationOrder, getSquares, iterateOnSquares, registerSqColChange, registerSqIterationRowChange } from "./squares/_sqOperations.js";
 import { iterateOnOrganisms } from "./organisms/_orgOperations.js";
 import {
     ALL_SQUARES, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES, resetWaterflowSquares
@@ -111,51 +111,51 @@ export function doWaterFlow() {
         let candidatePressureKeys = Array.from(candidateGroupMap.keys()).sort((a, b) => a - b);
         let targetPressureKeys = Array.from(targetGroupMap.keys()).sort((a, b) => b - a);
 
-        let candidateOffset = 0;
-        let i = 0;
-
-        let candidate, candidateArr, pCand, PTarg;
-
-        targetPressureKeys.forEach((targetPressure) => {
-            let targetPosArr = targetGroupMap.get(targetPressure);
+        let candidate, candidateArr, candPressure, targPressure;
+        targetPressureKeys.filter((v) => v > 0).forEach((targPressure) => {
+            let targetPosArr = targetGroupMap.get(targPressure);
             let curTargetIdx = 0;
-
             while (curTargetIdx < targetPosArr.length) {
-                let curTarget = targetPosArr[curTargetIdx];
-                while (candidatePressureKeys.length > 0) {
-                    let candidatePressure = candidatePressureKeys.find((candidatePressure) => candidatePressure < targetPressure);
-                    if (candidatePressure == null) {
-                        return;
+                let curTarg = targetPosArr[curTargetIdx];
+                let curTargWater = getSquares(curTarg[0], curTarg[1]).find((sq) => sq.proto == "WaterSquare");
+                let curTargHealth = curTargWater == null ? 0 : curTargWater.blockHealth;
+
+                while (candidatePressureKeys.length > 0 && candidatePressureKeys.some((candidatePressure) => candidatePressure < targPressure)) {
+                    let candPressure = candidatePressureKeys.find((candidatePressure) => candidatePressure < targPressure);
+                    if (candidateGroupMap.get(candPressure).length == 0) {
+                        candidatePressureKeys = removeItemAll(candidatePressureKeys, candPressure);
+                        break;
                     }
-                    if (candidateGroupMap.get(candidatePressure).length == 0) {
-                        candidatePressureKeys = removeItemAll(candidatePressureKeys, candidatePressure);
+                    let flowProbability = 1 - (Math.exp((candPressure - targPressure))) ** .3;
+                    if (Math.random() < flowProbability) {
                         curTargetIdx += 1;
-                        continue;
+                        break;
                     }
-                    candidateArr = candidateGroupMap.get(candidatePressure);
-                    candidate = candidateArr.at(0);
-                    pCand = candidatePressure;
-                    PTarg = targetPressure;
-                    break;
-                }
+                    candidateArr = candidateGroupMap.get(candPressure);
+                    candidateArr.forEach((cand) => {
+                        if (curTargHealth == 1) {
+                            return true;
+                        }
+                        let candidateHealthApplied = Math.min(cand.blockHealth, 1 - curTargHealth);
+                        curTargHealth += candidateHealthApplied;
+                        if (curTargWater == null) {
+                            let startX = cand.posX;
+                            if (cand.updatePosition(curTarg[0], curTarg[1])) {
+                                let side = (curTarg[0] - startX) > 0 ? 1 : -1;
+                                cand.speedX = side * curTarg[2] * (Math.floor((targPressure - candPressure) ** 0.1));
+                                removeItemAll(candidateArr, cand);
+                            }
+                        } else {
+                            curTargWater.blockHealth += candidateHealthApplied;
+                            cand.blockHealth -= candidateHealthApplied;
+                            if (cand.blockHealth == 0) {
+                                removeItemAll(candidateArr, cand);
+                                cand.destroy();
+                            }
+                        }
+                    })
+                };
                 curTargetIdx += 1;
-                if (candidate == null) {
-                    return;
-                }
-
-                removeItemAll(candidateArr, candidate);
-                if (curTarget[1] >= getCanvasSquaresY()) {
-                    candidate.destroy();
-                    return;
-                }
-
-                if (PTarg < 2 || Math.random() > (0.99) ** (PTarg - pCand)) {
-                    let startX = candidate.posX;
-                    if (candidate.updatePosition(curTarget[0], curTarget[1])) {
-                        let side = (curTarget[0] - startX) > 0 ? 1 : -1;
-                        candidate.speedX = side * curTarget[2] * (Math.floor((PTarg - pCand) ** 0.1));
-                    }
-                }
             }
         });
 

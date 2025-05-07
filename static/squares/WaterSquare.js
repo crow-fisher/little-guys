@@ -99,41 +99,38 @@ class WaterSquare extends BaseSquare {
         if (this.speedY > 0) {
             return;
         }
-
         if (!WATERFLOW_CANDIDATE_SQUARES.has(this.group)) {
             WATERFLOW_CANDIDATE_SQUARES.set(this.group, new Map());
         }
         if (!WATERFLOW_TARGET_SQUARES.has(this.group)) {
             WATERFLOW_TARGET_SQUARES.set(this.group, new Map());
         }
+
         let candidateMap = WATERFLOW_CANDIDATE_SQUARES.get(this.group);
         let targetMap = WATERFLOW_TARGET_SQUARES.get(this.group);
 
-        let candidatePressure = this.currentPressureIndirect;
+        let candidateProbability = 1;
+        let sqSoilSquare = getSquares(this.posX, this.posY).find((sq) => sq.proto == "SoilSquare");
 
-        if (!(getSquares(this.posX, this.posY).some((sq) => sq.surface))) {
-            if (!candidateMap.has(candidatePressure)) {
-                candidateMap.set(candidatePressure, new Array());
-            }
-            candidateMap.get(candidatePressure).push(this);
-        } else {
-            let sq = getSquares(this.posX, this.posY).find((sq) => sq.proto == "SoilSquare");
-            if (sq != null) {
-                if (Math.random() > (1 / sq.getWaterflowRate())) {
-                    if (!candidateMap.has(candidatePressure)) {
-                        candidateMap.set(candidatePressure, new Array());
-                    }
-                    candidateMap.get(candidatePressure).push(this);
-                }
-            }
+        if (sqSoilSquare != null) {
+            candidateProbability /= sqSoilSquare.getWaterflowRate();
         }
+        if (Math.random() < candidateProbability) {
+            if (!candidateMap.has(this.currentPressureIndirect)) {
+                candidateMap.set(this.currentPressureIndirect, new Array());
+            }
+            candidateMap.get(this.currentPressureIndirect).push(this);
+        }
+
         for (let i = -1; i < 2; i++) {
             for (let j = -1; j < 2; j++) {
+                if (i != 0 && j != 0)
+                    continue;
+                
                 let pressure = this.currentPressureIndirect + j;
-                if (getSquares(this.posX + i, this.posY + j)
-                    .some((sq) => (sq.collision))) {
-                    let found = getSquares(this.posX + i, this.posY + j)
-                        .find((sq) => (sq.proto == this.proto && sq.group != this.group));
+                let adjSquares = getSquares(this.posX + i, this.posY + j);
+                if (adjSquares.some((sq) => sq.testCollidesWithSquare(this))) {
+                    let found = adjSquares.find((sq) => sq.proto == this.proto && sq.group != this.group);
                     if (found != null) {
                         if (getGroupSize(this.group) > getGroupSize(found.group)) {
                             this._percolateGroup();
@@ -160,7 +157,7 @@ class WaterSquare extends BaseSquare {
         deregisterSquare(this.posX, this.posY, this.group);
         let ret = super.updatePosition(newPosX, newPosY);
         registerSquare(this.posX, this.posY, this.group);
-        
+
         if (Math.random() > 0.997) {
             if (!isGroupContiguous(this.group)) {
                 this.group = getNextGroupId();
