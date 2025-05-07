@@ -20,7 +20,9 @@ import {
     UI_VIEWMODE_WATERTICKRATE,
     UI_VIEWMODE_WATERMATRIC,
     UI_VIEWMODE_GROUP,
-    UI_VIEWMODE_AIRTICKRATE
+    UI_VIEWMODE_AIRTICKRATE,
+    UI_VIEWMODE_DEV1,
+    UI_VIEWMODE_DEV2
 } from "../UIData.js";
 import { SubTreeComponent } from "./SubTreeComponent.js";
 export class ViewSubtreeComponent extends SubTreeComponent {
@@ -41,6 +43,8 @@ export class ViewSubtreeComponent extends SubTreeComponent {
         container.addElement(new RadioToggleLabel(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX,"organisms",  UI_VIEWMODE_SELECT, UI_VIEWMODE_ORGANISMS,() => getActiveClimate().getUIColorInactiveCustom(0.66), () => getActiveClimate().getUIColorActive()));
         container.addElement(new RadioToggleLabel(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX,"group",  UI_VIEWMODE_SELECT, UI_VIEWMODE_GROUP,() => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));
         container.addElement(new RadioToggleLabel(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX,"air tickrate",  UI_VIEWMODE_SELECT, UI_VIEWMODE_AIRTICKRATE,() => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));
+        container.addElement(new RadioToggleLabel(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX,"candidate",  UI_VIEWMODE_SELECT, UI_VIEWMODE_DEV1,() => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));
+        container.addElement(new RadioToggleLabel(this.window, sizeX + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX,"target",  UI_VIEWMODE_SELECT, UI_VIEWMODE_DEV2,() => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));
     
         
     }

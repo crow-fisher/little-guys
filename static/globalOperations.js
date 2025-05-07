@@ -6,10 +6,12 @@ import {
 
 import { getObjectArrFromMap } from "./common.js";
 import { removeItemAll } from "./common.js";
-import { getCanvasSquaresX, getCanvasSquaresY } from "./canvas.js";
+import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillRect } from "./canvas.js";
 import { saveGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "./ui/UIData.js";
-import { indexCanvasSize } from "./index.js";
+import { indexCanvasSize, MAIN_CANVAS, MAIN_CONTEXT } from "./index.js";
 import { resetFrameGroupCache } from "./waterGraph.js";
+import { COLOR_BLUE, COLOR_VERY_FUCKING_RED, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "./colors.js";
+import { calculateColor, calculateColorProvideOpacity } from "./climate/simulation/temperatureHumidity.js";
 
 let frame_squares = null;
 let frame_solid_squares = null;
@@ -160,4 +162,44 @@ export function doWaterFlow() {
         });
 
     });
+}
+
+export function renderTargetMap() {
+    WATERFLOW_TARGET_SQUARES.keys().forEach((group) => {
+        let minPressure = Math.min(...WATERFLOW_TARGET_SQUARES.get(group).keys().filter((val) => !(isNaN(val))))
+        let maxPressure = Math.max(...WATERFLOW_TARGET_SQUARES.get(group).keys().filter((val) => !(isNaN(val))))
+
+        WATERFLOW_TARGET_SQUARES.get(group).keys().forEach((pressure) => {
+            let arr = WATERFLOW_TARGET_SQUARES.get(group).get(pressure);
+            MAIN_CONTEXT.fillStyle = calculateColorProvideOpacity(pressure, minPressure, maxPressure, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED, 1);
+            arr.forEach((loc) => {
+                zoomCanvasFillRect(
+                    loc[0] * getBaseSize(),
+                    loc[1] * getBaseSize(),
+                    getBaseSize(),
+                    getBaseSize()
+                );
+            });
+        })
+    })
+}
+
+export function renderCandidateMap() {
+    WATERFLOW_CANDIDATE_SQUARES.keys().forEach((group) => {
+        let minPressure = Math.min(...WATERFLOW_CANDIDATE_SQUARES.get(group).keys().filter((val) => !(isNaN(val))))
+        let maxPressure = Math.max(...WATERFLOW_CANDIDATE_SQUARES.get(group).keys().filter((val) => !(isNaN(val))))
+
+        WATERFLOW_CANDIDATE_SQUARES.get(group).keys().forEach((pressure) => {
+            let arr = WATERFLOW_CANDIDATE_SQUARES.get(group).get(pressure);
+            MAIN_CONTEXT.fillStyle = calculateColorProvideOpacity(pressure, minPressure, maxPressure, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED, 1);
+            arr.forEach((sq) => {
+                zoomCanvasFillRect(
+                    sq.posX * getBaseSize(),
+                    sq.posY * getBaseSize(),
+                    getBaseSize(),
+                    getBaseSize()
+                );
+            });
+        })
+    })
 }
