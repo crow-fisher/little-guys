@@ -113,31 +113,47 @@ export function doWaterFlow() {
         let candidatePressureKeys = Array.from(candidateGroupMap.keys()).sort((a, b) => a - b);
         let targetPressureKeys = Array.from(targetGroupMap.keys()).sort((a, b) => b - a);
 
-        let candidate, candidateArr, candPressure, targPressure;
         targetPressureKeys.filter((v) => v > 0).forEach((targPressure) => {
             let targetPosArr = targetGroupMap.get(targPressure);
             let curTargetIdx = 0;
             while (curTargetIdx < targetPosArr.length) {
                 let curTarg = targetPosArr[curTargetIdx];
                 let curTargWater = getSquares(curTarg[0], curTarg[1]).find((sq) => sq.proto == "WaterSquare");
-                let curTargHealth = curTargWater == null ? 0 : curTargWater.blockHealth;
+                let curTargSoil = getSquares(curTarg[0], curTarg[1]).find((sq) => sq.proto == "SoilSquare");
 
-                while (candidatePressureKeys.length > 0 && candidatePressureKeys.some((candidatePressure) => candidatePressure < targPressure)) {
+                let curTargHealth = curTargWater == null ? 0 : curTargWater.blockHealth;
+                curTargetIdx += 1;
+                while (
+                    curTargHealth < 1 && 
+                    candidatePressureKeys.length > 0 && 
+                    candidatePressureKeys.some((candidatePressure) => candidatePressure < targPressure)
+                ) {
                     let candPressure = candidatePressureKeys.find((candidatePressure) => candidatePressure < targPressure);
                     if (candidateGroupMap.get(candPressure).length == 0) {
                         candidatePressureKeys = removeItemAll(candidatePressureKeys, candPressure);
                         break;
                     }
-                    let flowProbability = 1 - (Math.exp((candPressure - targPressure))) ** .3;
-                    if (Math.random() < flowProbability) {
-                        curTargetIdx += 1;
+                    let flowProbability = 1 - (Math.exp((candPressure - targPressure))) ** .05;
+                    if (curTargSoil != null) {
+                        flowProbability /= (50 + curTargSoil.getWaterflowRate());
+                    }
+
+                    if (Math.random() > flowProbability) {
                         break;
                     }
-                    candidateArr = candidateGroupMap.get(candPressure);
+                    let candidateArr = candidateGroupMap.get(candPressure);
                     candidateArr.forEach((cand) => {
                         if (curTargHealth == 1) {
                             return true;
                         }
+                        let curCandSoil = getSquares(cand.posX, cand.posY).find((sq) => sq.proto == "SoilSquare");
+
+                        if (curCandSoil != null) {
+                            if (Math.random() > (1 / curCandSoil.getWaterflowRate())) {
+                                return;
+                            }
+                        }
+
                         let candidateHealthApplied = Math.min(cand.blockHealth, 1 - curTargHealth);
                         curTargHealth += candidateHealthApplied;
                         if (curTargWater == null) {
@@ -155,9 +171,8 @@ export function doWaterFlow() {
                                 cand.destroy();
                             }
                         }
-                    })
+                    });
                 };
-                curTargetIdx += 1;
             }
         });
 

@@ -55,7 +55,7 @@ class WaterSquare extends BaseSquare {
     physics() {
         super.physics();
         this.doNeighborPercolation();
-        this.combineAdjacentNeighbors();
+        // this.combineAdjacentNeighbors();
         this.calculateCandidateFlows();
     }
 
@@ -109,41 +109,30 @@ class WaterSquare extends BaseSquare {
         let candidateMap = WATERFLOW_CANDIDATE_SQUARES.get(this.group);
         let targetMap = WATERFLOW_TARGET_SQUARES.get(this.group);
 
-        let candidateProbability = 1;
-        let sqSoilSquare = getSquares(this.posX, this.posY).find((sq) => sq.proto == "SoilSquare");
-
-        if (sqSoilSquare != null) {
-            candidateProbability /= sqSoilSquare.getWaterflowRate();
+        if (!candidateMap.has(this.currentPressureIndirect)) {
+            candidateMap.set(this.currentPressureIndirect, new Array());
         }
-        if (Math.random() < candidateProbability) {
-            if (!candidateMap.has(this.currentPressureIndirect)) {
-                candidateMap.set(this.currentPressureIndirect, new Array());
-            }
-            candidateMap.get(this.currentPressureIndirect).push(this);
-        }
+        candidateMap.get(this.currentPressureIndirect).push(this);
 
         for (let i = -1; i < 2; i++) {
             for (let j = -1; j < 2; j++) {
                 if (i != 0 && j != 0)
                     continue;
-                
                 let pressure = this.currentPressureIndirect + j;
-                let adjSquares = getSquares(this.posX + i, this.posY + j);
-                if (adjSquares.some((sq) => sq.testCollidesWithSquare(this))) {
-                    let found = adjSquares.find((sq) => sq.proto == this.proto && sq.group != this.group);
-                    if (found != null) {
-                        if (getGroupSize(this.group) > getGroupSize(found.group)) {
-                            this._percolateGroup();
-                        } else {
-                            found._percolateGroup();
-                        }
+                let foundWater = getSquares(this.posX + i, this.posY + j).find((sq) => sq.proto == this.proto);
+                if (foundWater != null && foundWater.group != this.group) {
+                    if (getGroupSize(this.group) > getGroupSize(foundWater.group)) {
+                        this._percolateGroup();
+                    } else {
+                        foundWater._percolateGroup();
                     }
-                    continue;
                 }
-                if (!targetMap.has(pressure)) {
-                    targetMap.set(pressure, new Array());
+                if (foundWater == null || foundWater.blockHealth != 1) {
+                    if (!targetMap.has(pressure)) {
+                        targetMap.set(pressure, new Array());
+                    }
+                    targetMap.get(pressure).push([this.posX + i, this.posY + j, i]);
                 }
-                targetMap.get(pressure).push([this.posX + i, this.posY + j, i]);
             }
         }
     }

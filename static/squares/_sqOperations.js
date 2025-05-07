@@ -28,6 +28,9 @@ function* getNeighbors(x, y) {
 
 
 function addSquare(sq) {
+    if (getSquares(sq.posX, sq.posY).some((ssq) => ssq.testCollidesWithSquare(sq))) {
+        return false;
+    }
     getSquares(sq.posX, sq.posY, true).push(sq);
     if ((sq.proto != "PlantSquare")) {
         registerSqIterationRowChange(sq.posY);
