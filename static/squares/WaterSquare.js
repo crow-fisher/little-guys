@@ -10,6 +10,7 @@ import { getActiveClimate } from "../climate/climateManager.js";
 import { getDefaultLighting } from "../lighting/lightingProcessing.js";
 import { deregisterSquare, isGroupContiguous, registerSquare } from "../waterGraph.js";
 import { getGroupMinPosY } from "../globalOperations.js";
+import { convertMinutesToTimeUnit } from "../climate/weather/weather.js";
 class WaterSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
@@ -121,6 +122,9 @@ class WaterSquare extends BaseSquare {
                 if (i != 0 && j != 0)
                     continue;
                 let pressure = this.currentPressureIndirect + j;
+                if (getSquares(this.posX + i, this.posY + j).some((sq) => sq.solid && sq.testCollidesWithSquare(this))) {
+                    continue;
+                }
                 let foundWater = getSquares(this.posX + i, this.posY + j).find((sq) => sq.proto == this.proto);
                 if (foundWater != null && foundWater.group != this.group) {
                     if (getGroupSize(this.group) > getGroupSize(foundWater.group)) {
