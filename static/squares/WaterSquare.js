@@ -109,10 +109,12 @@ class WaterSquare extends BaseSquare {
         let candidateMap = WATERFLOW_CANDIDATE_SQUARES.get(this.group);
         let targetMap = WATERFLOW_TARGET_SQUARES.get(this.group);
 
-        if (!candidateMap.has(this.currentPressureIndirect)) {
-            candidateMap.set(this.currentPressureIndirect, new Array());
+        if (this.currentPressureDirect == 0) {
+            if (!candidateMap.has(this.currentPressureIndirect)) {
+                candidateMap.set(this.currentPressureIndirect, new Array());
+            }
+            candidateMap.get(this.currentPressureIndirect).push(this);
         }
-        candidateMap.get(this.currentPressureIndirect).push(this);
 
         for (let i = -1; i < 2; i++) {
             for (let j = -1; j < 2; j++) {

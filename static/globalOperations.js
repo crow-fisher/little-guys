@@ -133,7 +133,7 @@ export function doWaterFlow() {
                         candidatePressureKeys = removeItemAll(candidatePressureKeys, candPressure);
                         break;
                     }
-                    let flowProbability = 1 - (Math.exp((candPressure - targPressure))) ** .05;
+                    let flowProbability = 1 - (Math.exp((candPressure - targPressure))) ** .15;
                     if (curTargSoil != null) {
                         flowProbability /= (50 + curTargSoil.getWaterflowRate());
                     }
@@ -162,6 +162,8 @@ export function doWaterFlow() {
                                 let side = (curTarg[0] - startX) > 0 ? 1 : -1;
                                 cand.speedX = side * curTarg[2] * (Math.floor((targPressure - candPressure) ** 0.1));
                                 removeItemAll(candidateArr, cand);
+                                cand.currentPressureDirect = -1;
+                                cand.calculateDirectPressure();
                             }
                         } else {
                             curTargWater.blockHealth += candidateHealthApplied;

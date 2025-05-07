@@ -763,6 +763,7 @@ export class BaseSquare {
         if (
             (!isSqColChanged(this.posX) || this.posY > getSqColChangeLocation(this.posX))
             && Math.random() < 0.95
+            && this.currentPressureDirect != -1
         ) {
             return this.currentPressureDirect;
         }
