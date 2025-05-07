@@ -23,7 +23,7 @@ import {
 } from "../UIData.js";
 import { TopBarToggle } from "./TopBarToggle.js";
 import { getLastMoveOffset } from "../../mouse.js";
-import { getCurDay, getFrameDt, millis_per_day } from "../../climate/time.js";
+import { getCurDay, getFrameDt, getTimeScale, millis_per_day } from "../../climate/time.js";
 import { TopBarText } from "./TopBarText.js";
 import { getCurWeather } from "../../climate/weather/weatherManager.js";
 import { getWindSquareAbove } from "../../climate/simulation/wind.js";
@@ -160,7 +160,7 @@ export class TopBarComponent {
         let frameTime = getFrameDt();
         let fps = (1 / (frameTime / 1000));
 
-        if (this.shouldUpdate) {
+        if (this.shouldUpdate || getTimeScale() == 0) {
             this.numSquareCount = Array.from(getSqIterationOrder()).length;
             this.fpsCache = Math.round(fps);
         }

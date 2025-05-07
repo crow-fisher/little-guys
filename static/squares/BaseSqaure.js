@@ -490,6 +490,11 @@ export class BaseSquare {
             return false;
         }
 
+        if (newPosX < 0 || newPosX >= loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) || newPosY < 0 || newPosY >= loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y)) {
+            this.destroy();
+            return;
+        }
+
         if (this.linkedOrganism != null) {
             if (getOrganismsAtSquare(newPosX, newPosY).some((org) => true)) {
                 this.linkedOrganism.destroy()
