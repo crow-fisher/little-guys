@@ -164,6 +164,7 @@ export function doWaterFlow() {
                                 removeItemAll(candidateArr, cand);
                                 cand.currentPressureDirect = -1;
                                 cand.calculateDirectPressure();
+                                curTargWater = cand;
                             }
                         } else {
                             curTargWater.blockHealth += candidateHealthApplied;
