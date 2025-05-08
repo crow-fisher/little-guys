@@ -302,9 +302,9 @@ export class SoilSquare extends BaseSquare {
         shouldDo &= (Math.random() > 0.99 * (this.waterContainment / this.waterContainmentMax));
 
         if (shouldDo) {
-            if (getSquares(this.posX - 1, this.posY).length == 0)
+            if (!getSquares(this.posX - 1, this.posY).some((sq) => sq.testCollidesWithSquare(this)))
                 this.updatePosition(this.posX - 1, this.posY);
-            else if (getSquares(this.posX + 1, this.posY).length == 0)
+            else if (!getSquares(this.posX + 1, this.posY).some((sq) => sq.testCollidesWithSquare(this)))
                 this.updatePosition(this.posX + 1, this.posY);
         }
     }
