@@ -523,7 +523,13 @@ export class BaseSquare {
         return true;
     }
 
-    _percolateGroup() {
+    _percolateGroup(origGroup=null) {
+        if (origGroup != null) {
+            if (getNeighbors(this.posX, this.posY).some((sq) => sq.group == origGroup)) {
+                return false;
+            }
+        }
+
         let toVisit = new Set();
         let visited = new Set();
 
@@ -550,7 +556,8 @@ export class BaseSquare {
                     .filter((sq) => !sq.groupSetThisFrame)
                     .forEach((ssq) => toVisit.add(ssq));
             }
-        })
+        });
+        return true;
     }
 
     calculateGroup() {
@@ -563,8 +570,7 @@ export class BaseSquare {
 
         this.group = getNextGroupId();
         regSquareToGroup(this.group);
-
-        this._percolateGroup(this.group);
+        this._percolateGroup();
         if (this.proto == "RockSquare") {
             setGroupGrounded(this.group)
         }
@@ -721,8 +727,11 @@ export class BaseSquare {
             }
 
             if (shouldResetGroup) {
+                let origGroup = this.group;
                 this.group = getNextGroupId();
-                this._percolateGroup();
+                if (!this._percolateGroup(origGroup)) {
+                    this.group = origGroup;
+                };
             }
             if (bonked) {
                 this.triggerParticles(particleSpeed);
