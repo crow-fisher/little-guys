@@ -651,6 +651,7 @@ export class BaseSquare {
             }
             shouldResetGroup = true;
         }
+
         if (getTimeScale() != 0) {
             if (this.shouldFallThisFrame()) {
                 this.speedY += (1 / this.gravity);
@@ -715,7 +716,11 @@ export class BaseSquare {
             this.offsetY = finalYPosFrac;
             this.updatePosition(finalXPos, finalYPosFloor);
 
-            if (shouldResetGroup && Math.random() > 0.99) {
+            if (!this.solid) {
+                shouldResetGroup = true;
+            }
+
+            if (shouldResetGroup) {
                 this.group = getNextGroupId();
                 this._percolateGroup();
             }
