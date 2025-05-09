@@ -5,7 +5,7 @@ import { loadGD, saveGD, UI_CENTER } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class TextBackground extends WindowElement {
-    constructor(window, sizeX, sizeY, offsetX, colorFunc, sizeMult, text) {
+    constructor(window, sizeX, sizeY, offsetX, colorFunc, sizeMult, text, variant="") {
         super(window, sizeX, sizeY);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
@@ -13,10 +13,11 @@ export class TextBackground extends WindowElement {
         this.colorFunc = colorFunc;
         this.sizeMult = sizeMult;
         this.text = text;
+        this.variant = variant;
     }
 
     render(startX, startY) {
-        MAIN_CONTEXT.font = this.sizeY * this.sizeMult + "px courier"
+        MAIN_CONTEXT.font = this.sizeY * this.sizeMult + "px courier" + this.variant;
         MAIN_CONTEXT.textBaseline = 'middle';
         MAIN_CONTEXT.fillStyle = this.colorFunc();
         MAIN_CONTEXT.fillRect(startX, startY, this.sizeX, this.sizeY);
