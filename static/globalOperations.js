@@ -164,6 +164,9 @@ export function doWaterFlow() {
                                 removeItemAll(candidateArr, cand);
                                 cand.currentPressureDirect = -1;
                                 cand.calculateDirectPressure();
+                                
+                                cand.lighting = [];
+                                cand.initLightingFromNeighbors();
                                 curTargWater = cand;
                             }
                         } else {

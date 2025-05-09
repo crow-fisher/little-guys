@@ -68,9 +68,6 @@ function render() {
         renderWindPressureMap();
     }
     if (selectedViewMode == UI_VIEWMODE_WIND) {
-        renderWindPressureMap();
-    }
-    if (selectedViewMode == UI_VIEWMODE_MOISTURE) {
         renderWaterSaturation();
         renderWindPressureMap();
     }
