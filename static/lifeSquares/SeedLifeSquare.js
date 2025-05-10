@@ -7,6 +7,7 @@ class SeedLifeSquare extends BaseLifeSquare {
         this.type = "seed";
         this.height = 0.25;
         this.opacity = 0.3;
+        this.width = 0.25;
 
         this.baseColor = "#ecb55a";
         this.darkColor = "#a96831";

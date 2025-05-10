@@ -364,6 +364,15 @@ class BaseOrganism {
         console.log("Would spawn seed")
     }
 
+    doSpawnSeed() {
+        let curMaturityFrac = this.getAge() / this.getGrowthCycleMaturityLength();
+        if (curMaturityFrac > 1) {
+            if (this.nitrogen > this.growthNitrogen && this.phosphorus > this.growthPhosphorus && this.lightlevel > this.getGrowthLightLevel()) {
+                this.spawnSeed();
+            }
+        }
+    }
+
     doPlantGrowth() {
         if (!this.lifeSquares.some((lsq) => lsq.type == "green")) {
             this.executeGrowthPlans();
@@ -371,13 +380,8 @@ class BaseOrganism {
         if (this.stage == STAGE_DEAD) {
             return;
         }
-        let curMaturityFrac = this.getAge() / this.getGrowthCycleMaturityLength();
-        if (curMaturityFrac > 1) {
-            if (this.nitrogen > this.growthNitrogen && this.phosphorus > this.growthPhosphorus && this.lightlevel > this.getGrowthLightLevel()) {
-                this.spawnSeed();
-            }
-            return;
-        }
+        let curMaturityFrac = Math.min(1, this.getAge() / this.getGrowthCycleMaturityLength());
+
         let expectedNitrogen = curMaturityFrac ** 2 * this.growthNitrogen;
         let expectedPhosphorus = curMaturityFrac ** 2 * this.growthPhosphorus;
         let expectedLightLevel = curMaturityFrac ** 2 * this.getGrowthLightLevel();
@@ -522,6 +526,7 @@ class BaseOrganism {
         this.doPlantGrowth();
         this.doGodModePlantGrowth();
         this.planGrowth();
+        this.doSpawnSeed();
         this.updateDeflectionState();
         this.applyDeflectionStateToSquares();
         this.hasPlantLivedTooLong();

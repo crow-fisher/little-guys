@@ -31,7 +31,7 @@ export class WheatOrganism extends BaseOrganism {
         this.maxNumNodes = 7;
         this.maxStemLength = 4;
         this.maxLeafLength = 8;
-        this.maxFlowerLength = 6;
+        this.maxFlowerLength = 4;
 
         this.targetNumStems = 1;
         this.targetNumLeaves = 1;
@@ -234,6 +234,20 @@ export class WheatOrganism extends BaseOrganism {
             return;
         }
 
+        if (this.nitrogen > this.growthNitrogen * 0.85 && 
+            this.phosphorus > this.growthPhosphorus * 0.85 && 
+            this.lightlevel > this.growthLightLevel * 0.85) {
+            if (this.flower == null) {
+                this.growFlower();
+            }
+            if (this.flower != null) {
+                let flowerComponent = this.originGrowth.getChildFromPath(this.flower);
+                if (flowerComponent.growthPlan.steps.length < this.targetFlowerLength) {
+                    this.lengthenFlower();
+                }
+            }
+        }
+
         if (this.stems.length < this.targetNumStems) {
             this.adultGrowStem();
             return;
@@ -272,19 +286,7 @@ export class WheatOrganism extends BaseOrganism {
             return;
         }
         
-        if (this.nitrogen > this.growthNitrogen && 
-            this.phosphorus > this.growthPhosphorus && 
-            this.lightlevel > this.growthLightLevel) {
-            if (this.flower == null) {
-                this.growFlower();
-                return;
-            }
-            let flowerComponent = this.originGrowth.getChildFromPath(this.flower);
-            if (flowerComponent.growthPlan.steps.length < this.targetFlowerLength) {
-                this.lengthenFlower();
-                return;
-            }
-        }
+
     }
 
     spawnSeed() {
@@ -294,13 +296,10 @@ export class WheatOrganism extends BaseOrganism {
 
         let flowerComponent = this.originGrowth.getChildFromPath(this.flower);
         let startNode = flowerComponent.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_FLOWERNODE);
-
         let seedSquare = addSquare(new SeedSquare(startNode.getPosX(), startNode.getPosY()));
-
-        seedSquare.speedY = -Math.round(randRange(-2, -5));
-        seedSquare.speedX = Math.round(randRange(-5, 5));
-
         if (seedSquare) {
+            seedSquare.speedY = -Math.round(randRange(-2, -5));
+            seedSquare.speedX = Math.round(randRange(-5, 5));
             let orgAdded = addNewOrganism(new WheatSeedOrganism(seedSquare, this.getNextGenetics()));
             if (!orgAdded) {
                 seedSquare.destroy();
