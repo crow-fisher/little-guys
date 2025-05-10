@@ -265,90 +265,8 @@ export function doClickAdd() {
                         addSquareByName(px, py, "aquifer")
                     }
                 }
-
-
             } else if (loadGD(UI_SM_ORGANISM)) {
-                let selectedOrganism = loadGD(UI_ORGANISM_SELECT);
-                let chance = Math.random();
-                switch (selectedOrganism) {
-                    case "wheat":
-                        if (chance > 0.99) {
-                            let sq = addSquare(new SeedSquare(px, py));
-                            if (sq) {
-                                let orgAdded = addNewOrganism(new WheatSeedOrganism(sq));
-                                if (!orgAdded) {
-                                    sq.destroy();
-                                }
-                            }
-                        }
-                        break;
-                    case "k. bluegrass":
-                        if (chance > 0.95) {
-                            let sq = addSquare(new SeedSquare(px, py));
-                            if (sq) {
-                                let orgAdded = addNewOrganism(new KentuckyBluegrassSeedOrganism(sq, [Math.random()]));
-                                if (!orgAdded) {
-                                    sq.destroy();
-                                }
-                            }
-                        }
-                        break;
-                    case "cattail":
-                        if (chance > 0.95) {
-                            let sq = addSquare(new SeedSquare(px, py));
-                            if (sq) {
-                                let orgAdded = addNewOrganism(new CattailSeedOrganism(sq));
-                                if (!orgAdded) {
-                                    sq.destroy();
-                                }
-                            }
-                        }
-                        break;
-                    case "mushroom1":
-                        if (chance > 0.95) {
-                            let sq = addSquare(new SeedSquare(px, py));
-                            if (sq) {
-                                let orgAdded = addNewOrganism(new PalmTreeSeedOrganism(sq, [Math.random(), 0]));
-                                if (!orgAdded) {
-                                    sq.destroy();
-                                }
-                            }
-                        }
-                        break;
-                    case "mushroom2":
-                        if (chance > 0.95) {
-                            let sq = addSquare(new SeedSquare(px, py));
-                            if (sq) {
-                                let orgAdded = addNewOrganism(new PalmTreeSeedOrganism(sq, [Math.random(), 1]));
-                                if (!orgAdded) {
-                                    sq.destroy();
-                                }
-                            }
-                        }
-                        break;
-                    case "mushroom3":
-                        if (chance > 0.95) {
-                            let sq = addSquare(new SeedSquare(px, py));
-                            if (sq) {
-                                let orgAdded = addNewOrganism(new PalmTreeSeedOrganism(sq, [0.0001 + .25 * Math.random(), 0]));
-                                if (!orgAdded) {
-                                    sq.destroy();
-                                }
-                            }
-                        }
-                        break;
-                    case "mushroom4":
-                        if (chance > 0.95) {
-                            let sq = addSquare(new SeedSquare(px, py));
-                            if (sq) {
-                                let orgAdded = addNewOrganism(new PalmTreeSeedOrganism(sq, [.749999 + 0.25 * Math.random(), 0]));
-                                if (!orgAdded) {
-                                    sq.destroy();
-                                }
-                            }
-                        }
-                        break;
-                }
+                placeActiveSeed(px, py);
             }
         }
     } else {
@@ -365,6 +283,7 @@ function doBlockHover(lastMoveOffset) {
 }
 
 function placeActiveSeed(px, py) {
+    let chance = Math.random();
     switch (loadGD(UI_ORGANISM_SELECT)) {
         case UI_ORGANISM_GRASS_WHEAT:
             if (chance > 0.99) {

@@ -3,6 +3,7 @@ import { SeedLifeSquare } from "../lifeSquares/SeedLifeSquare.js";
 import { addNewOrganism } from "./_orgOperations.js";
 import { getCurDay, getTimeScale } from "../climate/time.js";
 import { loadGD, UI_SIMULATION_GENS_PER_DAY } from "../ui/UIData.js";
+import { getCurPlantConfiguratorVal } from "../ui/elements/SliderGradientBackgroundPlantConfigurator.js";
 
 class BaseSeedOrganism extends BaseOrganism {
     constructor(square, evolutionParameters = null) {
@@ -12,7 +13,7 @@ class BaseSeedOrganism extends BaseOrganism {
         this.maxLifeTime = 10;
         this.startSproutTime = null;
         this.totalSproutTime = 3 * (getTimeScale() / 86400);
-        this.evolutionParameters = evolutionParameters;
+        this.evolutionParameters = (evolutionParameters ?? Math.max(0, Math.min(1, (Math.random() - .5) * 0.25 + getCurPlantConfiguratorVal())));
         this.growInitialSquares();
     }
 

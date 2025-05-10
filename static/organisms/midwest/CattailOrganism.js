@@ -114,8 +114,8 @@ export class CattailOrganism extends BaseOrganism {
 }
 
 export class CattailSeedOrganism extends BaseSeedOrganism {
-    constructor(square) {
-        super(square);
+    constructor(square, evolutionParameters) {
+        super(square, evolutionParameters);
         this.proto = "CattailSeedOrganism";
     }
 
