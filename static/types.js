@@ -14,11 +14,10 @@ import { WheatOrganism, WheatSeedOrganism } from "./organisms/agriculture/WheatO
 import { ElephantEarGreenSquare } from "./lifeSquares/parameterized/tropical/ElephantEarGreenSquare.js";
 import { PalmTreeGreenSquare } from "./lifeSquares/parameterized/tropical/PalmTreeGreenSquare.js";
 import { ElephantEarOrganism, ElephantEarSeedOrganism } from "./organisms/tropical/ElephantEarOrganism.js";
-import { PalmTreeOrganism, PalmTreeSeedOrganism } from "./organisms/tropical/PalmTreeOrganism.js";
 import { KentuckyBluegrassGreenSquare } from "./lifeSquares/parameterized/agriculture/grasses/KentuckyBluegrassGreenSquare.js";
 import { KentuckyBluegrassOrganism, KentuckyBluegrassSeedOrganism } from "./organisms/agriculture/KentuckyBluegrassOrganism.js";
 import { MushroomGreenSquare } from "./lifeSquares/parameterized/fantasy/MushroomGreenSquare.js";
-import { MushroomOrganism, MushroomSeedOrganism } from "./organisms/fantasy/MushroomOrganism.js";
+import { PalmTreeOrganism, PalmTreeSeedOrganism } from "./organisms/fantasy/PalmTreeOrganism.js";
 
 let ProtoMap = {
     "BaseSquare": BaseSquare.prototype,
@@ -44,8 +43,8 @@ let ProtoMap = {
     "KentuckyBluegrassOrganism": KentuckyBluegrassOrganism.prototype,
     "KentuckyBluegrassSeedOrganism": KentuckyBluegrassSeedOrganism.prototype,
     "MushroomGreenSquare": MushroomGreenSquare.prototype,
-    "MushroomOrganism": MushroomOrganism.prototype,
-    "MushroomSeedOrganism": MushroomSeedOrganism.prototype,
+    "PalmTreeOrganism": PalmTreeOrganism.prototype,
+    "PalmTreeSeedOrganism": PalmTreeSeedOrganism.prototype,
     
 }
 

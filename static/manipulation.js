@@ -15,10 +15,10 @@ import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
-import { loadGD, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CLIMATE_WEATHER_TOOL_LIGHTCLOUD, UI_CLIMATE_WEATHER_TOOL_DRYAIR, UI_CLIMATE_WEATHER_TOOL_HEAVYCLOUD, UI_CLIMATE_WEATHER_TOOL_MATCHEDAIR, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_STRENGTH, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_STRENGTH, UI_GODMODE_TEMPERATURE, UI_ORGANISM_SELECT, UI_SM_GODMODE, UI_SM_ORGANISM, UI_PALETTE_ACTIVE, UI_PALETTE_AQUIFER, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_PALETTE_SOILROCK, UI_PALETTE_WATER, UI_CLIMATE_SELECT_CLOUDS, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_CLIMATE_TOOL_SIZE, UI_PALETTE_MODE_ROCK, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALLETE_MODE_SPECIAL, isEyedropperOrMixerClicked } from "./ui/UIData.js";
+import { loadGD, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CLIMATE_WEATHER_TOOL_LIGHTCLOUD, UI_CLIMATE_WEATHER_TOOL_DRYAIR, UI_CLIMATE_WEATHER_TOOL_HEAVYCLOUD, UI_CLIMATE_WEATHER_TOOL_MATCHEDAIR, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_STRENGTH, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_STRENGTH, UI_GODMODE_TEMPERATURE, UI_ORGANISM_SELECT, UI_SM_GODMODE, UI_SM_ORGANISM, UI_PALETTE_ACTIVE, UI_PALETTE_AQUIFER, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_PALETTE_SOILROCK, UI_PALETTE_WATER, UI_CLIMATE_SELECT_CLOUDS, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_CLIMATE_TOOL_SIZE, UI_PALETTE_MODE_ROCK, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALLETE_MODE_SPECIAL, isEyedropperOrMixerClicked, UI_ORGANISM_GRASS_WHEAT, UI_ORGANISM_GRASS_KBLUE, UI_ORGANISM_GRASS_CATTAIL, UI_ORGANISM_TREE_PALM } from "./ui/UIData.js";
 import { eyedropperBlockClick, eyedropperBlockHover, isWindowHovered, mixerBlockClick } from "./ui/WindowManager.js";
 import { CattailSeedOrganism } from "./organisms/midwest/CattailOrganism.js";
-import { MushroomSeedOrganism } from "./organisms/fantasy/MushroomOrganism.js";
+import { PalmTreeSeedOrganism } from "./organisms/fantasy/PalmTreeOrganism.js";
 let prevManipulationOffset;
 
 setMouseTouchStartCallback((inVal) => prevManipulationOffset = inVal);
@@ -308,7 +308,7 @@ export function doClickAdd() {
                         if (chance > 0.95) {
                             let sq = addSquare(new SeedSquare(px, py));
                             if (sq) {
-                                let orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [Math.random(), 0]));
+                                let orgAdded = addNewOrganism(new PalmTreeSeedOrganism(sq, [Math.random(), 0]));
                                 if (!orgAdded) {
                                     sq.destroy();
                                 }
@@ -319,7 +319,7 @@ export function doClickAdd() {
                         if (chance > 0.95) {
                             let sq = addSquare(new SeedSquare(px, py));
                             if (sq) {
-                                let orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [Math.random(), 1]));
+                                let orgAdded = addNewOrganism(new PalmTreeSeedOrganism(sq, [Math.random(), 1]));
                                 if (!orgAdded) {
                                     sq.destroy();
                                 }
@@ -330,7 +330,7 @@ export function doClickAdd() {
                         if (chance > 0.95) {
                             let sq = addSquare(new SeedSquare(px, py));
                             if (sq) {
-                                let orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [0.0001 + .25 * Math.random(), 0]));
+                                let orgAdded = addNewOrganism(new PalmTreeSeedOrganism(sq, [0.0001 + .25 * Math.random(), 0]));
                                 if (!orgAdded) {
                                     sq.destroy();
                                 }
@@ -341,7 +341,7 @@ export function doClickAdd() {
                         if (chance > 0.95) {
                             let sq = addSquare(new SeedSquare(px, py));
                             if (sq) {
-                                let orgAdded = addNewOrganism(new MushroomSeedOrganism(sq, [.749999 + 0.25 * Math.random(), 0]));
+                                let orgAdded = addNewOrganism(new PalmTreeSeedOrganism(sq, [.749999 + 0.25 * Math.random(), 0]));
                                 if (!orgAdded) {
                                     sq.destroy();
                                 }
@@ -362,4 +362,54 @@ function doBlockHover(lastMoveOffset) {
     let offsetX = offsetTransformed[0];
     let offsetY = offsetTransformed[1];
     eyedropperBlockHover(offsetX, offsetY);
+}
+
+function placeActiveSeed(px, py) {
+    switch (loadGD(UI_ORGANISM_SELECT)) {
+        case UI_ORGANISM_GRASS_WHEAT:
+            if (chance > 0.99) {
+                let sq = addSquare(new SeedSquare(px, py));
+                if (sq) {
+                    let orgAdded = addNewOrganism(new WheatSeedOrganism(sq));
+                    if (!orgAdded) {
+                        sq.destroy();
+                    }
+                }
+            }
+            break;
+        case UI_ORGANISM_GRASS_KBLUE:
+            if (chance > 0.95) {
+                let sq = addSquare(new SeedSquare(px, py));
+                if (sq) {
+                    let orgAdded = addNewOrganism(new KentuckyBluegrassSeedOrganism(sq));
+                    if (!orgAdded) {
+                        sq.destroy();
+                    }
+                }
+            }
+            break;
+        case UI_ORGANISM_GRASS_CATTAIL:
+            if (chance > 0.95) {
+                let sq = addSquare(new SeedSquare(px, py));
+                if (sq) {
+                    let orgAdded = addNewOrganism(new CattailSeedOrganism(sq));
+                    if (!orgAdded) {
+                        sq.destroy();
+                    }
+                }
+            }
+            break;
+        case UI_ORGANISM_TREE_PALM:
+        default:
+            if (chance > 0.95) {
+                let sq = addSquare(new SeedSquare(px, py));
+                if (sq) {
+                    let orgAdded = addNewOrganism(new PalmTreeSeedOrganism(sq));
+                    if (!orgAdded) {
+                        sq.destroy();
+                    }
+                }
+            }
+            break;
+    }
 }

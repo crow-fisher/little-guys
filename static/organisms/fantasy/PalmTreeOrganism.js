@@ -12,10 +12,10 @@ import { addSquare } from "../../squares/_sqOperations.js";
 import { addNewOrganism } from "../_orgOperations.js";
 import { getCurDay } from "../../climate/time.js";
 
-export class MushroomOrganism extends BaseOrganism {
+export class PalmTreeOrganism extends BaseOrganism {
     constructor(posX, posY) {
         super(posX, posY);
-        this.proto = "MushroomOrganism";
+        this.proto = "PalmTreeOrganism";
         this.greenType = MushroomGreenSquare;
         this.rootType = GenericParameterizedRootSquare;
         this.grassGrowTimeInDays =  0.01;
@@ -271,7 +271,7 @@ export class MushroomOrganism extends BaseOrganism {
             seedSquare.speedX = Math.round(randRange(-5, 5));
 
             if (seedSquare) {
-                let orgAdded = addNewOrganism(new MushroomSeedOrganism(seedSquare, this.getNextGenetics()));
+                let orgAdded = addNewOrganism(new PalmTreeSeedOrganism(seedSquare, this.getNextGenetics()));
                 if (!orgAdded) {
                     seedSquare.destroy();
                 }
@@ -299,13 +299,13 @@ export class MushroomOrganism extends BaseOrganism {
 }
 
 
-export class MushroomSeedOrganism extends BaseSeedOrganism {
+export class PalmTreeSeedOrganism extends BaseSeedOrganism {
     constructor(square, evolutionParameters) {
         super(square, evolutionParameters);
-        this.proto = "MushroomSeedOrganism";
+        this.proto = "PalmTreeSeedOrganism";
     }
 
     getSproutType() {
-        return MushroomOrganism;
+        return PalmTreeOrganism;
     }
 }

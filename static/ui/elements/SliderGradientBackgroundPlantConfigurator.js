@@ -7,6 +7,21 @@ import { isLeftMouseClicked } from "../../mouse.js";
 import { loadGD, saveGD, UI_ORGANISM_CONFIGURATOR, UI_ORGANISM_GRASS_CATTAIL, UI_ORGANISM_GRASS_KBLUE, UI_ORGANISM_GRASS_WHEAT, UI_ORGANISM_SELECT } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
+export function getCurPlantConfiguratorVal() {
+    let curKey = loadGD(UI_ORGANISM_SELECT);
+    let curMap = loadGD(UI_ORGANISM_CONFIGURATOR);
+    if (curMap[curKey] == null) {
+        curMap[curKey] = 0.5;
+    }
+    return curMap[curKey];
+}
+
+export function setCurPlantConfiguratorValue(value) {
+    let curKey = loadGD(UI_ORGANISM_SELECT);
+    let curMap = loadGD(UI_ORGANISM_CONFIGURATOR);
+    curMap[curKey] = value;
+}
+
 export class SliderGradientBackgroundPlantConfigurator extends WindowElement {
     constructor(window, sizeX, sizeY, minColorFunc, maxColorFunc) {
         super(window, sizeX, sizeY);
@@ -44,21 +59,6 @@ export class SliderGradientBackgroundPlantConfigurator extends WindowElement {
         return calculateColor(brightness, 0, 1, hexToRgb("#000000"), hexToRgb("#FFFFFF"));
     }
 
-    getCurValue() {
-        let curKey = loadGD(UI_ORGANISM_SELECT);
-        let curMap = loadGD(UI_ORGANISM_CONFIGURATOR);
-        if (curMap[curKey] == null) {
-            curMap[curKey] = 0.5;
-        }
-        return curMap[curKey];
-    }
-
-    setCurValue(value) {
-        let curKey = loadGD(UI_ORGANISM_SELECT);
-        let curMap = loadGD(UI_ORGANISM_CONFIGURATOR);
-        curMap[curKey] = value;
-    }
-
     render(startX, startY) {
         let gradient = MAIN_CONTEXT.createLinearGradient(startX, startY, this.sizeX + startX, startY);
         gradient.addColorStop(0, this.minColorFunc());
@@ -67,7 +67,7 @@ export class SliderGradientBackgroundPlantConfigurator extends WindowElement {
         MAIN_CONTEXT.fillRect(startX, startY, this.sizeX, this.sizeY);
 
         let blockSize = this.sizeY;
-        let invlerp = this.getCurValue();
+        let invlerp = getCurPlantConfiguratorVal();
         let lerp = invlerp * this.sizeX;
 
         MAIN_CONTEXT.fillStyle = calculateColor(invlerp, 0, 1, this.minColorFunc(), this.maxColorFunc());
@@ -95,7 +95,7 @@ export class SliderGradientBackgroundPlantConfigurator extends WindowElement {
         posX = Math.min(this.sizeX - (this.sizeY / 2), posX);
         let p = (posX - min) / (max - min);
         p = Math.min(Math.max(0, p), 1)
-        this.setCurValue(p);
+        setCurPlantConfiguratorValue(p);
     }
 
 }
