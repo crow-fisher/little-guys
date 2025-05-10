@@ -40,19 +40,16 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
         let comp = this.originGrowth.children.at(randNumber(0, this.originGrowth.children.length - 1));
         let lsq = comp.lifeSquares.at(comp.lifeSquares.length - 1);
 
-        let num = randNumber(2, 5);
-        for (let i = 0; i < num; i++) {
-            let seedSquare = addSquare(new SeedSquare(lsq.getPosX(), lsq.getPosY() - 4));
-            seedSquare.speedY = -Math.round(randRange(-2, -5));
-            seedSquare.speedX = Math.round(randRange(-5, 5));
-    
-            if (seedSquare) {
-                let orgAdded = addNewOrganism(new KentuckyBluegrassSeedOrganism(seedSquare, this.getNextGenetics()));
-                if (!orgAdded) {
-                    seedSquare.destroy();
-                } else {
-                    applyLightingFromSource(this.lifeSquares.at(0), orgAdded.lifeSquares.at(0));
-                }
+        let seedSquare = addSquare(new SeedSquare(lsq.getPosX(), lsq.getPosY() - 4));
+        seedSquare.speedY = -Math.round(randRange(-2, -5));
+        seedSquare.speedX = Math.round(randRange(-5, 5));
+
+        if (seedSquare) {
+            let orgAdded = addNewOrganism(new KentuckyBluegrassSeedOrganism(seedSquare, this.getNextGenetics()));
+            if (!orgAdded) {
+                seedSquare.destroy();
+            } else {
+                applyLightingFromSource(this.lifeSquares.at(0), orgAdded.lifeSquares.at(0));
             }
         }
         let reduction = 0.5;

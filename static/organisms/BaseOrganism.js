@@ -71,10 +71,10 @@ class BaseOrganism {
     }
 
     getGrowthCycleLength() {
-        return this.growthCycleLength / loadGD(UI_SIMULATION_GENS_PER_DAY);
+        return 4 * (this.growthCycleLength / loadGD(UI_SIMULATION_GENS_PER_DAY));
     }
     getGrowthCycleMaturityLength() {
-        return this.growthCycleMaturityLength / loadGD(UI_SIMULATION_GENS_PER_DAY);
+        return 4 * (this.growthCycleMaturityLength / loadGD(UI_SIMULATION_GENS_PER_DAY));
     }
     getGrowthLightLevel() {
         if (loadGD(UI_SIMULATION_GENS_PER_DAY) < 1) {
@@ -475,6 +475,19 @@ class BaseOrganism {
 
     // DESTRUCTION
     destroy() {
+        console.log("Organism dying; state: " ,
+            this.proto, 
+            "light:", 
+            this.lightlevel,
+            this.growthLightLevel,
+            "nitogen:",
+            this.nitrogen,
+            this.growthNitrogen,
+            "phosphorus:", 
+            this.phosphorus,
+            this.growthPhosphorus
+        );
+
         this.lifeSquares.forEach((lifeSquare) => lifeSquare.destroy());
         if (this.linkedSquare != null && this.linkedSquare != -1) {
             this.linkedSquare.unlinkOrganism();

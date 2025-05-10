@@ -219,4 +219,4 @@ export class ElephantEarSeedOrganism extends BaseSeedOrganism {
     getSproutType() {
         return ElephantEarOrganism;
     }
-}
+}2

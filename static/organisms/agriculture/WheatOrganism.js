@@ -6,6 +6,9 @@ import { WheatGreenSquare } from "../../lifeSquares/parameterized/agriculture/gr
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
 import { BaseOrganism } from "../BaseOrganism.js";
+import { addNewOrganism } from "../_orgOperations.js";
+import { addSquare } from "../../squares/_sqOperations.js";
+import { SeedSquare } from "../../squares/SeedSquare.js";
 
 // ref: https://prairiecalifornian.com/wheat-growth-stages/
 export class WheatOrganism extends BaseOrganism {
@@ -16,6 +19,8 @@ export class WheatOrganism extends BaseOrganism {
         this.rootType = GenericParameterizedRootSquare;
         this.grassGrowTimeInDays =  0.01;
         this.side = Math.random() > 0.5 ? -1 : 1;
+
+        this.growthCycleLength = this.growthCycleMaturityLength * 4;
 
         this.stems = [];
         this.leaves = [];
@@ -34,8 +39,10 @@ export class WheatOrganism extends BaseOrganism {
         this.targetStemLength = 1;
         this.targetFlowerLength = this.maxFlowerLength;
 
+        this.growthLightLevel = 0.5;
+
+
         this.growthNumGreen = this.maxNumNodes * (this.maxStemLength + this.maxLeafLength);
-    
     }
 
     growStem(parent, startNode, theta) {
@@ -278,6 +285,32 @@ export class WheatOrganism extends BaseOrganism {
                 return;
             }
         }
+    }
+
+    spawnSeed() {
+        if (this.flower == null) {
+            return;
+        }
+
+        let flowerComponent = this.originGrowth.getChildFromPath(this.flower);
+        let startNode = flowerComponent.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_FLOWERNODE);
+
+        let seedSquare = addSquare(new SeedSquare(startNode.getPosX(), startNode.getPosY()));
+
+        seedSquare.speedY = -Math.round(randRange(-2, -5));
+        seedSquare.speedX = Math.round(randRange(-5, 5));
+
+        if (seedSquare) {
+            let orgAdded = addNewOrganism(new WheatSeedOrganism(seedSquare, this.getNextGenetics()));
+            if (!orgAdded) {
+                seedSquare.destroy();
+            }
+        }
+
+        let reduction = 0.8;
+        this.nitrogen *= (1 - reduction);
+        this.phosphorus *= (1 - reduction);
+        this.lightlevel *= (1 - reduction);
     }
 
     planGrowth() {

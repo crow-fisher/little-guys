@@ -21,8 +21,8 @@ export class PalmTreeOrganism extends BaseOrganism {
         this.grassGrowTimeInDays =  0.01;
 
         this.numGrowthCycles = 1;
-        this.growthCycleMaturityLength = 4 * (1 + (Math.random()));
-        this.growthCycleLength = this.growthCycleMaturityLength * 4;
+        this.growthCycleMaturityLength = (1 + (Math.random()));
+        this.growthCycleLength = this.growthCycleMaturityLength;
         this.growthNitrogen = 25;
         this.growthPhosphorus = 25;
         this.growthLightLevel = 0.5; 
