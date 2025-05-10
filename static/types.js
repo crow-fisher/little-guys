@@ -18,6 +18,8 @@ import { KentuckyBluegrassGreenSquare } from "./lifeSquares/parameterized/agricu
 import { KentuckyBluegrassOrganism, KentuckyBluegrassSeedOrganism } from "./organisms/agriculture/KentuckyBluegrassOrganism.js";
 import { MushroomGreenSquare } from "./lifeSquares/parameterized/fantasy/MushroomGreenSquare.js";
 import { PalmTreeOrganism, PalmTreeSeedOrganism } from "./organisms/fantasy/PalmTreeOrganism.js";
+import { CattailOrganism, CattailSeedOrganism } from "./organisms/midwest/CattailOrganism.js";
+import { CattailGreenSquare } from "./lifeSquares/parameterized/midwest/CattailGreenSquare.js";
 
 let ProtoMap = {
     "BaseSquare": BaseSquare.prototype,
@@ -45,6 +47,9 @@ let ProtoMap = {
     "MushroomGreenSquare": MushroomGreenSquare.prototype,
     "PalmTreeOrganism": PalmTreeOrganism.prototype,
     "PalmTreeSeedOrganism": PalmTreeSeedOrganism.prototype,
+    "CattailOrganism": CattailOrganism.prototype,
+    "CattailSeedOrganism": CattailSeedOrganism.prototype,
+    "CattailGreenSquare": CattailGreenSquare.prototype
     
 }
 
@@ -54,7 +59,8 @@ let TypeMap = {
     [ElephantEarGreenSquare.name]: ElephantEarGreenSquare,
     [PalmTreeGreenSquare.name]: PalmTreeGreenSquare,
     [MushroomGreenSquare.name]: MushroomGreenSquare,
-    [KentuckyBluegrassGreenSquare.name]: KentuckyBluegrassGreenSquare
+    [KentuckyBluegrassGreenSquare.name]: KentuckyBluegrassGreenSquare,
+    [CattailGreenSquare.name]: CattailGreenSquare
 }
 
 let TypeNameMap = {
@@ -63,7 +69,8 @@ let TypeNameMap = {
     ElephantEarGreenSquare: ElephantEarGreenSquare.name,
     PalmTreeGreenSquare: PalmTreeGreenSquare.name,
     MushroomGreenSquare: MushroomGreenSquare.name,
-    KentuckyBluegrassGreenSquare: KentuckyBluegrassGreenSquare.name
+    KentuckyBluegrassGreenSquare: KentuckyBluegrassGreenSquare.name,
+    CattailGreenSquare: CattailGreenSquare.name
 }
 
 export { ProtoMap, TypeMap, TypeNameMap}

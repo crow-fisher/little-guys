@@ -156,7 +156,7 @@ class BaseLifeSquare {
         return -(0.5 - (this.width / 2));
     }
     getPosX() {
-        return this.posX - (this.deflectionXOffset + this.xOffset + this.calculateWidthXOffset());
+        return this.posX - (this.deflectionXOffset + this.xOffset);
     }
 
     getPosY() {
@@ -191,7 +191,7 @@ class BaseLifeSquare {
     renderToCanvas() {
         if (this.renderMode == LSQ_RENDERMODE_THETA) {
             zoomCanvasFillRectTheta(
-                this.getPosX() * getBaseSize(),
+                this.getPosX() * getBaseSize() - getBaseSize() * this.calculateWidthXOffset(),
                 this.getPosY() * getBaseSize(),
                 this.width * getBaseSize() * this.getLsqRenderSizeMult(),
                 this.height * getBaseSize() * this.getLsqRenderSizeMult(),

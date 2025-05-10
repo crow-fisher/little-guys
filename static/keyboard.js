@@ -98,26 +98,18 @@ export function keydown(e) {
         saveGD(UI_PALETTE_SELECT, UI_PALETTE_WATER);
     }
 
-    
     if (e.key == '4') {
+        saveGD(UI_TOPBAR_BLOCK, true);
+        saveGD(UI_PALETTE_ACTIVE, true);
+        saveGD(UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL);
+        saveGD(UI_PALETTE_SELECT, UI_PALETTE_AQUIFER);
+    }
+    
+    if (e.key == '5') {
         saveGD(UI_TOPBAR_BLOCK, true);
         saveGD(UI_SM_ORGANISM, true);
     }
 
-    if (e.key == '5') {
-        saveGD(UI_TOPBAR_BLOCK, true);
-        saveGD(UI_PALETTE_ACTIVE, true);
-        saveGD(UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL);
-        saveGD(UI_PALETTE_SELECT, UI_PALETTE_SURFACE);
-    }
-
-    if (e.key == '6') {
-        saveGD(UI_TOPBAR_BLOCK, true);
-        saveGD(UI_PALETTE_ACTIVE, true);
-        saveGD(UI_PALETTE_SELECT, UI_PALETTE_SURFACE_OFF);
-    }
-
-    
     if (e.key == '7') {
         saveGD(UI_TOPBAR_BLOCK, true);
         saveGD(UI_PALETTE_ACTIVE, true);

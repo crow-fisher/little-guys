@@ -1,5 +1,5 @@
 import { BaseLifeSquare } from "../../BaseLifeSquare.js";
-import { STATE_DEAD, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE } from "../../../organisms/Stages.js";
+import { STATE_DEAD, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE, SUBTYPE_FLOWERTIP } from "../../../organisms/Stages.js";
 import { addNewOrganism } from "../../../organisms/_orgOperations.js";
 import { WheatSeedOrganism } from "../../../organisms/agriculture/WheatOrganism.js";
 import { addSquare } from "../../../squares/_sqOperations.js";
@@ -27,6 +27,13 @@ export class CattailGreenSquare extends BaseLifeSquare {
             this.accentColor = "#67703f";
         } else {
             switch (this.subtype) {
+                case SUBTYPE_FLOWERTIP:
+                    this.baseColor = "#542f1f";
+                    this.darkColor = "#301a11";
+                    this.accentColor = "#3b231a";
+                    this.width = .4 + (0.1 * Math.random())
+                    break;
+
                 case SUBTYPE_FLOWERNODE:
                 case SUBTYPE_FLOWER:
                     this.baseColor = "#542f1f";

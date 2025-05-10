@@ -39,12 +39,10 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
             return;
         let comp = this.originGrowth.children.at(randNumber(0, this.originGrowth.children.length - 1));
         let lsq = comp.lifeSquares.at(comp.lifeSquares.length - 1);
-
         let seedSquare = addSquare(new SeedSquare(lsq.getPosX(), lsq.getPosY() - 4));
-        seedSquare.speedY = -Math.round(randRange(-2, -5));
-        seedSquare.speedX = Math.round(randRange(-5, 5));
-
         if (seedSquare) {
+            seedSquare.speedY = -Math.round(randRange(-2, -5));
+            seedSquare.speedX = Math.round(randRange(-5, 5));
             let orgAdded = addNewOrganism(new KentuckyBluegrassSeedOrganism(seedSquare, this.getNextGenetics()));
             if (!orgAdded) {
                 seedSquare.destroy();
