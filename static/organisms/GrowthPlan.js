@@ -249,7 +249,8 @@ export class GrowthComponent {
         let endSpringForce = startSpringForce * (1 - coef) + windX * coef;
         endSpringForce = Math.min(endSpringForce, strength);
         endSpringForce = Math.max(endSpringForce, -strength);
-        this.setCurrentDeflection(Math.asin(endSpringForce / (strength)));
+
+        this.setCurrentDeflection(Math.asin((endSpringForce / (strength))));
         this.children.forEach((child) => child.updateDeflectionState());
     }
 
@@ -390,7 +391,7 @@ export class GrowthComponent {
     }
 
     getTotalStrength() {
-        return Math.min(1, this.strength());
+        return Math.max(1, this.strength());
     }
 
     getTotalLifeSquares() {
@@ -459,7 +460,12 @@ export class GrowthComponent {
     }
 
     setCurrentDeflection(deflection) {
-        this.currentDeflection = deflection;
+        let limit = Math.PI / 12;
+        deflection = Math.min(Math.max(deflection, -limit), limit);
+
+        let period = 5;
+
+        this.currentDeflection = this.currentDeflection * (1 - (1 / period)) + deflection * (1 / period)
         if (this.deflectionRollingAverage == 10 ** 8) {
             this.deflectionRollingAverage = deflection;
         } else {
