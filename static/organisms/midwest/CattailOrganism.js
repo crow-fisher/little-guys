@@ -27,8 +27,9 @@ export class CattailOrganism extends BaseOrganism {
 
         this.numGrowthCycles = 1; 
         this.growthCycleMaturityLength = 1 + (Math.random());
-        this.growthCycleLength = this.growthCycleMaturityLength * 12;
+        this.growthCycleLength = this.growthCycleMaturityLength * 6;
 
+        this.waterPressureSoilTarget = -2.2
         this.grasses = [];
     }
 
@@ -75,7 +76,7 @@ export class CattailOrganism extends BaseOrganism {
                         lsq.width = .3 + .3 * Math.log(1 + grass.lifeSquares.length);
                     } else {
                         if (lsq.subtype == SUBTYPE_FLOWERTIP) {
-                            lsq.width = 0.4;
+                            lsq.width = 0.8;
                         } else {
                             let cur = Math.min(
                                 this.nitrogen / this.growthNitrogen, 
@@ -84,7 +85,7 @@ export class CattailOrganism extends BaseOrganism {
                             if (cur < 0.5) {
                                 lsq.width = .3 + .3 * Math.log(1 + grass.lifeSquares.length);
                             } else {
-                                lsq.width = Math.max(lsq.width, .3 + .3 * Math.log(1 + grass.lifeSquares.length) + (cur - 0.5) * 2);
+                                lsq.width = Math.max(lsq.width, .3 + .3 * Math.log(1 + grass.lifeSquares.length) + (cur - 0.5) * 0.4);
                             }
                         }
                     }
@@ -102,7 +103,7 @@ export class CattailOrganism extends BaseOrganism {
                 for (let i = 0; i < glsq.length; i++) {
                     if (i < min)
                         glsq[i].subtype = SUBTYPE_STEM;
-                    else if (i < max)
+                    else if (i < max - 1)
                         glsq[i].subtype = SUBTYPE_FLOWER;
                     else 
                         glsq[i].subtype = SUBTYPE_FLOWERTIP;

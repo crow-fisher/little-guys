@@ -38,6 +38,8 @@ class BaseOrganism {
         this.waterPressureSoilTarget = -3;
         this.waterPressureLossRate = 30000;
 
+        this.wiltBaseline = 0.3;
+
         // nutrients normalized to "pounds per acre" per farming websites
         this.ph = 7;
         this.nitrogen = 0;
@@ -139,10 +141,10 @@ class BaseOrganism {
             }
         }
 
-        nutrientTick() {
-            let growthCycleFrac = getDt() / this.getGrowthCycleMaturityLength();
-            let targetPerRootNitrogen = this.growthNitrogen * growthCycleFrac / this.growthNumRoots;
-            let targetPerRootPhosphorus = this.growthPhosphorus * growthCycleFrac / this.growthNumRoots;
+    nutrientTick() {
+        let growthCycleFrac = getDt() / this.getGrowthCycleMaturityLength();
+        let targetPerRootNitrogen = this.growthNitrogen * growthCycleFrac / this.growthNumRoots;
+        let targetPerRootPhosphorus = this.growthPhosphorus * growthCycleFrac / this.growthNumRoots;
 
         this.lifeSquares
             .filter((lsq) => lsq.type == "root")

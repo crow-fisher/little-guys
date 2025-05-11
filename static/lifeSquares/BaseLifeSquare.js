@@ -296,13 +296,13 @@ class BaseLifeSquare {
 
     renderWithVariedColors(frameOpacity) {
 
-        let minTime = 8000;
-        if (isSqColChanged(Math.floor(this.getPosX()))) {
-            minTime /= 4;
-        }
-        if (isSqRowChanged(Math.floor(this.getPosY()))) {
-            minTime /= 4;
-        }
+        let minTime = 10000;
+        // if (isSqColChanged(Math.floor(this.getPosX()))) {
+        //     minTime /= 4;
+        // }
+        // if (isSqRowChanged(Math.floor(this.getPosY()))) {
+        //     minTime /= 4;
+        // }
 
         if (
             (frameOpacity != this.lastColorCacheOpacity) ||
