@@ -295,8 +295,7 @@ class BaseLifeSquare {
     }
 
     renderWithVariedColors(frameOpacity) {
-
-        let minTime = 10000;
+        let minTime = 2000;
         // if (isSqColChanged(Math.floor(this.getPosX()))) {
         //     minTime /= 4;
         // }

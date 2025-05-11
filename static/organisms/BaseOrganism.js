@@ -38,8 +38,6 @@ class BaseOrganism {
         this.waterPressureSoilTarget = -3;
         this.waterPressureLossRate = 30000;
 
-        this.wiltBaseline = 0.3;
-
         // nutrients normalized to "pounds per acre" per farming websites
         this.ph = 7;
         this.nitrogen = 0;
@@ -166,7 +164,7 @@ class BaseOrganism {
     }
 
     wiltEfficiency() {
-        return (.3) + 0.7 * (1 - Math.abs(this.getWilt()));
+        return (1 - Math.abs(this.getWilt()));
     }
 
     getWilt() {

@@ -520,6 +520,8 @@ export class BaseSquare {
         this.posX = newPosX;
         this.posY = newPosY;
         addSquare(this);
+
+        this.lastColorCacheTime = 0;
         return true;
     }
 

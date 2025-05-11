@@ -162,7 +162,10 @@ export class TopBarComponent {
 
         if (this.shouldUpdate || getTimeScale() == 0) {
             this.numSquareCount = Array.from(getSqIterationOrder()).length;
-            this.fpsCache = Math.round(fps);
+            if (fps < 10)
+                this.fpsCache = fps.toFixed(1);
+            else
+                this.fpsCache = Math.round(fps);
         }
 
         return this.fpsCache + " fps" + " | " + this.numSquareCount + " squares"
