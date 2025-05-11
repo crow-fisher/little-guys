@@ -78,6 +78,9 @@ class WaterSquare extends BaseSquare {
     }
 
     physicsBefore() {
+        if (this.speedY != 0 || this.speedX != 0) {
+            return;
+        }
         super.physicsBefore();
         this.calculateIndirectPressure();
     }

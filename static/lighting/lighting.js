@@ -110,6 +110,7 @@ export class StationaryWideLightGroup extends LightGroup {
         let completionMap = new Map();
         for (let i = 0; i < this.lightSources.length; i++) {
             completionMap.set(i, false);
+            this.lightSources[i].calculateFrameCloudCover();
             this.lightSources[i].doRayCasting(idx, i, () => {
                 completionMap.set(i, true);
                 if (completionMap.values().every((val) => val)) {
@@ -120,7 +121,6 @@ export class StationaryWideLightGroup extends LightGroup {
         return true;
     }
     preRender() {
-        this.lightSources.forEach((ls) => ls.calculateFrameCloudCover());
     }
 }
 
@@ -161,7 +161,7 @@ export class LightSource {
                 outLightColor.b *= (windSquareCloudColor.b / 255) * opacity + (1 - opacity)
             });
             let brightnessDrop = (outLightColor.r + outLightColor.g + outLightColor.b) / (255 * 3);
-            this.windSquareBrightnessMults[rayTheta] = (brightnessDrop ** 8);
+            this.windSquareBrightnessMults[rayTheta] = (0.4 + 0.6 * (brightnessDrop ** 8));
         });
     }
 
