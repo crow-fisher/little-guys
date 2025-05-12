@@ -29,9 +29,6 @@ export class GrowthPlan {
         return this.steps.every((step) => step.completed);
     }
 
-    postConstruct() {
-    }
-
     postComplete() { };
 
     setBaseDeflectionOverTime(deflectionOverTimeList) {
@@ -50,26 +47,25 @@ export class GrowthPlan {
     }
 
     executePostConstruct() {
-        this.postConstruct();
-        this.postConstruct = () => null;
+        if (this.postConstruct != null) {
+            this.postConstruct();
+            this.postConstruct = null;
+        } 
     }
 
 }
 
 export class GrowthPlanStep {
-    constructor(growthPlan, energyCost, timeCost, growSqAction, otherAction) {
+    constructor(growthPlan, growSqAction) {
         this.growthPlan = growthPlan;
-        this.energyCost = energyCost;
-        this.timeCost = timeCost;
         this.growSqAction = growSqAction;
-        this.otherAction = otherAction;
         this.completed = false;
         this.completedSquare = null;
     }
 
     doAction() {
         if (this.growSqAction != null) {
-            let newLifeSquare = this.growSqAction(); // TODO: This can't be a lambda! Saving and loading breaks it.
+            let newLifeSquare = this.growSqAction();
             this.completed = true;
             if (newLifeSquare) {
                 this.completedSquare = newLifeSquare;
@@ -77,12 +73,6 @@ export class GrowthPlanStep {
                 this.growthPlan.component.addLifeSquare(newLifeSquare);
             }
             this.growthPlan.executePostConstruct();
-        } else {
-            this.growthPlan.steps = Array.from(this.growthPlan.steps.filter((step) => step != this));
-        }
-        if (this.otherAction != null) {
-            this.otherAction();
-            this.completed = true;
         }
     }
 }

@@ -287,8 +287,6 @@ class BaseOrganism {
             0, 0, TYPE_HEART, 10 ** 8);
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
-            0,
-            0,
             () => {
                 let rootSq = new this.rootType(this.linkedSquare, this);
                 rootSq.linkSquare(this.linkedSquare);
@@ -324,7 +322,7 @@ class BaseOrganism {
             return;
         }
         let anyStepFound = false;
-        this.growthPlans.filter((gp) => !gp.completed).forEach((growthPlan) => {
+        this.growthPlans.filter((gp) => !gp.areStepsCompleted()).forEach((growthPlan) => {
             let step = growthPlan.steps.filter((step) => !step.completed).at(0);
             step.doAction();
             step.growthPlan.stepLastExecuted = getCurDay();

@@ -239,7 +239,7 @@ function getFrameSaveData() {
     });
 
     growthPlanArr.forEach((gp) => {
-        gp.steps = Array.from(gp.steps.map((gps) => growthPlanStepArr.indexOf(gps)));
+        gp.steps = Array.from(gp.steps.filter((gps) => gps.completed).map((gps) => growthPlanStepArr.indexOf(gps)));
         gp.component = growthPlanComponentArr.indexOf(gp.component);
     });
 

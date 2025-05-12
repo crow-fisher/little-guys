@@ -131,14 +131,11 @@ export class CattailOrganism extends BaseOrganism {
         growthPlan.component._getWilt = (val) => Math.sin(val) / 2; 
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
-            0,
-            this.grassGrowTimeInDays,
             () => {
                 let shoot = this.growPlantSquare(startRootNode, 0, 0);
                 shoot.subtype = SUBTYPE_STEM;
                 return shoot;
-            },
-            null
+            }
         ));
         this.growthPlans.push(growthPlan);
     }
@@ -157,14 +154,11 @@ export class CattailOrganism extends BaseOrganism {
                 for (let i = 0; i < this.targetGrassLength - grass.growthPlan.steps.length; i++) {
                     grass.growthPlan.steps.push(new GrowthPlanStep(
                         grass.growthPlan,
-                        0,
-                        this.grassGrowTimeInDays,
                         () => {
                             let newGrassNode = this.growPlantSquare(startNode, 0, 0);
                             newGrassNode.subtype = SUBTYPE_STEM;
                             return newGrassNode;
-                        },
-                        null
+                        }
                     ))
                 };
                 grass.growthPlan.completed = false;
