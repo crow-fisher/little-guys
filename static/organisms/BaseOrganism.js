@@ -6,6 +6,8 @@ import { addSquare, getNeighbors } from "../squares/_sqOperations.js";
 import { PlantSquare } from "../squares/PlantSquare.js";
 import { applyLightingFromSource } from "../lighting/lightingProcessing.js";
 import { loadGD, UI_GODMODE_FASTPLANT, UI_SIMULATION_GENS_PER_DAY } from "../ui/UIData.js";
+import { RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
+import { rgbToRgba } from "../common.js";
 
 class BaseOrganism {
     constructor(square) {
@@ -68,6 +70,23 @@ class BaseOrganism {
         this.lighting = square.lighting;
         this.evolutionParameters = [0.5];
         this.deathProgress = 0;
+
+        this.evolutionMinColor = RGB_COLOR_BLUE;
+        this.evolutionMaxColor = RGB_COLOR_VERY_FUCKING_RED;
+    }
+
+    processColor(color1, color2, value, valueMax, opacity) {
+        let frac = value / valueMax;
+        let outColor = {
+            r: color1.r * frac + color2.r * (1 - frac),
+            g: color1.g * frac + color2.g * (1 - frac),
+            b: color1.b * frac + color2.b * (1 - frac)
+        }
+        return rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacity);
+    }
+
+    getEvolutionColor(opacity) {
+        return this.processColor(this.evolutionMinColor, this.evolutionMaxColor, this.evolutionParameters.at(0), 1, opacity);
     }
 
     getGrowthCycleLength() {

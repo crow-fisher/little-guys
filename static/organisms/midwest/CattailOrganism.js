@@ -1,4 +1,4 @@
-import { randNumber, randRange } from "../../common.js";
+import { randNumber, randRange, removeItemAll } from "../../common.js";
 import { GenericParameterizedRootSquare } from "../../lifeSquares/parameterized/GenericParameterizedRootSquare.js";
 import { STAGE_ADULT, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE, TYPE_FLOWER, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_TRUNK, TYPE_STEM, SUBTYPE_FLOWERTIP, STAGE_DEAD } from "../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
@@ -22,7 +22,7 @@ export class CattailOrganism extends BaseOrganism {
         this.targetNumGrass = 1;
         this.maxNumGrass = 3;
 
-        this.targetGrassLength = 14;
+        this.targetGrassLength = 3;
         this.maxGrassLength = 14;
 
         this.numGrowthCycles = 1; 
@@ -121,10 +121,12 @@ export class CattailOrganism extends BaseOrganism {
             baseDeflection, 
             randRange(0, 0.15), TYPE_TRUNK, .7);
         growthPlan.postConstruct = () => {
-            this.originGrowth.addChild(growthPlan.component);
-            this.grasses.push(this.originGrowth.getChildPath(growthPlan.component))
-            growthPlan.component.xOffset = 3 * (Math.random() - 0.5);
-            growthPlan.component.yOffset = - (.5 * (0.5 + Math.random()));
+            if (growthPlan.component.lifeSquares.length > 0) {
+                this.originGrowth.addChild(growthPlan.component);
+                this.grasses.push(this.originGrowth.getChildPath(growthPlan.component))
+                growthPlan.component.xOffset = 3 * (Math.random() - 0.5);
+                growthPlan.component.yOffset = - (.5 * (0.5 + Math.random()));
+            }
         };
         growthPlan.component._getWilt = (val) => Math.sin(val) / 2; 
         growthPlan.steps.push(new GrowthPlanStep(

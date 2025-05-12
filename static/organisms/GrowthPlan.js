@@ -2,6 +2,7 @@ import { getCurDay } from "../climate/time.js";
 import { getWindSpeedAtLocation } from "../climate/simulation/wind.js";
 import { STATE_DESTROYED } from "./Stages.js";
 import { getGlobalThetaBase } from "../globals.js";
+import { removeItemAll } from "../common.js";
 
 const ROLLING_AVERAGE_PERIOD = 200;
 export class GrowthPlan {
@@ -73,9 +74,9 @@ export class GrowthPlanStep {
             if (newLifeSquare) {
                 this.completedSquare = newLifeSquare;
                 newLifeSquare.component = this.growthPlan.component;
+                this.growthPlan.component.addLifeSquare(newLifeSquare);
             }
             this.growthPlan.executePostConstruct();
-            this.growthPlan.component.addLifeSquare(newLifeSquare);
         } else {
             this.growthPlan.steps = Array.from(this.growthPlan.steps.filter((step) => step != this));
         }

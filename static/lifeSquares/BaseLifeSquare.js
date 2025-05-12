@@ -9,7 +9,7 @@ import { removeSquare } from "../globalOperations.js";
 import { STATE_HEALTHY, STATE_DESTROYED, STAGE_DEAD } from "../organisms/Stages.js";
 import { getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasFillRectTheta } from "../canvas.js";
-import { loadGD, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../ui/UIData.js";
+import { loadGD, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../ui/UIData.js";
 import { isLeftMouseClicked } from "../mouse.js";
 
 export const LSQ_RENDERMODE_SQUARE = "LSQ_RENDERMODE_SQUARE";
@@ -263,9 +263,18 @@ class BaseLifeSquare {
             this.renderToCanvas();
             return;
         }
+        else if (selectedViewMode == UI_VIEWMODE_EVOLUTION) {
+            if (this.type == "green") 
+                MAIN_CONTEXT.fillStyle = this.linkedOrganism.getEvolutionColor(0.85);
+            else
+                MAIN_CONTEXT.fillStyle = this.linkedOrganism.getEvolutionColor(0.15);
+
+            this.renderToCanvas();
+            return;
+        }
         else {
             if (selectedViewMode == UI_VIEWMODE_ORGANISMS) {
-                if (this.opacity < 0.25) {
+                if (this.opacity < 0.235) {
                     frameOpacity *= 4;
                 }
             } 
