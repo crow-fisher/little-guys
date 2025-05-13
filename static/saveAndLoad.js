@@ -215,6 +215,7 @@ function getFrameSaveData() {
     let growthPlanStepArr = new Array();
 
     iterateOnOrganisms((org) => {
+        org.prepareForSave();
         if (org.stage != STAGE_DEAD) {
             orgArr.push(org);
             lsqArr.push(...org.lifeSquares);

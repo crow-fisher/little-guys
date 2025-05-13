@@ -159,16 +159,13 @@ export class PalmTreeOrganism extends BaseOrganism {
         }
         stem.growthPlan.steps.push(new GrowthPlanStep(
             stem.growthPlan,
-            0,
-            this.grassGrowTimeInDays,
             () => {
                 let shoot = this.growPlantSquare(startNode, 0, 0);
                 shoot.subtype = SUBTYPE_STEM;
                 return shoot;
             },
             null
-        ))
-        stem.growthPlan.completed = false;
+        ));
     }
     lengthenLeaves() {
         this.leaves
@@ -195,7 +192,6 @@ export class PalmTreeOrganism extends BaseOrganism {
                         null
                     ))
                 };
-                leaf.growthPlan.completed = false;
             });
     }
 
@@ -213,7 +209,7 @@ export class PalmTreeOrganism extends BaseOrganism {
         }
     }
     adultGrowthPlanning() {
-        if (this.growthPlans.some((gp) => !gp.completed)) {
+        if (this.growthPlans.some((gp) => !gp.areStepsCompleted())) {
             this.executeGrowthPlans();
             return;
         }

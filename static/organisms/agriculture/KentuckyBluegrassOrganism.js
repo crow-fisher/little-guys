@@ -132,7 +132,6 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
                         null
                     ))
                 };
-                grass.growthPlan.completed = false;
             });
     }
 
@@ -142,7 +141,7 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
             return;
         }
 
-        if (this.growthPlans.some((gp) => !gp.completed)) {
+        if (this.growthPlans.some((gp) => !gp.areStepsCompleted())) {
             this.executeGrowthPlans();
             return;
         }

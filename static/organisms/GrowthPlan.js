@@ -17,7 +17,6 @@ export class GrowthPlan {
         this.baseDeflection = baseDeflection;
         this.baseCurve = baseCurve;
         this.type = type;
-        this.completed = false;
         this.stepLastExecuted = 0;
         this.component = new GrowthComponent(
             this,
@@ -42,7 +41,6 @@ export class GrowthPlan {
     }
 
     complete() {
-        this.completed = true;
         this.postComplete();
     }
 

@@ -161,7 +161,6 @@ export class CattailOrganism extends BaseOrganism {
                         }
                     ))
                 };
-                grass.growthPlan.completed = false;
             });
     }
 
@@ -171,7 +170,7 @@ export class CattailOrganism extends BaseOrganism {
             return;
         }
 
-        if (this.growthPlans.some((gp) => !gp.completed)) {
+        if (this.growthPlans.some((gp) => !gp.areStepsCompleted())) {
             this.executeGrowthPlans();
             return;
         }

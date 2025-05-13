@@ -7,7 +7,7 @@ import { PlantSquare } from "../squares/PlantSquare.js";
 import { applyLightingFromSource } from "../lighting/lightingProcessing.js";
 import { loadGD, UI_GODMODE_FASTPLANT, UI_SIMULATION_GENS_PER_DAY } from "../ui/UIData.js";
 import { RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
-import { rgbToRgba } from "../common.js";
+import { removeItemAll, rgbToRgba } from "../common.js";
 
 class BaseOrganism {
     constructor(square) {
@@ -75,6 +75,26 @@ class BaseOrganism {
         this.evolutionMaxColor = RGB_COLOR_VERY_FUCKING_RED;
     }
 
+    prepareForSave() {
+        if (this.lifeSquares.length == 0) {
+            this.stage = STAGE_DEAD;
+            return;
+        }
+        this.growthPlans = Array.from(
+            this.growthPlans.filter((growthPlan) => {
+                if (growthPlan.component.lifeSquares.length == 0) {
+                    return false;
+                } else {
+                    if (growthPlan.areStepsCompleted()) {
+                        return;
+                    } else {
+                        growthPlan.steps = Array.from(growthPlan.steps.filter((step) => step.completed));
+                    };
+                    return true;
+                }
+            }));
+    }
+
     processColor(color1, color2, value, valueMax, opacity) {
         let frac = value / valueMax;
         let outColor = {
@@ -136,27 +156,27 @@ class BaseOrganism {
     waterPressureTick() {
         let roots = this.lifeSquares
             .filter((lsq) => lsq.type == "root");
-            let numRoots = roots.map((lsq) => 1).reduce(
-                (accumulator, currentValue) => accumulator + currentValue,
-                0);
-            this.waterPressure += this.waterPressureChangeRate * roots.filter((lsq) => lsq.linkedSquare != null && lsq.linkedSquare.proto == "SoilSquare")
-                .map((lsq) => {
-                    let sq = lsq.linkedSquare;
-                    let sqWaterPressure = sq.getSoilWaterPressure();
-                    let diffToTarget = sqWaterPressure - this.waterPressureSoilTarget;
-                    if (diffToTarget <= 0) {
-                        return 0;
-                    }
-                    sq.waterContainment -= (2 / (numRoots * this.waterPressureLossRate));
-                    return (diffToTarget / numRoots);
-                })
-                .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-            this.waterPressure -= this.waterPressureChangeRate;
+        let numRoots = roots.map((lsq) => 1).reduce(
+            (accumulator, currentValue) => accumulator + currentValue,
+            0);
+        this.waterPressure += this.waterPressureChangeRate * roots.filter((lsq) => lsq.linkedSquare != null && lsq.linkedSquare.proto == "SoilSquare")
+            .map((lsq) => {
+                let sq = lsq.linkedSquare;
+                let sqWaterPressure = sq.getSoilWaterPressure();
+                let diffToTarget = sqWaterPressure - this.waterPressureSoilTarget;
+                if (diffToTarget <= 0) {
+                    return 0;
+                }
+                sq.waterContainment -= (2 / (numRoots * this.waterPressureLossRate));
+                return (diffToTarget / numRoots);
+            })
+            .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+        this.waterPressure -= this.waterPressureChangeRate;
 
-            if (this.waterPressure > this.waterPressureTarget) {
-                this.waterPressure -= 5 * this.getWilt() * this.waterPressureChangeRate;
-            }
+        if (this.waterPressure > this.waterPressureTarget) {
+            this.waterPressure -= 5 * this.getWilt() * this.waterPressureChangeRate;
         }
+    }
 
     nutrientTick() {
         let growthCycleFrac = getDt() / this.getGrowthCycleMaturityLength();
@@ -496,15 +516,15 @@ class BaseOrganism {
 
     // DESTRUCTION
     destroy() {
-        console.log("Organism dying; state: " ,
-            this.proto, 
-            "light:", 
+        console.log("Organism dying; state: ",
+            this.proto,
+            "light:",
             this.lightlevel,
             this.growthLightLevel,
             "nitogen:",
             this.nitrogen,
             this.growthNitrogen,
-            "phosphorus:", 
+            "phosphorus:",
             this.phosphorus,
             this.growthPhosphorus
         );

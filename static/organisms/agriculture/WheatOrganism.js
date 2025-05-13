@@ -140,8 +140,7 @@ export class WheatOrganism extends BaseOrganism {
                 return shoot;
             },
             null
-        ))
-        stem.growthPlan.completed = false;
+        ));
     } 
     lengthenLeaves() {
         this.leaves
@@ -158,8 +157,6 @@ export class WheatOrganism extends BaseOrganism {
                 for (let i = 0; i < this.targetLeafLength - leaf.growthPlan.steps.length; i++) {
                     leaf.growthPlan.steps.push(new GrowthPlanStep(
                         leaf.growthPlan,
-                        0,
-                        this.grassGrowTimeInDays,
                         () => {
                             let leaf = this.growPlantSquare(startNode, 0, 0);
                             leaf.subtype = SUBTYPE_LEAF;
@@ -168,7 +165,6 @@ export class WheatOrganism extends BaseOrganism {
                         null
                     ))
                 };
-                leaf.growthPlan.completed = false;
             })
     }
 
@@ -212,16 +208,12 @@ export class WheatOrganism extends BaseOrganism {
         }
         flowerComponent.growthPlan.steps.push(new GrowthPlanStep(
             flowerComponent.growthPlan,
-            0,
-            this.grassGrowTimeInDays,
             () => {
                 let flower = this.growPlantSquare(startNode, 0, 0);
                 flower.subtype = SUBTYPE_FLOWER;
                 return flower;
-            },
-            null
-        ))
-        flowerComponent.growthPlan.completed = false;
+            }
+        ));
     }
 
     juvenileGrowthPlanning() {
@@ -229,7 +221,7 @@ export class WheatOrganism extends BaseOrganism {
     }
 
     adultGrowthPlanning() {
-        if (this.growthPlans.some((gp) => !gp.completed)) {
+        if (this.growthPlans.some((gp) => !gp.areStepsCompleted())) {
             this.executeGrowthPlans();
             return;
         }
