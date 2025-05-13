@@ -121,12 +121,10 @@ export class CattailOrganism extends BaseOrganism {
             baseDeflection, 
             randRange(0, 0.15), TYPE_TRUNK, .7);
         growthPlan.postConstruct = () => {
-            if (growthPlan.component.lifeSquares.length > 0) {
-                this.originGrowth.addChild(growthPlan.component);
-                this.grasses.push(this.originGrowth.getChildPath(growthPlan.component))
-                growthPlan.component.xOffset = 3 * (Math.random() - 0.5);
-                growthPlan.component.yOffset = - (.5 * (0.5 + Math.random()));
-            }
+            this.originGrowth.addChild(growthPlan.component);
+            this.grasses.push(this.originGrowth.getChildPath(growthPlan.component))
+            growthPlan.component.xOffset = 3 * (Math.random() - 0.5);
+            growthPlan.component.yOffset = - (.5 * (0.5 + Math.random()));
         };
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,

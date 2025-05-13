@@ -61,14 +61,11 @@ export class WheatOrganism extends BaseOrganism {
         };
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
-            0,
-            this.grassGrowTimeInDays,
             () => {
                 let node = this.growPlantSquare(startNode, 0,growthPlan.steps.length);
                 node.subtype = SUBTYPE_NODE;
                 return node;
-            },
-            null
+            }
         ))
         this.growthPlans.push(growthPlan);
     }
@@ -89,14 +86,11 @@ export class WheatOrganism extends BaseOrganism {
         };
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
-            0,
-            this.grassGrowTimeInDays,
             () => {
                 let node = this.growPlantSquare(startNode, 0,growthPlan.steps.length);
                 node.subtype = SUBTYPE_LEAF;
                 return node;
-            },
-            null
+            }
         ))
         this.growthPlans.push(growthPlan);
         this.curLeafTheta += randRange(Math.PI / 2, Math.PI);
