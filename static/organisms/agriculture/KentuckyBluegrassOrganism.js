@@ -93,7 +93,6 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
             growthPlan.component.xOffset = 3 * (Math.random() - 0.5);
             growthPlan.component.yOffset = - (.5 * (0.5 + Math.random()));
         };
-        growthPlan.component._getWilt = (val) => Math.sin(val) / 2; 
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
             0,

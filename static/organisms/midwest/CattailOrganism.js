@@ -22,7 +22,7 @@ export class CattailOrganism extends BaseOrganism {
         this.targetNumGrass = 1;
         this.maxNumGrass = 3;
 
-        this.targetGrassLength = 3;
+        this.targetGrassLength = 5;
         this.maxGrassLength = 14;
 
         this.numGrowthCycles = 1; 
@@ -128,14 +128,9 @@ export class CattailOrganism extends BaseOrganism {
                 growthPlan.component.yOffset = - (.5 * (0.5 + Math.random()));
             }
         };
-        growthPlan.component._getWilt = (val) => Math.sin(val) / 2; 
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
-            () => {
-                let shoot = this.growPlantSquare(startRootNode, 0, 0);
-                shoot.subtype = SUBTYPE_STEM;
-                return shoot;
-            }
+            () => this.growGreenSquareAction(startRootNode, SUBTYPE_STEM)
         ));
         this.growthPlans.push(growthPlan);
     }
@@ -154,12 +149,8 @@ export class CattailOrganism extends BaseOrganism {
                 for (let i = 0; i < this.targetGrassLength - grass.growthPlan.steps.length; i++) {
                     grass.growthPlan.steps.push(new GrowthPlanStep(
                         grass.growthPlan,
-                        () => {
-                            let newGrassNode = this.growPlantSquare(startNode, 0, 0);
-                            newGrassNode.subtype = SUBTYPE_STEM;
-                            return newGrassNode;
-                        }
-                    ))
+                        () => this.growGreenSquareAction(startNode, SUBTYPE_STEM)
+                    ));
                 };
             });
     }

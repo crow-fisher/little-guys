@@ -309,8 +309,8 @@ export class GrowthComponent {
         }
     }
 
-    _getWilt(wilt) {
-        return wilt;
+    _getWilt(val) {
+        return Math.sin(val) / 2;
     }
 
     getWilt() {

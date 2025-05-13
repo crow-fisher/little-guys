@@ -65,7 +65,6 @@ class BaseOrganism {
         this.lastDeflectionStateThetaRollingAveragePeriod = 1000;
         this.deflectionIdx = 0;
         this.deflectionStateTheta = 0;
-        this.deflectionStateFunctions = [];
         this.rootOpacity = 0.15;
         this.lighting = square.lighting;
         this.evolutionParameters = [0.5];
@@ -80,19 +79,16 @@ class BaseOrganism {
             this.stage = STAGE_DEAD;
             return;
         }
-        this.growthPlans = Array.from(
-            this.growthPlans.filter((growthPlan) => {
-                if (growthPlan.component.lifeSquares.length == 0) {
-                    return false;
-                } else {
-                    if (growthPlan.areStepsCompleted()) {
-                        return;
-                    } else {
-                        growthPlan.steps = Array.from(growthPlan.steps.filter((step) => step.completed));
-                    };
-                    return true;
-                }
-            }));
+        this.growthPlans = Array.from(this.growthPlans.filter((growthPlan) => {
+            if (growthPlan.component.lifeSquares.length == 0) {
+                return false;
+            } else {
+                if (!growthPlan.areStepsCompleted()) {
+                    growthPlan.steps = Array.from(growthPlan.steps.filter((step) => step.completed));
+                };
+                return true;
+            }
+        }));
     }
 
     processColor(color1, color2, value, valueMax, opacity) {
@@ -297,6 +293,13 @@ class BaseOrganism {
         component.children.forEach((child) => out.push(...this._getOriginForNewGrowth(subtype, child)));
         return out;
     }
+
+    growGreenSquareAction(startNode, subtype) {
+        let newGrassNode = this.growPlantSquare(startNode, 0, 0);
+        newGrassNode.subtype = subtype;
+        return newGrassNode;
+    }
+
     addSproutGrowthPlan() {
         if (!this.linkedSquare.surface) {
             this.destroy();
@@ -345,7 +348,6 @@ class BaseOrganism {
         this.growthPlans.filter((gp) => !gp.areStepsCompleted()).forEach((growthPlan) => {
             let step = growthPlan.steps.filter((step) => !step.completed).at(0);
             step.doAction();
-            step.growthPlan.stepLastExecuted = getCurDay();
             anyStepFound = true;
 
             if (this.originGrowth != null) {

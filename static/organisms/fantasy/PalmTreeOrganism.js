@@ -84,7 +84,6 @@ export class PalmTreeOrganism extends BaseOrganism {
             parent.addChild(growthPlan.component);
             this.stems.push(this.originGrowth.getChildPath(growthPlan.component));
         };
-        growthPlan.component._getWilt = (val) => Math.sin(val) / 2;
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
             0,
@@ -113,7 +112,6 @@ export class PalmTreeOrganism extends BaseOrganism {
             parent.addChild(growthPlan.component);
             this.leaves.push(this.originGrowth.getChildPath(growthPlan.component));
         };
-        growthPlan.component._getWilt = (val) => Math.sin(val) / 2;
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
             0,

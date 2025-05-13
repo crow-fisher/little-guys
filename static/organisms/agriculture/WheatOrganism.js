@@ -59,7 +59,6 @@ export class WheatOrganism extends BaseOrganism {
             parent.addChild(growthPlan.component);
             this.stems.push(this.originGrowth.getChildPath(growthPlan.component));
         };
-        growthPlan.component._getWilt = (val) => Math.sin(val) / 2;
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
             0,
@@ -88,7 +87,6 @@ export class WheatOrganism extends BaseOrganism {
             parent.addChild(growthPlan.component);
             this.leaves.push(this.originGrowth.getChildPath(growthPlan.component));
         };
-        growthPlan.component._getWilt = (val) => Math.sin(val) / 2;
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
             0,
@@ -183,17 +181,9 @@ export class WheatOrganism extends BaseOrganism {
             parent.addChild(growthPlan.component);
             this.flower = this.originGrowth.getChildPath(growthPlan.component);
         };
-        growthPlan.component._getWilt = (val) => Math.sin(val) / 2;
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
-            0,
-            this.grassGrowTimeInDays,
-            () => {
-                let node = this.growPlantSquare(startNode, 0,growthPlan.steps.length);
-                node.subtype = SUBTYPE_FLOWERNODE;
-                return node;
-            },
-            null
+            () => this.growGreenSquareAction(startNode, SUBTYPE_FLOWERNODE)
         ))
         this.growthPlans.push(growthPlan);
     }
