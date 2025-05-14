@@ -75,20 +75,6 @@ class BaseOrganism {
     }
 
     prepareForSave() {
-        if (this.lifeSquares.length == 0) {
-            this.stage = STAGE_DEAD;
-            return;
-        }
-        this.growthPlans = Array.from(this.growthPlans.filter((growthPlan) => {
-            if (growthPlan.component.lifeSquares.length == 0) {
-                return false;
-            } else {
-                if (!growthPlan.areStepsCompleted()) {
-                    growthPlan.steps = Array.from(growthPlan.steps.filter((step) => step.completed));
-                };
-                return true;
-            }
-        }));
     }
 
     processColor(color1, color2, value, valueMax, opacity) {
@@ -344,15 +330,12 @@ class BaseOrganism {
         if (this.nitrogen < requiredNitrogen || this.phosphorus < requiredPhosphorus || this.lightlevel < requiredLightLevel) {
             return;
         }
-        let anyStepFound = false;
         this.growthPlans.filter((gp) => !gp.areStepsCompleted()).forEach((growthPlan) => {
-            let step = growthPlan.steps.filter((step) => !step.completed).at(0);
-            step.doAction();
-            anyStepFound = true;
+            growthPlan.steps.filter((step) => !step.completed).at(0).doAction();
             growthPlan.complete();
 
             if (this.originGrowth != null) {
-                this.originGrowth.updateDeflectionState();
+                // this.originGrowth.updateDeflectionState();
                 this.originGrowth.applyDeflectionState();
             }
             if (growthPlan.areStepsCompleted()) {

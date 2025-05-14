@@ -95,7 +95,7 @@ export class CattailOrganism extends BaseOrganism {
             if (this.grasses.length >= 2) {
                 let grass = this.grasses.map((parentPath) => this.originGrowth.getChildFromPath(parentPath)).at(1);
                 let glsq = grass.lifeSquares;
-                if (glsq.length < 5) {
+                if (glsq.length < 9) {
                     return;
                 }
                 let min = glsq.length - 5;
@@ -139,11 +139,6 @@ export class CattailOrganism extends BaseOrganism {
             .filter((grass) => grass.growthPlan.steps.length < this.targetGrassLength)
             .forEach((grass) => {
                 let startNode = grass.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_STEM);
-                if (startNode == null) {
-                    this.growthPlans = Array.from(this.growthPlans.filter((gp) => gp != grass.growthPlan));
-                    this.grasses = Array.from(this.grasses.filter((le) => this.originGrowth.getChildFromPath(le) != grass));
-                    return;
-                }
                 for (let i = 0; i < this.targetGrassLength - grass.growthPlan.steps.length; i++) {
                     grass.growthPlan.steps.push(new GrowthPlanStep(
                         grass.growthPlan,

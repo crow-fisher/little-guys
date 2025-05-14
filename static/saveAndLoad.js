@@ -220,7 +220,7 @@ function getFrameSaveData() {
             orgArr.push(org);
             lsqArr.push(...org.lifeSquares);
             growthPlanArr.push(...org.growthPlans);
-            growthPlanComponentArr.push(...org.growthPlans.map((gp) => gp.component))
+            growthPlanComponentArr.push(...org.growthPlans.map((gp) => gp.component));
             org.growthPlans.forEach((gp) => growthPlanStepArr.push(...gp.steps));
         } else {
             org.destroy();
