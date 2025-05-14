@@ -1,4 +1,4 @@
-import { randNumber, randRange } from "../../common.js";
+import { randNumber, randRange, removeItemAll } from "../../common.js";
 import { GenericParameterizedRootSquare } from "../../lifeSquares/parameterized/GenericParameterizedRootSquare.js";
 import { STAGE_ADULT, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE, TYPE_FLOWER, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_TRUNK, TYPE_STEM, SUBTYPE_FLOWERTIP, STAGE_DEAD } from "../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
@@ -22,7 +22,7 @@ export class CattailOrganism extends BaseOrganism {
         this.targetNumGrass = 1;
         this.maxNumGrass = 3;
 
-        this.targetGrassLength = 14;
+        this.targetGrassLength = 5;
         this.maxGrassLength = 14;
 
         this.numGrowthCycles = 1; 
@@ -95,7 +95,7 @@ export class CattailOrganism extends BaseOrganism {
             if (this.grasses.length >= 2) {
                 let grass = this.grasses.map((parentPath) => this.originGrowth.getChildFromPath(parentPath)).at(1);
                 let glsq = grass.lifeSquares;
-                if (glsq.length < 5) {
+                if (glsq.length < 9) {
                     return;
                 }
                 let min = glsq.length - 5;
@@ -126,17 +126,9 @@ export class CattailOrganism extends BaseOrganism {
             growthPlan.component.xOffset = 3 * (Math.random() - 0.5);
             growthPlan.component.yOffset = - (.5 * (0.5 + Math.random()));
         };
-        growthPlan.component._getWilt = (val) => Math.sin(val) / 2; 
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
-            0,
-            this.grassGrowTimeInDays,
-            () => {
-                let shoot = this.growPlantSquare(startRootNode, 0, 0);
-                shoot.subtype = SUBTYPE_STEM;
-                return shoot;
-            },
-            null
+            () => this.growGreenSquareAction(startRootNode, SUBTYPE_STEM)
         ));
         this.growthPlans.push(growthPlan);
     }
@@ -147,25 +139,12 @@ export class CattailOrganism extends BaseOrganism {
             .filter((grass) => grass.growthPlan.steps.length < this.targetGrassLength)
             .forEach((grass) => {
                 let startNode = grass.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_STEM);
-                if (startNode == null) {
-                    this.growthPlans = Array.from(this.growthPlans.filter((gp) => gp != grass.growthPlan));
-                    this.grasses = Array.from(this.grasses.filter((le) => this.originGrowth.getChildFromPath(le) != grass));
-                    return;
-                }
                 for (let i = 0; i < this.targetGrassLength - grass.growthPlan.steps.length; i++) {
                     grass.growthPlan.steps.push(new GrowthPlanStep(
                         grass.growthPlan,
-                        0,
-                        this.grassGrowTimeInDays,
-                        () => {
-                            let newGrassNode = this.growPlantSquare(startNode, 0, 0);
-                            newGrassNode.subtype = SUBTYPE_STEM;
-                            return newGrassNode;
-                        },
-                        null
-                    ))
+                        () => this.growGreenSquareAction(startNode, SUBTYPE_STEM)
+                    ));
                 };
-                grass.growthPlan.completed = false;
             });
     }
 
@@ -175,7 +154,7 @@ export class CattailOrganism extends BaseOrganism {
             return;
         }
 
-        if (this.growthPlans.some((gp) => !gp.completed)) {
+        if (this.growthPlans.some((gp) => !gp.areStepsCompleted())) {
             this.executeGrowthPlans();
             return;
         }

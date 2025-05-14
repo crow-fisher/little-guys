@@ -6,6 +6,8 @@ import { addSquare, getNeighbors } from "../squares/_sqOperations.js";
 import { PlantSquare } from "../squares/PlantSquare.js";
 import { applyLightingFromSource } from "../lighting/lightingProcessing.js";
 import { loadGD, UI_GODMODE_FASTPLANT, UI_SIMULATION_GENS_PER_DAY } from "../ui/UIData.js";
+import { RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
+import { removeItemAll, rgbToRgba } from "../common.js";
 
 class BaseOrganism {
     constructor(square) {
@@ -63,11 +65,30 @@ class BaseOrganism {
         this.lastDeflectionStateThetaRollingAveragePeriod = 1000;
         this.deflectionIdx = 0;
         this.deflectionStateTheta = 0;
-        this.deflectionStateFunctions = [];
         this.rootOpacity = 0.15;
         this.lighting = square.lighting;
         this.evolutionParameters = [0.5];
         this.deathProgress = 0;
+
+        this.evolutionMinColor = RGB_COLOR_BLUE;
+        this.evolutionMaxColor = RGB_COLOR_VERY_FUCKING_RED;
+    }
+
+    prepareForSave() {
+    }
+
+    processColor(color1, color2, value, valueMax, opacity) {
+        let frac = value / valueMax;
+        let outColor = {
+            r: color1.r * frac + color2.r * (1 - frac),
+            g: color1.g * frac + color2.g * (1 - frac),
+            b: color1.b * frac + color2.b * (1 - frac)
+        }
+        return rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacity);
+    }
+
+    getEvolutionColor(opacity) {
+        return this.processColor(this.evolutionMinColor, this.evolutionMaxColor, this.evolutionParameters.at(0), 1, opacity);
     }
 
     getGrowthCycleLength() {
@@ -117,27 +138,27 @@ class BaseOrganism {
     waterPressureTick() {
         let roots = this.lifeSquares
             .filter((lsq) => lsq.type == "root");
-            let numRoots = roots.map((lsq) => 1).reduce(
-                (accumulator, currentValue) => accumulator + currentValue,
-                0);
-            this.waterPressure += this.waterPressureChangeRate * roots.filter((lsq) => lsq.linkedSquare != null && lsq.linkedSquare.proto == "SoilSquare")
-                .map((lsq) => {
-                    let sq = lsq.linkedSquare;
-                    let sqWaterPressure = sq.getSoilWaterPressure();
-                    let diffToTarget = sqWaterPressure - this.waterPressureSoilTarget;
-                    if (diffToTarget <= 0) {
-                        return 0;
-                    }
-                    sq.waterContainment -= (2 / (numRoots * this.waterPressureLossRate));
-                    return (diffToTarget / numRoots);
-                })
-                .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-            this.waterPressure -= this.waterPressureChangeRate;
+        let numRoots = roots.map((lsq) => 1).reduce(
+            (accumulator, currentValue) => accumulator + currentValue,
+            0);
+        this.waterPressure += this.waterPressureChangeRate * roots.filter((lsq) => lsq.linkedSquare != null && lsq.linkedSquare.proto == "SoilSquare")
+            .map((lsq) => {
+                let sq = lsq.linkedSquare;
+                let sqWaterPressure = sq.getSoilWaterPressure();
+                let diffToTarget = sqWaterPressure - this.waterPressureSoilTarget;
+                if (diffToTarget <= 0) {
+                    return 0;
+                }
+                sq.waterContainment -= (2 / (numRoots * this.waterPressureLossRate));
+                return (diffToTarget / numRoots);
+            })
+            .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+        this.waterPressure -= this.waterPressureChangeRate;
 
-            if (this.waterPressure > this.waterPressureTarget) {
-                this.waterPressure -= 5 * this.getWilt() * this.waterPressureChangeRate;
-            }
+        if (this.waterPressure > this.waterPressureTarget) {
+            this.waterPressure -= 5 * this.getWilt() * this.waterPressureChangeRate;
         }
+    }
 
     nutrientTick() {
         let growthCycleFrac = getDt() / this.getGrowthCycleMaturityLength();
@@ -258,6 +279,13 @@ class BaseOrganism {
         component.children.forEach((child) => out.push(...this._getOriginForNewGrowth(subtype, child)));
         return out;
     }
+
+    growGreenSquareAction(startNode, subtype) {
+        let newGrassNode = this.growPlantSquare(startNode, 0, 0);
+        newGrassNode.subtype = subtype;
+        return newGrassNode;
+    }
+
     addSproutGrowthPlan() {
         if (!this.linkedSquare.surface) {
             this.destroy();
@@ -268,8 +296,6 @@ class BaseOrganism {
             0, 0, TYPE_HEART, 10 ** 8);
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
-            0,
-            0,
             () => {
                 let rootSq = new this.rootType(this.linkedSquare, this);
                 rootSq.linkSquare(this.linkedSquare);
@@ -304,23 +330,17 @@ class BaseOrganism {
         if (this.nitrogen < requiredNitrogen || this.phosphorus < requiredPhosphorus || this.lightlevel < requiredLightLevel) {
             return;
         }
-        let anyStepFound = false;
-        this.growthPlans.filter((gp) => !gp.completed).forEach((growthPlan) => {
-            let step = growthPlan.steps.filter((step) => !step.completed).at(0);
-            step.doAction();
-            step.growthPlan.stepLastExecuted = getCurDay();
-            anyStepFound = true;
+        this.growthPlans.filter((gp) => !gp.areStepsCompleted()).forEach((growthPlan) => {
+            growthPlan.steps.filter((step) => !step.completed).at(0).doAction();
+            growthPlan.complete();
 
             if (this.originGrowth != null) {
-                this.originGrowth.updateDeflectionState();
+                // this.originGrowth.updateDeflectionState();
                 this.originGrowth.applyDeflectionState();
             }
-
             if (growthPlan.areStepsCompleted()) {
-                growthPlan.complete();
                 this.stage = growthPlan.endStage;
             }
-
             if (growthPlan.required && growthPlan.steps.some((step) => step.completedSquare == null)) {
                 this.destroy();
             }
@@ -479,15 +499,15 @@ class BaseOrganism {
 
     // DESTRUCTION
     destroy() {
-        console.log("Organism dying; state: " ,
-            this.proto, 
-            "light:", 
+        console.log("Organism dying; state: ",
+            this.proto,
+            "light:",
             this.lightlevel,
             this.growthLightLevel,
             "nitogen:",
             this.nitrogen,
             this.growthNitrogen,
-            "phosphorus:", 
+            "phosphorus:",
             this.phosphorus,
             this.growthPhosphorus
         );

@@ -215,11 +215,12 @@ function getFrameSaveData() {
     let growthPlanStepArr = new Array();
 
     iterateOnOrganisms((org) => {
+        org.prepareForSave();
         if (org.stage != STAGE_DEAD) {
             orgArr.push(org);
             lsqArr.push(...org.lifeSquares);
             growthPlanArr.push(...org.growthPlans);
-            growthPlanComponentArr.push(...org.growthPlans.map((gp) => gp.component))
+            growthPlanComponentArr.push(...org.growthPlans.map((gp) => gp.component));
             org.growthPlans.forEach((gp) => growthPlanStepArr.push(...gp.steps));
         } else {
             org.destroy();
@@ -239,7 +240,7 @@ function getFrameSaveData() {
     });
 
     growthPlanArr.forEach((gp) => {
-        gp.steps = Array.from(gp.steps.map((gps) => growthPlanStepArr.indexOf(gps)));
+        gp.steps = Array.from(gp.steps.filter((gps) => gps.completed).map((gps) => growthPlanStepArr.indexOf(gps)));
         gp.component = growthPlanComponentArr.indexOf(gp.component);
     });
 

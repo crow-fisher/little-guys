@@ -2,6 +2,7 @@ import { getCurDay } from "../climate/time.js";
 import { getWindSpeedAtLocation } from "../climate/simulation/wind.js";
 import { STATE_DESTROYED } from "./Stages.js";
 import { getGlobalThetaBase } from "../globals.js";
+import { removeItemAll } from "../common.js";
 
 const ROLLING_AVERAGE_PERIOD = 200;
 export class GrowthPlan {
@@ -16,7 +17,6 @@ export class GrowthPlan {
         this.baseDeflection = baseDeflection;
         this.baseCurve = baseCurve;
         this.type = type;
-        this.completed = false;
         this.stepLastExecuted = 0;
         this.component = new GrowthComponent(
             this,
@@ -28,10 +28,7 @@ export class GrowthPlan {
         return this.steps.every((step) => step.completed);
     }
 
-    postConstruct() {
-    }
-
-    postComplete() { };
+    postConstruct() { };
 
     setBaseDeflectionOverTime(deflectionOverTimeList) {
         this.deflectionOverTimeList = deflectionOverTimeList;
@@ -44,44 +41,28 @@ export class GrowthPlan {
     }
 
     complete() {
-        this.completed = true;
-        this.postComplete();
-    }
-
-    executePostConstruct() {
         this.postConstruct();
-        this.postConstruct = () => null;
+        this.postConstruct = () => {}
     }
-
 }
 
 export class GrowthPlanStep {
-    constructor(growthPlan, energyCost, timeCost, growSqAction, otherAction) {
+    constructor(growthPlan, growSqAction) {
         this.growthPlan = growthPlan;
-        this.energyCost = energyCost;
-        this.timeCost = timeCost;
         this.growSqAction = growSqAction;
-        this.otherAction = otherAction;
         this.completed = false;
         this.completedSquare = null;
     }
 
     doAction() {
         if (this.growSqAction != null) {
-            let newLifeSquare = this.growSqAction(); // TODO: This can't be a lambda! Saving and loading breaks it.
+            let newLifeSquare = this.growSqAction();
             this.completed = true;
             if (newLifeSquare) {
                 this.completedSquare = newLifeSquare;
                 newLifeSquare.component = this.growthPlan.component;
+                this.growthPlan.component.addLifeSquare(newLifeSquare);
             }
-            this.growthPlan.executePostConstruct();
-            this.growthPlan.component.addLifeSquare(newLifeSquare);
-        } else {
-            this.growthPlan.steps = Array.from(this.growthPlan.steps.filter((step) => step != this));
-        }
-        if (this.otherAction != null) {
-            this.otherAction();
-            this.completed = true;
         }
     }
 }
@@ -320,8 +301,8 @@ export class GrowthComponent {
         }
     }
 
-    _getWilt(wilt) {
-        return wilt;
+    _getWilt(val) {
+        return Math.sin(val) / 2;
     }
 
     getWilt() {
