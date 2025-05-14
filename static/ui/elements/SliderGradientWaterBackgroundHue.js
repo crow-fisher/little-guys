@@ -32,11 +32,6 @@ export class SliderGradientBackgroundWaterHue extends WindowElement {
         let blockSize = this.sizeY;
         let invlerp = (loadGD(this.key) - this.min) / (this.max - this.min);
         let lerp = invlerp * this.sizeX;
-
-        MAIN_CONTEXT.fillStyle = getWaterColorTransformed(NULL, NULL, NULL, NULL);
-        MAIN_CONTEXT.fillRect(startX + lerp - (blockSize / 2), startY, blockSize, this.sizeY);
-        MAIN_CONTEXT.fill();
-
         let lineWidth = getBaseUISize() * 0.1;
         MAIN_CONTEXT.strokeStyle = COLOR_BLACK;        // set the color for the circle to 'green'
         MAIN_CONTEXT.lineWidth = lineWidth;

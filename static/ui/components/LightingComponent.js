@@ -15,17 +15,15 @@ import { loadGD, UI_LIGHTING_SUN, UI_LIGHTING_MOON, UI_LIGHTING_WATER, UI_LIGHTI
 import { Text } from "../elements/Text.js";
 
 export function getWaterColorDark() {
-    let s = new WaterSquare(-1, -1);
-    let rgb = s.getColorBase();
-    let waterHsv = rgb2hsv(rgb.r, rgb.g, rgb.b);
-    waterHsv[2] *= 0.15;
-    return rgbToHex(...hsv2rgb(...waterHsv));
+   return getWaterColor(0.5)
 }
 
 export function getWaterColor(mult=1) {
     let s = new WaterSquare(-1, -1);
     let rgb = s.getColorBase();
     let waterHsv = rgb2hsv(rgb.r, rgb.g, rgb.b);
+    waterHsv[1] = 0.3;
+    waterHsv[2] = 200;
     waterHsv[2] *= mult;
     return rgbToHex(...hsv2rgb(...waterHsv));
 }

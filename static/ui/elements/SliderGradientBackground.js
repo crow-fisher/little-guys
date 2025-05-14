@@ -34,9 +34,11 @@ export class SliderGradientBackground extends WindowElement {
         let invlerp = (loadGD(this.key) - this.min) / (this.max - this.min);
         let lerp = invlerp * this.sizeX;
 
-        MAIN_CONTEXT.fillStyle = calculateColor(invlerp, 0, 1, this.minColorFunc, this.maxColorFunc);
-        MAIN_CONTEXT.fillRect(startX + lerp - (blockSize / 2), startY, blockSize, this.sizeY);
-        MAIN_CONTEXT.fill();
+        if (!this.renderSkyBackground) {
+            MAIN_CONTEXT.fillStyle = calculateColor(invlerp, 0, 1, this.minColorFunc, this.maxColorFunc);
+            MAIN_CONTEXT.fillRect(startX + lerp - (blockSize / 2), startY, blockSize, this.sizeY);
+            MAIN_CONTEXT.fill();
+        }
 
         let lineWidth = getBaseUISize() * 0.1;
         MAIN_CONTEXT.strokeStyle = COLOR_BLACK;        // set the color for the circle to 'green'
