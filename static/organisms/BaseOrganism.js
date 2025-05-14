@@ -349,17 +349,15 @@ class BaseOrganism {
             let step = growthPlan.steps.filter((step) => !step.completed).at(0);
             step.doAction();
             anyStepFound = true;
+            growthPlan.complete();
 
             if (this.originGrowth != null) {
                 this.originGrowth.updateDeflectionState();
                 this.originGrowth.applyDeflectionState();
             }
-
             if (growthPlan.areStepsCompleted()) {
-                growthPlan.complete();
                 this.stage = growthPlan.endStage;
             }
-
             if (growthPlan.required && growthPlan.steps.some((step) => step.completedSquare == null)) {
                 this.destroy();
             }

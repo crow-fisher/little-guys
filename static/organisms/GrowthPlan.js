@@ -28,7 +28,7 @@ export class GrowthPlan {
         return this.steps.every((step) => step.completed);
     }
 
-    postComplete() { };
+    postConstruct() { };
 
     setBaseDeflectionOverTime(deflectionOverTimeList) {
         this.deflectionOverTimeList = deflectionOverTimeList;
@@ -41,16 +41,9 @@ export class GrowthPlan {
     }
 
     complete() {
-        this.postComplete();
+        this.postConstruct();
+        this.postConstruct = () => {}
     }
-
-    executePostConstruct() {
-        if (this.postConstruct != null) {
-            this.postConstruct();
-            this.postConstruct = null;
-        } 
-    }
-
 }
 
 export class GrowthPlanStep {
@@ -70,7 +63,6 @@ export class GrowthPlanStep {
                 newLifeSquare.component = this.growthPlan.component;
                 this.growthPlan.component.addLifeSquare(newLifeSquare);
             }
-            this.growthPlan.executePostConstruct();
         }
     }
 }
