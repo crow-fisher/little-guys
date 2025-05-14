@@ -74,8 +74,13 @@ addUIFunctionMap(UI_SIMULATION_HEIGHT, () => {
 
 addUIFunctionMap(UI_UI_SIZE, initUI)
 
+let backgroundColor = "#FFFFFF";
 export function setBackgroundColor(hexColor) {
+    backgroundColor = hexColor;
     body.style = "background-color: " + hexColor
+}
+export function getCurBackgroundColor() {
+    return backgroundColor;
 }
 
 window.onresize = indexCanvasSize;

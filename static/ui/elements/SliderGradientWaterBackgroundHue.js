@@ -1,7 +1,7 @@
 import { getBaseUISize } from "../../canvas.js";
 import { calculateColor } from "../../climate/simulation/temperatureHumidity.js";
 import { COLOR_BLACK, COLOR_BLUE, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
-import { MAIN_CONTEXT } from "../../index.js";
+import { getCurBackgroundColor, MAIN_CONTEXT } from "../../index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
 import { getWaterColorTransformed, NULL } from "../components/LightingComponent.js";
 import { loadGD, saveGD } from "../UIData.js";
@@ -18,8 +18,9 @@ export class SliderGradientBackgroundWaterHue extends WindowElement {
     }
 
     render(startX, startY) {
+        MAIN_CONTEXT.fillStyle = getCurBackgroundColor();
+        MAIN_CONTEXT.fillRect(startX, startY, this.sizeX, this.sizeY);
         let gradient = MAIN_CONTEXT.createLinearGradient(startX, startY, this.sizeX + startX, startY);
-
         let steps = 10;
         for (let i = 0; i <= steps; i++) {
             let frac = i / steps;

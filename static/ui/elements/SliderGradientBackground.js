@@ -1,13 +1,13 @@
 import { getBaseUISize } from "../../canvas.js";
 import { calculateColor } from "../../climate/simulation/temperatureHumidity.js";
 import { COLOR_BLACK, COLOR_BLUE, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
-import { MAIN_CONTEXT } from "../../index.js";
+import { getCurBackgroundColor, MAIN_CONTEXT } from "../../index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
 import { loadGD, saveGD } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class SliderGradientBackground extends WindowElement {
-    constructor(window, key, sizeX, sizeY, min, max, minColorFunc, maxColorFunc) {
+    constructor(window, key, sizeX, sizeY, min, max, minColorFunc, maxColorFunc, renderSkyBackground=false) {
         super(window, sizeX, sizeY);
         this.key = key;
         this.sizeX = sizeX;
@@ -16,9 +16,14 @@ export class SliderGradientBackground extends WindowElement {
         this.max = max;
         this.minColorFunc = minColorFunc;
         this.maxColorFunc = maxColorFunc;
+        this.renderSkyBackground = renderSkyBackground;
     }
 
     render(startX, startY) {
+        if (this.renderSkyBackground) {
+            MAIN_CONTEXT.fillStyle = getCurBackgroundColor();
+            MAIN_CONTEXT.fillRect(startX, startY, this.sizeX, this.sizeY);
+        }
         let gradient = MAIN_CONTEXT.createLinearGradient(startX, startY, this.sizeX + startX, startY);
         gradient.addColorStop(0, this.minColorFunc());
         gradient.addColorStop(1, this.maxColorFunc());
