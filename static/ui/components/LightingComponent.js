@@ -22,7 +22,7 @@ export function getWaterColor(mult=1) {
     let s = new WaterSquare(-1, -1);
     let rgb = s.getColorBase();
     let waterHsv = rgb2hsv(rgb.r, rgb.g, rgb.b);
-    waterHsv[1] = 0.3;
+    waterHsv[1] = 0.6;
     waterHsv[2] = 200;
     waterHsv[2] *= mult;
     return rgbToHex(...hsv2rgb(...waterHsv));

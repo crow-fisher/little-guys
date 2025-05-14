@@ -9,13 +9,14 @@ import { removeSquare } from "../globalOperations.js";
 import { STATE_HEALTHY, STATE_DESTROYED, STAGE_DEAD } from "../organisms/Stages.js";
 import { getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasFillRectTheta } from "../canvas.js";
-import { loadGD, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../ui/UIData.js";
+import { loadGD, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../ui/UIData.js";
 import { isLeftMouseClicked } from "../mouse.js";
 
 export const LSQ_RENDERMODE_SQUARE = "LSQ_RENDERMODE_SQUARE";
 export const LSQ_RENDERMODE_CIRCLE = "LSQ_RENDERMODE_CIRCLE";
 export const LSQ_RENDERMODE_THETA = "LSQ_RENDERMODE_THETA";
 
+const NUTRIENT_BASE_HSV = rgb2hsv(RGB_COLOR_GREEN.r, RGB_COLOR_GREEN.g, RGB_COLOR_GREEN.b);
 class BaseLifeSquare {
     constructor(square, organism) {
         this.proto = "BaseLifeSquare";
@@ -221,7 +222,7 @@ class BaseLifeSquare {
             this.subtypeColorUpdate();
         }
         if (this.linkedOrganism.stage == STAGE_DEAD) {
-            frameOpacity *= 1 - this.linkedOrganism.deathProgress;
+            frameOpacity *= (1 - this.linkedOrganism.deathProgress ** 6);
         }
         let selectedViewMode = loadGD(UI_VIEWMODE_SELECT);
         if (selectedViewMode == UI_VIEWMODE_NITROGEN) {
@@ -271,6 +272,16 @@ class BaseLifeSquare {
 
             this.renderToCanvas();
             return;
+        } else if (selectedViewMode == UI_VIEWMODE_NUTRIENTS) {
+            let myhsv = structuredClone(NUTRIENT_BASE_HSV);
+            let hueShift = ((this.nitrogenIndicated + this.phosphorusIndicated) / 2) - this.lightlevelIndicated; 
+            myhsv[0] += 60 * (hueShift)
+            myhsv[1] = (this.nitrogenIndicated + this.phosphorusIndicated + this.lightlevelIndicated) / 3;
+            if (this.type == "green")
+                MAIN_CONTEXT.fillStyle = rgbToRgba(...hsv2rgb(...myhsv), 0.8);
+            else
+                MAIN_CONTEXT.fillStyle = rgbToRgba(...hsv2rgb(...myhsv), 0.5);
+            this.renderToCanvas();
         }
         else {
             if (selectedViewMode == UI_VIEWMODE_ORGANISMS) {
