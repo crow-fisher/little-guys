@@ -124,14 +124,7 @@ export class WheatOrganism extends BaseOrganism {
         }
         stem.growthPlan.steps.push(new GrowthPlanStep(
             stem.growthPlan,
-            0,
-            this.grassGrowTimeInDays,
-            () => {
-                let shoot = this.growPlantSquare(startNode, 0, 0);
-                shoot.subtype = SUBTYPE_STEM;
-                return shoot;
-            },
-            null
+            () => this.growGreenSquareAction(startNode, SUBTYPE_STEM)
         ));
     } 
     lengthenLeaves() {
@@ -149,12 +142,7 @@ export class WheatOrganism extends BaseOrganism {
                 for (let i = 0; i < this.targetLeafLength - leaf.growthPlan.steps.length; i++) {
                     leaf.growthPlan.steps.push(new GrowthPlanStep(
                         leaf.growthPlan,
-                        () => {
-                            let leaf = this.growPlantSquare(startNode, 0, 0);
-                            leaf.subtype = SUBTYPE_LEAF;
-                            return leaf;
-                        },
-                        null
+                        () => this.growGreenSquareAction(startNode, SUBTYPE_LEAF)
                     ))
                 };
             })
