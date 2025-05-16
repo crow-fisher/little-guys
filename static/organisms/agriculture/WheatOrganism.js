@@ -17,10 +17,11 @@ export class WheatOrganism extends BaseOrganism {
         this.proto = "WheatOrganism";
         this.greenType = WheatGreenSquare;
         this.rootType = GenericParameterizedRootSquare;
-        this.grassGrowTimeInDays =  0.01;
+        this.grassGrowTimeInDays = 0.01;
         this.side = Math.random() > 0.5 ? -1 : 1;
 
-        this.growthCycleLength = this.growthCycleMaturityLength * 4;
+        this.growthCycleMaturityLength = 20;
+        this.growthCycleLength = this.growthCycleMaturityLength * 2;
 
         this.stems = [];
         this.leaves = [];
@@ -41,8 +42,21 @@ export class WheatOrganism extends BaseOrganism {
 
         this.growthLightLevel = 0.5;
 
+        this.growthNumGreen = this.maxNumNodes * (this.maxStemLength + this.maxLeafLength);
+    }
+
+    processGenetics() {
+        this.evolutionParameters[0] = Math.min(Math.max(this.evolutionParameters[0], 0.00001), .99999)
+        let p0 = this.evolutionParameters[0];
+        this.growthLightLevel = p0 * 0.4;
+
+        this.maxNumNodes = 3 + Math.floor(this.maxNumNodes * p0);
+        this.maxStemLength = 2 + Math.floor(this.maxStemLength * p0);
+        this.maxGrassLength = 4 + Math.floor(this.maxGrassLength * p0);
+        this.maxLeafLength = 2 + Math.floor(this.maxLeafLength * p0);
 
         this.growthNumGreen = this.maxNumNodes * (this.maxStemLength + this.maxLeafLength);
+        this.growthNumRoots = this.growthNumGreen * 0.7;
     }
 
     growStem(parent, startNode, theta) {
@@ -50,9 +64,9 @@ export class WheatOrganism extends BaseOrganism {
             return;
         }
         let growthPlan = new GrowthPlan(
-            startNode.posX, startNode.posY, 
-            false, STAGE_ADULT, 
-            theta, 0, 0, 0, 
+            startNode.posX, startNode.posY,
+            false, STAGE_ADULT,
+            theta, 0, 0, 0,
             randRange(0, 0.05), TYPE_STEM, 10);
 
         growthPlan.postConstruct = () => {
@@ -62,7 +76,7 @@ export class WheatOrganism extends BaseOrganism {
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
             () => {
-                let node = this.growPlantSquare(startNode, 0,growthPlan.steps.length);
+                let node = this.growPlantSquare(startNode, 0, growthPlan.steps.length);
                 node.subtype = SUBTYPE_NODE;
                 return node;
             }
@@ -75,9 +89,9 @@ export class WheatOrganism extends BaseOrganism {
             return;
         }
         let growthPlan = new GrowthPlan(
-            startNode.posX, startNode.posY, 
-            false, STAGE_ADULT, this.curLeafTheta, 0, 0, 
-            randRange(0.5, 0.8), 
+            startNode.posX, startNode.posY,
+            false, STAGE_ADULT, this.curLeafTheta, 0, 0,
+            randRange(0.5, 0.8),
             randRange(.3, .6), TYPE_LEAF, 1);
 
         growthPlan.postConstruct = () => {
@@ -87,7 +101,7 @@ export class WheatOrganism extends BaseOrganism {
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
             () => {
-                let node = this.growPlantSquare(startNode, 0,growthPlan.steps.length);
+                let node = this.growPlantSquare(startNode, 0, growthPlan.steps.length);
                 node.subtype = SUBTYPE_LEAF;
                 return node;
             }
@@ -126,7 +140,7 @@ export class WheatOrganism extends BaseOrganism {
             stem.growthPlan,
             () => this.growGreenSquareAction(startNode, SUBTYPE_STEM)
         ));
-    } 
+    }
     lengthenLeaves() {
         this.leaves
             .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
@@ -154,9 +168,9 @@ export class WheatOrganism extends BaseOrganism {
         let startNode = parent.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_NODE);
 
         let growthPlan = new GrowthPlan(
-            startNode.posX, startNode.posY, 
-            false, STAGE_ADULT, 
-            this.curLeafTheta, 0, 0, .05, 
+            startNode.posX, startNode.posY,
+            false, STAGE_FLOWER,
+            this.curLeafTheta, 0, 0, .05,
             randRange(0.15, 0.25), TYPE_FLOWER, 1);
 
         growthPlan.postConstruct = () => {
@@ -192,25 +206,33 @@ export class WheatOrganism extends BaseOrganism {
         this.growStem(this.originGrowth, this.originGrowth.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_ROOTNODE), randRange(0, Math.PI * 2));
     }
 
+    flowerGrowthPlanning() {
+        if (this.flower == null) {
+            return;
+        }
+        let flowerComponent = this.originGrowth.getChildFromPath(this.flower);
+        if (flowerComponent.growthPlan.steps.length < this.targetFlowerLength) {
+            this.lengthenFlower();
+        }
+    }
+
     adultGrowthPlanning() {
         if (this.growthPlans.some((gp) => !gp.areStepsCompleted())) {
             this.executeGrowthPlans();
             return;
         }
 
-        if (this.nitrogen > this.growthNitrogen * 0.85 && 
-            this.phosphorus > this.growthPhosphorus * 0.85 && 
-            this.lightlevel > this.growthLightLevel * 0.85) {
-            if (this.flower == null) {
-                this.growFlower();
-            }
-            if (this.flower != null) {
-                let flowerComponent = this.originGrowth.getChildFromPath(this.flower);
-                if (flowerComponent.growthPlan.steps.length < this.targetFlowerLength) {
-                    this.lengthenFlower();
+        if (this.getAge() > 0.95 * this.getGrowthCycleMaturityLength()) {
+            if (this.nitrogen > this.growthNitrogen * 0.85 &&
+                this.phosphorus > this.growthPhosphorus * 0.85 &&
+                this.lightlevel > this.growthLightLevel * 0.85) {
+                if (this.flower == null) {
+                    this.growFlower();
+                    return;
                 }
             }
         }
+
 
         if (this.stems.length < this.targetNumStems) {
             this.adultGrowStem();
@@ -218,8 +240,8 @@ export class WheatOrganism extends BaseOrganism {
         }
 
         if (this.stems
-                .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
-                .some((stem) => stem.growthPlan.steps.length < this.targetStemLength)) {
+            .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
+            .some((stem) => stem.growthPlan.steps.length < this.targetStemLength)) {
             this.lengthenStems();
             return;
         }
@@ -230,8 +252,8 @@ export class WheatOrganism extends BaseOrganism {
         }
 
         if (this.leaves
-                .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
-                .some((leaf) => leaf.growthPlan.steps.length < Math.min(this.targetStemLength * (this.maxLeafLength / this.maxStemLength), this.targetLeafLength))) {
+            .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
+            .some((leaf) => leaf.growthPlan.steps.length < Math.min(this.targetStemLength * (this.maxLeafLength / this.maxStemLength), this.targetLeafLength))) {
             this.lengthenLeaves();
             return;
         }
@@ -249,7 +271,7 @@ export class WheatOrganism extends BaseOrganism {
             this.targetStemLength += 1;
             return;
         }
-        
+
 
     }
 
@@ -270,7 +292,7 @@ export class WheatOrganism extends BaseOrganism {
             }
         }
 
-        let reduction = 0.8;
+        let reduction = 0.5;
         this.nitrogen *= (1 - reduction);
         this.phosphorus *= (1 - reduction);
         this.lightlevel *= (1 - reduction);
@@ -286,6 +308,9 @@ export class WheatOrganism extends BaseOrganism {
         }
         if (this.stage == STAGE_ADULT) {
             this.adultGrowthPlanning();
+        }
+        if (this.stage == STAGE_FLOWER) {
+            this.flowerGrowthPlanning();
         }
     }
 }

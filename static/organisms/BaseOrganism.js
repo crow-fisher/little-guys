@@ -1,7 +1,7 @@
 import { removeOrganism } from "./_orgOperations.js";
 import { getCurDay, getDt } from "../climate/time.js";
 import { GrowthPlan, GrowthPlanStep } from "./GrowthPlan.js";
-import { STAGE_DEAD, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_ROOTNODE, TYPE_HEART } from "./Stages.js";
+import { STAGE_ADULT, STAGE_DEAD, STAGE_FLOWER, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_ROOTNODE, TYPE_HEART } from "./Stages.js";
 import { addSquare, getNeighbors } from "../squares/_sqOperations.js";
 import { PlantSquare } from "../squares/PlantSquare.js";
 import { applyLightingFromSource } from "../lighting/lightingProcessing.js";
@@ -92,15 +92,12 @@ class BaseOrganism {
     }
 
     getGrowthCycleLength() {
-        return 4 * (this.growthCycleLength / loadGD(UI_SIMULATION_GENS_PER_DAY));
+        return (this.growthCycleLength / loadGD(UI_SIMULATION_GENS_PER_DAY));
     }
     getGrowthCycleMaturityLength() {
-        return 4 * (this.growthCycleMaturityLength / loadGD(UI_SIMULATION_GENS_PER_DAY));
+        return (this.growthCycleMaturityLength / loadGD(UI_SIMULATION_GENS_PER_DAY));
     }
     getGrowthLightLevel() {
-        if (loadGD(UI_SIMULATION_GENS_PER_DAY) < 1) {
-            return this.growthLightLevel * 0.4; // (because night)
-        }
         return this.growthLightLevel;
     }
 
@@ -162,15 +159,15 @@ class BaseOrganism {
 
     nutrientTick() {
         let growthCycleFrac = getDt() / this.getGrowthCycleMaturityLength();
-        let targetPerRootNitrogen = this.growthNitrogen * growthCycleFrac / this.growthNumRoots;
-        let targetPerRootPhosphorus = this.growthPhosphorus * growthCycleFrac / this.growthNumRoots;
+        let targetPerRootNitrogen = this.growthNitrogen * growthCycleFrac / (this.growthNumRoots ** 1.5);
+        let targetPerRootPhosphorus = this.growthPhosphorus * growthCycleFrac / (this.growthNumRoots ** 1.5);
 
         this.lifeSquares
             .filter((lsq) => lsq.type == "root")
             .filter((lsq) => lsq.linkedSquare != null && lsq.linkedSquare.proto == "SoilSquare")
             .forEach((lsq) => {
-                this.nitrogen += this.wiltEfficiency() * lsq.linkedSquare.takeNitrogen(targetPerRootNitrogen, growthCycleFrac);
-                this.phosphorus += this.wiltEfficiency() * lsq.linkedSquare.takePhosphorus(targetPerRootPhosphorus, growthCycleFrac);
+                this.nitrogen += this.wiltEfficiency() * lsq.linkedSquare.takeNitrogen(targetPerRootNitrogen);
+                this.phosphorus += this.wiltEfficiency() * lsq.linkedSquare.takePhosphorus(targetPerRootPhosphorus);
             });
 
         this.lightlevel += this.lifeSquares
@@ -322,14 +319,18 @@ class BaseOrganism {
     }
 
     executeGrowthPlans() {
-        let curLifeFrac = this.getCurGrowthFrac();
-        let requiredNitrogen = curLifeFrac * this.growthNitrogen;
-        let requiredPhosphorus = curLifeFrac * this.growthPhosphorus;
-        let requiredLightLevel = curLifeFrac * this.getGrowthLightLevel();
+        let curLifeFrac = Math.min(1, this.getAge() / this.getGrowthCycleMaturityLength());
+        let requiredNitrogen = (curLifeFrac ** 2) * this.growthNitrogen;
+        let requiredPhosphorus = (curLifeFrac ** 2) * this.growthPhosphorus;
+        let requiredLightLevel = (curLifeFrac ** 2) * this.getGrowthLightLevel();
 
-        if (this.nitrogen < requiredNitrogen || this.phosphorus < requiredPhosphorus || this.lightlevel < requiredLightLevel) {
+        if (this.nitrogen < requiredNitrogen || this.phosphorus < requiredPhosphorus) {
+            this.growOptimalRoot();
+        }
+        if (this.lifeSquares.length > 2 && (this.lightlevel < requiredLightLevel)) {
             return;
         }
+
         this.growthPlans.filter((gp) => !gp.areStepsCompleted()).forEach((growthPlan) => {
             growthPlan.steps.filter((step) => !step.completed).at(0).doAction();
             growthPlan.complete();
@@ -348,7 +349,11 @@ class BaseOrganism {
     }
 
     growRoot(f) {
-        if (getCurDay() < this.rootLastGrown + (this.getGrowthCycleMaturityLength() / this.growthNumRoots)) {
+        // if (getCurDay() < this.rootLastGrown + (this.getGrowthCycleMaturityLength() / this.growthNumRoots)) {
+        //     return;
+        // }
+
+        if (this.curNumRoots > this.growthNumRoots * 2) {
             return;
         }
         this.rootLastGrown = getCurDay();
@@ -402,20 +407,25 @@ class BaseOrganism {
         }
         let curMaturityFrac = Math.min(1, this.getAge() / this.getGrowthCycleMaturityLength());
 
+
+        let expectedLightLevel = curMaturityFrac ** 2 * this.getGrowthLightLevel();
+
+        // if (this.lightlevel > (expectedLightLevel * 1.1) && curMaturityFrac > 0.25) {
+        //     this.lifeSquares.forEach((lsq) => lsq.lightHealth *= 0.9);
+        //     this.lightlevel = expectedLightLevel;
+        //     this.lightDamageCount += 1;
+        //     if (this.lightDamageCount > 10) {
+        //         this.stage = STAGE_DEAD;
+        //     }
+        // }
+
+        this.executeGrowthPlans();
+    }
+
+    growOptimalRoot() {
+        let curMaturityFrac = Math.min(1, this.getAge() / this.getGrowthCycleMaturityLength());
         let expectedNitrogen = curMaturityFrac ** 2 * this.growthNitrogen;
         let expectedPhosphorus = curMaturityFrac ** 2 * this.growthPhosphorus;
-        let expectedLightLevel = curMaturityFrac ** 2 * this.getGrowthLightLevel();
-        let expectedNumRoots = curMaturityFrac * this.growthNumRoots;
-
-        if (this.lightlevel > (expectedLightLevel * 1.1) && curMaturityFrac > 0.25) {
-            this.lifeSquares.forEach((lsq) => lsq.lightHealth *= 0.9);
-            this.growthLightLevel = expectedLightLevel;
-            this.lightDamageCount += 1;
-            if (this.lightDamageCount > 10) {
-                this.stage = STAGE_DEAD;
-            }
-        }
-
         let scoreFunc = (sq) => {
             let sqScore = 0;
             if (this.waterPressure < this.waterPressureTarget) {
@@ -428,12 +438,7 @@ class BaseOrganism {
                 sqScore += (sq.phosphorus / this.growthPhosphorus) / (sq.linkedOrganismSquares.length + 1);
             }
         }
-        if ((this.curNumRoots < expectedNumRoots) && (this.nitrogen < expectedNitrogen || this.phosphorus < expectedPhosphorus)) {
-            this.growRoot(scoreFunc);
-        }
-        if (this.lightlevel < expectedLightLevel) {
-            this.executeGrowthPlans();
-        }
+        this.growRoot(scoreFunc);
     }
 
     // ** PLAN GROWTH METHOD IMPLEMENTED BY ORGANISMS 
@@ -450,10 +455,19 @@ class BaseOrganism {
         if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_NUTRIENTS) {
             this.setNutrientIndicators();
         }
-        this.lifeSquares.forEach((sp) => sp.render())
+        if (this.stage != STAGE_DEAD) {
+            this.lifeSquares.forEach((sp) => sp.render())
+        }
     }
 
     setNutrientIndicators() {
+        let compareFunc = (lsq) => {
+            let relLsqX = (this.posX - lsq.posX);
+            let relLsqY = (this.posY - lsq.posY);
+            return (relLsqX ** 2 + relLsqY ** 2) ** 0.5;
+        }
+        this.lifeSquares.sort((a, b) => compareFunc(a) - compareFunc(b));
+
         let maturityLifeFrac = Math.min(1, this.getAge() / this.getGrowthCycleMaturityLength());
         let expectedNitrogen = maturityLifeFrac ** 2 * this.growthNitrogen;
         let expectedPhosphorus = maturityLifeFrac ** 2 * this.growthPhosphorus;
@@ -530,9 +544,13 @@ class BaseOrganism {
         if (this.stage == STAGE_DEAD) {
             return;
         }
-        let max = this.spawnTime + this.curLifeTimeOffset + this.getGrowthCycleLength() * this.numGrowthCycles;
-        if (getCurDay() > max) {
+        if (this.getAge() > this.getGrowthCycleLength() * this.numGrowthCycles) {
             this.stage = STAGE_DEAD;
+            return;
+        }
+        if (this.stage == STAGE_ADULT && this.getAge() > this.getGrowthCycleMaturityLength()) {
+            this.stage = STAGE_FLOWER;
+            return;
         }
     }
 
