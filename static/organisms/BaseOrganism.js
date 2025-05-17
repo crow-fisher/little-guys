@@ -159,8 +159,9 @@ class BaseOrganism {
 
     nutrientTick() {
         let growthCycleFrac = getDt() / this.getGrowthCycleMaturityLength();
-        let targetPerRootNitrogen = this.growthNitrogen * growthCycleFrac / (this.growthNumRoots ** 1.5);
-        let targetPerRootPhosphorus = this.growthPhosphorus * growthCycleFrac / (this.growthNumRoots ** 1.5);
+
+        let targetPerRootNitrogen = (1 / 2) * this.growthNitrogen * (1 / this.growthNumRoots ** 2)
+        let targetPerRootPhosphorus = (1 / 2) * this.growthPhosphorus * (1 / this.growthNumRoots ** 2)
 
         this.lifeSquares
             .filter((lsq) => lsq.type == "root")
@@ -174,7 +175,7 @@ class BaseOrganism {
             .filter((lsq) => lsq.type == "green")
             .map((lsq) => [lsq.processLighting(), lsq.lightHealth ** 4])
             .map((argb) => argb[1] * (argb[0].r + argb[0].b) / (255 * 2))
-            .map((lightlevel) => this.wiltEfficiency() * (lightlevel / this.growthNumGreen) * growthCycleFrac)
+            .map((lightlevel) => this.wiltEfficiency() * lightlevel * (1 / this.growthNumGreen ** 1) * growthCycleFrac)
             .reduce(
                 (accumulator, currentValue) => accumulator + currentValue,
                 0,
@@ -327,7 +328,7 @@ class BaseOrganism {
         if (this.nitrogen < requiredNitrogen || this.phosphorus < requiredPhosphorus) {
             this.growOptimalRoot();
         }
-        if (this.lifeSquares.length > 2 && (this.lightlevel < requiredLightLevel)) {
+        if (this.lifeSquares.length > 5 && (this.lightlevel < requiredLightLevel)) {
             return;
         }
 
