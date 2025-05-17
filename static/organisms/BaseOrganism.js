@@ -25,6 +25,7 @@ class BaseOrganism {
         this.linkSquare(square);
         this.spawnTime = getCurDay();
         this.rootLastGrown = getCurDay();
+        this.greenLastGrown = getCurDay();
         this.curLifeTimeOffset = 0;
 
         this.evolutionParameters = null;
@@ -57,6 +58,7 @@ class BaseOrganism {
         this.numGrowthCycles = 1;
 
         this.curNumRoots = 0;
+        this.curNumGreen = 0;
 
         this.applyWind = false;
         this.springCoef = 4;
@@ -160,8 +162,8 @@ class BaseOrganism {
     nutrientTick() {
         let growthCycleFrac = getDt() / this.getGrowthCycleMaturityLength();
 
-        let targetPerRootNitrogen = (1 / 2) * this.growthNitrogen * (1 / this.growthNumRoots ** 2)
-        let targetPerRootPhosphorus = (1 / 2) * this.growthPhosphorus * (1 / this.growthNumRoots ** 2)
+        let targetPerRootNitrogen = growthCycleFrac * (1 / 2) * this.growthNitrogen * (1 / this.growthNumRoots ** 0.8)
+        let targetPerRootPhosphorus = growthCycleFrac * (1 / 2) * this.growthPhosphorus * (1 / this.growthNumRoots ** 0.8)
 
         this.lifeSquares
             .filter((lsq) => lsq.type == "root")
@@ -171,15 +173,16 @@ class BaseOrganism {
                 this.phosphorus += this.wiltEfficiency() * lsq.linkedSquare.takePhosphorus(targetPerRootPhosphorus);
             });
 
-        this.lightlevel += this.lifeSquares
+        this.lifeSquares
             .filter((lsq) => lsq.type == "green")
             .map((lsq) => [lsq.processLighting(), lsq.lightHealth ** 4])
             .map((argb) => argb[1] * (argb[0].r + argb[0].b) / (255 * 2))
-            .map((lightlevel) => this.wiltEfficiency() * lightlevel * (1 / this.growthNumGreen ** 1) * growthCycleFrac)
-            .reduce(
-                (accumulator, currentValue) => accumulator + currentValue,
-                0,
-            );
+            .forEach((lightlevel) => this.addNutrient("lightlevel", "curNumGreen", lightlevel))
+    }
+
+    addNutrient(ref, curCountRef, val) {
+        let c = this[curCountRef]
+        this[ref] = this[ref] * (c - 1) / c + (val / c);
     }
 
     wiltEfficiency() {
@@ -319,22 +322,34 @@ class BaseOrganism {
             ) / Math.max(1, this.growthNumGreen);
     }
 
+    lightLevelThrottleVal() {
+        if (this.lightlevel < this.growthLightLevel * 0.7) {
+            return 2;
+        } else if (this.lightlevel < this.growthLightLevel * 1.3) {
+            return 1
+        } else {
+            return 2;
+        }
+    }
+
     executeGrowthPlans() {
         let curLifeFrac = Math.min(1, this.getAge() / this.getGrowthCycleMaturityLength());
         let requiredNitrogen = (curLifeFrac ** 2) * this.growthNitrogen;
         let requiredPhosphorus = (curLifeFrac ** 2) * this.growthPhosphorus;
-        let requiredLightLevel = (curLifeFrac ** 2) * this.getGrowthLightLevel();
 
         if (this.nitrogen < requiredNitrogen || this.phosphorus < requiredPhosphorus) {
             this.growOptimalRoot();
         }
-        if (this.lifeSquares.length > 5 && (this.lightlevel < requiredLightLevel)) {
+        
+        if (getCurDay() < this.greenLastGrown + this.lightLevelThrottleVal() * (this.getGrowthCycleMaturityLength() / this.growthNumRoots)) {
             return;
         }
 
         this.growthPlans.filter((gp) => !gp.areStepsCompleted()).forEach((growthPlan) => {
             growthPlan.steps.filter((step) => !step.completed).at(0).doAction();
             growthPlan.complete();
+            this.curNumGreen += 1;
+            this.greenLastGrown = getCurDay();
 
             if (this.originGrowth != null) {
                 // this.originGrowth.updateDeflectionState();
@@ -350,13 +365,17 @@ class BaseOrganism {
     }
 
     growRoot(f) {
-        // if (getCurDay() < this.rootLastGrown + (this.getGrowthCycleMaturityLength() / this.growthNumRoots)) {
-        //     return;
-        // }
+        if (getCurDay() < this.rootLastGrown + (this.getGrowthCycleMaturityLength() / this.growthNumRoots)) {
+            return;
+        }
 
         if (this.curNumRoots > this.growthNumRoots * 2) {
             return;
         }
+        if (this.curNumRoots > this.curNumGreen) {
+            return;
+        }
+
         this.rootLastGrown = getCurDay();
         this.curNumRoots += 1;
 
@@ -472,11 +491,10 @@ class BaseOrganism {
         let maturityLifeFrac = Math.min(1, this.getAge() / this.getGrowthCycleMaturityLength());
         let expectedNitrogen = maturityLifeFrac ** 2 * this.growthNitrogen;
         let expectedPhosphorus = maturityLifeFrac ** 2 * this.growthPhosphorus;
-        let expectedLightLevel = maturityLifeFrac ** 2 * this.getGrowthLightLevel();
-
+        
         let nitrogenMult = Math.min(1, this.nitrogen / expectedNitrogen) * this.lifeSquares.length;
         let phosphorusMult = Math.min(1, this.phosphorus / expectedPhosphorus) * this.lifeSquares.length;
-        let lightLevelMult = Math.min(1, this.lightlevel / expectedLightLevel) * this.lifeSquares.length;
+        let lightLevelMult = Math.min(1, this.lightlevel / this.growthLightLevel) * this.lifeSquares.length;
 
         this.lifeSquares.forEach((sq) => {
             sq.nitrogenIndicated = 0;
@@ -491,8 +509,8 @@ class BaseOrganism {
             let lightLevelToAdd = Math.min(lightLevelMult, 1)
             
             sq.nitrogenIndicated += nitrogenToAdd;
-            sq.lightlevelIndicated += phosphorusToAdd;
-            sq.phosphorusIndicated += lightLevelToAdd;
+            sq.phosphorusIndicated += phosphorusToAdd;
+            sq.lightlevelIndicated += lightLevelToAdd;
 
             nitrogenMult -= nitrogenToAdd;
             phosphorusMult -= phosphorusToAdd;
