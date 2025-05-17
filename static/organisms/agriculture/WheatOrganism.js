@@ -48,7 +48,7 @@ export class WheatOrganism extends BaseOrganism {
     processGenetics() {
         this.evolutionParameters[0] = Math.min(Math.max(this.evolutionParameters[0], 0.00001), .99999)
         let p0 = this.evolutionParameters[0];
-        this.growthLightLevel = p0 * 0.4;
+        this.growthLightLevel = 0.8 + p0;
 
         this.maxNumNodes = 3 + Math.floor(this.maxNumNodes * p0);
         this.maxStemLength = 2 + Math.floor(this.maxStemLength * p0);

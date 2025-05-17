@@ -5,7 +5,7 @@ import { STAGE_ADULT, STAGE_DEAD, STAGE_FLOWER, STAGE_JUVENILE, STAGE_SPROUT, SU
 import { addSquare, getNeighbors } from "../squares/_sqOperations.js";
 import { PlantSquare } from "../squares/PlantSquare.js";
 import { applyLightingFromSource } from "../lighting/lightingProcessing.js";
-import { loadGD, UI_GODMODE_FASTPLANT, UI_SIMULATION_GENS_PER_DAY, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
+import { loadGD, UI_GODMODE_FASTPLANT, UI_SIMULATION_GENS_PER_DAY, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
 import { RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
 import { removeItemAll, rgbToRgba } from "../common.js";
 
@@ -453,7 +453,7 @@ class BaseOrganism {
 
     // RENDERING
     render() {
-        if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_NUTRIENTS) {
+        if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_NUTRIENTS || loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_LIGHTING) {
             this.setNutrientIndicators();
         }
         if (this.stage != STAGE_DEAD) {
