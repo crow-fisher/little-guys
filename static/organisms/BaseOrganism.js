@@ -333,8 +333,8 @@ class BaseOrganism {
     }
 
     doGreenGrowth() {
-        if (getCurDay() < this.greenLastGrown + this.lightLevelThrottleVal() * (this.getGrowthCycleMaturityLength() / this.growthNumRoots)) {
-            // return;
+        if (getCurDay() < this.greenLastGrown + this.lightLevelThrottleVal() * (this.getGrowthCycleMaturityLength() / this.growthNumGreen)) {
+            return;
         }
 
         this.growthPlans.filter((gp) => !gp.areStepsCompleted()).forEach((growthPlan) => {
@@ -344,7 +344,7 @@ class BaseOrganism {
             this.greenLastGrown = getCurDay();
 
             if (this.originGrowth != null) {
-                // this.originGrowth.updateDeflectionState();
+                this.originGrowth.updateDeflectionState();
                 this.originGrowth.applyDeflectionState();
             }
             if (growthPlan.areStepsCompleted()) {
@@ -443,11 +443,12 @@ class BaseOrganism {
     planGrowth() {
         if (this.growthPlans.some((gp) => !gp.areStepsCompleted())) {
             this.doGreenGrowth();
-            return;
+            return false;
         }
         if (this.stage == STAGE_SPROUT) {
             this.addSproutGrowthPlan();
         }
+        return true;
     }
 
 
@@ -475,7 +476,7 @@ class BaseOrganism {
 
         let nitrogenMult = Math.min(1, this.nitrogen / expectedNitrogen) * this.lifeSquares.length;
         let phosphorusMult = Math.min(1, this.phosphorus / expectedPhosphorus) * this.lifeSquares.length;
-        let lightLevelMult = Math.min(1, this.lightlevel / this.growthLightLevel) * this.lifeSquares.length;
+        let lightLevelMult = Math.min(2, this.lightlevel / this.growthLightLevel) * this.lifeSquares.length;
 
         this.lifeSquares.forEach((sq) => {
             sq.nitrogenIndicated = 0;
@@ -483,7 +484,7 @@ class BaseOrganism {
             sq.phosphorusIndicated = 0;
         });
 
-        for (let i = 0; i < this.lifeSquares.length; i++) {
+        for (let i = 0; i < (this.lifeSquares.length * 2); i++) {
             let sq = this.lifeSquares[i % this.lifeSquares.length];
             let nitrogenToAdd = Math.min(nitrogenMult, 1);
             let phosphorusToAdd = Math.min(phosphorusMult, 1)

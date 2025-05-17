@@ -293,7 +293,10 @@ export class WheatOrganism extends BaseOrganism {
     }
 
     planGrowth() {
-        super.planGrowth();
+        if (!super.planGrowth()) {
+            return;
+        }
+        
         if (this.originGrowth == null) {
             return;
         }
