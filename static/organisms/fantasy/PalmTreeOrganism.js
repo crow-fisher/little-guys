@@ -197,8 +197,8 @@ export class PalmTreeOrganism extends BaseOrganism {
         this.growStem(this.originGrowth, this.originGrowth.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_ROOTNODE), randRange(0, Math.PI * 2));
     }
 
-    executeGrowthPlans() {
-        super.executeGrowthPlans();
+    doGreenGrowth() {
+        super.doGreenGrowth();
         if (this.originGrowth != null && this.stems.length > 0) {
             let stem = this.originGrowth.getChildFromPath(this.stems[0]);
             if (stem != null) {
@@ -208,7 +208,7 @@ export class PalmTreeOrganism extends BaseOrganism {
     }
     adultGrowthPlanning() {
         if (this.growthPlans.some((gp) => !gp.areStepsCompleted())) {
-            this.executeGrowthPlans();
+            this.doGreenGrowth();
             return;
         }
 

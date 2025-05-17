@@ -66,8 +66,8 @@ export class CattailOrganism extends BaseOrganism {
         this.growthNumRoots = this.growthNumGreen / 4;
     }
 
-    executeGrowthPlans() {
-        super.executeGrowthPlans();
+    doGreenGrowth() {
+        super.doGreenGrowth();
         if (this.originGrowth != null) {
             this.grasses.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .forEach((grass) => {
@@ -151,11 +151,6 @@ export class CattailOrganism extends BaseOrganism {
     planGrowth() {
         super.planGrowth();
         if (this.originGrowth == null) {
-            return;
-        }
-
-        if (this.growthPlans.some((gp) => !gp.areStepsCompleted())) {
-            this.executeGrowthPlans();
             return;
         }
 

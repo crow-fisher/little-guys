@@ -68,8 +68,8 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
         this.growthNumRoots = this.growthNumGreen / 4;
     }
 
-    executeGrowthPlans() {
-        super.executeGrowthPlans();
+    doGreenGrowth() {
+        super.doGreenGrowth();
         if (this.originGrowth != null) {
             this.grasses.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .forEach((grass) => {
@@ -127,7 +127,7 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
         }
 
         if (this.growthPlans.some((gp) => !gp.areStepsCompleted())) {
-            this.executeGrowthPlans();
+            this.doGreenGrowth();
             return;
         }
 

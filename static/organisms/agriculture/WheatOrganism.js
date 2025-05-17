@@ -217,22 +217,16 @@ export class WheatOrganism extends BaseOrganism {
     }
 
     adultGrowthPlanning() {
-        if (this.growthPlans.some((gp) => !gp.areStepsCompleted())) {
-            this.executeGrowthPlans();
-            return;
-        }
-
-        if (this.getAge() > 0.95 * this.getGrowthCycleMaturityLength()) {
-            if (this.nitrogen > this.growthNitrogen * 0.85 &&
-                this.phosphorus > this.growthPhosphorus * 0.85 &&
-                this.lightlevel > this.growthLightLevel * 0.85) {
-                if (this.flower == null) {
-                    this.growFlower();
-                    return;
-                }
-            }
-        }
-
+        // if (this.getAge() > 0.95 * this.getGrowthCycleMaturityLength()) {
+        //     if (this.nitrogen > this.growthNitrogen * 0.85 &&
+        //         this.phosphorus > this.growthPhosphorus * 0.85 &&
+        //         this.lightlevel > this.growthLightLevel) {
+        //         if (this.flower == null) {
+        //             this.growFlower();
+        //             return;
+        //         }
+        //     }
+        // }
 
         if (this.stems.length < this.targetNumStems) {
             this.adultGrowStem();
