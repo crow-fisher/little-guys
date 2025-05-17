@@ -48,7 +48,7 @@ export class WheatOrganism extends BaseOrganism {
     processGenetics() {
         this.evolutionParameters[0] = Math.min(Math.max(this.evolutionParameters[0], 0.00001), .99999)
         let p0 = this.evolutionParameters[0];
-        this.growthLightLevel = 0.8 + p0;
+        this.growthLightLevel = 1.3 + 2 * p0;
 
         this.maxNumNodes = 3 + Math.floor(this.maxNumNodes * p0);
         this.maxStemLength = 2 + Math.floor(this.maxStemLength * p0);
@@ -217,17 +217,6 @@ export class WheatOrganism extends BaseOrganism {
     }
 
     adultGrowthPlanning() {
-        // if (this.getAge() > 0.95 * this.getGrowthCycleMaturityLength()) {
-        //     if (this.nitrogen > this.growthNitrogen * 0.85 &&
-        //         this.phosphorus > this.growthPhosphorus * 0.85 &&
-        //         this.lightlevel > this.growthLightLevel) {
-        //         if (this.flower == null) {
-        //             this.growFlower();
-        //             return;
-        //         }
-        //     }
-        // }
-
         if (this.stems.length < this.targetNumStems) {
             this.adultGrowStem();
             return;
@@ -266,6 +255,11 @@ export class WheatOrganism extends BaseOrganism {
             return;
         }
 
+        if (this.flower == null) {
+            this.growFlower();
+            return;
+        }
+
 
     }
 
@@ -296,7 +290,7 @@ export class WheatOrganism extends BaseOrganism {
         if (!super.planGrowth()) {
             return;
         }
-        
+
         if (this.originGrowth == null) {
             return;
         }

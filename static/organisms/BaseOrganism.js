@@ -323,15 +323,25 @@ class BaseOrganism {
     }
 
     lightLevelThrottleVal() {
-        if (this.lightlevel < this.growthLightLevel * 0.7) {
-            return 2;
-        } else if (this.lightlevel < this.growthLightLevel * 1.3) {
-            return 1
+        let ratio = this.lightlevel / this.growthLightLevel;
+        let min = 0.7;
+        let max = 1.3;
+        
+        let throttlValMin = 0.5;
+        let throttlValMax = 4;
+
+        if (ratio < min) {
+            return throttlValMax;
+        } else if (ratio < 1) {
+            let t = (ratio - min) / min;
+            return throttlValMax * (1 - t) + throttlValMin * t;
+        } else if (ratio < max) {
+            let t = (ratio - 1);
+            return throttlValMax * t + throttlValMin * (1 - t);
         } else {
-            return 2;
+            return throttlValMax;
         }
     }
-
     doGreenGrowth() {
         if (getCurDay() < this.greenLastGrown + this.lightLevelThrottleVal() * (this.getGrowthCycleMaturityLength() / this.growthNumGreen)) {
             return;
