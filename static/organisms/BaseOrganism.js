@@ -162,8 +162,8 @@ class BaseOrganism {
     nutrientTick() {
         let growthCycleFrac = getDt() / this.getGrowthCycleMaturityLength();
 
-        let targetPerRootNitrogen = growthCycleFrac * (1 / 2) * this.growthNitrogen * (1 / this.growthNumRoots ** 0.8)
-        let targetPerRootPhosphorus = growthCycleFrac * (1 / 2) * this.growthPhosphorus * (1 / this.growthNumRoots ** 0.8)
+        let targetPerRootNitrogen = growthCycleFrac * (1 / 2) * this.growthNitrogen * (1 / this.growthNumRoots ** 0.7)
+        let targetPerRootPhosphorus = growthCycleFrac * (1 / 2) * this.growthPhosphorus * (1 / this.growthNumRoots ** 0.7)
 
         this.lifeSquares
             .filter((lsq) => lsq.type == "root")
@@ -324,9 +324,9 @@ class BaseOrganism {
 
     lightLevelThrottleVal() {
         let ratio = this.lightlevel / this.growthLightLevel;
-        let min = 0.7;
-        let max = 1.3;
-        
+        let min = 0.5;
+        let max = 2;
+
         let throttlValMin = 0.5;
         let throttlValMax = 4;
 
@@ -380,7 +380,7 @@ class BaseOrganism {
             return;
         }
 
-        if (this.curNumRoots > this.growthNumRoots * 2) {
+        if (this.curNumRoots > this.growthNumRoots * 3) {
             return;
         }
         if (this.curNumRoots > this.curNumGreen) {
@@ -421,9 +421,8 @@ class BaseOrganism {
     }
 
     doSpawnSeed() {
-        let curMaturityFrac = this.getAge() / this.getGrowthCycleMaturityLength();
-        if (curMaturityFrac > 1) {
-            if (this.nitrogen > this.growthNitrogen && this.phosphorus > this.growthPhosphorus && this.lightlevel > this.getGrowthLightLevel()) {
+        if (this.stage == STAGE_FLOWER) {
+            if (this.nitrogen > this.growthNitrogen && this.phosphorus > this.growthPhosphorus) {
                 this.spawnSeed();
             }
         }
