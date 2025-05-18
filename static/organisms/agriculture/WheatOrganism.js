@@ -56,7 +56,7 @@ export class WheatOrganism extends BaseOrganism {
         this.maxLeafLength = 2 + Math.floor(this.maxLeafLength * p0);
 
         this.growthNumGreen = this.maxNumNodes * (this.maxStemLength + this.maxLeafLength);
-        this.growthNumRoots = this.growthNumGreen * 0.3;
+        this.growthNumRoots = this.growthNumGreen * 0.2;
     }
 
     growStem(parent, startNode, theta) {
@@ -280,7 +280,7 @@ export class WheatOrganism extends BaseOrganism {
             }
         }
 
-        let reduction = 0.5;
+        let reduction = 0.2;
         this.nitrogen *= (1 - reduction);
         this.phosphorus *= (1 - reduction);
         this.lightlevel *= (1 - reduction);

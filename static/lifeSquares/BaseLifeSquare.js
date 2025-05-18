@@ -288,9 +288,10 @@ class BaseLifeSquare {
             return;
         } else if (selectedViewMode == UI_VIEWMODE_NUTRIENTS) {
             let myhsv = structuredClone(NUTRIENT_BASE_HSV);
-            let hueShift = ((this.nitrogenIndicated + this.phosphorusIndicated) / 2) - this.lightlevelIndicated; 
+            let lli = Math.min(1, this.lightlevelIndicated);
+            let hueShift = ((this.nitrogenIndicated + this.phosphorusIndicated) / 2) - lli; 
             myhsv[0] += 60 * (hueShift)
-            myhsv[1] = (this.nitrogenIndicated + this.phosphorusIndicated + this.lightlevelIndicated) / 3;
+            myhsv[1] = (this.nitrogenIndicated + this.phosphorusIndicated + lli) / 3;
             if (this.type == "green")
                 MAIN_CONTEXT.fillStyle = rgbToRgba(...hsv2rgb(...myhsv), 0.8);
             else

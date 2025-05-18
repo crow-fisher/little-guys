@@ -376,11 +376,11 @@ class BaseOrganism {
     }
 
     growRoot(f) {
-        if (getCurDay() < this.rootLastGrown + (this.getGrowthCycleMaturityLength() / this.growthNumRoots)) {
+        if (getCurDay() < this.rootLastGrown + (this.getGrowthCycleMaturityLength() / ( 4 * this.growthNumRoots))) {
             return;
         }
 
-        if (this.curNumRoots > this.growthNumRoots * 3) {
+        if (this.curNumRoots > this.growthNumRoots * 4) {
             return;
         }
         if (this.curNumRoots > this.curNumGreen) {

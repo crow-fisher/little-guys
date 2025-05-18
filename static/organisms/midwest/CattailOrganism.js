@@ -34,7 +34,7 @@ export class CattailOrganism extends BaseOrganism {
     }
 
     spawnSeed() {
-        if (this.originGrowth == null) 
+        if (this.originGrowth == null || (this.growthPlans.some((gp) => !gp.areStepsCompleted())) || this.targetGrassLength != this.maxGrassLength) 
             return;
         let comp = this.originGrowth.children.at(randNumber(0, this.originGrowth.children.length - 1));
         let lsq = comp.lifeSquares.at(comp.lifeSquares.length - 1);
@@ -58,7 +58,7 @@ export class CattailOrganism extends BaseOrganism {
     processGenetics() {
         this.evolutionParameters[0] = Math.min(Math.max(this.evolutionParameters[0], 0.00001), .99999)
         let p0 = this.evolutionParameters[0];
-        this.growthLightLevel = .1 + .3 * p0;
+        this.growthLightLevel = 0.1 + 1 * p0;
 
         this.maxNumGrass = randNumber(2, 3);
         this.maxGrassLength = 5 + Math.floor(this.maxGrassLength * p0);

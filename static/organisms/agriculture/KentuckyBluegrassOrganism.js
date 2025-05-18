@@ -35,7 +35,7 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
     }
 
     spawnSeed() {
-        if (this.originGrowth == null) 
+        if (this.originGrowth == null || (this.growthPlans.some((gp) => !gp.areStepsCompleted())) || this.targetGrassLength != this.maxGrassLength) 
             return;
         let comp = this.originGrowth.children.at(randNumber(0, this.originGrowth.children.length - 1));
         let lsq = comp.lifeSquares.at(comp.lifeSquares.length - 1);
@@ -50,7 +50,7 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
                 applyLightingFromSource(this.lifeSquares.at(0), orgAdded.lifeSquares.at(0));
             }
         }
-        let reduction = 0.5;
+        let reduction = 0.2;
         this.nitrogen *= (1 - reduction);
         this.phosphorus *= (1 - reduction);
         this.lightlevel *= (1 - reduction);
@@ -59,7 +59,7 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
     processGenetics() {
         this.evolutionParameters[0] = Math.min(Math.max(this.evolutionParameters[0], 0.00001), .99999)
         let p0 = this.evolutionParameters[0];
-        this.growthLightLevel = p0 * 0.3;
+        this.growthLightLevel = 0.3 + 2 * p0;
 
         this.maxNumGrass = 1 + Math.floor(this.maxNumGrass * p0);
         this.maxGrassLength = 1 + Math.floor(this.maxGrassLength * p0);
