@@ -161,28 +161,28 @@ class BaseOrganism {
 
     nutrientTick() {
         let growthCycleFrac = getDt() / this.getGrowthCycleMaturityLength();
-
-        let targetPerRootNitrogen = growthCycleFrac * (1 / 2) * this.growthNitrogen * (1 / this.growthNumRoots ** 0.7)
-        let targetPerRootPhosphorus = growthCycleFrac * (1 / 2) * this.growthPhosphorus * (1 / this.growthNumRoots ** 0.7)
+        let mult = growthCycleFrac * this.wiltEfficiency() / (2 * this.lightLevelThrottleVal() * (this.growthNumRoots ** 0.7));
+        let targetPerRootNitrogen = mult * this.growthNitrogen;
+        let targetPerRootPhosphorus = mult * this.growthPhosphorus;
 
         this.lifeSquares
             .filter((lsq) => lsq.type == "root")
             .filter((lsq) => lsq.linkedSquare != null && lsq.linkedSquare.proto == "SoilSquare")
             .forEach((lsq) => {
-                this.nitrogen += this.wiltEfficiency() * lsq.linkedSquare.takeNitrogen(targetPerRootNitrogen);
-                this.phosphorus += this.wiltEfficiency() * lsq.linkedSquare.takePhosphorus(targetPerRootPhosphorus);
+                this.nitrogen += lsq.linkedSquare.takeNitrogen(targetPerRootNitrogen);
+                this.phosphorus += lsq.linkedSquare.takePhosphorus(targetPerRootPhosphorus);
             });
 
         this.lifeSquares
             .filter((lsq) => lsq.type == "green")
             .map((lsq) => [lsq.processLighting(), lsq.lightHealth ** 4])
             .map((argb) => argb[1] * (argb[0].r + argb[0].b) / (255 * 2))
-            .forEach((lightlevel) => this.addNutrient("lightlevel", "curNumGreen", lightlevel))
+            .forEach((lightlevel) => this.lsqLightLevel(lightlevel))
     }
 
-    addNutrient(ref, curCountRef, val) {
-        let c = this[curCountRef]
-        this[ref] = this[ref] * (c - 1) / c + (val / c);
+    lsqLightLevel(val) {
+        let c = this.curNumGreen;
+        this.lightlevel = this.lightlevel * (c - 1) / c + (val / c);
     }
 
     wiltEfficiency() {
@@ -191,7 +191,7 @@ class BaseOrganism {
 
     getWilt() {
         if (this.lifeSquares.length == 0) {
-            return;
+            return 0;
         }
         let greenLifeSquares = Array.from(this.lifeSquares.filter((lsq) => lsq.type == "green"));
         if (greenLifeSquares.length == 0) {
@@ -327,7 +327,7 @@ class BaseOrganism {
         let min = 0.5;
         let max = 2;
 
-        let throttlValMin = 0.5;
+        let throttlValMin = 1;
         let throttlValMax = 4;
 
         if (ratio < min) {
@@ -438,10 +438,10 @@ class BaseOrganism {
                 sqScore += sq.getSoilWaterPressure() - this.waterPressureSoilTarget;
             }
             if (this.nitrogen < expectedNitrogen) {
-                sqScore += (sq.nitrogen / this.growthNitrogen) / (sq.linkedOrganismSquares.length + 1);
+                sqScore += (sq.nitrogen / this.growthNitrogen) / (sq.linkedOrganismSquares.length ** 0.5);
             }
             if (this.phosphorus < expectedPhosphorus) {
-                sqScore += (sq.phosphorus / this.growthPhosphorus) / (sq.linkedOrganismSquares.length + 1);
+                sqScore += (sq.phosphorus / this.growthPhosphorus) / (sq.linkedOrganismSquares.length ** 0.5);
             }
         }
         this.growRoot(scoreFunc);

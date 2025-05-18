@@ -346,7 +346,7 @@ export class SoilSquare extends BaseSquare {
         // requestedAmount = Math.max(meanAmount / 2, requestedAmount);
         // requestedAmount = Math.min(meanAmount * 2, requestedAmount);
         // this.nitrogen -= requestedAmount;
-        return (requestedAmount / this.linkedOrganismSquares.length);
+        return (requestedAmount / (this.linkedOrganismSquares.length ** 0.5));
     }
 
     takePhosphorus(requestedAmount) {
@@ -354,7 +354,7 @@ export class SoilSquare extends BaseSquare {
         // requestedAmount = Math.max(meanAmount / 2, requestedAmount);
         // requestedAmount = Math.min(meanAmount * 2, requestedAmount);
         // this.phosphorus -= requestedAmount;
-        return (requestedAmount / this.linkedOrganismSquares.length);
+        return (requestedAmount / (this.linkedOrganismSquares.length ** 0.5));
     }
 
     waterEvaporationRoutine() {

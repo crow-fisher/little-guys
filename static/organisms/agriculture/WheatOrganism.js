@@ -48,7 +48,7 @@ export class WheatOrganism extends BaseOrganism {
     processGenetics() {
         this.evolutionParameters[0] = Math.min(Math.max(this.evolutionParameters[0], 0.00001), .99999)
         let p0 = this.evolutionParameters[0];
-        this.growthLightLevel = 0.3 + 2 * p0;
+        this.growthLightLevel = 0.1 + 1 * p0;
 
         this.maxNumNodes = 3 + Math.floor(this.maxNumNodes * p0);
         this.maxStemLength = 2 + Math.floor(this.maxStemLength * p0);
@@ -265,6 +265,7 @@ export class WheatOrganism extends BaseOrganism {
 
     spawnSeed() {
         if (this.flower == null) {
+            this.growFlower();
             return;
         }
 
@@ -280,7 +281,7 @@ export class WheatOrganism extends BaseOrganism {
             }
         }
 
-        let reduction = 0.2;
+        let reduction = 0.5;
         this.nitrogen *= (1 - reduction);
         this.phosphorus *= (1 - reduction);
         this.lightlevel *= (1 - reduction);
@@ -290,7 +291,6 @@ export class WheatOrganism extends BaseOrganism {
         if (!super.planGrowth()) {
             return;
         }
-
         if (this.originGrowth == null) {
             return;
         }

@@ -219,7 +219,8 @@ export class BaseSquare {
             this.renderGroup();
         } else if (selectedViewMode == UI_VIEWMODE_LIGHTING) {
             this.renderWithVariedColors(1);
-            this.renderLightingView();
+            if (this.solid)
+                this.renderLightingView();
         } else if (selectedViewMode == UI_VIEWMODE_MOISTURE) {
             this.renderWaterSaturation();
         } else if (selectedViewMode == UI_VIEWMODE_WATERTICKRATE) {

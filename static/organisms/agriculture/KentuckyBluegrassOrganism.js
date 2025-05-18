@@ -27,7 +27,7 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
         this.maxGrassLength = 5;
 
         this.numGrowthCycles = 1; 
-        this.growthCycleMaturityLength = 1 + (Math.random());
+        this.growthCycleMaturityLength = 8 + 4 * (Math.random());
         this.growthCycleLength = this.growthCycleMaturityLength * 2.65;
 
         this.grasses = [];
@@ -59,7 +59,7 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
     processGenetics() {
         this.evolutionParameters[0] = Math.min(Math.max(this.evolutionParameters[0], 0.00001), .99999)
         let p0 = this.evolutionParameters[0];
-        this.growthLightLevel = 0.3 + 2 * p0;
+        this.growthLightLevel = 0.1 + 1 * p0;
 
         this.maxNumGrass = 1 + Math.floor(this.maxNumGrass * p0);
         this.maxGrassLength = 1 + Math.floor(this.maxGrassLength * p0);
@@ -121,28 +121,22 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
     }
 
     planGrowth() {
-        super.planGrowth();
+        if (!super.planGrowth()) {
+            return;
+        }
         if (this.originGrowth == null) {
             return;
         }
-
-        if (this.growthPlans.some((gp) => !gp.areStepsCompleted())) {
-            this.doGreenGrowth();
-            return;
-        }
-
         if (this.grasses.length < this.targetNumGrass) {
             this.growGrass();
             return;
         }
-
         if (this.grasses
             .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .some((grass) => grass.growthPlan.steps.length < this.targetGrassLength)) {
             this.lengthenGrass();
             return;
         }
-
         if (this.targetNumGrass < this.maxNumGrass) {
             this.targetNumGrass += 1;
             return;
