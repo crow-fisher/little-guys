@@ -1,4 +1,4 @@
-import { doWaterFlow, physics, processOrganisms, renderCandidateMap, renderOrganisms, renderSolidSquares, renderTargetMap, renderWaterSquares, reset } from "./globalOperations.js";
+import { doWaterFlow, periodicPurgeOldGroupData, physics, processOrganisms, renderCandidateMap, renderOrganisms, renderSolidSquares, renderTargetMap, renderWaterSquares, reset } from "./globalOperations.js";
 import { doClickAdd, doClickAddEyedropperMixer } from "./manipulation.js";
 import { renderClouds, renderTemperature, renderWaterSaturation } from "./climate/simulation/temperatureHumidity.js";
 import { doTimeSeek, doTimeSkipToNow, isTimeSeeking, renderTime, updateTime } from "./climate/time.js";
@@ -52,7 +52,7 @@ export function scheduler_main() {
         updateWindows();
         if (!isLeftMouseClicked()) 
             executeFunctionQueue();
-        
+        periodicPurgeOldGroupData();
         doPeriodicSave();
     }
     setTimeout(scheduler_main, 0);

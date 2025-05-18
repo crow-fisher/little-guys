@@ -33,6 +33,9 @@ export function initGroupList() {
 }
 
 export function regSquareToGroup(group, reg=1) {
+    if (group < 0) {
+        return;
+    }
     if (group == (groupSizeListSize + 1)) {
         initGroupList();
     }

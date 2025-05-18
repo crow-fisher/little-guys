@@ -24,6 +24,9 @@ export function registerSquare(posX, posY, group) {
     saveGroupMinHeight(group, posY);
 }
 export function deregisterSquare(posX, posY, group) {
+    if (group < 0) {
+        return;
+    }
     if (groupMap.has(group))
         groupMap.get(group).delete(_hash(posX, posY));
 }

@@ -328,7 +328,7 @@ class BaseOrganism {
         let max = 2;
 
         let throttlValMin = 1;
-        let throttlValMax = 4;
+        let throttlValMax = 8;
 
         if (ratio < min) {
             return throttlValMax;

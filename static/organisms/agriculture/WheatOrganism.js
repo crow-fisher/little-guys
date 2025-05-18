@@ -284,7 +284,6 @@ export class WheatOrganism extends BaseOrganism {
         let reduction = 0.5;
         this.nitrogen *= (1 - reduction);
         this.phosphorus *= (1 - reduction);
-        this.lightlevel *= (1 - reduction);
     }
 
     planGrowth() {

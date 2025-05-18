@@ -546,12 +546,7 @@ export class BaseSquare {
             if (sq == null || sq in visited) {
                 return;
             } else {
-                regSquareToGroup(sq.group, -1);
-                deregisterSquare(sq.posX, sq.posY, sq.group);
-                sq.group = this.group;
-                sq.groupSetThisFrame = true;
-                regSquareToGroup(sq.group);
-                registerSquare(sq.posX, sq.posY, sq.group);
+                sq.updateGroup(this.group);
                 visited.add(sq);
                 getNeighbors(sq.posX, sq.posY)
                     .filter((ssq) => ssq.proto == sq.proto)
@@ -563,6 +558,15 @@ export class BaseSquare {
         return true;
     }
 
+    updateGroup(newGroup) {
+        regSquareToGroup(this.group, -1);
+        deregisterSquare(this.posX, this.posY, this.group);
+        this.group = newGroup;
+        this.groupSetThisFrame = true;
+        regSquareToGroup(this.group);
+        registerSquare(this.posX, this.posY, this.group);
+    }
+
     calculateGroup() {
         if (this.proto == "SoilSquare") {
             return;
@@ -570,8 +574,7 @@ export class BaseSquare {
         if (this.group != -1) {
             return;
         }
-
-        this.group = getNextGroupId();
+        this.updateGroup( getNextGroupId());
         regSquareToGroup(this.group);
         this._percolateGroup();
         if (this.proto == "RockSquare") {

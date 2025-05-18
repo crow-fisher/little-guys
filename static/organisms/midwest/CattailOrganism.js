@@ -52,14 +52,12 @@ export class CattailOrganism extends BaseOrganism {
         let reduction = 0.5;
         this.nitrogen *= (1 - reduction);
         this.phosphorus *= (1 - reduction);
-        this.lightlevel *= (1 - reduction);
     }
 
     processGenetics() {
         this.evolutionParameters[0] = Math.min(Math.max(this.evolutionParameters[0], 0.00001), .99999)
         let p0 = this.evolutionParameters[0];
         this.growthLightLevel = 0.1 + 1 * p0;
-
         this.maxNumGrass = randNumber(2, 3);
         this.maxGrassLength = 5 + Math.floor(this.maxGrassLength * p0);
         this.growthNumGreen = this.maxNumGrass * this.maxGrassLength;
@@ -149,11 +147,12 @@ export class CattailOrganism extends BaseOrganism {
     }
 
     planGrowth() {
-        super.planGrowth();
+        if (!super.planGrowth()) {
+            return;
+        }
         if (this.originGrowth == null) {
             return;
         }
-
         if (this.grasses.length < this.targetNumGrass) {
             this.growGrass();
             return;

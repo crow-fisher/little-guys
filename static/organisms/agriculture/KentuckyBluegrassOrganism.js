@@ -27,7 +27,7 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
         this.maxGrassLength = 5;
 
         this.numGrowthCycles = 1; 
-        this.growthCycleMaturityLength = 8 + 4 * (Math.random());
+        this.growthCycleMaturityLength = 12 + 7 * (Math.random());
         this.growthCycleLength = this.growthCycleMaturityLength * 2.65;
 
         this.grasses = [];
@@ -50,10 +50,9 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
                 applyLightingFromSource(this.lifeSquares.at(0), orgAdded.lifeSquares.at(0));
             }
         }
-        let reduction = 0.2;
+        let reduction = 0.9;
         this.nitrogen *= (1 - reduction);
         this.phosphorus *= (1 - reduction);
-        this.lightlevel *= (1 - reduction);
     }
 
     processGenetics() {

@@ -9,7 +9,7 @@ import { removeItemAll } from "./common.js";
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillRect } from "./canvas.js";
 import { saveGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "./ui/UIData.js";
 import { indexCanvasSize, MAIN_CANVAS, MAIN_CONTEXT } from "./index.js";
-import { resetFrameGroupCache } from "./waterGraph.js";
+import { resetFrameGroupCache, waterGraphReset } from "./waterGraph.js";
 import { COLOR_BLUE, COLOR_VERY_FUCKING_RED, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "./colors.js";
 import { calculateColor, calculateColorProvideOpacity } from "./climate/simulation/temperatureHumidity.js";
 
@@ -17,7 +17,7 @@ let frame_squares = null;
 let frame_solid_squares = null;
 let frame_water_squares = null;
 
-let groupMinPosYMap = new Map();
+let groupMinPosYMap = new Map(); // this is what's doing de bad
 
 export function getGroupMinPosY(group) {
     return groupMinPosYMap.get(group);
@@ -28,9 +28,11 @@ export function saveGroupMinHeight(group, posY) {
 }
 
 export function periodicPurgeOldGroupData() {
-    if (groupMinPosYMap.size() > 10000) {
+    if (groupMinPosYMap.size > 1000) {
+        console.log("Periodic purge of old group data...")
         groupMinPosYMap.clear();
         iterateOnSquares((sq) => saveGroupMinHeight(sq.group, sq.posY));
+        waterGraphReset();
     }
 }
 
