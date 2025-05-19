@@ -1,6 +1,6 @@
 import { getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "../climate/time.js";
 import { isSaveOrLoadInProgress } from "../saveAndLoad.js";
-import { loadGD, UI_LIGHTING_ENABLED, UI_LIGHTING_MOON, UI_LIGHTING_SUN } from "../ui/UIData.js";
+import { loadGD, UI_CAMERA_EXPOSURE, UI_LIGHTING_ENABLED, UI_LIGHTING_MOON, UI_LIGHTING_SUN } from "../ui/UIData.js";
 
 export function getDefaultLighting() {
     let brightness = getDaylightStrength();
@@ -20,7 +20,7 @@ export function processLighting(lightingMap) {
         let strength = light[0].filter((f) => f != null).map((f) => f()).reduce(
             (accumulator, currentValue) => accumulator + currentValue,
             0,
-        );
+        ) * Math.exp(loadGD(UI_CAMERA_EXPOSURE));
         let color = light[1]();
         outColor = {
             r: outColor.r + strength * color.r,
