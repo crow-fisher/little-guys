@@ -1,8 +1,7 @@
 import { getBaseSize, zoomCanvasFillRectTheta } from "../../canvas.js";
 import { rgbToRgba } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
-import { getWindSquaresX, getWindSquaresY } from "./wind.js";
-
+import { getWindSquaresX, getWindSquaresY, getWindThrottleValWindMap, getWindThrottleValWindMapVal } from "./wind.js";
 
 let windThrottleMap = new Map();
 let maxDiff = 0.001;
@@ -39,7 +38,8 @@ export function getWindThrottleVal(x, y) {
 export function renderThrottleMap() {
     for (let i = 0; i < getWindSquaresX(); i++) {
         for (let j = 0; j < getWindSquaresY(); j++) {
-            let pressure_255 = windThrottleMap.get(i).get(j) * 200;
+            // let pressure_255 = windThrottleMap.get(i).get(j) * 200;
+            let pressure_255 = getWindThrottleValWindMapVal(i, j) * 200;
             MAIN_CONTEXT.fillStyle = rgbToRgba(255 - pressure_255, 255 - pressure_255, 255 - pressure_255, .3);
             zoomCanvasFillRectTheta(
                 4 * i * getBaseSize(),

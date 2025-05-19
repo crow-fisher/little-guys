@@ -114,7 +114,7 @@ export function restingValues() {
         for (let j = 0; j < getWindSquaresY(); j++) {
             let curPressure = getPressure(i, j); 
              
-            let pressureRestingMult = 0.0001;
+            let pressureRestingMult = 0.05;
 
             let restingPressureTarget = getRestingAirPressureAtSq(j) * pressureRestingMult + curPressure * (1 - pressureRestingMult);
             manipulateWindPressureMaintainHumidityWindSquare(i, j, restingPressureTarget);

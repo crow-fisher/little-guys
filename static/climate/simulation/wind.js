@@ -169,6 +169,56 @@ function getTempMolarMult(x, y) {
     return 1 + ((getTemperatureAtWindSquare(x, y) - 273) / 273);
 }
 
+export function getWindThrottleValWindMap(x, y) {
+    let max = 0;
+    getWindDirectNeighbors(x, y)
+        .filter((spl) => isPointInBounds(spl[0], spl[1]))
+        .forEach((spl) => {
+            let x2 = spl[0];
+            let y2 = spl[1];
+            let pressureDiff = getExpectedPressureDifferential(x, y, x2, y2);
+            max = Math.max(max, pressureDiff);
+        });
+    let maxThersh = 10000;
+    let minThresh = 1000;
+    let maxRate = 1;
+    let minRate = .01;
+    if (max > maxThersh) {
+        return Math.random() < maxRate ? 1 : -1;
+    } else if (max < minThresh) {
+        return Math.random() < minRate ? 1 : -1;
+    } else {
+        let invlerp = (max - minThresh) / (maxThersh - minThresh);
+        let lerp = invlerp * (maxRate - minRate) + minRate;
+        return Math.random() < lerp ? 1 : -1;
+    }
+}
+
+export function getWindThrottleValWindMapVal(x, y) {
+    let max = 0;
+    getWindDirectNeighbors(x, y)
+        .filter((spl) => isPointInBounds(spl[0], spl[1]))
+        .forEach((spl) => {
+            let x2 = spl[0];
+            let y2 = spl[1];
+            let pressureDiff = getExpectedPressureDifferential(x, y, x2, y2);
+            max = Math.max(max, pressureDiff);
+        });
+    let maxThersh = 10000;
+    let minThresh = 1000;
+    let maxRate = 1;
+    let minRate = .01;
+    if (max > maxThersh) {
+        return maxRate;
+    } else if (max < minThresh) {
+        return minRate;
+    } else {
+        let invlerp = (max - minThresh) / (maxThersh - minThresh);
+        let lerp = invlerp * (maxRate - minRate) + minRate;
+        return lerp;
+    }
+}
+
 function tickWindPressureMap() {
     windPressureMapByPressure = new Map();
     if (WIND_SQUARES_X() != curWindSquaresX || WIND_SQUARES_Y() != curWindSquaresY) {
@@ -207,7 +257,7 @@ function tickWindPressureMap() {
                     if (isWindSquareBlocked(x, y)) {
                         return;
                     }
-                    let throttleVal = getWindThrottleVal(x, y);
+                    let throttleVal = getWindThrottleValWindMap(x, y);
                     if (throttleVal < 0) {
                         return;
                     }
@@ -232,7 +282,6 @@ function tickWindPressureMap() {
                             if (windPressureDiff == 0) {
                                 return;
                             }
-
 
                             let plEnergyLost = windPressureDiff * plTemp;
                             let startSplEnergy = splPressure * splTemp;
@@ -367,7 +416,6 @@ function _getWindSpeedAtLocation(x, y) {
 
     netPresX = getExpectedPressureDifferential(x, y, x + 1, y) - getExpectedPressureDifferential(x, y, x - 1, y)
     netPresY = getExpectedPressureDifferential(x, y, x, y + 1) - getExpectedPressureDifferential(x, y, x, y - 1)
-
 
     netPresX = (netPresX > 0 ? 1 : -1) * windSpeedFromPressure(Math.abs(netPresX), windPressureMap[x][y]);
     netPresY = (netPresY > 0 ? 1 : -1) * windSpeedFromPressure(Math.abs(netPresY), windPressureMap[x][y]);
