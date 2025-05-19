@@ -2,7 +2,7 @@ import { gaussianRandom, randRange } from "../../common.js";
 import { addUIFunctionMap, UI_CLIMATE_WEATHER_CLEAR, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_HEAVYRAIN, loadGD, saveGD, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_DURATION, UI_CLIMATE_WEATHER_ACTIVE, UI_SIMULATION_GENS_PER_DAY, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_SIMULATION_CLOUDS, UI_CLIMATE_WEATHER_NULL } from "../../ui/UIData.js";
 import { getActiveClimate } from "../climateManager.js";
 import { cloudRainThresh } from "../simulation/temperatureHumidity.js";
-import { getCurDay, getDt } from "../time.js";
+import { getCurDay, getDt, getTimeScale } from "../time.js";
 import { getWindSquaresX, getWindSquaresY } from "../simulation/wind.js";
 import { Cloud } from "./cloud.js";
 import { Weather } from "./weather.js";
@@ -183,8 +183,8 @@ function generalRainyWeather(rainFactor) {
     }
 }
 
-weatherLightRain = new Weather(UI_CLIMATE_WEATHER_LIGHTRAIN, rainyHumidityGradient, rainyTemperatureGradient, 50, generalRainyWeather(0.6));
-weatherHeavyRain = new Weather(UI_CLIMATE_WEATHER_HEAVYRAIN, rainyHumidityGradient, rainyTemperatureGradient, 50, generalRainyWeather(2));
+weatherLightRain = new Weather(UI_CLIMATE_WEATHER_LIGHTRAIN, rainyHumidityGradient, rainyTemperatureGradient, 50, generalRainyWeather(1.3));
+weatherHeavyRain = new Weather(UI_CLIMATE_WEATHER_HEAVYRAIN, rainyHumidityGradient, rainyTemperatureGradient, 50, generalRainyWeather(1.8));
 
 ui_weatherMap.set(UI_CLIMATE_WEATHER_CLEAR, weatherClear)
 ui_weatherMap.set(UI_CLIMATE_WEATHER_PARTLY_CLOUDY, weatherPartlyCloudy)
@@ -247,7 +247,7 @@ export function initWeather() {
 
 function applyUIWeatherChange() {
     curWeather = ui_weatherMap.get(loadGD(UI_CLIMATE_WEATHER_ACTIVE));
-    curWeatherInterval = randRange(	7 / loadGD(UI_SIMULATION_GENS_PER_DAY), 16 / loadGD(UI_SIMULATION_GENS_PER_DAY));
+    curWeatherInterval = getTimeScale() * randRange(7 / loadGD(UI_SIMULATION_GENS_PER_DAY), 16 / loadGD(UI_SIMULATION_GENS_PER_DAY));
     curWeatherInterval -= curWeatherInterval % (0.000694444 / 60);
 
     curWeatherStartTime = getCurDay();

@@ -74,6 +74,12 @@ class BaseOrganism {
 
         this.evolutionMinColor = RGB_COLOR_BLUE;
         this.evolutionMaxColor = RGB_COLOR_VERY_FUCKING_RED;
+
+        this.llt_min = 0.5;
+        this.llt_max = 2;
+        this.llt_throttlValMin = 1;
+        this.llt_throttlValMax = 8;
+
     }
 
     prepareForSave() {
@@ -324,22 +330,16 @@ class BaseOrganism {
 
     lightLevelThrottleVal() {
         let ratio = this.lightlevel / this.growthLightLevel;
-        let min = 0.5;
-        let max = 2;
-
-        let throttlValMin = 1;
-        let throttlValMax = 8;
-
-        if (ratio < min) {
-            return throttlValMax;
+        if (ratio < this.llt_min) {
+            return this.llt_throttlValMax;
         } else if (ratio < 1) {
-            let t = (ratio - min) / min;
-            return throttlValMax * (1 - t) + throttlValMin * t;
-        } else if (ratio < max) {
+            let t = (ratio - this.llt_min) / this.llt_min;
+            return this.llt_throttlValMax * (1 - t) + this.llt_throttlValMin * t;
+        } else if (ratio < this.llt_max) {
             let t = (ratio - 1);
-            return throttlValMax * t + throttlValMin * (1 - t);
+            return this.llt_throttlValMax * t + this.llt_throttlValMin * (1 - t);
         } else {
-            return throttlValMax;
+            return this.llt_throttlValMax;
         }
     }
     doGreenGrowth() {

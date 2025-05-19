@@ -31,6 +31,9 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
         this.growthCycleLength = this.growthCycleMaturityLength * 2.65;
 
         this.grasses = [];
+
+        this.llt_throttlValMin = 1;
+        this.llt_throttlValMax = 2;
         
     }
 
