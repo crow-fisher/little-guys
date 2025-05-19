@@ -184,7 +184,7 @@ export function getWindThrottleValWindMapVal(x, y) {
             max = Math.max(max, pressureDiff);
         });
     let maxThersh = 100;
-    let minThresh = 1;
+    let minThresh = .1;
     let maxRate = 1;
     let minRate = .01;
     if (max > maxThersh) {
@@ -327,14 +327,22 @@ function getExpectedPressureDifferential(x, y, x2, y2) {
     return getWindPressureDiff(plPressureProcessed - expectedPressureDiff / 2, splPressureProcessed + expectedPressureDiff / 2) / 2;
 }
 
-
 function renderWindPressureMap() {
     for (let i = 0; i < curWindSquaresX; i++) {
         for (let j = 0; j < curWindSquaresY; j++) {
             let p = getPressure(i, j) / getBaseAirPressureAtYPosition(j);  
             let s = _getWindSpeedAtLocation(i, j);
 
-            let pressure_255 = (p - 1) * 122;
+
+            let sLen = (s[0] ** 2 + s[1] ** 2) ** 0.5;
+            let maxSLen = 2;
+
+            if (sLen > maxSLen) {
+                s[0] *= maxSLen / sLen;
+                s[1] *= maxSLen / sLen;
+            }
+
+            let pressure_255 = (p - 1) * 12200;
 
             MAIN_CONTEXT.fillStyle = rgbToRgba(255 - pressure_255, 255 - pressure_255, 255 - pressure_255, .3);
             zoomCanvasFillRectTheta(
@@ -357,7 +365,7 @@ function renderWindPressureMap() {
             MAIN_CONTEXT.beginPath();
             MAIN_CONTEXT.lineWidth = 1;
             MAIN_CONTEXT.moveTo(startX, startY);
-            MAIN_CONTEXT.lineTo(startX + s[0] * 3, startY + s[1] * 3);
+            MAIN_CONTEXT.lineTo(startX + s[0] * 30, startY + s[1] * 30);
             MAIN_CONTEXT.stroke();
             MAIN_CONTEXT.closePath();
         }

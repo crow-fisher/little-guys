@@ -28,7 +28,7 @@ export function getCurWeatherInterval() {
 let curClouds = [];
 let curWinds = [];
 
-let cloudDuration = randRange(0.5, 1) / loadGD(UI_SIMULATION_GENS_PER_DAY);
+let cloudDuration = () => getTimeScale() * randRange(0.5, 1) / loadGD(UI_SIMULATION_GENS_PER_DAY);
 
 function spawnFogCloud() {
     let wsx = getWindSquaresX();
@@ -37,7 +37,7 @@ function spawnFogCloud() {
         randRange(0, wsx),
         randRange(0, wsy),
         randRange(0.5, 0.9) * wsx, randRange(0.4, 0.9) * wsy,
-        getCurDay(), cloudDuration,
+        getCurDay(), cloudDuration(),
         randRange(1.004, 1.006), 0.4));
 }
 
@@ -48,7 +48,7 @@ function spawnCumulusCloud() {
         randRange(0, wsx),
         gaussianRandom( wsy/15, wsy/10),
         randRange(0.4, 0.9) * wsx, randRange(0.2, 0.35) * wsy,
-        getCurDay(), cloudDuration,
+        getCurDay(), cloudDuration(),
         randRange((1 + cloudRainThresh) / 2, cloudRainThresh), 0.8));
 }
 
@@ -59,19 +59,20 @@ function spawnNimbusCloud(rainFactor) {
         randRange(0, wsx),
         randRange(0, wsy / 8),
         randRange(0.4, 0.9) * wsy, randRange(0.15, 0.25) * wsy,
-        getCurDay(), cloudDuration,
+        getCurDay(), cloudDuration(),
         1 + 0.05 * rainFactor, 0.8));
 }
 
-function spawnWindGust() {
+function spawnWindGust(airPressure) {
+    console.log("Spawning wind gust...");
     let wsx = getWindSquaresX();
     let wsy = getWindSquaresY();
     curClouds.push(new Cloud(
         randRange(-wsx, wsx),
         randRange(-wsy, wsy),
         randRange(0, 0.2) * wsx, randRange(0.05, 0.1) * wsy,
-        getCurDay(), cloudDuration,
-        -1, 0.8));
+        getCurDay(), cloudDuration() * 2,
+        -1, 0.8, airPressure));
 }
 
 // UI_CLIMATE_WEATHER_CLEAR
@@ -88,6 +89,7 @@ let clearTg = [
 ]
 
 function clearWeather() {
+    windyWeather(10, 1.2);
 }
 
 weatherClear = new Weather(UI_CLIMATE_WEATHER_CLEAR, clearHg, clearTg, 100, clearWeather);
@@ -131,14 +133,13 @@ function spawnRateThrottle() {
     return Math.random() > 0.9
 }
 
-function windyWeather(windAmount) {
-    return () => {
-        if (curWinds.length > windAmount) {
-            return;
-        }
-        if (spawnRateThrottle())
-            spawnWindGust();
+function windyWeather(windAmount, airPressure) {
+    airPressure = 1 + .01 * airPressure;
+    if (curWinds.length > windAmount) {
+        return;
     }
+    if (spawnRateThrottle())
+        spawnWindGust(airPressure);
 }
 
 function cloudyWeather(cloudCount) {
@@ -149,7 +150,7 @@ function cloudyWeather(cloudCount) {
         if (spawnRateThrottle()) {
             spawnCumulusCloud();
         }
-        windyWeather(10);
+        windyWeather(10, 1.2);
     }
 }
 
@@ -160,6 +161,7 @@ function foggyWeather() {
     if (spawnRateThrottle()) {
         spawnFogCloud();
     }
+    windyWeather(10, 1.2);
 }
 
 weatherPartlyCloudy = new Weather(UI_CLIMATE_WEATHER_PARTLY_CLOUDY, cloudyHg, cloudyTg, 50, cloudyWeather(6));
@@ -179,7 +181,7 @@ function generalRainyWeather(rainFactor) {
         if (spawnRateThrottle()) {
             spawnNimbusCloud(rainFactor);
         }
-        windyWeather(10);
+        windyWeather(10, 1.5 * rainFactor);
     }
 }
 
