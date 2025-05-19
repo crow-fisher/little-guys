@@ -38,8 +38,8 @@ export class Climate {
         this.weatherPatternMap.set(UI_CLIMATE_WEATHER_PARTLY_CLOUDY, 10);
         this.weatherPatternMap.set(UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, 10);
         this.weatherPatternMap.set(UI_CLIMATE_WEATHER_FOGGY, 5);
-        this.weatherPatternMap.set(UI_CLIMATE_WEATHER_LIGHTRAIN, 25);
-        this.weatherPatternMap.set(UI_CLIMATE_WEATHER_HEAVYRAIN, 10);
+        this.weatherPatternMap.set(UI_CLIMATE_WEATHER_LIGHTRAIN, 45);
+        this.weatherPatternMap.set(UI_CLIMATE_WEATHER_HEAVYRAIN, 25);
 
         this.lat = 42.04;
         this.lng = -87.78;
