@@ -406,7 +406,6 @@ export class GrowthComponent {
                 [0, 0]
             );
         }
-
         return this.lastDeflectionValue;
 
     }

@@ -66,6 +66,13 @@ export class Cloud {
                         if (!isPointInWindBounds(wx, wy) || getPressure(wx, wy) < 0) {
                             continue;
                         }
+                        if (yside == 1 && wx == 0) {
+                            continue;
+                        }
+                        if (xside == 1 && wy == 0) {
+                            continue;
+                        }
+                        
                         if (this.targetHumidity != -1) {
                             let cur = getHumidity(wx, wy);
                             let waterPascals = (this.targetHumidity - cur) * (getWaterSaturation(wx, wy) / cur) * this.strength;

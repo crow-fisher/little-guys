@@ -170,28 +170,7 @@ function getTempMolarMult(x, y) {
 }
 
 export function getWindThrottleValWindMap(x, y) {
-    let max = 0;
-    getWindDirectNeighbors(x, y)
-        .filter((spl) => isPointInBounds(spl[0], spl[1]))
-        .forEach((spl) => {
-            let x2 = spl[0];
-            let y2 = spl[1];
-            let pressureDiff = getExpectedPressureDifferential(x, y, x2, y2);
-            max = Math.max(max, pressureDiff);
-        });
-    let maxThersh = 10000;
-    let minThresh = 1000;
-    let maxRate = 1;
-    let minRate = .01;
-    if (max > maxThersh) {
-        return Math.random() < maxRate ? 1 : -1;
-    } else if (max < minThresh) {
-        return Math.random() < minRate ? 1 : -1;
-    } else {
-        let invlerp = (max - minThresh) / (maxThersh - minThresh);
-        let lerp = invlerp * (maxRate - minRate) + minRate;
-        return Math.random() < lerp ? 1 : -1;
-    }
+    return Math.random() < getWindThrottleValWindMapVal(x, y) ? 1 : -1;
 }
 
 export function getWindThrottleValWindMapVal(x, y) {
@@ -204,8 +183,8 @@ export function getWindThrottleValWindMapVal(x, y) {
             let pressureDiff = getExpectedPressureDifferential(x, y, x2, y2);
             max = Math.max(max, pressureDiff);
         });
-    let maxThersh = 10000;
-    let minThresh = 1000;
+    let maxThersh = 100;
+    let minThresh = 1;
     let maxRate = 1;
     let minRate = .01;
     if (max > maxThersh) {

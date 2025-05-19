@@ -2,7 +2,7 @@ import { hexToRgb, randNumber, rgbToRgba } from "../../common.js";
 import { getSquares } from "../../squares/_sqOperations.js";
 import { getBaseSize, zoomCanvasFillRect } from "../../canvas.js";
 import { MAIN_CONTEXT } from "../../index.js";
-import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds, getBaseAirPressureAtYPosition, getAirSquareDensity, getWindPressureSquareDensity, base_wind_pressure, manipulateWindPressureMaintainHumidityWindSquare, initWindPressure, isWindSquareBlocked, windFlowrateFactor, getWindSquareAbove } from "./wind.js";
+import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds, getBaseAirPressureAtYPosition, getAirSquareDensity, getWindPressureSquareDensity, base_wind_pressure, manipulateWindPressureMaintainHumidityWindSquare, initWindPressure, isWindSquareBlocked, windFlowrateFactor, getWindSquareAbove, getWindThrottleValWindMap } from "./wind.js";
 import { logRainFall } from "../weather/weatherManager.js";
 import { getDefaultLighting } from "../../lighting/lightingProcessing.js";
 import { addSquareByName } from "../../manipulation.js";
@@ -109,7 +109,7 @@ function getRestingAirPressureAtSq(y) {
 
 export function restingValues() {
     let temperatureStrength = 18 * restingGradientStrength;
-    let humidityStrength = 60 * restingGradientStrength; 
+    let humidityStrength = 2 * restingGradientStrength; 
     for (let i = 0; i < getWindSquaresX(); i++) {
         for (let j = 0; j < getWindSquaresY(); j++) {
             let curPressure = getPressure(i, j); 
@@ -220,7 +220,7 @@ function tickMap(
         for (let j = 0; j < yKeys.length; j++) {
             let x = parseInt(xKeys[i]);
             let y = parseInt(yKeys[j]);
-            let throttleVal = getWindThrottleVal(x, y);
+            let throttleVal = getWindThrottleValWindMap(x, y);
             if (throttleVal < 0) {
                 continue;
             }
