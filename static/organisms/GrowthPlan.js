@@ -4,9 +4,8 @@ import { STATE_DESTROYED } from "./Stages.js";
 import { getGlobalThetaBase } from "../globals.js";
 import { removeItemAll } from "../common.js";
 
-const ROLLING_AVERAGE_PERIOD = 200;
 export class GrowthPlan {
-    constructor(posX, posY, required, endStage, theta, twist, baseRotation, baseDeflection, baseCurve, type, strengthMult) {
+    constructor(posX, posY, required, endStage, theta, twist, baseRotation, baseDeflection, baseCurve, type, strengthMult, rollingAveragePeriod=200) {
         this.posX = posX;
         this.posY = posY;
         this.required = required;
@@ -21,7 +20,7 @@ export class GrowthPlan {
         this.component = new GrowthComponent(
             this,
             this.steps.filter((step) => step.completed).map((step) => step.completedSquare),
-            theta, twist, baseRotation, baseDeflection, baseCurve, type, strengthMult)
+            theta, twist, baseRotation, baseDeflection, baseCurve, type, strengthMult, rollingAveragePeriod)
     }
 
     areStepsCompleted() {
@@ -68,7 +67,7 @@ export class GrowthPlanStep {
 }
 
 export class GrowthComponent {
-    constructor(growthPlan, lifeSquares, theta, twist, baseRotation, baseDeflection, baseCurve, type, strengthMult) {
+    constructor(growthPlan, lifeSquares, theta, twist, baseRotation, baseDeflection, baseCurve, type, strengthMult, rollingAveragePeriod) {
         this.growthPlan = growthPlan;
         this.lifeSquares = lifeSquares;
         this.theta = theta;
@@ -87,6 +86,7 @@ export class GrowthComponent {
         this.currentDeflection = 0;
         this.deflectionRollingAverage = 0;
         this.strengthMult = strengthMult;
+        this.rollingAveragePeriod = rollingAveragePeriod
         this.children = new Array();
         this.parentComponent = null;
         this.setCurrentDeflection(baseDeflection);
@@ -375,7 +375,7 @@ export class GrowthComponent {
     }
 
     getTotalStrength() {
-        return Math.max(1, this.strength());
+        return Math.max(.0001, this.strength());
     }
 
     getTotalLifeSquares() {
@@ -452,13 +452,13 @@ export class GrowthComponent {
         let limit = Math.PI / 12;
         deflection = Math.min(Math.max(deflection, -limit), limit);
 
-        let period = 6;
+        let period = 12;
 
         this.currentDeflection = this.currentDeflection * (1 - (1 / period)) + deflection * (1 / period)
         if (this.deflectionRollingAverage == 0) {
             this.deflectionRollingAverage = deflection;
         } else {
-            this.deflectionRollingAverage = this.deflectionRollingAverage * ((ROLLING_AVERAGE_PERIOD - 1) / ROLLING_AVERAGE_PERIOD) + deflection * (1 / ROLLING_AVERAGE_PERIOD);
+            this.deflectionRollingAverage = this.deflectionRollingAverage * ((this.rollingAveragePeriod - 1) / this.rollingAveragePeriod) + deflection * (1 / this.rollingAveragePeriod);
         }
     }
 

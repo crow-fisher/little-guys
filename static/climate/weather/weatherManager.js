@@ -70,7 +70,7 @@ function spawnWindGust(airPressure) {
     curClouds.push(new Cloud(
         randRange(-wsx, wsx),
         randRange(-wsy, wsy),
-        randRange(0, 0.2) * wsx, randRange(0.05, 0.1) * wsy,
+        randRange(.4, 0.7) * wsx, randRange(0.05, 0.1) * wsy,
         getCurDay(), cloudDuration() * 2,
         -1, 0.8, airPressure));
 }
