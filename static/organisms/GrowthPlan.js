@@ -1,4 +1,4 @@
-import { getCurDay } from "../climate/time.js";
+import { getCurDay, getFrameDt } from "../climate/time.js";
 import { getWindSpeedAtLocation } from "../climate/simulation/wind.js";
 import { STATE_DESTROYED } from "./Stages.js";
 import { getGlobalThetaBase } from "../globals.js";
@@ -42,7 +42,7 @@ export class GrowthPlan {
 
     complete() {
         this.postConstruct();
-        this.postConstruct = () => {}
+        this.postConstruct = () => { }
     }
 }
 
@@ -92,6 +92,9 @@ export class GrowthComponent {
         this.setCurrentDeflection(baseDeflection);
         this.distToFront = 0;
         this.spawnTime = getCurDay();
+
+        this.lastDeflectionInstant = 0;
+        this.lastDeflectionValue = null;
     }
 
     getChildPath(searchChild) {
@@ -316,7 +319,7 @@ export class GrowthComponent {
         if (this.lifeSquares.some((lsq) => lsq == null)) {
             return;
         }
-        
+
         let startDeflectionXOffset = 0;
         let startDeflectionYOffset = 0;
         if (parentComponent != null) {
@@ -395,12 +398,17 @@ export class GrowthComponent {
             return ret;
         }
     }
-
     _getNetWindSpeed() {
-        return this.lifeSquares.map((lsq) => getWindSpeedAtLocation(lsq.getPosX(), lsq.getPosY())).reduce(
-            (accumulator, currentValue) => [accumulator[0] + currentValue[0], accumulator[1] + currentValue[1]],
-            [0, 0]
-        );
+        if (getCurDay() != this.lastDeflectionInstant) {
+            this.lastDeflectionInstant = getCurDay();
+            this.lastDeflectionValue = this.lifeSquares.map((lsq) => getWindSpeedAtLocation(lsq.getPosX(), lsq.getPosY())).reduce(
+                (accumulator, currentValue) => [accumulator[0] + currentValue[0], accumulator[1] + currentValue[1]],
+                [0, 0]
+            );
+        }
+
+        return this.lastDeflectionValue;
+
     }
     getStartSpringForce() {
         return Math.sin(this.getBaseDeflection() - this.deflectionRollingAverage) * this.getTotalStrength();
