@@ -45,7 +45,7 @@ class BaseLifeSquare {
         this.darkColorAmount = 33;
         this.accentColorAmount = 33;
 
-        this.spawnTime = getCurTime();
+        this.spawnTime = Date.now();
 
         this.deflectionStrength = 0;
         this.deflectionXOffset = 0;

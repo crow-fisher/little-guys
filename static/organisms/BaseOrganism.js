@@ -521,18 +521,19 @@ class BaseOrganism {
 
     // DESTRUCTION
     destroy() {
-        console.log("Organism dying; state: ",
-            this.proto,
-            "light:",
-            this.lightlevel,
-            this.growthLightLevel,
-            "nitogen:",
-            this.nitrogen,
-            this.growthNitrogen,
-            "phosphorus:",
-            this.phosphorus,
-            this.growthPhosphorus
-        );
+        if (!this.proto.includes("Seed"))
+            console.log("Organism dying; state: ",
+                this.proto,
+                "light:",
+                this.lightlevel,
+                this.growthLightLevel,
+                "nitogen:",
+                this.nitrogen,
+                this.growthNitrogen,
+                "phosphorus:",
+                this.phosphorus,
+                this.growthPhosphorus
+            );
 
         this.lifeSquares.forEach((lifeSquare) => lifeSquare.destroy());
         if (this.linkedSquare != null && this.linkedSquare != -1) {

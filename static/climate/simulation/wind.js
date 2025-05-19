@@ -432,6 +432,7 @@ function _getWindSpeedAtLocation(x, y) {
     if (isNaN(previousAvgX * coef + netPresX * (1 - coef))) {
         console.warn("FUCK 408");
     }
+
     return [previousAvgX * coef + netPresX * (1 - coef), previousAvgY * coef + netPresY * (1 - coef)];
 }
 

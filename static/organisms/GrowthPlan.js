@@ -85,7 +85,7 @@ export class GrowthComponent {
         this.yOffset = 0;
 
         this.currentDeflection = 0;
-        this.deflectionRollingAverage = 10 ** 8;
+        this.deflectionRollingAverage = 0;
         this.strengthMult = strengthMult;
         this.children = new Array();
         this.parentComponent = null;
@@ -94,7 +94,7 @@ export class GrowthComponent {
         this.spawnTime = getCurDay();
 
         this.lastDeflectionInstant = 0;
-        this.lastDeflectionValue = null;
+        this.lastDeflectionValue = [0, 0];
     }
 
     getChildPath(searchChild) {
@@ -386,26 +386,27 @@ export class GrowthComponent {
     }
 
     getNetWindSpeed() {
-        if (this.parentComponent == null) {
-            return this._getNetWindSpeed();
-        } else {
-            let ret = this._getNetWindSpeed();
-            this.children.forEach((child) => {
-                let childWs = child.getNetWindSpeed();
-                ret[0] += childWs[0];
-                ret[1] += childWs[1];
-            });
-            return ret;
-        }
+        let ret = this._getNetWindSpeed();
+        this.children.forEach((child) => {
+            let childWs = child.getNetWindSpeed();
+            ret[0] += childWs[0];
+            ret[1] += childWs[1];
+        });
+        return ret;
     }
     _getNetWindSpeed() {
         if (getCurDay() != this.lastDeflectionInstant) {
             this.lastDeflectionInstant = getCurDay();
-            this.lastDeflectionValue = this.lifeSquares.map((lsq) => getWindSpeedAtLocation(lsq.getPosX(), lsq.getPosY())).reduce(
+            this.lastDeflectionValue = this.lifeSquares
+                .map((lsq) => getWindSpeedAtLocation(lsq.getPosX(), lsq.getPosY())).reduce(
                 (accumulator, currentValue) => [accumulator[0] + currentValue[0], accumulator[1] + currentValue[1]],
                 [0, 0]
             );
         }
+        // this caching implementation saves around 2 fps for 12.5k squares @ 12fps
+        // but it causes this weird 'tweaking' behavior
+        // so it's disabled for now
+        this.lastDeflectionInstant = 0;
         return this.lastDeflectionValue;
 
     }
@@ -451,10 +452,10 @@ export class GrowthComponent {
         let limit = Math.PI / 12;
         deflection = Math.min(Math.max(deflection, -limit), limit);
 
-        let period = 5;
+        let period = 6;
 
         this.currentDeflection = this.currentDeflection * (1 - (1 / period)) + deflection * (1 / period)
-        if (this.deflectionRollingAverage == 10 ** 8) {
+        if (this.deflectionRollingAverage == 0) {
             this.deflectionRollingAverage = deflection;
         } else {
             this.deflectionRollingAverage = this.deflectionRollingAverage * ((ROLLING_AVERAGE_PERIOD - 1) / ROLLING_AVERAGE_PERIOD) + deflection * (1 / ROLLING_AVERAGE_PERIOD);
