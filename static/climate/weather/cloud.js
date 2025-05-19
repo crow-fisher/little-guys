@@ -4,7 +4,7 @@ import { addWindPressureDryAirWindSquare, getBaseAirPressureAtYPosition, getPres
 
 
 export class Cloud {
-    constructor(centerX, centerY, sizeX, sizeY, startDay, duration, targetHumidity, strength, airPressure=1) {
+    constructor(centerX, centerY, sizeX, sizeY, startDay, duration, targetHumidity, strength, airPressure = 1) {
         this.centerX = Math.floor(centerX);
         this.centerY = Math.floor(centerY);
         this.sizeX = Math.floor(sizeX);
@@ -66,13 +66,13 @@ export class Cloud {
                         if (!isPointInWindBounds(wx, wy) || getPressure(wx, wy) < 0) {
                             continue;
                         }
-                        if (yside == 1 && wx == 0) {
+                        if (i == 0 && xside == 1) {
                             continue;
                         }
-                        if (xside == 1 && wy == 0) {
+                        if (j == 0 && yside == 1) {
                             continue;
                         }
-                        
+
                         if (this.targetHumidity != -1) {
                             let cur = getHumidity(wx, wy);
                             let waterPascals = (this.targetHumidity - cur) * (getWaterSaturation(wx, wy) / cur) * this.strength;
@@ -82,7 +82,7 @@ export class Cloud {
                             let airPascals = (getBaseAirPressureAtYPosition(wy) * this.airPressure - getPressure(wx, wy));
                             manipulateWindPressureMaintainHumidityWindSquare(wx, wy, getPressure(wx, wy) + airPascals);
                         }
-         
+
                     }
                 }
             }
