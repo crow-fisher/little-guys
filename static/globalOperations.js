@@ -12,6 +12,7 @@ import { indexCanvasSize, MAIN_CANVAS, MAIN_CONTEXT } from "./index.js";
 import { resetFrameGroupCache, waterGraphReset } from "./waterGraph.js";
 import { COLOR_BLUE, COLOR_VERY_FUCKING_RED, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "./colors.js";
 import { calculateColor, calculateColorProvideOpacity } from "./climate/simulation/temperatureHumidity.js";
+import { lightingExposureAdjustment } from "./lighting/lightingProcessing.js";
 
 let frame_squares = null;
 let frame_solid_squares = null;
@@ -51,6 +52,7 @@ export function renderSquares() {
 
 export function renderSolidSquares() {
     frame_solid_squares.forEach((sq) => sq.render());
+    lightingExposureAdjustment();
 }
 
 export function renderWaterSquares() {

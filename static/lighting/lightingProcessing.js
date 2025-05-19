@@ -1,6 +1,9 @@
+import { getCanvasSquaresX, getCanvasSquaresY } from "../canvas.js";
 import { getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "../climate/time.js";
+import { getStandardDeviation } from "../common.js";
 import { isSaveOrLoadInProgress } from "../saveAndLoad.js";
-import { loadGD, UI_CAMERA_EXPOSURE, UI_LIGHTING_ENABLED, UI_LIGHTING_MOON, UI_LIGHTING_SUN } from "../ui/UIData.js";
+import { getSquares } from "../squares/_sqOperations.js";
+import { loadGD, saveGD, saveUI, UI_CAMERA_EXPOSURE, UI_LIGHTING_ENABLED, UI_LIGHTING_MOON, UI_LIGHTING_SUN } from "../ui/UIData.js";
 
 export function getDefaultLighting() {
     let brightness = getDaylightStrength();
@@ -21,6 +24,7 @@ export function processLighting(lightingMap) {
             (accumulator, currentValue) => accumulator + currentValue,
             0,
         ) * Math.exp(loadGD(UI_CAMERA_EXPOSURE));
+
         let color = light[1]();
         outColor = {
             r: outColor.r + strength * color.r,
@@ -39,4 +43,40 @@ export function applyLightingFromSource(source, dest) {
     source.lighting.forEach((light) => {
         dest.lighting.push([Array.from(light[0].map((x) => x)), light[1]])
     });
+}
+
+export function lightingExposureAdjustment() {
+    let collectedSquares = new Array();
+    for (let i = 0; i < getCanvasSquaresX(); i += Math.floor(getCanvasSquaresX() ** 0.5)) {
+        for (let j = 0; j < getCanvasSquaresY(); j += Math.floor(getCanvasSquaresY() ** 0.5)) {
+            collectedSquares.push(...getSquares(i, j));
+        }
+    };
+    if (collectedSquares.length == 0) {
+        return;
+    }
+    let strengths = collectedSquares
+        .map((sq) => sq.lighting
+            .filter((light) => light != null && light.length == 2)
+            .map((light) => 
+                light[0]
+                    .filter((f) => f != null)
+                    .map((f) => f())
+                    .reduce((a, b) => a + b)
+        )).map((arr) => arr.reduce((a, b) => a + b, 0));
+    
+    let mean = strengths.reduce((a, b) => a + b, 0) / collectedSquares.length;
+    let max = strengths.reduce((a, b) => Math.max(a, b), 0);
+    let stdev = getStandardDeviation(strengths);
+    if (isNaN(mean) || isNaN(stdev)) {
+        return;
+    }
+    let exposureVal = Math.max(0.0001, max + 2 * stdev)
+    let exposure = 2.5 - exposureVal;
+    exposure = Math.max(exposure, 0.1);
+    exposure = Math.min(exposure, 2.5);
+
+    let curExposure = loadGD(UI_CAMERA_EXPOSURE);
+
+    saveGD(UI_CAMERA_EXPOSURE, curExposure * 0.95 + exposure * 0.05);
 }

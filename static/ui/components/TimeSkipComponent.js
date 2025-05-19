@@ -26,8 +26,8 @@ export class TimeSkipComponent extends LockedComponent {
         this.timeSkipElement = new TimeSkipElement(this.window, halfSizeX, getBaseUISize() * 3);
         container.addElement(this.timeSkipElement);
 
-        container.addElement(new Slider(this.window, UI_CAMERA_EXPOSURE, sizeX, getBaseUISize() * 3, 1, 3, () => "#FEFEFE", 
-        getBaseUISize(), () => COLOR_BLACK, () => getActiveClimate().getUIColorInactiveCustom(0.70)));
+        // container.addElement(new Slider(this.window, UI_CAMERA_EXPOSURE, sizeX, getBaseUISize() * 3, 1, 3, () => "#FEFEFE", 
+        // getBaseUISize(), () => COLOR_BLACK, () => getActiveClimate().getUIColorInactiveCustom(0.70)));
 
         container.addElement(new Button(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, () => doTimeSkipToNow(), "now",() => getActiveClimate().getUIColorInactiveCustom(0.52)));
        
