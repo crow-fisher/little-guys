@@ -33,7 +33,7 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
         this.grasses = [];
 
         this.llt_throttlValMin = 1;
-        this.llt_throttlValMax = 2;
+        this.llt_throttlValMax = 4;
         
     }
 
