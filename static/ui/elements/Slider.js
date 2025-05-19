@@ -6,7 +6,7 @@ import { loadGD, saveGD } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class Slider extends WindowElement {
-    constructor(window, key, sizeX, sizeY, min, max, blockColorFunc, blockSize = getBaseUISize()) {
+    constructor(window, key, sizeX, sizeY, min, max, blockColorFunc, blockSize = getBaseUISize(), lineColorFunc = () => null, backgroundColorFunc = null) {
         super(window, sizeX, sizeY);
         this.key = key;
         this.sizeX = sizeX;
@@ -14,10 +14,17 @@ export class Slider extends WindowElement {
         this.min = min;
         this.max = max;
         this.blockColorFunc = blockColorFunc;
+        this.lineColorFunc = lineColorFunc;
         this.blockSize = blockSize;
+        this.backgroundColorFunc = backgroundColorFunc;
     }
 
     render(startX, startY) {
+        if (this.backgroundColorFunc != null) {
+            MAIN_CONTEXT.fillStyle = this.backgroundColorFunc();
+            MAIN_CONTEXT.fillRect(startX, startY, this.sizeX, this.sizeY);
+        }
+
         let py = startY + this.sizeY / 2;
         let p1x = startX + this.blockSize; 
         let p2x = startX + this.sizeX - this.blockSize;
@@ -25,6 +32,7 @@ export class Slider extends WindowElement {
         MAIN_CONTEXT.beginPath();
         MAIN_CONTEXT.moveTo(p1x, py);
         MAIN_CONTEXT.lineTo(p2x, py);
+        MAIN_CONTEXT.strokeStyle = this.lineColorFunc();
         MAIN_CONTEXT.stroke();
         MAIN_CONTEXT.fillStyle = this.blockColorFunc();
         let p = (loadGD(this.key) - this.min) / (this.max - this.min);
