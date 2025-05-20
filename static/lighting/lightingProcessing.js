@@ -1,6 +1,7 @@
 import { getCanvasSquaresX, getCanvasSquaresY } from "../canvas.js";
 import { getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "../climate/time.js";
 import { getStandardDeviation } from "../common.js";
+import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
 import { isSaveOrLoadInProgress } from "../saveAndLoad.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import { loadGD, saveGD, saveUI, UI_CAMERA_EXPOSURE, UI_LIGHTING_ENABLED, UI_LIGHTING_MOON, UI_LIGHTING_SUN } from "../ui/UIData.js";
@@ -23,7 +24,7 @@ export function processLighting(lightingMap) {
         let strength = light[0].filter((f) => f != null).map((f) => f()).reduce(
             (accumulator, currentValue) => accumulator + currentValue,
             0,
-        ) * Math.exp(loadGD(UI_CAMERA_EXPOSURE));
+        ) * loadGD(UI_CAMERA_EXPOSURE);
 
         let color = light[1]();
         outColor = {
@@ -52,6 +53,13 @@ export function lightingExposureAdjustment() {
             collectedSquares.push(...getSquares(i, j));
         }
     };
+
+    iterateOnOrganisms((org) => 
+        org.lifeSquares
+            .filter((lsq) => lsq.type == "green")
+            .filter((lsq) => Math.random() > 0.99)
+            .forEach((lsq) => (collectedSquares.push(lsq))));
+
     if (collectedSquares.length == 0) {
         return;
     }
@@ -72,8 +80,8 @@ export function lightingExposureAdjustment() {
         return;
     }
     let exposureVal = Math.max(0.0001, max + 2 * stdev)
-    let exposure = 2.5 - exposureVal;
-    exposure = Math.max(exposure, 0.1);
+    let exposure = 8 - exposureVal;
+    exposure = Math.max(exposure, .01);
     exposure = Math.min(exposure, 2.5);
 
     let curExposure = loadGD(UI_CAMERA_EXPOSURE);
