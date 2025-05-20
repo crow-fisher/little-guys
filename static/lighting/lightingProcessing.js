@@ -50,7 +50,7 @@ export function lightingExposureAdjustment() {
     let collectedSquares = new Array();
     for (let i = 0; i < getCanvasSquaresX(); i += Math.floor(getCanvasSquaresX() ** 0.5)) {
         for (let j = 0; j < getCanvasSquaresY(); j += Math.floor(getCanvasSquaresY() ** 0.5)) {
-            collectedSquares.push(...getSquares(i, j));
+            collectedSquares.push(...getSquares(i, j).filter((sq) => sq.solid));
         }
     };
 
@@ -74,17 +74,12 @@ export function lightingExposureAdjustment() {
         )).map((arr) => arr.reduce((a, b) => a + b, 0));
     
     let mean = strengths.reduce((a, b) => a + b, 0) / collectedSquares.length;
-    let max = strengths.reduce((a, b) => Math.max(a, b), 0);
+    let max = strengths.reduce((a, b) => Math.max(a, b), .01);
     let stdev = getStandardDeviation(strengths);
     if (isNaN(mean) || isNaN(stdev)) {
         return;
     }
-    let exposureVal = Math.max(0.0001, max + 2 * stdev)
-    let exposure = 8 - exposureVal;
-    exposure = Math.max(exposure, .01);
-    exposure = Math.min(exposure, 2.5);
-
-    let curExposure = loadGD(UI_CAMERA_EXPOSURE);
-
-    saveGD(UI_CAMERA_EXPOSURE, curExposure * 0.95 + exposure * 0.05);
+    
+    let curValue = loadGD(UI_CAMERA_EXPOSURE);
+    saveGD(UI_CAMERA_EXPOSURE, curValue * 0.95 + 0.05 * 1/(max ** 0.6));
 }
