@@ -76,10 +76,24 @@ export function lightingExposureAdjustment() {
     let mean = strengths.reduce((a, b) => a + b, 0) / collectedSquares.length;
     let max = strengths.reduce((a, b) => Math.max(a, b), .01);
     let stdev = getStandardDeviation(strengths);
-    if (isNaN(mean) || isNaN(stdev)) {
+
+    let v = Math.min(mean + stdev, max);
+    if (isNaN(v) || v == 0) {
         return;
     }
     
-    let curValue = loadGD(UI_CAMERA_EXPOSURE);
-    saveGD(UI_CAMERA_EXPOSURE, curValue * 0.95 + 0.05 * 1/(max ** 0.6));
+    let cur = loadGD(UI_CAMERA_EXPOSURE);
+    let next = null;
+    if (v * cur > 1.5) {
+        next = cur * 0.9;
+    } else if (v * cur < 0.7) {
+        next = cur * 1.1;
+    } else {
+        next = cur;
+    }
+
+    next = Math.max(1, next);
+    next = Math.min(7, next);
+
+    saveGD(UI_CAMERA_EXPOSURE, next);
 }
