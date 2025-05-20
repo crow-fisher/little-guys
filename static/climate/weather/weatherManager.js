@@ -71,8 +71,8 @@ function spawnWindGust(airPressure) {
         randRange(-wsx, wsx),
         randRange(-wsy, wsy),
         randRange(.4, 0.7) * wsx, randRange(0.05, 0.1) * wsy,
-        getCurDay(), cloudDuration() * 2,
-        -1, 0.8, airPressure));
+        getCurDay(), cloudDuration() * 4 * Math.random(),
+        -1, 0.8, 1 + .1 * Math.random() * airPressure));
 }
 
 // UI_CLIMATE_WEATHER_CLEAR
@@ -89,7 +89,7 @@ let clearTg = [
 ]
 
 function clearWeather() {
-    windyWeather(10, 1.2);
+    windyWeather(10, .2);
 }
 
 weatherClear = new Weather(UI_CLIMATE_WEATHER_CLEAR, clearHg, clearTg, 100, clearWeather);
@@ -150,7 +150,7 @@ function cloudyWeather(cloudCount) {
         if (spawnRateThrottle()) {
             spawnCumulusCloud();
         }
-        windyWeather(10, 1.2);
+        windyWeather(10, .2);
     }
 }
 
@@ -161,7 +161,7 @@ function foggyWeather() {
     if (spawnRateThrottle()) {
         spawnFogCloud();
     }
-    windyWeather(10, 1.2);
+    windyWeather(10, .2);
 }
 
 weatherPartlyCloudy = new Weather(UI_CLIMATE_WEATHER_PARTLY_CLOUDY, cloudyHg, cloudyTg, 50, cloudyWeather(6));
@@ -181,7 +181,7 @@ function generalRainyWeather(rainFactor) {
         if (spawnRateThrottle()) {
             spawnNimbusCloud(rainFactor);
         }
-        windyWeather(10, 1.5 * rainFactor);
+        windyWeather(10, 3 * rainFactor);
     }
 }
 

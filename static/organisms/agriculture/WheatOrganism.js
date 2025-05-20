@@ -36,7 +36,7 @@ export class WheatOrganism extends BaseOrganism {
 
         this.targetNumStems = 1;
         this.targetNumLeaves = 1;
-        this.targetLeafLength = 1;
+        this.targetLeafLength = 3;
         this.targetStemLength = 1;
         this.targetFlowerLength = this.maxFlowerLength;
 
