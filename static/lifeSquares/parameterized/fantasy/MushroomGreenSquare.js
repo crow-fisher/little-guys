@@ -17,7 +17,7 @@ export class MushroomGreenSquare extends BaseLifeSquare {
         switch (this.subtype) {
             case SUBTYPE_FLOWERNODE:
             case SUBTYPE_FLOWER:
-                this.baseColor = "#542f1f";
+                this.baseColor = "#1f5436";
                 this.darkColor = "#301a11";
                 this.accentColor = "#3b231a";
                 this.width = 1.4 + (0.1 * Math.random())
@@ -27,22 +27,16 @@ export class MushroomGreenSquare extends BaseLifeSquare {
             case SUBTYPE_SHOOT:
             case SUBTYPE_SPROUT:
             case SUBTYPE_STEM:
-                if (this.linkedOrganism.evolutionParameters[1] == 0) {
-                    this.baseColor = "#def6fc";
-                    this.darkColor = "#7290ba";
-                    this.accentColor = "#657373"; 
-                } else {
-                    this.baseColor = "#450c1f";
-                    this.darkColor = "#380726";
-                    this.accentColor = "#400622"; 
-                }
+                this.baseColor = "#91705c";
+                this.darkColor = "#ad987b";
+                this.accentColor = "#b0805d"; 
                 this.renderMode = LSQ_RENDERMODE_THETA;
                 break;
             case SUBTYPE_NODE:
             case SUBTYPE_LEAF:
-                this.baseColor = "#13346d";
-                this.darkColor = "#0e55ae";
-                this.accentColor = "#6da6e3";
+                this.baseColor = "#7f760b";
+                this.darkColor = "#302e03";
+                this.accentColor = "#958c63";
                 this.width = 1
                 this.renderMode = LSQ_RENDERMODE_CIRCLE;
                 break;
@@ -50,7 +44,7 @@ export class MushroomGreenSquare extends BaseLifeSquare {
                 console.warn("Subtype doesn't have a display configuration!")
         }
         if (this.subtype != SUBTYPE_STEM) {
-            let hueShift = ((this.linkedOrganism.evolutionParameters[1] == 1) ? 100 : 0) + 100 * this.linkedOrganism.evolutionParameters[0];
+            let hueShift = 10 * this.linkedOrganism.evolutionParameters[0];
             let saturationShift = this.linkedOrganism.getWilt();
             this.accentColor = rgbToHex(...hueShiftColorArr(this.accentColor, hueShift, saturationShift,0));
             this.darkColor = rgbToHex(...hueShiftColorArr(this.darkColor, hueShift, saturationShift, 0));
