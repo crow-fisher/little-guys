@@ -117,7 +117,7 @@ export class CattailOrganism extends BaseOrganism {
             startRootNode.posX, startRootNode.posY, 
             false, STAGE_ADULT, randRange(-Math.PI, Math.PI), baseDeflection, 0, 
             baseDeflection, 
-            randRange(0, 0.15), TYPE_TRUNK, .4);
+            randRange(0, 0.15), TYPE_TRUNK, 2.4);
         growthPlan.postConstruct = () => {
             this.originGrowth.addChild(growthPlan.component);
             this.grasses.push(this.originGrowth.getChildPath(growthPlan.component))
