@@ -9,7 +9,7 @@ import { addSquareByName } from "../../manipulation.js";
 import { loadGD, UI_CLIMATE_RAINFALL_DENSITY } from "../../ui/UIData.js";
 import { isLeftMouseClicked, isRightMouseClicked } from "../../mouse.js";
 import { RGB_COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_GREEN, RGB_COLOR_RED } from "../../colors.js";
-import { millis_per_day } from "../time.js";
+import { getTimeScale, millis_per_day } from "../time.js";
 import { getWindThrottleVal, registerWindThrottlerOutput } from "./throttler.js";
 // decent reference https://web.gps.caltech.edu/~xun/course/GEOL1350/Lecture5.pdf
 
@@ -277,6 +277,9 @@ function getAdjacentProp(x, y, func) {
 }
 
 function doRain() {
+    if (getTimeScale() == 0) {
+        return;
+    }
     for (let x = 0; x < getWindSquaresX(); x++) {
         for (let y = 0; y < getWindSquaresY(); y++) {
             if (getAdjacentProp(x, y, (x, y) => (getHumidity(x, y) > cloudRainThresh ? 1 : 0)) < 5) {

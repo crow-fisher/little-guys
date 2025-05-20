@@ -1,8 +1,7 @@
-import { hueShiftColor, hueShiftColorArr, randNumber, randRange, rgbToHex } from "../../common.js";
+import { randNumber, randRange } from "../../common.js";
 import { GenericParameterizedRootSquare } from "../../lifeSquares/parameterized/GenericParameterizedRootSquare.js";
-import { STAGE_ADULT, STAGE_DEAD, STAGE_JUVENILE, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_FLOWER, TYPE_LEAF, TYPE_STEM } from "../Stages.js";
+import { STAGE_ADULT, STAGE_DEAD, STAGE_FLOWER, STAGE_JUVENILE, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_LEAF, TYPE_STEM } from "../Stages.js";
 
-// import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
 import { BaseOrganism } from "../BaseOrganism.js";
@@ -10,7 +9,6 @@ import { MushroomGreenSquare } from "../../lifeSquares/parameterized/fantasy/Mus
 import { SeedSquare } from "../../squares/SeedSquare.js";
 import { addSquare } from "../../squares/_sqOperations.js";
 import { addNewOrganism } from "../_orgOperations.js";
-import { getCurDay } from "../../climate/time.js";
 
 export class PalmTreeOrganism extends BaseOrganism {
     constructor(posX, posY) {
@@ -18,14 +16,9 @@ export class PalmTreeOrganism extends BaseOrganism {
         this.proto = "PalmTreeOrganism";
         this.greenType = MushroomGreenSquare;
         this.rootType = GenericParameterizedRootSquare;
-        this.grassGrowTimeInDays =  0.01;
 
-        this.numGrowthCycles = 1;
-        this.growthCycleMaturityLength = (1 + (Math.random()));
-        this.growthCycleLength = this.growthCycleMaturityLength;
-        this.growthNitrogen = 25;
-        this.growthPhosphorus = 25;
-        this.growthLightLevel = 0.5; 
+        this.growthCycleMaturityLength = 40;
+        this.growthCycleLength = this.growthCycleMaturityLength * 3;
 
         this.stems = [];
         this.leaves = [];
@@ -37,11 +30,9 @@ export class PalmTreeOrganism extends BaseOrganism {
         this.maxStemLength = 25;
         this.maxLeafLength = 15;
 
-        this.targetNumStems = 1;
-        this.targetNumLeaves = 1;
+        this.targetNumLeaves = this.maxNumLeaves;
         this.targetLeafLength = 1;
         this.targetStemLength = 1;
-        this.curGrowthCycleNum = 0;
 
         this.growthNumGreen = this.maxNumLeaves * (this.maxLeafLength) + this.maxStemLength;
     }
@@ -50,22 +41,11 @@ export class PalmTreeOrganism extends BaseOrganism {
         // param 0 - shady and squat or bright and tall 
         // will also impact life cycle
         this.evolutionParameters[0] = Math.min(Math.max(this.evolutionParameters[0], 0.00001), .99999)
-
         let p0 = this.evolutionParameters[0];
-        let p1 = this.evolutionParameters[1];
-        this.growthLightLevel = .2 + p0 * 0.6;
-
-        if (p1 == 0) {
-            // "correct" case - as p0 gets higher, grow taller with longer leaves and require more light
-            this.maxStemLength = 1 + Math.ceil(this.maxStemLength * p0);
-            this.maxLeafLength = 1 + Math.floor(this.maxLeafLength * p0);
-        } else {
-            // "incorrect case" - as p0 gets higher, grow squatter with shorter leaves and require more light
-            let p0i = 1 - p0;
-            this.maxStemLength = Math.ceil(this.maxStemLength * p0i);
-            this.maxLeafLength = 1 + Math.floor(this.maxLeafLength * p0i);
-        }
-        this.growthNumGreen = (this.maxNumLeaves * (this.maxLeafLength) + this.maxStemLength);
+        this.growthLightLevel = .2 + p0 * 2;
+        this.maxStemLength = 1 + Math.ceil(this.maxStemLength * p0);
+        this.maxLeafLength = 1 + Math.floor(this.maxLeafLength * p0);
+        this.growthNumGreen = (this.maxNumLeaves * this.maxLeafLength) + this.maxStemLength;
         this.growthNumRoots = this.growthNumGreen / 3;
     }
 
@@ -78,7 +58,7 @@ export class PalmTreeOrganism extends BaseOrganism {
             startNode.posX, startNode.posY,
             false, STAGE_ADULT,
             theta, 0, 0, 0,
-            randRange(0, 0.05), TYPE_STEM, 1000);
+            randRange(0, 0.05), TYPE_STEM, 10);
 
         growthPlan.postConstruct = () => {
             parent.addChild(growthPlan.component);
@@ -86,14 +66,11 @@ export class PalmTreeOrganism extends BaseOrganism {
         };
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
-            0,
-            this.grassGrowTimeInDays,
             () => {
                 let node = this.growPlantSquare(startNode, 0, growthPlan.steps.length);
                 node.subtype = SUBTYPE_NODE;
                 return node;
-            },
-            null
+            }
         ))
         this.growthPlans.push(growthPlan);
     }
@@ -106,7 +83,7 @@ export class PalmTreeOrganism extends BaseOrganism {
             startNode.posX, startNode.posY,
             false, STAGE_ADULT, this.curLeafTheta, 0, 0,
             randRange(1, 1.4),
-            randRange(.8, 1.2), TYPE_LEAF, 100);
+            randRange(.8, 1.2), TYPE_LEAF, 1);
 
         growthPlan.postConstruct = () => {
             parent.addChild(growthPlan.component);
@@ -114,14 +91,11 @@ export class PalmTreeOrganism extends BaseOrganism {
         };
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
-            0,
-            this.grassGrowTimeInDays,
             () => {
                 let node = this.growPlantSquare(startNode, 0, growthPlan.steps.length);
                 node.subtype = SUBTYPE_LEAF;
                 return node;
-            },
-            null
+            }
         ))
         this.growthPlans.push(growthPlan);
         this.curLeafTheta += randRange(Math.PI / 2, Math.PI);
@@ -161,8 +135,7 @@ export class PalmTreeOrganism extends BaseOrganism {
                 let shoot = this.growPlantSquare(startNode, 0, 0);
                 shoot.subtype = SUBTYPE_STEM;
                 return shoot;
-            },
-            null
+            }
         ));
     }
     lengthenLeaves() {
@@ -180,15 +153,12 @@ export class PalmTreeOrganism extends BaseOrganism {
                 for (let i = 0; i < this.targetLeafLength - leaf.growthPlan.steps.length; i++) {
                     leaf.growthPlan.steps.push(new GrowthPlanStep(
                         leaf.growthPlan,
-                        0,
-                        this.grassGrowTimeInDays,
                         () => {
                             let leaf = this.growPlantSquare(startNode, 0, 0);
                             leaf.subtype = SUBTYPE_LEAF;
                             return leaf;
-                        },
-                        null
-                    ))
+                        }
+                    ));
                 };
             });
     }
@@ -207,11 +177,6 @@ export class PalmTreeOrganism extends BaseOrganism {
         }
     }
     adultGrowthPlanning() {
-        if (this.growthPlans.some((gp) => !gp.areStepsCompleted())) {
-            this.doGreenGrowth();
-            return;
-        }
-
         if (this.stems.length < 1) {
             this.adultGrowStem();
             return;
@@ -224,14 +189,14 @@ export class PalmTreeOrganism extends BaseOrganism {
             return;
         }
 
-        if (this.leaves.length < (this.targetStemLength / this.maxStemLength) * this.targetNumLeaves) {
+        if (this.leaves.length < this.targetNumLeaves) {
             this.adultGrowLeaf();
             return;
         }
 
         if (this.leaves
             .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
-            .some((leaf) => leaf.growthPlan.steps.length < Math.min(this.targetStemLength * (this.maxLeafLength / this.maxStemLength), this.targetLeafLength))) {
+            .some((leaf) => leaf.growthPlan.steps.length < (this.targetStemLength / 2))) {
             this.lengthenLeaves();
             return;
         }
@@ -260,11 +225,9 @@ export class PalmTreeOrganism extends BaseOrganism {
             let comp = this.originGrowth.getChildFromPath(chosen);
             let lsq = comp.lifeSquares.at(comp.lifeSquares.length - 1);
             let seedSquare = addSquare(new SeedSquare(lsq.getPosX(), lsq.getPosY()));
-
-            seedSquare.speedY = -Math.round(randRange(-2, -5));
-            seedSquare.speedX = Math.round(randRange(-5, 5));
-
             if (seedSquare) {
+                seedSquare.speedY = -Math.round(randRange(-2, -5)); 
+                seedSquare.speedX = Math.round(randRange(-5, 5));
                 let orgAdded = addNewOrganism(new PalmTreeSeedOrganism(seedSquare, this.getNextGenetics()));
                 if (!orgAdded) {
                     seedSquare.destroy();
@@ -272,20 +235,22 @@ export class PalmTreeOrganism extends BaseOrganism {
             }
         }
 
-        let reduction = 0.8
+        let reduction = 0.2
         this.nitrogen *= (1 - reduction);
         this.phosphorus *= (1 - reduction);
     }
 
     planGrowth() {
-        super.planGrowth();
+        if (!super.planGrowth()) {
+            return;
+        }
         if (this.originGrowth == null) {
             return;
         }
         if (this.stage == STAGE_JUVENILE) {
             this.juvenileGrowthPlanning();
         }
-        if (this.stage == STAGE_ADULT) {
+        if (this.stage == STAGE_ADULT || this.stage == STAGE_FLOWER) {
             this.adultGrowthPlanning();
         }
     }

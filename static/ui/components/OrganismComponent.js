@@ -60,6 +60,7 @@ export class OrganismComponent extends Component {
           container.addElement(flowerConditionalContainer);
           container.addElement(treeConditionalContainer);
           // moss
+          mossConditionalContainer.addElement(new Text(this.window, sizeX, h1, offsetX, "coming soon!"));
           // grass 
           grassConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "wheat", UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_WHEAT,
                () => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorInactiveCustom(0.52)));
@@ -81,22 +82,34 @@ export class OrganismComponent extends Component {
           wheatConditionalContainer.addElement(new TextBackground(this.window, sizeX, br3, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""))
           wheatConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.50), 0.75, "drained soils, full sun"))
           wheatConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.75, "growing time: 2 cycles"))
-          wheatConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.51), 0.75, "value: 10 coins"))
 
           kblueConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.75, "kentucky blue: a boring grass", "italic"))
           kblueConditionalContainer.addElement(new TextBackground(this.window, sizeX, br3, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""))
           kblueConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.50), 0.75, "drained soils, partial sun"))
           kblueConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.75, "growing time: 1 cycle"))
-          kblueConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.51), 0.75, "value: 1 coin"))
 
           cattailConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.75, "cattails: the forbidden corndogs", "italic"))
           cattailConditionalContainer.addElement(new TextBackground(this.window, sizeX, br3, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""))
           cattailConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.50), 0.75, "wet soils, partial sun"))
           cattailConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.75, "growing time: 4 cycles"))
-          cattailConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.51), 0.75, "value: 15 coins"))
           // flower 
+          flowerConditionalContainer.addElement(new Text(this.window, sizeX, h1, offsetX, "coming soon!"));
           // tree
+          treeConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "palm tree", UI_ORGANISM_SELECT, UI_ORGANISM_TREE_PALM,
+          () => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorInactiveCustom(0.52)));
+
+
+          let palmConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_ORGANISM_SELECT) == UI_ORGANISM_TREE_PALM);
+          treeConditionalContainer.addElement(palmConditionalContainer);
+          
+          palmConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.75, "palms: technically grasses", "italic"))
+          palmConditionalContainer.addElement(new TextBackground(this.window, sizeX, br3, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""))
+          palmConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.50), 0.75, "wet soils, full sun"))
+          palmConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.75, "growing time: 20 cycles"))
+
           // end
+          
+
           
           container.addElement(new TextBackground(this.window, sizeX, br2, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""))
           container.addElement(new TextBackground(this.window, sizeX, h1, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.51), 0.75, "evolution parameters"))

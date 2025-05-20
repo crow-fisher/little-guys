@@ -1,5 +1,5 @@
 import { removeOrganism } from "./_orgOperations.js";
-import { getCurDay, getDt } from "../climate/time.js";
+import { getCurDay, getDt, getTimeScale } from "../climate/time.js";
 import { GrowthPlan, GrowthPlanStep } from "./GrowthPlan.js";
 import { STAGE_ADULT, STAGE_DEAD, STAGE_FLOWER, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_ROOTNODE, TYPE_HEART } from "./Stages.js";
 import { addSquare, getNeighbors } from "../squares/_sqOperations.js";

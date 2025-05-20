@@ -17,8 +17,6 @@ export class WheatOrganism extends BaseOrganism {
         this.proto = "WheatOrganism";
         this.greenType = WheatGreenSquare;
         this.rootType = GenericParameterizedRootSquare;
-        this.grassGrowTimeInDays = 0.01;
-        this.side = Math.random() > 0.5 ? -1 : 1;
 
         this.growthCycleMaturityLength = 20;
         this.growthCycleLength = this.growthCycleMaturityLength * 2;
