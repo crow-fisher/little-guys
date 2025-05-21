@@ -235,7 +235,7 @@ export class PalmTreeOrganism extends BaseOrganism {
             }
         }
 
-        let reduction = 0.2
+        let reduction = 0.5;
         this.nitrogen *= (1 - reduction);
         this.phosphorus *= (1 - reduction);
     }
