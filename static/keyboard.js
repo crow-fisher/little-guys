@@ -61,7 +61,8 @@ export function keydown(e) {
     }
 
     if (e.key == "w") {
-        moveCamera(0, -1);
+        if (!loadGD(UI_PALETTE_ACTIVE))
+            moveCamera(0, -1);
     }
     if (e.key == "s") {
         moveCamera(0, 1);

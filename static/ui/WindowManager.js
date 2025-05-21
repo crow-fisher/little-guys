@@ -4,7 +4,7 @@ import { BlockPalette } from "./components/BlockPalette.js";
 import { BlockSubtreeComponent as BlockSubtree } from "./components/BlockSubtreeComponent.js";
 import { TopBarComponent } from "./topbar/TopBarComponent.js";
 import { ViewSubtreeComponent } from "./components/ViewSubtreeComponent.js";
-import { loadGD, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_BLOCK, UI_PALETTE_ACTIVE, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveGD, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_TIME, UI_PALETTE_EYEDROPPER, UI_TOPBAR_WEATHER, UI_MAIN_NEWWORLD, saveUI, UI_UI_SIZE, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_CLIMATE_SELECT_CLOUDS, UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK, UI_PALETTE_SELECT, UI_PALETTE_SOILROCK } from "./UIData.js";
+import { loadGD, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_BLOCK, UI_PALETTE_ACTIVE, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveGD, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_TIME, UI_PALETTE_EYEDROPPER, UI_TOPBAR_WEATHER, UI_MAIN_NEWWORLD, saveUI, UI_UI_SIZE, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_CLIMATE_SELECT_CLOUDS, UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK, UI_PALETTE_SELECT, UI_PALETTE_SOILROCK, UI_PALETTE_MODE_SOIL } from "./UIData.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import { GodModeComponent } from "./components/GodModeComponent.js";
 import { getCurMixIdx, getMixArr, getMixArrLen, getTargetMixIdx, setCurMixIdx, setTargetMixIdx } from "../globals.js";
@@ -87,7 +87,17 @@ export function eyedropperBlockHover(posX, posY) {
     });
 }
 
+function setPaletteForMixerEyedropper(posX, posY) {
+    if (getSquares(posX, posY).some((sq) => sq.proto == "SoilSquare")) {
+        saveGD(UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL);
+    };
+    if (getSquares(posX, posY).some((sq) => sq.proto == "RockSquare")) {
+        saveGD(UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK);
+    };
+}
+
 export function eyedropperBlockClick(posX, posY) {
+    setPaletteForMixerEyedropper(posX, posY);
     let targetProto = loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK ? "RockSquare" : "SoilSquare";
     let targetIdx = loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK ? UI_PALETTE_ROCKIDX : UI_PALETTE_SOILIDX;
 
@@ -100,6 +110,7 @@ export function eyedropperBlockClick(posX, posY) {
 }
 
 export function mixerBlockClick(posX, posY) {
+    setPaletteForMixerEyedropper(posX, posY);
     let targetProto = loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK ? "RockSquare" : "SoilSquare";
     let targetIdx = loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK ? UI_PALETTE_ROCKIDX : UI_PALETTE_SOILIDX;
 
