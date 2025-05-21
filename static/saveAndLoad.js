@@ -190,7 +190,7 @@ async function doSave(slotName, saveString) {
 
 async function openDatabase() {
     return new Promise((resolve, reject) => {
-        const request = indexedDB.open("lgdb2", 4);
+        const request = indexedDB.open("lgdb", 20250521);
         request.onupgradeneeded = (event) => {
             const db = event.target.result;
             if (!db.objectStoreNames.contains("saves")) {
