@@ -22,8 +22,8 @@ export class CattailOrganism extends BaseOrganism {
         this.targetNumGrass = 1;
         this.maxNumGrass = 3;
 
-        this.targetGrassLength = 5;
-        this.maxGrassLength = 14;
+        this.targetGrassLength = 3;
+        this.maxGrassLength = 7;
 
         this.numGrowthCycles = 1; 
         this.growthCycleMaturityLength = 1 + (Math.random());
@@ -59,7 +59,7 @@ export class CattailOrganism extends BaseOrganism {
         let p0 = this.evolutionParameters[0];
         this.growthLightLevel = 0.1 + 1 * p0;
         this.maxNumGrass = randNumber(2, 3);
-        this.maxGrassLength = 5 + Math.floor(this.maxGrassLength * p0);
+        this.maxGrassLength = 3 + Math.floor(this.maxGrassLength * p0);
         this.growthNumGreen = this.maxNumGrass * this.maxGrassLength;
         this.growthNumRoots = this.growthNumGreen / 4;
     }
@@ -71,19 +71,19 @@ export class CattailOrganism extends BaseOrganism {
             .forEach((grass) => {
                 grass.lifeSquares.forEach((lsq) => {
                     if (lsq.subtype == SUBTYPE_STEM) {
-                        lsq.width = .3 + .3 * Math.log(1 + grass.lifeSquares.length);
+                        lsq.width = .2 + .3 * Math.log(1 + grass.lifeSquares.length);
                     } else {
                         if (lsq.subtype == SUBTYPE_FLOWERTIP) {
-                            lsq.width = 0.8;
+                            lsq.width = 0.7;
                         } else {
                             let cur = Math.min(
                                 this.nitrogen / this.growthNitrogen, 
                                     this.phosphorus / this.growthPhosphorus, 
                                     this.lightlevel / this.growthLightLevel);
                             if (cur < 0.5) {
-                                lsq.width = .3 + .3 * Math.log(1 + grass.lifeSquares.length);
+                                lsq.width = .2 + .3 * Math.log(1 + grass.lifeSquares.length);
                             } else {
-                                lsq.width = Math.max(lsq.width, .3 + .3 * Math.log(1 + grass.lifeSquares.length) + (cur - 0.5) * 0.4);
+                                lsq.width = Math.max(lsq.width, .2 + .3 * Math.log(1 + grass.lifeSquares.length) + (cur - 0.5) * 0.4);
                             }
                         }
                     }
@@ -96,7 +96,7 @@ export class CattailOrganism extends BaseOrganism {
                 if (glsq.length < 9) {
                     return;
                 }
-                let min = glsq.length - 5;
+                let min = glsq.length - 3;
                 let max = glsq.length - 1;
                 for (let i = 0; i < glsq.length; i++) {
                     if (i < min)
