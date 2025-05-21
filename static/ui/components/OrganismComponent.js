@@ -10,13 +10,14 @@ import { RowedRadio } from "../elements/RowedRadio.js";
 import { SliderGradientBackgroundPlantConfigurator } from "../elements/SliderGradientBackgroundPlantConfigurator.js";
 import { Text } from "../elements/Text.js";
 import { TextBackground } from "../elements/TextBackground.js";
-import { UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_WHEAT, UI_ORGANISM_GRASS_KBLUE, UI_ORGANISM_GRASS_CATTAIL, UI_CENTER, UI_ORGANISM_TREE_PALM, saveGD, UI_ORGANISM_TYPE_SELECT, UI_ORGANISM_TYPE_MOSS, UI_ORGANISM_TYPE_GRASS, UI_ORGANISM_TYPE_FLOWER, UI_ORGANISM_TYPE_TREE, loadGD } from "../UIData.js";
+import { UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_WHEAT, UI_ORGANISM_GRASS_KBLUE, UI_ORGANISM_GRASS_CATTAIL, UI_CENTER, UI_ORGANISM_TREE_PALM, saveGD, UI_ORGANISM_TYPE_SELECT, UI_ORGANISM_TYPE_MOSS, UI_ORGANISM_TYPE_GRASS, UI_ORGANISM_TYPE_FLOWER, UI_ORGANISM_TYPE_TREE, loadGD, loadUI, UI_UI_PHONEMODE } from "../UIData.js";
 
 export class OrganismComponent extends Component {
      constructor(posX, posY, padding, dir, key) {
           super(posX, posY, padding, dir, key);
           let container = new Container(this.window, 0, 1);
           this.window.container = container;
+          this.phoneModeOffset = 0;
 
           let sizeX = getBaseUISize() * 39;
           let half = sizeX / 2;
@@ -26,7 +27,7 @@ export class OrganismComponent extends Component {
 
           let h1 = getBaseUISize() * 3;
           let h2 = getBaseUISize() * 2.5;
-          let br1 =  getBaseUISize() * .75;
+          let br1 = getBaseUISize() * .75;
           let br2 = getBaseUISize() * .5;
           let br3 = Math.round(getBaseUISize() * .25);
 
@@ -96,21 +97,21 @@ export class OrganismComponent extends Component {
           flowerConditionalContainer.addElement(new Text(this.window, sizeX, h1, offsetX, "coming soon!"));
           // tree
           treeConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "palm tree", UI_ORGANISM_SELECT, UI_ORGANISM_TREE_PALM,
-          () => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorInactiveCustom(0.52)));
+               () => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorInactiveCustom(0.52)));
 
 
           let palmConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_ORGANISM_SELECT) == UI_ORGANISM_TREE_PALM);
           treeConditionalContainer.addElement(palmConditionalContainer);
-          
+
           palmConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.75, "palms: technically grasses", "italic"))
           palmConditionalContainer.addElement(new TextBackground(this.window, sizeX, br3, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""))
           palmConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.50), 0.75, "wet soils, full sun"))
           palmConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.75, "growing time: 20 cycles"))
 
           // end
-          
 
-          
+
+
           container.addElement(new TextBackground(this.window, sizeX, br2, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""))
           container.addElement(new TextBackground(this.window, sizeX, h1, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.51), 0.75, "evolution parameters"))
           container.addElement(new TextBackground(this.window, sizeX, br3, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""))
@@ -118,4 +119,19 @@ export class OrganismComponent extends Component {
 
           container.addElement(new SliderGradientBackgroundPlantConfigurator(this.window, sizeX, h1));
      }
+     render() {
+          if (loadUI(UI_UI_PHONEMODE)) {
+               if (this.phoneModeOffset == 0) {
+                    this.phoneModeOffset = getBaseUISize() * 6;
+                    this.window.posY += this.phoneModeOffset;
+               }
+          } else {
+               if (this.phoneModeOffset != 0) {
+                    this.window.posY -= this.phoneModeOffset;
+                    this.phoneModeOffset = 0;
+               }
+          };
+          super.render();
+     }
+
 }

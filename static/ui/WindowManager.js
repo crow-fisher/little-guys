@@ -37,7 +37,7 @@ export function initUI() {
     mainMenuComponent = new MainMenuComponent(() => 0, () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_MAINMENU);
     all_components.push(mainMenuComponent);
     all_components.push(new BlockSubtree(() => topBarComponent.getElementXPositionFunc(0, 1), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_BLOCK));
-    all_components.push(new CloudControlComponent(() => topBarComponent.getElementXPositionFunc(0, 3) + getBaseUISize() * 3, () => topBarComponent.ySize() + getBaseUISize() * 0.5, 0, 0, UI_CLIMATE_SELECT_CLOUDS));
+    all_components.push(new CloudControlComponent(getBaseUISize() * 24, palette_y_offset, 0, 0, UI_CLIMATE_SELECT_CLOUDS));
     all_components.push(new ViewSubtreeComponent(() => topBarComponent.getElementXPositionFunc(0, 3), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_VIEWMODE));
     blockPalette = new BlockPalette(getBaseUISize() * 24, palette_y_offset, 0, 0, UI_PALETTE_ACTIVE)
     all_components.push(blockPalette);

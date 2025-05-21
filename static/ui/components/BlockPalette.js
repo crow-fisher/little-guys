@@ -16,7 +16,7 @@ import { SoilPickerDotElement } from "../elements/SoilPickerDotElement.js";
 import { Text } from "../elements/Text.js";
 import { TextBackground } from "../elements/TextBackground.js";
 import { Toggle } from "../elements/Toggle.js";
-import { loadGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CENTER, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_PALETTE_COMPOSITION, saveGD, UI_PALETTE_SHOWPICKER, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, addUIFunctionMap, UI_PALETTE_SOILROCK, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_AQUIFER_FLOWRATE, UI_SOIL_COMPOSITION } from "../UIData.js";
+import { loadGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CENTER, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_PALETTE_COMPOSITION, saveGD, UI_PALETTE_SHOWPICKER, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, addUIFunctionMap, UI_PALETTE_SOILROCK, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_AQUIFER_FLOWRATE, UI_SOIL_COMPOSITION, UI_UI_PHONEMODE, loadUI } from "../UIData.js";
 import { getWaterColor, getWaterColorDark } from "./LightingComponent.js";
 
 
@@ -37,6 +37,7 @@ export class BlockPalette extends Component {
         super(posX, posY, padding, dir, key);
         this.numSoilRows = 5;
         this.initPallate();
+        this.phoneModeOffset = 0;
 
         let container = new Container(this.window, 0, 1);
         this.window.container = container;
@@ -211,5 +212,20 @@ export class BlockPalette extends Component {
         let siltPercent = (1 - clayPercent) * xp;
         let sandPercent = (1 - clayPercent) - siltPercent;
         return [sandPercent, siltPercent, clayPercent];
+    }
+
+    render() {
+        if (loadUI(UI_UI_PHONEMODE)) {
+            if (this.phoneModeOffset == 0) {
+                this.phoneModeOffset = getBaseUISize() * 6;
+                this.window.posY += this.phoneModeOffset;
+            }
+        } else {
+            if (this.phoneModeOffset != 0) {
+                this.window.posY -= this.phoneModeOffset;
+                this.phoneModeOffset = 0;
+            }
+        };
+        super.render();
     }
 }
