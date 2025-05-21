@@ -74,17 +74,9 @@ export class CattailOrganism extends BaseOrganism {
                         lsq.width = .2 + .3 * Math.log(1 + grass.lifeSquares.length);
                     } else {
                         if (lsq.subtype == SUBTYPE_FLOWERTIP) {
-                            lsq.width = 0.7;
+                            lsq.width = .2 + .25 * Math.log(1 + grass.lifeSquares.length);
                         } else {
-                            let cur = Math.min(
-                                this.nitrogen / this.growthNitrogen, 
-                                    this.phosphorus / this.growthPhosphorus, 
-                                    this.lightlevel / this.growthLightLevel);
-                            if (cur < 0.5) {
-                                lsq.width = .2 + .3 * Math.log(1 + grass.lifeSquares.length);
-                            } else {
-                                lsq.width = Math.max(lsq.width, .2 + .3 * Math.log(1 + grass.lifeSquares.length) + (cur - 0.5) * 0.4);
-                            }
+                            lsq.width = .2 + .4 * Math.log(1 + grass.lifeSquares.length);
                         }
                     }
                 });

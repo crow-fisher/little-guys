@@ -31,7 +31,6 @@ export class CattailGreenSquare extends BaseLifeSquare {
                     this.baseColor = "#542f1f";
                     this.darkColor = "#301a11";
                     this.accentColor = "#3b231a";
-                    this.width = .4 + (0.1 * Math.random())
                     break;
 
                 case SUBTYPE_FLOWERNODE:
@@ -39,7 +38,6 @@ export class CattailGreenSquare extends BaseLifeSquare {
                     this.baseColor = "#542f1f";
                     this.darkColor = "#301a11";
                     this.accentColor = "#3b231a";
-                    this.width = 1.4 + (0.1 * Math.random())
                     break;
                 case SUBTYPE_TRUNK:
                 case SUBTYPE_SHOOT:
