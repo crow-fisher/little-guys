@@ -8,18 +8,15 @@ import { SeedSquare } from "./squares/SeedSquare.js";
 import { AquiferSquare } from "./squares/parameterized/RainSquare.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
-import { WheatGreenSquare } from "./lifeSquares/parameterized/agriculture/grasses/WheatGreenSquare.js";
-import { GenericParameterizedRootSquare } from "./lifeSquares/parameterized/GenericParameterizedRootSquare.js";
-import { WheatOrganism, WheatSeedOrganism } from "./organisms/agriculture/WheatOrganism.js";
-import { ElephantEarGreenSquare } from "./lifeSquares/parameterized/tropical/ElephantEarGreenSquare.js";
-import { PalmTreeGreenSquare } from "./lifeSquares/parameterized/tropical/PalmTreeGreenSquare.js";
-import { ElephantEarOrganism, ElephantEarSeedOrganism } from "./organisms/tropical/ElephantEarOrganism.js";
-import { KentuckyBluegrassGreenSquare } from "./lifeSquares/parameterized/agriculture/grasses/KentuckyBluegrassGreenSquare.js";
-import { KentuckyBluegrassOrganism, KentuckyBluegrassSeedOrganism } from "./organisms/agriculture/KentuckyBluegrassOrganism.js";
-import { MushroomGreenSquare } from "./lifeSquares/parameterized/fantasy/MushroomGreenSquare.js";
-import { PalmTreeOrganism, PalmTreeSeedOrganism } from "./organisms/fantasy/PalmTreeOrganism.js";
-import { CattailOrganism, CattailSeedOrganism } from "./organisms/midwest/CattailOrganism.js";
-import { CattailGreenSquare } from "./lifeSquares/parameterized/midwest/CattailGreenSquare.js";
+import { WheatGreenSquare } from "./lifeSquares/grasses/WheatGreenSquare.js";
+import { GenericRootSquare } from "./lifeSquares/GenericRootSquare.js";
+import { WheatOrganism, WheatSeedOrganism } from "./organisms/grasses/WheatOrganism.js";
+import { KentuckyBluegrassGreenSquare } from "./lifeSquares/grasses/KentuckyBluegrassGreenSquare.js";
+import { KentuckyBluegrassOrganism, KentuckyBluegrassSeedOrganism } from "./organisms/grasses/KentuckyBluegrassOrganism.js";
+import { PalmTreeOrganism, PalmTreeSeedOrganism } from "./organisms/trees/PalmTreeOrganism.js";
+import { CattailOrganism, CattailSeedOrganism } from "./organisms/grasses/CattailOrganism.js";
+import { CattailGreenSquare } from "./lifeSquares/grasses/CattailGreenSquare.js";
+import { PalmTreeGreenSquare } from "./lifeSquares/trees/PalmTreeGreenSquare.js";
 
 let ProtoMap = {
     "BaseSquare": BaseSquare.prototype,
@@ -27,48 +24,42 @@ let ProtoMap = {
     "SoilSquare": SoilSquare.prototype,
     "RockSquare": RockSquare.prototype,
     "SoilSquare": SoilSquare.prototype,
-    "WaterSquare": WaterSquare.prototype,
-    "BaseLifeSquare": BaseLifeSquare.prototype,
-    "BaseOrganism": BaseOrganism.prototype,
-    "SeedLifeSquare": SeedLifeSquare.prototype,
-    "SeedSquare": SeedSquare.prototype,
+    "WaterSquare": WaterSquare.prototype, 
     "AquiferSquare": AquiferSquare.prototype,
-    "WheatGreenSquare": WheatGreenSquare.prototype,
-    "GenericParameterizedRootSquare": GenericParameterizedRootSquare.prototype,
+
+    "BaseOrganism": BaseOrganism.prototype,
     "WheatOrganism": WheatOrganism.prototype,
-    "WheatSeedOrganism": WheatSeedOrganism.prototype,
-    "ElephantEarSeedOrganism": ElephantEarSeedOrganism.prototype,
-    "ElephantEarOrganism": ElephantEarOrganism.prototype,
     "PalmTreeOrganism": PalmTreeOrganism.prototype,
-    "PalmTreeSeedOrganism": PalmTreeSeedOrganism.prototype,
-    "KentuckyBluegrassGreenSquare": KentuckyBluegrassGreenSquare.prototype,
     "KentuckyBluegrassOrganism": KentuckyBluegrassOrganism.prototype,
-    "KentuckyBluegrassSeedOrganism": KentuckyBluegrassSeedOrganism.prototype,
-    "MushroomGreenSquare": MushroomGreenSquare.prototype,
-    "PalmTreeOrganism": PalmTreeOrganism.prototype,
-    "PalmTreeSeedOrganism": PalmTreeSeedOrganism.prototype,
     "CattailOrganism": CattailOrganism.prototype,
+
+    "BaseLifeSquare": BaseLifeSquare.prototype,
+    "WheatGreenSquare": WheatGreenSquare.prototype,
+    "PalmTreeGreenSquare": PalmTreeGreenSquare.prototype,
+    "KentuckyBluegrassGreenSquare": KentuckyBluegrassGreenSquare.prototype,
+    "CattailGreenSquare": CattailGreenSquare.prototype,
+    "GenericRootSquare": GenericRootSquare.prototype,
+
+    "SeedSquare": SeedSquare.prototype,
+    "SeedLifeSquare": SeedLifeSquare.prototype,
+    "WheatSeedOrganism": WheatSeedOrganism.prototype,
+    "PalmTreeSeedOrganism": PalmTreeSeedOrganism.prototype,
+    "KentuckyBluegrassSeedOrganism": KentuckyBluegrassSeedOrganism.prototype,
     "CattailSeedOrganism": CattailSeedOrganism.prototype,
-    "CattailGreenSquare": CattailGreenSquare.prototype
-    
 }
 
 let TypeMap = {
-    [GenericParameterizedRootSquare.name]: GenericParameterizedRootSquare,
+    [GenericRootSquare.name]: GenericRootSquare,
     [WheatGreenSquare.name] : WheatGreenSquare,
-    [ElephantEarGreenSquare.name]: ElephantEarGreenSquare,
     [PalmTreeGreenSquare.name]: PalmTreeGreenSquare,
-    [MushroomGreenSquare.name]: MushroomGreenSquare,
     [KentuckyBluegrassGreenSquare.name]: KentuckyBluegrassGreenSquare,
     [CattailGreenSquare.name]: CattailGreenSquare
 }
 
 let TypeNameMap = {
-    GenericParameterizedRootSquare: GenericParameterizedRootSquare.name,
+    GenericRootSquare: GenericRootSquare.name,
     WheatGreenSquare: WheatGreenSquare.name,
-    ElephantEarGreenSquare: ElephantEarGreenSquare.name,
     PalmTreeGreenSquare: PalmTreeGreenSquare.name,
-    MushroomGreenSquare: MushroomGreenSquare.name,
     KentuckyBluegrassGreenSquare: KentuckyBluegrassGreenSquare.name,
     CattailGreenSquare: CattailGreenSquare.name
 }
