@@ -185,6 +185,10 @@ export class ConeflowerOrganism extends BaseOrganism {
         let parent = this.originGrowth.getChildFromPath(parentPath);
         let startNode = parent.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_NODE);
 
+        if (startNode == null) {
+            return;
+        }
+
         let growthPlan = new GrowthPlan(
             startNode.posX, startNode.posY,
             false, STAGE_FLOWER,
