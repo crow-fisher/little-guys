@@ -300,7 +300,7 @@ export class GrowthComponent {
         if (this.parentComponent == null) {
             return 0;
         } else {
-            return Math.cos(this.theta) * (this.parentComponent.currentDeflection + this.parentComponent.getParentDeflection());
+            return Math.cos(this.twist) * Math.cos(this.theta) * (this.parentComponent.currentDeflection + this.parentComponent.getParentDeflection());
         }
     }
 

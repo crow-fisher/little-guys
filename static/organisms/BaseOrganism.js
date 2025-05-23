@@ -78,7 +78,7 @@ class BaseOrganism {
         this.llt_min = 0.5;
         this.llt_max = 2;
         this.llt_throttlValMin = 1;
-        this.llt_throttlValMax = 8;
+        this.llt_throttlValMax = 4;
 
     }
 
