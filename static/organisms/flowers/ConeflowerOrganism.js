@@ -1,6 +1,6 @@
 import { randRange } from "../../common.js";
 import { GenericRootSquare } from "../../lifeSquares/GenericRootSquare.js";
-import { STAGE_ADULT, STAGE_FLOWER, STAGE_JUVENILE, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_FLOWER, TYPE_LEAF, TYPE_STEM } from "../Stages.js";
+import { STAGE_ADULT, STAGE_FLOWER, STAGE_JUVENILE, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE, SUBTYPE_FLOWERTIP, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_FLOWERNODE, TYPE_FLOWERPETAL, TYPE_LEAF, TYPE_STEM } from "../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
@@ -38,7 +38,14 @@ export class ConeflowerOrganism extends BaseOrganism {
         this.targetStemLength = 1;
         this.targetFlowerLength = this.maxFlowerLength;
 
+        this.numPetals = 4;
+
         this.growthLightLevel = 0.5;
+
+        this.llt_min = 0.5;
+        this.llt_max = 2;
+        this.llt_throttlValMin = 1;
+        this.llt_throttlValMax = 1;
 
         this.growthNumGreen = this.maxNumNodes * (this.maxStemLength + this.maxLeafLength);
     }
@@ -53,8 +60,9 @@ export class ConeflowerOrganism extends BaseOrganism {
         this.maxGrassLength = 4 + Math.floor(this.maxGrassLength * p0);
         this.maxLeafLength = 2 + Math.floor(this.maxLeafLength * p0);
 
-        this.growthNumGreen = this.maxNumNodes * (this.maxStemLength + this.maxLeafLength);
+        this.growthNumGreen = this.maxNumNodes * (this.maxStemLength + this.maxLeafLength) + 12;
         this.growthNumRoots = this.growthNumGreen * 0.2;
+        this.targetStemLength = this.maxStemLength;
     }
 
     growStem(parent, startNode, theta) {
@@ -64,8 +72,8 @@ export class ConeflowerOrganism extends BaseOrganism {
         let growthPlan = new GrowthPlan(
             startNode.posX, startNode.posY,
             false, STAGE_ADULT,
-            theta, 0, 0, 0,
-            randRange(0, 0.05), TYPE_STEM, 1 * this.maxNumNodes);
+            theta, 0, 0, randRange(0.1, 0.2),
+            randRange(0, 0.05), TYPE_STEM, 10 * this.maxNumNodes);
 
         growthPlan.postConstruct = () => {
             parent.addChild(growthPlan.component);
@@ -89,8 +97,8 @@ export class ConeflowerOrganism extends BaseOrganism {
         let growthPlan = new GrowthPlan(
             startNode.posX, startNode.posY,
             false, STAGE_ADULT, this.curLeafTheta, 0, 0,
-            randRange(0.5, 0.8),
-            randRange(.3, .6), TYPE_LEAF, 1);
+            randRange(Math.PI / 2, Math.PI),
+            randRange(.05, .10), TYPE_LEAF, 1);
 
         growthPlan.postConstruct = () => {
             parent.addChild(growthPlan.component);
@@ -115,7 +123,13 @@ export class ConeflowerOrganism extends BaseOrganism {
     }
 
     adultGrowLeaf() {
-        let parent = this.stems
+        let searchArr;
+        if (this.stems.length >= (this.maxNumNodes - 1)) {
+            searchArr = this.stems.slice(0, -2);
+        } else {
+            searchArr = this.stems;
+        }
+        let parent = searchArr
             .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .find((stem) => !stem.children.some((child) => child.growthPlan.type == TYPE_LEAF));
         if (parent == null) {
@@ -138,6 +152,18 @@ export class ConeflowerOrganism extends BaseOrganism {
             stem.growthPlan,
             () => this.growGreenSquareAction(startNode, SUBTYPE_STEM)
         ));
+
+        if (this.stems.length == this.maxNumNodes) {
+            let lastStemPath = this.stems.at(this.stems.length - 1);
+            let lastStem = this.originGrowth.getChildFromPath(lastStemPath);
+            if (lastStem.growthPlan.steps.length < this.targetStemLength * 3) {
+                lastStem.growthPlan.steps.push(new GrowthPlanStep(
+                    lastStem.growthPlan,
+                    () => this.growGreenSquareAction(lastStem.lifeSquares.at(lastStem.lifeSquares.length - 1), SUBTYPE_STEM)
+                ));
+            }
+        }
+
     }
     lengthenLeaves() {
         this.leaves
@@ -168,8 +194,8 @@ export class ConeflowerOrganism extends BaseOrganism {
         let growthPlan = new GrowthPlan(
             startNode.posX, startNode.posY,
             false, STAGE_FLOWER,
-            this.curLeafTheta, 0, 0, .05,
-            randRange(0.15, 0.25), TYPE_FLOWER, 1);
+            0, 0, 0, .05,
+            randRange(0.15, 0.25), TYPE_FLOWERNODE, 10 ** 8);
 
         growthPlan.postConstruct = () => {
             parent.addChild(growthPlan.component);
@@ -182,22 +208,39 @@ export class ConeflowerOrganism extends BaseOrganism {
         this.growthPlans.push(growthPlan);
     }
 
-    lengthenFlower() {
-        let flowerComponent = this.originGrowth.getChildFromPath(this.flower);
-        let startNode = flowerComponent.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_FLOWERNODE);
-        if (startNode == null) {
-            this.growthPlans = Array.from(this.growthPlans.filter((gp) => gp != flowerComponent.growthPlan));
-            this.flower = null;
-            return;
+    growFlowerPetals() {
+        let flowerNodeComponent = this.originGrowth.getChildFromPath(this.flower);
+        if (flowerNodeComponent.children.length >= this.numPetals) {
+            this.lengthenFlowerPetals();
+        } else {
+            let startTheta = randRange(0, 2 * Math.PI);
+            let startNode = flowerNodeComponent.lifeSquares.at(0);
+            for (let i = 0; i < this.numPetals; i++) {
+                let petalGrowthPlan = new GrowthPlan(
+                    startNode.posX, startNode.posY,
+                    false, STAGE_FLOWER,
+                    startTheta + (i * Math.PI / this.numPetals),
+                    -Math.PI, 5, 5,
+                    randRange(0.05, 0.15), TYPE_FLOWERPETAL, 10 ** 8);
+                petalGrowthPlan.postConstruct = () => flowerNodeComponent.addChild(petalGrowthPlan.component);
+                petalGrowthPlan.steps.push(new GrowthPlanStep(
+                    petalGrowthPlan,
+                    () => this.growGreenSquareAction(startNode, SUBTYPE_FLOWER)
+                ));
+                this.growthPlans.push(petalGrowthPlan);
+            };
         }
-        flowerComponent.growthPlan.steps.push(new GrowthPlanStep(
-            flowerComponent.growthPlan,
-            () => {
-                let flower = this.growPlantSquare(startNode, 0, 0);
-                flower.subtype = SUBTYPE_FLOWER;
-                return flower;
+    }
+
+    lengthenFlowerPetals() {
+        this.originGrowth.getChildFromPath(this.flower).children.forEach((child) => {
+            if (child.growthPlan.steps.length < 5) {
+                child.growthPlan.steps.push(new GrowthPlanStep(
+                    child.growthPlan,
+                    () => this.growGreenSquareAction(child.lifeSquares.at(child.lifeSquares.length - 1), SUBTYPE_FLOWER)
+                ));
             }
-        ));
+        })
     }
 
     juvenileGrowthPlanning() {
@@ -210,7 +253,7 @@ export class ConeflowerOrganism extends BaseOrganism {
         }
         let flowerComponent = this.originGrowth.getChildFromPath(this.flower);
         if (flowerComponent.growthPlan.steps.length < this.targetFlowerLength) {
-            this.lengthenFlower();
+            this.growFlowerPetals();
         }
     }
 
@@ -298,6 +341,7 @@ export class ConeflowerOrganism extends BaseOrganism {
             this.adultGrowthPlanning();
         }
         if (this.stage == STAGE_FLOWER) {
+            this.adultGrowthPlanning();
             this.flowerGrowthPlanning();
         }
     }

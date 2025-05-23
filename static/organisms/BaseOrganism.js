@@ -376,11 +376,12 @@ class BaseOrganism {
     }
 
     growRoot(f) {
-        if (getCurDay() < this.rootLastGrown + (this.getGrowthCycleMaturityLength() / ( 4 * this.growthNumRoots))) {
+        let max = 16;
+        if (getCurDay() < this.rootLastGrown + (this.getGrowthCycleMaturityLength() / ( max * this.growthNumRoots))) {
             return;
         }
 
-        if (this.curNumRoots > this.growthNumRoots * 4) {
+        if (this.curNumRoots > this.growthNumRoots * max) {
             return;
         }
         if (this.curNumRoots > this.curNumGreen) {
@@ -438,10 +439,10 @@ class BaseOrganism {
                 sqScore += sq.getSoilWaterPressure() - this.waterPressureSoilTarget;
             }
             if (this.nitrogen < expectedNitrogen) {
-                sqScore += (sq.nitrogen / this.growthNitrogen) / (sq.linkedOrganismSquares.length ** 0.5);
+                sqScore += (sq.nitrogen / this.growthNitrogen) / ((sq.linkedOrganismSquares.length + 1) ** 0.5);
             }
             if (this.phosphorus < expectedPhosphorus) {
-                sqScore += (sq.phosphorus / this.growthPhosphorus) / (sq.linkedOrganismSquares.length ** 0.5);
+                sqScore += (sq.phosphorus / this.growthPhosphorus) / ((sq.linkedOrganismSquares.length + 1) ** 0.5);
             }
         }
         this.growRoot(scoreFunc);

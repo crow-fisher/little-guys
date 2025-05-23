@@ -1,6 +1,6 @@
 import { randRange } from "../../common.js";
 import { GenericRootSquare } from "../../lifeSquares/GenericRootSquare.js";
-import { STAGE_ADULT, STAGE_FLOWER, STAGE_JUVENILE, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_FLOWER, TYPE_LEAF, TYPE_STEM } from "../Stages.js";
+import { STAGE_ADULT, STAGE_FLOWER, STAGE_JUVENILE, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_FLOWERPETAL, TYPE_LEAF, TYPE_STEM } from "../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { WheatGreenSquare } from "../../lifeSquares/grasses/WheatGreenSquare.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
@@ -169,7 +169,7 @@ export class WheatOrganism extends BaseOrganism {
             startNode.posX, startNode.posY,
             false, STAGE_FLOWER,
             this.curLeafTheta, 0, 0, .05,
-            randRange(0.15, 0.25), TYPE_FLOWER, 1);
+            randRange(0.15, 0.25), TYPE_FLOWERPETAL, 1);
 
         growthPlan.postConstruct = () => {
             parent.addChild(growthPlan.component);

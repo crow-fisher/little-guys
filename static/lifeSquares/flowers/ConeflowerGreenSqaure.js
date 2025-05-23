@@ -1,5 +1,5 @@
 import { BaseLifeSquare } from "../BaseLifeSquare.js";
-import { STATE_DEAD, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE } from "../../organisms/Stages.js";
+import { STATE_DEAD, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE, SUBTYPE_FLOWERTIP } from "../../organisms/Stages.js";
 
 export class ConeflowerGreenSqaure extends BaseLifeSquare {
     constructor(square, organism) {
@@ -23,11 +23,17 @@ export class ConeflowerGreenSqaure extends BaseLifeSquare {
         } else {
             switch (this.subtype) {
                 case SUBTYPE_FLOWERNODE:
+                    this.baseColor = "#382b23";
+                    this.darkColor = "#382b23";
+                    this.accentColor = "#382b23";
+                    this.width = 1;
+                    break;
                 case SUBTYPE_FLOWER:
-                    this.baseColor = "#668553";
-                    this.darkColor = "#717A4A";
-                    this.accentColor = "#525A2F";
-                    this.width = 0.35 + 0.1 * Math.random();
+                case SUBTYPE_FLOWERTIP:
+                    this.baseColor = "#735385";
+                    this.darkColor = "#7a4a74";
+                    this.accentColor = "#525a2f";
+                    this.width = 1
                     break;
                 case SUBTYPE_TRUNK:
                 case SUBTYPE_SHOOT:
