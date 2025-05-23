@@ -17,6 +17,8 @@ import { PalmTreeOrganism, PalmTreeSeedOrganism } from "./organisms/trees/PalmTr
 import { CattailOrganism, CattailSeedOrganism } from "./organisms/grasses/CattailOrganism.js";
 import { CattailGreenSquare } from "./lifeSquares/grasses/CattailGreenSquare.js";
 import { PalmTreeGreenSquare } from "./lifeSquares/trees/PalmTreeGreenSquare.js";
+import { ConeflowerOrganism, ConeflowerSeedOrganism } from "./organisms/flowers/ConeflowerOrganism.js";
+import { ConeflowerGreenSqaure } from "./lifeSquares/flowers/ConeflowerGreenSqaure.js";
 
 let ProtoMap = {
     "BaseSquare": BaseSquare.prototype,
@@ -32,12 +34,14 @@ let ProtoMap = {
     "PalmTreeOrganism": PalmTreeOrganism.prototype,
     "KentuckyBluegrassOrganism": KentuckyBluegrassOrganism.prototype,
     "CattailOrganism": CattailOrganism.prototype,
+    "ConeflowerOrganism": ConeflowerOrganism.prototype,
 
     "BaseLifeSquare": BaseLifeSquare.prototype,
     "WheatGreenSquare": WheatGreenSquare.prototype,
     "PalmTreeGreenSquare": PalmTreeGreenSquare.prototype,
     "KentuckyBluegrassGreenSquare": KentuckyBluegrassGreenSquare.prototype,
     "CattailGreenSquare": CattailGreenSquare.prototype,
+    "ConeflowerGreenSqaure": ConeflowerGreenSqaure.prototype,
     "GenericRootSquare": GenericRootSquare.prototype,
 
     "SeedSquare": SeedSquare.prototype,
@@ -46,6 +50,7 @@ let ProtoMap = {
     "PalmTreeSeedOrganism": PalmTreeSeedOrganism.prototype,
     "KentuckyBluegrassSeedOrganism": KentuckyBluegrassSeedOrganism.prototype,
     "CattailSeedOrganism": CattailSeedOrganism.prototype,
+    "ConeflowerSeedOrganism": ConeflowerSeedOrganism.prototype
 }
 
 let TypeMap = {
@@ -53,7 +58,8 @@ let TypeMap = {
     [WheatGreenSquare.name] : WheatGreenSquare,
     [PalmTreeGreenSquare.name]: PalmTreeGreenSquare,
     [KentuckyBluegrassGreenSquare.name]: KentuckyBluegrassGreenSquare,
-    [CattailGreenSquare.name]: CattailGreenSquare
+    [CattailGreenSquare.name]: CattailGreenSquare,
+    [ConeflowerGreenSqaure.name]: ConeflowerGreenSqaure
 }
 
 let TypeNameMap = {
@@ -61,7 +67,8 @@ let TypeNameMap = {
     WheatGreenSquare: WheatGreenSquare.name,
     PalmTreeGreenSquare: PalmTreeGreenSquare.name,
     KentuckyBluegrassGreenSquare: KentuckyBluegrassGreenSquare.name,
-    CattailGreenSquare: CattailGreenSquare.name
+    CattailGreenSquare: CattailGreenSquare.name,
+    ConeflowerGreenSqaure: ConeflowerGreenSqaure.name
 }
 
 export { ProtoMap, TypeMap, TypeNameMap}
