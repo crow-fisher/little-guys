@@ -329,8 +329,8 @@ export class GrowthComponent {
 
         let curve = this.baseCurve + Math.sin(this.currentDeflection) * 0.06 * (this.ySizeCur() - 1) / this.getTotalStrength();
 
-        let startTheta = this.deflectionRollingAverage + this.getParentDeflection();
-        let endTheta = this.currentDeflection + curve + this.getParentDeflection() - this.baseCurve * this.getWilt();
+        let startTheta = this.deflectionRollingAverage + this.getParentDeflection() + this.getBaseRotation();
+        let endTheta = this.currentDeflection + curve + this.getParentDeflection() - this.baseCurve * this.getWilt() + this.getBaseRotation();
 
         let length = this.ySizeCur();
 
@@ -359,7 +359,12 @@ export class GrowthComponent {
 
             lsq.deflectionXOffset = (endX - relLsqX) + this.xOffset;
             lsq.deflectionYOffset = (endY - relLsqY) + this.yOffset;
+            
 
+            if (prevX == -1 && this.parentComponent != null) {
+                let plsq = this.parentComponent.lifeSquares.at(this.parentComponent.lifeSquares.length - 1);
+                lsq.theta = Math.atan((lsq.getPosY() - plsq.getPosY()) / (lsq.getPosX() - plsq.getPosX())) + Math.PI / 2;
+            }
             if (prevX != -1) {
                 lsq.theta = Math.atan((lsq.getPosY() - prevY) / (lsq.getPosX() - prevX)) + Math.PI / 2;
             }

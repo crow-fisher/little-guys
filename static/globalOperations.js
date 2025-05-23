@@ -30,7 +30,6 @@ export function saveGroupMinHeight(group, posY) {
 
 export function periodicPurgeOldGroupData() {
     if (groupMinPosYMap.size > 1000) {
-        console.log("Periodic purge of old group data...")
         groupMinPosYMap.clear();
         iterateOnSquares((sq) => saveGroupMinHeight(sq.group, sq.posY));
         waterGraphReset();

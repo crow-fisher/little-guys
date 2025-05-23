@@ -2,6 +2,7 @@ import { reset } from "./globalOperations.js";
 import { MAIN_CONTEXT } from "./index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "./keyboard.js";
 import { getLastMoveOffset, isMiddleMouseClicked } from "./mouse.js";
+import { iterateOnOrganisms } from "./organisms/_orgOperations.js";
 import { loadGD, saveGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_UI_SIZE, UI_PALETTE_ACTIVE, loadUI, UI_PALETTE_SURFACE, UI_LIGHTING_SURFACE, UI_PALETTE_SELECT, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CANVAS_SQUARES_ZOOM } from "./ui/UIData.js";
 
 let BASE_SIZE = 1;
@@ -256,9 +257,39 @@ function resetZoomArr() {
     }
 }
 
+function doOrganismZoom(deltaY) {
+    let getter = null;
+    let ctlP = isKeyPressed(KEY_CONTROL);
+    let shfP = isKeyPressed(KEY_SHIFT);
+
+    if (ctlP && shfP)
+        getter = 'baseRotation';
+    else if (ctlP) {
+        getter = 'baseDeflection';
+    } else if (shfP) {
+        getter = 'twist';
+    }
+    if (getter == null) {
+        return false;
+    }
+    let lastMoveOffset = getLastMoveOffset();
+    let hover = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);
+    iterateOnOrganisms((org) => {
+        let foundLsq = org.lifeSquares.find((lsq) => 
+                lsq.type == "green" && 
+                Math.abs(lsq.getPosX() - hover[0]) < 1 && 
+                Math.abs(lsq.getPosY() - hover[1]) < 1
+        );
+        if (foundLsq != null) {
+            foundLsq.component[getter] += deltaY * .01;
+        }
+    });
+    return true;
+}
+
 export function doZoom(deltaY) {
     let lastMoveOffset = getLastMoveOffset();
-    if (lastMoveOffset == null || isMiddleMouseClicked()) {
+    if (lastMoveOffset == null || isMiddleMouseClicked() || doOrganismZoom(deltaY)) {
         return;
     }
     let totalWidth = CANVAS_SQUARES_X * BASE_SIZE;

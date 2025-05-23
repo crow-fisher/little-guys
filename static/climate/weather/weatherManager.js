@@ -64,7 +64,6 @@ function spawnNimbusCloud(rainFactor) {
 }
 
 function spawnWindGust(airPressure) {
-    console.log("Spawning wind gust...");
     let wsx = getWindSquaresX();
     let wsy = getWindSquaresY();
     curClouds.push(new Cloud(

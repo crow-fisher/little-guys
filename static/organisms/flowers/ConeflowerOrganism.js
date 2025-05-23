@@ -57,8 +57,11 @@ export class ConeflowerOrganism extends BaseOrganism {
 
         this.maxNumNodes = 3 + Math.floor(this.maxNumNodes * p0);
         this.maxStemLength = 2 + Math.floor(this.maxStemLength * p0);
-        this.maxGrassLength = 4 + Math.floor(this.maxGrassLength * p0);
         this.maxLeafLength = 2 + Math.floor(this.maxLeafLength * p0);
+
+        this.maxNumNodes = 3;
+        this.maxStemLength = 5;
+        this.maxLeafLength = 5;
 
         this.growthNumGreen = this.maxNumNodes * (this.maxStemLength + this.maxLeafLength) + 12;
         this.growthNumRoots = this.growthNumGreen * 0.2;
@@ -72,8 +75,8 @@ export class ConeflowerOrganism extends BaseOrganism {
         let growthPlan = new GrowthPlan(
             startNode.posX, startNode.posY,
             false, STAGE_ADULT,
-            theta, 0, 0, randRange(0.1, 0.2),
-            randRange(0, 0.05), TYPE_STEM, 10 * this.maxNumNodes);
+            theta, 0, 0, 0,
+            0, TYPE_STEM, 10 * this.maxNumNodes);
 
         growthPlan.postConstruct = () => {
             parent.addChild(growthPlan.component);
@@ -220,8 +223,8 @@ export class ConeflowerOrganism extends BaseOrganism {
                     startNode.posX, startNode.posY,
                     false, STAGE_FLOWER,
                     startTheta + (i * Math.PI / this.numPetals),
-                    -Math.PI, 5, 5,
-                    randRange(0.05, 0.15), TYPE_FLOWERPETAL, 10 ** 8);
+                    -Math.PI, 0, 0,
+                    0, TYPE_FLOWERPETAL, 10 ** 8);
                 petalGrowthPlan.postConstruct = () => flowerNodeComponent.addChild(petalGrowthPlan.component);
                 petalGrowthPlan.steps.push(new GrowthPlanStep(
                     petalGrowthPlan,

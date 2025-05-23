@@ -1,4 +1,4 @@
-import { BaseLifeSquare } from "../BaseLifeSquare.js";
+import { BaseLifeSquare, LSQ_RENDERMODE_CIRCLE } from "../BaseLifeSquare.js";
 import { STATE_DEAD, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE, SUBTYPE_FLOWERTIP } from "../../organisms/Stages.js";
 
 export class ConeflowerGreenSqaure extends BaseLifeSquare {
@@ -38,9 +38,9 @@ export class ConeflowerGreenSqaure extends BaseLifeSquare {
                 case SUBTYPE_TRUNK:
                 case SUBTYPE_SHOOT:
                 case SUBTYPE_SPROUT:
-                case SUBTYPE_STEM:
                 case SUBTYPE_NODE:
                 case SUBTYPE_LEAF:
+                case SUBTYPE_STEM:
                     this.baseColor = "#515c24";
                     this.darkColor = "#353b1a";
                     this.accentColor = "#5d6637";
