@@ -99,7 +99,7 @@ export class ConeflowerOrganism extends BaseOrganism {
         }
         let growthPlan = new GrowthPlan(
             startNode.posX, startNode.posY,
-            false, STAGE_ADULT, this.curLeafTheta, 0, 0,
+            false, STAGE_ADULT, this.curLeafTheta, 0, 0.75,
             randRange(Math.PI / 2, Math.PI),
             randRange(.05, .10), TYPE_LEAF, 1);
 
@@ -197,7 +197,7 @@ export class ConeflowerOrganism extends BaseOrganism {
         let growthPlan = new GrowthPlan(
             startNode.posX, startNode.posY,
             false, STAGE_FLOWER,
-            0, 0, 0, .05,
+            0, -Math.PI, 0, .05,
             randRange(0.15, 0.25), TYPE_FLOWERNODE, 10 ** 8);
 
         growthPlan.postConstruct = () => {
@@ -207,7 +207,8 @@ export class ConeflowerOrganism extends BaseOrganism {
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
             () => this.growGreenSquareAction(startNode, SUBTYPE_FLOWERNODE)
-        ))
+        ));
+        startNode.subtype = SUBTYPE_FLOWERNODE;
         this.growthPlans.push(growthPlan);
     }
 
@@ -222,8 +223,8 @@ export class ConeflowerOrganism extends BaseOrganism {
                 let petalGrowthPlan = new GrowthPlan(
                     startNode.posX, startNode.posY,
                     false, STAGE_FLOWER,
-                    startTheta + (i * Math.PI / this.numPetals),
-                    -Math.PI, 0, 0,
+                    startTheta + (i * (2 * Math.PI) / this.numPetals),
+                    0, 0.7, 0,
                     0, TYPE_FLOWERPETAL, 10 ** 8);
                 petalGrowthPlan.postConstruct = () => flowerNodeComponent.addChild(petalGrowthPlan.component);
                 petalGrowthPlan.steps.push(new GrowthPlanStep(
@@ -237,7 +238,7 @@ export class ConeflowerOrganism extends BaseOrganism {
 
     lengthenFlowerPetals() {
         this.originGrowth.getChildFromPath(this.flower).children.forEach((child) => {
-            if (child.growthPlan.steps.length < 5) {
+            if (child.growthPlan.steps.length < 3) {
                 child.growthPlan.steps.push(new GrowthPlanStep(
                     child.growthPlan,
                     () => this.growGreenSquareAction(child.lifeSquares.at(child.lifeSquares.length - 1), SUBTYPE_FLOWER)
