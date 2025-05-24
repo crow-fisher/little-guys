@@ -15,7 +15,7 @@ export const _llt_throttlValMin = "_llt_throttlValMin";
 export const _llt_throttlValMax = "_llt_throttlValMax";
 export const _waterPressureSoilTarget = "_waterPressureSoilTarget";
 
-export const baseOrganism_dnm = {
+export let baseOrganism_dnm = {
     _llt_min: 0.5,
     _llt_max: 2,
     _llt_throttlValMin: 1,

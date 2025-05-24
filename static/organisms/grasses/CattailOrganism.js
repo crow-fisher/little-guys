@@ -4,12 +4,15 @@ import { STAGE_ADULT, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE, TYPE_FLOWERPETAL, SUBT
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
-import { BaseOrganism } from "../BaseOrganism.js";
+import { _waterPressureSoilTarget, BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
 import { CattailGreenSquare } from "../../lifeSquares/grasses/CattailGreenSquare.js";
 import { addSquare } from "../../squares/_sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
 import { addNewOrganism } from "../_orgOperations.js";
 import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
+
+cattail_dnm = structuredClone(baseOrganism_dnm);
+cattail_dnm[_waterPressureSoilTarget] = -2.2;
 
 export class CattailOrganism extends BaseOrganism {
     constructor(posX, posY) {
@@ -29,8 +32,10 @@ export class CattailOrganism extends BaseOrganism {
         this.growthCycleMaturityLength = 1 + (Math.random());
         this.growthCycleLength = this.growthCycleMaturityLength * 6;
 
-        this.waterPressureSoilTarget = -2.2
         this.grasses = [];
+    }
+    getDefaultNutritionMap() {
+        return cattail_dnm;
     }
 
     spawnSeed() {
