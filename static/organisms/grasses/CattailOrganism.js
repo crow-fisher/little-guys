@@ -11,7 +11,7 @@ import { SeedSquare } from "../../squares/SeedSquare.js";
 import { addNewOrganism } from "../_orgOperations.js";
 import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
 
-cattail_dnm = structuredClone(baseOrganism_dnm);
+export let cattail_dnm = structuredClone(baseOrganism_dnm);
 cattail_dnm[_waterPressureSoilTarget] = -2.2;
 
 export class CattailOrganism extends BaseOrganism {
