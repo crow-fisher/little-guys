@@ -1,6 +1,6 @@
 import { randRange } from "../../common.js";
 import { GenericRootSquare } from "../../lifeSquares/GenericRootSquare.js";
-import { STAGE_ADULT, STAGE_FLOWER, STAGE_JUVENILE, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE, SUBTYPE_FLOWERTIP, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_FLOWERNODE, TYPE_FLOWERPETAL, TYPE_LEAF, TYPE_STEM } from "../Stages.js";
+import { STAGE_ADULT, STAGE_FLOWER, STAGE_JUVENILE, SUBTYPE_FLOWER, SUBTYPE_FLOWERBUD, SUBTYPE_FLOWERNODE, SUBTYPE_FLOWERTIP, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_FLOWERNODE, TYPE_FLOWERPETAL, TYPE_LEAF, TYPE_STEM } from "../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
@@ -175,6 +175,9 @@ export class ConeflowerOrganism extends BaseOrganism {
             })
     }
     growFlower() {
+        if (this.targetLeafLength < this.maxLeafLength || this.targetStemLength < this.maxStemLength)
+            return;
+
         let parentPath = this.stems[this.stems.length - 1];
         let parent = this.originGrowth.getChildFromPath(parentPath);
         let startNode = parent.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_NODE);
@@ -195,9 +198,8 @@ export class ConeflowerOrganism extends BaseOrganism {
         };
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
-            () => this.growGreenSquareAction(startNode, SUBTYPE_FLOWERNODE)
+            () => this.growGreenSquareAction(startNode, SUBTYPE_FLOWERBUD, -1)
         ));
-        startNode.subtype = SUBTYPE_FLOWERNODE;
         this.growthPlans.push(growthPlan);
     }
 
@@ -241,6 +243,7 @@ export class ConeflowerOrganism extends BaseOrganism {
                     () => this.growGreenSquareAction(startNode, SUBTYPE_FLOWER)
                 ));
                 this.growthPlans.push(petalGrowthPlan);
+                startNode.subtype = SUBTYPE_FLOWERNODE;
             };
         }
     }
@@ -324,6 +327,10 @@ export class ConeflowerOrganism extends BaseOrganism {
 
         let flowerComponent = this.originGrowth.getChildFromPath(this.flower);
         let startNode = flowerComponent.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_FLOWERNODE);
+        if (startNode == null) {
+            this.growFlowerPetals();
+            return;
+        }
         let seedSquare = addSquare(new SeedSquare(startNode.getPosX(), startNode.getPosY()));
         if (seedSquare) {
             seedSquare.speedY = -Math.round(randRange(-2, -5));

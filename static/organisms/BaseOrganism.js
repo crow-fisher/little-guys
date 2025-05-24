@@ -287,8 +287,8 @@ class BaseOrganism {
         return out;
     }
 
-    growGreenSquareAction(startNode, subtype) {
-        let newGrassNode = this.growPlantSquare(startNode, 0, 0);
+    growGreenSquareAction(startNode, subtype, dy=0) {
+        let newGrassNode = this.growPlantSquare(startNode, 0, dy);
         newGrassNode.subtype = subtype;
         return newGrassNode;
     }
