@@ -2,7 +2,7 @@ import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { calculateColor } from "../../climate/simulation/temperatureHumidity.js";
 import { hexToRgb } from "../../common.js";
-import { _llt_min, baseOrganism_dnm } from "../../organisms/BaseOrganism.js";
+import { _llt_max, _llt_min, _llt_throttlValMax, _llt_throttlValMin, _waterPressureSoilTarget, baseOrganism_dnm } from "../../organisms/BaseOrganism.js";
 import { Component } from "../Component.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
 import { Container } from "../Container.js";
@@ -17,7 +17,7 @@ import { Text } from "../elements/Text.js";
 import { TextBackground } from "../elements/TextBackground.js";
 import { TextFunctionalBackground } from "../elements/TextFunctionalBackground.js";
 import { Toggle } from "../elements/Toggle.js";
-import { UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_WHEAT, UI_ORGANISM_GRASS_KBLUE, UI_ORGANISM_GRASS_CATTAIL, UI_CENTER, UI_ORGANISM_TREE_PALM, saveGD, UI_ORGANISM_TYPE_SELECT, UI_ORGANISM_TYPE_MOSS, UI_ORGANISM_TYPE_GRASS, UI_ORGANISM_TYPE_FLOWER, UI_ORGANISM_TYPE_TREE, loadGD, loadUI, UI_UI_PHONEMODE, UI_ORGANISM_FLOWER_CONEFLOWER, UI_ORGANISM_NUTRITION_CONFIGURATOR, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA } from "../UIData.js";
+import { UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_WHEAT, UI_ORGANISM_GRASS_KBLUE, UI_ORGANISM_GRASS_CATTAIL, UI_CENTER, UI_ORGANISM_TREE_PALM, saveGD, UI_ORGANISM_TYPE_SELECT, UI_ORGANISM_TYPE_MOSS, UI_ORGANISM_TYPE_GRASS, UI_ORGANISM_TYPE_FLOWER, UI_ORGANISM_TYPE_TREE, loadGD, loadUI, UI_UI_PHONEMODE, UI_ORGANISM_FLOWER_CONEFLOWER, UI_ORGANISM_NUTRITION_CONFIGURATOR, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, addUIFunctionMap } from "../UIData.js";
 
 export class OrganismComponent extends Component {
      constructor(posX, posY, padding, dir, key) {
@@ -141,7 +141,38 @@ export class OrganismComponent extends Component {
           container.addElement(new Toggle(this.window, sizeX, h1, UI_CENTER, UI_ORGANISM_NUTRITION_CONFIGURATOR, "configure nutrition",
                () => getActiveClimate().getUIColorInactiveCustom(0.63), () => getActiveClimate().getUIColorInactiveCustom(0.50)));
 
-          let nutrientConfiguratorContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_ORGANISM_NUTRITION_CONFIGURATOR));
+          let nutrientConfiguratorContainer = new ConditionalContainer(this.window, 0, 1, () => {
+               let selected = loadGD(UI_ORGANISM_SELECT);
+               if (loadGD(UI_ORGANISM_NUTRITION_CONFIGURATOR)) {
+                    if (loadGD(UI_ORGANISM_TYPE_SELECT) == UI_ORGANISM_TYPE_FLOWER) {
+                         if ([UI_ORGANISM_FLOWER_CONEFLOWER].includes(selected)) {
+                              return true;
+                         }
+                         return false;
+                    }
+                    if (loadGD(UI_ORGANISM_TYPE_SELECT) == UI_ORGANISM_TYPE_MOSS) {
+                         if ([].includes(selected)) {
+                              return true;
+                         }
+                         return false;
+                    }
+                    if (loadGD(UI_ORGANISM_TYPE_SELECT) == UI_ORGANISM_TYPE_GRASS) {
+                         if ([UI_ORGANISM_GRASS_CATTAIL, UI_ORGANISM_GRASS_KBLUE, UI_ORGANISM_GRASS_WHEAT].includes(selected)) {
+                              return true;
+                         }
+                         return false;
+                    }
+                    if (loadGD(UI_ORGANISM_TYPE_SELECT) == UI_ORGANISM_TYPE_TREE) {
+                         if ([UI_ORGANISM_TREE_PALM].includes(selected)) {
+                              return true;
+                         }
+                         return false;
+                    }
+               } else {
+                    return false;
+               };
+          });
+
           container.addElement(nutrientConfiguratorContainer);
 
 
@@ -149,12 +180,33 @@ export class OrganismComponent extends Component {
           let left = sizeX * 0.8;
           let right = sizeX - left;
 
-          let tll = new Container(this.window, 0, 0);
-          nutrientConfiguratorContainer.addElement(tll);
-          tll.addElement(new TextBackground(this.window, left, h1, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.58), 0.75, "llt_min"));
-          tll.addElement(new TextFunctionalBackground(this.window, right, h1, offsetX, () => this.getGenericNutritionParam(_llt_min), () => getActiveClimate().getUIColorInactiveCustom(0.58)));
+          let c_llt_min = new Container(this.window, 0, 0);
+          nutrientConfiguratorContainer.addElement(c_llt_min);
+          c_llt_min.addElement(new TextBackground(this.window, left, h1, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.58), 0.75, "llt_min"));
+          c_llt_min.addElement(new TextFunctionalBackground(this.window, right, h1, offsetX, () => this.getGenericNutritionParam(_llt_min), () => getActiveClimate().getUIColorInactiveCustom(0.58)));
           nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
                () => this.getGenericNutritionParam(_llt_min), (val) => this.setGenericNutritionParam(_llt_min, val), sizeX, h1, .25, .85, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
+
+          let c_llt_max = new Container(this.window, 0, 0);
+          nutrientConfiguratorContainer.addElement(c_llt_max);
+          c_llt_max.addElement(new TextBackground(this.window, left, h1, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.58), 0.75, "llt_max"));
+          c_llt_max.addElement(new TextFunctionalBackground(this.window, right, h1, offsetX, () => this.getGenericNutritionParam(_llt_max), () => getActiveClimate().getUIColorInactiveCustom(0.58)));
+          nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
+               () => this.getGenericNutritionParam(_llt_max), (val) => this.setGenericNutritionParam(_llt_max, val), sizeX, h1, 1.1, 3, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
+
+          let c_llt_tv_max = new Container(this.window, 0, 0);
+          nutrientConfiguratorContainer.addElement(c_llt_tv_max);
+          c_llt_tv_max.addElement(new TextBackground(this.window, left, h1, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.58), 0.75, "llt_throttlValMax"));
+          c_llt_tv_max.addElement(new TextFunctionalBackground(this.window, right, h1, offsetX, () => this.getGenericNutritionParam(_llt_throttlValMax), () => getActiveClimate().getUIColorInactiveCustom(0.58)));
+          nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
+               () => this.getGenericNutritionParam(_llt_throttlValMax), (val) => this.setGenericNutritionParam(_llt_throttlValMax, val), sizeX, h1, 2, 8, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
+
+          let c_waterTarget = new Container(this.window, 0, 0);
+          nutrientConfiguratorContainer.addElement(c_waterTarget);
+          c_waterTarget.addElement(new TextBackground(this.window, left, h1, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.58), 0.75, "waterPressureSoilTarget"));
+          c_waterTarget.addElement(new TextFunctionalBackground(this.window, right, h1, offsetX, () => this.getGenericNutritionParam(_waterPressureSoilTarget), () => getActiveClimate().getUIColorInactiveCustom(0.58)));
+          nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
+               () => this.getGenericNutritionParam(_waterPressureSoilTarget), (val) => this.setGenericNutritionParam(_waterPressureSoilTarget, val), sizeX, h1, -6, -2, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
      }
 
      generalBrightnessFunc(brightness) {
@@ -205,3 +257,5 @@ export class OrganismComponent extends Component {
      }
 
 }
+
+addUIFunctionMap(UI_ORGANISM_SELECT, () => saveGD(UI_ORGANISM_NUTRITION_CONFIGURATOR, false))

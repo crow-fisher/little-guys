@@ -9,14 +9,11 @@ import { loadGD, UI_GODMODE_FASTPLANT, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, 
 import { RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
 import { removeItemAll, rgbToRgba } from "../common.js";
 
-export const _waterPressureOverwaterThresh = "_waterPressureOverwaterThresh";
-export const _waterPressureTarget = "_waterPressureTarget";
-export const _waterPressureWiltThresh = "_waterPressureWiltThresh";
-export const _waterPressureSoilTarget = "_waterPressureSoilTarget";
 export const _llt_min = "_llt_min";
 export const _llt_max = "_llt_max";
 export const _llt_throttlValMin = "_llt_throttlValMin";
 export const _llt_throttlValMax = "_llt_throttlValMax";
+export const _waterPressureSoilTarget = "_waterPressureSoilTarget";
 
 export const baseOrganism_dnm = {
     _llt_min: 0.5,
