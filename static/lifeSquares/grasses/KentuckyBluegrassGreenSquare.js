@@ -11,7 +11,6 @@ export class KentuckyBluegrassGreenSquare extends BaseLifeSquare {
         this.width = 0.7;
         this.activeRenderSubtype = null;
         this.LSQ_RENDER_SIZE_MULT = 1;
-        this.waterPressureSoilTarget = -4.5;
     }
 
     applySubtypeRenderConfig() {
