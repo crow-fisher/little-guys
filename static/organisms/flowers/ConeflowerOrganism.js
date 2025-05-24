@@ -9,12 +9,14 @@ import { addNewOrganism } from "../_orgOperations.js";
 import { addSquare } from "../../squares/_sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
 import { ConeflowerGreenSqaure } from "../../lifeSquares/flowers/ConeflowerGreenSqaure.js";
+import { UI_ORGANISM_FLOWER_CONEFLOWER } from "../../ui/UIData.js";
 
 // ref: https://prairiecalifornian.com/wheat-growth-stages/
 export class ConeflowerOrganism extends BaseOrganism {
     constructor(posX, posY) {
         super(posX, posY);
         this.proto = "ConeflowerOrganism";
+        this.uiRef = UI_ORGANISM_FLOWER_CONEFLOWER;
         this.greenType = ConeflowerGreenSqaure;
         this.rootType = GenericRootSquare;
 
@@ -347,9 +349,8 @@ export class ConeflowerOrganism extends BaseOrganism {
             }
         }
 
-        let reduction = 0.5;
-        this.nitrogen *= (1 - reduction);
-        this.phosphorus *= (1 - reduction);
+        this.nitrogen *= (1 - this.seedReduction());
+        this.phosphorus *= (1 - this.seedReduction());
     }
 
     planGrowth() {

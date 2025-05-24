@@ -10,11 +10,13 @@ import { addSquare } from "../../squares/_sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
 import { addNewOrganism } from "../_orgOperations.js";
 import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
+import { UI_ORGANISM_GRASS_KBLUE } from "../../ui/UIData.js";
 
 export class KentuckyBluegrassOrganism extends BaseOrganism {
     constructor(posX, posY) {
         super(posX, posY);
         this.proto = "KentuckyBluegrassOrganism";
+        this.uiRef = UI_ORGANISM_GRASS_KBLUE;
         this.greenType = KentuckyBluegrassGreenSquare;
         this.rootType = GenericRootSquare;
         this.grassGrowTimeInDays =  0.01;
@@ -49,9 +51,8 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
                 applyLightingFromSource(this.lifeSquares.at(0), orgAdded.lifeSquares.at(0));
             }
         }
-        let reduction = 0.9;
-        this.nitrogen *= (1 - reduction);
-        this.phosphorus *= (1 - reduction);
+        this.nitrogen *= (1 - this.seedReduction());
+        this.phosphorus *= (1 - this.seedReduction());
     }
 
     processGenetics() {

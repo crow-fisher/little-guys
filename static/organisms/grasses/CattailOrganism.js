@@ -10,6 +10,7 @@ import { addSquare } from "../../squares/_sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
 import { addNewOrganism } from "../_orgOperations.js";
 import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
+import { UI_ORGANISM_GRASS_CATTAIL } from "../../ui/UIData.js";
 
 export let cattail_dnm = structuredClone(baseOrganism_dnm);
 cattail_dnm[_waterPressureSoilTarget] = -2.2;
@@ -18,6 +19,7 @@ export class CattailOrganism extends BaseOrganism {
     constructor(posX, posY) {
         super(posX, posY);
         this.proto = "CattailOrganism";
+        this.uiRef = UI_ORGANISM_GRASS_CATTAIL;
         this.greenType = CattailGreenSquare;
         this.rootType = GenericRootSquare;
         this.grassGrowTimeInDays = 0.01;
@@ -54,9 +56,8 @@ export class CattailOrganism extends BaseOrganism {
                 applyLightingFromSource(this.lifeSquares.at(0), orgAdded.lifeSquares.at(0));
             }
         }
-        let reduction = 0.5;
-        this.nitrogen *= (1 - reduction);
-        this.phosphorus *= (1 - reduction);
+        this.nitrogen *= (1 - this.seedReduction());
+        this.phosphorus *= (1 - this.seedReduction());
     }
 
     processGenetics() {

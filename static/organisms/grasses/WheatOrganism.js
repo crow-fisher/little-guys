@@ -9,12 +9,14 @@ import { BaseOrganism } from "../BaseOrganism.js";
 import { addNewOrganism } from "../_orgOperations.js";
 import { addSquare } from "../../squares/_sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
+import { UI_ORGANISM_GRASS_WHEAT } from "../../ui/UIData.js";
 
 // ref: https://prairiecalifornian.com/wheat-growth-stages/
 export class WheatOrganism extends BaseOrganism {
     constructor(posX, posY) {
         super(posX, posY);
         this.proto = "WheatOrganism";
+        this.uiRef = UI_ORGANISM_GRASS_WHEAT;
         this.greenType = WheatGreenSquare;
         this.rootType = GenericRootSquare;
 
@@ -278,10 +280,8 @@ export class WheatOrganism extends BaseOrganism {
                 seedSquare.destroy();
             }
         }
-
-        let reduction = 0.5;
-        this.nitrogen *= (1 - reduction);
-        this.phosphorus *= (1 - reduction);
+        this.nitrogen *= (1 - this.seedReduction());
+        this.phosphorus *= (1 - this.seedReduction());
     }
 
     planGrowth() {

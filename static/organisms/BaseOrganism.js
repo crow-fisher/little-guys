@@ -5,7 +5,7 @@ import { STAGE_ADULT, STAGE_DEAD, STAGE_FLOWER, STAGE_JUVENILE, STAGE_SPROUT, SU
 import { addSquare, getNeighbors } from "../squares/_sqOperations.js";
 import { PlantSquare } from "../squares/PlantSquare.js";
 import { applyLightingFromSource } from "../lighting/lightingProcessing.js";
-import { loadGD, UI_GODMODE_FASTPLANT, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_SIMULATION_GENS_PER_DAY, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
+import { loadGD, UI_GODMODE_FASTPLANT, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_SELECT, UI_SIMULATION_GENS_PER_DAY, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
 import { RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
 import { removeItemAll, rgbToRgba } from "../common.js";
 
@@ -14,18 +14,21 @@ export const _llt_max = "_llt_max";
 export const _llt_throttlValMin = "_llt_throttlValMin";
 export const _llt_throttlValMax = "_llt_throttlValMax";
 export const _waterPressureSoilTarget = "_waterPressureSoilTarget";
+export const _seedReduction = "_seedReduction";
 
 export let baseOrganism_dnm = {
     _llt_min: 0.5,
     _llt_max: 2,
     _llt_throttlValMin: 1,
     _llt_throttlValMax: 4,
-    _waterPressureSoilTarget: -4
+    _waterPressureSoilTarget: -4,
+    _seedReduction: 0.5
 }
 
 class BaseOrganism {
     constructor(square) {
         this.proto = "BaseOrganism";
+        this.uiRef = UI_ORGANISM_SELECT;
         this.posX = square.posX;
         this.posY = square.posY;
         this.stage = STAGE_SPROUT;
@@ -95,7 +98,7 @@ class BaseOrganism {
 
     getGenericNutritionParam(name) {
         let defaultMap = this.getDefaultNutritionMap();
-        let configMap = loadGD(UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA)[this.proto];
+        let configMap = loadGD(UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA)[this.uiRef];
         if (configMap == null || configMap[name] == null) {
             return defaultMap[name];
         }
@@ -116,6 +119,9 @@ class BaseOrganism {
     }
     waterPressureSoilTarget() {
         return this.getGenericNutritionParam(_waterPressureSoilTarget);
+    }
+    seedReduction() {
+        return this.getGenericNutritionParam(_seedReduction);
     }
 
     processColor(color1, color2, value, valueMax, opacity) {

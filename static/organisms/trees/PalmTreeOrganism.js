@@ -9,11 +9,13 @@ import { PalmTreeGreenSquare } from "../../lifeSquares/trees/PalmTreeGreenSquare
 import { SeedSquare } from "../../squares/SeedSquare.js";
 import { addSquare } from "../../squares/_sqOperations.js";
 import { addNewOrganism } from "../_orgOperations.js";
+import { UI_ORGANISM_TREE_PALM } from "../../ui/UIData.js";
 
 export class PalmTreeOrganism extends BaseOrganism {
     constructor(posX, posY) {
         super(posX, posY);
         this.proto = "PalmTreeOrganism";
+        this.uiRef = UI_ORGANISM_TREE_PALM;
         this.greenType = PalmTreeGreenSquare;
         this.rootType = GenericRootSquare;
 
@@ -234,10 +236,8 @@ export class PalmTreeOrganism extends BaseOrganism {
                 }
             }
         }
-
-        let reduction = 0.5;
-        this.nitrogen *= (1 - reduction);
-        this.phosphorus *= (1 - reduction);
+        this.nitrogen *= (1 - this.seedReduction());
+        this.phosphorus *= (1 - this.seedReduction());
     }
 
     planGrowth() {
