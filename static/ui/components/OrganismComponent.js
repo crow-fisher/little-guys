@@ -192,7 +192,7 @@ export class OrganismComponent extends Component {
           c_lightDecayValue.addElement(new TextBackground(this.window, left, h1, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.58), 0.75, "lightDecay"));
           c_lightDecayValue.addElement(new TextFunctionalBackground(this.window, right, h1, offsetX, () => this.getGenericNutritionParam(_lightDecayValue), () => getActiveClimate().getUIColorInactiveCustom(0.58)));
           nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
-               () => this.getGenericNutritionParam(_lightDecayValue), (val) => this.setGenericNutritionParam(_lightDecayValue, val), sizeX, h1, 0.05, 20, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
+               () => this.getGenericNutritionParam(_lightDecayValue), (val) => this.setGenericNutritionParam(_lightDecayValue, val), sizeX, h1, -0.05, 2, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
      
      }
 

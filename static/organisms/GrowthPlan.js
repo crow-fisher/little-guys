@@ -120,7 +120,7 @@ export class GrowthComponent {
     }
 
     strength() {
-        return this.strengthMult * (this.xSize()) / this.ySize();
+        return this.strengthMult;
     }
 
     setBaseDeflectionOverTime(deflectionOverTimeList) {
@@ -224,8 +224,13 @@ export class GrowthComponent {
             return;
         }
 
-        let strength = this.getTotalStrength();
+        let strength = this.strengthMult;
         let windVec = this.getNetWindSpeed();
+
+        let numSquares = this.getTotalLifeSquares();
+        windVec[0] /= numSquares;
+        windVec[1] /= numSquares;
+
         let startSpringForce = this.getStartSpringForce();
         let windX = Math.sin(this.getTheta()) * windVec[0] * 0.1;
         let coef = 0.05;
@@ -384,7 +389,7 @@ export class GrowthComponent {
     }
 
     getTotalLifeSquares() {
-        return Math.max(1, this.lifeSquares.length + this.children.map((gc) => this.lifeSquares.length).reduce(
+        return Math.max(1, this.lifeSquares.length + this.children.map((child) => child.getTotalLifeSquares()).reduce(
             (accumulator, currentValue) => accumulator + currentValue,
             0,
         ));

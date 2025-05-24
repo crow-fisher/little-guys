@@ -78,7 +78,7 @@ export class ConeflowerOrganism extends BaseOrganism {
             startNode.posX, startNode.posY,
             false, STAGE_ADULT,
             theta, 0, 0, randRange(0, 0.1),
-            randRange(0.05, 0.15), TYPE_STEM, 3 * this.maxNumNodes);
+            randRange(0.05, 0.15), TYPE_STEM, .03 * this.maxNumNodes);
 
         growthPlan.postConstruct = () => {
             parent.addChild(growthPlan.component);
