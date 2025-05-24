@@ -198,7 +198,11 @@ export class ConeflowerOrganism extends BaseOrganism {
         };
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
-            () => this.growGreenSquareAction(startNode, SUBTYPE_FLOWERBUD, -1)
+            () => {
+                let ret = this.growGreenSquareAction(startNode, SUBTYPE_FLOWERBUD, 0);
+                startNode.opacity = 0;
+                return ret;
+            }
         ));
         this.growthPlans.push(growthPlan);
     }
@@ -237,13 +241,15 @@ export class ConeflowerOrganism extends BaseOrganism {
                     startTheta + (i * (2 * Math.PI) / this.numPetals),
                     0, Math.PI * 0.15, 0,
                     0, TYPE_FLOWERPETAL, 10 ** 8);
-                petalGrowthPlan.postConstruct = () => flowerNodeComponent.addChild(petalGrowthPlan.component);
+                petalGrowthPlan.postConstruct = () => {
+                    flowerNodeComponent.addChild(petalGrowthPlan.component);
+                    startNode.subtype = SUBTYPE_FLOWERNODE;
+                }
                 petalGrowthPlan.steps.push(new GrowthPlanStep(
                     petalGrowthPlan,
                     () => this.growGreenSquareAction(startNode, SUBTYPE_FLOWER)
                 ));
                 this.growthPlans.push(petalGrowthPlan);
-                startNode.subtype = SUBTYPE_FLOWERNODE;
             };
         }
     }
