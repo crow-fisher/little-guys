@@ -5,20 +5,20 @@ import { STAGE_ADULT, STAGE_DEAD, STAGE_FLOWER, STAGE_JUVENILE, STAGE_SPROUT, SU
 import { addSquare, getNeighbors } from "../squares/_sqOperations.js";
 import { PlantSquare } from "../squares/PlantSquare.js";
 import { applyLightingFromSource } from "../lighting/lightingProcessing.js";
-import { loadGD, UI_GODMODE_FASTPLANT, UI_ORGANISM_NUTRITION_CONFIGURATOR, UI_SIMULATION_GENS_PER_DAY, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
+import { loadGD, UI_GODMODE_FASTPLANT, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_SIMULATION_GENS_PER_DAY, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
 import { RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
 import { removeItemAll, rgbToRgba } from "../common.js";
 
-const _waterPressureOverwaterThresh = "_waterPressureOverwaterThresh";
-const _waterPressureTarget = "_waterPressureTarget";
-const _waterPressureWiltThresh = "_waterPressureWiltThresh";
-const _waterPressureSoilTarget = "_waterPressureSoilTarget";
-const _llt_min = "_llt_min";
-const _llt_max = "_llt_max";
-const _llt_throttlValMin = "_llt_throttlValMin";
-const _llt_throttlValMax = "_llt_throttlValMax";
+export const _waterPressureOverwaterThresh = "_waterPressureOverwaterThresh";
+export const _waterPressureTarget = "_waterPressureTarget";
+export const _waterPressureWiltThresh = "_waterPressureWiltThresh";
+export const _waterPressureSoilTarget = "_waterPressureSoilTarget";
+export const _llt_min = "_llt_min";
+export const _llt_max = "_llt_max";
+export const _llt_throttlValMin = "_llt_throttlValMin";
+export const _llt_throttlValMax = "_llt_throttlValMax";
 
-const defaultNutritionMap = {
+export const baseOrganism_dnm = {
     _llt_min: 0.5,
     _llt_max: 2,
     _llt_throttlValMin: 1,
@@ -93,12 +93,12 @@ class BaseOrganism {
     }
 
     getDefaultNutritionMap() {
-        return defaultNutritionMap;
+        return baseOrganism_dnm;
     }
 
     getGenericNutritionParam(name) {
         let defaultMap = this.getDefaultNutritionMap();
-        let configMap = loadGD(UI_ORGANISM_NUTRITION_CONFIGURATOR)[this.proto];
+        let configMap = loadGD(UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA)[this.proto];
         if (configMap == null || configMap[name] == null) {
             return defaultMap[name];
         }
