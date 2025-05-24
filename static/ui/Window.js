@@ -130,8 +130,8 @@ export class Window {
 
         if (isLeftMouseClicked()) {
             if (this.clicked) {
-                this.posX = x - this.clickStartX;
-                this.posY = y - this.clickStartY;
+                this.posX = Math.max(0, Math.min(getCanvasWidth() - this.sizeX, x - this.clickStartX));
+                this.posY = Math.max(getBaseUISize() * 3, Math.min(getCanvasHeight() - this.sizeY, y - this.clickStartY));
             } else {
                 this.clicked = true;
                 this.clickStartX = x - this.posX;

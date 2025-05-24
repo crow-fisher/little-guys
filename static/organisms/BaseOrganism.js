@@ -15,6 +15,7 @@ export const _llt_throttlValMin = "_llt_throttlValMin";
 export const _llt_throttlValMax = "_llt_throttlValMax";
 export const _waterPressureSoilTarget = "_waterPressureSoilTarget";
 export const _seedReduction = "_seedReduction";
+export const _lightDecayValue = "_lightDecayValue";
 
 export let baseOrganism_dnm = {
     _llt_min: 0.5,
@@ -22,7 +23,8 @@ export let baseOrganism_dnm = {
     _llt_throttlValMin: 1,
     _llt_throttlValMax: 4,
     _waterPressureSoilTarget: -4,
-    _seedReduction: 0.5
+    _seedReduction: 0.5,
+    _lightDecayValue: 1
 }
 
 class BaseOrganism {
@@ -122,6 +124,9 @@ class BaseOrganism {
     }
     seedReduction() {
         return this.getGenericNutritionParam(_seedReduction);
+    }
+    lightDecayValue() {
+        return this.getGenericNutritionParam(_lightDecayValue);
     }
 
     processColor(color1, color2, value, valueMax, opacity) {

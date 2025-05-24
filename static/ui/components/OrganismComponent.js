@@ -2,7 +2,7 @@ import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { calculateColor } from "../../climate/simulation/temperatureHumidity.js";
 import { hexToRgb } from "../../common.js";
-import { _llt_max, _llt_min, _llt_throttlValMax, _llt_throttlValMin, _seedReduction, _waterPressureSoilTarget, baseOrganism_dnm } from "../../organisms/BaseOrganism.js";
+import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _llt_throttlValMin, _seedReduction, _waterPressureSoilTarget, baseOrganism_dnm } from "../../organisms/BaseOrganism.js";
 import { cattail_dnm } from "../../organisms/grasses/CattailOrganism.js";
 import { Component } from "../Component.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
@@ -185,6 +185,15 @@ export class OrganismComponent extends Component {
           c_seedReduction.addElement(new TextFunctionalBackground(this.window, right, h1, offsetX, () => this.getGenericNutritionParam(_seedReduction), () => getActiveClimate().getUIColorInactiveCustom(0.58)));
           nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
                () => this.getGenericNutritionParam(_seedReduction), (val) => this.setGenericNutritionParam(_seedReduction, val), sizeX, h1, 0.05, 0.95, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
+     
+               
+          let c_lightDecayValue = new Container(this.window, 0, 0);
+          nutrientConfiguratorContainer.addElement(c_lightDecayValue);
+          c_lightDecayValue.addElement(new TextBackground(this.window, left, h1, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.58), 0.75, "lightDecay"));
+          c_lightDecayValue.addElement(new TextFunctionalBackground(this.window, right, h1, offsetX, () => this.getGenericNutritionParam(_lightDecayValue), () => getActiveClimate().getUIColorInactiveCustom(0.58)));
+          nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
+               () => this.getGenericNutritionParam(_lightDecayValue), (val) => this.setGenericNutritionParam(_lightDecayValue, val), sizeX, h1, 0.125, 8, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
+     
      }
 
      isOrganismSelectedOnCurrentPage() {
