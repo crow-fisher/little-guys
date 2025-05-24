@@ -4,12 +4,21 @@ import { STAGE_ADULT, STAGE_FLOWER, STAGE_JUVENILE, SUBTYPE_FLOWER, SUBTYPE_FLOW
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
-import { BaseOrganism } from "../BaseOrganism.js";
+import { BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
 import { addNewOrganism } from "../_orgOperations.js";
 import { addSquare } from "../../squares/_sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
 import { ConeflowerGreenSqaure } from "../../lifeSquares/flowers/ConeflowerGreenSqaure.js";
 import { UI_ORGANISM_FLOWER_CONEFLOWER } from "../../ui/UIData.js";
+
+export const coneflower_dnm = {
+    _llt_min: 0.63,
+    _llt_max: 2.32,
+    _llt_throttlValMin: 1,
+    _llt_throttlValMax: 3.15,
+    _waterPressureSoilTarget: -2.63,
+    _seedReduction: 0.21
+}
 
 // ref: https://prairiecalifornian.com/wheat-growth-stages/
 export class ConeflowerOrganism extends BaseOrganism {
@@ -50,7 +59,7 @@ export class ConeflowerOrganism extends BaseOrganism {
     processGenetics() {
         this.evolutionParameters[0] = Math.min(Math.max(this.evolutionParameters[0], 0.00001), .99999)
         let p0 = this.evolutionParameters[0];
-        this.growthLightLevel = 0.1 + 1 * p0;
+        this.growthLightLevel = 0.1 + 1.5 * p0;
 
         this.maxNumNodes = 3 + Math.floor(this.maxNumNodes * p0);
         this.targetNumLeaves = -1;

@@ -177,7 +177,7 @@ export class OrganismComponent extends Component {
           c_waterTarget.addElement(new TextBackground(this.window, left, h1, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.58), 0.75, "waterPressureTarget"));
           c_waterTarget.addElement(new TextFunctionalBackground(this.window, right, h1, offsetX, () => this.getGenericNutritionParam(_waterPressureSoilTarget), () => getActiveClimate().getUIColorInactiveCustom(0.58)));
           nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
-               () => this.getGenericNutritionParam(_waterPressureSoilTarget), (val) => this.setGenericNutritionParam(_waterPressureSoilTarget, val), sizeX, h1, -6, -2, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
+               () => this.getGenericNutritionParam(_waterPressureSoilTarget), (val) => this.setGenericNutritionParam(_waterPressureSoilTarget, val), sizeX, h1, -6, -1, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
 
           let c_seedReduction = new Container(this.window, 0, 0);
           nutrientConfiguratorContainer.addElement(c_seedReduction);

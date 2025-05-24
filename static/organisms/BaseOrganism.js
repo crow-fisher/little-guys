@@ -157,7 +157,7 @@ class BaseOrganism {
         return Array.from(this.evolutionParameters.map((v) => {
             if (v === 1 || v === 0)
                 return v;
-            v = v + (Math.random() - 0.5) * .2;
+            v = v + (Math.random() - 0.5) * .1;
             return Math.min(Math.max(0.0001, v), 0.9999);
         }));
     }
