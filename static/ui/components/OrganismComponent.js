@@ -104,6 +104,7 @@ export class OrganismComponent extends Component {
           // flower 
           flowerConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "coneflower", UI_ORGANISM_SELECT, UI_ORGANISM_FLOWER_CONEFLOWER,
                () => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorInactiveCustom(0.52)));
+          flowerConditionalContainer.addElement(new TextBackground(this.window, sizeX, br2, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""))
 
           let coneflowerConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_ORGANISM_SELECT) == UI_ORGANISM_FLOWER_CONEFLOWER);
           flowerConditionalContainer.addElement(coneflowerConditionalContainer);
@@ -120,6 +121,7 @@ export class OrganismComponent extends Component {
 
           let palmConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_ORGANISM_SELECT) == UI_ORGANISM_TREE_PALM);
           treeConditionalContainer.addElement(palmConditionalContainer);
+          treeConditionalContainer.addElement(new TextBackground(this.window, sizeX, br2, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""))
 
           palmConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.75, "palms: technically grasses", "italic"))
           palmConditionalContainer.addElement(new TextBackground(this.window, sizeX, br3, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""))
@@ -171,7 +173,7 @@ export class OrganismComponent extends Component {
 
           let c_waterTarget = new Container(this.window, 0, 0);
           nutrientConfiguratorContainer.addElement(c_waterTarget);
-          c_waterTarget.addElement(new TextBackground(this.window, left, h1, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.58), 0.75, "waterPressureSoilTarget"));
+          c_waterTarget.addElement(new TextBackground(this.window, left, h1, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.58), 0.75, "waterPressureTarget"));
           c_waterTarget.addElement(new TextFunctionalBackground(this.window, right, h1, offsetX, () => this.getGenericNutritionParam(_waterPressureSoilTarget), () => getActiveClimate().getUIColorInactiveCustom(0.58)));
           nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
                () => this.getGenericNutritionParam(_waterPressureSoilTarget), (val) => this.setGenericNutritionParam(_waterPressureSoilTarget, val), sizeX, h1, -6, -2, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
