@@ -239,7 +239,7 @@ export class ConeflowerOrganism extends BaseOrganism {
                     startNode.posX, startNode.posY,
                     false, STAGE_FLOWER,
                     startTheta + (i * (2 * Math.PI) / this.numPetals),
-                    0, Math.PI * 0.15, 0,
+                    0, Math.PI * randRange(0.1, 0.2), 0,
                     0, TYPE_FLOWERPETAL, 10 ** 8);
                 petalGrowthPlan.postConstruct = () => {
                     flowerNodeComponent.addChild(petalGrowthPlan.component);
