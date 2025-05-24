@@ -51,6 +51,7 @@ export class ConeflowerOrganism extends BaseOrganism {
         this.growthLightLevel = 0.1 + 1 * p0;
 
         this.maxNumNodes = 3 + Math.floor(this.maxNumNodes * p0);
+        this.targetNumLeaves = -1;
         this.maxStemLength = 2 + Math.floor(this.maxStemLength * p0);
         this.maxLeafLength = 2 + Math.floor(this.maxLeafLength * p0);
 
@@ -117,13 +118,7 @@ export class ConeflowerOrganism extends BaseOrganism {
     }
 
     adultGrowLeaf() {
-        let searchArr;
-        if (this.stems.length >= (this.maxNumNodes - 1)) {
-            searchArr = this.stems.slice(0, -2);
-        } else {
-            searchArr = this.stems;
-        }
-        let parent = searchArr
+        let parent = this.stems
             .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .find((stem) => !stem.children.some((child) => child.growthPlan.type == TYPE_LEAF));
         if (parent == null) {
@@ -179,7 +174,6 @@ export class ConeflowerOrganism extends BaseOrganism {
                 };
             })
     }
-
     growFlower() {
         let parentPath = this.stems[this.stems.length - 1];
         let parent = this.originGrowth.getChildFromPath(parentPath);
@@ -205,6 +199,26 @@ export class ConeflowerOrganism extends BaseOrganism {
         ));
         startNode.subtype = SUBTYPE_FLOWERNODE;
         this.growthPlans.push(growthPlan);
+    }
+
+    doGreenGrowth() {
+        if (super.doGreenGrowth()) {
+            for (let i = 0; i < this.stems.length; i++) {
+                let curStem = this.originGrowth.getChildFromPath(this.stems.at(i));
+                let curStemWidth = 0.7 - (0.05 * i);
+                curStem.lifeSquares.forEach((lsq) => lsq.width = curStemWidth);
+
+                let childLeaf = curStem.children.find((child) => child.type == TYPE_LEAF);
+                if (childLeaf != null) {
+                    childLeaf.lifeSquares.at(0).width = curStemWidth;
+                    let curLeafChildWidth = curStemWidth * 1.2;
+                    childLeaf.lifeSquares.slice(1).forEach((lsq) => {
+                        lsq.width = curLeafChildWidth;
+                        curLeafChildWidth *= 0.7;
+                    });
+                }
+            }
+        }
     }
 
     growFlowerPetals() {
@@ -271,19 +285,18 @@ export class ConeflowerOrganism extends BaseOrganism {
 
         if (this.leaves.length < this.targetNumLeaves) {
             this.adultGrowLeaf();
-            return;
         }
 
         if (this.leaves
             .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .some((leaf) => leaf.growthPlan.steps.length < Math.min(this.targetStemLength * (this.maxLeafLength / this.maxStemLength), this.targetLeafLength))) {
             this.lengthenLeaves();
-            return;
         }
 
         if (this.targetNumStems < this.maxNumNodes) {
             this.targetNumStems += 1;
             this.targetNumLeaves += 1;
+            this.targetLeafLength = Math.min(this.targetLeafLength + 1, this.maxLeafLength);
             return;
         }
         if (this.targetLeafLength < this.maxLeafLength) {

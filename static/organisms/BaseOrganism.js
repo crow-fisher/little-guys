@@ -344,12 +344,13 @@ class BaseOrganism {
     }
     doGreenGrowth() {
         if (getCurDay() < this.greenLastGrown + this.lightLevelThrottleVal() * (this.getGrowthCycleMaturityLength() / this.growthNumGreen)) {
-            return;
+            return false;
         }
-
+        let somethingDone = false;
         this.growthPlans.filter((gp) => !gp.areStepsCompleted()).forEach((growthPlan) => {
             growthPlan.steps.filter((step) => !step.completed).at(0).doAction();
             growthPlan.complete();
+            somethingDone = true;
             this.curNumGreen += 1;
             this.greenLastGrown = getCurDay();
 
@@ -364,6 +365,7 @@ class BaseOrganism {
                 this.destroy();
             }
         });
+        return somethingDone;
     }
 
     doRootGrowth() {
