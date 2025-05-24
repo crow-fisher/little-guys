@@ -5,9 +5,23 @@ import { STAGE_ADULT, STAGE_DEAD, STAGE_FLOWER, STAGE_JUVENILE, STAGE_SPROUT, SU
 import { addSquare, getNeighbors } from "../squares/_sqOperations.js";
 import { PlantSquare } from "../squares/PlantSquare.js";
 import { applyLightingFromSource } from "../lighting/lightingProcessing.js";
-import { loadGD, UI_GODMODE_FASTPLANT, UI_SIMULATION_GENS_PER_DAY, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
+import { loadGD, UI_GODMODE_FASTPLANT, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_SIMULATION_GENS_PER_DAY, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
 import { RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
 import { removeItemAll, rgbToRgba } from "../common.js";
+
+export const _llt_min = "_llt_min";
+export const _llt_max = "_llt_max";
+export const _llt_throttlValMin = "_llt_throttlValMin";
+export const _llt_throttlValMax = "_llt_throttlValMax";
+export const _waterPressureSoilTarget = "_waterPressureSoilTarget";
+
+export const baseOrganism_dnm = {
+    _llt_min: 0.5,
+    _llt_max: 2,
+    _llt_throttlValMin: 1,
+    _llt_throttlValMax: 4,
+    _waterPressureSoilTarget: -4
+}
 
 class BaseOrganism {
     constructor(square) {
@@ -38,7 +52,6 @@ class BaseOrganism {
         this.waterPressureWiltThresh = -1;
         this.waterPressure = 0;
         this.waterPressureChangeRate = .01;
-        this.waterPressureSoilTarget = -4;
         this.waterPressureLossRate = 30000;
 
         // nutrients normalized to "pounds per acre" per farming websites
@@ -74,15 +87,35 @@ class BaseOrganism {
 
         this.evolutionMinColor = RGB_COLOR_BLUE;
         this.evolutionMaxColor = RGB_COLOR_VERY_FUCKING_RED;
-
-        this.llt_min = 0.5;
-        this.llt_max = 2;
-        this.llt_throttlValMin = 1;
-        this.llt_throttlValMax = 4;
-
     }
 
-    prepareForSave() {
+    getDefaultNutritionMap() {
+        return baseOrganism_dnm;
+    }
+
+    getGenericNutritionParam(name) {
+        let defaultMap = this.getDefaultNutritionMap();
+        let configMap = loadGD(UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA)[this.proto];
+        if (configMap == null || configMap[name] == null) {
+            return defaultMap[name];
+        }
+        return configMap[name];
+    }
+
+    llt_min() {
+        return this.getGenericNutritionParam(_llt_min);
+    }
+    llt_max() {
+        return this.getGenericNutritionParam(_llt_max);
+    }
+    llt_throttlValMin() {
+        return this.getGenericNutritionParam(_llt_throttlValMin);
+    }
+    llt_throttlValMax() {
+        return this.getGenericNutritionParam(_llt_throttlValMax);
+    }
+    waterPressureSoilTarget() {
+        return this.getGenericNutritionParam(_waterPressureSoilTarget);
     }
 
     processColor(color1, color2, value, valueMax, opacity) {
@@ -150,7 +183,7 @@ class BaseOrganism {
             .map((lsq) => {
                 let sq = lsq.linkedSquare;
                 let sqWaterPressure = sq.getSoilWaterPressure();
-                let diffToTarget = sqWaterPressure - this.waterPressureSoilTarget;
+                let diffToTarget = sqWaterPressure - this.waterPressureSoilTarget();
                 if (diffToTarget <= 0) {
                     return 0;
                 }
@@ -330,16 +363,16 @@ class BaseOrganism {
 
     lightLevelThrottleVal() {
         let ratio = this.lightlevel / this.growthLightLevel;
-        if (ratio < this.llt_min) {
-            return this.llt_throttlValMax;
+        if (ratio < this.llt_min()) {
+            return this.llt_throttlValMax();
         } else if (ratio < 1) {
-            let t = (ratio - this.llt_min) / this.llt_min;
-            return this.llt_throttlValMax * (1 - t) + this.llt_throttlValMin * t;
-        } else if (ratio < this.llt_max) {
+            let t = (ratio - this.llt_min()) / this.llt_min();
+            return this.llt_throttlValMax() * (1 - t) + this.llt_throttlValMin() * t;
+        } else if (ratio < this.llt_max()) {
             let t = (ratio - 1);
-            return this.llt_throttlValMax * t + this.llt_throttlValMin * (1 - t);
+            return this.llt_throttlValMax() * t + this.llt_throttlValMin() * (1 - t);
         } else {
-            return this.llt_throttlValMax;
+            return this.llt_throttlValMax();
         }
     }
     doGreenGrowth() {
@@ -438,7 +471,7 @@ class BaseOrganism {
         let scoreFunc = (sq) => {
             let sqScore = 0;
             if (this.waterPressure < this.waterPressureTarget) {
-                sqScore += sq.getSoilWaterPressure() - this.waterPressureSoilTarget;
+                sqScore += sq.getSoilWaterPressure() - this.waterPressureSoilTarget();
             }
             if (this.nitrogen < expectedNitrogen) {
                 sqScore += (sq.nitrogen / this.growthNitrogen) / ((sq.linkedOrganismSquares.length + 1) ** 0.5);

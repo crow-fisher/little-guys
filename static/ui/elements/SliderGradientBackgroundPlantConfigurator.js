@@ -23,7 +23,7 @@ export function setCurPlantConfiguratorValue(value) {
 }
 
 export class SliderGradientBackgroundPlantConfigurator extends WindowElement {
-    constructor(window, sizeX, sizeY, minColorFunc, maxColorFunc) {
+    constructor(window, sizeX, sizeY) {
         super(window, sizeX, sizeY);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
