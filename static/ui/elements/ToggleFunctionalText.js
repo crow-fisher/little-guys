@@ -6,7 +6,7 @@ import { loadGD, saveGD, UI_CENTER } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class ToggleFunctionalText extends WindowElement {
-    constructor(window, sizeX, sizeY, offsetX, key, labelFunc, colorInactiveFunc, colorActiveFunc, textSize) {
+    constructor(window, sizeX, sizeY, offsetX, key, labelFunc, colorInactiveFunc, colorActiveFunc, textSize=0.75) {
         super(window, sizeX, sizeY);
         this.sizeX = sizeX;
         this.sizeY = sizeY;

@@ -17,6 +17,7 @@ import { Text } from "../elements/Text.js";
 import { TextBackground } from "../elements/TextBackground.js";
 import { TextFunctionalBackground } from "../elements/TextFunctionalBackground.js";
 import { Toggle } from "../elements/Toggle.js";
+import { ToggleFunctionalText } from "../elements/ToggleFunctionalText.js";
 import { UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_WHEAT, UI_ORGANISM_GRASS_KBLUE, UI_ORGANISM_GRASS_CATTAIL, UI_CENTER, UI_ORGANISM_TREE_PALM, saveGD, UI_ORGANISM_TYPE_SELECT, UI_ORGANISM_TYPE_MOSS, UI_ORGANISM_TYPE_GRASS, UI_ORGANISM_TYPE_FLOWER, UI_ORGANISM_TYPE_TREE, loadGD, loadUI, UI_UI_PHONEMODE, UI_ORGANISM_FLOWER_CONEFLOWER, UI_ORGANISM_NUTRITION_CONFIGURATOR, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, addUIFunctionMap } from "../UIData.js";
 
 export class OrganismComponent extends Component {
@@ -127,56 +128,23 @@ export class OrganismComponent extends Component {
 
           // end
 
-          container.addElement(new TextBackground(this.window, sizeX, br2, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""))
-          container.addElement(new TextBackground(this.window, sizeX, h1, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.51), 0.75, "evolution parameters"))
-          container.addElement(new TextBackground(this.window, sizeX, br3, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""))
-          container.addElement(new TextBackground(this.window, sizeX, h2, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.58), 0.75, "target light level"))
+          let organismControlConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => this.isOrganismSelectedOnCurrentPage());
+          container.addElement(organismControlConditionalContainer);
+          
+          organismControlConditionalContainer.addElement(new TextBackground(this.window, sizeX, br2, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""))
+          organismControlConditionalContainer.addElement(new TextBackground(this.window, sizeX, h1, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.51), 0.75, "evolution parameters"))
+          organismControlConditionalContainer.addElement(new TextBackground(this.window, sizeX, br3, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""))
+          organismControlConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.58), 0.75, "target light level"))
 
-          container.addElement(new SliderGradientBackgroundPlantConfigurator(this.window, sizeX, h1));
+          organismControlConditionalContainer.addElement(new SliderGradientBackgroundPlantConfigurator(this.window, sizeX, h1));
 
           // plant nutrition characteristic configurator
+          organismControlConditionalContainer.addElement(new TextBackground(this.window, sizeX, br1, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""));
+          organismControlConditionalContainer.addElement(new Toggle(this.window, sizeX, h1, UI_CENTER, UI_ORGANISM_NUTRITION_CONFIGURATOR, "configure nutrition",
+                () => getActiveClimate().getUIColorInactiveCustom(0.63), () => getActiveClimate().getUIColorInactiveCustom(0.50)));
 
-
-          container.addElement(new TextBackground(this.window, sizeX, br1, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""));
-          container.addElement(new Toggle(this.window, sizeX, h1, UI_CENTER, UI_ORGANISM_NUTRITION_CONFIGURATOR, "configure nutrition",
-               () => getActiveClimate().getUIColorInactiveCustom(0.63), () => getActiveClimate().getUIColorInactiveCustom(0.50)));
-
-          let nutrientConfiguratorContainer = new ConditionalContainer(this.window, 0, 1, () => {
-               let selected = loadGD(UI_ORGANISM_SELECT);
-               if (loadGD(UI_ORGANISM_NUTRITION_CONFIGURATOR)) {
-                    if (loadGD(UI_ORGANISM_TYPE_SELECT) == UI_ORGANISM_TYPE_FLOWER) {
-                         if ([UI_ORGANISM_FLOWER_CONEFLOWER].includes(selected)) {
-                              return true;
-                         }
-                         return false;
-                    }
-                    if (loadGD(UI_ORGANISM_TYPE_SELECT) == UI_ORGANISM_TYPE_MOSS) {
-                         if ([].includes(selected)) {
-                              return true;
-                         }
-                         return false;
-                    }
-                    if (loadGD(UI_ORGANISM_TYPE_SELECT) == UI_ORGANISM_TYPE_GRASS) {
-                         if ([UI_ORGANISM_GRASS_CATTAIL, UI_ORGANISM_GRASS_KBLUE, UI_ORGANISM_GRASS_WHEAT].includes(selected)) {
-                              return true;
-                         }
-                         return false;
-                    }
-                    if (loadGD(UI_ORGANISM_TYPE_SELECT) == UI_ORGANISM_TYPE_TREE) {
-                         if ([UI_ORGANISM_TREE_PALM].includes(selected)) {
-                              return true;
-                         }
-                         return false;
-                    }
-               } else {
-                    return false;
-               };
-          });
-
-          container.addElement(nutrientConfiguratorContainer);
-
-
-
+          let nutrientConfiguratorContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_ORGANISM_NUTRITION_CONFIGURATOR) && this.isOrganismSelectedOnCurrentPage());
+          organismControlConditionalContainer.addElement(nutrientConfiguratorContainer);
           let left = sizeX * 0.8;
           let right = sizeX - left;
 
@@ -207,6 +175,34 @@ export class OrganismComponent extends Component {
           c_waterTarget.addElement(new TextFunctionalBackground(this.window, right, h1, offsetX, () => this.getGenericNutritionParam(_waterPressureSoilTarget), () => getActiveClimate().getUIColorInactiveCustom(0.58)));
           nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
                () => this.getGenericNutritionParam(_waterPressureSoilTarget), (val) => this.setGenericNutritionParam(_waterPressureSoilTarget, val), sizeX, h1, -6, -2, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
+     }
+
+     isOrganismSelectedOnCurrentPage() {
+          let selected = loadGD(UI_ORGANISM_SELECT);
+          if (loadGD(UI_ORGANISM_TYPE_SELECT) == UI_ORGANISM_TYPE_FLOWER) {
+               if ([UI_ORGANISM_FLOWER_CONEFLOWER].includes(selected)) {
+                    return true;
+               }
+               return false;
+          }
+          if (loadGD(UI_ORGANISM_TYPE_SELECT) == UI_ORGANISM_TYPE_MOSS) {
+               if ([].includes(selected)) {
+                    return true;
+               }
+               return false;
+          }
+          if (loadGD(UI_ORGANISM_TYPE_SELECT) == UI_ORGANISM_TYPE_GRASS) {
+               if ([UI_ORGANISM_GRASS_CATTAIL, UI_ORGANISM_GRASS_KBLUE, UI_ORGANISM_GRASS_WHEAT].includes(selected)) {
+                    return true;
+               }
+               return false;
+          }
+          if (loadGD(UI_ORGANISM_TYPE_SELECT) == UI_ORGANISM_TYPE_TREE) {
+               if ([UI_ORGANISM_TREE_PALM].includes(selected)) {
+                    return true;
+               }
+               return false;
+          }
      }
 
      generalBrightnessFunc(brightness) {
@@ -255,7 +251,4 @@ export class OrganismComponent extends Component {
           };
           super.render();
      }
-
 }
-
-addUIFunctionMap(UI_ORGANISM_SELECT, () => saveGD(UI_ORGANISM_NUTRITION_CONFIGURATOR, false))
