@@ -365,7 +365,6 @@ export class GrowthComponent {
             lsq.deflectionXOffset = (endX - relLsqX) + this.xOffset;
             lsq.deflectionYOffset = (endY - relLsqY) + this.yOffset;
             
-
             if (prevX == -1 && this.parentComponent != null) {
                 let plsq = this.parentComponent.lifeSquares.at(this.parentComponent.lifeSquares.length - 1);
                 lsq.theta = Math.atan((lsq.getPosY() - plsq.getPosY()) / (lsq.getPosX() - plsq.getPosX())) + Math.PI / 2;

@@ -29,8 +29,8 @@ export class WheatOrganism extends BaseOrganism {
 
         this.curLeafTheta = 0;
 
-        this.maxNumNodes = 7;
-        this.maxStemLength = 4;
+        this.maxNumNodes = 5;
+        this.maxStemLength = 3;
         this.maxLeafLength = 8;
         this.maxFlowerLength = 4;
 
@@ -67,7 +67,7 @@ export class WheatOrganism extends BaseOrganism {
             startNode.posX, startNode.posY,
             false, STAGE_ADULT,
             theta, 0, 0, 0,
-            randRange(0, 0.05), TYPE_STEM, 1 * this.maxNumNodes);
+            randRange(0, 0.05), TYPE_STEM, .01 * this.maxNumNodes);
 
         growthPlan.postConstruct = () => {
             parent.addChild(growthPlan.component);
@@ -92,7 +92,7 @@ export class WheatOrganism extends BaseOrganism {
             startNode.posX, startNode.posY,
             false, STAGE_ADULT, this.curLeafTheta, 0, 0,
             randRange(0.5, 0.8),
-            randRange(.3, .6), TYPE_LEAF, 1);
+            randRange(.3, .6), TYPE_LEAF, .07);
 
         growthPlan.postConstruct = () => {
             parent.addChild(growthPlan.component);

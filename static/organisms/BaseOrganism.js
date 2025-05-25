@@ -505,7 +505,7 @@ class BaseOrganism {
     // ** PLAN GROWTH METHOD IMPLEMENTED BY ORGANISMS 
     // for green growth, roots are handled generically (for now)
     planGrowth() {
-        if (this.getWilt() <= -0.75) {
+        if (this.getWilt() <= -0.5) {
             return;
         }
         if (this.growthPlans.some((gp) => !gp.areStepsCompleted())) {
