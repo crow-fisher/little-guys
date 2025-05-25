@@ -28,7 +28,7 @@ export class CattailOrganism extends BaseOrganism {
         this.maxNumGrass = 3;
 
         this.targetGrassLength = 3;
-        this.maxGrassLength = 7;
+        this.maxGrassLength = 9;
 
         this.numGrowthCycles = 1; 
         this.growthCycleMaturityLength = 1 + (Math.random());
@@ -64,7 +64,7 @@ export class CattailOrganism extends BaseOrganism {
         this.evolutionParameters[0] = Math.min(Math.max(this.evolutionParameters[0], 0.00001), .99999)
         let p0 = this.evolutionParameters[0];
         this.growthLightLevel = 0.1 + 1 * p0;
-        this.maxNumGrass = randNumber(2, 3);
+        this.maxNumGrass = randNumber(1, 2);
         this.maxGrassLength = 3 + Math.floor(this.maxGrassLength * p0);
         this.growthNumGreen = this.maxNumGrass * this.maxGrassLength;
         this.growthNumRoots = this.growthNumGreen / 4;
@@ -110,12 +110,12 @@ export class CattailOrganism extends BaseOrganism {
 
     growGrass() {
         let startRootNode = this.getOriginsForNewGrowth(SUBTYPE_ROOTNODE).at(0);
-        let baseDeflection = randRange(0, .1);
+        let baseDeflection = randRange(0, .2);
         let growthPlan = new GrowthPlan(
             startRootNode.posX, startRootNode.posY, 
             false, STAGE_ADULT, randRange(-Math.PI, Math.PI), baseDeflection, 0, 
             baseDeflection, 
-            randRange(0, 0.15), TYPE_TRUNK, .08);
+            randRange(0, 0.25), TYPE_TRUNK, .08);
         growthPlan.postConstruct = () => {
             this.originGrowth.addChild(growthPlan.component);
             this.grasses.push(this.originGrowth.getChildPath(growthPlan.component))

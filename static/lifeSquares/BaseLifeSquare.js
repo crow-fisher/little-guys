@@ -156,12 +156,12 @@ class BaseLifeSquare {
     calculateWidthXOffset() {
         return -(0.5 - (this.width / 2));
     }
-    getPosX() {
-        return this.posX - (this.deflectionXOffset + this.xOffset);
+    getPosX(xOffset=this.xOffset) {
+        return this.posX - (this.deflectionXOffset + xOffset);
     }
 
-    getPosY() {
-        return this.posY - (this.deflectionYOffset + this.yOffset);
+    getPosY(yOffset=this.yOffset) {
+        return this.posY - (this.deflectionYOffset + yOffset);
     }
 
     applySubtypeRenderConfig() {
