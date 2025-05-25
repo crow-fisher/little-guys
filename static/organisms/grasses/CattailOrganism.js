@@ -6,7 +6,7 @@ import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
 import { _waterPressureSoilTarget, BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
 import { CattailGreenSquare } from "../../lifeSquares/grasses/CattailGreenSquare.js";
-import { addSquare } from "../../squares/_sqOperations.js";
+import { addSquare, getSquares } from "../../squares/_sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
 import { addNewOrganism } from "../_orgOperations.js";
 import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
@@ -31,8 +31,8 @@ export class CattailOrganism extends BaseOrganism {
         this.maxGrassLength = 9;
 
         this.numGrowthCycles = 1; 
-        this.growthCycleMaturityLength = 1 + (Math.random());
-        this.growthCycleLength = this.growthCycleMaturityLength * 6;
+        this.growthCycleMaturityLength = 15 + 9 * (Math.random());
+        this.growthCycleLength = this.growthCycleMaturityLength * 2.65;
 
         this.grasses = [];
     }
@@ -120,7 +120,7 @@ export class CattailOrganism extends BaseOrganism {
             this.originGrowth.addChild(growthPlan.component);
             this.grasses.push(this.originGrowth.getChildPath(growthPlan.component))
             growthPlan.component.xOffset = 3 * (Math.random() - 0.5);
-            growthPlan.component.yOffset = - (.5 * (0.5 + Math.random()));
+            growthPlan.component.yOffset = randRange(-growthPlan.component.xOffset, 0) - 1;
         };
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,

@@ -6,7 +6,7 @@ import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
 import { BaseOrganism } from "../BaseOrganism.js";
 import { KentuckyBluegrassGreenSquare } from "../../lifeSquares/grasses/KentuckyBluegrassGreenSquare.js";
-import { addSquare } from "../../squares/_sqOperations.js";
+import { addSquare, getSquares } from "../../squares/_sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
 import { addNewOrganism } from "../_orgOperations.js";
 import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
@@ -90,7 +90,7 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
             this.originGrowth.addChild(growthPlan.component);
             this.grasses.push(this.originGrowth.getChildPath(growthPlan.component))
             growthPlan.component.xOffset = 3 * (Math.random() - 0.5);
-            growthPlan.component.yOffset = - (.5 * (0.5 + Math.random()));
+            growthPlan.component.yOffset = randRange(-growthPlan.component.xOffset, 0) - 1;
         };
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,

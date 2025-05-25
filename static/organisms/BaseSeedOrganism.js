@@ -38,13 +38,11 @@ class BaseSeedOrganism extends BaseOrganism {
             return;
         }
         if (this.startSproutTime == null) {
-            if (this.linkedSquare.getSoilWaterPressure() > -3.5) {
+            if (this.linkedSquare.getSoilWaterPressure() > -10) {
                 this.startSproutTime = getCurDay();
             }
         } else {
-            if (this.linkedSquare.getSoilWaterPressure() < -5.5) {
-                this.destroy();
-            } else if (getCurDay() - this.startSproutTime > this.totalSproutTime) {
+            if (getCurDay() - this.startSproutTime > this.totalSproutTime) {
                 let linkedSquareCache = this.linkedSquare;
                 this.destroy();
                 this.applyEvolutionParameters(addNewOrganism(new (this.getSproutType())(linkedSquareCache)));
