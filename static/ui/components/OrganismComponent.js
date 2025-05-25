@@ -2,7 +2,7 @@ import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { calculateColor } from "../../climate/simulation/temperatureHumidity.js";
 import { hexToRgb } from "../../common.js";
-import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _llt_throttlValMin, _seedReduction, _waterPressureSoilTarget, baseOrganism_dnm } from "../../organisms/BaseOrganism.js";
+import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _llt_throttlValMin, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, baseOrganism_dnm } from "../../organisms/BaseOrganism.js";
 import { cattail_dnm } from "../../organisms/grasses/CattailOrganism.js";
 import { Component } from "../Component.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
@@ -172,13 +172,6 @@ export class OrganismComponent extends Component {
           nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
                () => this.getGenericNutritionParam(_llt_throttlValMax), (val) => this.setGenericNutritionParam(_llt_throttlValMax, val), sizeX, h1, 2, 8, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
 
-          let c_waterTarget = new Container(this.window, 0, 0);
-          nutrientConfiguratorContainer.addElement(c_waterTarget);
-          c_waterTarget.addElement(new TextBackground(this.window, left, h1, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.58), 0.75, "waterPressureTarget"));
-          c_waterTarget.addElement(new TextFunctionalBackground(this.window, right, h1, offsetX, () => this.getGenericNutritionParam(_waterPressureSoilTarget), () => getActiveClimate().getUIColorInactiveCustom(0.58)));
-          nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
-               () => this.getGenericNutritionParam(_waterPressureSoilTarget), (val) => this.setGenericNutritionParam(_waterPressureSoilTarget, val), sizeX, h1, -6, -1, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
-
           let c_seedReduction = new Container(this.window, 0, 0);
           nutrientConfiguratorContainer.addElement(c_seedReduction);
           c_seedReduction.addElement(new TextBackground(this.window, left, h1, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.58), 0.75, "seedReduction"));
@@ -186,7 +179,27 @@ export class OrganismComponent extends Component {
           nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
                () => this.getGenericNutritionParam(_seedReduction), (val) => this.setGenericNutritionParam(_seedReduction, val), sizeX, h1, 0.05, 0.95, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
      
-               
+          let c_waterTarget = new Container(this.window, 0, 0);
+          nutrientConfiguratorContainer.addElement(c_waterTarget);
+          c_waterTarget.addElement(new TextBackground(this.window, left, h1, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.58), 0.75, "waterPressureTarget"));
+          c_waterTarget.addElement(new TextFunctionalBackground(this.window, right, h1, offsetX, () => this.getGenericNutritionParam(_waterPressureSoilTarget), () => getActiveClimate().getUIColorInactiveCustom(0.58)));
+          nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
+               () => this.getGenericNutritionParam(_waterPressureSoilTarget), (val) => this.setGenericNutritionParam(_waterPressureSoilTarget, val), sizeX, h1, -10, -1, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
+
+          let c_overwaterThresh = new Container(this.window, 0, 0);
+          nutrientConfiguratorContainer.addElement(c_overwaterThresh);
+          c_overwaterThresh.addElement(new TextBackground(this.window, left, h1, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.58), 0.75, "overwaterThresh"));
+          c_overwaterThresh.addElement(new TextFunctionalBackground(this.window, right, h1, offsetX, () => this.getGenericNutritionParam(_waterPressureOverwaterThresh), () => getActiveClimate().getUIColorInactiveCustom(0.58)));
+          nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
+               () => this.getGenericNutritionParam(_waterPressureOverwaterThresh), (val) => this.setGenericNutritionParam(_waterPressureOverwaterThresh, val), sizeX, h1, 0.1, 2, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
+     
+          let c_wiltThresh = new Container(this.window, 0, 0);
+          nutrientConfiguratorContainer.addElement(c_wiltThresh);
+          c_wiltThresh.addElement(new TextBackground(this.window, left, h1, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.58), 0.75, "wiltThresh"));
+          c_wiltThresh.addElement(new TextFunctionalBackground(this.window, right, h1, offsetX, () => this.getGenericNutritionParam(_waterPressureWiltThresh), () => getActiveClimate().getUIColorInactiveCustom(0.58)));
+          nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
+               () => this.getGenericNutritionParam(_waterPressureWiltThresh), (val) => this.setGenericNutritionParam(_waterPressureWiltThresh, val), sizeX, h1, -2, -.1, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
+                              
           let c_lightDecayValue = new Container(this.window, 0, 0);
           nutrientConfiguratorContainer.addElement(c_lightDecayValue);
           c_lightDecayValue.addElement(new TextBackground(this.window, left, h1, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.58), 0.75, "lightDecay"));
@@ -194,6 +207,7 @@ export class OrganismComponent extends Component {
           nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
                () => this.getGenericNutritionParam(_lightDecayValue), (val) => this.setGenericNutritionParam(_lightDecayValue, val), sizeX, h1, -0.05, 2, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
      
+               
      }
 
      isOrganismSelectedOnCurrentPage() {

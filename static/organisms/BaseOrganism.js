@@ -16,6 +16,8 @@ export const _llt_throttlValMax = "_llt_throttlValMax";
 export const _waterPressureSoilTarget = "_waterPressureSoilTarget";
 export const _seedReduction = "_seedReduction";
 export const _lightDecayValue = "_lightDecayValue";
+export const _waterPressureOverwaterThresh = "_waterPressureOverwaterThresh";
+export const _waterPressureWiltThresh = "_waterPressureWiltThresh";
 
 export let baseOrganism_dnm = {
     _llt_min: 0.5,
@@ -24,7 +26,9 @@ export let baseOrganism_dnm = {
     _llt_throttlValMax: 4,
     _waterPressureSoilTarget: -4,
     _seedReduction: 0.5,
-    _lightDecayValue: 1
+    _lightDecayValue: 1,
+    _waterPressureOverwaterThresh: 1,
+    _waterPressureWiltThresh: -1
 }
 
 class BaseOrganism {
@@ -52,9 +56,7 @@ class BaseOrganism {
         this.greenType = null;
         this.rootType = null;
 
-        this.waterPressureOverwaterThresh = 1
         this.waterPressureTarget = 0;
-        this.waterPressureWiltThresh = -1;
         this.waterPressure = 0;
         this.waterPressureChangeRate = .01;
         this.waterPressureLossRate = 30000;
@@ -127,6 +129,12 @@ class BaseOrganism {
     }
     lightDecayValue() {
         return this.getGenericNutritionParam(_lightDecayValue);
+    }
+    waterPressureOverwaterThresh() {
+        return this.getGenericNutritionParam(_waterPressureOverwaterThresh);
+    }
+    waterPressureWiltThresh() {
+        return this.getGenericNutritionParam(_waterPressureWiltThresh);
     }
 
     processColor(color1, color2, value, valueMax, opacity) {
@@ -248,9 +256,9 @@ class BaseOrganism {
             return 0;
         }
         if (this.waterPressure > this.waterPressureTarget) {
-            return Math.min(1, (this.waterPressure - this.waterPressureTarget) / (this.waterPressureOverwaterThresh - this.waterPressureTarget));
-        } else if (this.waterPressure > this.waterPressureWiltThresh) {
-            return (this.waterPressure - this.waterPressureWiltThresh) / (this.waterPressureTarget - this.waterPressureWiltThresh) - 1;
+            return Math.min(1, (this.waterPressure - this.waterPressureTarget) / (this.waterPressureOverwaterThresh() - this.waterPressureTarget));
+        } else if (this.waterPressure > this.waterPressureWiltThresh()) {
+            return (this.waterPressure - this.waterPressureWiltThresh()) / (this.waterPressureTarget - this.waterPressureWiltThresh()) - 1;
         } else {
             return -1;
         }
@@ -497,6 +505,9 @@ class BaseOrganism {
     // ** PLAN GROWTH METHOD IMPLEMENTED BY ORGANISMS 
     // for green growth, roots are handled generically (for now)
     planGrowth() {
+        if (this.getWilt() <= -0.75) {
+            return;
+        }
         if (this.growthPlans.some((gp) => !gp.areStepsCompleted())) {
             this.doGreenGrowth();
             return false;
