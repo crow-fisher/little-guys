@@ -3,10 +3,10 @@ import { getObjectArrFromMap } from "../common.js";
 import { removeItemAll } from "../common.js";
 
 function addNewOrganism(organism) {
-    if (getOrganismsAtSquare(organism.posX, organism.posY, true).length > 0) {
-        organism.destroy();
-        return false;
-    }
+    // if (getOrganismsAtSquare(organism.posX, organism.posY, true).length > 2) {
+    //     organism.destroy();
+    //     return false;
+    // }
     if (organism.linkedSquare == null) {
         organism.destroy();
         return false;

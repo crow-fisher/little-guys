@@ -28,10 +28,10 @@ export class CattailOrganism extends BaseOrganism {
         this.maxNumGrass = 3;
 
         this.targetGrassLength = 3;
-        this.maxGrassLength = 9;
+        this.maxGrassLength = 12;
 
         this.numGrowthCycles = 1; 
-        this.growthCycleMaturityLength = 15 + 9 * (Math.random());
+        this.growthCycleMaturityLength = 7 + 7 * (Math.random());
         this.growthCycleLength = this.growthCycleMaturityLength * 2.65;
 
         this.grasses = [];
@@ -63,9 +63,9 @@ export class CattailOrganism extends BaseOrganism {
     processGenetics() {
         this.evolutionParameters[0] = Math.min(Math.max(this.evolutionParameters[0], 0.00001), .99999)
         let p0 = this.evolutionParameters[0];
-        this.growthLightLevel = 0.1 + 1 * p0;
+        this.growthLightLevel = 0.1 + 2 * p0;
         this.maxNumGrass = randNumber(1, 2);
-        this.maxGrassLength = 3 + Math.floor(this.maxGrassLength * p0);
+        this.maxGrassLength = 2 + Math.floor(this.maxGrassLength * p0);
         this.growthNumGreen = this.maxNumGrass * this.maxGrassLength;
         this.growthNumRoots = this.growthNumGreen / 4;
     }
