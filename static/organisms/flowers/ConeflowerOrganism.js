@@ -4,7 +4,7 @@ import { STAGE_ADULT, STAGE_FLOWER, STAGE_JUVENILE, SUBTYPE_FLOWER, SUBTYPE_FLOW
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
-import { _llt_max, _llt_min, _llt_throttlValMax, _llt_throttlValMin, _seedReduction, _waterPressureSoilTarget, BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
+import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _llt_throttlValMin, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
 import { addNewOrganism } from "../_orgOperations.js";
 import { addSquare } from "../../squares/_sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
@@ -12,12 +12,14 @@ import { ConeflowerGreenSqaure } from "../../lifeSquares/flowers/ConeflowerGreen
 import { UI_ORGANISM_FLOWER_CONEFLOWER } from "../../ui/UIData.js";
 
 export let coneflower_dnm = structuredClone(baseOrganism_dnm);
-coneflower_dnm[_llt_min] = 0.63;
-coneflower_dnm[_llt_max] = 2.32;
-coneflower_dnm[_llt_throttlValMin] = 1;
-coneflower_dnm[_llt_throttlValMax] = 3.15;
-coneflower_dnm[_waterPressureSoilTarget] = -2.63;
-coneflower_dnm[_seedReduction] = 0.21
+coneflower_dnm[_llt_min] = 0.57;
+coneflower_dnm[_llt_max] = 1.36;
+coneflower_dnm[_llt_throttlValMax] = 4.62;
+coneflower_dnm[_seedReduction] = 0.64;
+coneflower_dnm[_waterPressureSoilTarget] = -4.87;
+coneflower_dnm[_waterPressureOverwaterThresh] = 1;
+coneflower_dnm[_waterPressureWiltThresh] = -1.57;
+coneflower_dnm[_lightDecayValue] = 1;
 
 // ref: https://prairiecalifornian.com/wheat-growth-stages/
 export class ConeflowerOrganism extends BaseOrganism {

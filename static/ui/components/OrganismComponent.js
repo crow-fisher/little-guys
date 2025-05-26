@@ -3,7 +3,10 @@ import { getActiveClimate } from "../../climate/climateManager.js";
 import { calculateColor } from "../../climate/simulation/temperatureHumidity.js";
 import { hexToRgb } from "../../common.js";
 import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _llt_throttlValMin, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, baseOrganism_dnm } from "../../organisms/BaseOrganism.js";
+import { coneflower_dnm } from "../../organisms/flowers/ConeflowerOrganism.js";
 import { cattail_dnm } from "../../organisms/grasses/CattailOrganism.js";
+import { kblue_dnm } from "../../organisms/grasses/KentuckyBluegrassOrganism.js";
+import { wheat_dnm } from "../../organisms/grasses/WheatOrganism.js";
 import { Component } from "../Component.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
 import { Container } from "../Container.js";
@@ -245,6 +248,12 @@ export class OrganismComponent extends Component {
      getDefaultNutritionMap() {
           let activeOrganism = loadGD(UI_ORGANISM_SELECT);
           switch (activeOrganism) {
+               case UI_ORGANISM_FLOWER_CONEFLOWER:
+                    return coneflower_dnm;
+               case UI_ORGANISM_GRASS_KBLUE:
+                    return kblue_dnm;
+               case UI_ORGANISM_GRASS_WHEAT:
+                    return wheat_dnm;
                case UI_ORGANISM_GRASS_CATTAIL:
                     return cattail_dnm;
                default:

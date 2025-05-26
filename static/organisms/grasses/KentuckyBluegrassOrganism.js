@@ -1,16 +1,27 @@
 import { randNumber, randRange } from "../../common.js";
 import { GenericRootSquare } from "../../lifeSquares/GenericRootSquare.js";
-import { STAGE_ADULT, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_TRUNK } from "../Stages.js";
+import { STAGE_ADULT, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_TRUNK } from "../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
-import { BaseOrganism } from "../BaseOrganism.js";
+import { BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
 import { KentuckyBluegrassGreenSquare } from "../../lifeSquares/grasses/KentuckyBluegrassGreenSquare.js";
-import { addSquare, getSquares } from "../../squares/_sqOperations.js";
+import { addSquare } from "../../squares/_sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
 import { addNewOrganism } from "../_orgOperations.js";
 import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
 import { UI_ORGANISM_GRASS_KBLUE } from "../../ui/UIData.js";
+import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh } from "../BaseOrganism.js";
+
+export let kblue_dnm = structuredClone(baseOrganism_dnm);
+kblue_dnm[_llt_min] = 0.66;
+kblue_dnm[_llt_max] = 1.62;
+kblue_dnm[_llt_throttlValMax] = 6.37;
+kblue_dnm[_seedReduction] = 0.48;
+kblue_dnm[_waterPressureSoilTarget] = -5.07;
+kblue_dnm[_waterPressureOverwaterThresh] = 1;
+kblue_dnm[_waterPressureWiltThresh] = -1.45;
+kblue_dnm[_lightDecayValue] = 1;
 
 export class KentuckyBluegrassOrganism extends BaseOrganism {
     constructor(posX, posY) {
@@ -34,6 +45,11 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
 
         this.grasses = [];
     }
+
+    getDefaultNutritionMap() {
+        return kblue_dnm;
+    }
+    
 
     spawnSeed() {
         if (this.originGrowth == null || (this.growthPlans.some((gp) => !gp.areStepsCompleted())) || this.targetGrassLength != this.maxGrassLength) 

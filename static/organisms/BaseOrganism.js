@@ -170,8 +170,8 @@ class BaseOrganism {
         return Array.from(this.evolutionParameters.map((v) => {
             if (v === 1 || v === 0)
                 return v;
-            v = v + (Math.random() - 0.5) * .03;
-            return Math.min(Math.max(0.0001, v), 0.9999);
+            let d = Math.random() * ((this.lightlevel < this.growthLightLevel) ? .03 : -.03);
+            return Math.min(Math.max(0.0001, v + d), 0.9999);
         }));
     }
 
@@ -493,10 +493,10 @@ class BaseOrganism {
                 sqScore += sq.getSoilWaterPressure() - this.waterPressureSoilTarget();
             }
             if (this.nitrogen < expectedNitrogen) {
-                sqScore += (sq.nitrogen / this.growthNitrogen) / ((sq.linkedOrganismSquares.length + 1) ** 0.5);
+                sqScore += (sq.nitrogen / this.growthNitrogen) / ((sq.linkedOrganismSquares.length + 1) ** 0.2);
             }
             if (this.phosphorus < expectedPhosphorus) {
-                sqScore += (sq.phosphorus / this.growthPhosphorus) / ((sq.linkedOrganismSquares.length + 1) ** 0.5);
+                sqScore += (sq.phosphorus / this.growthPhosphorus) / ((sq.linkedOrganismSquares.length + 1) ** 0.2);
             }
         }
         this.growRoot(scoreFunc);

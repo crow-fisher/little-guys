@@ -5,13 +5,26 @@ import { STAGE_ADULT, STAGE_FLOWER, STAGE_JUVENILE, SUBTYPE_FLOWER, SUBTYPE_FLOW
 import { WheatGreenSquare } from "../../lifeSquares/grasses/WheatGreenSquare.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
-import { BaseOrganism } from "../BaseOrganism.js";
+import { BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
 import { addNewOrganism } from "../_orgOperations.js";
 import { addSquare } from "../../squares/_sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
 import { UI_ORGANISM_GRASS_WHEAT } from "../../ui/UIData.js";
+import { kblue_dnm } from "./KentuckyBluegrassOrganism.js";
+import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh } from "../BaseOrganism.js";
 
 // ref: https://prairiecalifornian.com/wheat-growth-stages/
+
+export let wheat_dnm = structuredClone(baseOrganism_dnm);
+wheat_dnm[_llt_min] = 0.66;
+wheat_dnm[_llt_max] = 1.62;
+wheat_dnm[_llt_throttlValMax] = 6.37;
+wheat_dnm[_seedReduction] = 0.48;
+wheat_dnm[_waterPressureSoilTarget] = -5.07;
+wheat_dnm[_waterPressureOverwaterThresh] = 1;
+wheat_dnm[_waterPressureWiltThresh] = -1.45;
+wheat_dnm[_lightDecayValue] = 1;
+
 export class WheatOrganism extends BaseOrganism {
     constructor(posX, posY) {
         super(posX, posY);
@@ -43,6 +56,10 @@ export class WheatOrganism extends BaseOrganism {
         this.growthLightLevel = 0.5;
 
         this.growthNumGreen = this.maxNumNodes * (this.maxStemLength + this.maxLeafLength);
+    }
+
+    getDefaultNutritionMap() {
+        return kblue_dnm;
     }
 
     processGenetics() {
