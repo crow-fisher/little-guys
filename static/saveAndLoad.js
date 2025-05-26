@@ -190,7 +190,7 @@ async function doSave(slotName, saveString) {
 
 async function openDatabase() {
     return new Promise((resolve, reject) => {
-        const request = indexedDB.open("lgdb_2", 1);
+        const request = indexedDB.open("lgdb_3", 1);
         request.onupgradeneeded = (event) => {
             const db = event.target.result;
             if (!db.objectStoreNames.contains("saves")) {
@@ -245,8 +245,8 @@ function getFrameSaveData() {
 
     iterateOnSquares((sq) => {
         sq.lighting = [];
-        if (sq.linkedOrganism != null)
-            sq.linkedOrganism = orgArr.indexOf(sq.linkedOrganism);
+        if (sq.linkedOrganisms.length > 0)
+            sq.linkedOrganisms = Array.from(sq.linkedOrganisms.map((org) => orgArr.indexOf(org)));
         sq.linkedOrganismSquares = Array.from(sq.linkedOrganismSquares.map((lsq) => lsqArr.indexOf(lsq)));
         sqArr.push(sq)
     });
@@ -358,10 +358,10 @@ function loadSlotFromSave(slotData) {
     });
 
     sqArr.forEach((sq) => {
-        if (sq.linkedOrganism == -1) {
-            sq.linkedOrganism = null;
+        if (sq.linkedOrganisms.length == 0) {
+            sq.linkedOrganisms = new Array();
         } else {
-            sq.linkedOrganism = orgArr[sq.linkedOrganism];
+            sq.linkedOrganisms = Array.from(sq.linkedOrganisms.map((orgIdx) => orgArr[orgIdx]));
         }
         sq.linkedOrganismSquares = Array.from(sq.linkedOrganismSquares.map((lsqIdx) => lsqArr[lsqIdx]));
         regSquareToGroup(sq.group);

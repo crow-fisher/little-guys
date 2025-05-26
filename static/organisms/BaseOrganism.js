@@ -170,7 +170,7 @@ class BaseOrganism {
         return Array.from(this.evolutionParameters.map((v) => {
             if (v === 1 || v === 0)
                 return v;
-            v = v + (Math.random() - 0.5) * .1;
+            v = v + (Math.random() - 0.5) * .03;
             return Math.min(Math.max(0.0001, v), 0.9999);
         }));
     }
@@ -595,7 +595,7 @@ class BaseOrganism {
 
         this.lifeSquares.forEach((lifeSquare) => lifeSquare.destroy());
         if (this.linkedSquare != null && this.linkedSquare != -1) {
-            this.linkedSquare.unlinkOrganism();
+            this.linkedSquare.unlinkOrganism(this);
         }
         removeOrganism(this);
     }

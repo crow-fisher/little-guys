@@ -12,7 +12,7 @@ import {
 
 import { MAIN_CONTEXT } from "../index.js";
 
-import { hexToRgb, rgbToRgba } from "../common.js";
+import { hexToRgb, removeItemAll, rgbToRgba } from "../common.js";
 
 import { getOrganismsAtSquare } from "../organisms/_orgOperations.js";
 import { addOrganism } from "../organisms/_orgOperations.js";
@@ -59,14 +59,14 @@ export class BaseSquare {
         this.speedY = 0;
         this.rootable = false;
         this.group = -1;
-        this.groupSetThisFrame =false;
+        this.groupSetThisFrame = false;
         this.organic = false;
         this.collision = true;
         this.visible = true;
         this.darken = true;
         this.special = false;
         this.randoms = [];
-        this.linkedOrganism = null;
+        this.linkedOrganisms = new Array();
         this.linkedOrganismSquares = new Array();
         this.lighting = new Array();
         this.spawnTime = Date.now();
@@ -171,18 +171,18 @@ export class BaseSquare {
     }
 
     destroy(deep = false) {
-        if (deep && this.linkedOrganism != null) {
-            this.linkedOrganism.destroy();
+        if (deep) {
+            this.linkedOrganisms.forEach((org) => org.destroy());
         }
         removeSquare(this);
         this.lighting = [];
         this.linkedOrganismSquares = [];
     }
     linkOrganism(organism) {
-        this.linkedOrganism = organism;
+        this.linkedOrganisms.push(organism);
     }
-    unlinkOrganism() {
-        this.linkedOrganism = null;
+    unlinkOrganism(organism) {
+        this.linkedOrganisms = removeItemAll(this.linkedOrganisms, organism);
     }
     linkOrganismSquare(organismSquare) {
         if (organismSquare in this.linkedOrganismSquares) {
@@ -287,7 +287,7 @@ export class BaseSquare {
                 getBaseSize()
             );
         } else {
-            this.renderSpecialViewModeLinearOpacity({r: 255, g: 255, b: 255}, {r: 0, g: 0, b: 0}, 1 - this.surfaceLightingFactor, 1, 0.3);   
+            this.renderSpecialViewModeLinearOpacity({ r: 255, g: 255, b: 255 }, { r: 0, g: 0, b: 0 }, 1 - this.surfaceLightingFactor, 1, 0.3);
         }
 
     }
@@ -306,7 +306,7 @@ export class BaseSquare {
         this.renderSpecialViewModeLinear(this.waterSaturation_color1, this.waterSaturation_color2, this.blockHealth, this.blockHealthMax);
     }
 
-    
+
     renderWaterSaturation() {
         this.renderSpecialViewModeLinear(this.blockHealth_color1, this.blockHealth_color2, this.waterContainment, this.waterContainmentMax);
     }
@@ -364,7 +364,7 @@ export class BaseSquare {
         return this.color;
     }
 
-    processLighting(override=false) {
+    processLighting(override = false) {
         if (this.frameCacheLighting != null && !override) {
             return this.frameCacheLighting;
         }
@@ -436,7 +436,7 @@ export class BaseSquare {
         if (isSqRowChanged(this.posY)) {
             minTime /= 4;
         }
-        
+
         if (
             (opacityMult != this.lastColorCacheOpacity) ||
             (Date.now() > this.lastColorCacheTime + minTime * Math.random()) ||
@@ -453,14 +453,14 @@ export class BaseSquare {
         }
         MAIN_CONTEXT.fillStyle = this.cachedRgba;
         if (this.proto == "WaterSquare" && this.blockHealth < 0.5 && this.speedY > 2) {
-            let size = this.blockHealth; 
+            let size = this.blockHealth;
             if (size < 0.3) {
                 size = 20 * (this.blockHealth);
             }
             zoomCanvasFillCircle(
-            (this.offsetX + this.posX) * getBaseSize(),
-            (this.offsetY + this.posY) * getBaseSize(),
-            getBaseSize() * Math.max(this.blockHealth, 0.3));
+                (this.offsetX + this.posX) * getBaseSize(),
+                (this.offsetY + this.posY) * getBaseSize(),
+                getBaseSize() * Math.max(this.blockHealth, 0.3));
         } else {
             zoomCanvasFillRect(
                 (this.offsetX + this.posX) * getBaseSize(),
@@ -497,13 +497,6 @@ export class BaseSquare {
             return;
         }
 
-        if (this.linkedOrganism != null) {
-            if (getOrganismsAtSquare(newPosX, newPosY).some((org) => true)) {
-                this.linkedOrganism.destroy()
-                return false;
-            }
-        }
-
         this.linkedOrganismSquares.forEach((lsq) => {
             if (lsq != null && lsq.posX != null) {
                 lsq.posX = newPosX;
@@ -511,11 +504,13 @@ export class BaseSquare {
             }
         })
 
-        if (this.linkedOrganism != null) {
-            removeOrganism(this.linkedOrganism);
-            this.linkedOrganism.posX = newPosX;
-            this.linkedOrganism.posY = newPosY;
-            addOrganism(this.linkedOrganism);
+        if (this.linkedOrganisms != null) {
+            this.linkedOrganisms.forEach((org) => {
+                removeOrganism(org);
+                org.posX = newPosX;
+                org.posY = newPosY;
+                addOrganism(org);
+            })
         }
 
         removeSquare(this);
@@ -527,7 +522,7 @@ export class BaseSquare {
         return true;
     }
 
-    _percolateGroup(origGroup=null) {
+    _percolateGroup(origGroup = null) {
         if (origGroup != null) {
             if (getNeighbors(this.posX, this.posY).some((sq) => sq.group == origGroup)) {
                 return false;
@@ -575,7 +570,7 @@ export class BaseSquare {
         if (this.group != -1) {
             return;
         }
-        this.updateGroup( getNextGroupId());
+        this.updateGroup(getNextGroupId());
         regSquareToGroup(this.group);
         this._percolateGroup();
         if (this.proto == "RockSquare") {
@@ -672,7 +667,7 @@ export class BaseSquare {
             if (this.shouldFallThisFrame()) {
                 this.speedY += (1 / this.gravity);
             }
-        }1
+        } 1
         let finalXPos = this.posX;
         let finalYPos = this.posY;
         let bonked = false;
@@ -682,8 +677,8 @@ export class BaseSquare {
                 let jSigned = (this.speedX > 0) ? j : -j;
                 let jSignedMinusOne = (this.speedX == 0 ? 0 : (this.speedX > 0) ? (j - 1) : -(j - 1));
                 let bonkSquare = getSquares(this.posX + jSigned, this.posY + i)
-                    .find((sq) => this.testCollidesWithSquare(sq) || 
-                    (this.proto == "WaterSquare" && sq.proto == "SoilSquare" && Math.random() > (1 / sq.getWaterflowRate())));
+                    .find((sq) => this.testCollidesWithSquare(sq) ||
+                        (this.proto == "WaterSquare" && sq.proto == "SoilSquare" && Math.random() > (1 / sq.getWaterflowRate())));
                 if (bonkSquare) {
                     finalYPos = this.posY + (i - 1);
                     finalXPos = this.posX + jSignedMinusOne;
@@ -806,7 +801,7 @@ export class BaseSquare {
         return this.currentPressureDirect;
     }
 
-    transferHeat() { 
+    transferHeat() {
         if (Math.random() < 0.75) {
             return;
         }

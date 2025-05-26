@@ -38,8 +38,8 @@ export class ConeflowerOrganism extends BaseOrganism {
         this.curLeafTheta = 0;
 
         this.maxNumNodes = 4;
-        this.maxStemLength = 3;
-        this.maxLeafLength = 4;
+        this.maxStemLength = 2;
+        this.maxLeafLength = 2;
         this.maxFlowerLength = 4;
 
         this.targetNumStems = 1;
@@ -58,12 +58,12 @@ export class ConeflowerOrganism extends BaseOrganism {
     processGenetics() {
         this.evolutionParameters[0] = Math.min(Math.max(this.evolutionParameters[0], 0.00001), .99999)
         let p0 = this.evolutionParameters[0];
-        this.growthLightLevel = 0.1 + 1.5 * p0;
+        this.growthLightLevel = 0.1 + 2.5 * p0;
 
-        this.maxNumNodes = 3 + Math.floor(this.maxNumNodes * p0);
+        this.maxNumNodes = 4 + Math.round(this.maxNumNodes * p0);
         this.targetNumLeaves = -1;
-        this.maxStemLength = 2 + Math.floor(this.maxStemLength * p0);
-        this.maxLeafLength = 2 + Math.floor(this.maxLeafLength * p0);
+        this.maxStemLength = 3 + Math.round(this.maxStemLength * p0);
+        this.maxLeafLength = 3 + Math.round(this.maxLeafLength * p0);
 
         this.growthNumGreen = this.maxNumNodes * (this.maxStemLength + this.maxLeafLength) + 12;
         this.growthNumRoots = this.growthNumGreen * 0.2;

@@ -28,7 +28,7 @@ export class CattailOrganism extends BaseOrganism {
         this.maxNumGrass = 3;
 
         this.targetGrassLength = 3;
-        this.maxGrassLength = 12;
+        this.maxGrassLength = 6;
 
         this.numGrowthCycles = 1; 
         this.growthCycleMaturityLength = 7 + 7 * (Math.random());
@@ -65,7 +65,7 @@ export class CattailOrganism extends BaseOrganism {
         let p0 = this.evolutionParameters[0];
         this.growthLightLevel = 0.1 + 2 * p0;
         this.maxNumGrass = randNumber(1, 2);
-        this.maxGrassLength = 2 + Math.floor(this.maxGrassLength * p0);
+        this.maxGrassLength = 10 + Math.floor(this.maxGrassLength * p0);
         this.growthNumGreen = this.maxNumGrass * this.maxGrassLength;
         this.growthNumRoots = this.growthNumGreen / 4;
     }
@@ -99,7 +99,7 @@ export class CattailOrganism extends BaseOrganism {
                 for (let i = 0; i < glsq.length; i++) {
                     if (i < min)
                         glsq[i].subtype = SUBTYPE_STEM;
-                    else if (i < max - 1)
+                    else if (i < max)
                         glsq[i].subtype = SUBTYPE_FLOWER;
                     else 
                         glsq[i].subtype = SUBTYPE_FLOWERTIP;

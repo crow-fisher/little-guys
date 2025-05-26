@@ -60,11 +60,10 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
         let p0 = this.evolutionParameters[0];
         this.growthLightLevel = 0.1 + 1 * p0;
 
-        this.maxNumGrass = 1 + Math.floor(this.maxNumGrass * p0);
-        this.maxGrassLength = 1 + Math.floor(this.maxGrassLength * p0);
-
+        this.maxNumGrass = randNumber(2, 4);
+        this.maxGrassLength = 3 + Math.floor(this.maxGrassLength * p0);
         this.growthNumGreen = this.maxNumGrass * this.maxGrassLength;
-        this.growthNumRoots = this.growthNumGreen / 4;
+        this.growthNumRoots = 2;
     }
 
     doGreenGrowth() {

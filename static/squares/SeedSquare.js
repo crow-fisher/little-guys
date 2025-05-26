@@ -29,28 +29,16 @@ class SeedSquare extends BaseSquare {
             }
             return;
         }
-
-        if (this.linkedOrganism == null) {
+        if (this.linkedOrganisms.length == 0) {
             this.destroy();
             return;
         }
-
-        let linkedOrganism = this.linkedOrganism;
-        if (sq.linkedOrganism == null) {
-            removeOrganism(linkedOrganism);
-            linkedOrganism.posY += 1;
-            linkedOrganism.linkSquare(sq);
-            addOrganism(linkedOrganism);
-
-            linkedOrganism.lifeSquares.forEach((lsq) => {
-                lsq.posY += 1;
-                lsq.linkSquare(sq);
-            });
-            this.destroy();
-        } else {
-            this.linkedOrganism.destroy();
-            this.destroy();
-        }
+        this.linkedOrganisms.forEach((org) => {
+            removeOrganism(org);
+            org.posY += 1;
+            org.linkSquare(sq);
+            addOrganism(org);
+        });
     }
 }
 
