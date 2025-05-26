@@ -44,6 +44,7 @@ export function applyLightingFromSource(source, dest) {
     source.lighting.forEach((light) => {
         dest.lighting.push([Array.from(light[0].map((x) => x)), light[1]])
     });
+    dest.frameCacheLighting = structuredClone(source.frameCacheLighting);
 }
 
 export function lightingExposureAdjustment() {
@@ -66,11 +67,16 @@ export function lightingExposureAdjustment() {
     let strengths = collectedSquares
         .map((sq) => sq.lighting
             .filter((light) => light != null && light.length == 2)
-            .map((light) => 
-                light[0]
+            .map((light) => {
+                let ba = light[0];
+                let c  = light[1]();
+                let b = ba
                     .filter((f) => f != null)
                     .map((f) => f())
-                    .reduce((a, b) => a + b)
+                    .reduce((a, b) => a + b, 0);
+                return b * (c.r / 255) + b * (c.b / 255);
+            }
+                
         )).map((arr) => arr.reduce((a, b) => a + b, 0));
     
     let mean = strengths.reduce((a, b) => a + b, 0) / collectedSquares.length;
@@ -84,16 +90,20 @@ export function lightingExposureAdjustment() {
     
     let cur = loadGD(UI_CAMERA_EXPOSURE);
     let next = null;
-    if (v * cur > 1.5) {
-        next = cur * 0.9;
-    } else if (v * cur < 0.7) {
-        next = cur * 1.1;
+
+    let target = 2.5;
+    let db = Math.abs((v * cur - target) / target) * .1;
+
+    if (v * cur > target) {
+        next = cur * (1 - db);
+    } else if (v * cur < target) {
+        next = cur * (1 + db);
     } else {
         next = cur;
     }
 
-    next = Math.max(1, next);
-    next = Math.min(7, next);
+    next = Math.max(0.5, next);
+    next = Math.min(14, next);
 
     saveGD(UI_CAMERA_EXPOSURE, next);
 }
