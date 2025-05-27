@@ -230,7 +230,7 @@ export class LightSource {
         });
 
         iterateOnOrganisms((org) => {
-            org.lifeSquares.forEach((lsq) => {
+            org.lifeSquares.filter((lsq) => lsq.type == "green").forEach((lsq) => {
                 let relPosX = lsq.getPosX() - this.posX;
                 let relPosY = lsq.getPosY() - this.posY;
                 let sqTheta = Math.atan(relPosX / relPosY);

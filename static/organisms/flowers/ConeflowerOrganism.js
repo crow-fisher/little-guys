@@ -68,7 +68,7 @@ export class ConeflowerOrganism extends BaseOrganism {
         this.maxLeafLength = 3 + Math.round(this.maxLeafLength * p0);
 
         this.growthNumGreen = this.maxNumNodes * (this.maxStemLength + this.maxLeafLength) + 12;
-        this.growthNumRoots = this.growthNumGreen * 0.2;
+        this.growthNumRoots = 2; //this.growthNumGreen * 0.2;
         this.targetStemLength = this.maxStemLength;
     }
 
@@ -187,8 +187,9 @@ export class ConeflowerOrganism extends BaseOrganism {
             })
     }
     growFlower() {
-        if (this.targetLeafLength < this.maxLeafLength || this.targetStemLength < this.maxStemLength)
+        if (this.targetLeafLength < this.maxLeafLength || this.targetStemLength < this.maxStemLength || this.growthPlans.some((gp) => !gp.areStepsCompleted())) {
             return;
+        }
 
         let parentPath = this.stems[this.stems.length - 1];
         let parent = this.originGrowth.getChildFromPath(parentPath);
@@ -352,7 +353,7 @@ export class ConeflowerOrganism extends BaseOrganism {
         let seedSquare = addSquare(new SeedSquare(startNode.getPosX(), startNode.getPosY()));
         if (seedSquare) {
             seedSquare.speedY = -Math.round(randRange(-3, -8));
-            seedSquare.speedX = Math.round(randRange(-5, 5));
+            seedSquare.speedX = Math.random() > 0.5 ? -1 : 1 * 5;
             let orgAdded = addNewOrganism(new ConeflowerSeedOrganism(seedSquare, this.getNextGenetics()));
             if (!orgAdded) {
                 seedSquare.destroy();

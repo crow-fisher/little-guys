@@ -430,20 +430,10 @@ class BaseOrganism {
     }
 
     growRoot(f) {
-        let max = 3;
+        let max = 20;
         if (getCurDay() < this.rootLastGrown + (this.getGrowthCycleMaturityLength() / ( max * this.growthNumRoots))) {
             return;
         }
-
-        if (this.curNumRoots > this.growthNumRoots * max) {
-            return;
-        }
-        if (this.curNumRoots > this.curNumGreen) {
-            return;
-        }
-
-        this.rootLastGrown = getCurDay();
-        this.curNumRoots += 1;
 
         let targetSquare = null;
         let targetSquareParent = null;
@@ -465,6 +455,9 @@ class BaseOrganism {
         newRootLifeSquare.linkSquare(targetSquare);
         targetSquareParent.addChild(newRootLifeSquare)
         targetSquare.linkOrganismSquare(newRootLifeSquare);
+
+        this.rootLastGrown = getCurDay();
+        this.curNumRoots += 1;
     }
 
     getAge() {

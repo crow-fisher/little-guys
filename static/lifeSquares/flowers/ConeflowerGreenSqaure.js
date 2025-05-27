@@ -42,6 +42,7 @@ export class ConeflowerGreenSqaure extends BaseLifeSquare {
                     this.darkColor = "#7a4a74";
                     this.accentColor = "#525a2f";
                     this.width = 0.73;
+                    this.lsqLightDecayValue = 0.1;
                     break;
                 case SUBTYPE_TRUNK:
                 case SUBTYPE_SHOOT:

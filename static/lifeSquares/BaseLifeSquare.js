@@ -82,12 +82,13 @@ class BaseLifeSquare {
 
         this.lighting = [];
         this.touchingGround = null;
-
         this.renderMode = LSQ_RENDERMODE_THETA;
+        
+        this.lsqLightDecayValue = 1;
     }
 
     getLightFilterRate() {
-        return 0.00023 * (this.height ** 2) * (this.width ** 2) * Math.exp(-loadGD(UI_LIGHTING_PLANT) * this.linkedOrganism.lightDecayValue());
+        return 0.00023 * (this.height ** 2) * (this.width ** 2) * Math.exp(-loadGD(UI_LIGHTING_PLANT)) * this.linkedOrganism.lightDecayValue() * this.lsqLightDecayValue;
     }
 
     getLsqRenderSizeMult() {
