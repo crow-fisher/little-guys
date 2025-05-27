@@ -14,11 +14,11 @@ import { UI_ORGANISM_GRASS_KBLUE } from "../../ui/UIData.js";
 import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh } from "../BaseOrganism.js";
 
 export let kblue_dnm = structuredClone(baseOrganism_dnm);
-kblue_dnm[_llt_min] = 0.66;
+kblue_dnm[_llt_min] = 0.53;
 kblue_dnm[_llt_max] = 1.62;
 kblue_dnm[_llt_throttlValMax] = 6.37;
-kblue_dnm[_seedReduction] = 0.48;
-kblue_dnm[_waterPressureSoilTarget] = -5.07;
+kblue_dnm[_seedReduction] = 0.34;
+kblue_dnm[_waterPressureSoilTarget] = -6.13;
 kblue_dnm[_waterPressureOverwaterThresh] = 1;
 kblue_dnm[_waterPressureWiltThresh] = -1.45;
 kblue_dnm[_lightDecayValue] = 1;
@@ -56,10 +56,10 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
             return;
         let comp = this.originGrowth.children.at(randNumber(0, this.originGrowth.children.length - 1));
         let lsq = comp.lifeSquares.at(comp.lifeSquares.length - 1);
-        let seedSquare = addSquare(new SeedSquare(lsq.getPosX(), lsq.getPosY() - 4));
+        let seedSquare = addSquare(new SeedSquare(lsq.getPosX(), lsq.getPosY() - 10));
         if (seedSquare) {
-            seedSquare.speedY = -Math.round(randRange(-2, -5));
-            seedSquare.speedX = Math.round(randRange(-5, 5));
+            seedSquare.speedY = -Math.round(randRange(-4, -7));
+            seedSquare.speedX = Math.round(randRange(-3, 3));
             let orgAdded = addNewOrganism(new KentuckyBluegrassSeedOrganism(seedSquare, this.getNextGenetics()));
             if (!orgAdded) {
                 seedSquare.destroy();
@@ -74,7 +74,7 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
     processGenetics() {
         this.evolutionParameters[0] = Math.min(Math.max(this.evolutionParameters[0], 0.00001), .99999)
         let p0 = this.evolutionParameters[0];
-        this.growthLightLevel = 0.1 + 1 * p0;
+        this.growthLightLevel = .5 + 1.2 * p0;
 
         this.maxNumGrass = randNumber(2, 4);
         this.maxGrassLength = 3 + Math.floor(this.maxGrassLength * p0);

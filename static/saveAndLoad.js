@@ -361,7 +361,7 @@ function loadSlotFromSave(slotData) {
         if (sq.linkedOrganisms.length == 0) {
             sq.linkedOrganisms = new Array();
         } else {
-            sq.linkedOrganisms = Array.from(sq.linkedOrganisms.map((orgIdx) => orgArr[orgIdx]));
+            sq.linkedOrganisms = Array.from(sq.linkedOrganisms.filter((org) => org != -1).map((orgIdx) => orgArr[orgIdx]));
         }
         sq.linkedOrganismSquares = Array.from(sq.linkedOrganismSquares.map((lsqIdx) => lsqArr[lsqIdx]));
         regSquareToGroup(sq.group);
@@ -384,7 +384,8 @@ function loadSlotFromSave(slotData) {
         org.greenType = TypeMap[org.greenType];
         org.rootType = TypeMap[org.rootType];
 
-        addOrganism(org);
+        if (org.linkedSquare != null)
+            addOrganism(org);
     });
     indexCanvasSize(false);
 

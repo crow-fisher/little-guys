@@ -12,11 +12,11 @@ import { ConeflowerGreenSqaure } from "../../lifeSquares/flowers/ConeflowerGreen
 import { UI_ORGANISM_FLOWER_CONEFLOWER } from "../../ui/UIData.js";
 
 export let coneflower_dnm = structuredClone(baseOrganism_dnm);
-coneflower_dnm[_llt_min] = 0.57;
+coneflower_dnm[_llt_min] = 0.74;
 coneflower_dnm[_llt_max] = 1.36;
-coneflower_dnm[_llt_throttlValMax] = 4.62;
-coneflower_dnm[_seedReduction] = 0.64;
-coneflower_dnm[_waterPressureSoilTarget] = -4.87;
+coneflower_dnm[_llt_throttlValMax] = 5.4;
+coneflower_dnm[_seedReduction] = 0.2;
+coneflower_dnm[_waterPressureSoilTarget] = -6.88;
 coneflower_dnm[_waterPressureOverwaterThresh] = 1;
 coneflower_dnm[_waterPressureWiltThresh] = -1.57;
 coneflower_dnm[_lightDecayValue] = 1;
@@ -30,7 +30,7 @@ export class ConeflowerOrganism extends BaseOrganism {
         this.greenType = ConeflowerGreenSqaure;
         this.rootType = GenericRootSquare;
 
-        this.growthCycleMaturityLength = 20;
+        this.growthCycleMaturityLength = 20 + Math.random() * 10;
         this.growthCycleLength = this.growthCycleMaturityLength * 2;
 
         this.stems = [];
@@ -60,7 +60,7 @@ export class ConeflowerOrganism extends BaseOrganism {
     processGenetics() {
         this.evolutionParameters[0] = Math.min(Math.max(this.evolutionParameters[0], 0.00001), .99999)
         let p0 = this.evolutionParameters[0];
-        this.growthLightLevel = 0.1 + 2.5 * p0;
+        this.growthLightLevel = 1 + .7 * p0;
 
         this.maxNumNodes = 4 + Math.round(this.maxNumNodes * p0);
         this.targetNumLeaves = -1;
@@ -351,7 +351,7 @@ export class ConeflowerOrganism extends BaseOrganism {
         }
         let seedSquare = addSquare(new SeedSquare(startNode.getPosX(), startNode.getPosY()));
         if (seedSquare) {
-            seedSquare.speedY = -Math.round(randRange(-2, -5));
+            seedSquare.speedY = -Math.round(randRange(-3, -8));
             seedSquare.speedX = Math.round(randRange(-5, 5));
             let orgAdded = addNewOrganism(new ConeflowerSeedOrganism(seedSquare, this.getNextGenetics()));
             if (!orgAdded) {

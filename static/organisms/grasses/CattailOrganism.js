@@ -13,12 +13,12 @@ import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
 import { UI_ORGANISM_GRASS_CATTAIL } from "../../ui/UIData.js";
 
 export let cattail_dnm = structuredClone(baseOrganism_dnm);
-cattail_dnm[_llt_min] = 0.5;
-cattail_dnm[_llt_max] = 2;
-cattail_dnm[_llt_throttlValMax] = 4;
-cattail_dnm[_seedReduction] = 0.5;
-cattail_dnm[_waterPressureSoilTarget] = -2.2;
-cattail_dnm[_waterPressureOverwaterThresh] = 1.9;
+cattail_dnm[_llt_min] = 0.49;
+cattail_dnm[_llt_max] = 1.29;
+cattail_dnm[_llt_throttlValMax] = 5.35;
+cattail_dnm[_seedReduction] = 0.08;
+cattail_dnm[_waterPressureSoilTarget] = -2.07;
+cattail_dnm[_waterPressureOverwaterThresh] = 1.93;
 cattail_dnm[_waterPressureWiltThresh] = -.17;
 cattail_dnm[_lightDecayValue] = 1;
 
@@ -71,7 +71,7 @@ export class CattailOrganism extends BaseOrganism {
     processGenetics() {
         this.evolutionParameters[0] = Math.min(Math.max(this.evolutionParameters[0], 0.00001), .99999)
         let p0 = this.evolutionParameters[0];
-        this.growthLightLevel = 0.1 + 2 * p0;
+        this.growthLightLevel = 1 + .7 * p0;
         this.maxNumGrass = randNumber(1, 2);
         this.maxGrassLength = 10 + Math.floor(this.maxGrassLength * p0);
         this.growthNumGreen = this.maxNumGrass * this.maxGrassLength;

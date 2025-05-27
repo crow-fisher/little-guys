@@ -44,7 +44,7 @@ export class PalmTreeOrganism extends BaseOrganism {
         // will also impact life cycle
         this.evolutionParameters[0] = Math.min(Math.max(this.evolutionParameters[0], 0.00001), .99999)
         let p0 = this.evolutionParameters[0];
-        this.growthLightLevel = .2 + p0 * 2;
+        this.growthLightLevel = 1 + .7 * p0;
         this.maxStemLength = 1 + Math.ceil(this.maxStemLength * p0);
         this.maxLeafLength = 1 + Math.floor(this.maxLeafLength * p0);
         this.growthNumGreen = (this.maxNumLeaves * this.maxLeafLength) + this.maxStemLength;

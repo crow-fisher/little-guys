@@ -170,7 +170,7 @@ class BaseOrganism {
         return Array.from(this.evolutionParameters.map((v) => {
             if (v === 1 || v === 0)
                 return v;
-            let d = Math.random() * ((this.lightlevel < this.growthLightLevel) ? .03 : -.03);
+            let d = Math.random() * ((this.lightlevel < this.growthLightLevel) ? -.1 : .1);
             return Math.min(Math.max(0.0001, v + d), 0.9999);
         }));
     }
