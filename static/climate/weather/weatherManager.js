@@ -235,6 +235,12 @@ export function weather() {
     if (curWinds.some((wind) => getCurDay() > wind.startDay + wind.duration)) {
         curWinds = Array.from(curWinds.filter((wind) => getCurDay() < wind.startDay + wind.duration));
     }
+    if (curClouds.some((cloud) => getCurDay() < cloud.startDay - cloud.duration)) {
+        curClouds = Array.from(curClouds.filter((cloud) => getCurDay() > cloud.startDay - cloud.duration));
+    }
+    if (curWinds.some((wind) => getCurDay() < wind.startDay - wind.duration)) {
+        curWinds = Array.from(curWinds.filter((wind) => getCurDay() > wind.startDay - wind.duration));
+    }
 
     weatherChange();
     curWeather.weather();

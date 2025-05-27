@@ -1,15 +1,11 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { doTimeSkipToDate, doTimeSkipToNow } from "../../climate/time.js";
-import { COLOR_BLACK } from "../../colors.js";
 import { Container } from "../Container.js";
 import { Button } from "../elements/Button.js";
-import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
-import { Slider } from "../elements/Slider.js";
-import { Text } from "../elements/Text.js";
 import { TimeSkipElement } from "../elements/TimeSkipElement.js";
 import { LockedComponent } from "../LockedComponent.js";
-import { UI_CAMERA_EXPOSURE, UI_CENTER, UI_CLIMATE_MIDWEST, UI_CLIMATE_SELECT } from "../UIData.js";
+import { UI_CENTER } from "../UIData.js";
 
 export const R_COLORS = "🎨";
 export const R_PERCOLATION_RATE = "💦";
