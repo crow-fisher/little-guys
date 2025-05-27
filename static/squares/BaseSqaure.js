@@ -377,6 +377,9 @@ export class BaseSquare {
     }
 
     renderLightingView() {
+        if (this.frameCacheLighting == null) {
+            this.processLighting();
+        }
         let outRgba = rgbToRgba(
             Math.floor(this.frameCacheLighting.r / loadGD(UI_CAMERA_EXPOSURE)),
             Math.floor(this.frameCacheLighting.g / loadGD(UI_CAMERA_EXPOSURE)),
@@ -628,6 +631,13 @@ export class BaseSquare {
             }
         }
         return true;
+    }
+    
+    getNutrientRate(proto) {
+        return 1 / (this.linkedOrganismSquares
+            .filter((lsq) => lsq != null && lsq.linkedOrganism.proto == proto)
+            .map((lsq) => 1)
+            .reduce((a, b) => a + b, 1) ** 0.3);
     }
 
     shouldFallThisFrame() {

@@ -227,8 +227,8 @@ class BaseOrganism {
             .filter((lsq) => lsq.type == "root")
             .filter((lsq) => lsq.linkedSquare != null && lsq.linkedSquare.proto == "SoilSquare")
             .forEach((lsq) => {
-                this.nitrogen += lsq.linkedSquare.takeNitrogen(targetPerRootNitrogen);
-                this.phosphorus += lsq.linkedSquare.takePhosphorus(targetPerRootPhosphorus);
+                this.nitrogen += lsq.linkedSquare.takeNitrogen(targetPerRootNitrogen, this.proto);
+                this.phosphorus += lsq.linkedSquare.takePhosphorus(targetPerRootPhosphorus, this.proto);
             });
 
         this.lifeSquares
@@ -430,7 +430,7 @@ class BaseOrganism {
     }
 
     growRoot(f) {
-        let max = 16;
+        let max = 3;
         if (getCurDay() < this.rootLastGrown + (this.getGrowthCycleMaturityLength() / ( max * this.growthNumRoots))) {
             return;
         }
@@ -493,10 +493,10 @@ class BaseOrganism {
                 sqScore += sq.getSoilWaterPressure() - this.waterPressureSoilTarget();
             }
             if (this.nitrogen < expectedNitrogen) {
-                sqScore += (sq.nitrogen / this.growthNitrogen) / ((sq.linkedOrganismSquares.length + 1) ** 0.2);
+                sqScore += (sq.nitrogen / this.growthNitrogen) * sq.getNutrientRate(this.proto)
             }
             if (this.phosphorus < expectedPhosphorus) {
-                sqScore += (sq.phosphorus / this.growthPhosphorus) / ((sq.linkedOrganismSquares.length + 1) ** 0.2);
+                sqScore += (sq.phosphorus / this.growthPhosphorus) * sq.getNutrientRate(this.proto)
             }
         }
         this.growRoot(scoreFunc);

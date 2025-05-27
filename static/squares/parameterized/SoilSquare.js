@@ -341,20 +341,20 @@ export class SoilSquare extends BaseSquare {
     }
     // soil nutrients
 
-    takeNitrogen(requestedAmount) {
+    takeNitrogen(requestedAmount, proto) {
         // let meanAmount = this.nitrogen * growthCycleFrac;
         // requestedAmount = Math.max(meanAmount / 2, requestedAmount);
         // requestedAmount = Math.min(meanAmount * 2, requestedAmount);
         // this.nitrogen -= requestedAmount;
-        return (requestedAmount / (this.linkedOrganismSquares.length ** 0.2));
+        return requestedAmount * this.getNutrientRate(proto);
     }
 
-    takePhosphorus(requestedAmount) {
+    takePhosphorus(requestedAmount, proto) {
         // let meanAmount = this.phosphorus * growthCycleFrac;
         // requestedAmount = Math.max(meanAmount / 2, requestedAmount);
         // requestedAmount = Math.min(meanAmount * 2, requestedAmount);
         // this.phosphorus -= requestedAmount;
-        return (requestedAmount / (this.linkedOrganismSquares.length ** 0.2));
+        return requestedAmount  *this.getNutrientRate(proto);
     }
 
     waterEvaporationRoutine() {
