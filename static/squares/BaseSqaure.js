@@ -634,7 +634,7 @@ export class BaseSquare {
     }
     
     getNutrientRate(proto) {
-        return 1 / (this.linkedOrganismSquares
+        return 4 / (this.linkedOrganismSquares
             .filter((lsq) => lsq != null && lsq.linkedOrganism.proto == proto)
             .map((lsq) => 1)
             .reduce((a, b) => a + b, 1) ** 0.3);
