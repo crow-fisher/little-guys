@@ -430,7 +430,7 @@ class BaseOrganism {
     }
 
     growRoot(f) {
-        let max = 20;
+        let max = 3;
         if (getCurDay() < this.rootLastGrown + (this.getGrowthCycleMaturityLength() / ( max * this.growthNumRoots))) {
             return;
         }
@@ -441,7 +441,6 @@ class BaseOrganism {
             getNeighbors(lsq.posX, lsq.posY)
                 .filter((_sq) => _sq != null)
                 .filter((_sq) => _sq.rootable)
-                .filter((_sq) => !(_sq.linkedOrganismSquares.some((llsq => llsq == null))))
                 .filter((_sq) => !(_sq.linkedOrganismSquares.some((llsq => llsq.linkedOrganism == this))))
                 .filter((_sq) => targetSquare == null || f(targetSquare) < f(_sq))
                 .forEach((_sq) => { targetSquare = _sq; targetSquareParent = lsq });

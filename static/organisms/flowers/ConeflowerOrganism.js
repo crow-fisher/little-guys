@@ -13,10 +13,10 @@ import { UI_ORGANISM_FLOWER_CONEFLOWER } from "../../ui/UIData.js";
 
 export let coneflower_dnm = structuredClone(baseOrganism_dnm);
 coneflower_dnm[_llt_min] = 0.74;
-coneflower_dnm[_llt_max] = 1.36;
+coneflower_dnm[_llt_max] = 1.89;
 coneflower_dnm[_llt_throttlValMax] = 5.4;
-coneflower_dnm[_seedReduction] = 0.2;
-coneflower_dnm[_waterPressureSoilTarget] = -6.88;
+coneflower_dnm[_seedReduction] = 0.49;
+coneflower_dnm[_waterPressureSoilTarget] = -4.75;
 coneflower_dnm[_waterPressureOverwaterThresh] = 1;
 coneflower_dnm[_waterPressureWiltThresh] = -1.57;
 coneflower_dnm[_lightDecayValue] = 1;

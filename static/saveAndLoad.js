@@ -190,7 +190,7 @@ async function doSave(slotName, saveString) {
 
 async function openDatabase() {
     return new Promise((resolve, reject) => {
-        const request = indexedDB.open("lgdb_3", 1);
+        const request = indexedDB.open("lgdb_4", 1);
         request.onupgradeneeded = (event) => {
             const db = event.target.result;
             if (!db.objectStoreNames.contains("saves")) {
@@ -361,9 +361,9 @@ function loadSlotFromSave(slotData) {
         if (sq.linkedOrganisms.length == 0) {
             sq.linkedOrganisms = new Array();
         } else {
-            sq.linkedOrganisms = Array.from(sq.linkedOrganisms.filter((org) => org != -1).map((orgIdx) => orgArr[orgIdx]));
+            sq.linkedOrganisms = Array.from(sq.linkedOrganisms.filter((idx) => idx != -1).map((orgIdx) => orgArr[orgIdx]));
         }
-        sq.linkedOrganismSquares = Array.from(sq.linkedOrganismSquares.map((lsqIdx) => lsqArr[lsqIdx]));
+        sq.linkedOrganismSquares = Array.from(sq.linkedOrganismSquares.filter((idx) => idx != -1).map((lsqIdx) => lsqArr[lsqIdx]));
         regSquareToGroup(sq.group);
     });
 

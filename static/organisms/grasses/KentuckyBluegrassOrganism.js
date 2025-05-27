@@ -16,8 +16,8 @@ import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReductio
 export let kblue_dnm = structuredClone(baseOrganism_dnm);
 kblue_dnm[_llt_min] = 0.49;
 kblue_dnm[_llt_max] = 1.39;
-kblue_dnm[_llt_throttlValMax] = 5.27;
-kblue_dnm[_seedReduction] = 0.22;
+kblue_dnm[_llt_throttlValMax] = 5.71;
+kblue_dnm[_seedReduction] = 0.68;
 kblue_dnm[_waterPressureSoilTarget] = -4.32;
 kblue_dnm[_waterPressureOverwaterThresh] = 1;
 kblue_dnm[_waterPressureWiltThresh] = -1.45;
@@ -76,10 +76,10 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
         let p0 = this.evolutionParameters[0];
         this.growthLightLevel = .5 + 1.2 * p0;
 
-        this.maxNumGrass = randNumber(2, 4);
+        this.maxNumGrass = 2;
         this.maxGrassLength = 3 + Math.floor(this.maxGrassLength * p0);
         this.growthNumGreen = this.maxNumGrass * this.maxGrassLength;
-        this.growthNumRoots = 2;
+        this.growthNumRoots = 1;
     }
 
     doGreenGrowth() {
