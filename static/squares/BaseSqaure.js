@@ -632,12 +632,18 @@ export class BaseSquare {
         }
         return true;
     }
-    
+
     getNutrientRate(proto) {
-        return 4 / (this.linkedOrganismSquares
-            .filter((lsq) => lsq != null && lsq.linkedOrganism.proto == proto)
-            .map((lsq) => 1)
-            .reduce((a, b) => a + b, 1) ** 0.3);
+        if (this.cachedNutrientRateSquares == this.linkedOrganismSquares.length) {
+            return this.cachedNutrientRate;
+        } else {
+            this.cachedNutrientRate = 4 / (this.linkedOrganismSquares
+                .filter((lsq) => lsq != null && lsq.linkedOrganism.proto == proto)
+                .map((lsq) => 1)
+                .reduce((a, b) => a + b, 1) ** 0.3);
+            this.cachedNutrientRateSquares = this.linkedOrganismSquares.length;
+            return this.cachedNutrientRate;
+        }
     }
 
     shouldFallThisFrame() {

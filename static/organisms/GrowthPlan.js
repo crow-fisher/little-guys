@@ -5,7 +5,7 @@ import { getGlobalThetaBase } from "../globals.js";
 import { removeItemAll } from "../common.js";
 
 export class GrowthPlan {
-    constructor(posX, posY, required, endStage, theta, twist, baseRotation, baseDeflection, baseCurve, type, strengthMult, rollingAveragePeriod=200) {
+    constructor(posX, posY, required, endStage, theta, twist, baseRotation, baseDeflection, baseCurve, type, strengthMult, rollingAveragePeriod = 200) {
         this.posX = posX;
         this.posY = posY;
         this.required = required;
@@ -314,10 +314,12 @@ export class GrowthComponent {
     }
 
     getWilt() {
-        if (this.lifeSquares.length == 0) {
-            return 0;
-        }
-        return this._getWilt(this.lifeSquares.at(0).linkedOrganism.getWilt());
+        return this.getValueCached("getWilt", () => {
+            if (this.lifeSquares.length == 0) {
+                return 0;
+            }
+            return this._getWilt(this.lifeSquares.at(0).linkedOrganism.getWilt());
+        });
     }
 
     applyDeflectionState(parentComponent) {
@@ -364,7 +366,7 @@ export class GrowthComponent {
 
             lsq.deflectionXOffset = (endX - relLsqX) + this.xOffset;
             lsq.deflectionYOffset = (endY - relLsqY) + this.yOffset;
-            
+
             if (prevX == -1 && this.parentComponent != null) {
                 let plsq = this.parentComponent.lifeSquares.at(this.parentComponent.lifeSquares.length - 1);
                 lsq.theta = Math.atan((lsq.getPosY() - plsq.getPosY(this.yOffset)) / (lsq.getPosX() - plsq.getPosX(this.xOffset))) + Math.PI / 2;
@@ -395,29 +397,36 @@ export class GrowthComponent {
     }
 
     getNetWindSpeed() {
-        let ret = this._getNetWindSpeed();
-        this.children.forEach((child) => {
-            let childWs = child.getNetWindSpeed();
-            ret[0] += childWs[0];
-            ret[1] += childWs[1];
+        return this.getValueCached("getNetWindSpeed", () => {
+            let ret = this._getNetWindSpeed();
+            this.children.forEach((child) => {
+                let childWs = child.getNetWindSpeed();
+                ret[0] += childWs[0];
+                ret[1] += childWs[1];
+            });
+            return ret;
         });
-        return ret;
     }
+
     _getNetWindSpeed() {
-        if (getCurDay() != this.lastDeflectionInstant) {
-            this.lastDeflectionInstant = getCurDay();
-            this.lastDeflectionValue = this.lifeSquares
-                .map((lsq) => getWindSpeedAtLocation(lsq.getPosX(), lsq.getPosY())).reduce(
+        return this.getValueCached("_getNetWindSpeed", () => this.lifeSquares
+            .map((lsq) => getWindSpeedAtLocation(lsq.getPosX(), lsq.getPosY())).reduce(
                 (accumulator, currentValue) => [accumulator[0] + currentValue[0], accumulator[1] + currentValue[1]],
                 [0, 0]
-            );
-        }
-        // this caching implementation saves around 2 fps for 12.5k squares @ 12fps
-        // but it causes this weird 'tweaking' behavior
-        // so it's disabled for now
-        this.lastDeflectionInstant = 0;
-        return this.lastDeflectionValue;
+            ));
+    }
 
+    getValueCached(name, calculation) {
+        if (this.valueCache == null || this.valueCacheDay != getCurDay()) {
+            this.valueCache = new Map();
+            this.valueCacheDay = getCurDay();
+        }
+        if (this.valueCache.has(name)) {
+            return this.valueCache.get(name);
+        } else {
+            this.valueCache.set(name, calculation());
+            return this.valueCache.get(name);
+        }
     }
     getStartSpringForce() {
         return Math.sin(this.getBaseDeflection() - this.deflectionRollingAverage) * this.getTotalStrength();
