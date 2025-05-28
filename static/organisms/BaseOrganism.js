@@ -430,7 +430,7 @@ class BaseOrganism {
     }
 
     growRoot(f) {
-        let max = 4;
+        let max = 2;
         if (getCurDay() < this.rootLastGrown + (this.getGrowthCycleMaturityLength() / ( max * this.growthNumRoots))) {
             return;
         }

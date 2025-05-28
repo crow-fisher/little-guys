@@ -640,7 +640,7 @@ export class BaseSquare {
             this.cachedNutrientRate = 2 / (this.linkedOrganismSquares
                 .filter((lsq) => lsq != null && lsq.linkedOrganism.proto == proto)
                 .map((lsq) => 1)
-                .reduce((a, b) => a + b, 1) ** 0.2);
+                .reduce((a, b) => a + b, 1));
             this.cachedNutrientRateSquares = this.linkedOrganismSquares.length;
             return this.cachedNutrientRate;
         }
