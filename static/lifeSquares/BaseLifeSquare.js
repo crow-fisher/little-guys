@@ -9,7 +9,7 @@ import { removeSquare } from "../globalOperations.js";
 import { STATE_HEALTHY, STATE_DESTROYED, STAGE_DEAD } from "../organisms/Stages.js";
 import { getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasFillRectTheta } from "../canvas.js";
-import { loadGD, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../ui/UIData.js";
+import { loadGD, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_NORMAL, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../ui/UIData.js";
 import { isLeftMouseClicked } from "../mouse.js";
 
 export const LSQ_RENDERMODE_SQUARE = "LSQ_RENDERMODE_SQUARE";
@@ -226,6 +226,10 @@ class BaseLifeSquare {
             frameOpacity *= (1 - this.linkedOrganism.deathProgress ** 6);
         }
         let selectedViewMode = loadGD(UI_VIEWMODE_SELECT);
+        if (selectedViewMode != UI_VIEWMODE_NORMAL && Math.random() > 0.97) {
+            this.frameCacheLighting = null;
+            this.processLighting();
+        }
         if (selectedViewMode == UI_VIEWMODE_NITROGEN) {
             let color = {
                 r: 100 + (1 - this.nitrogenIndicated) * 130,
@@ -236,18 +240,15 @@ class BaseLifeSquare {
             return;
         }
         else if (selectedViewMode == UI_VIEWMODE_LIGHTING) {
-            if (this.type != "green") {
-                return;
-            }
-            if (Math.random() > 0.97) {
-                this.frameCacheLighting = null;
-                this.processLighting();
+            let frameOp = 0.5;
+            if (this.type == "root") {
+                frameOp = 0.25;
             }
             let myhsv = structuredClone(NUTRIENT_BASE_HSV);
             let hueShift = this.lightlevelIndicated; 
             myhsv[0] += 60 * (hueShift)
             myhsv[1] = this.lightlevelIndicated;
-            MAIN_CONTEXT.fillStyle = rgbToRgba(...hsv2rgb(...myhsv), 0.5);
+            MAIN_CONTEXT.fillStyle = rgbToRgba(...hsv2rgb(...myhsv), frameOp);
             this.renderToCanvas();
         }
         else if (selectedViewMode == UI_VIEWMODE_MOISTURE || selectedViewMode == UI_VIEWMODE_WATERMATRIC || selectedViewMode == UI_VIEWMODE_WATERTICKRATE) {

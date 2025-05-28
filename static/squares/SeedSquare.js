@@ -3,6 +3,7 @@ import { BaseSquare } from "./BaseSqaure.js";
 import { addOrganism } from "../organisms/_orgOperations.js";
 import { removeOrganism } from "../organisms/_orgOperations.js";
 import { getSquares } from "./_sqOperations.js";
+import { randRange } from "../common.js";
 class SeedSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
@@ -15,6 +16,7 @@ class SeedSquare extends BaseSquare {
         this.rootable = true;
         this.organic = true;
         this.visible = false;
+        this.gravity = randRange(4, 16);
     }
     gravityPhysics() {
         super.gravityPhysics();

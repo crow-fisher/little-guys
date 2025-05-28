@@ -1,4 +1,4 @@
-import { randRange } from "../../common.js";
+import { randNumber, randRange } from "../../common.js";
 import { GenericRootSquare } from "../../lifeSquares/GenericRootSquare.js";
 import { STAGE_ADULT, STAGE_FLOWER, STAGE_JUVENILE, SUBTYPE_FLOWER, SUBTYPE_FLOWERBUD, SUBTYPE_FLOWERNODE, SUBTYPE_FLOWERTIP, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_FLOWERNODE, TYPE_FLOWERPETAL, TYPE_LEAF, TYPE_STEM } from "../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
@@ -352,8 +352,8 @@ export class ConeflowerOrganism extends BaseOrganism {
         }
         let seedSquare = addSquare(new SeedSquare(startNode.getPosX(), startNode.getPosY()));
         if (seedSquare) {
-            seedSquare.speedY = -Math.round(randRange(-3, -8));
-            seedSquare.speedX = Math.random() > 0.5 ? -1 : 1 * 5;
+            seedSquare.speedX = Math.random() > 0.5 ? -1 : 1 * randNumber(1, 2);
+            seedSquare.speedY = randNumber(-3, 1);
             let orgAdded = addNewOrganism(new ConeflowerSeedOrganism(seedSquare, this.getNextGenetics()));
             if (!orgAdded) {
                 seedSquare.destroy();
