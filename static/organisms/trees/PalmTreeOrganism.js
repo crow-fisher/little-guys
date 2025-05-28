@@ -12,8 +12,8 @@ import { addNewOrganism } from "../_orgOperations.js";
 import { UI_ORGANISM_TREE_PALM } from "../../ui/UIData.js";
 
 export class PalmTreeOrganism extends BaseOrganism {
-    constructor(posX, posY) {
-        super(posX, posY);
+    constructor(square) {
+        super(square);
         this.proto = "PalmTreeOrganism";
         this.uiRef = UI_ORGANISM_TREE_PALM;
         this.greenType = PalmTreeGreenSquare;
@@ -265,5 +265,8 @@ export class PalmTreeSeedOrganism extends BaseSeedOrganism {
 
     getSproutType() {
         return PalmTreeOrganism;
+    }
+    getSproutTypeProto() {
+        return "PalmTreeOrganism";
     }
 }

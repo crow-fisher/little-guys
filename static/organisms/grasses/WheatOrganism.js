@@ -26,8 +26,8 @@ wheat_dnm[_waterPressureWiltThresh] = -1.45;
 wheat_dnm[_lightDecayValue] = 1;
 
 export class WheatOrganism extends BaseOrganism {
-    constructor(posX, posY) {
-        super(posX, posY);
+    constructor(square) {
+        super(square);
         this.proto = "WheatOrganism";
         this.uiRef = UI_ORGANISM_GRASS_WHEAT;
         this.greenType = WheatGreenSquare;
@@ -328,5 +328,8 @@ export class WheatSeedOrganism extends BaseSeedOrganism {
 
     getSproutType() {
         return WheatOrganism;
+    }
+    getSproutTypeProto() {
+        return "WheatOrganism";
     }
 }

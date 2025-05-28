@@ -24,8 +24,8 @@ cattail_dnm[_lightDecayValue] = 1;
 
 
 export class CattailOrganism extends BaseOrganism {
-    constructor(posX, posY) {
-        super(posX, posY);
+    constructor(square) {
+        super(square);
         this.proto = "CattailOrganism";
         this.uiRef = UI_ORGANISM_GRASS_CATTAIL;
         this.greenType = CattailGreenSquare;
@@ -190,5 +190,8 @@ export class CattailSeedOrganism extends BaseSeedOrganism {
 
     getSproutType() {
         return CattailOrganism;
+    }
+    getSproutTypeProto() {
+        return "CattailOrganism";
     }
 }

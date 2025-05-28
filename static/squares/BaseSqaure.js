@@ -185,13 +185,10 @@ export class BaseSquare {
         this.linkedOrganisms = removeItemAll(this.linkedOrganisms, organism);
     }
     linkOrganismSquare(organismSquare) {
-        if (organismSquare in this.linkedOrganismSquares) {
-            console.warn("Trying to link an organismSquare that it's already been attached to...odd state.");
-        }
         this.linkedOrganismSquares.push(organismSquare);
     }
     unlinkOrganismSquare(organismSquare) {
-        this.linkedOrganismSquares = Array.from(this.linkedOrganismSquares.filter((lsq) => lsq != organismSquare));
+        this.linkedOrganismSquares = removeItemAll(this.linkedOrganismSquares, organismSquare);
     }
     reset() {
         if (this.blockHealth <= 0) {
@@ -495,7 +492,7 @@ export class BaseSquare {
             return false;
         }
 
-        if (newPosX < 0 || newPosX >= loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) || newPosY < 0 || newPosY >= loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y)) {
+        if (newPosX < 0 || newPosX >= loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) || newPosY >= loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y)) {
             this.destroy();
             return;
         }

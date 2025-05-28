@@ -256,7 +256,12 @@ class BaseOrganism {
             return 0;
         }
         if (this.waterPressure > this.waterPressureTarget) {
-            return Math.min(1, (this.waterPressure - this.waterPressureTarget) / (this.waterPressureOverwaterThresh() - this.waterPressureTarget));
+            let mid = this.waterPressureTarget + (this.waterPressureOverwaterThresh() / 2);
+            let max = this.waterPressureTarget + this.waterPressureOverwaterThresh();
+            if (this.waterPressure < mid) {
+                return 1;
+            }
+            return Math.min(1, (this.waterPressure - mid) / (max - mid));
         } else if (this.waterPressure > this.waterPressureWiltThresh()) {
             return (this.waterPressure - this.waterPressureWiltThresh()) / (this.waterPressureTarget - this.waterPressureWiltThresh()) - 1;
         } else {

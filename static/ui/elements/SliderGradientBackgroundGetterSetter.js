@@ -18,6 +18,10 @@ export class SliderGradientBackgroundGetterSetter extends WindowElement {
         this.minColorFunc = minColorFunc;
         this.maxColorFunc = maxColorFunc;
         this.renderSkyBackground = renderSkyBackground;
+        
+        let range = (max - min);
+        this.min -= (sizeY / sizeX) * range;
+        this.max += (sizeY / sizeX) * range;
     }
 
     render(startX, startY) {

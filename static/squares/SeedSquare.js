@@ -4,6 +4,7 @@ import { addOrganism } from "../organisms/_orgOperations.js";
 import { removeOrganism } from "../organisms/_orgOperations.js";
 import { getSquares } from "./_sqOperations.js";
 import { randRange } from "../common.js";
+import { getWindSpeedAtLocation } from "../climate/simulation/wind.js";
 class SeedSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
@@ -16,11 +17,11 @@ class SeedSquare extends BaseSquare {
         this.rootable = true;
         this.organic = true;
         this.visible = false;
-        this.gravity = randRange(4, 16);
+        this.gravity = randRange(4, 8);
     }
     gravityPhysics() {
         super.gravityPhysics();
-        let sq = getSquares(this.posX, this.posY + 1)
+        let sq = getSquares(Math.round(this.posX), Math.round(this.posY + 1))
             .find((sq) => sq.proto == "SoilSquare");
         if (sq == null) {
             let rockSq = getSquares(this.posX, this.posY + 1)
@@ -29,18 +30,36 @@ class SeedSquare extends BaseSquare {
                 this.destroy(true);
                 return;
             }
+            this.seedWindPhysics();
             return;
         }
         if (this.linkedOrganisms.length == 0) {
             this.destroy();
             return;
         }
+        this.updatePosition(Math.round(this.posX), Math.round(this.posY));
+        
+        if (sq.linkedOrganismSquares.some((lsq) => {
+            let myOrg = this.linkedOrganisms.at(0);
+            return lsq.proto == myOrg.getSproutTypeProto();
+        })) {
+            this.destroy(true);
+            console.log("Destroying; found a root or something here that")
+            return;
+        } 
+
         this.linkedOrganisms.forEach((org) => {
             removeOrganism(org);
             org.posY += 1;
             org.linkSquare(sq);
             addOrganism(org);
         });
+    }
+
+    seedWindPhysics() {
+        let windSpeed = getWindSpeedAtLocation(this.posX, this.posY);
+        this.speedX += .1 * windSpeed[0];
+        this.speedY += .1 * windSpeed[1];
     }
 }
 

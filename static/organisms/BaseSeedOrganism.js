@@ -27,6 +27,9 @@ class BaseSeedOrganism extends BaseOrganism {
     getSproutType() {
         return null;
     }
+    getSproutTypeProto() {
+        return "BaseOrganism";
+    }
 
     process() {
         if (this.getAge() > loadGD(UI_SIMULATION_GENS_PER_DAY) * 2) {

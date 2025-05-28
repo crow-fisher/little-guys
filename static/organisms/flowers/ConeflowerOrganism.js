@@ -23,8 +23,8 @@ coneflower_dnm[_lightDecayValue] = 1;
 
 // ref: https://prairiecalifornian.com/wheat-growth-stages/
 export class ConeflowerOrganism extends BaseOrganism {
-    constructor(posX, posY) {
-        super(posX, posY);
+    constructor(square) {
+        super(square);
         this.proto = "ConeflowerOrganism";
         this.uiRef = UI_ORGANISM_FLOWER_CONEFLOWER;
         this.greenType = ConeflowerGreenSqaure;
@@ -352,8 +352,8 @@ export class ConeflowerOrganism extends BaseOrganism {
         }
         let seedSquare = addSquare(new SeedSquare(startNode.getPosX(), startNode.getPosY()));
         if (seedSquare) {
-            seedSquare.speedX = Math.random() > 0.5 ? -1 : 1 * randNumber(1, 2);
-            seedSquare.speedY = randNumber(-3, 1);
+            seedSquare.speedX = Math.random() > 0.5 ? -1 : 1 * randRange(0.5, 1);
+            seedSquare.speedY = randRange(-.5, .5);
             let orgAdded = addNewOrganism(new ConeflowerSeedOrganism(seedSquare, this.getNextGenetics()));
             if (!orgAdded) {
                 seedSquare.destroy();
@@ -392,5 +392,8 @@ export class ConeflowerSeedOrganism extends BaseSeedOrganism {
 
     getSproutType() {
         return ConeflowerOrganism;
+    }
+    getSproutTypeProto() {
+        return "ConeflowerOrganism";
     }
 }

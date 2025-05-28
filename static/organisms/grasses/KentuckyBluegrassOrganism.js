@@ -24,8 +24,8 @@ kblue_dnm[_waterPressureWiltThresh] = -1.45;
 kblue_dnm[_lightDecayValue] = 1;
 
 export class KentuckyBluegrassOrganism extends BaseOrganism {
-    constructor(posX, posY) {
-        super(posX, posY);
+    constructor(square) {
+        super(square);
         this.proto = "KentuckyBluegrassOrganism";
         this.uiRef = UI_ORGANISM_GRASS_KBLUE;
         this.greenType = KentuckyBluegrassGreenSquare;
@@ -59,7 +59,7 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
         let seedSquare = addSquare(new SeedSquare(lsq.getPosX(), lsq.getPosY() - 10));
         if (seedSquare) {
             seedSquare.speedX = Math.random() > 0.5 ? -1 : 1 * randNumber(1, 2);
-            seedSquare.speedY = randNumber(-2, 0);
+            seedSquare.speedY = randRange(-1.5, 1);
             let orgAdded = addNewOrganism(new KentuckyBluegrassSeedOrganism(seedSquare, this.getNextGenetics()));
             if (!orgAdded) {
                 seedSquare.destroy();
@@ -170,5 +170,8 @@ export class KentuckyBluegrassSeedOrganism extends BaseSeedOrganism {
 
     getSproutType() {
         return KentuckyBluegrassOrganism;
+    }
+    getSproutTypeProto() {
+        return "KentuckyBluegrassOrganism";
     }
 }
