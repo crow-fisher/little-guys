@@ -12,12 +12,12 @@ import { ConeflowerGreenSqaure } from "../../lifeSquares/flowers/ConeflowerGreen
 import { UI_ORGANISM_FLOWER_CONEFLOWER } from "../../ui/UIData.js";
 
 export let coneflower_dnm = structuredClone(baseOrganism_dnm);
-coneflower_dnm[_llt_min] = 0.74;
-coneflower_dnm[_llt_max] = 1.89;
-coneflower_dnm[_llt_throttlValMax] = 5.4;
-coneflower_dnm[_seedReduction] = 0.49;
-coneflower_dnm[_waterPressureSoilTarget] = -4.75;
-coneflower_dnm[_waterPressureOverwaterThresh] = 1;
+coneflower_dnm[_llt_min] = 0.58;
+coneflower_dnm[_llt_max] = 1.35;
+coneflower_dnm[_llt_throttlValMax] = 4.42;
+coneflower_dnm[_seedReduction] = 0.10;
+coneflower_dnm[_waterPressureSoilTarget] = -3.2;
+coneflower_dnm[_waterPressureOverwaterThresh] = .98;
 coneflower_dnm[_waterPressureWiltThresh] = -1.57;
 coneflower_dnm[_lightDecayValue] = 1;
 

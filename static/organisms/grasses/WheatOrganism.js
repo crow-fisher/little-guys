@@ -16,13 +16,13 @@ import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReductio
 // ref: https://prairiecalifornian.com/wheat-growth-stages/
 
 export let wheat_dnm = structuredClone(baseOrganism_dnm);
-wheat_dnm[_llt_min] = 0.66;
-wheat_dnm[_llt_max] = 1.62;
-wheat_dnm[_llt_throttlValMax] = 6.37;
-wheat_dnm[_seedReduction] = 0.48;
-wheat_dnm[_waterPressureSoilTarget] = -5.07;
-wheat_dnm[_waterPressureOverwaterThresh] = 1;
-wheat_dnm[_waterPressureWiltThresh] = -1.45;
+wheat_dnm[_llt_min] = 0.58;
+wheat_dnm[_llt_max] = 1.35;
+wheat_dnm[_llt_throttlValMax] = 4.42;
+wheat_dnm[_seedReduction] = 0.10;
+wheat_dnm[_waterPressureSoilTarget] = -3.2;
+wheat_dnm[_waterPressureOverwaterThresh] = .98;
+wheat_dnm[_waterPressureWiltThresh] = -1.57;
 wheat_dnm[_lightDecayValue] = 1;
 
 export class WheatOrganism extends BaseOrganism {
@@ -290,8 +290,8 @@ export class WheatOrganism extends BaseOrganism {
         let startNode = flowerComponent.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_FLOWERNODE);
         let seedSquare = addSquare(new SeedSquare(startNode.getPosX(), startNode.getPosY()));
         if (seedSquare) {
-            seedSquare.speedY = -Math.round(randRange(-2, -5));
-            seedSquare.speedX = Math.round(randRange(-5, 5));
+            seedSquare.speedX = Math.random() > 0.5 ? -1 : 1 * randRange(0.5, 1);
+            seedSquare.speedY = randRange(-.5, .5);
             let orgAdded = addNewOrganism(new WheatSeedOrganism(seedSquare, this.getNextGenetics()));
             if (!orgAdded) {
                 seedSquare.destroy();

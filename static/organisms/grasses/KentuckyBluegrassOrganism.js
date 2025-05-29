@@ -14,14 +14,14 @@ import { UI_ORGANISM_GRASS_KBLUE } from "../../ui/UIData.js";
 import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh } from "../BaseOrganism.js";
 
 export let kblue_dnm = structuredClone(baseOrganism_dnm);
-kblue_dnm[_llt_min] = 0.49;
-kblue_dnm[_llt_max] = 1.39;
-kblue_dnm[_llt_throttlValMax] = 5.71;
-kblue_dnm[_seedReduction] = 0.68;
-kblue_dnm[_waterPressureSoilTarget] = -4.32;
+kblue_dnm[_llt_min] = 0.59;
+kblue_dnm[_llt_max] = 1.43;
+kblue_dnm[_llt_throttlValMax] = 4.13;
+kblue_dnm[_seedReduction] = 0.09;
+kblue_dnm[_waterPressureSoilTarget] = -3.4;
 kblue_dnm[_waterPressureOverwaterThresh] = 1;
-kblue_dnm[_waterPressureWiltThresh] = -1.45;
-kblue_dnm[_lightDecayValue] = 1;
+kblue_dnm[_waterPressureWiltThresh] = -1.47;
+kblue_dnm[_lightDecayValue] = 0.47;
 
 export class KentuckyBluegrassOrganism extends BaseOrganism {
     constructor(square) {
