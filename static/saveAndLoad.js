@@ -127,7 +127,6 @@ function loadSlotData(slotData) {
     purgeGameState();
     loadSlotFromSave(slotData);
     saveGD(UI_MAIN_NEWWORLD, false);
-    saveGD(UI_TOPBAR_MAINMENU, true);
     saveOrLoadInProgress = false;
 }
 

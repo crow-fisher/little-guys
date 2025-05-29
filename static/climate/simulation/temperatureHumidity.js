@@ -307,7 +307,7 @@ function doRain() {
             let usedWaterPascalsPerSquare = dropPascals / 5;
             let dropHealth = dropPascals / pascalsPerWaterSquare;
 
-            dropHealth = Math.min(1, dropHealth * density * 20000);
+            dropHealth = Math.min(1, dropHealth * density * 12000);
 
             let sq = addSquareByName(x * 4 + randNumber(0, 3), y * 4 + randNumber(0, 3), "water");
             if (sq) {
