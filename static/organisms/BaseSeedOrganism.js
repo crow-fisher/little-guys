@@ -59,23 +59,6 @@ class BaseSeedOrganism extends BaseOrganism {
         }
         org.setEvolutionParameters(this.evolutionParameters);
     }
-
-
-    postTick() {
-        let lifeCyclePercentage = (getCurDay() - this.spawnTime) / this.maxLifeTime;
-        if (lifeCyclePercentage > 1) {
-            return;
-        }
-        if (this.lifeSquares.some((lsq) => lsq.sproutStatus >= 1)) {
-            if (this.linkedSquare == -1) {
-                console.warn("BAD SEED STATE!");
-                return;
-            }
-            let linkedSquareCache = this.linkedSquare;
-            this.destroy();
-            this.applyEvolutionParameters(addNewOrganism(new (this.getSproutType())(linkedSquareCache)));
-        }
-    }
 }
 
 export {BaseSeedOrganism} 

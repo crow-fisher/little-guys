@@ -626,7 +626,6 @@ class BaseOrganism {
         this.hasPlantLivedTooLong();
         this.doDecay();
         this.lifeSquares = this.lifeSquares.sort((a, b) => a.distToFront - b.distToFront);
-
     }
 }
 
