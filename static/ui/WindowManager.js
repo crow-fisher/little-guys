@@ -46,8 +46,8 @@ export function initUI() {
     all_components.push(new LightingSubtree(() => topBarComponent.getElementXPositionFunc(0, 5), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_LIGHTING));
     all_components.push(new OrganismComponent(getBaseUISize() * 24, palette_y_offset, 0, 0, UI_SM_ORGANISM));
     all_components.push(new GodModeComponent(getBaseUISize() * 34, getBaseUISize() * 6, 10, 0, UI_SM_GODMODE));
-    all_components.push(new TimeSkipComponent(() => topBarComponent.getElementXPositionFunc(0, 18), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_TIME));
-    all_components.push(new WeatherSelectionComponent(() => topBarComponent.getElementXPositionFunc(0,20), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_WEATHER));
+    all_components.push(new TimeSkipComponent(() => topBarComponent.getElementXPositionFunc(0, 18-5), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_TIME));
+    all_components.push(new WeatherSelectionComponent(() => topBarComponent.getElementXPositionFunc(0,20-5), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_WEATHER));
     all_components.push(new WorldSetupComponent(() => getCanvasWidth() / 2, () => getBaseUISize() * 30, 0, 0, UI_MAIN_NEWWORLD));
 }
 
