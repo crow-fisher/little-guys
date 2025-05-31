@@ -9,6 +9,7 @@ import { loadGD, UI_GODMODE_FASTPLANT, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, 
 import { RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
 import { removeItemAll, rgbToRgba } from "../common.js";
 
+export const _llt_target = "_llt_target";
 export const _llt_min = "_llt_min";
 export const _llt_max = "_llt_max";
 export const _llt_throttlValMin = "_llt_throttlValMin";
@@ -20,6 +21,7 @@ export const _waterPressureOverwaterThresh = "_waterPressureOverwaterThresh";
 export const _waterPressureWiltThresh = "_waterPressureWiltThresh";
 
 export let baseOrganism_dnm = {
+    _llt_target: 1,
     _llt_min: 0.5,
     _llt_max: 2,
     _llt_throttlValMin: 1,
@@ -109,6 +111,9 @@ class BaseOrganism {
         return configMap[name];
     }
 
+    llt_target() {
+        return this.getGenericNutritionParam(_llt_target);
+    }
     llt_min() {
         return this.getGenericNutritionParam(_llt_min);
     }

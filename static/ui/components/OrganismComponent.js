@@ -2,7 +2,7 @@ import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { calculateColor } from "../../climate/simulation/temperatureHumidity.js";
 import { hexToRgb } from "../../common.js";
-import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _llt_throttlValMin, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, baseOrganism_dnm } from "../../organisms/BaseOrganism.js";
+import { _lightDecayValue, _llt_max, _llt_min, _llt_target, _llt_throttlValMax, _llt_throttlValMin, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, baseOrganism_dnm } from "../../organisms/BaseOrganism.js";
 import { coneflower_dnm } from "../../organisms/flowers/ConeflowerOrganism.js";
 import { cattail_dnm } from "../../organisms/grasses/CattailOrganism.js";
 import { kblue_dnm } from "../../organisms/grasses/KentuckyBluegrassOrganism.js";
@@ -164,6 +164,13 @@ export class OrganismComponent extends Component {
           let left = sizeX * 0.8;
           let right = sizeX - left;
 
+          let c_llt_target = new Container(this.window, 0, 0);
+          nutrientConfiguratorContainer.addElement(c_llt_target);
+          c_llt_target.addElement(new TextBackground(this.window, left, h1, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.58), 0.75, "llt_target"));
+          c_llt_target.addElement(new TextFunctionalBackground(this.window, right, h1, offsetX, () => this.getGenericNutritionParam(_llt_target), () => getActiveClimate().getUIColorInactiveCustom(0.58)));
+          nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
+               () => this.getGenericNutritionParam(_llt_target), (val) => this.setGenericNutritionParam(_llt_target, val), sizeX, h1, .25, 2, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
+
           let c_llt_min = new Container(this.window, 0, 0);
           nutrientConfiguratorContainer.addElement(c_llt_min);
           c_llt_min.addElement(new TextBackground(this.window, left, h1, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.58), 0.75, "llt_min"));
@@ -219,8 +226,6 @@ export class OrganismComponent extends Component {
           c_lightDecayValue.addElement(new TextFunctionalBackground(this.window, right, h1, offsetX, () => this.getGenericNutritionParam(_lightDecayValue), () => getActiveClimate().getUIColorInactiveCustom(0.58)));
           nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
                () => this.getGenericNutritionParam(_lightDecayValue), (val) => this.setGenericNutritionParam(_lightDecayValue, val), sizeX, h1, -0.05, 2, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
-     
-               
      }
 
      isOrganismSelectedOnCurrentPage() {

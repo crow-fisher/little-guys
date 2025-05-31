@@ -14,10 +14,12 @@ import {
     _seedReduction,
     _lightDecayValue,
     _waterPressureOverwaterThresh,
-    _waterPressureWiltThresh
+    _waterPressureWiltThresh,
+    _llt_target
 } from "../BaseOrganism.js";
 
 export let baseMossOrganism_dnm = {
+    _llt_target: 1,
     _llt_min: 0.5,
     _llt_max: 2,
     _llt_throttlValMin: 1,
@@ -53,7 +55,9 @@ export class BaseMossOrganism {
         }
         return configMap[name];
     }
-
+    llt_target() {
+        return this.getGenericNutritionParam(_llt_target);
+    }
     llt_min() {
         return this.getGenericNutritionParam(_llt_min);
     }
@@ -109,7 +113,7 @@ export class BaseMossOrganism {
 
     growNeighborMoss(parentLsq) {
         let square = getNeighbors(parentLsq.posX, parentLsq.posY)
-            .filter((sq) => sq.rootable)
+            .filter((sq) => sq.proto == "SoilSquare" || sq.proto == "RockSquare")
             .find((sq) => !(sq.linkedOrganismSquares.some((lsq) => lsq.linkedOrganism == this)));
         if (square != null) {
             let newMoss = new this.greenType(square, this);
@@ -139,6 +143,10 @@ export class BaseMossOrganism {
     }
     render() {
         this.lifeSquares.forEach((lsq) => lsq.render());
+    }
+    destroy() {
+        this.lifeSquares.forEach((lsq) => lsq.destroy());
+        return;
     }
 
 }

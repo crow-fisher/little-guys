@@ -34,6 +34,7 @@ export class PleurocarpMossSeedOrganism extends BaseSeedOrganism {
     constructor(square, evolutionParameters) {
         super(square, evolutionParameters);
         this.proto = "PleurocarpMossSeedOrganism";
+        this.greenType = PleurocarpMossGreenSquare;
     }
 
     getSproutType() {

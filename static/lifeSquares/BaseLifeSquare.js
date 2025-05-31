@@ -240,16 +240,7 @@ class BaseLifeSquare {
             return;
         }
         else if (selectedViewMode == UI_VIEWMODE_LIGHTING) {
-            let frameOp = 0.5;
-            if (this.type == "root") {
-                frameOp = 0.25;
-            }
-            let myhsv = structuredClone(NUTRIENT_BASE_HSV);
-            let hueShift = this.lightlevelIndicated;
-            myhsv[0] += 60 * (hueShift)
-            myhsv[1] = this.lightlevelIndicated;
-            MAIN_CONTEXT.fillStyle = rgbToRgba(...hsv2rgb(...myhsv), frameOp);
-            this.renderToCanvas();
+            this.renderLighting();
         }
         else if (selectedViewMode == UI_VIEWMODE_MOISTURE || selectedViewMode == UI_VIEWMODE_WATERMATRIC || selectedViewMode == UI_VIEWMODE_WATERTICKRATE) {
             this.renderMoisture(frameOpacity);
@@ -282,6 +273,18 @@ class BaseLifeSquare {
             }
             this.renderWithVariedColors(frameOpacity);
         }
+    }
+    renderLighting() {
+        let frameOp = 0.5;
+        if (this.type == "root") {
+            frameOp = 0.25;
+        }
+        let myhsv = structuredClone(NUTRIENT_BASE_HSV);
+        let hueShift = this.lightlevelIndicated;
+        myhsv[0] += 60 * (hueShift)
+        myhsv[1] = this.lightlevelIndicated;
+        MAIN_CONTEXT.fillStyle = rgbToRgba(...hsv2rgb(...myhsv), frameOp);
+        this.renderToCanvas();
     }
 
     renderMoisture(frameOpacity) {

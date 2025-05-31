@@ -1,5 +1,5 @@
 import { getDaylightStrengthFrameDiff } from "../../climate/time.js";
-import { RGB_COLOR_GREEN, RGB_COLOR_RED } from "../../colors.js";
+import { RGB_COLOR_GREEN, RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED } from "../../colors.js";
 import { hexToRgb, rgbToRgba } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
@@ -16,47 +16,76 @@ export class BaseMossGreenSquare extends BaseLifeSquare {
         this.dormantColorBase = hexToRgb("#594d3c");
     }
 
-    generalNutritionTick(value, target, min, max) {
-        if (value < min || value > max)
-            return 0;
-        else if (value > target)
-            return 1 - ((value - target) / (max - target));
-        else if (value < target)
-            return (value - min) / (target - min);
+    generalNutritionTick(val, target, min, max) {
+        if (val <= min)
+            return -1;
+        else if (val >= max) 
+            return 1;
+        else if (val > target)
+            return ((val - target) / (max - target));
+        else if (val < target)
+            return -(val - min) / (target - min);
         else
             return 0;
     }
 
     lightLevelTick() {
-        return 1;
+        let target = this.linkedOrganism.llt_target();
+        let min = target - this.linkedOrganism.llt_min();
+        let max = this.linkedOrganism.llt_max() + target;
+        let lsl = this.linkedSquare.processLighting();
+        let val = (lsl.r + lsl.b) / (255 * 2);
+        this.tickLightLevel = this.generalNutritionTick(val, target, min, max);
+        return this.tickLightLevel;
     }
 
     moistureLevelTick() {
         let target = this.linkedOrganism.waterPressureSoilTarget();
         let min = this.linkedOrganism.waterPressureWiltThresh() + target;
         let max = this.linkedOrganism.waterPressureOverwaterThresh() + target;
-
-        this.tickMoistureLevel = this.generalNutritionTick(this.linkedSquare.getSoilWaterPressure(), target, min, max);
-
+        let val = this.linkedSquare.getSoilWaterPressure();
+        this.tickMoistureLevel = this.generalNutritionTick(val, target, min, max);
         return this.tickMoistureLevel;
     }
 
     mossSqTick() {
-        return this.lightLevelTick() * this.moistureLevelTick();
+        this.lightLevelTick();
+        return (1 - Math.abs(this.moistureLevelTick()));
     };
 
-    renderMoisture(frameOpacity) {
-        let c1 = RGB_COLOR_GREEN;
-        let c2 = RGB_COLOR_RED;
-
-        let out = {
-            r: c1.r * this.tickMoistureLevel + c2.r * (1 - this.tickMoistureLevel),
-            g: c1.g * this.tickMoistureLevel + c2.g * (1 - this.tickMoistureLevel),
-            b: c1.b * this.tickMoistureLevel + c2.b * (1 - this.tickMoistureLevel),
+    renderNutrient(frameOpacity, val) {
+        let color1 = null;
+        let color2 = null;
+        let valMin, valMax;
+        if (val > 0) {
+            color1 = RGB_COLOR_OTHER_BLUE;
+            color2 = RGB_COLOR_GREEN;
+            valMin = 0;
+            valMax = 1;
+        } else {
+            color1 = RGB_COLOR_RED;
+            color2 = RGB_COLOR_GREEN;
+            valMin = -1;
+            valMax = 0;
         }
+        let valInvLerp = (val - valMin) / (valMax - valMin);
+        let out = {
+            r: color1.r * valInvLerp + color2.r * (1 - valInvLerp),
+            g: color1.g * valInvLerp + color2.g * (1 - valInvLerp),
+            b: color1.b * valInvLerp + color2.b * (1 - valInvLerp),
+        }
+
         MAIN_CONTEXT.fillStyle = rgbToRgba(out.r, out.g, out.b, frameOpacity);
         this.renderToCanvas();
         return;
+    }
+
+    renderMoisture(frameOpacity) {
+        return this.renderNutrient(frameOpacity, this.tickMoistureLevel);
+    }
+
+    renderLighting() {
+        return this.renderNutrient(1, this.tickLightLevel);
     }
 
     renderWithVariedColors(frameOpacity) {
