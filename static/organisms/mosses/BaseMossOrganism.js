@@ -1,5 +1,6 @@
 import { getCurDay } from "../../climate/time.js";
 import { RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../../colors.js";
+import { removeItemAll } from "../../common.js";
 import { PleurocarpMossGreenSquare } from "../../lifeSquares/mosses/PleurocarpMossGreenSquare.js";
 import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
 import { getNeighbors } from "../../squares/_sqOperations.js";
@@ -99,6 +100,11 @@ export class BaseMossOrganism {
         this.lifeSquares.push(newMoss);
     }
 
+    killMossSquare(mossSquare) {
+        mossSquare.destroy();
+        removeItemAll(this.lifeSquares, mossSquare);
+    }
+
     processGenetics() { } // fill this out in your implementation class!
 
     growNeighborMoss(parentLsq) {
@@ -117,11 +123,10 @@ export class BaseMossOrganism {
         let scoreArr = Array.from(this.lifeSquares.map((lsq) => [lsq, lsq.mossSqTick()]));
         scoreArr.sort((a, b) => a[1] - b[1]);
         if (Math.min(...scoreArr.map((arr) => arr[1])) > 0.5) {
-            this.growNeighborMoss(scoreArr[0][0]);
-        }
-        let mossParent = scoreArr.map((arr) => arr[0]).find((lsq) => this.growNeighborMoss(lsq));
-        if (mossParent != null) {
-            console.log("grew from ", mossParent);
+            let mossParent = scoreArr.map((arr) => arr[0]).find((lsq) => this.growNeighborMoss(lsq));
+            if (mossParent != null) {
+                console.log("grew from ", mossParent);
+            }
         }
     }
 
@@ -129,8 +134,8 @@ export class BaseMossOrganism {
         if (this.lifeSquares.length == 0) {
             this.growMossSquare(this.linkedSquare);
         }
-
         this.nutrientGrowthTick();
+        this.lifeSquares.filter((lsq) => lsq.tickMoistureLevel < 0.25).forEach((lsq) => this.killMossSquare(lsq));
     }
     render() {
         this.lifeSquares.forEach((lsq) => lsq.render());

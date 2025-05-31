@@ -83,7 +83,7 @@ class BaseLifeSquare {
         this.lighting = [];
         this.touchingGround = null;
         this.renderMode = LSQ_RENDERMODE_THETA;
-        
+
         this.lsqLightDecayValue = 1;
     }
 
@@ -157,11 +157,11 @@ class BaseLifeSquare {
     calculateWidthXOffset() {
         return -(0.5 - (this.width / 2));
     }
-    getPosX(xOffset=this.xOffset) {
+    getPosX(xOffset = this.xOffset) {
         return this.posX - (this.deflectionXOffset + xOffset);
     }
 
-    getPosY(yOffset=this.yOffset) {
+    getPosY(yOffset = this.yOffset) {
         return this.posY - (this.deflectionYOffset + yOffset);
     }
 
@@ -245,43 +245,17 @@ class BaseLifeSquare {
                 frameOp = 0.25;
             }
             let myhsv = structuredClone(NUTRIENT_BASE_HSV);
-            let hueShift = this.lightlevelIndicated; 
+            let hueShift = this.lightlevelIndicated;
             myhsv[0] += 60 * (hueShift)
             myhsv[1] = this.lightlevelIndicated;
             MAIN_CONTEXT.fillStyle = rgbToRgba(...hsv2rgb(...myhsv), frameOp);
             this.renderToCanvas();
         }
         else if (selectedViewMode == UI_VIEWMODE_MOISTURE || selectedViewMode == UI_VIEWMODE_WATERMATRIC || selectedViewMode == UI_VIEWMODE_WATERTICKRATE) {
-            let color1 = null;
-            let color2 = null;
-
-            let val = this.linkedOrganism.getWilt();
-            let valMin, valMax;
-
-            if (val > 0) {
-                color1 = RGB_COLOR_OTHER_BLUE;
-                color2 = RGB_COLOR_GREEN;
-                valMin = 0;
-                valMax = 1;
-            } else {
-                color1 = RGB_COLOR_GREEN;
-                color2 = RGB_COLOR_RED;
-                valMin = -1;
-                valMax = 0;
-            }
-            let valInvLerp = (val - valMin) / (valMax - valMin);
-            let out = {
-                r: color1.r * valInvLerp + color2.r * (1 - valInvLerp),
-                g: color1.g * valInvLerp + color2.g * (1 - valInvLerp),
-                b: color1.b * valInvLerp + color2.b * (1 - valInvLerp),
-            }
-
-            MAIN_CONTEXT.fillStyle = rgbToRgba(out.r, out.g, out.b, frameOpacity);
-            this.renderToCanvas();
-            return;
+            this.renderMoisture(frameOpacity);
         }
         else if (selectedViewMode == UI_VIEWMODE_EVOLUTION) {
-            if (this.type == "green") 
+            if (this.type == "green")
                 MAIN_CONTEXT.fillStyle = this.linkedOrganism.getEvolutionColor(0.85);
             else
                 MAIN_CONTEXT.fillStyle = this.linkedOrganism.getEvolutionColor(0.15);
@@ -291,7 +265,7 @@ class BaseLifeSquare {
         } else if (selectedViewMode == UI_VIEWMODE_NUTRIENTS) {
             let myhsv = structuredClone(NUTRIENT_BASE_HSV);
             let lli = Math.min(1, this.lightlevelIndicated);
-            let hueShift = ((this.nitrogenIndicated + this.phosphorusIndicated) / 2) - lli; 
+            let hueShift = ((this.nitrogenIndicated + this.phosphorusIndicated) / 2) - lli;
             myhsv[0] += 60 * (hueShift)
             myhsv[1] = (this.nitrogenIndicated + this.phosphorusIndicated + lli) / 3;
             if (this.type == "green")
@@ -305,9 +279,39 @@ class BaseLifeSquare {
                 if (this.opacity < 0.235) {
                     frameOpacity *= 4;
                 }
-            } 
+            }
             this.renderWithVariedColors(frameOpacity);
         }
+    }
+
+    renderMoisture(frameOpacity) {
+        let color1 = null;
+        let color2 = null;
+
+        let val = this.linkedOrganism.getWilt();
+        let valMin, valMax;
+
+        if (val > 0) {
+            color1 = RGB_COLOR_OTHER_BLUE;
+            color2 = RGB_COLOR_GREEN;
+            valMin = 0;
+            valMax = 1;
+        } else {
+            color1 = RGB_COLOR_GREEN;
+            color2 = RGB_COLOR_RED;
+            valMin = -1;
+            valMax = 0;
+        }
+        let valInvLerp = (val - valMin) / (valMax - valMin);
+        let out = {
+            r: color1.r * valInvLerp + color2.r * (1 - valInvLerp),
+            g: color1.g * valInvLerp + color2.g * (1 - valInvLerp),
+            b: color1.b * valInvLerp + color2.b * (1 - valInvLerp),
+        }
+
+        MAIN_CONTEXT.fillStyle = rgbToRgba(out.r, out.g, out.b, frameOpacity);
+        this.renderToCanvas();
+        return;
     }
 
     processLighting() {
@@ -378,7 +382,6 @@ class BaseLifeSquare {
         }
         MAIN_CONTEXT.fillStyle = this.cachedRgba;
         this.renderToCanvas();
-
     }
 
     calculateColor() {

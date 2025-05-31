@@ -75,6 +75,14 @@ export class OrganismComponent extends Component {
           // moss
           mossConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "moss", UI_ORGANISM_SELECT, UI_ORGANISM_MOSS_PLEUROCARP,
                () => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorInactiveCustom(0.52)));
+          
+          let pleurocarpConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_ORGANISM_SELECT) == UI_ORGANISM_MOSS_PLEUROCARP);
+          mossConditionalContainer.addElement(pleurocarpConditionalContainer);
+          
+          
+          pleurocarpConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.75, "pleurocarp moss: the spready kind", "italic"))
+          pleurocarpConditionalContainer.addElement(new TextBackground(this.window, sizeX, br3, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""))
+          pleurocarpConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.50), 0.75, "moist soils, shade"))
 
           // grass 
           grassConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "wheat", UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_WHEAT,
@@ -224,7 +232,7 @@ export class OrganismComponent extends Component {
                return false;
           }
           if (loadGD(UI_ORGANISM_TYPE_SELECT) == UI_ORGANISM_TYPE_MOSS) {
-               if ([].includes(selected)) {
+               if ([UI_ORGANISM_MOSS_PLEUROCARP].includes(selected)) {
                     return true;
                }
                return false;
