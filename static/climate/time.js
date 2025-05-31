@@ -56,6 +56,10 @@ export function getDaylightStrengthFrameDiff() {
     return _cdaylightStrength - _prevDaylightStrength;
 }
 
+export function getSeekTimeTarget() {
+    return seekTimeTarget;
+}
+
 // for time skipping 
 let startSeekTime = 0;
 let seekTimeTarget = 0;

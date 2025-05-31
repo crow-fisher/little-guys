@@ -1,7 +1,8 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { SunCalc } from "../../climate/suncalc/suncalc.js";
-import { explicitSeek, getCurDay, getSkyBackgroundColorForDay, millis_per_day } from "../../climate/time.js";
+import { explicitSeek, getCurDay, getSeekTimeTarget, getSkyBackgroundColorForDay, millis_per_day } from "../../climate/time.js";
+import { COLOR_BLACK } from "../../colors.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
 import { WindowElement } from "../Window.js";
@@ -70,6 +71,10 @@ export class TimeSkipElement extends WindowElement {
     
             if (Math.abs(renderLineCurDay - getCurDay()) < (1 / this.sizeX)) {
                 strokeStyle = getActiveClimate().getUIColorActive();
+            }
+
+            if (Math.abs(renderLineCurDay - getSeekTimeTarget()) < (1 / this.sizeX)) {
+                strokeStyle = COLOR_BLACK;
             }
     
             if (strokeStyle != strokeStyleStart) {
