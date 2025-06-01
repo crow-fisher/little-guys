@@ -143,7 +143,9 @@ export class BaseMossOrganism {
             this.growMossSquare(this.linkedSquare);
         }
         this.nutrientGrowthTick();
-        this.lifeSquares.filter((lsq) => lsq.tickMoistureLevel < 0.25).forEach((lsq) => this.killMossSquare(lsq));
+        this.lifeSquares
+            .filter((lsq) => Math.abs(lsq.tickMoistureLevel) > 0.75 || Math.abs(lsq.tickLightLevel) > 0.75)
+            .forEach((lsq) => this.killMossSquare(lsq));
     }
     render() {
         this.lifeSquares.forEach((lsq) => lsq.render());

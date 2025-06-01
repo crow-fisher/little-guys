@@ -25,8 +25,12 @@ export class BaseMossGreenSquare extends BaseLifeSquare {
             return 1;
         else if (val > target)
             return ((val - target) / (max - target));
-        else if (val < target)
-            return -(val - min) / (target - min);
+        else if (val < target) {
+            val -= min;
+            target -= min;
+            val /= target; // if val is min, ie worst, it will be 0. if max, ie best, it will be 1
+            return (-1) + val; 
+        }
         else
             return 0;
     }
@@ -36,7 +40,7 @@ export class BaseMossGreenSquare extends BaseLifeSquare {
         let min = target - this.linkedOrganism.llt_min();
         let max = target + this.linkedOrganism.llt_max();
 
-        let _lsl = this.linkedSquare.processLighting();
+        let _lsl = this.processLighting();
         let val = (_lsl.r + _lsl.b) / (255 * 2);
         this.tickLightLevel = this.generalNutritionTick(val, target, min, max);
 
@@ -55,7 +59,7 @@ export class BaseMossGreenSquare extends BaseLifeSquare {
 
     mossSqTick() {
         this.lightLevelTick();
-        return (1 - Math.abs(this.moistureLevelTick()));
+        return (1 - Math.abs(this.moistureLevelTick())) * (1 - Math.abs(this.lightLevelTick()));
     };
 
     renderNutrient(frameOpacity, val) {
