@@ -12,8 +12,8 @@ export class BaseMossGreenSquare extends BaseLifeSquare {
         super(square, organism);
         square.linkOrganismSquare(this);
         applyLightingFromSource(square, this);
-
         this.dormantColorBase = hexToRgb("#594d3c");
+        this.overwaterColorBase = hexToRgb("#150e04");
         this.tickLightLevel = 0;
         this.tickMoistureLevel = 0;
     }
@@ -21,7 +21,7 @@ export class BaseMossGreenSquare extends BaseLifeSquare {
     generalNutritionTick(val, target, min, max) {
         if (val <= min)
             return -1;
-        else if (val >= max) 
+        else if (val >= max)
             return 1;
         else if (val > target)
             return ((val - target) / (max - target));
@@ -29,7 +29,7 @@ export class BaseMossGreenSquare extends BaseLifeSquare {
             val -= min;
             target -= min;
             val /= target; // if val is min, ie worst, it will be 0. if max, ie best, it will be 1
-            return (-1) + val; 
+            return (-1) + val;
         }
         else
             return 0;
@@ -59,7 +59,7 @@ export class BaseMossGreenSquare extends BaseLifeSquare {
 
     mossSqTick() {
         this.lightLevelTick();
-        return (1 - Math.abs(this.moistureLevelTick())) * (1 - Math.abs(this.lightLevelTick()));
+        return [(1 - Math.abs(this.moistureLevelTick())), (1 - Math.abs(this.lightLevelTick()))]
     };
 
     renderNutrient(frameOpacity, val) {
@@ -138,10 +138,20 @@ export class BaseMossGreenSquare extends BaseLifeSquare {
                 b: (baseColor.b * 0.5 + ((altColor1.b * rand + altColor2.b * (1 - rand)) * 0.5))
             };
 
-            let outColorMP = {
-                r: (outColorBase.r * this.tickMoistureLevel + this.dormantColorBase.r * (1 - this.tickMoistureLevel)),
-                g: (outColorBase.g * this.tickMoistureLevel + this.dormantColorBase.g * (1 - this.tickMoistureLevel)),
-                b: (outColorBase.b * this.tickMoistureLevel + this.dormantColorBase.b * (1 - this.tickMoistureLevel))
+            let outColorMP = null;
+
+            if (this.tickMoistureLevel <= 0) {
+                outColorMP = {
+                    r: (outColorBase.r * (1 - Math.abs(this.tickMoistureLevel)) + this.dormantColorBase.r * Math.abs(this.tickMoistureLevel)),
+                    g: (outColorBase.g * (1 - Math.abs(this.tickMoistureLevel)) + this.dormantColorBase.g * Math.abs(this.tickMoistureLevel)),
+                    b: (outColorBase.b * (1 - Math.abs(this.tickMoistureLevel)) + this.dormantColorBase.b * Math.abs(this.tickMoistureLevel))
+                }
+            } else {
+                outColorMP = {
+                    r: (outColorBase.r * (1 - this.tickMoistureLevel) + this.overwaterColorBase.r * Math.abs(this.tickMoistureLevel)),
+                    g: (outColorBase.g * (1 - this.tickMoistureLevel) + this.overwaterColorBase.g * Math.abs(this.tickMoistureLevel)),
+                    b: (outColorBase.b * (1 - this.tickMoistureLevel) + this.overwaterColorBase.b * Math.abs(this.tickMoistureLevel))
+                }
             }
 
             this.frameCacheLighting = null;

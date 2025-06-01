@@ -1,12 +1,13 @@
 import { GenericRootSquare } from "../../lifeSquares/GenericRootSquare.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
-import { baseOrganism_dnm } from "../BaseOrganism.js";
+import { _llt_target, baseOrganism_dnm } from "../BaseOrganism.js";
 import { UI_ORGANISM_GRASS_KBLUE, UI_ORGANISM_MOSS_PLEUROCARP } from "../../ui/UIData.js";
 import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh } from "../BaseOrganism.js";
 import { PleurocarpMossGreenSquare } from "../../lifeSquares/mosses/PleurocarpMossGreenSquare.js";
 import { BaseMossOrganism } from "./BaseMossOrganism.js";
 
 export let pmoss_dnm = structuredClone(baseOrganism_dnm);
+pmoss_dnm[_llt_target] = 2.28;
 pmoss_dnm[_llt_min] = 0.59;
 pmoss_dnm[_llt_max] = 1.43;
 pmoss_dnm[_llt_throttlValMax] = 4.13;

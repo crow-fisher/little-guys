@@ -121,6 +121,11 @@ export class BaseMossOrganism {
             .find((sq) => !(sq.linkedOrganismSquares.some((lsq) => lsq.linkedOrganism == this)));
         if (square != null) {
             let newMoss = new this.greenType(square, this);
+            newMoss.mossSqTick();
+            if (Math.abs(newMoss.tickMoistureLevel) > 0.75 || Math.abs(newMoss.tickLightLevel) > 0.75) {
+                newMoss.destroy();
+                return false;
+            }
             this.lifeSquares.push(newMoss);
             return true;
         }
@@ -129,8 +134,8 @@ export class BaseMossOrganism {
 
     nutrientGrowthTick() {
         let scoreArr = Array.from(this.lifeSquares.map((lsq) => [lsq, lsq.mossSqTick()]));
-        scoreArr.sort((a, b) => a[1] - b[1]);
-        if (Math.min(...scoreArr.map((arr) => arr[1])) > 0.5) {
+        scoreArr.sort((a, b) => a[1][0] * a[1][1] - b[1][0] * b[1][1]);
+        if (scoreArr.every((arr) => Math.min(arr[1][0],arr[1][1])) > 0.75) {
             let mossParent = scoreArr.map((arr) => arr[0]).find((lsq) => this.growNeighborMoss(lsq));
             if (mossParent != null) {
                 console.log("grew from ", mossParent);
