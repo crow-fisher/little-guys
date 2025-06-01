@@ -1,5 +1,5 @@
 import { getCurDay } from "../../climate/time.js";
-import { RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../../colors.js";
+import { COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { removeItemAll } from "../../common.js";
 import { PleurocarpMossGreenSquare } from "../../lifeSquares/mosses/PleurocarpMossGreenSquare.js";
 import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
@@ -41,11 +41,15 @@ export class BaseMossOrganism {
         this.spawnTime = getCurDay();
         this.lifeSquares = new Array();
         this.tickEnergy = 0;
-
         this.greenType = PleurocarpMossGreenSquare; // eg 
-
         this.evolutionMinColor = RGB_COLOR_BLUE;
         this.evolutionMaxColor = RGB_COLOR_VERY_FUCKING_RED;
+        
+        this.growthPlans = [];
+    }
+
+    getEvolutionColor(opacity) {
+        return COLOR_BLACK;
     }
     getGenericNutritionParam(name) {
         let defaultMap = this.getDefaultNutritionMap();

@@ -14,6 +14,8 @@ export class BaseMossGreenSquare extends BaseLifeSquare {
         applyLightingFromSource(square, this);
 
         this.dormantColorBase = hexToRgb("#594d3c");
+        this.tickLightLevel = 0;
+        this.tickMoistureLevel = 0;
     }
 
     generalNutritionTick(val, target, min, max) {
@@ -32,17 +34,20 @@ export class BaseMossGreenSquare extends BaseLifeSquare {
     lightLevelTick() {
         let target = this.linkedOrganism.llt_target();
         let min = target - this.linkedOrganism.llt_min();
-        let max = this.linkedOrganism.llt_max() + target;
-        let lsl = this.linkedSquare.processLighting();
-        let val = (lsl.r + lsl.b) / (255 * 2);
+        let max = target + this.linkedOrganism.llt_max();
+
+        let _lsl = this.linkedSquare.processLighting();
+        let val = (_lsl.r + _lsl.b) / (255 * 2);
         this.tickLightLevel = this.generalNutritionTick(val, target, min, max);
+
         return this.tickLightLevel;
     }
 
     moistureLevelTick() {
         let target = this.linkedOrganism.waterPressureSoilTarget();
-        let min = this.linkedOrganism.waterPressureWiltThresh() + target;
-        let max = this.linkedOrganism.waterPressureOverwaterThresh() + target;
+        let min = target + this.linkedOrganism.waterPressureWiltThresh();
+        let max = target + this.linkedOrganism.waterPressureOverwaterThresh();
+
         let val = this.linkedSquare.getSoilWaterPressure();
         this.tickMoistureLevel = this.generalNutritionTick(val, target, min, max);
         return this.tickMoistureLevel;
@@ -56,23 +61,23 @@ export class BaseMossGreenSquare extends BaseLifeSquare {
     renderNutrient(frameOpacity, val) {
         let color1 = null;
         let color2 = null;
-        let valMin, valMax;
-        if (val > 0) {
-            color1 = RGB_COLOR_OTHER_BLUE;
-            color2 = RGB_COLOR_GREEN;
-            valMin = 0;
-            valMax = 1;
-        } else {
+        let c1m, c2m;
+
+        if (val < 0) {
             color1 = RGB_COLOR_RED;
             color2 = RGB_COLOR_GREEN;
-            valMin = -1;
-            valMax = 0;
+            c1m = Math.abs(val);
+            c2m = 1 + val;
+        } else if (val >= 0) {
+            color1 = RGB_COLOR_GREEN;
+            color2 = RGB_COLOR_OTHER_BLUE;
+            c1m = (1 - val);
+            c2m = val;
         }
-        let valInvLerp = (val - valMin) / (valMax - valMin);
         let out = {
-            r: color1.r * valInvLerp + color2.r * (1 - valInvLerp),
-            g: color1.g * valInvLerp + color2.g * (1 - valInvLerp),
-            b: color1.b * valInvLerp + color2.b * (1 - valInvLerp),
+            r: color1.r * c1m + color2.r * c2m,
+            g: color1.g * c1m + color2.g * c2m,
+            b: color1.b * c1m + color2.b * c2m
         }
 
         MAIN_CONTEXT.fillStyle = rgbToRgba(out.r, out.g, out.b, frameOpacity);
