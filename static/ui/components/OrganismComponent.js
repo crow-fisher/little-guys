@@ -7,6 +7,7 @@ import { coneflower_dnm } from "../../organisms/flowers/ConeflowerOrganism.js";
 import { cattail_dnm } from "../../organisms/grasses/CattailOrganism.js";
 import { kblue_dnm } from "../../organisms/grasses/KentuckyBluegrassOrganism.js";
 import { wheat_dnm } from "../../organisms/grasses/WheatOrganism.js";
+import { pmoss_dnm } from "../../organisms/mosses/PleurocarpMossOrganism.js";
 import { Component } from "../Component.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
 import { Container } from "../Container.js";
@@ -169,7 +170,7 @@ export class OrganismComponent extends Component {
           c_llt_target.addElement(new TextBackground(this.window, left, h1, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.58), 0.75, "llt_target"));
           c_llt_target.addElement(new TextFunctionalBackground(this.window, right, h1, offsetX, () => this.getGenericNutritionParam(_llt_target), () => getActiveClimate().getUIColorInactiveCustom(0.58)));
           nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
-               () => this.getGenericNutritionParam(_llt_target), (val) => this.setGenericNutritionParam(_llt_target, val), sizeX, h1, .25, 2, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
+               () => this.getGenericNutritionParam(_llt_target), (val) => this.setGenericNutritionParam(_llt_target, val), sizeX, h1, .25, 4, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
 
           let c_llt_min = new Container(this.window, 0, 0);
           nutrientConfiguratorContainer.addElement(c_llt_min);
@@ -271,6 +272,8 @@ export class OrganismComponent extends Component {
                     return wheat_dnm;
                case UI_ORGANISM_GRASS_CATTAIL:
                     return cattail_dnm;
+               case UI_ORGANISM_MOSS_PLEUROCARP:
+                    return pmoss_dnm;
                default:
                     return baseOrganism_dnm;
           }

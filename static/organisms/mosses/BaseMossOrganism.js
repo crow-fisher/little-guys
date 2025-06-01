@@ -24,7 +24,7 @@ export let baseMossOrganism_dnm = {
     _llt_max: 2,
     _llt_throttlValMin: 1,
     _llt_throttlValMax: 4,
-    _waterPressureSoilTarget: -4,
+    _waterPressureSoilTarget: -2.46,
     _seedReduction: 0.5,
     _lightDecayValue: 1,
     _waterPressureOverwaterThresh: 1,

@@ -11,8 +11,8 @@ pmoss_dnm[_llt_min] = 0.59;
 pmoss_dnm[_llt_max] = 1.43;
 pmoss_dnm[_llt_throttlValMax] = 4.13;
 pmoss_dnm[_seedReduction] = 0.09;
-pmoss_dnm[_waterPressureSoilTarget] = -3.4;
-pmoss_dnm[_waterPressureOverwaterThresh] = 1;
+pmoss_dnm[_waterPressureSoilTarget] = -2.3;
+pmoss_dnm[_waterPressureOverwaterThresh] = 1.54;
 pmoss_dnm[_waterPressureWiltThresh] = -1.47;
 pmoss_dnm[_lightDecayValue] = 0.47;
 
