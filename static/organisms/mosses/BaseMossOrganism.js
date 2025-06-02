@@ -1,6 +1,7 @@
 import { getCurDay } from "../../climate/time.js";
 import { COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { removeItemAll } from "../../common.js";
+import { GenericRootSquare } from "../../lifeSquares/GenericRootSquare.js";
 import { PleurocarpMossGreenSquare } from "../../lifeSquares/mosses/PleurocarpMossGreenSquare.js";
 import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
 import { getNeighbors } from "../../squares/_sqOperations.js";
@@ -42,6 +43,7 @@ export class BaseMossOrganism {
         this.lifeSquares = new Array();
         this.tickEnergy = 0;
         this.greenType = PleurocarpMossGreenSquare; // eg 
+        this.rootType = GenericRootSquare;
         this.evolutionMinColor = RGB_COLOR_BLUE;
         this.evolutionMaxColor = RGB_COLOR_VERY_FUCKING_RED;
         
@@ -118,7 +120,12 @@ export class BaseMossOrganism {
     scoreSquare(tickMoistureLevel, tickLightLevel) {
         let mDist = Math.abs(tickMoistureLevel);
         let lDist = Math.abs(tickLightLevel);
-        return 0.1 - (0.2 * mDist * lDist);
+
+        let ret = 1 - (2 * mDist * lDist);
+        if (mDist > 0.5 || lDist > 0.5) {
+            return -Math.abs(ret);
+        }
+        return ret;
     }
 
     growNeighborMoss(parentLsq) {
@@ -134,7 +141,7 @@ export class BaseMossOrganism {
                 newMoss.destroy();
                 return false;
             }
-            newMoss.opacity = newMossScore;
+            newMoss.opacity = newMossScore / 10;
             this.lifeSquares.push(newMoss);
             return true;
         }
@@ -144,12 +151,9 @@ export class BaseMossOrganism {
     nutrientGrowthTick() {
         let scoreArr = Array.from(this.lifeSquares.map((lsq) => [lsq, lsq.mossSqTick()]));
         scoreArr.sort((a, b) => a[1][0] * a[1][1] - b[1][0] * b[1][1]);
-        if (scoreArr.every((arr) => Math.min(arr[1][0],arr[1][1])) > 0.75) {
-            let mossParent = scoreArr.map((arr) => arr[0]).find((lsq) => this.growNeighborMoss(lsq));
-            if (mossParent != null) {
-                console.log("grew from ", mossParent);
-            }
-        }
+        scoreArr
+            .map((arr) => arr[0])
+            .find((lsq) => this.growNeighborMoss(lsq));
     }
 
     process() {
@@ -158,7 +162,7 @@ export class BaseMossOrganism {
         }
         this.nutrientGrowthTick();
         this.lifeSquares
-            .filter((lsq) => Math.abs(lsq.tickMoistureLevel) > 0.75 || Math.abs(lsq.tickLightLevel) > 0.75)
+            .filter((lsq) => lsq.opacity <= 0)
             .forEach((lsq) => this.killMossSquare(lsq));
     }
     render() {

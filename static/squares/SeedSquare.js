@@ -17,12 +17,21 @@ class SeedSquare extends BaseSquare {
         this.rootable = true;
         this.organic = true;
         this.visible = false;
+        this.rockable = false;
         this.gravity = randRange(4, 8);
     }
     gravityPhysics() {
         super.gravityPhysics();
+
+        if (this.linkedOrganisms.length == 0) {
+            this.destroy();
+            return;
+        }
+
+        let rockable = this.linkedOrganisms.at(0).rockable;
+        
         let sq = getSquares(Math.round(this.posX), Math.round(this.posY + 1))
-            .find((sq) => sq.proto == "SoilSquare");
+            .find((sq) => (rockable ? (sq.proto == "SoilSquare" || sq.proto == "RockSquare") : sq.proto == "SoilSquare"));
         if (sq == null) {
             let rockSq = getSquares(this.posX, this.posY + 1)
                 .find((sq) => sq.proto == "RockSquare");
@@ -33,10 +42,7 @@ class SeedSquare extends BaseSquare {
             this.seedWindPhysics();
             return;
         }
-        if (this.linkedOrganisms.length == 0) {
-            this.destroy();
-            return;
-        }
+
         this.updatePosition(Math.round(this.posX), Math.round(this.posY));
         
         if (sq.linkedOrganismSquares.some((lsq) => {

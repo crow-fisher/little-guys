@@ -7,7 +7,7 @@ import { PleurocarpMossGreenSquare } from "../../lifeSquares/mosses/PleurocarpMo
 import { BaseMossOrganism } from "./BaseMossOrganism.js";
 
 export let pmoss_dnm = structuredClone(baseOrganism_dnm);
-pmoss_dnm[_llt_target] = 2.28;
+pmoss_dnm[_llt_target] = .39;
 pmoss_dnm[_llt_min] = 0.59;
 pmoss_dnm[_llt_max] = 1.43;
 pmoss_dnm[_llt_throttlValMax] = 4.13;
@@ -36,6 +36,7 @@ export class PleurocarpMossSeedOrganism extends BaseSeedOrganism {
         super(square, evolutionParameters);
         this.proto = "PleurocarpMossSeedOrganism";
         this.greenType = PleurocarpMossGreenSquare;
+        this.rockable = true;
     }
 
     getSproutType() {

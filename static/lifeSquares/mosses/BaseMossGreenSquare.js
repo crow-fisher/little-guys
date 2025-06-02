@@ -60,8 +60,21 @@ export class BaseMossGreenSquare extends BaseLifeSquare {
 
     mossSqTick() {
         this.lightLevelTick();
-        return [(1 - Math.abs(this.moistureLevelTick())), (1 - Math.abs(this.lightLevelTick()))]
+        this.moistureLevelTick();
+        this.mossSqGrowthTick();
+        return [(1 - Math.abs(this.tickMoistureLevel)), (1 - Math.abs(this.tickLightLevel))];
     };
+
+    mossSqGrowthTick() {
+        let lsqMossScore = this.linkedOrganism.scoreSquare(this.tickMoistureLevel, this.tickLightLevel);
+        this.opacity += lsqMossScore / 10;
+        
+        if (lsqMossScore < 0) {
+            this.opacity = 0;
+        } else {
+            this.opacity = Math.min(this.opacity, lsqMossScore ** 7);
+        }
+    }
 
     renderNutrient(frameOpacity, val) {
         let color1 = null;
