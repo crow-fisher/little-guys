@@ -7,7 +7,7 @@ import { PleurocarpMossGreenSquare } from "../../lifeSquares/mosses/PleurocarpMo
 import { BaseMossOrganism } from "./BaseMossOrganism.js";
 
 export let pmoss_dnm = structuredClone(baseOrganism_dnm);
-pmoss_dnm[_llt_target] = .39;
+pmoss_dnm[_llt_target] = .72;
 pmoss_dnm[_llt_min] = 0.59;
 pmoss_dnm[_llt_max] = 1.43;
 pmoss_dnm[_llt_throttlValMax] = 4.13;
