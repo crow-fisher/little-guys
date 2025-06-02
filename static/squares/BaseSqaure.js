@@ -591,6 +591,9 @@ export class BaseSquare {
         if (!this.collision || !sq.collision) {
             return false;
         }
+        if (this.proto == "SeedSquare" && sq.proto == "SeedSquare") {
+            return false;
+        }
         if (this.organic) {
             if (!sq.solid) {
                 return false;

@@ -131,7 +131,7 @@ export class BaseMossOrganism {
     growNeighborMoss(parentLsq) {
         let square = getNeighbors(parentLsq.posX, parentLsq.posY)
             .filter((sq) => sq.proto == "SoilSquare" || sq.proto == "RockSquare")
-            .find((sq) => !(sq.linkedOrganismSquares.some((lsq) => lsq.linkedOrganism == this)));
+            .find((sq) => !(sq.linkedOrganismSquares.some((lsq) => lsq.linkedOrganism.proto == this.proto)));
         if (square != null) {
             let newMoss = new this.greenType(square, this);
             newMoss.mossSqTick();
