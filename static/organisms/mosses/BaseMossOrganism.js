@@ -115,6 +115,12 @@ export class BaseMossOrganism {
 
     processGenetics() { } // fill this out in your implementation class!
 
+    scoreSquare(tickMoistureLevel, tickLightLevel) {
+        let mDist = Math.abs(tickMoistureLevel);
+        let lDist = Math.abs(tickLightLevel);
+        return 0.1 - (0.2 * mDist * lDist);
+    }
+
     growNeighborMoss(parentLsq) {
         let square = getNeighbors(parentLsq.posX, parentLsq.posY)
             .filter((sq) => sq.proto == "SoilSquare" || sq.proto == "RockSquare")
@@ -122,10 +128,13 @@ export class BaseMossOrganism {
         if (square != null) {
             let newMoss = new this.greenType(square, this);
             newMoss.mossSqTick();
-            if (Math.abs(newMoss.tickMoistureLevel) > 0.75 || Math.abs(newMoss.tickLightLevel) > 0.75) {
+            let newMossScore = this.scoreSquare(newMoss.tickMoistureLevel, newMoss.tickLightLevel);
+            newMossScore = Math.min(newMossScore, square.mossSpaceRemaining());
+            if (newMossScore <= 0) {
                 newMoss.destroy();
                 return false;
             }
+            newMoss.opacity = newMossScore;
             this.lifeSquares.push(newMoss);
             return true;
         }

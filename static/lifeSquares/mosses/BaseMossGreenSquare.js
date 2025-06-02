@@ -11,6 +11,7 @@ export class BaseMossGreenSquare extends BaseLifeSquare {
     constructor(square, organism) {
         super(square, organism);
         square.linkOrganismSquare(this);
+        this.type = "moss";
         applyLightingFromSource(square, this);
         this.dormantColorBase = hexToRgb("#594d3c");
         this.overwaterColorBase = hexToRgb("#150e04");

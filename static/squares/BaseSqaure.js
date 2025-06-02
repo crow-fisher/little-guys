@@ -107,6 +107,13 @@ export class BaseSquare {
         this.activeParticles = new Array();
     };
 
+    mossSpaceRemaining() {
+        return 1 - this.linkedOrganismSquares
+            .filter((lsq) => lsq.type == "moss")
+            .map((lsq) => lsq.opacity)
+            .reduce((a, b) => a + b, 0);
+    }
+
     initLightingFromNeighbors() {
         let neighbor = getNeighbors(this.posX, this.posY).find((sq) => sq.lighting.length > 0);
         let curY = this.posY + 1;
