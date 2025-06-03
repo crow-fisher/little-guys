@@ -1,5 +1,5 @@
 import { zoomCanvasFillRect } from "../../canvas.js";
-import { getCurDay } from "../../climate/time.js";
+import { getCurDay, getFrameDt } from "../../climate/time.js";
 import { COLOR_BLACK, COLOR_BLUE, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { removeItemAll } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
@@ -164,7 +164,7 @@ export class BaseMossOrganism {
         if (this.lifeSquares.length == 0) {
             this.growMossSquare(this.linkedSquare);
         }
-        if (Date.now() - this.lastTickTime < 300) {
+        if (Date.now() - this.lastTickTime < (getFrameDt() * 3)) {
             return;
         }
         this.lastTickTime = Date.now();
