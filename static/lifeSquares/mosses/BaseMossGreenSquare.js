@@ -59,6 +59,8 @@ export class BaseMossGreenSquare extends BaseLifeSquare {
     }
 
     mossSqTick() {
+        this.posX = this.linkedSquare.posX;
+        this.posY = this.linkedSquare.posY;
         this.lightLevelTick();
         this.moistureLevelTick();
         this.mossSqGrowthTick();
@@ -110,7 +112,7 @@ export class BaseMossGreenSquare extends BaseLifeSquare {
 
     destroy() {
         super.destroy();
-        this.linkedOrganism.killMossSquare(this, false);
+        this.linkedOrganism.killMossSquare(this);
     }
 
     renderWithVariedColors(frameOpacity) {

@@ -661,7 +661,7 @@ export class BaseSquare {
         if (this.gravity == 0) {
             return false;
         }
-        if (this.proto == "SoilSquare" && this.linkedOrganismSquares.length > 0) {
+        if (this.proto == "SoilSquare" && (this.linkedOrganismSquares.some((lsq) => lsq.type == "root"))) {
             return false;
         }
         return true;

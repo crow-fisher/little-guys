@@ -1,11 +1,13 @@
+import { zoomCanvasFillRect } from "../../canvas.js";
 import { getCurDay } from "../../climate/time.js";
-import { COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../../colors.js";
+import { COLOR_BLACK, COLOR_BLUE, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { removeItemAll } from "../../common.js";
+import { MAIN_CONTEXT } from "../../index.js";
 import { GenericRootSquare } from "../../lifeSquares/GenericRootSquare.js";
 import { PleurocarpMossGreenSquare } from "../../lifeSquares/mosses/PleurocarpMossGreenSquare.js";
 import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
 import { getNeighbors } from "../../squares/_sqOperations.js";
-import { loadGD, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_SELECT } from "../../ui/UIData.js";
+import { loadGD, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_SELECT, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../../ui/UIData.js";
 import { removeOrganism } from "../_orgOperations.js";
 import {
     _llt_min,
@@ -53,6 +55,7 @@ export class BaseMossOrganism {
 
         this.lastTickTime = Date.now();
         this.growthPlans = []; // stub, hack for saveAndLoad.js 
+        this.organismColor = COLOR_BLUE;
     }
 
     getEvolutionColor(opacity) {
@@ -115,12 +118,8 @@ export class BaseMossOrganism {
         this.lifeSquares.push(newMoss);
     }
 
-    killMossSquare(mossSquare, deep=true) {
-        if (deep) {
-            mossSquare.destroy();
-        }
+    killMossSquare(mossSquare) {
         removeItemAll(this.lifeSquares, mossSquare);
-        removeOrganism(this);
     }
 
     processGenetics() { } // fill this out in your implementation class!
@@ -165,18 +164,28 @@ export class BaseMossOrganism {
         if (this.lifeSquares.length == 0) {
             this.growMossSquare(this.linkedSquare);
         }
+        if (Date.now() - this.lastTickTime < 300) {
+            return;
+        }
+        this.lastTickTime = Date.now();
+
         this.nutrientGrowthTick();
         this.lifeSquares
             .filter((lsq) => lsq.opacity <= 0)
-            .forEach((lsq) => this.killMossSquare(lsq));
+            .forEach((lsq) => lsq.destroy());
         this.lastTickTime = Date.now();
 
     }
     render() {
-        this.lifeSquares.forEach((lsq) => lsq.render());
+        this.lifeSquares.forEach((lsq) => lsq.render()); 
+        if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_ORGANISMS) {
+            MAIN_CONTEXT.fillStyle = this.organismColor;
+            zoomCanvasFillRect(this.posX, this.posY, 1, 1);
+        }
     }
     destroy() {
         this.lifeSquares.forEach((lsq) => lsq.destroy());
+        removeOrganism(this);
         return;
     }
 

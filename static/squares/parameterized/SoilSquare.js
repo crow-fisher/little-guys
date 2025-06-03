@@ -275,7 +275,7 @@ export class SoilSquare extends BaseSquare {
             return;
         }
 
-        if (this.linkedOrganismSquares.length > 0 || this.linkedOrganisms.length > 0) {
+        if (this.linkedOrganismSquares.some((lsq) => lsq.type == "root") || this.linkedOrganisms.length > 0) {
             return;
         }
 

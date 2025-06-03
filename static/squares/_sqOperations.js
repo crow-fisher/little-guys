@@ -166,8 +166,7 @@ function getCollidableSquareAtLocation(posX, posY) {
 function removeSquarePos(x, y) {
     x = Math.floor(x);
     y = Math.floor(y);
-    getOrganismsAtSquare(x, y).forEach((org) => org.destroy());
-    getSquares(x, y).filter((sq) => !sq.organic).forEach((sq) => sq.destroy());
+    getSquares(x, y).filter((sq) => !sq.organic).forEach((sq) => sq.destroy(true));
 }
 
 

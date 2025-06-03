@@ -5,9 +5,11 @@ import { STAGE_ADULT, STAGE_DEAD, STAGE_FLOWER, STAGE_JUVENILE, STAGE_SPROUT, SU
 import { addSquare, getNeighbors } from "../squares/_sqOperations.js";
 import { PlantSquare } from "../squares/PlantSquare.js";
 import { applyLightingFromSource } from "../lighting/lightingProcessing.js";
-import { loadGD, UI_GODMODE_FASTPLANT, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_SELECT, UI_SIMULATION_GENS_PER_DAY, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
-import { RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
+import { loadGD, UI_GODMODE_FASTPLANT, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_SELECT, UI_SIMULATION_GENS_PER_DAY, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
+import { COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
 import { removeItemAll, rgbToRgba } from "../common.js";
+import { MAIN_CONTEXT } from "../index.js";
+import { zoomCanvasFillRect } from "../canvas.js";
 
 export const _llt_target = "_llt_target";
 export const _llt_min = "_llt_min";
@@ -96,6 +98,8 @@ class BaseOrganism {
 
         this.evolutionMinColor = RGB_COLOR_BLUE;
         this.evolutionMaxColor = RGB_COLOR_VERY_FUCKING_RED;
+
+        this.organismColor = COLOR_BLACK;
     }
 
     getDefaultNutritionMap() {
@@ -528,6 +532,11 @@ class BaseOrganism {
         }
         if (this.stage != STAGE_DEAD) {
             this.lifeSquares.forEach((sp) => sp.render())
+        }
+
+        if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_ORGANISMS) {
+            MAIN_CONTEXT.fillStyle = this.organismColor;
+            zoomCanvasFillRect(this.posX, this.posY, 1, 1);
         }
     }
 
