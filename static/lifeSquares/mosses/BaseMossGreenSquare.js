@@ -66,14 +66,11 @@ export class BaseMossGreenSquare extends BaseLifeSquare {
     };
 
     mossSqGrowthTick() {
-        let lsqMossScore = this.linkedOrganism.scoreSquare(this.tickMoistureLevel, this.tickLightLevel);
-        this.opacity += lsqMossScore / 10;
-        
-        if (lsqMossScore < 0) {
-            this.opacity = 0;
-        } else {
-            this.opacity = Math.min(this.opacity, lsqMossScore ** 7);
-        }
+        let tml = Math.abs(this.tickMoistureLevel);
+        let tll = Math.abs(this.tickLightLevel);
+        let maxSqOpacity = 1 - Math.max(tml, tll);
+        this.opacity += 1 / this.linkedOrganism.mossTickGrowthRate;
+        this.opacity = Math.min(this.opacity, maxSqOpacity);
     }
 
     renderNutrient(frameOpacity, val) {
@@ -109,6 +106,11 @@ export class BaseMossGreenSquare extends BaseLifeSquare {
 
     renderLighting() {
         return this.renderNutrient(1, this.tickLightLevel);
+    }
+
+    destroy() {
+        super.destroy();
+        this.linkedOrganism.killMossSquare(this, false);
     }
 
     renderWithVariedColors(frameOpacity) {

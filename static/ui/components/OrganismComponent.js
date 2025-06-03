@@ -184,7 +184,7 @@ export class OrganismComponent extends Component {
           c_llt_max.addElement(new TextBackground(this.window, left, h1, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.58), 0.75, "llt_max"));
           c_llt_max.addElement(new TextFunctionalBackground(this.window, right, h1, offsetX, () => this.getGenericNutritionParam(_llt_max), () => getActiveClimate().getUIColorInactiveCustom(0.58)));
           nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
-               () => this.getGenericNutritionParam(_llt_max), (val) => this.setGenericNutritionParam(_llt_max, val), sizeX, h1, 1.1, 3, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
+               () => this.getGenericNutritionParam(_llt_max), (val) => this.setGenericNutritionParam(_llt_max, val), sizeX, h1, 0, 3, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
 
           let c_llt_tv_max = new Container(this.window, 0, 0);
           nutrientConfiguratorContainer.addElement(c_llt_tv_max);

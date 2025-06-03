@@ -6,6 +6,7 @@ import { PleurocarpMossGreenSquare } from "../../lifeSquares/mosses/PleurocarpMo
 import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
 import { getNeighbors } from "../../squares/_sqOperations.js";
 import { loadGD, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_SELECT } from "../../ui/UIData.js";
+import { removeOrganism } from "../_orgOperations.js";
 import {
     _llt_min,
     _llt_max,
@@ -47,7 +48,11 @@ export class BaseMossOrganism {
         this.evolutionMinColor = RGB_COLOR_BLUE;
         this.evolutionMaxColor = RGB_COLOR_VERY_FUCKING_RED;
         
-        this.growthPlans = [];
+
+        this.mossTickGrowthRate = 15;
+
+        this.lastTickTime = Date.now();
+        this.growthPlans = []; // stub, hack for saveAndLoad.js 
     }
 
     getEvolutionColor(opacity) {
@@ -110,23 +115,15 @@ export class BaseMossOrganism {
         this.lifeSquares.push(newMoss);
     }
 
-    killMossSquare(mossSquare) {
-        mossSquare.destroy();
+    killMossSquare(mossSquare, deep=true) {
+        if (deep) {
+            mossSquare.destroy();
+        }
         removeItemAll(this.lifeSquares, mossSquare);
+        removeOrganism(this);
     }
 
     processGenetics() { } // fill this out in your implementation class!
-
-    scoreSquare(tickMoistureLevel, tickLightLevel) {
-        let mDist = Math.abs(tickMoistureLevel);
-        let lDist = Math.abs(tickLightLevel);
-
-        let ret = 1 - (2 * mDist * lDist);
-        if (mDist > 0.5 || lDist > 0.5) {
-            return -Math.abs(ret);
-        }
-        return ret;
-    }
 
     growNeighborMoss(parentLsq) {
         let square = getNeighbors(parentLsq.posX, parentLsq.posY)
@@ -135,13 +132,21 @@ export class BaseMossOrganism {
         if (square != null) {
             let newMoss = new this.greenType(square, this);
             newMoss.mossSqTick();
-            let newMossScore = this.scoreSquare(newMoss.tickMoistureLevel, newMoss.tickLightLevel);
-            newMossScore = Math.min(newMossScore, square.mossSpaceRemaining());
-            if (newMossScore <= 0) {
+            let tml = Math.abs(newMoss.tickMoistureLevel); 
+            let tll = Math.abs(newMoss.tickLightLevel);
+
+            if (tll == 1 || tml == 1) {
                 newMoss.destroy();
                 return false;
             }
-            newMoss.opacity = newMossScore / 10;
+
+            let newMossOpacity = (1 - Math.max(tml, tll)) / this.mossTickGrowthRate;
+            newMossOpacity = Math.min(newMossOpacity, square.mossSpaceRemaining());
+            if (newMossOpacity <= 0) {
+                newMoss.destroy();
+                return false;
+            }
+            newMoss.opacity = newMossOpacity;
             this.lifeSquares.push(newMoss);
             return true;
         }
@@ -164,6 +169,8 @@ export class BaseMossOrganism {
         this.lifeSquares
             .filter((lsq) => lsq.opacity <= 0)
             .forEach((lsq) => this.killMossSquare(lsq));
+        this.lastTickTime = Date.now();
+
     }
     render() {
         this.lifeSquares.forEach((lsq) => lsq.render());

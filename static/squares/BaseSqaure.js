@@ -180,6 +180,7 @@ export class BaseSquare {
     destroy(deep = false) {
         if (deep) {
             this.linkedOrganisms.forEach((org) => org.destroy());
+            this.linkedOrganismSquares.forEach((lsq) => lsq.destroy());
         }
         removeSquare(this);
         this.lighting = [];
