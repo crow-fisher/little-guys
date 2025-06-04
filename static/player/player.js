@@ -1,5 +1,5 @@
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillCircle, zoomCanvasFillRect } from "../canvas.js";
-import { COLOR_VERY_FUCKING_RED } from "../colors.js";
+import { COLOR_BLACK, COLOR_GREEN, COLOR_VERY_FUCKING_RED } from "../colors.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { getSquares } from "../squares/_sqOperations.js";
 
@@ -22,22 +22,46 @@ export class Player {
 
         this.sizeX = 2;
         this.sizeY = 4;
-
+        this.frameCollisionMap = new Map();
 
         this.kmxl = 'a';
         this.kmxr = 'd';
         this.kmyu = 'w';
         this.kmyd = 's';
 
-        this.acc = .1;
+        this.acc = .01;
+        
+        this.initFrameCollisionMap();
+    }
+
+    initFrameCollisionMap() {
+        for (let i = 0; i < this.sizeX; i++) {
+            this.frameCollisionMap.set(i, new Map());
+            for (let j = 0; j < this.sizeY; j++) {
+                this.frameCollisionMap.get(i).set(j, false);
+            }
+        }
     }
 
     render() { 
-        MAIN_CONTEXT.fillStyle = COLOR_VERY_FUCKING_RED;
-        zoomCanvasFillRect(this.posX * getBaseSize(), this.posY * getBaseSize(), this.sizeX * getBaseSize(), this.sizeY * getBaseSize());
+        for (let i = 0; i < this.sizeX; i++) {
+            for (let j = 0; j < this.sizeY; j++) {
+                if (this.frameCollisionMap.get(i).get(j)) {
+                    MAIN_CONTEXT.fillStyle = COLOR_VERY_FUCKING_RED;
+                } else {
+                    MAIN_CONTEXT.fillStyle = COLOR_BLACK;
+                }
+                zoomCanvasFillRect((this.posX + i) * getBaseSize(), (this.posY + j) * getBaseSize(), getBaseSize(), getBaseSize());
+            }
+        }
     }
 
     tick() {
+        let sideX = (this.speedX > 0) ? 1 : -1;
+        let sideY = (this.speedY > 0) ? 1 : -1;
+        this.speedX -= sideX * Math.max(this.acc / 10, Math.abs(this.speedX) / 10);
+        this.speedY -= sideY * Math.max(this.acc / 10, Math.abs(this.speedY) / 10);
+
         if (this.kpxl)
             this.speedX -= this.acc;
         if (this.kpxr)
@@ -66,23 +90,22 @@ export class Player {
             this.speedY = 0;
         }
 
-        let foundCollisionSquare, i, j;
-        
-        collision:
-        for (i = 0; i < this.sizeX; i++) {
-            for (j = 0; j < this.sizeY; j++) {
-                let px = Math.floor(this.posX + i);
-                let py = Math.floor(this.posY + j);
-                foundCollisionSquare = getSquares(px, py).find((sq) => sq.collision && sq.solid);
-                if (foundCollisionSquare != null)
-                    break collision;
+        for (let i = 0; i < this.sizeX; i++) {
+            for (let j = 0; j <= this.sizeY; j++) {
+                let pxc = Math.ceil(this.posX + i);
+                let pyc = Math.ceil(this.posY + j);
+                let pxf = Math.floor(this.posX + i);
+                let pyf = Math.floor(this.posY + j);
+
+                let ccc = getSquares(pxc, pyc).some((sq) => sq.collision && sq.solid);
+                let cff = getSquares(pxf, pyf).some((sq) => sq.collision && sq.solid);
+
+                let ccf = getSquares(pxc, pyf).some((sq) => sq.collision && sq.solid);
+                let cfc = getSquares(pxf, pyc).some((sq) => sq.collision && sq.solid);
+
+                this.frameCollisionMap.get(i).set(j, ccc || cff || ccf || cfc);
             }
         };
-
-        if (foundCollisionSquare != null) {
-            this.speedX = 0;
-            this.speedY = 0;
-        }
 
     }
 
