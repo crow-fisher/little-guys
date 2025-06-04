@@ -11,6 +11,8 @@ import { isLeftMouseClicked } from "./mouse.js";
 import { iterateOnSquares, resetSqColChangeMap } from "./squares/_sqOperations.js";
 import { doPeriodicSave, isSaveOrLoadInProgress } from "./saveAndLoad.js";
 import { renderThrottleMap } from "./climate/simulation/throttler.js";
+import { Player } from "./player/player.js";
+import { playerTick, renderPlayer } from "./player/playerMain.js";
  
 initUI();
 let lightingHandler = new LightingHandler();
@@ -50,6 +52,7 @@ export function scheduler_main() {
         doClickAddEyedropperMixer();
         resetWindowHovered(); 
         squareTick();
+        playerTick();
         orgTick();
         render();
         renderWindows();
@@ -58,6 +61,8 @@ export function scheduler_main() {
             executeFunctionQueue();
         periodicPurgeOldGroupData();
         doPeriodicSave();
+        renderPlayer();
+
     }
     setTimeout(scheduler_main, 0);
 }

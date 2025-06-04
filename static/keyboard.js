@@ -1,5 +1,6 @@
 import { moveCamera, resetZoom } from "./canvas.js";
 import { getGlobalThetaBase, setGlobalThetaBase } from "./globals.js";
+import { isPlayerRunning, playerKeyDown, playerKeyUp } from "./player/playerMain.js";
 import { loadGD, saveGD, UI_PALETTE_EYEDROPPER, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_MIXER, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_TOPBAR_BLOCK, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, closeEyedropperMixer, UI_PALETTE_ERASE, UI_TEXTEDIT_ACTIVE, UI_REGEX, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALETTE_SURFACE_OFF, UI_SM_ORGANISM } from "./ui/UIData.js";
 
 export const KEY_CONTROL = "Control";
@@ -46,6 +47,10 @@ export function keydown(e) {
         doKeyboardInput(e);
         return;
     }
+    if (isPlayerRunning()) {
+        playerKeyDown(e.key);
+        return;
+    }
     keyPressMap[e.key] = true;
     // if (e.key == "s") {
     //     doZoom(-0.1);
@@ -88,8 +93,6 @@ export function keydown(e) {
         saveGD(UI_PALETTE_ACTIVE, true);
         saveGD(UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK);
         closeEyedropperMixer();
-
-
     }
 
     if (e.key == '3') {
@@ -131,6 +134,9 @@ export function keydown(e) {
 }
 
 export function keyup(e) {
+    if (isPlayerRunning()) {
+        playerKeyUp(e.key);
+    }
     if (e.key in keyPressMap) {
         keyPressMap[e.key] = false;
     }

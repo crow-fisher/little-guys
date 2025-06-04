@@ -2,6 +2,7 @@ import { getBaseUISize, resetZoom } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { purgeCanvasFrameLimit } from "../../globalOperations.js";
 import { getLastMouseDown } from "../../mouse.js";
+import { isPlayerRunning, startPlayerMain, stopPlayerMain } from "../../player/playerMain.js";
 import { deleteHiddenWorlds, hideWorld, loadEmptyScene, loadSlot, saveCurGame, unhideWorld } from "../../saveAndLoad.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
 import { Container } from "../Container.js";
@@ -105,6 +106,26 @@ export class MainMenuComponent extends SubTreeComponent {
 
         subMenuContainer.addElement( new Toggle(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, UI_UI_PHONEMODE, 
         "phone mode",  () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient(), 0.75, true, UICONFIG));
+
+        subMenuContainer.addElement(new ButtonFunctionalText(this.window, this.sizeX, getBaseUISize() * 3, UI_CENTER, () => {
+            if (isPlayerRunning()) {
+                stopPlayerMain();
+            } else {
+                startPlayerMain();
+            }
+        }, () => {
+            if (isPlayerRunning()) {
+                return "stop player";
+            } else {
+                return "start player";
+            }
+        }, () => {
+            if (isPlayerRunning()) {
+                return getActiveClimate().getUIColorInactiveCustom(0.63);
+            } else {
+                return getActiveClimate().getUIColorInactiveCustom(0.55);
+            }
+        }))
 
     }
 
