@@ -4,6 +4,11 @@ import { MAIN_CONTEXT } from "../index.js";
 import { getSquares } from "../squares/_sqOperations.js";
 
 
+const ET = 0b1000;
+const EB = 0b0100;
+const EL = 0b0010;
+const ER = 0b0001;
+
 export class Player {
     constructor() {
         this.posX = getCanvasSquaresX() / 2;
@@ -30,7 +35,7 @@ export class Player {
         this.kmyd = 's';
 
         this.acc = .01;
-        
+
         this.initFrameCollisionMap();
     }
 
@@ -90,6 +95,11 @@ export class Player {
             this.speedY = 0;
         }
 
+        this.updateCollision();
+        this.processCollision();
+    }
+
+    updateCollision() {
         for (let i = 0; i < this.sizeX; i++) {
             for (let j = 0; j <= this.sizeY; j++) {
                 let pxc = Math.ceil(this.posX + i);
@@ -106,7 +116,21 @@ export class Player {
                 this.frameCollisionMap.get(i).set(j, ccc || cff || ccf || cfc);
             }
         };
+    }
 
+    processCollision() {
+        let any = false;
+        for (let i = 0; i < this.sizeX; i++) {
+            for (let j = 0; j < this.sizeY; j++) {
+                any |= this.frameCollisionMap.get(i).get(j);
+            }
+        }
+        if (!any) {
+            return;
+        }
+
+        // behaviors - 
+        // if we are touching on the bottom, move up
     }
 
     handleKeyDown(key) {
@@ -114,7 +138,7 @@ export class Player {
             this.kpxl = true;
         if (key == this.kmxr)
             this.kpxr = true;
-        if (key == this.kmyu)
+        if (key == this.kmyu)   
             this.kpyu = true;
         if (key == this.kmyd)
             this.kpyd = true;
