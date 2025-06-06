@@ -22,6 +22,8 @@ export class Player {
         this.kpyu = false;
         this.kpyd = false;
 
+        this.protos = ["RockSquare", "SoilSquare"];
+        this.bottomColMap = new Map();
 
         // configured members 
 
@@ -34,9 +36,20 @@ export class Player {
         this.kmyu = 'w';
         this.kmyd = 's';
 
-        this.acc = .05;
-        this.gravity = 0.05;
+        this.gravity = .1;
+
+        this.dirtAcc = 0.25;
+        this.rockAcc = 0.01;
+        this.airAcc = 0.05;
+
+        this.dirtMax = 1;
+        this.rockMax = 0.05;
+        this.airMax = this.dirtMax;
+
+        this.acc = .25;
         this.jumpSpeed = 1;
+
+        this.prevTickTime = Date.now();
 
         this.collisionCacheMap = {
             ET: 0,
@@ -49,39 +62,48 @@ export class Player {
     }
 
     initFrameCollisionMap() {
-        for (let i = 0; i < this.sizeX; i++) {
-            this.frameCollisionMap.set(i, new Map());
-            for (let j = 0; j < this.sizeY; j++) {
-                this.frameCollisionMap.get(i).set(j, false);
+        for (let proto of this.protos) {
+            this.bottomColMap.set(proto, false);
+            this.frameCollisionMap.set(proto, new Map());
+            for (let i = 0; i < this.sizeX; i++) {
+                this.frameCollisionMap.get(proto).set(i, new Map());
+                for (let j = 0; j < this.sizeY; j++) {
+                    this.frameCollisionMap.get(proto).get(i).set(j, false);
+                }
             }
         }
     }
 
-    render() { 
-        for (let i = 0; i < this.sizeX; i++) {
-            for (let j = 0; j < this.sizeY; j++) {
+    render() {
+        for (let proto of this.protos) {
+            for (let i = 0; i < this.sizeX; i++) {
+                for (let j = 0; j < this.sizeY; j++) {
+                    MAIN_CONTEXT.fillStyle = COLOR_BLACK;
+                    zoomCanvasFillRect((this.posX + i) * getBaseSize(), (this.posY + j) * getBaseSize(), getBaseSize(), getBaseSize());
+                    let colMask = this.frameCollisionMap.get(proto).get(i).get(j);
 
-                MAIN_CONTEXT.fillStyle = COLOR_BLACK;
-                zoomCanvasFillRect((this.posX + i) * getBaseSize(), (this.posY + j) * getBaseSize(), getBaseSize(), getBaseSize());
+                    if (proto == "RockSquare")
+                        MAIN_CONTEXT.fillStyle = "rgba(255, 0, 0, 0.5);"
+                    if (proto == "SoilSquare")
+                        MAIN_CONTEXT.fillStyle = "rgba(0, 255, 0, 0.5)";
 
-                let colMask = this.frameCollisionMap.get(i).get(j);
-                MAIN_CONTEXT.fillStyle = COLOR_VERY_FUCKING_RED;
-                if ((ET & colMask) == ET)
-                    zoomCanvasFillRect((this.posX + i) * getBaseSize(), (this.posY + j) * getBaseSize(), getBaseSize(), getBaseSize() * 0.125);
-                if ((EB & colMask) == EB)
-                    zoomCanvasFillRect((this.posX + i) * getBaseSize(), (this.posY + j + 1) * getBaseSize(), getBaseSize(), getBaseSize() * -0.125);
-                if ((EL & colMask) == EL)
-                    zoomCanvasFillRect((this.posX + i) * getBaseSize(), (this.posY + j) * getBaseSize(), getBaseSize() * 0.125, getBaseSize());
-                if ((ER & colMask) == ER)
-                    zoomCanvasFillRect((this.posX + i + 1) * getBaseSize(), (this.posY + j) * getBaseSize(), getBaseSize() * -0.125, getBaseSize());
+                    if ((ET & colMask) == ET)
+                        zoomCanvasFillRect((this.posX + i) * getBaseSize(), (this.posY + j) * getBaseSize(), getBaseSize(), getBaseSize() * 0.125);
+                    if ((EB & colMask) == EB)
+                        zoomCanvasFillRect((this.posX + i) * getBaseSize(), (this.posY + j + 1) * getBaseSize(), getBaseSize(), getBaseSize() * -0.125);
+                    if ((EL & colMask) == EL)
+                        zoomCanvasFillRect((this.posX + i) * getBaseSize(), (this.posY + j) * getBaseSize(), getBaseSize() * 0.125, getBaseSize());
+                    if ((ER & colMask) == ER)
+                        zoomCanvasFillRect((this.posX + i + 1) * getBaseSize(), (this.posY + j) * getBaseSize(), getBaseSize() * -0.125, getBaseSize());
+                }
             }
         }
     }
 
     tick() {
-        let sideX = (this.speedX > 0) ? 1 : -1;
-        let sideY = (this.speedY > 0) ? 1 : -1;
-        this.speedX -= sideX * Math.max(this.acc / 10, Math.abs(this.speedX) / 10);
+        this.frameDt = (Date.now() - this.prevTickTime) / 16;
+        this.prevTickTime = Date.now();
+
 
         let frameGravity = this.gravity;
         if (this.kpyd) {
@@ -91,10 +113,6 @@ export class Player {
             frameGravity /= 2;
         }
         this.speedY += frameGravity;
-        if (this.kpxl)
-            this.speedX -= this.acc;
-        if (this.kpxr)
-            this.speedX += this.acc;
 
         this.posX += this.speedX;
         this.posY += this.speedY;
@@ -105,10 +123,9 @@ export class Player {
         this.posX = Math.min(this.posX, getCanvasSquaresX() - this.sizeX);
         this.posX = Math.max(0, this.posX);
 
-        this.posY = Math.min(this.posY, getCanvasSquaresY() - this.sizeY);
         this.posY = Math.max(0, this.posY);
 
-        if (startPx != this.posX) { 
+        if (startPx != this.posX) {
             this.speedX = 0;
         }
         if (startPy != this.posY) {
@@ -120,41 +137,77 @@ export class Player {
     }
 
     updateCollision() {
-        for (let i = 0; i < this.sizeX; i++) {
-            for (let j = 0; j <= this.sizeY; j++) {
-                let pxc = Math.ceil(this.posX + i);
-                let pyc = Math.ceil(this.posY + j);
-                let pxf = Math.floor(this.posX + i);
-                let pyf = Math.floor(this.posY + j);
-                // collison - [ceil/floor] [ceil/floor]
-                let ccc = getSquares(pxc, pyc).some((sq) => sq.collision && sq.solid);
-                let cff = getSquares(pxf, pyf).some((sq) => sq.collision && sq.solid);
+        for (let proto of this.protos) {
+            for (let i = 0; i < this.sizeX; i++) {
+                for (let j = 0; j <= this.sizeY; j++) {
+                    let pxc = Math.ceil(this.posX + i);
+                    let pyc = Math.ceil(this.posY + j);
+                    let pxf = Math.floor(this.posX + i);
+                    let pyf = Math.floor(this.posY + j);
 
-                let ccf = getSquares(pxc, pyf).some((sq) => sq.collision && sq.solid);
-                let cfc = getSquares(pxf, pyc).some((sq) => sq.collision && sq.solid);
+                    let ccc = getSquares(pxc, pyc).some((sq) => sq.proto == proto);
+                    let cff = getSquares(pxf, pyf).some((sq) => sq.proto == proto);
 
-                let colMask = 0;
-                colMask |= (cff || ccf) ? ET : 0; // top edge 
-                colMask |= (ccf || ccc) ? EB : 0; // bottom edge
-                colMask |= (cff || cfc) ? EL : 0; // left edge 
-                colMask |= (ccf || ccc) ? ER : 0; // right edge;
-                this.frameCollisionMap.get(i).set(j, colMask);
+                    let ccf = getSquares(pxc, pyf).some((sq) => sq.proto == proto);
+                    let cfc = getSquares(pxf, pyc).some((sq) => sq.proto == proto);
+
+                    let colMask = 0;
+                    colMask |= (cff || ccf) ? ET : 0; // top edge 
+                    colMask |= (ccf || ccc) ? EB : 0; // bottom edge
+                    colMask |= (cff || cfc) ? EL : 0; // left edge 
+                    colMask |= (ccf || ccc) ? ER : 0; // right edge;
+
+                    this.frameCollisionMap.get(proto).get(i).set(j, colMask);
+                }
             }
-        };
+        }
+
     }
 
     processCollision() {
-        let anyEB = false;
-        for (let i = 0; i < this.sizeX; i++) {
-            for (let j = 0; j < this.sizeY; j++) {
-                anyEB |= (this.frameCollisionMap.get(i).get(j) & EB) == EB;
+        for (let proto of this.protos) {
+            let anyEB = false;
+            for (let i = 0; i < this.sizeX; i++) {
+                for (let j = 0; j < this.sizeY; j++) {
+                    anyEB |= (this.frameCollisionMap.get(proto).get(i).get(j) & EB) == EB;
+                }
+            }
+            this.bottomColMap.set(proto, anyEB);
+        }
+
+        let acc, max, coll;
+        if (this.bottomColMap.get("SoilSquare")) {
+            acc = this.dirtAcc;
+            max = this.dirtMax;
+            coll = true;
+        } else if (this.bottomColMap.get("RockSquare")) {
+            acc = this.rockAcc;
+            max = this.rockMax;
+            coll = true;
+        } else {
+            acc = this.airAcc;
+            max = this.airMax;
+        }
+        
+        if (this.kpxl)
+            this.speedX = Math.max(this.speedX - acc, -max);
+        else if (this.kpxr)
+            this.speedX = Math.min(this.speedX + acc, max);
+        else {
+            let sideX = (this.speedX > 0) ? 1 : -1;
+            if (sideX > 0) {
+                this.speedX = Math.max(0, this.speedX - acc);
+            } else {
+                this.speedX = Math.min(0, this.speedX + acc);
             }
         }
-        if (anyEB) {
+
+        if (coll) {
             this.posY -= .1;
             this.speedY = 0;
             this.collisionCacheMap[EB] = 4;
         }
+
         this.collisionCacheMap[ET] = Math.max(0, this.collisionCacheMap[ET] - 1);
         this.collisionCacheMap[EB] = Math.max(0, this.collisionCacheMap[EB] - 1);
         this.collisionCacheMap[EL] = Math.max(0, this.collisionCacheMap[EL] - 1);
@@ -182,7 +235,7 @@ export class Player {
             this.kpyd = true;
     }
 
-    handleKeyUp(key) { 
+    handleKeyUp(key) {
         if (key == this.kmxl)
             this.kpxl = false;
         if (key == this.kmxr)

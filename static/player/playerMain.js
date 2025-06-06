@@ -1,3 +1,4 @@
+import { getCanvasSquaresY } from "../canvas.js";
 import { Player } from "./player.js";
 
 let player = null;
@@ -23,7 +24,13 @@ export function playerKeyUp(key) {
 }
 
 export function playerTick() {
-    isPlayerRunning() ? player.tick() : null;
+    if (isPlayerRunning()) {
+        player.tick();
+        if (player.posY > getCanvasSquaresY()) {
+            stopPlayerMain();
+            startPlayerMain();
+        }
+    }
 }
 export function renderPlayer() {
     isPlayerRunning() ? player.render() : null;
