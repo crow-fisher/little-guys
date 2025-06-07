@@ -52,7 +52,9 @@ export function scheduler_main() {
         doClickAddEyedropperMixer();
         resetWindowHovered(); 
         squareTick();
+        if (getTimeScale() > 0) {
         playerTick();
+            }
         orgTick();
         render();
         renderWindows();

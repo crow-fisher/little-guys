@@ -21,6 +21,7 @@ export class Player {
         this.kpxr = false;
         this.kpyu = false;
         this.kpyd = false;
+        this.kpRun = false;
 
         // configured members 
 
@@ -32,13 +33,17 @@ export class Player {
         this.kmxr = 'd';
         this.kmyu = 'w';
         this.kmyd = 's';
-
+        this.kmRun = 'shift'
         this.kmJump = ' ';
 
         this.gravity = .1;
 
-        this.walkAcc = 0.25;
-        this.walkMax = 1;
+        this.walkMax = 0.35;
+        this.walkAcc = this.walkMax / 7;
+
+        this.runMax = this.walkMax * 4;
+        this.runAcc = this.walkAcc;
+
         this.jumpSpeed = 1;
         this.jumpTicksLeft = 0;
 
@@ -146,16 +151,34 @@ export class Player {
         let tickAcc = this.walkAcc;
         let tickMax = this.walkMax;
 
+        if (this.kpRun) {
+            tickAcc = this.runAcc;
+            tickMax = this.runMax;
+        }
+
+        let surfaceScoreSquaresAbove = 0;
+        let cx = Math.floor(this.posX);
+        let cy = Math.floor(this.posY + this.sizeY);
+        while (getSquares(cx, cy).some((sq) => sq.proto == "SoilSquare" || sq.proto == "RockSquare")) {
+            surfaceScoreSquaresAbove += getSquares(cx, cy)
+                .filter((sq) => sq.surface)
+                .map((sq) => sq.surfaceLightingFactor)
+                .reduce((a, b) => a + b, 0);
+            cy -= 1;
+        }
+        surfaceScoreSquaresAbove = Math.min(surfaceScoreSquaresAbove, 10);
+        let decayFactor = 0.75 + (surfaceScoreSquaresAbove / 40);
+
         let bottomSurfaceCollision = false;
         let bottomNonSurfaceCollision = false;
-        let bottomMidNonSurfaceCollison = false;
+        let bottomMidNonSurfaceCollison = 0;
 
         for (let i = 0; i < this.sizeX; i++) {
             for (let j = 0; j < this.sizeY; j++) {
                 bottomSurfaceCollision |= (this.frameCollisionMap.get(true).get(i).get(j) & ES) == ES;
                 bottomNonSurfaceCollision |= (this.frameCollisionMap.get(false).get(i).get(j) & ES) == ES;
-                if (j == this.sizeY - 2) {
-                    bottomMidNonSurfaceCollison |= (this.frameCollisionMap.get(false).get(i).get(j) & ES) == ES;
+                if (j <= this.sizeY - 2) {
+                    bottomMidNonSurfaceCollison += (this.frameCollisionMap.get(false).get(i).get(j) & ES) == ES;
                 }
             }
         }
@@ -167,21 +190,25 @@ export class Player {
         } else {
             if (bottomSurfaceCollision) {
                 tickGravity = 0;
-                this.speedY = 0;
+                let sideY = (this.speedY > 0) ? 1 : -1;
+                if (sideY > 0) {
+                    this.speedY = Math.max(0, this.speedY - (decayFactor * tickAcc));
+                } else {
+                    this.speedY = Math.min(0, this.speedY + (decayFactor * tickAcc));
+                }
                 if (this.kpyu)
-                    this.speedY = -tickAcc;
-                
-                if (!bottomNonSurfaceCollision && this.kpyd)
-                    this.speedY = tickAcc;
+                    this.speedY -= tickAcc;
+                else if (!bottomNonSurfaceCollision && this.kpyd)
+                    this.speedY += tickAcc;
 
             } else if (bottomNonSurfaceCollision) {
                 this.speedY = 0;
-                if (bottomMidNonSurfaceCollison) {
-                    tickGravity = -this.gravity * 6;
+                if (bottomMidNonSurfaceCollison > 0) {
+                    tickGravity = -this.gravity * (0.2 * bottomMidNonSurfaceCollison);
                     if (this.speedX > 0) {
-                        this.speedX -= tickAcc * 2;
+                        this.speedX -= tickAcc * (2 * bottomMidNonSurfaceCollison);
                     } else {
-                        this.speedX += tickAcc * 2;
+                        this.speedX += tickAcc * (2 * bottomMidNonSurfaceCollison);
                     }
                 } else {
                     tickGravity = 0;
@@ -194,21 +221,22 @@ export class Player {
             this.jumpTicks = 3;
         }
         this.speedY += tickGravity;
+
+        let globalMax = this.gravity * 16 * 2;
+        this.speedY = (this.speedY > 0 ? Math.min(this.speedY, globalMax) : Math.max(this.speedY, -globalMax));
         this.posX += this.speedX;
         this.posY += this.speedY;
 
+        let sideX = (this.speedX > 0) ? 1 : -1;
+        if (sideX > 0) {
+            this.speedX = Math.max(0, this.speedX - (decayFactor * tickAcc));
+        } else {
+            this.speedX = Math.min(0, this.speedX + (decayFactor * tickAcc));
+        }
         if (this.kpxl)
             this.speedX = Math.max(this.speedX - tickAcc, -tickMax);
         else if (this.kpxr)
             this.speedX = Math.min(this.speedX + tickAcc, tickMax);
-        else {
-            let sideX = (this.speedX > 0) ? 1 : -1;
-            if (sideX > 0) {
-                this.speedX = Math.max(0, this.speedX - tickAcc);
-            } else {
-                this.speedX = Math.min(0, this.speedX + tickAcc);
-            }
-        }
 
         if (this.kpJump) {
             this.jump();
@@ -225,19 +253,23 @@ export class Player {
     }
 
     handleKeyDown(key) {
+        key = key.toLowerCase();
         if (key == this.kmxl)
             this.kpxl = true;
         if (key == this.kmxr)
             this.kpxr = true;
-        if (key == this.kmyu) 
+        if (key == this.kmyu)
             this.kpyu = true;
         if (key == this.kmyd)
             this.kpyd = true;
         if (key == this.kmJump)
             this.kpJump = true;
+        if (key == this.kmRun)
+            this.kpRun = true;
     }
 
     handleKeyUp(key) {
+        key = key.toLowerCase();
         if (key == this.kmxl)
             this.kpxl = false;
         if (key == this.kmxr)
@@ -248,5 +280,8 @@ export class Player {
             this.kpyd = false;
         if (key == this.kmJump)
             this.kpJump = false;
+        if (key == this.kmRun) {
+            this.kpRun = false;
+        }
     }
 }
