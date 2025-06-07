@@ -36,10 +36,10 @@ export class Player {
         this.kmRun = 'shift'
         this.kmJump = ' ';
 
-        this.gravity = .1;
+        this.gravity = .07;
 
         this.walkMax = 0.35;
-        this.walkAcc = this.walkMax / 7;
+        this.walkAcc = this.walkMax / 5;
 
         this.runMax = this.walkMax * 4;
         this.runAcc = this.walkAcc;
@@ -166,8 +166,10 @@ export class Player {
                 .reduce((a, b) => a + b, 0);
             cy -= 1;
         }
-        surfaceScoreSquaresAbove = Math.min(surfaceScoreSquaresAbove, 10);
-        let decayFactor = 0.75 + (surfaceScoreSquaresAbove / 40);
+        surfaceScoreSquaresAbove = Math.max(0, Math.min(surfaceScoreSquaresAbove - 2, 10));
+        let decayFactor = 0.2 + (surfaceScoreSquaresAbove / 20);
+        let decayFactorX = (Math.abs(this.speedX) / tickMax) * decayFactor;
+        let decayFactorY = (Math.abs(this.speedY) / tickMax) * decayFactor;
 
         let bottomSurfaceCollision = false;
         let bottomNonSurfaceCollision = false;
@@ -192,9 +194,9 @@ export class Player {
                 tickGravity = 0;
                 let sideY = (this.speedY > 0) ? 1 : -1;
                 if (sideY > 0) {
-                    this.speedY = Math.max(0, this.speedY - (decayFactor * tickAcc));
+                    this.speedY = Math.max(0, this.speedY - (decayFactorY * tickMax));
                 } else {
-                    this.speedY = Math.min(0, this.speedY + (decayFactor * tickAcc));
+                    this.speedY = Math.min(0, this.speedY + (decayFactorY * tickMax));
                 }
                 if (this.kpyu)
                     this.speedY -= tickAcc;
@@ -227,12 +229,15 @@ export class Player {
         this.posX += this.speedX;
         this.posY += this.speedY;
 
-        let sideX = (this.speedX > 0) ? 1 : -1;
-        if (sideX > 0) {
-            this.speedX = Math.max(0, this.speedX - (decayFactor * tickAcc));
-        } else {
-            this.speedX = Math.min(0, this.speedX + (decayFactor * tickAcc));
+        if (bottomNonSurfaceCollision || bottomSurfaceCollision) {
+            let sideX = (this.speedX > 0) ? 1 : -1;
+            if (sideX > 0) {
+                this.speedX = Math.max(0, this.speedX - (decayFactorX * tickMax));
+            } else {
+                this.speedX = Math.min(0, this.speedX + (decayFactorX * tickMax));
+            }
         }
+
         if (this.kpxl)
             this.speedX = Math.max(this.speedX - tickAcc, -tickMax);
         else if (this.kpxr)
