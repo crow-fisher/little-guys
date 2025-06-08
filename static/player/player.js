@@ -13,7 +13,7 @@ const EE = 0b0001;
 export class Player {
     constructor() {
         this.posX = getCanvasSquaresX() / 2;
-        this.posY = getCanvasSquaresY() / 2;
+        this.posY = 0;
 
         this.speedX = 0;
         this.speedY = 0;
@@ -42,7 +42,7 @@ export class Player {
 
         this.gravity = .07;
 
-        this.walkMax = 0.35;
+        this.walkMax = 0.7;
         this.walkAcc = this.walkMax / 5;
 
         this.runMax = this.walkMax * 4;
@@ -169,7 +169,6 @@ export class Player {
                 }
             }
         }
-
     }
 
     processCollision() {
@@ -200,7 +199,7 @@ export class Player {
             cy -= 1;
         }
         surfaceScoreSquaresAbove = Math.max(0, Math.min(surfaceScoreSquaresAbove - 5, 10));
-        this.decayFactor = 0.4 + (surfaceScoreSquaresAbove / 40);
+        this.decayFactor = 0.2 + (surfaceScoreSquaresAbove / 20);
         let decayFactorX = (Math.abs(this.speedX) / tickMax) * this.decayFactor;
         let decayFactorY = (Math.abs(this.speedY) / tickMax) * this.decayFactor;
 
@@ -251,31 +250,27 @@ export class Player {
             } else {
                 tickAcc = 0;
             }
-        }
-        if (bottomNonSurfaceCollision || bottomSurfaceCollision) {
-            this.jumpTicks = 3;
-        }
-        this.speedY += tickGravity;
 
-        let globalMax = this.gravity * 16 * 2;
-        this.speedY = (this.speedY > 0 ? Math.min(this.speedY, globalMax) : Math.max(this.speedY, -globalMax));
-        this.posX += this.speedX;
-        this.posY += this.speedY;
+            if (bottomNonSurfaceCollision || bottomSurfaceCollision) {
+                let sideX = (this.speedX > 0) ? 1 : -1;
+                if (sideX > 0) {
+                    this.speedX = Math.max(0, this.speedX - (decayFactorX * tickMax));
+                } else {
+                    this.speedX = Math.min(0, this.speedX + (decayFactorX * tickMax));
+                }
+                let cmp = (this.kpax > 0) ? Math.max : Math.min;
+                this.speedX = cmp(this.speedX + this.kpax * tickAcc, (tickMax * this.kpax));
 
-        if (bottomNonSurfaceCollision || bottomSurfaceCollision) {
-            let sideX = (this.speedX > 0) ? 1 : -1;
-            if (sideX > 0) {
-                this.speedX = Math.max(0, this.speedX - (decayFactorX * tickMax));
-            } else {
-                this.speedX = Math.min(0, this.speedX + (decayFactorX * tickMax));
+                if (this.kpJump || isButtonPressed(GBA)) {
+                    this.jumpTicks = 3;
+                    this.jump();
+                }
             }
         }
-        let cmp = (this.kpax > 0) ? Math.max : Math.min;
-        this.speedX = cmp(this.speedX + this.kpax * tickAcc, (tickMax * this.kpax));
 
-        if (this.kpJump || isButtonPressed(GBA)) {
-            this.jump();
-        }
+        this.speedY += tickGravity;
+        this.posX += this.speedX;
+        this.posY += this.speedY;
     }
 
     jump() {
