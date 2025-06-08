@@ -270,7 +270,8 @@ export class Player {
                 this.speedX = Math.min(0, this.speedX + (decayFactorX * tickMax));
             }
         }
-        this.speedX = Math.max(this.speedX + this.kpax * tickAcc, (tickMax * this.kpax));
+        let cmp = (this.kpax > 0) ? Math.max : Math.min;
+        this.speedX = cmp(this.speedX + this.kpax * tickAcc, (tickMax * this.kpax));
 
         if (this.kpJump || isButtonPressed(GBA)) {
             this.jump();
