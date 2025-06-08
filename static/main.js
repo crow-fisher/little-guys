@@ -14,7 +14,7 @@ import { renderThrottleMap } from "./climate/simulation/throttler.js";
 import { Player } from "./player/player.js";
 import { playerTick, renderPlayer } from "./player/playerMain.js";
 import { gamepadInputLoop } from "./gamepad.js";
- 
+
 initUI();
 let lightingHandler = new LightingHandler();
 let climateHandler = new ClimateHandler();
@@ -36,7 +36,7 @@ export function resetLighting() {
     iterateOnSquares((sq) => sq.lighting = new Array());
     lightingHandler = new LightingHandler();
 }
-    
+
 export function resetClimateAndLighting() {
     resetLighting();
     climateHandler = new ClimateHandler();
@@ -46,23 +46,27 @@ export function resetClimate() {
     climateHandler.reset();
 }
 
+function playerMainTick() {
+    if (getTimeScale() > 0) {
+        gamepadInputLoop();
+        playerTick();
+    }
+}
+
 export function scheduler_main() {
     if (!isSaveOrLoadInProgress()) {
         resetSqColChangeMap();
         updateTime();
         doClickAdd();
         doClickAddEyedropperMixer();
-        resetWindowHovered(); 
+        resetWindowHovered();
         squareTick();
-        if (getTimeScale() > 0) {
-            gamepadInputLoop();
-        playerTick();
-            }
+        playerMainTick();
         orgTick();
         render();
         renderWindows();
         updateWindows();
-        if (!isLeftMouseClicked()) 
+        if (!isLeftMouseClicked())
             executeFunctionQueue();
         periodicPurgeOldGroupData();
         doPeriodicSave();
@@ -120,9 +124,9 @@ function squareTick() {
     doWaterFlow();
 
     if (getTimeScale() > 0) {
-    if (loadGD(UI_SIMULATION_CLOUDS)) {
-        climateHandler.climateTick();
-    }
+        if (loadGD(UI_SIMULATION_CLOUDS)) {
+            climateHandler.climateTick();
+        }
     }
 
 }
