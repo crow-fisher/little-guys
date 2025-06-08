@@ -1,5 +1,6 @@
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillCircle, zoomCanvasFillRect } from "../canvas.js";
 import { COLOR_BLACK, COLOR_GREEN, COLOR_VERY_FUCKING_RED } from "../colors.js";
+import { GBNOTSURE, GBX, GBA, getLeftStick, isButtonPressed } from "../gamepad.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { getSquares } from "../squares/_sqOperations.js";
 
@@ -22,6 +23,9 @@ export class Player {
         this.kpyu = false;
         this.kpyd = false;
         this.kpRun = false;
+
+        this.kpax = 0;
+        this.kpay = 0;
 
         // configured members 
 
@@ -97,9 +101,38 @@ export class Player {
         }
     }
 
+    processInput() {
+        this.kpax = 0;
+        this.kpay = 0;
+        if (this.kpxl) {
+            this.kpax -= 1;
+        }
+        if (this.kpxr) {
+            this.kpax += 1;
+        }
+        if (this.kpyu) {
+            this.kpay -= 1;
+        }
+        if (this.kpyd) {
+            this.kpay += 1;
+        }
+        let kbSum = Math.abs(this.kpax) + Math.abs(this.kpay);
+        if (kbSum > 0 && kbSum != 1) {
+            this.kpax /= kbSum ** 0.5;
+            this.kpay /= kbSum ** 0.5;
+        }
+
+        let leftStickInput = getLeftStick();
+        if (kbSum == 0) {
+            this.kpax += leftStickInput[0];
+            this.kpay += leftStickInput[1];
+        }
+    }
+
     tick() {
         this.frameDt = (Date.now() - this.prevTickTime) / 16;
         this.prevTickTime = Date.now();
+        this.processInput();
         this.updateCollision();
         this.processCollision();
     }
@@ -151,7 +184,7 @@ export class Player {
         let tickAcc = this.walkAcc;
         let tickMax = this.walkMax;
 
-        if (this.kpRun) {
+        if (this.kpRun || isButtonPressed(GBX)) {
             tickAcc = this.runAcc;
             tickMax = this.runMax;
         }
@@ -166,10 +199,10 @@ export class Player {
                 .reduce((a, b) => a + b, 0);
             cy -= 1;
         }
-        surfaceScoreSquaresAbove = Math.max(0, Math.min(surfaceScoreSquaresAbove - 2, 10));
-        let decayFactor = 0.2 + (surfaceScoreSquaresAbove / 20);
-        let decayFactorX = (Math.abs(this.speedX) / tickMax) * decayFactor;
-        let decayFactorY = (Math.abs(this.speedY) / tickMax) * decayFactor;
+        surfaceScoreSquaresAbove = Math.max(0, Math.min(surfaceScoreSquaresAbove - 5, 10));
+        this.decayFactor = 0.4 + (surfaceScoreSquaresAbove / 40);
+        let decayFactorX = (Math.abs(this.speedX) / tickMax) * this.decayFactor;
+        let decayFactorY = (Math.abs(this.speedY) / tickMax) * this.decayFactor;
 
         let bottomSurfaceCollision = false;
         let bottomNonSurfaceCollision = false;
@@ -198,10 +231,10 @@ export class Player {
                 } else {
                     this.speedY = Math.min(0, this.speedY + (decayFactorY * tickMax));
                 }
-                if (this.kpyu)
-                    this.speedY -= tickAcc;
-                else if (!bottomNonSurfaceCollision && this.kpyd)
-                    this.speedY += tickAcc;
+                if (this.kpay < 0)
+                    this.speedY += this.kpay * tickAcc;
+                else if (!bottomNonSurfaceCollision && this.kpay > 0)
+                    this.speedY += tickAcc * this.kpay;
 
             } else if (bottomNonSurfaceCollision) {
                 this.speedY = 0;
@@ -237,13 +270,9 @@ export class Player {
                 this.speedX = Math.min(0, this.speedX + (decayFactorX * tickMax));
             }
         }
+        this.speedX = Math.max(this.speedX + this.kpax * tickAcc, (tickMax * this.kpax));
 
-        if (this.kpxl)
-            this.speedX = Math.max(this.speedX - tickAcc, -tickMax);
-        else if (this.kpxr)
-            this.speedX = Math.min(this.speedX + tickAcc, tickMax);
-
-        if (this.kpJump) {
+        if (this.kpJump || isButtonPressed(GBA)) {
             this.jump();
         }
     }
@@ -253,7 +282,7 @@ export class Player {
             this.jumpTicks = 0;
             this.jumpStartY = this.posY;
             this.jumpTicksLeft = 10;
-            this.speedY -= this.jumpSpeed;
+            this.speedY -= (this.jumpSpeed / (1 + this.decayFactor));
         }
     }
 

@@ -1,8 +1,8 @@
 const gamepads = {};
 
-export const GBY = 0b10000;
-export const GBX = 0b01000;
-export const GBA = 0b00100;
+export const GBA = 0b10000;
+export const GBNOTSURE = 0b01000;
+export const GBX = 0b00100;
 export const GBB = 0b00010;
 
 let activeGamepad = 0;
@@ -14,7 +14,7 @@ let stickRightX = 0;
 let stickRightY = 0;
 
 export function isButtonPressed(button) {
-    return (pressedMask | button) == button;
+    return (pressedMask & button) == button;
 }
 
 export function inv(val) {
@@ -52,9 +52,9 @@ export function gamepadInputLoop() {
     if (gp == null) {
         return;
     }
-    doButtonInput(GBY, gp.buttons[0].pressed);
-    doButtonInput(GBX, gp.buttons[1].pressed);
-    doButtonInput(GBA, gp.buttons[2].pressed);
+    doButtonInput(GBA, gp.buttons[0].pressed);
+    doButtonInput(GBNOTSURE, gp.buttons[1].pressed);
+    doButtonInput(GBX, gp.buttons[2].pressed);
     doButtonInput(GBB, gp.buttons[3].pressed);
 
     stickLeftX = gp.axes[0];
@@ -63,10 +63,24 @@ export function gamepadInputLoop() {
     stickRightY = gp.axes[3];
 }
 
+function pdz(val, dz=0.2) {
+    if (val > 0) {
+        if (val > dz) {
+            return val;
+        }
+        return 0;
+    } else {
+        if (val < -dz) {
+            return val;
+        }
+        return 0;
+    }
+}
+
 export function getLeftStick() {
-    return [stickLeftX, stickLeftY];
+    return [pdz(stickLeftX), pdz(stickLeftY)];
 }
 
 export function getRightStick() {
-    return [stickRightX, stickRightY];
+    return [pdz(stickRightX), pdz(stickRightY)];
 }
