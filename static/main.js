@@ -13,12 +13,14 @@ import { doPeriodicSave, isSaveOrLoadInProgress } from "./saveAndLoad.js";
 import { renderThrottleMap } from "./climate/simulation/throttler.js";
 import { Player } from "./player/player.js";
 import { playerTick, renderPlayer } from "./player/playerMain.js";
+import { gamepadInputLoop } from "./gamepad.js";
  
 initUI();
 let lightingHandler = new LightingHandler();
 let climateHandler = new ClimateHandler();
 let liveTimeouts = new Array();
 doTimeSkipToNow();
+
 
 export function addTimeout(timeout) {
     liveTimeouts.push(timeout);
@@ -53,6 +55,7 @@ export function scheduler_main() {
         resetWindowHovered(); 
         squareTick();
         if (getTimeScale() > 0) {
+            gamepadInputLoop();
         playerTick();
             }
         orgTick();
