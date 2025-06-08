@@ -154,10 +154,10 @@ export class Player {
                     let xdt = this.frameDt * this.speedX;
                     let ydt = this.frameDt * this.speedY;
 
-                    let cn = EN * getSquares(pxn + xdt, pyn + ydt).some((sq) => sq.surface == surface);
-                    let cs = ES * getSquares(pxs + xdt, pys + ydt).some((sq) => sq.surface == surface);
-                    let ce = EE * getSquares(pxe + xdt, pye + ydt).some((sq) => sq.surface == surface);
-                    let cw = EW * getSquares(pxw + xdt, pyw + ydt).some((sq) => sq.surface == surface);
+                    let cn = EN * getSquares(pxn + xdt, pyn + ydt).some((sq) => (sq.proto == "SoilSquare" || sq.proto == "RockSquare") && sq.surface == surface);
+                    let cs = ES * getSquares(pxs + xdt, pys + ydt).some((sq) => (sq.proto == "SoilSquare" || sq.proto == "RockSquare") && sq.surface == surface);
+                    let ce = EE * getSquares(pxe + xdt, pye + ydt).some((sq) => (sq.proto == "SoilSquare" || sq.proto == "RockSquare") && sq.surface == surface);
+                    let cw = EW * getSquares(pxw + xdt, pyw + ydt).some((sq) => (sq.proto == "SoilSquare" || sq.proto == "RockSquare") && sq.surface == surface);
 
                     let colMask = 0;
                     colMask |= cn
@@ -187,6 +187,8 @@ export class Player {
             tickAcc = this.runAcc;
             tickMax = this.runMax;
         }
+
+        tickAcc *= this.frameDt;
 
         let surfaceScoreSquaresAbove = 0;
         let cx = Math.floor(this.posX);
