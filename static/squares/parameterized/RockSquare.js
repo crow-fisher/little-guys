@@ -32,6 +32,8 @@ export class RockSquare extends SoilSquare {
         this.surface = false;
         this.waterContainment = 0;
     }
+    
+    windPhysics() {}
 
     getColorBase() {
         let outColor = getActiveClimate().getBaseRockColor(this.colorVariant, this.sand, this.silt, this.clay);

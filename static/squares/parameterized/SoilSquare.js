@@ -2,7 +2,7 @@ import { BaseSquare } from "../BaseSqaure.js";
 import { getNeighbors, getSquares } from "../_sqOperations.js";
 import { cachedGetWaterflowRate, hexToRgb, randRange } from "../../common.js";
 import { getCurTimeScale, getDt, getFrameDt, timeScaleFactor } from "../../climate/time.js";
-import { getPressure, getWindSquareAbove } from "../../climate/simulation/wind.js";
+import { getPressure, getWindSpeedAtLocation, getWindSquareAbove } from "../../climate/simulation/wind.js";
 import { addWaterSaturationPascals, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, temperatureHumidityFlowrateFactor } from "../../climate/simulation/temperatureHumidity.js";
 import { loadGD, UI_LIGHTING_SURFACE, UI_PALETTE_COMPOSITION, UI_PALETTE_SOILIDX, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER } from "../../ui/UIData.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
@@ -123,7 +123,7 @@ export class SoilSquare extends BaseSquare {
         if (refArr.length === 0) {
             return 0;
         }
-    
+
         let lower = refArr[0];
         let upper = refArr[refArr.length - 1];
 
@@ -133,7 +133,7 @@ export class SoilSquare extends BaseSquare {
         if (waterContainment >= upper[0]) {
             return upper[1];
         }
-    
+
         for (let i = 0; i < refArr.length; i++) {
             let entry = refArr[i];
             if (entry[0] < waterContainment && entry[0] > lower[0]) {
@@ -143,29 +143,29 @@ export class SoilSquare extends BaseSquare {
                 upper = entry;
             }
         }
-    
+
         let t = (waterContainment - lower[0]) / (upper[0] - lower[0]);
         let interpolated = lower[1] + t * (upper[1] - lower[1]);
         return interpolated;
     }
-    
+
     getInverseMatricPressure(waterPressure) {
         return (
             this.clay * this.getInversePressureGeneric(waterPressure, clayMatricPressureMap)
-             + this.silt * this.getInversePressureGeneric(waterPressure, siltMatricPressureMap)
-             + this.sand * this.getInversePressureGeneric(waterPressure, sandMatricPressureMap)
+            + this.silt * this.getInversePressureGeneric(waterPressure, siltMatricPressureMap)
+            + this.sand * this.getInversePressureGeneric(waterPressure, sandMatricPressureMap)
         );
     }
 
     getMatricPressure(waterContainment) {
         return (
             this.clay * this.getPressureGeneric(waterContainment, clayMatricPressureMap)
-             + this.silt * this.getPressureGeneric(waterContainment, siltMatricPressureMap)
-             + this.sand * this.getPressureGeneric(waterContainment, sandMatricPressureMap)
+            + this.silt * this.getPressureGeneric(waterContainment, siltMatricPressureMap)
+            + this.sand * this.getPressureGeneric(waterContainment, sandMatricPressureMap)
         );
     }
     getGravitationalPressure() {
-        return -0.02 * 9.8 * this.posY; 
+        return -0.02 * 9.8 * this.posY;
     }
 
     getSoilWaterPressure() {
@@ -184,7 +184,8 @@ export class SoilSquare extends BaseSquare {
                     return true;
                 } else {
                     return false;
-                }})
+                }
+            })
             .forEach((sq) => {
                 let thisWaterPressure = this.getMatricPressure(this.waterContainment);
                 let sqWaterPressure = sq.getMatricPressure(sq.waterContainment) + (sq.getGravitationalPressure() - this.getGravitationalPressure());
@@ -251,7 +252,7 @@ export class SoilSquare extends BaseSquare {
             newWater.processLighting(true);
         }
     }
-    
+
     percolateFromWater(waterBlock) {
         if (this.waterContainmentMax == 0 || this.waterContainment >= this.waterContainmentMax) {
             return 0;
@@ -262,7 +263,7 @@ export class SoilSquare extends BaseSquare {
         return amountToPercolate;
     }
 
-    slopePhysics() {
+    slopeConditional() {
         if (this.gravity == 0 || this.speedY > 0) {
             return;
         }
@@ -280,7 +281,7 @@ export class SoilSquare extends BaseSquare {
         }
 
         if (
-            getSquares(this.posX + 1, this.posY).some((sq) => sq.testCollidesWithSquare(this)) && 
+            getSquares(this.posX + 1, this.posY).some((sq) => sq.testCollidesWithSquare(this)) &&
             getSquares(this.posX - 1, this.posY).some((sq) => sq.testCollidesWithSquare(this))
         ) {
             return;
@@ -300,15 +301,41 @@ export class SoilSquare extends BaseSquare {
         }
 
         shouldDo &= (Math.random() > 0.99 * (this.waterContainment / this.waterContainmentMax));
-
-        if (shouldDo) {
-            if (!getSquares(this.posX - 1, this.posY).some((sq) => sq.testCollidesWithSquare(this)))
-                this.updatePosition(this.posX - 1, this.posY);
-            else if (!getSquares(this.posX + 1, this.posY).some((sq) => sq.testCollidesWithSquare(this)))
-                this.updatePosition(this.posX + 1, this.posY);
-        }
+        return shouldDo;
     }
 
+    slopePhysics() {
+        if (!this.slopeConditional()) {
+            return;
+        }
+        if (!getSquares(this.posX - 1, this.posY).some((sq) => sq.testCollidesWithSquare(this)))
+            this.updatePosition(this.posX - 1, this.posY);
+        else if (!getSquares(this.posX + 1, this.posY).some((sq) => sq.testCollidesWithSquare(this)))
+            this.updatePosition(this.posX + 1, this.posY);
+    }
+
+    windPhysics() {
+        if (!this.slopeConditional()) {
+            return;
+        }
+        let ws = getWindSpeedAtLocation(this.posX, this.posY);
+        let maxWindSpeed = 2;
+
+        let wx = Math.min(Math.max(ws[0], -maxWindSpeed), maxWindSpeed);
+        let wy = Math.min(Math.max(ws[1], -maxWindSpeed), maxWindSpeed);
+
+        let px = Math.abs(wx) / maxWindSpeed;
+        let py = Math.abs(wy) / maxWindSpeed;
+
+        if (Math.random() < px) {
+            this.speedX += Math.round(wx);
+        }
+        if (Math.random() < py) {
+            this.speedY += Math.round(wy);
+
+        }
+
+    }
     getWaterflowRate() {
         return cachedGetWaterflowRate(this.sand, this.silt, this.clay);
     }
@@ -354,7 +381,7 @@ export class SoilSquare extends BaseSquare {
         // requestedAmount = Math.max(meanAmount / 2, requestedAmount);
         // requestedAmount = Math.min(meanAmount * 2, requestedAmount);
         // this.phosphorus -= requestedAmount;
-        return requestedAmount  *this.getNutrientRate(proto);
+        return requestedAmount * this.getNutrientRate(proto);
     }
 
     waterEvaporationRoutine() {
@@ -371,7 +398,7 @@ export class SoilSquare extends BaseSquare {
         }
         let pascals = (myVaporPressure - airWaterPressure);
         pascals /= (8 * temperatureHumidityFlowrateFactor());
-        
+
         pascals *= Math.exp(-0.01 * (this.posY - (y * 4)));
         let amount = Math.min(this.waterContainment, (10 * pascals) / pascalsPerWaterSquare)
         this.waterContainment -= amount;

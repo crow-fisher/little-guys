@@ -769,14 +769,15 @@ export class BaseSquare {
         this.processParticles();
     }
 
-    slopePhysics() {
-        return;
-    }
+    slopePhysics() {}
+
+    windPhysics() {}
 
     physics() {
         if (getTimeScale() != 0) {
             this.slopePhysics();
             this.gravityPhysics();
+            this.windPhysics();
             this.percolateInnerMoisture();
             if (this.speedY > 0) {
                 if (loadGD(UI_SIMULATION_CLOUDS)) {
