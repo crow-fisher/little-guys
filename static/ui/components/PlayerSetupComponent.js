@@ -25,13 +25,14 @@ export class PlayerSetupComponent extends Component {
         let h1 = getBaseUISize() * 3;
         let h2 = getBaseUISize() * 2.5;
         let br = getBaseUISize() * .5;
+        let textAlignOffsetX = getBaseUISize() * 0.91;
 
         container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.75), 0.75, " "))
         container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 3.8, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.66315, "player editor"))
         container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""));
         let waypointArr = this.getIterWaypoints();
-        for (let i = 0; i < this.numWaypoints; i++) {
-            let iCopy = i;
+        for (let _i = 0; _i < this.numWaypoints; _i++) {
+            let iCopy = _i;
             let slotEmptyConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => waypointArr.length <= iCopy);
             slotEmptyConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, UI_CENTER, () => "#999999", 0.75, " - slot empty - "));
             container.addElement(slotEmptyConditionalContainer);
@@ -42,14 +43,14 @@ export class PlayerSetupComponent extends Component {
             let row = new Container(this.window, 0, 0);
             slotFilledConditionalContainer.addElement(row);
 
-            let colorFunc1 = () => (loadUI(UI_PLAYER_SETUP_WAYPOINT_SELECT) == iCopy) ? getActiveClimate().getUIColorActive() : getActiveClimate().getUIColorInactiveCustom([0.65, 0.55, 0.62, 0.58, 0.61, 0.67][i % 6]);
-            let colorFunc2 = () => getActiveClimate().getUIColorInactiveCustom(0.1 + [0.65, 0.55, 0.62, 0.58, 0.61, 0.67][i % 6]);
+            let colorFunc1 = () => loadGD(UI_PLAYER_SETUP_WAYPOINT_SELECT) == iCopy ? getActiveClimate().getUIColorActive() : getActiveClimate().getUIColorInactiveCustom([0.65, 0.55, 0.62, 0.58, 0.61, 0.67][_i % 6]);
+            let colorFunc2 = () => getActiveClimate().getUIColorInactiveCustom(0.1 + [0.65, 0.55, 0.62, 0.58, 0.61, 0.67][_i % 6]);
 
-            row.addElement(new ButtonFunctionalText(this.window, sizeX * (4 / 5), getBaseUISize() * 3, this.textAlignOffsetX, () => loadSlot(this.getWorldFromI(iCopy)),
-                () => waypointArr[i].label, colorFunc1));
-            row.addElement(new ButtonFunctionalText(this.window, sizeX * (1 / 5), getBaseUISize() * 3, this.textAlignOffsetX,
-                () => waypointArr[loadGD(UI_PLAYER_SETUP_WAYPOINT_SELECT)].target = i,
-                () => waypointArr[loadGD(UI_PLAYER_SETUP_WAYPOINT_SELECT)].target == i ? UI_BIGDOTSOLID : UI_BIGDOTHOLLOW, colorFunc2));
+            row.addElement(new ButtonFunctionalText(this.window, sizeX * (4 / 5), getBaseUISize() * 3, textAlignOffsetX, () => saveGD(UI_PLAYER_SETUP_WAYPOINT_SELECT, iCopy),
+                () => waypointArr[iCopy].label, colorFunc1));
+            row.addElement(new ButtonFunctionalText(this.window, sizeX * (1 / 5), getBaseUISize() * 3, textAlignOffsetX,
+                () => waypointArr[loadGD(UI_PLAYER_SETUP_WAYPOINT_SELECT)].target = iCopy,
+                () => waypointArr[loadGD(UI_PLAYER_SETUP_WAYPOINT_SELECT)].target == iCopy ? UI_BIGDOTSOLID : UI_BIGDOTHOLLOW, colorFunc2));
         }
 
         container.addElement(new Button(this.window, sizeX, h1, UI_CENTER, () => {
