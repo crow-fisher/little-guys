@@ -66,8 +66,6 @@ export class BlockPalette extends Component {
         modeSelectRow1.addElement(new RadioToggleLabel(this.window, third, h1, offsetX, "rock", UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK, () => getActiveClimate().getPaletteRockColor(1.1), () => getActiveClimate().getPaletteRockColor(0.55)));
         modeSelectRow1.addElement(new RadioToggleLabel(this.window, third, h1, offsetX, "special", UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, getSpecialColor, getSpecialColorDark));
 
-        let buttonHeight = h1;
-
         let soilRockContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_SOIL || loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK);
         let specialContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_PALETTE_MODE) == UI_PALLETE_MODE_SPECIAL);
 
@@ -92,7 +90,7 @@ export class BlockPalette extends Component {
         soilRockContainer.addElement(toolRow);
 
         for (let i = 0; i < getActiveClimate().soilColors.length; i++) {
-            toolRow.addElement(new ButtonFunctionalText(this.window, sizeX / getActiveClimate().soilColors.length, buttonHeight, UI_CENTER,
+            toolRow.addElement(new ButtonFunctionalText(this.window, sizeX / getActiveClimate().soilColors.length, h1, UI_CENTER,
                 () => {
                     let key = loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK ? UI_PALETTE_ROCKIDX : UI_PALETTE_SOILIDX;
                     saveGD(key, i)
@@ -113,7 +111,7 @@ export class BlockPalette extends Component {
                     return getActiveClimate().getBaseActiveToolBrightnessIdx(i, arr, 1);
                 }));
         }
-        container.addElement(new Text(this.window, sizeX / 8, buttonHeight / 4, 0, ""));
+        container.addElement(new Text(this.window, sizeX / 8, h1 / 4, 0, ""));
         specialContainer.addElement(new Text(this.window, sizeX, h1, UI_CENTER, "surface"))
         let surfaceRow = new Container(this.window, 0, 0);
         specialContainer.addElement(surfaceRow);
@@ -139,10 +137,10 @@ export class BlockPalette extends Component {
         specialContainer.addElement(new SliderGradientBackground(this.window, UI_PALETTE_AQUIFER_FLOWRATE, sizeX, 35, 0.0, 1, getWaterColorDark, getWaterColor,));
 
         let palleteSelectAdvancedRow = new Container(this.window, 0, 0);
-        container.addElement(new Text(this.window, sizeX / 8, buttonHeight / 4, 0, ""));
+        container.addElement(new Text(this.window, sizeX / 8, h1 / 4, 0, ""));
         container.addElement(palleteSelectAdvancedRow);
 
-        container.addElement(new Text(this.window, sizeX / 8, buttonHeight / 4, 0, ""));
+        container.addElement(new Text(this.window, sizeX / 8, h1 / 4, 0, ""));
 
         palleteSelectAdvancedRow.addElement(new RadioToggleLabel(this.window, sizeX, h1, UI_CENTER, "erase", UI_PALETTE_SELECT, UI_PALETTE_ERASE,
             () => getActiveClimate().getSurfaceOnColor(), () => getActiveClimate().getSufaceOffColor()));
@@ -170,13 +168,13 @@ export class BlockPalette extends Component {
         let sizeContainer = new Container(this.window, padding, 1);
         strengthSizeContainer.addElement(sizeContainer);
 
-        sizeContainer.addElement(new Text(this.window, sizeX / 2, buttonHeight * 0.6, UI_CENTER, "size"));
+        sizeContainer.addElement(new Text(this.window, sizeX / 2, h1 * 0.6, UI_CENTER, "size"));
         sizeContainer.addElement(new Slider(this.window, UI_PALETTE_SIZE, sizeX / 2, h1, 2, 14, () => getActiveClimate().getUIColorTransient(), getBaseUISize() * 1));
 
         let strengthContainer = new Container(this.window, padding, 1);
         strengthSizeContainer.addElement(strengthContainer);
 
-        strengthContainer.addElement(new Text(this.window, sizeX / 2, buttonHeight * 0.6, UI_CENTER, "strength"));
+        strengthContainer.addElement(new Text(this.window, sizeX / 2, h1 * 0.6, UI_CENTER, "strength"));
         strengthContainer.addElement(new Slider(this.window, UI_PALETTE_STRENGTH, sizeX / 2, h1, 0, 1, () => getActiveClimate().getUIColorTransient(), getBaseUISize() * 1));
 
     }

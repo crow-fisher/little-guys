@@ -127,6 +127,13 @@ export const UI_GODMODE_MOISTURE = "moisture";
 export const UI_GODMODE_KILL = "kill";
 export const UI_GODMODE_FASTPLANT = "UI_GODMODE_FASTPLANT";
 
+export const UI_PLAYER_SETUP = "UI_PLAYER_SETUP";
+export const UI_PLAYER_SETUP_WAYPOINT_SELECT = "UI_PLAYER_SETUP_WAYPOINT_SELECT";
+export const UI_PLAYER_SETUP_WAYPOINT_DATAMAP = "UI_PLAYER_SETUP_WAYPOINT_DATAMAP";
+export const UI_PLAYER_SETUP_WAYPOINT_NAME = "UI_PLAYER_SETUP_WAYPOINT_NAME";
+export const UI_PLAYER_SETUP_WAYPOINT_SRC = "UI_PLAYER_SETUP_WAYPOINT_SRC";
+export const UI_PLAYER_SETUP_WAYPOINT_DST = "UI_PLAYER_SETUP_WAYPOINT_DST";
+
 export const UI_CLIMATE_SELECT_MENU = "UI_CLIMATE_SELECT_MENU";
 export const UI_CLIMATE_SELECT_CLOUDS = "UI_CLIMATE_SELECT_CLOUDS";
 
@@ -232,7 +239,8 @@ export function isEyedropperOrMixerClicked() {
 export const UI_REGEX = {
     UI_MAIN_NEWWORLD_NAME: ".{0,20}",
     UI_MAIN_NEWWORLD_LATITUDE: "^(-?(90(\\.0{0,2})?|[0-8]?\\d?(\\.\\d{0,2})?))?$",
-    UI_MAIN_NEWWORLD_LONGITUDE: "^(-?(180(\\.0{0,2})?|((1[0-7]\\d)|([1-9]?\\d))?(\\.\\d{0,2})?))?$"
+    UI_MAIN_NEWWORLD_LONGITUDE: "^(-?(180(\\.0{0,2})?|((1[0-7]\\d)|([1-9]?\\d))?(\\.\\d{0,2})?))?$",
+    UI_PLAYER_SETUP_WAYPOINT_NAME: ".{0,20}"
 }
 // put default values in here
 // saved directly
@@ -297,7 +305,10 @@ let _GAMEDATA_DEFAULT = {
     UI_PALETTE_MODE: UI_PALETTE_MODE_SOIL,
     UI_PALETTE_AQUIFER_FLOWRATE: 0.5,
     UI_ORGANISM_CONFIGURATOR: {},
-    UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA: {}
+    UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA: {},
+    UI_PLAYER_SETUP_WAYPOINT_NAME: "new waypoint",
+    UI_PLAYER_SETUP_WAYPOINT_SELECT: -1,
+    UI_PLAYER_SETUP_WAYPOINT_DATAMAP: {}
 };
 
 let _UI_DEFAULT = {
@@ -409,7 +420,8 @@ function saveGeneral(map, key, value) {
 
 
     if (key != UI_CAMERA_EXPOSURE && key != UI_TEXTEDIT_ACTIVE && !(Object.keys(UI_REGEX).some((k) => k == key)))
-        saveGD(UI_TEXTEDIT_ACTIVE, null);
+        console.log("doing nothing");
+        // saveGD(UI_TEXTEDIT_ACTIVE, null);
     
     map[key] = value;
     if (key in UI_FUNCTION_MAP) {

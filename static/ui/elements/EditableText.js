@@ -7,13 +7,12 @@ import { loadGD, saveGD, UI_CENTER, UI_TEXTEDIT_ACTIVE } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class EditableText extends WindowElement {
-    constructor(window, sizeX, sizeY, offsetX, key, regex, fontSizeMult=0.75) {
+    constructor(window, sizeX, sizeY, offsetX, key, fontSizeMult=0.75) {
         super(window, sizeX, sizeY);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         this.offsetX = offsetX;
         this.key = key;
-        this.regex = regex;
         this.fontSizeMult = fontSizeMult;
     }
 

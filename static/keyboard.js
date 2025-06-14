@@ -33,7 +33,7 @@ function doKeyboardInput(e) {
             return;
         }
         let newText = curText + e.key;
-        let regex = new RegExp("^" + curRegex + "$"); // ensure full match
+        let regex = new RegExp("^" + curRegex + "$");
         if (regex.test(newText)) {
             saveGD(curId, newText);
         }

@@ -27,7 +27,7 @@ export class WorldSetupComponent extends PopupComponent {
         let h3 = getBaseUISize() * 2;
         let br = getBaseUISize() * .5;
 
-        container.addElement(new EditableText(this.window, sizeX, h1, UI_CENTER, UI_MAIN_NEWWORLD_NAME, "*"));
+        container.addElement(new EditableText(this.window, sizeX, h1, UI_CENTER, UI_MAIN_NEWWORLD_NAME));
         container.addElement(new Text(this.window, sizeX, br, UI_CENTER, ""));
 
         container.addElement(new Text(this.window, sizeX, h2, UI_CENTER, "world height"));
@@ -70,8 +70,8 @@ export class WorldSetupComponent extends PopupComponent {
 
         locRow1.addElement(new Text(this.window, half, h2, UI_CENTER, "latitude", 0.75, "#AAAAAA"));
         locRow1.addElement(new Text(this.window, half, h2, UI_CENTER, "longitude", 0.75, "#AAAAAA"));
-        locRow2.addElement(new EditableText(this.window, half, h2, UI_CENTER, UI_MAIN_NEWWORLD_LATITUDE, "*"));
-        locRow2.addElement(new EditableText(this.window, half, h2, UI_CENTER, UI_MAIN_NEWWORLD_LONGITUDE, "*"));
+        locRow2.addElement(new EditableText(this.window, half, h2, UI_CENTER, UI_MAIN_NEWWORLD_LATITUDE));
+        locRow2.addElement(new EditableText(this.window, half, h2, UI_CENTER, UI_MAIN_NEWWORLD_LONGITUDE));
 
         let newEditRow = new Container(this.window, padding, 0);
         let newEditRow2 = new Container(this.window, padding, 0);
