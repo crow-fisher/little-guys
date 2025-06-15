@@ -4,7 +4,7 @@ import { BlockPalette } from "./components/BlockPalette.js";
 import { BlockSubtreeComponent as BlockSubtree } from "./components/BlockSubtreeComponent.js";
 import { TopBarComponent } from "./topbar/TopBarComponent.js";
 import { ViewSubtreeComponent } from "./components/ViewSubtreeComponent.js";
-import { loadGD, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_BLOCK, UI_PALETTE_ACTIVE, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveGD, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_TIME, UI_PALETTE_EYEDROPPER, UI_TOPBAR_WEATHER, UI_MAIN_NEWWORLD, saveUI, UI_UI_SIZE, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_CLIMATE_SELECT_CLOUDS, UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK, UI_PALETTE_SELECT, UI_PALETTE_SOILROCK, UI_PALETTE_MODE_SOIL, UI_PLAYER_SETUP } from "./UIData.js";
+import { loadGD, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_BLOCK, UI_PALETTE_ACTIVE, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveGD, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_TIME, UI_PALETTE_EYEDROPPER, UI_TOPBAR_WEATHER, UI_MAIN_NEWWORLD, saveUI, UI_UI_SIZE, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_CLIMATE_SELECT_CLOUDS, UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK, UI_PALETTE_SELECT, UI_PALETTE_SOILROCK, UI_PALETTE_MODE_SOIL, UI_PLAYER_SETUP, UI_PLAYER_SETUP_WAYPOINT_NAME } from "./UIData.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import { PlayerSetupComponent } from "./components/PlayerSetupComponent.js";
 import { getCurMixIdx, getMixArr, getMixArrLen, getTargetMixIdx, setCurMixIdx, setTargetMixIdx } from "../globals.js";
@@ -20,6 +20,7 @@ let topBarComponent;
 let mainMenuComponent;
 let blockPalette;
 let all_components;
+let playerSetup;
 
 all_components = [];
 topBarComponent = new TopBarComponent("UI_TOPBAR");
@@ -45,7 +46,8 @@ export function initUI() {
     all_components.push(new LightingComponent(getBaseUISize() * 63, palette_y_offset, 0, 0, UI_SM_LIGHTING));
     all_components.push(new LightingSubtree(() => topBarComponent.getElementXPositionFunc(0, 5), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_LIGHTING));
     all_components.push(new OrganismComponent(getBaseUISize() * 24, palette_y_offset, 0, 0, UI_SM_ORGANISM));
-    all_components.push(new PlayerSetupComponent(getBaseUISize() * 34, getBaseUISize() * 6, 0, 0, UI_PLAYER_SETUP));
+    playerSetup = new PlayerSetupComponent(getBaseUISize() * 34, getBaseUISize() * 6, 0, 0, UI_PLAYER_SETUP);
+    all_components.push(playerSetup);
     all_components.push(new TimeSkipComponent(() => topBarComponent.getElementXPositionFunc(0, 18-5), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_TIME));
     all_components.push(new WeatherSelectionComponent(() => topBarComponent.getElementXPositionFunc(0,20-5), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_WEATHER));
     all_components.push(new WorldSetupComponent(() => getCanvasWidth() / 2, () => getBaseUISize() * 30, 0, 0, UI_MAIN_NEWWORLD));
@@ -139,6 +141,7 @@ export function mixerBlockClick(posX, posY) {
 }
 
 addUIFunctionMap(UI_PALETTE_MIXER, () => {setCurMixIdx(getCurMixIdx() - (getCurMixIdx() % 3) + 1); setTargetMixIdx(getCurMixIdx() + getMixArrLen()); });
+addUIFunctionMap(UI_PLAYER_SETUP_WAYPOINT_NAME, () => (playerSetup != null ? playerSetup.handleTextInput() : null));
 
 export function mixerReset() {
     setCurMixIdx(getCurMixIdx() - (getCurMixIdx() % 3) + 1);

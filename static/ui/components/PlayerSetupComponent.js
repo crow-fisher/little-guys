@@ -30,7 +30,7 @@ export class PlayerSetupComponent extends Component {
         container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.75), 0.75, " "))
         container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 3.8, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.66315, "player editor"))
         container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""));
-        let waypointArr = this.getIterWaypoints();
+        let waypointArr = this.getWaypoints();
         for (let _i = 0; _i < this.numWaypoints; _i++) {
             let iCopy = _i;
             let slotEmptyConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => waypointArr.length <= iCopy);
@@ -46,7 +46,7 @@ export class PlayerSetupComponent extends Component {
             let colorFunc1 = () => loadGD(UI_PLAYER_SETUP_WAYPOINT_SELECT) == iCopy ? getActiveClimate().getUIColorActive() : getActiveClimate().getUIColorInactiveCustom([0.65, 0.55, 0.62, 0.58, 0.61, 0.67][_i % 6]);
             let colorFunc2 = () => getActiveClimate().getUIColorInactiveCustom(0.1 + [0.65, 0.55, 0.62, 0.58, 0.61, 0.67][_i % 6]);
 
-            row.addElement(new ButtonFunctionalText(this.window, sizeX * (4 / 5), getBaseUISize() * 3, textAlignOffsetX, () => saveGD(UI_PLAYER_SETUP_WAYPOINT_SELECT, iCopy),
+            row.addElement(new ButtonFunctionalText(this.window, sizeX * (4 / 5), getBaseUISize() * 3, textAlignOffsetX, () => this.setActiveWaypoint(iCopy),
                 () => waypointArr[iCopy].label, colorFunc1));
             row.addElement(new ButtonFunctionalText(this.window, sizeX * (1 / 5), getBaseUISize() * 3, textAlignOffsetX,
                 () => waypointArr[loadGD(UI_PLAYER_SETUP_WAYPOINT_SELECT)].target = iCopy,
@@ -54,26 +54,32 @@ export class PlayerSetupComponent extends Component {
         }
 
         container.addElement(new Button(this.window, sizeX, h1, UI_CENTER, () => {
-            this.createNewWaypoint();
-            saveGD(UI_PLAYER_SETUP_WAYPOINT_SELECT, waypointArr.length - 1);
+            this.getWaypoints().push(new Waypoint());
+            this.setActiveWaypoint(this.getWaypoints().length - 1);
         }, "add waypoint",
             () => getActiveClimate().getUIColorInactiveCustom(0.75)));
         container.addElement(new EditableText(this.window, sizeX, h1, UI_CENTER, UI_PLAYER_SETUP_WAYPOINT_NAME))
     }
 
-    getIterWaypoints() {
+    getWaypoints() {
         if (loadGD(UI_PLAYER_SETUP_WAYPOINT_DATAMAP)[loadUI(UI_UI_CURWORLD)] == null) {
             loadGD(UI_PLAYER_SETUP_WAYPOINT_DATAMAP)[loadUI(UI_UI_CURWORLD)] = [];
         }
         return loadGD(UI_PLAYER_SETUP_WAYPOINT_DATAMAP)[loadUI(UI_UI_CURWORLD)];
     }
 
-    createNewWaypoint() {
-        let arr = this.getIterWaypoints();
-        arr.push(new Waypoint());
-
+    setActiveWaypoint(i) {
+        saveGD(UI_PLAYER_SETUP_WAYPOINT_SELECT, i);
+        saveGD(UI_PLAYER_SETUP_WAYPOINT_NAME, this.getWaypoints().at(loadGD(UI_PLAYER_SETUP_WAYPOINT_SELECT)).label);
     }
 
+    handleTextInput() {
+        let i = loadGD(UI_PLAYER_SETUP_WAYPOINT_SELECT);
+        if (i >= this.getWaypoints().length || i < 0) 
+            return;
+        let c = this.getWaypoints()[i];
+        c.label = loadGD(UI_PLAYER_SETUP_WAYPOINT_NAME);
+    }
 }
 
 class Waypoint {
