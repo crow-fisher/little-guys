@@ -1,14 +1,15 @@
 
 
-import { gameUserStateLoad, saveCurGame } from "./saveAndLoad.js";
-import { clearTimeouts, resetClimateAndLighting, resetLighting, scheduler_main } from "./main.js";
+import { gameUserStateLoad } from "./saveAndLoad.js";
+import { resetClimateAndLighting, resetLighting, scheduler_main } from "./main.js";
 import { keydown, keyup } from "./keyboard.js";
-import { handleClick, handleMouseDown, handleMouseUp, handleTouchEnd, handleTouchMove, handleTouchStart } from "./mouse.js";
-import { getCanvasHeight, getCanvasWidth, resetZoom, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, zoom } from "./canvas.js";
+import { getLastMoveOffset, handleClick, handleMouseDown, handleMouseUp, handleTouchEnd, handleTouchMove, handleTouchStart } from "./mouse.js";
+import { getCanvasHeight, getCanvasWidth, resetZoom, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, transformPixelsToCanvasSquares, zoom } from "./canvas.js";
 import { addUIFunctionMap, loadGD, saveGD, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_SIMULATION_HEIGHT, UI_UI_SIZE } from "./ui/UIData.js";
 import { initUI } from "./ui/WindowManager.js";
-import { iterateOnSquares } from "./squares/_sqOperations.js";
+import { addSquare } from "./squares/_sqOperations.js";
 import { waterGraphReset } from "./waterGraph.js";
+import { ImageSquare } from "./squares/ImageSquare.js";
 
 export let MAIN_CANVAS = document.getElementById("main");
 export let MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
@@ -51,13 +52,13 @@ export function _resetLighting() {
     resetLighting();
 }
 
-export function indexCanvasSize(shouldInitUIClimateAndLighting=true) {
+export function indexCanvasSize(shouldInitUIClimateAndLighting = true) {
     let margin = 0;
     width = Math.floor(window.innerWidth - margin);
     height = Math.floor(window.innerHeight - margin);
     let c_baseSize = Math.floor(height / loadGD(UI_SIMULATION_HEIGHT));
     setCanvasSquaresY(loadGD(UI_SIMULATION_HEIGHT));
-    setCanvasSquaresX(Math.floor(width / c_baseSize));      
+    setCanvasSquaresX(Math.floor(width / c_baseSize));
     setBaseSize(c_baseSize);
     MAIN_CANVAS.width = width;
     MAIN_CANVAS.height = height;
@@ -86,3 +87,40 @@ export function getCurBackgroundColor() {
 window.onresize = indexCanvasSize;
 // window.onblur = saveCurGame;
 document.documentElement.style.overflow = 'hidden';  // firefox, chrome
+document.addEventListener('paste', async (e) => {
+    e.preventDefault();
+    for (const clipboardItem of e.clipboardData.files) {
+        if (clipboardItem.type.startsWith('image/')) {
+            let image = await createImageBitmap(clipboardItem);
+            let tempCanvas = document.createElement("canvas", {willReadFrequently: true});
+            tempCanvas.width = image.width;
+            tempCanvas.height = image.height;
+            
+            let tempCtx = tempCanvas.getContext("2d", {willReadFrequently: true});
+
+            let lastMoveOffset = getLastMoveOffset();
+            if (lastMoveOffset == null) {
+                return;
+            }
+            if (lastMoveOffset.x > getCanvasWidth() || lastMoveOffset > getCanvasHeight()) {
+                return;
+            }
+            let offsetTransformed = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);
+            let offsetX = Math.round(offsetTransformed[0]);
+            let offsetY = Math.round(offsetTransformed[1]);
+            tempCtx.drawImage(image, 0, 0);
+
+            for (let i = 0; i < image.width; i++) {
+                for (let j = 0; j < image.height; j++) {
+                    let r = tempCtx.getImageData(i, j, 1, 1).data[0];
+                    let g = tempCtx.getImageData(i, j, 1, 1).data[1];
+                    let b = tempCtx.getImageData(i, j, 1, 1).data[2];
+                    let a = tempCtx.getImageData(i, j, 1, 1).data[3] / 255;
+                    if (a > (50 / 255)) {
+                        addSquare(new ImageSquare(offsetX + i, offsetY + j, r, g, b, a))
+                    }
+                }
+            }
+        }
+    }
+});

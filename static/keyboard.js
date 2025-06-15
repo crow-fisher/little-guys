@@ -41,7 +41,7 @@ function doKeyboardInput(e) {
 }
 
 export function keydown(e) {
-    e.preventDefault();
+    // e.preventDefault();
     lastKeypressTime = Date.now();
     if (loadGD(UI_TEXTEDIT_ACTIVE)) {
         doKeyboardInput(e);
