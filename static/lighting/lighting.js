@@ -250,7 +250,10 @@ export class LightSource {
                 this.thetaSquares[curBucket] = new Array();
             }
             this.thetaSquares[curBucket].push(arr);
-        }
+        };
+
+        // lastly, nonzero optimization
+        this.cachedLightingConstant = Math.exp(8 - loadGD(UI_LIGHTING_DECAY)) * (loadGD(UI_LIGHTING_QUALITY)) / 9;
     }
 
     async rayCastingForRayIdx(idx, jobIdx, i) {
@@ -264,7 +267,7 @@ export class LightSource {
             let obj = arr[3];
             let curBrightnessCopy = curBrightness;
             let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(this.minTheta + this.thetaStep * i)() * curBrightnessCopy * this.brightnessFunc();
-            curBrightness *= (1 - (obj.surface ? (obj.surfaceLightingFactor ?? 1) : 1) * (obj.blockHealth ?? 1) * (obj.getLightFilterRate() * Math.exp(8 - loadGD(UI_LIGHTING_DECAY)) * (loadGD(UI_LIGHTING_QUALITY)) / 9));
+            curBrightness *= (1 - (obj.surface ? (obj.surfaceLightingFactor ?? 1) : 1) * (obj.blockHealth ?? 1) * (obj.getLightFilterRate() * this.cachedLightingConstant));
             if (obj.lighting[idx] == null) {
                 obj.lighting[idx] = [[pointLightSourceFunc], this.colorFunc];
             } else {
