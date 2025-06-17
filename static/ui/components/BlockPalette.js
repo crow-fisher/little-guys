@@ -1,12 +1,9 @@
-import { getBaseUISize, zoomCanvasFillCircle } from "../../canvas.js";
+import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
-import { COLOR_BLACK } from "../../colors.js";
-import { hueShiftColor, rgbToHex, UI_BIGDOTHOLLOW, UI_BIGDOTSOLID, UI_TINYDOT } from "../../common.js";
-import { MAIN_CONTEXT } from "../../index.js";
+import { hueShiftColor, rgbToHex, UI_BIGDOTHOLLOW, UI_BIGDOTSOLID } from "../../common.js";
 import { Component } from "../Component.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
 import { Container } from "../Container.js";
-import { Button } from "../elements/Button.js";
 import { ButtonFunctionalText } from "../elements/ButtonFunctionalText.js";
 import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
 import { Slider } from "../elements/Slider.js";
@@ -16,7 +13,7 @@ import { SoilPickerDotElement } from "../elements/SoilPickerDotElement.js";
 import { Text } from "../elements/Text.js";
 import { TextBackground } from "../elements/TextBackground.js";
 import { Toggle } from "../elements/Toggle.js";
-import { loadGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CENTER, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_PALETTE_COMPOSITION, saveGD, UI_PALETTE_SHOWPICKER, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, addUIFunctionMap, UI_PALETTE_SOILROCK, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_AQUIFER_FLOWRATE, UI_SOIL_COMPOSITION, UI_UI_PHONEMODE, loadUI } from "../UIData.js";
+import { loadGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CENTER, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_PALETTE_COMPOSITION, saveGD, UI_PALETTE_SHOWPICKER, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, UI_PALETTE_SOILROCK, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_AQUIFER_FLOWRATE, UI_UI_PHONEMODE, loadUI, UI_PALLETE_MODE_PASTE, UI_PALETTE_PASTE_MODE, UI_PALETTE_PASTE_MODE_FG, UI_PALETTE_PASTE_MODE_BG, UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_RIGID, UI_PALETTE_PHYSICS_SAND, UI_PALETTE_PHYSICS_STATIC } from "../UIData.js";
 import { getWaterColor, getWaterColorDark } from "./LightingComponent.js";
 
 
@@ -29,6 +26,17 @@ function getSpecialColor(value = 0.55) {
 
 function getSpecialColorDark() {
     let hueShifted = hueShiftColor(getActiveClimate().getUIColorInactiveCustom(.25), specialHueShift, -.1, 0);
+    return rgbToHex(hueShifted.r, hueShifted.g, hueShifted.b);
+}
+
+const pasteHueShift = 55;
+function getPasteColor(value = 0.55) {
+    let hueShifted = hueShiftColor(getActiveClimate().getUIColorInactiveCustom(value), pasteHueShift, -.1, 0);
+    return rgbToHex(hueShifted.r, hueShifted.g, hueShifted.b);
+}
+
+function getPasteColorDark() {
+    let hueShifted = hueShiftColor(getActiveClimate().getUIColorInactiveCustom(.25), pasteHueShift, -.1, 0);
     return rgbToHex(hueShifted.r, hueShifted.g, hueShifted.b);
 }
 
@@ -60,17 +68,23 @@ export class BlockPalette extends Component {
 
 
         let modeSelectRow1 = new Container(this.window, 0, 0);
-        container.addElement(modeSelectRow1);
+        let modeSelectRow2 = new Container(this.window, 0, 0);
 
-        modeSelectRow1.addElement(new RadioToggleLabel(this.window, third, h1, offsetX, "soil", UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, () => getActiveClimate().getPaletteSoilColor(0.9), () => getActiveClimate().getPaletteSoilColor(0.7)));
-        modeSelectRow1.addElement(new RadioToggleLabel(this.window, third, h1, offsetX, "rock", UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK, () => getActiveClimate().getPaletteRockColor(1.1), () => getActiveClimate().getPaletteRockColor(0.55)));
-        modeSelectRow1.addElement(new RadioToggleLabel(this.window, third, h1, offsetX, "special", UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, getSpecialColor, getSpecialColorDark));
+        container.addElement(modeSelectRow1);
+        container.addElement(modeSelectRow2);
+
+        modeSelectRow1.addElement(new RadioToggleLabel(this.window, half, h1, offsetX, "soil", UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, () => getActiveClimate().getPaletteSoilColor(0.9), () => getActiveClimate().getPaletteSoilColor(0.7)));
+        modeSelectRow1.addElement(new RadioToggleLabel(this.window, half, h1, offsetX, "rock", UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK, () => getActiveClimate().getPaletteRockColor(1.1), () => getActiveClimate().getPaletteRockColor(0.55)));
+        modeSelectRow2.addElement(new RadioToggleLabel(this.window, half, h1, offsetX, "special", UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, getSpecialColor, getSpecialColorDark));
+        modeSelectRow2.addElement(new RadioToggleLabel(this.window, half, h1, offsetX, "paste", UI_PALETTE_MODE, UI_PALLETE_MODE_PASTE, getPasteColor, getPasteColorDark));
 
         let soilRockContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_SOIL || loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK);
         let specialContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_PALETTE_MODE) == UI_PALLETE_MODE_SPECIAL);
+        let pasteContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_PALETTE_MODE) == UI_PALLETE_MODE_PASTE);
 
         container.addElement(soilRockContainer);
         container.addElement(specialContainer);
+        container.addElement(pasteContainer);
 
         for (let i = 0; i <= this.numSoilRows; i++) {
             let row = new Container(this.window, 0, 0);
@@ -135,6 +149,32 @@ export class BlockPalette extends Component {
 
         specialContainer.addElement(new Text(this.window, sizeX, h2, UI_CENTER, "aquifer flowrate"))
         specialContainer.addElement(new SliderGradientBackground(this.window, UI_PALETTE_AQUIFER_FLOWRATE, sizeX, 35, 0.0, 1, getWaterColorDark, getWaterColor,));
+
+
+        // paste container
+        pasteContainer.addElement(new Text(this.window, sizeX, h1, UI_CENTER, "mode"))
+
+        let pasteModeRow = new Container(this.window, 0, 0);
+        pasteContainer.addElement(pasteModeRow);
+
+        pasteModeRow.addElement(new RadioToggleLabel(this.window, half, h1, UI_CENTER, "foreground", UI_PALETTE_PASTE_MODE, UI_PALETTE_PASTE_MODE_FG,
+            () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive()))
+        pasteModeRow.addElement(new RadioToggleLabel(this.window, half, h1, UI_CENTER, "background", UI_PALETTE_PASTE_MODE, UI_PALETTE_PASTE_MODE_BG,
+            () => getActiveClimate().getUIColorInactiveCustom(0.61), () => getActiveClimate().getUIColorActive()))
+
+        let pastePhysicsConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_PALETTE_PASTE_MODE) == UI_PALETTE_PASTE_MODE_FG);
+        pasteContainer.addElement(pastePhysicsConditionalContainer);
+        pastePhysicsConditionalContainer.addElement(new Text(this.window, sizeX, h1, UI_CENTER, "physics mode"))
+        let pastePhysicsRow = new Container(this.window, 0, 0);
+        pastePhysicsConditionalContainer.addElement(pastePhysicsRow);
+
+        pastePhysicsRow.addElement(new RadioToggleLabel(this.window, third, h1, UI_CENTER, "static", UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_STATIC,
+            () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive()))
+        pastePhysicsRow.addElement(new RadioToggleLabel(this.window, third, h1, UI_CENTER, "rigid", UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_RIGID,
+            () => getActiveClimate().getUIColorInactiveCustom(0.61), () => getActiveClimate().getUIColorActive()))
+        pastePhysicsRow.addElement(new RadioToggleLabel(this.window, third, h1, UI_CENTER, "sand", UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_SAND,
+            () => getActiveClimate().getUIColorInactiveCustom(0.61), () => getActiveClimate().getUIColorActive()))
+
 
         let palleteSelectAdvancedRow = new Container(this.window, 0, 0);
         container.addElement(new Text(this.window, sizeX / 8, h1 / 4, 0, ""));

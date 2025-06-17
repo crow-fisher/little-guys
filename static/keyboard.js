@@ -79,7 +79,6 @@ export function keydown(e) {
         moveCamera(1, 0);
     }
 
-
     if (e.key == '1') {
         saveGD(UI_TOPBAR_BLOCK, true);
         saveGD(UI_PALETTE_ACTIVE, true);

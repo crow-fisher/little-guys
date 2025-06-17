@@ -21,6 +21,7 @@ import { ConeflowerOrganism, ConeflowerSeedOrganism } from "./organisms/flowers/
 import { ConeflowerGreenSqaure } from "./lifeSquares/flowers/ConeflowerGreenSqaure.js";
 import { PleurocarpMossGreenSquare } from "./lifeSquares/mosses/PleurocarpMossGreenSquare.js";
 import { PleurocarpMossOrganism } from "./organisms/mosses/PleurocarpMossOrganism.js";
+import { BackgroundImageSquare, ImageSquare, StaticImageSquare } from "./squares/ImageSquare.js";
 
 let ProtoMap = {
     "BaseSquare": BaseSquare.prototype,
@@ -30,6 +31,10 @@ let ProtoMap = {
     "SoilSquare": SoilSquare.prototype,
     "WaterSquare": WaterSquare.prototype, 
     "AquiferSquare": AquiferSquare.prototype,
+
+    "ImageSquare": ImageSquare.prototype,
+    "StaticImageSquare": StaticImageSquare.prototype,
+    "BackgroundImageSquare": BackgroundImageSquare.prototype,
 
     "BaseOrganism": BaseOrganism.prototype,
     "WheatOrganism": WheatOrganism.prototype,

@@ -5,11 +5,11 @@ import { resetClimateAndLighting, resetLighting, scheduler_main } from "./main.j
 import { keydown, keyup } from "./keyboard.js";
 import { getLastMoveOffset, handleClick, handleMouseDown, handleMouseUp, handleTouchEnd, handleTouchMove, handleTouchStart } from "./mouse.js";
 import { getCanvasHeight, getCanvasWidth, resetZoom, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, transformPixelsToCanvasSquares, zoom } from "./canvas.js";
-import { addUIFunctionMap, loadGD, saveGD, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_SIMULATION_HEIGHT, UI_UI_SIZE } from "./ui/UIData.js";
+import { addUIFunctionMap, loadGD, saveGD, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_PALETTE_PASTE_MODE, UI_PALETTE_PASTE_MODE_BG, UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_STATIC, UI_PALLETE_MODE_PASTE, UI_SIMULATION_HEIGHT, UI_UI_SIZE } from "./ui/UIData.js";
 import { initUI } from "./ui/WindowManager.js";
 import { addSquare } from "./squares/_sqOperations.js";
 import { waterGraphReset } from "./waterGraph.js";
-import { ImageSquare } from "./squares/ImageSquare.js";
+import { BackgroundImageSquare, ImageSquare, StaticImageSquare } from "./squares/ImageSquare.js";
 
 export let MAIN_CANVAS = document.getElementById("main");
 export let MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
@@ -117,7 +117,13 @@ document.addEventListener('paste', async (e) => {
                     let b = tempCtx.getImageData(i, j, 1, 1).data[2];
                     let a = tempCtx.getImageData(i, j, 1, 1).data[3] / 255;
                     if (a > (50 / 255)) {
-                        addSquare(new ImageSquare(offsetX + i, offsetY + j, r, g, b, a))
+                        let targetProto = ImageSquare;
+                        if (loadGD(UI_PALETTE_PASTE_MODE) == UI_PALETTE_PASTE_MODE_BG) {
+                            targetProto = BackgroundImageSquare;
+                        } else if (loadGD(UI_PALETTE_PHYSICS) == UI_PALETTE_PHYSICS_STATIC) {
+                            targetProto = StaticImageSquare;
+                        }
+                        addSquare(new targetProto(offsetX + i, offsetY + j, r, g, b, a))
                     }
                 }
             }
