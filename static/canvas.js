@@ -6,7 +6,7 @@ import { iterateOnOrganisms } from "./organisms/_orgOperations.js";
 import { loadGD, saveGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_UI_SIZE, UI_PALETTE_ACTIVE, loadUI, UI_PALETTE_SURFACE, UI_LIGHTING_SURFACE, UI_PALETTE_SELECT, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CANVAS_SQUARES_ZOOM } from "./ui/UIData.js";
 
 let BASE_SIZE = 1;
-let CANVAS_SQUARES_X = 192; 
+let CANVAS_SQUARES_X = 192;
 let CANVAS_SQUARES_Y = 108;
 
 export function getBaseSize() {
@@ -45,11 +45,11 @@ export function transformPixelsToCanvasSquares(x, y) {
 
     let canvasWindowWidth = CANVAS_SQUARES_X / loadGD(UI_CANVAS_SQUARES_ZOOM);
     let canvasWindowHeight = CANVAS_SQUARES_Y / loadGD(UI_CANVAS_SQUARES_ZOOM);
-    
-    let windowWidthStart = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) - (windowWidth / 2);
-    let windowHeightStart = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) - (windowHeight / 2); 
 
-    let canvasWindowWidthStart = windowWidthStart /   BASE_SIZE;
+    let windowWidthStart = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) - (windowWidth / 2);
+    let windowHeightStart = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) - (windowHeight / 2);
+
+    let canvasWindowWidthStart = windowWidthStart / BASE_SIZE;
     let canvasWindowHeightStart = windowHeightStart / BASE_SIZE;
 
     let xpi = x / totalWidth;
@@ -57,21 +57,34 @@ export function transformPixelsToCanvasSquares(x, y) {
 
     return [canvasWindowWidthStart + xpi * canvasWindowWidth, canvasWindowHeightStart + ypi * canvasWindowHeight];
 }
+
+
+let _c_UI_CANVAS_SQUARES_ZOOM = loadGD(UI_CANVAS_SQUARES_ZOOM);
+let _c_UI_CANVAS_VIEWPORT_CENTER_X = loadGD(UI_CANVAS_VIEWPORT_CENTER_X);
+let _c_UI_CANVAS_VIEWPORT_CENTER_Y = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y);
+
+function recacheCanvasPositions() {
+    // 14 fps to 16 fps, 63k squares
+    _c_UI_CANVAS_SQUARES_ZOOM = loadGD(UI_CANVAS_SQUARES_ZOOM);
+    _c_UI_CANVAS_VIEWPORT_CENTER_X = loadGD(UI_CANVAS_VIEWPORT_CENTER_X);
+    _c_UI_CANVAS_VIEWPORT_CENTER_Y = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y);
+}
+
 export function zoomCanvasFillRect(x, y, dx, dy) {
-    dx *= (loadGD(UI_CANVAS_SQUARES_ZOOM));
-    dy *= (loadGD(UI_CANVAS_SQUARES_ZOOM));
+    dx *= _c_UI_CANVAS_SQUARES_ZOOM;
+    dy *= _c_UI_CANVAS_SQUARES_ZOOM;
 
     let totalWidth = CANVAS_SQUARES_X * BASE_SIZE;
     let totalHeight = CANVAS_SQUARES_Y * BASE_SIZE;
 
-    let windowWidth = totalWidth / loadGD(UI_CANVAS_SQUARES_ZOOM);
-    let windowHeight = totalHeight / loadGD(UI_CANVAS_SQUARES_ZOOM);
+    let windowWidth = totalWidth / _c_UI_CANVAS_SQUARES_ZOOM;
+    let windowHeight = totalHeight / _c_UI_CANVAS_SQUARES_ZOOM;
 
-    let windowWidthStart = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) - (windowWidth / 2);
-    let windowHeightStart = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) - (windowHeight / 2); 
+    let windowWidthStart = _c_UI_CANVAS_VIEWPORT_CENTER_X - (windowWidth / 2);
+    let windowHeightStart = _c_UI_CANVAS_VIEWPORT_CENTER_Y - (windowHeight / 2);
 
-    let windowWidthEnd = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) + (windowWidth / 2);
-    let windowHeightEnd = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) + (windowHeight / 2); 
+    let windowWidthEnd = _c_UI_CANVAS_VIEWPORT_CENTER_X + (windowWidth / 2);
+    let windowHeightEnd = _c_UI_CANVAS_VIEWPORT_CENTER_Y + (windowHeight / 2);
 
     let xpi = (x - windowWidthStart) / (windowWidthEnd - windowWidthStart);
     let ypi = (y - windowHeightStart) / (windowHeightEnd - windowHeightStart);
@@ -84,10 +97,9 @@ export function zoomCanvasFillRect(x, y, dx, dy) {
     }
     if ((ypl + dy < 0) || (ypl > getCanvasHeight())) {
         return;
-    } 
-    
+    }
     MAIN_CONTEXT.fillRect(
-        xpl, 
+        xpl,
         ypl,
         dx,
         dy
@@ -102,18 +114,18 @@ export function zoomCanvasFillCircle(x, y, size) {
     let windowHeight = totalHeight / loadGD(UI_CANVAS_SQUARES_ZOOM);
 
     let windowWidthStart = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) - (windowWidth / 2);
-    let windowHeightStart = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) - (windowHeight / 2); 
+    let windowHeightStart = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) - (windowHeight / 2);
 
     let windowWidthEnd = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) + (windowWidth / 2);
-    let windowHeightEnd = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) + (windowHeight / 2); 
+    let windowHeightEnd = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) + (windowHeight / 2);
 
     let xpi = (x - windowWidthStart) / (windowWidthEnd - windowWidthStart);
     let ypi = (y - windowHeightStart) / (windowHeightEnd - windowHeightStart);
     let xpl = xpi * totalWidth;
     let ypl = ypi * totalHeight;
-    MAIN_CONTEXT.beginPath(); 
+    MAIN_CONTEXT.beginPath();
     MAIN_CONTEXT.arc(xpl, ypl, size * loadGD(UI_CANVAS_SQUARES_ZOOM), 0, 2 * Math.PI, false);
-    MAIN_CONTEXT.fill();  
+    MAIN_CONTEXT.fill();
 }
 
 export function zoomCanvasFillRectTheta(x, y, dx, dy, xRef, yRef, theta) {
@@ -127,10 +139,10 @@ export function zoomCanvasFillRectTheta(x, y, dx, dy, xRef, yRef, theta) {
     let windowHeight = totalHeight / loadGD(UI_CANVAS_SQUARES_ZOOM);
 
     let windowWidthStart = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) - (windowWidth / 2);
-    let windowHeightStart = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) - (windowHeight / 2); 
+    let windowHeightStart = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) - (windowHeight / 2);
 
     let windowWidthEnd = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) + (windowWidth / 2);
-    let windowHeightEnd = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) + (windowHeight / 2); 
+    let windowHeightEnd = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) + (windowHeight / 2);
 
     let xpi = (x - windowWidthStart) / (windowWidthEnd - windowWidthStart);
     let ypi = (y - windowHeightStart) / (windowHeightEnd - windowHeightStart);
@@ -138,8 +150,8 @@ export function zoomCanvasFillRectTheta(x, y, dx, dy, xRef, yRef, theta) {
     let xpl = xpi * totalWidth;
     let ypl = ypi * totalHeight;
 
-    xRef = xpl + dx/2;
-    yRef = ypl + dy/2;
+    xRef = xpl + dx / 2;
+    yRef = ypl + dy / 2;
 
     let p1x = xpl - xRef;
     let p1y = ypl - yRef;
@@ -147,10 +159,10 @@ export function zoomCanvasFillRectTheta(x, y, dx, dy, xRef, yRef, theta) {
     let p2x = xpl + dx - xRef;
     let p2y = ypl - yRef;
 
-    let p3x = xpl + dx - xRef; 
+    let p3x = xpl + dx - xRef;
     let p3y = ypl + dy - yRef;
 
-    let p4x = xpl - xRef; 
+    let p4x = xpl - xRef;
     let p4y = ypl + dy - yRef;
 
     let p1xR = p1x * Math.cos(theta) - p1y * Math.sin(theta);
@@ -191,10 +203,10 @@ export function zoomCanvasSquareText(x, y, text) {
     let windowHeight = totalHeight / loadGD(UI_CANVAS_SQUARES_ZOOM);
 
     let windowWidthStart = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) - (windowWidth / 2);
-    let windowHeightStart = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) - (windowHeight / 2); 
+    let windowHeightStart = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) - (windowHeight / 2);
 
     let windowWidthEnd = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) + (windowWidth / 2);
-    let windowHeightEnd = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) + (windowHeight / 2); 
+    let windowHeightEnd = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) + (windowHeight / 2);
 
     let xpi = (x - windowWidthStart) / (windowWidthEnd - windowWidthStart);
     let ypi = (y - windowHeightStart) / (windowHeightEnd - windowHeightStart);
@@ -218,7 +230,7 @@ export function zoom(event) {
             }
             let strength = loadGD(UI_PALETTE_STRENGTH);
             if (event.deltaY > 0) {
-                strength *= (0.999 ** event.deltaY); 
+                strength *= (0.999 ** event.deltaY);
             } else {
                 for (let i = 0; i < Math.abs(event.deltaY); i++) {
                     strength += (1 - strength) * 0.001;
@@ -234,7 +246,7 @@ export function zoom(event) {
             size = Math.min(Math.max(size, 1), 14)
             saveGD(UI_PALETTE_SIZE, size);
             return;
-        } 
+        }
     }
     doZoom(event.deltaY);
 }
@@ -245,10 +257,10 @@ let zoom_idx = neutral_zoom_idx;
 
 function resetZoomArr() {
     zoom_arr = new Array();
-    zoom_arr.push(6/7);
-    zoom_arr.push(7/8);
-    zoom_arr.push(8/9);
-    zoom_arr.push(9/10);
+    zoom_arr.push(6 / 7);
+    zoom_arr.push(7 / 8);
+    zoom_arr.push(8 / 9);
+    zoom_arr.push(9 / 10);
 
     neutral_zoom_idx = zoom_arr.length;
     zoom_idx = neutral_zoom_idx;
@@ -275,10 +287,10 @@ function doOrganismZoom(deltaY) {
     let lastMoveOffset = getLastMoveOffset();
     let hover = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);
     iterateOnOrganisms((org) => {
-        let foundLsq = org.lifeSquares.find((lsq) => 
-                lsq.type == "green" && 
-                Math.abs(lsq.getPosX() - hover[0]) < 1 && 
-                Math.abs(lsq.getPosY() - hover[1]) < 1
+        let foundLsq = org.lifeSquares.find((lsq) =>
+            lsq.type == "green" &&
+            Math.abs(lsq.getPosX() - hover[0]) < 1 &&
+            Math.abs(lsq.getPosY() - hover[1]) < 1
         );
         if (foundLsq != null) {
             foundLsq.component[getter] += deltaY * .01;
@@ -324,17 +336,20 @@ export function doZoom(deltaY) {
 
     saveGD(UI_CANVAS_VIEWPORT_CENTER_X, loadGD(UI_CANVAS_VIEWPORT_CENTER_X) + Math.floor((widthDiff * (x - 0.5))));
     saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) + Math.floor((heightDiff * (y - 0.5))));
+    recacheCanvasPositions();
 }
 export function resetZoom() {
     saveGD(UI_CANVAS_VIEWPORT_CENTER_X, (CANVAS_SQUARES_X * BASE_SIZE) / 2);
     saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, (CANVAS_SQUARES_Y * BASE_SIZE) / 2);
     saveGD(UI_CANVAS_SQUARES_ZOOM, 1);
     zoom_idx = neutral_zoom_idx;
+    recacheCanvasPositions();
 }
 
 export function moveCamera(x, y) {
     saveGD(UI_CANVAS_VIEWPORT_CENTER_X, loadGD(UI_CANVAS_VIEWPORT_CENTER_X) + x * 4);
     saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) + y * 4);
+    recacheCanvasPositions();
 }
 export function getCanvasWidth() {
     return CANVAS_SQUARES_X * BASE_SIZE;
