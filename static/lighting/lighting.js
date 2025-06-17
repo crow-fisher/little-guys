@@ -8,6 +8,7 @@ import { isLeftMouseClicked, isRightMouseClicked } from "../mouse.js";
 import { addTimeout } from "../main.js";
 import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
 import { isSaveOrLoadInProgress } from "../saveAndLoad.js";
+import { isSquareOnCanvas } from "../canvas.js";
 
 export let MAX_BRIGHTNESS = 8;
 export function createSunLightGroup() {
@@ -95,7 +96,7 @@ export class StationaryWideLightGroup extends LightGroup {
                 10 ** 8,
                 minMaxTheta[0],
                 minMaxTheta[1],
-                (100 / 7) * loadGD(UI_LIGHTING_QUALITY)
+                Math.ceil((100 / 7) * loadGD(UI_LIGHTING_QUALITY))
             );
             this.lightSources.push(newLightSource);
         }
@@ -138,6 +139,9 @@ export class LightSource {
         this.windSquareBrightnessMults = new Map();
         this.numTasks = 10;
         this.numTasksCompleted = {};
+        this.thetaSquares = new Array(numRays);
+        
+        this.thetaStep = (this.maxTheta - this.minTheta) / this.numRays;
     }
 
     destroy() {
@@ -203,18 +207,14 @@ export class LightSource {
                 this.calculateFrameCloudCover();
                 return this.getWindSquareBrightnessFunc(theta);
             }
-            let m = .5; 
+            let m = .5;
             ret = (ret + m) / (m + 1);
             return ret;
         }
     }
 
-
-    async rayCastingForTheta(idx, jobIdx, theta, thetaStep) {
-        if (isSaveOrLoadInProgress()) {
-            return;
-        }
-        let thetaSquares = new Array();
+    prepareSquareCoordinatePlane() {
+        let allSquares = new Array();
         iterateOnSquares((sq) => {
             if (!sq.visible) {
                 return;
@@ -222,31 +222,48 @@ export class LightSource {
             let relPosX = sq.posX - this.posX;
             let relPosY = sq.posY - this.posY;
             let sqTheta = Math.atan(relPosX / relPosY);
-            if (relPosX == 0 && relPosY == 0 && theta == this.minTheta) {
-                thetaSquares.push([relPosX, relPosY, sq]);
-            } else if (sqTheta > theta && sqTheta < (theta + thetaStep)) {
-                thetaSquares.push([relPosX, relPosY, sq]);
-            }
+            allSquares.push([relPosX, relPosY, sqTheta, sq]);
         });
 
         iterateOnOrganisms((org) => {
             org.lifeSquares.filter((lsq) => lsq.type == "green").forEach((lsq) => {
                 let relPosX = lsq.getPosX() - this.posX;
                 let relPosY = lsq.getPosY() - this.posY;
-                let sqTheta = Math.atan(relPosX / relPosY);
-                if (relPosX == 0 && relPosY == 0 && theta == this.minTheta) {
-                    thetaSquares.push([relPosX, relPosY, lsq]);
-                } else if (sqTheta > theta && sqTheta < (theta + thetaStep)) {
-                    thetaSquares.push([relPosX, relPosY, lsq]);
-                }
-            })
-        })
+                let lsqTheta = Math.atan(relPosX / relPosY);
+                allSquares.push([relPosX, relPosY, lsqTheta, lsq]);
+            }
+            )
+        });
+
+        // sort these into theta buckets, and distribute them to our rays
+        allSquares.sort((a, b) => a[2] - b[2]);
+        
+        let curBucket = -1;
+        let curMinTheta = this.minTheta - this.thetaStep;
+        let curMaxTheta = curMinTheta + this.thetaStep;
+        
+        for (let arr of allSquares) {
+            while (arr[2] > curMaxTheta) {
+                curMinTheta = curMaxTheta;
+                curMaxTheta = curMinTheta + this.thetaStep;
+                curBucket += 1;
+                this.thetaSquares[curBucket] = new Array();
+            }
+            this.thetaSquares[curBucket].push(arr);
+        }
+    }
+
+    async rayCastingForRayIdx(idx, jobIdx, i) {
+        let thetaSquares = this.thetaSquares[i];
+        if (thetaSquares == null) {
+            return;
+        }
         thetaSquares.sort((a, b) => (a[0] ** 2 + a[1] ** 2) ** 0.5 - (b[0] ** 2 + b[1] ** 2) ** 0.5);
         let curBrightness = 1;
         thetaSquares.forEach((arr) => {
-            let obj = arr[2];
+            let obj = arr[3];
             let curBrightnessCopy = curBrightness;
-            let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(theta)() * curBrightnessCopy * this.brightnessFunc();
+            let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(this.minTheta + this.thetaStep * i)() * curBrightnessCopy * this.brightnessFunc();
             curBrightness *= (1 - (obj.surface ? (obj.surfaceLightingFactor ?? 1) : 1) * (obj.blockHealth ?? 1) * (obj.getLightFilterRate() * Math.exp(8 - loadGD(UI_LIGHTING_DECAY)) * (loadGD(UI_LIGHTING_QUALITY)) / 9));
             if (obj.lighting[idx] == null) {
                 obj.lighting[idx] = [[pointLightSourceFunc], this.colorFunc];
@@ -255,28 +272,19 @@ export class LightSource {
                 obj.lighting[idx][0][jobIdx] = pointLightSourceFunc;
             }
         });
-    };
+    }
     doRayCasting(idx, jobIdx, onComplete) {
         if (this.numTasksCompleted[idx] == null) {
             this.numTasksCompleted[idx] = new Map();
         }
         this.numTasksCompleted[idx][jobIdx] = 0;
-
-        let thetaStep = (this.maxTheta - this.minTheta) / this.numRays;
-        let a0 = [];
-
-        for (let theta = this.minTheta; theta < this.maxTheta; theta += thetaStep) {
-            a0.push(theta);
-        }
-        let tasksPerThread = a0.length / this.numTasks;
         let timeInterval = (getCurLightingInterval() / this.numTasks);
+        this.prepareSquareCoordinatePlane();
         for (let i = 0; i < this.numTasks; i++) {
-            let startIdx = Math.floor(i * tasksPerThread);
-            let endIdx = Math.ceil((i + 1) * (tasksPerThread));
             let scheduledTime = i * timeInterval + (getFrameDt() * (jobIdx % loadGD(UI_LIGHTING_UPDATERATE)));
             addTimeout(setTimeout(() => {
-                for (let i = startIdx; i < Math.min(endIdx, a0.length); i++) {
-                    this.rayCastingForTheta(idx, jobIdx, a0[i], thetaStep);
+                for (let i = 0; i < this.numRays; i++) {
+                    this.rayCastingForRayIdx(idx, jobIdx, i);
                 }
                 this.numTasksCompleted[idx][jobIdx] += 1;
                 if (this.numTasksCompleted[idx][jobIdx] == this.numTasks) {
