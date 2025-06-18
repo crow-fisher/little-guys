@@ -9,6 +9,7 @@ import { addTimeout } from "../main.js";
 import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
 import { isSaveOrLoadInProgress } from "../saveAndLoad.js";
 import { isSquareOnCanvas } from "../canvas.js";
+import { getFrameSimulationSquares } from "../globalOperations.js";
 
 export let MAX_BRIGHTNESS = 8;
 export function createSunLightGroup() {
@@ -215,7 +216,7 @@ export class LightSource {
 
     prepareSquareCoordinatePlane() {
         let allSquares = new Array();
-        iterateOnSquares((sq) => {
+        getFrameSimulationSquares().forEach((sq) => {
             if (!sq.visible) {
                 return;
             }

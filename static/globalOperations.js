@@ -6,7 +6,7 @@ import {
 
 import { getObjectArrFromMap } from "./common.js";
 import { removeItemAll } from "./common.js";
-import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillRect } from "./canvas.js";
+import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, isSquareOnCanvas, zoomCanvasFillRect } from "./canvas.js";
 import { saveGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "./ui/UIData.js";
 import { indexCanvasSize, MAIN_CANVAS, MAIN_CONTEXT } from "./index.js";
 import { resetFrameGroupCache, waterGraphReset } from "./waterGraph.js";
@@ -15,6 +15,7 @@ import { calculateColor, calculateColorProvideOpacity } from "./climate/simulati
 import { lightingExposureAdjustment } from "./lighting/lightingProcessing.js";
 
 let frame_squares = null;
+let frame_simulation_squares = null;
 let frame_solid_squares = null;
 let frame_water_squares = null;
 
@@ -36,12 +37,17 @@ export function periodicPurgeOldGroupData() {
     }
 }
 
+export function getFrameSimulationSquares() {
+    return frame_simulation_squares;
+}
+
 export function reset() {
     resetWaterflowSquares();
     resetFrameGroupCache();
     frame_squares = Array.from(getSqIterationOrder());
-    frame_solid_squares = frame_squares.filter((sq) => sq.solid);
-    frame_water_squares = frame_squares.filter((sq) => !sq.solid);
+    frame_simulation_squares = frame_squares.filter((sq) => isSquareOnCanvas(sq.posX, sq.posY));
+    frame_solid_squares = frame_simulation_squares.filter((sq) => sq.solid);
+    frame_water_squares = frame_simulation_squares.filter((sq) => !sq.solid);
     frame_squares.forEach((sq) => sq.reset());
 }
 

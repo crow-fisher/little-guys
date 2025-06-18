@@ -71,33 +71,25 @@ function recacheCanvasPositions() {
 }
 
 export function isSquareOnCanvas(x, y, dx=1, dy=1) {
-    dx *= _c_UI_CANVAS_SQUARES_ZOOM;
-    dy *= _c_UI_CANVAS_SQUARES_ZOOM;
+    let totalWidth = getCanvasSquaresX() * BASE_SIZE;
+    let totalHeight = getCanvasSquaresY() * BASE_SIZE;
 
-    let totalWidth = CANVAS_SQUARES_X * BASE_SIZE;
-    let totalHeight = CANVAS_SQUARES_Y * BASE_SIZE;
+    x *= BASE_SIZE;
+    y *= BASE_SIZE;
 
     let windowWidth = totalWidth / _c_UI_CANVAS_SQUARES_ZOOM;
     let windowHeight = totalHeight / _c_UI_CANVAS_SQUARES_ZOOM;
 
-    let windowWidthStart = _c_UI_CANVAS_VIEWPORT_CENTER_X - (windowWidth / 2);
-    let windowHeightStart = _c_UI_CANVAS_VIEWPORT_CENTER_Y - (windowHeight / 2);
+    let windowSize = Math.max(windowWidth, windowHeight);
 
-    let windowWidthEnd = _c_UI_CANVAS_VIEWPORT_CENTER_X + (windowWidth / 2);
-    let windowHeightEnd = _c_UI_CANVAS_VIEWPORT_CENTER_Y + (windowHeight / 2);
+    let windowWidthStart = _c_UI_CANVAS_VIEWPORT_CENTER_X - (windowSize / 2);
+    let windowHeightStart = _c_UI_CANVAS_VIEWPORT_CENTER_Y - (windowSize / 2);
 
-    let xpi = (x - windowWidthStart) / (windowWidthEnd - windowWidthStart);
-    let ypi = (y - windowHeightStart) / (windowHeightEnd - windowHeightStart);
+    let windowWidthEnd = _c_UI_CANVAS_VIEWPORT_CENTER_X + (windowSize / 2);
+    let windowHeightEnd = _c_UI_CANVAS_VIEWPORT_CENTER_Y + (windowSize / 2);
 
-    let xpl = xpi * totalWidth;
-    let ypl = ypi * totalHeight;
-
-    if ((xpl + dx < 0) || xpl > getCanvasWidth()) {
+    if (x < windowWidthStart || x > windowWidthEnd || y < windowHeightStart || y > windowHeightEnd)
         return false;
-    }
-    if ((ypl + dy < 0) || (ypl > getCanvasHeight())) {
-        return false;
-    }
     return true;
 }
 
