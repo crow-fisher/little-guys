@@ -315,7 +315,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     windPhysics() {
-        if (!this.slopeConditional()) {
+        if (getSquares(this.posX, this.posY - 1).some((sq) => sq.testCollidesWithSquare(this))) {
             return;
         }
         let ws = getWindSpeedAtLocation(this.posX, this.posY);
