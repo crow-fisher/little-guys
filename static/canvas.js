@@ -63,7 +63,7 @@ let _c_UI_CANVAS_SQUARES_ZOOM = loadGD(UI_CANVAS_SQUARES_ZOOM);
 let _c_UI_CANVAS_VIEWPORT_CENTER_X = loadGD(UI_CANVAS_VIEWPORT_CENTER_X);
 let _c_UI_CANVAS_VIEWPORT_CENTER_Y = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y);
 
-function recacheCanvasPositions() {
+export function recacheCanvasPositions() {
     // 14 fps to 16 fps, 63k squares
     _c_UI_CANVAS_SQUARES_ZOOM = loadGD(UI_CANVAS_SQUARES_ZOOM);
     _c_UI_CANVAS_VIEWPORT_CENTER_X = loadGD(UI_CANVAS_VIEWPORT_CENTER_X);

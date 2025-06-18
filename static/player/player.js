@@ -1,9 +1,9 @@
-import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillCircle, zoomCanvasFillRect } from "../canvas.js";
+import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, recacheCanvasPositions, zoomCanvasFillCircle, zoomCanvasFillRect } from "../canvas.js";
 import { COLOR_BLACK, COLOR_GREEN, COLOR_VERY_FUCKING_RED } from "../colors.js";
 import { GBNOTSURE, GBX, GBA, getLeftStick, isButtonPressed } from "../gamepad.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { getSquares } from "../squares/_sqOperations.js";
-import { saveGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y } from "../ui/UIData.js";
+import { loadGD, saveGD, UI_CANVAS_SQUARES_ZOOM, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y } from "../ui/UIData.js";
 
 
 const EN = 0b1000;
@@ -140,8 +140,11 @@ export class Player {
     }
 
     updateCamera() {
-        saveGD(UI_CANVAS_VIEWPORT_CENTER_X, this.posX);
-        saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, this.posY);
+        let width = getCanvasSquaresX();
+        let height = getCanvasSquaresY();
+        saveGD(UI_CANVAS_VIEWPORT_CENTER_X, Math.round(this.posX * getBaseSize()));
+        saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, Math.round(this.posY * getBaseSize()));
+        recacheCanvasPositions();
     }
 
     updateCollision() {
