@@ -22,17 +22,15 @@ export class ImageSquare extends SoilSquare {
     }
 
     getColorBase() {
-        return this.colorBase;
+        let outColor = structuredClone(this.colorBase);
+        let darkeningColorMult = (this.waterContainment / this.waterContainmentMax);
+
+        outColor.r *= (1 - 0.24 * darkeningColorMult);
+        outColor.g *= (1 - 0.30 * darkeningColorMult);
+        outColor.b *= (1 - 0.383 * darkeningColorMult);
+        return outColor;
     }
-    renderWithVariedColors2() {
-        MAIN_CONTEXT.fillStyle = this.color;
-        zoomCanvasFillRect(
-            (this.offsetX + this.posX) * getBaseSize(),
-            (this.offsetY + this.posY) * getBaseSize(),
-            getBaseSize(),
-            getBaseSize()
-        );
-    }
+   
 }
 
 export class StaticImageSquare extends ImageSquare {
