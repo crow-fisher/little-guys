@@ -3,6 +3,7 @@ import { COLOR_BLACK, COLOR_GREEN, COLOR_VERY_FUCKING_RED } from "../colors.js";
 import { GBNOTSURE, GBX, GBA, getLeftStick, isButtonPressed } from "../gamepad.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { getSquares } from "../squares/_sqOperations.js";
+import { saveGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y } from "../ui/UIData.js";
 
 
 const EN = 0b1000;
@@ -135,6 +136,12 @@ export class Player {
         this.processInput();
         this.updateCollision();
         this.processCollision();
+        this.updateCamera();
+    }
+
+    updateCamera() {
+        saveGD(UI_CANVAS_VIEWPORT_CENTER_X, this.posX);
+        saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, this.posY);
     }
 
     updateCollision() {

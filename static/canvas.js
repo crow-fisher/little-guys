@@ -80,13 +80,11 @@ export function isSquareOnCanvas(x, y, dx=1, dy=1) {
     let windowWidth = totalWidth / _c_UI_CANVAS_SQUARES_ZOOM;
     let windowHeight = totalHeight / _c_UI_CANVAS_SQUARES_ZOOM;
 
-    let windowSize = Math.max(windowWidth, windowHeight);
+    let windowWidthStart = _c_UI_CANVAS_VIEWPORT_CENTER_X - (windowWidth / 2);
+    let windowHeightStart = _c_UI_CANVAS_VIEWPORT_CENTER_Y - (windowHeight / 2);
 
-    let windowWidthStart = _c_UI_CANVAS_VIEWPORT_CENTER_X - (windowSize / 2);
-    let windowHeightStart = _c_UI_CANVAS_VIEWPORT_CENTER_Y - (windowSize / 2);
-
-    let windowWidthEnd = _c_UI_CANVAS_VIEWPORT_CENTER_X + (windowSize / 2);
-    let windowHeightEnd = _c_UI_CANVAS_VIEWPORT_CENTER_Y + (windowSize / 2);
+    let windowWidthEnd = _c_UI_CANVAS_VIEWPORT_CENTER_X + (windowWidth / 2);
+    let windowHeightEnd = _c_UI_CANVAS_VIEWPORT_CENTER_Y + (windowHeight / 2);
 
     if (x < windowWidthStart || x > windowWidthEnd || y < windowHeightStart || y > windowHeightEnd)
         return false;
