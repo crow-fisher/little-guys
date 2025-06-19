@@ -167,7 +167,7 @@ class WaterSquare extends BaseSquare {
 
     doNeighborPercolation() {
         getNeighbors(this.posX, this.posY)
-            .filter((sq) => sq.solid)
+            .filter((sq) => sq.solid && sq.collision)
             .forEach((sq) => this.blockHealth -= sq.percolateFromWater(this));
     }
 

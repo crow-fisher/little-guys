@@ -1,5 +1,6 @@
 import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
 import { rgbToRgba } from "../common.js";
+import { isGroupGrounded } from "../globals.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { BaseSquare } from "./BaseSqaure.js";
 import { RockSquare } from "./parameterized/RockSquare.js";
@@ -33,12 +34,23 @@ export class ImageSquare extends SoilSquare {
    
 }
 
+export class RigidImageSquare extends ImageSquare {
+    constructor(posX, posY, r, g, b, a) {
+        super(posX, posY, r, g, b, a);
+        this.proto = "RigidImageSquare";
+        this.rootable = false;
+    }
+    slopePhysics() {}
+}
+
 export class StaticImageSquare extends ImageSquare {
     constructor(posX, posY, r, g, b, a) {
         super(posX, posY, r, g, b, a);
         this.proto = "StaticImageSquare";
         this.physicsEnabled = false;
+        this.rootable = false;
     }
+    physics() {}
 }
 
 
@@ -48,4 +60,10 @@ export class BackgroundImageSquare extends StaticImageSquare {
         this.proto = "BackgroundImageSquare";
         this.collision = false;
     }
+
+    getLightFilterRate() {
+        return 0;
+    }
+
+    
 }
