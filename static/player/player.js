@@ -29,6 +29,8 @@ export class Player {
         this.kpax = 0;
         this.kpay = 0;
 
+        this.running = true;
+
         // configured members 
 
         this.sizeX = 2;
@@ -44,13 +46,13 @@ export class Player {
 
         this.gravity = .07;
 
-        this.walkMax = 0.7;
+        this.walkMax = 0.45;
         this.walkAcc = this.walkMax / 5;
 
-        this.runMax = this.walkMax * 4;
+        this.runMax = this.walkMax * 2.6;
         this.runAcc = this.walkAcc;
 
-        this.jumpSpeed = 1;
+        this.jumpSpeed = 1.1;
         this.jumpTicksLeft = 0;
 
         this.prevTickTime = Date.now();
@@ -187,38 +189,18 @@ export class Player {
     }
 
     processCollision() {
-        // surface collision rules: 
-        // do not apply gravity 
-        // allow the player to move up or down at will, like left or right, at a set speed
-
-        // surface collision rules 
-        // the player 
-
         let tickGravity = this.gravity;
         let tickAcc = this.walkAcc;
         let tickMax = this.walkMax;
 
-        if (this.kpRun || isButtonPressed(GBX)) {
+        if (this.running) {
             tickAcc = this.runAcc;
             tickMax = this.runMax;
         }
 
         tickAcc *= this.frameDt;
-
-        let surfaceScoreSquaresAbove = 0;
-        let cx = Math.floor(this.posX);
-        let cy = Math.floor(this.posY + this.sizeY);
-        while (getSquares(cx, cy).some((sq) => sq.proto == "SoilSquare" || sq.proto == "RockSquare")) {
-            surfaceScoreSquaresAbove += getSquares(cx, cy)
-                .filter((sq) => sq.surface)
-                .map((sq) => sq.surfaceLightingFactor)
-                .reduce((a, b) => a + b, 0);
-            cy -= 1;
-        }
-        surfaceScoreSquaresAbove = Math.max(0, Math.min(surfaceScoreSquaresAbove - 5, 10));
-        this.decayFactor = 0.2 + (surfaceScoreSquaresAbove / 20);
-        let decayFactorX = (Math.abs(this.speedX) / tickMax) * this.decayFactor;
-        let decayFactorY = (Math.abs(this.speedY) / tickMax) * this.decayFactor;
+        let decayFactorX = (Math.abs(this.speedX) / tickMax)
+        let decayFactorY = (Math.abs(this.speedY) / tickMax)
 
         let bottomEs2Collision = false;
         let bottomSurfaceCollision = false;
@@ -251,9 +233,9 @@ export class Player {
             }
         }
 
+        this.running = !bottomEs2Collision;
         this.jumpTicksLeft = Math.max(0, this.jumpTicksLeft - 1);
-
-        if (this.jumpTicksLeft > 0 && this.posY <= this.jumpStartY) {
+        if (this.jumpTicksLeft > 0) {
             // do nothing 
         } else {
             if (bottomSurfaceCollision) {
@@ -276,15 +258,15 @@ export class Player {
                 tickGravity = 0;
             }
 
+            let sideX = (this.speedX > 0) ? 1 : -1;
+            if (sideX > 0) {
+                this.speedX = Math.max(0, this.speedX - (decayFactorX * tickMax));
+            } else {
+                this.speedX = Math.min(0, this.speedX + (decayFactorX * tickMax));
+            }
+            let cmp = (this.kpax > 0) ? Math.max : Math.min;
+            this.speedX = cmp(this.speedX + this.kpax * tickAcc, (tickMax * this.kpax));
             if (bottomNonSurfaceCollision || bottomSurfaceCollision) {
-                let sideX = (this.speedX > 0) ? 1 : -1;
-                if (sideX > 0) {
-                    this.speedX = Math.max(0, this.speedX - (decayFactorX * tickMax));
-                } else {
-                    this.speedX = Math.min(0, this.speedX + (decayFactorX * tickMax));
-                }
-                let cmp = (this.kpax > 0) ? Math.max : Math.min;
-                this.speedX = cmp(this.speedX + this.kpax * tickAcc, (tickMax * this.kpax));
 
                 if (this.kpJump || isButtonPressed(GBA)) {
                     this.jumpTicks = 3;
@@ -303,7 +285,7 @@ export class Player {
             this.jumpTicks = 0;
             this.jumpStartY = this.posY;
             this.jumpTicksLeft = 10;
-            this.speedY -= (this.jumpSpeed / (1 + this.decayFactor));
+            this.speedY -= this.jumpSpeed;
         }
     }
 
