@@ -112,7 +112,7 @@ export class StationaryWideLightGroup extends LightGroup {
         let completionMap = new Map();
         for (let i = 0; i < this.lightSources.length; i++) {
             completionMap.set(i, false);
-            this.lightSources[i].calculateFrameCloudCover();
+            // this.lightSources[i].calculateFrameCloudCover();
             this.lightSources[i].doRayCasting(idx, i, () => {
                 completionMap.set(i, true);
                 if (completionMap.values().every((val) => val)) {
@@ -195,23 +195,23 @@ export class LightSource {
     }
 
     getWindSquareBrightnessFunc(theta) {
-        return () => {
-            if (!loadGD(UI_SIMULATION_CLOUDS)) {
-                return 1;
-            }
-
-            if (this.windSquareBrightnessMults == null) {
-                return 1;
-            }
-            let ret = this.windSquareBrightnessMults[theta];
-            if (ret == null) {
-                this.calculateFrameCloudCover();
-                return this.getWindSquareBrightnessFunc(theta);
-            }
-            let m = .5;
-            ret = (ret + m) / (m + 1);
-            return ret;
+        if (!loadGD(UI_SIMULATION_CLOUDS)) {
+            return 1;
         }
+        return 1;
+    
+        // pretty fucking bad code here, fix
+        if (this.windSquareBrightnessMults == null) {
+            return 1;
+        }
+        let ret = this.windSquareBrightnessMults[theta];
+        if (ret == null) {
+            this.calculateFrameCloudCover();
+            return this.getWindSquareBrightnessFunc(theta);
+        }
+        let m = .5;
+        ret = (ret + m) / (m + 1);
+        return ret;
     }
 
     prepareSquareCoordinatePlane() {
@@ -267,7 +267,7 @@ export class LightSource {
         thetaSquares.forEach((arr) => {
             let obj = arr[3];
             let curBrightnessCopy = curBrightness;
-            let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(this.minTheta + this.thetaStep * i)() * curBrightnessCopy * this.brightnessFunc();
+            let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(this.minTheta + this.thetaStep * i) * curBrightnessCopy * this.brightnessFunc();
             curBrightness *= (1 - (obj.surface ? (obj.surfaceLightingFactor ?? 1) : 1) * (obj.blockHealth ?? 1) * (obj.getLightFilterRate() * this.cachedLightingConstant));
             if (obj.lighting[idx] == null) {
                 obj.lighting[idx] = [[pointLightSourceFunc], this.colorFunc];
