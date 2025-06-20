@@ -6,10 +6,10 @@ import { getSquares } from "../squares/_sqOperations.js";
 import { loadGD, saveGD, UI_CANVAS_SQUARES_ZOOM, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y } from "../ui/UIData.js";
 
 
-const EN  = 0b10000;
-const ES  = 0b01000;
-const EW  = 0b00100;
-const EE  = 0b00010;
+const EN = 0b10000;
+const ES = 0b01000;
+const EW = 0b00100;
+const EE = 0b00010;
 const ES2 = 0b00001;
 
 export class Player {
@@ -225,6 +225,21 @@ export class Player {
         let bottomNonSurfaceCollision = false;
         let bottomMidNonSurfaceCollison = 0;
 
+        let amount = 0;
+        for (let i = 0; i < this.sizeX; i++) {
+            for (let j = 0; j < (this.sizeY - 1); j++) {
+                if ((this.frameCollisionMap.get(false).get(i).get(j) & ES) == ES) {
+                    amount += 0.5;
+                    this.speedX /= 2;
+                    this.posX -= this.speedX;
+                    this.speedY = 0;
+                    tickGravity = 0;
+                    tickMax /= 2;
+                }
+            }
+        }
+        this.posY -= Math.min(.1, amount);
+
         for (let i = 0; i < this.sizeX; i++) {
             for (let j = 0; j < this.sizeY; j++) {
                 bottomSurfaceCollision |= (this.frameCollisionMap.get(true).get(i).get(j) & ES) == ES;
@@ -241,11 +256,6 @@ export class Player {
         if (this.jumpTicksLeft > 0 && this.posY <= this.jumpStartY) {
             // do nothing 
         } else {
-            if (bottomSurfaceCollision && !bottomEs2Collision) {
-                this.posY = Math.round(this.posY);
-                this.speedY = 0;
-                return;
-            }
             if (bottomSurfaceCollision) {
                 tickGravity = 0;
                 let sideY = (this.speedY > 0) ? 1 : -1;
@@ -258,21 +268,12 @@ export class Player {
                     this.speedY += this.kpay * tickAcc;
                 else if (!bottomNonSurfaceCollision && this.kpay > 0)
                     this.speedY += tickAcc * this.kpay;
-
-            } else if (bottomNonSurfaceCollision) {
-                this.speedY = 0;
-                if (bottomMidNonSurfaceCollison > 0) {
-                    tickGravity = -this.gravity * (0.2 * bottomMidNonSurfaceCollison);
-                    if (this.speedX > 0) {
-                        this.speedX -= tickAcc * (2 * bottomMidNonSurfaceCollison);
-                    } else {
-                        this.speedX += tickAcc * (2 * bottomMidNonSurfaceCollison);
-                    }
-                } else {
-                    tickGravity = 0;
-                }
             } else {
                 tickAcc = 0;
+            }
+
+            if (bottomNonSurfaceCollision) {
+                tickGravity = 0;
             }
 
             if (bottomNonSurfaceCollision || bottomSurfaceCollision) {
