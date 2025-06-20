@@ -155,7 +155,7 @@ function iterateOnSquares(func) {
 
 
 function getSquares(posX, posY, create=false) {
-    return getObjectArrFromMap(ALL_SQUARES, Math.floor(posX), Math.floor(posY), create);
+    return getObjectArrFromMap(ALL_SQUARES, Math.round(posX), Math.round(posY), create);
 }
 
 function getCollidableSquareAtLocation(posX, posY) {
@@ -164,8 +164,8 @@ function getCollidableSquareAtLocation(posX, posY) {
 
 // Does not remove organic squares.
 function removeSquarePos(x, y) {
-    x = Math.floor(x);
-    y = Math.floor(y);
+    x = Math.round(x);
+    y = Math.round(y);
     getSquares(x, y).filter((sq) => !sq.organic).forEach((sq) => sq.destroy(true));
 }
 

@@ -86,7 +86,9 @@ export function isSquareOnCanvas(x, y, dx=1, dy=1) {
     let windowWidthEnd = _c_UI_CANVAS_VIEWPORT_CENTER_X + (windowWidth / 2);
     let windowHeightEnd = _c_UI_CANVAS_VIEWPORT_CENTER_Y + (windowHeight / 2);
 
-    if (x < (windowWidthStart - getBaseSize()) || x > windowWidthEnd || y < (windowHeightStart - getBaseSize()) || y > windowHeightEnd)
+    let margin = getBaseSize() * 2;
+
+    if (x < (windowWidthStart - margin) || x > (windowWidthEnd + margin) || y < (windowHeightStart - margin) || y > (windowHeightEnd + margin))
         return false;
     return true;
 }
@@ -113,12 +115,6 @@ export function zoomCanvasFillRect(x, y, dx, dy) {
     let xpl = xpi * totalWidth;
     let ypl = ypi * totalHeight;
 
-    if ((xpl + dx < 0) || xpl > getCanvasWidth()) {
-        return;
-    }
-    if ((ypl + dy < 0) || (ypl > getCanvasHeight())) {
-        return;
-    }
     MAIN_CONTEXT.fillRect(
         xpl,
         ypl,

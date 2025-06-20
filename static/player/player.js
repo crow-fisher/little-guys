@@ -6,10 +6,11 @@ import { getSquares } from "../squares/_sqOperations.js";
 import { loadGD, saveGD, UI_CANVAS_SQUARES_ZOOM, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y } from "../ui/UIData.js";
 
 
-const EN = 0b1000;
-const ES = 0b0100;
-const EW = 0b0010;
-const EE = 0b0001;
+const EN  = 0b10000;
+const ES  = 0b01000;
+const EW  = 0b00100;
+const EE  = 0b00010;
+const ES2 = 0b00001;
 
 export class Player {
     constructor() {
@@ -151,31 +152,35 @@ export class Player {
         for (let surface of [true, false]) {
             for (let i = 0; i < this.sizeX; i++) {
                 for (let j = 0; j <= this.sizeY; j++) {
-                    let pxn = Math.round(this.posX + i + 0.5);
-                    let pxs = pxn;
-                    let pxe = Math.round(this.posX + i);
-                    let pxw = Math.round(this.posX + i + 1);
+                    this.frameCollisionMap.get(surface).get(i).set(j, 0);
+                    for (let dt of [0, 1]) {
+                        let pxn = this.posX + i + 0.5;
+                        let pxs = pxn;
+                        let pxe = this.posX + i;
+                        let pxw = this.posX + i + 1;
 
-                    let pyn = Math.round(this.posY + j);
-                    let pys = Math.round(this.posY + j + 1);
-                    let pye = Math.round(this.posY + j + 0.5);
-                    let pyw = pye;
+                        let pyn = this.posY + j;
+                        let pys = this.posY + j + 1;
+                        let pye = this.posY + j + 0.5;
+                        let pyw = pye;
 
-                    let xdt = this.frameDt * this.speedX;
-                    let ydt = this.frameDt * this.speedY;
+                        let xdt = this.frameDt * this.speedX * dt;
+                        let ydt = this.frameDt * this.speedY * dt;
 
-                    let cn = EN * getSquares(pxn + xdt, pyn + ydt).some((sq) => (sq.proto == "SoilSquare" || sq.proto == "RockSquare") && sq.surface == surface);
-                    let cs = ES * getSquares(pxs + xdt, pys + ydt).some((sq) => (sq.proto == "SoilSquare" || sq.proto == "RockSquare") && sq.surface == surface);
-                    let ce = EE * getSquares(pxe + xdt, pye + ydt).some((sq) => (sq.proto == "SoilSquare" || sq.proto == "RockSquare") && sq.surface == surface);
-                    let cw = EW * getSquares(pxw + xdt, pyw + ydt).some((sq) => (sq.proto == "SoilSquare" || sq.proto == "RockSquare") && sq.surface == surface);
+                        let cn = EN * getSquares(pxn + xdt, pyn + ydt).some((sq) => (sq.proto == "SoilSquare" || sq.proto == "RockSquare") && sq.surface == surface);
+                        let cs = ES * getSquares(pxs + xdt, pys + ydt).some((sq) => (sq.proto == "SoilSquare" || sq.proto == "RockSquare") && sq.surface == surface);
+                        let ce = EE * getSquares(pxe + xdt, pye + ydt).some((sq) => (sq.proto == "SoilSquare" || sq.proto == "RockSquare") && sq.surface == surface);
+                        let cw = EW * getSquares(pxw + xdt, pyw + ydt).some((sq) => (sq.proto == "SoilSquare" || sq.proto == "RockSquare") && sq.surface == surface);
+                        let cs2 = ES2 * getSquares(pxs + xdt, (pys * 0.8 + pyn * 0.2) + ydt).some((sq) => (sq.proto == "SoilSquare" || sq.proto == "RockSquare") && sq.surface == surface);
 
-                    let colMask = 0;
-                    colMask |= cn
-                    colMask |= cs
-                    colMask |= ce
-                    colMask |= cw
-
-                    this.frameCollisionMap.get(surface).get(i).set(j, colMask);
+                        let colMask = this.frameCollisionMap.get(surface).get(i).get(j);
+                        colMask |= cn;
+                        colMask |= cs;
+                        colMask |= ce;
+                        colMask |= cw;
+                        colMask |= cs2;
+                        this.frameCollisionMap.get(surface).get(i).set(j, colMask);
+                    }
                 }
             }
         }
@@ -215,6 +220,7 @@ export class Player {
         let decayFactorX = (Math.abs(this.speedX) / tickMax) * this.decayFactor;
         let decayFactorY = (Math.abs(this.speedY) / tickMax) * this.decayFactor;
 
+        let bottomEs2Collision = false;
         let bottomSurfaceCollision = false;
         let bottomNonSurfaceCollision = false;
         let bottomMidNonSurfaceCollison = 0;
@@ -222,6 +228,7 @@ export class Player {
         for (let i = 0; i < this.sizeX; i++) {
             for (let j = 0; j < this.sizeY; j++) {
                 bottomSurfaceCollision |= (this.frameCollisionMap.get(true).get(i).get(j) & ES) == ES;
+                bottomEs2Collision |= (this.frameCollisionMap.get(true).get(i).get(j) & ES2) == ES2;
                 bottomNonSurfaceCollision |= (this.frameCollisionMap.get(false).get(i).get(j) & ES) == ES;
                 if (j <= this.sizeY - 2) {
                     bottomMidNonSurfaceCollison += (this.frameCollisionMap.get(false).get(i).get(j) & ES) == ES;
@@ -234,6 +241,11 @@ export class Player {
         if (this.jumpTicksLeft > 0 && this.posY <= this.jumpStartY) {
             // do nothing 
         } else {
+            if (bottomSurfaceCollision && !bottomEs2Collision) {
+                this.posY = Math.round(this.posY);
+                this.speedY = 0;
+                return;
+            }
             if (bottomSurfaceCollision) {
                 tickGravity = 0;
                 let sideY = (this.speedY > 0) ? 1 : -1;
