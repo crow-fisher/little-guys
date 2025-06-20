@@ -49,7 +49,7 @@ export class Player {
         this.walkMax = 0.45;
         this.walkAcc = this.walkMax / 5;
 
-        this.runMax = this.walkMax * 2.6;
+        this.runMax = this.walkMax * 1.6;
         this.runAcc = this.walkAcc;
 
         this.jumpSpeed = 1.1;
@@ -257,21 +257,21 @@ export class Player {
             if (bottomNonSurfaceCollision) {
                 tickGravity = 0;
             }
+        }
 
-            let sideX = (this.speedX > 0) ? 1 : -1;
-            if (sideX > 0) {
-                this.speedX = Math.max(0, this.speedX - (decayFactorX * tickMax));
-            } else {
-                this.speedX = Math.min(0, this.speedX + (decayFactorX * tickMax));
-            }
-            let cmp = (this.kpax > 0) ? Math.max : Math.min;
-            this.speedX = cmp(this.speedX + this.kpax * tickAcc, (tickMax * this.kpax));
-            if (bottomNonSurfaceCollision || bottomSurfaceCollision) {
+        let sideX = (this.speedX > 0) ? 1 : -1;
+        if (sideX > 0) {
+            this.speedX = Math.max(0, this.speedX - (decayFactorX * tickMax));
+        } else {
+            this.speedX = Math.min(0, this.speedX + (decayFactorX * tickMax));
+        }
+        let cmp = (this.kpax > 0) ? Math.max : Math.min;
+        this.speedX = cmp(this.speedX + this.kpax * tickAcc, (tickMax * this.kpax));
+        if (bottomNonSurfaceCollision || bottomSurfaceCollision) {
 
-                if (this.kpJump || isButtonPressed(GBA)) {
-                    this.jumpTicks = 3;
-                    this.jump();
-                }
+            if (this.kpJump || isButtonPressed(GBA)) {
+                this.jumpTicks = 3;
+                this.jump();
             }
         }
 
