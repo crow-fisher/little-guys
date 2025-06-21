@@ -4,7 +4,7 @@ import { gameUserStateLoad } from "./saveAndLoad.js";
 import { resetClimateAndLighting, resetLighting, scheduler_main } from "./main.js";
 import { keydown, keyup } from "./keyboard.js";
 import { getLastMoveOffset, handleClick, handleMouseDown, handleMouseUp, handleTouchEnd, handleTouchMove, handleTouchStart } from "./mouse.js";
-import { getCanvasHeight, getCanvasWidth, resetZoom, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, transformPixelsToCanvasSquares, zoom } from "./canvas.js";
+import { getBaseSize, getCanvasHeight, getCanvasWidth, resetZoom, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, transformPixelsToCanvasSquares, zoom } from "./canvas.js";
 import { addUIFunctionMap, loadGD, saveGD, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_PALETTE_PASTE_MODE, UI_PALETTE_PASTE_MODE_BG, UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_RIGID, UI_PALETTE_PHYSICS_STATIC, UI_PALLETE_MODE_PASTE, UI_SIMULATION_HEIGHT, UI_UI_SIZE } from "./ui/UIData.js";
 import { initUI } from "./ui/WindowManager.js";
 import { addSquare } from "./squares/_sqOperations.js";
@@ -56,10 +56,13 @@ export function indexCanvasSize(shouldInitUIClimateAndLighting = true) {
     let margin = 0;
     width = Math.floor(window.innerWidth - margin);
     height = Math.floor(window.innerHeight - margin);
-    let c_baseSize = Math.floor(height / loadGD(UI_SIMULATION_HEIGHT));
-    setCanvasSquaresY(loadGD(UI_SIMULATION_HEIGHT));
-    setCanvasSquaresX(Math.floor(width / c_baseSize));
-    setBaseSize(c_baseSize);
+    setBaseSize(Math.floor(height / loadGD(UI_SIMULATION_HEIGHT)));
+    while (getBaseSize() % 4 != 0)
+        setBaseSize(getBaseSize() - 1);
+
+    setCanvasSquaresY(Math.floor(height / getBaseSize()));
+    setCanvasSquaresX(Math.floor(width / getBaseSize()));
+
     MAIN_CANVAS.width = width;
     MAIN_CANVAS.height = height;
     resetClimateAndLighting();

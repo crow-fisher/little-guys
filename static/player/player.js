@@ -143,10 +143,9 @@ export class Player {
     }
 
     updateCamera() {
-        let width = getCanvasSquaresX();
-        let height = getCanvasSquaresY();
         saveGD(UI_CANVAS_VIEWPORT_CENTER_X, Math.round(this.posX * getBaseSize()));
         saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, Math.round(this.posY * getBaseSize()));
+        saveGD(UI_CANVAS_SQUARES_ZOOM, 3);
         recacheCanvasPositions();
     }
 
