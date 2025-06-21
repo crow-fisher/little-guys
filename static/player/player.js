@@ -131,6 +131,20 @@ export class Player {
             this.kpax += leftStickInput[0];
             this.kpay += leftStickInput[1];
         }
+        if (isButtonPressed(GBNOTSURE)) {
+            this.applyZoom(-1);
+        }
+        if (isButtonPressed(GBX))
+            this.applyZoom(1);
+    }
+
+    applyZoom(dir) {
+        if (Date.now() - this.zoomBounce < 1000) {
+            return;
+        }
+        this.zoomBounce = Date.now();
+        saveGD(UI_CANVAS_SQUARES_ZOOM, loadGD(UI_CANVAS_SQUARES_ZOOM) + dir);
+
     }
 
     tick() {
@@ -145,7 +159,6 @@ export class Player {
     updateCamera() {
         saveGD(UI_CANVAS_VIEWPORT_CENTER_X, Math.round(this.posX * getBaseSize()));
         saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, Math.round(this.posY * getBaseSize()));
-        saveGD(UI_CANVAS_SQUARES_ZOOM, 3);
         recacheCanvasPositions();
     }
 
@@ -275,8 +288,8 @@ export class Player {
         }
 
         this.speedY += tickGravity;
-        this.posX += this.speedX;
-        this.posY += this.speedY;
+        this.posX += this.speedX * this.frameDt * 1;
+        this.posY += this.speedY * this.frameDt * 1;
     }
 
     jump() {
