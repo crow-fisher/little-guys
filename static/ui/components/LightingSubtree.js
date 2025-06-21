@@ -50,13 +50,13 @@ export class LightingSubtree extends SubTreeComponent {
         subMenuContainer.addElement(row3);
         subMenuContainer.addElement(row4);
 
-        row3.addElement(new RadioToggleLabel(this.window, radioSizeX + (textAlignOffsetX / 2), getBaseUISize() * 3, UI_CENTER, "ultra", UI_LIGHTING_QUALITY, 7,
+        row3.addElement(new RadioToggleLabel(this.window, radioSizeX + (textAlignOffsetX / 2), getBaseUISize() * 3, UI_CENTER, "ultra", UI_LIGHTING_QUALITY, 15,
         () => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));
-        row3.addElement(new RadioToggleLabel(this.window, radioSizeX + (textAlignOffsetX / 2), getBaseUISize() * 3, UI_CENTER, "high", UI_LIGHTING_QUALITY, 5,
+        row3.addElement(new RadioToggleLabel(this.window, radioSizeX + (textAlignOffsetX / 2), getBaseUISize() * 3, UI_CENTER, "high", UI_LIGHTING_QUALITY, 7,
         () => getActiveClimate().getUIColorInactiveCustom(0.53), () => getActiveClimate().getUIColorActive()));
-        row4.addElement(new RadioToggleLabel(this.window, radioSizeX + (textAlignOffsetX / 2), getBaseUISize() * 3, UI_CENTER, "medium", UI_LIGHTING_QUALITY, 3,
+        row4.addElement(new RadioToggleLabel(this.window, radioSizeX + (textAlignOffsetX / 2), getBaseUISize() * 3, UI_CENTER, "medium", UI_LIGHTING_QUALITY, 5,
         () => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorActive()));
-        row4.addElement(new RadioToggleLabel(this.window, radioSizeX + (textAlignOffsetX / 2), getBaseUISize() * 3, UI_CENTER, "low", UI_LIGHTING_QUALITY,  2,
+        row4.addElement(new RadioToggleLabel(this.window, radioSizeX + (textAlignOffsetX / 2), getBaseUISize() * 3, UI_CENTER, "low", UI_LIGHTING_QUALITY,  3,
         () => getActiveClimate().getUIColorInactiveCustom(0.64), () => getActiveClimate().getUIColorActive()));
         
     }
