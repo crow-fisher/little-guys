@@ -4,17 +4,17 @@ import { getStandardDeviation } from "../common.js";
 import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
 import { isSaveOrLoadInProgress } from "../saveAndLoad.js";
 import { getSquares } from "../squares/_sqOperations.js";
-import { loadGD, saveGD, saveUI, UI_CAMERA_EXPOSURE, UI_LIGHTING_ENABLED, UI_LIGHTING_GLOBAL, UI_LIGHTING_MOON, UI_LIGHTING_SUN } from "../ui/UIData.js";
+import { addUIFunctionMap, loadGD, saveGD, saveUI, UI_CAMERA_EXPOSURE, UI_LIGHTING_DISABLED_BRIGHTNESS, UI_LIGHTING_ENABLED, UI_LIGHTING_GLOBAL, UI_LIGHTING_MOON, UI_LIGHTING_SUN } from "../ui/UIData.js";
 
 export function getDefaultLighting() {
     let brightness = getDaylightStrength();
     let daylightColor = getCurrentLightColorTemperature();
     let moonlightColor = getMoonlightColor();
-
+    let mult =  Math.exp(loadGD(UI_LIGHTING_DISABLED_BRIGHTNESS));
     return {
-        r: moonlightColor.r * .7 * Math.exp(loadGD(UI_LIGHTING_MOON)) + 0.5 * Math.exp(loadGD(UI_LIGHTING_SUN)) * (daylightColor.r * brightness),
-        g: moonlightColor.g * .7 * Math.exp(loadGD(UI_LIGHTING_MOON)) + 0.5 * Math.exp(loadGD(UI_LIGHTING_SUN)) * (daylightColor.g * brightness),
-        b: moonlightColor.b * .7 * Math.exp(loadGD(UI_LIGHTING_MOON)) + 0.5 * Math.exp(loadGD(UI_LIGHTING_SUN)) * (daylightColor.b * brightness)
+        r: mult * (moonlightColor.r * .7 * Math.exp(loadGD(UI_LIGHTING_MOON)) + 0.5 * Math.exp(loadGD(UI_LIGHTING_SUN)) * (daylightColor.r * brightness)),
+        g: mult * (moonlightColor.g * .7 * Math.exp(loadGD(UI_LIGHTING_MOON)) + 0.5 * Math.exp(loadGD(UI_LIGHTING_SUN)) * (daylightColor.g * brightness)),
+        b: mult * (moonlightColor.b * .7 * Math.exp(loadGD(UI_LIGHTING_MOON)) + 0.5 * Math.exp(loadGD(UI_LIGHTING_SUN)) * (daylightColor.b * brightness))
     }
 }
 

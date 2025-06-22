@@ -11,7 +11,7 @@ import { SliderGradientBackgroundWaterHue } from "../elements/SliderGradientWate
 import { SliderGradientBackground } from "../elements/SliderGradientBackground.js";
 import { TextBackground } from "../elements/TextBackground.js";
 import { TextFunctionalBackground } from "../elements/TextFunctionalBackground.js";
-import { loadGD, UI_LIGHTING_SUN, UI_LIGHTING_MOON, UI_LIGHTING_WATER, UI_LIGHTING_ROCK, UI_LIGHTING_PLANT, UI_LIGHTING_DECAY, UI_CENTER, UI_LIGHTING_WATER_OPACITY, UI_LIGHTING_WATER_VALUE, UI_LIGHTING_WATER_SATURATION, UI_LIGHTING_WATER_HUE, UI_LIGHTING_PLANT_GRASS, UI_LIGHTING_PLANT_TREE, UI_LIGHTING_SCENE_MODE, UI_LIGHTING_SCENE_MODE_WATER, UI_LIGHTING_SCENE_MODE_PLANT, UI_LIGHTING_SCENE_MODE_BRIGHTNESS, UI_LIGHTING_SCENE_MODE_DECAY, UI_CLIMATE_RAINFALL_DENSITY, loadUI, UI_UI_PHONEMODE, UI_LIGHTING_GLOBAL } from "../UIData.js";
+import { loadGD, UI_LIGHTING_SUN, UI_LIGHTING_MOON, UI_LIGHTING_WATER, UI_LIGHTING_ROCK, UI_LIGHTING_PLANT, UI_LIGHTING_DECAY, UI_CENTER, UI_LIGHTING_WATER_OPACITY, UI_LIGHTING_WATER_VALUE, UI_LIGHTING_WATER_SATURATION, UI_LIGHTING_WATER_HUE, UI_LIGHTING_PLANT_GRASS, UI_LIGHTING_PLANT_TREE, UI_LIGHTING_SCENE_MODE, UI_LIGHTING_SCENE_MODE_WATER, UI_LIGHTING_SCENE_MODE_PLANT, UI_LIGHTING_SCENE_MODE_BRIGHTNESS, UI_LIGHTING_SCENE_MODE_DECAY, UI_CLIMATE_RAINFALL_DENSITY, loadUI, UI_UI_PHONEMODE, UI_LIGHTING_GLOBAL, UI_LIGHTING_DISABLED_BRIGHTNESS } from "../UIData.js";
 import { Text } from "../elements/Text.js";
 
 export function getWaterColorDark() {
@@ -121,9 +121,6 @@ export class LightingComponent extends Component {
 
         let sliderSizeY = getBaseUISize() * (35 / 10);
 
-        brightnessConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => "global", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
-        brightnessConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_GLOBAL, sizeX, sliderSizeY, .85, 1/.85, () => "#000000", () => "#FFF0FF"));
-        brightnessConditionalContainer.addElement(new TextBackground(this.window, sizeX, br, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""));
 
         brightnessConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => "sun", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
         brightnessConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_SUN, sizeX, sliderSizeY, -4, 4, () => "#000000", () => "#FFF0FF"));
@@ -131,6 +128,15 @@ export class LightingComponent extends Component {
 
         brightnessConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => "moon", () => getActiveClimate().getUIColorInactiveCustom(0.62)));
         brightnessConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_MOON, sizeX, sliderSizeY, -3, 0, () => "#000000", () => getMoonlightColorRgb()));
+
+        brightnessConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => "global", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
+        brightnessConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_GLOBAL, sizeX, sliderSizeY, .85, 1/.85, () => "#000000", () => "#FFF0FF"));
+        brightnessConditionalContainer.addElement(new TextBackground(this.window, sizeX, br, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""));
+
+        brightnessConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => "flat lighting", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
+        brightnessConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_DISABLED_BRIGHTNESS, sizeX, sliderSizeY, 1, 5, () => "#000000", () => "#FFF0FF"));
+        brightnessConditionalContainer.addElement(new TextBackground(this.window, sizeX, br, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""));
+
 
         decayConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => "global", () => getActiveClimate().getUIColorInactiveCustom(0.64)));
         decayConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_DECAY, sizeX, sliderSizeY, -2, 8, () => "#000000", () => "#FFF0FF"));
