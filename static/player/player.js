@@ -52,7 +52,7 @@ export class Player {
         this.runMax = this.walkMax * 1.6;
         this.runAcc = this.walkAcc;
 
-        this.jumpSpeed = 1.1;
+        this.jumpSpeed = 1.3;
         this.jumpTicksLeft = 0;
 
         this.prevTickTime = Date.now();
@@ -143,8 +143,7 @@ export class Player {
             return;
         }
         this.zoomBounce = Date.now();
-        saveGD(UI_CANVAS_SQUARES_ZOOM, loadGD(UI_CANVAS_SQUARES_ZOOM) + dir);
-
+        saveGD(UI_CANVAS_SQUARES_ZOOM, Math.max(1, loadGD(UI_CANVAS_SQUARES_ZOOM) + dir));
     }
 
     tick() {

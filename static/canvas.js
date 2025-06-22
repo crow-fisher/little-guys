@@ -362,9 +362,6 @@ export function doZoom(deltaY) {
 
     saveGD(UI_CANVAS_SQUARES_ZOOM, zoom_arr.at(zoom_idx));
 
-    if (zoom_idx == 0) {
-        // resetZoom();
-    }
     //  Math.min(Math.max(loadGD(UI_CANVAS_SQUARES_ZOOM) + deltaY * -0.001, 1), 100);
     let endZoom = loadGD(UI_CANVAS_SQUARES_ZOOM);
 

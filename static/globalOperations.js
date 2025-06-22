@@ -46,7 +46,6 @@ export function getFrameSimulationSquares() {
 export function reset() {
     resetWaterflowSquares();
     resetFrameGroupCache();
-    // frame_squares = Array.from(getSqIterationOrder());
 
     frame_simulation_squares = new Array();
     frame_simulation_organisms = new Array();
