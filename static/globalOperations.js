@@ -6,16 +6,18 @@ import {
 
 import { getObjectArrFromMap } from "./common.js";
 import { removeItemAll } from "./common.js";
-import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, isSquareOnCanvas, zoomCanvasFillRect } from "./canvas.js";
+import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, getFrameXMax, getFrameXMin, getFrameYMax, getFrameYMin, isSquareOnCanvas, zoomCanvasFillRect } from "./canvas.js";
 import { saveGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "./ui/UIData.js";
 import { indexCanvasSize, MAIN_CANVAS, MAIN_CONTEXT } from "./index.js";
 import { resetFrameGroupCache, waterGraphReset } from "./waterGraph.js";
 import { COLOR_BLUE, COLOR_VERY_FUCKING_RED, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "./colors.js";
 import { calculateColor, calculateColorProvideOpacity } from "./climate/simulation/temperatureHumidity.js";
 import { lightingExposureAdjustment } from "./lighting/lightingProcessing.js";
+import { getFrameXMinWsq } from "./climate/simulation/wind.js";
 
 let frame_squares = null;
 let frame_simulation_squares = null;
+let frame_simulation_organisms = null;
 let frame_solid_squares = null;
 let frame_water_squares = null;
 
@@ -45,7 +47,20 @@ export function reset() {
     resetWaterflowSquares();
     resetFrameGroupCache();
     frame_squares = Array.from(getSqIterationOrder());
-    frame_simulation_squares = frame_squares.filter((sq) => isSquareOnCanvas(sq.posX, sq.posY));
+
+    frame_simulation_squares = new Array();
+    frame_simulation_organisms = new Array();
+
+    for (let i = getFrameXMin(); i < getFrameXMax(); i++) {
+        for (let j = getFrameYMax(); j >= getFrameYMin(); j--) {
+            getSquares(i, j).forEach((sq) => {
+                if (sq.linkedOrganism != null)
+                    frame_simulation_organisms.push(sq.linkedOrganism);
+                frame_simulation_squares.push(sq);
+            });
+        }
+    }
+    
     frame_solid_squares = frame_simulation_squares.filter((sq) => sq.solid);
     frame_water_squares = frame_simulation_squares.filter((sq) => !sq.solid);
     frame_squares.forEach((sq) => sq.reset());

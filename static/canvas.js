@@ -59,6 +59,28 @@ export function transformPixelsToCanvasSquares(x, y) {
 }
 
 
+
+let frameXMin = 0;
+let frameXMax = 0;
+let frameYMin = 0;
+let frameYMax = 0;
+
+export function getFrameXMin() { return frameXMin; }
+export function getFrameXMax() { return frameXMax; }
+export function getFrameYMin() { return frameYMin; }
+export function getFrameYMax() { return frameYMax; }
+
+function resetCornerLocations() {
+    let width = getCanvasWidth() / loadGD(UI_CANVAS_SQUARES_ZOOM);
+    let height = getCanvasHeight() / loadGD(UI_CANVAS_SQUARES_ZOOM);
+
+    frameXMin = Math.floor(Math.max(0, loadGD(UI_CANVAS_VIEWPORT_CENTER_X) - (width / 2)) / getBaseSize());
+    frameXMax = Math.ceil(Math.min(getCanvasWidth(), frameXMin + width) / getBaseSize());
+    frameYMin = Math.floor(Math.max(0, loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) - (height / 2)) / getBaseSize());
+    frameYMax = Math.ceil(Math.min(getCanvasHeight(), frameYMin + height) / getBaseSize());
+}
+
+
 let _c_UI_CANVAS_SQUARES_ZOOM = loadGD(UI_CANVAS_SQUARES_ZOOM);
 let _c_UI_CANVAS_VIEWPORT_CENTER_X = loadGD(UI_CANVAS_VIEWPORT_CENTER_X);
 let _c_UI_CANVAS_VIEWPORT_CENTER_Y = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y);
@@ -68,6 +90,7 @@ export function recacheCanvasPositions() {
     _c_UI_CANVAS_SQUARES_ZOOM = loadGD(UI_CANVAS_SQUARES_ZOOM);
     _c_UI_CANVAS_VIEWPORT_CENTER_X = loadGD(UI_CANVAS_VIEWPORT_CENTER_X);
     _c_UI_CANVAS_VIEWPORT_CENTER_Y = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y);
+    resetCornerLocations();
 }
 
 export function isSquareOnCanvas(x, y, dx=1, dy=1) {

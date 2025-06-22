@@ -29,8 +29,8 @@ let curClouds = [];
 let curWinds = [];
 
 let cloudDuration = () => getTimeScale() * randRange(0.5, 1) / loadGD(UI_SIMULATION_GENS_PER_DAY);
-let cloudXSize = (min=0.5, max=0.9) => randRange(min, max) * getFrameXMaxWsq() - getFrameXMinWsq();
-let cloudYSize = (min=0.5, max=0.9) => randRange(min, max) * getFrameXMaxWsq() - getFrameXMinWsq();
+let cloudXSize = (min=0.1, max=0.2) => randRange(min, max) * getFrameXMaxWsq() - getFrameXMinWsq();
+let cloudYSize = (min=0.1, max=0.2) => randRange(min, max) * getFrameXMaxWsq() - getFrameXMinWsq();
 
 function spawnFogCloud() {
     let wsx = getWindSquaresX();

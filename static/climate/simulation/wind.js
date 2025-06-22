@@ -2,7 +2,7 @@ import { hexToRgb, rgbToRgba } from "../../common.js";
 import { getSquares } from "../../squares/_sqOperations.js";
 import {  MAIN_CONTEXT } from "../../index.js";
 import { addWaterSaturation, addWaterSaturationPascals, calculateColor, getHumidity, getTemperatureAtWindSquare, getWaterSaturation, initTemperatureHumidity, setWaterSaturation, setWaterSaturationMap, updateWindSquareTemperature } from "./temperatureHumidity.js";
-import { getBaseSize, getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, zoomCanvasFillRect, zoomCanvasFillRectTheta } from "../../canvas.js";
+import { getBaseSize, getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, getFrameYMax, zoomCanvasFillRect, zoomCanvasFillRectTheta } from "../../canvas.js";
 import { loadGD, UI_CANVAS_SQUARES_ZOOM, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "../../ui/UIData.js";
 import { getWindThrottleVal, registerWindThrottlerOutput } from "./throttler.js";
 import { COLOR_VERY_FUCKING_RED } from "../../colors.js";
@@ -214,18 +214,11 @@ function tickWindPressureMap() {
     }
 
     windPressureMapByPressure = new Map();
-    let width = getCanvasWidth() / loadGD(UI_CANVAS_SQUARES_ZOOM);
-    let height = getCanvasHeight() / loadGD(UI_CANVAS_SQUARES_ZOOM);
 
-    let frameXMin = Math.max(0, loadGD(UI_CANVAS_VIEWPORT_CENTER_X) - (width / 2));
-    let frameXMax = Math.min(getCanvasWidth(), frameXMin + width);
-    let frameYMin = Math.max(0, loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) - (height / 2));
-    let frameYMax = Math.min(getCanvasHeight(), frameYMin + height);
-
-    frameXMinWsq = Math.round(frameXMin / (getBaseSize() * 4));
-    frameXMaxWsq = Math.round(frameXMax / (getBaseSize() * 4));
-    frameYMinWsq = Math.round(frameYMin / (getBaseSize() * 4));
-    frameYMaxWsq = Math.round(frameYMax / (getBaseSize() * 4));
+    frameXMinWsq = Math.floor(getFrameXMinWsq() / (getBaseSize() * 4));
+    frameXMaxWsq = Math.ceil(getFrameXMaxWsq() / (getBaseSize() * 4));
+    frameYMinWsq = Math.floor(getFrameYMinWsq() / (getBaseSize() * 4));
+    frameYMaxWsq = Math.ceil(getFrameYMax() / (getBaseSize() * 4));
 
     for (let i = frameXMinWsq; i < frameXMaxWsq; i++) {
         for (let j = frameYMinWsq; j < frameYMaxWsq; j++) {

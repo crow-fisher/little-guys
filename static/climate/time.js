@@ -209,7 +209,7 @@ function initializeStarMap() {
     starMapCenterX = randNumber(getCanvasSquaresX() / 4, getCanvasSquaresX() * 0.75);
     starMapCenterY = randNumber(getCanvasSquaresY() / 4, getCanvasSquaresY() * 0.75);
 
-    let numStars = randNumber(22000, 33000) * ((getCanvasSquaresY() / 100) ** 0.1);
+    let numStars = randNumber(4000, 8000) * ((getCanvasSquaresY() / 100) ** 0.1);
 
     for (let i = 0; i < numStars; i++) {
         let starX = randNumber(-getCanvasSquaresX() * 4, getCanvasSquaresX() * 4);
