@@ -71,13 +71,16 @@ export function getFrameYMin() { return frameYMin; }
 export function getFrameYMax() { return frameYMax; }
 
 function resetCornerLocations() {
-    let width = getCanvasWidth() / loadGD(UI_CANVAS_SQUARES_ZOOM);
-    let height = getCanvasHeight() / loadGD(UI_CANVAS_SQUARES_ZOOM);
+    let width = getCanvasWidth() / loadGD(UI_CANVAS_SQUARES_ZOOM) / getBaseSize();
+    let height = getCanvasHeight() / loadGD(UI_CANVAS_SQUARES_ZOOM) / getBaseSize();
 
-    frameXMin = Math.floor(Math.max(0, loadGD(UI_CANVAS_VIEWPORT_CENTER_X) - (width / 2)) / getBaseSize());
-    frameXMax = Math.ceil(Math.min(getCanvasWidth(), frameXMin + width) / getBaseSize());
-    frameYMin = Math.floor(Math.max(0, loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) - (height / 2)) / getBaseSize());
-    frameYMax = Math.ceil(Math.min(getCanvasHeight(), frameYMin + height) / getBaseSize());
+    let cx = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) / getBaseSize();
+    let cy = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) / getBaseSize();
+
+    frameXMin = Math.floor(Math.max(0, cx - (width / 2)));
+    frameXMax = Math.ceil(cx + (width / 2));
+    frameYMin = Math.floor(Math.max(0, cy - (height / 2)));
+    frameYMax = Math.ceil(cy + (height / 2));
 }
 
 

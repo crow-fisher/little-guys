@@ -46,7 +46,7 @@ export function getFrameSimulationSquares() {
 export function reset() {
     resetWaterflowSquares();
     resetFrameGroupCache();
-    frame_squares = Array.from(getSqIterationOrder());
+    // frame_squares = Array.from(getSqIterationOrder());
 
     frame_simulation_squares = new Array();
     frame_simulation_organisms = new Array();
@@ -60,14 +60,14 @@ export function reset() {
             });
         }
     }
-    
+
     frame_solid_squares = frame_simulation_squares.filter((sq) => sq.solid);
     frame_water_squares = frame_simulation_squares.filter((sq) => !sq.solid);
-    frame_squares.forEach((sq) => sq.reset());
+    frame_simulation_squares.forEach((sq) => sq.reset());
 }
 
 export function renderSquares() {
-    frame_squares.forEach((sq) => sq.render());
+    frame_simulation_squares.forEach((sq) => sq.render());
 }
 
 export function renderSolidSquares() {
@@ -80,8 +80,8 @@ export function renderWaterSquares() {
 }
 
 export function physics() {
-    frame_squares.forEach((sq) => sq.physicsBefore());
-    frame_squares.forEach((sq) => sq.physics());
+    frame_simulation_squares.forEach((sq) => sq.physicsBefore());
+    frame_simulation_squares.forEach((sq) => sq.physics());
 }
 
 export function processOrganisms() {
