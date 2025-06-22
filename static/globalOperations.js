@@ -34,7 +34,7 @@ export function saveGroupMinHeight(group, posY) {
 export function periodicPurgeOldGroupData() {
     if (groupMinPosYMap.size > 1000) {
         groupMinPosYMap.clear();
-        iterateOnSquares((sq) => saveGroupMinHeight(sq.group, sq.posY));
+        getFrameSimulationSquares().forEach((sq) => saveGroupMinHeight(sq.group, sq.posY));
         waterGraphReset();
     }
 }

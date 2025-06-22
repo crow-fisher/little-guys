@@ -1,6 +1,6 @@
 import { hexToRgb, randNumber, rgbToRgba } from "../../common.js";
 import { getSquares } from "../../squares/_sqOperations.js";
-import { getBaseSize, zoomCanvasFillRect } from "../../canvas.js";
+import { getBaseSize, isSquareOnCanvas, zoomCanvasFillRect } from "../../canvas.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds, getBaseAirPressureAtYPosition, getAirSquareDensity, getWindPressureSquareDensity, base_wind_pressure, manipulateWindPressureMaintainHumidityWindSquare, initWindPressure, isWindSquareBlocked, windFlowrateFactor, getWindSquareAbove, getWindThrottleValWindMap, getFrameXMinWsq, getFrameXMaxWsq, getFrameYMinWsq, getFrameYMaxWsq } from "./wind.js";
 import { logRainFall } from "../weather/weatherManager.js";
@@ -109,11 +109,11 @@ function getRestingAirPressureAtSq(y) {
 
 export function restingValues() {
     let temperatureStrength = 18 * restingGradientStrength;
-    let humidityStrength = 2 * restingGradientStrength; 
+    let humidityStrength = 2 * restingGradientStrength;
     for (let i = getFrameXMinWsq(); i < getFrameXMaxWsq(); i++) {
         for (let j = getFrameYMinWsq(); j < getFrameYMaxWsq(); j++) {
-            let curPressure = getPressure(i, j); 
-             
+            let curPressure = getPressure(i, j);
+
             let pressureRestingMult = 0.05;
 
             let restingPressureTarget = getRestingAirPressureAtSq(j) * pressureRestingMult + curPressure * (1 - pressureRestingMult);
@@ -121,7 +121,7 @@ export function restingValues() {
 
             let startTemp = temperatureMap[i][j];
             let restingTemp = getRestingTemperatureAtSq(i, j);
-            let diffTemp = restingTemp - startTemp; 
+            let diffTemp = restingTemp - startTemp;
             let curTempPascals = saturationPressureOfWaterVapor((restingTemp * 0.8 + temperatureMap[i][j] * 0.2));
 
             let curHumidity = getHumidity(i, j);
@@ -173,7 +173,7 @@ function updateWindSquareTemperature(x, y, newVal) {
     let end = temperatureMap[x][y];
     setPressurebyMult(x, y, (end / start));
 }
- 
+
 
 
 function temperatureDiffFunction(x, y, x2, y2, high, low) {
@@ -193,7 +193,7 @@ function humidityDiffFunction(x, y, x2, y2, high, low) {
     let humidity2 = getHumidity(x2, y2); // 0.8
 
     let humidityDiff = humidity1 - humidity2; // 0.2 - 0.8 = -0.6;
-    
+
     let square1PascalsForHumidityDiff = getWindPressureSquareDensity(x, y) * saturationPressureOfWaterVapor(temperatureMap[x][y]) * Math.abs(humidityDiff / 2);
     let square2PascalsForHumidityDiff = getWindPressureSquareDensity(x2, y2) * saturationPressureOfWaterVapor(temperatureMap[x2][y2]) * Math.abs(humidityDiff / 2);
 
@@ -263,12 +263,12 @@ function tickMap(
 
 function getAdjacentProp(x, y, func) {
     return func(x, y) + getMapDirectNeighbors(x, y)
-    .filter((loc) => loc[0] >= 0 && loc[0] < getWindSquaresX() && loc[1] >= 0 && loc[1] < getWindSquaresY())
-    .map((loc) => func(loc[0], loc[1]))
-    .reduce(
-        (accumulator, currentValue) => accumulator + currentValue,
-        0,
-    );
+        .filter((loc) => loc[0] >= 0 && loc[0] < getWindSquaresX() && loc[1] >= 0 && loc[1] < getWindSquaresY())
+        .map((loc) => func(loc[0], loc[1]))
+        .reduce(
+            (accumulator, currentValue) => accumulator + currentValue,
+            0,
+        );
 }
 
 function doRain() {
@@ -304,18 +304,24 @@ function doRain() {
 
             dropHealth = Math.min(1, dropHealth * density * 12000);
 
-            let sq = addSquareByName(x * 4 + randNumber(0, 3), y * 4 + randNumber(0, 3), "water");
-            if (sq) {
-                sq.blockHealth = dropHealth;
-                sq.temperature = temperatureMap[x][y];
-                logRainFall(sq.blockHealth);
-                waterSaturationMap[x][y] -= usedWaterPascalsPerSquare;
-                getMapDirectNeighbors(x, y)
-                    .filter((loc) => loc[0] >= 0 && loc[0] < getWindSquaresX() && loc[1] >= 0 && loc[1] < getWindSquaresY())
-                    .forEach((loc) => waterSaturationMap[loc[0]][loc[1]] -= usedWaterPascalsPerSquare); 
-                sq.speedY = 1;
+            let posX = x * 4 + randNumber(0, 3);
+            let posY = y * 4 + randNumber(0, 3);
+
+            if (isSquareOnCanvas(posX, posY)) {
+                let sq = addSquareByName(posX, posY, "water");
+                if (sq) {
+                    sq.blockHealth = dropHealth;
+                    sq.temperature = temperatureMap[x][y];
+                    logRainFall(sq.blockHealth);
+                    waterSaturationMap[x][y] -= usedWaterPascalsPerSquare;
+                    getMapDirectNeighbors(x, y)
+                        .filter((loc) => loc[0] >= 0 && loc[0] < getWindSquaresX() && loc[1] >= 0 && loc[1] < getWindSquaresY())
+                        .forEach((loc) => waterSaturationMap[loc[0]][loc[1]] -= usedWaterPascalsPerSquare);
+                    sq.speedY = 1;
+                }
             }
         }
+
     }
 }
 
@@ -327,11 +333,11 @@ export function getCloudColorAtSqPos(x, y) {
 
 export function getCloudColorAtPos(x, y) {
     if (!isPointInWindBounds(x, y)) {
-        return {r: 255, g: 255, b: 255, a: 0};
+        return { r: 255, g: 255, b: 255, a: 0 };
     }
     let squareHumidity = getHumidity(x, y);
     if (squareHumidity < 1) {
-        return {r: 255, g: 255, b: 255, a: 0};
+        return { r: 255, g: 255, b: 255, a: 0 };
     }
     let outColor;
     let opacity;
@@ -346,7 +352,7 @@ export function getCloudColorAtPos(x, y) {
     return outColor;
 }
 
-let frameCloudSum = {r: 0, g: 0, b: 0};;
+let frameCloudSum = { r: 0, g: 0, b: 0 };;
 let frameCloudSumCount = 1;
 
 export function getFrameRelCloud() {
@@ -358,7 +364,7 @@ export function getFrameRelCloud() {
 }
 
 function renderClouds() {
-    frameCloudSum = {r: 0, g: 0, b: 0};
+    frameCloudSum = { r: 0, g: 0, b: 0 };
     frameCloudSumCount = 1;
     let frameLighting = getDefaultLighting();
 
@@ -384,9 +390,9 @@ function renderClouds() {
 
 
             MAIN_CONTEXT.fillStyle = rgbToRgba(
-                cloudColorRGBA.r * (frameLighting.r / 255), 
-                cloudColorRGBA.g * (frameLighting.g / 255), 
-                cloudColorRGBA.b * (frameLighting.b / 255), 
+                cloudColorRGBA.r * (frameLighting.r / 255),
+                cloudColorRGBA.g * (frameLighting.g / 255),
+                cloudColorRGBA.b * (frameLighting.b / 255),
                 cloudColorRGBA.a);
             zoomCanvasFillRect(
                 4 * i * getBaseSize(),
