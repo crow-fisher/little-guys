@@ -2,9 +2,10 @@ import { hexToRgb, rgbToRgba } from "../../common.js";
 import { getSquares } from "../../squares/_sqOperations.js";
 import {  MAIN_CONTEXT } from "../../index.js";
 import { addWaterSaturation, addWaterSaturationPascals, calculateColor, getHumidity, getTemperatureAtWindSquare, getWaterSaturation, initTemperatureHumidity, setWaterSaturation, setWaterSaturationMap, updateWindSquareTemperature } from "./temperatureHumidity.js";
-import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillRect, zoomCanvasFillRectTheta } from "../../canvas.js";
-import { loadGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "../../ui/UIData.js";
+import { getBaseSize, getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, zoomCanvasFillRect, zoomCanvasFillRectTheta } from "../../canvas.js";
+import { loadGD, UI_CANVAS_SQUARES_ZOOM, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "../../ui/UIData.js";
 import { getWindThrottleVal, registerWindThrottlerOutput } from "./throttler.js";
+import { COLOR_VERY_FUCKING_RED } from "../../colors.js";
 
 let windPressureMap;
 let windPressureMapByPressure;
@@ -28,17 +29,17 @@ let base_wind_pressure = 101325; // 1 atm in pascals
 
 let windSpeedSmoothingMap = new Map();
 
-let WIND_SQUARES_X = () => Math.ceil(getCanvasSquaresX() / 4);
-let WIND_SQUARES_Y = () => Math.ceil(getCanvasSquaresY() / 4);
+let WIND_SQUARES_X = () => Math.ceil(loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) / 4);
+let WIND_SQUARES_Y = () => Math.ceil(loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y) / 4);
 
 let curWindSquaresX = -1;
 let curWindSquaresY = -1;
 
 export function getWindSquaresX() {
-    return curWindSquaresX;
+    return WIND_SQUARES_X();
 }
 export function getWindSquaresY() {
-    return curWindSquaresY;
+    return WIND_SQUARES_Y();
 }
 
 function getAirSquareDensity(x, y) {
@@ -198,15 +199,36 @@ export function getWindThrottleValWindMapVal(x, y) {
     }
 }
 
+let frameXMinWsq = 0;
+export function getFrameXMinWsq() { return frameXMinWsq; }
+let frameXMaxWsq = 0;
+export function getFrameXMaxWsq() { return frameXMaxWsq; }
+let frameYMinWsq = 0;
+export function getFrameYMinWsq() { return frameYMinWsq; }
+let frameYMaxWsq = 0;
+export function getFrameYMaxWsq() { return frameYMaxWsq; }
+
 function tickWindPressureMap() {
-    windPressureMapByPressure = new Map();
-    if (WIND_SQUARES_X() != curWindSquaresX || WIND_SQUARES_Y() != curWindSquaresY) {
-        initWindPressure();
-        initTemperatureHumidity();
+    if (WIND_SQUARES_X() == 0) {
+        return;
     }
 
-    for (let i = 0; i < curWindSquaresX; i++) {
-        for (let j = 0; j < curWindSquaresY; j++) {
+    windPressureMapByPressure = new Map();
+    let width = getCanvasWidth() / loadGD(UI_CANVAS_SQUARES_ZOOM);
+    let height = getCanvasHeight() / loadGD(UI_CANVAS_SQUARES_ZOOM);
+
+    let frameXMin = Math.max(0, loadGD(UI_CANVAS_VIEWPORT_CENTER_X) - (width / 2));
+    let frameXMax = Math.min(getCanvasWidth(), frameXMin + width);
+    let frameYMin = Math.max(0, loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) - (height / 2));
+    let frameYMax = Math.min(getCanvasHeight(), frameYMin + height);
+
+    frameXMinWsq = Math.round(frameXMin / (getBaseSize() * 4));
+    frameXMaxWsq = Math.round(frameXMax / (getBaseSize() * 4));
+    frameYMinWsq = Math.round(frameYMin / (getBaseSize() * 4));
+    frameYMaxWsq = Math.round(frameYMax / (getBaseSize() * 4));
+
+    for (let i = frameXMinWsq; i < frameXMaxWsq; i++) {
+        for (let j = frameYMinWsq; j < frameYMaxWsq; j++) {
             let coll = checkIfCollisionAtWindSquare(i, j);
             if (coll) {
                 if (!(windPressureBlockOcclusionMap[i][j])) {

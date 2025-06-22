@@ -3,7 +3,7 @@ import { addUIFunctionMap, UI_CLIMATE_WEATHER_CLEAR, UI_CLIMATE_WEATHER_LIGHTRAI
 import { getActiveClimate } from "../climateManager.js";
 import { cloudRainThresh } from "../simulation/temperatureHumidity.js";
 import { getCurDay, getDt, getTimeScale } from "../time.js";
-import { getWindSquaresX, getWindSquaresY } from "../simulation/wind.js";
+import { getFrameXMaxWsq, getFrameXMinWsq, getFrameYMaxWsq, getFrameYMinWsq, getWindSquaresX, getWindSquaresY } from "../simulation/wind.js";
 import { Cloud } from "./cloud.js";
 import { Weather } from "./weather.js";
 
@@ -29,47 +29,44 @@ let curClouds = [];
 let curWinds = [];
 
 let cloudDuration = () => getTimeScale() * randRange(0.5, 1) / loadGD(UI_SIMULATION_GENS_PER_DAY);
+let cloudXSize = (min=0.5, max=0.9) => randRange(min, max) * getFrameXMaxWsq() - getFrameXMinWsq();
+let cloudYSize = (min=0.5, max=0.9) => randRange(min, max) * getFrameXMaxWsq() - getFrameXMinWsq();
 
 function spawnFogCloud() {
     let wsx = getWindSquaresX();
     let wsy = getWindSquaresY();
     curClouds.push(new Cloud(
-        randRange(0, wsx),
-        randRange(0, wsy),
-        randRange(0.5, 0.9) * wsx, randRange(0.4, 0.9) * wsy,
+        randRange(getFrameXMinWsq(), getFrameXMaxWsq()),
+        randRange(getFrameYMinWsq(), getFrameYMaxWsq()),
+        cloudXSize(), cloudYSize(),
         getCurDay(), cloudDuration(),
         randRange(1.004, 1.006), 0.4));
 }
 
 function spawnCumulusCloud() {
-    let wsx = getWindSquaresX();
-    let wsy = getWindSquaresY();
+    let wsy = randRange(getFrameYMinWsq(), getFrameYMaxWsq());
     curClouds.push(new Cloud(
-        randRange(0, wsx),
+        randRange(getFrameXMinWsq(), getFrameXMaxWsq()),
         gaussianRandom( wsy/15, wsy/10),
-        randRange(0.4, 0.9) * wsx, randRange(0.2, 0.35) * wsy,
+        cloudXSize(), cloudYSize(),
         getCurDay(), cloudDuration(),
         randRange((1 + cloudRainThresh) / 2, cloudRainThresh), 0.8));
 }
 
 function spawnNimbusCloud(rainFactor) {
-    let wsx = getWindSquaresX();
-    let wsy = getWindSquaresY();
     curClouds.push(new Cloud(
-        randRange(0, wsx),
-        randRange(0, wsy / 8),
-        randRange(0.4, 0.9) * wsy, randRange(0.15, 0.25) * wsy,
+        randRange(getFrameXMinWsq(), getFrameXMaxWsq()),
+                randRange(getFrameYMinWsq(), getFrameYMaxWsq()),
+        cloudXSize(), cloudYSize(),
         getCurDay(), cloudDuration(),
         1 + 0.05 * rainFactor, 0.8));
 }
 
 function spawnWindGust(airPressure) {
-    let wsx = getWindSquaresX();
-    let wsy = getWindSquaresY();
     curClouds.push(new Cloud(
-        randRange(-wsx, wsx),
-        randRange(-wsy, wsy),
-        randRange(.4, 0.7) * wsx, randRange(0.05, 0.1) * wsy,
+        randRange(getFrameXMinWsq(), getFrameXMaxWsq()),
+        randRange(getFrameYMinWsq(), getFrameYMaxWsq()),
+        cloudXSize(), cloudYSize(),
         getCurDay(), cloudDuration() * 4 * Math.random(),
         -1, 0.8, 1 + .1 * Math.random() * airPressure));
 }

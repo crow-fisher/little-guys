@@ -57,7 +57,7 @@ export function indexCanvasSize(shouldInitUIClimateAndLighting = true) {
     width = Math.floor(window.innerWidth - margin);
     height = Math.floor(window.innerHeight - margin);
     setBaseSize(Math.floor(height / loadGD(UI_SIMULATION_HEIGHT)));
-    while (getBaseSize() % 4 != 0)
+    while (getBaseSize() % 4 != 0 && getBaseSize() > 1)
         setBaseSize(getBaseSize() - 1);
 
     setCanvasSquaresY(Math.floor(height / getBaseSize()));

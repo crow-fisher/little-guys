@@ -2,7 +2,7 @@ import { hexToRgb, randNumber, rgbToRgba } from "../../common.js";
 import { getSquares } from "../../squares/_sqOperations.js";
 import { getBaseSize, zoomCanvasFillRect } from "../../canvas.js";
 import { MAIN_CONTEXT } from "../../index.js";
-import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds, getBaseAirPressureAtYPosition, getAirSquareDensity, getWindPressureSquareDensity, base_wind_pressure, manipulateWindPressureMaintainHumidityWindSquare, initWindPressure, isWindSquareBlocked, windFlowrateFactor, getWindSquareAbove, getWindThrottleValWindMap } from "./wind.js";
+import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds, getBaseAirPressureAtYPosition, getAirSquareDensity, getWindPressureSquareDensity, base_wind_pressure, manipulateWindPressureMaintainHumidityWindSquare, initWindPressure, isWindSquareBlocked, windFlowrateFactor, getWindSquareAbove, getWindThrottleValWindMap, getFrameXMinWsq, getFrameXMaxWsq, getFrameYMinWsq, getFrameYMaxWsq } from "./wind.js";
 import { logRainFall } from "../weather/weatherManager.js";
 import { getDefaultLighting } from "../../lighting/lightingProcessing.js";
 import { addSquareByName } from "../../manipulation.js";
@@ -110,8 +110,8 @@ function getRestingAirPressureAtSq(y) {
 export function restingValues() {
     let temperatureStrength = 18 * restingGradientStrength;
     let humidityStrength = 2 * restingGradientStrength; 
-    for (let i = 0; i < getWindSquaresX(); i++) {
-        for (let j = 0; j < getWindSquaresY(); j++) {
+    for (let i = getFrameXMinWsq(); i < getFrameXMaxWsq(); i++) {
+        for (let j = getFrameYMinWsq(); j < getFrameYMaxWsq(); j++) {
             let curPressure = getPressure(i, j); 
              
             let pressureRestingMult = 0.05;
@@ -214,17 +214,12 @@ function tickMap(
     diff_function,
     update_function
 ) {
-    let xKeys = Array.from(Object.keys(map));
-    for (let i = 0; i < xKeys.length; i++) {
-        let yKeys = Array.from(Object.keys(map[xKeys[i]]));
-        for (let j = 0; j < yKeys.length; j++) {
-            let x = parseInt(xKeys[i]);
-            let y = parseInt(yKeys[j]);
+    for (let x = getFrameXMinWsq(); x < getFrameXMaxWsq(); x++) {
+        for (let y = getFrameYMinWsq(); y < getFrameYMaxWsq(); y++) {
             let throttleVal = getWindThrottleValWindMap(x, y);
             if (throttleVal < 0) {
                 continue;
             }
-
             getMapDirectNeighbors(x, y)
                 .filter((loc) => isPointInWindBounds(loc[0], loc[1]))
                 .filter((loc) => getPressure(loc[0], loc[1]) > 0)
@@ -280,8 +275,8 @@ function doRain() {
     if (getTimeScale() == 0) {
         return;
     }
-    for (let x = 0; x < getWindSquaresX(); x++) {
-        for (let y = 0; y < getWindSquaresY(); y++) {
+    for (let x = getFrameXMinWsq(); x < getFrameXMaxWsq(); x++) {
+        for (let y = getFrameYMinWsq(); y < getFrameYMaxWsq(); y++) {
             if (getAdjacentProp(x, y, (x, y) => (getHumidity(x, y) > cloudRainThresh ? 1 : 0)) < 5) {
                 continue;
             };
@@ -367,8 +362,8 @@ function renderClouds() {
     frameCloudSumCount = 1;
     let frameLighting = getDefaultLighting();
 
-    for (let i = 0; i < getWindSquaresX(); i++) {
-        for (let j = 0; j < getWindSquaresY(); j++) {
+    for (let i = getFrameXMinWsq(); i < getFrameXMaxWsq(); i++) {
+        for (let j = getFrameYMinWsq(); j < getFrameYMaxWsq(); j++) {
             let x = i;
             let y = j;
 
