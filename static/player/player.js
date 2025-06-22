@@ -180,10 +180,10 @@ export class Player {
                         let xdt = this.frameDt * this.speedX * dt;
                         let ydt = this.frameDt * this.speedY * dt;
 
-                        let cn = EN * getSquares(pxn + xdt, pyn + ydt).some((sq) => (sq.proto == "SoilSquare" || sq.proto == "RockSquare") && sq.surface == surface);
-                        let cs = ES * getSquares(pxs + xdt, pys + ydt).some((sq) => (sq.proto == "SoilSquare" || sq.proto == "RockSquare") && sq.surface == surface);
-                        let ce = EE * getSquares(pxe + xdt, pye + ydt).some((sq) => (sq.proto == "SoilSquare" || sq.proto == "RockSquare") && sq.surface == surface);
-                        let cw = EW * getSquares(pxw + xdt, pyw + ydt).some((sq) => (sq.proto == "SoilSquare" || sq.proto == "RockSquare") && sq.surface == surface);
+                        let cn = EN * getSquares(pxn + xdt, pyn + ydt).some((sq) => (sq.solid && !sq.organic && sq.collision) && sq.surface == surface);
+                        let cs = ES * getSquares(pxs + xdt, pys + ydt).some((sq) => (sq.solid && !sq.organic && sq.collision) && sq.surface == surface);
+                        let ce = EE * getSquares(pxe + xdt, pye + ydt).some((sq) => (sq.solid && !sq.organic && sq.collision) && sq.surface == surface);
+                        let cw = EW * getSquares(pxw + xdt, pyw + ydt).some((sq) => (sq.solid && !sq.organic && sq.collision) && sq.surface == surface);
                         let cs2 = ES2 * getSquares(pxs + xdt, (pys * 0.8 + pyn * 0.2) + ydt).some((sq) => (sq.proto == "SoilSquare" || sq.proto == "RockSquare") && sq.surface == surface);
 
                         let colMask = this.frameCollisionMap.get(surface).get(i).get(j);

@@ -39,6 +39,7 @@ export class RigidImageSquare extends ImageSquare {
         super(posX, posY, r, g, b, a);
         this.proto = "RigidImageSquare";
         this.rootable = false;
+        
     }
     slopePhysics() {}
 }
