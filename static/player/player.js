@@ -84,7 +84,7 @@ export class Player {
             for (let i = 0; i < this.sizeX; i++) {
                 for (let j = 0; j < this.sizeY; j++) {
                     MAIN_CONTEXT.fillStyle = COLOR_BLACK;
-                    zoomCanvasFillRect((this.posX + i) * getBaseSize(), (this.posY + j) * getBaseSize(), getBaseSize(), getBaseSize());
+                    zoomCanvasFillRect(Math.round((this.posX + i) * getBaseSize()), Math.round((this.posY + j) * getBaseSize()), getBaseSize(), getBaseSize());
                     let colMask = this.frameCollisionMap.get(proto).get(i).get(j);
 
                     if (proto)
@@ -93,13 +93,13 @@ export class Player {
                         MAIN_CONTEXT.fillStyle = "rgba(0, 255, 0, 0.5)";
 
                     if ((EN & colMask) == EN)
-                        zoomCanvasFillRect((this.posX + i) * getBaseSize(), (this.posY + j) * getBaseSize(), getBaseSize(), getBaseSize() * 0.125);
+                        zoomCanvasFillRect(Math.round((this.posX + i) * getBaseSize()), Math.round((this.posY + j) * getBaseSize()), getBaseSize(), getBaseSize() * 0.125);
                     if ((ES & colMask) == ES)
-                        zoomCanvasFillRect((this.posX + i) * getBaseSize(), (this.posY + j + 1) * getBaseSize(), getBaseSize(), getBaseSize() * -0.125);
+                        zoomCanvasFillRect(Math.round((this.posX + i) * getBaseSize()), Math.round((this.posY + j + 1) * getBaseSize()), getBaseSize(), getBaseSize() * -0.125);
                     if ((EW & colMask) == EW)
-                        zoomCanvasFillRect((this.posX + i) * getBaseSize(), (this.posY + j) * getBaseSize(), getBaseSize() * 0.125, getBaseSize());
+                        zoomCanvasFillRect(Math.round((this.posX + i) * getBaseSize()), Math.round((this.posY + j) * getBaseSize()), getBaseSize() * 0.125, getBaseSize());
                     if ((EE & colMask) == EE)
-                        zoomCanvasFillRect((this.posX + i + 1) * getBaseSize(), (this.posY + j) * getBaseSize(), getBaseSize() * -0.125, getBaseSize());
+                        zoomCanvasFillRect(Math.round((this.posX + i + 1) * getBaseSize()), Math.round((this.posY + j) * getBaseSize()), getBaseSize() * -0.125, getBaseSize());
                 }
             }
         }
