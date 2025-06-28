@@ -343,8 +343,8 @@ function getExpectedPressureDifferential(x, y, x2, y2) {
 }
 
 function renderWindPressureMap() {
-    for (let i = 0; i < curWindSquaresX; i++) {
-        for (let j = 0; j < curWindSquaresY; j++) {
+    for (let i = getFrameXMinWsq(); i < getFrameXMaxWsq(); i++) {
+        for (let j = getFrameYMinWsq(); j < getFrameYMaxWsq(); j++) {
             let p = getPressure(i, j) / getBaseAirPressureAtYPosition(j);  
             let s = _getWindSpeedAtLocation(i, j);
 
@@ -374,8 +374,8 @@ function renderWindPressureMap() {
                 continue;
             }
 
-            let startX = 4 * i * getBaseSize();
-            let startY = 4 * j * getBaseSize();
+            let startX = 4 * (i + getFrameXMinWsq()) * getBaseSize();
+            let startY = 4 * (j + getFrameYMinWsq()) * getBaseSize();
 
             MAIN_CONTEXT.beginPath();
             MAIN_CONTEXT.lineWidth = 1;

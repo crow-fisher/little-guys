@@ -18,6 +18,17 @@ export function getDefaultLighting() {
     }
 }
 
+export function getCloudRenderingLighting() {
+    let brightness = getDaylightStrength();
+    let daylightColor = getCurrentLightColorTemperature();
+    let moonlightColor = getMoonlightColor();
+    return {
+        r: (moonlightColor.r * .7 * Math.exp(loadGD(UI_LIGHTING_MOON)) + 0.5 * Math.exp(loadGD(UI_LIGHTING_SUN)) * (daylightColor.r * brightness)),
+        g: (moonlightColor.g * .7 * Math.exp(loadGD(UI_LIGHTING_MOON)) + 0.5 * Math.exp(loadGD(UI_LIGHTING_SUN)) * (daylightColor.g * brightness)),
+        b: (moonlightColor.b * .7 * Math.exp(loadGD(UI_LIGHTING_MOON)) + 0.5 * Math.exp(loadGD(UI_LIGHTING_SUN)) * (daylightColor.b * brightness))
+    }
+}
+
 export function processLighting(lightingMap) {
     let outColor = {r: 0, g: 0, b: 0}
     lightingMap.filter((light) => light != null && light.length == 2).forEach((light) => {

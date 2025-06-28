@@ -4,7 +4,7 @@ import { getBaseSize, isSquareOnCanvas, zoomCanvasFillRect } from "../../canvas.
 import { MAIN_CONTEXT } from "../../index.js";
 import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds, getBaseAirPressureAtYPosition, getAirSquareDensity, getWindPressureSquareDensity, base_wind_pressure, manipulateWindPressureMaintainHumidityWindSquare, initWindPressure, isWindSquareBlocked, windFlowrateFactor, getWindSquareAbove, getWindThrottleValWindMap, getFrameXMinWsq, getFrameXMaxWsq, getFrameYMinWsq, getFrameYMaxWsq } from "./wind.js";
 import { logRainFall } from "../weather/weatherManager.js";
-import { getDefaultLighting } from "../../lighting/lightingProcessing.js";
+import { getCloudRenderingLighting, getDefaultLighting } from "../../lighting/lightingProcessing.js";
 import { addSquareByName } from "../../manipulation.js";
 import { loadGD, UI_CLIMATE_RAINFALL_DENSITY } from "../../ui/UIData.js";
 import { isLeftMouseClicked, isRightMouseClicked } from "../../mouse.js";
@@ -362,7 +362,7 @@ export function getFrameRelCloud() {
 function renderClouds() {
     frameCloudSum = { r: 0, g: 0, b: 0 };
     frameCloudSumCount = 1;
-    let frameLighting = getDefaultLighting();
+    let frameLighting = getCloudRenderingLighting();
 
     for (let i = getFrameXMinWsq(); i < getFrameXMaxWsq(); i++) {
         for (let j = getFrameYMinWsq(); j < getFrameYMaxWsq(); j++) {
@@ -498,8 +498,8 @@ function renderTemperature() {
 }
 
 function renderWaterSaturation() {
-    for (let i = 0; i < getWindSquaresX(); i++) {
-        for (let j = 0; j < getWindSquaresY(); j++) {
+    for (let i = getFrameXMinWsq(); i < getFrameXMaxWsq(); i++) {
+        for (let j = getFrameYMinWsq(); j < getFrameYMaxWsq(); j++) {
             if (getPressure(i, j) <= 0) {
                 continue;
             }

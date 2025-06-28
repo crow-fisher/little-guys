@@ -47,10 +47,10 @@ function spawnCumulusCloud() {
     let wsy = randRange(getFrameYMinWsq(), getFrameYMaxWsq());
     curClouds.push(new Cloud(
         randRange(getFrameXMinWsq(), getFrameXMaxWsq()),
-        gaussianRandom( wsy/15, wsy/10),
+        randRangeFactor(getFrameYMinWsq(), getFrameXMaxWsq(), 0.25),
         cloudXSize(), cloudYSize(),
         getCurDay(), cloudDuration(),
-        randRange((1 + cloudRainThresh) / 2, cloudRainThresh), 0.8));
+        randRange((1 + cloudRainThresh) / 2, cloudRainThresh), randRange(.001, .04)));
 }
 
 function spawnNimbusCloud(rainFactor) {
@@ -130,7 +130,7 @@ function spawnRateThrottle() {
 }
 
 function windyWeather(windAmount, airPressure) {
-    airPressure = 1 + .01 * airPressure;
+    airPressure = 1 + .0001 * airPressure;
     if (curWinds.length > windAmount) {
         return;
     }
@@ -177,7 +177,7 @@ function generalRainyWeather(rfMin, rfMax) {
         if (spawnRateThrottle()) {
             spawnNimbusCloud(randRange(rfMin, rfMax));
         }
-        // windyWeather(10, 3 * rfMin);
+        windyWeather(10, 3 * rfMin);
     }
 }
 
