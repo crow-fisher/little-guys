@@ -1,4 +1,5 @@
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, recacheCanvasPositions, zoomCanvasFillCircle, zoomCanvasFillRect } from "../canvas.js";
+import { getFrameDt } from "../climate/time.js";
 import { COLOR_BLACK, COLOR_GREEN, COLOR_VERY_FUCKING_RED } from "../colors.js";
 import { GBNOTSURE, GBX, GBA, getLeftStick, isButtonPressed } from "../gamepad.js";
 import { MAIN_CONTEXT } from "../index.js";
@@ -46,13 +47,14 @@ export class Player {
 
         this.gravity = .07;
 
-        this.walkMax = 0.45;
+        this.walkMax = 0.25;
         this.walkAcc = this.walkMax / 5;
 
         this.runMax = this.walkMax * 1.6;
         this.runAcc = this.walkAcc;
 
-        this.jumpSpeed = 1.3;
+        this.jumpSpeed = this.walkMax;
+        this.jumpActiveTicksLeft = 0;
         this.jumpTicksLeft = 0;
 
         this.prevTickTime = Date.now();
@@ -279,7 +281,6 @@ export class Player {
         let cmp = (this.kpax > 0) ? Math.max : Math.min;
         this.speedX = cmp(this.speedX + this.kpax * tickAcc, (tickMax * this.kpax));
         if (bottomNonSurfaceCollision || bottomSurfaceCollision) {
-
             if (this.kpJump || isButtonPressed(GBA)) {
                 this.jumpTicks = 3;
                 this.jump();
@@ -289,6 +290,8 @@ export class Player {
         this.speedY += tickGravity;
         this.posX += this.speedX * this.frameDt * 1;
         this.posY += this.speedY * this.frameDt * 1;
+
+        this.postJump();
     }
 
     jump() {
@@ -297,7 +300,16 @@ export class Player {
             this.jumpStartY = this.posY;
             this.jumpTicksLeft = 10;
             this.speedY -= this.jumpSpeed;
+            this.totalJumpActiveTicks = 250 / (getFrameDt());
+            this.jumpActiveTicksLeft = this.totalJumpActiveTicks;
         }
+    }
+
+    postJump() {
+        if (this.jumpActiveTicksLeft > 0 && (this.kpJump || isButtonPressed(GBA)))
+            this.speedY -= this.jumpSpeed * (this.jumpActiveTicksLeft / this.totalJumpActiveTicks) ** 4;
+        this.jumpActiveTicksLeft = Math.max(0, this.jumpActiveTicksLeft - 1);
+
     }
 
     handleKeyDown(key) {
