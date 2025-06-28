@@ -91,6 +91,9 @@ function getRestingHumidityAtSq(x, y) {
     y /= getWindSquaresY();
     let lower = reverseRestingHumidityGradient.find((arr) => arr[0] <= y);
     let upper = restingHumidityGradient.find((arr) => arr[0] > y);
+    if (upper == null || lower == null) {
+        return getHumidity(x, y);
+    }
     let pos = (y - lower[0]) / (upper[0] - lower[0]);
     return lower[1] * (1 - pos) + upper[1] * pos;
 }

@@ -284,7 +284,10 @@ class BaseOrganism {
         this.linkedSquare = square;
         square.linkOrganism(this);
     }
-    unlinkSquare() {
+    unlinkSquare(deep=true) {
+        if (deep) {
+            this.linkedSquare.unlinkOrganism(this);
+        }
         this.linkedSquare = null;
     }
 

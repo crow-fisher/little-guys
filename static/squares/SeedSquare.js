@@ -56,6 +56,7 @@ class SeedSquare extends BaseSquare {
 
         this.linkedOrganisms.forEach((org) => {
             removeOrganism(org);
+            org.unlinkSquare(org.linkedSquare);
             org.posY += 1;
             org.linkSquare(sq);
             addOrganism(org);
