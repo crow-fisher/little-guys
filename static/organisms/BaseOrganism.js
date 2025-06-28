@@ -1,5 +1,5 @@
 import { removeOrganism } from "./_orgOperations.js";
-import { getCurDay, getDt, getTimeScale } from "../climate/time.js";
+import { getCurDay, getDt, getFrameDt, getTimeScale } from "../climate/time.js";
 import { GrowthPlan, GrowthPlanStep } from "./GrowthPlan.js";
 import { STAGE_ADULT, STAGE_DEAD, STAGE_FLOWER, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_ROOTNODE, TYPE_HEART } from "./Stages.js";
 import { addSquare, getNeighbors } from "../squares/_sqOperations.js";
@@ -50,7 +50,7 @@ class BaseOrganism {
         this.growthPlans = [];
         this.lastGrownMap = {};
         this.linkSquare(square);
-        this.spawnTime = getCurDay();
+        this.age = 0;
         this.rootLastGrown = 0;
         this.greenLastGrown = 0;
         this.curLifeTimeOffset = 0;
@@ -95,6 +95,7 @@ class BaseOrganism {
         this.lighting = square.lighting;
         this.evolutionParameters = [0.5];
         this.deathProgress = 0;
+        this.lastTickTime = getCurDay();
 
         this.evolutionMinColor = RGB_COLOR_BLUE;
         this.evolutionMaxColor = RGB_COLOR_VERY_FUCKING_RED;
@@ -474,7 +475,7 @@ class BaseOrganism {
     }
 
     getAge() {
-        return (getCurDay() - this.spawnTime) - this.curLifeTimeOffset;
+        return this.age;
     }
 
     spawnSeed() {
@@ -625,10 +626,15 @@ class BaseOrganism {
         }
     }
 
+    plantAgeHandling() {
+        this.age += getDt();
+    }
+
     // ** OUTER TICK METHOD INVOKED EACH FRAME
     // -- these methods are universal to every organism
     process() {
         if (this.stage != STAGE_DEAD) {
+            this.plantAgeHandling();
             this.waterPressureTick();
             this.nutrientTick();
             this.planGrowth();

@@ -99,6 +99,9 @@ export function getRestingTemperatureAtSq(x, y) {
     y /= getWindSquaresY();
     let lower = reverseRestingTemperatureGradient.find((arr) => arr[0] <= y);
     let upper = restingTemperatureGradient.find((arr) => arr[0] > y);
+    if (upper == null || lower == null) {
+        return getTemperatureAtWindSquare(x, y);
+    }
     let pos = (y - lower[0]) / (upper[0] - lower[0]);
     return lower[1] * (1 - pos) + upper[1] * pos;
 }

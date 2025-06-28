@@ -16,8 +16,8 @@ import { lightingExposureAdjustment } from "./lighting/lightingProcessing.js";
 import { getFrameXMinWsq } from "./climate/simulation/wind.js";
 
 let frame_squares = null;
-let frame_simulation_squares = null;
-let frame_simulation_organisms = null;
+let frame_simulation_squares = new Array();
+let frame_simulation_organisms = new Array();
 let frame_solid_squares = null;
 let frame_water_squares = null;
 
@@ -43,6 +43,10 @@ export function getFrameSimulationSquares() {
     return frame_simulation_squares;
 }
 
+export function getFrameSimulationOrganisms() {
+    return frame_simulation_organisms;
+}
+
 export function reset() {
     resetWaterflowSquares();
     resetFrameGroupCache();
@@ -53,8 +57,8 @@ export function reset() {
     for (let i = getFrameXMin() - 1; i < getFrameXMax() + 1; i++) {
         for (let j = getFrameYMax() + 1; j >= getFrameYMin() - 1; j--) {
             getSquares(i, j).forEach((sq) => {
-                if (sq.linkedOrganism != null)
-                    frame_simulation_organisms.push(sq.linkedOrganism);
+                if (sq.linkedOrganisms.length > 0)
+                    sq.linkedOrganisms.forEach((org) => frame_simulation_organisms.push(org));
                 frame_simulation_squares.push(sq);
             });
         }

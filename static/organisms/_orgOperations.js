@@ -1,6 +1,7 @@
 import { ALL_ORGANISMS } from "../globals.js";
 import { getObjectArrFromMap } from "../common.js";
 import { removeItemAll } from "../common.js";
+import { getFrameSimulationOrganisms, getFrameSimulationSquares } from "../globalOperations.js";
 
 function addNewOrganism(organism) {
     // if (getOrganismsAtSquare(organism.posX, organism.posY, true).length > 2) {
@@ -25,7 +26,7 @@ function getOrganismsAtSquare(posX, posY, create=false) {
 }
 
 function iterateOnOrganisms(func) {
-    ALL_ORGANISMS.keys().forEach((key) => ALL_ORGANISMS.get(key).keys().forEach((subkey) => ALL_ORGANISMS.get(key).get(subkey).forEach((func))));
+    getFrameSimulationOrganisms().forEach(func);
 }
 
 function removeOrganism(organism) {
