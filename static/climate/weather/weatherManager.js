@@ -38,7 +38,7 @@ function spawnFogCloud() {
     curClouds.push(new Cloud(
         randRange(getFrameXMinWsq(), getFrameXMaxWsq()),
         randRange(getFrameYMinWsq(), getFrameYMaxWsq()),
-        cloudXSize(), cloudYSize(),
+        cloudXSize(.7, 1), cloudYSize(.7, 1),
         getCurDay(), cloudDuration(),
         randRange(1.004, 1.006), 0.4));
 }
