@@ -86,6 +86,11 @@ function randRange(min, max) {
     return Math.random() * (max - min) + min;
 }
 
+export function randRangeFactor(min, max, factor) {
+    let d = (max - min);
+    return randRange(min, min + (d * factor));
+}
+
 export function organismProgressCalculus(amount, period) {
     return (amount / (period ** 2)) * 2;
 }

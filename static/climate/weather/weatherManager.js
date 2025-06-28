@@ -1,4 +1,4 @@
-import { gaussianRandom, randRange } from "../../common.js";
+import { gaussianRandom, randRange, randRangeFactor } from "../../common.js";
 import { addUIFunctionMap, UI_CLIMATE_WEATHER_CLEAR, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_HEAVYRAIN, loadGD, saveGD, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_DURATION, UI_CLIMATE_WEATHER_ACTIVE, UI_SIMULATION_GENS_PER_DAY, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_SIMULATION_CLOUDS, UI_CLIMATE_WEATHER_NULL } from "../../ui/UIData.js";
 import { getActiveClimate } from "../climateManager.js";
 import { cloudRainThresh } from "../simulation/temperatureHumidity.js";
@@ -28,7 +28,7 @@ export function getCurWeatherInterval() {
 let curClouds = [];
 let curWinds = [];
 
-let cloudDuration = () => getTimeScale() * randRange(0.5, 1) / loadGD(UI_SIMULATION_GENS_PER_DAY);
+let cloudDuration = () => getTimeScale() * randRange(4, 8) / loadGD(UI_SIMULATION_GENS_PER_DAY);
 let cloudXSize = (min=0.1, max=0.2) => randRange(min, max) * getFrameXMaxWsq() - getFrameXMinWsq();
 let cloudYSize = (min=0.1, max=0.2) => randRange(min, max) * getFrameXMaxWsq() - getFrameXMinWsq();
 
@@ -56,10 +56,10 @@ function spawnCumulusCloud() {
 function spawnNimbusCloud(rainFactor) {
     curClouds.push(new Cloud(
         randRange(getFrameXMinWsq(), getFrameXMaxWsq()),
-                randRange(getFrameYMinWsq(), getFrameYMaxWsq()),
-        cloudXSize(), cloudYSize(),
+        randRangeFactor(getFrameYMinWsq(), getFrameXMaxWsq(), 0.25),
+        cloudXSize(.4, .7), cloudYSize(),
         getCurDay(), cloudDuration(),
-        1 + 0.05 * rainFactor, 0.8));
+        1 + 0.05 * (1 + rainFactor), randRange(.001, .04)));
 }
 
 function spawnWindGust(airPressure) {
@@ -169,20 +169,20 @@ export function logRainFall(amount) {
 }
 
 
-function generalRainyWeather(rainFactor) {
+function generalRainyWeather(rfMin, rfMax) {
     return () => {
         if (curClouds.length > 10) {
             return;
         }
         if (spawnRateThrottle()) {
-            spawnNimbusCloud(rainFactor);
+            spawnNimbusCloud(randRange(rfMin, rfMax));
         }
-        windyWeather(10, 3 * rainFactor);
+        // windyWeather(10, 3 * rfMin);
     }
 }
 
-weatherLightRain = new Weather(UI_CLIMATE_WEATHER_LIGHTRAIN, rainyHumidityGradient, rainyTemperatureGradient, 50, generalRainyWeather(1.3));
-weatherHeavyRain = new Weather(UI_CLIMATE_WEATHER_HEAVYRAIN, rainyHumidityGradient, rainyTemperatureGradient, 50, generalRainyWeather(1.8));
+weatherLightRain = new Weather(UI_CLIMATE_WEATHER_LIGHTRAIN, rainyHumidityGradient, rainyTemperatureGradient, 50, generalRainyWeather(0.1, 0.3));
+weatherHeavyRain = new Weather(UI_CLIMATE_WEATHER_HEAVYRAIN, rainyHumidityGradient, rainyTemperatureGradient, 50, generalRainyWeather(0.4, 0.8));
 
 ui_weatherMap.set(UI_CLIMATE_WEATHER_CLEAR, weatherClear)
 ui_weatherMap.set(UI_CLIMATE_WEATHER_PARTLY_CLOUDY, weatherPartlyCloudy)

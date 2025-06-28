@@ -31,7 +31,7 @@ let c_cloudMidRGB = hexToRgb("#dbdce1")
 let c_cloudMaxRGB = hexToRgb("#818398");
 
 let cloudRainThresh = 1.01;
-export let cloudRainMax = 1.1;
+export let cloudRainMax = 1.05;
 let cloudMaxOpacity = 0.65;
 
 let pascalsPerWaterSquare = (1.986 * 10 ** 6);
@@ -277,10 +277,6 @@ function doRain() {
     }
     for (let x = getFrameXMinWsq(); x < getFrameXMaxWsq(); x++) {
         for (let y = getFrameYMinWsq(); y < getFrameYMaxWsq(); y++) {
-            if (getAdjacentProp(x, y, (x, y) => (getHumidity(x, y) > cloudRainThresh ? 1 : 0)) < 5) {
-                continue;
-            };
-
             let adjacentHumidity = Math.min(cloudRainMax, getAdjacentProp(x, y, getHumidity) / 5);
             if (adjacentHumidity < (cloudRainThresh))
                 continue;
