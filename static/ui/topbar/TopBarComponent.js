@@ -28,6 +28,7 @@ import { TopBarText } from "./TopBarText.js";
 import { getCurWeather } from "../../climate/weather/weatherManager.js";
 import { getWindSquareAbove } from "../../climate/simulation/wind.js";
 import { getSqIterationOrder } from "../../squares/_sqOperations.js";
+import { getFrameSimulationSquares } from "../../globalOperations.js";
 
 export class TopBarComponent {
     constructor(key) {
@@ -161,7 +162,7 @@ export class TopBarComponent {
         let fps = (1 / (frameTime / 1000));
 
         if (this.shouldUpdate || getTimeScale() == 0) {
-            this.numSquareCount = Array.from(getSqIterationOrder()).length;
+            this.numSquareCount = getFrameSimulationSquares().length;
             if (fps < 10)
                 this.fpsCache = fps.toFixed(1);
             else

@@ -50,8 +50,8 @@ export function reset() {
     frame_simulation_squares = new Array();
     frame_simulation_organisms = new Array();
 
-    for (let i = getFrameXMin(); i < getFrameXMax(); i++) {
-        for (let j = getFrameYMax(); j >= getFrameYMin(); j--) {
+    for (let i = getFrameXMin() - 1; i < getFrameXMax() + 1; i++) {
+        for (let j = getFrameYMax() + 1; j >= getFrameYMin() - 1; j--) {
             getSquares(i, j).forEach((sq) => {
                 if (sq.linkedOrganism != null)
                     frame_simulation_organisms.push(sq.linkedOrganism);
