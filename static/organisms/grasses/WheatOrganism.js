@@ -6,7 +6,6 @@ import { WheatGreenSquare } from "../../lifeSquares/grasses/WheatGreenSquare.js"
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
 import { BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
-import { addNewOrganism } from "../_orgOperations.js";
 import { addSquare } from "../../squares/_sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
 import { UI_ORGANISM_GRASS_WHEAT } from "../../ui/UIData.js";
@@ -292,7 +291,7 @@ export class WheatOrganism extends BaseOrganism {
         if (seedSquare) {
             seedSquare.speedX = Math.random() > 0.5 ? -1 : 1 * randRange(0.5, 1);
             seedSquare.speedY = randRange(-.5, .5);
-            let orgAdded = addNewOrganism(new WheatSeedOrganism(seedSquare, this.getNextGenetics()));
+            let orgAdded = new WheatSeedOrganism(seedSquare, this.getNextGenetics());
             if (!orgAdded) {
                 seedSquare.destroy();
             }

@@ -1,6 +1,5 @@
 import { BaseOrganism } from "./BaseOrganism.js";
 import { SeedLifeSquare } from "../lifeSquares/SeedLifeSquare.js";
-import { addNewOrganism } from "./_orgOperations.js";
 import { getCurDay, getDt, getTimeScale } from "../climate/time.js";
 import { loadGD, UI_SIMULATION_GENS_PER_DAY } from "../ui/UIData.js";
 import { getCurPlantConfiguratorVal } from "../ui/elements/SliderGradientBackgroundPlantConfigurator.js";
@@ -49,7 +48,7 @@ class BaseSeedOrganism extends BaseOrganism {
             if (this.sproutAge > this.totalSproutTime) {
                 let linkedSquareCache = this.linkedSquare;
                 this.destroy();
-                this.applyEvolutionParameters(addNewOrganism(new (this.getSproutType())(linkedSquareCache)));
+                this.applyEvolutionParameters(new (this.getSproutType())(linkedSquareCache));
             }
         }
     }

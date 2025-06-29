@@ -5,10 +5,8 @@ import { removeItemAll } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { GenericRootSquare } from "../../lifeSquares/GenericRootSquare.js";
 import { PleurocarpMossGreenSquare } from "../../lifeSquares/mosses/PleurocarpMossGreenSquare.js";
-import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
 import { getNeighbors } from "../../squares/_sqOperations.js";
 import { loadGD, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_SELECT, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../../ui/UIData.js";
-import { removeOrganism } from "../_orgOperations.js";
 import {
     _llt_min,
     _llt_max,
@@ -185,7 +183,6 @@ export class BaseMossOrganism {
     }
     destroy() {
         this.lifeSquares.forEach((lsq) => lsq.destroy());
-        removeOrganism(this);
         return;
     }
 

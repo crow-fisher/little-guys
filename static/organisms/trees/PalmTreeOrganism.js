@@ -8,7 +8,6 @@ import { BaseOrganism } from "../BaseOrganism.js";
 import { PalmTreeGreenSquare } from "../../lifeSquares/trees/PalmTreeGreenSquare.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
 import { addSquare } from "../../squares/_sqOperations.js";
-import { addNewOrganism } from "../_orgOperations.js";
 import { UI_ORGANISM_TREE_PALM } from "../../ui/UIData.js";
 
 export class PalmTreeOrganism extends BaseOrganism {
@@ -230,7 +229,7 @@ export class PalmTreeOrganism extends BaseOrganism {
             if (seedSquare) {
                 seedSquare.speedY = -Math.round(randRange(-2, -5)); 
                 seedSquare.speedX = Math.round(randRange(-5, 5));
-                let orgAdded = addNewOrganism(new PalmTreeSeedOrganism(seedSquare, this.getNextGenetics()));
+                let orgAdded = new PalmTreeSeedOrganism(seedSquare, this.getNextGenetics());
                 if (!orgAdded) {
                     seedSquare.destroy();
                 }

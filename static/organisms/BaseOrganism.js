@@ -1,13 +1,12 @@
-import { removeOrganism } from "./_orgOperations.js";
-import { getCurDay, getDt, getFrameDt, getTimeScale } from "../climate/time.js";
+import { getCurDay, getDt } from "../climate/time.js";
 import { GrowthPlan, GrowthPlanStep } from "./GrowthPlan.js";
 import { STAGE_ADULT, STAGE_DEAD, STAGE_FLOWER, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_ROOTNODE, TYPE_HEART } from "./Stages.js";
 import { addSquare, getNeighbors } from "../squares/_sqOperations.js";
 import { PlantSquare } from "../squares/PlantSquare.js";
 import { applyLightingFromSource } from "../lighting/lightingProcessing.js";
-import { loadGD, UI_GODMODE_FASTPLANT, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_SELECT, UI_SIMULATION_GENS_PER_DAY, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
+import { loadGD, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_SELECT, UI_SIMULATION_GENS_PER_DAY, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
 import { COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
-import { removeItemAll, rgbToRgba } from "../common.js";
+import { rgbToRgba } from "../common.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { zoomCanvasFillRect } from "../canvas.js";
 
@@ -612,7 +611,6 @@ class BaseOrganism {
         if (this.linkedSquare != null && this.linkedSquare != -1) {
             this.linkedSquare.unlinkOrganism(this);
         }
-        removeOrganism(this);
     }
 
     hasPlantLivedTooLong() {

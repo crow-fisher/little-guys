@@ -1,14 +1,13 @@
-import { randNumber, randRange, removeItemAll } from "../../common.js";
+import { randNumber, randRange } from "../../common.js";
 import { GenericRootSquare } from "../../lifeSquares/GenericRootSquare.js";
-import { STAGE_ADULT, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE, TYPE_FLOWERPETAL, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_TRUNK, TYPE_STEM, SUBTYPE_FLOWERTIP, STAGE_DEAD } from "../Stages.js";
+import { STAGE_ADULT, SUBTYPE_FLOWER, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_TRUNK, SUBTYPE_FLOWERTIP } from "../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
 import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
 import { CattailGreenSquare } from "../../lifeSquares/grasses/CattailGreenSquare.js";
-import { addSquare, getSquares } from "../../squares/_sqOperations.js";
+import { addSquare } from "../../squares/_sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
-import { addNewOrganism } from "../_orgOperations.js";
 import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
 import { UI_ORGANISM_GRASS_CATTAIL } from "../../ui/UIData.js";
 
@@ -57,7 +56,7 @@ export class CattailOrganism extends BaseOrganism {
         if (seedSquare) {
             seedSquare.speedY = -Math.round(randRange(-2, -5));
             seedSquare.speedX = Math.round(randRange(-5, 5));
-            let orgAdded = addNewOrganism(new CattailSeedOrganism(seedSquare, this.getNextGenetics()));
+            let orgAdded = new CattailSeedOrganism(seedSquare, this.getNextGenetics());
             if (!orgAdded) {
                 seedSquare.destroy();
             } else {

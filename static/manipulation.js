@@ -5,7 +5,6 @@ import { addTemperature, addWaterSaturationPascalsSqCoords } from "./climate/sim
 import { addWindPerssureMaintainHumidity, addWindPressureCloud, addWindPressureDryAir } from "./climate/simulation/wind.js";
 import { removeSquare } from "./globalOperations.js";
 import { getLastMouseDown, getLastMoveOffset, getLeftMouseUpEvent, isLeftMouseClicked, isMiddleMouseClicked, isRightMouseClicked, setMouseTouchStartCallback } from "./mouse.js";
-import { addNewOrganism, getOrganismsAtSquare } from "./organisms/_orgOperations.js";
 import { WheatSeedOrganism } from "./organisms/grasses/WheatOrganism.js";
 import { KentuckyBluegrassSeedOrganism } from "./organisms/grasses/KentuckyBluegrassOrganism.js";
 import { STAGE_DEAD } from "./organisms/Stages.js";
@@ -95,13 +94,6 @@ export function addSquareByName(posX, posY, name) {
     };
     return square;
 }
-
-function killOrganismsAtSquare(posX, posY) {
-    getOrganismsAtSquare(posX, posY)
-        .map((lsq) => lsq.linkedOrganism)
-        .forEach((org) => org.stage = STAGE_DEAD);
-}
-
 
 function doBlockMod(posX, posY) {
     if (loadGD(UI_GODMODE_SELECT) == UI_GODMODE_TEMPERATURE) {
@@ -291,7 +283,7 @@ function placeActiveSeed(px, py) {
             if (chance > 0.99) {
                 let sq = addSquare(new SeedSquare(px, py));
                 if (sq) {
-                    let orgAdded = addNewOrganism(new WheatSeedOrganism(sq));
+                    let orgAdded = new WheatSeedOrganism(sq);
                     if (!orgAdded) {
                         sq.destroy();
                     }
@@ -302,7 +294,7 @@ function placeActiveSeed(px, py) {
             if (chance > 0.95) {
                 let sq = addSquare(new SeedSquare(px, py));
                 if (sq) {
-                    let orgAdded = addNewOrganism(new KentuckyBluegrassSeedOrganism(sq));
+                    let orgAdded = new KentuckyBluegrassSeedOrganism(sq);
                     if (!orgAdded) {
                         sq.destroy();
                     }
@@ -313,7 +305,7 @@ function placeActiveSeed(px, py) {
             if (chance > 0.95) {
                 let sq = addSquare(new SeedSquare(px, py));
                 if (sq) {
-                    let orgAdded = addNewOrganism(new CattailSeedOrganism(sq));
+                    let orgAdded = new CattailSeedOrganism(sq);
                     if (!orgAdded) {
                         sq.destroy();
                     }
@@ -325,7 +317,7 @@ function placeActiveSeed(px, py) {
             if (chance > 0.95) {
                 let sq = addSquare(new SeedSquare(px, py));
                 if (sq) {
-                    let orgAdded = addNewOrganism(new PleurocarpMossSeedOrganism(sq));
+                    let orgAdded = new PleurocarpMossSeedOrganism(sq);
                     if (!orgAdded) {
                         sq.destroy();
                     }
@@ -337,7 +329,7 @@ function placeActiveSeed(px, py) {
             if (chance > 0.95) {
                 let sq = addSquare(new SeedSquare(px, py));
                 if (sq) {
-                    let orgAdded = addNewOrganism(new ConeflowerSeedOrganism(sq));
+                    let orgAdded = new ConeflowerSeedOrganism(sq);
                     if (!orgAdded) {
                         sq.destroy();
                     }
@@ -350,7 +342,7 @@ function placeActiveSeed(px, py) {
             if (chance > 0.95) {
                 let sq = addSquare(new SeedSquare(px, py));
                 if (sq) {
-                    let orgAdded = addNewOrganism(new PalmTreeSeedOrganism(sq));
+                    let orgAdded = new PalmTreeSeedOrganism(sq);
                     if (!orgAdded) {
                         sq.destroy();
                     }

@@ -1,4 +1,4 @@
-import { addOrganism, iterateOnOrganisms } from "./organisms/_orgOperations.js";
+import { iterateOnOrganisms } from "./organisms/_orgOperations.js";
 import { GrowthComponent, GrowthPlan, GrowthPlanStep } from "./organisms/GrowthPlan.js";
 import { addSquare, iterateOnSquares } from "./squares/_sqOperations.js";
 import { getTemperatureMap, getWaterSaturationMap } from "./climate/simulation/temperatureHumidity.js";
@@ -382,9 +382,6 @@ function loadSlotFromSave(slotData) {
 
         org.greenType = TypeMap[org.greenType];
         org.rootType = TypeMap[org.rootType];
-
-        if (org.linkedSquare != null)
-            addOrganism(org);
     });
     indexCanvasSize(false);
 

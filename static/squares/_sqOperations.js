@@ -1,7 +1,6 @@
 import { getObjectArrFromMap } from "../common.js";
 import { ALL_SQUARES } from "../globals.js";
 import { removeSquare } from "../globalOperations.js";
-import { getOrganismsAtSquare } from "../organisms/_orgOperations.js";
 import { loadGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_LIGHTING_SURFACE } from "../ui/UIData.js";
 
 let abs = Math.abs;

@@ -8,7 +8,6 @@ import { BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
 import { KentuckyBluegrassGreenSquare } from "../../lifeSquares/grasses/KentuckyBluegrassGreenSquare.js";
 import { addSquare } from "../../squares/_sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
-import { addNewOrganism } from "../_orgOperations.js";
 import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
 import { UI_ORGANISM_GRASS_KBLUE } from "../../ui/UIData.js";
 import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh } from "../BaseOrganism.js";
@@ -60,7 +59,7 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
         if (seedSquare) {
             seedSquare.speedX = Math.random() > 0.5 ? -1 : 1 * randNumber(1, 2);
             seedSquare.speedY = randRange(-1.5, 1);
-            let orgAdded = addNewOrganism(new KentuckyBluegrassSeedOrganism(seedSquare, this.getNextGenetics()));
+            let orgAdded = new KentuckyBluegrassSeedOrganism(seedSquare, this.getNextGenetics());
             if (!orgAdded) {
                 seedSquare.destroy();
             } else {

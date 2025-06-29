@@ -1,11 +1,10 @@
-import { randNumber, randRange } from "../../common.js";
+import { randRange } from "../../common.js";
 import { GenericRootSquare } from "../../lifeSquares/GenericRootSquare.js";
-import { STAGE_ADULT, STAGE_FLOWER, STAGE_JUVENILE, SUBTYPE_FLOWER, SUBTYPE_FLOWERBUD, SUBTYPE_FLOWERNODE, SUBTYPE_FLOWERTIP, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_FLOWERNODE, TYPE_FLOWERPETAL, TYPE_LEAF, TYPE_STEM } from "../Stages.js";
+import { STAGE_ADULT, STAGE_FLOWER, STAGE_JUVENILE, SUBTYPE_FLOWER, SUBTYPE_FLOWERBUD, SUBTYPE_FLOWERNODE, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_FLOWERNODE, TYPE_FLOWERPETAL, TYPE_LEAF, TYPE_STEM } from "../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
-import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _llt_throttlValMin, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
-import { addNewOrganism } from "../_orgOperations.js";
+import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
 import { addSquare } from "../../squares/_sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
 import { ConeflowerGreenSqaure } from "../../lifeSquares/flowers/ConeflowerGreenSqaure.js";
@@ -354,7 +353,7 @@ export class ConeflowerOrganism extends BaseOrganism {
         if (seedSquare) {
             seedSquare.speedX = Math.random() > 0.5 ? -1 : 1 * randRange(0.5, 1);
             seedSquare.speedY = randRange(-.5, .5);
-            let orgAdded = addNewOrganism(new ConeflowerSeedOrganism(seedSquare, this.getNextGenetics()));
+            let orgAdded = new ConeflowerSeedOrganism(seedSquare, this.getNextGenetics());
             if (!orgAdded) {
                 seedSquare.destroy();
             }

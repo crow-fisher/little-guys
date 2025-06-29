@@ -1,7 +1,5 @@
 import { BaseSquare } from "./BaseSqaure.js";
     
-import { addOrganism } from "../organisms/_orgOperations.js";
-import { removeOrganism } from "../organisms/_orgOperations.js";
 import { getSquares } from "./_sqOperations.js";
 import { randRange } from "../common.js";
 import { getWindSpeedAtLocation } from "../climate/simulation/wind.js";
@@ -55,11 +53,9 @@ class SeedSquare extends BaseSquare {
         } 
 
         this.linkedOrganisms.forEach((org) => {
-            removeOrganism(org);
             org.unlinkSquare(org.linkedSquare);
             org.posY += 1;
             org.linkSquare(sq);
-            addOrganism(org);
         });
     }
 
