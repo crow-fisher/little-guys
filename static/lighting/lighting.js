@@ -250,7 +250,8 @@ export class LightSource {
                 curBucket += 1;
                 this.thetaSquares[curBucket] = new Array();
             }
-            this.thetaSquares[curBucket].push(arr);
+            if (curBucket >= 0)
+                this.thetaSquares[curBucket].push(arr);
         };
 
         // lastly, nonzero optimization

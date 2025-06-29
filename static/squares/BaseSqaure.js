@@ -781,12 +781,12 @@ export class BaseSquare {
             this.percolateInnerMoisture();
             if (this.speedY > 0) {
                 if (loadGD(UI_SIMULATION_CLOUDS)) {
-                    this.waterEvaporationRoutine();
-                    this.temperatureRoutine();
+                    // this.waterEvaporationRoutine();
+                    // this.temperatureRoutine();
                 }
                 if (loadGD(UI_LIGHTING_ENABLED)) {
-                    this.transferHeat();
-                    this.processFrameLightingTemperature();
+                    // this.transferHeat();
+                    // this.processFrameLightingTemperature();
                 }
             }
         }

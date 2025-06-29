@@ -81,13 +81,6 @@ function resetCornerLocations() {
     frameXMax = Math.ceil(cx + (width / 2));
     frameYMin = Math.floor(Math.max(0, cy - (height / 2)));
     frameYMax = Math.ceil(cy + (height / 2));
-
-    if (frameXMax > loadGD(UI_GAME_MAX_CANVAS_SQUARES_X)) {
-        saveGD(UI_GAME_MAX_CANVAS_SQUARES_X, frameXMax);
-    }
-    if (frameYMax > loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y)) {
-        saveGD(UI_GAME_MAX_CANVAS_SQUARES_Y, frameYMax);
-    }
 }
 
 

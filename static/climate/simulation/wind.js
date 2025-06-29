@@ -61,7 +61,7 @@ function getPressure(wx, wy) {
 }
 
 export function isPointInWindBounds(x, y) {
-    return x >= 0 && x < curWindSquaresX && y >= 0 && y < curWindSquaresY;
+    return x >= getFrameXMinWsq() && x < getFrameXMaxWsq() && y >= getFrameYMinWsq() && y < getFrameYMaxWsq();
 }
 
 export function getAdjacentWindSquareToRealSquare(squareX, squareY) {

@@ -154,8 +154,8 @@ export function initTemperatureHumidity() {
     temperatureMap = new Map();
     waterSaturationMap = new Map();
 
-    for (let i = 0; i < getWindSquaresX(); i++) {
-        for (let j = 0; j < getWindSquaresY(); j++) {
+    for (let i = 0; i <= getWindSquaresX(); i++) {
+        for (let j = 0; j <= getWindSquaresY(); j++) {
             if (!(i in temperatureMap)) {
                 temperatureMap[i] = new Map();
                 waterSaturationMap[i] = new Map();
@@ -234,6 +234,11 @@ function tickMap(
                     let y2 = loc[1];
                     let diff = diff_function(x, y, x2, y2, map[x][y], map[x2][y2]);
                     if (diff == 0) {
+                        return;
+                    }
+
+                    if (isNaN(diff)) {
+                        console.log("diff nan; returning");
                         return;
                     }
                     // registerWindThrottlerOutput(x, y, map[x][y], map[x][y] - diff)
