@@ -383,8 +383,8 @@ export function resetZoom() {
 }
 
 export function moveCamera(x, y) {
-    saveGD(UI_CANVAS_VIEWPORT_CENTER_X, loadGD(UI_CANVAS_VIEWPORT_CENTER_X) + x * 4);
-    saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) + y * 4);
+    saveGD(UI_CANVAS_VIEWPORT_CENTER_X, loadGD(UI_CANVAS_VIEWPORT_CENTER_X) + x * 40);
+    saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) + y * 40);
     recacheCanvasPositions();
 }
 export function getCanvasWidth() {

@@ -363,7 +363,7 @@ class BaseOrganism {
     }
 
     addSproutGrowthPlan() {
-        if (!this.linkedSquare.surface) {
+        if (this.linkedSquare == null || !this.linkedSquare.surface) {
             this.destroy();
             return;
         }
@@ -606,7 +606,6 @@ class BaseOrganism {
                 this.phosphorus,
                 this.growthPhosphorus
             );
-
         this.lifeSquares.forEach((lifeSquare) => lifeSquare.destroy());
         if (this.linkedSquare != null && this.linkedSquare != -1) {
             this.linkedSquare.unlinkOrganism(this);
