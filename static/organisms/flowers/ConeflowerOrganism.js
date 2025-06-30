@@ -61,9 +61,9 @@ export class ConeflowerOrganism extends BaseOrganism {
         let p0 = this.evolutionParameters[0];
         this.growthLightLevel = 1 + .7 * p0;
 
-        this.maxNumNodes = 2 + Math.round(this.maxNumNodes * p0);
+        this.maxNumNodes = 1 + Math.round(this.maxNumNodes * p0);
         this.targetNumLeaves = -1;
-        this.maxStemLength = 2 + Math.round(this.maxStemLength * p0);
+        this.maxStemLength = 1 + Math.round(this.maxStemLength * p0);
         this.maxLeafLength = 3 + Math.round(this.maxLeafLength * p0);
 
         this.growthNumGreen = this.maxNumNodes * (this.maxStemLength + this.maxLeafLength) + 12;
