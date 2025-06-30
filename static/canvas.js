@@ -88,8 +88,23 @@ let _c_UI_CANVAS_SQUARES_ZOOM = loadGD(UI_CANVAS_SQUARES_ZOOM);
 let _c_UI_CANVAS_VIEWPORT_CENTER_X = loadGD(UI_CANVAS_VIEWPORT_CENTER_X);
 let _c_UI_CANVAS_VIEWPORT_CENTER_Y = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y);
 
+function cameraBoundsCheck() {
+    let w2 = (getCanvasWidth() / loadGD(UI_CANVAS_SQUARES_ZOOM)) / 2;
+    let h2 = (getCanvasHeight() / loadGD(UI_CANVAS_SQUARES_ZOOM)) / 2;
+
+    let xMin = w2;
+    let yMin = h2;
+
+    let xMax = loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) * getBaseSize() - w2;
+    let yMax = loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y) * getBaseSize() - h2;
+
+    saveGD(UI_CANVAS_VIEWPORT_CENTER_X, Math.min(xMax, Math.max(xMin, loadGD(UI_CANVAS_VIEWPORT_CENTER_X))));
+    saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, Math.min(yMax, Math.max(yMin, loadGD(UI_CANVAS_VIEWPORT_CENTER_Y))));
+}
+
 export function recacheCanvasPositions() {
     // 14 fps to 16 fps, 63k squares
+    cameraBoundsCheck();
     _c_UI_CANVAS_SQUARES_ZOOM = loadGD(UI_CANVAS_SQUARES_ZOOM);
     _c_UI_CANVAS_VIEWPORT_CENTER_X = loadGD(UI_CANVAS_VIEWPORT_CENTER_X);
     _c_UI_CANVAS_VIEWPORT_CENTER_Y = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y);
