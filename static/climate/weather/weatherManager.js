@@ -33,33 +33,30 @@ let cloudXSize = (min=0.1, max=0.2) => randRange(min, max) * getFrameXMaxWsq() -
 let cloudYSize = (min=0.1, max=0.2) => randRange(min, max) * getFrameXMaxWsq() - getFrameXMinWsq();
 
 function spawnFogCloud() {
-    let wsx = getWindSquaresX();
-    let wsy = getWindSquaresY();
     curClouds.push(new Cloud(
         randRange(getFrameXMinWsq(), getFrameXMaxWsq()),
         randRange(getFrameYMinWsq(), getFrameYMaxWsq()),
         cloudXSize(.7, 1), cloudYSize(.7, 1),
         getCurDay(), cloudDuration(),
-        randRange(1.004, 1.006), 0.4));
+        randRange(1.004, 1.006), randRange(.1, .4)));
 }
 
 function spawnCumulusCloud() {
-    let wsy = randRange(getFrameYMinWsq(), getFrameYMaxWsq());
     curClouds.push(new Cloud(
         randRange(getFrameXMinWsq(), getFrameXMaxWsq()),
-        randRangeFactor(getFrameYMinWsq(), getFrameXMaxWsq(), 0.25),
+        randRangeFactor(getFrameYMinWsq(), getFrameYMaxWsq(), 0.25),
         cloudXSize(), cloudYSize(),
         getCurDay(), cloudDuration(),
-        randRange((1 + cloudRainThresh) / 2, cloudRainThresh), randRange(.001, .04)));
+        randRange(1, cloudRainThresh), randRange(.05, .2)));
 }
 
 function spawnNimbusCloud(rainFactor) {
     curClouds.push(new Cloud(
         randRange(getFrameXMinWsq(), getFrameXMaxWsq()),
-        randRangeFactor(getFrameYMinWsq(), getFrameXMaxWsq(), 0.25),
+        randRangeFactor(getFrameYMinWsq(), getFrameYMaxWsq(), 0.25),
         cloudXSize(.4, .7), cloudYSize(),
         getCurDay(), cloudDuration(),
-        1 + 0.05 * (1 + rainFactor), randRange(.001, .04)));
+        1 + 0.05 * (1 + rainFactor), randRange(.001, .2)));
 }
 
 function spawnWindGust(airPressure) {
@@ -251,9 +248,7 @@ export function initWeather() {
 
 function applyUIWeatherChange() {
     curWeather = ui_weatherMap.get(loadGD(UI_CLIMATE_WEATHER_ACTIVE));
-    curWeatherInterval = getTimeScale() * randRange(16 / loadGD(UI_SIMULATION_GENS_PER_DAY), 24 / loadGD(UI_SIMULATION_GENS_PER_DAY));
-    curWeatherInterval -= curWeatherInterval % (0.000694444 / 60);
-
+    curWeatherInterval = randRange(.001, .004);
     curWeatherStartTime = getCurDay();
     curWeatherStartTime -= curWeatherStartTime % (0.000694444 / 60);
 

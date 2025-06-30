@@ -288,18 +288,15 @@ function doRain() {
     }
     for (let x = getFrameXMinWsq(); x < getFrameXMaxWsq(); x++) {
         for (let y = getFrameYMinWsq(); y < getFrameYMaxWsq(); y++) {
-            let adjacentHumidity = Math.min(cloudRainMax, getAdjacentProp(x, y, getHumidity) / 5);
+            let adjacentHumidity = getAdjacentProp(x, y, getHumidity) / 5;
             if (adjacentHumidity < (cloudRainThresh))
                 continue;
             let rainDropProbability = ((adjacentHumidity - cloudRainThresh) / (cloudRainMax - cloudRainThresh));
-
             let density = Math.exp(loadGD(UI_CLIMATE_RAINFALL_DENSITY));
-
             rainDropProbability /= density;
             if (Math.random() > rainDropProbability) {
                 continue;
             }
-
             let adjacentTemperature = getAdjacentProp(x, y, getTemperatureAtWindSquare) / 5;
             let expectedPascals = saturationPressureOfWaterVapor(adjacentTemperature) * cloudRainThresh;
             let adjacentPascals = getAdjacentProp(x, y, (x, y) => waterSaturationMap[x][y]) / 5;
