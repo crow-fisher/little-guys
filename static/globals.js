@@ -3,7 +3,6 @@ import { iterateOnSquares } from "./squares/_sqOperations.js";
 import { removeGroupFromGraph } from "./waterGraph.js";
 
 export let ALL_SQUARES = new Map();
-export let ALL_ORGANISMS = new Map();
 export let stats = new Map();
 export let NUM_GROUPS = 0; 
 export let WATERFLOW_TARGET_SQUARES = new Map();
@@ -13,7 +12,6 @@ export let global_theta_base = 0;
 
 export function purgeMaps() {
     ALL_SQUARES = new Map();
-    ALL_ORGANISMS = new Map();
 }
 
 let mixArrLen = 3; 

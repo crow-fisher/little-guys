@@ -232,6 +232,9 @@ export class LightSource {
     }
 
     async rayCastingForRayIdx(idx, jobIdx, i) {
+        if (isSaveOrLoadInProgress()) {
+            return;
+        }
         let thetaSquares = this.thetaSquares[i];
         if (thetaSquares == null) {
             return;

@@ -1,7 +1,8 @@
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, recacheCanvasPositions, zoomCanvasFillCircle, zoomCanvasFillRect } from "../canvas.js";
+import { addWindPressureDryAir } from "../climate/simulation/wind.js";
 import { getFrameDt } from "../climate/time.js";
 import { COLOR_BLACK, COLOR_GREEN, COLOR_VERY_FUCKING_RED } from "../colors.js";
-import { GBNOTSURE, GBX, GBA, getLeftStick, isButtonPressed } from "../gamepad.js";
+import { GBNOTSURE, GBX, GBA, getLeftStick, isButtonPressed, GBB } from "../gamepad.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import { loadGD, saveGD, UI_CANVAS_SQUARES_ZOOM, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y } from "../ui/UIData.js";
@@ -155,6 +156,13 @@ export class Player {
         this.updateCollision();
         this.processCollision();
         this.updateCamera();
+        this.doPlayerAction();
+    }
+
+    doPlayerAction() {
+        if (isButtonPressed(GBB)) {
+            addWindPressureDryAir(this.posX, this.posY, 1.1);
+        }
     }
 
     updateCamera() {

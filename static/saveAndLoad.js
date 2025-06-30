@@ -118,7 +118,6 @@ export async function saveUserSettings() {
 }
 
 function purgeGameState() {
-    iterateOnOrganisms((org) => org.destroy());
     iterateOnSquares((sq) => sq.destroy());
     purgeMaps();
 }
@@ -213,18 +212,44 @@ function getFrameSaveData() {
     let growthPlanComponentArr = new Array();
     let growthPlanStepArr = new Array();
 
-    iterateOnOrganisms((org) => {
-        if (org.stage != STAGE_DEAD) {
-            orgArr.push(org);
-            lsqArr.push(...org.lifeSquares);
-            growthPlanArr.push(...org.growthPlans);
-            growthPlanComponentArr.push(...org.growthPlans.map((gp) => gp.component));
-            org.growthPlans.forEach((gp) => growthPlanStepArr.push(...gp.steps));
-        } else {
-            org.destroy();
-        }
-    });
+    iterateOnSquares((sq) => {
+        sq.lighting = [];
+        sq.linkedOrganisms = Array.from(sq.linkedOrganisms.map((org) => {
+            if (org.stage != STAGE_DEAD) {
+                orgArr.push(org);
+                lsqArr.push(...org.lifeSquares);
+                growthPlanArr.push(...org.growthPlans);
+                growthPlanComponentArr.push(...org.growthPlans.map((gp) => gp.component));
+                org.growthPlans.forEach((gp) => growthPlanStepArr.push(...gp.steps));
 
+                org.lighting = [];
+                org.linkedSquare = sqArr.indexOf(org.linkedSquare);
+                org.growthPlans = Array.from(org.growthPlans.map((gp) => growthPlanArr.indexOf(gp)));
+                org.lifeSquares.forEach((lsq) => {
+                    lsq.lighting = [];
+                    lsq.linkedSquare = sqArr.indexOf(lsq.linkedSquare);
+                    lsq.linkedOrganism = orgArr.indexOf(lsq.linkedOrganism);
+                    lsq.component = growthPlanComponentArr.indexOf(lsq.component);
+                });
+                org.lifeSquares = Array.from(org.lifeSquares.map((lsq) => lsqArr.indexOf(lsq)));
+                org.originGrowth = growthPlanComponentArr.indexOf(org.originGrowth);
+                
+                if (org.greenType != null)
+                    org.greenType = org.greenType.name;
+                if (org.rootType != null)
+                    org.rootType = org.rootType.name;
+                
+                return org;
+            } else {
+                org.destroy();
+                return null;
+            };
+        }).filter((v) => v != null));
+        sq.linkedOrganisms = Array.from(sq.linkedOrganisms.map((org) => orgArr.indexOf(org)));
+        sq.linkedOrganismSquares = Array.from(sq.linkedOrganismSquares.map((lsq) => lsqArr.indexOf(lsq)));
+        sqArr.push(sq)
+    });
+    
     growthPlanStepArr.forEach((gps) => {
         gps.growthPlan = growthPlanArr.indexOf(gps.growthPlan);
         gps.completedSquare = lsqArr.indexOf(gps.completedSquare);
@@ -242,31 +267,6 @@ function getFrameSaveData() {
         gp.component = growthPlanComponentArr.indexOf(gp.component);
     });
 
-    iterateOnSquares((sq) => {
-        sq.lighting = [];
-        if (sq.linkedOrganisms.length > 0)
-            sq.linkedOrganisms = Array.from(sq.linkedOrganisms.map((org) => orgArr.indexOf(org)));
-        sq.linkedOrganismSquares = Array.from(sq.linkedOrganismSquares.map((lsq) => lsqArr.indexOf(lsq)));
-        sqArr.push(sq)
-    });
-
-    iterateOnOrganisms((org) => {
-        org.lighting = [];
-        org.linkedSquare = sqArr.indexOf(org.linkedSquare);
-        org.growthPlans = Array.from(org.growthPlans.map((gp) => growthPlanArr.indexOf(gp)));
-        org.lifeSquares.forEach((lsq) => {
-            lsq.lighting = [];
-            lsq.linkedSquare = sqArr.indexOf(lsq.linkedSquare);
-            lsq.linkedOrganism = orgArr.indexOf(lsq.linkedOrganism);
-            lsq.component = growthPlanComponentArr.indexOf(lsq.component);
-        });
-        org.lifeSquares = Array.from(org.lifeSquares.map((lsq) => lsqArr.indexOf(lsq)));
-        org.originGrowth = growthPlanComponentArr.indexOf(org.originGrowth);
-        if (org.greenType != null) {
-            org.greenType = org.greenType.name;
-            org.rootType = org.rootType.name;
-        }
-    })
 
     let saveObj = {
         sqArr: sqArr,
@@ -368,8 +368,8 @@ function loadSlotFromSave(slotData) {
             org.originGrowth = growthPlanComponentArr[org.originGrowth];
             org.lifeSquares.forEach((lsq) => {
                 lsq.lighting = [];
-                lsq.linkedSquare = sqArr[lsq.linkedSquare];
-                lsq.linkedOrganism = orgArr[lsq.linkedOrganism];
+                lsq.linkedSquare = sq;
+                lsq.linkedOrganism = org;
                 lsq.component = growthPlanComponentArr[lsq.component];
             });
             org.greenType = TypeMap[org.greenType];
