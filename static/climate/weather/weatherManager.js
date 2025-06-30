@@ -6,6 +6,7 @@ import { getCurDay, getDt, getTimeScale } from "../time.js";
 import { getFrameXMaxWsq, getFrameXMinWsq, getFrameYMaxWsq, getFrameYMinWsq, getWindSquaresX, getWindSquaresY } from "../simulation/wind.js";
 import { Cloud } from "./cloud.js";
 import { Weather } from "./weather.js";
+import { topbarWeatherTextReset } from "../../ui/WindowManager.js";
 
 let weatherClear, weatherPartlyCloudy, weatherMostlyCloudy, weatherFoggy, weatherLightRain, weatherHeavyRain;
 let ui_weatherMap = new Map();
@@ -47,7 +48,7 @@ function spawnCumulusCloud() {
         randRangeFactor(getFrameYMinWsq(), getFrameYMaxWsq(), 0.25),
         cloudXSize(), cloudYSize(),
         getCurDay(), cloudDuration(),
-        randRange(1, cloudRainThresh), randRange(.05, .2)));
+        randRange(1, cloudRainThresh), .5));
 }
 
 function spawnNimbusCloud(rainFactor) {
@@ -260,6 +261,7 @@ addUIFunctionMap(UI_CLIMATE_WEATHER_ACTIVE, () => {
         saveGD(UI_SIMULATION_CLOUDS, true);
     }
     applyUIWeatherChange();
+    topbarWeatherTextReset();
 });
 
 addUIFunctionMap(UI_CLIMATE_WEATHER_DURATION, applyUIWeatherChange);
@@ -271,4 +273,5 @@ addUIFunctionMap(UI_SIMULATION_CLOUDS, () => {
         saveGD(UI_CLIMATE_WEATHER_ACTIVE, UI_CLIMATE_WEATHER_CLEAR);
         weatherChange();
     }
+    topbarWeatherTextReset();
 })

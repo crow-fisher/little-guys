@@ -1,6 +1,7 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { UI_BIGDOTHOLLOW, UI_BIGDOTSOLID, UI_TINYDOT } from "../../common.js";
+import { ConditionalContainer } from "../ConditionalContainer.js";
 import { Container } from "../Container.js";
 import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
 import { TextFunctionalBackground } from "../elements/TextFunctionalBackground.js";
@@ -36,13 +37,16 @@ export class WeatherSelectionComponent extends LockedComponent {
              }
             },() => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorInactiveCustom(0.68), 0.75 / spacingMult));
 
+        let weatherSelectConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_SIMULATION_CLOUDS));
+        container.addElement(weatherSelectConditionalContainer);
+
         let weatherRow1 = new Container(this.window, padding, 0);
         let weatherRow2 = new Container(this.window, padding, 0);
         let weatherRow3 = new Container(this.window, padding, 0);
 
-        container.addElement(weatherRow1);
-        container.addElement(weatherRow2);
-        container.addElement(weatherRow3);
+        weatherSelectConditionalContainer.addElement(weatherRow1);
+        weatherSelectConditionalContainer.addElement(weatherRow2);
+        weatherSelectConditionalContainer.addElement(weatherRow3);
 
         weatherRow1.addElement(new RadioToggleLabel(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 3, textAlignOffsetX, "clear",UI_CLIMATE_WEATHER_ACTIVE, UI_CLIMATE_WEATHER_CLEAR, () => getActiveClimate().getUIColorInactiveCustom(0.54 + 0.2), () => getActiveClimate().getUIColorInactiveCustom(0.54), 0.75, [UI_TINYDOT, UI_BIGDOTHOLLOW]));
         weatherRow1.addElement(new RadioToggleLabel(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 3, textAlignOffsetX, "partly cloudy",UI_CLIMATE_WEATHER_ACTIVE, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, () => getActiveClimate().getUIColorInactiveCustom(0.56 + 0.2), () => getActiveClimate().getUIColorInactiveCustom(0.56), 0.75, [UI_TINYDOT, UI_BIGDOTHOLLOW]));
