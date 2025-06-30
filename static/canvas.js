@@ -300,10 +300,6 @@ let zoom_idx = neutral_zoom_idx;
 
 function resetZoomArr() {
     zoom_arr = new Array();
-    zoom_arr.push(6 / 7);
-    zoom_arr.push(7 / 8);
-    zoom_arr.push(8 / 9);
-    zoom_arr.push(9 / 10);
 
     neutral_zoom_idx = zoom_arr.length;
     zoom_idx = neutral_zoom_idx;

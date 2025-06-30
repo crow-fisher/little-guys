@@ -65,7 +65,7 @@ export async function gameUserStateLoad() {
                         indexCanvasSize();
                     } else {
                         let p = loadSlot(loadUI(UI_UI_CURWORLD));
-                        await p; 
+                        await p;
                         saveGD(UI_TOPBAR_MAINMENU, false);
                         saveGD(UI_TOPBAR_BLOCK, false);
                         saveGD(UI_TOPBAR_LIGHTING, false);
@@ -153,7 +153,7 @@ export function doPeriodicSave() {
     }
 }
 
-export async function saveCurGame(reload=false) {
+export async function saveCurGame(reload = false) {
     console.log("save cur game\t", loadUI(UI_UI_CURWORLD));
     await saveGame(loadUI(UI_UI_CURWORLD), reload);
 }
@@ -357,34 +357,27 @@ function loadSlotFromSave(slotData) {
     });
 
     sqArr.forEach((sq) => {
-        if (sq.linkedOrganisms.length == 0) {
-            sq.linkedOrganisms = new Array();
-        } else {
-            sq.linkedOrganisms = Array.from(sq.linkedOrganisms.filter((idx) => idx != -1).map((orgIdx) => orgArr[orgIdx]));
-        }
+        sq.linkedOrganisms = Array.from(sq.linkedOrganisms.filter((idx) => idx != -1).map((orgIdx) => orgArr[orgIdx]));
         sq.linkedOrganismSquares = Array.from(sq.linkedOrganismSquares.filter((idx) => idx != -1).map((lsqIdx) => lsqArr[lsqIdx]));
         regSquareToGroup(sq.group);
-    });
 
-    sqArr.forEach(addSquare);
-
-    orgArr.forEach((org) => {
-        org.linkedSquare = sqArr[org.linkedSquare];
-        org.growthPlans = Array.from(org.growthPlans.map((gp) => growthPlanArr[gp]));
-        org.lifeSquares = Array.from(org.lifeSquares.map((lsq) => lsqArr[lsq]));
-        org.originGrowth = growthPlanComponentArr[org.originGrowth];
-        org.lifeSquares.forEach((lsq) => {
-            lsq.lighting = [];
-            lsq.linkedSquare = sqArr[lsq.linkedSquare];
-            lsq.linkedOrganism = orgArr[lsq.linkedOrganism];
-            lsq.component = growthPlanComponentArr[lsq.component];
+        sq.linkedOrganisms.forEach((org) => {
+            org.linkedSquare = sqArr[org.linkedSquare];
+            org.growthPlans = Array.from(org.growthPlans.map((gp) => growthPlanArr[gp]));
+            org.lifeSquares = Array.from(org.lifeSquares.map((lsq) => lsqArr[lsq]));
+            org.originGrowth = growthPlanComponentArr[org.originGrowth];
+            org.lifeSquares.forEach((lsq) => {
+                lsq.lighting = [];
+                lsq.linkedSquare = sqArr[lsq.linkedSquare];
+                lsq.linkedOrganism = orgArr[lsq.linkedOrganism];
+                lsq.component = growthPlanComponentArr[lsq.component];
+            });
+            org.greenType = TypeMap[org.greenType];
+            org.rootType = TypeMap[org.rootType];
         });
-
-        org.greenType = TypeMap[org.greenType];
-        org.rootType = TypeMap[org.rootType];
     });
+    sqArr.forEach(addSquare);
     indexCanvasSize(false);
-
 }
 
 async function compress(inputString) {

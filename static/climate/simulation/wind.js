@@ -152,8 +152,8 @@ function initWindPressure() {
     curWindSquaresX = WIND_SQUARES_X();
     curWindSquaresY = WIND_SQUARES_Y();
 
-    for (let i = 0; i < curWindSquaresX; i++) {
-        for (let j = 0; j < curWindSquaresY; j++) {
+    for (let i = 0; i <= curWindSquaresX; i++) {
+        for (let j = 0; j <= curWindSquaresY; j++) {
             if (!(i in windPressureMap)) {
                 windPressureMap[i] = new Map();
                 windSpeedSmoothingMap[i] = new Map();

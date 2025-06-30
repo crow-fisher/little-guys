@@ -2,7 +2,7 @@ import { iterateOnSquares } from "../squares/_sqOperations.js";
 import { getCloudColorAtPos } from "../climate/simulation/temperatureHumidity.js";
 import { getCurrentLightColorTemperature, getDaylightStrength, getFrameDt, getMoonlightColor } from "../climate/time.js";
 import { loadGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_QUALITY, UI_LIGHTING_SUN, UI_LIGHTING_UPDATERATE, UI_SIMULATION_CLOUDS } from "../ui/UIData.js";
-import { getWindSquaresX, getWindSquaresY } from "../climate/simulation/wind.js";
+import { getFrameXMaxWsq, getFrameXMinWsq, getFrameYMaxWsq, getFrameYMinWsq, getWindSquaresX, getWindSquaresY } from "../climate/simulation/wind.js";
 import { getCurLightingInterval } from "./lightingHandler.js";
 import { isLeftMouseClicked, isRightMouseClicked } from "../mouse.js";
 import { addTimeout } from "../main.js";
@@ -10,6 +10,7 @@ import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
 import { isSaveOrLoadInProgress } from "../saveAndLoad.js";
 import { isSquareOnCanvas } from "../canvas.js";
 import { getFrameSimulationSquares } from "../globalOperations.js";
+import { randRange } from "../common.js";
 
 export let MAX_BRIGHTNESS = 8;
 export function createSunLightGroup() {
@@ -112,7 +113,7 @@ export class StationaryWideLightGroup extends LightGroup {
         let completionMap = new Map();
         for (let i = 0; i < this.lightSources.length; i++) {
             completionMap.set(i, false);
-            // this.lightSources[i].calculateFrameCloudCover();
+            this.lightSources[i].calculateFrameCloudCover();
             this.lightSources[i].doRayCasting(idx, i, () => {
                 completionMap.set(i, true);
                 if (completionMap.values().every((val) => val)) {
@@ -141,7 +142,7 @@ export class LightSource {
         this.numTasks = 10;
         this.numTasksCompleted = {};
         this.thetaSquares = new Array(numRays);
-        
+
         this.thetaStep = (this.maxTheta - this.minTheta) / this.numRays;
     }
 
@@ -151,64 +152,36 @@ export class LightSource {
     }
 
     calculateFrameCloudCover() {
-        this.windSquareBrightnessMults = new Map();
-        let rayKeys = Object.keys(this.windSquareLocations);
-        if (rayKeys.length < (this.numRays - 1)) {
-            this.initWindSquareLocations();
+        for (let rayIdx = 0; rayIdx <= this.numRays; rayIdx++) {
+            this.windSquareBrightnessMults[rayIdx] = 1;
         }
-        rayKeys.forEach((rayTheta) => {
-            let outLightColor = { r: 255, g: 255, b: 255 };
-            this.windSquareLocations[rayTheta].forEach((loc) => {
-                let windSquareCloudColor = getCloudColorAtPos(loc[0], loc[1]);
+
+        for (let x = getFrameXMinWsq(); x < getFrameXMaxWsq(); x++) {
+            for (let y = getFrameYMinWsq(); y < getFrameYMaxWsq(); y++) {
+                let wsqTheta = Math.atan(((x * 4) - this.posX) /((y * 4) - this.posY));
+                let wsqThetaNormalized = wsqTheta - this.minTheta;
+                let bucket = Math.floor(wsqThetaNormalized / this.thetaStep);
+                let windSquareCloudColor = getCloudColorAtPos(x, y);
                 let opacity = windSquareCloudColor.a * 0.1;
+                let outLightColor = { r: 255, g: 255, b: 255 };
                 outLightColor.r *= (windSquareCloudColor.r / 255) * opacity + (1 - opacity)
                 outLightColor.g *= (windSquareCloudColor.g / 255) * opacity + (1 - opacity)
                 outLightColor.b *= (windSquareCloudColor.b / 255) * opacity + (1 - opacity)
-            });
-            let brightnessDrop = (outLightColor.r + outLightColor.g + outLightColor.b) / (255 * 3);
-            this.windSquareBrightnessMults[rayTheta] = (0.4 + 0.6 * (brightnessDrop ** 8));
-        });
-    }
-
-    initWindSquareLocations() {
-        this.windSquareLocations = new Map();
-        let thetaStep = (this.maxTheta - this.minTheta) / this.numRays;
-        for (let i = 0; i < getWindSquaresX(); i++) {
-            for (let j = 0; j < getWindSquaresY(); j++) {
-                let loc = [i, j];
-                let relPosX = (i * 4) + 2 - this.posX;
-                let relPosY = (j * 4) + 2 - this.posY;
-                let sqTheta = Math.atan(relPosX / relPosY);
-
-                for (let theta = this.minTheta; theta < this.maxTheta; theta += thetaStep) {
-                    if (!(theta in this.windSquareLocations)) {
-                        this.windSquareLocations[theta] = new Array();
-                    }
-                    if (this.windSquareLocations[theta].includes(loc)) {
-                        continue;
-                    } else if (sqTheta > theta && sqTheta < (theta + thetaStep)) {
-                        this.windSquareLocations[theta].push(loc);
-                    }
-                }
+                let brightnessDrop = (outLightColor.r + outLightColor.g + outLightColor.b) / (255 * 3);
+                brightnessDrop = brightnessDrop ** 8;
+                this.windSquareBrightnessMults[bucket] *= brightnessDrop;
             }
         }
     }
 
-    getWindSquareBrightnessFunc(theta) {
+    getWindSquareBrightnessFunc(rayIdx) {
         if (!loadGD(UI_SIMULATION_CLOUDS)) {
             return 1;
         }
-        return 1;
-    
-        // pretty fucking bad code here, fix
         if (this.windSquareBrightnessMults == null) {
             return 1;
         }
-        let ret = this.windSquareBrightnessMults[theta];
-        if (ret == null) {
-            this.calculateFrameCloudCover();
-            return this.getWindSquareBrightnessFunc(theta);
-        }
+        let ret = this.windSquareBrightnessMults[rayIdx];
         let m = .5;
         ret = (ret + m) / (m + 1);
         return ret;
@@ -238,11 +211,11 @@ export class LightSource {
 
         // sort these into theta buckets, and distribute them to our rays
         allSquares.sort((a, b) => a[2] - b[2]);
-        
+
         let curBucket = -1;
         let curMinTheta = this.minTheta - this.thetaStep;
         let curMaxTheta = curMinTheta + this.thetaStep;
-        
+
         for (let arr of allSquares) {
             while (arr[2] > curMaxTheta) {
                 curMinTheta = curMaxTheta;
@@ -268,7 +241,7 @@ export class LightSource {
         thetaSquares.forEach((arr) => {
             let obj = arr[3];
             let curBrightnessCopy = curBrightness;
-            let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(this.minTheta + this.thetaStep * i) * curBrightnessCopy * this.brightnessFunc();
+            let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(i) * curBrightnessCopy * this.brightnessFunc();
             curBrightness *= (1 - (obj.surface ? (obj.surfaceLightingFactor ?? 1) : 1) * (obj.blockHealth ?? 1) * (obj.getLightFilterRate() * this.cachedLightingConstant));
             if (obj.lighting[idx] == null) {
                 obj.lighting[idx] = [[pointLightSourceFunc], this.colorFunc];

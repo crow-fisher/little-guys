@@ -251,7 +251,7 @@ export function initWeather() {
 
 function applyUIWeatherChange() {
     curWeather = ui_weatherMap.get(loadGD(UI_CLIMATE_WEATHER_ACTIVE));
-    curWeatherInterval = getTimeScale() * randRange(7 / loadGD(UI_SIMULATION_GENS_PER_DAY), 16 / loadGD(UI_SIMULATION_GENS_PER_DAY));
+    curWeatherInterval = getTimeScale() * randRange(16 / loadGD(UI_SIMULATION_GENS_PER_DAY), 24 / loadGD(UI_SIMULATION_GENS_PER_DAY));
     curWeatherInterval -= curWeatherInterval % (0.000694444 / 60);
 
     curWeatherStartTime = getCurDay();
