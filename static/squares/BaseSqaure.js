@@ -586,6 +586,9 @@ export class BaseSquare {
         if (this.proto == "SeedSquare" && sq.proto == "SeedSquare") {
             return false;
         }
+        if (this.proto == "WaterSquare" && sq.proto == "WaterSquare" && ((this.blockHealth + sq.blockHealth) < 1)) {
+            return false;
+        }
         if (this.organic) {
             if (!sq.solid) {
                 return false;
