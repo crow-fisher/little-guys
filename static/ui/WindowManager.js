@@ -1,10 +1,10 @@
-import { getBaseUISize, getCanvasHeight, getCanvasWidth } from "../canvas.js";
+import { getBaseSize, getBaseUISize, getCanvasHeight, getCanvasWidth, transformPixelsToCanvasSquares, zoomCanvasFillRect } from "../canvas.js";
 import { OrganismComponent } from "./components/OrganismComponent.js";
 import { BlockPalette } from "./components/BlockPalette.js";
 import { BlockSubtreeComponent as BlockSubtree } from "./components/BlockSubtreeComponent.js";
 import { TopBarComponent } from "./topbar/TopBarComponent.js";
 import { ViewSubtreeComponent } from "./components/ViewSubtreeComponent.js";
-import { loadGD, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_BLOCK, UI_PALETTE_ACTIVE, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveGD, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_TIME, UI_PALETTE_EYEDROPPER, UI_TOPBAR_WEATHER, UI_MAIN_NEWWORLD, saveUI, UI_UI_SIZE, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_CLIMATE_SELECT_CLOUDS, UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK, UI_PALETTE_SELECT, UI_PALETTE_SOILROCK, UI_PALETTE_MODE_SOIL, UI_PLAYER_SETUP, UI_PLAYER_SETUP_WAYPOINT_NAME, UI_CLIMATE_WEATHER_ACTIVE } from "./UIData.js";
+import { loadGD, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_BLOCK, UI_PALETTE_ACTIVE, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveGD, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_TIME, UI_PALETTE_EYEDROPPER, UI_TOPBAR_WEATHER, UI_MAIN_NEWWORLD, saveUI, UI_UI_SIZE, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_CLIMATE_SELECT_CLOUDS, UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK, UI_PALETTE_SELECT, UI_PALETTE_SOILROCK, UI_PALETTE_MODE_SOIL, UI_PLAYER_SETUP, UI_PLAYER_SETUP_WAYPOINT_NAME, UI_CLIMATE_WEATHER_ACTIVE, UI_PALETTE_STRENGTH } from "./UIData.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import { PlayerSetupComponent } from "./components/PlayerSetupComponent.js";
 import { getCurMixIdx, getMixArr, getMixArrLen, getTargetMixIdx, setCurMixIdx, setTargetMixIdx } from "../globals.js";
@@ -15,6 +15,11 @@ import { WeatherSelectionComponent } from "./components/WeatherSelectionComponen
 import { TimeSkipComponent } from "./components/TimeSkipComponent.js";
 import { WorldSetupComponent } from "./components/WorldSetupComponent.js";
 import { CloudControlComponent } from "./components/CloudControlComponent.js";
+import { getLastMoveOffset } from "../mouse.js";
+import { MAIN_CONTEXT } from "../index.js";
+import { COLOR_BLUE, COLOR_RED, RGB_COLOR_BLUE } from "../colors.js";
+import { doBrushFunc } from "../manipulation.js";
+import { rgbToRgba } from "../common.js";
 
 let topBarComponent;
 let mainMenuComponent;
@@ -150,4 +155,25 @@ export function mixerReset() {
 
 export function topbarWeatherTextReset() {
     topBarComponent.weatherStringCache = null;
+}
+
+export function renderMouseHover() {
+    let lastMoveOffset = getLastMoveOffset();
+    if (lastMoveOffset == null)
+        return;
+
+    MAIN_CONTEXT.fillStyle = COLOR_RED;
+    MAIN_CONTEXT.fillRect(lastMoveOffset.x, lastMoveOffset.y, 10, 10);
+
+    let offsetTransformed = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);
+    let offsetX = Math.floor(offsetTransformed[0]);
+    let offsetY = Math.floor(offsetTransformed[1]);
+
+    doBrushFunc(offsetX, offsetY, (x, y) => {
+        let color = structuredClone(RGB_COLOR_BLUE);
+        color.a = loadGD(UI_PALETTE_STRENGTH); 
+        MAIN_CONTEXT.fillStyle = rgbToRgba(color.r, color.g, color.b, color.a);
+        zoomCanvasFillRect(x * getBaseSize(), y * getBaseSize(), getBaseSize(), getBaseSize());
+    }, false);
+
 }

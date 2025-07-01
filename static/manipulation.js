@@ -27,7 +27,11 @@ setMouseTouchStartCallback((inVal) => prevManipulationOffset = inVal);
 let prevClickTime = 0;
 let prevClickMap = new Map();
 
-function doBrushFuncClickThrottle(x, y, func) {
+function doBrushFuncClickThrottle(x, y, func, throttle=true) {
+    if (!throttle) {
+        func(x, y);
+        return;
+    }
     if (prevClickTime != getLastMouseDown()) {
         prevClickMap = new Map();
         prevClickTime = getLastMouseDown();
@@ -44,7 +48,7 @@ function doBrushFuncClickThrottle(x, y, func) {
         func(x, y);
     }
 }
-function doBrushFunc(centerX, centerY, func) {
+export function doBrushFunc(centerX, centerY, func, throttle=true) {
     let radius = Math.floor(loadGD(UI_PALETTE_SIZE));
     if (loadGD(UI_CLIMATE_SELECT_CLOUDS)) {
         radius = loadGD(UI_CLIMATE_TOOL_SIZE);
@@ -54,10 +58,10 @@ function doBrushFunc(centerX, centerY, func) {
             if (Math.ceil((i ** 2 + j ** 2) * 0.5) > radius) {
                 continue;
             }
-            if (Math.random() > loadGD(UI_PALETTE_STRENGTH) ** 2) {
+            if (throttle && Math.random() > loadGD(UI_PALETTE_STRENGTH) ** 2) {
                 continue;
             }
-            doBrushFuncClickThrottle(centerX + i, centerY + j, func);
+            doBrushFuncClickThrottle(centerX + i, centerY + j, func, throttle);
         }
     }
 }
