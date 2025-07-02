@@ -4,7 +4,7 @@ import { BlockPalette } from "./components/BlockPalette.js";
 import { BlockSubtreeComponent as BlockSubtree } from "./components/BlockSubtreeComponent.js";
 import { TopBarComponent } from "./topbar/TopBarComponent.js";
 import { ViewSubtreeComponent } from "./components/ViewSubtreeComponent.js";
-import { loadGD, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_BLOCK, UI_PALETTE_ACTIVE, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveGD, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_TIME, UI_PALETTE_EYEDROPPER, UI_TOPBAR_WEATHER, UI_MAIN_NEWWORLD, saveUI, UI_UI_SIZE, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_CLIMATE_SELECT_CLOUDS, UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK, UI_PALETTE_SELECT, UI_PALETTE_SOILROCK, UI_PALETTE_MODE_SOIL, UI_PLAYER_SETUP, UI_PLAYER_SETUP_WAYPOINT_NAME, UI_CLIMATE_WEATHER_ACTIVE, UI_PALETTE_STRENGTH, UI_PALETTE_WATER, UI_PALETTE_SURFACE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_COMPOSITION } from "./UIData.js";
+import { loadGD, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_BLOCK, UI_PALETTE_ACTIVE, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveGD, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_TIME, UI_PALETTE_EYEDROPPER, UI_TOPBAR_WEATHER, UI_MAIN_NEWWORLD, saveUI, UI_UI_SIZE, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_CLIMATE_SELECT_CLOUDS, UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK, UI_PALETTE_SELECT, UI_PALETTE_SOILROCK, UI_PALETTE_MODE_SOIL, UI_PLAYER_SETUP, UI_PLAYER_SETUP_WAYPOINT_NAME, UI_CLIMATE_WEATHER_ACTIVE, UI_PALETTE_STRENGTH, UI_PALETTE_WATER, UI_PALETTE_SURFACE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_COMPOSITION, UI_LIGHTING_ENABLED } from "./UIData.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import { PlayerSetupComponent } from "./components/PlayerSetupComponent.js";
 import { getCurMixIdx, getMixArr, getMixArrLen, getTargetMixIdx, setCurMixIdx, setTargetMixIdx } from "../globals.js";
@@ -15,7 +15,7 @@ import { WeatherSelectionComponent } from "./components/WeatherSelectionComponen
 import { TimeSkipComponent } from "./components/TimeSkipComponent.js";
 import { WorldSetupComponent } from "./components/WorldSetupComponent.js";
 import { CloudControlComponent } from "./components/CloudControlComponent.js";
-import { getLastMoveOffset } from "../mouse.js";
+import { getLastMouseDown, getLastMoveOffset, isLeftMouseClicked } from "../mouse.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { COLOR_BLUE, COLOR_RED, RGB_COLOR_BLUE, RGB_COLOR_GREEN, RGB_COLOR_RED, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
 import { doBrushFunc } from "../manipulation.js";
@@ -163,6 +163,17 @@ export function topbarWeatherTextReset() {
 let mouseHoverColorCacheMap = new Map();
 let mouseHoverColorCacheMode = null;
 
+let curMouseClickTime = getLastMouseDown();
+let curMouseClickLighting = getDefaultLighting();
+
+function getLighting(x, y) {
+    if (isLeftMouseClicked() && getLastMouseDown() == curMouseClickTime)
+        return curMouseClickLighting;
+    curMouseClickTime = getLastMouseDown();
+    curMouseClickLighting = getDefaultLighting();
+
+}
+
 function getColorFromColorCacheMap(x, y, mode, func) {
     if (mode != mouseHoverColorCacheMode) {
         mouseHoverColorCacheMap = new Map();
@@ -182,10 +193,18 @@ export function clearMouseHoverColorCacheMap() {
 }
 
 
+
 export function renderMouseHover() {
     let lastMoveOffset = getLastMoveOffset();
     if (lastMoveOffset == null)
         return;
+
+    if (!loadGD(UI_PALETTE_ACTIVE))
+        return;
+
+    let offsetTransformed = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);
+    let offsetX = Math.floor(offsetTransformed[0]);
+    let offsetY = Math.floor(offsetTransformed[1]);
 
     let color = null;
     let colorFunc = null;
@@ -197,6 +216,12 @@ export function renderMouseHover() {
                 colorFunc = () => {
                     let outColorBase = new SoilSquare(-1, -1).getColorBase();
                     let lightingColor = getDefaultLighting();
+                    if (loadGD(UI_LIGHTING_ENABLED)) {
+                        let sq = getSquares(offsetX, offsetY).find((sq) => sq.visible);
+                        if (sq != null) {
+                            lightingColor = sq.processLighting();
+                        }
+                    }
                     return { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
                 }
             }
@@ -217,10 +242,6 @@ export function renderMouseHover() {
     }
 
     if (colorFunc != null) {
-        let offsetTransformed = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);
-        let offsetX = Math.floor(offsetTransformed[0]);
-        let offsetY = Math.floor(offsetTransformed[1]);
-
         doBrushFunc(offsetX, offsetY, (x, y) => {
             MAIN_CONTEXT.fillStyle = getColorFromColorCacheMap(x, y, mode, colorFunc);
             zoomCanvasFillRect(x * getBaseSize(), y * getBaseSize(), getBaseSize(), getBaseSize());
