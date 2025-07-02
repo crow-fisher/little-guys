@@ -160,18 +160,45 @@ export function topbarWeatherTextReset() {
     topBarComponent.weatherStringCache = null;
 }
 
+let mouseHoverColorCacheMap = new Map();
+let mouseHoverColorCacheMode = null;
+
+function getColorFromColorCacheMap(x, y, mode, func) {
+    if (mode != mouseHoverColorCacheMode) {
+        mouseHoverColorCacheMap = new Map();
+        mouseHoverColorCacheMode = mode;
+    }
+    if (!mouseHoverColorCacheMap.has(x))
+        mouseHoverColorCacheMap.set(x, new Map());
+    if (!mouseHoverColorCacheMap.get(x).has(y))
+        mouseHoverColorCacheMap.get(x).set(y, func());
+    let rgb = mouseHoverColorCacheMap.get(x).get(y);
+    return rgbToRgba(rgb.r, rgb.g, rgb.b, loadGD(UI_PALETTE_STRENGTH));
+}
+
+export function clearMouseHoverColorCacheMap() {
+    mouseHoverColorCacheMap = new Map();
+    mouseHoverColorCacheMode = null;
+}
+
+
 export function renderMouseHover() {
     let lastMoveOffset = getLastMoveOffset();
     if (lastMoveOffset == null)
         return;
 
     let color = null;
+    let colorFunc = null;
+    let mode = UI_PALETTE_MODE_SOIL;
     switch (loadGD(UI_PALETTE_SELECT)) {
         case (UI_PALETTE_SOILROCK):
             if (loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_SOIL) {
-                let outColorBase = hexToRgb(getActiveClimate().getBaseSoilColorBrightness(loadGD(UI_PALETTE_COMPOSITION), 1));
-                let lightingColor = getDefaultLighting();
-                color = { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
+                mode = UI_PALETTE_MODE_SOIL;
+                colorFunc = () => {
+                    let outColorBase = new SoilSquare(-1, -1).getColorBase();
+                    let lightingColor = getDefaultLighting();
+                    return { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
+                }
             }
             else
                 color = hexToRgb(getActiveClimate().getPaletteRockColor(0.65));
@@ -189,19 +216,16 @@ export function renderMouseHover() {
             break;
     }
 
-    if (color != null) {
-        color.a = loadGD(UI_PALETTE_STRENGTH);
-        MAIN_CONTEXT.fillStyle = rgbToRgba(color.r, color.g, color.b, color.a);
+    if (colorFunc != null) {
         let offsetTransformed = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);
         let offsetX = Math.floor(offsetTransformed[0]);
         let offsetY = Math.floor(offsetTransformed[1]);
 
         doBrushFunc(offsetX, offsetY, (x, y) => {
-            let color = structuredClone(RGB_COLOR_BLUE);
+            MAIN_CONTEXT.fillStyle = getColorFromColorCacheMap(x, y, mode, colorFunc);
             zoomCanvasFillRect(x * getBaseSize(), y * getBaseSize(), getBaseSize(), getBaseSize());
         }, false);
     }
-
-
-
 }
+
+addUIFunctionMap(UI_PALETTE_COMPOSITION, clearMouseHoverColorCacheMap);
