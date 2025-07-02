@@ -4,7 +4,7 @@ import { BlockPalette } from "./components/BlockPalette.js";
 import { BlockSubtreeComponent as BlockSubtree } from "./components/BlockSubtreeComponent.js";
 import { TopBarComponent } from "./topbar/TopBarComponent.js";
 import { ViewSubtreeComponent } from "./components/ViewSubtreeComponent.js";
-import { loadGD, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_BLOCK, UI_PALETTE_ACTIVE, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveGD, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_TIME, UI_PALETTE_EYEDROPPER, UI_TOPBAR_WEATHER, UI_MAIN_NEWWORLD, saveUI, UI_UI_SIZE, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_CLIMATE_SELECT_CLOUDS, UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK, UI_PALETTE_SELECT, UI_PALETTE_SOILROCK, UI_PALETTE_MODE_SOIL, UI_PLAYER_SETUP, UI_PLAYER_SETUP_WAYPOINT_NAME, UI_CLIMATE_WEATHER_ACTIVE, UI_PALETTE_STRENGTH } from "./UIData.js";
+import { loadGD, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_BLOCK, UI_PALETTE_ACTIVE, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveGD, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_TIME, UI_PALETTE_EYEDROPPER, UI_TOPBAR_WEATHER, UI_MAIN_NEWWORLD, saveUI, UI_UI_SIZE, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_CLIMATE_SELECT_CLOUDS, UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK, UI_PALETTE_SELECT, UI_PALETTE_SOILROCK, UI_PALETTE_MODE_SOIL, UI_PLAYER_SETUP, UI_PLAYER_SETUP_WAYPOINT_NAME, UI_CLIMATE_WEATHER_ACTIVE, UI_PALETTE_STRENGTH, UI_PALETTE_WATER, UI_PALETTE_SURFACE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_COMPOSITION } from "./UIData.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import { PlayerSetupComponent } from "./components/PlayerSetupComponent.js";
 import { getCurMixIdx, getMixArr, getMixArrLen, getTargetMixIdx, setCurMixIdx, setTargetMixIdx } from "../globals.js";
@@ -17,9 +17,12 @@ import { WorldSetupComponent } from "./components/WorldSetupComponent.js";
 import { CloudControlComponent } from "./components/CloudControlComponent.js";
 import { getLastMoveOffset } from "../mouse.js";
 import { MAIN_CONTEXT } from "../index.js";
-import { COLOR_BLUE, COLOR_RED, RGB_COLOR_BLUE } from "../colors.js";
+import { COLOR_BLUE, COLOR_RED, RGB_COLOR_BLUE, RGB_COLOR_GREEN, RGB_COLOR_RED, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
 import { doBrushFunc } from "../manipulation.js";
-import { rgbToRgba } from "../common.js";
+import { hexToRgb, rgbToRgba } from "../common.js";
+import { getActiveClimate } from "../climate/climateManager.js";
+import { SoilSquare } from "../squares/parameterized/SoilSquare.js";
+import { getDefaultLighting } from "../lighting/lightingProcessing.js";
 
 let topBarComponent;
 let mainMenuComponent;
@@ -31,7 +34,7 @@ all_components = [];
 topBarComponent = new TopBarComponent("UI_TOPBAR");
 
 export function initUI() {
-    
+
     if (getBaseUISize() * 40 > getCanvasHeight() && getCanvasHeight() > 500) {
         saveUI(UI_UI_SIZE, 8);
     }
@@ -53,8 +56,8 @@ export function initUI() {
     all_components.push(new OrganismComponent(getBaseUISize() * 24, palette_y_offset, 0, 0, UI_SM_ORGANISM));
     playerSetup = new PlayerSetupComponent(getBaseUISize() * 34, getBaseUISize() * 6, 0, 0, UI_PLAYER_SETUP);
     all_components.push(playerSetup);
-    all_components.push(new TimeSkipComponent(() => topBarComponent.getElementXPositionFunc(0, 18-5), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_TIME));
-    all_components.push(new WeatherSelectionComponent(() => topBarComponent.getElementXPositionFunc(0,20-5), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_WEATHER));
+    all_components.push(new TimeSkipComponent(() => topBarComponent.getElementXPositionFunc(0, 18 - 5), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_TIME));
+    all_components.push(new WeatherSelectionComponent(() => topBarComponent.getElementXPositionFunc(0, 20 - 5), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_WEATHER));
     all_components.push(new WorldSetupComponent(() => getCanvasWidth() / 2, () => getBaseUISize() * 30, 0, 0, UI_MAIN_NEWWORLD));
 }
 
@@ -128,7 +131,7 @@ export function mixerBlockClick(posX, posY) {
     saveGD(targetIdx, sq.colorVariant);
     let sqComp = [sq.sand, sq.silt, sq.clay];
     if (!getMixArr().some((arr) => arr[0] == sqComp[0] && arr[1] == sqComp[1] && arr[2] == sqComp[2])) {
-        getMixArr()[getCurMixIdx() % getMixArrLen()] = sqComp; 
+        getMixArr()[getCurMixIdx() % getMixArrLen()] = sqComp;
         sq.mixIdx = getCurMixIdx();
         setCurMixIdx(getCurMixIdx() + 1);
     }
@@ -145,12 +148,12 @@ export function mixerBlockClick(posX, posY) {
     }
 }
 
-addUIFunctionMap(UI_PALETTE_MIXER, () => {setCurMixIdx(getCurMixIdx() - (getCurMixIdx() % 3) + 1); setTargetMixIdx(getCurMixIdx() + getMixArrLen()); });
+addUIFunctionMap(UI_PALETTE_MIXER, () => { setCurMixIdx(getCurMixIdx() - (getCurMixIdx() % 3) + 1); setTargetMixIdx(getCurMixIdx() + getMixArrLen()); });
 addUIFunctionMap(UI_PLAYER_SETUP_WAYPOINT_NAME, () => (playerSetup != null ? playerSetup.handleTextInput() : null));
 
 export function mixerReset() {
     setCurMixIdx(getCurMixIdx() - (getCurMixIdx() % 3) + 1);
-    setTargetMixIdx(getCurMixIdx() + getMixArrLen()); 
+    setTargetMixIdx(getCurMixIdx() + getMixArrLen());
 }
 
 export function topbarWeatherTextReset() {
@@ -162,18 +165,43 @@ export function renderMouseHover() {
     if (lastMoveOffset == null)
         return;
 
-    MAIN_CONTEXT.fillStyle = COLOR_RED;
-    MAIN_CONTEXT.fillRect(lastMoveOffset.x, lastMoveOffset.y, 10, 10);
+    let color = null;
+    switch (loadGD(UI_PALETTE_SELECT)) {
+        case (UI_PALETTE_SOILROCK):
+            if (loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_SOIL) {
+                let outColorBase = hexToRgb(getActiveClimate().getBaseSoilColorBrightness(loadGD(UI_PALETTE_COMPOSITION), 1));
+                let lightingColor = getDefaultLighting();
+                color = { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
+            }
+            else
+                color = hexToRgb(getActiveClimate().getPaletteRockColor(0.65));
+            break;
+        case UI_PALETTE_WATER:
+            color = hexToRgb(getActiveClimate().getWaterColor(5));
+            break;
+        case UI_PALETTE_SURFACE:
+            color = RGB_COLOR_GREEN;
+            break;
+        case UI_PALETTE_SURFACE_OFF:
+            color = RGB_COLOR_RED;
+            break;
+        default:
+            break;
+    }
 
-    let offsetTransformed = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);
-    let offsetX = Math.floor(offsetTransformed[0]);
-    let offsetY = Math.floor(offsetTransformed[1]);
-
-    doBrushFunc(offsetX, offsetY, (x, y) => {
-        let color = structuredClone(RGB_COLOR_BLUE);
-        color.a = loadGD(UI_PALETTE_STRENGTH); 
+    if (color != null) {
+        color.a = loadGD(UI_PALETTE_STRENGTH);
         MAIN_CONTEXT.fillStyle = rgbToRgba(color.r, color.g, color.b, color.a);
-        zoomCanvasFillRect(x * getBaseSize(), y * getBaseSize(), getBaseSize(), getBaseSize());
-    }, false);
+        let offsetTransformed = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);
+        let offsetX = Math.floor(offsetTransformed[0]);
+        let offsetY = Math.floor(offsetTransformed[1]);
+
+        doBrushFunc(offsetX, offsetY, (x, y) => {
+            let color = structuredClone(RGB_COLOR_BLUE);
+            zoomCanvasFillRect(x * getBaseSize(), y * getBaseSize(), getBaseSize(), getBaseSize());
+        }, false);
+    }
+
+
 
 }

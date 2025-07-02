@@ -51,8 +51,8 @@ export class Climate {
     }
 
 
-    getWaterColor() {
-        return this.processColor(this.waterColor, 0.5);
+    getWaterColor(frac=0.5) {
+        return this.processColor(this.waterColor, frac);
     }
 
     getWaterColorDark() {
