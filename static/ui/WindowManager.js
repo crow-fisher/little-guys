@@ -171,7 +171,13 @@ function getLighting(x, y) {
         return curMouseClickLighting;
     curMouseClickTime = getLastMouseDown();
     curMouseClickLighting = getDefaultLighting();
-
+    if (loadGD(UI_LIGHTING_ENABLED)) {
+        let sq = getSquares(x, y).find((sq) => sq.visible);
+        if (sq != null) {
+            curMouseClickLighting = sq.processLighting();
+        }
+    }
+    return curMouseClickLighting;
 }
 
 function getColorFromColorCacheMap(x, y, mode, func) {
@@ -215,13 +221,7 @@ export function renderMouseHover() {
                 mode = UI_PALETTE_MODE_SOIL;
                 colorFunc = () => {
                     let outColorBase = new SoilSquare(-1, -1).getColorBase();
-                    let lightingColor = getDefaultLighting();
-                    if (loadGD(UI_LIGHTING_ENABLED)) {
-                        let sq = getSquares(offsetX, offsetY).find((sq) => sq.visible);
-                        if (sq != null) {
-                            lightingColor = sq.processLighting();
-                        }
-                    }
+                    let lightingColor = getLighting(offsetX, offsetY);
                     return { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
                 }
             }

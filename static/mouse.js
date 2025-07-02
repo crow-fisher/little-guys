@@ -1,5 +1,6 @@
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, resetZoom } from "./canvas.js";
 import { isEyedropperOrMixerClicked, loadGD, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER } from "./ui/UIData.js";
+import { clearMouseHoverColorCacheMap } from "./ui/WindowManager.js";
 
 let leftMouseClicked = false;
 let rightMouseClicked = false;
@@ -74,6 +75,7 @@ export function handleMouseDown(e) {
 
 export function handleMouseUp(e) {
     e.preventDefault();
+    clearMouseHoverColorCacheMap();
     let leftMouseWasClicked = leftMouseClicked;
     switch (e.button) {
         case 2: 
