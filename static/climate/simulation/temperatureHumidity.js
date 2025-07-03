@@ -345,6 +345,7 @@ export function getCloudColorAtPos(x, y) {
     }
     let outColor;
     let opacity;
+
     if (squareHumidity < (cloudRainThresh)) {
         outColor = calculateColorRGB(squareHumidity, 1, cloudRainThresh, c_cloudMinRGB, c_cloudMidRGB);
         opacity = (squareHumidity - 1) / (cloudRainThresh - 1);
