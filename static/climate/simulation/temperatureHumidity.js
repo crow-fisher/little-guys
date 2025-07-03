@@ -257,7 +257,7 @@ function tickMap(
                         side *= -1;
                     }
 
-                    let vertMult = 5;
+                    let vertMult = 1;
 
                     if (side == 1) {
                         diff /= vertMult;
