@@ -1,5 +1,3 @@
-
-
 import { gameUserStateLoad } from "./saveAndLoad.js";
 import { resetClimateAndLighting, resetLighting, scheduler_main } from "./main.js";
 import { keydown, keyup } from "./keyboard.js";

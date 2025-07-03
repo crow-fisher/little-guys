@@ -163,8 +163,8 @@ export function topbarWeatherTextReset() {
 let mouseHoverColorCacheMap = new Map();
 let mouseHoverColorCacheMode = null;
 
-let curMouseClickTime = getLastMouseDown();
-let curMouseClickLighting = getDefaultLighting();
+let curMouseClickTime = null;
+let curMouseClickLighting = null;
 
 function getLighting(x, y) {
     if (isLeftMouseClicked() && getLastMouseDown() == curMouseClickTime)
