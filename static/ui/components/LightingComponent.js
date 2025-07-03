@@ -175,9 +175,7 @@ export class LightingComponent extends Component {
         waterConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => "water hue", () => getActiveClimate().getUIColorInactiveCustom(0.53)));
         waterConditionalContainer.addElement(new SliderGradientBackgroundWaterHue(this.window, UI_LIGHTING_WATER_HUE, sizeX, sliderSizeY, -.5, .5));
 
-        waterConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => "rainfall density", () => getActiveClimate().getUIColorInactiveCustom(0.53)));
-        waterConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_CLIMATE_RAINFALL_DENSITY, sizeX, sliderSizeY, 10, 1, () => getWaterColorTransformed(NULL, 0, .5, .5), () => getWaterColorTransformed(NULL, NULL, NULL, 1), true));
-    }
+            }
     render() {
         if (loadUI(UI_UI_PHONEMODE)) {
             if (this.phoneModeOffset == 0) {
