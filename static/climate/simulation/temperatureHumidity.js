@@ -6,9 +6,9 @@ import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquare
 import { logRainFall } from "../weather/weatherManager.js";
 import { getCloudRenderingLighting, getDefaultLighting } from "../../lighting/lightingProcessing.js";
 import { addSquareByName } from "../../manipulation.js";
-import { loadGD, UI_CLIMATE_RAINFALL_DENSITY } from "../../ui/UIData.js";
+import { loadGD, UI_CLIMATE_RAINFALL_DENSITY, UI_VIEWMODE_SELECT, UI_VIEWMODE_WIND } from "../../ui/UIData.js";
 import { isLeftMouseClicked, isRightMouseClicked } from "../../mouse.js";
-import { RGB_COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_GREEN, RGB_COLOR_RED } from "../../colors.js";
+import { COLOR_VERY_FUCKING_RED, RGB_COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_GREEN, RGB_COLOR_RED } from "../../colors.js";
 import { getTimeScale, millis_per_day } from "../time.js";
 import { getWindThrottleVal, registerWindThrottlerOutput } from "./throttler.js";
 // decent reference https://web.gps.caltech.edu/~xun/course/GEOL1350/Lecture5.pdf
@@ -393,12 +393,12 @@ function renderClouds() {
             frameCloudSum.b += cloudColorRGBA.b * cloudColorRGBA.a;
             frameCloudSumCount += 1;
 
-
             MAIN_CONTEXT.fillStyle = rgbToRgba(
                 cloudColorRGBA.r * (frameLighting.r / 255),
                 cloudColorRGBA.g * (frameLighting.g / 255),
                 cloudColorRGBA.b * (frameLighting.b / 255),
                 cloudColorRGBA.a);
+
             zoomCanvasFillRect(
                 4 * i * getBaseSize(),
                 4 * j * getBaseSize(),

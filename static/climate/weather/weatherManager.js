@@ -7,6 +7,9 @@ import { getFrameXMaxWsq, getFrameXMinWsq, getFrameYMaxWsq, getFrameYMinWsq, get
 import { Cloud } from "./cloud.js";
 import { Weather } from "./weather.js";
 import { topbarWeatherTextReset } from "../../ui/WindowManager.js";
+import { isSquareOnCanvas } from "../../canvas.js";
+import { MAIN_CANVAS, MAIN_CONTEXT } from "../../index.js";
+import { COLOR_VERY_FUCKING_RED } from "../../colors.js";
 
 let weatherClear, weatherPartlyCloudy, weatherMostlyCloudy, weatherFoggy, weatherLightRain, weatherHeavyRain;
 let ui_weatherMap = new Map();
@@ -224,18 +227,13 @@ function weatherChange() {
 export function weather() {
     curClouds.forEach((cloud) => cloud.tick());
     curWinds.forEach((wind) => wind.tick());
-    if (curClouds.some((cloud) => getCurDay() > cloud.startDay + cloud.duration)) {
-        curClouds = Array.from(curClouds.filter((cloud) => getCurDay() < cloud.startDay + cloud.duration));
-    }
-    if (curWinds.some((wind) => getCurDay() > wind.startDay + wind.duration)) {
-        curWinds = Array.from(curWinds.filter((wind) => getCurDay() < wind.startDay + wind.duration));
-    }
-    if (curClouds.some((cloud) => getCurDay() < cloud.startDay - cloud.duration)) {
-        curClouds = Array.from(curClouds.filter((cloud) => getCurDay() > cloud.startDay - cloud.duration));
-    }
-    if (curWinds.some((wind) => getCurDay() < wind.startDay - wind.duration)) {
-        curWinds = Array.from(curWinds.filter((wind) => getCurDay() > wind.startDay - wind.duration));
-    }
+    curClouds = Array.from(curClouds.filter((cloud) => getCurDay() < cloud.startDay + cloud.duration));
+    curClouds = Array.from(curClouds.filter((cloud) => getCurDay() > cloud.startDay - cloud.duration));
+    // curClouds = Array.from(curClouds.filter((cloud) => isSquareOnCanvas(cloud.centerX * 4, cloud.centerY * 4)));
+    curWinds = Array.from(curWinds.filter((wind) => getCurDay() < wind.startDay + wind.duration));
+    curWinds = Array.from(curWinds.filter((wind) => getCurDay() > wind.startDay - wind.duration));
+    // curClouds = Array.from(curWinds.filter((wind) => isSquareOnCanvas(wind.centerX * 4, wind.centerY * 4)));
+
 
     weatherChange();
     curWeather.weather();
@@ -254,6 +252,12 @@ function applyUIWeatherChange() {
     curWeatherStartTime -= curWeatherStartTime % (0.000694444 / 60);
 
     console.log("Next weather: ", curWeather.type + ", for " + Math.round(curWeatherInterval / 0.000694444) + " minutes")
+}
+
+export function renderCloudsDebug() {
+    MAIN_CONTEXT.fillStyle = COLOR_VERY_FUCKING_RED;
+    curClouds.forEach((cloud) => cloud.renderDebug());
+
 }
 
 addUIFunctionMap(UI_CLIMATE_WEATHER_ACTIVE, () => {

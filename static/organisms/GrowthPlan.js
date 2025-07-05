@@ -417,7 +417,7 @@ export class GrowthComponent {
     }
 
     getValueCached(name, calculation) {
-        if (this.valueCache == null || this.valueCacheDay != getCurDay()) {
+        if (this.valueCache == null || !(this.valueCache instanceof Map) || this.valueCacheDay != getCurDay()) {
             this.valueCache = new Map();
             this.valueCacheDay = getCurDay();
         }

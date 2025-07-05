@@ -14,6 +14,7 @@ import { renderThrottleMap } from "./climate/simulation/throttler.js";
 import { Player } from "./player/player.js";
 import { playerTick, renderPlayer } from "./player/playerMain.js";
 import { gamepadInputLoop } from "./gamepad.js";
+import { renderCloudsDebug } from "./climate/weather/weatherManager.js";
 
 initUI();
 let lightingHandler = new LightingHandler();
@@ -103,8 +104,11 @@ function render() {
     renderSolidSquares();
     renderOrganisms();
     renderWaterSquares();
-    if (selectedViewMode == UI_VIEWMODE_NORMAL && loadGD(UI_SIMULATION_CLOUDS)) {
-        renderClouds();
+    if (loadGD(UI_SIMULATION_CLOUDS)) {
+        if (selectedViewMode == UI_VIEWMODE_NORMAL)
+            renderClouds();
+        if (selectedViewMode == UI_VIEWMODE_WIND)
+            renderCloudsDebug();
     }
     renderMouseHover();
     renderWindows();

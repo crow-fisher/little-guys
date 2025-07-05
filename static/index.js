@@ -3,7 +3,7 @@ import { resetClimateAndLighting, resetLighting, scheduler_main } from "./main.j
 import { keydown, keyup } from "./keyboard.js";
 import { getLastMoveOffset, handleClick, handleMouseDown, handleMouseUp, handleTouchEnd, handleTouchMove, handleTouchStart } from "./mouse.js";
 import { getBaseSize, getCanvasHeight, getCanvasWidth, resetZoom, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, transformPixelsToCanvasSquares, zoom } from "./canvas.js";
-import { addUIFunctionMap, loadGD, saveGD, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_PALETTE_PASTE_MODE, UI_PALETTE_PASTE_MODE_BG, UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_RIGID, UI_PALETTE_PHYSICS_STATIC, UI_PALLETE_MODE_PASTE, UI_SIMULATION_HEIGHT, UI_UI_SIZE } from "./ui/UIData.js";
+import { addUIFunctionMap, loadGD, saveGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_PALETTE_PASTE_MODE, UI_PALETTE_PASTE_MODE_BG, UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_RIGID, UI_PALETTE_PHYSICS_STATIC, UI_PALLETE_MODE_PASTE, UI_SIMULATION_HEIGHT, UI_UI_SIZE } from "./ui/UIData.js";
 import { initUI } from "./ui/WindowManager.js";
 import { addSquare } from "./squares/_sqOperations.js";
 import { waterGraphReset } from "./waterGraph.js";
@@ -58,7 +58,7 @@ export function indexCanvasSize(shouldInitUIClimateAndLighting = true) {
     while (getBaseSize() % 4 != 0 && getBaseSize() > 1)
         setBaseSize(getBaseSize() - 1);
 
-    setCanvasSquaresY(Math.floor(height / getBaseSize()));
+    setCanvasSquaresY(loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y));
     setCanvasSquaresX(Math.floor(width / getBaseSize()));
 
     MAIN_CANVAS.width = width;
