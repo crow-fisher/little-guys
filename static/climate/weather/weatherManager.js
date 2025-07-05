@@ -33,8 +33,8 @@ let curClouds = [];
 let curWinds = [];
 
 let cloudDuration = () => getTimeScale() * randRange(4, 8) / loadGD(UI_SIMULATION_GENS_PER_DAY);
-let cloudXSize = (min=0.1, max=0.2) => randRange(min, max) * getFrameXMaxWsq() - getFrameXMinWsq();
-let cloudYSize = (min=0.1, max=0.2) => randRange(min, max) * getFrameXMaxWsq() - getFrameXMinWsq();
+let cloudXSize = (min=0.1, max=0.2) => randRange(min, max) * (getFrameXMaxWsq() - getFrameXMinWsq());
+let cloudYSize = (min=0.1, max=0.2) => randRange(min, max) * (getFrameXMaxWsq() - getFrameXMinWsq());
 
 function spawnFogCloud() {
     curClouds.push(new Cloud(
@@ -229,10 +229,10 @@ export function weather() {
     curWinds.forEach((wind) => wind.tick());
     curClouds = Array.from(curClouds.filter((cloud) => getCurDay() < cloud.startDay + cloud.duration));
     curClouds = Array.from(curClouds.filter((cloud) => getCurDay() > cloud.startDay - cloud.duration));
-    // curClouds = Array.from(curClouds.filter((cloud) => isSquareOnCanvas(cloud.centerX * 4, cloud.centerY * 4)));
+    curClouds = Array.from(curClouds.filter((cloud) => isSquareOnCanvas(cloud.centerX * 4, cloud.centerY * 4)));
     curWinds = Array.from(curWinds.filter((wind) => getCurDay() < wind.startDay + wind.duration));
     curWinds = Array.from(curWinds.filter((wind) => getCurDay() > wind.startDay - wind.duration));
-    // curClouds = Array.from(curWinds.filter((wind) => isSquareOnCanvas(wind.centerX * 4, wind.centerY * 4)));
+    curWinds = Array.from(curWinds.filter((wind) => isSquareOnCanvas(wind.centerX * 4, wind.centerY * 4)));
 
 
     weatherChange();

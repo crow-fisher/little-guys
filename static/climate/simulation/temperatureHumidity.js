@@ -288,12 +288,13 @@ function doRain() {
     }
     for (let x = getFrameXMinWsq(); x < getFrameXMaxWsq(); x++) {
         for (let y = getFrameYMinWsq(); y < getFrameYMaxWsq(); y++) {
+            let density = Math.exp(loadGD(UI_CLIMATE_RAINFALL_DENSITY));
+            if (Math.random() > (1 / density))
+                return;
             let adjacentHumidity = getAdjacentProp(x, y, getHumidity) / 5;
             if (adjacentHumidity < (cloudRainThresh))
                 continue;
             let rainDropProbability = ((adjacentHumidity - cloudRainThresh) / (cloudRainMax - cloudRainThresh));
-            let density = Math.exp(loadGD(UI_CLIMATE_RAINFALL_DENSITY));
-            rainDropProbability /= density;
             if (Math.random() > rainDropProbability) {
                 continue;
             }
