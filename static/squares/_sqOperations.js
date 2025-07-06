@@ -1,4 +1,4 @@
-import { getObjectArrFromMap } from "../common.js";
+import { getFirstLevelObjectMapFromMap, getObjectArrFromMap } from "../common.js";
 import { ALL_SQUARES } from "../globals.js";
 import { removeSquare } from "../globalOperations.js";
 import { loadGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_LIGHTING_SURFACE } from "../ui/UIData.js";
@@ -155,6 +155,10 @@ function iterateOnSquares(func) {
 
 function getSquares(posX, posY, create=false) {
     return getObjectArrFromMap(ALL_SQUARES, Math.round(posX), Math.round(posY), create);
+}
+
+export function getFirstLevelSquares(posX) {
+    return getFirstLevelObjectMapFromMap(ALL_SQUARES, posX);
 }
 
 function getCollidableSquareAtLocation(posX, posY) {

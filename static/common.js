@@ -6,7 +6,7 @@ export const UI_BIGDOTHOLLOW = "•";
 
 export const MOUSEEVENT_UNHIDE = "MOSUEEVENT_UNHIDE";
 
-function getObjectArrFromMap(baseMap, posX, posY, create=false) {
+function getObjectArrFromMap(baseMap, posX, posY, create = false) {
     if (!(baseMap.has(posX))) {
         if (!create)
             return new Array();
@@ -18,6 +18,13 @@ function getObjectArrFromMap(baseMap, posX, posY, create=false) {
         baseMap.get(posX).set(posY, new Array());
     }
     return baseMap.get(posX).get(posY);
+}
+
+export function getFirstLevelObjectMapFromMap(baseMap, posX) {
+    if (!(baseMap.has(posX))) {
+        baseMap.set(posX, new Map());
+    }
+    return baseMap.get(posX)
 }
 
 function removeItemAll(arr, value) {
@@ -65,7 +72,7 @@ export function hueShiftColor(hex, hueShift, saturationShift, valueShift) {
     hsv[1] += saturationShift;
     hsv[2] += valueShift;
     let rgb = hsv2rgb(...hsv);
-    return {r: rgb[0], g: rgb[1], b: rgb[2]};
+    return { r: rgb[0], g: rgb[1], b: rgb[2] };
 }
 
 export function hueShiftColorArr(hex, hueShift, saturationShift, valueShift) {
@@ -173,7 +180,7 @@ function getDist(x1, x2, y1, y2) {
 
 function dec2bin(dec) {
     return (dec >>> 0).toString(2);
-  }
+}
 
 
 
@@ -181,17 +188,16 @@ function dec2bin(dec) {
 // https://stackoverflow.com/questions/8022885/rgb-to-hsv-color-in-javascript
 
 // input: r,g,b in [0,1], out: h in [0,360) and s,v in [0,1]
-export function rgb2hsv(r,g,b) {
-    let v=Math.max(r,g,b), c=v-Math.min(r,g,b);
-    let h= c && ((v==r) ? (g-b)/c : ((v==g) ? 2+(b-r)/c : 4+(r-g)/c)); 
-    return [60*(h<0?h+6:h), v&&c/v, v];
-  }
+export function rgb2hsv(r, g, b) {
+    let v = Math.max(r, g, b), c = v - Math.min(r, g, b);
+    let h = c && ((v == r) ? (g - b) / c : ((v == g) ? 2 + (b - r) / c : 4 + (r - g) / c));
+    return [60 * (h < 0 ? h + 6 : h), v && c / v, v];
+}
 // input: h in [0,360] and s,v in [0,1] - output: r,g,b in [0,1]
-export function hsv2rgb(h,s,v) 
-{                              
-  let f= (n,k=(n+h/60)%6) => v - v*s*Math.max( Math.min(k,4-k,1), 0);     
-  return [f(5),f(3),f(1)];       
-}   
+export function hsv2rgb(h, s, v) {
+    let f = (n, k = (n + h / 60) % 6) => v - v * s * Math.max(Math.min(k, 4 - k, 1), 0);
+    return [f(5), f(3), f(1)];
+}
 
 
 
@@ -208,9 +214,9 @@ export function cachedGetWaterflowRate(sand, silt, clay) {
     let sandRate = 0.92;
     let power = 10;
 
-    let baseRet = (sand * sandRate + 
-            silt * siltRate + 
-            clay * clayRate) ** power;
+    let baseRet = (sand * sandRate +
+        silt * siltRate +
+        clay * clayRate) ** power;
 
     let sandMult = 1 + Math.max(0, sand - 0.9) * 40;
     baseRet *= sandMult;
@@ -222,10 +228,10 @@ export function cachedGetWaterflowRate(sand, silt, clay) {
 }
 
 // Standard Normal variate using Box-Muller transform.
-export function gaussianRandom(mean=0, stdev=1) {
+export function gaussianRandom(mean = 0, stdev = 1) {
     const u = 1 - Math.random(); // Converting [0,1) to (0,1]
     const v = Math.random();
-    const z = Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
+    const z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
     // Transform to the desired mean and standard deviation:
     return z * stdev + mean;
 }
@@ -238,7 +244,9 @@ export function gaussianRandom(mean=0, stdev=1) {
 
 
 
-export { getObjectArrFromMap, removeItemAll, hexToRgb, rgbToHex, rgbToRgba, 
+export {
+    getObjectArrFromMap, removeItemAll, hexToRgb, rgbToHex, rgbToRgba,
     randNumber, randRange, loadImage, getStandardDeviation, getZPercent,
-     processColorStdev, processColorStdevMulticolor, processColorLerp, 
-     processColorLerpBicolor, getDist, dec2bin}
+    processColorStdev, processColorStdevMulticolor, processColorLerp,
+    processColorLerpBicolor, getDist, dec2bin
+}

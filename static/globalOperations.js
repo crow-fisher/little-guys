@@ -1,4 +1,4 @@
-import { getSqIterationOrder, getSquares, iterateOnSquares, registerSqColChange, registerSqIterationRowChange } from "./squares/_sqOperations.js";
+import { getFirstLevelSquares, getSqIterationOrder, getSquares, iterateOnSquares, registerSqColChange, registerSqIterationRowChange } from "./squares/_sqOperations.js";
 import { iterateOnOrganisms } from "./organisms/_orgOperations.js";
 import {
     ALL_SQUARES, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES, resetWaterflowSquares
@@ -55,12 +55,20 @@ export function reset() {
     frame_simulation_organisms = new Array();
 
     for (let i = getFrameXMin() - 1; i < getFrameXMax() + 1; i++) {
-        for (let j = getFrameYMax() + 1; j >= getFrameYMin() - 1; j--) {
-            getSquares(i, j).forEach((sq) => {
-                if (sq.linkedOrganisms.length > 0)
-                    sq.linkedOrganisms.forEach((org) => frame_simulation_organisms.push(org));
-                frame_simulation_squares.push(sq);
-            });
+        let firstLevel = getFirstLevelSquares(i);
+        if (firstLevel.size == 0)
+            continue;
+        let keys = Array.from(firstLevel.keys()).sort((a, b) => a - b);
+        let min = keys.at(0);
+        let max = keys.at(keys.length - 1);
+
+        for (let j = Math.min(max, getFrameYMax() + 1); j >= Math.max(min, getFrameYMin() - 1); j--) {
+            if (firstLevel.has(j))
+                firstLevel.get(j).forEach((sq) => {
+                    if (sq.linkedOrganisms.length > 0)
+                        sq.linkedOrganisms.forEach((org) => frame_simulation_organisms.push(org));
+                    frame_simulation_squares.push(sq);
+                });
         }
     }
 
@@ -151,8 +159,8 @@ export function doWaterFlow() {
                 let curTargHealth = curTargWater == null ? 0 : curTargWater.blockHealth;
                 curTargetIdx += 1;
                 while (
-                    curTargHealth < 1 && 
-                    candidatePressureKeys.length > 0 && 
+                    curTargHealth < 1 &&
+                    candidatePressureKeys.length > 0 &&
                     candidatePressureKeys.some((candidatePressure) => candidatePressure < targPressure)
                 ) {
                     let candPressure = candidatePressureKeys.find((candidatePressure) => candidatePressure < targPressure);
@@ -191,7 +199,7 @@ export function doWaterFlow() {
                                 removeItemAll(candidateArr, cand);
                                 cand.currentPressureDirect = -1;
                                 cand.calculateDirectPressure();
-                                
+
                                 cand.lighting = [];
                                 cand.initLightingFromNeighbors();
                                 curTargWater = cand;
