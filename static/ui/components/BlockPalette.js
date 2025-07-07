@@ -13,7 +13,7 @@ import { SoilPickerDotElement } from "../elements/SoilPickerDotElement.js";
 import { Text } from "../elements/Text.js";
 import { TextBackground } from "../elements/TextBackground.js";
 import { Toggle } from "../elements/Toggle.js";
-import { loadGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CENTER, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_PALETTE_COMPOSITION, saveGD, UI_PALETTE_SHOWPICKER, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, UI_PALETTE_SOILROCK, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_AQUIFER_FLOWRATE, UI_UI_PHONEMODE, loadUI, UI_PALLETE_MODE_PASTE, UI_PALETTE_PASTE_MODE, UI_PALETTE_PASTE_MODE_FG, UI_PALETTE_PASTE_MODE_BG, UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_RIGID, UI_PALETTE_PHYSICS_SAND, UI_PALETTE_PHYSICS_STATIC } from "../UIData.js";
+import { loadGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CENTER, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_PALETTE_COMPOSITION, saveGD, UI_PALETTE_SHOWPICKER, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, UI_PALETTE_SOILROCK, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_AQUIFER_FLOWRATE, UI_UI_PHONEMODE, loadUI, UI_PALLETE_MODE_PASTE, UI_PALETTE_PASTE_MODE, UI_PALETTE_PASTE_MODE_FG, UI_PALETTE_PASTE_MODE_BG, UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_RIGID, UI_PALETTE_PHYSICS_SAND, UI_PALETTE_PHYSICS_STATIC, UI_PALETTE_SPECIAL_CHURN, UI_PALETTE_SPECIAL_CHURN_WIDE, UI_PALETTE_SPECIAL_CHURN_STRENGTH } from "../UIData.js";
 import { getWaterColor, getWaterColorDark } from "./LightingComponent.js";
 
 
@@ -149,6 +149,18 @@ export class BlockPalette extends Component {
 
         specialContainer.addElement(new Text(this.window, sizeX, h2, UI_CENTER, "aquifer flowrate"))
         specialContainer.addElement(new SliderGradientBackground(this.window, UI_PALETTE_AQUIFER_FLOWRATE, sizeX, 35, 0.0, 1, getWaterColorDark, getWaterColor,));
+
+        
+        specialContainer.addElement(new Text(this.window, sizeX, h2, UI_CENTER, "special tools"))
+        specialContainer.addElement(new SliderGradientBackground(this.window, UI_PALETTE_AQUIFER_FLOWRATE, sizeX, 35, 0.0, 1, getWaterColorDark, getWaterColor,));
+
+        let specialToolRow = new Container(this.window, 0, 0);
+        specialContainer.addElement(specialToolRow);
+        specialToolRow.addElement(new RadioToggleLabel(this.window, half, h1, UI_CENTER, "churn", UI_PALETTE_SELECT, UI_PALETTE_SPECIAL_CHURN,
+            () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
+        specialToolRow.addElement(new RadioToggleLabel(this.window, half, h1, UI_CENTER, "wide churn", UI_PALETTE_SELECT, UI_PALETTE_SPECIAL_CHURN_WIDE,
+            () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive()));
+        specialContainer.addElement(new SliderGradientBackground(this.window, UI_PALETTE_SPECIAL_CHURN_STRENGTH, sizeX, 35, 2, 10, getWaterColorDark, getWaterColor,));
 
 
         // paste container

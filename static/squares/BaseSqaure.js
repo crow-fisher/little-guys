@@ -665,7 +665,7 @@ export class BaseSquare {
         if (!this.shouldFallThisFrame()) {
             return;
         }
-        if (!this.organic) {
+        if (!this.organic && this.speedY >= 0) {
             if (getSquares(this.posX, this.posY + 1).some((sq) => sq.testCollidesWithSquare(this))) {
                 this.speedY = 0;
                 this.speedX = 0;
