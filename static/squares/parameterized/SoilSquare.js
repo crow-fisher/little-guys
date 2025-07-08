@@ -332,9 +332,7 @@ export class SoilSquare extends BaseSquare {
         }
         if (Math.random() < py) {
             this.speedY += Math.round(wy);
-
         }
-
     }
     getWaterflowRate() {
         return cachedGetWaterflowRate(this.sand, this.silt, this.clay);

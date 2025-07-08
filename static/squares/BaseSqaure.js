@@ -690,7 +690,7 @@ export class BaseSquare {
         let finalYPos = this.posY;
         let bonked = false;
         let particleSpeed = Math.sqrt(this.speedX ** 2 + this.speedY ** 2);
-        for (let i = 1; i < this.speedY + 1; i += (1 / this.gravity)) {
+        for (let i = 1; i < this.speedY + 1; i += 1) {
             for (let j = 0; j < Math.abs(this.speedX) + 1; j++) {
                 let jSigned = (this.speedX > 0) ? j : -j;
                 let jSignedMinusOne = (this.speedX == 0 ? 0 : (this.speedX > 0) ? (j - 1) : -(j - 1));
@@ -700,8 +700,8 @@ export class BaseSquare {
                 if (bonkSquare) {
                     finalYPos = this.posY + (i - 1);
                     finalXPos = this.posX + jSignedMinusOne;
-                    this.speedX = 0;
-                    this.speedY = 0;
+                    this.speedX = bonkSquare.speedX;
+                    this.speedY = bonkSquare.speedY;
                     this.offsetY = 0;
                     bonked = true;
                     this.hasBonked = true;
