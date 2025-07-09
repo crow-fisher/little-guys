@@ -446,8 +446,8 @@ function saveGeneral(map, key, value) {
         Object.keys(UI_AUTOCLOSE[key]).forEach((key2) => UI_AUTOCLOSE[key][key2].forEach((key3) => saveGeneral(ROOT[key2], key3, false)));
 
 
-    if (key != UI_CAMERA_EXPOSURE && key != UI_TEXTEDIT_ACTIVE && !(Object.keys(UI_REGEX).some((k) => k == key)))
-        console.log("doing nothing");
+    // if (key != UI_CAMERA_EXPOSURE && key != UI_TEXTEDIT_ACTIVE && !(Object.keys(UI_REGEX).some((k) => k == key)))
+        // console.log("doing nothing");
         // saveGD(UI_TEXTEDIT_ACTIVE, null);
     
     map[key] = value;

@@ -5,6 +5,7 @@ export const COLOR_OTHER_BLUE = "#1053A5";
 export const COLOR_BLUE = "#0093AF";
 export const COLOR_BROWN = "#AF6E4D";
 export const COLOR_BLACK = "#1B1B1B";
+export const COLOR_WHITE = "#CBCBCB";
 export const COLOR_VERY_FUCKING_RED = "#FF0000";
 export const COLOR_GREEN = "#00FF00";
 
