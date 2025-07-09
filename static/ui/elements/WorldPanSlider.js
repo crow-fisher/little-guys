@@ -1,10 +1,12 @@
-import { getBaseSize, getBaseUISize, getCanvasWidth, recacheCanvasPositions } from "../../canvas.js";
-import { calculateColor } from "../../climate/simulation/temperatureHumidity.js";
+import { getBaseSize, getBaseUISize, getCanvasSquaresX, getCanvasWidth, recacheCanvasPositions, setCanvasSquaresX } from "../../canvas.js";
+import { calculateColor, initTemperatureHumidity } from "../../climate/simulation/temperatureHumidity.js";
+import { initWindPressure } from "../../climate/simulation/wind.js";
+import { initWeather } from "../../climate/weather/weatherManager.js";
 import { COLOR_BLACK, COLOR_BLUE, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../colors.js";
 import { randRange } from "../../common.js";
 import { getCurBackgroundColor, getTotalCanvasPixelHeight, getTotalCanvasPixelWidth, MAIN_CONTEXT } from "../../index.js";
 import { getLastMoveEventTime, getLastMoveOffset, isLeftMouseClicked } from "../../mouse.js";
-import { addUIFunctionMap, loadGD, saveGD, UI_CANVAS_VIEWPORT_CENTER_X } from "../UIData.js";
+import { addUIFunctionMap, loadGD, saveGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_GAME_MAX_CANVAS_SQUARES_X } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class WorldPanSlider extends WindowElement {
@@ -58,7 +60,7 @@ export class WorldPanSlider extends WindowElement {
 
         // console.log(t, moveHeight * Math.max(0, 1 - Math.exp(c1 * t - c2)));
         // this.lastRenderOffset += moveHeight * Math.max(0, 1 - Math.exp(c1 * t - c2));
-        
+
         startY -= this.lastRenderOffset;
 
         let gradient = MAIN_CONTEXT.createLinearGradient(startX, startY, this.sizeX + startX, startY);
@@ -97,6 +99,14 @@ export class WorldPanSlider extends WindowElement {
         let v = this.min + (p * (this.max - this.min));
         v = Math.floor(v);
         v -= v % getBaseSize();
+
+        if (p > 0.95) {
+            // setCanvasSquaresX(getCanvasSquaresX() + 250);
+            saveGD(UI_GAME_MAX_CANVAS_SQUARES_X, getCanvasSquaresX() + 250);
+            
+            initWindPressure();
+            initTemperatureHumidity();
+        }
 
         saveGD(this.key, v);
         recacheCanvasPositions();
