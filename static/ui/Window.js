@@ -5,12 +5,13 @@ import { MAIN_CONTEXT } from "../index.js";
 import { getLastMoveOffset, isLeftMouseClicked } from "../mouse.js";
 
 export class Window {
-    constructor(posX, posY, padding, dir, grounded) {
+    constructor(posX, posY, padding, dir, grounded, renderBackground=true) {
         this.container = null;
         this.posX = posX;
         this.posY = posY;
         this.padding = padding;
         this.grounded = grounded;
+        this.renderBackground = renderBackground;
 
         this.sizeX = 0;
         this.sizeY = 0;
@@ -36,6 +37,8 @@ export class Window {
     }
 
     renderWindowBorder() {
+        if (!this.renderBackground)
+            return;
         let size = getBaseUISize() * 0.8;
 
         let py = this.posY + this.sizeY;
@@ -105,6 +108,8 @@ export class Window {
     }
 
     renderWindowFrame() {
+        if (!this.renderBackground)
+            return;
         MAIN_CONTEXT.fillStyle = COLOR_BLACK;
         MAIN_CONTEXT.fillRect(
             this.posX - this.padding, this.posY - this.padding, 

@@ -23,3 +23,8 @@
     font-family: 'courierBoldItalic';
     src: url('./fonts/VeraMoBI.ttf')
 }
+
+
+html { scrollbar-width: none; } /* Firefox */
+body { -ms-overflow-style: none; } /* IE and Edge */
+body::-webkit-scrollbar, body::-webkit-scrollbar-button { display: none; } /* Chrome */

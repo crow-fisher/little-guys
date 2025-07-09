@@ -1,4 +1,4 @@
-import { gameUserStateLoad } from "./saveAndLoad.js";
+import { gameUserStateLoad, saveCurGame } from "./saveAndLoad.js";
 import { resetClimateAndLighting, resetLighting, scheduler_main } from "./main.js";
 import { keydown, keyup } from "./keyboard.js";
 import { getLastMoveOffset, handleClick, handleMouseDown, handleMouseUp, handleTouchEnd, handleTouchMove, handleTouchStart } from "./mouse.js";

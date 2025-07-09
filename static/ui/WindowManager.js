@@ -4,7 +4,7 @@ import { BlockPalette } from "./components/BlockPalette.js";
 import { BlockSubtreeComponent as BlockSubtree } from "./components/BlockSubtreeComponent.js";
 import { TopBarComponent } from "./topbar/TopBarComponent.js";
 import { ViewSubtreeComponent } from "./components/ViewSubtreeComponent.js";
-import { loadGD, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_BLOCK, UI_PALETTE_ACTIVE, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveGD, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_TIME, UI_PALETTE_EYEDROPPER, UI_TOPBAR_WEATHER, UI_MAIN_NEWWORLD, saveUI, UI_UI_SIZE, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_CLIMATE_SELECT_CLOUDS, UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK, UI_PALETTE_SELECT, UI_PALETTE_SOILROCK, UI_PALETTE_MODE_SOIL, UI_PLAYER_SETUP, UI_PLAYER_SETUP_WAYPOINT_NAME, UI_CLIMATE_WEATHER_ACTIVE, UI_PALETTE_STRENGTH, UI_PALETTE_WATER, UI_PALETTE_SURFACE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_COMPOSITION, UI_LIGHTING_ENABLED } from "./UIData.js";
+import { loadGD, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_BLOCK, UI_PALETTE_ACTIVE, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveGD, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_TIME, UI_PALETTE_EYEDROPPER, UI_TOPBAR_WEATHER, UI_MAIN_NEWWORLD, saveUI, UI_UI_SIZE, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_CLIMATE_SELECT_CLOUDS, UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK, UI_PALETTE_SELECT, UI_PALETTE_SOILROCK, UI_PALETTE_MODE_SOIL, UI_PLAYER_SETUP, UI_PLAYER_SETUP_WAYPOINT_NAME, UI_CLIMATE_WEATHER_ACTIVE, UI_PALETTE_STRENGTH, UI_PALETTE_WATER, UI_PALETTE_SURFACE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_COMPOSITION, UI_LIGHTING_ENABLED, UI_WORLDPAN } from "./UIData.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import { PlayerSetupComponent } from "./components/PlayerSetupComponent.js";
 import { getCurMixIdx, getMixArr, getMixArrLen, getTargetMixIdx, setCurMixIdx, setTargetMixIdx } from "../globals.js";
@@ -13,7 +13,6 @@ import { LightingSubtree } from "./components/LightingSubtree.js";
 import { LightingComponent } from "./components/LightingComponent.js";
 import { WeatherSelectionComponent } from "./components/WeatherSelectionComponent.js";
 import { TimeSkipComponent } from "./components/TimeSkipComponent.js";
-import { WorldSetupComponent } from "./components/WorldSetupComponent.js";
 import { CloudControlComponent } from "./components/CloudControlComponent.js";
 import { getLastMouseDown, getLastMoveOffset, isLeftMouseClicked } from "../mouse.js";
 import { MAIN_CONTEXT } from "../index.js";
@@ -23,6 +22,8 @@ import { hexToRgb, rgbToRgba } from "../common.js";
 import { getActiveClimate } from "../climate/climateManager.js";
 import { SoilSquare } from "../squares/parameterized/SoilSquare.js";
 import { getDefaultLighting } from "../lighting/lightingProcessing.js";
+import { WorldPanComponent } from "./components/WorldPanComponent.js";
+import { WorldSetupComponent } from "./components/WorldSetupComponent.js";
 
 let topBarComponent;
 let mainMenuComponent;
@@ -59,6 +60,7 @@ export function initUI() {
     all_components.push(new TimeSkipComponent(() => topBarComponent.getElementXPositionFunc(0, 18 - 5), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_TIME));
     all_components.push(new WeatherSelectionComponent(() => topBarComponent.getElementXPositionFunc(0, 20 - 5), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_WEATHER));
     all_components.push(new WorldSetupComponent(() => getCanvasWidth() / 2, () => getBaseUISize() * 30, 0, 0, UI_MAIN_NEWWORLD));
+    all_components.push(new WorldPanComponent(() => getCanvasWidth() / 2, () => getCanvasHeight() - getBaseUISize() * 10, 0, 0, UI_WORLDPAN));
 }
 
 export function getMainMenuComponent() {
