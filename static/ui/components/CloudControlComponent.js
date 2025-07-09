@@ -1,7 +1,7 @@
-import { getBaseUISize } from "../../canvas.js";
+import { getBaseUISize, getCanvasSquaresY } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { Container } from "../Container.js";
-import { loadUI, UI_CENTER, UI_CLIMATE_RAINFALL_DENSITY, UI_CLIMATE_TOOL_SIZE, UI_CLIMATE_WEATHER_TOOL_CLOUD_HUMIDITY, UI_UI_PHONEMODE } from "../UIData.js";
+import { loadGD, loadUI, UI_CENTER, UI_CLIMATE_RAINFALL_DENSITY, UI_CLIMATE_TOOL_SIZE, UI_CLIMATE_WEATHER_RAIN_TOGGLE, UI_CLIMATE_WEATHER_TOOL_CLOUD_HUMIDITY, UI_SIMULATION_HEIGHT, UI_UI_PHONEMODE } from "../UIData.js";
 import { Slider } from "../elements/Slider.js";
 import {
     UI_CLIMATE_WEATHER_TOOL_DRYAIR,
@@ -15,6 +15,7 @@ import { SliderGradientBackground } from "../elements/SliderGradientBackground.j
 import { TextBackground } from "../elements/TextBackground.js";
 import { TextFunctionalBackground } from "../elements/TextFunctionalBackground.js";
 import { getWaterColorTransformed, NULL } from "./LightingComponent.js";
+import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
 
 export class CloudControlComponent extends Component {
     constructor(posX, posY, padding, dir, key) {
@@ -33,30 +34,33 @@ export class CloudControlComponent extends Component {
 
 
         container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.75), 0.75, " "))
-        container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 3.8, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.66315, "block editor"))
+        container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 3.8, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.66315, "cloud painter"))
         container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""));
 
         let row1 = new Container(this.window, 0, 0);
         let row2 = new Container(this.window, 0, 0);
 
         container.addElement(row1);
+        container.addElement(row2);
+
 
         row1.addElement(new RadioToggle(this.window, halfSizeX, getBaseUISize() * 3, UI_CENTER, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_DRYAIR,
             () => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));
         row1.addElement(new RadioToggle(this.window, halfSizeX, getBaseUISize() * 3, UI_CENTER, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_CLOUD,
             () => getActiveClimate().getUIColorInactiveCustom(0.53), () => getActiveClimate().getUIColorActive()));
+        row2.addElement(new RadioToggleLabel(this.window, halfSizeX, getBaseUISize() * 3, UI_CENTER, "rain off", UI_CLIMATE_WEATHER_RAIN_TOGGLE, 
+        true, () => getActiveClimate().getUIColorInactiveCustom(0.53), () => getActiveClimate().getUIColorActive()));
+        row2.addElement(new RadioToggleLabel(this.window, halfSizeX, getBaseUISize() * 3, UI_CENTER, "rain on", UI_CLIMATE_WEATHER_RAIN_TOGGLE, 
+        false, () => getActiveClimate().getUIColorInactiveCustom(0.58), () => getActiveClimate().getUIColorActive(0.65)));
 
-        container.addElement(new Text(this.window, sizeX, h2, UI_CENTER, "cloud density"));
+        container.addElement(new Text(this.window, sizeX, h2, UI_CENTER, "cloud humidity"));
         container.addElement(new SliderGradientBackground(this.window, UI_CLIMATE_WEATHER_TOOL_CLOUD_HUMIDITY, sizeX, getBaseUISize() * 3, 1.001, 1.05, () => "#000000", () => "#FFF0FF"));
 
-        container.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => "rainfall density", () => getActiveClimate().getUIColorInactiveCustom(0.53)));
-        container.addElement(new SliderGradientBackground(this.window, UI_CLIMATE_RAINFALL_DENSITY, sizeX, getBaseUISize() * 3, 10, 1, () => getWaterColorTransformed(NULL, 0, .5, .5), () => getWaterColorTransformed(NULL, NULL, NULL, 1), true));
+        container.addElement(new Text(this.window, sizeX, h2, UI_CENTER, "cloud puffiness"));
+        container.addElement(new SliderGradientBackground(this.window, UI_CLIMATE_WEATHER_TOOL_STRENGTH, sizeX, getBaseUISize() * 3, 0.01, .5, () => "#000000", () => "#FFF0FF"));
+        container.addElement(new Text(this.window, sizeX, h2, UI_CENTER, "cloud size"));
+        container.addElement(new SliderGradientBackground(this.window, UI_CLIMATE_TOOL_SIZE, sizeX, getBaseUISize() * 3, 1, getCanvasSquaresY(), () => "#000000", () => "#FFF0FF"));
 
-        brushControlRow.addElement(new Slider(this.window, UI_CLIMATE_TOOL_SIZE, halfSizeX, getBaseUISize() * 3, 10, 400, () => getActiveClimate().getUIColorTransient()));
-        brushControlRow.addElement(new Slider(this.window, UI_CLIMATE_WEATHER_TOOL_STRENGTH, halfSizeX, getBaseUISize() * 3, 0.01, 4, () => getActiveClimate().getUIColorTransient()));
-
-        brushLabelRow.addElement(new Text(this.window, halfSizeX, getBaseUISize() * 2, UI_CENTER, "brush size"));
-        brushLabelRow.addElement(new Text(this.window, halfSizeX, getBaseUISize() * 2, UI_CENTER, "brush strength"));
 
         container.addElement(brushLabelRow);
         container.addElement(brushControlRow);

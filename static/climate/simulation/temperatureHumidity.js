@@ -6,7 +6,7 @@ import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquare
 import { logRainFall } from "../weather/weatherManager.js";
 import { getCloudRenderingLighting, getDefaultLighting } from "../../lighting/lightingProcessing.js";
 import { addSquareByName } from "../../manipulation.js";
-import { loadGD, UI_CLIMATE_RAINFALL_DENSITY, UI_VIEWMODE_SELECT, UI_VIEWMODE_WIND } from "../../ui/UIData.js";
+import { loadGD, UI_CLIMATE_RAINFALL_DENSITY, UI_CLIMATE_WEATHER_RAIN_TOGGLE, UI_VIEWMODE_SELECT, UI_VIEWMODE_WIND } from "../../ui/UIData.js";
 import { isLeftMouseClicked, isRightMouseClicked } from "../../mouse.js";
 import { COLOR_VERY_FUCKING_RED, RGB_COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_GREEN, RGB_COLOR_RED } from "../../colors.js";
 import { getTimeScale, millis_per_day } from "../time.js";
@@ -283,14 +283,11 @@ function getAdjacentProp(x, y, func) {
 }
 
 function doRain() {
-    if (getTimeScale() == 0) {
+    if (getTimeScale() == 0 || loadGD(UI_CLIMATE_WEATHER_RAIN_TOGGLE)) {
         return;
     }
     for (let x = getFrameXMinWsq(); x < getFrameXMaxWsq(); x++) {
         for (let y = getFrameYMinWsq(); y < getFrameYMaxWsq(); y++) {
-            let density = Math.exp(loadGD(UI_CLIMATE_RAINFALL_DENSITY));
-            if (Math.random() > (1 / density))
-                return;
             let adjacentHumidity = getAdjacentProp(x, y, getHumidity) / 5;
             if (adjacentHumidity < (cloudRainThresh))
                 continue;
@@ -307,7 +304,7 @@ function doRain() {
             let usedWaterPascalsPerSquare = dropPascals / 5;
             let dropHealth = dropPascals / pascalsPerWaterSquare;
 
-            dropHealth = Math.min(1, dropHealth * density * 12000);
+            dropHealth = Math.min(1, dropHealth * 12000);
 
             let posX = x * 4 + randNumber(0, 3);
             let posY = y * 4 + randNumber(0, 3);
@@ -412,7 +409,7 @@ function renderClouds() {
 }
 
 function tickMaps() {
-    tickMap(temperatureMap, temperatureDiffFunction, updateWindSquareTemperature);
+    // tickMap(temperatureMap, temperatureDiffFunction, updateWindSquareTemperature);
     tickMap(waterSaturationMap, humidityDiffFunction, (x, y, v) => {
         if (v < 0) {
             console.warn("V is less than zero in tickMap!");

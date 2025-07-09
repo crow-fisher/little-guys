@@ -6,9 +6,12 @@ import { Button } from "../elements/Button.js";
 import { EditableText } from "../elements/EditableText.js";
 import { RadioToggle } from "../elements/RadioToggle.js";
 import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
+import { SliderGradientBackground } from "../elements/SliderGradientBackground.js";
 import { Text } from "../elements/Text.js";
+import { TextFunctionalBackground } from "../elements/TextFunctionalBackground.js";
 import { PopupComponent } from "../PopupComponent.js";
-import { UI_CENTER, UI_MAIN_NEWWORLD_TYPE_CLOUDS, UI_MAIN_NEWWORLD_TYPE_BLOCKS, UI_MAIN_NEWWORLD_TYPE_PLANTS, UI_MAIN_NEWWORLD_TYPE_SELECT, UI_MAIN_NEWWORLD_NAME, UI_MAIN_NEWWORLD_SIMHEIGHT, addUIFunctionMap, loadGD, saveGD, UI_MAIN_NEWWORLD_LATITUDE, UI_MAIN_NEWWORLD_LONGITUDE, UI_MAIN_NEWWORLD } from "../UIData.js";
+import { UI_CENTER, UI_MAIN_NEWWORLD_TYPE_CLOUDS, UI_MAIN_NEWWORLD_TYPE_BLOCKS, UI_MAIN_NEWWORLD_TYPE_PLANTS, UI_MAIN_NEWWORLD_TYPE_SELECT, UI_MAIN_NEWWORLD_NAME, UI_MAIN_NEWWORLD_SIMHEIGHT, addUIFunctionMap, loadGD, saveGD, UI_MAIN_NEWWORLD_LATITUDE, UI_MAIN_NEWWORLD_LONGITUDE, UI_MAIN_NEWWORLD, UI_CLIMATE_RAINFALL_DENSITY } from "../UIData.js";
+import { getWaterColorTransformed, NULL } from "./LightingComponent.js";
 export class WorldSetupComponent extends PopupComponent {
     constructor(posXFunc, posYFunc, padding, dir, key) {
         super(posXFunc, posYFunc, padding, dir, key);

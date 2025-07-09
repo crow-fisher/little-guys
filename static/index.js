@@ -58,7 +58,7 @@ export function indexCanvasSize(shouldInitUIClimateAndLighting = true) {
     while (getBaseSize() % 4 != 0 && getBaseSize() > 1)
         setBaseSize(getBaseSize() - 1);
 
-    setCanvasSquaresY(loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y));
+    setCanvasSquaresY(Math.max(Math.ceil(height / getBaseSize())), loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y));
     setCanvasSquaresX(Math.floor(width / getBaseSize()));
 
     MAIN_CANVAS.width = width;
@@ -86,7 +86,7 @@ export function getCurBackgroundColor() {
 }
 
 window.onresize = indexCanvasSize;
-// window.onblur = saveCurGame;
+window.onblur = saveCurGame;
 document.documentElement.style.overflow = 'hidden';  // firefox, chrome
 document.addEventListener('paste', async (e) => {
     e.preventDefault();
