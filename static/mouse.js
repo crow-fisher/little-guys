@@ -57,6 +57,7 @@ export function getLeftMouseUpEvent() {
 
 export function handleMouseDown(e) {
     e.preventDefault();
+    lastMoveEventTime = Date.now();
     if (!isLeftMouseClicked()) {
         lastMouseDownStart = Date.now();
         mouseEventCounter.clear();

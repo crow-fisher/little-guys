@@ -21,7 +21,7 @@ export class WorldPanSlider extends WindowElement {
         this.lastRenderOffset = 0;
         this.lastOpacity = 0;
 
-        this.window.mouseOffsetY = () => this.lastRenderOffset;
+        this.window.mouseOffsetY = () => -this.lastRenderOffset;
     }
 
     render(startX, startY) {
@@ -35,9 +35,8 @@ export class WorldPanSlider extends WindowElement {
             return;
         }
 
-
-        let min = 0.8 * height;
-        let max = 0.9 * height;
+        let min = 0.75 * height;
+        let max = 0.85 * height;
 
         if (y > max) {
             this.lastOpacity = 1;
