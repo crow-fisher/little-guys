@@ -1,5 +1,6 @@
 import { getBaseSize, getBaseUISize } from "../../canvas.js";
 import { Container } from "../Container.js";
+import { Button } from "../elements/Button.js";
 import { WorldPanSlider } from "../elements/WorldPanSlider.js";
 import { LockedComponent } from "../LockedComponent.js";
 import { loadGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_GAME_MAX_CANVAS_SQUARES_X } from "../UIData.js";
@@ -18,6 +19,13 @@ export class WorldPanComponent extends WorldPanLockedComponent {
         let h3 = getBaseUISize() * 2;
         let br = getBaseUISize() * .5;
 
-        container.addElement(new WorldPanSlider(this.window, UI_CANVAS_VIEWPORT_CENTER_X, sizeX, getBaseUISize() * 3, 0, loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) * getBaseSize(), "rgba(50, 50, 50, ", "rgba(50, 50, 50, "));
+        let row = new Container(this.window, 0, 0);
+        container.addElement(row);
+
+        let wps = new WorldPanSlider(this.window, UI_CANVAS_VIEWPORT_CENTER_X, sizeX, getBaseUISize() * 3, 0, loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) * getBaseSize(), "rgba(50, 50, 50, ", "rgba(50, 50, 50, ");
+        row.addElement(wps);
+
+        row.addElement(new Button(this.window, getBaseUISize() * 3, getBaseUISize() * 3, 0, 
+            () => alert("FCK"), "", () => "rgba(50, 50, 50, " + wps.lastOpacity + ");"));
     }
 }

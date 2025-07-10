@@ -107,7 +107,5 @@ export class WorldPanSlider extends WindowElement {
 
         saveGD(this.key, v);
         recacheCanvasPositions();
-
-
     }
 }
