@@ -1,13 +1,9 @@
-import { getBaseSize, getBaseUISize, getCanvasSquaresX, recacheCanvasPositions } from "../../canvas.js";
+import { getBaseSize, getBaseUISize, getCanvasSquaresX } from "../../canvas.js";
 import { indexCanvasSize } from "../../index.js";
-import { iterateOnOrganisms } from "../../organisms/_orgOperations.js";
-import { iterateOnSquares } from "../../squares/_sqOperations.js";
 import { Container } from "../Container.js";
-import { Button } from "../elements/Button.js";
 import { WorldPanButton } from "../elements/WorldPanButton.js";
 import { WorldPanSlider } from "../elements/WorldPanSlider.js";
-import { LockedComponent } from "../LockedComponent.js";
-import { loadGD, saveGD, UI_CANVAS_SQUARES_ZOOM, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CENTER, UI_GAME_MAX_CANVAS_SQUARES_X } from "../UIData.js";
+import { loadGD, saveGD, UI_CANVAS_SQUARES_ZOOM, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CENTER, UI_GAME_MAX_CANVAS_SQUARES_X, UI_PALETTE_SELECT } from "../UIData.js";
 import { WorldPanContainer } from "../WorldPanContainer.js";
 import { WorldPanLockedComponent } from "../WorldPanLockedComponent.js";
 export class WorldPanComponent extends WorldPanLockedComponent {
@@ -34,15 +30,20 @@ export class WorldPanComponent extends WorldPanLockedComponent {
                 let startCamY = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y);
                 let startZoom = loadGD(UI_CANVAS_SQUARES_ZOOM);
 
-                saveGD(UI_GAME_MAX_CANVAS_SQUARES_X, loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) + getCanvasSquaresX());
+                let start = loadGD(UI_PALETTE_SELECT);
+
+                saveGD(UI_PALETTE_SELECT, null);
+
+                saveGD(UI_GAME_MAX_CANVAS_SQUARES_X, loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) + getCanvasSquaresX() * 0.5);
                 indexCanvasSize();
 
-                saveGD(UI_CANVAS_VIEWPORT_CENTER_X, startCamX + (getBaseSize() * getCanvasSquaresX() * 0.5));
+                saveGD(UI_CANVAS_VIEWPORT_CENTER_X, startCamX + (getBaseSize() * getCanvasSquaresX() * .25));
                 saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, startCamY);
                 saveGD(UI_CANVAS_SQUARES_ZOOM, startZoom);
 
-                recacheCanvasPositions();
+                setTimeout(() => saveGD(UI_PALETTE_SELECT, start), 250);
 
             }, "+", "rgba(180, 180, 180,", 1.5));
     }
 }
+

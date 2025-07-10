@@ -18,7 +18,7 @@ export function createSunLightGroup() {
     let sunLightGroup = new StationaryWideLightGroup(
         loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) / 2,
         -loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y),
-        1000,
+        loadGD(UI_GAME_MAX_CANVAS_SQUARES_X),
         numNodes,
         getCurrentLightColorTemperature,
         () => Math.exp(loadGD(UI_LIGHTING_SUN)) * getDaylightStrength() / numNodes
