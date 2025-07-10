@@ -1,4 +1,4 @@
-import { getBaseSize, getBaseUISize, getCanvasSquaresX } from "../../canvas.js";
+import { getBaseSize, getBaseUISize, getCanvasSquaresX, recacheCanvasPositions } from "../../canvas.js";
 import { indexCanvasSize } from "../../index.js";
 import { Container } from "../Container.js";
 import { WorldPanButton } from "../elements/WorldPanButton.js";
@@ -40,6 +40,7 @@ export class WorldPanComponent extends WorldPanLockedComponent {
                 saveGD(UI_CANVAS_VIEWPORT_CENTER_X, startCamX + (getBaseSize() * getCanvasSquaresX() * .25));
                 saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, startCamY);
                 saveGD(UI_CANVAS_SQUARES_ZOOM, startZoom);
+                recacheCanvasPositions();
 
                 setTimeout(() => saveGD(UI_PALETTE_SELECT, start), 250);
 

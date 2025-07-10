@@ -86,7 +86,7 @@ export function getCurBackgroundColor() {
 }
 
 window.onresize = indexCanvasSize;
-window.onblur = saveCurGame;
+// window.onblur = saveCurGame;
 document.documentElement.style.overflow = 'hidden';  // firefox, chrome
 document.addEventListener('paste', async (e) => {
     e.preventDefault();
