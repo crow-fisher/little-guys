@@ -6,7 +6,7 @@ import { loadGD, saveGD, UI_CENTER } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class WorldPanButton extends WindowElement {
-    constructor(window, sizeX, sizeY, offsetX, func, label, colorFunc, textSizeMult=0.75) {
+    constructor(window, sizeX, sizeY, offsetX, func, label, color, textSizeMult=0.75) {
         super(window, sizeX, sizeY);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
@@ -14,7 +14,7 @@ export class WorldPanButton extends WindowElement {
         this.func = func;
         this.label = label;
         this.lastClick = 0;
-        this.colorFunc = colorFunc;
+        this.color = color;
         this.textSizeMult = textSizeMult;
         this.lastRenderOffset = 0;
     }
@@ -23,12 +23,12 @@ export class WorldPanButton extends WindowElement {
         return [this.sizeX, this.sizeY];
     }
 
-    render(startX, startY) {
+    render(startX, startY, opacity) {
         startY -= this.lastRenderOffset;
 
         MAIN_CONTEXT.font = this.sizeY * this.textSizeMult + "px courier"
         MAIN_CONTEXT.textBaseline = 'middle';
-        MAIN_CONTEXT.fillStyle = this.colorFunc();
+        MAIN_CONTEXT.fillStyle = this.color + opacity + ")";
         MAIN_CONTEXT.fillRect(startX, startY, this.sizeX, this.sizeY);
         MAIN_CONTEXT.fillStyle = COLOR_BLACK;
 

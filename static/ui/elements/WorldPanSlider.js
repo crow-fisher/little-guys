@@ -64,11 +64,6 @@ export class WorldPanSlider extends WindowElement {
         v = Math.floor(v);
         v -= v % getBaseSize();
 
-        if (p > 0.95) {
-            saveGD(UI_GAME_MAX_CANVAS_SQUARES_X, loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) + getCanvasSquaresX());
-            indexCanvasSize();
-        }
-
         saveGD(this.key, v);
         recacheCanvasPositions();
     }
