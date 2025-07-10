@@ -52,7 +52,7 @@ export class WorldPanContainer {
             this.lastOpacity = (y - min) / (max - min);
         }
 
-        let moveHeight = 1.5 * this.sizeY;
+        let moveHeight = Math.SQRT2 * this.sizeY;
 
         // exponential decay 
         let c1 = .01;

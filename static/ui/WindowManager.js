@@ -60,7 +60,7 @@ export function initUI() {
     all_components.push(new TimeSkipComponent(() => topBarComponent.getElementXPositionFunc(0, 18 - 5), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_TIME));
     all_components.push(new WeatherSelectionComponent(() => topBarComponent.getElementXPositionFunc(0, 20 - 5), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_WEATHER));
     all_components.push(new WorldSetupComponent(() => getCanvasWidth() / 2, () => getBaseUISize() * 30, 0, 0, UI_MAIN_NEWWORLD));
-    all_components.push(new WorldPanComponent(() => getCanvasWidth() / 2, () => getCanvasHeight() - getBaseUISize() * 10, 0, 0, UI_WORLDPAN));
+    all_components.push(new WorldPanComponent(() => getCanvasWidth() / 2, () => getCanvasHeight() - getBaseUISize() * 4, 0, 0, UI_WORLDPAN));
 }
 
 export function getMainMenuComponent() {

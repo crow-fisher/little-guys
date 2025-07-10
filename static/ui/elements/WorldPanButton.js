@@ -30,15 +30,10 @@ export class WorldPanButton extends WindowElement {
         MAIN_CONTEXT.textBaseline = 'middle';
         MAIN_CONTEXT.fillStyle = this.color + opacity + ")";
         MAIN_CONTEXT.fillRect(startX, startY, this.sizeX, this.sizeY);
-        MAIN_CONTEXT.fillStyle = COLOR_BLACK;
+        MAIN_CONTEXT.fillStyle = "rgba(30, 30, 30, " + opacity + ")";
+        MAIN_CONTEXT.textAlign = 'center';
+        MAIN_CONTEXT.fillText(this.label, startX + this.sizeX / 2, startY + this.sizeY / 1.6);
 
-        if (this.offsetX == UI_CENTER) {
-            MAIN_CONTEXT.textAlign = 'center';
-            MAIN_CONTEXT.fillText(this.label, startX + this.sizeX / 2, startY + this.sizeY / 2);
-        } else {
-            MAIN_CONTEXT.textAlign = 'left';
-            MAIN_CONTEXT.fillText(this.label, startX + this.offsetX, startY + this.sizeY / 2);
-        }
         return [this.sizeX, this.sizeY];
     }
 

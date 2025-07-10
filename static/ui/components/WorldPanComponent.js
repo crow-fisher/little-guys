@@ -1,11 +1,13 @@
 import { getBaseSize, getBaseUISize, getCanvasSquaresX, recacheCanvasPositions } from "../../canvas.js";
 import { indexCanvasSize } from "../../index.js";
+import { iterateOnOrganisms } from "../../organisms/_orgOperations.js";
+import { iterateOnSquares } from "../../squares/_sqOperations.js";
 import { Container } from "../Container.js";
 import { Button } from "../elements/Button.js";
 import { WorldPanButton } from "../elements/WorldPanButton.js";
 import { WorldPanSlider } from "../elements/WorldPanSlider.js";
 import { LockedComponent } from "../LockedComponent.js";
-import { loadGD, saveGD, UI_CANVAS_SQUARES_ZOOM, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_GAME_MAX_CANVAS_SQUARES_X } from "../UIData.js";
+import { loadGD, saveGD, UI_CANVAS_SQUARES_ZOOM, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CENTER, UI_GAME_MAX_CANVAS_SQUARES_X } from "../UIData.js";
 import { WorldPanContainer } from "../WorldPanContainer.js";
 import { WorldPanLockedComponent } from "../WorldPanLockedComponent.js";
 export class WorldPanComponent extends WorldPanLockedComponent {
@@ -25,12 +27,8 @@ export class WorldPanComponent extends WorldPanLockedComponent {
         let row = new WorldPanContainer(this.window, getBaseUISize() * 1, 0);
         container.addElement(row);
 
-        row.addElement(new WorldPanButton(this.window, getBaseUISize() * 3, getBaseUISize() * 3, 0, 
-            () => alert("FCK"), "", "rgba(50, 50, 50,"));
-
         row.addElement(new WorldPanSlider(this.window, UI_CANVAS_VIEWPORT_CENTER_X, sizeX, getBaseUISize() * 3, 0, loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) * getBaseSize(), "rgba(50, 50, 50, ", "rgba(50, 50, 50, "));
-
-        row.addElement(new WorldPanButton(this.window, getBaseUISize() * 3, getBaseUISize() * 3, 0, 
+        row.addElement(new WorldPanButton(this.window, getBaseUISize() * 3, getBaseUISize() * 3, UI_CENTER, 
             () => {
                 let startCamX = loadGD(UI_CANVAS_VIEWPORT_CENTER_X);
                 let startCamY = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y);
@@ -45,6 +43,6 @@ export class WorldPanComponent extends WorldPanLockedComponent {
 
                 recacheCanvasPositions();
 
-            }, "", "rgba(50, 50, 50,"));
+            }, "+", "rgba(180, 180, 180,", 1.5));
     }
 }
