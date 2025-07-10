@@ -4,7 +4,7 @@ import { initWindPressure } from "../../climate/simulation/wind.js";
 import { initWeather } from "../../climate/weather/weatherManager.js";
 import { COLOR_BLACK, COLOR_BLUE, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../colors.js";
 import { randRange } from "../../common.js";
-import { getCurBackgroundColor, getTotalCanvasPixelHeight, getTotalCanvasPixelWidth, MAIN_CONTEXT } from "../../index.js";
+import { getCurBackgroundColor, getTotalCanvasPixelHeight, getTotalCanvasPixelWidth, indexCanvasSize, MAIN_CONTEXT } from "../../index.js";
 import { getLastMoveEventTime, getLastMoveOffset, isLeftMouseClicked } from "../../mouse.js";
 import { addUIFunctionMap, loadGD, saveGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_GAME_MAX_CANVAS_SQUARES_X } from "../UIData.js";
 import { WindowElement } from "../Window.js";
@@ -101,11 +101,8 @@ export class WorldPanSlider extends WindowElement {
         v -= v % getBaseSize();
 
         if (p > 0.95) {
-            // setCanvasSquaresX(getCanvasSquaresX() + 250);
-            saveGD(UI_GAME_MAX_CANVAS_SQUARES_X, getCanvasSquaresX() + 250);
-            
-            initWindPressure();
-            initTemperatureHumidity();
+            saveGD(UI_GAME_MAX_CANVAS_SQUARES_X, loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) + getCanvasSquaresX());
+            indexCanvasSize();
         }
 
         saveGD(this.key, v);
