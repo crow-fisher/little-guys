@@ -20,52 +20,16 @@ export class WorldPanSlider extends WindowElement {
         this.minColor = minColor;
         this.maxColor = maxColor;
         this.renderSkyBackground = renderSkyBackground;
-        this.lastRenderOffset = 0;
-        this.lastOpacity = 0;
-
-        this.window.mouseOffsetY = () => -this.lastRenderOffset;
     }
 
-    render(startX, startY) {
-        let lastMoveOffset = getLastMoveOffset();
-        if (lastMoveOffset == null)
-            return;
-        let y = lastMoveOffset.y;
-        let height = getTotalCanvasPixelHeight();
-
-        if (lastMoveOffset == null || y > height || y < height / 2) {
-            return;
-        }
-
-        let min = 0.75 * height;
-        let max = 0.85 * height;
-
-        if (y > max) {
-            this.lastOpacity = 1;
-        } else {
-            this.lastOpacity = (y - min) / (max - min);
-        }
-
-        let moveHeight = 1.5 * this.sizeY;
-
-        // exponential decay 
-        let c1 = .01;
-        let c2 = 12; 
-        let t = Date.now() - getLastMoveEventTime();
-
-        let expFrac = Math.max(0, 1 - Math.exp(c1 * t - c2));
-        this.lastOpacity *= expFrac;
-
-        this.lastRenderOffset = moveHeight * this.lastOpacity;
-
+    render(startX, startY, opacity) {
         // console.log(t, moveHeight * Math.max(0, 1 - Math.exp(c1 * t - c2)));
         // this.lastRenderOffset += moveHeight * Math.max(0, 1 - Math.exp(c1 * t - c2));
 
-        startY -= this.lastRenderOffset;
 
         let gradient = MAIN_CONTEXT.createLinearGradient(startX, startY, this.sizeX + startX, startY);
-        gradient.addColorStop(0, this.minColor + this.lastOpacity + ")");
-        gradient.addColorStop(1, this.maxColor + this.lastOpacity + ")");
+        gradient.addColorStop(0, this.minColor + opacity + ")");
+        gradient.addColorStop(1, this.maxColor + opacity + ")");
         MAIN_CONTEXT.fillStyle = gradient;
         MAIN_CONTEXT.fillRect(startX, startY, this.sizeX, this.sizeY);
 
@@ -74,9 +38,9 @@ export class WorldPanSlider extends WindowElement {
         let lerp = invlerp * this.sizeX;
 
         let lineWidth = getBaseUISize() * 0.1;
-        MAIN_CONTEXT.strokeStyle =  "rgba(35, 35, 35, " + this.lastOpacity + ")";
-        MAIN_CONTEXT.fillStyle = "rgba(195, 195, 195, " + this.lastOpacity + ")";
-        MAIN_CONTEXT.lineWidth = lineWidth * this.lastOpacity;
+        MAIN_CONTEXT.strokeStyle =  "rgba(35, 35, 35, " + opacity + ")";
+        MAIN_CONTEXT.fillStyle = "rgba(195, 195, 195, " + opacity + ")";
+        MAIN_CONTEXT.lineWidth = lineWidth * opacity;
         MAIN_CONTEXT.strokeRect((startX + lineWidth /2) + lerp - (blockSize / 2), startY + (lineWidth / 2), blockSize - lineWidth, this.sizeY - (lineWidth));
         MAIN_CONTEXT.fillRect((startX + lineWidth /2) + lerp - (blockSize / 2), startY + (lineWidth / 2), blockSize - lineWidth, this.sizeY - (lineWidth));
 

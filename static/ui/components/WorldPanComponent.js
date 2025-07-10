@@ -4,6 +4,7 @@ import { Button } from "../elements/Button.js";
 import { WorldPanSlider } from "../elements/WorldPanSlider.js";
 import { LockedComponent } from "../LockedComponent.js";
 import { loadGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_GAME_MAX_CANVAS_SQUARES_X } from "../UIData.js";
+import { WorldPanContainer } from "../WorldPanContainer.js";
 import { WorldPanLockedComponent } from "../WorldPanLockedComponent.js";
 export class WorldPanComponent extends WorldPanLockedComponent {
     constructor(posXFunc, posYFunc, padding, dir, key) {
@@ -19,7 +20,7 @@ export class WorldPanComponent extends WorldPanLockedComponent {
         let h3 = getBaseUISize() * 2;
         let br = getBaseUISize() * .5;
 
-        let row = new Container(this.window, 0, 0);
+        let row = new WorldPanContainer(this.window, 0, 0);
         container.addElement(row);
 
         let wps = new WorldPanSlider(this.window, UI_CANVAS_VIEWPORT_CENTER_X, sizeX, getBaseUISize() * 3, 0, loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) * getBaseSize(), "rgba(50, 50, 50, ", "rgba(50, 50, 50, ");
