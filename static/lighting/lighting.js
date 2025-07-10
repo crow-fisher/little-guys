@@ -31,7 +31,7 @@ export function createMoonLightGroup() {
     let moonLightGroup = new StationaryWideLightGroup(
         loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) / 2,
         -loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y),
-        50,
+        loadGD(UI_GAME_MAX_CANVAS_SQUARES_X),
         Math.ceil(loadGD(UI_LIGHTING_QUALITY) / 2),
         getMoonlightColor,
         () => Math.exp(loadGD(UI_LIGHTING_MOON)) / numNodes
