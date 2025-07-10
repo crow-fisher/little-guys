@@ -7,7 +7,7 @@ import {
 import { getObjectArrFromMap } from "./common.js";
 import { removeItemAll } from "./common.js";
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, getFrameXMax, getFrameXMin, getFrameYMax, getFrameYMin, isSquareOnCanvas, zoomCanvasFillRect } from "./canvas.js";
-import { saveGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "./ui/UIData.js";
+import { loadGD, saveGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "./ui/UIData.js";
 import { indexCanvasSize, MAIN_CANVAS, MAIN_CONTEXT } from "./index.js";
 import { resetFrameGroupCache, waterGraphReset } from "./waterGraph.js";
 import { COLOR_BLUE, COLOR_VERY_FUCKING_RED, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "./colors.js";
@@ -117,6 +117,8 @@ export function removeSquare(sq) {
 
 export function purgeCanvasFrameLimit() {
     let rootKeys = ALL_SQUARES.keys();
+    let curX = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) / getBaseSize();
+    let end = Math.ceil(curX + getCanvasSquaresX())
     rootKeys.forEach((key) => {
         let subkeys = ALL_SQUARES.get(key).keys();
         subkeys.forEach((subkey) => {
@@ -126,7 +128,7 @@ export function purgeCanvasFrameLimit() {
             ALL_SQUARES.get(key).get(subkey).forEach((sq) => sq.destroy(true));
             ALL_SQUARES.get(key).delete(subkey);
         });
-        if (key < 0 || key >= getCanvasSquaresX()) {
+        if (key < 0 || key >= (curX + getCanvasSquaresX())) {
             subkeys.forEach((subkey) => {
                 ALL_SQUARES.get(key).get(subkey).forEach((sq) => sq.destroy(true));
                 ALL_SQUARES.get(key).delete(subkey);
@@ -134,7 +136,7 @@ export function purgeCanvasFrameLimit() {
             ALL_SQUARES.delete(key);
         }
     });
-    saveGD(UI_GAME_MAX_CANVAS_SQUARES_X, getCanvasSquaresX() + 1);
+    saveGD(UI_GAME_MAX_CANVAS_SQUARES_X, end);
     saveGD(UI_GAME_MAX_CANVAS_SQUARES_Y, getCanvasSquaresY() + 1);
     indexCanvasSize();
 }
