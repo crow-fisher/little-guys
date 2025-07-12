@@ -4,7 +4,7 @@ import { getTemperatureMap, getWaterSaturationMap } from "./climate/simulation/t
 import { getCurDay, setCurDay } from "./climate/time.js";
 import { ProtoMap, TypeMap } from "./types.js";
 import { getWindPressureMap } from "./climate/simulation/wind.js";
-import { getGAMEDATA, getUICONFIG, loadGD, loadUI, saveGD, saveMapEntry, saveUI, setGAMEDATA, setUICONFIG, UI_LIGHTING_ENABLED, UI_MAIN_NEWWORLD, UI_MAIN_NEWWORLD_LATITUDE, UI_MAIN_NEWWORLD_LONGITUDE, UI_MAIN_NEWWORLD_NAME, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_NAME, UI_SIMULATION_CLOUDS, UI_SIMULATION_HEIGHT, UI_TOPBAR_BLOCK, UI_TOPBAR_LIGHTING, UI_TOPBAR_MAINMENU, UI_TOPBAR_SIMULATION, UI_TOPBAR_TIME, UI_TOPBAR_VIEWMODE, UI_UI_CURWORLD, UI_UI_LASTSAVED, UI_UI_NEXTWORLD, UI_UI_SIZE, UI_UI_WORLDDELETED, UI_UI_WORLDHIDDEN, UI_UI_WORLDNAME, UI_UI_WORLDPAGE, UICONFIG } from "./ui/UIData.js";
+import { _GAMEDATA_DEFAULT, _UI_DEFAULT, getGAMEDATA, getUICONFIG, loadGD, loadUI, saveGD, saveMapEntry, saveUI, setGAMEDATA, setUICONFIG, UI_LIGHTING_ENABLED, UI_MAIN_NEWWORLD, UI_MAIN_NEWWORLD_LATITUDE, UI_MAIN_NEWWORLD_LONGITUDE, UI_MAIN_NEWWORLD_NAME, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_NAME, UI_SIMULATION_CLOUDS, UI_SIMULATION_HEIGHT, UI_TOPBAR_BLOCK, UI_TOPBAR_LIGHTING, UI_TOPBAR_MAINMENU, UI_TOPBAR_SIMULATION, UI_TOPBAR_TIME, UI_TOPBAR_VIEWMODE, UI_UI_CURWORLD, UI_UI_LASTSAVED, UI_UI_NEXTWORLD, UI_UI_SIZE, UI_UI_WORLDDELETED, UI_UI_WORLDHIDDEN, UI_UI_WORLDNAME, UI_UI_WORLDPAGE, UICONFIG } from "./ui/UIData.js";
 import { getTotalCanvasPixelWidth, indexCanvasSize } from "./index.js";
 import { STAGE_DEAD } from "./organisms/Stages.js";
 import { getMainMenuComponent, initUI } from "./ui/WindowManager.js";
@@ -232,12 +232,12 @@ function getFrameSaveData() {
                 });
                 org.lifeSquares = Array.from(org.lifeSquares.map((lsq) => lsqArr.indexOf(lsq)));
                 org.originGrowth = growthPlanComponentArr.indexOf(org.originGrowth);
-                
+
                 if (org.greenType != null)
                     org.greenType = org.greenType.name;
                 if (org.rootType != null)
                     org.rootType = org.rootType.name;
-                
+
                 return org;
             } else {
                 org.destroy();
@@ -248,7 +248,7 @@ function getFrameSaveData() {
         sq.linkedOrganismSquares = Array.from(sq.linkedOrganismSquares.map((lsq) => lsqArr.indexOf(lsq)));
         sqArr.push(sq)
     });
-    
+
     growthPlanStepArr.forEach((gps) => {
         gps.growthPlan = growthPlanArr.indexOf(gps.growthPlan);
         gps.completedSquare = lsqArr.indexOf(gps.completedSquare);
@@ -418,6 +418,16 @@ async function decompress(base64String) {
     return decoder.decode(decompressedArrayBuffer);
 }
 
+export function deleteAllSaveData() {
+    window.indexedDB.databases().then((r) => {
+        for (var i = 0; i < r.length; i++) window.indexedDB.deleteDatabase(r[i].name);
+    }).then(() => {
+        alert('All save data cleared.');
+    });
+    loadEmptyScene();
+    setGAMEDATA(structuredClone(_GAMEDATA_DEFAULT));
+    setUICONFIG(structuredClone(_UI_DEFAULT));
+}
 
 
 export function loadEmptyScene() {

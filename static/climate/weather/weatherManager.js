@@ -60,7 +60,7 @@ function spawnNimbusCloud(rainFactor) {
         randRangeFactor(getFrameYMinWsq(), getFrameYMaxWsq(), 0.1),
         cloudXSize(.4, .7), cloudYSize(),
         getCurDay(), cloudDuration(),
-        2, rainFactor * randRange(.005, .02)));
+        2, rainFactor * randRange(.01, .04)));
 }
 
 function spawnWindGust(airPressure) {

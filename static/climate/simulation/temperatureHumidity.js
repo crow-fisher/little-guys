@@ -292,6 +292,9 @@ function doRain() {
             if (adjacentHumidity < (cloudRainThresh))
                 continue;
             let rainDropProbability = ((adjacentHumidity - cloudRainThresh) / (cloudRainMax - cloudRainThresh));
+
+            rainDropProbability /= 10;
+
             if (Math.random() > rainDropProbability) {
                 continue;
             }
@@ -299,7 +302,7 @@ function doRain() {
             let expectedPascals = saturationPressureOfWaterVapor(adjacentTemperature) * cloudRainThresh;
             let adjacentPascals = getAdjacentProp(x, y, (x, y) => waterSaturationMap[x][y]) / 5;
 
-            let dropPascals = (adjacentPascals - expectedPascals) * 0.005;
+            let dropPascals = (adjacentPascals - expectedPascals) * 0.05;
 
             let usedWaterPascalsPerSquare = dropPascals / 5;
             let dropHealth = dropPascals / pascalsPerWaterSquare;
