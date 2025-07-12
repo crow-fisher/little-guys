@@ -208,13 +208,13 @@ class BaseOrganism {
             (accumulator, currentValue) => accumulator + currentValue,
             0);
 
-        this.waterPressure -= 3 * this.waterPressureChangeRate;
+        this.waterPressure -= 2 * this.waterPressureChangeRate;
 
         this.waterPressure += this.waterPressureChangeRate * roots.filter((lsq) => lsq.linkedSquare != null && lsq.linkedSquare.proto == "SoilSquare")
             .map((lsq) => {
                 let sq = lsq.linkedSquare;
                 let sqWaterPressure = sq.getSoilWaterPressure();
-                let diffToTarget = sqWaterPressure - this.waterPressureSoilTarget();
+                let diffToTarget = sqWaterPressure - (this.waterPressureSoilTarget() + this.waterPressureWiltThresh());
                 if (diffToTarget <= 0) {
                     return 0;
                 }
@@ -225,7 +225,7 @@ class BaseOrganism {
             .reduce((a, b) => a + b, 0);
 
         if (this.waterPressure > this.waterPressureTarget) {
-            this.waterPressure -= 4 * this.waterPressureChangeRate;
+            this.waterPressure -= 4 * this.getWilt() * this.waterPressureChangeRate;
         }
     }
 

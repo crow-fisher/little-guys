@@ -69,7 +69,7 @@ export function lightingExposureAdjustment() {
     iterateOnOrganisms((org) => 
         org.lifeSquares
             .filter((lsq) => lsq.type == "green")
-            .filter((lsq) => Math.random() > 0.99)
+            .filter((lsq) => Math.random() > 0.9)
             .forEach((lsq) => (collectedSquares.push(lsq))));
 
     if (collectedSquares.length == 0) {
