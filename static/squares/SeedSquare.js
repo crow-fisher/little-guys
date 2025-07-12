@@ -20,43 +20,10 @@ class SeedSquare extends BaseSquare {
     }
     gravityPhysics() {
         super.gravityPhysics();
-
         if (this.linkedOrganisms.length == 0) {
             this.destroy();
             return;
         }
-
-        let rockable = this.linkedOrganisms.at(0).rockable;
-        
-        let sq = getSquares(Math.round(this.posX), Math.round(this.posY + randNumber(2, 5)))
-            .find((sq) => (rockable ? (sq.proto == "SoilSquare" || sq.proto == "RockSquare") : sq.proto == "SoilSquare"));
-        if (sq == null) {
-            let rockSq = getSquares(this.posX, this.posY + randNumber(2, 5))
-                .find((sq) => sq.proto == "RockSquare");
-            if (rockSq != null) {
-                this.destroy(true);
-                return;
-            }
-            this.seedWindPhysics();
-            return;
-        }
-
-        this.updatePosition(Math.round(this.posX), Math.round(this.posY));
-        
-        if (sq.linkedOrganismSquares.some((lsq) => {
-            let myOrg = this.linkedOrganisms.at(0);
-            return lsq.proto == myOrg.getSproutTypeProto();
-        })) {
-            this.destroy(true);
-            console.log("Destroying; found a root or something here that")
-            return;
-        } 
-
-        this.linkedOrganisms.forEach((org) => {
-            org.unlinkSquare(org.linkedSquare);
-            org.posY += 1;
-            org.linkSquare(sq);
-        });
     }
 
     seedWindPhysics() {

@@ -3,6 +3,8 @@ import { SeedLifeSquare } from "../lifeSquares/SeedLifeSquare.js";
 import { getCurDay, getDt, getTimeScale } from "../climate/time.js";
 import { loadGD, UI_SIMULATION_GENS_PER_DAY } from "../ui/UIData.js";
 import { getCurPlantConfiguratorVal } from "../ui/elements/SliderGradientBackgroundPlantConfigurator.js";
+import { getSquares } from "../squares/_sqOperations.js";
+import { randNumber } from "../common.js";
 
 class BaseSeedOrganism extends BaseOrganism {
     constructor(square, evolutionParameters = null) {
@@ -51,6 +53,36 @@ class BaseSeedOrganism extends BaseOrganism {
                 this.applyEvolutionParameters(new (this.getSproutType())(linkedSquareCache));
             }
         }
+        this.plantSeedPhysics();
+    }
+
+    plantSeedPhysics() {
+        if (this.linkedSquare.proto != "SeedSquare")
+            return;
+        
+        let sq = getSquares(Math.round(this.posX), Math.round(this.posY + randNumber(2, 5)))
+            .find((sq) => (this.rockable ? (sq.proto == "SoilSquare" || sq.proto == "RockSquare") : sq.proto == "SoilSquare"));
+        if (sq == null) {
+            let rockSq = getSquares(this.posX, this.posY + randNumber(2, 5))
+                .find((sq) => sq.proto == "RockSquare");
+            if (rockSq != null) {
+                this.destroy(true);
+                return;
+            }
+            return;
+        }
+
+        if (sq.linkedOrganismSquares.some((lsq) => lsq.proto == this.getSproutTypeProto())) {
+            console.log("Destroying; found an org here of the same proto")
+            this.linkedSquare.destroy(true);
+            return;
+        }
+        let origSq = this.linkedSquare;
+        this.unlinkSquare(true);
+        origSq.destroy(false);
+        this.posX = sq.posX;
+        this.posY = sq.posY;
+        this.linkSquare(sq);
     }
 
     applyEvolutionParameters(org) {
