@@ -98,7 +98,7 @@ export class StationaryWideLightGroup extends LightGroup {
                 10 ** 8,
                 minMaxTheta[0],
                 minMaxTheta[1],
-                Math.ceil((100 / 7) * loadGD(UI_LIGHTING_QUALITY))
+                Math.ceil((300 / 7) * loadGD(UI_LIGHTING_QUALITY))
             );
             this.lightSources.push(newLightSource);
         }

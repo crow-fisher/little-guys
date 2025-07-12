@@ -351,8 +351,8 @@ export class ConeflowerOrganism extends BaseOrganism {
         }
         let seedSquare = addSquare(new SeedSquare(startNode.getPosX(), startNode.getPosY()));
         if (seedSquare) {
-            seedSquare.speedX = Math.random() > 0.5 ? -1 : 1 * randRange(0.5, 1);
-            seedSquare.speedY = randRange(-.5, .5);
+            seedSquare.speedX = randRange(-3, 3);
+            seedSquare.speedY = randRange(-3, .5);
             let orgAdded = new ConeflowerSeedOrganism(seedSquare, this.getNextGenetics());
             if (!orgAdded) {
                 seedSquare.destroy();

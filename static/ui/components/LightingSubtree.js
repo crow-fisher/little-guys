@@ -50,7 +50,7 @@ export class LightingSubtree extends SubTreeComponent {
         subMenuContainer.addElement(row3);
         subMenuContainer.addElement(row4);
 
-        row3.addElement(new RadioToggleLabel(this.window, radioSizeX + (textAlignOffsetX / 2), getBaseUISize() * 3, UI_CENTER, "ultra", UI_LIGHTING_QUALITY, 15,
+        row3.addElement(new RadioToggleLabel(this.window, radioSizeX + (textAlignOffsetX / 2), getBaseUISize() * 3, UI_CENTER, "ultra", UI_LIGHTING_QUALITY, 11,
         () => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));
         row3.addElement(new RadioToggleLabel(this.window, radioSizeX + (textAlignOffsetX / 2), getBaseUISize() * 3, UI_CENTER, "high", UI_LIGHTING_QUALITY, 7,
         () => getActiveClimate().getUIColorInactiveCustom(0.53), () => getActiveClimate().getUIColorActive()));
