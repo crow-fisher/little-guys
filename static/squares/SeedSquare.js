@@ -1,7 +1,7 @@
 import { BaseSquare } from "./BaseSqaure.js";
     
 import { getSquares } from "./_sqOperations.js";
-import { randRange } from "../common.js";
+import { randNumber, randRange } from "../common.js";
 import { getWindSpeedAtLocation } from "../climate/simulation/wind.js";
 class SeedSquare extends BaseSquare {
     constructor(posX, posY) {
@@ -28,10 +28,10 @@ class SeedSquare extends BaseSquare {
 
         let rockable = this.linkedOrganisms.at(0).rockable;
         
-        let sq = getSquares(Math.round(this.posX), Math.round(this.posY + 1))
+        let sq = getSquares(Math.round(this.posX), Math.round(this.posY + randNumber(2, 5)))
             .find((sq) => (rockable ? (sq.proto == "SoilSquare" || sq.proto == "RockSquare") : sq.proto == "SoilSquare"));
         if (sq == null) {
-            let rockSq = getSquares(this.posX, this.posY + 1)
+            let rockSq = getSquares(this.posX, this.posY + randNumber(2, 5))
                 .find((sq) => sq.proto == "RockSquare");
             if (rockSq != null) {
                 this.destroy(true);

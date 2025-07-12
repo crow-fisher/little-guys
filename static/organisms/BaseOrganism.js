@@ -207,6 +207,9 @@ class BaseOrganism {
         let numRoots = roots.map((lsq) => 1).reduce(
             (accumulator, currentValue) => accumulator + currentValue,
             0);
+
+        this.waterPressure -= 3 * this.waterPressureChangeRate;
+
         this.waterPressure += this.waterPressureChangeRate * roots.filter((lsq) => lsq.linkedSquare != null && lsq.linkedSquare.proto == "SoilSquare")
             .map((lsq) => {
                 let sq = lsq.linkedSquare;
@@ -215,14 +218,14 @@ class BaseOrganism {
                 if (diffToTarget <= 0) {
                     return 0;
                 }
-                sq.waterContainment -= (2 / (numRoots * this.waterPressureLossRate));
-                return (diffToTarget / numRoots);
+                let amount = (diffToTarget / numRoots);
+                // sq.waterContainment -= amount;
+                return amount;
             })
-            .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-        this.waterPressure -= this.waterPressureChangeRate;
+            .reduce((a, b) => a + b, 0);
 
         if (this.waterPressure > this.waterPressureTarget) {
-            this.waterPressure -= 5 * this.getWilt() * this.waterPressureChangeRate;
+            this.waterPressure -= 4 * this.waterPressureChangeRate;
         }
     }
 
@@ -594,18 +597,18 @@ class BaseOrganism {
     // DESTRUCTION
     destroy() {
         if (!this.proto.includes("Seed"))
-            console.log("Organism dying; state: ",
-                this.proto,
-                "light:",
-                this.lightlevel,
-                this.growthLightLevel,
-                "nitogen:",
-                this.nitrogen,
-                this.growthNitrogen,
-                "phosphorus:",
-                this.phosphorus,
-                this.growthPhosphorus
-            );
+            // console.log("Organism dying; state: ",
+            //     this.proto,
+            //     "light:",
+            //     this.lightlevel,
+            //     this.growthLightLevel,
+            //     "nitogen:",
+            //     this.nitrogen,
+            //     this.growthNitrogen,
+            //     "phosphorus:",
+            //     this.phosphorus,
+            //     this.growthPhosphorus
+            // );
         this.lifeSquares.forEach((lifeSquare) => lifeSquare.destroy());
         if (this.linkedSquare != null && this.linkedSquare != -1) {
             this.linkedSquare.unlinkOrganism(this);

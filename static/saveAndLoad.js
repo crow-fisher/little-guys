@@ -321,6 +321,7 @@ function loadSlotFromSave(slotData) {
     let sqArr = slotData.sqArr;
     let orgArr = slotData.orgArr;
     let lsqArr = slotData.lsqArr;
+
     let growthPlanArr = slotData.growthPlanArr;
     let growthPlanComponentArr = slotData.growthPlanComponentArr;
     let growthPlanStepArr = slotData.growthPlanStepArr;
