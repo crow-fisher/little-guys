@@ -10,7 +10,7 @@ export function getDefaultLighting() {
     let brightness = getDaylightStrength();
     let daylightColor = getCurrentLightColorTemperature();
     let moonlightColor = getMoonlightColor();
-    let mult =  Math.exp(loadGD(UI_LIGHTING_DISABLED_BRIGHTNESS));
+    let mult = Math.exp(loadGD(UI_LIGHTING_DISABLED_BRIGHTNESS));
     return {
         r: mult * (moonlightColor.r * .7 * Math.exp(loadGD(UI_LIGHTING_MOON)) + 0.5 * Math.exp(loadGD(UI_LIGHTING_SUN)) * (daylightColor.r * brightness)),
         g: mult * (moonlightColor.g * .7 * Math.exp(loadGD(UI_LIGHTING_MOON)) + 0.5 * Math.exp(loadGD(UI_LIGHTING_SUN)) * (daylightColor.g * brightness)),
@@ -30,7 +30,7 @@ export function getCloudRenderingLighting() {
 }
 
 export function processLighting(lightingMap) {
-    let outColor = {r: 0, g: 0, b: 0}
+    let outColor = { r: 0, g: 0, b: 0 }
     lightingMap.filter((light) => light != null && light.length == 2).forEach((light) => {
         let strength = light[0].filter((f) => f != null).map((f) => f()).reduce(
             (accumulator, currentValue) => accumulator + currentValue,
@@ -58,6 +58,7 @@ export function applyLightingFromSource(source, dest) {
     dest.frameCacheLighting = structuredClone(source.frameCacheLighting);
 }
 
+let averageGreenLen = 3;
 export function lightingExposureAdjustment() {
     let collectedSquares = new Array();
     for (let i = 0; i < getCanvasSquaresX(); i += Math.floor(getCanvasSquaresX() ** 0.5)) {
@@ -66,11 +67,19 @@ export function lightingExposureAdjustment() {
         }
     };
 
-    iterateOnOrganisms((org) => 
-        org.lifeSquares
-            .filter((lsq) => lsq.type == "green")
-            .filter((lsq) => Math.random() > 0.9)
-            .forEach((lsq) => (collectedSquares.push(lsq))));
+
+    let greenLen = 0;
+    let greenCount = 0;
+    iterateOnOrganisms((org) => {
+        let greens = Array.from(org.lifeSquares.filter((lsq) => lsq.type == "green"));
+        if (greens.length > 0) {
+            greenCount += 1;
+            greenLen += greens.length;
+            if (greens.length > averageGreenLen)
+                collectedSquares.push(greens.at(greens.length - 1));
+        }
+    });
+    averageGreenLen = greenCount / greenLen;
 
     if (collectedSquares.length == 0) {
         return;
@@ -80,25 +89,25 @@ export function lightingExposureAdjustment() {
             .filter((light) => light != null && light.length == 2)
             .map((light) => {
                 let ba = light[0];
-                let c  = light[1]();
+                let c = light[1]();
                 let b = ba
                     .filter((f) => f != null)
                     .map((f) => f())
                     .reduce((a, b) => a + b, 0);
                 return b * (c.r / 255) + b * (c.b / 255);
             }
-                
-        )).map((arr) => arr.reduce((a, b) => a + b, 0));
-    
+
+            )).map((arr) => arr.reduce((a, b) => a + b, 0));
+
     let mean = strengths.reduce((a, b) => a + b, 0) / collectedSquares.length;
     let max = strengths.reduce((a, b) => Math.max(a, b), .01);
     let stdev = getStandardDeviation(strengths);
 
-    let v = Math.min(mean + stdev, max);
+    let v = max - stdev;
     if (isNaN(v) || v == 0) {
         return;
     }
-    
+
     let cur = loadGD(UI_CAMERA_EXPOSURE) / loadGD(UI_LIGHTING_GLOBAL);
     let next = null;
 
