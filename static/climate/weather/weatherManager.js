@@ -66,10 +66,10 @@ function spawnNimbusCloud(rainFactor) {
 function spawnWindGust(airPressure) {
     curClouds.push(new Cloud(
         randRange(getFrameXMinWsq(), getFrameXMaxWsq()),
-        randRange(getFrameYMinWsq(), getFrameYMaxWsq()),
+        randRangeFactor(getFrameYMinWsq(), getFrameYMaxWsq(), 0.7),
         cloudXSize(), cloudYSize(),
         getCurDay(), cloudDuration() * 4 * Math.random(),
-        -1, 0.8, 1 + .1 * Math.random() * airPressure));
+        -1, 0.8, Math.random() * airPressure));
 }
 
 // UI_CLIMATE_WEATHER_CLEAR
@@ -131,7 +131,7 @@ function spawnRateThrottle() {
 }
 
 function windyWeather(windAmount, airPressure) {
-    airPressure = 1 + .0001 * airPressure;
+    airPressure /= 10000;
     if (curWinds.length > windAmount) {
         return;
     }

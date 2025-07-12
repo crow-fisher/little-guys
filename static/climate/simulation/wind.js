@@ -5,7 +5,7 @@ import { addWaterSaturation, addWaterSaturationPascals, calculateColor, getHumid
 import { getBaseSize, getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, getFrameXMax, getFrameXMin, getFrameYMax, getFrameYMin, zoomCanvasFillRect, zoomCanvasFillRectTheta } from "../../canvas.js";
 import { loadGD, UI_CANVAS_SQUARES_ZOOM, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "../../ui/UIData.js";
 import { getWindThrottleVal, registerWindThrottlerOutput } from "./throttler.js";
-import { COLOR_VERY_FUCKING_RED } from "../../colors.js";
+import { COLOR_BLACK, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 
 let windPressureMap;
 let windPressureMapByPressure;
@@ -343,6 +343,7 @@ function getExpectedPressureDifferential(x, y, x2, y2) {
 }
 
 function renderWindPressureMap() {
+    MAIN_CONTEXT.strokeStyle = COLOR_BLACK;
     for (let i = getFrameXMinWsq(); i < getFrameXMaxWsq(); i++) {
         for (let j = getFrameYMinWsq(); j < getFrameYMaxWsq(); j++) {
             let p = getPressure(i, j) / getBaseAirPressureAtYPosition(j);  

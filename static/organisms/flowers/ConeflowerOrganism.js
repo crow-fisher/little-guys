@@ -11,14 +11,14 @@ import { ConeflowerGreenSqaure } from "../../lifeSquares/flowers/ConeflowerGreen
 import { UI_ORGANISM_FLOWER_CONEFLOWER } from "../../ui/UIData.js";
 
 export let coneflower_dnm = structuredClone(baseOrganism_dnm);
-coneflower_dnm[_llt_min] = 0.58;
+coneflower_dnm[_llt_min] = 0.79;
 coneflower_dnm[_llt_max] = 1.35;
-coneflower_dnm[_llt_throttlValMax] = 3.20;
-coneflower_dnm[_seedReduction] = 0.10;
+coneflower_dnm[_llt_throttlValMax] = 3.9;
+coneflower_dnm[_seedReduction] = 0.09;
 coneflower_dnm[_waterPressureSoilTarget] = -3.2;
 coneflower_dnm[_waterPressureOverwaterThresh] = .98;
 coneflower_dnm[_waterPressureWiltThresh] = -1.57;
-coneflower_dnm[_lightDecayValue] = 1;
+coneflower_dnm[_lightDecayValue] = 2.6;
 
 // ref: https://prairiecalifornian.com/wheat-growth-stages/
 export class ConeflowerOrganism extends BaseOrganism {

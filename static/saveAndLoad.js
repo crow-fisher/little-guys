@@ -12,6 +12,7 @@ import { initGroupList, purgeMaps, regSquareToGroup } from "./globals.js";
 import { getActiveClimate } from "./climate/climateManager.js";
 import { doSingleTimeMouseEvent } from "./mouse.js";
 import { MOUSEEVENT_UNHIDE } from "./common.js";
+import { resetZoom } from "./canvas.js";
 
 
 let saveOrLoadInProgress = false;
@@ -427,7 +428,8 @@ export function deleteAllSaveData() {
     });
     loadEmptyScene();
     setGAMEDATA(structuredClone(_GAMEDATA_DEFAULT));
-    setUICONFIG(structuredClone(_UI_DEFAULT));
+    setUICONFIG(structuredClone(_UI_DEFAULT)); 
+    resetZoom();
 }
 
 

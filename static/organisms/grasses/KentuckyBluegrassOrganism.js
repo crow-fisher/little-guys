@@ -13,14 +13,14 @@ import { UI_ORGANISM_GRASS_KBLUE } from "../../ui/UIData.js";
 import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh } from "../BaseOrganism.js";
 
 export let kblue_dnm = structuredClone(baseOrganism_dnm);
-kblue_dnm[_llt_min] = 0.73;
+kblue_dnm[_llt_min] = 0.74;
 kblue_dnm[_llt_max] = 1.43;
 kblue_dnm[_llt_throttlValMax] = 5.38;
 kblue_dnm[_seedReduction] = 0.13;
-kblue_dnm[_waterPressureSoilTarget] = -4.215236686390532;
+kblue_dnm[_waterPressureSoilTarget] = -3.6;
 kblue_dnm[_waterPressureOverwaterThresh] = 0.487869822485207;
 kblue_dnm[_waterPressureWiltThresh] = -1.47;
-kblue_dnm[_lightDecayValue] = 1.19;
+kblue_dnm[_lightDecayValue] = 1.18;
 
 export class KentuckyBluegrassOrganism extends BaseOrganism {
     constructor(square) {
@@ -99,7 +99,7 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
             startRootNode.posX, startRootNode.posY, 
             false, STAGE_ADULT, randRange(-Math.PI, Math.PI), baseDeflection, 0, 
             baseDeflection, 
-            randRange(0, 0.3), TYPE_TRUNK, .05, 15);
+            randRange(0, 0.3), TYPE_TRUNK, .025, 15);
         growthPlan.postConstruct = () => {
             this.originGrowth.addChild(growthPlan.component);
             this.grasses.push(this.originGrowth.getChildPath(growthPlan.component))

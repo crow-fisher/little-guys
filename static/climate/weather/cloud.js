@@ -156,8 +156,7 @@ export class Cloud {
                             waterPascals /= 100;
                             addWaterSaturationPascals(wx, wy, waterPascals);
                         } else {
-                            let airPascals = Math.max(0, getBaseAirPressureAtYPosition(wy) * (this.airPressure - getPressure(wx, wy)));
-                            // addWindPressureDryAir(wx, wy, airPascals);
+                            addWindPressureDryAir(wx * 4, wy * 4, this.airPressure);
                         }
 
                     }

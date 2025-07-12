@@ -318,6 +318,9 @@ export class SoilSquare extends BaseSquare {
         if (getSquares(this.posX, this.posY - 1).some((sq) => sq.testCollidesWithSquare(this))) {
             return;
         }
+        if (this.linkedOrganismSquares.length > 0) {
+            return;
+        }
         let ws = getWindSpeedAtLocation(this.posX, this.posY);
         let maxWindSpeed = 2;
 
