@@ -135,5 +135,3 @@ function squareTick() {
     }
 
 }
-
-addUIFunctionMap(UI_CANVAS_VIEWPORT_CENTER_X, resetLighting);

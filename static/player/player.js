@@ -48,13 +48,13 @@ export class Player {
 
         this.gravity = .07;
 
-        this.walkMax = 0.25;
+        this.walkMax = 0.45;
         this.walkAcc = this.walkMax / 5;
 
         this.runMax = this.walkMax * 1.6;
         this.runAcc = this.walkAcc;
 
-        this.jumpSpeed = this.walkMax;
+        this.jumpSpeed = 0.3;
         this.jumpActiveTicksLeft = 0;
         this.jumpTicksLeft = 0;
 
