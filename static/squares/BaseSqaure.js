@@ -687,44 +687,41 @@ export class BaseSquare {
 
             last = pathArr[pathArr.length - 1];
             
-            if (rcsx == last[0] && rcsx == last[1])
+            if (rcsx == last[0] && rcsy == last[1])
                 continue;
 
             if (getSquares(rcsx, rcsy).some((sq) => sq.testCollidesWithSquare(this))) {
-                break;
+                return [true, pathArr];
             }
 
             pathArr.push([rcsx, rcsy]);
         }
 
-        return pathArr;
+        return [false, pathArr];
     }
 
     gravityPhysics() {
         if (!this.shouldFallThisFrame()) {
             return;
         }
-        let shouldResetGroup = false;
-        if (isGroupGrounded(this.group) && this.currentPressureDirect > 10) {
-            if ((Math.random() * 1.5) < 1 - (1 / this.currentPressureDirect) && !getSquares(this.posX, this.posY + 2).some((sq) => sq.testCollidesWithSquare(this))) {
-                return;
-            }
-            shouldResetGroup = true;
-        }
-
         if (getTimeScale() != 0) {
             if (this.shouldFallThisFrame()) {
                 this.speedY += (1 / this.gravity);
             }
         }
 
-        let nextPath = this.getNextPath();
-        if (nextPath.length == 1) {
-            return;
-        } else {
-            let nextPos = nextPath.at(nextPath.length - 1);
-            this.updatePosition(nextPos[0], nextPos[1]);
+        let nextPathRes = this.getNextPath();
+        let nextPathBonk = nextPathRes[0];
+        let nextPathPath = nextPathRes[1];
+
+        if (nextPathBonk) {
+            this.speedX = 0;
+            this.speedY = 0;
         }
+
+        let nextPos = nextPathPath.at(nextPathPath.length - 1);
+        this.updatePosition(nextPos[0], nextPos[1]);
+
     }
 
     _gravityPhysics() {
