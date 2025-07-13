@@ -661,17 +661,48 @@ export class BaseSquare {
         return true;
     }
 
+    getNextPath() {
+        let f = Math.max(1, this.speedX) * Math.max(1, this.speedY);
+        
+        let dsx = this.speedX / f;
+        let dsy = this.speedY / f;
+
+        let csx = 0;
+        let csy = 0;
+
+        let rcsx = 0;
+        let rcsy = 0;
+
+        let last = null;
+        
+        let pathArr = new Array();
+        pathArr.push([this.posX, this.posY]);
+
+        for (let i = 0; i < f; i++) {
+            csx += dsx;
+            csy += dsy;
+
+            rcsx = Math.round(csx) + this.posX;
+            rcsy = Math.round(csy) + this.posY;
+
+            last = pathArr[pathArr.length - 1];
+            
+            if (rcsx == last[0] && rcsx == last[1])
+                continue;
+
+            if (getSquares(rcsx, rcsy).some((sq) => sq.testCollidesWithSquare(this))) {
+                break;
+            }
+
+            pathArr.push([rcsx, rcsy]);
+        }
+
+        return pathArr;
+    }
+
     gravityPhysics() {
         if (!this.shouldFallThisFrame()) {
             return;
-        }
-        if (!this.organic && this.speedY >= 0) {
-            if (getSquares(this.posX, this.posY + 1).some((sq) => sq.testCollidesWithSquare(this))) {
-                this.speedY = 0;
-                this.speedX = 0;
-                this.hasBonked = true;
-                return;
-            }
         }
         let shouldResetGroup = false;
         if (isGroupGrounded(this.group) && this.currentPressureDirect > 10) {
@@ -685,7 +716,46 @@ export class BaseSquare {
             if (this.shouldFallThisFrame()) {
                 this.speedY += (1 / this.gravity);
             }
-        } 1
+        }
+
+        let nextPath = this.getNextPath();
+        if (nextPath.length == 1) {
+            return;
+        } else {
+            let nextPos = nextPath.at(nextPath.length - 1);
+            this.updatePosition(nextPos[0], nextPos[1]);
+        }
+    }
+
+    _gravityPhysics() {
+        if (!this.shouldFallThisFrame()) {
+            return;
+        }
+        if (!this.organic && this.speedY >= 0) {
+            if (getSquares(this.posX, this.posY + 1).some((sq) => sq.testCollidesWithSquare(this))) {
+                this.speedY = 0;
+                this.speedX = 0;
+                this.hasBonked = true;
+                return;
+            }
+        }
+
+        if (Math.abs(this.speedX * this.speedY) > 2) {
+            console.log(this.getNextPath());
+        }
+        let shouldResetGroup = false;
+        if (isGroupGrounded(this.group) && this.currentPressureDirect > 10) {
+            if ((Math.random() * 1.5) < 1 - (1 / this.currentPressureDirect) && !getSquares(this.posX, this.posY + 2).some((sq) => sq.testCollidesWithSquare(this))) {
+                return;
+            }
+            shouldResetGroup = true;
+        }
+
+        if (getTimeScale() != 0) {
+            if (this.shouldFallThisFrame()) {
+                this.speedY += (1 / this.gravity);
+            }
+        }
         let finalXPos = this.posX;
         let finalYPos = this.posY;
         let bonked = false;
