@@ -327,11 +327,13 @@ export class SoilSquare extends BaseSquare {
         let px = Math.abs(wx) / maxWindSpeed;
         let py = Math.abs(wy) / maxWindSpeed;
 
+        let factor = 0.1;
+
         if (Math.random() < px) {
-            this.speedX += Math.round(wx);
+            this.speedX += factor * Math.round(wx);
         }
         if (Math.random() < py) {
-            this.speedY += Math.round(wy);
+            this.speedY += factor * Math.round(wy);
         }
     }
     getWaterflowRate() {
