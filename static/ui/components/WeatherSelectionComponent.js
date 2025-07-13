@@ -1,10 +1,10 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
-import { UI_BIGDOTHOLLOW, UI_BIGDOTSOLID, UI_TINYDOT } from "../../common.js";
+import { UI_BIGDOTHOLLOW, UI_TINYDOT } from "../../common.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
 import { Container } from "../Container.js";
 import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
-import { TextFunctionalBackground } from "../elements/TextFunctionalBackground.js";
+import { Toggle } from "../elements/Toggle.js";
 import { ToggleFunctionalText } from "../elements/ToggleFunctionalText.js";
 import { LockedComponent } from "../LockedComponent.js";
 import {
@@ -15,7 +15,8 @@ import {
     UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_ACTIVE,
     UI_SIMULATION_CLOUDS,
     loadGD,
-    UI_CENTER
+    UI_CENTER,
+    UI_DEBUG_CLIMATE_WEATHER_FOREVER
 } from "../UIData.js";
 export class WeatherSelectionComponent extends LockedComponent {
     constructor(posXFunc, posYFunc, padding, dir, key) {
@@ -54,5 +55,7 @@ export class WeatherSelectionComponent extends LockedComponent {
         weatherRow2.addElement(new RadioToggleLabel(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 3, textAlignOffsetX, "foggy",UI_CLIMATE_WEATHER_ACTIVE, UI_CLIMATE_WEATHER_FOGGY, () => getActiveClimate().getUIColorInactiveCustom(0.59 + 0.2), () => getActiveClimate().getUIColorInactiveCustom(0.59), 0.75, [UI_TINYDOT, UI_BIGDOTHOLLOW]));
         weatherRow3.addElement(new RadioToggleLabel(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 3, textAlignOffsetX, "light rain",UI_CLIMATE_WEATHER_ACTIVE, UI_CLIMATE_WEATHER_LIGHTRAIN, () => getActiveClimate().getUIColorInactiveCustom(0.58 + 0.2), () => getActiveClimate().getUIColorInactiveCustom(0.58), 0.75, [UI_TINYDOT, UI_BIGDOTHOLLOW]));
         weatherRow3.addElement(new RadioToggleLabel(this.window,sizeX / 2 - (padding / 2), getBaseUISize() * 3, textAlignOffsetX, "heavy rain",UI_CLIMATE_WEATHER_ACTIVE, UI_CLIMATE_WEATHER_HEAVYRAIN, () => getActiveClimate().getUIColorInactiveCustom(0.55 + 0.2), () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.75, [UI_TINYDOT, UI_BIGDOTHOLLOW]));
+    
+        weatherSelectConditionalContainer.addElement(new Toggle(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, UI_DEBUG_CLIMATE_WEATHER_FOREVER, "forever weather", () => getActiveClimate().getUIColorInactiveCustom(0.55 + 0.2), () => getActiveClimate().getUIColorInactiveCustom(0.55)))
     }
 }

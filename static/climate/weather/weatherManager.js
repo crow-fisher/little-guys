@@ -1,5 +1,5 @@
 import { gaussianRandom, randRange, randRangeFactor } from "../../common.js";
-import { addUIFunctionMap, UI_CLIMATE_WEATHER_CLEAR, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_HEAVYRAIN, loadGD, saveGD, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_DURATION, UI_CLIMATE_WEATHER_ACTIVE, UI_SIMULATION_GENS_PER_DAY, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_SIMULATION_CLOUDS, UI_CLIMATE_WEATHER_NULL } from "../../ui/UIData.js";
+import { addUIFunctionMap, UI_CLIMATE_WEATHER_CLEAR, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_HEAVYRAIN, loadGD, saveGD, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_DURATION, UI_CLIMATE_WEATHER_ACTIVE, UI_SIMULATION_GENS_PER_DAY, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_SIMULATION_CLOUDS, UI_CLIMATE_WEATHER_NULL, UI_DEBUG_CLIMATE_WEATHER_FOREVER } from "../../ui/UIData.js";
 import { getActiveClimate } from "../climateManager.js";
 import { cloudRainThresh } from "../simulation/temperatureHumidity.js";
 import { getCurDay, getDt, getTimeScale } from "../time.js";
@@ -251,6 +251,9 @@ function applyUIWeatherChange() {
     curWeatherStartTime = getCurDay();
     curWeatherStartTime -= curWeatherStartTime % (0.000694444 / 60);
 
+    if (loadGD(UI_DEBUG_CLIMATE_WEATHER_FOREVER))
+        curWeatherInterval *= 10 ** 8;
+    
     console.log("Next weather: ", curWeather.type + ", for " + Math.round(curWeatherInterval / 0.000694444) + " minutes")
 }
 

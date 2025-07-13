@@ -315,9 +315,6 @@ export class SoilSquare extends BaseSquare {
     }
 
     windPhysics() {
-        if (getSquares(this.posX, this.posY - 1).some((sq) => sq.testCollidesWithSquare(this))) {
-            return;
-        }
         if (this.linkedOrganismSquares.length > 0) {
             return;
         }

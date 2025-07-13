@@ -486,8 +486,8 @@ export class BaseSquare {
         if (newPosX == this.posX && newPosY == this.posY) {
             return true;
         }
-        newPosX = Math.floor(newPosX);
-        newPosY = Math.floor(newPosY);
+        newPosX = Math.round(newPosX);
+        newPosY = Math.round(newPosY);
 
         if (getSquares(newPosX, newPosY).some((sq) => this.testCollidesWithSquare(sq))) {
             return false;
@@ -662,8 +662,8 @@ export class BaseSquare {
     }
 
     getNextPath() {
-        let f = Math.max(1, this.speedX) * Math.max(1, this.speedY);
-        
+        let f = Math.abs((this.speedX + 1) * (this.speedY + 1))
+
         let dsx = this.speedX / f;
         let dsy = this.speedY / f;
 
@@ -673,8 +673,8 @@ export class BaseSquare {
         let rcsx = 0;
         let rcsy = 0;
 
-        let last = null;
-        
+        let last, collSquare;
+
         let pathArr = new Array();
         pathArr.push([this.posX, this.posY]);
 
@@ -686,40 +686,46 @@ export class BaseSquare {
             rcsy = Math.round(csy) + this.posY;
 
             last = pathArr[pathArr.length - 1];
-            
+
             if (rcsx == last[0] && rcsy == last[1])
                 continue;
 
-            if (getSquares(rcsx, rcsy).some((sq) => sq.testCollidesWithSquare(this))) {
-                return [true, pathArr];
+            collSquare = getSquares(rcsx, rcsy).find((sq) => sq.testCollidesWithSquare(this));
+
+            if (collSquare != null) {
+                return [collSquare, pathArr];
             }
 
             pathArr.push([rcsx, rcsy]);
         }
 
-        return [false, pathArr];
+        return [null, pathArr];
     }
 
     gravityPhysics() {
         if (!this.shouldFallThisFrame()) {
             return;
         }
-        if (getTimeScale() != 0) {
-            if (this.shouldFallThisFrame()) {
-                this.speedY += (1 / this.gravity);
-            }
-        }
+
+        let maxSpeed = 5;
+
+        this.speedX = Math.min(maxSpeed, Math.max(-maxSpeed, this.speedX));
+        this.speedY = Math.min(maxSpeed, Math.max(-maxSpeed, this.speedY));
 
         let nextPathRes = this.getNextPath();
-        let nextPathBonk = nextPathRes[0];
-        let nextPathPath = nextPathRes[1];
 
-        if (nextPathBonk) {
-            this.speedX = 0;
-            this.speedY = 0;
+        let colSq = nextPathRes[0];
+        let nextPath = nextPathRes[1];
+
+        if (colSq != null) {
+            this.speedX = colSq.speedX;
+            this.speedY = colSq.speedY;
         }
 
-        let nextPos = nextPathPath.at(nextPathPath.length - 1);
+        if (this.speedX == 0 && Math.abs(this.speedY) > 2)
+            console.log(this.speedX, this.speedY, nextPath);
+
+        let nextPos = nextPath.at(nextPath.length - 1);
         this.updatePosition(nextPos[0], nextPos[1]);
 
     }
@@ -835,9 +841,9 @@ export class BaseSquare {
         this.processParticles();
     }
 
-    slopePhysics() {}
+    slopePhysics() { }
 
-    windPhysics() {}
+    windPhysics() { }
 
     physics() {
         if (!isSquareOnCanvas(this.posX, this.posY)) {
