@@ -662,7 +662,8 @@ export class BaseSquare {
     }
 
     getNextPath() {
-        let f = Math.abs((this.speedX + 1) * (this.speedY + 1))
+        let gnpf = (v) => Math.max(1, Math.abs(v));
+        let f = gnpf(this.speedX) * gnpf(this.speedY);
 
         let dsx = this.speedX / f;
         let dsy = this.speedY / f;
@@ -706,6 +707,12 @@ export class BaseSquare {
         if (!this.shouldFallThisFrame()) {
             return;
         }
+        
+        if (getTimeScale() != 0) {
+            if (this.shouldFallThisFrame()) {
+                this.speedY += (1 / this.gravity);
+            }
+        }
 
         let maxSpeed = 5;
 
@@ -720,6 +727,7 @@ export class BaseSquare {
         if (colSq != null) {
             this.speedX = colSq.speedX;
             this.speedY = colSq.speedY;
+            this.hasBonked = true;
         }
 
         if (this.speedX == 0 && Math.abs(this.speedY) > 2)

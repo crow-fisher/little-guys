@@ -264,7 +264,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     slopeConditional() {
-        if (this.gravity == 0 || this.speedY > 0) {
+        if (this.gravity == 0 || Math.abs(this.speedY) > 0) {
             return;
         }
 
