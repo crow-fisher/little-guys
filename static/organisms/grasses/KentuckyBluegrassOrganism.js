@@ -15,10 +15,10 @@ import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReductio
 export let kblue_dnm = structuredClone(baseOrganism_dnm);
 kblue_dnm[_llt_min] = 0.74;
 kblue_dnm[_llt_max] = 1.43;
-kblue_dnm[_llt_throttlValMax] = 5.38;
-kblue_dnm[_seedReduction] = 0.13;
-kblue_dnm[_waterPressureSoilTarget] = -3.6;
-kblue_dnm[_waterPressureOverwaterThresh] = 0.487869822485207;
+kblue_dnm[_llt_throttlValMax] = 5.27;
+kblue_dnm[_seedReduction] = 0.10;
+kblue_dnm[_waterPressureSoilTarget] = -3.32;
+kblue_dnm[_waterPressureOverwaterThresh] = 0.49;
 kblue_dnm[_waterPressureWiltThresh] = -1.47;
 kblue_dnm[_lightDecayValue] = 1.18;
 

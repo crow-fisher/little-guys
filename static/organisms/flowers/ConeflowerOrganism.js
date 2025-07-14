@@ -11,13 +11,13 @@ import { ConeflowerGreenSqaure } from "../../lifeSquares/flowers/ConeflowerGreen
 import { UI_ORGANISM_FLOWER_CONEFLOWER } from "../../ui/UIData.js";
 
 export let coneflower_dnm = structuredClone(baseOrganism_dnm);
-coneflower_dnm[_llt_min] = 0.81;
-coneflower_dnm[_llt_max] = 1.12;
-coneflower_dnm[_llt_throttlValMax] = 3.88;
-coneflower_dnm[_seedReduction] = 0.09;
-coneflower_dnm[_waterPressureSoilTarget] = -3.2;
-coneflower_dnm[_waterPressureOverwaterThresh] = .98;
-coneflower_dnm[_waterPressureWiltThresh] = -1.57;
+coneflower_dnm[_llt_min] = 0.84;
+coneflower_dnm[_llt_max] = 1.52;
+coneflower_dnm[_llt_throttlValMax] = 7.49;
+coneflower_dnm[_seedReduction] = 0.10;
+coneflower_dnm[_waterPressureSoilTarget] = -2.91;
+coneflower_dnm[_waterPressureOverwaterThresh] = 1.85;
+coneflower_dnm[_waterPressureWiltThresh] = -1.96;
 coneflower_dnm[_lightDecayValue] = 2.6;
 
 // ref: https://prairiecalifornian.com/wheat-growth-stages/
@@ -79,7 +79,7 @@ export class ConeflowerOrganism extends BaseOrganism {
             startNode.posX, startNode.posY,
             false, STAGE_ADULT,
             theta, 0, 0, randRange(0, 0.1),
-            randRange(0.05, 0.15), TYPE_STEM, .03 * this.maxNumNodes);
+            randRange(0.05, 0.15), TYPE_STEM, .01 * this.maxNumNodes);
 
         growthPlan.postConstruct = () => {
             parent.addChild(growthPlan.component);
@@ -104,7 +104,7 @@ export class ConeflowerOrganism extends BaseOrganism {
             startNode.posX, startNode.posY,
             false, STAGE_ADULT, this.curLeafTheta, 0, 0.75,
             randRange(Math.PI / 2, Math.PI),
-            randRange(.05, .10), TYPE_LEAF, 1);
+            randRange(.05, .10), TYPE_LEAF, .1);
 
         growthPlan.postConstruct = () => {
             parent.addChild(growthPlan.component);
