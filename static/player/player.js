@@ -161,7 +161,7 @@ export class Player {
 
     doPlayerAction() {
         if (isButtonPressed(GBB)) {
-            addWindPressureDryAir(this.posX, this.posY, 1.1);
+            addWindPressureDryAir(this.posX, this.posY, 1.5);
         }
     }
 

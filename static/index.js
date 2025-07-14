@@ -11,7 +11,7 @@ import { BackgroundImageSquare, ImageSquare, RigidImageSquare, StaticImageSquare
 
 export let MAIN_CANVAS = document.getElementById("main");
 export let MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
-export const DEBUG = true;
+export const DEBUG = false;
 
 const body = document.getElementById("body");
 

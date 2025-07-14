@@ -70,7 +70,7 @@ export function scheduler_main() {
         if (!isLeftMouseClicked())
             executeFunctionQueue();
         periodicPurgeOldGroupData();
-        doPeriodicSave();
+        // doPeriodicSave();
         renderPlayer();
 
     }
