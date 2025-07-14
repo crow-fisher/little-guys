@@ -60,7 +60,7 @@ function spawnNimbusCloud(rainFactor) {
         randRangeFactor(getFrameYMinWsq(), getFrameYMaxWsq(), 0.1),
         cloudXSize(.4, .7), cloudYSize(),
         getCurDay(), cloudDuration(),
-        2, rainFactor * randRange(.01, .04)));
+        2, rainFactor * randRange(.025, .04)));
 }
 
 function spawnWindGust(airPressure) {
@@ -253,7 +253,7 @@ function applyUIWeatherChange() {
 
     if (loadGD(UI_DEBUG_CLIMATE_WEATHER_FOREVER))
         curWeatherInterval *= 10 ** 8;
-    
+
     console.log("Next weather: ", curWeather.type + ", for " + Math.round(curWeatherInterval / 0.000694444) + " minutes")
 }
 

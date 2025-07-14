@@ -4,7 +4,7 @@ import { BlockPalette } from "./components/BlockPalette.js";
 import { BlockSubtreeComponent as BlockSubtree } from "./components/BlockSubtreeComponent.js";
 import { TopBarComponent } from "./topbar/TopBarComponent.js";
 import { ViewSubtreeComponent } from "./components/ViewSubtreeComponent.js";
-import { loadGD, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_BLOCK, UI_PALETTE_ACTIVE, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveGD, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_TIME, UI_PALETTE_EYEDROPPER, UI_TOPBAR_WEATHER, UI_MAIN_NEWWORLD, saveUI, UI_UI_SIZE, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_CLIMATE_SELECT_CLOUDS, UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK, UI_PALETTE_SELECT, UI_PALETTE_SOILROCK, UI_PALETTE_MODE_SOIL, UI_PLAYER_SETUP, UI_PLAYER_SETUP_WAYPOINT_NAME, UI_CLIMATE_WEATHER_ACTIVE, UI_PALETTE_STRENGTH, UI_PALETTE_WATER, UI_PALETTE_SURFACE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_COMPOSITION, UI_LIGHTING_ENABLED, UI_WORLDPAN } from "./UIData.js";
+import { loadGD, UI_SM_GODMODE, UI_SM_LIGHTING, UI_SM_ORGANISM, UI_TOPBAR_BLOCK, UI_PALETTE_ACTIVE, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveGD, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_TIME, UI_PALETTE_EYEDROPPER, UI_TOPBAR_WEATHER, UI_MAIN_NEWWORLD, saveUI, UI_UI_SIZE, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_CLIMATE_SELECT_CLOUDS, UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK, UI_PALETTE_SELECT, UI_PALETTE_SOILROCK, UI_PALETTE_MODE_SOIL, UI_PLAYER_SETUP, UI_PLAYER_SETUP_WAYPOINT_NAME, UI_CLIMATE_WEATHER_ACTIVE, UI_PALETTE_STRENGTH, UI_PALETTE_WATER, UI_PALETTE_SURFACE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_COMPOSITION, UI_LIGHTING_ENABLED, UI_WORLDPAN, UI_PALETTE_AQUIFER } from "./UIData.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import { PlayerSetupComponent } from "./components/PlayerSetupComponent.js";
 import { getCurMixIdx, getMixArr, getMixArrLen, getTargetMixIdx, setCurMixIdx, setTargetMixIdx } from "../globals.js";
@@ -24,6 +24,8 @@ import { SoilSquare } from "../squares/parameterized/SoilSquare.js";
 import { getDefaultLighting } from "../lighting/lightingProcessing.js";
 import { WorldPanComponent } from "./components/WorldPanComponent.js";
 import { WorldSetupComponent } from "./components/WorldSetupComponent.js";
+import { RockSquare } from "../squares/parameterized/RockSquare.js";
+import { WaterSquare } from "../squares/WaterSquare.js";
 
 let topBarComponent;
 let mainMenuComponent;
@@ -216,13 +218,19 @@ export function renderMouseHover() {
 
     let color = null;
     let colorFunc = null;
-    let mode = UI_PALETTE_MODE_SOIL;
+    let mode = loadGD(UI_PALETTE_MODE);
     switch (loadGD(UI_PALETTE_SELECT)) {
         case (UI_PALETTE_SOILROCK):
-            if (loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_SOIL) {
-                mode = UI_PALETTE_MODE_SOIL;
+            if (mode == UI_PALETTE_MODE_SOIL) {
                 colorFunc = () => {
                     let outColorBase = new SoilSquare(-1, -1).getColorBase();
+                    let lightingColor = getLighting(offsetX, offsetY);
+                    return { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
+                }
+            }
+            if (mode == UI_PALETTE_MODE_ROCK) {
+                colorFunc = () => {
+                    let outColorBase = new RockSquare(-1, -1).getColorBase();
                     let lightingColor = getLighting(offsetX, offsetY);
                     return { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
                 }
@@ -231,15 +239,21 @@ export function renderMouseHover() {
                 color = hexToRgb(getActiveClimate().getPaletteRockColor(0.65));
             break;
         case UI_PALETTE_WATER:
-            color = hexToRgb(getActiveClimate().getWaterColor(5));
+        case UI_PALETTE_AQUIFER:
+            colorFunc = () => {
+                let outColorBase = new WaterSquare(-1, -1).getColorBase();
+                let lightingColor = getLighting(offsetX, offsetY);
+                return { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
+            }
             break;
         case UI_PALETTE_SURFACE:
-            color = RGB_COLOR_GREEN;
+            colorFunc = () => RGB_COLOR_GREEN;
             break;
         case UI_PALETTE_SURFACE_OFF:
-            color = RGB_COLOR_RED;
+            colorFunc = () => RGB_COLOR_RED;
             break;
         default:
+            colorFunc = () => "rgba(50, 50, 50, 0.3)";
             break;
     }
 

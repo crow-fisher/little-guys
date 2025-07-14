@@ -55,34 +55,52 @@ class BaseSeedOrganism extends BaseOrganism {
         }
         this.plantSeedPhysics();
     }
+    
+    destroySeed() { 
+        this.linkedSquare.destroy();
+    }
 
     plantSeedPhysics() {
         if (this.linkedSquare.proto != "SeedSquare")
             return;
+
+        let searchDist = randNumber(2, 5);
+
+        let soilSq = getSquares(this.posX, this.posY + searchDist)
+            .find((sq) => sq.proto == "SoilSquare");
+        let rockSq = getSquares(this.posX, this.posY + searchDist)
+            .find((sq) => sq.proto == "RockSquare");
         
-        let sq = getSquares(Math.round(this.posX), Math.round(this.posY + randNumber(2, 5)))
-            .find((sq) => (this.rockable ? (sq.proto == "SoilSquare" || sq.proto == "RockSquare") : sq.proto == "SoilSquare"));
-        if (sq == null) {
-            let rockSq = getSquares(this.posX, this.posY + randNumber(2, 5))
-                .find((sq) => sq.proto == "RockSquare");
-            if (rockSq != null) {
-                this.destroy(true);
+        if ((this.rockable ? (soilSq ?? rockSq) : soilSq) != null) {
+            if (soilSq.linkedOrganismSquares.some((lsq) => lsq.linkedOrganism.proto == this.getSproutTypeProto())) {
+                console.log("Destroying; found an org here of the same proto")
+                this.destroySeed();
                 return;
+            } // only happy path out of this statement
+        } else {
+            if (rockSq != null) {
+                this.destroySeed(true);
             }
             return;
         }
 
-        if (sq.linkedOrganismSquares.some((lsq) => lsq.proto == this.getSproutTypeProto())) {
-            console.log("Destroying; found an org here of the same proto")
-            this.linkedSquare.destroy(true);
-            return;
-        }
-        let origSq = this.linkedSquare;
+        // now plant yourself in soilSq
+
+        let origSeedSquare = this.linkedSquare;
         this.unlinkSquare(true);
-        origSq.destroy(false);
-        this.posX = sq.posX;
-        this.posY = sq.posY;
-        this.linkSquare(sq);
+        origSeedSquare.destroy(false);
+
+        this.posX = soilSq.posX;
+        this.posY = soilSq.posY;
+
+        this.lifeSquares.forEach((lsq) => {
+            lsq.posX = this.posX;
+            lsq.posY = this.posY;
+            lsq.linkSquare(soilSq);
+            soilSq.linkOrganismSquare(lsq);
+        });
+        
+        this.linkSquare(soilSq);
     }
 
     applyEvolutionParameters(org) {
