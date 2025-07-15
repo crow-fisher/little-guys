@@ -1,4 +1,4 @@
-import { getBaseSize, getBaseUISize, getCanvasSquaresX, recacheCanvasPositions } from "../../canvas.js";
+import { getBaseSize, getBaseUISize, getCanvasSquaresX, getCanvasWidth, recacheCanvasPositions } from "../../canvas.js";
 import { indexCanvasSize } from "../../index.js";
 import { Container } from "../Container.js";
 import { WorldPanButton } from "../elements/WorldPanButton.js";
@@ -23,7 +23,8 @@ export class WorldPanComponent extends WorldPanLockedComponent {
         let row = new WorldPanContainer(this.window, getBaseUISize() * 1, 0);
         container.addElement(row);
 
-        row.addElement(new WorldPanSlider(this.window, UI_CANVAS_VIEWPORT_CENTER_X, sizeX, getBaseUISize() * 3, 0, loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) * getBaseSize(), "rgba(50, 50, 50, ", "rgba(50, 50, 50, "));
+        let w = getCanvasWidth() / 2;
+        row.addElement(new WorldPanSlider(this.window, UI_CANVAS_VIEWPORT_CENTER_X, sizeX, getBaseUISize() * 3, w, loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) * getBaseSize() - w, "rgba(50, 50, 50, ", "rgba(50, 50, 50, "));
         row.addElement(new WorldPanButton(this.window, getBaseUISize() * 3, getBaseUISize() * 3, UI_CENTER, 
             () => {
                 let startCamX = loadGD(UI_CANVAS_VIEWPORT_CENTER_X);

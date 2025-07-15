@@ -59,7 +59,7 @@ export class PalmTreeOrganism extends BaseOrganism {
             startNode.posX, startNode.posY,
             false, STAGE_ADULT,
             theta, 0, 0, 0,
-            randRange(0, 0.05), TYPE_STEM, 10);
+            randRange(0, 0.05), TYPE_STEM, .5);
 
         growthPlan.postConstruct = () => {
             parent.addChild(growthPlan.component);
@@ -84,7 +84,7 @@ export class PalmTreeOrganism extends BaseOrganism {
             startNode.posX, startNode.posY,
             false, STAGE_ADULT, this.curLeafTheta, 0, 0,
             randRange(1, 1.4),
-            randRange(.8, 1.2), TYPE_LEAF, 1);
+            randRange(.8, 1.2), TYPE_LEAF, .07);
 
         growthPlan.postConstruct = () => {
             parent.addChild(growthPlan.component);

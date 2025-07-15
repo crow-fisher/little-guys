@@ -48,13 +48,6 @@ export class OrganismComponent extends Component {
           container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 3.8, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.66315, "plant editor"))
           container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""));
 
-
-          if (true) {
-               container.addElement(new Button(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, () => {
-                    console.log(loadGD(UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA));
-               }, "log configurator data", () => getActiveClimate().getUIColorInactiveCustom(0.85)));
-          }
-
           let modeSelectRow1 = new Container(this.window, 0, 0);
           let modeSelectRow2 = new Container(this.window, 0, 0);
 

@@ -730,9 +730,6 @@ export class BaseSquare {
             this.hasBonked = true;
         }
 
-        if (this.speedX == 0 && Math.abs(this.speedY) > 2)
-            console.log(this.speedX, this.speedY, nextPath);
-
         let nextPos = nextPath.at(nextPath.length - 1);
         this.updatePosition(nextPos[0], nextPos[1]);
 

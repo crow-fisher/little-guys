@@ -108,7 +108,7 @@ export function lightingExposureAdjustment() {
         return;
     }
 
-    let cur = loadGD(UI_CAMERA_EXPOSURE) / loadGD(UI_LIGHTING_GLOBAL);
+    let cur = loadGD(UI_CAMERA_EXPOSURE) / (2 - loadGD(UI_LIGHTING_GLOBAL));
     let next = null;
 
     let target = 2.5;

@@ -57,7 +57,7 @@ class BaseSeedOrganism extends BaseOrganism {
     }
     
     destroySeed() { 
-        this.linkedSquare.destroy();
+        this.linkedSquare.destroy(true);
     }
 
     plantSeedPhysics() {
@@ -73,7 +73,6 @@ class BaseSeedOrganism extends BaseOrganism {
         
         if ((this.rockable ? (soilSq ?? rockSq) : soilSq) != null) {
             if (soilSq.linkedOrganismSquares.some((lsq) => lsq.linkedOrganism.proto == this.getSproutTypeProto())) {
-                console.log("Destroying; found an org here of the same proto")
                 this.destroySeed();
                 return;
             } // only happy path out of this statement
