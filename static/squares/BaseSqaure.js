@@ -586,7 +586,7 @@ export class BaseSquare {
         if (this.proto == "SeedSquare" && sq.proto == "SeedSquare") {
             return false;
         }
-        if (this.proto == "WaterSquare" && sq.proto == "WaterSquare" && ((this.blockHealth + sq.blockHealth) < 1)) {
+        if (this.proto == "WaterSquare" && sq.proto == "WaterSquare" && (getSquares(this.posX, this.posY).filter((sq) => sq.proto == "WaterSquare").map((sq) => sq.blockHealth).reduce((a, b) => a + b, sq.blockHealth) < 1)) {
             return false;
         }
         if (this.organic) {
@@ -732,6 +732,11 @@ export class BaseSquare {
 
         let nextPos = nextPath.at(nextPath.length - 1);
         this.updatePosition(nextPos[0], nextPos[1]);
+
+        if (!isSquareOnCanvas(this.posX, this.posY)) {
+            if (this.proto == "WaterSquare" || this.proto == "SeedSquare")
+                this.destroy();
+        }
 
     }
 

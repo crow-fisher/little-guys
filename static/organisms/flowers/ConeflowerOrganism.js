@@ -8,7 +8,7 @@ import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReductio
 import { addSquare } from "../../squares/_sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
 import { ConeflowerGreenSqaure } from "../../lifeSquares/flowers/ConeflowerGreenSqaure.js";
-import { UI_ORGANISM_FLOWER_CONEFLOWER } from "../../ui/UIData.js";
+import { loadGD, UI_ORGANISM_FLOWER_CONEFLOWER, UI_PLANT_CONEFLOWER_HUESHIFT, UI_PLANT_CONEFLOWER_PEDALANGLESHIFT } from "../../ui/UIData.js";
 
 export let coneflower_dnm = structuredClone(baseOrganism_dnm);
 coneflower_dnm[_llt_min] = 0.84;
@@ -54,6 +54,10 @@ export class ConeflowerOrganism extends BaseOrganism {
         this.growthLightLevel = 0.5;
 
         this.growthNumGreen = this.maxNumNodes * (this.maxStemLength + this.maxLeafLength);
+
+        this.flowerHueShift = randRange(-100, 100);
+        this.petalAngleShift = randRange(0, 0.1 * Math.PI);
+
     }
 
     processGenetics() {
@@ -251,7 +255,7 @@ export class ConeflowerOrganism extends BaseOrganism {
                     startNode.posX, startNode.posY,
                     false, STAGE_FLOWER,
                     startTheta + (i * (2 * Math.PI) / this.numPetals),
-                    0, Math.PI * randRange(0.1, 0.2), 0,
+                    0, Math.PI * randRange(0.1, 0.2) + this.petalAngleShift, 0,
                     0, TYPE_FLOWERPETAL, 10 ** 8);
                 petalGrowthPlan.postConstruct = () => {
                     flowerNodeComponent.addChild(petalGrowthPlan.component);

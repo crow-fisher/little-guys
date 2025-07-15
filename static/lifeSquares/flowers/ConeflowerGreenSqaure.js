@@ -1,5 +1,6 @@
 import { BaseLifeSquare, LSQ_RENDERMODE_CIRCLE } from "../BaseLifeSquare.js";
 import { STATE_DEAD, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE, SUBTYPE_FLOWERTIP, SUBTYPE_FLOWERBUD } from "../../organisms/Stages.js";
+import { hsv2rgb, hueShiftColorArr, rgbToHex } from "../../common.js";
 
 export class ConeflowerGreenSqaure extends BaseLifeSquare {
     constructor(square, organism) {
@@ -43,6 +44,10 @@ export class ConeflowerGreenSqaure extends BaseLifeSquare {
                     this.accentColor = "#525a2f";
                     this.width = 0.73;
                     this.lsqLightDecayValue = 0.1;
+
+                    this.baseColor = rgbToHex(...hueShiftColorArr(this.baseColor, this.linkedOrganism.flowerHueShift, 0, 0));
+                    this.darkColor = rgbToHex(...hueShiftColorArr(this.darkColor, this.linkedOrganism.flowerHueShift, 0, 0));
+
                     break;
                 case SUBTYPE_TRUNK:
                 case SUBTYPE_SHOOT:

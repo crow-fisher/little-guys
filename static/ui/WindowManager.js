@@ -247,10 +247,10 @@ export function renderMouseHover() {
             }
             break;
         case UI_PALETTE_SURFACE:
-            colorFunc = () => RGB_COLOR_GREEN;
+            colorFunc = () => "rgba(50, 50, 50, 0.1)";
             break;
         case UI_PALETTE_SURFACE_OFF:
-            colorFunc = () => RGB_COLOR_RED;
+            colorFunc = () => "rgba(50, 50, 50, 0.1)";
             break;
         default:
             colorFunc = () => "rgba(50, 50, 50, 0.3)";

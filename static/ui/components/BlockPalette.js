@@ -151,16 +151,16 @@ export class BlockPalette extends Component {
         specialContainer.addElement(new SliderGradientBackground(this.window, UI_PALETTE_AQUIFER_FLOWRATE, sizeX, 35, 0.0, 1, getWaterColorDark, getWaterColor,));
 
         
-        specialContainer.addElement(new Text(this.window, sizeX, h2, UI_CENTER, "special tools"))
-        specialContainer.addElement(new SliderGradientBackground(this.window, UI_PALETTE_AQUIFER_FLOWRATE, sizeX, 35, 0.0, 1, getWaterColorDark, getWaterColor,));
+        // specialContainer.addElement(new Text(this.window, sizeX, h2, UI_CENTER, "special tools"))
+        // specialContainer.addElement(new SliderGradientBackground(this.window, UI_PALETTE_AQUIFER_FLOWRATE, sizeX, 35, 0.0, 1, getWaterColorDark, getWaterColor,));
 
-        let specialToolRow = new Container(this.window, 0, 0);
-        specialContainer.addElement(specialToolRow);
-        specialToolRow.addElement(new RadioToggleLabel(this.window, half, h1, UI_CENTER, "churn", UI_PALETTE_SELECT, UI_PALETTE_SPECIAL_CHURN,
-            () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
-        specialToolRow.addElement(new RadioToggleLabel(this.window, half, h1, UI_CENTER, "wide churn", UI_PALETTE_SELECT, UI_PALETTE_SPECIAL_CHURN_WIDE,
-            () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive()));
-        specialContainer.addElement(new SliderGradientBackground(this.window, UI_PALETTE_SPECIAL_CHURN_STRENGTH, sizeX, 35, 2, 10, getWaterColorDark, getWaterColor,));
+        // let specialToolRow = new Container(this.window, 0, 0);
+        // specialContainer.addElement(specialToolRow);
+        // specialToolRow.addElement(new RadioToggleLabel(this.window, half, h1, UI_CENTER, "churn", UI_PALETTE_SELECT, UI_PALETTE_SPECIAL_CHURN,
+        //     () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
+        // specialToolRow.addElement(new RadioToggleLabel(this.window, half, h1, UI_CENTER, "wide churn", UI_PALETTE_SELECT, UI_PALETTE_SPECIAL_CHURN_WIDE,
+        //     () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive()));
+        // specialContainer.addElement(new SliderGradientBackground(this.window, UI_PALETTE_SPECIAL_CHURN_STRENGTH, sizeX, 35, 2, 10, getWaterColorDark, getWaterColor,));
 
 
         // paste container
