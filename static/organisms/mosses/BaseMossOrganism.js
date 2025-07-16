@@ -21,16 +21,16 @@ import {
 } from "../BaseOrganism.js";
 
 export let baseMossOrganism_dnm = {
-    _llt_target: 1,
-    _llt_min: 0.5,
-    _llt_max: 2,
+    _llt_target: 1.14,
+    _llt_min: 0.6,
+    _llt_max: 1.43,
     _llt_throttlValMin: 1,
-    _llt_throttlValMax: 4,
-    _waterPressureSoilTarget: -2.46,
+    _llt_throttlValMax: 4.13,
+    _waterPressureSoilTarget: -3.4,
     _seedReduction: 0.5,
     _lightDecayValue: 1,
-    _waterPressureOverwaterThresh: 1,
-    _waterPressureWiltThresh: -1
+    _waterPressureOverwaterThresh: 1.54,
+    _waterPressureWiltThresh: -1.47
 }
 
 export class BaseMossOrganism {
@@ -47,7 +47,6 @@ export class BaseMossOrganism {
         this.rootType = GenericRootSquare;
         this.evolutionMinColor = RGB_COLOR_BLUE;
         this.evolutionMaxColor = RGB_COLOR_VERY_FUCKING_RED;
-        
 
         this.mossTickGrowthRate = 15;
 
@@ -113,6 +112,9 @@ export class BaseMossOrganism {
 
     growMossSquare(square) {
         let newMoss = new this.greenType(square, this);
+        newMoss.mossSqTick();
+
+        newMoss.opacity = .01;
         this.lifeSquares.push(newMoss);
     }
 
@@ -129,7 +131,7 @@ export class BaseMossOrganism {
         if (square != null) {
             let newMoss = new this.greenType(square, this);
             newMoss.mossSqTick();
-            let tml = Math.abs(newMoss.tickMoistureLevel); 
+            let tml = Math.abs(newMoss.tickMoistureLevel);
             let tll = Math.abs(newMoss.tickLightLevel);
 
             if (tll == 1 || tml == 1) {
@@ -160,6 +162,10 @@ export class BaseMossOrganism {
 
     process() {
         if (this.lifeSquares.length == 0) {
+            if (this.linkedSquare == null) {
+                this.destroy();
+                return;
+            }
             this.growMossSquare(this.linkedSquare);
         }
         if (Date.now() - this.lastTickTime < (getFrameDt() * 3)) {
@@ -175,11 +181,12 @@ export class BaseMossOrganism {
 
     }
     render() {
-        this.lifeSquares.forEach((lsq) => lsq.render()); 
+        this.lifeSquares.forEach((lsq) => lsq.render());
         if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_ORGANISMS) {
             MAIN_CONTEXT.fillStyle = this.organismColor;
             zoomCanvasFillRect(this.posX, this.posY, 1, 1);
         }
+        
     }
     destroy() {
         this.lifeSquares.forEach((lsq) => lsq.destroy());

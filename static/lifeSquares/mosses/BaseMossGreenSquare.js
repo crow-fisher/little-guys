@@ -71,7 +71,7 @@ export class BaseMossGreenSquare extends BaseLifeSquare {
         let tml = Math.abs(this.tickMoistureLevel);
         let tll = Math.abs(this.tickLightLevel);
         let maxSqOpacity = 1 - Math.max(tml, tll);
-        this.opacity += 1 / this.linkedOrganism.mossTickGrowthRate;
+        this.opacity += maxSqOpacity / this.linkedOrganism.mossTickGrowthRate;
         this.opacity = Math.min(this.opacity, maxSqOpacity);
     }
 
@@ -103,7 +103,7 @@ export class BaseMossGreenSquare extends BaseLifeSquare {
     }
 
     renderMoisture(frameOpacity) {
-        return this.renderNutrient(frameOpacity, this.tickMoistureLevel);
+        return this.renderNutrient(1, this.tickMoistureLevel);
     }
 
     renderLighting() {
