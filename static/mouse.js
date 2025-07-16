@@ -58,6 +58,7 @@ export function getLeftMouseUpEvent() {
 export function handleMouseDown(e) {
     e.preventDefault();
     lastMoveEventTime = Date.now();
+    touchMode = false;
     if (!isLeftMouseClicked()) {
         lastMouseDownStart = Date.now();
         mouseEventCounter.clear();
@@ -109,12 +110,26 @@ export function handleClick(event) {
     }
 }
 
+let touchMode = false;
+let touchActive = false;
+
+export function isTouchMode() {
+    return touchMode;
+}
+
+export function isTouchActive() {
+    return touchActive;
+}
+
 // Handle Touch Events
 export function handleTouchStart(e) {
     e.preventDefault();
     handleTouchMove(e, true);
     lastMouseDownStart = Date.now();
     
+    touchMode = true;
+    touchActive = true;
+
     // We can simulate mouse down events for the first touch
     let touch = e.touches[0];
     switch (touch.button) {
@@ -135,6 +150,7 @@ export function handleTouchStart(e) {
 export function handleTouchEnd(e) {
     e.preventDefault();
     let leftMouseWasClicked = leftMouseClicked;
+    touchActive = false;
     if (e.touches.length === 0) {
         // No more touches, reset click states
         leftMouseClicked = false;

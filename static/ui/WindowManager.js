@@ -14,7 +14,7 @@ import { LightingComponent } from "./components/LightingComponent.js";
 import { WeatherSelectionComponent } from "./components/WeatherSelectionComponent.js";
 import { TimeSkipComponent } from "./components/TimeSkipComponent.js";
 import { CloudControlComponent } from "./components/CloudControlComponent.js";
-import { getLastMouseDown, getLastMoveOffset, isLeftMouseClicked } from "../mouse.js";
+import { getLastMouseDown, getLastMoveOffset, isLeftMouseClicked, isTouchActive, isTouchMode } from "../mouse.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { COLOR_BLUE, COLOR_RED, RGB_COLOR_BLUE, RGB_COLOR_GREEN, RGB_COLOR_RED, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
 import { doBrushFunc } from "../manipulation.js";
@@ -210,6 +210,9 @@ export function renderMouseHover() {
         return;
 
     if (!loadGD(UI_PALETTE_ACTIVE))
+        return;
+
+    if (isTouchMode() && !isTouchActive())
         return;
 
     let offsetTransformed = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);

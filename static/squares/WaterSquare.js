@@ -51,6 +51,13 @@ class WaterSquare extends BaseSquare {
         super.reset();
         this.currentPressureDirect = -1;
         this.currentPressureIndirect = -1;
+
+        if (Math.random() > 0.99) {
+            getSquares(this.posX, this.posY)
+                .filter((sq) => sq.proto == this.proto)
+                .filter((sq) => sq != this)
+                .forEach((sq) => sq.destroy(true));
+        }
     }
 
     physics() {
