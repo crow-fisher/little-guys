@@ -284,6 +284,8 @@ export function doClickAdd() {
                 }
             } else if (loadGD(UI_SM_ORGANISM)) {
                 placeActiveSeed(px, py);
+            } else {
+                doBrushFunc(px, py, (x, y) => addWindPressureDryAir(x, y, loadGD(UI_CLIMATE_WEATHER_TOOL_STRENGTH)));
             }
         }
     } else {

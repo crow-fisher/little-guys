@@ -1,7 +1,7 @@
 import { iterateOnSquares } from "../squares/_sqOperations.js";
 import { getCloudColorAtPos } from "../climate/simulation/temperatureHumidity.js";
 import { getCurrentLightColorTemperature, getDaylightStrength, getFrameDt, getMoonlightColor } from "../climate/time.js";
-import { loadGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_QUALITY, UI_LIGHTING_SUN, UI_LIGHTING_UPDATERATE, UI_SIMULATION_CLOUDS } from "../ui/UIData.js";
+import { loadGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_LIGHTING_CLOUDCOVER_OPACITY, UI_LIGHTING_DECAY, UI_LIGHTING_MOON, UI_LIGHTING_QUALITY, UI_LIGHTING_SUN, UI_LIGHTING_UPDATERATE, UI_SIMULATION_CLOUDS } from "../ui/UIData.js";
 import { getFrameXMaxWsq, getFrameXMinWsq, getFrameYMaxWsq, getFrameYMinWsq, getWindSquaresX, getWindSquaresY } from "../climate/simulation/wind.js";
 import { getCurLightingInterval } from "./lightingHandler.js";
 import { isLeftMouseClicked, isRightMouseClicked } from "../mouse.js";
@@ -156,13 +156,15 @@ export class LightSource {
             this.windSquareBrightnessMults[rayIdx] = 1;
         }
 
+        let opacityFactor = loadGD(UI_LIGHTING_CLOUDCOVER_OPACITY);
+
         for (let x = getFrameXMinWsq(); x < getFrameXMaxWsq(); x++) {
             for (let y = getFrameYMinWsq(); y < getFrameYMaxWsq(); y++) {
                 let wsqTheta = Math.atan(((x * 4) - this.posX) /((y * 4) - this.posY));
                 let wsqThetaNormalized = wsqTheta - this.minTheta;
                 let bucket = Math.floor(wsqThetaNormalized / this.thetaStep);
                 let windSquareCloudColor = getCloudColorAtPos(x, y);
-                let opacity = windSquareCloudColor.a * 0.1;
+                let opacity = windSquareCloudColor.a * opacityFactor;
                 let outLightColor = { r: 255, g: 255, b: 255 };
                 outLightColor.r *= (windSquareCloudColor.r / 255) * opacity + (1 - opacity)
                 outLightColor.g *= (windSquareCloudColor.g / 255) * opacity + (1 - opacity)
