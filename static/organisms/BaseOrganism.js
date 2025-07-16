@@ -59,10 +59,8 @@ class BaseOrganism {
         this.greenType = null;
         this.rootType = null;
 
-        this.waterPressureTarget = 0;
-        this.waterPressure = 0;
-        this.waterPressureChangeRate = .01;
-        this.waterPressureLossRate = 30000;
+        this.waterPressure = this.waterPressureSoilTarget();
+        this.waterPressureChangeRate = .001;
 
         // nutrients normalized to "pounds per acre" per farming websites
         this.ph = 7;
@@ -209,29 +207,41 @@ class BaseOrganism {
             0);
 
         
-        let waterPressureLossRate = 0;
-        if (this.waterPressure < this.waterPressureTarget) {
-            waterPressureLossRate = 1;
-        } else {
-            waterPressureLossRate = 1.5;
-        }
+        let target = this.waterPressureSoilTarget();
+        let min = target + this.waterPressureWiltThresh();
+        let max = target + this.waterPressureOverwaterThresh();
 
-        this.waterPressure -= 2 * waterPressureLossRate * this.waterPressureChangeRate;
+        let waterPressureLossRate;
 
-        this.waterPressure += (1 / numRoots) * this.waterPressureChangeRate * roots.filter((lsq) => lsq.linkedSquare != null && lsq.linkedSquare.proto == "SoilSquare")
-            .map((lsq) => {
-                let sq = lsq.linkedSquare;
-                let sqWaterPressure = sq.getSoilWaterPressure();
-                let diffToTarget = sqWaterPressure - this.waterPressureSoilTarget();
-                if (diffToTarget <= 0) {
-                    return 0;
-                }
-                
-                if (Math.random() > 0.999)
-                    console.log(diffToTarget);
-                return diffToTarget;
-            })
-            .reduce((a, b) => a + b, 0);
+        if (this.waterPressure < min)
+            waterPressureLossRate = 0;
+        else if (this.waterPressure < target)
+            waterPressureLossRate = (this.waterPressure - min) / (target - min);
+        else if (this.waterPressure < max)
+            waterPressureLossRate = 1 + (this.waterPressure - target) / (max - target);
+        else 
+            waterPressureLossRate = 2;
+
+        console.log(this.waterPressure, "min: ", min, "target: ", target," max: ",  max, "waterPressureLossRate: ", waterPressureLossRate, "wilt", this.getWilt());
+        this.waterPressure -= waterPressureLossRate * this.waterPressureChangeRate;
+
+        if (numRoots > 0)
+            this.waterPressure += (1 / numRoots) * this.waterPressureChangeRate * roots.filter((lsq) => lsq.linkedSquare != null && lsq.linkedSquare.proto == "SoilSquare")
+                .map((lsq) => {
+                    let sq = lsq.linkedSquare;
+                    let sqWaterPressure = sq.getSoilWaterPressure();
+                    let diffToTarget = sqWaterPressure - this.waterPressureSoilTarget();
+                    if (diffToTarget <= 0) {
+                        return 0;
+                    }
+
+                    let amount = diffToTarget;
+                    if (this.waterPressure > target)
+                        amount /= waterPressureLossRate;
+
+                    return amount;
+                })
+                .reduce((a, b) => a + b, 0);
     }
 
     nutrientTick() {
@@ -272,15 +282,19 @@ class BaseOrganism {
         if (greenLifeSquares.length == 0) {
             return 0;
         }
-        if (this.waterPressure > this.waterPressureTarget) {
-            let mid = this.waterPressureTarget + (this.waterPressureOverwaterThresh() / 2);
-            let max = this.waterPressureTarget + this.waterPressureOverwaterThresh();
+        
+        let target = this.waterPressureSoilTarget();
+        let min = target + this.waterPressureWiltThresh();
+        let max = target + this.waterPressureOverwaterThresh();
+
+        if (this.waterPressure > target) {
+            let mid = (target + max) / 2;
             if (this.waterPressure < mid) {
-                return 1;
+                return 0;
             }
             return Math.min(1, (this.waterPressure - mid) / (max - mid));
-        } else if (this.waterPressure > this.waterPressureWiltThresh()) {
-            return (this.waterPressure - this.waterPressureWiltThresh()) / (this.waterPressureTarget - this.waterPressureWiltThresh()) - 1;
+        } else if (this.waterPressure > min) {
+            return (this.waterPressure - min) / (this.waterPressureTarget - min) - 1;
         } else {
             return -1;
         }
