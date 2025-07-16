@@ -15,10 +15,10 @@ import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReductio
 // ref: https://prairiecalifornian.com/wheat-growth-stages/
 
 export let wheat_dnm = structuredClone(baseOrganism_dnm);
-wheat_dnm[_llt_min] = 0.84;
-wheat_dnm[_llt_max] = 1.52;
-wheat_dnm[_llt_throttlValMax] = 7.49;
-wheat_dnm[_seedReduction] = 0.10;
+wheat_dnm[_llt_min] = 0.59;
+wheat_dnm[_llt_max] = 1.29;
+wheat_dnm[_llt_throttlValMax] = 4;
+wheat_dnm[_seedReduction] = 0.20;
 wheat_dnm[_waterPressureSoilTarget] = -4;
 wheat_dnm[_waterPressureOverwaterThresh] = 1;
 wheat_dnm[_waterPressureWiltThresh] = -1.96;
@@ -32,7 +32,7 @@ export class WheatOrganism extends BaseOrganism {
         this.greenType = WheatGreenSquare;
         this.rootType = GenericRootSquare;
 
-        this.growthCycleMaturityLength = 20;
+        this.growthCycleMaturityLength = 20 + Math.random() * 10;
         this.growthCycleLength = this.growthCycleMaturityLength * 2;
 
         this.stems = [];
