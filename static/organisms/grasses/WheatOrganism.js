@@ -15,14 +15,14 @@ import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReductio
 // ref: https://prairiecalifornian.com/wheat-growth-stages/
 
 export let wheat_dnm = structuredClone(baseOrganism_dnm);
-wheat_dnm[_llt_min] = 0.58;
-wheat_dnm[_llt_max] = 1.35;
-wheat_dnm[_llt_throttlValMax] = 4.42;
+wheat_dnm[_llt_min] = 0.84;
+wheat_dnm[_llt_max] = 1.52;
+wheat_dnm[_llt_throttlValMax] = 7.49;
 wheat_dnm[_seedReduction] = 0.10;
-wheat_dnm[_waterPressureSoilTarget] = -3.2;
-wheat_dnm[_waterPressureOverwaterThresh] = .98;
-wheat_dnm[_waterPressureWiltThresh] = -1.57;
-wheat_dnm[_lightDecayValue] = 1;
+wheat_dnm[_waterPressureSoilTarget] = -4;
+wheat_dnm[_waterPressureOverwaterThresh] = 1;
+wheat_dnm[_waterPressureWiltThresh] = -1.96;
+wheat_dnm[_lightDecayValue] = 2.6;
 
 export class WheatOrganism extends BaseOrganism {
     constructor(square) {

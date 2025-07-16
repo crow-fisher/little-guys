@@ -71,13 +71,16 @@ class BaseSeedOrganism extends BaseOrganism {
         let rockSq = getSquares(this.posX, this.posY + searchDist)
             .find((sq) => sq.proto == "RockSquare");
         
-        if ((this.rockable ? (soilSq ?? rockSq) : soilSq) != null) {
-            if (soilSq.linkedOrganismSquares.some((lsq) => lsq.linkedOrganism.proto == this.getSproutTypeProto())) {
+
+        let targetSq = (this.rockable ? (soilSq ?? rockSq) : soilSq);
+
+        if (targetSq != null) {
+            if (targetSq.linkedOrganismSquares.some((lsq) => lsq.linkedOrganism.proto == this.getSproutTypeProto())) {
                 this.destroySeed();
                 return;
             } // only happy path out of this statement
         } else {
-            if (rockSq != null) {
+            if (rockSq != null && !this.rockable) {
                 this.destroySeed(true);
             }
             return;
@@ -89,17 +92,17 @@ class BaseSeedOrganism extends BaseOrganism {
         this.unlinkSquare(true);
         origSeedSquare.destroy(false);
 
-        this.posX = soilSq.posX;
-        this.posY = soilSq.posY;
+        this.posX = targetSq.posX;
+        this.posY = targetSq.posY;
 
         this.lifeSquares.forEach((lsq) => {
             lsq.posX = this.posX;
             lsq.posY = this.posY;
             lsq.linkSquare(soilSq);
-            soilSq.linkOrganismSquare(lsq);
+            targetSq.linkOrganismSquare(lsq);
         });
         
-        this.linkSquare(soilSq);
+        this.linkSquare(targetSq);
     }
 
     applyEvolutionParameters(org) {

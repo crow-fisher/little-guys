@@ -17,7 +17,7 @@ const ES2 = 0b00001;
 
 export class Player {
     constructor() {
-        this.posX = getCanvasSquaresX() / 2;
+        this.posX = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) / getBaseSize();
         this.posY = 0;
 
         this.speedX = 0;
