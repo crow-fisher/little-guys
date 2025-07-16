@@ -17,8 +17,8 @@ cattail_dnm[_llt_max] = 1.29;
 cattail_dnm[_llt_throttlValMax] = 5.35;
 cattail_dnm[_seedReduction] = 0.08;
 cattail_dnm[_waterPressureSoilTarget] = -2.07;
-cattail_dnm[_waterPressureOverwaterThresh] = 1.93;
-cattail_dnm[_waterPressureWiltThresh] = -.17;
+cattail_dnm[_waterPressureOverwaterThresh] = 1;
+cattail_dnm[_waterPressureWiltThresh] = -.25;
 cattail_dnm[_lightDecayValue] = 1;
 
 

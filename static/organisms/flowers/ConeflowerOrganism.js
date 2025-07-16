@@ -15,8 +15,8 @@ coneflower_dnm[_llt_min] = 0.84;
 coneflower_dnm[_llt_max] = 1.52;
 coneflower_dnm[_llt_throttlValMax] = 7.49;
 coneflower_dnm[_seedReduction] = 0.10;
-coneflower_dnm[_waterPressureSoilTarget] = -2.91;
-coneflower_dnm[_waterPressureOverwaterThresh] = 1.85;
+coneflower_dnm[_waterPressureSoilTarget] = -4;
+coneflower_dnm[_waterPressureOverwaterThresh] = 1;
 coneflower_dnm[_waterPressureWiltThresh] = -1.96;
 coneflower_dnm[_lightDecayValue] = 2.6;
 

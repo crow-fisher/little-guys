@@ -60,7 +60,7 @@ class BaseOrganism {
         this.rootType = null;
 
         this.waterPressure = this.waterPressureSoilTarget();
-        this.waterPressureChangeRate = .001;
+        this.waterPressureChangeRate = .01;
 
         // nutrients normalized to "pounds per acre" per farming websites
         this.ph = 7;
