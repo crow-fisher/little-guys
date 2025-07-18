@@ -68,7 +68,7 @@ export class CloudControlComponent extends Component {
     render() {
         if (loadUI(UI_UI_PHONEMODE)) {
             if (this.phoneModeOffset == 0) {
-                this.phoneModeOffset = getBaseUISize() * 6;
+                this.phoneModeOffset = getBaseUISize() * 3;
                 this.window.posY += this.phoneModeOffset;
             }
         } else {

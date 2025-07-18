@@ -252,7 +252,7 @@ export class TopBarComponent {
             return;
         }
         
-        this.phoneModeOffset = (loadUI(UI_UI_PHONEMODE) ? getBaseUISize() * 6 : 0);
+        this.phoneModeOffset = (loadUI(UI_UI_PHONEMODE) ? getBaseUISize() * 3 : 0);
 
         let shouldRenderAsTwoRows = getCanvasWidth() < this.viewAsTwoRowsWidthCutoff;
         MAIN_CONTEXT.fillStyle = COLOR_BLACK;
