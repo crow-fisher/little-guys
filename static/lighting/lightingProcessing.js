@@ -68,18 +68,18 @@ export function lightingExposureAdjustment() {
     };
 
 
-    let greenLen = 0;
-    let greenCount = 0;
-    iterateOnOrganisms((org) => {
-        let greens = Array.from(org.lifeSquares.filter((lsq) => lsq.type == "green"));
-        if (greens.length > 0) {
-            greenCount += 1;
-            greenLen += greens.length;
-            if (greens.length > averageGreenLen)
-                collectedSquares.push(greens.at(greens.length - 1));
-        }
-    });
-    averageGreenLen = greenCount / greenLen;
+    // let greenLen = 0;
+    // let greenCount = 0;
+    // iterateOnOrganisms((org) => {
+    //     let greens = Array.from(org.lifeSquares.filter((lsq) => lsq.type == "green"));
+    //     if (greens.length > 0) {
+    //         greenCount += 1;
+    //         greenLen += greens.length;
+    //         if (greens.length > averageGreenLen)
+    //             collectedSquares.push(greens.at(greens.length - 1));
+    //     }
+    // });
+    // averageGreenLen = greenCount / greenLen;
 
     if (collectedSquares.length == 0) {
         return;
@@ -96,7 +96,6 @@ export function lightingExposureAdjustment() {
                     .reduce((a, b) => a + b, 0);
                 return b * (c.r / 255) + b * (c.b / 255);
             }
-
             )).map((arr) => arr.reduce((a, b) => a + b, 0));
 
     let mean = strengths.reduce((a, b) => a + b, 0) / collectedSquares.length;
