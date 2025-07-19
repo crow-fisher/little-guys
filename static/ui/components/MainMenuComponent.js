@@ -99,13 +99,14 @@ export class MainMenuComponent extends SubTreeComponent {
         subMenuContainer.addElement(new Text(this.window, this.sizeX, getBaseUISize() * .5, this.textAlignOffsetX, ""));
 
         subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, loadEmptyScene, "empty scene", () => getActiveClimate().getUIColorInactiveCustom(0.61)));
+        subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, () => setTimeout(deleteAllSaveData, 100), "delete all save data", () => getActiveClimate().getUIColorInactiveCustom(0.64)));
+
         subMenuContainer.addElement( new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, purgeCanvasFrameLimit, "purge off-screen blocks", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
         subMenuContainer.addElement( new Toggle(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, UI_UI_SHOWHIDDEN, 
         "show hidden worlds",  () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient(), 0.75, true, UICONFIG));
         subMenuContainer.addElement( new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, deleteHiddenWorlds, "delete hidden worlds", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
         subMenuContainer.addElement( new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, resetZoom, "reset zoom", () => getActiveClimate().getUIColorInactiveCustom(0.60)));
 
-        subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, () => setTimeout(deleteAllSaveData, 100), "delete all save data", () => getActiveClimate().getUIColorInactiveCustom(0.64)));
         subMenuContainer.addElement( new Toggle(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, UI_UI_PHONEMODE, 
         "phone mode",  () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient(), 0.75, true, UICONFIG));
 
