@@ -6,7 +6,6 @@ export class PleurocarpMossGreenSquare extends BaseMossGreenSquare {
     constructor(square, organism) {
         super(square, organism);
         this.proto = "PleurocarpMossGreenSquare";
-        this.type = "green";
         this.width = 1;
         this.activeRenderSubtype = null;
         this.LSQ_RENDER_SIZE_MULT = 1;

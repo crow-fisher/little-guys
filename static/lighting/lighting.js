@@ -265,7 +265,7 @@ export class LightSource {
         this.prepareSquareCoordinatePlane();
         for (let _i = 0; _i < this.numTasks; _i++) {
             let i = _i;
-            let scheduledTime = i * timeInterval + (getFrameDt() * (jobIdx % loadGD(UI_LIGHTING_UPDATERATE)));
+            let scheduledTime = i * timeInterval;
             addTimeout(setTimeout(() => {
                 let bottom = i * (this.numRays / this.numTasks);
                 let top = (i + 1) * (this.numRays / this.numTasks);
