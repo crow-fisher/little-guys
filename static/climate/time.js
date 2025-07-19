@@ -1,4 +1,4 @@
-import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillCircle } from "../canvas.js";
+import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, getFrameXMax, getFrameXMin, getFrameYMax, getFrameYMin, isSquareOnCanvas, zoomCanvasFillCircle } from "../canvas.js";
 import { hexToRgb, hsv2rgb, randNumber, randRange, rgb2hsv, rgbToHex, rgbToRgba } from "../common.js";
 import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth, MAIN_CONTEXT, setBackgroundColor } from "../index.js";
 import { calculateColorRGB, getFrameRelCloud } from "./simulation/temperatureHumidity.js";
@@ -11,7 +11,9 @@ import {
     UI_SPEED_8,
     UI_SPEED_9,
     UI_SPEED,
-    UI_SPEED_0, saveGD
+    UI_SPEED_0, saveGD,
+    UI_GAME_MAX_CANVAS_SQUARES_X,
+    UI_GAME_MAX_CANVAS_SQUARES_Y
 } from "../ui/UIData.js";
 import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
 import { SunCalc } from "./suncalc/suncalc.js";
@@ -206,22 +208,27 @@ function getPrevTime() {
 function initializeStarMap() {
     starMap = new Map();
     starColorTemperatureMap = new Map();
-    starMapCenterX = randNumber(getCanvasSquaresX() / 4, getCanvasSquaresX() * 0.75);
-    starMapCenterY = randNumber(getCanvasSquaresY() / 4, getCanvasSquaresY() * 0.75);
+    let sx = loadGD(UI_GAME_MAX_CANVAS_SQUARES_X);
+    let sy = loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y);
 
-    let numStars = randNumber(4000, 8000) * ((getCanvasSquaresY() / 100) ** 0.1);
+    starMapCenterX = randNumber(sx / 4, sx * 0.75);
+    starMapCenterY = randNumber(sy / 4, sy * 0.75);
+
+    let numStars = 10000 * (1 + Math.random()) * ((sx / 100) ** 0.1);
 
     for (let i = 0; i < numStars; i++) {
-        let starX = randNumber(-getCanvasSquaresX() * 4, getCanvasSquaresX() * 4);
-        let starY = randNumber(-getCanvasSquaresY() * 4, getCanvasSquaresY() * 4);
+        let starX = randNumber(-sx * 4, sx * 4);
+        let starY = randNumber(-sy * 4, sy * 4);
+        
         let starBrightness = (Math.random() ** 0.7) * 0.3;
 
-        if (!(starX in starMap)) {
-            starMap[starX] = new Map();
-            starColorTemperatureMap[starX] = new Map();
+        if (!(starMap.has(starX))) {
+            starMap.set(starX, new Map());
+            starColorTemperatureMap.set(starX, new Map());
         }
-        starMap[starX][starY] = starBrightness;
-        starColorTemperatureMap[starX][starY] = randRange(0.63, 1);
+
+        starMap.get(starX).set(starY, starBrightness);
+        starColorTemperatureMap.get(starX).set(starY,  randRange(0.63, 1));
     }
 }
 
@@ -237,13 +244,13 @@ function renderStarMap(brightnessMult) {
         return;
     }
 
-    let xKeys = Array.from(Object.keys(starMap));
+    let xKeys = Array.from(starMap.keys());
     for (let i = 0; i < xKeys.length; i++) {
-        let yKeys = Array.from(Object.keys(starMap[xKeys[i]]));
+        let yKeys = Array.from(starMap.get(xKeys[i]).keys());
         for (let j = 0; j < yKeys.length; j++) {
             let starX = xKeys[i];
             let starY = yKeys[j];
-            let starbrightness = starMap[starX][starY] * Math.max(brightnessMult, 0);
+            let starbrightness = starMap.get(starX).get(starY) * Math.max(brightnessMult, 0);
 
             let starXRelOrigin = starX - starMapCenterX;
             let starYRelOrigin = starY - starMapCenterY;
@@ -256,16 +263,12 @@ function renderStarMap(brightnessMult) {
             let endX = rotatedX + starMapCenterX;
             let endY = rotatedY + starMapCenterX;
 
-            if (endX < 0 || endY < 0) {
+            if (!isSquareOnCanvas(endX, endY)) 
                 continue;
-            }
-            if (endX > getCanvasSquaresX() || endY > getCanvasSquaresY()) {
-                continue;
-            }
 
             let r = 0.4;
             let b = (starbrightness) * r + (1) * (1 - r);
-            MAIN_CONTEXT.fillStyle = calculateTempColorRgbaNoCache(starColorTemperatureMap[starX][starY], (b * (1 - frameCloudMult)));
+            MAIN_CONTEXT.fillStyle = calculateTempColorRgbaNoCache(starColorTemperatureMap.get(starX).get(starY), (b * (1 - frameCloudMult)));
             zoomCanvasFillCircle(
                 endX * getBaseSize(),
                 endY * getBaseSize(),
