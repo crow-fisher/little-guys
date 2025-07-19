@@ -65,8 +65,7 @@ export function reset() {
         for (let j = Math.min(max, getFrameYMax() + 1); j >= Math.max(min, getFrameYMin() - 1); j--) {
             if (firstLevel.has(j))
                 firstLevel.get(j).forEach((sq) => {
-                    if (sq.linkedOrganisms.length > 0)
-                        sq.linkedOrganisms.forEach((org) => frame_simulation_organisms.push(org));
+                    sq.linkedOrganisms.forEach((org) => frame_simulation_organisms.push(org));
                     frame_simulation_squares.push(sq);
                 });
         }

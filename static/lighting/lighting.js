@@ -9,7 +9,7 @@ import { addTimeout } from "../main.js";
 import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
 import { isSaveOrLoadInProgress } from "../saveAndLoad.js";
 import { isSquareOnCanvas } from "../canvas.js";
-import { getFrameSimulationSquares } from "../globalOperations.js";
+import { getFrameSimulationOrganisms, getFrameSimulationSquares } from "../globalOperations.js";
 import { randRange } from "../common.js";
 
 export let MAX_BRIGHTNESS = 8;
@@ -201,7 +201,7 @@ export class LightSource {
             allSquares.push([relPosX, relPosY, sqTheta, sq]);
         });
 
-        iterateOnOrganisms((org) => {
+        getFrameSimulationOrganisms().forEach((org) => {
             org.lifeSquares.filter((lsq) => lsq.type == "green").forEach((lsq) => {
                 let relPosX = lsq.getPosX() - this.posX;
                 let relPosY = lsq.getPosY() - this.posY;
@@ -238,7 +238,7 @@ export class LightSource {
             return;
         }
         let thetaSquares = this.thetaSquares[i];
-        if (thetaSquares == null) {
+        if (thetaSquares == null || thetaSquares.length == 0) {
             return;
         }
         thetaSquares.sort((a, b) => (a[0] ** 2 + a[1] ** 2) ** 0.5 - (b[0] ** 2 + b[1] ** 2) ** 0.5);
@@ -265,7 +265,7 @@ export class LightSource {
         this.prepareSquareCoordinatePlane();
         for (let _i = 0; _i < this.numTasks; _i++) {
             let i = _i;
-            let scheduledTime = i * timeInterval + (getFrameDt() * (jobIdx % loadGD(UI_LIGHTING_UPDATERATE)));
+            let scheduledTime = _i * timeInterval + (getFrameDt() * (jobIdx % loadGD(UI_LIGHTING_UPDATERATE)));
             addTimeout(setTimeout(() => {
                 let bottom = i * (this.numRays / this.numTasks);
                 let top = (i + 1) * (this.numRays / this.numTasks);
