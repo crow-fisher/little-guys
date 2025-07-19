@@ -11,7 +11,10 @@ import { BackgroundImageSquare, ImageSquare, RigidImageSquare, StaticImageSquare
 
 export let MAIN_CANVAS = document.getElementById("main");
 export let MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
-export const DEBUG = false;
+
+let params = new URLSearchParams(document.location.search);
+
+export let DEBUG = params.get("debug");
 
 const body = document.getElementById("body");
 
