@@ -497,6 +497,12 @@ export function manipulateWindPressureMaintainHumidityBlockSquare(posX, posY, am
 }
 
 export function addWindPressureDryAir(posX, posY, amount) {
+    posX = Math.max(0, posX);
+    posY = Math.max(0, posY);
+    
+    posX = Math.min(0, loadGD(UI_GAME_MAX_CANVAS_SQUARES_X));
+    posY = Math.min(0, loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y));
+
     let x = Math.floor(posX / 4);
     let y = Math.floor(posY / 4);
     if (isWindSquareBlocked(x, y)) {
