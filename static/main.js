@@ -23,8 +23,8 @@ let liveTimeouts = new Array();
 doTimeSkipToNow();
 
 
-export function addTimeout(timeout) {
-    liveTimeouts.push(timeout);
+export function addTimeout(myTimeout) {
+    liveTimeouts.push(myTimeout);
 }
 export function clearTimeouts() {
     liveTimeouts.forEach((timeout) => clearTimeout(timeout));

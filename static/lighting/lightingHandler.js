@@ -43,7 +43,7 @@ export class LightingHandler {
         for (let i = 0; i < this.lightSources.length; i++) {
             this.lightSources[i].doRayCasting(i);
         }
-        this.nextLightingUpdate = Date.now() + 100;
+        this.nextLightingUpdate = Date.now() + getCurLightingInterval();
     }
     destroy() {
         this.lightSources.forEach((ls) => ls.destroy());

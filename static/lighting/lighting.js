@@ -263,12 +263,16 @@ export class LightSource {
         this.numTasksCompleted[idx][jobIdx] = 0;
         let timeInterval = (getCurLightingInterval() / this.numTasks);
         this.prepareSquareCoordinatePlane();
-        for (let i = 0; i < this.numTasks; i++) {
+        for (let _i = 0; _i < this.numTasks; _i++) {
+            let i = _i;
             let scheduledTime = i * timeInterval + (getFrameDt() * (jobIdx % loadGD(UI_LIGHTING_UPDATERATE)));
             addTimeout(setTimeout(() => {
-                for (let i = 0; i < this.numRays; i++) {
-                    this.rayCastingForRayIdx(idx, jobIdx, i);
-                }
+                let bottom = i * (this.numRays / this.numTasks);
+                let top = (i + 1) * (this.numRays / this.numTasks);
+
+                for (let j = bottom; j < top; j++) 
+                    this.rayCastingForRayIdx(idx, jobIdx, j);
+
                 this.numTasksCompleted[idx][jobIdx] += 1;
                 if (this.numTasksCompleted[idx][jobIdx] == this.numTasks) {
                     onComplete();

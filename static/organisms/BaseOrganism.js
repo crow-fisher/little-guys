@@ -222,7 +222,6 @@ class BaseOrganism {
         else 
             waterPressureLossRate = 2;
 
-        console.log(this.waterPressure, "min: ", min, "target: ", target," max: ",  max, "waterPressureLossRate: ", waterPressureLossRate, "wilt", this.getWilt());
         this.waterPressure -= waterPressureLossRate * this.waterPressureChangeRate;
 
         if (numRoots > 0)
