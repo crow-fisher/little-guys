@@ -95,7 +95,7 @@ export class StationaryWideLightGroup extends LightGroup {
                 this.centerY,
                 this.brightnessFunc,
                 this.colorFunc,
-                10 ** 8,
+                100,
                 minMaxTheta[0],
                 minMaxTheta[1],
                 Math.ceil((300 / 7) * loadGD(UI_LIGHTING_QUALITY))
@@ -114,8 +114,10 @@ export class StationaryWideLightGroup extends LightGroup {
         for (let i = 0; i < this.lightSources.length; i++) {
             completionMap.set(i, false);
             this.lightSources[i].calculateFrameCloudCover();
-            this.lightSources[i].doRayCasting(idx, i, () => {
-                completionMap.set(i, true);
+
+            let _i = i;
+            this.lightSources[i].doRayCasting(idx, _i, () => {
+                completionMap.set(_i, true);
                 if (completionMap.values().every((val) => val)) {
                     this.idxCompletionMap.set(idx, true);
                 }

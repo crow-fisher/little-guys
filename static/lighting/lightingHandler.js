@@ -1,5 +1,4 @@
 import { getFrameDt } from "../climate/time.js";
-import { iterateOnSquares } from "../squares/_sqOperations.js";
 import { loadGD, UI_LIGHTING_UPDATERATE, UI_LIGHTING_ENABLED, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "../ui/UIData.js";
 import { createMoonLightGroup, createSunLightGroup } from "./lighting.js";
 
@@ -21,8 +20,6 @@ export class LightingHandler {
     }
 
     initLightSources() {
-        this.lightSources.forEach((ls) => ls.destroy());
-        this.lightSources = new Array();
         this.lightSources.push(createSunLightGroup());
         this.lightSources.push(createMoonLightGroup());
         this.lightingSizeX = loadGD(UI_GAME_MAX_CANVAS_SQUARES_X);
