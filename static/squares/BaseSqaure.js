@@ -714,6 +714,14 @@ export class BaseSquare {
             }
         }
 
+        let shouldResetGroup = false;
+        if (isGroupGrounded(this.group) && this.currentPressureDirect > 10) {
+            if ((Math.random() * 1.5) < 1 - (1 / this.currentPressureDirect) && !getSquares(this.posX, this.posY + 2).some((sq) => sq.testCollidesWithSquare(this))) {
+                return;
+            }
+            shouldResetGroup = true;
+        }
+
         let maxSpeed = 5;
 
         this.speedX = Math.min(maxSpeed, Math.max(-maxSpeed, this.speedX));
@@ -731,12 +739,34 @@ export class BaseSquare {
         }
 
         let nextPos = nextPath.at(nextPath.length - 1);
-        this.updatePosition(nextPos[0], nextPos[1]);
+
+        let finalXPos = nextPos[0];
+        let finalYPos = nextPos[1];
+
+        if (finalXPos != this.posX | this.posY != finalYPos) {
+            let finalYPosFloor = Math.floor(finalYPos);
+            let finalYPosFrac = finalYPos - finalYPosFloor;
+            this.offsetY = finalYPosFrac;
+            this.updatePosition(finalXPos, finalYPosFloor);
+
+            if (!this.solid) {
+                shouldResetGroup = true;
+            }
+
+            if (shouldResetGroup) {
+                let origGroup = this.group;
+                this.group = getNextGroupId();
+                if (!this._percolateGroup(origGroup)) {
+                    this.group = origGroup;
+                };
+            }
+        }
 
         if (!isSquareOnCanvas(this.posX, this.posY)) {
             if (this.proto == "WaterSquare" || this.proto == "SeedSquare")
                 this.destroy();
         }
+
 
     }
 
