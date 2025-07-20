@@ -114,8 +114,10 @@ export class StationaryWideLightGroup extends LightGroup {
         for (let i = 0; i < this.lightSources.length; i++) {
             completionMap.set(i, false);
             this.lightSources[i].calculateFrameCloudCover();
+
+            let _i = i;
             this.lightSources[i].doRayCasting(idx, i, () => {
-                completionMap.set(i, true);
+                completionMap.set(_i, true);
                 if (completionMap.values().every((val) => val)) {
                     this.idxCompletionMap.set(idx, true);
                 }

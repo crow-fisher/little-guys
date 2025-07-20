@@ -132,9 +132,9 @@ class WaterSquare extends BaseSquare {
     }
 
     calculateCandidateFlows() {
-        if (this.speedY > 0) {
-            return;
-        }
+        // if (this.speedY > 0) {
+        //     return;
+        // }
         if (!WATERFLOW_CANDIDATE_SQUARES.has(this.group)) {
             WATERFLOW_CANDIDATE_SQUARES.set(this.group, new Map());
         }

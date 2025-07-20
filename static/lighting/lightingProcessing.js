@@ -58,7 +58,6 @@ export function applyLightingFromSource(source, dest) {
     dest.frameCacheLighting = structuredClone(source.frameCacheLighting);
 }
 
-let averageGreenLen = 3;
 export function lightingExposureAdjustment() {
     let collectedSquares = new Array();
     for (let i = 0; i < getCanvasSquaresX(); i += Math.floor(getCanvasSquaresX() ** 0.5)) {
@@ -66,20 +65,6 @@ export function lightingExposureAdjustment() {
             collectedSquares.push(...getSquares(i, j).filter((sq) => sq.solid));
         }
     };
-
-
-    // let greenLen = 0;
-    // let greenCount = 0;
-    // iterateOnOrganisms((org) => {
-    //     let greens = Array.from(org.lifeSquares.filter((lsq) => lsq.type == "green"));
-    //     if (greens.length > 0) {
-    //         greenCount += 1;
-    //         greenLen += greens.length;
-    //         if (greens.length > averageGreenLen)
-    //             collectedSquares.push(greens.at(greens.length - 1));
-    //     }
-    // });
-    // averageGreenLen = greenCount / greenLen;
 
     if (collectedSquares.length == 0) {
         return;
