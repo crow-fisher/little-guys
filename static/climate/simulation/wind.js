@@ -505,9 +505,7 @@ export function addWindPressureDryAir(posX, posY, amount) {
 
     let x = Math.floor(posX / 4);
     let y = Math.floor(posY / 4);
-    if (isWindSquareBlocked(x, y)) {
-        return;
-    }
+
     let pascals = getBaseAirPressureAtYPosition(y) * amount;
     let target = windPressureMap[x][y] + pascals;
     windPressureMap[x][y] = Math.max(getBaseAirPressureAtYPosition(y) * 1, target);
