@@ -197,6 +197,7 @@ export function doWaterFlow() {
                             if (cand.updatePosition(curTarg[0], curTarg[1])) {
                                 let side = (curTarg[0] - startX) > 0 ? 1 : -1;
                                 cand.speedX = side * curTarg[2] * (Math.floor((targPressure - candPressure) ** 0.1));
+                                cand.speedY = 0;
                                 removeItemAll(candidateArr, cand);
                                 cand.currentPressureDirect = -1;
                                 cand.calculateDirectPressure();

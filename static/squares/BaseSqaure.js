@@ -743,7 +743,7 @@ export class BaseSquare {
         let finalXPos = nextPos[0];
         let finalYPos = nextPos[1];
 
-        if (finalXPos != this.posX | this.posY != finalYPos) {
+        if (finalXPos != this.posX || this.posY != finalYPos) {
             let finalYPosFloor = Math.floor(finalYPos);
             let finalYPosFrac = finalYPos - finalYPosFloor;
             this.offsetY = finalYPosFrac;
