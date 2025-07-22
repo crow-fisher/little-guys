@@ -34,29 +34,6 @@ class WaterSquare extends BaseSquare {
         this.thermalMass = 4.2;
     }
 
-    windPhysics() {
-        if (this.linkedOrganismSquares.length > 0) {
-            return;
-        }
-        let ws = getWindSpeedAtLocation(this.posX, this.posY);
-        let maxWindSpeed = 2;
-
-        let wx = Math.min(Math.max(ws[0], -maxWindSpeed), maxWindSpeed);
-        let wy = Math.min(Math.max(ws[1], -maxWindSpeed), maxWindSpeed);
-
-        let px = Math.abs(wx) / maxWindSpeed;
-        let py = Math.abs(wy) / maxWindSpeed;
-
-        let factor = 1;
-
-        if (Math.random() < px) {
-            this.speedX += factor * Math.round(wx);
-        }
-        if (Math.random() < py) {
-            this.speedY += factor * Math.round(wy);
-        }
-    }
-
 
     getLightFilterRate() {
         return super.getLightFilterRate() * Math.exp(-loadGD(UI_LIGHTING_WATER));

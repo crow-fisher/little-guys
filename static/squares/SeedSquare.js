@@ -25,12 +25,6 @@ class SeedSquare extends BaseSquare {
             return;
         }
     }
-
-    seedWindPhysics() {
-        let windSpeed = getWindSpeedAtLocation(this.posX, this.posY);
-        this.speedX += .1 * windSpeed[0];
-        this.speedY += .1 * windSpeed[1];
-    }
 }
 
 export {SeedSquare}

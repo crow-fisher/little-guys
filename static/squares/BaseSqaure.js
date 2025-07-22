@@ -15,7 +15,7 @@ import { MAIN_CONTEXT } from "../index.js";
 import { hexToRgb, removeItemAll, rgbToRgba } from "../common.js";
 import { removeSquare } from "../globalOperations.js";
 import { calculateColorTemperature, getTemperatureAtWindSquare, temperatureHumidityFlowrateFactor, updateWindSquareTemperature } from "../climate/simulation/temperatureHumidity.js";
-import { getWindSquareAbove } from "../climate/simulation/wind.js";
+import { getWindSpeedAtLocation, getWindSquareAbove } from "../climate/simulation/wind.js";
 import { COLOR_BLACK, GROUP_BROWN, GROUP_BLUE, GROUP_MAUVE, GROUP_TAN, GROUP_GREEN, RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
 import { getDaylightStrengthFrameDiff, getFrameDt, getTimeScale } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
@@ -883,7 +883,39 @@ export class BaseSquare {
 
     slopePhysics() { }
 
-    windPhysics() { }
+    windPhysics() {
+        if (this.linkedOrganismSquares.length > 0) {
+            return;
+        }
+        let ws = getWindSpeedAtLocation(this.posX, this.posY);
+        let maxWindSpeed = 2;
+
+        let wx = Math.min(Math.max(ws[0], -maxWindSpeed), maxWindSpeed);
+        let wy = Math.min(Math.max(ws[1], -maxWindSpeed), maxWindSpeed);
+
+        let px = Math.abs(wx) / maxWindSpeed;
+        let py = Math.abs(wy) / maxWindSpeed;
+
+        let factor = 1;
+
+        if (Math.random() < px) {
+            this.speedX += factor * Math.round(wx);
+        }
+        if (Math.random() < py) {
+            this.speedY += factor * Math.round(wy);
+        }
+
+        let sxs = (this.speedX > 0) ? 1 : -1;
+        let sys = (this.speedY > 0) ? 1 : -1;
+
+        if (getSquares(this.posX + sxs, this.posY).filter((sq) => (sq.speedX != this.speedX)).some((sq) => sq.testCollidesWithSquare(this))) {
+            this.speedX = 0;
+        }
+        if (getSquares(this.posX, this.posY + sys).filter((sq) => (sq.speedY != this.speedY)).some((sq) => sq.testCollidesWithSquare(this))) {
+            this.speedY = 0;
+        }
+            
+    }
 
     physics() {
         if (!isSquareOnCanvas(this.posX, this.posY)) {
