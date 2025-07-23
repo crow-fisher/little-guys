@@ -1,10 +1,11 @@
+import { getFrameXMax, getFrameXMin, getFrameYMax, getFrameYMin } from "../../canvas.js";
 import { getCloudColorAtPos } from "../../climate/simulation/temperatureHumidity.js";
 import { getFrameXMaxWsq, getFrameXMinWsq, getFrameYMaxWsq, getFrameYMinWsq } from "../../climate/simulation/wind.js";
 import { getFrameDt } from "../../climate/time.js";
 import { getFrameSimulationSquares } from "../../globalOperations.js";
 import { addTimeout } from "../../main.js";
 import { isSaveOrLoadInProgress } from "../../saveAndLoad.js";
-import { loadGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_LIGHTING_CLOUDCOVER_OPACITY, UI_LIGHTING_DECAY, UI_LIGHTING_QUALITY, UI_LIGHTING_UPDATERATE, UI_SIMULATION_CLOUDS } from "../../ui/UIData.js";
+import { loadGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_LIGHTING_CLOUDCOVER_OPACITY, UI_LIGHTING_DECAY, UI_LIGHTING_QUALITY, UI_LIGHTING_UPDATERATE, UI_SIMULATION_CLOUDS } from "../../ui/UIData.js";
 import { getCurLightingInterval } from "../lightingHandler.js";
 
 export class LightSource {
@@ -14,6 +15,7 @@ export class LightSource {
         this.brightnessFunc = brightnessFunc;
         this.colorFunc = colorFunc;
         this.numRays = numRays;
+        this.thetaStep = Math.PI * 2 / numRays;
 
         this.thetaSquares = new Array(numRays);
         this.windSquareLocations = new Map();
@@ -21,28 +23,34 @@ export class LightSource {
         this.numTasks = 10;
         this.numTasksCompleted = {};
         this.calculateMinMaxTheta();
+
+        this.minTheta = 0;
+        this.maxTheta = Math.PI * 2;
     }
 
     calculateMinMaxTheta() {
+        if (getFrameXMin() == 0 && getFrameXMax() == 0)
+            return;
+        let relXMin = this.posX - getFrameXMin();
+        let relXMax = this.posX - getFrameXMax();
+
         let minThetaPoint, maxThetaPoint;
-        if (this.posX < 0) {
-            minThetaPoint = [0, loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y)];
-            maxThetaPoint = [loadGD(UI_GAME_MAX_CANVAS_SQUARES_X), 0];
-        } else if (this.posX <= loadGD(UI_GAME_MAX_CANVAS_SQUARES_X)) {
-            minThetaPoint = [0, 0];
-            maxThetaPoint = [loadGD(UI_GAME_MAX_CANVAS_SQUARES_X), 0];
-        } else {
-            minThetaPoint = [0, 0]
-            maxThetaPoint = [loadGD(UI_GAME_MAX_CANVAS_SQUARES_X), loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y)];
+
+        if (relXMin < 0) { // then we're to the left of the canvas
+            minThetaPoint = [getFrameXMin(), getFrameYMax()];
+            maxThetaPoint = [getFrameXMax(), getFrameYMin()];
+        } else if (relXMax < 0) { // then we're to the right of the canvas
+            minThetaPoint = [getFrameXMin(), getFrameYMin()];
+            maxThetaPoint = [getFrameXMax(), getFrameYMax()];
+        } else { // otherwise we're in middle of the canvas 
+            minThetaPoint = [getFrameXMin(), getFrameYMin()]
+            maxThetaPoint = [getFrameXMax(), getFrameYMin()];
         }
+
         let relMinThetaPoint = [minThetaPoint[0] - this.posX, minThetaPoint[1] - this.posY]
         let relMaxThetaPoint = [maxThetaPoint[0] - this.posX, maxThetaPoint[1] - this.posY]
         this.minTheta = Math.atan(relMinThetaPoint[0] / relMinThetaPoint[1]);
         this.maxTheta = Math.atan(relMaxThetaPoint[0] / relMaxThetaPoint[1]);
-
-        this.thetaStep = (this.maxTheta - this.minTheta) / this.numRays;
-
-
     }
     
 
@@ -166,6 +174,12 @@ export class LightSource {
         let timeInterval = (getCurLightingInterval() / this.numTasks);
         this.calculateMinMaxTheta();
         this.prepareSquareCoordinatePlane();
+
+        let bottomIdx = this.minTheta / this.thetaStep;
+        let topIdx = this.maxTheta / this.thetaStep;
+
+        bottomIdx = (bottomIdx + this.numRays) % this.numRays;
+        topIdx = (topIdx + this.numRays) % this.numRays;
         
         for (let _i = 0; _i < this.numTasks; _i++) {
             let i = _i;
