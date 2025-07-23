@@ -3,8 +3,8 @@ import { getCloudColorAtPos } from "../../climate/simulation/temperatureHumidity
 import { getFrameXMaxWsq, getFrameXMinWsq, getFrameYMaxWsq, getFrameYMinWsq } from "../../climate/simulation/wind.js";
 import { getFrameDt } from "../../climate/time.js";
 import { getFrameSimulationSquares } from "../../globalOperations.js";
-import { addTimeout } from "../../main.js";
 import { isSaveOrLoadInProgress } from "../../saveAndLoad.js";
+import { addTask } from "../../scheduler.js";
 import { loadGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_LIGHTING_CLOUDCOVER_OPACITY, UI_LIGHTING_DECAY, UI_LIGHTING_QUALITY, UI_LIGHTING_UPDATERATE, UI_SIMULATION_CLOUDS } from "../../ui/UIData.js";
 import { getCurLightingInterval } from "../lightingHandler.js";
 
@@ -52,7 +52,7 @@ export class LightSource {
         this.minTheta = Math.atan(relMinThetaPoint[0] / relMinThetaPoint[1]);
         this.maxTheta = Math.atan(relMaxThetaPoint[0] / relMaxThetaPoint[1]);
     }
-    
+
 
     destroy() {
         this.windSquareLocations = null;
@@ -98,7 +98,6 @@ export class LightSource {
     }
 
     prepareSquareCoordinatePlane() {
-        
         let allSquares = new Array();
         this.thetaSquares = new Array(this.numRays);
 
@@ -171,31 +170,26 @@ export class LightSource {
             this.numTasksCompleted[idx] = new Map();
         }
         this.numTasksCompleted[idx][jobIdx] = 0;
-        let timeInterval = (getCurLightingInterval() / this.numTasks);
         this.calculateMinMaxTheta();
         this.prepareSquareCoordinatePlane();
 
-        let bottomIdx = this.minTheta / this.thetaStep;
-        let topIdx = this.maxTheta / this.thetaStep;
+        let ix1 = Math.floor(this.minTheta / this.thetaStep);
+        let ix2 = Math.ceil(this.maxTheta / this.thetaStep);
 
-        bottomIdx = (bottomIdx + this.numRays) % this.numRays;
-        topIdx = (topIdx + this.numRays) % this.numRays;
+        ix1 = (ix1 + this.numRays) % this.numRays;
+        ix2 = (ix2 + this.numRays) % this.numRays;
+
+        let bottomIdx = Math.min(ix1, ix2);
+        let topIdx = Math.max(ix1, ix2);
+
+        let priority = 1;
+        let funcName = "doRayCasting_" + idx + "_" + jobIdx;
+
+        addTask(funcName, () => {
+            for (let j = bottomIdx; j < topIdx; j++)
+                this.rayCastingForRayIdx(idx, jobIdx, j)
+        }, priority);
         
-        for (let _i = 0; _i < this.numTasks; _i++) {
-            let i = _i;
-            let scheduledTime = _i * timeInterval + (getFrameDt() * (jobIdx % loadGD(UI_LIGHTING_UPDATERATE)));
-            addTimeout(setTimeout(() => {
-                let bottom = i * (this.numRays / this.numTasks);
-                let top = (i + 1) * (this.numRays / this.numTasks);
-
-                for (let j = bottom; j < top; j++)
-                    this.rayCastingForRayIdx(idx, jobIdx, j);
-
-                this.numTasksCompleted[idx][jobIdx] += 1;
-                if (this.numTasksCompleted[idx][jobIdx] == this.numTasks) {
-                    onComplete();
-                }
-            }, scheduledTime));
-        }
+        addTask("doRayCastingOnComplete", onComplete, priority);
     }
 }
