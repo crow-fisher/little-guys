@@ -1,10 +1,8 @@
 import { getCanvasSquaresX, getCanvasSquaresY } from "../canvas.js";
 import { getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "../climate/time.js";
 import { getStandardDeviation } from "../common.js";
-import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
-import { isSaveOrLoadInProgress } from "../saveAndLoad.js";
 import { getSquares } from "../squares/_sqOperations.js";
-import { addUIFunctionMap, loadGD, saveGD, saveUI, UI_CAMERA_EXPOSURE, UI_LIGHTING_DISABLED_BRIGHTNESS, UI_LIGHTING_ENABLED, UI_LIGHTING_GLOBAL, UI_LIGHTING_MOON, UI_LIGHTING_SUN } from "../ui/UIData.js";
+import { loadGD, saveGD, UI_CAMERA_EXPOSURE, UI_LIGHTING_DISABLED_BRIGHTNESS, UI_LIGHTING_GLOBAL, UI_LIGHTING_MOON, UI_LIGHTING_SUN } from "../ui/UIData.js";
 
 export function getDefaultLighting() {
     let brightness = getDaylightStrength();

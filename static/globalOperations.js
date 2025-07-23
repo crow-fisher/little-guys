@@ -1,4 +1,4 @@
-import { getFirstLevelSquares, getSqIterationOrder, getSquares, iterateOnSquares, registerSqColChange, registerSqIterationRowChange } from "./squares/_sqOperations.js";
+import { getFirstLevelSquares, getSquares, registerSqColChange, registerSqIterationRowChange } from "./squares/_sqOperations.js";
 import { iterateOnOrganisms } from "./organisms/_orgOperations.js";
 import {
     ALL_SQUARES, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES, resetWaterflowSquares
@@ -6,14 +6,13 @@ import {
 
 import { getObjectArrFromMap } from "./common.js";
 import { removeItemAll } from "./common.js";
-import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, getFrameXMax, getFrameXMin, getFrameYMax, getFrameYMin, isSquareOnCanvas, zoomCanvasFillRect } from "./canvas.js";
+import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, getFrameXMax, getFrameXMin, getFrameYMax, getFrameYMin, zoomCanvasFillRect } from "./canvas.js";
 import { loadGD, saveGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "./ui/UIData.js";
-import { indexCanvasSize, MAIN_CANVAS, MAIN_CONTEXT } from "./index.js";
+import { indexCanvasSize, MAIN_CONTEXT } from "./index.js";
 import { resetFrameGroupCache, waterGraphReset } from "./waterGraph.js";
-import { COLOR_BLUE, COLOR_VERY_FUCKING_RED, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "./colors.js";
-import { calculateColor, calculateColorProvideOpacity } from "./climate/simulation/temperatureHumidity.js";
+import { RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "./colors.js";
+import { calculateColorProvideOpacity } from "./climate/simulation/temperatureHumidity.js";
 import { lightingExposureAdjustment } from "./lighting/lightingProcessing.js";
-import { getFrameXMinWsq } from "./climate/simulation/wind.js";
 
 let frame_squares = null;
 let frame_simulation_squares = new Array();
