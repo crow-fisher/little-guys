@@ -1,4 +1,5 @@
 import { getFrameDt } from "../climate/time.js";
+import { addTask } from "../scheduler.js";
 import { loadGD, UI_LIGHTING_UPDATERATE, UI_LIGHTING_ENABLED, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "../ui/UIData.js";
 import { createMoonLightGroup, createSunLightGroup } from "./lighting.js";
 
@@ -38,7 +39,7 @@ export class LightingHandler {
             return;
         }
         for (let i = 0; i < this.lightSources.length; i++) {
-            this.lightSources[i].doRayCasting(i);
+            addTask("lightingTick_" + i, () => this.lightSources[i].doRayCasting(i), 10 + i);
         }
         this.nextLightingUpdate = Date.now() + getCurLightingInterval();
     }

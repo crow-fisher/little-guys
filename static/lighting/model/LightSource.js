@@ -182,14 +182,14 @@ export class LightSource {
         let bottomIdx = Math.min(ix1, ix2);
         let topIdx = Math.max(ix1, ix2);
 
-        let priority = 1;
+        let priority = 100;
         let funcName = "doRayCasting_" + idx + "_" + jobIdx;
 
         addTask(funcName, () => {
             for (let j = bottomIdx; j < topIdx; j++)
                 this.rayCastingForRayIdx(idx, jobIdx, j)
         }, priority);
-        
-        addTask("doRayCastingOnComplete", onComplete, priority);
+
+        addTask("doRayCastingOnComplete", onComplete, priority + 1);
     }
 }

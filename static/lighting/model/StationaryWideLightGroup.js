@@ -26,7 +26,7 @@ export class StationaryWideLightGroup extends LightGroup {
                 this.centerY,
                 this.brightnessFunc,
                 this.colorFunc,
-                100,
+                500,
                 Math.ceil((300 / 7) * loadGD(UI_LIGHTING_QUALITY))
             );
             this.lightSources.push(newLightSource);
