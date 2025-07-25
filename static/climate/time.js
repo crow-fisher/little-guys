@@ -22,7 +22,7 @@ import { getActiveClimate } from "./climateManager.js";
 let TIME_SCALE = 1;
 let curUIKey = UI_SPEED_1;
 
-export let millis_per_day = 60 * 60 * 24 * 1000;
+export const millis_per_day = 60 * 60 * 24 * 1000;
 var curDay = 0.4;
 var prevDay = 0;
 var curTime = 0.8;
@@ -135,16 +135,6 @@ export function doTimeSeek() {
 }
 
 // targetTime between 0 and 1
-
-export function seekDateLabel(label) {
-    let curDay = getCurDay();
-    let curDate = new Date(curDay * millis_per_day);
-    let times = SunCalc.getTimes(curDate, getActiveClimate().lat, getActiveClimate().lng);
-    let targetDate = null;
-    targetDate = times[label];
-    let seekDay = targetDate.getTime() / millis_per_day;
-    seek(seekDay % 1);
-}
 
 export function explicitSeek(targetDate) {
     seekTimeTarget = targetDate;
