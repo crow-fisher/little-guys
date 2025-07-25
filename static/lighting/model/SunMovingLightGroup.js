@@ -48,33 +48,32 @@ export class SunMovingLightGroup extends LightGroup {
 
             sunPos = (sunPos) * Math.PI;
 
-            let posX = this.dist * Math.cos(sunPos);
-            let posY = -this.dist * Math.sin(sunPos);
+            let posX = (this.dist - (100 * idx)) * Math.cos(sunPos);
+            let posY = -(this.dist + (100 * idx)) * Math.sin(sunPos);
 
+            return [posX, posY]
             // sunPos is between 0 and 1
 
-            return [posX, posY];
+            let width = .1 * this.dist * this.numNodes;
 
-            // let width = .1 * this.dist * this.numNodes;
+            let idxPosX = idx * .1 * this.dist - (width / 2);
+            let idxPosY = 0;
 
-            // let idxPosX = idx * .1 * this.dist - (width / 2);
-            // let idxPosY = 0;
+            let refX = (getFrameXMin() + getFrameXMax()) / 2;
+            let refY = getFrameYMax();
 
-            // let refX = (getFrameXMin() + getFrameXMax()) / 2;
-            // let refY = getFrameYMax();
+            let idxPosXProcessed = idxPosX - refX;
+            let idxPosYProcessed = idxPosY - refY;
 
-            // let idxPosXProcessed = idxPosX - refX;
-            // let idxPosYProcessed = idxPosY - refY;
+            let dayTheta = (getCurDay() % 1) * 2 * Math.PI;
 
-            // let dayTheta = (getCurDay() % 1) * 2 * Math.PI;
+            let rotatedX = idxPosXProcessed * Math.cos(dayTheta) - idxPosYProcessed * Math.sin(dayTheta);
+            let rotatedY = idxPosYProcessed * Math.cos(dayTheta) + idxPosXProcessed * Math.sin(dayTheta);
 
-            // let rotatedX = idxPosXProcessed * Math.cos(dayTheta) - idxPosYProcessed * Math.sin(dayTheta);
-            // let rotatedY = idxPosYProcessed * Math.cos(dayTheta) + idxPosXProcessed * Math.sin(dayTheta);
+            let endX = rotatedX + refX;
+            let endY = rotatedY + refY;
 
-            // let endX = rotatedX + refX;
-            // let endY = rotatedY + refY;
-
-            // return [endX, endY]
+            return [endX, endY]
         }
     }
 
