@@ -142,7 +142,7 @@ export class LightingComponent extends Component {
         brightnessConditionalContainer.addElement(new TextBackground(this.window, sizeX, br, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""));
 
         decayConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => "global", () => getActiveClimate().getUIColorInactiveCustom(0.64)));
-        decayConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_DECAY, sizeX, sliderSizeY, 0, 5, () => "#000000", () => "#FFF0FF"));
+        decayConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_DECAY, sizeX, sliderSizeY, 0, 20, () => "#000000", () => "#FFF0FF"));
         decayConditionalContainer.addElement(new TextBackground(this.window, sizeX, br, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""));
 
         decayConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => "water", () => getActiveClimate().getUIColorInactiveCustom(0.66)));

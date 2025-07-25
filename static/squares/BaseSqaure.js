@@ -107,6 +107,7 @@ export class BaseSquare {
     }
 
     initLightingFromNeighbors() {
+        return;
         let neighbor = getNeighbors(this.posX, this.posY).find((sq) => sq.lighting.length > 0);
         let curY = this.posY + 1;
         while (neighbor == null) {

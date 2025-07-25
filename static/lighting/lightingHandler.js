@@ -22,7 +22,7 @@ export class LightingHandler {
 
     initLightSources() {
         this.lightSources.push(createSunLightGroup());
-        this.lightSources.push(createMoonLightGroup());
+        // this.lightSources.push(createMoonLightGroup());
         this.lightingSizeX = loadGD(UI_GAME_MAX_CANVAS_SQUARES_X);
         this.lightingSizeY = loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y);
     }
@@ -34,7 +34,6 @@ export class LightingHandler {
             this.initLightSources();
         }
         
-        this.lightSources.forEach((ls) => ls.preRender());
         if (Date.now() < this.nextLightingUpdate) {
             return;
         }

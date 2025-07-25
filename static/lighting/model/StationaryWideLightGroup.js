@@ -31,7 +31,6 @@ export class StationaryWideLightGroup extends LightGroup {
             );
             this.lightSources.push(newLightSource);
         }
-
     }
 
     doRayCasting(idx) {
