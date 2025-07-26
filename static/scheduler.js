@@ -4,10 +4,10 @@ const jobLastTimeMap = new Map();
 const activeJobArr = new Array();
 let pendingJobArr = new Array();
 
-export function addTask(funcName, func, priority) {
+export function addTask(funcName, func, inHowManyFrames) {
     if (!jobLastTimeMap.has(funcName))
         jobLastTimeMap.set(funcName, 0);
-    pendingJobArr.push([funcName, func, priority]);
+    pendingJobArr.push([funcName, func, inHowManyFrames]);
 }
 
 export function clearTimeouts() {
@@ -17,31 +17,22 @@ export function clearTimeouts() {
 }
 
 export function prepareTickJobs() {
-    let timeAllocated = 1;
     pendingJobArr.sort((a, b) => a[2] - b[2]);
-
     console.log("prepareTickJobs: ", activeJobArr.length, ", pending jobs: " + pendingJobArr.length);
 
     let pendingJobCurIdx;
     for (pendingJobCurIdx = 0; pendingJobCurIdx < pendingJobArr.length; pendingJobCurIdx++) {
         let jobArr = pendingJobArr[pendingJobCurIdx];
-
         let funcName = jobArr[0];
         let func = jobArr[1];
-        let priority = jobArr[2];
-        let funcTime = jobLastTimeMap.get(funcName);
-
-        if (priority == 0) {
+        let inHowManyFrames = jobArr[2];
+        if (inHowManyFrames == 0) {
             activeJobArr.push([funcName, func])
-        }
-        activeJobArr.push([funcName, func])
-        timeAllocated -= funcTime;
-
-        if (timeAllocated < 0) {
+        } else {
             break;
         }
     };
-    pendingJobArr = pendingJobArr.slice(pendingJobCurIdx + 1);
+    pendingJobArr = pendingJobArr.slice(activeJobArr.length);
     pendingJobArr.forEach((jobArr) => jobArr[2] = Math.max(0, jobArr[2] - 1));
 
 }

@@ -2,6 +2,7 @@ import { getBaseSize, getFrameXMax, getFrameXMin, getFrameYMax, getFrameYMin } f
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { SunCalc } from "../../climate/suncalc/suncalc.js";
 import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, millis_per_day } from "../../climate/time.js";
+import { addTask } from "../../scheduler.js";
 import { loadGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_LIGHTING_SHADOW_SOFTNESS } from "../../ui/UIData.js";
 import { LightGroup } from "./lightGroup.js";
 import { MovingLightSource } from "./MovingLightSource.js";
@@ -85,12 +86,14 @@ export class SunMovingLightGroup extends LightGroup {
             completionMap.set(i, false);
             this.lightSources[i].calculateFrameCloudCover();
             let _i = i;
-            this.lightSources[i].doRayCasting(idx, i, () => {
-                completionMap.set(_i, true);
-                if (completionMap.values().every((val) => val)) {
-                    this.idxCompletionMap.set(idx, true);
-                }
-            });
+            addTask("SunMovingLightGroup_doRayCasting_" + idx + "_" + i, () => {
+                this.lightSources[i].doRayCasting(idx, i, () => {
+                    completionMap.set(_i, true);
+                    if (completionMap.values().every((val) => val)) {
+                        this.idxCompletionMap.set(idx, true);
+                    }
+                });
+            }, i);
         };
         return true;
     }

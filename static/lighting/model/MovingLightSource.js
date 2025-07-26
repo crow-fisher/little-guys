@@ -196,14 +196,9 @@ export class MovingLightSource {
         bottomIdx = 0;
         topIdx = Math.max(...this.thetaSquares.keys())
 
-        let priority = 100;
-        let funcName = "doRayCasting_" + idx + "_" + jobIdx;
+        for (let j = bottomIdx; j < topIdx; j++)
+            this.rayCastingForRayIdx(idx, jobIdx, j)
 
-        addTask(funcName, () => {
-            for (let j = bottomIdx; j < topIdx; j++)
-                this.rayCastingForRayIdx(idx, jobIdx, j)
-        }, priority);
-
-        addTask("doRayCastingOnComplete", onComplete, priority + 1);
+        onComplete(); 
     }
 }

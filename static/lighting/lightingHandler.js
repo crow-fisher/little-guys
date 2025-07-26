@@ -38,7 +38,7 @@ export class LightingHandler {
             return;
         }
         for (let i = 0; i < this.lightSources.length; i++) {
-            addTask("lightingTick_" + i, () => this.lightSources[i].doRayCasting(i), 10 + i);
+            this.lightSources[i].doRayCasting(i);
         }
         this.nextLightingUpdate = Date.now() + getCurLightingInterval();
     }
