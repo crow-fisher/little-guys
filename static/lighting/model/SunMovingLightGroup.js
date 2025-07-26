@@ -2,7 +2,7 @@ import { getBaseSize, getFrameXMax, getFrameXMin, getFrameYMax } from "../../can
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { SunCalc } from "../../climate/suncalc/suncalc.js";
 import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, millis_per_day } from "../../climate/time.js";
-import { loadGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y } from "../../ui/UIData.js";
+import { loadGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_LIGHTING_SHADOW_SOFTNESS } from "../../ui/UIData.js";
 import { LightGroup } from "./lightGroup.js";
 import { MovingLightSource } from "./MovingLightSource.js";
 
@@ -30,7 +30,6 @@ export class SunMovingLightGroup extends LightGroup {
 
     getPositionFunc(idx) {
         return () => {
-            // compare current time to solar noon
             let curMillis = getCurDay() * millis_per_day;
             let curDate = new Date(curMillis);
 
@@ -39,7 +38,7 @@ export class SunMovingLightGroup extends LightGroup {
             let sunrise = times["sunrise"].getTime() / millis_per_day;
             let noon = times["solarNoon"].getTime() / millis_per_day;
             let sunset = times["night"].getTime() / millis_per_day;
-            
+
             let sunPos = 0;
             if (getCurDay() < noon)
                 sunPos = 0.5 * (getCurDay() - sunrise) / (noon - sunrise);
@@ -48,30 +47,26 @@ export class SunMovingLightGroup extends LightGroup {
 
             sunPos = (sunPos) * Math.PI;
 
-            let posX = (this.dist - (100 * idx)) * Math.cos(sunPos);
-            let posY = -(this.dist + (100 * idx)) * Math.sin(sunPos);
+            let perIdxOffset = (this.dist * loadGD(UI_LIGHTING_SHADOW_SOFTNESS) * idx);
+            let maxIdxOffset = (this.dist * loadGD(UI_LIGHTING_SHADOW_SOFTNESS) * this.numNodes);
+            let idxOffset = perIdxOffset - (maxIdxOffset / 2);
 
-            return [posX, posY]
-            // sunPos is between 0 and 1
+            let lightSourceCenterPosX = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) / getBaseSize() + idxOffset;;
+            let lightSourceCenterPosY = -this.dist;
 
-            let width = .1 * this.dist * this.numNodes;
+            let lightSourceRotationPosX = lightSourceCenterPosX;
+            let lightSourceRotationPosY = getFrameYMax();
 
-            let idxPosX = idx * .1 * this.dist - (width / 2);
-            let idxPosY = 0;
+            let idxPosXProcessed = lightSourceCenterPosX - lightSourceRotationPosX;
+            let idxPosYProcessed = lightSourceCenterPosY - lightSourceRotationPosY;
 
-            let refX = (getFrameXMin() + getFrameXMax()) / 2;
-            let refY = getFrameYMax();
-
-            let idxPosXProcessed = idxPosX - refX;
-            let idxPosYProcessed = idxPosY - refY;
-
-            let dayTheta = (getCurDay() % 1) * 2 * Math.PI;
+            let dayTheta = sunPos - (Math.PI / 2);
 
             let rotatedX = idxPosXProcessed * Math.cos(dayTheta) - idxPosYProcessed * Math.sin(dayTheta);
             let rotatedY = idxPosYProcessed * Math.cos(dayTheta) + idxPosXProcessed * Math.sin(dayTheta);
 
-            let endX = rotatedX + refX;
-            let endY = rotatedY + refY;
+            let endX = rotatedX + lightSourceRotationPosX;
+            let endY = rotatedY + lightSourceRotationPosY;
 
             return [endX, endY]
         }

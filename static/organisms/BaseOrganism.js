@@ -293,7 +293,7 @@ class BaseOrganism {
             }
             return Math.min(1, (this.waterPressure - mid) / (max - mid));
         } else if (this.waterPressure > min) {
-            return (this.waterPressure - min) / (this.waterPressureTarget - min) - 1;
+            return ((this.waterPressure - min) / (target - min)) - 1;
         } else {
             return -1;
         }
