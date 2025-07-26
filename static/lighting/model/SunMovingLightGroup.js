@@ -1,4 +1,4 @@
-import { getBaseSize, getFrameXMax, getFrameXMin, getFrameYMax } from "../../canvas.js";
+import { getBaseSize, getFrameXMax, getFrameXMin, getFrameYMax, getFrameYMin } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { SunCalc } from "../../climate/suncalc/suncalc.js";
 import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, millis_per_day } from "../../climate/time.js";
@@ -55,7 +55,7 @@ export class SunMovingLightGroup extends LightGroup {
             let lightSourceCenterPosY = -this.dist;
 
             let lightSourceRotationPosX = lightSourceCenterPosX;
-            let lightSourceRotationPosY = getFrameYMax();
+            let lightSourceRotationPosY = (getFrameYMax() + getFrameYMin()) / 2;
 
             let idxPosXProcessed = lightSourceCenterPosX - lightSourceRotationPosX;
             let idxPosYProcessed = lightSourceCenterPosY - lightSourceRotationPosY;
@@ -67,6 +67,8 @@ export class SunMovingLightGroup extends LightGroup {
 
             let endX = rotatedX + lightSourceRotationPosX;
             let endY = rotatedY + lightSourceRotationPosY;
+
+            endY = Math.min(endY, lightSourceRotationPosY);
 
             return [endX, endY]
         }
