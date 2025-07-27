@@ -12,7 +12,7 @@ import {
 
 import { MAIN_CONTEXT } from "../index.js";
 
-import { hexToRgb, removeItemAll, rgbToRgba } from "../common.js";
+import { hexToRgb, hsv2rgb, hueShiftColor, hueShiftColorArr, randNumber, randRange, removeItemAll, rgb2hsv, rgbToHex, rgbToRgba } from "../common.js";
 import { removeSquare } from "../globalOperations.js";
 import { calculateColorTemperature, getTemperatureAtWindSquare, temperatureHumidityFlowrateFactor, updateWindSquareTemperature } from "../climate/simulation/temperatureHumidity.js";
 import { getWindSquareAbove } from "../climate/simulation/wind.js";
@@ -20,7 +20,7 @@ import { COLOR_BLACK, GROUP_BROWN, GROUP_BLUE, GROUP_MAUVE, GROUP_TAN, GROUP_GRE
 import { getDaylightStrengthFrameDiff, getFrameDt, getTimeScale } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, getFrameYMax, isSquareOnCanvas, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
-import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE } from "../ui/UIData.js";
+import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3 } from "../ui/UIData.js";
 import { deregisterSquare, registerSquare } from "../waterGraph.js";
 
 export class BaseSquare {
@@ -28,9 +28,6 @@ export class BaseSquare {
         this.proto = "BaseSquare";
         this.posX = Math.floor(posX);
         this.posY = Math.floor(posY);
-
-        this.offsetX = posX % 1;
-        this.offsetY = posY % 1;
 
         this.color = hexToRgb("#00FFFF");
 
@@ -201,6 +198,15 @@ export class BaseSquare {
         }
 
     }
+
+    renderBlockHealth() {
+        let base = this.getColorBase();
+        let hsv = rgb2hsv(base.r, base.g, base.b);
+        hsv[0] += 360 * this.blockHealth;
+        let out = hsv2rgb(...hsv);
+        MAIN_CONTEXT.fillStyle = rgbToHex(...out);
+        zoomCanvasFillRect(this.posX * getBaseSize(), this.posY * getBaseSize(), getBaseSize(), getBaseSize());
+    }
     render() {
         if (!this.visible || this.posY >= getCanvasSquaresY()) {
             return;
@@ -227,6 +233,9 @@ export class BaseSquare {
             this.renderWaterTickrate();
         } else if (selectedViewMode == UI_VIEWMODE_WATERMATRIC) {
             this.renderMatricPressure();
+        }
+        else if (selectedViewMode == UI_VIEWMODE_DEV3) {
+            return this.renderBlockHealth();
         }
         if (selectedViewMode == UI_VIEWMODE_SURFACE || (loadGD(UI_PALETTE_ACTIVE) && (loadGD(UI_PALETTE_MODE) == UI_PALLETE_MODE_SPECIAL) && (loadGD(UI_PALETTE_SELECT) == UI_PALETTE_SURFACE || loadGD(UI_PALETTE_SELECT) == UI_PALETTE_SURFACE_OFF))) {
             if (this.solid) {
@@ -280,8 +289,8 @@ export class BaseSquare {
         if (!this.surface) {
             MAIN_CONTEXT.fillStyle = "rgba(90, 71, 97, 0.3)"
             zoomCanvasFillRect(
-                (this.offsetX + this.posX) * getBaseSize(),
-                (this.offsetY + this.posY) * getBaseSize(),
+                (this.posX) * getBaseSize(),
+                (this.posY) * getBaseSize(),
                 getBaseSize(),
                 getBaseSize()
             );
@@ -294,17 +303,12 @@ export class BaseSquare {
     renderAsGrey() {
         MAIN_CONTEXT.fillStyle = "rgba(50, 50, 50, 0.2)";
         zoomCanvasFillRect(
-            (this.offsetX + this.posX) * getBaseSize(),
-            (this.offsetY + this.posY) * getBaseSize(),
+            (this.posX) * getBaseSize(),
+            (this.posY) * getBaseSize(),
             getBaseSize(),
             getBaseSize()
         );
     }
-
-    renderBlockHealth() {
-        this.renderSpecialViewModeLinear(this.waterSaturation_color1, this.waterSaturation_color2, this.blockHealth, this.blockHealthMax);
-    }
-
 
     renderWaterSaturation() {
         this.renderSpecialViewModeLinear(this.blockHealth_color1, this.blockHealth_color2, this.waterContainment, this.waterContainmentMax);
@@ -337,8 +341,8 @@ export class BaseSquare {
         let outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacity);
         MAIN_CONTEXT.fillStyle = outRgba;
         zoomCanvasFillRect(
-            (this.offsetX + this.posX) * getBaseSize(),
-            (this.offsetY + this.posY) * getBaseSize(),
+            this.posX * getBaseSize(),
+            this.posY * getBaseSize(),
             getBaseSize(),
             getBaseSize()
         );
@@ -386,8 +390,8 @@ export class BaseSquare {
             0.5);
         MAIN_CONTEXT.fillStyle = outRgba;
         zoomCanvasFillRect(
-            (this.offsetX + this.posX) * getBaseSize(),
-            (this.offsetY + this.posY) * getBaseSize(),
+            this.posX * getBaseSize(),
+            this.posY * getBaseSize(),
             getBaseSize(),
             getBaseSize()
         );
@@ -451,7 +455,6 @@ export class BaseSquare {
             let outColor = { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
             this.lastColorCacheOpacity = opacityMult;
             this.cachedRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacityMult * this.opacity * this.blockHealth ** 0.2);
-            this.cachedRgbaParticle = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), .2 * (opacityMult * this.opacity * (this.blockHealth ** 0.2)));
         }
         MAIN_CONTEXT.fillStyle = this.cachedRgba;
         if (this.proto == "WaterSquare" && this.blockHealth < 0.5 && this.speedY > 2) {
@@ -460,13 +463,13 @@ export class BaseSquare {
                 size = 20 * (this.blockHealth);
             }
             zoomCanvasFillCircle(
-                (this.offsetX + this.posX) * getBaseSize(),
-                (this.offsetY + this.posY) * getBaseSize(),
+                this.posX * getBaseSize(),
+                this.posY * getBaseSize(),
                 getBaseSize() * Math.max(this.blockHealth, 0.3));
         } else {
             zoomCanvasFillRect(
-                (this.offsetX + this.posX) * getBaseSize(),
-                (this.offsetY + this.posY) * getBaseSize(),
+                this.posX * getBaseSize(),
+                this.posY * getBaseSize(),
                 getBaseSize(),
                 getBaseSize()
             );
@@ -477,8 +480,9 @@ export class BaseSquare {
             MAIN_CONTEXT.textAlign = 'center';
             MAIN_CONTEXT.textBaseline = 'middle';
             MAIN_CONTEXT.fillStyle = COLOR_BLACK;
-            zoomCanvasSquareText(((this.offsetX + this.posX) + 0.5) * getBaseSize(),
-                ((this.offsetY + this.posY) + 0.5) * getBaseSize(),
+            zoomCanvasSquareText(
+                (this.posX + 0.5) * getBaseSize(),
+                (this.posY + 0.5) * getBaseSize(),
                 this.mixIdx % getMixArrLen());
         }
         // this.renderParticles();
@@ -487,8 +491,6 @@ export class BaseSquare {
         if (newPosX == this.posX && newPosY == this.posY) {
             return true;
         }
-        newPosX = Math.round(newPosX);
-        newPosY = Math.round(newPosY);
 
         if (getSquares(newPosX, newPosY).some((sq) => this.testCollidesWithSquare(sq))) {
             return false;
@@ -590,6 +592,7 @@ export class BaseSquare {
         if (this.proto == "WaterSquare" && sq.proto == "WaterSquare" && (getSquares(this.posX, this.posY).filter((sq) => sq.proto == "WaterSquare").map((sq) => sq.blockHealth).reduce((a, b) => a + b, sq.blockHealth) < 1)) {
             return false;
         }
+
         if (this.organic) {
             if (!sq.solid) {
                 return false;
@@ -708,11 +711,9 @@ export class BaseSquare {
         if (!this.shouldFallThisFrame()) {
             return;
         }
-        
+
         if (getTimeScale() != 0) {
-            if (this.shouldFallThisFrame()) {
-                this.speedY += (1 / this.gravity);
-            }
+            this.speedY += (1 / this.gravity);
         }
 
         let shouldResetGroup = false;
@@ -723,8 +724,7 @@ export class BaseSquare {
             shouldResetGroup = true;
         }
 
-        let maxSpeed = 5;
-
+        let maxSpeed = 9;
         this.speedX = Math.min(maxSpeed, Math.max(-maxSpeed, this.speedX));
         this.speedY = Math.min(maxSpeed, Math.max(-maxSpeed, this.speedY));
 
@@ -734,6 +734,15 @@ export class BaseSquare {
         let nextPath = nextPathRes[1];
 
         if (colSq != null) {
+            if (colSq.proto == this.proto && colSq.blockHealth < 1 && colSq.blockHealth > 0) {
+                let amount = Math.min(1 - colSq.blockHealth, this.blockHealth);
+                colSq.blockHealth += amount;
+                this.blockHealth -= amount;
+                if (this.blockHealth == 0) {
+                    this.destroy();
+                    return;
+                }
+            }
             this.speedX = colSq.speedX;
             this.speedY = colSq.speedY;
             this.hasBonked = true;
@@ -762,129 +771,27 @@ export class BaseSquare {
                 };
             }
         }
-
-        if (!isSquareOnCanvas(this.posX, this.posY)) {
-            if (this.proto == "WaterSquare" || this.proto == "SeedSquare")
-                this.destroy();
-        }
-
-
-    }
-
-    _gravityPhysics() {
-        if (!this.shouldFallThisFrame()) {
-            return;
-        }
-        if (!this.organic && this.speedY >= 0) {
-            if (getSquares(this.posX, this.posY + 1).some((sq) => sq.testCollidesWithSquare(this))) {
-                this.speedY = 0;
-                this.speedX = 0;
-                this.hasBonked = true;
-                return;
-            }
-        }
-
-        if (Math.abs(this.speedX * this.speedY) > 2) {
-            console.log(this.getNextPath());
-        }
-        let shouldResetGroup = false;
-        if (isGroupGrounded(this.group) && this.currentPressureDirect > 10) {
-            if ((Math.random() * 1.5) < 1 - (1 / this.currentPressureDirect) && !getSquares(this.posX, this.posY + 2).some((sq) => sq.testCollidesWithSquare(this))) {
-                return;
-            }
-            shouldResetGroup = true;
-        }
-
-        if (getTimeScale() != 0) {
-            if (this.shouldFallThisFrame()) {
-                this.speedY += (1 / this.gravity);
-            }
-        }
-        let finalXPos = this.posX;
-        let finalYPos = this.posY;
-        let bonked = false;
-        let particleSpeed = Math.sqrt(this.speedX ** 2 + this.speedY ** 2);
-        for (let i = 1; i < this.speedY + 1; i += 1) {
-            for (let j = 0; j < Math.abs(this.speedX) + 1; j++) {
-                let jSigned = (this.speedX > 0) ? j : -j;
-                let jSignedMinusOne = (this.speedX == 0 ? 0 : (this.speedX > 0) ? (j - 1) : -(j - 1));
-                let bonkSquare = getSquares(this.posX + jSigned, this.posY + i)
-                    .find((sq) => this.testCollidesWithSquare(sq) ||
-                        (this.proto == "WaterSquare" && sq.proto == "SoilSquare" && Math.random() > (1 / sq.getWaterflowRate())));
-                if (bonkSquare) {
-                    finalYPos = this.posY + (i - 1);
-                    finalXPos = this.posX + jSignedMinusOne;
-                    this.speedX = bonkSquare.speedX;
-                    this.speedY = bonkSquare.speedY;
-                    this.offsetY = 0;
-                    bonked = true;
-                    this.hasBonked = true;
-                    if (bonkSquare.proto == this.proto || (this.sand != null && bonkSquare.sand != null)) {
-                        this.group = bonkSquare.group;
-                    };
-                    if (this.lighting.length == 0 && loadGD(UI_LIGHTING_ENABLED)) {
-                        this.initLightingFromNeighbors();
-                    }
-                    if (!this.solid) {
-                        if (getSquares(this.posX + jSigned, this.posY + i)
-                            .filter((sq) => sq.proto == this.proto)
-                            .filter((sq) => sq.blockHealth + this.blockHealth < sq.blockHealthMax)
-                            .some((sq) => {
-                                sq.blockHealth = sq.blockHealth + this.blockHealth;
-                                this.destroy();
-                                return true;
-                            })) {
-                            return;
-                        }
-                    }
-                }
-                if (bonked)
-                    break;
-            } if (bonked)
-                break;
-        }
-        if (!bonked) {
-            finalXPos = this.posX + this.speedX;
-            finalYPos = this.posY + this.speedY;
-        }
-
-        let maxY = loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y);
-        if (!this.solid) {
-            maxY = getFrameYMax();
-        }
-
-        if (finalXPos < 0 || finalXPos > loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) || finalYPos < 0 || finalYPos >= maxY) {
-            this.destroy(true);
-            return;
-        }
-
-        if (finalXPos != this.posX | this.posY != finalYPos) {
-            let finalYPosFloor = Math.floor(finalYPos);
-            let finalYPosFrac = finalYPos - finalYPosFloor;
-            this.offsetY = finalYPosFrac;
-            this.updatePosition(finalXPos, finalYPosFloor);
-
-            if (!this.solid) {
-                shouldResetGroup = true;
-            }
-
-            if (shouldResetGroup) {
-                let origGroup = this.group;
-                this.group = getNextGroupId();
-                if (!this._percolateGroup(origGroup)) {
-                    this.group = origGroup;
-                };
-            }
-            if (bonked) {
-                this.triggerParticles(particleSpeed);
-            }
-        }
-        this.processParticles();
     }
 
     slopePhysics() { }
 
     windPhysics() { }
+
+    compactionPhysics() {
+        if (this.blockHealth < 1) {
+            let dist = 2;
+            let neighbSquare = getSquares(this.posX + randNumber(-dist, dist), this.posY + randNumber(-dist * 2, 0)).find((sq) => sq.proto == this.proto);
+            if (neighbSquare != null && this.linkedOrganismSquares.length == 0 && this.linkedOrganismSquares.length == 0) {
+                let amount = Math.min(1 - this.blockHealth, neighbSquare.blockHealth);
+                this.blockHealth += amount;
+                neighbSquare.blockHealth -= amount;
+                if (neighbSquare.blockHealth == 0) {
+                    neighbSquare.destroy();
+                }
+            }
+
+        }
+    }
 
     physics() {
         if (!isSquareOnCanvas(this.posX, this.posY)) {
@@ -895,6 +802,7 @@ export class BaseSquare {
             this.slopePhysics();
             this.gravityPhysics();
             this.windPhysics();
+            this.compactionPhysics();
             this.percolateInnerMoisture();
             if (this.speedY > 0) {
                 if (loadGD(UI_SIMULATION_CLOUDS)) {

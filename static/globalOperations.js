@@ -51,6 +51,8 @@ export function reset() {
     resetWaterflowSquares();
     resetFrameGroupCache();
 
+    frame_simulation_squares.forEach((sq) => sq.reset());
+    
     frame_simulation_squares = new Array();
     frame_simulation_organisms = new Array();
 
@@ -73,7 +75,6 @@ export function reset() {
 
     frame_solid_squares = frame_simulation_squares.filter((sq) => sq.solid);
     frame_water_squares = frame_simulation_squares.filter((sq) => !sq.solid);
-    frame_simulation_squares.forEach((sq) => sq.reset());
 }
 
 export function renderSquares() {

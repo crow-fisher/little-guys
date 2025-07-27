@@ -1,6 +1,6 @@
 import { BaseSquare } from "../BaseSqaure.js";
-import { getNeighbors, getSquares } from "../_sqOperations.js";
-import { cachedGetWaterflowRate, hexToRgb, randRange } from "../../common.js";
+import { addSquare, getNeighbors, getSquares } from "../_sqOperations.js";
+import { cachedGetWaterflowRate, hexToRgb, randNumber, randRange } from "../../common.js";
 import { getCurTimeScale, getDt, getFrameDt, timeScaleFactor } from "../../climate/time.js";
 import { getPressure, getWindSpeedAtLocation, getWindSquareAbove } from "../../climate/simulation/wind.js";
 import { addWaterSaturationPascals, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, temperatureHumidityFlowrateFactor } from "../../climate/simulation/temperatureHumidity.js";
@@ -327,13 +327,43 @@ export class SoilSquare extends BaseSquare {
         let px = Math.abs(wx) / maxWindSpeed;
         let py = Math.abs(wy) / maxWindSpeed;
 
-        let factor = 0.1;
+        let factor = 2;
 
-        if (Math.random() < px) {
-            this.speedX += factor * Math.round(wx);
-        }
-        if (Math.random() < py) {
-            this.speedY += factor * Math.round(wy);
+        let projX = (wx > 0 ? 1 : -1);
+        let projY = (wy > 0 ? 1 : -1);
+
+        if (this.speedX == 0 && this.speedY == 0) {
+            let amount = Math.min(this.blockHealth, randRange(0.1, .2));
+            if (
+                amount < this.blockHealth &&
+                !getSquares(this.posX + projX, this.posY + projY).some((sq) => sq.proto == this.proto)
+            ) {
+                let sq = new SoilSquare(this.posX + projX, this.posY + projY);
+                if (addSquare(sq)) {
+                    sq.sand = this.sand;
+                    sq.silt = this.silt;
+                    sq.clay = this.clay;
+                    sq.waterContainment = this.waterContainment;
+                    sq.blockHealth = amount;
+                    this.blockHealth -= amount;
+                    applyLightingFromSource(this, sq);
+                    sq.cachedRgba = this.cachedRgba;
+                    sq.lastColorCacheOpacity = this.lastColorCacheOpacity;
+                    sq.lastColorCacheTime = this.lastColorCacheTime;
+
+                    sq.speedX += factor * Math.round(wx);
+                    sq.speedY += factor * Math.round(wy);
+                };
+            } else {
+                return;
+            }
+        } else {
+            if (Math.random() < px) {
+                this.speedX += factor * Math.round(wx);
+            }
+            if (Math.random() < py) {
+                this.speedY += factor * Math.round(wy);
+            }
         }
     }
     getWaterflowRate() {
