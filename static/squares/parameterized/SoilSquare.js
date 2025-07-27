@@ -327,15 +327,14 @@ export class SoilSquare extends BaseSquare {
         let px = Math.abs(wx) / maxWindSpeed;
         let py = Math.abs(wy) / maxWindSpeed;
 
-        let factor = .1;
+        let factor = .9;
 
         let projX = (wx > 0 ? 1 : -1);
         let projY = (wy > 0 ? 1 : -1);
 
-        if (false && this.speedX == 0 && this.speedY == 0 && this.blockHealth == 1) {
-            let amount = Math.min(this.blockHealth, randRange(0.1, .2));
+        if (this.speedX == 0 && this.speedY == 0 && this.blockHealth > 0.125) {
+            let amount = Math.min(this.blockHealth, randRange(0.125, .25));
             if (
-                false && 
                 amount < this.blockHealth &&
                 !getSquares(this.posX + projX, this.posY + projY).some((sq) => sq.testCollidesWithSquare(this))
             ) {
@@ -356,13 +355,13 @@ export class SoilSquare extends BaseSquare {
                     sq.speedY += factor * Math.round(wy);
                 };
             } else {
-                // return;
+                return;
             }
         } else {
-            if (true || Math.random() < px) {
+            if (Math.random() < px) {
                 this.speedX += factor * Math.round(wx);
             }
-            if (true || Math.random() < py) {
+            if (Math.random() < py) {
                 this.speedY += factor * Math.round(wy);
             }
         }

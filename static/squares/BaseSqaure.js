@@ -564,6 +564,9 @@ export class BaseSquare {
 
     percolateInnerMoisture() { }
 
+    getMovementSpeed() {
+        return (this.speedX ** 2 + this.speedY ** 2) ** 0.5;
+    }
     testCollidesWithSquare(sq) {
         if (!this.collision || !sq.collision) {
             return false;
@@ -572,6 +575,10 @@ export class BaseSquare {
             return false;
         }
         if (this.proto == "WaterSquare" && sq.proto == "WaterSquare" && (getSquares(this.posX, this.posY).filter((sq) => sq.proto == "WaterSquare").map((sq) => sq.blockHealth).reduce((a, b) => a + b, sq.blockHealth) < 1)) {
+            return false;
+        }
+
+        if (this.proto == sq.proto && (this.blockHealth + sq.blockHealth) < 1 && this.getMovementSpeed() > 0.1 && sq.getMovementSpeed() > 0.1) {
             return false;
         }
 
@@ -716,15 +723,15 @@ export class BaseSquare {
         let nextPath = nextPathRes[1];
 
         if (colSq != null) {
-            // if (colSq.proto == this.proto && colSq.blockHealth < 1 && colSq.blockHealth > 0) {
-            //     let amount = Math.min(1 - colSq.blockHealth, this.blockHealth);
-            //     colSq.blockHealth += amount;
-            //     this.blockHealth -= amount;
-            //     if (this.blockHealth == 0) {
-            //         this.destroy();
-            //         return;
-            //     }
-            // }
+            if (this.blockHealth < 1 && colSq.proto == this.proto && colSq.blockHealth < 1 && colSq.blockHealth > 0) {
+                let amount = Math.min(1 - colSq.blockHealth, this.blockHealth);
+                colSq.blockHealth += amount;
+                this.blockHealth -= amount;
+                if (this.blockHealth == 0) {
+                    this.destroy();
+                    return;
+                }
+            }
             this.speedX = colSq.speedX;
             this.speedY = colSq.speedY;
             this.hasBonked = true;
