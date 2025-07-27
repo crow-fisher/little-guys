@@ -712,7 +712,7 @@ export class BaseSquare {
         let shouldResetGroup = false;
         if (isGroupGrounded(this.group) && this.currentPressureDirect > 10) {
             if ((Math.random() * 1.5) < 1 - (1 / this.currentPressureDirect) && !getSquares(this.posX, this.posY + 2).some((sq) => sq.testCollidesWithSquare(this))) {
-                return;
+                // return;
             }
             shouldResetGroup = true;
         }
@@ -768,7 +768,7 @@ export class BaseSquare {
     compactionPhysics() {
         if (this.blockHealth < 1) {
             let dist = 2;
-            let neighbSquare = getSquares(this.posX + randNumber(-dist, dist), this.posY + randNumber(-dist * 2, 0)).find((sq) => sq.proto == this.proto);
+            let neighbSquare = getSquares(this.posX + randNumber(-dist, dist), this.posY + randNumber(-dist * 2, -1)).find((sq) => sq.proto == this.proto);
             if (neighbSquare != null && this.linkedOrganismSquares.length == 0 && this.linkedOrganismSquares.length == 0) {
                 let amount = Math.min(1 - this.blockHealth, neighbSquare.blockHealth);
                 this.blockHealth += amount;
