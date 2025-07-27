@@ -18,8 +18,6 @@ export function clearTimeouts() {
 
 export function prepareTickJobs() {
     pendingJobArr.sort((a, b) => a[2] - b[2]);
-    console.log("prepareTickJobs: ", activeJobArr.length, ", pending jobs: " + pendingJobArr.length);
-
     let pendingJobCurIdx;
     for (pendingJobCurIdx = 0; pendingJobCurIdx < pendingJobArr.length; pendingJobCurIdx++) {
         let jobArr = pendingJobArr[pendingJobCurIdx];
@@ -34,11 +32,8 @@ export function prepareTickJobs() {
     };
     pendingJobArr = pendingJobArr.slice(activeJobArr.length);
     pendingJobArr.forEach((jobArr) => jobArr[2] = Math.max(0, jobArr[2] - 1));
-
 }
 export function completeActiveJobs() {
-    console.log("completeActiveJobs: ", activeJobArr.length, ", pending jobs: " + pendingJobArr.length);
-    
     activeJobArr.forEach((job) => {
         let start = performance.now();
         job[1]();

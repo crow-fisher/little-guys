@@ -20,7 +20,7 @@ import { COLOR_BLACK, GROUP_BROWN, GROUP_BLUE, GROUP_MAUVE, GROUP_TAN, GROUP_GRE
 import { getDaylightStrengthFrameDiff, getFrameDt, getTimeScale } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, getFrameYMax, isSquareOnCanvas, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
-import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3 } from "../ui/UIData.js";
+import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3, UI_VIEWMODE_DEV4 } from "../ui/UIData.js";
 import { deregisterSquare, registerSquare } from "../waterGraph.js";
 
 export class BaseSquare {
@@ -93,7 +93,6 @@ export class BaseSquare {
         this.surfaceLightingFactor = 0.1;
         this.mixIdx = -1;
         this.initTemperature();
-        this.activeParticles = new Array();
     };
 
     mossSpaceRemaining() {
@@ -251,8 +250,26 @@ export class BaseSquare {
             this.renderWithVariedColors(0.25);
         } else if (selectedViewMode == UI_VIEWMODE_DEV1 || selectedViewMode == UI_VIEWMODE_DEV2) {
             this.renderWithVariedColors(0.5);
+        } else if (selectedViewMode == UI_VIEWMODE_DEV4) {
+            this.renderSpeed(true, true);
         }
     };
+
+    renderSpeed(x = true, y = true) {
+        let res = 0;
+
+        if (x) 
+            res += this.speedX;
+        if (y)
+            res += this.speedY;
+        
+        let base = this.getColorBase();
+        let hsv = rgb2hsv(base.r, base.g, base.b);
+        hsv[0] += 360.0 * res;
+        let out = hsv2rgb(...hsv);
+        MAIN_CONTEXT.fillStyle = rgbToHex(...out);
+        zoomCanvasFillRect(this.posX * getBaseSize(), this.posY * getBaseSize(), getBaseSize(), getBaseSize());
+    }
 
     renderGroup() {
         let colorArr = [
@@ -396,40 +413,6 @@ export class BaseSquare {
             getBaseSize()
         );
     }
-
-    triggerParticles(bonkSpeed) {
-    }
-
-    processParticles() {
-        return;
-        let next = new Array();
-        this.activeParticles.forEach((partArr) => {
-            partArr[0] += partArr[3]; // px
-            partArr[1] += partArr[4]; // py
-            partArr[4] += 0.15;
-            partArr[3] *= 0.99;
-
-            let x = Math.round(partArr[0]);
-            let y = Math.round(partArr[1]);
-            if (x < 0 || y < 0 || x >= getCanvasSquaresX() || y >= getCanvasSquaresY() || getSquares(x, y).length > 0) {
-                return;
-            } else {
-                next.push(partArr);
-            }
-        });
-        this.activeParticles = next;
-    }
-
-    renderParticles() {
-        MAIN_CONTEXT.fillStyle = this.cachedRgba;
-        this.activeParticles.forEach((partArr) => {
-            let px = partArr[0];
-            let py = partArr[1];
-            let size = partArr[5];
-            zoomCanvasFillCircle(px * getBaseSize(), py * getBaseSize(), size)
-        });
-    }
-
     renderWithVariedColors(opacityMult) {
         if (this.proto == "WaterSquare") {
             this.opacity = loadGD(UI_LIGHTING_WATER_OPACITY);
@@ -485,7 +468,6 @@ export class BaseSquare {
                 (this.posY + 0.5) * getBaseSize(),
                 this.mixIdx % getMixArrLen());
         }
-        // this.renderParticles();
     }
     updatePosition(newPosX, newPosY) {
         if (newPosX == this.posX && newPosY == this.posY) {
@@ -695,7 +677,7 @@ export class BaseSquare {
             if (rcsx == last[0] && rcsy == last[1])
                 continue;
 
-            collSquare = getSquares(rcsx, rcsy).find((sq) => sq.testCollidesWithSquare(this));
+            collSquare = getSquares(rcsx, rcsy).find((sq) => sq != this && sq.testCollidesWithSquare(this));
 
             if (collSquare != null) {
                 return [collSquare, pathArr];
@@ -713,7 +695,7 @@ export class BaseSquare {
         }
 
         if (getTimeScale() != 0) {
-            this.speedY += (1 / this.gravity);
+            // this.speedY += (1 / this.gravity);
         }
 
         let shouldResetGroup = false;
@@ -743,8 +725,8 @@ export class BaseSquare {
             //         return;
             //     }
             // }
-            this.speedX = colSq.speedX;
-            this.speedY = colSq.speedY;
+            this.speedX = 0;
+            this.speedY = 0;
             this.hasBonked = true;
         }
 
@@ -754,10 +736,7 @@ export class BaseSquare {
         let finalYPos = nextPos[1];
 
         if (finalXPos != this.posX || this.posY != finalYPos) {
-            let finalYPosFloor = Math.floor(finalYPos);
-            let finalYPosFrac = finalYPos - finalYPosFloor;
-            this.offsetY = finalYPosFrac;
-            this.updatePosition(finalXPos, finalYPosFloor);
+            this.updatePosition(finalXPos, finalYPos);
 
             if (!this.solid) {
                 shouldResetGroup = true;
@@ -790,10 +769,6 @@ export class BaseSquare {
                 }
             }
         }
-        if (this.blockHealth == 1) {
-            this.posX = Math.floor(this.posX);
-            this.posY = Math.floor(this.posY);
-        }
     }
 
     physics() {
@@ -802,10 +777,10 @@ export class BaseSquare {
         }
 
         if (getTimeScale() != 0) {
-            this.slopePhysics();
+            // this.slopePhysics();
+            this.compactionPhysics();
             this.gravityPhysics();
             this.windPhysics();
-            this.compactionPhysics();
             this.percolateInnerMoisture();
             if (this.speedY > 0) {
                 if (loadGD(UI_SIMULATION_CLOUDS)) {
@@ -818,7 +793,6 @@ export class BaseSquare {
                 }
             }
         }
-        this.processParticles();
     }
 
     /* Called before physics(), with blocks in strict order from top left to bottom right. */

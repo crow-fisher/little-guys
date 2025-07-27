@@ -104,14 +104,17 @@ export function renderOrganisms() {
 }
 
 export function removeSquare(sq) {
-    let arr = removeItemAll(getObjectArrFromMap(ALL_SQUARES, sq.posX, sq.posY), sq);
+    let posX = Math.floor(sq.posX);
+    let posY = Math.floor(sq.posY);
+
+    let arr = removeItemAll(getSquares(posX, posY), sq);
     if (arr.length === 0) {
-        if ((ALL_SQUARES).has(sq.posX) && ALL_SQUARES.get(sq.posX).has(sq.posY))
-            ALL_SQUARES.get(sq.posX).delete(sq.posY);
+        if ((ALL_SQUARES).has(posX) && ALL_SQUARES.get(posX).has(posY))
+            ALL_SQUARES.get(posX).delete(posY);
     }
     if (sq.proto != "PlantSquare") {
-        registerSqIterationRowChange(sq.posY);
-        registerSqColChange(sq.posX, sq.posY);
+        registerSqIterationRowChange(posY);
+        registerSqColChange(posX, posY);
     }
 }
 
