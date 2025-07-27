@@ -258,11 +258,11 @@ export class BaseSquare {
     renderSpeed(x = true, y = true) {
         let res = 0;
 
-        if (x) 
+        if (x)
             res += this.speedX;
         if (y)
             res += this.speedY;
-        
+
         let base = this.getColorBase();
         let hsv = rgb2hsv(base.r, base.g, base.b);
         hsv[0] += 360.0 * res;
@@ -695,7 +695,7 @@ export class BaseSquare {
         }
 
         if (getTimeScale() != 0) {
-            // this.speedY += (1 / this.gravity);
+            this.speedY += (1 / this.gravity);
         }
 
         let shouldResetGroup = false;
@@ -725,8 +725,8 @@ export class BaseSquare {
             //         return;
             //     }
             // }
-            this.speedX = 0;
-            this.speedY = 0;
+            this.speedX = colSq.speedX;
+            this.speedY = colSq.speedY;
             this.hasBonked = true;
         }
 
@@ -768,6 +768,11 @@ export class BaseSquare {
                     neighbSquare.destroy();
                 }
             }
+        } else {
+            if (this.speedX == 0 && this.speedY == 0) {
+                this.posX = Math.floor(this.posX);
+                this.posY = Math.floor(this.posY);
+            }
         }
     }
 
@@ -777,7 +782,7 @@ export class BaseSquare {
         }
 
         if (getTimeScale() != 0) {
-            // this.slopePhysics();
+            this.slopePhysics();
             this.compactionPhysics();
             this.gravityPhysics();
             this.windPhysics();
