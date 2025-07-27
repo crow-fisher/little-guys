@@ -687,8 +687,8 @@ export class BaseSquare {
             csx += dsx;
             csy += dsy;
 
-            rcsx = Math.round(csx) + this.posX;
-            rcsy = Math.round(csy) + this.posY;
+            rcsx = csx + this.posX;
+            rcsy = csy + this.posY;
 
             last = pathArr[pathArr.length - 1];
 
@@ -734,15 +734,15 @@ export class BaseSquare {
         let nextPath = nextPathRes[1];
 
         if (colSq != null) {
-            if (colSq.proto == this.proto && colSq.blockHealth < 1 && colSq.blockHealth > 0) {
-                let amount = Math.min(1 - colSq.blockHealth, this.blockHealth);
-                colSq.blockHealth += amount;
-                this.blockHealth -= amount;
-                if (this.blockHealth == 0) {
-                    this.destroy();
-                    return;
-                }
-            }
+            // if (colSq.proto == this.proto && colSq.blockHealth < 1 && colSq.blockHealth > 0) {
+            //     let amount = Math.min(1 - colSq.blockHealth, this.blockHealth);
+            //     colSq.blockHealth += amount;
+            //     this.blockHealth -= amount;
+            //     if (this.blockHealth == 0) {
+            //         this.destroy();
+            //         return;
+            //     }
+            // }
             this.speedX = colSq.speedX;
             this.speedY = colSq.speedY;
             this.hasBonked = true;
@@ -789,7 +789,10 @@ export class BaseSquare {
                     neighbSquare.destroy();
                 }
             }
-
+        }
+        if (this.blockHealth == 1) {
+            this.posX = Math.floor(this.posX);
+            this.posY = Math.floor(this.posY);
         }
     }
 
