@@ -327,16 +327,16 @@ export class SoilSquare extends BaseSquare {
         let px = Math.abs(wx) / maxWindSpeed;
         let py = Math.abs(wy) / maxWindSpeed;
 
-        let factor = .9;
+        let factor = .2;
 
         let projX = (wx > 0 ? 1 : -1);
         let projY = (wy > 0 ? 1 : -1);
 
         if (this.speedX == 0 && this.speedY == 0 && this.blockHealth > 0.125) {
-            let amount = Math.min(this.blockHealth, randRange(0.125, .25));
+            let amount = Math.min(this.blockHealth, randRange(0.0625, .125));
             if (
                 amount < this.blockHealth &&
-                !getSquares(this.posX + projX, this.posY + projY).some((sq) => sq.testCollidesWithSquare(this))
+                !getSquares(this.posX + projX, this.posY + projY).some((sq) => sq.proto == "SoilSquare")
             ) {
                 let sq = new SoilSquare(this.posX + projX, this.posY + projY);
                 if (addSquare(sq)) {
@@ -345,11 +345,9 @@ export class SoilSquare extends BaseSquare {
                     sq.clay = this.clay;
                     sq.waterContainment = this.waterContainment;
                     sq.blockHealth = amount;
-                    this.blockHealth -= amount;
+                    this.blockHealth -= (amount / 1.3);
+
                     applyLightingFromSource(this, sq);
-                    sq.cachedRgba = this.cachedRgba;
-                    sq.lastColorCacheOpacity = this.lastColorCacheOpacity;
-                    sq.lastColorCacheTime = this.lastColorCacheTime;
 
                     sq.speedX += factor * Math.round(wx);
                     sq.speedY += factor * Math.round(wy);
@@ -359,33 +357,25 @@ export class SoilSquare extends BaseSquare {
             }
         } else {
             if (Math.random() < px) {
-                this.speedX += factor * Math.round(wx);
+                this.speedX += factor * (Math.round(wx) / (Math.max(.01, this.blockHealth)));
             }
             if (Math.random() < py) {
-                this.speedY += factor * Math.round(wy);
+                this.speedY += factor * (Math.round(wy) / (Math.max(.01, this.blockHealth)));
             }
         }
     }
     getWaterflowRate() {
         return cachedGetWaterflowRate(this.sand, this.silt, this.clay);
     }
-    triggerParticles(bonkSpeed) {
-        return;
-        if (Date.now() < this.spawnTime + 100) {
-            return;
-        }
-        let numParticles = (bonkSpeed / (this.getWaterflowRate() ** 0.3));
 
-        for (let i = 0; i < numParticles; i++) {
-            let speed = randRange(0, (bonkSpeed ** 0.22) - 1);
-            let theta = randRange(0, 2 * Math.PI);
-            let speedX = speed * Math.cos(theta);
-            let speedY = speed * Math.sin(theta);
-            let wrp = 0.7 * (getBaseSize() * (this.getWaterflowRate() * 0.1 + 40 * 0.9) / 30) ** 0.2;
-            let size = randRange(wrp * 0.5, wrp * 2);
-            this.activeParticles.push([this.posX, this.posY, theta, speedX, speedY, size])
-        }
+    consumeParticle(colSq) {
+        let res = super.consumeParticle(colSq);
+        this.sand = (this.sand * res[1] + res[2] * colSq.sand) / this.blockHealth;
+        this.silt = (this.silt * res[1] + res[2] * colSq.silt) / this.blockHealth;
+        this.clay = (this.clay * res[1] + res[2] * colSq.clay) / this.blockHealth;
+        return res;
     }
+
 
     getColorBase() {
         let outColor = getActiveClimate().getBaseSoilColor(this.colorVariant, this.sand, this.silt, this.clay);

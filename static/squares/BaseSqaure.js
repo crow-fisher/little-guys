@@ -372,14 +372,6 @@ export class BaseSquare {
         return this.randoms[randIdx];
     }
 
-    swapColors(otherSquare) {
-        let t1 = this.randoms;
-        this.randoms = otherSquare.randoms;
-        otherSquare.randoms = t1;
-        this.cachedRgba = null;
-        otherSquare.cachedRgba = null;
-    }
-
     getColorBase() {
         return this.color;
     }
@@ -450,11 +442,13 @@ export class BaseSquare {
                 this.posY * getBaseSize(),
                 getBaseSize() * Math.max(this.blockHealth, 0.3));
         } else {
+            let size = (this.blockHealth ** 0.5);
+
             zoomCanvasFillRect(
                 this.posX * getBaseSize(),
-                this.posY * getBaseSize(),
-                getBaseSize(),
-                getBaseSize()
+                (this.posY + (1 - size)) * getBaseSize(),
+                getBaseSize() * (size > 0.5 ? 1 : size),
+                getBaseSize() * (size)
             );
         }
 
@@ -696,6 +690,16 @@ export class BaseSquare {
         return [null, pathArr];
     }
 
+    consumeParticle(colSq) {
+        let startBlockHeatlh = this.blockHealth;
+        this.blockHealth = Math.min(1, this.blockHealth + colSq.blockHealth);
+        let colSqHeatlhAdded = this.blockHealth - startBlockHeatlh;
+        colSq.blockHealth -= colSqHeatlhAdded;
+
+        return [colSqHeatlhAdded == colSq.blockHealth, startBlockHeatlh, colSqHeatlhAdded];
+    }
+
+
     gravityPhysics() {
         if (!this.shouldFallThisFrame()) {
             return;
@@ -724,10 +728,8 @@ export class BaseSquare {
 
         if (colSq != null) {
             if (this.blockHealth < 1 && colSq.proto == this.proto && colSq.blockHealth < 1 && colSq.blockHealth > 0) {
-                let amount = Math.min(1 - colSq.blockHealth, this.blockHealth);
-                colSq.blockHealth += amount;
-                this.blockHealth -= amount;
-                if (this.blockHealth == 0) {
+                let res = colSq.consumeParticle(this);
+                if (res[0]) {
                     this.destroy();
                     return;
                 }
