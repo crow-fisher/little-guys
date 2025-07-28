@@ -32,7 +32,7 @@ export class BaseSquare {
         this.posHistoryRetentionLength = 5;
         this.posHistoryMap = new Array(this.posHistoryRetentionLength);
         this.posHistoryCur = this.posHistoryRetentionLength;
-        for (let i = 0; i < this.posHistoryRetentionLength; i++) 
+        for (let i = 0; i < this.posHistoryRetentionLength; i++)
             this.posHistoryMap[i] = [this.posX, this.posY];
 
         this.color = hexToRgb("#00FFFF");
@@ -98,6 +98,9 @@ export class BaseSquare {
         this.blockHealth_color2 = RGB_COLOR_BLUE;
         this.surfaceLightingFactor = 0.1;
         this.mixIdx = -1;
+
+        this.blockHealthGravityCoef = 4;
+
         this.initTemperature();
     };
 
@@ -259,7 +262,7 @@ export class BaseSquare {
         } else if (selectedViewMode == UI_VIEWMODE_DEV4) {
             this.renderSpeed(true, true);
         } else if (selectedViewMode == UI_VIEWMODE_DEV5) {
-            this.renderWithVariedColors();
+            this.renderWithVariedColors(1);
             this.renderHistory();
         }
     };
@@ -510,11 +513,14 @@ export class BaseSquare {
     }
 
     renderHistory() {
-        if (this.speedX == 0 && this.speedY == 0)
+        if (this.speedX == 0 && this.speedY == 0 && this.renderCountDown == 0)
             return;
-        
-        this.posHistoryMap[(this.posHistoryCur % this.posHistoryRetentionLength)] = [this.posX, this.posY];
-        this.posHistoryCur += 1;
+
+        if (this.getMovementSpeed() > 0) {
+            this.renderCountDown = this.posHistoryRetentionLength * 2;
+            this.posHistoryMap[(this.posHistoryCur % this.posHistoryRetentionLength)] = [this.posX, this.posY];
+            this.posHistoryCur += 1;
+        }
 
         MAIN_CONTEXT.strokeStyle = COLOR_VERY_FUCKING_RED;
         MAIN_CONTEXT.beginPath();
@@ -524,13 +530,19 @@ export class BaseSquare {
         let start = transformCanvasSquaresToPixels(p[0] * getBaseSize(), p[1] * getBaseSize());
 
         MAIN_CONTEXT.moveTo(start[0], start[1]);
-        for (let i = this.posHistoryCur - this.posHistoryRetentionLength; i < this.posHistoryCur; i++) {
-            let p2 = transformCanvasSquaresToPixels(...this.posHistoryMap[i % this.posHistoryRetentionLength]);
-            let node = transformCanvasSquaresToPixels(p2[0] * getBaseSize(), p2[1] * getBaseSize());
-            MAIN_CONTEXT.lineTo(node[0], node[1]);
+        for (let i = this.posHistoryCur; i > this.posHistoryCur - this.posHistoryRetentionLength; i--) {
+            let loc = this.posHistoryMap[i % this.posHistoryRetentionLength];
+            if (!isSquareOnCanvas(...loc)) {
+                MAIN_CONTEXT.closePath();
+                return;
+            }
+            let p2 = transformCanvasSquaresToPixels(loc[0] * getBaseSize(), loc[1] * getBaseSize());
+            MAIN_CONTEXT.lineTo(p2[0], p2[1]);
         }
         MAIN_CONTEXT.closePath()
         MAIN_CONTEXT.stroke();
+
+        this.renderCountDown -= 1;
     }
 
     _percolateGroup(origGroup = null) {
@@ -605,7 +617,7 @@ export class BaseSquare {
             return false;
         }
 
-        if (this.proto == sq.proto && (this.blockHealth + sq.blockHealth) < 1 && this.getMovementSpeed() > 0.1 && sq.getMovementSpeed() > 0.1) {
+        if (this.proto == sq.proto && this.getMovementSpeed() > 0.1 && sq.getMovementSpeed() > 0.1) {
             return false;
         }
 
@@ -704,7 +716,7 @@ export class BaseSquare {
             csy += dsy;
 
             rcsx = csx + this.posX;
-            rcsy = csy + this.posY; 
+            rcsy = csy + this.posY;
 
             last = pathArr[pathArr.length - 1];
 
@@ -739,7 +751,7 @@ export class BaseSquare {
         }
 
         if (getTimeScale() != 0) {
-            this.speedY += (1 / (this.gravity / this.blockHealth));
+            this.speedY += (1 / (this.gravity / this.blockHealth ** (this.blockHealthGravityCoef)));
         }
 
         let shouldResetGroup = false;
@@ -805,8 +817,7 @@ export class BaseSquare {
 
     compactionPhysics() {
         if (this.blockHealth < 1) {
-            let dist = 2;
-            let neighbSquare = getSquares(this.posX + randNumber(-dist, dist), this.posY + randNumber(-dist * 2, -1)).find((sq) => sq.proto == this.proto);
+            let neighbSquare = getSquares(this.posX, this.posY - randNumber(1, 2)).find((sq) => sq.proto == this.proto);
             if (neighbSquare != null && this.linkedOrganismSquares.length == 0 && this.linkedOrganismSquares.length == 0) {
                 let amount = Math.min(1 - this.blockHealth, neighbSquare.blockHealth);
                 this.blockHealth += amount;

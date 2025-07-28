@@ -31,7 +31,8 @@ class WaterSquare extends BaseSquare {
         // water starts as a liquid 
         this.state = 1;
         this.thermalConductivity = 0.6;
-        this.thermalMass = 4.2;
+        this.thermalMass = 4.2; 
+        this.blockHealthGravityCoef = 0.7;
     }
 
     windPhysics() {
