@@ -671,7 +671,7 @@ export class BaseSquare {
             csy += dsy;
 
             rcsx = csx + this.posX;
-            rcsy = csy + this.posY;
+            rcsy = csy + this.posY; 
 
             last = pathArr[pathArr.length - 1];
 
@@ -706,7 +706,7 @@ export class BaseSquare {
         }
 
         if (getTimeScale() != 0) {
-            this.speedY += (1 / this.gravity);
+            this.speedY += (1 / (this.gravity / this.blockHealth));
         }
 
         let shouldResetGroup = false;
@@ -725,6 +725,11 @@ export class BaseSquare {
 
         let colSq = nextPathRes[0];
         let nextPath = nextPathRes[1];
+
+        // if (nextPath.length == 1) {
+        //     this.updatePosition(Math.floor(this.posX), Math.floor(this.posY));
+        //     return;
+        // }
 
         if (colSq != null) {
             if (this.blockHealth < 1 && colSq.proto == this.proto && colSq.blockHealth < 1 && colSq.blockHealth > 0) {

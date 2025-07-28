@@ -264,7 +264,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     slopeConditional() {
-        if (this.gravity == 0 || Math.abs(this.speedY) > 0) {
+        if (this.gravity == 0 || this.getMovementSpeed() > 0) {
             return;
         }
 
@@ -327,13 +327,16 @@ export class SoilSquare extends BaseSquare {
         let px = Math.abs(wx) / maxWindSpeed;
         let py = Math.abs(wy) / maxWindSpeed;
 
-        let factor = .2;
+        let factor = .02;
 
         let projX = (wx > 0 ? 1 : -1);
         let projY = (wy > 0 ? 1 : -1);
 
-        if (this.speedX == 0 && this.speedY == 0 && this.blockHealth > 0.125) {
-            let amount = Math.min(this.blockHealth, randRange(0.0625, .125));
+        let minProjSize = 0.125;
+        let maxProjSize = 0.3;
+
+        if (Math.abs(this.speedX) < 1 && Math.abs(this.speedY) < 1 && this.blockHealth > minProjSize) {
+            let amount = Math.min(this.blockHealth, randRange(minProjSize, maxProjSize));
             if (
                 amount < this.blockHealth &&
                 !getSquares(this.posX + projX, this.posY + projY).some((sq) => sq.proto == "SoilSquare")
@@ -345,7 +348,7 @@ export class SoilSquare extends BaseSquare {
                     sq.clay = this.clay;
                     sq.waterContainment = this.waterContainment;
                     sq.blockHealth = amount;
-                    this.blockHealth -= (amount / 1.3);
+                    this.blockHealth -= amount;
 
                     applyLightingFromSource(this, sq);
 
