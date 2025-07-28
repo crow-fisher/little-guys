@@ -16,18 +16,24 @@ import { hexToRgb, hsv2rgb, hueShiftColor, hueShiftColorArr, randNumber, randRan
 import { removeSquare } from "../globalOperations.js";
 import { calculateColorTemperature, getTemperatureAtWindSquare, temperatureHumidityFlowrateFactor, updateWindSquareTemperature } from "../climate/simulation/temperatureHumidity.js";
 import { getWindSquareAbove } from "../climate/simulation/wind.js";
-import { COLOR_BLACK, GROUP_BROWN, GROUP_BLUE, GROUP_MAUVE, GROUP_TAN, GROUP_GREEN, RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
+import { COLOR_BLACK, GROUP_BROWN, GROUP_BLUE, GROUP_MAUVE, GROUP_TAN, GROUP_GREEN, RGB_COLOR_BLUE, RGB_COLOR_RED, COLOR_VERY_FUCKING_RED } from "../colors.js";
 import { getDaylightStrengthFrameDiff, getFrameDt, getTimeScale } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
-import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, getFrameYMax, isSquareOnCanvas, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
-import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3, UI_VIEWMODE_DEV4 } from "../ui/UIData.js";
+import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, getFrameYMax, isSquareOnCanvas, transformCanvasSquaresToPixels, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
+import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3, UI_VIEWMODE_DEV4, UI_VIEWMODE_DEV5 } from "../ui/UIData.js";
 import { deregisterSquare, registerSquare } from "../waterGraph.js";
 
 export class BaseSquare {
     constructor(posX, posY) {
         this.proto = "BaseSquare";
-        this.posX = Math.floor(posX);
-        this.posY = Math.floor(posY);
+        this.posX = posX;
+        this.posY = posY;
+
+        this.posHistoryRetentionLength = 5;
+        this.posHistoryMap = new Array(this.posHistoryRetentionLength);
+        this.posHistoryCur = this.posHistoryRetentionLength;
+        for (let i = 0; i < this.posHistoryRetentionLength; i++) 
+            this.posHistoryMap[i] = [this.posX, this.posY];
 
         this.color = hexToRgb("#00FFFF");
 
@@ -252,6 +258,9 @@ export class BaseSquare {
             this.renderWithVariedColors(0.5);
         } else if (selectedViewMode == UI_VIEWMODE_DEV4) {
             this.renderSpeed(true, true);
+        } else if (selectedViewMode == UI_VIEWMODE_DEV5) {
+            this.renderWithVariedColors();
+            this.renderHistory();
         }
     };
 
@@ -498,6 +507,30 @@ export class BaseSquare {
 
         this.lastColorCacheTime = 0;
         return true;
+    }
+
+    renderHistory() {
+        if (this.speedX == 0 && this.speedY == 0)
+            return;
+        
+        this.posHistoryMap[(this.posHistoryCur % this.posHistoryRetentionLength)] = [this.posX, this.posY];
+        this.posHistoryCur += 1;
+
+        MAIN_CONTEXT.strokeStyle = COLOR_VERY_FUCKING_RED;
+        MAIN_CONTEXT.beginPath();
+
+        let p = this.posHistoryMap[this.posHistoryCur % this.posHistoryRetentionLength];
+
+        let start = transformCanvasSquaresToPixels(p[0] * getBaseSize(), p[1] * getBaseSize());
+
+        MAIN_CONTEXT.moveTo(start[0], start[1]);
+        for (let i = this.posHistoryCur - this.posHistoryRetentionLength; i < this.posHistoryCur; i++) {
+            let p2 = transformCanvasSquaresToPixels(...this.posHistoryMap[i % this.posHistoryRetentionLength]);
+            let node = transformCanvasSquaresToPixels(p2[0] * getBaseSize(), p2[1] * getBaseSize());
+            MAIN_CONTEXT.lineTo(node[0], node[1]);
+        }
+        MAIN_CONTEXT.closePath()
+        MAIN_CONTEXT.stroke();
     }
 
     _percolateGroup(origGroup = null) {

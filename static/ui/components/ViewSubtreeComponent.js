@@ -27,7 +27,8 @@ import {
     UI_VIEWMODE_EVOLUTION,
     UI_VIEWMODE_NUTRIENTS,
     UI_VIEWMODE_DEV3,
-    UI_VIEWMODE_DEV4
+    UI_VIEWMODE_DEV4,
+    UI_VIEWMODE_DEV5
 } from "../UIData.js";
 import { SubTreeComponent } from "./SubTreeComponent.js";
 export class ViewSubtreeComponent extends SubTreeComponent {
@@ -64,7 +65,7 @@ export class ViewSubtreeComponent extends SubTreeComponent {
         container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"target",  UI_VIEWMODE_SELECT, UI_VIEWMODE_DEV2,() => getActiveClimate().getUIColorInactiveCustom(0.56), () => getActiveClimate().getUIColorActive()));
         container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"block health",  UI_VIEWMODE_SELECT, UI_VIEWMODE_DEV3,() => getActiveClimate().getUIColorInactiveCustom(0.56), () => getActiveClimate().getUIColorActive()));
         container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"block speed",  UI_VIEWMODE_SELECT, UI_VIEWMODE_DEV4,() => getActiveClimate().getUIColorInactiveCustom(0.56), () => getActiveClimate().getUIColorActive()));
-    
+        container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"path history",  UI_VIEWMODE_SELECT, UI_VIEWMODE_DEV5,() => getActiveClimate().getUIColorInactiveCustom(0.56), () => getActiveClimate().getUIColorActive()));
         
     }
 }
