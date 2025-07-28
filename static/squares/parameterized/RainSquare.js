@@ -34,6 +34,7 @@ class AquiferSquare extends BaseSquare {
         if (sq) {
             sq.temperature = this.temperature;
             sq.speedY = randNumber(-1, 1);
+            sq.blockHealth = loadGD(UI_PALETTE_AQUIFER_FLOWRATE);
         }
     }
     render() {

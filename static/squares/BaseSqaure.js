@@ -617,7 +617,7 @@ export class BaseSquare {
             return false;
         }
 
-        if (this.proto == sq.proto && this.getMovementSpeed() > 0.1 && sq.getMovementSpeed() > 0.1) {
+        if (this.proto == sq.proto && (this.blockHealth + sq.blockHealth) < 1 && this.getMovementSpeed() > 0.1 && sq.getMovementSpeed() > 0.1) {
             return false;
         }
 

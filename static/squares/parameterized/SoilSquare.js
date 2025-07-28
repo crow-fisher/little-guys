@@ -333,7 +333,7 @@ export class SoilSquare extends BaseSquare {
         let projY = (wy > 0 ? 1 : -1);
 
         let minProjSize = 0.125;
-        let maxProjSize = 0.3;
+        let maxProjSize = 0.2;
 
         if (Math.abs(this.speedX) < 1 && Math.abs(this.speedY) < 1 && this.blockHealth > minProjSize) {
             let amount = Math.min(this.blockHealth, randRange(minProjSize, maxProjSize));
