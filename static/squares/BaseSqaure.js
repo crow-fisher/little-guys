@@ -29,7 +29,7 @@ export class BaseSquare {
         this.posX = posX;
         this.posY = posY;
 
-        this.posHistoryRetentionLength = 5;
+        this.posHistoryRetentionLength = 25;
         this.posHistoryMap = new Array(this.posHistoryRetentionLength);
         this.posHistoryCur = this.posHistoryRetentionLength;
         for (let i = 0; i < this.posHistoryRetentionLength; i++)
@@ -523,24 +523,26 @@ export class BaseSquare {
         }
 
         MAIN_CONTEXT.strokeStyle = COLOR_VERY_FUCKING_RED;
+        MAIN_CONTEXT.lineWidth = 4 * Math.max(0.5, this.blockHealth);
         MAIN_CONTEXT.beginPath();
 
-        let p = this.posHistoryMap[this.posHistoryCur % this.posHistoryRetentionLength];
+        let p = this.posHistoryMap[(this.posHistoryCur - 1 + this.posHistoryRetentionLength) % this.posHistoryRetentionLength];
 
         let start = transformCanvasSquaresToPixels(p[0] * getBaseSize(), p[1] * getBaseSize());
 
         MAIN_CONTEXT.moveTo(start[0], start[1]);
-        for (let i = this.posHistoryCur; i > this.posHistoryCur - this.posHistoryRetentionLength; i--) {
+        // console.log("START: ", p);
+        for (let i = this.posHistoryCur - 1; i >= this.posHistoryCur - this.posHistoryRetentionLength; i--) {
             let loc = this.posHistoryMap[i % this.posHistoryRetentionLength];
             if (!isSquareOnCanvas(...loc)) {
-                MAIN_CONTEXT.closePath();
                 return;
             }
             let p2 = transformCanvasSquaresToPixels(loc[0] * getBaseSize(), loc[1] * getBaseSize());
             MAIN_CONTEXT.lineTo(p2[0], p2[1]);
+            // console.log("POINT: ", loc);
         }
-        MAIN_CONTEXT.closePath()
         MAIN_CONTEXT.stroke();
+        // console.log("END!")
 
         this.renderCountDown -= 1;
     }
