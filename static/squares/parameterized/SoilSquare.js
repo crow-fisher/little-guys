@@ -4,7 +4,7 @@ import { cachedGetWaterflowRate, hexToRgb, randNumber, randRange } from "../../c
 import { getCurTimeScale, getDt, getFrameDt, timeScaleFactor } from "../../climate/time.js";
 import { getPressure, getWindSpeedAtLocation, getWindSquareAbove } from "../../climate/simulation/wind.js";
 import { addWaterSaturationPascals, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, temperatureHumidityFlowrateFactor } from "../../climate/simulation/temperatureHumidity.js";
-import { loadGD, UI_LIGHTING_SURFACE, UI_PALETTE_COMPOSITION, UI_PALETTE_SOILIDX, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER } from "../../ui/UIData.js";
+import { loadGD, UI_LIGHTING_SURFACE, UI_PALETTE_COMPOSITION, UI_PALETTE_SOILIDX, UI_SIMULATION_CLOUDS, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER } from "../../ui/UIData.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { addSquareByName } from "../../manipulation.js";
 import { getBaseSize } from "../../canvas.js";
@@ -315,6 +315,9 @@ export class SoilSquare extends BaseSquare {
     }
 
     windPhysics() {
+        if (!loadGD(UI_SIMULATION_CLOUDS))
+            return;
+
         if (this.linkedOrganismSquares.length > 0) {
             return;
         }
@@ -332,8 +335,8 @@ export class SoilSquare extends BaseSquare {
         let projX = (wx > 0 ? 1 : -1);
         let projY = (wy > 0 ? 1 : -1);
 
-        let minProjSize = 0.125;
-        let maxProjSize = 0.2;
+        let minProjSize = 0.4;
+        let maxProjSize = 0.8;
 
         if (Math.abs(this.speedX) < 1 && Math.abs(this.speedY) < 1 && this.blockHealth > minProjSize) {
             let amount = Math.min(this.blockHealth, randRange(minProjSize, maxProjSize));
@@ -352,8 +355,8 @@ export class SoilSquare extends BaseSquare {
 
                     applyLightingFromSource(this, sq);
 
-                    sq.speedX += factor * Math.round(wx);
-                    sq.speedY += factor * Math.round(wy);
+                    sq.speedX += factor * 10 * Math.round(wx);
+                    sq.speedY += factor * 10 * Math.round(wy);
                 };
             } else {
                 return;
@@ -371,11 +374,11 @@ export class SoilSquare extends BaseSquare {
         return cachedGetWaterflowRate(this.sand, this.silt, this.clay);
     }
 
-    consumeParticle(colSq) {
-        let res = super.consumeParticle(colSq);
-        this.sand = (this.sand * res[1] + res[2] * colSq.sand) / this.blockHealth;
-        this.silt = (this.silt * res[1] + res[2] * colSq.silt) / this.blockHealth;
-        this.clay = (this.clay * res[1] + res[2] * colSq.clay) / this.blockHealth;
+    consumeParticle(incomingSq) {
+        let res = super.consumeParticle(incomingSq);
+        this.sand = (this.sand * res[1] + res[2] * incomingSq.sand) / this.blockHealth;
+        this.silt = (this.silt * res[1] + res[2] * incomingSq.silt) / this.blockHealth;
+        this.clay = (this.clay * res[1] + res[2] * incomingSq.clay) / this.blockHealth;
         return res;
     }
 

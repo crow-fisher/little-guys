@@ -20,7 +20,7 @@ import { COLOR_BLACK, GROUP_BROWN, GROUP_BLUE, GROUP_MAUVE, GROUP_TAN, GROUP_GRE
 import { getDaylightStrengthFrameDiff, getFrameDt, getTimeScale } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, getFrameYMax, isSquareOnCanvas, transformCanvasSquaresToPixels, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
-import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3, UI_VIEWMODE_DEV4, UI_VIEWMODE_DEV5 } from "../ui/UIData.js";
+import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3, UI_VIEWMODE_DEV4, UI_VIEWMODE_DEV5, UI_PALETTE_STRENGTH } from "../ui/UIData.js";
 import { deregisterSquare, registerSquare } from "../waterGraph.js";
 
 export class BaseSquare {
@@ -44,7 +44,7 @@ export class BaseSquare {
         this.gravity = 1;
         this.hasBonked = false;
         this.blockHealthMax = 1;
-        this.blockHealth = this.blockHealthMax; // when reaches zero, delete
+        this.blockHealth = Math.min(loadGD(UI_PALETTE_STRENGTH), this.blockHealthMax); // when reaches zero, delete
         // water flow parameters
 
         this.currentPressureDirect = -1;
@@ -99,7 +99,7 @@ export class BaseSquare {
         this.surfaceLightingFactor = 0.1;
         this.mixIdx = -1;
 
-        this.blockHealthGravityCoef = 4;
+        this.blockHealthGravityCoef = 2;
 
         this.initTemperature();
     };
@@ -737,13 +737,14 @@ export class BaseSquare {
         return [null, pathArr];
     }
 
-    consumeParticle(colSq) {
+    consumeParticle(incomingSq) {
         let startBlockHeatlh = this.blockHealth;
-        this.blockHealth = Math.min(1, this.blockHealth + colSq.blockHealth);
+        this.blockHealth = Math.min(1, this.blockHealth + incomingSq.blockHealth);
         let colSqHeatlhAdded = this.blockHealth - startBlockHeatlh;
-        colSq.blockHealth -= colSqHeatlhAdded;
+        let res = colSqHeatlhAdded == incomingSq.blockHealth;
+        incomingSq.blockHealth -= colSqHeatlhAdded;
 
-        return [colSqHeatlhAdded == colSq.blockHealth, startBlockHeatlh, colSqHeatlhAdded];
+        return [res, startBlockHeatlh, colSqHeatlhAdded];
     }
 
 
@@ -759,27 +760,49 @@ export class BaseSquare {
         let shouldResetGroup = false;
         if (isGroupGrounded(this.group) && this.currentPressureDirect > 10) {
             if ((Math.random() * 1.5) < 1 - (1 / this.currentPressureDirect) && !getSquares(this.posX, this.posY + 2).some((sq) => sq.testCollidesWithSquare(this))) {
-                // return;
+                return;
             }
             shouldResetGroup = true;
         }
 
+        if (this.speedX == 0 && this.speedY == 0)
+            return;
+
         let maxSpeed = 9;
         this.speedX = Math.min(maxSpeed, Math.max(-maxSpeed, this.speedX));
         this.speedY = Math.min(maxSpeed, Math.max(-maxSpeed, this.speedY));
+
+
+        // cover case of within-block movement first 
+        let isWithinSquareX = false;
+        let isWithinSquareY = false;
+        if (Math.floor(this.posX + this.speedX) == Math.floor(this.posX)) {
+            isWithinSquareX = true;
+        }
+        if (Math.floor(this.posY + this.speedY) == Math.floor(this.posY)) {
+            isWithinSquareY = true;
+        }
+        if (isWithinSquareX && isWithinSquareY) {
+            this.updatePosition(this.posX + this.speedX, this.posY + this.speedY);
+            return;
+        }
+
+        // now, we know we're (trying) to move at least a block
 
         let nextPathRes = this.getNextPath();
 
         let colSq = nextPathRes[0];
         let nextPath = nextPathRes[1];
 
-        // if (nextPath.length == 1) {
-        //     this.updatePosition(Math.floor(this.posX), Math.floor(this.posY));
-        //     return;
-        // }
+        if (nextPath.length == 1) {
+            this.updatePosition(Math.floor(this.posX), Math.floor(this.posY));
+            this.speedX = 0;
+            this.speedY = 0;
+            return;
+        }
 
         if (colSq != null) {
-            if (this.blockHealth < 1 && colSq.proto == this.proto && colSq.blockHealth < 1 && colSq.blockHealth > 0) {
+            if (this.blockHealth < 1 && colSq.proto == this.proto) {
                 let res = colSq.consumeParticle(this);
                 if (res[0]) {
                     this.destroy();
@@ -818,6 +841,8 @@ export class BaseSquare {
     windPhysics() { }
 
     compactionPhysics() {
+        if (this.speedX != 0 || this.speedY != 0)
+            return;
         if (this.blockHealth < 1) {
             let neighbSquare = getSquares(this.posX, this.posY - randNumber(1, 2)).find((sq) => sq.proto == this.proto);
             if (neighbSquare != null && this.linkedOrganismSquares.length == 0 && this.linkedOrganismSquares.length == 0) {
