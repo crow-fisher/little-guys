@@ -261,11 +261,24 @@ export class BaseSquare {
             this.renderWithVariedColors(0.5);
         } else if (selectedViewMode == UI_VIEWMODE_DEV4) {
             this.renderSpeed(true, true);
+            this.renderBlockId();
         } else if (selectedViewMode == UI_VIEWMODE_DEV5) {
             this.renderWithVariedColors(1);
             this.renderHistory();
         }
     };
+
+    renderBlockId() {
+        MAIN_CONTEXT.font = getBaseSize() + "px courier"
+        MAIN_CONTEXT.textAlign = 'center';
+        MAIN_CONTEXT.textBaseline = 'middle';
+        MAIN_CONTEXT.strokeStyle =  "rgba(35, 35, 35, 1)";
+        MAIN_CONTEXT.fillStyle = "rgba(195, 195, 195, 1)";
+        zoomCanvasSquareText(
+            (this.posX + 0.5) * getBaseSize(),
+            (this.posY + 0.5) * getBaseSize(),
+            this.id % 100);
+    }
 
     renderSpeed(x = true, y = true) {
         let res = 0;
@@ -754,7 +767,15 @@ export class BaseSquare {
         }
 
         if (getTimeScale() != 0) {
+            let sqBelow = getSquares(this.posX, this.posY + 1).find((sq) => sq.testCollidesWithSquare(this));
             this.speedY += (1 / (this.gravity / this.blockHealth ** (this.blockHealthGravityCoef)));
+            if (sqBelow != null) {
+                this.speedY = Math.min(this.speedY, sqBelow.speedY);
+                if (this.speedX < 0)
+                    this.speedX = Math.max(this.speedX, Math.min(sqBelow.speedX, 0));
+                else
+                    this.speedX = Math.min(this.speedX, Math.max(sqBelow.speedX, 0));
+            }
         }
 
         let shouldResetGroup = false;
@@ -793,13 +814,6 @@ export class BaseSquare {
 
         let colSq = nextPathRes[0];
         let nextPath = nextPathRes[1];
-
-        if (nextPath.length == 1) {
-            this.updatePosition(Math.floor(this.posX), Math.floor(this.posY));
-            this.speedX = 0;
-            this.speedY = 0;
-            return;
-        }
 
         if (colSq != null) {
             if (this.blockHealth < 1 && colSq.proto == this.proto) {

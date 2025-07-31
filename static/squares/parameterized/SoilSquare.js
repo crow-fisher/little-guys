@@ -9,6 +9,7 @@ import { getActiveClimate } from "../../climate/climateManager.js";
 import { addSquareByName } from "../../manipulation.js";
 import { getBaseSize } from "../../canvas.js";
 import { applyLightingFromSource, getDefaultLighting } from "../../lighting/lightingProcessing.js";
+import { getNextBlockId, getNextGroupId } from "../../globals.js";
 
 // maps in form "water containment" / "matric pressure in atmospheres"
 export const clayMatricPressureMap = [
@@ -52,6 +53,7 @@ export class SoilSquare extends BaseSquare {
         this.proto = "SoilSquare";
         this.colorBase = "#B06C49";
         this.rootable = true;
+        this.id = getNextBlockId();
 
         this.clayColorRgb = getActiveClimate().clayColorRgb;
         this.siltColorRgb = getActiveClimate().siltColorRgb;

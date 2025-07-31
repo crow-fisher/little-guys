@@ -14,6 +14,13 @@ export function purgeMaps() {
     ALL_SQUARES = new Map();
 }
 
+let curBlockId = 0;
+
+export function getNextBlockId() {
+    curBlockId += 1;
+    return curBlockId;
+}
+
 let mixArrLen = 3; 
 let curMixIdx = Math.floor(Date.now());
 curMixIdx -= curMixIdx % mixArrLen;
