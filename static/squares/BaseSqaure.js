@@ -207,6 +207,11 @@ export class BaseSquare {
 
     }
 
+    spawnParticle(dx, dy, sx, sy, blockHealth) {
+        return;
+    }
+
+
     renderBlockHealth() {
         let base = this.getColorBase();
         let hsv = rgb2hsv(base.r, base.g, base.b);
@@ -272,7 +277,7 @@ export class BaseSquare {
         MAIN_CONTEXT.font = getBaseSize() + "px courier"
         MAIN_CONTEXT.textAlign = 'center';
         MAIN_CONTEXT.textBaseline = 'middle';
-        MAIN_CONTEXT.strokeStyle =  "rgba(35, 35, 35, 1)";
+        MAIN_CONTEXT.strokeStyle = "rgba(35, 35, 35, 1)";
         MAIN_CONTEXT.fillStyle = "rgba(195, 195, 195, 1)";
         zoomCanvasSquareText(
             (this.posX + 0.5) * getBaseSize(),
@@ -774,9 +779,6 @@ export class BaseSquare {
             if (sqBelow != null) {
                 this.speedY = Math.min(this.speedY, sqBelow.speedY);
             }
-            if (sqAbove != null) {
-                this.speedY = Math.max(this.speedY, sqAbove.speedY);
-            }
         }
 
         let shouldResetGroup = false;
@@ -793,6 +795,9 @@ export class BaseSquare {
         let maxSpeed = 9;
         this.speedX = Math.min(maxSpeed, Math.max(-maxSpeed, this.speedX));
         this.speedY = Math.min(maxSpeed, Math.max(-maxSpeed, this.speedY));
+
+        if (getSquares(this.posX - 1, this.posY).some((sq) => sq.testCollidesWithSquare(this)) && getSquares(this.posX + 1, this.posY).some((sq) => sq.testCollidesWithSquare(this)))
+            this.speedX = 0;
 
 
         // cover case of within-block movement first 
@@ -819,6 +824,9 @@ export class BaseSquare {
         if (colSq != null) {
             if (this.blockHealth < 1 && colSq.proto == this.proto) {
                 let res = colSq.consumeParticle(this);
+                if (res == null)
+                    return;
+
                 if (res[0]) {
                     this.destroy();
                     return;
@@ -856,7 +864,6 @@ export class BaseSquare {
     windPhysics() { }
 
     compactionPhysics() {
-        // return;
         if (this.speedX != 0 || this.speedY != 0)
             return;
         if (this.blockHealth < 1) {

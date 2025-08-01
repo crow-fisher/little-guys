@@ -316,6 +316,21 @@ export class SoilSquare extends BaseSquare {
             this.updatePosition(this.posX + 1, this.posY);
     }
 
+    spawnParticle(dx, dy, sx, sy, amount) {
+        let sq = new SoilSquare(this.posX + dx, this.posY + dy);
+        if (addSquare(sq)) {
+            sq.sand = this.sand;
+            sq.silt = this.silt;
+            sq.clay = this.clay;
+            sq.waterContainment = this.waterContainment;
+            sq.blockHealth = amount;
+            this.blockHealth -= amount;
+            applyLightingFromSource(this, sq);
+            sq.speedX += sx
+            sq.speedY += sy
+        }
+    }
+
     windPhysics() {
         if (!loadGD(UI_SIMULATION_CLOUDS))
             return;
@@ -332,7 +347,7 @@ export class SoilSquare extends BaseSquare {
         let px = Math.abs(wx) / maxWindSpeed;
         let py = Math.abs(wy) / maxWindSpeed;
 
-        let factor = .01;
+        let factor = .04;
 
         let projX = (wx > 0 ? 1 : -1);
         let projY = (wy > 0 ? 1 : -1);
@@ -344,31 +359,18 @@ export class SoilSquare extends BaseSquare {
             let amount = Math.min(this.blockHealth, randRange(minProjSize, maxProjSize));
             if (
                 amount < this.blockHealth &&
-                !getSquares(this.posX + projX, this.posY + projY).some((sq) => sq.proto == "SoilSquare")
+                !getSquares(this.posX + projX, this.posY + projY).some((sq) => sq.proto == this.proto)
             ) {
-                let sq = new SoilSquare(this.posX + projX, this.posY + projY);
-                if (addSquare(sq)) {
-                    sq.sand = this.sand;
-                    sq.silt = this.silt;
-                    sq.clay = this.clay;
-                    sq.waterContainment = this.waterContainment;
-                    sq.blockHealth = amount;
-                    this.blockHealth -= amount;
-
-                    applyLightingFromSource(this, sq);
-
-                    sq.speedX += factor * Math.round(wx);
-                    sq.speedY += factor * Math.round(wy);
-                };
+                this.spawnParticle(projX, projY, factor * wx, factor * wy, amount)
             } else {
                 return;
             }
         } else {
             if (Math.random() < px) {
-                this.speedX += factor * (Math.round(wx) / (Math.max(.01, this.blockHealth)));
+                this.speedX += factor * (wx / (Math.max(.01, this.blockHealth)));
             }
             if (Math.random() < py) {
-                this.speedY += factor * (Math.round(wy) / (Math.max(.01, this.blockHealth)));
+                this.speedY += factor * (wy / (Math.max(.01, this.blockHealth)));
             }
         }
     }
@@ -377,6 +379,9 @@ export class SoilSquare extends BaseSquare {
     }
 
     consumeParticle(incomingSq) {
+        if (this.blockHealth == 0)
+            return null;
+
         let res = super.consumeParticle(incomingSq);
         this.sand = (this.sand * res[1] + res[2] * incomingSq.sand) / this.blockHealth;
         this.silt = (this.silt * res[1] + res[2] * incomingSq.silt) / this.blockHealth;
