@@ -199,8 +199,7 @@ export function hsv2rgb(h, s, v) {
     return [f(5), f(3), f(1)];
 }
 
-
-
+// maximum value: 1024 (2 ** 10, clayRate ** power)
 let getWaterflowRateCache = new Map();
 export function cachedGetWaterflowRate(sand, silt, clay) {
     let key = sand * 1000 + silt * 10 + clay;
