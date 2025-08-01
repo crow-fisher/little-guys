@@ -462,7 +462,7 @@ export class BaseSquare {
             this.cachedRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacityMult * this.opacity * this.blockHealth ** 0.2);
         }
         MAIN_CONTEXT.fillStyle = this.cachedRgba;
-        if (this.proto == "WaterSquare" && this.blockHealth < 0.5 && this.speedY > 2) {
+        if (this.blockHealth < 0.5 && this.getMovementSpeed() > 0.5) {
             let size = this.blockHealth;
             if (size < 0.3) {
                 size = 20 * (this.blockHealth);
@@ -475,8 +475,8 @@ export class BaseSquare {
             let size = (this.blockHealth ** 0.5);
 
             zoomCanvasFillRect(
-                Math.floor(this.posX) * getBaseSize(),
-                Math.floor((this.posY + (1 - size))) * getBaseSize(),
+                this.posX * getBaseSize(),
+                (this.posY + (1 - size)) * getBaseSize(),
                 getBaseSize() * (size > 0.5 ? 1 : size),
                 getBaseSize() * (size)
             );
@@ -770,14 +770,14 @@ export class BaseSquare {
         if (!this.shouldFallThisFrame()) {
             return;
         }
-
+        
+        // per-tick speed manipulation
         if (getTimeScale() != 0) {
             let sqBelow = getSquares(this.posX, this.posY + 1).find((sq) => sq.testCollidesWithSquare(this));
-            let sqAbove = getSquares(this.posX, this.posY - 1).find((sq) => sq.testCollidesWithSquare(this));
-
             this.speedY += (1 / (this.gravity / Math.max(.1, this.blockHealth) ** (this.blockHealthGravityCoef)));
-            if (sqBelow != null) {
-                this.speedY = Math.min(this.speedY, sqBelow.speedY);
+            if (sqBelow != null && sqBelow.speedX == 0 && sqBelow.speedY == 0 && Math.random() > .9) {
+                this.speedX = 0;
+                this.speedY = 0;
             }
         }
 
@@ -799,8 +799,13 @@ export class BaseSquare {
         if (getSquares(this.posX - 1, this.posY).some((sq) => sq.testCollidesWithSquare(this)) && getSquares(this.posX + 1, this.posY).some((sq) => sq.testCollidesWithSquare(this)))
             this.speedX = 0;
 
+        if (Math.abs(this.speedX) < .05)
+            this.speedX = 0
 
-        // cover case of within-block movement first 
+        this.speedX += (this.speedX > 0 ? this.speedX * -.1 : this.speedX * .1);
+        // end per-tick speed manipulation
+
+        // within-block movement 
         let isWithinSquareX = false;
         let isWithinSquareY = false;
         if (Math.floor(this.posX + this.speedX) == Math.floor(this.posX)) {
@@ -814,7 +819,9 @@ export class BaseSquare {
             return;
         }
 
-        // now, we know we're (trying) to move at least a block
+        // end case of within-block movement
+
+        // standard movement 
 
         let nextPathRes = this.getNextPath();
 

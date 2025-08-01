@@ -326,8 +326,9 @@ export class SoilSquare extends BaseSquare {
             sq.blockHealth = amount;
             this.blockHealth -= amount;
             applyLightingFromSource(this, sq);
-            sq.speedX += sx
-            sq.speedY += sy
+            sq.speedX += sx;
+            sq.speedY += sy;
+            sq.gravityPhysics();
         }
     }
 
@@ -352,19 +353,12 @@ export class SoilSquare extends BaseSquare {
         let projX = (wx > 0 ? 1 : -1);
         let projY = (wy > 0 ? 1 : -1);
 
-        let minProjSize = 0.4;
-        let maxProjSize = 0.8;
+        let minProjSize = 0.2;
+        let maxProjSize = 0.4;
 
-        if (Math.abs(this.speedX) < 1 && Math.abs(this.speedY) < 1 && this.blockHealth > minProjSize) {
-            let amount = Math.min(this.blockHealth, randRange(minProjSize, maxProjSize));
-            if (
-                amount < this.blockHealth &&
-                !getSquares(this.posX + projX, this.posY + projY).some((sq) => sq.proto == this.proto)
-            ) {
-                this.spawnParticle(projX, projY, factor * wx, factor * wy, amount)
-            } else {
-                return;
-            }
+        if (Math.abs(this.speedX) < 1 && Math.abs(this.speedY) < 1 && this.blockHealth > maxProjSize) {
+            let amount = randRange(minProjSize, maxProjSize);
+            this.spawnParticle(projX, projY, factor * (wx / amount), factor * (wy / amount), amount)
         } else {
             if (Math.random() < px) {
                 this.speedX += factor * (wx / (Math.max(.01, this.blockHealth)));
@@ -379,13 +373,15 @@ export class SoilSquare extends BaseSquare {
     }
 
     consumeParticle(incomingSq) {
-        if (this.blockHealth == 0)
+        if (this.blockHealth <= 0 || incomingSq.blockHealth <= 0)
             return null;
 
         let res = super.consumeParticle(incomingSq);
         this.sand = (this.sand * res[1] + res[2] * incomingSq.sand) / this.blockHealth;
         this.silt = (this.silt * res[1] + res[2] * incomingSq.silt) / this.blockHealth;
         this.clay = (this.clay * res[1] + res[2] * incomingSq.clay) / this.blockHealth;
+        if (isNaN(this.sand + this.silt + this.clay))
+            alert("FUCK!!!!");
         return res;
     }
 
