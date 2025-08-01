@@ -332,7 +332,7 @@ export class SoilSquare extends BaseSquare {
         let px = Math.abs(wx) / maxWindSpeed;
         let py = Math.abs(wy) / maxWindSpeed;
 
-        let factor = .001;
+        let factor = .01;
 
         let projX = (wx > 0 ? 1 : -1);
         let projY = (wy > 0 ? 1 : -1);
@@ -357,8 +357,8 @@ export class SoilSquare extends BaseSquare {
 
                     applyLightingFromSource(this, sq);
 
-                    sq.speedX += factor * 10 * Math.round(wx);
-                    sq.speedY += factor * 10 * Math.round(wy);
+                    sq.speedX += factor * Math.round(wx);
+                    sq.speedY += factor * Math.round(wy);
                 };
             } else {
                 return;

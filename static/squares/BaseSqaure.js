@@ -277,7 +277,7 @@ export class BaseSquare {
         zoomCanvasSquareText(
             (this.posX + 0.5) * getBaseSize(),
             (this.posY + 0.5) * getBaseSize(),
-            this.id % 100);
+            this.id % 10000);
     }
 
     renderSpeed(x = true, y = true) {
@@ -292,7 +292,7 @@ export class BaseSquare {
         let hsv = rgb2hsv(base.r, base.g, base.b);
         hsv[0] += 360.0 * res;
         let out = hsv2rgb(...hsv);
-        MAIN_CONTEXT.fillStyle = rgbToHex(...out);
+        MAIN_CONTEXT.fillStyle = rgbToRgba(...out, 0.1);
         zoomCanvasFillRect(this.posX * getBaseSize(), this.posY * getBaseSize(), getBaseSize(), getBaseSize());
     }
 
@@ -470,8 +470,8 @@ export class BaseSquare {
             let size = (this.blockHealth ** 0.5);
 
             zoomCanvasFillRect(
-                this.posX * getBaseSize(),
-                (this.posY + (1 - size)) * getBaseSize(),
+                Math.floor(this.posX) * getBaseSize(),
+                Math.floor((this.posY + (1 - size))) * getBaseSize(),
                 getBaseSize() * (size > 0.5 ? 1 : size),
                 getBaseSize() * (size)
             );
@@ -632,9 +632,9 @@ export class BaseSquare {
             return false;
         }
 
-        if (this.proto == sq.proto && (this.blockHealth + sq.blockHealth) < 1 && this.getMovementSpeed() > 0.1 && sq.getMovementSpeed() > 0.1) {
-            return false;
-        }
+        // if (this.proto == sq.proto && (this.blockHealth + sq.blockHealth) < 1 && this.getMovementSpeed() > 0.1 && sq.getMovementSpeed() > 0.1) {
+        //     return false;
+        // }
 
         if (this.organic) {
             if (!sq.solid) {
@@ -768,13 +768,14 @@ export class BaseSquare {
 
         if (getTimeScale() != 0) {
             let sqBelow = getSquares(this.posX, this.posY + 1).find((sq) => sq.testCollidesWithSquare(this));
-            this.speedY += (1 / (this.gravity / this.blockHealth ** (this.blockHealthGravityCoef)));
+            let sqAbove = getSquares(this.posX, this.posY - 1).find((sq) => sq.testCollidesWithSquare(this));
+
+            this.speedY += (1 / (this.gravity / Math.max(.1, this.blockHealth) ** (this.blockHealthGravityCoef)));
             if (sqBelow != null) {
                 this.speedY = Math.min(this.speedY, sqBelow.speedY);
-                if (this.speedX < 0)
-                    this.speedX = Math.max(this.speedX, Math.min(sqBelow.speedX, 0));
-                else
-                    this.speedX = Math.min(this.speedX, Math.max(sqBelow.speedX, 0));
+            }
+            if (sqAbove != null) {
+                this.speedY = Math.max(this.speedY, sqAbove.speedY);
             }
         }
 
@@ -855,6 +856,7 @@ export class BaseSquare {
     windPhysics() { }
 
     compactionPhysics() {
+        // return;
         if (this.speedX != 0 || this.speedY != 0)
             return;
         if (this.blockHealth < 1) {

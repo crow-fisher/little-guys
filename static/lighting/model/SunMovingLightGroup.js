@@ -61,7 +61,7 @@ export class SunMovingLightGroup extends LightGroup {
             let idxPosXProcessed = lightSourceCenterPosX - lightSourceRotationPosX;
             let idxPosYProcessed = lightSourceCenterPosY - lightSourceRotationPosY;
 
-            let dayTheta = sunPos - (Math.PI / 2);
+            let dayTheta = (2 * Math.PI) - (sunPos - (Math.PI / 2));
 
             let rotatedX = idxPosXProcessed * Math.cos(dayTheta) - idxPosYProcessed * Math.sin(dayTheta);
             let rotatedY = idxPosYProcessed * Math.cos(dayTheta) + idxPosXProcessed * Math.sin(dayTheta);
