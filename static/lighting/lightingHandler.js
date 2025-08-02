@@ -1,7 +1,7 @@
 import { getFrameDt } from "../climate/time.js";
 import { addTask } from "../scheduler.js";
 import { loadGD, UI_LIGHTING_UPDATERATE, UI_LIGHTING_ENABLED, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "../ui/UIData.js";
-import { createMoonLightGroup, createSunLightGroup } from "./lighting.js";
+import { createMoonLightGroup, createPermanantLightGroup, createSunLightGroup } from "./lighting.js";
 
 
 export function getCurLightingInterval() {
@@ -22,7 +22,8 @@ export class LightingHandler {
 
     initLightSources() {
         this.lightSources.push(createSunLightGroup());
-        // this.lightSources.push(createMoonLightGroup());
+        this.lightSources.push(createMoonLightGroup());
+        this.lightSources.push(createPermanantLightGroup());
         this.lightingSizeX = loadGD(UI_GAME_MAX_CANVAS_SQUARES_X);
         this.lightingSizeY = loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y);
     }

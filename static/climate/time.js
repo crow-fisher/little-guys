@@ -48,7 +48,7 @@ let sky_colorNearNoonRGB = hexToRgb("#7E9FB1");
 let sky_colorNoonRGB = hexToRgb("#84B2E2");
 
 let currentLightColorTemperature = sky_nightRGB;
-let _cdaylightStrength, _prevDaylightStrength;
+let _cdaylightStrength, _prevDaylightStrength, _cmoonlightStrength;
 export function setTimeScale(timeScale) {
     seekTimeTarget = 0;
     TIME_SCALE = timeScale;
@@ -363,6 +363,7 @@ function updateTime() {
         prevRealTime = Date.now();
         _prevDaylightStrength = _cdaylightStrength;
         _cdaylightStrength = null;
+        _cmoonlightStrength = null;
     }
 }
 
@@ -435,6 +436,17 @@ function renderSkyBackground() {
 
     renderStarMap(Math.min(1, Math.exp(-7 * getDaylightStrength())));
 }
+
+export function getMoonlightStrength() {
+    if (_cmoonlightStrength != null) {
+        return _cmoonlightStrength;
+    }
+    let curDay = getCurDay();
+    let curDate = new Date(curDay * millis_per_day);
+    let moonData = SunCalc.getMoonIllumination(curDate);
+    return moonData.fraction;
+}
+
 
 function getDaylightStrength() {
     if (_cdaylightStrength != null) {
