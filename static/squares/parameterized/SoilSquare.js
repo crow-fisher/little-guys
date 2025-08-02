@@ -363,6 +363,8 @@ export class SoilSquare extends BaseSquare {
             let b = 2.2;
             let c = soilStickinessFactor;
             let x = (wx ** 2 + wy ** 2) ** 0.2;
+            if (x < 1)
+                return;
             let particleProbability = (Math.E / (40 * Math.E + c)) * (b + (1 / c)) ** x - d;
 
             if (Math.random() < particleProbability) {

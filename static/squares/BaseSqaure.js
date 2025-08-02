@@ -770,14 +770,17 @@ export class BaseSquare {
         if (!this.shouldFallThisFrame()) {
             return;
         }
-        
+
         // per-tick speed manipulation
         if (getTimeScale() != 0) {
             let sqBelow = getSquares(this.posX, this.posY + 1).find((sq) => sq.testCollidesWithSquare(this));
-            this.speedY += (1 / (this.gravity / Math.max(.1, this.blockHealth) ** (this.blockHealthGravityCoef)));
-            if (sqBelow != null && sqBelow.speedX == 0 && sqBelow.speedY == 0 && Math.random() > .9) {
-                this.speedX = 0;
-                this.speedY = 0;
+            if (sqBelow != null && sqBelow.speedX == 0 && sqBelow.speedY == 0) {
+                if (Math.random() > .9) {
+                    this.speedX = 0;
+                    this.speedY = 0;
+                }
+            } else {
+                this.speedY += (1 / (this.gravity / Math.max(.1, this.blockHealth) ** (this.blockHealthGravityCoef)));
             }
         }
 
