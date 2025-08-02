@@ -540,7 +540,7 @@ export class BaseSquare {
             this.posHistoryCur += 1;
         }
 
-        MAIN_CONTEXT.strokeStyle = COLOR_VERY_FUCKING_RED;
+        MAIN_CONTEXT.strokeStyle = this.cachedRgba.replace(",1)", ",.01)");
         MAIN_CONTEXT.lineWidth = 4 * Math.max(0.5, this.blockHealth);
         MAIN_CONTEXT.beginPath();
 
