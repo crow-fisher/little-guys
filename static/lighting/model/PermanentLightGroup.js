@@ -13,7 +13,7 @@ export class PermanentLightGroup extends LightGroup {
     constructor() {
         super();
         this.dist = 10000;
-        this.numNodes = 2;
+        this.numNodes = 7;
         this.init();
         this.idxCompletionMap = new Map();
     }
@@ -26,7 +26,7 @@ export class PermanentLightGroup extends LightGroup {
                 this.getPositionFunc(i),
                 () => Math.exp(loadGD(UI_LIGHTING_FLATLIGHTING_BRIGHTNESS)),
                 () => this.colorFunc(),
-                21000
+                40000
             );
             this.lightSources.push(newLightSource);
         }
@@ -44,8 +44,8 @@ export class PermanentLightGroup extends LightGroup {
 
 
     getPositionFunc(idx) {
-        let offset = 50 * idx - (50 * (this.numNodes - 1) / 2);
-        return () => [offset + loadGD(UI_CANVAS_VIEWPORT_CENTER_X), loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) - 2000];
+        let offset = 1000 * idx - (50 * (this.numNodes - 1) / 2);
+        return () => [offset + (loadGD(UI_CANVAS_VIEWPORT_CENTER_X) / getBaseSize()), -2000];
     }
 
     doRayCasting(idx) {
@@ -54,7 +54,7 @@ export class PermanentLightGroup extends LightGroup {
         }
         this.idxCompletionMap.set(idx, false)
 
-        let completionMap = new Map();
+        let completionMap = new Map(); 
         for (let i = 0; i < this.lightSources.length; i++) {
             completionMap.set(i, false);
             this.lightSources[i].calculateFrameCloudCover();

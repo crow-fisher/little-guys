@@ -151,13 +151,13 @@ export class MovingLightSource {
             return;
         }
         thetaSquares.sort((a, b) => (a[0] ** 2 + a[1] ** 2) ** 0.5 - (b[0] ** 2 + b[1] ** 2) ** 0.5);
-        let curBrightness = 1;
+        let curBrightness = this.brightnessFunc();
         thetaSquares.forEach((arr) => {
             let obj = arr[3];
             curBrightness *= (1 - (obj.surface ? (obj.surfaceLightingFactor ?? 1) : 1) * (obj.blockHealth ?? 1) * ((obj.getLightFilterRate() ** (1 / (20 - loadGD(UI_LIGHTING_DECAY))))));
 
             let _curBrightness = curBrightness;
-            let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(i) * _curBrightness * this.brightnessFunc();
+            let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(i) * _curBrightness;
 
             if (obj.lighting[idx] == null) {
                 obj.lighting[idx] = [[pointLightSourceFunc], this.colorFunc];

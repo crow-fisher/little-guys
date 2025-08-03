@@ -104,7 +104,7 @@ export function lightingExposureAdjustment() {
         next = cur;
     }
 
-    next = Math.max(0.5, next);
+    next = Math.max(0.1, next);
     next = Math.min(14, next);
 
     saveGD(UI_CAMERA_EXPOSURE, next);

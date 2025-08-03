@@ -13,7 +13,8 @@ import {
     UI_SPEED,
     UI_SPEED_0, saveGD,
     UI_GAME_MAX_CANVAS_SQUARES_X,
-    UI_GAME_MAX_CANVAS_SQUARES_Y
+    UI_GAME_MAX_CANVAS_SQUARES_Y,
+    UI_LIGHTING_SUN
 } from "../ui/UIData.js";
 import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
 import { SunCalc } from "./suncalc/suncalc.js";
