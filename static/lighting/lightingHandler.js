@@ -8,11 +8,6 @@ export function getCurLightingInterval() {
     return (loadGD(UI_LIGHTING_UPDATERATE) - 1) * getFrameDt();
 }
 
-export function setNextLightingInterval(inVal) {
-    curLightingInterval = inVal;
-}
-
-
 export class LightingHandler {
     constructor() {
         this.nextLightingUpdate = 0;

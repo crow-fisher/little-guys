@@ -163,14 +163,14 @@ export class TopBarComponent {
 
         if (this.shouldUpdate || getTimeScale() == 0) {
             this.numSquareCount = getFrameSimulationSquares().length;
-            this.soilTotalSum = getFrameSimulationSquares().filter((sq) => sq.proto == "SoilSquare").map((sq) => sq.blockHealth).reduce((a, b) => a + b, 0);
+            // this.soilTotalSum = getFrameSimulationSquares().filter((sq) => sq.proto == "SoilSquare").map((sq) => sq.blockHealth).reduce((a, b) => a + b, 0);
             if (fps < 10)
                 this.fpsCache = fps.toFixed(1);
             else
                 this.fpsCache = Math.round(fps);
         }
 
-        return this.fpsCache + " fps" + " | " + this.numSquareCount + " squares" + " | " + this.soilTotalSum + " total soil"
+        return this.fpsCache + " fps" + " | " + this.numSquareCount + " squares"; // + " | " + this.soilTotalSum + " total soil"
     }
 
 

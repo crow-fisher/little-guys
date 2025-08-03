@@ -10,6 +10,8 @@ import { getCurLightingInterval } from "../lightingHandler.js";
 
 export class MovingLightSource {
     constructor(positionFunc, brightnessFunc, colorFunc, numRays) {
+        numRays = Math.floor(numRays * (loadGD(UI_LIGHTING_QUALITY) / 11));
+
         this.posX = 0;
         this.posY = 0;
         this.positionFunc = positionFunc;
@@ -154,7 +156,13 @@ export class MovingLightSource {
         let curBrightness = this.brightnessFunc();
         thetaSquares.forEach((arr) => {
             let obj = arr[3];
-            curBrightness *= (1 - (obj.surface ? (obj.surfaceLightingFactor ?? 1) : 1) * (obj.blockHealth ?? 1) * ((obj.getLightFilterRate() ** (1 / (20 - loadGD(UI_LIGHTING_DECAY))))));
+
+            let p1 = (obj.surface ? (obj.surfaceLightingFactor ?? 1) : 1);
+            let p2 = obj.blockHealth;
+            let p3 = obj.getLightFilterRate() ** (1 / (20 - loadGD(UI_LIGHTING_DECAY)));
+            let p4 = loadGD(UI_LIGHTING_QUALITY) / 11;
+
+            curBrightness *= 1 - (p1 * p2 * p3 * p4);
 
             let _curBrightness = curBrightness;
             let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(i) * _curBrightness;
