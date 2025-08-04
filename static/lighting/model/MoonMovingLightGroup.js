@@ -4,7 +4,7 @@ import { SunCalc } from "../../climate/suncalc/suncalc.js";
 import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getMoonlightBrightness, getMoonlightColor, millis_per_day } from "../../climate/time.js";
 import { addTask } from "../../scheduler.js";
 import { loadGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_LIGHTING_MOON, UI_LIGHTING_SHADOW_SOFTNESS } from "../../ui/UIData.js";
-import { LightGroup } from "./lightGroup.js";
+import { LightGroup } from "./LightGroup.js";
 import { MovingLightSource } from "./MovingLightSource.js";
 
 export class MoonMovingLightGroup extends LightGroup {

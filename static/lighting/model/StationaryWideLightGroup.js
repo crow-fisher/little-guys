@@ -1,5 +1,5 @@
 import { loadGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_LIGHTING_QUALITY } from "../../ui/UIData.js";
-import { LightGroup } from "./lightGroup.js";
+import { LightGroup } from "./LightGroup.js";
 import { LightSource } from "./LightSource.js";
 
 export class StationaryWideLightGroup extends LightGroup {

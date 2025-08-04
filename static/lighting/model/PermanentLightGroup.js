@@ -6,7 +6,7 @@ import { RGB_COLOR_RED } from "../../colors.js";
 import { hsv2rgb } from "../../common.js";
 import { addTask } from "../../scheduler.js";
 import { loadGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_LIGHTING_FLATLIGHTING_BRIGHTNESS, UI_LIGHTING_FLATLIGHTING_HUE, UI_LIGHTING_FLATLIGHTING_SATURATION, UI_LIGHTING_SHADOW_SOFTNESS } from "../../ui/UIData.js";
-import { LightGroup } from "./lightGroup.js";
+import { LightGroup } from "./LightGroup.js";
 import { MovingLightSource } from "./MovingLightSource.js";
 
 export class PermanentLightGroup extends LightGroup {
