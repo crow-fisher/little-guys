@@ -49,6 +49,7 @@ function doBrushFuncClickThrottle(x, y, func, throttle=true) {
     }
 }
 export function doBrushFunc(centerX, centerY, func, throttle=true) {
+    throttle = false;
     let radius = Math.floor(loadGD(UI_PALETTE_SIZE));
     if (loadGD(UI_CLIMATE_SELECT_CLOUDS)) {
         radius = loadGD(UI_CLIMATE_TOOL_SIZE);

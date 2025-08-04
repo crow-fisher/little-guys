@@ -22,7 +22,7 @@ function getCloudIdColor(strength) {
         cloud_id_c1_hsv[0] * v1 + cloud_id_c2_hsv[0] * (1 - v1),
         cloud_id_c1_hsv[1] * v2 + cloud_id_c2_hsv[1] * (1 - v2),
         cloud_id_c1_hsv[2] * v3 + cloud_id_c2_hsv[2] * (1 - v3),
-    ), .02);
+    ), strength);
 }
 
 export class Cloud {

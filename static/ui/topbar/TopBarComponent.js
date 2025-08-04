@@ -64,11 +64,11 @@ export class TopBarComponent {
             new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_2, () => "▶"),
             new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_3, () => "▶"),
             new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_4, () => "▶"),
-            // new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_5, () => "▶"),
-            // new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_6, () => "▶"),
-            // new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_7, () => "▶"),
-            // new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_8, () => "▶"),
-            // new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_9, () => "▶"),
+            new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_5, () => "▶"),
+            new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_6, () => "▶"),
+            new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_7, () => "▶"),
+            new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_8, () => "▶"),
+            new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_9, () => "▶"),
             this.midSpacingEl,
             new TopBarToggle(fontSize, "left", UI_TOPBAR_TIME, UI_BOOLEAN,() => this.textDateTime(), getBaseUISize() * 26.404296875),
             new TopBarToggle(fontSize, "left", UI_TOPBAR_WEATHER, UI_BOOLEAN, () => " | " + this.textWeather()),
@@ -163,13 +163,14 @@ export class TopBarComponent {
 
         if (this.shouldUpdate || getTimeScale() == 0) {
             this.numSquareCount = getFrameSimulationSquares().length;
+            // this.soilTotalSum = getFrameSimulationSquares().filter((sq) => sq.proto == "SoilSquare").map((sq) => sq.blockHealth).reduce((a, b) => a + b, 0);
             if (fps < 10)
                 this.fpsCache = fps.toFixed(1);
             else
                 this.fpsCache = Math.round(fps);
         }
 
-        return this.fpsCache + " fps" + " | " + this.numSquareCount + " squares"
+        return this.fpsCache + " fps" + " | " + this.numSquareCount + " squares"; // + " | " + this.soilTotalSum + " total soil"
     }
 
 

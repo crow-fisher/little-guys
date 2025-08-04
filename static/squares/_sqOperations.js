@@ -81,6 +81,7 @@ function sqOrderCmp(sq) {
 }
 
 export function registerSqIterationRowChange(y) {
+    y = Math.floor(y);
     sqIterationOrderChangeMap.set(y, true);
 }
 
@@ -125,6 +126,8 @@ export function isSqColChanged(x) {
 }
 
 export function registerSqColChange(x, y) {
+    x = Math.floor(x);
+    y = Math.floor(y);
     if (!sqColChangeMap.has(x)) {
         sqColChangeMap.set(x, 0);
         sqColChangeLocationMap.set(x, 0);
@@ -140,6 +143,7 @@ export function resetSqColChangeMap() {
 }
 
 export function getSqColChangeLocation(posX) {
+    posX = Math.floor(posX);
     if (!sqColChangeLocationMap.has(posX)) {
         sqColChangeLocationMap.set(posX, 0);
     }
@@ -154,7 +158,7 @@ function iterateOnSquares(func) {
 
 
 function getSquares(posX, posY, create=false) {
-    return getObjectArrFromMap(ALL_SQUARES, Math.round(posX), Math.round(posY), create);
+    return getObjectArrFromMap(ALL_SQUARES, Math.floor(posX), Math.floor(posY), create);
 }
 
 export function getFirstLevelSquares(posX) {
@@ -167,8 +171,8 @@ function getCollidableSquareAtLocation(posX, posY) {
 
 // Does not remove organic squares.
 function removeSquarePos(x, y) {
-    x = Math.round(x);
-    y = Math.round(y);
+    x = Math.floor(x);
+    y = Math.floor(y);
     getSquares(x, y).filter((sq) => !sq.organic).forEach((sq) => sq.destroy(true));
 }
 

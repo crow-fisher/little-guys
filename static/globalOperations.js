@@ -1,4 +1,4 @@
-import { getFirstLevelSquares, getSqIterationOrder, getSquares, iterateOnSquares, registerSqColChange, registerSqIterationRowChange } from "./squares/_sqOperations.js";
+import { getFirstLevelSquares, getSquares, registerSqColChange, registerSqIterationRowChange } from "./squares/_sqOperations.js";
 import { iterateOnOrganisms } from "./organisms/_orgOperations.js";
 import {
     ALL_SQUARES, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES, resetWaterflowSquares
@@ -6,14 +6,14 @@ import {
 
 import { getObjectArrFromMap } from "./common.js";
 import { removeItemAll } from "./common.js";
-import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, getFrameXMax, getFrameXMin, getFrameYMax, getFrameYMin, isSquareOnCanvas, zoomCanvasFillRect } from "./canvas.js";
+import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, getFrameXMax, getFrameXMin, getFrameYMax, getFrameYMin, zoomCanvasFillRect } from "./canvas.js";
 import { loadGD, saveGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "./ui/UIData.js";
-import { indexCanvasSize, MAIN_CANVAS, MAIN_CONTEXT } from "./index.js";
+import { indexCanvasSize, MAIN_CONTEXT } from "./index.js";
 import { resetFrameGroupCache, waterGraphReset } from "./waterGraph.js";
-import { COLOR_BLUE, COLOR_VERY_FUCKING_RED, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "./colors.js";
-import { calculateColor, calculateColorProvideOpacity } from "./climate/simulation/temperatureHumidity.js";
+import { RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "./colors.js";
+import { calculateColorProvideOpacity } from "./climate/simulation/temperatureHumidity.js";
 import { lightingExposureAdjustment } from "./lighting/lightingProcessing.js";
-import { getFrameXMinWsq } from "./climate/simulation/wind.js";
+import { getPlayerXMaxOffset, getPlayerXMinOffset } from "./player/playerMain.js";
 
 let frame_squares = null;
 let frame_simulation_squares = new Array();
@@ -51,10 +51,12 @@ export function reset() {
     resetWaterflowSquares();
     resetFrameGroupCache();
 
+    frame_simulation_squares.forEach((sq) => sq.reset());
+    
     frame_simulation_squares = new Array();
     frame_simulation_organisms = new Array();
 
-    for (let i = getFrameXMin() - 1; i < getFrameXMax() + 1; i++) {
+    for (let i = getFrameXMin() - getPlayerXMinOffset(); i < getFrameXMax() + getPlayerXMaxOffset(); i++) {
         let firstLevel = getFirstLevelSquares(i);
         if (firstLevel.size == 0)
             continue;
@@ -73,7 +75,6 @@ export function reset() {
 
     frame_solid_squares = frame_simulation_squares.filter((sq) => sq.solid);
     frame_water_squares = frame_simulation_squares.filter((sq) => !sq.solid);
-    frame_simulation_squares.forEach((sq) => sq.reset());
 }
 
 export function renderSquares() {
@@ -103,14 +104,17 @@ export function renderOrganisms() {
 }
 
 export function removeSquare(sq) {
-    let arr = removeItemAll(getObjectArrFromMap(ALL_SQUARES, sq.posX, sq.posY), sq);
+    let posX = Math.floor(sq.posX);
+    let posY = Math.floor(sq.posY);
+
+    let arr = removeItemAll(getSquares(posX, posY), sq);
     if (arr.length === 0) {
-        if ((ALL_SQUARES).has(sq.posX) && ALL_SQUARES.get(sq.posX).has(sq.posY))
-            ALL_SQUARES.get(sq.posX).delete(sq.posY);
+        if ((ALL_SQUARES).has(posX) && ALL_SQUARES.get(posX).has(posY))
+            ALL_SQUARES.get(posX).delete(posY);
     }
     if (sq.proto != "PlantSquare") {
-        registerSqIterationRowChange(sq.posY);
-        registerSqColChange(sq.posX, sq.posY);
+        registerSqIterationRowChange(posY);
+        registerSqColChange(posX, posY);
     }
 }
 

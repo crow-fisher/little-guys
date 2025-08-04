@@ -186,6 +186,28 @@ export function zoomCanvasFillCircle(x, y, size) {
     MAIN_CONTEXT.fill();
 }
 
+export function transformCanvasSquaresToPixels(x, y) {
+    let totalWidth = CANVAS_SQUARES_X * BASE_SIZE;
+    let totalHeight = CANVAS_SQUARES_Y * BASE_SIZE;
+
+    let windowWidth = totalWidth / loadGD(UI_CANVAS_SQUARES_ZOOM);
+    let windowHeight = totalHeight / loadGD(UI_CANVAS_SQUARES_ZOOM);
+
+    let windowWidthStart = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) - (windowWidth / 2);
+    let windowHeightStart = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) - (windowHeight / 2);
+
+    let windowWidthEnd = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) + (windowWidth / 2);
+    let windowHeightEnd = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) + (windowHeight / 2);
+
+    let xpi = (x - windowWidthStart) / (windowWidthEnd - windowWidthStart);
+    let ypi = (y - windowHeightStart) / (windowHeightEnd - windowHeightStart);
+
+    let xpl = xpi * totalWidth;
+    let ypl = ypi * totalHeight;
+
+    return [xpl, ypl];
+}
+
 export function zoomCanvasFillRectTheta(x, y, dx, dy, xRef, yRef, theta) {
     dx *= (loadGD(UI_CANVAS_SQUARES_ZOOM));
     dy *= (loadGD(UI_CANVAS_SQUARES_ZOOM));

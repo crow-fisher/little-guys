@@ -12,25 +12,28 @@ import {
 
 import { MAIN_CONTEXT } from "../index.js";
 
-import { hexToRgb, removeItemAll, rgbToRgba } from "../common.js";
+import { hexToRgb, hsv2rgb, hueShiftColor, hueShiftColorArr, randNumber, randRange, removeItemAll, rgb2hsv, rgbToHex, rgbToRgba } from "../common.js";
 import { removeSquare } from "../globalOperations.js";
 import { calculateColorTemperature, getTemperatureAtWindSquare, temperatureHumidityFlowrateFactor, updateWindSquareTemperature } from "../climate/simulation/temperatureHumidity.js";
-import { getWindSpeedAtLocation, getWindSquareAbove } from "../climate/simulation/wind.js";
-import { COLOR_BLACK, GROUP_BROWN, GROUP_BLUE, GROUP_MAUVE, GROUP_TAN, GROUP_GREEN, RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
+import { getWindSquareAbove } from "../climate/simulation/wind.js";
+import { COLOR_BLACK, GROUP_BROWN, GROUP_BLUE, GROUP_MAUVE, GROUP_TAN, GROUP_GREEN, RGB_COLOR_BLUE, RGB_COLOR_RED, COLOR_VERY_FUCKING_RED } from "../colors.js";
 import { getDaylightStrengthFrameDiff, getFrameDt, getTimeScale } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
-import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, getFrameYMax, isSquareOnCanvas, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
-import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE } from "../ui/UIData.js";
+import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, getFrameYMax, isSquareOnCanvas, transformCanvasSquaresToPixels, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
+import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3, UI_VIEWMODE_DEV4, UI_VIEWMODE_DEV5, UI_PALETTE_STRENGTH } from "../ui/UIData.js";
 import { deregisterSquare, registerSquare } from "../waterGraph.js";
 
 export class BaseSquare {
     constructor(posX, posY) {
         this.proto = "BaseSquare";
-        this.posX = Math.floor(posX);
-        this.posY = Math.floor(posY);
+        this.posX = posX;
+        this.posY = posY;
 
-        this.offsetX = posX % 1;
-        this.offsetY = posY % 1;
+        this.posHistoryRetentionLength = 25;
+        this.posHistoryMap = new Array(this.posHistoryRetentionLength);
+        this.posHistoryCur = this.posHistoryRetentionLength;
+        for (let i = 0; i < this.posHistoryRetentionLength; i++)
+            this.posHistoryMap[i] = [this.posX, this.posY];
 
         this.color = hexToRgb("#00FFFF");
 
@@ -41,7 +44,7 @@ export class BaseSquare {
         this.gravity = 1;
         this.hasBonked = false;
         this.blockHealthMax = 1;
-        this.blockHealth = this.blockHealthMax; // when reaches zero, delete
+        this.blockHealth = Math.min(loadGD(UI_PALETTE_STRENGTH), this.blockHealthMax); // when reaches zero, delete
         // water flow parameters
 
         this.currentPressureDirect = -1;
@@ -95,8 +98,10 @@ export class BaseSquare {
         this.blockHealth_color2 = RGB_COLOR_BLUE;
         this.surfaceLightingFactor = 0.1;
         this.mixIdx = -1;
+
+        this.blockHealthGravityCoef = 2;
+
         this.initTemperature();
-        this.activeParticles = new Array();
     };
 
     mossSpaceRemaining() {
@@ -107,6 +112,7 @@ export class BaseSquare {
     }
 
     initLightingFromNeighbors() {
+        return;
         let neighbor = getNeighbors(this.posX, this.posY).find((sq) => sq.lighting.length > 0);
         let curY = this.posY + 1;
         while (neighbor == null) {
@@ -200,6 +206,20 @@ export class BaseSquare {
         }
 
     }
+
+    spawnParticle(dx, dy, sx, sy, blockHealth) {
+        return;
+    }
+
+
+    renderBlockHealth() {
+        let base = this.getColorBase();
+        let hsv = rgb2hsv(base.r, base.g, base.b);
+        hsv[0] += 360 * this.blockHealth;
+        let out = hsv2rgb(...hsv);
+        MAIN_CONTEXT.fillStyle = rgbToHex(...out);
+        zoomCanvasFillRect(this.posX * getBaseSize(), this.posY * getBaseSize(), getBaseSize(), getBaseSize());
+    }
     render() {
         if (!this.visible || this.posY >= getCanvasSquaresY()) {
             return;
@@ -227,6 +247,9 @@ export class BaseSquare {
         } else if (selectedViewMode == UI_VIEWMODE_WATERMATRIC) {
             this.renderMatricPressure();
         }
+        else if (selectedViewMode == UI_VIEWMODE_DEV3) {
+            return this.renderBlockHealth();
+        }
         if (selectedViewMode == UI_VIEWMODE_SURFACE || (loadGD(UI_PALETTE_ACTIVE) && (loadGD(UI_PALETTE_MODE) == UI_PALLETE_MODE_SPECIAL) && (loadGD(UI_PALETTE_SELECT) == UI_PALETTE_SURFACE || loadGD(UI_PALETTE_SELECT) == UI_PALETTE_SURFACE_OFF))) {
             if (this.solid) {
                 this.renderWithVariedColors(1);
@@ -241,8 +264,42 @@ export class BaseSquare {
             this.renderWithVariedColors(0.25);
         } else if (selectedViewMode == UI_VIEWMODE_DEV1 || selectedViewMode == UI_VIEWMODE_DEV2) {
             this.renderWithVariedColors(0.5);
+        } else if (selectedViewMode == UI_VIEWMODE_DEV4) {
+            this.renderSpeed(true, true);
+            this.renderBlockId();
+        } else if (selectedViewMode == UI_VIEWMODE_DEV5) {
+            this.renderWithVariedColors(1);
+            this.renderHistory();
         }
     };
+
+    renderBlockId() {
+        MAIN_CONTEXT.font = getBaseSize() + "px courier"
+        MAIN_CONTEXT.textAlign = 'center';
+        MAIN_CONTEXT.textBaseline = 'middle';
+        MAIN_CONTEXT.strokeStyle = "rgba(35, 35, 35, 1)";
+        MAIN_CONTEXT.fillStyle = "rgba(195, 195, 195, 1)";
+        zoomCanvasSquareText(
+            (this.posX + 0.5) * getBaseSize(),
+            (this.posY + 0.5) * getBaseSize(),
+            this.id % 10000);
+    }
+
+    renderSpeed(x = true, y = true) {
+        let res = 0;
+
+        if (x)
+            res += this.speedX;
+        if (y)
+            res += this.speedY;
+
+        let base = this.getColorBase();
+        let hsv = rgb2hsv(base.r, base.g, base.b);
+        hsv[0] += 360.0 * res;
+        let out = hsv2rgb(...hsv);
+        MAIN_CONTEXT.fillStyle = rgbToRgba(...out, 0.1);
+        zoomCanvasFillRect(this.posX * getBaseSize(), this.posY * getBaseSize(), getBaseSize(), getBaseSize());
+    }
 
     renderGroup() {
         let colorArr = [
@@ -279,8 +336,8 @@ export class BaseSquare {
         if (!this.surface) {
             MAIN_CONTEXT.fillStyle = "rgba(90, 71, 97, 0.3)"
             zoomCanvasFillRect(
-                (this.offsetX + this.posX) * getBaseSize(),
-                (this.offsetY + this.posY) * getBaseSize(),
+                (this.posX) * getBaseSize(),
+                (this.posY) * getBaseSize(),
                 getBaseSize(),
                 getBaseSize()
             );
@@ -293,17 +350,12 @@ export class BaseSquare {
     renderAsGrey() {
         MAIN_CONTEXT.fillStyle = "rgba(50, 50, 50, 0.2)";
         zoomCanvasFillRect(
-            (this.offsetX + this.posX) * getBaseSize(),
-            (this.offsetY + this.posY) * getBaseSize(),
+            (this.posX) * getBaseSize(),
+            (this.posY) * getBaseSize(),
             getBaseSize(),
             getBaseSize()
         );
     }
-
-    renderBlockHealth() {
-        this.renderSpecialViewModeLinear(this.waterSaturation_color1, this.waterSaturation_color2, this.blockHealth, this.blockHealthMax);
-    }
-
 
     renderWaterSaturation() {
         this.renderSpecialViewModeLinear(this.blockHealth_color1, this.blockHealth_color2, this.waterContainment, this.waterContainmentMax);
@@ -336,8 +388,8 @@ export class BaseSquare {
         let outRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacity);
         MAIN_CONTEXT.fillStyle = outRgba;
         zoomCanvasFillRect(
-            (this.offsetX + this.posX) * getBaseSize(),
-            (this.offsetY + this.posY) * getBaseSize(),
+            this.posX * getBaseSize(),
+            this.posY * getBaseSize(),
             getBaseSize(),
             getBaseSize()
         );
@@ -348,14 +400,6 @@ export class BaseSquare {
             this.randoms.push(Math.random());
         }
         return this.randoms[randIdx];
-    }
-
-    swapColors(otherSquare) {
-        let t1 = this.randoms;
-        this.randoms = otherSquare.randoms;
-        otherSquare.randoms = t1;
-        this.cachedRgba = null;
-        otherSquare.cachedRgba = null;
     }
 
     getColorBase() {
@@ -385,46 +429,12 @@ export class BaseSquare {
             0.5);
         MAIN_CONTEXT.fillStyle = outRgba;
         zoomCanvasFillRect(
-            (this.offsetX + this.posX) * getBaseSize(),
-            (this.offsetY + this.posY) * getBaseSize(),
+            this.posX * getBaseSize(),
+            this.posY * getBaseSize(),
             getBaseSize(),
             getBaseSize()
         );
     }
-
-    triggerParticles(bonkSpeed) {
-    }
-
-    processParticles() {
-        return;
-        let next = new Array();
-        this.activeParticles.forEach((partArr) => {
-            partArr[0] += partArr[3]; // px
-            partArr[1] += partArr[4]; // py
-            partArr[4] += 0.15;
-            partArr[3] *= 0.99;
-
-            let x = Math.round(partArr[0]);
-            let y = Math.round(partArr[1]);
-            if (x < 0 || y < 0 || x >= getCanvasSquaresX() || y >= getCanvasSquaresY() || getSquares(x, y).length > 0) {
-                return;
-            } else {
-                next.push(partArr);
-            }
-        });
-        this.activeParticles = next;
-    }
-
-    renderParticles() {
-        MAIN_CONTEXT.fillStyle = this.cachedRgba;
-        this.activeParticles.forEach((partArr) => {
-            let px = partArr[0];
-            let py = partArr[1];
-            let size = partArr[5];
-            zoomCanvasFillCircle(px * getBaseSize(), py * getBaseSize(), size)
-        });
-    }
-
     renderWithVariedColors(opacityMult) {
         if (this.proto == "WaterSquare") {
             this.opacity = loadGD(UI_LIGHTING_WATER_OPACITY);
@@ -450,24 +460,25 @@ export class BaseSquare {
             let outColor = { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
             this.lastColorCacheOpacity = opacityMult;
             this.cachedRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacityMult * this.opacity * this.blockHealth ** 0.2);
-            this.cachedRgbaParticle = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), .2 * (opacityMult * this.opacity * (this.blockHealth ** 0.2)));
         }
         MAIN_CONTEXT.fillStyle = this.cachedRgba;
-        if (this.proto == "WaterSquare" && this.blockHealth < 0.5 && this.speedY > 2) {
+        if (this.blockHealth < 0.5 && this.getMovementSpeed() > 0.5) {
             let size = this.blockHealth;
             if (size < 0.3) {
                 size = 20 * (this.blockHealth);
             }
             zoomCanvasFillCircle(
-                (this.offsetX + this.posX) * getBaseSize(),
-                (this.offsetY + this.posY) * getBaseSize(),
+                this.posX * getBaseSize(),
+                this.posY * getBaseSize(),
                 getBaseSize() * Math.max(this.blockHealth, 0.3));
         } else {
+            let size = (this.blockHealth ** 0.5);
+
             zoomCanvasFillRect(
-                (this.offsetX + this.posX) * getBaseSize(),
-                (this.offsetY + this.posY) * getBaseSize(),
-                getBaseSize(),
-                getBaseSize()
+                this.posX * getBaseSize(),
+                (this.posY + (1 - size)) * getBaseSize(),
+                getBaseSize() * (size > 0.5 ? 1 : size),
+                getBaseSize() * (size)
             );
         }
 
@@ -476,18 +487,16 @@ export class BaseSquare {
             MAIN_CONTEXT.textAlign = 'center';
             MAIN_CONTEXT.textBaseline = 'middle';
             MAIN_CONTEXT.fillStyle = COLOR_BLACK;
-            zoomCanvasSquareText(((this.offsetX + this.posX) + 0.5) * getBaseSize(),
-                ((this.offsetY + this.posY) + 0.5) * getBaseSize(),
+            zoomCanvasSquareText(
+                (this.posX + 0.5) * getBaseSize(),
+                (this.posY + 0.5) * getBaseSize(),
                 this.mixIdx % getMixArrLen());
         }
-        // this.renderParticles();
     }
     updatePosition(newPosX, newPosY) {
         if (newPosX == this.posX && newPosY == this.posY) {
             return true;
         }
-        newPosX = Math.round(newPosX);
-        newPosY = Math.round(newPosY);
 
         if (getSquares(newPosX, newPosY).some((sq) => this.testCollidesWithSquare(sq))) {
             return false;
@@ -519,6 +528,41 @@ export class BaseSquare {
 
         this.lastColorCacheTime = 0;
         return true;
+    }
+
+    renderHistory() {
+        if (this.speedX == 0 && this.speedY == 0 && this.renderCountDown == 0)
+            return;
+
+        if (this.getMovementSpeed() > 0) {
+            this.renderCountDown = this.posHistoryRetentionLength * 2;
+            this.posHistoryMap[(this.posHistoryCur % this.posHistoryRetentionLength)] = [this.posX, this.posY];
+            this.posHistoryCur += 1;
+        }
+
+        MAIN_CONTEXT.strokeStyle = this.cachedRgba.replace(",1)", ",.01)");
+        MAIN_CONTEXT.lineWidth = 4 * Math.max(0.5, this.blockHealth);
+        MAIN_CONTEXT.beginPath();
+
+        let p = this.posHistoryMap[(this.posHistoryCur - 1 + this.posHistoryRetentionLength) % this.posHistoryRetentionLength];
+
+        let start = transformCanvasSquaresToPixels(p[0] * getBaseSize(), p[1] * getBaseSize());
+
+        MAIN_CONTEXT.moveTo(start[0], start[1]);
+        // console.log("START: ", p);
+        for (let i = this.posHistoryCur - 1; i >= this.posHistoryCur - this.posHistoryRetentionLength; i--) {
+            let loc = this.posHistoryMap[i % this.posHistoryRetentionLength];
+            if (!isSquareOnCanvas(...loc)) {
+                return;
+            }
+            let p2 = transformCanvasSquaresToPixels(loc[0] * getBaseSize(), loc[1] * getBaseSize());
+            MAIN_CONTEXT.lineTo(p2[0], p2[1]);
+            // console.log("POINT: ", loc);
+        }
+        MAIN_CONTEXT.stroke();
+        // console.log("END!")
+
+        this.renderCountDown -= 1;
     }
 
     _percolateGroup(origGroup = null) {
@@ -579,6 +623,9 @@ export class BaseSquare {
 
     percolateInnerMoisture() { }
 
+    getMovementSpeed() {
+        return (this.speedX ** 2 + this.speedY ** 2) ** 0.5;
+    }
     testCollidesWithSquare(sq) {
         if (!this.collision || !sq.collision) {
             return false;
@@ -589,6 +636,11 @@ export class BaseSquare {
         if (this.proto == "WaterSquare" && sq.proto == "WaterSquare" && (getSquares(this.posX, this.posY).filter((sq) => sq.proto == "WaterSquare").map((sq) => sq.blockHealth).reduce((a, b) => a + b, sq.blockHealth) < 1)) {
             return false;
         }
+
+        // if (this.proto == sq.proto && (this.blockHealth + sq.blockHealth) < 1 && this.getMovementSpeed() > 0.1 && sq.getMovementSpeed() > 0.1) {
+        //     return false;
+        // }
+
         if (this.organic) {
             if (!sq.solid) {
                 return false;
@@ -683,15 +735,15 @@ export class BaseSquare {
             csx += dsx;
             csy += dsy;
 
-            rcsx = Math.round(csx) + this.posX;
-            rcsy = Math.round(csy) + this.posY;
+            rcsx = csx + this.posX;
+            rcsy = csy + this.posY;
 
             last = pathArr[pathArr.length - 1];
 
             if (rcsx == last[0] && rcsy == last[1])
                 continue;
 
-            collSquare = getSquares(rcsx, rcsy).find((sq) => sq.testCollidesWithSquare(this));
+            collSquare = getSquares(rcsx, rcsy).find((sq) => sq != this && sq.testCollidesWithSquare(this));
 
             if (collSquare != null) {
                 return [collSquare, pathArr];
@@ -703,14 +755,32 @@ export class BaseSquare {
         return [null, pathArr];
     }
 
+    consumeParticle(incomingSq) {
+        let startBlockHeatlh = this.blockHealth;
+        this.blockHealth = Math.min(1, this.blockHealth + incomingSq.blockHealth);
+        let colSqHeatlhAdded = this.blockHealth - startBlockHeatlh;
+        let res = colSqHeatlhAdded == incomingSq.blockHealth;
+        incomingSq.blockHealth -= colSqHeatlhAdded;
+
+        return [res, startBlockHeatlh, colSqHeatlhAdded];
+    }
+
+
     gravityPhysics() {
         if (!this.shouldFallThisFrame()) {
             return;
         }
-        
+
+        // per-tick speed manipulation
         if (getTimeScale() != 0) {
-            if (this.shouldFallThisFrame()) {
-                this.speedY += (1 / this.gravity);
+            let sqBelow = getSquares(this.posX, this.posY + 1).find((sq) => sq.testCollidesWithSquare(this));
+            if (sqBelow != null && sqBelow.speedX == 0 && sqBelow.speedY == 0) {
+                if (Math.random() > .9) {
+                    this.speedX = 0;
+                    this.speedY = 0;
+                }
+            } else {
+                this.speedY += (1 / (this.gravity / Math.max(.1, this.blockHealth) ** (this.blockHealthGravityCoef)));
             }
         }
 
@@ -722,10 +792,39 @@ export class BaseSquare {
             shouldResetGroup = true;
         }
 
-        let maxSpeed = 5;
+        if (this.speedX == 0 && this.speedY == 0)
+            return;
 
+        let maxSpeed = 9;
         this.speedX = Math.min(maxSpeed, Math.max(-maxSpeed, this.speedX));
         this.speedY = Math.min(maxSpeed, Math.max(-maxSpeed, this.speedY));
+
+        if (getSquares(this.posX - 1, this.posY).some((sq) => sq.testCollidesWithSquare(this)) && getSquares(this.posX + 1, this.posY).some((sq) => sq.testCollidesWithSquare(this)))
+            this.speedX = 0;
+
+        if (Math.abs(this.speedX) < .05)
+            this.speedX = 0
+
+        this.speedX += (this.speedX > 0 ? this.speedX * -.1 : this.speedX * .1);
+        // end per-tick speed manipulation
+
+        // within-block movement 
+        let isWithinSquareX = false;
+        let isWithinSquareY = false;
+        if (Math.floor(this.posX + this.speedX) == Math.floor(this.posX)) {
+            isWithinSquareX = true;
+        }
+        if (Math.floor(this.posY + this.speedY) == Math.floor(this.posY)) {
+            isWithinSquareY = true;
+        }
+        if (isWithinSquareX && isWithinSquareY) {
+            this.updatePosition(this.posX + this.speedX, this.posY + this.speedY);
+            return;
+        }
+
+        // end case of within-block movement
+
+        // standard movement 
 
         let nextPathRes = this.getNextPath();
 
@@ -733,6 +832,16 @@ export class BaseSquare {
         let nextPath = nextPathRes[1];
 
         if (colSq != null) {
+            if (this.blockHealth < 1 && colSq.proto == this.proto) {
+                let res = colSq.consumeParticle(this);
+                if (res == null)
+                    return;
+
+                if (res[0]) {
+                    this.destroy();
+                    return;
+                }
+            }
             this.speedX = colSq.speedX;
             this.speedY = colSq.speedY;
             this.hasBonked = true;
@@ -744,10 +853,7 @@ export class BaseSquare {
         let finalYPos = nextPos[1];
 
         if (finalXPos != this.posX || this.posY != finalYPos) {
-            let finalYPosFloor = Math.floor(finalYPos);
-            let finalYPosFrac = finalYPos - finalYPosFloor;
-            this.offsetY = finalYPosFrac;
-            this.updatePosition(finalXPos, finalYPosFloor);
+            this.updatePosition(finalXPos, finalYPos);
 
             if (!this.solid) {
                 shouldResetGroup = true;
@@ -761,160 +867,31 @@ export class BaseSquare {
                 };
             }
         }
-
-        if (!isSquareOnCanvas(this.posX, this.posY)) {
-            if (this.proto == "WaterSquare" || this.proto == "SeedSquare")
-                this.destroy();
-        }
-
-
-    }
-
-    _gravityPhysics() {
-        if (!this.shouldFallThisFrame()) {
-            return;
-        }
-        if (!this.organic && this.speedY >= 0) {
-            if (getSquares(this.posX, this.posY + 1).some((sq) => sq.testCollidesWithSquare(this))) {
-                this.speedY = 0;
-                this.speedX = 0;
-                this.hasBonked = true;
-                return;
-            }
-        }
-
-        if (Math.abs(this.speedX * this.speedY) > 2) {
-            console.log(this.getNextPath());
-        }
-        let shouldResetGroup = false;
-        if (isGroupGrounded(this.group) && this.currentPressureDirect > 10) {
-            if ((Math.random() * 1.5) < 1 - (1 / this.currentPressureDirect) && !getSquares(this.posX, this.posY + 2).some((sq) => sq.testCollidesWithSquare(this))) {
-                return;
-            }
-            shouldResetGroup = true;
-        }
-
-        if (getTimeScale() != 0) {
-            if (this.shouldFallThisFrame()) {
-                this.speedY += (1 / this.gravity);
-            }
-        }
-        let finalXPos = this.posX;
-        let finalYPos = this.posY;
-        let bonked = false;
-        let particleSpeed = Math.sqrt(this.speedX ** 2 + this.speedY ** 2);
-        for (let i = 1; i < this.speedY + 1; i += 1) {
-            for (let j = 0; j < Math.abs(this.speedX) + 1; j++) {
-                let jSigned = (this.speedX > 0) ? j : -j;
-                let jSignedMinusOne = (this.speedX == 0 ? 0 : (this.speedX > 0) ? (j - 1) : -(j - 1));
-                let bonkSquare = getSquares(this.posX + jSigned, this.posY + i)
-                    .find((sq) => this.testCollidesWithSquare(sq) ||
-                        (this.proto == "WaterSquare" && sq.proto == "SoilSquare" && Math.random() > (1 / sq.getWaterflowRate())));
-                if (bonkSquare) {
-                    finalYPos = this.posY + (i - 1);
-                    finalXPos = this.posX + jSignedMinusOne;
-                    this.speedX = bonkSquare.speedX;
-                    this.speedY = bonkSquare.speedY;
-                    this.offsetY = 0;
-                    bonked = true;
-                    this.hasBonked = true;
-                    if (bonkSquare.proto == this.proto || (this.sand != null && bonkSquare.sand != null)) {
-                        this.group = bonkSquare.group;
-                    };
-                    if (this.lighting.length == 0 && loadGD(UI_LIGHTING_ENABLED)) {
-                        this.initLightingFromNeighbors();
-                    }
-                    if (!this.solid) {
-                        if (getSquares(this.posX + jSigned, this.posY + i)
-                            .filter((sq) => sq.proto == this.proto)
-                            .filter((sq) => sq.blockHealth + this.blockHealth < sq.blockHealthMax)
-                            .some((sq) => {
-                                sq.blockHealth = sq.blockHealth + this.blockHealth;
-                                this.destroy();
-                                return true;
-                            })) {
-                            return;
-                        }
-                    }
-                }
-                if (bonked)
-                    break;
-            } if (bonked)
-                break;
-        }
-        if (!bonked) {
-            finalXPos = this.posX + this.speedX;
-            finalYPos = this.posY + this.speedY;
-        }
-
-        let maxY = loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y);
-        if (!this.solid) {
-            maxY = getFrameYMax();
-        }
-
-        if (finalXPos < 0 || finalXPos > loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) || finalYPos < 0 || finalYPos >= maxY) {
-            this.destroy(true);
-            return;
-        }
-
-        if (finalXPos != this.posX | this.posY != finalYPos) {
-            let finalYPosFloor = Math.floor(finalYPos);
-            let finalYPosFrac = finalYPos - finalYPosFloor;
-            this.offsetY = finalYPosFrac;
-            this.updatePosition(finalXPos, finalYPosFloor);
-
-            if (!this.solid) {
-                shouldResetGroup = true;
-            }
-
-            if (shouldResetGroup) {
-                let origGroup = this.group;
-                this.group = getNextGroupId();
-                if (!this._percolateGroup(origGroup)) {
-                    this.group = origGroup;
-                };
-            }
-            if (bonked) {
-                this.triggerParticles(particleSpeed);
-            }
-        }
-        this.processParticles();
     }
 
     slopePhysics() { }
 
-    windPhysics() {
-        if (this.linkedOrganismSquares.length > 0) {
+    windPhysics() { }
+
+    compactionPhysics() {
+        if (this.speedX != 0 || this.speedY != 0)
             return;
+        if (this.blockHealth < 1) {
+            let neighbSquare = getSquares(this.posX, this.posY - randNumber(1, 2)).find((sq) => sq.proto == this.proto);
+            if (neighbSquare != null && this.linkedOrganismSquares.length == 0 && this.linkedOrganismSquares.length == 0) {
+                let amount = Math.min(1 - this.blockHealth, neighbSquare.blockHealth);
+                this.blockHealth += amount;
+                neighbSquare.blockHealth -= amount;
+                if (neighbSquare.blockHealth == 0) {
+                    neighbSquare.destroy();
+                }
+            }
+        } else {
+            if (this.speedX == 0 && this.speedY == 0) {
+                this.posX = Math.floor(this.posX);
+                this.posY = Math.floor(this.posY);
+            }
         }
-        let ws = getWindSpeedAtLocation(this.posX, this.posY);
-        let maxWindSpeed = 2;
-
-        let wx = Math.min(Math.max(ws[0], -maxWindSpeed), maxWindSpeed);
-        let wy = Math.min(Math.max(ws[1], -maxWindSpeed), maxWindSpeed);
-
-        let px = Math.abs(wx) / maxWindSpeed;
-        let py = Math.abs(wy) / maxWindSpeed;
-
-        let factor = 1;
-
-        if (Math.random() < px) {
-            this.speedX += factor * Math.round(wx);
-        }
-        if (Math.random() < py) {
-            this.speedY += factor * Math.round(wy);
-        }
-
-        let sxs = (this.speedX > 0) ? 1 : -1;
-        let sys = (this.speedY > 0) ? 1 : -1;
-
-        if (getSquares(this.posX + sxs, this.posY).filter((sq) => (sq.speedX != this.speedX)).some((sq) => sq.testCollidesWithSquare(this))) {
-            this.speedX = 0;
-        }
-        if (getSquares(this.posX, this.posY + sys).filter((sq) => (sq.speedY != this.speedY)).some((sq) => sq.testCollidesWithSquare(this))) {
-            this.speedY = 0;
-        }
-            
     }
 
     physics() {
@@ -924,6 +901,7 @@ export class BaseSquare {
 
         if (getTimeScale() != 0) {
             this.slopePhysics();
+            this.compactionPhysics();
             this.gravityPhysics();
             this.windPhysics();
             this.percolateInnerMoisture();
@@ -938,7 +916,6 @@ export class BaseSquare {
                 }
             }
         }
-        this.processParticles();
     }
 
     /* Called before physics(), with blocks in strict order from top left to bottom right. */

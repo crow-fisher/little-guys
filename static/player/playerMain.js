@@ -35,3 +35,20 @@ export function playerTick() {
 export function renderPlayer() {
     isPlayerRunning() ? player.render() : null;
 }
+
+export function getPlayerXMinOffset() {
+    if (player == null)
+        return 4;
+    if (player.speedX < 0)
+        return Math.ceil(player.speedX * -50);
+    return 0;
+
+}
+
+export function getPlayerXMaxOffset() {
+    if (player == null)
+        return 4;
+    if (player.speedX >= 0)
+        return Math.ceil(player.speedX * 50);
+    return 0;
+}

@@ -1,14 +1,15 @@
 import { BaseSquare } from "../BaseSqaure.js";
-import { getNeighbors, getSquares } from "../_sqOperations.js";
-import { cachedGetWaterflowRate, hexToRgb, randRange } from "../../common.js";
+import { addSquare, getNeighbors, getSquares } from "../_sqOperations.js";
+import { cachedGetWaterflowRate, hexToRgb, randNumber, randRange } from "../../common.js";
 import { getCurTimeScale, getDt, getFrameDt, timeScaleFactor } from "../../climate/time.js";
 import { getPressure, getWindSpeedAtLocation, getWindSquareAbove } from "../../climate/simulation/wind.js";
 import { addWaterSaturationPascals, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, temperatureHumidityFlowrateFactor } from "../../climate/simulation/temperatureHumidity.js";
-import { loadGD, UI_LIGHTING_SURFACE, UI_PALETTE_COMPOSITION, UI_PALETTE_SOILIDX, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER } from "../../ui/UIData.js";
+import { loadGD, UI_LIGHTING_SURFACE, UI_PALETTE_COMPOSITION, UI_PALETTE_SOILIDX, UI_SIMULATION_CLOUDS, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER } from "../../ui/UIData.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { addSquareByName } from "../../manipulation.js";
 import { getBaseSize } from "../../canvas.js";
 import { applyLightingFromSource, getDefaultLighting } from "../../lighting/lightingProcessing.js";
+import { getNextBlockId, getNextGroupId } from "../../globals.js";
 
 // maps in form "water containment" / "matric pressure in atmospheres"
 export const clayMatricPressureMap = [
@@ -52,6 +53,7 @@ export class SoilSquare extends BaseSquare {
         this.proto = "SoilSquare";
         this.colorBase = "#B06C49";
         this.rootable = true;
+        this.id = getNextBlockId();
 
         this.clayColorRgb = getActiveClimate().clayColorRgb;
         this.siltColorRgb = getActiveClimate().siltColorRgb;
@@ -264,7 +266,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     slopeConditional() {
-        if (this.gravity == 0 || Math.abs(this.speedY) > 0) {
+        if (this.gravity == 0 || this.getMovementSpeed() > 0) {
             return;
         }
 
@@ -314,26 +316,87 @@ export class SoilSquare extends BaseSquare {
             this.updatePosition(this.posX + 1, this.posY);
     }
 
+    spawnParticle(dx, dy, sx, sy, amount) {
+        let sq = new SoilSquare(this.posX + dx, this.posY + dy);
+        if (addSquare(sq)) {
+            sq.sand = this.sand;
+            sq.silt = this.silt;
+            sq.clay = this.clay;
+            sq.waterContainment = this.waterContainment;
+            sq.blockHealth = amount;
+            this.blockHealth -= amount;
+            applyLightingFromSource(this, sq);
+            sq.speedX += sx;
+            sq.speedY += sy;
+            sq.gravityPhysics();
+        }
+    }
+
+    windPhysics() {
+        if (!loadGD(UI_SIMULATION_CLOUDS))
+            return;
+
+        if (this.linkedOrganismSquares.length > 0) {
+            return;
+        }
+        let ws = getWindSpeedAtLocation(this.posX, this.posY);
+        let maxWindSpeed = 10;
+
+        let wx = Math.min(Math.max(ws[0], -maxWindSpeed), maxWindSpeed);
+        let wy = Math.min(Math.max(ws[1], -maxWindSpeed), maxWindSpeed);
+
+        let soilStickinessFactor = this.getWaterflowRate() * (1 + (this.waterContainment / this.waterContainmentMax));
+
+        let px = Math.abs(wx) / maxWindSpeed;
+        let py = Math.abs(wy) / maxWindSpeed;
+
+        let factor = .04;
+
+        let projX = (wx > 0 ? 1 : -1);
+        let projY = (wy > 0 ? 1 : -1);
+
+        let minProjSize = 0.2;
+        let maxProjSize = 0.4;
+
+        if (Math.abs(this.speedX) < 1 && Math.abs(this.speedY) < 1 && this.blockHealth > maxProjSize) {
+            let d = 0.022;
+            let b = 2.2;
+            let c = soilStickinessFactor;
+            let x = (wx ** 2 + wy ** 2) ** 0.2;
+            if (x < 1)
+                return;
+            let particleProbability = (Math.E / (40 * Math.E + c)) * (b + (1 / c)) ** x - d;
+
+            if (Math.random() < particleProbability) {
+                let amount = randRange(minProjSize, maxProjSize);
+                this.spawnParticle(projX, projY, factor * (wx / amount), factor * (wy / amount), amount)
+            }
+        } else {
+            if (Math.random() < px) {
+                this.speedX += factor * (wx / (Math.max(.01, this.blockHealth)));
+            }
+            if (Math.random() < py) {
+                this.speedY += factor * (wy / (Math.max(.01, this.blockHealth)));
+            }
+        }
+    }
     getWaterflowRate() {
         return cachedGetWaterflowRate(this.sand, this.silt, this.clay);
     }
-    triggerParticles(bonkSpeed) {
-        return;
-        if (Date.now() < this.spawnTime + 100) {
-            return;
-        }
-        let numParticles = (bonkSpeed / (this.getWaterflowRate() ** 0.3));
 
-        for (let i = 0; i < numParticles; i++) {
-            let speed = randRange(0, (bonkSpeed ** 0.22) - 1);
-            let theta = randRange(0, 2 * Math.PI);
-            let speedX = speed * Math.cos(theta);
-            let speedY = speed * Math.sin(theta);
-            let wrp = 0.7 * (getBaseSize() * (this.getWaterflowRate() * 0.1 + 40 * 0.9) / 30) ** 0.2;
-            let size = randRange(wrp * 0.5, wrp * 2);
-            this.activeParticles.push([this.posX, this.posY, theta, speedX, speedY, size])
-        }
+    consumeParticle(incomingSq) {
+        if (this.blockHealth <= 0 || incomingSq.blockHealth <= 0)
+            return null;
+
+        let res = super.consumeParticle(incomingSq);
+        this.sand = (this.sand * res[1] + res[2] * incomingSq.sand) / this.blockHealth;
+        this.silt = (this.silt * res[1] + res[2] * incomingSq.silt) / this.blockHealth;
+        this.clay = (this.clay * res[1] + res[2] * incomingSq.clay) / this.blockHealth;
+        if (isNaN(this.sand + this.silt + this.clay))
+            alert("FUCK!!!!");
+        return res;
     }
+
 
     getColorBase() {
         let outColor = getActiveClimate().getBaseSoilColor(this.colorVariant, this.sand, this.silt, this.clay);

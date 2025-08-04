@@ -115,7 +115,6 @@ function setPressurebyMult(x, y, mult) {
 }
 
 function checkIfCollisionAtWindSquare(x, y) {
-    return false;
     let every = true;
     let someSquareFound = false;
     for (let i = 0; i < 4; i++) {

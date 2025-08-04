@@ -40,7 +40,9 @@ export async function loadSlot(slotName) {
                 loadSlotData(saveObj);
                 resolve(saveObj);
             } else {
-                reject(new Error("Save slot not found"));
+                alert("Issue in saves; deleting all save data");
+                deleteAllSaveData();
+
             }
         };
         request.onerror = () => reject(request.error);

@@ -13,7 +13,8 @@ import {
     UI_SPEED,
     UI_SPEED_0, saveGD,
     UI_GAME_MAX_CANVAS_SQUARES_X,
-    UI_GAME_MAX_CANVAS_SQUARES_Y
+    UI_GAME_MAX_CANVAS_SQUARES_Y,
+    UI_LIGHTING_SUN
 } from "../ui/UIData.js";
 import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
 import { SunCalc } from "./suncalc/suncalc.js";
@@ -22,7 +23,7 @@ import { getActiveClimate } from "./climateManager.js";
 let TIME_SCALE = 1;
 let curUIKey = UI_SPEED_1;
 
-export let millis_per_day = 60 * 60 * 24 * 1000;
+export const millis_per_day = 60 * 60 * 24 * 1000;
 var curDay = 0.4;
 var prevDay = 0;
 var curTime = 0.8;
@@ -33,7 +34,7 @@ let dt = 0;
 let dtRollingAverage = dt;
 
 export function getFrameDt() {
-    return Math.min(1000, dtRollingAverage);
+    return Math.min(100, dtRollingAverage);
 }
 
 var starMap;
@@ -48,7 +49,7 @@ let sky_colorNearNoonRGB = hexToRgb("#7E9FB1");
 let sky_colorNoonRGB = hexToRgb("#84B2E2");
 
 let currentLightColorTemperature = sky_nightRGB;
-let _cdaylightStrength, _prevDaylightStrength;
+let _cdaylightStrength, _prevDaylightStrength, _cmoonlightStrength;
 export function setTimeScale(timeScale) {
     seekTimeTarget = 0;
     TIME_SCALE = timeScale;
@@ -135,16 +136,6 @@ export function doTimeSeek() {
 }
 
 // targetTime between 0 and 1
-
-export function seekDateLabel(label) {
-    let curDay = getCurDay();
-    let curDate = new Date(curDay * millis_per_day);
-    let times = SunCalc.getTimes(curDate, getActiveClimate().lat, getActiveClimate().lng);
-    let targetDate = null;
-    targetDate = times[label];
-    let seekDay = targetDate.getTime() / millis_per_day;
-    seek(seekDay % 1);
-}
 
 export function explicitSeek(targetDate) {
     seekTimeTarget = targetDate;
@@ -373,6 +364,7 @@ function updateTime() {
         prevRealTime = Date.now();
         _prevDaylightStrength = _cdaylightStrength;
         _cdaylightStrength = null;
+        _cmoonlightStrength = null;
     }
 }
 
@@ -445,6 +437,17 @@ function renderSkyBackground() {
 
     renderStarMap(Math.min(1, Math.exp(-7 * getDaylightStrength())));
 }
+
+export function getMoonlightStrength() {
+    if (_cmoonlightStrength != null) {
+        return _cmoonlightStrength;
+    }
+    let curDay = getCurDay();
+    let curDate = new Date(curDay * millis_per_day);
+    let moonData = SunCalc.getMoonIllumination(curDate);
+    return moonData.fraction;
+}
+
 
 function getDaylightStrength() {
     if (_cdaylightStrength != null) {
