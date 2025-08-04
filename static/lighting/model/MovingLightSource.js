@@ -158,7 +158,7 @@ export class MovingLightSource {
             let obj = arr[3];
 
             let p1 = (obj.surface ? (obj.surfaceLightingFactor ?? 1) : 1);
-            let p2 = obj.blockHealth;
+            let p2 = (obj.blockHealth ?? 1);
             let p3 = obj.getLightFilterRate() ** (1 / (20 - loadGD(UI_LIGHTING_DECAY)));
             let p4 = loadGD(UI_LIGHTING_QUALITY) / 11;
 
