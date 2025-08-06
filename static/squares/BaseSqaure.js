@@ -298,6 +298,10 @@ export class BaseSquare {
         hsv[0] += 360.0 * res;
         let out = hsv2rgb(...hsv);
         MAIN_CONTEXT.fillStyle = rgbToRgba(...out, 0.1);
+
+        if (this.linkedOrganismSquares.length > 0)
+            MAIN_CONTEXT.fillStyle = rgbToRgba(225, 35, 10, .8);
+
         zoomCanvasFillRect(this.posX * getBaseSize(), this.posY * getBaseSize(), getBaseSize(), getBaseSize());
     }
 
@@ -494,6 +498,8 @@ export class BaseSquare {
         }
     }
     updatePosition(newPosX, newPosY) {
+        if (this.linkedOrganismSquares.length > 0 && this.proto == "SoilSquare")
+            console.log("???????")
         if (newPosX == this.posX && newPosY == this.posY) {
             return true;
         }
