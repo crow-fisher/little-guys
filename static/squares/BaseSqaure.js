@@ -29,7 +29,7 @@ export class BaseSquare {
         this.posX = posX;
         this.posY = posY;
 
-        this.posHistoryRetentionLength = 25;
+        this.posHistoryRetentionLength = 50;
         this.posHistoryMap = new Array(this.posHistoryRetentionLength);
         this.posHistoryCur = this.posHistoryRetentionLength;
         for (let i = 0; i < this.posHistoryRetentionLength; i++)
@@ -461,9 +461,9 @@ export class BaseSquare {
             let outColorBase = this.getColorBase();
             let lightingColor = this.processLighting(true);
             this.frameCacheLighting = lightingColor;
-            let outColor = { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
+            this.outColor = { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
             this.lastColorCacheOpacity = opacityMult;
-            this.cachedRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacityMult * this.opacity * this.blockHealth ** 0.2);
+            this.cachedRgba = rgbToRgba(Math.floor(this.outColor.r), Math.floor(this.outColor.g), Math.floor(this.outColor.b), opacityMult * this.opacity * this.blockHealth ** 0.2);
         }
         MAIN_CONTEXT.fillStyle = this.cachedRgba;
         if (this.blockHealth < 0.5 && this.getMovementSpeed() > 0.5) {
@@ -540,13 +540,12 @@ export class BaseSquare {
         if (this.speedX == 0 && this.speedY == 0 && this.renderCountDown == 0)
             return;
 
-        if (this.getMovementSpeed() > 0) {
+        // if (this.getMovementSpeed() > 0) {
             this.renderCountDown = this.posHistoryRetentionLength * 2;
             this.posHistoryMap[(this.posHistoryCur % this.posHistoryRetentionLength)] = [this.posX, this.posY];
             this.posHistoryCur += 1;
-        }
+        // }
 
-        MAIN_CONTEXT.strokeStyle = this.cachedRgba.replace(",1)", ",.01)");
         MAIN_CONTEXT.lineWidth = 4 * Math.max(0.5, this.blockHealth);
         MAIN_CONTEXT.beginPath();
 
@@ -554,15 +553,29 @@ export class BaseSquare {
 
         let start = transformCanvasSquaresToPixels(p[0] * getBaseSize(), p[1] * getBaseSize());
 
-        MAIN_CONTEXT.moveTo(start[0], start[1]);
         // console.log("START: ", p);
-        for (let i = this.posHistoryCur - 1; i >= this.posHistoryCur - this.posHistoryRetentionLength; i--) {
+
+        let init = this.posHistoryCur - 1;
+        let min = this.posHistoryCur - this.posHistoryRetentionLength;
+        let thickEnd = Math.ceil(this.posHistoryCur - (this.posHistoryRetentionLength * 0.05));
+
+        MAIN_CONTEXT.strokeStyle = rgbToRgba(this.outColor.r, this.outColor.g, this.outColor.b, 1)
+
+        MAIN_CONTEXT.moveTo(start[0], start[1]);
+        for (let i = init; i >= min; i--) {
             let loc = this.posHistoryMap[i % this.posHistoryRetentionLength];
             if (!isSquareOnCanvas(...loc)) {
                 return;
             }
             let p2 = transformCanvasSquaresToPixels(loc[0] * getBaseSize(), loc[1] * getBaseSize());
             MAIN_CONTEXT.lineTo(p2[0], p2[1]);
+
+            if (i == thickEnd) {
+                MAIN_CONTEXT.stroke();
+                MAIN_CONTEXT.lineTo(p2[0], p2[1]);
+                MAIN_CONTEXT.lineWidth = 1 * Math.max(0.5, this.blockHealth);
+            }
+            
             // console.log("POINT: ", loc);
         }
         MAIN_CONTEXT.stroke();

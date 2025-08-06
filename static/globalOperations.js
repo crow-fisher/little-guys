@@ -209,6 +209,10 @@ export function doWaterFlow() {
                                 cand.lighting = [];
                                 cand.initLightingFromNeighbors();
                                 curTargWater = cand;
+
+                                for (let i = 0; i < cand.posHistoryRetentionLength; i++) {
+                                    cand.posHistoryMap[i] = [cand.posX, cand.posY]
+                                }
                             }
                         } else {
                             curTargWater.blockHealth += candidateHealthApplied;
