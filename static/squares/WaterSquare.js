@@ -1,13 +1,13 @@
 import { BaseSquare } from "./BaseSqaure.js";
-import { getSquares, iterateOnSquares, getNeighbors } from "./_sqOperations.js";
+import { getSquares, iterateOnSquares, getNeighbors, addSquare } from "./_sqOperations.js";
 import { getGroupSize, getNextGroupId, WATERFLOW_CANDIDATE_SQUARES, WATERFLOW_TARGET_SQUARES } from "../globals.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { RGB_COLOR_OTHER_BLUE } from "../colors.js";
 import { hexToRgb, hsv2rgb, randRange, rgb2hsv, rgbToRgba } from "../common.js";
-import { loadGD, UI_LIGHTING_WATER, UI_LIGHTING_WATER_HUE, UI_LIGHTING_WATER_VALUE, UI_LIGHTING_WATER_SATURATION, UI_LIGHTING_WATER_OPACITY } from "../ui/UIData.js";
+import { loadGD, UI_LIGHTING_WATER, UI_LIGHTING_WATER_HUE, UI_LIGHTING_WATER_VALUE, UI_LIGHTING_WATER_SATURATION, UI_LIGHTING_WATER_OPACITY, UI_SIMULATION_CLOUDS } from "../ui/UIData.js";
 import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
 import { getActiveClimate } from "../climate/climateManager.js";
-import { getDefaultLighting } from "../lighting/lightingProcessing.js";
+import { applyLightingFromSource, getDefaultLighting } from "../lighting/lightingProcessing.js";
 import { deregisterSquare, isGroupContiguous, registerSquare } from "../waterGraph.js";
 import { getGroupMinPosY } from "../globalOperations.js";
 import { convertMinutesToTimeUnit } from "../climate/weather/weather.js";
@@ -31,16 +31,27 @@ class WaterSquare extends BaseSquare {
         // water starts as a liquid 
         this.state = 1;
         this.thermalConductivity = 0.6;
-        this.thermalMass = 4.2; 
+        this.thermalMass = 4.2;
         this.blockHealthGravityCoef = 0.7;
+    }
+    spawnParticle(dx, dy, sx, sy, amount) {
+        let sq = new WaterSquare(this.posX + dx, this.posY + dy);
+        if (addSquare(sq)) {
+            sq.blockHealth = amount;
+            this.blockHealth -= amount;
+            applyLightingFromSource(this, sq);
+            sq.speedX += sx;
+            sq.speedY += sy;
+            sq.gravityPhysics();
+        }
     }
 
     windPhysics() {
-        if (this.linkedOrganismSquares.length > 0) {
+        if (!loadGD(UI_SIMULATION_CLOUDS))
             return;
-        }
+
         let ws = getWindSpeedAtLocation(this.posX, this.posY);
-        let maxWindSpeed = 2;
+        let maxWindSpeed = 10;
 
         let wx = Math.min(Math.max(ws[0], -maxWindSpeed), maxWindSpeed);
         let wy = Math.min(Math.max(ws[1], -maxWindSpeed), maxWindSpeed);
@@ -48,13 +59,34 @@ class WaterSquare extends BaseSquare {
         let px = Math.abs(wx) / maxWindSpeed;
         let py = Math.abs(wy) / maxWindSpeed;
 
-        let factor = 1;
+        let factor = .04;
 
-        if (Math.random() < px) {
-            this.speedX += factor * Math.round(wx);
-        }
-        if (Math.random() < py) {
-            this.speedY += factor * Math.round(wy);
+        let projX = (wx > 0 ? 1 : -1);
+        let projY = (wy > 0 ? 1 : -1);
+
+        let minProjSize = 0.2;
+        let maxProjSize = 0.4;
+
+        if (Math.abs(this.speedX) < 1 && Math.abs(this.speedY) < 1 && this.blockHealth > maxProjSize) {
+            let d = 0.022;
+            let b = 2.2;
+            let c = 2;
+            let x = (wx ** 2 + wy ** 2) ** 0.4;
+            if (x < 1)
+                return;
+            let particleProbability = (Math.E / (40 * Math.E + c)) * (b + (1 / c)) ** x - d;
+
+            if (Math.random() < particleProbability) {
+                let amount = randRange(minProjSize, maxProjSize);
+                this.spawnParticle(projX, projY, factor * (wx / amount), factor * (wy / amount), amount)
+            }
+        } else {
+            if (Math.random() < px) {
+                this.speedX += factor * (wx / (Math.max(.01, this.blockHealth)));
+            }
+            if (Math.random() < py) {
+                this.speedY += factor * (wy / (Math.max(.01, this.blockHealth)));
+            }
         }
     }
 

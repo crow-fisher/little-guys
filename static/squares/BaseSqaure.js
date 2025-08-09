@@ -540,11 +540,9 @@ export class BaseSquare {
         if (this.speedX == 0 && this.speedY == 0 && this.renderCountDown == 0)
             return;
 
-        // if (this.getMovementSpeed() > 0) {
-            this.renderCountDown = this.posHistoryRetentionLength * 2;
-            this.posHistoryMap[(this.posHistoryCur % this.posHistoryRetentionLength)] = [this.posX, this.posY];
-            this.posHistoryCur += 1;
-        // }
+        this.renderCountDown = this.posHistoryRetentionLength * 2;
+        this.posHistoryMap[(this.posHistoryCur % this.posHistoryRetentionLength)] = [this.posX, this.posY];
+        this.posHistoryCur += 1;
 
         MAIN_CONTEXT.lineWidth = 4 * Math.max(0.5, this.blockHealth);
         MAIN_CONTEXT.beginPath();
@@ -575,7 +573,7 @@ export class BaseSquare {
                 MAIN_CONTEXT.lineTo(p2[0], p2[1]);
                 MAIN_CONTEXT.lineWidth = 1 * Math.max(0.5, this.blockHealth);
             }
-            
+
             // console.log("POINT: ", loc);
         }
         MAIN_CONTEXT.stroke();

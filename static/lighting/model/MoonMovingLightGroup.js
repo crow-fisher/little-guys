@@ -1,7 +1,9 @@
-import { getBaseSize, getFrameXMax, getFrameXMin, getFrameYMax, getFrameYMin } from "../../canvas.js";
+import { getBaseSize, getCanvasHeight, getCanvasWidth, getFrameXMax, getFrameXMin, getFrameYMax, getFrameYMin } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { SunCalc } from "../../climate/suncalc/suncalc.js";
 import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getMoonlightBrightness, getMoonlightColor, millis_per_day } from "../../climate/time.js";
+import { COLOR_VERY_FUCKING_RED } from "../../colors.js";
+import { MAIN_CONTEXT } from "../../index.js";
 import { addTask } from "../../scheduler.js";
 import { loadGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_LIGHTING_MOON, UI_LIGHTING_SHADOW_SOFTNESS } from "../../ui/UIData.js";
 import { LightGroup } from "./LightGroup.js";
@@ -38,6 +40,22 @@ export class MoonMovingLightGroup extends LightGroup {
 
             if (Math.random() > .99)
                 console.log(moonPosition);
+
+
+            // DEBUG 
+            let cw = getCanvasWidth();
+            let ch = getCanvasHeight();
+
+            MAIN_CONTEXT.moveTo(cw / 2, ch / 2);
+            MAIN_CONTEXT.lineTo(
+                (cw / 2) + 2000 * Math.cos(moonPosition.parallacticAngle),
+                (ch / 2) + 2000 * Math.sin(moonPosition.parallacticAngle)
+            )
+            MAIN_CONTEXT.strokeWidth = 2;
+            MAIN_CONTEXT.strokeStyle = COLOR_VERY_FUCKING_RED;
+            MAIN_CONTEXT.stroke();
+
+            // END DEBUG
 
             let moonPos = moonPosition.parallacticAngle;
             moonPos = (0.5 * Math.PI) + moonPos;
