@@ -43,17 +43,17 @@ export class MoonMovingLightGroup extends LightGroup {
 
 
             // DEBUG 
-            let cw = getCanvasWidth();
-            let ch = getCanvasHeight();
+            // let cw = getCanvasWidth();
+            // let ch = getCanvasHeight();
 
-            MAIN_CONTEXT.moveTo(cw / 2, ch / 2);
-            MAIN_CONTEXT.lineTo(
-                (cw / 2) + 2000 * Math.cos(moonPosition.parallacticAngle),
-                (ch / 2) + 2000 * Math.sin(moonPosition.parallacticAngle)
-            )
-            MAIN_CONTEXT.strokeWidth = 2;
-            MAIN_CONTEXT.strokeStyle = COLOR_VERY_FUCKING_RED;
-            MAIN_CONTEXT.stroke();
+            // MAIN_CONTEXT.moveTo(cw / 2, ch / 2);
+            // MAIN_CONTEXT.lineTo(
+            //     (cw / 2) + 2000 * Math.cos(moonPosition.parallacticAngle),
+            //     (ch / 2) + 2000 * Math.sin(moonPosition.parallacticAngle)
+            // )
+            // MAIN_CONTEXT.strokeWidth = 2;
+            // MAIN_CONTEXT.strokeStyle = COLOR_VERY_FUCKING_RED;
+            // MAIN_CONTEXT.stroke();
 
             // END DEBUG
 
