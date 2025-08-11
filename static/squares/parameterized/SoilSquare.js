@@ -53,7 +53,6 @@ export class SoilSquare extends BaseSquare {
         this.proto = "SoilSquare";
         this.colorBase = "#B06C49";
         this.rootable = true;
-        this.id = getNextBlockId();
 
         this.clayColorRgb = getActiveClimate().clayColorRgb;
         this.siltColorRgb = getActiveClimate().siltColorRgb;

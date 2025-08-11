@@ -496,6 +496,7 @@ export function getMoonlightColorRgb() {
 }
 
 export function getMoonlightBrightness() {
+    return 1;
     let curDay = getCurDay();
     let curMillis = curDay * millis_per_day;
     let curDate = new Date(curMillis);

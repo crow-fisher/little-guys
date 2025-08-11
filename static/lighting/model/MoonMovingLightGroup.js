@@ -13,7 +13,7 @@ export class MoonMovingLightGroup extends LightGroup {
     constructor() {
         super();
         this.dist = 10000;
-        this.numNodes = 5;
+        this.numNodes = 2;
         this.init();
         this.idxCompletionMap = new Map();
     }
@@ -37,28 +37,7 @@ export class MoonMovingLightGroup extends LightGroup {
             let curDate = new Date(curMillis);
 
             let moonPosition = SunCalc.getMoonPosition(curDate, getActiveClimate().lat, getActiveClimate().lng);
-
-            if (Math.random() > .99)
-                console.log(moonPosition);
-
-
-            // DEBUG 
-            // let cw = getCanvasWidth();
-            // let ch = getCanvasHeight();
-
-            // MAIN_CONTEXT.moveTo(cw / 2, ch / 2);
-            // MAIN_CONTEXT.lineTo(
-            //     (cw / 2) + 2000 * Math.cos(moonPosition.parallacticAngle),
-            //     (ch / 2) + 2000 * Math.sin(moonPosition.parallacticAngle)
-            // )
-            // MAIN_CONTEXT.strokeWidth = 2;
-            // MAIN_CONTEXT.strokeStyle = COLOR_VERY_FUCKING_RED;
-            // MAIN_CONTEXT.stroke();
-
-            // END DEBUG
-
-            let moonPos = moonPosition.parallacticAngle;
-            moonPos = (0.5 * Math.PI) + moonPos;
+            let moonAngle = moonPosition.parallacticAngle;
 
             let perIdxOffset = (this.dist * loadGD(UI_LIGHTING_SHADOW_SOFTNESS) * idx);
             let maxIdxOffset = (this.dist * loadGD(UI_LIGHTING_SHADOW_SOFTNESS) * this.numNodes);
@@ -73,10 +52,9 @@ export class MoonMovingLightGroup extends LightGroup {
             let idxPosXProcessed = lightSourceCenterPosX - lightSourceRotationPosX;
             let idxPosYProcessed = lightSourceCenterPosY - lightSourceRotationPosY;
 
-            let dayTheta = (2 * Math.PI) - (moonPos - (Math.PI / 2));
 
-            let rotatedX = idxPosXProcessed * Math.cos(dayTheta) - idxPosYProcessed * Math.sin(dayTheta);
-            let rotatedY = idxPosYProcessed * Math.cos(dayTheta) + idxPosXProcessed * Math.sin(dayTheta);
+            let rotatedX = idxPosXProcessed * Math.cos(moonAngle) - idxPosYProcessed * Math.sin(moonAngle);
+            let rotatedY = idxPosYProcessed * Math.cos(moonAngle) + idxPosXProcessed * Math.sin(moonAngle);
 
             let endX = rotatedX + lightSourceRotationPosX;
             let endY = rotatedY + lightSourceRotationPosY;

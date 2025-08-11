@@ -7,7 +7,8 @@ import {
     getTargetMixIdx,
     setGroupGrounded,
     isGroupGrounded,
-    regSquareToGroup
+    regSquareToGroup,
+    getNextBlockId
 } from "../globals.js";
 
 import { MAIN_CONTEXT } from "../index.js";
@@ -28,8 +29,9 @@ export class BaseSquare {
         this.proto = "BaseSquare";
         this.posX = posX;
         this.posY = posY;
+        this.id = getNextBlockId();
 
-        this.posHistoryRetentionLength = 50;
+        this.posHistoryRetentionLength = 10;
         this.posHistoryMap = new Array(this.posHistoryRetentionLength);
         this.posHistoryCur = this.posHistoryRetentionLength;
         for (let i = 0; i < this.posHistoryRetentionLength; i++)

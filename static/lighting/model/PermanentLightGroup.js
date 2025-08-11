@@ -13,7 +13,7 @@ export class PermanentLightGroup extends LightGroup {
     constructor() {
         super();
         this.dist = 10000;
-        this.numNodes = 7;
+        this.numNodes = 2;
         this.init();
         this.idxCompletionMap = new Map();
     }
