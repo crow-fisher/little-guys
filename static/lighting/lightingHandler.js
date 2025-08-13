@@ -29,14 +29,9 @@ export class LightingHandler {
         if (loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) != this.lightingSizeX || loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y) != this.lightingSizeY) {
             this.initLightSources();
         }
-        
-        if (Date.now() < this.nextLightingUpdate) {
-            return;
-        }
         for (let i = 0; i < this.lightSources.length; i++) {
             this.lightSources[i].doRayCasting(i);
         }
-        this.nextLightingUpdate = Date.now() + getCurLightingInterval();
     }
     destroy() {
         this.lightSources.forEach((ls) => ls.destroy());

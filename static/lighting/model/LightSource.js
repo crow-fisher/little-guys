@@ -182,7 +182,7 @@ export class LightSource {
         let bottomIdx = Math.min(ix1, ix2);
         let topIdx = Math.max(ix1, ix2);
 
-        let priority = 100;
+        let priority = (idx + jobIdx) * loadGD(UI_LIGHTING_UPDATERATE);
         let funcName = "doRayCasting_" + idx + "_" + jobIdx;
 
         addTask(funcName, () => {
