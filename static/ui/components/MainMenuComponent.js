@@ -54,9 +54,6 @@ export class MainMenuComponent extends SubTreeComponent {
             let colorFunc1 = () => (loadUI(UI_UI_CURWORLD) == this.getWorldFromI(iCopy)) ? getActiveClimate().getUIColorActive() : getActiveClimate().getUIColorInactiveCustom([0.65, 0.55, 0.62, 0.58, 0.61, 0.67][i % 6]);
             let colorFunc2 = () => getActiveClimate().getUIColorInactiveCustom(0.1 + [0.65, 0.55, 0.62, 0.58, 0.61, 0.67][i % 6]);
 
-            console.log(loadUI(UI_UI_WORLDNAME)[this.getWorldFromI(iCopy)]);
-            console.log(iCopy)
-
             row.addElement(new ButtonFunctionalText(this.window, this.sizeX * (4/5), getBaseUISize() * 3, this.textAlignOffsetX, () => loadSlot( this.getWorldFromI(iCopy)), 
                 () => loadUI(UI_UI_WORLDNAME)[this.getWorldFromI(iCopy)], colorFunc1));
             row.addElement(new ButtonFunctionalText(this.window, this.sizeX * (1/5), getBaseUISize() * 3, this.textAlignOffsetX, 

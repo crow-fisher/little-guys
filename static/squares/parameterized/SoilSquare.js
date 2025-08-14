@@ -327,11 +327,13 @@ export class SoilSquare extends BaseSquare {
             applyLightingFromSource(this, sq);
             sq.speedX += sx;
             sq.speedY += sy;
-            sq.gravityPhysics();
         }
     }
 
     windPhysics() {
+        if (!Number.isFinite(this.blockHealth))
+            alert("?????????");
+
         if (!loadGD(UI_SIMULATION_CLOUDS))
             return;
 
@@ -386,13 +388,10 @@ export class SoilSquare extends BaseSquare {
     consumeParticle(incomingSq) {
         if (this.blockHealth <= 0 || incomingSq.blockHealth <= 0)
             return null;
-
         let res = super.consumeParticle(incomingSq);
         this.sand = (this.sand * res[1] + res[2] * incomingSq.sand) / this.blockHealth;
         this.silt = (this.silt * res[1] + res[2] * incomingSq.silt) / this.blockHealth;
         this.clay = (this.clay * res[1] + res[2] * incomingSq.clay) / this.blockHealth;
-        if (isNaN(this.sand + this.silt + this.clay))
-            alert("FUCK!!!!");
         return res;
     }
 

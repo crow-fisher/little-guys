@@ -780,7 +780,6 @@ export class BaseSquare {
         let colSqHeatlhAdded = this.blockHealth - startBlockHeatlh;
         let res = colSqHeatlhAdded == incomingSq.blockHealth;
         incomingSq.blockHealth -= colSqHeatlhAdded;
-
         return [res, startBlockHeatlh, colSqHeatlhAdded];
     }
 
@@ -914,7 +913,7 @@ export class BaseSquare {
     }
 
     physics() {
-        if (!isSquareOnCanvas(this.posX, this.posY)) {
+        if (!isSquareOnCanvas(this.posX, this.posY) || this.blockHealth <= 0) {
             return;
         }
 

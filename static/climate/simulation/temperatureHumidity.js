@@ -238,7 +238,8 @@ function tickMap(
                     }
 
                     if (isNaN(diff)) {
-                        console.log("diff nan; returning");
+                        console.log("diff nan; resetting wind and returning");
+                        initTemperatureHumidity();
                         return;
                     }
                     // registerWindThrottlerOutput(x, y, map[x][y], map[x][y] - diff)
