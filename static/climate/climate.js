@@ -3,7 +3,7 @@ import { loadGD, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_HEAVYRAIN, UI_CLIM
 
 export class Climate {
     constructor() {
-        let soilColorBaseArr = ["#c99060", "#33251b", "#773319"];
+        let soilColorBaseArr = ["#ad7c54", "#33251b", "#773319"];
         let rockColorBaseArr = ["#2b2f3d", "#141114", "#7e8097"];
 
         this.soilColors = [

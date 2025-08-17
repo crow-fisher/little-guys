@@ -1,12 +1,9 @@
 import { getFrameXMax, getFrameXMin, getFrameYMax, getFrameYMin } from "../../canvas.js";
 import { getCloudColorAtPos } from "../../climate/simulation/temperatureHumidity.js";
 import { getFrameXMaxWsq, getFrameXMinWsq, getFrameYMaxWsq, getFrameYMinWsq } from "../../climate/simulation/wind.js";
-import { getFrameDt } from "../../climate/time.js";
 import { getFrameSimulationSquares } from "../../globalOperations.js";
 import { isSaveOrLoadInProgress } from "../../saveAndLoad.js";
-import { addTask } from "../../scheduler.js";
-import { loadGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_LIGHTING_CLOUDCOVER_OPACITY, UI_LIGHTING_DECAY, UI_LIGHTING_QUALITY, UI_LIGHTING_UPDATERATE, UI_SIMULATION_CLOUDS } from "../../ui/UIData.js";
-import { getCurLightingInterval } from "../lightingHandler.js";
+import { loadGD, UI_LIGHTING_CLOUDCOVER_OPACITY, UI_LIGHTING_DECAY, UI_LIGHTING_QUALITY, UI_SIMULATION_CLOUDS } from "../../ui/UIData.js";
 
 export class MovingLightSource {
     constructor(positionFunc, brightnessFunc, colorFunc, numRays) {
@@ -183,6 +180,8 @@ export class MovingLightSource {
     }
 
     prepare() {
+        if (isSaveOrLoadInProgress())
+            return;
         this.cachedLightingConstant = Math.exp(8 - loadGD(UI_LIGHTING_DECAY)) * (loadGD(UI_LIGHTING_QUALITY)) / 9;
         this.calculateFramePosition();
         this.calculateMinMaxTheta();

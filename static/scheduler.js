@@ -24,14 +24,14 @@ export function prepareTickJobs() {
         let funcName = jobArr[0];
         let func = jobArr[1];
         let inHowManyFrames = jobArr[2];
-        if (inHowManyFrames == 0) {
+        if (inHowManyFrames <= 0) {
             activeJobArr.push([funcName, func])
         } else {
             break;
         }
     };
     pendingJobArr = pendingJobArr.slice(activeJobArr.length);
-    pendingJobArr.forEach((jobArr) => jobArr[2] = Math.max(0, jobArr[2] - 1));
+    pendingJobArr.forEach((jobArr) => jobArr[2] -= 1);
 }
 export function completeActiveJobs() {
     activeJobArr.forEach((job) => {

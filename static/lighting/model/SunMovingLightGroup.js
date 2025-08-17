@@ -3,7 +3,7 @@ import { getActiveClimate } from "../../climate/climateManager.js";
 import { SunCalc } from "../../climate/suncalc/suncalc.js";
 import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, millis_per_day } from "../../climate/time.js";
 import { addTask } from "../../scheduler.js";
-import { loadGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_LIGHTING_SHADOW_SOFTNESS, UI_LIGHTING_SUN } from "../../ui/UIData.js";
+import { loadGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_LIGHTING_SHADOW_SOFTNESS, UI_LIGHTING_SUN, UI_LIGHTING_UPDATERATE } from "../../ui/UIData.js";
 import { LightGroup } from "./LightGroup.js";
 import { MovingLightSource } from "./MovingLightSource.js";
 
@@ -93,7 +93,7 @@ export class SunMovingLightGroup extends LightGroup {
                         this.idxCompletionMap.set(idx, true);
                     }
                 });
-            }, i);
+            }, idx + i * loadGD(UI_LIGHTING_UPDATERATE));
         };
         return true;
     }

@@ -5,7 +5,7 @@ import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getMoo
 import { COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { addTask } from "../../scheduler.js";
-import { loadGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_LIGHTING_MOON, UI_LIGHTING_SHADOW_SOFTNESS } from "../../ui/UIData.js";
+import { loadGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_LIGHTING_MOON, UI_LIGHTING_SHADOW_SOFTNESS, UI_LIGHTING_UPDATERATE } from "../../ui/UIData.js";
 import { LightGroup } from "./LightGroup.js";
 import { MovingLightSource } from "./MovingLightSource.js";
 
@@ -83,7 +83,7 @@ export class MoonMovingLightGroup extends LightGroup {
                         this.idxCompletionMap.set(idx, true);
                     }
                 });
-            }, i);
+            }, idx + i * loadGD(UI_LIGHTING_UPDATERATE));
         };
         return true;
     }

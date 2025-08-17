@@ -31,8 +31,8 @@ export class KentuckyBluegrassGreenSquare extends BaseLifeSquare {
                 case SUBTYPE_STEM:
                 case SUBTYPE_NODE:
                 case SUBTYPE_LEAF:
-                    this.baseColor = "#5f633b";
-                    this.darkColor = "#4e5234";
+                    this.baseColor = "#2e301d";
+                    this.darkColor = "#15160e";
                     this.accentColor = "#6b704f";
                     break;
                 default:

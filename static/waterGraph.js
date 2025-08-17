@@ -14,7 +14,6 @@ function _hash(posX, posY) {
 export function waterGraphReset() {
     groupMap.clear();
     squaresX = loadGD(UI_GAME_MAX_CANVAS_SQUARES_X);
-    iterateOnSquares((sq) => registerSquare(sq.posX, sq.posY, sq.group));
 }
 
 export function registerSquare(posX, posY, group) {

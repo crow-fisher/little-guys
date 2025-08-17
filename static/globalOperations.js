@@ -9,7 +9,7 @@ import { removeItemAll } from "./common.js";
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, getFrameXMax, getFrameXMin, getFrameYMax, getFrameYMin, zoomCanvasFillRect } from "./canvas.js";
 import { loadGD, saveGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "./ui/UIData.js";
 import { indexCanvasSize, MAIN_CONTEXT } from "./index.js";
-import { resetFrameGroupCache, waterGraphReset } from "./waterGraph.js";
+import { registerSquare, resetFrameGroupCache, waterGraphReset } from "./waterGraph.js";
 import { RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "./colors.js";
 import { calculateColorProvideOpacity } from "./climate/simulation/temperatureHumidity.js";
 import { lightingExposureAdjustment } from "./lighting/lightingProcessing.js";
@@ -34,8 +34,11 @@ export function saveGroupMinHeight(group, posY) {
 export function periodicPurgeOldGroupData() {
     if (groupMinPosYMap.size > 1000) {
         groupMinPosYMap.clear();
-        getFrameSimulationSquares().forEach((sq) => saveGroupMinHeight(sq.group, sq.posY));
         waterGraphReset();
+        getFrameSimulationSquares().forEach((sq) => {
+            saveGroupMinHeight(sq.group, sq.posY);
+            registerSquare(sq.posX, sq.posY, sq.group);
+        });
     }
 }
 

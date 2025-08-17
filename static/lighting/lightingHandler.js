@@ -1,5 +1,4 @@
 import { getFrameDt } from "../climate/time.js";
-import { addTask } from "../scheduler.js";
 import { loadGD, UI_LIGHTING_UPDATERATE, UI_LIGHTING_ENABLED, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "../ui/UIData.js";
 import { createMoonLightGroup, createPermanantLightGroup, createSunLightGroup } from "./lighting.js";
 
