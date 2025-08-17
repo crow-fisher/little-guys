@@ -436,6 +436,9 @@ class BaseOrganism {
         if (getCurDay() < this.greenLastGrown + this.lightLevelThrottleVal() * (this.getGrowthCycleMaturityLength() / this.growthNumGreen)) {
             return false;
         }
+        if (Math.abs(this.getWilt()) > .5)
+            return false;
+
         let somethingDone = false;
         this.growthPlans.filter((gp) => !gp.areStepsCompleted()).forEach((growthPlan) => {
             growthPlan.steps.filter((step) => !step.completed).at(0).doAction();
