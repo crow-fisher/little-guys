@@ -11,7 +11,7 @@ import { SliderGradientBackgroundWaterHue } from "../elements/SliderGradientWate
 import { SliderGradientBackground } from "../elements/SliderGradientBackground.js";
 import { TextBackground } from "../elements/TextBackground.js";
 import { TextFunctionalBackground } from "../elements/TextFunctionalBackground.js";
-import { loadGD, UI_LIGHTING_SUN, UI_LIGHTING_MOON, UI_LIGHTING_WATER, UI_LIGHTING_ROCK, UI_LIGHTING_PLANT, UI_LIGHTING_DECAY, UI_CENTER, UI_LIGHTING_WATER_OPACITY, UI_LIGHTING_WATER_VALUE, UI_LIGHTING_WATER_SATURATION, UI_LIGHTING_WATER_HUE, UI_LIGHTING_PLANT_GRASS, UI_LIGHTING_PLANT_TREE, UI_LIGHTING_SCENE_MODE, UI_LIGHTING_SCENE_MODE_WATER, UI_LIGHTING_SCENE_MODE_PLANT, UI_LIGHTING_SCENE_MODE_BRIGHTNESS, UI_LIGHTING_SCENE_MODE_DECAY, loadUI, UI_UI_PHONEMODE, UI_LIGHTING_GLOBAL, UI_LIGHTING_DISABLED_BRIGHTNESS, UI_LIGHTING_CLOUDCOVER_OPACITY, UI_LIGHTING_SHADOW_SOFTNESS, UI_LIGHTING_FLATLIGHTING_BRIGHTNESS, UI_LIGHTING_FLATLIGHTING_HUE, UI_LIGHTING_FLATLIGHTING_SATURATION } from "../UIData.js";
+import { loadGD, UI_LIGHTING_SUN, UI_LIGHTING_MOON, UI_LIGHTING_WATER, UI_LIGHTING_ROCK, UI_LIGHTING_PLANT, UI_LIGHTING_DECAY, UI_CENTER, UI_LIGHTING_WATER_OPACITY, UI_LIGHTING_WATER_VALUE, UI_LIGHTING_WATER_SATURATION, UI_LIGHTING_WATER_HUE, UI_LIGHTING_PLANT_GRASS, UI_LIGHTING_PLANT_TREE, UI_LIGHTING_SCENE_MODE, UI_LIGHTING_SCENE_MODE_WATER, UI_LIGHTING_SCENE_MODE_PLANT, UI_LIGHTING_SCENE_MODE_BRIGHTNESS, UI_LIGHTING_SCENE_MODE_DECAY, loadUI, UI_UI_PHONEMODE, UI_LIGHTING_GLOBAL, UI_LIGHTING_DISABLED_BRIGHTNESS, UI_LIGHTING_CLOUDCOVER_OPACITY, UI_LIGHTING_SHADOW_SOFTNESS, UI_LIGHTING_FLATLIGHTING_BRIGHTNESS, UI_LIGHTING_FLATLIGHTING_HUE, UI_LIGHTING_FLATLIGHTING_SATURATION, UI_LIGHTING_PLANTLIGHTINGOFFSET } from "../UIData.js";
 
 export function getWaterColorDark() {
     return getWaterColor(0.5)
@@ -131,6 +131,11 @@ export class LightingComponent extends Component {
         brightnessConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => "global", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
         brightnessConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_GLOBAL, sizeX, sliderSizeY, .55, 1/.55, () => "#000000", () => "#FFF0FF"));
         brightnessConditionalContainer.addElement(new TextBackground(this.window, sizeX, br, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""));
+
+        brightnessConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => "plant", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
+        brightnessConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_PLANTLIGHTINGOFFSET, sizeX, sliderSizeY, -1, 1, () => "#000000", () => "#FFF0FF"));
+        brightnessConditionalContainer.addElement(new TextBackground(this.window, sizeX, br, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""));
+
 
         brightnessConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => "flat lighting", () => getActiveClimate().getUIColorInactiveCustom(0.58)));
         brightnessConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_DISABLED_BRIGHTNESS, sizeX, sliderSizeY, -3, 3, () => "#000000", () => "#FFF0FF"));

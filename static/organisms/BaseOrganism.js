@@ -349,7 +349,7 @@ class BaseOrganism {
                     refSquare = this.linkedSquare;
                 }
             }
-            applyLightingFromSource(refSquare, newGreenSquare);
+            // applyLightingFromSource(refSquare, newGreenSquare);
             return newGreenSquare;
         }
         return null;

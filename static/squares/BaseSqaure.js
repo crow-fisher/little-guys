@@ -505,7 +505,6 @@ export class BaseSquare {
         if (newPosX == this.posX && newPosY == this.posY) {
             return true;
         }
-
         if (getSquares(newPosX, newPosY).some((sq) => this.testCollidesWithSquare(sq))) {
             return false;
         }

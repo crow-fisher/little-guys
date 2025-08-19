@@ -9,7 +9,7 @@ import { removeSquare } from "../globalOperations.js";
 import { STATE_HEALTHY, STATE_DESTROYED, STAGE_DEAD } from "../organisms/Stages.js";
 import { getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasFillRectTheta } from "../canvas.js";
-import { loadGD, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_NORMAL, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../ui/UIData.js";
+import { loadGD, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_LIGHTING_PLANTLIGHTINGOFFSET, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_NORMAL, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../ui/UIData.js";
 import { isLeftMouseClicked } from "../mouse.js";
 
 export const LSQ_RENDERMODE_SQUARE = "LSQ_RENDERMODE_SQUARE";
@@ -327,13 +327,13 @@ class BaseLifeSquare {
         }
         if (this.type == "root") {
             if (this.linkedSquare != null) {
-                this.frameCacheLighting = processLighting(this.linkedSquare.lighting);
+                this.frameCacheLighting = this.linkedSquare.frameCacheLighting;
             } else {
                 this.linkedOrganism.removeAssociatedLifeSquare(this);
                 return getDefaultLighting();
             }
         }
-        else
+        else 
             this.frameCacheLighting = processLighting(this.lighting);
         return this.frameCacheLighting;
     }
@@ -380,7 +380,12 @@ class BaseLifeSquare {
             }
             this.frameCacheLighting = null;
             let lightingColor = this.processLighting();
-            let outColor = { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
+            let frameLightingOffset = Math.exp(loadGD(UI_LIGHTING_PLANTLIGHTINGOFFSET));
+            let outColor = { 
+                r: (frameLightingOffset * lightingColor.r) * outColorBase.r / 255, 
+                g: (frameLightingOffset * lightingColor.g) * outColorBase.g / 255, 
+                b: (frameLightingOffset * lightingColor.b) * outColorBase.b / 255 
+            };
             this.cachedRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), frameOpacity);
         }
         MAIN_CONTEXT.fillStyle = this.cachedRgba;
