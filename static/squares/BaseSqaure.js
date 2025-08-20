@@ -932,6 +932,8 @@ export class BaseSquare {
                     // this.processFrameLightingTemperature();
                 }
             }
+            if (!isSquareOnCanvas(this.posX + this.speedX, this.posY +this.speedY))
+                this.destroy();
         }
     }
 
