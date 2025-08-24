@@ -19,7 +19,7 @@ coneflower_dnm[_waterPressureSoilTarget] = -4;
 coneflower_dnm[_waterPressureOverwaterThresh] = 1;
 coneflower_dnm[_waterPressureWiltThresh] = -1.96;
 coneflower_dnm[_lightDecayValue] = 2.6;
-coneflower_dnm[_lightLevelDisplayExposureAdjustment] = -.16;
+coneflower_dnm[_lightLevelDisplayExposureAdjustment] = -.47;
 
 // ref: https://prairiecalifornian.com/wheat-growth-stages/
 export class ConeflowerOrganism extends BaseOrganism {
