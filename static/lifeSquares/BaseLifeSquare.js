@@ -327,7 +327,7 @@ class BaseLifeSquare {
         }
         if (this.type == "root") {
             if (this.linkedSquare != null) {
-                this.frameCacheLighting = this.linkedSquare.frameCacheLighting;
+                this.frameCacheLighting = (this.linkedSquare.frameCacheLighting ?? getDefaultLighting());
             } else {
                 this.linkedOrganism.removeAssociatedLifeSquare(this);
                 return getDefaultLighting();
