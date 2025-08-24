@@ -132,11 +132,6 @@ export class LightingComponent extends Component {
         brightnessConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_GLOBAL, sizeX, sliderSizeY, .55, 1/.55, () => "#000000", () => "#FFF0FF"));
         brightnessConditionalContainer.addElement(new TextBackground(this.window, sizeX, br, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""));
 
-        brightnessConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => "plant", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
-        brightnessConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_PLANTLIGHTINGOFFSET, sizeX, sliderSizeY, -1, 1, () => "#000000", () => "#FFF0FF"));
-        brightnessConditionalContainer.addElement(new TextBackground(this.window, sizeX, br, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""));
-
-
         brightnessConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => "flat lighting", () => getActiveClimate().getUIColorInactiveCustom(0.58)));
         brightnessConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_DISABLED_BRIGHTNESS, sizeX, sliderSizeY, -3, 3, () => "#000000", () => "#FFF0FF"));
         brightnessConditionalContainer.addElement(new TextBackground(this.window, sizeX, br, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""));

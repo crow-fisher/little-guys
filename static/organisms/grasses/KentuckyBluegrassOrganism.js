@@ -4,7 +4,7 @@ import { STAGE_ADULT, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_TRUNK } from "../Stag
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
-import { BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
+import { _lightLevelDisplayExposureAdjustment, BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
 import { KentuckyBluegrassGreenSquare } from "../../lifeSquares/grasses/KentuckyBluegrassGreenSquare.js";
 import { addSquare } from "../../squares/_sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
@@ -21,6 +21,7 @@ kblue_dnm[_waterPressureSoilTarget] = -4;
 kblue_dnm[_waterPressureOverwaterThresh] = 1;
 kblue_dnm[_waterPressureWiltThresh] = -1.5;
 kblue_dnm[_lightDecayValue] = 1.18;
+kblue_dnm[_lightLevelDisplayExposureAdjustment] = .16;
 
 export class KentuckyBluegrassOrganism extends BaseOrganism {
     constructor(square) {

@@ -4,7 +4,7 @@ import { STAGE_ADULT, STAGE_FLOWER, STAGE_JUVENILE, SUBTYPE_FLOWER, SUBTYPE_FLOW
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
-import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
+import { _lightDecayValue, _lightLevelDisplayExposureAdjustment, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
 import { addSquare } from "../../squares/_sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
 import { ConeflowerGreenSqaure } from "../../lifeSquares/flowers/ConeflowerGreenSqaure.js";
@@ -19,6 +19,7 @@ coneflower_dnm[_waterPressureSoilTarget] = -4;
 coneflower_dnm[_waterPressureOverwaterThresh] = 1;
 coneflower_dnm[_waterPressureWiltThresh] = -1.96;
 coneflower_dnm[_lightDecayValue] = 2.6;
+coneflower_dnm[_lightLevelDisplayExposureAdjustment] = -.16;
 
 // ref: https://prairiecalifornian.com/wheat-growth-stages/
 export class ConeflowerOrganism extends BaseOrganism {
@@ -51,8 +52,6 @@ export class ConeflowerOrganism extends BaseOrganism {
 
         this.numPetals = 4;
 
-        this.growthLightLevel = 0.5;
-
         this.growthNumGreen = this.maxNumNodes * (this.maxStemLength + this.maxLeafLength);
 
         this.flowerHueShift = randRange(-100, 100);
@@ -63,7 +62,7 @@ export class ConeflowerOrganism extends BaseOrganism {
     processGenetics() {
         this.evolutionParameters[0] = Math.min(Math.max(this.evolutionParameters[0], 0.00001), .99999)
         let p0 = this.evolutionParameters[0];
-        this.growthLightLevel = 1 + .7 * p0;
+        this.growthLightLevel *= (1 + .7 * p0);
 
         this.maxNumNodes = 1 + Math.round(this.maxNumNodes * p0);
         this.targetNumLeaves = -1;

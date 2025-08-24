@@ -20,6 +20,7 @@ export const _seedReduction = "_seedReduction";
 export const _lightDecayValue = "_lightDecayValue";
 export const _waterPressureOverwaterThresh = "_waterPressureOverwaterThresh";
 export const _waterPressureWiltThresh = "_waterPressureWiltThresh";
+export const _lightLevelDisplayExposureAdjustment = "_lightLevelDisplayExposureAdjustment";
 
 export let baseOrganism_dnm = {
     _llt_target: 1,
@@ -31,7 +32,8 @@ export let baseOrganism_dnm = {
     _seedReduction: 0.5,
     _lightDecayValue: 1,
     _waterPressureOverwaterThresh: 1,
-    _waterPressureWiltThresh: -1
+    _waterPressureWiltThresh: -1,
+    _lightLevelDisplayExposureAdjustment: -.16
 }
 
 class BaseOrganism {
@@ -73,7 +75,7 @@ class BaseOrganism {
         this.growthNumRoots = 30;
         this.growthNitrogen = 50;
         this.growthPhosphorus = 25;
-        this.growthLightLevel = 0.5;
+        this.growthLightLevel = 1.75;
         this.growthCycleMaturityLength = 1;
         this.growthCycleLength = 1.5;
         this.numGrowthCycles = 1;
@@ -143,6 +145,10 @@ class BaseOrganism {
     waterPressureWiltThresh() {
         return this.getGenericNutritionParam(_waterPressureWiltThresh);
     }
+    lightLevelDisplayExposureAdjustment() {
+        return this.getGenericNutritionParam(_lightLevelDisplayExposureAdjustment);
+    }
+    
 
     processColor(color1, color2, value, valueMax, opacity) {
         let frac = value / valueMax;
