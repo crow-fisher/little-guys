@@ -123,7 +123,7 @@ function doClimateMod(posX, posY) {
         return;
     }
 
-    let pressure = (isRightMouseClicked() ? -1 : 1) * loadGD(UI_CLIMATE_WEATHER_TOOL_STRENGTH)
+    let pressure = (isRightMouseClicked() ? -1 : 1) * loadGD(UI_CLIMATE_WEATHER_TOOL_STRENGTH) ** 4
     switch (loadGD(UI_CLIMATE_WEATHER_TOOL_SELECT)) {
         case UI_CLIMATE_WEATHER_TOOL_DRYAIR:
             addWindPressureDryAir(posX, posY, pressure);
