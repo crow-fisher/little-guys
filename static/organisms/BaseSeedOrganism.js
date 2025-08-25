@@ -33,6 +33,9 @@ class BaseSeedOrganism extends BaseOrganism {
     }
 
     process() {
+        if (this.linkedSquare != null && this.linkedSquare.getMovementSpeed() > 0)
+            return;
+        
         if (this.age > loadGD(UI_SIMULATION_GENS_PER_DAY) * 2) {
             this.destroy();
             return;
