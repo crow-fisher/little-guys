@@ -327,6 +327,7 @@ export class SoilSquare extends BaseSquare {
             applyLightingFromSource(this, sq);
             sq.speedX += sx;
             sq.speedY += sy;
+
         }
     }
 
@@ -337,7 +338,7 @@ export class SoilSquare extends BaseSquare {
         if (!loadGD(UI_SIMULATION_CLOUDS))
             return;
 
-        if (this.linkedOrganismSquares.length > 0) {
+        if (this.linkedOrganismSquares.some((lsq) => lsq.type == "root")) {
             return;
         }
         let ws = getWindSpeedAtLocation(this.posX, this.posY);
@@ -350,6 +351,10 @@ export class SoilSquare extends BaseSquare {
 
         let px = Math.abs(wx) / maxWindSpeed;
         let py = Math.abs(wy) / maxWindSpeed;
+
+        if (px + py < .2) {
+            return;
+        }
 
         let factor = .04;
 
@@ -373,12 +378,8 @@ export class SoilSquare extends BaseSquare {
                 this.spawnParticle(projX, projY, factor * (wx / amount), factor * (wy / amount), amount)
             }
         } else {
-            if (Math.random() < px) {
-                this.speedX += factor * (wx / (Math.max(.01, this.blockHealth)));
-            }
-            if (Math.random() < py) {
-                this.speedY += factor * (wy / (Math.max(.01, this.blockHealth)));
-            }
+            this.speedX += factor * (wx / (Math.max(.01, this.blockHealth)));
+            this.speedY += factor * (wy / (Math.max(.01, this.blockHealth)));
         }
     }
     getWaterflowRate() {

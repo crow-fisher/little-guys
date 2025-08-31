@@ -266,6 +266,8 @@ class BaseLifeSquare {
             this.renderToCanvas();
         }
         else {
+            if (selectedViewMode == UI_VIEWMODE_NORMAL && this.type == "root")
+                return;
             if (selectedViewMode == UI_VIEWMODE_ORGANISMS) {
                 if (this.opacity < 0.235) {
                     frameOpacity *= 4;

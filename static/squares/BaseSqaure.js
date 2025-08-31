@@ -505,8 +505,6 @@ export class BaseSquare {
         }
     }
     updatePosition(newPosX, newPosY) {
-        if (this.linkedOrganismSquares.length > 0 && this.proto == "SoilSquare")
-            console.log("???????")
         if (newPosX == this.posX && newPosY == this.posY) {
             return true;
         }
@@ -519,12 +517,6 @@ export class BaseSquare {
             return;
         }
 
-        this.linkedOrganismSquares.forEach((lsq) => {
-            if (lsq != null && lsq.posX != null) {
-                lsq.posX = newPosX;
-                lsq.posY = newPosY;
-            }
-        })
 
         if (this.linkedOrganisms != null) {
             this.linkedOrganisms.forEach((org) => {
@@ -867,6 +859,11 @@ export class BaseSquare {
             this.speedX = colSq.speedX;
             this.speedY = colSq.speedY;
             this.hasBonked = true;
+
+            if (this.getMovementSpeed() == 0) {
+                this.posX = Math.floor(this.posX);
+                this.posY = Math.floor(this.posY);
+            }
         }
 
         let nextPos = nextPath.at(nextPath.length - 1);
