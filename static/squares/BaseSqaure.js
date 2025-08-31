@@ -517,13 +517,15 @@ export class BaseSquare {
             return;
         }
 
+        this.linkedOrganisms.forEach((org) => {
+            org.posX = newPosX;
+            org.posY = newPosY;
+        });
 
-        if (this.linkedOrganisms != null) {
-            this.linkedOrganisms.forEach((org) => {
-                org.posX = newPosX;
-                org.posY = newPosY;
-            })
-        }
+        this.linkedOrganismSquares.forEach((lsq) => {
+            lsq.posX = newPosX;
+            lsq.posY = newPosY;
+        });
 
         removeSquare(this);
         this.posX = newPosX;

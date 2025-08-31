@@ -267,7 +267,7 @@ class BaseOrganism {
             .filter((lsq) => lsq.type == "green")
             .map((lsq) => [lsq.processLighting(), lsq.lightHealth ** 4])
             .map((argb) => argb[1] * (argb[0].r + argb[0].b) / (255 * 2))
-            .forEach((lightlevel) => this.lsqLightLevel(lightlevel))
+            .forEach((lightlevel) => this.lsqLightLevel(this.llt_target() * lightlevel))
     }
 
     lsqLightLevel(val) {
