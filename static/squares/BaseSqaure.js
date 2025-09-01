@@ -905,7 +905,7 @@ export class BaseSquare {
         if (this.speedX != 0 || this.speedY != 0)
             return;
         if (this.blockHealth < 1) {
-            let neighbSquare = getSquares(this.posX, this.posY - randNumber(1, 2)).find((sq) => sq.proto == this.proto);
+            let neighbSquare = getSquares(this.posX + randNumber(-1, 1), this.posY - randNumber(1, 2)).find((sq) => sq.proto == this.proto);
             if (neighbSquare != null && this.linkedOrganismSquares.length == 0 && this.linkedOrganismSquares.length == 0) {
                 let amount = Math.min(1 - this.blockHealth, neighbSquare.blockHealth);
                 this.blockHealth += amount;

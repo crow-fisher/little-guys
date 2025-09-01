@@ -29,8 +29,6 @@ MAIN_CANVAS.onwheel = zoom;
 MAIN_CANVAS.width = getCanvasWidth();
 MAIN_CANVAS.height = getCanvasHeight();
 
-document.addEventListener('contextmenu', (e) => e.preventDefault());
-
 document.addEventListener('touchstart', handleTouchStart, { passive: false });
 document.addEventListener('touchend', handleTouchEnd, { passive: false });
 document.addEventListener('touchmove', handleTouchMove, { passive: false });
@@ -42,7 +40,6 @@ window.onload = function () {
     gameUserStateLoad();
 }
 
-setTimeout(scheduler_main, 0);
 
 let width = 0;
 let height = 0;
@@ -92,7 +89,8 @@ export function getCurBackgroundColor() {
 window.onresize = indexCanvasSize;
 // window.onblur = saveCurGame;
 document.documentElement.style.overflow = 'hidden';  // firefox, chrome
-document.addEventListener('paste', async (e) => {
+
+addEventListener('paste', async (e) => {
     e.preventDefault();
     for (const clipboardItem of e.clipboardData.files) {
         if (clipboardItem.type.startsWith('image/')) {
@@ -137,3 +135,5 @@ document.addEventListener('paste', async (e) => {
         }
     }
 });
+
+setTimeout(scheduler_main, 0);
