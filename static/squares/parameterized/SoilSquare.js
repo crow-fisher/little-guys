@@ -316,7 +316,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     spawnParticle(dx, dy, sx, sy, amount) {
-        let sq = new SoilSquare(this.posX + dx, this.posY + dy);
+        let sq = new this.constructor(this.posX + dx, this.posY + dy);
         if (addSquare(sq)) {
             sq.sand = this.sand;
             sq.silt = this.silt;
