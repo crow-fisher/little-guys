@@ -653,11 +653,6 @@ export class BaseSquare {
             return false;
         }
 
-        if (this.blockHealth < 1 && sq.blockHealth < 1) {
-            let mult = 1;
-            return (Math.random() ** mult < this.blockHealth) && (Math.random() ** mult < sq.blockHealth)
-        }
-
         // if (this.proto == sq.proto && (this.blockHealth + sq.blockHealth) < 1 && this.getMovementSpeed() > 0.1 && sq.getMovementSpeed() > 0.1) {
         //     return false;
         // }
