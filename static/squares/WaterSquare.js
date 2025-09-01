@@ -43,7 +43,10 @@ class WaterSquare extends BaseSquare {
             sq.speedX += sx;
             sq.speedY += sy;
             sq.gravityPhysics();
+            sq.groupId = getNextGroupId();
+            return amount;
         }
+        return 0;
     }
 
     windPhysics() {

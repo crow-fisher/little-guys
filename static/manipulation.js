@@ -172,13 +172,8 @@ function churnBlocks(x, y, wide=false) {
     getSquares(x, y)
         .filter((sq) => sq.linkedOrganismSquares.length == 0 && sq.linkedOrganisms.length == 0 && sq.physicsEnabled && sq.gravity > 0)
         .forEach((sq) => {
-            let st = loadGD(UI_PALETTE_SPECIAL_CHURN_STRENGTH);
-            sq.speedY = -Math.round(st);
-            st /= 3;
-            if (wide)
-                sq.speedX = randRange( -st, st);
-
-            sq.gravityPhysics();
+            let st = .5 * loadGD(UI_PALETTE_SPECIAL_CHURN_STRENGTH);
+            sq.spawnParticle(0, -10, (wide ? 100 : 10) * randRange(-.1, .1), -st * randRange(.95, 1.05), randRange(.1, .4));
         });
 }
 

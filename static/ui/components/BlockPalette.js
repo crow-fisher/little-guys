@@ -160,7 +160,7 @@ export class BlockPalette extends Component {
             () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
         specialToolRow.addElement(new RadioToggleLabel(this.window, half, h1, UI_CENTER, "wide churn", UI_PALETTE_SELECT, UI_PALETTE_SPECIAL_CHURN_WIDE,
             () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive()));
-        specialContainer.addElement(new SliderGradientBackground(this.window, UI_PALETTE_SPECIAL_CHURN_STRENGTH, sizeX, 35, 2, 10, getWaterColorDark, getWaterColor,));
+        specialContainer.addElement(new SliderGradientBackground(this.window, UI_PALETTE_SPECIAL_CHURN_STRENGTH, sizeX, 35, 1, 20, getWaterColorDark, getWaterColor,));
 
 
         // paste container
@@ -221,7 +221,7 @@ export class BlockPalette extends Component {
         strengthSizeContainer.addElement(sizeContainer);
 
         sizeContainer.addElement(new Text(this.window, sizeX / 2, h1 * 0.6, UI_CENTER, "size"));
-        sizeContainer.addElement(new Slider(this.window, UI_PALETTE_SIZE, sizeX / 2, h1, 0, 14, () => getActiveClimate().getUIColorTransient(), getBaseUISize() * 1));
+        sizeContainer.addElement(new Slider(this.window, UI_PALETTE_SIZE, sizeX / 2, h1, 0, 28, () => getActiveClimate().getUIColorTransient(), getBaseUISize() * 1));
 
         let strengthContainer = new Container(this.window, padding, 1);
         strengthSizeContainer.addElement(strengthContainer);

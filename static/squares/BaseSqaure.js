@@ -21,7 +21,7 @@ import { COLOR_BLACK, GROUP_BROWN, GROUP_BLUE, GROUP_MAUVE, GROUP_TAN, GROUP_GRE
 import { getDaylightStrengthFrameDiff, getFrameDt, getTimeScale } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, getFrameYMax, isSquareOnCanvas, transformCanvasSquaresToPixels, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
-import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3, UI_VIEWMODE_DEV4, UI_VIEWMODE_DEV5, UI_PALETTE_STRENGTH } from "../ui/UIData.js";
+import { loadGD, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3, UI_VIEWMODE_DEV4, UI_VIEWMODE_DEV5, UI_PALETTE_STRENGTH, UI_CANVAS_SQUARES_ZOOM } from "../ui/UIData.js";
 import { deregisterSquare, registerSquare } from "../waterGraph.js";
 import { STAGE_DEAD } from "../organisms/Stages.js";
 
@@ -210,12 +210,12 @@ export class BaseSquare {
 
         if (Math.random() > 0.99) // yeahh....this is a hack. :( 
             this.linkedOrganismSquares = Array.from(this.linkedOrganismSquares.filter((lsq) => lsq.linkedOrganism.stage != STAGE_DEAD));
-        
+
 
     }
 
     spawnParticle(dx, dy, sx, sy, blockHealth) {
-        return;
+        return 0;
     }
 
 
@@ -281,11 +281,10 @@ export class BaseSquare {
     };
 
     renderBlockId() {
-        MAIN_CONTEXT.font = getBaseSize() + "px courier"
+        MAIN_CONTEXT.font = .35 * getBaseSize() * loadGD(UI_CANVAS_SQUARES_ZOOM) + "px courier"
         MAIN_CONTEXT.textAlign = 'center';
         MAIN_CONTEXT.textBaseline = 'middle';
         MAIN_CONTEXT.strokeStyle = "rgba(35, 35, 35, 1)";
-        MAIN_CONTEXT.fillStyle = "rgba(195, 195, 195, 1)";
         zoomCanvasSquareText(
             (this.posX + 0.5) * getBaseSize(),
             (this.posY + 0.5) * getBaseSize(),
@@ -654,6 +653,11 @@ export class BaseSquare {
             return false;
         }
 
+        if (this.blockHealth < 1 && sq.blockHealth < 1) {
+            let mult = 1;
+            return (Math.random() ** mult < this.blockHealth) && (Math.random() ** mult < sq.blockHealth)
+        }
+
         // if (this.proto == sq.proto && (this.blockHealth + sq.blockHealth) < 1 && this.getMovementSpeed() > 0.1 && sq.getMovementSpeed() > 0.1) {
         //     return false;
         // }
@@ -786,7 +790,6 @@ export class BaseSquare {
         if (!this.shouldFallThisFrame()) {
             return;
         }
-
         // per-tick speed manipulation
         if (getTimeScale() != 0) {
             let sqBelow = getSquares(this.posX, this.posY + 1).find((sq) => sq.testCollidesWithSquare(this));
@@ -856,6 +859,15 @@ export class BaseSquare {
                 if (res[0]) {
                     this.destroy();
                     return;
+                }
+
+                if (res[2] == 0 && nextPath.length == 1) {
+                    // error state - overlapping squares that cannot be merged 
+                    let amount = colSq.spawnParticle(randNumber(-2, 2), randNumber(-2, 2), randRange(-1, 1), randRange(-1, 1), this.blockHealth);
+                    if (amount == this.blockHealth) {
+                        colSq.blockHealth += this.blockHealth;
+                        this.destroy();
+                    }
                 }
             }
             this.speedX = colSq.speedX;
@@ -936,7 +948,7 @@ export class BaseSquare {
                     // this.processFrameLightingTemperature();
                 }
             }
-            if (!isSquareOnCanvas(this.posX + this.speedX, this.posY +this.speedY))
+            if (!isSquareOnCanvas(this.posX + this.speedX, this.posY + this.speedY))
                 this.destroy();
         }
     }
