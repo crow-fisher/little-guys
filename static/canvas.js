@@ -1,7 +1,7 @@
 import { reset } from "./globalOperations.js";
 import { MAIN_CONTEXT } from "./index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "./keyboard.js";
-import { getLastMoveOffset, isMiddleMouseClicked } from "./mouse.js";
+import { getLastLastMoveOffset, getLastMoveOffset, isMiddleMouseClicked } from "./mouse.js";
 import { iterateOnOrganisms } from "./organisms/_orgOperations.js";
 import { loadGD, saveGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_UI_SIZE, UI_PALETTE_ACTIVE, loadUI, UI_PALETTE_SURFACE, UI_LIGHTING_SURFACE, UI_PALETTE_SELECT, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CANVAS_SQUARES_ZOOM } from "./ui/UIData.js";
 
@@ -419,9 +419,30 @@ export function resetZoom() {
     recacheCanvasPositions();
 }
 
-export function moveCamera(x, y) {
-    saveGD(UI_CANVAS_VIEWPORT_CENTER_X, loadGD(UI_CANVAS_VIEWPORT_CENTER_X) + x * 40);
-    saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) + y * 40);
+export function canvasPanRoutine() {
+    if (!isMiddleMouseClicked())
+        return;
+    panCanvas();
+}
+
+let canvasLastMoveOffset = {x: 0, y: 0};
+
+export function resetCanvasLastMoveOffset() {
+    canvasLastMoveOffset = getLastMoveOffset();
+}
+
+function panCanvas() {
+    let llmo = canvasLastMoveOffset;
+    let lmo = getLastMoveOffset();
+    let dx = llmo.x - lmo.x;
+    let dy = llmo.y - lmo.y;
+    moveCamera(dx, dy, 1/(loadGD(UI_CANVAS_SQUARES_ZOOM)));
+    canvasLastMoveOffset = lmo;
+}
+
+export function moveCamera(x, y, mult=40) {
+    saveGD(UI_CANVAS_VIEWPORT_CENTER_X, Math.floor(loadGD(UI_CANVAS_VIEWPORT_CENTER_X) + x * mult));
+    saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, Math.floor(loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) + y * mult));
     recacheCanvasPositions();
 }
 export function getCanvasWidth() {

@@ -15,6 +15,7 @@ import { playerTick, renderPlayer } from "./player/playerMain.js";
 import { gamepadInputLoop } from "./gamepad.js";
 import { renderCloudsDebug } from "./climate/weather/weatherManager.js";
 import { clearTimeouts, completeActiveJobs, prepareTickJobs } from "./scheduler.js";
+import { canvasPanRoutine } from "./canvas.js";
 
 initUI();
 let lightingHandler = new LightingHandler();
@@ -52,6 +53,7 @@ export function scheduler_main() {
         doClickAdd();
         doClickAddEyedropperMixer();
         resetWindowHovered();
+        canvasPanRoutine();
         squareTick();
         playerMainTick();
         orgTick();

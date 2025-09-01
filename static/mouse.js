@@ -1,4 +1,4 @@
-import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, resetZoom } from "./canvas.js";
+import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, resetCanvasLastMoveOffset, resetZoom } from "./canvas.js";
 import { isEyedropperOrMixerClicked, loadGD, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER } from "./ui/UIData.js";
 import { clearMouseHoverColorCacheMap } from "./ui/WindowManager.js";
 
@@ -29,6 +29,10 @@ export function doSingleTimeMouseEvent(event, func) {
 
 export function getLastMoveOffset() {
     return lastMoveOffset;
+}
+
+export function getLastLastMoveOffset() {
+    return lastLastMoveOffset;
 }
 
 export function isLeftMouseClicked() {
@@ -69,8 +73,9 @@ export function handleMouseDown(e) {
             rightMouseClicked = true;
             break;
         case 1:
+            if (!middleMouseClicked)
+                resetCanvasLastMoveOffset();
             middleMouseClicked = true;
-            resetZoom();
             break; 
         case 0:
         default:
