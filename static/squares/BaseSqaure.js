@@ -793,6 +793,7 @@ export class BaseSquare {
                     this.speedX = 0;
                     this.speedY = 0;
                 }
+
             } else {
                 this.speedY += (1 / (this.gravity / Math.max(.1, this.blockHealth) ** (this.blockHealthGravityCoef)));
             }

@@ -2,7 +2,7 @@ import { gameUserStateLoad, saveCurGame } from "./saveAndLoad.js";
 import { resetClimateAndLighting, resetLighting, scheduler_main } from "./main.js";
 import { keydown, keyup } from "./keyboard.js";
 import { getLastMoveOffset, handleClick, handleMouseDown, handleMouseUp, handleTouchEnd, handleTouchMove, handleTouchStart } from "./mouse.js";
-import { getBaseSize, getCanvasHeight, getCanvasWidth, resetZoom, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, transformPixelsToCanvasSquares, zoom } from "./canvas.js";
+import { getBaseSize, getCanvasHeight, getCanvasWidth, isSquareOnCanvas, resetZoom, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, transformPixelsToCanvasSquares, zoom } from "./canvas.js";
 import { addUIFunctionMap, loadGD, saveGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_PALETTE_PASTE_MODE, UI_PALETTE_PASTE_MODE_BG, UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_RIGID, UI_PALETTE_PHYSICS_STATIC, UI_PALLETE_MODE_PASTE, UI_SIMULATION_HEIGHT, UI_UI_SIZE } from "./ui/UIData.js";
 import { initUI } from "./ui/WindowManager.js";
 import { addSquare } from "./squares/_sqOperations.js";
@@ -128,7 +128,8 @@ addEventListener('paste', async (e) => {
                         } else if (loadGD(UI_PALETTE_PHYSICS) == UI_PALETTE_PHYSICS_RIGID) {
                             targetProto = RigidImageSquare;
                         }
-                        addSquare(new targetProto(offsetX + i, offsetY + j, r, g, b, a))
+                        if (isSquareOnCanvas(offsetX + i, offsetY + j))
+                            addSquare(new targetProto(offsetX + i, offsetY + j, r, g, b, a))
                     }
                 }
             }

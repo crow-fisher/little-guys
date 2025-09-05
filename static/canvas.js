@@ -345,39 +345,9 @@ function resetZoomArr() {
     }
 }
 
-function doOrganismZoom(deltaY) {
-    let getter = null;
-    let ctlP = isKeyPressed(KEY_CONTROL);
-    let shfP = isKeyPressed(KEY_SHIFT);
-
-    if (ctlP && shfP)
-        getter = 'baseRotation';
-    else if (ctlP) {
-        getter = 'baseDeflection';
-    } else if (shfP) {
-        getter = 'twist';
-    }
-    if (getter == null) {
-        return false;
-    }
-    let lastMoveOffset = getLastMoveOffset();
-    let hover = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);
-    iterateOnOrganisms((org) => {
-        let foundLsq = org.lifeSquares.find((lsq) =>
-            lsq.type == "green" &&
-            Math.abs(lsq.getPosX() - hover[0]) < 1 &&
-            Math.abs(lsq.getPosY() - hover[1]) < 1
-        );
-        if (foundLsq != null) {
-            foundLsq.component[getter] += deltaY * .01;
-        }
-    });
-    return true;
-}
-
 export function doZoom(deltaY) {
     let lastMoveOffset = getLastMoveOffset();
-    if (lastMoveOffset == null || isMiddleMouseClicked() || doOrganismZoom(deltaY)) {
+    if (lastMoveOffset == null || isMiddleMouseClicked()) {
         return;
     }
     let totalWidth = CANVAS_SQUARES_X * BASE_SIZE;
