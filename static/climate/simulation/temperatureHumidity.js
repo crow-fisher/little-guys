@@ -337,6 +337,20 @@ export function getCloudColorAtSqPos(x, y) {
     return getCloudColorAtPos(wx, wy);
 }
 
+export function getCloudLightBlockCoef(x, y) {
+    if (!isPointInWindBounds(x, y)) {
+        return 1;
+    }
+    let squareHumidity = getHumidity(x, y);
+    if (squareHumidity < 1) {
+        return 1;
+    }
+    let maxMult = 0.93;
+    if (squareHumidity > cloudRainMax)
+        return maxMult;
+    return 1 - (1 - maxMult) * (squareHumidity - 1) / (cloudRainMax - 1); 
+}
+
 export function getCloudColorAtPos(x, y) {
     if (!isPointInWindBounds(x, y)) {
         return { r: 255, g: 255, b: 255, a: 0 };

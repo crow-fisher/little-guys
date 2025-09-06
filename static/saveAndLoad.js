@@ -437,4 +437,5 @@ export function deleteAllSaveData() {
 
 export function loadEmptyScene() {
     purgeGameState();
+    resetZoom();
 }

@@ -1,5 +1,5 @@
 import { getFrameXMax, getFrameXMin, getFrameYMax, getFrameYMin } from "../../canvas.js";
-import { getCloudColorAtPos } from "../../climate/simulation/temperatureHumidity.js";
+import { getCloudColorAtPos, getCloudLightBlockCoef } from "../../climate/simulation/temperatureHumidity.js";
 import { getFrameXMaxWsq, getFrameXMinWsq, getFrameYMaxWsq, getFrameYMinWsq } from "../../climate/simulation/wind.js";
 import { getFrameSimulationSquares } from "../../globalOperations.js";
 import { isSaveOrLoadInProgress } from "../../saveAndLoad.js";
@@ -27,8 +27,6 @@ export class MovingLightSource {
 
         this.minTheta = 0;
         this.maxTheta = Math.PI * 2;
-
-        this._windSquareBrightnessMult = 1;
     }
 
     calculateMinMaxTheta() {
@@ -66,22 +64,13 @@ export class MovingLightSource {
         for (let rayIdx = 0; rayIdx <= this.numRays; rayIdx++) {
             this.windSquareBrightnessMults[rayIdx] = 1;
         }
-
-        let opacityFactor = loadGD(UI_LIGHTING_CLOUDCOVER_OPACITY);
-
+        
         for (let x = getFrameXMinWsq(); x < getFrameXMaxWsq(); x++) {
             for (let y = getFrameYMinWsq(); y < getFrameYMaxWsq(); y++) {
                 let wsqTheta = Math.atan(((x * 4) - this.posX) / ((y * 4) - this.posY));
                 let wsqThetaNormalized = wsqTheta - this.minTheta;
                 let bucket = Math.floor(wsqThetaNormalized / this.thetaStep);
-                let windSquareCloudColor = getCloudColorAtPos(x, y);
-                let opacity = windSquareCloudColor.a * opacityFactor;
-                let outLightColor = { r: 255, g: 255, b: 255 };
-                outLightColor.r *= (windSquareCloudColor.r / 255) * opacity + (1 - opacity)
-                outLightColor.g *= (windSquareCloudColor.g / 255) * opacity + (1 - opacity)
-                outLightColor.b *= (windSquareCloudColor.b / 255) * opacity + (1 - opacity)
-                let brightnessDrop = (outLightColor.r + outLightColor.g + outLightColor.b) / (255 * 3);
-                brightnessDrop = brightnessDrop ** 3;
+                let brightnessDrop = getCloudLightBlockCoef(x, y) ** loadGD(UI_LIGHTING_CLOUDCOVER_OPACITY);
                 this.windSquareBrightnessMults[bucket] *= brightnessDrop;
             }
         }
@@ -101,7 +90,7 @@ export class MovingLightSource {
     }
 
     getBrightness() {
-        let m = this._windSquareBrightnessMult * this.brightnessFunc();
+        let m = this.brightnessFunc();
         let c = this.colorFunc();
         return { r: m * c.r, g: m * c.g, b: m * c.b }
     }
@@ -172,8 +161,6 @@ export class MovingLightSource {
 
             let _curBrightness = curBrightness;
             let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(i) * _curBrightness;
-
-            this._windSquareBrightnessMult = (.99 * this._windSquareBrightnessMult) + .01 * this.getWindSquareBrightnessFunc(i);
 
             if (obj.lighting[idx] == null) {
                 obj.lighting[idx] = [[pointLightSourceFunc], this.colorFunc];

@@ -39,7 +39,9 @@ export class PermanentLightGroup extends LightGroup {
     }
 
     colorFunc() {
-        return this.cachedColor;
+        let hsv = [loadGD(UI_LIGHTING_FLATLIGHTING_HUE), loadGD(UI_LIGHTING_FLATLIGHTING_SATURATION), 255];
+        let rgbArr = hsv2rgb(...hsv);
+        return { r: rgbArr[0], g: rgbArr[1], b: rgbArr[2] }
     }
 
 
