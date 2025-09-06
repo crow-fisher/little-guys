@@ -27,6 +27,8 @@ export class MovingLightSource {
 
         this.minTheta = 0;
         this.maxTheta = Math.PI * 2;
+
+        this._windSquareBrightnessMult = 1;
     }
 
     calculateMinMaxTheta() {
@@ -79,7 +81,7 @@ export class MovingLightSource {
                 outLightColor.g *= (windSquareCloudColor.g / 255) * opacity + (1 - opacity)
                 outLightColor.b *= (windSquareCloudColor.b / 255) * opacity + (1 - opacity)
                 let brightnessDrop = (outLightColor.r + outLightColor.g + outLightColor.b) / (255 * 3);
-                brightnessDrop = brightnessDrop ** 8;
+                brightnessDrop = brightnessDrop ** 3;
                 this.windSquareBrightnessMults[bucket] *= brightnessDrop;
             }
         }
@@ -97,6 +99,13 @@ export class MovingLightSource {
         ret = (ret + m) / (m + 1);
         return ret;
     }
+
+    getBrightness() {
+        let m = this._windSquareBrightnessMult * this.brightnessFunc();
+        let c = this.colorFunc();
+        return { r: m * c.r, g: m * c.g, b: m * c.b }
+    }
+
 
     prepareSquareCoordinatePlane() {
         let allSquares = new Array();
@@ -164,6 +173,8 @@ export class MovingLightSource {
             let _curBrightness = curBrightness;
             let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(i) * _curBrightness;
 
+            this._windSquareBrightnessMult = (.99 * this._windSquareBrightnessMult) + .01 * this.getWindSquareBrightnessFunc(i);
+
             if (obj.lighting[idx] == null) {
                 obj.lighting[idx] = [[pointLightSourceFunc], this.colorFunc];
             } else {
@@ -206,6 +217,6 @@ export class MovingLightSource {
         for (let j = bottomIdx; j < topIdx; j++)
             this.rayCastingForRayIdx(idx, jobIdx, j)
 
-        onComplete(); 
+        onComplete();
     }
 }

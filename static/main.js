@@ -2,7 +2,7 @@ import { doWaterFlow, periodicPurgeOldGroupData, physics, processOrganisms, rend
 import { doClickAdd, doClickAddEyedropperMixer } from "./manipulation.js";
 import { renderClouds, renderTemperature, renderWaterSaturation } from "./climate/simulation/temperatureHumidity.js";
 import { doTimeSeek, doTimeSkipToNow, getTimeScale, isTimeSeeking, renderTime, updateTime } from "./climate/time.js";
-import { executeFunctionQueue, loadGD, UI_SIMULATION_CLOUDS, UI_VIEWMODE_AIRTICKRATE, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_DEV5, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_WIND } from "./ui/UIData.js";
+import { executeFunctionQueue, loadGD, saveGD, UI_CAMERA_EXPOSURE, UI_LIGHTING_GLOBAL, UI_SIMULATION_CLOUDS, UI_VIEWMODE_AIRTICKRATE, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_DEV5, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_WIND } from "./ui/UIData.js";
 import { initUI, renderMouseHover, renderWindows, resetWindowHovered, updateWindows } from "./ui/WindowManager.js";
 import { renderWindPressureMap } from "./climate/simulation/wind.js";
 import { LightingHandler } from "./lighting/lightingHandler.js";
@@ -21,6 +21,15 @@ initUI();
 let lightingHandler = new LightingHandler();
 let climateHandler = new ClimateHandler();
 doTimeSkipToNow();
+
+export function getLightingHandler() {
+    return lightingHandler;
+}
+
+export function lightingExposureAdjustment() {
+    let mult = loadGD(UI_LIGHTING_GLOBAL) / lightingHandler.plantAvailableLighting;
+    saveGD(UI_CAMERA_EXPOSURE, mult);
+}
 
 export function resetLighting() {
     clearTimeouts();
@@ -96,6 +105,7 @@ function render() {
     }
     lightingHandler.lightingTick();
 
+    lightingExposureAdjustment();
     renderSolidSquares();
     renderOrganisms();
     renderWaterSquares();

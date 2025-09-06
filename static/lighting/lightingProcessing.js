@@ -56,7 +56,7 @@ export function applyLightingFromSource(source, dest) {
     dest.frameCacheLighting = structuredClone(source.frameCacheLighting);
 }
 
-export function lightingExposureAdjustment() {
+export function _lightingExposureAdjustment() {
     let collectedSquares = new Array();
     for (let i = 0; i < getCanvasSquaresX(); i += Math.floor(getCanvasSquaresX() ** 0.5)) {
         for (let j = 0; j < getCanvasSquaresY(); j += Math.floor(getCanvasSquaresY() ** 0.5)) {

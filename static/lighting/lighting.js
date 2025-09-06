@@ -1,8 +1,6 @@
-import { getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "../climate/time.js";
-import { addUIFunctionMap, loadGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_LIGHTING_FLATLIGHTING_BRIGHTNESS, UI_LIGHTING_FLATLIGHTING_HUE, UI_LIGHTING_FLATLIGHTING_SATURATION, UI_LIGHTING_MOON, UI_LIGHTING_QUALITY, UI_LIGHTING_SUN } from "../ui/UIData.js";
+import { addUIFunctionMap, UI_LIGHTING_FLATLIGHTING_BRIGHTNESS, UI_LIGHTING_FLATLIGHTING_HUE, UI_LIGHTING_FLATLIGHTING_SATURATION } from "../ui/UIData.js";
 import { MoonMovingLightGroup } from "./model/MoonMovingLightGroup.js";
 import { PermanentLightGroup } from "./model/PermanentLightGroup.js";
-import { StationaryWideLightGroup } from "./model/StationaryWideLightGroup.js";
 import { SunMovingLightGroup } from "./model/SunMovingLightGroup.js";
 
 export let MAX_BRIGHTNESS = 8;

@@ -67,7 +67,6 @@ export function indexCanvasSize(shouldInitUIClimateAndLighting = true) {
     resetClimateAndLighting();
     waterGraphReset();
     initUI();
-    resetZoom();
 }
 
 addUIFunctionMap(UI_SIMULATION_HEIGHT, () => {

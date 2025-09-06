@@ -12,6 +12,7 @@ export class LightingHandler {
         this.nextLightingUpdate = 0;
         this.lightSources = new Array();
         this.initLightSources();
+        this.plantAvailableLighting = 2000;
     }
 
     initLightSources() {
@@ -28,9 +29,16 @@ export class LightingHandler {
         if (loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) != this.lightingSizeX || loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y) != this.lightingSizeY) {
             this.initLightSources();
         }
+        let bsum = {r: 0, g: 0, b: 0}
         for (let i = 0; i < this.lightSources.length; i++) {
             this.lightSources[i].doRayCasting(i);
+            let lsBrightness = this.lightSources[i].getBrightness();
+            bsum.r += lsBrightness.r;
+            bsum.g += lsBrightness.g;
+            bsum.b += lsBrightness.b;
         }
+
+        this.plantAvailableLighting = bsum.r + bsum.b;
     }
     destroy() {
         this.lightSources.forEach((ls) => ls.destroy());

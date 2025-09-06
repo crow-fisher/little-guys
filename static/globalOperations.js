@@ -4,7 +4,6 @@ import {
     ALL_SQUARES, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES, resetWaterflowSquares
 } from "./globals.js";
 
-import { getObjectArrFromMap } from "./common.js";
 import { removeItemAll } from "./common.js";
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, getFrameXMax, getFrameXMin, getFrameYMax, getFrameYMin, zoomCanvasFillRect } from "./canvas.js";
 import { loadGD, saveGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "./ui/UIData.js";
@@ -12,7 +11,6 @@ import { indexCanvasSize, MAIN_CONTEXT } from "./index.js";
 import { registerSquare, resetFrameGroupCache, waterGraphReset } from "./waterGraph.js";
 import { RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "./colors.js";
 import { calculateColorProvideOpacity } from "./climate/simulation/temperatureHumidity.js";
-import { lightingExposureAdjustment } from "./lighting/lightingProcessing.js";
 import { getPlayerXMaxOffset, getPlayerXMinOffset } from "./player/playerMain.js";
 
 let frame_squares = null;
@@ -86,7 +84,6 @@ export function renderSquares() {
 
 export function renderSolidSquares() {
     frame_solid_squares.forEach((sq) => sq.render());
-    lightingExposureAdjustment();
 }
 
 export function renderWaterSquares() {
