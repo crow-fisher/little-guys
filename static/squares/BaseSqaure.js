@@ -228,7 +228,7 @@ export class BaseSquare {
         zoomCanvasFillRect(this.posX * getBaseSize(), this.posY * getBaseSize(), getBaseSize(), getBaseSize());
     }
     render() {
-        if (!this.visible || this.posY >= getCanvasSquaresY()) {
+        if (!this.visible) {
             return;
         }
 
