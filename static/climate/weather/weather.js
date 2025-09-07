@@ -1,14 +1,14 @@
 import { loadGD, UI_SIMULATION_CLOUDS } from "../../ui/UIData.js";
 import { setRestingGradientStrength, setRestingHumidityGradient, setRestingTemperatureGradient } from "../simulation/temperatureHumidity.js";
-import { getCurWeatherInterval } from "./weatherManager.js";
 
 export class Weather {
-    constructor(type, hg, tg, strength, f) {
+    constructor(type, hg, tg, strength, f, getCurWeatherInterval) {
         this.type = type;
         this.hg = hg;
         this.tg = tg;
         this.strength = strength;
         this.f = f;
+        this.getCurWeatherInterval = getCurWeatherInterval;
     }
     weather() {
         this.setRestingValues();
@@ -25,13 +25,13 @@ export class Weather {
         if (!loadGD(UI_SIMULATION_CLOUDS))
             return ""
 
-        return this.type + ", " + convertMinutesToTimeUnit(getCurWeatherInterval(), true);
+        return this.type + ", " + convertMinutesToTimeUnit(this.getCurWeatherInterval(), true);
     }
     weatherStringLong() {
         if (!loadGD(UI_SIMULATION_CLOUDS))
             return "weather disabled"
     
-        return this.type + " for " + convertMinutesToTimeUnit(getCurWeatherInterval());
+        return this.type + " for " + convertMinutesToTimeUnit(this.getCurWeatherInterval());
     }
 }
 

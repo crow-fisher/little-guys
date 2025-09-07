@@ -3,6 +3,7 @@ import { getCloudColorAtPos, getCloudLightBlockCoef } from "../../climate/simula
 import { getFrameXMaxWsq, getFrameXMinWsq, getFrameYMaxWsq, getFrameYMinWsq } from "../../climate/simulation/wind.js";
 import { getFrameSimulationSquares } from "../../globalOperations.js";
 import { isSaveOrLoadInProgress } from "../../saveAndLoad.js";
+import { addTask } from "../../scheduler.js";
 import { loadGD, UI_LIGHTING_CLOUDCOVER_OPACITY, UI_LIGHTING_DECAY, UI_LIGHTING_QUALITY, UI_SIMULATION_CLOUDS } from "../../ui/UIData.js";
 
 export class MovingLightSource {
@@ -27,6 +28,8 @@ export class MovingLightSource {
 
         this.minTheta = 0;
         this.maxTheta = Math.PI * 2;
+
+        this.ticksToNextCloudUpdate = 0;
     }
 
     calculateMinMaxTheta() {
@@ -59,12 +62,20 @@ export class MovingLightSource {
         this.windSquareLocations = null;
         this.windSquareBrightnessMults = null;
     }
-
+    
     calculateFrameCloudCover() {
+        if (this.ticksToNextCloudUpdate == 0) {
+            this._calculateFrameCloudCover();
+            this.ticksToNextCloudUpdate = 4;
+        }
+        this.ticksToNextCloudUpdate -= 1;
+    }
+
+    _calculateFrameCloudCover() {
         for (let rayIdx = 0; rayIdx <= this.numRays; rayIdx++) {
             this.windSquareBrightnessMults[rayIdx] = 1;
         }
-        
+
         for (let x = getFrameXMinWsq(); x < getFrameXMaxWsq(); x++) {
             for (let y = getFrameYMinWsq(); y < getFrameYMaxWsq(); y++) {
                 let wsqTheta = Math.atan(((x * 4) - this.posX) / ((y * 4) - this.posY));

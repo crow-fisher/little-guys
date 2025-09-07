@@ -177,7 +177,6 @@ export function getWindThrottleValWindMap(x, y) {
 export function getWindThrottleValWindMapVal(x, y) {
     let max = 0;
     getWindDirectNeighbors(x, y)
-        .filter((spl) => isPointInBounds(spl[0], spl[1]))
         .forEach((spl) => {
             let x2 = spl[0];
             let y2 = spl[1];

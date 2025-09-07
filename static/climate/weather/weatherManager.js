@@ -28,7 +28,6 @@ export function getCurWeatherInterval() {
     return int;
 }
 
-
 let curClouds = [];
 let curWinds = [];
 
@@ -89,7 +88,7 @@ function clearWeather() {
     windyWeather(10, .2);
 }
 
-weatherClear = new Weather(UI_CLIMATE_WEATHER_CLEAR, clearHg, clearTg, 100, clearWeather);
+weatherClear = new Weather(UI_CLIMATE_WEATHER_CLEAR, clearHg, clearTg, 100, clearWeather, getCurWeatherInterval);
 
 let cloudyHg = [
     [0, 1],
@@ -161,9 +160,9 @@ function foggyWeather() {
     windyWeather(10, .2);
 }
 
-weatherPartlyCloudy = new Weather(UI_CLIMATE_WEATHER_PARTLY_CLOUDY, cloudyHg, cloudyTg, 50, cloudyWeather(6));
-weatherMostlyCloudy = new Weather(UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, cloudyHg, cloudyTg, 50, cloudyWeather(20));
-weatherFoggy = new Weather(UI_CLIMATE_WEATHER_FOGGY, foggyHg, foggyTg, 50, foggyWeather);
+weatherPartlyCloudy = new Weather(UI_CLIMATE_WEATHER_PARTLY_CLOUDY, cloudyHg, cloudyTg, 50, cloudyWeather(6), getCurWeatherInterval);
+weatherMostlyCloudy = new Weather(UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, cloudyHg, cloudyTg, 50, cloudyWeather(20), getCurWeatherInterval);
+weatherFoggy = new Weather(UI_CLIMATE_WEATHER_FOGGY, foggyHg, foggyTg, 50, foggyWeather, getCurWeatherInterval);
 
 
 function generalRainyWeather(rfMin, rfMax) {
@@ -178,8 +177,8 @@ function generalRainyWeather(rfMin, rfMax) {
     }
 }
 
-weatherLightRain = new Weather(UI_CLIMATE_WEATHER_LIGHTRAIN, rainyHumidityGradient, rainyTemperatureGradient, 50, generalRainyWeather(0.1, 0.3));
-weatherHeavyRain = new Weather(UI_CLIMATE_WEATHER_HEAVYRAIN, rainyHumidityGradient, rainyTemperatureGradient, 50, generalRainyWeather(0.4, 0.8));
+weatherLightRain = new Weather(UI_CLIMATE_WEATHER_LIGHTRAIN, rainyHumidityGradient, rainyTemperatureGradient, 50, generalRainyWeather(0.1, 0.3), getCurWeatherInterval);
+weatherHeavyRain = new Weather(UI_CLIMATE_WEATHER_HEAVYRAIN, rainyHumidityGradient, rainyTemperatureGradient, 50, generalRainyWeather(0.4, 0.8), getCurWeatherInterval);
 
 ui_weatherMap.set(UI_CLIMATE_WEATHER_CLEAR, weatherClear)
 ui_weatherMap.set(UI_CLIMATE_WEATHER_PARTLY_CLOUDY, weatherPartlyCloudy)
