@@ -345,7 +345,7 @@ export function getCloudLightBlockCoef(x, y) {
     if (squareHumidity < 1) {
         return 1;
     }
-    let maxMult = 0.93;
+    let maxMult = 0.96;
     if (squareHumidity > cloudRainMax)
         return maxMult;
     return 1 - (1 - maxMult) * (squareHumidity - 1) / (cloudRainMax - 1); 
