@@ -56,12 +56,13 @@ export function indexCanvasSize(shouldInitUIClimateAndLighting = true) {
     width = Math.floor(window.innerWidth - margin);
     height = Math.floor(window.innerHeight - margin);
     setBaseSize(Math.floor(height / loadGD(UI_SIMULATION_HEIGHT)));
-    setBaseSize(8);
+    setBaseSize(4);
     while (getBaseSize() % 4 != 0 && getBaseSize() > 1)
         setBaseSize(getBaseSize() - 1);
 
-    setCanvasSquaresY(10 ** 3);
-    setCanvasSquaresX(10 ** 3);
+    // this is our viewport size
+    setCanvasSquaresY(Math.max(Math.ceil(height / getBaseSize())), loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y));
+    setCanvasSquaresX(Math.floor(width / getBaseSize()));
 
     MAIN_CANVAS.width = width;
     MAIN_CANVAS.height = height;

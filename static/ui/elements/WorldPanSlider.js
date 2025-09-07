@@ -26,7 +26,6 @@ export class WorldPanSlider extends WindowElement {
         // console.log(t, moveHeight * Math.max(0, 1 - Math.exp(c1 * t - c2)));
         // this.lastRenderOffset += moveHeight * Math.max(0, 1 - Math.exp(c1 * t - c2));
 
-
         let gradient = MAIN_CONTEXT.createLinearGradient(startX, startY, this.sizeX + startX, startY);
         gradient.addColorStop(0, this.minColor + opacity + ")");
         gradient.addColorStop(1, this.maxColor + opacity + ")");
