@@ -1,6 +1,5 @@
 import { loadGD, UI_SIMULATION_CLOUDS } from "../../ui/UIData.js";
 import { setRestingGradientStrength, setRestingHumidityGradient, setRestingTemperatureGradient } from "../simulation/temperatureHumidity.js";
-import { getDt } from "../time.js";
 import { getCurWeatherInterval } from "./weatherManager.js";
 
 export class Weather {

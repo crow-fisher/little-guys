@@ -2,15 +2,12 @@ import { hexToRgb, randNumber, rgbToRgba } from "../../common.js";
 import { getSquares } from "../../squares/_sqOperations.js";
 import { getBaseSize, isSquareOnCanvas, zoomCanvasFillRect } from "../../canvas.js";
 import { MAIN_CONTEXT } from "../../index.js";
-import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds, getBaseAirPressureAtYPosition, getAirSquareDensity, getWindPressureSquareDensity, base_wind_pressure, manipulateWindPressureMaintainHumidityWindSquare, initWindPressure, isWindSquareBlocked, windFlowrateFactor, getWindSquareAbove, getWindThrottleValWindMap, getFrameXMinWsq, getFrameXMaxWsq, getFrameYMinWsq, getFrameYMaxWsq } from "./wind.js";
-import { logRainFall } from "../weather/weatherManager.js";
-import { getCloudRenderingLighting, getDefaultLighting } from "../../lighting/lightingProcessing.js";
+import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds, getBaseAirPressureAtYPosition, getWindPressureSquareDensity, base_wind_pressure, manipulateWindPressureMaintainHumidityWindSquare, isWindSquareBlocked, getWindSquareAbove, getWindThrottleValWindMap, getFrameXMinWsq, getFrameXMaxWsq, getFrameYMinWsq, getFrameYMaxWsq } from "./wind.js";
+import { getCloudRenderingLighting } from "../../lighting/lightingProcessing.js";
 import { addSquareByName } from "../../manipulation.js";
-import { loadGD, UI_CLIMATE_RAINFALL_DENSITY, UI_CLIMATE_WEATHER_RAIN_TOGGLE, UI_VIEWMODE_SELECT, UI_VIEWMODE_WIND } from "../../ui/UIData.js";
-import { isLeftMouseClicked, isRightMouseClicked } from "../../mouse.js";
-import { COLOR_VERY_FUCKING_RED, RGB_COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_GREEN, RGB_COLOR_RED } from "../../colors.js";
-import { getTimeScale, millis_per_day } from "../time.js";
-import { getWindThrottleVal, registerWindThrottlerOutput } from "./throttler.js";
+import { loadGD, UI_CLIMATE_WEATHER_RAIN_TOGGLE } from "../../ui/UIData.js";
+import { RGB_COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_GREEN, RGB_COLOR_RED } from "../../colors.js";
+import { getTimeScale } from "../time.js";
 // decent reference https://web.gps.caltech.edu/~xun/course/GEOL1350/Lecture5.pdf
 
 export function temperatureHumidityFlowrateFactor() {
@@ -289,42 +286,40 @@ function doRain() {
     }
     for (let x = getFrameXMinWsq(); x < getFrameXMaxWsq(); x++) {
         for (let y = getFrameYMinWsq(); y < getFrameYMaxWsq(); y++) {
-            let adjacentHumidity = getAdjacentProp(x, y, getHumidity) / 5;
-            if (adjacentHumidity < (cloudRainThresh))
+
+            let posX = x * 4 + randNumber(0, 3);
+            let posY = y * 4 + randNumber(0, 3);
+            if (!isSquareOnCanvas(posX, posY)) {
+                return;
+            }
+            let humidity = getHumidity(x, y);
+            if (humidity < (cloudRainThresh))
                 continue;
-            let rainDropProbability = ((adjacentHumidity - cloudRainThresh) / (cloudRainMax - cloudRainThresh));
-
+            let rainDropProbability = ((humidity - cloudRainThresh) / (cloudRainMax - cloudRainThresh));
             rainDropProbability /= 10;
-
             if (Math.random() > rainDropProbability) {
                 continue;
             }
-            let adjacentTemperature = getAdjacentProp(x, y, getTemperatureAtWindSquare) / 5;
-            let expectedPascals = saturationPressureOfWaterVapor(adjacentTemperature) * cloudRainThresh;
-            let adjacentPascals = getAdjacentProp(x, y, (x, y) => waterSaturationMap[x][y]) / 5;
+            let temperature = temperatureMap[x][y];
+            let expectedPascals = saturationPressureOfWaterVapor(temperature) * cloudRainThresh;
+            let pascals = waterSaturationMap[x][y];
 
-            let dropPascals = (adjacentPascals - expectedPascals) * 0.05;
+            let dropPascals = (pascals - expectedPascals) * 0.05;
 
             let usedWaterPascalsPerSquare = dropPascals / 5;
             let dropHealth = dropPascals / pascalsPerWaterSquare;
 
             dropHealth = Math.min(1, dropHealth * 12000);
 
-            let posX = x * 4 + randNumber(0, 3);
-            let posY = y * 4 + randNumber(0, 3);
-
-            if (isSquareOnCanvas(posX, posY)) {
-                let sq = addSquareByName(posX, posY, "water");
-                if (sq) {
-                    sq.blockHealth = dropHealth;
-                    sq.temperature = temperatureMap[x][y];
-                    logRainFall(sq.blockHealth);
-                    waterSaturationMap[x][y] -= usedWaterPascalsPerSquare;
-                    getMapDirectNeighbors(x, y)
-                        .filter((loc) => loc[0] >= 0 && loc[0] < getWindSquaresX() && loc[1] >= 0 && loc[1] < getWindSquaresY())
-                        .forEach((loc) => waterSaturationMap[loc[0]][loc[1]] -= usedWaterPascalsPerSquare);
-                    sq.speedY = 1;
-                }
+            let sq = addSquareByName(posX, posY, "water");
+            if (sq) {
+                sq.blockHealth = dropHealth;
+                sq.temperature = temperatureMap[x][y];
+                waterSaturationMap[x][y] -= usedWaterPascalsPerSquare;
+                getMapDirectNeighbors(x, y)
+                    .filter((loc) => loc[0] >= 0 && loc[0] < getWindSquaresX() && loc[1] >= 0 && loc[1] < getWindSquaresY())
+                    .forEach((loc) => waterSaturationMap[loc[0]][loc[1]] -= usedWaterPascalsPerSquare);
+                sq.speedY = 1;
             }
         }
 
@@ -348,7 +343,7 @@ export function getCloudLightBlockCoef(x, y) {
     let maxMult = 0.96;
     if (squareHumidity > cloudRainMax)
         return maxMult;
-    return 1 - (1 - maxMult) * (squareHumidity - 1) / (cloudRainMax - 1); 
+    return 1 - (1 - maxMult) * (squareHumidity - 1) / (cloudRainMax - 1);
 }
 
 export function getCloudColorAtPos(x, y) {

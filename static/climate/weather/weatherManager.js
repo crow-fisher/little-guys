@@ -1,20 +1,19 @@
-import { gaussianRandom, randRange, randRangeFactor } from "../../common.js";
-import { addUIFunctionMap, UI_CLIMATE_WEATHER_CLEAR, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_HEAVYRAIN, loadGD, saveGD, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_DURATION, UI_CLIMATE_WEATHER_ACTIVE, UI_SIMULATION_GENS_PER_DAY, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_SIMULATION_CLOUDS, UI_CLIMATE_WEATHER_NULL, UI_DEBUG_CLIMATE_WEATHER_FOREVER } from "../../ui/UIData.js";
+import { randRange, randRangeFactor } from "../../common.js";
+import { addUIFunctionMap, UI_CLIMATE_WEATHER_CLEAR, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_HEAVYRAIN, loadGD, saveGD, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_DURATION, UI_CLIMATE_WEATHER_ACTIVE, UI_SIMULATION_GENS_PER_DAY, UI_SIMULATION_CLOUDS, UI_CLIMATE_WEATHER_NULL, UI_DEBUG_CLIMATE_WEATHER_FOREVER } from "../../ui/UIData.js";
 import { getActiveClimate } from "../climateManager.js";
-import { cloudRainThresh } from "../simulation/temperatureHumidity.js";
 import { getCurDay, getDt, getTimeScale } from "../time.js";
-import { getFrameXMaxWsq, getFrameXMinWsq, getFrameYMaxWsq, getFrameYMinWsq, getWindSquaresX, getWindSquaresY } from "../simulation/wind.js";
+import { getFrameXMaxWsq, getFrameXMinWsq, getFrameYMaxWsq, getFrameYMinWsq } from "../simulation/wind.js";
 import { Cloud } from "./cloud.js";
-import { Weather } from "./weather.js";
 import { topbarWeatherTextReset } from "../../ui/WindowManager.js";
 import { isSquareOnCanvas } from "../../canvas.js";
-import { MAIN_CANVAS, MAIN_CONTEXT } from "../../index.js";
+import { MAIN_CONTEXT } from "../../index.js";
 import { COLOR_VERY_FUCKING_RED } from "../../colors.js";
+import { Weather } from "./weather.js";
+
 
 let weatherClear, weatherPartlyCloudy, weatherMostlyCloudy, weatherFoggy, weatherLightRain, weatherHeavyRain;
 let ui_weatherMap = new Map();
 
-let curRainFallAmount = 0;
 let curWeatherStartTime = 0;
 let curWeatherInterval = 1;
 let curWeather = null;
@@ -28,6 +27,7 @@ export function getCurWeatherInterval() {
     int -= getCurDay() % (0.000694444 / 60);
     return int;
 }
+
 
 let curClouds = [];
 let curWinds = [];
@@ -164,10 +164,6 @@ function foggyWeather() {
 weatherPartlyCloudy = new Weather(UI_CLIMATE_WEATHER_PARTLY_CLOUDY, cloudyHg, cloudyTg, 50, cloudyWeather(6));
 weatherMostlyCloudy = new Weather(UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, cloudyHg, cloudyTg, 50, cloudyWeather(20));
 weatherFoggy = new Weather(UI_CLIMATE_WEATHER_FOGGY, foggyHg, foggyTg, 50, foggyWeather);
-
-export function logRainFall(amount) {
-    curRainFallAmount += amount;
-}
 
 
 function generalRainyWeather(rfMin, rfMax) {
