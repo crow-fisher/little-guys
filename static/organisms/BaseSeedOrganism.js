@@ -67,6 +67,11 @@ class BaseSeedOrganism extends BaseOrganism {
         if (this.linkedSquare.proto != "SeedSquare")
             return;
 
+        if (!this.rockable && getSquares(this.posX, this.posY + 1).some((sq) => sq.proto == "RockSquare")) {
+            this.destroySeed();
+            return;
+        }
+
         let searchDist = randNumber(2, 5);
 
         let soilSq = getSquares(this.posX, this.posY + searchDist)
@@ -74,7 +79,6 @@ class BaseSeedOrganism extends BaseOrganism {
         let rockSq = getSquares(this.posX, this.posY + searchDist)
             .find((sq) => sq.proto == "RockSquare");
         
-
         let targetSq = (this.rockable ? (soilSq ?? rockSq) : soilSq);
 
         if (targetSq != null) {

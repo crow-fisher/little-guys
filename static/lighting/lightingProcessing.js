@@ -9,11 +9,21 @@ export function getDefaultLighting() {
     let daylightColor = getCurrentLightColorTemperature();
     let moonlightColor = getMoonlightColor();
     let mult = Math.exp(loadGD(UI_LIGHTING_DISABLED_BRIGHTNESS));
-    return {
-        r: mult * (moonlightColor.r * .7 * Math.exp(loadGD(UI_LIGHTING_MOON)) + 0.5 * Math.exp(loadGD(UI_LIGHTING_SUN)) * (daylightColor.r * brightness)),
-        g: mult * (moonlightColor.g * .7 * Math.exp(loadGD(UI_LIGHTING_MOON)) + 0.5 * Math.exp(loadGD(UI_LIGHTING_SUN)) * (daylightColor.g * brightness)),
-        b: mult * (moonlightColor.b * .7 * Math.exp(loadGD(UI_LIGHTING_MOON)) + 0.5 * Math.exp(loadGD(UI_LIGHTING_SUN)) * (daylightColor.b * brightness))
+
+    let out = {
+        r: moonlightColor.r * .7 * Math.exp(loadGD(UI_LIGHTING_MOON)) + 0.5 * Math.exp(loadGD(UI_LIGHTING_SUN)) * (daylightColor.r * brightness),
+        g: moonlightColor.g * .7 * Math.exp(loadGD(UI_LIGHTING_MOON)) + 0.5 * Math.exp(loadGD(UI_LIGHTING_SUN)) * (daylightColor.g * brightness),
+        b: moonlightColor.b * .7 * Math.exp(loadGD(UI_LIGHTING_MOON)) + 0.5 * Math.exp(loadGD(UI_LIGHTING_SUN)) * (daylightColor.b * brightness)
     }
+
+    let midstepSum = out.r + out.g + out.b;
+    out.r *= (255 * 3 * mult) / midstepSum;
+    out.g *= (255 * 3 * mult) / midstepSum;
+    out.b *= (255 * 3 * mult) / midstepSum;
+
+    return out;
+
+    
 }
 
 export function getCloudRenderingLighting() {
