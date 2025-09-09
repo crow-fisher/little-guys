@@ -3,7 +3,7 @@ import { getActiveClimate } from "../../climate/climateManager.js";
 import { SunCalc } from "../../climate/suncalc/suncalc.js";
 import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, millis_per_day } from "../../climate/time.js";
 import { addTask } from "../../scheduler.js";
-import { loadGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_LIGHTING_SHADOW_SOFTNESS, UI_LIGHTING_SUN, UI_LIGHTING_UPDATERATE } from "../../ui/UIData.js";
+import { loadGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_LIGHTING_QUALITY, UI_LIGHTING_SHADOW_SOFTNESS, UI_LIGHTING_SUN, UI_LIGHTING_UPDATERATE } from "../../ui/UIData.js";
 import { LightGroup } from "./LightGroup.js";
 import { MovingLightSource } from "./MovingLightSource.js";
 
@@ -11,7 +11,7 @@ export class SunMovingLightGroup extends LightGroup {
     constructor() {
         super();
         this.dist = 10000;
-        this.numNodes = 5;
+        this.numNodes = loadGD(UI_LIGHTING_QUALITY);
         this.init();
         this.idxCompletionMap = new Map();
     }

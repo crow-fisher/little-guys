@@ -5,6 +5,7 @@ import { loadGD, UI_SIMULATION_GENS_PER_DAY } from "../ui/UIData.js";
 import { getCurPlantConfiguratorVal } from "../ui/elements/SliderGradientBackgroundPlantConfigurator.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import { randNumber } from "../common.js";
+import { isSaveOrLoadInProgress } from "../saveAndLoad.js";
 
 class BaseSeedOrganism extends BaseOrganism {
     constructor(square, evolutionParameters = null) {
@@ -37,23 +38,17 @@ class BaseSeedOrganism extends BaseOrganism {
             return;
         
         if (this.age > loadGD(UI_SIMULATION_GENS_PER_DAY) * 2) {
-            this.destroy();
+            this.destroySeed();
             return;
         }
-        if (this.linkedSquare == null) {
-            this.destroy();
-            return;
-        }
-        if (this.sproutAge == null) {
-            if (this.linkedSquare.getSoilWaterPressure() > -10) {
-                this.sproutAge = 0;
-            }
-        } else {
+
+        if (this.sproutAge != null) {
             this.sproutAge += getDt();
             if (this.sproutAge > this.totalSproutTime) {
                 let linkedSquareCache = this.linkedSquare;
-                this.destroy();
                 this.applyEvolutionParameters(new (this.getSproutType())(linkedSquareCache));
+                this.destroy();
+                return;
             }
         }
         this.plantSeedPhysics();
@@ -110,6 +105,8 @@ class BaseSeedOrganism extends BaseOrganism {
         });
         
         this.linkSquare(targetSq);
+
+        this.sproutAge = 0;
     }
 
     applyEvolutionParameters(org) {

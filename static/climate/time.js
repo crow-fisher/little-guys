@@ -26,7 +26,6 @@ let curUIKey = UI_SPEED_1;
 export const millis_per_day = 60 * 60 * 24 * 1000;
 var curDay = 0.4;
 var prevDay = 0;
-var curTime = 0.8;
 var prevTime = 0;
 
 let prevRealTime = Date.now();
@@ -34,7 +33,7 @@ let dt = 0;
 let dtRollingAverage = dt;
 
 export function getFrameDt() {
-    return Math.min(100, dtRollingAverage);
+    return dtRollingAverage;
 }
 
 var starMap;
@@ -282,10 +281,6 @@ function getPrevDay() {
     return prevDay;
 }
 
-function getCurTime() {
-    return curTime;
-}
-
 export function getCurTimeScaleVal(v) {
     return (3.5 ** (v - 1));
 }
@@ -346,22 +341,17 @@ function updateTime() {
         return;
     }
     dt = Date.now() - prevRealTime;
+    prevRealTime = Date.now();
+    prevDay = curDay;
+
     if (dtRollingAverage == 0) {
         dtRollingAverage = dt;
-    } else if (document.hasFocus()) {
-        dtRollingAverage *= 0.95;
-        dtRollingAverage += .05 * dt;
     }
-    if (dt > 10000) {
-        prevRealTime = Date.now();
-        dtRollingAverage = 0;
-        dt = 100;
-    } else {
-        prevTime = curTime;
-        prevDay = curDay;
-        curTime += dt;
+
+    dtRollingAverage = dtRollingAverage * 0.9 + dt * 0.1;
+
+    if (dt < 1000) {
         curDay += dt / (millis_per_day / getCurTimeScale());
-        prevRealTime = Date.now();
         _prevDaylightStrength = _cdaylightStrength;
         _cdaylightStrength = null;
         _cmoonlightStrength = null;
@@ -611,4 +601,4 @@ function temp_blue(temperature) {
 }
 
 
-export { getDaylightStrength, getPrevDay, getCurTime, getPrevTime, updateTime, renderTime, initializeStarMap }
+export { getDaylightStrength, getPrevDay, getPrevTime, updateTime, renderTime, initializeStarMap }

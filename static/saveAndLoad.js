@@ -365,7 +365,7 @@ function loadSlotFromSave(slotData) {
         regSquareToGroup(sq.group);
 
         sq.linkedOrganisms.forEach((org) => {
-            org.linkedSquare = sqArr[org.linkedSquare];
+            org.linkedSquare = sq;
             org.growthPlans = Array.from(org.growthPlans.map((gp) => growthPlanArr[gp]));
             org.lifeSquares = Array.from(org.lifeSquares.map((lsq) => lsqArr[lsq]));
             org.originGrowth = growthPlanComponentArr[org.originGrowth];

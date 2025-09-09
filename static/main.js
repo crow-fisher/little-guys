@@ -34,7 +34,7 @@ export function lightingExposureAdjustment() {
 export function resetLighting() {
     clearTimeouts();
     lightingHandler.destroy();
-    iterateOnSquares((sq) => sq.lighting = new Array());
+    iterateOnSquares((sq) => sq.purgeLighting());
     lightingHandler = new LightingHandler();
 }
 

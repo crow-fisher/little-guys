@@ -107,6 +107,13 @@ export class BaseSquare {
         this.initTemperature();
     };
 
+    purgeLighting() {
+        this.lighting = new Array();
+        this.linkedOrganisms.forEach((org) => {
+            org.lighting = new Array();
+            org.lifeSquares.forEach((lsq) => lsq.lighting = new Array());
+        });
+    }
     mossSpaceRemaining() {
         return 1 - this.linkedOrganismSquares
             .filter((lsq) => lsq.type == "moss")

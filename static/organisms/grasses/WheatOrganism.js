@@ -289,8 +289,8 @@ export class WheatOrganism extends BaseOrganism {
         let startNode = flowerComponent.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_FLOWERNODE);
         let seedSquare = addSquare(new SeedSquare(startNode.getPosX(), startNode.getPosY()));
         if (seedSquare) {
-            seedSquare.speedX = Math.random() > 0.5 ? -1 : 1 * randRange(0.5, 1);
-            seedSquare.speedY = randRange(-.5, .5);
+            seedSquare.speedX = 2 * Math.random() > 0.5 ? -1 : 1 * randRange(0.5, 1);
+            seedSquare.speedY = 2 * randRange(-.5, .5);
             let orgAdded = new WheatSeedOrganism(seedSquare, this.getNextGenetics());
             if (!orgAdded) {
                 seedSquare.destroy();
