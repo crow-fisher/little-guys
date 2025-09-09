@@ -62,7 +62,7 @@ class BaseSeedOrganism extends BaseOrganism {
         if (this.linkedSquare.proto != "SeedSquare")
             return;
 
-        if (!this.rockable && getSquares(this.posX, this.posY + 1).some((sq) => sq.proto == "RockSquare")) {
+        if (!this.rockable && getSquares(this.posX, this.posY + 1).some((sq) => sq.proto != "SoilSquare" && sq.proto != "WaterSquare")) {
             this.destroySeed();
             return;
         }

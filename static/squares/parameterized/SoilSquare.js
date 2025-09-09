@@ -51,7 +51,6 @@ export class SoilSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
         this.proto = "SoilSquare";
-        this.colorBase = "#B06C49";
         this.rootable = true;
 
         this.clayColorRgb = getActiveClimate().clayColorRgb;

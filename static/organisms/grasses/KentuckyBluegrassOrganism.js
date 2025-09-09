@@ -13,7 +13,7 @@ import { UI_ORGANISM_GRASS_KBLUE } from "../../ui/UIData.js";
 import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh } from "../BaseOrganism.js";
 
 export let kblue_dnm = structuredClone(baseOrganism_dnm);
-kblue_dnm[_llt_target] = 1;
+kblue_dnm[_llt_target] = 1.45;
 kblue_dnm[_llt_min] = 0.74;
 kblue_dnm[_llt_max] = 1.43;
 kblue_dnm[_llt_throttlValMax] = 5.27;
