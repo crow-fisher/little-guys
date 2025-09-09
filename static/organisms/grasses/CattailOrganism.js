@@ -4,7 +4,7 @@ import { STAGE_ADULT, SUBTYPE_FLOWER, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_TRUNK
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
-import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
+import { _lightDecayValue, _lightLevelDisplayExposureAdjustment, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
 import { CattailGreenSquare } from "../../lifeSquares/grasses/CattailGreenSquare.js";
 import { addSquare } from "../../squares/_sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
@@ -19,7 +19,8 @@ cattail_dnm[_seedReduction] = 0.08;
 cattail_dnm[_waterPressureSoilTarget] = -2.07;
 cattail_dnm[_waterPressureOverwaterThresh] = 1;
 cattail_dnm[_waterPressureWiltThresh] = -.25;
-cattail_dnm[_lightDecayValue] = 1;
+cattail_dnm[_lightDecayValue] = 5.23;
+cattail_dnm[_lightLevelDisplayExposureAdjustment] = -.37;
 
 
 export class CattailOrganism extends BaseOrganism {

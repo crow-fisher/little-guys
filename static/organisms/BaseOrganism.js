@@ -489,7 +489,7 @@ class BaseOrganism {
                 .filter((_sq) => _sq != null)
                 .filter((_sq) => _sq.rootable)
                 .filter((_sq) => _sq.blockHealth == _sq.blockHealthMax)
-                .filter((_sq) => !(_sq.linkedOrganismSquares.some((llsq => llsq.linkedOrganism == this))))
+                .filter((_sq) => !(_sq.linkedOrganismSquares.some((llsq => llsq.linkedOrganism.proto == this.proto))))
                 .filter((_sq) => targetSquare == null || f(targetSquare) < f(_sq))
                 .forEach((_sq) => { targetSquare = _sq; targetSquareParent = lsq });
         });

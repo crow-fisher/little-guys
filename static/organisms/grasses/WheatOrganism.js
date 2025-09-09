@@ -5,7 +5,7 @@ import { STAGE_ADULT, STAGE_FLOWER, STAGE_JUVENILE, SUBTYPE_FLOWER, SUBTYPE_FLOW
 import { WheatGreenSquare } from "../../lifeSquares/grasses/WheatGreenSquare.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
-import { BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
+import { _lightLevelDisplayExposureAdjustment, _llt_target, BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
 import { addSquare } from "../../squares/_sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
 import { UI_ORGANISM_GRASS_WHEAT } from "../../ui/UIData.js";
@@ -15,14 +15,16 @@ import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReductio
 // ref: https://prairiecalifornian.com/wheat-growth-stages/
 
 export let wheat_dnm = structuredClone(baseOrganism_dnm);
-wheat_dnm[_llt_min] = 0.59;
+wheat_dnm[_llt_target] = 0.89;
+wheat_dnm[_llt_min] = 0.80;
 wheat_dnm[_llt_max] = 1.29;
 wheat_dnm[_llt_throttlValMax] = 4;
-wheat_dnm[_seedReduction] = 0.20;
+wheat_dnm[_seedReduction] = 0.13;
 wheat_dnm[_waterPressureSoilTarget] = -4;
 wheat_dnm[_waterPressureOverwaterThresh] = 1;
 wheat_dnm[_waterPressureWiltThresh] = -1.96;
-wheat_dnm[_lightDecayValue] = 2.6;
+wheat_dnm[_lightDecayValue] = 4.33;
+wheat_dnm[_lightLevelDisplayExposureAdjustment] = -0.18;
 
 export class WheatOrganism extends BaseOrganism {
     constructor(square) {
@@ -72,7 +74,7 @@ export class WheatOrganism extends BaseOrganism {
         this.maxLeafLength = 2 + Math.floor(this.maxLeafLength * p0);
 
         this.growthNumGreen = this.maxNumNodes * (this.maxStemLength + this.maxLeafLength);
-        this.growthNumRoots = this.growthNumGreen * 0.2;
+        this.growthNumRoots = this.growthNumGreen * 0.1;
     }
 
     growStem(parent, startNode, theta) {
@@ -271,7 +273,7 @@ export class WheatOrganism extends BaseOrganism {
             return;
         }
 
-        if (this.flower == null) {
+        if (this.flower == null && this.lifeSquares.length > (this.growthNumGreen + this.growthNumRoots)) {
             this.growFlower();
             return;
         }
@@ -289,8 +291,8 @@ export class WheatOrganism extends BaseOrganism {
         let startNode = flowerComponent.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_FLOWERNODE);
         let seedSquare = addSquare(new SeedSquare(startNode.getPosX(), startNode.getPosY()));
         if (seedSquare) {
-            seedSquare.speedX = 2 * Math.random() > 0.5 ? -1 : 1 * randRange(0.5, 1);
-            seedSquare.speedY = 2 * randRange(-.5, .5);
+            seedSquare.speedX = randRange(-4, 4);
+            seedSquare.speedY = randRange(-1, 0);
             let orgAdded = new WheatSeedOrganism(seedSquare, this.getNextGenetics());
             if (!orgAdded) {
                 seedSquare.destroy();

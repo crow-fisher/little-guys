@@ -4,7 +4,7 @@ import { STAGE_ADULT, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_TRUNK } from "../Stag
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
-import { _lightLevelDisplayExposureAdjustment, BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
+import { _lightLevelDisplayExposureAdjustment, _llt_target, BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
 import { KentuckyBluegrassGreenSquare } from "../../lifeSquares/grasses/KentuckyBluegrassGreenSquare.js";
 import { addSquare } from "../../squares/_sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
@@ -13,6 +13,7 @@ import { UI_ORGANISM_GRASS_KBLUE } from "../../ui/UIData.js";
 import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh } from "../BaseOrganism.js";
 
 export let kblue_dnm = structuredClone(baseOrganism_dnm);
+kblue_dnm[_llt_target] = 1;
 kblue_dnm[_llt_min] = 0.74;
 kblue_dnm[_llt_max] = 1.43;
 kblue_dnm[_llt_throttlValMax] = 5.27;
@@ -20,8 +21,8 @@ kblue_dnm[_seedReduction] = 0.10;
 kblue_dnm[_waterPressureSoilTarget] = -4;
 kblue_dnm[_waterPressureOverwaterThresh] = 1;
 kblue_dnm[_waterPressureWiltThresh] = -1.5;
-kblue_dnm[_lightDecayValue] = 1.18;
-kblue_dnm[_lightLevelDisplayExposureAdjustment] = .16;
+kblue_dnm[_lightDecayValue] = 4.42;
+kblue_dnm[_lightLevelDisplayExposureAdjustment] = .22;
 
 export class KentuckyBluegrassOrganism extends BaseOrganism {
     constructor(square) {
