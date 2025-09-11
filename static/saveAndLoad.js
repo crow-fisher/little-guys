@@ -11,7 +11,7 @@ import { getMainMenuComponent, initUI } from "./ui/WindowManager.js";
 import { initGroupList, purgeMaps, regSquareToGroup } from "./globals.js";
 import { getActiveClimate } from "./climate/climateManager.js";
 import { doSingleTimeMouseEvent } from "./mouse.js";
-import { MOUSEEVENT_UNHIDE } from "./common.js";
+import { downloadFile, MOUSEEVENT_UNHIDE } from "./common.js";
 import { resetZoom } from "./canvas.js";
 
 
@@ -19,6 +19,10 @@ let saveOrLoadInProgress = false;
 
 export function isSaveOrLoadInProgress() {
     return saveOrLoadInProgress;
+}
+
+export function setSaveOrLoadInProgress(value) {
+    saveOrLoadInProgress = value;
 }
 
 export async function loadSlot(slotName) {
@@ -119,17 +123,19 @@ export async function saveUserSettings() {
     console.log("saveUserSettings completed.");
 }
 
-function purgeGameState() {
+export function purgeGameState() {
     iterateOnSquares((sq) => sq.destroy());
     purgeMaps();
 }
 
-function loadSlotData(slotData) {
+export function loadSlotData(slotData) {
     purgeGameState();
     loadSlotFromSave(slotData);
     saveGD(UI_MAIN_NEWWORLD, false);
     saveOrLoadInProgress = false;
 }
+
+
 
 export function unhideWorld(slotName) {
     loadUI(UI_UI_WORLDHIDDEN)[slotName] = false;
@@ -158,6 +164,17 @@ export async function saveCurGame(reload = false) {
     console.log("save cur game\t", loadUI(UI_UI_CURWORLD));
     await saveGame(loadUI(UI_UI_CURWORLD), reload);
 }
+
+export async function downloadSaveFile() {
+    saveOrLoadInProgress = true;
+    const saveObj = getFrameSaveData();
+    const saveString = JSON.stringify(saveObj);
+    const compressedSave = await compress(saveString);
+
+    downloadFile(loadGD(UI_NAME) + (new Date()).toISOString() + ".lg", compressedSave);
+    loadSlotData(saveObj);
+}
+
 
 export async function saveGame(slotName, reload) {
     saveOrLoadInProgress = true;
@@ -287,8 +304,6 @@ function getFrameSaveData() {
 }
 
 export async function createNewWorld() {
-    await saveCurGame(false);
-
     let startNumPages = getMainMenuComponent().getNumPages();
 
     let slot = loadUI(UI_UI_NEXTWORLD);
@@ -318,7 +333,7 @@ export function editCurrentWorld() {
     saveCurGame();
 }
 
-function loadSlotFromSave(slotData) {
+export function loadSlotFromSave(slotData) {
     initGroupList();
 
     let sqArr = slotData.sqArr;
@@ -406,7 +421,7 @@ async function compress(inputString) {
 }
 
 // Decode Base64 and gunzip
-async function decompress(base64String) {
+export async function decompress(base64String) {
     const binaryString = atob(base64String);
     const compressedData = Uint8Array.from(binaryString, (char) => char.charCodeAt(0));
 

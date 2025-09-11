@@ -1,9 +1,9 @@
-import { gameUserStateLoad, saveCurGame } from "./saveAndLoad.js";
+import { createNewWorld, decompress, gameUserStateLoad, isSaveOrLoadInProgress, loadEmptyScene, loadSlot, loadSlotData, loadSlotFromSave, purgeGameState, saveCurGame, setSaveOrLoadInProgress } from "./saveAndLoad.js";
 import { resetClimateAndLighting, resetLighting, scheduler_main } from "./main.js";
 import { keydown, keyup } from "./keyboard.js";
 import { getLastMoveOffset, handleClick, handleMouseDown, handleMouseUp, handleTouchEnd, handleTouchMove, handleTouchStart } from "./mouse.js";
 import { getBaseSize, getCanvasHeight, getCanvasWidth, isSquareOnCanvas, recacheCanvasPositions, resetZoom, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, transformPixelsToCanvasSquares, zoom } from "./canvas.js";
-import { addUIFunctionMap, loadGD, saveGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_PALETTE_PASTE_MODE, UI_PALETTE_PASTE_MODE_BG, UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_RIGID, UI_PALETTE_PHYSICS_STATIC, UI_PALLETE_MODE_PASTE, UI_SIMULATION_HEIGHT, UI_UI_SIZE } from "./ui/UIData.js";
+import { addUIFunctionMap, GAMEDATA, loadGD, loadUI, saveGD, setGAMEDATA, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_NAME, UI_PALETTE_PASTE_MODE, UI_PALETTE_PASTE_MODE_BG, UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_RIGID, UI_PALETTE_PHYSICS_STATIC, UI_PALLETE_MODE_PASTE, UI_SIMULATION_HEIGHT, UI_UI_CURWORLD, UI_UI_SIZE, UI_UI_WORLDNAME } from "./ui/UIData.js";
 import { initUI } from "./ui/WindowManager.js";
 import { addSquare } from "./squares/_sqOperations.js";
 import { waterGraphReset } from "./waterGraph.js";
@@ -39,7 +39,6 @@ window.onload = function () {
     document.addEventListener('keyup', keyup);
     gameUserStateLoad();
 }
-
 
 let width = 0;
 let height = 0;
@@ -98,11 +97,11 @@ addEventListener('paste', async (e) => {
     for (const clipboardItem of e.clipboardData.files) {
         if (clipboardItem.type.startsWith('image/')) {
             let image = await createImageBitmap(clipboardItem);
-            let tempCanvas = document.createElement("canvas", {willReadFrequently: true});
+            let tempCanvas = document.createElement("canvas", { willReadFrequently: true });
             tempCanvas.width = image.width;
             tempCanvas.height = image.height;
-            
-            let tempCtx = tempCanvas.getContext("2d", {willReadFrequently: true});
+
+            let tempCtx = tempCanvas.getContext("2d", { willReadFrequently: true });
 
             let lastMoveOffset = getLastMoveOffset();
             if (lastMoveOffset == null) {
@@ -139,5 +138,37 @@ addEventListener('paste', async (e) => {
         }
     }
 });
+
+async function handleFileDrop(ev) {
+    setSaveOrLoadInProgress(true);
+    // purgeGameState();
+
+    const newWorldRes = await createNewWorld();
+
+    // Prevent default behavior (Prevent file from being opened)
+    ev.preventDefault();
+    // Use DataTransferItemList interface to access the file(s)
+    let item = [...ev.dataTransfer.items].at(0);
+    if (item.kind === "file") {
+        const file = item.getAsFile();
+        const saveFile = await file.text();
+        const decompressedSave = await decompress(saveFile);
+        const saveObj = JSON.parse(decompressedSave);
+        loadSlotFromSave(saveObj);
+
+        saveGD(UI_NAME, saveObj.gamedata.UI_NAME);
+        loadUI(UI_UI_WORLDNAME)[loadUI(UI_UI_CURWORLD)] = loadGD(UI_NAME);
+        // await saveCurGame();
+        setSaveOrLoadInProgress(false);
+    }
+};
+window.addEventListener("dragover", (e) => {
+    e.preventDefault();
+});
+window.addEventListener("drop", (e) => {
+    e.preventDefault();
+});
+
+MAIN_CANVAS.addEventListener("drop", handleFileDrop);
 
 setTimeout(scheduler_main, 0);

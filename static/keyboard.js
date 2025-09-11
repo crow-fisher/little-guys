@@ -120,7 +120,6 @@ export function keydown(e) {
     }
 
 
-
     if (e.key == 'q') {
         saveGD(UI_PALETTE_SELECT, UI_PALETTE_EYEDROPPER);
     }

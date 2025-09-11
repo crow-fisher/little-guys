@@ -4,7 +4,7 @@ import { purgeCanvasFrameLimit } from "../../globalOperations.js";
 import { DEBUG } from "../../index.js";
 import { getLastMouseDown } from "../../mouse.js";
 import { isPlayerRunning, startPlayerMain, stopPlayerMain } from "../../player/playerMain.js";
-import { deleteAllSaveData, deleteHiddenWorlds, hideWorld, loadEmptyScene, loadSlot, saveCurGame, unhideWorld } from "../../saveAndLoad.js";
+import { deleteAllSaveData, deleteHiddenWorlds, downloadSaveFile, hideWorld, loadEmptyScene, loadSlot, saveCurGame, unhideWorld } from "../../saveAndLoad.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
 import { Container } from "../Container.js";
 import { Button } from "../elements/Button.js";
@@ -27,10 +27,13 @@ export class MainMenuComponent extends SubTreeComponent {
         this.numWorldsPerPage = 5;
         this.lastClick = Date.now();
 
-
         subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, saveCurGame, "save game", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
+        subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, downloadSaveFile, "download save", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
         subMenuContainer.addElement(new Toggle(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, UI_MAIN_NEWWORLD, "new/edit world", 
         () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive(), 0.75, false));
+
+
+
         subMenuContainer.addElement(new Text(this.window, this.sizeX, getBaseUISize() * .5, this.textAlignOffsetX, ""));
         subMenuContainer.addElement(new Text(this.window, this.sizeX, getBaseUISize() * 2.5, UI_CENTER, "your worlds"))
         subMenuContainer.addElement(new Text(this.window, this.sizeX, getBaseUISize() * 1, this.textAlignOffsetX, ""));

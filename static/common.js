@@ -235,13 +235,16 @@ export function gaussianRandom(mean = 0, stdev = 1) {
     return z * stdev + mean;
 }
 
-
-
-
-
-
-
-
+export function downloadFile(filename, text) {
+    // if this ends up not working out, FileSaver (lib) may be an option
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+}
 
 export {
     getObjectArrFromMap, removeItemAll, hexToRgb, rgbToHex, rgbToRgba,
@@ -249,3 +252,5 @@ export {
     processColorStdev, processColorStdevMulticolor, processColorLerp,
     processColorLerpBicolor, getDist, dec2bin
 }
+
+

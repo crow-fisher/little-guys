@@ -497,6 +497,7 @@ function saveGeneral(map, key, value) {
     }
     if (!(UI_NEWWORLD_ALLOWLIST.some((k) => key == k))) {
         saveGD(UI_MAIN_NEWWORLD, false);
+        saveGD(UI_TEXTEDIT_ACTIVE, null)
     }
     if (map == ROOT[UICONFIG]) {
         saveUserSettings();
