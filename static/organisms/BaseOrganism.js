@@ -54,7 +54,6 @@ class BaseOrganism {
         this.age = 0;
         this.rootLastGrown = 0;
         this.greenLastGrown = 0;
-        this.curLifeTimeOffset = 0;
 
         this.evolutionParameters = null;
 
@@ -638,10 +637,12 @@ class BaseOrganism {
             this.stage = STAGE_DEAD;
             return;
         }
-        if (this.stage == STAGE_ADULT && this.getAge() > this.getGrowthCycleMaturityLength()) {
-            this.stage = STAGE_FLOWER;
-            return;
-        }
+
+        // what da tuna
+        // if (this.stage == STAGE_ADULT && this.getAge() > this.getGrowthCycleMaturityLength()) {
+        //     this.stage = STAGE_FLOWER;
+        //     return;
+        // }
     }
 
     plantAgeHandling() {

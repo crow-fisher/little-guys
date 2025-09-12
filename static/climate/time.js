@@ -71,7 +71,6 @@ export function isTimeSeeking() {
 }
 
 function endTimeSeek() {
-    iterateOnOrganisms((org) => org.curLifeTimeOffset += (seekTimeTarget - startSeekTime))
     seekTimeTarget = 0;
 }
 
@@ -179,10 +178,8 @@ export function doTimeSkipToDate(dateName) {
 }
 
 export function setCurDay(newCurDay) {
-    let start = curDay;
     curDay = newCurDay;
     seekTimeTarget = 0;
-    iterateOnOrganisms((org) => org.curLifeTimeOffset += (curDay - start));
 }
 
 export function doTimeSkipToNow() {
@@ -270,7 +267,7 @@ function renderStarMap(brightnessMult) {
 
 
 export function getDt() {
-    return curDay - prevDay;
+    return Math.min(.00001, curDay - prevDay);
 }
 
 export function getCurDay() {

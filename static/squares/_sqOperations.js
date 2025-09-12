@@ -2,6 +2,7 @@ import { getFirstLevelObjectMapFromMap, getObjectArrFromMap } from "../common.js
 import { ALL_SQUARES } from "../globals.js";
 import { removeSquare } from "../globalOperations.js";
 import { loadGD, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_LIGHTING_SURFACE } from "../ui/UIData.js";
+import { isSquareOnCanvas } from "../canvas.js";
 
 let abs = Math.abs;
 let dir = -1;
@@ -27,6 +28,9 @@ function* getNeighbors(x, y) {
 
 
 function addSquare(sq) {
+    if (!isSquareOnCanvas(sq.posX, sq.posY) && sq.proto == "SeedSquare")
+        return false;
+
     if (getSquares(sq.posX, sq.posY).some((ssq) => ssq.testCollidesWithSquare(sq))) {
         return false;
     }
