@@ -469,22 +469,22 @@ class BaseOrganism {
     }
 
     doRootGrowth() {
-        if (this.stage == STAGE_FLOWER)
+        let curMaturityLifeFrac = this.getAge() / this.getGrowthCycleMaturityLength();
+        if (this.stage == STAGE_FLOWER || curMaturityLifeFrac >= 1)
             return;
 
-        let curLifeFrac = Math.min(1, this.getAge() / this.getGrowthCycleMaturityLength());
-        let expectedNitrogen = (curLifeFrac ** 2) * this.growthNitrogen;
-        let expectedPhosphorus = (curLifeFrac ** 2) * this.growthPhosphorus;
+        let expectedNitrogen = (curMaturityLifeFrac ** 2) * this.growthNitrogen;
+        let expectedPhosphorus = (curMaturityLifeFrac ** 2) * this.growthPhosphorus;
         if (this.nitrogen < expectedNitrogen || this.phosphorus < expectedPhosphorus) {
             this.growOptimalRoot();
         }
     }
 
     growRoot(f) {
-        let max = 2;
-        if (getCurDay() < this.rootLastGrown + (this.getGrowthCycleMaturityLength() / ( max * this.growthNumRoots))) {
+        let dRoot = this.getAge() - this.rootLastGrown;
+        let rootThrottlInterval = this.getGrowthCycleMaturityLength() / this.growthNumRoots;
+        if (dRoot < rootThrottlInterval)
             return;
-        }
 
         let targetSquare = null;
         let targetSquareParent = null;
@@ -507,7 +507,7 @@ class BaseOrganism {
         targetSquareParent.addChild(newRootLifeSquare)
         targetSquare.linkOrganismSquare(newRootLifeSquare);
 
-        this.rootLastGrown = getCurDay();
+        this.rootLastGrown = this.getAge();
         this.curNumRoots += 1;
     }
 
@@ -609,7 +609,7 @@ class BaseOrganism {
             let nitrogenToAdd = Math.min(nitrogenMult, 1);
             let phosphorusToAdd = Math.min(phosphorusMult, 1)
             let lightLevelToAdd = Math.min(lightLevelMult, 1)
-            let lifetimeToAdd = Math.min(lightLevelMult, 1)
+            let lifetimeToAdd = Math.min(lifetimeMult, 1)
 
             lsq.nitrogenIndicated += nitrogenToAdd;
             lsq.phosphorusIndicated += phosphorusToAdd;

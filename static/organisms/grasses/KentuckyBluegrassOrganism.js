@@ -80,7 +80,7 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
         this.maxNumGrass = 2;
         this.maxGrassLength = 5 + Math.floor(this.maxGrassLength * p0);
         this.growthNumGreen = this.maxNumGrass * this.maxGrassLength;
-        this.growthNumRoots = 1;
+        this.growthNumRoots = 10;
     }
 
     doGreenGrowth() {
