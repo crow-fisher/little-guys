@@ -265,14 +265,23 @@ class BaseLifeSquare {
             this.renderToCanvas();
         }
         else {
-            if (selectedViewMode == UI_VIEWMODE_NORMAL && this.type == "root")
-                return;
-            if (selectedViewMode == UI_VIEWMODE_ORGANISMS) {
-                if (this.opacity < 0.235) {
-                    frameOpacity *= 4;
+            if (selectedViewMode == UI_VIEWMODE_NORMAL)
+                if (this.type == "root") {
+                   return;
+                } else {
+                    this.renderWithVariedColors(frameOpacity);
+                    return;
                 }
+            if (selectedViewMode == UI_VIEWMODE_ORGANISMS) {
+                let lsqHsv = structuredClone(this.linkedOrganism.organismViewHsvBase);
+                let hueShift = this.lifetimeIndicated;
+                lsqHsv[0] += 60 * (hueShift)
+                if (this.type == "green")
+                    MAIN_CONTEXT.fillStyle = rgbToRgba(...hsv2rgb(...lsqHsv), 0.8);
+                else
+                    MAIN_CONTEXT.fillStyle = rgbToRgba(...hsv2rgb(...lsqHsv), 0.5);
+                this.renderToCanvas();
             }
-            this.renderWithVariedColors(frameOpacity);
         }
     }
     renderLighting() {
@@ -334,12 +343,12 @@ class BaseLifeSquare {
                 return getDefaultLighting();
             }
         }
-        else 
+        else
             this.frameCacheLighting = processLighting(this.lighting);
         return this.frameCacheLighting;
     }
 
-    renderWithVariedColors(frameOpacity) {
+    renderWithVariedColors(frameOpacity=1) {
         let minTime = 2000;
         // if (isSqColChanged(Math.floor(this.getPosX()))) {
         //     minTime /= 4;
@@ -382,10 +391,10 @@ class BaseLifeSquare {
             this.frameCacheLighting = null;
             let lightingColor = this.processLighting();
             let frameLightingOffset = Math.exp(this.linkedOrganism.lightLevelDisplayExposureAdjustment());
-            let outColor = { 
-                r: (frameLightingOffset * lightingColor.r) * outColorBase.r / 255, 
-                g: (frameLightingOffset * lightingColor.g) * outColorBase.g / 255, 
-                b: (frameLightingOffset * lightingColor.b) * outColorBase.b / 255 
+            let outColor = {
+                r: (frameLightingOffset * lightingColor.r) * outColorBase.r / 255,
+                g: (frameLightingOffset * lightingColor.g) * outColorBase.g / 255,
+                b: (frameLightingOffset * lightingColor.b) * outColorBase.b / 255
             };
             this.cachedRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), frameOpacity);
         }

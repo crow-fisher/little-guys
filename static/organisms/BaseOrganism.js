@@ -99,6 +99,8 @@ class BaseOrganism {
         this.evolutionMaxColor = RGB_COLOR_VERY_FUCKING_RED;
 
         this.organismColor = COLOR_BLACK;
+
+        this.organismViewHsvBase = [166, 95, 95];
     }
 
     getDefaultNutritionMap() {
@@ -467,6 +469,9 @@ class BaseOrganism {
     }
 
     doRootGrowth() {
+        if (this.stage == STAGE_FLOWER)
+            return;
+
         let curLifeFrac = Math.min(1, this.getAge() / this.getGrowthCycleMaturityLength());
         let expectedNitrogen = (curLifeFrac ** 2) * this.growthNitrogen;
         let expectedPhosphorus = (curLifeFrac ** 2) * this.growthPhosphorus;
@@ -560,7 +565,8 @@ class BaseOrganism {
 
     // RENDERING
     render() {
-        if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_NUTRIENTS || loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_LIGHTING) {
+        let mode = loadGD(UI_VIEWMODE_SELECT);
+        if ([UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_ORGANISMS].indexOf(mode) != -1) {
             this.setNutrientIndicators();
         }
         if (this.stage != STAGE_DEAD) {
@@ -584,30 +590,36 @@ class BaseOrganism {
         let maturityLifeFrac = Math.min(1, this.getAge() / this.getGrowthCycleMaturityLength());
         let expectedNitrogen = maturityLifeFrac ** 2 * this.growthNitrogen;
         let expectedPhosphorus = maturityLifeFrac ** 2 * this.growthPhosphorus;
+        let lifetimeFrac = this.getAge() / this.getGrowthCycleLength() * this.numGrowthCycles;
 
         let nitrogenMult = Math.min(1, this.nitrogen / expectedNitrogen) * this.lifeSquares.length;
         let phosphorusMult = Math.min(1, this.phosphorus / expectedPhosphorus) * this.lifeSquares.length;
         let lightLevelMult = Math.min(2, this.lightlevel / this.growthLightLevel) * this.lifeSquares.length;
+        let lifetimeMult = lifetimeFrac * this.lifeSquares.length;
 
-        this.lifeSquares.forEach((sq) => {
-            sq.nitrogenIndicated = 0;
-            sq.lightlevelIndicated = 0;
-            sq.phosphorusIndicated = 0;
+        this.lifeSquares.forEach((lsq) => {
+            lsq.nitrogenIndicated = 0;
+            lsq.lightlevelIndicated = 0;
+            lsq.phosphorusIndicated = 0;
+            lsq.lifetimeIndicated = 0;
         });
 
         for (let i = 0; i < (this.lifeSquares.length * 2); i++) {
-            let sq = this.lifeSquares[i % this.lifeSquares.length];
+            let lsq = this.lifeSquares[i % this.lifeSquares.length];
             let nitrogenToAdd = Math.min(nitrogenMult, 1);
             let phosphorusToAdd = Math.min(phosphorusMult, 1)
             let lightLevelToAdd = Math.min(lightLevelMult, 1)
+            let lifetimeToAdd = Math.min(lightLevelMult, 1)
 
-            sq.nitrogenIndicated += nitrogenToAdd;
-            sq.phosphorusIndicated += phosphorusToAdd;
-            sq.lightlevelIndicated += lightLevelToAdd;
+            lsq.nitrogenIndicated += nitrogenToAdd;
+            lsq.phosphorusIndicated += phosphorusToAdd;
+            lsq.lightlevelIndicated += lightLevelToAdd;
+            lsq.lifetimeIndicated += lifetimeToAdd;
 
             nitrogenMult -= nitrogenToAdd;
             phosphorusMult -= phosphorusToAdd;
             lightLevelMult -= lightLevelToAdd;
+            lifetimeMult -= lifetimeToAdd;
         }
     }
 
@@ -615,7 +627,7 @@ class BaseOrganism {
         if (this.stage != STAGE_DEAD) {
             return;
         }
-        this.deathProgress += (getDt()) * (loadGD(UI_SIMULATION_GENS_PER_DAY) / 4);
+        this.deathProgress += .01;
         if (this.originGrowth == null || this.deathProgress >= 1) {
             this.destroy();
         }
@@ -637,12 +649,6 @@ class BaseOrganism {
             this.stage = STAGE_DEAD;
             return;
         }
-
-        // what da tuna
-        // if (this.stage == STAGE_ADULT && this.getAge() > this.getGrowthCycleMaturityLength()) {
-        //     this.stage = STAGE_FLOWER;
-        //     return;
-        // }
     }
 
     plantAgeHandling() {

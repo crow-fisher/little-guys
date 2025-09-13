@@ -69,8 +69,8 @@ export class ConeflowerOrganism extends BaseOrganism {
         this.maxStemLength = 1 + Math.round(this.maxStemLength * p0);
         this.maxLeafLength = 3 + Math.round(this.maxLeafLength * p0);
 
-        this.growthNumGreen = this.maxNumNodes * (this.maxStemLength + this.maxLeafLength) + 12;
-        this.growthNumRoots = 2; //this.growthNumGreen * 0.2;
+        this.growthNumGreen = this.maxNumNodes * (this.maxStemLength + this.maxLeafLength);
+        this.growthNumRoots = this.growthNumGreen * 0.3;
         this.targetStemLength = this.maxStemLength;
     }
 
@@ -192,6 +192,8 @@ export class ConeflowerOrganism extends BaseOrganism {
         if (this.targetLeafLength < this.maxLeafLength || this.targetStemLength < this.maxStemLength || this.growthPlans.some((gp) => !gp.areStepsCompleted())) {
             return;
         }
+
+        this.stage = STAGE_FLOWER;
 
         let parentPath = this.stems[this.stems.length - 1];
         let parent = this.originGrowth.getChildFromPath(parentPath);
@@ -332,7 +334,7 @@ export class ConeflowerOrganism extends BaseOrganism {
             return;
         }
 
-        if (this.flower == null) {
+        if (this.flower == null && (this.curNumGreen > this.growthNumGreen * .9)) {
             this.growFlower();
             return;
         }

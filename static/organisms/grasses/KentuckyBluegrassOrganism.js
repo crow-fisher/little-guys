@@ -1,6 +1,6 @@
 import { randNumber, randRange } from "../../common.js";
 import { GenericRootSquare } from "../../lifeSquares/GenericRootSquare.js";
-import { STAGE_ADULT, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_TRUNK } from "../Stages.js";
+import { STAGE_ADULT, STAGE_FLOWER, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_TRUNK } from "../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
@@ -159,6 +159,10 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
         if (this.targetGrassLength < this.maxGrassLength) {
             this.targetGrassLength += 1;
             return;
+        }
+
+        if (this.curNumGreen > this.growthNumGreen * .9) {
+            this.stage = STAGE_FLOWER;
         }
     }
 }
