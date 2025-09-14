@@ -272,12 +272,14 @@ class BaseLifeSquare {
 
         }
         else {
-            if (this.type == "root" && selectedViewMode == UI_VIEWMODE_NORMAL) {
+            if (selectedViewMode == UI_VIEWMODE_NORMAL && this.type == "root")
                 return;
-            } else {
-                this.renderWithVariedColors(frameOpacity);
-                return;
+            if (selectedViewMode == UI_VIEWMODE_ORGANISMS) {
+                if (this.opacity < 0.235) {
+                    frameOpacity *= 4;
+                }
             }
+            this.renderWithVariedColors(frameOpacity);
         }
     }
     renderLighting() {
