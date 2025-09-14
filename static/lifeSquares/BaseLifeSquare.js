@@ -1,5 +1,5 @@
 import { MAIN_CONTEXT } from "../index.js";
-import { hexToRgb, hsv2rgb, rgb2hsv, rgbToHex, rgbToRgba } from "../common.js";
+import { hexToRgb, hsv2rgb, rgb2hsv, rgbToHex, rgbToRgba, UI_BIGDOTSOLID } from "../common.js";
 
 import { getDaylightStrengthFrameDiff } from "../climate/time.js";
 import { addSquare } from "../squares/_sqOperations.js";
@@ -8,8 +8,8 @@ import { RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED, RGB_COLOR_GREEN } from "../colors.
 import { removeSquare } from "../globalOperations.js";
 import { STATE_HEALTHY, STAGE_DEAD } from "../organisms/Stages.js";
 import { getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
-import { getBaseSize, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasFillRectTheta } from "../canvas.js";
-import { loadGD, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_NORMAL, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../ui/UIData.js";
+import { getBaseSize, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasFillRectTheta, zoomCanvasSquareText } from "../canvas.js";
+import { loadGD, UI_CANVAS_SQUARES_ZOOM, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_NORMAL, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../ui/UIData.js";
 
 export const LSQ_RENDERMODE_SQUARE = "LSQ_RENDERMODE_SQUARE";
 export const LSQ_RENDERMODE_CIRCLE = "LSQ_RENDERMODE_CIRCLE";
@@ -263,24 +263,20 @@ class BaseLifeSquare {
             else
                 MAIN_CONTEXT.fillStyle = rgbToRgba(...hsv2rgb(...myhsv), 0.5);
             this.renderToCanvas();
+
+            MAIN_CONTEXT.font = .35 * getBaseSize() * loadGD(UI_CANVAS_SQUARES_ZOOM) + "px courier"
+            MAIN_CONTEXT.textAlign = 'center';
+            MAIN_CONTEXT.textBaseline = 'middle';
+            MAIN_CONTEXT.strokeStyle = "rgba(35, 35, 35, " + this.lifetimeIndicated + ")";
+            MAIN_CONTEXT.stroke();
+
         }
         else {
-            if (selectedViewMode == UI_VIEWMODE_NORMAL)
-                if (this.type == "root") {
-                   return;
-                } else {
-                    this.renderWithVariedColors(frameOpacity);
-                    return;
-                }
-            if (selectedViewMode == UI_VIEWMODE_ORGANISMS) {
-                let lsqHsv = structuredClone(this.linkedOrganism.organismViewHsvBase);
-                let hueShift = this.lifetimeIndicated;
-                lsqHsv[0] += 60 * (hueShift)
-                if (this.type == "green")
-                    MAIN_CONTEXT.fillStyle = rgbToRgba(...hsv2rgb(...lsqHsv), 0.8);
-                else
-                    MAIN_CONTEXT.fillStyle = rgbToRgba(...hsv2rgb(...lsqHsv), 0.5);
-                this.renderToCanvas();
+            if (this.type == "root" && selectedViewMode == UI_VIEWMODE_NORMAL) {
+                return;
+            } else {
+                this.renderWithVariedColors(frameOpacity);
+                return;
             }
         }
     }
@@ -348,7 +344,7 @@ class BaseLifeSquare {
         return this.frameCacheLighting;
     }
 
-    renderWithVariedColors(frameOpacity=1) {
+    renderWithVariedColors(frameOpacity = 1) {
         let minTime = 2000;
         // if (isSqColChanged(Math.floor(this.getPosX()))) {
         //     minTime /= 4;
