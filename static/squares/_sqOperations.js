@@ -48,15 +48,18 @@ function addSquareOverride(square) {
         addSquare(square);
         return;
     }
-    let prevSurfaceLightingFactor = loadGD(UI_LIGHTING_SURFACE);
+    let prevSurfaceLightingFactor = (1 - loadGD(UI_LIGHTING_SURFACE));
+    let prevSurface = true;
     if (square.collision) {
         existingSquares.filter((sq) => sq.collision).forEach((sq) => {
-            prevSurfaceLightingFactor = sq.surfaceLightingFactor; 
+            prevSurfaceLightingFactor = sq.surfaceLightingFactor;
+            prevSurface = sq.surface;
             removeSquare(sq)
         });
     }
     addSquare(square); 
     square.surfaceLightingFactor = prevSurfaceLightingFactor;
+    square.surface = prevSurface;
     return square;
 }
 

@@ -26,6 +26,9 @@ export class SunMovingLightGroup extends LightGroup {
                 21000
             );
             this.lightSources.push(newLightSource);
+
+            let dMid = Math.abs(10 - i) / 10 + 0.3;
+            i -= (1 - dMid);
         }
     }
 
@@ -55,10 +58,7 @@ export class SunMovingLightGroup extends LightGroup {
 
             sunPos = (sunPos) * Math.PI;
 
-            console.log("from " + idx + " to " + this.idxOffsetFunction(idx));
-            idx = this.idxOffsetFunction(idx);
-
-            let perIdxOffset = (this.dist * loadGD(UI_LIGHTING_SHADOW_SOFTNESS) * idx);
+            let perIdxOffset = (this.dist * loadGD(UI_LIGHTING_SHADOW_SOFTNESS) * (idx - 3.5));
             let maxIdxOffset = (this.dist * loadGD(UI_LIGHTING_SHADOW_SOFTNESS) * this.numNodes);
             let idxOffset = perIdxOffset - (maxIdxOffset / 2);
 

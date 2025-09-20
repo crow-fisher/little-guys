@@ -72,7 +72,6 @@ export class SoilSquare extends BaseSquare {
         this.phosphorus = 25;
 
         this.surface = true;
-        this.surfaceLightingFactor = loadGD(UI_LIGHTING_SURFACE);
         this.percolationFactor = 0.99;
 
         this.setVariant();

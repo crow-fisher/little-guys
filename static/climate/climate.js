@@ -4,7 +4,7 @@ import { loadGD, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_HEAVYRAIN, UI_CLIM
 export class Climate {
     constructor() {
         let soilColorBaseArr = ["#ffb77cff", "#3d2d21", "#be5227"];
-        let rockColorBaseArr = ["#2b2f3d", "#270e27ff", "#9fa0b4"];
+        let rockColorBaseArr = ["#1b203bff", "#412441ff", "#7b7b81ff"];
 
         this.soilColors = [
             this.hueShiftColorArr(soilColorBaseArr, -15, 0, -10),
@@ -17,7 +17,7 @@ export class Climate {
 
         ]
         this.rockColors = [
-            this.hueShiftColorArr(rockColorBaseArr, -150, -.2, 0),
+            this.hueShiftColorArr(rockColorBaseArr, -150, -.2, 0    ),
             this.hueShiftColorArr(rockColorBaseArr, -100, -.1, 0),
             this.hueShiftColorArr(rockColorBaseArr, -50, -.05, 0),
             this.hueShiftColorArr(rockColorBaseArr, -0, -.15, 0),
