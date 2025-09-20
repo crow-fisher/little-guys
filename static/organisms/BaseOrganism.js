@@ -251,7 +251,6 @@ class BaseOrganism {
     }
 
     nutrientTick() {
-        console.log(this.lightLevelThrottleVal());
         let growthCycleFrac = getDt() / this.getGrowthCycleMaturityLength();
         let mult = growthCycleFrac * this.wiltEfficiency() / (2 * this.lightLevelThrottleVal() * (this.growthNumRoots ** 0.7));
         let targetPerRootNitrogen = mult * this.growthNitrogen;
@@ -650,7 +649,6 @@ class BaseOrganism {
 
     plantAgeHandling() {
         this.age += getDt();
-        console.log("Plant with id " + this.linkedSquare.id + ":\t" + getDt());
     }
 
     // ** OUTER TICK METHOD INVOKED EACH FRAME

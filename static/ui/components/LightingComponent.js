@@ -153,9 +153,9 @@ export class LightingComponent extends Component {
         // brightnessConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_CLOUDCOVER_OPACITY, sizeX, sliderSizeY, .01, 1, () => "#000000", () => "#FFF0FF"));
         // brightnessConditionalContainer.addElement(new TextBackground(this.window, sizeX, br, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""));
 
-        // brightnessConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => "shadow softness", () => getActiveClimate().getUIColorInactiveCustom(0.53)));
-        // brightnessConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_SHADOW_SOFTNESS, sizeX, sliderSizeY, .001, .3, () => "#000000", () => "#FFF0FF"));
-        // brightnessConditionalContainer.addElement(new TextBackground(this.window, sizeX, br, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""));
+        brightnessConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => "shadow softness", () => getActiveClimate().getUIColorInactiveCustom(0.53)));
+        brightnessConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_SHADOW_SOFTNESS, sizeX, sliderSizeY, .001, .3, () => "#000000", () => "#FFF0FF"));
+        brightnessConditionalContainer.addElement(new TextBackground(this.window, sizeX, br, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""));
 
         decayConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => "global", () => getActiveClimate().getUIColorInactiveCustom(0.64)));
         decayConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_DECAY, sizeX, sliderSizeY, 0, 2, () => "#000000", () => "#FFF0FF"));

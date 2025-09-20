@@ -29,6 +29,13 @@ export class SunMovingLightGroup extends LightGroup {
         }
     }
 
+    idxOffsetFunction(idx) {
+        let n = this.numNodes;
+        let c = 0.59;
+        let x = idx;
+        return (x * c) + ((1 - c) * (n * Math.atan(x) / (Math.PI / 2)));
+    }
+
     getPositionFunc(idx) {
         return () => {
             let curMillis = getCurDay() * millis_per_day;
@@ -47,6 +54,9 @@ export class SunMovingLightGroup extends LightGroup {
                 sunPos = 0.5 + 0.5 * (getCurDay() - noon) / (sunset - noon);
 
             sunPos = (sunPos) * Math.PI;
+
+            console.log("from " + idx + " to " + this.idxOffsetFunction(idx));
+            idx = this.idxOffsetFunction(idx);
 
             let perIdxOffset = (this.dist * loadGD(UI_LIGHTING_SHADOW_SOFTNESS) * idx);
             let maxIdxOffset = (this.dist * loadGD(UI_LIGHTING_SHADOW_SOFTNESS) * this.numNodes);

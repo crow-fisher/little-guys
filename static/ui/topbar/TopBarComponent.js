@@ -29,6 +29,7 @@ import { getCurWeather } from "../../climate/weather/weatherManager.js";
 import { getWindSquareAbove } from "../../climate/simulation/wind.js";
 import { getSqIterationOrder } from "../../squares/_sqOperations.js";
 import { getFrameSimulationSquares } from "../../globalOperations.js";
+import { TopBarTimeSeekLabel } from "./TopBarTimeSeekLabel.js";
 
 export class TopBarComponent {
     constructor(key) {
@@ -69,6 +70,7 @@ export class TopBarComponent {
             new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_7, () => "▶"),
             new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_8, () => "▶"),
             new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_9, () => "▶"),
+            new TopBarTimeSeekLabel(fontSize,"left", () => "⏭"),
             this.midSpacingEl,
             new TopBarToggle(fontSize, "left", UI_TOPBAR_TIME, UI_BOOLEAN,() => this.textDateTime(), getBaseUISize() * 26.404296875),
             new TopBarToggle(fontSize, "left", UI_TOPBAR_WEATHER, UI_BOOLEAN, () => " | " + this.textWeather()),
