@@ -13,7 +13,7 @@ import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
-import { loadGD, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CLIMATE_WEATHER_TOOL_CLOUD, UI_CLIMATE_WEATHER_TOOL_DRYAIR, UI_CLIMATE_WEATHER_TOOL_MATCHEDAIR, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_STRENGTH, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_STRENGTH, UI_GODMODE_TEMPERATURE, UI_ORGANISM_SELECT, UI_SM_GODMODE, UI_SM_ORGANISM, UI_PALETTE_ACTIVE, UI_PALETTE_AQUIFER, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_PALETTE_SOILROCK, UI_PALETTE_WATER, UI_CLIMATE_SELECT_CLOUDS, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_CLIMATE_TOOL_SIZE, UI_PALETTE_MODE_ROCK, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, isEyedropperOrMixerClicked, UI_ORGANISM_GRASS_WHEAT, UI_ORGANISM_GRASS_KBLUE, UI_ORGANISM_GRASS_CATTAIL, UI_ORGANISM_TREE_PALM, UI_ORGANISM_FLOWER_CONEFLOWER, UI_ORGANISM_MOSS_PLEUROCARP, UI_CLIMATE_WEATHER_TOOL_CLOUD_HUMIDITY, UI_PALETTE_SPECIAL_CHURN, UI_PALETTE_SPECIAL_CHURN_STRENGTH, UI_PALETTE_SPECIAL_CHURN_WIDE, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "./ui/UIData.js";
+import { loadGD, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CLIMATE_WEATHER_TOOL_CLOUD, UI_CLIMATE_WEATHER_TOOL_DRYAIR, UI_CLIMATE_WEATHER_TOOL_MATCHEDAIR, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_STRENGTH, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_STRENGTH, UI_GODMODE_TEMPERATURE, UI_ORGANISM_SELECT, UI_SM_GODMODE, UI_SM_ORGANISM, UI_PALETTE_ACTIVE, UI_PALETTE_AQUIFER, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_PALETTE_SOILROCK, UI_PALETTE_WATER, UI_CLIMATE_SELECT_CLOUDS, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_CLIMATE_TOOL_SIZE, UI_PALETTE_MODE_ROCK, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, isEyedropperOrMixerClicked, UI_ORGANISM_GRASS_WHEAT, UI_ORGANISM_GRASS_KBLUE, UI_ORGANISM_GRASS_CATTAIL, UI_ORGANISM_TREE_PALM, UI_ORGANISM_FLOWER_CONEFLOWER, UI_ORGANISM_MOSS_PLEUROCARP, UI_CLIMATE_WEATHER_TOOL_CLOUD_HUMIDITY, UI_PALETTE_SPECIAL_CHURN, UI_PALETTE_SPECIAL_CHURN_STRENGTH, UI_PALETTE_SPECIAL_CHURN_WIDE, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_SM_BB } from "./ui/UIData.js";
 import { clearMouseHoverColorCacheMap, eyedropperBlockClick, eyedropperBlockHover, isWindowHovered, mixerBlockClick } from "./ui/WindowManager.js";
 import { PalmTreeSeedOrganism } from "./organisms/trees/PalmTreeOrganism.js";
 import { CattailSeedOrganism } from "./organisms/grasses/CattailOrganism.js";
@@ -27,7 +27,7 @@ setMouseTouchStartCallback((inVal) => prevManipulationOffset = inVal);
 let prevClickTime = 0;
 let prevClickMap = new Map();
 
-function doBrushFuncClickThrottle(x, y, func, throttle=true) {
+function doBrushFuncClickThrottle(x, y, func, throttle = true) {
     if (!throttle) {
         func(x, y);
         return;
@@ -48,7 +48,7 @@ function doBrushFuncClickThrottle(x, y, func, throttle=true) {
         func(x, y);
     }
 }
-export function doBrushFunc(centerX, centerY, func, throttle=true) {
+export function doBrushFunc(centerX, centerY, func, throttle = true) {
     throttle = false;
     let radius = Math.floor(loadGD(UI_PALETTE_SIZE));
     if (loadGD(UI_CLIMATE_SELECT_CLOUDS)) {
@@ -82,11 +82,11 @@ export function addSquareByName(posX, posY, name) {
             square = addSquareOverride(new RockSquare(posX, posY));
             break;
         case "soil":
-            let prevSurfaceLightingFactor = 
-            getSquares(posX, posY).filter((sq) => sq.proto == "SoilSquare" || sq.proto == "WaterSquare").forEach((sq) => {
-                prevSurfaceLightingFactor = sq.surfaceLightingFactor;
-                removeSquare(sq);
-            });
+            let prevSurfaceLightingFactor =
+                getSquares(posX, posY).filter((sq) => sq.proto == "SoilSquare" || sq.proto == "WaterSquare").forEach((sq) => {
+                    prevSurfaceLightingFactor = sq.surfaceLightingFactor;
+                    removeSquare(sq);
+                });
             square = addSquare(new SoilSquare(posX, posY));
             square.surfaceLightingFactor = prevSurfaceLightingFactor;
             break;
@@ -123,7 +123,7 @@ function doClimateMod(posX, posY) {
         return;
     }
 
-    let pressure = (isRightMouseClicked() ? -1 : 1) * loadGD(UI_CLIMATE_WEATHER_TOOL_STRENGTH) ** 4
+    let pressure = (isRightMouseClicked() ? -1 : 1) * loadGD(UI_CLIMATE_WEATHER_TOOL_STRENGTH) ** 6;
     switch (loadGD(UI_CLIMATE_WEATHER_TOOL_SELECT)) {
         case UI_CLIMATE_WEATHER_TOOL_DRYAIR:
             addWindPressureDryAir(posX, posY, pressure);
@@ -168,7 +168,7 @@ export function setPrevManipulationOffset(inLoc) {
     prevManipulationOffset = inLoc;
 }
 
-function churnBlocks(x, y, wide=false) {
+function churnBlocks(x, y, wide = false) {
     getSquares(x, y)
         .filter((sq) => sq.linkedOrganismSquares.length == 0 && sq.linkedOrganisms.length == 0 && sq.physicsEnabled && sq.gravity > 0)
         .forEach((sq) => {
@@ -236,21 +236,15 @@ export function doClickAdd() {
             } else if (loadGD(UI_SM_GODMODE)) {
                 doBrushFunc(px, py, (x, y) => doBlockMod(x, y));
             } else if (loadGD(UI_PALETTE_ACTIVE)) {
+                if (loadGD(UI_SM_ORGANISM)) {
+                    placeActiveSeed(px, py);
+                } else if (loadGD(UI_SM_BB)) {
+
+                }
+
                 let mode = loadGD(UI_PALETTE_MODE);
                 let selectMode = loadGD(UI_PALETTE_SELECT);
-
-                if (selectMode == UI_PALETTE_SPECIAL_CHURN) {
-                    doBrushFunc(px, py, (x, y) => churnBlocks(x, y));
-                }
-                else if (selectMode == UI_PALETTE_SPECIAL_CHURN_WIDE) {
-                    doBrushFunc(px, py, (x, y) => churnBlocks(x, y, true));
-                }
-                else if (selectMode != UI_PALETTE_SURFACE && selectMode != UI_PALETTE_SURFACE_OFF && (selectMode == UI_PALETTE_ERASE || isRightMouseClicked())) {
-                    doBrushFunc(px, py, (x, y) => removeSquarePos(x, y));
-                    continue;
-                } else if (selectMode == UI_PALETTE_SOILROCK) {
-                    doBrushFunc(px, py, (x, y) => addActivePaletteToolSquare(x, y));
-                } else if (mode == UI_PALLETE_MODE_SPECIAL) {
+                if (mode == UI_PALLETE_MODE_SPECIAL) {
                     if (selectMode == UI_PALETTE_SURFACE) {
                         doBrushFunc(px, py, (x, y) => {
                             let squares = getSquares(x, y);
@@ -276,19 +270,28 @@ export function doClickAdd() {
                         doBrushFunc(px, py, (x, y) => addSquareByName(x, y, "water"));
                     } else if (selectMode == UI_PALETTE_AQUIFER) {
                         addSquareByName(px, py, "aquifer")
+                    } else if (selectMode == UI_PALETTE_SPECIAL_CHURN) {
+                        doBrushFunc(px, py, (x, y) => churnBlocks(x, y));
+                    } else if (selectMode == UI_PALETTE_SPECIAL_CHURN_WIDE) {
+                        doBrushFunc(px, py, (x, y) => churnBlocks(x, y, true));
                     }
                 }
-            } else if (loadGD(UI_SM_ORGANISM)) {
-                placeActiveSeed(px, py);
-            } else {
-                doBrushFunc(px, py, (x, y) => addWindPressureDryAir(x, y, loadGD(UI_CLIMATE_WEATHER_TOOL_STRENGTH)));
+                else if (selectMode == UI_PALETTE_SOILROCK) {
+                    if (selectMode == UI_PALETTE_ERASE || isRightMouseClicked()) {
+                        doBrushFunc(px, py, (x, y) => removeSquarePos(x, y));
+                    } else {
+                        doBrushFunc(px, py, (x, y) => addActivePaletteToolSquare(x, y));
+                    }
+                }
             }
+            if (loadGD(UI_SM_ORGANISM)) {
+                placeActiveSeed(px, py);
+            }
+            prevManipulationOffset = lastMoveOffset;
         }
-    } else {
-        doBlockHover(lastMoveOffset);
     }
-    prevManipulationOffset = lastMoveOffset;
 }
+
 
 function doBlockHover(lastMoveOffset) {
     let offsetTransformed = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);
@@ -333,7 +336,7 @@ function placeActiveSeed(px, py) {
                 }
             }
             break;
-        
+
         case UI_ORGANISM_MOSS_PLEUROCARP:
             if (chance > 0.95) {
                 let sq = addSquare(new SeedSquare(px, py));

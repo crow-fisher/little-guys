@@ -263,11 +263,12 @@ class BaseLifeSquare {
             else
                 MAIN_CONTEXT.fillStyle = rgbToRgba(...hsv2rgb(...myhsv), 0.5);
             this.renderToCanvas();
-
-            MAIN_CONTEXT.font = .35 * getBaseSize() * loadGD(UI_CANVAS_SQUARES_ZOOM) + "px courier"
-            MAIN_CONTEXT.textAlign = 'center';
-            MAIN_CONTEXT.textBaseline = 'middle';
-            MAIN_CONTEXT.strokeStyle = "rgba(35, 35, 35, " + this.lifetimeIndicated + ")";
+            let outlineHsv = myhsv;
+            outlineHsv[0] += 100;
+            outlineHsv[1] /= 3;
+            outlineHsv[2] /= 2;
+            MAIN_CONTEXT.strokeStyle = rgbToRgba(...hsv2rgb(...outlineHsv), this.lifetimeIndicated);
+            MAIN_CONTEXT.lineWidth = getBaseSize() * .15 * loadGD(UI_CANVAS_SQUARES_ZOOM);
             MAIN_CONTEXT.stroke();
 
         }

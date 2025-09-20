@@ -343,10 +343,10 @@ export class SoilSquare extends BaseSquare {
             return;
         }
         let ws = getWindSpeedAtLocation(this.posX, this.posY);
-        let maxWindSpeed = 10;
+        let maxWindSpeed = 2;
 
-        let wx = Math.min(Math.max(ws[0], -maxWindSpeed), maxWindSpeed);
-        let wy = Math.min(Math.max(ws[1], -maxWindSpeed), maxWindSpeed);
+        let wx = ws[0]; // Math.min(Math.max(ws[0], -maxWindSpeed), maxWindSpeed);
+        let wy = ws[1]; // Math.min(Math.max(ws[1], -maxWindSpeed), maxWindSpeed);
 
         let soilStickinessFactor = this.getWaterflowRate() * (1 + (this.waterContainment / this.waterContainmentMax));
 

@@ -57,7 +57,7 @@ export class CloudControlComponent extends Component {
         container.addElement(new SliderGradientBackground(this.window, UI_CLIMATE_WEATHER_TOOL_CLOUD_HUMIDITY, sizeX, getBaseUISize() * 3, 1.001, 1.05, () => "#000000", () => "#FFF0FF"));
 
         container.addElement(new Text(this.window, sizeX, h2, UI_CENTER, "cloud puffiness"));
-        container.addElement(new SliderGradientBackground(this.window, UI_CLIMATE_WEATHER_TOOL_STRENGTH, sizeX, getBaseUISize() * 3, 10 ** -1.5, 10 ** -.5, () => "#000000", () => "#FFF0FF"));
+        container.addElement(new SliderGradientBackground(this.window, UI_CLIMATE_WEATHER_TOOL_STRENGTH, sizeX, getBaseUISize() * 3, 10 ** -1.5, 10 ** 2, () => "#000000", () => "#FFF0FF"));
         container.addElement(new Text(this.window, sizeX, h2, UI_CENTER, "cloud size"));
         container.addElement(new SliderGradientBackground(this.window, UI_CLIMATE_TOOL_SIZE, sizeX, getBaseUISize() * 3, 1, getCanvasSquaresY(), () => "#000000", () => "#FFF0FF"));
 

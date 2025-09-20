@@ -1,4 +1,5 @@
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, resetCanvasLastMoveOffset, resetZoom } from "./canvas.js";
+import { setPrevManipulationOffset } from "./manipulation.js";
 import { isEyedropperOrMixerClicked, loadGD, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER } from "./ui/UIData.js";
 import { clearMouseHoverColorCacheMap } from "./ui/WindowManager.js";
 
@@ -88,6 +89,7 @@ export function handleMouseUp(e) {
     e.preventDefault();
     clearMouseHoverColorCacheMap();
     let leftMouseWasClicked = leftMouseClicked;
+    setPrevManipulationOffset(null);
     switch (e.button) {
         case 2: 
             rightMouseClicked = false;

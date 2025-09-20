@@ -3,13 +3,26 @@ import { hexToRgb, hsv2rgb, randNumber, randRange, rgb2hsv, rgbToHex, rgbToRgba 
 import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth, MAIN_CONTEXT, setBackgroundColor } from "../index.js";
 import { calculateColorRGB, getFrameRelCloud } from "./simulation/temperatureHumidity.js";
 import {
-    loadGD, UI_SPEED_1, UI_SPEED_2, UI_SPEED_3,
+    loadGD, 
+    UI_SPEED_1,
+    UI_SPEED_2,
+    UI_SPEED_3,
     UI_SPEED_4,
     UI_SPEED_5,
     UI_SPEED_6,
     UI_SPEED_7,
     UI_SPEED_8,
     UI_SPEED_9,
+    UI_SPEED_10,
+    UI_SPEED_11,
+    UI_SPEED_12,
+    UI_SPEED_13,
+    UI_SPEED_14,
+    UI_SPEED_15,
+    UI_SPEED_16,
+    UI_SPEED_17,
+    UI_SPEED_18,
+    UI_SPEED_19,
     UI_SPEED,
     UI_SPEED_0, saveGD,
     UI_GAME_MAX_CANVAS_SQUARES_X,
@@ -99,7 +112,7 @@ export function doTimeSeek() {
     } else {
         TIME_SCALE += 1;
     }
-    TIME_SCALE = Math.min(TIME_SCALE, 9);
+    TIME_SCALE = Math.min(TIME_SCALE, 19);
     TIME_SCALE = Math.max(TIME_SCALE, 1);
 
     switch (TIME_SCALE) {
@@ -129,6 +142,36 @@ export function doTimeSeek() {
             break;
         case 9:
             saveGD(UI_SPEED, UI_SPEED_9);
+            break;
+        case 10:
+            saveGD(UI_SPEED, UI_SPEED_10);
+            break;
+        case 11:
+            saveGD(UI_SPEED, UI_SPEED_11);
+            break;
+        case 12:
+            saveGD(UI_SPEED, UI_SPEED_12);
+            break;
+        case 13:
+            saveGD(UI_SPEED, UI_SPEED_13);
+            break;
+        case 14:
+            saveGD(UI_SPEED, UI_SPEED_14);
+            break;
+        case 15:
+            saveGD(UI_SPEED, UI_SPEED_15);
+            break;
+        case 16:
+            saveGD(UI_SPEED, UI_SPEED_16);
+            break;
+        case 17:
+            saveGD(UI_SPEED, UI_SPEED_17);
+            break;
+        case 18:
+            saveGD(UI_SPEED, UI_SPEED_18);
+            break;
+        case 19:
+            saveGD(UI_SPEED, UI_SPEED_19);
             break;
     }
 }
@@ -267,7 +310,8 @@ function renderStarMap(brightnessMult) {
 
 
 export function getDt() {
-    return Math.min(.00001, curDay - prevDay);
+    // return Math.min(.00001, curDay - prevDay);
+    return Math.min(.000008, curDay - prevDay);
 }
 
 export function getCurDay() {
@@ -279,7 +323,7 @@ function getPrevDay() {
 }
 
 export function getCurTimeScaleVal(v) {
-    return (3.5 ** (v - 1));
+    return (2.8 ** (v - 1));
 }
 
 export function getCurTimeScale() {
@@ -327,8 +371,35 @@ function updateTime() {
             case UI_SPEED_9:
                 TIME_SCALE = 9;
                 break;
-            default:
-                TIME_SCALE = 1;
+            case UI_SPEED_10:
+                TIME_SCALE = 10;
+                break;
+            case UI_SPEED_11:
+                TIME_SCALE = 11;
+                break;
+            case UI_SPEED_12:
+                TIME_SCALE = 12;
+                break;
+            case UI_SPEED_13:
+                TIME_SCALE = 13;
+                break;
+            case UI_SPEED_14:
+                TIME_SCALE = 14;
+                break;
+            case UI_SPEED_15:
+                TIME_SCALE = 15;
+                break;
+            case UI_SPEED_16:
+                TIME_SCALE = 16;
+                break;
+            case UI_SPEED_17:
+                TIME_SCALE = 17;
+                break;
+            case UI_SPEED_18:
+                TIME_SCALE = 18;
+                break;
+            case UI_SPEED_19:
+                TIME_SCALE = 19;
                 break;
         }
         curUIKey = loadGD(UI_SPEED);

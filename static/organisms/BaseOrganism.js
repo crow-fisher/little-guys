@@ -9,6 +9,7 @@ import { COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../colo
 import { rgbToRgba } from "../common.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { zoomCanvasFillRect } from "../canvas.js";
+import { getNextBlockId } from "../globals.js";
 
 export const _llt_target = "_llt_target";
 export const _llt_min = "_llt_min";
@@ -93,7 +94,6 @@ class BaseOrganism {
         this.lighting = square.lighting;
         this.evolutionParameters = [0.5];
         this.deathProgress = 0;
-        this.lastTickTime = getCurDay();
 
         this.evolutionMinColor = RGB_COLOR_BLUE;
         this.evolutionMaxColor = RGB_COLOR_VERY_FUCKING_RED;
@@ -251,6 +251,7 @@ class BaseOrganism {
     }
 
     nutrientTick() {
+        console.log(this.lightLevelThrottleVal());
         let growthCycleFrac = getDt() / this.getGrowthCycleMaturityLength();
         let mult = growthCycleFrac * this.wiltEfficiency() / (2 * this.lightLevelThrottleVal() * (this.growthNumRoots ** 0.7));
         let targetPerRootNitrogen = mult * this.growthNitrogen;
@@ -440,7 +441,7 @@ class BaseOrganism {
         }
     }
     doGreenGrowth() {
-        if (getCurDay() < this.greenLastGrown + this.lightLevelThrottleVal() * (this.getGrowthCycleMaturityLength() / this.growthNumGreen)) {
+        if (this.age < this.greenLastGrown + this.lightLevelThrottleVal() * (this.getGrowthCycleMaturityLength() / this.growthNumGreen)) {
             return false;
         }
         if (Math.abs(this.getWilt()) > .5)
@@ -452,7 +453,7 @@ class BaseOrganism {
             growthPlan.complete();
             somethingDone = true;
             this.curNumGreen += 1;
-            this.greenLastGrown = getCurDay();
+            this.greenLastGrown = this.age;
 
             if (this.originGrowth != null) {
                 this.originGrowth.updateDeflectionState();
@@ -469,7 +470,7 @@ class BaseOrganism {
     }
 
     doRootGrowth() {
-        let curMaturityLifeFrac = this.getAge() / this.getGrowthCycleMaturityLength();
+        let curMaturityLifeFrac = this.age / this.getGrowthCycleMaturityLength();
         if (this.stage == STAGE_FLOWER || curMaturityLifeFrac >= 1)
             return;
 
@@ -481,7 +482,7 @@ class BaseOrganism {
     }
 
     growRoot(f) {
-        let dRoot = this.getAge() - this.rootLastGrown;
+        let dRoot = this.age - this.rootLastGrown;
         let rootThrottlInterval = this.getGrowthCycleMaturityLength() / this.growthNumRoots;
         if (dRoot < rootThrottlInterval)
             return;
@@ -507,12 +508,8 @@ class BaseOrganism {
         targetSquareParent.addChild(newRootLifeSquare)
         targetSquare.linkOrganismSquare(newRootLifeSquare);
 
-        this.rootLastGrown = this.getAge();
+        this.rootLastGrown = this.age;
         this.curNumRoots += 1;
-    }
-
-    getAge() {
-        return this.age;
     }
 
     spawnSeed() {
@@ -528,7 +525,7 @@ class BaseOrganism {
     }
 
     growOptimalRoot() {
-        let curMaturityFrac = Math.min(1, this.getAge() / this.getGrowthCycleMaturityLength());
+        let curMaturityFrac = Math.min(1, this.age / this.getGrowthCycleMaturityLength());
         let expectedNitrogen = curMaturityFrac ** 2 * this.growthNitrogen;
         let expectedPhosphorus = curMaturityFrac ** 2 * this.growthPhosphorus;
         let scoreFunc = (sq) => {
@@ -587,10 +584,10 @@ class BaseOrganism {
         }
         this.lifeSquares.sort((a, b) => compareFunc(a) - compareFunc(b));
 
-        let maturityLifeFrac = Math.min(1, this.getAge() / this.getGrowthCycleMaturityLength());
+        let maturityLifeFrac = Math.min(1, this.age / this.getGrowthCycleMaturityLength());
         let expectedNitrogen = maturityLifeFrac ** 2 * this.growthNitrogen;
         let expectedPhosphorus = maturityLifeFrac ** 2 * this.growthPhosphorus;
-        let lifetimeFrac = this.getAge() / this.getGrowthCycleLength() * this.numGrowthCycles;
+        let lifetimeFrac = this.age / this.getGrowthCycleLength() * this.numGrowthCycles;
 
         let nitrogenMult = Math.min(1, this.nitrogen / expectedNitrogen) * this.lifeSquares.length;
         let phosphorusMult = Math.min(1, this.phosphorus / expectedPhosphorus) * this.lifeSquares.length;
@@ -645,7 +642,7 @@ class BaseOrganism {
         if (this.stage == STAGE_DEAD) {
             return;
         }
-        if (this.getAge() > this.getGrowthCycleLength() * this.numGrowthCycles) {
+        if (this.age > this.getGrowthCycleLength() * this.numGrowthCycles) {
             this.stage = STAGE_DEAD;
             return;
         }
@@ -653,6 +650,7 @@ class BaseOrganism {
 
     plantAgeHandling() {
         this.age += getDt();
+        console.log("Plant with id " + this.linkedSquare.id + ":\t" + getDt());
     }
 
     // ** OUTER TICK METHOD INVOKED EACH FRAME

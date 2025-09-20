@@ -189,8 +189,18 @@ export const UI_SPEED_6 = "UI_SPEED_6";
 export const UI_SPEED_7 = "UI_SPEED_7";
 export const UI_SPEED_8 = "UI_SPEED_8";
 export const UI_SPEED_9 = "UI_SPEED_9";
+export const UI_SPEED_10 = "UI_SPEED_10";
+export const UI_SPEED_11 = "UI_SPEED_11";
+export const UI_SPEED_12 = "UI_SPEED_12";
+export const UI_SPEED_13 = "UI_SPEED_13";
+export const UI_SPEED_14 = "UI_SPEED_14";
+export const UI_SPEED_15 = "UI_SPEED_15";
+export const UI_SPEED_16 = "UI_SPEED_16";
+export const UI_SPEED_17 = "UI_SPEED_17";
+export const UI_SPEED_18 = "UI_SPEED_18";
+export const UI_SPEED_19 = "UI_SPEED_19";
 
-export const UI_SPEEDS = [UI_SPEED_1, UI_SPEED_2, UI_SPEED_3, UI_SPEED_4, UI_SPEED_5, UI_SPEED_6, UI_SPEED_7, UI_SPEED_8, UI_SPEED_9]
+export const UI_SPEEDS = [UI_SPEED, UI_SPEED_0, UI_SPEED_1, UI_SPEED_2, UI_SPEED_3, UI_SPEED_4, UI_SPEED_5, UI_SPEED_6, UI_SPEED_7, UI_SPEED_8, UI_SPEED_9, UI_SPEED_10, UI_SPEED_11, UI_SPEED_12, UI_SPEED_13, UI_SPEED_14, UI_SPEED_15, UI_SPEED_16, UI_SPEED_17, UI_SPEED_18, UI_SPEED_19 ]
 export const UI_BOOLEAN = "UI_BOOLEAN";
 
 export const UI_LIGHTING_ENABLED = "UI_LIGHTING_ENABLED";
