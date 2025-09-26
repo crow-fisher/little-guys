@@ -1,7 +1,7 @@
 import { moveCamera, resetZoom } from "./canvas.js";
 import { getGlobalThetaBase, setGlobalThetaBase } from "./globals.js";
 import { isPlayerRunning, playerKeyDown, playerKeyUp } from "./player/playerMain.js";
-import { loadGD, saveGD, UI_PALETTE_EYEDROPPER, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_MIXER, UI_PALETTE_ACTIVE, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_TOPBAR_BLOCK, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, closeEyedropperMixer, UI_PALETTE_ERASE, UI_TEXTEDIT_ACTIVE, UI_REGEX, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALETTE_SURFACE_OFF, UI_SM_ORGANISM } from "./ui/UIData.js";
+import { loadGD, saveGD, UI_PALETTE_EYEDROPPER, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_MIXER, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_TOPBAR_BLOCK, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, closeEyedropperMixer, UI_PALETTE_ERASE, UI_TEXTEDIT_ACTIVE, UI_REGEX, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALETTE_SURFACE_OFF, UI_PALETTE_PLANTS } from "./ui/UIData.js";
 
 export const KEY_CONTROL = "Control";
 export const KEY_SHIFT = "Shift";
@@ -66,7 +66,7 @@ export function keydown(e) {
     }
 
     if (e.key == "w") {
-        if (!loadGD(UI_PALETTE_ACTIVE))
+        if (!loadGD(UI_PALETTE_BLOCKS))
             moveCamera(0, -1);
     }
     if (e.key == "s") {
@@ -81,7 +81,7 @@ export function keydown(e) {
 
     if (e.key == '1') {
         saveGD(UI_TOPBAR_BLOCK, true);
-        saveGD(UI_PALETTE_ACTIVE, true);
+        saveGD(UI_PALETTE_BLOCKS, true);
         saveGD(UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL);
         closeEyedropperMixer();
 
@@ -89,33 +89,33 @@ export function keydown(e) {
 
     if (e.key == '2') {
         saveGD(UI_TOPBAR_BLOCK, true);
-        saveGD(UI_PALETTE_ACTIVE, true);
+        saveGD(UI_PALETTE_BLOCKS, true);
         saveGD(UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK);
         closeEyedropperMixer();
     }
 
     if (e.key == '3') {
         saveGD(UI_TOPBAR_BLOCK, true);
-        saveGD(UI_PALETTE_ACTIVE, true);
+        saveGD(UI_PALETTE_BLOCKS, true);
         saveGD(UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL);
         saveGD(UI_PALETTE_SELECT, UI_PALETTE_WATER);
     }
 
     if (e.key == '4') {
         saveGD(UI_TOPBAR_BLOCK, true);
-        saveGD(UI_PALETTE_ACTIVE, true);
+        saveGD(UI_PALETTE_BLOCKS, true);
         saveGD(UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL);
         saveGD(UI_PALETTE_SELECT, UI_PALETTE_AQUIFER);
     }
     
     if (e.key == '5') {
         saveGD(UI_TOPBAR_BLOCK, true);
-        saveGD(UI_SM_ORGANISM, true);
+        saveGD(UI_PALETTE_PLANTS, true);
     }
 
     if (e.key == '7') {
         saveGD(UI_TOPBAR_BLOCK, true);
-        saveGD(UI_PALETTE_ACTIVE, true);
+        saveGD(UI_PALETTE_BLOCKS, true);
         saveGD(UI_PALETTE_SELECT, UI_PALETTE_ERASE);
     }
 

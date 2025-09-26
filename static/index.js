@@ -3,7 +3,7 @@ import { resetClimateAndLighting, resetLighting, scheduler_main } from "./main.j
 import { keydown, keyup } from "./keyboard.js";
 import { getLastMoveOffset, handleClick, handleMouseDown, handleMouseUp, handleTouchEnd, handleTouchMove, handleTouchStart } from "./mouse.js";
 import { getBaseSize, getCanvasHeight, getCanvasWidth, isSquareOnCanvas, recacheCanvasPositions, resetZoom, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, transformPixelsToCanvasSquares, zoom } from "./canvas.js";
-import { addUIFunctionMap, GAMEDATA, loadGD, loadUI, saveGD, setGAMEDATA, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_NAME, UI_PALETTE_PASTE_MODE, UI_PALETTE_PASTE_MODE_BG, UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_RIGID, UI_PALETTE_PHYSICS_STATIC, UI_PALLETE_MODE_PASTE, UI_SIMULATION_HEIGHT, UI_UI_CURWORLD, UI_UI_SIZE, UI_UI_WORLDNAME } from "./ui/UIData.js";
+import { addUIFunctionMap, GAMEDATA, loadGD, loadUI, saveGD, setGAMEDATA, UI_CLIPS, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_NAME, UI_PALETTE_PASTE_MODE, UI_PALETTE_PASTE_MODE_BG, UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_RIGID, UI_PALETTE_PHYSICS_STATIC, UI_PALLETE_MODE_PASTE, UI_SIMULATION_HEIGHT, UI_UI_CURWORLD, UI_UI_SIZE, UI_UI_WORLDNAME } from "./ui/UIData.js";
 import { initUI } from "./ui/WindowManager.js";
 import { addSquare } from "./squares/_sqOperations.js";
 import { waterGraphReset } from "./waterGraph.js";
@@ -115,6 +115,7 @@ addEventListener('paste', async (e) => {
             let offsetY = Math.round(offsetTransformed[1]);
             tempCtx.drawImage(image, 0, 0);
 
+            let squares = new Array();
             for (let i = 0; i < image.width; i++) {
                 for (let j = 0; j < image.height; j++) {
                     let r = tempCtx.getImageData(i, j, 1, 1).data[0];
@@ -130,11 +131,14 @@ addEventListener('paste', async (e) => {
                         } else if (loadGD(UI_PALETTE_PHYSICS) == UI_PALETTE_PHYSICS_RIGID) {
                             targetProto = RigidImageSquare;
                         }
-                        if (isSquareOnCanvas(offsetX + i, offsetY + j))
-                            addSquare(new targetProto(offsetX + i, offsetY + j, r, g, b, a))
+
+                        let sq = new targetProto(offsetX + i, offsetY + j, r, g, b, a);
+                        squares.push(sq);
+                        addSquare(sq);
                     }
                 }
             }
+            loadUI(UI_CLIPS).push(squares);
         }
     }
 });
