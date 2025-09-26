@@ -10,6 +10,7 @@ import { getWaterColor, getWaterColorDark } from "../../ui/components/LightingCo
 import { getBaseSize, getBaseUISize, zoomCanvasFillRect } from "../../canvas.js";
 import { COLOR_BLACK } from "../../colors.js";
 import { calculateColor } from "../../climate/simulation/temperatureHumidity.js";
+import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
 
 class AquiferSquare extends BaseSquare {
     constructor(posX, posY) { 
@@ -35,6 +36,7 @@ class AquiferSquare extends BaseSquare {
             sq.temperature = this.temperature;
             sq.speedY = randNumber(-1, 1);
             sq.blockHealth = loadGD(UI_PALETTE_AQUIFER_FLOWRATE);
+            applyLightingFromSource(this, sq);
         }
     }
     render() {

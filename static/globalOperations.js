@@ -12,6 +12,7 @@ import { registerSquare, resetFrameGroupCache, waterGraphReset } from "./waterGr
 import { RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "./colors.js";
 import { calculateColorProvideOpacity } from "./climate/simulation/temperatureHumidity.js";
 import { getPlayerXMaxOffset, getPlayerXMinOffset } from "./player/playerMain.js";
+import { applyLightingFromSource } from "./lighting/lightingProcessing.js";
 
 let frame_squares = null;
 let frame_simulation_squares = new Array();
@@ -205,14 +206,14 @@ export function doWaterFlow() {
                                 removeItemAll(candidateArr, cand);
                                 cand.currentPressureDirect = -1;
                                 cand.calculateDirectPressure();
-
-                                cand.lighting = [];
-                                cand.initLightingFromNeighbors();
                                 curTargWater = cand;
 
                                 for (let i = 0; i < cand.posHistoryRetentionLength; i++) {
                                     cand.posHistoryMap[i] = [cand.posX, cand.posY]
                                 }
+
+                                let refForLighting = getSquares(cand.posX, cand.posY + 1).filter((sq) => sq.visible).at(0);
+                                applyLightingFromSource(refForLighting, cand);
                             }
                         } else {
                             curTargWater.blockHealth += candidateHealthApplied;

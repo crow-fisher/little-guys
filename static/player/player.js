@@ -1,4 +1,4 @@
-import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, recacheCanvasPositions, zoomCanvasFillCircle, zoomCanvasFillRect } from "../canvas.js";
+import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, getCurZoom, recacheCanvasPositions, zoomCanvasFillCircle, zoomCanvasFillRect } from "../canvas.js";
 import { addWindPressureDryAir } from "../climate/simulation/wind.js";
 import { getFrameDt } from "../climate/time.js";
 import { COLOR_BLACK, COLOR_GREEN, COLOR_VERY_FUCKING_RED } from "../colors.js";
@@ -157,7 +157,7 @@ export class Player {
             return;
         }
         this.zoomBounce = Date.now();
-        saveGD(UI_CANVAS_SQUARES_ZOOM, Math.max(1, loadGD(UI_CANVAS_SQUARES_ZOOM) + dir));
+        saveGD(UI_CANVAS_SQUARES_ZOOM, Math.max(1, getCurZoom() + dir));
     }
 
     tick() {

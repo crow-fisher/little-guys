@@ -83,12 +83,18 @@ export function addSquareByName(posX, posY, name) {
             break;
         case "soil":
             let prevSurfaceLightingFactor = (1 - loadGD(UI_LIGHTING_SURFACE));
-                getSquares(posX, posY).filter((sq) => sq.proto == "SoilSquare" || sq.proto == "WaterSquare").forEach((sq) => {
-                    prevSurfaceLightingFactor = sq.surfaceLightingFactor;
-                    removeSquare(sq);
-                });
+            let prevWaterContainment = null;
+            getSquares(posX, posY).filter((sq) => sq.proto == "SoilSquare" || sq.proto == "WaterSquare").forEach((sq) => {
+                prevSurfaceLightingFactor = sq.surfaceLightingFactor;
+                prevWaterContainment = sq.waterContainment;
+                removeSquare(sq);
+            });
             square = addSquare(new SoilSquare(posX, posY));
             square.surfaceLightingFactor = prevSurfaceLightingFactor;
+
+            if (prevWaterContainment != null)
+                square.waterContainment = prevWaterContainment;
+            
             break;
         case "water":
             square = addSquare(new WaterSquare(posX, posY));

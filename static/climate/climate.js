@@ -17,7 +17,7 @@ export class Climate {
 
         ]
         this.rockColors = [
-            this.hueShiftColorArr(rockColorBaseArr, -150, -.2, 0    ),
+            this.hueShiftColorArr(rockColorBaseArr, -150, -.2, 0),
             this.hueShiftColorArr(rockColorBaseArr, -100, -.1, 0),
             this.hueShiftColorArr(rockColorBaseArr, -50, -.05, 0),
             this.hueShiftColorArr(rockColorBaseArr, -0, -.15, 0),

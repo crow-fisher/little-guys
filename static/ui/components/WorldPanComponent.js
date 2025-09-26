@@ -1,4 +1,4 @@
-import { getBaseSize, getBaseUISize, getCanvasSquaresX, getCanvasWidth, recacheCanvasPositions } from "../../canvas.js";
+import { getBaseSize, getBaseUISize, getCanvasSquaresX, getCanvasWidth, getCurZoom, recacheCanvasPositions } from "../../canvas.js";
 import { initializeStarMap } from "../../climate/time.js";
 import { indexCanvasSize } from "../../index.js";
 import { Container } from "../Container.js";
@@ -30,7 +30,7 @@ export class WorldPanComponent extends WorldPanLockedComponent {
             () => {
                 let startCamX = loadGD(UI_CANVAS_VIEWPORT_CENTER_X);
                 let startCamY = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y);
-                let startZoom = loadGD(UI_CANVAS_SQUARES_ZOOM);
+                let startZoom = getCurZoom();
 
                 let start = loadGD(UI_PALETTE_SELECT);
 

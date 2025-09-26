@@ -8,7 +8,7 @@ import { RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED, RGB_COLOR_GREEN } from "../colors.
 import { removeSquare } from "../globalOperations.js";
 import { STATE_HEALTHY, STAGE_DEAD } from "../organisms/Stages.js";
 import { getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
-import { getBaseSize, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasFillRectTheta, zoomCanvasSquareText } from "../canvas.js";
+import { getBaseSize, getCurZoom, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasFillRectTheta, zoomCanvasSquareText } from "../canvas.js";
 import { loadGD, UI_CANVAS_SQUARES_ZOOM, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_NORMAL, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../ui/UIData.js";
 
 export const LSQ_RENDERMODE_SQUARE = "LSQ_RENDERMODE_SQUARE";
@@ -268,7 +268,7 @@ class BaseLifeSquare {
             outlineHsv[1] /= 3;
             outlineHsv[2] /= 2;
             MAIN_CONTEXT.strokeStyle = rgbToRgba(...hsv2rgb(...outlineHsv), this.lifetimeIndicated);
-            MAIN_CONTEXT.lineWidth = getBaseSize() * .15 * loadGD(UI_CANVAS_SQUARES_ZOOM);
+            MAIN_CONTEXT.lineWidth = getBaseSize() * .15 * getCurZoom();
             MAIN_CONTEXT.stroke();
 
         }

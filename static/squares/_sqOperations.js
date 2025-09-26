@@ -50,16 +50,20 @@ function addSquareOverride(square) {
     }
     let prevSurfaceLightingFactor = (1 - loadGD(UI_LIGHTING_SURFACE));
     let prevSurface = true;
+    let prevWaterContainment = null;
     if (square.collision) {
         existingSquares.filter((sq) => sq.collision).forEach((sq) => {
             prevSurfaceLightingFactor = sq.surfaceLightingFactor;
             prevSurface = sq.surface;
+            prevWaterContainment = sq.waterContainment;
             removeSquare(sq)
         });
     }
     addSquare(square); 
     square.surfaceLightingFactor = prevSurfaceLightingFactor;
     square.surface = prevSurface;
+    if (prevWaterContainment != null)
+        square.waterContainment = prevWaterContainment
     return square;
 }
 
