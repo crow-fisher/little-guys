@@ -22,7 +22,7 @@ export class CilpGallery extends WindowElement {
         for (let i = 0; i < gd2; i++) {
             let clip = clips[loadUI(UI_CLIPS_PAGE) * 4 + i];
             if (clip != null)
-                this.renderClip(startX + clipSizeX * (i % gd), startY + clipSizeY * Math.floor(i / gd), clipSizeX, clipSizeY, clip);
+                this.renderClip(startX + clipSizeX * (.5 + i % gd), startY + clipSizeY * (0.5 + Math.floor(i / gd)), clipSizeX, clipSizeY, clip);
             
         }
         return [this.sizeX, this.sizeY];
@@ -33,7 +33,9 @@ export class CilpGallery extends WindowElement {
 
         let clipPixels = clip.length;
         let canvasArea = sizeX * sizeY;
-        let frac = 1; //canvasArea / (clipPixels ** 1.1);
+        let frac = 1;   
+
+        // need to just set these up in a struct that has all the metadata that's needed to render and scale them properly
 
         let midX = 0, midY = 0;
         clip.forEach((sq) => {
@@ -43,17 +45,14 @@ export class CilpGallery extends WindowElement {
             midY += sqpy / clip.length;
         });
 
-        clip.forEach((sq) => {
+        for (let i = 0; i < clip.length; i += (5 * frac)) {
+            let sq = clip[Math.floor(i)];
             let cb = sq.getColorBase();
-            let posX = startX + ((sq.posX - midX) / frac);
-            let posY = startY + ((sq.posY - midY) / frac);
+            let posX = startX + ((sq.posX - midX) * frac);
+            let posY = startY + ((sq.posY - midY) * frac);
             MAIN_CONTEXT.fillStyle = rgbToHex(cb.r, cb.g, cb.b);
             MAIN_CONTEXT.fillRect(posX, posY, 10, 10);
-
-        })
-        
-
-        
+        }
 
     }
 }
