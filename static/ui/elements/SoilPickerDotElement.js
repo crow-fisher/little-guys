@@ -24,14 +24,14 @@ export class SoilPickerDotElement extends WindowElement {
         MAIN_CONTEXT.fillStyle = COLOR_VERY_FUCKING_RED;
 
         let arr = loadGD(UI_PALETTE_COMPOSITION);
-        let y = 1 - arr[2];
-        let x = 1 - (arr[0] / (y));
 
-        x -= 0.5;
-        x /= y;
-        x *= 0.8;
-        x += 0.5;
-        
+        let sand = arr[0];
+        let silt = arr[1];
+        let clay = arr[2];
+
+        let y = 1 - clay;
+        let x = 1 - (sand / (sand + silt));
+
         MAIN_CONTEXT.textAlign = 'center';
         let label = UI_BIGDOTHOLLOW;
         if (loadGD(UI_PALETTE_SELECT) == UI_PALETTE_SOILROCK) {

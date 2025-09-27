@@ -42,6 +42,21 @@ function getPasteColorDark() {
 
 function transformComposition(sand, silt, clay, xClickLoc, yClickLoc, numRows, numCols) {
     return [sand, silt, clay];
+    let sandSiltDeltaRange = (1 - clay) / numCols;
+    let clayDeltaRange = 1 / numRows;
+
+    let sandDelta = (0.5 - xClickLoc) * sandSiltDeltaRange;
+    let clayDelta = (0.5 - yClickLoc) * clayDeltaRange;
+    let sandSiltCache = sand + silt;
+
+    sand += sandDelta;
+    silt -= sandDelta;
+
+    clay += clayDelta;
+    sand -= (sand / sandSiltCache) * clayDelta;
+    silt -= (silt / sandSiltCache) * clayDelta;
+
+    return [sand, silt, clay];
 }
 
 export class BlockPalette extends Component {
