@@ -40,6 +40,10 @@ function getPasteColorDark() {
     return rgbToHex(hueShifted.r, hueShifted.g, hueShifted.b);
 }
 
+function transformComposition(sand, silt, clay, xClickLoc, yClickLoc, numRows, numCols) {
+    return [sand, silt, clay];
+}
+
 export class BlockPalette extends Component {
     constructor(posX, posY, padding, dir, key) {
         super(posX, posY, padding, dir, key);
@@ -85,18 +89,31 @@ export class BlockPalette extends Component {
         container.addElement(specialContainer);
         container.addElement(pasteContainer);
 
+        // block palette part
+
+        let buttonHeight = h2; 
         for (let i = 0; i <= this.numSoilRows; i++) {
             let row = new Container(this.window, 0, 0);
             soilRockContainer.addElement(row);
-            for (let j = 0; j < this.palette.get(i).length; j++) {
-                let labelFunc = () => ""
-                row.addElement(new ButtonFunctionalText(this.window, sizeX / this.palette.get(i).length, h2, UI_CENTER, () => {
-                    saveGD(UI_PALETTE_COMPOSITION, this.palette.get(i).at(j));
+
+            let numCols = this.palette.get(i).length;
+            let buttonWidth = sizeX / numCols;
+
+            for (let j = 0; j < numCols; j++) {
+                row.addElement(new ButtonFunctionalText(this.window, buttonWidth, buttonHeight, UI_CENTER, (x, y) => {
+                    let comp = this.palette.get(i).at(j);
+                    x /= buttonWidth;
+                    y /= buttonHeight; 
+                    comp = transformComposition(...comp, x, y, this.numSoilRows, numCols);
+                    saveGD(UI_PALETTE_COMPOSITION, comp);
                     saveGD(UI_PALETTE_SELECT, UI_PALETTE_SOILROCK)
-                }, labelFunc, () => getActiveClimate().getBaseActiveToolBrightness(this.palette.get(i).at(j), 1), 1, getBaseUISize() * 0.15))
+                },  () => "", () => getActiveClimate().getBaseActiveToolBrightness(this.palette.get(i).at(j), 1), 1, getBaseUISize() * 0.15))
             }
         }
         soilRockContainer.addElement(new SoilPickerDotElement(this.window, sizeX, (this.numSoilRows + 1) * h2));
+
+        // end block palette part
+        
         let toolRow = new Container(this.window, 0, 0);
 
         soilRockContainer.addElement(new Text(this.window, sizeX, h2, UI_CENTER, "palette"));

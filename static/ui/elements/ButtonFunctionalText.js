@@ -46,7 +46,7 @@ export class ButtonFunctionalText extends WindowElement {
             return;
         } 
         if (this.lastClick != getLastMouseDown()) {
-            this.func();
+            this.func(posX, posY);
             this.lastClick = getLastMouseDown();
         }
     }

@@ -35,7 +35,6 @@ all_components = [];
 topBarComponent = new TopBarComponent("UI_TOPBAR");
 
 export function initUI() {
-
     if (getBaseUISize() * 40 > getCanvasHeight() && getCanvasHeight() > 500) {
         saveUI(UI_UI_SIZE, 8);
     }
