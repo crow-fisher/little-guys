@@ -122,7 +122,11 @@ export class BlockPalette extends Component {
                     comp = transformComposition(...comp, x, y, this.numSoilRows, numCols);
                     saveGD(UI_PALETTE_COMPOSITION, comp);
                     saveGD(UI_PALETTE_SELECT, UI_PALETTE_SOILROCK)
-                },  () => "", () => getActiveClimate().getBaseActiveToolBrightness(this.palette.get(i).at(j), .75), 1, getBaseUISize() * 0.15))
+                },  () => "", 
+                    () => getActiveClimate().getBaseActiveToolBrightness(this.palette.get(i).at(j), .70),
+                    1, 
+                    getBaseUISize() * 0.15)
+                );  
             }
         }
         soilRockContainer.addElement(new SoilPickerDotElement(this.window, sizeX, (this.numSoilRows + 1) * h2));
@@ -131,7 +135,7 @@ export class BlockPalette extends Component {
         let debug =new URLSearchParams(document.location.search).get("debug");
         soilRockContainer.addElement(new Text(this.window, sizeX, br, UI_CENTER, ""));
         
-        soilRockContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => debug ? Array.from(loadGD(UI_PALETTE_COMPOSITION).map((val) => val.toFixed(2))) : "", () => getActiveClimate().getBaseActiveToolBrightness(loadGD(UI_PALETTE_COMPOSITION), 0.75)));
+        soilRockContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => debug ? Array.from(loadGD(UI_PALETTE_COMPOSITION).map((val) => val.toFixed(2))) : "", () => getActiveClimate().getBaseActiveToolBrightness(loadGD(UI_PALETTE_COMPOSITION), 0.60)));
 
         // end block palette part
         

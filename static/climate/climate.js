@@ -4,8 +4,8 @@ import { loadGD, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_HEAVYRAIN, UI_CLIM
 
 export class Climate {
     constructor() {
-        let soilColorBaseArr = ["#ffb77cff", "#3d2d21", "#be5227"];
-        let rockColorBaseArr = ["#1b203bff", "#412441ff", "#7b7b81ff"];
+        let soilColorBaseArr = ["#c99062ff", "#3d2d21", "#8b4c33ff"];
+        let rockColorBaseArr = ["#3c4786ff", "#8f528fff", "#828297ff"];
 
         this.soilColors = [
             this.hueShiftColorArr(soilColorBaseArr, -15, 0, -10),
@@ -68,9 +68,9 @@ export class Climate {
         return this.processColor(this.surfaceOffColor, 0.5);
     }
 
-    processColor(rgb, frac) {
+    processColor(rgb, frac, darken=255) {
         let hsv = rgb2hsv(rgb.r, rgb.g, rgb.b);
-        hsv[2] =  (255 * (1 - frac)) + (hsv[2] * frac);
+        hsv[2] =  (darken * (1 - frac)) + (hsv[2] * frac);
         rgb = hsv2rgb(hsv[0], hsv[1], hsv[2]);
         return rgbToHex(Math.floor(rgb[0]), Math.floor(rgb[1]), Math.floor(rgb[2]));
     }
@@ -134,9 +134,9 @@ export class Climate {
 
     getBaseActiveToolBrightness(arr, brightness) {
         if (loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK) {
-            return this.processColor(this.getBaseRockColorApplyLighting(loadGD(UI_PALETTE_ROCKIDX), ...arr), brightness);
+            return this.processColor(this.getBaseRockColorApplyLighting(loadGD(UI_PALETTE_ROCKIDX), ...arr), brightness, 35);
         } else {
-            return this.processColor(this.getBaseSoilColorApplyLighting(loadGD(UI_PALETTE_SOILIDX), ...arr), brightness);
+            return this.processColor(this.getBaseSoilColorApplyLighting(loadGD(UI_PALETTE_SOILIDX), ...arr), brightness, 0);
         }
     }
 
