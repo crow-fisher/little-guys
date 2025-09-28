@@ -126,6 +126,7 @@ export class BlockPalette extends Component {
             }
         }
         soilRockContainer.addElement(new SoilPickerDotElement(this.window, sizeX, (this.numSoilRows + 1) * h2));
+        
 
         // end block palette part
         

@@ -222,16 +222,14 @@ async function openDatabase() {
     });
 }
 
-
-function getFrameSaveData() {
+export function compressSquares(squares) {
     let sqArr = new Array();
     let orgArr = new Array();
     let lsqArr = new Array();
     let growthPlanArr = new Array();
     let growthPlanComponentArr = new Array();
     let growthPlanStepArr = new Array();
-
-    iterateOnSquares((sq) => {
+        squares.forEach((sq) => {
         sq.lighting = [];
         sq.linkedOrganisms = Array.from(sq.linkedOrganisms.map((org) => {
             if (org.stage != STAGE_DEAD) {
@@ -268,7 +266,7 @@ function getFrameSaveData() {
         sq.linkedOrganismSquares = Array.from(sq.linkedOrganismSquares.map((lsq) => lsqArr.indexOf(lsq)));
         sqArr.push(sq)
     });
-
+    
     growthPlanStepArr.forEach((gps) => {
         gps.growthPlan = growthPlanArr.indexOf(gps.growthPlan);
         gps.completedSquare = lsqArr.indexOf(gps.completedSquare);
@@ -286,6 +284,20 @@ function getFrameSaveData() {
         gp.component = growthPlanComponentArr.indexOf(gp.component);
     });
 
+    return [sqArr, orgArr, lsqArr, growthPlanArr, growthPlanComponentArr, growthPlanStepArr]
+}
+
+
+function getFrameSaveData() {
+    let squares = new Array();
+    iterateOnSquares((sq) => squares.push(sq));
+    let compressed = compressSquares(squares);
+    let sqArr = compressed[0]
+    let orgArr = compressed[1]
+    let lsqArr = compressed[2]
+    let growthPlanArr = compressed[3]
+    let growthPlanComponentArr = compressed[4]
+    let growthPlanStepArr = compressed[5]
 
     let saveObj = {
         sqArr: sqArr,

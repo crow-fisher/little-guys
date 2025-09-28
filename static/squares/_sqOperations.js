@@ -160,13 +160,10 @@ export function getSqColChangeLocation(posX) {
     }
     return sqColChangeLocationMap.get(posX);
 }
-/**
- * @param {function} func - applies provided function to all squares
- */
+
 function iterateOnSquares(func) {
     ALL_SQUARES.keys().forEach((key) => ALL_SQUARES.get(key).keys().forEach((subkey) => ALL_SQUARES.get(key).get(subkey).forEach((func))));
 }
-
 
 function getSquares(posX, posY, create=false) {
     return getObjectArrFromMap(ALL_SQUARES, Math.floor(posX), Math.floor(posY), create);
