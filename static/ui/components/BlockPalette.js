@@ -139,33 +139,47 @@ export class BlockPalette extends Component {
 
         // end block palette part
         
-        let toolRow = new Container(this.window, 0, 0);
 
         soilRockContainer.addElement(new Text(this.window, sizeX, h2, UI_CENTER, "palette"));
-        soilRockContainer.addElement(toolRow);
 
-        for (let i = 0; i < getActiveClimate().soilColors.length; i++) {
-            toolRow.addElement(new ButtonFunctionalText(this.window, sizeX / getActiveClimate().soilColors.length, h1, UI_CENTER,
-                () => {
-                    let key = loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK ? UI_PALETTE_ROCKIDX : UI_PALETTE_SOILIDX;
-                    saveGD(key, i)
-                },
-                () => {
-                    let key = loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK ? UI_PALETTE_ROCKIDX : UI_PALETTE_SOILIDX;
-                    let curVal = loadGD(key);
-                    if (curVal != i) {
-                        return UI_BIGDOTHOLLOW;
-                    } else {
-                        return UI_BIGDOTSOLID;
-                    }
-                }, () => {
-                    let arr = [.4, .4, .2];
-                    if (loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK) {
-                        arr = [.2, .2, .6];
-                    };
-                    return getActiveClimate().getBaseActiveToolBrightnessIdx(i, arr, 0.75);
-                }));
+        let soilColorPaletteConditionalContainer = new ConditionalContainer(this.window, 0, 0, () => loadGD(UI_PALETTE_MODE) != UI_PALETTE_MODE_ROCK);
+        let rockColorPaletteConditionalContainer = new ConditionalContainer(this.window, 0, 0, () => loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK);
+
+        soilRockContainer.addElement(soilColorPaletteConditionalContainer);
+        soilRockContainer.addElement(rockColorPaletteConditionalContainer);
+
+        let lengthArrMapping = [[soilColorPaletteConditionalContainer, getActiveClimate().soilColors.length], [rockColorPaletteConditionalContainer, getActiveClimate().rockColors.length]];
+        for (let j = 0; j < lengthArrMapping.length; j++) {
+            let container = lengthArrMapping[j][0];
+            let length = lengthArrMapping[j][1];
+            for (let i = 0; i < length; i++) {
+                let toolRow = new Container(this.window, 0, 0);
+                container.addElement(toolRow);
+
+                toolRow.addElement(new ButtonFunctionalText(this.window, sizeX / length, h1, UI_CENTER,
+                    () => {
+                        let key = loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK ? UI_PALETTE_ROCKIDX : UI_PALETTE_SOILIDX;
+                        saveGD(key, i)
+                    },
+                    () => {
+                        let key = loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK ? UI_PALETTE_ROCKIDX : UI_PALETTE_SOILIDX;
+                        let curVal = loadGD(key);
+                        if (curVal != i) {
+                            return UI_BIGDOTHOLLOW;
+                        } else {
+                            return UI_BIGDOTSOLID;
+                        }
+                    }, () => {
+                        let arr = [.4, .4, .2];
+                        if (loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK) {
+                            arr = [.2, .2, .6];
+                        };
+                        return getActiveClimate().getBaseActiveToolBrightnessIdx(i, arr, 0.75);
+                    }));
+            }
         }
+
+
         container.addElement(new Text(this.window, sizeX / 8, h1 / 4, 0, ""));
         specialContainer.addElement(new Text(this.window, sizeX, h1, UI_CENTER, "surface and lighting"))
         let surfaceRow = new Container(this.window, 0, 0);

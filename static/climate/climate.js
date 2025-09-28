@@ -15,17 +15,16 @@ export class Climate {
             this.hueShiftColorArr(soilColorBaseArr, 5, 0, -10),
             this.hueShiftColorArr(soilColorBaseArr, 10, 0, -20),
             this.hueShiftColorArr(soilColorBaseArr, 15, 0, -30)
+        ]
+        this.rockColors = new Array();
+        let numRockColors = 20; // the one we want is at 29
+        for (let i = 0; i < numRockColors; i++) {
+            let hueShift = 61 + (400 / numRockColors) * i;
+            this.rockColors.push(this.hueShiftColorArr(rockColorBaseArr, hueShift, 0, 0));
+            console.log(hueShift);
+        }
 
-        ]
-        this.rockColors = [
-            this.hueShiftColorArr(rockColorBaseArr, -150, -.2, 0),
-            this.hueShiftColorArr(rockColorBaseArr, -100, -.1, 0),
-            this.hueShiftColorArr(rockColorBaseArr, -50, -.05, 0),
-            this.hueShiftColorArr(rockColorBaseArr, -0, -.15, 0),
-            this.hueShiftColorArr(rockColorBaseArr, 50, -.13, 0),
-            this.hueShiftColorArr(rockColorBaseArr, 100, -.1, 0),
-            this.hueShiftColorArr(rockColorBaseArr, 150, -.05, 0),
-        ]
+        -200 + (720 / 80) * 29
 
         this.surfaceOnColorHex = "#50545e";
         this.surfaceOffColorHex = "#c3cde6";
