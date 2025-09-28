@@ -68,8 +68,6 @@ export class BaseSquare {
         this.linkedOrganismSquares = new Array();
         this.lighting = new Array();
         this.spawnTime = Date.now();
-
-        // for ref - values from dirt
         this.opacity = 1;
         this.cachedRgba = null;
         this.distToFront = 0;
