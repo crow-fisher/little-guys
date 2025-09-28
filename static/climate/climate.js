@@ -161,9 +161,9 @@ export class Climate {
         idx = idx % this.soilColors.length;
         let l = getDefaultLighting();
         return {
-            r: l.r * (this.soilColors[idx][0].r * sand + this.soilColors[idx][1].r * silt + this.soilColors[idx][2].r * clay), 
-            g: l.g * (this.soilColors[idx][0].g * sand + this.soilColors[idx][1].g * silt + this.soilColors[idx][2].g * clay), 
-            b: l.b * (this.soilColors[idx][0].b * sand + this.soilColors[idx][1].b * silt + this.soilColors[idx][2].b * clay)
+            r: (l.r / 255)* (this.soilColors[idx][0].r * sand + this.soilColors[idx][1].r * silt + this.soilColors[idx][2].r * clay), 
+            g: (l.g / 255)* (this.soilColors[idx][0].g * sand + this.soilColors[idx][1].g * silt + this.soilColors[idx][2].g * clay), 
+            b: (l.b / 255)* (this.soilColors[idx][0].b * sand + this.soilColors[idx][1].b * silt + this.soilColors[idx][2].b * clay)
         }
     }
     getBaseRockColorApplyLighting(idx, sand, silt, clay) {
