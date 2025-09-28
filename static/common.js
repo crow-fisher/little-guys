@@ -56,6 +56,9 @@ export function hexToRgbArr(hex) {
         parseInt(result[3], 16)
     ] : null;
 }
+export function rgbToHexObj(obj) {
+    return rgbToHex(obj.r, obj.b, obj.b);
+}
 
 function rgbToHex(r, g, b) {
     return "#" + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1);

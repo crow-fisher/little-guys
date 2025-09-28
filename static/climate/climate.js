@@ -1,4 +1,5 @@
 import { hexToRgb, hsv2rgb, hueShiftColor, rgb2hsv, rgbToHex } from "../common.js";
+import { getDefaultLighting } from "../lighting/lightingProcessing.js";
 import { loadGD, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_HEAVYRAIN, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_CLEAR, UI_PALETTE_ROCKIDX, UI_PALETTE_SOILIDX, UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK } from "../ui/UIData.js";
 
 export class Climate {
@@ -133,26 +134,9 @@ export class Climate {
 
     getBaseActiveToolBrightness(arr, brightness) {
         if (loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK) {
-            return this.processColor(this.getBaseRockColor(loadGD(UI_PALETTE_ROCKIDX), ...arr), brightness);
+            return this.processColor(this.getBaseRockColorApplyLighting(loadGD(UI_PALETTE_ROCKIDX), ...arr), brightness);
         } else {
-            return this.processColor(this.getBaseSoilColor(loadGD(UI_PALETTE_SOILIDX), ...arr), brightness);
-        }
-    }
-
-    getBaseSoilColorBrightness(arr, brightness) {
-        return this.processColor(this.getBaseSoilColor(loadGD(UI_PALETTE_SOILIDX), ...arr), brightness);
-    }
-    getBaseSoilColorBrightnessIdx(idx, arr, brightness) {
-        return this.processColor(this.getBaseSoilColor(idx, ...arr), brightness);
-    }
-    getBaseRockColorBrightnessIdx(idx, arr, brightness) {
-        return this.processColor(this.getBaseRockColor(idx, ...arr), brightness);
-    }
-    getBaseActiveToolColorActiveIdx(brightness) {
-        if (loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK) {
-            return this.processColor(this.getBaseRockColor(loadGD(UI_PALETTE_ROCKIDX), .4, .4, .2), brightness);
-        } else {
-            return this.processColor(this.getBaseSoilColor(loadGD(UI_PALETTE_SOILIDX), .4, .4, .2), brightness);
+            return this.processColor(this.getBaseSoilColorApplyLighting(loadGD(UI_PALETTE_SOILIDX), ...arr), brightness);
         }
     }
 
@@ -170,6 +154,25 @@ export class Climate {
             r: sand * this.rockColors[idx][0].r + silt * this.rockColors[idx][1].r + clay * this.rockColors[idx][2].r, 
             g: sand * this.rockColors[idx][0].g + silt * this.rockColors[idx][1].g + clay * this.rockColors[idx][2].g, 
             b: sand * this.rockColors[idx][0].b + silt * this.rockColors[idx][1].b + clay * this.rockColors[idx][2].b
+        }
+    }
+
+    getBaseSoilColorApplyLighting(idx, sand, silt, clay) {
+        idx = idx % this.soilColors.length;
+        let l = getDefaultLighting();
+        return {
+            r: l.r * (this.soilColors[idx][0].r * sand + this.soilColors[idx][1].r * silt + this.soilColors[idx][2].r * clay), 
+            g: l.g * (this.soilColors[idx][0].g * sand + this.soilColors[idx][1].g * silt + this.soilColors[idx][2].g * clay), 
+            b: l.b * (this.soilColors[idx][0].b * sand + this.soilColors[idx][1].b * silt + this.soilColors[idx][2].b * clay)
+        }
+    }
+    getBaseRockColorApplyLighting(idx, sand, silt, clay) {
+        idx = idx % this.rockColors.length;
+        let l = getDefaultLighting();
+        return {
+            r: (l.r / 255) * (sand * this.rockColors[idx][0].r + silt * this.rockColors[idx][1].r + clay * this.rockColors[idx][2].r), 
+            g: (l.g / 255) * (sand * this.rockColors[idx][0].g + silt * this.rockColors[idx][1].g + clay * this.rockColors[idx][2].g), 
+            b: (l.b / 255) * (sand * this.rockColors[idx][0].b + silt * this.rockColors[idx][1].b + clay * this.rockColors[idx][2].b)
         }
     }
 }

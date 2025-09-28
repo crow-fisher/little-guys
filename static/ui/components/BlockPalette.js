@@ -1,6 +1,6 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
-import { hueShiftColor, rgbToHex, UI_BIGDOTHOLLOW, UI_BIGDOTSOLID } from "../../common.js";
+import { hueShiftColor, rgbToHex, rgbToHexObj, UI_BIGDOTHOLLOW, UI_BIGDOTSOLID } from "../../common.js";
 import { Component } from "../Component.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
 import { Container } from "../Container.js";
@@ -12,6 +12,7 @@ import { SoilPickerElement } from "../elements/SoilPicker.js";
 import { SoilPickerDotElement } from "../elements/SoilPickerDotElement.js";
 import { Text } from "../elements/Text.js";
 import { TextBackground } from "../elements/TextBackground.js";
+import { TextFunctionalBackground } from "../elements/TextFunctionalBackground.js";
 import { Toggle } from "../elements/Toggle.js";
 import { loadGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CENTER, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_PALETTE_COMPOSITION, saveGD, UI_PALETTE_SHOWPICKER, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, UI_PALETTE_SOILROCK, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_AQUIFER_FLOWRATE, UI_UI_PHONEMODE, loadUI, UI_PALLETE_MODE_PASTE, UI_PALETTE_PASTE_MODE, UI_PALETTE_PASTE_MODE_FG, UI_PALETTE_PASTE_MODE_BG, UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_RIGID, UI_PALETTE_PHYSICS_SAND, UI_PALETTE_PHYSICS_STATIC, UI_PALETTE_SPECIAL_CHURN, UI_PALETTE_SPECIAL_CHURN_WIDE, UI_PALETTE_SPECIAL_CHURN_STRENGTH, UI_PALETTE_SURFACE_MATCH } from "../UIData.js";
 import { getWaterColor, getWaterColorDark } from "./LightingComponent.js";
@@ -41,7 +42,6 @@ function getPasteColorDark() {
 }
 
 function transformComposition(sand, silt, clay, xClickLoc, yClickLoc, numRows, numCols) {
-    return [sand, silt, clay];
     let sandSiltDeltaRange = (1 - clay) / numCols;
     let clayDeltaRange = 1 / numRows;
 
@@ -122,11 +122,16 @@ export class BlockPalette extends Component {
                     comp = transformComposition(...comp, x, y, this.numSoilRows, numCols);
                     saveGD(UI_PALETTE_COMPOSITION, comp);
                     saveGD(UI_PALETTE_SELECT, UI_PALETTE_SOILROCK)
-                },  () => "", () => getActiveClimate().getBaseActiveToolBrightness(this.palette.get(i).at(j), 1), 1, getBaseUISize() * 0.15))
+                },  () => "", () => getActiveClimate().getBaseActiveToolBrightness(this.palette.get(i).at(j), .75), 1, getBaseUISize() * 0.15))
             }
         }
         soilRockContainer.addElement(new SoilPickerDotElement(this.window, sizeX, (this.numSoilRows + 1) * h2));
         
+
+        let debug =new URLSearchParams(document.location.search).get("debug");
+        soilRockContainer.addElement(new Text(this.window, sizeX, br, UI_CENTER, ""));
+        
+        soilRockContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => debug ? Array.from(loadGD(UI_PALETTE_COMPOSITION).map((val) => val.toFixed(2))) : "", () => getActiveClimate().getBaseActiveToolBrightness(loadGD(UI_PALETTE_COMPOSITION), 0.75)));
 
         // end block palette part
         
@@ -154,7 +159,7 @@ export class BlockPalette extends Component {
                     if (loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK) {
                         arr = [.2, .2, .6];
                     };
-                    return getActiveClimate().getBaseActiveToolBrightnessIdx(i, arr, 1);
+                    return getActiveClimate().getBaseActiveToolBrightnessIdx(i, arr, 0.75);
                 }));
         }
         container.addElement(new Text(this.window, sizeX / 8, h1 / 4, 0, ""));
@@ -271,15 +276,11 @@ export class BlockPalette extends Component {
         let curClay = clayStep / 2;
         let cols = 4;
         for (let i = this.numSoilRows; i >= 0; i--) {
-            let remaining = (1 - curClay);
-            let remMid = remaining / 2;
-            let start = 0.5 - remMid;
-            let end = 0.5 + remMid;
-            let steps = cols;
-            let step = (end - start) / steps;
+
+            let step = 1 / (cols + 1);
             let arr = new Array();
             for (let j = 0; j <= cols; j++) {
-                arr.push(this.getSquareComposition(start + step * j, curClay));
+                arr.push(this.getSquareComposition((step / 2) + step * j, curClay));
             }
             this.palette.set(i, arr);
             curClay += clayStep;
