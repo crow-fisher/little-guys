@@ -95,8 +95,8 @@ function transformComposition(sandDelta, clayDelta) {
 
     sand += sandDelta;
     silt -= sandDelta;
-
     clay += clayDelta;
+    
     sand -= (sand / sandSiltCache) * clayDelta;
     silt -= (silt / sandSiltCache) * clayDelta;
 
@@ -137,21 +137,21 @@ function toollessKeyMap(key) {
         setGlobalThetaBase(getGlobalThetaBase() - 0.1);
     }
 
-    if (e.key == "w") {
+    if (key == "w") {
         if (!loadGD(UI_PALETTE_BLOCKS))
             moveCamera(0, -1);
     }
-    if (e.key == "s") {
+    if (key == "s") {
         moveCamera(0, 1);
     }
-    if (e.key == "a") {
+    if (key == "a") {
         moveCamera(-1, 0);
     }
-    if (e.key == "d") {
+    if (key == "d") {
         moveCamera(1, 0);
     }
 
-    if (e.key == "Escape") {
+    if (key == "Escape") {
         resetZoom();
     }
 }
