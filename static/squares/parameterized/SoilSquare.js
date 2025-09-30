@@ -4,7 +4,7 @@ import { cachedGetWaterflowRate, hexToRgb, randNumber, randRange } from "../../c
 import { getCurTimeScale, getDt, getFrameDt, timeScaleFactor } from "../../climate/time.js";
 import { getPressure, getWindSpeedAtLocation, getWindSquareAbove } from "../../climate/simulation/wind.js";
 import { addWaterSaturationPascals, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, temperatureHumidityFlowrateFactor } from "../../climate/simulation/temperatureHumidity.js";
-import { loadGD, UI_LIGHTING_SURFACE, UI_PALETTE_COMPOSITION, UI_PALETTE_SOILIDX, UI_SIMULATION_CLOUDS, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER } from "../../ui/UIData.js";
+import { loadGD, UI_LIGHTING_SURFACE, UI_PALETTE_COMPOSITION, UI_PALETTE_SOILIDX, UI_PALETTE_VARIANCE, UI_SIMULATION_CLOUDS, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER } from "../../ui/UIData.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { addSquareByName } from "../../manipulation.js";
 import { getBaseSize } from "../../canvas.js";
@@ -90,9 +90,9 @@ export class SoilSquare extends BaseSquare {
     }
 
     randomize() {
-        let rand1 = (Math.random() - 0.5) * 0.3;
-        let rand2 = (Math.random() - 0.5) * 0.3;
-        let rand3 = (Math.random() - 0.5) * 0.3;
+        let rand1 = (Math.random() - 0.5) * loadGD(UI_PALETTE_VARIANCE);
+        let rand2 = (Math.random() - 0.5) * loadGD(UI_PALETTE_VARIANCE);
+        let rand3 = (Math.random() - 0.5) * loadGD(UI_PALETTE_VARIANCE);
         this.clay *= (1 + rand1);
         this.silt *= (1 + rand2);
         this.sand *= (1 + rand3);
