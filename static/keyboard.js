@@ -1,7 +1,9 @@
 import { moveCamera, resetZoom } from "./canvas.js";
+import { getActiveClimate } from "./climate/climateManager.js";
 import { getGlobalThetaBase, setGlobalThetaBase } from "./globals.js";
 import { isPlayerRunning, playerKeyDown, playerKeyUp } from "./player/playerMain.js";
-import { loadGD, saveGD, UI_PALETTE_EYEDROPPER, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_MIXER, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_TOPBAR_BLOCK, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, closeEyedropperMixer, UI_PALETTE_ERASE, UI_TEXTEDIT_ACTIVE, UI_REGEX, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALETTE_SURFACE_OFF, UI_PALETTE_PLANTS } from "./ui/UIData.js";
+import { loadGD, saveGD, UI_PALETTE_EYEDROPPER, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_MIXER, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_TOPBAR_BLOCK, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, closeEyedropperMixer, UI_PALETTE_ERASE, UI_TEXTEDIT_ACTIVE, UI_REGEX, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALETTE_SURFACE_OFF, UI_PALETTE_PLANTS, UI_PALETTE_ROCKIDX, addUIFunctionMap, UI_PALETTE_COMPOSITION } from "./ui/UIData.js";
+import { clearMouseHoverColorCacheMap } from "./ui/WindowManager.js";
 
 export const KEY_CONTROL = "Control";
 export const KEY_SHIFT = "Shift";
@@ -40,28 +42,98 @@ function doKeyboardInput(e) {
     }
 }
 
-export function keydown(e) {
-        // e.preventDefault();
-    lastKeypressTime = Date.now();
-    if (loadGD(UI_TEXTEDIT_ACTIVE)) {
-        doKeyboardInput(e);
-        return;
+function globalKeymap(key) {
+    if (key == '1') {
+        saveGD(UI_TOPBAR_BLOCK, true);
+        saveGD(UI_PALETTE_BLOCKS, true);
+        saveGD(UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL);
+        closeEyedropperMixer();
     }
-    if (isPlayerRunning()) {
-        playerKeyDown(e.key);
-        return;
+
+    if (key == '2') {
+        saveGD(UI_TOPBAR_BLOCK, true);
+        saveGD(UI_PALETTE_BLOCKS, true);
+        saveGD(UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK);
+        closeEyedropperMixer();
     }
-    keyPressMap[e.key] = true;
-    // if (e.key == "s") {
-    //     doZoom(-0.1);
-    // }
-    // if (e.key == "x") {
-    //     doZoom(0.1);
-    // }
-    if (e.key == "q") {
+
+    if (key == '3') {
+        saveGD(UI_TOPBAR_BLOCK, true);
+        saveGD(UI_PALETTE_BLOCKS, true);
+        saveGD(UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL);
+        saveGD(UI_PALETTE_SELECT, UI_PALETTE_WATER);
+    }
+
+    if (key == '4') {
+        saveGD(UI_TOPBAR_BLOCK, true);
+        saveGD(UI_PALETTE_BLOCKS, true);
+        saveGD(UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL);
+        saveGD(UI_PALETTE_SELECT, UI_PALETTE_AQUIFER);
+    }
+
+    if (key == '5') {
+        saveGD(UI_TOPBAR_BLOCK, true);
+        saveGD(UI_PALETTE_PLANTS, true);
+    }
+
+    if (key == '7') {
+        saveGD(UI_TOPBAR_BLOCK, true);
+        saveGD(UI_PALETTE_BLOCKS, true);
+        saveGD(UI_PALETTE_SELECT, UI_PALETTE_ERASE);
+    }
+
+}
+
+function transformComposition(sandDelta, clayDelta) {
+    let arr = loadGD(UI_PALETTE_COMPOSITION);
+    
+    let sand = arr[0];
+    let silt = arr[1];
+    let clay = arr[2];
+
+    let sandSiltCache = sand + silt;
+
+    sand += sandDelta;
+    silt -= sandDelta;
+
+    clay += clayDelta;
+    sand -= (sand / sandSiltCache) * clayDelta;
+    silt -= (silt / sandSiltCache) * clayDelta;
+
+    return [sand, silt, clay];
+}
+
+function rockKeymap(key) {
+    if (key == "z")
+        saveGD(UI_PALETTE_ROCKIDX, Math.max(0, loadGD(UI_PALETTE_ROCKIDX) - 1));
+    if (key == "c")
+        saveGD(UI_PALETTE_ROCKIDX, Math.min(getActiveClimate().rockColors.length - 1, loadGD(UI_PALETTE_ROCKIDX) + 1));
+
+    if (key == "w") {
+       saveGD(UI_PALETTE_COMPOSITION, transformComposition(0, .01));
+    }
+    if (key == "s") {
+       saveGD(UI_PALETTE_COMPOSITION, transformComposition(0, -.01));
+    }
+    if (key == "a") {
+       saveGD(UI_PALETTE_COMPOSITION, transformComposition(.001, 0));
+    }
+    if (key == "d") {
+       saveGD(UI_PALETTE_COMPOSITION, transformComposition(-.001, 0));
+    }
+    if (key == 'q') {
+        saveGD(UI_PALETTE_SELECT, UI_PALETTE_EYEDROPPER);
+    }
+    if (key == 'e') {
+        saveGD(UI_PALETTE_SELECT, UI_PALETTE_MIXER);
+    }
+}
+
+function toollessKeyMap(key) {
+    if (key == "q") {
         setGlobalThetaBase(getGlobalThetaBase() + 0.1);
     }
-    if (e.key == "e") {
+    if (key == "e") {
         setGlobalThetaBase(getGlobalThetaBase() - 0.1);
     }
 
@@ -79,56 +151,42 @@ export function keydown(e) {
         moveCamera(1, 0);
     }
 
-    if (e.key == '1') {
-        saveGD(UI_TOPBAR_BLOCK, true);
-        saveGD(UI_PALETTE_BLOCKS, true);
-        saveGD(UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL);
-        closeEyedropperMixer();
-
-    }
-
-    if (e.key == '2') {
-        saveGD(UI_TOPBAR_BLOCK, true);
-        saveGD(UI_PALETTE_BLOCKS, true);
-        saveGD(UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK);
-        closeEyedropperMixer();
-    }
-
-    if (e.key == '3') {
-        saveGD(UI_TOPBAR_BLOCK, true);
-        saveGD(UI_PALETTE_BLOCKS, true);
-        saveGD(UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL);
-        saveGD(UI_PALETTE_SELECT, UI_PALETTE_WATER);
-    }
-
-    if (e.key == '4') {
-        saveGD(UI_TOPBAR_BLOCK, true);
-        saveGD(UI_PALETTE_BLOCKS, true);
-        saveGD(UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL);
-        saveGD(UI_PALETTE_SELECT, UI_PALETTE_AQUIFER);
-    }
-    
-    if (e.key == '5') {
-        saveGD(UI_TOPBAR_BLOCK, true);
-        saveGD(UI_PALETTE_PLANTS, true);
-    }
-
-    if (e.key == '7') {
-        saveGD(UI_TOPBAR_BLOCK, true);
-        saveGD(UI_PALETTE_BLOCKS, true);
-        saveGD(UI_PALETTE_SELECT, UI_PALETTE_ERASE);
-    }
-
-
-    if (e.key == 'q') {
-        saveGD(UI_PALETTE_SELECT, UI_PALETTE_EYEDROPPER);
-    }
-    if (e.key == 'w') {
-        saveGD(UI_PALETTE_SELECT, UI_PALETTE_MIXER);
-    }
     if (e.key == "Escape") {
         resetZoom();
     }
+}
+
+export function keydown(e) {
+    // e.preventDefault();
+    lastKeypressTime = Date.now();
+    if (loadGD(UI_TEXTEDIT_ACTIVE)) {
+        doKeyboardInput(e);
+        return;
+    }
+    if (isPlayerRunning()) {
+        playerKeyDown(e.key);
+        return;
+    }
+    keyPressMap[e.key] = true;
+
+    globalKeymap(e.key);
+
+    let mode = loadGD(UI_PALETTE_MODE);
+    let selectMode = loadGD(UI_PALETTE_SELECT);
+
+    if (mode == UI_PALETTE_MODE_ROCK) {
+        rockKeymap(e.key);
+    } else {
+        toollessKeyMap(e.key);
+    }
+
+    // if (e.key == "s") {
+    //     doZoom(-0.1);
+    // }
+    // if (e.key == "x") {
+    //     doZoom(0.1);
+    // }
+
 }
 
 export function keyup(e) {
@@ -139,3 +197,5 @@ export function keyup(e) {
         keyPressMap[e.key] = false;
     }
 }
+
+addUIFunctionMap(UI_PALETTE_ROCKIDX, clearMouseHoverColorCacheMap);
