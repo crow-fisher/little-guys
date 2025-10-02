@@ -338,7 +338,7 @@ export function zoom(event) {
         if (isKeyPressed(KEY_CONTROL)) {
             let size = loadGD(UI_PALETTE_SIZE);
             size += event.deltaY * 0.005;
-            size = Math.min(Math.max(size, 1), 14)
+            size = Math.min(Math.max(size, 0), 14)
             saveGD(UI_PALETTE_SIZE, size);
             return;
         }

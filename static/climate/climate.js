@@ -17,7 +17,7 @@ export class Climate {
             this.hueShiftColorArr(soilColorBaseArr, 15, 0, -30)
         ]
         this.rockColors = new Array();
-        let numRockColors = 20; // the one we want is at 29
+        let numRockColors = 40; // the one we want is at 29
         for (let i = 0; i < numRockColors; i++) {
             let hueShift = 61 + (400 / numRockColors) * i;
             this.rockColors.push(this.hueShiftColorArr(rockColorBaseArr, hueShift, 0, 0));

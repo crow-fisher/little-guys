@@ -163,7 +163,7 @@ export class MovingLightSource {
         thetaSquares.forEach((arr) => {
             let obj = arr[3];
 
-            let p1 = (Math.exp((2 * obj.surfaceLightingFactor) - 1) ?? 1);
+            let p1 = (Math.exp((2 * (obj.surfaceLightingFactor ?? 1)) - 1) ?? 1);
             let p2 = (obj.blockHealth ?? 1);
             let p3 = obj.getLightFilterRate() ** (1 / Math.exp(loadGD(UI_LIGHTING_DECAY) ** 2));
             let p4 = loadGD(UI_LIGHTING_QUALITY) / 11;
