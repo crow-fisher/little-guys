@@ -28,12 +28,30 @@ export class MagnoliaTree extends BaseOrganism {
         this._treeGrowthPlanning(this.originGrowth.growthPlan);
     }
 
-    _treeGrowthPlanning(growthPlan) {
+    _treeGrowthPlanning(growthPlan, startNode) {
         if (growthPlan.steps.length < 5) {
             growthPlan.steps.push(new GrowthPlanStep(
                 growthPlan,
-                () => this.growGreenSquareAction(growthPlan.component.lifeSquares.at(0), SUBTYPE_STEM)
+                () => this.growGreenSquareAction((startNode ?? growthPlan.component.lifeSquares.at(0)), SUBTYPE_STEM)
             ));
+            return true;
+        }
+        if (growthPlan.component.children.length > 1) {
+            // if we cannot grow, try to grow one of our children
+            return growthPlan.component.children.find((child) => this._treeGrowthPlanning(child.growthPlan));
+        } else {
+            // grow new child
+            let startNode = growthPlan.component.lifeSquares.at(randNumber(3, 4));
+            let newGrowthPlan = new GrowthPlan(
+                startNode.posX, startNode.posY,
+                false, STAGE_ADULT,
+                randRange(0, Math.PI * 2), 0, 0, randRange(0, 0.1),
+                randRange(0.05, 0.15), TYPE_STEM, .01);
+            newGrowthPlan.postConstruct = () => {  
+                growthPlan.component.addChild(newGrowthPlan.component);
+            };
+            this._treeGrowthPlanning(newGrowthPlan, startNode);
+            this.growthPlans.push(newGrowthPlan);
         }
 
     }
