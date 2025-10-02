@@ -21,7 +21,6 @@ export class Climate {
         for (let i = 0; i < numRockColors; i++) {
             let hueShift = 61 + (400 / numRockColors) * i;
             this.rockColors.push(this.hueShiftColorArr(rockColorBaseArr, hueShift, 0, 0));
-            console.log(hueShift);
         }
 
         -200 + (720 / 80) * 29
