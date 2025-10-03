@@ -52,6 +52,7 @@ export class MagnoliaTree extends BaseOrganism {
             };
             this._treeGrowthPlanning(newGrowthPlan, startNode);
             this.growthPlans.push(newGrowthPlan);
+            return true;
         }
 
     }
