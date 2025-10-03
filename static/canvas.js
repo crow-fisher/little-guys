@@ -3,7 +3,7 @@ import { MAIN_CONTEXT } from "./index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "./keyboard.js";
 import { getLastLastMoveOffset, getLastMoveOffset, isMiddleMouseClicked } from "./mouse.js";
 import { iterateOnOrganisms } from "./organisms/_orgOperations.js";
-import { loadGD, saveGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_UI_SIZE, UI_PALETTE_BLOCKS, loadUI, UI_PALETTE_SURFACE, UI_LIGHTING_SURFACE, UI_PALETTE_SELECT, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CANVAS_SQUARES_ZOOM } from "./ui/UIData.js";
+import { loadGD, saveGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_UI_SIZE, UI_PALETTE_BLOCKS, loadUI, UI_PALETTE_SURFACE, UI_LIGHTING_SURFACE, UI_PALETTE_SELECT, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CANVAS_SQUARES_ZOOM, UI_CANVAS_VIEWPORT_FRAC_X, UI_CANVAS_VIEWPORT_FRAC_Y } from "./ui/UIData.js";
 
 let BASE_SIZE = 4;
 let CANVAS_SQUARES_X = 192;
@@ -417,8 +417,21 @@ function panCanvas() {
 }
 
 export function moveCamera(x, y, mult=40) {
-    saveGD(UI_CANVAS_VIEWPORT_CENTER_X, Math.round(loadGD(UI_CANVAS_VIEWPORT_CENTER_X) + x * mult));
-    saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, Math.round(loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) + y * mult));
+    let trueX = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) + x * mult;
+    let trueY = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) + y * mult;
+
+    let initialX = saveGD(UI_CANVAS_VIEWPORT_CENTER_X, Math.round(trueX)); 
+    let initialY = saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, Math.round(trueY)); 
+
+    let leftoverX = trueX - loadGD(UI_CANVAS_VIEWPORT_CENTER_X);
+    let leftoverY = trueY - loadGD(UI_CANVAS_VIEWPORT_CENTER_Y);
+
+    let secondaryX = saveGD(UI_CANVAS_VIEWPORT_CENTER_X, Math.round(initialX + leftoverX + loadGD(UI_CANVAS_VIEWPORT_FRAC_X))); 
+    let secondaryY = saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, Math.round(initialY + leftoverY + loadGD(UI_CANVAS_VIEWPORT_FRAC_Y)));
+
+    saveGD(UI_CANVAS_VIEWPORT_FRAC_X, loadGD(UI_CANVAS_VIEWPORT_FRAC_X) + leftoverX - (secondaryX - initialX));
+    saveGD(UI_CANVAS_VIEWPORT_FRAC_Y, loadGD(UI_CANVAS_VIEWPORT_FRAC_Y) + leftoverY - (secondaryY - initialY));
+
     recacheCanvasPositions();
 }
 export function getCanvasWidth() {
