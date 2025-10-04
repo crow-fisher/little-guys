@@ -86,6 +86,9 @@ export function hueShiftColorArr(hex, hueShift, saturationShift, valueShift) {
     return hsv2rgb(...hsv);
 }
 
+export function randNumberExclusive(min, max) {
+    return Math.floor(Math.random() * (max - min) + min);
+} 
 
 function randNumber(min, max) {
     max += 1;

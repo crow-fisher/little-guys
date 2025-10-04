@@ -1,4 +1,4 @@
-import { randNumber, randRange } from "../../../common.js";
+import { randNumber, randNumberExclusive, randRange } from "../../../common.js";
 import { GenericRootSquare } from "../../../lifeSquares/GenericRootSquare.js";
 import { STAGE_ADULT, STAGE_DEAD, STAGE_FLOWER, STAGE_JUVENILE, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_LEAF, TYPE_STEM } from "../../Stages.js";
 import { GrowthPlan, GrowthPlanStep } from "../../GrowthPlan.js";
@@ -36,17 +36,32 @@ export class MagnoliaTree extends BaseOrganism {
             ));
             return true;
         }
-        if (growthPlan.component.children.length > 1) {
+        if (growthPlan.component.children.length > 3) {
             // if we cannot grow, try to grow one of our children
             return growthPlan.component.children.find((child) => this._treeGrowthPlanning(child.growthPlan));
         } else {
             // grow new child
-            let startNode = growthPlan.component.lifeSquares.at(randNumber(3, 4));
+            // find where our children currently are
+
+            let childYs = growthPlan.component.children.map((child) => child.growthPlan.posY);
+            let availableNodes = Array.from(growthPlan.component.lifeSquares
+                .filter((lsq) => lsq.type == "green")
+                .filter((lsq) => !childYs.some((childY) => childY == lsq.posY)));
+            
+            if (availableNodes.length == 0)
+                return false;
+            
+            let startNode = availableNodes.at(randNumberExclusive(0, availableNodes.length));
+
+            if (startNode == null)
+                alert("FUCK!!!");
+
             let newGrowthPlan = new GrowthPlan(
                 startNode.posX, startNode.posY,
                 false, STAGE_ADULT,
-                randRange(0, Math.PI * 2), 0, 0, randRange(0, 0.1),
-                randRange(0.05, 0.15), TYPE_STEM, .01);
+                0, 0, 0, randNumber(-1, 1),
+                0, TYPE_STEM, 10);
+
             newGrowthPlan.postConstruct = () => {  
                 growthPlan.component.addChild(newGrowthPlan.component);
             };
