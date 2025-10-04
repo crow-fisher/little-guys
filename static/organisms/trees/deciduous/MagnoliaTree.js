@@ -25,51 +25,58 @@ export class MagnoliaTree extends BaseOrganism {
         // each component length can be of some size 
         // and once it reaches that size, then it grows a child.
         // children must grow some distnace apart from each other
+
+        this.frameTreeGrowthChoices = new Array();
         this._treeGrowthPlanning(this.originGrowth.growthPlan);
+        this.executeFrameTreeGrowthChoice();
     }
 
     _treeGrowthPlanning(growthPlan, startNode) {
         if (growthPlan.steps.length < 5) {
-            growthPlan.steps.push(new GrowthPlanStep(
-                growthPlan,
-                () => this.growGreenSquareAction((startNode ?? growthPlan.component.lifeSquares.at(0)), SUBTYPE_STEM)
-            ));
-            return true;
+            let growAction = () => {
+                growthPlan.steps.push(new GrowthPlanStep(
+                    growthPlan,
+                    () => this.growGreenSquareAction((startNode ?? growthPlan.component.lifeSquares.at(0)), SUBTYPE_STEM)
+                ))};
+            if (startNode != null) 
+                growAction();
+            else
+                this.frameTreeGrowthChoices.push(growAction);
         }
-        if (growthPlan.component.children.length > 3) {
-            // if we cannot grow, try to grow one of our children
-            return growthPlan.component.children.find((child) => this._treeGrowthPlanning(child.growthPlan));
-        } else {
+        if (growthPlan.component.children.length < 3) {
             // grow new child
             // find where our children currently are
-
             let childYs = growthPlan.component.children.map((child) => child.growthPlan.posY);
             let availableNodes = Array.from(growthPlan.component.lifeSquares
                 .filter((lsq) => lsq.type == "green")
                 .filter((lsq) => !childYs.some((childY) => childY == lsq.posY)));
-            
+
             if (availableNodes.length == 0)
-                return false;
-            
+                return;
+
             let startNode = availableNodes.at(randNumberExclusive(0, availableNodes.length));
 
-            if (startNode == null)
-                alert("FUCK!!!");
+            this.frameTreeGrowthChoices.push(() => {
+                let newGrowthPlan = new GrowthPlan(
+                    startNode.posX, startNode.posY,
+                    false, STAGE_ADULT,
+                    0, 0, 0, randNumber(-1, 1),
+                    0, TYPE_STEM, 10);
 
-            let newGrowthPlan = new GrowthPlan(
-                startNode.posX, startNode.posY,
-                false, STAGE_ADULT,
-                0, 0, 0, randNumber(-1, 1),
-                0, TYPE_STEM, 10);
-
-            newGrowthPlan.postConstruct = () => {  
-                growthPlan.component.addChild(newGrowthPlan.component);
-            };
-            this._treeGrowthPlanning(newGrowthPlan, startNode);
-            this.growthPlans.push(newGrowthPlan);
-            return true;
+                newGrowthPlan.postConstruct = () => {
+                    growthPlan.component.addChild(newGrowthPlan.component);
+                };
+                this._treeGrowthPlanning(newGrowthPlan, startNode);
+                this.growthPlans.push(newGrowthPlan);
+            })
         }
+        growthPlan.component.children.forEach((child) => this._treeGrowthPlanning(child.growthPlan));
 
+
+    }
+
+    executeFrameTreeGrowthChoice() {
+        this.frameTreeGrowthChoices.at(randNumberExclusive(0, this.frameTreeGrowthChoices.length))();
     }
 
     planGrowth() {
