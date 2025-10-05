@@ -32,7 +32,13 @@ export class MagnoliaTree extends BaseOrganism {
     }
 
     _treeGrowthPlanning(growthPlan, startNode) {
-        if (growthPlan.steps.length < 5) {
+        let ccls = growthPlan.component.getCountChildLifeSquares();
+        let maxComponentLength = Math.max(3, ccls ** 0.6);
+        let maxNodes = Math.max(2, Math.min(maxComponentLength - 2, ccls ** 0.2))
+
+        console.log("maxComponentLength", maxComponentLength, "maxNodes", maxNodes);
+
+        if (growthPlan.steps.length < maxComponentLength) {
             let growAction = () => {
                 growthPlan.steps.push(new GrowthPlanStep(
                     growthPlan,
@@ -43,7 +49,7 @@ export class MagnoliaTree extends BaseOrganism {
             else
                 this.frameTreeGrowthChoices.push(growAction);
         }
-        if (growthPlan.component.children.length < 3) {
+        if (growthPlan.component.children.length < maxNodes) {
             // grow new child
             // find where our children currently are
             let childYs = growthPlan.component.children.map((child) => child.growthPlan.posY);
@@ -60,8 +66,8 @@ export class MagnoliaTree extends BaseOrganism {
                 let newGrowthPlan = new GrowthPlan(
                     startNode.posX, startNode.posY,
                     false, STAGE_ADULT,
-                    0, 0, 0, randNumber(-1, 1),
-                    0, TYPE_STEM, 10);
+                    randRange(0, Math.PI * 2), 0, 0, randNumber(-2, 2),
+                    randRange(0, 1), TYPE_STEM, 10);
 
                 newGrowthPlan.postConstruct = () => {
                     growthPlan.component.addChild(newGrowthPlan.component);
@@ -76,7 +82,8 @@ export class MagnoliaTree extends BaseOrganism {
     }
 
     executeFrameTreeGrowthChoice() {
-        this.frameTreeGrowthChoices.at(randNumberExclusive(0, this.frameTreeGrowthChoices.length))();
+        if (this.frameTreeGrowthChoices.length > 0)
+            this.frameTreeGrowthChoices.at(randNumberExclusive(0, this.frameTreeGrowthChoices.length))();
     }
 
     planGrowth() {

@@ -227,7 +227,7 @@ export class GrowthComponent {
         let strength = this.strengthMult;
         let windVec = this.getNetWindSpeed();
 
-        let numSquares = this.getTotalLifeSquares();
+        let numSquares = this.getCountLifeSquares();
         windVec[0] /= numSquares;
         windVec[1] /= numSquares;
 
@@ -389,12 +389,7 @@ export class GrowthComponent {
         return Math.max(.0001, this.strength());
     }
 
-    getTotalLifeSquares() {
-        return Math.max(1, this.lifeSquares.length + this.children.map((child) => child.getTotalLifeSquares()).reduce(
-            (accumulator, currentValue) => accumulator + currentValue,
-            0,
-        ));
-    }
+
 
     getNetWindSpeed() {
         return this.getValueCached("getNetWindSpeed", () => {
@@ -480,11 +475,21 @@ export class GrowthComponent {
         }
     }
 
+    // computed informational methods
     someSquareTouchingGround() {
         return this.lifeSquares.some((lsq) =>
             lsq.type == "green" &&
             lsq.state != STATE_DESTROYED &&
             lsq.groundTouchSquare() != null)
             || this.children.some((child) => child.someSquareTouchingGround());
+    }
+
+    getCountLifeSquares() {
+        return Math.max(1, this.lifeSquares.length + this.getCountChildLifeSquares());
+    }
+    getCountChildLifeSquares() {
+        return this.children.map((child) => child.getCountLifeSquares()).reduce(
+            (a, b) => a + b, 0
+        );
     }
 }
