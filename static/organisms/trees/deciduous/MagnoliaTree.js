@@ -34,7 +34,16 @@ export class MagnoliaTree extends BaseOrganism {
     _treeGrowthPlanning(growthPlan, startNode) {
         let ccls = growthPlan.component.getCountChildLifeSquares();
         let maxComponentLength = Math.max(3, ccls ** 0.6);
-        let maxNodes = Math.max(1, Math.min(maxComponentLength - 2, ccls ** 0.2))
+        let maxNodes = Math.max(1, Math.min(maxComponentLength - 2, ccls ** 0.3))
+
+        let maxCcls = 100;
+        
+        if (ccls > maxCcls)
+            return;
+
+        let componentWidth = .6 + .4 * ccls / maxCcls;
+
+        growthPlan.component.lifeSquares.forEach((lsq) => lsq.width = componentWidth);
 
         console.log("maxComponentLength", maxComponentLength, "maxNodes", maxNodes);
 
@@ -47,7 +56,7 @@ export class MagnoliaTree extends BaseOrganism {
             if (startNode != null) 
                 growAction();
             else
-                this.frameTreeGrowthChoices.push(growAction);
+                this.frameTreeGrowthChoices.push([this._d(growthPlan.posX, growthPlan.posY), growAction]);
         }
         if (growthPlan.component.children.length < maxNodes) {
             // grow new child
@@ -62,28 +71,35 @@ export class MagnoliaTree extends BaseOrganism {
 
             let startNode = availableNodes.at(randNumberExclusive(0, availableNodes.length));
 
-            this.frameTreeGrowthChoices.push(() => {
+            this.frameTreeGrowthChoices.push([this._d( startNode.getPosX(), startNode.getPosY()), () => {
                 let newGrowthPlan = new GrowthPlan(
                     startNode.posX, startNode.posY,
                     false, STAGE_ADULT,
-                    randRange(0, Math.PI), 0, 0, randRange(-.6, .6),
-                    0, TYPE_STEM, 10);
+                    randRange(0, Math.PI), 0, 0, randRange(.7, 1.2),
+                    randRange(0, .3), TYPE_STEM, 10);
 
                 newGrowthPlan.postConstruct = () => {
                     growthPlan.component.addChild(newGrowthPlan.component);
                 };
                 this._treeGrowthPlanning(newGrowthPlan, startNode);
                 this.growthPlans.push(newGrowthPlan);
-            })
+            }]);
         }
         growthPlan.component.children.forEach((child) => this._treeGrowthPlanning(child.growthPlan));
+    }
 
-
+    _d(x, y) {
+        return ((this.posX - x) ** 2 + (this.posY - y) ** 2) ** 0.5;
     }
 
     executeFrameTreeGrowthChoice() {
-        if (this.frameTreeGrowthChoices.length > 0)
-            this.frameTreeGrowthChoices.at(randNumberExclusive(0, this.frameTreeGrowthChoices.length))();
+        this.frameTreeGrowthChoices.sort((a, b) => a[0] - b[0]);
+        console.log(this.frameTreeGrowthChoices);
+        if (this.frameTreeGrowthChoices.length > 0) {
+            this.frameTreeGrowthChoices.at(0)[1]()
+            // this.frameTreeGrowthChoices.at(randNumberExclusive(0, this.frameTreeGrowthChoices.length / 3))[1]();
+        }
+            // this.frameTreeGrowthChoices.at(randNumberExclusive(0, this.frameTreeGrowthChoices.length / 3))[1]();
     }
 
     planGrowth() {
