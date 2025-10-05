@@ -3,10 +3,10 @@ import { SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROU
 import { hueShiftColorArr, rgbToHex } from "../../../common.js";
 import { loadGD, UI_LIGHTING_PLANT_TREE } from "../../../ui/UIData.js";
 
-export class MagnoliaTreeGreenSquare extends BaseLifeSquare {
+export class MagnoliaTreeOrganismGreenSquare extends BaseLifeSquare {
     constructor(square, organism) {
         super(square, organism);
-        this.proto = "MagnoliaTreeGreenSquare";
+        this.proto = "MagnoliaTreeOrganismGreenSquare";
         this.type = "green";
         this.width = 1;
         this.activeRenderSubtype = null;

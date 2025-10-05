@@ -22,6 +22,7 @@ import { ConeflowerGreenSqaure } from "./lifeSquares/flowers/ConeflowerGreenSqau
 import { PleurocarpMossGreenSquare } from "./lifeSquares/mosses/PleurocarpMossGreenSquare.js";
 import { PleurocarpMossOrganism } from "./organisms/mosses/PleurocarpMossOrganism.js";
 import { BackgroundImageSquare, ImageSquare, RigidImageSquare, StaticImageSquare } from "./squares/ImageSquare.js";
+import { MagnoliaTreeOrganism, MagnoliaTreeOrganismSeedOrganism } from "./organisms/trees/deciduous/MagnoliaTreeOrganism.js";
 
 let ProtoMap = {
     "BaseSquare": BaseSquare.prototype,
@@ -44,6 +45,7 @@ let ProtoMap = {
     "CattailOrganism": CattailOrganism.prototype,
     "ConeflowerOrganism": ConeflowerOrganism.prototype,
     "PleurocarpMossOrganism": PleurocarpMossOrganism.prototype,
+    "MagnoliaTreeOrganism": MagnoliaTreeOrganism.prototype,
 
     "BaseLifeSquare": BaseLifeSquare.prototype,
     "WheatGreenSquare": WheatGreenSquare.prototype,
@@ -60,7 +62,8 @@ let ProtoMap = {
     "PalmTreeSeedOrganism": PalmTreeSeedOrganism.prototype,
     "KentuckyBluegrassSeedOrganism": KentuckyBluegrassSeedOrganism.prototype,
     "CattailSeedOrganism": CattailSeedOrganism.prototype,
-    "ConeflowerSeedOrganism": ConeflowerSeedOrganism.prototype
+    "ConeflowerSeedOrganism": ConeflowerSeedOrganism.prototype,
+    "MagnoliaSeedOrganism": MagnoliaTreeOrganismSeedOrganism.prototype
 }
 
 let TypeMap = {

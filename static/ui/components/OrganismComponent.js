@@ -260,7 +260,7 @@ export class OrganismComponent extends Component {
                return false;
           }
           if (loadGD(UI_ORGANISM_TYPE_SELECT) == UI_ORGANISM_TYPE_TREE) {
-               if ([UI_ORGANISM_TREE_PALM].includes(selected)) {
+               if ([UI_ORGANISM_TREE_PALM, UI_ORGANISM_TREE_MAGNOLIA].includes(selected)) {
                     return true;
                }
                return false;

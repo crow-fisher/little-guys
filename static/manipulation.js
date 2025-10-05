@@ -20,7 +20,7 @@ import { CattailSeedOrganism } from "./organisms/grasses/CattailOrganism.js";
 import { ConeflowerSeedOrganism } from "./organisms/flowers/ConeflowerOrganism.js";
 import { PleurocarpMossSeedOrganism } from "./organisms/mosses/PleurocarpMossOrganism.js";
 import { randNumber, randRange } from "./common.js";
-import { MagnoliaTreeSeedOrganism } from "./organisms/trees/deciduous/MagnoliaTree.js";
+import { MagnoliaTreeOrganismSeedOrganism } from "./organisms/trees/deciduous/MagnoliaTreeOrganism.js";
 let prevManipulationOffset;
 
 setMouseTouchStartCallback((inVal) => prevManipulationOffset = inVal);
@@ -386,7 +386,7 @@ function placeActiveSeed(px, py) {
             if (chance > 0.95) {
                 let sq = addSquare(new SeedSquare(px, py));
                 if (sq) {
-                    let orgAdded = new MagnoliaTreeSeedOrganism(sq);
+                    let orgAdded = new MagnoliaTreeOrganismSeedOrganism(sq);
                     if (!orgAdded) {
                         sq.destroy();
                     }
