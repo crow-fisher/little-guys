@@ -27,14 +27,19 @@ export class MagnoliaTree extends BaseOrganism {
         // children must grow some distnace apart from each other
 
         this.frameTreeGrowthChoices = new Array();
-        this._treeGrowthPlanning(this.originGrowth.growthPlan);
+        this._treeGrowthPlanning(this.originGrowth.growthPlan, 0);
         this.executeFrameTreeGrowthChoice();
     }
 
-    _treeGrowthPlanning(growthPlan, startNode) {
+    _treeGrowthPlanning(growthPlan, depth, startNode) {
+        const maxDepth = 4;
+        if (depth > maxDepth) {
+            return;
+        }
+
         let ccls = growthPlan.component.getCountChildLifeSquares();
-        let maxComponentLength = Math.max(3, ccls ** 0.6);
-        let maxNodes = Math.max(1, Math.min(maxComponentLength - 2, ccls ** 0.3))
+        let maxComponentLength = Math.max(3 * (maxDepth - depth), ccls ** 0.7);
+        let maxNodes = Math.max(1, ccls ** 0.1)
 
         let maxCcls = 100;
         
@@ -66,26 +71,26 @@ export class MagnoliaTree extends BaseOrganism {
                 .filter((lsq) => lsq.type == "green")
                 .filter((lsq) => !childYs.some((childY) => childY == lsq.posY)));
 
-            if (availableNodes.length == 0)
+            if (availableNodes.length <= 4)
                 return;
 
-            let startNode = availableNodes.at(randNumberExclusive(0, availableNodes.length));
+            let startNode = availableNodes.at(randNumberExclusive(3, availableNodes.length));
 
             this.frameTreeGrowthChoices.push([this._d( startNode.getPosX(), startNode.getPosY()), () => {
                 let newGrowthPlan = new GrowthPlan(
                     startNode.posX, startNode.posY,
                     false, STAGE_ADULT,
-                    randRange(0, Math.PI), 0, 0, randRange(.7, 1.2),
+                    randRange(0, 2 * Math.PI), 0, 0, randRange(.7, 1.2),
                     randRange(0, .3), TYPE_STEM, 10);
 
                 newGrowthPlan.postConstruct = () => {
                     growthPlan.component.addChild(newGrowthPlan.component);
                 };
-                this._treeGrowthPlanning(newGrowthPlan, startNode);
+                this._treeGrowthPlanning(newGrowthPlan, depth + 1, startNode);
                 this.growthPlans.push(newGrowthPlan);
             }]);
         }
-        growthPlan.component.children.forEach((child) => this._treeGrowthPlanning(child.growthPlan));
+        growthPlan.component.children.forEach((child) => this._treeGrowthPlanning(child.growthPlan, depth + 1));
     }
 
     _d(x, y) {
