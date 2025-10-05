@@ -492,4 +492,7 @@ export class GrowthComponent {
             (a, b) => a + b, 0
         );
     }
+    getSumBaseDeflection() {
+        return this.baseDeflection + (this.parentComponent != null ? this.parentComponent.getSumBaseDeflection() : 0);
+    }
 }

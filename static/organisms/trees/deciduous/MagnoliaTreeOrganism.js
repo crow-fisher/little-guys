@@ -77,10 +77,12 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
             let startNode = availableNodes.at(randNumberExclusive(3, availableNodes.length));
 
             this.frameTreeGrowthChoices.push([this._d( startNode.getPosX(), startNode.getPosY()), () => {
+                // concept - we have 2 deflection to play with through a chain of growth plans 
+                // that can go anywhere but it's random up to that amount
                 let newGrowthPlan = new GrowthPlan(
                     startNode.posX, startNode.posY,
                     false, STAGE_ADULT,
-                    randRange(0, 2 * Math.PI), 0, 0, randRange(.7, 1.2),
+                    randRange(0, 2 * Math.PI), 0, 0, randRange(0, 2 - growthPlan.component.getSumBaseDeflection()),
                     randRange(0, .3), TYPE_STEM, 10);
 
                 newGrowthPlan.postConstruct = () => {
