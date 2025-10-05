@@ -34,7 +34,7 @@ export class MagnoliaTree extends BaseOrganism {
     _treeGrowthPlanning(growthPlan, startNode) {
         let ccls = growthPlan.component.getCountChildLifeSquares();
         let maxComponentLength = Math.max(3, ccls ** 0.6);
-        let maxNodes = Math.max(2, Math.min(maxComponentLength - 2, ccls ** 0.2))
+        let maxNodes = Math.max(1, Math.min(maxComponentLength - 2, ccls ** 0.2))
 
         console.log("maxComponentLength", maxComponentLength, "maxNodes", maxNodes);
 
@@ -66,8 +66,8 @@ export class MagnoliaTree extends BaseOrganism {
                 let newGrowthPlan = new GrowthPlan(
                     startNode.posX, startNode.posY,
                     false, STAGE_ADULT,
-                    randRange(0, Math.PI * 2), 0, 0, randNumber(-2, 2),
-                    randRange(0, 1), TYPE_STEM, 10);
+                    randRange(0, Math.PI), 0, 0, randRange(-.6, .6),
+                    0, TYPE_STEM, 10);
 
                 newGrowthPlan.postConstruct = () => {
                     growthPlan.component.addChild(newGrowthPlan.component);

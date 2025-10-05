@@ -462,8 +462,8 @@ export class GrowthComponent {
     }
 
     setCurrentDeflection(deflection) {
-        let limit = Math.PI / 12;
-        deflection = Math.min(Math.max(deflection, -limit), limit);
+        // let limit = Math.PI / 12;
+        // deflection = Math.min(Math.max(deflection, -limit), limit);
 
         let period = 12;
 
