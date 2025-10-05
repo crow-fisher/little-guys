@@ -98,6 +98,9 @@ function randNumber(min, max) {
 function randRange(min, max) {
     return Math.random() * (max - min) + min;
 }
+export function randSide() {
+    return Math.random() > 0.5 ? 1 : -1;
+}
 
 export function randRangeFactor(min, max, factor) {
     let d = (max - min);

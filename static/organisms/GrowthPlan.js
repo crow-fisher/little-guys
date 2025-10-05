@@ -493,6 +493,6 @@ export class GrowthComponent {
         );
     }
     getSumBaseDeflection() {
-        return this.baseDeflection + (this.parentComponent != null ? this.parentComponent.getSumBaseDeflection() : 0);
+        return Math.abs(this.baseDeflection) + (this.parentComponent != null ? this.parentComponent.getSumBaseDeflection() : 0);
     }
 }

@@ -1,4 +1,4 @@
-import { randNumber, randNumberExclusive, randRange } from "../../../common.js";
+import { randNumber, randNumberExclusive, randRange, randSide } from "../../../common.js";
 import { GenericRootSquare } from "../../../lifeSquares/GenericRootSquare.js";
 import { STAGE_ADULT, STAGE_DEAD, STAGE_FLOWER, STAGE_JUVENILE, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_LEAF, TYPE_STEM } from "../../Stages.js";
 import { GrowthPlan, GrowthPlanStep } from "../../GrowthPlan.js";
@@ -32,23 +32,18 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
     }
 
     _treeGrowthPlanning(growthPlan, depth, startNode) {
-        const maxDepth = 4;
+        const maxDepth = 6;
         if (depth > maxDepth) {
             return;
         }
 
-        let ccls = growthPlan.component.getCountChildLifeSquares();
-        let maxComponentLength = Math.max(3 * (maxDepth - depth), ccls ** 0.7);
-        let maxNodes = Math.max(1, ccls ** 0.1)
+        let cls = this.originGrowth.getCountLifeSquares();
+        let maxComponentLength = Math.max(2 + 1 * (maxDepth - depth), cls ** 0.4);
+        let maxNodes = growthPlan.component.lifeSquares.length / 4;
 
-        let maxCcls = 100;
-        
-        if (ccls > maxCcls)
-            return;
+        let maxCcls = 64;
 
-        let componentWidth = .6 + .4 * ccls / maxCcls;
-
-        growthPlan.component.lifeSquares.forEach((lsq) => lsq.width = componentWidth);
+        growthPlan.component.lifeSquares.forEach((lsq) => lsq.width = .4 + .4 * (growthPlan.component.getCountChildLifeSquares() + (growthPlan.component.lifeSquares.length - growthPlan.component.lifeSquares.indexOf(lsq))) / maxCcls);
 
         console.log("maxComponentLength", maxComponentLength, "maxNodes", maxNodes);
 
@@ -56,14 +51,16 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
             let growAction = () => {
                 growthPlan.steps.push(new GrowthPlanStep(
                     growthPlan,
-                    () => this.growGreenSquareAction((startNode ?? growthPlan.component.lifeSquares.at(randNumberExclusive(growthPlan.component.lifeSquares.length * .5, growthPlan.component.lifeSquares.length))), SUBTYPE_STEM)
-                ))};
-            if (startNode != null) 
+                    () => this.growGreenSquareAction((startNode ?? growthPlan.component.lifeSquares.at(randNumberExclusive(0, growthPlan.component.lifeSquares.length))), SUBTYPE_STEM)
+                ))
+            };
+            if (startNode != null)
                 growAction();
             else
-                this.frameTreeGrowthChoices.push([this._d(growthPlan.posX, growthPlan.posY), growAction]);
+                this.frameTreeGrowthChoices.push(["GROW", this._d(growthPlan.posX, growthPlan.posY), growAction]);
         }
-        if (growthPlan.component.children.length < maxNodes) {
+
+        if (growthPlan.component.children.length < maxNodes && cls < maxCcls) {
             // grow new child
             // find where our children currently are
             let childYs = growthPlan.component.children.map((child) => child.growthPlan.posY);
@@ -71,26 +68,24 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
                 .filter((lsq) => lsq.type == "green")
                 .filter((lsq) => !childYs.some((childY) => childY == lsq.posY)));
 
-            if (availableNodes.length <= 4)
-                return;
+            if (availableNodes.length > 2) {
+                let startNode = availableNodes.at(randNumberExclusive(1, availableNodes.length));
+                this.frameTreeGrowthChoices.push(["NEW", this._d(startNode.getPosX(), startNode.getPosY()), () => {
+                    // concept - we have 2 deflection to play with through a chain of growth plans 
+                    // that can go anywhere but it's random up to that amount
+                    let newGrowthPlan = new GrowthPlan(
+                        startNode.posX, startNode.posY,
+                        false, STAGE_ADULT,
+                        randRange(0, 2 * Math.PI), 0, 0, randSide() * randRange(0, 3 - growthPlan.component.getSumBaseDeflection()),
+                        randRange(0, .3), TYPE_STEM, 10);
 
-            let startNode = availableNodes.at(randNumberExclusive(3, availableNodes.length));
-
-            this.frameTreeGrowthChoices.push([this._d( startNode.getPosX(), startNode.getPosY()), () => {
-                // concept - we have 2 deflection to play with through a chain of growth plans 
-                // that can go anywhere but it's random up to that amount
-                let newGrowthPlan = new GrowthPlan(
-                    startNode.posX, startNode.posY,
-                    false, STAGE_ADULT,
-                    randRange(0, 2 * Math.PI), 0, 0, randRange(0, 2 - growthPlan.component.getSumBaseDeflection()),
-                    randRange(0, .3), TYPE_STEM, 10);
-
-                newGrowthPlan.postConstruct = () => {
-                    growthPlan.component.addChild(newGrowthPlan.component);
-                };
-                this._treeGrowthPlanning(newGrowthPlan, depth + 1, startNode);
-                this.growthPlans.push(newGrowthPlan);
-            }]);
+                    newGrowthPlan.postConstruct = () => {
+                        growthPlan.component.addChild(newGrowthPlan.component);
+                    };
+                    this._treeGrowthPlanning(newGrowthPlan, depth + 1, startNode);
+                    this.growthPlans.push(newGrowthPlan);
+                }]);
+            }
         }
         growthPlan.component.children.forEach((child) => this._treeGrowthPlanning(child.growthPlan, depth + 1));
     }
@@ -100,13 +95,14 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
     }
 
     executeFrameTreeGrowthChoice() {
-        this.frameTreeGrowthChoices.sort((a, b) => a[0] - b[0]);
-        console.log(this.frameTreeGrowthChoices);
-        if (this.frameTreeGrowthChoices.length > 0) {
-            this.frameTreeGrowthChoices.at(0)[1]()
-            // this.frameTreeGrowthChoices.at(randNumberExclusive(0, this.frameTreeGrowthChoices.length / 3))[1]();
-        }
-            // this.frameTreeGrowthChoices.at(randNumberExclusive(0, this.frameTreeGrowthChoices.length / 3))[1]();
+        if (this.frameTreeGrowthChoices.length == 0)
+            return;
+        this.frameTreeGrowthChoices.sort((a, b) => a[1] - b[1]);
+        let newAction = this.frameTreeGrowthChoices.find((act) => act[0] == "NEW");
+        if (newAction != null)
+            newAction[2]();
+        else
+            this.frameTreeGrowthChoices.at(0)[2]();
     }
 
     planGrowth() {
