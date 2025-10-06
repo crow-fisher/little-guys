@@ -95,7 +95,7 @@ export function addSquareByName(posX, posY, name) {
 
             if (prevWaterContainment != null)
                 square.waterContainment = prevWaterContainment;
-            
+
             break;
         case "water":
             square = addSquare(new WaterSquare(posX, posY));
@@ -272,9 +272,9 @@ export function doClickAdd() {
                         });
                     } else if (selectMode == UI_PALETTE_SURFACE_MATCH) {
                         doBrushFunc(px, py, (x, y) => {
-                             getSquares(x, y)
-                            .filter((sq) => sq.solid)
-                            .forEach((sq) => sq.surfaceLightingFactor = 1 - loadGD(UI_LIGHTING_SURFACE));
+                            getSquares(x, y)
+                                .filter((sq) => sq.solid)
+                                .forEach((sq) => sq.surfaceLightingFactor = 1 - loadGD(UI_LIGHTING_SURFACE));
                         });
                     } else if (selectMode == UI_PALETTE_WATER) {
                         doBrushFunc(px, py, (x, y) => addSquareByName(x, y, "water"));
@@ -310,6 +310,24 @@ function doBlockHover(lastMoveOffset) {
     eyedropperBlockHover(offsetX, offsetY);
 }
 
+let hasOrganismBeenAddedThisClick = false;
+export function setOrganismAddedThisClick(val) {
+    hasOrganismBeenAddedThisClick = val;
+}
+
+function addOrgSingleClick(seedOrganismProto, px, py) {
+    if (hasOrganismBeenAddedThisClick)
+        return;
+    hasOrganismBeenAddedThisClick = true;
+
+    let sq = addSquare(new SeedSquare(px, py));
+    if (sq) {
+        let orgAdded = new seedOrganismProto(sq);
+        if (!orgAdded) {
+            sq.destroy();
+        }
+    }
+}
 function placeActiveSeed(px, py) {
     let chance = Math.random();
     switch (loadGD(UI_ORGANISM_SELECT)) {
@@ -383,16 +401,7 @@ function placeActiveSeed(px, py) {
             }
             break;
         case UI_ORGANISM_TREE_MAGNOLIA:
-            if (chance > 0.95) {
-                let sq = addSquare(new SeedSquare(px, py));
-                if (sq) {
-                    let orgAdded = new MagnoliaTreeOrganismSeedOrganism(sq);
-                    if (!orgAdded) {
-                        sq.destroy();
-                    }
-                }
-            }
-            break;
+            addOrgSingleClick(MagnoliaTreeOrganismSeedOrganism, px, py);
         default:
             break;
     }

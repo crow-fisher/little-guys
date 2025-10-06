@@ -43,7 +43,16 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
 
         let maxCcls = 64;
 
-        growthPlan.component.lifeSquares.forEach((lsq) => lsq.width = .4 + .4 * (growthPlan.component.getCountChildLifeSquares() + (growthPlan.component.lifeSquares.length - growthPlan.component.lifeSquares.indexOf(lsq))) / maxCcls);
+        growthPlan.component.lifeSquares.forEach((lsq) => {
+            lsq.width = .4 + .4 * (growthPlan.component.getCountChildLifeSquares() + (growthPlan.component.lifeSquares.length - growthPlan.component.lifeSquares.indexOf(lsq))) / maxCcls;
+            let childComponent = growthPlan.component.children.find((child) => child.posX == lsq.posX && child.posY == lsq.posY);
+            if (childComponent != null && childComponent.lifeSquares.length > 1) {
+                childComponent.lifeSquares.at(0).theta = childComponent.lifeSquares.at(1).theta;
+                childComponent.lifeSquares.at(0).height = 1 + .6 * lsq.width
+                childComponent.lifeSquares.at(1).height = 1 + .6 * lsq.width
+
+            }
+        });
 
         console.log("maxComponentLength", maxComponentLength, "maxNodes", maxNodes);
 

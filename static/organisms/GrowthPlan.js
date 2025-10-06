@@ -369,7 +369,8 @@ export class GrowthComponent {
 
             if (prevX == -1 && this.parentComponent != null) {
                 let plsq = this.parentComponent.lifeSquares.at(this.parentComponent.lifeSquares.length - 1);
-                lsq.theta = Math.atan((lsq.getPosY() - plsq.getPosY(this.yOffset)) / (lsq.getPosX() - plsq.getPosX(this.xOffset))) + Math.PI / 2;
+                if (lsq.getPosX() != plsq.getPosX(this.xOffset))
+                    lsq.theta = Math.atan((lsq.getPosY() - plsq.getPosY(this.yOffset)) / (lsq.getPosX() - plsq.getPosX(this.xOffset))) + Math.PI / 2;
             }
             if (prevX != -1) {
                 lsq.theta = Math.atan((lsq.getPosY() - prevY) / (lsq.getPosX() - prevX)) + Math.PI / 2;
