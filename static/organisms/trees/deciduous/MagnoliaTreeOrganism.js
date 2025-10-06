@@ -16,16 +16,10 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
         this.uiRef = UI_ORGANISM_TREE_MAGNOLIA;
         this.greenType = PalmTreeGreenSquare;
         this.rootType = GenericRootSquare;
-
         this.growthCycleLength = 10 ** 8;
     }
 
     treeGrowthPlanning() {
-        // greedily search for something we can do 
-        // each component length can be of some size 
-        // and once it reaches that size, then it grows a child.
-        // children must grow some distnace apart from each other
-
         this.frameTreeGrowthChoices = new Array();
         this._treeGrowthPlanning(this.originGrowth.growthPlan, 0);
         this.executeFrameTreeGrowthChoice();
@@ -40,21 +34,15 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
         let cls = this.originGrowth.getCountLifeSquares();
         let maxComponentLength = Math.max(2 + 1 * (maxDepth - depth), cls ** 0.4);
         let maxNodes = growthPlan.component.lifeSquares.length / 4;
-
         let maxCcls = 64;
 
         growthPlan.component.lifeSquares.forEach((lsq) => {
             lsq.width = .4 + .4 * (growthPlan.component.getCountChildLifeSquares() + (growthPlan.component.lifeSquares.length - growthPlan.component.lifeSquares.indexOf(lsq))) / maxCcls;
             let childComponent = growthPlan.component.children.find((child) => child.posX == lsq.posX && child.posY == lsq.posY);
             if (childComponent != null && childComponent.lifeSquares.length > 1) {
-                childComponent.lifeSquares.at(0).theta = childComponent.lifeSquares.at(1).theta;
-                childComponent.lifeSquares.at(0).height = 1 + .6 * lsq.width
-                childComponent.lifeSquares.at(1).height = 1 + .6 * lsq.width
-
+                childComponent.lifeSquares.at(0).height = .7;
             }
         });
-
-        console.log("maxComponentLength", maxComponentLength, "maxNodes", maxNodes);
 
         if (growthPlan.steps.length < maxComponentLength) {
             let growAction = () => {
@@ -70,8 +58,6 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
         }
 
         if (growthPlan.component.children.length < maxNodes && cls < maxCcls) {
-            // grow new child
-            // find where our children currently are
             let childYs = growthPlan.component.children.map((child) => child.growthPlan.posY);
             let availableNodes = Array.from(growthPlan.component.lifeSquares
                 .filter((lsq) => lsq.type == "green")
@@ -80,8 +66,6 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
             if (availableNodes.length > 2) {
                 let startNode = availableNodes.at(randNumberExclusive(1, availableNodes.length));
                 this.frameTreeGrowthChoices.push(["NEW", this._d(startNode.getPosX(), startNode.getPosY()), () => {
-                    // concept - we have 2 deflection to play with through a chain of growth plans 
-                    // that can go anywhere but it's random up to that amount
                     let newGrowthPlan = new GrowthPlan(
                         startNode.posX, startNode.posY,
                         false, STAGE_ADULT,
