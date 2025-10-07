@@ -26,6 +26,9 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
     }
 
     _treeGrowthPlanning(growthPlan, depth, startNode) {
+        if (growthPlan.type == TYPE_LEAF)
+            return;
+
         const maxDepth = 6;
         if (depth > maxDepth) {
             return;
@@ -57,7 +60,7 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
                 this.frameTreeGrowthChoices.push(["GROW", this._d(growthPlan.posX, growthPlan.posY), growAction]);
         }
 
-        if (growthPlan.component.children.length < maxNodes && cls < maxCcls) {
+        if (growthPlan.component.getChildrenOfType(TYPE_STEM).length < maxNodes && cls < maxCcls) {
             let childYs = growthPlan.component.children.map((child) => child.growthPlan.posY);
             let availableNodes = Array.from(growthPlan.component.lifeSquares
                 .filter((lsq) => lsq.type == "green")
@@ -80,8 +83,32 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
                 }]);
             }
         }
+        growthPlan.component.lifeSquares.forEach((lsq) => this.growLeaves(growthPlan, lsq));
         growthPlan.component.children.forEach((child) => this._treeGrowthPlanning(child.growthPlan, depth + 1));
     }
+
+    growLeaves(growthPlan, startNode) {
+        if (growthPlan.component.getChildrenOfType(TYPE_LEAF).length > 4) {
+            return;
+        }
+        let leafGrowthPlan = new GrowthPlan(
+            startNode.posX, startNode.posY,
+            false, STAGE_ADULT,
+            randRange(0, 2 * Math.PI), 0, 0, randSide() * randRange(0, 3 - growthPlan.component.getSumBaseDeflection()),
+            randRange(0, .3), TYPE_LEAF, 10);
+
+        leafGrowthPlan.postConstruct = () => {
+            growthPlan.component.addChild(leafGrowthPlan.component);
+        };
+        leafGrowthPlan.steps.push(new GrowthPlanStep(
+            growthPlan,
+            () => this.growGreenSquareAction(startNode, SUBTYPE_LEAF)
+        ));
+
+        this.growthPlans.push(leafGrowthPlan);
+    }
+
+
 
     _d(x, y) {
         return ((this.posX - x) ** 2 + (this.posY - y) ** 2) ** 0.5;

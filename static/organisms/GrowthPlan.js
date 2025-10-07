@@ -502,4 +502,7 @@ export class GrowthComponent {
     getSumBaseDeflection() {
         return Math.abs(this.baseDeflection) + (this.parentComponent != null ? this.parentComponent.getSumBaseDeflection() : 0);
     }
+    getChildrenOfType(type) {
+        return Array.from(this.children.filter((child) => child.type == type))
+    }
 }
