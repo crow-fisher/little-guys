@@ -499,6 +499,18 @@ export class GrowthComponent {
             (a, b) => a + b, 0
         );
     }
+    getCountLifeSquaresOfType(type) {
+        if (this.type == type)
+            return Math.max(1, this.lifeSquares.length + this.getCountChildLifeSquares());
+        return 0;
+    }
+
+    getCountChildLifeSquaresOfType(type) {
+        return this.getChildrenOfType(type).map((child) => child.getCountChildLifeSquaresOfType(type)).reduce(
+            (a, b) => a + b, 0
+        );
+    }
+
     getSumBaseDeflection() {
         return Math.abs(this.baseDeflection) + (this.parentComponent != null ? this.parentComponent.getSumBaseDeflection() : 0);
     }

@@ -34,13 +34,13 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
             return;
         }
 
-        let cls = this.originGrowth.getCountLifeSquares();
+        let cls = this.originGrowth.getCountLifeSquaresOfType(TYPE_STEM);
         let maxComponentLength = Math.max(2 + 1 * (maxDepth - depth), cls ** 0.4);
         let maxNodes = growthPlan.component.lifeSquares.length / 4;
         let maxCcls = 64;
 
         growthPlan.component.lifeSquares.forEach((lsq) => {
-            lsq.width = .4 + .4 * (growthPlan.component.getCountChildLifeSquares() + (growthPlan.component.lifeSquares.length - growthPlan.component.lifeSquares.indexOf(lsq))) / maxCcls;
+            lsq.width = .4 + .4 * (growthPlan.component.getCountChildLifeSquaresOfType(TYPE_STEM) + (growthPlan.component.lifeSquares.length - growthPlan.component.lifeSquares.indexOf(lsq))) / maxCcls;
             let childComponent = growthPlan.component.children.find((child) => child.posX == lsq.posX && child.posY == lsq.posY);
             if (childComponent != null && childComponent.lifeSquares.length > 1) {
                 childComponent.lifeSquares.at(0).height = .7;
@@ -94,17 +94,19 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
         let leafGrowthPlan = new GrowthPlan(
             startNode.posX, startNode.posY,
             false, STAGE_ADULT,
-            randRange(0, 2 * Math.PI), 0, 0, randSide() * randRange(0, 3 - growthPlan.component.getSumBaseDeflection()),
-            randRange(0, .3), TYPE_LEAF, 10);
+            randRange(0, 2 * Math.PI), 0, 0, 7,
+            4, TYPE_LEAF, 10);
 
         leafGrowthPlan.postConstruct = () => {
             growthPlan.component.addChild(leafGrowthPlan.component);
         };
-        leafGrowthPlan.steps.push(new GrowthPlanStep(
-            growthPlan,
-            () => this.growGreenSquareAction(startNode, SUBTYPE_LEAF)
-        ));
 
+        for (let i = 0; i < 2; i++) {
+            leafGrowthPlan.steps.push(new GrowthPlanStep(
+                leafGrowthPlan,
+                () => this.growGreenSquareAction(startNode, SUBTYPE_LEAF, 1.3)
+            ));
+        }
         this.growthPlans.push(leafGrowthPlan);
     }
 
