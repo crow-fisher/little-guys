@@ -134,6 +134,14 @@ export class GrowthComponent {
     }
 
     addLifeSquare(newLsq) {
+        this.children.filter((child) => child.posX == newLsq.posX && child.posY <= newLsq.posY)
+            .forEach((child) => child.shiftUp());
+
+        this.lifeSquares.filter((llsq) => llsq.proto == newLsq.proto && llsq.posX == newLsq.posX && llsq.posY <= newLsq.posY)
+            .forEach((llsq) => {
+                llsq.shiftUp();
+            });
+
         this.lifeSquares.push(newLsq);
         let compareFunc = (lsq) => {
             let relLsqX = (this.posX - lsq.posX);
