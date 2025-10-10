@@ -346,11 +346,11 @@ export class GrowthComponent {
         let prevX = -1;
         let prevY = -1;
 
-        if (this.lifeSquares.length >= 2) {
+        if (this.lifeSquares.length >= 1) {
             this.lifeSquares.forEach((lsq) => {
                 // relative to origin
-                let relLsqX = 0.85 * (this.posX - lsq.posX);
-                let relLsqY = 0.85 * (this.posY - lsq.posY);
+                let relLsqX = .7 * (this.posX - lsq.posX);
+                let relLsqY = .7 * (this.posY - lsq.posY);
                 let lsqDist = (relLsqX ** 2 + relLsqY ** 2) ** 0.5;
                 let currentTheta = startTheta + (lsqDist / length) * thetaDelta;
 
@@ -385,7 +385,7 @@ export class GrowthComponent {
             });
 
             let firstLsq = this.lifeSquares.at(0);
-            let secondLsq = this.lifeSquares.at(1);
+            let secondLsq = this.lifeSquares.at(1) ?? firstLsq;
             firstLsq.theta = secondLsq.theta;
         }
 
