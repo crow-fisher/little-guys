@@ -369,9 +369,10 @@ export class GrowthComponent {
                 lsq.deflectionYOffset = (endY - relLsqY) + this.yOffset;
 
                 if (prevX == -1 && this.parentComponent != null) {
-                    let plsq = this.parentComponent.lifeSquares.at(this.parentComponent.lifeSquares.length - 1);
-                    if (lsq.getPosX() != plsq.getPosX(this.xOffset))
-                        lsq.theta = Math.atan((lsq.getPosY() - plsq.getPosY(this.yOffset)) / (lsq.getPosX() - plsq.getPosX(this.xOffset))) + Math.PI / 2;
+                    if (this.lifeSquares.length == 1)
+                        lsq.theta = (this.parentComponent.lifeSquares.find((llsq) => llsq.posY == lsq.posY) ?? lsq).theta;
+                    else
+                        lsq.theta = this.lifeSquares.at(1).theta;
                 }
                 if (prevX != -1) {
                     lsq.theta = Math.atan((lsq.getPosY() - prevY) / (lsq.getPosX() - prevX)) + Math.PI / 2;
@@ -383,11 +384,7 @@ export class GrowthComponent {
                 lsq.xRef = 1;
                 lsq.yRef = 0.5;
             });
-
-            let firstLsq = this.lifeSquares.at(0);
-            let secondLsq = this.lifeSquares.at(1) ?? firstLsq;
-            firstLsq.theta = secondLsq.theta;
-        }
+        };
 
         this.children.forEach((child) => child.applyDeflectionState(this));
     }

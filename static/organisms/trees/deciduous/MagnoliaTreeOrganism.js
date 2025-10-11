@@ -41,10 +41,6 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
 
         growthPlan.component.lifeSquares.forEach((lsq) => {
             lsq.width = .4 + .4 * (growthPlan.component.getCountChildLifeSquaresOfType(TYPE_STEM) + (growthPlan.component.lifeSquares.length - growthPlan.component.lifeSquares.indexOf(lsq))) / maxCcls;
-            let childComponent = growthPlan.component.children.find((child) => child.posX == lsq.posX && child.posY == lsq.posY);
-            if (childComponent != null && childComponent.lifeSquares.length > 1) {
-                childComponent.lifeSquares.at(0).height = .7;
-            }
         });
 
         if (growthPlan.steps.length < maxComponentLength) {
@@ -83,7 +79,7 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
                 }]);
             }
         }
-        growthPlan.component.lifeSquares.forEach((lsq) => this.growLeaves(growthPlan, lsq));
+        // growthPlan.component.lifeSquares.forEach((lsq) => this.growLeaves(growthPlan, lsq));
         growthPlan.component.children.forEach((child) => this._treeGrowthPlanning(child.growthPlan, depth + 1));
     }
 
