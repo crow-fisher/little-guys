@@ -384,9 +384,10 @@ class BaseOrganism {
         return out;
     }
 
-    growGreenSquareAction(startNode, subtype, dy=0) {
+    growGreenSquareAction(startNode, subtype, dy=0, width=1) {
         let newGrassNode = this.growPlantSquare(startNode, 0, dy);
         newGrassNode.subtype = subtype;
+        newGrassNode.width = width;
         return newGrassNode;
     }
 

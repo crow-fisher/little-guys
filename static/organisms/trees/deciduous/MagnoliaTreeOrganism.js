@@ -62,7 +62,6 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
 
     _treeGrowthPlanning(growthPlan, depth, startNode) {
         if (growthPlan.type == TYPE_LEAF) {
-            // growthPlan.component.lifeSquares.forEach((lsq) => lsq.width = randRange(0.5 ,0.52));
             return;
         }
 
@@ -133,7 +132,7 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
         for (let i = 0; i < 2; i++) {
             leafGrowthPlan.steps.push(new GrowthPlanStep(
                 leafGrowthPlan,
-                () => this.growGreenSquareAction(startNode, SUBTYPE_LEAF, 1.3)
+                () => this.growGreenSquareAction(startNode, SUBTYPE_LEAF, 1.3, randRange(0.55, 0.65))
             ));
         }
         this.growthPlans.push(leafGrowthPlan);
