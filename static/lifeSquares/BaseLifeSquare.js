@@ -85,9 +85,13 @@ class BaseLifeSquare {
 
         this.lsqLightDecayValue = 1;
     }
+    
+    getSurfaceLightingFactor() {
+        return Math.max(0, loadGD(UI_LIGHTING_PLANT));
+    }
 
     getLightFilterRate() {
-        return 0.00023 * (this.height ** 2) * (this.width ** 2) * Math.exp(-loadGD(UI_LIGHTING_PLANT)) * Math.exp(this.linkedOrganism.lightDecayValue()) * this.lsqLightDecayValue;
+        return 0.00023 * (this.height ** 2) * (this.width ** 2) * Math.exp(this.linkedOrganism.lightDecayValue()) * this.lsqLightDecayValue;
     }
 
     getLsqRenderSizeMult() {

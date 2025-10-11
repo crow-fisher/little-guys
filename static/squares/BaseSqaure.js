@@ -104,6 +104,10 @@ export class BaseSquare {
         this.initTemperature();
     };
 
+    getSurfaceLightingFactor() {
+        return Math.min(1, Math.max(0, this.surfaceLightingFactor));
+    }
+
     purgeLighting() {
         this.lighting = new Array();
         this.linkedOrganisms.forEach((org) => {

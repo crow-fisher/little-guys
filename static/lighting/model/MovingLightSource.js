@@ -1,9 +1,8 @@
 import { getFrameXMax, getFrameXMin, getFrameYMax, getFrameYMin } from "../../canvas.js";
-import { getCloudColorAtPos, getCloudLightBlockCoef } from "../../climate/simulation/temperatureHumidity.js";
+import { getCloudLightBlockCoef } from "../../climate/simulation/temperatureHumidity.js";
 import { getFrameXMaxWsq, getFrameXMinWsq, getFrameYMaxWsq, getFrameYMinWsq } from "../../climate/simulation/wind.js";
 import { getFrameSimulationSquares } from "../../globalOperations.js";
 import { isSaveOrLoadInProgress } from "../../saveAndLoad.js";
-import { addTask } from "../../scheduler.js";
 import { loadGD, UI_LIGHTING_CLOUDCOVER_OPACITY, UI_LIGHTING_DECAY, UI_LIGHTING_QUALITY, UI_SIMULATION_CLOUDS } from "../../ui/UIData.js";
 
 export class MovingLightSource {
@@ -163,11 +162,10 @@ export class MovingLightSource {
         thetaSquares.forEach((arr) => {
             let obj = arr[3];
 
-            let p1 = (Math.exp((2 * (obj.surfaceLightingFactor ?? 1)) - 1) ?? 1);
+            let p1 = 1 - 1 / Math.exp(obj.getSurfaceLightingFactor());
             let p2 = (obj.blockHealth ?? 1);
             let p3 = obj.getLightFilterRate() ** (1 / Math.exp(loadGD(UI_LIGHTING_DECAY) ** 2));
             let p4 = loadGD(UI_LIGHTING_QUALITY) / 11;
-
             curBrightness *= 1 - (p1 * p2 * p3 * p4);
 
             let _curBrightness = curBrightness;

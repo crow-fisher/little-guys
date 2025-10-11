@@ -1,6 +1,6 @@
 import { BaseLifeSquare, LSQ_RENDERMODE_CIRCLE, LSQ_RENDERMODE_THETA } from "../../BaseLifeSquare.js";
 import { SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE } from "../../../organisms/Stages.js";
-import { hueShiftColorArr, randRange, rgbToHex } from "../../../common.js";
+import { hueShiftColorArr, rgbToHex } from "../../../common.js";
 import { loadGD, UI_LIGHTING_PLANT_TREE } from "../../../ui/UIData.js";
 
 export class MagnoliaTreeOrganismGreenSquare extends BaseLifeSquare {
@@ -51,8 +51,7 @@ export class MagnoliaTreeOrganismGreenSquare extends BaseLifeSquare {
         }
     }
 
-    getLightFilterRate() {
-        return 0;
+    getLightFilterRate() { 
         if (this.subtype == SUBTYPE_LEAF)
             return 0;
         return super.getLightFilterRate() * Math.exp(loadGD(UI_LIGHTING_PLANT_TREE));

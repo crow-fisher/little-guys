@@ -23,6 +23,7 @@ import { PleurocarpMossGreenSquare } from "./lifeSquares/mosses/PleurocarpMossGr
 import { PleurocarpMossOrganism } from "./organisms/mosses/PleurocarpMossOrganism.js";
 import { BackgroundImageSquare, ImageSquare, RigidImageSquare, StaticImageSquare } from "./squares/ImageSquare.js";
 import { MagnoliaTreeOrganism, MagnoliaTreeOrganismSeedOrganism } from "./organisms/trees/deciduous/MagnoliaTreeOrganism.js";
+import { MagnoliaTreeOrganismGreenSquare } from "./lifeSquares/trees/deciduous/MagnoliaTreeGreenSquare.js";
 
 let ProtoMap = {
     "BaseSquare": BaseSquare.prototype,
@@ -55,6 +56,7 @@ let ProtoMap = {
     "ConeflowerGreenSqaure": ConeflowerGreenSqaure.prototype,
     "GenericRootSquare": GenericRootSquare.prototype,
     "PleurocarpMossGreenSquare": PleurocarpMossGreenSquare.prototype,
+    "MagnoliaTreeOrganismGreenSquare": MagnoliaTreeOrganismGreenSquare.prototype,
 
     "SeedSquare": SeedSquare.prototype,
     "SeedLifeSquare": SeedLifeSquare.prototype,
@@ -73,7 +75,8 @@ let TypeMap = {
     [KentuckyBluegrassGreenSquare.name]: KentuckyBluegrassGreenSquare,
     [CattailGreenSquare.name]: CattailGreenSquare,
     [ConeflowerGreenSqaure.name]: ConeflowerGreenSqaure,
-    [PleurocarpMossGreenSquare.name]: PleurocarpMossGreenSquare
+    [PleurocarpMossGreenSquare.name]: PleurocarpMossGreenSquare,
+    [MagnoliaTreeOrganismGreenSquare.name]: MagnoliaTreeOrganismGreenSquare
 }
 
 let TypeNameMap = {
@@ -83,7 +86,8 @@ let TypeNameMap = {
     KentuckyBluegrassGreenSquare: KentuckyBluegrassGreenSquare.name,
     CattailGreenSquare: CattailGreenSquare.name,
     ConeflowerGreenSqaure: ConeflowerGreenSqaure.name,
-    PleurocarpMossGreenSquare: PleurocarpMossGreenSquare.name
+    PleurocarpMossGreenSquare: PleurocarpMossGreenSquare.name,
+    MagnoliaTreeOrganismGreenSquare: MagnoliaTreeOrganismGreenSquare.name
 }
 
 export { ProtoMap, TypeMap, TypeNameMap}

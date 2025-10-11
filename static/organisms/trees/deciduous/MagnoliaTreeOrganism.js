@@ -1,11 +1,9 @@
-import { randNumber, randNumberExclusive, randRange, randSide } from "../../../common.js";
+import { randNumberExclusive, randRange, randSide } from "../../../common.js";
 import { GenericRootSquare } from "../../../lifeSquares/GenericRootSquare.js";
-import { STAGE_ADULT, STAGE_DEAD, STAGE_FLOWER, STAGE_JUVENILE, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_LEAF, TYPE_STEM } from "../../Stages.js";
+import { STAGE_ADULT, SUBTYPE_LEAF, SUBTYPE_STEM, TYPE_LEAF, TYPE_STEM } from "../../Stages.js";
 import { GrowthPlan, GrowthPlanStep } from "../../GrowthPlan.js";
 import { BaseSeedOrganism } from "../../BaseSeedOrganism.js";
 import { BaseOrganism } from "../../BaseOrganism.js";
-import { SeedSquare } from "../../../squares/SeedSquare.js";
-import { addSquare } from "../../../squares/_sqOperations.js";
 import { UI_ORGANISM_TREE_MAGNOLIA } from "../../../ui/UIData.js";
 import { MagnoliaTreeOrganismGreenSquare } from "../../../lifeSquares/trees/deciduous/MagnoliaTreeGreenSquare.js";
 
@@ -27,7 +25,7 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
 
     _treeGrowthPlanning(growthPlan, depth, startNode) {
         if (growthPlan.type == TYPE_LEAF) {
-            growthPlan.component.lifeSquares.forEach((lsq) => lsq.width = randRange(0.5 ,0.52));
+            // growthPlan.component.lifeSquares.forEach((lsq) => lsq.width = randRange(0.5 ,0.52));
             return;
         }
 

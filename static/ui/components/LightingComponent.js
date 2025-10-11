@@ -170,7 +170,7 @@ export class LightingComponent extends Component {
         decayConditionalContainer.addElement(new TextBackground(this.window, sizeX, br, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""));
 
         decayConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => "plant", () => getActiveClimate().getUIColorInactiveCustom(0.58)));
-        decayConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_PLANT, sizeX, sliderSizeY, -8, 8, getPlantColorDark, getPlantColor));
+        decayConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_PLANT, sizeX, sliderSizeY, -.42, 2, getPlantColorDark, getPlantColor));
 
         plantConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => "grass", () => getActiveClimate().getUIColorInactiveCustom(0.58)));
         plantConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_PLANT_GRASS, sizeX, sliderSizeY, -2, 2, getPlantColorDark, getPlantColor));
