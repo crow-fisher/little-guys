@@ -65,7 +65,7 @@ let ProtoMap = {
     "KentuckyBluegrassSeedOrganism": KentuckyBluegrassSeedOrganism.prototype,
     "CattailSeedOrganism": CattailSeedOrganism.prototype,
     "ConeflowerSeedOrganism": ConeflowerSeedOrganism.prototype,
-    "MagnoliaSeedOrganism": MagnoliaTreeOrganismSeedOrganism.prototype
+    "MagnoliaTreeOrganismSeedOrganism": MagnoliaTreeOrganismSeedOrganism.prototype
 }
 
 let TypeMap = {

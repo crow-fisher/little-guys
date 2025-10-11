@@ -6,6 +6,7 @@ import { BaseSeedOrganism } from "../../BaseSeedOrganism.js";
 import { BaseOrganism } from "../../BaseOrganism.js";
 import { UI_ORGANISM_TREE_MAGNOLIA } from "../../../ui/UIData.js";
 import { MagnoliaTreeOrganismGreenSquare } from "../../../lifeSquares/trees/deciduous/MagnoliaTreeGreenSquare.js";
+import { getBaseSize, zoomCanvasSquareText } from "../../../canvas.js";
 
 export class MagnoliaTreeOrganism extends BaseOrganism {
     constructor(square) {
@@ -20,7 +21,43 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
     treeGrowthPlanning() {
         this.frameTreeGrowthChoices = new Array();
         this._treeGrowthPlanning(this.originGrowth.growthPlan, 0);
+        this.treeWidthRoutine();
         this.executeFrameTreeGrowthChoice();
+    }
+    
+    render() {
+        super.render();
+        //     this.lifeSquares.forEach((lsq) => {
+        //     if (lsq.depth != null)
+        //         lsq.width = .1 + lsq.depth / 4; 
+        //     zoomCanvasSquareText(lsq.getPosX() * getBaseSize(), lsq.getPosY() * getBaseSize(), lsq.depth);
+        // });
+    }
+
+    treeWidthRoutine() {
+        // we need to determine how many children each life square has
+        this._treeWidthCountRoutine(this.originGrowth);
+
+        this.lifeSquares.forEach((lsq) => {
+            if (lsq.depth != null)
+                lsq.width = .3 + lsq.depth / 70; 
+        });
+
+    }
+    _treeWidthCountRoutine(component) {
+        let lsqs = component.lifeSquares;
+        let max = 0;
+        for (let i = 0; i < lsqs.length; i++) {
+            let lsq = lsqs.at(i);
+            let lsqChildren = Array.from(component.children.filter((child) => child.type == TYPE_STEM && child.posY == lsq.posY));
+            lsq.depth = (lsqs.length - i);
+            let componentDepth = lsqChildren.map((child) => this._treeWidthCountRoutine(child)).reduce((a, b) => a + b, 0);
+            lsqs.slice(0, i).forEach((lsq) => lsq.depth += componentDepth);
+            lsq.depth += componentDepth;
+
+            max = Math.max(lsq.depth, max);
+        }
+        return max;
     }
 
     _treeGrowthPlanning(growthPlan, depth, startNode) {
@@ -37,12 +74,8 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
         let cls = this.originGrowth.getCountLifeSquaresOfType(TYPE_STEM);
         let maxComponentLength = Math.max(2 + 1 * (maxDepth - depth), cls ** 0.4);
         let maxNodes = growthPlan.component.lifeSquares.length / 4;
-        let maxCcls = 64;
-
-        growthPlan.component.lifeSquares.forEach((lsq) => {
-            lsq.width = .4 + .4 * (growthPlan.component.getCountChildLifeSquaresOfType(TYPE_STEM) + (growthPlan.component.lifeSquares.length - growthPlan.component.lifeSquares.indexOf(lsq))) / maxCcls;
-        });
-
+        let maxCcls = 4;
+        
         if (growthPlan.steps.length < maxComponentLength) {
             let growAction = () => {
                 growthPlan.steps.push(new GrowthPlanStep(
