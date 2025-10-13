@@ -179,6 +179,7 @@ export function zoomCanvasFillRect(x, y, dx, dy) {
     );
 }
 
+
 export function zoomCanvasFillCircle(x, y, size) {
     let totalWidth = CANVAS_SQUARES_X * BASE_SIZE;
     let totalHeight = CANVAS_SQUARES_Y * BASE_SIZE;
@@ -198,6 +199,16 @@ export function zoomCanvasFillCircle(x, y, size) {
     let ypl = ypi * totalHeight;
     MAIN_CONTEXT.beginPath();
     MAIN_CONTEXT.arc(xpl, ypl, size * getCurZoom(), 0, 2 * Math.PI, false);
+    MAIN_CONTEXT.fill();
+}
+
+
+export function zoomCanvasFillCircleRelPos(xpl, ypl, size) {
+    let totalWidth = CANVAS_SQUARES_X * BASE_SIZE;
+    let totalHeight = CANVAS_SQUARES_Y * BASE_SIZE;
+
+    MAIN_CONTEXT.beginPath();
+    MAIN_CONTEXT.arc(xpl * totalWidth, ypl * totalHeight, size * getCurZoom(), 0, 2 * Math.PI, false);
     MAIN_CONTEXT.fill();
 }
 

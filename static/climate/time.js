@@ -268,6 +268,8 @@ function _initializeStarMap() {
 }
 
 function renderStarMap(brightnessMult) {
+    starHandler.render();
+    return;
     if (starMap == null) {
         initializeStarMap();
     }

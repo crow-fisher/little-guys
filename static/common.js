@@ -263,3 +263,10 @@ export {
 }
 
 
+
+export function lerp(min, max, value) {
+    return min + value * (max - min);
+}
+export function invlerp(min, max, value) {
+    return (value - min) / (max - min);
+}
