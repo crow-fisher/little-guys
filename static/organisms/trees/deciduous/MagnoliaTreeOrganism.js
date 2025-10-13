@@ -111,7 +111,7 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
                 }]);
             }
         }
-        // growthPlan.component.lifeSquares.forEach((lsq) => this.growLeaves(growthPlan, lsq));
+        growthPlan.component.lifeSquares.forEach((lsq) => this.growLeaves(growthPlan, lsq));
         growthPlan.component.children.forEach((child) => this._treeGrowthPlanning(child.growthPlan, depth + 1));
     }
 
