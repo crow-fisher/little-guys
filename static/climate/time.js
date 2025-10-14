@@ -593,12 +593,45 @@ export function getMoonlightBrightness() {
 // https://www.researchgate.net/publication/328726901_Real-time_adaptable_and_coherent_rendering_for_outdoor_augmented_reality/download
 
 export function calculateTempColor(temperature) {
+    temperature = Math.max(2500, Math.min(temperature, 6500));
     temperature /= 100;
-    temperature = Math.max(10, temperature);
+
     return {
-        r: temp_red(temperature),
-        g: temp_green(temperature),
-        b: temp_blue(temperature)
+        r: fbc(temp_red(temperature)),
+        g: fbc(temp_green(temperature)),
+        b: fbc(temp_blue(temperature))
+    };
+}
+
+export function calculateTempColorAlt(t) {
+    // from https://stackoverflow.com/questions/21977786/star-b-v-color-index-to-apparent-rgb-color
+    // code copied from https://jsfiddle.net/AkjDw/2/
+    var x, y = 0
+    if (t >= 1667 & t <= 4000) {
+        x = ((-0.2661239 * Math.pow(10, 9)) / Math.pow(t, 3)) + ((-0.2343580 * Math.pow(10, 6)) / Math.pow(t, 2)) + ((0.8776956 * Math.pow(10, 3)) / t) + 0.179910
+    } else if (t > 4000) {
+        x = ((-3.0258469 * Math.pow(10, 9)) / Math.pow(t, 3)) + ((2.1070379 * Math.pow(10, 6)) / Math.pow(t, 2)) + ((0.2226347 * Math.pow(10, 3)) / t) + 0.240390
+    }
+    if (t >= 1667 & t <= 2222) {
+        y = -1.1063814 * Math.pow(x, 3) - 1.34811020 * Math.pow(x, 2) + 2.18555832 * x - 0.20219683
+    } else if (t > 2222 & t <= 4000) {
+        y = -0.9549476 * Math.pow(x, 3) - 1.37418593 * Math.pow(x, 2) + 2.09137015 * x - 0.16748867
+    } else if (t > 4000) {
+        y = 3.0817580 * Math.pow(x, 3) - 5.87338670 * Math.pow(x, 2) + 3.75112997 * x - 0.37001483
+    }
+    var Y = 1.0
+    var X = (y == 0) ? 0 : (x * Y) / y
+    var Z = (y == 0) ? 0 : ((1 - x - y) * Y) / y
+    var r = 3.2406 * X - 1.5372 * Y - 0.4986 * Z
+    var g = -0.9689 * X + 1.8758 * Y + 0.0415 * Z
+    var b = 0.0557 * X - 0.2040 * Y + 1.0570 * Z
+    var R = (r <= 0.0031308) ? 12.92 * r : 1.055 * Math.pow(r, 1 / 0.5) - 0.055
+    var G = (g <= 0.0031308) ? 12.92 * g : 1.055 * Math.pow(g, 1 / 0.5) - 0.055
+    var B = (b <= 0.0031308) ? 12.92 * b : 1.055 * Math.pow(b, 1 / 0.5) - 0.055
+    return {
+        r: Math.round(R * 255),
+        g: Math.round(G * 255),
+        b: Math.round(B * 255)
     };
 }
 
@@ -624,9 +657,10 @@ function calculateTempColorRgbaCache(daylightStrength, opacity) {
     }
 }
 
-export function temperatureToHex(temperature) {
+
+export function tempToRgbaForStar(temperature) {
     let dc = calculateTempColor(temperature);
-    return rgbToHex(Math.round(dc.r), Math.round(dc.g), Math.round(dc.b))
+    return rgbToHex(dc.r, dc.g, dc.b);
 }
 
 
@@ -641,6 +675,11 @@ export function calculateTempColorRgbaNoCache(daylightStrength, opacity) {
     return rgbToRgba(resColor.r, resColor.g, resColor.b, opacity);
 }
 
+// "floor bound color"
+export function fbc(v) {
+    return Math.min(v, Math.max(v, 0, 255));
+}
+
 function temp_red(temperature) {
     let red;
     if (temperature < 66) {
@@ -649,9 +688,7 @@ function temp_red(temperature) {
         red = temperature - 60;
         red = 329.698727446 * (red ** (-0.1332047592))
     }
-    red = Math.max(0, red);
-    red = Math.min(255, red);
-    return Math.floor(red);
+    return red;
 }
 
 function temp_green(temperature) {
@@ -661,24 +698,22 @@ function temp_green(temperature) {
         green = 99.4708 * Math.log(green) - 161.1195;
     } else {
         green = temperature - 60;
-        green = 288.122169 * (green * (-.0755));
+        green = 288.122169 * (green ** (-.0755));
     }
-    green = Math.max(0, green);
-    green = Math.min(255, green);
-    return Math.floor(green);
+    return green;
 }
 
 function temp_blue(temperature) {
     let blue = 0;
-    if (temperature >= 66) {
+    if (temperature > 66) {
         blue = 255;
+    } else if (temperature <= 19) {
+        blue = 0;
     } else {
         blue = temperature - 10;
+        blue = 138.517 * Math.log(blue) - 305.0447;
     }
-    blue = 138.517 * Math.log(blue) - 305.0447;
-    blue = Math.max(0, blue);
-    blue = Math.min(255, blue);
-    return Math.floor(blue);
+    return blue;
 }
 
 

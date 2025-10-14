@@ -1,7 +1,7 @@
 import { getBaseSize, zoomCanvasFillCircleRelPos } from "../../canvas.js";
-import { invlerp } from "../../common.js";
+import { invlerp, randRange } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
-import { temperatureToHex } from "../time.js";
+import { tempToRgbaForStar } from "../time.js";
 
 export class StarHandler {
     constructor() {
@@ -38,11 +38,17 @@ export class StarHandler {
         let brightness = Number.parseFloat(row.substr(104, 4));
         let bv = Number.parseFloat(row.substr(110, 4));
 
+        if (isNaN(bv))
+            return;
 
         let netRa = raHours + raMinutes / 60 + raSeconds / 3600;
         let netDec = (signDec == "+" ? 1 : -1) * degressDec + minutesDec / 60 + secondsDec / 3600;
         let temperature = this.calculateStarTemperature(bv);
-        let hex = temperatureToHex(temperature);
+        let middleSqueeze = 4000;
+        let factor = 200;
+
+        // temperature = (temperature + (middleSqueeze * factor - 1)) / factor;;
+        let hex = tempToRgbaForStar(temperature);
         if (isNaN(netRa) || isNaN(netDec) || isNaN(brightness)) {
             return;
         }
@@ -63,7 +69,7 @@ export class StarHandler {
         //     "\nhex: ", hex,
         // )
 
-        this.data.push([netRa, netDec, brightness, temperatureToHex(temperature)]);
+        this.data.push([netRa, netDec, brightness, hex]);
 
     }
 
@@ -71,7 +77,7 @@ export class StarHandler {
         // https://web.archive.org/web/20230315074349/https://spiff.rit.edu/classes/phys445/lectures/colors/colors.html
         // https://iopscience.iop.org/article/10.1086/301490/pdf
         // https://stackoverflow.com/questions/21977786/star-b-v-color-index-to-apparent-rgb-color
-        return 4600 * ((1 / ((0.92 * bv) + 1.7)) +(1 / ((0.92 * bv) + 0.62)) );
+        return 4600 * ((1 / ((0.92 * bv) + 1.7)) + (1 / ((0.92 * bv) + 0.62)));
     }
 
     render() {
@@ -79,7 +85,7 @@ export class StarHandler {
         for (let i = 0; i < this.data.length; i++) {
             let row = this.data[i];
             MAIN_CONTEXT.fillStyle = row[3];
-            zoomCanvasFillCircleRelPos(invlerp(0, 24, row[0]), invlerp(-90, 90, row[1]), row[2] * 2);
+            zoomCanvasFillCircleRelPos(invlerp(0, 24, row[0]), invlerp(-90, 90, row[1]), row[2] * 3);
         }
     }
 
