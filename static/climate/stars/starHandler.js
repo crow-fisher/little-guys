@@ -6,12 +6,14 @@ import { tempToRgbaForStar } from "../time.js";
 export class StarHandler {
     constructor() {
         this.initalizeData();
-
     }
 
     initalizeData() {
         this.data = new Array();
-        fetch("./static/climate/stars/lib/bsc/catalog").then((resp) => resp.text())
+        this.dataAsc = new Map();
+        this.dataDec = new Map();
+
+        fetch("./static/climate/stars/lib/bsc/catalog.txt").then((resp) => resp.text())
             .then((text) => this.loadData(text))
     }
 
@@ -69,7 +71,8 @@ export class StarHandler {
         //     "\nhex: ", hex,
         // )
 
-        this.data.push([netRa, netDec, brightness, hex]);
+        let objArr = [netRa, netDec, brightness, hex];
+        this.data.push(objArr);
 
     }
 
@@ -81,12 +84,59 @@ export class StarHandler {
     }
 
     render() {
-        MAIN_CONTEXT.fillStyle = "#FFFFFF";
+
+        let asc = Number.parseFloat(new URLSearchParams(document.location.search).get("asc"));
+        let dec = Number.parseFloat(new URLSearchParams(document.location.search).get("dec"));
+        let fov = Number.parseFloat(new URLSearchParams(document.location.search).get("fov"));
+        this._render((asc ?? 0), (dec ?? 0), (fov ?? 20));
+
+        // MAIN_CONTEXT.fillStyle = "#FFFFFF";
+        // for (let i = 0; i < this.data.length; i++) {
+        //     let row = this.data[i];
+        //     MAIN_CONTEXT.fillStyle = row[3];
+        //     zoomCanvasFillCircleRelPos(invlerp(0, 24, row[0]), invlerp(-90, 90, row[1]), row[2] * 3);
+        // }
+    }
+
+    _render(ascension, declination, fov) {
+        // render all stars within a circle of degrees 'fov' 
+        // fov in degrees
+        let ascFov = (fov / 180) * 24;
         for (let i = 0; i < this.data.length; i++) {
             let row = this.data[i];
-            MAIN_CONTEXT.fillStyle = row[3];
-            zoomCanvasFillCircleRelPos(invlerp(0, 24, row[0]), invlerp(-90, 90, row[1]), row[2] * 3);
+            // ascension ranges between 0 and 24 corresponding to a complete circle
+            // declination ranges from -90 to 90 corresponding to a hemisphere
+
+            let rowAsc = row[0];
+            let rowDec = row[1];
+            let rowBrightness = row[2];
+            let rowColor = row[3];
+
+            let minDec = declination - (fov / 2);
+            let maxDec = declination + (fov / 2);
+
+            let minAsc = ascension - (ascFov / 2);
+            let maxAsc = ascension + (ascFov / 2);
+
+            MAIN_CONTEXT.fillStyle = rowColor;
+
+            if ((rowDec > minDec) && (rowDec < maxDec) && (rowAsc > minAsc) && (rowAsc < maxAsc)) {
+                zoomCanvasFillCircleRelPos(
+                    invlerp(0, 24, rowAsc),
+                    invlerp(-90, 90, rowDec),
+                    rowBrightness * 3);
+            }
+            // so if we're at 0 0, we are at the prime meridian looking straight out
+
+            // 
+
+
+
+
         }
+
+
+
     }
 
 
