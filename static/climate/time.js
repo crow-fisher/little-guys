@@ -3,7 +3,7 @@ import { hexToRgb, hsv2rgb, randNumber, randRange, rgb2hsv, rgbToHex, rgbToRgba 
 import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth, MAIN_CONTEXT, setBackgroundColor } from "../index.js";
 import { calculateColorRGB, getFrameRelCloud } from "./simulation/temperatureHumidity.js";
 import {
-    loadGD, 
+    loadGD,
     UI_SPEED_1,
     UI_SPEED_2,
     UI_SPEED_3,
@@ -254,7 +254,7 @@ function _initializeStarMap() {
     for (let i = 0; i < numStars; i++) {
         let starX = randNumber(-sx * 4, sx * 4);
         let starY = randNumber(-sy * 4, sy * 4);
-        
+
         let starBrightness = (Math.random() ** 0.7) * 0.3;
 
         if (!(starMap.has(starX))) {
@@ -263,7 +263,7 @@ function _initializeStarMap() {
         }
 
         starMap.get(starX).set(starY, starBrightness);
-        starColorTemperatureMap.get(starX).set(starY,  randRange(0.63, 1));
+        starColorTemperatureMap.get(starX).set(starY, randRange(0.63, 1));
     }
 }
 
@@ -300,7 +300,7 @@ function renderStarMap(brightnessMult) {
             let endX = rotatedX + starMapCenterX;
             let endY = rotatedY + starMapCenterX;
 
-            if (!isSquareOnCanvas(endX, endY)) 
+            if (!isSquareOnCanvas(endX, endY))
                 continue;
 
             let r = 0.4;
@@ -567,7 +567,7 @@ export function getMoonlightBrightness() {
     let curDate = new Date(curMillis);
     let moonTimes = SunCalc.getMoonTimes(curDate, getActiveClimate().lat, getActiveClimate().lng);
     let moonFraction = SunCalc.getMoonIllumination(curDate).fraction;
-    
+
     if (moonTimes.alwaysUp) {
         return moonFraction;
     }
@@ -592,7 +592,7 @@ export function getMoonlightBrightness() {
 
 // https://www.researchgate.net/publication/328726901_Real-time_adaptable_and_coherent_rendering_for_outdoor_augmented_reality/download
 
-function calculateTempColor(temperature) {
+export function calculateTempColor(temperature) {
     temperature /= 100;
     temperature = Math.max(10, temperature);
     return {
@@ -624,7 +624,13 @@ function calculateTempColorRgbaCache(daylightStrength, opacity) {
     }
 }
 
-function calculateTempColorRgbaNoCache(daylightStrength, opacity) {
+export function temperatureToHex(temperature) {
+    let dc = calculateTempColor(temperature);
+    return rgbToHex(Math.round(dc.r), Math.round(dc.g), Math.round(dc.b))
+}
+
+
+export function calculateTempColorRgbaNoCache(daylightStrength, opacity) {
     let temperature = Math.floor(daylightStrength * 6600);
     let dc = calculateTempColor(temperature);
     let resColor = {

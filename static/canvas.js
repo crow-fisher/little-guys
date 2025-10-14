@@ -208,7 +208,7 @@ export function zoomCanvasFillCircleRelPos(xpl, ypl, size) {
     let totalHeight = CANVAS_SQUARES_Y * BASE_SIZE;
 
     MAIN_CONTEXT.beginPath();
-    MAIN_CONTEXT.arc(xpl * totalWidth, ypl * totalHeight, size * getCurZoom(), 0, 2 * Math.PI, false);
+    MAIN_CONTEXT.arc(xpl * totalWidth, ypl * totalHeight, size, 0, 2 * Math.PI, false);
     MAIN_CONTEXT.fill();
 }
 
