@@ -1,9 +1,9 @@
 import { getBaseSize, zoomCanvasFillCircleRelPos } from "../../canvas.js";
 import { invlerp, lerp, randRange, rgb2hsv } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
-import { loadGD, UI_STARMAP_ASC, UI_STARMAP_DEC } from "../../ui/UIData.js";
+import { loadGD, saveGD, UI_STARMAP_XROTATION, UI_STARMAP_XROTATION_SPEED, UI_STARMAP_YROTATION, UI_STARMAP_YROTATION_SPEED, UI_STARMAP_ZROTATION, UI_STARMAP_ZROTATION_SPEED } from "../../ui/UIData.js";
 import { tempToRgbaForStar } from "../time.js";
-import { multiplyMatrixAndPoint } from "./matrix.js";
+import { multiplyMatrices, multiplyMatrixAndPoint } from "./matrix.js";
 
 export class StarHandler {
     constructor() {
@@ -87,56 +87,65 @@ export class StarHandler {
 
     render() {
 
+
+
         // this is what i need 
         // https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix.html
 
         // render all stars within a circle of degrees 'fov' 
         // fov in degrees
 
-        let ascension = loadGD(UI_STARMAP_ASC);
-        let declination = loadGD(UI_STARMAP_DEC);
+        saveGD(UI_STARMAP_XROTATION, loadGD(UI_STARMAP_XROTATION) + loadGD(UI_STARMAP_XROTATION_SPEED));
+        saveGD(UI_STARMAP_YROTATION, loadGD(UI_STARMAP_YROTATION) + loadGD(UI_STARMAP_YROTATION_SPEED));
+        saveGD(UI_STARMAP_ZROTATION, loadGD(UI_STARMAP_ZROTATION) + loadGD(UI_STARMAP_ZROTATION_SPEED));
 
-        let fov = 180;
+        saveGD(UI_STARMAP_XROTATION_SPEED, loadGD(UI_STARMAP_XROTATION_SPEED) * 0.97);
+        saveGD(UI_STARMAP_YROTATION_SPEED, loadGD(UI_STARMAP_YROTATION_SPEED) * 0.97);
+        saveGD(UI_STARMAP_ZROTATION_SPEED, loadGD(UI_STARMAP_ZROTATION_SPEED) * 0.97);
 
-        let p_camera_x = 1;
-        let p_camera_y = 1;
-        let p_camera_z = 1;
+        let cameraX = loadGD(UI_STARMAP_XROTATION);
+        let cameraY = loadGD(UI_STARMAP_YROTATION);
+        let cameraZ = loadGD(UI_STARMAP_ZROTATION);
+
+        let fov = 80;
+        let r2d = 57.2958;
 
         for (let i = 0; i < this.data.length; i++) {
             let row = this.data[i];
-            // ascension ranges between 0 and 24 corresponding to a complete circle
-            // declination ranges from -90 to 90 corresponding to a hemisphere
-
             let rowAsc = lerp(invlerp(0, 24, row[0]), 0, Math.PI * 2);
             let rowDec = lerp(invlerp(-90, 90, row[1]), 0, Math.PI * 2);
-
             let rowBrightness = row[2];
             let rowColor = row[3];
-
             MAIN_CONTEXT.fillStyle = rowColor;
             // we are in sphericasl coordinates 
             let phi = rowDec;
             let theta = rowAsc;
 
-            let x = Math.sin(phi) * Math.cos(theta);
-            let y = Math.sin(phi) * Math.sin(theta);
-            let z = Math.cos(phi);
+            let x = 2 * Math.sin(phi) * Math.cos(theta);
+            let y = 2 * Math.sin(phi) * Math.sin(theta);
+            let z = 2 * Math.cos(phi);
             let w = 1;
+
+            let rotated = rotatePointRx([x, y, z, w], cameraX);
+            rotated = rotatePointRy(rotated, cameraY);
+            rotated = rotatePointRz(rotated, cameraZ);
+
+            x = rotated[0];
+            y = rotated[1];
+            z = rotated[2];
+            w = rotated[3];
 
             if (z < 0)
                 continue;
 
             // scaling factor for FOV calculation 
 
-            let fov = 120;
-            let r2d = 57.2958;
 
             let S = 1 / (Math.tan((fov / r2d) / 2) * (Math.PI / (180 / r2d)));
-
             let perspectiveMatrix = [
                 [S, 0, 0, 0],
                 [0, S, 0, 0],
-                [0, 0, 1, -1],
+                [0, 0, S, -1],
                 [0, 0, 1, 0]
             ];
 
@@ -144,16 +153,43 @@ export class StarHandler {
 
             let transformed = multiplyMatrixAndPoint(perspectiveMatrix, [x, y, z, w]);
 
-            if (Math.random() > 0.99) {
-                console.log([x, y, z, w])
-                console.log(transformed);
-            }
+            zoomCanvasFillCircleRelPos(
+                invlerp(-1, 1, transformed[0] / transformed[2]),
+                invlerp(-1, 1, transformed[1] / transformed[2]),
+                rowBrightness * 3);
 
-                zoomCanvasFillCircleRelPos(
-                    invlerp(-1, 1, transformed[0]),
-                    invlerp(-1, 1, transformed[1]),
-                    rowBrightness * 3);
+        }
 
+
+        function rotatePointRx(point, theta) {
+            let rotationMatrix = [
+                [1, 0, 0, 0],
+                [0, Math.cos(theta), -Math.sin(theta), 0],
+                [0, Math.sin(theta), Math.cos(theta), 0],
+                [0, 0, 0, 1]
+            ];
+            return multiplyMatrixAndPoint(rotationMatrix, point);
+        }
+
+        function rotatePointRy(point, theta) {
+            let rotationMatrix = [
+                [Math.cos(theta), 0, Math.sin(theta), 0],
+                [0, 1, 0, 0],
+                [-Math.sin(theta), 0, Math.cos(theta), 0],
+                [0, 0, 0, 1]
+            ]
+            return multiplyMatrixAndPoint(rotationMatrix, point);
+        }
+
+
+        function rotatePointRz(point, theta) {
+            let rotationMatrix = [
+                [Math.cos(theta), -Math.sin(theta), 0, 0],
+                [Math.sin(theta), Math.cos(theta), 0, 0],
+                [0, 0, 1, 0],
+                [0, 0, 0, 1]
+            ]
+            return multiplyMatrixAndPoint(rotationMatrix, point);
         }
 
 

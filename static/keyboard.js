@@ -2,7 +2,7 @@ import { moveCamera, resetZoom } from "./canvas.js";
 import { getActiveClimate } from "./climate/climateManager.js";
 import { getGlobalThetaBase, setGlobalThetaBase } from "./globals.js";
 import { isPlayerRunning, playerKeyDown, playerKeyUp } from "./player/playerMain.js";
-import { loadGD, saveGD, UI_PALETTE_EYEDROPPER, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_MIXER, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_TOPBAR_BLOCK, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, closeEyedropperMixer, UI_PALETTE_ERASE, UI_TEXTEDIT_ACTIVE, UI_REGEX, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALETTE_SURFACE_OFF, UI_PALETTE_PLANTS, UI_PALETTE_ROCKIDX, addUIFunctionMap, UI_PALETTE_COMPOSITION, UI_STARMAP_ASC, UI_STARMAP_DEC } from "./ui/UIData.js";
+import { loadGD, saveGD, UI_PALETTE_EYEDROPPER, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_MIXER, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_TOPBAR_BLOCK, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, closeEyedropperMixer, UI_PALETTE_ERASE, UI_TEXTEDIT_ACTIVE, UI_REGEX, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALETTE_SURFACE_OFF, UI_PALETTE_PLANTS, UI_PALETTE_ROCKIDX, addUIFunctionMap, UI_PALETTE_COMPOSITION, UI_STARMAP_XROTATION, UI_STARMAP_YROTATION, UI_STARMAP_ZROTATION, UI_STARMAP_YROTATION_SPEED, UI_STARMAP_XROTATION_SPEED, UI_STARMAP_ZROTATION_SPEED } from "./ui/UIData.js";
 import { clearMouseHoverColorCacheMap } from "./ui/WindowManager.js";
 
 export const KEY_CONTROL = "Control";
@@ -151,18 +151,25 @@ function toollessKeyMap(key) {
         moveCamera(1, 0);
     }
 
-    if (key == "i") {
-        saveGD(UI_STARMAP_ASC, loadGD(UI_STARMAP_ASC) + .01);
-    }
-    if (key == "k") {
-        saveGD(UI_STARMAP_ASC, loadGD(UI_STARMAP_ASC) - .01);
-    }
-    if (key == "h") {
-        saveGD(UI_STARMAP_DEC, loadGD(UI_STARMAP_DEC) + .01);
+    if (key == "j") {
+        saveGD(UI_STARMAP_YROTATION_SPEED, loadGD(UI_STARMAP_YROTATION_SPEED) - .01);
     }
     if (key == "l") {
-        saveGD(UI_STARMAP_DEC, loadGD(UI_STARMAP_DEC) - .01);
+        saveGD(UI_STARMAP_YROTATION_SPEED, loadGD(UI_STARMAP_YROTATION_SPEED) + .01);
     }
+    if (key == "i") {
+        saveGD(UI_STARMAP_XROTATION_SPEED, loadGD(UI_STARMAP_XROTATION_SPEED) + .01);
+    }
+    if (key == "k") {
+        saveGD(UI_STARMAP_XROTATION_SPEED, loadGD(UI_STARMAP_XROTATION_SPEED) - .01);
+    }
+    if (key == "u") {
+        saveGD(UI_STARMAP_ZROTATION_SPEED, loadGD(UI_STARMAP_ZROTATION_SPEED) + .01);
+    }
+    if (key == "o") {
+        saveGD(UI_STARMAP_ZROTATION_SPEED, loadGD(UI_STARMAP_ZROTATION_SPEED) - .01);
+    }
+
 
     if (key == "Escape") {
         resetZoom();
