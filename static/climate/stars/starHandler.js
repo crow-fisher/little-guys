@@ -1,8 +1,9 @@
 import { getBaseSize, zoomCanvasFillCircleRelPos } from "../../canvas.js";
-import { invlerp, lerp, randRange } from "../../common.js";
+import { invlerp, lerp, randRange, rgb2hsv } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { loadGD, UI_STARMAP_ASC, UI_STARMAP_DEC } from "../../ui/UIData.js";
 import { tempToRgbaForStar } from "../time.js";
+import { multiplyMatrixAndPoint } from "./matrix.js";
 
 export class StarHandler {
     constructor() {
@@ -85,6 +86,10 @@ export class StarHandler {
     }
 
     render() {
+
+        // this is what i need 
+        // https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix.html
+
         // render all stars within a circle of degrees 'fov' 
         // fov in degrees
 
@@ -92,6 +97,11 @@ export class StarHandler {
         let declination = loadGD(UI_STARMAP_DEC);
 
         let fov = 180;
+
+        let p_camera_x = 1;
+        let p_camera_y = 1;
+        let p_camera_z = 1;
+
         for (let i = 0; i < this.data.length; i++) {
             let row = this.data[i];
             // ascension ranges between 0 and 24 corresponding to a complete circle
@@ -108,23 +118,45 @@ export class StarHandler {
             let phi = rowDec - declination;
             let theta = rowAsc - ascension;
 
-            let x = Math.sin(phi) * Math.cos(theta);
-            let y = Math.sin(phi) * Math.sin(theta);
-            let z = Math.cos(phi);
+            let x = 2 * Math.sin(phi) * Math.cos(theta);
+            let y = 2 * Math.sin(phi) * Math.sin(theta);
+            let z = 2 * Math.cos(phi);
+            let w = 1;
 
-            let X = x / (1 - z);
-            let Y = y / (1 - z);
+            if (z < 0)
+                continue;
 
-            zoomCanvasFillCircleRelPos(
-                invlerp(-2, 2, X),
-                invlerp(-2, 2, Y),
-                rowBrightness * 3);
-            // so if we're at 0 0, we are at the prime meridian looking straight out
+            // scaling factor for FOV calculation 
 
-            // 
+            let fov = 120;
+            let r2d = 57.2958;
 
+            let S = 1 / (Math.tan((fov / r2d) / 2) * (Math.PI / (180 / r2d)));
 
+            let f = 1;
+            let n = 0.1;
 
+            let m33 = (-f) / (f - n);
+            let m34 = (-f * n) / (f - n);
+
+            let perspectiveMatrix = [
+                [S, 0, 0, 0],
+                [0, S, 0, 0],
+                [0, 0, m33, -1],
+                [0, 0, m34, 0]
+            ];
+
+            let transformed = multiplyMatrixAndPoint(perspectiveMatrix, [x, y, z, w]);
+
+            if (Math.random() > 0.99) {
+                console.log([x, y, z, w])
+                console.log(transformed);
+            }
+
+                zoomCanvasFillCircleRelPos(
+                    invlerp(-1, 1, transformed[0]),
+                    invlerp(-1, 1, transformed[1]),
+                    rowBrightness * 3);
 
         }
 
