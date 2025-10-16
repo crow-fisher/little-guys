@@ -105,8 +105,8 @@ export class StarHandler {
 
             MAIN_CONTEXT.fillStyle = rowColor;
             // we are in sphericasl coordinates 
-            let phi = rowDec + declination;
-            let theta = rowAsc + ascension;
+            let phi = rowDec - declination;
+            let theta = rowAsc - ascension;
 
             let x = Math.sin(phi) * Math.cos(theta);
             let y = Math.sin(phi) * Math.sin(theta);
