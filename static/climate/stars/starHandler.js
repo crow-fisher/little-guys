@@ -1,6 +1,7 @@
 import { getBaseSize, zoomCanvasFillCircleRelPos } from "../../canvas.js";
-import { invlerp, randRange } from "../../common.js";
+import { invlerp, lerp, randRange } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
+import { loadGD, UI_STARMAP_ASC, UI_STARMAP_DEC } from "../../ui/UIData.js";
 import { tempToRgbaForStar } from "../time.js";
 
 export class StarHandler {
@@ -84,48 +85,40 @@ export class StarHandler {
     }
 
     render() {
-
-        let asc = Number.parseFloat(new URLSearchParams(document.location.search).get("asc"));
-        let dec = Number.parseFloat(new URLSearchParams(document.location.search).get("dec"));
-        let fov = Number.parseFloat(new URLSearchParams(document.location.search).get("fov"));
-        this._render((asc ?? 0), (dec ?? 0), (fov ?? 20));
-
-        // MAIN_CONTEXT.fillStyle = "#FFFFFF";
-        // for (let i = 0; i < this.data.length; i++) {
-        //     let row = this.data[i];
-        //     MAIN_CONTEXT.fillStyle = row[3];
-        //     zoomCanvasFillCircleRelPos(invlerp(0, 24, row[0]), invlerp(-90, 90, row[1]), row[2] * 3);
-        // }
-    }
-
-    _render(ascension, declination, fov) {
         // render all stars within a circle of degrees 'fov' 
         // fov in degrees
-        let ascFov = (fov / 180) * 24;
+
+        let ascension = loadGD(UI_STARMAP_ASC);
+        let declination = loadGD(UI_STARMAP_DEC);
+
+        let fov = 180;
         for (let i = 0; i < this.data.length; i++) {
             let row = this.data[i];
             // ascension ranges between 0 and 24 corresponding to a complete circle
             // declination ranges from -90 to 90 corresponding to a hemisphere
 
-            let rowAsc = row[0];
-            let rowDec = row[1];
+            let rowAsc = lerp(invlerp(0, 24, row[0]), 0, Math.PI * 2);
+            let rowDec = lerp(invlerp(-90, 90, row[1]), 0, Math.PI * 2);
+
             let rowBrightness = row[2];
             let rowColor = row[3];
 
-            let minDec = declination - (fov / 2);
-            let maxDec = declination + (fov / 2);
-
-            let minAsc = ascension - (ascFov / 2);
-            let maxAsc = ascension + (ascFov / 2);
-
             MAIN_CONTEXT.fillStyle = rowColor;
+            // we are in sphericasl coordinates 
+            let phi = rowDec + declination;
+            let theta = rowAsc + ascension;
 
-            if ((rowDec > minDec) && (rowDec < maxDec) && (rowAsc > minAsc) && (rowAsc < maxAsc)) {
-                zoomCanvasFillCircleRelPos(
-                    invlerp(0, 24, rowAsc),
-                    invlerp(-90, 90, rowDec),
-                    rowBrightness * 3);
-            }
+            let x = Math.sin(phi) * Math.cos(theta);
+            let y = Math.sin(phi) * Math.sin(theta);
+            let z = Math.cos(phi);
+
+            let X = x / (1 - z);
+            let Y = y / (1 - z);
+
+            zoomCanvasFillCircleRelPos(
+                invlerp(-2, 2, X),
+                invlerp(-2, 2, Y),
+                rowBrightness * 3);
             // so if we're at 0 0, we are at the prime meridian looking straight out
 
             // 
