@@ -115,12 +115,12 @@ export class StarHandler {
 
             MAIN_CONTEXT.fillStyle = rowColor;
             // we are in sphericasl coordinates 
-            let phi = rowDec - declination;
-            let theta = rowAsc - ascension;
+            let phi = rowDec;
+            let theta = rowAsc;
 
-            let x = 2 * Math.sin(phi) * Math.cos(theta);
-            let y = 2 * Math.sin(phi) * Math.sin(theta);
-            let z = 2 * Math.cos(phi);
+            let x = Math.sin(phi) * Math.cos(theta);
+            let y = Math.sin(phi) * Math.sin(theta);
+            let z = Math.cos(phi);
             let w = 1;
 
             if (z < 0)
@@ -133,18 +133,14 @@ export class StarHandler {
 
             let S = 1 / (Math.tan((fov / r2d) / 2) * (Math.PI / (180 / r2d)));
 
-            let f = 1;
-            let n = 0.1;
-
-            let m33 = (-f) / (f - n);
-            let m34 = (-f * n) / (f - n);
-
             let perspectiveMatrix = [
                 [S, 0, 0, 0],
                 [0, S, 0, 0],
-                [0, 0, m33, -1],
-                [0, 0, m34, 0]
+                [0, 0, 1, -1],
+                [0, 0, 1, 0]
             ];
+
+            // https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix.html
 
             let transformed = multiplyMatrixAndPoint(perspectiveMatrix, [x, y, z, w]);
 
