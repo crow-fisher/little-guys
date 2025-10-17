@@ -1,11 +1,13 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { doTimeSkipToDate, doTimeSkipToNow } from "../../climate/time.js";
+import { COLOR_BLACK, COLOR_WHITE } from "../../colors.js";
 import { Container } from "../Container.js";
 import { Button } from "../elements/Button.js";
+import { SliderGradientBackground } from "../elements/SliderGradientBackground.js";
 import { TimeSkipElement } from "../elements/TimeSkipElement.js";
 import { LockedComponent } from "../LockedComponent.js";
-import { UI_CENTER } from "../UIData.js";
+import { UI_CENTER, UI_STARMAP_FOV } from "../UIData.js";
 
 export const R_COLORS = "🎨";
 export const R_PERCOLATION_RATE = "💦";
@@ -40,6 +42,7 @@ export class TimeSkipComponent extends LockedComponent {
 
         container.addElement(row1);
         container.addElement(row2);
+        container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_FOV, sizeX, getBaseUISize() * 3, 60, 179, () => COLOR_WHITE, () => COLOR_BLACK));
     }
 
     render() {
