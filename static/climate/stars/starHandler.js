@@ -160,16 +160,15 @@ export class StarHandler {
     }
 
     renderCompass() {
-        let unit = 2;
-
-        this.renderCompassDir(0, 0, 0, unit)
-        this.renderCompassDir(0, 0, 1, unit)
-        this.renderCompassDir(0, 0, 0.5, unit)
-        this.renderCompassDir(0, 0, -0.5, unit)
+        this.renderCompassDir(0, 0, 0)
+        this.renderCompassDir(0, 0, 1)
+        this.renderCompassDir(0, 0, 0.5)
+        this.renderCompassDir(0, 0, -0.5)
 
     }
 
-    renderCompassDir(dirX, dirY, dirZ, unit) {
+    renderCompassDir(dirX, dirY, dirZ) {
+        let unit = 1;
         let totalWidth = getCanvasSquaresX() * getBaseSize();
         let totalHeight = getCanvasSquaresY() * getBaseSize();
 
@@ -191,8 +190,8 @@ export class StarHandler {
             startVec = this.rotatePoint(startVec, cameraX, cameraY, cameraZ);
             endVec = this.rotatePoint(endVec, cameraX, cameraY, cameraZ);
 
-            let startVecNormalized = normalizeXYZVector(startVec, 0.5);
-            let endVecNormalized = normalizeXYZVector(endVec, 0.5);
+            let startVecNormalized = normalizeXYZVector(startVec, 1);
+            let endVecNormalized = normalizeXYZVector(endVec, 1);
 
             let sp = this.cartesianToScreen(...startVec, true);
             let ep = this.cartesianToScreen(...endVec, true);
@@ -269,9 +268,9 @@ export class StarHandler {
     }
 
     sphericalToScreen(phi, theta) {
-        let x = 2 * Math.sin(phi) * Math.cos(theta);
-        let y = 2 * Math.sin(phi) * Math.sin(theta);
-        let z = 2 * Math.cos(phi);
+        let x = 1 * Math.sin(phi) * Math.cos(theta);
+        let y = 1 * Math.sin(phi) * Math.sin(theta);
+        let z = 1 * Math.cos(phi);
         let w = 1;
         return this.cartesianToScreen(x, y, z, w)
     }
