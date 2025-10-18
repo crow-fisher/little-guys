@@ -13,15 +13,33 @@ export class StarHandler {
 
     initalizeData() {
         this.data = new Array();
-        this.dataAsc = new Map();
-        this.dataDec = new Map();
+        this.constellations = new Array();
+        this.constellationStars = new Set();
+        this.starsById = new Map();
 
-        fetch("./static/climate/stars/lib/bsc/catalog.txt").then((resp) => resp.text())
+        fetch("./static/climate/stars/lib/stellarium/constellations.fab").then((resp) => resp.text())
+            .then((text) => this.loadConstellations(text));
+
+        fetch("./static/climate/stars/lib/stellarium/hip_main.dat").then((resp) => resp.text())
             .then((text) => this.loadData(text))
+
     }
 
-    loadData(data) {
-        let rows = data.split("\n");
+    loadConstellations(text) {
+        let rows = text.split("\n");
+        for (let i = 0; i < rows.length; i++) {
+            this.loadConstellationRow(rows.at(i));
+        }
+    }
+
+    loadConstellationRow(row) {
+        let rowValues = Array.from(row.split(" ").map((v) => Number.parseInt(v)));
+        rowValues.slice(1).forEach((id) => this.constellationStars.add(Number.parseInt(id)));
+        this.constellations.push(rowValues.slice(1));
+    }
+
+    loadData(text) {
+        let rows = text.split("\n");
         for (let i = 0; i < rows.length; i++) {
             this.loadRow(rows.at(i));
         }
@@ -31,32 +49,39 @@ export class StarHandler {
         // for equinox J2000, epoch 2000.0
 
         // right ascension - goes from 0 to 24 hours 
-        // declination - goes from -90 to 90 degrees    
+        // declination - goes from -90 to 90 degrees
 
-        let raHours = Number.parseFloat(row.substr(75, 2));
-        let raMinutes = Number.parseFloat(row.substr(77, 2));
-        let raSeconds = Number.parseFloat(row.substr(79, 3));
-        let signDec = row.substr(83, 1);
-        let degressDec = Number.parseFloat(row.substr(84, 2));
-        let minutesDec = Number.parseFloat(row.substr(86, 2));
-        let secondsDec = Number.parseFloat(row.substr(88, 2));
-        let brightness = Number.parseFloat(row.substr(104, 4));
-        let bv = Number.parseFloat(row.substr(110, 4));
+        let id = Number.parseInt(row.substr(8, 13));
 
-        if (isNaN(bv))
+        if (!this.constellationStars.has(id) && Math.random() < 0.9)
             return;
+        let raHours = Number.parseFloat(row.substr(17, 2));
+        let raMinutes = Number.parseFloat(row.substr(20, 2));
+        let raSeconds = Number.parseFloat(row.substr(23, 5));
+
+        let signDec = row.substr(29, 1);
+        let degressDec = Number.parseFloat(row.substr(30, 2));
+        let minutesDec = Number.parseFloat(row.substr(33, 2));
+        let secondsDec = Number.parseFloat(row.substr(36, 5));
+
+        let brightness = Number.parseFloat(row.substr(230, 6));
+        let bv = Number.parseFloat(row.substr(245, 5));
+
+        if (isNaN(bv) || brightness < 0)
+            return;
+
+        brightness *= .2;
 
         let netRa = raHours + raMinutes / 60 + raSeconds / 3600;
         let netDec = (signDec == "+" ? 1 : -1) * degressDec + minutesDec / 60 + secondsDec / 3600;
         let temperature = this.calculateStarTemperature(bv);
-        let middleSqueeze = 4000;
-        let factor = 200;
-
-        // temperature = (temperature + (middleSqueeze * factor - 1)) / factor;;
         let hex = tempToRgbaForStar(temperature);
         if (isNaN(netRa) || isNaN(netDec) || isNaN(brightness)) {
             return;
         }
+
+        netRa *= Math.PI * 2;
+        netDec *= Math.PI * 2;
 
         // console.log(
         //     "\nId: ", row.substr(0, 4),
@@ -75,6 +100,7 @@ export class StarHandler {
         // )
 
         let objArr = [netRa, netDec, brightness, hex];
+        this.starsById.set(id, objArr);
         this.data.push(objArr);
 
     }
@@ -164,7 +190,6 @@ export class StarHandler {
         this.renderCompassDir(0, 0, 1)
         this.renderCompassDir(0, 0, 0.5)
         this.renderCompassDir(0, 0, -0.5)
-
     }
 
     renderCompassDir(dirX, dirY, dirZ) {
@@ -213,16 +238,48 @@ export class StarHandler {
 
     }
 
+    renderConstellations() {
+        let phi, theta, start, transformed;
+
+        let cw = getCanvasWidth();
+        let ch = getCanvasHeight();
+
+        MAIN_CONTEXT.beginPath();
+        MAIN_CONTEXT.lineWidth = 8;
+        MAIN_CONTEXT.strokeStyle = COLOR_VERY_FUCKING_RED;
+        for (let i = 0; i < this.constellations.length; i += 24) {
+            let constellationStars = this.constellations.at(i);
+            start = null;
+            for (let j = 0; j < constellationStars.length; j++) {
+                let curStar = this.starsById.get(constellationStars.at(j))
+                if (curStar == null)
+                    continue;
+                phi = curStar[0];
+                theta = curStar[1];
+                transformed = this.sphericalToScreen(phi, theta);
+                if (transformed != null) {
+                    if (start == null) {
+                        start = transformed;
+                        MAIN_CONTEXT.moveTo(cw * invlerp(-1, 1, start[0]), ch * invlerp(-1, 1, start[1]))
+                    } else {
+                        MAIN_CONTEXT.lineTo(cw * invlerp(-1, 1, transformed[0]), ch * invlerp(-1, 1, transformed[1]))
+                    }
+                } else {
+                    start = null;
+                }
+                MAIN_CONTEXT.stroke();
+            }
+        }
+    }
 
     render() {
         // https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix.html
         this.cameraHandling();
         this.renderWireframe();
-        this.renderCompass();
         for (let i = 0; i < this.data.length; i++) {
             let row = this.data[i];
-            let rowAsc = lerp(invlerp(0, 24, row[0]), 0, Math.PI * 2);
-            let rowDec = lerp(invlerp(-90, 90, row[1]), 0, Math.PI * 2);
+            let rowAsc = invlerp(0, 24, row[0]);
+            let rowDec = invlerp(-90, 90, row[1]);
             let rowBrightness = row[2];
             let rowColor = row[3];
             MAIN_CONTEXT.fillStyle = rowColor;
@@ -231,7 +288,7 @@ export class StarHandler {
             let theta = rowAsc;
 
             let transformed = this.sphericalToScreen(phi, theta);
-            this.renderTransformed(transformed, rowBrightness * 3);
+            this.renderTransformed(transformed, rowBrightness);
         }
     }
     cameraHandling() {
