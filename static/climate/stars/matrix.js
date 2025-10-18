@@ -61,3 +61,12 @@ export function multiplyMatrixAndPoint(matrix, point) {
 
   return [resultX, resultY, resultZ, resultW];
 }
+
+export function normalizeXYZVector(vector, toLength) {
+    vector = structuredClone(vector);
+    let length = toLength * (vector[0] ** 2 + vector[1] ** 2 + vector[2] ** 2) ** 0.5;
+    vector[0] /= length;
+    vector[1] /= length;
+    vector[2] /= length;
+    return vector;
+}

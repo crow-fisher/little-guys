@@ -4,7 +4,7 @@ import { invlerp, lerp, randRange, rgb2hsv } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { loadGD, saveGD, UI_STARMAP_FOV, UI_STARMAP_XROTATION, UI_STARMAP_XROTATION_SPEED, UI_STARMAP_YROTATION, UI_STARMAP_YROTATION_SPEED, UI_STARMAP_ZROTATION, UI_STARMAP_ZROTATION_SPEED } from "../../ui/UIData.js";
 import { tempToRgbaForStar } from "../time.js";
-import { multiplyMatrices, multiplyMatrixAndPoint } from "./matrix.js";
+import { multiplyMatrices, multiplyMatrixAndPoint, normalizeXYZVector } from "./matrix.js";
 
 export class StarHandler {
     constructor() {
@@ -126,7 +126,7 @@ export class StarHandler {
         let cameraY = loadGD(UI_STARMAP_YROTATION);
         let cameraZ = loadGD(UI_STARMAP_ZROTATION);
 
-        let sublines = 10;
+        let sublines = 50;
         for (let i = 0; i < sublines; i++) {
             let cur = unit * (i / sublines);
             let next = unit * ((i + 1) / sublines);
@@ -140,15 +140,21 @@ export class StarHandler {
             startVec = this.rotatePoint(startVec, cameraX, cameraY, cameraZ);
             endVec = this.rotatePoint(endVec, cameraX, cameraY, cameraZ);
 
+            let startVecNormalized = normalizeXYZVector(startVec, 0.5);
+            let endVecNormalized = normalizeXYZVector(endVec, 0.5);
+
             let sp = this.cartesianToScreen(...startVec, true);
             let ep = this.cartesianToScreen(...endVec, true);
+            
+            let spn = this.cartesianToScreen(...startVecNormalized, true);
+            let epn = this.cartesianToScreen(...endVecNormalized, true);
 
-            if (sp != null && ep != null) {
+            if (spn[2] <= sp[2] && epn[2] <= ep[2]) {
                 MAIN_CONTEXT.strokeStyle = COLOR_BLUE;
-                MAIN_CONTEXT.lineWidth = 20;
+                MAIN_CONTEXT.lineWidth = 4;
                 MAIN_CONTEXT.beginPath();
-                MAIN_CONTEXT.moveTo(totalWidth * invlerp(-1, 1, sp[0]), totalHeight * invlerp(-1, 1, sp[1]));
-                MAIN_CONTEXT.lineTo(totalWidth * invlerp(-1, 1, ep[0]), totalHeight * invlerp(-1, 1, ep[1]));
+                MAIN_CONTEXT.moveTo(totalWidth * invlerp(-1, 1, spn[0]), totalHeight * invlerp(-1, 1, spn[1]));
+                MAIN_CONTEXT.lineTo(totalWidth * invlerp(-1, 1, epn[0]), totalHeight * invlerp(-1, 1, epn[1]));
                 MAIN_CONTEXT.closePath();
                 MAIN_CONTEXT.stroke();
             }
@@ -176,41 +182,6 @@ export class StarHandler {
 
             let transformed = this.sphericalToScreen(phi, theta);
             this.renderTransformed(transformed, rowBrightness * 3);
-            continue;
-            let x = 2 * Math.sin(phi) * Math.cos(theta);
-            let y = 2 * Math.sin(phi) * Math.sin(theta);
-            let z = 2 * Math.cos(phi);
-            let w = 1;
-
-            let rotated = this.rotatePointRx([x, y, z, w], cameraX);
-            rotated = this.rotatePointRy(rotated, cameraY);
-            rotated = this.rotatePointRz(rotated, cameraZ);
-
-            x = rotated[0];
-            y = rotated[1];
-            z = rotated[2];
-            w = rotated[3];
-
-            if (z < 0)
-                continue;
-
-            // scaling factor for FOV calculation 
-
-
-            let S = 1 / (Math.tan((fov / r2d) / 2) * (Math.PI / (180 / r2d)));
-            let perspectiveMatrix = [
-                [S, 0, 0, 0],
-                [0, S, 0, 0],
-                [0, 0, S, -1],
-                [0, 0, 1, 0]
-            ];
-
-            // https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix.html
-
-            // let transformed = multiplyMatrixAndPoint(perspectiveMatrix, [x, y, z, w]);
-
-
-
         }
     }
     cameraHandling() {
@@ -224,7 +195,7 @@ export class StarHandler {
 
     cartesianToScreen(x, y, z, w, force=false) {
         // https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix.html
-        if (z > 0 && !force)
+        if (z < 0 && !force)
             return null;
         let fov = loadGD(UI_STARMAP_FOV);
         let r2d = 57.2958;
