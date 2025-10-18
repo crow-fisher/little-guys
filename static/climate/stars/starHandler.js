@@ -3,7 +3,8 @@ import { COLOR_BLUE, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colo
 import { invlerp, lerp, randRange, rgb2hsv } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { loadGD, saveGD, UI_STARMAP_FOV, UI_STARMAP_XROTATION, UI_STARMAP_XROTATION_SPEED, UI_STARMAP_YROTATION, UI_STARMAP_YROTATION_SPEED, UI_STARMAP_ZROTATION, UI_STARMAP_ZROTATION_SPEED } from "../../ui/UIData.js";
-import { getCurDay, tempToRgbaForStar } from "../time.js";
+import { getFrameRelCloud } from "../simulation/temperatureHumidity.js";
+import { getCurDay, getDaylightStrength, tempToRgbaForStar } from "../time.js";
 import { multiplyMatrices, multiplyMatrixAndPoint, normalizeXYZVector } from "./matrix.js";
 
 export class StarHandler {
@@ -70,7 +71,7 @@ export class StarHandler {
         if (isNaN(bv) || brightness < 0)
             return;
 
-        brightness *= .2;
+        brightness *= .4;
 
         let netRa = raHours + raMinutes / 60 + raSeconds / 3600;
         let netDec = (signDec == "+" ? 1 : -1) * degressDec + minutesDec / 60 + secondsDec / 3600;
@@ -275,12 +276,20 @@ export class StarHandler {
     render() {
         // https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix.html
         this.cameraHandling();
-        this.renderWireframe();
+        // this.renderWireframe();
+
+        if (getDaylightStrength() > 0.35) {
+            return;
+        }
+        let bMult = Math.min(1, Math.exp(-7 * getDaylightStrength()));
+        let frameCloudColor = getFrameRelCloud();
+        let frameCloudMult = Math.min(1, ((frameCloudColor.r + frameCloudColor.g + frameCloudColor.b) / (3 * 255) * 20));
+
         for (let i = 0; i < this.data.length; i++) {
             let row = this.data[i];
             let rowAsc = invlerp(0, 24, row[0]);
             let rowDec = invlerp(-90, 90, row[1]);
-            let rowBrightness = row[2];
+            let rowBrightness = row[2] * bMult * (1 - frameCloudMult);
             let rowColor = row[3];
             MAIN_CONTEXT.fillStyle = rowColor;
             // we are in sphericasl coordinates 
