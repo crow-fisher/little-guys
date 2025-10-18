@@ -257,8 +257,8 @@ export class StarHandler {
             [0, 0, 1, 0]
         ];
         let dayTheta = Math.PI * 2 * (getCurDay() % 1);
-        let cameraX = loadGD(UI_STARMAP_XROTATION) + dayTheta;
-        let cameraY = loadGD(UI_STARMAP_YROTATION) + dayTheta;
+        let cameraX = loadGD(UI_STARMAP_XROTATION);
+        let cameraY = loadGD(UI_STARMAP_YROTATION);
         let cameraZ = loadGD(UI_STARMAP_ZROTATION) + dayTheta;
         let rotated = this.rotatePoint([x, y, z, w], cameraX, cameraY, cameraZ);
         let transformed = multiplyMatrixAndPoint(perspectiveMatrix, rotated);
