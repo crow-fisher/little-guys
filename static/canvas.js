@@ -202,7 +202,6 @@ export function zoomCanvasFillCircle(x, y, size) {
     MAIN_CONTEXT.fill();
 }
 
-
 export function zoomCanvasFillCircleRelPos(xpl, ypl, size) {
     let totalWidth = CANVAS_SQUARES_X * BASE_SIZE;
     let totalHeight = CANVAS_SQUARES_Y * BASE_SIZE;

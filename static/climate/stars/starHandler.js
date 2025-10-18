@@ -1,5 +1,5 @@
-import { getBaseSize, zoomCanvasFillCircleRelPos } from "../../canvas.js";
-import { COLOR_VERY_FUCKING_RED } from "../../colors.js";
+import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillCircleRelPos } from "../../canvas.js";
+import { COLOR_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { invlerp, lerp, randRange, rgb2hsv } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { loadGD, saveGD, UI_STARMAP_FOV, UI_STARMAP_XROTATION, UI_STARMAP_XROTATION_SPEED, UI_STARMAP_YROTATION, UI_STARMAP_YROTATION_SPEED, UI_STARMAP_ZROTATION, UI_STARMAP_ZROTATION_SPEED } from "../../ui/UIData.js";
@@ -101,10 +101,59 @@ export class StarHandler {
             for (let j = 0; j < steps; j++) {
                 let phi = i * (Math.PI * 2 / steps);
                 let theta = j * (Math.PI * 2 / steps);
-                let transformed = this.sphericalToScreen(phi, theta); 
+                let transformed = this.sphericalToScreen(phi, theta);
                 this.renderTransformed(transformed, 2);
             }
         }
+
+    }
+
+    renderCompass() {
+        let unit = 2;
+
+        this.renderCompassDir(0,0, 0, unit)
+        this.renderCompassDir(0,0, 1, unit)
+        this.renderCompassDir(0, 0, 0.5, unit)
+        this.renderCompassDir(0,0, -0.5, unit)
+
+    }
+
+    renderCompassDir(dirX, dirY, dirZ, unit) {
+        let totalWidth = getCanvasSquaresX() * getBaseSize();
+        let totalHeight = getCanvasSquaresY() * getBaseSize();
+
+        let cameraX = loadGD(UI_STARMAP_XROTATION);
+        let cameraY = loadGD(UI_STARMAP_YROTATION);
+        let cameraZ = loadGD(UI_STARMAP_ZROTATION);
+
+        let sublines = 10;
+        for (let i = 0; i < sublines; i++) {
+            let cur = unit * (i / sublines);
+            let next = unit * ((i + 1) / sublines);
+
+            let startVec = [cur, 0, -unit, 1];
+            let endVec = [next, 0, -unit, 1];
+
+            startVec = this.rotatePoint(startVec, Math.PI * dirX, Math.PI * dirY, Math.PI * dirZ)
+            endVec = this.rotatePoint(endVec, Math.PI * dirX, Math.PI * dirY, Math.PI * dirZ)
+
+            startVec = this.rotatePoint(startVec, cameraX, cameraY, cameraZ);
+            endVec = this.rotatePoint(endVec, cameraX, cameraY, cameraZ);
+
+            let sp = this.cartesianToScreen(...startVec, true);
+            let ep = this.cartesianToScreen(...endVec, true);
+
+            if (sp != null && ep != null) {
+                MAIN_CONTEXT.strokeStyle = COLOR_BLUE;
+                MAIN_CONTEXT.lineWidth = 20;
+                MAIN_CONTEXT.beginPath();
+                MAIN_CONTEXT.moveTo(totalWidth * invlerp(-1, 1, sp[0]), totalHeight * invlerp(-1, 1, sp[1]));
+                MAIN_CONTEXT.lineTo(totalWidth * invlerp(-1, 1, ep[0]), totalHeight * invlerp(-1, 1, ep[1]));
+                MAIN_CONTEXT.closePath();
+                MAIN_CONTEXT.stroke();
+            }
+        }
+
 
     }
 
@@ -113,6 +162,7 @@ export class StarHandler {
         // https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix.html
         this.cameraHandling();
         this.renderWireframe();
+        this.renderCompass();
         for (let i = 0; i < this.data.length; i++) {
             let row = this.data[i];
             let rowAsc = lerp(invlerp(0, 24, row[0]), 0, Math.PI * 2);
@@ -172,31 +222,12 @@ export class StarHandler {
         saveGD(UI_STARMAP_ZROTATION_SPEED, loadGD(UI_STARMAP_ZROTATION_SPEED) * 0.97);
     }
 
-    sphericalToScreen(phi, theta) {
-        let cameraX = loadGD(UI_STARMAP_XROTATION);
-        let cameraY = loadGD(UI_STARMAP_YROTATION);
-        let cameraZ = loadGD(UI_STARMAP_ZROTATION);
-
+    cartesianToScreen(x, y, z, w, force=false) {
+        // https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix.html
+        if (z > 0 && !force)
+            return null;
         let fov = loadGD(UI_STARMAP_FOV);
         let r2d = 57.2958;
-        let x = 2 * Math.sin(phi) * Math.cos(theta);
-        let y = 2 * Math.sin(phi) * Math.sin(theta);
-        let z = 2 * Math.cos(phi);
-        let w = 1;
-
-        let rotated = this.rotatePointRx([x, y, z, w], cameraX);
-        rotated = this.rotatePointRy(rotated, cameraY);
-        rotated = this.rotatePointRz(rotated, cameraZ);
-
-        x = rotated[0];
-        y = rotated[1];
-        z = rotated[2];
-        w = rotated[3];
-
-        if (z > 0)
-            return null;
-
-        // scaling factor for FOV calculation 
         let S = 1 / (Math.tan((fov / r2d) / 2) * (Math.PI / (180 / r2d)));
         let perspectiveMatrix = [
             [S, 0, 0, 0],
@@ -204,11 +235,24 @@ export class StarHandler {
             [0, 0, S, -1],
             [0, 0, 1, 0]
         ];
-
-        // https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix.html
-
         let transformed = multiplyMatrixAndPoint(perspectiveMatrix, [x, y, z, w]);
         return transformed;
+    }
+
+    sphericalToScreen(phi, theta) {
+        let cameraX = loadGD(UI_STARMAP_XROTATION);
+        let cameraY = loadGD(UI_STARMAP_YROTATION);
+        let cameraZ = loadGD(UI_STARMAP_ZROTATION);
+        let x = 2 * Math.sin(phi) * Math.cos(theta);
+        let y = 2 * Math.sin(phi) * Math.sin(theta);
+        let z = 2 * Math.cos(phi);
+        let w = 1;
+        let rotated = this.rotatePoint([x, y, z, w], cameraX, cameraY, cameraZ);
+        return this.cartesianToScreen(...rotated)
+    }
+
+    rotatePoint(point, rX, rY, rZ) {
+        return this.rotatePointRx(this.rotatePointRy(this.rotatePointRz(point, rZ), rY), rX);
     }
 
     rotatePointRx(point, theta) {
