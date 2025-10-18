@@ -1,9 +1,9 @@
-import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, zoomCanvasFillCircleRelPos } from "../../canvas.js";
-import { COLOR_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
+import { getBaseSize, getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, zoomCanvasFillCircleRelPos } from "../../canvas.js";
+import { COLOR_BLUE, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { invlerp, lerp, randRange, rgb2hsv } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { loadGD, saveGD, UI_STARMAP_FOV, UI_STARMAP_XROTATION, UI_STARMAP_XROTATION_SPEED, UI_STARMAP_YROTATION, UI_STARMAP_YROTATION_SPEED, UI_STARMAP_ZROTATION, UI_STARMAP_ZROTATION_SPEED } from "../../ui/UIData.js";
-import { tempToRgbaForStar } from "../time.js";
+import { getCurDay, tempToRgbaForStar } from "../time.js";
 import { multiplyMatrices, multiplyMatrixAndPoint, normalizeXYZVector } from "./matrix.js";
 
 export class StarHandler {
@@ -95,26 +95,77 @@ export class StarHandler {
     }
 
     renderWireframe() {
-        let steps = 100;
-        MAIN_CONTEXT.fillStyle = COLOR_VERY_FUCKING_RED;
-        for (let i = 0; i < steps; i++) {
-            for (let j = 0; j < steps; j++) {
-                let phi = i * (Math.PI * 2 / steps);
-                let theta = j * (Math.PI * 2 / steps);
-                let transformed = this.sphericalToScreen(phi, theta);
-                this.renderTransformed(transformed, 2);
-            }
-        }
+        let steps = 40;
+        MAIN_CONTEXT.strokeStyle = COLOR_VERY_FUCKING_RED;
+        MAIN_CONTEXT.lineWidth = 1;
 
+        let cw = getCanvasWidth();
+        let ch = getCanvasHeight();
+
+        let startPhi, startTheta, phi, theta, transformed;
+
+        for (let i = 0; i < steps; i++) {
+
+            if (i % (steps / 4) == 0) {
+                MAIN_CONTEXT.strokeStyle = COLOR_VERY_FUCKING_RED;
+            } else {
+                MAIN_CONTEXT.strokeStyle = COLOR_BLUE;
+            }
+
+            MAIN_CONTEXT.beginPath();
+            phi = i * (Math.PI * 2 / steps);
+            startPhi = null;
+            for (let j = 0; j <= steps; j++) {
+                theta = j * (Math.PI * 2 / steps);
+                transformed = this.sphericalToScreen(phi, theta);
+                if (transformed != null) {
+                    if (startPhi == null) {
+                        startPhi = transformed;
+                        MAIN_CONTEXT.moveTo(cw * invlerp(-1, 1, startPhi[0]), ch * invlerp(-1, 1, startPhi[1]))
+                    } else {
+                        MAIN_CONTEXT.lineTo(cw * invlerp(-1, 1, transformed[0]), ch * invlerp(-1, 1, transformed[1]))
+                    }
+                } else {
+                    startPhi = null;
+                }
+            }
+            MAIN_CONTEXT.stroke();
+        }
+        for (let i = 0; i < steps; i++) {
+            MAIN_CONTEXT.beginPath();
+            if (i % (steps / 4) == 0) {
+                MAIN_CONTEXT.strokeStyle = COLOR_VERY_FUCKING_RED;
+            } else {
+                MAIN_CONTEXT.strokeStyle = COLOR_BLUE;
+            }
+
+            theta = i * (Math.PI * 2 / steps);
+            startTheta = null;
+            for (let j = 0; j <= steps; j++) {
+                phi = j * (Math.PI * 2 / steps);
+                transformed = this.sphericalToScreen(phi, theta);
+                if (transformed != null) {
+                    if (startTheta == null) {
+                        startTheta = transformed;
+                        MAIN_CONTEXT.moveTo(cw * invlerp(-1, 1, startTheta[0]), ch * invlerp(-1, 1, startTheta[1]))
+                    } else {
+                        MAIN_CONTEXT.lineTo(cw * invlerp(-1, 1, transformed[0]), ch * invlerp(-1, 1, transformed[1]))
+                    }
+                } else {
+                    startTheta = null;
+                }
+            }
+            MAIN_CONTEXT.stroke();
+        }
     }
 
     renderCompass() {
         let unit = 2;
 
-        this.renderCompassDir(0,0, 0, unit)
-        this.renderCompassDir(0,0, 1, unit)
+        this.renderCompassDir(0, 0, 0, unit)
+        this.renderCompassDir(0, 0, 1, unit)
         this.renderCompassDir(0, 0, 0.5, unit)
-        this.renderCompassDir(0,0, -0.5, unit)
+        this.renderCompassDir(0, 0, -0.5, unit)
 
     }
 
@@ -145,7 +196,7 @@ export class StarHandler {
 
             let sp = this.cartesianToScreen(...startVec, true);
             let ep = this.cartesianToScreen(...endVec, true);
-            
+
             let spn = this.cartesianToScreen(...startVecNormalized, true);
             let epn = this.cartesianToScreen(...endVecNormalized, true);
 
@@ -193,10 +244,9 @@ export class StarHandler {
         saveGD(UI_STARMAP_ZROTATION_SPEED, loadGD(UI_STARMAP_ZROTATION_SPEED) * 0.97);
     }
 
-    cartesianToScreen(x, y, z, w, force=false) {
+    cartesianToScreen(x, y, z, w, force = false) {
         // https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix.html
-        if (z < 0 && !force)
-            return null;
+
         let fov = loadGD(UI_STARMAP_FOV);
         let r2d = 57.2958;
         let S = 1 / (Math.tan((fov / r2d) / 2) * (Math.PI / (180 / r2d)));
@@ -206,20 +256,24 @@ export class StarHandler {
             [0, 0, S, -1],
             [0, 0, 1, 0]
         ];
-        let transformed = multiplyMatrixAndPoint(perspectiveMatrix, [x, y, z, w]);
+        let dayTheta = Math.PI * 2 * (getCurDay() % 1);
+        let cameraX = loadGD(UI_STARMAP_XROTATION) + dayTheta;
+        let cameraY = loadGD(UI_STARMAP_YROTATION) + dayTheta;
+        let cameraZ = loadGD(UI_STARMAP_ZROTATION) + dayTheta;
+        let rotated = this.rotatePoint([x, y, z, w], cameraX, cameraY, cameraZ);
+        let transformed = multiplyMatrixAndPoint(perspectiveMatrix, rotated);
+
+        if (rotated[2] < 0 && !force)
+            return null;
         return transformed;
     }
 
     sphericalToScreen(phi, theta) {
-        let cameraX = loadGD(UI_STARMAP_XROTATION);
-        let cameraY = loadGD(UI_STARMAP_YROTATION);
-        let cameraZ = loadGD(UI_STARMAP_ZROTATION);
         let x = 2 * Math.sin(phi) * Math.cos(theta);
         let y = 2 * Math.sin(phi) * Math.sin(theta);
         let z = 2 * Math.cos(phi);
         let w = 1;
-        let rotated = this.rotatePoint([x, y, z, w], cameraX, cameraY, cameraZ);
-        return this.cartesianToScreen(...rotated)
+        return this.cartesianToScreen(x, y, z, w)
     }
 
     rotatePoint(point, rX, rY, rZ) {
