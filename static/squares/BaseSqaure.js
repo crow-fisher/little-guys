@@ -21,7 +21,7 @@ import { COLOR_BLACK, GROUP_BROWN, GROUP_BLUE, GROUP_MAUVE, GROUP_TAN, GROUP_GRE
 import { getCurDay, getDaylightStrengthFrameDiff, getFrameDt, getTimeScale } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, getCurZoom, getFrameYMax, isSquareOnCanvas, transformCanvasSquaresToPixels, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
-import { loadGD, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3, UI_VIEWMODE_DEV4, UI_VIEWMODE_DEV5, UI_PALETTE_STRENGTH, UI_CANVAS_SQUARES_ZOOM, UI_LIGHTING_SURFACE, UI_PALETTE_SURFACE_MATCH, UI_STARMAP_FOV, UI_STARMAP_XROTATION, UI_STARMAP_YROTATION, UI_STARMAP_ZROTATION, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CANVAS_VIEWPORT_CENTER_Z } from "../ui/UIData.js";
+import { loadGD, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3, UI_VIEWMODE_DEV4, UI_VIEWMODE_DEV5, UI_PALETTE_STRENGTH, UI_CANVAS_SQUARES_ZOOM, UI_LIGHTING_SURFACE, UI_PALETTE_SURFACE_MATCH, UI_STARMAP_FOV, UI_STARMAP_XROTATION, UI_STARMAP_YROTATION, UI_STARMAP_ZROTATION, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CANVAS_VIEWPORT_CENTER_Z, UI_VIEWMODE_3D } from "../ui/UIData.js";
 import { deregisterSquare, registerSquare } from "../waterGraph.js";
 import { STAGE_DEAD } from "../organisms/Stages.js";
 import { multiplyMatrixAndPoint } from "../climate/stars/matrix.js";
@@ -241,18 +241,6 @@ export class BaseSquare {
             return;
         }
 
-        let bottomSquares = Array.from(getSquares(this.posX, this.posY).filter((sq) => sq.solid).map((sq) => sq.z));
-
-        if (bottomSquares.length == 0)
-            this.z = 0;
-
-        this.z = bottomSquares.reduce((a, b) => a + b, -this.surface);
-
-        this.renderWithVariedColors(1);
-        return;
-        // 
-
-
         if (loadGD(UI_LIGHTING_ENABLED) && this.lighting.length == 0) {
             this.initLightingFromNeighbors();
         }
@@ -260,6 +248,8 @@ export class BaseSquare {
         let selectedViewMode = loadGD(UI_VIEWMODE_SELECT);
         if (selectedViewMode == UI_VIEWMODE_NORMAL) {
             this.renderWithVariedColors(1);
+        } else if (selectedViewMode == UI_VIEWMODE_3D) {
+            this.render3D(1);
         } else if (selectedViewMode == UI_VIEWMODE_ORGANISMS || selectedViewMode == UI_VIEWMODE_EVOLUTION || selectedViewMode == UI_VIEWMODE_NUTRIENTS) {
             this.renderWithVariedColors(0.35);
         } else if (selectedViewMode == UI_VIEWMODE_GROUP) {
@@ -467,7 +457,7 @@ export class BaseSquare {
         );
     }
 
-    renderWithVariedColors(opacityMult) {
+    render3D(opacityMult) {
         let minTime = getFrameDt() * 128;
         if (isSqColChanged(this.posX)) {
             minTime /= 4;
@@ -490,17 +480,37 @@ export class BaseSquare {
             this.cachedRgba = rgbToRgba(Math.floor(this.outColor.r), Math.floor(this.outColor.g), Math.floor(this.outColor.b), opacityMult * this.opacity * this.blockHealth ** 0.2);
         }
         MAIN_CONTEXT.fillStyle = this.cachedRgba;
-        this.z = 1;
+
+        let bottomSquares = Array.from(getSquares(this.posX, this.posY + 1).filter((sq) => sq.solid).map((sq) => sq.z));
+        if (bottomSquares.length == 0)
+            this.z = 0;
+
+        this.z = bottomSquares.reduce((a, b) => a + b, -this.surface);
+        if (isNaN(this.z))
+            this.z = 0;
 
         let tlr = [this.posX, this.posY, this.z, 1];
         let trr = [this.posX + 1, this.posY, this.z, 1];
-        let blr = [this.posX, this.posY + 1, this.z + this.surface, 1];
-        let brr = [this.posX + 1, this.posY + 1, this.z + this.surface, 1];
+        let blr = [this.posX, this.posY + 1, this.z + this.surfaceLightingFactor, 1];
+        let brr = [this.posX + 1, this.posY + 1, this.z + this.surfaceLightingFactor, 1];
 
-        let tls = this.cartesianToScreen(...tlr);
-        let trs = this.cartesianToScreen(...trr);
-        let bls = this.cartesianToScreen(...blr);
-        let brs = this.cartesianToScreen(...brr);
+        this.tls = this.cartesianToScreen(...tlr);
+        this.trs = this.cartesianToScreen(...trr);
+        this.bls = this.cartesianToScreen(...blr);
+        this.brs = this.cartesianToScreen(...brr);
+
+        let tls = this.tls;
+        let trs = this.trs;
+
+        let bls = this.bls;
+        let brs = this.brs;
+
+        let bottomSquare = getSquares(this.posX, this.posY + 1).find((sq) => sq.solid);
+
+        if (bottomSquare != null) {
+            bls = bottomSquare.tls;
+            brs = bottomSquare.trs;
+        }
 
         if (tls == null || trs == null || bls == null || brs == null)
             return;
@@ -521,7 +531,7 @@ export class BaseSquare {
 
     cartesianToScreen(x, y, z, w, force = false) {
         // https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix.html
-        let fov = loadGD(UI_STARMAP_FOV);
+        let fov = 180 / loadGD(UI_CANVAS_SQUARES_ZOOM);
         let r2d = 57.2958;
         let S = 1 / (Math.tan((fov / r2d) / 2) * (Math.PI / (180 / r2d)));
         let perspectiveMatrix = [
@@ -531,11 +541,18 @@ export class BaseSquare {
             [0, 0, 1, 0]
         ];
 
-        let xo = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) / getBaseSize();
-        let yo = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) / getBaseSize();
-        let zo = loadGD(UI_CANVAS_VIEWPORT_CENTER_Z) / getBaseSize();
-        let point = [x - xo, y - yo, z - zo, w];
-        let transformed = multiplyMatrixAndPoint(perspectiveMatrix, point);
+        let cameraXPosition = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) / getBaseSize();
+        let cameraYPosition = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) / getBaseSize(); 
+        let cameraZPosition = -50;
+
+        let point = [x - cameraXPosition, y - cameraYPosition, (z * -.2) - cameraZPosition, w];
+
+        let cameraXRotation = 0; //loadGD(UI_STARMAP_XROTATION);
+        let cameraYRotation = 0;// loadGD(UI_STARMAP_YROTATION);
+        let cameraZRotation = 0; //loadGD(UI_STARMAP_ZROTATION);
+        let rotated = this.rotatePoint(point, cameraXRotation, cameraYRotation, cameraZRotation);
+
+        let transformed = multiplyMatrixAndPoint(perspectiveMatrix, rotated);
 
         if (transformed[2] < 0 && !force)
             return null;
@@ -575,8 +592,7 @@ export class BaseSquare {
         return multiplyMatrixAndPoint(rotationMatrix, point);
     }
 
-
-    _renderWithVariedColors(opacityMult) {
+    renderWithVariedColors(opacityMult) {
         if (this.proto == "WaterSquare") {
             this.opacity = loadGD(UI_LIGHTING_WATER_OPACITY);
         }

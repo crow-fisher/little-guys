@@ -28,7 +28,8 @@ import {
     UI_VIEWMODE_NUTRIENTS,
     UI_VIEWMODE_DEV3,
     UI_VIEWMODE_DEV4,
-    UI_VIEWMODE_DEV5
+    UI_VIEWMODE_DEV5,
+    UI_VIEWMODE_3D
 } from "../UIData.js";
 import { SubTreeComponent } from "./SubTreeComponent.js";
 export class ViewSubtreeComponent extends SubTreeComponent {
@@ -42,6 +43,7 @@ export class ViewSubtreeComponent extends SubTreeComponent {
 
 
         container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"normal",  UI_VIEWMODE_SELECT, UI_VIEWMODE_NORMAL,() => getActiveClimate().getUIColorInactiveCustom(0.49), () => getActiveClimate().getUIColorActive()));
+        container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"3D",  UI_VIEWMODE_SELECT, UI_VIEWMODE_3D,() => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
         container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"lighting",  UI_VIEWMODE_SELECT, UI_VIEWMODE_LIGHTING,() => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
         container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"organisms",  UI_VIEWMODE_SELECT, UI_VIEWMODE_ORGANISMS,() => getActiveClimate().getUIColorInactiveCustom(0.51), () => getActiveClimate().getUIColorActive()));
         container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"evolution",  UI_VIEWMODE_SELECT, UI_VIEWMODE_EVOLUTION,() => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
