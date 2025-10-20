@@ -501,19 +501,22 @@ export class BaseSquare {
 
         let tls = this.tls;
         let trs = this.trs;
-
         let bls = this.bls;
         let brs = this.brs;
 
-        let bottomSquare = getSquares(this.posX, this.posY + 1).find((sq) => sq.solid);
-
-        if (bottomSquare != null) {
-            bls = bottomSquare.tls;
-            brs = bottomSquare.trs;
-        }
-
         if (tls == null || trs == null || bls == null || brs == null)
             return;
+
+        let tlsq = getSquares(this.posX - 1, this.posY).find((sq) => sq.solid && sq.tls != null) ?? this;
+        let trsq = getSquares(this.posX + 1, this.posY).find((sq) => sq.solid && sq.trs != null) ?? this;
+        let blsq = getSquares(this.posX - 1, this.posY + 1).find((sq) => sq.solid && sq.bls != null) ?? this;
+        let brsq = getSquares(this.posX + 1, this.posY + 1).find((sq) => sq.solid && sq.brs != null) ?? this;
+
+        tls = this.combinePoints(this, tlsq, "tls");
+        trs = this.combinePoints(this, trsq, "trs");
+        bls = this.combinePoints(this, blsq, "bls");
+        brs = this.combinePoints(this, brsq, "brs");
+
 
         let cw = getCanvasWidth();
         let ch = getCanvasHeight();
@@ -529,6 +532,15 @@ export class BaseSquare {
 
     }
 
+    combinePoints(p1, p2, getter) {
+        return [
+            (p1[getter][0] + p2[getter][0]) * .5,
+            (p1[getter][1] + p2[getter][1]) * .5,
+            (p1[getter][2] + p2[getter][2]) * .5,
+            (p1[getter][3] + p2[getter][3]) * .5,
+        ]
+    }
+
     cartesianToScreen(x, y, z, w, force = false) {
         // https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix.html
         let fov = 180 / loadGD(UI_CANVAS_SQUARES_ZOOM);
@@ -542,13 +554,13 @@ export class BaseSquare {
         ];
 
         let cameraXPosition = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) / getBaseSize();
-        let cameraYPosition = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) / getBaseSize(); 
+        let cameraYPosition = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) / getBaseSize() - 50;
         let cameraZPosition = -50;
 
         let point = [x - cameraXPosition, y - cameraYPosition, (z * -.2) - cameraZPosition, w];
 
-        let cameraXRotation = 0; //loadGD(UI_STARMAP_XROTATION);
-        let cameraYRotation = 0;// loadGD(UI_STARMAP_YROTATION);
+        let cameraXRotation = .250; //loadGD(UI_STARMAP_XROTATION);
+        let cameraYRotation = .250; //loadGD(UI_STARMAP_YROTATION);
         let cameraZRotation = 0; //loadGD(UI_STARMAP_ZROTATION);
         let rotated = this.rotatePoint(point, cameraXRotation, cameraYRotation, cameraZRotation);
 
