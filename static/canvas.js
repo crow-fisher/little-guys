@@ -1,9 +1,10 @@
+import { multiplyMatrixAndPoint } from "./climate/stars/matrix.js";
 import { reset } from "./globalOperations.js";
-import { MAIN_CONTEXT } from "./index.js";
+import { MAIN_CANVAS, MAIN_CONTEXT } from "./index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "./keyboard.js";
-import { getLastLastMoveOffset, getLastMoveOffset, isMiddleMouseClicked } from "./mouse.js";
+import { getLastLastMoveOffset, getLastMoveEvent, getLastMoveOffset, isMiddleMouseClicked } from "./mouse.js";
 import { iterateOnOrganisms } from "./organisms/_orgOperations.js";
-import { loadGD, saveGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_UI_SIZE, UI_PALETTE_BLOCKS, loadUI, UI_PALETTE_SURFACE, UI_LIGHTING_SURFACE, UI_PALETTE_SELECT, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CANVAS_SQUARES_ZOOM, UI_CANVAS_VIEWPORT_FRAC_X, UI_CANVAS_VIEWPORT_FRAC_Y } from "./ui/UIData.js";
+import { loadGD, saveGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_UI_SIZE, UI_PALETTE_BLOCKS, loadUI, UI_PALETTE_SURFACE, UI_LIGHTING_SURFACE, UI_PALETTE_SELECT, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CANVAS_SQUARES_ZOOM, UI_CANVAS_VIEWPORT_FRAC_X, UI_CANVAS_VIEWPORT_FRAC_Y, UI_CAMERA_XOFFSET_DT, UI_CAMERA_YOFFSET_DT, UI_CAMERA_ZOFFSET_DT, UI_CAMERA_XOFFSET, UI_CAMERA_YOFFSET, UI_CAMERA_ZOFFSET, UI_CAMERA_OFFSET_VEC, UI_CAMERA_OFFSET_VEC_DT, UI_VIEWMODE_SELECT, UI_VIEWMODE_3D, UI_CAMERA_ROTATION_VEC, addUIFunctionMap } from "./ui/UIData.js";
 
 let BASE_SIZE = 4;
 let CANVAS_SQUARES_X = 192;
@@ -126,7 +127,7 @@ export function recacheCanvasPositions() {
     resetCornerLocations();
 }
 
-export function isSquareOnCanvas(x, y, dx=1, dy=1) {
+export function isSquareOnCanvas(x, y, dx = 1, dy = 1) {
     let totalWidth = getCanvasSquaresX() * BASE_SIZE;
     let totalHeight = getCanvasSquaresY() * BASE_SIZE;
 
@@ -405,13 +406,91 @@ export function resetZoom() {
     recacheCanvasPositions();
 }
 
+
+export function rotatePoint(point, rX, rY, rZ) {
+    return rotatePointRx(rotatePointRy(rotatePointRz(point, rZ), rY), rX);
+}
+
+export function rotatePointRx(point, theta) {
+    let rotationMatrix = [
+        [1, 0, 0, 0],
+        [0, Math.cos(theta), -Math.sin(theta), 0],
+        [0, Math.sin(theta), Math.cos(theta), 0],
+        [0, 0, 0, 1]
+    ];
+    return multiplyMatrixAndPoint(rotationMatrix, point);
+}
+
+export function rotatePointRy(point, theta) {
+    let rotationMatrix = [
+        [Math.cos(theta), 0, Math.sin(theta), 0],
+        [0, 1, 0, 0],
+        [-Math.sin(theta), 0, Math.cos(theta), 0],
+        [0, 0, 0, 1]
+    ]
+    return multiplyMatrixAndPoint(rotationMatrix, point);
+}
+export function rotatePointRz(point, theta) {
+    let rotationMatrix = [
+        [Math.cos(theta), -Math.sin(theta), 0, 0],
+        [Math.sin(theta), Math.cos(theta), 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+    ]
+    return multiplyMatrixAndPoint(rotationMatrix, point);
+}
+
+
 export function canvasPanRoutine() {
+    if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_3D)
+        canvasPan3DRoutine();
     if (!isMiddleMouseClicked())
         return;
     panCanvas();
+
 }
 
-let canvasLastMoveOffset = {x: 0, y: 0};
+let curLastMoveOffset, prevLastMoveOffset;
+
+function canvasPan3DRoutine() {
+    let co = loadGD(UI_CAMERA_OFFSET_VEC);
+    let cs = loadGD(UI_CAMERA_OFFSET_VEC_DT);
+
+    co[0] += cs[0];
+    co[1] += cs[1];
+    co[2] += cs[2];
+
+    cs[0] *= 0.9;
+    cs[1] *= 0.9;
+    cs[2] *= 0.9;
+    saveGD(UI_CAMERA_OFFSET_VEC, co);
+    saveGD(UI_CAMERA_OFFSET_VEC_DT, cs);
+
+    let e = getLastMoveEvent();
+    if (e == null)
+        return;
+    
+    if (curLastMoveOffset == null) {
+        curLastMoveOffset = getLastMoveOffset();
+        return;
+    }
+    prevLastMoveOffset = curLastMoveOffset;
+    curLastMoveOffset = getLastMoveOffset();
+
+    let dX = e.movementX;
+    let dy = e.movementY;
+
+    dX *= .001;
+    dy *= .001;
+
+    let cr = loadGD(UI_CAMERA_ROTATION_VEC);
+    cr[0] += dX;
+    // cr[2] -= dy;
+    saveGD(UI_CAMERA_ROTATION_VEC, cr);
+
+}
+
+let canvasLastMoveOffset = { x: 0, y: 0 };
 
 export function resetCanvasLastMoveOffset() {
     canvasLastMoveOffset = getLastMoveOffset();
@@ -422,21 +501,21 @@ function panCanvas() {
     let lmo = getLastMoveOffset();
     let dx = llmo.x - lmo.x;
     let dy = llmo.y - lmo.y;
-    moveCamera(dx, dy, 1/(getCurZoom()));
+    moveCamera(dx, dy, 1 / (getCurZoom()));
     canvasLastMoveOffset = lmo;
 }
 
-export function moveCamera(x, y, mult=40) {
+export function moveCamera(x, y, mult = 40) {
     let trueX = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) + x * mult;
     let trueY = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) + y * mult;
 
-    let initialX = saveGD(UI_CANVAS_VIEWPORT_CENTER_X, Math.round(trueX)); 
-    let initialY = saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, Math.round(trueY)); 
+    let initialX = saveGD(UI_CANVAS_VIEWPORT_CENTER_X, Math.round(trueX));
+    let initialY = saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, Math.round(trueY));
 
     let leftoverX = trueX - loadGD(UI_CANVAS_VIEWPORT_CENTER_X);
     let leftoverY = trueY - loadGD(UI_CANVAS_VIEWPORT_CENTER_Y);
 
-    let secondaryX = saveGD(UI_CANVAS_VIEWPORT_CENTER_X, Math.round(initialX + leftoverX + loadGD(UI_CANVAS_VIEWPORT_FRAC_X))); 
+    let secondaryX = saveGD(UI_CANVAS_VIEWPORT_CENTER_X, Math.round(initialX + leftoverX + loadGD(UI_CANVAS_VIEWPORT_FRAC_X)));
     let secondaryY = saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, Math.round(initialY + leftoverY + loadGD(UI_CANVAS_VIEWPORT_FRAC_Y)));
 
     saveGD(UI_CANVAS_VIEWPORT_FRAC_X, loadGD(UI_CANVAS_VIEWPORT_FRAC_X) + leftoverX - (secondaryX - initialX));
@@ -450,3 +529,16 @@ export function getCanvasWidth() {
 export function getCanvasHeight() {
     return CANVAS_SQUARES_Y * BASE_SIZE;
 }
+
+
+addUIFunctionMap(UI_VIEWMODE_SELECT, async () => {
+    let curViewMode = loadGD(UI_VIEWMODE_SELECT);
+    if (curViewMode == UI_VIEWMODE_3D) {
+        MAIN_CANVAS.addEventListener("click", async () => {
+            await MAIN_CANVAS.requestPointerLock({
+                unadjustedMovement: true,
+            });
+        });
+    } else
+        document.exitPointerLock();
+})

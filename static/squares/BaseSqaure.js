@@ -21,7 +21,7 @@ import { COLOR_BLACK, GROUP_BROWN, GROUP_BLUE, GROUP_MAUVE, GROUP_TAN, GROUP_GRE
 import { getCurDay, getDaylightStrengthFrameDiff, getFrameDt, getTimeScale } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, getCurZoom, getFrameYMax, isSquareOnCanvas, transformCanvasSquaresToPixels, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
-import { loadGD, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3, UI_VIEWMODE_DEV4, UI_VIEWMODE_DEV5, UI_PALETTE_STRENGTH, UI_CANVAS_SQUARES_ZOOM, UI_LIGHTING_SURFACE, UI_PALETTE_SURFACE_MATCH, UI_STARMAP_FOV, UI_STARMAP_XROTATION, UI_STARMAP_YROTATION, UI_STARMAP_ZROTATION, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CANVAS_VIEWPORT_CENTER_Z, UI_VIEWMODE_3D } from "../ui/UIData.js";
+import { loadGD, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3, UI_VIEWMODE_DEV4, UI_VIEWMODE_DEV5, UI_PALETTE_STRENGTH, UI_CANVAS_SQUARES_ZOOM, UI_LIGHTING_SURFACE, UI_PALETTE_SURFACE_MATCH, UI_STARMAP_FOV, UI_STARMAP_XROTATION, UI_STARMAP_YROTATION, UI_STARMAP_ZROTATION, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CANVAS_VIEWPORT_CENTER_Z, UI_VIEWMODE_3D, UI_CAMERA_XOFFSET, UI_CAMERA_YOFFSET, UI_CAMERA_ZOFFSET, UI_CAMERA_XROTATION, UI_CAMERA_ZROTATION, UI_CAMERA_YROTATION, UI_CAMERA_OFFSET_VEC, UI_CAMERA_ROTATION_VEC } from "../ui/UIData.js";
 import { deregisterSquare, registerSquare } from "../waterGraph.js";
 import { STAGE_DEAD } from "../organisms/Stages.js";
 import { multiplyMatrixAndPoint } from "../climate/stars/matrix.js";
@@ -517,7 +517,6 @@ export class BaseSquare {
         bls = this.combinePoints(this, blsq, "bls");
         brs = this.combinePoints(this, brsq, "brs");
 
-
         let cw = getCanvasWidth();
         let ch = getCanvasHeight();
 
@@ -553,18 +552,16 @@ export class BaseSquare {
             [0, 0, 1, 0]
         ];
 
-        let cameraXPosition = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) / getBaseSize();
-        let cameraYPosition = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) / getBaseSize() - 50;
-        let cameraZPosition = -50;
+        let cr = loadGD(UI_CAMERA_ROTATION_VEC);
 
-        let point = [x - cameraXPosition, y - cameraYPosition, (z * -.2) - cameraZPosition, w];
+        let cameraDtPosition = structuredClone(loadGD(UI_CAMERA_OFFSET_VEC));
+        let camPos = this.rotatePoint(cameraDtPosition, cr[0], cr[1], cr[2]);
+        
+        camPos[0] += loadGD(UI_CANVAS_VIEWPORT_CENTER_X) / getBaseSize();
+        camPos[1] += loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) / getBaseSize();
 
-        let cameraXRotation = .250; //loadGD(UI_STARMAP_XROTATION);
-        let cameraYRotation = .250; //loadGD(UI_STARMAP_YROTATION);
-        let cameraZRotation = 0; //loadGD(UI_STARMAP_ZROTATION);
-        let rotated = this.rotatePoint(point, cameraXRotation, cameraYRotation, cameraZRotation);
-
-        let transformed = multiplyMatrixAndPoint(perspectiveMatrix, rotated);
+        let point = [x - camPos[0], y - camPos[1], (z * -1) - camPos[2], 1];
+        let transformed = multiplyMatrixAndPoint(perspectiveMatrix, point);
 
         if (transformed[2] < 0 && !force)
             return null;

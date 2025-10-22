@@ -1,8 +1,8 @@
-import { moveCamera, resetZoom } from "./canvas.js";
+import { moveCamera, resetZoom, rotatePoint } from "./canvas.js";
 import { getActiveClimate } from "./climate/climateManager.js";
 import { getGlobalThetaBase, setGlobalThetaBase } from "./globals.js";
 import { isPlayerRunning, playerKeyDown, playerKeyUp } from "./player/playerMain.js";
-import { loadGD, saveGD, UI_PALETTE_EYEDROPPER, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_MIXER, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_TOPBAR_BLOCK, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, closeEyedropperMixer, UI_PALETTE_ERASE, UI_TEXTEDIT_ACTIVE, UI_REGEX, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALETTE_SURFACE_OFF, UI_PALETTE_PLANTS, UI_PALETTE_ROCKIDX, addUIFunctionMap, UI_PALETTE_COMPOSITION, UI_STARMAP_XROTATION, UI_STARMAP_YROTATION, UI_STARMAP_ZROTATION, UI_STARMAP_YROTATION_SPEED, UI_STARMAP_XROTATION_SPEED, UI_STARMAP_ZROTATION_SPEED } from "./ui/UIData.js";
+import { loadGD, saveGD, UI_PALETTE_EYEDROPPER, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_MIXER, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_TOPBAR_BLOCK, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, closeEyedropperMixer, UI_PALETTE_ERASE, UI_TEXTEDIT_ACTIVE, UI_REGEX, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALETTE_SURFACE_OFF, UI_PALETTE_PLANTS, UI_PALETTE_ROCKIDX, addUIFunctionMap, UI_PALETTE_COMPOSITION, UI_STARMAP_XROTATION, UI_STARMAP_YROTATION, UI_STARMAP_ZROTATION, UI_STARMAP_YROTATION_SPEED, UI_STARMAP_XROTATION_SPEED, UI_STARMAP_ZROTATION_SPEED, UI_CAMERA_YOFFSET, UI_CAMERA_ZOFFSET, UI_CAMERA_XOFFSET, UI_CAMERA_XROTATION, UI_CAMERA_YROTATION, UI_CAMERA_ZROTATION, UI_VIEWMODE_SELECT, UI_VIEWMODE_3D, UI_CAMERA_ZOFFSET_DT, UI_CAMERA_XOFFSET_DT, UI_CAMERA_YOFFSET_DT, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_OFFSET_VEC, UI_CAMERA_ROTATION_VEC } from "./ui/UIData.js";
 import { clearMouseHoverColorCacheMap } from "./ui/WindowManager.js";
 
 export const KEY_CONTROL = "Control";
@@ -40,6 +40,48 @@ function doKeyboardInput(e) {
             saveGD(curId, newText);
         }
     }
+}
+
+function _3dViewKeymap(key) {
+    let offset = 1;
+    let cur = [0, 0, 0, 0];
+    if (key == 'd') {
+        cur[0] += offset; 
+    }
+    if (key == 'a') { 
+        cur[0] -= offset; 
+    }
+    if (key == 's') {
+        cur[1] += offset; 
+    }
+    if (key == 'w') {
+        cur[1] -= offset; 
+    }
+    if (key == 'q') {
+        cur[2] += offset; 
+    }
+    if (key == 'e') {
+        cur[2] -= offset; 
+    }
+
+    let cr = loadGD(UI_CAMERA_ROTATION_VEC)
+    let transformed = rotatePoint(cur, cr[0], cr[1], cr[2]);
+
+    cur[0] += transformed[0];
+    cur[1] += transformed[1];
+    cur[2] += transformed[2];
+    
+    saveGD(UI_CAMERA_OFFSET_VEC_DT, cur)
+
+    if (key == 'Escape') {
+        saveGD(UI_CAMERA_XOFFSET, 0);
+        saveGD(UI_CAMERA_YOFFSET, 0);
+        saveGD(UI_CAMERA_ZOFFSET, 0);
+        saveGD(UI_CAMERA_XROTATION, 0);
+        saveGD(UI_CAMERA_YROTATION, 0);
+        saveGD(UI_CAMERA_ZROTATION, 0);
+    }
+
 }
 
 function globalKeymap(key) {
@@ -86,7 +128,7 @@ function globalKeymap(key) {
 
 function transformComposition(sandDelta, clayDelta) {
     let arr = loadGD(UI_PALETTE_COMPOSITION);
-    
+
     let sand = arr[0];
     let silt = arr[1];
     let clay = arr[2];
@@ -96,7 +138,7 @@ function transformComposition(sandDelta, clayDelta) {
     sand += sandDelta;
     silt -= sandDelta;
     clay += clayDelta;
-    
+
     sand -= (sand / sandSiltCache) * clayDelta;
     silt -= (silt / sandSiltCache) * clayDelta;
 
@@ -110,16 +152,16 @@ function rockKeymap(key) {
         saveGD(UI_PALETTE_ROCKIDX, Math.min(getActiveClimate().rockColors.length - 1, loadGD(UI_PALETTE_ROCKIDX) + 1));
 
     if (key == "w") {
-       saveGD(UI_PALETTE_COMPOSITION, transformComposition(0, .01));
+        saveGD(UI_PALETTE_COMPOSITION, transformComposition(0, .01));
     }
     if (key == "s") {
-       saveGD(UI_PALETTE_COMPOSITION, transformComposition(0, -.01));
+        saveGD(UI_PALETTE_COMPOSITION, transformComposition(0, -.01));
     }
     if (key == "a") {
-       saveGD(UI_PALETTE_COMPOSITION, transformComposition(.001, 0));
+        saveGD(UI_PALETTE_COMPOSITION, transformComposition(.001, 0));
     }
     if (key == "d") {
-       saveGD(UI_PALETTE_COMPOSITION, transformComposition(-.001, 0));
+        saveGD(UI_PALETTE_COMPOSITION, transformComposition(-.001, 0));
     }
     if (key == 'q') {
         saveGD(UI_PALETTE_SELECT, UI_PALETTE_EYEDROPPER);
@@ -185,6 +227,11 @@ export function keydown(e) {
     }
     if (isPlayerRunning()) {
         playerKeyDown(e.key);
+        return;
+    }
+
+    if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_3D) {
+        _3dViewKeymap(e.key)
         return;
     }
     keyPressMap[e.key] = true;

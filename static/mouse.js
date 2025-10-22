@@ -16,6 +16,9 @@ let lastMoveEventTime = Date.now();
 
 let mouseEventCounter = new Map();
 
+export function getLastMoveEvent() {
+    return lastMoveEvent;
+} 
 export function getLastMoveEventTime() {
     return lastMoveEventTime;
 }
