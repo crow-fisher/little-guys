@@ -489,10 +489,22 @@ export class BaseSquare {
         if (isNaN(this.z))
             this.z = 0;
 
-        let tlr = [this.posX, this.posY, this.z, 1];
-        let trr = [this.posX + 1, this.posY, this.z, 1];
-        let blr = [this.posX, this.posY + 1, this.z + this.surfaceLightingFactor, 1];
-        let brr = [this.posX + 1, this.posY + 1, this.z + this.surfaceLightingFactor, 1];
+
+        let z = this.surfaceLightingFactor;
+
+        // let tlr = [this.posX, this.posY, this.z + z, 1];
+        // let trr = [this.posX + 1, this.posY, this.z + z, 1];
+        // let blr = [this.posX, this.posY + 1, this.z, 1];
+        // let brr = [this.posX + 1, this.posY + 1, this.z, 1];
+
+        let zs = this.z;
+        let zd = -this.surfaceLightingFactor;
+
+        let tlr = [this.posX, this.posY, zs + zd, 1]
+        let trr = [this.posX + 1, this.posY, zs + zd, 1]
+
+        let blr = [this.posX, this.posY + 1, zs, 1]
+        let brr = [this.posX + 1, this.posY + 1, zs, 1]
 
         this.tls = this.cartesianToScreen(...tlr);
         this.trs = this.cartesianToScreen(...trr);
@@ -512,10 +524,10 @@ export class BaseSquare {
         let blsq = getSquares(this.posX - 1, this.posY + 1).find((sq) => sq.solid && sq.bls != null) ?? this;
         let brsq = getSquares(this.posX + 1, this.posY + 1).find((sq) => sq.solid && sq.brs != null) ?? this;
 
-        tls = this.combinePoints(this, tlsq, "tls");
-        trs = this.combinePoints(this, trsq, "trs");
-        bls = this.combinePoints(this, blsq, "bls");
-        brs = this.combinePoints(this, brsq, "brs");
+        tls = this.tls; // this.combinePoints(this, tlsq, "tls");
+        trs = this.trs; // this.combinePoints(this, trsq, "trs");
+        bls = this.bls; // this.combinePoints(this, blsq, "bls");
+        brs = this.brs; // this.combinePoints(this, brsq, "brs");
 
         let cw = getCanvasWidth();
         let ch = getCanvasHeight();
@@ -554,14 +566,15 @@ export class BaseSquare {
 
         let cr = loadGD(UI_CAMERA_ROTATION_VEC);
 
-        let cameraDtPosition = structuredClone(loadGD(UI_CAMERA_OFFSET_VEC));
-        let camPos = this.rotatePoint(cameraDtPosition, cr[0], cr[1], cr[2]);
+        let camPos = structuredClone(loadGD(UI_CAMERA_OFFSET_VEC)); 
         
         camPos[0] += loadGD(UI_CANVAS_VIEWPORT_CENTER_X) / getBaseSize();
         camPos[1] += loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) / getBaseSize();
 
-        let point = [x - camPos[0], y - camPos[1], (z * -1) - camPos[2], 1];
-        let transformed = multiplyMatrixAndPoint(perspectiveMatrix, point);
+        let point = [x - camPos[0], y - camPos[1], (z * -1) - camPos[2], 1]; 
+        let pointRotated = this.rotatePoint(point, cr[0], cr[1], cr[2]);
+
+        let transformed = multiplyMatrixAndPoint(perspectiveMatrix, pointRotated);
 
         if (transformed[2] < 0 && !force)
             return null;

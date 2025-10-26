@@ -4,7 +4,7 @@ import { MAIN_CANVAS, MAIN_CONTEXT } from "./index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "./keyboard.js";
 import { getLastLastMoveOffset, getLastMoveEvent, getLastMoveOffset, isMiddleMouseClicked } from "./mouse.js";
 import { iterateOnOrganisms } from "./organisms/_orgOperations.js";
-import { loadGD, saveGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_UI_SIZE, UI_PALETTE_BLOCKS, loadUI, UI_PALETTE_SURFACE, UI_LIGHTING_SURFACE, UI_PALETTE_SELECT, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CANVAS_SQUARES_ZOOM, UI_CANVAS_VIEWPORT_FRAC_X, UI_CANVAS_VIEWPORT_FRAC_Y, UI_CAMERA_XOFFSET_DT, UI_CAMERA_YOFFSET_DT, UI_CAMERA_ZOFFSET_DT, UI_CAMERA_XOFFSET, UI_CAMERA_YOFFSET, UI_CAMERA_ZOFFSET, UI_CAMERA_OFFSET_VEC, UI_CAMERA_OFFSET_VEC_DT, UI_VIEWMODE_SELECT, UI_VIEWMODE_3D, UI_CAMERA_ROTATION_VEC, addUIFunctionMap } from "./ui/UIData.js";
+import { loadGD, saveGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_UI_SIZE, UI_PALETTE_BLOCKS, loadUI, UI_PALETTE_SURFACE, UI_LIGHTING_SURFACE, UI_PALETTE_SELECT, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CANVAS_SQUARES_ZOOM, UI_CANVAS_VIEWPORT_FRAC_X, UI_CANVAS_VIEWPORT_FRAC_Y, UI_CAMERA_XOFFSET_DT, UI_CAMERA_YOFFSET_DT, UI_CAMERA_ZOFFSET_DT, UI_CAMERA_XOFFSET, UI_CAMERA_YOFFSET, UI_CAMERA_ZOFFSET, UI_CAMERA_OFFSET_VEC, UI_CAMERA_OFFSET_VEC_DT, UI_VIEWMODE_SELECT, UI_VIEWMODE_3D, UI_CAMERA_ROTATION_VEC, addUIFunctionMap, UI_CAMERA_ROTATION_VEC_DT } from "./ui/UIData.js";
 
 let BASE_SIZE = 4;
 let CANVAS_SQUARES_X = 192;
@@ -452,19 +452,27 @@ export function canvasPanRoutine() {
 
 let curLastMoveOffset, prevLastMoveOffset;
 
-function canvasPan3DRoutine() {
-    let co = loadGD(UI_CAMERA_OFFSET_VEC);
-    let cs = loadGD(UI_CAMERA_OFFSET_VEC_DT);
+function _applyDerivativeVec(k1, k2) {
+    let co = loadGD(k1);
+    let cs = loadGD(k2);
 
     co[0] += cs[0];
     co[1] += cs[1];
     co[2] += cs[2];
 
-    cs[0] *= 0.9;
-    cs[1] *= 0.9;
-    cs[2] *= 0.9;
-    saveGD(UI_CAMERA_OFFSET_VEC, co);
-    saveGD(UI_CAMERA_OFFSET_VEC_DT, cs);
+    cs[0] *= 0.7;
+    cs[1] *= 0.7;
+    cs[2] *= 0.7;
+ 
+    saveGD(k1, co);
+    saveGD(k2, cs);
+
+}
+
+function canvasPan3DRoutine() {
+    _applyDerivativeVec(UI_CAMERA_OFFSET_VEC, UI_CAMERA_OFFSET_VEC_DT);
+    _applyDerivativeVec(UI_CAMERA_ROTATION_VEC, UI_CAMERA_ROTATION_VEC_DT);
+    return;
 
     let e = getLastMoveEvent();
     if (e == null)
@@ -484,8 +492,8 @@ function canvasPan3DRoutine() {
     dy *= .001;
 
     let cr = loadGD(UI_CAMERA_ROTATION_VEC);
-    cr[0] += dX;
-    // cr[2] -= dy;
+    cr[1] += dX;
+    cr[0] -= dy;
     saveGD(UI_CAMERA_ROTATION_VEC, cr);
 
 }
