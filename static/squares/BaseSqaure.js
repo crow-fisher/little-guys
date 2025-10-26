@@ -481,24 +481,12 @@ export class BaseSquare {
         }
         MAIN_CONTEXT.fillStyle = this.cachedRgba;
 
-        let bottomSquares = Array.from(getSquares(this.posX, this.posY + 1).filter((sq) => sq.solid).map((sq) => sq.z));
-        if (bottomSquares.length == 0)
-            this.z = 0;
-
-        this.z = bottomSquares.reduce((a, b) => a + b, -this.surface);
-        if (isNaN(this.z))
-            this.z = 0;
-
-
-        let z = this.surfaceLightingFactor;
-
-        // let tlr = [this.posX, this.posY, this.z + z, 1];
-        // let trr = [this.posX + 1, this.posY, this.z + z, 1];
-        // let blr = [this.posX, this.posY + 1, this.z, 1];
-        // let brr = [this.posX + 1, this.posY + 1, this.z, 1];
+        let bottomSquare = getSquares(this.posX, this.posY + 1).find((sq) => sq.solid);
+        
+        this.z = bottomSquare != null ? (bottomSquare.z + bottomSquare.surfaceLightingFactor) : 0;
 
         let zs = this.z;
-        let zd = -this.surfaceLightingFactor;
+        let zd = this.surfaceLightingFactor;
 
         let tlr = [this.posX, this.posY, zs + zd, 1]
         let trr = [this.posX + 1, this.posY, zs + zd, 1]
