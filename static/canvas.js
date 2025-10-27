@@ -1,3 +1,4 @@
+import { cartesianToScreen } from "./camera.js";
 import { multiplyMatrixAndPoint } from "./climate/stars/matrix.js";
 import { reset } from "./globalOperations.js";
 import { MAIN_CANVAS, MAIN_CONTEXT } from "./index.js";
@@ -234,6 +235,70 @@ export function transformCanvasSquaresToPixels(x, y) {
     return [xpl, ypl];
 }
 
+export function zoomCanvasFillRectTheta3D(x, y, dx, dy, xRef, yRef, theta, z) {
+    // dx *= (getCurZoom());
+    // dy *= (getCurZoom());
+
+    let totalWidth = CANVAS_SQUARES_X * BASE_SIZE;
+    let totalHeight = CANVAS_SQUARES_Y * BASE_SIZE;
+
+    let windowWidth = totalWidth / getCurZoom();
+    let windowHeight = totalHeight / getCurZoom();
+
+    let windowWidthStart = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) - (windowWidth / 2);
+    let windowHeightStart = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) - (windowHeight / 2);
+
+    let windowWidthEnd = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) + (windowWidth / 2);
+    let windowHeightEnd = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) + (windowHeight / 2);
+
+    let xpi = (x - windowWidthStart) / (windowWidthEnd - windowWidthStart);
+    let ypi = (y - windowHeightStart) / (windowHeightEnd - windowHeightStart);
+
+    let xpl = xpi * totalWidth;
+    let ypl = ypi * totalHeight;
+
+    xRef = xpl + dx / 2;
+    yRef = ypl + dy / 2;
+
+    let p1x = xpl - xRef;
+    let p1y = ypl - yRef;
+
+    let p2x = xpl + dx - xRef;
+    let p2y = ypl - yRef;
+
+    let p3x = xpl + dx - xRef;
+    let p3y = ypl + dy - yRef;
+
+    let p4x = xpl - xRef;
+    let p4y = ypl + dy - yRef;
+
+    let p1xR = p1x * Math.cos(theta) - p1y * Math.sin(theta);
+    let p1yR = p1y * Math.cos(theta) + p1x * Math.sin(theta);
+    let p2xR = p2x * Math.cos(theta) - p2y * Math.sin(theta);
+    let p2yR = p2y * Math.cos(theta) + p2x * Math.sin(theta);
+    let p3xR = p3x * Math.cos(theta) - p3y * Math.sin(theta);
+    let p3yR = p3y * Math.cos(theta) + p3x * Math.sin(theta);
+    let p4xR = p4x * Math.cos(theta) - p4y * Math.sin(theta);
+    let p4yR = p4y * Math.cos(theta) + p4x * Math.sin(theta);
+
+    let tls = cartesianToScreen(xRef + p1xR, yRef + p1yR, z, 1);
+    let trs = cartesianToScreen(xRef + p2xR, yRef + p2yR, z, 1);
+    let bls = cartesianToScreen(xRef + p3xR, yRef + p3yR, z, 1);
+    let brs = cartesianToScreen(xRef + p4xR, yRef + p4yR, z, 1);
+
+    let cw = getCanvasWidth();
+    let ch = getCanvasHeight();
+    let pArr = [
+        [(tls[0] / tls[2]) * cw, (tls[1] / tls[2]) * ch],
+        [(trs[0] / trs[2]) * cw, (trs[1] / trs[2]) * ch],
+        [(brs[0] / brs[2]) * cw, (brs[1] / brs[2]) * ch],
+        [(bls[0] / bls[2]) * cw, (bls[1] / bls[2]) * ch],
+        [(tls[0] / tls[2]) * cw, (tls[1] / tls[2]) * ch]
+    ]
+
+    fillCanvasPointArr(pArr);
+}
+
 export function zoomCanvasFillRectTheta(x, y, dx, dy, xRef, yRef, theta) {
     dx *= (getCurZoom());
     dy *= (getCurZoom());
@@ -280,20 +345,21 @@ export function zoomCanvasFillRectTheta(x, y, dx, dy, xRef, yRef, theta) {
     let p4xR = p4x * Math.cos(theta) - p4y * Math.sin(theta);
     let p4yR = p4y * Math.cos(theta) + p4x * Math.sin(theta);
 
+    let pArr = [[xRef + p1xR, yRef + p1yR],
+    [xRef + p2xR, yRef + p2yR],
+    [xRef + p3xR, yRef + p3yR],
+    [xRef + p4xR, yRef + p4yR],
+    [xRef + p1xR, yRef + p1yR]];
+
+    fillCanvasPointArr(pArr);
+}
+
+export function fillCanvasPointArr(pArr) {
     MAIN_CONTEXT.beginPath()
-    MAIN_CONTEXT.moveTo(xRef + p1xR, yRef + p1yR);
-    MAIN_CONTEXT.lineTo(xRef + p2xR, yRef + p2yR);
-    MAIN_CONTEXT.lineTo(xRef + p3xR, yRef + p3yR);
-    MAIN_CONTEXT.lineTo(xRef + p4xR, yRef + p4yR);
-    MAIN_CONTEXT.lineTo(xRef + p1xR, yRef + p1yR);
+    MAIN_CONTEXT.moveTo(...pArr[0]);
+    pArr.slice(1).forEach(p => MAIN_CONTEXT.lineTo(...p));
     MAIN_CONTEXT.closePath();
     MAIN_CONTEXT.fill();
-
-    // MAIN_CONTEXT.arc(xRef, yRef, 10, 0, 2 * Math.PI, false);
-
-    // MAIN_CONTEXT.stroke();
-
-
 }
 
 
@@ -463,7 +529,7 @@ function _applyDerivativeVec(k1, k2) {
     cs[0] *= 0.7;
     cs[1] *= 0.7;
     cs[2] *= 0.7;
- 
+
     saveGD(k1, co);
     saveGD(k2, cs);
 
@@ -477,7 +543,7 @@ function canvasPan3DRoutine() {
     let e = getLastMoveEvent();
     if (e == null)
         return;
-    
+
     if (curLastMoveOffset == null) {
         curLastMoveOffset = getLastMoveOffset();
         return;
@@ -539,14 +605,14 @@ export function getCanvasHeight() {
 }
 
 
-addUIFunctionMap(UI_VIEWMODE_SELECT, async () => {
-    let curViewMode = loadGD(UI_VIEWMODE_SELECT);
-    if (curViewMode == UI_VIEWMODE_3D) {
-        MAIN_CANVAS.addEventListener("click", async () => {
-            await MAIN_CANVAS.requestPointerLock({
-                unadjustedMovement: true,
-            });
-        });
-    } else
-        document.exitPointerLock();
-})
+// addUIFunctionMap(UI_VIEWMODE_SELECT, async () => {
+//     let curViewMode = loadGD(UI_VIEWMODE_SELECT);
+//     if (curViewMode == UI_VIEWMODE_3D) {
+//         MAIN_CANVAS.addEventListener("click", async () => {
+//             await MAIN_CANVAS.requestPointerLock({
+//                 unadjustedMovement: true,
+//             });
+//         });
+//     } else
+//         document.exitPointerLock();
+// })

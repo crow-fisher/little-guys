@@ -20,11 +20,12 @@ import { getWindSquareAbove } from "../climate/simulation/wind.js";
 import { COLOR_BLACK, GROUP_BROWN, GROUP_BLUE, GROUP_MAUVE, GROUP_TAN, GROUP_GREEN, RGB_COLOR_BLUE, RGB_COLOR_RED, COLOR_VERY_FUCKING_RED } from "../colors.js";
 import { getCurDay, getDaylightStrengthFrameDiff, getFrameDt, getTimeScale } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
-import { getBaseSize, getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, getCurZoom, getFrameYMax, isSquareOnCanvas, transformCanvasSquaresToPixels, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
+import { fillCanvasPointArr, getBaseSize, getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, getCurZoom, getFrameYMax, isSquareOnCanvas, transformCanvasSquaresToPixels, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
 import { loadGD, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3, UI_VIEWMODE_DEV4, UI_VIEWMODE_DEV5, UI_PALETTE_STRENGTH, UI_CANVAS_SQUARES_ZOOM, UI_LIGHTING_SURFACE, UI_PALETTE_SURFACE_MATCH, UI_STARMAP_FOV, UI_STARMAP_XROTATION, UI_STARMAP_YROTATION, UI_STARMAP_ZROTATION, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CANVAS_VIEWPORT_CENTER_Z, UI_VIEWMODE_3D, UI_CAMERA_XOFFSET, UI_CAMERA_YOFFSET, UI_CAMERA_ZOFFSET, UI_CAMERA_XROTATION, UI_CAMERA_ZROTATION, UI_CAMERA_YROTATION, UI_CAMERA_OFFSET_VEC, UI_CAMERA_ROTATION_VEC } from "../ui/UIData.js";
 import { deregisterSquare, registerSquare } from "../waterGraph.js";
 import { STAGE_DEAD } from "../organisms/Stages.js";
 import { multiplyMatrixAndPoint } from "../climate/stars/matrix.js";
+import { cartesianToScreen } from "../camera.js";
 
 export class BaseSquare {
     constructor(posX, posY) {
@@ -494,10 +495,10 @@ export class BaseSquare {
         let blr = [this.posX, this.posY + 1, zs, 1]
         let brr = [this.posX + 1, this.posY + 1, zs, 1]
 
-        this.tls = this.cartesianToScreen(...tlr);
-        this.trs = this.cartesianToScreen(...trr);
-        this.bls = this.cartesianToScreen(...blr);
-        this.brs = this.cartesianToScreen(...brr);
+        this.tls = cartesianToScreen(...tlr);
+        this.trs = cartesianToScreen(...trr);
+        this.bls = cartesianToScreen(...blr);
+        this.brs = cartesianToScreen(...brr);
 
         let tls = this.tls;
         let trs = this.trs;
@@ -512,23 +513,20 @@ export class BaseSquare {
         let blsq = getSquares(this.posX - 1, this.posY + 1).find((sq) => sq.solid && sq.bls != null) ?? this;
         let brsq = getSquares(this.posX + 1, this.posY + 1).find((sq) => sq.solid && sq.brs != null) ?? this;
 
-        tls = this.tls; // this.combinePoints(this, tlsq, "tls");
-        trs = this.trs; // this.combinePoints(this, trsq, "trs");
-        bls = this.bls; // this.combinePoints(this, blsq, "bls");
-        brs = this.brs; // this.combinePoints(this, brsq, "brs");
-
+        tls = this.combinePoints(this, tlsq, "tls");
+        trs = this.combinePoints(this, trsq, "trs");
+        bls = this.combinePoints(this, blsq, "bls");
+        brs = this.combinePoints(this, brsq, "brs");
         let cw = getCanvasWidth();
         let ch = getCanvasHeight();
-
-        MAIN_CONTEXT.beginPath()
-        MAIN_CONTEXT.moveTo((tls[0] / tls[2]) * cw, (tls[1] / tls[2]) * ch);
-        MAIN_CONTEXT.lineTo((trs[0] / trs[2]) * cw, (trs[1] / trs[2]) * ch);
-        MAIN_CONTEXT.lineTo((brs[0] / brs[2]) * cw, (brs[1] / brs[2]) * ch);
-        MAIN_CONTEXT.lineTo((bls[0] / bls[2]) * cw, (bls[1] / bls[2]) * ch);
-        MAIN_CONTEXT.lineTo((tls[0] / tls[2]) * cw, (tls[1] / tls[2]) * ch);
-        MAIN_CONTEXT.closePath();
-        MAIN_CONTEXT.fill();
-
+        let pArr = [
+            [(tls[0] / tls[2]) * cw, (tls[1] / tls[2]) * ch],
+            [(trs[0] / trs[2]) * cw, (trs[1] / trs[2]) * ch],
+            [(brs[0] / brs[2]) * cw, (brs[1] / brs[2]) * ch],
+            [(bls[0] / bls[2]) * cw, (bls[1] / bls[2]) * ch],
+            [(tls[0] / tls[2]) * cw, (tls[1] / tls[2]) * ch]
+        ]
+        fillCanvasPointArr(pArr);
     }
 
     combinePoints(p1, p2, getter) {
@@ -538,68 +536,6 @@ export class BaseSquare {
             (p1[getter][2] + p2[getter][2]) * .5,
             (p1[getter][3] + p2[getter][3]) * .5,
         ]
-    }
-
-    cartesianToScreen(x, y, z, w, force = false) {
-        // https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix.html
-        let fov = 180 / loadGD(UI_CANVAS_SQUARES_ZOOM);
-        let r2d = 57.2958;
-        let S = 1 / (Math.tan((fov / r2d) / 2) * (Math.PI / (180 / r2d)));
-        let perspectiveMatrix = [
-            [S, 0, 0, 0],
-            [0, S, 0, 0],
-            [0, 0, S, -1],
-            [0, 0, 1, 0]
-        ];
-
-        let cr = loadGD(UI_CAMERA_ROTATION_VEC);
-
-        let camPos = structuredClone(loadGD(UI_CAMERA_OFFSET_VEC)); 
-        
-        camPos[0] += loadGD(UI_CANVAS_VIEWPORT_CENTER_X) / getBaseSize();
-        camPos[1] += loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) / getBaseSize();
-
-        let point = [x - camPos[0], y - camPos[1], (z * -1) - camPos[2], 1]; 
-        let pointRotated = this.rotatePoint(point, cr[0], cr[1], cr[2]);
-
-        let transformed = multiplyMatrixAndPoint(perspectiveMatrix, pointRotated);
-
-        if (transformed[2] < 0 && !force)
-            return null;
-        return transformed;
-    }
-
-    rotatePoint(point, rX, rY, rZ) {
-        return this.rotatePointRx(this.rotatePointRy(this.rotatePointRz(point, rZ), rY), rX);
-    }
-
-    rotatePointRx(point, theta) {
-        let rotationMatrix = [
-            [1, 0, 0, 0],
-            [0, Math.cos(theta), -Math.sin(theta), 0],
-            [0, Math.sin(theta), Math.cos(theta), 0],
-            [0, 0, 0, 1]
-        ];
-        return multiplyMatrixAndPoint(rotationMatrix, point);
-    }
-
-    rotatePointRy(point, theta) {
-        let rotationMatrix = [
-            [Math.cos(theta), 0, Math.sin(theta), 0],
-            [0, 1, 0, 0],
-            [-Math.sin(theta), 0, Math.cos(theta), 0],
-            [0, 0, 0, 1]
-        ]
-        return multiplyMatrixAndPoint(rotationMatrix, point);
-    }
-    rotatePointRz(point, theta) {
-        let rotationMatrix = [
-            [Math.cos(theta), -Math.sin(theta), 0, 0],
-            [Math.sin(theta), Math.cos(theta), 0, 0],
-            [0, 0, 1, 0],
-            [0, 0, 0, 1]
-        ]
-        return multiplyMatrixAndPoint(rotationMatrix, point);
     }
 
     renderWithVariedColors(opacityMult) {

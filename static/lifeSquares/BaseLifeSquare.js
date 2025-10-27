@@ -8,8 +8,8 @@ import { RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED, RGB_COLOR_GREEN } from "../colors.
 import { removeSquare } from "../globalOperations.js";
 import { STATE_HEALTHY, STAGE_DEAD } from "../organisms/Stages.js";
 import { getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
-import { getBaseSize, getCurZoom, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasFillRectTheta, zoomCanvasSquareText } from "../canvas.js";
-import { loadGD, UI_CANVAS_SQUARES_ZOOM, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_NORMAL, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../ui/UIData.js";
+import { getBaseSize, getCurZoom, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasFillRectTheta, zoomCanvasFillRectTheta3D, zoomCanvasSquareText } from "../canvas.js";
+import { loadGD, UI_CANVAS_SQUARES_ZOOM, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_3D, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_NORMAL, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../ui/UIData.js";
 
 export const LSQ_RENDERMODE_SQUARE = "LSQ_RENDERMODE_SQUARE";
 export const LSQ_RENDERMODE_CIRCLE = "LSQ_RENDERMODE_CIRCLE";
@@ -69,7 +69,8 @@ class BaseLifeSquare {
         this.width = 1;
         this.height = 1;
         this.strength = 1;
-        this.xOffset = 0;
+        this.xOffset = 0; 
+        this.zDelta = 0;
         this.randoms = [];
 
         this.cachedRgba = null;
@@ -195,14 +196,20 @@ class BaseLifeSquare {
 
     renderToCanvas() {
         if (this.renderMode == LSQ_RENDERMODE_THETA) {
-            zoomCanvasFillRectTheta(
+            let func = zoomCanvasFillRectTheta; 
+
+            if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_3D)
+                func = zoomCanvasFillRectTheta3D;
+
+            func(
                 this.getPosX() * getBaseSize() - getBaseSize() * this.calculateWidthXOffset(),
                 this.getPosY() * getBaseSize(),
                 this.width * getBaseSize() * this.getLsqRenderSizeMult(),
                 this.height * getBaseSize() * this.getLsqRenderSizeMult(),
                 this.xRef,
                 this.yRef,
-                this.theta
+                this.theta, 
+                this.linkedOrganism.linkedSquare.z 
             );
         } else if (this.renderMode == LSQ_RENDERMODE_CIRCLE) {
             zoomCanvasFillCircle(
