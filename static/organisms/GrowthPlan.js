@@ -3,6 +3,7 @@ import { getWindSpeedAtLocation } from "../climate/simulation/wind.js";
 import { STATE_DESTROYED, TYPE_HEART } from "./Stages.js";
 import { getGlobalThetaBase } from "../globals.js";
 import { removeItemAll } from "../common.js";
+import { rotatePoint } from "../camera.js";
 
 export class GrowthPlan {
     constructor(posX, posY, required, endStage, theta, twist, baseRotation, baseDeflection, baseCurve, type, strengthMult, rollingAveragePeriod = 200) {
@@ -67,26 +68,17 @@ export class GrowthPlanStep {
 }
 
 export class GrowthComponent {
-    constructor(growthPlan, lifeSquares, theta, twist, baseRotation, baseDeflection, baseCurve, type, strengthMult, rollingAveragePeriod) {
+    constructor(growthPlan, lifeSquares, theta, sin, phi, thetaCurve, sinCurve, phiCurve, type, strengthMult, rollingAveragePeriod) {
         this.growthPlan = growthPlan;
-        this.lifeSquares = lifeSquares;
-        this.theta = theta;
-        this.twist = twist;
-        this.baseRotation = baseRotation;
-        this.baseDeflection = baseDeflection;
-        this.baseCurve = baseCurve;
+        this.lifeSquares = Array.from(lifeSquares);
+
+        this.bv = [theta, sin, phi];
+        this.bdv = [thetaCurve, sinCurve, phiCurve];
+        this.dv = [0, 0, 0];
+        this.ddv = [0, 0, 0];
+
         this.type = type;
-
-        this.posX = growthPlan.posX;
-        this.posY = growthPlan.posY;
-
-        this.xOffset = 0;
-        this.yOffset = 0;
-
-        this.currentDeflection = 0;
-        this.deflectionRollingAverage = 0;
         this.strengthMult = strengthMult;
-        this.rollingAveragePeriod = rollingAveragePeriod
         this.children = new Array();
         this.parentComponent = null;
         this.setCurrentDeflection(baseDeflection);
@@ -96,6 +88,100 @@ export class GrowthComponent {
         this.lastDeflectionInstant = 0;
         this.lastDeflectionValue = [0, 0];
     }
+
+    // important to ABSOLUTELY SPECIFY
+    // that posX and posY, as invoked from here
+    // represent COORDINATES of POINTS on the THEORETICAL FLAT PLANE
+
+    // this 2D PLANE is PROJECTED into 3D SPACE
+
+    getParentPosition(posX, posY) {
+        if (this.parentComponent == null) {
+            let pSq = this.lifeSquares.at(0).linkedSquare;
+            return [pSq.posX, pSq.posY, pSq.z];
+        }
+        let pP = this.parentComponent.getParentPositionVal(this.posX, this.posY);
+        let pD = this.parentComponent.getParentDeflectionVal(this.posX, this.posY);
+
+        let dv = this.getDeflectionMult(posX - this.posX, posY - this.posY);
+
+
+        pP[0] += dv[0];
+        pP[1] += dv[1];
+        pP[2] += dv[2];
+
+        return out;
+    }
+
+    getParentPositionVal(posX, posY) {
+        let mult = ((posX - this.posX) ** 2 + (posY - this.posY) ** 2);
+        let cAng = structuredClone(this.bv);
+        
+        for (let i = 0; i < mult; i += 1) {
+            let dv = rotatePoint([0, 1, , 0], )
+            pP[0] += dv[0];
+            pP[1] += dv[1];
+            pP[2] += dv[2];
+        }
+        return Array.from(this.bv.map((v) => v * mult));
+    }
+
+
+
+
+
+    getDeflectionMult(posX, posY) {
+        let out = structuredClone(this.bv);
+        for (let i = 0; i < mult; i += 1) {
+            let dv = rotatePoint([0, 1, , 0], )
+            pP[0] += dv[0];
+            pP[1] += dv[1];
+            pP[2] += dv[2];
+        }
+        return Array.from(this.bv.map((v) => v * mult));
+    }
+
+
+    applyDeflectionState(parentComponent) {
+        if (this.lifeSquares.some((lsq) => lsq == null)) {
+            return;
+        }
+        let cPos = this.getParentPosition(this.posX, this.posY);
+        let cRot = this.getParentRotation(this.posX, this.posY);
+
+        this.lifeSquares.forEach((lsq) => {
+            lsq.rotVec = this.getRotVec(structuredClone(cRot), lsq.posX, lsq.posY);
+            lsq.posVec = this.getPosVec(structuredClone(cPos), lsq.rotVec, cRot, lsq.posX, lsq.posY);
+        });
+    }
+
+    getPosVec(vec, posX, posY) {
+        let 
+    }
+
+    getRotVec(vec, posX, posY) {
+        let dv = this.getBvMult(posX, posY);
+        vec[0] += dv[0];
+        vec[1] += dv[1];
+        vec[2] += dv[2];
+        vec[3] += dv[3];
+        return vec;
+    }
+
+
+    getRotVec(posX, posY) {
+        return 
+    }
+
+    dist(posX, posY) {
+        return ((posX - this.posX) ** 2 + (posY - this.posY) ** 2);
+    }
+
+    getBvMult(posX, posY) {
+        let mult = this.dist(posX, posY);
+        return Array.from(this.bv.map((v) => v * mult));
+    }
+
 
     getChildPath(searchChild) {
         for (let i = 0; i < this.children.length; i++) {
@@ -218,8 +304,15 @@ export class GrowthComponent {
         this.children.push(childComponent);
         childComponent.parentComponent = this;
     }
+    applyDeflectionState(parentComponent) {
+        if (this.lifeSquares.some((lsq) => lsq == null)) {
+            return;
+        }
+    }
 
-    updateDeflectionState() {
+
+
+    _updateDeflectionState() {
         if (this.lifeSquares.some((lsq) => lsq == null)) {
             return;
         }
@@ -250,6 +343,8 @@ export class GrowthComponent {
     getDeflectionYAtPosition(posX, posY) {
         return this.lifeSquares.filter((lsq) => lsq.posX == posX && lsq.posY == posY).map((lsq) => lsq.deflectionYOffset).at(0);
     }
+
+
 
     getCurrentDeflection() {
         if (this.parentComponent == null) {
@@ -301,7 +396,7 @@ export class GrowthComponent {
         }
     }
 
-    getParentDeflection() {
+    getParentDeflectionVal() {
         if (this.parentComponent == null) {
             return 0;
         } else {
@@ -322,7 +417,8 @@ export class GrowthComponent {
         });
     }
 
-    applyDeflectionState(parentComponent) {
+
+    _applyDeflectionState(parentComponent) {
         if (this.lifeSquares.some((lsq) => lsq == null)) {
             return;
         }
@@ -336,8 +432,8 @@ export class GrowthComponent {
 
         let curve = this.baseCurve + Math.sin(this.currentDeflection) * 0.06 * (this.ySizeCur() - 1) / this.getTotalStrength();
 
-        let startTheta = this.deflectionRollingAverage + this.getParentDeflection() + this.getBaseRotation();
-        let endTheta = this.currentDeflection + curve + this.getParentDeflection() - this.baseCurve * this.getWilt() + this.getBaseRotation();
+        let startTheta = this.deflectionRollingAverage + this.getParentDeflectionVal() + this.getBaseRotation();
+        let endTheta = this.currentDeflection + curve + this.getParentDeflectionVal() - this.baseCurve * this.getWilt() + this.getBaseRotation();
 
         let length = this.ySizeCur();
 
