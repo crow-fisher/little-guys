@@ -4,24 +4,21 @@ import { STATE_DESTROYED, TYPE_HEART } from "./Stages.js";
 import { getGlobalThetaBase } from "../globals.js";
 import { removeItemAll } from "../common.js";
 import { rotatePoint } from "../camera.js";
+import { addVectors } from "../climate/stars/matrix.js";
 
 export class GrowthPlan {
-    constructor(posX, posY, required, endStage, theta, twist, baseRotation, baseDeflection, baseCurve, type, strengthMult, rollingAveragePeriod = 200) {
+    constructor(posX, posY, required, endStage, theta, sin, phi, thetaCurve, sinCurve, phiCurve, type, strengthMult, rollingAveragePeriod = 200) {
         this.posX = posX;
         this.posY = posY;
         this.required = required;
         this.steps = new Array(); // GrowthPlanStep
         this.endStage = endStage;
-        this.theta = theta;
-        this.baseRotation = baseRotation;
-        this.baseDeflection = baseDeflection;
-        this.baseCurve = baseCurve;
         this.type = type;
         this.stepLastExecuted = 0;
         this.component = new GrowthComponent(
             this,
             this.steps.filter((step) => step.completed).map((step) => step.completedSquare),
-            theta, twist, baseRotation, baseDeflection, baseCurve, type, strengthMult, rollingAveragePeriod)
+             theta, sin, phi, thetaCurve, sinCurve, phiCurve, type, strengthMult);
     }
 
     areStepsCompleted() {
@@ -68,25 +65,19 @@ export class GrowthPlanStep {
 }
 
 export class GrowthComponent {
-    constructor(growthPlan, lifeSquares, theta, sin, phi, thetaCurve, sinCurve, phiCurve, type, strengthMult, rollingAveragePeriod) {
+    constructor(growthPlan, lifeSquares, theta, sin, phi, thetaCurve, sinCurve, phiCurve, type, strengthMult) {
         this.growthPlan = growthPlan;
         this.lifeSquares = Array.from(lifeSquares);
-
         this.bv = [theta, sin, phi];
         this.bdv = [thetaCurve, sinCurve, phiCurve];
         this.dv = [0, 0, 0];
         this.ddv = [0, 0, 0];
-
         this.type = type;
         this.strengthMult = strengthMult;
         this.children = new Array();
         this.parentComponent = null;
-        this.setCurrentDeflection(baseDeflection);
         this.distToFront = 0;
         this.spawnTime = getCurDay();
-
-        this.lastDeflectionInstant = 0;
-        this.lastDeflectionValue = [0, 0];
     }
 
     // important to ABSOLUTELY SPECIFY
@@ -95,90 +86,66 @@ export class GrowthComponent {
 
     // this 2D PLANE is PROJECTED into 3D SPACE
 
+    getParentRotation(posX, posY) {
+        if (this.parentComponent == null) {
+            let pSq = this.lifeSquares.at(0).linkedSquare;
+            return structuredClone(this.bv);
+        } else {
+            let pRot = this.parentComponent.getParentRotation(posX, posY);
+            return this.parentComponent.getRotVec(pRot, posX, posY);
+        }
+    }
+
     getParentPosition(posX, posY) {
         if (this.parentComponent == null) {
             let pSq = this.lifeSquares.at(0).linkedSquare;
-            return [pSq.posX, pSq.posY, pSq.z];
+            return [pSq.posX + (this.posX - posX), pSq.posY + (this.posY - posY), pSq.z];
         }
-        let pP = this.parentComponent.getParentPositionVal(this.posX, this.posY);
-        let pD = this.parentComponent.getParentDeflectionVal(this.posX, this.posY);
-
-        let dv = this.getDeflectionMult(posX - this.posX, posY - this.posY);
-
-
-        pP[0] += dv[0];
-        pP[1] += dv[1];
-        pP[2] += dv[2];
-
-        return out;
+        let pPos = this.parentComponent.getParentRotation(posX, posY);
+        return this.parentComponent.getPosVec(pPos, this.posX, this.posY);
     }
 
-    getParentPositionVal(posX, posY) {
-        let mult = ((posX - this.posX) ** 2 + (posY - this.posY) ** 2);
-        let cAng = structuredClone(this.bv);
-        
-        for (let i = 0; i < mult; i += 1) {
-            let dv = rotatePoint([0, 1, , 0], )
-            pP[0] += dv[0];
-            pP[1] += dv[1];
-            pP[2] += dv[2];
-        }
-        return Array.from(this.bv.map((v) => v * mult));
-    }
-
-
-
-
-
-    getDeflectionMult(posX, posY) {
-        let out = structuredClone(this.bv);
-        for (let i = 0; i < mult; i += 1) {
-            let dv = rotatePoint([0, 1, , 0], )
-            pP[0] += dv[0];
-            pP[1] += dv[1];
-            pP[2] += dv[2];
-        }
-        return Array.from(this.bv.map((v) => v * mult));
-    }
-
-
-    applyDeflectionState(parentComponent) {
+    applyDeflectionState() {
         if (this.lifeSquares.some((lsq) => lsq == null)) {
             return;
         }
-        let cPos = this.getParentPosition(this.posX, this.posY);
         let cRot = this.getParentRotation(this.posX, this.posY);
+        let cPos = this.getParentPosition(this.posX, this.posY);
 
         this.lifeSquares.forEach((lsq) => {
             lsq.rotVec = this.getRotVec(structuredClone(cRot), lsq.posX, lsq.posY);
             lsq.posVec = this.getPosVec(structuredClone(cPos), lsq.rotVec, cRot, lsq.posX, lsq.posY);
         });
+        this.children.forEach((child) => child.applyDeflectionState())
     }
 
-    getPosVec(vec, posX, posY) {
-        let 
+    getPosVec(vecPos, vecRot, posX, posY) {
+        let mult = this.dist(posX, posY);
+        let step = 1;
+        let dx = posX - this.posX;
+        let dy = posY - this.posY;
+        let sdx = (step / mult) * dx;
+        let sdy = (step / mult) * dy;
+        for (let i = 0; i < mult; i += step) {
+            let offsetVec = [sdx, sdy, 0, 0];
+            let rotatedOffset = rotatePoint(offsetVec, ...this.getRotVec(vecRot, (sdx * i) + this.posX, (sdy * i) + this.posY));
+            vecPos = addVectors(vecPos, rotatedOffset);    
+        }
+        return vecPos;
     }
 
-    getRotVec(vec, posX, posY) {
-        let dv = this.getBvMult(posX, posY);
-        vec[0] += dv[0];
-        vec[1] += dv[1];
-        vec[2] += dv[2];
-        vec[3] += dv[3];
-        return vec;
+    getRotVec(vecRot, posX, posY) {
+        let dv = this.getBvMultPos(posX, posY);
+        return addVectors(vecRot, dv);
     }
-
-
-    getRotVec(posX, posY) {
-        return 
-    }
-
     dist(posX, posY) {
         return ((posX - this.posX) ** 2 + (posY - this.posY) ** 2);
     }
-
-    getBvMult(posX, posY) {
+    getBvMultPos(posX, posY) {
         let mult = this.dist(posX, posY);
+        return this.getBvMult(mult);
+    }
+    getBvMult(mult) {
         return Array.from(this.bv.map((v) => v * mult));
     }
 
@@ -304,15 +271,8 @@ export class GrowthComponent {
         this.children.push(childComponent);
         childComponent.parentComponent = this;
     }
-    applyDeflectionState(parentComponent) {
-        if (this.lifeSquares.some((lsq) => lsq == null)) {
-            return;
-        }
-    }
 
-
-
-    _updateDeflectionState() {
+    updateDeflectionState() {
         if (this.lifeSquares.some((lsq) => lsq == null)) {
             return;
         }

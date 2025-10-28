@@ -398,7 +398,7 @@ class BaseOrganism {
         }
         let growthPlan = new GrowthPlan(this.posX, this.posY,
             true, STAGE_JUVENILE, Math.PI / 2, 0, 0,
-            0, 0, TYPE_HEART, 10 ** 8);
+            0, 0, 0, TYPE_HEART, 10 ** 8);
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
             () => {

@@ -70,3 +70,10 @@ export function normalizeXYZVector(vector, toLength) {
     vector[2] /= length;
     return vector;
 }
+
+export function addVectors(v1, v2) {
+  for (let i = 0; i < v1.length; i++) {
+    v1[i] += v2[i];
+  }
+  return v1;
+}

@@ -101,7 +101,7 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
                         startNode.posX, startNode.posY,
                         false, STAGE_ADULT,
                         randRange(0, 2 * Math.PI), 0, 0, randSide() * randRange(0, 3 - growthPlan.component.getSumBaseDeflection()),
-                        randRange(0, .3), TYPE_STEM, 10);
+                        randRange(0, .3), 0, TYPE_STEM, 10);
 
                     newGrowthPlan.postConstruct = () => {
                         growthPlan.component.addChild(newGrowthPlan.component);
@@ -123,7 +123,7 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
             startNode.posX, startNode.posY,
             false, STAGE_ADULT,
             randRange(0, 2 * Math.PI), 0, 0, 7,
-            4, TYPE_LEAF, 10);
+            4, 0, TYPE_LEAF, 10);
 
         leafGrowthPlan.postConstruct = () => {
             growthPlan.component.addChild(leafGrowthPlan.component);
