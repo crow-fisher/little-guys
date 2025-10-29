@@ -44,56 +44,58 @@ function doKeyboardInput(e) {
 
 function _3dViewKeymap(key) {
     let offset = 1;
-    let ct = loadGD(UI_CAMERA_OFFSET_VEC_DT);
+    let applied = [0, 0, 0, 0];
+
     if (key == 'd') {
-        ct[0] += offset; 
+        applied[0] += offset; 
     }
     if (key == 'a') { 
-        ct[0] -= offset; 
+        applied[0] -= offset; 
     }
     if (key == 's') {
-        ct[1] += offset; 
+        applied[1] += offset; 
     }
     if (key == 'w') {
-        ct[1] -= offset; 
+        applied[1] -= offset; 
     }
     if (key == 'q') {
-        ct[2] += offset; 
+        applied[2] += offset; 
     }
     if (key == 'e') {
-        ct[2] -= offset; 
+        applied[2] -= offset;
     }
 
-    let cr = loadGD(UI_CAMERA_ROTATION_VEC)
-    let transformed = rotatePoint(ct, cr[0], cr[1], cr[2]);
 
-    ct[0] += transformed[0];
-    ct[1] += transformed[1];
-    ct[2] += transformed[2];
-    
+    let cr = loadGD(UI_CAMERA_ROTATION_VEC);
+    let transformed = rotatePoint(applied, -cr[0], -cr[1], -cr[2]);
+
+    let ct = loadGD(UI_CAMERA_OFFSET_VEC_DT);
+    ct[0] = ct[0] * .8 + transformed[0] * .5;
+    ct[1] = ct[1] * .8 + transformed[1] * .5;
+    ct[2] = ct[2] * .8 + transformed[2] * .5;
     saveGD(UI_CAMERA_OFFSET_VEC_DT, ct)
 
-    cr = loadGD(UI_CAMERA_ROTATION_VEC_DT);
+    let crd = loadGD(UI_CAMERA_ROTATION_VEC_DT);
     offset = .01;
     if (key == 'l') {
-        cr[0] += offset; 
+        crd[0] += offset; 
     }
     if (key == 'j') { 
-        cr[0] -= offset; 
+        crd[0] -= offset; 
     }
     if (key == 'k') {
-        cr[1] += offset; 
+        crd[1] += offset; 
     }
     if (key == 'i') {
-        cr[1] -= offset; 
+        crd[1] -= offset; 
     }
     if (key == 'u') {
-        cr[2] += offset; 
+        crd[2] += offset; 
     }
     if (key == 'o') {
-        cr[2] -= offset; 
+        crd[2] -= offset; 
     }
-    saveGD(UI_CAMERA_ROTATION_VEC_DT, cr)
+    saveGD(UI_CAMERA_ROTATION_VEC_DT, crd)
 
     if (key == 'Escape') {
         saveGD(UI_CAMERA_OFFSET_VEC, [0, 0, 0, 0]);

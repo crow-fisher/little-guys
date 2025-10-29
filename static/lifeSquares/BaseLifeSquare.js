@@ -199,14 +199,15 @@ class BaseLifeSquare {
     }
 
     renderToCanvas() {
-        return;
         let root = cartesianToScreen(...this.posVec, 1);
         let cw = getCanvasWidth();
         let ch = getCanvasHeight();
 
         MAIN_CONTEXT.beginPath();
-        MAIN_CONTEXT.arc(root[0] * cw, root[1] * ch, 4, 0, 2 * Math.PI, false);
+        MAIN_CONTEXT.arc((root[0] / root[2]) * cw, (root[1] / root[2]) * ch, 8, 0, 2 * Math.PI, false);
         MAIN_CONTEXT.fill();
+        MAIN_CONTEXT.stroke();
+
         return;
         if (this.renderMode == LSQ_RENDERMODE_THETA) {
             let func = zoomCanvasFillRectTheta; 
