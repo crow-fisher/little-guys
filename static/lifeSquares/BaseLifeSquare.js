@@ -8,8 +8,9 @@ import { RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED, RGB_COLOR_GREEN } from "../colors.
 import { removeSquare } from "../globalOperations.js";
 import { STATE_HEALTHY, STAGE_DEAD } from "../organisms/Stages.js";
 import { getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
-import { getBaseSize, getCurZoom, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasFillRectTheta, zoomCanvasFillRectTheta3D, zoomCanvasSquareText } from "../canvas.js";
+import { getBaseSize, getCanvasHeight, getCanvasWidth, getCurZoom, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasFillRectTheta, zoomCanvasFillRectTheta3D, zoomCanvasSquareText } from "../canvas.js";
 import { loadGD, UI_CANVAS_SQUARES_ZOOM, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_3D, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_NORMAL, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../ui/UIData.js";
+import { cartesianToScreen } from "../camera.js";
 
 export const LSQ_RENDERMODE_SQUARE = "LSQ_RENDERMODE_SQUARE";
 export const LSQ_RENDERMODE_CIRCLE = "LSQ_RENDERMODE_CIRCLE";
@@ -85,6 +86,9 @@ class BaseLifeSquare {
         this.renderMode = LSQ_RENDERMODE_THETA;
 
         this.lsqLightDecayValue = 1;
+
+        this.posVec = [this.posX, this.posY, square.z];
+        this.rotVec = [0, 0, 0];
     }
     
     getSurfaceLightingFactor() {
@@ -195,6 +199,15 @@ class BaseLifeSquare {
     }
 
     renderToCanvas() {
+        return;
+        let root = cartesianToScreen(...this.posVec, 1);
+        let cw = getCanvasWidth();
+        let ch = getCanvasHeight();
+
+        MAIN_CONTEXT.beginPath();
+        MAIN_CONTEXT.arc(root[0] * cw, root[1] * ch, 4, 0, 2 * Math.PI, false);
+        MAIN_CONTEXT.fill();
+        return;
         if (this.renderMode == LSQ_RENDERMODE_THETA) {
             let func = zoomCanvasFillRectTheta; 
 

@@ -32,6 +32,8 @@ export class BaseSquare {
         this.proto = "BaseSquare";
         this.posX = posX;
         this.posY = posY;
+        this.z = 0;
+
         this.id = getNextBlockId();
 
         this.posHistoryRetentionLength = 10;
@@ -104,6 +106,7 @@ export class BaseSquare {
         this.blockHealthGravityCoef = 2;
 
         this.initTemperature();
+        this.setFrameCartesians();
     };
 
     getSurfaceLightingFactor() {
@@ -458,6 +461,21 @@ export class BaseSquare {
         );
     }
 
+    setFrameCartesians() { 
+        let zs = this.z;
+        let zd = this.surfaceLightingFactor;
+        let tlr = [this.posX, this.posY, zs + zd, 1]
+        let trr = [this.posX + 1, this.posY, zs + zd, 1]
+
+        let blr = [this.posX, this.posY + 1, zs, 1]
+        let brr = [this.posX + 1, this.posY + 1, zs, 1]
+
+        this.tls = cartesianToScreen(...tlr);
+        this.trs = cartesianToScreen(...trr);
+        this.bls = cartesianToScreen(...blr);
+        this.brs = cartesianToScreen(...brr);
+    }
+
     render3D(opacityMult) {
         let minTime = getFrameDt() * 128;
         if (isSqColChanged(this.posX)) {
@@ -486,19 +504,7 @@ export class BaseSquare {
         
         this.z = bottomSquare != null ? (bottomSquare.z + bottomSquare.surfaceLightingFactor) : 0;
 
-        let zs = this.z;
-        let zd = this.surfaceLightingFactor;
-
-        let tlr = [this.posX, this.posY, zs + zd, 1]
-        let trr = [this.posX + 1, this.posY, zs + zd, 1]
-
-        let blr = [this.posX, this.posY + 1, zs, 1]
-        let brr = [this.posX + 1, this.posY + 1, zs, 1]
-
-        this.tls = cartesianToScreen(...tlr);
-        this.trs = cartesianToScreen(...trr);
-        this.bls = cartesianToScreen(...blr);
-        this.brs = cartesianToScreen(...brr);
+        this.setFrameCartesians();
 
         let tls = this.tls;
         let trs = this.trs;
@@ -517,8 +523,10 @@ export class BaseSquare {
         trs = this.combinePoints(this, trsq, "trs");
         bls = this.combinePoints(this, blsq, "bls");
         brs = this.combinePoints(this, brsq, "brs");
+
         let cw = getCanvasWidth();
         let ch = getCanvasHeight();
+
         let pArr = [
             [(tls[0] / tls[2]) * cw, (tls[1] / tls[2]) * ch],
             [(trs[0] / trs[2]) * cw, (trs[1] / trs[2]) * ch],

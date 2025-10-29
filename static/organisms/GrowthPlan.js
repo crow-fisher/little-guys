@@ -88,7 +88,6 @@ export class GrowthComponent {
 
     getParentRotation(posX, posY) {
         if (this.parentComponent == null) {
-            let pSq = this.lifeSquares.at(0).linkedSquare;
             return structuredClone(this.bv);
         } else {
             let pRot = this.parentComponent.getParentRotation(posX, posY);
@@ -97,20 +96,23 @@ export class GrowthComponent {
     }
 
     getParentPosition(posX, posY) {
+        let pSq = this.lifeSquares.at(0).linkedSquare;
         if (this.parentComponent == null) {
-            let pSq = this.lifeSquares.at(0).linkedSquare;
-            return [pSq.posX + (this.posX - posX), pSq.posY + (this.posY - posY), pSq.z];
+            return [pSq.posX + (pSq.posX - posX), pSq.posY + (pSq.posY - posY), pSq.z];
         }
-        let pPos = this.parentComponent.getParentRotation(posX, posY);
-        return this.parentComponent.getPosVec(pPos, this.posX, this.posY);
+        let pRot = this.parentComponent.getParentRotation(posX, posY);
+        let pPos = this.parentComponent.getParentPosition(posX, posY);
+
+        return this.parentComponent.getPosVec(pPos, pRot, pSq.posX, pSq.posY);
     }
 
     applyDeflectionState() {
         if (this.lifeSquares.some((lsq) => lsq == null)) {
             return;
         }
-        let cRot = this.getParentRotation(this.posX, this.posY);
-        let cPos = this.getParentPosition(this.posX, this.posY);
+        let pSq = this.lifeSquares.at(0).linkedSquare;
+        let cRot = this.getParentRotation(pSq.posX, pSq.posY);
+        let cPos = this.getParentPosition(pSq.posX, pSq.posY);
 
         this.lifeSquares.forEach((lsq) => {
             lsq.rotVec = this.getRotVec(structuredClone(cRot), lsq.posX, lsq.posY);
@@ -120,15 +122,16 @@ export class GrowthComponent {
     }
 
     getPosVec(vecPos, vecRot, posX, posY) {
+        let pSq = this.lifeSquares.at(0).linkedSquare;
         let mult = this.dist(posX, posY);
         let step = 1;
-        let dx = posX - this.posX;
-        let dy = posY - this.posY;
+        let dx = posX - pSq.posX;
+        let dy = posY - pSq.posY;
         let sdx = (step / mult) * dx;
         let sdy = (step / mult) * dy;
         for (let i = 0; i < mult; i += step) {
             let offsetVec = [sdx, sdy, 0, 0];
-            let rotatedOffset = rotatePoint(offsetVec, ...this.getRotVec(vecRot, (sdx * i) + this.posX, (sdy * i) + this.posY));
+            let rotatedOffset = rotatePoint(offsetVec, ...this.getRotVec(vecRot, (sdx * i) + pSq.posX, (sdy * i) + pSq.posY));
             vecPos = addVectors(vecPos, rotatedOffset);    
         }
         return vecPos;
@@ -139,7 +142,8 @@ export class GrowthComponent {
         return addVectors(vecRot, dv);
     }
     dist(posX, posY) {
-        return ((posX - this.posX) ** 2 + (posY - this.posY) ** 2);
+        let pSq = this.lifeSquares.at(0).linkedSquare;
+        return ((posX - pSq.posX) ** 2 + (posY - pSq.posY) ** 2);
     }
     getBvMultPos(posX, posY) {
         let mult = this.dist(posX, posY);
