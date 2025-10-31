@@ -2,7 +2,7 @@ import { getCurDay, getFrameDt } from "../climate/time.js";
 import { getWindSpeedAtLocation } from "../climate/simulation/wind.js";
 import { STATE_DESTROYED, TYPE_HEART } from "./Stages.js";
 import { getGlobalThetaBase } from "../globals.js";
-import { removeItemAll } from "../common.js";
+import { randRange, removeItemAll } from "../common.js";
 import { rotatePoint } from "../camera.js";
 import { addVectors } from "../climate/stars/matrix.js";
 
@@ -17,7 +17,7 @@ export class GrowthPlan {
         this.stepLastExecuted = 0;
         this.component = new GrowthComponent(
             this,
-            this.steps.filter((step) => step.completed).map((step) => step.completedSquare),
+            this.steps.filter((step) => step.completed).map((step) => step.completedLsq),
              theta, sin, phi, thetaCurve, sinCurve, phiCurve, type, strengthMult);
     }
 
@@ -48,7 +48,7 @@ export class GrowthPlanStep {
         this.growthPlan = growthPlan;
         this.growSqAction = growSqAction;
         this.completed = false;
-        this.completedSquare = null;
+        this.completedLsq = null;
     }
 
     doAction() {
@@ -56,7 +56,7 @@ export class GrowthPlanStep {
             let newLifeSquare = this.growSqAction();
             this.completed = true;
             if (newLifeSquare) {
-                this.completedSquare = newLifeSquare;
+                this.completedLsq = newLifeSquare;
                 newLifeSquare.component = this.growthPlan.component;
                 this.growthPlan.component.addLifeSquare(newLifeSquare);
             }
@@ -116,7 +116,8 @@ export class GrowthComponent {
 
         this.lifeSquares.forEach((lsq) => {
             lsq.rotVec = this.getRotVec(structuredClone(cRot), lsq.posX, lsq.posY);
-            lsq.posVec = this.getPosVec(structuredClone(cPos), lsq.rotVec, cRot, lsq.posX, lsq.posY);
+            lsq.posVec = this.getPosVec(structuredClone(cPos), lsq.rotVec, lsq.posX, lsq.posY);
+            // lsq.posVec = [lsq.posX, lsq.posY, 0, 1];
         });
         this.children.forEach((child) => child.applyDeflectionState())
     }
@@ -129,9 +130,14 @@ export class GrowthComponent {
         let dy = posY - pSq.posY;
         let sdx = (step / mult) * dx;
         let sdy = (step / mult) * dy;
+        
         for (let i = 0; i < mult; i += step) {
             let offsetVec = [sdx, sdy, 0, 0];
-            let rotatedOffset = rotatePoint(offsetVec, ...this.getRotVec(vecRot, (sdx * i) + pSq.posX, (sdy * i) + pSq.posY));
+            let rotVec = this.getRotVec(vecRot, (sdx * i) + pSq.posX, (sdy * i) + pSq.posY);
+            let rX = rotVec[0];
+            let rY = rotVec[1];
+            let rZ = rotVec[2];
+            let rotatedOffset = rotatePoint(offsetVec, rZ, rY, rX)
             vecPos = addVectors(vecPos, rotatedOffset);    
         }
         return vecPos;
@@ -150,6 +156,7 @@ export class GrowthComponent {
         return this.getBvMult(mult);
     }
     getBvMult(mult) {
+        this.bv = [Math.sin(Date.now() / 1000) / 200, 0, 0]
         return Array.from(this.bv.map((v) => v * mult));
     }
 

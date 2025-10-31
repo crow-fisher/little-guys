@@ -65,13 +65,13 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
             return;
         }
 
-        const maxDepth = 6;
+        const maxDepth = 1;
         if (depth > maxDepth) {
             return;
         }
 
         let cls = this.originGrowth.getCountLifeSquaresOfType(TYPE_STEM);
-        let maxComponentLength = Math.max(2 + 1 * (maxDepth - depth), cls ** 0.4);
+        let maxComponentLength = 10; //Math.max(2 + 1 * (maxDepth - depth), cls ** 0.4);
         let maxNodes = growthPlan.component.lifeSquares.length / 4;
         let maxCcls = 4;
         
@@ -88,6 +88,8 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
                 this.frameTreeGrowthChoices.push(["GROW", this._d(growthPlan.posX, growthPlan.posY), growAction]);
         }
 
+        let pi = Math.PI;
+        let hpi = pi / 2;
         if (growthPlan.component.getChildrenOfType(TYPE_STEM).length < maxNodes && cls < maxCcls) {
             let childYs = growthPlan.component.children.map((child) => child.growthPlan.posY);
             let availableNodes = Array.from(growthPlan.component.lifeSquares
@@ -100,8 +102,9 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
                     let newGrowthPlan = new GrowthPlan(
                         startNode.posX, startNode.posY,
                         false, STAGE_ADULT,
-                        randRange(0, 2 * Math.PI), 0, 0, randSide() * randRange(0, 3 - growthPlan.component.getSumBaseDeflection()),
-                        randRange(0, .3), 0, TYPE_STEM, 10);
+                        pi, pi, pi, 
+                        0, 0, 0,
+                        TYPE_STEM, 10);
 
                     newGrowthPlan.postConstruct = () => {
                         growthPlan.component.addChild(newGrowthPlan.component);
@@ -111,7 +114,7 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
                 }]);
             }
         }
-        growthPlan.component.lifeSquares.forEach((lsq) => this.growLeaves(growthPlan, lsq));
+        // growthPlan.component.lifeSquares.forEach((lsq) => this.growLeaves(growthPlan, lsq));
         growthPlan.component.children.forEach((child) => this._treeGrowthPlanning(child.growthPlan, depth + 1));
     }
 

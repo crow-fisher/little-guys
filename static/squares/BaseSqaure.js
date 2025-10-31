@@ -514,10 +514,10 @@ export class BaseSquare {
         if (tls == null || trs == null || bls == null || brs == null)
             return;
 
-        let tlsq = getSquares(this.posX - 1, this.posY).find((sq) => sq.solid && sq.tls != null) ?? this;
-        let trsq = getSquares(this.posX + 1, this.posY).find((sq) => sq.solid && sq.trs != null) ?? this;
-        let blsq = getSquares(this.posX - 1, this.posY + 1).find((sq) => sq.solid && sq.bls != null) ?? this;
-        let brsq = getSquares(this.posX + 1, this.posY + 1).find((sq) => sq.solid && sq.brs != null) ?? this;
+        let tlsq = getSquares(this.posX - 1, this.posY).find((sq) => sq.solid && sq.visible && sq.tls != null) ?? this;
+        let trsq = getSquares(this.posX + 1, this.posY).find((sq) => sq.solid && sq.visible && sq.trs != null) ?? this;
+        let blsq = getSquares(this.posX - 1, this.posY + 1).find((sq) => sq.solid && sq.visible && sq.bls != null) ?? this;
+        let brsq = getSquares(this.posX + 1, this.posY + 1).find((sq) => sq.solid && sq.visible && sq.brs != null) ?? this;
 
         tls = this.combinePoints(this, tlsq, "tls");
         trs = this.combinePoints(this, trsq, "trs");

@@ -269,7 +269,7 @@ export function compressSquares(squares) {
     
     growthPlanStepArr.forEach((gps) => {
         gps.growthPlan = growthPlanArr.indexOf(gps.growthPlan);
-        gps.completedSquare = lsqArr.indexOf(gps.completedSquare);
+        gps.completedLsq = lsqArr.indexOf(gps.completedLsq);
     });
 
     growthPlanComponentArr.forEach((gpc) => {
@@ -369,8 +369,8 @@ export function loadSlotFromSave(slotData) {
 
     growthPlanStepArr.forEach((gps) => {
         gps.growthPlan = growthPlanArr[gps.growthPlan];
-        if (gps.completedSquare != -1) {
-            gps.completedSquare = lsqArr[gps.completedSquare];
+        if (gps.completedLsq != -1) {
+            gps.completedLsq = lsqArr[gps.completedLsq];
         }
     });
 

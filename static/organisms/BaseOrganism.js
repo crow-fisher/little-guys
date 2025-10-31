@@ -462,7 +462,7 @@ class BaseOrganism {
             if (growthPlan.areStepsCompleted()) {
                 this.stage = growthPlan.endStage;
             }
-            if (growthPlan.required && growthPlan.steps.some((step) => step.completedSquare == null)) {
+            if (growthPlan.required && growthPlan.steps.some((step) => step.completedLsq == null)) {
                 this.destroy();
             }
         });
