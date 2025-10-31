@@ -125,7 +125,7 @@ export class GrowthComponent {
     getPosVec(vecPos, vecRot, posX, posY) {
         let pSq = this.lifeSquares.at(0).linkedSquare;
         let mult = this.dist(posX, posY);
-        let step = 1;
+        let step = .1;
         let dx = posX - pSq.posX;
         let dy = posY - pSq.posY;
         let sdx = (step / mult) * dx;
@@ -144,20 +144,25 @@ export class GrowthComponent {
     }
 
     getRotVec(vecRot, posX, posY) {
-        let dv = this.getBvMultPos(posX, posY);
+        let dv = this.getBdvMultPos(posX, posY);
         return addVectors(vecRot, dv);
     }
     dist(posX, posY) {
         let pSq = this.lifeSquares.at(0).linkedSquare;
-        return ((posX - pSq.posX) ** 2 + (posY - pSq.posY) ** 2);
+        return ((posX - pSq.posX) ** 2 + (posY - pSq.posY) ** 2) ** 0.5;
     }
-    getBvMultPos(posX, posY) {
+    getBdvMultPos(posX, posY) {
         let mult = this.dist(posX, posY);
-        return this.getBvMult(mult);
+        return this.getBdvMult(mult);
     }
-    getBvMult(mult) {
-        this.bv = [Math.sin(Date.now() / 1000) / 200, 0, 0]
-        return Array.from(this.bv.map((v) => v * mult));
+    getBdvMult(mult) {
+        let bdvX = Math.sin(Date.now() / 1000) / 12;
+        let bvX = -bdvX * 20;
+
+        this.bdv = [Math.sin(Date.now() / 1000) / 200, 0, 0]
+        this.bdv = [bdvX, 0, 0]
+        this.bv = [bvX, 0, 0]
+        return Array.from(this.bdv.map((v) => v * mult));
     }
 
 
