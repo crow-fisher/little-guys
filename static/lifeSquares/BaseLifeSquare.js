@@ -55,11 +55,6 @@ class BaseLifeSquare {
         this.spawnedEntityId = organism.spawnedEntityId;
         this.childLifeSquares = new Array();
 
-        if (square.organic) {
-            square.spawnedEntityId = organism.spawnedEntityId;
-            square.linkOrganismSquare(this);
-        }
-
         this.strength = 1;
 
         this.state = STATE_HEALTHY;
@@ -86,7 +81,7 @@ class BaseLifeSquare {
 
         this.lsqLightDecayValue = 1;
 
-        this.posVec = [this.posX, this.posY, square.z];
+        this.posVec = [this.posX, this.posY, 0];
         this.rotVec = [0, 0, 0];
     }
     

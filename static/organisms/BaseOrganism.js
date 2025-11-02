@@ -338,33 +338,28 @@ class BaseOrganism {
 
     // COMPONENT GROWTH
     growPlantSquare(parentSquare, dx, dy) {
-        let newPlantSquare = new PlantSquare(parentSquare.posX + dx, parentSquare.posY - dy);
-        if (addSquare(newPlantSquare)) {
-            let newGreenSquare = new this.greenType(newPlantSquare, this);
-            this.addAssociatedLifeSquare(newGreenSquare);
-            newGreenSquare.linkSquare(newPlantSquare);
-            parentSquare.addChild(newPlantSquare);
-            newGreenSquare.lighting = new Array();
+        let posX = parentSquare.posX + dx, posY = parentSquare.posY - dy;
+        let newGreenSquare = new this.greenType(this, posX, posY);
+        this.addAssociatedLifeSquare(newGreenSquare);
+        newGreenSquare.lighting = new Array();
 
-            let refSquare = null;
-            if (parentSquare.lighting.length > 0) {
-                refSquare = parentSquare;
-            } else {
-                for (let i = this.greenLifeSquares.length - 1; i >= 0; i--) {
-                    let lsq = this.greenLifeSquares.at(i);
-                    if (lsq.lighting.length > 0) {
-                        refSquare = lsq;
-                        break;
-                    }
-                }
-                if (refSquare == null) {
-                    refSquare = this.linkedSquare;
+        let refSquare = null;
+        if (parentSquare.lighting.length > 0) {
+            refSquare = parentSquare;
+        } else {
+            for (let i = this.greenLifeSquares.length - 1; i >= 0; i--) {
+                let lsq = this.greenLifeSquares.at(i);
+                if (lsq.lighting.length > 0) {
+                    refSquare = lsq;
+                    break;
                 }
             }
-            applyLightingFromSource(refSquare, newGreenSquare);
-            return newGreenSquare;
+            if (refSquare == null) {
+                refSquare = this.linkedSquare;
+            }
         }
-        return null;
+        applyLightingFromSource(refSquare, newGreenSquare);
+        return newGreenSquare;
     }
 
     getAllComponentsofType(componentType) {

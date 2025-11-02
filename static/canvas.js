@@ -450,6 +450,9 @@ export function doZoom(deltaY) {
     //  Math.min(Math.max(getCurZoom() + deltaY * -0.001, 1), 100);
     let endZoom = getCurZoom();
 
+    if (isNaN(startZoom) || isNaN(endZoom))
+        return;
+
     let startWidth = totalWidth / startZoom;
     let endWidth = totalWidth / endZoom;
 
