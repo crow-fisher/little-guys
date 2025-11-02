@@ -1,5 +1,5 @@
 import { randRange } from "../../common.js";
-import { GenericRootSquare } from "../../lifeSquares/GenericRootSquare.js";
+import { RootLifeSquare } from "../../lifeSquares/RootLifeSquare.js";
 import { STAGE_ADULT, STAGE_FLOWER, STAGE_JUVENILE, SUBTYPE_FLOWER, SUBTYPE_FLOWERBUD, SUBTYPE_FLOWERNODE, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_FLOWERNODE, TYPE_FLOWERPETAL, TYPE_LEAF, TYPE_STEM } from "../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
@@ -28,7 +28,7 @@ export class ConeflowerOrganism extends BaseOrganism {
         this.proto = "ConeflowerOrganism";
         this.uiRef = UI_ORGANISM_FLOWER_CONEFLOWER;
         this.greenType = ConeflowerGreenSqaure;
-        this.rootType = GenericRootSquare;
+        this.rootType = RootLifeSquare;
 
         this.growthCycleMaturityLength = 20 + Math.random() * 10;
         this.growthCycleLength = this.growthCycleMaturityLength * 2;

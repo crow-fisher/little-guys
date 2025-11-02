@@ -18,10 +18,10 @@ export const LSQ_RENDERMODE_THETA = "LSQ_RENDERMODE_THETA";
 
 const NUTRIENT_BASE_HSV = rgb2hsv(RGB_COLOR_GREEN.r, RGB_COLOR_GREEN.g, RGB_COLOR_GREEN.b);
 class BaseLifeSquare {
-    constructor(square, organism) {
+    constructor(organism, posX, posY) {
         this.proto = "BaseLifeSquare";
-        this.posX = square.posX;
-        this.posY = square.posY;
+        this.posX = posX;
+        this.posY = posY;
         this.xOffset = 0;
         this.yOffset = 0;
         this.xRef = 0;
@@ -51,7 +51,6 @@ class BaseLifeSquare {
         this.deflectionXOffset = 0;
         this.deflectionYOffset = 0;
 
-        this.linkedSquare = square;
         this.linkedOrganism = organism;
         this.spawnedEntityId = organism.spawnedEntityId;
         this.childLifeSquares = new Array();
@@ -114,10 +113,8 @@ class BaseLifeSquare {
     }
 
     updatePositionDifferential(dx, dy) {
-        removeSquare(this.linkedSquare);
         this.posX += dx;
         this.posY += dy;
-        addSquare(this.linkedSquare);
     }
 
     shiftUp() {

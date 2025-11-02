@@ -1,4 +1,4 @@
-import { GenericRootSquare } from "../../lifeSquares/GenericRootSquare.js";
+import { RootLifeSquare } from "../../lifeSquares/RootLifeSquare.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
 import { _llt_target, baseOrganism_dnm } from "../BaseOrganism.js";
 import { UI_ORGANISM_GRASS_KBLUE, UI_ORGANISM_MOSS_PLEUROCARP } from "../../ui/UIData.js";

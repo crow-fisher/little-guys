@@ -7,9 +7,7 @@ import { rotatePoint } from "../camera.js";
 import { addVectors } from "../climate/stars/matrix.js";
 
 export class GrowthPlan {
-    constructor(posX, posY, required, endStage, theta, sin, phi, thetaCurve, sinCurve, phiCurve, type, strengthMult, rollingAveragePeriod = 200) {
-        this.posX = posX;
-        this.posY = posY;
+    constructor(required, endStage, theta, sin, phi, thetaCurve, sinCurve, phiCurve, type, strengthMult, rollingAveragePeriod = 200) {
         this.required = required;
         this.steps = new Array(); // GrowthPlanStep
         this.endStage = endStage;
@@ -80,6 +78,18 @@ export class GrowthComponent {
         this.spawnTime = getCurDay();
     }
 
+    posX() {
+        return this.lifeSquares.at(0).posX;
+    }
+
+    posY() {
+        return this.lifeSquares.at(0).posY;
+    }
+
+    z() {
+        return this.lifeSquares.at(0).z;
+    }
+
     // important to ABSOLUTELY SPECIFY
     // that posX and posY, as invoked from here
     // represent COORDINATES of POINTS on the THEORETICAL FLAT PLANE
@@ -96,23 +106,21 @@ export class GrowthComponent {
     }
 
     getParentPosition(posX, posY) {
-        let pSq = this.lifeSquares.at(0).linkedSquare;
         if (this.parentComponent == null) {
-            return [pSq.posX + (pSq.posX - posX), pSq.posY + (pSq.posY - posY), pSq.z];
+            return [this.posX() + (this.posX() - posX), this.posY() + (this.posY() - posY), this.z()];
         }
         let pRot = this.parentComponent.getParentRotation(posX, posY);
         let pPos = this.parentComponent.getParentPosition(posX, posY);
 
-        return this.parentComponent.getPosVec(pPos, pRot, pSq.posX, pSq.posY);
+        return this.parentComponent.getPosVec(pPos, pRot, this.posX(), this.posY());
     }
 
     applyDeflectionState() {
         if (this.lifeSquares.some((lsq) => lsq == null)) {
             return;
         }
-        let pSq = this.lifeSquares.at(0).linkedSquare;
-        let cRot = this.getParentRotation(pSq.posX, pSq.posY);
-        let cPos = this.getParentPosition(pSq.posX, pSq.posY);
+        let cRot = this.getParentRotation(this.posX(), this.posY());
+        let cPos = this.getParentPosition(this.posX(), this.posY());
 
         this.lifeSquares.forEach((lsq) => {
             lsq.rotVec = this.getRotVec(structuredClone(cRot), lsq.posX, lsq.posY);
@@ -123,17 +131,16 @@ export class GrowthComponent {
     }
 
     getPosVec(vecPos, vecRot, posX, posY) {
-        let pSq = this.lifeSquares.at(0).linkedSquare;
         let mult = this.dist(posX, posY);
         let step = .1;
-        let dx = posX - pSq.posX;
-        let dy = posY - pSq.posY;
+        let dx = posX - this.posX();
+        let dy = posY - this.posY();
         let sdx = (step / mult) * dx;
         let sdy = (step / mult) * dy;
         
         for (let i = 0; i < mult; i += step) {
             let offsetVec = [sdx, sdy, 0, 0];
-            let rotVec = this.getRotVec(vecRot, (sdx * i) + pSq.posX, (sdy * i) + pSq.posY);
+            let rotVec = this.getRotVec(vecRot, (sdx * i) + this.posX(), (sdy * i) + this.posY());
             let rX = rotVec[0];
             let rY = rotVec[1];
             let rZ = rotVec[2];
@@ -148,8 +155,7 @@ export class GrowthComponent {
         return addVectors(vecRot, dv);
     }
     dist(posX, posY) {
-        let pSq = this.lifeSquares.at(0).linkedSquare;
-        return ((posX - pSq.posX) ** 2 + (posY - pSq.posY) ** 2) ** 0.5;
+        return ((posX - this.posX()) ** 2 + (posY - this.posY()) ** 2) ** 0.5;
     }
     getBdvMultPos(posX, posY) {
         let mult = this.dist(posX, posY);
@@ -212,12 +218,12 @@ export class GrowthComponent {
             });
 
         this.lifeSquares.push(newLsq);
-        let compareFunc = (lsq) => {
+        let cf = (lsq) => {
             let relLsqX = (this.posX - lsq.posX);
             let relLsqY = (this.posY - lsq.posY);
             return (relLsqX ** 2 + relLsqY ** 2) ** 0.5;
         }
-        this.lifeSquares.sort((a, b) => compareFunc(a) - compareFunc(b));
+        this.lifeSquares.sort((a, b) => cf(a) - cf(b));
     }
 
     updatePosition(newPosX, newPosY) {

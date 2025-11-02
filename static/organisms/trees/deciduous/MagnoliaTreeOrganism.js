@@ -1,5 +1,5 @@
 import { randNumberExclusive, randRange, randSide } from "../../../common.js";
-import { GenericRootSquare } from "../../../lifeSquares/GenericRootSquare.js";
+import { RootLifeSquare } from "../../../lifeSquares/RootLifeSquare.js";
 import { STAGE_ADULT, SUBTYPE_LEAF, SUBTYPE_STEM, TYPE_LEAF, TYPE_STEM } from "../../Stages.js";
 import { GrowthPlan, GrowthPlanStep } from "../../GrowthPlan.js";
 import { BaseSeedOrganism } from "../../BaseSeedOrganism.js";
@@ -14,7 +14,7 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
         this.proto = "MagnoliaTreeOrganism";
         this.uiRef = UI_ORGANISM_TREE_MAGNOLIA;
         this.greenType = MagnoliaTreeOrganismGreenSquare;
-        this.rootType = GenericRootSquare;
+        this.rootType = RootLifeSquare;
         this.growthCycleLength = 10 ** 8;
     }
 
@@ -38,7 +38,7 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
         // we need to determine how many children each life square has
         this._treeWidthCountRoutine(this.originGrowth);
 
-        this.lifeSquares.forEach((lsq) => {
+        this.greenLifeSquares.forEach((lsq) => {
             if (lsq.depth != null)
                 lsq.width = .3 + lsq.depth / 70; 
         });
@@ -101,7 +101,6 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
                 let startNode = availableNodes.at(availableNodes.length - 1);
                 this.frameTreeGrowthChoices.push(["NEW", this._d(startNode.getPosX(), startNode.getPosY()), () => {
                     let newGrowthPlan = new GrowthPlan(
-                        startNode.posX, startNode.posY,
                         false, STAGE_ADULT,
                         pi, pi, pi, 
                         0, 0, 0,
@@ -124,7 +123,6 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
             return;
         }
         let leafGrowthPlan = new GrowthPlan(
-            startNode.posX, startNode.posY,
             false, STAGE_ADULT,
             randRange(0, 2 * Math.PI), 0, 0, 7,
             4, 0, TYPE_LEAF, 10);

@@ -1,5 +1,5 @@
 import { randNumber, randRange } from "../../common.js";
-import { GenericRootSquare } from "../../lifeSquares/GenericRootSquare.js";
+import { RootLifeSquare } from "../../lifeSquares/RootLifeSquare.js";
 import { STAGE_ADULT, SUBTYPE_FLOWER, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_TRUNK, SUBTYPE_FLOWERTIP } from "../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
@@ -29,7 +29,7 @@ export class CattailOrganism extends BaseOrganism {
         this.proto = "CattailOrganism";
         this.uiRef = UI_ORGANISM_GRASS_CATTAIL;
         this.greenType = CattailGreenSquare;
-        this.rootType = GenericRootSquare;
+        this.rootType = RootLifeSquare;
         this.grassGrowTimeInDays = 0.01;
 
         this.targetNumGrass = 1;
@@ -61,7 +61,7 @@ export class CattailOrganism extends BaseOrganism {
             if (!orgAdded) {
                 seedSquare.destroy();
             } else {
-                applyLightingFromSource(this.lifeSquares.at(0), orgAdded.lifeSquares.at(0));
+                applyLightingFromSource(this.greenLifeSquares.at(0), orgAdded.greenLifeSquares.at(0));
             }
         }
         this.nitrogen *= (1 - this.seedReduction());

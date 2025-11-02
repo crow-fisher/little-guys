@@ -1,5 +1,5 @@
 import { randNumber, randRange } from "../../common.js";
-import { GenericRootSquare } from "../../lifeSquares/GenericRootSquare.js";
+import { RootLifeSquare } from "../../lifeSquares/RootLifeSquare.js";
 import { STAGE_ADULT, STAGE_DEAD, STAGE_FLOWER, STAGE_JUVENILE, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_LEAF, TYPE_STEM } from "../Stages.js";
 
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
@@ -16,7 +16,7 @@ export class PalmTreeOrganism extends BaseOrganism {
         this.proto = "PalmTreeOrganism";
         this.uiRef = UI_ORGANISM_TREE_PALM;
         this.greenType = PalmTreeGreenSquare;
-        this.rootType = GenericRootSquare;
+        this.rootType = RootLifeSquare;
 
         this.growthCycleMaturityLength = 40;
         this.growthCycleLength = this.growthCycleMaturityLength * 3;

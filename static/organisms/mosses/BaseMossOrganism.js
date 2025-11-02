@@ -3,7 +3,7 @@ import { getCurDay, getFrameDt } from "../../climate/time.js";
 import { COLOR_BLACK, COLOR_BLUE, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { removeItemAll } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
-import { GenericRootSquare } from "../../lifeSquares/GenericRootSquare.js";
+import { RootLifeSquare } from "../../lifeSquares/RootLifeSquare.js";
 import { PleurocarpMossGreenSquare } from "../../lifeSquares/mosses/PleurocarpMossGreenSquare.js";
 import { getNeighbors } from "../../squares/_sqOperations.js";
 import { loadGD, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_SELECT, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../../ui/UIData.js";
@@ -44,7 +44,7 @@ export class BaseMossOrganism {
         this.lifeSquares = new Array();
         this.tickEnergy = 0;
         this.greenType = PleurocarpMossGreenSquare; // eg 
-        this.rootType = GenericRootSquare;
+        this.rootType = RootLifeSquare;
         this.evolutionMinColor = RGB_COLOR_BLUE;
         this.evolutionMaxColor = RGB_COLOR_VERY_FUCKING_RED;
 

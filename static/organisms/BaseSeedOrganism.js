@@ -97,7 +97,7 @@ class BaseSeedOrganism extends BaseOrganism {
         this.posX = targetSq.posX;
         this.posY = targetSq.posY;
 
-        this.lifeSquares.forEach((lsq) => {
+        this.greenLifeSquares.forEach((lsq) => {
             lsq.posX = this.posX;
             lsq.posY = this.posY;
             lsq.linkSquare(soilSq);

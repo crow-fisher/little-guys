@@ -1,5 +1,5 @@
 import { randNumber, randRange } from "../../common.js";
-import { GenericRootSquare } from "../../lifeSquares/GenericRootSquare.js";
+import { RootLifeSquare } from "../../lifeSquares/RootLifeSquare.js";
 import { STAGE_ADULT, STAGE_FLOWER, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_TRUNK } from "../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
@@ -30,7 +30,7 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
         this.proto = "KentuckyBluegrassOrganism";
         this.uiRef = UI_ORGANISM_GRASS_KBLUE;
         this.greenType = KentuckyBluegrassGreenSquare;
-        this.rootType = GenericRootSquare;
+        this.rootType = RootLifeSquare;
         this.grassGrowTimeInDays =  0.01;
         this.side = Math.random() > 0.5 ? -1 : 1;
 
@@ -65,7 +65,7 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
             if (!orgAdded) {
                 seedSquare.destroy();
             } else {
-                applyLightingFromSource(this.lifeSquares.at(0), orgAdded.lifeSquares.at(0));
+                applyLightingFromSource(this.greenLifeSquares.at(0), orgAdded.greenLifeSquares.at(0));
             }
         }
         this.nitrogen *= (1 - this.seedReduction());

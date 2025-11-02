@@ -9,7 +9,7 @@ import { AquiferSquare } from "./squares/parameterized/RainSquare.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { WheatGreenSquare } from "./lifeSquares/grasses/WheatGreenSquare.js";
-import { GenericRootSquare } from "./lifeSquares/GenericRootSquare.js";
+import { RootLifeSquare } from "./lifeSquares/RootLifeSquare.js";
 import { WheatOrganism, WheatSeedOrganism } from "./organisms/grasses/WheatOrganism.js";
 import { KentuckyBluegrassGreenSquare } from "./lifeSquares/grasses/KentuckyBluegrassGreenSquare.js";
 import { KentuckyBluegrassOrganism, KentuckyBluegrassSeedOrganism } from "./organisms/grasses/KentuckyBluegrassOrganism.js";
@@ -54,7 +54,7 @@ let ProtoMap = {
     "KentuckyBluegrassGreenSquare": KentuckyBluegrassGreenSquare.prototype,
     "CattailGreenSquare": CattailGreenSquare.prototype,
     "ConeflowerGreenSqaure": ConeflowerGreenSqaure.prototype,
-    "GenericRootSquare": GenericRootSquare.prototype,
+    "RootLifeSquare": RootLifeSquare.prototype,
     "PleurocarpMossGreenSquare": PleurocarpMossGreenSquare.prototype,
     "MagnoliaTreeOrganismGreenSquare": MagnoliaTreeOrganismGreenSquare.prototype,
 
@@ -69,7 +69,7 @@ let ProtoMap = {
 }
 
 let TypeMap = {
-    [GenericRootSquare.name]: GenericRootSquare,
+    [RootLifeSquare.name]: RootLifeSquare,
     [WheatGreenSquare.name] : WheatGreenSquare,
     [PalmTreeGreenSquare.name]: PalmTreeGreenSquare,
     [KentuckyBluegrassGreenSquare.name]: KentuckyBluegrassGreenSquare,
@@ -80,7 +80,7 @@ let TypeMap = {
 }
 
 let TypeNameMap = {
-    GenericRootSquare: GenericRootSquare.name,
+    RootLifeSquare: RootLifeSquare.name,
     WheatGreenSquare: WheatGreenSquare.name,
     PalmTreeGreenSquare: PalmTreeGreenSquare.name,
     KentuckyBluegrassGreenSquare: KentuckyBluegrassGreenSquare.name,

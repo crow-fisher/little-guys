@@ -1,5 +1,5 @@
 import { randRange } from "../../common.js";
-import { GenericRootSquare } from "../../lifeSquares/GenericRootSquare.js";
+import { RootLifeSquare } from "../../lifeSquares/RootLifeSquare.js";
 import { STAGE_ADULT, STAGE_FLOWER, STAGE_JUVENILE, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_FLOWERPETAL, TYPE_LEAF, TYPE_STEM } from "../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { WheatGreenSquare } from "../../lifeSquares/grasses/WheatGreenSquare.js";
@@ -32,7 +32,7 @@ export class WheatOrganism extends BaseOrganism {
         this.proto = "WheatOrganism";
         this.uiRef = UI_ORGANISM_GRASS_WHEAT;
         this.greenType = WheatGreenSquare;
-        this.rootType = GenericRootSquare;
+        this.rootType = RootLifeSquare;
 
         this.growthCycleMaturityLength = 20 + Math.random() * 10;
         this.growthCycleLength = this.growthCycleMaturityLength * 2;
@@ -273,7 +273,7 @@ export class WheatOrganism extends BaseOrganism {
             return;
         }
 
-        if (this.flower == null && this.lifeSquares.length > (this.growthNumGreen + this.growthNumRoots)) {
+        if (this.flower == null && this.greenLifeSquares.length > (this.growthNumGreen + this.growthNumRoots)) {
             this.growFlower();
             return;
         }
