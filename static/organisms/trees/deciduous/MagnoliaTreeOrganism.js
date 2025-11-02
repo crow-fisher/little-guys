@@ -65,7 +65,7 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
             return;
         }
 
-        const maxDepth = 1;
+        const maxDepth = 2;
         if (depth > maxDepth) {
             return;
         }
@@ -97,7 +97,8 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
                 .filter((lsq) => !childYs.some((childY) => childY == lsq.posY)));
 
             if (availableNodes.length > 2) {
-                let startNode = availableNodes.at(randNumberExclusive(1, availableNodes.length));
+                // let startNode = availableNodes.at(randNumberExclusive(1, availableNodes.length));
+                let startNode = availableNodes.at(availableNodes.length - 1);
                 this.frameTreeGrowthChoices.push(["NEW", this._d(startNode.getPosX(), startNode.getPosY()), () => {
                     let newGrowthPlan = new GrowthPlan(
                         startNode.posX, startNode.posY,
