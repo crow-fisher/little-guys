@@ -2,8 +2,8 @@ import { BaseLifeSquare } from "../BaseLifeSquare.js";
 import { STATE_DEAD, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE, SUBTYPE_FLOWERTIP } from "../../organisms/Stages.js";
 
 export class CattailGreenSquare extends BaseLifeSquare {
-    constructor(square, organism) {
-        super(square, organism);
+    constructor(organism, posX, posY) {
+        super(organism, posX, posY);
         this.proto = "CattailGreenSquare";
         this.type = "green";
         this.width = 1;

@@ -4,8 +4,8 @@ import { loadGD, UI_LIGHTING_PLANT_GRASS } from "../../ui/UIData.js";
 import { BaseLifeSquare } from "../BaseLifeSquare.js";
 
 export class KentuckyBluegrassGreenSquare extends BaseLifeSquare {
-    constructor(square, organism) {
-        super(square, organism);
+    constructor(organism, posX, posY) {
+        super(organism, posX, posY);
         this.proto = "KentuckyBluegrassGreenSquare";
         this.type = "green";
         this.width = 0.7;

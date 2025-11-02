@@ -117,7 +117,7 @@ export class BaseSquare {
         this.lighting = new Array();
         this.linkedOrganisms.forEach((org) => {
             org.lighting = new Array();
-            org.lifeSquares.forEach((lsq) => lsq.lighting = new Array());
+            org.greenLifeSquares.forEach((lsq) => lsq.lighting = new Array());
         });
     }
     mossSpaceRemaining() {

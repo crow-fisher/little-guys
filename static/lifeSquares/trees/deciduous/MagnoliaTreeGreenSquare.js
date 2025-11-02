@@ -4,8 +4,8 @@ import { hueShiftColorArr, rgbToHex } from "../../../common.js";
 import { loadGD, UI_LIGHTING_PLANT_TREE } from "../../../ui/UIData.js";
 
 export class MagnoliaTreeOrganismGreenSquare extends BaseLifeSquare {
-    constructor(square, organism) {
-        super(square, organism);
+    constructor(organism, posX, posY) {
+        super(organism, posX, posY);
         this.proto = "MagnoliaTreeOrganismGreenSquare";
         this.type = "green";
         this.width = 1;

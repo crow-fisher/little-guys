@@ -3,8 +3,8 @@ import { STATE_DEAD, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, S
 import { hsv2rgb, hueShiftColorArr, rgbToHex } from "../../common.js";
 
 export class ConeflowerGreenSqaure extends BaseLifeSquare {
-    constructor(square, organism) {
-        super(square, organism);
+    constructor(organism, posX, posY) {
+        super(organism, posX, posY);
         this.proto = "ConeflowerGreenSqaure";
         this.type = "green";
         this.width = 1;

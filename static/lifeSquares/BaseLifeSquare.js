@@ -22,13 +22,10 @@ class BaseLifeSquare {
         this.proto = "BaseLifeSquare";
         this.posX = posX;
         this.posY = posY;
-        this.xOffset = 0;
-        this.yOffset = 0;
-        this.xRef = 0;
-        this.yRef = 0;
+        this.z = 0;
+
         this.type = "base";
         this.subtype = "";
-        this.theta = 0;
 
         this.lightHealth = 1;
         this.prevLightHealth = 1;

@@ -20,7 +20,7 @@ class BaseSeedOrganism extends BaseOrganism {
     }
 
     growInitialSquares() {
-        let newLifeSquare = new SeedLifeSquare(this.linkedSquare, this);
+        let newLifeSquare = new SeedLifeSquare(this, this.linkedSquare.posX, this.linkedSquare.posY);
         newLifeSquare.linkSquare(this.linkedSquare);
         this.linkedSquare.linkOrganismSquare(newLifeSquare);
         this.addAssociatedLifeSquare(newLifeSquare);
