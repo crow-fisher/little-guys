@@ -2,7 +2,7 @@ import { moveCamera, resetZoom, rotatePoint } from "./canvas.js";
 import { getActiveClimate } from "./climate/climateManager.js";
 import { getGlobalThetaBase, setGlobalThetaBase } from "./globals.js";
 import { isPlayerRunning, playerKeyDown, playerKeyUp } from "./player/playerMain.js";
-import { loadGD, saveGD, UI_PALETTE_EYEDROPPER, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_MIXER, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_TOPBAR_BLOCK, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, closeEyedropperMixer, UI_PALETTE_ERASE, UI_TEXTEDIT_ACTIVE, UI_REGEX, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALETTE_SURFACE_OFF, UI_PALETTE_PLANTS, UI_PALETTE_ROCKIDX, addUIFunctionMap, UI_PALETTE_COMPOSITION, UI_STARMAP_XROTATION, UI_STARMAP_YROTATION, UI_STARMAP_ZROTATION, UI_STARMAP_YROTATION_SPEED, UI_STARMAP_XROTATION_SPEED, UI_STARMAP_ZROTATION_SPEED, UI_CAMERA_YOFFSET, UI_CAMERA_ZOFFSET, UI_CAMERA_XOFFSET, UI_CAMERA_XROTATION, UI_CAMERA_YROTATION, UI_CAMERA_ZROTATION, UI_VIEWMODE_SELECT, UI_VIEWMODE_3D, UI_CAMERA_ZOFFSET_DT, UI_CAMERA_XOFFSET_DT, UI_CAMERA_YOFFSET_DT, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_OFFSET_VEC, UI_CAMERA_ROTATION_VEC, UI_CAMERA_ROTATION_VEC_DT } from "./ui/UIData.js";
+import { loadGD, saveGD, UI_PALETTE_EYEDROPPER, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_MIXER, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_TOPBAR_BLOCK, UI_PALETTE_AQUIFER, closeEyedropperMixer, UI_PALETTE_ERASE, UI_TEXTEDIT_ACTIVE, UI_REGEX, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALETTE_PLANTS, UI_PALETTE_ROCKIDX, addUIFunctionMap, UI_PALETTE_COMPOSITION, UI_VIEWMODE_SELECT, UI_VIEWMODE_3D, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_OFFSET_VEC, UI_CAMERA_ROTATION_VEC, UI_CAMERA_ROTATION_VEC_DT, UI_STARMAP_ROTATION_VEC_DT } from "./ui/UIData.js";
 import { clearMouseHoverColorCacheMap } from "./ui/WindowManager.js";
 
 export const KEY_CONTROL = "Control";
@@ -40,6 +40,13 @@ function doKeyboardInput(e) {
             saveGD(curId, newText);
         }
     }
+}
+
+function _applyDeltaToVec(applied, offset, dx, dy, dz) {
+    applied[0] += dx; 
+    applied[1] += dy; 
+    applied[2] += dz;
+    return applied; 
 }
 
 function _3dViewKeymap(key) {
@@ -215,25 +222,28 @@ function toollessKeyMap(key) {
         moveCamera(1, 0);
     }
 
+    let starmapVecDt = loadGD(UI_STARMAP_ROTATION_VEC_DT);
+
     if (key == "j") {
-        saveGD(UI_STARMAP_YROTATION_SPEED, loadGD(UI_STARMAP_YROTATION_SPEED) - .01);
+        starmapVecDt = _applyDeltaToVec(starmapVecDt, .01, -1, 0, 0);
     }
     if (key == "l") {
-        saveGD(UI_STARMAP_YROTATION_SPEED, loadGD(UI_STARMAP_YROTATION_SPEED) + .01);
+        starmapVecDt = _applyDeltaToVec(starmapVecDt, .01, 1, 0, 0);
     }
     if (key == "i") {
-        saveGD(UI_STARMAP_XROTATION_SPEED, loadGD(UI_STARMAP_XROTATION_SPEED) + .01);
+        starmapVecDt = _applyDeltaToVec(starmapVecDt, .01, 0, -1, 0);
     }
     if (key == "k") {
-        saveGD(UI_STARMAP_XROTATION_SPEED, loadGD(UI_STARMAP_XROTATION_SPEED) - .01);
+        starmapVecDt = _applyDeltaToVec(starmapVecDt, .01, 0, 1, 0);
     }
     if (key == "u") {
-        saveGD(UI_STARMAP_ZROTATION_SPEED, loadGD(UI_STARMAP_ZROTATION_SPEED) + .01);
+        starmapVecDt = _applyDeltaToVec(starmapVecDt, .01, 0, 0, -1);
     }
     if (key == "o") {
-        saveGD(UI_STARMAP_ZROTATION_SPEED, loadGD(UI_STARMAP_ZROTATION_SPEED) - .01);
+        starmapVecDt = _applyDeltaToVec(starmapVecDt, .01, 0, 0, 1);
     }
 
+    saveGD(UI_STARMAP_ROTATION_VEC_DT, starmapVecDt);
 
     if (key == "Escape") {
         resetZoom();

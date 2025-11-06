@@ -7,7 +7,7 @@ import { Button } from "../elements/Button.js";
 import { SliderGradientBackground } from "../elements/SliderGradientBackground.js";
 import { TimeSkipElement } from "../elements/TimeSkipElement.js";
 import { LockedComponent } from "../LockedComponent.js";
-import { loadGD, saveGD, UI_CENTER, UI_STARMAP_FOV, UI_STARMAP_XROTATION, UI_STARMAP_YROTATION, UI_STARMAP_ZROTATION } from "../UIData.js";
+import { saveGD, UI_CENTER, UI_STARMAP_FOV, UI_STARMAP_ROTATION_VEC } from "../UIData.js";
 
 export const R_COLORS = "🎨";
 export const R_PERCOLATION_RATE = "💦";
@@ -46,12 +46,9 @@ export class TimeSkipComponent extends LockedComponent {
         container.addElement(new Button(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, () => {
             let lat = getActiveClimate().lat;
             let lng = getActiveClimate().lng;
-
             let phi = (Math.PI * lat / 180);
             let theta = (Math.PI * lng / 180);
-            saveGD(UI_STARMAP_XROTATION, phi);
-            saveGD(UI_STARMAP_YROTATION, theta);
-            saveGD(UI_STARMAP_ZROTATION, 0);
+            saveGD(UI_STARMAP_ROTATION_VEC, [phi, theta, 0, 0]);
         }, "reset starmap view", () => getActiveClimate().getUIColorInactiveCustom(0.62)));
     }
 

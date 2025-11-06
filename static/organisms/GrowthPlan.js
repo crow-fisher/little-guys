@@ -87,7 +87,7 @@ export class GrowthComponent {
     }
 
     z() {
-        return this.lifeSquares.at(0).z;
+        return this.lifeSquares.at(0).linkedOrganism.linkedSquare.z;
     }
 
     // important to ABSOLUTELY SPECIFY
@@ -162,10 +162,8 @@ export class GrowthComponent {
         return this.getBdvMult(mult);
     }
     getBdvMult(mult) {
-        let bdvX = Math.sin(Date.now() / 1000) / 12;
+        let bdvX = 0;
         let bvX = -bdvX * 20;
-
-        this.bdv = [Math.sin(Date.now() / 1000) / 200, 0, 0]
         this.bdv = [bdvX, 0, 0]
         this.bv = [bvX, 0, 0]
         return Array.from(this.bdv.map((v) => v * mult));

@@ -63,12 +63,12 @@ export function multiplyMatrixAndPoint(matrix, point) {
 }
 
 export function normalizeXYZVector(vector, toLength) {
-    vector = structuredClone(vector);
-    let length = toLength * (vector[0] ** 2 + vector[1] ** 2 + vector[2] ** 2) ** 0.5;
-    vector[0] /= length;
-    vector[1] /= length;
-    vector[2] /= length;
-    return vector;
+  vector = structuredClone(vector);
+  let length = toLength * (vector[0] ** 2 + vector[1] ** 2 + vector[2] ** 2) ** 0.5;
+  vector[0] /= length;
+  vector[1] /= length;
+  vector[2] /= length;
+  return vector;
 }
 
 export function addVectors(v1, v2) {
@@ -76,4 +76,10 @@ export function addVectors(v1, v2) {
     v1[i] += v2[i];
   }
   return v1;
+}
+export function multiplyVectorByScalar(vec, scalar) {
+  for (let i = 0; i < vec.length; i++) {
+    vec[i] *= scalar;
+  }
+  return vec;
 }

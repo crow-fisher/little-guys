@@ -234,7 +234,8 @@ export function compressSquares(squares) {
         sq.linkedOrganisms = Array.from(sq.linkedOrganisms.map((org) => {
             if (org.stage != STAGE_DEAD) {
                 orgArr.push(org);
-                lsqArr.push(...org.lifeSquares);
+                lsqArr.push(...org.greenLifeSquares);
+                lsqArr.push(...org.rootLifeSquares);
                 growthPlanArr.push(...org.growthPlans);
                 growthPlanComponentArr.push(...org.growthPlans.map((gp) => gp.component));
                 org.growthPlans.forEach((gp) => growthPlanStepArr.push(...gp.steps));
@@ -248,7 +249,8 @@ export function compressSquares(squares) {
                     lsq.linkedOrganism = orgArr.indexOf(lsq.linkedOrganism);
                     lsq.component = growthPlanComponentArr.indexOf(lsq.component);
                 });
-                org.lifeSquares = Array.from(org.lifeSquares.map((lsq) => lsqArr.indexOf(lsq)));
+                org.greenLifeSquares = Array.from(org.greenLifeSquares.map((lsq) => lsqArr.indexOf(lsq)));
+                org.rootLifeSquares = Array.from(org.rootLifeSquares.map((lsq) => lsqArr.indexOf(lsq)));
                 org.originGrowth = growthPlanComponentArr.indexOf(org.originGrowth);
 
                 if (org.greenType != null)
@@ -394,14 +396,15 @@ export function loadSlotFromSave(slotData) {
         sq.linkedOrganisms.forEach((org) => {
             org.linkedSquare = sq;
             org.growthPlans = Array.from(org.growthPlans.map((gp) => growthPlanArr[gp]));
-            org.lifeSquares = Array.from(org.lifeSquares.map((lsq) => lsqArr[lsq]));
+            org.greenLifeSquares = Array.from(org.greenLifeSquares.map((lsq) => lsqArr[lsq]));
+            org.rootLifeSquares = Array.from(org.rootLifeSquares.map((lsq) => lsqArr[lsq]));
             org.originGrowth = growthPlanComponentArr[org.originGrowth];
-            org.lifeSquares.forEach((lsq) => {
+            [org.greenLifeSquares, org.rootLifeSquares].forEach((arr) => arr.forEach((lsq) => {
                 lsq.lighting = [];
                 lsq.linkedSquare = sq;
                 lsq.linkedOrganism = org;
                 lsq.component = growthPlanComponentArr[lsq.component];
-            });
+            }));
             org.greenType = TypeMap[org.greenType];
             org.rootType = TypeMap[org.rootType];
         });

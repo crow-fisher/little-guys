@@ -11,20 +11,19 @@ import {
     getNextBlockId
 } from "../globals.js";
 
-import { MAIN_CANVAS, MAIN_CONTEXT } from "../index.js";
+import { MAIN_CONTEXT } from "../index.js";
 
-import { hexToRgb, hsv2rgb, hueShiftColor, hueShiftColorArr, randNumber, randRange, removeItemAll, rgb2hsv, rgbToHex, rgbToRgba } from "../common.js";
+import { hexToRgb, hsv2rgb, randNumber, randRange, removeItemAll, rgb2hsv, rgbToHex, rgbToRgba } from "../common.js";
 import { removeSquare } from "../globalOperations.js";
 import { calculateColorTemperature, getTemperatureAtWindSquare, temperatureHumidityFlowrateFactor, updateWindSquareTemperature } from "../climate/simulation/temperatureHumidity.js";
 import { getWindSquareAbove } from "../climate/simulation/wind.js";
-import { COLOR_BLACK, GROUP_BROWN, GROUP_BLUE, GROUP_MAUVE, GROUP_TAN, GROUP_GREEN, RGB_COLOR_BLUE, RGB_COLOR_RED, COLOR_VERY_FUCKING_RED } from "../colors.js";
-import { getCurDay, getDaylightStrengthFrameDiff, getFrameDt, getTimeScale } from "../climate/time.js";
+import { COLOR_BLACK, GROUP_BROWN, GROUP_BLUE, GROUP_MAUVE, GROUP_TAN, GROUP_GREEN, RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
+import { getDaylightStrengthFrameDiff, getFrameDt, getTimeScale } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
-import { fillCanvasPointArr, getBaseSize, getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, getCurZoom, getFrameYMax, isSquareOnCanvas, transformCanvasSquaresToPixels, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
-import { loadGD, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3, UI_VIEWMODE_DEV4, UI_VIEWMODE_DEV5, UI_PALETTE_STRENGTH, UI_CANVAS_SQUARES_ZOOM, UI_LIGHTING_SURFACE, UI_PALETTE_SURFACE_MATCH, UI_STARMAP_FOV, UI_STARMAP_XROTATION, UI_STARMAP_YROTATION, UI_STARMAP_ZROTATION, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CANVAS_VIEWPORT_CENTER_Z, UI_VIEWMODE_3D, UI_CAMERA_XOFFSET, UI_CAMERA_YOFFSET, UI_CAMERA_ZOFFSET, UI_CAMERA_XROTATION, UI_CAMERA_ZROTATION, UI_CAMERA_YROTATION, UI_CAMERA_OFFSET_VEC, UI_CAMERA_ROTATION_VEC } from "../ui/UIData.js";
+import { fillCanvasPointArr, getBaseSize, getCanvasHeight, getCanvasSquaresY, getCanvasWidth, getCurZoom, isSquareOnCanvas, transformCanvasSquaresToPixels, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
+import { loadGD, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3, UI_VIEWMODE_DEV4, UI_VIEWMODE_DEV5, UI_PALETTE_STRENGTH, UI_LIGHTING_SURFACE, UI_PALETTE_SURFACE_MATCH, UI_VIEWMODE_3D } from "../ui/UIData.js";
 import { deregisterSquare, registerSquare } from "../waterGraph.js";
 import { STAGE_DEAD } from "../organisms/Stages.js";
-import { multiplyMatrixAndPoint } from "../climate/stars/matrix.js";
 import { cartesianToScreen } from "../camera.js";
 
 export class BaseSquare {

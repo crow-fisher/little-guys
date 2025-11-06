@@ -193,7 +193,7 @@ export class BlockPalette extends Component {
             () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive()));
         specialContainer.addElement(new Toggle(this.window, sizeX, h1, UI_CENTER, UI_PALETTE_SPECIAL_SHOWINDICATOR,
             "show surface indicator", () => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorTransient()));
-        specialContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_SURFACE, sizeX, 35, 0.0, 4, () => "rgba(0, 0, 0, 0)", () => "#FFFFFF",));
+        specialContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_SURFACE, sizeX, 35, -4, 4, () => "rgba(0, 0, 0, 0)", () => "#FFFFFF",));
         // end surface
 
         // water

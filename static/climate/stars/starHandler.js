@@ -1,11 +1,11 @@
 import { getBaseSize, getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, zoomCanvasFillCircleRelPos } from "../../canvas.js";
-import { COLOR_BLUE, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
-import { invlerp, lerp, randRange, rgb2hsv } from "../../common.js";
+import { COLOR_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
+import { invlerp } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
-import { loadGD, saveGD, UI_STARMAP_FOV, UI_STARMAP_XROTATION, UI_STARMAP_XROTATION_SPEED, UI_STARMAP_YROTATION, UI_STARMAP_YROTATION_SPEED, UI_STARMAP_ZROTATION, UI_STARMAP_ZROTATION_SPEED } from "../../ui/UIData.js";
+import { loadGD, saveGD, UI_STARMAP_FOV, UI_STARMAP_ROTATION_VEC, UI_STARMAP_ROTATION_VEC_DT } from "../../ui/UIData.js";
 import { getFrameRelCloud } from "../simulation/temperatureHumidity.js";
 import { getCurDay, getDaylightStrength, tempToRgbaForStar } from "../time.js";
-import { multiplyMatrices, multiplyMatrixAndPoint, normalizeXYZVector } from "./matrix.js";
+import { addVectors, multiplyMatrixAndPoint, multiplyVectorByScalar, normalizeXYZVector } from "./matrix.js";
 
 export class StarHandler {
     constructor() {
@@ -198,9 +198,10 @@ export class StarHandler {
         let totalWidth = getCanvasSquaresX() * getBaseSize();
         let totalHeight = getCanvasSquaresY() * getBaseSize();
 
-        let cameraX = loadGD(UI_STARMAP_XROTATION);
-        let cameraY = loadGD(UI_STARMAP_YROTATION);
-        let cameraZ = loadGD(UI_STARMAP_ZROTATION);
+        let vec = loadGD(UI_STARMAP_ROTATION_VEC);
+        let cameraX = vec[0];
+        let cameraY = vec[1];
+        let cameraZ = vec[2];
 
         let sublines = 50;
         for (let i = 0; i < sublines; i++) {
@@ -301,12 +302,9 @@ export class StarHandler {
         }
     }
     cameraHandling() {
-        saveGD(UI_STARMAP_XROTATION, loadGD(UI_STARMAP_XROTATION) + loadGD(UI_STARMAP_XROTATION_SPEED));
-        saveGD(UI_STARMAP_YROTATION, loadGD(UI_STARMAP_YROTATION) + loadGD(UI_STARMAP_YROTATION_SPEED));
-        saveGD(UI_STARMAP_ZROTATION, loadGD(UI_STARMAP_ZROTATION) + loadGD(UI_STARMAP_ZROTATION_SPEED));
-        saveGD(UI_STARMAP_XROTATION_SPEED, loadGD(UI_STARMAP_XROTATION_SPEED) * 0.97);
-        saveGD(UI_STARMAP_YROTATION_SPEED, loadGD(UI_STARMAP_YROTATION_SPEED) * 0.97);
-        saveGD(UI_STARMAP_ZROTATION_SPEED, loadGD(UI_STARMAP_ZROTATION_SPEED) * 0.97);
+
+        saveGD(UI_STARMAP_ROTATION_VEC, addVectors(loadGD(UI_STARMAP_ROTATION_VEC), loadGD(UI_STARMAP_ROTATION_VEC_DT)));
+        saveGD(UI_STARMAP_ROTATION_VEC_DT, multiplyVectorByScalar(loadGD(UI_STARMAP_ROTATION_VEC_DT), .97));
     }
 
     cartesianToScreen(x, y, z, w, force = false) {
@@ -322,9 +320,10 @@ export class StarHandler {
             [0, 0, 1, 0]
         ];
         let dayTheta = Math.PI * 2 * (getCurDay() % 1);
-        let cameraX = loadGD(UI_STARMAP_XROTATION);
-        let cameraY = loadGD(UI_STARMAP_YROTATION);
-        let cameraZ = loadGD(UI_STARMAP_ZROTATION) + dayTheta;
+        let vec = loadGD(UI_STARMAP_ROTATION_VEC);
+        let cameraX = vec[0];
+        let cameraY = vec[1];
+        let cameraZ = vec[2] + dayTheta;
         let rotated = this.rotatePoint([x, y, z, w], cameraX, cameraY, cameraZ);
         let transformed = multiplyMatrixAndPoint(perspectiveMatrix, rotated);
 

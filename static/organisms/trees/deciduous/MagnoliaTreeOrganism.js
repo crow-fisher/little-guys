@@ -102,7 +102,7 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
                 this.frameTreeGrowthChoices.push(["NEW", this._d(startNode.getPosX(), startNode.getPosY()), () => {
                     let newGrowthPlan = new GrowthPlan(
                         false, STAGE_ADULT,
-                        pi, pi, pi, 
+                        0,0, 0, 
                         0, 0, 0,
                         TYPE_STEM, 10);
 
@@ -165,6 +165,14 @@ export class MagnoliaTreeOrganism extends BaseOrganism {
             return;
         }
         this.treeGrowthPlanning();
+        this.setDeflectionAngles();
+    }
+
+    setDeflectionAngles() {
+        let first = this.originGrowth.children.at(0);
+    }
+
+    _setDeflectionAngle(depth) {
     }
 }
 
