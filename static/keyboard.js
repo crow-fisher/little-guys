@@ -43,9 +43,9 @@ function doKeyboardInput(e) {
 }
 
 function _applyDeltaToVec(applied, offset, dx, dy, dz) {
-    applied[0] += dx; 
-    applied[1] += dy; 
-    applied[2] += dz;
+    applied[0] += offset * dx; 
+    applied[1] += offset * dy; 
+    applied[2] += offset * dz;
     return applied; 
 }
 

@@ -19,10 +19,10 @@ export function cartesianToScreen(x, y, z, w, force = false) {
     let cr = loadGD(UI_CAMERA_ROTATION_VEC);
     let camPos = structuredClone(loadGD(UI_CAMERA_OFFSET_VEC));
 
-    camPos[0] += .5 * loadGD(UI_CANVAS_VIEWPORT_CENTER_X) / getBaseSize();
-    camPos[1] += .7 * loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) / getBaseSize();
+    camPos[0] += loadGD(UI_CANVAS_VIEWPORT_CENTER_X) / getBaseSize();
+    camPos[1] += loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) / getBaseSize();
 
-    let point = [.7 * (x - camPos[0]), y - camPos[1], (z * -1) - camPos[2], 1];
+    let point = [x - camPos[0], y - camPos[1], (z * -1) - camPos[2], 1];
     let pointRotated = rotatePoint(point, cr[0], cr[1], cr[2]);
     let transformed = multiplyMatrixAndPoint(perspectiveMatrix, pointRotated);
     return transformed;
