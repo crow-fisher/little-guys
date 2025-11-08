@@ -1,13 +1,47 @@
 import { getBaseSize } from "./canvas.js";
-import { multiplyMatrixAndPoint } from "./climate/stars/matrix.js";
+import { addVectors, crossVec3, multiplyMatrixAndPoint, subtractVectors } from "./climate/stars/matrix.js";
+import { getCurDay } from "./climate/time.js";
 import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CANVAS_SQUARES_ZOOM, UI_CAMERA_OFFSET_VEC, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_STARMAP_FOV } from "./ui/UIData.js";
+
+
+export function getFrameCameraMatrix() {
+    let from = structuredClone(loadGD(UI_CAMERA_OFFSET_VEC));
+    let rotNorm = rotatePoint([0, 0, 1, 0], ...loadGD(UI_CAMERA_ROTATION_VEC));
+    let to = addVectors(structuredClone(from), rotNorm);
+    let forward = subtractVectors(from, to);
+    let randomVec = [0, 1, 0];
+    let right = crossVec3(randomVec, forward);
+    let up = crossVec3(forward, right);
+
+    right.push(0);
+    up.push(0);
+    forward.push(0);
+    from.push(1);
+
+    return [
+        right,
+        up,
+        forward,
+        from,
+    ];
+}
+
+let frameMatrix  = getFrameCameraMatrix();
+let frameMatrixDay = getCurDay();
 
 export function cartesianToScreen(x, y, z, w, force = false) {
     // https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix.html
+
+    // this is what i need to do for  the camera but i dont wanna
+    // https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/lookat-function/framing-lookat-function.html
+
+    if (getCurDay() != frameMatrixDay) {
+        frameMatrix = getFrameCameraMatrix();
+        frameMatrixDay = getCurDay();
+    }
     let fov = 180 / loadGD(UI_CANVAS_SQUARES_ZOOM);
     let r2d = 57.2958;
     let S = 1 / (Math.tan((fov / r2d) / 2) * (Math.PI / (180 / r2d)));
-    
     S /= loadGD(UI_STARMAP_FOV);
     let perspectiveMatrix = [
         [S, 0, 0, 0],
@@ -15,16 +49,8 @@ export function cartesianToScreen(x, y, z, w, force = false) {
         [0, 0, S, -1],
         [0, 0, 1, 0]
     ];
-
-    let cr = loadGD(UI_CAMERA_ROTATION_VEC);
-    let camPos = structuredClone(loadGD(UI_CAMERA_OFFSET_VEC));
-
-    camPos[0] += loadGD(UI_CANVAS_VIEWPORT_CENTER_X) / getBaseSize();
-    camPos[1] += loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) / getBaseSize();
-
-    let point = [x - camPos[0], y - camPos[1], (z * -1) - camPos[2], 1];
-    let pointRotated = rotatePoint(point, cr[0], cr[1], cr[2]);
-    let transformed = multiplyMatrixAndPoint(perspectiveMatrix, pointRotated);
+    let point = multiplyMatrixAndPoint(frameMatrix, [x, y, z, w])
+    let transformed = multiplyMatrixAndPoint(perspectiveMatrix, point);
     return transformed;
 }
 
