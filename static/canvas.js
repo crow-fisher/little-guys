@@ -3,7 +3,7 @@ import { multiplyMatrixAndPoint } from "./climate/stars/matrix.js";
 import { MAIN_CONTEXT } from "./index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "./keyboard.js";
 import { getLastMoveEvent, getLastMoveOffset, isMiddleMouseClicked } from "./mouse.js";
-import { loadGD, saveGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_UI_SIZE, UI_PALETTE_BLOCKS, loadUI, UI_PALETTE_SURFACE, UI_PALETTE_SELECT, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CANVAS_SQUARES_ZOOM, UI_CANVAS_VIEWPORT_FRAC_X, UI_CANVAS_VIEWPORT_FRAC_Y, UI_CAMERA_OFFSET_VEC, UI_CAMERA_OFFSET_VEC_DT, UI_VIEWMODE_SELECT, UI_VIEWMODE_3D, UI_CAMERA_ROTATION_VEC, UI_CAMERA_ROTATION_VEC_DT } from "./ui/UIData.js";
+import { loadGD, saveGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_UI_SIZE, UI_PALETTE_BLOCKS, loadUI, UI_PALETTE_SURFACE, UI_PALETTE_SELECT, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CANVAS_SQUARES_ZOOM, UI_CANVAS_VIEWPORT_FRAC_X, UI_CANVAS_VIEWPORT_FRAC_Y, UI_CAMERA_OFFSET_VEC, UI_CAMERA_OFFSET_VEC_DT, UI_VIEWMODE_SELECT, UI_VIEWMODE_3D, UI_CAMERA_ROTATION_VEC, UI_CAMERA_ROTATION_VEC_DT, addUIFunctionMap } from "./ui/UIData.js";
 
 let BASE_SIZE = 4;
 let CANVAS_SQUARES_X = 192;
@@ -606,14 +606,22 @@ export function getCanvasHeight() {
 }
 
 
-// addUIFunctionMap(UI_VIEWMODE_SELECT, async () => {
-//     let curViewMode = loadGD(UI_VIEWMODE_SELECT);
-//     if (curViewMode == UI_VIEWMODE_3D) {
-//         MAIN_CANVAS.addEventListener("click", async () => {
-//             await MAIN_CANVAS.requestPointerLock({
-//                 unadjustedMovement: true,
-//             });
-//         });
-//     } else
-//         document.exitPointerLock();
-// })
+addUIFunctionMap(UI_VIEWMODE_SELECT, async () => {
+    let curViewMode = loadGD(UI_VIEWMODE_SELECT);
+    if (curViewMode == UI_VIEWMODE_3D) {
+        let cx = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) / getBaseSize();
+        let cy = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) / getBaseSize();
+        let cz = -10;
+        let cw = 1;
+        
+        saveGD(UI_CAMERA_OFFSET_VEC, [cx, cy, cz, cw]);
+        saveGD(UI_CAMERA_OFFSET_VEC_DT, [0, 0, 0, 0]);
+
+        // MAIN_CANVAS.addEventListener("click", async () => {
+        //     await MAIN_CANVAS.requestPointerLock({
+        //         unadjustedMovement: true,
+        //     });
+        // });
+    } else
+        document.exitPointerLock();
+})

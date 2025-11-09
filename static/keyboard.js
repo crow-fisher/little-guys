@@ -50,7 +50,7 @@ function _applyDeltaToVec(applied, offset, dx, dy, dz) {
 }
 
 function _3dViewKeymap(key) {
-    let offset = 1;
+    let offset = 10;
     let applied = [0, 0, 0, 0];
 
     if (key == 'd') {
@@ -72,14 +72,13 @@ function _3dViewKeymap(key) {
         applied[2] -= offset;
     }
 
-
     let cr = loadGD(UI_CAMERA_ROTATION_VEC);
-    let transformed = rotatePoint(applied, -cr[0], -cr[1], -cr[2]);
+    let transformed = rotatePoint(applied, cr[0], cr[1], cr[2]);
 
     let ct = loadGD(UI_CAMERA_OFFSET_VEC_DT);
-    ct[0] = ct[0] * .8 + transformed[0] * .5;
-    ct[1] = ct[1] * .8 + transformed[1] * .5;
-    ct[2] = ct[2] * .8 + transformed[2] * .5;
+    ct[0] += transformed[0];
+    ct[1] += transformed[1];
+    ct[2] += transformed[2];
     saveGD(UI_CAMERA_OFFSET_VEC_DT, ct)
 
     let crd = loadGD(UI_CAMERA_ROTATION_VEC_DT);
@@ -105,7 +104,7 @@ function _3dViewKeymap(key) {
     saveGD(UI_CAMERA_ROTATION_VEC_DT, crd)
 
     if (key == 'Escape') {
-        saveGD(UI_CAMERA_OFFSET_VEC, [0, 0, 0, 0]);
+        saveGD(UI_CAMERA_OFFSET_VEC, [0, 0, -10, 0]);
         saveGD(UI_CAMERA_OFFSET_VEC_DT, [0, 0, 0, 0]);
         saveGD(UI_CAMERA_ROTATION_VEC, [0, 0, 0, 0]);
         saveGD(UI_CAMERA_ROTATION_VEC_DT, [0, 0, 0, 0]);
