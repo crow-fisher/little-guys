@@ -1,5 +1,5 @@
 import { getBaseSize } from "./canvas.js";
-import { addVectors, crossVec3, multiplyMatrixAndPoint, subtractVectors } from "./climate/stars/matrix.js";
+import { addVectors, crossVec3, invertMat4, multiplyMatrixAndPoint, subtractVectors } from "./climate/stars/matrix.js";
 import { getCurDay } from "./climate/time.js";
 import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CANVAS_SQUARES_ZOOM, UI_CAMERA_OFFSET_VEC, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_STARMAP_FOV } from "./ui/UIData.js";
 
@@ -21,7 +21,7 @@ export function getFrameCameraMatrix() {
         right,
         up,
         forward,
-        from,
+        from
     ];
 }
 
@@ -38,7 +38,7 @@ export function cartesianToScreen(x, y, z, w, force = false) {
         frameMatrix = getFrameCameraMatrix();
         frameMatrixDay = getCurDay();
     }
-    let fov = 180 / loadGD(UI_CANVAS_SQUARES_ZOOM);
+    let fov = 60;
     let r2d = 57.2958;
     let S = 1 / (Math.tan((fov / r2d) / 2) * (Math.PI / (180 / r2d)));
     S /= loadGD(UI_STARMAP_FOV);
@@ -48,10 +48,12 @@ export function cartesianToScreen(x, y, z, w, force = false) {
         [0, 0, S, -1],
         [0, 0, 1, 0]
     ];
-    let point = multiplyMatrixAndPoint(frameMatrix, [x, y, z, 1]);
+
     
-    if (point.z > 0 && !force)
-        return null
+    let point = multiplyMatrixAndPoint(invertMat4(frameMatrix), [x, y, z, 1]);
+    
+    // if (point.z > 0 && !force)j
+        // return null
 
     let transformed = multiplyMatrixAndPoint(perspectiveMatrix, point);
     return transformed;
