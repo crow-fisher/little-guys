@@ -104,7 +104,7 @@ function _3dViewKeymap(key) {
     saveGD(UI_CAMERA_ROTATION_VEC_DT, crd)
 
     if (key == 'Escape') {
-        saveGD(UI_CAMERA_OFFSET_VEC, [0, 0, -10, 0]);
+        saveGD(UI_CAMERA_OFFSET_VEC, [0, 0, -10, 1]);
         saveGD(UI_CAMERA_OFFSET_VEC_DT, [0, 0, 0, 0]);
         saveGD(UI_CAMERA_ROTATION_VEC, [0, 0, 0, 0]);
         saveGD(UI_CAMERA_ROTATION_VEC_DT, [0, 0, 0, 0]);

@@ -8,17 +8,14 @@ export function getFrameCameraMatrix() {
     let from = structuredClone(loadGD(UI_CAMERA_OFFSET_VEC));
     let rotNorm = rotatePoint([0, 0, 1, 0], ...loadGD(UI_CAMERA_ROTATION_VEC));
 
-    console.log(rotNorm, loadGD(UI_CAMERA_ROTATION_VEC), loadGD(UI_CAMERA_OFFSET_VEC));
     let to = addVectors(structuredClone(from), rotNorm);
-    let forward = subtractVectors(from, to);
+    let forward = subtractVectors(structuredClone(from), to);
     let randomVec = [0, 1, 0];
     let right = crossVec3(randomVec, forward);
     let up = crossVec3(forward, right);
 
     right.push(0);
     up.push(0);
-    forward.push(0);
-    from.push(1);
 
     return [
         right,
@@ -51,7 +48,7 @@ export function cartesianToScreen(x, y, z, w, force = false) {
         [0, 0, S, -1],
         [0, 0, 1, 0]
     ];
-    let point = multiplyMatrixAndPoint(frameMatrix, [x, y, z, w]);
+    let point = multiplyMatrixAndPoint(frameMatrix, [x, y, z, 1]);
     
     if (point.z > 0 && !force)
         return null

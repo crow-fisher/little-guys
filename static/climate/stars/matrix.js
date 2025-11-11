@@ -24,22 +24,22 @@ export function multiplyMatrices(matrixA, matrixB) {
 
 export function multiplyMatrixAndPoint(matrix, point) {
   // Give a simple variable name to each part of the matrix, a column and row number
-  const c0r0 = matrix[0][0],
-    c1r0 = matrix[0][1],
-    c2r0 = matrix[0][2],
-    c3r0 = matrix[0][3];
-  const c0r1 = matrix[1][0],
-    c1r1 = matrix[1][1],
-    c2r1 = matrix[1][2],
-    c3r1 = matrix[1][3];
-  const c0r2 = matrix[2][0],
-    c1r2 = matrix[2][1],
-    c2r2 = matrix[2][2],
-    c3r2 = matrix[2][3];
-  const c0r3 = matrix[3][0],
-    c1r3 = matrix[3][1],
-    c2r3 = matrix[3][2],
-    c3r3 = matrix[3][3];
+  const r0c0 = matrix[0][0],
+    r0c1 = matrix[0][1],
+    r0c2 = matrix[0][2],
+    r0c3 = matrix[0][3];
+  const r1c0 = matrix[1][0],
+    r1c1 = matrix[1][1],
+    r1c2 = matrix[1][2],
+    r1c3 = matrix[1][3];
+  const r2c0 = matrix[2][0],
+    r2c1 = matrix[2][1],
+    r2c2 = matrix[2][2],
+    r2c3 = matrix[2][3];
+  const r3c0 = matrix[3][0],
+    r3c1 = matrix[3][1],
+    r3c2 = matrix[3][2],
+    r3c3 = matrix[3][3];
 
   // Now set some simple names for the point
   const x = point[0];
@@ -48,16 +48,16 @@ export function multiplyMatrixAndPoint(matrix, point) {
   const w = point[3];
 
   // Multiply the point against each part of the 1st column, then add together
-  const resultX = x * c0r0 + y * c0r1 + z * c0r2 + w * c0r3;
+  const resultX = x * r0c0 + y * r1c0 + z * r2c0 + w * r3c0;
 
   // Multiply the point against each part of the 2nd column, then add together
-  const resultY = x * c1r0 + y * c1r1 + z * c1r2 + w * c1r3;
+  const resultY = x * r0c1 + y * r1c1 + z * r2c1 + w * r3c1;
 
   // Multiply the point against each part of the 3rd column, then add together
-  const resultZ = x * c2r0 + y * c2r1 + z * c2r2 + w * c2r3;
+  const resultZ = x * r0c2 + y * r1c2 + z * r2c2 + w * r3c2;
 
   // Multiply the point against each part of the 4th column, then add together
-  const resultW = x * c3r0 + y * c3r1 + z * c3r2 + w * c3r3;
+  const resultW = x * r0c3 + y * r1c3 + z * r2c3 + w * r3c3;
 
   return [resultX, resultY, resultZ, resultW];
 }
