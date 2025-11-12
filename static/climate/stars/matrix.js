@@ -62,7 +62,7 @@ export function multiplyMatrixAndPoint(matrix, point) {
   return [resultX, resultY, resultZ, resultW];
 }
 
-export function normalizeXYZVector(vector, toLength) {
+export function normalizeVec3(vector, toLength=1) {
   vector = structuredClone(vector);
   let length = toLength * (vector[0] ** 2 + vector[1] ** 2 + vector[2] ** 2) ** 0.5;
   vector[0] /= length;
@@ -99,6 +99,20 @@ export function crossVec3(v1, v2) {
   return out;
 }
 
+export function transposeMat4(a) {
+  let out = [
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0]
+  ];
+  for (let i = 0; i < 4; i++) {
+    for (let j = 0; j < 4; j++) {
+      out[i][j] = a[j][i];
+    }
+  }
+  return out;
+}
 export function invertMat4(a)
 {
     var s0 = a[0][0] * a[1][1] - a[1][0] * a[0][1];

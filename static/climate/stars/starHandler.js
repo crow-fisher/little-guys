@@ -5,7 +5,7 @@ import { MAIN_CONTEXT } from "../../index.js";
 import { loadGD, saveGD, UI_STARMAP_FOV, UI_STARMAP_ROTATION_VEC, UI_STARMAP_ROTATION_VEC_DT } from "../../ui/UIData.js";
 import { getFrameRelCloud } from "../simulation/temperatureHumidity.js";
 import { getCurDay, getDaylightStrength, tempToRgbaForStar } from "../time.js";
-import { addVectors, multiplyMatrixAndPoint, multiplyVectorByScalar, normalizeXYZVector } from "./matrix.js";
+import { addVectors, multiplyMatrixAndPoint, multiplyVectorByScalar, normalizeVec3 } from "./matrix.js";
 
 export class StarHandler {
     constructor() {
@@ -217,8 +217,8 @@ export class StarHandler {
             startVec = this.rotatePoint(startVec, cameraX, cameraY, cameraZ);
             endVec = this.rotatePoint(endVec, cameraX, cameraY, cameraZ);
 
-            let startVecNormalized = normalizeXYZVector(startVec, 1);
-            let endVecNormalized = normalizeXYZVector(endVec, 1);
+            let startVecNormalized = normalizeVec3(startVec);
+            let endVecNormalized = normalizeVec3(endVec);
 
             let sp = this.cartesianToScreen(...startVec, true);
             let ep = this.cartesianToScreen(...endVec, true);

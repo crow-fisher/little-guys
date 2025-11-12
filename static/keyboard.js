@@ -96,7 +96,7 @@ function _3dViewKeymap(key) {
         crd[1] -= offset; 
     }
     if (key == 'u') {
-        crd[2] += offset; 
+        crd[2] += offset;
     }
     if (key == 'o') {
         crd[2] -= offset; 
