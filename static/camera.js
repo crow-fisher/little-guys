@@ -2,6 +2,7 @@ import { getBaseSize, getCanvasHeight, getCanvasWidth } from "./canvas.js";
 import { addVectors, crossVec3, invertMat4, multiplyMatrixAndPoint, normalizeVec3, subtractVectors, transposeMat4 } from "./climate/stars/matrix.js";
 import { getCurDay } from "./climate/time.js";
 import { COLOR_WHITE } from "./colors.js";
+import { randRange } from "./common.js";
 import { MAIN_CONTEXT } from "./index.js";
 import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CANVAS_SQUARES_ZOOM, UI_CAMERA_OFFSET_VEC, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_STARMAP_FOV } from "./ui/UIData.js";
 
@@ -82,31 +83,37 @@ export function pointToScreen(x, y, z) {
         [0, 0, -(f * n) / (f - n), 0]
     ];
     let point = multiplyMatrixAndPoint(perspectiveMatrix, [x, y, z, 1]);
-    return [getCanvasWidth() * point[0] / point[2], getCanvasHeight() * point[1] / point[2]]
+    let cameraZ = point[2];
+    if (cameraZ < 0) 
+        return null;
+    
+    return [getCanvasWidth() * point[0] / cameraZ, getCanvasHeight() * point[1] / cameraZ]
 }
 
 export function renderTest() {
     MAIN_CONTEXT.fillStyle = COLOR_WHITE;
+    let cl = loadGD(UI_CAMERA_OFFSET_VEC);
+    cl = [0, 0, 0];
+    for (let x = 0; x < 100; x += .3) {
+        for (let z = 0; z < 100; z += .3) {
+            let dx = x - cl[0];
+            let dz = z - cl[1];
 
-    for (let x = 0; x < 100; x += 1) {
-        for (let z = 0; z < 100; z += 1) {
-            renderTestPoint(x, -10, z);
+            let adx = (Math.abs(dx) / 10000);
+            let adz = (Math.abs(dz) / 10000);
+
+            x += adx;
+            z += adz;
+
+            renderTestPoint(x, -9 - Math.sin((x * z + ((Date.now() / (10 + (.01 * adz))) % 628)) / 100), z);
             renderTestPoint(x, 10, z);
         }
     }
-
-    // for (let x = -1000; x <= 1000; x += 50) {
-    //     for (let y = -1000; y <= 1000; y += 50) {
-    //         for (let z = -50; z <= 100; z += 50) {
-    //             renderTestPoint(x, y, z)
-    //         }
-    //     }
-    // }
 }
 
 function renderTestPoint(x, y, z) {
     let point = cartesianToScreen(x, y, z);
-    if (z > 0) {
+    if (point != null) {
         MAIN_CONTEXT.beginPath();
         MAIN_CONTEXT.arc(point[0], point[1], 4, 0, 2 * Math.PI, false);
         MAIN_CONTEXT.fill();
