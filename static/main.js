@@ -16,6 +16,7 @@ import { gamepadInputLoop } from "./gamepad.js";
 import { renderCloudsDebug } from "./climate/weather/weatherManager.js";
 import { clearTimeouts, completeActiveJobs, prepareTickJobs } from "./scheduler.js";
 import { canvasPanRoutine } from "./canvas.js";
+import { renderTest } from "./camera.js";
 
 initUI();
 let lightingHandler = new LightingHandler();
@@ -56,7 +57,6 @@ function playerMainTick() {
 
 export function scheduler_main() {
     if (!isSaveOrLoadInProgress()) {
-
         resetSqColChangeMap();
         updateTime();
         doClickAdd();
@@ -77,6 +77,7 @@ export function scheduler_main() {
 
         prepareTickJobs();
         completeActiveJobs();
+        renderTest();
     }
     setTimeout(scheduler_main, 0);
 }

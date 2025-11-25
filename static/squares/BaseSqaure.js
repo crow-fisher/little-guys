@@ -463,11 +463,11 @@ export class BaseSquare {
     setFrameCartesians() { 
         let zs = this.z;
         let zd = this.surfaceLightingFactor;
-        let tlr = [this.posX, this.posY, zs + zd, 1]
-        let trr = [this.posX + 1, this.posY, zs + zd, 1]
+        let tlr = [this.posX, this.posY, zs + zd]
+        let trr = [this.posX + 1, this.posY, zs + zd]
 
-        let blr = [this.posX, this.posY + 1, zs, 1]
-        let brr = [this.posX + 1, this.posY + 1, zs, 1]
+        let blr = [this.posX, this.posY + 1, zs]
+        let brr = [this.posX + 1, this.posY + 1, zs]
 
         this.tls = cartesianToScreen(...tlr);
         this.trs = cartesianToScreen(...trr);
