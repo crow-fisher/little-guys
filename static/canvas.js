@@ -519,49 +519,49 @@ export function canvasPanRoutine() {
 
 let curLastMoveOffset, prevLastMoveOffset;
 
-function _applyDerivativeVec(k1, k2) {
+function _applyDerivativeVec(k1, p2, valuemode=false, applyFrac=1) {
     let co = loadGD(k1);
-    let cs = loadGD(k2);
+    let cs = valuemode ? p2 : loadGD(p2);
 
-    co[0] += cs[0];
-    co[1] += cs[1];
-    co[2] += cs[2];
+    co[0] += cs[0] * applyFrac;
+    co[1] += cs[1] * applyFrac;
+    co[2] += cs[2] * applyFrac;
 
     cs[0] *= 0.7;
     cs[1] *= 0.7;
     cs[2] *= 0.7;
 
     saveGD(k1, co);
-    saveGD(k2, cs);
+    if (!valuemode)
+        saveGD(p2, cs);
+}
 
+export function decayVec(key, frac=0.7) {
+    let val = loadGD(key);
+    for (let i = 0; i < val.length; i++) {
+        val[i] *= frac;
+    }
+    saveGD(key, val);
 }
 
 function canvasPan3DRoutine() {
-    _applyDerivativeVec(UI_CAMERA_OFFSET_VEC, UI_CAMERA_OFFSET_VEC_DT);
+    let cvdt = loadGD(UI_CAMERA_OFFSET_VEC_DT);
+
+    let offsetVec = cvdt;
+    offsetVec = rotatePoint(offsetVec, ...loadGD(UI_CAMERA_ROTATION_VEC));
+
+    console.log(cvdt, loadGD(UI_CAMERA_ROTATION_VEC));
+
+    decayVec(UI_CAMERA_OFFSET_VEC_DT);
+
+    _applyDerivativeVec(UI_CAMERA_OFFSET_VEC, offsetVec, true, .1);
     _applyDerivativeVec(UI_CAMERA_ROTATION_VEC, UI_CAMERA_ROTATION_VEC_DT);
-    return;
-
-    let e = getLastMoveEvent();
-    if (e == null)
-        return;
-
-    if (curLastMoveOffset == null) {
-        curLastMoveOffset = getLastMoveOffset();
-        return;
-    }
-    prevLastMoveOffset = curLastMoveOffset;
-    curLastMoveOffset = getLastMoveOffset();
-
-    let dX = e.movementX;
-    let dy = e.movementY;
-
-    dX *= .001;
-    dy *= .001;
 
     let cr = loadGD(UI_CAMERA_ROTATION_VEC);
-    cr[1] += dX;
-    cr[0] -= dy;
+    let bound = Math.PI / 2 - 0.0001;
+    cr[1] = Math.max(-bound, Math.min(bound, cr[1]))
     saveGD(UI_CAMERA_ROTATION_VEC, cr);
+    return;
 
 }
 

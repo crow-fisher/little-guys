@@ -9,7 +9,6 @@ import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CANVAS_SQUARES_ZOOM, UI_CAMERA_OFFSE
 
 // https://learnopengl.com/Getting-started/Camera
 export function getFrameCameraMatrix() {
-    let from = structuredClone(loadGD(UI_CAMERA_OFFSET_VEC));
 
     let cr = loadGD(UI_CAMERA_ROTATION_VEC);
     let yaw = cr[0];
@@ -24,6 +23,7 @@ export function getFrameCameraMatrix() {
     let forward = normalizeVec3(subtractVectors([0, 0, 0], rotNorm));
     let right = normalizeVec3(crossVec3([0, 1, 0], forward));
     let up = normalizeVec3(crossVec3(forward, right));
+    let from = structuredClone(loadGD(UI_CAMERA_OFFSET_VEC));
 
     forward.push(0);
     right.push(0);
@@ -36,7 +36,7 @@ export function getFrameCameraMatrix() {
         right,
         up,
         forward,
-        [0, 0, 0, 1]
+        from
     ]);
 }
 
@@ -94,8 +94,8 @@ export function renderTest() {
     MAIN_CONTEXT.fillStyle = COLOR_WHITE;
     let cl = loadGD(UI_CAMERA_OFFSET_VEC);
     cl = [0, 0, 0];
-    for (let x = 0; x < 100; x += .3) {
-        for (let z = 0; z < 100; z += .3) {
+    for (let x = 0; x < 100; x += .8) {
+        for (let z = 0; z < 100; z += .8) {
             let dx = x - cl[0];
             let dz = z - cl[1];
 
@@ -106,7 +106,6 @@ export function renderTest() {
             z += adz;
 
             renderTestPoint(x, -9 - Math.sin((x * z + ((Date.now() / (10 + (.01 * adz))) % 628)) / 100), z);
-            renderTestPoint(x, 10, z);
         }
     }
 }
