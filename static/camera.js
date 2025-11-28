@@ -1,10 +1,10 @@
-import { getBaseSize, getCanvasHeight, getCanvasWidth } from "./canvas.js";
+import { decayVec, getBaseSize, getCanvasHeight, getCanvasWidth } from "./canvas.js";
 import { addVectors, crossVec3, invertMat4, multiplyMatrixAndPoint, multiplyVectorByScalar, normalizeVec3, subtractVectors, transposeMat4 } from "./climate/stars/matrix.js";
 import { getCurDay } from "./climate/time.js";
 import { COLOR_RED, COLOR_WHITE } from "./colors.js";
 import { hexToRgb, randRange, rgbToHex } from "./common.js";
 import { MAIN_CONTEXT } from "./index.js";
-import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CANVAS_SQUARES_ZOOM, UI_CAMERA_OFFSET_VEC, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_STARMAP_FOV } from "./ui/UIData.js";
+import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CANVAS_SQUARES_ZOOM, UI_CAMERA_OFFSET_VEC, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_STARMAP_FOV, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_ROTATION_VEC_DT, saveGD } from "./ui/UIData.js";
 
 
 // https://learnopengl.com/Getting-started/Camera
@@ -69,8 +69,6 @@ export function cartesianToScreen(x, y, z) {
     }
 
     let point = addVectors([x, y, z, 1], loadGD(UI_CAMERA_OFFSET_VEC));
-    
-
     return pointToScreen(...multiplyMatrixAndPoint(cameraToWorld, point));
     // z coordinates are now remapped to a range of 0,
     // subtractVectors(point, loadGD(UI_CAMERA_OFFSET_VEC));
@@ -110,7 +108,7 @@ export function renderTest() {
             x += adx;
             z += adz;
             MAIN_CONTEXT.fillStyle = rgbToHex(x, (x + z) / 2, z);
-            renderTestPoint(x, -9 - Math.sin((x * z + ((Date.now() / (10 + (.01 * adz))) % 628)) / 100), z);
+            renderTestPoint(x, -9 - Math.sin((x * z + ((Date.now() / (10 + (.01 * adz))) % 628)) / 20), z);
         }
     }
 
@@ -199,22 +197,47 @@ function mat4x4_translate_in_place(m, x, y, z) {
     return m;
 }
 
+function _applyDerivativeVec(k1, p2, valuemode=false, applyFrac=1) {
+    let co = loadGD(k1);
+    let cs = valuemode ? p2 : loadGD(p2);
 
+    co[0] += cs[0] * applyFrac;
+    co[1] += cs[1] * applyFrac;
+    co[2] += cs[2] * applyFrac;
 
+    cs[0] *= 0.7;
+    cs[1] *= 0.7;
+    cs[2] *= 0.7;
 
+    saveGD(k1, co);
+    if (!valuemode)
+        saveGD(p2, cs);
+}
 
+export  function canvasPan3DRoutine() {
+    let rotNorm = [0, 0, 0];
 
+    let cr = loadGD(UI_CAMERA_ROTATION_VEC);
+    let yaw = cr[0];
+    let pitch = cr[1];
 
+    rotNorm[0] = Math.cos(yaw) * Math.cos(pitch);
+    rotNorm[1] = Math.sin(pitch);
+    rotNorm[2] = Math.sin(yaw) * Math.cos(pitch);
 
+    let offsetVec = multiplyVectorByScalar(rotNorm, -3);
 
+    decayVec(UI_CAMERA_OFFSET_VEC_DT);
 
+    _applyDerivativeVec(UI_CAMERA_OFFSET_VEC, offsetVec, true, .1);
+    // _applyDerivativeVec(UI_CAMERA_OFFSET_VEC, UI_CAMERA_OFFSET_VEC_DT);
+    _applyDerivativeVec(UI_CAMERA_ROTATION_VEC, UI_CAMERA_ROTATION_VEC_DT);
 
-
-
-
-
-
-
+    let bound = Math.PI / 2 - 0.0001;
+    cr[1] = Math.max(-bound, Math.min(bound, cr[1]))
+    saveGD(UI_CAMERA_ROTATION_VEC, cr);
+    return;
+}
 
 export function rotatePoint(point, rX, rY, rZ) {
     return rotatePointRx(rotatePointRy(rotatePointRz(point, rZ), rY), rX);

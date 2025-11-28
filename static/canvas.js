@@ -1,4 +1,4 @@
-import { cartesianToScreen } from "./camera.js";
+import { canvasPan3DRoutine, cartesianToScreen } from "./camera.js";
 import { multiplyMatrixAndPoint } from "./climate/stars/matrix.js";
 import { MAIN_CONTEXT } from "./index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "./keyboard.js";
@@ -519,22 +519,6 @@ export function canvasPanRoutine() {
 
 let curLastMoveOffset, prevLastMoveOffset;
 
-function _applyDerivativeVec(k1, p2, valuemode=false, applyFrac=1) {
-    let co = loadGD(k1);
-    let cs = valuemode ? p2 : loadGD(p2);
-
-    co[0] += cs[0] * applyFrac;
-    co[1] += cs[1] * applyFrac;
-    co[2] += cs[2] * applyFrac;
-
-    cs[0] *= 0.7;
-    cs[1] *= 0.7;
-    cs[2] *= 0.7;
-
-    saveGD(k1, co);
-    if (!valuemode)
-        saveGD(p2, cs);
-}
 
 export function decayVec(key, frac=0.7) {
     let val = loadGD(key);
@@ -544,27 +528,7 @@ export function decayVec(key, frac=0.7) {
     saveGD(key, val);
 }
 
-function canvasPan3DRoutine() {
-    let cvdt = loadGD(UI_CAMERA_OFFSET_VEC_DT);
 
-    let offsetVec = cvdt;
-    offsetVec = rotatePoint(offsetVec, ...loadGD(UI_CAMERA_ROTATION_VEC));
-
-    console.log(cvdt, loadGD(UI_CAMERA_ROTATION_VEC));
-
-    decayVec(UI_CAMERA_OFFSET_VEC_DT);
-
-    // _applyDerivativeVec(UI_CAMERA_OFFSET_VEC, offsetVec, true, .1);
-    _applyDerivativeVec(UI_CAMERA_OFFSET_VEC, UI_CAMERA_OFFSET_VEC_DT);
-    _applyDerivativeVec(UI_CAMERA_ROTATION_VEC, UI_CAMERA_ROTATION_VEC_DT);
-
-    let cr = loadGD(UI_CAMERA_ROTATION_VEC);
-    let bound = Math.PI / 2 - 0.0001;
-    cr[1] = Math.max(-bound, Math.min(bound, cr[1]))
-    saveGD(UI_CAMERA_ROTATION_VEC, cr);
-    return;
-
-}
 
 let canvasLastMoveOffset = { x: 0, y: 0 };
 
