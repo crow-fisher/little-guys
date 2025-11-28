@@ -68,7 +68,10 @@ export function cartesianToScreen(x, y, z) {
         frameMatrixDay = getCurDay();
     }
 
-    return pointToScreen(...multiplyMatrixAndPoint(cameraToWorld, [x, y, z, 1]));
+    let point = addVectors([x, y, z, 1], loadGD(UI_CAMERA_OFFSET_VEC));
+    
+
+    return pointToScreen(...multiplyMatrixAndPoint(cameraToWorld, point));
     // z coordinates are now remapped to a range of 0,
     // subtractVectors(point, loadGD(UI_CAMERA_OFFSET_VEC));
     // if (point.z > 0 && !force)j

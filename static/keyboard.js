@@ -53,22 +53,22 @@ function _3dViewKeymap(key) {
     let offset = 10;
     let applied = [0, 0, 0, 0];
 
-    if (key == 'd') {
+    if (key == 'a') {
         applied[0] += offset; 
     }
-    if (key == 'a') { 
+    if (key == 'd') { 
         applied[0] -= offset; 
     }
-    if (key == 's') {
+    if (key == 'q') {
         applied[1] -= offset; 
     }
-    if (key == 'w') {
+    if (key == 'e') {
         applied[1] += offset; 
     }
-    if (key == 'q') {
+    if (key == 's') {
         applied[2] += offset; 
     }
-    if (key == 'e') {
+    if (key == 'w') {
         applied[2] -= offset;
     }
 
