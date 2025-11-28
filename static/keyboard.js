@@ -53,22 +53,22 @@ function _3dViewKeymap(key) {
     let offset = 10;
     let applied = [0, 0, 0, 0];
 
-    if (key == 'a') {
+    if (key == 's') {
         applied[0] += offset; 
     }
-    if (key == 'd') { 
+    if (key == 'w') { 
         applied[0] -= offset; 
     }
-    if (key == 'q') {
+    if (key == 'd') {
         applied[1] -= offset; 
     }
-    if (key == 'e') {
+    if (key == 'a') {
         applied[1] += offset; 
     }
-    if (key == 's') {
+    if (key == 'q') {
         applied[2] += offset; 
     }
-    if (key == 'w') {
+    if (key == 'e') {
         applied[2] -= offset;
     }
 
@@ -87,10 +87,10 @@ function _3dViewKeymap(key) {
         crd[0] += offset; 
     }
     if (key == 'k') {
-        crd[1] -= offset; 
+        crd[1] += offset; 
     }
     if (key == 'i') {
-        crd[1] += offset; 
+        crd[1] -= offset; 
     }
     saveGD(UI_CAMERA_ROTATION_VEC_DT, crd)
 

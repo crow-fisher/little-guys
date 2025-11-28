@@ -23,7 +23,7 @@ export function getFrameCameraMatrix() {
     let forward = normalizeVec3(subtractVectors([0, 0, 0], rotNorm));
     let right = normalizeVec3(crossVec3([0, 1, 0], forward));
     let up = normalizeVec3(crossVec3(forward, right));
-    
+
     let from = structuredClone(loadGD(UI_CAMERA_OFFSET_VEC));
 
     // forward = [0, 0, -1, from[0]];
@@ -88,10 +88,10 @@ export function pointToScreen(x, y, z) {
     ];
     let point = multiplyMatrixAndPoint(perspectiveMatrix, [x, y, z, 1]);
     let cameraZ = point[2];
-    if (cameraZ < 0) 
+    if (cameraZ < 0)
         return null;
-    
-    return [getCanvasWidth() * point[0] / cameraZ, getCanvasHeight() * point[1] / cameraZ]
+
+    return [getCanvasWidth() * point[0] / cameraZ, getCanvasHeight() * point[1] / cameraZ, cameraZ]
 }
 
 export function renderTest() {
@@ -111,22 +111,9 @@ export function renderTest() {
             renderTestPoint(x, -9 - Math.sin((x * z + ((Date.now() / (10 + (.01 * adz))) % 628)) / 20), z);
         }
     }
-
-    MAIN_CONTEXT.lineWidth = 4;
-    MAIN_CONTEXT.strokeStyle = COLOR_RED;
-
-    let right = cameraToWorld[0];
-    let up = cameraToWorld[1];
-    let forward = cameraToWorld[2];
-    let from = cameraToWorld[3];
-    
-    renderTestVec([0, 0, 0], right)
-    renderTestVec([0, 0, 0], up)
-    renderTestVec([0, 0, 0], forward)
-
 }
 
-function renderTestVec(from, vec, scalar=10) {
+function renderTestVec(from, vec, scalar = 10) {
     let to = structuredClone(from);
     to = addVectors(to, multiplyVectorByScalar(vec, scalar));
 
@@ -145,8 +132,10 @@ function renderTestVec(from, vec, scalar=10) {
 function renderTestPoint(x, y, z) {
     let point = cartesianToScreen(x, y, z);
     if (point != null) {
+        let pz = point[2];
+        let size = Math.max(1, 800 / pz);
         MAIN_CONTEXT.beginPath();
-        MAIN_CONTEXT.arc(point[0], point[1], 4, 0, 2 * Math.PI, false);
+        MAIN_CONTEXT.arc(point[0], point[1], size, 0, 2 * Math.PI, false);
         MAIN_CONTEXT.fill();
     }
 }
@@ -197,7 +186,7 @@ function mat4x4_translate_in_place(m, x, y, z) {
     return m;
 }
 
-function _applyDerivativeVec(k1, p2, valuemode=false, applyFrac=1) {
+function _applyDerivativeVec(k1, p2, valuemode = false, applyFrac = 1) {
     let co = loadGD(k1);
     let cs = valuemode ? p2 : loadGD(p2);
 
@@ -214,10 +203,11 @@ function _applyDerivativeVec(k1, p2, valuemode=false, applyFrac=1) {
         saveGD(p2, cs);
 }
 
-export  function canvasPan3DRoutine() {
+export function canvasPan3DRoutine() {
     let rotNorm = [0, 0, 0];
 
     let cr = loadGD(UI_CAMERA_ROTATION_VEC);
+    let cd = loadGD(UI_CAMERA_OFFSET_VEC_DT);
     let yaw = cr[0];
     let pitch = cr[1];
 
@@ -225,11 +215,22 @@ export  function canvasPan3DRoutine() {
     rotNorm[1] = Math.sin(pitch);
     rotNorm[2] = Math.sin(yaw) * Math.cos(pitch);
 
-    let offsetVec = multiplyVectorByScalar(rotNorm, -3);
+    let forward = rotNorm;
+    let right = normalizeVec3(crossVec3([0, 1, 0], forward));
+    let up = normalizeVec3(crossVec3(forward, right));
+
+    let fo = multiplyVectorByScalar(forward, cd[0]);
+    let ro = multiplyVectorByScalar(right, cd[1]);
+    let uo = multiplyVectorByScalar(up, cd[2]);
+
+    let offset = [0, 0, 0];
+    offset = addVectors(offset, fo);
+    offset = addVectors(offset, ro);
+    offset = addVectors(offset, uo);
 
     decayVec(UI_CAMERA_OFFSET_VEC_DT);
 
-    _applyDerivativeVec(UI_CAMERA_OFFSET_VEC, offsetVec, true, .1);
+    _applyDerivativeVec(UI_CAMERA_OFFSET_VEC, offset, true, .1);
     // _applyDerivativeVec(UI_CAMERA_OFFSET_VEC, UI_CAMERA_OFFSET_VEC_DT);
     _applyDerivativeVec(UI_CAMERA_ROTATION_VEC, UI_CAMERA_ROTATION_VEC_DT);
 
