@@ -38,7 +38,7 @@ export function getFrameCameraMatrix() {
     ];
 
     worldToCamera = transposeMat4(cameraToWorld);
-    // worldToCamera[3] = from;
+    worldToCamera[3] = [0, 0, 0, 1];
     return worldToCamera;
 }
 
