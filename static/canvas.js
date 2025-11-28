@@ -554,7 +554,8 @@ function canvasPan3DRoutine() {
 
     decayVec(UI_CAMERA_OFFSET_VEC_DT);
 
-    _applyDerivativeVec(UI_CAMERA_OFFSET_VEC, offsetVec, true, .1);
+    // _applyDerivativeVec(UI_CAMERA_OFFSET_VEC, offsetVec, true, .1);
+    _applyDerivativeVec(UI_CAMERA_OFFSET_VEC, UI_CAMERA_OFFSET_VEC_DT);
     _applyDerivativeVec(UI_CAMERA_ROTATION_VEC, UI_CAMERA_ROTATION_VEC_DT);
 
     let cr = loadGD(UI_CAMERA_ROTATION_VEC);

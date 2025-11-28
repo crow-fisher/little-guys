@@ -1,8 +1,8 @@
 import { getBaseSize, getCanvasHeight, getCanvasWidth } from "./canvas.js";
-import { addVectors, crossVec3, invertMat4, multiplyMatrixAndPoint, normalizeVec3, subtractVectors, transposeMat4 } from "./climate/stars/matrix.js";
+import { addVectors, crossVec3, invertMat4, multiplyMatrixAndPoint, multiplyVectorByScalar, normalizeVec3, subtractVectors, transposeMat4 } from "./climate/stars/matrix.js";
 import { getCurDay } from "./climate/time.js";
-import { COLOR_WHITE } from "./colors.js";
-import { randRange } from "./common.js";
+import { COLOR_RED, COLOR_WHITE } from "./colors.js";
+import { hexToRgb, randRange, rgbToHex } from "./common.js";
 import { MAIN_CONTEXT } from "./index.js";
 import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CANVAS_SQUARES_ZOOM, UI_CAMERA_OFFSET_VEC, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_STARMAP_FOV } from "./ui/UIData.js";
 
@@ -23,24 +23,26 @@ export function getFrameCameraMatrix() {
     let forward = normalizeVec3(subtractVectors([0, 0, 0], rotNorm));
     let right = normalizeVec3(crossVec3([0, 1, 0], forward));
     let up = normalizeVec3(crossVec3(forward, right));
+    
     let from = structuredClone(loadGD(UI_CAMERA_OFFSET_VEC));
 
-    forward.push(0);
-    right.push(0);
-    up.push(0);
+    // forward = [0, 0, -1, from[0]];
+    // right = [-1, 0, 0, from[1]];
+    // up = [0, 1, 0, from[2]];
 
-    let func = (x) => x;
-    // func = transposeMat4;
-    // func = invertMat4;
-    return func([
+    cameraToWorld = [
         right,
         up,
         forward,
-        from
-    ]);
+        [0, 0, 0, 1]
+    ];
+
+    worldToCamera = transposeMat4(cameraToWorld);
+    // worldToCamera[3] = from;
+    return worldToCamera;
 }
 
-let frameMatrix = [
+let cameraToWorld = [
     [0, 0, 0, 0],
     [0, 0, 0, 0],
     [0, 0, 0, 0],
@@ -62,10 +64,11 @@ export function cartesianToScreen(x, y, z) {
     // https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/lookat-function/framing-lookat-function.html
 
     if (getCurDay() != frameMatrixDay) {
-        frameMatrix = getFrameCameraMatrix();
+        cameraToWorld = getFrameCameraMatrix();
         frameMatrixDay = getCurDay();
     }
-    return pointToScreen(...multiplyMatrixAndPoint(frameMatrix, [x, y, z, 1]));
+
+    return pointToScreen(...multiplyMatrixAndPoint(cameraToWorld, [x, y, z, 1]));
     // z coordinates are now remapped to a range of 0,
     // subtractVectors(point, loadGD(UI_CAMERA_OFFSET_VEC));
     // if (point.z > 0 && !force)j
@@ -91,11 +94,10 @@ export function pointToScreen(x, y, z) {
 }
 
 export function renderTest() {
-    MAIN_CONTEXT.fillStyle = COLOR_WHITE;
     let cl = loadGD(UI_CAMERA_OFFSET_VEC);
     cl = [0, 0, 0];
-    for (let x = 0; x < 100; x += .8) {
-        for (let z = 0; z < 100; z += .8) {
+    for (let x = 0; x < 255; x += .8) {
+        for (let z = 0; z < 255; z += .8) {
             let dx = x - cl[0];
             let dz = z - cl[1];
 
@@ -104,10 +106,39 @@ export function renderTest() {
 
             x += adx;
             z += adz;
-
+            MAIN_CONTEXT.fillStyle = rgbToHex(x, (x + z) / 2, z);
             renderTestPoint(x, -9 - Math.sin((x * z + ((Date.now() / (10 + (.01 * adz))) % 628)) / 100), z);
         }
     }
+
+    MAIN_CONTEXT.lineWidth = 4;
+    MAIN_CONTEXT.strokeStyle = COLOR_RED;
+
+    let right = cameraToWorld[0];
+    let up = cameraToWorld[1];
+    let forward = cameraToWorld[2];
+    let from = cameraToWorld[3];
+    
+    renderTestVec([0, 0, 0], right)
+    renderTestVec([0, 0, 0], up)
+    renderTestVec([0, 0, 0], forward)
+
+}
+
+function renderTestVec(from, vec, scalar=10) {
+    let to = structuredClone(from);
+    to = addVectors(to, multiplyVectorByScalar(vec, scalar));
+
+    let fc = cartesianToScreen(...from);
+    let ft = cartesianToScreen(...to);
+
+    if (fc != null && ft != null) {
+        MAIN_CONTEXT.beginPath();
+        MAIN_CONTEXT.moveTo(...fc);
+        MAIN_CONTEXT.lineTo(...ft);
+        MAIN_CONTEXT.stroke();
+    }
+
 }
 
 function renderTestPoint(x, y, z) {
