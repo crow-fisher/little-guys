@@ -95,6 +95,7 @@ export function pointToScreen(x, y, z) {
 }
 
 export function renderTest() {
+    return;
     let cl = loadGD(UI_CAMERA_OFFSET_VEC);
     cl = [0, 0, 0];
     for (let x = 0; x < 255; x += .8) {
@@ -107,15 +108,13 @@ export function renderTest() {
 
             x += adx;
             z += adz;
-            MAIN_CONTEXT.fillStyle = rgbToHex(x, (x + z) / 2, z);
-
             let y = -9 - 100 * Math.sin((x * z + ((Date.now() / (10 + (.01 * adz))) % 628)) / 100);
-            
-            y = 10 * Math.sin((x + z) + (Date.now() / 1000) % 100)
+            y = 10 * Math.sin((x * (1 + z/1000)) + (Date.now() / 1000) % 100)
 
-            renderTestPoint(x, y, z);
+            renderTestPoint(x, y, z, rgbToHex(x, (x + z) / 2, z));
         }
     }
+    renderTestPoints();
 }
 
 function renderTestVec(from, vec, scalar = 10) {
@@ -131,17 +130,30 @@ function renderTestVec(from, vec, scalar = 10) {
         MAIN_CONTEXT.lineTo(...ft);
         MAIN_CONTEXT.stroke();
     }
-
 }
 
-function renderTestPoint(x, y, z) {
+let test_points = new Array();
+function renderTestPoints() {
+    test_points.sort((a, b) => a[0] - b[0]);
+    test_points.forEach((pointArr) => {
+        let color = pointArr[1];
+        let loc = pointArr[2];
+        let size = pointArr[3];
+        MAIN_CONTEXT.fillStyle = color;
+
+        MAIN_CONTEXT.beginPath();
+        MAIN_CONTEXT.arc(loc[0], loc[1], size, 0, 2 * Math.PI, false);
+        MAIN_CONTEXT.fill();
+    });
+    test_points = new Array();
+}
+
+function renderTestPoint(x, y, z, color) {
     let point = cartesianToScreen(x, y, z);
     if (point != null) {
         let pz = point[2];
         let size = Math.max(1, 800 / pz);
-        MAIN_CONTEXT.beginPath();
-        MAIN_CONTEXT.arc(point[0], point[1], size, 0, 2 * Math.PI, false);
-        MAIN_CONTEXT.fill();
+        test_points.push([z, color, point, size]);
     }
 }
 

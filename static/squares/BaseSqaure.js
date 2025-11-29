@@ -463,10 +463,10 @@ export class BaseSquare {
     setFrameCartesians() { 
         let zs = this.z;
         let zd = this.surfaceLightingFactor;
-        this.tlr = [this.posX, this.posY, zs + zd]
-        this.trr = [this.posX + 1, this.posY, zs + zd]
-        this.blr = [this.posX, this.posY + 1, zs]
-        this.brr = [this.posX + 1, this.posY + 1, zs]
+        this.tl = [this.posX, this.posY, zs + zd]
+        this.tr = [this.posX + 1, this.posY, zs + zd]
+        this.bl = [this.posX, this.posY + 1, zs]
+        this.br = [this.posX + 1, this.posY + 1, zs]
     }
 
     render3D(opacityMult) {
@@ -503,17 +503,17 @@ export class BaseSquare {
         let blsq = getSquares(this.posX - 1, this.posY + 1).find((sq) => sq.solid && sq.visible && sq.bls != null) ?? this;
         let brsq = getSquares(this.posX + 1, this.posY + 1).find((sq) => sq.solid && sq.visible && sq.brs != null) ?? this;
 
-        let ftlr = this.combinePoints(this, tlsq, "tlr");
-        let ftrr = this.combinePoints(this, trsq, "trr");
-        let fblr = this.combinePoints(this, blsq, "blr");
-        let fbrr = this.combinePoints(this, brsq, "brr");
+        this.tls = cartesianToScreen(...this.tl);
+        this.trs = cartesianToScreen(...this.tr);
+        this.bls = cartesianToScreen(...this.bl);
+        this.brs = cartesianToScreen(...this.br);
 
-        let p1 = cartesianToScreen(...ftlr);
-        let p2 = cartesianToScreen(...ftrr);
-        let p3 = cartesianToScreen(...fblr);
-        let p4 = cartesianToScreen(...fbrr);
-        
-        let pArr = [p1, p2, p3, p4, p1];
+        let p1 = this.tls; //this.combinePoints(this, tlsq, "tls");
+        let p2 = this.trs; //this.combinePoints(this, trsq, "trs");
+        let p3 = this.bls; //this.combinePoints(this, blsq, "bls");
+        let p4 = this.brs; //this.combinePoints(this, brsq, "brs");
+
+        let pArr = [p1, p2, p4, p3, p1];
 
         if (pArr.some((p) => p == null))
             return;
@@ -522,6 +522,9 @@ export class BaseSquare {
     }
 
     combinePoints(p1, p2, getter) {
+        if (p1[getter] == null || p2[getter] == null)
+            return p1[getter] ?? p2[getter] ?? [0, 0, 0, 0];
+
         return [
             (p1[getter][0] + p2[getter][0]) * .5,
             (p1[getter][1] + p2[getter][1]) * .5,
