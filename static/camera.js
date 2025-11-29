@@ -95,7 +95,6 @@ export function pointToScreen(x, y, z) {
 }
 
 export function renderTest() {
-    return;
     let cl = loadGD(UI_CAMERA_OFFSET_VEC);
     cl = [0, 0, 0];
     for (let x = 0; x < 255; x += .8) {

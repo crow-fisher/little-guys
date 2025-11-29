@@ -508,10 +508,10 @@ export class BaseSquare {
         this.bls = cartesianToScreen(...this.bl);
         this.brs = cartesianToScreen(...this.br);
 
-        let p1 = this.tls; //this.combinePoints(this, tlsq, "tls");
-        let p2 = this.trs; //this.combinePoints(this, trsq, "trs");
-        let p3 = this.bls; //this.combinePoints(this, blsq, "bls");
-        let p4 = this.brs; //this.combinePoints(this, brsq, "brs");
+        let p1 = this.combinePoints(this, tlsq, "tls");
+        let p2 = this.combinePoints(this, trsq, "trs");
+        let p3 = this.combinePoints(this, blsq, "bls");
+        let p4 = this.combinePoints(this, brsq, "brs");
 
         let pArr = [p1, p2, p4, p3, p1];
 
