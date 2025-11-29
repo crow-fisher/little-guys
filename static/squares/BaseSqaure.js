@@ -463,16 +463,10 @@ export class BaseSquare {
     setFrameCartesians() { 
         let zs = this.z;
         let zd = this.surfaceLightingFactor;
-        let tlr = [this.posX, this.posY, zs + zd]
-        let trr = [this.posX + 1, this.posY, zs + zd]
-
-        let blr = [this.posX, this.posY + 1, zs]
-        let brr = [this.posX + 1, this.posY + 1, zs]
-
-        this.tls = cartesianToScreen(...tlr);
-        this.trs = cartesianToScreen(...trr);
-        this.bls = cartesianToScreen(...blr);
-        this.brs = cartesianToScreen(...brr);
+        this.tlr = [this.posX, this.posY, zs + zd]
+        this.trr = [this.posX + 1, this.posY, zs + zd]
+        this.blr = [this.posX, this.posY + 1, zs]
+        this.brr = [this.posX + 1, this.posY + 1, zs]
     }
 
     render3D(opacityMult) {
@@ -500,39 +494,30 @@ export class BaseSquare {
         MAIN_CONTEXT.fillStyle = this.cachedRgba;
 
         let bottomSquare = getSquares(this.posX, this.posY + 1).find((sq) => sq.solid);
-        
         this.z = bottomSquare != null ? (bottomSquare.z + bottomSquare.surfaceLightingFactor) : 0;
-
+        
         this.setFrameCartesians();
-
-        let tls = this.tls;
-        let trs = this.trs;
-        let bls = this.bls;
-        let brs = this.brs;
-
-        if (tls == null || trs == null || bls == null || brs == null)
-            return;
 
         let tlsq = getSquares(this.posX - 1, this.posY).find((sq) => sq.solid && sq.visible && sq.tls != null) ?? this;
         let trsq = getSquares(this.posX + 1, this.posY).find((sq) => sq.solid && sq.visible && sq.trs != null) ?? this;
         let blsq = getSquares(this.posX - 1, this.posY + 1).find((sq) => sq.solid && sq.visible && sq.bls != null) ?? this;
         let brsq = getSquares(this.posX + 1, this.posY + 1).find((sq) => sq.solid && sq.visible && sq.brs != null) ?? this;
 
-        tls = this.combinePoints(this, tlsq, "tls");
-        trs = this.combinePoints(this, trsq, "trs");
-        bls = this.combinePoints(this, blsq, "bls");
-        brs = this.combinePoints(this, brsq, "brs");
+        let ftlr = this.combinePoints(this, tlsq, "tlr");
+        let ftrr = this.combinePoints(this, trsq, "trr");
+        let fblr = this.combinePoints(this, blsq, "blr");
+        let fbrr = this.combinePoints(this, brsq, "brr");
 
-        let cw = getCanvasWidth();
-        let ch = getCanvasHeight();
+        let p1 = cartesianToScreen(...ftlr);
+        let p2 = cartesianToScreen(...ftrr);
+        let p3 = cartesianToScreen(...fblr);
+        let p4 = cartesianToScreen(...fbrr);
+        
+        let pArr = [p1, p2, p3, p4, p1];
 
-        let pArr = [
-            [(tls[0] / tls[2]) * cw, (tls[1] / tls[2]) * ch],
-            [(trs[0] / trs[2]) * cw, (trs[1] / trs[2]) * ch],
-            [(brs[0] / brs[2]) * cw, (brs[1] / brs[2]) * ch],
-            [(bls[0] / bls[2]) * cw, (bls[1] / bls[2]) * ch],
-            [(tls[0] / tls[2]) * cw, (tls[1] / tls[2]) * ch]
-        ]
+        if (pArr.some((p) => p == null))
+            return;
+
         fillCanvasPointArr(pArr);
     }
 
@@ -540,8 +525,7 @@ export class BaseSquare {
         return [
             (p1[getter][0] + p2[getter][0]) * .5,
             (p1[getter][1] + p2[getter][1]) * .5,
-            (p1[getter][2] + p2[getter][2]) * .5,
-            (p1[getter][3] + p2[getter][3]) * .5,
+            (p1[getter][2] + p2[getter][2]) * .5
         ]
     }
 

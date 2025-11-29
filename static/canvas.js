@@ -579,7 +579,8 @@ addUIFunctionMap(UI_VIEWMODE_SELECT, async () => {
         let cz = -10;
         let cw = 1;
         
-        saveGD(UI_CAMERA_OFFSET_VEC, [cx, cy, cz, cw]);
+        // saveGD(UI_CAMERA_OFFSET_VEC, [cx, cy, cz, cw]);
+        saveGD(UI_CAMERA_OFFSET_VEC, [0, 0, 0, 0]);
         saveGD(UI_CAMERA_OFFSET_VEC_DT, [0, 0, 0, 0]);
 
         // MAIN_CANVAS.addEventListener("click", async () => {
