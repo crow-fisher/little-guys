@@ -108,7 +108,12 @@ export function renderTest() {
             x += adx;
             z += adz;
             MAIN_CONTEXT.fillStyle = rgbToHex(x, (x + z) / 2, z);
-            renderTestPoint(x, -9 - Math.sin((x * z + ((Date.now() / (10 + (.01 * adz))) % 628)) / 20), z);
+
+            let y = -9 - 100 * Math.sin((x * z + ((Date.now() / (10 + (.01 * adz))) % 628)) / 100);
+            
+            y = 10 * Math.sin((x + z) + (Date.now() / 1000) % 100)
+
+            renderTestPoint(x, y, z);
         }
     }
 }
