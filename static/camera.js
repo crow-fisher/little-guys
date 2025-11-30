@@ -9,7 +9,6 @@ import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CANVAS_SQUARES_ZOOM, UI_CAMERA_OFFSE
 
 // https://learnopengl.com/Getting-started/Camera
 export function getFrameCameraMatrix() {
-
     let cr = loadGD(UI_CAMERA_ROTATION_VEC);
     let yaw = cr[0];
     let pitch = cr[1];
@@ -95,6 +94,7 @@ export function pointToScreen(x, y, z) {
 }
 
 export function renderTest() {
+    return;
     let cl = loadGD(UI_CAMERA_OFFSET_VEC);
     cl = [0, 0, 0];
     for (let x = 0; x < 255; x += .8) {
@@ -107,7 +107,7 @@ export function renderTest() {
 
             x += adx;
             z += adz;
-            let y = -9 - 100 * Math.sin((x * z + ((Date.now() / (10 + (.01 * adz))) % 628)) / 100);
+            let y = -9 - 10 * Math.sin((x * z + ((Date.now() / (10 + (.01 * adz))) % 628)) / 100);
             y = 10 * Math.sin((x * (1 + z/1000)) + (Date.now() / 1000) % 100)
 
             renderTestPoint(x, y, z, rgbToHex(x, (x + z) / 2, z));
