@@ -4,13 +4,14 @@ import { hexToRgb, hsv2rgb, rgb2hsv, rgbToHex, rgbToRgba, UI_BIGDOTSOLID } from 
 import { getDaylightStrengthFrameDiff } from "../climate/time.js";
 import { addSquare } from "../squares/_sqOperations.js";
 
-import { RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED, RGB_COLOR_GREEN } from "../colors.js";
+import { RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED, RGB_COLOR_GREEN, COLOR_RED, COLOR_BLUE } from "../colors.js";
 import { removeSquare } from "../globalOperations.js";
 import { STATE_HEALTHY, STAGE_DEAD, TYPE_ROOT } from "../organisms/Stages.js";
 import { getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
-import { getBaseSize, getCanvasHeight, getCanvasWidth, getCurZoom, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasFillRectTheta, zoomCanvasFillRectTheta3D, zoomCanvasSquareText } from "../canvas.js";
+import { getBaseSize, getCanvasHeight, getCanvasWidth, getCurZoom, rotatePoint, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasFillRectTheta, zoomCanvasFillRectTheta3D, zoomCanvasSquareText } from "../canvas.js";
 import { loadGD, UI_CANVAS_SQUARES_ZOOM, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_3D, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_NORMAL, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../ui/UIData.js";
-import { cartesianToScreen } from "../camera.js";
+import { cartesianToScreen, renderTestPoint } from "../camera.js";
+import { addVectors } from "../climate/stars/matrix.js";
 
 export const LSQ_RENDERMODE_SQUARE = "LSQ_RENDERMODE_SQUARE";
 export const LSQ_RENDERMODE_CIRCLE = "LSQ_RENDERMODE_CIRCLE";
@@ -61,7 +62,7 @@ class BaseLifeSquare {
         this.width = 1;
         this.height = 1;
         this.strength = 1;
-        this.xOffset = 0; 
+        this.xOffset = 0;
         this.zDelta = 0;
         this.randoms = [];
 
@@ -81,7 +82,7 @@ class BaseLifeSquare {
         this.posVec = [this.posX, this.posY, 0];
         this.rotVec = [0, 0, 0];
     }
-    
+
     getSurfaceLightingFactor() {
         return Math.max(0, loadGD(UI_LIGHTING_PLANT));
     }
@@ -190,18 +191,32 @@ class BaseLifeSquare {
     renderToCanvas() {
         if (this.type == "root")
             return;
-        let root = cartesianToScreen(...this.posVec, 1);
-        let cw = getCanvasWidth();
-        let ch = getCanvasHeight();
 
-        MAIN_CONTEXT.beginPath();
-        MAIN_CONTEXT.arc((root[0] / root[2]) * cw, (root[1] / root[2]) * ch, 8, 0, 2 * Math.PI, false);
-        MAIN_CONTEXT.fill();
-        MAIN_CONTEXT.stroke();
+        // we are a cylinder
+        // rotated at a certain angle 
+        // based on parameters:
+        // * this.posVec (vec<3>)
+        // * this.rotVec (vec<3>)
 
+        // we have a maximum viewable cross section
+        // for cylinders - the width only reduces with distance,
+        //                 but the height reduces with the angle. 
+
+        // vaguely replicated from how these are used in growthPlans
+        let offsetVec = [0, 1, 0, 0];
+        let rotatedOffset = rotatePoint(offsetVec, ...this.rotVec);
+        
+        let startVec = this.posVec;
+        let endVec = addVectors(structuredClone(this.posVec), rotatedOffset);
+
+         
+        startVec[1] *= -1;
+        endVec[1] *= -1;
+        renderTestPoint(...startVec, COLOR_RED);
+        renderTestPoint(...endVec, COLOR_BLUE);
         return;
         if (this.renderMode == LSQ_RENDERMODE_THETA) {
-            let func = zoomCanvasFillRectTheta; 
+            let func = zoomCanvasFillRectTheta;
 
             if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_3D)
                 func = zoomCanvasFillRectTheta3D;
@@ -213,8 +228,8 @@ class BaseLifeSquare {
                 this.height * getBaseSize() * this.getLsqRenderSizeMult(),
                 this.xRef,
                 this.yRef,
-                this.theta, 
-                this.linkedOrganism.linkedSquare.z 
+                this.theta,
+                this.linkedOrganism.linkedSquare.z
             );
         } else if (this.renderMode == LSQ_RENDERMODE_CIRCLE) {
             zoomCanvasFillCircle(
@@ -265,7 +280,6 @@ class BaseLifeSquare {
                 MAIN_CONTEXT.fillStyle = this.linkedOrganism.getEvolutionColor(0.85);
             else
                 MAIN_CONTEXT.fillStyle = this.linkedOrganism.getEvolutionColor(0.15);
-
             this.renderToCanvas();
             return;
         } else if (selectedViewMode == UI_VIEWMODE_NUTRIENTS) {

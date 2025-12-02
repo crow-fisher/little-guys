@@ -93,8 +93,25 @@ export function pointToScreen(x, y, z) {
     return [getCanvasWidth() * point[0] / cameraZ, getCanvasHeight() * point[1] / cameraZ, cameraZ]
 }
 
-export function renderTest() {
-    return;
+export function render3DHud() {
+    // renderPlanes();
+    // renderTest();
+    renderPoints();
+}
+
+function renderPlanes() {
+    let xo = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) / getBaseSize();
+    let yo = -loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) / getBaseSize();
+    for (let y = -200; y <= 200; y += 200) {
+        for (let x = -100; x < 100; x += 8) {
+            for (let z = -100; z < 100; z += 8) {
+                renderTestPoint(x + xo, y + yo, z, COLOR_WHITE);
+            }
+        }
+    }
+}
+
+function renderTest() {
     let cl = loadGD(UI_CAMERA_OFFSET_VEC);
     cl = [0, 0, 0];
     for (let x = 0; x < 255; x += .8) {
@@ -113,7 +130,6 @@ export function renderTest() {
             renderTestPoint(x, y, z, rgbToHex(x, (x + z) / 2, z));
         }
     }
-    renderTestPoints();
 }
 
 function renderTestVec(from, vec, scalar = 10) {
@@ -132,7 +148,7 @@ function renderTestVec(from, vec, scalar = 10) {
 }
 
 let test_points = new Array();
-function renderTestPoints() {
+function renderPoints() {
     test_points.sort((a, b) => a[0] - b[0]);
     test_points.forEach((pointArr) => {
         let color = pointArr[1];
@@ -147,7 +163,7 @@ function renderTestPoints() {
     test_points = new Array();
 }
 
-function renderTestPoint(x, y, z, color) {
+export function renderTestPoint(x, y, z, color) {
     let point = cartesianToScreen(x, y, z);
     if (point != null) {
         let pz = point[2];

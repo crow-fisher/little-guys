@@ -229,7 +229,7 @@ export function compressSquares(squares) {
     let growthPlanArr = new Array();
     let growthPlanComponentArr = new Array();
     let growthPlanStepArr = new Array();
-        squares.forEach((sq) => {
+    squares.forEach((sq) => {
         sq.lighting = [];
         sq.linkedOrganisms = Array.from(sq.linkedOrganisms.map((org) => {
             if (org.stage != STAGE_DEAD) {
@@ -243,11 +243,13 @@ export function compressSquares(squares) {
                 org.lighting = [];
                 org.linkedSquare = sqArr.indexOf(org.linkedSquare);
                 org.growthPlans = Array.from(org.growthPlans.map((gp) => growthPlanArr.indexOf(gp)));
-                org.lifeSquares.forEach((lsq) => {
-                    lsq.lighting = [];
-                    lsq.linkedSquare = sqArr.indexOf(lsq.linkedSquare);
-                    lsq.linkedOrganism = orgArr.indexOf(lsq.linkedOrganism);
-                    lsq.component = growthPlanComponentArr.indexOf(lsq.component);
+                [org.greenLifeSquares, org.rootLifeSquares].forEach((list) => {
+                    list.forEach((lsq) => {
+                        lsq.lighting = [];
+                        lsq.linkedSquare = sqArr.indexOf(lsq.linkedSquare);
+                        lsq.linkedOrganism = orgArr.indexOf(lsq.linkedOrganism);
+                        lsq.component = growthPlanComponentArr.indexOf(lsq.component);
+                    })
                 });
                 org.greenLifeSquares = Array.from(org.greenLifeSquares.map((lsq) => lsqArr.indexOf(lsq)));
                 org.rootLifeSquares = Array.from(org.rootLifeSquares.map((lsq) => lsqArr.indexOf(lsq)));
@@ -268,7 +270,7 @@ export function compressSquares(squares) {
         sq.linkedOrganismSquares = Array.from(sq.linkedOrganismSquares.map((lsq) => lsqArr.indexOf(lsq)));
         sqArr.push(sq)
     });
-    
+
     growthPlanStepArr.forEach((gps) => {
         gps.growthPlan = growthPlanArr.indexOf(gps.growthPlan);
         gps.completedLsq = lsqArr.indexOf(gps.completedLsq);
@@ -460,7 +462,7 @@ export function deleteAllSaveData() {
     });
     loadEmptyScene();
     setGAMEDATA(structuredClone(_GAMEDATA_DEFAULT));
-    setUICONFIG(structuredClone(_UI_DEFAULT)); 
+    setUICONFIG(structuredClone(_UI_DEFAULT));
     resetZoom();
 }
 
