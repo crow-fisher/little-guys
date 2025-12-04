@@ -6,6 +6,9 @@ import { hexToRgb, randRange, rgbToHex } from "./common.js";
 import { MAIN_CONTEXT } from "./index.js";
 import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CANVAS_SQUARES_ZOOM, UI_CAMERA_OFFSET_VEC, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_STARMAP_FOV, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_ROTATION_VEC_DT, saveGD } from "./ui/UIData.js";
 
+let params = new URLSearchParams(document.location.search);
+
+
 export function getForwardVec() {
     return cameraToWorld[2];
 }
@@ -110,7 +113,7 @@ export function pointToScreen(x, y, z) {
 
 export function render3DHud() {
     // renderPlanes();
-    // renderTest();
+    renderTest();
     renderPoints();
 }
 
@@ -127,24 +130,31 @@ function renderPlanes() {
 }
 
 function renderTest() {
+    let renderTest1 = params.get("renderTest1");
+    let renderTest1Size = params.get("renderTest1Size") ?? 255;
+    let renderTest1NumPointsX = params.get("renderTest1NumPointsX") ?? 100;
+    let renderTest1NumPointsZ = params.get("renderTest1NumPointsZ") ?? 100;
+    let renderTest1Height = params.get("renderTest1Height") ?? 10;
+
     let cl = loadGD(UI_CAMERA_OFFSET_VEC);
-    cl = [0, 0, 0];
-    for (let x = 0; x < 255; x += .8) {
-        for (let z = 0; z < 255; z += .8) {
-            let dx = x - cl[0];
-            let dz = z - cl[1];
 
-            let adx = (Math.abs(dx) / 10000);
-            let adz = (Math.abs(dz) / 10000);
+    if (renderTest1) {
+        for (let x = 10; x < renderTest1Size; x += renderTest1Size / renderTest1NumPointsX) {
+            for (let z = 0; z < renderTest1Size; z += renderTest1Size / renderTest1NumPointsZ) {
+                let dx = x - cl[0];
+                let dz = z - cl[2];
 
-            x += adx;
-            z += adz;
-            let y = -9 - 10 * Math.sin((x * z + ((Date.now() / (10 + (.01 * adz))) % 628)) / 100);
-            y = 10 * Math.sin((x * (1 + z/1000)) + (Date.now() / 1000) % 100)
+                let adx = Math.sin((Math.abs(dx) / 10000));
+                let adz = Math.sin((Math.abs(dz) / 10000));
 
-            renderPoint(x, y, z, rgbToHex(x, (x + z) / 2, z));
+                let y = -9 - 10 * Math.sin((x * z + ((Date.now() / (10 + (.01 * adz))) % 628)) / 100);
+                y = renderTest1Height * Math.sin((x * (1 + z / 1000)) + (Date.now() / 1000) % 100)
+
+                renderPoint(x, y, z, rgbToHex(x, (x + z) / 2, z));
+            }
         }
     }
+
 }
 
 function renderTestVec(from, vec, scalar = 10) {
@@ -162,10 +172,10 @@ function renderTestVec(from, vec, scalar = 10) {
     }
 }
 
-let test_points = new Array();
+let renderpoint_queue = new Array();
 function renderPoints() {
-    test_points.sort((a, b) => a[0] - b[0]);
-    test_points.forEach((pointArr) => {
+    renderpoint_queue.sort((a, b) => (b[0] - a[0]));
+    renderpoint_queue.forEach((pointArr) => {
         let color = pointArr[1];
         let loc = pointArr[2];
         let size = pointArr[3];
@@ -175,7 +185,7 @@ function renderPoints() {
         MAIN_CONTEXT.arc(loc[0], loc[1], size, 0, 2 * Math.PI, false);
         MAIN_CONTEXT.fill();
     });
-    test_points = new Array();
+    renderpoint_queue = new Array();
 }
 
 export function renderPoint(x, y, z, color) {
@@ -183,7 +193,7 @@ export function renderPoint(x, y, z, color) {
     if (point != null) {
         let pz = point[2];
         let size = Math.max(1, 800 / pz);
-        test_points.push([z, color, point, size]);
+        renderpoint_queue.push([point[2], color, point, size]);
     }
 }
 
@@ -191,7 +201,7 @@ export function renderPoint(x, y, z, color) {
 export function renderVec(v1, v2, color) {
     let p1 = cartesianToScreen(...v1);
     let p2 = cartesianToScreen(...v2);
-    
+
     if (p1 != null && p2 != null) {
         let pz = p1[2];
         let size = Math.max(1, 200 / pz);
@@ -296,7 +306,7 @@ export function canvasPan3DRoutine() {
     offset = addVectors(offset, ro);
     offset = addVectors(offset, uo);
 
-    decayVec(UI_CAMERA_OFFSET_VEC_DT);
+    decayVec(UI_CAMERA_OFFSET_VEC_DT, 0.93);
 
     _applyDerivativeVec(UI_CAMERA_OFFSET_VEC, offset, true, .1);
     // _applyDerivativeVec(UI_CAMERA_OFFSET_VEC, UI_CAMERA_OFFSET_VEC_DT);
