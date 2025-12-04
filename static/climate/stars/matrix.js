@@ -70,6 +70,9 @@ export function normalizeVec3(vector, toLength=1) {
   vector[2] /= length;
   return vector;
 }
+export function addVectorsCopy(v1, v2) {
+  return addVectors(structuredClone(v1), v2);
+}
 
 export function addVectors(v1, v2) {
   for (let i = 0; i < v1.length; i++) {

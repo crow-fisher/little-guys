@@ -178,6 +178,7 @@ export function renderPoint(x, y, z, color) {
     }
 }
 
+
 export function renderVec(v1, v2, color) {
     let p1 = cartesianToScreen(...v1);
     let p2 = cartesianToScreen(...v2);
@@ -192,6 +193,10 @@ export function renderVec(v1, v2, color) {
         MAIN_CONTEXT.lineTo(...p2);
         MAIN_CONTEXT.stroke();
     }
+}
+
+export function getCameraPosition() {
+    return structuredClone(loadGD(UI_CAMERA_OFFSET_VEC));
 }
 
 function getFrameWorldToCameraMatrix() {
