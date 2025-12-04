@@ -2,7 +2,7 @@ import { doWaterFlow, getFrameSimulationSquares, periodicPurgeOldGroupData, phys
 import { doClickAdd, doClickAddEyedropperMixer } from "./manipulation.js";
 import { renderClouds, renderTemperature, renderWaterSaturation } from "./climate/simulation/temperatureHumidity.js";
 import { doTimeSeek, doTimeSkipToNow, getTimeScale, isTimeSeeking, renderTime, updateTime } from "./climate/time.js";
-import { executeFunctionQueue, loadGD, saveGD, UI_CAMERA_EXPOSURE, UI_LIGHTING_GLOBAL, UI_SIMULATION_CLOUDS, UI_VIEWMODE_AIRTICKRATE, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_DEV5, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_WIND } from "./ui/UIData.js";
+import { executeFunctionQueue, loadGD, saveGD, UI_CAMERA_EXPOSURE, UI_LIGHTING_GLOBAL, UI_SIMULATION_CLOUDS, UI_VIEWMODE_3D, UI_VIEWMODE_AIRTICKRATE, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_DEV5, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_WIND } from "./ui/UIData.js";
 import { initUI, renderMouseHover, renderWindows, resetWindowHovered, updateWindows } from "./ui/WindowManager.js";
 import { renderWindPressureMap } from "./climate/simulation/wind.js";
 import { LightingHandler } from "./lighting/lightingHandler.js";
@@ -17,6 +17,7 @@ import { renderCloudsDebug } from "./climate/weather/weatherManager.js";
 import { clearTimeouts, completeActiveJobs, prepareTickJobs } from "./scheduler.js";
 import { canvasPanRoutine } from "./canvas.js";
 import { render3DHud } from "./camera.js";
+import { gamepadCameraInput } from "./gamepadCameraInput.js";
 
 initUI();
 let lightingHandler = new LightingHandler();
@@ -48,11 +49,18 @@ export function resetClimate() {
     climateHandler.reset();
 }
 
-function playerMainTick() {
-    if (getTimeScale() > 0) {
-        gamepadInputLoop();
-        playerTick();
+function gamepadAndPlayerTick() {
+    gamepadInputLoop();
+
+    if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_3D) {
+        gamepadCameraInput();
     }
+    else {
+        if (getTimeScale() > 0) {
+            playerTick();
+        }
+    }
+
 }
 
 export function scheduler_main() {
@@ -64,7 +72,7 @@ export function scheduler_main() {
         resetWindowHovered();
         canvasPanRoutine();
         squareTick();
-        playerMainTick();
+        gamepadAndPlayerTick();
         orgTick();
         render();
         renderWindows();

@@ -1,13 +1,15 @@
 const gamepads = {};
 
-export const GBA = 0b100000000;
-export const GBY = 0b010000000;
-export const GBX = 0b001000000;
-export const GBB = 0b000100000;
-export const GBDU = 0b000001000;
-export const GBDD = 0b000000100;
-export const GBDL = 0b000000010;
-export const GBDR = 0b000000001;
+export const GBA  = 0b10000000000; // gamepad button a 
+export const GBY  = 0b01000000000; // ...
+export const GBX  = 0b00100000000;
+export const GBB  = 0b00010000000;
+export const GBDU = 0b00000100000; // gamepad button dpad up
+export const GBDD = 0b00000010000; // ...
+export const GBDL = 0b00000001000;
+export const GBDR = 0b00000000100; 
+export const GBSL = 0b00000000010; // gamepad button shoulder left
+export const GBSR = 0b00000000001; // ...
 
 let activeGamepad = 0;
 
@@ -60,6 +62,8 @@ export function gamepadInputLoop() {
     doButtonInput(GBB, gp.buttons[1].pressed);
     doButtonInput(GBX, gp.buttons[2].pressed);
     doButtonInput(GBY, gp.buttons[3].pressed);
+    doButtonInput(GBSL, gp.buttons[4].pressed);
+    doButtonInput(GBSR, gp.buttons[5].pressed);
 
     if (gp.buttons.length >= 16) {
         doButtonInput(GBDU, gp.buttons[12].pressed);
