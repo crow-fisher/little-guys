@@ -25,6 +25,7 @@ import { loadGD, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LI
 import { deregisterSquare, registerSquare } from "../waterGraph.js";
 import { STAGE_DEAD } from "../organisms/Stages.js";
 import { cartesianToScreen } from "../camera.js";
+import { subtractVectors } from "../climate/stars/matrix.js";
 
 export class BaseSquare {
     constructor(posX, posY) {
@@ -523,7 +524,7 @@ export class BaseSquare {
 
     combinePoints(p1, p2, getter) {
         if (p1[getter] == null || p2[getter] == null)
-            return p1[getter] ?? p2[getter] ?? [0, 0, 0, 0];
+            return null;
 
         return [
             (p1[getter][0] + p2[getter][0]) * .5,

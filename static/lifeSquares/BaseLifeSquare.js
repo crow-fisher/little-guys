@@ -4,14 +4,14 @@ import { hexToRgb, hsv2rgb, rgb2hsv, rgbToHex, rgbToRgba, UI_BIGDOTSOLID } from 
 import { getDaylightStrengthFrameDiff } from "../climate/time.js";
 import { addSquare } from "../squares/_sqOperations.js";
 
-import { RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED, RGB_COLOR_GREEN, COLOR_RED, COLOR_BLUE } from "../colors.js";
+import { RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED, RGB_COLOR_GREEN, COLOR_RED, COLOR_BLUE, COLOR_BLACK } from "../colors.js";
 import { removeSquare } from "../globalOperations.js";
 import { STATE_HEALTHY, STAGE_DEAD, TYPE_ROOT } from "../organisms/Stages.js";
 import { getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasHeight, getCanvasWidth, getCurZoom, rotatePoint, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasFillRectTheta, zoomCanvasFillRectTheta3D, zoomCanvasSquareText } from "../canvas.js";
 import { loadGD, UI_CANVAS_SQUARES_ZOOM, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_3D, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_NORMAL, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../ui/UIData.js";
-import { cartesianToScreen, renderTestPoint } from "../camera.js";
-import { addVectors } from "../climate/stars/matrix.js";
+import { cartesianToScreen, getForwardVec, renderPoint, renderVec } from "../camera.js";
+import { addVectors, crossVec3, subtractVectors } from "../climate/stars/matrix.js";
 
 export const LSQ_RENDERMODE_SQUARE = "LSQ_RENDERMODE_SQUARE";
 export const LSQ_RENDERMODE_CIRCLE = "LSQ_RENDERMODE_CIRCLE";
@@ -212,8 +212,17 @@ class BaseLifeSquare {
          
         startVec[1] *= -1;
         endVec[1] *= -1;
-        renderTestPoint(...startVec, COLOR_RED);
-        renderTestPoint(...endVec, COLOR_BLUE);
+        // renderPoint(...startVec, COLOR_RED);
+        // renderPoint(...endVec, COLOR_BLUE);
+        renderVec(startVec, endVec, COLOR_BLACK);
+
+        let dv = rotatedOffset; 
+        let forward = getForwardVec();
+        let side = crossVec3(dv, forward);
+        let sideEnd = addVectors(structuredClone(this.posVec), side);
+
+        renderVec(startVec, sideEnd);
+
         return;
         if (this.renderMode == LSQ_RENDERMODE_THETA) {
             let func = zoomCanvasFillRectTheta;

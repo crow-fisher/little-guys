@@ -6,6 +6,12 @@ import { hexToRgb, randRange, rgbToHex } from "./common.js";
 import { MAIN_CONTEXT } from "./index.js";
 import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CANVAS_SQUARES_ZOOM, UI_CAMERA_OFFSET_VEC, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_STARMAP_FOV, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_ROTATION_VEC_DT, saveGD } from "./ui/UIData.js";
 
+export function getForwardVec() {
+    return cameraToWorld[2];
+}
+export function getCameraRotationVec() {
+    return subtractVectors([0, 0, 0], getForwardVec());
+}
 
 // https://learnopengl.com/Getting-started/Camera
 export function getFrameCameraMatrix() {
@@ -105,7 +111,7 @@ function renderPlanes() {
     for (let y = -200; y <= 200; y += 200) {
         for (let x = -100; x < 100; x += 8) {
             for (let z = -100; z < 100; z += 8) {
-                renderTestPoint(x + xo, y + yo, z, COLOR_WHITE);
+                renderPoint(x + xo, y + yo, z, COLOR_WHITE);
             }
         }
     }
@@ -127,7 +133,7 @@ function renderTest() {
             let y = -9 - 10 * Math.sin((x * z + ((Date.now() / (10 + (.01 * adz))) % 628)) / 100);
             y = 10 * Math.sin((x * (1 + z/1000)) + (Date.now() / 1000) % 100)
 
-            renderTestPoint(x, y, z, rgbToHex(x, (x + z) / 2, z));
+            renderPoint(x, y, z, rgbToHex(x, (x + z) / 2, z));
         }
     }
 }
@@ -163,12 +169,28 @@ function renderPoints() {
     test_points = new Array();
 }
 
-export function renderTestPoint(x, y, z, color) {
+export function renderPoint(x, y, z, color) {
     let point = cartesianToScreen(x, y, z);
     if (point != null) {
         let pz = point[2];
         let size = Math.max(1, 800 / pz);
         test_points.push([z, color, point, size]);
+    }
+}
+
+export function renderVec(v1, v2, color) {
+    let p1 = cartesianToScreen(...v1);
+    let p2 = cartesianToScreen(...v2);
+    
+    if (p1 != null && p2 != null) {
+        let pz = p1[2];
+        let size = Math.max(1, 200 / pz);
+        MAIN_CONTEXT.lineWidth = size;
+        MAIN_CONTEXT.strokeStyle = color;
+        MAIN_CONTEXT.beginPath();
+        MAIN_CONTEXT.moveTo(...p1);
+        MAIN_CONTEXT.lineTo(...p2);
+        MAIN_CONTEXT.stroke();
     }
 }
 
