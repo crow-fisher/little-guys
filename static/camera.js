@@ -96,7 +96,16 @@ export function pointToScreen(x, y, z) {
     if (cameraZ < 0)
         return null;
 
-    return [getCanvasWidth() * point[0] / cameraZ, getCanvasHeight() * point[1] / cameraZ, cameraZ]
+    let pxr = point[0] / cameraZ;
+    let pyr = point[1] / cameraZ;
+
+    let px = 0.5 + pxr;
+    let py = 0.5 + pyr;
+
+    let cw = getCanvasWidth();
+    let ch = getCanvasHeight();
+
+    return [cw * px, ch * py, cameraZ]
 }
 
 export function render3DHud() {
