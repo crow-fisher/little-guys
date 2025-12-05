@@ -135,6 +135,7 @@ function renderTest() {
     let renderTest1NumPointsX = params.get("renderTest1NumPointsX") ?? 100;
     let renderTest1NumPointsZ = params.get("renderTest1NumPointsZ") ?? 100;
     let renderTest1Height = params.get("renderTest1Height") ?? 10;
+    let renderTest1Rate = params.get("renderTest1Rate") ?? 1000;
 
     let cl = loadGD(UI_CAMERA_OFFSET_VEC);
 
@@ -148,7 +149,7 @@ function renderTest() {
                 let adz = Math.sin((Math.abs(dz) / 10000));
 
                 let y = -9 - 10 * Math.sin((x * z + ((Date.now() / (10 + (.01 * adz))) % 628)) / 100);
-                y = renderTest1Height * Math.sin((x * (1 + z / 1000)) + (Date.now() / 1000) % 100)
+                y = renderTest1Height * Math.sin((x * (1 + z / 1000)) + (Date.now() / renderTest1Rate) % 100)
 
                 renderPoint(x, y, z, rgbToHex(x, (x + z) / 2, z));
             }
