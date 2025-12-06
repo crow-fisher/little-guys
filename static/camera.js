@@ -150,7 +150,6 @@ function renderTest() {
 
                 let y = -9 - 10 * Math.sin((x * z + ((Date.now() / (10 + (.01 * adz))) % 628)) / 100);
                 y = renderTest1Height * Math.sin((x * (1 + z / 1000)) + (Date.now() / renderTest1Rate) % 100)
-
                 renderPoint(x, y, z, rgbToHex(x, (x + z) / 2, z));
             }
         }
