@@ -3,7 +3,7 @@ import { getActiveClimate } from "./climate/climateManager.js";
 import { getGlobalThetaBase, setGlobalThetaBase } from "./globals.js";
 import { isPlayerRunning, playerKeyDown, playerKeyUp } from "./player/playerMain.js";
 import { addSquareOverride } from "./squares/_sqOperations.js";
-import { loadGD, saveGD, UI_PALETTE_EYEDROPPER, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_MIXER, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_TOPBAR_BLOCK, UI_PALETTE_AQUIFER, closeEyedropperMixer, UI_PALETTE_ERASE, UI_TEXTEDIT_ACTIVE, UI_REGEX, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALETTE_PLANTS, UI_PALETTE_ROCKIDX, addUIFunctionMap, UI_PALETTE_COMPOSITION, UI_VIEWMODE_SELECT, UI_VIEWMODE_3D, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_OFFSET_VEC, UI_CAMERA_ROTATION_VEC, UI_CAMERA_ROTATION_VEC_DT, UI_STARMAP_ROTATION_VEC_DT, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Z, UI_CANVAS_VIEWPORT_CENTER_Y } from "./ui/UIData.js";
+import { loadGD, saveGD, UI_PALETTE_EYEDROPPER, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_MIXER, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_TOPBAR_BLOCK, UI_PALETTE_AQUIFER, closeEyedropperMixer, UI_PALETTE_ERASE, UI_TEXTEDIT_ACTIVE, UI_REGEX, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALETTE_PLANTS, UI_PALETTE_ROCKIDX, addUIFunctionMap, UI_PALETTE_COMPOSITION, UI_VIEWMODE_SELECT, UI_VIEWMODE_3D, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_OFFSET_VEC, UI_CAMERA_ROTATION_VEC, UI_CAMERA_ROTATION_VEC_DT, UI_STARMAP_ROTATION_VEC_DT, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Z, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CANVAS_SQUARES_ZOOM } from "./ui/UIData.js";
 import { clearMouseHoverColorCacheMap } from "./ui/WindowManager.js";
 
 export const KEY_CONTROL = "Control";
@@ -96,14 +96,36 @@ function _3dViewKeymap(key) {
     saveGD(UI_CAMERA_ROTATION_VEC_DT, crd)
 
     if (key == 'Escape') {
-        saveGD(UI_CANVAS_VIEWPORT_CENTER_X, 0);
-        saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, 0);
+            saveGD(UI_CANVAS_VIEWPORT_CENTER_X, 0);
+            saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, 0);
         
         saveGD(UI_CAMERA_OFFSET_VEC, [0, 0, -50, 1]);
         saveGD(UI_CAMERA_OFFSET_VEC, [0, 0, -50, 1]);
         saveGD(UI_CAMERA_OFFSET_VEC_DT, [0, 0, 0, 0]);
         saveGD(UI_CAMERA_ROTATION_VEC, [0, 0, 0, 0]);
         saveGD(UI_CAMERA_ROTATION_VEC_DT, [0, 0, 0, 0]);
+    }
+
+    if (key == ' ') {
+
+        // somehow marrying the 3d and 2d camera views is being hard....lol
+
+        return;
+        let bs = getBaseSize();
+        console.log(loadGD(UI_CAMERA_OFFSET_VEC));
+        console.log(loadGD(UI_CANVAS_VIEWPORT_CENTER_X))
+        console.log(loadGD(UI_CANVAS_VIEWPORT_CENTER_Y))
+        console.log(loadGD(UI_CANVAS_SQUARES_ZOOM));
+
+        let cx = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) / bs;
+        let cy = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) / bs;
+        let cz = 4 - (2 ** loadGD(UI_CANVAS_SQUARES_ZOOM));
+
+        cx /= cz;
+        cy /= cz;
+
+        saveGD(UI_CAMERA_OFFSET_VEC, [-cx, cy, (-50) * (2 ** cz), 1]);
+
     }
 
 }

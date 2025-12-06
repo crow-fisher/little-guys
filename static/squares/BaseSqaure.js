@@ -497,8 +497,6 @@ export class BaseSquare {
         let bottomSquare = getSquares(this.posX, this.posY + 1).find((sq) => sq.solid);
         this.z = bottomSquare != null ? (bottomSquare.z + Math.abs(bottomSquare.surfaceLightingFactor * .21)) : 0;
         
-        this.setFrameCartesians();
-
         let tlsq = getSquares(this.posX - 1, this.posY).find((sq) => sq.solid && sq.visible && sq.tls != null) ?? this;
         let trsq = getSquares(this.posX + 1, this.posY).find((sq) => sq.solid && sq.visible && sq.trs != null) ?? this;
         let blsq = getSquares(this.posX - 1, this.posY + 1).find((sq) => sq.solid && sq.visible && sq.bls != null) ?? this;

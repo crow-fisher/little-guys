@@ -1,4 +1,4 @@
-import { doWaterFlow, getFrameSimulationSquares, periodicPurgeOldGroupData, physics, processOrganisms, renderCandidateMap, renderOrganisms, renderSolidSquares, renderTargetMap, renderWaterSquares, reset } from "./globalOperations.js";
+import { doWaterFlow, getFrameSimulationSquares, periodicPurgeOldGroupData, physics, processOrganisms, renderCandidateMap, renderOrganisms, renderSolidSquares, renderTargetMap, renderWaterSquares, reset, setFrameCartesians } from "./globalOperations.js";
 import { doClickAdd, doClickAddEyedropperMixer } from "./manipulation.js";
 import { renderClouds, renderTemperature, renderWaterSaturation } from "./climate/simulation/temperatureHumidity.js";
 import { doTimeSeek, doTimeSkipToNow, getTimeScale, isTimeSeeking, renderTime, updateTime } from "./climate/time.js";
@@ -111,6 +111,9 @@ function render() {
     }
     if (selectedViewMode == UI_VIEWMODE_DEV2) {
         renderTargetMap();
+    }
+    if (selectedViewMode == UI_VIEWMODE_3D) {
+        setFrameCartesians();
     }
     lightingHandler.lightingTick();
 

@@ -87,6 +87,10 @@ export function renderSolidSquares() {
     frame_solid_squares.forEach((sq) => sq.render());
 }
 
+export function setFrameCartesians() {
+    frame_solid_squares.forEach((sq) => sq.setFrameCartesians());
+}
+
 export function renderWaterSquares() {
     frame_water_squares.forEach((sq) => sq.render());
 }
