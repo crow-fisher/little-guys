@@ -8,48 +8,6 @@ import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CANVAS_SQUARES_ZOOM, UI_CAMERA_OFFSE
 
 let params = new URLSearchParams(document.location.search);
 
-
-export function getForwardVec() {
-    return cameraToWorld[2];
-}
-export function getCameraRotationVec() {
-    return subtractVectors([0, 0, 0], getForwardVec());
-}
-
-// https://learnopengl.com/Getting-started/Camera
-export function getFrameCameraMatrix() {
-    let cr = loadGD(UI_CAMERA_ROTATION_VEC);
-    let yaw = cr[0];
-    let pitch = cr[1];
-
-    let rotNorm = [0, 0, 0];
-
-    rotNorm[0] = Math.cos(yaw) * Math.cos(pitch);
-    rotNorm[1] = Math.sin(pitch);
-    rotNorm[2] = Math.sin(yaw) * Math.cos(pitch);
-
-    let forward = normalizeVec3(subtractVectors([0, 0, 0], rotNorm));
-    let right = normalizeVec3(crossVec3([0, 1, 0], forward));
-    let up = normalizeVec3(crossVec3(forward, right));
-
-    let from = structuredClone(loadGD(UI_CAMERA_OFFSET_VEC));
-
-    // forward = [0, 0, -1, from[0]];
-    // right = [-1, 0, 0, from[1]];
-    // up = [0, 1, 0, from[2]];
-
-    cameraToWorld = [
-        right,
-        up,
-        forward,
-        [0, 0, 0, 1]
-    ];
-
-    worldToCamera = transposeMat4(cameraToWorld);
-    worldToCamera[3] = [0, 0, 0, 1];
-    return worldToCamera;
-}
-
 let cameraToWorld = [
     [0, 0, 0, 0],
     [0, 0, 0, 0],
@@ -65,12 +23,51 @@ let worldToCamera = [
 let frameMatrixDay = 0;
 
 
+export function getForwardVec() {
+    return cameraToWorld[2];
+}
+export function getCameraRotationVec() {
+    return subtractVectors([0, 0, 0], getForwardVec());
+}
+
+// this implementation of a 3d camera uses a lookat matrix to manage the camera position and direction,
+// and a perspective matrix for going from that to screen space. 
+
+// refs:
+// https://learnopengl.com/Getting-started/Camera
+// https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix.html
+// https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/lookat-function/framing-lookat-function.html
+
+
+
+export function getFrameCameraMatrix() {
+    let cr = loadGD(UI_CAMERA_ROTATION_VEC);
+    let yaw = cr[0];
+    let pitch = cr[1];
+
+    let rotNorm = [0, 0, 0];
+
+    rotNorm[0] = Math.cos(yaw) * Math.cos(pitch);
+    rotNorm[1] = Math.sin(pitch);
+    rotNorm[2] = Math.sin(yaw) * Math.cos(pitch);
+
+    let forward = normalizeVec3(subtractVectors([0, 0, 0], rotNorm));
+    let right = normalizeVec3(crossVec3([0, 1, 0], forward));
+    let up = normalizeVec3(crossVec3(forward, right));
+
+    cameraToWorld = [
+        right,
+        up,
+        forward,
+        [0, 0, 0, 1]
+    ];
+
+    worldToCamera = transposeMat4(cameraToWorld);
+    worldToCamera[3] = [0, 0, 0, 1];
+    return worldToCamera;
+}
+
 export function cartesianToScreen(x, y, z) {
-    // https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix.html
-
-    // this is what i need to do for  the camera but i dont wanna
-    // https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/lookat-function/framing-lookat-function.html
-
     if (getCurDay() != frameMatrixDay) {
         cameraToWorld = getFrameCameraMatrix();
         frameMatrixDay = getCurDay();
@@ -78,10 +75,6 @@ export function cartesianToScreen(x, y, z) {
 
     let point = addVectors([x, y, z, 1], loadGD(UI_CAMERA_OFFSET_VEC));
     return pointToScreen(...multiplyMatrixAndPoint(cameraToWorld, point));
-    // z coordinates are now remapped to a range of 0,
-    // subtractVectors(point, loadGD(UI_CAMERA_OFFSET_VEC));
-    // if (point.z > 0 && !force)j
-    // return null
 }
 
 export function pointToScreen(x, y, z) {

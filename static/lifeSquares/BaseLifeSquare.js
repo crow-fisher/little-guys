@@ -209,7 +209,6 @@ class BaseLifeSquare {
         let startVec = this.posVec;
         let endVec = addVectors(structuredClone(this.posVec), rotatedOffset);
 
-         
         startVec[1] *= -1;
         endVec[1] *= -1;
         // renderPoint(...startVec, COLOR_RED);
@@ -217,14 +216,17 @@ class BaseLifeSquare {
         renderVec(startVec, endVec, COLOR_BLACK);
 
         let dv = rotatedOffset;
-        let forward = normalizeVec3(subtractVectors(getCameraPosition(), this.posVec));
-        let side = crossVec3(dv, getCameraRotationVec());
+
+        let forward = normalizeVec3(addVectors(getCameraPosition(), startVec));
+
+        let side = crossVec3(dv, forward);
     
         let sideEnd = addVectorsCopy(this.posVec, side);
         let forwardEnd = addVectorsCopy(this.posVec, forward);
 
         renderVec(startVec, sideEnd, COLOR_OTHER_BLUE);
         renderVec(startVec, forwardEnd, COLOR_RED);
+        
 
         return;
         if (this.renderMode == LSQ_RENDERMODE_THETA) {

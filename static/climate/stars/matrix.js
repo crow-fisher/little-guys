@@ -75,10 +75,12 @@ export function addVectorsCopy(v1, v2) {
 }
 
 export function addVectors(v1, v2) {
-  for (let i = 0; i < v1.length; i++) {
-    v1[i] += v2[i];
+  let out = structuredClone(v1);
+  let l = Math.min(v1.length, v2.length);
+  for (let i = 0; i < l; i++) {
+    out[i] += v2[i];
   }
-  return v1;
+  return out.slice(0, l);
 }
 
 export function subtractVectors(v1, v2) {
