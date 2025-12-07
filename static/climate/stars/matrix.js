@@ -88,6 +88,10 @@ export function subtractVectors(v1, v2) {
   }
   return v1;
 }
+export function subtractVectorsCopy(v1, v2) {
+  return subtractVectors(structuredClone(v1), v2)
+}
+
 export function multiplyVectorByScalar(vec, scalar) {
   for (let i = 0; i < vec.length; i++) {
     vec[i] *= scalar;

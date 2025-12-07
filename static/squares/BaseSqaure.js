@@ -520,7 +520,7 @@ export class BaseSquare {
         if (pArr.some((p) => p == null))
             return;
 
-        let centerZ = [this.tls, this.trs, this.bls, this.brs].map((arr) => arr[2]).reduce((a, b) => a + b, 0) / 4;
+        let centerZ = pArr.slice(0, 4).map((arr) => arr[2]).reduce((a, b) => a + b, 0) / 4;
         addRenderJob(new QuadRenderJob(pArr, this.cachedRgba, centerZ));
 
         // fillCanvasPointArr(pArr);

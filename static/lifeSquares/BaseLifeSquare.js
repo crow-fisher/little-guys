@@ -11,7 +11,8 @@ import { getDefaultLighting, processLighting } from "../lighting/lightingProcess
 import { getBaseSize, getCanvasHeight, getCanvasWidth, getCurZoom, rotatePoint, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasFillRectTheta, zoomCanvasFillRectTheta3D, zoomCanvasSquareText } from "../canvas.js";
 import { loadGD, UI_CAMERA_OFFSET_VEC, UI_CANVAS_SQUARES_ZOOM, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_3D, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_NORMAL, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../ui/UIData.js";
 import { cartesianToScreen, getCameraPosition, getCameraRotationVec, getForwardVec, renderPoint, renderVec } from "../camera.js";
-import { addVectors, addVectorsCopy, crossVec3, normalizeVec3, subtractVectors } from "../climate/stars/matrix.js";
+import { addVectors, addVectorsCopy, crossVec3, normalizeVec3, subtractVectors, subtractVectorsCopy } from "../climate/stars/matrix.js";
+import { addRenderJob, QuadRenderJob } from "../rasterizer.js";
 
 export const LSQ_RENDERMODE_SQUARE = "LSQ_RENDERMODE_SQUARE";
 export const LSQ_RENDERMODE_CIRCLE = "LSQ_RENDERMODE_CIRCLE";
@@ -216,16 +217,23 @@ class BaseLifeSquare {
         let dv = rotatedOffset;
 
         let forward = normalizeVec3(addVectors(getCameraPosition(), startVec));
+        let side = normalizeVec3(crossVec3(dv, forward));
 
-        let side = crossVec3(dv, forward);
-    
-        let sideEnd = addVectorsCopy(this.posVec, side);
-        let forwardEnd = addVectorsCopy(this.posVec, forward);
-
-        renderVec(startVec, sideEnd, COLOR_OTHER_BLUE);
-        renderVec(startVec, forwardEnd, COLOR_RED);
+        let p1 = cartesianToScreen(...subtractVectorsCopy(endVec, side));
+        let p2 = cartesianToScreen(...addVectorsCopy(endVec, side));
+        let p3 = cartesianToScreen(...subtractVectorsCopy(startVec, side));
+        let p4 = cartesianToScreen(...addVectorsCopy(startVec, side));
         
+        let pArr = [p1, p2, p4, p3, p1];
+
+        if (pArr.some((p) => p == null))
+            return;
+
+        let centerZ = pArr.slice(0, 4).map((arr) => arr[2]).reduce((a, b) => a + b, 0) / 4;
+        addRenderJob(new QuadRenderJob(pArr, this.cachedRgba, centerZ));
         return;
+
+
         if (this.renderMode == LSQ_RENDERMODE_THETA) {
             let func = zoomCanvasFillRectTheta;
 
@@ -388,7 +396,7 @@ class BaseLifeSquare {
         return this.frameCacheLighting;
     }
 
-    renderWithVariedColors(frameOpacity = 1) {
+    frameColorUpdate(frameOpacity = 1) {
         let minTime = 2000;
         // if (isSqColChanged(Math.floor(this.getPosX()))) {
         //     minTime /= 4;
@@ -438,6 +446,10 @@ class BaseLifeSquare {
             };
             this.cachedRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), frameOpacity);
         }
+    }
+
+    renderWithVariedColors(frameOpacity = 1) {
+        this.frameColorUpdate(frameOpacity);
         MAIN_CONTEXT.fillStyle = this.cachedRgba;
         this.renderToCanvas();
     }
