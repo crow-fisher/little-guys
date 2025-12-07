@@ -1,3 +1,4 @@
+import { randRange } from "../common.js";
 import { saveUserSettings } from "../saveAndLoad.js";
 
 export const UI_MODE_SOIL = "soil";
@@ -412,13 +413,16 @@ export let _GAMEDATA_DEFAULT = {
     UI_STARMAP_XROTATION_SPEED: 0,
     UI_STARMAP_YROTATION_SPEED: 0,
     UI_STARMAP_ZROTATION_SPEED: 0,
-    UI_STARMAP_FOV: 128,
+    UI_STARMAP_FOV: -3,
 
     UI_CAMERA_OFFSET_VEC: [0, 0, 0, 1],
     UI_CAMERA_OFFSET_VEC_DT: [0, 0, 0, 0],
     UI_CAMERA_ROTATION_VEC: [0, 0, 0, 0],
     UI_CAMERA_ROTATION_VEC_DT: [0, 0, 0, 0],
-    UI_STARMAP_ROTATION_VEC: [0, 0, 0, 0],
+    UI_STARMAP_ROTATION_VEC: [
+        randRange(-.4, .4), 
+        randRange(-.4, .4), 
+        randRange(-.4, .4), 0],
     UI_STARMAP_ROTATION_VEC_DT: [0, 0, 0, 0]
 };
 
