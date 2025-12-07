@@ -227,7 +227,6 @@ class BaseLifeSquare {
         renderVec(startVec, sideEnd, COLOR_OTHER_BLUE);
         renderVec(startVec, forwardEnd, COLOR_RED);
         
-
         return;
         if (this.renderMode == LSQ_RENDERMODE_THETA) {
             let func = zoomCanvasFillRectTheta;
