@@ -30,7 +30,6 @@ export function gamepadCameraInput() {
     crd[1] -= offset * rs[1];
     saveGD(UI_CAMERA_ROTATION_VEC_DT, crd)
 
-
     // hotkeys 
 
     if (isButtonPressed(GBA)) {

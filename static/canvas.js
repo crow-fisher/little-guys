@@ -574,23 +574,9 @@ export function getCanvasHeight() {
 }
 
 
-// addUIFunctionMap(UI_VIEWMODE_SELECT, async () => {
-//     let curViewMode = loadGD(UI_VIEWMODE_SELECT);
-//     if (curViewMode == UI_VIEWMODE_3D) {
-//         let cx = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) / getBaseSize();
-//         let cy = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) / getBaseSize();
-//         let cz = -10;
-//         let cw = 1;
-        
-//         // saveGD(UI_CAMERA_OFFSET_VEC, [cx, cy, cz, cw]);
-//         saveGD(UI_CAMERA_OFFSET_VEC, [0, 0, 0, 0]);
-//         saveGD(UI_CAMERA_OFFSET_VEC_DT, [0, 0, 0, 0]);
-
-//         // MAIN_CANVAS.addEventListener("click", async () => {
-//         //     await MAIN_CANVAS.requestPointerLock({
-//         //         unadjustedMovement: true,
-//         //     });
-//         // });
-//     } else
-//         document.exitPointerLock();
-// })
+addUIFunctionMap(UI_VIEWMODE_SELECT, async () => {
+    let curViewMode = loadGD(UI_VIEWMODE_SELECT);
+    if (curViewMode == UI_VIEWMODE_3D) {
+        reset3DCameraTo2DScreen();
+    }
+})
