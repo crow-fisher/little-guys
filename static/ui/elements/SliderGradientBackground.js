@@ -21,6 +21,8 @@ export class SliderGradientBackground extends WindowElement {
     }
 
     render(startX, startY) {
+        if (isNaN(startX))
+            return;
         if (this.renderSkyBackground) {
             MAIN_CONTEXT.fillStyle = getCurBackgroundColor();
             MAIN_CONTEXT.fillRect(startX, startY, this.sizeX, this.sizeY);

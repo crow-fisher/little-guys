@@ -4,7 +4,7 @@ import { getCurDay } from "./climate/time.js";
 import { COLOR_RED, COLOR_WHITE } from "./colors.js";
 import { hexToRgb, randRange, rgbToHex } from "./common.js";
 import { MAIN_CONTEXT } from "./index.js";
-import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CANVAS_SQUARES_ZOOM, UI_CAMERA_OFFSET_VEC, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_STARMAP_FOV, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_ROTATION_VEC_DT, saveGD } from "./ui/UIData.js";
+import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CANVAS_SQUARES_ZOOM, UI_CAMERA_OFFSET_VEC, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_ROTATION_VEC_DT, saveGD, UI_CAMERA_FOV } from "./ui/UIData.js";
 
 let params = new URLSearchParams(document.location.search);
 
@@ -72,7 +72,6 @@ export function cartesianToScreen(x, y, z) {
         cameraToWorld = getFrameCameraMatrix();
         frameMatrixDay = getCurDay();
     }
-
     // by convention, x and y are inverted
     let point = addVectors([x, -y, z, 1], loadGD(UI_CAMERA_OFFSET_VEC));
     return pointToScreen(...multiplyMatrixAndPoint(cameraToWorld, point));
@@ -93,7 +92,11 @@ export function reset3DCameraTo2DScreen() {
 export function pointToScreen(x, y, z) {
     let n = 1; // near clipping plane;
     let f = 1000; // far clipping plane;
-    let S = 1 / Math.tan(loadGD(UI_STARMAP_FOV));
+
+    let fov = loadGD(UI_CAMERA_FOV);
+    let r2d = 57.2958;
+    let S = 1 / (Math.tan((fov / r2d) / 2) * (Math.PI / (180 / r2d)));
+
     let perspectiveMatrix = [
         [S, 0, 0, 0],
         [0, S, 0, 0],

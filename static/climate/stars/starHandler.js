@@ -1,10 +1,11 @@
+import { cartesianToScreen } from "../../camera.js";
 import { getBaseSize, getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, zoomCanvasFillCircleRelPos } from "../../canvas.js";
 import { COLOR_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { invlerp } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
-import { loadGD, saveGD, UI_STARMAP_FOV, UI_STARMAP_ROTATION_VEC, UI_STARMAP_ROTATION_VEC_DT } from "../../ui/UIData.js";
+import { loadGD, saveGD, UI_STARMAP_ROTATION_VEC, UI_STARMAP_ROTATION_VEC_DT } from "../../ui/UIData.js";
 import { getFrameRelCloud } from "../simulation/temperatureHumidity.js";
-import { getCurDay, getDaylightStrength, tempToRgbaForStar } from "../time.js";
+import { getDaylightStrength, tempToRgbaForStar } from "../time.js";
 import { addVectors, multiplyMatrixAndPoint, multiplyVectorByScalar, normalizeVec3 } from "./matrix.js";
 
 export class StarHandler {
@@ -220,11 +221,11 @@ export class StarHandler {
             let startVecNormalized = normalizeVec3(startVec);
             let endVecNormalized = normalizeVec3(endVec);
 
-            let sp = this.cartesianToScreen(...startVec, true);
-            let ep = this.cartesianToScreen(...endVec, true);
+            let sp = cartesianToScreen(...startVec, true);
+            let ep = cartesianToScreen(...endVec, true);
 
-            let spn = this.cartesianToScreen(...startVecNormalized, true);
-            let epn = this.cartesianToScreen(...endVecNormalized, true);
+            let spn = cartesianToScreen(...startVecNormalized, true);
+            let epn = cartesianToScreen(...endVecNormalized, true);
 
             if (spn[2] <= sp[2] && epn[2] <= ep[2]) {
                 MAIN_CONTEXT.strokeStyle = COLOR_BLUE;
@@ -307,37 +308,11 @@ export class StarHandler {
         saveGD(UI_STARMAP_ROTATION_VEC_DT, multiplyVectorByScalar(loadGD(UI_STARMAP_ROTATION_VEC_DT), .97));
     }
 
-    cartesianToScreen(x, y, z, w, force = false) {
-        // https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix.html
-
-        let fov = loadGD(UI_STARMAP_FOV);
-        let r2d = 57.2958;
-        let S = 1 / (Math.tan((fov / r2d) / 2) * (Math.PI / (180 / r2d)));
-        let perspectiveMatrix = [
-            [S, 0, 0, 0],
-            [0, S, 0, 0],
-            [0, 0, S, -1],
-            [0, 0, 1, 0]
-        ];
-        let dayTheta = Math.PI * 2 * (getCurDay() % 1);
-        let vec = loadGD(UI_STARMAP_ROTATION_VEC);
-        let cameraX = vec[0];
-        let cameraY = vec[1];
-        let cameraZ = vec[2] + dayTheta;
-        let rotated = this.rotatePoint([x, y, z, w], cameraX, cameraY, cameraZ);
-        let transformed = multiplyMatrixAndPoint(perspectiveMatrix, rotated);
-
-        if (rotated[2] < 0 && !force)
-            return null;
-        return transformed;
-    }
-
     sphericalToScreen(phi, theta) {
-        let x = 1 * Math.sin(phi) * Math.cos(theta);
-        let y = 1 * Math.sin(phi) * Math.sin(theta);
-        let z = 1 * Math.cos(phi);
-        let w = 1;
-        return this.cartesianToScreen(x, y, z, w)
+        let x = (10 ** 8) * Math.sin(phi) * Math.cos(theta);
+        let y = -(10 ** 8) * Math.sin(phi) * Math.sin(theta);
+        let z = (10 ** 8) * Math.cos(phi);
+        return cartesianToScreen(x, y, z)
     }
 
     rotatePoint(point, rX, rY, rZ) {
