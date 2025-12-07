@@ -36,4 +36,5 @@ export function gamepadCameraInput() {
     if (isButtonPressed(GBA)) {
         reset3DCameraTo2DScreen();
     }
+    // no-op commit
 }
