@@ -26,6 +26,7 @@ import { deregisterSquare, registerSquare } from "../waterGraph.js";
 import { STAGE_DEAD } from "../organisms/Stages.js";
 import { cartesianToScreen } from "../camera.js";
 import { subtractVectors } from "../climate/stars/matrix.js";
+import { addRenderJob, QuadRenderJob } from "../rasterizer.js";
 
 export class BaseSquare {
     constructor(posX, posY) {
@@ -505,6 +506,7 @@ export class BaseSquare {
         this.bls = cartesianToScreen(...this.bl);
         this.brs = cartesianToScreen(...this.br);
 
+
         let p1 = this.combinePoints(this, tlsq, "tls");
         let p2 = this.combinePoints(this, trsq, "trs");
         let p3 = this.combinePoints(this, blsq, "bls");
@@ -514,8 +516,11 @@ export class BaseSquare {
 
         if (pArr.some((p) => p == null))
             return;
+        
+        let centerZ = [this.tls, this.trs, this.bls, this.brs].map((arr) => arr[2]).reduce((a, b) => a + b, 0) / 4;
+        addRenderJob(new QuadRenderJob(pArr, this.cachedRgba, centerZ));
 
-        fillCanvasPointArr(pArr);
+        // fillCanvasPointArr(pArr);
     }
 
     combinePoints(p1, p2, getter) {

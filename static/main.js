@@ -18,6 +18,7 @@ import { clearTimeouts, completeActiveJobs, prepareTickJobs } from "./scheduler.
 import { canvasPanRoutine } from "./canvas.js";
 import { render3DHud } from "./camera.js";
 import { gamepadCameraInput } from "./gamepadCameraInput.js";
+import { executeRenderJobs } from "./rasterizer.js";
 
 initUI();
 let lightingHandler = new LightingHandler();
@@ -118,9 +119,12 @@ function render() {
     lightingHandler.lightingTick();
 
     lightingExposureAdjustment();
+
     renderSolidSquares();
     renderOrganisms();
     renderWaterSquares();
+    executeRenderJobs();
+    
     if (loadGD(UI_SIMULATION_CLOUDS)) {
         if (selectedViewMode == UI_VIEWMODE_NORMAL || selectedViewMode == UI_VIEWMODE_DEV5)
             renderClouds();
