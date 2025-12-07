@@ -254,6 +254,7 @@ export class BaseSquare {
             this.renderWithVariedColors(1);
         } else if (selectedViewMode == UI_VIEWMODE_3D) {
             this.render3D(1);
+            return;
         } else if (selectedViewMode == UI_VIEWMODE_ORGANISMS || selectedViewMode == UI_VIEWMODE_EVOLUTION || selectedViewMode == UI_VIEWMODE_NUTRIENTS) {
             this.renderWithVariedColors(0.35);
         } else if (selectedViewMode == UI_VIEWMODE_GROUP) {

@@ -82,7 +82,7 @@ export function reset3DCameraTo2DScreen() {
         let bs = getBaseSize();
         let cx = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) / bs;
         let cy = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) / bs;
-        let cz = 24 * (2 ** (4 - loadGD(UI_CANVAS_SQUARES_ZOOM)));
+        let cz = 4 * (2 ** (6.5 - loadGD(UI_CANVAS_SQUARES_ZOOM)));
         saveGD(UI_CAMERA_OFFSET_VEC, [-cx, cy, cz, 1]);
         saveGD(UI_CAMERA_ROTATION_VEC, [Math.PI / 2, 0, 0, 0]);
         saveGD(UI_CAMERA_OFFSET_VEC_DT, [0, 0, 0, 0]);

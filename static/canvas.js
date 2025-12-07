@@ -517,6 +517,8 @@ export function canvasPanRoutine() {
     if (!isMiddleMouseClicked())
         return;
     panCanvas();
+    if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_3D)
+        reset3DCameraTo2DScreen();
 
 }
 
