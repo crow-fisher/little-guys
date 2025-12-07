@@ -464,10 +464,10 @@ export class BaseSquare {
     setFrameCartesians() { 
         let zs = this.z;
         let zd = this.surfaceLightingFactor;
-        this.tl = [this.posX, (-1) * (this.posY), zs]
-        this.tr = [this.posX + 1, (-1) * (this.posY), zs]
-        this.bl = [this.posX, (-1) * (this.posY + 1), zs]
-        this.br = [this.posX + 1, (-1) * (this.posY + 1), zs]
+        this.tl = [this.posX, this.posY, zs]
+        this.tr = [this.posX + 1, this.posY, zs]
+        this.bl = [this.posX, this.posY + 1, zs]
+        this.br = [this.posX + 1, this.posY + 1, zs]
     }
 
     render3D(opacityMult) {

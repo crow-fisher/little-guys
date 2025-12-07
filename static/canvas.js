@@ -1,4 +1,4 @@
-import { canvasPan3DRoutine, cartesianToScreen } from "./camera.js";
+import { canvasPan3DRoutine, cartesianToScreen, reset3DCameraTo2DScreen } from "./camera.js";
 import { multiplyMatrixAndPoint } from "./climate/stars/matrix.js";
 import { MAIN_CONTEXT } from "./index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "./keyboard.js";
@@ -392,6 +392,9 @@ export function zoomCanvasSquareText(x, y, text) {
 
 export function zoom(event) {
     event.preventDefault();
+    if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_3D) {
+        reset3DCameraTo2DScreen();
+    }
     if (loadGD(UI_PALETTE_BLOCKS)) {
         if (isKeyPressed(KEY_SHIFT)) {
             if (loadGD(UI_PALETTE_SELECT) == loadGD(UI_PALETTE_SURFACE)) {

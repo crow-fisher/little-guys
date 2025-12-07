@@ -209,8 +209,6 @@ class BaseLifeSquare {
         let startVec = this.posVec;
         let endVec = addVectors(structuredClone(this.posVec), rotatedOffset);
 
-        startVec[1] *= -1;
-        endVec[1] *= -1;
         // renderPoint(...startVec, COLOR_RED);
         // renderPoint(...endVec, COLOR_BLUE);
         renderVec(startVec, endVec, COLOR_BLACK);

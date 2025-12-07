@@ -73,8 +73,20 @@ export function cartesianToScreen(x, y, z) {
         frameMatrixDay = getCurDay();
     }
 
-    let point = addVectors([x, y, z, 1], loadGD(UI_CAMERA_OFFSET_VEC));
+    // by convention, x and y are inverted
+    let point = addVectors([x, -y, z, 1], loadGD(UI_CAMERA_OFFSET_VEC));
     return pointToScreen(...multiplyMatrixAndPoint(cameraToWorld, point));
+}
+
+export function reset3DCameraTo2DScreen() {
+        let bs = getBaseSize();
+        let cx = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) / bs;
+        let cy = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) / bs;
+        let cz = 24 * (2 ** (4 - loadGD(UI_CANVAS_SQUARES_ZOOM)));
+        saveGD(UI_CAMERA_OFFSET_VEC, [-cx, cy, cz, 1]);
+        saveGD(UI_CAMERA_ROTATION_VEC, [Math.PI / 2, 0, 0, 0]);
+        saveGD(UI_CAMERA_OFFSET_VEC_DT, [0, 0, 0, 0]);
+        saveGD(UI_CAMERA_ROTATION_VEC_DT, [0, 0, 0, 0]);
 }
 
 export function pointToScreen(x, y, z) {

@@ -1,3 +1,4 @@
+import { reset3DCameraTo2DScreen } from "./camera.js";
 import { getBaseSize, moveCamera, resetZoom, rotatePoint } from "./canvas.js";
 import { getActiveClimate } from "./climate/climateManager.js";
 import { getGlobalThetaBase, setGlobalThetaBase } from "./globals.js";
@@ -107,25 +108,7 @@ function _3dViewKeymap(key) {
     }
 
     if (key == ' ') {
-
-        // somehow marrying the 3d and 2d camera views is being hard....lol
-
-        return;
-        let bs = getBaseSize();
-        console.log(loadGD(UI_CAMERA_OFFSET_VEC));
-        console.log(loadGD(UI_CANVAS_VIEWPORT_CENTER_X))
-        console.log(loadGD(UI_CANVAS_VIEWPORT_CENTER_Y))
-        console.log(loadGD(UI_CANVAS_SQUARES_ZOOM));
-
-        let cx = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) / bs;
-        let cy = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) / bs;
-        let cz = 4 - (2 ** loadGD(UI_CANVAS_SQUARES_ZOOM));
-
-        cx /= cz;
-        cy /= cz;
-
-        saveGD(UI_CAMERA_OFFSET_VEC, [-cx, cy, (-50) * (2 ** cz), 1]);
-
+        reset3DCameraTo2DScreen();
     }
 
 }
