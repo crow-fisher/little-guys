@@ -18,7 +18,7 @@ import { removeSquare } from "../globalOperations.js";
 import { calculateColorTemperature, getTemperatureAtWindSquare, temperatureHumidityFlowrateFactor, updateWindSquareTemperature } from "../climate/simulation/temperatureHumidity.js";
 import { getWindSquareAbove } from "../climate/simulation/wind.js";
 import { COLOR_BLACK, GROUP_BROWN, GROUP_BLUE, GROUP_MAUVE, GROUP_TAN, GROUP_GREEN, RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
-import { getDaylightStrengthFrameDiff, getFrameDt, getTimeScale } from "../climate/time.js";
+import { getCurDay, getDaylightStrengthFrameDiff, getDt, getFrameDt, getTimeScale } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { fillCanvasPointArr, getBaseSize, getCanvasHeight, getCanvasSquaresY, getCanvasWidth, getCurZoom, isSquareOnCanvas, transformCanvasSquaresToPixels, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
 import { loadGD, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3, UI_VIEWMODE_DEV4, UI_VIEWMODE_DEV5, UI_PALETTE_STRENGTH, UI_LIGHTING_SURFACE, UI_PALETTE_SURFACE_MATCH, UI_VIEWMODE_3D } from "../ui/UIData.js";
@@ -103,6 +103,8 @@ export class BaseSquare {
         this.blockHealth_color1 = RGB_COLOR_RED;
         this.blockHealth_color2 = RGB_COLOR_BLUE;
         this.mixIdx = -1;
+
+        this.lastTickUpdate = getCurDay();
 
         this.blockHealthGravityCoef = 2;
 
@@ -245,6 +247,8 @@ export class BaseSquare {
         if (!this.visible) {
             return;
         }
+
+        this.lastTickUpdate = getCurDay();
 
         if (loadGD(UI_LIGHTING_ENABLED) && this.lighting.length == 0) {
             this.initLightingFromNeighbors();
@@ -496,16 +500,15 @@ export class BaseSquare {
         }
         MAIN_CONTEXT.fillStyle = this.cachedRgba;
 
-        let tlsq = getSquares(this.posX - 1, this.posY).find((sq) => sq.solid && sq.visible && sq.tls != null) ?? this;
-        let trsq = getSquares(this.posX + 1, this.posY).find((sq) => sq.solid && sq.visible && sq.trs != null) ?? this;
-        let blsq = getSquares(this.posX - 1, this.posY + 1).find((sq) => sq.solid && sq.visible && sq.bls != null) ?? this;
-        let brsq = getSquares(this.posX + 1, this.posY + 1).find((sq) => sq.solid && sq.visible && sq.brs != null) ?? this;
+        let tlsq = getSquares(this.posX - 1, this.posY).find((sq) => sq.lastTickUpdate >= (this.lastTickUpdate - getDt() * 2) && sq.solid && sq.visible && sq.tls != null) ?? this;
+        let trsq = getSquares(this.posX + 1, this.posY).find((sq) => sq.lastTickUpdate >= (this.lastTickUpdate - getDt() * 2) && sq.solid && sq.visible && sq.trs != null) ?? this;
+        let blsq = getSquares(this.posX - 1, this.posY + 1).find((sq) => sq.lastTickUpdate >= (this.lastTickUpdate - getDt() * 2) && sq.solid && sq.visible && sq.bls != null) ?? this;
+        let brsq = getSquares(this.posX + 1, this.posY + 1).find((sq) => sq.lastTickUpdate >= (this.lastTickUpdate - getDt() * 2) && sq.solid && sq.visible && sq.brs != null) ?? this;
 
         this.tls = cartesianToScreen(...this.tl);
         this.trs = cartesianToScreen(...this.tr);
         this.bls = cartesianToScreen(...this.bl);
         this.brs = cartesianToScreen(...this.br);
-
 
         let p1 = this.combinePoints(this, tlsq, "tls");
         let p2 = this.combinePoints(this, trsq, "trs");
@@ -516,7 +519,7 @@ export class BaseSquare {
 
         if (pArr.some((p) => p == null))
             return;
-        
+
         let centerZ = [this.tls, this.trs, this.bls, this.brs].map((arr) => arr[2]).reduce((a, b) => a + b, 0) / 4;
         addRenderJob(new QuadRenderJob(pArr, this.cachedRgba, centerZ));
 
