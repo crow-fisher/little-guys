@@ -392,9 +392,6 @@ export function zoomCanvasSquareText(x, y, text) {
 
 export function zoom(event) {
     event.preventDefault();
-    if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_3D) {
-        reset3DCameraTo2DScreen();
-    }
     if (loadGD(UI_PALETTE_BLOCKS)) {
         if (isKeyPressed(KEY_SHIFT)) {
             if (loadGD(UI_PALETTE_SELECT) == loadGD(UI_PALETTE_SURFACE)) {
@@ -422,6 +419,7 @@ export function zoom(event) {
         }
     }
     doZoom(event.deltaY);
+    reset3DCameraTo2DScreen();
 }
 
 
