@@ -119,15 +119,15 @@ export class MovingLightSource {
             let sqTheta = Math.atan(relPosX / relPosY);
             allSquares.push([relPosX, relPosY, sqTheta, sq]);
 
-            // sq.linkedOrganisms.forEach((org) => {
-            //     org.greenLifeSquares.forEach((lsq) => {
-            //         let relPosX = lsq.getPosX() - this.posX;
-            //         let relPosY = lsq.getPosY() - this.posY;
-            //         let lsqTheta = Math.atan(relPosX / relPosY);
-            //         allSquares.push([relPosX, relPosY, lsqTheta, lsq]);
-            //     }
-            //     )
-            // });
+            sq.linkedOrganisms.forEach((org) => {
+                org.greenLifeSquares.forEach((lsq) => {
+                    let relPosX = lsq.posVec[0] - this.posX;
+                    let relPosY = lsq.posVec[1] - this.posY;
+                    let lsqTheta = Math.atan(relPosX / relPosY);
+                    allSquares.push([relPosX, relPosY, lsqTheta, lsq]);
+                }
+                )
+            });
         });
 
         // sort these into theta buckets, and distribute them to our rays

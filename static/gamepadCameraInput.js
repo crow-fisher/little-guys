@@ -1,5 +1,6 @@
+import { reset3DCameraTo2DScreen } from "./camera.js";
 import { getFrameDt } from "./climate/time.js";
-import { GBSL, GBSR, getLeftStick, getRightStick, isButtonPressed } from "./gamepad.js";
+import { GBA, GBSL, GBSR, getLeftStick, getRightStick, isButtonPressed } from "./gamepad.js";
 import { loadGD, saveGD, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_ROTATION_VEC_DT } from "./ui/UIData.js";
 
 
@@ -28,4 +29,11 @@ export function gamepadCameraInput() {
     crd[0] -= offset * rs[0];
     crd[1] -= offset * rs[1];
     saveGD(UI_CAMERA_ROTATION_VEC_DT, crd)
+
+
+    // hotkeys 
+
+    if (isButtonPressed(GBA)) {
+        reset3DCameraTo2DScreen();
+    }
 }

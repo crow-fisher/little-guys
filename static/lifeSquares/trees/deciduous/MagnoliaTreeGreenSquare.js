@@ -34,7 +34,7 @@ export class MagnoliaTreeOrganismGreenSquare extends BaseLifeSquare {
                 break;
             case SUBTYPE_NODE:
             case SUBTYPE_LEAF:
-                this.baseColor = "#7f760b";
+                this.baseColor = "#e4e4e3ff";
                 this.darkColor = "#302e03";
                 this.accentColor = "#958c63";
                 this.renderMode = LSQ_RENDERMODE_CIRCLE;

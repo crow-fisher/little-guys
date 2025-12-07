@@ -217,7 +217,7 @@ class BaseLifeSquare {
         let dv = rotatedOffset;
 
         let forward = normalizeVec3(addVectors(getCameraPosition(), startVec));
-        let side = normalizeVec3(crossVec3(dv, forward));
+        let side = normalizeVec3(crossVec3(dv, forward), 1 / this.width);
 
         let p1 = cartesianToScreen(...subtractVectorsCopy(endVec, side));
         let p2 = cartesianToScreen(...addVectorsCopy(endVec, side));
