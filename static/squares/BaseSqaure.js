@@ -495,9 +495,6 @@ export class BaseSquare {
         }
         MAIN_CONTEXT.fillStyle = this.cachedRgba;
 
-        let bottomSquare = getSquares(this.posX, this.posY + 1).find((sq) => sq.solid);
-        this.z = bottomSquare != null ? (bottomSquare.z + Math.abs(bottomSquare.surfaceLightingFactor * .21)) : 0;
-        
         let tlsq = getSquares(this.posX - 1, this.posY).find((sq) => sq.solid && sq.visible && sq.tls != null) ?? this;
         let trsq = getSquares(this.posX + 1, this.posY).find((sq) => sq.solid && sq.visible && sq.trs != null) ?? this;
         let blsq = getSquares(this.posX - 1, this.posY + 1).find((sq) => sq.solid && sq.visible && sq.bls != null) ?? this;
@@ -1010,6 +1007,10 @@ export class BaseSquare {
         }
     }
 
+    zCascadePhysics() {
+        
+    }
+
     physics() {
         if (!isSquareOnCanvas(this.posX, this.posY) || this.blockHealth <= 0) {
             return;
@@ -1019,6 +1020,7 @@ export class BaseSquare {
             this.slopePhysics();
             this.compactionPhysics();
             this.gravityPhysics();
+            this.zCascadePhysics();
             this.windPhysics();
             this.percolateInnerMoisture();
             if (this.speedY > 0) {

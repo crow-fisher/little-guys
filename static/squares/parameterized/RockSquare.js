@@ -69,4 +69,11 @@ export class RockSquare extends SoilSquare {
         super.doBlockOutflow();
         this.outflowNewWaterToLocation(this.posX, this.posY + 1);
     }
+
+    zCascadePhysics() {
+        let sqAbove = getSquares(this.posX, this.posY - 1).find((sq) => sq.solid);
+        if (sqAbove != null) {
+            this.z = sqAbove.z;
+        }
+    }
 }

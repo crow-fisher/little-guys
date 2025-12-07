@@ -1,6 +1,6 @@
 import { BaseSquare } from "../BaseSqaure.js";
 import { addSquare, getNeighbors, getSquares } from "../_sqOperations.js";
-import { cachedGetWaterflowRate, hexToRgb, randNumber, randRange } from "../../common.js";
+import { cachedGetWaterflowRate, hexToRgb, invlerp, lerp, randNumber, randRange } from "../../common.js";
 import { getCurTimeScale, getDt, getFrameDt, timeScaleFactor } from "../../climate/time.js";
 import { getPressure, getWindSpeedAtLocation, getWindSquareAbove } from "../../climate/simulation/wind.js";
 import { addWaterSaturationPascals, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, temperatureHumidityFlowrateFactor } from "../../climate/simulation/temperatureHumidity.js";
@@ -443,5 +443,9 @@ export class SoilSquare extends BaseSquare {
         let amount = Math.min(this.waterContainment, (10 * pascals) / pascalsPerWaterSquare)
         this.waterContainment -= amount;
         addWaterSaturationPascals(x, y, pascals);
+    }
+
+    zCascadePhysics() {
+        this.z = -4 * (this.currentPressureDirect ** .5);
     }
 }
