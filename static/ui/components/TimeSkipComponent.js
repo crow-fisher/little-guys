@@ -44,7 +44,7 @@ export class TimeSkipComponent extends LockedComponent {
         container.addElement(row1);
         container.addElement(row2);
         container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "camera FOV"))
-        container.addElement(new SliderGradientBackground(this.window, UI_CAMERA_FOV, sizeX, getBaseUISize() * 3, 30, 160, () => COLOR_WHITE, () => COLOR_BLACK));
+        container.addElement(new SliderGradientBackground(this.window, UI_CAMERA_FOV, sizeX, getBaseUISize() * 3, 20, 160, () => COLOR_WHITE, () => COLOR_BLACK));
         container.addElement(new Button(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, () => {
             let lat = getActiveClimate().lat;
             let lng = getActiveClimate().lng;

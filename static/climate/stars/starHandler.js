@@ -3,9 +3,10 @@ import { getBaseSize, getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, get
 import { COLOR_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { invlerp } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
-import { loadGD, saveGD, UI_STARMAP_ROTATION_VEC, UI_STARMAP_ROTATION_VEC_DT } from "../../ui/UIData.js";
+import { loadGD, saveGD, UI_MAIN_NEWWORLD_LATITUDE, UI_STARMAP_ROTATION_VEC, UI_STARMAP_ROTATION_VEC_DT } from "../../ui/UIData.js";
+import { getActiveClimate } from "../climateManager.js";
 import { getFrameRelCloud } from "../simulation/temperatureHumidity.js";
-import { getDaylightStrength, tempToRgbaForStar } from "../time.js";
+import { getCurDay, getDaylightStrength, tempToRgbaForStar } from "../time.js";
 import { addVectors, multiplyMatrixAndPoint, multiplyVectorByScalar, normalizeVec3 } from "./matrix.js";
 
 export class StarHandler {
@@ -114,12 +115,13 @@ export class StarHandler {
         return 4600 * ((1 / ((0.92 * bv) + 1.7)) + (1 / ((0.92 * bv) + 0.62)));
     }
 
-    renderTransformed(transformed, size) {
-        if (transformed)
-            zoomCanvasFillCircleRelPos(
-                invlerp(-1, 1, transformed[0]),
-                invlerp(-1, 1, transformed[1]),
-                size);
+    renderTransformed(loc, size) {
+        if (loc) {
+            MAIN_CONTEXT.beginPath();
+            MAIN_CONTEXT.arc(loc[0], loc[1], size, 0, 2 * Math.PI, false);
+            MAIN_CONTEXT.fill();
+        }
+
     }
 
     renderWireframe() {
@@ -277,7 +279,6 @@ export class StarHandler {
 
     render() {
         // https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix.html
-        this.cameraHandling();
         // this.renderWireframe();
 
         if (getDaylightStrength() > 0.35) {
@@ -285,12 +286,16 @@ export class StarHandler {
         }
         let bMult = Math.min(1, Math.exp(-7 * getDaylightStrength()));
         let frameCloudColor = getFrameRelCloud();
-        let frameCloudMult = Math.min(1, ((frameCloudColor.r + frameCloudColor.g + frameCloudColor.b) / (3 * 255) * 20));
+        let frameCloudMult = 0;// Math.min(1, ((frameCloudColor.r + frameCloudColor.g + frameCloudColor.b) / (3 * 255) * 20));
+
+
+        let ascOffset = 24 * (getActiveClimate().lng / 360) + (getCurDay() % 1);
+        let decOffset = getActiveClimate().lat / 90;
 
         for (let i = 0; i < this.data.length; i++) {
             let row = this.data[i];
-            let rowAsc = invlerp(0, 24, row[0]);
-            let rowDec = invlerp(-90, 90, row[1]);
+            let rowAsc = invlerp(0, 24, row[0]) + ascOffset;
+            let rowDec = invlerp(-90, 90, row[1]) + decOffset;
             let rowBrightness = row[2] * bMult * (1 - frameCloudMult);
             let rowColor = row[3];
             MAIN_CONTEXT.fillStyle = rowColor;
@@ -302,16 +307,13 @@ export class StarHandler {
             this.renderTransformed(transformed, rowBrightness);
         }
     }
-    cameraHandling() {
-
-        saveGD(UI_STARMAP_ROTATION_VEC, addVectors(loadGD(UI_STARMAP_ROTATION_VEC), loadGD(UI_STARMAP_ROTATION_VEC_DT)));
-        saveGD(UI_STARMAP_ROTATION_VEC_DT, multiplyVectorByScalar(loadGD(UI_STARMAP_ROTATION_VEC_DT), .97));
-    }
 
     sphericalToScreen(phi, theta) {
-        let x = (10 ** 8) * Math.sin(phi) * Math.cos(theta);
-        let y = -(10 ** 8) * Math.sin(phi) * Math.sin(theta);
-        let z = (10 ** 8) * Math.cos(phi);
+        let m = 10000;
+        let x = m * Math.sin(phi) * Math.cos(theta);
+        let y = m * Math.sin(phi) * Math.sin(theta);
+        let z = m * Math.cos(phi);
+
         return cartesianToScreen(x, y, z)
     }
 

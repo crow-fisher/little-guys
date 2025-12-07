@@ -93,9 +93,12 @@ export function pointToScreen(x, y, z) {
     let n = 1; // near clipping plane;
     let f = 1000; // far clipping plane;
 
+    x *= -1;
+    y *= -1;
+
     let fov = loadGD(UI_CAMERA_FOV);
     let r2d = 57.2958;
-    let S = 1 / (Math.tan((fov / r2d) / 2) * (Math.PI / (180 / r2d)));
+    let S = 1 / (Math.tan((fov / 2) * (Math.PI / 180)));
 
     let perspectiveMatrix = [
         [S, 0, 0, 0],
@@ -189,7 +192,6 @@ function renderPoints() {
         let loc = pointArr[2];
         let size = pointArr[3];
         MAIN_CONTEXT.fillStyle = color;
-
         MAIN_CONTEXT.beginPath();
         MAIN_CONTEXT.arc(loc[0], loc[1], size, 0, 2 * Math.PI, false);
         MAIN_CONTEXT.fill();
