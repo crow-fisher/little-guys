@@ -83,8 +83,8 @@ export class StarHandler {
             return;
         }
 
-        netRa *= Math.PI * 2;
-        netDec *= Math.PI * 2;
+        netRa  /= 24;
+        netDec = invlerp(-90, 90, netDec);
 
         // console.log(
         //     "\nId: ", row.substr(0, 4),
@@ -289,13 +289,13 @@ export class StarHandler {
         let frameCloudMult = 0;// Math.min(1, ((frameCloudColor.r + frameCloudColor.g + frameCloudColor.b) / (3 * 255) * 20));
 
 
-        let ascOffset = 24 * (getActiveClimate().lng / 360) + (getCurDay() % 1);
-        let decOffset = getActiveClimate().lat / 90;
+        let ascOffset = 0; //24 * (getActiveClimate().lng / 360) + (getCurDay() % 1);
+        let decOffset = 0; //getActiveClimate().lat / 90;
 
         for (let i = 0; i < this.data.length; i++) {
             let row = this.data[i];
-            let rowAsc = invlerp(0, 24, row[0]) + ascOffset;
-            let rowDec = invlerp(-90, 90, row[1]) + decOffset;
+            let rowAsc = row[0] + ascOffset;
+            let rowDec = row[1] + decOffset;
             let rowBrightness = row[2] * bMult * (1 - frameCloudMult);
             let rowColor = row[3];
             MAIN_CONTEXT.fillStyle = rowColor;
@@ -309,7 +309,7 @@ export class StarHandler {
     }
 
     sphericalToScreen(phi, theta) {
-        let m = 10000;
+        let m = 10 ** 2;
         let x = m * Math.sin(phi) * Math.cos(theta);
         let y = m * Math.sin(phi) * Math.sin(theta);
         let z = m * Math.cos(phi);

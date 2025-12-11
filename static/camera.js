@@ -119,8 +119,10 @@ export function pointToScreen(x, y, z) {
 
     let cw = getCanvasWidth();
     let ch = getCanvasHeight();
+    
+    let s = Math.min(cw, ch);
 
-    return [cw * px, ch * py, cameraZ]
+    return [s * px, s * py, cameraZ]
 }
 
 export function render3DHud() {
