@@ -1,7 +1,7 @@
 import { cartesianToScreen } from "../../camera.js";
 import { getBaseSize, getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, zoomCanvasFillCircleRelPos } from "../../canvas.js";
 import { COLOR_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
-import { invlerp } from "../../common.js";
+import { invlerp, randRange } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { loadGD, saveGD, UI_MAIN_NEWWORLD_LATITUDE, UI_STARMAP_ROTATION_VEC, UI_STARMAP_ROTATION_VEC_DT } from "../../ui/UIData.js";
 import { getActiveClimate } from "../climateManager.js";
@@ -67,6 +67,7 @@ export class StarHandler {
         let minutesDec = Number.parseFloat(row.substr(33, 2));
         let secondsDec = Number.parseFloat(row.substr(36, 5));
 
+        let parallax = Number.parseFloat(row.substr(79, 85));
         let brightness = Number.parseFloat(row.substr(230, 6));
         let bv = Number.parseFloat(row.substr(245, 5));
 
@@ -75,34 +76,21 @@ export class StarHandler {
 
         brightness *= .4;
 
-        let netRa = raHours + raMinutes / 60 + raSeconds / 3600;
-        let netDec = (signDec == "+" ? 1 : -1) * degressDec + minutesDec / 60 + secondsDec / 3600;
+        // in degrees
+        let rowAsc = (raHours + raMinutes / 60 + raSeconds / 3600) * (360 / 24); // between 0 and 360
+        let rowDec = (signDec == "+" ? 1 : -1) * degressDec + minutesDec / 60 + secondsDec / 3600; // between -90 and 90
+        
+        console.log(id, rowAsc, rowDec);
+        // convert to radians 
+        let rowAscRad = rowAsc / 57.4;
+        let rowDecRad = rowDec / 57.4;
+        
         let temperature = this.calculateStarTemperature(bv);
         let hex = tempToRgbaForStar(temperature);
-        if (isNaN(netRa) || isNaN(netDec) || isNaN(brightness)) {
+        if (isNaN(rowAsc) || isNaN(rowDec) || isNaN(brightness) || isNaN(parallax)) {
             return;
         }
-
-        netRa  /= 24;
-        netDec = invlerp(-90, 90, netDec);
-
-        // console.log(
-        //     "\nId: ", row.substr(0, 4),
-        //     "\nraHours: ", raHours,
-        //     "\nraMinutes: ", raMinutes,
-        //     "\nraSeconds: ", raSeconds,
-        //     "\nsignDec: ", signDec,
-        //     "\ndegressDec: ", degressDec,
-        //     "\nminutesDec: ", minutesDec,
-        //     "\nsecondsDec: ", secondsDec,
-        //     "\nbrightness: ", brightness,
-        //     "\netRa: ", netRa,
-        //     "\nbv: ", bv,
-        //     "\ntemperature: ", temperature,
-        //     "\nhex: ", hex,
-        // )
-
-        let objArr = [netRa, netDec, brightness, hex];
+        let objArr = [rowAscRad, rowDecRad, brightness, hex, parallax];
         this.starsById.set(id, objArr);
         this.data.push(objArr);
 
@@ -289,8 +277,8 @@ export class StarHandler {
         let frameCloudMult = 0;// Math.min(1, ((frameCloudColor.r + frameCloudColor.g + frameCloudColor.b) / (3 * 255) * 20));
 
 
-        let ascOffset = 0; //24 * (getActiveClimate().lng / 360) + (getCurDay() % 1);
-        let decOffset = 0; //getActiveClimate().lat / 90;
+        let ascOffset = (getCurDay() % 1) * 2 * Math.PI;
+        let decOffset = 0;
 
         for (let i = 0; i < this.data.length; i++) {
             let row = this.data[i];
@@ -298,21 +286,25 @@ export class StarHandler {
             let rowDec = row[1] + decOffset;
             let rowBrightness = row[2] * bMult * (1 - frameCloudMult);
             let rowColor = row[3];
+            let rowParallax = row[4]
             MAIN_CONTEXT.fillStyle = rowColor;
             // we are in sphericasl coordinates 
+            
             let phi = rowDec;
             let theta = rowAsc;
+            let distance = 1 / rowParallax; // in parsecs
 
-            let transformed = this.sphericalToScreen(phi, theta);
+            let transformed = this.sphericalToScreen(phi, theta, distance);
+            
             this.renderTransformed(transformed, rowBrightness);
         }
     }
 
-    sphericalToScreen(phi, theta) {
-        let m = 10 ** 2;
-        let x = m * Math.sin(phi) * Math.cos(theta);
-        let y = m * Math.sin(phi) * Math.sin(theta);
-        let z = m * Math.cos(phi);
+    sphericalToScreen(pitch, yaw, distance) {
+        let m = distance * 10 ** 4;
+        let x = m * Math.cos(yaw) * Math.cos(pitch);
+        let y = m * Math.sin(pitch);
+        let z = m * Math.sin(yaw) * Math.cos(pitch);
 
         return cartesianToScreen(x, y, z)
     }
