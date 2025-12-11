@@ -3,11 +3,11 @@ import { getBaseSize, getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, get
 import { COLOR_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { invlerp, randRange } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
-import { loadGD, saveGD, UI_MAIN_NEWWORLD_LATITUDE, UI_STARMAP_ROTATION_VEC, UI_STARMAP_ROTATION_VEC_DT } from "../../ui/UIData.js";
+import { loadGD, saveGD, UI_CAMERA_OFFSET_VEC, UI_MAIN_NEWWORLD_LATITUDE, UI_STARMAP_ROTATION_VEC, UI_STARMAP_ROTATION_VEC_DT } from "../../ui/UIData.js";
 import { getActiveClimate } from "../climateManager.js";
 import { getFrameRelCloud } from "../simulation/temperatureHumidity.js";
 import { getCurDay, getDaylightStrength, tempToRgbaForStar } from "../time.js";
-import { addVectors, multiplyMatrixAndPoint, multiplyVectorByScalar, normalizeVec3 } from "./matrix.js";
+import { addVectors, getVec3Length, multiplyMatrixAndPoint, multiplyVectorByScalar, normalizeVec3, subtractVectors } from "./matrix.js";
 
 export class StarHandler {
     constructor() {
@@ -103,7 +103,7 @@ export class StarHandler {
         return 4600 * ((1 / ((0.92 * bv) + 1.7)) + (1 / ((0.92 * bv) + 0.62)));
     }
 
-    renderTransformed(loc, size) {
+    renderScreen(loc, size) {
         if (loc) {
             MAIN_CONTEXT.beginPath();
             MAIN_CONTEXT.arc(loc[0], loc[1], size, 0, 2 * Math.PI, false);
@@ -135,7 +135,7 @@ export class StarHandler {
             startPhi = null;
             for (let j = 0; j <= steps; j++) {
                 theta = j * (Math.PI * 2 / steps);
-                transformed = this.sphericalToScreen(phi, theta);
+                transformed = this.cartesianToScreen(phi, theta);
                 if (transformed != null) {
                     if (startPhi == null) {
                         startPhi = transformed;
@@ -161,7 +161,7 @@ export class StarHandler {
             startTheta = null;
             for (let j = 0; j <= steps; j++) {
                 phi = j * (Math.PI * 2 / steps);
-                transformed = this.sphericalToScreen(phi, theta);
+                transformed = this.cartesianToScreen(phi, theta);
                 if (transformed != null) {
                     if (startTheta == null) {
                         startTheta = transformed;
@@ -249,7 +249,7 @@ export class StarHandler {
                     continue;
                 phi = curStar[0];
                 theta = curStar[1];
-                transformed = this.sphericalToScreen(phi, theta);
+                transformed = this.cartesianToScreen(phi, theta);
                 if (transformed != null) {
                     if (start == null) {
                         start = transformed;
@@ -294,19 +294,28 @@ export class StarHandler {
             let theta = rowAsc;
             let distance = 1 / rowParallax; // in parsecs
 
-            let transformed = this.sphericalToScreen(phi, theta, distance);
+            let cartesian = this.sphericalToCartesian(phi, theta, distance);
+            let screen = cartesianToScreen(...cartesian);
+
+            let origDistance = getVec3Length(cartesian);
+            let newDistance = getVec3Length(subtractVectors(cartesian, loadGD(UI_CAMERA_OFFSET_VEC)));
             
-            this.renderTransformed(transformed, rowBrightness);
+            let distFactor = newDistance / origDistance; 
+            let brightnessFactor = 1 / distFactor;
+            // if we're half the distance, then this will be 2. 4 times brighter
+            
+
+            this.renderScreen(screen, rowBrightness * brightnessFactor);
         }
     }
 
-    sphericalToScreen(pitch, yaw, distance) {
+    sphericalToCartesian(pitch, yaw, distance) {
         let m = distance * 10 ** 4;
         let x = m * Math.cos(yaw) * Math.cos(pitch);
         let y = m * Math.sin(pitch);
         let z = m * Math.sin(yaw) * Math.cos(pitch);
-
-        return cartesianToScreen(x, y, z)
+        
+        return [x, y, z];
     }
 
     rotatePoint(point, rX, rY, rZ) {

@@ -64,12 +64,17 @@ export function multiplyMatrixAndPoint(matrix, point) {
 
 export function normalizeVec3(vector, toLength=1) {
   vector = structuredClone(vector);
-  let length = toLength * (vector[0] ** 2 + vector[1] ** 2 + vector[2] ** 2) ** 0.5;
+  let length = toLength * getVec3Length(vector);
   vector[0] /= length;
   vector[1] /= length;
   vector[2] /= length;
   return vector;
 }
+
+export function getVec3Length(vector) {
+  return (vector[0] ** 2 + vector[1] ** 2 + vector[2] ** 2) ** 0.5;
+}
+
 export function addVectorsCopy(v1, v2) {
   return addVectors(structuredClone(v1), v2);
 }
