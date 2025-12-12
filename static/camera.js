@@ -20,6 +20,12 @@ let worldToCamera = [
     [0, 0, 0, 0],
     [0, 0, 0, 0]
 ]
+let perspectiveMatrix = [
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0]
+]
 let frameMatrixDay = 0;
 
 
@@ -67,10 +73,25 @@ export function getFrameCameraMatrix() {
     return worldToCamera;
 }
 
+function setFramePerspectiveMatrix() {
+    let n = 1; // near clipping plane;
+    let f = 1000; // far clipping plane;
+    let fov = loadGD(UI_CAMERA_FOV);
+    let S = 1 / (Math.tan((fov / 2) * (Math.PI / 180)));
+    perspectiveMatrix = [
+        [S, 0, 0, 0],
+        [0, S, 0, 0],
+        [0, 0, -(f / (f - n)), -1],
+        [0, 0, -(f * n) / (f - n), 0]
+    ];
+
+}
+
 export function cartesianToScreen(x, y, z) {
     if (getCurDay() != frameMatrixDay) {
         cameraToWorld = getFrameCameraMatrix();
         frameMatrixDay = getCurDay();
+        setFramePerspectiveMatrix();
     }
     // by convention, x and y are inverted
     let point = addVectors([x, -y, z, 1], loadGD(UI_CAMERA_OFFSET_VEC));
@@ -90,22 +111,9 @@ export function reset3DCameraTo2DScreen() {
 }
 
 export function pointToScreen(x, y, z) {
-    let n = 1; // near clipping plane;
-    let f = 1000; // far clipping plane;
-
     x *= -1;
     y *= -1;
 
-    let fov = loadGD(UI_CAMERA_FOV);
-    let r2d = 57.2958;
-    let S = 1 / (Math.tan((fov / 2) * (Math.PI / 180)));
-
-    let perspectiveMatrix = [
-        [S, 0, 0, 0],
-        [0, S, 0, 0],
-        [0, 0, -(f / (f - n)), -1],
-        [0, 0, -(f * n) / (f - n), 0]
-    ];
     let point = multiplyMatrixAndPoint(perspectiveMatrix, [x, y, z, 1]);
     let cameraZ = point[2];
     if (cameraZ < 0)

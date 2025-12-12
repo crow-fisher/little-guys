@@ -8,7 +8,7 @@ import { SliderGradientBackground } from "../elements/SliderGradientBackground.j
 import { Text } from "../elements/Text.js";
 import { TimeSkipElement } from "../elements/TimeSkipElement.js";
 import { LockedComponent } from "../LockedComponent.js";
-import { saveGD, UI_CAMERA_FOV, UI_CENTER, UI_STARMAP_ROTATION_VEC } from "../UIData.js";
+import { saveGD, UI_CAMERA_FOV, UI_CENTER, UI_STARMAP_ROTATION_VEC, UI_STARMAP_ZOOM } from "../UIData.js";
 
 export const R_COLORS = "🎨";
 export const R_PERCOLATION_RATE = "💦";
@@ -45,13 +45,9 @@ export class TimeSkipComponent extends LockedComponent {
         container.addElement(row2);
         container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "camera FOV"))
         container.addElement(new SliderGradientBackground(this.window, UI_CAMERA_FOV, sizeX, getBaseUISize() * 3, 20, 160, () => COLOR_WHITE, () => COLOR_BLACK));
-        container.addElement(new Button(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, () => {
-            let lat = getActiveClimate().lat;
-            let lng = getActiveClimate().lng;
-            let phi = (Math.PI * lat / 180);
-            let theta = (Math.PI * lng / 180);
-            saveGD(UI_STARMAP_ROTATION_VEC, [phi, theta, 0, 0]);
-        }, "reset starmap view", () => getActiveClimate().getUIColorInactiveCustom(0.62)));
+        
+        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "star scale"))
+        container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_ZOOM, sizeX, getBaseUISize() * 3, -2, 7, () => COLOR_WHITE, () => COLOR_BLACK));
     }
 
     render() {

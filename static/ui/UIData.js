@@ -11,6 +11,7 @@ export const UI_CANVAS_VIEWPORT_CENTER_Z = "UI_CANVAS_VIEWPORT_CENTER_Z";
 export const UI_CANVAS_VIEWPORT_FRAC_Y = "UI_CANVAS_VIEWPORT_FRAC_Y";
 export const UI_CANVAS_VIEWPORT_FRAC_X = "UI_CANVAS_VIEWPORT_FRAC_X";
 export const UI_CANVAS_SQUARES_ZOOM = "UI_CANVAS_SQUARES_ZOOM";
+export const UI_STARMAP_ZOOM = "UI_STARMAP_ZOOM";
 
 export const UI_CAMERA_FOV = "UI_CAMERA_FOV";
 export const UI_CAMERA_OFFSET_VEC = "UI_CAMERA_OFFSET_VEC";
@@ -423,7 +424,8 @@ export let _GAMEDATA_DEFAULT = {
         randRange(-.4, .4), 
         randRange(-.4, .4), 
         randRange(-.4, .4), 0],
-    UI_STARMAP_ROTATION_VEC_DT: [0, 0, 0, 0]
+    UI_STARMAP_ROTATION_VEC_DT: [0, 0, 0, 0],
+    UI_STARMAP_ZOOM: 3
 };
 
 export let _UI_DEFAULT = {

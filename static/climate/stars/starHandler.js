@@ -4,7 +4,7 @@ import { COLOR_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { invlerp, randRange } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { addRenderJob, PointRenderJob } from "../../rasterizer.js";
-import { loadGD, saveGD, UI_CAMERA_OFFSET_VEC, UI_MAIN_NEWWORLD_LATITUDE, UI_STARMAP_ROTATION_VEC, UI_STARMAP_ROTATION_VEC_DT } from "../../ui/UIData.js";
+import { loadGD, saveGD, UI_CAMERA_OFFSET_VEC, UI_MAIN_NEWWORLD_LATITUDE, UI_STARMAP_ROTATION_VEC, UI_STARMAP_ROTATION_VEC_DT, UI_STARMAP_ZOOM } from "../../ui/UIData.js";
 import { getActiveClimate } from "../climateManager.js";
 import { getFrameRelCloud } from "../simulation/temperatureHumidity.js";
 import { getCurDay, getDaylightStrength, tempToRgbaForStar } from "../time.js";
@@ -105,13 +105,13 @@ export class StarHandler {
 
     renderScreen(loc, size, color) {
         if (loc) { 
-            // Performance is quite bad with this. Even with the isVisible check. 
-            // So just render naively.  
-            // addRenderJob(new PointRenderJob(loc[0], loc[1], loc[2], size, color));
-            MAIN_CONTEXT.beginPath();
-            MAIN_CONTEXT.fillStyle = color;
-            MAIN_CONTEXT.arc(loc[0], loc[1], size, 0, 2 * Math.PI, false);
-            MAIN_CONTEXT.fill();
+            if (size > .5)
+                addRenderJob(new PointRenderJob(loc[0], loc[1], loc[2], size, color));
+            
+            // MAIN_CONTEXT.beginPath();
+            // MAIN_CONTEXT.fillStyle = color;
+            // MAIN_CONTEXT.arc(loc[0], loc[1], size, 0, 2 * Math.PI, false);
+            // MAIN_CONTEXT.fill();
         }
 
     }
@@ -314,7 +314,7 @@ export class StarHandler {
     }
 
     sphericalToCartesian(pitch, yaw, distance) {
-        let m = distance * 10 ** 4;
+        let m = distance * 10 ** loadGD(UI_STARMAP_ZOOM);
         let x = m * Math.cos(yaw) * Math.cos(pitch);
         let y = -m * Math.sin(pitch);
         let z = m * Math.sin(yaw) * Math.cos(pitch);

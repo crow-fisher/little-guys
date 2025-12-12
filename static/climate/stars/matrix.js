@@ -22,7 +22,16 @@ export function multiplyMatrices(matrixA, matrixB) {
   ];
 }
 
+// this method is equivalent to the lower method. but runs faster and is unreadable. yay.
 export function multiplyMatrixAndPoint(matrix, point) {
+  return [
+      point[0] * matrix[0][0] + point[1] * matrix[1][0] + point[2] * matrix[2][0] + point[3] * matrix[3][0],
+      point[0] * matrix[0][1] + point[1] * matrix[1][1] + point[2] * matrix[2][1] + point[3] * matrix[3][1], 
+      point[0] * matrix[0][2] + point[1] * matrix[1][2] + point[2] * matrix[2][2] + point[3] * matrix[3][2], 
+      point[0] * matrix[0][3] + point[1] * matrix[1][3] + point[2] * matrix[2][3] + point[3] * matrix[3][3]
+  ];
+}
+export function _multiplyMatrixAndPoint(matrix, point) {
   // Give a simple variable name to each part of the matrix, a column and row number
   const r0c0 = matrix[0][0],
     r0c1 = matrix[0][1],
