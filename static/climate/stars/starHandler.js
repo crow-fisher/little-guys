@@ -1,13 +1,14 @@
-import { cartesianToScreen } from "../../camera.js";
+import { cartesianToScreen, renderVec } from "../../camera.js";
 import { getBaseSize, getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, zoomCanvasFillCircleRelPos } from "../../canvas.js";
 import { COLOR_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { invlerp, randRange } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
+import { addRenderJob, PointRenderJob } from "../../rasterizer.js";
 import { loadGD, saveGD, UI_CAMERA_OFFSET_VEC, UI_MAIN_NEWWORLD_LATITUDE, UI_STARMAP_ROTATION_VEC, UI_STARMAP_ROTATION_VEC_DT } from "../../ui/UIData.js";
 import { getActiveClimate } from "../climateManager.js";
 import { getFrameRelCloud } from "../simulation/temperatureHumidity.js";
 import { getCurDay, getDaylightStrength, tempToRgbaForStar } from "../time.js";
-import { addVectors, getVec3Length, multiplyMatrixAndPoint, multiplyVectorByScalar, normalizeVec3, subtractVectors } from "./matrix.js";
+import { addVectors, addVectorsCopy, getVec3Length, multiplyMatrixAndPoint, multiplyVectorByScalar, normalizeVec3, subtractVectors, subtractVectorsCopy } from "./matrix.js";
 
 export class StarHandler {
     constructor() {
@@ -80,7 +81,6 @@ export class StarHandler {
         let rowAsc = (raHours + raMinutes / 60 + raSeconds / 3600) * (360 / 24); // between 0 and 360
         let rowDec = (signDec == "+" ? 1 : -1) * degressDec + minutesDec / 60 + secondsDec / 3600; // between -90 and 90
         
-        console.log(id, rowAsc, rowDec);
         // convert to radians 
         let rowAscRad = rowAsc / 57.4;
         let rowDecRad = rowDec / 57.4;
@@ -103,9 +103,13 @@ export class StarHandler {
         return 4600 * ((1 / ((0.92 * bv) + 1.7)) + (1 / ((0.92 * bv) + 0.62)));
     }
 
-    renderScreen(loc, size) {
-        if (loc) {
+    renderScreen(loc, size, color) {
+        if (loc) { 
+            // Performance is quite bad with this. Even with the isVisible check. 
+            // So just render naively.  
+            // addRenderJob(new PointRenderJob(loc[0], loc[1], loc[2], size, color));
             MAIN_CONTEXT.beginPath();
+            MAIN_CONTEXT.fillStyle = color;
             MAIN_CONTEXT.arc(loc[0], loc[1], size, 0, 2 * Math.PI, false);
             MAIN_CONTEXT.fill();
         }
@@ -287,7 +291,6 @@ export class StarHandler {
             let rowBrightness = row[2] * bMult * (1 - frameCloudMult);
             let rowColor = row[3];
             let rowParallax = row[4]
-            MAIN_CONTEXT.fillStyle = rowColor;
             // we are in sphericasl coordinates 
             
             let phi = rowDec;
@@ -296,23 +299,24 @@ export class StarHandler {
 
             let cartesian = this.sphericalToCartesian(phi, theta, distance);
             let screen = cartesianToScreen(...cartesian);
-
             let origDistance = getVec3Length(cartesian);
-            let newDistance = getVec3Length(subtractVectors(cartesian, loadGD(UI_CAMERA_OFFSET_VEC)));
-            
+
+            cartesian[1] *= -1;
+
+            addVectors(cartesian, loadGD(UI_CAMERA_OFFSET_VEC))
+            let newDistance = getVec3Length(cartesian);
+
             let distFactor = newDistance / origDistance; 
             let brightnessFactor = 1 / distFactor;
-            // if we're half the distance, then this will be 2. 4 times brighter
-            
 
-            this.renderScreen(screen, rowBrightness * brightnessFactor);
+            this.renderScreen(screen, rowBrightness * brightnessFactor, rowColor);
         }
     }
 
     sphericalToCartesian(pitch, yaw, distance) {
         let m = distance * 10 ** 4;
         let x = m * Math.cos(yaw) * Math.cos(pitch);
-        let y = m * Math.sin(pitch);
+        let y = -m * Math.sin(pitch);
         let z = m * Math.sin(yaw) * Math.cos(pitch);
         
         return [x, y, z];
