@@ -10,19 +10,32 @@ import { getFrameRelCloud } from "../simulation/temperatureHumidity.js";
 import { getCurDay, getDaylightStrength, tempToRgbaForStar } from "../time.js";
 import { addVectors, addVectorsCopy, getVec3Length, multiplyMatrixAndPoint, multiplyVectorByScalar, normalizeVec3, subtractVectors, subtractVectorsCopy } from "./matrix.js";
 
+class Constellation {
+    constructor(data) {
+        let row = data.split(" ");
+        this.name = row[0];
+        this.stars = new Set(data.trim().split(" ").slice(1).map((s) => s.trim()).map((s) => parseInt(s)))
+    }
+
+}
 export class StarHandler {
     constructor() {
         this.initalizeData();
     }
 
     initalizeData() {
-        this.data = new Array();
+        this.stars = new Array();
         this.constellations = new Array();
+        this.constellationNames = new Map();
         this.constellationStars = new Set();
         this.starsById = new Map();
+        this.starsConstellations = new Map();
 
         fetch("./static/climate/stars/lib/stellarium/constellations.fab").then((resp) => resp.text())
             .then((text) => this.loadConstellations(text));
+
+        fetch("./static/climate/stars/lib/stellarium/constellation_names.eng.fab").then((resp) => resp.text())
+            .then((text) => this.loadConstellationNames(text));
 
         fetch("./static/climate/stars/lib/stellarium/hip_main.dat").then((resp) => resp.text())
             .then((text) => this.loadHIPStars(text))
@@ -37,19 +50,42 @@ export class StarHandler {
     }
 
     loadConstellationRow(row) {
-        let rowValues = Array.from(row.split(" ").map((v) => Number.parseInt(v)));
-        rowValues.slice(1).forEach((id) => this.constellationStars.add(Number.parseInt(id)));
-        this.constellations.push(rowValues.slice(1));
+        let constellation = new Constellation(row);
+        this.constellationNames.set(constellation.name, constellation);
+        this.constellations.push(constellation);
+        constellation.stars.forEach((star) => {
+            if (!this.starsConstellations.has(star)) {
+                this.starsConstellations.set(star, new Set())
+            }
+            this.starsConstellations.get(star).add(constellation);
+            this.constellationStars.add(star);
+        });
+    }
+
+    loadConstellationNames(text) {
+        let rows = text.split("\n");
+        for (let i = 0; i < rows.length; i++) {
+            this.loadConstellationNameRow(rows.at(i));
+        }
+    }
+
+    loadConstellationNameRow(row) {
+        let data = row.split("\t").map((a) => a.trim()).filter((a) => a.length >= 3);
+        let name = data[0];
+        let eng = data[1];
+        let loadedRef = this.constellationNames.get(name);
+        if (loadedRef != null)
+            loadedRef.englishName = eng;
     }
 
     loadHIPStars(text) {
         let rows = text.split("\n");
         for (let i = 0; i < rows.length; i++) {
-            this.laodHIPRow(rows.at(i));
+            this.loadHIPRow(rows.at(i));
         }
     }
 
-    laodHIPRow(row) {
+    loadHIPRow(row) {
         let id = Number.parseInt(row.substr(8, 13));
         if (!this.constellationStars.has(id) && Math.random() < 0.9)
             return;
@@ -84,9 +120,9 @@ export class StarHandler {
         if (isNaN(rowAsc) || isNaN(rowDec) || isNaN(brightness) || isNaN(parallax)) {
             return;
         }
-        let objArr = [rowAscRad, rowDecRad, brightness, hex, parallax];
+        let objArr = [id, rowAscRad, rowDecRad, brightness, hex, parallax];
         this.starsById.set(id, objArr);
-        this.data.push(objArr);
+        this.stars.push(objArr);
     }
 
     calculateStarTemperature(bv) {
@@ -98,7 +134,7 @@ export class StarHandler {
 
     render() {
         this.renderStars();
-        this.renderConstellations();
+        // this.renderConstellations();
     }
 
     renderStars() {
@@ -115,10 +151,10 @@ export class StarHandler {
         this.ascOffset = (getCurDay() % 1) * 2 * Math.PI;
         this.decOffset = 0;
 
-        for (let i = 0; i < this.data.length; i++) {
-            let row = this.data[i];
-            let pRow = this.processStarRow(row, bMult, frameCloudColor, frameCloudMult);
-            let cartesian = pRow[0];
+        for (let i = 0; i < this.stars.length; i++) {
+            let row = this.stars[i];
+            let processedRow = this.processStarRow(row, bMult, frameCloudColor, frameCloudMult);
+            let cartesian = processedRow[0];
             let screen = cartesianToScreen(...cartesian);
             let origDistance = getVec3Length(cartesian);
             cartesian[1] *= -1;
@@ -126,23 +162,39 @@ export class StarHandler {
             let newDistance = getVec3Length(cartesian);
             let distFactor = newDistance / origDistance;
             let brightnessFactor = 1 / distFactor;
-            this.renderScreen(screen, pRow[1] * brightnessFactor, pRow[2]);
+            this.renderScreen(screen, processedRow[1] * brightnessFactor, processedRow[2]);
         }
     }
 
     processStarRow(row, bMult, frameCloudColor, frameCloudMult) {
-        let rowAsc = row[0] + this.ascOffset;
-        let rowDec = row[1] + this.decOffset;
-        let rowBrightness = row[2] * bMult * (1 - frameCloudMult);
-        let rowColor = row[3];
-        let rowParallax = row[4];
+        // all business logic for star row processing goes here 
+        let rowAsc = row[1] + this.ascOffset;
+        let rowDec = row[2] + this.decOffset;
+        let rowBrightness = row[3] * bMult * (1 - frameCloudMult);
+        let rowColor = row[4];
+        let rowParallax = row[5];
         let phi = rowDec;
         let theta = rowAsc;
         let distance = 1 / rowParallax; // in parsecs. 
-
         let cartesian = this.sphericalToCartesian(phi, theta, distance);
 
-        return [cartesian, rowBrightness, rowColor];
+        let constellations = this.starsConstellations.get(row[0]);
+        if (constellations == null)
+            return [cartesian, rowBrightness * .1, rowColor]
+
+        let screen = cartesianToScreen(...cartesian);
+        if (screen != null) {
+            let curOffset = 0;
+            constellations.forEach((constellation) => {
+                MAIN_CONTEXT.strokeText(
+                    constellation.englishName,
+                    screen[0],
+                    screen[1] + curOffset
+                );
+                curOffset += 24;
+            })
+        }
+        return [cartesian, 12, COLOR_VERY_FUCKING_RED];
     }
 
     sphericalToCartesian(pitch, yaw, distance) {
@@ -162,39 +214,6 @@ export class StarHandler {
     }
 
     renderConstellations() {
-        for (let i = 0; i < this.constellations.length; i += 24) {
-            let constellationStars = this.constellations.at(i);
-            let start = null;
-            for (let j = 0; j < constellationStars.length; j++) {
-                let curStar = this.starsById.get(constellationStars.at(j))
-                if (curStar == null)
-                    continue;
-
-                let pStar = this.processStarRow(curStar, this.ascOffset, this.decOffset);
-                let cartesian = pStar[0];
-                let screen = cartesianToScreen(...cartesian);
-                let origDistance = getVec3Length(cartesian);
-                cartesian[1] *= -1;
-                addVectors(cartesian, loadGD(UI_CAMERA_OFFSET_VEC))
-                let newDistance = getVec3Length(cartesian);
-                let distFactor = newDistance / origDistance;
-                // let brightnessFactor = 1 / distFactor;
-
-
-                MAIN_CONTEXT.lineWidth = 18;
-                if (screen != null) {
-                    if (start == null) {
-                        start = screen;
-                        MAIN_CONTEXT.moveTo(...screen);
-                    } else {
-                        MAIN_CONTEXT.lineTo(...screen);
-                    }
-                } else {
-                    start = null;
-                }
-                MAIN_CONTEXT.stroke();
-            }
-        }
     }
 
 
