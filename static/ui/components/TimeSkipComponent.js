@@ -1,14 +1,15 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { doTimeSkipToDate, doTimeSkipToNow } from "../../climate/time.js";
-import { COLOR_BLACK, COLOR_WHITE } from "../../colors.js";
+import { COLOR_BLACK, COLOR_BLUE, COLOR_RED, COLOR_WHITE } from "../../colors.js";
 import { Container } from "../Container.js";
 import { Button } from "../elements/Button.js";
 import { SliderGradientBackground } from "../elements/SliderGradientBackground.js";
 import { Text } from "../elements/Text.js";
 import { TimeSkipElement } from "../elements/TimeSkipElement.js";
+import { Toggle } from "../elements/Toggle.js";
 import { LockedComponent } from "../LockedComponent.js";
-import { saveGD, UI_CAMERA_FOV, UI_CENTER, UI_STARMAP_ROTATION_VEC, UI_STARMAP_ZOOM } from "../UIData.js";
+import { saveGD, UI_CAMERA_FOV, UI_CENTER, UI_STARMAP_CONSTELATION_BRIGHTNESS, UI_STARMAP_NORMAL_BRIGTNESS, UI_STARMAP_ROTATION_VEC, UI_STARMAP_SHOW_CONSTELLATION_NAMES, UI_STARMAP_ZOOM } from "../UIData.js";
 
 export const R_COLORS = "🎨";
 export const R_PERCOLATION_RATE = "💦";
@@ -47,7 +48,19 @@ export class TimeSkipComponent extends LockedComponent {
         container.addElement(new SliderGradientBackground(this.window, UI_CAMERA_FOV, sizeX, getBaseUISize() * 3, 20, 160, () => COLOR_WHITE, () => COLOR_BLACK));
         
         container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "star scale"))
-        container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_ZOOM, sizeX, getBaseUISize() * 3, -2, 7, () => COLOR_WHITE, () => COLOR_BLACK));
+        container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_ZOOM, sizeX, getBaseUISize() * 3, -2, 15, () => COLOR_WHITE, () => COLOR_BLACK));
+
+        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "base stars"))
+        container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_NORMAL_BRIGTNESS, sizeX, getBaseUISize() * 3, -8, 2, () => COLOR_WHITE, () => COLOR_BLACK));
+
+        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "constellation stars"))
+        container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_CONSTELATION_BRIGHTNESS, sizeX, getBaseUISize() * 3, 0, 8, () => COLOR_WHITE, () => COLOR_BLACK));
+
+
+        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "star scale"))
+        container.addElement(new Toggle(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, UI_STARMAP_SHOW_CONSTELLATION_NAMES, "show constellation names", () => COLOR_RED, () => COLOR_BLUE));
+
+        
     }
 
     render() {

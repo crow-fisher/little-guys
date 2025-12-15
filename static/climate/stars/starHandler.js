@@ -1,10 +1,10 @@
 import { cartesianToScreen, renderVec } from "../../camera.js";
 import { getBaseSize, getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, zoomCanvasFillCircleRelPos } from "../../canvas.js";
-import { COLOR_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
+import { COLOR_BLUE, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../colors.js";
 import { invlerp, randRange } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { addRenderJob, PointRenderJob } from "../../rasterizer.js";
-import { loadGD, saveGD, UI_CAMERA_OFFSET_VEC, UI_MAIN_NEWWORLD_LATITUDE, UI_STARMAP_ROTATION_VEC, UI_STARMAP_ROTATION_VEC_DT, UI_STARMAP_ZOOM } from "../../ui/UIData.js";
+import { loadGD, saveGD, UI_CAMERA_OFFSET_VEC, UI_MAIN_NEWWORLD_LATITUDE, UI_STARMAP_CONSTELATION_BRIGHTNESS, UI_STARMAP_NORMAL_BRIGTNESS, UI_STARMAP_ROTATION_VEC, UI_STARMAP_ROTATION_VEC_DT, UI_STARMAP_SHOW_CONSTELLATION_NAMES, UI_STARMAP_ZOOM } from "../../ui/UIData.js";
 import { getActiveClimate } from "../climateManager.js";
 import { getFrameRelCloud } from "../simulation/temperatureHumidity.js";
 import { getCurDay, getDaylightStrength, tempToRgbaForStar } from "../time.js";
@@ -71,8 +71,10 @@ export class StarHandler {
 
     loadConstellationNameRow(row) {
         let data = row.split("\t").map((a) => a.trim()).filter((a) => a.length >= 3);
+        if (data.length < 2)
+            return;
         let name = data[0];
-        let eng = data[1];
+        let eng = data[1].slice(1, -1);
         let loadedRef = this.constellationNames.get(name);
         if (loadedRef != null)
             loadedRef.englishName = eng;
@@ -87,7 +89,7 @@ export class StarHandler {
 
     loadHIPRow(row) {
         let id = Number.parseInt(row.substr(8, 13));
-        if (!this.constellationStars.has(id) && Math.random() < 0.9)
+        if (!this.constellationStars.has(id) && Math.random() < 0.5)
             return;
         let raHours = Number.parseFloat(row.substr(17, 2));
         let raMinutes = Number.parseFloat(row.substr(20, 2));
@@ -134,7 +136,6 @@ export class StarHandler {
 
     render() {
         this.renderStars();
-        // this.renderConstellations();
     }
 
     renderStars() {
@@ -170,7 +171,7 @@ export class StarHandler {
         // all business logic for star row processing goes here 
         let rowAsc = row[1] + this.ascOffset;
         let rowDec = row[2] + this.decOffset;
-        let rowBrightness = row[3] * bMult * (1 - frameCloudMult);
+        let rowBrightness = (row[3] ** 2) * bMult * (1 - frameCloudMult);
         let rowColor = row[4];
         let rowParallax = row[5];
         let phi = rowDec;
@@ -180,21 +181,30 @@ export class StarHandler {
 
         let constellations = this.starsConstellations.get(row[0]);
         if (constellations == null)
-            return [cartesian, rowBrightness * .1, rowColor]
+            return [cartesian, Math.exp(loadGD(UI_STARMAP_NORMAL_BRIGTNESS)) * rowBrightness, rowColor]
 
-        let screen = cartesianToScreen(...cartesian);
-        if (screen != null) {
-            let curOffset = 0;
-            constellations.forEach((constellation) => {
-                MAIN_CONTEXT.strokeText(
-                    constellation.englishName,
-                    screen[0],
-                    screen[1] + curOffset
-                );
-                curOffset += 24;
-            })
+        if (loadGD(UI_STARMAP_SHOW_CONSTELLATION_NAMES)) {
+            MAIN_CONTEXT.strokeStyle = COLOR_WHITE;
+            let screen = cartesianToScreen(...cartesian);
+            if (screen != null) {
+                let curOffset = 0;
+                constellations
+                .forEach((constellation) => {
+                    if (constellation.englishName != "Taurus") {
+                        return;
+                    }
+                    
+                    MAIN_CONTEXT.strokeText(
+                        constellation.englishName,
+                        screen[0],
+                        screen[1] + curOffset
+                    );
+                    curOffset += 36;
+                })
+            }
         }
-        return [cartesian, 12, COLOR_VERY_FUCKING_RED];
+
+        return [cartesian, Math.exp(loadGD(UI_STARMAP_NORMAL_BRIGTNESS) + loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS)) * rowBrightness, rowColor];
     }
 
     sphericalToCartesian(pitch, yaw, distance) {
