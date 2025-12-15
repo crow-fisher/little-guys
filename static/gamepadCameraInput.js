@@ -1,7 +1,7 @@
 import { reset3DCameraTo2DScreen } from "./camera.js";
 import { getFrameDt } from "./climate/time.js";
-import { GBA, GBSL, GBSR, getLeftStick, getRightStick, isButtonPressed } from "./gamepad.js";
-import { loadGD, saveGD, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_ROTATION_VEC_DT } from "./ui/UIData.js";
+import { GBA, GBDD, GBDL, GBDR, GBDU, GBSL, GBSR, getLeftStick, getRightStick, getTriggers, isButtonPressed } from "./gamepad.js";
+import { loadGD, saveGD, UI_CAMERA_FOV, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_ROTATION_VEC_DT, UI_STARMAP_CONSTELATION_BRIGHTNESS, UI_STARMAP_NORMAL_BRIGTNESS } from "./ui/UIData.js";
 
 
 export function gamepadCameraInput() {
@@ -9,6 +9,7 @@ export function gamepadCameraInput() {
     let rs = getRightStick();
     let lsb = isButtonPressed(GBSL) ? .75 : 0;
     let rsb = isButtonPressed(GBSR) ? .75 : 0;
+    let triggers = getTriggers();
 
     let offset = 1 * (getFrameDt() / 10);
     let applied = [0, 0, 0, 0]; 
@@ -35,5 +36,26 @@ export function gamepadCameraInput() {
     if (isButtonPressed(GBA)) {
         reset3DCameraTo2DScreen();
     }
-    // no-op commit
+
+    if (triggers[0] > 0) {
+        saveGD(UI_CAMERA_FOV, loadGD(UI_CAMERA_FOV) + triggers[0]);
+    }
+
+    if (triggers[1] > 0) {
+        saveGD(UI_CAMERA_FOV, loadGD(UI_CAMERA_FOV) - triggers[1]);
+    }
+
+    offset = 0.05;
+    if (isButtonPressed(GBDU)) {
+        saveGD(UI_STARMAP_NORMAL_BRIGTNESS, loadGD(UI_STARMAP_NORMAL_BRIGTNESS) + offset);
+    }
+    if (isButtonPressed(GBDD)) {
+        saveGD(UI_STARMAP_NORMAL_BRIGTNESS, loadGD(UI_STARMAP_NORMAL_BRIGTNESS) - offset);
+    }
+    if (isButtonPressed(GBDL)) {
+        saveGD(UI_STARMAP_CONSTELATION_BRIGHTNESS, loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS) - offset);
+    }
+    if (isButtonPressed(GBDR)) {
+        saveGD(UI_STARMAP_CONSTELATION_BRIGHTNESS, loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS) + offset);
+    }
 }

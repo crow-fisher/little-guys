@@ -190,9 +190,9 @@ export class StarHandler {
                 let curOffset = 0;
                 constellations
                 .forEach((constellation) => {
-                    if (constellation.englishName != "Taurus") {
-                        return;
-                    }
+                    // if (constellation.englishName != "Taurus") {
+                    //     return;
+                    // }
                     
                     MAIN_CONTEXT.strokeText(
                         constellation.englishName,
@@ -204,7 +204,7 @@ export class StarHandler {
             }
         }
 
-        return [cartesian, Math.exp(loadGD(UI_STARMAP_NORMAL_BRIGTNESS) + loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS)) * rowBrightness, rowColor];
+        return [cartesian, Math.exp(loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS)) * rowBrightness, rowColor];
     }
 
     sphericalToCartesian(pitch, yaw, distance) {

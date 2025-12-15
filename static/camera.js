@@ -122,8 +122,6 @@ export function pointToScreen(x, y, z) {
     let pxr = point[0] / cameraZ;
     let pyr = point[1] / cameraZ;
 
-
-
     let cw = getCanvasWidth();
     let ch = getCanvasHeight();
 

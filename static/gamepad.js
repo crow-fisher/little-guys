@@ -5,19 +5,20 @@ export const GBY  = 0b01000000000; // ...
 export const GBX  = 0b00100000000;
 export const GBB  = 0b00010000000;
 export const GBDU = 0b00000100000; // gamepad button dpad up
-export const GBDD = 0b00000010000; // ...
+export const GBDD = 0b00000010000; 
 export const GBDL = 0b00000001000;
 export const GBDR = 0b00000000100; 
 export const GBSL = 0b00000000010; // gamepad button shoulder left
-export const GBSR = 0b00000000001; // ...
+export const GBSR = 0b00000000001; 
 
 let activeGamepad = 0;
-
 let pressedMask = 0;
 let stickLeftX = 0;
 let stickLeftY = 0;
 let stickRightX = 0;
 let stickRightY = 0;
+let triggerLeft = 0;
+let triggerRight = 0;
 
 export function isButtonPressed(button) {
     return (pressedMask & button) == button;
@@ -72,10 +73,15 @@ export function gamepadInputLoop() {
         doButtonInput(GBDR, gp.buttons[15].pressed);
     }
 
+
+
+
     stickLeftX = gp.axes[0];
     stickLeftY = gp.axes[1];
     stickRightX = gp.axes[2];
     stickRightY = gp.axes[3];
+    triggerLeft = gp.buttons[6].value;
+    triggerRight = gp.buttons[7].value;
 }
 
 function pdz(val, dz = 0.2) {
@@ -98,4 +104,8 @@ export function getLeftStick() {
 
 export function getRightStick() {
     return [pdz(stickRightX), pdz(stickRightY)];
+}
+
+export function getTriggers() {
+    return [triggerLeft, triggerRight];
 }
