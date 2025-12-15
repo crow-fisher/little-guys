@@ -25,7 +25,7 @@ export class StarHandler {
             .then((text) => this.loadConstellations(text));
 
         fetch("./static/climate/stars/lib/stellarium/hip_main.dat").then((resp) => resp.text())
-            .then((text) => this.loadData(text))
+            .then((text) => this.loadHIPStars(text))
 
     }
 
@@ -42,21 +42,15 @@ export class StarHandler {
         this.constellations.push(rowValues.slice(1));
     }
 
-    loadData(text) {
+    loadHIPStars(text) {
         let rows = text.split("\n");
         for (let i = 0; i < rows.length; i++) {
-            this.loadRow(rows.at(i));
+            this.laodHIPRow(rows.at(i));
         }
     }
 
-    loadRow(row) {
-        // for equinox J2000, epoch 2000.0
-
-        // right ascension - goes from 0 to 24 hours 
-        // declination - goes from -90 to 90 degrees
-
+    laodHIPRow(row) {
         let id = Number.parseInt(row.substr(8, 13));
-
         if (!this.constellationStars.has(id) && Math.random() < 0.9)
             return;
         let raHours = Number.parseFloat(row.substr(17, 2));
@@ -80,11 +74,11 @@ export class StarHandler {
         // in degrees
         let rowAsc = (raHours + raMinutes / 60 + raSeconds / 3600) * (360 / 24); // between 0 and 360
         let rowDec = (signDec == "+" ? 1 : -1) * degressDec + minutesDec / 60 + secondsDec / 3600; // between -90 and 90
-        
+
         // convert to radians 
-        let rowAscRad = rowAsc / 57.4;
-        let rowDecRad = rowDec / 57.4;
-        
+        let rowAscRad = rowAsc / 57.295779513;
+        let rowDecRad = rowDec / 57.295779513;
+
         let temperature = this.calculateStarTemperature(bv);
         let hex = tempToRgbaForStar(temperature);
         if (isNaN(rowAsc) || isNaN(rowDec) || isNaN(brightness) || isNaN(parallax)) {
@@ -93,7 +87,6 @@ export class StarHandler {
         let objArr = [rowAscRad, rowDecRad, brightness, hex, parallax];
         this.starsById.set(id, objArr);
         this.data.push(objArr);
-
     }
 
     calculateStarTemperature(bv) {
@@ -103,173 +96,12 @@ export class StarHandler {
         return 4600 * ((1 / ((0.92 * bv) + 1.7)) + (1 / ((0.92 * bv) + 0.62)));
     }
 
-    renderScreen(loc, size, color) {
-        if (loc) { 
-            if (size > .5)
-                addRenderJob(new PointRenderJob(loc[0], loc[1], loc[2], size, color));
-            
-            // MAIN_CONTEXT.beginPath();
-            // MAIN_CONTEXT.fillStyle = color;
-            // MAIN_CONTEXT.arc(loc[0], loc[1], size, 0, 2 * Math.PI, false);
-            // MAIN_CONTEXT.fill();
-        }
-
-    }
-
-    renderWireframe() {
-        let steps = 40;
-        MAIN_CONTEXT.strokeStyle = COLOR_VERY_FUCKING_RED;
-        MAIN_CONTEXT.lineWidth = 1;
-
-        let cw = getCanvasWidth();
-        let ch = getCanvasHeight();
-
-        let startPhi, startTheta, phi, theta, transformed;
-
-        for (let i = 0; i < steps; i++) {
-
-            if (i % (steps / 4) == 0) {
-                MAIN_CONTEXT.strokeStyle = COLOR_VERY_FUCKING_RED;
-            } else {
-                MAIN_CONTEXT.strokeStyle = COLOR_BLUE;
-            }
-
-            MAIN_CONTEXT.beginPath();
-            phi = i * (Math.PI * 2 / steps);
-            startPhi = null;
-            for (let j = 0; j <= steps; j++) {
-                theta = j * (Math.PI * 2 / steps);
-                transformed = this.cartesianToScreen(phi, theta);
-                if (transformed != null) {
-                    if (startPhi == null) {
-                        startPhi = transformed;
-                        MAIN_CONTEXT.moveTo(cw * invlerp(-1, 1, startPhi[0]), ch * invlerp(-1, 1, startPhi[1]))
-                    } else {
-                        MAIN_CONTEXT.lineTo(cw * invlerp(-1, 1, transformed[0]), ch * invlerp(-1, 1, transformed[1]))
-                    }
-                } else {
-                    startPhi = null;
-                }
-            }
-            MAIN_CONTEXT.stroke();
-        }
-        for (let i = 0; i < steps; i++) {
-            MAIN_CONTEXT.beginPath();
-            if (i % (steps / 4) == 0) {
-                MAIN_CONTEXT.strokeStyle = COLOR_VERY_FUCKING_RED;
-            } else {
-                MAIN_CONTEXT.strokeStyle = COLOR_BLUE;
-            }
-
-            theta = i * (Math.PI * 2 / steps);
-            startTheta = null;
-            for (let j = 0; j <= steps; j++) {
-                phi = j * (Math.PI * 2 / steps);
-                transformed = this.cartesianToScreen(phi, theta);
-                if (transformed != null) {
-                    if (startTheta == null) {
-                        startTheta = transformed;
-                        MAIN_CONTEXT.moveTo(cw * invlerp(-1, 1, startTheta[0]), ch * invlerp(-1, 1, startTheta[1]))
-                    } else {
-                        MAIN_CONTEXT.lineTo(cw * invlerp(-1, 1, transformed[0]), ch * invlerp(-1, 1, transformed[1]))
-                    }
-                } else {
-                    startTheta = null;
-                }
-            }
-            MAIN_CONTEXT.stroke();
-        }
-    }
-
-    renderCompass() {
-        this.renderCompassDir(0, 0, 0)
-        this.renderCompassDir(0, 0, 1)
-        this.renderCompassDir(0, 0, 0.5)
-        this.renderCompassDir(0, 0, -0.5)
-    }
-
-    renderCompassDir(dirX, dirY, dirZ) {
-        let unit = 1;
-        let totalWidth = getCanvasSquaresX() * getBaseSize();
-        let totalHeight = getCanvasSquaresY() * getBaseSize();
-
-        let vec = loadGD(UI_STARMAP_ROTATION_VEC);
-        let cameraX = vec[0];
-        let cameraY = vec[1];
-        let cameraZ = vec[2];
-
-        let sublines = 50;
-        for (let i = 0; i < sublines; i++) {
-            let cur = unit * (i / sublines);
-            let next = unit * ((i + 1) / sublines);
-
-            let startVec = [cur, 0, -unit, 1];
-            let endVec = [next, 0, -unit, 1];
-
-            startVec = this.rotatePoint(startVec, Math.PI * dirX, Math.PI * dirY, Math.PI * dirZ)
-            endVec = this.rotatePoint(endVec, Math.PI * dirX, Math.PI * dirY, Math.PI * dirZ)
-
-            startVec = this.rotatePoint(startVec, cameraX, cameraY, cameraZ);
-            endVec = this.rotatePoint(endVec, cameraX, cameraY, cameraZ);
-
-            let startVecNormalized = normalizeVec3(startVec);
-            let endVecNormalized = normalizeVec3(endVec);
-
-            let sp = cartesianToScreen(...startVec, true);
-            let ep = cartesianToScreen(...endVec, true);
-
-            let spn = cartesianToScreen(...startVecNormalized, true);
-            let epn = cartesianToScreen(...endVecNormalized, true);
-
-            if (spn[2] <= sp[2] && epn[2] <= ep[2]) {
-                MAIN_CONTEXT.strokeStyle = COLOR_BLUE;
-                MAIN_CONTEXT.lineWidth = 4;
-                MAIN_CONTEXT.beginPath();
-                MAIN_CONTEXT.moveTo(totalWidth * invlerp(-1, 1, spn[0]), totalHeight * invlerp(-1, 1, spn[1]));
-                MAIN_CONTEXT.lineTo(totalWidth * invlerp(-1, 1, epn[0]), totalHeight * invlerp(-1, 1, epn[1]));
-                MAIN_CONTEXT.closePath();
-                MAIN_CONTEXT.stroke();
-            }
-        }
-
-
-    }
-
-    renderConstellations() {
-        let phi, theta, start, transformed;
-
-        let cw = getCanvasWidth();
-        let ch = getCanvasHeight();
-
-        MAIN_CONTEXT.beginPath();
-        MAIN_CONTEXT.lineWidth = 8;
-        MAIN_CONTEXT.strokeStyle = COLOR_VERY_FUCKING_RED;
-        for (let i = 0; i < this.constellations.length; i += 24) {
-            let constellationStars = this.constellations.at(i);
-            start = null;
-            for (let j = 0; j < constellationStars.length; j++) {
-                let curStar = this.starsById.get(constellationStars.at(j))
-                if (curStar == null)
-                    continue;
-                phi = curStar[0];
-                theta = curStar[1];
-                transformed = this.cartesianToScreen(phi, theta);
-                if (transformed != null) {
-                    if (start == null) {
-                        start = transformed;
-                        MAIN_CONTEXT.moveTo(cw * invlerp(-1, 1, start[0]), ch * invlerp(-1, 1, start[1]))
-                    } else {
-                        MAIN_CONTEXT.lineTo(cw * invlerp(-1, 1, transformed[0]), ch * invlerp(-1, 1, transformed[1]))
-                    }
-                } else {
-                    start = null;
-                }
-                MAIN_CONTEXT.stroke();
-            }
-        }
-    }
-
     render() {
+        this.renderStars();
+        this.renderConstellations();
+    }
+
+    renderStars() {
         // https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix.html
         // this.renderWireframe();
 
@@ -280,37 +112,37 @@ export class StarHandler {
         let frameCloudColor = getFrameRelCloud();
         let frameCloudMult = 0;// Math.min(1, ((frameCloudColor.r + frameCloudColor.g + frameCloudColor.b) / (3 * 255) * 20));
 
-
-        let ascOffset = (getCurDay() % 1) * 2 * Math.PI;
-        let decOffset = 0;
+        this.ascOffset = (getCurDay() % 1) * 2 * Math.PI;
+        this.decOffset = 0;
 
         for (let i = 0; i < this.data.length; i++) {
             let row = this.data[i];
-            let rowAsc = row[0] + ascOffset;
-            let rowDec = row[1] + decOffset;
-            let rowBrightness = row[2] * bMult * (1 - frameCloudMult);
-            let rowColor = row[3];
-            let rowParallax = row[4]
-            // we are in sphericasl coordinates 
-            
-            let phi = rowDec;
-            let theta = rowAsc;
-            let distance = 1 / rowParallax; // in parsecs
-
-            let cartesian = this.sphericalToCartesian(phi, theta, distance);
+            let pRow = this.processStarRow(row, bMult, frameCloudColor, frameCloudMult);
+            let cartesian = pRow[0];
             let screen = cartesianToScreen(...cartesian);
             let origDistance = getVec3Length(cartesian);
-
             cartesian[1] *= -1;
-
             addVectors(cartesian, loadGD(UI_CAMERA_OFFSET_VEC))
             let newDistance = getVec3Length(cartesian);
-
-            let distFactor = newDistance / origDistance; 
+            let distFactor = newDistance / origDistance;
             let brightnessFactor = 1 / distFactor;
-
-            this.renderScreen(screen, rowBrightness * brightnessFactor, rowColor);
+            this.renderScreen(screen, pRow[1] * brightnessFactor, pRow[2]);
         }
+    }
+
+    processStarRow(row, bMult, frameCloudColor, frameCloudMult) {
+        let rowAsc = row[0] + this.ascOffset;
+        let rowDec = row[1] + this.decOffset;
+        let rowBrightness = row[2] * bMult * (1 - frameCloudMult);
+        let rowColor = row[3];
+        let rowParallax = row[4];
+        let phi = rowDec;
+        let theta = rowAsc;
+        let distance = 1 / rowParallax; // in parsecs. 
+
+        let cartesian = this.sphericalToCartesian(phi, theta, distance);
+
+        return [cartesian, rowBrightness, rowColor];
     }
 
     sphericalToCartesian(pitch, yaw, distance) {
@@ -318,42 +150,53 @@ export class StarHandler {
         let x = m * Math.cos(yaw) * Math.cos(pitch);
         let y = -m * Math.sin(pitch);
         let z = m * Math.sin(yaw) * Math.cos(pitch);
-        
+
         return [x, y, z];
     }
 
-    rotatePoint(point, rX, rY, rZ) {
-        return this.rotatePointRx(this.rotatePointRy(this.rotatePointRz(point, rZ), rY), rX);
+    renderScreen(loc, size, color) {
+        if (loc) {
+            if (size > .5)
+                addRenderJob(new PointRenderJob(loc[0], loc[1], loc[2], size, color));
+        }
     }
 
-    rotatePointRx(point, theta) {
-        let rotationMatrix = [
-            [1, 0, 0, 0],
-            [0, Math.cos(theta), -Math.sin(theta), 0],
-            [0, Math.sin(theta), Math.cos(theta), 0],
-            [0, 0, 0, 1]
-        ];
-        return multiplyMatrixAndPoint(rotationMatrix, point);
+    renderConstellations() {
+        for (let i = 0; i < this.constellations.length; i += 24) {
+            let constellationStars = this.constellations.at(i);
+            let start = null;
+            for (let j = 0; j < constellationStars.length; j++) {
+                let curStar = this.starsById.get(constellationStars.at(j))
+                if (curStar == null)
+                    continue;
+
+                let pStar = this.processStarRow(curStar, this.ascOffset, this.decOffset);
+                let cartesian = pStar[0];
+                let screen = cartesianToScreen(...cartesian);
+                let origDistance = getVec3Length(cartesian);
+                cartesian[1] *= -1;
+                addVectors(cartesian, loadGD(UI_CAMERA_OFFSET_VEC))
+                let newDistance = getVec3Length(cartesian);
+                let distFactor = newDistance / origDistance;
+                // let brightnessFactor = 1 / distFactor;
+
+
+                MAIN_CONTEXT.lineWidth = 18;
+                if (screen != null) {
+                    if (start == null) {
+                        start = screen;
+                        MAIN_CONTEXT.moveTo(...screen);
+                    } else {
+                        MAIN_CONTEXT.lineTo(...screen);
+                    }
+                } else {
+                    start = null;
+                }
+                MAIN_CONTEXT.stroke();
+            }
+        }
     }
 
-    rotatePointRy(point, theta) {
-        let rotationMatrix = [
-            [Math.cos(theta), 0, Math.sin(theta), 0],
-            [0, 1, 0, 0],
-            [-Math.sin(theta), 0, Math.cos(theta), 0],
-            [0, 0, 0, 1]
-        ]
-        return multiplyMatrixAndPoint(rotationMatrix, point);
-    }
-    rotatePointRz(point, theta) {
-        let rotationMatrix = [
-            [Math.cos(theta), -Math.sin(theta), 0, 0],
-            [Math.sin(theta), Math.cos(theta), 0, 0],
-            [0, 0, 1, 0],
-            [0, 0, 0, 1]
-        ]
-        return multiplyMatrixAndPoint(rotationMatrix, point);
-    }
 
 
 
