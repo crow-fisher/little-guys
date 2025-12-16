@@ -52,10 +52,13 @@ export function gamepadCameraInput() {
     if (isButtonPressed(GBDD)) {
         saveGD(UI_STARMAP_NORMAL_BRIGTNESS, loadGD(UI_STARMAP_NORMAL_BRIGTNESS) - offset);
     }
+
+    offset = .70;
     if (isButtonPressed(GBDL)) {
         saveGD(UI_STARMAP_CONSTELATION_BRIGHTNESS, loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS) - offset);
     }
     if (isButtonPressed(GBDR)) {
         saveGD(UI_STARMAP_CONSTELATION_BRIGHTNESS, loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS) + offset);
     }
+    saveGD(UI_STARMAP_CONSTELATION_BRIGHTNESS, Math.max(0, loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS)));
 }

@@ -26,7 +26,7 @@ export class PointRenderJob extends RenderJob {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.size = size;
+        this.size = Math.max(0, size);
         this.color = color;
     }
 

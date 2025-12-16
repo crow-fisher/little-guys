@@ -626,9 +626,9 @@ function calculateTempColorRgbaCache(daylightStrength, opacity) {
 }
 
 
-export function tempToRgbaForStar(temperature) {
+export function tempToColorForStar(temperature) {
     let dc = calculateTempColor(temperature);
-    return rgbToHex(dc.r, dc.g, dc.b);
+    return [dc.r, dc.g, dc.b];
 }
 
 
