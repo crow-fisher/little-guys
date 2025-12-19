@@ -4,6 +4,10 @@ import { GBA, GBDD, GBDL, GBDR, GBDU, GBSL, GBSR, getLeftStick, getRightStick, g
 import { loadGD, saveGD, UI_CAMERA_FOV, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_ROTATION_VEC_DT, UI_STARMAP_CONSTELATION_BRIGHTNESS, UI_STARMAP_NORMAL_BRIGTNESS } from "./ui/UIData.js";
 
 
+function boundValue(min, max, value) {
+    return Math.min(max, Math.max(min, value));
+}
+
 export function gamepadCameraInput() {
     let ls = getLeftStick();
     let rs = getRightStick();
@@ -61,4 +65,8 @@ export function gamepadCameraInput() {
         saveGD(UI_STARMAP_CONSTELATION_BRIGHTNESS, loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS) + offset);
     }
     saveGD(UI_STARMAP_CONSTELATION_BRIGHTNESS, Math.max(0, loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS)));
+
+    saveGD(UI_CAMERA_FOV, boundValue(10, 160,loadGD(UI_CAMERA_FOV)));
+    // UI_STARMAP_NORMAL_BRIGTNESS
+    // UI_STARMAP_CONSTELATION_BRIGHTNESS
 }

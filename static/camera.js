@@ -116,16 +116,10 @@ export function reset3DCameraTo2DScreen() {
         saveGD(UI_CAMERA_ROTATION_VEC_DT, [0, 0, 0, 0]);
 }
 
-export function cartesianToScreenInplace(cartesian, screen) {
-    return pointToScreenInplace(cartesian, screen);
+export function cartesianToScreenInplace(cartesian, camera, screen) {
+    multiplyMatrixAndPointInplace(cameraToWorld, cartesian, camera);
+    multiplyMatrixAndPointInplace(perspectiveMatrix, camera, screen);
 }
-
-export function pointToScreenInplace(cartesian, screen) {
-    multiplyMatrixAndPointInplace(cameraToWorld, cartesian, screen);
-    let perspectiveSpacePoint = multiplyMatrixAndPoint(perspectiveMatrix, screen, screen);
-    return perspectiveSpacePoint;
-}
-
 
 export function pointToScreen(x, y, z) {
     x *= -1;

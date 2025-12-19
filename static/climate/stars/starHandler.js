@@ -16,7 +16,7 @@ function brightnessValueToLumensNormalized(brightnessRaw) {
     brightnessRaw = Math.max(1, brightnessRaw);
     return (10 ** (0.4 * (4.83 - brightnessRaw))) / 85.5066712885;
 }
-function sphericalToCartesianInplace(target, cameraOffset, pitch, yaw, m) {
+function sphericalToCartesianInplace(target, cameraOffset, yaw, pitch, m) {
     target[0] = m * Math.cos(yaw) * Math.cos(pitch) + cameraOffset[0]
     target[1] = m * Math.sin(pitch) + cameraOffset[1]
     target[2] = m * Math.sin(yaw) * Math.cos(pitch) + cameraOffset[2]
@@ -50,6 +50,7 @@ class Star {
         this.color = color;
         this.parallax = parallax;
         this._cartesian = [0, 0, 0];
+        this._camera = [0, 0, 0];
         this._screen = [0, 0, 0];
         this._renderNorm = [0, 0];
         this._renderScreen = [0, 0];
@@ -60,24 +61,11 @@ class Star {
     prepare(frameCache) {
         this._prepare(frameCache);
     }
-    prepareLegacy(frameCache) {
-        this._brightness = brightnessValueToLumensNormalized(this.magnitude + frameCache.UI_STARMAP_BRIGHTNESS_SHIFT);
-        sphericalToCartesianInplace(this._cartesian, frameCache.UI_CAMERA_OFFSET_VEC, this.asc, this.dec, (1 / this.parallax) * 10 ** (frameCache.UI_STARMAP_ZOOM));
-        this._screen = cartesianToScreen(...this._cartesian);
-        if (this._screen != null) {
-            this._renderScreen[0] = this._screen[0];
-            this._renderScreen[1] = this._screen[1];
-        }
-        this._size = (this._brightness ** frameCache.UI_STARMAP_STAR_SIZE_FACTOR) * frameCache.UI_STARMAP_STAR_MAX_SIZE;
-        this._opacity = 1; //(this._brightness ** frameCache.UI_STARMAP_STAR_OPACITY_FACTOR);
-        this._color = rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_STARMAP_STAR_OPACITY_SHIFT))
-      
-    }
 
     _prepare(frameCache) {
         this._brightness = brightnessValueToLumensNormalized(this.magnitude + frameCache.UI_STARMAP_BRIGHTNESS_SHIFT);
         sphericalToCartesianInplace(this._cartesian, frameCache.UI_CAMERA_OFFSET_VEC, this.asc, this.dec, (1 / this.parallax) * 10 ** (frameCache.UI_STARMAP_ZOOM));
-        this._screen = cartesianToScreenInplace(this._cartesian, this._screen);
+        cartesianToScreenInplace(this._cartesian, this._camera, this._screen);
 
         if (this._screen[2] < 0)
             return;
