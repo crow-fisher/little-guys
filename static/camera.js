@@ -1,5 +1,5 @@
 import { decayVec, getBaseSize, getCanvasHeight, getCanvasWidth, getCurZoom } from "./canvas.js";
-import { addVectors, crossVec3, invertMat4, multiplyMatrixAndPoint, multiplyVectorByScalar, normalizeVec3, subtractVectors, transposeMat4 } from "./climate/stars/matrix.js";
+import { addVectors, crossVec3, invertMat4, multiplyMatrixAndPoint, multiplyMatrixAndPointInplace, multiplyVectorByScalar, normalizeVec3, subtractVectors, transposeMat4 } from "./climate/stars/matrix.js";
 import { getCurDay } from "./climate/time.js";
 import { COLOR_RED, COLOR_WHITE } from "./colors.js";
 import { hexToRgb, randRange, rgbToHex } from "./common.js";
@@ -87,6 +87,15 @@ function setFramePerspectiveMatrix() {
 
 }
 
+export function cartesianToScreenInplace(cartesian, screen) {
+    if (getCurDay() != frameMatrixDay) {
+        cameraToWorld = getFrameCameraMatrix();
+        frameMatrixDay = getCurDay();
+        setFramePerspectiveMatrix();
+    }
+    return pointToScreenInplace(cartesian, screen);
+}
+
 export function cartesianToScreen(x, y, z) {
     if (getCurDay() != frameMatrixDay) {
         cameraToWorld = getFrameCameraMatrix();
@@ -109,6 +118,15 @@ export function reset3DCameraTo2DScreen() {
         saveGD(UI_CAMERA_OFFSET_VEC_DT, [0, 0, 0, 0]);
         saveGD(UI_CAMERA_ROTATION_VEC_DT, [0, 0, 0, 0]);
 }
+
+export function pointToScreenInplace(cartesian, screen) {
+    let cameraSpacePoint = multiplyMatrixAndPoint(cameraToWorld, cartesian);
+    let perspectiveSpacePoint = multiplyMatrixAndPoint(perspectiveMatrix, cameraSpacePoint);
+    // multiplyMatrixAndPointInplace(worldToCamera, cartesian, screen);
+    // multiplyMatrixAndPointInplace(perspectiveMatrix, screen, screen);
+    return perspectiveSpacePoint;
+}
+
 
 export function pointToScreen(x, y, z) {
     x *= -1;

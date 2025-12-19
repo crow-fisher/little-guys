@@ -1,4 +1,4 @@
-import { cartesianToScreen, renderVec } from "../../camera.js";
+import { cartesianToScreen, cartesianToScreenInplace, renderVec } from "../../camera.js";
 import { getBaseSize, getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, zoomCanvasFillCircleRelPos } from "../../canvas.js";
 import { COLOR_BLUE, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../colors.js";
 import { invlerp, randRange, rgbToRgba } from "../../common.js";
@@ -9,6 +9,18 @@ import { getActiveClimate } from "../climateManager.js";
 import { getFrameRelCloud } from "../simulation/temperatureHumidity.js";
 import { getCurDay, getDaylightStrength, tempToColorForStar } from "../time.js";
 import { addVectors, addVectorsCopy, getVec3Length, multiplyMatrixAndPoint, multiplyVectorByScalar, normalizeVec3, subtractVectors, subtractVectorsCopy } from "./matrix.js";
+
+// https://resources.wolframcloud.com/FormulaRepository/resources/Luminosity-Formula-for-Absolute-Magnitude
+// maximum value  85.5066712885
+function brightnessValueToLumensNormalized(brightnessRaw) {
+    brightnessRaw = Math.max(1, brightnessRaw);
+    return (10 ** (0.4 * (4.83 - brightnessRaw))) / 85.5066712885;
+}
+function sphericalToCartesianInplace(target, cameraOffset, pitch, yaw, m) {
+    target[0] = m * Math.cos(yaw) * Math.cos(pitch) + cameraOffset[0]
+    target[1] = m * Math.sin(pitch) + cameraOffset[1]
+    target[2] = m * Math.sin(yaw) * Math.cos(pitch) + cameraOffset[2]
+}
 
 class Constellation {
     constructor(data) {
@@ -26,19 +38,103 @@ class Constellation {
             this.segments[i] = [parseInt(this.numbers[startIdx]), parseInt(this.numbers[endIdx])];
         }
     }
+}
+
+class Star {
+    // ascension and declination in radians
+    constructor(id, asc, dec, magnitude, color, parallax) {
+        this.id = id;
+        this.asc = asc;
+        this.dec = dec;
+        this.magnitude = magnitude;
+        this.color = color;
+        this.parallax = parallax;
+        this._cartesian = [0, 0, 0];
+        this._screen = [0, 0, 0];
+        this._renderNorm = [0, 0];
+        this._renderScreen = [0, 0];
+        this._size = 0;
+        this._opacity = 0;
+    }
+
+    prepare(frameCache) {
+        this._brightness = brightnessValueToLumensNormalized(this.magnitude + frameCache.UI_STARMAP_BRIGHTNESS_SHIFT);
+
+        sphericalToCartesianInplace(this._cartesian, frameCache.UI_CAMERA_OFFSET_VEC, this.asc, this.dec, (1 / this.parallax) * 10 ** (frameCache.UI_STARMAP_ZOOM));
+        this._screen = cartesianToScreenInplace(this._cartesian, this._screen);
+
+        if (this._screen[2] < 0)
+            return;
+
+        this._renderNorm[0] = (this._screen[0] / this._screen[2]);
+        this._renderNorm[1] = (this._screen[1] / this._screen[2]);
+        this._renderScreen[0] = (this._renderNorm[0] + frameCache._xOffset) * frameCache._s;
+        this._renderScreen[1] = (this._renderNorm[1] + frameCache._yOffset) * frameCache._s;
+
+        this._size = (this._brightness ** frameCache.UI_STARMAP_STAR_SIZE_FACTOR) * frameCache.UI_STARMAP_STAR_MAX_SIZE;
+        this._opacity = 1; //(this._brightness ** frameCache.UI_STARMAP_STAR_OPACITY_FACTOR);
+        this._color = rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_STARMAP_STAR_OPACITY_SHIFT))
+    }
+
+    render() {
+        if (this._screen[2] < 0) {
+            return;
+        }
+        addRenderJob(new PointRenderJob(
+            this._renderScreen[0],
+            this._renderScreen[1],
+            this._screen[2],
+            this._size, this._color));
+
+    }
 
 }
+
+class FrameCache {
+    constructor() {
+        this.UI_STARMAP_STAR_MAX_SIZE = null;
+        this.UI_STARMAP_STAR_SIZE_FACTOR = null;
+        this.UI_STARMAP_STAR_OPACITY_FACTOR = null;
+        this.UI_STARMAP_BRIGHTNESS_SHIFT = null;
+        this.UI_STARMAP_STAR_OPACITY_SHIFT = null;
+        this.UI_CAMERA_OFFSET_VEC = null;
+        this.UI_STARMAP_ZOOM = null;
+    }
+
+    prepareFrameCache() {
+        this.UI_STARMAP_STAR_MAX_SIZE = loadGD(UI_STARMAP_STAR_MAX_SIZE);
+        this.UI_STARMAP_STAR_SIZE_FACTOR = loadGD(UI_STARMAP_STAR_SIZE_FACTOR);
+        this.UI_STARMAP_STAR_OPACITY_FACTOR = loadGD(UI_STARMAP_STAR_OPACITY_FACTOR);
+        this.UI_STARMAP_BRIGHTNESS_SHIFT = loadGD(UI_STARMAP_BRIGHTNESS_SHIFT);
+        this.UI_STARMAP_STAR_OPACITY_SHIFT = loadGD(UI_STARMAP_STAR_OPACITY_SHIFT);
+        this.UI_STARMAP_ZOOM = loadGD(UI_STARMAP_ZOOM)
+        this.UI_CAMERA_OFFSET_VEC = loadGD(UI_CAMERA_OFFSET_VEC);
+
+        this._cw = getCanvasWidth();
+        this._ch = getCanvasHeight();
+        this._max = Math.max(this._cw, this._ch);
+        this._xOffset = (this._max / this._cw) / 2;
+        this._yOffset = (this._max / this._ch) / 2;
+        this._s = Math.min(this._cw, this._ch);
+
+    }
+}
+
+
 export class StarHandler {
     constructor() {
+        this.frameCache = new FrameCache();
         this.initalizeData();
     }
 
     initalizeData() {
-        this.stars = new Array();
+        this.stars = new Array(118323); // Highest ID in the Hippacros catalog. 
+        this.starsProcessedRenderRow = new Array(118323)
+        this.starIds = new Array();
+
         this.constellations = new Array();
         this.constellationNames = new Map();
         this.constellationStars = new Set();
-        this.starsById = new Map();
         this.starNames = new Map();
         this.starsConstellations = new Map();
 
@@ -97,9 +193,8 @@ export class StarHandler {
 
     loadHIPRow(row) {
         let id = Number.parseInt(row.substr(8, 13));
-
         // THROTTLE - FOR COWARDS 
-        if (!this.constellationStars.has(id) && Math.random() < 0.0001)
+        if (!this.constellationStars.has(id) && Math.random() > .15)
             return;
 
         let raHours = Number.parseFloat(row.substr(17, 2));
@@ -112,10 +207,10 @@ export class StarHandler {
         let secondsDec = Number.parseFloat(row.substr(36, 5));
 
         let parallax = isNaN(Number.parseFloat(row.substr(79, 7))) ? 0 : Number.parseFloat(row.substr(79, 7));
-        let brightness = Number.parseFloat(row.substr(41, 5));
+        let magnitude = Number.parseFloat(row.substr(41, 5));
         let bv = Number.parseFloat(row.substr(245, 5));
 
-        if (isNaN(bv) || brightness < 0)
+        if (isNaN(bv) || magnitude < 0)
             return;
 
         // "Luminosity Formula for Absolute Magnitude". Max value is 85.5066712885
@@ -130,12 +225,13 @@ export class StarHandler {
 
         let temperature = this.calculateStarTemperature(bv);
         let color = tempToColorForStar(temperature);
-        if (isNaN(rowAsc) || isNaN(rowDec) || isNaN(brightness) || isNaN(parallax)) {
+        if (isNaN(rowAsc) || isNaN(rowDec) || isNaN(magnitude) || isNaN(parallax)) {
             return;
         }
-        let objArr = [id, rowAscRad, rowDecRad, brightness, color, parallax];
-        this.starsById.set(id, objArr);
-        this.stars.push(objArr);
+
+        let star = new Star(id, rowAscRad, rowDecRad, magnitude, color, parallax);
+        this.stars[id] = star;
+        this.starIds.push(id);
     }
 
     brightnessValueToLumens(brightnessRaw) {
@@ -172,6 +268,17 @@ export class StarHandler {
     }
 
     renderStars() {
+        this.frameCache.prepareFrameCache();
+        for (let i = 0; i < this.starIds.length; i++) {
+            let id = this.starIds[i];
+            let star = this.stars[id];
+            star.prepare(this.frameCache);
+            star.render();
+        }
+    }
+
+
+    _renderStars() {
         // https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix.html
         // this.renderWireframe();
 
@@ -186,20 +293,21 @@ export class StarHandler {
 
         this.tickFrameRenderParams();
 
-        for (let i = 0; i < this.stars.length; i++) {
-            let row = this.stars[i];
+        for (let i = 0; i < this.starIds.length; i++) {
+            let id = this.starIds[i];
+            let row = this.stars[id];
             let ppr = this.processRenderRow(row);
             this.renderScreen(ppr[0], ppr[1], ppr[2]);
         }
     }
 
     tickFrameRenderParams() {
-        this.frp = [loadGD(UI_STARMAP_STAR_MAX_SIZE), loadGD(UI_STARMAP_STAR_SIZE_FACTOR), loadGD(UI_STARMAP_STAR_OPACITY_FACTOR),  loadGD(UI_STARMAP_BRIGHTNESS_SHIFT), loadGD(UI_STARMAP_STAR_OPACITY_SHIFT)]
+        this.frp = [loadGD(UI_STARMAP_STAR_MAX_SIZE), loadGD(UI_STARMAP_STAR_SIZE_FACTOR), loadGD(UI_STARMAP_STAR_OPACITY_FACTOR), loadGD(UI_STARMAP_BRIGHTNESS_SHIFT), loadGD(UI_STARMAP_STAR_OPACITY_SHIFT)]
     }
 
     processRenderRow(row) {
         let pr = this.prepareRenderRow(row);
-        let size =    (pr[1] ** this.frp[1]) * this.frp[0];
+        let size = (pr[1] ** this.frp[1]) * this.frp[0];
         let opacity = (pr[1] ** this.frp[2]);
         return [pr[0], size, rgbToRgba(...pr[2], Math.min(1, opacity * this.frp[4]))]
     }
@@ -235,14 +343,7 @@ export class StarHandler {
         return [cartesian, brightness, rowColor];
     }
 
-    sphericalToCartesian(pitch, yaw, distance) {
-        let m = distance * 10 ** loadGD(UI_STARMAP_ZOOM);
-        let x = m * Math.cos(yaw) * Math.cos(pitch);
-        let y = -m * Math.sin(pitch);
-        let z = m * Math.sin(yaw) * Math.cos(pitch);
 
-        return [x, y, z];
-    }
 
     renderScreen(loc, size, color) {
         if (loc) {
@@ -251,9 +352,7 @@ export class StarHandler {
     }
 
     renderConstellations() {
-        if (this.starsById.size == 0) {
-            return;
-        }
+        return;
         if (loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS) == 0) {
             return;
         }
@@ -275,8 +374,10 @@ export class StarHandler {
                 let fpr = this.processRenderRow(fromRow);
                 let tpr = this.processRenderRow(toRow);
 
+                let size = loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS) * fpr[1];
+
                 if (fpr[0] != null && tpr[0] != null) {
-                    addRenderJob(new LineRenderJob(fpr[0], tpr[0], loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS), rgbToRgba(...fpr[2], 1)));
+                    addRenderJob(new LineRenderJob(fpr[0], tpr[0], size, fpr[2], 1));
                 }
 
             }

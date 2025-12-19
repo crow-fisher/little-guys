@@ -22,13 +22,22 @@ export function multiplyMatrices(matrixA, matrixB) {
   ];
 }
 
+// wow it's even more unreadable
+export function multiplyMatrixAndPointInplace(matrix, point, dest) {
+    dest[0] = point[0] * matrix[0][0] + point[1] * matrix[1][0] + point[2] * matrix[2][0];
+    dest[1] = point[0] * matrix[0][1] + point[1] * matrix[1][1] + point[2] * matrix[2][1];
+    dest[2] = point[0] * matrix[0][2] + point[1] * matrix[1][2] + point[2] * matrix[2][2];
+    dest[3] = point[0] * matrix[0][3] + point[1] * matrix[1][3] + point[2] * matrix[2][3];
+    return dest;
+}
+
 // this method is equivalent to the lower method. but runs faster and is unreadable. yay.
 export function multiplyMatrixAndPoint(matrix, point) {
   return [
-      point[0] * matrix[0][0] + point[1] * matrix[1][0] + point[2] * matrix[2][0] + point[3] * matrix[3][0],
-      point[0] * matrix[0][1] + point[1] * matrix[1][1] + point[2] * matrix[2][1] + point[3] * matrix[3][1], 
-      point[0] * matrix[0][2] + point[1] * matrix[1][2] + point[2] * matrix[2][2] + point[3] * matrix[3][2], 
-      point[0] * matrix[0][3] + point[1] * matrix[1][3] + point[2] * matrix[2][3] + point[3] * matrix[3][3]
+      point[0] * matrix[0][0] + point[1] * matrix[1][0] + point[2] * matrix[2][0] + matrix[3][0],
+      point[0] * matrix[0][1] + point[1] * matrix[1][1] + point[2] * matrix[2][1] + matrix[3][1], 
+      point[0] * matrix[0][2] + point[1] * matrix[1][2] + point[2] * matrix[2][2] + matrix[3][2], 
+      point[0] * matrix[0][3] + point[1] * matrix[1][3] + point[2] * matrix[2][3] + matrix[3][3]
   ];
 }
 export function _multiplyMatrixAndPoint(matrix, point) {
