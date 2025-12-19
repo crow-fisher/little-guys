@@ -4,7 +4,7 @@ import { COLOR_BLUE, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../colors.js
 import { invlerp, randRange, rgbToRgba } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { addRenderJob, LineRenderJob, PointRenderJob } from "../../rasterizer.js";
-import { loadGD, saveGD, UI_CAMERA_FOV, UI_CAMERA_OFFSET_VEC, UI_MAIN_NEWWORLD_LATITUDE, UI_STARMAP_CONSTELATION_BRIGHTNESS, UI_STARMAP_NORMAL_BRIGTNESS, UI_STARMAP_ROTATION_VEC, UI_STARMAP_ROTATION_VEC_DT, UI_STARMAP_SHOW_CONSTELLATION_NAMES, UI_STARMAP_STAR_MAGIC_1, UI_STARMAP_STAR_MAGIC_2, UI_STARMAP_STAR_MAX_SIZE, UI_STARMAP_STAR_MIN_SIZE, UI_STARMAP_ZOOM } from "../../ui/UIData.js";
+import { loadGD, saveGD, UI_CAMERA_FOV, UI_CAMERA_OFFSET_VEC, UI_MAIN_NEWWORLD_LATITUDE, UI_STARMAP_CONSTELATION_BRIGHTNESS, UI_STARMAP_NORMAL_BRIGTNESS, UI_STARMAP_ROTATION_VEC, UI_STARMAP_ROTATION_VEC_DT, UI_STARMAP_SHOW_CONSTELLATION_NAMES, UI_STARMAP_STAR_SIZE_FACTOR, UI_STARMAP_STAR_OPACITY_FACTOR, UI_STARMAP_STAR_MAX_SIZE, UI_STARMAP_STAR_MIN_SIZE, UI_STARMAP_ZOOM, UI_STARMAP_MAX_BRIGHTNESS, UI_STARMAP_BRIGHTNESS_SHIFT, UI_STARMAP_STAR_OPACITY_SHIFT } from "../../ui/UIData.js";
 import { getActiveClimate } from "../climateManager.js";
 import { getFrameRelCloud } from "../simulation/temperatureHumidity.js";
 import { getCurDay, getDaylightStrength, tempToColorForStar } from "../time.js";
@@ -112,16 +112,14 @@ export class StarHandler {
         let secondsDec = Number.parseFloat(row.substr(36, 5));
 
         let parallax = isNaN(Number.parseFloat(row.substr(79, 7))) ? 0 : Number.parseFloat(row.substr(79, 7));
-        let brightnessRaw = Number.parseFloat(row.substr(274, 7));
+        let brightness = Number.parseFloat(row.substr(41, 5));
         let bv = Number.parseFloat(row.substr(245, 5));
 
-        if (isNaN(bv) || brightnessRaw < 0)
+        if (isNaN(bv) || brightness < 0)
             return;
 
         // "Luminosity Formula for Absolute Magnitude". Max value is 85.5066712885
         // https://resources.wolframcloud.com/FormulaRepository/resources/Luminosity-Formula-for-Absolute-Magnitude
-        let brightness = 10 ** (0.4 * (4.83 - brightnessRaw));
-
         // in degrees
         let rowAsc = (raHours + raMinutes / 60 + raSeconds / 3600) * (360 / 24); // between 0 and 360
         let rowDec = (signDec == "+" ? 1 : -1) * degressDec + minutesDec / 60 + secondsDec / 3600; // between -90 and 90
@@ -138,6 +136,10 @@ export class StarHandler {
         let objArr = [id, rowAscRad, rowDecRad, brightness, color, parallax];
         this.starsById.set(id, objArr);
         this.stars.push(objArr);
+    }
+
+    brightnessValueToLumens(brightnessRaw) {
+        return 10 ** (0.4 * (4.83 - brightnessRaw));
     }
 
     calculateStarTemperature(bv) {
@@ -192,14 +194,14 @@ export class StarHandler {
     }
 
     tickFrameRenderParams() {
-        this.frp = [loadGD(UI_STARMAP_STAR_MIN_SIZE), loadGD(UI_STARMAP_STAR_MAX_SIZE), loadGD(UI_STARMAP_NORMAL_BRIGTNESS), loadGD(UI_STARMAP_STAR_MAGIC_1), loadGD(UI_STARMAP_STAR_MAGIC_2)]
+        this.frp = [loadGD(UI_STARMAP_STAR_MAX_SIZE), loadGD(UI_STARMAP_STAR_SIZE_FACTOR), loadGD(UI_STARMAP_STAR_OPACITY_FACTOR),  loadGD(UI_STARMAP_BRIGHTNESS_SHIFT), loadGD(UI_STARMAP_STAR_OPACITY_SHIFT)]
     }
 
     processRenderRow(row) {
         let pr = this.prepareRenderRow(row);
-        let size = this.frp[0] + pr[1] ** this.frp[3] * this.frp[1];
-        let opacity = pr[1] ** this.frp[4] * this.frp[2];
-        return [pr[0], size, rgbToRgba(...pr[2], opacity)]
+        let size =    (pr[1] ** this.frp[1]) * this.frp[0];
+        let opacity = (pr[1] ** this.frp[2]);
+        return [pr[0], size, rgbToRgba(...pr[2], Math.min(1, opacity * this.frp[4]))]
     }
 
     prepareRenderRow(row) {
@@ -221,14 +223,15 @@ export class StarHandler {
         let rowAsc = row[1] + this.ascOffset;
         let rowDec = row[2] + this.decOffset;
         let rowBrightness = row[3];
-
+        rowBrightness += this.frp[3];
         let rowColor = row[4];
         let rowParallax = row[5];
         let phi = rowDec;
         let theta = rowAsc;
         let distance = 1 / rowParallax; // in parsecs. 
         let cartesian = this.sphericalToCartesian(phi, theta, distance);
-        let brightness = rowBrightness / 85.5066712885;
+        let brightness = this.brightnessValueToLumens(rowBrightness) / 85.5066712885;
+
         return [cartesian, brightness, rowColor];
     }
 
