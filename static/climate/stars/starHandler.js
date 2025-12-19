@@ -4,7 +4,7 @@ import { COLOR_BLUE, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../colors.js
 import { invlerp, randRange, rgbToRgba } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { addRenderJob, LineRenderJob, PointRenderJob } from "../../rasterizer.js";
-import { loadGD, saveGD, UI_CAMERA_FOV, UI_CAMERA_OFFSET_VEC, UI_MAIN_NEWWORLD_LATITUDE, UI_STARMAP_CONSTELATION_BRIGHTNESS, UI_STARMAP_NORMAL_BRIGTNESS, UI_STARMAP_ROTATION_VEC, UI_STARMAP_ROTATION_VEC_DT, UI_STARMAP_SHOW_CONSTELLATION_NAMES, UI_STARMAP_ZOOM } from "../../ui/UIData.js";
+import { loadGD, saveGD, UI_CAMERA_FOV, UI_CAMERA_OFFSET_VEC, UI_MAIN_NEWWORLD_LATITUDE, UI_STARMAP_CONSTELATION_BRIGHTNESS, UI_STARMAP_NORMAL_BRIGTNESS, UI_STARMAP_ROTATION_VEC, UI_STARMAP_ROTATION_VEC_DT, UI_STARMAP_SHOW_CONSTELLATION_NAMES, UI_STARMAP_STAR_MAGIC_1, UI_STARMAP_STAR_MAGIC_2, UI_STARMAP_STAR_MAX_SIZE, UI_STARMAP_STAR_MIN_SIZE, UI_STARMAP_ZOOM } from "../../ui/UIData.js";
 import { getActiveClimate } from "../climateManager.js";
 import { getFrameRelCloud } from "../simulation/temperatureHumidity.js";
 import { getCurDay, getDaylightStrength, tempToColorForStar } from "../time.js";
@@ -19,7 +19,7 @@ class Constellation {
         this.segments = new Array(this.length);
 
         this.uniqueStars = new Set(this.numbers.slice(1));
-        
+
         for (let i = 0; i < this.length; i++) {
             let startIdx = 1 + (i * 2);
             let endIdx = startIdx + 1;
@@ -29,7 +29,7 @@ class Constellation {
 
 }
 export class StarHandler {
-    constructor() { 
+    constructor() {
         this.initalizeData();
     }
 
@@ -97,10 +97,10 @@ export class StarHandler {
 
     loadHIPRow(row) {
         let id = Number.parseInt(row.substr(8, 13));
-        
+
         // THROTTLE - FOR COWARDS 
-        // if (!this.constellationStars.has(id) && Math.random() < 0.1)
-        //     return;
+        if (!this.constellationStars.has(id) && Math.random() < 0.0001)
+            return;
 
         let raHours = Number.parseFloat(row.substr(17, 2));
         let raMinutes = Number.parseFloat(row.substr(20, 2));
@@ -118,7 +118,7 @@ export class StarHandler {
         if (isNaN(bv) || brightnessRaw < 0)
             return;
 
-        // "Luminosity Formula for Absolute Magnitude"
+        // "Luminosity Formula for Absolute Magnitude". Max value is 85.5066712885
         // https://resources.wolframcloud.com/FormulaRepository/resources/Luminosity-Formula-for-Absolute-Magnitude
         let brightness = 10 ** (0.4 * (4.83 - brightnessRaw));
 
@@ -177,21 +177,32 @@ export class StarHandler {
             return;
         }
         this.frameBrigthnessMult = Math.min(1, Math.exp(-7 * getDaylightStrength()));
-        this.frameBrigthnessMult *= Math.exp(loadGD(UI_STARMAP_NORMAL_BRIGTNESS));
         this.frameBrigthnessMult *= (12 * (1 - 2 * invlerp(20, 270, loadGD(UI_CAMERA_FOV))));
-        
+
         this.ascOffset = (getCurDay() % 1) * 2 * Math.PI;
         this.decOffset = 0;
 
+        this.tickFrameRenderParams();
+
         for (let i = 0; i < this.stars.length; i++) {
             let row = this.stars[i];
-            let processedRenderRow = this.processRenderRow(row);
-            this.renderScreen(processedRenderRow[0], processedRenderRow[1], rgbToRgba(...processedRenderRow[2], 1));
-            this.renderScreen(processedRenderRow[0], processedRenderRow[1] * 1.2, rgbToRgba(...processedRenderRow[2], 0.7));
+            let ppr = this.processRenderRow(row);
+            this.renderScreen(ppr[0], ppr[1], ppr[2]);
         }
     }
 
+    tickFrameRenderParams() {
+        this.frp = [loadGD(UI_STARMAP_STAR_MIN_SIZE), loadGD(UI_STARMAP_STAR_MAX_SIZE), loadGD(UI_STARMAP_NORMAL_BRIGTNESS), loadGD(UI_STARMAP_STAR_MAGIC_1), loadGD(UI_STARMAP_STAR_MAGIC_2)]
+    }
+
     processRenderRow(row) {
+        let pr = this.prepareRenderRow(row);
+        let size = this.frp[0] + pr[1] ** this.frp[3] * this.frp[1];
+        let opacity = pr[1] ** this.frp[4] * this.frp[2];
+        return [pr[0], size, rgbToRgba(...pr[2], opacity)]
+    }
+
+    prepareRenderRow(row) {
         let processedRow = this.processStarRow(row);
         let cartesian = processedRow[0];
         let screen = cartesianToScreen(...cartesian);
@@ -204,42 +215,21 @@ export class StarHandler {
         return [screen, processedRow[1] * brightnessFactor, processedRow[2]];
     }
 
+
     processStarRow(row) {
         // all business logic for star row processing goes here 
         let rowAsc = row[1] + this.ascOffset;
         let rowDec = row[2] + this.decOffset;
-        let rowBrightness = row[3]; 
-        
+        let rowBrightness = row[3];
+
         let rowColor = row[4];
         let rowParallax = row[5];
         let phi = rowDec;
         let theta = rowAsc;
         let distance = 1 / rowParallax; // in parsecs. 
         let cartesian = this.sphericalToCartesian(phi, theta, distance);
-        let constellations = this.starsConstellations.get(row[0]);
-        let brightness = this.frameBrigthnessMult * rowBrightness;
-
-        let ret = [cartesian, brightness, rowColor];
-        if (constellations == null || !loadGD(UI_STARMAP_SHOW_CONSTELLATION_NAMES))
-            return ret;
-
-        MAIN_CONTEXT.strokeStyle = COLOR_WHITE;
-        let screen = cartesianToScreen(...cartesian);
-        if (screen != null) {
-            let curOffset = 0;
-            constellations
-                .forEach((constellation) => {
-                    MAIN_CONTEXT.strokeText(
-                        "(" + 
-                        (this.starNames.get(row[0]) ?? row[0]) +
-                        ")\t" + constellation.englishName,
-                        screen[0],
-                        screen[1] + curOffset
-                    );
-                    curOffset += 36;
-                })
-        }
-        return ret;
+        let brightness = rowBrightness / 85.5066712885;
+        return [cartesian, brightness, rowColor];
     }
 
     sphericalToCartesian(pitch, yaw, distance) {
