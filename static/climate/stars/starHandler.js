@@ -118,7 +118,9 @@ export class StarHandler {
         if (isNaN(bv) || brightnessRaw < 0)
             return;
 
-        let brightness = 2.5 * Math.log10(7 - (brightnessRaw / 1.4))
+        // "Luminosity Formula for Absolute Magnitude"
+        // https://resources.wolframcloud.com/FormulaRepository/resources/Luminosity-Formula-for-Absolute-Magnitude
+        let brightness = 10 ** (0.4 * (4.83 - brightnessRaw));
 
         // in degrees
         let rowAsc = (raHours + raMinutes / 60 + raSeconds / 3600) * (360 / 24); // between 0 and 360
@@ -215,7 +217,7 @@ export class StarHandler {
         let distance = 1 / rowParallax; // in parsecs. 
         let cartesian = this.sphericalToCartesian(phi, theta, distance);
         let constellations = this.starsConstellations.get(row[0]);
-        let brightness = this.frameBrigthnessMult * (7 ** rowBrightness);
+        let brightness = this.frameBrigthnessMult * rowBrightness;
 
         let ret = [cartesian, brightness, rowColor];
         if (constellations == null || !loadGD(UI_STARMAP_SHOW_CONSTELLATION_NAMES))
