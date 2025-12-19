@@ -53,7 +53,7 @@ export class SliderGradientBackground extends WindowElement {
             MAIN_CONTEXT.strokeText(
                 loadGD(this.key),
                 (startX + lineWidth / 2) + lerp - (blockSize / 2),
-                startY + (lineWidth / 2)
+                startY + (lineWidth / 2) + getBaseUISize() * 1.5
             );
         }
         return [this.sizeX, this.sizeY]
