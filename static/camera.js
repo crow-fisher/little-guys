@@ -44,8 +44,6 @@ export function getCameraRotationVec() {
 // https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix.html
 // https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/lookat-function/framing-lookat-function.html
 
-
-
 export function getFrameCameraMatrix() {
     let cr = loadGD(UI_CAMERA_ROTATION_VEC);
     let yaw = cr[0];
@@ -84,17 +82,16 @@ function setFramePerspectiveMatrix() {
         [0, 0, -(f / (f - n)), -1],
         [0, 0, -(f * n) / (f - n), 0]
     ];
-
 }
 
-export function cartesianToScreenInplace(cartesian, screen) {
+export function frameMatrixReset() {
     if (getCurDay() != frameMatrixDay) {
         cameraToWorld = getFrameCameraMatrix();
         frameMatrixDay = getCurDay();
         setFramePerspectiveMatrix();
     }
-    return pointToScreenInplace(cartesian, screen);
 }
+
 
 export function cartesianToScreen(x, y, z) {
     if (getCurDay() != frameMatrixDay) {
@@ -119,11 +116,13 @@ export function reset3DCameraTo2DScreen() {
         saveGD(UI_CAMERA_ROTATION_VEC_DT, [0, 0, 0, 0]);
 }
 
+export function cartesianToScreenInplace(cartesian, screen) {
+    return pointToScreenInplace(cartesian, screen);
+}
+
 export function pointToScreenInplace(cartesian, screen) {
-    let cameraSpacePoint = multiplyMatrixAndPoint(cameraToWorld, cartesian);
-    let perspectiveSpacePoint = multiplyMatrixAndPoint(perspectiveMatrix, cameraSpacePoint);
-    // multiplyMatrixAndPointInplace(worldToCamera, cartesian, screen);
-    // multiplyMatrixAndPointInplace(perspectiveMatrix, screen, screen);
+    multiplyMatrixAndPointInplace(cameraToWorld, cartesian, screen);
+    let perspectiveSpacePoint = multiplyMatrixAndPoint(perspectiveMatrix, screen, screen);
     return perspectiveSpacePoint;
 }
 
@@ -150,7 +149,6 @@ export function pointToScreen(x, y, z) {
     let px = xOffset + pxr;
     let py = yOffset + pyr;
 
-    
     let s = Math.min(cw, ch);
 
     return [s * px, s * py, cameraZ]

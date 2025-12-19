@@ -1,4 +1,4 @@
-import { cartesianToScreen, cartesianToScreenInplace, renderVec } from "../../camera.js";
+import { cartesianToScreen, cartesianToScreenInplace, frameMatrixReset, renderVec } from "../../camera.js";
 import { getBaseSize, getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, zoomCanvasFillCircleRelPos } from "../../canvas.js";
 import { COLOR_BLUE, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../colors.js";
 import { invlerp, randRange, rgbToRgba } from "../../common.js";
@@ -58,8 +58,24 @@ class Star {
     }
 
     prepare(frameCache) {
+        this._prepare(frameCache);
+    }
+    prepareLegacy(frameCache) {
         this._brightness = brightnessValueToLumensNormalized(this.magnitude + frameCache.UI_STARMAP_BRIGHTNESS_SHIFT);
+        sphericalToCartesianInplace(this._cartesian, frameCache.UI_CAMERA_OFFSET_VEC, this.asc, this.dec, (1 / this.parallax) * 10 ** (frameCache.UI_STARMAP_ZOOM));
+        this._screen = cartesianToScreen(...this._cartesian);
+        if (this._screen != null) {
+            this._renderScreen[0] = this._screen[0];
+            this._renderScreen[1] = this._screen[1];
+        }
+        this._size = (this._brightness ** frameCache.UI_STARMAP_STAR_SIZE_FACTOR) * frameCache.UI_STARMAP_STAR_MAX_SIZE;
+        this._opacity = 1; //(this._brightness ** frameCache.UI_STARMAP_STAR_OPACITY_FACTOR);
+        this._color = rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_STARMAP_STAR_OPACITY_SHIFT))
+      
+    }
 
+    _prepare(frameCache) {
+        this._brightness = brightnessValueToLumensNormalized(this.magnitude + frameCache.UI_STARMAP_BRIGHTNESS_SHIFT);
         sphericalToCartesianInplace(this._cartesian, frameCache.UI_CAMERA_OFFSET_VEC, this.asc, this.dec, (1 / this.parallax) * 10 ** (frameCache.UI_STARMAP_ZOOM));
         this._screen = cartesianToScreenInplace(this._cartesian, this._screen);
 
@@ -77,7 +93,7 @@ class Star {
     }
 
     render() {
-        if (this._screen[2] < 0) {
+        if (this._screen == null || this._screen[2] < 0) {
             return;
         }
         addRenderJob(new PointRenderJob(
@@ -102,6 +118,7 @@ class FrameCache {
     }
 
     prepareFrameCache() {
+        frameMatrixReset();
         this.UI_STARMAP_STAR_MAX_SIZE = loadGD(UI_STARMAP_STAR_MAX_SIZE);
         this.UI_STARMAP_STAR_SIZE_FACTOR = loadGD(UI_STARMAP_STAR_SIZE_FACTOR);
         this.UI_STARMAP_STAR_OPACITY_FACTOR = loadGD(UI_STARMAP_STAR_OPACITY_FACTOR);
