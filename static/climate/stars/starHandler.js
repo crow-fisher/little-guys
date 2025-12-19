@@ -199,8 +199,8 @@ export class StarHandler {
     loadHIPRow(row) {
         let id = Number.parseInt(row.substr(8, 13));
         // THROTTLE - FOR COWARDS 
-        if (!this.constellationStars.has(id) && Math.random() > .15)
-            return;
+        // if (!this.constellationStars.has(id) && Math.random() > .15)
+        //     return;
 
         let raHours = Number.parseFloat(row.substr(17, 2));
         let raMinutes = Number.parseFloat(row.substr(20, 2));
