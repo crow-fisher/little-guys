@@ -25,14 +25,14 @@ export function gamepadCameraInput() {
 
     let ct = loadGD(UI_CAMERA_OFFSET_VEC_DT);
     ct[0] += applied[0];
-    ct[1] += applied[1];
+    ct[1] -= applied[1];
     ct[2] += applied[2];
     saveGD(UI_CAMERA_OFFSET_VEC_DT, ct)
 
     let crd = loadGD(UI_CAMERA_ROTATION_VEC_DT);
     offset = .003 * (getFrameDt() / 10);
-    crd[0] -= offset * rs[0];
-    crd[1] -= offset * rs[1];
+    crd[0] += offset * rs[0];
+    crd[1] += offset * rs[1];
     saveGD(UI_CAMERA_ROTATION_VEC_DT, crd)
 
     // hotkeys 

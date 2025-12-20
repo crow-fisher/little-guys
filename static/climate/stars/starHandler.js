@@ -118,8 +118,8 @@ class FrameCache {
         this._cw = getCanvasWidth();
         this._ch = getCanvasHeight();
         this._max = Math.max(this._cw, this._ch);
-        this._xOffset = (this._max / this._cw) / 2;
-        this._yOffset = (this._max / this._ch) / 2;
+        this._yOffset = (this._max / this._cw) / 2;
+        this._xOffset = (this._max / this._ch) / 2;
         this._s = Math.min(this._cw, this._ch);
 
     }
@@ -199,7 +199,7 @@ export class StarHandler {
     loadHIPRow(row) {
         let id = Number.parseInt(row.substr(8, 13));
         // THROTTLE - FOR COWARDS 
-        // if (!this.constellationStars.has(id) && Math.random() > .15)
+        // if (!this.constellationStars.has(id) && Math.random() > .015)
         //     return;
 
         let raHours = Number.parseFloat(row.substr(17, 2));
