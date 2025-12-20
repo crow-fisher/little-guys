@@ -56,6 +56,7 @@ class Star {
         this._renderScreen = [0, 0];
         this._size = 0;
         this._opacity = 0;
+        this._brightness = 0;
     }
 
     prepare(frameCache) {
@@ -77,7 +78,7 @@ class Star {
 
         this._size = (this._brightness ** frameCache.UI_STARMAP_STAR_SIZE_FACTOR) * frameCache.UI_STARMAP_STAR_MAX_SIZE;
         this._opacity = 1; //(this._brightness ** frameCache.UI_STARMAP_STAR_OPACITY_FACTOR);
-        this._color = rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_STARMAP_STAR_OPACITY_SHIFT))
+        this._color = (this._color ?? rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_STARMAP_STAR_OPACITY_SHIFT)))
     }
 
     render() {
