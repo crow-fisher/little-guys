@@ -80,14 +80,14 @@ class Star {
         this.vecToCamera = normalizeVec3(subtractVectorsCopy(this._cartesian, loadGD(UI_CAMERA_OFFSET_VEC)));
         this.shouldRenderStarThisFrameFlag = this.shouldRenderStarThisFrame();
         this.recalculateScreenFlag = false;
+        cartesianToScreenInplace(this._cartesian, this._camera, this._screen);
     }
 
     prepare(frameCache) {
-        if (this.recalculateScreenFlag)
+        if (this.recalculateScreenFlag) {
             this.recalculateScreen(frameCache);
-
+        }
         cartesianToScreenInplace(this._cartesian, this._camera, this._screen);
-
         if (this._screen[2] < 0)
             return;
 
@@ -102,10 +102,7 @@ class Star {
         } else {
             this.shouldRenderStarThisFrameFlag = false;
         }
-
     }
-
-
     render() {
         if (this._screen == null || this._screen[2] < 0) {
             return;
