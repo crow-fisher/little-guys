@@ -71,7 +71,7 @@ class Star {
 
     recalculateScreen(frameCache) {
         this._brightness = brightnessValueToLumensNormalized(this.magnitude + frameCache.UI_STARMAP_BRIGHTNESS_SHIFT);
-        sphericalToCartesianInplace(this._cartesian, frameCache.UI_CAMERA_OFFSET_VEC, this.asc, this.dec, (1 / this.parallax) * 10 ** (frameCache.UI_STARMAP_ZOOM));
+        sphericalToCartesianInplace(this._cartesian, frameCache.UI_CAMERA_OFFSET_VEC, this.asc, -this.dec, (1 / this.parallax) * 10 ** (frameCache.UI_STARMAP_ZOOM));
 
         this._size = (this._brightness ** frameCache.UI_STARMAP_STAR_SIZE_FACTOR) * frameCache.UI_STARMAP_STAR_MAX_SIZE;
         this._opacity = (this._brightness ** frameCache.UI_STARMAP_STAR_OPACITY_FACTOR);
@@ -159,8 +159,6 @@ export class StarHandler {
     valueWatchTick() {
         this.watchedValues = {
             UI_STARMAP_ZOOM: loadGD(UI_STARMAP_ZOOM),
-            UI_STARMAP_NORMAL_BRIGTNESS: loadGD(UI_STARMAP_NORMAL_BRIGTNESS),
-            UI_STARMAP_CONSTELATION_BRIGHTNESS: loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS),
             UI_STARMAP_STAR_MIN_SIZE: loadGD(UI_STARMAP_STAR_MIN_SIZE),
             UI_STARMAP_STAR_MAX_SIZE: loadGD(UI_STARMAP_STAR_MAX_SIZE),
             UI_STARMAP_STAR_SIZE_FACTOR: loadGD(UI_STARMAP_STAR_SIZE_FACTOR),
@@ -335,8 +333,6 @@ export class StarHandler {
         for (let i = 0; i < this.starIds.length; i++) {
             let id = this.starIds[i];
             let star = this.stars[id];
-
-
             star.prepare(this.frameCache);
             star.render();
         }
@@ -360,7 +356,11 @@ export class StarHandler {
                 if (fromStar?._renderScreen == null || toStar?._renderScreen == null) {
                     return;
                 }
-                addRenderJob(new LineRenderJob(fromStar._renderScreen, toStar._renderScreen, fromStar._size, fromStar._color, fromStar._screen[2]));
+
+                if (fromStar._screen[2] < 0 || toStar._screen[2] < 0) {
+                    return;
+                }
+                addRenderJob(new LineRenderJob(fromStar._renderScreen, toStar._renderScreen, loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS), fromStar._color, fromStar._screen[2]));
 
             }
 

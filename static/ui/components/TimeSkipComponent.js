@@ -50,9 +50,6 @@ export class TimeSkipComponent extends LockedComponent {
         container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "star scale"))
         container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_ZOOM, sizeX, getBaseUISize() * 3, -2, 15, () => COLOR_WHITE, () => COLOR_BLACK));
 
-        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "base stars"))
-        container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_NORMAL_BRIGTNESS, sizeX, getBaseUISize() * 3, 1, 7, () => COLOR_WHITE, () => COLOR_BLACK));
-
         container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "constellation stars"))
         container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_CONSTELATION_BRIGHTNESS, sizeX, getBaseUISize() * 3, 0, 8, () => COLOR_WHITE, () => COLOR_BLACK));
 
@@ -60,7 +57,7 @@ export class TimeSkipComponent extends LockedComponent {
         container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_STAR_MIN_SIZE, sizeX, getBaseUISize() * 3, 0, 8, () => COLOR_WHITE, () => COLOR_BLACK));
 
         container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "star size"))
-        container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_STAR_MAX_SIZE, sizeX, getBaseUISize() * 3, 1, 8, () => COLOR_WHITE, () => COLOR_BLACK));
+        container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_STAR_MAX_SIZE, sizeX, getBaseUISize() * 3, 1, 20, () => COLOR_WHITE, () => COLOR_BLACK));
         
         container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "UI_STARMAP_STAR_SIZE_FACTOR"))
         container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_STAR_SIZE_FACTOR, sizeX, getBaseUISize() * 3, -.25, .25, () => COLOR_WHITE, () => COLOR_BLACK));

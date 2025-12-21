@@ -4,7 +4,7 @@ import { getActiveClimate } from "./climate/climateManager.js";
 import { getGlobalThetaBase, setGlobalThetaBase } from "./globals.js";
 import { isPlayerRunning, playerKeyDown, playerKeyUp } from "./player/playerMain.js";
 import { addSquareOverride } from "./squares/_sqOperations.js";
-import { loadGD, saveGD, UI_PALETTE_EYEDROPPER, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_MIXER, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_TOPBAR_BLOCK, UI_PALETTE_AQUIFER, closeEyedropperMixer, UI_PALETTE_ERASE, UI_TEXTEDIT_ACTIVE, UI_REGEX, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALETTE_PLANTS, UI_PALETTE_ROCKIDX, addUIFunctionMap, UI_PALETTE_COMPOSITION, UI_VIEWMODE_SELECT, UI_VIEWMODE_3D, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_OFFSET_VEC, UI_CAMERA_ROTATION_VEC, UI_CAMERA_ROTATION_VEC_DT, UI_STARMAP_ROTATION_VEC_DT, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Z, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CANVAS_SQUARES_ZOOM } from "./ui/UIData.js";
+import { loadGD, saveGD, UI_PALETTE_EYEDROPPER, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_MIXER, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_TOPBAR_BLOCK, UI_PALETTE_AQUIFER, closeEyedropperMixer, UI_PALETTE_ERASE, UI_TEXTEDIT_ACTIVE, UI_REGEX, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALETTE_PLANTS, UI_PALETTE_ROCKIDX, addUIFunctionMap, UI_PALETTE_COMPOSITION, UI_VIEWMODE_SELECT, UI_VIEWMODE_3D, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_OFFSET_VEC, UI_CAMERA_ROTATION_VEC, UI_CAMERA_ROTATION_VEC_DT, UI_STARMAP_ROTATION_VEC_DT, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Z, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CANVAS_SQUARES_ZOOM, UI_STARMAP_CONSTELATION_BRIGHTNESS, UI_CAMERA_FOV } from "./ui/UIData.js";
 import { clearMouseHoverColorCacheMap } from "./ui/WindowManager.js";
 
 export const KEY_CONTROL = "Control";
@@ -83,10 +83,10 @@ function _3dViewKeymap(key) {
     let crd = loadGD(UI_CAMERA_ROTATION_VEC_DT);
     offset = .01;
     if (key == 'l') {
-        crd[0] -= offset; 
+        crd[0] += offset; 
     }
     if (key == 'j') { 
-        crd[0] += offset; 
+        crd[0] -= offset; 
     }
     if (key == 'k') {
         crd[1] += offset; 
@@ -94,7 +94,22 @@ function _3dViewKeymap(key) {
     if (key == 'i') {
         crd[1] -= offset; 
     }
-    saveGD(UI_CAMERA_ROTATION_VEC_DT, crd)
+    saveGD(UI_CAMERA_ROTATION_VEC_DT, crd);
+
+    if (key == 'u') {
+        saveGD(UI_STARMAP_CONSTELATION_BRIGHTNESS, loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS) - .01);
+    }
+    if (key === 'o') {
+        saveGD(UI_STARMAP_CONSTELATION_BRIGHTNESS, loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS) + .01);
+    }
+
+    if (key == '7') {
+        saveGD(UI_CAMERA_FOV, loadGD(UI_CAMERA_FOV) + 10);
+    }
+    if (key === '8') {
+        saveGD(UI_CAMERA_FOV, loadGD(UI_CAMERA_FOV) - 10);
+    }
+
 
     if (key == 'Escape') {
             saveGD(UI_CANVAS_VIEWPORT_CENTER_X, 0);
