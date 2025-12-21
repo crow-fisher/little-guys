@@ -1,14 +1,22 @@
-import { cartesianToScreen, cartesianToScreenInplace, frameMatrixReset, renderVec } from "../../camera.js";
-import { getBaseSize, getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, zoomCanvasFillCircleRelPos } from "../../canvas.js";
-import { COLOR_BLUE, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../colors.js";
-import { invlerp, randRange, rgbToRgba } from "../../common.js";
-import { MAIN_CONTEXT } from "../../index.js";
+import { cartesianToScreenInplace, frameMatrixReset, getForwardVec } from "../../camera.js";
+import { getCanvasHeight, getCanvasWidth } from "../../canvas.js";
+import { rgbToRgba } from "../../common.js";
 import { addRenderJob, LineRenderJob, PointRenderJob } from "../../rasterizer.js";
-import { loadGD, saveGD, UI_CAMERA_FOV, UI_CAMERA_OFFSET_VEC, UI_MAIN_NEWWORLD_LATITUDE, UI_STARMAP_CONSTELATION_BRIGHTNESS, UI_STARMAP_NORMAL_BRIGTNESS, UI_STARMAP_ROTATION_VEC, UI_STARMAP_ROTATION_VEC_DT, UI_STARMAP_SHOW_CONSTELLATION_NAMES, UI_STARMAP_STAR_SIZE_FACTOR, UI_STARMAP_STAR_OPACITY_FACTOR, UI_STARMAP_STAR_MAX_SIZE, UI_STARMAP_STAR_MIN_SIZE, UI_STARMAP_ZOOM, UI_STARMAP_MAX_BRIGHTNESS, UI_STARMAP_BRIGHTNESS_SHIFT, UI_STARMAP_STAR_OPACITY_SHIFT } from "../../ui/UIData.js";
-import { getActiveClimate } from "../climateManager.js";
-import { getFrameRelCloud } from "../simulation/temperatureHumidity.js";
-import { getCurDay, getDaylightStrength, tempToColorForStar } from "../time.js";
-import { addVectors, addVectorsCopy, getVec3Length, multiplyMatrixAndPoint, multiplyVectorByScalar, normalizeVec3, subtractVectors, subtractVectorsCopy } from "./matrix.js";
+import {
+    loadGD, UI_STARMAP_ZOOM,
+    UI_STARMAP_NORMAL_BRIGTNESS,
+    UI_STARMAP_CONSTELATION_BRIGHTNESS,
+    UI_STARMAP_STAR_MIN_SIZE,
+    UI_STARMAP_STAR_MAX_SIZE,
+    UI_STARMAP_STAR_SIZE_FACTOR,
+    UI_STARMAP_STAR_OPACITY_FACTOR,
+    UI_STARMAP_STAR_OPACITY_SHIFT,
+    UI_STARMAP_BRIGHTNESS_SHIFT,
+    UI_STARMAP_SHOW_CONSTELLATION_NAMES,
+    UI_CAMERA_OFFSET_VEC
+} from "../../ui/UIData.js";
+import { tempToColorForStar } from "../time.js";
+import { dotVec3Copy, normalizeVec3, subtractVectorsCopy } from "./matrix.js";
 
 // https://resources.wolframcloud.com/FormulaRepository/resources/Luminosity-Formula-for-Absolute-Magnitude
 // maximum value  85.5066712885
@@ -57,15 +65,27 @@ class Star {
         this._size = 0;
         this._opacity = 0;
         this._brightness = 0;
+
+        this.recalculateScreenFlag = true;
+    }
+
+    recalculateScreen(frameCache) {
+        this._brightness = brightnessValueToLumensNormalized(this.magnitude + frameCache.UI_STARMAP_BRIGHTNESS_SHIFT);
+        sphericalToCartesianInplace(this._cartesian, frameCache.UI_CAMERA_OFFSET_VEC, this.asc, this.dec, (1 / this.parallax) * 10 ** (frameCache.UI_STARMAP_ZOOM));
+
+        this._size = (this._brightness ** frameCache.UI_STARMAP_STAR_SIZE_FACTOR) * frameCache.UI_STARMAP_STAR_MAX_SIZE;
+        this._opacity = (this._brightness ** frameCache.UI_STARMAP_STAR_OPACITY_FACTOR);
+        this._color = rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_STARMAP_STAR_OPACITY_SHIFT));
+
+        this.vecToCamera = normalizeVec3(subtractVectorsCopy(this._cartesian, loadGD(UI_CAMERA_OFFSET_VEC)));
+        this.shouldRenderStarThisFrameFlag = this.shouldRenderStarThisFrame();
+        this.recalculateScreenFlag = false;
     }
 
     prepare(frameCache) {
-        this._prepare(frameCache);
-    }
+        if (this.recalculateScreenFlag)
+            this.recalculateScreen(frameCache);
 
-    _prepare(frameCache) {
-        this._brightness = brightnessValueToLumensNormalized(this.magnitude + frameCache.UI_STARMAP_BRIGHTNESS_SHIFT);
-        sphericalToCartesianInplace(this._cartesian, frameCache.UI_CAMERA_OFFSET_VEC, this.asc, this.dec, (1 / this.parallax) * 10 ** (frameCache.UI_STARMAP_ZOOM));
         cartesianToScreenInplace(this._cartesian, this._camera, this._screen);
 
         if (this._screen[2] < 0)
@@ -75,11 +95,16 @@ class Star {
         this._renderNorm[1] = (this._screen[1] / this._screen[2]);
         this._renderScreen[0] = (this._renderNorm[0] + frameCache._xOffset) * frameCache._s;
         this._renderScreen[1] = (this._renderNorm[1] + frameCache._yOffset) * frameCache._s;
-
-        this._size = (this._brightness ** frameCache.UI_STARMAP_STAR_SIZE_FACTOR) * frameCache.UI_STARMAP_STAR_MAX_SIZE;
-        this._opacity = (this._brightness ** frameCache.UI_STARMAP_STAR_OPACITY_FACTOR);
-        this._color = rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_STARMAP_STAR_OPACITY_SHIFT));
     }
+    shouldRenderStarThisFrame() {
+        if (dotVec3Copy(getForwardVec(), this.vecToCamera) > 0) {
+            this.shouldRenderStarThisFrameFlag = true;
+        } else {
+            this.shouldRenderStarThisFrameFlag = false;
+        }
+
+    }
+
 
     render() {
         if (this._screen == null || this._screen[2] < 0) {
@@ -131,7 +156,46 @@ export class StarHandler {
     constructor() {
         this.frameCache = new FrameCache();
         this.initalizeData();
+        this.valueWatchTick();
     }
+
+    valueWatchTick() {
+        this.watchedValues = {
+            UI_STARMAP_ZOOM: loadGD(UI_STARMAP_ZOOM),
+            UI_STARMAP_NORMAL_BRIGTNESS: loadGD(UI_STARMAP_NORMAL_BRIGTNESS),
+            UI_STARMAP_CONSTELATION_BRIGHTNESS: loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS),
+            UI_STARMAP_STAR_MIN_SIZE: loadGD(UI_STARMAP_STAR_MIN_SIZE),
+            UI_STARMAP_STAR_MAX_SIZE: loadGD(UI_STARMAP_STAR_MAX_SIZE),
+            UI_STARMAP_STAR_SIZE_FACTOR: loadGD(UI_STARMAP_STAR_SIZE_FACTOR),
+            UI_STARMAP_STAR_OPACITY_FACTOR: loadGD(UI_STARMAP_STAR_OPACITY_FACTOR),
+            UI_STARMAP_STAR_OPACITY_SHIFT: loadGD(UI_STARMAP_STAR_OPACITY_SHIFT),
+            UI_STARMAP_BRIGHTNESS_SHIFT: loadGD(UI_STARMAP_BRIGHTNESS_SHIFT),
+            UI_STARMAP_SHOW_CONSTELLATION_NAMES: loadGD(UI_STARMAP_SHOW_CONSTELLATION_NAMES)
+        }
+    }
+
+    watchValues() {
+        let setFlag = false;
+        for (const [key, prevValue] of Object.entries(this.watchedValues)) {
+            if (prevValue == 0) {
+                continue;
+            }
+            let curValueDiff = loadGD(key) / prevValue;
+            if (Math.abs(1 - curValueDiff) > .0001) {
+                setFlag = true;
+                break;
+            }
+        }
+
+        this.valueWatchTick();
+
+        if (setFlag) {
+            for (let i = 0; i < this.starIds.length; i++) {
+                this.stars[this.starIds.at(i)].recalculateScreenFlag = true;
+            }
+        }
+    }
+
 
     initalizeData() {
         this.stars = new Array(118323); // Highest ID in the Hippacros catalog. 
@@ -239,11 +303,6 @@ export class StarHandler {
         this.stars[id] = star;
         this.starIds.push(id);
     }
-
-    brightnessValueToLumens(brightnessRaw) {
-        return 10 ** (0.4 * (4.83 - brightnessRaw));
-    }
-
     calculateStarTemperature(bv) {
         // https://web.archive.org/web/20230315074349/https://spiff.rit.edu/classes/phys445/lectures/colors/colors.html
         // https://iopscience.iop.org/article/10.1086/301490/pdf
@@ -269,6 +328,7 @@ export class StarHandler {
     }
 
     render() {
+        this.watchValues();
         this.renderStars();
         this.renderConstellations();
     }
@@ -278,84 +338,13 @@ export class StarHandler {
         for (let i = 0; i < this.starIds.length; i++) {
             let id = this.starIds[i];
             let star = this.stars[id];
+
+
             star.prepare(this.frameCache);
             star.render();
         }
     }
 
-
-    _renderStars() {
-        // https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix.html
-        // this.renderWireframe();
-
-        if (getDaylightStrength() > 0.35) {
-            return;
-        }
-        this.frameBrigthnessMult = Math.min(1, Math.exp(-7 * getDaylightStrength()));
-        this.frameBrigthnessMult *= (12 * (1 - 2 * invlerp(20, 270, loadGD(UI_CAMERA_FOV))));
-
-        this.ascOffset = (getCurDay() % 1) * 2 * Math.PI;
-        this.decOffset = 0;
-
-        this.tickFrameRenderParams();
-
-        for (let i = 0; i < this.starIds.length; i++) {
-            let id = this.starIds[i];
-            let row = this.stars[id];
-            let ppr = this.processRenderRow(row);
-            this.renderScreen(ppr[0], ppr[1], ppr[2]);
-        }
-    }
-
-    tickFrameRenderParams() {
-        this.frp = [loadGD(UI_STARMAP_STAR_MAX_SIZE), loadGD(UI_STARMAP_STAR_SIZE_FACTOR), loadGD(UI_STARMAP_STAR_OPACITY_FACTOR), loadGD(UI_STARMAP_BRIGHTNESS_SHIFT), loadGD(UI_STARMAP_STAR_OPACITY_SHIFT)]
-    }
-
-    processRenderRow(row) {
-        let pr = this.prepareRenderRow(row);
-        let size = (pr[1] ** this.frp[1]) * this.frp[0];
-        let opacity = (pr[1] ** this.frp[2]);
-        return [pr[0], size, rgbToRgba(...pr[2], Math.min(1, opacity * this.frp[4]))]
-    }
-
-    prepareRenderRow(row) {
-        let processedRow = this.processStarRow(row);
-        let cartesian = processedRow[0];
-        let screen = cartesianToScreen(...cartesian);
-        let origDistance = getVec3Length(cartesian);
-        cartesian[1] *= -1;
-        addVectors(cartesian, loadGD(UI_CAMERA_OFFSET_VEC))
-        let newDistance = getVec3Length(cartesian);
-        let distFactor = newDistance / origDistance;
-        let brightnessFactor = 1 / distFactor;
-        return [screen, processedRow[1] * brightnessFactor, processedRow[2]];
-    }
-
-
-    processStarRow(row) {
-        // all business logic for star row processing goes here 
-        let rowAsc = row[1] + this.ascOffset;
-        let rowDec = row[2] + this.decOffset;
-        let rowBrightness = row[3];
-        rowBrightness += this.frp[3];
-        let rowColor = row[4];
-        let rowParallax = row[5];
-        let phi = rowDec;
-        let theta = rowAsc;
-        let distance = 1 / rowParallax; // in parsecs. 
-        let cartesian = this.sphericalToCartesian(phi, theta, distance);
-        let brightness = this.brightnessValueToLumens(rowBrightness) / 85.5066712885;
-
-        return [cartesian, brightness, rowColor];
-    }
-
-
-
-    renderScreen(loc, size, color) {
-        if (loc) {
-            addRenderJob(new PointRenderJob(loc[0], loc[1], loc[2], size, color));
-        }
-    }
 
     renderConstellations() {
         if (loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS) == 0) {
@@ -374,7 +363,7 @@ export class StarHandler {
                 if (fromStar?._renderScreen == null || toStar?._renderScreen == null) {
                     return;
                 }
-                addRenderJob(new LineRenderJob(fromStar._renderScreen, toStar._renderScreen, fromStar._size, fromStar._color,fromStar._screen[2]));
+                addRenderJob(new LineRenderJob(fromStar._renderScreen, toStar._renderScreen, fromStar._size, fromStar._color, fromStar._screen[2]));
 
             }
 

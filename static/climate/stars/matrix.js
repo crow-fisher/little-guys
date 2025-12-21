@@ -28,7 +28,6 @@ export function multiplyMatrixAndPointInplace(matrix, point, dest) {
     dest[1] = point[0] * matrix[0][1] + point[1] * matrix[1][1] + point[2] * matrix[2][1];
     dest[2] = point[0] * matrix[0][2] + point[1] * matrix[1][2] + point[2] * matrix[2][2];
     dest[3] = point[0] * matrix[0][3] + point[1] * matrix[1][3] + point[2] * matrix[2][3];
-    return dest;
 }
 
 // this method is equivalent to the lower method. but runs faster and is unreadable. yay.
@@ -80,6 +79,14 @@ export function _multiplyMatrixAndPoint(matrix, point) {
   return [resultX, resultY, resultZ, resultW];
 }
 
+export function normalizeVec3Real(vector) {
+  let len = (vector[0] ** 2 + vector[1] ** 2 + vector[2] ** 2) ** 0.5
+  vector[0] /= len;
+  vector[1] /= len;
+  vector[2] /= len;
+  return vector;
+}
+
 export function normalizeVec3(vector, toLength=1) {
   vector = structuredClone(vector);
   let length = toLength * getVec3Length(vector);
@@ -120,6 +127,10 @@ export function multiplyVectorByScalar(vec, scalar) {
     vec[i] *= scalar;
   }
   return vec;
+} 
+
+export function dotVec3Copy(v1, v2) {
+  return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
 }
 
 export function crossVec3(v1, v2) {
