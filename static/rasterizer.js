@@ -47,12 +47,13 @@ export class PointRenderJob extends RenderJob {
 }
 
 export class LineRenderJob extends RenderJob {
-    constructor(v1, v2, size, color) {
+    constructor(v1, v2, size, color, z) {
         super();
         this.v1 = v1; 
         this.v2 = v2;
         this.size = size;
         this.color = color;
+        this.z = z;
     }
 
     render() {
@@ -92,7 +93,9 @@ export function addRenderJob(renderJob) {
 
 export function executeRenderJobs() {
     // renderJobs.sort((a, b) => a.getZ() - b.getZ());
-    renderJobs.sort((a, b) => b.getZ() - a.getZ());
-    renderJobs.forEach((job) => job.render());
+    // renderJobs.sort((a, b) => b.getZ() - a.getZ()); // super expensive for the stars!!!
+    for (let i = 0; i < renderJobs.length; i++) {
+        renderJobs.at(i).render();
+    }
     renderJobs.length = 0;
 }

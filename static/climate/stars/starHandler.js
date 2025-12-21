@@ -77,8 +77,8 @@ class Star {
         this._renderScreen[1] = (this._renderNorm[1] + frameCache._yOffset) * frameCache._s;
 
         this._size = (this._brightness ** frameCache.UI_STARMAP_STAR_SIZE_FACTOR) * frameCache.UI_STARMAP_STAR_MAX_SIZE;
-        this._opacity = 1; //(this._brightness ** frameCache.UI_STARMAP_STAR_OPACITY_FACTOR);
-        this._color = (this._color ?? rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_STARMAP_STAR_OPACITY_SHIFT)))
+        this._opacity = (this._brightness ** frameCache.UI_STARMAP_STAR_OPACITY_FACTOR);
+        this._color = rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_STARMAP_STAR_OPACITY_SHIFT));
     }
 
     render() {
@@ -358,7 +358,6 @@ export class StarHandler {
     }
 
     renderConstellations() {
-        return;
         if (loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS) == 0) {
             return;
         }
@@ -369,22 +368,13 @@ export class StarHandler {
                 let from = segment[0];
                 let to = segment[1];
 
-                let fromRow = this.starsById.get(from);
-                let toRow = this.starsById.get(to);
+                let fromStar = this.stars[from];
+                let toStar = this.stars[to];
 
-                if (fromRow == null || toRow == null) {
-                    // console.log("Missing for constellation " + constellation.name + ": ", fromRow, toRow, from, to);
+                if (fromStar?._renderScreen == null || toStar?._renderScreen == null) {
                     return;
                 }
-
-                let fpr = this.processRenderRow(fromRow);
-                let tpr = this.processRenderRow(toRow);
-
-                let size = loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS) * fpr[1];
-
-                if (fpr[0] != null && tpr[0] != null) {
-                    addRenderJob(new LineRenderJob(fpr[0], tpr[0], size, fpr[2], 1));
-                }
+                addRenderJob(new LineRenderJob(fromStar._renderScreen, toStar._renderScreen, fromStar._size, fromStar._color,fromStar._screen[2]));
 
             }
 
