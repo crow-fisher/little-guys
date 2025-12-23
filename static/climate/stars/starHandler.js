@@ -16,7 +16,7 @@ import {
     UI_CAMERA_OFFSET_VEC
 } from "../../ui/UIData.js";
 import { tempToColorForStar } from "../time.js";
-import { dotVec3Copy, normalizeVec3, subtractVectorsCopy } from "./matrix.js";
+import { dotVec3Copy, normalizeVec3, subtractVectors, subtractVectorsCopy } from "./matrix.js";
 
 // https://resources.wolframcloud.com/FormulaRepository/resources/Luminosity-Formula-for-Absolute-Magnitude
 // maximum value  85.5066712885
@@ -65,20 +65,17 @@ class Star {
         this._size = 0;
         this._opacity = 0;
         this._brightness = 0;
-
         this.recalculateScreenFlag = true;
     }
 
     recalculateScreen(frameCache) {
         this._brightness = brightnessValueToLumensNormalized(this.magnitude + frameCache.UI_STARMAP_BRIGHTNESS_SHIFT);
-        sphericalToCartesianInplace(this._cartesian, frameCache.UI_CAMERA_OFFSET_VEC, this.asc, -this.dec, (1 / this.parallax) * 10 ** (frameCache.UI_STARMAP_ZOOM));
+        sphericalToCartesianInplace(this._cartesian, frameCache.UI_CAMERA_OFFSET_VEC, -this.asc, -this.dec, (1 / this.parallax) * 10 ** (frameCache.UI_STARMAP_ZOOM));
 
         this._size = (this._brightness ** frameCache.UI_STARMAP_STAR_SIZE_FACTOR) * frameCache.UI_STARMAP_STAR_MAX_SIZE;
         this._opacity = (this._brightness ** frameCache.UI_STARMAP_STAR_OPACITY_FACTOR);
         this._color = rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_STARMAP_STAR_OPACITY_SHIFT));
 
-        this.vecToCamera = normalizeVec3(subtractVectorsCopy(this._cartesian, loadGD(UI_CAMERA_OFFSET_VEC)));
-        this.shouldRenderStarThisFrameFlag = this.shouldRenderStarThisFrame();
         this.recalculateScreenFlag = false;
         cartesianToScreenInplace(this._cartesian, this._camera, this._screen);
     }
@@ -95,13 +92,6 @@ class Star {
         this._renderNorm[1] = (this._screen[1] / this._screen[2]);
         this._renderScreen[0] = (this._renderNorm[0] + frameCache._xOffset) * frameCache._s;
         this._renderScreen[1] = (this._renderNorm[1] + frameCache._yOffset) * frameCache._s;
-    }
-    shouldRenderStarThisFrame() {
-        if (dotVec3Copy(getForwardVec(), this.vecToCamera) > 0) {
-            this.shouldRenderStarThisFrameFlag = true;
-        } else {
-            this.shouldRenderStarThisFrameFlag = false;
-        }
     }
     render() {
         if (this._screen == null || this._screen[2] < 0) {

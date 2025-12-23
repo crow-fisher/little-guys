@@ -66,7 +66,7 @@ export class TimeSkipComponent extends LockedComponent {
         container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_STAR_OPACITY_FACTOR, sizeX, getBaseUISize() * 3, -.55, 1.5, () => COLOR_WHITE, () => COLOR_BLACK));
 
         container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "UI_STARMAP_STAR_OPACITY_SHIFT"))
-        container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_STAR_OPACITY_SHIFT, sizeX, getBaseUISize() * 3, 1, 3, () => COLOR_WHITE, () => COLOR_BLACK));
+        container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_STAR_OPACITY_SHIFT, sizeX, getBaseUISize() * 3, 1, 30, () => COLOR_WHITE, () => COLOR_BLACK));
 
 
         container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "UI_STARMAP_BRIGHTNESS_SHIFT"))
