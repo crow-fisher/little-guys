@@ -121,6 +121,17 @@ export function cartesianToScreenInplace(cartesian, camera, screen) {
     multiplyMatrixAndPointInplace(perspectiveMatrix, camera, screen);
 }
 
+export function screenToRenderScreen(screenRef, renderNormRef, renderScreenRef, xOffset, yOffset, s) {
+    if (screenRef[2] < 0) {
+        return;
+    }
+    renderNormRef[0] = (screenRef[0] / screenRef[2]);
+    renderNormRef[1] = (screenRef[1] / screenRef[2]);
+    renderScreenRef[0] = (renderNormRef[0] + xOffset) * s;
+    renderScreenRef[1] = (renderNormRef[1] + yOffset) * s;
+    renderScreenRef[2] = screenRef[2];
+}
+
 export function pointToScreen(x, y, z) {
     x *= -1;
     y *= -1;

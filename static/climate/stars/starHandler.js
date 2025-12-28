@@ -1,11 +1,9 @@
-import { cartesianToScreenInplace, frameMatrixReset, getForwardVec } from "../../camera.js";
+import { cartesianToScreenInplace, frameMatrixReset, screenToRenderScreen } from "../../camera.js";
 import { getCanvasHeight, getCanvasWidth } from "../../canvas.js";
 import { rgbToRgba } from "../../common.js";
 import { addRenderJob, LineRenderJob, PointRenderJob } from "../../rasterizer.js";
 import {
-    loadGD, UI_STARMAP_ZOOM,
-    UI_STARMAP_NORMAL_BRIGTNESS,
-    UI_STARMAP_CONSTELATION_BRIGHTNESS,
+    loadGD, UI_STARMAP_ZOOM, UI_STARMAP_CONSTELATION_BRIGHTNESS,
     UI_STARMAP_STAR_MIN_SIZE,
     UI_STARMAP_STAR_MAX_SIZE,
     UI_STARMAP_STAR_SIZE_FACTOR,
@@ -16,7 +14,6 @@ import {
     UI_CAMERA_OFFSET_VEC
 } from "../../ui/UIData.js";
 import { tempToColorForStar } from "../time.js";
-import { dotVec3Copy, normalizeVec3, subtractVectors, subtractVectorsCopy } from "./matrix.js";
 
 // https://resources.wolframcloud.com/FormulaRepository/resources/Luminosity-Formula-for-Absolute-Magnitude
 // maximum value  85.5066712885
@@ -61,7 +58,7 @@ class Star {
         this._camera = [0, 0, 0];
         this._screen = [0, 0, 0];
         this._renderNorm = [0, 0];
-        this._renderScreen = [0, 0];
+        this._renderScreen = [0, 0, 0];
         this._size = 0;
         this._opacity = 0;
         this._brightness = 0;
@@ -85,13 +82,7 @@ class Star {
             this.recalculateScreen(frameCache);
         }
         cartesianToScreenInplace(this._cartesian, this._camera, this._screen);
-        if (this._screen[2] < 0)
-            return;
-
-        this._renderNorm[0] = (this._screen[0] / this._screen[2]);
-        this._renderNorm[1] = (this._screen[1] / this._screen[2]);
-        this._renderScreen[0] = (this._renderNorm[0] + frameCache._xOffset) * frameCache._s;
-        this._renderScreen[1] = (this._renderNorm[1] + frameCache._yOffset) * frameCache._s;
+        screenToRenderScreen(this._screen, this._renderNorm, this._renderScreen, frameCache._xOffset, frameCache._yOffset, frameCache._s);
     }
     render() {
         if (this._screen == null || this._screen[2] < 0) {

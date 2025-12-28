@@ -18,13 +18,13 @@ import { removeSquare } from "../globalOperations.js";
 import { calculateColorTemperature, getTemperatureAtWindSquare, temperatureHumidityFlowrateFactor, updateWindSquareTemperature } from "../climate/simulation/temperatureHumidity.js";
 import { getWindSquareAbove } from "../climate/simulation/wind.js";
 import { COLOR_BLACK, GROUP_BROWN, GROUP_BLUE, GROUP_MAUVE, GROUP_TAN, GROUP_GREEN, RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
-import { getCurDay, getDaylightStrengthFrameDiff, getDt, getFrameDt, getTimeScale } from "../climate/time.js";
+import { getCurDay, getDaylightStrengthFrameDiff, getDt, getFrameDt, getTimeScale, gsmfc } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { fillCanvasPointArr, getBaseSize, getCanvasHeight, getCanvasSquaresY, getCanvasWidth, getCurZoom, isSquareOnCanvas, transformCanvasSquaresToPixels, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
 import { loadGD, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3, UI_VIEWMODE_DEV4, UI_VIEWMODE_DEV5, UI_PALETTE_STRENGTH, UI_LIGHTING_SURFACE, UI_PALETTE_SURFACE_MATCH, UI_VIEWMODE_3D } from "../ui/UIData.js";
 import { deregisterSquare, registerSquare } from "../waterGraph.js";
 import { STAGE_DEAD } from "../organisms/Stages.js";
-import { cartesianToScreen } from "../camera.js";
+import { cartesianToScreen, cartesianToScreenInplace, screenToRenderScreen } from "../camera.js";
 import { subtractVectors } from "../climate/stars/matrix.js";
 import { addRenderJob, QuadRenderJob } from "../rasterizer.js";
 
@@ -107,6 +107,31 @@ export class BaseSquare {
         this.lastTickUpdate = getCurDay();
 
         this.blockHealthGravityCoef = 2;
+
+        this.cartesian_tl = [0, 0, 0];
+        this.cartesian_tr = [0, 0, 0];
+        this.cartesian_bl = [0, 0, 0];
+        this.cartesian_br = [0, 0, 0];
+
+        this.camera_tl = [0, 0, 0];
+        this.camera_tr = [0, 0, 0];
+        this.camera_bl = [0, 0, 0];
+        this.camera_br = [0, 0, 0];
+                
+        this.screen_tl = [0, 0, 0];
+        this.screen_tr = [0, 0, 0];
+        this.screen_bl = [0, 0, 0];
+        this.screen_br = [0, 0, 0];
+        
+        this.renderNorm_tl = [0, 0];
+        this.renderNorm_tr = [0, 0];
+        this.renderNorm_bl = [0, 0];
+        this.renderNorm_br = [0, 0];
+
+        this.renderScreen_tl = [0, 0, 0];
+        this.renderScreen_tr = [0, 0, 0];
+        this.renderScreen_bl = [0, 0, 0];
+        this.renderScreen_br = [0, 0, 0];
 
         this.initTemperature();
         this.setFrameCartesians();
@@ -469,11 +494,21 @@ export class BaseSquare {
 
     setFrameCartesians() { 
         let zs = this.z;
-        let zd = this.surfaceLightingFactor;
-        this.tl = [this.posX, this.posY, zs]
-        this.tr = [this.posX + 1, this.posY, zs]
-        this.bl = [this.posX, this.posY + 1, zs]
-        this.br = [this.posX + 1, this.posY + 1, zs]
+
+        this.cartesian_tl = [this.posX, this.posY, zs]
+        this.cartesian_tr = [this.posX + 1, this.posY, zs]
+        this.cartesian_bl = [this.posX, this.posY + 1, zs]
+        this.cartesian_br = [this.posX + 1, this.posY + 1, zs]
+
+        cartesianToScreenInplace(this.cartesian_tl, this.camera_tl, this.screen_tl);
+        cartesianToScreenInplace(this.cartesian_tr, this.camera_tr, this.screen_tr);
+        cartesianToScreenInplace(this.cartesian_bl, this.camera_bl, this.screen_bl);
+        cartesianToScreenInplace(this.cartesian_br, this.camera_br, this.screen_br);
+
+        screenToRenderScreen(this.screen_tl, this.renderNorm_tl, this.renderScreen_tl, gsmfc()._xOffset, gsmfc()._yOffset, gsmfc()._s);
+        screenToRenderScreen(this.screen_tr, this.renderNorm_tr, this.renderScreen_tr, gsmfc()._xOffset, gsmfc()._yOffset, gsmfc()._s);
+        screenToRenderScreen(this.screen_bl, this.renderNorm_bl, this.renderScreen_bl, gsmfc()._xOffset, gsmfc()._yOffset, gsmfc()._s);
+        screenToRenderScreen(this.screen_br, this.renderNorm_br, this.renderScreen_br, gsmfc()._xOffset, gsmfc()._yOffset, gsmfc()._s);
     }
 
     render3D(opacityMult) {
@@ -505,15 +540,10 @@ export class BaseSquare {
         let blsq = getSquares(this.posX - 1, this.posY + 1).find((sq) => sq.lastTickUpdate >= (this.lastTickUpdate - getDt() * 2) && sq.solid && sq.visible && sq.bls != null) ?? this;
         let brsq = getSquares(this.posX + 1, this.posY + 1).find((sq) => sq.lastTickUpdate >= (this.lastTickUpdate - getDt() * 2) && sq.solid && sq.visible && sq.brs != null) ?? this;
 
-        this.tls = cartesianToScreen(...this.tl);
-        this.trs = cartesianToScreen(...this.tr);
-        this.bls = cartesianToScreen(...this.bl);
-        this.brs = cartesianToScreen(...this.br);
-
-        let p1 = this.combinePoints(this, tlsq, "tls");
-        let p2 = this.combinePoints(this, trsq, "trs");
-        let p3 = this.combinePoints(this, blsq, "bls");
-        let p4 = this.combinePoints(this, brsq, "brs");
+        let p1 = this.combinePoints(this, tlsq, "renderScreen_tl");
+        let p2 = this.combinePoints(this, trsq, "renderScreen_tr");
+        let p3 = this.combinePoints(this, blsq, "renderScreen_bl");
+        let p4 = this.combinePoints(this, brsq, "renderScreen_br");
 
         let pArr = [p1, p2, p4, p3, p1];
 
@@ -522,8 +552,6 @@ export class BaseSquare {
 
         let centerZ = pArr.slice(0, 4).map((arr) => arr[2]).reduce((a, b) => a + b, 0) / 4;
         addRenderJob(new QuadRenderJob(pArr, this.cachedRgba, centerZ));
-
-        // fillCanvasPointArr(pArr);
     }
 
     combinePoints(p1, p2, getter) {
