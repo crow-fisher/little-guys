@@ -22,7 +22,6 @@ export function multiplyMatrices(matrixA, matrixB) {
   ];
 }
 
-// wow it's even more unreadable
 export function multiplyMatrixAndPointInplace(matrix, point, dest) {
     dest[0] = point[0] * matrix[0][0] + point[1] * matrix[1][0] + point[2] * matrix[2][0];
     dest[1] = point[0] * matrix[0][1] + point[1] * matrix[1][1] + point[2] * matrix[2][1];

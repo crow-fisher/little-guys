@@ -18,10 +18,10 @@ export function gamepadCameraInput() {
     let offset = 1 * (getFrameDt() / 10);
     let applied = [0, 0, 0, 0]; 
 
-    applied[0] += offset * ls[1];
-    applied[1] -= offset * ls[0];
-    applied[2] += offset * rsb;
-    applied[2] -= offset * lsb;
+    applied[0] -= offset * ls[1];
+    applied[1] += offset * ls[0];
+    applied[2] -= offset * rsb;
+    applied[2] += offset * lsb;
 
     let ct = loadGD(UI_CAMERA_OFFSET_VEC_DT);
     ct[0] += applied[0];
