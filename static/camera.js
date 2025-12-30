@@ -4,7 +4,7 @@ import { getCurDay } from "./climate/time.js";
 import { COLOR_WHITE } from "./colors.js";
 import { rgbToHex } from "./common.js";
 import { MAIN_CONTEXT } from "./index.js";
-import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CAMERA_OFFSET_VEC, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_ROTATION_VEC_DT, saveGD, UI_CAMERA_FOV } from "./ui/UIData.js";
+import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CAMERA_OFFSET_VEC, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_ROTATION_VEC_DT, saveGD, UI_CAMERA_FOV, addUIFunctionMap, UI_STARMAP_ZOOM, UI_STARMAP_PREV_ZOOM } from "./ui/UIData.js";
 
 let params = new URLSearchParams(document.location.search);
 
@@ -397,3 +397,10 @@ export function rotatePointRz(point, theta) {
     ]
     return multiplyMatrixAndPoint(rotationMatrix, point);
 }
+
+addUIFunctionMap(UI_STARMAP_ZOOM, () => {
+    let m = 10 ** loadGD(UI_STARMAP_ZOOM);
+    let p = 10 ** loadGD(UI_STARMAP_PREV_ZOOM);
+    multiplyVectorByScalar(loadGD(UI_CAMERA_OFFSET_VEC), (m / p));
+    saveGD(UI_STARMAP_PREV_ZOOM, loadGD(UI_STARMAP_ZOOM));
+})
