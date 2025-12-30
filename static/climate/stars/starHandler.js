@@ -55,6 +55,7 @@ class Star {
         this.color = color;
         this.parallax = parallax;
         this._cartesian = [0, 0, 0];
+        this._offset = [0, 0, 0];
         this._camera = [0, 0, 0];
         this._screen = [0, 0, 0];
         this._renderNorm = [0, 0];
@@ -72,16 +73,18 @@ class Star {
         this._size = (this._brightness ** frameCache.UI_STARMAP_STAR_SIZE_FACTOR) * frameCache.UI_STARMAP_STAR_MAX_SIZE;
         this._opacity = (this._brightness ** frameCache.UI_STARMAP_STAR_OPACITY_FACTOR);
         this._color = rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_STARMAP_STAR_OPACITY_SHIFT));
-
         this.recalculateScreenFlag = false;
-        cartesianToScreenInplace(this._cartesian, this._camera, this._screen);
     }
 
     prepare(frameCache) {
         if (this.recalculateScreenFlag) {
             this.recalculateScreen(frameCache);
         }
-        cartesianToScreenInplace(this._cartesian, this._camera, this._screen);
+        this._offset[0] = this._cartesian[0] - loadGD(UI_CAMERA_OFFSET_VEC)[0];
+        this._offset[1] = this._cartesian[1] - loadGD(UI_CAMERA_OFFSET_VEC)[1];
+        this._offset[2] = this._cartesian[2] - loadGD(UI_CAMERA_OFFSET_VEC)[2];
+
+        cartesianToScreenInplace(this._offset, this._camera, this._screen);
         screenToRenderScreen(this._screen, this._renderNorm, this._renderScreen, frameCache._xOffset, frameCache._yOffset, frameCache._s);
     }
     render() {
@@ -100,13 +103,7 @@ class Star {
 
 class FrameCache {
     constructor() {
-        this.UI_STARMAP_STAR_MAX_SIZE = null;
-        this.UI_STARMAP_STAR_SIZE_FACTOR = null;
-        this.UI_STARMAP_STAR_OPACITY_FACTOR = null;
-        this.UI_STARMAP_BRIGHTNESS_SHIFT = null;
-        this.UI_STARMAP_STAR_OPACITY_SHIFT = null;
-        this.UI_CAMERA_OFFSET_VEC = null;
-        this.UI_STARMAP_ZOOM = null;
+        this.prepareFrameCache();
     }
 
     prepareFrameCache() {
@@ -117,6 +114,7 @@ class FrameCache {
         this.UI_STARMAP_BRIGHTNESS_SHIFT = loadGD(UI_STARMAP_BRIGHTNESS_SHIFT);
         this.UI_STARMAP_STAR_OPACITY_SHIFT = loadGD(UI_STARMAP_STAR_OPACITY_SHIFT);
         this.UI_STARMAP_ZOOM = loadGD(UI_STARMAP_ZOOM)
+        this.UI_CAMERA_OFFSET_VEC = loadGD(UI_CAMERA_OFFSET_VEC);
         this.UI_CAMERA_OFFSET_VEC = loadGD(UI_CAMERA_OFFSET_VEC);
 
         this._cw = getCanvasWidth();
