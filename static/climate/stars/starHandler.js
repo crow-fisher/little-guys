@@ -1,6 +1,6 @@
 import { cartesianToScreenInplace, frameMatrixReset, screenToRenderScreen } from "../../camera.js";
 import { getCanvasHeight, getCanvasWidth } from "../../canvas.js";
-import { rgbToRgba } from "../../common.js";
+import { hsv2rgb, hueShiftColor, hueShiftColorArr, rgb2hsv, rgbToHex, rgbToRgba } from "../../common.js";
 import { addRenderJob, LineRenderJob, PointRenderJob } from "../../rasterizer.js";
 import {
     loadGD, UI_STARMAP_ZOOM, UI_STARMAP_CONSTELATION_BRIGHTNESS,
@@ -11,7 +11,8 @@ import {
     UI_STARMAP_STAR_OPACITY_SHIFT,
     UI_STARMAP_BRIGHTNESS_SHIFT,
     UI_STARMAP_SHOW_CONSTELLATION_NAMES,
-    UI_CAMERA_OFFSET_VEC
+    UI_CAMERA_OFFSET_VEC,
+    UI_STARMAP_STAR_MIN_BRIGHTNESS
 } from "../../ui/UIData.js";
 import { tempToColorForStar } from "../time.js";
 
@@ -63,6 +64,7 @@ class Star {
         this._size = 0;
         this._opacity = 0;
         this._brightness = 0;
+        this._isInConstellation = false;
         this.recalculateScreenFlag = true;
     }
 
@@ -72,7 +74,8 @@ class Star {
 
         this._size = (this._brightness ** frameCache.UI_STARMAP_STAR_SIZE_FACTOR) * frameCache.UI_STARMAP_STAR_MAX_SIZE;
         this._opacity = (this._brightness ** frameCache.UI_STARMAP_STAR_OPACITY_FACTOR);
-        this._color = rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_STARMAP_STAR_OPACITY_SHIFT));
+        
+        this._color = rgbToRgba(...hueShiftColorArr(rgbToHex(...this.color), 0, -100, -50), Math.min(1, this._opacity * frameCache.UI_STARMAP_STAR_OPACITY_SHIFT));
         this.recalculateScreenFlag = false;
     }
 
@@ -89,6 +92,9 @@ class Star {
     }
     render() {
         if (this._screen == null || this._screen[2] < 0) {
+            return;
+        }
+        if (!this._isInConstellation && this.magnitude > loadGD(UI_STARMAP_STAR_MIN_BRIGHTNESS)) {
             return;
         }
         addRenderJob(new PointRenderJob(
@@ -339,6 +345,9 @@ export class StarHandler {
                 if (fromStar._screen[2] < 0 || toStar._screen[2] < 0) {
                     return;
                 }
+
+                fromStar._isInConstellation = true;
+                toStar._isInConstellation = true;
                 addRenderJob(new LineRenderJob(fromStar._renderScreen, toStar._renderScreen, loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS), fromStar._color, fromStar._screen[2]));
 
             }

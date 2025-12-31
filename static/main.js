@@ -95,34 +95,6 @@ function render() {
     let selectedViewMode = loadGD(UI_VIEWMODE_SELECT);
     doTimeSeek();
     renderTime();
-
-    if (selectedViewMode == UI_VIEWMODE_TEMPERATURE) {
-        renderTemperature();
-        renderWindPressureMap();
-    }
-    if (selectedViewMode == UI_VIEWMODE_WIND) {
-        renderWaterSaturation();
-        renderWindPressureMap();
-    }
-    if (selectedViewMode == UI_VIEWMODE_AIRTICKRATE) {
-        renderThrottleMap();
-    }
-    if (selectedViewMode == UI_VIEWMODE_DEV1) {
-        renderCandidateMap();
-    }
-    if (selectedViewMode == UI_VIEWMODE_DEV2) {
-        renderTargetMap();
-    }
-    if (selectedViewMode == UI_VIEWMODE_3D) {
-        setFrameCartesians();
-    }
-    lightingHandler.lightingTick();
-
-    lightingExposureAdjustment();
-
-    renderSolidSquares();
-    renderOrganisms();
-    renderWaterSquares();
     executeRenderJobs();
     
     if (loadGD(UI_SIMULATION_CLOUDS)) {

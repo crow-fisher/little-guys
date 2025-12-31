@@ -9,7 +9,7 @@ import { Text } from "../elements/Text.js";
 import { TimeSkipElement } from "../elements/TimeSkipElement.js";
 import { Toggle } from "../elements/Toggle.js";
 import { LockedComponent } from "../LockedComponent.js";
-import { saveGD, UI_CAMERA_FOV, UI_CENTER, UI_STARMAP_CONSTELATION_BRIGHTNESS, UI_STARMAP_NORMAL_BRIGTNESS, UI_STARMAP_ROTATION_VEC, UI_STARMAP_SHOW_CONSTELLATION_NAMES, UI_STARMAP_STAR_SIZE_FACTOR, UI_STARMAP_STAR_OPACITY_FACTOR, UI_STARMAP_STAR_MAX_SIZE, UI_STARMAP_STAR_MIN_SIZE, UI_STARMAP_ZOOM, UI_STARMAP_MAX_BRIGHTNESS, UI_STARMAP_BRIGHTNESS_SHIFT, UI_STARMAP_STAR_OPACITY_SHIFT } from "../UIData.js";
+import { saveGD, UI_CAMERA_FOV, UI_CENTER, UI_STARMAP_CONSTELATION_BRIGHTNESS, UI_STARMAP_NORMAL_BRIGTNESS, UI_STARMAP_ROTATION_VEC, UI_STARMAP_SHOW_CONSTELLATION_NAMES, UI_STARMAP_STAR_SIZE_FACTOR, UI_STARMAP_STAR_OPACITY_FACTOR, UI_STARMAP_STAR_MAX_SIZE, UI_STARMAP_STAR_MIN_SIZE, UI_STARMAP_ZOOM, UI_STARMAP_MAX_BRIGHTNESS, UI_STARMAP_BRIGHTNESS_SHIFT, UI_STARMAP_STAR_OPACITY_SHIFT, UI_STARMAP_STAR_MIN_BRIGHTNESS } from "../UIData.js";
 
 export const R_COLORS = "🎨";
 export const R_PERCOLATION_RATE = "💦";
@@ -71,7 +71,9 @@ export class TimeSkipComponent extends LockedComponent {
 
         container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "UI_STARMAP_BRIGHTNESS_SHIFT"))
         container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_BRIGHTNESS_SHIFT, sizeX, getBaseUISize() * 3, -20, 20, () => COLOR_WHITE, () => COLOR_BLACK));
-
+        
+        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "min magnitude"))
+        container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_STAR_MIN_BRIGHTNESS, sizeX, getBaseUISize() * 3, 2, 10, () => COLOR_WHITE, () => COLOR_BLACK));
 
         container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "star scale"))
         container.addElement(new Toggle(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, UI_STARMAP_SHOW_CONSTELLATION_NAMES, "show constellation names", () => COLOR_RED, () => COLOR_BLUE));

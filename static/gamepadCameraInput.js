@@ -57,7 +57,7 @@ export function gamepadCameraInput() {
         saveGD(UI_STARMAP_NORMAL_BRIGTNESS, loadGD(UI_STARMAP_NORMAL_BRIGTNESS) - offset);
     }
 
-    offset = .07;
+    offset = .007;
     if (isButtonPressed(GBDL)) {
         saveGD(UI_STARMAP_CONSTELATION_BRIGHTNESS, loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS) - offset);
     }

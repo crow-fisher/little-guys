@@ -493,17 +493,17 @@ export function getSkyBackgroundColorForDay(curDay) {
 }
 
 function renderSkyBackground() {
-    let curDay = getCurDay();
-    let processedColorRgba = getSkyBackgroundColorForDay(curDay);
-    MAIN_CONTEXT.fillStyle = processedColorRgba;
-    setBackgroundColor(processedColorRgba);
+    // let curDay = getCurDay();
+    // let processedColorRgba = getSkyBackgroundColorForDay(curDay);
+    // MAIN_CONTEXT.fillStyle = processedColorRgba;
+    // setBackgroundColor(processedColorRgba);
 
-    MAIN_CONTEXT.fillRect(
-        0,
-        0,
-        getTotalCanvasPixelWidth(),
-        getTotalCanvasPixelHeight()
-    );
+    // MAIN_CONTEXT.fillRect(
+    //     0,
+    //     0,
+    //     getTotalCanvasPixelWidth(),
+    //     getTotalCanvasPixelHeight()
+    // );
 
     renderStarMap(Math.min(1, Math.exp(-7 * getDaylightStrength())));
 }
@@ -536,7 +536,7 @@ function getDaylightStrength() {
 }
 
 function renderTime() {
-    MAIN_CONTEXT.fillStyle = calculateTempColorRgbaCache(getDaylightStrength(), 0.35);
+    MAIN_CONTEXT.fillStyle = "#FFFFFF"
     MAIN_CONTEXT.fillRect(
         0,
         0,
