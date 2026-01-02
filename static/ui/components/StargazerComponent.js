@@ -2,6 +2,7 @@ import { getBaseUISize } from "../../canvas.js";
 import { COLOR_BLACK, COLOR_BLUE, COLOR_RED, COLOR_WHITE } from "../../colors.js";
 import { Container } from "../Container.js";
 import { SliderGradientBackground } from "../elements/SliderGradientBackground.js";
+import { StarSpecializedValuePicker } from "../elements/SliderGradientBackgroundGetterSetterGradeint.js";
 import { Text } from "../elements/Text.js";
 import { Toggle } from "../elements/Toggle.js";
 import { LockedComponent } from "../LockedComponent.js";
@@ -48,6 +49,9 @@ export class StargazerComponent extends LockedComponent {
         container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "star scale"))
         container.addElement(new Toggle(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, UI_STARMAP_SHOW_CONSTELLATION_NAMES, "show constellation names", () => COLOR_RED, () => COLOR_BLUE));
         
+        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "opacity"))
+        container.addElement(new StarSpecializedValuePicker(this.window, sizeX, getBaseUISize() * 12));
+
     }
 
     render() {
