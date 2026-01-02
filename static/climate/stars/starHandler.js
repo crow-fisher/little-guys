@@ -4,14 +4,14 @@ import { rgbToRgba } from "../../common.js";
 import { addRenderJob, LineRenderJob, PointRenderJob } from "../../rasterizer.js";
 import {
     loadGD, UI_STARMAP_ZOOM, UI_STARMAP_CONSTELATION_BRIGHTNESS,
-    UI_STARMAP_STAR_MIN_SIZE,
     UI_STARMAP_STAR_MAX_SIZE,
     UI_STARMAP_STAR_SIZE_FACTOR,
     UI_STARMAP_STAR_OPACITY_FACTOR,
     UI_STARMAP_STAR_OPACITY_SHIFT,
     UI_STARMAP_BRIGHTNESS_SHIFT,
     UI_STARMAP_SHOW_CONSTELLATION_NAMES,
-    UI_CAMERA_OFFSET_VEC
+    UI_CAMERA_OFFSET_VEC,
+    UI_STARMAP_STAR_MIN_MAGNITUDE
 } from "../../ui/UIData.js";
 import { tempToColorForStar } from "../time.js";
 
@@ -138,7 +138,6 @@ export class StarHandler {
     valueWatchTick() {
         this.watchedValues = {
             UI_STARMAP_ZOOM: loadGD(UI_STARMAP_ZOOM),
-            UI_STARMAP_STAR_MIN_SIZE: loadGD(UI_STARMAP_STAR_MIN_SIZE),
             UI_STARMAP_STAR_MAX_SIZE: loadGD(UI_STARMAP_STAR_MAX_SIZE),
             UI_STARMAP_STAR_SIZE_FACTOR: loadGD(UI_STARMAP_STAR_SIZE_FACTOR),
             UI_STARMAP_STAR_OPACITY_FACTOR: loadGD(UI_STARMAP_STAR_OPACITY_FACTOR),
@@ -309,9 +308,15 @@ export class StarHandler {
 
     renderStars() {
         this.frameCache.prepareFrameCache();
+        let mm = loadGD(UI_STARMAP_STAR_MIN_MAGNITUDE);
+
         for (let i = 0; i < this.starIds.length; i++) {
             let id = this.starIds[i];
             let star = this.stars[id];
+
+            if (star.magnitude > mm) {
+                continue;
+            }
             star.prepare(this.frameCache);
             star.render();
         }

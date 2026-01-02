@@ -19,7 +19,8 @@ import {
     UI_TOPBAR_TIME,
     UI_NAME, UI_TOPBAR_WEATHER,
     loadUI,
-    UI_UI_PHONEMODE
+    UI_UI_PHONEMODE,
+    UI_TOPBAR_STARGAZER
 } from "../UIData.js";
 import { TopBarToggle } from "./TopBarToggle.js";
 import { getLastMoveOffset } from "../../mouse.js";
@@ -59,6 +60,8 @@ export class TopBarComponent {
             new TopBarToggle(fontSize, "left", UI_TOPBAR_VIEWMODE, UI_BOOLEAN, () => this.textViewMode()),
             this.midSpacingEl,
             new TopBarToggle(fontSize, "left", UI_TOPBAR_LIGHTING, UI_BOOLEAN, () => this.textToggleLighting()),
+            this.midSpacingEl, 
+            new TopBarToggle(fontSize, "left", UI_TOPBAR_STARGAZER, UI_BOOLEAN, () => this.textStargazer()),
             this.midSpacingEl,
             new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_0, () => "\u23F8\uFE0E"),
             new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_1, () => "▶"),
@@ -107,6 +110,12 @@ export class TopBarComponent {
             return "light"
         }
         return "lighting" 
+    }
+    textStargazer() {
+        if (this.veryCompact) {
+            return "stars"
+        }
+        return "stars" 
     }
     textSimulation() {
         if (this.veryCompact) {
