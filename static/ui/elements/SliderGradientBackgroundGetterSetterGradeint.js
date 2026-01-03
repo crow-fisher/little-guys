@@ -1,8 +1,8 @@
 import { COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../colors.js";
-import { invlerp } from "../../common.js";
+import { invlerp, lerp } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
-import { loadGD, UI_STARMAP_BRIGHTNESS_SHIFT, UI_STARMAP_STAR_OPACITY_FACTOR, UI_STARMAP_STAR_OPACITY_SHIFT, UI_STARMAP_STAR_SIZE_FACTOR } from "../UIData.js";
+import { loadGD, saveGD, UI_STARMAP_BRIGHTNESS_SHIFT, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_STARMAP_STAR_OPACITY_FACTOR, UI_STARMAP_STAR_OPACITY_SHIFT, UI_STARMAP_STAR_SIZE_FACTOR } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class StarSpecializedValuePicker extends WindowElement {
@@ -10,6 +10,8 @@ export class StarSpecializedValuePicker extends WindowElement {
         super(window, sizeX, sizeY);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
+
+        this.pointSize = 6;
 
         this.keys = [
             [UI_STARMAP_STAR_OPACITY_SHIFT, UI_STARMAP_STAR_SIZE_FACTOR],
@@ -42,7 +44,7 @@ export class StarSpecializedValuePicker extends WindowElement {
 
         MAIN_CONTEXT.beginPath();
         MAIN_CONTEXT.fillStyle = color;
-        MAIN_CONTEXT.arc(startX + this.pX0 * this.sizeX, startY + this.pY0 * this.sizeY, 12, 0, 2 * Math.PI, false);
+        MAIN_CONTEXT.arc(startX + this.pX0 * this.sizeX, startY + this.pY0 * this.sizeY, this.pointSize, 0, 2 * Math.PI, false);
         MAIN_CONTEXT.fill();
 
         key = this.keys[1], valueRange = this.valueRanges[1], color = this.colors[1];
@@ -54,7 +56,7 @@ export class StarSpecializedValuePicker extends WindowElement {
 
         MAIN_CONTEXT.beginPath();
         MAIN_CONTEXT.fillStyle = color;
-        MAIN_CONTEXT.arc(startX + this.pX1 * this.sizeX, startY + this.pY1 * this.sizeY, 12, 0, 2 * Math.PI, false);
+        MAIN_CONTEXT.arc(startX + this.pX1 * this.sizeX, startY + this.pY1 * this.sizeY, this.pointSize, 0, 2 * Math.PI, false);
         MAIN_CONTEXT.fill();
     }
 
@@ -64,7 +66,11 @@ export class StarSpecializedValuePicker extends WindowElement {
             return;
         }
         this.window.locked = true;
-
+        let pX = invlerp(0, this.sizeX, posX);
+        let pY = invlerp(0, this.sizeY, posY);
+        let idx = loadGD(UI_STARMAP_STAR_CONTROL_TOGGLE_MODE);
+        saveGD(this.keys[idx][0], lerp(...this.valueRanges[idx][0], pX));
+        saveGD(this.keys[idx][1], lerp(...this.valueRanges[idx][1], pY));
     }
 
 }
