@@ -492,13 +492,23 @@ export class BaseSquare {
         );
     }
 
-    setFrameCartesians() { 
-        let zs = this.z;
+    setFrameCartesians() {
+        let co = gsmfc().UI_CAMERA_OFFSET_VEC;
 
-        this.cartesian_tl = [this.posX, this.posY, zs]
-        this.cartesian_tr = [this.posX + 1, this.posY, zs]
-        this.cartesian_bl = [this.posX, this.posY + 1, zs]
-        this.cartesian_br = [this.posX + 1, this.posY + 1, zs]
+        this.cartesian_tl[0] = co[0] + this.posX;
+        this.cartesian_tr[0] = co[0] + this.posX + 1;
+        this.cartesian_bl[0] = co[0] + this.posX;
+        this.cartesian_br[0] = co[0] + this.posX + 1;
+
+        this.cartesian_tl[1] = co[1] + this.posY;
+        this.cartesian_tr[1] = co[1] + this.posY;
+        this.cartesian_bl[1] = co[1] + this.posY + 1;
+        this.cartesian_br[1] = co[1] + this.posY + 1;
+
+        this.cartesian_tl[2] = co[2] + this.z;
+        this.cartesian_tr[2] = co[2] + this.z;
+        this.cartesian_bl[2] = co[2] + this.z;
+        this.cartesian_br[2] = co[2] + this.z;
 
         cartesianToScreenInplace(this.cartesian_tl, this.camera_tl, this.screen_tl);
         cartesianToScreenInplace(this.cartesian_tr, this.camera_tr, this.screen_tr);
@@ -535,10 +545,13 @@ export class BaseSquare {
         }
         MAIN_CONTEXT.fillStyle = this.cachedRgba;
 
+        
         let tlsq = getSquares(this.posX - 1, this.posY).find((sq) => sq.lastTickUpdate >= (this.lastTickUpdate - getDt() * 2) && sq.solid && sq.visible && sq.tls != null) ?? this;
         let trsq = getSquares(this.posX + 1, this.posY).find((sq) => sq.lastTickUpdate >= (this.lastTickUpdate - getDt() * 2) && sq.solid && sq.visible && sq.trs != null) ?? this;
         let blsq = getSquares(this.posX - 1, this.posY + 1).find((sq) => sq.lastTickUpdate >= (this.lastTickUpdate - getDt() * 2) && sq.solid && sq.visible && sq.bls != null) ?? this;
         let brsq = getSquares(this.posX + 1, this.posY + 1).find((sq) => sq.lastTickUpdate >= (this.lastTickUpdate - getDt() * 2) && sq.solid && sq.visible && sq.brs != null) ?? this;
+
+        this.setFrameCartesians(); 
 
         let p1 = this.combinePoints(this, tlsq, "renderScreen_tl");
         let p2 = this.combinePoints(this, trsq, "renderScreen_tr");

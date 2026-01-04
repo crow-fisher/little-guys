@@ -80,9 +80,9 @@ class Star {
         if (this.recalculateScreenFlag) {
             this.recalculateScreen(frameCache);
         }
-        this._offset[0] = this._cartesian[0] - loadGD(UI_CAMERA_OFFSET_VEC)[0];
-        this._offset[1] = this._cartesian[1] - loadGD(UI_CAMERA_OFFSET_VEC)[1];
-        this._offset[2] = this._cartesian[2] - loadGD(UI_CAMERA_OFFSET_VEC)[2];
+        this._offset[0] = this._cartesian[0] - frameCache.UI_CAMERA_OFFSET_VEC[0];
+        this._offset[1] = this._cartesian[1] - frameCache.UI_CAMERA_OFFSET_VEC[1];
+        this._offset[2] = this._cartesian[2] - frameCache.UI_CAMERA_OFFSET_VEC[2];
 
         cartesianToScreenInplace(this._offset, this._camera, this._screen);
         screenToRenderScreen(this._screen, this._renderNorm, this._renderScreen, frameCache._xOffset, frameCache._yOffset, frameCache._s);
@@ -114,7 +114,6 @@ class FrameCache {
         this.UI_STARMAP_BRIGHTNESS_SHIFT = loadGD(UI_STARMAP_BRIGHTNESS_SHIFT);
         this.UI_STARMAP_STAR_OPACITY_SHIFT = loadGD(UI_STARMAP_STAR_OPACITY_SHIFT);
         this.UI_STARMAP_ZOOM = loadGD(UI_STARMAP_ZOOM)
-        this.UI_CAMERA_OFFSET_VEC = loadGD(UI_CAMERA_OFFSET_VEC);
         this.UI_CAMERA_OFFSET_VEC = loadGD(UI_CAMERA_OFFSET_VEC);
 
         this._cw = getCanvasWidth();
