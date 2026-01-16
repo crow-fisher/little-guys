@@ -20,45 +20,33 @@ export class StargazerComponent extends LockedComponent {
         let sizeX = getBaseUISize() * 20;
         let half = sizeX / 2;
         let container = new Container(this.window, padding, 1);
-        this.window.container = container
+        this.window.container = container;
 
-        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "camera FOV"))
-        container.addElement(new SliderGradientBackground(this.window, UI_CAMERA_FOV, sizeX, getBaseUISize() * 3, 20, 160, () => COLOR_WHITE, () => COLOR_BLACK));
+        let textHeight = getBaseUISize() * 3;
+        let sliderHeight = getBaseUISize() * 1;
 
-        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "star scale"))
-        container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_ZOOM, sizeX, getBaseUISize() * 3, -2, 15, () => COLOR_WHITE, () => COLOR_BLACK));
+        container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "field of view"))
+        container.addElement(new SliderGradientBackground(this.window, UI_CAMERA_FOV, sizeX, sliderHeight, 20, 160, () => COLOR_WHITE, () => COLOR_BLACK));
 
-        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "constellation lines"))
-        container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_CONSTELATION_BRIGHTNESS, sizeX, getBaseUISize() * 3, 0, 8, () => COLOR_WHITE, () => COLOR_BLACK));
+        container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "scale"))
+        container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_ZOOM, sizeX, sliderHeight, -2, 15, () => COLOR_WHITE, () => COLOR_BLACK));
 
-        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "star size"))
-        container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_STAR_MAX_SIZE, sizeX, getBaseUISize() * 3, 1, 20, () => COLOR_WHITE, () => COLOR_BLACK));
+        container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "constellations"))
+        container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_CONSTELATION_BRIGHTNESS, sizeX, sliderHeight, 0, 8, () => COLOR_WHITE, () => COLOR_BLACK));
 
-        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "size factor"))
-        container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_STAR_SIZE_FACTOR, sizeX, getBaseUISize() * 3, -.25, .25, () => COLOR_WHITE, () => COLOR_BLACK));
+        container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "filter magnitude"))
+        container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_STAR_MIN_MAGNITUDE, sizeX, sliderHeight, 1, 15, () => COLOR_WHITE, () => COLOR_BLACK));
 
-        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "opacity factor"))
-        container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_STAR_OPACITY_FACTOR, sizeX, getBaseUISize() * 3, -.55, 1.5, () => COLOR_WHITE, () => COLOR_BLACK));
+        container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "star size"))
+        container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_STAR_MAX_SIZE, sizeX, sliderHeight, 1, 20, () => COLOR_WHITE, () => COLOR_BLACK));
 
-        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "opacity shift"))
-        container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_STAR_OPACITY_SHIFT, sizeX, getBaseUISize() * 3, 1, 30, () => COLOR_WHITE, () => COLOR_BLACK));
 
-        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "brightness shift"))
-        container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_BRIGHTNESS_SHIFT, sizeX, getBaseUISize() * 3, -20, 20, () => COLOR_WHITE, () => COLOR_BLACK));
-
-        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "minimum magnitude"))
-        container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_STAR_MIN_MAGNITUDE, sizeX, getBaseUISize() * 3, 1, 15, () => COLOR_WHITE, () => COLOR_BLACK));
-
-        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "star scale"))
-        container.addElement(new Toggle(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, UI_STARMAP_SHOW_CONSTELLATION_NAMES, "show constellation names", () => COLOR_RED, () => COLOR_BLUE));
-
-        container.addElement(new Text(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "opacity"))
         container.addElement(new StarSpecializedValuePicker(this.window, sizeX, getBaseUISize() * 12));
 
         let row = new Container(this.window, 0, 0);
         container.addElement(row);
-        row.addElement(new RadioToggleLabel(this.window, half, getBaseUISize() * 3, UI_CENTER, "size", UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, 0, () => COLOR_RED, () => COLOR_BLUE));
-        row.addElement(new RadioToggleLabel(this.window, half, getBaseUISize() * 3, UI_CENTER, "color", UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, 1, () => COLOR_RED, () => COLOR_BLUE));
+        row.addElement(new RadioToggleLabel(this.window, half, textHeight, UI_CENTER, "size", UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, 0, () => COLOR_RED, () => COLOR_BLUE));
+        row.addElement(new RadioToggleLabel(this.window, half, textHeight, UI_CENTER, "color", UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, 1, () => COLOR_RED, () => COLOR_BLUE));
     } 
     render() {
         super.render();

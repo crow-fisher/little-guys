@@ -95,7 +95,7 @@ class Star {
             this._renderScreen[0],
             this._renderScreen[1],
             this._screen[2],
-            this._size, this._color));
+            this._size, this._color), false);
 
     }
 
@@ -339,19 +339,18 @@ export class StarHandler {
                 if (fromStar?._renderScreen == null || toStar?._renderScreen == null) {
                     return;
                 }
-
                 if (fromStar._screen[2] < 0 || toStar._screen[2] < 0) {
                     return;
                 }
-                addRenderJob(new LineRenderJob(fromStar._renderScreen, toStar._renderScreen, loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS), fromStar._color, fromStar._screen[2]));
-
+                addRenderJob(
+                    new LineRenderJob(
+                        fromStar._renderScreen,
+                        toStar._renderScreen,
+                        loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS),
+                        fromStar._color,
+                        fromStar._screen[2]
+                    ), false);
             }
-
-
         })
     }
-
-
-
-
 }

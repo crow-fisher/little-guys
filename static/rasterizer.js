@@ -84,16 +84,20 @@ export class QuadRenderJob extends RenderJob {
     }
 }
 
+const noSortRenderJobs = new Array();
 const renderJobs = new Array();
 
-export function addRenderJob(renderJob) {
-    if (renderJob.isVisible())
-        renderJobs.push(renderJob);
+export function addRenderJob(renderJob, sort) {
+    if (renderJob.isVisible()) {
+        ((sort) ? renderJobs : noSortRenderJobs).push(renderJob);
+    }
 }
-
 export function executeRenderJobs() {
-    // renderJobs.sort((a, b) => a.getZ() - b.getZ());
-    // renderJobs.sort((a, b) => b.getZ() - a.getZ()); // super expensive for the stars!!!
+    for (let i = 0; i < noSortRenderJobs.length; i++) {
+        noSortRenderJobs.at(i).render();
+    }
+    noSortRenderJobs.length = 0;
+    renderJobs.sort((a, b) => b.getZ() - a.getZ()); 
     for (let i = 0; i < renderJobs.length; i++) {
         renderJobs.at(i).render();
     }

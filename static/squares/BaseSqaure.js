@@ -495,20 +495,24 @@ export class BaseSquare {
     setFrameCartesians() {
         let co = gsmfc().UI_CAMERA_OFFSET_VEC;
 
-        this.cartesian_tl[0] = co[0] + this.posX;
-        this.cartesian_tr[0] = co[0] + this.posX + 1;
-        this.cartesian_bl[0] = co[0] + this.posX;
-        this.cartesian_br[0] = co[0] + this.posX + 1;
+        let xp = -1;
+        let yp = -1;
+        let zp = -1;
 
-        this.cartesian_tl[1] = co[1] + this.posY;
-        this.cartesian_tr[1] = co[1] + this.posY;
-        this.cartesian_bl[1] = co[1] + this.posY + 1;
-        this.cartesian_br[1] = co[1] + this.posY + 1;
+        this.cartesian_tl[0] = xp * co[0] + this.posX;
+        this.cartesian_tr[0] = xp * co[0] + this.posX + 1;
+        this.cartesian_bl[0] = xp * co[0] + this.posX;
+        this.cartesian_br[0] = xp * co[0] + this.posX + 1;
 
-        this.cartesian_tl[2] = co[2] + this.z;
-        this.cartesian_tr[2] = co[2] + this.z;
-        this.cartesian_bl[2] = co[2] + this.z;
-        this.cartesian_br[2] = co[2] + this.z;
+        this.cartesian_tl[1] = yp * co[1] + this.posY;
+        this.cartesian_tr[1] = yp * co[1] + this.posY;
+        this.cartesian_bl[1] = yp * co[1] + this.posY + 1;
+        this.cartesian_br[1] = yp * co[1] + this.posY + 1;
+
+        this.cartesian_tl[2] = zp * co[2] + this.z;
+        this.cartesian_tr[2] = zp * co[2] + this.z;
+        this.cartesian_bl[2] = zp * co[2] + this.z;
+        this.cartesian_br[2] = zp * co[2] + this.z;
 
         cartesianToScreenInplace(this.cartesian_tl, this.camera_tl, this.screen_tl);
         cartesianToScreenInplace(this.cartesian_tr, this.camera_tr, this.screen_tr);
