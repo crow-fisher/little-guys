@@ -574,7 +574,6 @@ export class BaseSquare {
     combinePoints(p1, p2, getter) {
         if (p1[getter] == null || p2[getter] == null)
             return null;
-
         return [
             (p1[getter][0] + p2[getter][0]) * .5,
             (p1[getter][1] + p2[getter][1]) * .5,
