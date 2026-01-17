@@ -49,7 +49,7 @@ export class PointRenderJob extends RenderJob {
 export class LineRenderJob extends RenderJob {
     constructor(v1, v2, size, color, z) {
         super();
-        this.v1 = v1; 
+        this.v1 = v1;
         this.v2 = v2;
         this.size = size;
         this.color = color;
@@ -67,16 +67,26 @@ export class LineRenderJob extends RenderJob {
 }
 
 export class QuadRenderJob extends RenderJob {
-    constructor(pArr, color, z) {
+    constructor(p1, p2, p3, p4, color, z) {
         super();
-        this.pArr = pArr;
+        this.p1 = p1;
+        this.p2 = p2;
+        this.p3 = p3;
+        this.p4 = p4;
         this.color = color;
         this.z = z;
     }
 
     render() {
         MAIN_CONTEXT.fillStyle = this.color;
-        fillCanvasPointArr(this.pArr);
+        MAIN_CONTEXT.beginPath()
+        MAIN_CONTEXT.moveTo(...this.p1);
+        MAIN_CONTEXT.lineTo(...this.p2);
+        MAIN_CONTEXT.lineTo(...this.p3);
+        MAIN_CONTEXT.lineTo(...this.p4);
+        MAIN_CONTEXT.lineTo(...this.p1);
+        MAIN_CONTEXT.closePath();
+        MAIN_CONTEXT.fill();
     }
 
     getZ() {
@@ -97,7 +107,7 @@ export function executeRenderJobs() {
         noSortRenderJobs.at(i).render();
     }
     noSortRenderJobs.length = 0;
-    renderJobs.sort((a, b) => b.getZ() - a.getZ()); 
+    renderJobs.sort((a, b) => b.getZ() - a.getZ());
     for (let i = 0; i < renderJobs.length; i++) {
         renderJobs.at(i).render();
     }

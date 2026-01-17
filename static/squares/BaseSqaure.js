@@ -117,12 +117,12 @@ export class BaseSquare {
         this.camera_tr = [0, 0, 0];
         this.camera_bl = [0, 0, 0];
         this.camera_br = [0, 0, 0];
-                
+
         this.screen_tl = [0, 0, 0];
         this.screen_tr = [0, 0, 0];
         this.screen_bl = [0, 0, 0];
         this.screen_br = [0, 0, 0];
-        
+
         this.renderNorm_tl = [0, 0];
         this.renderNorm_tr = [0, 0];
         this.renderNorm_bl = [0, 0];
@@ -132,6 +132,11 @@ export class BaseSquare {
         this.renderScreen_tr = [0, 0, 0];
         this.renderScreen_bl = [0, 0, 0];
         this.renderScreen_br = [0, 0, 0];
+
+        this.p1 = [0, 0, 0];
+        this.p2 = [0, 0, 0];
+        this.p3 = [0, 0, 0];
+        this.p4 = [0, 0, 0];
 
         this.initTemperature();
         this.setFrameCartesians();
@@ -494,25 +499,18 @@ export class BaseSquare {
 
     setFrameCartesians() {
         let co = gsmfc().UI_CAMERA_OFFSET_VEC;
-
-        let xp = -1;
-        let yp = -1;
-        let zp = -1;
-
-        this.cartesian_tl[0] = xp * co[0] + this.posX;
-        this.cartesian_tr[0] = xp * co[0] + this.posX + 1;
-        this.cartesian_bl[0] = xp * co[0] + this.posX;
-        this.cartesian_br[0] = xp * co[0] + this.posX + 1;
-
-        this.cartesian_tl[1] = yp * co[1] + this.posY;
-        this.cartesian_tr[1] = yp * co[1] + this.posY;
-        this.cartesian_bl[1] = yp * co[1] + this.posY + 1;
-        this.cartesian_br[1] = yp * co[1] + this.posY + 1;
-
-        this.cartesian_tl[2] = zp * co[2] + this.z;
-        this.cartesian_tr[2] = zp * co[2] + this.z;
-        this.cartesian_bl[2] = zp * co[2] + this.z;
-        this.cartesian_br[2] = zp * co[2] + this.z;
+        this.cartesian_tl[0] = this.posX - co[0];
+        this.cartesian_tr[0] = this.posX + 1 - co[0];
+        this.cartesian_bl[0] = this.posX - co[0];
+        this.cartesian_br[0] = this.posX + 1 - co[0];
+        this.cartesian_tl[1] = this.posY - co[1];
+        this.cartesian_tr[1] = this.posY - co[1];
+        this.cartesian_bl[1] = this.posY + 1 - co[1];
+        this.cartesian_br[1] = this.posY + 1 - co[1];
+        this.cartesian_tl[2] = this.z - co[2];
+        this.cartesian_tr[2] = this.z - co[2];
+        this.cartesian_bl[2] = this.z - co[2];
+        this.cartesian_br[2] = this.z - co[2];
 
         cartesianToScreenInplace(this.cartesian_tl, this.camera_tl, this.screen_tl);
         cartesianToScreenInplace(this.cartesian_tr, this.camera_tr, this.screen_tr);
@@ -525,67 +523,57 @@ export class BaseSquare {
         screenToRenderScreen(this.screen_br, this.renderNorm_br, this.renderScreen_br, gsmfc()._xOffset, gsmfc()._yOffset, gsmfc()._s);
     }
 
+    updateNeighborSquares() {
+        this.tlsq = getSquares(this.posX - 1, this.posY).find((sq) => sq.lastTickUpdate >= (this.lastTickUpdate - getDt() * 2) && sq.solid && sq.visible && sq.tls != null);
+        this.trsq = getSquares(this.posX + 1, this.posY).find((sq) => sq.lastTickUpdate >= (this.lastTickUpdate - getDt() * 2) && sq.solid && sq.visible && sq.trs != null);
+        this.blsq = getSquares(this.posX - 1, this.posY + 1).find((sq) => sq.lastTickUpdate >= (this.lastTickUpdate - getDt() * 2) && sq.solid && sq.visible && sq.bls != null);
+        this.brsq = getSquares(this.posX + 1, this.posY + 1).find((sq) => sq.lastTickUpdate >= (this.lastTickUpdate - getDt() * 2) && sq.solid && sq.visible && sq.brs != null);
+    }
+
+    prepareRenderJob() {
+        this.combinePoints(this, this.tlsq, this.p1, "renderScreen_tl", "renderScreen_tr");
+        this.combinePoints(this, this.trsq, this.p2, "renderScreen_tr", "renderScreen_tl");
+        this.combinePoints(this, this.blsq, this.p3, "renderScreen_bl", "renderScreen_br");
+        this.combinePoints(this, this.brsq, this.p4, "renderScreen_br", "renderScreen_bl");
+        this.centerZ = (this.p1[2] + this.p2[2] + this.p3[2] + this.p4[2]) / 4;
+
+        if (this.renderJob == null) {
+            this.renderJob = new QuadRenderJob(this.p1, this.p2, this.p3, this.p4, this.cachedRgba, this.centerZ)
+        } else {
+            this.renderJob.p1 = this.p1;
+            this.renderJob.p2 = this.p2;
+            this.renderJob.p3 = this.p3;
+            this.renderJob.p4 = this.p4;
+            this.renderJob.cachedRgba = this.cachedRgba;
+            this.renderJob.centerZ = this.centerZ;
+        }
+    }
+
+
     render3D(opacityMult) {
-        let minTime = getFrameDt() * 128;
-        if (isSqColChanged(this.posX)) {
-            minTime /= 4;
-        }
-        if (isSqRowChanged(this.posY)) {
-            minTime /= 4;
-        }
-
-        if (
-            (opacityMult != this.lastColorCacheOpacity) ||
-            (Date.now() > this.lastColorCacheTime + minTime * Math.random()) ||
-            Math.abs(getDaylightStrengthFrameDiff()) > 0.005) {
-
-            this.lastColorCacheTime = Date.now();
-            let outColorBase = this.getColorBase();
-            let lightingColor = this.processLighting(true);
-            this.frameCacheLighting = lightingColor;
-            this.outColor = { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
-            this.lastColorCacheOpacity = opacityMult;
-            this.cachedRgba = rgbToRgba(Math.floor(this.outColor.r), Math.floor(this.outColor.g), Math.floor(this.outColor.b), opacityMult * this.opacity * this.blockHealth ** 0.2);
-        }
-        MAIN_CONTEXT.fillStyle = this.cachedRgba;
-
-        
-        let tlsq = getSquares(this.posX - 1, this.posY).find((sq) => sq.lastTickUpdate >= (this.lastTickUpdate - getDt() * 2) && sq.solid && sq.visible && sq.tls != null) ?? this;
-        let trsq = getSquares(this.posX + 1, this.posY).find((sq) => sq.lastTickUpdate >= (this.lastTickUpdate - getDt() * 2) && sq.solid && sq.visible && sq.trs != null) ?? this;
-        let blsq = getSquares(this.posX - 1, this.posY + 1).find((sq) => sq.lastTickUpdate >= (this.lastTickUpdate - getDt() * 2) && sq.solid && sq.visible && sq.bls != null) ?? this;
-        let brsq = getSquares(this.posX + 1, this.posY + 1).find((sq) => sq.lastTickUpdate >= (this.lastTickUpdate - getDt() * 2) && sq.solid && sq.visible && sq.brs != null) ?? this;
-
-        this.setFrameCartesians(); 
-
-        let p1 = this.combinePoints(this, tlsq, "renderScreen_tl", "renderScreen_tr");
-        let p2 = this.combinePoints(this, trsq, "renderScreen_tr", "renderScreen_tl");
-        let p3 = this.combinePoints(this, blsq, "renderScreen_bl", "renderScreen_br");
-        let p4 = this.combinePoints(this, brsq, "renderScreen_br", "renderScreen_bl");
-
-        let pArr = [p1, p2, p4, p3, p1];
-
-        if (pArr.some((p) => p == null))
-            return;
-
-        let centerZ = pArr.slice(0, 4).map((arr) => arr[2]).reduce((a, b) => a + b, 0) / 4;
-        addRenderJob(new QuadRenderJob(pArr, this.cachedRgba, centerZ));
+        this.prepareFillColor(opacityMult);
+        this.updateNeighborSquares();
+        this.setFrameCartesians();
+        this.prepareRenderJob();
+        addRenderJob(this.renderJob);
     }
 
-    combinePoints(p1, p2, g1, g2) {
-        if (p1[g1] == null || p2[g2] == null)
-            return null;
-        return [
-            (p1[g1][0] + p2[g2][0]) * .5,
-            (p1[g1][1] + p2[g2][1]) * .5,
-            (p1[g1][2] + p2[g2][2]) * .5
-        ]
+    combinePoints(p1, p2, dest, g1, g2) {
+        if (p2 == null || p1[g1] == null || p2[g2] == null) {
+            dest[0] = (p1[g1] ?? p2[g2])[0];
+            dest[1] = (p1[g1] ?? p2[g2])[1];
+            dest[2] = (p1[g1] ?? p2[g2])[2];
+        } else {
+            dest[0] = (p1[g1][0] + p2[g2][0]) * .5;
+            dest[1] = (p1[g1][1] + p2[g2][1]) * .5;
+            dest[2] = (p1[g1][2] + p2[g2][2]) * .5;
+        }
     }
 
-    renderWithVariedColors(opacityMult) {
+    prepareFillColor(opacityMult) {
         if (this.proto == "WaterSquare") {
             this.opacity = loadGD(UI_LIGHTING_WATER_OPACITY);
         }
-
         let minTime = getFrameDt() * 128;
         if (isSqColChanged(this.posX)) {
             minTime /= 4;
@@ -608,6 +596,11 @@ export class BaseSquare {
             this.cachedRgba = rgbToRgba(Math.floor(this.outColor.r), Math.floor(this.outColor.g), Math.floor(this.outColor.b), opacityMult * this.opacity * this.blockHealth ** 0.2);
         }
         MAIN_CONTEXT.fillStyle = this.cachedRgba;
+    }
+
+    renderWithVariedColors(opacityMult) {
+        this.prepareFillColor(opacityMult);
+
         if (this.blockHealth < 0.5 && this.getMovementSpeed() > 0.5) {
             let size = this.blockHealth;
             if (size < 0.3) {
@@ -1060,7 +1053,7 @@ export class BaseSquare {
     }
 
     zCascadePhysics() {
-        
+
     }
 
     physics() {

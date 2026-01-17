@@ -231,6 +231,12 @@ export function compressSquares(squares) {
     let growthPlanStepArr = new Array();
     squares.forEach((sq) => {
         sq.lighting = [];
+        sq.renderJob = null;
+        sq.tlsq = null;
+        sq.trsq = null;
+        sq.blsq = null;
+        sq.brsq = null;
+        
         sq.linkedOrganisms = Array.from(sq.linkedOrganisms.map((org) => {
             if (org.stage != STAGE_DEAD) {
                 orgArr.push(org);
