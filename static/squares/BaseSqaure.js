@@ -557,10 +557,10 @@ export class BaseSquare {
 
         this.setFrameCartesians(); 
 
-        let p1 = this.combinePoints(this, tlsq, "renderScreen_tl");
-        let p2 = this.combinePoints(this, trsq, "renderScreen_tr");
-        let p3 = this.combinePoints(this, blsq, "renderScreen_bl");
-        let p4 = this.combinePoints(this, brsq, "renderScreen_br");
+        let p1 = this.combinePoints(this, tlsq, "renderScreen_tl", "renderScreen_tr");
+        let p2 = this.combinePoints(this, trsq, "renderScreen_tr", "renderScreen_tl");
+        let p3 = this.combinePoints(this, blsq, "renderScreen_bl", "renderScreen_br");
+        let p4 = this.combinePoints(this, brsq, "renderScreen_br", "renderScreen_bl");
 
         let pArr = [p1, p2, p4, p3, p1];
 
@@ -571,13 +571,13 @@ export class BaseSquare {
         addRenderJob(new QuadRenderJob(pArr, this.cachedRgba, centerZ));
     }
 
-    combinePoints(p1, p2, getter) {
-        if (p1[getter] == null || p2[getter] == null)
+    combinePoints(p1, p2, g1, g2) {
+        if (p1[g1] == null || p2[g2] == null)
             return null;
         return [
-            (p1[getter][0] + p2[getter][0]) * .5,
-            (p1[getter][1] + p2[getter][1]) * .5,
-            (p1[getter][2] + p2[getter][2]) * .5
+            (p1[g1][0] + p2[g2][0]) * .5,
+            (p1[g1][1] + p2[g2][1]) * .5,
+            (p1[g1][2] + p2[g2][2]) * .5
         ]
     }
 
