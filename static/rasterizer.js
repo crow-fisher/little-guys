@@ -82,8 +82,8 @@ export class QuadRenderJob extends RenderJob {
         MAIN_CONTEXT.beginPath()
         MAIN_CONTEXT.moveTo(...this.p1);
         MAIN_CONTEXT.lineTo(...this.p2);
-        MAIN_CONTEXT.lineTo(...this.p3);
         MAIN_CONTEXT.lineTo(...this.p4);
+        MAIN_CONTEXT.lineTo(...this.p3);
         MAIN_CONTEXT.lineTo(...this.p1);
         MAIN_CONTEXT.closePath();
         MAIN_CONTEXT.fill();

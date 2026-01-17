@@ -524,17 +524,18 @@ export class BaseSquare {
     }
 
     updateNeighborSquares() {
-        this.tlsq = getSquares(this.posX - 1, this.posY).find((sq) => sq.lastTickUpdate >= (this.lastTickUpdate - getDt() * 2) && sq.solid && sq.visible && sq.tls != null);
-        this.trsq = getSquares(this.posX + 1, this.posY).find((sq) => sq.lastTickUpdate >= (this.lastTickUpdate - getDt() * 2) && sq.solid && sq.visible && sq.trs != null);
-        this.blsq = getSquares(this.posX - 1, this.posY + 1).find((sq) => sq.lastTickUpdate >= (this.lastTickUpdate - getDt() * 2) && sq.solid && sq.visible && sq.bls != null);
-        this.brsq = getSquares(this.posX + 1, this.posY + 1).find((sq) => sq.lastTickUpdate >= (this.lastTickUpdate - getDt() * 2) && sq.solid && sq.visible && sq.brs != null);
+        this.lsq = getSquares(this.posX - 1, this.posY).find((sq) => sq.solid && sq.visible);
+        this.rsq = getSquares(this.posX + 1, this.posY).find((sq) => sq.solid && sq.visible);
+        this.tsq = getSquares(this.posX, this.posY - 1).find((sq) => sq.solid && sq.visible);
+        this.bsq = getSquares(this.posX, this.posY + 1).find((sq) => sq.solid && sq.visible);
     }
 
     prepareRenderJob() {
-        this.combinePoints(this, this.tlsq, this.p1, "renderScreen_tl", "renderScreen_tr");
-        this.combinePoints(this, this.trsq, this.p2, "renderScreen_tr", "renderScreen_tl");
-        this.combinePoints(this, this.blsq, this.p3, "renderScreen_bl", "renderScreen_br");
-        this.combinePoints(this, this.brsq, this.p4, "renderScreen_br", "renderScreen_bl");
+        this.combinePoints(this, this.lsq, this.tsq, this.p1, "renderScreen_tl", "renderScreen_tr", "renderScreen_bl");
+        this.combinePoints(this, this.lsq, this.bsq, this.p3, "renderScreen_bl", "renderScreen_br", "renderScreen_tl");
+        this.combinePoints(this, this.rsq, this.tsq, this.p2, "renderScreen_tr", "renderScreen_tl", "renderScreen_br");
+        this.combinePoints(this, this.rsq, this.bsq, this.p4, "renderScreen_br", "renderScreen_bl", "renderScreen_tr");
+
         this.centerZ = (this.p1[2] + this.p2[2] + this.p3[2] + this.p4[2]) / 4;
 
         if (this.renderJob == null) {
@@ -558,15 +559,15 @@ export class BaseSquare {
         addRenderJob(this.renderJob);
     }
 
-    combinePoints(p1, p2, dest, g1, g2) {
-        if (p2 == null || p1[g1] == null || p2[g2] == null) {
-            dest[0] = (p1[g1] ?? p2[g2])[0];
-            dest[1] = (p1[g1] ?? p2[g2])[1];
-            dest[2] = (p1[g1] ?? p2[g2])[2];
+    combinePoints(p1, p2, p3, dest, g1, g2, g3) {
+        if (p2 == null || p3 == null || p1[g1] == null || p2[g2] == null || p3[g3] == null) {
+            dest[0] = (p1[g1] ?? p2[g2] ?? p3[g3])[0];
+            dest[1] = (p1[g1] ?? p2[g2] ?? p3[g3])[1];
+            dest[2] = (p1[g1] ?? p2[g2] ?? p3[g3])[2];
         } else {
-            dest[0] = (p1[g1][0] + p2[g2][0]) * .5;
-            dest[1] = (p1[g1][1] + p2[g2][1]) * .5;
-            dest[2] = (p1[g1][2] + p2[g2][2]) * .5;
+            dest[0] = (p1[g1][0] + p2[g2][0] + p3[g3][0]) / 3;
+            dest[1] = (p1[g1][1] + p2[g2][1] + p3[g3][1]) / 3;
+            dest[2] = (p1[g1][2] + p2[g2][2] + p3[g3][2]) / 3;
         }
     }
 
