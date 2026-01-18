@@ -397,10 +397,3 @@ export function rotatePointRz(point, theta) {
     ]
     return multiplyMatrixAndPoint(rotationMatrix, point);
 }
-
-addUIFunctionMap(UI_STARMAP_ZOOM, () => {
-    let m = 10 ** loadGD(UI_STARMAP_ZOOM);
-    let p = 10 ** loadGD(UI_STARMAP_PREV_ZOOM);
-    multiplyVectorByScalar(loadGD(UI_CAMERA_OFFSET_VEC), (m / p));
-    saveGD(UI_STARMAP_PREV_ZOOM, loadGD(UI_STARMAP_ZOOM));
-})

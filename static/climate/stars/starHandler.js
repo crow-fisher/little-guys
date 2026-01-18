@@ -1,6 +1,6 @@
 import { cartesianToScreenInplace, frameMatrixReset, screenToRenderScreen } from "../../camera.js";
 import { getCanvasHeight, getCanvasWidth } from "../../canvas.js";
-import { rgbToRgba } from "../../common.js";
+import { hexToRgb, processColorLerpBicolor, processColorLerpBicolorPow, rgbToRgba, rgbToRgbaObj } from "../../common.js";
 import { addRenderJob, LineRenderJob, PointRenderJob } from "../../rasterizer.js";
 import {
     loadGD, UI_STARMAP_ZOOM, UI_STARMAP_CONSTELATION_BRIGHTNESS,
@@ -11,7 +11,11 @@ import {
     UI_STARMAP_BRIGHTNESS_SHIFT,
     UI_STARMAP_SHOW_CONSTELLATION_NAMES,
     UI_CAMERA_OFFSET_VEC,
-    UI_STARMAP_STAR_MIN_MAGNITUDE
+    UI_STARMAP_STAR_MIN_MAGNITUDE,
+    UI_STARMAP_FEH_MIN_VALUE,
+    UI_STARMAP_FEH_WINDOW_SIZE,
+    UI_STARMAP_FEH_POW,
+    UI_STARMAP_VIEWMODE
 } from "../../ui/UIData.js";
 import { tempToColorForStar } from "../time.js";
 
@@ -26,6 +30,9 @@ function sphericalToCartesianInplace(target, cameraOffset, yaw, pitch, m) {
     target[1] = m * Math.sin(pitch) + cameraOffset[1]
     target[2] = m * Math.sin(yaw) * Math.cos(pitch) + cameraOffset[2]
 }
+
+let feHMinColor = hexToRgb("#99ffd8");
+let feHMaxColor = hexToRgb("#be20e6");
 
 class Constellation {
     constructor(data) {
@@ -65,8 +72,29 @@ class Star {
         this._opacity = 0;
         this._brightness = 0;
         this.recalculateScreenFlag = true;
-
     }
+
+    setFeH(feH) {
+        this.p_feH = feH;
+        this.recalculateFeHColor();
+    }
+
+    recalculateFeHColor() {
+        if (this.p_feH == null)
+            return;
+
+        let minValue = loadGD(UI_STARMAP_FEH_MIN_VALUE);
+        let maxValue = minValue + loadGD(UI_STARMAP_FEH_WINDOW_SIZE);
+
+        let vfcc = Math.min(Math.max(minValue, this.p_feH), maxValue);
+
+        if (isNaN(this.p_feH)) {
+            console.warn("????");
+        }
+        this.p_feH_color = rgbToRgbaObj(processColorLerpBicolorPow(
+            vfcc, minValue, maxValue, feHMinColor, feHMaxColor, loadGD(UI_STARMAP_FEH_POW)),1);
+    }
+
 
     recalculateScreen(frameCache) {
         this._brightness = brightnessValueToLumensNormalized(this.magnitude + frameCache.UI_STARMAP_BRIGHTNESS_SHIFT);
@@ -76,6 +104,7 @@ class Star {
         this._opacity = (this._brightness ** frameCache.UI_STARMAP_STAR_OPACITY_FACTOR);
         this._color = rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_STARMAP_STAR_OPACITY_SHIFT));
         this.recalculateScreenFlag = false;
+        this.recalculateFeHColor();
     }
 
     prepare(frameCache) {
@@ -89,18 +118,16 @@ class Star {
         cartesianToScreenInplace(this._offset, this._camera, this._screen);
         screenToRenderScreen(this._screen, this._renderNorm, this._renderScreen, frameCache._xOffset, frameCache._yOffset, frameCache._s);
     }
-    render() {
+    render(renderMode) {
         if (this._screen == null || this._screen[2] < 0) {
-            return;
+            return; q
         }
         addRenderJob(new PointRenderJob(
             this._renderScreen[0],
             this._renderScreen[1],
             this._screen[2],
-            this._size, this._color), false);
-
+            this._size,  (renderMode == 0 ? this._color : (this.p_feH_color ?? this._color))), false);
     }
-
 }
 
 class FrameCache {
@@ -117,6 +144,7 @@ class FrameCache {
         this.UI_STARMAP_STAR_OPACITY_SHIFT = loadGD(UI_STARMAP_STAR_OPACITY_SHIFT);
         this.UI_STARMAP_ZOOM = loadGD(UI_STARMAP_ZOOM)
         this.UI_CAMERA_OFFSET_VEC = loadGD(UI_CAMERA_OFFSET_VEC);
+        this.UI_STARMAP_VIEWMODE = loadGD(UI_STARMAP_VIEWMODE);
 
         this._cw = getCanvasWidth();
         this._ch = getCanvasHeight();
@@ -144,7 +172,11 @@ export class StarHandler {
             UI_STARMAP_STAR_OPACITY_FACTOR: loadGD(UI_STARMAP_STAR_OPACITY_FACTOR),
             UI_STARMAP_STAR_OPACITY_SHIFT: loadGD(UI_STARMAP_STAR_OPACITY_SHIFT),
             UI_STARMAP_BRIGHTNESS_SHIFT: loadGD(UI_STARMAP_BRIGHTNESS_SHIFT),
-            UI_STARMAP_SHOW_CONSTELLATION_NAMES: loadGD(UI_STARMAP_SHOW_CONSTELLATION_NAMES)
+            UI_STARMAP_SHOW_CONSTELLATION_NAMES: loadGD(UI_STARMAP_SHOW_CONSTELLATION_NAMES),
+            UI_STARMAP_FEH_MIN_VALUE: loadGD(UI_STARMAP_FEH_MIN_VALUE),
+            UI_STARMAP_FEH_WINDOW_SIZE: loadGD(UI_STARMAP_FEH_WINDOW_SIZE),
+            UI_STARMAP_FEH_POW: loadGD(UI_STARMAP_FEH_POW),
+            UI_STARMAP_VIEWMODE: loadGD(UI_STARMAP_VIEWMODE),
         }
     }
 
@@ -298,14 +330,14 @@ export class StarHandler {
             let designation = row.substr(0, 32);
             let feH = Number.parseFloat(row.substr(166, 6));
 
-            if (designation.substr(0, 2) === "HD") {
+            if (designation.substr(0, 2) === "HD" && !isNaN(feH)) {
                 let designationParts = designation.match(/\S+/g)
                 let hdId = Number.parseInt(designationParts[1]);
                 if (this.hdMap.has(hdId)) {
-                    this.hdMap.get(hdId).p_feH = feH;
-                    console.log("Set FeH ", feH, " for HIP star ", this.hdMap.get(hdId).id);
+                    this.hdMap.get(hdId).setFeH(feH);
+                    // console.log("Set FeH ", feH, " for HIP star ", this.hdMap.get(hdId).id);
                 } else {
-                    console.log("HD Lookup failed for PASTEL designation " + designation);
+                    // console.log("HD Lookup failed for PASTEL designation " + designation);
                 }
             }
 
@@ -355,11 +387,14 @@ export class StarHandler {
             if (star.magnitude > mm) {
                 continue;
             }
+            if (this.frameCache.UI_STARMAP_VIEWMODE == 1 && star.p_feH == null) {
+                continue;
+            }
+
             star.prepare(this.frameCache);
-            star.render();
+            star.render(this.frameCache.UI_STARMAP_VIEWMODE);
         }
     }
-
 
     renderConstellations() {
         if (loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS) == 0) {

@@ -64,6 +64,10 @@ function rgbToHex(r, g, b) {
     return "#" + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1);
 }
 
+export function rgbToRgbaObj(obj, a) {
+    return "rgba(" + obj.r + "," + obj.g + "," + obj.b + "," + a + ")";
+}
+
 function rgbToRgba(r, g, b, a) {
     return "rgba(" + r + "," + g + "," + b + "," + a + ")";
 }
@@ -133,6 +137,16 @@ function processColorLerp(val, val_min, val_max, color) {
 
 function processColorLerpBicolor(val, val_min, val_max, color1, color2) {
     let p = (val - val_min) / (val_max - val_min);
+    return {
+        r: Math.floor(color1.r * (1 - p) + color2.r * (p)),
+        g: Math.floor(color1.g * (1 - p) + color2.g * (p)),
+        b: Math.floor(color1.b * (1 - p) + color2.b * (p))
+    }
+}
+
+export function processColorLerpBicolorPow(val, val_min, val_max, color1, color2, pow) {
+    let p = (val - val_min) / (val_max - val_min);
+    p = p ** pow;
     return {
         r: Math.floor(color1.r * (1 - p) + color2.r * (p)),
         g: Math.floor(color1.g * (1 - p) + color2.g * (p)),
