@@ -47,13 +47,14 @@ class Constellation {
 
 class Star {
     // ascension and declination in radians
-    constructor(id, asc, dec, magnitude, color, parallax) {
+    constructor(id, asc, dec, magnitude, color, parallax, hd_number) {
         this.id = id;
         this.asc = asc;
         this.dec = dec;
         this.magnitude = magnitude;
         this.color = color;
         this.parallax = parallax;
+        this.hd_number = hd_number;
         this._cartesian = [0, 0, 0];
         this._offset = [0, 0, 0];
         this._camera = [0, 0, 0];
@@ -64,6 +65,7 @@ class Star {
         this._opacity = 0;
         this._brightness = 0;
         this.recalculateScreenFlag = true;
+
     }
 
     recalculateScreen(frameCache) {
@@ -173,6 +175,7 @@ export class StarHandler {
         this.stars = new Array(118323); // Highest ID in the Hippacros catalog. 
         this.starsProcessedRenderRow = new Array(118323)
         this.starIds = new Array();
+        this.hdMap = new Map();
 
         this.constellations = new Array();
         this.constellationNames = new Map();
@@ -188,6 +191,10 @@ export class StarHandler {
 
         fetch("./static/climate/stars/lib/hip_main.dat").then((resp) => resp.text())
             .then((text) => this.loadHIPStars(text))
+            .then((_) => {
+                fetch("./static/climate/stars/lib/metallicity/pastel.dat").then((resp) => resp.text())
+                    .then((text) => this.loadPASTEL(text))
+            });
 
         fetch("./static/climate/stars/lib/stellarium/star_names.fab").then((resp) => resp.text())
             .then((text) => this.loadStarNames(text))
@@ -252,6 +259,8 @@ export class StarHandler {
         let magnitude = Number.parseFloat(row.substr(41, 5));
         let bv = Number.parseFloat(row.substr(245, 5));
 
+        let hd_number = Number.parseInt(row.substr(390, 6));
+
         if (isNaN(bv) || magnitude < 0)
             return;
 
@@ -271,10 +280,40 @@ export class StarHandler {
             return;
         }
 
-        let star = new Star(id, rowAscRad, rowDecRad, magnitude, color, parallax);
+        let star = new Star(id, rowAscRad, rowDecRad, magnitude, color, parallax, hd_number);
         this.stars[id] = star;
         this.starIds.push(id);
+        this.hdMap.set(hd_number, star);
     }
+
+    loadPASTEL(text) {
+        let rows = text.split("\n");
+        for (let i = 0; i < rows.length; i++) {
+            this.loadPASTELRow(rows.at(i));
+        }
+    }
+
+    loadPASTELRow(row) {
+        try {
+            let designation = row.substr(0, 32);
+            let feH = Number.parseFloat(row.substr(166, 6));
+
+            if (designation.substr(0, 2) === "HD") {
+                let designationParts = designation.match(/\S+/g)
+                let hdId = Number.parseInt(designationParts[1]);
+                if (this.hdMap.has(hdId)) {
+                    this.hdMap.get(hdId).p_feH = feH;
+                    console.log("Set FeH ", feH, " for HIP star ", this.hdMap.get(hdId).id);
+                } else {
+                    console.log("HD Lookup failed for PASTEL designation " + designation);
+                }
+            }
+
+        } catch (error) { // ignored
+        }
+
+    }
+
     calculateStarTemperature(bv) {
         // https://web.archive.org/web/20230315074349/https://spiff.rit.edu/classes/phys445/lectures/colors/colors.html
         // https://iopscience.iop.org/article/10.1086/301490/pdf
