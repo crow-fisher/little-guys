@@ -245,6 +245,10 @@ export function gsmfc() {
     return starHandler?.frameCache;
 }
 
+export function gsh() {
+    return starHandler;
+}
+
 function _initializeStarMap() {
     starMap = new Map();
     starColorTemperatureMap = new Map();

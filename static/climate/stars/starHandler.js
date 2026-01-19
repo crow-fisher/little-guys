@@ -54,11 +54,12 @@ class Constellation {
 
 class Star {
     // ascension and declination in radians
-    constructor(id, asc, dec, magnitude, color, parallax, hd_number) {
+    constructor(id, asc, dec, magnitude, bv, color, parallax, hd_number) {
         this.id = id;
         this.asc = asc;
         this.dec = dec;
         this.magnitude = magnitude;
+        this.bv = bv;
         this.color = color;
         this.parallax = parallax;
         this.hd_number = hd_number;
@@ -312,7 +313,7 @@ export class StarHandler {
             return;
         }
 
-        let star = new Star(id, rowAscRad, rowDecRad, magnitude, color, parallax, hd_number);
+        let star = new Star(id, rowAscRad, rowDecRad, magnitude, bv, color, parallax, hd_number);
         this.stars[id] = star;
         this.starIds.push(id);
         this.hdMap.set(hd_number, star);
