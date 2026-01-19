@@ -37,10 +37,6 @@ export function gamepadCameraInput() {
 
     // hotkeys 
 
-    if (isButtonPressed(GBA)) {
-        reset3DCameraTo2DScreen();
-    }
-
     if (triggers[0] > 0) {
         saveGD(UI_CAMERA_FOV, loadGD(UI_CAMERA_FOV) + triggers[0]);
     }

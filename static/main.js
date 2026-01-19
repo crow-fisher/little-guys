@@ -120,10 +120,16 @@ function render() {
 
     lightingExposureAdjustment();
 
+
+    if (selectedViewMode != UI_VIEWMODE_3D) 
+        executeRenderJobs();
+
     renderSolidSquares();
     renderOrganisms();
     renderWaterSquares();
-    executeRenderJobs();
+
+    if (selectedViewMode == UI_VIEWMODE_3D) 
+        executeRenderJobs();
     
     if (loadGD(UI_SIMULATION_CLOUDS)) {
         if (selectedViewMode == UI_VIEWMODE_NORMAL || selectedViewMode == UI_VIEWMODE_DEV5)

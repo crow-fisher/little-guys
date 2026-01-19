@@ -105,6 +105,7 @@ export function cartesianToScreen(x, y, z) {
 }
 
 export function reset3DCameraTo2DScreen() {
+    return;
         let bs = getBaseSize();
         let cx = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) / bs;
         let cy = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) / bs;

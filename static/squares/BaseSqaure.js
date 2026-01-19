@@ -545,7 +545,7 @@ export class BaseSquare {
             this.renderJob.p2 = this.p2;
             this.renderJob.p3 = this.p3;
             this.renderJob.p4 = this.p4;
-            this.renderJob.cachedRgba = this.cachedRgba;
+            this.renderJob.color = this.cachedRgba;
             this.renderJob.centerZ = this.centerZ;
         }
     }
