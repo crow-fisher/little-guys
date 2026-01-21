@@ -7,7 +7,7 @@ import { StarSpecializedValuePicker } from "../elements/StarSpecializedValuePick
 import { Text } from "../elements/Text.js";
 import { Toggle } from "../elements/Toggle.js";
 import { LockedComponent } from "../LockedComponent.js";
-import { UI_CAMERA_FOV, UI_CENTER, UI_STARMAP_CONSTELATION_BRIGHTNESS, UI_STARMAP_STAR_MAX_SIZE, UI_STARMAP_ZOOM, UI_STARMAP_STAR_MIN_MAGNITUDE, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_STARMAP_VIEWMODE, UI_STARMAP_FEH_POW, UI_STARMAP_FEH_WINDOW_SIZE, UI_STARMAP_FEH_MIN_VALUE, UI_PLOTCONTAINER_ACTIVE, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_WIDTH, UI_PLOTCONTAINER_HEIGHT, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_ZOOM_Y, UI_PLOTCONTAINER_ZOOM_X, UI_PLOTCONTAINER_RENDERGRIDLINES, UI_PLOTCONTAINER_AXISLABELS, UI_PLOTCONTAINER_XPADDING, UI_PLOTCONTAINER_YPADDING } from "../UIData.js";
+import { UI_CAMERA_FOV, UI_CENTER, UI_STARMAP_CONSTELATION_BRIGHTNESS, UI_STARMAP_STAR_MAX_SIZE, UI_STARMAP_ZOOM, UI_STARMAP_STAR_MIN_MAGNITUDE, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_STARMAP_VIEWMODE, UI_STARMAP_FEH_POW, UI_STARMAP_FEH_WINDOW_SIZE, UI_STARMAP_FEH_MIN_VALUE, UI_PLOTCONTAINER_ACTIVE, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_WIDTH, UI_PLOTCONTAINER_HEIGHT, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_ZOOM_Y, UI_PLOTCONTAINER_ZOOM_X, UI_PLOTCONTAINER_RENDERGRIDLINES, UI_PLOTCONTAINER_AXISLABELS, UI_PLOTCONTAINER_XPADDING, UI_PLOTCONTAINER_YPADDING, UI_PLOTCONTAINER_OFFSET_X, UI_PLOTCONTAINER_OFFSET_Y } from "../UIData.js";
 
 export const R_COLORS = "🎨";
 export const R_PERCOLATION_RATE = "💦";
@@ -111,11 +111,6 @@ export class StargazerComponent extends LockedComponent {
             row.addElement(new RadioToggleLabel(this.window, half, textHeight, UI_CENTER, text, UI_PLOTCONTAINER_XKEY, text, () => COLOR_RED, () => COLOR_BLUE));
             row.addElement(new RadioToggleLabel(this.window, half, textHeight, UI_CENTER, text, UI_PLOTCONTAINER_YKEY, text, () => COLOR_RED, () => COLOR_BLUE));
         });
-        container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "graph zoom x"))
-        container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_ZOOM_X, sizeX, sliderHeight, -10, 10, () => COLOR_WHITE, () => COLOR_BLACK));
-
-        container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "graph zoom y"))
-        container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_ZOOM_Y, sizeX, sliderHeight, -10, 10, () => COLOR_WHITE, () => COLOR_BLACK));
 
         container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "graph x-size"))
         container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_WIDTH, sizeX, sliderHeight, 250, 4000, () => COLOR_WHITE, () => COLOR_BLACK));
@@ -127,13 +122,26 @@ export class StargazerComponent extends LockedComponent {
         container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_POINTSIZE, sizeX, sliderHeight, -10, 4, () => COLOR_WHITE, () => COLOR_BLACK));
 
         container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "point opacity"))
-        container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_POINTOPACITY, sizeX, sliderHeight, -.001, .001, () => COLOR_WHITE, () => COLOR_BLACK));
+        container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_POINTOPACITY, sizeX, sliderHeight, -.0001, .00001, () => COLOR_WHITE, () => COLOR_BLACK));
 
         container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "padding (X)"))
         container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_XPADDING, sizeX, sliderHeight, 1, 50, () => COLOR_WHITE, () => COLOR_BLACK));
 
         container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "padding (Y)"))
         container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_YPADDING, sizeX, sliderHeight, 1, 50, () => COLOR_WHITE, () => COLOR_BLACK));
+
+        container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "graph zoom x"))
+        container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_ZOOM_X, sizeX, sliderHeight, -2, 5, () => COLOR_WHITE, () => COLOR_BLACK));
+
+        container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "graph zoom y"))
+        container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_ZOOM_Y, sizeX, sliderHeight, -2, 5, () => COLOR_WHITE, () => COLOR_BLACK));
+
+        container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "graph offset x"))
+        container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_OFFSET_X, sizeX, sliderHeight, -1, 1, () => COLOR_WHITE, () => COLOR_BLACK));
+
+        container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "graph offset y"))
+        container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_OFFSET_Y, sizeX, sliderHeight, -1, 1, () => COLOR_WHITE, () => COLOR_BLACK));
+
 
 
         container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "labels"))

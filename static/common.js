@@ -284,3 +284,7 @@ export function lerp(min, max, value) {
 export function invlerp(min, max, value) {
     return (value - min) / (max - min);
 }
+
+export function processRangeToOne(value) {
+    return (Math.atan(value) / Math.PI) + 0.5;
+}

@@ -1,8 +1,8 @@
 import { gsh } from "../../../climate/time.js";
 import { COLOR_WHITE } from "../../../colors.js";
-import { calculateStatistics, invlerp, rgbToRgba } from "../../../common.js";
+import { calculateStatistics, invlerp, processRangeToOne, rgbToRgba } from "../../../common.js";
 import { MAIN_CONTEXT } from "../../../index.js";
-import { loadGD, UI_PLOTCONTAINER_AXISLABELS, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_XPADDING, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_YPADDING, UI_PLOTCONTAINER_ZOOM_X, UI_PLOTCONTAINER_ZOOM_Y } from "../../UIData.js";
+import { loadGD, UI_PLOTCONTAINER_AXISLABELS, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_OFFSET_X, UI_PLOTCONTAINER_OFFSET_Y, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_XPADDING, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_YPADDING, UI_PLOTCONTAINER_ZOOM_X, UI_PLOTCONTAINER_ZOOM_Y } from "../../UIData.js";
 import { WindowElement } from "../../Window.js";
 
 export class PlotStarScatter extends WindowElement {
@@ -52,7 +52,7 @@ export class PlotStarScatter extends WindowElement {
         let i = 0;
         let idxMult = gsh().stars.length / (this.lengthCap); 
 
-        let opacity = Math.atan(loadGD(UI_PLOTCONTAINER_POINTOPACITY) * this.lengthCap) / Math.PI + 0.5;
+        let opacity = processRangeToOne(loadGD(UI_PLOTCONTAINER_POINTOPACITY) * this.lengthCap);
 
         let star, iO;
         for (let i = 0; i < this.lengthCap; i++) {
@@ -80,18 +80,39 @@ export class PlotStarScatter extends WindowElement {
 
     }
 
+    processValue(value, zoom, offset) {
+        let minValue = offset;
+        let range = 1 / Math.max(zoom, 1);
+        let maxValue = minValue + range;
+        if (value < minValue || value > maxValue) {
+            return null;
+        } else {
+            return invlerp(minValue, maxValue, value);
+        }
+
+    }
+
     renderGraph(startX, startY) {
         this.xBounds = [
             this.xS[2],
-            Math.min(this.xS[3], this.xS[0] + Math.exp(loadGD(UI_PLOTCONTAINER_ZOOM_X)) * this.xS[1])
+            this.xS[3]// Math.min(this.xS[3], this.xS[0] + Math.exp(loadGD(UI_PLOTCONTAINER_ZOOM_X)) * this.xS[1])
         ];
         this.yBounds =  [
             this.yS[2],
-            Math.min(this.yS[3], this.yS[0] + Math.exp(loadGD(UI_PLOTCONTAINER_ZOOM_Y)) * this.yS[1])
+            this.yS[3]//Math.min(this.yS[3], this.yS[0] + Math.exp(loadGD(UI_PLOTCONTAINER_ZOOM_Y)) * this.yS[1])
         ];
 
         this.paddingX = this.sizeX / loadGD(UI_PLOTCONTAINER_XPADDING);
-        this.paddingY = this.sizeY / loadGD(UI_PLOTCONTAINER_YPADDING);
+        this.paddingY = this.sizeY / loadGD(UI_PLOTCONTAINER_YPADDING); 
+         
+        this.xMin = loadGD(UI_PLOTCONTAINER_OFFSET_X);
+        this.yMin = loadGD(UI_PLOTCONTAINER_OFFSET_Y);
+
+        this.xRange = 1 / loadGD(UI_PLOTCONTAINER_ZOOM_X);
+        this.yRange = 1 / loadGD(UI_PLOTCONTAINER_ZOOM_Y);
+
+        this.xMax = this.xMin + this.xRange;
+        this.yMax = this.yMin + this.yRange;
 
         let size = Math.exp(loadGD(UI_PLOTCONTAINER_POINTSIZE));
         let x, y;
@@ -99,9 +120,11 @@ export class PlotStarScatter extends WindowElement {
         for (let i = 0; i < this.lengthCap; i++) {
             x = invlerp(...this.xBounds, this.xValues[i]);
             y = invlerp(...this.yBounds, this.yValues[i]);
-
-            if (x < 0 || x > 1 || y < 0 || y > 1)
+            if (x < this.xMin || x > this.xMax || y < this.yMin || y > this.yMax)
                 continue;
+
+            x = invlerp(this.xMin, this.xMax, x);
+            y = invlerp(this.yMin, this.yMax, y);
 
             MAIN_CONTEXT.fillStyle = this.cValues[i];
             MAIN_CONTEXT.beginPath();
