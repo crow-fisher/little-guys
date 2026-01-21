@@ -1,7 +1,8 @@
 import { gsh } from "../../../climate/time.js";
+import { COLOR_WHITE } from "../../../colors.js";
 import { calculateStatistics, invlerp, rgbToRgba } from "../../../common.js";
 import { MAIN_CONTEXT } from "../../../index.js";
-import { loadGD, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_ZOOM_X, UI_PLOTCONTAINER_ZOOM_Y } from "../../UIData.js";
+import { loadGD, UI_PLOTCONTAINER_AXISLABELS, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_XPADDING, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_YPADDING, UI_PLOTCONTAINER_ZOOM_X, UI_PLOTCONTAINER_ZOOM_Y } from "../../UIData.js";
 import { WindowElement } from "../../Window.js";
 
 export class PlotStarScatter extends WindowElement {
@@ -51,7 +52,7 @@ export class PlotStarScatter extends WindowElement {
         let i = 0;
         let idxMult = gsh().stars.length / (this.lengthCap); 
 
-        let opacity = Math.atan(loadGD(UI_PLOTCONTAINER_POINTOPACITY)) / Math.PI + 0.5;
+        let opacity = Math.atan(loadGD(UI_PLOTCONTAINER_POINTOPACITY) * this.lengthCap) / Math.PI + 0.5;
 
         let star, iO;
         for (let i = 0; i < this.lengthCap; i++) {
@@ -89,17 +90,40 @@ export class PlotStarScatter extends WindowElement {
             Math.min(this.yS[3], this.yS[0] + Math.exp(loadGD(UI_PLOTCONTAINER_ZOOM_Y)) * this.yS[1])
         ];
 
+        this.paddingX = this.sizeX / loadGD(UI_PLOTCONTAINER_XPADDING);
+        this.paddingY = this.sizeY / loadGD(UI_PLOTCONTAINER_YPADDING);
+
         let size = Math.exp(loadGD(UI_PLOTCONTAINER_POINTSIZE));
+        let x, y;
+
         for (let i = 0; i < this.lengthCap; i++) {
+            x = invlerp(...this.xBounds, this.xValues[i]);
+            y = invlerp(...this.yBounds, this.yValues[i]);
+
+            if (x < 0 || x > 1 || y < 0 || y > 1)
+                continue;
+
             MAIN_CONTEXT.fillStyle = this.cValues[i];
             MAIN_CONTEXT.beginPath();
-            MAIN_CONTEXT.arc(
-                invlerp(...this.xBounds, this.xValues[i]) * this.sizeX + startX,
-                invlerp(...this.yBounds, this.yValues[i]) * this.sizeY + startY,
-                size, 0, 2 * Math.PI, false);
+            MAIN_CONTEXT.arc(x * (this.sizeX - 2 * this.paddingX) + startX + this.paddingX, y * (this.sizeY - 2 * this.paddingY) + startY + this.paddingY, size, 0, 2 * Math.PI, false);
             MAIN_CONTEXT.fill();
         }
 
+        this.renderGridLines(startX, startY);
+        this.renderAxisLabels(startX, startY);
+
+        MAIN_CONTEXT.fillStyle = COLOR_WHITE;
+    }
+
+    renderGridLines() {
+
+    }
+    renderAxisLabels() {
+        if (!loadGD(UI_PLOTCONTAINER_AXISLABELS)) {
+            return;
+        }
+        MAIN_CONTEXT.strokeStyle = COLOR_WHITE;
+        
     }
 
     hover(posX, posY) {

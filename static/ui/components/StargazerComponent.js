@@ -5,8 +5,9 @@ import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
 import { SliderGradientBackground } from "../elements/SliderGradientBackground.js";
 import { StarSpecializedValuePicker } from "../elements/StarSpecializedValuePicker.js";
 import { Text } from "../elements/Text.js";
+import { Toggle } from "../elements/Toggle.js";
 import { LockedComponent } from "../LockedComponent.js";
-import { UI_CAMERA_FOV, UI_CENTER, UI_STARMAP_CONSTELATION_BRIGHTNESS, UI_STARMAP_STAR_MAX_SIZE, UI_STARMAP_ZOOM, UI_STARMAP_STAR_MIN_MAGNITUDE, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_STARMAP_VIEWMODE, UI_STARMAP_FEH_POW, UI_STARMAP_FEH_WINDOW_SIZE, UI_STARMAP_FEH_MIN_VALUE, UI_PLOTCONTAINER_ACTIVE, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_WIDTH, UI_PLOTCONTAINER_HEIGHT, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_ZOOM_Y, UI_PLOTCONTAINER_ZOOM_X } from "../UIData.js";
+import { UI_CAMERA_FOV, UI_CENTER, UI_STARMAP_CONSTELATION_BRIGHTNESS, UI_STARMAP_STAR_MAX_SIZE, UI_STARMAP_ZOOM, UI_STARMAP_STAR_MIN_MAGNITUDE, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_STARMAP_VIEWMODE, UI_STARMAP_FEH_POW, UI_STARMAP_FEH_WINDOW_SIZE, UI_STARMAP_FEH_MIN_VALUE, UI_PLOTCONTAINER_ACTIVE, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_WIDTH, UI_PLOTCONTAINER_HEIGHT, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_ZOOM_Y, UI_PLOTCONTAINER_ZOOM_X, UI_PLOTCONTAINER_RENDERGRIDLINES, UI_PLOTCONTAINER_AXISLABELS, UI_PLOTCONTAINER_XPADDING, UI_PLOTCONTAINER_YPADDING } from "../UIData.js";
 
 export const R_COLORS = "🎨";
 export const R_PERCOLATION_RATE = "💦";
@@ -15,7 +16,7 @@ export const R_NUTRIENTS = "⚡";
 export class StargazerComponent extends LockedComponent {
     constructor(posXFunc, posYFunc, padding, dir, key) {
         super(posXFunc, posYFunc, padding, dir, key);
-        let sizeX = getBaseUISize() * 20;
+        let sizeX = getBaseUISize() * 35;
         let half = sizeX / 2;
         let third = sizeX / 3;
         let container = new Container(this.window, padding, 1);
@@ -126,8 +127,21 @@ export class StargazerComponent extends LockedComponent {
         container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_POINTSIZE, sizeX, sliderHeight, -10, 4, () => COLOR_WHITE, () => COLOR_BLACK));
 
         container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "point opacity"))
-        container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_POINTOPACITY, sizeX, sliderHeight, -20, 10, () => COLOR_WHITE, () => COLOR_BLACK));
+        container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_POINTOPACITY, sizeX, sliderHeight, -.001, .001, () => COLOR_WHITE, () => COLOR_BLACK));
 
+        container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "padding (X)"))
+        container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_XPADDING, sizeX, sliderHeight, 1, 50, () => COLOR_WHITE, () => COLOR_BLACK));
+
+        container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "padding (Y)"))
+        container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_YPADDING, sizeX, sliderHeight, 1, 50, () => COLOR_WHITE, () => COLOR_BLACK));
+
+
+        container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "labels"))
+        
+        let row7 = new Container(this.window, 0, 0);
+        container.addElement(row7);
+        row7.addElement(new Toggle(this.window, half, textHeight, UI_CENTER, UI_PLOTCONTAINER_RENDERGRIDLINES, "grid lines", () => COLOR_RED, () => COLOR_BLUE));
+        row7.addElement(new Toggle(this.window, half, textHeight, UI_CENTER, UI_PLOTCONTAINER_AXISLABELS, "axis labels", () => COLOR_RED, () => COLOR_BLUE));
     }
     render() {
         super.render();
