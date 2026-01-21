@@ -1,8 +1,7 @@
-import { getCurDay, gsh } from "../../../climate/time.js";
-import { COLOR_VERY_FUCKING_RED } from "../../../colors.js";
+import { gsh } from "../../../climate/time.js";
 import { calculateMeanStandardDev, invlerp, rgbToRgba } from "../../../common.js";
 import { MAIN_CONTEXT } from "../../../index.js";
-import { loadGD, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_ZOOM } from "../../UIData.js";
+import { loadGD, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_ZOOM_X, UI_PLOTCONTAINER_ZOOM_Y } from "../../UIData.js";
 import { WindowElement } from "../../Window.js";
 
 export class PlotStarScatter extends WindowElement {
@@ -57,7 +56,7 @@ export class PlotStarScatter extends WindowElement {
             let x = star[this.xKey];
             let y = star[this.yKey];
 
-            if (isNaN(x) || isNaN(y)) {
+            if (isNaN(x) || isNaN(y) || !isFinite(x) || !isFinite(y)) {
                 return;
             }
             this.xValues[i] = x;
@@ -72,8 +71,8 @@ export class PlotStarScatter extends WindowElement {
     }
 
     renderGraph(startX, startY) {
-        this.xBounds = [this.xS[0] - loadGD(UI_PLOTCONTAINER_ZOOM) * this.xS[1], this.xS[0] + loadGD(UI_PLOTCONTAINER_ZOOM) * this.xS[1]];
-        this.yBounds =  [this.yS[0] - loadGD(UI_PLOTCONTAINER_ZOOM) * this.yS[1], this.yS[0] + loadGD(UI_PLOTCONTAINER_ZOOM) * this.yS[1]];
+        this.xBounds = [this.xS[0] - Math.exp(loadGD(UI_PLOTCONTAINER_ZOOM_X)) * this.xS[1], this.xS[0] + Math.exp(loadGD(UI_PLOTCONTAINER_ZOOM_X)) * this.xS[1]];
+        this.yBounds =  [this.yS[0] - Math.exp(loadGD(UI_PLOTCONTAINER_ZOOM_Y)) * this.yS[1], this.yS[0] + Math.exp(loadGD(UI_PLOTCONTAINER_ZOOM_Y)) * this.yS[1]];
 
         let size = Math.exp(loadGD(UI_PLOTCONTAINER_POINTSIZE));
         for (let i = 0; i < this.lengthCap; i++) {

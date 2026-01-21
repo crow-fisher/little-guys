@@ -1,14 +1,12 @@
 import { getBaseUISize } from "../../canvas.js";
 import { COLOR_BLACK, COLOR_BLUE, COLOR_RED, COLOR_WHITE } from "../../colors.js";
 import { Container } from "../Container.js";
-import { RadioToggle } from "../elements/RadioToggle.js";
 import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
 import { SliderGradientBackground } from "../elements/SliderGradientBackground.js";
 import { StarSpecializedValuePicker } from "../elements/StarSpecializedValuePicker.js";
 import { Text } from "../elements/Text.js";
-import { Toggle } from "../elements/Toggle.js";
 import { LockedComponent } from "../LockedComponent.js";
-import { UI_CAMERA_FOV, UI_CENTER, UI_STARMAP_CONSTELATION_BRIGHTNESS, UI_STARMAP_SHOW_CONSTELLATION_NAMES, UI_STARMAP_STAR_SIZE_FACTOR, UI_STARMAP_STAR_OPACITY_FACTOR, UI_STARMAP_STAR_MAX_SIZE, UI_STARMAP_ZOOM, UI_STARMAP_BRIGHTNESS_SHIFT, UI_STARMAP_STAR_OPACITY_SHIFT, UI_STARMAP_STAR_MIN_MAGNITUDE, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_STARMAP_VIEWMODE, UI_STARMAP_FEH_POW, UI_STARMAP_FEH_WINDOW_SIZE, UI_STARMAP_FEH_MIN_VALUE, addUIFunctionMap, UI_PLOTCONTAINER_ACTIVE, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_ZOOM, UI_PLOTCONTAINER_WIDTH, UI_PLOTCONTAINER_HEIGHT, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_POINTOPACITY } from "../UIData.js";
+import { UI_CAMERA_FOV, UI_CENTER, UI_STARMAP_CONSTELATION_BRIGHTNESS, UI_STARMAP_STAR_MAX_SIZE, UI_STARMAP_ZOOM, UI_STARMAP_STAR_MIN_MAGNITUDE, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_STARMAP_VIEWMODE, UI_STARMAP_FEH_POW, UI_STARMAP_FEH_WINDOW_SIZE, UI_STARMAP_FEH_MIN_VALUE, UI_PLOTCONTAINER_ACTIVE, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_WIDTH, UI_PLOTCONTAINER_HEIGHT, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_ZOOM_Y, UI_PLOTCONTAINER_ZOOM_X } from "../UIData.js";
 
 export const R_COLORS = "🎨";
 export const R_PERCOLATION_RATE = "💦";
@@ -111,8 +109,11 @@ export class StargazerComponent extends LockedComponent {
             row.addElement(new RadioToggleLabel(this.window, half, textHeight, UI_CENTER, text, UI_PLOTCONTAINER_XKEY, text, () => COLOR_RED, () => COLOR_BLUE));
             row.addElement(new RadioToggleLabel(this.window, half, textHeight, UI_CENTER, text, UI_PLOTCONTAINER_YKEY, text, () => COLOR_RED, () => COLOR_BLUE));
         });
-        container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "graph zoom"))
-        container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_ZOOM, sizeX, sliderHeight, -1, 10, () => COLOR_WHITE, () => COLOR_BLACK));
+        container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "graph zoom x"))
+        container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_ZOOM_X, sizeX, sliderHeight, -10, 10, () => COLOR_WHITE, () => COLOR_BLACK));
+
+        container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "graph zoom y"))
+        container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_ZOOM_Y, sizeX, sliderHeight, -10, 10, () => COLOR_WHITE, () => COLOR_BLACK));
 
         container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "graph x-size"))
         container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_WIDTH, sizeX, sliderHeight, 250, 4000, () => COLOR_WHITE, () => COLOR_BLACK));
@@ -125,8 +126,6 @@ export class StargazerComponent extends LockedComponent {
 
         container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "point opacity"))
         container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_POINTOPACITY, sizeX, sliderHeight, -10, 10, () => COLOR_WHITE, () => COLOR_BLACK));
-
-
 
     }
     render() {
