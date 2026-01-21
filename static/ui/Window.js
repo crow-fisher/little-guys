@@ -155,6 +155,13 @@ export class WindowElement {
         this.sizeX = Math.floor(sizeX);
         this.sizeY = Math.floor(sizeY);
     }
+
+    updateSizeX(sizeX) {
+        this.sizeX = sizeX;
+    }
+    updateSizeY(sizeY) {
+        this.sizeY = sizeY;
+    }
     render(startX, startY) {}
 
     hover(posX, posY) {

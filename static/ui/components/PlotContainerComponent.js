@@ -21,15 +21,24 @@ export class PlotContainerComponent extends Component {
         let container = new Container(this.window, 0, 1);
         this.window.container = container;
 
-        let sizeX = loadGD(UI_PLOTCONTAINER_WIDTH);
-        let sizeY = loadGD(UI_PLOTCONTAINER_HEIGHT);
+        this.plotSizeX = loadGD(UI_PLOTCONTAINER_WIDTH);
+        this.plotSizeY = loadGD(UI_PLOTCONTAINER_HEIGHT);
         
-        this.plotStarScatter = new PlotStarScatter(this.window, sizeX, sizeY);
+        this.plotStarScatter = new PlotStarScatter(this.window, this.plotSizeX, this.plotSizeY);
 
-        container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.75), 0.75, " "))
-        container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 3.8, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.66315, "plot container"))
-        container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""));
+        container.addElement(new TextBackground(this.window, this.plotSizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.75), 0.75, " "))
+        container.addElement(new TextBackground(this.window, this.plotSizeX, getBaseUISize() * 3.8, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.66315, "plot container"))
+        container.addElement(new TextBackground(this.window, this.plotSizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""));
 
         container.addElement( this.plotStarScatter)
+    }
+
+    updateSizeX(sizeX) {
+        this.plotStarScatter.updateSizeX(sizeX);
+        this.window.container.elements.forEach((el) => el.sizeX = sizeX);
+    }
+    
+    updatePlotContainers() {
+        this.plotStarScatter.update();
     }
 }

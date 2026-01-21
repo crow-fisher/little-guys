@@ -72,6 +72,7 @@ class Star {
         this._size = 0;
         this._opacity = 0;
         this._brightness = 0;
+        this._distance = 0;
         this.recalculateScreenFlag = true;
     }
 
@@ -99,7 +100,9 @@ class Star {
 
     recalculateScreen(frameCache) {
         this._brightness = brightnessValueToLumensNormalized(this.magnitude + frameCache.UI_STARMAP_BRIGHTNESS_SHIFT);
-        sphericalToCartesianInplace(this._cartesian, frameCache.UI_CAMERA_OFFSET_VEC, -this.asc, -this.dec, (1 / this.parallax) * 10 ** (frameCache.UI_STARMAP_ZOOM));
+        this._distance = (1 / this.parallax) * 10 ** (frameCache.UI_STARMAP_ZOOM);
+        
+        sphericalToCartesianInplace(this._cartesian, frameCache.UI_CAMERA_OFFSET_VEC, -this.asc, -this.dec, this._distance);
 
         this._size = (this._brightness ** frameCache.UI_STARMAP_STAR_SIZE_FACTOR) * frameCache.UI_STARMAP_STAR_MAX_SIZE;
         this._opacity = (this._brightness ** frameCache.UI_STARMAP_STAR_OPACITY_FACTOR);

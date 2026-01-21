@@ -121,10 +121,10 @@ function loadImage(url) {
     return i;
 }
 
-function getStandardDeviation(array) {
+export function calculateMeanStandardDev(array) {
     const n = array.length
     const mean = array.reduce((a, b) => a + b, 0) / n
-    return Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) / n)
+    return [mean, Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) / n)]
 }
 
 function processColorStdev(val_max, val, val_stdev, color) {
@@ -271,7 +271,7 @@ export function downloadFile(filename, text) {
 
 export {
     getObjectArrFromMap, removeItemAll, hexToRgb, rgbToHex, rgbToRgba,
-    randNumber, randRange, loadImage, getStandardDeviation, getZPercent,
+    randNumber, randRange, loadImage, getZPercent,
     processColorStdev, processColorStdevMulticolor, processColorLerp,
     processColorLerpBicolor, getDist, dec2bin
 }
