@@ -1,5 +1,5 @@
 import { gsh } from "../../../climate/time.js";
-import { calculateMeanStandardDev, invlerp, rgbToRgba } from "../../../common.js";
+import { calculateStatistics, invlerp, rgbToRgba } from "../../../common.js";
 import { MAIN_CONTEXT } from "../../../index.js";
 import { loadGD, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_ZOOM_X, UI_PLOTCONTAINER_ZOOM_Y } from "../../UIData.js";
 import { WindowElement } from "../../Window.js";
@@ -44,35 +44,50 @@ export class PlotStarScatter extends WindowElement {
         this.yKey = loadGD(UI_PLOTCONTAINER_YKEY);
         this.numStars = gsh().stars.length;
 
-        if (this.xKey == null || this.yKey == null) {
+        if (this.xKey == null || this.yKey == null || gsh().stars.length == 0) {
             return;
         }
 
         let i = 0;
+        let idxMult = gsh().stars.length / (this.lengthCap); 
 
         let opacity = Math.atan(loadGD(UI_PLOTCONTAINER_POINTOPACITY)) / Math.PI + 0.5;
 
-        gsh().stars.forEach((star) => {
+        let star, iO;
+        for (let i = 0; i < this.lengthCap; i++) {
+            star = null, iO = -1;
+            while (star == null && iO < 5) {
+                iO += 1;
+                star = gsh().stars[Math.floor(i * idxMult) + iO];
+            }
+            if (star == null) {
+                continue;
+            }
+            
             let x = star[this.xKey];
             let y = star[this.yKey];
-
             if (isNaN(x) || isNaN(y) || !isFinite(x) || !isFinite(y)) {
-                return;
+                continue;
             }
             this.xValues[i] = x;
             this.yValues[i] = y;
             this.cValues[i] = rgbToRgba(...star.color, opacity);
-            i = (i + 1) % this.lengthCap;
-        });
+        }
 
-        this.xS = calculateMeanStandardDev(this.xValues);
-        this.yS = calculateMeanStandardDev(this.yValues);
+        this.xS = calculateStatistics(this.xValues);
+        this.yS = calculateStatistics(this.yValues);
 
     }
 
     renderGraph(startX, startY) {
-        this.xBounds = [this.xS[0] - Math.exp(loadGD(UI_PLOTCONTAINER_ZOOM_X)) * this.xS[1], this.xS[0] + Math.exp(loadGD(UI_PLOTCONTAINER_ZOOM_X)) * this.xS[1]];
-        this.yBounds =  [this.yS[0] - Math.exp(loadGD(UI_PLOTCONTAINER_ZOOM_Y)) * this.yS[1], this.yS[0] + Math.exp(loadGD(UI_PLOTCONTAINER_ZOOM_Y)) * this.yS[1]];
+        this.xBounds = [
+            this.xS[2],
+            Math.min(this.xS[3], this.xS[0] + Math.exp(loadGD(UI_PLOTCONTAINER_ZOOM_X)) * this.xS[1])
+        ];
+        this.yBounds =  [
+            this.yS[2],
+            Math.min(this.yS[3], this.yS[0] + Math.exp(loadGD(UI_PLOTCONTAINER_ZOOM_Y)) * this.yS[1])
+        ];
 
         let size = Math.exp(loadGD(UI_PLOTCONTAINER_POINTSIZE));
         for (let i = 0; i < this.lengthCap; i++) {

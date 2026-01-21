@@ -100,7 +100,8 @@ export class StargazerComponent extends LockedComponent {
             "_opacity",
             "_brightness",
             "recalculateScreenFlag",
-            "_distance"
+            "_distance",
+            "magnitude_absolute"
         ]
 
         graphAxisChoices.forEach((text) => {
@@ -122,10 +123,10 @@ export class StargazerComponent extends LockedComponent {
         container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_HEIGHT, sizeX, sliderHeight, 250, 2000, () => COLOR_WHITE, () => COLOR_BLACK));
 
         container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "point size"))
-        container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_POINTSIZE, sizeX, sliderHeight, -2, 4, () => COLOR_WHITE, () => COLOR_BLACK));
+        container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_POINTSIZE, sizeX, sliderHeight, -10, 4, () => COLOR_WHITE, () => COLOR_BLACK));
 
         container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "point opacity"))
-        container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_POINTOPACITY, sizeX, sliderHeight, -10, 10, () => COLOR_WHITE, () => COLOR_BLACK));
+        container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_POINTOPACITY, sizeX, sliderHeight, -20, 10, () => COLOR_WHITE, () => COLOR_BLACK));
 
     }
     render() {

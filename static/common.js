@@ -121,10 +121,10 @@ function loadImage(url) {
     return i;
 }
 
-export function calculateMeanStandardDev(array) {
+export function calculateStatistics(array) {
     const n = array.length
     const mean = array.reduce((a, b) => a + b, 0) / n
-    return [mean, Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) / n)]
+    return [mean, Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) / n), array.reduce((a, b) => Math.min(a, b), array[0]), array.reduce((a, b) => Math.max(a, b), array[0])]
 }
 
 function processColorStdev(val_max, val, val_stdev, color) {
