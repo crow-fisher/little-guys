@@ -16,6 +16,7 @@ export class PlotStarScatter extends WindowElement {
         this.yValues = new Array(this.lengthCap);
         this.cValues = new Array(this.lengthCap);
         this.numStars = 0;
+        this.vr = [0, 1, 0, 1];
     }
 
     update() {
@@ -108,15 +109,6 @@ export class PlotStarScatter extends WindowElement {
         this.paddingX = this.sizeX / loadGD(UI_PLOTCONTAINER_XPADDING);
         this.paddingY = this.sizeY / loadGD(UI_PLOTCONTAINER_YPADDING);
 
-        this.xMin = loadGD(UI_PLOTCONTAINER_OFFSET_X);
-        this.yMin = loadGD(UI_PLOTCONTAINER_OFFSET_Y);
-
-        this.xRange = 1 / loadGD(UI_PLOTCONTAINER_ZOOM_X);
-        this.yRange = 1 / loadGD(UI_PLOTCONTAINER_ZOOM_Y);
-
-        this.xMax = this.xMin + this.xRange;
-        this.yMax = this.yMin + this.yRange;
-
         let size = Math.exp(loadGD(UI_PLOTCONTAINER_POINTSIZE));
         let x, y;
 
@@ -126,8 +118,8 @@ export class PlotStarScatter extends WindowElement {
             if (x < this.xMin || x > this.xMax || y < this.yMin || y > this.yMax)
                 continue;
 
-            x = invlerp(this.xMin, this.xMax, x);
-            y = invlerp(this.yMin, this.yMax, y);
+            x = invlerp(this.vr[0], this.vr[1], x);
+            y = invlerp(this.vr[2], this.vr[3], y);
 
             MAIN_CONTEXT.fillStyle = this.cValues[i];
             MAIN_CONTEXT.beginPath();
@@ -168,33 +160,52 @@ export class PlotStarScatter extends WindowElement {
 
         let shouldX = true, shouldY = true;
         if (isKeyPressed(KEY_SHIFT) && isKeyPressed(KEY_CONTROL)) {
-            // do nothing
+            // then we should do both of them, which is the same as defualt. so keep default
         } else if (isKeyPressed(KEY_SHIFT)) {
             shouldY = false;
         } else if (isKeyPressed(KEY_CONTROL)) {
             shouldX = false;
         }
 
-        console.log(shouldX, shouldY);
         let mpx = invlerp(this.paddingX, this.sizeX - this.paddingX, posX);
         let mpy = invlerp(this.paddingY, this.sizeY - this.paddingY, posY);
+
         if (this.curLastMouseWheelEvent != 0) {
-            if (shouldX) {
-                let izx = loadGD(UI_PLOTCONTAINER_ZOOM_X);
-                saveGD(UI_PLOTCONTAINER_ZOOM_X, izx * (1 - .001 * this.curLastMouseWheelEvent))
-                let fzx = loadGD(UI_PLOTCONTAINER_ZOOM_X);
-                let dzx = fzx - izx;
-                let iox = loadGD(UI_PLOTCONTAINER_OFFSET_X);
-                saveGD(UI_PLOTCONTAINER_OFFSET_X, iox += iox * (mpx) * dzx / fzx);
-            }
-            if (shouldY) {
-                let izy = loadGD(UI_PLOTCONTAINER_ZOOM_Y);
-                saveGD(UI_PLOTCONTAINER_ZOOM_Y, izy * (1 - .001 * this.curLastMouseWheelEvent))
-                let fzy = loadGD(UI_PLOTCONTAINER_ZOOM_Y);
-                let dzy = fzy - izy;
-                let ioy = loadGD(UI_PLOTCONTAINER_OFFSET_Y);
-                saveGD(UI_PLOTCONTAINER_OFFSET_Y, ioy += ioy * (mpy) * dzy / fzy);
-            }
+            this.handleZoom(shouldX, shouldY, mpx, mpy, this.curLastMouseWheelEvent)
         }
+
+        // if (shouldX) {
+        //     let izx = loadGD(UI_PLOTCONTAINER_ZOOM_X);
+        //     saveGD(UI_PLOTCONTAINER_ZOOM_X, izx * (1 - .001 * this.curLastMouseWheelEvent))
+        //     let fzx = loadGD(UI_PLOTCONTAINER_ZOOM_X);
+        //     let dzx = fzx - izx;
+        //     let iox = loadGD(UI_PLOTCONTAINER_OFFSET_X);
+        //     saveGD(UI_PLOTCONTAINER_OFFSET_X, iox += iox * (mpx) * dzx / fzx);
+        // }
+        // if (shouldY) {
+        //     let izy = loadGD(UI_PLOTCONTAINER_ZOOM_Y);
+        //     saveGD(UI_PLOTCONTAINER_ZOOM_Y, izy * (1 - .001 * this.curLastMouseWheelEvent))
+        //     let fzy = loadGD(UI_PLOTCONTAINER_ZOOM_Y);
+        //     let dzy = fzy - izy;
+        //     let ioy = loadGD(UI_PLOTCONTAINER_OFFSET_Y);
+        //     saveGD(UI_PLOTCONTAINER_OFFSET_Y, ioy += ioy * (mpy) * dzy / fzy);
+        // }
     }
+
+    handleZoom(shouldX, shouldY, mpx, mpy, scrollAmount) {
+        let offset = (scrollAmount < 0 ? 1 : -1) * invlerp(-720, 720, scrollAmount) / 10;
+
+        let xdiff = this.vr[1] - this.vr[0];
+        let ydiff = this.vr[3] - this.vr[2];
+
+        if (shouldX) {
+            this.vr[0] = this.vr[0] + xdiff * offset * mpx;
+            this.vr[1] = this.vr[1] - xdiff * offset * (1 - mpx);
+        }
+
+        if (shouldY) {
+            this.vr[2] = this.vr[2] + ydiff * offset * mpy;
+            this.vr[3] = this.vr[3] - ydiff * offset * (1 - mpy);
+        }
+    } 
 }
