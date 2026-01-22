@@ -9,19 +9,12 @@ let BASE_SIZE = 4;
 let CANVAS_SQUARES_X = 192;
 let CANVAS_SQUARES_Y = 108;
 
-let lastMosueWheelTick = 0;
-let lastMouseWheelEvent = 0;
+let lastMouseWheelState = 0;
 
-export function tickLastMouseWheelTickTime() {
-    lastMosueWheelTick += 1;
-}
-
-export function getLastMosueWheelTick() {
-    return lastMosueWheelTick;
-}
-
-export function getLastMouseWheelEvent() {
-    return lastMouseWheelEvent;
+export function getSingletonMouseWheelState() {
+    let ret = structuredClone(lastMouseWheelState);
+    lastMouseWheelState = 0;
+    return ret;
 }
 
 let zoom_arr = new Array();
@@ -407,7 +400,7 @@ export function zoomCanvasSquareText(x, y, text) {
 
 export function zoom(event) {
     event.preventDefault();
-    lastMouseWheelEvent = event.deltaY;
+    lastMouseWheelState = event.deltaY;
 
     if (loadGD(UI_PALETTE_BLOCKS)) {
         if (isKeyPressed(KEY_SHIFT)) {

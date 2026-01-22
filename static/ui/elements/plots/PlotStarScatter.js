@@ -1,4 +1,4 @@
-import { getLastMosueWheelTick, getLastMouseWheelEvent } from "../../../canvas.js";
+import { getSingletonMouseWheelState } from "../../../canvas.js";
 import { gsh } from "../../../climate/time.js";
 import { COLOR_WHITE } from "../../../colors.js";
 import { calculateStatistics, invlerp, processRangeToOne, rgbToRgba } from "../../../common.js";
@@ -52,7 +52,7 @@ export class PlotStarScatter extends WindowElement {
         }
 
         let i = 0;
-        let idxMult = gsh().stars.length / (this.lengthCap); 
+        let idxMult = gsh().stars.length / (this.lengthCap);
 
         let opacity = processRangeToOne(loadGD(UI_PLOTCONTAINER_POINTOPACITY) * this.lengthCap);
 
@@ -66,7 +66,7 @@ export class PlotStarScatter extends WindowElement {
             if (star == null) {
                 continue;
             }
-            
+
             let x = star[this.xKey];
             let y = star[this.yKey];
             if (isNaN(x) || isNaN(y) || !isFinite(x) || !isFinite(y)) {
@@ -99,14 +99,14 @@ export class PlotStarScatter extends WindowElement {
             this.xS[2],
             this.xS[3]// Math.min(this.xS[3], this.xS[0] + Math.exp(loadGD(UI_PLOTCONTAINER_ZOOM_X)) * this.xS[1])
         ];
-        this.yBounds =  [
+        this.yBounds = [
             this.yS[2],
             this.yS[3]//Math.min(this.yS[3], this.yS[0] + Math.exp(loadGD(UI_PLOTCONTAINER_ZOOM_Y)) * this.yS[1])
         ];
 
         this.paddingX = this.sizeX / loadGD(UI_PLOTCONTAINER_XPADDING);
-        this.paddingY = this.sizeY / loadGD(UI_PLOTCONTAINER_YPADDING); 
-         
+        this.paddingY = this.sizeY / loadGD(UI_PLOTCONTAINER_YPADDING);
+
         this.xMin = loadGD(UI_PLOTCONTAINER_OFFSET_X);
         this.yMin = loadGD(UI_PLOTCONTAINER_OFFSET_Y);
 
@@ -148,14 +148,14 @@ export class PlotStarScatter extends WindowElement {
             return;
         }
         MAIN_CONTEXT.strokeStyle = COLOR_WHITE;
-        
+
     }
 
     hover(posX, posY) {
         if (posX < this.paddingX || posX > (this.sizeX - this.paddingX)) {
             return;
         }
-        if (posY < this.paddingY || posY > (this.sizeY - this.paddingY)) { 
+        if (posY < this.paddingY || posY > (this.sizeY - this.paddingY)) {
             return;
         }
 
@@ -163,19 +163,15 @@ export class PlotStarScatter extends WindowElement {
             this.window.locked = true;
         }
 
-        this.curLastMouseWheelTick = getLastMosueWheelTick();
-        this.curLastMouseWheelEvent = getLastMouseWheelEvent();
+        this.curLastMouseWheelEvent = getSingletonMouseWheelState();
 
-        if (this.prevLastMosueWheelTick - this.curLastMouseWheelTick > 1) {
-            this.prevLastMosueWheelTick = this.curLastMouseWheelTick;
-            this.prevLastMouseWheelEvent = this.curLastMouseWheelEvent;
-            return;
+        if (this.curLastMouseWheelEvent != 0) {
+            saveGD(UI_PLOTCONTAINER_ZOOM_X, loadGD(UI_PLOTCONTAINER_ZOOM_X) - .001 * this.curLastMouseWheelEvent);
+            saveGD(UI_PLOTCONTAINER_ZOOM_Y, loadGD(UI_PLOTCONTAINER_ZOOM_Y) - .001 * this.curLastMouseWheelEvent);
+
         }
 
-        saveGD(UI_PLOTCONTAINER_ZOOM_X, loadGD(UI_PLOTCONTAINER_ZOOM_X) + .01 * this.curLastMouseWheelEvent);
-        saveGD(UI_PLOTCONTAINER_ZOOM_Y, loadGD(UI_PLOTCONTAINER_ZOOM_Y) + .01 * this.curLastMouseWheelEvent);
 
-        
         this.prevLastMosueWheelTick = this.curLastMouseWheelTick;
         this.prevLastMouseWheelEvent = this.curLastMouseWheelEvent;
     }
