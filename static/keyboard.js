@@ -268,6 +268,7 @@ function toollessKeyMap(key) {
 export function keydown(e) {
     // e.preventDefault();
     lastKeypressTime = Date.now();
+    keyPressMap[e.key] = true;
     if (loadGD(UI_TEXTEDIT_ACTIVE)) {
         doKeyboardInput(e);
         return;
@@ -281,7 +282,6 @@ export function keydown(e) {
         _3dViewKeymap(e.key)
         return;
     }
-    keyPressMap[e.key] = true;
 
     globalKeymap(e.key);
 

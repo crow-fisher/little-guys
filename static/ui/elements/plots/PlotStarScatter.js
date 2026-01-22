@@ -3,6 +3,7 @@ import { gsh } from "../../../climate/time.js";
 import { COLOR_WHITE } from "../../../colors.js";
 import { calculateStatistics, invlerp, processRangeToOne, rgbToRgba } from "../../../common.js";
 import { MAIN_CONTEXT } from "../../../index.js";
+import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "../../../keyboard.js";
 import { isLeftMouseClicked } from "../../../mouse.js";
 import { loadGD, saveGD, UI_PLOTCONTAINER_AXISLABELS, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_OFFSET_X, UI_PLOTCONTAINER_OFFSET_Y, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_XPADDING, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_YPADDING, UI_PLOTCONTAINER_ZOOM_X, UI_PLOTCONTAINER_ZOOM_Y } from "../../UIData.js";
 import { WindowElement } from "../../Window.js";
@@ -165,14 +166,35 @@ export class PlotStarScatter extends WindowElement {
 
         this.curLastMouseWheelEvent = getSingletonMouseWheelState();
 
-        if (this.curLastMouseWheelEvent != 0) {
-            saveGD(UI_PLOTCONTAINER_ZOOM_X, loadGD(UI_PLOTCONTAINER_ZOOM_X) - .001 * this.curLastMouseWheelEvent);
-            saveGD(UI_PLOTCONTAINER_ZOOM_Y, loadGD(UI_PLOTCONTAINER_ZOOM_Y) - .001 * this.curLastMouseWheelEvent);
-
+        let shouldX = true, shouldY = true;
+        if (isKeyPressed(KEY_SHIFT) && isKeyPressed(KEY_CONTROL)) {
+            // do nothing
+        } else if (isKeyPressed(KEY_SHIFT)) {
+            shouldY = false;
+        } else if (isKeyPressed(KEY_CONTROL)) {
+            shouldX = false;
         }
 
-
-        this.prevLastMosueWheelTick = this.curLastMouseWheelTick;
-        this.prevLastMouseWheelEvent = this.curLastMouseWheelEvent;
+        console.log(shouldX, shouldY);
+        let mpx = invlerp(this.paddingX, this.sizeX - this.paddingX, posX);
+        let mpy = invlerp(this.paddingY, this.sizeY - this.paddingY, posY);
+        if (this.curLastMouseWheelEvent != 0) {
+            if (shouldX) {
+                let izx = loadGD(UI_PLOTCONTAINER_ZOOM_X);
+                saveGD(UI_PLOTCONTAINER_ZOOM_X, izx * (1 - .001 * this.curLastMouseWheelEvent))
+                let fzx = loadGD(UI_PLOTCONTAINER_ZOOM_X);
+                let dzx = fzx - izx;
+                let iox = loadGD(UI_PLOTCONTAINER_OFFSET_X);
+                saveGD(UI_PLOTCONTAINER_OFFSET_X, iox += iox * (mpx) * dzx / fzx);
+            }
+            if (shouldY) {
+                let izy = loadGD(UI_PLOTCONTAINER_ZOOM_Y);
+                saveGD(UI_PLOTCONTAINER_ZOOM_Y, izy * (1 - .001 * this.curLastMouseWheelEvent))
+                let fzy = loadGD(UI_PLOTCONTAINER_ZOOM_Y);
+                let dzy = fzy - izy;
+                let ioy = loadGD(UI_PLOTCONTAINER_OFFSET_Y);
+                saveGD(UI_PLOTCONTAINER_OFFSET_Y, ioy += ioy * (mpy) * dzy / fzy);
+            }
+        }
     }
 }

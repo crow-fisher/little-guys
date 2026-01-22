@@ -12,6 +12,8 @@ let CANVAS_SQUARES_Y = 108;
 let lastMouseWheelState = 0;
 
 export function getSingletonMouseWheelState() {
+    // reasoning - if we're calling this method, we're catching a mouse wheel scroll state, right? 
+    // and you probably don't want to scroll on two things at once. so it's fine for this to be a global
     let ret = structuredClone(lastMouseWheelState);
     lastMouseWheelState = 0;
     return ret;
