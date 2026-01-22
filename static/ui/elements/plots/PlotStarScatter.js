@@ -1,10 +1,10 @@
 import { getSingletonMouseWheelState } from "../../../canvas.js";
-import { gsh } from "../../../climate/time.js";
+import { getFrameDt, gsh } from "../../../climate/time.js";
 import { COLOR_WHITE } from "../../../colors.js";
 import { calculateStatistics, invlerp, processRangeToOne, rgbToRgba } from "../../../common.js";
 import { MAIN_CONTEXT } from "../../../index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "../../../keyboard.js";
-import { isLeftMouseClicked } from "../../../mouse.js";
+import { getLastLastMoveOffset, getLastMouseDownStart, getLastMouseUpEvent, getLastMoveOffset, isLeftMouseClicked } from "../../../mouse.js";
 import { loadGD, saveGD, UI_PLOTCONTAINER_AXISLABELS, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_OFFSET_X, UI_PLOTCONTAINER_OFFSET_Y, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_XPADDING, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_YPADDING, UI_PLOTCONTAINER_ZOOM_X, UI_PLOTCONTAINER_ZOOM_Y } from "../../UIData.js";
 import { WindowElement } from "../../Window.js";
 
@@ -115,7 +115,7 @@ export class PlotStarScatter extends WindowElement {
         for (let i = 0; i < this.lengthCap; i++) {
             x = invlerp(...this.xBounds, this.xValues[i]);
             y = invlerp(...this.yBounds, this.yValues[i]);
-            if (x < this.xMin || x > this.xMax || y < this.yMin || y > this.yMax)
+            if (x < this.vr[0] || x > this.vr[1] || y < this.vr[2] || y > this.vr[3])
                 continue;
 
             x = invlerp(this.vr[0], this.vr[1], x);
@@ -152,10 +152,29 @@ export class PlotStarScatter extends WindowElement {
             return;
         }
 
+        this.lmo = getLastMoveOffset();
+        this.plmo = (this.plmo ?? this.lmo);
+
+        let dx = this.plmo.x - this.lmo.x;
+        let dy = this.plmo.y - this.lmo.y;
+
         if (isLeftMouseClicked()) {
             this.window.locked = true;
+            if (this.lastMouseDownStart != getLastMouseDownStart()) {
+                this.clickCounter += 1;
+                this.lastMouseDownStart = getLastMouseDownStart();
+            }
+        } else {
+            if (Math.abs(dx * dy) > 4) {
+                this.clickCounter = 0;
+            } else {
+                if (Date.now() - getLastMouseUpEvent() > 100) {
+                    this.clickCounter = 0;
+                }
+            }
         }
-
+        this.handlePan(dx, dy);
+        this.plmo = this.lmo;
         this.curLastMouseWheelEvent = getSingletonMouseWheelState();
 
         let shouldX = true, shouldY = true;
@@ -192,11 +211,27 @@ export class PlotStarScatter extends WindowElement {
         // }
     }
 
+    handlePan(dx, dy) {
+        let sX = 1 / (this.vr[1] - this.vr[0]);
+        let sY = 1 / (this.vr[3] - this.vr[2]);
+
+        if (this.clickCounter == 1) {
+            this.vr[0] += 1 / this.sizeX * dx / sX;
+            this.vr[1] += 1 / this.sizeX * dx / sX;
+            this.vr[2] += 1 / this.sizeY * dy / sY;
+            this.vr[3] += 1 / this.sizeY * dy / sY;
+        }
+
+    }
+
     handleZoom(shouldX, shouldY, mpx, mpy, scrollAmount) {
         let offset = (scrollAmount < 0 ? 1 : -1) * invlerp(-720, 720, scrollAmount) / 10;
 
-        let xdiff = this.vr[1] - this.vr[0];
-        let ydiff = this.vr[3] - this.vr[2];
+        let sX = 1 / (this.vr[1] - this.vr[0]);
+        let sY = 1 / (this.vr[3] - this.vr[2]);
+
+        let xdiff = (sX ** 0.5) * (this.vr[1] - this.vr[0]);
+        let ydiff = (sY ** 0.5) * (this.vr[3] - this.vr[2]);
 
         if (shouldX) {
             this.vr[0] = this.vr[0] + xdiff * offset * mpx;
@@ -207,5 +242,5 @@ export class PlotStarScatter extends WindowElement {
             this.vr[2] = this.vr[2] + ydiff * offset * mpy;
             this.vr[3] = this.vr[3] - ydiff * offset * (1 - mpy);
         }
-    } 
+    }
 }
