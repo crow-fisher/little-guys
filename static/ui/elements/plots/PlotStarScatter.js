@@ -1,8 +1,10 @@
+import { getLastMosueWheelTick, getLastMouseWheelEvent } from "../../../canvas.js";
 import { gsh } from "../../../climate/time.js";
 import { COLOR_WHITE } from "../../../colors.js";
 import { calculateStatistics, invlerp, processRangeToOne, rgbToRgba } from "../../../common.js";
 import { MAIN_CONTEXT } from "../../../index.js";
-import { loadGD, UI_PLOTCONTAINER_AXISLABELS, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_OFFSET_X, UI_PLOTCONTAINER_OFFSET_Y, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_XPADDING, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_YPADDING, UI_PLOTCONTAINER_ZOOM_X, UI_PLOTCONTAINER_ZOOM_Y } from "../../UIData.js";
+import { isLeftMouseClicked } from "../../../mouse.js";
+import { loadGD, saveGD, UI_PLOTCONTAINER_AXISLABELS, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_OFFSET_X, UI_PLOTCONTAINER_OFFSET_Y, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_XPADDING, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_YPADDING, UI_PLOTCONTAINER_ZOOM_X, UI_PLOTCONTAINER_ZOOM_Y } from "../../UIData.js";
 import { WindowElement } from "../../Window.js";
 
 export class PlotStarScatter extends WindowElement {
@@ -150,5 +152,31 @@ export class PlotStarScatter extends WindowElement {
     }
 
     hover(posX, posY) {
+        if (posX < this.paddingX || posX > (this.sizeX - this.paddingX)) {
+            return;
+        }
+        if (posY < this.paddingY || posY > (this.sizeY - this.paddingY)) { 
+            return;
+        }
+
+        if (isLeftMouseClicked()) {
+            this.window.locked = true;
+        }
+
+        this.curLastMouseWheelTick = getLastMosueWheelTick();
+        this.curLastMouseWheelEvent = getLastMouseWheelEvent();
+
+        if (this.prevLastMosueWheelTick - this.curLastMouseWheelTick > 1) {
+            this.prevLastMosueWheelTick = this.curLastMouseWheelTick;
+            this.prevLastMouseWheelEvent = this.curLastMouseWheelEvent;
+            return;
+        }
+
+        saveGD(UI_PLOTCONTAINER_ZOOM_X, loadGD(UI_PLOTCONTAINER_ZOOM_X) + .01 * this.curLastMouseWheelEvent);
+        saveGD(UI_PLOTCONTAINER_ZOOM_Y, loadGD(UI_PLOTCONTAINER_ZOOM_Y) + .01 * this.curLastMouseWheelEvent);
+
+        
+        this.prevLastMosueWheelTick = this.curLastMouseWheelTick;
+        this.prevLastMouseWheelEvent = this.curLastMouseWheelEvent;
     }
 }

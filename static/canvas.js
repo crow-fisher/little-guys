@@ -9,6 +9,21 @@ let BASE_SIZE = 4;
 let CANVAS_SQUARES_X = 192;
 let CANVAS_SQUARES_Y = 108;
 
+let lastMosueWheelTick = 0;
+let lastMouseWheelEvent = 0;
+
+export function tickLastMouseWheelTickTime() {
+    lastMosueWheelTick += 1;
+}
+
+export function getLastMosueWheelTick() {
+    return lastMosueWheelTick;
+}
+
+export function getLastMouseWheelEvent() {
+    return lastMouseWheelEvent;
+}
+
 let zoom_arr = new Array();
 let neutral_zoom_idx = zoom_arr.length;
 function resetZoomArr() {
@@ -392,6 +407,8 @@ export function zoomCanvasSquareText(x, y, text) {
 
 export function zoom(event) {
     event.preventDefault();
+    lastMouseWheelEvent = event.deltaY;
+
     if (loadGD(UI_PALETTE_BLOCKS)) {
         if (isKeyPressed(KEY_SHIFT)) {
             if (loadGD(UI_PALETTE_SELECT) == loadGD(UI_PALETTE_SURFACE)) {

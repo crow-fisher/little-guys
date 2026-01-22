@@ -2,7 +2,7 @@ import { getBaseUISize, resetZoom } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { purgeCanvasFrameLimit } from "../../globalOperations.js";
 import { DEBUG } from "../../index.js";
-import { getLastMouseDown } from "../../mouse.js";
+import { getLastMouseDownStart } from "../../mouse.js";
 import { isPlayerRunning, startPlayerMain, stopPlayerMain } from "../../player/playerMain.js";
 import { deleteAllSaveData, deleteHiddenWorlds, downloadSaveFile, hideWorld, loadEmptyScene, loadSlot, saveCurGame, unhideWorld } from "../../saveAndLoad.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
@@ -60,7 +60,7 @@ export class MainMenuComponent extends SubTreeComponent {
             row.addElement(new ButtonFunctionalText(this.window, this.sizeX * (4/5), getBaseUISize() * 3, this.textAlignOffsetX, () => loadSlot( this.getWorldFromI(iCopy)), 
                 () => loadUI(UI_UI_WORLDNAME)[this.getWorldFromI(iCopy)], colorFunc1));
             row.addElement(new ButtonFunctionalText(this.window, this.sizeX * (1/5), getBaseUISize() * 3, this.textAlignOffsetX, 
-                () => (this.lastClick != getLastMouseDown() ? 
+                () => (this.lastClick != getLastMouseDownStart() ? 
                     (loadUI(UI_UI_WORLDHIDDEN)[this.getWorldFromI(iCopy)] ? unhideWorld( this.getWorldFromI(iCopy)) : hideWorld( this.getWorldFromI(iCopy)))
                     : null),
             () => loadUI(UI_UI_WORLDHIDDEN)[this.getWorldFromI(iCopy)] ? "unhide" : "hide", colorFunc2));
@@ -168,6 +168,6 @@ export class MainMenuComponent extends SubTreeComponent {
 
     update() {
         super.update();
-        this.lastClick = getLastMouseDown();
+        this.lastClick = getLastMouseDownStart();
     }
 }

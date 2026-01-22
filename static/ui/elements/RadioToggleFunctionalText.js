@@ -1,7 +1,7 @@
 import { getBaseUISize } from "../../canvas.js";
 import { COLOR_BLACK, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { MAIN_CONTEXT } from "../../index.js";
-import { getLastMouseDown, isLeftMouseClicked } from "../../mouse.js";
+import { getLastMouseDownStart, isLeftMouseClicked } from "../../mouse.js";
 import { loadGD, saveGD, UI_CENTER } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
@@ -46,9 +46,9 @@ export class RadioToggleFunctionalText extends WindowElement {
         if (!isLeftMouseClicked()) {
             return;
         } 
-        if (this.lastClick != getLastMouseDown()) {
+        if (this.lastClick != getLastMouseDownStart()) {
             saveGD(this.key, this.value);
-            this.lastClick = getLastMouseDown();
+            this.lastClick = getLastMouseDownStart();
         }
     }
 

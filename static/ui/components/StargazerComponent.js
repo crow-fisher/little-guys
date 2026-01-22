@@ -143,7 +143,6 @@ export class StargazerComponent extends LockedComponent {
         container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_OFFSET_Y, sizeX, sliderHeight, -1, 1, () => COLOR_WHITE, () => COLOR_BLACK));
 
 
-
         container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "labels"))
         
         let row7 = new Container(this.window, 0, 0);

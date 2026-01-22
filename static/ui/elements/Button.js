@@ -1,7 +1,7 @@
 import { COLOR_BLACK, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { UI_TINYDOT } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
-import { getLastMouseDown, isLeftMouseClicked } from "../../mouse.js";
+import { getLastMouseDownStart, isLeftMouseClicked } from "../../mouse.js";
 import { loadGD, saveGD, UI_CENTER } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
@@ -44,9 +44,9 @@ export class Button extends WindowElement {
         if (!isLeftMouseClicked()) {
             return;
         } 
-        if (this.lastClick != getLastMouseDown()) {
+        if (this.lastClick != getLastMouseDownStart()) {
             this.func();
-            this.lastClick = getLastMouseDown();
+            this.lastClick = getLastMouseDownStart();
         }
     }
 

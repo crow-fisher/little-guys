@@ -51,7 +51,7 @@ export function isRightMouseClicked() {
     return rightMouseClicked;
 }
 
-export function getLastMouseDown() {
+export function getLastMouseDownStart() {
     return lastMouseDownStart;
 }
 

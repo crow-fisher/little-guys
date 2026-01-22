@@ -14,7 +14,7 @@ import { LightingComponent } from "./components/LightingComponent.js";
 import { WeatherSelectionComponent } from "./components/WeatherSelectionComponent.js";
 import { TimeSkipComponent } from "./components/TimeSkipComponent.js";
 import { CloudControlComponent } from "./components/CloudControlComponent.js";
-import { getLastMouseDown, getLastMoveOffset, isLeftMouseClicked, isTouchActive, isTouchMode } from "../mouse.js";
+import { getLastMouseDownStart, getLastMoveOffset, isLeftMouseClicked, isTouchActive, isTouchMode } from "../mouse.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { doBrushFunc } from "../manipulation.js";
 import { hexToRgb, rgbToRgba } from "../common.js";
@@ -175,9 +175,9 @@ let curMouseClickTime = null;
 let curMouseClickLighting = null;
 
 function getLighting(x, y) {
-    if (isLeftMouseClicked() && getLastMouseDown() == curMouseClickTime)
+    if (isLeftMouseClicked() && getLastMouseDownStart() == curMouseClickTime)
         return curMouseClickLighting;
-    curMouseClickTime = getLastMouseDown();
+    curMouseClickTime = getLastMouseDownStart();
     curMouseClickLighting = getDefaultLighting();
     if (loadGD(UI_LIGHTING_ENABLED)) {
         let sq = getSquares(x, y).find((sq) => sq.visible);

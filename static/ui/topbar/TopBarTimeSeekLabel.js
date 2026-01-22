@@ -1,7 +1,7 @@
 import { getBaseUISize } from "../../canvas.js";
 import { COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { MAIN_CONTEXT } from "../../index.js";
-import { getLastMouseDown, isLeftMouseClicked } from "../../mouse.js";
+import { getLastMouseDownStart, isLeftMouseClicked } from "../../mouse.js";
 import { loadGD, saveGD, UI_BOOLEAN, UI_SPEED, UI_SPEED_10, UI_SPEED_11, UI_SPEED_12, UI_SPEED_13, UI_SPEED_14, UI_SPEED_15, UI_SPEED_16, UI_SPEED_17, UI_SPEED_18, UI_SPEED_19 } from "../UIData.js";
 import { TopBarElementBase } from "./TopBarElementBase.js";
 
@@ -42,8 +42,8 @@ export class TopBarTimeSeekLabel extends TopBarElementBase{
         if (!isLeftMouseClicked()) {
             return;
         } 
-        if (this.lastClick != getLastMouseDown()) {
-            this.lastClick = getLastMouseDown();
+        if (this.lastClick != getLastMouseDownStart()) {
+            this.lastClick = getLastMouseDownStart();
             saveGD(UI_SPEED, UI_SPEED_10);
         }
     }
