@@ -14,8 +14,9 @@ export class PlotStarScatter extends WindowElement {
         this.lengthCap = loadGD(UI_PLOTCONTAINER_MAXPOINTS);
         this.xValues = new Array(this.lengthCap);
         this.yValues = new Array(this.lengthCap);
-        this.cValues = new Array(this.lengthCap);
+        this.sValues = new Array(this.lengthCap);
         this.rValues = new Array(this.lengthCap);
+        this.pixelStarMap = new Map();
         this.numStars = 0;
         this.plottedStars = 0;
         this.lastFrameStarsRenderedColorCalc = 0;
@@ -26,7 +27,7 @@ export class PlotStarScatter extends WindowElement {
         this.lengthCap = loadGD(UI_PLOTCONTAINER_MAXPOINTS);
         this.xValues = new Array(this.lengthCap);
         this.yValues = new Array(this.lengthCap);
-        this.cValues = new Array(this.lengthCap);
+        this.sValues = new Array(this.lengthCap);
         this.xKey = null;
         this.yKey = null;
     }
@@ -79,7 +80,7 @@ export class PlotStarScatter extends WindowElement {
             }
             this.xValues[i] = x;
             this.yValues[i] = y;
-            this.cValues[i] = star.color;
+            this.sValues[i] = star;
             this.rValues[i] = rgbToRgba(...star.color, opacity);
         }
 
@@ -114,7 +115,7 @@ export class PlotStarScatter extends WindowElement {
         this.paddingY = this.sizeY / loadGD(UI_PLOTCONTAINER_YPADDING);
 
         let size = Math.exp(loadGD(UI_PLOTCONTAINER_POINTSIZE));
-        let x, y;
+        let x, y, xo, yo, xa, ya, xaf, yaf, xof, yof;
 
         let frameStarsRendered = 0;
         for (let i = 0; i < this.lengthCap; i++) {
@@ -125,10 +126,33 @@ export class PlotStarScatter extends WindowElement {
 
             x = invlerp(this.vr[0], this.vr[1], x);
             y = invlerp(this.vr[2], this.vr[3], y);
+            
+            xo = x * (this.sizeX - 2 * this.paddingX);
+            yo = y * (this.sizeY - 2 * this.paddingY);
 
+            xa = xo + startX + this.paddingX;
+            ya = yo + startY + this.paddingY;
+            
+            xaf = Math.floor(xa);
+            yaf = Math.floor(ya);
+
+            xof = Math.floor(xo);
+            yof = Math.floor(yo);
+
+            this.pixelStarMap.set(xof, this.pixelStarMap.get(xof) ?? new Map());
+            this.pixelStarMap.get(xof).set(yof, this.sValues[i]);
+
+            if (this.sValues[i] == null) {
+                continue;
+            }
+
+            if (this.sValues[i].selected) {
+                size *= 10;
+            }
+            
             MAIN_CONTEXT.fillStyle = this.rValues[i];
             MAIN_CONTEXT.beginPath();
-            MAIN_CONTEXT.arc(x * (this.sizeX - 2 * this.paddingX) + startX + this.paddingX, y * (this.sizeY - 2 * this.paddingY) + startY + this.paddingY, size, 0, 2 * Math.PI, false);
+            MAIN_CONTEXT.arc(xa, ya, size, 0, 2 * Math.PI, false);
             MAIN_CONTEXT.fill();
             frameStarsRendered += 1;
         }
@@ -136,8 +160,8 @@ export class PlotStarScatter extends WindowElement {
         if (frameStarsRendered / this.lastFrameStarsRenderedColorCalc < 0.9) {
             let opacity = processRangeToOne(loadGD(UI_PLOTCONTAINER_POINTOPACITY) * frameStarsRendered);
             for (let i = 0; i < this.lengthCap; i++) {
-                if (this.cValues[i] != null) {
-                    this.rValues[i] = rgbToRgba(...this.cValues[i], opacity);
+                if (this.sValues[i] != null) {
+                    this.rValues[i] = rgbToRgba(...this.sValues[i].color, opacity);
                 }
             }
             this.lastFrameStarsRenderedColorCalc = frameStarsRendered;
@@ -158,6 +182,16 @@ export class PlotStarScatter extends WindowElement {
         }
         MAIN_CONTEXT.strokeStyle = COLOR_WHITE;
 
+    }
+
+    handleClick(posX, posY) {
+        if (this.clickCounter < 2) {
+            return;
+        }
+        let star = this.pixelStarMap.get(posX)?.get(posY);
+        if (star) {
+            star.selected = true;
+        }
     }
 
     hover(posX, posY) {
@@ -190,6 +224,8 @@ export class PlotStarScatter extends WindowElement {
             }
         }
         this.handlePan(dx, dy);
+        this.handleClick(posX, posY)
+        
         this.plmo = this.lmo;
         this.curLastMouseWheelEvent = getSingletonMouseWheelState();
 
