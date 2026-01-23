@@ -122,7 +122,7 @@ export class StargazerComponent extends LockedComponent {
         container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_POINTSIZE, sizeX, sliderHeight, -10, 4, () => COLOR_WHITE, () => COLOR_BLACK));
 
         container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "point opacity"))
-        container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_POINTOPACITY, sizeX, sliderHeight, -.0001, .00001, () => COLOR_WHITE, () => COLOR_BLACK));
+        container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_POINTOPACITY, sizeX, sliderHeight, -.0004, .00001, () => COLOR_WHITE, () => COLOR_BLACK));
 
         container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "padding (X)"))
         container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_XPADDING, sizeX, sliderHeight, 1, 50, () => COLOR_WHITE, () => COLOR_BLACK));

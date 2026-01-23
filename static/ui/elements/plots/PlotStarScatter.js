@@ -15,7 +15,10 @@ export class PlotStarScatter extends WindowElement {
         this.xValues = new Array(this.lengthCap);
         this.yValues = new Array(this.lengthCap);
         this.cValues = new Array(this.lengthCap);
+        this.rValues = new Array(this.lengthCap);
         this.numStars = 0;
+        this.plottedStars = 0;
+        this.lastFrameStarsRenderedColorCalc = 0;
         this.vr = [0, 1, 0, 1];
     }
 
@@ -76,12 +79,14 @@ export class PlotStarScatter extends WindowElement {
             }
             this.xValues[i] = x;
             this.yValues[i] = y;
-            this.cValues[i] = rgbToRgba(...star.color, opacity);
+            this.cValues[i] = star.color;
+            this.rValues[i] = rgbToRgba(...star.color, opacity);
         }
+
+        this.lastFrameStarsRenderedColorCalc = this.lengthCap;
 
         this.xS = calculateStatistics(this.xValues);
         this.yS = calculateStatistics(this.yValues);
-
     }
 
     processValue(value, zoom, offset) {
@@ -93,7 +98,6 @@ export class PlotStarScatter extends WindowElement {
         } else {
             return invlerp(minValue, maxValue, value);
         }
-
     }
 
     renderGraph(startX, startY) {
@@ -112,6 +116,7 @@ export class PlotStarScatter extends WindowElement {
         let size = Math.exp(loadGD(UI_PLOTCONTAINER_POINTSIZE));
         let x, y;
 
+        let frameStarsRendered = 0;
         for (let i = 0; i < this.lengthCap; i++) {
             x = invlerp(...this.xBounds, this.xValues[i]);
             y = invlerp(...this.yBounds, this.yValues[i]);
@@ -121,10 +126,21 @@ export class PlotStarScatter extends WindowElement {
             x = invlerp(this.vr[0], this.vr[1], x);
             y = invlerp(this.vr[2], this.vr[3], y);
 
-            MAIN_CONTEXT.fillStyle = this.cValues[i];
+            MAIN_CONTEXT.fillStyle = this.rValues[i];
             MAIN_CONTEXT.beginPath();
             MAIN_CONTEXT.arc(x * (this.sizeX - 2 * this.paddingX) + startX + this.paddingX, y * (this.sizeY - 2 * this.paddingY) + startY + this.paddingY, size, 0, 2 * Math.PI, false);
             MAIN_CONTEXT.fill();
+            frameStarsRendered += 1;
+        }
+
+        if (frameStarsRendered / this.lastFrameStarsRenderedColorCalc < 0.9) {
+            let opacity = processRangeToOne(loadGD(UI_PLOTCONTAINER_POINTOPACITY) * frameStarsRendered);
+            for (let i = 0; i < this.lengthCap; i++) {
+                if (this.cValues[i] != null) {
+                    this.rValues[i] = rgbToRgba(...this.cValues[i], opacity);
+                }
+            }
+            this.lastFrameStarsRenderedColorCalc = frameStarsRendered;
         }
 
         this.renderGridLines(startX, startY);
