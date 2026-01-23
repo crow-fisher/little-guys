@@ -157,7 +157,7 @@ export class PlotStarScatter extends WindowElement {
             frameStarsRendered += 1;
         }
 
-        if (frameStarsRendered / this.lastFrameStarsRenderedColorCalc < 0.9) {
+        if (frameStarsRendered / this.lastFrameStarsRenderedColorCalc < 0.9 || this.lastFrameStarsRenderedColorCalc / frameStarsRendered < 0.9) {
             let opacity = processRangeToOne(loadGD(UI_PLOTCONTAINER_POINTOPACITY) * frameStarsRendered);
             for (let i = 0; i < this.lengthCap; i++) {
                 if (this.sValues[i] != null) {
@@ -195,7 +195,7 @@ export class PlotStarScatter extends WindowElement {
         console.log(posX, posY);
 
         let closestStar = null;
-        let closestStarDist = 10 ** 8;
+        let closestStarDist = 25;
         let curDist;
         for (let i = 0; i < this.numStars; i++) {
             if (this.sValues[i] != null && this.sValues[i].graphVisible) {
