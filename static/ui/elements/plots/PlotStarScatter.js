@@ -114,46 +114,46 @@ export class PlotStarScatter extends WindowElement {
         this.paddingX = this.sizeX / loadGD(UI_PLOTCONTAINER_XPADDING);
         this.paddingY = this.sizeY / loadGD(UI_PLOTCONTAINER_YPADDING);
 
-        let size = Math.exp(loadGD(UI_PLOTCONTAINER_POINTSIZE));
-        let x, y, xo, yo, xa, ya, xaf, yaf, xof, yof;
+        let size = Math.exp(loadGD(UI_PLOTCONTAINER_POINTSIZE)), sizeCur = size;
+        let x, y, xo, yo, xa, ya;
 
         let frameStarsRendered = 0;
         for (let i = 0; i < this.lengthCap; i++) {
+            if (this.sValues[i] == null) {
+                continue;
+            }
             x = invlerp(...this.xBounds, this.xValues[i]);
             y = invlerp(...this.yBounds, this.yValues[i]);
-            if (x < this.vr[0] || x > this.vr[1] || y < this.vr[2] || y > this.vr[3])
+            if (x < this.vr[0] || x > this.vr[1] || y < this.vr[2] || y > this.vr[3]) {
+                this.sValues[i].graphVisible = false;
                 continue;
+            } else {
+                this.sValues[i].graphVisible = true;
+            }
 
             x = invlerp(this.vr[0], this.vr[1], x);
             y = invlerp(this.vr[2], this.vr[3], y);
-            
+
             xo = x * (this.sizeX - 2 * this.paddingX);
             yo = y * (this.sizeY - 2 * this.paddingY);
 
             xa = xo + startX + this.paddingX;
             ya = yo + startY + this.paddingY;
-            
-            xaf = Math.floor(xa);
-            yaf = Math.floor(ya);
 
-            xof = Math.floor(xo);
-            yof = Math.floor(yo);
-
-            this.pixelStarMap.set(xof, this.pixelStarMap.get(xof) ?? new Map());
-            this.pixelStarMap.get(xof).set(yof, this.sValues[i]);
-
-            if (this.sValues[i] == null) {
-                continue;
-            }
+            this.sValues[i].graphX = xo;
+            this.sValues[i].graphY = yo;
 
             if (this.sValues[i].selected) {
-                size *= 10;
+                sizeCur = size * 3;
+            } else {
+                sizeCur = size;
             }
-            
+
             MAIN_CONTEXT.fillStyle = this.rValues[i];
             MAIN_CONTEXT.beginPath();
-            MAIN_CONTEXT.arc(xa, ya, size, 0, 2 * Math.PI, false);
+            MAIN_CONTEXT.arc(xa, ya, sizeCur, 0, 2 * Math.PI, false);
             MAIN_CONTEXT.fill();
+
             frameStarsRendered += 1;
         }
 
@@ -188,9 +188,28 @@ export class PlotStarScatter extends WindowElement {
         if (this.clickCounter < 2) {
             return;
         }
-        let star = this.pixelStarMap.get(posX)?.get(posY);
-        if (star) {
-            star.selected = true;
+
+        posX -= this.paddingX;
+        posY -= this.paddingY;
+
+        console.log(posX, posY);
+
+        let closestStar = null;
+        let closestStarDist = 10 ** 8;
+        let curDist;
+        for (let i = 0; i < this.numStars; i++) {
+            if (this.sValues[i] != null && this.sValues[i].graphVisible) {
+                curDist = ((this.sValues[i].graphX - posX) ** 2 + (this.sValues[i].graphY - posY) ** 2) ** 0.5;
+                if (curDist < closestStarDist) {
+                    closestStar = this.sValues[i];
+                    closestStarDist = curDist;
+                }
+            }
+        }
+
+        if (closestStar != null) {
+            closestStar.selected = true;
+
         }
     }
 
@@ -225,7 +244,7 @@ export class PlotStarScatter extends WindowElement {
         }
         this.handlePan(dx, dy);
         this.handleClick(posX, posY)
-        
+
         this.plmo = this.lmo;
         this.curLastMouseWheelEvent = getSingletonMouseWheelState();
 
