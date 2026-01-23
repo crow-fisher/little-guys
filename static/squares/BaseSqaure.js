@@ -507,8 +507,8 @@ export class BaseSquare {
         this.cartesian_tr[1] = this.posY - co[1];
         this.cartesian_bl[1] = this.posY + 1 - co[1];
         this.cartesian_br[1] = this.posY + 1 - co[1];
-        this.cartesian_tl[2] = (this.tsq?.z ?? (this.z + 5)) - co[2];
-        this.cartesian_tr[2] = (this.tsq?.z ?? (this.z + 5)) - co[2];
+        this.cartesian_tl[2] = (this.tsq?.z ?? (this.z - (this.zCascadeFunc(-.5)))) - co[2];
+        this.cartesian_tr[2] = (this.tsq?.z ?? (this.z - (this.zCascadeFunc(-.5)))) - co[2];
         this.cartesian_bl[2] = this.z - co[2];
         this.cartesian_br[2] = this.z - co[2];
 
@@ -530,15 +530,15 @@ export class BaseSquare {
     }
 
     prepareRenderJob() {
-        this.tl = this.renderScreen_tl;
-        this.bl = this.renderScreen_bl;
-        this.br = this.renderScreen_br;
-        this.tr = this.renderScreen_tr;
+        this.tl = this.tl ?? structuredClone(this.renderScreen_tl);
+        this.bl = this.bl ?? structuredClone(this.renderScreen_bl);
+        this.br = this.br ?? structuredClone(this.renderScreen_br);
+        this.tr = this.tr ?? structuredClone(this.renderScreen_tr);
 
-        // this.combinePoints(this, this.lsq, this.p1, "renderScreen_tl", "renderScreen_tr");
-        // this.combinePoints(this, this.lsq, this.p2, "renderScreen_bl", "renderScreen_br");
-        // this.combinePoints(this, this.lsq, this.p3, "renderScreen_br", "renderScreen_bl");
-        // this.combinePoints(this, this.lsq, this.p4, "renderScreen_tr", "renderScreen_tl");
+        this.combinePoints(this, this.lsq, this.tl, "renderScreen_tl", "renderScreen_tr");
+        this.combinePoints(this, this.lsq, this.bl, "renderScreen_bl", "renderScreen_br");
+        this.combinePoints(this, this.rsq, this.br, "renderScreen_br", "renderScreen_bl");
+        this.combinePoints(this, this.rsq, this.tr, "renderScreen_tr", "renderScreen_tl");
 
         this.centerZ = (this.tl[2] + this.bl[2] + this.br[2] + this.tr[2]) / 4;
 
@@ -560,7 +560,7 @@ export class BaseSquare {
         this.updateNeighborSquares();
         this.setFrameCartesians();
         this.prepareRenderJob();
-        addRenderJob(this.renderJob);
+        addRenderJob(this.renderJob, false);
     }
 
     combinePoints(p1, p2, dest, g1, g2) {
