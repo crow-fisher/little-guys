@@ -5,7 +5,7 @@ import { calculateStatistics, invlerp, processRangeToOne, rgbToRgba } from "../.
 import { MAIN_CONTEXT } from "../../../index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "../../../keyboard.js";
 import { getLastLastMoveOffset, getLastMouseDownStart, getLastMouseUpEvent, getLastMoveOffset, isLeftMouseClicked } from "../../../mouse.js";
-import { loadGD, saveGD, UI_PLOTCONTAINER_AXISLABELS, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_OFFSET_X, UI_PLOTCONTAINER_OFFSET_Y, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_XPADDING, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_YPADDING, UI_PLOTCONTAINER_ZOOM_X, UI_PLOTCONTAINER_ZOOM_Y } from "../../UIData.js";
+import { loadGD, saveGD, UI_PLOTCONTAINER_AXISLABELS, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_OFFSET_X, UI_PLOTCONTAINER_OFFSET_Y, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_FILTERMODE, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_XPADDING, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_YPADDING, UI_PLOTCONTAINER_ZOOM_X, UI_PLOTCONTAINER_ZOOM_Y } from "../../UIData.js";
 import { WindowElement } from "../../Window.js";
 
 export class PlotStarScatter extends WindowElement {
@@ -111,15 +111,18 @@ export class PlotStarScatter extends WindowElement {
             this.yS[3]//Math.min(this.yS[3], this.yS[0] + Math.exp(loadGD(UI_PLOTCONTAINER_ZOOM_Y)) * this.yS[1])
         ];
 
+        
         this.paddingX = this.sizeX / loadGD(UI_PLOTCONTAINER_XPADDING);
         this.paddingY = this.sizeY / loadGD(UI_PLOTCONTAINER_YPADDING);
 
         let size = Math.exp(loadGD(UI_PLOTCONTAINER_POINTSIZE)), sizeCur = size;
-        let x, y, xo, yo, xa, ya;
+        let x, y, xo, yo, xa, ya, star;
+        let fm = loadGD(UI_PLOTCONTAINER_FILTERMODE)
 
         let frameStarsRendered = 0;
         for (let i = 0; i < this.lengthCap; i++) {
-            if (this.sValues[i] == null) {
+            star = this.sValues[i];
+            if (star == null) {
                 continue;
             }
             x = invlerp(...this.xBounds, this.xValues[i]);
@@ -131,6 +134,12 @@ export class PlotStarScatter extends WindowElement {
                 this.sValues[i].graphVisible = true;
             }
 
+            if (fm == 1) {
+                if (!star.mmVisible || !star.fovVisible) {
+                    continue;
+                }
+            }
+
             x = invlerp(this.vr[0], this.vr[1], x);
             y = invlerp(this.vr[2], this.vr[3], y);
 
@@ -140,8 +149,8 @@ export class PlotStarScatter extends WindowElement {
             xa = xo + startX + this.paddingX;
             ya = yo + startY + this.paddingY;
 
-            this.sValues[i].graphX = xo;
-            this.sValues[i].graphY = yo;
+            star.graphX = xo;
+            star.graphY = yo;
 
             if (this.sValues[i].selected) {
                 sizeCur = size * 3;

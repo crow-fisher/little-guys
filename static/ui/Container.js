@@ -74,5 +74,7 @@ export class Container {
         })));
     }
 
-    
+    updateSizeXByMult(mult) {
+        this.elements.forEach((el) => el.updateSizeXByMult(mult));
+    }
 }

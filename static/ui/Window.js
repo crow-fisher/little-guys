@@ -155,7 +155,9 @@ export class WindowElement {
         this.sizeX = Math.floor(sizeX);
         this.sizeY = Math.floor(sizeY);
     }
-
+    updateSizeXByMult(muit) {
+        this.sizeX *= muit;
+    }
     updateSizeX(sizeX) {
         this.sizeX = sizeX;
     }

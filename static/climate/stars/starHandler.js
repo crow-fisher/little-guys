@@ -1,6 +1,7 @@
 import { cartesianToScreenInplace, frameMatrixReset, screenToRenderScreen } from "../../camera.js";
 import { getCanvasHeight, getCanvasWidth } from "../../canvas.js";
 import { hexToRgb, processColorLerpBicolor, processColorLerpBicolorPow, rgbToRgba, rgbToRgbaObj } from "../../common.js";
+import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth } from "../../index.js";
 import { addRenderJob, LineRenderJob, PointRenderJob } from "../../rasterizer.js";
 import {
     loadGD, UI_STARMAP_ZOOM, UI_STARMAP_CONSTELATION_BRIGHTNESS,
@@ -127,9 +128,20 @@ class Star {
         screenToRenderScreen(this._screen, this._renderNorm, this._renderScreen, frameCache._xOffset, frameCache._yOffset, frameCache._s);
     }
     render(renderMode) {
+        this.fovVisible = false;
         if (this._screen == null || this._screen[2] < 0) {
-            return; q
+            return;
         }
+
+        if (this._renderScreen[0] < 0 || this._renderScreen[0] > getTotalCanvasPixelWidth()) {
+            return;
+        }
+        if (this._renderScreen[1] < 0 || this._renderScreen[1] > getTotalCanvasPixelHeight()) {
+            return;
+        }
+
+        this.fovVisible = true;
+
         addRenderJob(new PointRenderJob(
             this._renderScreen[0],
             this._renderScreen[1],
@@ -393,7 +405,10 @@ export class StarHandler {
             let star = this.stars[id];
 
             if (star.magnitude > mm) {
+                star.mmVisible = false; 
                 continue;
+            } else {
+                star.mmVisible = true;
             }
             if (this.frameCache.UI_STARMAP_VIEWMODE == 1 && star.p_feH == null) {
                 continue;
