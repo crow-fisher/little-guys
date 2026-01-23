@@ -507,8 +507,8 @@ export class BaseSquare {
         this.cartesian_tr[1] = this.posY - co[1];
         this.cartesian_bl[1] = this.posY + 1 - co[1];
         this.cartesian_br[1] = this.posY + 1 - co[1];
-        this.cartesian_tl[2] = (this.tsq?.z ?? (this.z - (this.zCascadeFunc(-.5)))) - co[2];
-        this.cartesian_tr[2] = (this.tsq?.z ?? (this.z - (this.zCascadeFunc(-.5)))) - co[2];
+        this.cartesian_tl[2] = (this.tsq?.z ?? (this.z - (this.zCascadeFunc(0)))) - co[2];
+        this.cartesian_tr[2] = (this.tsq?.z ?? (this.z - (this.zCascadeFunc(0)))) - co[2];
         this.cartesian_bl[2] = this.z - co[2];
         this.cartesian_br[2] = this.z - co[2];
 
@@ -550,7 +550,7 @@ export class BaseSquare {
             this.renderJob.br = this.br;
             this.renderJob.tr = this.tr;
             this.renderJob.color = this.cachedRgba;
-            this.renderJob.centerZ = this.centerZ;
+            this.renderJob.z = this.centerZ;
         }
     }
 
@@ -560,7 +560,8 @@ export class BaseSquare {
         this.updateNeighborSquares();
         this.setFrameCartesians();
         this.prepareRenderJob();
-        addRenderJob(this.renderJob, false);
+
+        addRenderJob(this.renderJob, true);
     }
 
     combinePoints(p1, p2, dest, g1, g2) {
