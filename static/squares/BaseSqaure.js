@@ -133,10 +133,10 @@ export class BaseSquare {
         this.renderScreen_bl = [0, 0, 0];
         this.renderScreen_br = [0, 0, 0];
 
-        this.p1 = [0, 0, 0];
-        this.p2 = [0, 0, 0];
-        this.p3 = [0, 0, 0];
-        this.p4 = [0, 0, 0];
+        this.tl = [0, 0, 0];
+        this.bl = [0, 0, 0];
+        this.br = [0, 0, 0];
+        this.tr = [0, 0, 0];
 
         this.initTemperature();
         this.setFrameCartesians();
@@ -524,27 +524,30 @@ export class BaseSquare {
     }
 
     updateNeighborSquares() {
-        this.tlsq = getSquares(this.posX - 1, this.posY + 1).find((sq) => sq.solid && sq.visible);
-        this.trsq = getSquares(this.posX + 1, this.posY + 1).find((sq) => sq.solid && sq.visible);
-        this.blsq = getSquares(this.posX - 1, this.posY - 1).find((sq) => sq.solid && sq.visible);
-        this.brsq = getSquares(this.posX + 1, this.posY - 1).find((sq) => sq.solid && sq.visible);
+        this.lsq = getSquares(this.posX - 1, this.posY).find((sq) => sq.solid && sq.visible);
+        this.rsq = getSquares(this.posX + 1, this.posY).find((sq) => sq.solid && sq.visible);
     }
 
     prepareRenderJob() {
-        this.combinePoints(this, this.tlsq, this.p1, "renderScreen_tl", "renderScreen_br");
-        this.combinePoints(this, this.trsq, this.p2, "renderScreen_tr", "renderScreen_bl");
-        this.combinePoints(this, this.brsq, this.p4, "renderScreen_br", "renderScreen_tl");
-        this.combinePoints(this, this.blsq, this.p3, "renderScreen_bl", "renderScreen_tr");
+        this.tl = this.renderScreen_tl;
+        this.bl = this.renderScreen_bl;
+        this.br = this.renderScreen_br;
+        this.tr = this.renderScreen_tr;
 
-        this.centerZ = (this.p1[2] + this.p2[2] + this.p3[2] + this.p4[2]) / 4;
+        // this.combinePoints(this, this.lsq, this.p1, "renderScreen_tl", "renderScreen_tr");
+        // this.combinePoints(this, this.lsq, this.p2, "renderScreen_bl", "renderScreen_br");
+        // this.combinePoints(this, this.lsq, this.p3, "renderScreen_br", "renderScreen_bl");
+        // this.combinePoints(this, this.lsq, this.p4, "renderScreen_tr", "renderScreen_tl");
+
+        this.centerZ = (this.tl[2] + this.bl[2] + this.br[2] + this.tr[2]) / 4;
 
         if (this.renderJob == null) {
-            this.renderJob = new QuadRenderJob(this.p1, this.p2, this.p3, this.p4, this.cachedRgba, this.centerZ)
+            this.renderJob = new QuadRenderJob(this.tl, this.bl, this.br, this.tr, this.cachedRgba, this.centerZ)
         } else {
-            this.renderJob.p1 = this.p1;
-            this.renderJob.p2 = this.p2;
-            this.renderJob.p3 = this.p3;
-            this.renderJob.p4 = this.p4;
+            this.renderJob.tl = this.tl;
+            this.renderJob.bl = this.bl;
+            this.renderJob.br = this.br;
+            this.renderJob.tr = this.tr;
             this.renderJob.color = this.cachedRgba;
             this.renderJob.centerZ = this.centerZ;
         }

@@ -67,12 +67,12 @@ export class LineRenderJob extends RenderJob {
 }
 
 export class QuadRenderJob extends RenderJob {
-    constructor(p1, p2, p3, p4, color, z) {
+    constructor(tl, bl, br, tr, color, z) {
         super();
-        this.p1 = p1;
-        this.p2 = p2;
-        this.p3 = p3;
-        this.p4 = p4;
+        this.tl = tl;
+        this.bl = bl;
+        this.br = br;
+        this.tr = tr;
         this.color = color;
         this.z = z;
     }
@@ -80,11 +80,11 @@ export class QuadRenderJob extends RenderJob {
     render() {
         MAIN_CONTEXT.fillStyle = this.color;
         MAIN_CONTEXT.beginPath()
-        MAIN_CONTEXT.moveTo(...this.p1);
-        MAIN_CONTEXT.lineTo(...this.p2);
-        MAIN_CONTEXT.lineTo(...this.p4);
-        MAIN_CONTEXT.lineTo(...this.p3);
-        MAIN_CONTEXT.lineTo(...this.p1);
+        MAIN_CONTEXT.moveTo(...this.tl);
+        MAIN_CONTEXT.lineTo(...this.bl);
+        MAIN_CONTEXT.lineTo(...this.br);
+        MAIN_CONTEXT.lineTo(...this.tr);
+        MAIN_CONTEXT.lineTo(...this.tl);
         MAIN_CONTEXT.closePath();
         MAIN_CONTEXT.fill();
     }

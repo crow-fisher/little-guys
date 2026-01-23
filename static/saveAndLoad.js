@@ -232,10 +232,8 @@ export function compressSquares(squares) {
     squares.forEach((sq) => {
         sq.lighting = [];
         sq.renderJob = null;
-        sq.tlsq = null;
-        sq.trsq = null;
-        sq.blsq = null;
-        sq.brsq = null;
+        sq.lsq = null;
+        sq.rsq = null;
         
         sq.linkedOrganisms = Array.from(sq.linkedOrganisms.map((org) => {
             if (org.stage != STAGE_DEAD) {
