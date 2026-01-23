@@ -445,7 +445,7 @@ export class SoilSquare extends BaseSquare {
         addWaterSaturationPascals(x, y, pascals);
     }
 
-    zCascadePhysics() {
-        this.z = -4 * (this.currentPressureDirect ** .5);
+    zCascadeFunc(val) {
+        return -4 * (val ** .5);
     }
 }

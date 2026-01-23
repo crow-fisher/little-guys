@@ -507,8 +507,8 @@ export class BaseSquare {
         this.cartesian_tr[1] = this.posY - co[1];
         this.cartesian_bl[1] = this.posY + 1 - co[1];
         this.cartesian_br[1] = this.posY + 1 - co[1];
-        this.cartesian_tl[2] = this.z - co[2];
-        this.cartesian_tr[2] = this.z - co[2];
+        this.cartesian_tl[2] = (this.tsq?.z ?? (this.z + 5)) - co[2];
+        this.cartesian_tr[2] = (this.tsq?.z ?? (this.z + 5)) - co[2];
         this.cartesian_bl[2] = this.z - co[2];
         this.cartesian_br[2] = this.z - co[2];
 
@@ -526,6 +526,7 @@ export class BaseSquare {
     updateNeighborSquares() {
         this.lsq = getSquares(this.posX - 1, this.posY).find((sq) => sq.solid && sq.visible);
         this.rsq = getSquares(this.posX + 1, this.posY).find((sq) => sq.solid && sq.visible);
+        this.tsq = getSquares(this.posX, this.posY - 1).find((sq) => sq.solid && sq.visible);
     }
 
     prepareRenderJob() {
@@ -1132,6 +1133,14 @@ export class BaseSquare {
                 this.temperature -= diff / this.thermalMass;
                 sq.temperature += diff / sq.thermalMass;
             })
+    }
+
+    zCascadePhysics() {
+        this.z = this.zCascadeFunc(this.currentPressureDirect);
+    }
+
+    zCascadeFunc(val) {
+        return 0
     }
 
 }
