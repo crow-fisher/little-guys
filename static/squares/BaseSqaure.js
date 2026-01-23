@@ -11,7 +11,7 @@ import {
     getNextBlockId
 } from "../globals.js";
 
-import { MAIN_CONTEXT } from "../index.js";
+import { getTotalCanvasPixelWidth, MAIN_CONTEXT } from "../index.js";
 
 import { hexToRgb, hsv2rgb, randNumber, randRange, removeItemAll, rgb2hsv, rgbToHex, rgbToRgba } from "../common.js";
 import { removeSquare } from "../globalOperations.js";
@@ -1136,7 +1136,7 @@ export class BaseSquare {
     }
 
     zCascadePhysics() {
-        this.z = this.zCascadeFunc(this.currentPressureDirect);
+        this.z = -this.zCascadeFunc(this.currentPressureDirect);
     }
 
     zCascadeFunc(val) {
