@@ -128,10 +128,10 @@ export class PlotStarScatter extends WindowElement {
             x = invlerp(...this.xBounds, this.xValues[i]);
             y = invlerp(...this.yBounds, this.yValues[i]);
             if (x < this.vr[0] || x > this.vr[1] || y < this.vr[2] || y > this.vr[3]) {
-                this.sValues[i].graphVisible = false;
+                star.graphVisible = false;
                 continue;
             } else {
-                this.sValues[i].graphVisible = true;
+                star.graphVisible = true;
             }
 
             if (fm == 1) {

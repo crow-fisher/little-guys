@@ -16,7 +16,8 @@ import {
     UI_STARMAP_FEH_MIN_VALUE,
     UI_STARMAP_FEH_WINDOW_SIZE,
     UI_STARMAP_FEH_POW,
-    UI_STARMAP_VIEWMODE
+    UI_STARMAP_VIEWMODE,
+    UI_PLOTCONTAINER_FILTERMODE
 } from "../../ui/UIData.js";
 import { tempToColorForStar } from "../time.js";
 
@@ -399,6 +400,7 @@ export class StarHandler {
     renderStars() {
         this.frameCache.prepareFrameCache();
         let mm = loadGD(UI_STARMAP_STAR_MIN_MAGNITUDE);
+        let fm = loadGD(UI_PLOTCONTAINER_FILTERMODE)
 
         for (let i = 0; i < this.starIds.length; i++) {
             let id = this.starIds[i];
@@ -413,8 +415,18 @@ export class StarHandler {
             if (this.frameCache.UI_STARMAP_VIEWMODE == 1 && star.p_feH == null) {
                 continue;
             }
-
             star.prepare(this.frameCache);
+
+            if (fm == 2) {
+                if (!star.graphVisible) {
+                    continue;
+                }
+            } else if (fm == 3) {
+                if (!star.selected) {
+                    continue;
+                }
+            }
+
             star.render(this.frameCache.UI_STARMAP_VIEWMODE);
         }
     }
