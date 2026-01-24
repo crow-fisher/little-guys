@@ -19,8 +19,9 @@ import {
     UI_STARMAP_FEH_POW,
     UI_STARMAP_VIEWMODE,
     UI_PLOTCONTAINER_FILTERMODE,
-    UI_PLOTCONTAINER_MAXZ,
-    addUIFunctionMap
+    UI_PLOTCONTAINER_SELECTRADIUS,
+    addUIFunctionMap,
+    UI_PLOTCONTAINER_LOCALITY_SELECTMODE
 } from "../../ui/UIData.js";
 import { gsh, tempToColorForStar } from "../time.js";
 import { calculateDistance, getVec3Length, subtractVectors, subtractVectorsCopy } from "./matrix.js";
@@ -120,8 +121,6 @@ class Star {
     }
 
     recalculateSizeOpacityColor(frameCache) {
-        this._curCameraDistance = calculateDistance(frameCache.UI_CAMERA_OFFSET_VEC, this._cartesian);
-        this._relCameraDist = (this._curCameraDistance / this._rootCameraDistance);
         if (this._prevRelCameraDist == null || this._relCameraDist / this._prevRelCameraDist < 0.9 || this._prevRelCameraDist / this._relCameraDist < 0.9) {
             this._prevRelCameraDist = this._relCameraDist;
             this._brightness = brightnessValueToLumensNormalized((this.magnitude) + frameCache.UI_STARMAP_BRIGHTNESS_SHIFT) / (this._relCameraDist ** 2);
@@ -130,9 +129,32 @@ class Star {
             this._color = rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_STARMAP_STAR_OPACITY_SHIFT));
             
         }
-
     }
+
+    doLocalitySelect(selectMode, selectRadius) {
+        if (selectMode == 0) {
+            this.localitySelect = false;
+            return;
+        } else {
+            if (this._relCameraDist * this.parsecs < selectRadius) {
+                this.localitySelect = true;
+                return;
+            } else {
+                if (selectMode == 2) {
+                    return;
+                }
+            }
+        }
+        this.localitySelect = false;
+        return;
+    }
+
     prepare(frameCache) {
+        this._curCameraDistance = calculateDistance(frameCache.UI_CAMERA_OFFSET_VEC, this._cartesian);
+        this._relCameraDist = (this._curCameraDistance / this._rootCameraDistance);
+        
+        this.doLocalitySelect(frameCache.UI_PLOTCONTAINER_LOCALITY_SELECTMODE, frameCache.UI_PLOTCONTAINER_SELECTRADIUS);
+
         if (this.recalculateScreenFlag) {
             this.recalculateScreen(frameCache);
             this._prevRelCameraDist = null;
@@ -147,7 +169,7 @@ class Star {
         cartesianToScreenInplace(this._offset, this._camera, this._screen);
         screenToRenderScreen(this._screen, this._renderNorm, this._renderScreen, frameCache._xOffset, frameCache._yOffset, frameCache._s);
 
-        if (this.selected) {
+        if (this.selected || this.localitySelect) {
             this.activeId = (frameCache.UI_PLOTCONTAINER_IDSYSTEM == 0) ? this.id : this.hd_number;
         }
     }
@@ -170,7 +192,7 @@ class Star {
             this._renderScreen[0],
             this._renderScreen[1],
             this._screen[2],
-            this._size,  (renderMode == 0 ? this._color : (this.p_feH_color ?? this._color)), this.selected ? this.activeId : null), false);
+            this._size,  (renderMode == 0 ? this._color : (this.p_feH_color ?? this._color)), (this.selected || this.localitySelect) ? this.activeId : null), false);
     }
 }
 
@@ -189,6 +211,8 @@ class FrameCache {
         this.UI_STARMAP_ZOOM = loadGD(UI_STARMAP_ZOOM)
         this.UI_CAMERA_OFFSET_VEC = loadGD(UI_CAMERA_OFFSET_VEC);
         this.UI_STARMAP_VIEWMODE = loadGD(UI_STARMAP_VIEWMODE);
+        this.UI_PLOTCONTAINER_LOCALITY_SELECTMODE = loadGD(UI_PLOTCONTAINER_LOCALITY_SELECTMODE);
+        this.UI_PLOTCONTAINER_SELECTRADIUS = loadGD(UI_PLOTCONTAINER_SELECTRADIUS);
 
         this._cw = getCanvasWidth();
         this._ch = getCanvasHeight();
@@ -424,20 +448,12 @@ export class StarHandler {
         this.frameCache.prepareFrameCache();
         let mm = loadGD(UI_STARMAP_STAR_MIN_MAGNITUDE);
         let fm = loadGD(UI_PLOTCONTAINER_FILTERMODE);
-        let mz = Math.exp(loadGD(UI_PLOTCONTAINER_MAXZ));
         let cz = (10 ** loadGD(UI_STARMAP_ZOOM));
 
         for (let i = 0; i < this.starIds.length; i++) {
             let id = this.starIds[i];
             let star = this.stars[id];
             
-            if ((star._renderScreen[2] / cz) > mz) {
-                star.mzVisible = false;
-                star.graphVisible = false;
-                continue;
-            } else {
-                star.mzVisible = true;
-            }
             if (star.magnitude > mm) {
                 star.mmVisible = false; 
                 continue;
