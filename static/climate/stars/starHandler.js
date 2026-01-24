@@ -18,7 +18,8 @@ import {
     UI_STARMAP_FEH_WINDOW_SIZE,
     UI_STARMAP_FEH_POW,
     UI_STARMAP_VIEWMODE,
-    UI_PLOTCONTAINER_FILTERMODE
+    UI_PLOTCONTAINER_FILTERMODE,
+    UI_PLOTCONTAINER_MAXZ
 } from "../../ui/UIData.js";
 import { tempToColorForStar } from "../time.js";
 import { calculateDistance, getVec3Length, subtractVectors, subtractVectorsCopy } from "./matrix.js";
@@ -416,12 +417,21 @@ export class StarHandler {
     renderStars() {
         this.frameCache.prepareFrameCache();
         let mm = loadGD(UI_STARMAP_STAR_MIN_MAGNITUDE);
-        let fm = loadGD(UI_PLOTCONTAINER_FILTERMODE)
+        let fm = loadGD(UI_PLOTCONTAINER_FILTERMODE);
+        let mz = Math.exp(loadGD(UI_PLOTCONTAINER_MAXZ));
+        let cz = (10 ** loadGD(UI_STARMAP_ZOOM));
 
         for (let i = 0; i < this.starIds.length; i++) {
             let id = this.starIds[i];
             let star = this.stars[id];
-
+            
+            if ((star._renderScreen[2] / cz) > mz) {
+                star.mzVisible = false;
+                star.graphVisible = false;
+                continue;
+            } else {
+                star.mzVisible = true;
+            }
             if (star.magnitude > mm) {
                 star.mmVisible = false; 
                 continue;

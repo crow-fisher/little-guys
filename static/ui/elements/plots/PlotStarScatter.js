@@ -138,7 +138,7 @@ export class PlotStarScatter extends WindowElement {
             }
 
             if (fm == 1) {
-                if (!star.mmVisible || !star.fovVisible) {
+                if (!star.mmVisible || !star.fovVisible || !star.mzVisible) {
                     continue;
                 }
             }

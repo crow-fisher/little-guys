@@ -1,7 +1,7 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { gsh } from "../../climate/time.js";
-import { COLOR_BLUE, COLOR_OTHER_BLUE, COLOR_RED } from "../../colors.js";
+import { COLOR_BLACK, COLOR_BLUE, COLOR_OTHER_BLUE, COLOR_RED, COLOR_WHITE } from "../../colors.js";
 import { UI_BIGDOTHOLLOW, UI_BIGDOTSOLID } from "../../common.js";
 import { Component } from "../Component.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
@@ -12,9 +12,10 @@ import { CilpGallery } from "../elements/ClipGallery.js";
 import { EditableText } from "../elements/EditableText.js";
 import { PlotStarScatter } from "../elements/plots/PlotStarScatter.js";
 import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
+import { SliderGradientBackground } from "../elements/SliderGradientBackground.js";
 import { Text } from "../elements/Text.js";
 import { TextBackground } from "../elements/TextBackground.js";
-import { loadGD, UI_CENTER, loadUI, UI_PALETTE_CLIPS_WAYPOINT_NAME, UI_PALETTE_CLIPS_WAYPOINT_DATAMAP, UI_UI_CURWORLD, UI_PALETTE_CLIPS_WAYPOINT_SELECT, saveGD, UI_PLOTCONTAINER_WIDTH, UI_PLOTCONTAINER_HEIGHT, UI_PLOTCONTAINER_FILTERMODE, UI_PLOTCONTAINER_IDSYSTEM } from "../UIData.js";
+import { loadGD, UI_CENTER, loadUI, UI_PALETTE_CLIPS_WAYPOINT_NAME, UI_PALETTE_CLIPS_WAYPOINT_DATAMAP, UI_UI_CURWORLD, UI_PALETTE_CLIPS_WAYPOINT_SELECT, saveGD, UI_PLOTCONTAINER_WIDTH, UI_PLOTCONTAINER_HEIGHT, UI_PLOTCONTAINER_FILTERMODE, UI_PLOTCONTAINER_IDSYSTEM, UI_PLOTCONTAINER_MAXZ } from "../UIData.js";
 
 
 export class PlotContainerComponent extends Component {
@@ -60,6 +61,8 @@ export class PlotContainerComponent extends Component {
         container.addElement(row4);
         row4.addElement(new Button(this.window, this.plotSizeX / 2, getBaseUISize() * 3, UI_CENTER, () => gsh().stars.forEach((star) => star.selected = false), "clear selection", () => COLOR_OTHER_BLUE))
         row4.addElement(new Button(this.window, this.plotSizeX / 2, getBaseUISize() * 3, UI_CENTER, () => gsh().stars.forEach((star) => star.selected = star.graphVisible), "select visible", () => COLOR_OTHER_BLUE));
+        container.addElement(new Text(this.window, this.plotSizeX, getBaseUISize() * 3, UI_CENTER, "Max camera view dist"));
+        container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_MAXZ, this.plotSizeX, getBaseUISize() * 3, 0, 10, () => COLOR_WHITE, () => COLOR_BLACK));
     }
 
     updateSizeX(sizeX) {
