@@ -13,7 +13,7 @@ import { PlotStarScatter } from "../elements/plots/PlotStarScatter.js";
 import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
 import { Text } from "../elements/Text.js";
 import { TextBackground } from "../elements/TextBackground.js";
-import { loadGD, UI_CENTER, loadUI, UI_PALETTE_CLIPS_WAYPOINT_NAME, UI_PALETTE_CLIPS_WAYPOINT_DATAMAP, UI_UI_CURWORLD, UI_PALETTE_CLIPS_WAYPOINT_SELECT, saveGD, UI_PLOTCONTAINER_WIDTH, UI_PLOTCONTAINER_HEIGHT, UI_PLOTCONTAINER_FILTERMODE } from "../UIData.js";
+import { loadGD, UI_CENTER, loadUI, UI_PALETTE_CLIPS_WAYPOINT_NAME, UI_PALETTE_CLIPS_WAYPOINT_DATAMAP, UI_UI_CURWORLD, UI_PALETTE_CLIPS_WAYPOINT_SELECT, saveGD, UI_PLOTCONTAINER_WIDTH, UI_PLOTCONTAINER_HEIGHT, UI_PLOTCONTAINER_FILTERMODE, UI_PLOTCONTAINER_IDSYSTEM } from "../UIData.js";
 
 
 export class PlotContainerComponent extends Component {
@@ -24,6 +24,8 @@ export class PlotContainerComponent extends Component {
 
         this.plotSizeX = loadGD(UI_PLOTCONTAINER_WIDTH);
         this.plotSizeY = loadGD(UI_PLOTCONTAINER_HEIGHT);
+
+        let addSpacing = () => container.addElement(new Text(this.window, this.plotSizeX, getBaseUISize() * 1, UI_CENTER, ""));
         
         this.plotStarScatter = new PlotStarScatter(this.window, this.plotSizeX, this.plotSizeY);
 
@@ -35,6 +37,8 @@ export class PlotContainerComponent extends Component {
 
         let row1 = new Container(this.window, 0, 0);
         let row2 = new Container(this.window, 0, 0);
+
+        
         let row3 = new Container(this.window, 0, 0);
         let row4 = new Container(this.window, 0, 0);
 
@@ -45,6 +49,12 @@ export class PlotContainerComponent extends Component {
         row1.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 2, getBaseUISize() * 3, UI_CENTER, "filter graph to stars", UI_PLOTCONTAINER_FILTERMODE, 1, () => COLOR_BLUE, () => COLOR_RED));
         row2.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 2, getBaseUISize() * 3, UI_CENTER, "filter stars to graph", UI_PLOTCONTAINER_FILTERMODE, 2, () => COLOR_BLUE, () => COLOR_RED));
         row2.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 2, getBaseUISize() * 3, UI_CENTER, "filter stars to selected", UI_PLOTCONTAINER_FILTERMODE, 3, () => COLOR_BLUE, () => COLOR_RED));
+
+        addSpacing();
+        container.addElement(new Text(this.window, this.plotSizeX, getBaseUISize() * 3, UI_CENTER, "ID number type"))
+        container.addElement(row3);
+        row3.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 2, getBaseUISize() * 3, UI_CENTER, "hipparcos", UI_PLOTCONTAINER_IDSYSTEM, 0, () => COLOR_BLUE, () => COLOR_RED));
+        row3.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 2, getBaseUISize() * 3, UI_CENTER, "henry draper", UI_PLOTCONTAINER_IDSYSTEM, 1, () => COLOR_BLUE, () => COLOR_RED));
     }
 
     updateSizeX(sizeX) {

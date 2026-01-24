@@ -5,7 +5,7 @@ import { calculateStatistics, hexToRgb, invlerp, processRangeToOne, rgbToRgba } 
 import { MAIN_CONTEXT } from "../../../index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "../../../keyboard.js";
 import { getLastLastMoveOffset, getLastMouseDownStart, getLastMouseUpEvent, getLastMoveOffset, isLeftMouseClicked } from "../../../mouse.js";
-import { loadGD, saveGD, UI_PLOTCONTAINER_AXISLABELS, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_OFFSET_X, UI_PLOTCONTAINER_OFFSET_Y, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_FILTERMODE, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_XPADDING, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_YPADDING, UI_PLOTCONTAINER_ZOOM_X, UI_PLOTCONTAINER_ZOOM_Y } from "../../UIData.js";
+import { loadGD, saveGD, UI_PLOTCONTAINER_AXISLABELS, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_OFFSET_X, UI_PLOTCONTAINER_OFFSET_Y, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_FILTERMODE, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_XPADDING, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_YPADDING, UI_PLOTCONTAINER_ZOOM_X, UI_PLOTCONTAINER_ZOOM_Y, UI_PLOTCONTAINER_IDSYSTEM } from "../../UIData.js";
 import { WindowElement } from "../../Window.js";
 
 export class PlotStarScatter extends WindowElement {
@@ -117,7 +117,10 @@ export class PlotStarScatter extends WindowElement {
 
         let size = Math.exp(loadGD(UI_PLOTCONTAINER_POINTSIZE)), sizeCur = size;
         let x, y, xo, yo, xa, ya, star;
-        let fm = loadGD(UI_PLOTCONTAINER_FILTERMODE)
+        let fm = loadGD(UI_PLOTCONTAINER_FILTERMODE);
+        let im = loadGD(UI_PLOTCONTAINER_IDSYSTEM);
+
+        let activeId = null;
 
         let frameStarsRendered = 0;
         for (let i = 0; i < this.lengthCap; i++) {
@@ -165,8 +168,9 @@ export class PlotStarScatter extends WindowElement {
 
             if (star.selected) {
                 MAIN_CONTEXT.font = getBaseUISize() * 3 + "px courier";
-                MAIN_CONTEXT.fillStyle = hexToRgb(...star.color);       
-                MAIN_CONTEXT.fillText(star.id, xa + getBaseUISize() * 6, ya);
+                MAIN_CONTEXT.fillStyle = hexToRgb(...star.color);
+                activeId = (im == 0 ? star.id : star.hd_number);
+                MAIN_CONTEXT.fillText(activeId, xa + MAIN_CONTEXT.measureText(activeId).width * 0.65, ya);
             }
 
             frameStarsRendered += 1;
