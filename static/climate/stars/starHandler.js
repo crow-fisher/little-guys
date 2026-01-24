@@ -2,6 +2,7 @@ import { cartesianToScreenInplace, frameMatrixReset, screenToRenderScreen } from
 import { getCanvasHeight, getCanvasWidth } from "../../canvas.js";
 import { hexToRgb, processColorLerpBicolor, processColorLerpBicolorPow, rgbToRgba, rgbToRgbaObj } from "../../common.js";
 import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth } from "../../index.js";
+import { setOrganismAddedThisClick } from "../../manipulation.js";
 import { addRenderJob, LineRenderJob, PointLabelRenderJob } from "../../rasterizer.js";
 import {
     loadGD, UI_STARMAP_ZOOM, UI_STARMAP_CONSTELATION_BRIGHTNESS,
@@ -20,6 +21,7 @@ import {
     UI_PLOTCONTAINER_FILTERMODE
 } from "../../ui/UIData.js";
 import { tempToColorForStar } from "../time.js";
+import { calculateDistance, getVec3Length, subtractVectors, subtractVectorsCopy } from "./matrix.js";
 
 // https://resources.wolframcloud.com/FormulaRepository/resources/Luminosity-Formula-for-Absolute-Magnitude
 // maximum value  85.5066712885
@@ -58,6 +60,7 @@ class Star {
     // ascension and declination in radians
     constructor(id, asc, dec, magnitude, bv, color, parallax, hd_number) {
         this.id = id;
+
         this.asc = asc;
         this.dec = dec;
         this.magnitude = magnitude;
@@ -75,11 +78,14 @@ class Star {
         this._opacity = 0;
         this._brightness = 0;
         this._distance = 0;
+        this._curCameraDistance = 1
+        this._rootCameraDistance = 1;
+        this._curOpacityUpdateFactor = 1;
+        this._prevOpacityUpdatefactor = 1;
         this.recalculateScreenFlag = true;
 
-        // absolute magnitude 
-        let d = Math.abs(1 / parallax);
-        this.magnitude_absolute = magnitude - (5 * Math.log(d) - 1)
+        this.parsecs = Math.abs(1 / (parallax / 1000));
+        this.magnitude_absolute = (magnitude + 5) - (5 * Math.log10(this.parsecs));
     }
 
     setFeH(feH) {
@@ -105,22 +111,28 @@ class Star {
 
 
     recalculateScreen(frameCache) {
-        this._brightness = brightnessValueToLumensNormalized(this.magnitude + frameCache.UI_STARMAP_BRIGHTNESS_SHIFT);
-        this._distance = Math.abs((1 / this.parallax) * 10 ** (frameCache.UI_STARMAP_ZOOM));
-
+        this._distance = this.parsecs * (10 ** frameCache.UI_STARMAP_ZOOM);
         sphericalToCartesianInplace(this._cartesian, frameCache.UI_CAMERA_OFFSET_VEC, -this.asc, -this.dec, this._distance);
-
-        this._size = (this._brightness ** frameCache.UI_STARMAP_STAR_SIZE_FACTOR) * frameCache.UI_STARMAP_STAR_MAX_SIZE;
-        this._opacity = (this._brightness ** frameCache.UI_STARMAP_STAR_OPACITY_FACTOR);
-        this._color = rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_STARMAP_STAR_OPACITY_SHIFT));
+        this._rootCameraDistance = getVec3Length(this._cartesian);
         this.recalculateScreenFlag = false;
         this.recalculateFeHColor();
     }
 
+    recalculateSizeOpacityColor(frameCache) {
+        this._curCameraDistance = calculateDistance(frameCache.UI_CAMERA_OFFSET_VEC, this._cartesian);
+        this._relCameraDist =  (this._curCameraDistance / this._rootCameraDistance);
+        this._brightness = brightnessValueToLumensNormalized((this.magnitude) + frameCache.UI_STARMAP_BRIGHTNESS_SHIFT) / (this._relCameraDist ** 2);
+        this._size = (this._brightness ** frameCache.UI_STARMAP_STAR_SIZE_FACTOR) * frameCache.UI_STARMAP_STAR_MAX_SIZE;
+        this._opacity = (this._brightness ** frameCache.UI_STARMAP_STAR_OPACITY_FACTOR);
+        this._color = rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_STARMAP_STAR_OPACITY_SHIFT));
+    }
     prepare(frameCache) {
         if (this.recalculateScreenFlag) {
             this.recalculateScreen(frameCache);
         }
+
+        this.recalculateSizeOpacityColor(frameCache);
+        
         this._offset[0] = this._cartesian[0] - frameCache.UI_CAMERA_OFFSET_VEC[0];
         this._offset[1] = this._cartesian[1] - frameCache.UI_CAMERA_OFFSET_VEC[1];
         this._offset[2] = this._cartesian[2] - frameCache.UI_CAMERA_OFFSET_VEC[2];
@@ -129,7 +141,7 @@ class Star {
         screenToRenderScreen(this._screen, this._renderNorm, this._renderScreen, frameCache._xOffset, frameCache._yOffset, frameCache._s);
 
         if (this.selected) {
-            this.activeId = frameCache.UI_PLOTCONTAINER_IDSYSTEM ? this.id : this.hd_number;
+            this.activeId = (frameCache.UI_PLOTCONTAINER_IDSYSTEM == 0) ? this.id : this.hd_number;
         }
     }
     render(renderMode) {
@@ -312,13 +324,13 @@ export class StarHandler {
         let minutesDec = Number.parseFloat(row.substr(33, 2));
         let secondsDec = Number.parseFloat(row.substr(36, 5));
 
-        let parallax = isNaN(Number.parseFloat(row.substr(79, 7))) ? 0 : Number.parseFloat(row.substr(79, 7));
+        let parallax = Number.parseFloat(row.substr(79, 7));
         let magnitude = Number.parseFloat(row.substr(41, 5));
         let bv = Number.parseFloat(row.substr(245, 5));
 
         let hd_number = Number.parseInt(row.substr(390, 6));
 
-        if (isNaN(bv) || magnitude < 0)
+        if (isNaN(bv) || isNaN(parallax) || magnitude < 0)
             return;
 
         // "Luminosity Formula for Absolute Magnitude". Max value is 85.5066712885
