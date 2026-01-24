@@ -19,9 +19,10 @@ import {
     UI_STARMAP_FEH_POW,
     UI_STARMAP_VIEWMODE,
     UI_PLOTCONTAINER_FILTERMODE,
-    UI_PLOTCONTAINER_MAXZ
+    UI_PLOTCONTAINER_MAXZ,
+    addUIFunctionMap
 } from "../../ui/UIData.js";
-import { tempToColorForStar } from "../time.js";
+import { gsh, tempToColorForStar } from "../time.js";
 import { calculateDistance, getVec3Length, subtractVectors, subtractVectorsCopy } from "./matrix.js";
 
 // https://resources.wolframcloud.com/FormulaRepository/resources/Luminosity-Formula-for-Absolute-Magnitude
@@ -81,8 +82,7 @@ class Star {
         this._distance = 0;
         this._curCameraDistance = 1
         this._rootCameraDistance = 1;
-        this._curOpacityUpdateFactor = 1;
-        this._prevOpacityUpdatefactor = 1;
+        this._relCameraDist = 1;
         this.recalculateScreenFlag = true;
 
         this.parsecs = Math.abs(1 / (parallax / 1000));
@@ -121,15 +121,21 @@ class Star {
 
     recalculateSizeOpacityColor(frameCache) {
         this._curCameraDistance = calculateDistance(frameCache.UI_CAMERA_OFFSET_VEC, this._cartesian);
-        this._relCameraDist =  (this._curCameraDistance / this._rootCameraDistance);
-        this._brightness = brightnessValueToLumensNormalized((this.magnitude) + frameCache.UI_STARMAP_BRIGHTNESS_SHIFT) / (this._relCameraDist ** 2);
-        this._size = (this._brightness ** frameCache.UI_STARMAP_STAR_SIZE_FACTOR) * frameCache.UI_STARMAP_STAR_MAX_SIZE;
-        this._opacity = (this._brightness ** frameCache.UI_STARMAP_STAR_OPACITY_FACTOR);
-        this._color = rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_STARMAP_STAR_OPACITY_SHIFT));
+        this._relCameraDist = (this._curCameraDistance / this._rootCameraDistance);
+        if (this._prevRelCameraDist == null || this._relCameraDist / this._prevRelCameraDist < 0.9 || this._prevRelCameraDist / this._relCameraDist < 0.9) {
+            this._prevRelCameraDist = this._relCameraDist;
+            this._brightness = brightnessValueToLumensNormalized((this.magnitude) + frameCache.UI_STARMAP_BRIGHTNESS_SHIFT) / (this._relCameraDist ** 2);
+            this._size = (this._brightness ** frameCache.UI_STARMAP_STAR_SIZE_FACTOR) * frameCache.UI_STARMAP_STAR_MAX_SIZE;
+            this._opacity = (this._brightness ** frameCache.UI_STARMAP_STAR_OPACITY_FACTOR);
+            this._color = rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_STARMAP_STAR_OPACITY_SHIFT));
+            
+        }
+
     }
     prepare(frameCache) {
         if (this.recalculateScreenFlag) {
             this.recalculateScreen(frameCache);
+            this._prevRelCameraDist = null;
         }
 
         this.recalculateSizeOpacityColor(frameCache);
