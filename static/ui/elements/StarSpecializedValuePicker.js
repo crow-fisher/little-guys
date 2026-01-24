@@ -19,10 +19,10 @@ export class StarSpecializedValuePicker extends WindowElement {
         ];
         this.valueRanges = [
             [
-                [1, 30], [-.25, .25]
+                [1, 30], [0, .25]
             ], 
             [
-                [-20, 20], [-.55, 1.5]
+                [-20, 20], [-1.5, 1.5]
             ]
         ];
         this.colors = [COLOR_VERY_FUCKING_RED, COLOR_OTHER_BLUE];
