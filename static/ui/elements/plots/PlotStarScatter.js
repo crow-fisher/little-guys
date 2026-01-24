@@ -1,7 +1,7 @@
-import { getSingletonMouseWheelState } from "../../../canvas.js";
+import { getBaseUISize, getSingletonMouseWheelState } from "../../../canvas.js";
 import { getFrameDt, gsh } from "../../../climate/time.js";
 import { COLOR_WHITE } from "../../../colors.js";
-import { calculateStatistics, invlerp, processRangeToOne, rgbToRgba } from "../../../common.js";
+import { calculateStatistics, hexToRgb, invlerp, processRangeToOne, rgbToRgba } from "../../../common.js";
 import { MAIN_CONTEXT } from "../../../index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "../../../keyboard.js";
 import { getLastLastMoveOffset, getLastMouseDownStart, getLastMouseUpEvent, getLastMoveOffset, isLeftMouseClicked } from "../../../mouse.js";
@@ -163,6 +163,12 @@ export class PlotStarScatter extends WindowElement {
             MAIN_CONTEXT.arc(xa, ya, sizeCur, 0, 2 * Math.PI, false);
             MAIN_CONTEXT.fill();
 
+            if (star.selected) {
+                MAIN_CONTEXT.font = getBaseUISize() * 3 + "px courier";
+                MAIN_CONTEXT.fillStyle = hexToRgb(...star.color);       
+                MAIN_CONTEXT.fillText(star.id, xa + getBaseUISize() * 6, ya);
+            }
+
             frameStarsRendered += 1;
         }
 
@@ -194,14 +200,12 @@ export class PlotStarScatter extends WindowElement {
     }
 
     handleClick(posX, posY) {
-        if (this.clickCounter < 2) {
+        if (this.clickCounter != 2) {
             return;
         }
 
         posX -= this.paddingX;
         posY -= this.paddingY;
-
-        console.log(posX, posY);
 
         let closestStar = null;
         let closestStarDist = 25;
@@ -217,8 +221,8 @@ export class PlotStarScatter extends WindowElement {
         }
 
         if (closestStar != null) {
-            closestStar.selected = true;
-
+            closestStar.selected = !closestStar.selected;
+            this.clickCounter += 1;
         }
     }
 
