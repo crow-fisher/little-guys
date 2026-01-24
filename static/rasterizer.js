@@ -1,4 +1,4 @@
-import { fillCanvasPointArr } from "./canvas.js";
+import { fillCanvasPointArr, getBaseUISize } from "./canvas.js";
 import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth, MAIN_CANVAS, MAIN_CONTEXT } from "./index.js";
 
 export class RenderJob {
@@ -20,14 +20,15 @@ export class RenderJob {
     }
 }
 
-export class PointRenderJob extends RenderJob {
-    constructor(x, y, z, size, color) {
+export class PointLabelRenderJob extends RenderJob {
+    constructor(x, y, z, size, color, label) {
         super();
         this.x = x;
         this.y = y;
         this.z = z;
         this.size = Math.max(0, size);
         this.color = color;
+        this.label = label;
     }
 
     isVisible() {
@@ -39,6 +40,11 @@ export class PointRenderJob extends RenderJob {
         MAIN_CONTEXT.fillStyle = this.color;
         MAIN_CONTEXT.arc(this.x, this.y, this.size, 0, 2 * Math.PI, false);
         MAIN_CONTEXT.fill();
+
+        if (this.label) { 
+            MAIN_CONTEXT.font = getBaseUISize() * 3 + "px courier";
+            MAIN_CONTEXT.fillText(this.label, this.x + MAIN_CONTEXT.measureText(this.label).width * 0.65, this.y);
+        }
     }
 
     getZ() {

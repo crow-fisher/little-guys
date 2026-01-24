@@ -1,6 +1,7 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
-import { COLOR_BLUE, COLOR_RED } from "../../colors.js";
+import { gsh } from "../../climate/time.js";
+import { COLOR_BLUE, COLOR_OTHER_BLUE, COLOR_RED } from "../../colors.js";
 import { UI_BIGDOTHOLLOW, UI_BIGDOTSOLID } from "../../common.js";
 import { Component } from "../Component.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
@@ -55,6 +56,10 @@ export class PlotContainerComponent extends Component {
         container.addElement(row3);
         row3.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 2, getBaseUISize() * 3, UI_CENTER, "hipparcos", UI_PLOTCONTAINER_IDSYSTEM, 0, () => COLOR_BLUE, () => COLOR_RED));
         row3.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 2, getBaseUISize() * 3, UI_CENTER, "henry draper", UI_PLOTCONTAINER_IDSYSTEM, 1, () => COLOR_BLUE, () => COLOR_RED));
+        addSpacing();
+        container.addElement(row4);
+        row4.addElement(new Button(this.window, this.plotSizeX / 2, getBaseUISize() * 3, UI_CENTER, () => gsh().stars.forEach((star) => star.selected = false), "clear selection", () => COLOR_OTHER_BLUE))
+        row4.addElement(new Button(this.window, this.plotSizeX / 2, getBaseUISize() * 3, UI_CENTER, () => gsh().stars.forEach((star) => star.selected = star.graphVisible), "select visible", () => COLOR_OTHER_BLUE));
     }
 
     updateSizeX(sizeX) {

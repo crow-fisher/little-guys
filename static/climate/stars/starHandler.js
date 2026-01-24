@@ -2,7 +2,7 @@ import { cartesianToScreenInplace, frameMatrixReset, screenToRenderScreen } from
 import { getCanvasHeight, getCanvasWidth } from "../../canvas.js";
 import { hexToRgb, processColorLerpBicolor, processColorLerpBicolorPow, rgbToRgba, rgbToRgbaObj } from "../../common.js";
 import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth } from "../../index.js";
-import { addRenderJob, LineRenderJob, PointRenderJob } from "../../rasterizer.js";
+import { addRenderJob, LineRenderJob, PointLabelRenderJob } from "../../rasterizer.js";
 import {
     loadGD, UI_STARMAP_ZOOM, UI_STARMAP_CONSTELATION_BRIGHTNESS,
     UI_STARMAP_STAR_MAX_SIZE,
@@ -127,6 +127,10 @@ class Star {
 
         cartesianToScreenInplace(this._offset, this._camera, this._screen);
         screenToRenderScreen(this._screen, this._renderNorm, this._renderScreen, frameCache._xOffset, frameCache._yOffset, frameCache._s);
+
+        if (this.selected) {
+            this.activeId = frameCache.UI_PLOTCONTAINER_IDSYSTEM ? this.id : this.hd_number;
+        }
     }
     render(renderMode) {
         this.fovVisible = false;
@@ -143,11 +147,11 @@ class Star {
 
         this.fovVisible = true;
 
-        addRenderJob(new PointRenderJob(
+        addRenderJob(new PointLabelRenderJob(
             this._renderScreen[0],
             this._renderScreen[1],
             this._screen[2],
-            this._size,  (renderMode == 0 ? this._color : (this.p_feH_color ?? this._color))), false);
+            this._size,  (renderMode == 0 ? this._color : (this.p_feH_color ?? this._color)), this.selected ? this.activeId : null), false);
     }
 }
 
