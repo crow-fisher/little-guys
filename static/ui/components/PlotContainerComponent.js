@@ -60,8 +60,10 @@ export class PlotContainerComponent extends Component {
         addSpacing();
         container.addElement(new Text(this.window, this.plotSizeX, getBaseUISize() * 3, UI_CENTER, "ID number type"))
         container.addElement(row3);
-        row3.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 2, getBaseUISize() * 3, UI_CENTER, "hipparcos", UI_PLOTCONTAINER_IDSYSTEM, 0, () => COLOR_BLUE, () => COLOR_RED));
-        row3.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 2, getBaseUISize() * 3, UI_CENTER, "henry draper", UI_PLOTCONTAINER_IDSYSTEM, 1, () => COLOR_BLUE, () => COLOR_RED));
+        row3.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 3, getBaseUISize() * 3, UI_CENTER, "hipparcos", UI_PLOTCONTAINER_IDSYSTEM, 0, () => COLOR_BLUE, () => COLOR_RED));
+        row3.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 3, getBaseUISize() * 3, UI_CENTER, "henry draper", UI_PLOTCONTAINER_IDSYSTEM, 1, () => COLOR_BLUE, () => COLOR_RED));
+        row3.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 3, getBaseUISize() * 3, UI_CENTER, "none", UI_PLOTCONTAINER_IDSYSTEM, 2, () => COLOR_BLUE, () => COLOR_RED));
+        
         addSpacing();
         container.addElement(row4);
         row4.addElement(new Button(this.window, this.plotSizeX / 2, getBaseUISize() * 3, UI_CENTER, () => gsh().stars.forEach((star) => star.selected = false), "clear selection", () => COLOR_OTHER_BLUE))

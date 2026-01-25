@@ -60,7 +60,7 @@ export class PlotStarScatter extends WindowElement {
             return;
         }
         let opacity = processRangeToOne(loadGD(UI_PLOTCONTAINER_POINTOPACITY) * this.lengthCap);
-
+        let im = loadGD(UI_PLOTCONTAINER_IDSYSTEM);
         let star;
         
         let filteredStars = Array.from(gsh().stars.filter((star) => star.selected || star.localitySelect));
@@ -77,6 +77,8 @@ export class PlotStarScatter extends WindowElement {
             if (star == null) {
                 continue;
             }
+
+            star.activeId = star.getActiveId(im);
 
             let x = star[this.xKey];
             let y = star[this.yKey];

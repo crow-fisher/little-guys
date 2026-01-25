@@ -113,12 +113,24 @@ class Star {
             vfcc, minValue, maxValue, feHMinColor, feHMaxColor, loadGD(UI_STARMAP_FEH_POW)),1);
     }
 
+    getActiveId(im) { 
+        this.im = im ?? this.im;
+        switch (this.im) {
+            case 0:
+                return this.id;
+            case 1:
+                return this.hd_number;
+            case 2:
+            default:
+                return null;
+        }
+    }
 
     recalculateScreen(frameCache) {
         this._distance = this.parsecs * (10 ** frameCache.UI_STARMAP_ZOOM);
         sphericalToCartesianInplace(this._cartesian, frameCache.UI_CAMERA_OFFSET_VEC, -this.asc, -this.dec, this._distance);
         this._rootCameraDistance = getVec3Length(this._cartesian);
-        this.activeId = (frameCache.UI_PLOTCONTAINER_IDSYSTEM == 0 ? this.id : this.hd_number);
+        this.activeId = this.getActiveId(frameCache.UI_PLOTCONTAINER_IDSYSTEM);
         this.recalculateScreenFlag = false;
         this.recalculateFeHColor();
     }
@@ -197,7 +209,7 @@ class Star {
             this._renderScreen[0],
             this._renderScreen[1],
             this._screen[2],
-            this._size,  (renderMode == 0 ? this._color : (this.p_feH_color ?? this._color)), (this.selected || this.localitySelect) ? this.activeId : null), false);
+            this._size,  (renderMode == 0 ? this._color : (this.p_feH_color ?? this._color)), this.getActiveId()), false);
     }
 }
 
