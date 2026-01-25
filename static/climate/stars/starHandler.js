@@ -178,7 +178,6 @@ class Star {
         if (this._screen == null || this._screen[2] < 0) {
             return;
         }
-
         if (this._renderScreen[0] < 0 || this._renderScreen[0] > getTotalCanvasPixelWidth()) {
             return;
         }
@@ -448,7 +447,6 @@ export class StarHandler {
         this.frameCache.prepareFrameCache();
         let mm = loadGD(UI_STARMAP_STAR_MIN_MAGNITUDE);
         let fm = loadGD(UI_PLOTCONTAINER_FILTERMODE_STARS);
-        let cz = (10 ** loadGD(UI_STARMAP_ZOOM));
 
         for (let i = 0; i < this.starIds.length; i++) {
             let id = this.starIds[i];
@@ -465,16 +463,15 @@ export class StarHandler {
             }
             star.prepare(this.frameCache);
 
-            if (fm == 2) {
+            if (fm == 1) {
                 if (!star.graphVisible) {
                     continue;
                 }
-            } else if (fm == 3) {
-                if (!star.selected) {
+            } else if (fm == 2) {
+                if (!(star.selected || star.localitySelect) ) {
                     continue;
                 }
             }
-
             star.render(this.frameCache.UI_STARMAP_VIEWMODE);
         }
     }

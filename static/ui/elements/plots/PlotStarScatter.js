@@ -5,7 +5,7 @@ import { calculateStatistics, hexToRgb, invlerp, processRangeToOne, rgbToRgba } 
 import { MAIN_CONTEXT } from "../../../index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "../../../keyboard.js";
 import { getLastLastMoveOffset, getLastMouseDownStart, getLastMouseUpEvent, getLastMoveOffset, isLeftMouseClicked } from "../../../mouse.js";
-import { loadGD, saveGD, UI_PLOTCONTAINER_AXISLABELS, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_OFFSET_X, UI_PLOTCONTAINER_OFFSET_Y, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_FILTERMODE_STARS, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_XPADDING, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_YPADDING, UI_PLOTCONTAINER_ZOOM_X, UI_PLOTCONTAINER_ZOOM_Y, UI_PLOTCONTAINER_IDSYSTEM } from "../../UIData.js";
+import { loadGD, saveGD, UI_PLOTCONTAINER_AXISLABELS, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_OFFSET_X, UI_PLOTCONTAINER_OFFSET_Y, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_FILTERMODE_STARS, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_XPADDING, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_YPADDING, UI_PLOTCONTAINER_ZOOM_X, UI_PLOTCONTAINER_ZOOM_Y, UI_PLOTCONTAINER_IDSYSTEM, UI_PLOTCONTAINER_FILTERMODE_GRAPH } from "../../UIData.js";
 import { WindowElement } from "../../Window.js";
 
 export class PlotStarScatter extends WindowElement {
@@ -110,14 +110,13 @@ export class PlotStarScatter extends WindowElement {
             this.yS[2],
             this.yS[3]//Math.min(this.yS[3], this.yS[0] + Math.exp(loadGD(UI_PLOTCONTAINER_ZOOM_Y)) * this.yS[1])
         ];
-
         
         this.paddingX = this.sizeX / loadGD(UI_PLOTCONTAINER_XPADDING);
         this.paddingY = this.sizeY / loadGD(UI_PLOTCONTAINER_YPADDING);
 
         let size = Math.exp(loadGD(UI_PLOTCONTAINER_POINTSIZE)), sizeCur = size;
         let x, y, xo, yo, xa, ya, star;
-        let fm = loadGD(UI_PLOTCONTAINER_FILTERMODE_STARS);
+        let fm = loadGD(UI_PLOTCONTAINER_FILTERMODE_GRAPH);
         let im = loadGD(UI_PLOTCONTAINER_IDSYSTEM);
 
         let activeId = null;
@@ -139,6 +138,10 @@ export class PlotStarScatter extends WindowElement {
 
             if (fm == 1) {
                 if (!star.mmVisible || !star.fovVisible) {
+                    continue;
+                }
+            } else if (fm == 2) {
+                if (!(star.selected || star.localitySelect)) {
                     continue;
                 }
             }
