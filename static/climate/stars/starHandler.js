@@ -21,7 +21,8 @@ import {
     UI_PLOTCONTAINER_FILTERMODE_STARS,
     UI_PLOTCONTAINER_SELECTRADIUS,
     addUIFunctionMap,
-    UI_PLOTCONTAINER_LOCALITY_SELECTMODE
+    UI_PLOTCONTAINER_LOCALITY_SELECTMODE,
+    UI_PLOTCONTAINER_IDSYSTEM
 } from "../../ui/UIData.js";
 import { gsh, tempToColorForStar } from "../time.js";
 import { calculateDistance, getVec3Length, subtractVectors, subtractVectorsCopy } from "./matrix.js";
@@ -85,6 +86,7 @@ class Star {
         this._rootCameraDistance = 1;
         this._relCameraDist = 1;
         this.recalculateScreenFlag = true;
+        this.recalculateColorFlag = true;
 
         this.parsecs = Math.abs(1 / (parallax / 1000));
         this.magnitude_absolute = (magnitude + 5) - (5 * Math.log10(this.parsecs));
@@ -116,12 +118,14 @@ class Star {
         this._distance = this.parsecs * (10 ** frameCache.UI_STARMAP_ZOOM);
         sphericalToCartesianInplace(this._cartesian, frameCache.UI_CAMERA_OFFSET_VEC, -this.asc, -this.dec, this._distance);
         this._rootCameraDistance = getVec3Length(this._cartesian);
+        this.activeId = (frameCache.UI_PLOTCONTAINER_IDSYSTEM == 0 ? this.id : this.hd_number);
         this.recalculateScreenFlag = false;
         this.recalculateFeHColor();
     }
 
     recalculateSizeOpacityColor(frameCache) {
-        if (this._prevRelCameraDist == null || this._relCameraDist / this._prevRelCameraDist < 0.9 || this._prevRelCameraDist / this._relCameraDist < 0.9) {
+        if (this._prevRelCameraDist == null || this.recalculateColorFlag || this._relCameraDist / this._prevRelCameraDist < 0.9 || this._prevRelCameraDist / this._relCameraDist < 0.9) {
+            this.recalculateColorFlag = false;
             this._prevRelCameraDist = this._relCameraDist;
             this._brightness = brightnessValueToLumensNormalized((this.magnitude) + frameCache.UI_STARMAP_BRIGHTNESS_SHIFT) / (this._relCameraDist ** 2);
             this._size = (this._brightness ** frameCache.UI_STARMAP_STAR_SIZE_FACTOR) * frameCache.UI_STARMAP_STAR_MAX_SIZE;
@@ -212,6 +216,7 @@ class FrameCache {
         this.UI_STARMAP_VIEWMODE = loadGD(UI_STARMAP_VIEWMODE);
         this.UI_PLOTCONTAINER_LOCALITY_SELECTMODE = loadGD(UI_PLOTCONTAINER_LOCALITY_SELECTMODE);
         this.UI_PLOTCONTAINER_SELECTRADIUS = loadGD(UI_PLOTCONTAINER_SELECTRADIUS);
+        this.UI_PLOTCONTAINER_IDSYSTEM = loadGD(UI_PLOTCONTAINER_IDSYSTEM);
 
         this._cw = getCanvasWidth();
         this._ch = getCanvasHeight();
@@ -234,16 +239,19 @@ export class StarHandler {
     valueWatchTick() {
         this.watchedValues = {
             UI_STARMAP_ZOOM: loadGD(UI_STARMAP_ZOOM),
-            UI_STARMAP_STAR_MAX_SIZE: loadGD(UI_STARMAP_STAR_MAX_SIZE),
-            UI_STARMAP_STAR_SIZE_FACTOR: loadGD(UI_STARMAP_STAR_SIZE_FACTOR),
-            UI_STARMAP_STAR_OPACITY_FACTOR: loadGD(UI_STARMAP_STAR_OPACITY_FACTOR),
-            UI_STARMAP_STAR_OPACITY_SHIFT: loadGD(UI_STARMAP_STAR_OPACITY_SHIFT),
-            UI_STARMAP_BRIGHTNESS_SHIFT: loadGD(UI_STARMAP_BRIGHTNESS_SHIFT),
             UI_STARMAP_SHOW_CONSTELLATION_NAMES: loadGD(UI_STARMAP_SHOW_CONSTELLATION_NAMES),
             UI_STARMAP_FEH_MIN_VALUE: loadGD(UI_STARMAP_FEH_MIN_VALUE),
             UI_STARMAP_FEH_WINDOW_SIZE: loadGD(UI_STARMAP_FEH_WINDOW_SIZE),
             UI_STARMAP_FEH_POW: loadGD(UI_STARMAP_FEH_POW),
             UI_STARMAP_VIEWMODE: loadGD(UI_STARMAP_VIEWMODE),
+        }
+
+        this.colorWatchValues = {
+            UI_STARMAP_STAR_MAX_SIZE: loadGD(UI_STARMAP_STAR_MAX_SIZE),
+            UI_STARMAP_STAR_SIZE_FACTOR: loadGD(UI_STARMAP_STAR_SIZE_FACTOR),
+            UI_STARMAP_STAR_OPACITY_FACTOR: loadGD(UI_STARMAP_STAR_OPACITY_FACTOR),
+            UI_STARMAP_STAR_OPACITY_SHIFT: loadGD(UI_STARMAP_STAR_OPACITY_SHIFT),
+            UI_STARMAP_BRIGHTNESS_SHIFT: loadGD(UI_STARMAP_BRIGHTNESS_SHIFT)
         }
     }
 
@@ -260,11 +268,29 @@ export class StarHandler {
             }
         }
 
+        let setColorFlag = false;
+        for (const [key, prevValue] of Object.entries(this.colorWatchValues)) {
+            if (prevValue == 0) {
+                continue;
+            }
+            let curValueDiff = loadGD(key) / prevValue;
+            if (Math.abs(1 - curValueDiff) > .0001) {
+                setColorFlag = true;
+                break;
+            }
+        }
+
         this.valueWatchTick();
 
         if (setFlag) {
             for (let i = 0; i < this.starIds.length; i++) {
                 this.stars[this.starIds.at(i)].recalculateScreenFlag = true;
+            }
+        }
+
+        if (setColorFlag) {
+            for (let i = 0; i < this.starIds.length; i++) {
+                this.stars[this.starIds.at(i)].recalculateColorFlag = true;
             }
         }
     }

@@ -119,8 +119,6 @@ export class PlotStarScatter extends WindowElement {
         let fm = loadGD(UI_PLOTCONTAINER_FILTERMODE_GRAPH);
         let im = loadGD(UI_PLOTCONTAINER_IDSYSTEM);
 
-        let activeId = null;
-
         let frameStarsRendered = 0;
         for (let i = 0; i < this.lengthCap; i++) {
             star = this.sValues[i];
@@ -169,11 +167,11 @@ export class PlotStarScatter extends WindowElement {
             MAIN_CONTEXT.arc(xa, ya, sizeCur, 0, 2 * Math.PI, false);
             MAIN_CONTEXT.fill();
 
-            if (star.selected) {
+            if (star.selected || star.localitySelect) {
                 MAIN_CONTEXT.font = getBaseUISize() * 3 + "px courier";
                 MAIN_CONTEXT.fillStyle = hexToRgb(...star.color);
-                activeId = (im == 0 ? star.id : star.hd_number);
-                MAIN_CONTEXT.fillText(activeId, xa + MAIN_CONTEXT.measureText(activeId).width * 0.65, ya);
+                star.activeId = (im == 0 ? star.id : star.hd_number);
+                MAIN_CONTEXT.fillText(star.activeId, xa + MAIN_CONTEXT.measureText(star.activeId).width * 0.65, ya);
             }
 
             frameStarsRendered += 1;
