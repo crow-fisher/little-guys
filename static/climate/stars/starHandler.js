@@ -138,26 +138,28 @@ class Star {
     doLocalitySelect(selectMode, selectRadius) {
         if (selectMode == 0) {
             this.localitySelect = false;
-            return;
+            return false;
         } else {
             if (this._relCameraDist * this.parsecs < selectRadius) {
+                if (this.localitySelect)
+                    return false;
                 this.localitySelect = true;
-                return;
+                return true;
             } else {
                 if (selectMode == 2) {
-                    return;
+                    return false;
                 }
             }
         }
         this.localitySelect = false;
-        return;
+        return false;
     }
 
     prepare(frameCache) {
         this._curCameraDistance = calculateDistance(frameCache.UI_CAMERA_OFFSET_VEC, this._cartesian);
         this._relCameraDist = (this._curCameraDistance / this._rootCameraDistance);
         
-        this.doLocalitySelect(frameCache.UI_PLOTCONTAINER_LOCALITY_SELECTMODE, frameCache.UI_PLOTCONTAINER_SELECTRADIUS);
+        frameCache.newStarSelected |= this.doLocalitySelect(frameCache.UI_PLOTCONTAINER_LOCALITY_SELECTMODE, frameCache.UI_PLOTCONTAINER_SELECTRADIUS);
 
         if (this.recalculateScreenFlag) {
             this.recalculateScreen(frameCache);
@@ -224,10 +226,11 @@ class FrameCache {
         this._yOffset = (this._max / this._cw) / 2;
         this._xOffset = (this._max / this._ch) / 2;
         this._s = Math.min(this._cw, this._ch);
+        
+        this.newStarSelected = false;
 
     }
 }
-
 
 export class StarHandler {
     constructor() {

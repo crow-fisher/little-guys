@@ -36,7 +36,13 @@ export class PlotStarScatter extends WindowElement {
         if (gsh()?.stars == null) {
             return;
         }
-
+        
+        if (loadGD(UI_PLOTCONTAINER_FILTERMODE_GRAPH) == 2) {
+            if (gsh()?.frameCache?.newStarSelected) {
+                gsh().frameCache.newStarSelected = false;
+                this.reloadGraph();
+            }
+        }
         if (this.xKey == null || this.yKey == null || this.numStars != gsh().stars.length) {
             this.reloadGraph();
             return;
@@ -47,6 +53,48 @@ export class PlotStarScatter extends WindowElement {
 
         this.renderGraph(startX, startY);
     }
+    
+    reloadGraphSelect() {
+        console.log("reloadGraphSelect");
+        if (this.xKey == null || this.yKey == null || gsh().stars.length == 0) {
+            return;
+        }
+        let opacity = processRangeToOne(loadGD(UI_PLOTCONTAINER_POINTOPACITY) * this.lengthCap);
+
+        let star;
+        
+        let filteredStars = Array.from(gsh().stars.filter((star) => star.selected || star.localitySelect));
+        let filteredStarsIdx = 0;
+
+        for (let i = 0; i < this.lengthCap; i++) {
+            if (filteredStarsIdx < filteredStars.length) {
+                star = filteredStars.at(i);
+            } else {
+                this.sValues[i] = null;
+                continue;
+            }
+
+            if (star == null) {
+                continue;
+            }
+
+            let x = star[this.xKey];
+            let y = star[this.yKey];
+
+            if (isNaN(x) || isNaN(y) || !isFinite(x) || !isFinite(y)) {
+                continue;
+            }
+            this.xValues[i] = x;
+            this.yValues[i] = y;
+            this.sValues[i] = star;
+            this.rValues[i] = rgbToRgba(...star.color, opacity);
+        }
+
+        this.lastFrameStarsRenderedColorCalc = this.lengthCap;
+
+        this.xS = calculateStatistics(this.xValues);
+        this.yS = calculateStatistics(this.yValues);
+    }
 
     reloadGraph() {
         this.xKey = loadGD(UI_PLOTCONTAINER_XKEY);
@@ -56,6 +104,12 @@ export class PlotStarScatter extends WindowElement {
         if (this.xKey == null || this.yKey == null || gsh().stars.length == 0) {
             return;
         }
+
+        if (loadGD(UI_PLOTCONTAINER_FILTERMODE_GRAPH) == 2) {
+            this.reloadGraphSelect();
+            return;
+        }
+
 
         let i = 0;
         let idxMult = gsh().stars.length / (this.lengthCap);
