@@ -15,7 +15,7 @@ import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
 import { SliderGradientBackground } from "../elements/SliderGradientBackground.js";
 import { Text } from "../elements/Text.js";
 import { TextBackground } from "../elements/TextBackground.js";
-import { loadGD, UI_CENTER, loadUI, UI_PALETTE_CLIPS_WAYPOINT_NAME, UI_PALETTE_CLIPS_WAYPOINT_DATAMAP, UI_UI_CURWORLD, UI_PALETTE_CLIPS_WAYPOINT_SELECT, saveGD, UI_PLOTCONTAINER_WIDTH, UI_PLOTCONTAINER_HEIGHT, UI_PLOTCONTAINER_FILTERMODE, UI_PLOTCONTAINER_IDSYSTEM, UI_PLOTCONTAINER_SELECTRADIUS, UI_PLOTCONTAINER_LOCALITY_SELECTMODE } from "../UIData.js";
+import { loadGD, UI_CENTER, loadUI, UI_PALETTE_CLIPS_WAYPOINT_NAME, UI_PALETTE_CLIPS_WAYPOINT_DATAMAP, UI_UI_CURWORLD, UI_PALETTE_CLIPS_WAYPOINT_SELECT, saveGD, UI_PLOTCONTAINER_WIDTH, UI_PLOTCONTAINER_HEIGHT, UI_PLOTCONTAINER_FILTERMODE_STARS, UI_PLOTCONTAINER_IDSYSTEM, UI_PLOTCONTAINER_SELECTRADIUS, UI_PLOTCONTAINER_LOCALITY_SELECTMODE, UI_PLOTCONTAINER_FILTERMODE_GRAPH } from "../UIData.js";
 
 
 export class PlotContainerComponent extends Component {
@@ -43,13 +43,19 @@ export class PlotContainerComponent extends Component {
         let row4 = new Container(this.window, 0, 0);
         let row5 = new Container(this.window, 0, 0);
 
-        container.addElement(row1);
-        container.addElement(row2);
 
-        row1.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 2, getBaseUISize() * 3, UI_CENTER, "show all", UI_PLOTCONTAINER_FILTERMODE, 0, () => COLOR_BLUE, () => COLOR_RED));
-        row1.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 2, getBaseUISize() * 3, UI_CENTER, "filter graph to stars", UI_PLOTCONTAINER_FILTERMODE, 1, () => COLOR_BLUE, () => COLOR_RED));
-        row2.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 2, getBaseUISize() * 3, UI_CENTER, "filter stars to graph", UI_PLOTCONTAINER_FILTERMODE, 2, () => COLOR_BLUE, () => COLOR_RED));
-        row2.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 2, getBaseUISize() * 3, UI_CENTER, "filter stars to selected", UI_PLOTCONTAINER_FILTERMODE, 3, () => COLOR_BLUE, () => COLOR_RED));
+        container.addElement(new Text(this.window, this.plotSizeX, getBaseUISize() * 3, UI_CENTER, "filter graph to"))
+        container.addElement(row1);
+        row1.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 3, getBaseUISize() * 3, UI_CENTER, "(no filter)", UI_PLOTCONTAINER_FILTERMODE_GRAPH, 0, () => COLOR_BLUE, () => COLOR_RED));
+        row1.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 3, getBaseUISize() * 3, UI_CENTER, "visible stars", UI_PLOTCONTAINER_FILTERMODE_GRAPH, 1, () => COLOR_BLUE, () => COLOR_RED));
+        row1.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 3, getBaseUISize() * 3, UI_CENTER, "selected stars", UI_PLOTCONTAINER_FILTERMODE_GRAPH, 2, () => COLOR_BLUE, () => COLOR_RED));
+        
+        
+        container.addElement(new Text(this.window, this.plotSizeX, getBaseUISize() * 3, UI_CENTER, "filter stars to"))
+        container.addElement(row2);
+        row2.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 3, getBaseUISize() * 3, UI_CENTER, "(no filter)", UI_PLOTCONTAINER_FILTERMODE_STARS, 0, () => COLOR_BLUE, () => COLOR_RED));
+        row2.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 3, getBaseUISize() * 3, UI_CENTER, "graphed stars", UI_PLOTCONTAINER_FILTERMODE_STARS, 1, () => COLOR_BLUE, () => COLOR_RED));
+        row2.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 3, getBaseUISize() * 3, UI_CENTER, "selected stars", UI_PLOTCONTAINER_FILTERMODE_STARS, 2, () => COLOR_BLUE, () => COLOR_RED));
 
         addSpacing();
         container.addElement(new Text(this.window, this.plotSizeX, getBaseUISize() * 3, UI_CENTER, "ID number type"))
@@ -64,7 +70,7 @@ export class PlotContainerComponent extends Component {
         addSpacing();
         container.addElement(new Text(this.window, this.plotSizeX, getBaseUISize() * 3, UI_CENTER, "locality select mode"));
         container.addElement(row5);
-        row5.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 3, getBaseUISize() * 3, UI_CENTER, "none", UI_PLOTCONTAINER_LOCALITY_SELECTMODE, 0, () => COLOR_BLUE, () => COLOR_RED));
+        row5.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 3, getBaseUISize() * 3, UI_CENTER, "none", 4, 0, () => COLOR_BLUE, () => COLOR_RED));
         row5.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 3, getBaseUISize() * 3, UI_CENTER, "local", UI_PLOTCONTAINER_LOCALITY_SELECTMODE, 1, () => COLOR_BLUE, () => COLOR_RED));
         row5.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 3, getBaseUISize() * 3, UI_CENTER, "persist", UI_PLOTCONTAINER_LOCALITY_SELECTMODE, 2, () => COLOR_BLUE, () => COLOR_RED));
         

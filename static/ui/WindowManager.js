@@ -64,7 +64,7 @@ export function initUI() {
     all_components.push(new WorldSetupComponent(() => getCanvasWidth() / 2, () => getBaseUISize() * 30, 0, 0, UI_MAIN_NEWWORLD));
     all_components.push(new StargazerComponent(() => topBarComponent.getElementXPositionFunc(0, 7), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_STARGAZER)); 
     
-    plotContainer = new PlotContainerComponent(getBaseUISize() * 80, getBaseUISize() * 30, 0, 0, UI_PLOTCONTAINER_ACTIVE) 
+    plotContainer = new PlotContainerComponent(getBaseUISize() * 90, getBaseUISize() * 30, 0, 0, UI_PLOTCONTAINER_ACTIVE) 
     all_components.push(plotContainer);
     
 }
