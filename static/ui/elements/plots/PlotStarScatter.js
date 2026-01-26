@@ -9,8 +9,8 @@ import { loadGD, saveGD, UI_PLOTCONTAINER_AXISLABELS, UI_PLOTCONTAINER_MAXPOINTS
 import { WindowElement } from "../../Window.js";
 
 export class PlotStarScatter extends WindowElement {
-    constructor(window, sizeX, sizeY) {
-        super(window, sizeX, sizeY);
+    constructor(window, plotSizeX, plotSizeY) {
+        super(window, plotSizeX, plotSizeY);
         this.lengthCap = loadGD(UI_PLOTCONTAINER_MAXPOINTS);
         this.xValues = new Array(this.lengthCap);
         this.yValues = new Array(this.lengthCap);

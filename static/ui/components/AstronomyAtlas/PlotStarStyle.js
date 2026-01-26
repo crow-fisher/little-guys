@@ -1,11 +1,11 @@
-import { getBaseUISize } from "../../canvas.js";
-import { COLOR_BLACK, COLOR_BLUE, COLOR_RED, COLOR_WHITE } from "../../colors.js";
-import { Container } from "../Container.js";
-import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
-import { SliderGradientBackground } from "../elements/SliderGradientBackground.js";
-import { StarSpecializedValuePicker } from "../elements/StarSpecializedValuePicker.js";
-import { Text } from "../elements/Text.js";
-import { UI_CENTER, UI_STARMAP_STAR_MAX_SIZE, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE } from "../UIData.js";
+import { getBaseUISize } from "../../../canvas.js";
+import { COLOR_BLACK, COLOR_BLUE, COLOR_RED, COLOR_WHITE } from "../../../colors.js";
+import { Container } from "../../Container.js";
+import { RadioToggleLabel } from "../../elements/RadioToggleLabel.js";
+import { SliderGradientBackground } from "../../elements/SliderGradientBackground.js";
+import { StarSpecializedValuePicker } from "../../elements/StarSpecializedValuePicker.js";
+import { Text } from "../../elements/Text.js";
+import { UI_CENTER, UI_STARMAP_STAR_MAX_SIZE, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE } from "../../UIData.js";
 
 
 export function addPlotStarStyleToContainer(window, container, sizeX, sizeY) {

@@ -33,16 +33,19 @@ export class Container {
 
         this.elements.forEach((el) => {
             let elSize = el.size()
-            if (elSize[0] == 0 || isNaN(elSize[0] || isNaN(elSize[1]))) {
+            if (isNaN(elSize[0] || isNaN(elSize[1]))) {
                 return;
             }
             el.render(curX, curY);
             this.endX = Math.max(curX + elSize[0], this.endX);
             this.endY = Math.max(curY + elSize[1], this.endY);
-            if (this.dir == 0) {
-                curX += elSize[0] + this.padding;
-            } else {
-                curY += elSize[1] + this.padding;
+
+            if (!el.absolute) {
+                if (this.dir == 0) {
+                    curX += elSize[0] + this.padding;
+                } else {
+                    curY += elSize[1] + this.padding;
+                }
             }
         });
         this.sizeX = this.endX - startX;
@@ -51,26 +54,28 @@ export class Container {
 
     hover(posX, posY) {
         this.window.hovered = true;
-        
+
         let curX1 = 0;
         let curY1 = 0;
         let curX2, curY2;
 
         if (!(this.elements.some((el) => {
             let elSize = el.size();
-            if (elSize[0] == 0) {
-                return;
-            }
             curX2 = curX1 + elSize[0];
             curY2 = curY1 + elSize[1];
+
             if (posX > curX1 && posX < curX2 && posY > curY1 && posY < curY2) {
                 el.hover(posX - curX1, posY - curY1);
                 return true;
+            } 
+
+            if (!el.absolute) {
+                if (this.dir == 0)
+                    curX1 = curX2 + this.padding;
+                else
+                    curY1 = curY2 + this.padding;
             }
-            if (this.dir == 0)
-                curX1 = curX2 + this.padding;
-            else
-                curY1 = curY2 + this.padding;
+
         })));
     }
 

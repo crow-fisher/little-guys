@@ -25,7 +25,7 @@ import { WorldSetupComponent } from "./components/WorldSetupComponent.js";
 import { RockSquare } from "../squares/parameterized/RockSquare.js";
 import { WaterSquare } from "../squares/WaterSquare.js";
 import { StargazerComponent } from "./components/StargazerComponent.js";
-import { PlotContainerComponent } from "./components/PlotContainerComponent.js";
+import { AstronomyAtlasComponent } from "./components/AstronomyAtlas/AstronomyAtlasComponent.js";
 
 let topBarComponent;
 let mainMenuComponent;
@@ -63,7 +63,7 @@ export function initUI() {
     all_components.push(new WeatherSelectionComponent(() => topBarComponent.getElementXPositionFunc(0, 20 - 5), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_WEATHER));
     all_components.push(new WorldSetupComponent(() => getCanvasWidth() / 2, () => getBaseUISize() * 30, 0, 0, UI_MAIN_NEWWORLD));
     all_components.push(new StargazerComponent(() => topBarComponent.getElementXPositionFunc(0, 7), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_STARGAZER)); 
-    plotContainer = new PlotContainerComponent(getBaseUISize() * 90, getBaseUISize() * 30, 0, 0, UI_PLOTCONTAINER_ACTIVE) 
+    plotContainer = new AstronomyAtlasComponent(getBaseUISize() * 90, getBaseUISize() * 30, 0, 0, UI_PLOTCONTAINER_ACTIVE) 
     all_components.push(plotContainer);
     
 }
