@@ -25,9 +25,6 @@ export class StargazerComponent extends LockedComponent {
         let textHeight = getBaseUISize() * 3;
         let sliderHeight = getBaseUISize() * 2;
 
-        container.addElement(new Toggle(this.window, sizeX, textHeight, UI_CENTER, UI_STARGAZER_SETUP, "star setup", () => COLOR_BLUE, () => COLOR_RED));
-        container.addElement(new Toggle(this.window, sizeX, textHeight, UI_CENTER, UI_PLOTCONTAINER_TOOLBOX_STAR_STYLE, "star style", () => COLOR_BLUE, () => COLOR_RED));
-
         container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "field of view"))
         container.addElement(new SliderGradientBackground(this.window, UI_CAMERA_FOV, sizeX, sliderHeight, 20, 160, () => COLOR_WHITE, () => COLOR_BLACK));
 
