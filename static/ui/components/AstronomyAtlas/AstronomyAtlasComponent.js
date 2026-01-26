@@ -14,6 +14,8 @@ import { Text } from "../../elements/Text.js";
 import { TextBackground } from "../../elements/TextBackground.js";
 import { loadGD, UI_CENTER, saveGD, UI_PLOTCONTAINER_WIDTH, UI_PLOTCONTAINER_HEIGHT, UI_PLOTCONTAINER_FILTERMODE_STARS, UI_PLOTCONTAINER_IDSYSTEM_STARS, UI_PLOTCONTAINER_SELECTRADIUS, UI_PLOTCONTAINER_LOCALITY_SELECTMODE, UI_PLOTCONTAINER_FILTERMODE_GRAPH, UI_PLOTCONTAINER_IDSYSTEM_GRAPH, UI_PLOTCONTAINER_HIDECONTROLS, UI_PLOTCONTAINER_TOOLBOX_STAR_STYLE, UI_AA_MODE_SELECT, UI_AA_MODE_PLOT, UI_AA_MODE_SETUP, UI_AA_MODE_STYLE } from "../../UIData.js";
 import { getPlotContainerComponent } from "../../WindowManager.js";
+import { AstronomyAtlasModeFuncPlot } from "./modes/AstronomyAtlasModeFuncPlot.js";
+import { AstronomyAtlasModeFuncSetup } from "./modes/AstronomyAtlasModeFuncSetup.js";
 import { AstronomyAtlasModeFuncStyle } from "./modes/AstronomyAtlasModeFuncStyle.js";
 import { addPlotStarStyleToContainer } from "./PlotStarStyle.js";
 
@@ -57,7 +59,8 @@ export class AstronomyAtlasComponent extends Component {
         container.addElement(styleConditionalContainer);
 
         AstronomyAtlasModeFuncStyle(this.window, styleConditionalContainer, this.sizeX, plotSizeY);
-
+        AstronomyAtlasModeFuncSetup(this.window, setupConditionalContainer, this.sizeX, plotSizeY);
+        AstronomyAtlasModeFuncPlot(this.window, plotConditionalContainer, this.sizeX, plotSizeY);
 
         // row0.addElement(new ButtonFunctionalText(this.window, this.sizeX / 3, getBaseUISize() * 3, UI_CENTER, () => saveGD(UI_PLOTCONTAINER_HIDECONTROLS, (loadGD(UI_PLOTCONTAINER_HIDECONTROLS) + 1) % 2),
         //     () => ["hide", "show"][loadGD(UI_PLOTCONTAINER_HIDECONTROLS)] + " controls", () => [COLOR_RED, COLOR_BLUE][loadGD(UI_PLOTCONTAINER_HIDECONTROLS)]));
