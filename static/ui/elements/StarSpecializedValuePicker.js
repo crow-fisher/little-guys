@@ -1,4 +1,4 @@
-import { COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../colors.js";
+import { COLOR_BLACK, COLOR_BLUE, COLOR_GREEN, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../colors.js";
 import { invlerp, lerp } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
@@ -25,7 +25,7 @@ export class StarSpecializedValuePicker extends WindowElement {
                 [-20, 20], [-1.5, 1.5]
             ]
         ];
-        this.colors = [COLOR_VERY_FUCKING_RED, COLOR_OTHER_BLUE];
+        this.colors = [COLOR_GREEN, "#6d9e6d"]
         this.clicked = [false, false];
 
         this.vX0, this.vY0, this.pX0, this.pY0;
@@ -34,8 +34,8 @@ export class StarSpecializedValuePicker extends WindowElement {
     }
 
     render(startX, startY) {
-        let key, valueRange, color;
-        key = this.keys[0], valueRange = this.valueRanges[0], color = this.colors[0];
+        let key, valueRange;
+        key = this.keys[0], valueRange = this.valueRanges[0];
 
         this.vX0 = loadGD(key[0]);
         this.vY0 = loadGD(key[1]);
@@ -43,11 +43,11 @@ export class StarSpecializedValuePicker extends WindowElement {
         this.pY0 = invlerp(valueRange[1][0], valueRange[1][1], this.vY0);
 
         MAIN_CONTEXT.beginPath();
-        MAIN_CONTEXT.fillStyle = color;
+        MAIN_CONTEXT.fillStyle = this.colors[loadGD(UI_STARMAP_STAR_CONTROL_TOGGLE_MODE)];
         MAIN_CONTEXT.arc(startX + this.pX0 * this.sizeX, startY + this.pY0 * this.sizeY, this.pointSize, 0, 2 * Math.PI, false);
         MAIN_CONTEXT.fill();
 
-        key = this.keys[1], valueRange = this.valueRanges[1], color = this.colors[1];
+        key = this.keys[1], valueRange = this.valueRanges[1];
 
         this.vX1 = loadGD(key[0]);
         this.vY1 = loadGD(key[1]);
@@ -55,9 +55,12 @@ export class StarSpecializedValuePicker extends WindowElement {
         this.pY1 = invlerp(valueRange[1][0], valueRange[1][1], this.vY1);
 
         MAIN_CONTEXT.beginPath();
-        MAIN_CONTEXT.fillStyle = color;
+        MAIN_CONTEXT.fillStyle = this.colors[1 - loadGD(UI_STARMAP_STAR_CONTROL_TOGGLE_MODE)];
         MAIN_CONTEXT.arc(startX + this.pX1 * this.sizeX, startY + this.pY1 * this.sizeY, this.pointSize, 0, 2 * Math.PI, false);
         MAIN_CONTEXT.fill();
+        MAIN_CONTEXT.beginPath();
+
+
     }
 
     hover(posX, posY) {

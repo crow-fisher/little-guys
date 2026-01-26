@@ -7,7 +7,7 @@ import { StarSpecializedValuePicker } from "../elements/StarSpecializedValuePick
 import { Text } from "../elements/Text.js";
 import { Toggle } from "../elements/Toggle.js";
 import { LockedComponent } from "../LockedComponent.js";
-import { UI_CAMERA_FOV, UI_CENTER, UI_STARMAP_CONSTELATION_BRIGHTNESS, UI_STARMAP_STAR_MAX_SIZE, UI_STARMAP_ZOOM, UI_STARMAP_STAR_MIN_MAGNITUDE, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_STARMAP_VIEWMODE, UI_STARMAP_FEH_POW, UI_STARMAP_FEH_WINDOW_SIZE, UI_STARMAP_FEH_MIN_VALUE, UI_PLOTCONTAINER_ACTIVE, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_WIDTH, UI_PLOTCONTAINER_HEIGHT, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_ZOOM_Y, UI_PLOTCONTAINER_ZOOM_X, UI_PLOTCONTAINER_RENDERGRIDLINES, UI_PLOTCONTAINER_AXISLABELS, UI_PLOTCONTAINER_XPADDING, UI_PLOTCONTAINER_YPADDING, UI_PLOTCONTAINER_OFFSET_X, UI_PLOTCONTAINER_OFFSET_Y } from "../UIData.js";
+import { UI_CAMERA_FOV, UI_CENTER, UI_STARMAP_CONSTELATION_BRIGHTNESS, UI_STARMAP_STAR_MAX_SIZE, UI_STARMAP_ZOOM, UI_STARMAP_STAR_MIN_MAGNITUDE, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_STARMAP_VIEWMODE, UI_STARMAP_FEH_POW, UI_STARMAP_FEH_WINDOW_SIZE, UI_STARMAP_FEH_MIN_VALUE, UI_PLOTCONTAINER_ACTIVE, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_WIDTH, UI_PLOTCONTAINER_HEIGHT, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_ZOOM_Y, UI_PLOTCONTAINER_ZOOM_X, UI_PLOTCONTAINER_RENDERGRIDLINES, UI_PLOTCONTAINER_AXISLABELS, UI_PLOTCONTAINER_XPADDING, UI_PLOTCONTAINER_YPADDING, UI_PLOTCONTAINER_OFFSET_X, UI_PLOTCONTAINER_OFFSET_Y, UI_STARGAZER_SETUP, UI_STARGAZER_STYLE } from "../UIData.js";
 
 export const R_COLORS = "🎨";
 export const R_PERCOLATION_RATE = "💦";
@@ -25,6 +25,9 @@ export class StargazerComponent extends LockedComponent {
         let textHeight = getBaseUISize() * 3;
         let sliderHeight = getBaseUISize() * 2;
 
+        container.addElement(new Toggle(this.window, sizeX, textHeight, UI_CENTER, UI_STARGAZER_SETUP, "star setup", () => COLOR_BLUE, () => COLOR_RED));
+        container.addElement(new Toggle(this.window, sizeX, textHeight, UI_CENTER, UI_STARGAZER_STYLE, "star style", () => COLOR_BLUE, () => COLOR_RED));
+
         container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "field of view"))
         container.addElement(new SliderGradientBackground(this.window, UI_CAMERA_FOV, sizeX, sliderHeight, 20, 160, () => COLOR_WHITE, () => COLOR_BLACK));
 
@@ -36,15 +39,6 @@ export class StargazerComponent extends LockedComponent {
 
         container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "filter magnitude"))
         container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_STAR_MIN_MAGNITUDE, sizeX, sliderHeight, 1, 15, () => COLOR_WHITE, () => COLOR_BLACK));
-
-        container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "star size"))
-        container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_STAR_MAX_SIZE, sizeX, sliderHeight, 1, 20, () => COLOR_WHITE, () => COLOR_BLACK));
-
-        container.addElement(new StarSpecializedValuePicker(this.window, sizeX, getBaseUISize() * 12));
-        let row = new Container(this.window, 0, 0);
-        container.addElement(row);
-        row.addElement(new RadioToggleLabel(this.window, half, textHeight, UI_CENTER, "size", UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, 0, () => COLOR_RED, () => COLOR_BLUE));
-        row.addElement(new RadioToggleLabel(this.window, half, textHeight, UI_CENTER, "color", UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, 1, () => COLOR_RED, () => COLOR_BLUE));
 
         container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "FeH min value"))
         container.addElement(new SliderGradientBackground(this.window, UI_STARMAP_FEH_MIN_VALUE, sizeX, sliderHeight, -5, 1, () => COLOR_WHITE, () => COLOR_BLACK));
@@ -64,9 +58,9 @@ export class StargazerComponent extends LockedComponent {
 
         container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "star plot"))
         let row3 = new Container(this.window, 0, 0);
-        container.addElement(row3);
-        row3.addElement(new RadioToggleLabel(this.window, half, textHeight, UI_CENTER, "off", UI_PLOTCONTAINER_ACTIVE, 0, () => COLOR_RED, () => COLOR_BLUE));
+        container.addElement(row3)
         row3.addElement(new RadioToggleLabel(this.window, half, textHeight, UI_CENTER, "on", UI_PLOTCONTAINER_ACTIVE, 1, () => COLOR_RED, () => COLOR_BLUE));
+        row3.addElement(new RadioToggleLabel(this.window, half, textHeight, UI_CENTER, "off", UI_PLOTCONTAINER_ACTIVE, 0, () => COLOR_RED, () => COLOR_BLUE));
 
         container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "number of graph points"))
 
