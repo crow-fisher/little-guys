@@ -75,8 +75,6 @@ export class StargazerComponent extends LockedComponent {
         row5.addElement(new RadioToggleLabel(this.window, half, textHeight, UI_CENTER, "50k", UI_PLOTCONTAINER_MAXPOINTS, 50000, () => COLOR_RED, () => COLOR_BLUE));
         row5.addElement(new RadioToggleLabel(this.window, half, textHeight, UI_CENTER, "all", UI_PLOTCONTAINER_MAXPOINTS, 120000, () => COLOR_RED, () => COLOR_BLUE));
 
-
-
         let row6 = new Container(this.window, 0, 0);
         container.addElement(row6);
         row6.addElement(new Text(this.window, half, textHeight, UI_CENTER, "X"));
