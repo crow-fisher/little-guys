@@ -22,7 +22,7 @@ import {
     UI_PLOTCONTAINER_SELECTRADIUS,
     addUIFunctionMap,
     UI_PLOTCONTAINER_LOCALITY_SELECTMODE,
-    UI_PLOTCONTAINER_IDSYSTEM
+    UI_PLOTCONTAINER_IDSYSTEM_STARS
 } from "../../ui/UIData.js";
 import { gsh, tempToColorForStar } from "../time.js";
 import { calculateDistance, getVec3Length, subtractVectors, subtractVectorsCopy } from "./matrix.js";
@@ -114,19 +114,14 @@ class Star {
     }
 
     getActiveId(im) {
-        if (!(this.localitySelect || this.selected)) {
-            return null;
-        }
-
-        this.im = im ?? this.im;
-        switch (this.im) {
+        switch (im) {
             case 0:
-                return this.id;
+                return null;
             case 1:
-                return this.hd_number;
+                return this.id;
             case 2:
             default:
-                return null;
+                return this.hd_number;
         }
     }
 
@@ -134,7 +129,6 @@ class Star {
         this._distance = this.parsecs * (10 ** frameCache.UI_STARMAP_ZOOM);
         sphericalToCartesianInplace(this._cartesian, frameCache.UI_CAMERA_OFFSET_VEC, -this.asc, -this.dec, this._distance);
         this._rootCameraDistance = getVec3Length(this._cartesian);
-        this.activeId = this.getActiveId(frameCache.UI_PLOTCONTAINER_IDSYSTEM);
         this.recalculateScreenFlag = false;
         this.recalculateFeHColor();
     }
@@ -156,19 +150,18 @@ class Star {
             this.localitySelect = false;
             return false;
         } else {
-            if (this._relCameraDist * this.parsecs < selectRadius) {
+            if (this._curCameraDistance < Math.exp(selectRadius)) {
                 if (this.localitySelect)
                     return false;
                 this.localitySelect = true;
                 return true;
             } else {
-                if (selectMode == 2) {
-                    return false;
+                if (selectMode != 2) {
+                    this.localitySelect = false;
                 }
+                return false;
             }
         }
-        this.localitySelect = false;
-        return false;
     }
 
     prepare(frameCache) {
@@ -192,10 +185,10 @@ class Star {
         screenToRenderScreen(this._screen, this._renderNorm, this._renderScreen, frameCache._xOffset, frameCache._yOffset, frameCache._s);
 
         if (this.selected || this.localitySelect) {
-            this.activeId = (frameCache.UI_PLOTCONTAINER_IDSYSTEM == 0) ? this.id : this.hd_number;
+            this.activeId = (frameCache.UI_PLOTCONTAINER_IDSYSTEM_STARS == 0) ? this.id : this.hd_number;
         }
     }
-    render(renderMode) {
+    render(renderMode, renderLabel) {
         this.fovVisible = false;
         if (this._screen == null || this._screen[2] < 0) {
             return;
@@ -213,7 +206,10 @@ class Star {
             this._renderScreen[0],
             this._renderScreen[1],
             this._screen[2],
-            this._size,  (renderMode == 0 ? this._color : (this.p_feH_color ?? this._color)), this.getActiveId()), false);
+            this._size,  
+            (renderMode == 0 ? this._color : (this.p_feH_color ?? this._color)), 
+            ((renderLabel) && (this.selected || this.localitySelect)) ? this.activeIdStar : null), 
+            false);
     }
 }
 
@@ -234,7 +230,6 @@ class FrameCache {
         this.UI_STARMAP_VIEWMODE = loadGD(UI_STARMAP_VIEWMODE);
         this.UI_PLOTCONTAINER_LOCALITY_SELECTMODE = loadGD(UI_PLOTCONTAINER_LOCALITY_SELECTMODE);
         this.UI_PLOTCONTAINER_SELECTRADIUS = loadGD(UI_PLOTCONTAINER_SELECTRADIUS);
-        this.UI_PLOTCONTAINER_IDSYSTEM = loadGD(UI_PLOTCONTAINER_IDSYSTEM);
 
         this._cw = getCanvasWidth();
         this._ch = getCanvasHeight();
@@ -492,6 +487,7 @@ export class StarHandler {
         this.frameCache.prepareFrameCache();
         let mm = loadGD(UI_STARMAP_STAR_MIN_MAGNITUDE);
         let fm = loadGD(UI_PLOTCONTAINER_FILTERMODE_STARS);
+        let im = loadGD(UI_PLOTCONTAINER_IDSYSTEM_STARS);
 
         for (let i = 0; i < this.starIds.length; i++) {
             let id = this.starIds[i];
@@ -517,7 +513,8 @@ export class StarHandler {
                     continue;
                 }
             }
-            star.render(this.frameCache.UI_STARMAP_VIEWMODE);
+            star.activeIdStar = star.getActiveId(im);
+            star.render(this.frameCache.UI_STARMAP_VIEWMODE, im > 0);
         }
     }
 

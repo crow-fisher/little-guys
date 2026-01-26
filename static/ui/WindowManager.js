@@ -69,6 +69,10 @@ export function initUI() {
     
 }
 
+export function getPlotContainerComponent() {
+    return plotContainer;
+}
+
 export function getMainMenuComponent() {
     return mainMenuComponent;
 }
