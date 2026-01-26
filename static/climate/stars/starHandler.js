@@ -1,6 +1,6 @@
 import { cartesianToScreenInplace, frameMatrixReset, screenToRenderScreen } from "../../camera.js";
 import { getCanvasHeight, getCanvasWidth } from "../../canvas.js";
-import { hexToRgb, processColorLerpBicolor, processColorLerpBicolorPow, rgbToRgba, rgbToRgbaObj } from "../../common.js";
+import { hexToRgb, processColorLerpBicolor, processColorLerpBicolorPow, processRangeToOne, rgbToRgba, rgbToRgbaObj } from "../../common.js";
 import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth } from "../../index.js";
 import { setOrganismAddedThisClick } from "../../manipulation.js";
 import { addRenderJob, LineRenderJob, PointLabelRenderJob } from "../../rasterizer.js";
@@ -141,7 +141,6 @@ class Star {
             this._size = (this._brightness ** frameCache.UI_STARMAP_STAR_SIZE_FACTOR) * frameCache.UI_STARMAP_STAR_MAX_SIZE;
             this._opacity = (this._brightness ** frameCache.UI_STARMAP_STAR_OPACITY_FACTOR);
             this._color = rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_STARMAP_STAR_OPACITY_SHIFT));
-            
         }
     }
 
