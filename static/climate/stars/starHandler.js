@@ -113,7 +113,11 @@ class Star {
             vfcc, minValue, maxValue, feHMinColor, feHMaxColor, loadGD(UI_STARMAP_FEH_POW)),1);
     }
 
-    getActiveId(im) { 
+    getActiveId(im) {
+        if (!(this.localitySelect || this.selected)) {
+            return null;
+        }
+
         this.im = im ?? this.im;
         switch (this.im) {
             case 0:

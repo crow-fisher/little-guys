@@ -50,6 +50,9 @@ export class PlotStarScatter extends WindowElement {
         if (this.xKey != loadGD(UI_PLOTCONTAINER_XKEY) || this.yKey != loadGD(UI_PLOTCONTAINER_YKEY)) {
             this.reloadGraph();
         }
+        if (loadGD(UI_PLOTCONTAINER_FILTERMODE_GRAPH) != 2 && this._modeWasSelect) {
+            this.reloadGraph();
+        }
 
         this.renderGraph(startX, startY);
     }
@@ -109,13 +112,11 @@ export class PlotStarScatter extends WindowElement {
 
         if (loadGD(UI_PLOTCONTAINER_FILTERMODE_GRAPH) == 2) {
             this.reloadGraphSelect();
+            this._modeWasSelect = true;
             return;
         }
 
-
-        let i = 0;
         let idxMult = gsh().stars.length / (this.lengthCap);
-
         let opacity = processRangeToOne(loadGD(UI_PLOTCONTAINER_POINTOPACITY) * this.lengthCap);
 
         let star, iO;

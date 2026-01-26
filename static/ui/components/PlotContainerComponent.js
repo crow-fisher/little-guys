@@ -72,7 +72,7 @@ export class PlotContainerComponent extends Component {
         addSpacing();
         container.addElement(new Text(this.window, this.plotSizeX, getBaseUISize() * 3, UI_CENTER, "locality select mode"));
         container.addElement(row5);
-        row5.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 3, getBaseUISize() * 3, UI_CENTER, "none", 4, 0, () => COLOR_BLUE, () => COLOR_RED));
+        row5.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 3, getBaseUISize() * 3, UI_CENTER, "none", UI_PLOTCONTAINER_LOCALITY_SELECTMODE, 0, () => COLOR_BLUE, () => COLOR_RED));
         row5.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 3, getBaseUISize() * 3, UI_CENTER, "local", UI_PLOTCONTAINER_LOCALITY_SELECTMODE, 1, () => COLOR_BLUE, () => COLOR_RED));
         row5.addElement(new RadioToggleLabel(this.window, this.plotSizeX / 3, getBaseUISize() * 3, UI_CENTER, "persist", UI_PLOTCONTAINER_LOCALITY_SELECTMODE, 2, () => COLOR_BLUE, () => COLOR_RED));
         
