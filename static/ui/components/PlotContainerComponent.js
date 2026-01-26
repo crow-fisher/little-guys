@@ -12,7 +12,8 @@ import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
 import { SliderGradientBackground } from "../elements/SliderGradientBackground.js";
 import { Text } from "../elements/Text.js";
 import { TextBackground } from "../elements/TextBackground.js";
-import { loadGD, UI_CENTER, saveGD, UI_PLOTCONTAINER_WIDTH, UI_PLOTCONTAINER_HEIGHT, UI_PLOTCONTAINER_FILTERMODE_STARS, UI_PLOTCONTAINER_IDSYSTEM_STARS, UI_PLOTCONTAINER_SELECTRADIUS, UI_PLOTCONTAINER_LOCALITY_SELECTMODE, UI_PLOTCONTAINER_FILTERMODE_GRAPH, UI_PLOTCONTAINER_IDSYSTEM_GRAPH, UI_PLOTCONTAINER_HIDECONTROLS, UI_STARGAZER_STYLE } from "../UIData.js";
+import { Toggle } from "../elements/Toggle.js";
+import { loadGD, UI_CENTER, saveGD, UI_PLOTCONTAINER_WIDTH, UI_PLOTCONTAINER_HEIGHT, UI_PLOTCONTAINER_FILTERMODE_STARS, UI_PLOTCONTAINER_IDSYSTEM_STARS, UI_PLOTCONTAINER_SELECTRADIUS, UI_PLOTCONTAINER_LOCALITY_SELECTMODE, UI_PLOTCONTAINER_FILTERMODE_GRAPH, UI_PLOTCONTAINER_IDSYSTEM_GRAPH, UI_PLOTCONTAINER_HIDECONTROLS, UI_PLOTCONTAINER_TOOLBOX_STAR_STYLE } from "../UIData.js";
 import { getPlotContainerComponent } from "../WindowManager.js";
 import { addPlotStarStyleToContainer } from "./PlotStarStyle.js";
 
@@ -33,15 +34,18 @@ export class PlotContainerComponent extends Component {
         container.addElement(new TextBackground(this.window, this.plotSizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""));
         
         let row0 = new Container(this.window, 0, 0);
+        let row00 = new Container(this.window, 0, 0);
         container.addElement(row0);
+        // container.addElement(row00);
+
         row0.addElement(new Button(this.window, this.plotSizeX / 3, getBaseUISize() * 3, UI_CENTER, () => getPlotContainerComponent().plotStarScatter.vr = [0, 1, 0, 1], "reset viewport", () => COLOR_RED))
         row0.addElement(new ButtonFunctionalText(this.window, this.plotSizeX / 3, getBaseUISize() * 3, UI_CENTER, () => saveGD(UI_PLOTCONTAINER_HIDECONTROLS, (loadGD(UI_PLOTCONTAINER_HIDECONTROLS) + 1) % 2),
          () => ["hide", "show"][loadGD(UI_PLOTCONTAINER_HIDECONTROLS)] + " controls",  () => [COLOR_RED, COLOR_BLUE][loadGD(UI_PLOTCONTAINER_HIDECONTROLS)]));
-        row0.addElement(new ButtonFunctionalText(this.window, this.plotSizeX / 3, getBaseUISize() * 3, UI_CENTER, () => saveGD(UI_STARGAZER_STYLE, (loadGD(UI_STARGAZER_STYLE) + 1) % 2),
-         () => ["star style", "close style"][loadGD(UI_STARGAZER_STYLE)],  () => [COLOR_RED, COLOR_BLUE][loadGD(UI_STARGAZER_STYLE)]));
+        row0.addElement(new ButtonFunctionalText(this.window, this.plotSizeX / 3, getBaseUISize() * 3, UI_CENTER, () => saveGD(UI_PLOTCONTAINER_TOOLBOX_STAR_STYLE, (loadGD(UI_PLOTCONTAINER_TOOLBOX_STAR_STYLE) + 1) % 2),
+         () => ["star style", "close style"][loadGD(UI_PLOTCONTAINER_TOOLBOX_STAR_STYLE)],  () => [COLOR_RED, COLOR_BLUE][loadGD(UI_PLOTCONTAINER_TOOLBOX_STAR_STYLE)]));
 
-        let plotContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_STARGAZER_STYLE) == 0);
-        let styleContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_STARGAZER_STYLE) == 1);
+        let plotContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_PLOTCONTAINER_TOOLBOX_STAR_STYLE) == 0);
+        let styleContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_PLOTCONTAINER_TOOLBOX_STAR_STYLE) == 1);
 
         container.addElement(styleContainer);
         container.addElement(plotContainer);

@@ -109,8 +109,9 @@ class Star {
         if (isNaN(this.p_feH)) {
             console.warn("????");
         }
-        this.p_feH_color = rgbToRgbaObj(processColorLerpBicolorPow(
-            vfcc, minValue, maxValue, feHMinColor, feHMaxColor, loadGD(UI_STARMAP_FEH_POW)),1);
+        this.p_feH_color_obj = processColorLerpBicolorPow(
+            vfcc, minValue, maxValue, feHMinColor, feHMaxColor, loadGD(UI_STARMAP_FEH_POW));
+        this.p_feH_color = rgbToRgbaObj(this.p_feH_color_obj, 1);
     }
 
     getActiveId(im) {
