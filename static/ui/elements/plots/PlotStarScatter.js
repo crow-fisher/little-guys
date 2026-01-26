@@ -397,8 +397,8 @@ export class PlotStarScatter extends WindowElement {
         let sX = 1 / (this.vr[1] - this.vr[0]);
         let sY = 1 / (this.vr[3] - this.vr[2]);
 
-        let xdiff = (sX ** 0.5) * (this.vr[1] - this.vr[0]);
-        let ydiff = (sY ** 0.5) * (this.vr[3] - this.vr[2]);
+        let xdiff = (sX) * (this.vr[1] - this.vr[0]);
+        let ydiff = (sY) * (this.vr[3] - this.vr[2]);
 
         if (shouldX) {
             this.vr[0] = this.vr[0] + xdiff * offset * mpx;
