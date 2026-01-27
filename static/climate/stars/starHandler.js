@@ -121,7 +121,7 @@ class Star {
 
         let v = invlerp(minValue, maxValue, valNorm) ** powValue;
         this.alt_color_obj = combineColorMult(feHMinColor, feHMaxColor, v);
-        this.alt_color = rgbToRgbaObj(this.alt_color_obj, this._opacity);
+        this.alt_color = rgbToRgbaObj(this.alt_color_obj, this._opacity ?? 1);
     }
 
     getActiveId(im) {
@@ -523,10 +523,8 @@ export class StarHandler {
                 continue;
             } else {
                 star.mmVisible = true;
-            }
-            if (this.frameCache.UI_STARMAP_VIEWMODE == 1 && star.p_feH == null) {
-                continue;
-            }
+            } 
+            
             star.prepare(this.frameCache);
 
             if (fm == 1) {
