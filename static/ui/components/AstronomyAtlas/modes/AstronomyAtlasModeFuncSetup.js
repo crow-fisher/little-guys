@@ -61,7 +61,7 @@ export function AstronomyAtlasModeFuncSetup(window, container, sizeX, sizeY) {
     let powRow = new Container(window, 0, 0);
     let multRow = new Container(window, 0, 0);
 
-    let f1 = .25
+    let f1 = .25;
     let f2 = 2 / 3;
 
     let specialModeControlConditionalContainer = new ConditionalContainer(window, 0, 1, () => loadGD(UI_AA_SETUP_COLORMODE) != "default");
