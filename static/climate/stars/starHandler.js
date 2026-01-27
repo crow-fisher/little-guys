@@ -587,7 +587,6 @@ export class StarHandler {
                     continue;
                 }
             }
-            star.activeIdStar = star.getActiveId(im);
             star.render(sm, im > 0);
         }
     }

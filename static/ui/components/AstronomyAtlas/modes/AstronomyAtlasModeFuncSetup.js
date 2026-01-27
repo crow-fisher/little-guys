@@ -106,7 +106,6 @@ export function AstronomyAtlasModeFuncSetup(window, container, sizeX, sizeY) {
          () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
 }
 
-
 let rsag = () => {
     gsh().stars.forEach((star) => star.recalculateAltColor());
     getAstronomyAtlasComponent().plotStarScatter._shouldRecalculateColor = true;

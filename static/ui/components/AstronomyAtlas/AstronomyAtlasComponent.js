@@ -18,6 +18,7 @@ import { loadGD, UI_CENTER, saveGD, UI_PLOTCONTAINER_WIDTH, UI_PLOTCONTAINER_HEI
 import { getAstronomyAtlasComponent } from "../../WindowManager.js";
 import { AstronomyAtlasModeFuncLabel } from "./modes/AstronomyAtlasModeFuncLabel.js";
 import { AstronomyAtlasModeFuncPlot } from "./modes/AstronomyAtlasModeFuncPlot.js";
+import { AstronomyAtlasModeFuncSelect } from "./modes/AstronomyAtlasModeFuncSelect.js";
 import { AstronomyAtlasModeFuncSetup } from "./modes/AstronomyAtlasModeFuncSetup.js";
 import { AstronomyAtlasModeFuncStyle } from "./modes/AstronomyAtlasModeFuncStyle.js";
 import { addPlotStarStyleToContainer } from "./PlotStarStyle.js";
@@ -40,6 +41,7 @@ export class AstronomyAtlasComponent extends Component {
         let half = this.sizeX / 2;
         let third = this.sizeX / 3;
         let fourth = this.sizeX / 4;
+        let fifth = this.sizeX / 5;
 
         let addSpacing = () => container.addElement(new Text(this.window, this.sizeX, br, UI_CENTER, ""));
 
@@ -50,25 +52,29 @@ export class AstronomyAtlasComponent extends Component {
         let modeSelectRow = new Container(this.window, 0, 0);
         container.addElement(modeSelectRow);
 
-        modeSelectRow.addElement(new Toggle(this.window, fourth, h2, UI_CENTER, UI_AA_MODE_PLOT, "plot", () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
-        modeSelectRow.addElement(new Toggle(this.window, fourth, h2, UI_CENTER, UI_AA_MODE_LABEL, "label", () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
-        modeSelectRow.addElement(new Toggle(this.window, fourth, h2, UI_CENTER, UI_AA_MODE_SETUP, "setup", () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
-        modeSelectRow.addElement(new Toggle(this.window, fourth, h2, UI_CENTER, UI_AA_MODE_STYLE, "style", () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
+        modeSelectRow.addElement(new Toggle(this.window, fifth, h2, UI_CENTER, UI_AA_MODE_PLOT, "plot", () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
+        modeSelectRow.addElement(new Toggle(this.window, fifth, h2, UI_CENTER, UI_AA_MODE_LABEL, "label", () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
+        modeSelectRow.addElement(new Toggle(this.window, fifth, h2, UI_CENTER, UI_AA_MODE_SETUP, "setup", () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
+        modeSelectRow.addElement(new Toggle(this.window, fifth, h2, UI_CENTER, UI_AA_MODE_STYLE, "style", () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
+        modeSelectRow.addElement(new Toggle(this.window, fifth, h2, UI_CENTER, UI_AA_MODE_SELECT, "select", () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
 
         let plotConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_AA_MODE_PLOT));
         let labelConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_AA_MODE_LABEL));
         let setupConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_AA_MODE_SETUP));
         let styleConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_AA_MODE_STYLE));
+        let selectConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_AA_MODE_SELECT));
 
         container.addElement(plotConditionalContainer);
         container.addElement(labelConditionalContainer);
         container.addElement(setupConditionalContainer);
         container.addElement(styleConditionalContainer);
+        container.addElement(selectConditionalContainer);
 
         AstronomyAtlasModeFuncPlot(this, plotConditionalContainer, this.sizeX, plotSizeY);
         AstronomyAtlasModeFuncLabel(this.window, labelConditionalContainer, this.sizeX, plotSizeY);
         AstronomyAtlasModeFuncSetup(this.window, setupConditionalContainer, this.sizeX, plotSizeY);
         AstronomyAtlasModeFuncStyle(this.window, styleConditionalContainer, this.sizeX, plotSizeY);
+        AstronomyAtlasModeFuncSelect(this.window, selectConditionalContainer, this.sizeX, plotSizeY);
 
         // row0.addElement(new ButtonFunctionalText(this.window, this.sizeX / 3, getBaseUISize() * 3, UI_CENTER, () => saveGD(UI_PLOTCONTAINER_HIDECONTROLS, (loadGD(UI_PLOTCONTAINER_HIDECONTROLS) + 1) % 2),
         //     () => ["hide", "show"][loadGD(UI_PLOTCONTAINER_HIDECONTROLS)] + " controls", () => [COLOR_RED, COLOR_BLUE][loadGD(UI_PLOTCONTAINER_HIDECONTROLS)]));
