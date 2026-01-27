@@ -44,8 +44,8 @@ function sphericalToCartesianInplace(target, cameraOffset, yaw, pitch, m) {
     target[2] = m * Math.sin(yaw) * Math.cos(pitch) + cameraOffset[2]
 }
 
-let feHMinColor = hexToRgb("#99ffd8");
-let feHMaxColor = hexToRgb("#be20e6");
+const feHMinColor = hexToRgb("#99ffd8");
+const feHMaxColor = hexToRgb("#be20e6");
 
 class Constellation {
     constructor(data) {
@@ -103,25 +103,27 @@ class Star {
     }
 
     recalculateAltColor() {
-        let curKey = loadGD(UI_AA_SETUP_COLORMODE);
-
-        if (curKey == null || curKey == "default") {
+        this._rac_curKey = loadGD(UI_AA_SETUP_COLORMODE);
+        if (this._rac_curKey == null || this._rac_curKey == "default") {
             return;
         }
 
-        let st = gsh().paramStatistics.get(curKey);
-        let val = this[curKey];
+        this._rac_st = gsh().paramStatistics.get(this._rac_curKey);
+        this._rac_val = this[this._rac_curKey];
+        this._rac_valNorm = invlerp(this._rac_st[2], this._rac_st[3], this._rac_val);
+        this._rac_minValue = loadGD(UI_AA_SETUP_MIN);
+        this._rac_windowSize = loadGD(UI_AA_SETUP_WINDOW_SIZE);
+        this._rac_maxValue = lerp(this._rac_minValue, 1, this._rac_windowSize);
+        this._rac_powValue = loadGD(UI_AA_SETUP_POW);
 
-        let valNorm = invlerp(st[2], st[3], val);
-
-        let minValue = loadGD(UI_AA_SETUP_MIN);
-        let windowSize = loadGD(UI_AA_SETUP_WINDOW_SIZE);
-        let maxValue = lerp(minValue, 1, windowSize);
-        let powValue = loadGD(UI_AA_SETUP_POW);
-
-        let v = invlerp(minValue, maxValue, valNorm) ** powValue;
-        this.alt_color_obj = combineColorMult(feHMinColor, feHMaxColor, v);
+        this._rac_valNorm = Math.max(this._rac_valNorm, this._rac_minValue);
+        this._rac_valNorm = Math.min(this._rac_valNorm, this._rac_maxValue);
+        
+        this._rac_v = invlerp(this._rac_minValue, this._rac_maxValue, this._rac_valNorm) ** this._rac_powValue;
+        
+        this.alt_color_obj = combineColorMult(feHMinColor, feHMaxColor, this._rac_v);
         this.alt_color = rgbToRgbaObj(this.alt_color_obj, this._opacity ?? 1);
+
     }
 
     getActiveId(im) {
@@ -152,6 +154,10 @@ class Star {
             this._size = (this._brightness ** frameCache.UI_STARMAP_STAR_SIZE_FACTOR) * frameCache.UI_STARMAP_STAR_MAX_SIZE;
             this._opacity = (this._brightness ** frameCache.UI_STARMAP_STAR_OPACITY_FACTOR);
             this._color = rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_STARMAP_STAR_OPACITY_SHIFT));
+            
+            
+            if (this.alt_color_obj != null)
+                this.alt_color = rgbToRgbaObj(this.alt_color_obj, this._opacity ?? 1);
         }
     }
 
@@ -211,15 +217,17 @@ class Star {
         }
 
         this.fovVisible = true;
+        this.renderColor = (renderMode == "default") ? this._color : this.alt_color;
 
-        addRenderJob(new PointLabelRenderJob(
-            this._renderScreen[0],
-            this._renderScreen[1],
-            this._screen[2],
-            this._size,
-            (renderMode == "default" ? this._color : (this.alt_color ?? this._color)),
-            ((renderLabel) && (this.selected || this.localitySelect)) ? this.activeIdStar : null),
-            false);
+        if (this.renderColor != null)
+            addRenderJob(new PointLabelRenderJob(
+                this._renderScreen[0],
+                this._renderScreen[1],
+                this._screen[2],
+                this._size,
+                this.renderColor,
+                ((renderLabel) && (this.selected || this.localitySelect)) ? this.activeIdStar : null),
+                false);
     }
 }
 
@@ -454,6 +462,8 @@ export class StarHandler {
         for (let i = 0; i < rows.length; i++) {
             this.loadPASTELRow(rows.at(i));
         }
+        let st = calculateStatistics(this.stars.map((s) => s.p_feH).filter((v) => v != null));
+        this.paramStatistics.set("p_feH", st);
     }
 
     loadPASTELRow(row) {
@@ -466,9 +476,6 @@ export class StarHandler {
                 let hdId = Number.parseInt(designationParts[1]);
                 if (this.hdMap.has(hdId)) {
                     this.hdMap.get(hdId).setFeH(feH);
-                    // console.log("Set FeH ", feH, " for HIP star ", this.hdMap.get(hdId).id);
-                } else {
-                    // console.log("HD Lookup failed for PASTEL designation " + designation);
                 }
             }
 
