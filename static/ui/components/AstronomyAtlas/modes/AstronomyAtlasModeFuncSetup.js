@@ -16,7 +16,7 @@ import { getAstronomyAtlasComponent } from "../../../WindowManager.js";
 
 export const astronomyAtlasSetupChoices = [
     [["default", "Temperature"], ["magnitude", "Rel. Mag"], ["magnitude_absolute", "Abs. Mag"]],
-    [["p_feH", "Metallicity"], ["parallax", "Parallax"], ["parsecs", "Parsecs"]]
+    [["p_feH", "Metallicity"], ["parallax", "Parallax"], ["parsecs_log", "Parsecs (log)"]]
 ];
 
 export const unitMap = new Map();
@@ -88,7 +88,7 @@ export function AstronomyAtlasModeFuncSetup(window, container, sizeX, sizeY) {
         () => (loadGD(UI_AA_SETUP_WINDOW_SIZE) * 100).toFixed(2) + "%", () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
 
     powRow.addElement(new Text(window, sizeX * f1, textHeight, UI_CENTER, "power"));
-    powRow.addElement(new SliderGradientBackground(window, UI_AA_SETUP_POW, sizeX * (f2 - f1), textHeight, -1, 1, () => COLOR_BLACK, () => COLOR_WHITE));
+    powRow.addElement(new SliderGradientBackground(window, UI_AA_SETUP_POW, sizeX * (f2 - f1), textHeight, -1, 5, () => COLOR_BLACK, () => COLOR_WHITE));
     powRow.addElement(new ToggleFunctionalText(window, sizeX * (1 - f2), textHeight, UI_CENTER, UI_AA_SETUP_DISPLAYTYPE_MAX,
         () =>(loadGD(UI_AA_SETUP_POW)).toFixed(2) + "", () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
 
@@ -100,22 +100,22 @@ export function AstronomyAtlasModeFuncSetup(window, container, sizeX, sizeY) {
          () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
 
     nameMultRow.addElement(new Text(window, sizeX * f1, textHeight, UI_CENTER, "named stars"));
-    nameMultRow.addElement(new SliderGradientBackground(window, UI_AA_SETUP_NAME_MULT, sizeX * (f2 - f1), textHeight, -10, 10, () => COLOR_BLACK, () => COLOR_WHITE));
+    nameMultRow.addElement(new SliderGradientBackground(window, UI_AA_SETUP_NAME_MULT, sizeX * (f2 - f1), textHeight, 0, 10, () => COLOR_BLACK, () => COLOR_WHITE));
     nameMultRow.addElement(new ToggleFunctionalText(window, sizeX * (1 - f2), textHeight, UI_CENTER, UI_AA_SETUP_DISPLAYTYPE_NAME_MULT,
         () => 
-            (loadGD(UI_AA_SETUP_DISPLAYTYPE_NAME_MULT) ? (processRangeToOne(loadGD(UI_AA_SETUP_NAME_MULT))) : loadGD(UI_AA_SETUP_NAME_MULT)).toFixed(2) + "",
+            (loadGD(UI_AA_SETUP_DISPLAYTYPE_NAME_MULT) ? 1 + Math.exp(loadGD(UI_AA_SETUP_NAME_MULT)) : loadGD(UI_AA_SETUP_NAME_MULT)).toFixed(2) + "",
          () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
 }
 
-let rsag = () => {
+export function triggerStarColorRecalculation() {
     gsh().stars.forEach((star) => {star.recalculateAltColor(); star.recalculateColorFlag = true});
     getAstronomyAtlasComponent().plotStarScatter._shouldRecalculateColor = true;
     gsh().resetStarLabels();
 }
 
-addUIFunctionMap(UI_AA_SETUP_COLORMODE, rsag);
-addUIFunctionMap(UI_AA_SETUP_MIN, rsag);
-addUIFunctionMap(UI_AA_SETUP_WINDOW_SIZE, rsag);
-addUIFunctionMap(UI_AA_SETUP_POW, rsag);
-addUIFunctionMap(UI_AA_SETUP_MULT, rsag);
-addUIFunctionMap(UI_AA_SETUP_NAME_MULT, rsag);
+addUIFunctionMap(UI_AA_SETUP_COLORMODE, triggerStarColorRecalculation);
+addUIFunctionMap(UI_AA_SETUP_MIN, triggerStarColorRecalculation);
+addUIFunctionMap(UI_AA_SETUP_WINDOW_SIZE, triggerStarColorRecalculation);
+addUIFunctionMap(UI_AA_SETUP_POW, triggerStarColorRecalculation);
+addUIFunctionMap(UI_AA_SETUP_MULT, triggerStarColorRecalculation);
+addUIFunctionMap(UI_AA_SETUP_NAME_MULT, triggerStarColorRecalculation);

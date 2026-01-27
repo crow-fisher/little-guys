@@ -43,7 +43,7 @@ export class PointLabelRenderJob extends RenderJob {
 
         if (this.label) { 
             MAIN_CONTEXT.font = getBaseUISize() * 3 + "px courier";
-            MAIN_CONTEXT.fillText(this.label, this.x + MAIN_CONTEXT.measureText(this.label).width * 0.65, this.y);
+            MAIN_CONTEXT.fillText(this.label, this.x + getBaseUISize() * 3, this.y);
         }
     }
 

@@ -6,7 +6,8 @@ import { RadioToggleLabel } from "../../../elements/RadioToggleLabel.js";
 import { SliderGradientBackground } from "../../../elements/SliderGradientBackground.js";
 import { StarSpecializedValuePicker } from "../../../elements/StarSpecializedValuePicker.js";
 import { Text } from "../../../elements/Text.js";
-import { UI_CENTER, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_STARMAP_STAR_MAX_SIZE } from "../../../UIData.js";
+import { addUIFunctionMap, UI_CENTER, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_STARMAP_STAR_MAX_SIZE, UI_STARMAP_STAR_MIN_SIZE } from "../../../UIData.js";
+import { triggerStarColorRecalculation } from "./AstronomyAtlasModeFuncSetup.js";
 
 export function AstronomyAtlasModeFuncStyle(window, container, sizeX, sizeY) {
     let half = sizeX / 2;
@@ -20,4 +21,9 @@ export function AstronomyAtlasModeFuncStyle(window, container, sizeX, sizeY) {
          () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
     container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "base size"))
     container.addElement(new SliderGradientBackground(window, UI_STARMAP_STAR_MAX_SIZE, sizeX, textHeight, 1, 20, () => COLOR_BLACK, () => COLOR_WHITE));
+    container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "min size"))
+    container.addElement(new SliderGradientBackground(window, UI_STARMAP_STAR_MIN_SIZE, sizeX, textHeight, -1, 1, () => COLOR_BLACK, () => COLOR_WHITE));
 }
+
+addUIFunctionMap(UI_STARMAP_STAR_MAX_SIZE, triggerStarColorRecalculation);
+addUIFunctionMap(UI_STARMAP_STAR_MIN_SIZE, triggerStarColorRecalculation);

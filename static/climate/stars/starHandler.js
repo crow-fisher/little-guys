@@ -32,7 +32,8 @@ import {
     UI_AA_LABEL_GRAPH,
     UI_PLOTCONTAINER_XKEY,
     UI_PLOTCONTAINER_YKEY,
-    UI_AA_SETUP_NAME_MULT
+    UI_AA_SETUP_NAME_MULT,
+    UI_STARMAP_STAR_MIN_SIZE
 } from "../../ui/UIData.js";
 import { getAstronomyAtlasComponent } from "../../ui/WindowManager.js";
 import { gsh, tempToColorForStar } from "../time.js";
@@ -181,10 +182,16 @@ class Star {
             this.recalculateColorFlag = false;
             this._prevRelCameraDist = this._relCameraDist;
             this._brightness = (this.name != null ? frameCache.namedStarOpacityMult : 1) * brightnessValueToLumensNormalized((this.magnitude) + frameCache.UI_STARMAP_BRIGHTNESS_SHIFT) / (this._relCameraDist ** 2);
+
             this._size = (this._brightness ** frameCache.UI_STARMAP_STAR_SIZE_FACTOR) * frameCache.UI_STARMAP_STAR_MAX_SIZE;
             this._opacity = (this._brightness ** frameCache.UI_STARMAP_STAR_OPACITY_FACTOR);
             this._color = rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_STARMAP_STAR_OPACITY_SHIFT));
 
+            if (this._size < frameCache.starMinSize) {
+                this._brightnessVisible = false;
+            } else {
+                this._brightnessVisible = true;
+            }
             this.recalculateAltColor();
             if (this.alt_color_arr != null)
                 this.alt_color = rgbToRgba(...this.alt_color_arr, this._opacity * frameCache.UI_AA_SETUP_MULT ?? 1);
@@ -235,6 +242,10 @@ class Star {
         }
     }
     render(renderMode, renderLabel) {
+        if (!this._brightnessVisible) {
+            return;
+        }
+
         this._fovVisible = false;
         if (this._screen == null || this._screen[2] < 0) {
             return;
@@ -279,7 +290,8 @@ class FrameCache {
         this.UI_PLOTCONTAINER_LOCALITY_SELECTMODE = loadGD(UI_PLOTCONTAINER_LOCALITY_SELECTMODE);
         this.UI_PLOTCONTAINER_SELECTRADIUS = loadGD(UI_PLOTCONTAINER_SELECTRADIUS);
         this.UI_AA_SETUP_MULT = Math.exp(loadGD(UI_AA_SETUP_MULT));
-        this.namedStarOpacityMult = Math.exp(loadGD(UI_AA_SETUP_NAME_MULT));
+        this.namedStarOpacityMult = 1 + Math.exp(loadGD(UI_AA_SETUP_NAME_MULT));
+        this.starMinSize = Math.exp(loadGD(UI_STARMAP_STAR_MIN_SIZE));
 
         this._cw = getCanvasWidth();
         this._ch = getCanvasHeight();
