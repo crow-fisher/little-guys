@@ -32,7 +32,7 @@ let mainMenuComponent;
 let blockPalette;
 let all_components;
 let playerSetup;
-let plotContainer;
+let astronomyAtlas;
 
 all_components = [];
 topBarComponent = new TopBarComponent("UI_TOPBAR");
@@ -63,13 +63,13 @@ export function initUI() {
     all_components.push(new WeatherSelectionComponent(() => topBarComponent.getElementXPositionFunc(0, 20 - 5), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_WEATHER));
     all_components.push(new WorldSetupComponent(() => getCanvasWidth() / 2, () => getBaseUISize() * 30, 0, 0, UI_MAIN_NEWWORLD));
     all_components.push(new StargazerComponent(() => topBarComponent.getElementXPositionFunc(0, 7), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_STARGAZER)); 
-    plotContainer = new AstronomyAtlasComponent(getBaseUISize() * 90, getBaseUISize() * 30, 0, 0, UI_PLOTCONTAINER_ACTIVE) 
-    all_components.push(plotContainer);
+    astronomyAtlas = new AstronomyAtlasComponent(getBaseUISize() * 90, getBaseUISize() * 30, 0, 0, UI_PLOTCONTAINER_ACTIVE) 
+    all_components.push(astronomyAtlas);
     
 }
 
-export function getPlotContainerComponent() {
-    return plotContainer;
+export function getAstronomyAtlasComponent() {
+    return astronomyAtlas;
 }
 
 export function getMainMenuComponent() {
@@ -277,14 +277,14 @@ export function renderMouseHover() {
 
 addUIFunctionMap(UI_PALETTE_COMPOSITION, clearMouseHoverColorCacheMap);
 
-addUIFunctionMap(UI_PLOTCONTAINER_MAXPOINTS, () => plotContainer.updatePlotContainers())
-addUIFunctionMap(UI_PLOTCONTAINER_XKEY, () => plotContainer.updatePlotContainers())
-addUIFunctionMap(UI_PLOTCONTAINER_YKEY, () => plotContainer.updatePlotContainers())
-addUIFunctionMap(UI_PLOTCONTAINER_POINTOPACITY, () => plotContainer.updatePlotContainers())
+addUIFunctionMap(UI_PLOTCONTAINER_MAXPOINTS, () => astronomyAtlas.updatePlotContainers())
+addUIFunctionMap(UI_PLOTCONTAINER_XKEY, () => astronomyAtlas.updatePlotContainers())
+addUIFunctionMap(UI_PLOTCONTAINER_YKEY, () => astronomyAtlas.updatePlotContainers())
+addUIFunctionMap(UI_PLOTCONTAINER_POINTOPACITY, () => astronomyAtlas.updatePlotContainers())
 
-addUIFunctionMap(UI_PLOTCONTAINER_WIDTH, () => plotContainer.updateSizeX(loadGD(UI_PLOTCONTAINER_WIDTH)));
-addUIFunctionMap(UI_PLOTCONTAINER_HEIGHT, () => plotContainer.plotStarScatter.updateSizeY(loadGD(UI_PLOTCONTAINER_HEIGHT)));
-addUIFunctionMap(UI_STARMAP_VIEWMODE, () => plotContainer.updatePlotContainers());
-addUIFunctionMap(UI_STARMAP_FEH_MIN_VALUE, () => plotContainer.updatePlotContainers());
-addUIFunctionMap(UI_STARMAP_FEH_WINDOW_SIZE, () => plotContainer.updatePlotContainers());
-addUIFunctionMap(UI_STARMAP_FEH_POW, () => plotContainer.updatePlotContainers());
+addUIFunctionMap(UI_PLOTCONTAINER_WIDTH, () => astronomyAtlas.updateSizeX(loadGD(UI_PLOTCONTAINER_WIDTH)));
+addUIFunctionMap(UI_PLOTCONTAINER_HEIGHT, () => astronomyAtlas.plotStarScatter.updateSizeY(loadGD(UI_PLOTCONTAINER_HEIGHT)));
+addUIFunctionMap(UI_STARMAP_VIEWMODE, () => astronomyAtlas.updatePlotContainers());
+addUIFunctionMap(UI_STARMAP_FEH_MIN_VALUE, () => astronomyAtlas.updatePlotContainers());
+addUIFunctionMap(UI_STARMAP_FEH_WINDOW_SIZE, () => astronomyAtlas.updatePlotContainers());
+addUIFunctionMap(UI_STARMAP_FEH_POW, () => astronomyAtlas.updatePlotContainers());

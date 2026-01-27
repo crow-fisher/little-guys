@@ -94,7 +94,7 @@ export class PlotStarScatter extends WindowElement {
             this.xValues[i] = x;
             this.yValues[i] = y;
             this.sValues[i] = star;
-            this.rValues[i] = this.colorFromRenderModeStar(starRenderMode, star, opacity);
+            this.rValues[i] = this.colorFromRenderModeStar(this.sValues[i], opacity);
         }
 
         this.lastFrameStarsRenderedColorCalc = this.lengthCap;
@@ -141,7 +141,7 @@ export class PlotStarScatter extends WindowElement {
             this.xValues[i] = x;
             this.yValues[i] = y;
             this.sValues[i] = star;
-            this.rValues[i] = this.colorFromRenderModeStar(starRenderMode, star, opacity);
+            this.rValues[i] = this.colorFromRenderModeStar(this.sValues[i], opacity);
         }
 
         this.lastFrameStarsRenderedColorCalc = this.lengthCap;
@@ -150,21 +150,8 @@ export class PlotStarScatter extends WindowElement {
         this.yS = calculateStatistics(this.yValues);
     }
 
-    colorFromRenderModeStar(starRenderMode, star, opacity) {
-        if (starRenderMode == 0) {
-            return rgbToRgba(...star.color, opacity);
-        } else if (starRenderMode == 1) {
-            if (star.p_feH != null) {
-                return rgbToRgbaObj(star.p_feH_color_obj, opacity);
-            } else {
-                return null;
-            }
-        } else {
-            if (star.p_feH != null) {
-                return rgbToRgbaObj(star.p_feH_color_obj, opacity);
-            }
-            return rgbToRgba(...star.color, opacity);
-        }
+    colorFromRenderModeStar(star, opacity) {
+        return rgbToRgba(...(star.alt_color_arr ?? star.color), opacity);
     }
 
     processValue(value, zoom, offset) {
@@ -255,11 +242,11 @@ export class PlotStarScatter extends WindowElement {
             frameStarsRendered += 1;
         }
 
-        if (frameStarsRendered / this.lastFrameStarsRenderedColorCalc < 0.95 || this.lastFrameStarsRenderedColorCalc / frameStarsRendered < 0.95) {
+        if (this._shouldRecalculateColor || frameStarsRendered / this.lastFrameStarsRenderedColorCalc < 0.95 || this.lastFrameStarsRenderedColorCalc / frameStarsRendered < 0.95) {
             let opacity = processRangeToOne(loadGD(UI_PLOTCONTAINER_POINTOPACITY) * frameStarsRendered);
             for (let i = 0; i < this.lengthCap; i++) {
                 if (this.sValues[i] != null) {
-                    this.rValues[i] = this.colorFromRenderModeStar(starRenderMode, this.sValues[i], opacity);
+                    this.rValues[i] = this.colorFromRenderModeStar(this.sValues[i], opacity);
                 }
             }
             this.lastFrameStarsRenderedColorCalc = frameStarsRendered;
@@ -269,6 +256,10 @@ export class PlotStarScatter extends WindowElement {
         this.renderAxisLabels(startX, startY);
 
         MAIN_CONTEXT.fillStyle = COLOR_WHITE;
+    }
+
+    triggerRecalculateColor() {
+        this._shouldRecalculateColor = true;
     }
 
     renderGridLines() {

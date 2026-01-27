@@ -106,6 +106,7 @@ class Star {
     recalculateAltColor() {
         this._rac_curKey = loadGD(UI_AA_SETUP_COLORMODE);
         if (this._rac_curKey == null || this._rac_curKey == "default") {
+            this.alt_color_arr = null;
             return;
         }
 
@@ -122,7 +123,7 @@ class Star {
         
         this._rac_v = invlerp(this._rac_minValue, this._rac_maxValue, this._rac_valNorm) ** this._rac_powValue;
 
-        this.alt_color_obj = combineColorMult(feHMinColor, feHMaxColor, this._rac_v);
+        this.alt_color_arr = combineColorMult(feHMinColor, feHMaxColor, this._rac_v);
     }
 
     getActiveId(im) {
@@ -154,8 +155,8 @@ class Star {
             this._opacity = (this._brightness ** frameCache.UI_STARMAP_STAR_OPACITY_FACTOR);
             this._color = rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_STARMAP_STAR_OPACITY_SHIFT));
             
-            if (this.alt_color_obj != null)
-                this.alt_color = rgbToRgbaObj(this.alt_color_obj, this._opacity * frameCache.UI_AA_SETUP_MULT ?? 1);
+            if (this.alt_color_arr != null)
+                this.alt_color = rgbToRgbaObj(this.alt_color_arr, this._opacity * frameCache.UI_AA_SETUP_MULT ?? 1);
         }
     }
 

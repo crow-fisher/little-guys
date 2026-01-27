@@ -150,11 +150,11 @@ function processColorLerpBicolor(val, val_min, val_max, color1, color2) {
 }
 
 export function combineColorMult(color1, color2, p) {
-    return {
-        r: Math.floor(color1.r * (1 - p) + color2.r * (p)),
-        g: Math.floor(color1.g * (1 - p) + color2.g * (p)),
-        b: Math.floor(color1.b * (1 - p) + color2.b * (p))
-    }
+    return [
+        Math.floor(color1.r * (1 - p) + color2.r * (p)),
+        Math.floor(color1.g * (1 - p) + color2.g * (p)),
+        Math.floor(color1.b * (1 - p) + color2.b * (p))
+    ]
 }
 
 export function processColorLerpBicolorPow(val, val_min, val_max, color1, color2, pow) {

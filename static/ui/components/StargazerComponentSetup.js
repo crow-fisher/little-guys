@@ -17,7 +17,7 @@ import { SliderGradientBackground } from "../elements/SliderGradientBackground.j
 import { Text } from "../elements/Text.js";
 import { TextBackground } from "../elements/TextBackground.js";
 import { loadGD, UI_CENTER, loadUI, UI_PALETTE_CLIPS_WAYPOINT_NAME, UI_PALETTE_CLIPS_WAYPOINT_DATAMAP, UI_UI_CURWORLD, UI_PALETTE_CLIPS_WAYPOINT_SELECT, saveGD, UI_PLOTCONTAINER_WIDTH, UI_PLOTCONTAINER_HEIGHT, UI_PLOTCONTAINER_FILTERMODE_STARS, UI_PLOTCONTAINER_IDSYSTEM_STARS, UI_PLOTCONTAINER_SELECTRADIUS, UI_PLOTCONTAINER_LOCALITY_SELECTMODE, UI_PLOTCONTAINER_FILTERMODE_GRAPH, UI_PLOTCONTAINER_IDSYSTEM_GRAPH, UI_PLOTCONTAINER_HIDECONTROLS, UI_PLOTCONTAINER_HIDEGRAPH } from "../UIData.js";
-import { getPlotContainerComponent } from "../WindowManager.js";
+import { getAstronomyAtlasComponent } from "../WindowManager.js";
 
 
 export class StargazerComponentSetup extends WindowElement {
@@ -39,7 +39,7 @@ export class StargazerComponentSetup extends WindowElement {
         
         let row0 = new Container(this.window, 0, 0);
         container.addElement(row0);
-        row0.addElement(new Button(this.window, this.plotSizeX / 2, getBaseUISize() * 3, UI_CENTER, () => getPlotContainerComponent().plotStarScatter.vr = [0, 1, 0, 1], "reset viewport", () => COLOR_RED))
+        row0.addElement(new Button(this.window, this.plotSizeX / 2, getBaseUISize() * 3, UI_CENTER, () => getAstronomyAtlasComponent().plotStarScatter.vr = [0, 1, 0, 1], "reset viewport", () => COLOR_RED))
         row0.addElement(new ButtonFunctionalText(this.window, this.plotSizeX / 2, getBaseUISize() * 3, UI_CENTER, () => saveGD(UI_PLOTCONTAINER_HIDECONTROLS, (loadGD(UI_PLOTCONTAINER_HIDECONTROLS) + 1) % 2),
          () => ["hide", "show"][loadGD(UI_PLOTCONTAINER_HIDECONTROLS)] + " controls",  () => [COLOR_RED, COLOR_BLUE][loadGD(UI_PLOTCONTAINER_HIDECONTROLS)]));
         

@@ -12,6 +12,7 @@ import { StarSpecializedValuePicker } from "../../../elements/StarSpecializedVal
 import { Text } from "../../../elements/Text.js";
 import { ToggleFunctionalText } from "../../../elements/ToggleFunctionalText.js";
 import { addUIFunctionMap, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_WINDOW_SIZE, UI_AA_SETUP_MIN, UI_AA_SETUP_POW, UI_CENTER, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_STARMAP_STAR_MAX_SIZE, UI_AA_SETUP_DISPLAYTYPE_MAX, UI_AA_SETUP_DISPLAYTYPE_MIN, UI_AA_SETUP_DISPLAYTYPE_WINDOW, loadGD, UI_AA_SETUP_MULT, UI_AA_SETUP_DISPLAYTYPE_MULT } from "../../../UIData.js";
+import { getAstronomyAtlasComponent } from "../../../WindowManager.js";
 
 export const astronomyAtlasSetupChoices = [
     [["default", "Temperature"], ["magnitude", "Rel. Mag"], ["magnitude_absolute", "Abs. Mag"]],
@@ -94,6 +95,9 @@ export function AstronomyAtlasModeFuncSetup(window, container, sizeX, sizeY) {
          () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
 
 }
+
+
+let rsag = () => {gsh().stars.forEach((star) => star.recalculateScreenFlag = true); getAstronomyAtlasComponent()?.plotStarScatter.triggerRecalculateColor()}
 
 addUIFunctionMap(UI_AA_SETUP_COLORMODE, () => gsh().stars.forEach((star) => star.recalculateScreenFlag = true));
 addUIFunctionMap(UI_AA_SETUP_MIN, () => gsh().stars.forEach((star) => star.recalculateScreenFlag = true));
