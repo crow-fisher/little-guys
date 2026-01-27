@@ -96,6 +96,7 @@ class Star {
 
         this.parsecs = Math.abs(1 / (parallax / 1000));
         this.magnitude_absolute = (magnitude + 5) - (5 * Math.log10(this.parsecs));
+
     }
 
     setFeH(feH) {
@@ -124,6 +125,7 @@ class Star {
         this._rac_v = invlerp(this._rac_minValue, this._rac_maxValue, this._rac_valNorm) ** this._rac_powValue;
 
         this.alt_color_arr = combineColorMult(feHMinColor, feHMaxColor, this._rac_v);
+        this.alt_color = rgbToRgba(...this.alt_color_arr, this._opacity * Math.exp(loadGD(UI_AA_SETUP_MULT)));
     }
 
     getActiveId(im) {
@@ -143,7 +145,6 @@ class Star {
         sphericalToCartesianInplace(this._cartesian, -this.asc, -this.dec, this._distance);
         this._rootCameraDistance = getVec3Length(this._cartesian);
         this.recalculateScreenFlag = false;
-        this.recalculateAltColor();
     }
 
     recalculateSizeOpacityColor(frameCache) {
@@ -155,8 +156,9 @@ class Star {
             this._opacity = (this._brightness ** frameCache.UI_STARMAP_STAR_OPACITY_FACTOR);
             this._color = rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_STARMAP_STAR_OPACITY_SHIFT));
             
+            this.recalculateAltColor();
             if (this.alt_color_arr != null)
-                this.alt_color = rgbToRgbaObj(this.alt_color_arr, this._opacity * frameCache.UI_AA_SETUP_MULT ?? 1);
+                this.alt_color = rgbToRgba(...this.alt_color_arr, this._opacity * frameCache.UI_AA_SETUP_MULT ?? 1);
         }
     }
 

@@ -5,7 +5,7 @@ import { calculateStatistics, hexToRgb, invlerp, processRangeToOne, rgbToRgba, r
 import { MAIN_CONTEXT } from "../../../index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "../../../keyboard.js";
 import { getLastLastMoveOffset, getLastMouseDownStart, getLastMouseUpEvent, getLastMoveOffset, isLeftMouseClicked } from "../../../mouse.js";
-import { loadGD, saveGD, UI_PLOTCONTAINER_AXISLABELS, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_OFFSET_X, UI_PLOTCONTAINER_OFFSET_Y, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_FILTERMODE_STARS, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_XPADDING, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_YPADDING, UI_PLOTCONTAINER_ZOOM_X, UI_PLOTCONTAINER_ZOOM_Y, UI_PLOTCONTAINER_IDSYSTEM_STARS, UI_PLOTCONTAINER_FILTERMODE_GRAPH, UI_PLOTCONTAINER_IDSYSTEM_GRAPH, UI_STARMAP_VIEWMODE } from "../../UIData.js";
+import { loadGD, saveGD, UI_PLOTCONTAINER_AXISLABELS, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_OFFSET_X, UI_PLOTCONTAINER_OFFSET_Y, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_FILTERMODE_STARS, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_XPADDING, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_YPADDING, UI_PLOTCONTAINER_ZOOM_X, UI_PLOTCONTAINER_ZOOM_Y, UI_PLOTCONTAINER_IDSYSTEM_STARS, UI_PLOTCONTAINER_FILTERMODE_GRAPH, UI_PLOTCONTAINER_IDSYSTEM_GRAPH, UI_STARMAP_VIEWMODE, UI_AA_SETUP_COLORMODE } from "../../UIData.js";
 import { WindowElement } from "../../Window.js";
 
 export class PlotStarScatter extends WindowElement {
@@ -182,7 +182,7 @@ export class PlotStarScatter extends WindowElement {
         let x, y, xo, yo, xa, ya, star;
         let fm = loadGD(UI_PLOTCONTAINER_FILTERMODE_GRAPH);
         let im = loadGD(UI_PLOTCONTAINER_IDSYSTEM_GRAPH);
-        let starRenderMode = loadGD(UI_STARMAP_VIEWMODE);
+        let starRenderMode = loadGD(UI_AA_SETUP_COLORMODE);
 
         let frameStarsRendered = 0;
         for (let i = 0; i < this.lengthCap; i++) {
@@ -236,7 +236,7 @@ export class PlotStarScatter extends WindowElement {
 
             if (im > 0 && (star.selected || star.localitySelect)) {
                 MAIN_CONTEXT.font = getBaseUISize() * 3 + "px courier";
-                MAIN_CONTEXT.fillStyle = hexToRgb(...star.color);
+                MAIN_CONTEXT.fillStyle = hexToRgb(...(star.alt_color_arr ?? star.color));
                 MAIN_CONTEXT.fillText(star.activeIdGraph, xa + MAIN_CONTEXT.measureText(star.activeIdGraph).width * 0.65, ya);
             }
             frameStarsRendered += 1;

@@ -97,10 +97,10 @@ export function AstronomyAtlasModeFuncSetup(window, container, sizeX, sizeY) {
 }
 
 
-let rsag = () => {gsh().stars.forEach((star) => star.recalculateScreenFlag = true); getAstronomyAtlasComponent()?.plotStarScatter.triggerRecalculateColor()}
+let rsag = () => {gsh().stars.forEach((star) => star.recalculateAltColor()); getAstronomyAtlasComponent().plotStarScatter._shouldRecalculateColor = true;}
 
-addUIFunctionMap(UI_AA_SETUP_COLORMODE, () => gsh().stars.forEach((star) => star.recalculateScreenFlag = true));
-addUIFunctionMap(UI_AA_SETUP_MIN, () => gsh().stars.forEach((star) => star.recalculateScreenFlag = true));
-addUIFunctionMap(UI_AA_SETUP_WINDOW_SIZE, () => gsh().stars.forEach((star) => star.recalculateScreenFlag = true));
-addUIFunctionMap(UI_AA_SETUP_POW, () => gsh().stars.forEach((star) => star.recalculateScreenFlag = true));
-addUIFunctionMap(UI_AA_SETUP_MULT, () => gsh().stars.forEach((star) => star.recalculateScreenFlag = true));
+addUIFunctionMap(UI_AA_SETUP_COLORMODE, rsag);
+addUIFunctionMap(UI_AA_SETUP_MIN, rsag);
+addUIFunctionMap(UI_AA_SETUP_WINDOW_SIZE, rsag);
+addUIFunctionMap(UI_AA_SETUP_POW, rsag);
+addUIFunctionMap(UI_AA_SETUP_MULT, rsag);
