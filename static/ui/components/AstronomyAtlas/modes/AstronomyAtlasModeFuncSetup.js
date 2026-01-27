@@ -63,8 +63,8 @@ export function AstronomyAtlasModeFuncSetup(window, container, sizeX, sizeY) {
     let multRow = new Container(window, 0, 0);
     let nameMultRow = new Container(window, 0, 0);
 
-    let f1 = .25;
-    let f2 = 2 / 3;
+    let f1 = .45;
+    let f2 = .70;
 
     let specialModeControlConditionalContainer = new ConditionalContainer(window, 0, 1, () => loadGD(UI_AA_SETUP_COLORMODE) != "default");
     
@@ -75,6 +75,7 @@ export function AstronomyAtlasModeFuncSetup(window, container, sizeX, sizeY) {
     specialModeControlConditionalContainer.addElement(windowRow);
     specialModeControlConditionalContainer.addElement(powRow);
     specialModeControlConditionalContainer.addElement(multRow);
+
 
     minRow.addElement(new Text(window, sizeX * f1, textHeight, UI_CENTER, "minimum value"));
     minRow.addElement(new SliderGradientBackground(window, UI_AA_SETUP_MIN, sizeX * (f2 - f1), textHeight, 0, 1, () => COLOR_BLACK, () => COLOR_WHITE));
@@ -91,23 +92,23 @@ export function AstronomyAtlasModeFuncSetup(window, container, sizeX, sizeY) {
     powRow.addElement(new ToggleFunctionalText(window, sizeX * (1 - f2), textHeight, UI_CENTER, UI_AA_SETUP_DISPLAYTYPE_MAX,
         () =>(loadGD(UI_AA_SETUP_POW)).toFixed(2) + "", () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
 
-    multRow.addElement(new Text(window, sizeX * f1, textHeight, UI_CENTER, "point brightness mult"));
+    multRow.addElement(new Text(window, sizeX * f1, textHeight, UI_CENTER, "point brightness"));
     multRow.addElement(new SliderGradientBackground(window, UI_AA_SETUP_MULT, sizeX * (f2 - f1), textHeight, -3, 10, () => COLOR_BLACK, () => COLOR_WHITE));
     multRow.addElement(new ToggleFunctionalText(window, sizeX * (1 - f2), textHeight, UI_CENTER, UI_AA_SETUP_DISPLAYTYPE_MULT,
         () => 
             (loadGD(UI_AA_SETUP_DISPLAYTYPE_MULT) ? (Math.exp(loadGD(UI_AA_SETUP_MULT))) : loadGD(UI_AA_SETUP_MULT)).toFixed(2) + "",
          () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
 
-    nameMultRow.addElement(new Text(window, sizeX * f1, textHeight, UI_CENTER, "name brightness boost"));
+    nameMultRow.addElement(new Text(window, sizeX * f1, textHeight, UI_CENTER, "named stars"));
     nameMultRow.addElement(new SliderGradientBackground(window, UI_AA_SETUP_NAME_MULT, sizeX * (f2 - f1), textHeight, -10, 10, () => COLOR_BLACK, () => COLOR_WHITE));
-    nameMultRow.addElement(new ToggleFunctionalText(window, sizeX * (1 - f2), textHeight, UI_CENTER, UI_AA_SETUP_DISPLAYTYPE_MULT,
+    nameMultRow.addElement(new ToggleFunctionalText(window, sizeX * (1 - f2), textHeight, UI_CENTER, UI_AA_SETUP_DISPLAYTYPE_NAME_MULT,
         () => 
-            (loadGD(UI_AA_SETUP_DISPLAYTYPE_MULT) ? (processRangeToOne(loadGD(UI_AA_SETUP_NAME_MULT))) : loadGD(UI_AA_SETUP_NAME_MULT)).toFixed(2) + "",
+            (loadGD(UI_AA_SETUP_DISPLAYTYPE_NAME_MULT) ? (processRangeToOne(loadGD(UI_AA_SETUP_NAME_MULT))) : loadGD(UI_AA_SETUP_NAME_MULT)).toFixed(2) + "",
          () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
 }
 
 let rsag = () => {
-    gsh().stars.forEach((star) => star.recalculateAltColor());
+    gsh().stars.forEach((star) => {star.recalculateAltColor(); star.recalculateColorFlag = true});
     getAstronomyAtlasComponent().plotStarScatter._shouldRecalculateColor = true;
     gsh().resetStarLabels();
 }
