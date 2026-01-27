@@ -11,7 +11,7 @@ import { SliderGradientBackground } from "../../../elements/SliderGradientBackgr
 import { StarSpecializedValuePicker } from "../../../elements/StarSpecializedValuePicker.js";
 import { Text } from "../../../elements/Text.js";
 import { ToggleFunctionalText } from "../../../elements/ToggleFunctionalText.js";
-import { addUIFunctionMap, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_WINDOW_SIZE, UI_AA_SETUP_MIN, UI_AA_SETUP_POW, UI_CENTER, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_STARMAP_STAR_MAX_SIZE, UI_AA_SETUP_DISPLAYTYPE_MAX, UI_AA_SETUP_DISPLAYTYPE_MIN, UI_AA_SETUP_DISPLAYTYPE_WINDOW, loadGD, UI_AA_SETUP_MULT, UI_AA_SETUP_DISPLAYTYPE_MULT, UI_AA_SETUP_DISPLAYTYPE_NAME_MULT, UI_AA_SETUP_NAME_MULT, UI_PLOTCONTAINER_LOCALITY_SELECTMODE, UI_PLOTCONTAINER_SELECTRADIUS, UI_PLOTCONTAINER_SELECT_NAMED_STARS } from "../../../UIData.js";
+import { addUIFunctionMap, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_WINDOW_SIZE, UI_AA_SETUP_MIN, UI_AA_SETUP_POW, UI_CENTER, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_STARMAP_STAR_MAX_SIZE, UI_AA_SETUP_DISPLAYTYPE_MAX, UI_AA_SETUP_DISPLAYTYPE_MIN, UI_AA_SETUP_DISPLAYTYPE_WINDOW, loadGD, UI_AA_SETUP_MULT, UI_AA_SETUP_DISPLAYTYPE_MULT, UI_AA_SETUP_DISPLAYTYPE_NAME_MULT, UI_AA_SETUP_NAME_MULT, UI_AA_PLOT_LOCALITY_SELECTMODE, UI_AA_PLOT_SELECTRADIUS, UI_AA_PLOT_SELECT_NAMED_STARS } from "../../../UIData.js";
 import { getAstronomyAtlasComponent } from "../../../WindowManager.js";
 
 export const astronomyAtlasSetupChoices = [
@@ -119,6 +119,6 @@ addUIFunctionMap(UI_AA_SETUP_WINDOW_SIZE, triggerStarColorRecalculation);
 addUIFunctionMap(UI_AA_SETUP_POW, triggerStarColorRecalculation);
 addUIFunctionMap(UI_AA_SETUP_MULT, triggerStarColorRecalculation);
 addUIFunctionMap(UI_AA_SETUP_NAME_MULT, triggerStarColorRecalculation);
-addUIFunctionMap(UI_PLOTCONTAINER_LOCALITY_SELECTMODE, triggerStarColorRecalculation);
-addUIFunctionMap(UI_PLOTCONTAINER_SELECTRADIUS, triggerStarColorRecalculation);
-addUIFunctionMap(UI_PLOTCONTAINER_SELECT_NAMED_STARS, triggerStarColorRecalculation)
+addUIFunctionMap(UI_AA_PLOT_LOCALITY_SELECTMODE, triggerStarColorRecalculation);
+addUIFunctionMap(UI_AA_PLOT_SELECTRADIUS, triggerStarColorRecalculation);
+addUIFunctionMap(UI_AA_PLOT_SELECT_NAMED_STARS, triggerStarColorRecalculation)

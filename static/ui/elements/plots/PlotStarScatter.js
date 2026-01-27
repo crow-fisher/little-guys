@@ -6,13 +6,13 @@ import { MAIN_CONTEXT } from "../../../index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "../../../keyboard.js";
 import { getLastLastMoveOffset, getLastMouseDownStart, getLastMouseUpEvent, getLastMoveOffset, isLeftMouseClicked } from "../../../mouse.js";
 import { resetViewportButtonOffset } from "../../components/AstronomyAtlas/modes/AstronomyAtlasModeFuncPlot.js";
-import { loadGD, saveGD, UI_PLOTCONTAINER_AXISLABELS, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_OFFSET_X, UI_PLOTCONTAINER_OFFSET_Y, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_FILTERMODE_STARS, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_XPADDING, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_YPADDING, UI_PLOTCONTAINER_ZOOM_X, UI_PLOTCONTAINER_ZOOM_Y, UI_AA_LABEL_STARS, UI_PLOTCONTAINER_FILTERMODE_GRAPH, UI_AA_LABEL_GRAPH, UI_STARMAP_VIEWMODE, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_DISPLAYTYPE_NAME_MULT, UI_AA_SETUP_NAME_MULT, UI_PLOTCONTAINER_SELECT_NAMED_STARS } from "../../UIData.js";
+import { loadGD, saveGD, UI_AA_PLOT_AXISLABELS, UI_AA_PLOT_MAXPOINTS, UI_AA_PLOT_OFFSET_X, UI_AA_PLOT_OFFSET_Y, UI_AA_PLOT_POINTOPACITY, UI_AA_PLOT_POINTSIZE, UI_AA_SELECT_FILTERMODE_STARS, UI_AA_PLOT_XKEY, UI_AA_PLOT_XPADDING, UI_AA_PLOT_YKEY, UI_AA_PLOT_YPADDING, UI_AA_PLOT_ZOOM_X, UI_AA_PLOT_ZOOM_Y, UI_AA_LABEL_STARS, UI_AA_SELECT_FILTERMODE_GRAPH, UI_AA_LABEL_GRAPH, UI_STARMAP_VIEWMODE, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_DISPLAYTYPE_NAME_MULT, UI_AA_SETUP_NAME_MULT, UI_AA_PLOT_SELECT_NAMED_STARS } from "../../UIData.js";
 import { WindowElement } from "../../Window.js";
 
 export class PlotStarScatter extends WindowElement {
     constructor(window, plotSizeX, plotSizeY) {
         super(window, plotSizeX, plotSizeY);
-        this.lengthCap = loadGD(UI_PLOTCONTAINER_MAXPOINTS);
+        this.lengthCap = loadGD(UI_AA_PLOT_MAXPOINTS);
         this.xValues = new Array(this.lengthCap);
         this.yValues = new Array(this.lengthCap);
         this.sValues = new Array(this.lengthCap);
@@ -28,12 +28,23 @@ export class PlotStarScatter extends WindowElement {
         this.preparePointFlag = true;
     }
 
+    resetCameraPosition() {
+        saveGD(UI_CAMERA_OFFSET_VEC, [0, 0, 0, 0]);
+        saveGD(UI_CAMERA_OFFSET_VEC_DT, [0, 0, 0, 0]); 
+        getAstronomyAtlasComponent().plotStarScatter.flagRepreparePoints();
+    }
+
+    resetValueRange() {
+        this.valueRange = [0, 1, 0, 1];
+        this.flagRepreparePoints();
+    }
+
     flagRepreparePoints() {
         this.preparePointFlag = true;
     }
 
     update() {
-        this.lengthCap = loadGD(UI_PLOTCONTAINER_MAXPOINTS);
+        this.lengthCap = loadGD(UI_AA_PLOT_MAXPOINTS);
         this.xValues = new Array(this.lengthCap);
         this.yValues = new Array(this.lengthCap);
         this.sValues = new Array(this.lengthCap);
@@ -46,7 +57,7 @@ export class PlotStarScatter extends WindowElement {
         if (gsh()?.stars == null) {
             return;
         }
-        if (loadGD(UI_PLOTCONTAINER_FILTERMODE_GRAPH) == 2) {
+        if (loadGD(UI_AA_SELECT_FILTERMODE_GRAPH) == 2) {
             if (gsh()?.frameCache?.newStarSelected) {
                 this.reloadGraph();
                 gsh().frameCache.newStarSelected = false;
@@ -56,10 +67,10 @@ export class PlotStarScatter extends WindowElement {
             this.reloadGraph();
             return;
         }
-        if (this.xKey != loadGD(UI_PLOTCONTAINER_XKEY) || this.yKey != loadGD(UI_PLOTCONTAINER_YKEY)) {
+        if (this.xKey != loadGD(UI_AA_PLOT_XKEY) || this.yKey != loadGD(UI_AA_PLOT_YKEY)) {
             this.reloadGraph();
         }
-        if (loadGD(UI_PLOTCONTAINER_FILTERMODE_GRAPH) != 2 && this._modeWasSelect) {
+        if (loadGD(UI_AA_SELECT_FILTERMODE_GRAPH) != 2 && this._modeWasSelect) {
             this.reloadGraph();
         }
 
@@ -76,10 +87,10 @@ export class PlotStarScatter extends WindowElement {
         if (this.xKey == null || this.yKey == null || gsh().stars.length == 0) {
             return;
         }
-        let opacity = processRangeToOne(loadGD(UI_PLOTCONTAINER_POINTOPACITY) * this.lengthCap);
-        let namedStarOpacityAddition = loadGD(UI_PLOTCONTAINER_SELECT_NAMED_STARS) ? processRangeToOne(loadGD(UI_AA_SETUP_NAME_MULT)) : 0;
+        let opacity = processRangeToOne(loadGD(UI_AA_PLOT_POINTOPACITY) * this.lengthCap);
+        let namedStarOpacityAddition = loadGD(UI_AA_PLOT_SELECT_NAMED_STARS) ? processRangeToOne(loadGD(UI_AA_SETUP_NAME_MULT)) : 0;
         let star;
-        let selectNamedStars = loadGD(UI_PLOTCONTAINER_SELECT_NAMED_STARS);
+        let selectNamedStars = loadGD(UI_AA_PLOT_SELECT_NAMED_STARS);
 
         let filteredStars = Array.from(gsh().stars.filter((star) =>
             (selectNamedStars ? star.name != null : false)
@@ -116,8 +127,8 @@ export class PlotStarScatter extends WindowElement {
     }
 
     reloadGraphDefault() {
-        this.xKey = loadGD(UI_PLOTCONTAINER_XKEY);
-        this.yKey = loadGD(UI_PLOTCONTAINER_YKEY);
+        this.xKey = loadGD(UI_AA_PLOT_XKEY);
+        this.yKey = loadGD(UI_AA_PLOT_YKEY);
         this.numStars = gsh().stars.length;
 
         if (this.xKey == null || this.yKey == null || this.numStars == 0) {
@@ -125,7 +136,7 @@ export class PlotStarScatter extends WindowElement {
         }
 
         let idxMult = gsh().stars.length / (this.lengthCap);
-        let opacity = processRangeToOne(loadGD(UI_PLOTCONTAINER_POINTOPACITY) * this.lengthCap);
+        let opacity = processRangeToOne(loadGD(UI_AA_PLOT_POINTOPACITY) * this.lengthCap);
         let namedStarOpacityAddition = processRangeToOne(loadGD(UI_AA_SETUP_NAME_MULT));
         let star, iO;
 
@@ -156,7 +167,7 @@ export class PlotStarScatter extends WindowElement {
     prepareGraphPoints() {
         this.xS = calculateStatistics(this.xValues);
         this.yS = calculateStatistics(this.yValues);
-        let graphFilterMode = loadGD(UI_PLOTCONTAINER_FILTERMODE_GRAPH);
+        let graphFilterMode = loadGD(UI_AA_SELECT_FILTERMODE_GRAPH);
 
         this.xBounds = [
             this.xS[2],
@@ -219,22 +230,22 @@ export class PlotStarScatter extends WindowElement {
     }
 
     reloadGraph() {
-        this.xKey = loadGD(UI_PLOTCONTAINER_XKEY);
-        this.yKey = loadGD(UI_PLOTCONTAINER_YKEY);
+        this.xKey = loadGD(UI_AA_PLOT_XKEY);
+        this.yKey = loadGD(UI_AA_PLOT_YKEY);
         this.numStars = gsh().stars.length;
 
         if (this.xKey == null || this.yKey == null || gsh().stars.length == 0) {
             return;
         }
 
-        if (loadGD(UI_PLOTCONTAINER_FILTERMODE_GRAPH) == 2) {
+        if (loadGD(UI_AA_SELECT_FILTERMODE_GRAPH) == 2) {
             this.reloadGraphSelect();
             this._modeWasSelect = true;
             return;
         }
 
         let idxMult = gsh().stars.length / (this.lengthCap);
-        let opacity = processRangeToOne(loadGD(UI_PLOTCONTAINER_POINTOPACITY) * this.lengthCap);
+        let opacity = processRangeToOne(loadGD(UI_AA_PLOT_POINTOPACITY) * this.lengthCap);
         let namedStarOpacityAddition = processRangeToOne(loadGD(UI_AA_SETUP_NAME_MULT))
         let star, iO;
 
@@ -291,7 +302,7 @@ export class PlotStarScatter extends WindowElement {
 
     renderGraph(startX, startY) {
         let frameStarsRendered = 0;
-        let size = Math.exp(loadGD(UI_PLOTCONTAINER_POINTSIZE)), sizeCur = size;
+        let size = Math.exp(loadGD(UI_AA_PLOT_POINTSIZE)), sizeCur = size;
         let star;
         for (let i = 0; i < this.lengthCap; i++) {
             star = this.sValues[i];
@@ -329,12 +340,12 @@ export class PlotStarScatter extends WindowElement {
             this.yS[3]
         ];
 
-        this.paddingX = loadGD(UI_PLOTCONTAINER_POINTSIZE) * 2;
-        this.paddingY = loadGD(UI_PLOTCONTAINER_POINTSIZE) * 2;
+        this.paddingX = loadGD(UI_AA_PLOT_POINTSIZE) * 2;
+        this.paddingY = loadGD(UI_AA_PLOT_POINTSIZE) * 2;
 
-        let size = Math.exp(loadGD(UI_PLOTCONTAINER_POINTSIZE)), sizeCur = size;
+        let size = Math.exp(loadGD(UI_AA_PLOT_POINTSIZE)), sizeCur = size;
         let x, y, xo, yo, xa, ya, star;
-        let graphFilterMode = loadGD(UI_PLOTCONTAINER_FILTERMODE_GRAPH);
+        let graphFilterMode = loadGD(UI_AA_SELECT_FILTERMODE_GRAPH);
         let namedStarOpacityAddition = processRangeToOne(loadGD(UI_AA_SETUP_NAME_MULT))
 
         let frameStarsRendered = 0;
@@ -394,7 +405,7 @@ export class PlotStarScatter extends WindowElement {
         }
 
         if (this._shouldRecalculateColor || frameStarsRendered / this.lastFrameStarsRenderedColorCalc < 0.95 || this.lastFrameStarsRenderedColorCalc / frameStarsRendered < 0.95) {
-            let opacity = processRangeToOne(loadGD(UI_PLOTCONTAINER_POINTOPACITY) * frameStarsRendered);
+            let opacity = processRangeToOne(loadGD(UI_AA_PLOT_POINTOPACITY) * frameStarsRendered);
             for (let i = 0; i < this.lengthCap; i++) {
                 if (this.sValues[i] != null) {
                     this.rValues[i] = this.colorFromRenderModeStar(this.sValues[i], opacity, namedStarOpacityAddition);
@@ -417,7 +428,7 @@ export class PlotStarScatter extends WindowElement {
 
     }
     renderAxisLabels() {
-        if (!loadGD(UI_PLOTCONTAINER_AXISLABELS)) {
+        if (!loadGD(UI_AA_PLOT_AXISLABELS)) {
             return;
         }
         MAIN_CONTEXT.strokeStyle = COLOR_WHITE;

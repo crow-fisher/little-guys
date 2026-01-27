@@ -14,7 +14,7 @@ import { SliderGradientBackground } from "../../elements/SliderGradientBackgroun
 import { Text } from "../../elements/Text.js";
 import { TextBackground } from "../../elements/TextBackground.js";
 import { Toggle } from "../../elements/Toggle.js";
-import { loadGD, UI_CENTER, saveGD, UI_PLOTCONTAINER_WIDTH, UI_PLOTCONTAINER_HEIGHT, UI_PLOTCONTAINER_FILTERMODE_STARS, UI_AA_LABEL_STARS, UI_PLOTCONTAINER_SELECTRADIUS, UI_PLOTCONTAINER_LOCALITY_SELECTMODE, UI_PLOTCONTAINER_FILTERMODE_GRAPH, UI_AA_LABEL_GRAPH, UI_PLOTCONTAINER_HIDECONTROLS, UI_PLOTCONTAINER_TOOLBOX_STAR_STYLE, UI_AA_MODE_SELECT, UI_AA_MODE_PLOT, UI_AA_MODE_SETUP, UI_AA_MODE_STYLE, UI_AA_MODE_LABEL } from "../../UIData.js";
+import { loadGD, UI_CENTER, saveGD, UI_AA_PLOT_WIDTH, UI_AA_PLOT_HEIGHT, UI_AA_SELECT_FILTERMODE_STARS, UI_AA_LABEL_STARS, UI_AA_PLOT_SELECTRADIUS, UI_AA_PLOT_LOCALITY_SELECTMODE, UI_AA_SELECT_FILTERMODE_GRAPH, UI_AA_LABEL_GRAPH, UI_AA_PLOT_HIDECONTROLS, UI_AA_PLOT_TOOLBOX_STAR_STYLE, UI_AA_MODE_SELECT, UI_AA_MODE_PLOT, UI_AA_MODE_SETUP, UI_AA_MODE_STYLE, UI_AA_MODE_LABEL } from "../../UIData.js";
 import { getAstronomyAtlasComponent } from "../../WindowManager.js";
 import { AstronomyAtlasModeFuncLabel } from "./modes/AstronomyAtlasModeFuncLabel.js";
 import { AstronomyAtlasModeFuncPlot } from "./modes/AstronomyAtlasModeFuncPlot.js";
@@ -29,8 +29,8 @@ export class AstronomyAtlasComponent extends Component {
         let container = new Container(this.window, 0, 1);
         this.window.container = container;
 
-        let plotSizeX = getBaseUISize() * loadGD(UI_PLOTCONTAINER_WIDTH);
-        let plotSizeY = getBaseUISize() * loadGD(UI_PLOTCONTAINER_HEIGHT);
+        let plotSizeX = getBaseUISize() * loadGD(UI_AA_PLOT_WIDTH);
+        let plotSizeY = getBaseUISize() * loadGD(UI_AA_PLOT_HEIGHT);
 
         let h1 = getBaseUISize() * 4;
         let h2 = getBaseUISize() * 3;
@@ -76,13 +76,13 @@ export class AstronomyAtlasComponent extends Component {
         AstronomyAtlasModeFuncStyle(this.window, styleConditionalContainer, this.sizeX, plotSizeY);
         AstronomyAtlasModeFuncSelect(this.window, selectConditionalContainer, this.sizeX, plotSizeY);
 
-        // row0.addElement(new ButtonFunctionalText(this.window, this.sizeX / 3, getBaseUISize() * 3, UI_CENTER, () => saveGD(UI_PLOTCONTAINER_HIDECONTROLS, (loadGD(UI_PLOTCONTAINER_HIDECONTROLS) + 1) % 2),
-        //     () => ["hide", "show"][loadGD(UI_PLOTCONTAINER_HIDECONTROLS)] + " controls", () => [COLOR_RED, COLOR_BLUE][loadGD(UI_PLOTCONTAINER_HIDECONTROLS)]));
-        // row0.addElement(new ButtonFunctionalText(this.window, this.sizeX / 3, getBaseUISize() * 3, UI_CENTER, () => saveGD(UI_PLOTCONTAINER_TOOLBOX_STAR_STYLE, (loadGD(UI_PLOTCONTAINER_TOOLBOX_STAR_STYLE) + 1) % 2),
-        //     () => ["star style", "close style"][loadGD(UI_PLOTCONTAINER_TOOLBOX_STAR_STYLE)], () => [COLOR_RED, COLOR_BLUE][loadGD(UI_PLOTCONTAINER_TOOLBOX_STAR_STYLE)]));
+        // row0.addElement(new ButtonFunctionalText(this.window, this.sizeX / 3, getBaseUISize() * 3, UI_CENTER, () => saveGD(UI_AA_PLOT_HIDECONTROLS, (loadGD(UI_AA_PLOT_HIDECONTROLS) + 1) % 2),
+        //     () => ["hide", "show"][loadGD(UI_AA_PLOT_HIDECONTROLS)] + " controls", () => [COLOR_RED, COLOR_BLUE][loadGD(UI_AA_PLOT_HIDECONTROLS)]));
+        // row0.addElement(new ButtonFunctionalText(this.window, this.sizeX / 3, getBaseUISize() * 3, UI_CENTER, () => saveGD(UI_AA_PLOT_TOOLBOX_STAR_STYLE, (loadGD(UI_AA_PLOT_TOOLBOX_STAR_STYLE) + 1) % 2),
+        //     () => ["star style", "close style"][loadGD(UI_AA_PLOT_TOOLBOX_STAR_STYLE)], () => [COLOR_RED, COLOR_BLUE][loadGD(UI_AA_PLOT_TOOLBOX_STAR_STYLE)]));
 
-        // let plotContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_PLOTCONTAINER_TOOLBOX_STAR_STYLE) == 0);
-        // let styleContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_PLOTCONTAINER_TOOLBOX_STAR_STYLE) == 1);
+        // let plotContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_AA_PLOT_TOOLBOX_STAR_STYLE) == 0);
+        // let styleContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_AA_PLOT_TOOLBOX_STAR_STYLE) == 1);
 
         // container.addElement(styleContainer);
         // container.addElement(plotContainer);
@@ -94,7 +94,7 @@ export class AstronomyAtlasComponent extends Component {
 
         // addPlotStarStyleToContainer(this.window, styleContainer, this.sizeX, this.plotSizeY);
 
-        // let controlsContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_PLOTCONTAINER_HIDECONTROLS) == 0);
+        // let controlsContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_AA_PLOT_HIDECONTROLS) == 0);
         // container.addElement(controlsContainer);
 
         // let row1 = new Container(this.window, 0, 0);
@@ -106,16 +106,16 @@ export class AstronomyAtlasComponent extends Component {
 
         // controlsContainer.addElement(new Text(this.window, this.sizeX, getBaseUISize() * 3, UI_CENTER, "filter graph to"))
         // controlsContainer.addElement(row1);
-        // row1.addElement(new RadioToggleLabel(this.window, this.sizeX / 3, getBaseUISize() * 3, UI_CENTER, "(no filter)", UI_PLOTCONTAINER_FILTERMODE_GRAPH, 0, () => COLOR_BLUE, () => COLOR_RED));
-        // row1.addElement(new RadioToggleLabel(this.window, this.sizeX / 3, getBaseUISize() * 3, UI_CENTER, "visible stars", UI_PLOTCONTAINER_FILTERMODE_GRAPH, 1, () => COLOR_BLUE, () => COLOR_RED));
-        // row1.addElement(new RadioToggleLabel(this.window, this.sizeX / 3, getBaseUISize() * 3, UI_CENTER, "selected stars", UI_PLOTCONTAINER_FILTERMODE_GRAPH, 2, () => COLOR_BLUE, () => COLOR_RED));
+        // row1.addElement(new RadioToggleLabel(this.window, this.sizeX / 3, getBaseUISize() * 3, UI_CENTER, "(no filter)", UI_AA_SELECT_FILTERMODE_GRAPH, 0, () => COLOR_BLUE, () => COLOR_RED));
+        // row1.addElement(new RadioToggleLabel(this.window, this.sizeX / 3, getBaseUISize() * 3, UI_CENTER, "visible stars", UI_AA_SELECT_FILTERMODE_GRAPH, 1, () => COLOR_BLUE, () => COLOR_RED));
+        // row1.addElement(new RadioToggleLabel(this.window, this.sizeX / 3, getBaseUISize() * 3, UI_CENTER, "selected stars", UI_AA_SELECT_FILTERMODE_GRAPH, 2, () => COLOR_BLUE, () => COLOR_RED));
 
 
         // controlsContainer.addElement(new Text(this.window, this.sizeX, getBaseUISize() * 3, UI_CENTER, "filter stars to"))
         // controlsContainer.addElement(row2);
-        // row2.addElement(new RadioToggleLabel(this.window, this.sizeX / 3, getBaseUISize() * 3, UI_CENTER, "(no filter)", UI_PLOTCONTAINER_FILTERMODE_STARS, 0, () => COLOR_BLUE, () => COLOR_RED));
-        // row2.addElement(new RadioToggleLabel(this.window, this.sizeX / 3, getBaseUISize() * 3, UI_CENTER, "graphed stars", UI_PLOTCONTAINER_FILTERMODE_STARS, 1, () => COLOR_BLUE, () => COLOR_RED));
-        // row2.addElement(new RadioToggleLabel(this.window, this.sizeX / 3, getBaseUISize() * 3, UI_CENTER, "selected stars", UI_PLOTCONTAINER_FILTERMODE_STARS, 2, () => COLOR_BLUE, () => COLOR_RED));
+        // row2.addElement(new RadioToggleLabel(this.window, this.sizeX / 3, getBaseUISize() * 3, UI_CENTER, "(no filter)", UI_AA_SELECT_FILTERMODE_STARS, 0, () => COLOR_BLUE, () => COLOR_RED));
+        // row2.addElement(new RadioToggleLabel(this.window, this.sizeX / 3, getBaseUISize() * 3, UI_CENTER, "graphed stars", UI_AA_SELECT_FILTERMODE_STARS, 1, () => COLOR_BLUE, () => COLOR_RED));
+        // row2.addElement(new RadioToggleLabel(this.window, this.sizeX / 3, getBaseUISize() * 3, UI_CENTER, "selected stars", UI_AA_SELECT_FILTERMODE_STARS, 2, () => COLOR_BLUE, () => COLOR_RED));
 
         // addSpacing();
         // controlsContainer.addElement(new Text(this.window, this.sizeX, getBaseUISize() * 3, UI_CENTER, "id numbering system (stars)"))
@@ -138,12 +138,12 @@ export class AstronomyAtlasComponent extends Component {
         // controlsContainer.addElement(new Text(this.window, this.sizeX, getBaseUISize() * 3, UI_CENTER, "locality select mode"));
         // controlsContainer.addElement(row5);
         // controlsContainer.addElement(row6);
-        // row6.addElement(new RadioToggleLabel(this.window, this.sizeX / 3, getBaseUISize() * 3, UI_CENTER, "none", UI_PLOTCONTAINER_LOCALITY_SELECTMODE, 0, () => COLOR_BLUE, () => COLOR_RED));
-        // row6.addElement(new RadioToggleLabel(this.window, this.sizeX / 3, getBaseUISize() * 3, UI_CENTER, "local", UI_PLOTCONTAINER_LOCALITY_SELECTMODE, 1, () => COLOR_BLUE, () => COLOR_RED));
-        // row6.addElement(new RadioToggleLabel(this.window, this.sizeX / 3, getBaseUISize() * 3, UI_CENTER, "persist", UI_PLOTCONTAINER_LOCALITY_SELECTMODE, 2, () => COLOR_BLUE, () => COLOR_RED));
+        // row6.addElement(new RadioToggleLabel(this.window, this.sizeX / 3, getBaseUISize() * 3, UI_CENTER, "none", UI_AA_PLOT_LOCALITY_SELECTMODE, 0, () => COLOR_BLUE, () => COLOR_RED));
+        // row6.addElement(new RadioToggleLabel(this.window, this.sizeX / 3, getBaseUISize() * 3, UI_CENTER, "local", UI_AA_PLOT_LOCALITY_SELECTMODE, 1, () => COLOR_BLUE, () => COLOR_RED));
+        // row6.addElement(new RadioToggleLabel(this.window, this.sizeX / 3, getBaseUISize() * 3, UI_CENTER, "persist", UI_AA_PLOT_LOCALITY_SELECTMODE, 2, () => COLOR_BLUE, () => COLOR_RED));
 
         // controlsContainer.addElement(new Text(this.window, this.sizeX, getBaseUISize() * 3, UI_CENTER, "locality select range"));
-        // controlsContainer.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_SELECTRADIUS, this.sizeX, getBaseUISize() * 3, 0, 10, () => COLOR_WHITE, () => COLOR_BLACK));
+        // controlsContainer.addElement(new SliderGradientBackground(this.window, UI_AA_PLOT_SELECTRADIUS, this.sizeX, getBaseUISize() * 3, 0, 10, () => COLOR_WHITE, () => COLOR_BLACK));
     }
 
     updateSizeX(sizeX) {

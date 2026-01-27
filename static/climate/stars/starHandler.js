@@ -19,10 +19,10 @@ import {
     UI_STARMAP_FEH_WINDOW_SIZE,
     UI_STARMAP_FEH_POW,
     UI_STARMAP_VIEWMODE,
-    UI_PLOTCONTAINER_FILTERMODE_STARS,
-    UI_PLOTCONTAINER_SELECTRADIUS,
+    UI_AA_SELECT_FILTERMODE_STARS,
+    UI_AA_PLOT_SELECTRADIUS,
     addUIFunctionMap,
-    UI_PLOTCONTAINER_LOCALITY_SELECTMODE,
+    UI_AA_PLOT_LOCALITY_SELECTMODE,
     UI_AA_LABEL_STARS,
     UI_AA_SETUP_COLORMODE,
     UI_AA_SETUP_MIN,
@@ -30,11 +30,11 @@ import {
     UI_AA_SETUP_POW,
     UI_AA_SETUP_MULT,
     UI_AA_LABEL_GRAPH,
-    UI_PLOTCONTAINER_XKEY,
-    UI_PLOTCONTAINER_YKEY,
+    UI_AA_PLOT_XKEY,
+    UI_AA_PLOT_YKEY,
     UI_AA_SETUP_NAME_MULT,
     UI_STARMAP_STAR_MIN_SIZE,
-    UI_PLOTCONTAINER_SELECT_NAMED_STARS
+    UI_AA_PLOT_SELECT_NAMED_STARS
 } from "../../ui/UIData.js";
 import { getAstronomyAtlasComponent } from "../../ui/WindowManager.js";
 import { gsh, tempToColorForStar } from "../time.js";
@@ -214,7 +214,7 @@ class Star {
         this._curCameraDistance = calculateDistance(frameCache.UI_CAMERA_OFFSET_VEC, this._cartesian);
         this._relCameraDist = (this._curCameraDistance / this._rootCameraDistance);
 
-        frameCache.newStarSelected |= this.doLocalitySelect(frameCache.UI_PLOTCONTAINER_LOCALITY_SELECTMODE, frameCache.selectRadius);
+        frameCache.newStarSelected |= this.doLocalitySelect(frameCache.UI_AA_PLOT_LOCALITY_SELECTMODE, frameCache.selectRadius);
 
         if (this.recalculateScreenFlag) {
             this.recalculateScreen(frameCache);
@@ -280,8 +280,8 @@ class FrameCache {
         this.UI_STARMAP_ZOOM = loadGD(UI_STARMAP_ZOOM)
         this.UI_CAMERA_OFFSET_VEC = loadGD(UI_CAMERA_OFFSET_VEC);
         this.UI_STARMAP_VIEWMODE = loadGD(UI_STARMAP_VIEWMODE);
-        this.UI_PLOTCONTAINER_LOCALITY_SELECTMODE = loadGD(UI_PLOTCONTAINER_LOCALITY_SELECTMODE);
-        this.selectRadius = Math.exp(loadGD(UI_PLOTCONTAINER_SELECTRADIUS));
+        this.UI_AA_PLOT_LOCALITY_SELECTMODE = loadGD(UI_AA_PLOT_LOCALITY_SELECTMODE);
+        this.selectRadius = Math.exp(loadGD(UI_AA_PLOT_SELECTRADIUS));
         this.UI_AA_SETUP_MULT = Math.exp(loadGD(UI_AA_SETUP_MULT));
         this.namedStarOpacityMult = 1 + Math.exp(loadGD(UI_AA_SETUP_NAME_MULT));
         this.starMinSize = Math.exp(loadGD(UI_STARMAP_STAR_MIN_SIZE));
@@ -308,10 +308,10 @@ export class StarHandler {
     resetStarLabels() {
         let graphLabelType = loadGD(UI_AA_LABEL_GRAPH);
         let starLabelType = loadGD(UI_AA_LABEL_STARS);
-        let selectNamedStars = loadGD(UI_PLOTCONTAINER_SELECT_NAMED_STARS);
+        let selectNamedStars = loadGD(UI_AA_PLOT_SELECT_NAMED_STARS);
 
-        let aX = loadGD(UI_PLOTCONTAINER_XKEY);
-        let aY = loadGD(UI_PLOTCONTAINER_YKEY);
+        let aX = loadGD(UI_AA_PLOT_XKEY);
+        let aY = loadGD(UI_AA_PLOT_YKEY);
         let aC = loadGD(UI_AA_SETUP_COLORMODE);
 
         this.stars.forEach((star) => {
@@ -573,7 +573,7 @@ export class StarHandler {
 
     renderStars() {
         this.frameCache.prepareFrameCache();
-        let fm = loadGD(UI_PLOTCONTAINER_FILTERMODE_STARS);
+        let fm = loadGD(UI_AA_SELECT_FILTERMODE_STARS);
         let im = loadGD(UI_AA_LABEL_STARS);
         let sm = loadGD(UI_AA_SETUP_COLORMODE);
 

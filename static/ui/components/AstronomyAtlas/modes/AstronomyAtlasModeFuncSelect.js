@@ -7,7 +7,7 @@ import { SliderGradientBackground } from "../../../elements/SliderGradientBackgr
 import { StarSpecializedValuePicker } from "../../../elements/StarSpecializedValuePicker.js";
 import { Text } from "../../../elements/Text.js";
 import { Toggle } from "../../../elements/Toggle.js";
-import { UI_CENTER, UI_PLOTCONTAINER_FILTERMODE_GRAPH, UI_PLOTCONTAINER_FILTERMODE_STARS, UI_PLOTCONTAINER_LOCALITY_SELECTMODE, UI_PLOTCONTAINER_SELECT_NAMED_STARS, UI_PLOTCONTAINER_SELECTRADIUS, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_STARMAP_STAR_MAX_SIZE } from "../../../UIData.js";
+import { UI_CENTER, UI_AA_SELECT_FILTERMODE_GRAPH, UI_AA_SELECT_FILTERMODE_STARS, UI_AA_PLOT_LOCALITY_SELECTMODE, UI_AA_PLOT_SELECT_NAMED_STARS, UI_AA_PLOT_SELECTRADIUS, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_STARMAP_STAR_MAX_SIZE } from "../../../UIData.js";
 
 export function AstronomyAtlasModeFuncSelect(window, container, sizeX, sizeY) {
     let row1 = new Container(window, 0, 0);
@@ -15,20 +15,20 @@ export function AstronomyAtlasModeFuncSelect(window, container, sizeX, sizeY) {
     let row3 = new Container(window, 0, 0);
     container.addElement(new Text(window, sizeX, getBaseUISize() * 3, UI_CENTER, "filter graph to"))
     container.addElement(row1);
-    row1.addElement(new RadioToggleLabel(window, sizeX / 3, getBaseUISize() * 3, UI_CENTER, "(no filter)", UI_PLOTCONTAINER_FILTERMODE_GRAPH, 0, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
-    row1.addElement(new RadioToggleLabel(window, sizeX / 3, getBaseUISize() * 3, UI_CENTER, "visible stars", UI_PLOTCONTAINER_FILTERMODE_GRAPH, 1, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
-    row1.addElement(new RadioToggleLabel(window, sizeX / 3, getBaseUISize() * 3, UI_CENTER, "selected stars", UI_PLOTCONTAINER_FILTERMODE_GRAPH, 2, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
+    row1.addElement(new RadioToggleLabel(window, sizeX / 3, getBaseUISize() * 3, UI_CENTER, "(no filter)", UI_AA_SELECT_FILTERMODE_GRAPH, 0, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
+    row1.addElement(new RadioToggleLabel(window, sizeX / 3, getBaseUISize() * 3, UI_CENTER, "visible stars", UI_AA_SELECT_FILTERMODE_GRAPH, 1, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
+    row1.addElement(new RadioToggleLabel(window, sizeX / 3, getBaseUISize() * 3, UI_CENTER, "selected stars", UI_AA_SELECT_FILTERMODE_GRAPH, 2, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
     container.addElement(new Text(window, sizeX, getBaseUISize() * 3, UI_CENTER, "filter stars to"))
     container.addElement(row2);
-    row2.addElement(new RadioToggleLabel(window, sizeX / 3, getBaseUISize() * 3, UI_CENTER, "(no filter)", UI_PLOTCONTAINER_FILTERMODE_STARS, 0, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
-    row2.addElement(new RadioToggleLabel(window, sizeX / 3, getBaseUISize() * 3, UI_CENTER, "graphed stars", UI_PLOTCONTAINER_FILTERMODE_STARS, 1, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
-    row2.addElement(new RadioToggleLabel(window, sizeX / 3, getBaseUISize() * 3, UI_CENTER, "selected stars", UI_PLOTCONTAINER_FILTERMODE_STARS, 2, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
+    row2.addElement(new RadioToggleLabel(window, sizeX / 3, getBaseUISize() * 3, UI_CENTER, "(no filter)", UI_AA_SELECT_FILTERMODE_STARS, 0, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
+    row2.addElement(new RadioToggleLabel(window, sizeX / 3, getBaseUISize() * 3, UI_CENTER, "graphed stars", UI_AA_SELECT_FILTERMODE_STARS, 1, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
+    row2.addElement(new RadioToggleLabel(window, sizeX / 3, getBaseUISize() * 3, UI_CENTER, "selected stars", UI_AA_SELECT_FILTERMODE_STARS, 2, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
     container.addElement(new Text(window, sizeX, getBaseUISize() * 3, UI_CENTER, "locality select mode"));
     container.addElement(row3);
-    row3.addElement(new RadioToggleLabel(window, sizeX / 3, getBaseUISize() * 3, UI_CENTER, "none", UI_PLOTCONTAINER_LOCALITY_SELECTMODE, 0, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
-    row3.addElement(new RadioToggleLabel(window, sizeX / 3, getBaseUISize() * 3, UI_CENTER, "local", UI_PLOTCONTAINER_LOCALITY_SELECTMODE, 1, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
-    row3.addElement(new RadioToggleLabel(window, sizeX / 3, getBaseUISize() * 3, UI_CENTER, "persist", UI_PLOTCONTAINER_LOCALITY_SELECTMODE, 2, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
+    row3.addElement(new RadioToggleLabel(window, sizeX / 3, getBaseUISize() * 3, UI_CENTER, "none", UI_AA_PLOT_LOCALITY_SELECTMODE, 0, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
+    row3.addElement(new RadioToggleLabel(window, sizeX / 3, getBaseUISize() * 3, UI_CENTER, "local", UI_AA_PLOT_LOCALITY_SELECTMODE, 1, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
+    row3.addElement(new RadioToggleLabel(window, sizeX / 3, getBaseUISize() * 3, UI_CENTER, "persist", UI_AA_PLOT_LOCALITY_SELECTMODE, 2, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
     container.addElement(new Text(window, sizeX, getBaseUISize() * 3, UI_CENTER, "locality select range"));
-    container.addElement(new SliderGradientBackground(window, UI_PLOTCONTAINER_SELECTRADIUS, sizeX, getBaseUISize() * 3, 0, 10, () => COLOR_WHITE, () => COLOR_BLACK));
-    container.addElement(new Toggle(window, sizeX, getBaseUISize() * 3, UI_CENTER, UI_PLOTCONTAINER_SELECT_NAMED_STARS, "select all named stars", () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
+    container.addElement(new SliderGradientBackground(window, UI_AA_PLOT_SELECTRADIUS, sizeX, getBaseUISize() * 3, 0, 10, () => COLOR_WHITE, () => COLOR_BLACK));
+    container.addElement(new Toggle(window, sizeX, getBaseUISize() * 3, UI_CENTER, UI_AA_PLOT_SELECT_NAMED_STARS, "select all named stars", () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
 }
