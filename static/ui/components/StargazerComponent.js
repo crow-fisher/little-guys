@@ -95,7 +95,9 @@ export class StargazerComponent extends LockedComponent {
             "recalculateScreenFlag",
             "_distance",
             "magnitude_absolute",
-            "p_feH"
+            "p_feH",
+            "parsecs",
+            "parsecs_log"
         ]
 
         graphAxisChoices.forEach((text) => {

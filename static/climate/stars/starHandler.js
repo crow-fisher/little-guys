@@ -99,6 +99,7 @@ class Star {
         this.recalculateColorFlag = true;
 
         this.parsecs = Math.abs(1 / (parallax / 1000));
+        this.parsecs_log = Math.log10(this.parsecs);
         this.magnitude_absolute = (magnitude + 5) - (5 * Math.log10(this.parsecs));
     }
 
@@ -115,10 +116,11 @@ class Star {
             case 4:
                 return this[tY].toFixed(2);
             case 5:
-            default:
                 if (tC == "default")
-                    return (this.name ?? null)
+                    return this.temperature.toFixed(0) + "K"
                 return this[tC].toFixed(2);
+            case 6:
+                return (this.name ?? null);
         }
     }
 

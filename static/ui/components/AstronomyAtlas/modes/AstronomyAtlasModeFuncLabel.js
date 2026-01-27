@@ -20,16 +20,18 @@ export function AstronomyAtlasModeFuncLabel(window, container, sizeX, sizeY) {
     row1.addElement(new RadioToggleLabel(window, sizeX / 4, getBaseUISize() * 3, UI_CENTER, "none", UI_AA_LABEL_STARS, 0, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
     row1.addElement(new RadioToggleLabel(window, sizeX / 4, getBaseUISize() * 3, UI_CENTER, "hipparcos", UI_AA_LABEL_STARS, 1, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
     row1.addElement(new RadioToggleLabel(window, sizeX / 4, getBaseUISize() * 3, UI_CENTER, "henry draper", UI_AA_LABEL_STARS, 2, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
-    row1.addElement(new RadioToggleLabel(window, sizeX / (4 * 3), getBaseUISize() * 3, UI_CENTER, "x", UI_AA_LABEL_STARS, 3, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
-    row1.addElement(new RadioToggleLabel(window, sizeX / (4 * 3), getBaseUISize() * 3, UI_CENTER, "y", UI_AA_LABEL_STARS, 4, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
+    row1.addElement(new RadioToggleLabel(window, sizeX / (4 * 6), getBaseUISize() * 3, UI_CENTER, "x", UI_AA_LABEL_STARS, 3, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
+    row1.addElement(new RadioToggleLabel(window, sizeX / (4 * 6), getBaseUISize() * 3, UI_CENTER, "y", UI_AA_LABEL_STARS, 4, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
     row1.addElement(new RadioToggleLabel(window, sizeX / (4 * 3), getBaseUISize() * 3, UI_CENTER, "color", UI_AA_LABEL_STARS, 5, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
+    row1.addElement(new RadioToggleLabel(window, sizeX / (4 * 3), getBaseUISize() * 3, UI_CENTER, "name", UI_AA_LABEL_STARS, 6, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
     
     row2.addElement(new RadioToggleLabel(window, sizeX / 4, getBaseUISize() * 3, UI_CENTER, "none", UI_AA_LABEL_GRAPH, 0, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
     row2.addElement(new RadioToggleLabel(window, sizeX / 4, getBaseUISize() * 3, UI_CENTER, "hipparcos", UI_AA_LABEL_GRAPH, 1, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
     row2.addElement(new RadioToggleLabel(window, sizeX / 4, getBaseUISize() * 3, UI_CENTER, "henry draper", UI_AA_LABEL_GRAPH, 2, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
-    row2.addElement(new RadioToggleLabel(window, sizeX / (4 * 3), getBaseUISize() * 3, UI_CENTER, "x", UI_AA_LABEL_GRAPH, 3, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
-    row2.addElement(new RadioToggleLabel(window, sizeX / (4 * 3), getBaseUISize() * 3, UI_CENTER, "y", UI_AA_LABEL_GRAPH, 4, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
+    row2.addElement(new RadioToggleLabel(window, sizeX / (4 * 6), getBaseUISize() * 3, UI_CENTER, "x", UI_AA_LABEL_GRAPH, 3, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
+    row2.addElement(new RadioToggleLabel(window, sizeX / (4 * 6), getBaseUISize() * 3, UI_CENTER, "y", UI_AA_LABEL_GRAPH, 4, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
     row2.addElement(new RadioToggleLabel(window, sizeX / (4 * 3), getBaseUISize() * 3, UI_CENTER, "color", UI_AA_LABEL_GRAPH, 5, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
+    row2.addElement(new RadioToggleLabel(window, sizeX / (4 * 3), getBaseUISize() * 3, UI_CENTER, "name", UI_AA_LABEL_GRAPH, 6, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
 }
 addUIFunctionMap(UI_AA_LABEL_STARS, () => gsh().resetStarLabels());
 addUIFunctionMap(UI_AA_LABEL_GRAPH, () => gsh().resetStarLabels());
