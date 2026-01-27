@@ -33,7 +33,8 @@ import {
     UI_PLOTCONTAINER_XKEY,
     UI_PLOTCONTAINER_YKEY,
     UI_AA_SETUP_NAME_MULT,
-    UI_STARMAP_STAR_MIN_SIZE
+    UI_STARMAP_STAR_MIN_SIZE,
+    UI_PLOTCONTAINER_SELECT_NAMED_STARS
 } from "../../ui/UIData.js";
 import { getAstronomyAtlasComponent } from "../../ui/WindowManager.js";
 import { gsh, tempToColorForStar } from "../time.js";
@@ -108,29 +109,29 @@ class Star {
         this.magnitude_absolute = (magnitude + 5) - (5 * Math.log10(this.parsecs));
     }
 
-    getLabelForType(labelType, tX, tY, tC) {
-        if (this.name == null && !(this.selected || this.localitySelect)) {
-            return null;
+    getLabelForType(labelType, selectNamed, tX, tY, tC) {
+        if (this.selected || this.localitySelect || (selectNamed && this.name != null)) {
+            switch (labelType) {
+                case 0:
+                    return null;
+                case 1:
+                    return this.id;
+                case 2:
+                    return this.hd_number;
+                case 3:
+                    return this[tX].toFixed(2);
+                case 4:
+                    return this[tY].toFixed(2);
+                case 5:
+                    if (tC == "default")
+                        return this.temperature.toFixed(0) + "K"
+                    return this[tC].toFixed(2);
+                case 6:
+                    return (this.name ?? null);
+            }
         }
+        return null;
 
-        switch (labelType) {
-            case 0:
-                return null;
-            case 1:
-                return this.id;
-            case 2:
-                return this.hd_number;
-            case 3:
-                return this[tX].toFixed(2);
-            case 4:
-                return this[tY].toFixed(2);
-            case 5:
-                if (tC == "default")
-                    return this.temperature.toFixed(0) + "K"
-                return this[tC].toFixed(2);
-            case 6:
-                return (this.name ?? null);
-        }
     }
 
     setFeH(feH) {
@@ -160,18 +161,6 @@ class Star {
 
         this.alt_color_arr = combineColorMult(feHMinColor, feHMaxColor, this._rac_v);
         this.alt_color = rgbToRgba(...this.alt_color_arr, this._opacity * Math.exp(loadGD(UI_AA_SETUP_MULT)));
-    }
-
-    getActiveId(im) {
-        switch (im) {
-            case 0:
-                return null;
-            case 1:
-                return this.id;
-            case 2:
-            default:
-                return this.hd_number;
-        }
     }
 
     recalculateScreen(frameCache) {
@@ -319,14 +308,15 @@ export class StarHandler {
     resetStarLabels() {
         let graphLabelType = loadGD(UI_AA_LABEL_GRAPH);
         let starLabelType = loadGD(UI_AA_LABEL_STARS);
+        let selectNamedStars = loadGD(UI_PLOTCONTAINER_SELECT_NAMED_STARS);
 
         let aX = loadGD(UI_PLOTCONTAINER_XKEY);
         let aY = loadGD(UI_PLOTCONTAINER_YKEY);
         let aC = loadGD(UI_AA_SETUP_COLORMODE);
 
         this.stars.forEach((star) => {
-            star.starLabel = star.getLabelForType(starLabelType, aX, aY, aC);
-            star.graphLabel = star.getLabelForType(graphLabelType, aX, aY, aC);
+            star.starLabel = star.getLabelForType(starLabelType, selectNamedStars, aX, aY, aC);
+            star.graphLabel = star.getLabelForType(graphLabelType, selectNamedStars, aX, aY, aC);
         });
     }
 
@@ -608,7 +598,7 @@ export class StarHandler {
         if (this.frameCache.newStarSelected) {
             this.resetStarLabels();
         }
-        
+
     }
 
     renderConstellations() {

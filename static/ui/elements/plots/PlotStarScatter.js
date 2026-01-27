@@ -6,7 +6,7 @@ import { MAIN_CONTEXT } from "../../../index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "../../../keyboard.js";
 import { getLastLastMoveOffset, getLastMouseDownStart, getLastMouseUpEvent, getLastMoveOffset, isLeftMouseClicked } from "../../../mouse.js";
 import { resetViewportButtonOffset } from "../../components/AstronomyAtlas/modes/AstronomyAtlasModeFuncPlot.js";
-import { loadGD, saveGD, UI_PLOTCONTAINER_AXISLABELS, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_OFFSET_X, UI_PLOTCONTAINER_OFFSET_Y, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_FILTERMODE_STARS, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_XPADDING, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_YPADDING, UI_PLOTCONTAINER_ZOOM_X, UI_PLOTCONTAINER_ZOOM_Y, UI_AA_LABEL_STARS, UI_PLOTCONTAINER_FILTERMODE_GRAPH, UI_AA_LABEL_GRAPH, UI_STARMAP_VIEWMODE, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_DISPLAYTYPE_NAME_MULT, UI_AA_SETUP_NAME_MULT } from "../../UIData.js";
+import { loadGD, saveGD, UI_PLOTCONTAINER_AXISLABELS, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_OFFSET_X, UI_PLOTCONTAINER_OFFSET_Y, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_FILTERMODE_STARS, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_XPADDING, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_YPADDING, UI_PLOTCONTAINER_ZOOM_X, UI_PLOTCONTAINER_ZOOM_Y, UI_AA_LABEL_STARS, UI_PLOTCONTAINER_FILTERMODE_GRAPH, UI_AA_LABEL_GRAPH, UI_STARMAP_VIEWMODE, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_DISPLAYTYPE_NAME_MULT, UI_AA_SETUP_NAME_MULT, UI_PLOTCONTAINER_SELECT_NAMED_STARS } from "../../UIData.js";
 import { WindowElement } from "../../Window.js";
 
 export class PlotStarScatter extends WindowElement {
@@ -63,10 +63,10 @@ export class PlotStarScatter extends WindowElement {
             return;
         }
         let opacity = processRangeToOne(loadGD(UI_PLOTCONTAINER_POINTOPACITY) * this.lengthCap);
-        let namedStarOpacityAddition = processRangeToOne(loadGD(UI_AA_SETUP_NAME_MULT))
+        let namedStarOpacityAddition = loadGD(UI_PLOTCONTAINER_SELECT_NAMED_STARS) ? processRangeToOne(loadGD(UI_AA_SETUP_NAME_MULT)) : 0;
         let star;
 
-        let filteredStars = Array.from(gsh().stars.filter((star) => star.selected || star.localitySelect));
+        let filteredStars = Array.from(gsh().stars.filter((star) => (loadGD(UI_PLOTCONTAINER_SELECT_NAMED_STARS) ? star.name != null : false) || star.selected || star.localitySelect));
         let filteredStarsIdx = 0;
 
         for (let i = 0; i < this.lengthCap; i++) {
@@ -83,11 +83,9 @@ export class PlotStarScatter extends WindowElement {
 
             let x = star[this.xKey];
             let y = star[this.yKey];
-
             if (isNaN(x) || isNaN(y) || !isFinite(x) || !isFinite(y)) {
                 continue;
             }
-
             this.xValues[i] = x;
             this.yValues[i] = y;
             this.sValues[i] = star;
@@ -95,7 +93,6 @@ export class PlotStarScatter extends WindowElement {
         }
 
         this.lastFrameStarsRenderedColorCalc = this.lengthCap;
-
         this.xS = calculateStatistics(this.xValues);
         this.yS = calculateStatistics(this.yValues);
     }
@@ -148,7 +145,6 @@ export class PlotStarScatter extends WindowElement {
         }
 
         this.lastFrameStarsRenderedColorCalc = this.lengthCap;
-
         this.xS = calculateStatistics(this.xValues);
         this.yS = calculateStatistics(this.yValues);
     }
