@@ -50,9 +50,9 @@ export function AstronomyAtlasModeFuncPlot(_this, container, sizeX, sizeY) {
     configurePlotConditionalContanier.addElement(new SliderGradientBackground(_this.window, UI_AA_PLOT_HEIGHT, sizeX, textHeight, 10, 100, () => COLOR_WHITE, () => COLOR_BLACK));
 
     configurePlotConditionalContanier.addElement(new Text(_this.window, sizeX, textHeight, UI_CENTER, "point size"))
-    configurePlotConditionalContanier.addElement(new SliderGradientBackground(_this.window, UI_AA_PLOT_POINTSIZE, sizeX, textHeight, -10, 4, () => COLOR_WHITE, () => COLOR_BLACK));
+    configurePlotConditionalContanier.addElement(new SliderGradientBackground(_this.window, UI_AA_PLOT_POINTSIZE, sizeX, textHeight, 1, 4, () => COLOR_WHITE, () => COLOR_BLACK));
 
     configurePlotConditionalContanier.addElement(new Text(_this.window, sizeX, textHeight, UI_CENTER, "point opacity"))
-    configurePlotConditionalContanier.addElement(new SliderGradientBackground(_this.window, UI_AA_PLOT_POINTOPACITY, sizeX, textHeight, -.0004, .00001, () => COLOR_WHITE, () => COLOR_BLACK));
+    configurePlotConditionalContanier.addElement(new SliderGradientBackground(_this.window, UI_AA_PLOT_POINTOPACITY, sizeX, textHeight, -.0008, .00001, () => COLOR_WHITE, () => COLOR_BLACK));
 
 }

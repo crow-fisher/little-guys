@@ -22,7 +22,7 @@ export class PlotStarScatter extends WindowElement {
 
         this.numStars = 0;
         this.plottedStars = 0;
-        this.lastFrameStarsRenderedColorCalc = 0;
+        this.lastNumRenderedPoints = 0;
 
         this.valueRange = [0, 1, 0, 1];
         this.preparePointFlag = true;
@@ -30,7 +30,7 @@ export class PlotStarScatter extends WindowElement {
 
     resetCameraPosition() {
         saveGD(UI_CAMERA_OFFSET_VEC, [0, 0, 0, 0]);
-        saveGD(UI_CAMERA_OFFSET_VEC_DT, [0, 0, 0, 0]); 
+        saveGD(UI_CAMERA_OFFSET_VEC_DT, [0, 0, 0, 0]);
         getAstronomyAtlasComponent().plotStarScatter.flagRepreparePoints();
     }
 
@@ -78,6 +78,10 @@ export class PlotStarScatter extends WindowElement {
             this.preparePointFlag = false;
             this.prepareGraphPoints();
         }
+        if (this._shouldRecalculateColor) {
+            this.preparePointColor();
+            this._shouldRecalculateColor = false;
+        }
 
         this.renderGraph(startX, startY);
     }
@@ -121,7 +125,7 @@ export class PlotStarScatter extends WindowElement {
             this.rValues[i] = this.colorFromRenderModeStar(star, opacity, namedStarOpacityAddition);
         }
 
-        this.lastFrameStarsRenderedColorCalc = this.lengthCap;
+        this.lastNumRenderedPoints = this.lengthCap;
         this.xS = calculateStatistics(this.xValues);
         this.yS = calculateStatistics(this.yValues);
     }
@@ -136,8 +140,6 @@ export class PlotStarScatter extends WindowElement {
         }
 
         let idxMult = gsh().stars.length / (this.lengthCap);
-        let opacity = processRangeToOne(loadGD(UI_AA_PLOT_POINTOPACITY) * this.lengthCap);
-        let namedStarOpacityAddition = processRangeToOne(loadGD(UI_AA_SETUP_NAME_MULT));
         let star, iO;
 
         gsh().stars.forEach((star) => star.recalculateAltColor());
@@ -164,6 +166,16 @@ export class PlotStarScatter extends WindowElement {
 
     }
 
+    preparePointColor() {
+        let opacity = processRangeToOne(loadGD(UI_AA_PLOT_POINTOPACITY) * this.lengthCap);
+        let namedStarOpacityAddition = processRangeToOne(loadGD(UI_AA_SETUP_NAME_MULT));
+        for (let i = 0; i < this.lengthCap; i++) {
+            if (this.sValues[i] != null) {
+                this.rValues[i] = this.colorFromRenderModeStar(this.sValues[i], opacity, namedStarOpacityAddition);
+            }
+        };
+
+    }
     prepareGraphPoints() {
         this.xS = calculateStatistics(this.xValues);
         this.yS = calculateStatistics(this.yValues);
@@ -178,6 +190,8 @@ export class PlotStarScatter extends WindowElement {
             this.yS[3]
         ];
         let x, y, xo, yo, xp, yp, star;
+
+        let numRenderedPoints = 0;
 
         for (let i = 0; i < this.numStars; i++) {
             if (this.sValues[i] == null) {
@@ -206,10 +220,16 @@ export class PlotStarScatter extends WindowElement {
             y = invlerp(this.valueRange[2], this.valueRange[3], y);
 
             xo = x * this.sizeX;
-            yo = y * ((this.sizeY + resetViewportButtonOffset));
+            yo = y * this.sizeY;
 
             star.graphX = xo;
             star.graphY = yo;
+
+            numRenderedPoints++;
+        }
+
+        if ((numRenderedPoints / this.lastNumRenderedPoints < 0.95 || this.lastNumRenderedPoints / numRenderedPoints < 0.95)) {
+            this._shouldRecalculateColor = true;
         }
     }
 
@@ -276,7 +296,7 @@ export class PlotStarScatter extends WindowElement {
             this.rValues[i] = this.colorFromRenderModeStar(star, opacity, namedStarOpacityAddition);
         }
 
-        this.lastFrameStarsRenderedColorCalc = this.lengthCap;
+        this.lastNumRenderedPoints = this.lengthCap;
         this.xS = calculateStatistics(this.xValues);
         this.yS = calculateStatistics(this.yValues);
     }
@@ -309,7 +329,7 @@ export class PlotStarScatter extends WindowElement {
             if (star == null || !star.graphVisible) {
                 continue;
             }
-            
+
             if (star.selected) {
                 sizeCur = size * 3;
             } else {
@@ -331,93 +351,7 @@ export class PlotStarScatter extends WindowElement {
     }
 
     _renderGraph(startX, startY) {
-        this.xBounds = [
-            this.xS[2],
-            this.xS[3]
-        ];
-        this.yBounds = [
-            this.yS[2],
-            this.yS[3]
-        ];
 
-        this.paddingX = loadGD(UI_AA_PLOT_POINTSIZE) * 2;
-        this.paddingY = loadGD(UI_AA_PLOT_POINTSIZE) * 2;
-
-        let size = Math.exp(loadGD(UI_AA_PLOT_POINTSIZE)), sizeCur = size;
-        let x, y, xo, yo, xa, ya, star;
-        let graphFilterMode = loadGD(UI_AA_SELECT_FILTERMODE_GRAPH);
-        let namedStarOpacityAddition = processRangeToOne(loadGD(UI_AA_SETUP_NAME_MULT))
-
-        let frameStarsRendered = 0;
-        for (let i = 0; i < this.lengthCap; i++) {
-            star = this.sValues[i];
-            if (star == null || this.rValues[i] == null) {
-                continue;
-            }
-            x = invlerp(...this.xBounds, this.xValues[i]);
-            y = invlerp(...this.yBounds, this.yValues[i]);
-            if (x < this.valueRange[0] || x > this.valueRange[1] || y < this.valueRange[2] || y > this.valueRange[3]) {
-                star.graphVisible = false;
-                continue;
-            } else {
-                star.graphVisible = true;
-            }
-
-            if (graphFilterMode == 1) {
-                if (!star._fovVisible) {
-                    continue;
-                }
-            } else if (graphFilterMode == 2) {
-                if (!(star.selected || star.localitySelect)) {
-                    continue;
-                }
-            }
-
-            x = invlerp(this.valueRange[0], this.valueRange[1], x);
-            y = invlerp(this.valueRange[2], this.valueRange[3], y);
-
-            xo = x * (this.sizeX - 2 * this.paddingX);
-            yo = y * ((this.sizeY + resetViewportButtonOffset));
-
-            xa = xo + startX + this.paddingX;
-            ya = yo + startY + this.paddingY;
-
-            star.graphX = xo;
-            star.graphY = yo;
-
-            if (this.sValues[i].selected) {
-                sizeCur = size * 3;
-            } else {
-                sizeCur = size;
-            }
-
-            MAIN_CONTEXT.fillStyle = this.rValues[i];
-            MAIN_CONTEXT.beginPath();
-            MAIN_CONTEXT.arc(xa, ya, sizeCur, 0, 2 * Math.PI, false);
-            MAIN_CONTEXT.fill();
-
-            if (star.graphLabel) {
-                MAIN_CONTEXT.font = getBaseUISize() * 3 + "px courier";
-                MAIN_CONTEXT.fillStyle = hexToRgb(...(star.alt_color_arr ?? star.color));
-                MAIN_CONTEXT.fillText(star.graphLabel, xa + MAIN_CONTEXT.measureText(star.graphLabel).width * 0.65, ya);
-            }
-            frameStarsRendered += 1;
-        }
-
-        if (this._shouldRecalculateColor || frameStarsRendered / this.lastFrameStarsRenderedColorCalc < 0.95 || this.lastFrameStarsRenderedColorCalc / frameStarsRendered < 0.95) {
-            let opacity = processRangeToOne(loadGD(UI_AA_PLOT_POINTOPACITY) * frameStarsRendered);
-            for (let i = 0; i < this.lengthCap; i++) {
-                if (this.sValues[i] != null) {
-                    this.rValues[i] = this.colorFromRenderModeStar(this.sValues[i], opacity, namedStarOpacityAddition);
-                }
-            }
-            this.lastFrameStarsRenderedColorCalc = frameStarsRendered;
-        }
-
-        this.renderGridLines(startX, startY);
-        this.renderAxisLabels(startX, startY);
-
-        MAIN_CONTEXT.fillStyle = COLOR_WHITE;
     }
 
     triggerRecalculateColor() {
