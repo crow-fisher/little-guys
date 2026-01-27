@@ -283,7 +283,7 @@ addUIFunctionMap(UI_PLOTCONTAINER_YKEY, () => astronomyAtlas.updatePlotContainer
 addUIFunctionMap(UI_PLOTCONTAINER_POINTOPACITY, () => astronomyAtlas.updatePlotContainers())
 
 addUIFunctionMap(UI_PLOTCONTAINER_WIDTH, () => astronomyAtlas.updateSizeX(loadGD(UI_PLOTCONTAINER_WIDTH)));
-addUIFunctionMap(UI_PLOTCONTAINER_HEIGHT, () => astronomyAtlas.plotStarScatter.updateSizeY(loadGD(UI_PLOTCONTAINER_HEIGHT)));
+addUIFunctionMap(UI_PLOTCONTAINER_HEIGHT, () => astronomyAtlas.updateSizeY(loadGD(UI_PLOTCONTAINER_HEIGHT)));
 addUIFunctionMap(UI_STARMAP_VIEWMODE, () => astronomyAtlas.updatePlotContainers());
 addUIFunctionMap(UI_STARMAP_FEH_MIN_VALUE, () => astronomyAtlas.updatePlotContainers());
 addUIFunctionMap(UI_STARMAP_FEH_WINDOW_SIZE, () => astronomyAtlas.updatePlotContainers());

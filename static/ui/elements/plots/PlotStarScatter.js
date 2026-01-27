@@ -5,6 +5,7 @@ import { calculateStatistics, hexToRgb, invlerp, processRangeToOne, rgbToRgba, r
 import { MAIN_CONTEXT } from "../../../index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "../../../keyboard.js";
 import { getLastLastMoveOffset, getLastMouseDownStart, getLastMouseUpEvent, getLastMoveOffset, isLeftMouseClicked } from "../../../mouse.js";
+import { resetViewportButtonOffset } from "../../components/AstronomyAtlas/modes/AstronomyAtlasModeFuncPlot.js";
 import { loadGD, saveGD, UI_PLOTCONTAINER_AXISLABELS, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_OFFSET_X, UI_PLOTCONTAINER_OFFSET_Y, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_FILTERMODE_STARS, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_XPADDING, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_YPADDING, UI_PLOTCONTAINER_ZOOM_X, UI_PLOTCONTAINER_ZOOM_Y, UI_AA_LABEL_STARS, UI_PLOTCONTAINER_FILTERMODE_GRAPH, UI_AA_LABEL_GRAPH, UI_STARMAP_VIEWMODE, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_DISPLAYTYPE_NAME_MULT, UI_AA_SETUP_NAME_MULT } from "../../UIData.js";
 import { WindowElement } from "../../Window.js";
 
@@ -36,7 +37,6 @@ export class PlotStarScatter extends WindowElement {
         if (gsh()?.stars == null) {
             return;
         }
-
         if (loadGD(UI_PLOTCONTAINER_FILTERMODE_GRAPH) == 2) {
             if (gsh()?.frameCache?.newStarSelected) {
                 this.reloadGraph();
@@ -181,8 +181,8 @@ export class PlotStarScatter extends WindowElement {
             this.yS[3]
         ];
 
-        this.paddingX = this.sizeX / loadGD(UI_PLOTCONTAINER_XPADDING);
-        this.paddingY = this.sizeY / loadGD(UI_PLOTCONTAINER_YPADDING);
+        this.paddingX = loadGD(UI_PLOTCONTAINER_POINTSIZE) * 2;
+        this.paddingY = loadGD(UI_PLOTCONTAINER_POINTSIZE) * 2;
 
         let size = Math.exp(loadGD(UI_PLOTCONTAINER_POINTSIZE)), sizeCur = size;
         let x, y, xo, yo, xa, ya, star;
@@ -218,7 +218,7 @@ export class PlotStarScatter extends WindowElement {
             y = invlerp(this.vr[2], this.vr[3], y);
 
             xo = x * (this.sizeX - 2 * this.paddingX);
-            yo = y * (this.sizeY - 2 * this.paddingY);
+            yo = y * ((this.sizeY + resetViewportButtonOffset));
 
             xa = xo + startX + this.paddingX;
             ya = yo + startY + this.paddingY;

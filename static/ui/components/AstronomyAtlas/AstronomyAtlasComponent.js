@@ -29,8 +29,8 @@ export class AstronomyAtlasComponent extends Component {
         let container = new Container(this.window, 0, 1);
         this.window.container = container;
 
-        let plotSizeX = loadGD(UI_PLOTCONTAINER_WIDTH);
-        let plotSizeY = loadGD(UI_PLOTCONTAINER_HEIGHT);
+        let plotSizeX = getBaseUISize() * loadGD(UI_PLOTCONTAINER_WIDTH);
+        let plotSizeY = getBaseUISize() * loadGD(UI_PLOTCONTAINER_HEIGHT);
 
         let h1 = getBaseUISize() * 4;
         let h2 = getBaseUISize() * 3;
@@ -144,14 +144,18 @@ export class AstronomyAtlasComponent extends Component {
 
         // controlsContainer.addElement(new Text(this.window, this.sizeX, getBaseUISize() * 3, UI_CENTER, "locality select range"));
         // controlsContainer.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_SELECTRADIUS, this.sizeX, getBaseUISize() * 3, 0, 10, () => COLOR_WHITE, () => COLOR_BLACK));
-
     }
 
     updateSizeX(sizeX) {
+        sizeX *= getBaseUISize();
         let mult = sizeX / this.sizeX;
         this.sizeX = sizeX;
         this.plotStarScatter.updateSizeX(sizeX);
         this.window.container.elements.forEach((el) => el.updateSizeXByMult(mult));
+    }
+    updateSizeY(sizeY) {
+        sizeY *= getBaseUISize();
+        this.plotStarScatter.updateSizeY(sizeY);
     }
 
     updatePlotContainers() {

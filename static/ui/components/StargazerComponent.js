@@ -108,10 +108,10 @@ export class StargazerComponent extends LockedComponent {
         });
 
         container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "graph x-size"))
-        container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_WIDTH, sizeX, sliderHeight, 250, 4000, () => COLOR_WHITE, () => COLOR_BLACK));
+        container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_WIDTH, sizeX, sliderHeight, 10, 100, () => COLOR_WHITE, () => COLOR_BLACK));
 
         container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "graph y-size"))
-        container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_HEIGHT, sizeX, sliderHeight, 250, 2000, () => COLOR_WHITE, () => COLOR_BLACK));
+        container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_HEIGHT, sizeX, sliderHeight, 10, 100, () => COLOR_WHITE, () => COLOR_BLACK));
 
         container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "point size"))
         container.addElement(new SliderGradientBackground(this.window, UI_PLOTCONTAINER_POINTSIZE, sizeX, sliderHeight, -10, 4, () => COLOR_WHITE, () => COLOR_BLACK));
