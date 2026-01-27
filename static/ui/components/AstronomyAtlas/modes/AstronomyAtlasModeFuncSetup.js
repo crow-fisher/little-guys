@@ -3,7 +3,7 @@ import { getBaseUISize } from "../../../../canvas.js";
 import { getActiveClimate } from "../../../../climate/climateManager.js";
 import { gsh } from "../../../../climate/time.js";
 import { COLOR_BLACK, COLOR_WHITE } from "../../../../colors.js";
-import { lerp } from "../../../../common.js";
+import { lerp, processRangeToOne } from "../../../../common.js";
 import { ConditionalContainer } from "../../../ConditionalContainer.js";
 import { Container } from "../../../Container.js";
 import { RadioToggleLabel } from "../../../elements/RadioToggleLabel.js";
@@ -11,7 +11,7 @@ import { SliderGradientBackground } from "../../../elements/SliderGradientBackgr
 import { StarSpecializedValuePicker } from "../../../elements/StarSpecializedValuePicker.js";
 import { Text } from "../../../elements/Text.js";
 import { ToggleFunctionalText } from "../../../elements/ToggleFunctionalText.js";
-import { addUIFunctionMap, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_WINDOW_SIZE, UI_AA_SETUP_MIN, UI_AA_SETUP_POW, UI_CENTER, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_STARMAP_STAR_MAX_SIZE, UI_AA_SETUP_DISPLAYTYPE_MAX, UI_AA_SETUP_DISPLAYTYPE_MIN, UI_AA_SETUP_DISPLAYTYPE_WINDOW, loadGD, UI_AA_SETUP_MULT, UI_AA_SETUP_DISPLAYTYPE_MULT } from "../../../UIData.js";
+import { addUIFunctionMap, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_WINDOW_SIZE, UI_AA_SETUP_MIN, UI_AA_SETUP_POW, UI_CENTER, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_STARMAP_STAR_MAX_SIZE, UI_AA_SETUP_DISPLAYTYPE_MAX, UI_AA_SETUP_DISPLAYTYPE_MIN, UI_AA_SETUP_DISPLAYTYPE_WINDOW, loadGD, UI_AA_SETUP_MULT, UI_AA_SETUP_DISPLAYTYPE_MULT, UI_AA_SETUP_DISPLAYTYPE_NAME_MULT, UI_AA_SETUP_NAME_MULT } from "../../../UIData.js";
 import { getAstronomyAtlasComponent } from "../../../WindowManager.js";
 
 export const astronomyAtlasSetupChoices = [
@@ -61,12 +61,16 @@ export function AstronomyAtlasModeFuncSetup(window, container, sizeX, sizeY) {
     let windowRow = new Container(window, 0, 0);
     let powRow = new Container(window, 0, 0);
     let multRow = new Container(window, 0, 0);
+    let nameMultRow = new Container(window, 0, 0);
 
     let f1 = .25;
     let f2 = 2 / 3;
 
     let specialModeControlConditionalContainer = new ConditionalContainer(window, 0, 1, () => loadGD(UI_AA_SETUP_COLORMODE) != "default");
+    
     container.addElement(specialModeControlConditionalContainer);
+    container.addElement(nameMultRow);
+
     specialModeControlConditionalContainer.addElement(minRow);
     specialModeControlConditionalContainer.addElement(windowRow);
     specialModeControlConditionalContainer.addElement(powRow);
@@ -94,13 +98,24 @@ export function AstronomyAtlasModeFuncSetup(window, container, sizeX, sizeY) {
             (loadGD(UI_AA_SETUP_DISPLAYTYPE_MULT) ? (Math.exp(loadGD(UI_AA_SETUP_MULT))) : loadGD(UI_AA_SETUP_MULT)).toFixed(2) + "",
          () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
 
+    nameMultRow.addElement(new Text(window, sizeX * f1, textHeight, UI_CENTER, "name brightness boost"));
+    nameMultRow.addElement(new SliderGradientBackground(window, UI_AA_SETUP_NAME_MULT, sizeX * (f2 - f1), textHeight, -10, 10, () => COLOR_BLACK, () => COLOR_WHITE));
+    nameMultRow.addElement(new ToggleFunctionalText(window, sizeX * (1 - f2), textHeight, UI_CENTER, UI_AA_SETUP_DISPLAYTYPE_MULT,
+        () => 
+            (loadGD(UI_AA_SETUP_DISPLAYTYPE_MULT) ? (processRangeToOne(loadGD(UI_AA_SETUP_NAME_MULT))) : loadGD(UI_AA_SETUP_NAME_MULT)).toFixed(2) + "",
+         () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
 }
 
 
-let rsag = () => {gsh().stars.forEach((star) => star.recalculateAltColor()); getAstronomyAtlasComponent().plotStarScatter._shouldRecalculateColor = true;}
+let rsag = () => {
+    gsh().stars.forEach((star) => star.recalculateAltColor());
+    getAstronomyAtlasComponent().plotStarScatter._shouldRecalculateColor = true;
+    gsh().resetStarLabels();
+}
 
 addUIFunctionMap(UI_AA_SETUP_COLORMODE, rsag);
 addUIFunctionMap(UI_AA_SETUP_MIN, rsag);
 addUIFunctionMap(UI_AA_SETUP_WINDOW_SIZE, rsag);
 addUIFunctionMap(UI_AA_SETUP_POW, rsag);
 addUIFunctionMap(UI_AA_SETUP_MULT, rsag);
+addUIFunctionMap(UI_AA_SETUP_NAME_MULT, rsag);

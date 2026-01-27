@@ -5,7 +5,7 @@ import { calculateStatistics, hexToRgb, invlerp, processRangeToOne, rgbToRgba, r
 import { MAIN_CONTEXT } from "../../../index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "../../../keyboard.js";
 import { getLastLastMoveOffset, getLastMouseDownStart, getLastMouseUpEvent, getLastMoveOffset, isLeftMouseClicked } from "../../../mouse.js";
-import { loadGD, saveGD, UI_PLOTCONTAINER_AXISLABELS, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_OFFSET_X, UI_PLOTCONTAINER_OFFSET_Y, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_FILTERMODE_STARS, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_XPADDING, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_YPADDING, UI_PLOTCONTAINER_ZOOM_X, UI_PLOTCONTAINER_ZOOM_Y, UI_PLOTCONTAINER_IDSYSTEM_STARS, UI_PLOTCONTAINER_FILTERMODE_GRAPH, UI_PLOTCONTAINER_IDSYSTEM_GRAPH, UI_STARMAP_VIEWMODE, UI_AA_SETUP_COLORMODE } from "../../UIData.js";
+import { loadGD, saveGD, UI_PLOTCONTAINER_AXISLABELS, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_OFFSET_X, UI_PLOTCONTAINER_OFFSET_Y, UI_PLOTCONTAINER_POINTOPACITY, UI_PLOTCONTAINER_POINTSIZE, UI_PLOTCONTAINER_FILTERMODE_STARS, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_XPADDING, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_YPADDING, UI_PLOTCONTAINER_ZOOM_X, UI_PLOTCONTAINER_ZOOM_Y, UI_AA_LABEL_STARS, UI_PLOTCONTAINER_FILTERMODE_GRAPH, UI_AA_LABEL_GRAPH, UI_STARMAP_VIEWMODE, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_DISPLAYTYPE_NAME_MULT, UI_AA_SETUP_NAME_MULT } from "../../UIData.js";
 import { WindowElement } from "../../Window.js";
 
 export class PlotStarScatter extends WindowElement {
@@ -39,8 +39,8 @@ export class PlotStarScatter extends WindowElement {
 
         if (loadGD(UI_PLOTCONTAINER_FILTERMODE_GRAPH) == 2) {
             if (gsh()?.frameCache?.newStarSelected) {
-                gsh().frameCache.newStarSelected = false;
                 this.reloadGraph();
+                gsh().frameCache.newStarSelected = false;
             }
         }
         if (this.xKey == null || this.yKey == null || this.numStars != gsh().stars.length) {
@@ -63,8 +63,9 @@ export class PlotStarScatter extends WindowElement {
             return;
         }
         let opacity = processRangeToOne(loadGD(UI_PLOTCONTAINER_POINTOPACITY) * this.lengthCap);
-        let im = loadGD(UI_PLOTCONTAINER_IDSYSTEM_STARS);
+        let im = loadGD(UI_AA_LABEL_STARS);
         let starRenderMode = loadGD(UI_STARMAP_VIEWMODE);
+        let namedStarOpacityAddition = processRangeToOne(loadGD(UI_AA_SETUP_NAME_MULT))
         let star;
 
         let filteredStars = Array.from(gsh().stars.filter((star) => star.selected || star.localitySelect));
@@ -82,8 +83,6 @@ export class PlotStarScatter extends WindowElement {
                 continue;
             }
 
-            star.activeId = star.getActiveId(im);
-
             let x = star[this.xKey];
             let y = star[this.yKey];
 
@@ -94,7 +93,7 @@ export class PlotStarScatter extends WindowElement {
             this.xValues[i] = x;
             this.yValues[i] = y;
             this.sValues[i] = star;
-            this.rValues[i] = this.colorFromRenderModeStar(this.sValues[i], opacity);
+            this.rValues[i] = this.colorFromRenderModeStar(this.sValues[i], opacity, namedStarOpacityAddition);
         }
 
         this.lastFrameStarsRenderedColorCalc = this.lengthCap;
@@ -108,6 +107,7 @@ export class PlotStarScatter extends WindowElement {
         this.yKey = loadGD(UI_PLOTCONTAINER_YKEY);
         this.numStars = gsh().stars.length;
 
+
         if (this.xKey == null || this.yKey == null || gsh().stars.length == 0) {
             return;
         }
@@ -120,7 +120,7 @@ export class PlotStarScatter extends WindowElement {
 
         let idxMult = gsh().stars.length / (this.lengthCap);
         let opacity = processRangeToOne(loadGD(UI_PLOTCONTAINER_POINTOPACITY) * this.lengthCap);
-        let starRenderMode = loadGD(UI_STARMAP_VIEWMODE);
+        let namedStarOpacityAddition = processRangeToOne(loadGD(UI_AA_SETUP_NAME_MULT))
 
         let star, iO;
         for (let i = 0; i < this.lengthCap; i++) {
@@ -141,7 +141,7 @@ export class PlotStarScatter extends WindowElement {
             this.xValues[i] = x;
             this.yValues[i] = y;
             this.sValues[i] = star;
-            this.rValues[i] = this.colorFromRenderModeStar(this.sValues[i], opacity);
+            this.rValues[i] = this.colorFromRenderModeStar(this.sValues[i], opacity, namedStarOpacityAddition);
         }
 
         this.lastFrameStarsRenderedColorCalc = this.lengthCap;
@@ -150,7 +150,10 @@ export class PlotStarScatter extends WindowElement {
         this.yS = calculateStatistics(this.yValues);
     }
 
-    colorFromRenderModeStar(star, opacity) {
+    colorFromRenderModeStar(star, opacity, namedStarOpacityAddition) {
+        if (star.name) {
+            return rgbToRgba(...(star.alt_color_arr ?? star.color), Math.min(1, opacity + namedStarOpacityAddition));
+        }
         return rgbToRgba(...(star.alt_color_arr ?? star.color), opacity);
     }
 
@@ -181,7 +184,8 @@ export class PlotStarScatter extends WindowElement {
         let size = Math.exp(loadGD(UI_PLOTCONTAINER_POINTSIZE)), sizeCur = size;
         let x, y, xo, yo, xa, ya, star;
         let fm = loadGD(UI_PLOTCONTAINER_FILTERMODE_GRAPH);
-        let im = loadGD(UI_PLOTCONTAINER_IDSYSTEM_GRAPH);
+        let namedStarOpacityAddition = processRangeToOne(loadGD(UI_AA_SETUP_NAME_MULT))
+        let im = loadGD(UI_AA_LABEL_GRAPH);
         let starRenderMode = loadGD(UI_AA_SETUP_COLORMODE);
 
         let frameStarsRendered = 0;
@@ -232,12 +236,10 @@ export class PlotStarScatter extends WindowElement {
             MAIN_CONTEXT.arc(xa, ya, sizeCur, 0, 2 * Math.PI, false);
             MAIN_CONTEXT.fill();
 
-            star.activeIdGraph = star.getActiveId(im);
-
-            if (im > 0 && (star.selected || star.localitySelect)) {
+            if (star.graphLabel) {
                 MAIN_CONTEXT.font = getBaseUISize() * 3 + "px courier";
                 MAIN_CONTEXT.fillStyle = hexToRgb(...(star.alt_color_arr ?? star.color));
-                MAIN_CONTEXT.fillText(star.activeIdGraph, xa + MAIN_CONTEXT.measureText(star.activeIdGraph).width * 0.65, ya);
+                MAIN_CONTEXT.fillText(star.graphLabel, xa + MAIN_CONTEXT.measureText(star.graphLabel).width * 0.65, ya);
             }
             frameStarsRendered += 1;
         }
@@ -246,7 +248,7 @@ export class PlotStarScatter extends WindowElement {
             let opacity = processRangeToOne(loadGD(UI_PLOTCONTAINER_POINTOPACITY) * frameStarsRendered);
             for (let i = 0; i < this.lengthCap; i++) {
                 if (this.sValues[i] != null) {
-                    this.rValues[i] = this.colorFromRenderModeStar(this.sValues[i], opacity);
+                    this.rValues[i] = this.colorFromRenderModeStar(this.sValues[i], opacity, namedStarOpacityAddition);
                 }
             }
             this.lastFrameStarsRenderedColorCalc = frameStarsRendered;
@@ -383,22 +385,22 @@ export class PlotStarScatter extends WindowElement {
     }
 
     handleZoom(shouldX, shouldY, mpx, mpy, scrollAmount) {
-        let offset = (scrollAmount < 0 ? 1 : -1) * invlerp(-720, 720, scrollAmount) / 10;
+        let offset = invlerp(-720, 720, scrollAmount);
+        offset = Math.max(Math.min(1, offset), 0) - 0.5;
 
-        let sX = 1 / (this.vr[1] - this.vr[0]);
-        let sY = 1 / (this.vr[3] - this.vr[2]);
+        let gapX = (this.vr[1] - this.vr[0]);
+        let gapY = (this.vr[3] - this.vr[2]);
 
-        let xdiff = (sX) * (this.vr[1] - this.vr[0]);
-        let ydiff = (sY) * (this.vr[3] - this.vr[2]);
+        let gapFracX = ((gapX) * offset / 2);
+        let gapFracY = ((gapY) * offset / 2);
 
         if (shouldX) {
-            this.vr[0] = this.vr[0] + xdiff * offset * mpx;
-            this.vr[1] = this.vr[1] - xdiff * offset * (1 - mpx);
+            this.vr[0] -= gapFracX;
+            this.vr[1] += gapFracX;
         }
-
         if (shouldY) {
-            this.vr[2] = this.vr[2] + ydiff * offset * mpy;
-            this.vr[3] = this.vr[3] - ydiff * offset * (1 - mpy);
+            this.vr[2] -= gapFracY;
+            this.vr[3] += gapFracY;
         }
     }
 }

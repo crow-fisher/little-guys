@@ -23,12 +23,15 @@ import {
     UI_PLOTCONTAINER_SELECTRADIUS,
     addUIFunctionMap,
     UI_PLOTCONTAINER_LOCALITY_SELECTMODE,
-    UI_PLOTCONTAINER_IDSYSTEM_STARS,
+    UI_AA_LABEL_STARS,
     UI_AA_SETUP_COLORMODE,
     UI_AA_SETUP_MIN,
     UI_AA_SETUP_WINDOW_SIZE,
     UI_AA_SETUP_POW,
-    UI_AA_SETUP_MULT
+    UI_AA_SETUP_MULT,
+    UI_AA_LABEL_GRAPH,
+    UI_PLOTCONTAINER_XKEY,
+    UI_PLOTCONTAINER_YKEY
 } from "../../ui/UIData.js";
 import { gsh, tempToColorForStar } from "../time.js";
 import { calculateDistance, getVec3Length, subtractVectors, subtractVectorsCopy } from "./matrix.js";
@@ -68,7 +71,7 @@ class Constellation {
 
 class Star {
     // ascension and declination in radians
-    constructor(id, asc, dec, magnitude, bv, color, parallax, hd_number) {
+    constructor(id, asc, dec, magnitude, bv, color, parallax, hd_number, temperature) {
         this.id = id;
 
         this.asc = asc;
@@ -78,6 +81,7 @@ class Star {
         this.color = color;
         this.parallax = parallax;
         this.hd_number = hd_number;
+        this.temperature = temperature;
         this._cartesian = [0, 0, 0];
         this._offset = [0, 0, 0];
         this._camera = [0, 0, 0];
@@ -96,7 +100,26 @@ class Star {
 
         this.parsecs = Math.abs(1 / (parallax / 1000));
         this.magnitude_absolute = (magnitude + 5) - (5 * Math.log10(this.parsecs));
+    }
 
+    getLabelForType(labelType, tX, tY, tC) {
+        switch (labelType) {
+            case 0:
+                return null;
+            case 1:
+                return this.id;
+            case 2:
+                return this.hd_number;
+            case 3:
+                return this[tX].toFixed(2);
+            case 4:
+                return this[tY].toFixed(2);
+            case 5:
+            default:
+                if (tC == "default")
+                    return (this.name ?? null)
+                return this[tC].toFixed(2);
+        }
     }
 
     setFeH(feH) {
@@ -121,7 +144,7 @@ class Star {
 
         this._rac_valNorm = Math.max(this._rac_valNorm, this._rac_minValue);
         this._rac_valNorm = Math.min(this._rac_valNorm, this._rac_maxValue);
-        
+
         this._rac_v = invlerp(this._rac_minValue, this._rac_maxValue, this._rac_valNorm) ** this._rac_powValue;
 
         this.alt_color_arr = combineColorMult(feHMinColor, feHMaxColor, this._rac_v);
@@ -155,7 +178,7 @@ class Star {
             this._size = (this._brightness ** frameCache.UI_STARMAP_STAR_SIZE_FACTOR) * frameCache.UI_STARMAP_STAR_MAX_SIZE;
             this._opacity = (this._brightness ** frameCache.UI_STARMAP_STAR_OPACITY_FACTOR);
             this._color = rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_STARMAP_STAR_OPACITY_SHIFT));
-            
+
             this.recalculateAltColor();
             if (this.alt_color_arr != null)
                 this.alt_color = rgbToRgba(...this.alt_color_arr, this._opacity * frameCache.UI_AA_SETUP_MULT ?? 1);
@@ -202,7 +225,7 @@ class Star {
         screenToRenderScreen(this._screen, this._renderNorm, this._renderScreen, frameCache._xOffset, frameCache._yOffset, frameCache._s);
 
         if (this.selected || this.localitySelect) {
-            this.activeId = (frameCache.UI_PLOTCONTAINER_IDSYSTEM_STARS == 0) ? this.id : this.hd_number;
+            this.activeId = (frameCache.UI_AA_LABEL_STARS == 0) ? this.id : this.hd_number;
         }
     }
     render(renderMode, renderLabel) {
@@ -227,8 +250,8 @@ class Star {
                 this._screen[2],
                 this._size,
                 this.renderColor,
-                ((renderLabel) && (this.selected || this.localitySelect)) ? this.activeIdStar : null),
-                false);
+                this.starLabel,
+                false));
     }
 }
 
@@ -267,6 +290,20 @@ export class StarHandler {
         this.frameCache = new FrameCache();
         this.initalizeData();
         this.valueWatchTick();
+    }
+
+    resetStarLabels() {
+        let graphLabelType = loadGD(UI_AA_LABEL_GRAPH);
+        let starLabelType = loadGD(UI_AA_LABEL_STARS);
+
+        let aX = loadGD(UI_PLOTCONTAINER_XKEY);
+        let aY = loadGD(UI_PLOTCONTAINER_YKEY);
+        let aC = loadGD(UI_AA_SETUP_COLORMODE);
+
+        this.stars.forEach((star) => {
+            star.starLabel = star.getLabelForType(starLabelType, aX, aY, aC);
+            star.graphLabel = star.getLabelForType(graphLabelType, aX, aY, aC);
+        });
     }
 
     valueWatchTick() {
@@ -351,11 +388,11 @@ export class StarHandler {
             .then((text) => this.loadHIPStars(text))
             .then((_) => {
                 fetch("./static/climate/stars/lib/metallicity/pastel.dat").then((resp) => resp.text())
-                    .then((text) => this.loadPASTEL(text))
-            });
+                    .then((text) => this.loadPASTEL(text));
 
-        fetch("./static/climate/stars/lib/stellarium/star_names.fab").then((resp) => resp.text())
-            .then((text) => this.loadStarNames(text))
+                fetch("./static/climate/stars/lib/stellarium/star_names.fab").then((resp) => resp.text())
+                    .then((text) => this.loadStarNames(text))
+            })
 
     }
 
@@ -452,7 +489,7 @@ export class StarHandler {
             return;
         }
 
-        let star = new Star(id, rowAscRad, rowDecRad, magnitude, bv, color, parallax, hd_number);
+        let star = new Star(id, rowAscRad, rowDecRad, magnitude, bv, color, parallax, hd_number, temperature);
         this.stars[id] = star;
         this.starIds.push(id);
         this.hdMap.set(hd_number, star);
@@ -506,7 +543,11 @@ export class StarHandler {
         }
         let id = parts[0];
         let name = parts[1].slice(1, -2)
-        this.starNames.set(parseInt(id), name);
+        let star = this.stars[parseInt(id)];
+        if (star) {
+            star.name = name;
+            this.starNames.set(parseInt(id), name);
+        }
     }
 
     render() {
@@ -519,7 +560,7 @@ export class StarHandler {
         this.frameCache.prepareFrameCache();
         let mm = loadGD(UI_STARMAP_STAR_MIN_MAGNITUDE);
         let fm = loadGD(UI_PLOTCONTAINER_FILTERMODE_STARS);
-        let im = loadGD(UI_PLOTCONTAINER_IDSYSTEM_STARS);
+        let im = loadGD(UI_AA_LABEL_STARS);
         let sm = loadGD(UI_AA_SETUP_COLORMODE);
 
         for (let i = 0; i < this.starIds.length; i++) {
@@ -531,8 +572,8 @@ export class StarHandler {
                 continue;
             } else {
                 star.mmVisible = true;
-            } 
-            
+            }
+
             star.prepare(this.frameCache);
 
             if (fm == 1) {
