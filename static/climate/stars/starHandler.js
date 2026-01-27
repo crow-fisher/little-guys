@@ -27,7 +27,8 @@ import {
     UI_AA_SETUP_COLORMODE,
     UI_AA_SETUP_MIN,
     UI_AA_SETUP_WINDOW_SIZE,
-    UI_AA_SETUP_POW
+    UI_AA_SETUP_POW,
+    UI_AA_SETUP_MULT
 } from "../../ui/UIData.js";
 import { gsh, tempToColorForStar } from "../time.js";
 import { calculateDistance, getVec3Length, subtractVectors, subtractVectorsCopy } from "./matrix.js";
@@ -38,10 +39,10 @@ function brightnessValueToLumensNormalized(brightnessRaw) {
     brightnessRaw = Math.max(1, brightnessRaw);
     return (10 ** (0.4 * (4.83 - brightnessRaw))) / 85.5066712885;
 }
-function sphericalToCartesianInplace(target, cameraOffset, yaw, pitch, m) {
-    target[0] = m * Math.cos(yaw) * Math.cos(pitch) + cameraOffset[0]
-    target[1] = m * Math.sin(pitch) + cameraOffset[1]
-    target[2] = m * Math.sin(yaw) * Math.cos(pitch) + cameraOffset[2]
+function sphericalToCartesianInplace(target, yaw, pitch, m) {
+    target[0] = m * Math.cos(yaw) * Math.cos(pitch);
+    target[1] = m * Math.sin(pitch);
+    target[2] = m * Math.sin(yaw) * Math.cos(pitch);
 }
 
 const feHMinColor = hexToRgb("#99ffd8");
@@ -120,10 +121,8 @@ class Star {
         this._rac_valNorm = Math.min(this._rac_valNorm, this._rac_maxValue);
         
         this._rac_v = invlerp(this._rac_minValue, this._rac_maxValue, this._rac_valNorm) ** this._rac_powValue;
-        
-        this.alt_color_obj = combineColorMult(feHMinColor, feHMaxColor, this._rac_v);
-        this.alt_color = rgbToRgbaObj(this.alt_color_obj, this._opacity ?? 1);
 
+        this.alt_color_obj = combineColorMult(feHMinColor, feHMaxColor, this._rac_v);
     }
 
     getActiveId(im) {
@@ -140,7 +139,7 @@ class Star {
 
     recalculateScreen(frameCache) {
         this._distance = this.parsecs * (10 ** frameCache.UI_STARMAP_ZOOM);
-        sphericalToCartesianInplace(this._cartesian, frameCache.UI_CAMERA_OFFSET_VEC, -this.asc, -this.dec, this._distance);
+        sphericalToCartesianInplace(this._cartesian, -this.asc, -this.dec, this._distance);
         this._rootCameraDistance = getVec3Length(this._cartesian);
         this.recalculateScreenFlag = false;
         this.recalculateAltColor();
@@ -155,9 +154,8 @@ class Star {
             this._opacity = (this._brightness ** frameCache.UI_STARMAP_STAR_OPACITY_FACTOR);
             this._color = rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_STARMAP_STAR_OPACITY_SHIFT));
             
-            
             if (this.alt_color_obj != null)
-                this.alt_color = rgbToRgbaObj(this.alt_color_obj, this._opacity ?? 1);
+                this.alt_color = rgbToRgbaObj(this.alt_color_obj, this._opacity * frameCache.UI_AA_SETUP_MULT ?? 1);
         }
     }
 
@@ -248,7 +246,7 @@ class FrameCache {
         this.UI_STARMAP_VIEWMODE = loadGD(UI_STARMAP_VIEWMODE);
         this.UI_PLOTCONTAINER_LOCALITY_SELECTMODE = loadGD(UI_PLOTCONTAINER_LOCALITY_SELECTMODE);
         this.UI_PLOTCONTAINER_SELECTRADIUS = loadGD(UI_PLOTCONTAINER_SELECTRADIUS);
-
+        this.UI_AA_SETUP_MULT = Math.exp(loadGD(UI_AA_SETUP_MULT));
         this._cw = getCanvasWidth();
         this._ch = getCanvasHeight();
         this._max = Math.max(this._cw, this._ch);

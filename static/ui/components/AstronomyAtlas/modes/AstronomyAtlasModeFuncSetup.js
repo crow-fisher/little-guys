@@ -11,7 +11,7 @@ import { SliderGradientBackground } from "../../../elements/SliderGradientBackgr
 import { StarSpecializedValuePicker } from "../../../elements/StarSpecializedValuePicker.js";
 import { Text } from "../../../elements/Text.js";
 import { ToggleFunctionalText } from "../../../elements/ToggleFunctionalText.js";
-import { addUIFunctionMap, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_WINDOW_SIZE, UI_AA_SETUP_MIN, UI_AA_SETUP_POW, UI_CENTER, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_STARMAP_STAR_MAX_SIZE, UI_AA_SETUP_DISPLAYTYPE_MAX, UI_AA_SETUP_DISPLAYTYPE_MIN, UI_AA_SETUP_DISPLAYTYPE_WINDOW, loadGD } from "../../../UIData.js";
+import { addUIFunctionMap, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_WINDOW_SIZE, UI_AA_SETUP_MIN, UI_AA_SETUP_POW, UI_CENTER, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_STARMAP_STAR_MAX_SIZE, UI_AA_SETUP_DISPLAYTYPE_MAX, UI_AA_SETUP_DISPLAYTYPE_MIN, UI_AA_SETUP_DISPLAYTYPE_WINDOW, loadGD, UI_AA_SETUP_MULT, UI_AA_SETUP_DISPLAYTYPE_MULT } from "../../../UIData.js";
 
 export const astronomyAtlasSetupChoices = [
     [["default", "Temperature"], ["magnitude", "Rel. Mag"], ["magnitude_absolute", "Abs. Mag"]],
@@ -27,6 +27,9 @@ unitMap.set(astronomyAtlasSetupChoices[1][1][0], "")
 unitMap.set(astronomyAtlasSetupChoices[1][2][0], "parsecs")
 
 function getDisplayValueString(displayTypeKey, targetParam, key) {
+    if (gsh()?.paramStatistics == null) {
+        return;
+    }
     let displayType = loadGD(displayTypeKey);
     let targetParamUnit = unitMap.get(targetParam);
     let st = gsh().paramStatistics.get(targetParam);
@@ -56,6 +59,7 @@ export function AstronomyAtlasModeFuncSetup(window, container, sizeX, sizeY) {
     let minRow = new Container(window, 0, 0);
     let windowRow = new Container(window, 0, 0);
     let powRow = new Container(window, 0, 0);
+    let multRow = new Container(window, 0, 0);
 
     let f1 = .25
     let f2 = 2 / 3;
@@ -65,6 +69,7 @@ export function AstronomyAtlasModeFuncSetup(window, container, sizeX, sizeY) {
     specialModeControlConditionalContainer.addElement(minRow);
     specialModeControlConditionalContainer.addElement(windowRow);
     specialModeControlConditionalContainer.addElement(powRow);
+    specialModeControlConditionalContainer.addElement(multRow);
 
     minRow.addElement(new Text(window, sizeX * f1, textHeight, UI_CENTER, "minimum value"));
     minRow.addElement(new SliderGradientBackground(window, UI_AA_SETUP_MIN, sizeX * (f2 - f1), textHeight, 0, 1, () => COLOR_BLACK, () => COLOR_WHITE));
@@ -80,9 +85,18 @@ export function AstronomyAtlasModeFuncSetup(window, container, sizeX, sizeY) {
     powRow.addElement(new SliderGradientBackground(window, UI_AA_SETUP_POW, sizeX * (f2 - f1), textHeight, -1, 1, () => COLOR_BLACK, () => COLOR_WHITE));
     powRow.addElement(new ToggleFunctionalText(window, sizeX * (1 - f2), textHeight, UI_CENTER, UI_AA_SETUP_DISPLAYTYPE_MAX,
         () =>(loadGD(UI_AA_SETUP_POW)).toFixed(2) + "", () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
+
+    multRow.addElement(new Text(window, sizeX * f1, textHeight, UI_CENTER, "point brightness mult"));
+    multRow.addElement(new SliderGradientBackground(window, UI_AA_SETUP_MULT, sizeX * (f2 - f1), textHeight, -3, 10, () => COLOR_BLACK, () => COLOR_WHITE));
+    multRow.addElement(new ToggleFunctionalText(window, sizeX * (1 - f2), textHeight, UI_CENTER, UI_AA_SETUP_DISPLAYTYPE_MULT,
+        () => 
+            (loadGD(UI_AA_SETUP_DISPLAYTYPE_MULT) ? (Math.exp(loadGD(UI_AA_SETUP_MULT))) : loadGD(UI_AA_SETUP_MULT)).toFixed(2) + "",
+         () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
+
 }
 
 addUIFunctionMap(UI_AA_SETUP_COLORMODE, () => gsh().stars.forEach((star) => star.recalculateScreenFlag = true));
 addUIFunctionMap(UI_AA_SETUP_MIN, () => gsh().stars.forEach((star) => star.recalculateScreenFlag = true));
 addUIFunctionMap(UI_AA_SETUP_WINDOW_SIZE, () => gsh().stars.forEach((star) => star.recalculateScreenFlag = true));
 addUIFunctionMap(UI_AA_SETUP_POW, () => gsh().stars.forEach((star) => star.recalculateScreenFlag = true));
+addUIFunctionMap(UI_AA_SETUP_MULT, () => gsh().stars.forEach((star) => star.recalculateScreenFlag = true));
