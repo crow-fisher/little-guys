@@ -109,6 +109,10 @@ class Star {
     }
 
     getLabelForType(labelType, tX, tY, tC) {
+        if (this.name == null && !(this.selected || this.localitySelect)) {
+            return null;
+        }
+
         switch (labelType) {
             case 0:
                 return null;
@@ -203,7 +207,7 @@ class Star {
             this.localitySelect = false;
             return false;
         } else {
-            if (this._curCameraDistance < Math.exp(selectRadius)) {
+            if (this._curCameraDistance < selectRadius) {
                 if (this.localitySelect)
                     return false;
                 this.localitySelect = true;
@@ -221,7 +225,7 @@ class Star {
         this._curCameraDistance = calculateDistance(frameCache.UI_CAMERA_OFFSET_VEC, this._cartesian);
         this._relCameraDist = (this._curCameraDistance / this._rootCameraDistance);
 
-        frameCache.newStarSelected |= this.doLocalitySelect(frameCache.UI_PLOTCONTAINER_LOCALITY_SELECTMODE, frameCache.UI_PLOTCONTAINER_SELECTRADIUS);
+        frameCache.newStarSelected |= this.doLocalitySelect(frameCache.UI_PLOTCONTAINER_LOCALITY_SELECTMODE, frameCache.selectRadius);
 
         if (this.recalculateScreenFlag) {
             this.recalculateScreen(frameCache);
@@ -288,7 +292,7 @@ class FrameCache {
         this.UI_CAMERA_OFFSET_VEC = loadGD(UI_CAMERA_OFFSET_VEC);
         this.UI_STARMAP_VIEWMODE = loadGD(UI_STARMAP_VIEWMODE);
         this.UI_PLOTCONTAINER_LOCALITY_SELECTMODE = loadGD(UI_PLOTCONTAINER_LOCALITY_SELECTMODE);
-        this.UI_PLOTCONTAINER_SELECTRADIUS = loadGD(UI_PLOTCONTAINER_SELECTRADIUS);
+        this.selectRadius = Math.exp(loadGD(UI_PLOTCONTAINER_SELECTRADIUS));
         this.UI_AA_SETUP_MULT = Math.exp(loadGD(UI_AA_SETUP_MULT));
         this.namedStarOpacityMult = 1 + Math.exp(loadGD(UI_AA_SETUP_NAME_MULT));
         this.starMinSize = Math.exp(loadGD(UI_STARMAP_STAR_MIN_SIZE));
@@ -600,6 +604,11 @@ export class StarHandler {
             }
             star.render(sm, im > 0);
         }
+
+        if (this.frameCache.newStarSelected) {
+            this.resetStarLabels();
+        }
+        
     }
 
     renderConstellations() {
