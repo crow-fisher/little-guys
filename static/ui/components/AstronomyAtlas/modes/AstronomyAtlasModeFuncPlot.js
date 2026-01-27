@@ -8,7 +8,7 @@ import { PlotStarScatter } from "../../../elements/plots/PlotStarScatter.js";
 import { SliderGradientBackground } from "../../../elements/SliderGradientBackground.js";
 import { Text } from "../../../elements/Text.js";
 import { Toggle } from "../../../elements/Toggle.js";
-import { loadGD, saveGD, UI_AA_PLOT_CONFIGURE, UI_AA_PLOT_HEIGHT, UI_AA_PLOT_POINTOPACITY, UI_AA_PLOT_POINTSIZE, UI_AA_PLOT_WIDTH, UI_CAMERA_OFFSET_VEC, UI_CAMERA_OFFSET_VEC_DT, UI_CENTER } from "../../../UIData.js";
+import { loadGD, saveGD, UI_AA_PLOT_CONFIGURE, UI_AA_PLOT_HEIGHT, UI_AA_PLOT_POINTOPACITY, UI_AA_PLOT_POINTSIZE, UI_AA_PLOT_WIDTH, UI_AA_SELECTED_OPACITY, UI_CAMERA_OFFSET_VEC, UI_CAMERA_OFFSET_VEC_DT, UI_CENTER } from "../../../UIData.js";
 import { getAstronomyAtlasComponent } from "../../../WindowManager.js";
 
 export const resetViewportButtonOffset = getBaseUISize() * 2;
@@ -50,9 +50,11 @@ export function AstronomyAtlasModeFuncPlot(_this, container, sizeX, sizeY) {
     configurePlotConditionalContanier.addElement(new SliderGradientBackground(_this.window, UI_AA_PLOT_HEIGHT, sizeX, textHeight, 10, 100, () => COLOR_WHITE, () => COLOR_BLACK));
 
     configurePlotConditionalContanier.addElement(new Text(_this.window, sizeX, textHeight, UI_CENTER, "point size"))
-    configurePlotConditionalContanier.addElement(new SliderGradientBackground(_this.window, UI_AA_PLOT_POINTSIZE, sizeX, textHeight, 1, 4, () => COLOR_WHITE, () => COLOR_BLACK));
+    configurePlotConditionalContanier.addElement(new SliderGradientBackground(_this.window, UI_AA_PLOT_POINTSIZE, sizeX, textHeight, -2, 2, () => COLOR_WHITE, () => COLOR_BLACK));
 
     configurePlotConditionalContanier.addElement(new Text(_this.window, sizeX, textHeight, UI_CENTER, "point opacity"))
     configurePlotConditionalContanier.addElement(new SliderGradientBackground(_this.window, UI_AA_PLOT_POINTOPACITY, sizeX, textHeight, -.0008, .00001, () => COLOR_WHITE, () => COLOR_BLACK));
 
+    configurePlotConditionalContanier.addElement(new Text(_this.window, sizeX, textHeight, UI_CENTER, "selected points"))
+    configurePlotConditionalContanier.addElement(new SliderGradientBackground(_this.window, UI_AA_SELECTED_OPACITY, sizeX, textHeight, -5, 5, () => COLOR_WHITE, () => COLOR_BLACK));
 }

@@ -11,7 +11,7 @@ import { SliderGradientBackground } from "../../../elements/SliderGradientBackgr
 import { StarSpecializedValuePicker } from "../../../elements/StarSpecializedValuePicker.js";
 import { Text } from "../../../elements/Text.js";
 import { ToggleFunctionalText } from "../../../elements/ToggleFunctionalText.js";
-import { addUIFunctionMap, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_WINDOW_SIZE, UI_AA_SETUP_MIN, UI_AA_SETUP_POW, UI_CENTER, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_STARMAP_STAR_MAX_SIZE, UI_AA_SETUP_DISPLAYTYPE_MAX, UI_AA_SETUP_DISPLAYTYPE_MIN, UI_AA_SETUP_DISPLAYTYPE_WINDOW, loadGD, UI_AA_SETUP_MULT, UI_AA_SETUP_DISPLAYTYPE_MULT, UI_AA_SETUP_DISPLAYTYPE_NAME_MULT, UI_AA_SETUP_NAME_MULT, UI_AA_PLOT_LOCALITY_SELECTMODE, UI_AA_PLOT_SELECTRADIUS, UI_AA_PLOT_SELECT_NAMED_STARS } from "../../../UIData.js";
+import { addUIFunctionMap, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_WINDOW_SIZE, UI_AA_SETUP_MIN, UI_AA_SETUP_POW, UI_CENTER, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_STARMAP_STAR_MAX_SIZE, UI_AA_SETUP_DISPLAYTYPE_MAX, UI_AA_SETUP_DISPLAYTYPE_MIN, UI_AA_SETUP_DISPLAYTYPE_WINDOW, loadGD, UI_AA_SETUP_MULT, UI_AA_SETUP_DISPLAYTYPE_MULT, UI_AA_SETUP_DISPLAYTYPE_NAME_MULT, UI_AA_SETUP_SELECT_MULT, UI_AA_PLOT_LOCALITY_SELECTMODE, UI_AA_PLOT_SELECTRADIUS, UI_AA_PLOT_SELECT_NAMED_STARS } from "../../../UIData.js";
 import { getAstronomyAtlasComponent } from "../../../WindowManager.js";
 
 export const astronomyAtlasSetupChoices = [
@@ -100,10 +100,10 @@ export function AstronomyAtlasModeFuncSetup(window, container, sizeX, sizeY) {
          () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
 
     nameMultRow.addElement(new Text(window, sizeX * f1, textHeight, UI_CENTER, "named stars"));
-    nameMultRow.addElement(new SliderGradientBackground(window, UI_AA_SETUP_NAME_MULT, sizeX * (f2 - f1), textHeight, 0, 10, () => COLOR_BLACK, () => COLOR_WHITE));
+    nameMultRow.addElement(new SliderGradientBackground(window, UI_AA_SETUP_SELECT_MULT, sizeX * (f2 - f1), textHeight, 0, 10, () => COLOR_BLACK, () => COLOR_WHITE));
     nameMultRow.addElement(new ToggleFunctionalText(window, sizeX * (1 - f2), textHeight, UI_CENTER, UI_AA_SETUP_DISPLAYTYPE_NAME_MULT,
         () => 
-            (loadGD(UI_AA_SETUP_DISPLAYTYPE_NAME_MULT) ? 1 + Math.exp(loadGD(UI_AA_SETUP_NAME_MULT)) : loadGD(UI_AA_SETUP_NAME_MULT)).toFixed(2) + "",
+            (loadGD(UI_AA_SETUP_DISPLAYTYPE_NAME_MULT) ? 1 + Math.exp(loadGD(UI_AA_SETUP_SELECT_MULT)) : loadGD(UI_AA_SETUP_SELECT_MULT)).toFixed(2) + "",
          () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
 }
 
@@ -112,13 +112,3 @@ export function triggerStarColorRecalculation() {
     getAstronomyAtlasComponent().plotStarScatter._shouldRecalculateColor = true;
     gsh().resetStarLabels();
 }
-
-addUIFunctionMap(UI_AA_SETUP_COLORMODE, triggerStarColorRecalculation);
-addUIFunctionMap(UI_AA_SETUP_MIN, triggerStarColorRecalculation);
-addUIFunctionMap(UI_AA_SETUP_WINDOW_SIZE, triggerStarColorRecalculation);
-addUIFunctionMap(UI_AA_SETUP_POW, triggerStarColorRecalculation);
-addUIFunctionMap(UI_AA_SETUP_MULT, triggerStarColorRecalculation);
-addUIFunctionMap(UI_AA_SETUP_NAME_MULT, triggerStarColorRecalculation);
-addUIFunctionMap(UI_AA_PLOT_LOCALITY_SELECTMODE, triggerStarColorRecalculation);
-addUIFunctionMap(UI_AA_PLOT_SELECTRADIUS, triggerStarColorRecalculation);
-addUIFunctionMap(UI_AA_PLOT_SELECT_NAMED_STARS, triggerStarColorRecalculation)

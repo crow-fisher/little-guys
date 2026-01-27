@@ -32,7 +32,7 @@ import {
     UI_AA_LABEL_GRAPH,
     UI_AA_PLOT_XKEY,
     UI_AA_PLOT_YKEY,
-    UI_AA_SETUP_NAME_MULT,
+    UI_AA_SETUP_SELECT_MULT,
     UI_STARMAP_STAR_MIN_SIZE,
     UI_AA_PLOT_SELECT_NAMED_STARS
 } from "../../ui/UIData.js";
@@ -283,7 +283,7 @@ class FrameCache {
         this.UI_AA_PLOT_LOCALITY_SELECTMODE = loadGD(UI_AA_PLOT_LOCALITY_SELECTMODE);
         this.selectRadius = Math.exp(loadGD(UI_AA_PLOT_SELECTRADIUS));
         this.UI_AA_SETUP_MULT = Math.exp(loadGD(UI_AA_SETUP_MULT));
-        this.namedStarOpacityMult = 1 + Math.exp(loadGD(UI_AA_SETUP_NAME_MULT));
+        this.namedStarOpacityMult = 1 + Math.exp(loadGD(UI_AA_SETUP_SELECT_MULT));
         this.starMinSize = Math.exp(loadGD(UI_STARMAP_STAR_MIN_SIZE));
 
         this._cw = getCanvasWidth();

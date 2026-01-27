@@ -33,8 +33,3 @@ export function AstronomyAtlasModeFuncLabel(window, container, sizeX, sizeY) {
     row2.addElement(new RadioToggleLabel(window, sizeX / (4 * 3), getBaseUISize() * 3, UI_CENTER, "color", UI_AA_LABEL_GRAPH, 5, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
     row2.addElement(new RadioToggleLabel(window, sizeX / (4 * 3), getBaseUISize() * 3, UI_CENTER, "name", UI_AA_LABEL_GRAPH, 6, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
 }
-addUIFunctionMap(UI_AA_LABEL_STARS, () => gsh().resetStarLabels());
-addUIFunctionMap(UI_AA_LABEL_GRAPH, () => gsh().resetStarLabels());
-addUIFunctionMap(UI_AA_PLOT_XKEY, () => gsh().resetStarLabels());
-addUIFunctionMap(UI_AA_PLOT_YKEY, () => gsh().resetStarLabels());
-addUIFunctionMap(UI_AA_SETUP_COLORMODE, () => gsh().resetStarLabels());

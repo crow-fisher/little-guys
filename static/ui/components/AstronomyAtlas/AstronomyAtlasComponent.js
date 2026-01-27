@@ -21,6 +21,7 @@ import { AstronomyAtlasModeFuncPlot } from "./modes/AstronomyAtlasModeFuncPlot.j
 import { AstronomyAtlasModeFuncSelect } from "./modes/AstronomyAtlasModeFuncSelect.js";
 import { AstronomyAtlasModeFuncSetup } from "./modes/AstronomyAtlasModeFuncSetup.js";
 import { AstronomyAtlasModeFuncStyle } from "./modes/AstronomyAtlasModeFuncStyle.js";
+import { initAAUIFunctionMaps } from "./modes/AstronomyAtlasUIFunctionMaps.js";
 import { addPlotStarStyleToContainer } from "./PlotStarStyle.js";
 
 export class AstronomyAtlasComponent extends Component {
@@ -75,6 +76,8 @@ export class AstronomyAtlasComponent extends Component {
         AstronomyAtlasModeFuncSetup(this.window, setupConditionalContainer, this.sizeX, plotSizeY);
         AstronomyAtlasModeFuncStyle(this.window, styleConditionalContainer, this.sizeX, plotSizeY);
         AstronomyAtlasModeFuncSelect(this.window, selectConditionalContainer, this.sizeX, plotSizeY);
+
+        initAAUIFunctionMaps();
 
         // row0.addElement(new ButtonFunctionalText(this.window, this.sizeX / 3, getBaseUISize() * 3, UI_CENTER, () => saveGD(UI_AA_PLOT_HIDECONTROLS, (loadGD(UI_AA_PLOT_HIDECONTROLS) + 1) % 2),
         //     () => ["hide", "show"][loadGD(UI_AA_PLOT_HIDECONTROLS)] + " controls", () => [COLOR_RED, COLOR_BLUE][loadGD(UI_AA_PLOT_HIDECONTROLS)]));

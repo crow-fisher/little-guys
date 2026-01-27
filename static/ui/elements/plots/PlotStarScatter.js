@@ -6,7 +6,7 @@ import { MAIN_CONTEXT } from "../../../index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "../../../keyboard.js";
 import { getLastLastMoveOffset, getLastMouseDownStart, getLastMouseUpEvent, getLastMoveOffset, isLeftMouseClicked } from "../../../mouse.js";
 import { resetViewportButtonOffset } from "../../components/AstronomyAtlas/modes/AstronomyAtlasModeFuncPlot.js";
-import { loadGD, saveGD, UI_AA_PLOT_AXISLABELS, UI_AA_PLOT_MAXPOINTS, UI_AA_PLOT_OFFSET_X, UI_AA_PLOT_OFFSET_Y, UI_AA_PLOT_POINTOPACITY, UI_AA_PLOT_POINTSIZE, UI_AA_SELECT_FILTERMODE_STARS, UI_AA_PLOT_XKEY, UI_AA_PLOT_XPADDING, UI_AA_PLOT_YKEY, UI_AA_PLOT_YPADDING, UI_AA_PLOT_ZOOM_X, UI_AA_PLOT_ZOOM_Y, UI_AA_LABEL_STARS, UI_AA_SELECT_FILTERMODE_GRAPH, UI_AA_LABEL_GRAPH, UI_STARMAP_VIEWMODE, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_DISPLAYTYPE_NAME_MULT, UI_AA_SETUP_NAME_MULT, UI_AA_PLOT_SELECT_NAMED_STARS } from "../../UIData.js";
+import { loadGD, saveGD, UI_AA_PLOT_AXISLABELS, UI_AA_PLOT_MAXPOINTS, UI_AA_PLOT_OFFSET_X, UI_AA_PLOT_OFFSET_Y, UI_AA_PLOT_POINTOPACITY, UI_AA_PLOT_POINTSIZE, UI_AA_SELECT_FILTERMODE_STARS, UI_AA_PLOT_XKEY, UI_AA_PLOT_XPADDING, UI_AA_PLOT_YKEY, UI_AA_PLOT_YPADDING, UI_AA_PLOT_ZOOM_X, UI_AA_PLOT_ZOOM_Y, UI_AA_LABEL_STARS, UI_AA_SELECT_FILTERMODE_GRAPH, UI_AA_LABEL_GRAPH, UI_STARMAP_VIEWMODE, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_DISPLAYTYPE_NAME_MULT, UI_AA_SETUP_SELECT_MULT, UI_AA_PLOT_SELECT_NAMED_STARS } from "../../UIData.js";
 import { WindowElement } from "../../Window.js";
 
 export class PlotStarScatter extends WindowElement {
@@ -92,7 +92,7 @@ export class PlotStarScatter extends WindowElement {
             return;
         }
         let opacity = processRangeToOne(loadGD(UI_AA_PLOT_POINTOPACITY) * this.lengthCap);
-        let namedStarOpacityAddition = loadGD(UI_AA_PLOT_SELECT_NAMED_STARS) ? processRangeToOne(loadGD(UI_AA_SETUP_NAME_MULT)) : 0;
+        let namedStarOpacityAddition = loadGD(UI_AA_PLOT_SELECT_NAMED_STARS) ? processRangeToOne(loadGD(UI_AA_SETUP_SELECT_MULT)) : 0;
         let star;
         let selectNamedStars = loadGD(UI_AA_PLOT_SELECT_NAMED_STARS);
 
@@ -168,7 +168,7 @@ export class PlotStarScatter extends WindowElement {
 
     preparePointColor() {
         let opacity = processRangeToOne(loadGD(UI_AA_PLOT_POINTOPACITY) * this.lengthCap);
-        let namedStarOpacityAddition = processRangeToOne(loadGD(UI_AA_SETUP_NAME_MULT));
+        let namedStarOpacityAddition = processRangeToOne(loadGD(UI_AA_SETUP_SELECT_MULT));
         for (let i = 0; i < this.lengthCap; i++) {
             if (this.sValues[i] != null) {
                 this.rValues[i] = this.colorFromRenderModeStar(this.sValues[i], opacity, namedStarOpacityAddition);
@@ -266,8 +266,10 @@ export class PlotStarScatter extends WindowElement {
 
         let idxMult = gsh().stars.length / (this.lengthCap);
         let opacity = processRangeToOne(loadGD(UI_AA_PLOT_POINTOPACITY) * this.lengthCap);
-        let namedStarOpacityAddition = processRangeToOne(loadGD(UI_AA_SETUP_NAME_MULT))
+        let selectedStarOpacityMult = Math.exp(loadGD(UI_AA_SETUP_SELECT_MULT));
         let star, iO;
+
+        let nameSelect = loadGD(UI_AA_PLOT_SELECT_NAMED_STARS)
 
         gsh().stars.forEach((star) => star.recalculateAltColor());
         let namedStars = Array.from(gsh().stars.filter((star) => star.name != null));
@@ -293,7 +295,7 @@ export class PlotStarScatter extends WindowElement {
             this.xValues[i] = x;
             this.yValues[i] = y;
             this.sValues[i] = star;
-            this.rValues[i] = this.colorFromRenderModeStar(star, opacity, namedStarOpacityAddition);
+            this.rValues[i] = this.colorFromRenderModeStar(star, opacity, selectedStarOpacityMult, nameSelect);
         }
 
         this.lastNumRenderedPoints = this.lengthCap;
@@ -301,9 +303,9 @@ export class PlotStarScatter extends WindowElement {
         this.yS = calculateStatistics(this.yValues);
     }
 
-    colorFromRenderModeStar(star, opacity, namedStarOpacityAddition) {
-        if (star.name) {
-            return rgbToRgba(...(star.alt_color_arr ?? star.color), Math.min(1, opacity + namedStarOpacityAddition));
+    colorFromRenderModeStar(star, opacity, namedStarOpacityMult, nameSelect) {
+        if (nameSelect && star.name || star.selected || star.localitySelect) {
+            return rgbToRgba(...(star.alt_color_arr ?? star.color), Math.min(1, opacity * namedStarOpacityMult));
         }
         return rgbToRgba(...(star.alt_color_arr ?? star.color), opacity);
     }
