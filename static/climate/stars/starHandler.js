@@ -33,6 +33,7 @@ import {
     UI_PLOTCONTAINER_XKEY,
     UI_PLOTCONTAINER_YKEY
 } from "../../ui/UIData.js";
+import { getAstronomyAtlasComponent } from "../../ui/WindowManager.js";
 import { gsh, tempToColorForStar } from "../time.js";
 import { calculateDistance, getVec3Length, subtractVectors, subtractVectorsCopy } from "./matrix.js";
 
@@ -97,6 +98,8 @@ class Star {
         this._relCameraDist = 1;
         this.recalculateScreenFlag = true;
         this.recalculateColorFlag = true;
+
+        this._fovVisible = true;
 
         this.parsecs = Math.abs(1 / (parallax / 1000));
         this.parsecs_log = Math.log10(this.parsecs);
@@ -231,7 +234,7 @@ class Star {
         }
     }
     render(renderMode, renderLabel) {
-        this.fovVisible = false;
+        this._fovVisible = false;
         if (this._screen == null || this._screen[2] < 0) {
             return;
         }
@@ -242,7 +245,7 @@ class Star {
             return;
         }
 
-        this.fovVisible = true;
+        this._fovVisible = true;
         this.renderColor = (renderMode == "default") ? this._color : this.alt_color;
 
         if (this.renderColor != null)
@@ -536,6 +539,7 @@ export class StarHandler {
         for (let i = 0; i < rows.length; i++) {
             this.loadStarNameRow(rows.at(i));
         }
+        getAstronomyAtlasComponent().plotStarScatter.reloadGraph();
     }
 
     loadStarNameRow(row) {
@@ -560,7 +564,6 @@ export class StarHandler {
 
     renderStars() {
         this.frameCache.prepareFrameCache();
-        let mm = loadGD(UI_STARMAP_STAR_MIN_MAGNITUDE);
         let fm = loadGD(UI_PLOTCONTAINER_FILTERMODE_STARS);
         let im = loadGD(UI_AA_LABEL_STARS);
         let sm = loadGD(UI_AA_SETUP_COLORMODE);
@@ -568,13 +571,6 @@ export class StarHandler {
         for (let i = 0; i < this.starIds.length; i++) {
             let id = this.starIds[i];
             let star = this.stars[id];
-
-            if (star.magnitude > mm) {
-                star.mmVisible = false;
-                continue;
-            } else {
-                star.mmVisible = true;
-            }
 
             star.prepare(this.frameCache);
 

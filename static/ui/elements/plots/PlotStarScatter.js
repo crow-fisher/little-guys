@@ -205,7 +205,7 @@ export class PlotStarScatter extends WindowElement {
             }
 
             if (graphFilterMode == 1) {
-                if (!star.mmVisible || !star.fovVisible) {
+                if (!star._fovVisible) {
                     continue;
                 }
             } else if (graphFilterMode == 2) {
