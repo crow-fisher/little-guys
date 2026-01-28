@@ -21,6 +21,6 @@ export function AstronomyAtlasModeFuncStyle(window, container, sizeX, sizeY) {
     container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "base size"))
     container.addElement(new SliderGradientBackground(window, UI_STARMAP_STAR_MAX_SIZE, sizeX, textHeight, 1, 20, () => COLOR_BLACK, () => COLOR_WHITE));
     container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "min size"))
-    container.addElement(new SliderGradientBackground(window, UI_STARMAP_STAR_MIN_SIZE, sizeX, textHeight, -1, 1, () => COLOR_BLACK, () => COLOR_WHITE));
+    container.addElement(new SliderGradientBackground(window, UI_STARMAP_STAR_MIN_SIZE, sizeX, textHeight, -3, 3, () => COLOR_BLACK, () => COLOR_WHITE));
 }
 

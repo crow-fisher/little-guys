@@ -177,10 +177,7 @@ export class PlotStarScatter extends WindowElement {
 
     }
     prepareGraphPoints() {
-        this.xS = calculateStatistics(this.xValues);
-        this.yS = calculateStatistics(this.yValues);
         let graphFilterMode = loadGD(UI_AA_SELECT_FILTERMODE_GRAPH);
-
         this.xBounds = [
             this.xS[2],
             this.xS[3]
@@ -189,7 +186,7 @@ export class PlotStarScatter extends WindowElement {
             this.yS[2],
             this.yS[3]
         ];
-        let x, y, xo, yo, xp, yp, star;
+        let x, y, xo, yo, star;
 
         let numRenderedPoints = 0;
 
@@ -323,6 +320,7 @@ export class PlotStarScatter extends WindowElement {
 
 
     renderGraph(startX, startY) {
+        this.prepareGraphPoints();
         let frameStarsRendered = 0;
         let size = Math.exp(loadGD(UI_AA_PLOT_POINTSIZE)), sizeCur = size;
         let star;

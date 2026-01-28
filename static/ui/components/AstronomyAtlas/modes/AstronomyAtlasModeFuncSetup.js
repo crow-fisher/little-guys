@@ -106,9 +106,3 @@ export function AstronomyAtlasModeFuncSetup(window, container, sizeX, sizeY) {
             (loadGD(UI_AA_SETUP_DISPLAYTYPE_NAME_MULT) ? 1 + Math.exp(loadGD(UI_AA_SETUP_SELECT_MULT)) : loadGD(UI_AA_SETUP_SELECT_MULT)).toFixed(2) + "",
          () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
 }
-
-export function triggerStarColorRecalculation() {
-    gsh().stars.forEach((star) => {star.recalculateAltColor(); star.recalculateColorFlag = true});
-    getAstronomyAtlasComponent().plotStarScatter._shouldRecalculateColor = true;
-    gsh().resetStarLabels();
-}

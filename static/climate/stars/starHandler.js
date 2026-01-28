@@ -178,14 +178,14 @@ class Star {
 
             this._size = (this._brightness ** frameCache.UI_STARMAP_STAR_SIZE_FACTOR) * frameCache.UI_STARMAP_STAR_MAX_SIZE;
             this._opacity = (this._brightness ** frameCache.UI_STARMAP_STAR_OPACITY_FACTOR);
-            this._color = rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_STARMAP_STAR_OPACITY_SHIFT));
 
             if (this._size < frameCache.starMinSize) {
                 this._brightnessVisible = false;
+                return;
             } else {
                 this._brightnessVisible = true;
             }
-            this.recalculateAltColor();
+            this._color = rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_STARMAP_STAR_OPACITY_SHIFT));
             if (this.alt_color_arr != null)
                 this.alt_color = rgbToRgba(...this.alt_color_arr, this._opacity * frameCache.UI_AA_SETUP_MULT ?? 1);
         }
@@ -222,6 +222,10 @@ class Star {
         }
 
         this.recalculateSizeOpacityColor(frameCache);
+
+        if (!this._brightnessVisible) {
+            return;
+        }
 
         this._offset[0] = this._cartesian[0] - frameCache.UI_CAMERA_OFFSET_VEC[0];
         this._offset[1] = this._cartesian[1] - frameCache.UI_CAMERA_OFFSET_VEC[1];
@@ -322,18 +326,12 @@ export class StarHandler {
 
     valueWatchTick() {
         this.watchedValues = {
-            UI_STARMAP_ZOOM: loadGD(UI_STARMAP_ZOOM),
-            UI_STARMAP_SHOW_CONSTELLATION_NAMES: loadGD(UI_STARMAP_SHOW_CONSTELLATION_NAMES),
-            UI_STARMAP_FEH_MIN_VALUE: loadGD(UI_STARMAP_FEH_MIN_VALUE),
-            UI_STARMAP_FEH_WINDOW_SIZE: loadGD(UI_STARMAP_FEH_WINDOW_SIZE),
-            UI_STARMAP_FEH_POW: loadGD(UI_STARMAP_FEH_POW),
-            UI_STARMAP_VIEWMODE: loadGD(UI_STARMAP_VIEWMODE),
-            UI_AA_PLOT_XKEY: loadGD(UI_AA_PLOT_XKEY), 
-            UI_AA_PLOT_YKEY: loadGD(UI_AA_PLOT_YKEY)
+            UI_STARMAP_ZOOM: loadGD(UI_STARMAP_ZOOM)
         }
 
         this.colorWatchValues = {
             UI_STARMAP_STAR_MAX_SIZE: loadGD(UI_STARMAP_STAR_MAX_SIZE),
+            UI_STARMAP_STAR_MAX_SIZE: loadGD(UI_STARMAP_STAR_MIN_SIZE),
             UI_STARMAP_STAR_SIZE_FACTOR: loadGD(UI_STARMAP_STAR_SIZE_FACTOR),
             UI_STARMAP_STAR_OPACITY_FACTOR: loadGD(UI_STARMAP_STAR_OPACITY_FACTOR),
             UI_STARMAP_STAR_OPACITY_SHIFT: loadGD(UI_STARMAP_STAR_OPACITY_SHIFT),
