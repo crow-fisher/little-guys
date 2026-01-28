@@ -21,14 +21,13 @@ function resetGraphPoints() {
 export function initAAUIFunctionMaps() {
     addUIFunctionMap(UI_AA_LABEL_STARS, () => gsh().resetStarLabels());
     addUIFunctionMap(UI_AA_LABEL_GRAPH, () => gsh().resetStarLabels());
-    addUIFunctionMap(UI_AA_PLOT_XKEY, () => resetStarStyle());
-    addUIFunctionMap(UI_AA_PLOT_YKEY, () => resetStarStyle());
-    addUIFunctionMap(UI_AA_SETUP_COLORMODE, () => gsh().resetStarLabels());
 
     addUIFunctionMap(UI_STARMAP_STAR_MAX_SIZE, resetGraphPoints);
     addUIFunctionMap(UI_STARMAP_STAR_MIN_SIZE, resetGraphPoints);
 
     addUIFunctionMap(UI_AA_SETUP_COLORMODE, resetStarStyle);
+    addUIFunctionMap(UI_AA_PLOT_XKEY, resetStarStyle);
+    addUIFunctionMap(UI_AA_PLOT_YKEY, resetStarStyle);
 
     addUIFunctionMap(UI_AA_SETUP_MIN, resetStarStyle);
     addUIFunctionMap(UI_AA_SETUP_WINDOW_SIZE, resetStarStyle);

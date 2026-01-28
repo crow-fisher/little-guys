@@ -71,31 +71,44 @@ export function AstronomyAtlasModeFuncPlot(_this, container, sizeX, sizeY) {
 
 
     let idGraphAxisChoices = [
-        ["id", "HIP"],
-        ["hd_number", "H-D"]
+        [
+            ["id", "HIP"],
+            ["hd_number", "H-D"]
+        ]
     ];
 
     let posGraphAxisChoices = [
-        ["asc", "asc"],
-        ["dec", "dec"],
-        ["parsecs_log", "dist"]
+        [["asc", "asc"],
+        ["dec", "dec"]],
+        [["parsecs_log", "dist"]]
     ]
 
     let magGraphAxisChoices = [
-        ["magnitude", "rel. mag"],
-        ["magnitude_absolute", "abs. mag"],
-        ["_brightness", "cur. brightness"]
+        [["magnitude", "rel. mag"],
+        ["magnitude_absolute", "abs. mag"]],
+        [["_brightness", "cur. brightness"]]
     ]
 
     let compGraphAxisChoices = [
-        ["p_feH", "metalllicity"]
+        [["p_feH", "metalllicity"], ["bv", "b-v"]]
     ]
-    
-    let f = (cpl) => cpl.forEach((arr) => configureParamsConditionalContainer.addElement(createLabel(arr, _this.window, sizeX / idGraphAxisChoices.length)));
-    
+
+    let f = (cpl) => {
+        for (let i = 0; i < cpl.length; i++) {
+            let cplRow = cpl[i];
+            let cplRowContainer = new Container(_this.window, 0, 0);
+            configureParamsConditionalContainer.addElement(cplRowContainer);
+            cplRow.forEach((arr) => cplRowContainer.addElement(createLabel(arr, _this.window, sizeX / cplRow.length)));
+        }
+    };
+
+    configureParamsConditionalContainer.addElement(new Text(_this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "identification"))
     f(idGraphAxisChoices);
+    configureParamsConditionalContainer.addElement(new Text(_this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "position"))
     f(posGraphAxisChoices);
+    configureParamsConditionalContainer.addElement(new Text(_this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "magnitude"))
     f(magGraphAxisChoices);
+    configureParamsConditionalContainer.addElement(new Text(_this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "composition"))
     f(compGraphAxisChoices);
 }
 
