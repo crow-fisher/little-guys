@@ -327,7 +327,9 @@ export class StarHandler {
             UI_STARMAP_FEH_MIN_VALUE: loadGD(UI_STARMAP_FEH_MIN_VALUE),
             UI_STARMAP_FEH_WINDOW_SIZE: loadGD(UI_STARMAP_FEH_WINDOW_SIZE),
             UI_STARMAP_FEH_POW: loadGD(UI_STARMAP_FEH_POW),
-            UI_STARMAP_VIEWMODE: loadGD(UI_STARMAP_VIEWMODE)
+            UI_STARMAP_VIEWMODE: loadGD(UI_STARMAP_VIEWMODE),
+            UI_AA_PLOT_XKEY: loadGD(UI_AA_PLOT_XKEY), 
+            UI_AA_PLOT_YKEY: loadGD(UI_AA_PLOT_YKEY),
         }
 
         this.colorWatchValues = {

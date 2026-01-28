@@ -4,6 +4,12 @@ import { UI_AA_LABEL_GRAPH, UI_AA_LABEL_STARS, addUIFunctionMap, UI_AA_PLOT_XKEY
 import { UI_AA_SETUP_WINDOW_SIZE, UI_AA_SETUP_POW, UI_AA_SETUP_MULT, UI_AA_SETUP_SELECT_MULT, UI_AA_PLOT_LOCALITY_SELECTMODE, UI_AA_PLOT_SELECTRADIUS, UI_AA_PLOT_SELECT_NAMED_STARS } from "../../../UIData.js";
 import { getAstronomyAtlasComponent } from "../../../WindowManager.js";
 
+function resetStarStyle() {
+    gsh().stars.forEach((star) => star.recalculateAltColor());
+    gsh().resetStarLabels();
+    resetGraphStyle();
+}
+
 function resetGraphStyle() {
     getAstronomyAtlasComponent().plotStarScatter.triggerRecalculateColor();
 }
@@ -15,24 +21,25 @@ function resetGraphPoints() {
 export function initAAUIFunctionMaps() {
     addUIFunctionMap(UI_AA_LABEL_STARS, () => gsh().resetStarLabels());
     addUIFunctionMap(UI_AA_LABEL_GRAPH, () => gsh().resetStarLabels());
-    addUIFunctionMap(UI_AA_PLOT_XKEY, () => gsh().resetStarLabels());
-    addUIFunctionMap(UI_AA_PLOT_YKEY, () => gsh().resetStarLabels());
+    addUIFunctionMap(UI_AA_PLOT_XKEY, () => resetStarStyle());
+    addUIFunctionMap(UI_AA_PLOT_YKEY, () => resetStarStyle());
     addUIFunctionMap(UI_AA_SETUP_COLORMODE, () => gsh().resetStarLabels());
-
 
     addUIFunctionMap(UI_STARMAP_STAR_MAX_SIZE, resetGraphPoints);
     addUIFunctionMap(UI_STARMAP_STAR_MIN_SIZE, resetGraphPoints);
 
-    addUIFunctionMap(UI_AA_SETUP_COLORMODE, resetGraphStyle);
-    addUIFunctionMap(UI_AA_SETUP_MIN, resetGraphStyle);
-    addUIFunctionMap(UI_AA_SETUP_WINDOW_SIZE, resetGraphStyle);
-    addUIFunctionMap(UI_AA_SETUP_POW, resetGraphStyle);
-    addUIFunctionMap(UI_AA_SETUP_MULT, resetGraphStyle);
-    addUIFunctionMap(UI_AA_SETUP_SELECT_MULT, resetGraphStyle);
+    addUIFunctionMap(UI_AA_SETUP_COLORMODE, resetStarStyle);
+
+    addUIFunctionMap(UI_AA_SETUP_MIN, resetStarStyle);
+    addUIFunctionMap(UI_AA_SETUP_WINDOW_SIZE, resetStarStyle);
+    addUIFunctionMap(UI_AA_SETUP_POW, resetStarStyle);
+    addUIFunctionMap(UI_AA_SETUP_MULT, resetStarStyle);
+    addUIFunctionMap(UI_AA_SETUP_SELECT_MULT, resetStarStyle);
+    
     addUIFunctionMap(UI_AA_PLOT_LOCALITY_SELECTMODE, resetGraphStyle);
     addUIFunctionMap(UI_AA_PLOT_SELECTRADIUS, resetGraphStyle);
     addUIFunctionMap(UI_AA_PLOT_SELECT_NAMED_STARS, resetGraphStyle);
 
-
     addUIFunctionMap(UI_AA_SELECTED_OPACITY, resetGraphStyle);
+
 }
