@@ -63,6 +63,14 @@ export function gamepadCameraInput() {
     saveGD(UI_STARMAP_CONSTELATION_BRIGHTNESS, Math.max(0, loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS)));
 
     saveGD(UI_CAMERA_FOV, boundValue(10, 160,loadGD(UI_CAMERA_FOV)));
+
+
+    if (isButtonPressed(GBA)) {
+    loadGD(UI_CAMERA_OFFSET_VEC_DT)[0] *= 1.2;
+    loadGD(UI_CAMERA_OFFSET_VEC_DT)[1] *= 1.2;
+    loadGD(UI_CAMERA_OFFSET_VEC_DT)[2] *= 1.2;
+    }
     // UI_STARMAP_NORMAL_BRIGTNESS
+
     // UI_STARMAP_CONSTELATION_BRIGHTNESS
 }
