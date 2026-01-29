@@ -219,10 +219,12 @@ export class Star {
             this.renderJob.x = this._renderScreen[0]
             this.renderJob.y = this._renderScreen[1]
             this.renderJob.z = this._screen[2]
-            this.renderJob.size = this._size
-            this.renderJob.color = this.renderColor
-            this.renderJob.label = this.starLabel
+            this.renderJob.size = this._size;
+            this.renderJob.color = this.renderColor;
+            this.renderJob.label = this.starLabel;
         }
-        addRenderJob(this.renderJob, false);
+
+        if (this._screen[2] < 0)
+            addRenderJob(this.renderJob, false);
     }
 }

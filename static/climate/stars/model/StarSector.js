@@ -79,11 +79,6 @@ export class StarSector {
         this.visibilityFlags = 0;
         addVec3Dest(this.cartesian, this._curCameraPosition, this._cameraOffset);
         cartesianToCamera(this._cameraOffset, this._camera);
-
-        if (this._camera[2] < 0) {
-            this.visibilityFlags |= Z_VISIBLE;
-            return;
-        }
         cameraToScreen(this._camera, this._screen);
         screenToRenderScreen(this._screen, this._renderNorm, this._renderScreen, this._xOffset, this._yOffset, this._s);
 
@@ -111,11 +106,9 @@ export class StarSector {
         let bucketLumens;
         for (let i = 0; i < this.buckets.length; i++) {
             bucketLumens = this.bucketLumensCutoffs.at(i) * this._relCameraDistBrightnessMult;
-            if (bucketLumens > luminenceParams[0]) {
+            if (true || bucketLumens >= luminenceParams[0]) {
                 this.prepareBucket(this.buckets.at(i));
-                if (this._recalculateStarColorFlag) {
-                    this.processBucketSizeColor(this.buckets.at(i), luminenceParams, sizeParams, brightnessParams);
-                }
+                this.processBucketSizeColor(this.buckets.at(i), luminenceParams, sizeParams, brightnessParams);
                 this.renderBucket(this.buckets.at(i));
             }
         }
@@ -175,7 +168,7 @@ export class StarSector {
     procesLoadedStars() {
         this.lumensSt = calculateStatistics(this.loadedStars.map((star) => star.lumens));
         this.loadedStars.sort((a, b) => a.lumens - b.lumens);
-        this.starsPerBucket = loadGD(UI_SH_STARS_PER_BUCKET);
+        this.starsPerBucket = 100;
 
         let curBucket = 0;
         this.bucketLumensCutoffs[curBucket] = this.lumensSt[2];
