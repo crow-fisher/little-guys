@@ -2,7 +2,7 @@ import { COLOR_BLACK, COLOR_BLUE, COLOR_GREEN, COLOR_OTHER_BLUE, COLOR_VERY_FUCK
 import { invlerp, lerp } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
-import { loadGD, saveGD, UI_STARMAP_BRIGHTNESS_SHIFT, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_STARMAP_STAR_OPACITY_FACTOR, UI_STARMAP_STAR_OPACITY_SHIFT, UI_STARMAP_STAR_SIZE_FACTOR } from "../UIData.js";
+import { loadGD, saveGD, UI_SH_STYLE_BRIGHTNESS_SHIFT, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_SH_STYLE_BRIGHTNESS_FACTOR, UI_SH_STYLE_SIZE_SHIFT, UI_SH_STYLE_SIZE_FACTOR } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class StarSpecializedValuePicker extends WindowElement {
@@ -14,12 +14,12 @@ export class StarSpecializedValuePicker extends WindowElement {
         this.pointSize = 6;
 
         this.keys = [
-            [UI_STARMAP_STAR_OPACITY_SHIFT, UI_STARMAP_STAR_SIZE_FACTOR],
-            [UI_STARMAP_BRIGHTNESS_SHIFT, UI_STARMAP_STAR_OPACITY_FACTOR]
+            [UI_SH_STYLE_SIZE_SHIFT, UI_SH_STYLE_SIZE_FACTOR],
+            [UI_SH_STYLE_BRIGHTNESS_SHIFT, UI_SH_STYLE_BRIGHTNESS_FACTOR]
         ];
         this.valueRanges = [
             [
-                [-30, 30], [-1.5, 1.5]
+                [-1.5, 1.5], [-1.5, 1.5]
             ], 
             [
                 [-20, 20], [-1.5, 1.5]

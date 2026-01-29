@@ -1,5 +1,5 @@
 import { frameMatrixReset, tickFrameMatrix } from "../../camera.js";
-import { loadGD, UI_SH_SUBDIVISION_SIZE, UI_STARMAP_ZOOM } from "../../ui/UIData.js";
+import { loadGD, UI_SH_MINLUMINENCE, UI_SH_SUBDIVISION_SIZE, UI_STARMAP_ZOOM } from "../../ui/UIData.js";
 import { HipparcosCatalog } from "./catalog/HipparcosCatalog.js";
 import { StellariumCatalog } from "./catalog/StellariumCatalog.js";
 import { StarSector } from "./model/StarSector.js";

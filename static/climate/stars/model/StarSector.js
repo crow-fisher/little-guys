@@ -3,7 +3,7 @@ import { getCanvasHeight, getCanvasWidth } from "../../../canvas.js";
 import { COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../colors.js";
 import { calculateStatistics, rgbToRgba } from "../../../common.js";
 import { addRenderJob, PointLabelRenderJob } from "../../../rasterizer.js";
-import { loadGD, UI_CAMERA_OFFSET_VEC, UI_SH_STARS_PER_BUCKET } from "../../../ui/UIData.js";
+import { loadGD, UI_CAMERA_OFFSET_VEC, UI_SH_MINLUMINENCE, UI_SH_STARS_PER_BUCKET, UI_SH_STYLE_BRIGHTNESS_FACTOR, UI_SH_STYLE_BRIGHTNESS_SHIFT, UI_SH_STYLE_SIZE_FACTOR, UI_SH_STYLE_SIZE_SHIFT } from "../../../ui/UIData.js";
 import { addVec3Dest, addVectors, calculateDistance, getVec3Length } from "../matrix.js";
 
 const Z_VISIBLE = 0b10;
@@ -35,6 +35,14 @@ export class StarSector {
         this.visibilityFlags = 0;
     }
 
+    getSizeParams() {
+        return [Math.exp(loadGD(UI_SH_STYLE_SIZE_FACTOR)), Math.exp(loadGD(UI_SH_STYLE_SIZE_SHIFT))];
+    }
+
+    getBrightnessParams() {
+        return [Math.exp(loadGD(UI_SH_STYLE_BRIGHTNESS_FACTOR)), Math.exp(loadGD(UI_SH_STYLE_BRIGHTNESS_SHIFT))];
+    }
+
     renderMain() {
         if (!this.ready) {
             return;
@@ -42,8 +50,7 @@ export class StarSector {
         this.renderPrepare();
 
         if (this.visibilityFlags == 0) {
-            this.renderStars();
-            // this.renderSector();
+            this.renderStars(Math.exp(loadGD(UI_SH_MINLUMINENCE)), this.getSizeParams(), this.getBrightnessParams());
         }
     }
 
@@ -83,23 +90,22 @@ export class StarSector {
         }
     }
 
-    processStarSize(lumens) {
-        return 10 * lumens ** 0.5;
+    processStarSize(star, sizeParams) { 
+        return sizeParams[0] * (star.lumens ** 0.5) / sizeParams[1];
     }
 
-    processStarOpacity(lumens) {
-        return Math.min(1, 10 * lumens ** 0.5);
+    processStarColor(star, brightnessParams) {
+        return rgbToRgba(...star.color, ((star.lumens * brightnessParams[0]) * star._relCameraDistBrightnessMult) / brightnessParams[1]);
     }
 
-    renderStars() {
-        let minLumens = .01;
+    renderStars(minLumens, sizeParams, brightnessParams) {
         let bucketLumens;
         for (let i = 0; i < this.buckets.length; i++) {
             bucketLumens = this.bucketLumensCutoffs.at(i) * this._relCameraDistBrightnessMult;
             if (bucketLumens > minLumens) {
                 this.prepareBucket(this.buckets.at(i));
                 if (this._recalculateStarColorFlag) {
-                    this.processBucketColor(this.buckets.at(i));
+                    this.processBucketColor(this.buckets.at(i), sizeParams, brightnessParams);
                 }
                 this.renderBucket(this.buckets.at(i));
             }
@@ -115,14 +121,16 @@ export class StarSector {
         });
     }
 
-    processBucketColor(bucket) {
+    processBucketColor(bucket, sizeParams, brightnessParams) {
         bucket.forEach((star) => {
             star._curCameraDistance = getVec3Length(star._offset);
             star._relCameraDist = (star._curCameraDistance / star._rootCameraDistance);
             star._relCameraDistBrightnessMult = 1 / (star._relCameraDist ** 2);
             star._curLumens = (star.lumens * star._relCameraDistBrightnessMult);
-            star._size = this.processStarSize(star._curLumens);
-            star.renderColor = rgbToRgba(...star.color, this.processStarOpacity(star._curLumens));
+
+            star._size = this.processStarSize(star, sizeParams);
+            star.renderColor = this.processStarColor(star, brightnessParams);
+
         });
     }
 
