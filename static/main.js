@@ -19,14 +19,29 @@ import { canvasPanRoutine } from "./canvas.js";
 import { render3DHud } from "./camera.js";
 import { gamepadCameraInput } from "./gamepadCameraInput.js";
 import { executeRenderJobs } from "./rasterizer.js";
+import { StarHandler } from "./climate/stars/starHandler.js";
 
-initUI();
-let lightingHandler = new LightingHandler();
-let climateHandler = new ClimateHandler();
-doTimeSkipToNow();
+
+let starHandler;
+let lightingHandler;
+let climateHandler;
 
 export function getLightingHandler() {
     return lightingHandler;
+}
+
+export function getStarHandler() {
+    return starHandler;
+}
+
+export function getClimateHandler() {
+    return climateHandler;
+}
+
+function initHandlers(force) {
+    starHandler = (force ? new StarHandler() : starHandler ?? new StarHandler());
+    lightingHandler = (force ? new LightingHandler() : lightingHandler ?? new LightingHandler());
+    climateHandler = (force ? new ClimateHandler() : climateHandler ?? new ClimateHandler());
 }
 
 export function lightingExposureAdjustment() {
@@ -66,6 +81,7 @@ function gamepadAndPlayerTick() {
 
 export function scheduler_main() {
     if (!isSaveOrLoadInProgress()) {
+        initHandlers();
         resetSqColChangeMap();
         updateTime();
         doClickAdd();
@@ -95,6 +111,7 @@ function render() {
     let selectedViewMode = loadGD(UI_VIEWMODE_SELECT);
     doTimeSeek();
     renderTime();
+    starHandler.render();
 
     if (selectedViewMode == UI_VIEWMODE_TEMPERATURE) {
         renderTemperature();
@@ -124,9 +141,9 @@ function render() {
     if (selectedViewMode != UI_VIEWMODE_3D) 
         executeRenderJobs();
 
-    renderSolidSquares();
-    renderOrganisms();
-    renderWaterSquares();
+    // renderSolidSquares();
+    // renderOrganisms();
+    // renderWaterSquares();
 
     if (selectedViewMode == UI_VIEWMODE_3D) 
         executeRenderJobs();

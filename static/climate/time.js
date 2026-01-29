@@ -1,5 +1,5 @@
-import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, getFrameXMax, getFrameXMin, getFrameYMax, getFrameYMin, isSquareOnCanvas, zoomCanvasFillCircle } from "../canvas.js";
-import { hexToRgb, hsv2rgb, randNumber, randRange, rgb2hsv, rgbToHex, rgbToRgba } from "../common.js";
+import { getBaseSize, getCanvasSquaresY, isSquareOnCanvas, zoomCanvasFillCircle } from "../canvas.js";
+import { hexToRgb, hsv2rgb, rgb2hsv, rgbToHex, rgbToRgba } from "../common.js";
 import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth, MAIN_CONTEXT, setBackgroundColor } from "../index.js";
 import { calculateColorRGB, getFrameRelCloud } from "./simulation/temperatureHumidity.js";
 import {
@@ -24,16 +24,10 @@ import {
     UI_SPEED_18,
     UI_SPEED_19,
     UI_SPEED,
-    UI_SPEED_0, saveGD,
-    UI_GAME_MAX_CANVAS_SQUARES_X,
-    UI_GAME_MAX_CANVAS_SQUARES_Y,
-    UI_LIGHTING_SUN,
-    addUIFunctionMap
+    UI_SPEED_0, saveGD
 } from "../ui/UIData.js";
-import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
 import { SunCalc } from "./suncalc/suncalc.js";
 import { getActiveClimate } from "./climateManager.js";
-import { StarHandler } from "./stars/_starHandler.js";
 
 let TIME_SCALE = 1;
 let curUIKey = UI_SPEED_1;
@@ -236,51 +230,11 @@ export function doTimeSkipToNow() {
 function getPrevTime() {
     return prevTime;
 }
-let starHandler;
-function initializeStarMap() {
-    starHandler = new StarHandler();
-}
 
-export function gsmfc() {
-    return starHandler?.frameCache;
-}
-
-export function gsh() {
-    return starHandler;
-}
-
-function _initializeStarMap() {
-    starMap = new Map();
-    starColorTemperatureMap = new Map();
-    let sx = loadGD(UI_GAME_MAX_CANVAS_SQUARES_X);
-    let sy = loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y);
-
-    starMapCenterX = randNumber(sx / 4, sx * 0.75);
-    starMapCenterY = randNumber(sy / 4, sy * 0.75);
-
-    let numStars = 10000 * (1 + Math.random()) * ((sx / 100) ** 0.1);
-
-    for (let i = 0; i < numStars; i++) {
-        let starX = randNumber(-sx * 4, sx * 4);
-        let starY = randNumber(-sy * 4, sy * 4);
-
-        let starBrightness = (Math.random() ** 0.7) * 0.3;
-
-        if (!(starMap.has(starX))) {
-            starMap.set(starX, new Map());
-            starColorTemperatureMap.set(starX, new Map());
-        }
-
-        starMap.get(starX).set(starY, starBrightness);
-        starColorTemperatureMap.get(starX).set(starY, randRange(0.63, 1));
-    }
-}
 
 function renderStarMap(brightnessMult) {
-    starHandler.render();
     return;
     if (starMap == null) {
-        initializeStarMap();
     }
 
     let frameCloudColor = getFrameRelCloud();
@@ -694,4 +648,4 @@ function temp_blue(temperature) {
 }
 
 
-export { getDaylightStrength, getPrevDay, getPrevTime, updateTime, renderTime, initializeStarMap }
+export { getDaylightStrength, getPrevDay, getPrevTime, updateTime, renderTime }

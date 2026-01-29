@@ -37,7 +37,6 @@ import {
     UI_AA_PLOT_SELECT_NAMED_STARS
 } from "../../ui/UIData.js";
 import { getAstronomyAtlasComponent } from "../../ui/WindowManager.js";
-import { gsh, tempToColorForStar } from "../time.js";
 import { calculateDistance, getVec3Length, subtractVectors, subtractVectorsCopy } from "./matrix.js";
 
 // https://resources.wolframcloud.com/FormulaRepository/resources/Luminosity-Formula-for-Absolute-Magnitude
@@ -242,9 +241,6 @@ export class StarHandler {
 
     loadHIPRow(row) {
         let id = Number.parseInt(row.substr(8, 13));
-        // THROTTLE - FOR COWARDS 
-        // if (!this.constellationStars.has(id) && Math.random() > .015)
-        //     return;
 
         let raHours = Number.parseFloat(row.substr(17, 2));
         let raMinutes = Number.parseFloat(row.substr(20, 2));
@@ -313,12 +309,7 @@ export class StarHandler {
 
     }
 
-    calculateStarTemperature(bv) {
-        // https://web.archive.org/web/20230315074349/https://spiff.rit.edu/classes/phys445/lectures/colors/colors.html
-        // https://iopscience.iop.org/article/10.1086/301490/pdf
-        // https://stackoverflow.com/questions/21977786/star-b-v-color-index-to-apparent-rgb-color
-        return 4600 * ((1 / ((0.92 * bv) + 1.7)) + (1 / ((0.92 * bv) + 0.62)));
-    }
+
 
     loadStarNames(text) {
         let rows = text.split("\n");

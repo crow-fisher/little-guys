@@ -5,7 +5,7 @@ export class CatalogHandlerBase {
         this.name = "BaseCatalog";
     }
 
-    loadData() {
+    loadData(callback) {
 
     }
 }

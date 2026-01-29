@@ -1,3 +1,5 @@
+import { CatalogHandlerBase } from "./CatalogHandlerBase.js";
+
 export class StellariumCatalog extends CatalogHandlerBase {
     constructor(starCallback, constellationCallback) {
         super(starCallback, constellationCallback);

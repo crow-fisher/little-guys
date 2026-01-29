@@ -1,12 +1,12 @@
-import { gsh } from "../../../../climate/time.js";
+import { getStarHandler } from "../../../../main.js";
 import { UI_AA_LABEL_GRAPH, UI_AA_LABEL_STARS, addUIFunctionMap, UI_AA_PLOT_XKEY, UI_AA_PLOT_YKEY, UI_AA_SETUP_COLORMODE, UI_STARMAP_STAR_MAX_SIZE, UI_STARMAP_STAR_MIN_SIZE, UI_AA_SETUP_MIN, UI_AA_SELECTED_OPACITY } from "../../../UIData.js";
 
 import { UI_AA_SETUP_WINDOW_SIZE, UI_AA_SETUP_POW, UI_AA_SETUP_MULT, UI_AA_SETUP_SELECT_MULT, UI_AA_PLOT_LOCALITY_SELECTMODE, UI_AA_PLOT_SELECTRADIUS, UI_AA_PLOT_SELECT_NAMED_STARS } from "../../../UIData.js";
 import { getAstronomyAtlasComponent } from "../../../WindowManager.js";
 
 function resetStarStyle() {
-    gsh().stars.forEach((star) => star.recalculateAltColor());
-    gsh().resetStarLabels();
+    getStarHandler().stars.forEach((star) => star.recalculateAltColor());
+    getStarHandler().resetStarLabels();
     resetGraphStyle();
 }
 
@@ -19,8 +19,8 @@ function resetGraphPoints() {
 }
 
 export function initAAUIFunctionMaps() {
-    addUIFunctionMap(UI_AA_LABEL_STARS, () => gsh().resetStarLabels());
-    addUIFunctionMap(UI_AA_LABEL_GRAPH, () => gsh().resetStarLabels());
+    addUIFunctionMap(UI_AA_LABEL_STARS, () => getStarHandler().resetStarLabels());
+    addUIFunctionMap(UI_AA_LABEL_GRAPH, () => getStarHandler().resetStarLabels());
 
     addUIFunctionMap(UI_STARMAP_STAR_MAX_SIZE, resetGraphPoints);
     addUIFunctionMap(UI_STARMAP_STAR_MIN_SIZE, resetGraphPoints);

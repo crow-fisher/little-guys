@@ -1,6 +1,5 @@
 import { getBaseUISize } from "../../../../canvas.js";
 import { getActiveClimate } from "../../../../climate/climateManager.js";
-import { gsh } from "../../../../climate/time.js";
 import { COLOR_BLACK, COLOR_WHITE } from "../../../../colors.js";
 import { Container } from "../../../Container.js";
 import { RadioToggleLabel } from "../../../elements/RadioToggleLabel.js";

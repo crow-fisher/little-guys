@@ -1,3 +1,5 @@
+import { getStarHandler } from "../../../main.js";
+import { brightnessValueToLumens, sphericalToCartesian } from "../starHandlerUtil.js";
 
 export class Star {
     // ascension and declination in radians
@@ -11,7 +13,7 @@ export class Star {
         this.parallax = parallax;
         this.hd_number = hd_number;
         this.temperature = temperature;
-        this._cartesian = [0, 0, 0];
+        
         this._offset = [0, 0, 0];
         this._camera = [0, 0, 0];
         this._screen = [0, 0, 0];
@@ -32,6 +34,9 @@ export class Star {
         this.parsecs = Math.abs(1 / (parallax / 1000));
         this.parsecs_log = Math.log10(this.parsecs);
         this.magnitude_absolute = (magnitude + 5) - (5 * Math.log10(this.parsecs));
+        this.cartesian = sphericalToCartesian(-this.asc, -this.dec, this.parsecs);
+        this.lumens = brightnessValueToLumens(this.magnitude);
+        this.sector = [-1, -1, -1];
     }
 
     getLabelForType(labelType, selectNamed, tX, tY, tC) {
@@ -71,7 +76,7 @@ export class Star {
             return;
         }
 
-        this._rac_st = gsh().paramStatistics.get(this._rac_curKey);
+        this._rac_st = getStarHandler().paramStatistics.get(this._rac_curKey);
         this._rac_val = this[this._rac_curKey];
         this._rac_valNorm = invlerp(this._rac_st[2], this._rac_st[3], this._rac_val);
         this._rac_minValue = loadGD(UI_AA_SETUP_MIN);

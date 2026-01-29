@@ -1,4 +1,3 @@
-import { initializeStarMap } from "./time.js";
 import { initTemperatureHumidity, restingValues, tickMaps } from "./simulation/temperatureHumidity.js";
 import { initWeather, weather } from "./weather/weatherManager.js";
 import { initWindPressure, tickWindPressureMap } from "./simulation/wind.js";
@@ -14,7 +13,6 @@ export class ClimateHandler {
         initWeather();
         initTemperatureHumidity();
         initWindThrottleMap();
-        initializeStarMap();
     }
 
     climateTick() {

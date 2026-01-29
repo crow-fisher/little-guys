@@ -585,7 +585,6 @@ export function getCanvasHeight() {
     return CANVAS_SQUARES_Y * BASE_SIZE;
 }
 
-
 addUIFunctionMap(UI_VIEWMODE_SELECT, async () => {
     let curViewMode = loadGD(UI_VIEWMODE_SELECT);
     if (curViewMode == UI_VIEWMODE_3D) {

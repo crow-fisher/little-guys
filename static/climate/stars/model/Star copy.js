@@ -1,3 +1,4 @@
+import { getStarHandler } from "../../../main.js";
 
 export class Star {
     // ascension and declination in radians
@@ -57,7 +58,7 @@ export class Star {
             return;
         }
 
-        this._rac_st = gsh().paramStatistics.get(this._rac_curKey);
+        this._rac_st = getStarHandler().paramStatistics.get(this._rac_curKey);
         this._rac_val = this[this._rac_curKey];
         this._rac_valNorm = invlerp(this._rac_st[2], this._rac_st[3], this._rac_val);
         this._rac_minValue = loadGD(UI_AA_SETUP_MIN);

@@ -1,9 +1,9 @@
 import { getBaseUISize, getSingletonMouseWheelState } from "../../../canvas.js";
-import { getFrameDt, gsh } from "../../../climate/time.js";
 import { COLOR_WHITE } from "../../../colors.js";
 import { calculateStatistics, hexToRgb, invlerp, processRangeToOne, rgbToRgba, rgbToRgbaObj } from "../../../common.js";
 import { MAIN_CONTEXT } from "../../../index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "../../../keyboard.js";
+import { getStarHandler } from "../../../main.js";
 import { getLastLastMoveOffset, getLastMouseDownStart, getLastMouseUpEvent, getLastMoveOffset, isLeftMouseClicked } from "../../../mouse.js";
 import { resetViewportButtonOffset } from "../../components/AstronomyAtlas/modes/AstronomyAtlasModeFuncPlot.js";
 import { loadGD, saveGD, UI_AA_PLOT_AXISLABELS, UI_AA_PLOT_MAXPOINTS, UI_AA_PLOT_OFFSET_X, UI_AA_PLOT_OFFSET_Y, UI_AA_PLOT_POINTOPACITY, UI_AA_PLOT_POINTSIZE, UI_AA_SELECT_FILTERMODE_STARS, UI_AA_PLOT_XKEY, UI_AA_PLOT_XPADDING, UI_AA_PLOT_YKEY, UI_AA_PLOT_YPADDING, UI_AA_PLOT_ZOOM_X, UI_AA_PLOT_ZOOM_Y, UI_AA_LABEL_STARS, UI_AA_SELECT_FILTERMODE_GRAPH, UI_AA_LABEL_GRAPH, UI_STARMAP_VIEWMODE, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_DISPLAYTYPE_NAME_MULT, UI_AA_SETUP_SELECT_MULT, UI_AA_PLOT_SELECT_NAMED_STARS } from "../../UIData.js";
@@ -54,16 +54,16 @@ export class PlotStarScatter extends WindowElement {
     }
 
     render(startX, startY) {
-        if (gsh()?.stars == null) {
+        if (getStarHandler()?.stars == null) {
             return;
         }
         if (loadGD(UI_AA_SELECT_FILTERMODE_GRAPH) == 2) {
-            if (gsh()?.frameCache?.newStarSelected) {
+            if (getStarHandler()?.frameCache?.newStarSelected) {
                 this.reloadGraph();
-                gsh().frameCache.newStarSelected = false;
+                getStarHandler().frameCache.newStarSelected = false;
             }
         }
-        if (this.xKey == null || this.yKey == null || this.numStars != gsh().stars.length) {
+        if (this.xKey == null || this.yKey == null || this.numStars != getStarHandler().stars.length) {
             this.reloadGraph();
             return;
         }
@@ -88,7 +88,7 @@ export class PlotStarScatter extends WindowElement {
 
     _reloadGraphSelect() {
         console.log("reloadGraphSelect");
-        if (this.xKey == null || this.yKey == null || gsh().stars.length == 0) {
+        if (this.xKey == null || this.yKey == null || getStarHandler().stars.length == 0) {
             return;
         }
         let opacity = processRangeToOne(loadGD(UI_AA_PLOT_POINTOPACITY) * this.lengthCap);
@@ -96,7 +96,7 @@ export class PlotStarScatter extends WindowElement {
         let star;
         let selectNamedStars = loadGD(UI_AA_PLOT_SELECT_NAMED_STARS);
 
-        let filteredStars = Array.from(gsh().stars.filter((star) =>
+        let filteredStars = Array.from(getStarHandler().stars.filter((star) =>
             (selectNamedStars ? star.name != null : false)
             || star.selected
             || star.localitySelect));
@@ -133,18 +133,18 @@ export class PlotStarScatter extends WindowElement {
     reloadGraphDefault() {
         this.xKey = loadGD(UI_AA_PLOT_XKEY);
         this.yKey = loadGD(UI_AA_PLOT_YKEY);
-        this.numStars = gsh().stars.length;
+        this.numStars = getStarHandler().stars.length;
 
         if (this.xKey == null || this.yKey == null || this.numStars == 0) {
             return;
         }
 
-        let idxMult = gsh().stars.length / (this.lengthCap);
+        let idxMult = getStarHandler().stars.length / (this.lengthCap);
         let star, iO;
 
-        gsh().stars.forEach((star) => star.recalculateAltColor());
-        let namedStars = Array.from(gsh().stars.filter((star) => star.name != null));
-        let nonNamedStars = Array.from(gsh().stars.filter((star) => star.name == null));
+        getStarHandler().stars.forEach((star) => star.recalculateAltColor());
+        let namedStars = Array.from(getStarHandler().stars.filter((star) => star.name != null));
+        let nonNamedStars = Array.from(getStarHandler().stars.filter((star) => star.name == null));
 
         for (let i = 0; i < this.lengthCap; i++) {
             star = namedStars.pop(), iO = -1;
@@ -249,9 +249,9 @@ export class PlotStarScatter extends WindowElement {
     reloadGraph() {
         this.xKey = loadGD(UI_AA_PLOT_XKEY);
         this.yKey = loadGD(UI_AA_PLOT_YKEY);
-        this.numStars = gsh().stars.length;
+        this.numStars = getStarHandler().stars.length;
 
-        if (this.xKey == null || this.yKey == null || gsh().stars.length == 0) {
+        if (this.xKey == null || this.yKey == null || getStarHandler().stars.length == 0) {
             return;
         }
 
@@ -261,16 +261,16 @@ export class PlotStarScatter extends WindowElement {
             return;
         }
 
-        let idxMult = gsh().stars.length / (this.lengthCap);
+        let idxMult = getStarHandler().stars.length / (this.lengthCap);
         let opacity = processRangeToOne(loadGD(UI_AA_PLOT_POINTOPACITY) * this.lengthCap);
         let selectedStarOpacityMult = Math.exp(loadGD(UI_AA_SETUP_SELECT_MULT));
         let star, iO;
 
         let nameSelect = loadGD(UI_AA_PLOT_SELECT_NAMED_STARS)
 
-        gsh().stars.forEach((star) => star.recalculateAltColor());
-        let namedStars = Array.from(gsh().stars.filter((star) => star.name != null));
-        let nonNamedStars = Array.from(gsh().stars.filter((star) => star.name == null));
+        getStarHandler().stars.forEach((star) => star.recalculateAltColor());
+        let namedStars = Array.from(getStarHandler().stars.filter((star) => star.name != null));
+        let nonNamedStars = Array.from(getStarHandler().stars.filter((star) => star.name == null));
 
         for (let i = 0; i < this.lengthCap; i++) {
             star = namedStars.pop(), iO = -1;
