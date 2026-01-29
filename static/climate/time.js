@@ -33,7 +33,7 @@ import {
 import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
 import { SunCalc } from "./suncalc/suncalc.js";
 import { getActiveClimate } from "./climateManager.js";
-import { StarHandler } from "./stars/starHandler.js";
+import { StarHandler } from "./stars/_starHandler.js";
 
 let TIME_SCALE = 1;
 let curUIKey = UI_SPEED_1;
