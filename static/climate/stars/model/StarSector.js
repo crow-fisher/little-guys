@@ -69,7 +69,7 @@ export class StarSector {
     }
 
     renderStars() {
-        let minLumens = .1;
+        let minLumens = .001;
         let bucketLumens;
         for (let i = 0; i < this.buckets.length; i++) {
             bucketLumens = this.bucketLumensCutoffs.at(i) * this._relCameraDistBrightnessMult;
@@ -77,7 +77,7 @@ export class StarSector {
                 this.prepareStarBucket(this.buckets.at(i));
                 this.buckets.at(i).forEach((star) => {
                     star.renderColor = COLOR_VERY_FUCKING_RED;
-                    star._size = 10;
+                    star._size = 10 * (star.lumens * star._relCameraDistBrightnessMult);
                     star.render();
                 });
             }
@@ -90,6 +90,10 @@ export class StarSector {
             cartesianToCamera(star._offset, star._camera);
             cameraToScreen(star._camera, star._screen);
             screenToRenderScreen(star._screen, star._renderNorm, star._renderScreen, this._xOffset, this._yOffset, this._s);
+
+            star._curCameraDistance = getVec3Length(star._offset);
+            star._relCameraDist = (star._curCameraDistance / star._rootCameraDistance);
+            star._relCameraDistBrightnessMult = 1 / (star._relCameraDist ** 2);
         });
     }
 

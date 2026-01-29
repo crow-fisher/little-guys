@@ -1,5 +1,6 @@
 import { getStarHandler } from "../../../main.js";
 import { addRenderJob, PointLabelRenderJob } from "../../../rasterizer.js";
+import { getVec3Length } from "../matrix.js";
 import { brightnessValueToLumens, sphericalToCartesian } from "../starHandlerUtil.js";
 
 export class Star {
@@ -38,6 +39,11 @@ export class Star {
         this.cartesian = sphericalToCartesian(-this.asc, -this.dec, this.parsecs);
         this.lumens = brightnessValueToLumens(this.magnitude);
         this.sector = [-1, -1, -1];
+
+        this._rootCameraDistance = getVec3Length(this.cartesian);
+        this._curCameraDistance = getVec3Length(this.cartesian);
+        this._relCameraDist = (this._curCameraDistance / this._rootCameraDistance);
+        this._relCameraDistBrightnessMult = 1 / (this._relCameraDist ** 2);
     }
 
     getLabelForType(labelType, selectNamed, tX, tY, tC) {
