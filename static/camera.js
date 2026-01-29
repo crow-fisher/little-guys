@@ -129,9 +129,6 @@ export function cameraToScreen(camera, screen) {
 }
 
 export function screenToRenderScreen(screenRef, renderNormRef, renderScreenRef, xOffset, yOffset, s) {
-    if (screenRef[2] < 0) {
-        return;
-    }
     renderNormRef[0] = (screenRef[0] / screenRef[2]);
     renderNormRef[1] = (screenRef[1] / screenRef[2]);
     renderScreenRef[0] = (renderNormRef[0] + xOffset) * s;
