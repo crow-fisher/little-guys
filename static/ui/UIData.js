@@ -448,7 +448,7 @@ export let _GAMEDATA_DEFAULT = {
 
 
     // star sectors 
-    UI_SH_SUBDIVISION_SIZE: 10,
+    UI_SH_SUBDIVISION_SIZE: 100,
     UI_SH_STARS_PER_BUCKET: 10,
 
     // lighting

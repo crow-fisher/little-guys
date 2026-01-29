@@ -1,4 +1,5 @@
 import { getStarHandler } from "../../../main.js";
+import { addRenderJob, PointLabelRenderJob } from "../../../rasterizer.js";
 import { brightnessValueToLumens, sphericalToCartesian } from "../starHandlerUtil.js";
 
 export class Star {
@@ -13,7 +14,7 @@ export class Star {
         this.parallax = parallax;
         this.hd_number = hd_number;
         this.temperature = temperature;
-        
+
         this._offset = [0, 0, 0];
         this._camera = [0, 0, 0];
         this._screen = [0, 0, 0];
@@ -143,7 +144,6 @@ export class Star {
     prepare(frameCache) {
         this._curCameraDistance = calculateDistance(frameCache.UI_CAMERA_OFFSET_VEC, this._cartesian);
         this._relCameraDist = (this._curCameraDistance / this._rootCameraDistance);
-
         frameCache.newStarSelected |= this.doLocalitySelect(frameCache.UI_AA_PLOT_LOCALITY_SELECTMODE, frameCache.selectRadius);
 
         if (this.recalculateScreenFlag) {
@@ -168,7 +168,7 @@ export class Star {
             this.activeId = (frameCache.UI_AA_LABEL_STARS == 0) ? this.id : this.hd_number;
         }
     }
-    render(renderMode, renderLabel) {
+    _render(renderMode, renderLabel) {
         if (!this._brightnessVisible) {
             return;
         }
@@ -196,5 +196,26 @@ export class Star {
                 this.renderColor,
                 this.starLabel,
                 false));
+    }
+
+    render() {
+        if (this.renderJob == null) {
+            this.renderJob = new PointLabelRenderJob(
+                this._renderScreen[0],
+                this._renderScreen[1],
+                this._screen[2],
+                this._size,
+                this.renderColor,
+                this.starLabel,
+                false);
+        } else {
+            this.renderJob.x = this._renderScreen[0]
+            this.renderJob.y = this._renderScreen[1]
+            this.renderJob.z = this._screen[2]
+            this.renderJob.size = this._size
+            this.renderJob.color = this.renderColor
+            this.renderJob.label = this.starLabel
+        }
+        addRenderJob(this.renderJob, false);
     }
 }

@@ -17,7 +17,7 @@ export class StarHandler {
 
     render() {
         tickFrameMatrix();
-        this.iterateOnSectors((sector) => sector.render());
+        this.iterateOnSectors((sector) => sector.renderMain());
     }
 
     sectorIndexToCartesian(bX, bY, bZ) {
@@ -39,14 +39,11 @@ export class StarHandler {
             star.sector[1], 
                 this.sectors.get(star.sector[0]).get(star.sector[1])
                 ?? new Map());
-
-        this.sectors.get(star.sector[0]).get(star.sector[1]).set(
-            star.sector[2],
-                this.sectors.get(this.sectors.get(star.sector[0]).get(star.sector[1]).get(star.sector[2]))
-                ?? new StarSector(star.sector, sectorToCartesian(this.bounds, star.sector, this.numSectors))
-        );
-
-        this.sectors.get(star.sector[0]).get(star.sector[1]).get(star.sector[2]).loadStar(star);
+        let curSector = this.sectors.get(star.sector[0]).get(star.sector[1]);
+        if (!curSector.has(star.sector[2])) {
+            curSector.set(star.sector[2], new StarSector(star.sector, sectorToCartesian(this.bounds, star.sector, this.numSectors)));
+        }
+        curSector.get(star.sector[2]).loadStar(star);
     }
 
     iterateOnSectors(func) {
