@@ -16,6 +16,11 @@ export function gamepadCameraInput() {
     let triggers = getTriggers();
 
     let offset = 1 * (getFrameDt() / 10);
+
+    if (isButtonPressed(GBA)) {
+        offset *= 100;
+    }
+
     let applied = [0, 0, 0, 0]; 
 
     applied[0] -= offset * ls[1];
@@ -63,6 +68,10 @@ export function gamepadCameraInput() {
     saveGD(UI_STARMAP_CONSTELATION_BRIGHTNESS, Math.max(0, loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS)));
 
     saveGD(UI_CAMERA_FOV, boundValue(10, 160,loadGD(UI_CAMERA_FOV)));
+
+
+
     // UI_STARMAP_NORMAL_BRIGTNESS
+
     // UI_STARMAP_CONSTELATION_BRIGHTNESS
 }

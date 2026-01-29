@@ -92,7 +92,7 @@ export function hueShiftColorArr(hex, hueShift, saturationShift, valueShift) {
 
 export function randNumberExclusive(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
-} 
+}
 
 function randNumber(min, max) {
     max += 1;
@@ -122,10 +122,14 @@ function loadImage(url) {
 }
 
 export function calculateStatistics(array) {
-    array = array.filter((v) => v != null);
-    const n = array.length
-    const mean = array.reduce((a, b) => a + b, 0) / n
-    return [mean, Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) / n), array.reduce((a, b) => Math.min(a, b), array[0]), array.reduce((a, b) => Math.max(a, b), array[0])]
+    array = array.filter((v) => v != null && isFinite(v));
+    const n = array.length;
+    const mean = array.reduce((a, b) => a + b, 0) / n;
+    return [
+        mean,
+        Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) / n), // stdev
+        array.reduce((a, b) => Math.min(a, b), array[0]), // min
+        array.reduce((a, b) => Math.max(a, b), array[0])] // max
 }
 
 function processColorStdev(val_max, val, val_stdev, color) {
@@ -143,6 +147,14 @@ function processColorLerpBicolor(val, val_min, val_max, color1, color2) {
         g: Math.floor(color1.g * (1 - p) + color2.g * (p)),
         b: Math.floor(color1.b * (1 - p) + color2.b * (p))
     }
+}
+
+export function combineColorMult(color1, color2, p) {
+    return [
+        Math.floor(color1.r * (1 - p) + color2.r * (p)),
+        Math.floor(color1.g * (1 - p) + color2.g * (p)),
+        Math.floor(color1.b * (1 - p) + color2.b * (p))
+    ]
 }
 
 export function processColorLerpBicolorPow(val, val_min, val_max, color1, color2, pow) {

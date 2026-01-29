@@ -4,7 +4,7 @@ import { BlockPalette } from "./components/BlockPalette.js";
 import { BlockSubtreeComponent as BlockSubtree } from "./components/BlockSubtreeComponent.js";
 import { TopBarComponent } from "./topbar/TopBarComponent.js";
 import { ViewSubtreeComponent } from "./components/ViewSubtreeComponent.js";
-import { loadGD, UI_SM_LIGHTING, UI_PALETTE_PLANTS, UI_TOPBAR_BLOCK, UI_PALETTE_BLOCKS, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveGD, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_TIME, UI_TOPBAR_WEATHER, UI_MAIN_NEWWORLD, saveUI, UI_UI_SIZE, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_CLIMATE_SELECT_CLOUDS, UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK, UI_PALETTE_SELECT, UI_PALETTE_SOILROCK, UI_PALETTE_MODE_SOIL, UI_PALETTE_CLIPS, UI_PALETTE_CLIPS_WAYPOINT_NAME, UI_PALETTE_STRENGTH, UI_PALETTE_WATER, UI_PALETTE_SURFACE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_COMPOSITION, UI_LIGHTING_ENABLED, UI_PALETTE_AQUIFER, UI_TOPBAR_STARGAZER, UI_PLOTCONTAINER_ACTIVE, UI_PLOTCONTAINER_MAXPOINTS, UI_PLOTCONTAINER_XKEY, UI_PLOTCONTAINER_YKEY, UI_PLOTCONTAINER_WIDTH, UI_PLOTCONTAINER_HEIGHT, UI_PLOTCONTAINER_POINTOPACITY, UI_STARGAZER_SETUP, UI_PLOTCONTAINER_TOOLBOX_STAR_STYLE, UI_STARMAP_VIEWMODE, UI_STARMAP_FEH_POW, UI_STARMAP_FEH_WINDOW_SIZE, UI_STARMAP_FEH_MIN_VALUE } from "./UIData.js";
+import { loadGD, UI_SM_LIGHTING, UI_PALETTE_PLANTS, UI_TOPBAR_BLOCK, UI_PALETTE_BLOCKS, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveGD, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_TIME, UI_TOPBAR_WEATHER, UI_MAIN_NEWWORLD, saveUI, UI_UI_SIZE, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_CLIMATE_SELECT_CLOUDS, UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK, UI_PALETTE_SELECT, UI_PALETTE_SOILROCK, UI_PALETTE_MODE_SOIL, UI_PALETTE_CLIPS, UI_PALETTE_CLIPS_WAYPOINT_NAME, UI_PALETTE_STRENGTH, UI_PALETTE_WATER, UI_PALETTE_SURFACE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_COMPOSITION, UI_LIGHTING_ENABLED, UI_PALETTE_AQUIFER, UI_TOPBAR_STARGAZER, UI_AA_PLOT_ACTIVE, UI_AA_PLOT_MAXPOINTS, UI_AA_PLOT_XKEY, UI_AA_PLOT_YKEY, UI_AA_PLOT_WIDTH, UI_AA_PLOT_HEIGHT, UI_AA_PLOT_POINTOPACITY, UI_STARGAZER_SETUP, UI_AA_PLOT_TOOLBOX_STAR_STYLE, UI_STARMAP_VIEWMODE, UI_STARMAP_FEH_POW, UI_STARMAP_FEH_WINDOW_SIZE, UI_STARMAP_FEH_MIN_VALUE } from "./UIData.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import { ClipComponent } from "./components/ClipComponent.js";
 import { getCurMixIdx, getMixArr, getMixArrLen, getTargetMixIdx, setCurMixIdx, setTargetMixIdx } from "../globals.js";
@@ -25,14 +25,14 @@ import { WorldSetupComponent } from "./components/WorldSetupComponent.js";
 import { RockSquare } from "../squares/parameterized/RockSquare.js";
 import { WaterSquare } from "../squares/WaterSquare.js";
 import { StargazerComponent } from "./components/StargazerComponent.js";
-import { PlotContainerComponent } from "./components/PlotContainerComponent.js";
+import { AstronomyAtlasComponent } from "./components/AstronomyAtlas/AstronomyAtlasComponent.js";
 
 let topBarComponent;
 let mainMenuComponent;
 let blockPalette;
 let all_components;
 let playerSetup;
-let plotContainer;
+let astronomyAtlas;
 
 all_components = [];
 topBarComponent = new TopBarComponent("UI_TOPBAR");
@@ -63,13 +63,13 @@ export function initUI() {
     all_components.push(new WeatherSelectionComponent(() => topBarComponent.getElementXPositionFunc(0, 20 - 5), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_WEATHER));
     all_components.push(new WorldSetupComponent(() => getCanvasWidth() / 2, () => getBaseUISize() * 30, 0, 0, UI_MAIN_NEWWORLD));
     all_components.push(new StargazerComponent(() => topBarComponent.getElementXPositionFunc(0, 7), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_STARGAZER)); 
-    plotContainer = new PlotContainerComponent(getBaseUISize() * 90, getBaseUISize() * 30, 0, 0, UI_PLOTCONTAINER_ACTIVE) 
-    all_components.push(plotContainer);
+    astronomyAtlas = new AstronomyAtlasComponent(getBaseUISize() * 90, getBaseUISize() * 30, 0, 0, UI_AA_PLOT_ACTIVE) 
+    all_components.push(astronomyAtlas);
     
 }
 
-export function getPlotContainerComponent() {
-    return plotContainer;
+export function getAstronomyAtlasComponent() {
+    return astronomyAtlas;
 }
 
 export function getMainMenuComponent() {
@@ -277,14 +277,14 @@ export function renderMouseHover() {
 
 addUIFunctionMap(UI_PALETTE_COMPOSITION, clearMouseHoverColorCacheMap);
 
-addUIFunctionMap(UI_PLOTCONTAINER_MAXPOINTS, () => plotContainer.updatePlotContainers())
-addUIFunctionMap(UI_PLOTCONTAINER_XKEY, () => plotContainer.updatePlotContainers())
-addUIFunctionMap(UI_PLOTCONTAINER_YKEY, () => plotContainer.updatePlotContainers())
-addUIFunctionMap(UI_PLOTCONTAINER_POINTOPACITY, () => plotContainer.updatePlotContainers())
+addUIFunctionMap(UI_AA_PLOT_MAXPOINTS, () => astronomyAtlas.updatePlotContainers())
+addUIFunctionMap(UI_AA_PLOT_XKEY, () => astronomyAtlas.updatePlotContainers())
+addUIFunctionMap(UI_AA_PLOT_YKEY, () => astronomyAtlas.updatePlotContainers())
+addUIFunctionMap(UI_AA_PLOT_POINTOPACITY, () => astronomyAtlas.updatePlotContainers())
 
-addUIFunctionMap(UI_PLOTCONTAINER_WIDTH, () => plotContainer.updateSizeX(loadGD(UI_PLOTCONTAINER_WIDTH)));
-addUIFunctionMap(UI_PLOTCONTAINER_HEIGHT, () => plotContainer.plotStarScatter.updateSizeY(loadGD(UI_PLOTCONTAINER_HEIGHT)));
-addUIFunctionMap(UI_STARMAP_VIEWMODE, () => plotContainer.updatePlotContainers());
-addUIFunctionMap(UI_STARMAP_FEH_MIN_VALUE, () => plotContainer.updatePlotContainers());
-addUIFunctionMap(UI_STARMAP_FEH_WINDOW_SIZE, () => plotContainer.updatePlotContainers());
-addUIFunctionMap(UI_STARMAP_FEH_POW, () => plotContainer.updatePlotContainers());
+addUIFunctionMap(UI_AA_PLOT_WIDTH, () => astronomyAtlas.updateSizeX(loadGD(UI_AA_PLOT_WIDTH)));
+addUIFunctionMap(UI_AA_PLOT_HEIGHT, () => astronomyAtlas.updateSizeY(loadGD(UI_AA_PLOT_HEIGHT)));
+addUIFunctionMap(UI_STARMAP_VIEWMODE, () => astronomyAtlas.updatePlotContainers());
+addUIFunctionMap(UI_STARMAP_FEH_MIN_VALUE, () => astronomyAtlas.updatePlotContainers());
+addUIFunctionMap(UI_STARMAP_FEH_WINDOW_SIZE, () => astronomyAtlas.updatePlotContainers());
+addUIFunctionMap(UI_STARMAP_FEH_POW, () => astronomyAtlas.updatePlotContainers());
