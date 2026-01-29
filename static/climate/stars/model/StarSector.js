@@ -1,9 +1,9 @@
 import { cameraToScreen, cartesianToCamera, cartesianToScreen, screenToRenderScreen } from "../../../camera.js";
 import { getCanvasHeight, getCanvasWidth } from "../../../canvas.js";
 import { COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../colors.js";
-import { calculateStatistics, rgbToRgba } from "../../../common.js";
+import { calculateStatistics, invlerp, processRangeToOne, rgbToRgba } from "../../../common.js";
 import { addRenderJob, PointLabelRenderJob } from "../../../rasterizer.js";
-import { loadGD, UI_CAMERA_OFFSET_VEC, UI_SH_MINLUMINENCE, UI_SH_STARS_PER_BUCKET, UI_SH_STYLE_BRIGHTNESS_FACTOR, UI_SH_STYLE_BRIGHTNESS_SHIFT, UI_SH_STYLE_SIZE_FACTOR, UI_SH_STYLE_SIZE_SHIFT } from "../../../ui/UIData.js";
+import { loadGD, UI_CAMERA_OFFSET_VEC, UI_SH_MAXLUMINENCE, UI_SH_MINLUMINENCE, UI_SH_STARS_PER_BUCKET, UI_SH_STYLE_BRIGHTNESS_FACTOR, UI_SH_STYLE_BRIGHTNESS_SHIFT, UI_SH_STYLE_SIZE_FACTOR, UI_SH_STYLE_SIZE_SHIFT } from "../../../ui/UIData.js";
 import { addVec3Dest, addVectors, calculateDistance, getVec3Length } from "../matrix.js";
 
 const Z_VISIBLE = 0b10;
@@ -36,11 +36,15 @@ export class StarSector {
     }
 
     getSizeParams() {
-        return [Math.exp(loadGD(UI_SH_STYLE_SIZE_FACTOR)), Math.exp(loadGD(UI_SH_STYLE_SIZE_SHIFT))];
+        return [loadGD(UI_SH_STYLE_SIZE_SHIFT), loadGD(UI_SH_STYLE_SIZE_FACTOR)];
     }
 
     getBrightnessParams() {
         return [Math.exp(loadGD(UI_SH_STYLE_BRIGHTNESS_FACTOR)), Math.exp(loadGD(UI_SH_STYLE_BRIGHTNESS_SHIFT))];
+    }
+
+    getLuminenceParams() {
+        return [loadGD(UI_SH_MINLUMINENCE), processRangeToOne(loadGD(UI_SH_MAXLUMINENCE)) / 20];
     }
 
     renderMain() {
@@ -50,7 +54,10 @@ export class StarSector {
         this.renderPrepare();
 
         if (this.visibilityFlags == 0) {
-            this.renderStars(Math.exp(loadGD(UI_SH_MINLUMINENCE)), this.getSizeParams(), this.getBrightnessParams());
+            this.renderStars(
+                this.getLuminenceParams(),
+                this.getSizeParams(), 
+                this.getBrightnessParams());
         }
     }
 
@@ -91,21 +98,23 @@ export class StarSector {
     }
 
     processStarSize(star, sizeParams) { 
-        return sizeParams[0] * (star.lumens ** 0.5) / sizeParams[1];
+        return sizeParams[0] * ((star.lumens * star._relCameraDistBrightnessMult) ** sizeParams[1]);
     }
 
-    processStarColor(star, brightnessParams) {
-        return rgbToRgba(...star.color, ((star.lumens * brightnessParams[0]) * star._relCameraDistBrightnessMult) / brightnessParams[1]);
+    processStarColor(star, brightnessParams, luminenceParams) {
+        let starBrightness = Math.min(1, invlerp(...luminenceParams, star.lumens * star._relCameraDistBrightnessMult));
+        let valInvlerp = brightnessParams[0] * (starBrightness ** brightnessParams[1])
+        return rgbToRgba(...star.color, valInvlerp);
     }
 
-    renderStars(minLumens, sizeParams, brightnessParams) {
+    renderStars(luminenceParams, sizeParams, brightnessParams) {
         let bucketLumens;
         for (let i = 0; i < this.buckets.length; i++) {
             bucketLumens = this.bucketLumensCutoffs.at(i) * this._relCameraDistBrightnessMult;
-            if (bucketLumens > minLumens) {
+            if (bucketLumens > luminenceParams[0]) {
                 this.prepareBucket(this.buckets.at(i));
                 if (this._recalculateStarColorFlag) {
-                    this.processBucketColor(this.buckets.at(i), sizeParams, brightnessParams);
+                    this.processBucketSizeColor(this.buckets.at(i), luminenceParams, sizeParams, brightnessParams);
                 }
                 this.renderBucket(this.buckets.at(i));
             }
@@ -121,15 +130,14 @@ export class StarSector {
         });
     }
 
-    processBucketColor(bucket, sizeParams, brightnessParams) {
+    processBucketSizeColor(bucket, luminenceParams, sizeParams, brightnessParams) {
         bucket.forEach((star) => {
             star._curCameraDistance = getVec3Length(star._offset);
             star._relCameraDist = (star._curCameraDistance / star._rootCameraDistance);
             star._relCameraDistBrightnessMult = 1 / (star._relCameraDist ** 2);
-            star._curLumens = (star.lumens * star._relCameraDistBrightnessMult);
 
             star._size = this.processStarSize(star, sizeParams);
-            star.renderColor = this.processStarColor(star, brightnessParams);
+            star.renderColor = this.processStarColor(star, brightnessParams, luminenceParams);
 
         });
     }

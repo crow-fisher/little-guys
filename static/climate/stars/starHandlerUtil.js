@@ -2,7 +2,7 @@ import { invlerp, lerp } from "../../common.js";
 
 // https://resources.wolframcloud.com/FormulaRepository/resources/Luminosity-Formula-for-Absolute-Magnitude
 export function brightnessValueToLumens(brightness) {
-    return (10 ** (0.4 * (4.83 - brightness)));
+    return (10 ** (0.4 * (4.83 - brightness))) / 85.50667128846837;
 }
 
 export function calculateStarTemperature(bv) {
