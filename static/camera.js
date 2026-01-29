@@ -106,17 +106,25 @@ export function cartesianToScreen(x, y, z) {
 
 export function reset3DCameraTo2DScreen() {
     return;
-        let bs = getBaseSize();
-        let cx = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) / bs;
-        let cy = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) / bs;
-         // if mouse moves more than canvas, go closer (make cz smaller). if mouse moving less than canvas, other way 
-        let cz = 256 - 24 * (getCurZoom());
-        saveGD(UI_CAMERA_OFFSET_VEC, [-cx, cy, cz, 1]);
-        saveGD(UI_CAMERA_ROTATION_VEC, [Math.PI / 2, 0, 0, 0]);
-        saveGD(UI_CAMERA_OFFSET_VEC_DT, [0, 0, 0, 0]);
-        saveGD(UI_CAMERA_ROTATION_VEC_DT, [0, 0, 0, 0]);
+    let bs = getBaseSize();
+    let cx = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) / bs;
+    let cy = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) / bs;
+    // if mouse moves more than canvas, go closer (make cz smaller). if mouse moving less than canvas, other way 
+    let cz = 256 - 24 * (getCurZoom());
+    saveGD(UI_CAMERA_OFFSET_VEC, [-cx, cy, cz, 1]);
+    saveGD(UI_CAMERA_ROTATION_VEC, [Math.PI / 2, 0, 0, 0]);
+    saveGD(UI_CAMERA_OFFSET_VEC_DT, [0, 0, 0, 0]);
+    saveGD(UI_CAMERA_ROTATION_VEC_DT, [0, 0, 0, 0]);
 }
 export function cartesianToScreenInplace(cartesian, camera, screen) {
+}
+
+export function tickFrameMatrix() {
+    if (getCurDay() != frameMatrixDay) {
+        cameraToWorld = getFrameCameraMatrix();
+        frameMatrixDay = getCurDay();
+        setFramePerspectiveMatrix();
+    }
 }
 
 export function cartesianToCamera(cartesian, camera) {
@@ -154,7 +162,7 @@ export function pointToScreen(x, y, z) {
     let max = Math.max(cw, ch);
     let yOffset = (max / cw) / 2;
     let xOffset = (max / ch) / 2;
-    
+
     let px = xOffset + pxr;
     let py = yOffset + pyr;
 
@@ -348,9 +356,9 @@ export function canvasPan3DRoutine() {
     let right = normalizeVec3(crossVec3([0, 1, 0], forward));
     let up = normalizeVec3(crossVec3(forward, right));
 
-    let fo = multiplyVectorByScalar(forward, cd[0]);
-    let ro = multiplyVectorByScalar(right, cd[1]);
-    let uo = multiplyVectorByScalar(up, cd[2]);
+    let fo = multiplyVectorByScalar(forward, cd[0] * 100);
+    let ro = multiplyVectorByScalar(right, cd[1] * 100);
+    let uo = multiplyVectorByScalar(up, cd[2] * 100);
 
     let offset = [0, 0, 0];
     offset = addVectors(offset, fo);
@@ -360,7 +368,6 @@ export function canvasPan3DRoutine() {
     decayVec(UI_CAMERA_OFFSET_VEC_DT, 0.93);
 
     _applyDerivativeVec(UI_CAMERA_OFFSET_VEC, offset, true, .1);
-    // _applyDerivativeVec(UI_CAMERA_OFFSET_VEC, UI_CAMERA_OFFSET_VEC_DT);
     _applyDerivativeVec(UI_CAMERA_ROTATION_VEC, UI_CAMERA_ROTATION_VEC_DT);
 
     let bound = Math.PI / 2 - 0.0001;

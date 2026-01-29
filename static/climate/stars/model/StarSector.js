@@ -3,7 +3,8 @@ import { getCanvasHeight, getCanvasWidth } from "../../../canvas.js";
 import { COLOR_WHITE } from "../../../colors.js";
 import { calculateStatistics } from "../../../common.js";
 import { addRenderJob, PointLabelRenderJob } from "../../../rasterizer.js";
-import { loadGD, UI_SH_STARS_PER_BUCKET } from "../../../ui/UIData.js";
+import { loadGD, UI_CAMERA_OFFSET_VEC, UI_SH_STARS_PER_BUCKET } from "../../../ui/UIData.js";
+import { addVec3Dest, addVectors } from "../matrix.js";
 
 const   Z_VISIBLE = 0b10;
 const FOV_VISIBLE = 0b01;
@@ -14,6 +15,7 @@ export class StarSector {
         this.cartesian = cartesian;
         this.ready = false;
 
+        this._cameraOffset = [0, 0, 0];
         this._camera = [0, 0, 0];
         this._screen = [0, 0, 0];
         this._renderNorm = [0, 0];
@@ -42,7 +44,8 @@ export class StarSector {
         
         this.visibilityFlags = 0;
 
-        cartesianToCamera(this.cartesian, this._camera);
+        addVec3Dest(this.cartesian, loadGD(UI_CAMERA_OFFSET_VEC), this._cameraOffset);
+        cartesianToCamera(this._cameraOffset, this._camera);
         
         if (this._camera[2] < 0) {
             this.visibilityFlags &= FOV_VISIBLE;
@@ -52,12 +55,12 @@ export class StarSector {
         screenToRenderScreen(this._screen, this._renderNorm, this._renderScreen, this._xOffset, this._yOffset, this._s)
 
         if (this.sectorRenderJob == null) {
-            this.sectorRenderJob = new PointLabelRenderJob(...this._renderScreen, 10, COLOR_WHITE, this.sector);
+            this.sectorRenderJob = new PointLabelRenderJob(...this._renderScreen, 10, COLOR_WHITE, this.cartesian);
         } else {
             this.sectorRenderJob.x = this._renderScreen[0];
             this.sectorRenderJob.y = this._renderScreen[1];
             this.sectorRenderJob.z = this._renderScreen[2];
-            this.sectorRenderJob.size = 10;
+            this.sectorRenderJob.size = 3;
             this.sectorRenderJob.color = COLOR_WHITE;
             this.sectorRenderJob.label = this.sector;
         }

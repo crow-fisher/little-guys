@@ -1,4 +1,4 @@
-import { frameMatrixReset } from "../../camera.js";
+import { frameMatrixReset, tickFrameMatrix } from "../../camera.js";
 import { loadGD, UI_SH_SUBDIVISION_SIZE, UI_STARMAP_ZOOM } from "../../ui/UIData.js";
 import { HipparcosCatalog } from "./catalog/HipparcosCatalog.js";
 import { StellariumCatalog } from "./catalog/StellariumCatalog.js";
@@ -16,7 +16,7 @@ export class StarHandler {
     }
 
     render() {
-        frameMatrixReset();
+        tickFrameMatrix();
         this.iterateOnSectors((sector) => sector.render());
     }
 
