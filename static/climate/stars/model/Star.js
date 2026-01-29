@@ -44,6 +44,7 @@ export class Star {
         this._curCameraDistance = getVec3Length(this.cartesian);
         this._relCameraDist = (this._curCameraDistance / this._rootCameraDistance);
         this._relCameraDistBrightnessMult = 1 / (this._relCameraDist ** 2);
+        this._curLumens = this.lumens;
     }
 
     getLabelForType(labelType, selectNamed, tX, tY, tC) {

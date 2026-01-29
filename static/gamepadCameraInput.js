@@ -18,7 +18,7 @@ export function gamepadCameraInput() {
     let offset = 1 * (getFrameDt() / 10);
 
     if (isButtonPressed(GBA)) {
-        offset *= 100;
+        offset *= 3;
     }
 
     let applied = [0, 0, 0, 0]; 
