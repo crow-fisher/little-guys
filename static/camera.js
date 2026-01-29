@@ -356,9 +356,9 @@ export function canvasPan3DRoutine() {
     let right = normalizeVec3(crossVec3([0, 1, 0], forward));
     let up = normalizeVec3(crossVec3(forward, right));
 
-    let fo = multiplyVectorByScalar(forward, cd[0] * 100);
-    let ro = multiplyVectorByScalar(right, cd[1] * 100);
-    let uo = multiplyVectorByScalar(up, cd[2] * 100);
+    let fo = multiplyVectorByScalar(forward, cd[0] * 3);
+    let ro = multiplyVectorByScalar(right, cd[1] * 3);
+    let uo = multiplyVectorByScalar(up, cd[2] * 3);
 
     let offset = [0, 0, 0];
     offset = addVectors(offset, fo);

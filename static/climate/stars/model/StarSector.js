@@ -30,9 +30,7 @@ export class StarSector {
         this.bucketLumensCutoffs = new Array();
 
         this.visibilityFlags = 0;
-
     }
-
 
     renderMain() {
         if (!this.ready) {
@@ -41,9 +39,8 @@ export class StarSector {
         this.renderPrepare();
 
         if (this.visibilityFlags == 0) {
-            this.prepareStars();
             this.renderStars();
-            this.renderSector();
+            // this.renderSector();
         }
     }
 
@@ -65,31 +62,35 @@ export class StarSector {
         cartesianToCamera(this._cameraOffset, this._camera);
 
         if (this._camera[2] < 0) {
-            this.visibilityFlags &= FOV_VISIBLE;
+            this.visibilityFlags |= FOV_VISIBLE;
             return;
         }
         cameraToScreen(this._camera, this._screen);
     }
 
     renderStars() {
+        let minLumens = .1;
+        let bucketLumens;
         for (let i = 0; i < this.buckets.length; i++) {
-            this.buckets.at(i).forEach((star) => {
-                star.renderColor = COLOR_VERY_FUCKING_RED;
-                star._size = 1;
-                star.render();
-            });
+            bucketLumens = this.bucketLumensCutoffs.at(i) * this._relCameraDistBrightnessMult;
+            if (bucketLumens > minLumens) {
+                this.prepareStarBucket(this.buckets.at(i));
+                this.buckets.at(i).forEach((star) => {
+                    star.renderColor = COLOR_VERY_FUCKING_RED;
+                    star._size = 10;
+                    star.render();
+                });
+            }
         }
     }
 
-    prepareStars() {
-        for (let i = 0; i < this.buckets.length; i++) {
-            this.buckets.at(i).forEach((star) => {
-                addVec3Dest(star.cartesian, this._curCameraPosition, star._offset);
-                cartesianToCamera(star._offset, star._camera);
-                cameraToScreen(star._camera, star._screen);
-                screenToRenderScreen(star._screen, star._renderNorm, star._renderScreen, this._xOffset, this._yOffset, this._s)
-            })
-        }
+    prepareStarBucket(bucket) {
+        bucket.forEach((star) => {
+            addVec3Dest(star.cartesian, this._curCameraPosition, star._offset);
+            cartesianToCamera(star._offset, star._camera);
+            cameraToScreen(star._camera, star._screen);
+            screenToRenderScreen(star._screen, star._renderNorm, star._renderScreen, this._xOffset, this._yOffset, this._s);
+        });
     }
 
 
@@ -103,7 +104,7 @@ export class StarSector {
             this.sectorRenderJob.z = this._renderScreen[2];
             this.sectorRenderJob.size = 3;
             this.sectorRenderJob.color = COLOR_WHITE;
-            this.sectorRenderJob.label = this.sector;
+            this.sectorRenderJob.label = this._relCameraDistBrightnessMult.toFixed(2);
         }
         addRenderJob(this.sectorRenderJob);
 
@@ -118,7 +119,6 @@ export class StarSector {
     }
 
     procesLoadedStars() {
-        console.log("Sector processing stars: ", this.loadedStars.length, this.sector, this.cartesian)
         this.lumensSt = calculateStatistics(this.loadedStars.map((star) => star.lumens));
         this.loadedStars.sort((a, b) => a.lumens - b.lumens);
         this.starsPerBucket = loadGD(UI_SH_STARS_PER_BUCKET);
@@ -130,14 +130,13 @@ export class StarSector {
         for (let i = 0; i < this.loadedStars.length; i++) {
             star = this.loadedStars.at(i);
             if ((i != 0) && (i % this.starsPerBucket == 0)) {
-                curBucket += 1;
                 this.bucketLumensCutoffs[curBucket] = star.lumens;
+                curBucket += 1;
             }
             this.buckets[i] = this.buckets[i] ?? new Array();
             this.buckets[i].push(star);
         }
         this.ready = true;
-        console.log(curBucket);
     }
 
 }
