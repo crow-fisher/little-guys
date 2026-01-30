@@ -95,7 +95,7 @@ export class StarSector {
     }
 
     processStarSize(star, sizeParams, luminenceParams) {
-        return 400 * ((sizeParams[0] * ((star.lumens * star._relCameraDistBrightnessMult) - luminenceParams[0])) ** sizeParams[1])
+        return (400 * ((sizeParams[0] * ((star.lumens * star._relCameraDistBrightnessMult) - luminenceParams[0]))) ** sizeParams[1])
     }
 
     processStarColor(star, brightnessParams, luminenceParams) {

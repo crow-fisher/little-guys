@@ -19,7 +19,7 @@ export class StarSpecializedValuePicker extends WindowElement {
         ];
         this.valueRanges = [
             [
-                [0, 5], [0, 1]
+                [-5, 5], [0, 1]
             ], 
             [
                 [-20, 20], [-1, 1.5]
