@@ -1,6 +1,6 @@
 import { cameraToScreen, cartesianToCamera, cartesianToScreen, renderVec, screenToRenderScreen } from "../../../camera.js";
 import { getCanvasHeight, getCanvasWidth } from "../../../canvas.js";
-import { COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../colors.js";
+import { COLOR_BLUE, COLOR_RED, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../colors.js";
 import { calculateStatistics, invlerp, processRangeToOne, rgbToRgba } from "../../../common.js";
 import { addRenderJob, LineRenderJob, PointLabelRenderJob } from "../../../rasterizer.js";
 import { loadGD, UI_CAMERA_OFFSET_VEC, UI_SH_MAXLUMINENCE, UI_SH_MINLUMINENCE, UI_SH_STARS_PER_BUCKET, UI_SH_STYLE_BRIGHTNESS_FACTOR, UI_SH_STYLE_BRIGHTNESS_SHIFT, UI_SH_STYLE_SIZE_FACTOR, UI_SH_STYLE_SIZE_SHIFT } from "../../../ui/UIData.js";
@@ -23,6 +23,7 @@ export class StarSector {
         this._recalculateStarColorFlag = true;
 
         this._cameraDistRefPoint = [0, 0, 0];
+
         this._curCameraPosition = [0, 0, 0];
         this._cameraOffset = [0, 0, 0];
         this._camera = [0, 0, 0];
@@ -86,7 +87,7 @@ export class StarSector {
 
         this.setCurCameraPoint();
 
-        addVec3Dest(this._cameraDistRefPoint, this._curCameraPosition, this._cameraOffset);
+        addVec3Dest(this.cartesian, this._curCameraPosition, this._cameraOffset);
         cartesianToCamera(this._cameraOffset, this._camera);
         cameraToScreen(this._camera, this._screen);
         screenToRenderScreen(this._screen, this._renderNorm, this._renderScreen, this._xOffset, this._yOffset, this._s);
@@ -171,6 +172,45 @@ export class StarSector {
     }
 
     debugRenderBounds() {
+        this._x1 = this.cartesianBounds[0];
+        this._x2 = this.cartesianBounds[3];
+        this._y1 = this.cartesianBounds[1];
+        this._y2 = this.cartesianBounds[4];
+        this._z1 = this.cartesianBounds[2];
+        this._z2 = this.cartesianBounds[5];
+
+
+        let lines = [
+            [
+                [this._x1, this._y1, this._z1],
+                [this._x2, this._y1, this._z1], 
+                COLOR_BLUE
+            ],
+            [
+                [this._x2, this._y1, this._z1],
+                [this._x2, this._y2, this._z1],
+                COLOR_RED
+            ],
+            [
+                [this._x2, this._y2, this._z1],
+                [this._x1, this._y2, this._z1],
+                COLOR_BLUE
+            ],
+            [
+                [this._x1, this._y2, this._z1],
+                [this._x1, this._y1, this._z1],
+                COLOR_RED
+            ]
+        ];
+
+        lines.forEach((line) => {
+            let start = line[0];
+            let end = line[1];
+            let color = line[2];
+            this.debugRenderLineCartesianPoints(start, end, color);
+            this.debugRenderLineCartesianPoints(start, this.cartesian, color);
+        })
+        
         this.debugRenderLineCartesianPoints(
             [this.cartesianBounds[0], this.cartesianBounds[1], this.cartesianBounds[2]],
             [this.cartesianBounds[3], this.cartesianBounds[1], this.cartesianBounds[2]]
@@ -190,7 +230,7 @@ export class StarSector {
 
     }
 
-    debugRenderLineCartesianPoints(cartesian1, cartesian2) {
+    debugRenderLineCartesianPoints(cartesian1, cartesian2, color) {
         let offset1 = [0, 0, 0];
         let offset2 = [0, 0, 0];
         let camera1 = [0, 0, 0];
@@ -213,7 +253,7 @@ export class StarSector {
 
 
         // if (renderScreen2.z > 0 && renderScreen1.z > 0)
-            addRenderJob(new LineRenderJob(renderScreen1, renderScreen2, 3, COLOR_VERY_FUCKING_RED, renderScreen2.z));
+        addRenderJob(new LineRenderJob(renderScreen1, renderScreen2, 3, color, renderScreen2.z));
 
     }
 
