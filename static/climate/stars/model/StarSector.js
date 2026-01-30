@@ -3,7 +3,7 @@ import { getCanvasHeight, getCanvasWidth } from "../../../canvas.js";
 import { COLOR_BLUE, COLOR_RED, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../colors.js";
 import { calculateStatistics, invlerp, processRangeToOne, rgbToRgba } from "../../../common.js";
 import { addRenderJob, LineRenderJob, PointLabelRenderJob } from "../../../rasterizer.js";
-import { loadGD, UI_CAMERA_OFFSET_VEC, UI_SH_BASESIZE, UI_SH_MAXLUMINENCE, UI_SH_MINLUMINENCE, UI_SH_STARS_PER_BUCKET, UI_SH_STYLE_BRIGHTNESS_FACTOR, UI_SH_STYLE_BRIGHTNESS_SHIFT, UI_SH_STYLE_SIZE_FACTOR, UI_SH_STYLE_SIZE_SHIFT } from "../../../ui/UIData.js";
+import { loadGD, UI_CAMERA_OFFSET_VEC, UI_SH_BASESIZE, UI_SH_DISTPOWERMULT, UI_SH_MAXLUMINENCE, UI_SH_MINLUMINENCE, UI_SH_STARS_PER_BUCKET, UI_SH_STYLE_BRIGHTNESS_FACTOR, UI_SH_STYLE_BRIGHTNESS_SHIFT, UI_SH_STYLE_SIZE_FACTOR, UI_SH_STYLE_SIZE_SHIFT } from "../../../ui/UIData.js";
 import { addVec3Dest, addVectors, addVectorsCopy, calculateDistance, getVec3Length, multiplyVectorByScalar } from "../matrix.js";
 import { arrayOfNumbersToText, arrayOfVectorsToText } from "../starHandlerUtil.js";
 
@@ -45,7 +45,7 @@ export class StarSector {
     }
 
     getLuminenceParams() {
-        return [processRangeToOne(loadGD(UI_SH_MINLUMINENCE)), processRangeToOne(loadGD(UI_SH_MAXLUMINENCE)) / 20];
+        return [processRangeToOne(loadGD(UI_SH_MINLUMINENCE)), processRangeToOne(loadGD(UI_SH_MAXLUMINENCE)) / 20, loadGD(UI_SH_DISTPOWERMULT)];
     }
 
     renderMain() {
@@ -94,7 +94,7 @@ export class StarSector {
 
         this._curCameraDist = getVec3Length(this._cameraOffset);
         this._relCameraDist = (this._curCameraDist / this._rootCameraDist);
-        this._relCameraDistBrightnessMult = 1 / (this._relCameraDist ** 2);
+        this._relCameraDistBrightnessMult = 1 / (this._relCameraDist ** loadGD(UI_SH_DISTPOWERMULT));
         this._recalculateStarColorFlag |= (Math.min(this._relCameraDist, this._prevCameraDist) / Math.max(this._relCameraDist, this._prevCameraDist)) < 0.9;
 
         this.visibilityFlags = 0;
@@ -154,7 +154,7 @@ export class StarSector {
         bucket.forEach((star) => {
             star._curCameraDistance = getVec3Length(star._offset);
             star._relCameraDist = (star._curCameraDistance / star._rootCameraDistance);
-            star._relCameraDistBrightnessMult = 1 / (star._relCameraDist ** 2);
+            star._relCameraDistBrightnessMult = 1 / (star._relCameraDist ** luminenceParams[2]);
 
             star._size = this.processStarSize(star, sizeParams, luminenceParams);
             star.renderColor = this.processStarColor(star, brightnessParams, luminenceParams);
