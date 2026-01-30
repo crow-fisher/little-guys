@@ -97,8 +97,6 @@ export class StarSector {
         this._relCameraDistBrightnessMult = 1 / (this._relCameraDist ** 2);
         this._recalculateStarColorFlag |= (Math.min(this._relCameraDist, this._prevCameraDist) / Math.max(this._relCameraDist, this._prevCameraDist)) < 0.9;
 
-        this._curCameraDist = this.setCurCameraPoint();
-
         this.visibilityFlags = 0;
         if (this._renderScreen[0] < 0 || this._renderScreen[0] > getCanvasWidth()) {
             this.visibilityFlags |= FOV_VISIBLE;
