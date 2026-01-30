@@ -19,7 +19,7 @@ export class HipparcosCatalog extends CatalogHandlerBase {
 
     loadHIPStars(text) {
         let rows = text.split("\n");
-        for (let i = 0; i < rows.length; i++) {
+        for (let i = 0; i < Math.min(10 ** 8, rows.length); i++) {
             this.loadHIPRow(rows.at(i));
         }
     }

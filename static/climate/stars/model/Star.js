@@ -69,12 +69,6 @@ export class Star {
             }
         }
         return null;
-
-    }
-
-    setFeH(feH) {
-        this.p_feH = feH;
-        this.recalculateAltColor();
     }
 
     recalculateAltColor() {
@@ -101,34 +95,6 @@ export class Star {
         this.alt_color = rgbToRgba(...this.alt_color_arr, this._opacity * Math.exp(loadGD(UI_AA_SETUP_MULT)));
     }
 
-    recalculateScreen(frameCache) {
-        this._distance = this.parsecs * (10 ** frameCache.UI_STARMAP_ZOOM);
-        sphericalToCartesianInplace(this._cartesian, -this.asc, -this.dec, this._distance);
-        this._rootCameraDistance = getVec3Length(this._cartesian);
-        this.recalculateScreenFlag = false;
-    }
-
-    recalculateSizeOpacityColor(frameCache) {
-        if (this._prevRelCameraDist == null || this.recalculateColorFlag || this._relCameraDist / this._prevRelCameraDist < 0.9 || this._prevRelCameraDist / this._relCameraDist < 0.9) {
-            this.recalculateColorFlag = false;
-            this._prevRelCameraDist = this._relCameraDist;
-            this._brightness = (this.name != null ? frameCache.namedStarOpacityMult : 1) * brightnessValueToLumensNormalized((this.magnitude) + frameCache.UI_SH_STYLE_BRIGHTNESS_SHIFT) / (this._relCameraDist ** 2);
-
-            this._size = (this._brightness ** frameCache.UI_SH_STYLE_SIZE_FACTOR) * frameCache.UI_STARMAP_STAR_MAX_SIZE;
-            this._opacity = (this._brightness ** frameCache.UI_SH_STYLE_BRIGHTNESS_FACTOR);
-
-            if (this._size < frameCache.starMinSize) {
-                this._brightnessVisible = false;
-                return;
-            } else {
-                this._brightnessVisible = true;
-            }
-            this._color = rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_SH_STYLE_SIZE_SHIFT));
-            if (this.alt_color_arr != null)
-                this.alt_color = rgbToRgba(...this.alt_color_arr, this._opacity * frameCache.UI_AA_SETUP_MULT ?? 1);
-        }
-    }
-
     doLocalitySelect(selectMode, selectRadius) {
         if (selectMode == 0) {
             this.localitySelect = false;
@@ -146,63 +112,6 @@ export class Star {
                 return false;
             }
         }
-    }
-
-    prepare(frameCache) {
-        this._curCameraDistance = calculateDistance(frameCache.UI_CAMERA_OFFSET_VEC, this._cartesian);
-        this._relCameraDist = (this._curCameraDistance / this._rootCameraDistance);
-        frameCache.newStarSelected |= this.doLocalitySelect(frameCache.UI_AA_PLOT_LOCALITY_SELECTMODE, frameCache.selectRadius);
-
-        if (this.recalculateScreenFlag) {
-            this.recalculateScreen(frameCache);
-            this._prevRelCameraDist = null;
-        }
-
-        this.recalculateSizeOpacityColor(frameCache);
-
-        if (!this._brightnessVisible) {
-            return;
-        }
-
-        this._offset[0] = this._cartesian[0] - frameCache.UI_CAMERA_OFFSET_VEC[0];
-        this._offset[1] = this._cartesian[1] - frameCache.UI_CAMERA_OFFSET_VEC[1];
-        this._offset[2] = this._cartesian[2] - frameCache.UI_CAMERA_OFFSET_VEC[2];
-
-        cartesianToScreenInplace(this._offset, this._camera, this._screen);
-        screenToRenderScreen(this._screen, this._renderNorm, this._renderScreen, frameCache._xOffset, frameCache._yOffset, frameCache._s);
-
-        if (this.selected || this.localitySelect) {
-            this.activeId = (frameCache.UI_AA_LABEL_STARS == 0) ? this.id : this.hd_number;
-        }
-    }
-    _render(renderMode, renderLabel) {
-        if (!this._brightnessVisible) {
-            return;
-        }
-
-        this._fovVisible = false;
-        if (this._screen == null || this._screen[2] < 0) {
-            return;
-        }
-        if (this._renderScreen[0] < 0 || this._renderScreen[0] > getTotalCanvasPixelWidth()) {
-            return;
-        }
-        if (this._renderScreen[1] < 0 || this._renderScreen[1] > getTotalCanvasPixelHeight()) {
-            return;
-        }
-
-        this._fovVisible = true;
-        this.renderColor = (renderMode == "default") ? this._color : this.alt_color;
-
-        if (this.renderColor != null)
-            addRenderJob(new PointLabelRenderJob(
-                this._renderScreen[0],
-                this._renderScreen[1],
-                this._screen[2],
-                this._size,
-                this.renderColor,
-                this.starLabel,
-                false));
     }
 
     render() {
@@ -224,7 +133,6 @@ export class Star {
             this.renderJob.label = this.starLabel;
         }
 
-        if (this._screen[2] < 0)
-            addRenderJob(this.renderJob, false);
+        addRenderJob(this.renderJob, false);
     }
 }

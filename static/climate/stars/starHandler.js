@@ -3,7 +3,7 @@ import { loadGD, UI_SH_MINLUMINENCE, UI_SH_SUBDIVISION_SIZE, UI_STARMAP_ZOOM } f
 import { HipparcosCatalog } from "./catalog/HipparcosCatalog.js";
 import { StellariumCatalog } from "./catalog/StellariumCatalog.js";
 import { StarSector } from "./model/StarSector.js";
-import { adjustBoundsToIncludePoint, cartesianToSectorIndex, sectorToCartesian } from "./starHandlerUtil.js";
+import { adjustBoundsToIncludePoint, cartesianToSectorIndex, getSectorSize, sectorToCartesian } from "./starHandlerUtil.js";
 
 
 export class StarHandler {
@@ -20,16 +20,8 @@ export class StarHandler {
         this.iterateOnSectors((sector) => sector.renderMain());
     }
 
-    sectorIndexToCartesian(bX, bY, bZ) {
-        return [
-            this.bounds[0] + (bX / this.numSectors),
-            this.bounds[1] + (bY / this.numSectors),
-            this.bounds[2] + (bZ / this.numSectors)
-        ]
-    }
-
     rebuildSectors() {
-        this.numSectors = 10; //  loadGD(UI_SH_SUBDIVISION_SIZE);
+        this.numSectors = 100; //  loadGD(UI_SH_SUBDIVISION_SIZE);
         this.sectors = new Map();
     }
 
@@ -41,7 +33,11 @@ export class StarHandler {
                 ?? new Map());
         let curSector = this.sectors.get(star.sector[0]).get(star.sector[1]);
         if (!curSector.has(star.sector[2])) {
-            curSector.set(star.sector[2], new StarSector(star.sector, sectorToCartesian(this.bounds, star.sector, this.numSectors)));
+            curSector.set(star.sector[2], new StarSector(
+                star.sector, 
+                sectorToCartesian(this.bounds, star.sector, this.numSectors),
+                getSectorSize(this.bounds, this.numSectors)
+            ));
         }
         curSector.get(star.sector[2]).loadStar(star);
     }

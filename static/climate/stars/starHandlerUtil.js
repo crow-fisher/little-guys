@@ -23,23 +23,29 @@ export function adjustBoundsToIncludePoint(bounds, point) {
     bounds[0] = Math.min(bounds[0], point[0]);
     bounds[1] = Math.min(bounds[1], point[1]);
     bounds[2] = Math.min(bounds[2], point[2]);
-    
+
     bounds[3] = Math.max(3, point[0]);
     bounds[4] = Math.max(4, point[1]);
     bounds[5] = Math.max(5, point[2]);
 }
 export function cartesianToSectorIndex(bounds, cartesianPoint, numSectors) {
     return [
-          Math.floor(invlerp(bounds[0], bounds[3], cartesianPoint[0]) * numSectors)
+        Math.floor(invlerp(bounds[0], bounds[3], cartesianPoint[0]) * numSectors)
         , Math.floor(invlerp(bounds[1], bounds[4], cartesianPoint[1]) * numSectors)
         , Math.floor(invlerp(bounds[2], bounds[5], cartesianPoint[2]) * numSectors)
     ];
 }
 
 export function sectorToCartesian(bounds, sectorPoint, numSectors) {
-        return [
-          lerp(bounds[0], bounds[3], sectorPoint[0] / numSectors)
+    return [
+        lerp(bounds[0], bounds[3], sectorPoint[0] / numSectors)
         , lerp(bounds[1], bounds[4], sectorPoint[1] / numSectors)
         , lerp(bounds[2], bounds[5], sectorPoint[2] / numSectors)
     ];
+}
+
+export function getSectorSize(bounds, numSectors) {
+    return [(bounds[3] - bounds[0]) / numSectors,
+            (bounds[4] - bounds[1]) / numSectors,
+            (bounds[5] - bounds[2]) / numSectors  ]
 }

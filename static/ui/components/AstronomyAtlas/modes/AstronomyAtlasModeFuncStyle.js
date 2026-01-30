@@ -20,7 +20,7 @@ export function AstronomyAtlasModeFuncStyle(window, container, sizeX, sizeY) {
          () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
 
     container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "filter luminence"))
-    container.addElement(new SliderGradientBackground(window, UI_SH_MINLUMINENCE, sizeX, textHeight, 0, .003, () => COLOR_BLACK, () => COLOR_WHITE));
+    container.addElement(new SliderGradientBackground(window, UI_SH_MINLUMINENCE, sizeX, textHeight, 0, .01, () => COLOR_BLACK, () => COLOR_WHITE));
     container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "max luminence"))
     container.addElement(new SliderGradientBackground(window, UI_SH_MAXLUMINENCE, sizeX, textHeight, -30, 30, () => COLOR_BLACK, () => COLOR_WHITE));
     container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "base size"))
