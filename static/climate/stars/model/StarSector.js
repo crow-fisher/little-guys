@@ -11,15 +11,18 @@ const Z_VISIBLE = 0b10;
 const FOV_VISIBLE = 0b01;
 
 export class StarSector {
-    constructor(sector, cartesian) {
+    constructor(sector, cartesian, cartesianBounds) {
         this.sector = sector;
         this.cartesian = cartesian;
+        this.cartesianBounds = cartesianBounds;
         this.ready = false;
 
         this._rootCameraDist = getVec3Length(cartesian);
         this._curCameraDist = this._rootCameraDist;
         this._prevCameraDist = 0;
         this._recalculateStarColorFlag = true;
+
+        this._cameraDistRefPoint = [0, 0, 0];
 
         this._curCameraPosition = [0, 0, 0];
         this._cameraOffset = [0, 0, 0];
@@ -64,6 +67,15 @@ export class StarSector {
 
         }
     }
+
+    calculateCurCameraDist() {
+        this.cameraRefPointX = Math.min(Math.max(this.cartesianBounds[0], this._curCameraPosition[0]), this.cartesianBounds[3]);
+        this.cameraRefPointY = Math.min(Math.max(this.cartesianBounds[1], this._curCameraPosition[1]), this.cartesianBounds[4]);
+        this.cameraRefPointZ = Math.min(Math.max(this.cartesianBounds[2], this._curCameraPosition[2]), this.cartesianBounds[5]);
+        addVec3Dest(this.cartesian, this._curCameraPosition, this._cameraDistRefPoint);
+        return getVec3Length(this._cameraDistRefPoint);
+    }
+
     renderPrepare() {
         this._curCameraPosition = loadGD(UI_CAMERA_OFFSET_VEC);
 
@@ -79,12 +91,12 @@ export class StarSector {
         cameraToScreen(this._camera, this._screen);
         screenToRenderScreen(this._screen, this._renderNorm, this._renderScreen, this._xOffset, this._yOffset, this._s);
 
-        this._curCameraDist = getVec3Length(this._cameraOffset);
 
         this._relCameraDist = (this._curCameraDist / this._rootCameraDist);
         this._relCameraDistBrightnessMult = 1 / (this._relCameraDist ** 2);
         this._recalculateStarColorFlag |= (Math.min(this._relCameraDist, this._prevCameraDist) / Math.max(this._relCameraDist, this._prevCameraDist)) < 0.9;
 
+        this._curCameraDist = this.calculateCurCameraDist();
 
         this.visibilityFlags = 0;
         if (this._renderScreen[0] < 0 || this._renderScreen[0] > getCanvasWidth()) {
@@ -117,9 +129,9 @@ export class StarSector {
 
         for (let i = 0; i < this.buckets.length; i++) {
             bucketLumens = this.bucketLumensCutoffs.at(i) * this._relCameraDistBrightnessMult;
-            if (true || bucketLumens >= luminenceParams[0]) {
+            if (bucketLumens >= luminenceParams[0]) {
                 this.prepareBucket(this.buckets.at(i));
-
+                
                 this.processBucketSizeColor(this.buckets.at(i), luminenceParams, sizeParams, brightnessParams);
                 this._prevCameraDist = this._curCameraDist;
 
