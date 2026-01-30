@@ -10,15 +10,15 @@ const Z_VISIBLE = 0b10;
 const FOV_VISIBLE = 0b01;
 
 export class StarSector {
-    constructor(sector, cartesian, size, stars) {
+    constructor(sector, cartesian) {
         this.sector = sector;
-        this.cartesian = addVectorsCopy(cartesian, multiplyVectorByScalar(size, 0.5));
+        this.cartesian = cartesian;
         this.ready = false;
 
         this._rootCameraDist = getVec3Length(cartesian);
         this._curCameraDist = this._rootCameraDist;
         this._prevCameraDist = 0;
-        this._recalculateStarColorFlag = false;
+        this._recalculateStarColorFlag = true;
 
         this._curCameraPosition = [0, 0, 0];
         this._cameraOffset = [0, 0, 0];
@@ -28,9 +28,6 @@ export class StarSector {
         this._renderScreen = [0, 0, 0];
 
         this.loadedStars = new Array();
-
-        this.buckets = new Array();
-        this.bucketLumensCutoffs = new Array();
 
         this.visibilityFlags = 0;
     }
@@ -53,43 +50,43 @@ export class StarSector {
         }
         this.renderPrepare();
 
-        if (this.visibilityFlags == 0) {
+        if (true || this.visibilityFlags == 0) {
             this.renderStars(
                 this.getLuminenceParams(),
                 this.getSizeParams(),
                 this.getBrightnessParams());
+            this.renderSector();
 
         }
-
     }
-
-
     renderPrepare() {
         this._curCameraPosition = loadGD(UI_CAMERA_OFFSET_VEC);
-        this._curCameraDist = calculateDistance(this._curCameraPosition, this.cartesian);
-        this._relCameraDist = (this._curCameraDist / this._rootCameraDist);
-        this._relCameraDistBrightnessMult = 1 / (this._relCameraDist ** 2);
-
-        this._recalculateStarColorFlag = (Math.min(this._relCameraDist, this._prevCameraDist) / Math.max(this._relCameraDist, this._prevCameraDist)) < 0.9;
 
         this._cw = getCanvasWidth();
         this._ch = getCanvasHeight();
         this._max = Math.max(this._cw, this._ch);
         this._yOffset = (this._max / this._cw) / 2;
         this._xOffset = (this._max / this._ch) / 2;
-        this._s = Math.min(this._cw, this._ch);
+        this._s = Math.min(this._cw, this._ch); 
+
         addVec3Dest(this.cartesian, this._curCameraPosition, this._cameraOffset);
         cartesianToCamera(this._cameraOffset, this._camera);
         cameraToScreen(this._camera, this._screen);
         screenToRenderScreen(this._screen, this._renderNorm, this._renderScreen, this._xOffset, this._yOffset, this._s);
 
+        this._curCameraDist = calculateDistance(this._curCameraPosition, this.cartesian);
+        this._relCameraDist = (this._curCameraDist / this._rootCameraDist);
+        this._relCameraDistBrightnessMult = 1 / (this._relCameraDist ** 2);
+        this._recalculateStarColorFlag |= (Math.min(this._relCameraDist, this._prevCameraDist) / Math.max(this._relCameraDist, this._prevCameraDist)) < 0.9;
+
+
         this.visibilityFlags = 0;
-        if (this._renderScreen[0] < 0 || this._renderScreen[0] > getCanvasWidth()) {
-            this.visibilityFlags |= FOV_VISIBLE;
-        }
-        if (this._renderScreen[1] < 0 || this._renderScreen[1] > getCanvasHeight()) {
-            this.visibilityFlags |= FOV_VISIBLE;
-        }
+        // if (this._renderScreen[0] < 0 || this._renderScreen[0] > getCanvasWidth()) {
+        //     this.visibilityFlags |= FOV_VISIBLE;
+        // }
+        // if (this._renderScreen[1] < 0 || this._renderScreen[1] > getCanvasHeight()) {
+        //     this.visibilityFlags |= FOV_VISIBLE;
+        // }
         if (this._renderScreen[2] > 0) {
             this.visibilityFlags |= Z_VISIBLE;
         }
@@ -115,13 +112,13 @@ export class StarSector {
 
         for (let i = 0; i < this.buckets.length; i++) {
             bucketLumens = this.bucketLumensCutoffs.at(i) * this._relCameraDistBrightnessMult;
-            if (true || bucketLumens >= luminenceParams[0]) {
+            if (true && bucketLumens >= luminenceParams[0]) {
                 this.prepareBucket(this.buckets.at(i));
-                this.renderBucket(this.buckets.at(i));
                 if (recalculatingColor) {
                     this.processBucketSizeColor(this.buckets.at(i), luminenceParams, sizeParams, brightnessParams);
                     this._prevCameraDist = this._curCameraDist;
                 }
+                this.renderBucket(this.buckets.at(i));
             }
         }
     }
@@ -137,19 +134,19 @@ export class StarSector {
 
     processBucketSizeColor(bucket, luminenceParams, sizeParams, brightnessParams) {
         bucket.forEach((star) => {
-            star._curCameraDistance = getVec3Length(star._offset);
+            star._curCameraDistance = calculateDistance(this._curCameraPosition, star.cartesian);
             star._relCameraDist = (star._curCameraDistance / star._rootCameraDistance);
             star._relCameraDistBrightnessMult = 1 / (star._relCameraDist ** 2);
-            star._size = this.processStarSize(star, sizeParams);
-            star.renderColor = this.processStarColor(star, brightnessParams, luminenceParams);
+            star._size = 2; // this.processStarSize(star, sizeParams);
+            star.renderColor = COLOR_VERY_FUCKING_RED; // this.processStarColor(star, brightnessParams, luminenceParams);
 
         });
     }
 
     renderBucket(bucket) {
         bucket.forEach((star) => {
-                star.render();
-            });
+            star.render();
+        });
     }
 
 
@@ -182,6 +179,10 @@ export class StarSector {
         this.starsPerBucket = 100;
 
         let curBucket = 0;
+        
+        this.buckets = new Array();
+        this.bucketLumensCutoffs = new Array();
+
         this.bucketLumensCutoffs[curBucket] = this.lumensSt[2];
 
         let star;

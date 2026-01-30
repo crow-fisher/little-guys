@@ -31,10 +31,6 @@ export class PointLabelRenderJob extends RenderJob {
         this.label = label;
     }
 
-    isVisible() {
-        return (this.x > 0 && this.x < getTotalCanvasPixelWidth() && this.y > 0 && this.y < getTotalCanvasPixelHeight());
-    }
-
     render() {
         MAIN_CONTEXT.beginPath();
         MAIN_CONTEXT.fillStyle = this.color;

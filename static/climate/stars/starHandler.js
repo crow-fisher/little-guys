@@ -1,5 +1,4 @@
 import { frameMatrixReset, tickFrameMatrix } from "../../camera.js";
-import { loadGD, UI_SH_MINLUMINENCE, UI_SH_SUBDIVISION_SIZE, UI_STARMAP_ZOOM } from "../../ui/UIData.js";
 import { HipparcosCatalog } from "./catalog/HipparcosCatalog.js";
 import { StellariumCatalog } from "./catalog/StellariumCatalog.js";
 import { StarSector } from "./model/StarSector.js";
@@ -35,7 +34,7 @@ export class StarHandler {
         if (!curSector.has(star.sector[2])) {
             curSector.set(star.sector[2], new StarSector(
                 star.sector, 
-                sectorToCartesian(this.bounds, star.sector, this.numSectors),
+                star.cartesian,
                 getSectorSize(this.bounds, this.numSectors)
             ));
         }
