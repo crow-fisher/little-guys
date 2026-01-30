@@ -34,7 +34,7 @@ export class StarSector {
     }
 
     getSizeParams() {
-        return [loadGD(UI_SH_STYLE_SIZE_SHIFT), loadGD(UI_SH_STYLE_SIZE_FACTOR)];
+        return [loadGD(UI_SH_STYLE_SIZE_SHIFT), processRangeToOne(loadGD(UI_SH_STYLE_SIZE_FACTOR))];
     }
 
     getBrightnessParams() {
@@ -42,7 +42,7 @@ export class StarSector {
     }
 
     getLuminenceParams() {
-        return [loadGD(UI_SH_MINLUMINENCE) ** 2, processRangeToOne(loadGD(UI_SH_MAXLUMINENCE)) / 20];
+        return [processRangeToOne(loadGD(UI_SH_MINLUMINENCE)), processRangeToOne(loadGD(UI_SH_MAXLUMINENCE)) / 20];
     }
 
     renderMain() {
@@ -56,7 +56,7 @@ export class StarSector {
                 this.getLuminenceParams(),
                 this.getSizeParams(),
                 this.getBrightnessParams());
-            this.renderSector();
+            // this.renderSector();
 
         }
     }
@@ -94,14 +94,13 @@ export class StarSector {
         }
     }
 
-    processStarSize(star, sizeParams) {
-        return sizeParams[0] * ((star.lumens * star._relCameraDistBrightnessMult) ** sizeParams[1]);
+    processStarSize(star, sizeParams, luminenceParams) {
+        return 400 * ((sizeParams[0] * ((star.lumens * star._relCameraDistBrightnessMult) - luminenceParams[0])) ** sizeParams[1])
     }
 
     processStarColor(star, brightnessParams, luminenceParams) {
-        let starBrightness = Math.min(1, invlerp(...luminenceParams, star.lumens * star._relCameraDistBrightnessMult));
-        let valInvlerp = (starBrightness ** brightnessParams[1])
-        return rgbToRgba(...star.color, valInvlerp);
+        let opacity = 10 ** 6 * ((brightnessParams[0] * ((star.lumens * star._relCameraDistBrightnessMult) - luminenceParams[0])) ** brightnessParams[1])
+        return rgbToRgba(...star.color, opacity);
     }
 
     renderStars(luminenceParams, sizeParams, brightnessParams) {
@@ -114,13 +113,13 @@ export class StarSector {
 
         for (let i = 0; i < this.buckets.length; i++) {
             bucketLumens = this.bucketLumensCutoffs.at(i) * this._relCameraDistBrightnessMult;
-            if (true || bucketLumens >= luminenceParams[0]) {
+            if (bucketLumens >= luminenceParams[0]) {
                 this.prepareBucket(this.buckets.at(i));
                 if (recalculatingColor) {
                     this.processBucketSizeColor(this.buckets.at(i), luminenceParams, sizeParams, brightnessParams);
                     this._prevCameraDist = this._curCameraDist;
                 }
-                this.renderBucket(this.buckets.at(i));
+                this.renderBucket(this.buckets.at(i), luminenceParams);
             }
         }
     }
@@ -136,17 +135,19 @@ export class StarSector {
 
     processBucketSizeColor(bucket, luminenceParams, sizeParams, brightnessParams) {
         bucket.forEach((star) => {
-            star._curCameraDistance = calculateDistance(this._curCameraPosition, star.cartesian);
+            star._curCameraDistance = getVec3Length(star._offset);
             star._relCameraDist = (star._curCameraDistance / star._rootCameraDistance);
-            star._relCameraDistBrightnessMult = 1; //1 / (star._relCameraDist ** 2);
-            star._size = this.processStarSize(star, sizeParams);
+            star._relCameraDistBrightnessMult = 1 / (star._relCameraDist ** 2);
+
+            star._size = this.processStarSize(star, sizeParams, luminenceParams); 
             star.renderColor = this.processStarColor(star, brightnessParams, luminenceParams);
+            // star.starLabel = star.lumens * star._relCameraDistBrightnessMult; 
         });
     }
 
-    renderBucket(bucket) {
+    renderBucket(bucket, luminenceParams) {
         bucket.forEach((star) => {
-            if (star._renderScreen[2] < 0)
+            if (star._renderScreen[2] < 0 && (star.lumens * star._relCameraDistBrightnessMult > luminenceParams[0]))
                 star.render();
         });
     }
