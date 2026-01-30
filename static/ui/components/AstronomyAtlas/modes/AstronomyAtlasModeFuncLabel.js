@@ -6,7 +6,7 @@ import { RadioToggleLabel } from "../../../elements/RadioToggleLabel.js";
 import { SliderGradientBackground } from "../../../elements/SliderGradientBackground.js";
 import { StarSpecializedValuePicker } from "../../../elements/StarSpecializedValuePicker.js";
 import { Text } from "../../../elements/Text.js";
-import { UI_CENTER, UI_AA_LABEL_GRAPH, UI_AA_LABEL_STARS, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_STARMAP_STAR_MAX_SIZE, addUIFunctionMap, UI_AA_PLOT_XKEY, UI_AA_PLOT_YKEY, UI_AA_SETUP_COLORMODE } from "../../../UIData.js";
+import { UI_CENTER, UI_AA_LABEL_GRAPH, UI_AA_LABEL_STARS, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_SH_BASESIZE, addUIFunctionMap, UI_AA_PLOT_XKEY, UI_AA_PLOT_YKEY, UI_AA_SETUP_COLORMODE } from "../../../UIData.js";
 
 export function AstronomyAtlasModeFuncLabel(window, container, sizeX, sizeY) {
     let row1 = new Container(window, 0, 0);

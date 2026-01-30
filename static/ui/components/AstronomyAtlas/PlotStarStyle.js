@@ -5,7 +5,7 @@ import { RadioToggleLabel } from "../../elements/RadioToggleLabel.js";
 import { SliderGradientBackground } from "../../elements/SliderGradientBackground.js";
 import { StarSpecializedValuePicker } from "../../elements/StarSpecializedValuePicker.js";
 import { Text } from "../../elements/Text.js";
-import { UI_CENTER, UI_STARMAP_STAR_MAX_SIZE, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE } from "../../UIData.js";
+import { UI_CENTER, UI_SH_BASESIZE, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE } from "../../UIData.js";
 
 
 export function addPlotStarStyleToContainer(window, container, sizeX, sizeY) {
@@ -18,5 +18,5 @@ export function addPlotStarStyleToContainer(window, container, sizeX, sizeY) {
     row.addElement(new RadioToggleLabel(window, half, textHeight, UI_CENTER, "size", UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, 0, () => COLOR_RED, () => COLOR_BLUE));
     row.addElement(new RadioToggleLabel(window, half, textHeight, UI_CENTER, "color", UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, 1, () => COLOR_RED, () => COLOR_BLUE));
     container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "base size"))
-    container.addElement(new SliderGradientBackground(window, UI_STARMAP_STAR_MAX_SIZE, sizeX, textHeight, 1, 20, () => COLOR_WHITE, () => COLOR_BLACK));
+    container.addElement(new SliderGradientBackground(window, UI_SH_BASESIZE, sizeX, textHeight, 1, 20, () => COLOR_WHITE, () => COLOR_BLACK));
 }

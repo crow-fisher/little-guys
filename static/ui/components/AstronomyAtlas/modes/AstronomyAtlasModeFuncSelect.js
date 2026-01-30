@@ -7,7 +7,7 @@ import { SliderGradientBackground } from "../../../elements/SliderGradientBackgr
 import { StarSpecializedValuePicker } from "../../../elements/StarSpecializedValuePicker.js";
 import { Text } from "../../../elements/Text.js";
 import { Toggle } from "../../../elements/Toggle.js";
-import { UI_CENTER, UI_AA_SELECT_FILTERMODE_GRAPH, UI_AA_SELECT_FILTERMODE_STARS, UI_AA_PLOT_LOCALITY_SELECTMODE, UI_AA_PLOT_SELECT_NAMED_STARS, UI_AA_PLOT_SELECTRADIUS, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_STARMAP_STAR_MAX_SIZE } from "../../../UIData.js";
+import { UI_CENTER, UI_AA_SELECT_FILTERMODE_GRAPH, UI_AA_SELECT_FILTERMODE_STARS, UI_AA_PLOT_LOCALITY_SELECTMODE, UI_AA_PLOT_SELECT_NAMED_STARS, UI_AA_PLOT_SELECTRADIUS, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_SH_BASESIZE } from "../../../UIData.js";
 
 export function AstronomyAtlasModeFuncSelect(window, container, sizeX, sizeY) {
     let row1 = new Container(window, 0, 0);
