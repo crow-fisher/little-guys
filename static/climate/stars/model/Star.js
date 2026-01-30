@@ -36,6 +36,7 @@ export class Star {
         this.parsecs = Math.abs(1 / (parallax / 1000));
         this.parsecs_log = Math.log10(this.parsecs);
         this.magnitude_absolute = (magnitude + 5) - (5 * Math.log10(this.parsecs));
+        
         this.cartesian = sphericalToCartesian(-this.asc, -this.dec, this.parsecs);
         this.lumens = brightnessValueToLumens(this.magnitude);
         this.sector = [-1, -1, -1];

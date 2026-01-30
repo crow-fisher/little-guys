@@ -20,7 +20,7 @@ export class StarHandler {
     }
 
     rebuildSectors() {
-        this.numSectors = 100; //  loadGD(UI_SH_SUBDIVISION_SIZE);
+        this.numSectors = 200; //  loadGD(UI_SH_SUBDIVISION_SIZE);
         this.sectors = new Map();
     }
 
