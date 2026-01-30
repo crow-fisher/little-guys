@@ -46,6 +46,24 @@ export function sectorToCartesian(bounds, sectorPoint, numSectors) {
 
 export function getSectorSize(bounds, numSectors) {
     return [(bounds[3] - bounds[0]) / numSectors,
-            (bounds[4] - bounds[1]) / numSectors,
-            (bounds[5] - bounds[2]) / numSectors  ]
+    (bounds[4] - bounds[1]) / numSectors,
+    (bounds[5] - bounds[2]) / numSectors]
+}
+
+export function arrayOfVectorsToText(vecs, fractionDigits = 2) {
+    let out = "";
+    vecs.forEach((vec) => {
+        out += "[" + vec[0].toFixed(fractionDigits);
+        out += "," + vec[1].toFixed(fractionDigits);
+        out += "," + vec[2].toFixed(fractionDigits) + "]\n";
+    });
+    return out;
+}
+
+export function arrayOfNumbersToText(vals, fractionDigits = 2) {
+    let out = "";
+    vals.forEach((val) => {
+        out += "," + val.toFixed(fractionDigits) + "\n";
+    });
+    return out;
 }
