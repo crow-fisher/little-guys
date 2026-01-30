@@ -200,7 +200,27 @@ export class StarSector {
                 [this._x1, this._y2, this._z1],
                 [this._x1, this._y1, this._z1],
                 COLOR_RED
-            ]
+            ],
+                        [
+                [this._x1, this._y1, this._z2],
+                [this._x2, this._y1, this._z2], 
+                COLOR_BLUE
+            ],
+            [
+                [this._x2, this._y1, this._z2],
+                [this._x2, this._y2, this._z2],
+                COLOR_RED
+            ],
+            [
+                [this._x2, this._y2, this._z2],
+                [this._x1, this._y2, this._z2],
+                COLOR_BLUE
+            ],
+            [
+                [this._x1, this._y2, this._z2],
+                [this._x1, this._y1, this._z2],
+                COLOR_RED
+            ],
         ];
 
         lines.forEach((line) => {
@@ -252,8 +272,9 @@ export class StarSector {
         screenToRenderScreen(screen2, renderNorm2, renderScreen2, this._xOffset, this._yOffset, this._s);
 
 
-        // if (renderScreen2.z > 0 && renderScreen1.z > 0)
-        addRenderJob(new LineRenderJob(renderScreen1, renderScreen2, 3, color, renderScreen2.z));
+        if (renderScreen1[2] < 0 && renderScreen2[2] < 0) {
+            addRenderJob(new LineRenderJob(renderScreen1, renderScreen2, 3, color, renderScreen2.z));
+        }
 
     }
 
