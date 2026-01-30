@@ -22,6 +22,7 @@ export class StarSector {
         this._prevCameraDist = 0;
         this._recalculateStarColorFlag = true;
 
+
         this._cameraDistRefPoint = [0, 0, 0];
 
         this._curCameraPosition = [0, 0, 0];
@@ -55,9 +56,10 @@ export class StarSector {
         this.renderPrepare();
         
         if (this._curCameraDist < 1000) {
-            // this.renderSector();
             this.visibilityFlags = 0;
         }
+
+        // this.renderSector();
 
         if (this.visibilityFlags == 0) {
             this.renderStars(
@@ -68,12 +70,10 @@ export class StarSector {
         }
     }
 
-    calculateCurCameraDist() {
-        this.cameraRefPointX = Math.min(Math.max(this.cartesianBounds[0], this._curCameraPosition[0]), this.cartesianBounds[3]);
-        this.cameraRefPointY = Math.min(Math.max(this.cartesianBounds[1], this._curCameraPosition[1]), this.cartesianBounds[4]);
-        this.cameraRefPointZ = Math.min(Math.max(this.cartesianBounds[2], this._curCameraPosition[2]), this.cartesianBounds[5]);
-        addVec3Dest(this.cartesian, this._curCameraPosition, this._cameraDistRefPoint);
-        return getVec3Length(this._cameraDistRefPoint);
+    setCurCameraPoint() {
+        this._cameraDistRefPoint[0] = Math.min(Math.max(this.cartesianBounds[0], this._curCameraPosition[0]), this.cartesianBounds[3]);
+        this._cameraDistRefPoint[1] = Math.min(Math.max(this.cartesianBounds[1], this._curCameraPosition[1]), this.cartesianBounds[4]);
+        this._cameraDistRefPoint[2] = Math.min(Math.max(this.cartesianBounds[2], this._curCameraPosition[2]), this.cartesianBounds[5]);
     }
 
     renderPrepare() {
@@ -86,17 +86,19 @@ export class StarSector {
         this._xOffset = (this._max / this._ch) / 2;
         this._s = Math.min(this._cw, this._ch); 
 
-        addVec3Dest(this.cartesian, this._curCameraPosition, this._cameraOffset);
+        this.setCurCameraPoint();
+        
+        addVec3Dest(this._cameraDistRefPoint, this._curCameraPosition, this._cameraOffset);
         cartesianToCamera(this._cameraOffset, this._camera);
         cameraToScreen(this._camera, this._screen);
         screenToRenderScreen(this._screen, this._renderNorm, this._renderScreen, this._xOffset, this._yOffset, this._s);
 
-
+        this._curCameraDist = getVec3Length(this._cameraOffset);
         this._relCameraDist = (this._curCameraDist / this._rootCameraDist);
         this._relCameraDistBrightnessMult = 1 / (this._relCameraDist ** 2);
         this._recalculateStarColorFlag |= (Math.min(this._relCameraDist, this._prevCameraDist) / Math.max(this._relCameraDist, this._prevCameraDist)) < 0.9;
 
-        this._curCameraDist = this.calculateCurCameraDist();
+        this._curCameraDist = this.setCurCameraPoint();
 
         this.visibilityFlags = 0;
         if (this._renderScreen[0] < 0 || this._renderScreen[0] > getCanvasWidth()) {
@@ -181,8 +183,8 @@ export class StarSector {
         this.sectorRenderJob.z = this._renderScreen[2];
         this.sectorRenderJob.size = 3;
         this.sectorRenderJob.color = COLOR_WHITE;
-        this.sectorRenderJob.label = arrayOfVectorsToText([this.cartesian, this._curCameraPosition, this._cameraOffset]);
-        this.sectorRenderJob.label = arrayOfNumbersToText([this._rootCameraDist, this._curCameraDist, this._relCameraDistBrightnessMult]);
+        // this.sectorRenderJob.label = arrayOfVectorsToText([this.cartesian, this._curCameraPosition, this._cameraOffset]);
+        // this.sectorRenderJob.label = arrayOfNumbersToText([this._rootCameraDist, this._curCameraDist, this._relCameraDistBrightnessMult]);
 
         addRenderJob(this.sectorRenderJob);
 

@@ -2,7 +2,7 @@ import { frameMatrixReset, tickFrameMatrix } from "../../camera.js";
 import { HipparcosCatalog } from "./catalog/HipparcosCatalog.js";
 import { StellariumCatalog } from "./catalog/StellariumCatalog.js";
 import { StarSector } from "./model/StarSector.js";
-import { adjustBoundsToIncludePoint, cartesianToSectorIndex, getSectorSize, sectorToCartesian } from "./starHandlerUtil.js";
+import { adjustBoundsToIncludePoint, cartesianToSectorIndex, getSectorSize, sectorToCartesian, sectorToCartesianBounds } from "./starHandlerUtil.js";
 
 
 export class StarHandler {
@@ -35,7 +35,7 @@ export class StarHandler {
             curSector.set(star.sector[2], new StarSector(
                 star.sector, 
                 star.cartesian,
-                getSectorSize(this.bounds, this.numSectors)
+                sectorToCartesianBounds(this.bounds, star.sector, this.numSectors)
             ));
         }
         curSector.get(star.sector[2]).loadStar(star);
