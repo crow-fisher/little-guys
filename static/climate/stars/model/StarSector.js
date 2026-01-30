@@ -292,7 +292,7 @@ export class StarSector {
         this.sectorRenderJob.z = this._renderScreen[2];
         this.sectorRenderJob.size = 3;
         this.sectorRenderJob.color = COLOR_WHITE;
-        this.sectorRenderJob.label = this.visibilityFlags + " | " + arrayOfVectorsToText([this.sector, this._cameraDistRefPoint]);
+        // this.sectorRenderJob.label = this.visibilityFlags + " | " + arrayOfVectorsToText([this.sector, this._cameraDistRefPoint]);
         // this.sectorRenderJob.label = arrayOfNumbersToText([this._rootCameraDist, this._curCameraDist, this._relCameraDistBrightnessMult]);
 
         addRenderJob(this.sectorRenderJob);

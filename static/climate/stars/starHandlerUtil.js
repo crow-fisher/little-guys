@@ -28,6 +28,9 @@ export function adjustBoundsToIncludePoint(bounds, point) {
     bounds[4] = Math.max(4, point[1]);
     bounds[5] = Math.max(5, point[2]);
 }
+
+const sectorPow = 3;
+
 export function cartesianToSectorIndex(bounds, cartesianPoint, numSectors) {
     return [
         Math.floor(invlerp(bounds[0], bounds[3], cartesianPoint[0]) * numSectors)
