@@ -50,7 +50,7 @@ export class StarSector {
         }
         this.renderPrepare();
 
-        if (true || this.visibilityFlags == 0) {
+        if (false || this.visibilityFlags == 0) {
             this.renderStars(
                 this.getLuminenceParams(),
                 this.getSizeParams(),
@@ -112,13 +112,14 @@ export class StarSector {
 
         for (let i = 0; i < this.buckets.length; i++) {
             bucketLumens = this.bucketLumensCutoffs.at(i) * this._relCameraDistBrightnessMult;
-            if (true && bucketLumens >= luminenceParams[0]) {
+            if (true || bucketLumens >= luminenceParams[0]) {
                 this.prepareBucket(this.buckets.at(i));
                 if (recalculatingColor) {
                     this.processBucketSizeColor(this.buckets.at(i), luminenceParams, sizeParams, brightnessParams);
                     this._prevCameraDist = this._curCameraDist;
                 }
                 this.renderBucket(this.buckets.at(i));
+                // console.log("Rendering bucket ", i, " with ", this.buckets.at(i).length);
             }
         }
     }
@@ -145,7 +146,8 @@ export class StarSector {
 
     renderBucket(bucket) {
         bucket.forEach((star) => {
-            star.render();
+            if (star._renderScreen[2] < 0)
+                star.render();
         });
     }
 
@@ -159,7 +161,7 @@ export class StarSector {
             this.sectorRenderJob.z = this._renderScreen[2];
             this.sectorRenderJob.size = 3;
             this.sectorRenderJob.color = COLOR_WHITE;
-            this.sectorRenderJob.label = this._relCameraDistBrightnessMult.toFixed(2);
+            this.sectorRenderJob.label = this.loadedStars.length; //.toFixed(2);
         }
         addRenderJob(this.sectorRenderJob);
 

@@ -30,6 +30,10 @@ export class PointLabelRenderJob extends RenderJob {
         this.color = color;
         this.label = label;
     }
+    
+    getZ() {
+        return this.z;
+    }
 
     render() {
         MAIN_CONTEXT.beginPath();

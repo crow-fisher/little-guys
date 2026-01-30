@@ -133,8 +133,8 @@ export class Star {
             this.renderJob.label = this.starLabel;
         }
 
-        if (this._screen[2] < 0) {
-            addRenderJob(this.renderJob, false);
-        }
+        // if (this._screen[2] < 0) {
+        addRenderJob(this.renderJob, false);
+        // }
     }
 }
