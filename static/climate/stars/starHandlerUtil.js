@@ -46,7 +46,7 @@ export function sectorToCartesian(bounds, sectorPoint, numSectors) {
 
 export function sectorToCartesianBounds(bounds, sectorPoint, numSectors) {
     return [
-        lerp(bounds[0], bounds[3], sectorPoint[0] / numSectors)
+          lerp(bounds[0], bounds[3], sectorPoint[0] / numSectors)
         , lerp(bounds[1], bounds[4], sectorPoint[1] / numSectors)
         , lerp(bounds[2], bounds[5], sectorPoint[2] / numSectors)
         , lerp(bounds[0], bounds[3], (sectorPoint[0] + 1) / numSectors)

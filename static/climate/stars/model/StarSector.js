@@ -2,7 +2,7 @@ import { cameraToScreen, cartesianToCamera, cartesianToScreen, renderVec, screen
 import { getCanvasHeight, getCanvasWidth } from "../../../canvas.js";
 import { COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../colors.js";
 import { calculateStatistics, invlerp, processRangeToOne, rgbToRgba } from "../../../common.js";
-import { addRenderJob, PointLabelRenderJob } from "../../../rasterizer.js";
+import { addRenderJob, LineRenderJob, PointLabelRenderJob } from "../../../rasterizer.js";
 import { loadGD, UI_CAMERA_OFFSET_VEC, UI_SH_MAXLUMINENCE, UI_SH_MINLUMINENCE, UI_SH_STARS_PER_BUCKET, UI_SH_STYLE_BRIGHTNESS_FACTOR, UI_SH_STYLE_BRIGHTNESS_SHIFT, UI_SH_STYLE_SIZE_FACTOR, UI_SH_STYLE_SIZE_SHIFT } from "../../../ui/UIData.js";
 import { addVec3Dest, addVectors, addVectorsCopy, calculateDistance, getVec3Length, multiplyVectorByScalar } from "../matrix.js";
 import { arrayOfNumbersToText, arrayOfVectorsToText } from "../starHandlerUtil.js";
@@ -22,9 +22,7 @@ export class StarSector {
         this._prevCameraDist = 0;
         this._recalculateStarColorFlag = true;
 
-
         this._cameraDistRefPoint = [0, 0, 0];
-
         this._curCameraPosition = [0, 0, 0];
         this._cameraOffset = [0, 0, 0];
         this._camera = [0, 0, 0];
@@ -59,6 +57,8 @@ export class StarSector {
             this.visibilityFlags = 0;
         }
 
+        this.renderSector();
+
         if (this.visibilityFlags == 0) {
             this.renderStars(
                 this.getLuminenceParams(),
@@ -69,9 +69,9 @@ export class StarSector {
     }
 
     setCurCameraPoint() {
-        this._cameraDistRefPoint[0] = Math.min(Math.max(this.cartesianBounds[0], this._curCameraPosition[0]), this.cartesianBounds[3]);
-        this._cameraDistRefPoint[1] = Math.min(Math.max(this.cartesianBounds[1], this._curCameraPosition[1]), this.cartesianBounds[4]);
-        this._cameraDistRefPoint[2] = Math.min(Math.max(this.cartesianBounds[2], this._curCameraPosition[2]), this.cartesianBounds[5]);
+        this._cameraDistRefPoint[0] = Math.min(this.cartesianBounds[3], this._curCameraPosition[0]); //Math.min(Math.max(this.cartesianBounds[0], this._curCameraPosition[0]), this.cartesianBounds[3]);
+        this._cameraDistRefPoint[1] = Math.min(this.cartesianBounds[4], this._curCameraPosition[1]); //Math.min(Math.max(this.cartesianBounds[1], this._curCameraPosition[1]), this.cartesianBounds[4]);
+        this._cameraDistRefPoint[2] = Math.min(this.cartesianBounds[5], this._curCameraPosition[2]); //Math.min(Math.max(this.cartesianBounds[2], this._curCameraPosition[2]), this.cartesianBounds[5]);
     }
 
     renderPrepare() {
@@ -170,6 +170,54 @@ export class StarSector {
         });
     }
 
+    debugRenderBounds() {
+        this.debugRenderLineCartesianPoints(
+            [this.cartesianBounds[0], this.cartesianBounds[1], this.cartesianBounds[2]],
+            [this.cartesianBounds[3], this.cartesianBounds[1], this.cartesianBounds[2]]
+        )
+        this.debugRenderLineCartesianPoints(
+            [this.cartesianBounds[0], this.cartesianBounds[4], this.cartesianBounds[2]],
+            [this.cartesianBounds[3], this.cartesianBounds[4], this.cartesianBounds[2]]
+        )
+        this.debugRenderLineCartesianPoints(
+            [this.cartesianBounds[0], this.cartesianBounds[1], this.cartesianBounds[2]],
+            [this.cartesianBounds[0], this.cartesianBounds[4], this.cartesianBounds[5]]
+        )
+        this.debugRenderLineCartesianPoints(
+            [this.cartesianBounds[3], this.cartesianBounds[1], this.cartesianBounds[2]],
+            [this.cartesianBounds[3], this.cartesianBounds[4], this.cartesianBounds[5]]
+        )
+
+    }
+
+    debugRenderLineCartesianPoints(cartesian1, cartesian2) {
+        let offset1 = [0, 0, 0];
+        let offset2 = [0, 0, 0];
+        let camera1 = [0, 0, 0];
+        let camera2 = [0, 0, 0];
+        let screen1 = [0, 0, 0];
+        let screen2 = [0, 0, 0];
+        let renderNorm1 = [0, 0];
+        let renderNorm2 = [0, 0];
+        let renderScreen1 = [0, 0, 0];
+        let renderScreen2 = [0, 0, 0];
+
+        addVec3Dest(cartesian1, this._curCameraPosition, offset1);
+        addVec3Dest(cartesian2, this._curCameraPosition, offset2);
+        cartesianToCamera(offset1, camera1);
+        cartesianToCamera(offset2, camera2);
+        cameraToScreen(camera1, screen1);
+        cameraToScreen(camera2, screen2);
+        screenToRenderScreen(screen1, renderNorm1, renderScreen1, this._xOffset, this._yOffset, this._s);
+        screenToRenderScreen(screen2, renderNorm2, renderScreen2, this._xOffset, this._yOffset, this._s);
+
+
+        // if (renderScreen2.z > 0 && renderScreen1.z > 0)
+            addRenderJob(new LineRenderJob(renderScreen1, renderScreen2, 3, COLOR_VERY_FUCKING_RED, renderScreen2.z));
+
+    }
+
+
 
     renderSector() {
         if (this._renderScreen[2] > 0) {
@@ -183,10 +231,12 @@ export class StarSector {
         this.sectorRenderJob.z = this._renderScreen[2];
         this.sectorRenderJob.size = 3;
         this.sectorRenderJob.color = COLOR_WHITE;
-        // this.sectorRenderJob.label = arrayOfVectorsToText([this.cartesian, this._curCameraPosition, this._cameraOffset]);
+        this.sectorRenderJob.label = this.visibilityFlags + " | " + arrayOfVectorsToText([this.sector, this._cameraDistRefPoint]);
         // this.sectorRenderJob.label = arrayOfNumbersToText([this._rootCameraDist, this._curCameraDist, this._relCameraDistBrightnessMult]);
 
         addRenderJob(this.sectorRenderJob);
+
+        this.debugRenderBounds();
 
     }
 
