@@ -54,12 +54,10 @@ export class StarSector {
             return;
         }
         this.renderPrepare();
-        
+
         if (this._curCameraDist < 1000) {
             this.visibilityFlags = 0;
         }
-
-        // this.renderSector();
 
         if (this.visibilityFlags == 0) {
             this.renderStars(
@@ -84,10 +82,10 @@ export class StarSector {
         this._max = Math.max(this._cw, this._ch);
         this._yOffset = (this._max / this._cw) / 2;
         this._xOffset = (this._max / this._ch) / 2;
-        this._s = Math.min(this._cw, this._ch); 
+        this._s = Math.min(this._cw, this._ch);
 
         this.setCurCameraPoint();
-        
+
         addVec3Dest(this._cameraDistRefPoint, this._curCameraPosition, this._cameraOffset);
         cartesianToCamera(this._cameraOffset, this._camera);
         cameraToScreen(this._camera, this._screen);
@@ -133,9 +131,11 @@ export class StarSector {
             bucketLumens = this.bucketLumensCutoffs.at(i) * this._relCameraDistBrightnessMult;
             if (bucketLumens >= luminenceParams[0]) {
                 this.prepareBucket(this.buckets.at(i));
-                
-                this.processBucketSizeColor(this.buckets.at(i), luminenceParams, sizeParams, brightnessParams);
-                this._prevCameraDist = this._curCameraDist;
+
+                if (1 || recalculatingColor) {
+                    this.processBucketSizeColor(this.buckets.at(i), luminenceParams, sizeParams, brightnessParams);
+                    this._prevCameraDist = this._curCameraDist;
+                }
 
                 this.renderBucket(this.buckets.at(i), luminenceParams);
             }
@@ -157,7 +157,7 @@ export class StarSector {
             star._relCameraDist = (star._curCameraDistance / star._rootCameraDistance);
             star._relCameraDistBrightnessMult = 1 / (star._relCameraDist ** 2);
 
-            star._size = this.processStarSize(star, sizeParams, luminenceParams); 
+            star._size = this.processStarSize(star, sizeParams, luminenceParams);
             star.renderColor = this.processStarColor(star, brightnessParams, luminenceParams);
             // star.starLabel = star.lumens * star._relCameraDistBrightnessMult; 
         });
@@ -204,7 +204,7 @@ export class StarSector {
         this.starsPerBucket = 100;
 
         let curBucket = 0;
-        
+
         this.buckets = new Array();
         this.bucketLumensCutoffs = new Array();
 
