@@ -29,30 +29,30 @@ export function adjustBoundsToIncludePoint(bounds, point) {
     bounds[5] = Math.max(5, point[2]);
 }
 
-export function cartesianToSectorIndex(bounds, cartesianPoint, numSectors) {
+export function cartesianToSectorIndex(bounds, cartesianPoint, numSectorsArr) {
     return [
-        Math.floor(invlerp(bounds[0], bounds[3], cartesianPoint[0]) * numSectors)
-        , Math.floor(invlerp(bounds[1], bounds[4], cartesianPoint[1]) * numSectors)
-        , Math.floor(invlerp(bounds[2], bounds[5], cartesianPoint[2]) * numSectors)
+        Math.floor(invlerp(bounds[0], bounds[3], cartesianPoint[0]) * numSectorsArr[0])
+        , Math.floor(invlerp(bounds[1], bounds[4], cartesianPoint[1]) * numSectorsArr[1])
+        , Math.floor(invlerp(bounds[2], bounds[5], cartesianPoint[2]) * numSectorsArr[2])
     ];
 }
 
-export function sectorToCartesian(bounds, sectorPoint, numSectors) {
+export function sectorToCartesian(bounds, sectorPoint, numSectorsArr) {
     return [
-        lerp(bounds[0], bounds[3], sectorPoint[0] / numSectors)
-        , lerp(bounds[1], bounds[4], sectorPoint[1] / numSectors)
-        , lerp(bounds[2], bounds[5], sectorPoint[2] / numSectors)
+        lerp(bounds[0], bounds[3], sectorPoint[0] / numSectorsArr[0])
+        , lerp(bounds[1], bounds[4], sectorPoint[1] / numSectorsArr[1])
+        , lerp(bounds[2], bounds[5], sectorPoint[2] / numSectorsArr[2])
     ];
 }
 
-export function sectorToCartesianBounds(bounds, sectorPoint, numSectors) {
+export function sectorToCartesianBounds(bounds, sectorPoint, numSectorsArr) {
     return [
-          lerp(bounds[0], bounds[3], sectorPoint[0] / numSectors)
-        , lerp(bounds[1], bounds[4], sectorPoint[1] / numSectors)
-        , lerp(bounds[2], bounds[5], sectorPoint[2] / numSectors)
-        , lerp(bounds[0], bounds[3], (sectorPoint[0] + 1) / numSectors)
-        , lerp(bounds[1], bounds[4], (sectorPoint[1] + 1) / numSectors)
-        , lerp(bounds[2], bounds[5], (sectorPoint[2] + 1) / numSectors)
+          lerp(bounds[0], bounds[3], sectorPoint[0] / numSectorsArr[0])
+        , lerp(bounds[1], bounds[4], sectorPoint[1] / numSectorsArr[1])
+        , lerp(bounds[2], bounds[5], sectorPoint[2] / numSectorsArr[2])
+        , lerp(bounds[0], bounds[3], (sectorPoint[0] + 1) / numSectorsArr[0])
+        , lerp(bounds[1], bounds[4], (sectorPoint[1] + 1) / numSectorsArr[1])
+        , lerp(bounds[2], bounds[5], (sectorPoint[2] + 1) / numSectorsArr[2])
     ];
 }
 

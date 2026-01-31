@@ -132,7 +132,7 @@ export class BlockPalette extends Component {
         soilRockContainer.addElement(new SoilPickerDotElement(this.window, sizeX, (this.numSoilRows + 1) * h2));
         
 
-        let debug =new URLSearchParams(document.location.search).get("debug");
+        let debug = new URLSearchParams(document.location.search).get("debug");
         soilRockContainer.addElement(new Text(this.window, sizeX, br, UI_CENTER, ""));
         
         soilRockContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => debug ? Array.from(loadGD(UI_PALETTE_COMPOSITION).map((val) => val.toFixed(2))) : "", () => getActiveClimate().getBaseActiveToolBrightness(loadGD(UI_PALETTE_COMPOSITION), 0.60)));

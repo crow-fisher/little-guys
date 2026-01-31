@@ -1,6 +1,6 @@
 import { cameraToScreen, cartesianToCamera, cartesianToScreen, renderVec, screenToRenderScreen } from "../../../camera.js";
 import { getBaseUISize, getCanvasHeight, getCanvasWidth } from "../../../canvas.js";
-import { COLOR_BLUE, COLOR_GREEN, COLOR_RED, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../colors.js";
+import { COLOR_BLUE, COLOR_GREEN, COLOR_OTHER_BLUE, COLOR_RED, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../colors.js";
 import { calculateStatistics, invlerp, lerp, processRangeToOne, rgbToRgba } from "../../../common.js";
 import { addRenderJob, LineRenderJob, PointLabelRenderJob } from "../../../rasterizer.js";
 import { loadGD, UI_CAMERA_OFFSET_VEC, UI_SH_MINSIZE, UI_SH_DISTPOWERMULT, UI_SH_MAXLUMINENCE, UI_SH_MINLUMINENCE, UI_SH_STARS_PER_BUCKET, UI_SH_STYLE_BRIGHTNESS_FACTOR, UI_SH_STYLE_BRIGHTNESS_SHIFT, UI_SH_STYLE_SIZE_FACTOR, UI_SH_STYLE_SIZE_SHIFT, UI_AA_PLOT_SELECTRADIUS, UI_AA_PLOT_LOCALITY_SELECTMODE } from "../../../ui/UIData.js";
@@ -75,9 +75,12 @@ export class StarSector {
 
         if (this._curCameraDist < Math.exp(7)) {
             this.visibilityFlags = 0;
-            // this.renderSector();
         }
 
+        let debug = new URLSearchParams(document.location.search).get("debug");
+        if (debug && this._curCameraDist < Math.exp(loadGD(UI_AA_PLOT_SELECTRADIUS))) {
+            this.renderSector();
+        }
 
         if (this.visibilityFlags == 0) {
             this.renderStars(
@@ -244,6 +247,26 @@ export class StarSector {
             ],
             [
                 [this._x1, this._y1, this._z1],
+                [this._x1, this._y1, this._z2],
+                COLOR_OTHER_BLUE
+            ],
+            [
+                [this._x2, this._y1, this._z1],
+                [this._x2, this._y1, this._z2],
+                COLOR_OTHER_BLUE
+            ],
+            [
+                [this._x1, this._y2, this._z1],
+                [this._x1, this._y2, this._z2],
+                COLOR_OTHER_BLUE
+            ],
+            [
+                [this._x2, this._y2, this._z1],
+                [this._x2, this._y2, this._z2],
+                COLOR_OTHER_BLUE
+            ],
+            [
+                [this._x1, this._y1, this._z1],
                 [this._x2, this._y2, this._z2],
                 COLOR_GREEN
             ],
@@ -251,7 +274,7 @@ export class StarSector {
                 [this._x1, this._y1, this._z1],
                 [(this._x2 + this._x1) / 2, (this._y1 + this._y2) / 2, (this._z1 + this._z2) / 2],
                 COLOR_WHITE
-            ]
+            ],
         ];
 
         lines.forEach((line) => {

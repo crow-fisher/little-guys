@@ -9,7 +9,7 @@ export class StarHandler {
     constructor() {
         this.dataCatalogs = [HipparcosCatalog];
         this.sectors = new Map();
-        this.numSectors = 1;
+        this.numSectorsArr = 1;
         this.bounds = [-1, -1, -1, 1, 1, 1]; // xMin, yMin, zMin, xMax, yMax, zMax. 
         this.loadData();
     }
@@ -20,8 +20,15 @@ export class StarHandler {
     }
 
     rebuildSectors() {
-        this.numSectors = 300; //  loadGD(UI_SH_SUBDIVISION_SIZE);
         this.sectors = new Map();
+        
+        let sectorSize = 100;
+        this.numSectorsArr = [
+            (this.bounds[3] - this.bounds[0]) / sectorSize,
+            (this.bounds[4] - this.bounds[1]) / sectorSize,
+            (this.bounds[5] - this.bounds[2]) / sectorSize
+        ]; 
+
     }
 
     addStarToSector(star) {
@@ -35,7 +42,7 @@ export class StarHandler {
             curSector.set(star.sector[2], new StarSector(
                 star.sector, 
                 star.cartesian,
-                sectorToCartesianBounds(this.bounds, star.sector, this.numSectors)
+                sectorToCartesianBounds(this.bounds, star.sector, this.numSectorsArr)
             ));
         }
         curSector.get(star.sector[2]).loadStar(star);
@@ -75,7 +82,7 @@ export class StarHandler {
         this.rebuildSectors();
 
         this.loadedStars.forEach((star) => {
-            star.sector = cartesianToSectorIndex(this.bounds, star.cartesian, this.numSectors);
+            star.sector = cartesianToSectorIndex(this.bounds, star.cartesian, this.numSectorsArr);
             this.addStarToSector(star);
         }); 
 
