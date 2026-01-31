@@ -1,6 +1,6 @@
 import { cameraToScreen, cartesianToCamera, cartesianToScreen, renderVec, screenToRenderScreen } from "../../../camera.js";
 import { getBaseUISize, getCanvasHeight, getCanvasWidth } from "../../../canvas.js";
-import { COLOR_BLUE, COLOR_RED, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../colors.js";
+import { COLOR_BLUE, COLOR_GREEN, COLOR_RED, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../colors.js";
 import { calculateStatistics, invlerp, lerp, processRangeToOne, rgbToRgba } from "../../../common.js";
 import { addRenderJob, LineRenderJob, PointLabelRenderJob } from "../../../rasterizer.js";
 import { loadGD, UI_CAMERA_OFFSET_VEC, UI_SH_MINSIZE, UI_SH_DISTPOWERMULT, UI_SH_MAXLUMINENCE, UI_SH_MINLUMINENCE, UI_SH_STARS_PER_BUCKET, UI_SH_STYLE_BRIGHTNESS_FACTOR, UI_SH_STYLE_BRIGHTNESS_SHIFT, UI_SH_STYLE_SIZE_FACTOR, UI_SH_STYLE_SIZE_SHIFT, UI_AA_PLOT_SELECTRADIUS, UI_AA_PLOT_LOCALITY_SELECTMODE } from "../../../ui/UIData.js";
@@ -38,23 +38,23 @@ export class StarSector {
 
     getSizeParams() {
         return [
-            Math.exp(loadGD(UI_SH_STYLE_SIZE_SHIFT)), 
-            processRangeToOne(loadGD(UI_SH_STYLE_SIZE_FACTOR)), 
-            processRangeToOne(loadGD(UI_SH_MINSIZE)), 
+            Math.exp(loadGD(UI_SH_STYLE_SIZE_SHIFT)),
+            processRangeToOne(loadGD(UI_SH_STYLE_SIZE_FACTOR)),
+            processRangeToOne(loadGD(UI_SH_MINSIZE)),
             getBaseUISize() * processRangeToOne(loadGD(UI_SH_MINSIZE))
         ];
     }
 
     getBrightnessParams() {
         return [
-            Math.exp(loadGD(UI_SH_STYLE_BRIGHTNESS_FACTOR)), 
+            Math.exp(loadGD(UI_SH_STYLE_BRIGHTNESS_FACTOR)),
             processRangeToOne(loadGD(UI_SH_STYLE_BRIGHTNESS_SHIFT))
         ];
     }
 
     getLuminenceParams() {
         return [
-            processRangeToOne(loadGD(UI_SH_MINLUMINENCE)), 
+            processRangeToOne(loadGD(UI_SH_MINLUMINENCE)),
             processRangeToOne(loadGD(UI_SH_MAXLUMINENCE)),
             loadGD(UI_SH_DISTPOWERMULT)
         ];
@@ -73,9 +73,9 @@ export class StarSector {
         }
         this.renderPrepare();
 
-        if (this._curCameraDist < 1000) {
+        if (this._curCameraDist < Math.exp(7)) {
             this.visibilityFlags = 0;
-            this.renderSector();
+            // this.renderSector();
         }
 
 
@@ -91,9 +91,9 @@ export class StarSector {
     }
 
     setCurCameraPoint() {
-        this._cameraDistRefPoint[0] = Math.min(Math.max(this.cartesianBounds[0], this._curCameraPosition[0]), this.cartesianBounds[3]);
-        this._cameraDistRefPoint[1] = Math.min(Math.max(this.cartesianBounds[1], this._curCameraPosition[1]), this.cartesianBounds[4]);
-        this._cameraDistRefPoint[2] = Math.min(Math.max(this.cartesianBounds[2], this._curCameraPosition[2]), this.cartesianBounds[5]);
+        this._cameraDistRefPoint[0] = Math.min(Math.max(this.cartesianBounds[0], -this._curCameraPosition[0]), this.cartesianBounds[3]);
+        this._cameraDistRefPoint[1] = Math.min(Math.max(this.cartesianBounds[1], -this._curCameraPosition[1]), this.cartesianBounds[4]);
+        this._cameraDistRefPoint[2] = Math.min(Math.max(this.cartesianBounds[2], -this._curCameraPosition[2]), this.cartesianBounds[5]);
     }
 
     renderPrepare() {
@@ -201,7 +201,6 @@ export class StarSector {
         this._z1 = this.cartesianBounds[2];
         this._z2 = this.cartesianBounds[5];
 
-
         let lines = [
             [
                 [this._x1, this._y1, this._z1],
@@ -243,6 +242,16 @@ export class StarSector {
                 [this._x1, this._y1, this._z2],
                 COLOR_RED
             ],
+            [
+                [this._x1, this._y1, this._z1],
+                [this._x2, this._y2, this._z2],
+                COLOR_GREEN
+            ],
+            [
+                [this._x1, this._y1, this._z1],
+                [(this._x2 + this._x1) / 2, (this._y1 + this._y2) / 2, (this._z1 + this._z2) / 2],
+                COLOR_WHITE
+            ]
         ];
 
         lines.forEach((line) => {
@@ -253,21 +262,22 @@ export class StarSector {
         })
 
         this.debugRenderLineCartesianPoints(
-            [this.cartesianBounds[0], this.cartesianBounds[1], this.cartesianBounds[2]],
-            [this.cartesianBounds[3], this.cartesianBounds[1], this.cartesianBounds[2]]
+            this._cameraDistRefPoint,
+            this.cartesian,
+            COLOR_VERY_FUCKING_RED
         )
-        this.debugRenderLineCartesianPoints(
-            [this.cartesianBounds[0], this.cartesianBounds[4], this.cartesianBounds[2]],
-            [this.cartesianBounds[3], this.cartesianBounds[4], this.cartesianBounds[2]]
-        )
-        this.debugRenderLineCartesianPoints(
-            [this.cartesianBounds[0], this.cartesianBounds[1], this.cartesianBounds[2]],
-            [this.cartesianBounds[0], this.cartesianBounds[4], this.cartesianBounds[5]]
-        )
-        this.debugRenderLineCartesianPoints(
-            [this.cartesianBounds[3], this.cartesianBounds[1], this.cartesianBounds[2]],
-            [this.cartesianBounds[3], this.cartesianBounds[4], this.cartesianBounds[5]]
-        )
+        // this.debugRenderLineCartesianPoints(
+        //     [this.cartesianBounds[0], this.cartesianBounds[4], this.cartesianBounds[2]],
+        //     [this.cartesianBounds[3], this.cartesianBounds[4], this.cartesianBounds[2]]
+        // )
+        // this.debugRenderLineCartesianPoints(
+        //     [this.cartesianBounds[0], this.cartesianBounds[1], this.cartesianBounds[2]],
+        //     [this.cartesianBounds[0], this.cartesianBounds[4], this.cartesianBounds[5]]
+        // )
+        // this.debugRenderLineCartesianPoints(
+        //     [this.cartesianBounds[3], this.cartesianBounds[1], this.cartesianBounds[2]],
+        //     [this.cartesianBounds[3], this.cartesianBounds[4], this.cartesianBounds[5]]
+        // )
 
     }
 
