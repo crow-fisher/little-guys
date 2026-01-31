@@ -41,7 +41,7 @@ export class StarSector {
     }
 
     getBrightnessParams() {
-        return [Math.exp(loadGD(UI_SH_STYLE_BRIGHTNESS_FACTOR)), Math.exp(loadGD(UI_SH_STYLE_BRIGHTNESS_SHIFT))];
+        return [Math.exp(loadGD(UI_SH_STYLE_BRIGHTNESS_FACTOR)), processRangeToOne(loadGD(UI_SH_STYLE_BRIGHTNESS_SHIFT))];
     }
 
     getLuminenceParams() {
@@ -95,7 +95,7 @@ export class StarSector {
         this._curCameraDist = getVec3Length(this._cameraOffset);
         this._relCameraDist = (this._curCameraDist / this._rootCameraDist);
         this._relCameraDistBrightnessMult = 1 / (this._relCameraDist ** loadGD(UI_SH_DISTPOWERMULT));
-        this._recalculateStarColorFlag |= (Math.min(this._relCameraDist, this._prevCameraDist) / Math.max(this._relCameraDist, this._prevCameraDist)) < 0.9;
+        this._recalculateStarColorFlag |= (Math.min(this._curCameraDist, this._prevCameraDist) / Math.max(this._curCameraDist, this._prevCameraDist)) < 0.95;
 
         this.visibilityFlags = 0;
         if (this._renderScreen[0] < 0 || this._renderScreen[0] > getCanvasWidth()) {
@@ -114,7 +114,7 @@ export class StarSector {
     }
 
     processStarColor(star, brightnessParams, luminenceParams) {
-        let opacity = 10 ** 6 * ((brightnessParams[0] * ((star.lumens * star._relCameraDistBrightnessMult) - luminenceParams[0])) ** brightnessParams[1])
+        let opacity = ((brightnessParams[0] * ((star.lumens * star._relCameraDistBrightnessMult) - luminenceParams[0])) ** brightnessParams[1])
         return rgbToRgba(...star.color, opacity);
     }
 
@@ -181,7 +181,7 @@ export class StarSector {
         let lines = [
             [
                 [this._x1, this._y1, this._z1],
-                [this._x2, this._y1, this._z1], 
+                [this._x2, this._y1, this._z1],
                 COLOR_BLUE
             ],
             [
@@ -199,9 +199,9 @@ export class StarSector {
                 [this._x1, this._y1, this._z1],
                 COLOR_RED
             ],
-                        [
+            [
                 [this._x1, this._y1, this._z2],
-                [this._x2, this._y1, this._z2], 
+                [this._x2, this._y1, this._z2],
                 COLOR_BLUE
             ],
             [
@@ -228,7 +228,7 @@ export class StarSector {
             this.debugRenderLineCartesianPoints(start, end, color);
             this.debugRenderLineCartesianPoints(start, this.cartesian, color);
         })
-        
+
         this.debugRenderLineCartesianPoints(
             [this.cartesianBounds[0], this.cartesianBounds[1], this.cartesianBounds[2]],
             [this.cartesianBounds[3], this.cartesianBounds[1], this.cartesianBounds[2]]

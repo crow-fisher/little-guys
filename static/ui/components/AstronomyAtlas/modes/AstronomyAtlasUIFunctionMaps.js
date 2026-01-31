@@ -1,13 +1,11 @@
 import { getStarHandler } from "../../../../main.js";
-import { UI_AA_LABEL_GRAPH, UI_AA_LABEL_STARS, addUIFunctionMap, UI_AA_PLOT_XKEY, UI_AA_PLOT_YKEY, UI_AA_SETUP_COLORMODE, UI_SH_BASESIZE, UI_STARMAP_STAR_MIN_SIZE, UI_AA_SETUP_MIN, UI_AA_SELECTED_OPACITY } from "../../../UIData.js";
+import { UI_AA_LABEL_GRAPH, UI_AA_LABEL_STARS, addUIFunctionMap, UI_AA_PLOT_XKEY, UI_AA_PLOT_YKEY, UI_AA_SETUP_COLORMODE, UI_SH_BASESIZE, UI_STARMAP_STAR_MIN_SIZE, UI_AA_SETUP_MIN, UI_AA_SELECTED_OPACITY, UI_SH_STYLE_SIZE_SHIFT, UI_SH_STYLE_SIZE_FACTOR, UI_SH_STYLE_BRIGHTNESS_SHIFT, UI_SH_STYLE_BRIGHTNESS_FACTOR } from "../../../UIData.js";
 
 import { UI_AA_SETUP_WINDOW_SIZE, UI_AA_SETUP_POW, UI_AA_SETUP_MULT, UI_AA_SETUP_SELECT_MULT, UI_AA_PLOT_LOCALITY_SELECTMODE, UI_AA_PLOT_SELECTRADIUS, UI_AA_PLOT_SELECT_NAMED_STARS } from "../../../UIData.js";
 import { getAstronomyAtlasComponent } from "../../../WindowManager.js";
 
-function resetStarStyle() {
-    getStarHandler().stars.forEach((star) => star.recalculateAltColor());
-    getStarHandler().resetStarLabels();
-    resetGraphStyle();
+export function resetStarStyle() {
+    getStarHandler().iterateOnSectors((sector) => sector._recalculateStarColorFlag = true);
 }
 
 function resetGraphStyle() {
@@ -19,6 +17,8 @@ function resetGraphPoints() {
 }
 
 export function initAAUIFunctionMaps() {
+    addUIFunctionMap(UI_SH_BASESIZE, resetStarStyle);
+
     addUIFunctionMap(UI_AA_LABEL_STARS, () => getStarHandler().resetStarLabels());
     addUIFunctionMap(UI_AA_LABEL_GRAPH, () => getStarHandler().resetStarLabels());
 
