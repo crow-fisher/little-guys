@@ -1,5 +1,7 @@
+import { COLOR_BLACK, COLOR_WHITE } from "../../../colors.js";
 import { getStarHandler } from "../../../main.js";
 import { addRenderJob, PointLabelRenderJob } from "../../../rasterizer.js";
+import { loadGD, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_MIN, UI_AA_SETUP_MULT, UI_AA_SETUP_POW, UI_AA_SETUP_WINDOW_SIZE } from "../../../ui/UIData.js";
 import { getVec3Length } from "../matrix.js";
 import { brightnessValueToLumens, sphericalToCartesian } from "../starHandlerUtil.js";
 
@@ -92,7 +94,7 @@ export class Star {
 
         this._rac_v = invlerp(this._rac_minValue, this._rac_maxValue, this._rac_valNorm) ** this._rac_powValue;
 
-        this.alt_color_arr = combineColorMult(feHMinColor, feHMaxColor, this._rac_v);
+        this.alt_color_arr = combineColorMult(COLOR_WHITE, COLOR_BLACK, this._rac_v);
         this.alt_color = rgbToRgba(...this.alt_color_arr, this._opacity * Math.exp(loadGD(UI_AA_SETUP_MULT)));
     }
 

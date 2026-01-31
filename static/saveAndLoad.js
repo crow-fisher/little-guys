@@ -4,7 +4,7 @@ import { getTemperatureMap, getWaterSaturationMap } from "./climate/simulation/t
 import { getCurDay, setCurDay } from "./climate/time.js";
 import { ProtoMap, TypeMap } from "./types.js";
 import { getWindPressureMap } from "./climate/simulation/wind.js";
-import { _GAMEDATA_DEFAULT, _UI_DEFAULT, getGAMEDATA, getUICONFIG, loadGD, loadUI, saveGD, saveMapEntry, saveUI, setGAMEDATA, setUICONFIG, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_LIGHTING_ENABLED, UI_MAIN_NEWWORLD, UI_MAIN_NEWWORLD_LATITUDE, UI_MAIN_NEWWORLD_LONGITUDE, UI_MAIN_NEWWORLD_NAME, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_NAME, UI_SIMULATION_CLOUDS, UI_SIMULATION_HEIGHT, UI_TOPBAR_BLOCK, UI_TOPBAR_LIGHTING, UI_TOPBAR_MAINMENU, UI_TOPBAR_SIMULATION, UI_TOPBAR_TIME, UI_TOPBAR_VIEWMODE, UI_UI_CURWORLD, UI_UI_LASTSAVED, UI_UI_NEXTWORLD, UI_UI_SIZE, UI_UI_WORLDDELETED, UI_UI_WORLDHIDDEN, UI_UI_WORLDNAME, UI_UI_WORLDPAGE, UICONFIG } from "./ui/UIData.js";
+import { _GAMEDATA_DEFAULT, _UI_DEFAULT, GAMEDATA, getGAMEDATA, getUICONFIG, loadGD, loadUI, saveGD, saveMapEntry, saveUI, setGAMEDATA, setUICONFIG, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_LIGHTING_ENABLED, UI_MAIN_NEWWORLD, UI_MAIN_NEWWORLD_LATITUDE, UI_MAIN_NEWWORLD_LONGITUDE, UI_MAIN_NEWWORLD_NAME, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_NAME, UI_SIMULATION_CLOUDS, UI_SIMULATION_HEIGHT, UI_TOPBAR_BLOCK, UI_TOPBAR_LIGHTING, UI_TOPBAR_MAINMENU, UI_TOPBAR_SIMULATION, UI_TOPBAR_TIME, UI_TOPBAR_VIEWMODE, UI_UI_CURWORLD, UI_UI_LASTSAVED, UI_UI_NEXTWORLD, UI_UI_SIZE, UI_UI_WORLDDELETED, UI_UI_WORLDHIDDEN, UI_UI_WORLDNAME, UI_UI_WORLDPAGE, UICONFIG } from "./ui/UIData.js";
 import { getTotalCanvasPixelWidth, indexCanvasSize } from "./index.js";
 import { STAGE_DEAD } from "./organisms/Stages.js";
 import { getMainMenuComponent, initUI } from "./ui/WindowManager.js";
@@ -175,6 +175,14 @@ export async function downloadSaveFile() {
     loadSlotData(saveObj);
 }
 
+export async function downloadGamedataConfig() {
+    saveOrLoadInProgress = true;
+    const saveObj = structuredClone(getGAMEDATA());
+    const saveString = JSON.stringify(saveObj);
+    downloadFile("gamedata_downlaod_" + (new Date()).toISOString() + ".json", saveString);
+}
+
+
 
 export async function saveGame(slotName, reload) {
     saveOrLoadInProgress = true;
@@ -325,8 +333,6 @@ function getFrameSaveData() {
 }
 
 export async function createNewWorld() {
-    let startNumPages = getMainMenuComponent().getNumPages();
-
     let slot = loadUI(UI_UI_NEXTWORLD);
     loadEmptyScene();
     saveGD(UI_NAME, loadGD(UI_MAIN_NEWWORLD_NAME));
@@ -341,10 +347,12 @@ export async function createNewWorld() {
     saveGD(UI_CANVAS_VIEWPORT_CENTER_X, 100);
     saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, 100);
     saveCurGame();
-    let endNumPages = getMainMenuComponent().getNumPages();
-    if (endNumPages > startNumPages) {
-        saveUI(UI_UI_WORLDPAGE, loadUI(UI_UI_WORLDPAGE) + 1);
-    }
+
+    // let startNumPages = getMainMenuComponent().getNumPages();
+    // let endNumPages = getMainMenuComponent().getNumPages();
+    // if (endNumPages > startNumPages) {
+    //     saveUI(UI_UI_WORLDPAGE, loadUI(UI_UI_WORLDPAGE) + 1);
+    // }
 }
 
 export function editCurrentWorld() {
