@@ -6,7 +6,8 @@ import { RadioToggleLabel } from "../../../elements/RadioToggleLabel.js";
 import { SliderGradientBackground } from "../../../elements/SliderGradientBackground.js";
 import { StarSpecializedValuePicker } from "../../../elements/StarSpecializedValuePicker.js";
 import { Text } from "../../../elements/Text.js";
-import { UI_CENTER, UI_SH_MAXLUMINENCE, UI_SH_MINLUMINENCE, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_SH_BASESIZE, UI_STARMAP_STAR_MIN_SIZE, UI_SH_DISTPOWERMULT } from "../../../UIData.js";
+import { UI_CENTER, UI_SH_MAXLUMINENCE, UI_SH_MINLUMINENCE, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_SH_MINSIZE, UI_STARMAP_STAR_MIN_SIZE, UI_SH_DISTPOWERMULT, UI_SH_MAXSIZE } from "../../../UIData.js";
+import { resetStarStyle } from "./AstronomyAtlasUIFunctionMaps.js";
 
 export function AstronomyAtlasModeFuncStyle(window, container, sizeX, sizeY) {
     let half = sizeX / 2;
@@ -19,14 +20,17 @@ export function AstronomyAtlasModeFuncStyle(window, container, sizeX, sizeY) {
     row.addElement(new RadioToggleLabel(window, half, textHeight, UI_CENTER, "color", UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, 1,
          () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
         
-    container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "filter luminence"))
-    container.addElement(new SliderGradientBackground(window, UI_SH_MINLUMINENCE, sizeX, textHeight, -20000, -20, () => COLOR_BLACK, () => COLOR_WHITE));
+    container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "min luminence"))
+    container.addElement(new SliderGradientBackground(window, UI_SH_MINLUMINENCE, sizeX, textHeight, -20000, -20, () => COLOR_BLACK, () => COLOR_WHITE, false, resetStarStyle));
     container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "max luminence"))
-    container.addElement(new SliderGradientBackground(window, UI_SH_MAXLUMINENCE, sizeX, textHeight, -30, 30, () => COLOR_BLACK, () => COLOR_WHITE));
-    container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "base size"))
-    container.addElement(new SliderGradientBackground(window, UI_SH_BASESIZE, sizeX, textHeight, -30, 30, () => COLOR_BLACK, () => COLOR_WHITE));
+    container.addElement(new SliderGradientBackground(window, UI_SH_MAXLUMINENCE, sizeX, textHeight, -30, 30, () => COLOR_BLACK, () => COLOR_WHITE, false, resetStarStyle));
+    container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "min size"))
+    container.addElement(new SliderGradientBackground(window, UI_SH_MINSIZE, sizeX, textHeight, -30, 30, () => COLOR_BLACK, () => COLOR_WHITE, false, resetStarStyle));
+    container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "max size"))
+    container.addElement(new SliderGradientBackground(window, UI_SH_MAXSIZE, sizeX, textHeight, -30, 30, () => COLOR_BLACK, () => COLOR_WHITE, false, resetStarStyle));
+    
     container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "distance pow"))
-    container.addElement(new SliderGradientBackground(window, UI_SH_DISTPOWERMULT, sizeX, textHeight, 1, 4, () => COLOR_BLACK, () => COLOR_WHITE));
+    container.addElement(new SliderGradientBackground(window, UI_SH_DISTPOWERMULT, sizeX, textHeight, 1, 4, () => COLOR_BLACK, () => COLOR_WHITE, false, resetStarStyle));
 
 }
 

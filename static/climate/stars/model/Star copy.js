@@ -88,7 +88,7 @@ export class Star {
             this._prevRelCameraDist = this._relCameraDist;
             this._brightness = (this.name != null ? frameCache.namedStarOpacityMult : 1) * brightnessValueToLumensNormalized((this.magnitude) + frameCache.UI_SH_STYLE_BRIGHTNESS_SHIFT) / (this._relCameraDist ** 2);
 
-            this._size = (this._brightness ** frameCache.UI_SH_STYLE_SIZE_FACTOR) * frameCache.UI_SH_BASESIZE;
+            this._size = (this._brightness ** frameCache.UI_SH_STYLE_SIZE_FACTOR) * frameCache.UI_SH_MINSIZE;
             this._opacity = (this._brightness ** frameCache.UI_SH_STYLE_BRIGHTNESS_FACTOR);
 
             if (this._size < frameCache.starMinSize) {

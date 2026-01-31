@@ -1,9 +1,9 @@
 import { cameraToScreen, cartesianToCamera, cartesianToScreen, renderVec, screenToRenderScreen } from "../../../camera.js";
-import { getCanvasHeight, getCanvasWidth } from "../../../canvas.js";
+import { getBaseUISize, getCanvasHeight, getCanvasWidth } from "../../../canvas.js";
 import { COLOR_BLUE, COLOR_RED, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../colors.js";
 import { calculateStatistics, invlerp, processRangeToOne, rgbToRgba } from "../../../common.js";
 import { addRenderJob, LineRenderJob, PointLabelRenderJob } from "../../../rasterizer.js";
-import { loadGD, UI_CAMERA_OFFSET_VEC, UI_SH_BASESIZE, UI_SH_DISTPOWERMULT, UI_SH_MAXLUMINENCE, UI_SH_MINLUMINENCE, UI_SH_STARS_PER_BUCKET, UI_SH_STYLE_BRIGHTNESS_FACTOR, UI_SH_STYLE_BRIGHTNESS_SHIFT, UI_SH_STYLE_SIZE_FACTOR, UI_SH_STYLE_SIZE_SHIFT } from "../../../ui/UIData.js";
+import { loadGD, UI_CAMERA_OFFSET_VEC, UI_SH_MINSIZE, UI_SH_DISTPOWERMULT, UI_SH_MAXLUMINENCE, UI_SH_MINLUMINENCE, UI_SH_STARS_PER_BUCKET, UI_SH_STYLE_BRIGHTNESS_FACTOR, UI_SH_STYLE_BRIGHTNESS_SHIFT, UI_SH_STYLE_SIZE_FACTOR, UI_SH_STYLE_SIZE_SHIFT } from "../../../ui/UIData.js";
 import { addVec3Dest, addVectors, addVectorsCopy, calculateDistance, getVec3Length, multiplyVectorByScalar } from "../matrix.js";
 import { arrayOfNumbersToText, arrayOfVectorsToText } from "../starHandlerUtil.js";
 
@@ -37,15 +37,27 @@ export class StarSector {
     }
 
     getSizeParams() {
-        return [Math.exp(loadGD(UI_SH_STYLE_SIZE_SHIFT)), processRangeToOne(loadGD(UI_SH_STYLE_SIZE_FACTOR)), processRangeToOne(loadGD(UI_SH_BASESIZE))];
+        return [
+            Math.exp(loadGD(UI_SH_STYLE_SIZE_SHIFT)), 
+            processRangeToOne(loadGD(UI_SH_STYLE_SIZE_FACTOR)), 
+            processRangeToOne(loadGD(UI_SH_MINSIZE)), 
+            getBaseUISize() * processRangeToOne(loadGD(UI_SH_MINSIZE))
+        ];
     }
 
     getBrightnessParams() {
-        return [Math.exp(loadGD(UI_SH_STYLE_BRIGHTNESS_FACTOR)), processRangeToOne(loadGD(UI_SH_STYLE_BRIGHTNESS_SHIFT))];
+        return [
+            Math.exp(loadGD(UI_SH_STYLE_BRIGHTNESS_FACTOR)), 
+            processRangeToOne(loadGD(UI_SH_STYLE_BRIGHTNESS_SHIFT))
+        ];
     }
 
     getLuminenceParams() {
-        return [processRangeToOne(loadGD(UI_SH_MINLUMINENCE)), processRangeToOne(loadGD(UI_SH_MAXLUMINENCE)) / 20, loadGD(UI_SH_DISTPOWERMULT)];
+        return [
+            processRangeToOne(loadGD(UI_SH_MINLUMINENCE)), 
+            processRangeToOne(loadGD(UI_SH_MAXLUMINENCE)),
+            loadGD(UI_SH_DISTPOWERMULT)
+        ];
     }
 
     renderMain() {
@@ -70,9 +82,9 @@ export class StarSector {
     }
 
     setCurCameraPoint() {
-        this._cameraDistRefPoint[0] = Math.min(this.cartesianBounds[3], this._curCameraPosition[0]); //Math.min(Math.max(this.cartesianBounds[0], this._curCameraPosition[0]), this.cartesianBounds[3]);
-        this._cameraDistRefPoint[1] = Math.min(this.cartesianBounds[4], this._curCameraPosition[1]); //Math.min(Math.max(this.cartesianBounds[1], this._curCameraPosition[1]), this.cartesianBounds[4]);
-        this._cameraDistRefPoint[2] = Math.min(this.cartesianBounds[5], this._curCameraPosition[2]); //Math.min(Math.max(this.cartesianBounds[2], this._curCameraPosition[2]), this.cartesianBounds[5]);
+        this._cameraDistRefPoint[0] = Math.min(Math.max(this.cartesianBounds[0], this._curCameraPosition[0]), this.cartesianBounds[3]);
+        this._cameraDistRefPoint[1] = Math.min(Math.max(this.cartesianBounds[1], this._curCameraPosition[1]), this.cartesianBounds[4]);
+        this._cameraDistRefPoint[2] = Math.min(Math.max(this.cartesianBounds[2], this._curCameraPosition[2]), this.cartesianBounds[5]);
     }
 
     renderPrepare() {

@@ -7,7 +7,7 @@ import { addRenderJob, LineRenderJob, PointLabelRenderJob } from "../../rasteriz
 import { astronomyAtlasSetupChoices } from "../../ui/components/AstronomyAtlas/modes/AstronomyAtlasModeFuncSetup.js";
 import {
     loadGD, UI_STARMAP_ZOOM, UI_STARMAP_CONSTELATION_BRIGHTNESS,
-    UI_SH_BASESIZE,
+    UI_SH_MINSIZE,
     UI_SH_STYLE_SIZE_FACTOR,
     UI_SH_STYLE_BRIGHTNESS_FACTOR,
     UI_SH_STYLE_SIZE_SHIFT,
@@ -52,7 +52,7 @@ class FrameCache {
 
     prepareFrameCache() {
         frameMatrixReset();
-        this.UI_SH_BASESIZE = loadGD(UI_SH_BASESIZE);
+        this.UI_SH_MINSIZE = loadGD(UI_SH_MINSIZE);
         this.UI_SH_STYLE_SIZE_FACTOR = loadGD(UI_SH_STYLE_SIZE_FACTOR);
         this.UI_SH_STYLE_BRIGHTNESS_FACTOR = loadGD(UI_SH_STYLE_BRIGHTNESS_FACTOR);
         this.UI_SH_STYLE_BRIGHTNESS_SHIFT = loadGD(UI_SH_STYLE_BRIGHTNESS_SHIFT);
@@ -106,7 +106,7 @@ export class StarHandler {
         }
 
         this.colorWatchValues = {
-            UI_SH_BASESIZE: loadGD(UI_SH_BASESIZE),
+            UI_SH_MINSIZE: loadGD(UI_SH_MINSIZE),
             UI_STARMAP_STAR_MIN_SIZE: loadGD(UI_STARMAP_STAR_MIN_SIZE),
             UI_SH_STYLE_SIZE_FACTOR: loadGD(UI_SH_STYLE_SIZE_FACTOR),
             UI_SH_STYLE_BRIGHTNESS_FACTOR: loadGD(UI_SH_STYLE_BRIGHTNESS_FACTOR),
