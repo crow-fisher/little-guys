@@ -1,7 +1,7 @@
 import { cameraToScreen, cartesianToCamera, cartesianToScreen, renderVec, screenToRenderScreen } from "../../../camera.js";
 import { getBaseUISize, getCanvasHeight, getCanvasWidth } from "../../../canvas.js";
 import { COLOR_BLUE, COLOR_RED, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../colors.js";
-import { calculateStatistics, invlerp, processRangeToOne, rgbToRgba } from "../../../common.js";
+import { calculateStatistics, invlerp, lerp, processRangeToOne, rgbToRgba } from "../../../common.js";
 import { addRenderJob, LineRenderJob, PointLabelRenderJob } from "../../../rasterizer.js";
 import { loadGD, UI_CAMERA_OFFSET_VEC, UI_SH_MINSIZE, UI_SH_DISTPOWERMULT, UI_SH_MAXLUMINENCE, UI_SH_MINLUMINENCE, UI_SH_STARS_PER_BUCKET, UI_SH_STYLE_BRIGHTNESS_FACTOR, UI_SH_STYLE_BRIGHTNESS_SHIFT, UI_SH_STYLE_SIZE_FACTOR, UI_SH_STYLE_SIZE_SHIFT } from "../../../ui/UIData.js";
 import { addVec3Dest, addVectors, addVectorsCopy, calculateDistance, getVec3Length, multiplyVectorByScalar } from "../matrix.js";
@@ -121,13 +121,12 @@ export class StarSector {
         }
     }
 
-    processStarSize(star, sizeParams, lp) {
-        return sizeParams[2] + 100 * sizeParams[0] * Math.min((star.lumens * star._relCameraDistBrightnessMult) - lp[0], lp[1]);
+    processStarSize(star, sizeParams) {
+        return lerp(sizeParams[2], sizeParams[3], sizeParams[0] + star._relLumensRange ** sizeParams[1])
     }
 
     processStarColor(star, brightnessParams, luminenceParams) {
-        let opacity = ((brightnessParams[0] * ((star.lumens * star._relCameraDistBrightnessMult) - luminenceParams[0])) ** brightnessParams[1])
-        return rgbToRgba(...star.color, opacity);
+        return rgbToRgba(...star.color, brightnessParams[0] + star._relLumensRange ** brightnessParams[1]);
     }
 
     renderStars(luminenceParams, sizeParams, brightnessParams) {
@@ -168,8 +167,11 @@ export class StarSector {
             star._relCameraDist = (star._curCameraDistance / star._rootCameraDistance);
             star._relCameraDistBrightnessMult = 1 / (star._relCameraDist ** luminenceParams[2]);
 
-            star._size = this.processStarSize(star, sizeParams, luminenceParams);
-            star.renderColor = this.processStarColor(star, brightnessParams, luminenceParams);
+            star._relLumens = star.lumens * star._relCameraDistBrightnessMult;
+            star._relLumensRange = Math.max(0, Math.min(1, invlerp(luminenceParams[0], luminenceParams[1], star._relLumens)));
+
+            star._size = this.processStarSize(star, sizeParams);
+            star.renderColor = this.processStarColor(star, brightnessParams);
             // star.starLabel = star.lumens * star._relCameraDistBrightnessMult; 
         });
     }

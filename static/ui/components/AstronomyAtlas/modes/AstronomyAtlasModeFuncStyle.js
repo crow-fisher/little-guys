@@ -23,12 +23,11 @@ export function AstronomyAtlasModeFuncStyle(window, container, sizeX, sizeY) {
     container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "min luminence"))
     container.addElement(new SliderGradientBackground(window, UI_SH_MINLUMINENCE, sizeX, textHeight, -20000, -20, () => COLOR_BLACK, () => COLOR_WHITE, false, resetStarStyle));
     container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "max luminence"))
-    container.addElement(new SliderGradientBackground(window, UI_SH_MAXLUMINENCE, sizeX, textHeight, -30, 30, () => COLOR_BLACK, () => COLOR_WHITE, false, resetStarStyle));
+    container.addElement(new SliderGradientBackground(window, UI_SH_MAXLUMINENCE, sizeX, textHeight, -300, 30, () => COLOR_BLACK, () => COLOR_WHITE, false, resetStarStyle));
     container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "min size"))
     container.addElement(new SliderGradientBackground(window, UI_SH_MINSIZE, sizeX, textHeight, -30, 30, () => COLOR_BLACK, () => COLOR_WHITE, false, resetStarStyle));
     container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "max size"))
     container.addElement(new SliderGradientBackground(window, UI_SH_MAXSIZE, sizeX, textHeight, -30, 30, () => COLOR_BLACK, () => COLOR_WHITE, false, resetStarStyle));
-    
     container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "distance pow"))
     container.addElement(new SliderGradientBackground(window, UI_SH_DISTPOWERMULT, sizeX, textHeight, 1, 4, () => COLOR_BLACK, () => COLOR_WHITE, false, resetStarStyle));
 
