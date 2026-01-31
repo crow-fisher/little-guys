@@ -3,7 +3,7 @@ import { getBaseUISize, getCanvasHeight, getCanvasWidth } from "../../../canvas.
 import { COLOR_BLUE, COLOR_RED, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../colors.js";
 import { calculateStatistics, invlerp, lerp, processRangeToOne, rgbToRgba } from "../../../common.js";
 import { addRenderJob, LineRenderJob, PointLabelRenderJob } from "../../../rasterizer.js";
-import { loadGD, UI_CAMERA_OFFSET_VEC, UI_SH_MINSIZE, UI_SH_DISTPOWERMULT, UI_SH_MAXLUMINENCE, UI_SH_MINLUMINENCE, UI_SH_STARS_PER_BUCKET, UI_SH_STYLE_BRIGHTNESS_FACTOR, UI_SH_STYLE_BRIGHTNESS_SHIFT, UI_SH_STYLE_SIZE_FACTOR, UI_SH_STYLE_SIZE_SHIFT } from "../../../ui/UIData.js";
+import { loadGD, UI_CAMERA_OFFSET_VEC, UI_SH_MINSIZE, UI_SH_DISTPOWERMULT, UI_SH_MAXLUMINENCE, UI_SH_MINLUMINENCE, UI_SH_STARS_PER_BUCKET, UI_SH_STYLE_BRIGHTNESS_FACTOR, UI_SH_STYLE_BRIGHTNESS_SHIFT, UI_SH_STYLE_SIZE_FACTOR, UI_SH_STYLE_SIZE_SHIFT, UI_AA_PLOT_SELECTRADIUS, UI_AA_PLOT_LOCALITY_SELECTMODE } from "../../../ui/UIData.js";
 import { addVec3Dest, addVectors, addVectorsCopy, calculateDistance, getVec3Length, multiplyVectorByScalar } from "../matrix.js";
 import { arrayOfNumbersToText, arrayOfVectorsToText } from "../starHandlerUtil.js";
 
@@ -60,6 +60,13 @@ export class StarSector {
         ];
     }
 
+    getLocalitySelectParams() {
+        return [
+            loadGD(UI_AA_PLOT_LOCALITY_SELECTMODE),
+            loadGD(UI_AA_PLOT_SELECTRADIUS)
+        ];
+    }
+
     renderMain() {
         if (!this.ready) {
             return;
@@ -68,15 +75,17 @@ export class StarSector {
 
         if (this._curCameraDist < 1000) {
             this.visibilityFlags = 0;
+            this.renderSector();
         }
 
-        // this.renderSector();
 
         if (this.visibilityFlags == 0) {
             this.renderStars(
                 this.getLuminenceParams(),
                 this.getSizeParams(),
-                this.getBrightnessParams());
+                this.getBrightnessParams(),
+                this.getLocalitySelectParams()
+            );
 
         }
     }
@@ -129,7 +138,7 @@ export class StarSector {
         return rgbToRgba(...star.color, brightnessParams[0] + star._relLumensRange ** brightnessParams[1]);
     }
 
-    renderStars(luminenceParams, sizeParams, brightnessParams) {
+    renderStars(luminenceParams, sizeParams, brightnessParams, localitySelectParams) {
         let bucketLumens;
 
         let recalculatingColor = (this._recalculateStarColorFlag);
@@ -143,7 +152,7 @@ export class StarSector {
                 this.prepareBucket(this.buckets.at(i));
 
                 if (recalculatingColor) {
-                    this.processBucketSizeColor(this.buckets.at(i), luminenceParams, sizeParams, brightnessParams);
+                    this.processBucketSizeColor(this.buckets.at(i), luminenceParams, sizeParams, brightnessParams, localitySelectParams);
                     this._prevCameraDist = this._curCameraDist;
                 }
 
@@ -161,7 +170,7 @@ export class StarSector {
         });
     }
 
-    processBucketSizeColor(bucket, luminenceParams, sizeParams, brightnessParams) {
+    processBucketSizeColor(bucket, luminenceParams, sizeParams, brightnessParams, localitySelectParams) {
         bucket.forEach((star) => {
             star._curCameraDistance = getVec3Length(star._offset);
             star._relCameraDist = (star._curCameraDistance / star._rootCameraDistance);
@@ -172,7 +181,8 @@ export class StarSector {
 
             star._size = this.processStarSize(star, sizeParams);
             star.renderColor = this.processStarColor(star, brightnessParams);
-            // star.starLabel = star.lumens * star._relCameraDistBrightnessMult; 
+            star.doLocalitySelect(...localitySelectParams)
+            star.starLabel = star.localitySelect ? star.id : null;
         });
     }
 
@@ -240,7 +250,6 @@ export class StarSector {
             let end = line[1];
             let color = line[2];
             this.debugRenderLineCartesianPoints(start, end, color);
-            this.debugRenderLineCartesianPoints(start, this.cartesian, color);
         })
 
         this.debugRenderLineCartesianPoints(
@@ -302,8 +311,8 @@ export class StarSector {
         this.sectorRenderJob.x = this._renderScreen[0];
         this.sectorRenderJob.y = this._renderScreen[1];
         this.sectorRenderJob.z = this._renderScreen[2];
-        this.sectorRenderJob.size = 3;
-        this.sectorRenderJob.color = COLOR_WHITE;
+        this.sectorRenderJob.size = 10;
+        this.sectorRenderJob.color = COLOR_VERY_FUCKING_RED;
         // this.sectorRenderJob.label = this.visibilityFlags + " | " + arrayOfVectorsToText([this.sector, this._cameraDistRefPoint]);
         // this.sectorRenderJob.label = arrayOfNumbersToText([this._rootCameraDist, this._curCameraDist, this._relCameraDistBrightnessMult]);
 

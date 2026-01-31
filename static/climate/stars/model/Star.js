@@ -101,7 +101,7 @@ export class Star {
             this.localitySelect = false;
             return false;
         } else {
-            if (this._curCameraDistance < selectRadius) {
+            if (this._curCameraDistance < Math.exp(selectRadius)) {
                 if (this.localitySelect)
                     return false;
                 this.localitySelect = true;
