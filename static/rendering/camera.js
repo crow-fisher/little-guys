@@ -94,7 +94,6 @@ export function frameMatrixReset() {
     if (getCurDay() != frameMatrixDay) {
         cameraToWorld = getFrameCameraMatrix();
         frameMatrixDay = getCurDay();
-        frameCache.prepareFrameCache();
         setFramePerspectiveMatrix();
     }
 }
@@ -124,12 +123,16 @@ export function reset3DCameraTo2DScreen() {
     saveGD(UI_CAMERA_ROTATION_VEC_DT, [0, 0, 0, 0]);
 }
 export function cartesianToScreenInplace(cartesian, camera, screen) {
+    cartesianToCamera(cartesian, camera);
+    cameraToScreen(camera, screen);
 }
 
 export function tickFrameMatrix() {
     if (getCurDay() != frameMatrixDay) {
         cameraToWorld = getFrameCameraMatrix();
         frameMatrixDay = getCurDay();
+        frameCache.prepareFrameCache();
+        frameCache.prepareRenderFrameCache();
         setFramePerspectiveMatrix();
     }
 }

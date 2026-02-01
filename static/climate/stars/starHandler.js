@@ -15,7 +15,6 @@ export class StarHandler {
     }
 
     render() {
-        tickFrameMatrix();
         this.iterateOnSectors((sector) => sector.renderMain());
     }
 
