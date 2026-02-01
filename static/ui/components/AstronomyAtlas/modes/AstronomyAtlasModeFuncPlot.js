@@ -79,14 +79,14 @@ export function AstronomyAtlasModeFuncPlot(_this, container, sizeX, sizeY) {
 
     let posGraphAxisChoices = [
         [["asc", "asc"],
-        ["dec", "dec"]],
-        [["parsecs_log", "dist"]]
+        ["dec", "dec"]]
+        // ,[["parsecs_log", "dist"]]
     ]
 
     let magGraphAxisChoices = [
         [["magnitude", "rel. mag"],
-        ["magnitude_absolute", "abs. mag"]],
-        [["_brightness", "cur. brightness"]]
+        ["magnitude_absolute", "abs. mag"]]
+        // , [["_brightness", "cur. brightness"]]
     ]
 
     let compGraphAxisChoices = [
@@ -102,14 +102,22 @@ export function AstronomyAtlasModeFuncPlot(_this, container, sizeX, sizeY) {
         }
     };
 
+
+    let addSpacing = () => configureParamsConditionalContainer.addElement(new Text(_this.window, sizeX, getBaseUISize() * 1, UI_CENTER, ""));
+
+    addSpacing();
     configureParamsConditionalContainer.addElement(new Text(_this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "identification"))
     f(idGraphAxisChoices);
+    addSpacing();
     configureParamsConditionalContainer.addElement(new Text(_this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "position"))
     f(posGraphAxisChoices);
+    addSpacing();
     configureParamsConditionalContainer.addElement(new Text(_this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "magnitude"))
     f(magGraphAxisChoices);
+    addSpacing();
     configureParamsConditionalContainer.addElement(new Text(_this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "composition"))
     f(compGraphAxisChoices);
+
 }
 
 
@@ -123,8 +131,8 @@ function createLabel(choiceArr, window, sizeX) {
     let subContainer = new Container(window, 0, 0);
     subContainer.addElement(new Text(window, sizeX * f1, getBaseUISize() * 3, UI_CENTER, label));
 
-    let xButton = new RadioToggleLabel(window, sizeX * (f2 - f1), getBaseUISize() * 3, UI_CENTER, "X", UI_AA_PLOT_XKEY, ref, () => COLOR_RED, () => COLOR_BLUE);
-    let yButton = new RadioToggleLabel(window, sizeX * (1 - f2), getBaseUISize() * 3, UI_CENTER, "Y", UI_AA_PLOT_YKEY, ref, () => COLOR_RED, () => COLOR_BLUE);
+    let xButton = new RadioToggleLabel(window, sizeX * (f2 - f1), getBaseUISize() * 3, UI_CENTER, "X", UI_AA_PLOT_XKEY, ref, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55));
+    let yButton = new RadioToggleLabel(window, sizeX * (1 - f2), getBaseUISize() * 3, UI_CENTER, "Y", UI_AA_PLOT_YKEY, ref, () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55));
 
     subContainer.addElement(xButton);
     subContainer.addElement(yButton);

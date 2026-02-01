@@ -193,21 +193,22 @@ export class PlotStarScatter extends WindowElement {
             star = this.sValues[i];
             x = invlerp(...this.xBounds, this.xValues[i]);
             y = invlerp(...this.yBounds, this.yValues[i]);
-            // if (x < this.valueRange[0] || x > this.valueRange[1] || y < this.valueRange[2] || y > this.valueRange[3]) {
-            //     star.graphVisible = false;
-            //     continue;
-            // } else {
-            //     star.graphVisible = true;
-            // }
-            // if (graphFilterMode == 1) {
-            //     if (!star._fovVisible) {
-            //         continue;
-            //     }
-            // } else if (graphFilterMode == 2) {
-            //     if (!(star.selected || star.localitySelect)) {
-            //         continue;
-            //     }
-            // }
+            if (x < this.valueRange[0] || x > this.valueRange[1] || y < this.valueRange[2] || y > this.valueRange[3]) {
+                star.graphVisible = false;
+                continue;
+            } else {
+                star.graphVisible = true;
+            }
+
+            if (graphFilterMode == 1) {
+                if (!star._fovVisible) {
+                    continue;
+                }
+            } else if (graphFilterMode == 2) {
+                if (!(star.selected || star.localitySelect)) {
+                    continue;
+                }
+            }
 
             x = invlerp(this.valueRange[0], this.valueRange[1], x);
             y = invlerp(this.valueRange[2], this.valueRange[3], y);
@@ -325,7 +326,7 @@ export class PlotStarScatter extends WindowElement {
         let star;
         for (let i = 0; i < this.lengthCap; i++) {
             star = this.sValues[i];
-            if (star == null) {
+            if (star == null || !star.graphVisible) {
                 continue;
             }
 
