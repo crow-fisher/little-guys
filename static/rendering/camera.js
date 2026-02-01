@@ -1,10 +1,11 @@
-import { decayVec, getBaseSize, getCanvasHeight, getCanvasWidth, getCurZoom } from "./canvas.js";
-import { addVectors, crossVec3, multiplyMatrixAndPoint, multiplyMatrixAndPointInplace, multiplyVectorByScalar, normalizeVec3, subtractVectors, transposeMat4 } from "./climate/stars/matrix.js";
-import { getCurDay } from "./climate/time.js";
-import { COLOR_WHITE } from "./colors.js";
-import { rgbToHex } from "./common.js";
-import { MAIN_CONTEXT } from "./index.js";
-import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CAMERA_OFFSET_VEC, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_ROTATION_VEC_DT, saveGD, UI_CAMERA_FOV, addUIFunctionMap, UI_STARMAP_ZOOM, UI_STARMAP_PREV_ZOOM } from "./ui/UIData.js";
+import { decayVec, getBaseSize, getCanvasHeight, getCanvasWidth, getCurZoom } from "../canvas.js";
+import { addVectors, crossVec3, multiplyMatrixAndPoint, multiplyMatrixAndPointInplace, multiplyVectorByScalar, normalizeVec3, subtractVectors, transposeMat4 } from "../climate/stars/matrix.js";
+import { getCurDay } from "../climate/time.js";
+import { COLOR_WHITE } from "../colors.js";
+import { rgbToHex } from "../common.js";
+import { MAIN_CONTEXT } from "../index.js";
+import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CAMERA_OFFSET_VEC, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_ROTATION_VEC_DT, saveGD, UI_CAMERA_FOV, addUIFunctionMap, UI_STARMAP_ZOOM, UI_STARMAP_PREV_ZOOM } from "../ui/UIData.js";
+import { FrameCache } from "./FrameCache.js";
 
 let params = new URLSearchParams(document.location.search);
 
@@ -28,6 +29,11 @@ let perspectiveMatrix = [
 ]
 let frameMatrixDay = 0;
 
+let frameCache = new FrameCache();
+
+export function gfc() {
+    return frameCache;
+}
 
 export function getForwardVec() {
     return cameraToWorld[2];
@@ -88,6 +94,7 @@ export function frameMatrixReset() {
     if (getCurDay() != frameMatrixDay) {
         cameraToWorld = getFrameCameraMatrix();
         frameMatrixDay = getCurDay();
+        frameCache.prepareFrameCache();
         setFramePerspectiveMatrix();
     }
 }

@@ -3,7 +3,7 @@ import { getWindSpeedAtLocation } from "../climate/simulation/wind.js";
 import { STATE_DESTROYED, TYPE_HEART } from "./Stages.js";
 import { getGlobalThetaBase } from "../globals.js";
 import { randRange, removeItemAll } from "../common.js";
-import { rotatePoint } from "../camera.js";
+import { rotatePoint } from "../rendering/camera.js";
 import { addVectors } from "../climate/stars/matrix.js";
 
 export class GrowthPlan {

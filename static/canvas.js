@@ -1,4 +1,4 @@
-import { canvasPan3DRoutine, cartesianToScreen, reset3DCameraTo2DScreen } from "./camera.js";
+import { canvasPan3DRoutine, cartesianToScreen, reset3DCameraTo2DScreen } from "./rendering/camera.js";
 import { multiplyMatrixAndPoint } from "./climate/stars/matrix.js";
 import { MAIN_CONTEXT } from "./index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "./keyboard.js";

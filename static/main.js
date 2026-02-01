@@ -16,9 +16,9 @@ import { gamepadInputLoop } from "./gamepad.js";
 import { renderCloudsDebug } from "./climate/weather/weatherManager.js";
 import { clearTimeouts, completeActiveJobs, prepareTickJobs } from "./scheduler.js";
 import { canvasPanRoutine } from "./canvas.js";
-import { render3DHud } from "./camera.js";
+import { render3DHud } from "./rendering/camera.js";
 import { gamepadCameraInput } from "./gamepadCameraInput.js";
-import { executeRenderJobs } from "./rasterizer.js";
+import { executeRenderJobs } from "./rendering/rasterizer.js";
 import { StarHandler } from "./climate/stars/starHandler.js";
 
 

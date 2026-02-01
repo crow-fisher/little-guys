@@ -1,6 +1,7 @@
 import { COLOR_BLACK, COLOR_WHITE } from "../../../colors.js";
 import { getStarHandler } from "../../../main.js";
-import { addRenderJob, PointLabelRenderJob } from "../../../rasterizer.js";
+import { PointLabelRenderJob } from "../../../rendering/model/PointLabelRenderJob.js";
+import { addRenderJob } from "../../../rendering/rasterizer.js";
 import { loadGD, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_MIN, UI_AA_SETUP_MULT, UI_AA_SETUP_POW, UI_AA_SETUP_WINDOW_SIZE } from "../../../ui/UIData.js";
 import { getVec3Length } from "../matrix.js";
 import { brightnessValueToLumens, sphericalToCartesian } from "../starHandlerUtil.js";
@@ -33,7 +34,7 @@ export class Star {
         this.recalculateScreenFlag = true;
         this.recalculateColorFlag = true;
 
-        this._fovVisible = true;
+        this._renderedThisFrame = true;
 
         this.parsecs = Math.abs(1 / (parallax / 1000));
         this.parsecs_log = Math.log10(this.parsecs);
@@ -118,6 +119,7 @@ export class Star {
     }
 
     render() {
+        this._renderedThisFrame = true;
         if (this.renderJob == null) {
             this.renderJob = new PointLabelRenderJob(
                 this._renderScreen[0],

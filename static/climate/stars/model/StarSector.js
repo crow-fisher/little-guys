@@ -1,12 +1,13 @@
-import { cameraToScreen, cartesianToCamera, cartesianToScreen, renderVec, screenToRenderScreen } from "../../../camera.js";
+import { cameraToScreen, cartesianToCamera, cartesianToScreen, screenToRenderScreen } from "../../../rendering/camera.js";
 import { getBaseUISize, getCanvasHeight, getCanvasWidth } from "../../../canvas.js";
 import { COLOR_BLUE, COLOR_GREEN, COLOR_OTHER_BLUE, COLOR_RED, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../colors.js";
 import { calculateStatistics, invlerp, lerp, processRangeToOne, rgbToRgba } from "../../../common.js";
-import { addRenderJob, LineRenderJob, PointLabelRenderJob } from "../../../rasterizer.js";
-import { loadGD, UI_CAMERA_OFFSET_VEC, UI_SH_MINSIZE, UI_SH_DISTPOWERMULT, UI_SH_MAXLUMINENCE, UI_SH_MINLUMINENCE, UI_SH_STARS_PER_BUCKET, UI_SH_STYLE_BRIGHTNESS_FACTOR, UI_SH_STYLE_BRIGHTNESS_SHIFT, UI_SH_STYLE_SIZE_FACTOR, UI_SH_STYLE_SIZE_SHIFT, UI_AA_PLOT_SELECTRADIUS, UI_AA_PLOT_LOCALITY_SELECTMODE } from "../../../ui/UIData.js";
+import { addRenderJob } from "../../../rendering/rasterizer.js";
+import { loadGD, UI_CAMERA_OFFSET_VEC, UI_SH_MINSIZE, UI_SH_DISTPOWERMULT, UI_SH_MAXLUMINENCE, UI_SH_MINLUMINENCE, UI_SH_STYLE_BRIGHTNESS_FACTOR, UI_SH_STYLE_BRIGHTNESS_SHIFT, UI_SH_STYLE_SIZE_FACTOR, UI_SH_STYLE_SIZE_SHIFT, UI_AA_PLOT_SELECTRADIUS, UI_AA_PLOT_LOCALITY_SELECTMODE, UI_AA_PLOT_ACTIVE } from "../../../ui/UIData.js";
 import { getAstronomyAtlasComponent } from "../../../ui/WindowManager.js";
-import { addVec3Dest, addVectors, addVectorsCopy, calculateDistance, getVec3Length, multiplyVectorByScalar } from "../matrix.js";
-import { arrayOfNumbersToText, arrayOfVectorsToText } from "../starHandlerUtil.js";
+import { addVec3Dest, getVec3Length } from "../matrix.js";
+import { LineRenderJob } from "../../../rendering/model/LineRenderJob.js";
+import { PointLabelRenderJob } from "../../../rendering/model/PointLabelRenderJob.js";
 
 const Z_VISIBLE = 0b10;
 const FOV_VISIBLE = 0b01;
@@ -101,8 +102,11 @@ export class StarSector {
     }
 
     renderPrepare() {
-        this._curCameraPosition = loadGD(UI_CAMERA_OFFSET_VEC);
+        if (loadGD(UI_AA_PLOT_ACTIVE)) {
+            this.loadedStars.forEach((star) => star._renderedThisFrame = false);
+        }
 
+        this._curCameraPosition = loadGD(UI_CAMERA_OFFSET_VEC);
         this._cw = getCanvasWidth();
         this._ch = getCanvasHeight();
         this._max = Math.max(this._cw, this._ch);
@@ -337,8 +341,6 @@ export class StarSector {
         }
 
     }
-
-
 
     renderSector() {
         if (this._renderScreen[2] > 0) {

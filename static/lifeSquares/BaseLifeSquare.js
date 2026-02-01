@@ -10,9 +10,10 @@ import { STATE_HEALTHY, STAGE_DEAD, TYPE_ROOT } from "../organisms/Stages.js";
 import { getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasHeight, getCanvasWidth, getCurZoom, rotatePoint, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasFillRectTheta, zoomCanvasFillRectTheta3D, zoomCanvasSquareText } from "../canvas.js";
 import { loadGD, UI_CAMERA_OFFSET_VEC, UI_CANVAS_SQUARES_ZOOM, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_3D, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_NORMAL, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../ui/UIData.js";
-import { cartesianToScreen, getCameraPosition, getCameraRotationVec, getForwardVec, renderPoint, renderVec } from "../camera.js";
+import { cartesianToScreen, getCameraPosition, getCameraRotationVec, getForwardVec, renderPoint, renderVec } from "../rendering/camera.js";
 import { addVectors, addVectorsCopy, crossVec3, normalizeVec3, subtractVectors, subtractVectorsCopy } from "../climate/stars/matrix.js";
-import { addRenderJob, QuadRenderJob } from "../rasterizer.js";
+import { QuadRenderJob } from "../rendering/model/QuadRenderJob.js";
+import { addRenderJob } from "../rendering/rasterizer.js";
 
 export const LSQ_RENDERMODE_SQUARE = "LSQ_RENDERMODE_SQUARE";
 export const LSQ_RENDERMODE_CIRCLE = "LSQ_RENDERMODE_CIRCLE";

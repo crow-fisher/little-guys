@@ -1,4 +1,4 @@
-import { reset3DCameraTo2DScreen } from "./camera.js";
+import { reset3DCameraTo2DScreen } from "./rendering/camera.js";
 import { getBaseSize, moveCamera, resetZoom, rotatePoint } from "./canvas.js";
 import { getActiveClimate } from "./climate/climateManager.js";
 import { getGlobalThetaBase, setGlobalThetaBase } from "./globals.js";

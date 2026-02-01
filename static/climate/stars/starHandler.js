@@ -1,4 +1,4 @@
-import { frameMatrixReset, tickFrameMatrix } from "../../camera.js";
+import { frameMatrixReset, tickFrameMatrix } from "../../rendering/camera.js";
 import { HipparcosCatalog } from "./catalog/HipparcosCatalog.js";
 import { StellariumCatalog } from "./catalog/StellariumCatalog.js";
 import { StarSector } from "./model/StarSector.js";

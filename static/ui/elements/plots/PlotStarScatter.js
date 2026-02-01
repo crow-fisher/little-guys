@@ -82,7 +82,7 @@ export class PlotStarScatter extends WindowElement {
         this.renderGraph(startX, startY);
     }
 
-    _reloadGraphSelect() {
+    reloadGraphSelect() {
         console.log("reloadGraphSelect");
         if (this.xKey == null || this.yKey == null || getStarHandler().stars.length == 0) {
             return;
@@ -92,10 +92,11 @@ export class PlotStarScatter extends WindowElement {
         let star;
         let selectNamedStars = loadGD(UI_AA_PLOT_SELECT_NAMED_STARS);
 
-        let filteredStars = Array.from(getStarHandler().stars.filter((star) =>
-            (selectNamedStars ? star.name != null : false)
+        let filteredStars = new Array();
+        getStarHandler().iterateOnSectors(((sector) => sector.loadedStars
+                    .filter((selectNamedStars ? star.name != null : false)
             || star.selected
-            || star.localitySelect));
+            || star.localitySelect).forEach((star) => filteredStars.push(star))));
 
         let filteredStarsIdx = 0;
         for (let i = 0; i < this.lengthCap; i++) {
@@ -251,7 +252,9 @@ export class PlotStarScatter extends WindowElement {
             return;
         }
 
-        if (loadGD(UI_AA_SELECT_FILTERMODE_GRAPH) == 2) {
+        let filterModeGraph = loadGD(UI_AA_SELECT_FILTERMODE_GRAPH);
+
+        if (filterModeGraph == 2) {
             this.reloadGraphSelect();
             this._modeWasSelect = true;
             return;
@@ -280,6 +283,10 @@ export class PlotStarScatter extends WindowElement {
                 if (star == null) {
                     continue;
                 }
+            }
+
+            if (filterModeGraph == 1 && !star._renderedThisFrame) {
+                continue;
             }
 
             let x = star[this.xKey];
