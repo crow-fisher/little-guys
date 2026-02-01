@@ -258,7 +258,7 @@ export class PlotStarScatter extends WindowElement {
         }
 
         let idxMult = 1; // getStarHandler().stars.length / (this.lengthCap);
-        let opacity = 1; // processRangeToOne(loadGD(UI_AA_PLOT_POINTOPACITY) * this.lengthCap);
+        let opacity = processRangeToOne(loadGD(UI_AA_PLOT_POINTOPACITY) * this.lengthCap);
         let selectedStarOpacityMult =  1 ; // Math.exp(loadGD(UI_AA_SETUP_SELECT_MULT));
         let star, iO;
 

@@ -4,6 +4,7 @@ import { COLOR_BLUE, COLOR_GREEN, COLOR_OTHER_BLUE, COLOR_RED, COLOR_VERY_FUCKIN
 import { calculateStatistics, invlerp, lerp, processRangeToOne, rgbToRgba } from "../../../common.js";
 import { addRenderJob, LineRenderJob, PointLabelRenderJob } from "../../../rasterizer.js";
 import { loadGD, UI_CAMERA_OFFSET_VEC, UI_SH_MINSIZE, UI_SH_DISTPOWERMULT, UI_SH_MAXLUMINENCE, UI_SH_MINLUMINENCE, UI_SH_STARS_PER_BUCKET, UI_SH_STYLE_BRIGHTNESS_FACTOR, UI_SH_STYLE_BRIGHTNESS_SHIFT, UI_SH_STYLE_SIZE_FACTOR, UI_SH_STYLE_SIZE_SHIFT, UI_AA_PLOT_SELECTRADIUS, UI_AA_PLOT_LOCALITY_SELECTMODE } from "../../../ui/UIData.js";
+import { getAstronomyAtlasComponent } from "../../../ui/WindowManager.js";
 import { addVec3Dest, addVectors, addVectorsCopy, calculateDistance, getVec3Length, multiplyVectorByScalar } from "../matrix.js";
 import { arrayOfNumbersToText, arrayOfVectorsToText } from "../starHandlerUtil.js";
 
@@ -158,9 +159,14 @@ export class StarSector {
                     this.processBucketSizeColor(this.buckets.at(i), luminenceParams, sizeParams, brightnessParams, localitySelectParams);
                     this._prevCameraDist = this._curCameraDist;
                 }
-
+                
                 this.renderBucket(this.buckets.at(i), luminenceParams);
+            } else {
             }
+        };
+
+        if (recalculatingColor) {
+            getAstronomyAtlasComponent().plotStarScatter.flagRepreparePoints();
         }
     }
 

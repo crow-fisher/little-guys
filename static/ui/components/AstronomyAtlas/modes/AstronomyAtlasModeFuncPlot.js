@@ -90,8 +90,15 @@ export function AstronomyAtlasModeFuncPlot(_this, container, sizeX, sizeY) {
     ]
 
     let compGraphAxisChoices = [
-        [["p_feH", "metalllicity"], ["bv", "b-v"]]
+        [
+            ["p_feH", "metalllicity"],
+            ["bv", "b-v"]
+        ]
     ]
+
+    let displayGraphAxisChoies = [[
+        ["_relLumensRange", "rel lumens"],
+        ["_size", "size"]]];
 
     let f = (cpl) => {
         for (let i = 0; i < cpl.length; i++) {
@@ -117,7 +124,9 @@ export function AstronomyAtlasModeFuncPlot(_this, container, sizeX, sizeY) {
     addSpacing();
     configureParamsConditionalContainer.addElement(new Text(_this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "composition"))
     f(compGraphAxisChoices);
-
+    addSpacing();
+    configureParamsConditionalContainer.addElement(new Text(_this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "display"))
+    f(displayGraphAxisChoies);
 }
 
 
