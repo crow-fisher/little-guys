@@ -10,7 +10,7 @@ import { STATE_HEALTHY, STAGE_DEAD, TYPE_ROOT } from "../organisms/Stages.js";
 import { getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasHeight, getCanvasWidth, getCurZoom, rotatePoint, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasFillRectTheta, zoomCanvasFillRectTheta3D, zoomCanvasSquareText } from "../canvas.js";
 import { loadGD, UI_CAMERA_OFFSET_VEC, UI_CANVAS_SQUARES_ZOOM, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_3D, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_NORMAL, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../ui/UIData.js";
-import { cartesianToScreen, getCameraPosition, getCameraRotationVec, getForwardVec, renderPoint, renderVec } from "../rendering/camera.js";
+import { cartesianToScreen, cartesianToScreenInplace, getCameraPosition, getCameraRotationVec, getForwardVec, gfc, renderPoint, renderVec, screenToRenderScreen } from "../rendering/camera.js";
 import { addVectors, addVectorsCopy, crossVec3, normalizeVec3, subtractVectors, subtractVectorsCopy } from "../climate/stars/matrix.js";
 import { QuadRenderJob } from "../rendering/model/QuadRenderJob.js";
 import { addRenderJob } from "../rendering/rasterizer.js";
@@ -83,6 +83,87 @@ class BaseLifeSquare {
 
         this.posVec = [this.posX, this.posY, 0];
         this.rotVec = [0, 0, 0];
+
+        this.cartesian_tl = [0, 0, 0];
+        this.cartesian_tr = [0, 0, 0];
+        this.cartesian_bl = [0, 0, 0];
+        this.cartesian_br = [0, 0, 0];
+
+        this.camera_tl = [0, 0, 0];
+        this.camera_tr = [0, 0, 0];
+        this.camera_bl = [0, 0, 0];
+        this.camera_br = [0, 0, 0];
+
+        this.screen_tl = [0, 0, 0];
+        this.screen_tr = [0, 0, 0];
+        this.screen_bl = [0, 0, 0];
+        this.screen_br = [0, 0, 0];
+
+        this.renderNorm_tl = [0, 0];
+        this.renderNorm_tr = [0, 0];
+        this.renderNorm_bl = [0, 0];
+        this.renderNorm_br = [0, 0];
+
+        this.renderScreen_tl = [0, 0, 0];
+        this.renderScreen_tr = [0, 0, 0];
+        this.renderScreen_bl = [0, 0, 0];
+        this.renderScreen_br = [0, 0, 0];
+    }
+
+    setFrameCartesians() {
+        // we are a cylinder
+        // rotated at a certain angle 
+        // based on parameters:
+        // * this.posVec (vec<3>)
+        // * this.rotVec (vec<3>)
+
+        // we have a maximum viewable cross section
+        // for cylinders - the width only reduces with distance,
+        //                 but the height reduces with the angle. 
+
+        // vaguely replicated from how these are used in growthPlans
+
+        this.offsetVec = [0, 1, 0, 0];
+        this.rotatedOffset = rotatePoint(this.offsetVec, ...this.rotVec);
+        this.startVec = this.posVec;
+        this.endVec = addVectors(structuredClone(this.posVec), this.rotatedOffset);
+        this.forward = normalizeVec3(addVectors(getCameraPosition(), this.startVec));
+        this.side = normalizeVec3(crossVec3(this.rotatedOffset, this.forward), 1 / this.width);
+
+        this.cartesian_tl = subtractVectorsCopy(this.endVec, this.side);
+        this.cartesian_tl = addVectorsCopy(this.endVec, this.side);
+        this.cartesian_bl = subtractVectorsCopy(this.startVec, this.side);
+        this.cartesian_br = addVectorsCopy(this.startVec, this.side);
+
+        cartesianToScreenInplace(this.cartesian_tl, this.camera_tl, this.screen_tl);
+        cartesianToScreenInplace(this.cartesian_tr, this.camera_tr, this.screen_tr);
+        cartesianToScreenInplace(this.cartesian_bl, this.camera_bl, this.screen_bl);
+        cartesianToScreenInplace(this.cartesian_br, this.camera_br, this.screen_br);
+
+        screenToRenderScreen(this.screen_tl, this.renderNorm_tl, this.renderScreen_tl, gfc()._xOffset, gfc()._yOffset, gfc()._s);
+        screenToRenderScreen(this.screen_tr, this.renderNorm_tr, this.renderScreen_tr, gfc()._xOffset, gfc()._yOffset, gfc()._s);
+        screenToRenderScreen(this.screen_bl, this.renderNorm_bl, this.renderScreen_bl, gfc()._xOffset, gfc()._yOffset, gfc()._s);
+        screenToRenderScreen(this.screen_br, this.renderNorm_br, this.renderScreen_br, gfc()._xOffset, gfc()._yOffset, gfc()._s);
+    }
+
+    prepareRenderJob() {
+        this.tl = structuredClone(this.renderScreen_tl);
+        this.bl = structuredClone(this.renderScreen_bl);
+        this.br = structuredClone(this.renderScreen_br);
+        this.tr = structuredClone(this.renderScreen_tr);
+
+        this.centerZ = (this.tl[2] + this.bl[2] + this.br[2] + this.tr[2]) / 4;
+
+        if (this.renderJob == null) {
+            this.renderJob = new QuadRenderJob(this.tl, this.bl, this.br, this.tr, this.cachedRgba, this.centerZ)
+        } else {
+            this.renderJob.tl = this.tl;
+            this.renderJob.bl = this.bl;
+            this.renderJob.br = this.br;
+            this.renderJob.tr = this.tr;
+            this.renderJob.color = this.cachedRgba;
+            this.renderJob.z = this.centerZ;
+        }
     }
 
     getSurfaceLightingFactor() {
@@ -194,20 +275,15 @@ class BaseLifeSquare {
         if (this.type == "root")
             return;
 
-        // we are a cylinder
-        // rotated at a certain angle 
-        // based on parameters:
-        // * this.posVec (vec<3>)
-        // * this.rotVec (vec<3>)
 
-        // we have a maximum viewable cross section
-        // for cylinders - the width only reduces with distance,
-        //                 but the height reduces with the angle. 
+        this.setFrameCartesians();
+        this.prepareRenderJob();
+        addRenderJob(this.renderJob, true);
+        return;
 
-        // vaguely replicated from how these are used in growthPlans
+        
         let offsetVec = [0, 1, 0, 0];
         let rotatedOffset = rotatePoint(offsetVec, ...this.rotVec);
-        
         let startVec = this.posVec;
         let endVec = addVectors(structuredClone(this.posVec), rotatedOffset);
 
@@ -216,7 +292,7 @@ class BaseLifeSquare {
         renderVec(startVec, endVec, COLOR_BLACK);
 
         let dv = rotatedOffset;
-        
+
         let forward = normalizeVec3(addVectors(getCameraPosition(), startVec));
         let side = normalizeVec3(crossVec3(dv, forward), 1 / this.width);
 
@@ -224,7 +300,7 @@ class BaseLifeSquare {
         let p2 = cartesianToScreen(...addVectorsCopy(endVec, side));
         let p3 = cartesianToScreen(...subtractVectorsCopy(startVec, side));
         let p4 = cartesianToScreen(...addVectorsCopy(startVec, side));
-        
+
         let pArr = [p1, p2, p4, p3, p1];
 
         if (pArr.some((p) => p == null))
