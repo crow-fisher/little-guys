@@ -143,9 +143,9 @@ function render() {
     if (selectedViewMode != UI_VIEWMODE_3D) 
         executeRenderJobs();
 
-    // renderSolidSquares();
-    // renderOrganisms();
-    // renderWaterSquares();
+    renderSolidSquares();
+    renderOrganisms();
+    renderWaterSquares();
 
     if (selectedViewMode == UI_VIEWMODE_3D) 
         executeRenderJobs();

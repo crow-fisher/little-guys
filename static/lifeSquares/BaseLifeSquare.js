@@ -216,7 +216,7 @@ class BaseLifeSquare {
         renderVec(startVec, endVec, COLOR_BLACK);
 
         let dv = rotatedOffset;
-
+        
         let forward = normalizeVec3(addVectors(getCameraPosition(), startVec));
         let side = normalizeVec3(crossVec3(dv, forward), 1 / this.width);
 
