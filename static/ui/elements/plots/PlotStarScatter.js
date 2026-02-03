@@ -85,11 +85,8 @@ export class PlotStarScatter extends WindowElement {
         if (this.xKey == null || this.yKey == null || getStarHandler().stars.length == 0) {
             return;
         }
-        let opacity = processRangeToOne(loadGD(UI_AA_PLOT_POINTOPACITY) * this.lengthCap);
-        let namedStarOpacityAddition = loadGD(UI_AA_PLOT_SELECT_NAMED_STARS) ? processRangeToOne(loadGD(UI_AA_SETUP_SELECT_MULT)) : 0;
         let star;
         let selectNamedStars = loadGD(UI_AA_PLOT_SELECT_NAMED_STARS);
-
         let filteredStars = new Array();
         getStarHandler().iterateOnSectors(((sector) => sector.loadedStars
                     .filter((selectNamedStars ? star.name != null : false)
@@ -105,60 +102,10 @@ export class PlotStarScatter extends WindowElement {
                 continue;
             }
 
-            if (star == null) {
-                continue;
-            }
-
-            let x = star[this.xKey];
-            let y = star[this.yKey];
-            if (isNaN(x) || isNaN(y) || !isFinite(x) || !isFinite(y)) {
-                continue;
-            }
-            this.xValues[i] = x;
-            this.yValues[i] = y;
-            this.sValues[i] = star;
-            this.rValues[i] = this.colorFromRenderModeStar(star, opacity, namedStarOpacityAddition);
+            this.addStarToValueSet(i, star);
         }
-
-        this.lastNumRenderedPoints = this.lengthCap;
         this.xS = calculateStatistics(this.xValues);
         this.yS = calculateStatistics(this.yValues);
-    }
-
-    reloadGraphDefault() {
-        this.xKey = loadGD(UI_AA_PLOT_XKEY);
-        this.yKey = loadGD(UI_AA_PLOT_YKEY);
-
-        if (this.xKey == null || this.yKey == null) {
-        }
-
-        let idxMult = getStarHandler().stars.length / (this.lengthCap);
-        let star, iO;
-
-        getStarHandler().stars.forEach((star) => star.recalculateAltColor());
-        let namedStars = Array.from(getStarHandler().stars.filter((star) => star.name != null));
-        let nonNamedStars = Array.from(getStarHandler().stars.filter((star) => star.name == null));
-        this.numStars = namedStars.length + nonNamedStars.length;
-        console.log("Reloading graph; ", this.numStars + " stars");
-
-        for (let i = 0; i < this.lengthCap; i++) {
-            star = namedStars.pop(), iO = -1;
-            if (star == null) {
-                while (star == null && iO < 5) {
-                    iO += 1;
-                    star = nonNamedStars.at(Math.floor(i * idxMult) + iO);
-                }
-                if (star == null) {
-                    continue;
-                }
-            }
-            this.addStarToValueSet(i, star, opacity, namedStarOpacityAddition);
-        }
-
-    }
-
-    reloadGraphSelect() {
-
     }
 
     preparePointColor() {
@@ -226,7 +173,7 @@ export class PlotStarScatter extends WindowElement {
         }
     }
 
-    addStarToValueSet(i, star, opacity, namedStarOpacityAddition) {
+    addStarToValueSet(i, star) {
         if (star == null) {
             return false;
         }
@@ -238,7 +185,6 @@ export class PlotStarScatter extends WindowElement {
         this.xValues[i] = x;
         this.yValues[i] = y;
         this.sValues[i] = star;
-        this.rValues[i] = this.colorFromRenderModeStar(star, opacity, namedStarOpacityAddition);
         return true;
     }
 
@@ -258,7 +204,6 @@ export class PlotStarScatter extends WindowElement {
             return;
         }
 
-        let idxMult = 1; // getStarHandler().stars.length / (this.lengthCap);
         let star, iO;
         
         let namedStars = new Array();
@@ -267,8 +212,13 @@ export class PlotStarScatter extends WindowElement {
                     .forEach((star) => ((star.name != null) ? namedStars : nonNamedStars).push(star))));
         this.numStars = namedStars.length + nonNamedStars.length;
         console.log("Reloading graph; ", this.numStars + " stars");
+        let idxMult = this.numStars / this.lengthCap;
 
         for (let i = 0; i < this.lengthCap; i++) {
+            this.xValues[i] = null;
+            this.yValues[i] = null;
+            this.sValues[i] = null;
+
             star = namedStars.pop(), iO = -1;
             if (star == null) {
                 while (star == null && iO < 5) {
@@ -279,21 +229,8 @@ export class PlotStarScatter extends WindowElement {
                     continue;
                 }
             }
-
-            if (filterModeGraph == 1 && !star._renderedThisFrame) {
-                continue;
-            }
-
-            let x = star[this.xKey];
-            let y = star[this.yKey];
-            if (isNaN(x) || isNaN(y) || !isFinite(x) || !isFinite(y)) {
-                continue;
-            }
-            this.xValues[i] = x;
-            this.yValues[i] = y;
-            this.sValues[i] = star;
+            this.addStarToValueSet(i, star);
         }
-
         this.lastNumRenderedPoints = this.lengthCap;
         this.xS = calculateStatistics(this.xValues);
         this.yS = calculateStatistics(this.yValues);
