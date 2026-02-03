@@ -120,6 +120,7 @@ export class Star {
 
     render() {
         this._renderedThisFrame = true;
+
         if (this.renderJob == null) {
             this.renderJob = new PointLabelRenderJob(
                 this._renderScreen[0],
@@ -138,8 +139,6 @@ export class Star {
             this.renderJob.label = this.starLabel;
         }
 
-        // if (this._screen[2] < 0) {
         addRenderJob(this.renderJob, false);
-        // }
     }
 }

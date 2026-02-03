@@ -200,9 +200,13 @@ export class StarSector {
     }
 
     renderBucket(bucket, luminenceParams) {
+        let ch = getCanvasHeight(), cw = getCanvasWidth();
         bucket.forEach((star) => {
-            if (star._renderScreen[2] < 0 && (star.lumens * star._relCameraDistBrightnessMult > luminenceParams[0]))
-                star.render();
+            if (star._renderScreen[2] < 0 && (star.lumens * star._relCameraDistBrightnessMult > luminenceParams[0])) {
+                if (star._renderScreen[0] > 0 && star._renderScreen[0] < cw && star._renderScreen[1] > 0 && star._renderScreen[1] < ch) {
+                    star.render();
+                }
+            }
         });
     }
 
