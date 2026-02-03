@@ -125,8 +125,9 @@ class BaseLifeSquare {
 
         this.offsetVec = [0, 1, 0, 0];
         this.rotatedOffset = rotatePoint(this.offsetVec, ...this.rotVec);
-        this.startVec = this.posVec;
-        this.endVec = addVectors(structuredClone(this.posVec), this.rotatedOffset);
+        this.startVec = subtractVectorsCopy(this.posVec, gfc().UI_CAMERA_OFFSET_VEC);
+
+        this.endVec = addVectorsCopy(this.startVec, this.rotatedOffset);
         this.forward = normalizeVec3(addVectors(getCameraPosition(), this.startVec));
         this.side = normalizeVec3(crossVec3(this.rotatedOffset, this.forward), 1 / this.width);
 
