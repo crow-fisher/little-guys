@@ -26,6 +26,7 @@ export class PlotStarScatter extends WindowElement {
 
         this.valueRange = [0, 1, 0, 1];
         this.preparePointFlag = true;
+        this.reloadGraphFlag = false;
     }
 
     resetCameraPosition() {
@@ -53,6 +54,7 @@ export class PlotStarScatter extends WindowElement {
         this.yKey = null;
     }
 
+
     render(startX, startY) {
         if (getStarHandler()?.sectors == null) {
             return;
@@ -64,9 +66,6 @@ export class PlotStarScatter extends WindowElement {
             }
         }
         if (this.xKey != loadGD(UI_AA_PLOT_XKEY) || this.yKey != loadGD(UI_AA_PLOT_YKEY)) {
-            this.reloadGraph();
-        }
-        if (loadGD(UI_AA_SELECT_FILTERMODE_GRAPH) != 2 && this._modeWasSelect) {
             this.reloadGraph();
         }
 
@@ -83,7 +82,6 @@ export class PlotStarScatter extends WindowElement {
     }
 
     reloadGraphSelect() {
-        console.log("reloadGraphSelect");
         if (this.xKey == null || this.yKey == null || getStarHandler().stars.length == 0) {
             return;
         }
@@ -164,7 +162,7 @@ export class PlotStarScatter extends WindowElement {
     }
 
     preparePointColor() {
-        let opacity = processRangeToOne(loadGD(UI_AA_PLOT_POINTOPACITY) * this.lengthCap);
+        let opacity = processRangeToOne(loadGD(UI_AA_PLOT_POINTOPACITY) * this.numRenderedPoints);
         let namedStarOpacityAddition = processRangeToOne(loadGD(UI_AA_SETUP_SELECT_MULT));
         for (let i = 0; i < this.lengthCap; i++) {
             if (this.sValues[i] != null) {
@@ -185,7 +183,7 @@ export class PlotStarScatter extends WindowElement {
         ];
         let x, y, xo, yo, star;
 
-        let numRenderedPoints = 0;
+        this.numRenderedPoints = 0;
 
         for (let i = 0; i < this.numStars; i++) {
             if (this.sValues[i] == null) {
@@ -220,10 +218,10 @@ export class PlotStarScatter extends WindowElement {
             star.graphX = xo;
             star.graphY = yo;
 
-            numRenderedPoints++;
+            this.numRenderedPoints++;
         }
 
-        if ((numRenderedPoints / this.lastNumRenderedPoints < 0.95 || this.lastNumRenderedPoints / numRenderedPoints < 0.95)) {
+        if ((this.numRenderedPoints / this.lastNumRenderedPoints < 0.95 || this.lastNumRenderedPoints / this.numRenderedPoints < 0.95)) {
             this._shouldRecalculateColor = true;
         }
     }
@@ -261,11 +259,8 @@ export class PlotStarScatter extends WindowElement {
         }
 
         let idxMult = 1; // getStarHandler().stars.length / (this.lengthCap);
-        let opacity = processRangeToOne(loadGD(UI_AA_PLOT_POINTOPACITY) * this.lengthCap);
-        let selectedStarOpacityMult =  1 ; // Math.exp(loadGD(UI_AA_SETUP_SELECT_MULT));
         let star, iO;
-
-        let nameSelect = loadGD(UI_AA_PLOT_SELECT_NAMED_STARS)
+        
         let namedStars = new Array();
         let nonNamedStars = new Array();
         getStarHandler().iterateOnSectors(((sector) => sector.loadedStars
@@ -297,9 +292,6 @@ export class PlotStarScatter extends WindowElement {
             this.xValues[i] = x;
             this.yValues[i] = y;
             this.sValues[i] = star;
-            this.rValues[i] = this.colorFromRenderModeStar(star, opacity, selectedStarOpacityMult, nameSelect);
-
-            star.recalculateAltColor()
         }
 
         this.lastNumRenderedPoints = this.lengthCap;
@@ -328,12 +320,20 @@ export class PlotStarScatter extends WindowElement {
 
     renderGraph(startX, startY) {
         this.prepareGraphPoints();
-        let frameStarsRendered = 0;
         let size = Math.exp(loadGD(UI_AA_PLOT_POINTSIZE)), sizeCur = size;
         let star;
+        let filterMode = loadGD(UI_AA_SELECT_FILTERMODE_GRAPH);
+        
         for (let i = 0; i < this.lengthCap; i++) {
             star = this.sValues[i];
             if (star == null || !star.graphVisible) {
+                continue;
+            }
+
+            if (filterMode == 1 && !star._renderedThisFrame) {
+                continue;
+            }
+            if (filterMode == 2 && !(star.selected || star.localitySelect)) {
                 continue;
             }
 
