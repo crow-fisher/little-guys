@@ -97,7 +97,7 @@ export function AstronomyAtlasModeFuncPlot(_this, container, sizeX, sizeY) {
     ]
 
     let displayGraphAxisChoies = [[
-        ["_relLumensLog", "rel lumens"],
+        ["_relLumensRange", "lumens range"],
         ["_size", "size"]]];
 
     let renderGraphAxisChoies = [[

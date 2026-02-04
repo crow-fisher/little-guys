@@ -6,6 +6,7 @@ import { getAstronomyAtlasComponent } from "../../../WindowManager.js";
 
 export function resetStarStyle() {
     getStarHandler().iterateOnSectors((sector) => sector._recalculateStarColorFlag = true);
+    getStarHandler().resetStarLabels();
 }
 
 function resetGraphStyle() {

@@ -2,12 +2,14 @@ import { getBaseUISize } from "../../../../canvas.js";
 import { getActiveClimate } from "../../../../climate/climateManager.js";
 import { COLOR_BLACK, COLOR_WHITE } from "../../../../colors.js";
 import { Container } from "../../../Container.js";
+import { Button } from "../../../elements/Button.js";
 import { RadioToggleLabel } from "../../../elements/RadioToggleLabel.js";
 import { SliderGradientBackground } from "../../../elements/SliderGradientBackground.js";
 import { StarSpecializedValuePicker } from "../../../elements/StarSpecializedValuePicker.js";
 import { Text } from "../../../elements/Text.js";
 import { Toggle } from "../../../elements/Toggle.js";
-import { UI_CENTER, UI_AA_SELECT_FILTERMODE_GRAPH, UI_AA_SELECT_FILTERMODE_STARS, UI_AA_PLOT_LOCALITY_SELECTMODE, UI_AA_PLOT_SELECT_NAMED_STARS, UI_AA_PLOT_SELECTRADIUS, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_SH_MINSIZE } from "../../../UIData.js";
+import { UI_CENTER, UI_AA_SELECT_FILTERMODE_GRAPH, UI_AA_SELECT_FILTERMODE_STARS, UI_AA_PLOT_LOCALITY_SELECTMODE, UI_AA_PLOT_SELECT_NAMED_STARS, UI_AA_PLOT_SELECTRADIUS, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_SH_MINSIZE, UI_AA_SELECT_FILTERMODE_GRAPH_PREPARED } from "../../../UIData.js";
+import { getAstronomyAtlasComponent } from "../../../WindowManager.js";
 import { resetStarStyle } from "./AstronomyAtlasUIFunctionMaps.js";
 
 export function AstronomyAtlasModeFuncSelect(window, container, sizeX, sizeY) {
@@ -32,4 +34,9 @@ export function AstronomyAtlasModeFuncSelect(window, container, sizeX, sizeY) {
     container.addElement(new Text(window, sizeX, getBaseUISize() * 3, UI_CENTER, "locality select range"));
     container.addElement(new SliderGradientBackground(window, UI_AA_PLOT_SELECTRADIUS, sizeX, getBaseUISize() * 3, 0, 20, () => COLOR_WHITE, () => COLOR_BLACK, false, resetStarStyle));
     container.addElement(new Toggle(window, sizeX, getBaseUISize() * 3, UI_CENTER, UI_AA_PLOT_SELECT_NAMED_STARS, "select all named stars", () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
+    container.addElement(new Button(window, sizeX, getBaseUISize() * 3, UI_CENTER, 
+        () => getAstronomyAtlasComponent().plotStarScatter.sValues.filter((star) => star != null && star.graphVisible).forEach((star) => star.selected = !star.selected), 
+        "select all graphed stars", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
+    container.addElement(new Toggle(window, sizeX, getBaseUISize() * 3, UI_CENTER, UI_AA_SELECT_FILTERMODE_GRAPH_PREPARED, "only show prepared stars", () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
+
 }

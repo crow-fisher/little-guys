@@ -3,11 +3,12 @@ import { getBaseUISize, getCanvasHeight, getCanvasWidth } from "../../../canvas.
 import { COLOR_BLUE, COLOR_GREEN, COLOR_OTHER_BLUE, COLOR_RED, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../colors.js";
 import { calculateStatistics, invlerp, lerp, processRangeToOne, rgbToRgba } from "../../../common.js";
 import { addRenderJob } from "../../../rendering/rasterizer.js";
-import { loadGD, UI_CAMERA_OFFSET_VEC, UI_SH_MINSIZE, UI_SH_DISTPOWERMULT, UI_SH_MAXLUMINENCE, UI_SH_MINLUMINENCE, UI_SH_STYLE_BRIGHTNESS_FACTOR, UI_SH_STYLE_BRIGHTNESS_SHIFT, UI_SH_STYLE_SIZE_FACTOR, UI_SH_STYLE_SIZE_SHIFT, UI_AA_PLOT_SELECTRADIUS, UI_AA_PLOT_LOCALITY_SELECTMODE, UI_AA_PLOT_ACTIVE } from "../../../ui/UIData.js";
+import { loadGD, UI_CAMERA_OFFSET_VEC, UI_SH_MINSIZE, UI_SH_DISTPOWERMULT, UI_SH_MAXLUMINENCE, UI_SH_MINLUMINENCE, UI_SH_STYLE_BRIGHTNESS_FACTOR, UI_SH_STYLE_BRIGHTNESS_SHIFT, UI_SH_STYLE_SIZE_FACTOR, UI_SH_STYLE_SIZE_SHIFT, UI_AA_PLOT_SELECTRADIUS, UI_AA_PLOT_LOCALITY_SELECTMODE, UI_AA_PLOT_ACTIVE, UI_AA_LABEL_GRAPH, UI_AA_LABEL_STARS } from "../../../ui/UIData.js";
 import { getAstronomyAtlasComponent } from "../../../ui/WindowManager.js";
 import { addVec3Dest, getVec3Length } from "../matrix.js";
 import { LineRenderJob } from "../../../rendering/model/LineRenderJob.js";
 import { PointLabelRenderJob } from "../../../rendering/model/PointLabelRenderJob.js";
+import { getStarHandler } from "../../../main.js";
 
 const Z_VISIBLE = 0b10;
 const FOV_VISIBLE = 0b01;
@@ -40,7 +41,7 @@ export class StarSector {
 
     getSizeParams() {
         return [
-            Math.exp(loadGD(UI_SH_STYLE_SIZE_SHIFT)),
+            processRangeToOne(loadGD(UI_SH_STYLE_SIZE_SHIFT)),
             processRangeToOne(loadGD(UI_SH_STYLE_SIZE_FACTOR)),
             processRangeToOne(loadGD(UI_SH_MINSIZE)),
             getBaseUISize() * processRangeToOne(loadGD(UI_SH_MINSIZE))
@@ -49,7 +50,7 @@ export class StarSector {
 
     getBrightnessParams() {
         return [
-            Math.exp(loadGD(UI_SH_STYLE_BRIGHTNESS_FACTOR)),
+            processRangeToOne(loadGD(UI_SH_STYLE_BRIGHTNESS_FACTOR)),
             processRangeToOne(loadGD(UI_SH_STYLE_BRIGHTNESS_SHIFT))
         ];
     }
@@ -142,11 +143,12 @@ export class StarSector {
     }
 
     processStarSize(star, sizeParams) {
-        return lerp(sizeParams[2], sizeParams[3], sizeParams[0] + star._relLumensRange ** sizeParams[1])
+        star._sizeRange = sizeParams[0] + (1 - sizeParams[0]) * star._relLumensRange ** sizeParams[1];
+        return lerp(sizeParams[2], sizeParams[3], star._sizeRange);
     }
 
-    processStarColor(star, brightnessParams, luminenceParams) {
-        star._opacity = brightnessParams[0] + star._relLumensRange ** brightnessParams[1];
+    processStarColor(star, brightnessParams) {
+        star._opacity = star._relLumensRange ** brightnessParams[1];
         return rgbToRgba(...star.color, star._opacity);
     }
 
@@ -197,7 +199,7 @@ export class StarSector {
 
             star._relLumens = star.lumens * star._relCameraDistBrightnessMult;
             star._relLumensLog = Math.log(star._relLumens);
-            star._relLumensRange = Math.max(0, Math.min(1, invlerp(luminenceParams[0], luminenceParams[1], star._relLumens)));
+            star._relLumensRange = Math.min(1, invlerp(luminenceParams[0], luminenceParams[1], star._relLumens));
 
             star._size = this.processStarSize(star, sizeParams);
             star.renderColor = this.processStarColor(star, brightnessParams);
@@ -209,7 +211,7 @@ export class StarSector {
     renderBucket(bucket, luminenceParams) {
         let ch = getCanvasHeight(), cw = getCanvasWidth();
         bucket.forEach((star) => {
-            if (star._renderScreen[2] < 0 && (star.lumens * star._relCameraDistBrightnessMult > luminenceParams[0])) {
+            if (star._renderScreen[2] < 0 && star._relLumensRange > 0) {
                 if (star._renderScreen[0] > 0 && star._renderScreen[0] < cw && star._renderScreen[1] > 0 && star._renderScreen[1] < ch) {
                     star.render();
                 }

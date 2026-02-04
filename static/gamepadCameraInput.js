@@ -35,7 +35,7 @@ export function gamepadCameraInput() {
     saveGD(UI_CAMERA_OFFSET_VEC_DT, ct)
 
     let crd = loadGD(UI_CAMERA_ROTATION_VEC_DT);
-    offset = .003 * (getFrameDt() / 10);
+    offset = loadGD(UI_CAMERA_FOV) * .00003 * (getFrameDt() / 10);
     crd[0] += offset * rs[0];
     crd[1] += offset * rs[1];
     saveGD(UI_CAMERA_ROTATION_VEC_DT, crd)

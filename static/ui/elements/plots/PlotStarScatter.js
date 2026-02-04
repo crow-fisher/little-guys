@@ -6,7 +6,7 @@ import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "../../../keyboard.js";
 import { getStarHandler } from "../../../main.js";
 import { getLastLastMoveOffset, getLastMouseDownStart, getLastMouseUpEvent, getLastMoveOffset, isLeftMouseClicked } from "../../../mouse.js";
 import { resetViewportButtonOffset } from "../../components/AstronomyAtlas/modes/AstronomyAtlasModeFuncPlot.js";
-import { loadGD, saveGD, UI_AA_PLOT_AXISLABELS, UI_AA_PLOT_MAXPOINTS, UI_AA_PLOT_OFFSET_X, UI_AA_PLOT_OFFSET_Y, UI_AA_PLOT_POINTOPACITY, UI_AA_PLOT_POINTSIZE, UI_AA_SELECT_FILTERMODE_STARS, UI_AA_PLOT_XKEY, UI_AA_PLOT_XPADDING, UI_AA_PLOT_YKEY, UI_AA_PLOT_YPADDING, UI_AA_PLOT_ZOOM_X, UI_AA_PLOT_ZOOM_Y, UI_AA_LABEL_STARS, UI_AA_SELECT_FILTERMODE_GRAPH, UI_AA_LABEL_GRAPH, UI_STARMAP_VIEWMODE, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_DISPLAYTYPE_NAME_MULT, UI_AA_SETUP_SELECT_MULT, UI_AA_PLOT_SELECT_NAMED_STARS } from "../../UIData.js";
+import { loadGD, saveGD, UI_AA_PLOT_AXISLABELS, UI_AA_PLOT_MAXPOINTS, UI_AA_PLOT_OFFSET_X, UI_AA_PLOT_OFFSET_Y, UI_AA_PLOT_POINTOPACITY, UI_AA_PLOT_POINTSIZE, UI_AA_SELECT_FILTERMODE_STARS, UI_AA_PLOT_XKEY, UI_AA_PLOT_XPADDING, UI_AA_PLOT_YKEY, UI_AA_PLOT_YPADDING, UI_AA_PLOT_ZOOM_X, UI_AA_PLOT_ZOOM_Y, UI_AA_LABEL_STARS, UI_AA_SELECT_FILTERMODE_GRAPH, UI_AA_LABEL_GRAPH, UI_STARMAP_VIEWMODE, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_DISPLAYTYPE_NAME_MULT, UI_AA_SETUP_SELECT_MULT, UI_AA_PLOT_SELECT_NAMED_STARS, UI_AA_SELECT_FILTERMODE_GRAPH_PREPARED } from "../../UIData.js";
 import { WindowElement } from "../../Window.js";
 
 export class PlotStarScatter extends WindowElement {
@@ -177,6 +177,10 @@ export class PlotStarScatter extends WindowElement {
         if ((this.numRenderedPoints / this.lastNumRenderedPoints < 0.95 || this.lastNumRenderedPoints / this.numRenderedPoints < 0.95)) {
             this.recalculateColorFlag = true;
         }
+
+        if (loadGD(UI_AA_LABEL_GRAPH)) {
+            getStarHandler().resetStarLabels();
+        }
     }
 
     addStarToValueSet(i, star) {
@@ -266,12 +270,13 @@ export class PlotStarScatter extends WindowElement {
         let size = Math.exp(loadGD(UI_AA_PLOT_POINTSIZE)), sizeCur = size;
         let star;
         let filterMode = loadGD(UI_AA_SELECT_FILTERMODE_GRAPH);
-        
+        let preparedFilter = loadGD(UI_AA_SELECT_FILTERMODE_GRAPH_PREPARED);
         for (let i = 0; i < this.lengthCap; i++) {
             star = this.sValues[i];
             if (star == null || !star.graphVisible) {
                 continue;
             }
+
 
             if (filterMode == 1 && !star._renderedThisFrame) {
                 continue;
@@ -286,7 +291,7 @@ export class PlotStarScatter extends WindowElement {
                 sizeCur = size;
             }
 
-            if (true) {
+            if (preparedFilter) {
                 if (!star._preparedThisFrame) {
                     continue;
                 }
@@ -296,6 +301,10 @@ export class PlotStarScatter extends WindowElement {
             MAIN_CONTEXT.beginPath();
             MAIN_CONTEXT.arc(startX + star.graphX, startY + star.graphY, sizeCur, 0, 2 * Math.PI, false);
             MAIN_CONTEXT.fill();
+
+            if (star.graphX == null) {
+                console.log(star.id);
+            }
 
             if (star.graphLabel) {
                 MAIN_CONTEXT.font = getBaseUISize() * 3 + "px courier";
