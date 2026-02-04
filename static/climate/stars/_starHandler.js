@@ -54,20 +54,6 @@ export class StarHandler {
         this.valueWatchTick();
     }
 
-    resetStarLabels() {
-        let graphLabelType = loadGD(UI_AA_LABEL_GRAPH);
-        let starLabelType = loadGD(UI_AA_LABEL_STARS);
-        let selectNamedStars = loadGD(UI_AA_PLOT_SELECT_NAMED_STARS);
-
-        let aX = loadGD(UI_AA_PLOT_XKEY);
-        let aY = loadGD(UI_AA_PLOT_YKEY);
-        let aC = loadGD(UI_AA_SETUP_COLORMODE);
-
-        this.stars.forEach((star) => {
-            star.starLabel = star.getLabelForType(starLabelType, selectNamedStars, aX, aY, aC);
-            star.graphLabel = star.getLabelForType(graphLabelType, selectNamedStars, aX, aY, aC);
-        });
-    }
 
     valueWatchTick() {
         this.watchedValues = {

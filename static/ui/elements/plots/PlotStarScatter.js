@@ -26,7 +26,11 @@ export class PlotStarScatter extends WindowElement {
 
         this.valueRange = [0, 1, 0, 1];
         this.preparePointFlag = true;
+        this.recalculateColorFlag = false;
         this.reloadGraphFlag = false;
+
+        this.paddingX = 0;
+        this.paddingY = 0;
     }
 
     resetCameraPosition() {
@@ -40,8 +44,9 @@ export class PlotStarScatter extends WindowElement {
         this.flagRepreparePoints();
     }
 
-    flagRepreparePoints() {
+    flagRepreparePoints(color) {
         this.preparePointFlag = true;
+        this.recalculateColorFlag |= color;
     }
 
     update() {
@@ -73,9 +78,9 @@ export class PlotStarScatter extends WindowElement {
             this.preparePointFlag = false;
             this.prepareGraphPoints();
         }
-        if (this._shouldRecalculateColor) {
+        if (this.recalculateColorFlag) {
             this.preparePointColor();
-            this._shouldRecalculateColor = false;
+            this.recalculateColorFlag = false;
         }
 
         this.renderGraph(startX, startY);
@@ -137,8 +142,9 @@ export class PlotStarScatter extends WindowElement {
                 continue;
             }
             star = this.sValues[i];
-            x = invlerp(...this.xBounds, this.xValues[i]);
-            y = invlerp(...this.yBounds, this.yValues[i]);
+            x = invlerp(...this.xBounds, star[this.xKey]);
+            y = invlerp(...this.yBounds, star[this.yKey]);
+
             if (x < this.valueRange[0] || x > this.valueRange[1] || y < this.valueRange[2] || y > this.valueRange[3]) {
                 star.graphVisible = false;
                 continue;
@@ -169,7 +175,7 @@ export class PlotStarScatter extends WindowElement {
         }
 
         if ((this.numRenderedPoints / this.lastNumRenderedPoints < 0.95 || this.lastNumRenderedPoints / this.numRenderedPoints < 0.95)) {
-            this._shouldRecalculateColor = true;
+            this.recalculateColorFlag = true;
         }
     }
 
@@ -280,16 +286,24 @@ export class PlotStarScatter extends WindowElement {
                 sizeCur = size;
             }
 
+            if (true) {
+                if (!star._preparedThisFrame) {
+                    continue;
+                }
+            }
+
             MAIN_CONTEXT.fillStyle = this.rValues[i];
             MAIN_CONTEXT.beginPath();
             MAIN_CONTEXT.arc(startX + star.graphX, startY + star.graphY, sizeCur, 0, 2 * Math.PI, false);
             MAIN_CONTEXT.fill();
 
-            // if (star.graphLabel) {
-            //     MAIN_CONTEXT.font = getBaseUISize() * 3 + "px courier";
-            //     MAIN_CONTEXT.fillStyle = hexToRgb(...(star.alt_color_arr ?? star.color));
-            //     MAIN_CONTEXT.fillText(star.graphLabel, xa + MAIN_CONTEXT.measureText(star.graphLabel).width * 0.65, ya);
-            // }
+            if (star.graphLabel) {
+                MAIN_CONTEXT.font = getBaseUISize() * 3 + "px courier";
+                MAIN_CONTEXT.fillStyle = hexToRgb(...(star.alt_color_arr ?? star.color));
+                MAIN_CONTEXT.fillText(
+                    star.graphLabel,
+                    startX + star.graphX + MAIN_CONTEXT.measureText(star.graphLabel).width * 0.65, startY + star.graphY);
+            }
 
         }
     }
@@ -299,7 +313,7 @@ export class PlotStarScatter extends WindowElement {
     }
 
     triggerRecalculateColor() {
-        this._shouldRecalculateColor = true;
+        this.recalculateColorFlag = true;
     }
 
     renderGridLines() {
@@ -322,9 +336,9 @@ export class PlotStarScatter extends WindowElement {
         posY -= this.paddingY;
 
         let closestStar = null;
-        let closestStarDist = 25;
+        let closestStarDist = 100;
         let curDist;
-        for (let i = 0; i < this.numStars; i++) {
+        for (let i = 0; i < this.lengthCap; i++) {
             if (this.sValues[i] != null && this.sValues[i].graphVisible) {
                 curDist = ((this.sValues[i].graphX - posX) ** 2 + (this.sValues[i].graphY - posY) ** 2) ** 0.5;
                 if (curDist < closestStarDist) {
@@ -336,6 +350,7 @@ export class PlotStarScatter extends WindowElement {
 
         if (closestStar != null) {
             closestStar.selected = !closestStar.selected;
+            getStarHandler().resetStarLabels();
             this.clickCounter += 1;
         }
     }

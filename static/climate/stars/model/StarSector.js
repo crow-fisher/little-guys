@@ -103,7 +103,10 @@ export class StarSector {
 
     renderPrepare() {
         if (loadGD(UI_AA_PLOT_ACTIVE)) {
-            this.loadedStars.forEach((star) => star._renderedThisFrame = false);
+            this.loadedStars.forEach((star) => {
+                star._renderedThisFrame = false;
+                star._preparedThisFrame = false;
+            });
         }
 
         this._curCameraPosition = loadGD(UI_CAMERA_OFFSET_VEC);
@@ -143,7 +146,8 @@ export class StarSector {
     }
 
     processStarColor(star, brightnessParams, luminenceParams) {
-        return rgbToRgba(...star.color, brightnessParams[0] + star._relLumensRange ** brightnessParams[1]);
+        star._opacity = brightnessParams[0] + star._relLumensRange ** brightnessParams[1];
+        return rgbToRgba(...star.color, star._opacity);
     }
 
     renderStars(luminenceParams, sizeParams, brightnessParams, localitySelectParams) {
@@ -152,6 +156,7 @@ export class StarSector {
         let recalculatingColor = (this._recalculateStarColorFlag);
         if (recalculatingColor) {
             this._recalculateStarColorFlag = false;
+            getAstronomyAtlasComponent().plotStarScatter.flagRepreparePoints();
         }
 
         for (let i = 0; i < this.buckets.length; i++) {
@@ -180,6 +185,7 @@ export class StarSector {
             cartesianToCamera(star._offset, star._camera);
             cameraToScreen(star._camera, star._screen);
             screenToRenderScreen(star._screen, star._renderNorm, star._renderScreen, this._xOffset, this._yOffset, this._s);
+            star._preparedThisFrame = true;
         });
     }
 
@@ -190,6 +196,7 @@ export class StarSector {
             star._relCameraDistBrightnessMult = 1 / (star._relCameraDist ** luminenceParams[2]);
 
             star._relLumens = star.lumens * star._relCameraDistBrightnessMult;
+            star._relLumensLog = Math.log(star._relLumens);
             star._relLumensRange = Math.max(0, Math.min(1, invlerp(luminenceParams[0], luminenceParams[1], star._relLumens)));
 
             star._size = this.processStarSize(star, sizeParams);

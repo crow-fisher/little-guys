@@ -97,8 +97,13 @@ export function AstronomyAtlasModeFuncPlot(_this, container, sizeX, sizeY) {
     ]
 
     let displayGraphAxisChoies = [[
-        ["_relLumensRange", "rel lumens"],
+        ["_relLumensLog", "rel lumens"],
         ["_size", "size"]]];
+
+    let renderGraphAxisChoies = [[
+        ["_size", "size"],
+        ["_opacity", "opacity"]]];
+
 
     let f = (cpl) => {
         for (let i = 0; i < cpl.length; i++) {
@@ -125,8 +130,11 @@ export function AstronomyAtlasModeFuncPlot(_this, container, sizeX, sizeY) {
     configureParamsConditionalContainer.addElement(new Text(_this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "composition"))
     f(compGraphAxisChoices);
     addSpacing();
-    configureParamsConditionalContainer.addElement(new Text(_this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "display"))
+    configureParamsConditionalContainer.addElement(new Text(_this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "luminence"))
     f(displayGraphAxisChoies);
+    addSpacing();
+    configureParamsConditionalContainer.addElement(new Text(_this.window, sizeX, getBaseUISize() * 3, UI_CENTER, "rendering"))
+    f(renderGraphAxisChoies);
 }
 
 
