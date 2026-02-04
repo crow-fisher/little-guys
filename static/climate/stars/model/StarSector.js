@@ -204,6 +204,10 @@ export class StarSector {
             star._relCameraDistBrightnessMult = 1 / (star._relCameraDist ** luminenceParams[2]);
 
             star._relLumens = star.lumens * star._relCameraDistBrightnessMult;
+
+            if (star._relCameraDistBrightnessMult < this._relCameraDistBrightnessMult) {
+                console.log("??");
+            }
             star._relLumensLog = Math.log(star._relLumens);
             star._relLumensRange = Math.min(1, invlerp(luminenceParams[0], luminenceParams[1], star._relLumens));
 
