@@ -1,5 +1,5 @@
 import { getBaseUISize, getSingletonMouseWheelState } from "../../../canvas.js";
-import { COLOR_WHITE } from "../../../colors.js";
+import { COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../colors.js";
 import { calculateStatistics, hexToRgb, invlerp, processRangeToOne, rgbToRgba, rgbToRgbaObj } from "../../../common.js";
 import { MAIN_CONTEXT } from "../../../index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "../../../keyboard.js";
@@ -94,9 +94,9 @@ export class PlotStarScatter extends WindowElement {
         let selectNamedStars = loadGD(UI_AA_PLOT_SELECT_NAMED_STARS);
         let filteredStars = new Array();
         getStarHandler().iterateOnSectors(((sector) => sector.loadedStars
-                    .filter((selectNamedStars ? star.name != null : false)
-            || star.selected
-            || star.localitySelect).forEach((star) => filteredStars.push(star))));
+            .filter((selectNamedStars ? star.name != null : false)
+                || star.selected
+                || star.localitySelect).forEach((star) => filteredStars.push(star))));
 
         let filteredStarsIdx = 0;
         for (let i = 0; i < this.lengthCap; i++) {
@@ -215,11 +215,11 @@ export class PlotStarScatter extends WindowElement {
         }
 
         let star, iO;
-        
+
         let namedStars = new Array();
         let nonNamedStars = new Array();
         getStarHandler().iterateOnSectors(((sector) => sector.loadedStars
-                    .forEach((star) => ((star.name != null) ? namedStars : nonNamedStars).push(star))));
+            .forEach((star) => ((star.name != null) ? namedStars : nonNamedStars).push(star))));
         this.numStars = namedStars.length + nonNamedStars.length;
         console.log("Reloading graph; ", this.numStars + " stars");
         let idxMult = this.numStars / this.lengthCap;
@@ -313,8 +313,8 @@ export class PlotStarScatter extends WindowElement {
                     star.graphLabel,
                     startX + star.graphX + MAIN_CONTEXT.measureText(star.graphLabel).width * 0.65, startY + star.graphY);
             }
-
         }
+
     }
 
     _renderGraph(startX, startY) {
@@ -345,19 +345,26 @@ export class PlotStarScatter extends WindowElement {
         posY -= this.paddingY;
 
         let closestStar = null;
-        let closestStarDist = 100;
+        let closestStarDist = 10;
         let curDist;
+
+        let preparedFilter = loadGD(UI_AA_SELECT_FILTERMODE_GRAPH_PREPARED);
+        let star;
         for (let i = 0; i < this.lengthCap; i++) {
-            if (this.sValues[i] != null && this.sValues[i].graphVisible) {
-                curDist = ((this.sValues[i].graphX - posX) ** 2 + (this.sValues[i].graphY - posY) ** 2) ** 0.5;
-                if (curDist < closestStarDist) {
-                    closestStar = this.sValues[i];
-                    closestStarDist = curDist;
+            star = this.sValues[i];
+            if (star != null && star.graphVisible) {
+                if (!preparedFilter || star._preparedThisFrame) {
+                    curDist = ((star.graphX - posX) ** 2 + (star.graphY - posY) ** 2) ** 0.5;
+                    if (curDist < closestStarDist) {
+                        closestStar = star;
+                        closestStarDist = curDist;
+                    }
                 }
             }
         }
 
         if (closestStar != null) {
+            console.log("Selecting star ", closestStar.id, " ", closestStar.selected, ", with distance ", closestStarDist);
             closestStar.selected = !closestStar.selected;
             getStarHandler().resetStarLabels();
             this.clickCounter += 1;
@@ -388,7 +395,7 @@ export class PlotStarScatter extends WindowElement {
             if (Math.abs(dx * dy) > 4) {
                 this.clickCounter = 0;
             } else {
-                if (Date.now() - getLastMouseUpEvent() > 100) {
+                if (Date.now() - getLastMouseUpEvent() > 250) {
                     this.clickCounter = 0;
                 }
             }
