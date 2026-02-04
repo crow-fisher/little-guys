@@ -100,9 +100,16 @@ export function AstronomyAtlasModeFuncPlot(_this, container, sizeX, sizeY) {
         ["_relLumensRange", "lumens range"],
         ["_size", "size"]]];
 
-    let renderGraphAxisChoies = [[
-        ["_size", "size"],
-        ["_opacity", "opacity"]]];
+    let renderGraphAxisChoies = [
+        [
+            ["_size", "size"],
+            ["_opacity", "opacity"]
+        ],
+        [
+            ["bucket", "bucket"],
+            ["_opacity", "opacity"]
+        ],
+    ];
 
 
     let f = (cpl) => {

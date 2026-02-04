@@ -102,11 +102,6 @@ export class StarSector {
         this._cameraDistRefPoint[0] = Math.min(Math.max(this.cartesianBounds[0], -this._curCameraPosition[0]), this.cartesianBounds[3]);
         this._cameraDistRefPoint[1] = Math.min(Math.max(this.cartesianBounds[1], -this._curCameraPosition[1]), this.cartesianBounds[4]);
         this._cameraDistRefPoint[2] = Math.min(Math.max(this.cartesianBounds[2], -this._curCameraPosition[2]), this.cartesianBounds[5]);
-
-        // this ^ gives you the nearest point...but we actually want the *furthest* point in the sector. teehee!!! 
-        this._cameraDistRefPoint[0] = this.cartesianBounds[0] + (this.cartesianBounds[3] - this._cameraDistRefPoint[0]);
-        this._cameraDistRefPoint[1] = this.cartesianBounds[1] + (this.cartesianBounds[4] - this._cameraDistRefPoint[1]);
-        this._cameraDistRefPoint[2] = this.cartesianBounds[2] + (this.cartesianBounds[5] - this._cameraDistRefPoint[2]);
     }
 
     renderPrepare() {
@@ -132,6 +127,7 @@ export class StarSector {
         cameraToScreen(this._camera, this._screen);
         screenToRenderScreen(this._screen, this._renderNorm, this._renderScreen, this._xOffset, this._yOffset, this._s);
 
+        this._rootCameraDist = getVec3Length(this._cameraDistRefPoint);
         this._curCameraDist = getVec3Length(this._cameraOffset);
         this._relCameraDist = (this._curCameraDist / this._rootCameraDist);
         this._relCameraDistBrightnessMult = 1 / (this._relCameraDist ** loadGD(UI_SH_DISTPOWERMULT));
@@ -174,7 +170,7 @@ export class StarSector {
 
         for (let i = 0; i < this.buckets.length; i++) {
             bucketLumens = this.bucketLumensCutoffs.at(i) * this._relCameraDistBrightnessMult;
-            if (true || bucketLumens >= luminenceParams[0]) {
+            if (bucketLumens >= luminenceParams[0]) {
                 this.prepareBucket(this.buckets.at(i));
 
                 if (recalculatingColor) {
@@ -399,30 +395,30 @@ export class StarSector {
     procesLoadedStars() {
         this.lumensSt = calculateStatistics(this.loadedStars.map((star) => star.lumens));
         this.loadedStars.sort((a, b) => a.lumens - b.lumens);
-        this.starsPerBucket = 100;
-
+        
+        let lumenBucketSize = .001;
         let curBucket = 0;
 
         this.buckets = new Array();
         this.bucketLumensCutoffs = new Array();
 
-        this.bucketLumensCutoffs[curBucket] = this.lumensSt[2];
-
-        let lumenBucketSize = .001;
-        let curLumensCutoff = this.lumensSt[2] + lumenBucketSize;
-
-        let star;
+        this.bucketLumensCutoffs[curBucket] = this.loadedStars.at(0).lumens;
+        let curLumensCutoff = this.bucketLumensCutoffs[curBucket] + lumenBucketSize;
+        let star, i;
         for (let i = 0; i < this.loadedStars.length; i++) {
             star = this.loadedStars.at(i);
             if (star.lumens > curLumensCutoff) {
+                this.bucketLumensCutoffs[curBucket] = star.lumens;
+                
                 curBucket += 1;
-                this.bucketLumensCutoffs[curBucket] = curLumensCutoff;
                 curLumensCutoff += lumenBucketSize;
             }
 
             this.buckets[curBucket] = this.buckets[curBucket] ?? new Array();
             this.buckets[curBucket].push(star);
+            star.bucket = curBucket;
         }
+        this.bucketLum
         this.ready = true;
     }
 

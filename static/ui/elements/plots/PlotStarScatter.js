@@ -87,17 +87,20 @@ export class PlotStarScatter extends WindowElement {
     }
 
     reloadGraphSelect() {
-        if (this.xKey == null || this.yKey == null || getStarHandler().stars.length == 0) {
+        if (this.xKey == null || this.yKey == null) {
             return;
         }
         let star;
         let selectNamedStars = loadGD(UI_AA_PLOT_SELECT_NAMED_STARS);
         let filteredStars = new Array();
         getStarHandler().iterateOnSectors(((sector) => sector.loadedStars
-            .filter((selectNamedStars ? star.name != null : false)
+            .filter((star) => 
+                (selectNamedStars ? star.name != null : false)
                 || star.selected
                 || star.localitySelect).forEach((star) => filteredStars.push(star))));
-
+        if (filteredStars.length == 0) {
+            return;
+        }
         let filteredStarsIdx = 0;
         for (let i = 0; i < this.lengthCap; i++) {
             if (filteredStarsIdx < filteredStars.length) {
@@ -152,11 +155,7 @@ export class PlotStarScatter extends WindowElement {
                 star.graphVisible = true;
             }
 
-            if (graphFilterMode == 1) {
-                if (!star._fovVisible) {
-                    continue;
-                }
-            } else if (graphFilterMode == 2) {
+            if (graphFilterMode == 2) {
                 if (!(star.selected || star.localitySelect)) {
                     continue;
                 }
@@ -402,6 +401,10 @@ export class PlotStarScatter extends WindowElement {
         }
         this.handlePan(dx, dy);
         this.handleClick(posX, posY)
+
+        // if (this.clickCounter > 0) {
+        //     this.flagRepreparePoints();
+        // }
 
         this.plmo = this.lmo;
         this.curLastMouseWheelEvent = getSingletonMouseWheelState();
