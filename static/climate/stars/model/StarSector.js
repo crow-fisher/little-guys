@@ -102,6 +102,11 @@ export class StarSector {
         this._cameraDistRefPoint[0] = Math.min(Math.max(this.cartesianBounds[0], -this._curCameraPosition[0]), this.cartesianBounds[3]);
         this._cameraDistRefPoint[1] = Math.min(Math.max(this.cartesianBounds[1], -this._curCameraPosition[1]), this.cartesianBounds[4]);
         this._cameraDistRefPoint[2] = Math.min(Math.max(this.cartesianBounds[2], -this._curCameraPosition[2]), this.cartesianBounds[5]);
+
+        // this ^ gives you the nearest point...but we actually want the *furthest* point in the sector. teehee!!! 
+        this._cameraDistRefPoint[0] = this.cartesianBounds[0] + (this.cartesianBounds[3] - this._cameraDistRefPoint[0]);
+        this._cameraDistRefPoint[1] = this.cartesianBounds[1] + (this.cartesianBounds[4] - this._cameraDistRefPoint[1]);
+        this._cameraDistRefPoint[2] = this.cartesianBounds[2] + (this.cartesianBounds[5] - this._cameraDistRefPoint[2]);
     }
 
     renderPrepare() {
@@ -169,7 +174,7 @@ export class StarSector {
 
         for (let i = 0; i < this.buckets.length; i++) {
             bucketLumens = this.bucketLumensCutoffs.at(i) * this._relCameraDistBrightnessMult;
-            if (bucketLumens >= luminenceParams[0]) {
+            if (true || bucketLumens >= luminenceParams[0]) {
                 this.prepareBucket(this.buckets.at(i));
 
                 if (recalculatingColor) {
@@ -205,9 +210,6 @@ export class StarSector {
 
             star._relLumens = star.lumens * star._relCameraDistBrightnessMult;
 
-            if (star._relCameraDistBrightnessMult < this._relCameraDistBrightnessMult) {
-                console.log("??");
-            }
             star._relLumensLog = Math.log(star._relLumens);
             star._relLumensRange = Math.min(1, invlerp(luminenceParams[0], luminenceParams[1], star._relLumens));
 
