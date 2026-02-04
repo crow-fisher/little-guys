@@ -18,6 +18,9 @@ export class PointLabelRenderJob extends RenderJob {
     }
 
     render() {
+        if (this.size < 0) {
+            return;
+        }
         MAIN_CONTEXT.beginPath();
         MAIN_CONTEXT.fillStyle = this.color;
         MAIN_CONTEXT.arc(this.x, this.y, this.size, 0, 2 * Math.PI, false);

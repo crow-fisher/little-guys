@@ -86,10 +86,10 @@ export class Star {
         if (this._prevRelCameraDist == null || this.recalculateColorFlag || this._relCameraDist / this._prevRelCameraDist < 0.9 || this._prevRelCameraDist / this._relCameraDist < 0.9) {
             this.recalculateColorFlag = false;
             this._prevRelCameraDist = this._relCameraDist;
-            this._brightness = (this.name != null ? frameCache.namedStarOpacityMult : 1) * brightnessValueToLumensNormalized((this.magnitude) + frameCache.UI_SH_STYLE_BRIGHTNESS_SHIFT) / (this._relCameraDist ** 2);
+            this._brightness = (this.name != null ? frameCache.namedStarOpacityMult : 1) * brightnessValueToLumensNormalized((this.magnitude) + frameCache.UI_SH_STYLE_BRIGHTNESS_A) / (this._relCameraDist ** 2);
 
-            this._size = (this._brightness ** frameCache.UI_SH_STYLE_SIZE_FACTOR) * frameCache.UI_SH_MINSIZE;
-            this._opacity = (this._brightness ** frameCache.UI_SH_STYLE_BRIGHTNESS_FACTOR);
+            this._size = (this._brightness ** frameCache.UI_SH_STYLE_SIZE_A) * frameCache.UI_SH_MINSIZE;
+            this._opacity = (this._brightness ** frameCache.UI_SH_STYLE_BRIGHTNESS_B);
 
             if (this._size < frameCache.starMinSize) {
                 this._brightnessVisible = false;
@@ -97,7 +97,7 @@ export class Star {
             } else {
                 this._brightnessVisible = true;
             }
-            this._color = rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_SH_STYLE_SIZE_SHIFT));
+            this._color = rgbToRgba(...this.color, Math.min(1, this._opacity * frameCache.UI_SH_STYLE_SIZE_B));
             if (this.alt_color_arr != null)
                 this.alt_color = rgbToRgba(...this.alt_color_arr, this._opacity * frameCache.UI_AA_SETUP_MULT ?? 1);
         }

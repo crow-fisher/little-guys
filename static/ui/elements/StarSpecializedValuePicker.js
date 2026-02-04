@@ -4,7 +4,7 @@ import { MAIN_CONTEXT } from "../../index.js";
 import { getStarHandler } from "../../main.js";
 import { isLeftMouseClicked } from "../../mouse.js";
 import { resetStarStyle } from "../components/AstronomyAtlas/modes/AstronomyAtlasUIFunctionMaps.js";
-import { loadGD, saveGD, UI_SH_STYLE_BRIGHTNESS_SHIFT, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_SH_STYLE_BRIGHTNESS_FACTOR, UI_SH_STYLE_SIZE_SHIFT, UI_SH_STYLE_SIZE_FACTOR } from "../UIData.js";
+import { loadGD, saveGD, UI_SH_STYLE_BRIGHTNESS_A, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_SH_STYLE_BRIGHTNESS_B, UI_SH_STYLE_SIZE_B, UI_SH_STYLE_SIZE_A } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class StarSpecializedValuePicker extends WindowElement {
@@ -16,15 +16,15 @@ export class StarSpecializedValuePicker extends WindowElement {
         this.pointSize = 6;
 
         this.keys = [
-            [UI_SH_STYLE_SIZE_SHIFT, UI_SH_STYLE_SIZE_FACTOR],
-            [UI_SH_STYLE_BRIGHTNESS_SHIFT, UI_SH_STYLE_BRIGHTNESS_FACTOR]
+            [UI_SH_STYLE_SIZE_B, UI_SH_STYLE_SIZE_A],
+            [UI_SH_STYLE_BRIGHTNESS_A, UI_SH_STYLE_BRIGHTNESS_B]
         ];
         this.valueRanges = [
             [
-                [-50, 50], [-10, 5]
+                [0, 1], [0, 1]
             ], 
             [
-                [-50, 50], [-10, 5]
+                [0, 1], [0, 1]
             ]
         ];
         this.colors = [COLOR_GREEN, "#6d9e6d"]

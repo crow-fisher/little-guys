@@ -3,7 +3,7 @@ import { getBaseUISize, getCanvasHeight, getCanvasWidth } from "../../../canvas.
 import { COLOR_BLUE, COLOR_GREEN, COLOR_OTHER_BLUE, COLOR_RED, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../colors.js";
 import { calculateStatistics, invlerp, lerp, processRangeToOne, rgbToRgba } from "../../../common.js";
 import { addRenderJob } from "../../../rendering/rasterizer.js";
-import { loadGD, UI_CAMERA_OFFSET_VEC, UI_SH_MINSIZE, UI_SH_DISTPOWERMULT, UI_SH_MAXLUMINENCE, UI_SH_MINLUMINENCE, UI_SH_STYLE_BRIGHTNESS_FACTOR, UI_SH_STYLE_BRIGHTNESS_SHIFT, UI_SH_STYLE_SIZE_FACTOR, UI_SH_STYLE_SIZE_SHIFT, UI_AA_PLOT_SELECTRADIUS, UI_AA_PLOT_LOCALITY_SELECTMODE, UI_AA_PLOT_ACTIVE, UI_AA_LABEL_GRAPH, UI_AA_LABEL_STARS } from "../../../ui/UIData.js";
+import { loadGD, UI_CAMERA_OFFSET_VEC, UI_SH_MINSIZE, UI_SH_DISTPOWERMULT, UI_SH_MAXLUMINENCE, UI_SH_MINLUMINENCE, UI_SH_STYLE_BRIGHTNESS_B, UI_SH_STYLE_BRIGHTNESS_A, UI_SH_STYLE_SIZE_A, UI_SH_STYLE_SIZE_B, UI_AA_PLOT_SELECTRADIUS, UI_AA_PLOT_LOCALITY_SELECTMODE, UI_AA_PLOT_ACTIVE, UI_AA_LABEL_GRAPH, UI_AA_LABEL_STARS, UI_SH_STYLE_SIZE_C, UI_SH_MAXSIZE, UI_SH_STYLE_BRIGHTNESS_C } from "../../../ui/UIData.js";
 import { getAstronomyAtlasComponent } from "../../../ui/WindowManager.js";
 import { addVec3Dest, getVec3Length } from "../matrix.js";
 import { LineRenderJob } from "../../../rendering/model/LineRenderJob.js";
@@ -41,17 +41,19 @@ export class StarSector {
 
     getSizeParams() {
         return [
-            processRangeToOne(loadGD(UI_SH_STYLE_SIZE_SHIFT)),
-            processRangeToOne(loadGD(UI_SH_STYLE_SIZE_FACTOR)),
-            processRangeToOne(loadGD(UI_SH_MINSIZE)),
-            getBaseUISize() * processRangeToOne(loadGD(UI_SH_MINSIZE))
+            loadGD(UI_SH_STYLE_SIZE_A),
+            loadGD(UI_SH_STYLE_SIZE_B),
+            loadGD(UI_SH_STYLE_SIZE_C),
+            loadGD(UI_SH_MINSIZE),
+            loadGD(UI_SH_MAXSIZE),
         ];
     }
 
     getBrightnessParams() {
         return [
-            processRangeToOne(loadGD(UI_SH_STYLE_BRIGHTNESS_FACTOR)),
-            processRangeToOne(loadGD(UI_SH_STYLE_BRIGHTNESS_SHIFT))
+            loadGD(UI_SH_STYLE_BRIGHTNESS_A),
+            loadGD(UI_SH_STYLE_BRIGHTNESS_B),
+            loadGD(UI_SH_STYLE_BRIGHTNESS_C)
         ];
     }
 
@@ -142,13 +144,17 @@ export class StarSector {
         }
     }
 
+    processRange(x, a, b, c) {
+        return (c) * (x ** a) + (1 - c) * (x ** b);
+    }
+
     processStarSize(star, sizeParams) {
-        star._sizeRange = sizeParams[0] + (1 - sizeParams[0]) * star._relLumensRange ** sizeParams[1];
-        return lerp(sizeParams[2], sizeParams[3], star._sizeRange);
+        star._sizeRange = this.processRange(star._relLumensRange, ...sizeParams);
+        return lerp(sizeParams[3], sizeParams[3] + sizeParams[4], star._sizeRange);
     }
 
     processStarColor(star, brightnessParams) {
-        star._opacity = star._relLumensRange ** brightnessParams[1];
+        star._opacity = this.processRange(star._relLumensRange, ...brightnessParams);
         return rgbToRgba(...star.color, star._opacity);
     }
 
