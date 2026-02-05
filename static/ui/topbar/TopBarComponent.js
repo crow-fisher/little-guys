@@ -31,6 +31,7 @@ import { getWindSquareAbove } from "../../climate/simulation/wind.js";
 import { getSqIterationOrder } from "../../squares/_sqOperations.js";
 import { getFrameSimulationSquares } from "../../globalOperations.js";
 import { TopBarTimeSeekLabel } from "./TopBarTimeSeekLabel.js";
+import { getNoSortRenderJobsLength } from "../../rendering/rasterizer.js";
 
 export class TopBarComponent {
     constructor(key) {
@@ -181,7 +182,9 @@ export class TopBarComponent {
                 this.fpsCache = Math.round(fps);
         }
 
-        return this.fpsCache + " fps" + " | " + this.numSquareCount + " squares"; // + " | " + this.soilTotalSum + " total soil"
+        return this.fpsCache + " fps" + " | " 
+            // + this.numSquareCount + " squares" + " | " 
+            + getNoSortRenderJobsLength() + " stars"
     }
 
 

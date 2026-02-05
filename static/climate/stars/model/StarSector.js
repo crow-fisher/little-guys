@@ -84,7 +84,7 @@ export class StarSector {
 
         let debug = new URLSearchParams(document.location.search).get("debug");
         if (debug && this._curCameraDist < Math.exp(loadGD(UI_AA_PLOT_SELECTRADIUS))) {
-            this.renderSector();
+            // this.renderSector();
         }
 
         if (this.visibilityFlags == 0) {
@@ -131,7 +131,7 @@ export class StarSector {
         this._curCameraDist = getVec3Length(this._cameraOffset);
         this._relCameraDist = (this._curCameraDist / this._rootCameraDist);
         this._relCameraDistBrightnessMult = 1 / (this._relCameraDist ** loadGD(UI_SH_DISTPOWERMULT));
-        this._recalculateStarColorFlag |= (Math.min(this._curCameraDist, this._prevCameraDist) / Math.max(this._curCameraDist, this._prevCameraDist)) < 0.95;
+        this._recalculateStarColorFlag |= (Math.min(this._curCameraDist, this._prevCameraDist) / Math.max(this._curCameraDist, this._prevCameraDist)) < 0.97;
 
         this.visibilityFlags = 0;
         if (this._renderScreen[0] < 0 || this._renderScreen[0] > getCanvasWidth()) {
@@ -396,29 +396,27 @@ export class StarSector {
         this.lumensSt = calculateStatistics(this.loadedStars.map((star) => star.lumens));
         this.loadedStars.sort((a, b) => a.lumens - b.lumens);
         
-        let lumenBucketSize = .001;
-        let curBucket = 0;
+        let lumenBucketSize = .00004;
 
         this.buckets = new Array();
         this.bucketLumensCutoffs = new Array();
 
-        this.bucketLumensCutoffs[curBucket] = this.loadedStars.at(0).lumens;
+        let curBucket = 0;
+        this.bucketLumensCutoffs[0] = this.loadedStars.at(0).lumens;
         let curLumensCutoff = this.bucketLumensCutoffs[curBucket] + lumenBucketSize;
-        let star, i;
+        let star;
         for (let i = 0; i < this.loadedStars.length; i++) {
             star = this.loadedStars.at(i);
             if (star.lumens > curLumensCutoff) {
                 this.bucketLumensCutoffs[curBucket] = star.lumens;
-                
                 curBucket += 1;
-                curLumensCutoff += lumenBucketSize;
+                curLumensCutoff = Math.min(curLumensCutoff + lumenBucketSize, star.lumens);
             }
-
             this.buckets[curBucket] = this.buckets[curBucket] ?? new Array();
             this.buckets[curBucket].push(star);
             star.bucket = curBucket;
         }
-        this.bucketLum
+        this.bucketLumensCutoffs[curBucket] = this.loadedStars.reverse().at(0).lumens;
         this.ready = true;
     }
 

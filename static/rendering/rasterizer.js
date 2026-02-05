@@ -5,6 +5,11 @@ import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth, MAIN_CANVAS, MAIN_
 const noSortRenderJobs = new Array();
 const renderJobs = new Array();
 
+let prevNoSortRenderJobsLength = 0;
+export function getNoSortRenderJobsLength() {
+    return prevNoSortRenderJobsLength;
+}
+
 export function addRenderJob(renderJob, sort) {
     if (renderJob.isVisible()) {
         ((sort) ? renderJobs : noSortRenderJobs).push(renderJob);
@@ -14,6 +19,7 @@ export function executeRenderJobs() {
     for (let i = 0; i < noSortRenderJobs.length; i++) {
         noSortRenderJobs.at(i).render();
     }
+    prevNoSortRenderJobsLength = noSortRenderJobs.length;
     noSortRenderJobs.length = 0;
     renderJobs.sort((a, b) => b.getZ() - a.getZ());
     for (let i = 0; i < renderJobs.length; i++) {
