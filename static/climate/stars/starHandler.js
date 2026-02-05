@@ -18,6 +18,9 @@ export class StarHandler {
     }
 
     minLumensRuntime() {
+        if (loadGD(UI_SH_MINMODE) != 0) {
+            return;
+        }
         let targetNumStars = loadGD(UI_SH_TARGETNUMSTARS);
         let curNumStars = getNoSortRenderJobsLength();
 

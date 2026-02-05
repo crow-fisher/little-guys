@@ -15,7 +15,7 @@ export function gamepadCameraInput() {
     let rsb = isButtonPressed(GBSR) ? .75 : 0;
     let triggers = getTriggers();
 
-    let offset = 1 * (getFrameDt() / 10);
+    let offset = getFrameDt() / 400;
 
     if (isButtonPressed(GBA)) {
         offset *= 10;

@@ -8,7 +8,7 @@ import { loadGD, saveGD } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class SliderGradientBackground extends WindowElement {
-    constructor(window, key, sizeX, sizeY, min, max, minColorFunc, maxColorFunc, renderSkyBackground = false, callback=null) {
+    constructor(window, key, sizeX, sizeY, min, max, minColorFunc, maxColorFunc, renderSkyBackground = false, callback=null, reversed=false) {
         super(window, sizeX, sizeY);
         this.key = key;
         this.sizeX = sizeX;
@@ -19,6 +19,7 @@ export class SliderGradientBackground extends WindowElement {
         this.maxColorFunc = maxColorFunc;
         this.renderSkyBackground = renderSkyBackground;
         this.callback = callback;
+        this.reversed = reversed;
     }
 
     render(startX, startY) {
@@ -36,6 +37,9 @@ export class SliderGradientBackground extends WindowElement {
 
         let blockSize = this.sizeY;
         let invlerp = (loadGD(this.key) - this.min) / (this.max - this.min);
+        if (this.reversed) {
+            invlerp = 1 - invlerp;
+        }
         let lerp = invlerp * this.sizeX;
 
         if (!this.renderSkyBackground) {
@@ -72,6 +76,10 @@ export class SliderGradientBackground extends WindowElement {
         posX = Math.min(this.sizeX - (this.sizeY / 2), posX);
         let p = (posX - min) / (max - min);
         p = Math.min(Math.max(0, p), 1)
+
+        if (this.reversed) {
+            p = 1 - p;
+        }
         saveGD(this.key, this.min + (p * (this.max - this.min)));
         if (this.callback != null) {
             this.callback();
