@@ -34,9 +34,21 @@ export function AstronomyAtlasModeFuncSelect(window, container, sizeX, sizeY) {
     container.addElement(new Text(window, sizeX, getBaseUISize() * 3, UI_CENTER, "locality select range"));
     container.addElement(new SliderGradientBackground(window, UI_AA_PLOT_SELECTRADIUS, sizeX, getBaseUISize() * 3, 0, 20, () => COLOR_WHITE, () => COLOR_BLACK, false, resetStarStyle));
     container.addElement(new Toggle(window, sizeX, getBaseUISize() * 3, UI_CENTER, UI_AA_PLOT_SELECT_NAMED_STARS, "select all named stars", () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
-    container.addElement(new Button(window, sizeX, getBaseUISize() * 3, UI_CENTER, 
-        () => getAstronomyAtlasComponent().plotStarScatter.sValues.filter((star) => star != null && star.graphVisible).forEach((star) => star.selected = !star.selected), 
-        "select all graphed stars", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
+    
+    let buttonRow = new Container(window, 0, 0);
+    container.addElement(buttonRow);
+
+    buttonRow.addElement(new Button(window, sizeX / 3, getBaseUISize() * 3, UI_CENTER, 
+    () => getAstronomyAtlasComponent().plotStarScatter.sValues.filter((star) => star != null && star.graphVisible).forEach((star) => star.selected = true), 
+    "select all", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
+
+        buttonRow.addElement(new Button(window, sizeX / 3, getBaseUISize() * 3, UI_CENTER, 
+    () => getAstronomyAtlasComponent().plotStarScatter.sValues.filter((star) => star != null && star.graphVisible).forEach((star) => star.selected = false), 
+    "deselect all", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
+        buttonRow.addElement(new Button(window, sizeX / 3, getBaseUISize() * 3, UI_CENTER, 
+    () => getAstronomyAtlasComponent().plotStarScatter.sValues.filter((star) => star != null && star.graphVisible).forEach((star) => star.selected = !star.selected), 
+    "toggle select", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
+
     container.addElement(new Toggle(window, sizeX, getBaseUISize() * 3, UI_CENTER, UI_AA_SELECT_FILTERMODE_GRAPH_PREPARED, "only show prepared stars", () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive(0.55)));
 
 }
