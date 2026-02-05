@@ -59,7 +59,7 @@ export class StarSector {
 
     getLuminenceParams() {
         return [
-            processRangeToOne(loadGD(UI_SH_MINLUMINENCE)),
+            processRangeToOne(-1 * 10 ** (5 - loadGD(UI_SH_MINLUMINENCE))),
             processRangeToOne(loadGD(UI_SH_MAXLUMINENCE)),
             loadGD(UI_SH_DISTPOWERMULT)
         ];

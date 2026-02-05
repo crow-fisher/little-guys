@@ -26,7 +26,7 @@ export function AstronomyAtlasModeFuncStyle(window, container, sizeX, sizeY) {
     container.addElement(new SliderGradientBackground(window, UI_SH_STYLE_SIZE_C, sizeX, textHeight, 0, 1, () => COLOR_BLACK, () => COLOR_WHITE, false, resetStarStyle));
 
     container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "min luminence"))
-    container.addElement(new SliderGradientBackground(window, UI_SH_MINLUMINENCE, sizeX, textHeight, -550, 0, () => COLOR_BLACK, () => COLOR_WHITE, false, resetStarStyle));
+    container.addElement(new SliderGradientBackground(window, UI_SH_MINLUMINENCE, sizeX, textHeight, 0, 5, () => COLOR_BLACK, () => COLOR_WHITE, false, resetStarStyle));
     container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "max luminence"))
     container.addElement(new SliderGradientBackground(window, UI_SH_MAXLUMINENCE, sizeX, textHeight, -100, 5, () => COLOR_BLACK, () => COLOR_WHITE, false, resetStarStyle));
     container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "min size"))
