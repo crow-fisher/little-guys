@@ -19,7 +19,7 @@ export function AstronomyAtlasModeFuncStyle(window, container, sizeX, sizeY) {
 
     let accentHeight = getBaseUISize() * 1;
 
-    // container.addElement(new StarSpecializedValuePicker(window, sizeX, sizeY - (textHeight * 4)));
+    container.addElement(new StarSpecializedValuePicker(window, sizeX, sizeY - (textHeight * 4)));
     let row = new Container(window, 0, 0);
     container.addElement(row);
     row.addElement(new RadioToggleLabel(window, half, textHeight, UI_CENTER, "size", UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, 0,
