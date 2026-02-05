@@ -1,7 +1,9 @@
 import { frameMatrixReset, tickFrameMatrix } from "../../rendering/camera.js";
-import { loadGD, UI_AA_LABEL_GRAPH, UI_AA_LABEL_STARS, UI_AA_PLOT_SELECT_NAMED_STARS, UI_AA_PLOT_XKEY, UI_AA_PLOT_YKEY, UI_AA_SETUP_COLORMODE } from "../../ui/UIData.js";
+import { getNoSortRenderJobsLength } from "../../rendering/rasterizer.js";
+import { loadGD, saveGD, UI_AA_LABEL_GRAPH, UI_AA_LABEL_STARS, UI_AA_PLOT_SELECT_NAMED_STARS, UI_AA_PLOT_XKEY, UI_AA_PLOT_YKEY, UI_AA_SETUP_COLORMODE, UI_CAMERA_OFFSET_VEC_DT, UI_SH_MINLUMINENCE } from "../../ui/UIData.js";
 import { HipparcosCatalog } from "./catalog/HipparcosCatalog.js";
 import { StellariumCatalog } from "./catalog/StellariumCatalog.js";
+import { getVec3Length } from "./matrix.js";
 import { StarSector } from "./model/StarSector.js";
 import { adjustBoundsToIncludePoint, cartesianToSectorIndex, getSectorSize, sectorToCartesian, sectorToCartesianBounds } from "./starHandlerUtil.js";
 
@@ -13,6 +15,21 @@ export class StarHandler {
         this.numSectorsArr = 1;
         this.bounds = [-1, -1, -1, 1, 1, 1]; // xMin, yMin, zMin, xMax, yMax, zMax. 
         this.loadData();
+    }
+
+    minLumensRuntime() {
+        if (getVec3Length(loadGD(UI_CAMERA_OFFSET_VEC_DT)) > 1) {
+            return;
+        }
+
+        let targetNumStars = 5000;
+        let curNumStars = getNoSortRenderJobsLength();
+
+        let frac = curNumStars / targetNumStars;
+
+        let dx = .1 * (1 - frac);
+
+        saveGD(UI_SH_MINLUMINENCE, loadGD(UI_SH_MINLUMINENCE) - dx);
     }
 
     resetStarLabels() {
@@ -37,6 +54,7 @@ export class StarHandler {
 
     render() {
         this.iterateOnSectors((sector) => sector.renderMain());
+        this.minLumensRuntime();
     }
 
     rebuildSectors() {
