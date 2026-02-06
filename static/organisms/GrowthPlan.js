@@ -7,11 +7,12 @@ import { rotatePoint } from "../rendering/camera.js";
 import { addVectors } from "../climate/stars/matrix.js";
 
 export class GrowthPlan {
-    constructor(required, endStage, theta, sin, phi, thetaCurve, sinCurve, phiCurve, type, strengthMult, rollingAveragePeriod = 200) {
+    constructor(required, endStage, type, theta, sin, phi, thetaCurve, sinCurve, phiCurve, strengthMult) {
         this.required = required;
-        this.steps = new Array(); // GrowthPlanStep
         this.endStage = endStage;
         this.type = type;
+
+        this.steps = new Array();
         this.stepLastExecuted = 0;
         this.component = new GrowthComponent(
             this,

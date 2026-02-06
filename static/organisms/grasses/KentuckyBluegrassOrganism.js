@@ -1,6 +1,6 @@
 import { randNumber, randRange } from "../../common.js";
 import { RootLifeSquare } from "../../lifeSquares/RootLifeSquare.js";
-import { STAGE_ADULT, STAGE_FLOWER, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_TRUNK } from "../Stages.js";
+import { STAGE_ADULT, STAGE_FLOWER, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_STEM, TYPE_TRUNK } from "../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
@@ -96,21 +96,24 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
 
     growGrass() {
         let startRootNode = this.getOriginsForNewGrowth(SUBTYPE_ROOTNODE).at(0);
-        let baseDeflection = randRange(0, .25);
         let growthPlan = new GrowthPlan(
-            startRootNode.posX, startRootNode.posY, 
-            false, STAGE_ADULT, randRange(-Math.PI, Math.PI), baseDeflection, 0, 
-            baseDeflection, 
-            randRange(0, 0.3), TYPE_TRUNK, .025, 15);
-        growthPlan.postConstruct = () => {
+            false, STAGE_ADULT, TYPE_STEM, 
+            0, 0, 0, 0, 0, 0, 1)
+        
+            growthPlan.postConstruct = () => {
             this.originGrowth.addChild(growthPlan.component);
             this.grasses.push(this.originGrowth.getChildPath(growthPlan.component))
+            
             growthPlan.component.xOffset = 3 * (Math.random() - 0.5);
             growthPlan.component.yOffset = randRange(-growthPlan.component.xOffset, 0) - 1;
         };
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
-            () => this.growGreenSquareAction(startRootNode, SUBTYPE_STEM)
+            () => {
+                let node = this.growPlantSquare(startNode, 0, growthPlan.steps.length);
+                node.subtype = SUBTYPE_STEM;
+                return node;
+            }
         ))
         this.growthPlans.push(growthPlan);
     }
