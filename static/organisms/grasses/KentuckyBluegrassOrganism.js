@@ -37,7 +37,7 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
         this.targetNumGrass = 1;
         this.maxNumGrass = 2;
 
-        this.targetGrassLength = 1;
+        this.targetGrassLength = 5;
         this.maxGrassLength = 5;
 
         this.numGrowthCycles = 1; 
@@ -46,6 +46,16 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
 
         this.grasses = [];
     }
+ 
+    /* debug */ 
+
+
+    process() {
+        super.process();
+        this.doGreenGrowth();
+    }
+
+
 
     getDefaultNutritionMap() {
         return kblue_dnm;
@@ -95,18 +105,16 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
     }
 
     growGrass() {
-        let startRootNode = this.getOriginsForNewGrowth(SUBTYPE_ROOTNODE).at(0);
+        let startNode = this.originGrowth.lifeSquares.at(0);
         let growthPlan = new GrowthPlan(
             false, STAGE_ADULT, TYPE_STEM, 
             0, 0, 0, 0, 0, 0, 1)
-        
             growthPlan.postConstruct = () => {
-            this.originGrowth.addChild(growthPlan.component);
-            this.grasses.push(this.originGrowth.getChildPath(growthPlan.component))
-            
-            growthPlan.component.xOffset = 3 * (Math.random() - 0.5);
-            growthPlan.component.yOffset = randRange(-growthPlan.component.xOffset, 0) - 1;
-        };
+                this.originGrowth.addChild(growthPlan.component);
+                this.grasses.push(this.originGrowth.getChildPath(growthPlan.component))
+                growthPlan.component.xOffset = 3 * (Math.random() - 0.5);
+                growthPlan.component.yOffset = randRange(-growthPlan.component.xOffset, 0) - 1;
+            };
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
             () => {
@@ -132,13 +140,20 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
                 for (let i = 0; i < this.targetGrassLength - grass.growthPlan.steps.length; i++) {
                     grass.growthPlan.steps.push(new GrowthPlanStep(
                         grass.growthPlan,
-                        () => this.growGreenSquareAction(startNode, SUBTYPE_STEM)
-                    ))
+                        () => {
+                            let node = this.growPlantSquare(startNode, 0, grass.growthPlan.steps.length);
+                            node.subtype = SUBTYPE_STEM;
+                            return node;
+                        }
+                    ));
                 };
             });
     }
 
     planGrowth() {
+        if (this.grasses.length > 0) {
+            this.lengthenGrass();
+        }
         if (!super.planGrowth()) {
             return;
         }

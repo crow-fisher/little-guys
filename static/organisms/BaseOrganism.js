@@ -402,8 +402,8 @@ class BaseOrganism {
         this.addAssociatedLifeSquare(rootLsq);
 
         let growthPlan = new GrowthPlan(
-            true, STAGE_JUVENILE, Math.PI / 2, 0, 0,
-            0, 0, 0, TYPE_HEART, 10 ** 8);
+            true, STAGE_JUVENILE, TYPE_HEART, Math.PI / 2, 0, 0,
+            0, 0, 0, 10 ** 8);
 
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
@@ -442,11 +442,11 @@ class BaseOrganism {
         }
     }
     doGreenGrowth() {
-        if (this.age < this.greenLastGrown + this.lightLevelThrottleVal() * (this.getGrowthCycleMaturityLength() / this.growthNumGreen)) {
-            return false;
-        }
-        if (Math.abs(this.getWilt()) > .5)
-            return false;
+        // if (this.age < this.greenLastGrown + this.lightLevelThrottleVal() * (this.getGrowthCycleMaturityLength() / this.growthNumGreen)) {
+        //     return false;
+        // }
+        // if (Math.abs(this.getWilt()) > .5)
+        //     return false;
 
         let somethingDone = false;
         this.growthPlans.filter((gp) => !gp.areStepsCompleted()).forEach((growthPlan) => {
