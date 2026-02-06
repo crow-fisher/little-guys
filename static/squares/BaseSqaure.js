@@ -523,9 +523,9 @@ export class BaseSquare {
     }
 
     updateNeighborSquares() {
-        this.lsq = getSquares(this.posX - 1, this.posY).find((sq) => sq.solid && sq.visible);
-        this.rsq = getSquares(this.posX + 1, this.posY).find((sq) => sq.solid && sq.visible);
-        this.tsq = getSquares(this.posX, this.posY - 1).find((sq) => sq.solid && sq.visible);
+        this.lsq = getSquares(this.posX - 1, this.posY).find((sq) => sq.solid && sq.visible && sq.minZ > 0);
+        this.rsq = getSquares(this.posX + 1, this.posY).find((sq) => sq.solid && sq.visible && sq.minZ > 0);
+        this.tsq = getSquares(this.posX, this.posY - 1).find((sq) => sq.solid && sq.visible && sq.minZ > 0);
     }
 
     prepareRenderJob() {
@@ -534,12 +534,32 @@ export class BaseSquare {
         this.br = this.br ?? structuredClone(this.renderScreen_br);
         this.tr = this.tr ?? structuredClone(this.renderScreen_tr);
 
+        this.minZ = Math.min(this.tl[2], this.bl[2], this.br[2], this.tr[2]);
+
         this.combinePoints(this, this.lsq, this.tl, "renderScreen_tl", "renderScreen_tr");
         this.combinePoints(this, this.lsq, this.bl, "renderScreen_bl", "renderScreen_br");
         this.combinePoints(this, this.rsq, this.br, "renderScreen_br", "renderScreen_bl");
         this.combinePoints(this, this.rsq, this.tr, "renderScreen_tr", "renderScreen_tl");
 
         this.centerZ = (this.tl[2] + this.bl[2] + this.br[2] + this.tr[2]) / 4;
+
+        // if (this.minZ < 0) {
+        //     return;
+        // }
+
+        let maxDiff = 0;
+        [0, 1].forEach((p) => {
+            maxDiff = Math.max(maxDiff, this.tl[p] - this.bl[p]);
+            maxDiff = Math.max(maxDiff, this.tl[p] - this.bl[p]);
+            maxDiff = Math.max(maxDiff, this.tl[p] - this.bl[p]);
+            maxDiff = Math.max(maxDiff, this.tl[p] - this.bl[p]);
+        });
+
+        if (maxDiff > 20) {
+            this.renderJob = null;
+            return;
+        }
+
 
         if (this.renderJob == null) {
             this.renderJob = new QuadRenderJob(this.tl, this.bl, this.br, this.tr, this.cachedRgba, this.centerZ)
@@ -560,7 +580,9 @@ export class BaseSquare {
         this.setFrameCartesians();
         this.prepareRenderJob();
 
-        addRenderJob(this.renderJob, true);
+        if (this.minZ > 0) {
+            addRenderJob(this.renderJob, true);
+        }
     }
 
     combinePoints(p1, p2, dest, g1, g2) {
