@@ -1,4 +1,4 @@
-import { cameraToScreen, cartesianToCamera, cartesianToScreen, screenToRenderScreen } from "../../../rendering/camera.js";
+import { cameraToScreen, cartesianToCamera, cartesianToScreen, debugRenderLineCartesianPoints, screenToRenderScreen } from "../../../rendering/camera.js";
 import { getCanvasHeight, getCanvasWidth } from "../../../canvas.js";
 import { COLOR_BLUE, COLOR_GREEN, COLOR_OTHER_BLUE, COLOR_RED, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../colors.js";
 import { calculateStatistics, invlerp, lerp, processRangeToOne, rgbToRgba } from "../../../common.js";
@@ -311,56 +311,30 @@ export class StarSector {
             let start = line[0];
             let end = line[1];
             let color = line[2];
-            this.debugRenderLineCartesianPoints(start, end, color);
+            debugRenderLineCartesianPoints(start, end, color);
         })
 
-        this.debugRenderLineCartesianPoints(
+        debugRenderLineCartesianPoints(
             this._cameraDistRefPoint,
             this.cartesian,
             COLOR_VERY_FUCKING_RED
         )
-        // this.debugRenderLineCartesianPoints(
+        // debugRenderLineCartesianPoints(
         //     [this.cartesianBounds[0], this.cartesianBounds[4], this.cartesianBounds[2]],
         //     [this.cartesianBounds[3], this.cartesianBounds[4], this.cartesianBounds[2]]
         // )
-        // this.debugRenderLineCartesianPoints(
+        // debugRenderLineCartesianPoints(
         //     [this.cartesianBounds[0], this.cartesianBounds[1], this.cartesianBounds[2]],
         //     [this.cartesianBounds[0], this.cartesianBounds[4], this.cartesianBounds[5]]
         // )
-        // this.debugRenderLineCartesianPoints(
+        // debugRenderLineCartesianPoints(
         //     [this.cartesianBounds[3], this.cartesianBounds[1], this.cartesianBounds[2]],
         //     [this.cartesianBounds[3], this.cartesianBounds[4], this.cartesianBounds[5]]
         // )
 
     }
 
-    debugRenderLineCartesianPoints(cartesian1, cartesian2, color) {
-        let offset1 = [0, 0, 0];
-        let offset2 = [0, 0, 0];
-        let camera1 = [0, 0, 0];
-        let camera2 = [0, 0, 0];
-        let screen1 = [0, 0, 0];
-        let screen2 = [0, 0, 0];
-        let renderNorm1 = [0, 0];
-        let renderNorm2 = [0, 0];
-        let renderScreen1 = [0, 0, 0];
-        let renderScreen2 = [0, 0, 0];
 
-        addVec3Dest(cartesian1, this._curCameraPosition, offset1);
-        addVec3Dest(cartesian2, this._curCameraPosition, offset2);
-        cartesianToCamera(offset1, camera1);
-        cartesianToCamera(offset2, camera2);
-        cameraToScreen(camera1, screen1);
-        cameraToScreen(camera2, screen2);
-        screenToRenderScreen(screen1, renderNorm1, renderScreen1, this._xOffset, this._yOffset, this._s);
-        screenToRenderScreen(screen2, renderNorm2, renderScreen2, this._xOffset, this._yOffset, this._s);
-
-
-        if (renderScreen1[2] < 0 && renderScreen2[2] < 0) {
-            addRenderJob(new LineRenderJob(renderScreen1, renderScreen2, 3, color, renderScreen2.z));
-        }
-
-    }
 
     renderSector() {
         if (this._renderScreen[2] > 0) {

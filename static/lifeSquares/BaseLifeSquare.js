@@ -4,14 +4,14 @@ import { hexToRgb, hsv2rgb, rgb2hsv, rgbToHex, rgbToRgba, UI_BIGDOTSOLID } from 
 import { getDaylightStrengthFrameDiff } from "../climate/time.js";
 import { addSquare } from "../squares/_sqOperations.js";
 
-import { RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED, RGB_COLOR_GREEN, COLOR_RED, COLOR_BLUE, COLOR_BLACK, COLOR_GREEN, COLOR_OTHER_BLUE } from "../colors.js";
+import { RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED, RGB_COLOR_GREEN, COLOR_RED, COLOR_BLUE, COLOR_BLACK, COLOR_GREEN, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../colors.js";
 import { removeSquare } from "../globalOperations.js";
 import { STATE_HEALTHY, STAGE_DEAD, TYPE_ROOT } from "../organisms/Stages.js";
 import { getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasHeight, getCanvasWidth, getCurZoom, rotatePoint, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasFillRectTheta, zoomCanvasFillRectTheta3D, zoomCanvasSquareText } from "../canvas.js";
 import { loadGD, UI_CAMERA_OFFSET_VEC, UI_CANVAS_SQUARES_ZOOM, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_3D, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_NORMAL, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../ui/UIData.js";
-import { cartesianToScreen, cartesianToScreenInplace, getCameraPosition, getCameraRotationVec, getForwardVec, gfc, renderPoint, renderVec, screenToRenderScreen } from "../rendering/camera.js";
-import { addVectors, addVectorsCopy, crossVec3, normalizeVec3, subtractVectors, subtractVectorsCopy } from "../climate/stars/matrix.js";
+import { cartesianToScreen, cartesianToScreenInplace, debugRenderLineCartesianPoints, getCameraPosition, getCameraRotationVec, getForwardVec, gfc, renderPoint, renderVec, screenToRenderScreen } from "../rendering/camera.js";
+import { addVec3Dest, addVectors, addVectorsCopy, crossVec3, crossVec3Dest, normalizeVec3, normalizeVec3Dest, subtractVectors, subtractVectorsCopy, subtractVectorsDest } from "../climate/stars/matrix.js";
 import { QuadRenderJob } from "../rendering/model/QuadRenderJob.js";
 import { addRenderJob } from "../rendering/rasterizer.js";
 
@@ -84,6 +84,12 @@ class BaseLifeSquare {
         this.posVec = [this.posX, this.posY, 0];
         this.rotVec = [0, 0, 0];
 
+        this.startPointVec = [0, 0, 0];
+        this.endPointVec = [0, 0, 0];
+        this.forwardVec = [0, 0, 0];
+        this.sideVec = [0, 0, 0];
+        this.offsetCrossForwardVec = [0, 0, 0];
+
         this.cartesian_tl = [0, 0, 0];
         this.cartesian_tr = [0, 0, 0];
         this.cartesian_bl = [0, 0, 0];
@@ -125,16 +131,20 @@ class BaseLifeSquare {
 
         this.offsetVec = [0, 1, 0, 0];
         this.rotatedOffset = rotatePoint(this.offsetVec, ...this.rotVec);
-        this.startVec = subtractVectorsCopy(this.posVec, gfc().UI_CAMERA_OFFSET_VEC);
 
-        this.endVec = addVectorsCopy(this.startVec, this.rotatedOffset);
-        this.forward = normalizeVec3(addVectors(getCameraPosition(), this.startVec));
-        this.side = normalizeVec3(crossVec3(this.rotatedOffset, this.forward), 1 / this.width);
+        subtractVectorsDest(this.posVec, loadGD(UI_CAMERA_OFFSET_VEC), this.startPointVec);
+        addVec3Dest(this.startPointVec, this.rotatedOffset, this.endPointVec);
 
-        this.cartesian_tl = subtractVectorsCopy(this.endVec, this.side);
-        this.cartesian_tl = addVectorsCopy(this.endVec, this.side);
-        this.cartesian_bl = subtractVectorsCopy(this.startVec, this.side);
-        this.cartesian_br = addVectorsCopy(this.startVec, this.side);
+        debugRenderLineCartesianPoints(this.startPointVec, this.endPointVec, COLOR_VERY_FUCKING_RED);
+        
+        normalizeVec3Dest(addVectors(getCameraPosition(), this.startPointVec), this.forwardVec);
+        crossVec3Dest(this.rotatedOffset, this.forwardVec, this.offsetCrossForwardVec)
+        this.sideVec = normalizeVec3(crossVec3(this.rotatedOffset, this.forwardVec), 1 / this.width);
+
+        subtractVectorsDest(this.endPointVec, this.sideVec, this.cartesian_tl)
+        addVec3Dest(this.endPointVec, this.sideVec, this.cartesian_tl)
+        subtractVectorsDest(this.startPointVec, this.sideVec, this.cartesian_bl)
+        addVec3Dest(this.startPointVec, this.sideVec, this.cartesian_br)
 
         cartesianToScreenInplace(this.cartesian_tl, this.camera_tl, this.screen_tl);
         cartesianToScreenInplace(this.cartesian_tr, this.camera_tr, this.screen_tr);

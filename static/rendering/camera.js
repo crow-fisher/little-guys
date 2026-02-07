@@ -418,3 +418,29 @@ export function rotatePointRz(point, theta) {
     ]
     return multiplyMatrixAndPoint(rotationMatrix, point);
 }
+
+export function debugRenderLineCartesianPoints(cartesian1, cartesian2, color) {
+        let offset1 = [0, 0, 0];
+        let offset2 = [0, 0, 0];
+        let camera1 = [0, 0, 0];
+        let camera2 = [0, 0, 0];
+        let screen1 = [0, 0, 0];
+        let screen2 = [0, 0, 0];
+        let renderNorm1 = [0, 0];
+        let renderNorm2 = [0, 0];
+        let renderScreen1 = [0, 0, 0];
+        let renderScreen2 = [0, 0, 0];
+
+        addVec3Dest(cartesian1, this._curCameraPosition, offset1);
+        addVec3Dest(cartesian2, this._curCameraPosition, offset2);
+        cartesianToCamera(offset1, camera1);
+        cartesianToCamera(offset2, camera2);
+        cameraToScreen(camera1, screen1);
+        cameraToScreen(camera2, screen2);
+        screenToRenderScreen(screen1, renderNorm1, renderScreen1, this._xOffset, this._yOffset, this._s);
+        screenToRenderScreen(screen2, renderNorm2, renderScreen2, this._xOffset, this._yOffset, this._s);
+
+        if (renderScreen1[2] < 0 && renderScreen2[2] < 0) {
+            addRenderJob(new LineRenderJob(renderScreen1, renderScreen2, 3, color, renderScreen2.z));
+        }
+    }

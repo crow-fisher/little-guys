@@ -86,6 +86,7 @@ export function normalizeVec3Real(vector) {
   return vector;
 }
 
+
 export function normalizeVec3(vector, toLength=1) {
   vector = structuredClone(vector);
   let length = toLength * getVec3Length(vector);
@@ -93,6 +94,13 @@ export function normalizeVec3(vector, toLength=1) {
   vector[1] /= length;
   vector[2] /= length;
   return vector;
+}
+
+export function normalizeVec3Dest(vector, dest, toLength=1) {
+  toLength *= getVec3Length(vector);
+  dest[0] /= toLength;
+  dest[1] /= toLength;
+  dest[2] /= toLength;
 }
 
 export function getVec3Length(vector) {
@@ -123,6 +131,12 @@ export function subtractVectors(v1, v2) {
   return v1;
 }
 
+export function subtractVectorsDest(v1, v2, dest) {
+    dest[0] = (v1[0] - v2[0]);
+    dest[1] = (v1[1] - v2[1]);
+    dest[2] = (v1[2] - v2[2]);
+}
+
 export function calculateDistance(v1, v2) {
   return (
     (v1[0] - v2[0]) ** 2 +
@@ -151,6 +165,12 @@ export function crossVec3(v1, v2) {
   out[1] = v1[2] * v2[0] - v1[0] * v2[2]; 
   out[2] = v1[0] * v2[1] - v1[1] * v2[0];
   return out;
+}
+
+export function crossVec3Dest(v1, v2, dest) {
+  dest[0] = v1[1] * v2[2] - v1[2] * v2[1]; 
+  dest[1] = v1[2] * v2[0] - v1[0] * v2[2]; 
+  dest[2] = v1[0] * v2[1] - v1[1] * v2[0];
 }
 
 export function transposeMat4(a) {
