@@ -450,10 +450,14 @@ export function getSkyBackgroundColorForDay(curDay) {
     return rgbToRgba(Math.floor(processedColor.r), Math.floor(processedColor.g), Math.floor(processedColor.b), 1);
 }
 
+
+let params = new URLSearchParams(document.location.search);
+let timeOverrideColor = "#" + params.get("timeOverrideColor");
+
 function renderSkyBackground() {
     let curDay = getCurDay();
     let processedColorRgba = getSkyBackgroundColorForDay(curDay);
-    MAIN_CONTEXT.fillStyle = processedColorRgba;
+    MAIN_CONTEXT.fillStyle = timeOverrideColor ?? processedColorRgba;
     setBackgroundColor(processedColorRgba);
 
     MAIN_CONTEXT.fillRect(
@@ -492,16 +496,7 @@ function getDaylightStrength() {
     _cdaylightStrength = Math.sin(sunData.altitude);
     return _cdaylightStrength;
 }
-
 function renderTime() {
-    MAIN_CONTEXT.fillStyle = calculateTempColorRgbaCache(getDaylightStrength(), 0.35);
-    MAIN_CONTEXT.fillRect(
-        0,
-        0,
-        getTotalCanvasPixelWidth(),
-        getTotalCanvasPixelHeight()
-    );
-
     renderSkyBackground();
 }
 
@@ -589,9 +584,18 @@ function calculateTempColorRgbaCache(daylightStrength, opacity) {
 }
 
 
+let starValueDownwardMult = parseFloat(params.get("starValueDownwardShift"));
+
 export function tempToColorForStar(temperature) {
     let dc = calculateTempColor(temperature);
-    return [dc.r, dc.g, dc.b];
+    let rgb = [dc.r, dc.g, dc.b];
+    
+    if (starValueDownwardMult != null) {
+        let hsv = rgb2hsv(...rgb);
+        hsv[2] /= starValueDownwardMult;
+        rgb = hsv2rgb(...hsv);
+    }
+    return rgb;
 }
 
 
