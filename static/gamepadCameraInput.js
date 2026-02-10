@@ -17,17 +17,18 @@ export function gamepadCameraInput() {
 
     let offset = getFrameDt() / 400;
 
+    let buttonMult = 5;
     if (isButtonPressed(GBA)) {
-        offset *= 10;
+        offset *= buttonMult;
     }
     if (isButtonPressed(GBX)) {
-        offset *= 10;
+        offset *= buttonMult;
     }
     if (isButtonPressed(GBB)) {
-        offset *= 10;
+        offset *= buttonMult;
     }
     if (isButtonPressed(GBY)) {
-        offset *= 10;
+        offset *= buttonMult;
     }
 
 
