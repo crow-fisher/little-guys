@@ -452,7 +452,11 @@ export function getSkyBackgroundColorForDay(curDay) {
 
 
 let params = new URLSearchParams(document.location.search);
-let timeOverrideColor = "#" + params.get("timeOverrideColor");
+let timeOverrideColor = params.get("timeOverrideColor");
+
+if (timeOverrideColor != null) {
+    timeOverrideColor = "#" + timeOverrideColor;
+}
 
 function renderSkyBackground() {
     let curDay = getCurDay();
@@ -584,7 +588,7 @@ function calculateTempColorRgbaCache(daylightStrength, opacity) {
 }
 
 
-let starValueDownwardMult = parseFloat(params.get("starValueDownwardShift"));
+let starValueDownwardMult = parseFloat(params.get("starValueDownwardShift") ?? 1);
 
 export function tempToColorForStar(temperature) {
     let dc = calculateTempColor(temperature);
