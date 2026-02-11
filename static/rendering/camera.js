@@ -442,10 +442,11 @@ export function debugRenderLineOffsetPoints(offset1, offset2, color) {
         screenToRenderScreen(screen2, renderNorm2, renderScreen2, 
             gfc()._xOffset, gfc()._yOffset, gfc()._s);
 
-        if (renderScreen1[2] < 0 && renderScreen2[2] < 0) {
+        if (renderScreen1[2] > 0 && renderScreen2[2] > 0) {
             addRenderJob(new LineRenderJob(renderScreen1, renderScreen2, 3, color, renderScreen2.z));
+            addRenderJob(new PointLabelRenderJob(...renderScreen1, 2, color));
+            addRenderJob(new PointLabelRenderJob(...renderScreen2, 2, color));
         }
-        addRenderJob(new PointLabelRenderJob(...renderScreen1, 2, color));
-        addRenderJob(new PointLabelRenderJob(...renderScreen2, 2, color));
+
 }
 

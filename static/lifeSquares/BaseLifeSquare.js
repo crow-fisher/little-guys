@@ -138,17 +138,20 @@ class BaseLifeSquare {
 
         addVec3Dest(this.startPointVec, this.rotatedOffset, this.endPointVec);
 
-        this.forwardVec = normalizeVec3(addVectors(getCameraPosition(), this.startPointVec));
+        this.forwardVec = normalizeVec3(this.startPointVec);
         this.sideVec = normalizeVec3(crossVec3(this.rotatedOffset, this.forwardVec), 1 / this.width);
 
-        debugRenderLineOffsetPoints(this.startPointVec, this.endPointVec, COLOR_VERY_FUCKING_RED);
+        // debugRenderLineOffsetPoints(this.startPointVec, this.endPointVec, COLOR_VERY_FUCKING_RED);
 
         normalizeVec3Dest(addVectors(getCameraPosition(), this.startPointVec), this.forwardVec);
         crossVec3Dest(this.rotatedOffset, this.forwardVec, this.offsetCrossForwardVec)
         this.sideVec = normalizeVec3(crossVec3(this.rotatedOffset, this.forwardVec), 1 / this.width);
 
+        // debugRenderLineOffsetPoints(this.startPointVec, addVectorsCopy(this.startPointVec, this.forwardVec), COLOR_BLUE);
+        // debugRenderLineOffsetPoints(this.startPointVec, addVectorsCopy(this.startPointVec, this.sideVec), COLOR_VERY_FUCKING_RED);
+
         subtractVectorsDest(this.endPointVec, this.sideVec, this.cartesian_tl)
-        addVec3Dest(this.endPointVec, this.sideVec, this.cartesian_tl)
+        addVec3Dest(this.endPointVec, this.sideVec, this.cartesian_tr)
         subtractVectorsDest(this.startPointVec, this.sideVec, this.cartesian_bl)
         addVec3Dest(this.startPointVec, this.sideVec, this.cartesian_br)
 
