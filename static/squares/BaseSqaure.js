@@ -21,7 +21,7 @@ import { COLOR_BLACK, GROUP_BROWN, GROUP_BLUE, GROUP_MAUVE, GROUP_TAN, GROUP_GRE
 import { getCurDay, getDaylightStrengthFrameDiff, getFrameDt, getTimeScale } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasSquaresY, getCurZoom, isSquareOnCanvas, transformCanvasSquaresToPixels, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
-import { loadGD, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3, UI_VIEWMODE_DEV4, UI_VIEWMODE_DEV5, UI_PALETTE_STRENGTH, UI_LIGHTING_SURFACE, UI_PALETTE_SURFACE_MATCH, UI_VIEWMODE_3D } from "../ui/UIData.js";
+import { loadGD, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3, UI_VIEWMODE_DEV4, UI_VIEWMODE_DEV5, UI_PALETTE_STRENGTH, UI_LIGHTING_SURFACE, UI_PALETTE_SURFACE_MATCH, UI_VIEWMODE_3D, UI_CAMERA_CENTER_SELECT_POINT } from "../ui/UIData.js";
 import { deregisterSquare, registerSquare } from "../waterGraph.js";
 import { STAGE_DEAD } from "../organisms/Stages.js";
 import { cartesianToScreenInplace, gfc, screenToRenderScreen } from "../rendering/camera.js";
@@ -498,14 +498,19 @@ export class BaseSquare {
 
     setFrameCartesians() {
         let co = gfc().cameraOffset;
-        this.cartesian_tl[0] = this.posX - co[0];
-        this.cartesian_tr[0] = this.posX + 1 - co[0];
-        this.cartesian_bl[0] = this.posX - co[0];
-        this.cartesian_br[0] = this.posX + 1 - co[0];
-        this.cartesian_tl[1] = this.posY - co[1];
-        this.cartesian_tr[1] = this.posY - co[1];
-        this.cartesian_bl[1] = this.posY + 1 - co[1];
-        this.cartesian_br[1] = this.posY + 1 - co[1];
+        this.selectPoint = loadGD(UI_CAMERA_CENTER_SELECT_POINT);
+        
+        this.px = this.posX - this.selectPoint[0];
+        this.py = this.posY - this.selectPoint[1];
+
+        this.cartesian_tl[0] = this.px - co[0];
+        this.cartesian_tr[0] = this.px + 1 - co[0];
+        this.cartesian_bl[0] = this.px - co[0];
+        this.cartesian_br[0] = this.px + 1 - co[0];
+        this.cartesian_tl[1] = this.py - co[1];
+        this.cartesian_tr[1] = this.py - co[1];
+        this.cartesian_bl[1] = this.py + 1 - co[1];
+        this.cartesian_br[1] = this.py + 1 - co[1];
         this.cartesian_tl[2] = (this.tsq?.z ?? (this.z - (this.zCascadeFunc(0)))) - co[2];
         this.cartesian_tr[2] = (this.tsq?.z ?? (this.z - (this.zCascadeFunc(0)))) - co[2];
         this.cartesian_bl[2] = this.z - co[2];

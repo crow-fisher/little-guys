@@ -1,9 +1,11 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { hueShiftColor, rgbToHex, rgbToHexObj, UI_BIGDOTHOLLOW, UI_BIGDOTSOLID } from "../../common.js";
+import { getCameraPosition } from "../../rendering/camera.js";
 import { Component } from "../Component.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
 import { Container } from "../Container.js";
+import { Button } from "../elements/Button.js";
 import { ButtonFunctionalText } from "../elements/ButtonFunctionalText.js";
 import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
 import { Slider } from "../elements/Slider.js";
@@ -14,7 +16,7 @@ import { Text } from "../elements/Text.js";
 import { TextBackground } from "../elements/TextBackground.js";
 import { TextFunctionalBackground } from "../elements/TextFunctionalBackground.js";
 import { Toggle } from "../elements/Toggle.js";
-import { loadGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CENTER, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_PALETTE_COMPOSITION, saveGD, UI_PALETTE_SHOWPICKER, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, UI_PALETTE_SOILROCK, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_AQUIFER_FLOWRATE, UI_UI_PHONEMODE, loadUI, UI_PALLETE_MODE_PASTE, UI_PALETTE_PASTE_MODE, UI_PALETTE_PASTE_MODE_FG, UI_PALETTE_PASTE_MODE_BG, UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_RIGID, UI_PALETTE_PHYSICS_SAND, UI_PALETTE_PHYSICS_STATIC, UI_PALETTE_SPECIAL_CHURN, UI_PALETTE_SPECIAL_CHURN_WIDE, UI_PALETTE_SPECIAL_CHURN_STRENGTH, UI_PALETTE_SURFACE_MATCH, UI_PALETTE_VARIANCE, UI_PALETTE_CENTER_SELECT } from "../UIData.js";
+import { loadGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CENTER, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_PALETTE_COMPOSITION, saveGD, UI_PALETTE_SHOWPICKER, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, UI_PALETTE_SOILROCK, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_AQUIFER_FLOWRATE, UI_UI_PHONEMODE, loadUI, UI_PALLETE_MODE_PASTE, UI_PALETTE_PASTE_MODE, UI_PALETTE_PASTE_MODE_FG, UI_PALETTE_PASTE_MODE_BG, UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_RIGID, UI_PALETTE_PHYSICS_SAND, UI_PALETTE_PHYSICS_STATIC, UI_PALETTE_SPECIAL_CHURN, UI_PALETTE_SPECIAL_CHURN_WIDE, UI_PALETTE_SPECIAL_CHURN_STRENGTH, UI_PALETTE_SURFACE_MATCH, UI_PALETTE_VARIANCE, UI_PALETTE_CENTER_SELECT, UI_CAMERA_CENTER_SELECT_OFFSET } from "../UIData.js";
 import { getWaterColor, getWaterColorDark } from "./LightingComponent.js";
 
 
@@ -211,7 +213,7 @@ export class BlockPalette extends Component {
         
         specialContainer.addElement(new Text(this.window, sizeX, h2, UI_CENTER, "special tools"))
         specialContainer.addElement(new SliderGradientBackground(this.window, UI_PALETTE_AQUIFER_FLOWRATE, sizeX, 35, 0.0, 1, getWaterColorDark, getWaterColor,));
-
+        
         let specialToolRow = new Container(this.window, 0, 0);
         specialContainer.addElement(specialToolRow);
         specialToolRow.addElement(new RadioToggleLabel(this.window, half, h1, UI_CENTER, "churn", UI_PALETTE_SELECT, UI_PALETTE_SPECIAL_CHURN,
@@ -221,6 +223,7 @@ export class BlockPalette extends Component {
         specialContainer.addElement(new SliderGradientBackground(this.window, UI_PALETTE_SPECIAL_CHURN_STRENGTH, sizeX, 35, 1, 20, getWaterColorDark, getWaterColor,));
         specialContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, UI_CENTER, "center select point", UI_PALETTE_SELECT, UI_PALETTE_CENTER_SELECT,
             () => getWaterColor(0.7), () => getWaterColor(1)));
+        specialContainer.addElement(new Button(this.window, sizeX, h1, UI_CENTER, () => saveGD(UI_CAMERA_CENTER_SELECT_OFFSET, getCameraPosition()), "set center 3d point", () => getWaterColor(0.5)));
         // paste container
         pasteContainer.addElement(new Text(this.window, sizeX, h1, UI_CENTER, "mode"))
 

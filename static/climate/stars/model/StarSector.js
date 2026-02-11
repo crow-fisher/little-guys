@@ -111,7 +111,7 @@ export class StarSector {
             });
         }
 
-        this._curCameraPosition = gfc().cameraOffset;
+        this._curCameraPosition = gfc().UI_CAMERA_OFFSET_VEC;
         this._cw = getCanvasWidth();
         this._ch = getCanvasHeight();
         this._max = Math.max(this._cw, this._ch);
