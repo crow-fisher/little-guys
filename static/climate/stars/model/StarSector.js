@@ -1,4 +1,4 @@
-import { cameraToScreen, cartesianToCamera, cartesianToScreen, debugRenderLineCartesianPoints, screenToRenderScreen } from "../../../rendering/camera.js";
+import { cameraToScreen, cartesianToCamera, cartesianToScreen, debugRenderLineCartesianPoints, gfc, screenToRenderScreen } from "../../../rendering/camera.js";
 import { getCanvasHeight, getCanvasWidth } from "../../../canvas.js";
 import { COLOR_BLUE, COLOR_GREEN, COLOR_OTHER_BLUE, COLOR_RED, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../colors.js";
 import { calculateStatistics, invlerp, lerp, processRangeToOne, rgbToRgba } from "../../../common.js";
@@ -111,7 +111,7 @@ export class StarSector {
             });
         }
 
-        this._curCameraPosition = loadGD(UI_CAMERA_OFFSET_VEC);
+        this._curCameraPosition = gfc().cameraOffset;
         this._cw = getCanvasWidth();
         this._ch = getCanvasHeight();
         this._max = Math.max(this._cw, this._ch);

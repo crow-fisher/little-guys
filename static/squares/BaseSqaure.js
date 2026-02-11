@@ -497,7 +497,7 @@ export class BaseSquare {
     }
 
     setFrameCartesians() {
-        let co = gfc().UI_CAMERA_OFFSET_VEC;
+        let co = gfc().cameraOffset;
         this.cartesian_tl[0] = this.posX - co[0];
         this.cartesian_tr[0] = this.posX + 1 - co[0];
         this.cartesian_bl[0] = this.posX - co[0];

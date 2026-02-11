@@ -2,7 +2,7 @@ import { doWaterFlow, periodicPurgeOldGroupData, physics, processOrganisms, rend
 import { doClickAdd, doClickAddEyedropperMixer } from "./manipulation.js";
 import { renderClouds, renderTemperature, renderWaterSaturation } from "./climate/simulation/temperatureHumidity.js";
 import { doTimeSeek, doTimeSkipToNow, getTimeScale, isTimeSeeking, renderTime, updateTime } from "./climate/time.js";
-import { executeFunctionQueue, loadGD, saveGD, UI_CAMERA_EXPOSURE, UI_LIGHTING_GLOBAL, UI_SIMULATION_CLOUDS, UI_VIEWMODE_3D, UI_VIEWMODE_AIRTICKRATE, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_DEV5, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_WIND } from "./ui/UIData.js";
+import { executeFunctionQueue, loadGD, saveGD, UI_CAMERA_CENTER_SELECT_POINT, UI_CAMERA_EXPOSURE, UI_LIGHTING_GLOBAL, UI_SIMULATION_CLOUDS, UI_VIEWMODE_3D, UI_VIEWMODE_AIRTICKRATE, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_DEV5, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_WIND } from "./ui/UIData.js";
 import { initUI, renderMouseHover, renderWindows, resetWindowHovered, updateWindows } from "./ui/WindowManager.js";
 import { renderWindPressureMap } from "./climate/simulation/wind.js";
 import { LightingHandler } from "./lighting/lightingHandler.js";
@@ -15,11 +15,13 @@ import { playerTick, renderPlayer } from "./player/playerMain.js";
 import { gamepadInputLoop } from "./gamepad.js";
 import { renderCloudsDebug } from "./climate/weather/weatherManager.js";
 import { clearTimeouts, completeActiveJobs, prepareTickJobs } from "./scheduler.js";
-import { canvasPanRoutine } from "./canvas.js";
+import { canvasPanRoutine, getBaseSize, zoomCanvasFillRect } from "./canvas.js";
 import { render3DHud, tickFrameMatrix } from "./rendering/camera.js";
 import { gamepadCameraInput } from "./gamepadCameraInput.js";
 import { executeRenderJobs } from "./rendering/rasterizer.js";
 import { StarHandler } from "./climate/stars/starHandler.js";
+import { MAIN_CONTEXT } from "./index.js";
+import { COLOR_VERY_FUCKING_RED } from "./colors.js";
 
 
 let starHandler;
@@ -103,9 +105,11 @@ export function scheduler_main() {
         prepareTickJobs();
         completeActiveJobs();
         render3DHud();
+        renderMainDebug();
     }
     setTimeout(scheduler_main, 0);
 }
+
 
 function render() {
     tickFrameMatrix();
@@ -180,4 +184,19 @@ function squareTick() {
         }
     }
 
+}
+
+function renderMainDebug() {
+    renderCenterSelect();
+}
+
+function renderCenterSelect() {
+    let csp = loadGD(UI_CAMERA_CENTER_SELECT_POINT) ?? [0, 0];
+    MAIN_CONTEXT.fillStyle = COLOR_VERY_FUCKING_RED;
+    zoomCanvasFillRect(
+        csp[0] * getBaseSize(),
+        csp[1] * getBaseSize(),
+        getBaseSize(),
+        getBaseSize()
+    );
 }

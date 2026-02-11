@@ -1,4 +1,5 @@
 import { getCanvasHeight, getCanvasWidth } from "../canvas.js";
+import { getCurDay } from "../climate/time.js";
 import { loadGD, UI_SH_MINSIZE, UI_SH_STYLE_SIZE_A , UI_SH_STYLE_BRIGHTNESS_B, UI_SH_STYLE_BRIGHTNESS_A,
 UI_SH_STYLE_SIZE_B,
 UI_STARMAP_ZOOM,
@@ -23,6 +24,7 @@ export class FrameCache {
         this.UI_SH_STYLE_BRIGHTNESS_A = loadGD(UI_SH_STYLE_BRIGHTNESS_A);
         this.UI_SH_STYLE_SIZE_B = loadGD(UI_SH_STYLE_SIZE_B);
         this.UI_STARMAP_ZOOM = loadGD(UI_STARMAP_ZOOM)
+        
         this.UI_CAMERA_OFFSET_VEC = loadGD(UI_CAMERA_OFFSET_VEC);
         this.UI_STARMAP_VIEWMODE = loadGD(UI_STARMAP_VIEWMODE);
         this.UI_AA_PLOT_LOCALITY_SELECTMODE = loadGD(UI_AA_PLOT_LOCALITY_SELECTMODE);
@@ -30,6 +32,9 @@ export class FrameCache {
         this.UI_AA_SETUP_MULT = Math.exp(loadGD(UI_AA_SETUP_MULT));
         this.namedStarOpacityMult = 1 + Math.exp(loadGD(UI_AA_SETUP_SELECT_MULT));
         this.starMinSize = Math.exp(loadGD(UI_STARMAP_STAR_MIN_SIZE));
+
+        this.cameraOffset = structuredClone(this.UI_CAMERA_OFFSET_VEC); 
+
     }
 
     prepareRenderFrameCache() {
