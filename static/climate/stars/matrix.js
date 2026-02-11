@@ -134,7 +134,7 @@ export function subtractVectors(v1, v2) {
 export function subtractVectorsDest(v1, v2, dest) {
     dest[0] = (v1[0] - v2[0]);
     dest[1] = (v1[1] - v2[1]);
-    dest[2] = (v1[2] - v2[2]);
+    dest[2] = (v1[2] - (v2[2] ?? 0));
 }
 
 export function calculateDistance(v1, v2) {

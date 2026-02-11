@@ -1,11 +1,14 @@
 import { decayVec, getBaseSize, getCanvasHeight, getCanvasWidth, getCurZoom } from "../canvas.js";
-import { addVectors, crossVec3, multiplyMatrixAndPoint, multiplyMatrixAndPointInplace, multiplyVectorByScalar, normalizeVec3, subtractVectors, transposeMat4 } from "../climate/stars/matrix.js";
+import { addVec3Dest, addVectors, crossVec3, multiplyMatrixAndPoint, multiplyMatrixAndPointInplace, multiplyVectorByScalar, normalizeVec3, subtractVectors, transposeMat4 } from "../climate/stars/matrix.js";
 import { getCurDay } from "../climate/time.js";
-import { COLOR_WHITE } from "../colors.js";
+import { COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../colors.js";
 import { rgbToHex } from "../common.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CAMERA_OFFSET_VEC, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_ROTATION_VEC_DT, saveGD, UI_CAMERA_FOV, addUIFunctionMap, UI_STARMAP_ZOOM, UI_STARMAP_PREV_ZOOM } from "../ui/UIData.js";
 import { FrameCache } from "./FrameCache.js";
+import { LineRenderJob } from "./model/LineRenderJob.js";
+import { PointLabelRenderJob } from "./model/PointLabelRenderJob.js";
+import { addRenderJob } from "./rasterizer.js";
 
 let params = new URLSearchParams(document.location.search);
 
@@ -419,9 +422,7 @@ export function rotatePointRz(point, theta) {
     return multiplyMatrixAndPoint(rotationMatrix, point);
 }
 
-export function debugRenderLineCartesianPoints(cartesian1, cartesian2, color) {
-        let offset1 = [0, 0, 0];
-        let offset2 = [0, 0, 0];
+export function debugRenderLineOffsetPoints(offset1, offset2, color) {
         let camera1 = [0, 0, 0];
         let camera2 = [0, 0, 0];
         let screen1 = [0, 0, 0];
@@ -431,16 +432,20 @@ export function debugRenderLineCartesianPoints(cartesian1, cartesian2, color) {
         let renderScreen1 = [0, 0, 0];
         let renderScreen2 = [0, 0, 0];
 
-        addVec3Dest(cartesian1, this._curCameraPosition, offset1);
-        addVec3Dest(cartesian2, this._curCameraPosition, offset2);
         cartesianToCamera(offset1, camera1);
-        cartesianToCamera(offset2, camera2);
         cameraToScreen(camera1, screen1);
+        screenToRenderScreen(screen1, renderNorm1, renderScreen1, 
+            gfc()._xOffset, gfc()._yOffset, gfc()._s);
+        
+        cartesianToCamera(offset2, camera2);
         cameraToScreen(camera2, screen2);
-        screenToRenderScreen(screen1, renderNorm1, renderScreen1, this._xOffset, this._yOffset, this._s);
-        screenToRenderScreen(screen2, renderNorm2, renderScreen2, this._xOffset, this._yOffset, this._s);
+        screenToRenderScreen(screen2, renderNorm2, renderScreen2, 
+            gfc()._xOffset, gfc()._yOffset, gfc()._s);
 
         if (renderScreen1[2] < 0 && renderScreen2[2] < 0) {
             addRenderJob(new LineRenderJob(renderScreen1, renderScreen2, 3, color, renderScreen2.z));
         }
-    }
+        addRenderJob(new PointLabelRenderJob(...renderScreen1, 2, color));
+        addRenderJob(new PointLabelRenderJob(...renderScreen2, 2, color));
+}
+

@@ -1,4 +1,4 @@
-import { cameraToScreen, cartesianToCamera, cartesianToScreen, debugRenderLineCartesianPoints, gfc, screenToRenderScreen } from "../../../rendering/camera.js";
+import { cameraToScreen, cartesianToCamera, cartesianToScreen, debugRenderLineOffsetPoints, gfc, screenToRenderScreen } from "../../../rendering/camera.js";
 import { getCanvasHeight, getCanvasWidth } from "../../../canvas.js";
 import { COLOR_BLUE, COLOR_GREEN, COLOR_OTHER_BLUE, COLOR_RED, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../colors.js";
 import { calculateStatistics, invlerp, lerp, processRangeToOne, rgbToRgba } from "../../../common.js";
@@ -311,23 +311,23 @@ export class StarSector {
             let start = line[0];
             let end = line[1];
             let color = line[2];
-            debugRenderLineCartesianPoints(start, end, color);
+            debugRenderLineOffsetPoints(start, end, color);
         })
 
-        debugRenderLineCartesianPoints(
+        debugRenderLineOffsetPoints(
             this._cameraDistRefPoint,
             this.cartesian,
             COLOR_VERY_FUCKING_RED
         )
-        // debugRenderLineCartesianPoints(
+        // debugRenderLineOffsetPoints(
         //     [this.cartesianBounds[0], this.cartesianBounds[4], this.cartesianBounds[2]],
         //     [this.cartesianBounds[3], this.cartesianBounds[4], this.cartesianBounds[2]]
         // )
-        // debugRenderLineCartesianPoints(
+        // debugRenderLineOffsetPoints(
         //     [this.cartesianBounds[0], this.cartesianBounds[1], this.cartesianBounds[2]],
         //     [this.cartesianBounds[0], this.cartesianBounds[4], this.cartesianBounds[5]]
         // )
-        // debugRenderLineCartesianPoints(
+        // debugRenderLineOffsetPoints(
         //     [this.cartesianBounds[3], this.cartesianBounds[1], this.cartesianBounds[2]],
         //     [this.cartesianBounds[3], this.cartesianBounds[4], this.cartesianBounds[5]]
         // )

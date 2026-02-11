@@ -9,8 +9,8 @@ import { removeSquare } from "../globalOperations.js";
 import { STATE_HEALTHY, STAGE_DEAD, TYPE_ROOT } from "../organisms/Stages.js";
 import { getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasHeight, getCanvasWidth, getCurZoom, rotatePoint, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasFillRectTheta, zoomCanvasFillRectTheta3D, zoomCanvasSquareText } from "../canvas.js";
-import { loadGD, UI_CAMERA_OFFSET_VEC, UI_CANVAS_SQUARES_ZOOM, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_3D, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_NORMAL, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../ui/UIData.js";
-import { cartesianToScreen, cartesianToScreenInplace, debugRenderLineCartesianPoints, getCameraPosition, getCameraRotationVec, getForwardVec, gfc, renderPoint, renderVec, screenToRenderScreen } from "../rendering/camera.js";
+import { loadGD, UI_CAMERA_CENTER_SELECT_POINT, UI_CAMERA_OFFSET_VEC, UI_CANVAS_SQUARES_ZOOM, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_3D, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_NORMAL, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../ui/UIData.js";
+import { cartesianToScreen, cartesianToScreenInplace, debugRenderLineOffsetPoints, getCameraPosition, getCameraRotationVec, getForwardVec, gfc, renderPoint, renderVec, screenToRenderScreen } from "../rendering/camera.js";
 import { addVec3Dest, addVectors, addVectorsCopy, crossVec3, crossVec3Dest, normalizeVec3, normalizeVec3Dest, subtractVectors, subtractVectorsCopy, subtractVectorsDest } from "../climate/stars/matrix.js";
 import { QuadRenderJob } from "../rendering/model/QuadRenderJob.js";
 import { addRenderJob } from "../rendering/rasterizer.js";
@@ -131,12 +131,18 @@ class BaseLifeSquare {
 
         this.offsetVec = [0, 1, 0, 0];
         this.rotatedOffset = rotatePoint(this.offsetVec, ...this.rotVec);
+        this._centerPointRef = loadGD(UI_CAMERA_CENTER_SELECT_POINT);
 
-        subtractVectorsDest(this.posVec, loadGD(UI_CAMERA_OFFSET_VEC), this.startPointVec);
+        subtractVectorsDest(this.posVec, gfc().cameraOffset, this.startPointVec);
+        subtractVectorsDest(this.startPointVec, loadGD(UI_CAMERA_CENTER_SELECT_POINT), this.startPointVec);
+
         addVec3Dest(this.startPointVec, this.rotatedOffset, this.endPointVec);
 
-        debugRenderLineCartesianPoints(this.startPointVec, this.endPointVec, COLOR_VERY_FUCKING_RED);
-        
+        this.forwardVec = normalizeVec3(addVectors(getCameraPosition(), this.startPointVec));
+        this.sideVec = normalizeVec3(crossVec3(this.rotatedOffset, this.forwardVec), 1 / this.width);
+
+        debugRenderLineOffsetPoints(this.startPointVec, this.endPointVec, COLOR_VERY_FUCKING_RED);
+
         normalizeVec3Dest(addVectors(getCameraPosition(), this.startPointVec), this.forwardVec);
         crossVec3Dest(this.rotatedOffset, this.forwardVec, this.offsetCrossForwardVec)
         this.sideVec = normalizeVec3(crossVec3(this.rotatedOffset, this.forwardVec), 1 / this.width);

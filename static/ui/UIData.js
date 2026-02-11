@@ -515,6 +515,7 @@ export let _GAMEDATA_DEFAULT = {
     
     // end lighting 
 
+    UI_CAMERA_CENTER_SELECT_POINT: [0, 0],
     UI_LIGHTING_SHADOW_SOFTNESS: 0.05,
     
     UI_VIEWMODE_SELECT: UI_VIEWMODE_3D,

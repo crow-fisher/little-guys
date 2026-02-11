@@ -498,7 +498,7 @@ export class BaseSquare {
 
     setFrameCartesians() {
         let co = gfc().cameraOffset;
-        this.selectPoint = loadGD(UI_CAMERA_CENTER_SELECT_POINT);
+        this.selectPoint = loadGD(UI_CAMERA_CENTER_SELECT_POINT) ?? [0, 0];
         
         this.px = this.posX - this.selectPoint[0];
         this.py = this.posY - this.selectPoint[1];
