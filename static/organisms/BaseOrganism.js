@@ -10,6 +10,7 @@ import { rgbToRgba } from "../common.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { zoomCanvasFillRect } from "../canvas.js";
 import { getNextBlockId } from "../globals.js";
+import { executeRenderJobs } from "../rendering/rasterizer.js";
 
 export const _llt_target = "_llt_target";
 export const _llt_min = "_llt_min";
@@ -568,7 +569,14 @@ class BaseOrganism {
             this.setNutrientIndicators();
         }
         if (this.stage != STAGE_DEAD) {
-            this.greenLifeSquares.forEach((sp) => sp.render())
+            // this.greenLifeSquares.forEach((sp) => sp.render())
+            this.greenLifeSquares.forEach((sp) => {
+                sp.render();
+                executeRenderJobs();
+                console.log(sp.posY);
+                ;
+
+            });
         }
 
         if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_ORGANISMS) {

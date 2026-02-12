@@ -262,6 +262,7 @@ export function compressSquares(squares) {
                         lsq.linkedSquare = sqArr.indexOf(lsq.linkedSquare);
                         lsq.linkedOrganism = orgArr.indexOf(lsq.linkedOrganism);
                         lsq.component = growthPlanComponentArr.indexOf(lsq.component);
+                        lsq.renderJob = null;
                     })
                 });
                 org.greenLifeSquares = Array.from(org.greenLifeSquares.map((lsq) => lsqArr.indexOf(lsq)));

@@ -1,5 +1,6 @@
 import { fillCanvasPointArr, getBaseUISize } from "../canvas.js";
 import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth, MAIN_CANVAS, MAIN_CONTEXT } from "../index.js";
+import { RenderJob } from "./model/RenderJob.js";
 
 
 const noSortRenderJobs = new Array();

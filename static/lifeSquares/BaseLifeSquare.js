@@ -117,43 +117,21 @@ class BaseLifeSquare {
     }
 
     setFrameCartesians() {
-        // we are a cylinder
-        // rotated at a certain angle 
-        // based on parameters:
-        // * this.posVec (vec<3>)
-        // * this.rotVec (vec<3>)
-
-        // we have a maximum viewable cross section
-        // for cylinders - the width only reduces with distance,
-        //                 but the height reduces with the angle. 
-
-        // vaguely replicated from how these are used in growthPlans
-
         this.offsetVec = [0, 1, 0, 0];
         this.rotatedOffset = rotatePoint(this.offsetVec, ...this.rotVec);
         this._centerPointRef = loadGD(UI_CAMERA_CENTER_SELECT_POINT);
 
         subtractVectorsDest(this.posVec, gfc().cameraOffset, this.startPointVec);
         subtractVectorsDest(this.startPointVec, loadGD(UI_CAMERA_CENTER_SELECT_POINT), this.startPointVec);
-
         addVec3Dest(this.startPointVec, this.rotatedOffset, this.endPointVec);
 
         this.forwardVec = normalizeVec3(this.startPointVec);
-        this.sideVec = normalizeVec3(crossVec3(this.rotatedOffset, this.forwardVec), 1 / this.width);
+        this.sideVec = normalizeVec3(crossVec3(this.rotatedOffset, this.forwardVec))
 
-        // debugRenderLineOffsetPoints(this.startPointVec, this.endPointVec, COLOR_VERY_FUCKING_RED);
-
-        normalizeVec3Dest(addVectors(getCameraPosition(), this.startPointVec), this.forwardVec);
-        crossVec3Dest(this.rotatedOffset, this.forwardVec, this.offsetCrossForwardVec)
-        this.sideVec = normalizeVec3(crossVec3(this.rotatedOffset, this.forwardVec), 1 / this.width);
-
-        // debugRenderLineOffsetPoints(this.startPointVec, addVectorsCopy(this.startPointVec, this.forwardVec), COLOR_BLUE);
-        // debugRenderLineOffsetPoints(this.startPointVec, addVectorsCopy(this.startPointVec, this.sideVec), COLOR_VERY_FUCKING_RED);
-
-        subtractVectorsDest(this.endPointVec, this.sideVec, this.cartesian_tl)
-        addVec3Dest(this.endPointVec, this.sideVec, this.cartesian_tr)
-        subtractVectorsDest(this.startPointVec, this.sideVec, this.cartesian_bl)
-        addVec3Dest(this.startPointVec, this.sideVec, this.cartesian_br)
+        subtractVectorsDest(this.endPointVec, this.sideVec, this.cartesian_tl);
+        addVec3Dest(this.endPointVec, this.sideVec, this.cartesian_tr);
+        subtractVectorsDest(this.startPointVec, this.sideVec, this.cartesian_bl);
+        addVec3Dest(this.startPointVec, this.sideVec, this.cartesian_br);
 
         cartesianToScreenInplace(this.cartesian_tl, this.camera_tl, this.screen_tl);
         cartesianToScreenInplace(this.cartesian_tr, this.camera_tr, this.screen_tr);
