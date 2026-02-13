@@ -132,7 +132,10 @@ export class GrowthComponent {
     }
 
     getPosVec(vecPos, vecRot, posX, posY) {
-        let mult = this.dist(posX, posY);
+        // Temp override - trying to fix missing middle pixels problem
+        return [posX, posY, 0]; 
+
+        let mult = Math.max(1, this.dist(posX, posY));
         let step = .1;
         let dx = posX - this.posX();
         let dy = posY - this.posY();
@@ -148,6 +151,7 @@ export class GrowthComponent {
             let rotatedOffset = rotatePoint(offsetVec, rZ, rY, rX)
             vecPos = addVectors(vecPos, rotatedOffset);    
         }
+        console.log(vecPos, vecRot, posX, posY);
         return vecPos;
     }
 
@@ -396,74 +400,6 @@ export class GrowthComponent {
             }
             return this._getWilt(this.lifeSquares.at(0).linkedOrganism.getWilt());
         });
-    }
-
-
-    _applyDeflectionState(parentComponent) {
-        if (this.lifeSquares.some((lsq) => lsq == null)) {
-            return;
-        }
-
-        let startDeflectionXOffset = 0;
-        let startDeflectionYOffset = 0;
-        if (parentComponent != null) {
-            startDeflectionXOffset = parentComponent.getDeflectionXAtPosition(this.posX, this.posY);
-            startDeflectionYOffset = parentComponent.getDeflectionYAtPosition(this.posX, this.posY);
-        }
-
-        let curve = this.baseCurve + Math.sin(this.currentDeflection) * 0.06 * (this.ySizeCur() - 1) / this.getTotalStrength();
-
-        let startTheta = this.deflectionRollingAverage + this.getParentDeflectionVal() + this.getBaseRotation();
-        let endTheta = this.currentDeflection + curve + this.getParentDeflectionVal() - this.baseCurve * this.getWilt() + this.getBaseRotation();
-
-        let length = this.ySizeCur();
-
-        let thetaDelta = endTheta - startTheta;
-
-        let prevX = -1;
-        let prevY = -1;
-
-        if (this.lifeSquares.length >= 1) {
-            this.lifeSquares.forEach((lsq) => {
-                // relative to origin
-                let relLsqX = .7 * (this.posX - lsq.posX);
-                let relLsqY = .7 * (this.posY - lsq.posY);
-                let lsqDist = (relLsqX ** 2 + relLsqY ** 2) ** 0.5;
-                let currentTheta = startTheta + (lsqDist / length) * thetaDelta;
-
-                let offsetX = relLsqX * Math.cos(currentTheta) - relLsqY * Math.sin(currentTheta);
-                let offsetY = relLsqY * Math.cos(currentTheta) + relLsqX * Math.sin(currentTheta);
-
-                this.distToFront = offsetX * Math.cos(this.getTheta());
-                lsq.distToFront = this.getDistToFront();
-                offsetX *= Math.sin(this.getTheta());
-                offsetY *= Math.cos(this.getTwist());
-
-                let endX = startDeflectionXOffset + offsetX;
-                let endY = startDeflectionYOffset + offsetY;
-
-                lsq.deflectionXOffset = (endX - relLsqX) + this.xOffset;
-                lsq.deflectionYOffset = (endY - relLsqY) + this.yOffset;
-
-                if (prevX == -1 && this.parentComponent != null) {
-                    if (this.lifeSquares.length == 1)
-                        lsq.theta = (this.parentComponent.lifeSquares.find((llsq) => llsq.posY == lsq.posY) ?? lsq).theta;
-                    else
-                        lsq.theta = this.lifeSquares.at(1).theta;
-                }
-                if (prevX != -1) {
-                    lsq.theta = Math.atan((lsq.getPosY() - prevY) / (lsq.getPosX() - prevX)) + Math.PI / 2;
-                }
-
-                prevX = lsq.getPosX();
-                prevY = lsq.getPosY();
-
-                lsq.xRef = 1;
-                lsq.yRef = 0.5;
-            });
-        };
-
-        this.children.forEach((child) => child.applyDeflectionState(this));
     }
 
     getTotalStrength() {

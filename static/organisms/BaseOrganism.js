@@ -443,11 +443,10 @@ class BaseOrganism {
         }
     }
     doGreenGrowth() {
+        // -- Growth rate throttling method
         // if (this.age < this.greenLastGrown + this.lightLevelThrottleVal() * (this.getGrowthCycleMaturityLength() / this.growthNumGreen)) {
         //     return false;
         // }
-        // if (Math.abs(this.getWilt()) > .5)
-        //     return false;
 
         let somethingDone = false;
         this.growthPlans.filter((gp) => !gp.areStepsCompleted()).forEach((growthPlan) => {
@@ -548,9 +547,9 @@ class BaseOrganism {
     // ** PLAN GROWTH METHOD IMPLEMENTED BY ORGANISMS 
     // for green growth, roots are handled generically (for now)
     planGrowth() {
-        if (this.getWilt() <= -0.5) {
-            return;
-        }
+        if (Math.abs(this.getWilt()) > .5)
+            return false;
+
         if (this.growthPlans.some((gp) => !gp.areStepsCompleted())) {
             this.doGreenGrowth();
             return false;
@@ -564,6 +563,7 @@ class BaseOrganism {
 
     // RENDERING
     render() {
+        this.originGrowth?.applyDeflectionState();
         let mode = loadGD(UI_VIEWMODE_SELECT);
         if ([UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_ORGANISMS].indexOf(mode) != -1) {
             this.setNutrientIndicators();
@@ -573,7 +573,6 @@ class BaseOrganism {
             this.greenLifeSquares.forEach((sp) => {
                 sp.render();
                 executeRenderJobs();
-                console.log(sp.posY);
                 ;
 
             });

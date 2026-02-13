@@ -185,8 +185,11 @@ function squareTick() {
     }
 
 }
+let debug = new URLSearchParams(document.location.search).get("debug");
 
 function renderMainDebug() {
+        if (!debug)
+            return;
     renderCenterSelect();
 }
 
