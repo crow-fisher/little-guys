@@ -3,6 +3,7 @@ import pypdf
 
 coverReader = pypdf.PdfReader("./in/cover.pdf")
 sheetsReader = pypdf.PdfReader("./in/sheets.pdf")
+backReader = pypdf.PdfReader("./in/back.pdf")
 
 outWriter = pypdf.PdfWriter()
 
@@ -28,5 +29,9 @@ for i in range(numPages):
     )
 
     outWriter.add_page(page)
+
+
+backPage = backReader.pages[0]
+outWriter.add_page(backPage)
 
 outWriter.write("./out/out.pdf")

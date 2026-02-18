@@ -34,6 +34,7 @@ export class StarSector {
         this._renderScreen = [0, 0, 0];
 
         this.loadedStars = new Array();
+        this.constellationStars = new Set();
 
         this.visibilityFlags = 0;
     }
@@ -181,6 +182,14 @@ export class StarSector {
             } else {
             }
         };
+
+        this.constellationStars.forEach((star) => {
+            addVec3Dest(star.cartesian, this._curCameraPosition, star._offset);
+            cartesianToCamera(star._offset, star._camera);
+            cameraToScreen(star._camera, star._screen);
+            screenToRenderScreen(star._screen, star._renderNorm, star._renderScreen, this._xOffset, this._yOffset, this._s);
+            star._preparedThisFrame = true;
+        })
 
         if (recalculatingColor) {
             getAstronomyAtlasComponent().plotStarScatter.flagRepreparePoints();
@@ -363,6 +372,7 @@ export class StarSector {
 
     loadStar(star) {
         this.loadedStars.push(star);
+        star.sector = this;
     }
 
     procesLoadedStars() {

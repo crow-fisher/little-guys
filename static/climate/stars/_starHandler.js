@@ -141,37 +141,7 @@ export class StarHandler {
 
     }
 
-    loadConstellations(text) {
-        let rows = text.split("\n");
-        for (let i = 0; i < rows.length; i++) {
-            this.loadConstellationRow(rows.at(i));
-        }
-    }
 
-    loadConstellationRow(row) {
-        let constellation = new Constellation(row);
-        this.constellationNames.set(constellation.name, constellation);
-        this.constellations.push(constellation);
-        constellation.uniqueStars.forEach((star) => this.constellationStars.add(star));
-    }
-
-    loadConstellationNames(text) {
-        let rows = text.split("\n");
-        for (let i = 0; i < rows.length; i++) {
-            this.loadConstellationNameRow(rows.at(i));
-        }
-    }
-
-    loadConstellationNameRow(row) {
-        let data = row.split("\t").map((a) => a.trim()).filter((a) => a.length >= 3);
-        if (data.length < 2)
-            return;
-        let name = data[0];
-        let eng = data[1].slice(1, -1);
-        let loadedRef = this.constellationNames.get(name);
-        if (loadedRef != null)
-            loadedRef.englishName = eng;
-    }
 
     loadHIPStars(text) {
         let rows = text.split("\n");

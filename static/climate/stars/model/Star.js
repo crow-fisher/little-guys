@@ -18,6 +18,7 @@ export class Star {
         this.parallax = parallax;
         this.hd_number = hd_number;
         this.temperature = temperature;
+        this.constellationStar = false;
 
         this._offset = [0, 0, 0];
         this._camera = [0, 0, 0];
@@ -42,7 +43,7 @@ export class Star {
         
         this.cartesian = sphericalToCartesian(-this.asc, -this.dec, this.parsecs);
         this.lumens = brightnessValueToLumens(this.magnitude);
-        this.sector = [-1, -1, -1];
+        this.sector = null;
 
         this._rootCameraDistance = getVec3Length(this.cartesian);
         this._curCameraDistance = getVec3Length(this.cartesian);
