@@ -121,7 +121,7 @@ export class StarHandler {
         let stelCatalog = new StellariumCatalog((star) => this.loadStar(star), (constellation) => this.loadConstellation(constellation));
         hipCatalog.loadData(() => {
             this.processDataStar();
-            stelCatalog.loadData()
+            // stelCatalog.loadData()
         })
     };
 

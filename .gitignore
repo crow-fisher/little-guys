@@ -9,3 +9,5 @@
 
 ./music/util/raw_to_final/out/*
 ./music/util/raw_to_final/in/*
+
+*.pdf

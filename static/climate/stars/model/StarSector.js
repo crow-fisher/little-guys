@@ -3,7 +3,7 @@ import { getCanvasHeight, getCanvasWidth } from "../../../canvas.js";
 import { COLOR_BLUE, COLOR_GREEN, COLOR_OTHER_BLUE, COLOR_RED, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../colors.js";
 import { calculateStatistics, invlerp, lerp, processRangeToOne, rgbToRgba } from "../../../common.js";
 import { addRenderJob } from "../../../rendering/rasterizer.js";
-import { loadGD, UI_CAMERA_OFFSET_VEC, UI_SH_MINSIZE, UI_SH_DISTPOWERMULT, UI_SH_MAXLUMINENCE, UI_SH_MINLUMINENCE, UI_SH_STYLE_BRIGHTNESS_B, UI_SH_STYLE_BRIGHTNESS_A, UI_SH_STYLE_SIZE_A, UI_SH_STYLE_SIZE_B, UI_AA_PLOT_SELECTRADIUS, UI_AA_PLOT_LOCALITY_SELECTMODE, UI_AA_PLOT_ACTIVE, UI_SH_STYLE_SIZE_C, UI_SH_MAXSIZE, UI_SH_STYLE_BRIGHTNESS_C } from "../../../ui/UIData.js";
+import { loadGD, UI_CAMERA_OFFSET_VEC, UI_SH_MINSIZE, UI_SH_DISTPOWERMULT, UI_SH_MAXLUMINENCE, UI_SH_MINLUMINENCE, UI_SH_STYLE_BRIGHTNESS_B, UI_SH_STYLE_BRIGHTNESS_A, UI_SH_STYLE_SIZE_A, UI_SH_STYLE_SIZE_B, UI_AA_PLOT_SELECTRADIUS, UI_AA_PLOT_LOCALITY_SELECTMODE, UI_AA_PLOT_ACTIVE, UI_SH_STYLE_SIZE_C, UI_SH_MAXSIZE, UI_SH_STYLE_BRIGHTNESS_C, UI_CAMERA_FOV } from "../../../ui/UIData.js";
 import { getAstronomyAtlasComponent } from "../../../ui/WindowManager.js";
 import { addVec3Dest, getVec3Length } from "../matrix.js";
 import { LineRenderJob } from "../../../rendering/model/LineRenderJob.js";
@@ -32,6 +32,8 @@ export class StarSector {
         this._screen = [0, 0, 0];
         this._renderNorm = [0, 0];
         this._renderScreen = [0, 0, 0];
+        this._curFovMult = 1;
+        this._prevFovMult = 1;
 
         this.loadedStars = new Array();
         this.constellationStars = new Set();
@@ -113,6 +115,7 @@ export class StarSector {
         }
 
         this._curCameraPosition = gfc().UI_CAMERA_OFFSET_VEC;
+        this._curFovMult = 100 / loadGD(UI_CAMERA_FOV);
         this._cw = getCanvasWidth();
         this._ch = getCanvasHeight();
         this._max = Math.max(this._cw, this._ch);
@@ -132,6 +135,7 @@ export class StarSector {
         this._relCameraDist = (this._curCameraDist / this._rootCameraDist);
         this._relCameraDistBrightnessMult = 1 / (this._relCameraDist ** loadGD(UI_SH_DISTPOWERMULT));
         this._recalculateStarColorFlag |= (Math.min(this._curCameraDist, this._prevCameraDist) / Math.max(this._curCameraDist, this._prevCameraDist)) < 0.97;
+        this._recalculateStarColorFlag |= (Math.min(this._curFovMult, this._prevFovMult) / Math.max(this._curFovMult, this._prevFovMult)) < 0.97;
 
         this.visibilityFlags = 0;
         if (this._renderScreen[0] < 0 || this._renderScreen[0] > getCanvasWidth()) {
@@ -169,7 +173,7 @@ export class StarSector {
         }
 
         for (let i = 0; i < this.buckets.length; i++) {
-            bucketLumens = this.bucketLumensCutoffs.at(i) * this._relCameraDistBrightnessMult;
+            bucketLumens = this.bucketLumensCutoffs.at(i) * this._relCameraDistBrightnessMult * this._curFovMult;
             if (bucketLumens >= luminenceParams[0]) {
                 this.prepareBucket(this.buckets.at(i));
 
@@ -212,7 +216,7 @@ export class StarSector {
             star._relCameraDist = (star._curCameraDistance / star._rootCameraDistance);
             star._relCameraDistBrightnessMult = 1 / (star._relCameraDist ** luminenceParams[2]);
 
-            star._relLumens = star.lumens * star._relCameraDistBrightnessMult;
+            star._relLumens = star.lumens * star._relCameraDistBrightnessMult * this._curFovMult;
 
             star._relLumensLog = Math.log(star._relLumens);
             star._relLumensRange = Math.min(1, invlerp(luminenceParams[0], luminenceParams[1], star._relLumens));
