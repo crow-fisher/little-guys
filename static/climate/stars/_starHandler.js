@@ -228,7 +228,6 @@ export class StarHandler {
                     this.hdMap.get(hdId).setFeH(feH);
                 }
             }
-
         } catch (error) { // ignored
         }
 

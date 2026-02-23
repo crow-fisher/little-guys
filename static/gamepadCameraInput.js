@@ -16,23 +16,17 @@ export function gamepadCameraInput() {
     let triggers = getTriggers();
 
     let offset = getFrameDt() / 400;
+    let applied = [0, 0, 0, 0]; 
 
     let buttonMult = 5;
-    if (isButtonPressed(GBA)) {
+    if (isButtonPressed(GBA))
         offset *= buttonMult;
-    }
-    if (isButtonPressed(GBX)) {
+    if (isButtonPressed(GBX))
         offset *= buttonMult;
-    }
-    if (isButtonPressed(GBB)) {
+    if (isButtonPressed(GBB))
         offset *= buttonMult;
-    }
-    if (isButtonPressed(GBY)) {
+    if (isButtonPressed(GBY))
         offset *= buttonMult;
-    }
-
-
-    let applied = [0, 0, 0, 0]; 
 
     applied[0] -= offset * ls[1];
     applied[1] += offset * ls[0];
@@ -51,8 +45,11 @@ export function gamepadCameraInput() {
     crd[1] += offset * rs[1];
     saveGD(UI_CAMERA_ROTATION_VEC_DT, crd)
 
-    // hotkeys 
+    _gamepadCameraInput_hotkeys(triggers);
+    _gamepadCameraInput_boundValues();
+}
 
+function _gamepadCameraInput_hotkeys(triggers) {
     if (triggers[0] > 0) {
         saveGD(UI_CAMERA_FOV, loadGD(UI_CAMERA_FOV) + triggers[0]);
     }
@@ -61,7 +58,7 @@ export function gamepadCameraInput() {
         saveGD(UI_CAMERA_FOV, loadGD(UI_CAMERA_FOV) - triggers[1]);
     }
 
-    offset = 0.05;
+    let offset = 0.05;
     if (isButtonPressed(GBDU)) {
         saveGD(UI_STARMAP_NORMAL_BRIGTNESS, loadGD(UI_STARMAP_NORMAL_BRIGTNESS) + offset);
     }
@@ -76,13 +73,10 @@ export function gamepadCameraInput() {
     if (isButtonPressed(GBDR)) {
         saveGD(UI_STARMAP_CONSTELATION_BRIGHTNESS, loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS) + offset);
     }
-    saveGD(UI_STARMAP_CONSTELATION_BRIGHTNESS, Math.max(0, loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS)));
+}
 
+
+function _gamepadCameraInput_boundValues() {
     saveGD(UI_CAMERA_FOV, boundValue(10, 160,loadGD(UI_CAMERA_FOV)));
-
-
-
-    // UI_STARMAP_NORMAL_BRIGTNESS
-
-    // UI_STARMAP_CONSTELATION_BRIGHTNESS
+    saveGD(UI_STARMAP_CONSTELATION_BRIGHTNESS, Math.max(0, loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS)));
 }
