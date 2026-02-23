@@ -1,8 +1,10 @@
 import { frameMatrixReset, tickFrameMatrix } from "../../rendering/camera.js";
 import { LineRenderJob } from "../../rendering/model/LineRenderJob.js";
 import { addRenderJob, getNoSortRenderJobsLength } from "../../rendering/rasterizer.js";
+import { astronomyAtlasSetupChoices } from "../../ui/components/AstronomyAtlas/modes/AstronomyAtlasModeFuncSetup.js";
 import { loadGD, saveGD, UI_AA_LABEL_GRAPH, UI_AA_LABEL_STARS, UI_AA_PLOT_SELECT_NAMED_STARS, UI_AA_PLOT_XKEY, UI_AA_PLOT_YKEY, UI_AA_SETUP_COLORMODE, UI_CAMERA_OFFSET_VEC_DT, UI_SH_MINLUMINENCE, UI_SH_MINMODE, UI_SH_TARGETNUMSTARS, UI_STARMAP_CONSTELATION_BRIGHTNESS } from "../../ui/UIData.js";
 import { HipparcosCatalog } from "./catalog/HipparcosCatalog.js";
+import { PastelCatalog } from "./catalog/PastelCatalog.js";
 import { StellariumCatalog } from "./catalog/StellariumCatalog.js";
 import { getVec3Length } from "./matrix.js";
 import { StarSector } from "./model/StarSector.js";
@@ -13,7 +15,8 @@ export class StarHandler {
     constructor() {
         this.sectors = new Map();
         this.constellations = new Array();
-        this.stars = new Map();
+        this.stars = new Map(); // HIP id
+        this.hdMap = new Map(); // HD id
         this.constellationStars = new Set();
 
         this.numSectorsArr = 1;
@@ -103,6 +106,7 @@ export class StarHandler {
     loadStar(star) {
         this.loadedStars.push(star);
         this.stars.set(star.id, star);
+        this.hdMap.set(star.hd_number, star);
     }
 
     loadConstellation(constellation) {
@@ -119,8 +123,10 @@ export class StarHandler {
 
         let hipCatalog = new HipparcosCatalog((star) => this.loadStar(star), (constellation) => this.loadConstellation(constellation));
         let stelCatalog = new StellariumCatalog((star) => this.loadStar(star), (constellation) => this.loadConstellation(constellation));
+        let pastelCatalog = new PastelCatalog
         hipCatalog.loadData(() => {
             this.processDataStar();
+            pastelCatalog.loadData(() => this.processStarStatistics());
             // stelCatalog.loadData()
         })
     };
@@ -143,6 +149,23 @@ export class StarHandler {
 
         this.iterateOnSectors((sector) => sector.procesLoadedStars());
     }
+
+    processStarStatistics() {
+        let params = new Array();
+        this.paramStatistics = new Map();
+
+        for (let i = 0; i < astronomyAtlasSetupChoices.length; i++) {
+            let row = astronomyAtlasSetupChoices[i];
+            for (let j = 0; j < row.length; j++) {
+                params.push(row[j][0]);
+            }
+        };
+
+        params.slice(1).forEach((param) => {
+            let st = calculateStatistics(this.stars.map((s) => s[param]).filter((v) => v != null));
+            this.paramStatistics.set(param, st);
+        });
+}
 
     renderConstellations() {
         if (loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS) == 0) {
