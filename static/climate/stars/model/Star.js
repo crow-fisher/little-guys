@@ -1,4 +1,5 @@
-import { COLOR_BLACK, COLOR_WHITE } from "../../../colors.js";
+import { COLOR_BLACK, COLOR_WHITE, RGB_COLOR_BROWN, RGB_COLOR_RED } from "../../../colors.js";
+import { combineColorMult, invlerp, lerp } from "../../../common.js";
 import { getStarHandler } from "../../../main.js";
 import { PointLabelRenderJob } from "../../../rendering/model/PointLabelRenderJob.js";
 import { addRenderJob } from "../../../rendering/rasterizer.js";
@@ -79,7 +80,7 @@ export class Star {
     recalculateAltColor() {
         this._rac_curKey = loadGD(UI_AA_SETUP_COLORMODE);
         if (this._rac_curKey == null || this._rac_curKey == "default") {
-            this.alt_color_arr = null;
+            this.alt_color = null;
             return;
         }
 
@@ -96,8 +97,7 @@ export class Star {
 
         this._rac_v = invlerp(this._rac_minValue, this._rac_maxValue, this._rac_valNorm) ** this._rac_powValue;
 
-        this.alt_color_arr = combineColorMult(COLOR_WHITE, COLOR_BLACK, this._rac_v);
-        this.alt_color = rgbToRgba(...this.alt_color_arr, this._opacity * Math.exp(loadGD(UI_AA_SETUP_MULT)));
+        this.alt_color = combineColorMult(RGB_COLOR_RED, RGB_COLOR_BROWN, this._rac_v);
     }
 
     doLocalitySelect(selectMode, selectRadius) {

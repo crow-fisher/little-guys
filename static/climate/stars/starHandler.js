@@ -1,3 +1,4 @@
+import { calculateStatistics } from "../../common.js";
 import { frameMatrixReset, tickFrameMatrix } from "../../rendering/camera.js";
 import { LineRenderJob } from "../../rendering/model/LineRenderJob.js";
 import { addRenderJob, getNoSortRenderJobsLength } from "../../rendering/rasterizer.js";
@@ -57,6 +58,10 @@ export class StarHandler {
             star.starLabel = star.getLabelForType(starLabelType, selectNamedStars, aX, aY, aC);
             star.graphLabel = star.getLabelForType(graphLabelType, selectNamedStars, aX, aY, aC);
         });
+    }
+
+    reprocessStarAltColoration() {
+        this.stars.values().forEach((star) => star.recalculateAltColor());
     }
 
 
@@ -162,7 +167,7 @@ export class StarHandler {
         };
 
         params.slice(1).forEach((param) => {
-            let st = calculateStatistics(this.stars.map((s) => s[param]).filter((v) => v != null));
+            let st = calculateStatistics(Array.from(this.stars.values().map((s) => s[param]).filter((v) => v != null)));
             this.paramStatistics.set(param, st);
         });
 }

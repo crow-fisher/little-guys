@@ -3,7 +3,7 @@ import { getCanvasHeight, getCanvasWidth } from "../../../canvas.js";
 import { COLOR_BLUE, COLOR_GREEN, COLOR_OTHER_BLUE, COLOR_RED, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../colors.js";
 import { calculateStatistics, invlerp, lerp, processRangeToOne, rgbToRgba } from "../../../common.js";
 import { addRenderJob } from "../../../rendering/rasterizer.js";
-import { loadGD, UI_CAMERA_OFFSET_VEC, UI_SH_MINSIZE, UI_SH_DISTPOWERMULT, UI_SH_MAXLUMINENCE, UI_SH_MINLUMINENCE, UI_SH_STYLE_BRIGHTNESS_B, UI_SH_STYLE_BRIGHTNESS_A, UI_SH_STYLE_SIZE_A, UI_SH_STYLE_SIZE_B, UI_AA_PLOT_SELECTRADIUS, UI_AA_PLOT_LOCALITY_SELECTMODE, UI_AA_PLOT_ACTIVE, UI_SH_STYLE_SIZE_C, UI_SH_MAXSIZE, UI_SH_STYLE_BRIGHTNESS_C, UI_CAMERA_FOV } from "../../../ui/UIData.js";
+import { loadGD, UI_CAMERA_OFFSET_VEC, UI_SH_MINSIZE, UI_SH_DISTPOWERMULT, UI_SH_MAXLUMINENCE, UI_SH_MINLUMINENCE, UI_SH_STYLE_BRIGHTNESS_B, UI_SH_STYLE_BRIGHTNESS_A, UI_SH_STYLE_SIZE_A, UI_SH_STYLE_SIZE_B, UI_AA_PLOT_SELECTRADIUS, UI_AA_PLOT_LOCALITY_SELECTMODE, UI_AA_PLOT_ACTIVE, UI_SH_STYLE_SIZE_C, UI_SH_MAXSIZE, UI_SH_STYLE_BRIGHTNESS_C, UI_CAMERA_FOV, UI_AA_SETUP_COLORMODE } from "../../../ui/UIData.js";
 import { getAstronomyAtlasComponent } from "../../../ui/WindowManager.js";
 import { addVec3Dest, getVec3Length } from "../matrix.js";
 import { LineRenderJob } from "../../../rendering/model/LineRenderJob.js";
@@ -74,6 +74,10 @@ export class StarSector {
         ];
     }
 
+    getRenderMode() {
+        return loadGD(UI_AA_SETUP_COLORMODE) != "default";
+    }
+
     renderMain() {
         if (!this.ready) {
             return;
@@ -94,7 +98,8 @@ export class StarSector {
                 this.getLuminenceParams(),
                 this.getSizeParams(),
                 this.getBrightnessParams(),
-                this.getLocalitySelectParams()
+                this.getLocalitySelectParams(),
+                this.getRenderMode()
             );
 
         }
@@ -158,12 +163,16 @@ export class StarSector {
         return lerp(sizeParams[3], sizeParams[3] + sizeParams[4], star._sizeRange);
     }
 
-    processStarColor(star, brightnessParams) {
+    processStarColor(star, brightnessParams, renderMode) {
         star._opacity = this.processRange(star._relLumensRange, ...brightnessParams);
-        return rgbToRgba(...star.color, star._opacity);
+        star.recalculateAltColor();
+        if (star.alt_color == null) { 
+            return;
+        }
+        return rgbToRgba(...(renderMode ? star.alt_color : star.color), star._opacity);
     }
 
-    renderStars(luminenceParams, sizeParams, brightnessParams, localitySelectParams) {
+    renderStars(luminenceParams, sizeParams, brightnessParams, localitySelectParams, renderMode) {
         let bucketLumens;
 
         let recalculatingColor = (this._recalculateStarColorFlag);
@@ -178,7 +187,7 @@ export class StarSector {
                 this.prepareBucket(this.buckets.at(i));
 
                 if (recalculatingColor) {
-                    this.processBucketSizeColor(this.buckets.at(i), luminenceParams, sizeParams, brightnessParams, localitySelectParams);
+                    this.processBucketSizeColor(this.buckets.at(i), luminenceParams, sizeParams, brightnessParams, localitySelectParams, renderMode);
                     this._prevCameraDist = this._curCameraDist;
                 }
                 
@@ -210,7 +219,7 @@ export class StarSector {
         });
     }
 
-    processBucketSizeColor(bucket, luminenceParams, sizeParams, brightnessParams, localitySelectParams) {
+    processBucketSizeColor(bucket, luminenceParams, sizeParams, brightnessParams, localitySelectParams, renderMode) {
         bucket.forEach((star) => {
             star._curCameraDistance = getVec3Length(star._offset);
             star._relCameraDist = (star._curCameraDistance / star._rootCameraDistance);
@@ -222,7 +231,7 @@ export class StarSector {
             star._relLumensRange = Math.min(1, invlerp(luminenceParams[0], luminenceParams[1], star._relLumens));
 
             star._size = this.processStarSize(star, sizeParams);
-            star.renderColor = this.processStarColor(star, brightnessParams);
+            star.renderColor = this.processStarColor(star, brightnessParams, renderMode);
             star.doLocalitySelect(...localitySelectParams)
             star.starLabel = star.localitySelect ? star.id : null;
         });
