@@ -165,24 +165,15 @@ export class StarSector {
 
     processStarColor(star, brightnessParams, renderMode) {
         star._opacity = this.processRange(star._relLumensRange, ...brightnessParams);
-        
         if (star._opacity == 0) {
             return;
         }
-
         if (!renderMode) {
             return rgbToRgba(...star.color, star._opacity);
         } else {
-            if (star._rac_val == null) {
-                return;
-            } else {
-                return rgbToRgba(...star.alt_color, star._opacity);
-
-            }
+            return rgbToRgba(...star.alt_color, star._opacity);
         }
     }
-
-
 
     renderStars(luminenceParams, sizeParams, brightnessParams, localitySelectParams, renderMode) {
         let bucketLumens;
@@ -203,7 +194,7 @@ export class StarSector {
                     this._prevCameraDist = this._curCameraDist;
                 }
 
-                this.renderBucket(this.buckets.at(i), luminenceParams);
+                this.renderBucket(this.buckets.at(i), luminenceParams, renderMode);
             } else {
             }
         };
@@ -233,6 +224,10 @@ export class StarSector {
 
     processBucketSizeColor(bucket, luminenceParams, sizeParams, brightnessParams, localitySelectParams, renderMode) {
         bucket.forEach((star) => {
+            if (renderMode && star._rac_val == null) {
+                return;
+            }
+
             star._curCameraDistance = getVec3Length(star._offset);
             star._relCameraDist = (star._curCameraDistance / star._rootCameraDistance);
             star._relCameraDistBrightnessMult = 1 / (star._relCameraDist ** luminenceParams[2]);
@@ -249,9 +244,13 @@ export class StarSector {
         });
     }
 
-    renderBucket(bucket, luminenceParams) {
+    renderBucket(bucket, luminenceParams, renderMode) {
         let ch = getCanvasHeight(), cw = getCanvasWidth();
         bucket.forEach((star) => {
+            if (renderMode && star._rac_val == null) {
+                return;
+            }
+            
             if (star._renderScreen[2] < 0 && star._relLumensRange > 0) {
                 if (star._renderScreen[0] > 0 && star._renderScreen[0] < cw && star._renderScreen[1] > 0 && star._renderScreen[1] < ch) {
                     star.render();
