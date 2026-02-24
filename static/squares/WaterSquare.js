@@ -99,13 +99,17 @@ class WaterSquare extends BaseSquare {
     }
 
     getColorBase() {
+        let rgb = hsv2rgb(...this.getColorBaseHsv());
+        return { r: rgb[0], g: rgb[1], b: rgb[2] }
+    }
+
+    getColorBaseHsv() {
         let base = getActiveClimate().waterColor;
         let hsv = rgb2hsv(base.r, base.g, base.b);
         hsv[0] += 360 * loadGD(UI_LIGHTING_WATER_HUE);
         hsv[1] = loadGD(UI_LIGHTING_WATER_SATURATION);
         hsv[2] = 255 * loadGD(UI_LIGHTING_WATER_VALUE);
-        let rgb = hsv2rgb(...hsv);
-        return { r: rgb[0], g: rgb[1], b: rgb[2] }
+        return hsv;
     }
 
     reset() {

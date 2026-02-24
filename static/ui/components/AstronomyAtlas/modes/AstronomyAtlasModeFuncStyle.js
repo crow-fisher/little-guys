@@ -37,6 +37,7 @@ export function AstronomyAtlasModeFuncStyle(window, container, sizeX, sizeY) {
     container.addElement(new SliderGradientBackground(window, UI_SH_STYLE_SIZE_C, sizeX, textHeight, 0, 1, () => COLOR_BLACK, () => COLOR_WHITE, false, resetStarStyle));
 
 
+
     container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "minimum luminence mode"))
     let minLuminanceModeRow = new Container(window, 0, 0);
     container.addElement(minLuminanceModeRow);

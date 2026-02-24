@@ -157,6 +157,15 @@ export function combineColorMult(color1, color2, p) {
     ]
 }
 
+
+export function combineColorMultArr(color1, color2, p) {
+    return [
+        Math.floor(color1[0] * (1 - p) + color2[0] * (p)),
+        Math.floor(color1[1] * (1 - p) + color2[1] * (p)),
+        Math.floor(color1[2] * (1 - p) + color2[2] * (p))
+    ]
+}
+
 export function processColorLerpBicolorPow(val, val_min, val_max, color1, color2, pow) {
     let p = (val - val_min) / (val_max - val_min);
     p = p ** pow;

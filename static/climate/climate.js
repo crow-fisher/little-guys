@@ -54,6 +54,10 @@ export class Climate {
         return this.processColor(this.waterColor, frac);
     }
 
+    getWaterColorHue(frac=0.5, hue=90) {
+        return this.processColorHue(this.waterColor, frac, hue);
+    }
+
     getWaterColorDark() {
         return this.processColor(this.waterColor, 0.7);
     }
@@ -69,6 +73,14 @@ export class Climate {
     processColor(rgb, frac, darken=255) {
         let hsv = rgb2hsv(rgb.r, rgb.g, rgb.b);
         hsv[2] =  (darken * (1 - frac)) + (hsv[2] * frac);
+        rgb = hsv2rgb(hsv[0], hsv[1], hsv[2]);
+        return rgbToHex(Math.floor(rgb[0]), Math.floor(rgb[1]), Math.floor(rgb[2]));
+    }
+
+    processColorHue(rgb, frac, darken=255, hue=90) {
+        let hsv = rgb2hsv(rgb.r, rgb.g, rgb.b);
+        hsv[2] = (darken * (1 - frac)) + (hsv[2] * frac);
+        hsv[0] += hue;
         rgb = hsv2rgb(hsv[0], hsv[1], hsv[2]);
         return rgbToHex(Math.floor(rgb[0]), Math.floor(rgb[1]), Math.floor(rgb[2]));
     }

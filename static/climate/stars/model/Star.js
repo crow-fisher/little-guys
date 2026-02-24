@@ -1,9 +1,11 @@
 import { COLOR_BLACK, COLOR_WHITE, RGB_COLOR_BROWN, RGB_COLOR_RED } from "../../../colors.js";
-import { combineColorMult, invlerp, lerp } from "../../../common.js";
+import { combineColorMult, combineColorMultArr, hsv2rgb, invlerp, lerp } from "../../../common.js";
 import { getStarHandler } from "../../../main.js";
 import { PointLabelRenderJob } from "../../../rendering/model/PointLabelRenderJob.js";
 import { addRenderJob } from "../../../rendering/rasterizer.js";
-import { loadGD, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_MIN, UI_AA_SETUP_MULT, UI_AA_SETUP_POW, UI_AA_SETUP_WINDOW_SIZE } from "../../../ui/UIData.js";
+import { WaterSquare } from "../../../squares/WaterSquare.js";
+import { loadGD, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_MIN, UI_AA_SETUP_MULT, UI_AA_SETUP_POW, UI_AA_SETUP_WINDOW_SIZE, UI_SH_COLORSHIFT } from "../../../ui/UIData.js";
+import { getActiveClimate } from "../../climateManager.js";
 import { getVec3Length } from "../matrix.js";
 import { brightnessValueToLumens, sphericalToCartesian } from "../starHandlerUtil.js";
 
@@ -97,7 +99,16 @@ export class Star {
 
         this._rac_v = invlerp(this._rac_minValue, this._rac_maxValue, this._rac_valNorm) ** this._rac_powValue;
 
-        this.alt_color = combineColorMult(RGB_COLOR_RED, RGB_COLOR_BROWN, this._rac_v);
+        let sq = new WaterSquare(-1, -1);
+        let hsv = sq.getColorBaseHsv();
+        let hsv2 = structuredClone(hsv);
+
+        hsv2[0] += loadGD(UI_SH_COLORSHIFT);
+
+        this.alt_color = combineColorMultArr(
+            hsv2rgb(...hsv),
+            hsv2rgb(...hsv2),
+            this._rac_v)
     }
 
     doLocalitySelect(selectMode, selectRadius) {
