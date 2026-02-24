@@ -16,7 +16,8 @@ import { getAstronomyAtlasComponent } from "../../../WindowManager.js";
 
 export const astronomyAtlasSetupChoices = [
     [["default", "Temperature"], ["magnitude", "Rel. Mag"], ["magnitude_absolute", "Abs. Mag"]],
-    [["p_feH", "Metallicity"], ["parallax", "Parallax"], ["parsecs_log", "Parsecs (log)"]]
+    [["p_feH", "Metallicity"], ["parallax", "Parallax"], ["parsecs_log", "Parsecs (log)"]],
+    [["bv", "B-V"], ["asc", "Ascension"], ["dec", "Declination"]]
 ];
 
 export const unitMap = new Map();
