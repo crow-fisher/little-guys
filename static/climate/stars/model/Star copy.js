@@ -48,7 +48,6 @@ export class Star {
 
     setFeH(feH) {
         this.p_feH = feH;
-        this.recalculateAltColor();
     }
 
     recalculateAltColor() {

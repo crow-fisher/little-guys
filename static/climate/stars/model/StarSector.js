@@ -165,10 +165,21 @@ export class StarSector {
 
     processStarColor(star, brightnessParams, renderMode) {
         star._opacity = this.processRange(star._relLumensRange, ...brightnessParams);
-        if (star.alt_color == null || star._opacity == 0) { 
+        
+        if (star._opacity == 0) {
             return;
         }
-        return rgbToRgba(...(renderMode ? star.alt_color : star.color), star._opacity);
+
+        if (!renderMode) {
+            return rgbToRgba(...star.color, star._opacity);
+        } else {
+            if (star._rac_val == null) {
+                return;
+            } else {
+                return rgbToRgba(...star.alt_color, star._opacity);
+
+            }
+        }
     }
 
 
@@ -191,7 +202,7 @@ export class StarSector {
                     this.processBucketSizeColor(this.buckets.at(i), luminenceParams, sizeParams, brightnessParams, localitySelectParams, renderMode);
                     this._prevCameraDist = this._curCameraDist;
                 }
-                
+
                 this.renderBucket(this.buckets.at(i), luminenceParams);
             } else {
             }
@@ -392,7 +403,7 @@ export class StarSector {
     procesLoadedStars() {
         this.lumensSt = calculateStatistics(this.loadedStars.map((star) => star.lumens));
         this.loadedStars.sort((a, b) => a.lumens - b.lumens);
-        
+
         let lumenBucketSize = .00004;
 
         this.buckets = new Array();

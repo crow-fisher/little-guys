@@ -31,7 +31,7 @@ export class PastelCatalog extends CatalogHandlerBase {
                 let designationParts = designation.match(/\S+/g)
                 let hdId = Number.parseInt(designationParts[1]);
                 if (this.sh.hdMap.has(hdId)) {
-                    this.sh.hdMap.get(hdId).setFeH(feH);
+                    this.sh.hdMap.get(hdId).p_feH = feH;
                 }
             }
         } catch (error) {

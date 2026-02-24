@@ -94,6 +94,12 @@ export class StarHandler {
 
         this.stars.values().forEach((star) => {
             this._rac_val = star[this._rac_curKey];
+            star._rac_val = star[this._rac_curKey];
+            
+            if (this._rac_val == null) {
+                return;
+            }
+
             this._rac_valNorm = Math.max(
                 this._rac_minValue,
                 Math.min(
