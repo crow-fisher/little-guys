@@ -86,6 +86,11 @@ export class Star {
             return;
         }
 
+        if (getStarHandler().paramStatistics == null) {
+            this.alt_color = [255, 255, 255];
+            return;
+        }
+
         this._rac_st = getStarHandler().paramStatistics.get(this._rac_curKey);
         this._rac_val = this[this._rac_curKey];
         this._rac_valNorm = invlerp(this._rac_st[2], this._rac_st[3], this._rac_val);
@@ -101,9 +106,7 @@ export class Star {
 
         let sq = new WaterSquare(-1, -1);
         let hsv = sq.getColorBaseHsv();
-        let hsv2 = structuredClone(hsv);
-
-        hsv2[0] += loadGD(UI_SH_COLORSHIFT);
+        let hsv2 = [360 - hsv[0], 1 - hsv[1], 1 - hsv[2]]
 
         this.alt_color = combineColorMultArr(
             hsv2rgb(...hsv),
