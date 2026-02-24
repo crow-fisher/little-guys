@@ -118,11 +118,21 @@ export class PlotStarScatter extends WindowElement {
     }
 
     preparePointColor() {
+        let renderMode = loadGD(UI_AA_SETUP_COLORMODE) != "default";
+        
         let opacity = processRangeToOne(loadGD(UI_AA_PLOT_POINTOPACITY) * this.numRenderedPoints);
         let namedStarOpacityAddition = processRangeToOne(loadGD(UI_AA_SETUP_SELECT_MULT));
         for (let i = 0; i < this.lengthCap; i++) {
             if (this.sValues[i] != null) {
-                this.rValues[i] = this.colorFromRenderModeStar(this.sValues[i], opacity, namedStarOpacityAddition);
+                if (renderMode && this.sValues[i]._rac_val == null) {
+                    this.rValues[i] = null;
+                    continue;
+                }
+
+                this.rValues[i] = this.colorFromRenderModeStar(this.sValues[i], opacity, 
+                    namedStarOpacityAddition, 
+                    false, 
+                    renderMode);
             }
         };
 
@@ -246,11 +256,13 @@ export class PlotStarScatter extends WindowElement {
         this.yS = calculateStatistics(this.yValues);
     }
 
-    colorFromRenderModeStar(star, opacity, namedStarOpacityMult, nameSelect) {
+    colorFromRenderModeStar(star, opacity, namedStarOpacityMult, nameSelect, renderMode) {
+        let color = renderMode ? star.alt_color : star.color;
+
         if (nameSelect && star.name || star.selected || star.localitySelect) {
-            return rgbToRgba(...(star.alt_color_arr ?? star.color), Math.min(1, opacity * namedStarOpacityMult));
+            return rgbToRgba(...color, Math.min(1, opacity * namedStarOpacityMult));
         }
-        return rgbToRgba(...(star.alt_color_arr ?? star.color), opacity);
+        return rgbToRgba(...color, opacity);
     }
 
     processValue(value, zoom, offset) {
@@ -273,10 +285,9 @@ export class PlotStarScatter extends WindowElement {
         let preparedFilter = loadGD(UI_AA_SELECT_FILTERMODE_GRAPH_PREPARED);
         for (let i = 0; i < this.lengthCap; i++) {
             star = this.sValues[i];
-            if (star == null || !star.graphVisible) {
+            if (star == null || !star.graphVisible || this.rValues[i] == null) {
                 continue;
             }
-
 
             if (filterMode == 1 && !star._renderedThisFrame) {
                 continue;

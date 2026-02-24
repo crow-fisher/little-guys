@@ -8,6 +8,7 @@ export function resetStarStyle() {
     getStarHandler().iterateOnSectors((sector) => sector._recalculateStarColorFlag = true);
     getStarHandler().resetStarLabels();
     getStarHandler().reprocessStarAltColoration();
+    getAstronomyAtlasComponent().plotStarScatter.triggerRecalculateColor();
 }
 
 function resetGraphStyle() {
