@@ -5,7 +5,7 @@ import { LineRenderJob } from "../../rendering/model/LineRenderJob.js";
 import { addRenderJob, getNoSortRenderJobsLength } from "../../rendering/rasterizer.js";
 import { WaterSquare } from "../../squares/WaterSquare.js";
 import { astronomyAtlasSetupChoices } from "../../ui/components/AstronomyAtlas/modes/AstronomyAtlasModeFuncSetup.js";
-import { loadGD, saveGD, UI_AA_LABEL_GRAPH, UI_AA_LABEL_STARS, UI_AA_PLOT_SELECT_NAMED_STARS, UI_AA_PLOT_XKEY, UI_AA_PLOT_YKEY, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_MIN, UI_AA_SETUP_POW, UI_AA_SETUP_WINDOW_SIZE, UI_CAMERA_OFFSET_VEC_DT, UI_SH_MINLUMINENCE, UI_SH_MINMODE, UI_SH_TARGETNUMSTARS, UI_STARMAP_CONSTELATION_BRIGHTNESS } from "../../ui/UIData.js";
+import { loadGD, saveGD, UI_AA_LABEL_GRAPH, UI_AA_LABEL_STARS, UI_AA_PLOT_SELECT_NAMED_STARS, UI_AA_PLOT_XKEY, UI_AA_PLOT_YKEY, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_MIN, UI_AA_SETUP_POW, UI_AA_SETUP_WINDOW_SIZE, UI_CAMERA_OFFSET_VEC_DT, UI_SH_COLORSHIFT, UI_SH_MINLUMINENCE, UI_SH_MINMODE, UI_SH_TARGETNUMSTARS, UI_STARMAP_CONSTELATION_BRIGHTNESS } from "../../ui/UIData.js";
 import { HipparcosCatalog } from "./catalog/HipparcosCatalog.js";
 import { PastelCatalog } from "./catalog/PastelCatalog.js";
 import { StellariumCatalog } from "./catalog/StellariumCatalog.js";
@@ -80,7 +80,7 @@ export class StarHandler {
 
         let sq = new WaterSquare(-1, -1);
         let hsv = sq.getColorBaseHsv();
-        let hsv2 = [360 - hsv[0], hsv[1], hsv[2]];
+        let hsv2 = [hsv[0] + loadGD(UI_SH_COLORSHIFT), hsv[1], hsv[2]];
 
         let rgb = hsv2rgb(...hsv);
         let rgb2 = hsv2rgb(...hsv2);

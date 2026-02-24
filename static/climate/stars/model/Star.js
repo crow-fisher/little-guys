@@ -121,8 +121,7 @@ export class Star {
             this.renderJob.y = this._renderScreen[1]
             this.renderJob.z = this._renderScreen[2]
             this.renderJob.size = this._size;
-            this.renderJob.color = rgbToHex(...this.alt_color);
-            //  this.renderColor;
+            this.renderJob.color = this.renderColor; // rgbToHex(...this.alt_color);
             this.renderJob.label = this.starLabel;
         }
 
