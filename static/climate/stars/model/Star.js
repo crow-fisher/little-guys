@@ -1,5 +1,5 @@
 import { COLOR_BLACK, COLOR_WHITE, RGB_COLOR_BROWN, RGB_COLOR_RED } from "../../../colors.js";
-import { combineColorMult, combineColorMultArr, hsv2rgb, invlerp, lerp } from "../../../common.js";
+import { combineColorMult, combineColorMultArr, hsv2rgb, invlerp, lerp, rgbToHex } from "../../../common.js";
 import { getStarHandler } from "../../../main.js";
 import { PointLabelRenderJob } from "../../../rendering/model/PointLabelRenderJob.js";
 import { addRenderJob } from "../../../rendering/rasterizer.js";
@@ -22,6 +22,8 @@ export class Star {
         this.hd_number = hd_number;
         this.temperature = temperature;
         this.constellationStar = false;
+
+        this.alt_color = [255, 255, 255];
 
         this._offset = [0, 0, 0];
         this._camera = [0, 0, 0];
@@ -79,41 +81,6 @@ export class Star {
         return null;
     }
 
-    recalculateAltColor() {
-        this._rac_curKey = loadGD(UI_AA_SETUP_COLORMODE);
-        if (this._rac_curKey == null || this._rac_curKey == "default") {
-            this.alt_color = null;
-            return;
-        }
-
-        if (getStarHandler().paramStatistics == null) {
-            this.alt_color = [255, 255, 255];
-            return;
-        }
-
-        this._rac_st = getStarHandler().paramStatistics.get(this._rac_curKey);
-        this._rac_val = this[this._rac_curKey];
-        this._rac_valNorm = invlerp(this._rac_st[2], this._rac_st[3], this._rac_val);
-        this._rac_minValue = loadGD(UI_AA_SETUP_MIN);
-        this._rac_windowSize = loadGD(UI_AA_SETUP_WINDOW_SIZE);
-        this._rac_maxValue = lerp(this._rac_minValue, 1, this._rac_windowSize);
-        this._rac_powValue = loadGD(UI_AA_SETUP_POW);
-
-        this._rac_valNorm = Math.max(this._rac_valNorm, this._rac_minValue);
-        this._rac_valNorm = Math.min(this._rac_valNorm, this._rac_maxValue);
-
-        this._rac_v = invlerp(this._rac_minValue, this._rac_maxValue, this._rac_valNorm) ** this._rac_powValue;
-
-        let sq = new WaterSquare(-1, -1);
-        let hsv = sq.getColorBaseHsv();
-        let hsv2 = [360 - hsv[0], 1 - hsv[1], 1 - hsv[2]]
-
-        this.alt_color = combineColorMultArr(
-            hsv2rgb(...hsv),
-            hsv2rgb(...hsv2),
-            this._rac_v)
-    }
-
     doLocalitySelect(selectMode, selectRadius) {
         if (selectMode == 0) {
             this.localitySelect = false;
@@ -136,6 +103,10 @@ export class Star {
     render() {
         this._renderedThisFrame = true;
 
+        if (this.renderColor == null) {
+            return;
+        }
+
         if (this.renderJob == null) {
             this.renderJob = new PointLabelRenderJob(
                 this._renderScreen[0],
@@ -150,7 +121,8 @@ export class Star {
             this.renderJob.y = this._renderScreen[1]
             this.renderJob.z = this._renderScreen[2]
             this.renderJob.size = this._size;
-            this.renderJob.color = this.renderColor;
+            this.renderJob.color = rgbToHex(...this.alt_color);
+            //  this.renderColor;
             this.renderJob.label = this.starLabel;
         }
 

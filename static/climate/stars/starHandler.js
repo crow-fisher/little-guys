@@ -1,9 +1,11 @@
-import { calculateStatistics } from "../../common.js";
+import { calculateStatistics, combineColorMultArr, combineColorMultArrDest, hsv2rgb, invlerp, lerp } from "../../common.js";
+import { getStarHandler } from "../../main.js";
 import { frameMatrixReset, tickFrameMatrix } from "../../rendering/camera.js";
 import { LineRenderJob } from "../../rendering/model/LineRenderJob.js";
 import { addRenderJob, getNoSortRenderJobsLength } from "../../rendering/rasterizer.js";
+import { WaterSquare } from "../../squares/WaterSquare.js";
 import { astronomyAtlasSetupChoices } from "../../ui/components/AstronomyAtlas/modes/AstronomyAtlasModeFuncSetup.js";
-import { loadGD, saveGD, UI_AA_LABEL_GRAPH, UI_AA_LABEL_STARS, UI_AA_PLOT_SELECT_NAMED_STARS, UI_AA_PLOT_XKEY, UI_AA_PLOT_YKEY, UI_AA_SETUP_COLORMODE, UI_CAMERA_OFFSET_VEC_DT, UI_SH_MINLUMINENCE, UI_SH_MINMODE, UI_SH_TARGETNUMSTARS, UI_STARMAP_CONSTELATION_BRIGHTNESS } from "../../ui/UIData.js";
+import { loadGD, saveGD, UI_AA_LABEL_GRAPH, UI_AA_LABEL_STARS, UI_AA_PLOT_SELECT_NAMED_STARS, UI_AA_PLOT_XKEY, UI_AA_PLOT_YKEY, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_MIN, UI_AA_SETUP_POW, UI_AA_SETUP_WINDOW_SIZE, UI_CAMERA_OFFSET_VEC_DT, UI_SH_MINLUMINENCE, UI_SH_MINMODE, UI_SH_TARGETNUMSTARS, UI_STARMAP_CONSTELATION_BRIGHTNESS } from "../../ui/UIData.js";
 import { HipparcosCatalog } from "./catalog/HipparcosCatalog.js";
 import { PastelCatalog } from "./catalog/PastelCatalog.js";
 import { StellariumCatalog } from "./catalog/StellariumCatalog.js";
@@ -61,7 +63,59 @@ export class StarHandler {
     }
 
     reprocessStarAltColoration() {
-        this.stars.values().forEach((star) => star.recalculateAltColor());
+        if (getStarHandler().paramStatistics == null) {
+            return;
+        }
+
+        this._rac_curKey = loadGD(UI_AA_SETUP_COLORMODE);
+        if (this._rac_curKey == null || this._rac_curKey == "default") {
+            return;
+        }
+        this._rac_st = getStarHandler().paramStatistics.get(this._rac_curKey);
+
+        this._rac_minValue = loadGD(UI_AA_SETUP_MIN);
+        this._rac_windowSize = loadGD(UI_AA_SETUP_WINDOW_SIZE);
+        this._rac_maxValue = lerp(this._rac_minValue, 1, this._rac_windowSize);
+        this._rac_powValue = loadGD(UI_AA_SETUP_POW);
+
+        let sq = new WaterSquare(-1, -1);
+        let hsv = sq.getColorBaseHsv();
+        let hsv2 = [360 - hsv[0], hsv[1], hsv[2]];
+
+        let rgb = hsv2rgb(...hsv);
+        let rgb2 = hsv2rgb(...hsv2);
+        
+        rgb[0] *= 255;
+        rgb[1] *= 255;
+        rgb[2] *= 255;
+        rgb2[0] *= 255;
+        rgb2[1] *= 255;
+        rgb2[2] *= 255;
+
+        this.stars.values().forEach((star) => {
+            this._rac_val = star[this._rac_curKey];
+            this._rac_valNorm = Math.max(
+                this._rac_minValue,
+                Math.min(
+                    this._rac_maxValue,
+                    invlerp(this._rac_st[2], this._rac_st[3], this._rac_val)
+                )
+            );
+
+            this._rac_valNorm = Math.max(this._rac_valNorm, this._rac_minValue);
+            this._rac_valNorm = Math.min(this._rac_valNorm, this._rac_maxValue);
+
+            this._rac_v = invlerp(this._rac_minValue, this._rac_maxValue, this._rac_valNorm) ** this._rac_powValue;
+
+            combineColorMultArrDest(
+                rgb,
+                rgb2,
+                this._rac_v,
+                star.alt_color
+            );
+        });
+
+        this.iterateOnSectors((sector) => sector._recalculateStarColorFlag = true);
     }
 
 
@@ -170,7 +224,7 @@ export class StarHandler {
             let st = calculateStatistics(Array.from(this.stars.values().map((s) => s[param]).filter((v) => v != null)));
             this.paramStatistics.set(param, st);
         });
-}
+    }
 
     renderConstellations() {
         if (loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS) == 0) {

@@ -108,7 +108,7 @@ class WaterSquare extends BaseSquare {
         let hsv = rgb2hsv(base.r, base.g, base.b);
         hsv[0] += 360 * loadGD(UI_LIGHTING_WATER_HUE);
         hsv[1] = loadGD(UI_LIGHTING_WATER_SATURATION);
-        hsv[2] = 255 * loadGD(UI_LIGHTING_WATER_VALUE);
+        hsv[2] = loadGD(UI_LIGHTING_WATER_VALUE);
         return hsv;
     }
 

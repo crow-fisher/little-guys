@@ -165,12 +165,13 @@ export class StarSector {
 
     processStarColor(star, brightnessParams, renderMode) {
         star._opacity = this.processRange(star._relLumensRange, ...brightnessParams);
-        star.recalculateAltColor();
-        if (star.alt_color == null) { 
+        if (star.alt_color == null || star._opacity == 0) { 
             return;
         }
         return rgbToRgba(...(renderMode ? star.alt_color : star.color), star._opacity);
     }
+
+
 
     renderStars(luminenceParams, sizeParams, brightnessParams, localitySelectParams, renderMode) {
         let bucketLumens;
@@ -228,7 +229,7 @@ export class StarSector {
             star._relLumens = star.lumens * star._relCameraDistBrightnessMult * this._curFovMult;
 
             star._relLumensLog = Math.log(star._relLumens);
-            star._relLumensRange = Math.min(1, invlerp(luminenceParams[0], luminenceParams[1], star._relLumens));
+            star._relLumensRange = Math.max(0, Math.min(1, invlerp(luminenceParams[0], luminenceParams[1], star._relLumens)));
 
             star._size = this.processStarSize(star, sizeParams);
             star.renderColor = this.processStarColor(star, brightnessParams, renderMode);
