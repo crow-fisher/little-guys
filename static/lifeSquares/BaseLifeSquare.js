@@ -30,12 +30,9 @@ class BaseLifeSquare {
         this.type = "base";
         this.subtype = "";
 
-        this.lightHealth = 1;
-        this.prevLightHealth = 1;
-
-        this.baseColor = "#515c24";
-        this.darkColor = "#353b1a";
-        this.accentColor = "#5d6637";
+        this.baseColor = "#ff0000";
+        this.darkColor = "#00ff00";
+        this.accentColor = "#0000FF";
 
         this.baseColor_rgb = hexToRgb(this.baseColor);
         this.darkColor_rgb = hexToRgb(this.darkColor);
@@ -279,7 +276,7 @@ class BaseLifeSquare {
         addRenderJob(this.renderJob, true);
         return;
 
-        
+
         let offsetVec = [0, 1, 0, 0];
         let rotatedOffset = rotatePoint(offsetVec, ...this.rotVec);
         let startVec = this.posVec;
@@ -342,12 +339,63 @@ class BaseLifeSquare {
     }
 
     render() {
+        this.setFrameColor();
+        this.setFrameOpacity();
+        this.lightingUpdate();
+        this.renderToCanvas();
+    };
+
+    setFrameColor() {
+        this.frameViewMode = loadGD(UI_VIEWMODE_SELECT);
+
+
+        switch (this.frameViewMode) {
+            case UI_VIEWMODE_NITROGEN:
+                return this.viewmodeNitrogen();
+            case UI_VIEWMODE_LIGHTING:
+                return this.viewmodeLighting();
+            case UI_VIEWMODE_MOISTURE:
+            case UI_VIEWMODE_WATERMATRIC:
+            case UI_VIEWMODE_WATERTICKRATE:
+                return this.viewmodeMoisture();
+            case UI_VIEWMODE_EVOLUTION:
+                return this.viewmodeEvolution();
+            case UI_VIEWMODE_NUTRIENTS:
+                return this.viewmodeNutrients();
+            case UI_VIEWMODE_NORMAL:
+            default:
+                return this.viewmodeNormal();
+        }
+    }
+
+    viewmodeNitrogen() {}
+    viewmodeLighting() {}
+    viewmodeMoisture() {}
+    viewmodeEvolution() {}
+    viewmodeNutrients() {}
+    viewmodeNormal() {}
+    
+    setFrameOpacity() {
+        this.frameOpacity = 1;
+        if (this.linkedOrganism.stage == STAGE_DEAD) {
+            this.frameOpacity *= (1 - this.linkedOrganism.deathProgress ** 6);
+        }
+    }
+
+    lightingUpdate() {
+        if (Math.random() > 0.97) {
+            this.frameCacheLighting = null;
+            this.processLighting();
+        }
+    }
+
+
+
+
+    unused() {
         let frameOpacity = this.opacity;
         if (this.lightHealth != this.prevLightHealth || this.activeRenderSubtype != this.subtype || this.activeRenderState != this.state) {
             this.subtypeColorUpdate();
-        }
-        if (this.linkedOrganism.stage == STAGE_DEAD) {
-            frameOpacity *= (1 - this.linkedOrganism.deathProgress ** 6);
         }
         let selectedViewMode = loadGD(UI_VIEWMODE_SELECT);
         if (selectedViewMode != UI_VIEWMODE_NORMAL && Math.random() > 0.97) {
@@ -473,13 +521,6 @@ class BaseLifeSquare {
 
     frameColorUpdate(frameOpacity = 1) {
         let minTime = 2000;
-        // if (isSqColChanged(Math.floor(this.getPosX()))) {
-        //     minTime /= 4;
-        // }
-        // if (isSqRowChanged(Math.floor(this.getPosY()))) {
-        //     minTime /= 4;
-        // }
-
         if (
             (frameOpacity != this.lastColorCacheOpacity) ||
             (Date.now() > this.lastColorCacheTime + minTime * Math.random()) ||
