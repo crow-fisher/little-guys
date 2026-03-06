@@ -9,7 +9,7 @@ import { removeSquare } from "../globalOperations.js";
 import { STATE_HEALTHY, STAGE_DEAD, TYPE_ROOT } from "../organisms/Stages.js";
 import { getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasHeight, getCanvasWidth, getCurZoom, rotatePoint, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasFillRectTheta, zoomCanvasFillRectTheta3D, zoomCanvasSquareText } from "../canvas.js";
-import { loadGD, UI_CAMERA_CENTER_SELECT_POINT, UI_CAMERA_OFFSET_VEC, UI_CANVAS_SQUARES_ZOOM, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_3D, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_NORMAL, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../ui/UIData.js";
+import { loadGD, UI_CAMERA_CENTER_SELECT_POINT, UI_CAMERA_OFFSET_VEC, UI_CANVAS_SQUARES_ZOOM, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_3D, UI_VIEWMODE_CAMERAMODE, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_NORMAL, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../ui/UIData.js";
 import { cartesianToScreen, cartesianToScreenInplace, debugRenderLineOffsetPoints, getCameraPosition, getCameraRotationVec, getForwardVec, gfc, renderPoint, renderVec, screenToRenderScreen } from "../rendering/camera.js";
 import { addVec3Dest, addVectors, addVectorsCopy, crossVec3, crossVec3Dest, normalizeVec3, normalizeVec3Dest, subtractVectors, subtractVectorsCopy, subtractVectorsDest } from "../climate/stars/matrix.js";
 import { QuadRenderJob } from "../rendering/model/QuadRenderJob.js";
@@ -21,66 +21,26 @@ export const LSQ_RENDERMODE_THETA = "LSQ_RENDERMODE_THETA";
 
 const NUTRIENT_BASE_HSV = rgb2hsv(RGB_COLOR_GREEN.r, RGB_COLOR_GREEN.g, RGB_COLOR_GREEN.b);
 class BaseLifeSquare {
-    constructor(organism, posX, posY) {
+    constructor(organism) {
         this.proto = "BaseLifeSquare";
-        this.posX = posX;
-        this.posY = posY;
-        this.z = 0;
-
-        this.type = "base";
-        this.subtype = "";
-
-        this.baseColor = "#ff0000";
-        this.darkColor = "#00ff00";
-        this.accentColor = "#0000FF";
-
-        this.baseColor_rgb = hexToRgb(this.baseColor);
-        this.darkColor_rgb = hexToRgb(this.darkColor);
-        this.accentColor_rgb = hexToRgb(this.accentColor);
-
-        this.baseColorAmount = 33;
-        this.darkColorAmount = 33;
-        this.accentColorAmount = 33;
-
-        this.spawnTime = Date.now();
-
-        this.deflectionStrength = 0;
-        this.deflectionXOffset = 0;
-        this.deflectionYOffset = 0;
-
         this.linkedOrganism = organism;
-        this.spawnedEntityId = organism.spawnedEntityId;
-        this.childLifeSquares = new Array();
-
-        this.strength = 1;
-
-        this.state = STATE_HEALTHY;
-        this.activeRenderState = null;
-
+        this.spawnTime = Date.now();
+        // RGB Array
+        this.color = [100, 100, 100];
         this.opacity = 1;
-        this.width = 1;
-        this.height = 1;
-        this.strength = 1;
-        this.xOffset = 0;
-        this.zDelta = 0;
-        this.randoms = [];
-
+        // RGBA String
         this.cachedRgba = null;
 
-        this.distToFront = 0;
-        this.component = null;
-
-        this.LSQ_RENDER_SIZE_MULT = Math.SQRT2;
-
         this.lighting = [];
-        this.touchingGround = null;
-        this.renderMode = LSQ_RENDERMODE_THETA;
 
-        this.lsqLightDecayValue = 1;
+        // Set rendering member variables.
+        this.width = 1;
+        this.height = 1;
 
-        this.posVec = [this.posX, this.posY, 0];
+        this.posVec = [0, 0, 0];
         this.rotVec = [0, 0, 0];
 
+        // Derived rendering member variables.
         this.startPointVec = [0, 0, 0];
         this.endPointVec = [0, 0, 0];
         this.forwardVec = [0, 0, 0];
@@ -139,7 +99,7 @@ class BaseLifeSquare {
         screenToRenderScreen(this.screen_tr, this.renderNorm_tr, this.renderScreen_tr, gfc()._xOffset, gfc()._yOffset, gfc()._s);
         screenToRenderScreen(this.screen_bl, this.renderNorm_bl, this.renderScreen_bl, gfc()._xOffset, gfc()._yOffset, gfc()._s);
         screenToRenderScreen(this.screen_br, this.renderNorm_br, this.renderScreen_br, gfc()._xOffset, gfc()._yOffset, gfc()._s);
-    }
+}
 
     prepareRenderJob() {
         this.tl = structuredClone(this.renderScreen_tl);
@@ -270,72 +230,9 @@ class BaseLifeSquare {
         if (this.type == "root")
             return;
 
-
         this.setFrameCartesians();
         this.prepareRenderJob();
         addRenderJob(this.renderJob, true);
-        return;
-
-
-        let offsetVec = [0, 1, 0, 0];
-        let rotatedOffset = rotatePoint(offsetVec, ...this.rotVec);
-        let startVec = this.posVec;
-        let endVec = addVectors(structuredClone(this.posVec), rotatedOffset);
-
-        // renderPoint(...startVec, COLOR_RED);
-        // renderPoint(...endVec, COLOR_BLUE);
-        renderVec(startVec, endVec, COLOR_BLACK);
-
-        let dv = rotatedOffset;
-
-        let forward = normalizeVec3(addVectors(getCameraPosition(), startVec));
-        let side = normalizeVec3(crossVec3(dv, forward), 1 / this.width);
-
-        let p1 = cartesianToScreen(...subtractVectorsCopy(endVec, side));
-        let p2 = cartesianToScreen(...addVectorsCopy(endVec, side));
-        let p3 = cartesianToScreen(...subtractVectorsCopy(startVec, side));
-        let p4 = cartesianToScreen(...addVectorsCopy(startVec, side));
-
-        let pArr = [p1, p2, p4, p3, p1];
-
-        if (pArr.some((p) => p == null))
-            return;
-
-        let centerZ = pArr.slice(0, 4).map((arr) => arr[2]).reduce((a, b) => a + b, 0) / 4;
-        addRenderJob(new QuadRenderJob(pArr, this.cachedRgba, centerZ));
-        return;
-
-
-        if (this.renderMode == LSQ_RENDERMODE_THETA) {
-            let func = zoomCanvasFillRectTheta;
-
-            if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_3D)
-                func = zoomCanvasFillRectTheta3D;
-
-            func(
-                this.getPosX() * getBaseSize() - getBaseSize() * this.calculateWidthXOffset(),
-                this.getPosY() * getBaseSize(),
-                this.width * getBaseSize() * this.getLsqRenderSizeMult(),
-                this.height * getBaseSize() * this.getLsqRenderSizeMult(),
-                this.xRef,
-                this.yRef,
-                this.theta,
-                this.linkedOrganism.linkedSquare.z
-            );
-        } else if (this.renderMode == LSQ_RENDERMODE_CIRCLE) {
-            zoomCanvasFillCircle(
-                (this.getPosX() + 0.5) * getBaseSize(),
-                (this.getPosY() + 0.5) * getBaseSize(),
-                this.width * getBaseSize() / 2
-            );
-        } else {
-            zoomCanvasFillRect(
-                this.getPosX() * getBaseSize(),
-                this.getPosY() * getBaseSize(),
-                this.width * getBaseSize() * this.getLsqRenderSizeMult(),
-                this.height * getBaseSize() * this.getLsqRenderSizeMult()
-            );
-        }
     }
 
     render() {
@@ -347,8 +244,6 @@ class BaseLifeSquare {
 
     setFrameColor() {
         this.frameViewMode = loadGD(UI_VIEWMODE_SELECT);
-
-
         switch (this.frameViewMode) {
             case UI_VIEWMODE_NITROGEN:
                 return this.viewmodeNitrogen();
@@ -516,7 +411,8 @@ class BaseLifeSquare {
         }
         else
             this.frameCacheLighting = processLighting(this.lighting);
-        return this.frameCacheLighting;
+        
+        this.cachedRgba = rgbToRgba(...this.color, this.opacity) 
     }
 
     frameColorUpdate(frameOpacity = 1) {

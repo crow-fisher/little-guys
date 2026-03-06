@@ -66,33 +66,16 @@ class BaseOrganism {
         this.waterPressure = this.waterPressureSoilTarget();
         this.waterPressureChangeRate = .01;
 
-        // nutrients normalized to "pounds per acre" per farming websites
-        this.ph = 7;
-        this.nitrogen = 0;
-        this.phosphorus = 0;
         this.lightlevel = 0;
-        this.lightDamageCount = 0;
-
-        this.growthNumGreen = 20;
-        this.growthNumRoots = 30;
-        this.growthNitrogen = 50;
-        this.growthPhosphorus = 25;
-        this.growthLightLevel = 1.75;
         this.growthCycleMaturityLength = 1;
         this.growthCycleLength = 1.5;
         this.numGrowthCycles = 1;
 
+        this.growthNumGreen = 20;
+        this.growthNumRoots = 30;
         this.curNumRoots = 0;
         this.curNumGreen = 0;
 
-        this.applyWind = false;
-        this.springCoef = 4;
-        this.startDeflectionAngle = 0;
-        this.lastDeflectionStateRollingAverage = 0;
-        this.lastDeflectionStateThetaRollingAveragePeriod = 1000;
-        this.deflectionIdx = 0;
-        this.deflectionStateTheta = 0;
-        this.rootOpacity = 0.15;
         this.lighting = square.lighting;
         this.evolutionParameters = [0.5];
         this.deathProgress = 0;
@@ -172,9 +155,6 @@ class BaseOrganism {
     }
     getGrowthCycleMaturityLength() {
         return (this.growthCycleMaturityLength / loadGD(UI_SIMULATION_GENS_PER_DAY));
-    }
-    getGrowthLightLevel() {
-        return this.growthLightLevel;
     }
 
     setEvolutionParameters(evolutionParameters) {

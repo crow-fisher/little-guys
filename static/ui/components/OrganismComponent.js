@@ -6,7 +6,7 @@ import { _lightDecayValue, _lightLevelDisplayExposureAdjustment, _llt_max, _llt_
 import { coneflower_dnm } from "../../organisms/flowers/ConeflowerOrganism.js";
 import { cattail_dnm } from "../../organisms/grasses/CattailOrganism.js";
 import { kblue_dnm } from "../../organisms/grasses/KentuckyBluegrassOrganism.js";
-import { wheat_dnm } from "../../organisms/grasses/WheatOrganism.js";
+import { wheat_dnm } from "../../organisms/legacy (pending deletion)/grasses/WheatOrganism.js";
 import { pmoss_dnm } from "../../organisms/mosses/PleurocarpMossOrganism.js";
 import { Component } from "../Component.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
