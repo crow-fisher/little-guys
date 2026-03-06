@@ -2,7 +2,7 @@ import { randNumber, randRange } from "../../common.js";
 import { RootLifeSquare } from "../../lifeSquares/RootLifeSquare.js";
 import { STAGE_ADULT, STAGE_FLOWER, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_STEM, TYPE_TRUNK } from "../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
-import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
+import { GrowthPlan, GrowthPlanStep } from "../GrowthComponent.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
 import { _lightLevelDisplayExposureAdjustment, _llt_target, BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
 import { KentuckyBluegrassGreenSquare } from "../../lifeSquares/grasses/KentuckyBluegrassGreenSquare.js";

@@ -1,5 +1,5 @@
 import { MAIN_CONTEXT } from "../index.js";
-import { hexToRgb, hsv2rgb, rgb2hsv, rgbToHex, rgbToRgba, UI_BIGDOTSOLID } from "../common.js";
+import { hexToRgb, hsv2rgb, processColorLerpBicolor, rgb2hsv, rgbToHex, rgbToRgba, UI_BIGDOTSOLID } from "../common.js";
 
 import { getDaylightStrengthFrameDiff } from "../climate/time.js";
 import { addSquare } from "../squares/_sqOperations.js";
@@ -99,7 +99,7 @@ class BaseLifeSquare {
         screenToRenderScreen(this.screen_tr, this.renderNorm_tr, this.renderScreen_tr, gfc()._xOffset, gfc()._yOffset, gfc()._s);
         screenToRenderScreen(this.screen_bl, this.renderNorm_bl, this.renderScreen_bl, gfc()._xOffset, gfc()._yOffset, gfc()._s);
         screenToRenderScreen(this.screen_br, this.renderNorm_br, this.renderScreen_br, gfc()._xOffset, gfc()._yOffset, gfc()._s);
-}
+    }
 
     prepareRenderJob() {
         this.tl = structuredClone(this.renderScreen_tl);
@@ -263,13 +263,22 @@ class BaseLifeSquare {
         }
     }
 
-    viewmodeNitrogen() {}
-    viewmodeLighting() {}
-    viewmodeMoisture() {}
-    viewmodeEvolution() {}
-    viewmodeNutrients() {}
-    viewmodeNormal() {}
+    viewmodeNitrogen() { }
+    viewmodeLighting() { }
+    viewmodeMoisture() { }
     
+    viewmodeEvolution() {
+        this.evolutionColor = this.evolutionColor ?? this._getEvolutionColor();
+        this.cachedRgba = rgbToRgba(...this.evolutionColor, this.opacity);
+    }
+
+    _getEvolutionColor(opacity) {
+        return processColorLerpBicolor(this.linkedOrganism.evolutionMinColor, this.linkedOrganism.evolutionMaxColor, this.evolutionParameters.at(0), 1, opacity);
+    }
+
+    viewmodeNutrients() { }
+    viewmodeNormal() { }
+
     setFrameOpacity() {
         this.frameOpacity = 1;
         if (this.linkedOrganism.stage == STAGE_DEAD) {
@@ -411,8 +420,8 @@ class BaseLifeSquare {
         }
         else
             this.frameCacheLighting = processLighting(this.lighting);
-        
-        this.cachedRgba = rgbToRgba(...this.color, this.opacity) 
+
+        this.cachedRgba = rgbToRgba(...this.color, this.opacity)
     }
 
     frameColorUpdate(frameOpacity = 1) {

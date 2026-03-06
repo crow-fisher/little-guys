@@ -1,12 +1,12 @@
 import { getCurDay, getDt } from "../climate/time.js";
-import { GrowthPlan, GrowthPlanStep } from "./GrowthPlan.js";
+import { GrowthPlan, GrowthPlanStep } from "./GrowthComponent.js";
 import { STAGE_ADULT, STAGE_DEAD, STAGE_FLOWER, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_HEART, SUBTYPE_ROOTNODE, SUBTYPE_SPROUT, TYPE_HEART } from "./Stages.js";
 import { addSquare, getNeighbors } from "../squares/_sqOperations.js";
 import { PlantSquare } from "../squares/PlantSquare.js";
 import { applyLightingFromSource } from "../lighting/lightingProcessing.js";
 import { loadGD, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_SELECT, UI_SIMULATION_GENS_PER_DAY, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
 import { COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
-import { rgbToRgba } from "../common.js";
+import { processColorLerpBicolor, rgbToRgba } from "../common.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { zoomCanvasFillRect } from "../canvas.js";
 import { getNextBlockId } from "../globals.js";
@@ -41,24 +41,23 @@ export let baseOrganism_dnm = {
 class BaseOrganism {
     constructor(square) {
         this.proto = "BaseOrganism";
-        this.uiRef = UI_ORGANISM_SELECT;
-        this.posX = square.posX;
-        this.posY = square.posY;
+        this.linkedSquare = square;
         this.stage = STAGE_SPROUT;
-        this.originGrowth = null;
-        this.spinnable = false;
+        this.spawnTime = getCurDay();
+        // Required color parameters for rendering. 
+        // As RGB arrays.
+        this.evolutionMinColor = {r: 63, g: 64, b: 79};
+        this.evolutionMaxColor = {r: 99, g: 0, b: 43};
 
+        this.originGrowth = null;
         this.greenLifeSquares = new Array();
         this.rootLifeSquares = new Array();
-        this._lifeSquaresCount = -1;
         this.growthPlans = [];
-        this.lastGrownMap = {};
-        this.linkSquare(square);
         this.age = 0;
         this.rootLastGrown = 0;
         this.greenLastGrown = 0;
 
-        this.evolutionParameters = null;
+        this.evolutionParameters = [0.5];
 
         this.greenType = null;
         this.rootType = null;
@@ -76,16 +75,7 @@ class BaseOrganism {
         this.curNumRoots = 0;
         this.curNumGreen = 0;
 
-        this.lighting = square.lighting;
-        this.evolutionParameters = [0.5];
         this.deathProgress = 0;
-
-        this.evolutionMinColor = RGB_COLOR_BLUE;
-        this.evolutionMaxColor = RGB_COLOR_VERY_FUCKING_RED;
-
-        this.organismColor = COLOR_BLACK;
-
-        this.organismViewHsvBase = [166, 95, 95];
     }
 
     getDefaultNutritionMap() {
@@ -136,19 +126,6 @@ class BaseOrganism {
     }
 
 
-    processColor(color1, color2, value, valueMax, opacity) {
-        let frac = value / valueMax;
-        let outColor = {
-            r: color1.r * frac + color2.r * (1 - frac),
-            g: color1.g * frac + color2.g * (1 - frac),
-            b: color1.b * frac + color2.b * (1 - frac)
-        }
-        return rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacity);
-    }
-
-    getEvolutionColor(opacity) {
-        return this.processColor(this.evolutionMinColor, this.evolutionMaxColor, this.evolutionParameters.at(0), 1, opacity);
-    }
 
     getGrowthCycleLength() {
         return (this.growthCycleLength / loadGD(UI_SIMULATION_GENS_PER_DAY));
@@ -162,26 +139,19 @@ class BaseOrganism {
         this.processGenetics();
     }
 
+
+    // IMPORTANT IMPLEMENTATION METHODS 
     getNextGenetics() {
-        return Array.from(this.evolutionParameters.map((v) => {
-            if (v === 1 || v === 0)
-                return v;
-            let d = Math.random() * ((this.lightlevel < this.growthLightLevel) ? -.1 : .1);
-            return Math.min(Math.max(0.0001, v + d), 0.9999);
-        }));
+        return structuredClone(this.evolutionParameters);
     }
 
     processGenetics() { } // fill this out in your implementation class!
-
+     
+    // ^^^^^^^^^^^^^^^^^^^
 
     updateDeflectionState() {
         if (this.originGrowth != null) {
             this.originGrowth.updateDeflectionState();
-        }
-    }
-
-    applyDeflectionStateToSquares() {
-        if (this.originGrowth != null) {
             this.originGrowth.applyDeflectionState(null);
         }
     }
@@ -191,10 +161,7 @@ class BaseOrganism {
     waterPressureTick() {
         let roots = this.greenLifeSquares
             .filter((lsq) => lsq.type == "root");
-        let numRoots = roots.map((lsq) => 1).reduce(
-            (accumulator, currentValue) => accumulator + currentValue,
-            0);
-
+        let numRoots = roots.map((lsq) => 1).reduce((a, b) => a + b,0);
 
         let target = this.waterPressureSoilTarget();
         let min = target + this.waterPressureWiltThresh();
@@ -233,23 +200,12 @@ class BaseOrganism {
     }
 
     nutrientTick() {
-        let growthCycleFrac = getDt() / this.getGrowthCycleMaturityLength();
-        let mult = growthCycleFrac * this.wiltEfficiency() / (2 * this.lightLevelThrottleVal() * (this.growthNumRoots ** 0.7));
-        let targetPerRootNitrogen = mult * this.growthNitrogen;
-        let targetPerRootPhosphorus = mult * this.growthPhosphorus;
-
-        this.rootLifeSquares
-            .filter((lsq) => lsq.linkedSquare != null && lsq.linkedSquare.proto == "SoilSquare")
-            .forEach((lsq) => {
-                this.nitrogen += lsq.linkedSquare.takeNitrogen(targetPerRootNitrogen, this.proto);
-                this.phosphorus += lsq.linkedSquare.takePhosphorus(targetPerRootPhosphorus, this.proto);
-            });
-
+        // in the future, implement nitrogen, phosphorus, ph, micronutrients, etc here 
         this.greenLifeSquares
             .filter((lsq) => lsq.type == "green")
             .map((lsq) => [lsq.processLighting(), lsq.lightHealth ** 4])
             .map((argb) => argb[1] * (argb[0].r + argb[0].b) / (255 * 2))
-            .forEach((lightlevel) => this.lsqLightLevel(this.llt_target() * lightlevel))
+            .forEach((lightlevel) => this.lsqLightLevel(this.llt_target() * lightlevel));
     }
 
     lsqLightLevel(val) {
@@ -289,7 +245,6 @@ class BaseOrganism {
 
     // PHYSICAL SQUARES
     linkSquare(square) {
-        this.linkedSquare = square;
         square.linkOrganism(this);
     }
     unlinkSquare(deep = true) {
@@ -298,7 +253,6 @@ class BaseOrganism {
         }
         this.linkedSquare = null;
     }
-
     // LIFE SQUARES
     addAssociatedLifeSquare(lifeSquare) {
         if (lifeSquare.type == "green") {
@@ -652,7 +606,6 @@ class BaseOrganism {
             this.doSpawnSeed();
         }
         this.updateDeflectionState();
-        this.applyDeflectionStateToSquares();
         this.hasPlantLivedTooLong();
         this.doDecay();
         this.greenLifeSquares = this.greenLifeSquares.sort((a, b) => a.distToFront - b.distToFront);

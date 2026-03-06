@@ -1,4 +1,4 @@
-import { GrowthComponent, GrowthPlan, GrowthPlanStep } from "./organisms/GrowthPlan.js";
+import { GrowthComponent, GrowthPlan, GrowthPlanStep } from "./organisms/GrowthComponent.js";
 import { addSquare, iterateOnSquares } from "./squares/_sqOperations.js";
 import { getTemperatureMap, getWaterSaturationMap } from "./climate/simulation/temperatureHumidity.js";
 import { getCurDay, setCurDay } from "./climate/time.js";
