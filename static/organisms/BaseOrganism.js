@@ -244,6 +244,7 @@ class BaseOrganism {
     // PHYSICAL SQUARES
     linkSquare(square) {
         square.linkOrganism(this);
+        this.linkedSquare = square;
     }
     unlinkSquare(deep = true) {
         if (deep && this.linkedSquare != null) {

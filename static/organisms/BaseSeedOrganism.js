@@ -51,7 +51,11 @@ class BaseSeedOrganism extends BaseOrganism {
             this.sproutAge += getDt();
             if (this.sproutAge > this.totalSproutTime) {
                 let linkedSquareCache = this.linkedSquare;
-                this.applyEvolutionParameters(new (this.getSproutType())(linkedSquareCache));
+                this.unlinkSquare(true);
+                let newOrganism = new (this.getSproutType())(linkedSquareCache);
+                newOrganism.setEvolutionParameters(this.evolutionParameters);
+                newOrganism.seedLifeSquare = this.seedLifeSquare;
+
                 this.destroy();
                 return;
             }
@@ -99,15 +103,8 @@ class BaseSeedOrganism extends BaseOrganism {
         this.unlinkSquare(true);
         origSeedSquare.destroy(false);
 
-        this.posX = targetSq.posX;
-        this.posY = targetSq.posY;
-
-        this.greenLifeSquares.forEach((lsq) => {
-            lsq.posX = this.posX;
-            lsq.posY = this.posY;
-            lsq.linkSquare(soilSq);
-            targetSq.linkOrganismSquare(lsq);
-        });
+        this.seedLifeSquare.linkSquare(soilSq);
+        targetSq.linkOrganismSquare(this.seedLifeSquare);
         
         this.linkSquare(targetSq);
 
@@ -115,10 +112,7 @@ class BaseSeedOrganism extends BaseOrganism {
     }
 
     applyEvolutionParameters(org) {
-        if (org == false || org == null || this.evolutionParameters == null) {
-            return;
-        }
-        org.setEvolutionParameters(this.evolutionParameters);
+        org;
     }
 }
 
