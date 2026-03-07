@@ -1,3 +1,5 @@
+import { GrowthComponent } from "./GrowthComponent.js";
+
 export class GrowthPlan {
     constructor(required, endStage, type, theta, sin, phi, thetaCurve, sinCurve, phiCurve, strengthMult) {
         this.required = required;

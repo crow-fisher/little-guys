@@ -1,15 +1,10 @@
 import { getCurDay, getDt } from "../climate/time.js";
-import { STAGE_ADULT, STAGE_DEAD, STAGE_FLOWER, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_HEART, SUBTYPE_ROOTNODE, SUBTYPE_SPROUT, TYPE_HEART } from "./Stages.js";
-import { addSquare, getNeighbors } from "../squares/_sqOperations.js";
-import { PlantSquare } from "../squares/PlantSquare.js";
+import { STAGE_DEAD, STAGE_FLOWER, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_HEART, SUBTYPE_ROOTNODE, TYPE_HEART } from "./Stages.js";
+import { getNeighbors } from "../squares/_sqOperations.js";
 import { applyLightingFromSource } from "../lighting/lightingProcessing.js";
-import { loadGD, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_SELECT, UI_SIMULATION_GENS_PER_DAY, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
-import { COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
-import { processColorLerpBicolor, rgbToRgba } from "../common.js";
+import { loadGD, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_SIMULATION_GENS_PER_DAY, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { zoomCanvasFillRect } from "../canvas.js";
-import { getNextBlockId } from "../globals.js";
-import { executeRenderJobs } from "../rendering/rasterizer.js";
 import { GrowthPlan } from "./growthPlan/GrowthPlan.js";
 import { GrowthPlanStep } from "./growthPlan/GrowthPlanStep.js";
 
@@ -258,22 +253,14 @@ class BaseOrganism {
     }
     // LIFE SQUARES
     addAssociatedLifeSquare(lifeSquare) {
-        if (lifeSquare.type == "green") {
-            this.greenLifeSquares.push(lifeSquare);
-            let pred = (lsq) => lsq.lighting != null && lsq.lighting.length > 0;
-            if (this.greenLifeSquares.some(pred)) {
-                lifeSquare.lighting = this.greenLifeSquares.reverse().find(pred).lighting;
-            }
-        } else {
-            this.rootLifeSquares.push(lifeSquare);
+        // Only invoke for green life squares. For roots, push to `this.rootLifeSquares`
+        this.greenLifeSquares.push(lifeSquare);
+        let pred = (lsq) => lsq.lighting != null && lsq.lighting.length > 0;
+        if (this.greenLifeSquares.some(pred)) {
+            lifeSquare.lighting = this.greenLifeSquares.reverse().find(pred).lighting;
         }
 
     }
-    removeAssociatedLifeSquare(lifeSquare) {
-        this.greenLifeSquares = Array.from(this.greenLifeSquares.filter((lsq) => lsq != lifeSquare));
-        lifeSquare.destroy();
-    }
-
     // COMPONENT GROWTH
     growPlantSquare(parentSquare) {
         let newGreenSquare = new this.greenType(this);
@@ -425,7 +412,7 @@ class BaseOrganism {
 
         let targetSquare = null;
         let targetSquareParent = null;
-        this.greenLifeSquares.filter((lsq) => lsq.type == "root").forEach((lsq) => {
+        this.rootLifeSquares.filter((lsq) => lsq.type == "root").forEach((lsq) => {
             getNeighbors(lsq.posX, lsq.posY)
                 .filter((_sq) => _sq != null)
                 .filter((_sq) => _sq.rootable)
@@ -439,7 +426,7 @@ class BaseOrganism {
         }
 
         let newRootLifeSquare = new this.rootType(targetSquare, this);
-        this.addAssociatedLifeSquare(newRootLifeSquare);
+        this.rootLifeSquares.push(lifeSquare);
         newRootLifeSquare.linkSquare(targetSquare);
         targetSquareParent.addChild(newRootLifeSquare)
         targetSquare.linkOrganismSquare(newRootLifeSquare);
