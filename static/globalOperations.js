@@ -1,5 +1,4 @@
 import { getFirstLevelSquares, getSquares, registerSqColChange, registerSqIterationRowChange } from "./squares/_sqOperations.js";
-import { iterateOnOrganisms } from "./organisms/_orgOperations.js";
 import {
     ALL_SQUARES, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES, resetWaterflowSquares
 } from "./globals.js";
@@ -47,6 +46,10 @@ export function getFrameSimulationSquares() {
 
 export function getFrameSimulationOrganisms() {
     return frame_simulation_organisms;
+}
+
+function iterateOnOrganisms(func) {
+    getFrameSimulationOrganisms().forEach(func);
 }
 
 export function reset() {
