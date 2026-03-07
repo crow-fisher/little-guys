@@ -75,8 +75,13 @@ export class GrowthComponent {
     }
 
     _getNetWindSpeed() {
+        // todo: project this as a vector off of the lookat plane! 
+        // like, so however you have the thing tilted is how the wind blows
+
+        // maybe instep for 3d wind? 
+        
         return this.getValueCached("_getNetWindSpeed", () => this.lifeSquares
-            .map((lsq) => getWindSpeedAtLocation(lsq.getPosX(), lsq.getPosY())).reduce(
+            .map((lsq) => getWindSpeedAtLocation(lsq.posVec[0], lsq.posVec[1])).reduce(
                 (accumulator, currentValue) => [accumulator[0] + currentValue[0], accumulator[1] + currentValue[1]],
                 [0, 0]
             ));

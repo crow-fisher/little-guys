@@ -20,17 +20,22 @@ class BaseSeedOrganism extends BaseOrganism {
     }
 
     growInitialSquares() {
-        let newLifeSquare = new SeedLifeSquare(this, this.linkedSquare.posX, this.linkedSquare.posY);
+        let newLifeSquare = new SeedLifeSquare(this);
         newLifeSquare.linkSquare(this.linkedSquare);
         this.linkedSquare.linkOrganismSquare(newLifeSquare);
-        this.addAssociatedLifeSquare(newLifeSquare);
+        this.linkedSquare.linkOrganism(this);
+        this.seedLifeSquare = newLifeSquare;
     }
 
     getSproutType() {
-        return null;
+        return BaseOrganism;
     }
     getSproutTypeProto() {
         return "BaseOrganism";
+    }
+
+    render() {
+        this.seedLifeSquare.render();
     }
 
     process() {

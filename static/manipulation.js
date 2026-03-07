@@ -332,8 +332,9 @@ function placeActiveSeed(px, py) {
     let chance = Math.random();
     switch (loadGD(UI_ORGANISM_SELECT)) {
         case UI_ORGANISM_GRASS_KBLUE:
-            if (chance > 0.95) {
+            if (true || chance > 0.95) {
                 let sq = addSquare(new SeedSquare(px, py));
+                let sq2 = addSquare(new WaterSquare(px, py));
                 if (sq) {
                     let orgAdded = new KentuckyBluegrassSeedOrganism(sq);
                     if (!orgAdded) {

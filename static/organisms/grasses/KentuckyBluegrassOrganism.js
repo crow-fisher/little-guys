@@ -2,7 +2,6 @@ import { randNumber, randRange } from "../../common.js";
 import { RootLifeSquare } from "../../lifeSquares/RootLifeSquare.js";
 import { STAGE_ADULT, STAGE_FLOWER, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_STEM, TYPE_TRUNK } from "../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
-import { GrowthPlan, GrowthPlanStep } from "../GrowthComponent.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
 import { _lightLevelDisplayExposureAdjustment, _llt_target, BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
 import { KentuckyBluegrassGreenSquare } from "../../lifeSquares/grasses/KentuckyBluegrassGreenSquare.js";
@@ -11,6 +10,8 @@ import { SeedSquare } from "../../squares/SeedSquare.js";
 import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
 import { UI_ORGANISM_GRASS_KBLUE } from "../../ui/UIData.js";
 import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh } from "../BaseOrganism.js";
+import { GrowthPlan } from "../growthPlan/GrowthPlan.js";
+import { GrowthPlanStep } from "../growthPlan/GrowthPlanStep.js";
 
 export let kblue_dnm = structuredClone(baseOrganism_dnm);
 kblue_dnm[_llt_target] = 1.45;
@@ -113,13 +114,11 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
             growthPlan.postConstruct = () => {
                 this.originGrowth.addChild(growthPlan.component);
                 this.grasses.push(this.originGrowth.getChildPath(growthPlan.component))
-                growthPlan.component.xOffset = 3 * (Math.random() - 0.5);
-                growthPlan.component.yOffset = randRange(-growthPlan.component.xOffset, 0) - 1;
             };
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
             () => {
-                let node = this.growPlantSquare(startNode, 0, 0);
+                let node = this.growPlantSquare(startNode);
                 node.subtype = SUBTYPE_STEM;
                 return node;
             }
@@ -139,7 +138,7 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
                         grass.growthPlan,
                         () => {
                             let dy = grass.growthPlan.steps.length + i - 1;
-                            let node = this.growPlantSquare(startNode, 0, dy);
+                            let node = this.growPlantSquare(startNode);
                             node.subtype = SUBTYPE_STEM;
                             console.log("Adding unit of grass at ", dy, " from origin ", node.posY);
                             return node;

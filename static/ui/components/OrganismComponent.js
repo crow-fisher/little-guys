@@ -2,28 +2,18 @@ import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { calculateColor } from "../../climate/simulation/temperatureHumidity.js";
 import { hexToRgb } from "../../common.js";
-import { _lightDecayValue, _lightLevelDisplayExposureAdjustment, _llt_max, _llt_min, _llt_target, _llt_throttlValMax, _llt_throttlValMin, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, baseOrganism_dnm } from "../../organisms/BaseOrganism.js";
-import { coneflower_dnm } from "../../organisms/flowers/ConeflowerOrganism.js";
-import { cattail_dnm } from "../../organisms/grasses/CattailOrganism.js";
+import { _lightDecayValue, _lightLevelDisplayExposureAdjustment, _llt_max, _llt_min, _llt_target, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, baseOrganism_dnm } from "../../organisms/BaseOrganism.js";
 import { kblue_dnm } from "../../organisms/grasses/KentuckyBluegrassOrganism.js";
-import { wheat_dnm } from "../../organisms/legacy (pending deletion)/grasses/WheatOrganism.js";
-import { pmoss_dnm } from "../../organisms/mosses/PleurocarpMossOrganism.js";
 import { Component } from "../Component.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
 import { Container } from "../Container.js";
-import { Button } from "../elements/Button.js";
-import { RadioToggle } from "../elements/RadioToggle.js";
 import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
-import { RowedRadio } from "../elements/RowedRadio.js";
-import { SliderGradientBackground } from "../elements/SliderGradientBackground.js";
 import { SliderGradientBackgroundGetterSetter } from "../elements/SliderGradientBackgroundGetterSetter.js";
 import { SliderGradientBackgroundPlantConfigurator } from "../elements/SliderGradientBackgroundPlantConfigurator.js";
-import { Text } from "../elements/Text.js";
 import { TextBackground } from "../elements/TextBackground.js";
 import { TextFunctionalBackground } from "../elements/TextFunctionalBackground.js";
 import { Toggle } from "../elements/Toggle.js";
-import { ToggleFunctionalText } from "../elements/ToggleFunctionalText.js";
-import { UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_WHEAT, UI_ORGANISM_GRASS_KBLUE, UI_ORGANISM_GRASS_CATTAIL, UI_CENTER, UI_ORGANISM_TREE_PALM, saveGD, UI_ORGANISM_TYPE_SELECT, UI_ORGANISM_TYPE_MOSS, UI_ORGANISM_TYPE_GRASS, UI_ORGANISM_TYPE_FLOWER, UI_ORGANISM_TYPE_TREE, loadGD, loadUI, UI_UI_PHONEMODE, UI_ORGANISM_FLOWER_CONEFLOWER, UI_ORGANISM_NUTRITION_CONFIGURATOR, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, addUIFunctionMap, UI_ORGANISM_MOSS_PLEUROCARP, UI_ORGANISM_CONFIGURATOR, UI_ORGANISM_TREE_MAGNOLIA } from "../UIData.js";
+import { UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_WHEAT, UI_ORGANISM_GRASS_KBLUE, UI_ORGANISM_GRASS_CATTAIL, UI_CENTER, UI_ORGANISM_TREE_PALM, UI_ORGANISM_TYPE_SELECT, UI_ORGANISM_TYPE_MOSS, UI_ORGANISM_TYPE_GRASS, UI_ORGANISM_TYPE_FLOWER, UI_ORGANISM_TYPE_TREE, loadGD, loadUI, UI_UI_PHONEMODE, UI_ORGANISM_FLOWER_CONEFLOWER, UI_ORGANISM_NUTRITION_CONFIGURATOR, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_MOSS_PLEUROCARP, UI_ORGANISM_TREE_MAGNOLIA } from "../UIData.js";
 
 export class OrganismComponent extends Component {
      constructor(posX, posY, padding, dir, key) {
@@ -274,16 +264,8 @@ export class OrganismComponent extends Component {
      getDefaultNutritionMap() {
           let activeOrganism = loadGD(UI_ORGANISM_SELECT);
           switch (activeOrganism) {
-               case UI_ORGANISM_FLOWER_CONEFLOWER:
-                    return coneflower_dnm;
                case UI_ORGANISM_GRASS_KBLUE:
                     return kblue_dnm;
-               case UI_ORGANISM_GRASS_WHEAT:
-                    return wheat_dnm;
-               case UI_ORGANISM_GRASS_CATTAIL:
-                    return cattail_dnm;
-               case UI_ORGANISM_MOSS_PLEUROCARP:
-                    return pmoss_dnm;
                default:
                     return baseOrganism_dnm;
           }

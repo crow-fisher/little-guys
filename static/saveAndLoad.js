@@ -1,4 +1,3 @@
-import { GrowthComponent, GrowthPlan, GrowthPlanStep } from "./organisms/GrowthComponent.js";
 import { addSquare, iterateOnSquares } from "./squares/_sqOperations.js";
 import { getTemperatureMap, getWaterSaturationMap } from "./climate/simulation/temperatureHumidity.js";
 import { getCurDay, setCurDay } from "./climate/time.js";
@@ -13,7 +12,9 @@ import { getActiveClimate } from "./climate/climateManager.js";
 import { doSingleTimeMouseEvent } from "./mouse.js";
 import { downloadFile, MOUSEEVENT_UNHIDE } from "./common.js";
 import { resetZoom } from "./canvas.js";
-
+import { GrowthPlan } from "./organisms/growthPlan/GrowthPlan.js";
+import { GrowthComponent } from "./organisms/growthPlan/GrowthComponent.js";
+import { GrowthPlanStep } from "./organisms/growthPlan/GrowthPlanStep.js";
 
 let saveOrLoadInProgress = false;
 

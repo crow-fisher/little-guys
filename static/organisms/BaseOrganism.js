@@ -1,5 +1,4 @@
 import { getCurDay, getDt } from "../climate/time.js";
-import { GrowthPlan, GrowthPlanStep } from "./GrowthComponent.js";
 import { STAGE_ADULT, STAGE_DEAD, STAGE_FLOWER, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_HEART, SUBTYPE_ROOTNODE, SUBTYPE_SPROUT, TYPE_HEART } from "./Stages.js";
 import { addSquare, getNeighbors } from "../squares/_sqOperations.js";
 import { PlantSquare } from "../squares/PlantSquare.js";
@@ -11,6 +10,9 @@ import { MAIN_CONTEXT } from "../index.js";
 import { zoomCanvasFillRect } from "../canvas.js";
 import { getNextBlockId } from "../globals.js";
 import { executeRenderJobs } from "../rendering/rasterizer.js";
+import { GrowthPlan } from "./growthPlan/GrowthPlan.js";
+import { GrowthPlanStep } from "./growthPlan/GrowthPlanStep.js";
+
 
 export const _llt_target = "_llt_target";
 export const _llt_min = "_llt_min";
@@ -272,12 +274,10 @@ class BaseOrganism {
     }
 
     // COMPONENT GROWTH
-    growPlantSquare(parentSquare, dx, dy) {
-        let posX = parentSquare.posX + dx, posY = parentSquare.posY - dy;
-        let newGreenSquare = new this.greenType(this, posX, posY);
+    growPlantSquare(parentSquare) {
+        let newGreenSquare = new this.greenType(this);
         this.addAssociatedLifeSquare(newGreenSquare);
         newGreenSquare.lighting = new Array();
-
         let refSquare = null;
         if (parentSquare.lighting.length > 0) {
             refSquare = parentSquare;
@@ -506,7 +506,6 @@ class BaseOrganism {
             // this.greenLifeSquares.forEach((sp) => sp.render())
             this.greenLifeSquares.forEach((sp) => {
                 sp.render();
-                executeRenderJobs();
                 ;
 
             });
