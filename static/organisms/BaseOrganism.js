@@ -36,26 +36,26 @@ export let baseOrganism_dnm = {
 }
 
 class BaseOrganism {
-    constructor(square) {
+    constructor(square, seedLifeSquare, evolutionParameters) {
         this.proto = "BaseOrganism";
         this.linkedSquare = square;
         this.stage = STAGE_SPROUT;
         this.spawnTime = getCurDay();
         // Required color parameters for rendering. 
         // As RGB arrays.
-        this.evolutionMinColor = {r: 63, g: 64, b: 79};
-        this.evolutionMaxColor = {r: 99, g: 0, b: 43};
+        this.seedLifeSquare = seedLifeSquare;
+        this.evolutionParameters = evolutionParameters;
+
+        this.evolutionMinColor = { r: 63, g: 64, b: 79 };
+        this.evolutionMaxColor = { r: 99, g: 0, b: 43 };
 
         this.originGrowth = null;
-        this.seedLifeSquare = null;
         this.greenLifeSquares = new Array();
         this.rootLifeSquares = new Array();
         this.growthPlans = [];
         this.age = 0;
         this.rootLastGrown = 0;
         this.greenLastGrown = 0;
-
-        this.evolutionParameters = [0.5];
 
         this.greenType = null;
         this.rootType = null;
@@ -124,7 +124,6 @@ class BaseOrganism {
     }
 
 
-
     getGrowthCycleLength() {
         return (this.growthCycleLength / loadGD(UI_SIMULATION_GENS_PER_DAY));
     }
@@ -144,7 +143,7 @@ class BaseOrganism {
     }
 
     processGenetics() { } // fill this out in your implementation class!
-     
+
     // ^^^^^^^^^^^^^^^^^^^
 
     updateDeflectionState() {
@@ -157,9 +156,6 @@ class BaseOrganism {
     // WATER SATURATION AND NUTRIENTS 
 
     waterPressureTick() {
-        let roots = this.greenLifeSquares
-            .filter((lsq) => lsq.type == "root");
-        let numRoots = roots.map((lsq) => 1).reduce((a, b) => a + b,0);
 
         let target = this.waterPressureSoilTarget();
         let min = target + this.waterPressureWiltThresh();
@@ -178,23 +174,20 @@ class BaseOrganism {
 
         this.waterPressure -= waterPressureLossRate * this.waterPressureChangeRate;
 
+        let numRoots = this.rootLifeSquares.length;
         if (numRoots > 0)
-            this.waterPressure += (1 / numRoots) * this.waterPressureChangeRate * roots.filter((lsq) => lsq.linkedSquare != null && lsq.linkedSquare.proto == "SoilSquare")
-                .map((lsq) => {
-                    let sq = lsq.linkedSquare;
-                    let sqWaterPressure = sq.getSoilWaterPressure();
-                    let diffToTarget = sqWaterPressure - this.waterPressureSoilTarget();
-                    if (diffToTarget <= 0) {
-                        return 0;
-                    }
-
-                    let amount = diffToTarget;
-                    if (this.waterPressure > target)
-                        amount /= waterPressureLossRate;
-
-                    return amount;
-                })
-                .reduce((a, b) => a + b, 0);
+            this.waterPressure += (1 / numRoots) * this.waterPressureChangeRate * this.rootLifeSquares.map((lsq) => {
+                let sq = lsq.linkedSquare;
+                let sqWaterPressure = sq.getSoilWaterPressure();
+                let diffToTarget = sqWaterPressure - this.waterPressureSoilTarget();
+                if (diffToTarget <= 0) {
+                    return 0;
+                }
+                let amount = diffToTarget;
+                if (this.waterPressure > target)
+                    amount /= waterPressureLossRate;
+                return amount;
+            }).reduce((a, b) => a + b, 0);
     }
 
     nutrientTick() {
@@ -253,8 +246,7 @@ class BaseOrganism {
         this.linkedSquare = null;
     }
     // LIFE SQUARES
-    addAssociatedLifeSquare(lifeSquare) {
-        // Only invoke for green life squares. For roots, push to `this.rootLifeSquares`
+    addGreenLifeSquare(lifeSquare) {
         this.greenLifeSquares.push(lifeSquare);
         let pred = (lsq) => lsq.lighting != null && lsq.lighting.length > 0;
         if (this.greenLifeSquares.some(pred)) {
@@ -265,7 +257,7 @@ class BaseOrganism {
     // COMPONENT GROWTH
     growPlantSquare(parentSquare) {
         let newGreenSquare = new this.greenType(this);
-        this.addAssociatedLifeSquare(newGreenSquare);
+        this.addGreenLifeSquare(newGreenSquare);
         newGreenSquare.lighting = new Array();
         let refSquare = null;
         if (parentSquare.lighting.length > 0) {
@@ -316,25 +308,18 @@ class BaseOrganism {
     }
 
     addSproutGrowthPlan() {
-        if (this.linkedSquare == null || !this.linkedSquare.surface || this.linkedSquare == -1) {
-            this.destroy();
-            return;
-        }
-
         let rootLsq = new this.rootType(this.linkedSquare, this);
         rootLsq.subtype = SUBTYPE_ROOTNODE;
-        this.addAssociatedLifeSquare(rootLsq);
-
+        this.rootLifeSquares.push(rootLsq);
         let growthPlan = new GrowthPlan(
-            true, STAGE_JUVENILE, TYPE_HEART, Math.PI / 2, 0, 0,
+            true, STAGE_JUVENILE, TYPE_HEART, 0, 0, 0,
             0, 0, 0, 10 ** 8);
-
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
             () => {
                 let heartLsq = new this.greenType(this, this.posX, this.posY);
                 heartLsq.subtype = SUBTYPE_HEART;
-                this.addAssociatedLifeSquare(heartLsq);
+                this.addGreenLifeSquare(heartLsq);
                 return heartLsq;
             }
         ));
@@ -398,11 +383,8 @@ class BaseOrganism {
         if (this.stage == STAGE_FLOWER || curMaturityLifeFrac >= 1)
             return;
 
-        let expectedNitrogen = (curMaturityLifeFrac ** 2) * this.growthNitrogen;
-        let expectedPhosphorus = (curMaturityLifeFrac ** 2) * this.growthPhosphorus;
-        if (this.nitrogen < expectedNitrogen || this.phosphorus < expectedPhosphorus) {
+        if (this.curNumRoots < this.growthNumRoots)
             this.growOptimalRoot();
-        }
     }
 
     growRoot(f) {
@@ -442,26 +424,19 @@ class BaseOrganism {
 
     doSpawnSeed() {
         if (this.stage == STAGE_FLOWER) {
-            if (this.nitrogen > this.growthNitrogen && this.phosphorus > this.growthPhosphorus) {
-                this.spawnSeed();
-            }
+            this.spawnSeed();
         }
     }
 
     growOptimalRoot() {
-        let curMaturityFrac = Math.min(1, this.age / this.getGrowthCycleMaturityLength());
-        let expectedNitrogen = curMaturityFrac ** 2 * this.growthNitrogen;
-        let expectedPhosphorus = curMaturityFrac ** 2 * this.growthPhosphorus;
+        // TODO: This score function. 
+        // Commits before 3/7/26 have the previous nutrition implementation.
         let scoreFunc = (sq) => {
             let sqScore = 0;
             if (this.waterPressure < this.waterPressureSoilTarget()) {
                 sqScore += sq.getSoilWaterPressure() - this.waterPressureSoilTarget();
-            }
-            if (this.nitrogen < expectedNitrogen) {
-                sqScore += (sq.nitrogen / this.growthNitrogen) * sq.getNutrientRate(this.proto)
-            }
-            if (this.phosphorus < expectedPhosphorus) {
-                sqScore += (sq.phosphorus / this.growthPhosphorus) * sq.getNutrientRate(this.proto)
+            } else {
+                sqScore += this.waterPressureSoilTarget() - sq.getSoilWaterPressure();
             }
         }
         this.growRoot(scoreFunc);
@@ -479,6 +454,7 @@ class BaseOrganism {
         }
         if (this.stage == STAGE_SPROUT) {
             this.addSproutGrowthPlan();
+            return false;
         }
         return true;
     }
@@ -596,7 +572,6 @@ class BaseOrganism {
         this.updateDeflectionState();
         this.hasPlantLivedTooLong();
         this.doDecay();
-        this.greenLifeSquares = this.greenLifeSquares.sort((a, b) => a.distToFront - b.distToFront);
     }
 }
 
