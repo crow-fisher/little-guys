@@ -12,6 +12,9 @@ export function getNoSortRenderJobsLength() {
 }
 
 export function addRenderJob(renderJob, sort) {
+    if (renderJob == null || renderJob.isVisible == null) {
+        return;
+    }
     if (renderJob != null && renderJob.isVisible()) {
         ((sort) ? renderJobs : noSortRenderJobs).push(renderJob);
     }

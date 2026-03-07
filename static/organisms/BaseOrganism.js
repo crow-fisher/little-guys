@@ -52,6 +52,7 @@ class BaseOrganism {
         this.evolutionMaxColor = {r: 99, g: 0, b: 43};
 
         this.originGrowth = null;
+        this.seedLifeSquare = null;
         this.greenLifeSquares = new Array();
         this.rootLifeSquares = new Array();
         this.growthPlans = [];

@@ -248,8 +248,10 @@ export function compressSquares(squares) {
         sq.linkedOrganisms = Array.from(sq.linkedOrganisms.map((org) => {
             if (org.stage != STAGE_DEAD) {
                 orgArr.push(org);
+                lsqArr.push(org.seedLifeSquare);
                 lsqArr.push(...org.greenLifeSquares);
                 lsqArr.push(...org.rootLifeSquares);
+                
                 growthPlanArr.push(...org.growthPlans);
                 growthPlanComponentArr.push(...org.growthPlans.map((gp) => gp.component));
                 org.growthPlans.forEach((gp) => growthPlanStepArr.push(...gp.steps));
@@ -266,6 +268,7 @@ export function compressSquares(squares) {
                         lsq.renderJob = null;
                     })
                 });
+                org.seedLifeSquare = lsqArr.indexOf(org.seedLifeSquare);
                 org.greenLifeSquares = Array.from(org.greenLifeSquares.map((lsq) => lsqArr.indexOf(lsq)));
                 org.rootLifeSquares = Array.from(org.rootLifeSquares.map((lsq) => lsqArr.indexOf(lsq)));
                 org.originGrowth = growthPlanComponentArr.indexOf(org.originGrowth);
@@ -417,6 +420,7 @@ export function loadSlotFromSave(slotData) {
             org.growthPlans = Array.from(org.growthPlans.map((gp) => growthPlanArr[gp]));
             org.greenLifeSquares = Array.from(org.greenLifeSquares.map((lsq) => lsqArr[lsq]));
             org.rootLifeSquares = Array.from(org.rootLifeSquares.map((lsq) => lsqArr[lsq]));
+            org.seedLifeSquare = (org.seedLifeSquare != -1) ? lsqArr[org.seedLifeSquare] : null
             org.originGrowth = growthPlanComponentArr[org.originGrowth];
             [org.greenLifeSquares, org.rootLifeSquares].forEach((arr) => arr.forEach((lsq) => {
                 lsq.lighting = [];
