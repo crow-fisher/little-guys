@@ -2,9 +2,9 @@ import { hsv2rgb, processColorLerpBicolorArr, rgb2hsv, rgbToRgba } from "../../c
 import { RGB_COLOR_GREEN } from "../../colors.js";
 import { getDefaultLighting, processLighting } from "../../lighting/lightingProcessing.js";
 import { rotatePoint } from "../../canvas.js";
-import { loadGD, UI_CAMERA_CENTER_SELECT_POINT, UI_CAMERA_OFFSET_VEC, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../../ui/UIData.js";
+import { loadGD, UI_CAMERA_CENTER_SELECT_POINT, UI_CAMERA_OFFSET_VEC, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_3D, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../../ui/UIData.js";
 import { cartesianToScreenInplace, gfc, screenToRenderScreen } from "../../rendering/camera.js";
-import { addVec3Dest, copyVecValue, crossVec3, multiplyVectorsDest, normalizeVec3, subtractVectorsDest } from "../../climate/stars/matrix.js";
+import { addVec3Dest, copyVecValue, crossVec3, multiplyVectorByScalar, multiplyVectorsDest, normalizeVec3, subtractVectorsDest } from "../../climate/stars/matrix.js";
 import { QuadRenderJob } from "../../rendering/model/QuadRenderJob.js";
 import { addRenderJob } from "../../rendering/rasterizer.js";
 import { STAGE_DEAD } from "../organisms/Stages.js";
@@ -74,6 +74,8 @@ class PlantLifeSquare {
 
         this.forwardVec = normalizeVec3(this.startPointVec);
         this.sideVec = normalizeVec3(crossVec3(this.rotatedOffset, this.forwardVec))
+
+        multiplyVectorByScalar(this.sideVec, this.width / 2);
 
         subtractVectorsDest(this.endPointVec, this.sideVec, this.cartesian_tl);
         addVec3Dest(this.endPointVec, this.sideVec, this.cartesian_tr);
@@ -171,9 +173,9 @@ class PlantLifeSquare {
     }
 
     setFrameRenderColor() {
-        if (this.frameViewMode == UI_VIEWMODE_NORMAL) {
-            multiplyVectorsDest(this.color, this.lightingColor, this.colorLightingApplied);
-            this.cachedRgba = rgbToRgba(...this.colorLightingApplied, this.opacity);
+        if (this.frameViewMode == UI_VIEWMODE_3D) {
+            multiplyVectorsDest(this.color, this.lighting, this.colorLightingApplied);
+            this.cachedRgba = rgbToRgba(...this.color, this.opacity);
         } else {
             this.cachedRgba = rgbToRgba(...this.altColor, this.opacity);
         }

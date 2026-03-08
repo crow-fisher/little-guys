@@ -419,7 +419,7 @@ class BasePlant {
     // for green growth, roots are handled generically (for now)
     planGrowth() {
         if (Math.abs(this.getWilt()) > .5)
-            return false;
+            // return false;
 
         if (this.growthPlans.some((gp) => !gp.areStepsCompleted())) {
             this.doGreenGrowth();
@@ -432,6 +432,9 @@ class BasePlant {
         return true;
     }
 
+    prepareRender() {
+
+    }
 
     render() {
         this.greenLifeSquares.forEach((lsq) => lsq.render());

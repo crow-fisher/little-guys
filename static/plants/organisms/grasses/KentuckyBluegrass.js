@@ -1,3 +1,4 @@
+import { copyVecValue } from "../../../climate/stars/matrix.js";
 import { UI_ORGANISM_GRASS_KBLUE } from "../../../ui/UIData.js";
 import { PlantLifeSquare } from "../../lifeSquares/PlantLifeSquare.js";
 import { RootLifeSquare } from "../../lifeSquares/RootLifeSquare.js";
@@ -153,6 +154,11 @@ export class KentuckyBluegrass extends BasePlant {
             .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .some((grass) => grass.growthPlan.steps.length < this.targetGrassLength)) {
             this.lengthenGrass();
+            this.lengthenGrass();
+            this.lengthenGrass();
+            this.lengthenGrass();
+            this.lengthenGrass();
+            this.lengthenGrass();
             return;
         }
 
@@ -169,6 +175,20 @@ export class KentuckyBluegrass extends BasePlant {
         // if (this.curNumGreen > this.growthNumGreen * .9) {
         //     this.stage = STAGE_FLOWER;
         // }
+    }
+
+    prepareRender() {
+        this.grasses
+            .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
+            .forEach((grass) => {
+                let curColor = [85, 128, 109];
+                let width = 0.4;
+                grass.lifeSquares.forEach((lsq) => {
+                    copyVecValue(curColor, lsq.color);
+                    lsq.width = width;
+                    width *= .7;
+                });
+            });
     }
 }
 
