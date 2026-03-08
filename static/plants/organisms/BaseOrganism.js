@@ -1,10 +1,10 @@
-import { getCurDay, getDt } from "../climate/time.js";
+import { getCurDay, getDt } from "../../climate/time.js";
 import { STAGE_DEAD, STAGE_FLOWER, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_HEART, SUBTYPE_ROOTNODE, TYPE_HEART } from "./Stages.js";
-import { getNeighbors } from "../squares/_sqOperations.js";
-import { applyLightingFromSource } from "../lighting/lightingProcessing.js";
-import { loadGD, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_SIMULATION_GENS_PER_DAY, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
-import { MAIN_CONTEXT } from "../index.js";
-import { zoomCanvasFillRect } from "../canvas.js";
+import { getNeighbors } from "../../squares/_sqOperations.js";
+import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
+import { loadGD, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_SIMULATION_GENS_PER_DAY, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../../ui/UIData.js";
+import { MAIN_CONTEXT } from "../../index.js";
+import { zoomCanvasFillRect } from "../../canvas.js";
 import { GrowthPlan } from "./growthPlan/GrowthPlan.js";
 import { GrowthPlanStep } from "./growthPlan/GrowthPlanStep.js";
 

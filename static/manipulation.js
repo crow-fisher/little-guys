@@ -5,7 +5,7 @@ import { addTemperature, addWaterSaturationPascalsSqCoords } from "./climate/sim
 import { addWindPerssureMaintainHumidity, addWindPressureCloud, addWindPressureDryAir } from "./climate/simulation/wind.js";
 import { removeSquare } from "./globalOperations.js";
 import { getLastMouseDownStart, getLastMoveOffset, getLeftMouseUpEvent, isLeftMouseClicked, isMiddleMouseClicked, isRightMouseClicked, setMouseTouchStartCallback } from "./mouse.js";
-import { KentuckyBluegrassSeedOrganism } from "./organisms/grasses/KentuckyBluegrassOrganism.js";
+import { KentuckyBluegrassSeedOrganism } from "./plants/organisms/grasses/KentuckyBluegrassOrganism.js";
 import { addSquare, addSquareOverride, getSquares, removeSquarePos } from "./squares/_sqOperations.js";
 import { AquiferSquare } from "./squares/parameterized/RainSquare.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";

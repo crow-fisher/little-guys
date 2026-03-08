@@ -1,5 +1,5 @@
-import { getCurDay } from "../../climate/time.js";
-import { getWindSpeedAtLocation } from "../../climate/simulation/wind.js";
+import { getCurDay } from "../../../climate/time.js";
+import { getWindSpeedAtLocation } from "../../../climate/simulation/wind.js";
 
 
 export class GrowthComponent {

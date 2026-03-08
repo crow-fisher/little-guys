@@ -1,4 +1,3 @@
-import { hexToRgb } from "../common.js";
 import { BaseLifeSquare } from "./BaseLifeSquare.js";
 
 export class RootLifeSquare extends BaseLifeSquare {

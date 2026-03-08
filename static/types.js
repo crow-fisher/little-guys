@@ -2,7 +2,7 @@ import { BaseSquare } from "./squares/BaseSqaure.js";
 import { PlantSquare } from "./squares/PlantSquare.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
 import { BaseLifeSquare } from "./lifeSquares/BaseLifeSquare.js";
-import { BaseOrganism } from "./organisms/BaseOrganism.js";
+import { BaseOrganism } from "./plants/organisms/BaseOrganism.js";
 import { SeedLifeSquare } from "./lifeSquares/SeedLifeSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
 import { AquiferSquare } from "./squares/parameterized/RainSquare.js";
@@ -10,7 +10,7 @@ import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { RootLifeSquare } from "./lifeSquares/RootLifeSquare.js";
 import { KentuckyBluegrassGreenSquare } from "./lifeSquares/grasses/KentuckyBluegrassGreenSquare.js";
-import { KentuckyBluegrassOrganism, KentuckyBluegrassSeedOrganism } from "./organisms/grasses/KentuckyBluegrassOrganism.js";
+import { KentuckyBluegrassOrganism, KentuckyBluegrassSeedOrganism } from "./plants/organisms/grasses/KentuckyBluegrassOrganism.js";
 import { BackgroundImageSquare, ImageSquare, RigidImageSquare, StaticImageSquare } from "./squares/ImageSquare.js";
 
 export const ProtoMap = {

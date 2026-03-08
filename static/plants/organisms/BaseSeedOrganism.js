@@ -1,11 +1,10 @@
 import { BaseOrganism } from "./BaseOrganism.js";
-import { SeedLifeSquare } from "../lifeSquares/SeedLifeSquare.js";
-import { getCurDay, getDt, getTimeScale } from "../climate/time.js";
-import { loadGD, UI_SIMULATION_GENS_PER_DAY } from "../ui/UIData.js";
-import { getCurPlantConfiguratorVal } from "../ui/elements/SliderGradientBackgroundPlantConfigurator.js";
-import { getSquares } from "../squares/_sqOperations.js";
-import { randNumber } from "../common.js";
-import { isSaveOrLoadInProgress } from "../saveAndLoad.js";
+import { SeedLifeSquare } from "../../lifeSquares/SeedLifeSquare.js";
+import { getDt, getTimeScale } from "../../climate/time.js";
+import { loadGD, UI_SIMULATION_GENS_PER_DAY } from "../../ui/UIData.js";
+import { getCurPlantConfiguratorVal } from "../../ui/elements/SliderGradientBackgroundPlantConfigurator.js";
+import { getSquares } from "../../squares/_sqOperations.js";
+import { randNumber } from "../../common.js";
 
 class BaseSeedOrganism extends BaseOrganism {
     constructor(square, evolutionParameters = null) {
