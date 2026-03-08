@@ -10,6 +10,10 @@ class SeedLifeSquare extends PlantLifeSquare {
 
     setFrameCartesians() {
         this.ls = this.linkedOrganism.linkedSquare; // "linkedSq"
+        if (this.ls == null) {
+            return;
+        }
+
         this.posVec = [this.ls.posX, this.ls.posY, this.ls.z];
         this.rotVec = [0, 0, 0];
         super.setFrameCartesians();

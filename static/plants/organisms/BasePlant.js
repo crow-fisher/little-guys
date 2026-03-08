@@ -149,7 +149,8 @@ class BasePlant {
 
     updateRenderingState() {
         if (this.originGrowth != null) {
-            this.originGrowth.updateDeflectionState();
+            let ls = this.linkedSquare;
+            this.originGrowth.updateDeflectionState([ls.posX, ls.posY, ls.z]);
         }
     }
 
@@ -208,6 +209,12 @@ class BasePlant {
         return (1 - Math.abs(this.getWilt()));
     }
 
+    growPlantSquare() {
+        let newSquare = new PlantLifeSquare(this);
+        this.greenLifeSquares.push(newSquare);
+        return newSquare;
+    }
+
     getWilt() {
         if (this.greenLifeSquares.length == 0) {
             return 0;
@@ -255,28 +262,6 @@ class BasePlant {
 
     }
     // COMPONENT GROWTH
-    growPlantSquare(parentSquare) {
-        let newGreenSquare = new PlantLifeSquare(this);
-        this.addGreenLifeSquare(newGreenSquare);
-        newGreenSquare.lighting = new Array();
-        let refSquare = null;
-        if (parentSquare.lighting.length > 0) {
-            refSquare = parentSquare;
-        } else {
-            for (let i = this.greenLifeSquares.length - 1; i >= 0; i--) {
-                let lsq = this.greenLifeSquares.at(i);
-                if (lsq.lighting.length > 0) {
-                    refSquare = lsq;
-                    break;
-                }
-            }
-            if (refSquare == null) {
-                refSquare = this.linkedSquare;
-            }
-        }
-        applyLightingFromSource(refSquare, newGreenSquare);
-        return newGreenSquare;
-    }
 
     getAllComponentsofType(componentType) {
         return this._getAllComponentsofType(componentType, this.originGrowth);
@@ -300,13 +285,6 @@ class BasePlant {
         return out;
     }
 
-    growGreenSquareAction(startNode, subtype, dy = 0, width = 1) {
-        let newGrassNode = this.growPlantSquare(startNode, 0, dy);
-        newGrassNode.subtype = subtype;
-        newGrassNode.width = width;
-        return newGrassNode;
-    }
-
     addSproutGrowthPlan() {
         let rootLsq = new RootLifeSquare(this.linkedSquare, this);
         rootLsq.subtype = SUBTYPE_ROOTNODE;
@@ -319,7 +297,7 @@ class BasePlant {
             () => {
                 let heartLsq = new PlantLifeSquare(this);
                 heartLsq.subtype = SUBTYPE_HEART;
-                this.addGreenLifeSquare(heartLsq);
+                this.greenLifeSquares.push(heartLsq);
                 return heartLsq;
             }
         ));
@@ -363,11 +341,6 @@ class BasePlant {
             somethingDone = true;
             this.curNumGreen += 1;
             this.greenLastGrown = this.age;
-
-            if (this.originGrowth != null) {
-                this.originGrowth.updateDeflectionState();
-                this.originGrowth.applyDeflectionState();
-            }
             if (growthPlan.areStepsCompleted()) {
                 this.stage = growthPlan.endStage;
             }
@@ -510,7 +483,7 @@ class BasePlant {
     destroy() {
         this.greenLifeSquares.forEach((lifeSquare) => lifeSquare.destroy());
         this.rootLifeSquares.forEach((lifeSquare) => lifeSquare.destroy());
-        this.seedLifeSquare.destroy();
+        this.seedLifeSquare?. destroy();
         
         if (this.linkedSquare != null && this.linkedSquare != -1) {
             this.linkedSquare.unlinkOrganism(this);

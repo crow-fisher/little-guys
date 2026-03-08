@@ -1,6 +1,7 @@
 import { getCurDay } from "../../../climate/time.js";
 import { getWindSpeedAtLocation } from "../../../climate/simulation/wind.js";
 import { copyVecValue } from "../../../climate/stars/matrix.js";
+import { PlantLifeSquare } from "../../lifeSquares/PlantLifeSquare.js";
 
 
 export class GrowthComponent {
@@ -10,6 +11,7 @@ export class GrowthComponent {
         this.deflection_base = [theta, sin, phi];
         this.deflection_base_curve = [thetaCurve, sinCurve, phiCurve];
         this.deflection_applied = [0, 0];
+        this.curOffset = [0, 0, 0]
         this.dv = [0, 0, 0];
         this.ddv = [0, 0, 0];
         this.type = type;
@@ -53,12 +55,11 @@ export class GrowthComponent {
         childComponent.parentComponent = this;
     }
 
-    updateDeflectionState() {
-        let sq = this.lifeSquares.at(0).linkedSquare;
-        let curDeflectionState = [sq.posX, sq.posY, sq.z];
+    updateDeflectionState(startOffset) {
+        copyVecValue(startOffset, this.curOffset);
         for (let i = 0; i < this.lifeSquares.length; i++) {
-            copyVecValue(curDeflectionState, this.lifeSquares.at(i).posVec);
-            curDeflectionState[1] -= 1;
+            copyVecValue(this.curOffset, this.lifeSquares.at(i).posVec);
+            this.curOffset[1] -= 1;
         }
     }
 

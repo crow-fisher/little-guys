@@ -52,7 +52,8 @@ class BasePlantSeed extends BasePlant {
                 let linkedSquareCache = this.linkedSquare;
                 this.unlinkSquare(true);
                 let newOrganism = new (this.getSproutType())(linkedSquareCache, this.seedLifeSquare, this.evolutionParameters);
-                console.log("Sprouted new orgnaism of proto ", newOrganism.proto, + ", spawnTime ", newOrganism.spawnTime);
+                linkedSquareCache.linkedOrganisms.push(newOrganism);
+                console.log("Sprouted new orgnaism of proto ", newOrganism.proto, " at spawnTime ", newOrganism.spawnTime, ", at posX posY", newOrganism.posX, newOrganism.posY);
                 this.destroy();
                 return;
             }
@@ -74,9 +75,9 @@ class BasePlantSeed extends BasePlant {
         }
 
         let searchDist = randNumber(2, 5);
-        let soilSq = getSquares(this.posX, this.posY + searchDist)
+        let soilSq = getSquares(this.linkedSquare.posX, this.linkedSquare.posY + searchDist)
             .find((sq) => sq.proto == "SoilSquare");
-        let rockSq = getSquares(this.posX, this.posY + searchDist)
+        let rockSq = getSquares(this.linkedSquare.posX, this.linkedSquare.posY + searchDist)
             .find((sq) => sq.proto == "RockSquare");
         let targetSq = (this.rockable ? (soilSq ?? rockSq) : soilSq);
         if (targetSq != null) {

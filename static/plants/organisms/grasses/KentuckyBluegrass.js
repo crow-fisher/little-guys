@@ -3,8 +3,9 @@ import { PlantLifeSquare } from "../../lifeSquares/PlantLifeSquare.js";
 import { RootLifeSquare } from "../../lifeSquares/RootLifeSquare.js";
 import { BasePlant, _llt_target, _llt_min, _llt_max, _llt_throttlValMax, _seedReduction, _waterPressureSoilTarget, _waterPressureOverwaterThresh, _waterPressureWiltThresh, _lightDecayValue, _lightLevelDisplayExposureAdjustment, baseOrganism_dnm } from "../BasePlant.js";
 import { BasePlantSeed } from "../BasePlantSeed.js";
+import { GrowthPlan } from "../growthPlan/GrowthPlan.js";
 import { GrowthPlanStep } from "../growthPlan/GrowthPlanStep.js";
-import { SUBTYPE_STEM } from "../Stages.js";
+import { STAGE_ADULT, SUBTYPE_STEM, TYPE_STEM } from "../Stages.js";
 
 export let kblue_dnm = structuredClone(baseOrganism_dnm);
 
@@ -81,10 +82,13 @@ export class KentuckyBluegrass extends BasePlant {
         let p0 = this.evolutionParameters[0];
         this.growthLightLevel *= (1 + .7 * p0);
 
-        this.maxNumGrass = 2;
+        this.maxNumGrass = 1;
         this.maxGrassLength = 5 + Math.floor(this.maxGrassLength * p0);
         this.growthNumGreen = this.maxNumGrass * this.maxGrassLength;
         this.growthNumRoots = this.growthNumGreen;
+
+        this.targetGrassLength = 100;
+        this.maxGrassLength = 100;
     }
 
     doGreenGrowth() {
@@ -124,16 +128,12 @@ export class KentuckyBluegrass extends BasePlant {
             .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .filter((grass) => grass.growthPlan.steps.length < this.targetGrassLength)
             .forEach((grass) => {
-                let startNode = grass.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_STEM);
-                console.log("Node to grow grass at: ", startNode.posX, startNode.posY)
                 for (let i = 0; i < this.targetGrassLength - grass.growthPlan.steps.length; i++) {
                     grass.growthPlan.steps.push(new GrowthPlanStep(
                         grass.growthPlan,
                         () => {
-                            let dy = grass.growthPlan.steps.length + i - 1;
-                            let node = this.growPlantSquare(startNode);
+                            let node = this.growPlantSquare();
                             node.subtype = SUBTYPE_STEM;
-                            console.log("Adding unit of grass at ", dy, " from origin ", node.posY);
                             return node;
                         }
                     ));

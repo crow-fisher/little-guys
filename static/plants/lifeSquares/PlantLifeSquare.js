@@ -116,6 +116,8 @@ class PlantLifeSquare {
     }
 
     getLightFilterRate() {
+        return 0;
+
         return 0.00023 * (this.height ** 2) * (this.width ** 2) * Math.exp(this.linkedOrganism.lightDecayValue()) * this.lsqLightDecayValue;
     }
 
