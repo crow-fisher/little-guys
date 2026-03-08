@@ -273,11 +273,6 @@ export function compressSquares(squares) {
                 org.rootLifeSquares = Array.from(org.rootLifeSquares.map((lsq) => lsqArr.indexOf(lsq)));
                 org.originGrowth = growthPlanComponentArr.indexOf(org.originGrowth);
 
-                if (org.greenType != null)
-                    org.greenType = org.greenType.name;
-                if (org.rootType != null)
-                    org.rootType = org.rootType.name;
-
                 return org;
             } else {
                 org.destroy();
@@ -428,8 +423,6 @@ export function loadSlotFromSave(slotData) {
                 lsq.linkedOrganism = org;
                 lsq.component = growthPlanComponentArr[lsq.component];
             }));
-            org.greenType = TypeMap[org.greenType];
-            org.rootType = TypeMap[org.rootType];
         });
     });
     sqArr.forEach(addSquare);

@@ -7,6 +7,8 @@ import { MAIN_CONTEXT } from "../../index.js";
 import { zoomCanvasFillRect } from "../../canvas.js";
 import { GrowthPlan } from "./growthPlan/GrowthPlan.js";
 import { GrowthPlanStep } from "./growthPlan/GrowthPlanStep.js";
+import { PlantLifeSquare } from "../lifeSquares/PlantLifeSquare.js";
+import { RootLifeSquare } from "../lifeSquares/RootLifeSquare.js";
 
 
 export const _llt_target = "_llt_target";
@@ -35,9 +37,9 @@ export let baseOrganism_dnm = {
     _lightLevelDisplayExposureAdjustment: -.16
 }
 
-class BaseOrganism {
+class BasePlant {
     constructor(square, seedLifeSquare, evolutionParameters) {
-        this.proto = "BaseOrganism";
+        this.proto = "BasePlant";
         this.linkedSquare = square;
         this.stage = STAGE_SPROUT;
         this.spawnTime = getCurDay();
@@ -51,8 +53,6 @@ class BaseOrganism {
         this.moistureMinColor = [255, 0, 0];
         this.moistureMaxColor = [0, 0, 255];
 
-
-
         this.originGrowth = null;
         this.greenLifeSquares = new Array();
         this.rootLifeSquares = new Array();
@@ -60,9 +60,6 @@ class BaseOrganism {
         this.age = 0;
         this.rootLastGrown = 0;
         this.greenLastGrown = 0;
-
-        this.greenType = null;
-        this.rootType = null;
 
         this.waterPressure = this.waterPressureSoilTarget();
         this.waterPressureChangeRate = .01;
@@ -260,7 +257,7 @@ class BaseOrganism {
     }
     // COMPONENT GROWTH
     growPlantSquare(parentSquare) {
-        let newGreenSquare = new this.greenType(this);
+        let newGreenSquare = new PlantLifeSquare(this);
         this.addGreenLifeSquare(newGreenSquare);
         newGreenSquare.lighting = new Array();
         let refSquare = null;
@@ -312,7 +309,7 @@ class BaseOrganism {
     }
 
     addSproutGrowthPlan() {
-        let rootLsq = new this.rootType(this.linkedSquare, this);
+        let rootLsq = new RootLifeSquare(this.linkedSquare, this);
         rootLsq.subtype = SUBTYPE_ROOTNODE;
         this.rootLifeSquares.push(rootLsq);
         let growthPlan = new GrowthPlan(
@@ -321,7 +318,7 @@ class BaseOrganism {
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
             () => {
-                let heartLsq = new this.greenType(this, this.posX, this.posY);
+                let heartLsq = new PlantLifeSquare(this);
                 heartLsq.subtype = SUBTYPE_HEART;
                 this.addGreenLifeSquare(heartLsq);
                 return heartLsq;
@@ -412,7 +409,7 @@ class BaseOrganism {
             return;
         }
 
-        let newRootLifeSquare = new this.rootType(targetSquare, this);
+        let newRootLifeSquare = new RootLifeSquare(targetSquare, this);
         this.rootLifeSquares.push(lifeSquare);
         newRootLifeSquare.linkSquare(targetSquare);
         targetSquareParent.addChild(newRootLifeSquare)
@@ -569,4 +566,4 @@ class BaseOrganism {
     }
 }
 
-export { BaseOrganism }
+export { BasePlant }

@@ -1,6 +1,6 @@
 
-import { BaseLifeSquare } from "./BaseLifeSquare.js";
-class SeedLifeSquare extends BaseLifeSquare {
+import { PlantLifeSquare } from "./PlantLifeSquare.js";
+class SeedLifeSquare extends PlantLifeSquare {
     constructor(organism, posX, posY) {
         super(organism, posX, posY);
         this.height = 0.25;

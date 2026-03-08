@@ -1,19 +1,10 @@
-import { randNumber, randRange } from "../../../common.js";
-import { RootLifeSquare } from "../../../lifeSquares/RootLifeSquare.js";
-import { STAGE_ADULT, STAGE_FLOWER, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_STEM, TYPE_TRUNK } from "../../Stages.js";
-// import { GrowthPlan, GrowthPlanStep } from "../../../../GrowthPlan.js";
-import { BaseSeedOrganism } from "../../BaseSeedOrganism.js";
-import { _lightLevelDisplayExposureAdjustment, _llt_target, BaseOrganism, baseOrganism_dnm } from "../../BaseOrganism.js";
-import { KentuckyBluegrassGreenSquare } from "../../../lifeSquares/grasses/KentuckyBluegrassGreenSquare.js";
-import { addSquare } from "../../../squares/_sqOperations.js";
-import { SeedSquare } from "../../../squares/SeedSquare.js";
-import { applyLightingFromSource } from "../../../lighting/lightingProcessing.js";
 import { UI_ORGANISM_GRASS_KBLUE } from "../../../ui/UIData.js";
-import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh } from "../../BaseOrganism.js";
-import { GrowthPlan } from "../../growthPlan/GrowthPlan.js";
-import { GrowthPlanStep } from "../../growthPlan/GrowthPlanStep.js";
+import { PlantLifeSquare } from "../../lifeSquares/PlantLifeSquare.js";
+import { RootLifeSquare } from "../../lifeSquares/RootLifeSquare.js";
+import { BasePlant, baseOrganism_dnm } from "../BasePlant.js";
 
 export let kblue_dnm = structuredClone(baseOrganism_dnm);
+
 kblue_dnm[_llt_target] = 1.45;
 kblue_dnm[_llt_min] = 0.74;
 kblue_dnm[_llt_max] = 1.43;
@@ -25,13 +16,12 @@ kblue_dnm[_waterPressureWiltThresh] = -1.5;
 kblue_dnm[_lightDecayValue] = 4.42;
 kblue_dnm[_lightLevelDisplayExposureAdjustment] = .22;
 
-export class KentuckyBluegrassOrganism extends BaseOrganism {
+export class KentuckyBluegrass extends BasePlant {
     constructor(square) {
         super(square);
-        this.proto = "KentuckyBluegrassOrganism";
+        this.proto = "KentuckyBluegrass";
         this.uiRef = UI_ORGANISM_GRASS_KBLUE;
-        this.greenType = KentuckyBluegrassGreenSquare;
-        this.rootType = RootLifeSquare;
+
         this.grassGrowTimeInDays =  0.01;
         this.side = Math.random() > 0.5 ? -1 : 1;
 
@@ -152,10 +142,6 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
         if (!super.planGrowth()) {
             return;
         }
-        if (this.originGrowth == null) {
-            return;
-        }
-
         if (this.grasses.length < this.targetNumGrass) {
             this.growGrass();
             return;
@@ -183,16 +169,16 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
     }
 }
 
-export class KentuckyBluegrassSeedOrganism extends BaseSeedOrganism {
+export class KentuckyBluegrassSeedOrganism extends BasePlantSeed {
     constructor(square, evolutionParameters) {
         super(square, evolutionParameters);
         this.proto = "KentuckyBluegrassSeedOrganism";
     }
 
     getSproutType() {
-        return KentuckyBluegrassOrganism;
+        return KentuckyBluegrass;
     }
     getSproutTypeProto() {
-        return "KentuckyBluegrassOrganism";
+        return "KentuckyBluegrass";
     }
 }

@@ -1,4 +1,4 @@
-import { BaseOrganism } from "./BaseOrganism.js";
+import { BasePlant } from "./BasePlant.js";
 import { SeedLifeSquare } from "../../lifeSquares/SeedLifeSquare.js";
 import { getDt, getTimeScale } from "../../climate/time.js";
 import { loadGD, UI_SIMULATION_GENS_PER_DAY } from "../../ui/UIData.js";
@@ -6,10 +6,10 @@ import { getCurPlantConfiguratorVal } from "../../ui/elements/SliderGradientBack
 import { getSquares } from "../../squares/_sqOperations.js";
 import { randNumber } from "../../common.js";
 
-class BaseSeedOrganism extends BaseOrganism {
+class BasePlantSeed extends BasePlant {
     constructor(square, evolutionParameters = null) {
         super(square);
-        this.proto = "BaseSeedOrganism";
+        this.proto = "BasePlantSeed";
         this.sproutType = null;
         this.maxLifeTime = 10;
         this.sproutAge = null;
@@ -27,10 +27,10 @@ class BaseSeedOrganism extends BaseOrganism {
     }
 
     getSproutType() {
-        return BaseOrganism;
+        return BasePlant;
     }
     getSproutTypeProto() {
-        return "BaseOrganism";
+        return "BasePlant";
     }
 
     render() {
@@ -109,4 +109,4 @@ class BaseSeedOrganism extends BaseOrganism {
     }
 }
 
-export {BaseSeedOrganism} 
+export {BasePlantSeed} 

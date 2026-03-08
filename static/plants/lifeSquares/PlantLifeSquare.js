@@ -10,9 +10,9 @@ import { QuadRenderJob } from "../../rendering/model/QuadRenderJob.js";
 import { addRenderJob } from "../../rendering/rasterizer.js";
 
 const NUTRIENT_BASE_HSV = rgb2hsv(RGB_COLOR_GREEN.r, RGB_COLOR_GREEN.g, RGB_COLOR_GREEN.b);
-class BaseLifeSquare {
+class PlantLifeSquare {
     constructor(organism) {
-        this.proto = "BaseLifeSquare";
+        this.proto = "PlantLifeSquare";
         this.linkedOrganism = organism;
         this.spawnTime = Date.now();
         // RGB Array
@@ -241,4 +241,4 @@ class BaseLifeSquare {
     }
 
 }
-export { BaseLifeSquare };
+export { PlantLifeSquare };

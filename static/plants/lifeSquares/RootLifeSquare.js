@@ -1,6 +1,6 @@
-import { BaseLifeSquare } from "./BaseLifeSquare.js";
+import { PlantLifeSquare } from "./PlantLifeSquare.js";
 
-export class RootLifeSquare extends BaseLifeSquare {
+export class RootLifeSquare extends PlantLifeSquare {
     constructor(square, organism) {
         super(organism);
         this.linkSquare(square);
