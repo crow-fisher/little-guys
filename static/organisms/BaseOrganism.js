@@ -484,43 +484,30 @@ class BaseOrganism {
 
     setNutrientIndicators() {
         let compareFunc = (lsq) => {
-            let relLsqX = (this.posX - lsq.posX);
-            let relLsqY = (this.posY - lsq.posY);
-            return (relLsqX ** 2 + relLsqY ** 2) ** 0.5;
+            let relLsqX = (this.linkedSquare.posX - lsq.posVec[0]);
+            let relLsqY = (this.linkedSquare.posY - lsq.posVec[1]);
+            let relLsqZ = (this.linkedSquare.z - lsq.posVec[2]);
+            return (relLsqX ** 2 + relLsqY ** 2 + relLsqZ ** 2) ** 0.5;
         }
         this.greenLifeSquares.sort((a, b) => compareFunc(a) - compareFunc(b));
 
-        let maturityLifeFrac = Math.min(1, this.age / this.getGrowthCycleMaturityLength());
-        let expectedNitrogen = maturityLifeFrac ** 2 * this.growthNitrogen;
-        let expectedPhosphorus = maturityLifeFrac ** 2 * this.growthPhosphorus;
         let lifetimeFrac = this.age / this.getGrowthCycleLength() * this.numGrowthCycles;
-
-        let nitrogenMult = Math.min(1, this.nitrogen / expectedNitrogen) * this.greenLifeSquares.length;
-        let phosphorusMult = Math.min(1, this.phosphorus / expectedPhosphorus) * this.greenLifeSquares.length;
         let lightLevelMult = Math.min(2, this.lightlevel / this.growthLightLevel) * this.greenLifeSquares.length;
         let lifetimeMult = lifetimeFrac * this.greenLifeSquares.length;
 
         this.greenLifeSquares.forEach((lsq) => {
-            lsq.nitrogenIndicated = 0;
             lsq.lightlevelIndicated = 0;
-            lsq.phosphorusIndicated = 0;
             lsq.lifetimeIndicated = 0;
         });
 
         for (let i = 0; i < (this.greenLifeSquares.length * 2); i++) {
             let lsq = this.greenLifeSquares[i % this.greenLifeSquares.length];
-            let nitrogenToAdd = Math.min(nitrogenMult, 1);
-            let phosphorusToAdd = Math.min(phosphorusMult, 1)
             let lightLevelToAdd = Math.min(lightLevelMult, 1)
             let lifetimeToAdd = Math.min(lifetimeMult, 1)
 
-            lsq.nitrogenIndicated += nitrogenToAdd;
-            lsq.phosphorusIndicated += phosphorusToAdd;
             lsq.lightlevelIndicated += lightLevelToAdd;
             lsq.lifetimeIndicated += lifetimeToAdd;
 
-            nitrogenMult -= nitrogenToAdd;
-            phosphorusMult -= phosphorusToAdd;
             lightLevelMult -= lightLevelToAdd;
             lifetimeMult -= lifetimeToAdd;
         }
@@ -539,6 +526,9 @@ class BaseOrganism {
     // DESTRUCTION
     destroy() {
         this.greenLifeSquares.forEach((lifeSquare) => lifeSquare.destroy());
+        this.rootLifeSquares.forEach((lifeSquare) => lifeSquare.destroy());
+        this.seedLifeSquare.destroy();
+        
         if (this.linkedSquare != null && this.linkedSquare != -1) {
             this.linkedSquare.unlinkOrganism(this);
         }
