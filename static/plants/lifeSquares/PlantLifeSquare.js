@@ -1,6 +1,5 @@
 import { hsv2rgb, processColorLerpBicolorArr, rgb2hsv, rgbToRgba } from "../../common.js";
 import { RGB_COLOR_GREEN } from "../../colors.js";
-import { STAGE_DEAD } from "../../organisms/Stages.js";
 import { getDefaultLighting, processLighting } from "../../lighting/lightingProcessing.js";
 import { rotatePoint } from "../../canvas.js";
 import { loadGD, UI_CAMERA_CENTER_SELECT_POINT, UI_CAMERA_OFFSET_VEC, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../../ui/UIData.js";
@@ -8,6 +7,7 @@ import { cartesianToScreenInplace, gfc, screenToRenderScreen } from "../../rende
 import { addVec3Dest, crossVec3, multiplyVectorsDest, normalizeVec3, subtractVectorsDest } from "../../climate/stars/matrix.js";
 import { QuadRenderJob } from "../../rendering/model/QuadRenderJob.js";
 import { addRenderJob } from "../../rendering/rasterizer.js";
+import { STAGE_DEAD } from "../organisms/Stages.js";
 
 const NUTRIENT_BASE_HSV = rgb2hsv(RGB_COLOR_GREEN.r, RGB_COLOR_GREEN.g, RGB_COLOR_GREEN.b);
 class PlantLifeSquare {

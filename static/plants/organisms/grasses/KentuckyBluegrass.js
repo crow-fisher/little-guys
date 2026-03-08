@@ -1,7 +1,10 @@
 import { UI_ORGANISM_GRASS_KBLUE } from "../../../ui/UIData.js";
 import { PlantLifeSquare } from "../../lifeSquares/PlantLifeSquare.js";
 import { RootLifeSquare } from "../../lifeSquares/RootLifeSquare.js";
-import { BasePlant, baseOrganism_dnm } from "../BasePlant.js";
+import { BasePlant, _llt_target, _llt_min, _llt_max, _llt_throttlValMax, _seedReduction, _waterPressureSoilTarget, _waterPressureOverwaterThresh, _waterPressureWiltThresh, _lightDecayValue, _lightLevelDisplayExposureAdjustment, baseOrganism_dnm } from "../BasePlant.js";
+import { BasePlantSeed } from "../BasePlantSeed.js";
+import { GrowthPlanStep } from "../growthPlan/GrowthPlanStep.js";
+import { SUBTYPE_STEM } from "../Stages.js";
 
 export let kblue_dnm = structuredClone(baseOrganism_dnm);
 
@@ -22,7 +25,7 @@ export class KentuckyBluegrass extends BasePlant {
         this.proto = "KentuckyBluegrass";
         this.uiRef = UI_ORGANISM_GRASS_KBLUE;
 
-        this.grassGrowTimeInDays =  0.01;
+        this.grassGrowTimeInDays = 0.01;
         this.side = Math.random() > 0.5 ? -1 : 1;
 
         this.targetNumGrass = 1;
@@ -31,14 +34,14 @@ export class KentuckyBluegrass extends BasePlant {
         this.targetGrassLength = 1;
         this.maxGrassLength = 5;
 
-        this.numGrowthCycles = 1; 
+        this.numGrowthCycles = 1;
         this.growthCycleMaturityLength = 12 + 7 * (Math.random());
         this.growthCycleLength = this.growthCycleMaturityLength * 2.65;
 
         this.grasses = [];
     }
- 
-    /* debug */ 
+
+    /* debug */
 
 
     process() {
@@ -51,10 +54,10 @@ export class KentuckyBluegrass extends BasePlant {
     getDefaultNutritionMap() {
         return kblue_dnm;
     }
-    
+
 
     spawnSeed() {
-        if (this.originGrowth == null || (this.growthPlans.some((gp) => !gp.areStepsCompleted())) || this.targetGrassLength != this.maxGrassLength) 
+        if (this.originGrowth == null || (this.growthPlans.some((gp) => !gp.areStepsCompleted())) || this.targetGrassLength != this.maxGrassLength)
             return;
         let comp = this.originGrowth.children.at(randNumber(0, this.originGrowth.children.length - 1));
         let lsq = comp.lifeSquares.at(comp.lifeSquares.length - 1);
@@ -88,23 +91,23 @@ export class KentuckyBluegrass extends BasePlant {
         super.doGreenGrowth();
         if (this.originGrowth != null) {
             this.grasses.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
-            .forEach((grass) => {
-                grass.lifeSquares.forEach((lsq) => lsq.width = .3 + .3 * Math.log(1 + grass.lifeSquares.length));
+                .forEach((grass) => {
+                    grass.lifeSquares.forEach((lsq) => lsq.width = .3 + .3 * Math.log(1 + grass.lifeSquares.length));
 
-            })
+                })
         }
     }
 
     growGrass() {
         let startNode = this.originGrowth.lifeSquares.at(0);
         let growthPlan = new GrowthPlan(
-            false, STAGE_ADULT, TYPE_STEM, 
-            0, 0, 0, 
+            false, STAGE_ADULT, TYPE_STEM,
+            0, 0, 0,
             0, 0, 0, 1)
-            growthPlan.postConstruct = () => {
-                this.originGrowth.addChild(growthPlan.component);
-                this.grasses.push(this.originGrowth.getChildPath(growthPlan.component))
-            };
+        growthPlan.postConstruct = () => {
+            this.originGrowth.addChild(growthPlan.component);
+            this.grasses.push(this.originGrowth.getChildPath(growthPlan.component))
+        };
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
             () => {

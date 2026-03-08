@@ -1,10 +1,10 @@
 import { BasePlant } from "./BasePlant.js";
-import { SeedLifeSquare } from "../../lifeSquares/SeedLifeSquare.js";
 import { getDt, getTimeScale } from "../../climate/time.js";
 import { loadGD, UI_SIMULATION_GENS_PER_DAY } from "../../ui/UIData.js";
 import { getCurPlantConfiguratorVal } from "../../ui/elements/SliderGradientBackgroundPlantConfigurator.js";
 import { getSquares } from "../../squares/_sqOperations.js";
 import { randNumber } from "../../common.js";
+import { SeedLifeSquare } from "../lifeSquares/SeedLifeSquare.js";
 
 class BasePlantSeed extends BasePlant {
     constructor(square, evolutionParameters = null) {
@@ -74,14 +74,11 @@ class BasePlantSeed extends BasePlant {
         }
 
         let searchDist = randNumber(2, 5);
-
         let soilSq = getSquares(this.posX, this.posY + searchDist)
             .find((sq) => sq.proto == "SoilSquare");
         let rockSq = getSquares(this.posX, this.posY + searchDist)
             .find((sq) => sq.proto == "RockSquare");
-        
         let targetSq = (this.rockable ? (soilSq ?? rockSq) : soilSq);
-
         if (targetSq != null) {
             if (targetSq.linkedOrganismSquares.some((lsq) => lsq.linkedOrganism.proto == this.getSproutTypeProto())) {
                 this.destroySeed();
@@ -93,7 +90,6 @@ class BasePlantSeed extends BasePlant {
             }
             return;
         }
-
         // now plant yourself in soilSq
 
         let origSeedSquare = this.linkedSquare;

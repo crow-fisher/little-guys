@@ -147,10 +147,9 @@ class BasePlant {
 
     // ^^^^^^^^^^^^^^^^^^^
 
-    updateDeflectionState() {
+    updateRenderingState() {
         if (this.originGrowth != null) {
             this.originGrowth.updateDeflectionState();
-            this.originGrowth.applyDeflectionState(null);
         }
     }
 
@@ -439,6 +438,7 @@ class BasePlant {
             } else {
                 sqScore += this.waterPressureSoilTarget() - sq.getSoilWaterPressure();
             }
+            return sqScore;
         }
         this.growRoot(scoreFunc);
     }
@@ -461,26 +461,8 @@ class BasePlant {
     }
 
 
-    // RENDERING
     render() {
-        this.originGrowth?.applyDeflectionState();
-        let mode = loadGD(UI_VIEWMODE_SELECT);
-        if ([UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_ORGANISMS].indexOf(mode) != -1) {
-            this.setNutrientIndicators();
-        }
-        if (this.stage != STAGE_DEAD) {
-            // this.greenLifeSquares.forEach((sp) => sp.render())
-            this.greenLifeSquares.forEach((sp) => {
-                sp.render();
-                ;
-
-            });
-        }
-
-        if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_ORGANISMS) {
-            MAIN_CONTEXT.fillStyle = this.organismColor;
-            zoomCanvasFillRect(this.posX, this.posY, 1, 1);
-        }
+        this.greenLifeSquares.forEach((lsq) => lsq.render());
     }
 
     setNutrientIndicators() {
@@ -560,7 +542,7 @@ class BasePlant {
             this.doRootGrowth();
             this.doSpawnSeed();
         }
-        this.updateDeflectionState();
+        this.updateRenderingState();
         this.hasPlantLivedTooLong();
         this.doDecay();
     }

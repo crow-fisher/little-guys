@@ -1,5 +1,6 @@
 import { getCurDay } from "../../../climate/time.js";
 import { getWindSpeedAtLocation } from "../../../climate/simulation/wind.js";
+import { copyVecValue } from "../../../climate/stars/matrix.js";
 
 
 export class GrowthComponent {
@@ -53,6 +54,12 @@ export class GrowthComponent {
     }
 
     updateDeflectionState() {
+        let sq = this.lifeSquares.at(0).linkedSquare;
+        let curDeflectionState = [sq.posX, sq.posY, sq.z];
+        for (let i = 0; i < this.lifeSquares.length; i++) {
+            copyVecValue(curDeflectionState, this.lifeSquares.at(i).posVec);
+            curDeflectionState[1] -= 1;
+        }
     }
 
     getNetWindSpeed() {
