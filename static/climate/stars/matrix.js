@@ -148,6 +148,12 @@ export function subtractVectorsCopy(v1, v2) {
   return subtractVectors(structuredClone(v1), v2)
 }
 
+export function copyVecValue(src, dest) {
+  for (let i = 0; i < src.length; i++) {
+    dest[i] = src[i];
+  }
+}
+
 export function multiplyVectorByScalar(vec, scalar) {
   for (let i = 0; i < vec.length; i++) {
     vec[i] *= scalar;

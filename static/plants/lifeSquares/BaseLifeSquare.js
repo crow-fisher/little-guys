@@ -1,21 +1,13 @@
-import { MAIN_CONTEXT } from "../../index.js";
-import { hexToRgb, hsv2rgb, processColorLerpBicolorArr, rgb2hsv, rgbToHex, rgbToRgba } from "../../common.js";
-
-import { getDaylightStrengthFrameDiff } from "../../climate/time.js";
-
+import { hsv2rgb, processColorLerpBicolorArr, rgb2hsv, rgbToRgba } from "../../common.js";
 import { RGB_COLOR_GREEN } from "../../colors.js";
 import { STAGE_DEAD } from "../../organisms/Stages.js";
 import { getDefaultLighting, processLighting } from "../../lighting/lightingProcessing.js";
 import { rotatePoint } from "../../canvas.js";
-import { loadGD, UI_CAMERA_CENTER_SELECT_POINT, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../../ui/UIData.js";
+import { loadGD, UI_CAMERA_CENTER_SELECT_POINT, UI_CAMERA_OFFSET_VEC, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../../ui/UIData.js";
 import { cartesianToScreenInplace, gfc, screenToRenderScreen } from "../../rendering/camera.js";
-import { addVec3Dest, crossVec3, multiplyVectorByScalar, multiplyVectorsDest, normalizeVec3, subtractVectorsDest } from "../../climate/stars/matrix.js";
+import { addVec3Dest, crossVec3, multiplyVectorsDest, normalizeVec3, subtractVectorsDest } from "../../climate/stars/matrix.js";
 import { QuadRenderJob } from "../../rendering/model/QuadRenderJob.js";
 import { addRenderJob } from "../../rendering/rasterizer.js";
-
-export const LSQ_RENDERMODE_SQUARE = "LSQ_RENDERMODE_SQUARE";
-export const LSQ_RENDERMODE_CIRCLE = "LSQ_RENDERMODE_CIRCLE";
-export const LSQ_RENDERMODE_THETA = "LSQ_RENDERMODE_THETA";
 
 const NUTRIENT_BASE_HSV = rgb2hsv(RGB_COLOR_GREEN.r, RGB_COLOR_GREEN.g, RGB_COLOR_GREEN.b);
 class BaseLifeSquare {
@@ -78,7 +70,7 @@ class BaseLifeSquare {
         this.rotatedOffset = rotatePoint(this.offsetVec, ...this.rotVec);
         this._centerPointRef = loadGD(UI_CAMERA_CENTER_SELECT_POINT);
 
-        subtractVectorsDest(this.posVec, gfc().cameraOffset, this.startPointVec);
+        subtractVectorsDest(this.posVec, loadGD(UI_CAMERA_OFFSET_VEC), this.startPointVec);
         subtractVectorsDest(this.startPointVec, loadGD(UI_CAMERA_CENTER_SELECT_POINT), this.startPointVec);
         addVec3Dest(this.startPointVec, this.rotatedOffset, this.endPointVec);
 
@@ -102,20 +94,18 @@ class BaseLifeSquare {
     }
 
     prepareRenderJob() {
-        this.tl = structuredClone(this.renderScreen_tl);
-        this.bl = structuredClone(this.renderScreen_bl);
-        this.br = structuredClone(this.renderScreen_br);
-        this.tr = structuredClone(this.renderScreen_tr);
-
-        this.centerZ = (this.tl[2] + this.bl[2] + this.br[2] + this.tr[2]) / 4;
-
+        this.centerZ = (this.renderScreen_tl[2] + this.renderScreen_bl[2] + this.renderScreen_br[2] + this.renderScreen_tr[2]) / 4;
         if (this.renderJob == null) {
-            this.renderJob = new QuadRenderJob(this.tl, this.bl, this.br, this.tr, this.cachedRgba, this.centerZ)
+            this.renderJob = new QuadRenderJob(
+                this.renderScreen_tl, 
+                this.renderScreen_bl, 
+                this.renderScreen_br, 
+                this.renderScreen_tr, this.cachedRgba, this.centerZ)
         } else {
-            this.renderJob.tl = this.tl;
-            this.renderJob.bl = this.bl;
-            this.renderJob.br = this.br;
-            this.renderJob.tr = this.tr;
+            this.renderJob.renderScreen_tl = this.renderScreen_tl;
+            this.renderJob.renderScreen_bl = this.renderScreen_bl;
+            this.renderJob.renderScreen_br = this.renderScreen_br;
+            this.renderJob.renderScreen_tr = this.renderScreen_tr;
             this.renderJob.color = this.cachedRgba;
             this.renderJob.z = this.centerZ;
         }
@@ -166,12 +156,28 @@ class BaseLifeSquare {
     }
 
     render() {
-        this.setFrameAltColor();
         this.setFrameOpacity();
         this.setFrameRenderColor();
+        this.setFrameAltColor();
         this.lightingUpdate();
         this.renderToCanvas();
     };
+
+    setFrameOpacity() {
+        this.frameOpacity = 1;
+        if (this.linkedOrganism.stage == STAGE_DEAD) {
+            this.frameOpacity *= (1 - this.linkedOrganism.deathProgress ** 6);
+        }
+    }
+
+    setFrameRenderColor() {
+        if (this.frameViewMode == UI_VIEWMODE_NORMAL) {
+            multiplyVectorsDest(this.color, this.lightingColor, this.colorLightingApplied);
+            this.cachedRgba = rgbToRgba(...this.colorLightingApplied, this.opacity);
+        } else {
+            this.cachedRgba = rgbToRgba(...this.altColor, this.opacity);
+        }
+    }
 
     setFrameAltColor() {
         this.frameViewMode = loadGD(UI_VIEWMODE_SELECT);
@@ -186,15 +192,6 @@ class BaseLifeSquare {
                 return this.viewmodeEvolution();
             default:
                 return
-        }
-    }
-
-    setFrameRenderColor() {
-        if (this.frameViewMode == UI_VIEWMODE_NORMAL) {
-            multiplyVectorsDest(this.color, this.lightingColor, this.colorLightingApplied);
-            this.cachedRgba = rgbToRgba(...this.colorLightingApplied, this.opacity);
-        } else {
-            this.cachedRgba = rgbToRgba(...this.altColor, this.opacity);
         }
     }
 
@@ -221,13 +218,6 @@ class BaseLifeSquare {
         this.altColor = this.evolutionColor;
     }
 
-    setFrameOpacity() {
-        this.frameOpacity = 1;
-        if (this.linkedOrganism.stage == STAGE_DEAD) {
-            this.frameOpacity *= (1 - this.linkedOrganism.deathProgress ** 6);
-        }
-    }
-
     lightingUpdate() {
         if (Math.random() > 0.97) {
             this.frameCacheLighting = null;
@@ -248,80 +238,6 @@ class BaseLifeSquare {
         }
         else
             this.frameCacheLighting = processLighting(this.lighting);
-    }
-
-    frameColorUpdate(frameOpacity = 1) {
-        let minTime = 2000;
-        if (
-            (frameOpacity != this.lastColorCacheOpacity) ||
-            (Date.now() > this.lastColorCacheTime + minTime * Math.random()) ||
-            Math.abs(getDaylightStrengthFrameDiff()) > 0.01) {
-            this.lastColorCacheTime = Date.now();
-            this.lastColorCacheOpacity = frameOpacity;
-            let res = this.getStaticRand(1) * this.accentColorAmount + this.darkColorAmount + this.baseColorAmount;
-            let baseColor = null;
-            let altColor1 = null;
-            let altColor2 = null;
-            if (res < this.accentColorAmount) {
-                baseColor = this.accentColor_rgb;
-                altColor1 = this.darkColor_rgb;
-                altColor2 = this.baseColor_rgb;
-            } else if (res < this.accentColorAmount + this.darkColorAmount) {
-                baseColor = this.accentColor_rgb;
-                altColor1 = this.baseColor_rgb;
-                altColor2 = this.darkColor_rgb;
-            } else {
-                altColor1 = this.accentColor_rgb;
-                altColor2 = this.darkColor_rgb;
-                baseColor = this.baseColor_rgb;
-            }
-
-            let rand = this.getStaticRand(2);
-            // the '0.1' is the base darkness
-            let outColorBase = {
-                r: (baseColor.r * 0.5 + ((altColor1.r * rand + altColor2.r * (1 - rand)) * 0.5)),
-                g: (baseColor.g * 0.5 + ((altColor1.g * rand + altColor2.g * (1 - rand)) * 0.5)),
-                b: (baseColor.b * 0.5 + ((altColor1.b * rand + altColor2.b * (1 - rand)) * 0.5))
-            }
-            this.frameCacheLighting = null;
-            let lightingColor = this.processLighting();
-            let frameLightingOffset = Math.exp(this.linkedOrganism.lightLevelDisplayExposureAdjustment());
-            let outColor = {
-                r: (frameLightingOffset * lightingColor.r) * outColorBase.r / 255,
-                g: (frameLightingOffset * lightingColor.g) * outColorBase.g / 255,
-                b: (frameLightingOffset * lightingColor.b) * outColorBase.b / 255
-            };
-            this.cachedRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), frameOpacity);
-        }
-    }
-
-    renderWithVariedColors(frameOpacity = 1) {
-        this.frameColorUpdate(frameOpacity);
-        MAIN_CONTEXT.fillStyle = this.cachedRgba;
-        this.renderToCanvas();
-    }
-
-    calculateColor() {
-        let baseColorRGB = hexToRgb(this.colorBase);
-        return rgbToHex(Math.floor(baseColorRGB.r), Math.floor(baseColorRGB.g), Math.floor(baseColorRGB.b));
-    }
-
-    setSpawnedEntityId(id) {
-        this.spawnedEntityId = id;
-        if (this.linkedSquare != null) {
-            this.linkedSquare.spawnedEntityId = id;
-        }
-    }
-
-    getMinNutrient() {
-        return Math.min(Math.min(this.airNutrients, this.dirtNutrients), this.waterNutrients);
-    }
-
-    getMaxNutrient() {
-        return Math.max(Math.max(this.airNutrients, this.dirtNutrients), this.waterNutrients);
-    }
-    getMeanNutrient() {
-        return (this.airNutrients + this.dirtNutrients + this.waterNutrients) / 3;
     }
 
 }
