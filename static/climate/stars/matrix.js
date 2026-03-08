@@ -153,7 +153,12 @@ export function multiplyVectorByScalar(vec, scalar) {
     vec[i] *= scalar;
   }
   return vec;
-} 
+}
+
+export function multiplyVectorsDest(v1, v2, dest) {
+  for (let i = 0; i < v1.length; i++)
+    dest[i] = v1[i] + v2[i];
+}
 
 export function dotVec3Copy(v1, v2) {
   return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];

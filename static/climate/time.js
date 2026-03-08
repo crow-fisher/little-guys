@@ -4,13 +4,13 @@ import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth, MAIN_CONTEXT, setB
 import { calculateColorRGB, getFrameRelCloud } from "./simulation/temperatureHumidity.js";
 import {
     loadGD,
-    UI_SPEED_1,
-    UI_SPEED_2,
-    UI_SPEED_3,
-    UI_SPEED_4,
-    UI_SPEED_5,
-    UI_SPEED_6,
-    UI_SPEED_7,
+    UI_SPEED_ONE,
+    UI_SPEED_TWO,
+    UI_SPEED_THREE,
+    UI_SPEED_FOUR,
+    UI_SPEED_FIVE,
+    UI_SPEED_SIX,
+    UI_SPEED_SEVEN,
     UI_SPEED_8,
     UI_SPEED_9,
     UI_SPEED_10,
@@ -24,13 +24,13 @@ import {
     UI_SPEED_18,
     UI_SPEED_19,
     UI_SPEED,
-    UI_SPEED_0, saveGD
+    UI_SPEED_ZERO, saveGD
 } from "../ui/UIData.js";
 import { SunCalc } from "./suncalc/suncalc.js";
 import { getActiveClimate } from "./climateManager.js";
 
 let TIME_SCALE = 1;
-let curUIKey = UI_SPEED_1;
+let curUIKey = UI_SPEED_ONE;
 
 export const millis_per_day = 60 * 60 * 24 * 1000;
 var curDay = 0.4;
@@ -113,25 +113,25 @@ export function doTimeSeek() {
 
     switch (TIME_SCALE) {
         case 1:
-            saveGD(UI_SPEED, UI_SPEED_1);
+            saveGD(UI_SPEED, UI_SPEED_ONE);
             break;
         case 2:
-            saveGD(UI_SPEED, UI_SPEED_2);
+            saveGD(UI_SPEED, UI_SPEED_TWO);
             break;
         case 3:
-            saveGD(UI_SPEED, UI_SPEED_3);
+            saveGD(UI_SPEED, UI_SPEED_THREE);
             break;
         case 4:
-            saveGD(UI_SPEED, UI_SPEED_4);
+            saveGD(UI_SPEED, UI_SPEED_FOUR);
             break;
         case 5:
-            saveGD(UI_SPEED, UI_SPEED_5);
+            saveGD(UI_SPEED, UI_SPEED_FIVE);
             break;
         case 6:
-            saveGD(UI_SPEED, UI_SPEED_6);
+            saveGD(UI_SPEED, UI_SPEED_SIX);
             break;
         case 7:
-            saveGD(UI_SPEED, UI_SPEED_7);
+            saveGD(UI_SPEED, UI_SPEED_SEVEN);
             break;
         case 8:
             saveGD(UI_SPEED, UI_SPEED_8);
@@ -212,7 +212,7 @@ export function doTimeSkipToDate(dateName) {
             break;
     }
     setCurDay(Math.floor(date.getTime() / millis_per_day) + (curDay % 1));
-    saveGD(UI_SPEED, UI_SPEED_1);
+    saveGD(UI_SPEED, UI_SPEED_ONE);
 
 }
 
@@ -223,7 +223,7 @@ export function setCurDay(newCurDay) {
 
 export function doTimeSkipToNow() {
     setCurDay(Date.now() / millis_per_day);
-    saveGD(UI_SPEED, UI_SPEED_1);
+    saveGD(UI_SPEED, UI_SPEED_ONE);
     return;
 }
 
@@ -311,28 +311,28 @@ export function timeScaleFactor() {
 function updateTime() {
     if (curUIKey != loadGD(UI_SPEED)) {
         switch (loadGD(UI_SPEED)) {
-            case UI_SPEED_0:
+            case UI_SPEED_ZERO:
                 TIME_SCALE = 0;
                 break;
-            case UI_SPEED_1:
+            case UI_SPEED_ONE:
                 TIME_SCALE = 1;
                 break;
-            case UI_SPEED_2:
+            case UI_SPEED_TWO:
                 TIME_SCALE = 2;
                 break;
-            case UI_SPEED_3:
+            case UI_SPEED_THREE:
                 TIME_SCALE = 3;
                 break;
-            case UI_SPEED_4:
+            case UI_SPEED_FOUR:
                 TIME_SCALE = 4;
                 break;
-            case UI_SPEED_5:
+            case UI_SPEED_FIVE:
                 TIME_SCALE = 5;
                 break;
-            case UI_SPEED_6:
+            case UI_SPEED_SIX:
                 TIME_SCALE = 6;
                 break;
-            case UI_SPEED_7:
+            case UI_SPEED_SEVEN:
                 TIME_SCALE = 7;
                 break;
             case UI_SPEED_8:

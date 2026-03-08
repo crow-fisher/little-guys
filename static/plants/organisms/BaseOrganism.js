@@ -46,8 +46,12 @@ class BaseOrganism {
         this.seedLifeSquare = seedLifeSquare;
         this.evolutionParameters = evolutionParameters;
 
-        this.evolutionMinColor = { r: 63, g: 64, b: 79 };
-        this.evolutionMaxColor = { r: 99, g: 0, b: 43 };
+        this.evolutionMinColor = [63, 64, 79];
+        this.evolutionMaxColor = [99, 0, 43];
+        this.moistureMinColor = [255, 0, 0];
+        this.moistureMaxColor = [0, 0, 255];
+
+
 
         this.originGrowth = null;
         this.greenLifeSquares = new Array();

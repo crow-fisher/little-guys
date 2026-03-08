@@ -1,15 +1,15 @@
 import { MAIN_CONTEXT } from "../../index.js";
-import { hexToRgb, hsv2rgb, processColorLerpBicolor, rgb2hsv, rgbToHex, rgbToRgba } from "../../common.js";
+import { hexToRgb, hsv2rgb, processColorLerpBicolorArr, rgb2hsv, rgbToHex, rgbToRgba } from "../../common.js";
 
 import { getDaylightStrengthFrameDiff } from "../../climate/time.js";
 
-import { RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED, RGB_COLOR_GREEN } from "../../colors.js";
+import { RGB_COLOR_GREEN } from "../../colors.js";
 import { STAGE_DEAD } from "../../organisms/Stages.js";
 import { getDefaultLighting, processLighting } from "../../lighting/lightingProcessing.js";
-import { getBaseSize, getCurZoom, rotatePoint } from "../../canvas.js";
-import { loadGD, UI_CAMERA_CENTER_SELECT_POINT, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_NORMAL, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../../ui/UIData.js";
+import { rotatePoint } from "../../canvas.js";
+import { loadGD, UI_CAMERA_CENTER_SELECT_POINT, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../../ui/UIData.js";
 import { cartesianToScreenInplace, gfc, screenToRenderScreen } from "../../rendering/camera.js";
-import { addVec3Dest, crossVec3, normalizeVec3, subtractVectorsDest } from "../../climate/stars/matrix.js";
+import { addVec3Dest, crossVec3, multiplyVectorByScalar, multiplyVectorsDest, normalizeVec3, subtractVectorsDest } from "../../climate/stars/matrix.js";
 import { QuadRenderJob } from "../../rendering/model/QuadRenderJob.js";
 import { addRenderJob } from "../../rendering/rasterizer.js";
 
@@ -25,6 +25,8 @@ class BaseLifeSquare {
         this.spawnTime = Date.now();
         // RGB Array
         this.color = [100, 100, 100];
+        this.altColor = [255, 0, 0];
+        this.colorLightingApplied = [0, 0, 0];
         this.opacity = 1;
         // RGBA String
         this.cachedRgba = null;
@@ -127,33 +129,6 @@ class BaseLifeSquare {
         return 0.00023 * (this.height ** 2) * (this.width ** 2) * Math.exp(this.linkedOrganism.lightDecayValue()) * this.lsqLightDecayValue;
     }
 
-    getLsqRenderSizeMult() {
-        if (this.type == "green") {
-            return this.LSQ_RENDER_SIZE_MULT;
-        } else {
-            return 1;
-        }
-    }
-
-    makeRandomsSimilar(otherSquare) {
-        for (let i = 0; i < this.randoms.length; i++) {
-            this.randoms[i] = otherSquare.randoms[i] * 0.9 + this.randoms[i] * 0.1;
-        }
-    }
-
-    updatePositionDifferential(dx, dy) {
-        this.posX += dx;
-        this.posY += dy;
-    }
-
-    shiftUp() {
-        this.updatePositionDifferential(0, -1);
-    }
-
-    dist(testX, testY) { // manhattan
-        return Math.abs(this.posX - testX) + Math.abs(this.posY - testY);
-    }
-
     addChild(lifeSquare) {
         lifeSquare.deflectionXOffset = this.deflectionXOffset;
         lifeSquare.deflectionYOffset = this.deflectionYOffset;
@@ -181,49 +156,6 @@ class BaseLifeSquare {
         this.lighting = [];
     }
 
-    getStaticRand(randIdx) {
-        while (randIdx > this.randoms.length - 1) {
-            this.randoms.push(Math.random());
-        }
-        return this.randoms[randIdx];
-    }
-
-    calculateWidthXOffset() {
-        return -(0.5 - (this.width / 2));
-    }
-    getPosX(xOffset = this.xOffset) {
-        return this.posX - (this.deflectionXOffset + xOffset);
-    }
-
-    getPosY(yOffset = this.yOffset) {
-        return this.posY - (this.deflectionYOffset + yOffset);
-    }
-
-    applySubtypeRenderConfig() {
-
-    }
-
-    processLightHealth(rgb) {
-        let hsv = rgb2hsv(rgb.r, rgb.g, rgb.b);
-        hsv[1] *= this.lightHealth;
-        let rgbArr = hsv2rgb(...hsv);
-        return { r: rgbArr[0], g: rgbArr[1], b: rgbArr[2] };
-    }
-
-    subtypeColorUpdate() {
-        if (this.type == "root") {
-            return;
-        }
-
-        this.applySubtypeRenderConfig();
-        this.activeRenderSubtype = this.subtype;
-        this.activeRenderState = this.state;
-        this.prevLightHealth = this.lightHealth;
-        this.baseColor_rgb = this.processLightHealth(hexToRgb(this.baseColor));
-        this.darkColor_rgb = this.processLightHealth(hexToRgb(this.darkColor));
-        this.accentColor_rgb = this.processLightHealth(hexToRgb(this.accentColor));
-    }
-
     renderToCanvas() {
         if (this.type == "root")
             return;
@@ -234,17 +166,16 @@ class BaseLifeSquare {
     }
 
     render() {
-        this.setFrameColor();
+        this.setFrameAltColor();
         this.setFrameOpacity();
+        this.setFrameRenderColor();
         this.lightingUpdate();
         this.renderToCanvas();
     };
 
-    setFrameColor() {
+    setFrameAltColor() {
         this.frameViewMode = loadGD(UI_VIEWMODE_SELECT);
         switch (this.frameViewMode) {
-            case UI_VIEWMODE_NITROGEN:
-                return this.viewmodeNitrogen();
             case UI_VIEWMODE_LIGHTING:
                 return this.viewmodeLighting();
             case UI_VIEWMODE_MOISTURE:
@@ -253,29 +184,42 @@ class BaseLifeSquare {
                 return this.viewmodeMoisture();
             case UI_VIEWMODE_EVOLUTION:
                 return this.viewmodeEvolution();
-            case UI_VIEWMODE_NUTRIENTS:
-                return this.viewmodeNutrients();
-            case UI_VIEWMODE_NORMAL:
             default:
-                return this.viewmodeNormal();
+                return
         }
     }
 
-    viewmodeNitrogen() { }
-    viewmodeLighting() { }
-    viewmodeMoisture() { }
+    setFrameRenderColor() {
+        if (this.frameViewMode == UI_VIEWMODE_NORMAL) {
+            multiplyVectorsDest(this.color, this.lightingColor, this.colorLightingApplied);
+            this.cachedRgba = rgbToRgba(...this.colorLightingApplied, this.opacity);
+        } else {
+            this.cachedRgba = rgbToRgba(...this.altColor, this.opacity);
+        }
+    }
+
+    viewmodeLighting() {
+        let frameOp = 0.5;
+        if (this.type == "root") {
+            frameOp = 0.25;
+        }
+        let myhsv = structuredClone(NUTRIENT_BASE_HSV);
+        let hueShift = this.lightlevelIndicated;
+        myhsv[0] += 60 * (hueShift)
+        myhsv[1] = this.lightlevelIndicated;
+
+        this.lightingColor = hsv2rgb(...myhsv), frameOp;
+        this.altColor = this.lightingColor;
+    }
+    viewmodeMoisture() {
+        this.moistureColor = processColorLerpBicolorArr(this.linkedOrganism.getWilt(), -1, 1, this.linkedOrganism.moistureMinColor, this.linkedOrganism.moistureMaxColor, this.evolutionParameters.at(0), 1, opacity);
+        this.altColor = this.moistureColor;
+    }
     
     viewmodeEvolution() {
-        this.evolutionColor = this.evolutionColor ?? this._getEvolutionColor();
-        this.cachedRgba = rgbToRgba(...this.evolutionColor, this.opacity);
+        this.evolutionColor = this.evolutionColor ?? processColorLerpBicolorArr(this.linkedOrganism.evolutionMinColor, this.linkedOrganism.evolutionMaxColor, this.evolutionParameters.at(0), 1, opacity);
+        this.altColor = this.evolutionColor;
     }
-
-    _getEvolutionColor(opacity) {
-        return processColorLerpBicolor(this.linkedOrganism.evolutionMinColor, this.linkedOrganism.evolutionMaxColor, this.evolutionParameters.at(0), 1, opacity);
-    }
-
-    viewmodeNutrients() { }
-    viewmodeNormal() { }
 
     setFrameOpacity() {
         this.frameOpacity = 1;
@@ -291,115 +235,6 @@ class BaseLifeSquare {
         }
     }
 
-
-
-
-    unused() {
-        let frameOpacity = this.opacity;
-        if (this.lightHealth != this.prevLightHealth || this.activeRenderSubtype != this.subtype || this.activeRenderState != this.state) {
-            this.subtypeColorUpdate();
-        }
-        let selectedViewMode = loadGD(UI_VIEWMODE_SELECT);
-        if (selectedViewMode != UI_VIEWMODE_NORMAL && Math.random() > 0.97) {
-            this.frameCacheLighting = null;
-            this.processLighting();
-        }
-        if (selectedViewMode == UI_VIEWMODE_NITROGEN) {
-            let color = {
-                r: 100 + (1 - this.nitrogenIndicated) * 130,
-                g: 100 + (1 - this.lightlevelIndicated) * 130,
-                b: 100 + (1 - this.phosphorusIndicated) * 130
-            }
-            MAIN_CONTEXT.fillStyle = rgbToHex(color.r, color.g, color.b);
-            return;
-        }
-        else if (selectedViewMode == UI_VIEWMODE_LIGHTING) {
-            this.renderLighting();
-        }
-        else if (selectedViewMode == UI_VIEWMODE_MOISTURE || selectedViewMode == UI_VIEWMODE_WATERMATRIC || selectedViewMode == UI_VIEWMODE_WATERTICKRATE) {
-            this.renderMoisture(frameOpacity);
-        }
-        else if (selectedViewMode == UI_VIEWMODE_EVOLUTION) {
-            if (this.type == "green")
-                MAIN_CONTEXT.fillStyle = this.linkedOrganism.getEvolutionColor(0.85);
-            else
-                MAIN_CONTEXT.fillStyle = this.linkedOrganism.getEvolutionColor(0.15);
-            this.renderToCanvas();
-            return;
-        } else if (selectedViewMode == UI_VIEWMODE_NUTRIENTS) {
-            let myhsv = structuredClone(NUTRIENT_BASE_HSV);
-            let lli = Math.min(1, this.lightlevelIndicated);
-            let hueShift = ((this.nitrogenIndicated + this.phosphorusIndicated) / 2) - lli;
-            myhsv[0] += 60 * (hueShift)
-            myhsv[1] = (this.nitrogenIndicated + this.phosphorusIndicated + lli) / 3;
-            if (this.type == "green")
-                MAIN_CONTEXT.fillStyle = rgbToRgba(...hsv2rgb(...myhsv), 0.8);
-            else
-                MAIN_CONTEXT.fillStyle = rgbToRgba(...hsv2rgb(...myhsv), 0.5);
-            this.renderToCanvas();
-            let outlineHsv = myhsv;
-            outlineHsv[0] += 100;
-            outlineHsv[1] /= 3;
-            outlineHsv[2] /= 2;
-            MAIN_CONTEXT.strokeStyle = rgbToRgba(...hsv2rgb(...outlineHsv), this.lifetimeIndicated);
-            MAIN_CONTEXT.lineWidth = getBaseSize() * .15 * getCurZoom();
-            MAIN_CONTEXT.stroke();
-
-        }
-        else {
-            if (selectedViewMode == UI_VIEWMODE_NORMAL && this.type == "root")
-                return;
-            if (selectedViewMode == UI_VIEWMODE_ORGANISMS) {
-                if (this.opacity < 0.235) {
-                    frameOpacity *= 4;
-                }
-            }
-            this.renderWithVariedColors(frameOpacity);
-        }
-    }
-    renderLighting() {
-        let frameOp = 0.5;
-        if (this.type == "root") {
-            frameOp = 0.25;
-        }
-        let myhsv = structuredClone(NUTRIENT_BASE_HSV);
-        let hueShift = this.lightlevelIndicated;
-        myhsv[0] += 60 * (hueShift)
-        myhsv[1] = this.lightlevelIndicated;
-        MAIN_CONTEXT.fillStyle = rgbToRgba(...hsv2rgb(...myhsv), frameOp);
-        this.renderToCanvas();
-    }
-
-    renderMoisture(frameOpacity) {
-        let color1 = null;
-        let color2 = null;
-
-        let val = this.linkedOrganism.getWilt();
-        let valMin, valMax;
-
-        if (val > 0) {
-            color1 = RGB_COLOR_OTHER_BLUE;
-            color2 = RGB_COLOR_GREEN;
-            valMin = 0;
-            valMax = 1;
-        } else {
-            color1 = RGB_COLOR_GREEN;
-            color2 = RGB_COLOR_RED;
-            valMin = -1;
-            valMax = 0;
-        }
-        let valInvLerp = (val - valMin) / (valMax - valMin);
-        let out = {
-            r: color1.r * valInvLerp + color2.r * (1 - valInvLerp),
-            g: color1.g * valInvLerp + color2.g * (1 - valInvLerp),
-            b: color1.b * valInvLerp + color2.b * (1 - valInvLerp),
-        }
-
-        MAIN_CONTEXT.fillStyle = rgbToRgba(out.r, out.g, out.b, frameOpacity);
-        this.renderToCanvas();
-        return;
-    }
-
     processLighting() {
         if (this.frameCacheLighting != null) {
             return this.frameCacheLighting;
@@ -413,8 +248,6 @@ class BaseLifeSquare {
         }
         else
             this.frameCacheLighting = processLighting(this.lighting);
-
-        this.cachedRgba = rgbToRgba(...this.color, this.opacity)
     }
 
     frameColorUpdate(frameOpacity = 1) {
