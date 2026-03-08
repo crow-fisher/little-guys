@@ -149,8 +149,7 @@ class BasePlant {
 
     updateRenderingState() {
         if (this.originGrowth != null) {
-            let ls = this.linkedSquare;
-            this.originGrowth.updateDeflectionState([ls.posX, ls.posY, ls.z]);
+            this.originGrowth.updateDeflectionState(this.linkedSquare.cartesian_tl);
         }
     }
 

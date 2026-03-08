@@ -58,7 +58,7 @@ export class GrowthComponent {
     updateDeflectionState(startOffset) {
         copyVecValue(startOffset, this.curOffset);
         for (let i = 0; i < this.lifeSquares.length; i++) {
-            copyVecValue(this.curOffset, this.lifeSquares.at(i).posVec);
+            copyVecValue(this.curOffset, this.lifeSquares.at(i).startPointVec);
             this.curOffset[1] -= 1;
         }
     }
