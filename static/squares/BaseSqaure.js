@@ -108,6 +108,11 @@ export class BaseSquare {
 
         this.blockHealthGravityCoef = 2;
 
+        this.world_tl = [0, 0, 0];
+        this.world_tr = [0, 0, 0];
+        this.world_bl = [0, 0, 0];
+        this.world_br = [0, 0, 0];
+
         this.cartesian_tl = [0, 0, 0];
         this.cartesian_tr = [0, 0, 0];
         this.cartesian_bl = [0, 0, 0];
@@ -503,18 +508,36 @@ export class BaseSquare {
         this.px = this.posX - this.selectPoint[0];
         this.py = this.posY - this.selectPoint[1];
 
-        this.cartesian_tl[0] = this.px - co[0];
-        this.cartesian_tr[0] = this.px + 1 - co[0];
-        this.cartesian_bl[0] = this.px - co[0];
-        this.cartesian_br[0] = this.px + 1 - co[0];
-        this.cartesian_tl[1] = this.py - co[1];
-        this.cartesian_tr[1] = this.py - co[1];
-        this.cartesian_bl[1] = this.py + 1 - co[1];
-        this.cartesian_br[1] = this.py + 1 - co[1];
-        this.cartesian_tl[2] = (this.tsq?.z ?? (this.z - (this.zCascadeFunc(0)))) - co[2];
-        this.cartesian_tr[2] = (this.tsq?.z ?? (this.z - (this.zCascadeFunc(0)))) - co[2];
-        this.cartesian_bl[2] = this.z - co[2];
-        this.cartesian_br[2] = this.z - co[2];
+        this.world_tl = this.world_tl ?? [0, 0, 0]
+        this.world_tr = this.world_tr ?? [0, 0, 0]
+        this.world_bl = this.world_bl ?? [0, 0, 0]
+        this.world_br = this.world_br ?? [0, 0, 0]
+
+        this.world_tl[0] = this.px;
+        this.world_tr[0] = this.px + 1;
+        this.world_bl[0] = this.px;
+        this.world_br[0] = this.px + 1;
+        this.world_tl[1] = this.py;
+        this.world_tr[1] = this.py;
+        this.world_bl[1] = this.py + 1;
+        this.world_br[1] = this.py + 1;
+        this.world_tl[2] = (this.tsq?.z ?? (this.z - (this.zCascadeFunc(0))));
+        this.world_tr[2] = (this.tsq?.z ?? (this.z - (this.zCascadeFunc(0))));
+        this.world_bl[2] = this.z;
+        this.world_br[2] = this.z;
+
+        this.cartesian_tl[0] = this.world_tl[0] - co[0];
+        this.cartesian_tr[0] = this.world_tr[0] - co[0];
+        this.cartesian_bl[0] = this.world_bl[0] - co[0];
+        this.cartesian_br[0] = this.world_br[0] - co[0];
+        this.cartesian_tl[1] = this.world_tl[1] - co[1];
+        this.cartesian_tr[1] = this.world_tr[1] - co[1];
+        this.cartesian_bl[1] = this.world_bl[1] - co[1];
+        this.cartesian_br[1] = this.world_br[1] - co[1];
+        this.cartesian_tl[2] = this.world_tl[2] - co[2];
+        this.cartesian_tr[2] = this.world_tr[2] - co[2];
+        this.cartesian_bl[2] = this.world_bl[2] - co[2];
+        this.cartesian_br[2] = this.world_br[2] - co[2];
 
         cartesianToScreenInplace(this.cartesian_tl, this.camera_tl, this.screen_tl);
         cartesianToScreenInplace(this.cartesian_tr, this.camera_tr, this.screen_tr);
