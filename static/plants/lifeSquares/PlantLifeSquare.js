@@ -27,8 +27,8 @@ class PlantLifeSquare {
         this.lighting = []
 
         // Set rendering member variables.
-        this.width = 1;
-        this.height = 1;
+        this.width = 0;
+        this.height = 0;
 
         this.posVec = [0, 0, 0];
         this.rotVec = [0, 0, 0];
