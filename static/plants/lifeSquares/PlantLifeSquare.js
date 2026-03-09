@@ -112,11 +112,11 @@ class PlantLifeSquare {
     }
 
     getSurfaceLightingFactor() {
-        return Math.max(0, loadGD(UI_LIGHTING_PLANT));
+        return 1;
     }
 
     getLightFilterRate() {
-        return 0.00023 * (this.height ** 2) * (this.width ** 2) * Math.exp(this.linkedOrganism.lightDecayValue());
+        return Math.exp(loadGD(UI_LIGHTING_PLANT)) * 0.00023 * (this.height ** 2) * (this.width ** 2) * Math.exp(this.linkedOrganism.lightDecayValue());
     }
 
     addChild(lifeSquare) {
@@ -177,9 +177,10 @@ class PlantLifeSquare {
         if (this.frameViewMode == UI_VIEWMODE_3D) {
             this.colorLighting = this.processLighting();
             
-            this.colorLightingApplied[0] = this.color[0] * (this.colorLighting.r / 255);
-            this.colorLightingApplied[1] = this.color[1] * (this.colorLighting.g / 255);
-            this.colorLightingApplied[2] = this.color[2] * (this.colorLighting.b / 255);
+            this.colorLightingApplied[0] = (this.color[0] / 255) * this.colorLighting.r;
+            this.colorLightingApplied[1] = (this.color[1] / 255) * this.colorLighting.g;
+            this.colorLightingApplied[2] = (this.color[2] / 255) * this.colorLighting.b;
+            
             this.cachedRgba = rgbToRgba(...this.colorLightingApplied, this.opacity);
         } else {
             this.cachedRgba = rgbToRgba(...this.altColor, this.opacity);

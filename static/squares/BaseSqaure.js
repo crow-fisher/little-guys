@@ -630,27 +630,14 @@ export class BaseSquare {
         if (this.proto == "WaterSquare") {
             this.opacity = loadGD(UI_LIGHTING_WATER_OPACITY);
         }
-        let minTime = getFrameDt() * 128;
-        if (isSqColChanged(this.posX)) {
-            minTime /= 4;
-        }
-        if (isSqRowChanged(this.posY)) {
-            minTime /= 4;
-        }
 
-        if (
-            (opacityMult != this.lastColorCacheOpacity) ||
-            (Date.now() > this.lastColorCacheTime + minTime * Math.random()) ||
-            Math.abs(getDaylightStrengthFrameDiff()) > 0.005) {
-
-            this.lastColorCacheTime = Date.now();
-            let outColorBase = this.getColorBase();
-            let lightingColor = this.processLighting(true);
-            this.frameCacheLighting = lightingColor;
-            this.outColor = { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
-            this.lastColorCacheOpacity = opacityMult;
-            this.cachedRgba = rgbToRgba(Math.floor(this.outColor.r), Math.floor(this.outColor.g), Math.floor(this.outColor.b), opacityMult * this.opacity * this.blockHealth ** 0.2);
-        }
+        this.lastColorCacheTime = Date.now();
+        let outColorBase = this.getColorBase();
+        let lightingColor = this.processLighting(true);
+        this.frameCacheLighting = lightingColor;
+        this.outColor = { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
+        this.lastColorCacheOpacity = opacityMult;
+        this.cachedRgba = rgbToRgba(Math.floor(this.outColor.r), Math.floor(this.outColor.g), Math.floor(this.outColor.b), opacityMult * this.opacity * this.blockHealth ** 0.2);
     }
 
     renderWithVariedColors(opacityMult) {
