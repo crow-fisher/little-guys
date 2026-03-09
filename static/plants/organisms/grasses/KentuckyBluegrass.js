@@ -1,5 +1,5 @@
 import { copyVecValue, multiplyVectorByScalar } from "../../../climate/stars/matrix.js";
-import { UI_ORGANISM_GRASS_KBLUE } from "../../../ui/UIData.js";
+import { loadGD, UI_ORGANISM_GRASS_KBLUE } from "../../../ui/UIData.js";
 import { PlantLifeSquare } from "../../lifeSquares/PlantLifeSquare.js";
 import { RootLifeSquare } from "../../lifeSquares/RootLifeSquare.js";
 import { BasePlant, _llt_target, _llt_min, _llt_max, _llt_throttlValMax, _seedReduction, _waterPressureSoilTarget, _waterPressureOverwaterThresh, _waterPressureWiltThresh, _lightDecayValue, _lightLevelDisplayExposureAdjustment, baseOrganism_dnm } from "../BasePlant.js";
@@ -179,6 +179,7 @@ export class KentuckyBluegrass extends BasePlant {
             .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .forEach((grass) => {
                 let curColor = [85, 128, 109];
+                multiplyVectorByScalar(curColor, this.lightLevelDisplayExposureAdjustment());
                 let width = 0.4;
                 grass.lifeSquares.forEach((lsq) => {
                     copyVecValue(curColor, lsq.color);

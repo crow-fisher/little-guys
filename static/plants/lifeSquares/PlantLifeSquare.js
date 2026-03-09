@@ -1,4 +1,4 @@
-import { hsv2rgb, processColorLerpBicolorArr, rgb2hsv, rgbToRgba } from "../../common.js";
+import { hsv2rgb, processColorLerpBicolorArr, processRangeToOne, rgb2hsv, rgbToRgba } from "../../common.js";
 import { RGB_COLOR_GREEN } from "../../colors.js";
 import { getDefaultLighting, processLighting } from "../../lighting/lightingProcessing.js";
 import { rotatePoint } from "../../canvas.js";
@@ -116,7 +116,8 @@ class PlantLifeSquare {
     }
 
     getLightFilterRate() {
-        return Math.exp(loadGD(UI_LIGHTING_PLANT)) * 0.00023 * (this.height ** 2) * (this.width ** 2) * Math.exp(this.linkedOrganism.lightDecayValue());
+        return processRangeToOne(loadGD(UI_LIGHTING_PLANT));
+        // return loadGD(UI_LIGHTING_PLANT) * 0.00023 * (this.height ** 2) * (this.width ** 2) * Math.exp(this.linkedOrganism.lightDecayValue());
     }
 
     addChild(lifeSquare) {
@@ -156,13 +157,10 @@ class PlantLifeSquare {
     }
 
     render() {
-        if (this.color == [100, 100, 100]) {
-            return;
-        }
+        this.lightingUpdate();
         this.setFrameOpacity();
         this.setFrameRenderColor();
         this.setFrameAltColor();
-        this.lightingUpdate();
         this.renderToCanvas();
     };
 
@@ -172,16 +170,16 @@ class PlantLifeSquare {
             this.frameOpacity *= (1 - this.linkedOrganism.deathProgress ** 6);
         }
     }
-
+    
     setFrameRenderColor() {
         if (this.frameViewMode == UI_VIEWMODE_3D) {
-            this.colorLighting = this.processLighting();
-            
-            this.colorLightingApplied[0] = (this.color[0] / 255) * this.colorLighting.r;
-            this.colorLightingApplied[1] = (this.color[1] / 255) * this.colorLighting.g;
-            this.colorLightingApplied[2] = (this.color[2] / 255) * this.colorLighting.b;
-            
-            this.cachedRgba = rgbToRgba(...this.colorLightingApplied, this.opacity);
+
+        this.colorLighting = this.processLighting();
+        this.colorLightingApplied[0] = (this.color[0] / 255) * this.colorLighting.r;
+        this.colorLightingApplied[1] = (this.color[1] / 255) * this.colorLighting.g;
+        this.colorLightingApplied[2] = (this.color[2] / 255) * this.colorLighting.b;
+
+        this.cachedRgba = rgbToRgba(...this.colorLightingApplied, this.opacity);
         } else {
             this.cachedRgba = rgbToRgba(...this.altColor, this.opacity);
         }
@@ -227,10 +225,8 @@ class PlantLifeSquare {
     }
 
     lightingUpdate() {
-        if (Math.random() > 0.97) {
-            this.frameCacheLighting = null;
-            this.processLighting();
-        }
+        this.frameCacheLighting = null;
+        this.processLighting();
     }
 
     processLighting() {
@@ -240,9 +236,6 @@ class PlantLifeSquare {
         if (!loadGD(UI_LIGHTING_ENABLED)) {
             this.frameCacheLighting = getDefaultLighting();
             return this.frameCacheLighting;
-        }
-        if (this.type == "root") {
-            this.frameCacheLighting = (this.linkedSquare.frameCacheLighting ?? getDefaultLighting());
         }
         else
             this.frameCacheLighting = processLighting(this.lighting);

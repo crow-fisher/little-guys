@@ -116,13 +116,17 @@ export class MovingLightSource {
             }
             let relPosX = sq.posX - this.posX;
             let relPosY = sq.posY - this.posY;
+
+            let xo = relPosX - sq.world_tl[0];
+            let yo = relPosY - sq.world_tl[1];
+
             let sqTheta = Math.atan(relPosX / relPosY);
             allSquares.push([relPosX, relPosY, sqTheta, sq]);
 
             sq.linkedOrganisms.forEach((org) => {
                 org.greenLifeSquares.forEach((lsq) => {
-                    let relPosX = lsq.rootPositionVec[0] - this.posX;
-                    let relPosY = lsq.rootPositionVec[1] - this.posY;
+                    let relPosX = lsq.rootPositionVec[0] - this.posX - xo;
+                    let relPosY = (lsq.rootPositionVec[1] - 10) - this.posY - yo;
                     let lsqTheta = Math.atan(relPosX / relPosY);
                     allSquares.push([relPosX, relPosY, lsqTheta, lsq]);
                 }
@@ -162,15 +166,18 @@ export class MovingLightSource {
         thetaSquares.forEach((arr) => {
             let obj = arr[3];
 
-            let p1 = 1 - 1 / Math.exp(obj.getSurfaceLightingFactor());
+            // let p1 = 1 - 1 / Math.exp(obj.getSurfaceLightingFactor());
+            let p1 = 1;
             let p2 = (obj.blockHealth ?? 1);
             let p3 = obj.getLightFilterRate() ** (1 / Math.exp(loadGD(UI_LIGHTING_DECAY) ** 2));
             let p4 = loadGD(UI_LIGHTING_QUALITY) / 11;
             curBrightness *= 1 - (p1 * p2 * p3 * p4);
 
-            let _curBrightness = curBrightness;
-            let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(i) * _curBrightness;
+            curBrightness *= 0.99;
 
+            let _curBrightness = curBrightness;
+            let pointLightSourceFunc = () => _curBrightness;
+            // let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(i) * _curBrightness;
             if (obj.lighting[idx] == null) {
                 obj.lighting[idx] = [[pointLightSourceFunc], this.colorFunc];
             } else {
