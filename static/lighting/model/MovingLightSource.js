@@ -126,10 +126,10 @@ export class MovingLightSource {
 
             sq.linkedOrganisms.forEach((org) => {
                 org.greenLifeSquares.forEach((lsq) => {
-                    let lsqRelPosX = lsq.rootPositionVec[0] - this.posX - xo;
-                    let lsqRelPosY = (lsq.rootPositionVec[1] - 10) - this.posY - yo;
-                    lsqRelPosX =  relPosX;
-                    lsqRelPosY =  relPosY;
+                    let lsqRelPosX = -(lsq.rootPositionVec[0] + xo)
+                    let lsqRelPosY = -(lsq.rootPositionVec[1] + yo)
+                    // lsqRelPosX =  relPosX;
+                    // lsqRelPosY =  relPosY;
                     let lsqTheta = Math.atan(lsqRelPosX / lsqRelPosY);
                     allSquares.push([lsqRelPosX, lsqRelPosY, lsqTheta, lsq]);
                 }
