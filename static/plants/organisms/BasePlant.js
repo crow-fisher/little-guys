@@ -437,6 +437,8 @@ class BasePlant {
     }
 
     render() {
+        this.prepareRender();
+        
         this.greenLifeSquares.forEach((lsq) => lsq.render());
     }
 

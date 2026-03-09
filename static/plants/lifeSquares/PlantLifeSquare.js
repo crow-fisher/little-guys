@@ -23,7 +23,8 @@ class PlantLifeSquare {
         // RGBA String
         this.cachedRgba = null;
 
-        this.lighting = [];
+        this.frameCacheLighting = getDefaultLighting();
+        this.lighting = []
 
         // Set rendering member variables.
         this.width = 1;
@@ -174,8 +175,12 @@ class PlantLifeSquare {
 
     setFrameRenderColor() {
         if (this.frameViewMode == UI_VIEWMODE_3D) {
-            multiplyVectorsDest(this.color, this.lighting, this.colorLightingApplied);
-            this.cachedRgba = rgbToRgba(...this.color, this.opacity);
+            this.colorLighting = this.processLighting();
+            
+            this.colorLightingApplied[0] = this.color[0] * (this.colorLighting.r / 255);
+            this.colorLightingApplied[1] = this.color[1] * (this.colorLighting.g / 255);
+            this.colorLightingApplied[2] = this.color[2] * (this.colorLighting.b / 255);
+            this.cachedRgba = rgbToRgba(...this.colorLightingApplied, this.opacity);
         } else {
             this.cachedRgba = rgbToRgba(...this.altColor, this.opacity);
         }

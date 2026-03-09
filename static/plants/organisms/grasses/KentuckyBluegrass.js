@@ -1,4 +1,4 @@
-import { copyVecValue } from "../../../climate/stars/matrix.js";
+import { copyVecValue, multiplyVectorByScalar } from "../../../climate/stars/matrix.js";
 import { UI_ORGANISM_GRASS_KBLUE } from "../../../ui/UIData.js";
 import { PlantLifeSquare } from "../../lifeSquares/PlantLifeSquare.js";
 import { RootLifeSquare } from "../../lifeSquares/RootLifeSquare.js";
@@ -186,7 +186,7 @@ export class KentuckyBluegrass extends BasePlant {
                 grass.lifeSquares.forEach((lsq) => {
                     copyVecValue(curColor, lsq.color);
                     lsq.width = width;
-                    width *= .7;
+                    width *= .97;
                 });
             });
     }

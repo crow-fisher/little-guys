@@ -149,7 +149,7 @@ export class MovingLightSource {
         };
     }
 
-    async rayCastingForRayIdx(idx, jobIdx, i) {
+    async rayCastingForRayIdx(idx, jobIdx, i) { 
         if (isSaveOrLoadInProgress()) {
             return;
         }
