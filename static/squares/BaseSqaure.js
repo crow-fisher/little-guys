@@ -588,22 +588,7 @@ export class BaseSquare {
         //     return;
         // }
 
-        if ((this.tl[0] < 0) || this.br[0] > getTotalCanvasPixelWidth()) {
-            this.renderJob = null;
-            return;
-        }
-        if ((this.bl[0] < 0) || this.tr[0] > getTotalCanvasPixelWidth()) {
-            this.renderJob = null;
-            return;
-        }
-        if ((this.tl[1] < 0) || this.br[1] > getTotalCanvasPixelHeight()) {
-            this.renderJob = null;
-            return;
-        }
-        if ((this.bl[1] < 0) || this.tr[1] > getTotalCanvasPixelHeight()) {
-            this.renderJob = null;
-            return;
-        }
+
 
         if (this.renderJob == null) {
             this.renderJob = new QuadRenderJob(this.tl, this.bl, this.br, this.tr, this.cachedRgba, this.centerZ)

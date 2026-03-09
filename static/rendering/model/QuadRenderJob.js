@@ -1,5 +1,5 @@
 import { COLOR_VERY_FUCKING_RED } from "../../colors.js";
-import { MAIN_CONTEXT } from "../../index.js";
+import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth, MAIN_CONTEXT } from "../../index.js";
 import { RenderJob } from "./RenderJob.js";
 
 export class QuadRenderJob extends RenderJob {
@@ -14,6 +14,20 @@ export class QuadRenderJob extends RenderJob {
     }
 
     render() {
+
+        if ((this.tl[0] < 0) || this.br[0] > getTotalCanvasPixelWidth()) {
+            return;
+        }
+        if ((this.bl[0] < 0) || this.tr[0] > getTotalCanvasPixelWidth()) {
+            return;
+        }
+        if ((this.tl[1] < 0) || this.br[1] > getTotalCanvasPixelHeight()) {
+            return;
+        }
+        if ((this.bl[1] < 0) || this.tr[1] > getTotalCanvasPixelHeight()) {
+            return;
+        }
+
         MAIN_CONTEXT.fillStyle = this.color;
         MAIN_CONTEXT.beginPath()
         MAIN_CONTEXT.moveTo(...this.tl);

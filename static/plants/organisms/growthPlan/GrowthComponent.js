@@ -55,8 +55,8 @@ export class GrowthComponent {
         childComponent.parentComponent = this;
     }
 
-    updateDeflectionState(startOffset) {
-        copyVecValue(startOffset, this.curOffset);
+    updateDeflectionState(startWorldOffset) {
+        copyVecValue(startWorldOffset, this.curOffset);
         for (let i = 0; i < this.lifeSquares.length; i++) {
             copyVecValue(this.curOffset, this.lifeSquares.at(i).startPointVec);
             this.curOffset[1] -= 1;
