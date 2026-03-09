@@ -34,6 +34,7 @@ class PlantLifeSquare {
         this.rotVec = [0, 0, 0];
 
         // Derived rendering member variables.
+        this.rootPositionVec = [0, 0, 0];
         this.startPointVec = [0, 0, 0];
         this.endPointVec = [0, 0, 0];
         this.forwardVec = [0, 0, 0];
@@ -69,7 +70,7 @@ class PlantLifeSquare {
     setFrameCartesians() {
         this.offsetVec = [0, 1, 0, 0];
         this.rotatedOffset = rotatePoint(this.offsetVec, ...this.rotVec);
-        subtractVectors(this.startPointVec, gfc().cameraOffset);
+        subtractVectorsDest(this.rootPositionVec, gfc().cameraOffset, this.startPointVec);
 
         addVec3Dest(this.startPointVec, this.rotatedOffset, this.endPointVec);
         this.forwardVec = normalizeVec3(this.startPointVec);
@@ -155,6 +156,9 @@ class PlantLifeSquare {
     }
 
     render() {
+        if (this.color == [100, 100, 100]) {
+            return;
+        }
         this.setFrameOpacity();
         this.setFrameRenderColor();
         this.setFrameAltColor();

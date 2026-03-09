@@ -121,8 +121,8 @@ export class MovingLightSource {
 
             sq.linkedOrganisms.forEach((org) => {
                 org.greenLifeSquares.forEach((lsq) => {
-                    let relPosX = lsq.posVec[0] - this.posX;
-                    let relPosY = lsq.posVec[1] - this.posY;
+                    let relPosX = lsq.rootPositionVec[0] - this.posX;
+                    let relPosY = lsq.rootPositionVec[1] - this.posY;
                     let lsqTheta = Math.atan(relPosX / relPosY);
                     allSquares.push([relPosX, relPosY, lsqTheta, lsq]);
                 }
