@@ -201,7 +201,7 @@ export class BaseSquare {
     getSoilWaterPressure() { return -(10 ** 8); }
 
     getLightFilterRate() {
-        return 0.00017;
+        return 1;
     }
 
     temperatureRoutine() {

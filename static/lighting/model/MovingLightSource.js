@@ -1,6 +1,7 @@
 import { getFrameXMax, getFrameXMin, getFrameYMax, getFrameYMin } from "../../canvas.js";
 import { getCloudLightBlockCoef } from "../../climate/simulation/temperatureHumidity.js";
 import { getFrameXMaxWsq, getFrameXMinWsq, getFrameYMaxWsq, getFrameYMinWsq } from "../../climate/simulation/wind.js";
+import { processRangeToOne } from "../../common.js";
 import { getFrameSimulationSquares } from "../../globalOperations.js";
 import { isSaveOrLoadInProgress } from "../../saveAndLoad.js";
 import { loadGD, UI_LIGHTING_CLOUDCOVER_OPACITY, UI_LIGHTING_DECAY, UI_LIGHTING_QUALITY, UI_SIMULATION_CLOUDS } from "../../ui/UIData.js";
@@ -125,10 +126,12 @@ export class MovingLightSource {
 
             sq.linkedOrganisms.forEach((org) => {
                 org.greenLifeSquares.forEach((lsq) => {
-                    let relPosX = lsq.rootPositionVec[0] - this.posX - xo;
-                    let relPosY = (lsq.rootPositionVec[1] - 10) - this.posY - yo;
-                    let lsqTheta = Math.atan(relPosX / relPosY);
-                    allSquares.push([relPosX, relPosY, lsqTheta, lsq]);
+                    let lsqRelPosX = lsq.rootPositionVec[0] - this.posX - xo;
+                    let lsqRelPosY = (lsq.rootPositionVec[1] - 10) - this.posY - yo;
+                    lsqRelPosX =  relPosX;
+                    lsqRelPosY =  relPosY;
+                    let lsqTheta = Math.atan(lsqRelPosX / lsqRelPosY);
+                    allSquares.push([lsqRelPosX, lsqRelPosY, lsqTheta, lsq]);
                 }
                 )
             });
@@ -166,14 +169,10 @@ export class MovingLightSource {
         thetaSquares.forEach((arr) => {
             let obj = arr[3];
 
-            // let p1 = 1 - 1 / Math.exp(obj.getSurfaceLightingFactor());
-            let p1 = 1;
-            let p2 = (obj.blockHealth ?? 1);
-            let p3 = obj.getLightFilterRate() ** (1 / Math.exp(loadGD(UI_LIGHTING_DECAY) ** 2));
-            let p4 = loadGD(UI_LIGHTING_QUALITY) / 11;
-            curBrightness *= 1 - (p1 * p2 * p3 * p4);
-
-            curBrightness *= 0.99;
+            let p1 = obj.getLightFilterRate();
+            let p2 = processRangeToOne(loadGD(UI_LIGHTING_DECAY));
+            let p3 = loadGD(UI_LIGHTING_QUALITY) / 11;
+            curBrightness *= 1 - (p1 * p2 * p3);
 
             let _curBrightness = curBrightness;
             let pointLightSourceFunc = () => _curBrightness;
