@@ -156,9 +156,6 @@ export class KentuckyBluegrass extends BasePlant {
             this.lengthenGrass();
             this.lengthenGrass();
             this.lengthenGrass();
-            this.lengthenGrass();
-            this.lengthenGrass();
-            this.lengthenGrass();
             return;
         }
 
@@ -186,6 +183,7 @@ export class KentuckyBluegrass extends BasePlant {
                 grass.lifeSquares.forEach((lsq) => {
                     copyVecValue(curColor, lsq.color);
                     lsq.width = width;
+                    console.log(lsq.color);
                     width *= .97;
                 });
             });

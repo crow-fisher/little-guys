@@ -248,7 +248,8 @@ export function compressSquares(squares) {
         sq.linkedOrganisms = Array.from(sq.linkedOrganisms.map((org) => {
             if (org.stage != STAGE_DEAD) {
                 orgArr.push(org);
-                lsqArr.push(org.seedLifeSquare);
+                if (org.seedLifeSquare)
+                    lsqArr.push(org.seedLifeSquare);
                 lsqArr.push(...org.greenLifeSquares);
                 lsqArr.push(...org.rootLifeSquares);
                 
