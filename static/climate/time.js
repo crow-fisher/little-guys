@@ -281,7 +281,8 @@ function renderStarMap(brightnessMult) {
 
 export function getDt() {
     // return Math.min(.00001, curDay - prevDay);
-    return Math.min(.000008, curDay - prevDay);
+    // return Math.min(.000008, curDay - prevDay);
+    return Math.min(.0008, curDay - prevDay);
 }
 
 export function getCurDay() {

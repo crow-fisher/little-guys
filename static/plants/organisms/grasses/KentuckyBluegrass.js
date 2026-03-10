@@ -1,4 +1,8 @@
 import { copyVecValue, multiplyVectorByScalar } from "../../../climate/stars/matrix.js";
+import { randNumber, randRange } from "../../../common.js";
+import { applyLightingFromSource } from "../../../lighting/lightingProcessing.js";
+import { addSquare } from "../../../squares/_sqOperations.js";
+import { SeedSquare } from "../../../squares/SeedSquare.js";
 import { loadGD, UI_ORGANISM_GRASS_KBLUE } from "../../../ui/UIData.js";
 import { PlantLifeSquare } from "../../lifeSquares/PlantLifeSquare.js";
 import { RootLifeSquare } from "../../lifeSquares/RootLifeSquare.js";
@@ -31,7 +35,7 @@ export class KentuckyBluegrass extends BasePlant {
         this.side = Math.random() > 0.5 ? -1 : 1;
 
         this.targetNumGrass = 1;
-        this.maxNumGrass = 2;
+        this.maxNumGrass = 1;
 
         this.targetGrassLength = 1;
         this.maxGrassLength = 5;
@@ -61,9 +65,9 @@ export class KentuckyBluegrass extends BasePlant {
     spawnSeed() {
         if (this.originGrowth == null || (this.growthPlans.some((gp) => !gp.areStepsCompleted())) || this.targetGrassLength != this.maxGrassLength)
             return;
-        let comp = this.originGrowth.children.at(randNumber(0, this.originGrowth.children.length - 1));
-        let lsq = comp.lifeSquares.at(comp.lifeSquares.length - 1);
-        let seedSquare = addSquare(new SeedSquare(lsq.getPosX(), lsq.getPosY() - 10));
+        let comp = this.originGrowth.children.at(0);
+        let lsq_sq = comp.lifeSquares.at(0).linkedOrganism.linkedSquare;
+        let seedSquare = addSquare(new SeedSquare(lsq_sq.posX, lsq_sq.posY - 10));
         if (seedSquare) {
             seedSquare.speedX = Math.random() > 0.5 ? -1 : 1 * randNumber(1, 2);
             seedSquare.speedY = randRange(-1.5, 1);
@@ -71,25 +75,9 @@ export class KentuckyBluegrass extends BasePlant {
             if (!orgAdded) {
                 seedSquare.destroy();
             } else {
-                applyLightingFromSource(this.greenLifeSquares.at(0), orgAdded.greenLifeSquares.at(0));
+                applyLightingFromSource(this.greenLifeSquares.at(0), orgAdded.seedLifeSquare)
             }
         }
-        this.nitrogen *= (1 - this.seedReduction());
-        this.phosphorus *= (1 - this.seedReduction());
-    }
-
-    processGenetics() {
-        this.evolutionParameters[0] = Math.min(Math.max(this.evolutionParameters[0], 0.00001), .99999)
-        let p0 = this.evolutionParameters[0];
-        this.growthLightLevel *= (1 + .7 * p0);
-
-        this.maxNumGrass = 1;
-        this.maxGrassLength = 5 + Math.floor(this.maxGrassLength * p0);
-        this.growthNumGreen = this.maxNumGrass * this.maxGrassLength;
-        this.growthNumRoots = this.growthNumGreen;
-
-        this.targetGrassLength = 100;
-        this.maxGrassLength = 100;
     }
 
     doGreenGrowth() {
@@ -154,8 +142,6 @@ export class KentuckyBluegrass extends BasePlant {
             .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .some((grass) => grass.growthPlan.steps.length < this.targetGrassLength)) {
             this.lengthenGrass();
-            this.lengthenGrass();
-            this.lengthenGrass();
             return;
         }
 
@@ -169,9 +155,7 @@ export class KentuckyBluegrass extends BasePlant {
             return;
         }
 
-        // if (this.curNumGreen > this.growthNumGreen * .9) {
-        //     this.stage = STAGE_FLOWER;
-        // }
+        this.spawnSeed();
     }
 
     prepareRender() {
