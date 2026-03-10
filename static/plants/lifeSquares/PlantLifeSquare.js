@@ -219,7 +219,7 @@ class PlantLifeSquare {
     }
     
     viewmodeEvolution() {
-        this.evolutionColor = this.evolutionColor ?? processColorLerpBicolorArr(this.linkedOrganism.evolutionMinColor, this.linkedOrganism.evolutionMaxColor, this.evolutionParameters.at(0), 1, opacity);
+        this.evolutionColor = this.evolutionColor ?? processColorLerpBicolorArr(this.linkedOrganism.evolutionParameters.at(0), 0, 1, this.linkedOrganism.evolutionMinColor, this.linkedOrganism.evolutionMaxColor);
         this.altColor = this.evolutionColor;
     }
 

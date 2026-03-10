@@ -26,8 +26,8 @@ kblue_dnm[_lightDecayValue] = 4.42;
 kblue_dnm[_lightLevelDisplayExposureAdjustment] = .22;
 
 export class KentuckyBluegrass extends BasePlant {
-    constructor(square) {
-        super(square);
+    constructor(square, seedLifeSquare, evolutionParameters) {
+        super(square, seedLifeSquare, evolutionParameters);
         this.proto = "KentuckyBluegrass";
         this.uiRef = UI_ORGANISM_GRASS_KBLUE;
 
