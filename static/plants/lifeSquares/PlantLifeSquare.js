@@ -214,7 +214,7 @@ class PlantLifeSquare {
         this.altColor = this.lightingColor;
     }
     viewmodeMoisture() {
-        this.moistureColor = processColorLerpBicolorArr(this.linkedOrganism.getWilt(), -1, 1, this.linkedOrganism.moistureMinColor, this.linkedOrganism.moistureMaxColor, this.evolutionParameters.at(0), 1, opacity);
+        this.moistureColor = processColorLerpBicolorArr(this.linkedOrganism.getWilt(), -1, 1, this.linkedOrganism.moistureMinColor, this.linkedOrganism.moistureMaxColor);
         this.altColor = this.moistureColor;
     }
     

@@ -62,7 +62,6 @@ class BasePlant {
         this.greenLastGrown = 0;
 
         this.waterPressure = this.waterPressureSoilTarget();
-        this.waterPressureChangeRate = .01;
 
         this.lightlevel = 0;
         this.growthCycleMaturityLength = 1;
@@ -153,41 +152,31 @@ class BasePlant {
         }
     }
 
-    // WATER SATURATION AND NUTRIENTS 
-
     waterPressureTick() {
+        this.waterPressure = this.waterPressureSoilTarget();
+        // this._target = this.waterPressureSoilTarget();
+        // this._min = this._target + this.waterPressureWiltThresh();
+        // this._max = this._target + this.waterPressureOverwaterThresh();
 
-        let target = this.waterPressureSoilTarget();
-        let min = target + this.waterPressureWiltThresh();
-        let max = target + this.waterPressureOverwaterThresh();
+        // this._amountOfWaterPressureToGain = 0;
 
-        let waterPressureLossRate;
+        // this._numRoots = this.rootLifeSquares.length;
+        // if (numRoots > 0)
+        //     this._amountOfWaterPressureToGain = (1 / this._numRoots) * this.waterPressureChangeRate * this.rootLifeSquares.map((lsq) => {
+        //         this._sq = lsq.linkedSquare;
+        //         this._sqWaterPressure = this._sq.getSoilWaterPressure();
+        //         this._diffToMin = this._sqWaterPressure - this._min;
+        //         if (this._diffToMin > this.waterPressure) {
 
-        if (this.waterPressure < min)
-            waterPressureLossRate = 0;
-        else if (this.waterPressure < target)
-            waterPressureLossRate = (this.waterPressure - min) / (target - min);
-        else if (this.waterPressure < max)
-            waterPressureLossRate = 1 + (this.waterPressure - target) / (max - target);
-        else
-            waterPressureLossRate = 2;
+        //         }
 
-        this.waterPressure -= waterPressureLossRate * this.waterPressureChangeRate;
 
-        let numRoots = this.rootLifeSquares.length;
-        if (numRoots > 0)
-            this.waterPressure += (1 / numRoots) * this.waterPressureChangeRate * this.rootLifeSquares.map((lsq) => {
-                let sq = lsq.linkedSquare;
-                let sqWaterPressure = sq.getSoilWaterPressure();
-                let diffToTarget = sqWaterPressure - this.waterPressureSoilTarget();
-                if (diffToTarget <= 0) {
-                    return 0;
-                }
-                let amount = diffToTarget;
-                if (this.waterPressure > target)
-                    amount /= waterPressureLossRate;
-                return amount;
-            }).reduce((a, b) => a + b, 0);
+        //     }).reduce((a, b) => a + b, 0);
+        
+        // let fd = 4;
+        // console.log("Target:\t", this.waterPressureSoilTarget().toFixed(fd), "Current:\t", this.waterPressure.toFixed(fd), "Gain:\t", this._amountOfWaterPressureToGain.toFixed(fd), "\tLoss:\t", this.amountOfWaterPressureToLose.toFixed(fd))
+        // this.waterPressure -= this.amountOfWaterPressureToLose;
+        // this.waterPressure += this._amountOfWaterPressureToGain;
     }
 
     nutrientTick() {
