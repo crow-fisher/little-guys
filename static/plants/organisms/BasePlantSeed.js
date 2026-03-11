@@ -53,7 +53,6 @@ class BasePlantSeed extends BasePlant {
                 this.unlinkSquare(true);
                 let newOrganism = new (this.getSproutType())(linkedSquareCache, this.seedLifeSquare, this.evolutionParameters);
                 linkedSquareCache.linkedOrganisms.push(newOrganism);
-                console.log("Sprouted new orgnaism of proto ", newOrganism.proto, " at spawnTime ", newOrganism.spawnTime, ", at posX posY", newOrganism.posX, newOrganism.posY);
                 this.destroy();
                 return;
             }

@@ -318,9 +318,9 @@ class BasePlant {
     }
     doGreenGrowth() {
         // -- Growth rate throttling method
-        // if (this.age < this.greenLastGrown + this.lightLevelThrottleVal() * (this.getGrowthCycleMaturityLength() / this.growthNumGreen)) {
-        //     return false;
-        // }
+        if (this.age < this.greenLastGrown + this.lightLevelThrottleVal() * (this.getGrowthCycleMaturityLength() / this.growthNumGreen)) {
+            return false;
+        }
 
         let somethingDone = false;
         this.growthPlans.filter((gp) => !gp.areStepsCompleted()).forEach((growthPlan) => {
@@ -427,7 +427,6 @@ class BasePlant {
 
     render() {
         this.prepareRender();
-        
         this.greenLifeSquares.forEach((lsq) => lsq.render());
     }
 
@@ -467,7 +466,7 @@ class BasePlant {
             return;
         }
         this.deathProgress += .01;
-        if (this.originGrowth == null || this.deathProgress >= 1) {
+        if (this.deathProgress >= 1) {
             this.destroy();
         }
     }
@@ -489,6 +488,7 @@ class BasePlant {
         }
         if (this.age > this.getGrowthCycleLength() * this.numGrowthCycles) {
             this.stage = STAGE_DEAD;
+            console.log("Plant of proto ", this.proto, ", spawnTime ", this.spawnTime, " has died");
             return;
         }
     }

@@ -41,7 +41,7 @@ export class KentuckyBluegrass extends BasePlant {
         this.maxGrassLength = 5;
 
         this.numGrowthCycles = 1;
-        this.growthCycleMaturityLength = 12 + 7 * (Math.random());
+        this.growthCycleMaturityLength = 1;
         this.growthCycleLength = this.growthCycleMaturityLength * 2.65;
 
         this.grasses = [];
