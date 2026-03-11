@@ -73,6 +73,7 @@ class BasePlant {
         this.curNumRoots = 0;
         this.curNumGreen = 0;
 
+        this.growthProgress = 0;
         this.deathProgress = 0;
     }
 
