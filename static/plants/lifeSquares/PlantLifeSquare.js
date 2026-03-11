@@ -2,7 +2,7 @@ import { hsv2rgb, processColorLerpBicolorArr, processRangeToOne, rgb2hsv, rgbToR
 import { RGB_COLOR_GREEN } from "../../colors.js";
 import { getDefaultLighting, processLighting } from "../../lighting/lightingProcessing.js";
 import { rotatePoint } from "../../canvas.js";
-import { loadGD, UI_CAMERA_CENTER_SELECT_POINT, UI_CAMERA_OFFSET_VEC, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_3D, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../../ui/UIData.js";
+import { loadGD, UI_CAMERA_CENTER_SELECT_POINT, UI_CAMERA_OFFSET_VEC, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_3D, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../../ui/UIData.js";
 import { cartesianToScreenInplace, gfc, screenToRenderScreen } from "../../rendering/camera.js";
 import { addVec3Dest, addVectors, copyVecValue, crossVec3, multiplyVectorByScalar, multiplyVectorsDest, normalizeVec3, subtractVectors, subtractVectorsDest } from "../../climate/stars/matrix.js";
 import { QuadRenderJob } from "../../rendering/model/QuadRenderJob.js";
@@ -187,6 +187,8 @@ class PlantLifeSquare {
     setFrameAltColor() {
         this.frameViewMode = loadGD(UI_VIEWMODE_SELECT);
         switch (this.frameViewMode) {
+            case UI_VIEWMODE_ORGANISMS:
+                return this.viewmodeOrganisms();
             case UI_VIEWMODE_LIGHTING:
                 return this.viewmodeLighting();
             case UI_VIEWMODE_MOISTURE:
@@ -198,6 +200,11 @@ class PlantLifeSquare {
             default:
                 return
         }
+    }
+
+    viewmodeOrganisms() {
+        this.organismsColor = processColorLerpBicolorArr(this.growthLevelIndicated, 0, 1, this.linkedOrganism.moistureMinColor, this.linkedOrganism.moistureMaxColor);
+        this.altColor = this.organismsColor;
     }
 
     viewmodeLighting() {

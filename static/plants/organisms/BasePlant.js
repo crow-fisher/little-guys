@@ -180,13 +180,20 @@ class BasePlant {
         // this.waterPressure += this._amountOfWaterPressureToGain;
     }
 
-    nutrientTick() {
+    lightLevelTick() {
         // in the future, implement nitrogen, phosphorus, ph, micronutrients, etc here 
         this.greenLifeSquares
             .filter((lsq) => lsq.type == "green")
             .map((lsq) => [lsq.processLighting(), lsq.lightHealth ** 4])
             .map((argb) => argb[1] * (argb[0].r + argb[0].b) / (255 * 2))
             .forEach((lightlevel) => this.lsqLightLevel(this.llt_target() * lightlevel));
+    }
+
+    nutrientTick() {
+        let maturityDayFrac = 2 * getDt() / this.growthCycleLength;
+        maturityDayFrac /= this.wiltEfficiency();
+        maturityDayFrac /= this.lightLevelThrottleVal();
+        this.growthProgress += maturityDayFrac;
     }
 
     lsqLightLevel(val) {
@@ -443,6 +450,7 @@ class BasePlant {
         let lifetimeFrac = this.age / this.getGrowthCycleLength() * this.numGrowthCycles;
         let lightLevelMult = Math.min(2, this.lightlevel / this.growthLightLevel) * this.greenLifeSquares.length;
         let lifetimeMult = lifetimeFrac * this.greenLifeSquares.length;
+        let growthLevelMult = this.growthProgress * this.greenLifeSquares.length;
 
         this.greenLifeSquares.forEach((lsq) => {
             lsq.lightlevelIndicated = 0;
@@ -453,9 +461,11 @@ class BasePlant {
             let lsq = this.greenLifeSquares[i % this.greenLifeSquares.length];
             let lightLevelToAdd = Math.min(lightLevelMult, 1)
             let lifetimeToAdd = Math.min(lifetimeMult, 1)
+            let growthLevelToAdd = Math.min(growthLevelMult, 1)
 
             lsq.lightlevelIndicated += lightLevelToAdd;
             lsq.lifetimeIndicated += lifetimeToAdd;
+            lsq.growthLevelIndicated += growthLevelToAdd;
 
             lightLevelMult -= lightLevelToAdd;
             lifetimeMult -= lifetimeToAdd;
@@ -504,6 +514,7 @@ class BasePlant {
         if (this.stage != STAGE_DEAD) {
             this.plantAgeHandling();
             this.waterPressureTick();
+            this.lightLevelTick();
             this.nutrientTick();
             this.planGrowth();
             this.doRootGrowth();
