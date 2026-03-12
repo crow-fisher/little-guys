@@ -104,7 +104,7 @@ class BasePlant {
         return this.getGenericNutritionParam(_llt_min);
     }
     llt_max() {
-        return this.getGenericNutritionParam(_llt_max);
+        return 1 + this.getGenericNutritionParam(_llt_max);
     }
     llt_throttlValMin() {
         return this.getGenericNutritionParam(_llt_throttlValMin);
@@ -193,7 +193,7 @@ class BasePlant {
     }
 
     nutrientTick() {
-        let maturityDayFrac = 20 * getDt() / this.growthCycleLength;
+        let maturityDayFrac = 2 * getDt() / this.growthCycleLength;
         maturityDayFrac /= this.wiltEfficiency();
         maturityDayFrac /= this.lightLevelThrottleVal();
         this.growthProgress += maturityDayFrac;
@@ -315,27 +315,15 @@ class BasePlant {
     }
 
     lightLevelThrottleVal() {
-        let minLightLevel = this.llt_target() * this.llt_min();
-        let maxLightLevel = this.llt_target() * (1 + this.llt_max());
-
-        if (this.lightlevel < minLightLevel || this.lightlevel > maxLightLevel) {
+        let ratio = this.lightlevel / this.llt_target();
+        if (ratio < this.llt_min()) {
             return this.llt_throttlValMax();
-        }
-
-        if (this.lightlevel < this.llt_target()) {
-            return lerp(this.llt_throttlValMin(), this.llt_throttlValMax(), 
-                    1 - invlerp(
-                        minLightLevel, 
-                        this.llt_target(),
-                        this.lightlevel
-                    ));
+        } else if (ratio < 1) {
+            return lerp(this.llt_throttlValMin(), this.llt_throttlValMax(), ratio)
+        } else if (ratio < this.llt_max()) {
+            return lerp(this.llt_throttlValMin(), this.llt_throttlValMax(), ratio - 1)
         } else {
-            return lerp(this.llt_throttlValMin(), this.llt_throttlValMax(), 
-                    1 - invlerp(
-                        this.llt_target(),
-                        maxLightLevel,
-                        this.lightlevel
-                    ));
+            return this.llt_throttlValMax();
         }
     }
     doGreenGrowth() {
@@ -452,7 +440,6 @@ class BasePlant {
     }
 
     renderBlips() {
-        console.log(1 / this.lightLevelThrottleVal());
         let values = [
             1, 
             // this.growthProgress,
