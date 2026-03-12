@@ -30,20 +30,10 @@ export class KentuckyBluegrass extends BasePlant {
         super(square, seedLifeSquare, evolutionParameters);
         this.proto = "KentuckyBluegrass";
         this.uiRef = UI_ORGANISM_GRASS_KBLUE;
-
-        this.grassGrowTimeInDays = 0.01;
-        this.side = Math.random() > 0.5 ? -1 : 1;
-
         this.targetNumGrass = 1;
         this.maxNumGrass = 1;
-
         this.targetGrassLength = 1;
         this.maxGrassLength = 5;
-
-        this.numGrowthCycles = 1;
-        this.growthCycleMaturityLength = 1;
-        this.growthCycleLength = this.growthCycleMaturityLength * 2.65;
-
         this.grasses = [];
     }
 

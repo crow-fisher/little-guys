@@ -4,11 +4,17 @@ import { getNeighbors } from "../../squares/_sqOperations.js";
 import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
 import { loadGD, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_SIMULATION_GENS_PER_DAY, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../../ui/UIData.js";
 import { MAIN_CONTEXT } from "../../index.js";
-import { zoomCanvasFillRect } from "../../canvas.js";
+import { getBaseUISize, zoomCanvasFillRect } from "../../canvas.js";
 import { GrowthPlan } from "./growthPlan/GrowthPlan.js";
 import { GrowthPlanStep } from "./growthPlan/GrowthPlanStep.js";
 import { PlantLifeSquare } from "../lifeSquares/PlantLifeSquare.js";
 import { RootLifeSquare } from "../lifeSquares/RootLifeSquare.js";
+import { LineRenderJob } from "../../rendering/model/LineRenderJob.js";
+import { CoordinateSet } from "../../rendering/model/CoordinateSet.js";
+import { RenderJob } from "../../rendering/model/RenderJob.js";
+import { COLOR_BLUE, COLOR_BROWN, COLOR_GREEN, COLOR_GREY, COLOR_VERY_FUCKING_RED } from "../../colors.js";
+import { addRenderJob } from "../../rendering/rasterizer.js";
+import { copyVecValue } from "../../climate/stars/matrix.js";
 
 
 export const _llt_target = "_llt_target";
@@ -64,8 +70,7 @@ class BasePlant {
         this.waterPressure = this.waterPressureSoilTarget();
 
         this.lightlevel = 0;
-        this.growthCycleMaturityLength = 1;
-        this.growthCycleLength = 1.5;
+        this.growthCycleLength = (1 / 200); // i.e., 200 days per generation
         this.numGrowthCycles = 1;
 
         this.growthNumGreen = 20;
@@ -75,6 +80,7 @@ class BasePlant {
 
         this.growthProgress = 0;
         this.deathProgress = 0;
+
     }
 
     getDefaultNutritionMap() {
@@ -124,12 +130,8 @@ class BasePlant {
         return this.getGenericNutritionParam(_lightLevelDisplayExposureAdjustment);
     }
 
-
     getGrowthCycleLength() {
         return (this.growthCycleLength / loadGD(UI_SIMULATION_GENS_PER_DAY));
-    }
-    getGrowthCycleMaturityLength() {
-        return (this.growthCycleMaturityLength / loadGD(UI_SIMULATION_GENS_PER_DAY));
     }
 
     setEvolutionParameters(evolutionParameters) {
@@ -173,7 +175,7 @@ class BasePlant {
 
 
         //     }).reduce((a, b) => a + b, 0);
-        
+
         // let fd = 4;
         // console.log("Target:\t", this.waterPressureSoilTarget().toFixed(fd), "Current:\t", this.waterPressure.toFixed(fd), "Gain:\t", this._amountOfWaterPressureToGain.toFixed(fd), "\tLoss:\t", this.amountOfWaterPressureToLose.toFixed(fd))
         // this.waterPressure -= this.amountOfWaterPressureToLose;
@@ -326,7 +328,7 @@ class BasePlant {
     }
     doGreenGrowth() {
         // -- Growth rate throttling method
-        if (this.age < this.greenLastGrown + this.lightLevelThrottleVal() * (this.getGrowthCycleMaturityLength() / this.growthNumGreen)) {
+        if (this.age < this.greenLastGrown + this.lightLevelThrottleVal() * (this.getGrowthCycleLength() / this.growthNumGreen)) {
             return false;
         }
 
@@ -348,7 +350,7 @@ class BasePlant {
     }
 
     doRootGrowth() {
-        let curMaturityLifeFrac = this.age / this.getGrowthCycleMaturityLength();
+        let curMaturityLifeFrac = this.age / this.getGrowthCycleLength();
         if (this.stage == STAGE_FLOWER || curMaturityLifeFrac >= 1)
             return;
 
@@ -358,7 +360,7 @@ class BasePlant {
 
     growRoot(f) {
         let dRoot = this.age - this.rootLastGrown;
-        let rootThrottlInterval = this.getGrowthCycleMaturityLength() / this.growthNumRoots;
+        let rootThrottlInterval = this.getGrowthCycleLength() / this.growthNumRoots;
         if (dRoot < rootThrottlInterval)
             return;
 
@@ -418,10 +420,10 @@ class BasePlant {
         if (Math.abs(this.getWilt()) > .5)
             // return false;
 
-        if (this.growthPlans.some((gp) => !gp.areStepsCompleted())) {
-            this.doGreenGrowth();
-            return false;
-        }
+            if (this.growthPlans.some((gp) => !gp.areStepsCompleted())) {
+                this.doGreenGrowth();
+                return false;
+            }
         if (this.stage == STAGE_SPROUT) {
             this.addSproutGrowthPlan();
             return false;
@@ -436,6 +438,47 @@ class BasePlant {
     render() {
         this.prepareRender();
         this.greenLifeSquares.forEach((lsq) => lsq.render());
+        this.renderBlips();
+    }
+
+    renderBlips() {
+        this.renderBlip(0, 1);
+        this.renderBlip(1, this.growthProgress);
+        this.renderBlip(2, this.age * this.growthCycleLength);
+    }
+
+    renderBlip(idx, val) {
+        this._blipCoordinates = this._blipCoordinates ?? new Array();
+        this._blipRenderJobs = this._blipRenderJobs ?? new Array();
+        this._blipColors = [COLOR_GREY, COLOR_GREEN, COLOR_BLUE]
+
+        this._blipStartWorld = this._blipStartWorld ?? structuredClone(this.linkedSquare.world_tl);
+        copyVecValue(this.linkedSquare.world_tl, this._blipStartWorld);
+
+        this._blipStartWorld[1] -= this.greenLifeSquares.length ** .5 + 4;
+
+        this._blipEndWorld = structuredClone(this._blipStartWorld);
+        this._blipEndWorld[1] -= 4 * val;
+
+        this._curBlipCoordinates = this._blipCoordinates[idx];
+        if (this._curBlipCoordinates == null) {
+            this._blipCoordinates[idx] = [new CoordinateSet(this._blipStartWorld), new CoordinateSet(this._blipEndWorld)];
+            this._curBlipCoordinates = this._blipCoordinates[idx];
+        } else {
+            this._blipCoordinates[idx][0].world = this._blipStartWorld;
+            this._blipCoordinates[idx][1].world = this._blipEndWorld;
+        }
+        this._blipCoordinates[idx][0].process();
+        this._blipCoordinates[idx][1].process();
+
+        this._blipRenderJobs[idx] = this._blipRenderJobs[idx] ?? new LineRenderJob();
+        this._blipRenderJobs[idx].v1 = this._blipCoordinates[idx][0].renderScreen;
+        this._blipRenderJobs[idx].v2 = this._blipCoordinates[idx][1].renderScreen;
+        this._blipRenderJobs[idx].size = getBaseUISize() * (0.5 ** idx);
+        this._blipRenderJobs[idx].color = this._blipColors[idx];
+        this._blipRenderJobs[idx].z = this._blipCoordinates[idx][0].renderScreen[2];
+
+        addRenderJob(this._blipRenderJobs[idx]);
     }
 
     setNutrientIndicators() {
@@ -486,8 +529,8 @@ class BasePlant {
     destroy() {
         this.greenLifeSquares.forEach((lifeSquare) => lifeSquare.destroy());
         this.rootLifeSquares.forEach((lifeSquare) => lifeSquare.destroy());
-        this.seedLifeSquare?. destroy();
-        
+        this.seedLifeSquare?.destroy();
+
         if (this.linkedSquare != null && this.linkedSquare != -1) {
             this.linkedSquare.unlinkOrganism(this);
         }
