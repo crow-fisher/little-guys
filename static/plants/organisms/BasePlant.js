@@ -319,9 +319,10 @@ class BasePlant {
         if (ratio < this.llt_min()) {
             return this.llt_throttlValMax();
         } else if (ratio < 1) {
-            return lerp(this.llt_throttlValMin(), this.llt_throttlValMax(), ratio)
+            return lerp(this.llt_throttlValMin(), this.llt_throttlValMax(), 1 - ratio)
         } else if (ratio < this.llt_max()) {
-            return lerp(this.llt_throttlValMin(), this.llt_throttlValMax(), ratio - 1)
+            let ip = invlerp(1, this.llt_max(), ratio);
+            return lerp(this.llt_throttlValMin(), this.llt_throttlValMax(), ip)
         } else {
             return this.llt_throttlValMax();
         }
