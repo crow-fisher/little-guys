@@ -131,6 +131,7 @@ class BasePlant {
     }
 
     getGrowthCycleLength() {
+        return this.growthCycleLength;
         return (this.growthCycleLength / loadGD(UI_SIMULATION_GENS_PER_DAY));
     }
 
@@ -185,21 +186,21 @@ class BasePlant {
     lightLevelTick() {
         // in the future, implement nitrogen, phosphorus, ph, micronutrients, etc here 
         this.greenLifeSquares
-            .filter((lsq) => lsq.type == "green")
             .map((lsq) => [lsq.processLighting(), lsq.lightHealth ** 4])
             .map((argb) => argb[1] * (argb[0].r + argb[0].b) / (255 * 2))
             .forEach((lightlevel) => this.lsqLightLevel(this.llt_target() * lightlevel));
     }
 
     nutrientTick() {
-        let maturityDayFrac = 2 * getDt() / this.growthCycleLength;
+        let maturityDayFrac = 20 * getDt() / this.growthCycleLength;
         maturityDayFrac /= this.wiltEfficiency();
         maturityDayFrac /= this.lightLevelThrottleVal();
         this.growthProgress += maturityDayFrac;
+        this.age += getDt();
     }
 
     lsqLightLevel(val) {
-        let c = this.curNumGreen;
+        let c = this.greenLifeSquares.length;
         this.lightlevel = this.lightlevel * (c - 1) / c + (val / c);
     }
 
@@ -328,7 +329,7 @@ class BasePlant {
     }
     doGreenGrowth() {
         // -- Growth rate throttling method
-        if (this.age < this.greenLastGrown + this.lightLevelThrottleVal() * (this.getGrowthCycleLength() / this.growthNumGreen)) {
+        if (this.age < this.greenLastGrown + (.1 ?? this.lightLevelThrottleVal()) * (this.getGrowthCycleLength() / this.growthNumGreen)) {
             return false;
         }
 
@@ -442,9 +443,17 @@ class BasePlant {
     }
 
     renderBlips() {
-        this.renderBlip(0, 1);
-        this.renderBlip(1, this.growthProgress);
-        this.renderBlip(2, this.age * this.growthCycleLength);
+
+        let values = [
+            1, 
+            // this.growthProgress,
+            // this.age / this.growthCycleLength,
+            1 / this.lightLevelThrottleVal()
+        ]
+
+        for (let i = 0; i < values.length; i++) {
+            this.renderBlip(i, values[i]);
+        }
     }
 
     renderBlip(idx, val) {
@@ -455,7 +464,7 @@ class BasePlant {
         this._blipStartWorld = this._blipStartWorld ?? structuredClone(this.linkedSquare.world_tl);
         copyVecValue(this.linkedSquare.world_tl, this._blipStartWorld);
 
-        this._blipStartWorld[1] -= this.greenLifeSquares.length ** .5 + 4;
+        this._blipStartWorld[1] -= Math.log(this.greenLifeSquares.length) + Math.E;
 
         this._blipEndWorld = structuredClone(this._blipStartWorld);
         this._blipEndWorld[1] -= 4 * val;
@@ -474,7 +483,7 @@ class BasePlant {
         this._blipRenderJobs[idx] = this._blipRenderJobs[idx] ?? new LineRenderJob();
         this._blipRenderJobs[idx].v1 = this._blipCoordinates[idx][0].renderScreen;
         this._blipRenderJobs[idx].v2 = this._blipCoordinates[idx][1].renderScreen;
-        this._blipRenderJobs[idx].size = getBaseUISize() * (0.5 ** idx);
+        this._blipRenderJobs[idx].size = 3 * getBaseUISize() * (0.5 ** idx);
         this._blipRenderJobs[idx].color = this._blipColors[idx];
         this._blipRenderJobs[idx].z = this._blipCoordinates[idx][0].renderScreen[2];
 
@@ -547,15 +556,11 @@ class BasePlant {
         }
     }
 
-    plantAgeHandling() {
-        this.age += getDt();
-    }
 
     // ** OUTER TICK METHOD INVOKED EACH FRAME
     // -- these methods are universal to every organism
     process() {
         if (this.stage != STAGE_DEAD) {
-            this.plantAgeHandling();
             this.waterPressureTick();
             this.lightLevelTick();
             this.nutrientTick();
