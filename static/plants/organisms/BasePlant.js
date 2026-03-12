@@ -324,7 +324,7 @@ class BasePlant {
 
         if (this.lightlevel < this.llt_target()) {
             return lerp(this.llt_throttlValMin(), this.llt_throttlValMax(), 
-                    invlerp(
+                    1 - invlerp(
                         minLightLevel, 
                         this.llt_target(),
                         this.lightlevel
