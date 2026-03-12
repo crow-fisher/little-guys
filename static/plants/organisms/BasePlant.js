@@ -15,6 +15,7 @@ import { RenderJob } from "../../rendering/model/RenderJob.js";
 import { COLOR_BLUE, COLOR_BROWN, COLOR_GREEN, COLOR_GREY, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { addRenderJob } from "../../rendering/rasterizer.js";
 import { copyVecValue } from "../../climate/stars/matrix.js";
+import { invlerp, lerp } from "../../common.js";
 
 
 export const _llt_target = "_llt_target";
@@ -30,7 +31,7 @@ export const _waterPressureWiltThresh = "_waterPressureWiltThresh";
 export const _lightLevelDisplayExposureAdjustment = "_lightLevelDisplayExposureAdjustment";
 
 export let baseOrganism_dnm = {
-    _llt_target: 1,
+    _llt_target: 1.79,
     _llt_min: 0.5,
     _llt_max: 2,
     _llt_throttlValMin: 1,
@@ -186,9 +187,9 @@ class BasePlant {
     lightLevelTick() {
         // in the future, implement nitrogen, phosphorus, ph, micronutrients, etc here 
         this.greenLifeSquares
-            .map((lsq) => [lsq.processLighting(), lsq.lightHealth ** 4])
-            .map((argb) => argb[1] * (argb[0].r + argb[0].b) / (255 * 2))
-            .forEach((lightlevel) => this.lsqLightLevel(this.llt_target() * lightlevel));
+            .map((lsq) => lsq.processLighting())
+            .map((argb) => (argb.r + argb.b) / (255 * 2))
+            .forEach((lightlevel) => this.lsqLightLevel(lightlevel));
     }
 
     nutrientTick() {
@@ -314,17 +315,27 @@ class BasePlant {
     }
 
     lightLevelThrottleVal() {
-        let ratio = this.lightlevel / this.growthLightLevel;
-        if (ratio < this.llt_min()) {
+        let minLightLevel = this.llt_target() * this.llt_min();
+        let maxLightLevel = this.llt_target() * (1 + this.llt_max());
+
+        if (this.lightlevel < minLightLevel || this.lightlevel > maxLightLevel) {
             return this.llt_throttlValMax();
-        } else if (ratio < 1) {
-            let t = (ratio - this.llt_min()) / this.llt_min();
-            return this.llt_throttlValMax() * (1 - t) + this.llt_throttlValMin() * t;
-        } else if (ratio < this.llt_max()) {
-            let t = (ratio - 1);
-            return this.llt_throttlValMax() * t + this.llt_throttlValMin() * (1 - t);
+        }
+
+        if (this.lightlevel < this.llt_target()) {
+            return lerp(this.llt_throttlValMin(), this.llt_throttlValMax(), 
+                    invlerp(
+                        minLightLevel, 
+                        this.llt_target(),
+                        this.lightlevel
+                    ));
         } else {
-            return this.llt_throttlValMax();
+            return lerp(this.llt_throttlValMin(), this.llt_throttlValMax(), 
+                    1 - invlerp(
+                        this.llt_target(),
+                        maxLightLevel,
+                        this.lightlevel
+                    ));
         }
     }
     doGreenGrowth() {
@@ -418,13 +429,11 @@ class BasePlant {
     // ** PLAN GROWTH METHOD IMPLEMENTED BY ORGANISMS 
     // for green growth, roots are handled generically (for now)
     planGrowth() {
-        if (Math.abs(this.getWilt()) > .5)
-            // return false;
+        if (this.growthPlans.some((gp) => !gp.areStepsCompleted())) {
+            this.doGreenGrowth();
+            return false;
+        }
 
-            if (this.growthPlans.some((gp) => !gp.areStepsCompleted())) {
-                this.doGreenGrowth();
-                return false;
-            }
         if (this.stage == STAGE_SPROUT) {
             this.addSproutGrowthPlan();
             return false;
@@ -443,7 +452,7 @@ class BasePlant {
     }
 
     renderBlips() {
-
+        console.log(1 / this.lightLevelThrottleVal());
         let values = [
             1, 
             // this.growthProgress,
