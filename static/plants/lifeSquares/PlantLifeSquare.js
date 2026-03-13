@@ -116,7 +116,7 @@ class PlantLifeSquare {
     }
 
     getLightFilterRate() {
-        return processRangeToOne(loadGD(UI_LIGHTING_PLANT));
+        return processRangeToOne(loadGD(UI_LIGHTING_PLANT)) * this.linkedOrganism.lightDecayValue();
     }
 
     addChild(lifeSquare) {
@@ -136,13 +136,7 @@ class PlantLifeSquare {
         this.linkedSquare = null;
     }
     destroy() {
-        if (this.linkedSquare != null) {
-            if (this.linkedSquare.organic) {
-                this.linkedSquare.destroy();
-            } else {
-                this.linkedSquare.unlinkOrganismSquare(this);
-            }
-        }
+        this.linkedSquare = null;
         this.lighting = [];
     }
 

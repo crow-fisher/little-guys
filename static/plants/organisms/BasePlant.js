@@ -12,7 +12,7 @@ import { RootLifeSquare } from "../lifeSquares/RootLifeSquare.js";
 import { LineRenderJob } from "../../rendering/model/LineRenderJob.js";
 import { CoordinateSet } from "../../rendering/model/CoordinateSet.js";
 import { RenderJob } from "../../rendering/model/RenderJob.js";
-import { COLOR_BLUE, COLOR_BROWN, COLOR_GREEN, COLOR_GREY, COLOR_VERY_FUCKING_RED } from "../../colors.js";
+import { COLOR_BLUE, COLOR_BLUE_FAINT, COLOR_BROWN, COLOR_GREEN, COLOR_GREEN_FAINT, COLOR_GREY, COLOR_VERY_FUCKING_RED, COLOR_WHITE, COLOR_WHITE_FAINT } from "../../colors.js";
 import { addRenderJob } from "../../rendering/rasterizer.js";
 import { copyVecValue } from "../../climate/stars/matrix.js";
 import { invlerp, lerp } from "../../common.js";
@@ -442,10 +442,10 @@ class BasePlant {
 
     renderBlips() {
         let values = [
-            1, 
-            // this.growthProgress,
-            // this.age / this.growthCycleLength,
-            1 / this.lightLevelThrottleVal()
+            this.growthProgress,
+            1 / this.lightLevelThrottleVal(),
+            1,
+            this.age / this.growthCycleLength
         ]
 
         for (let i = 0; i < values.length; i++) {
@@ -453,15 +453,26 @@ class BasePlant {
         }
     }
 
+    purgeUnderscoredValues() {
+        let keys = Object.keys(this);
+        keys.filter((key) => key.startsWith("_"))
+                .forEach((key) => this[key] = null)
+    }
+
     renderBlip(idx, val) {
         this._blipCoordinates = this._blipCoordinates ?? new Array();
         this._blipRenderJobs = this._blipRenderJobs ?? new Array();
-        this._blipColors = [COLOR_GREY, COLOR_GREEN, COLOR_BLUE]
+        this._blipColors = [
+            COLOR_BLUE_FAINT,
+            COLOR_GREEN_FAINT,
+            COLOR_WHITE_FAINT,
+            COLOR_GREY
+        ]
 
         this._blipStartWorld = this._blipStartWorld ?? structuredClone(this.linkedSquare.world_tl);
         copyVecValue(this.linkedSquare.world_tl, this._blipStartWorld);
 
-        this._blipStartWorld[1] -= Math.log(this.greenLifeSquares.length) + Math.E;
+        this._blipStartWorld[1] -= Math.log(this.greenLifeSquares.length) + Math.E ** Math.E;
 
         this._blipEndWorld = structuredClone(this._blipStartWorld);
         this._blipEndWorld[1] -= 4 * val;
@@ -477,10 +488,12 @@ class BasePlant {
         this._blipCoordinates[idx][0].process();
         this._blipCoordinates[idx][1].process();
 
+        this._blipWidth = 0.3 * 10 ** 5 / (this._blipCoordinates[idx][0].distToCamera ** 2);
+
         this._blipRenderJobs[idx] = this._blipRenderJobs[idx] ?? new LineRenderJob();
         this._blipRenderJobs[idx].v1 = this._blipCoordinates[idx][0].renderScreen;
         this._blipRenderJobs[idx].v2 = this._blipCoordinates[idx][1].renderScreen;
-        this._blipRenderJobs[idx].size = 3 * getBaseUISize() * (0.5 ** idx);
+        this._blipRenderJobs[idx].size = this._blipWidth;
         this._blipRenderJobs[idx].color = this._blipColors[idx];
         this._blipRenderJobs[idx].z = this._blipCoordinates[idx][0].renderScreen[2];
 

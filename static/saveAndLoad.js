@@ -260,7 +260,8 @@ export function compressSquares(squares) {
                 org.lighting = [];
                 org.linkedSquare = sqArr.indexOf(org.linkedSquare);
                 org.growthPlans = Array.from(org.growthPlans.map((gp) => growthPlanArr.indexOf(gp)));
-                [org.greenLifeSquares, org.rootLifeSquares].forEach((list) => {
+                org.purgeUnderscoredValues();
+                [org.greenLifeSquares, org.rootLifeSquares, [org.seedLifeSquare]].forEach((list) => {
                     list.forEach((lsq) => {
                         lsq.lighting = [];
                         lsq.linkedSquare = sqArr.indexOf(lsq.linkedSquare);
