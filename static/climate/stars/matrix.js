@@ -98,9 +98,9 @@ export function normalizeVec3(vector, toLength=1) {
 
 export function normalizeVec3Dest(vector, dest, toLength=1) {
   toLength *= getVec3Length(vector);
-  dest[0] /= toLength;
-  dest[1] /= toLength;
-  dest[2] /= toLength;
+  dest[0] = vector[0] / toLength;
+  dest[1] = vector[1] / toLength;
+  dest[2] = vector[2] / toLength;
 }
 
 export function getVec3Length(vector) {

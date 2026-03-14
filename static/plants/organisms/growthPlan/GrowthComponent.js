@@ -76,6 +76,10 @@ export class GrowthComponent {
         for (let i = 0; i < this.lifeSquares.length; i++) {
             copyVecValue(this.curOffset, this.lifeSquares.at(i).rootPositionVec);
             addVectors(this.curOffset, crossed)
+
+            this.lifeSquares.at(i).posVecDir = crossed;
+
+            copyVecValue(crossed, this.lifeSquares.at(i).posVecDir);
         };
         this.children.forEach((child) => child.updateDeflectionState(this.curOffset));
     }
