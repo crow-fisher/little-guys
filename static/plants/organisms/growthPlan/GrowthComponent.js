@@ -1,6 +1,6 @@
 import { getCurDay } from "../../../climate/time.js";
 import { getWindSpeedAtLocation } from "../../../climate/simulation/wind.js";
-import { addVectors, copyVecValue, crossVec3, crossVec3Dest, normalizeVec3, subtractVectors } from "../../../climate/stars/matrix.js";
+import { addVectors, copyVecValue, crossVec3, crossVec3Dest, multiplyVectorByScalar, normalizeVec3, subtractVectors } from "../../../climate/stars/matrix.js";
 import { PlantLifeSquare } from "../../lifeSquares/PlantLifeSquare.js";
 
 
@@ -58,21 +58,24 @@ export class GrowthComponent {
     updateDeflectionState(startWorldOffset) {
         copyVecValue(startWorldOffset, this.curOffset);
 
-        let cr = [ Math.cos(getCurDay() * 10 ** 5), Math.sin(getCurDay() * 10 ** 5)];
-        
         let x = Math.cos(getCurDay() * 10 ** 5);
         let y = 1;
         let z = Math.sin(getCurDay() * 10 ** 5);
         let offset = [-x, -y, -z];
-        
+
         normalizeVec3(offset);
+        let offsetPerUnit = structuredClone(offset);
+        offsetPerUnit[0] /= -this.lifeSquares.length;
+        offsetPerUnit[2] /= -this.lifeSquares.length;
 
+        let curOffset = [0, -1, 0];
         for (let i = 0; i < this.lifeSquares.length; i++) {
+            curOffset[0] += offsetPerUnit[0];
+            curOffset[2] += offsetPerUnit[2];
+            normalizeVec3(curOffset);
             copyVecValue(this.curOffset, this.lifeSquares.at(i).rootPositionVec);
-            addVectors(this.curOffset, offset)
-            this.lifeSquares.at(i).posVecDir = offset;
-
-            copyVecValue(offset, this.lifeSquares.at(i).posVecDir);
+            addVectors(this.curOffset, curOffset)
+            this.lifeSquares.at(i).posVecDir = structuredClone(curOffset);
         };
         this.children.forEach((child) => child.updateDeflectionState(this.curOffset));
     }

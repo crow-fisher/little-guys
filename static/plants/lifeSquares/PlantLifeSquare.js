@@ -72,6 +72,7 @@ class PlantLifeSquare {
         subtractVectorsDest(this.rootPositionVec, gfc().cameraOffset, this.startPointVec);
         
         copyVecValue(this.posVecDir, this.offset);
+        multiplyVectorByScalar(this.offset, this.height);
         addVec3Dest(this.startPointVec, this.offset, this.endPointVec);
 
         this.forwardVec = normalizeVec3(this.startPointVec);
