@@ -58,9 +58,10 @@ export class GrowthComponent {
     updateDeflectionState(startWorldOffset) {
         copyVecValue(startWorldOffset, this.curOffset);
 
-        let x = Math.cos(getCurDay() * 10 ** 5);
+        this._ws = this._getNetWindSpeed();
+        let x = this._ws[0];
         let y = 1;
-        let z = Math.sin(getCurDay() * 10 ** 5);
+        let z = this._ws[1]
         let offset = [-x, -y, -z];
 
         normalizeVec3(offset);
@@ -97,7 +98,6 @@ export class GrowthComponent {
         // like, so however you have the thing tilted is how the wind blows
 
         // maybe instep for 3d wind? 
-        
         return this.getValueCached("_getNetWindSpeed", () => this.lifeSquares
             .map((lsq) => getWindSpeedAtLocation(lsq.posVec[0], lsq.posVec[1])).reduce(
                 (accumulator, currentValue) => [accumulator[0] + currentValue[0], accumulator[1] + currentValue[1]],
