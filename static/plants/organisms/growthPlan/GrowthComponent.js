@@ -58,28 +58,21 @@ export class GrowthComponent {
     updateDeflectionState(startWorldOffset) {
         copyVecValue(startWorldOffset, this.curOffset);
 
-        let cr = [0, Math.sin(getCurDay() * 10 ** 5)];
+        let cr = [ Math.cos(getCurDay() * 10 ** 5), Math.sin(getCurDay() * 10 ** 5)];
         
-        let yaw = cr[0];
-        let pitch = cr[1];
-
-        let rotNorm = [0, 0, 0];
-
-        rotNorm[0] = Math.cos(yaw) * Math.cos(pitch);
-        rotNorm[1] = Math.sin(pitch);
-        rotNorm[2] = Math.sin(yaw) * Math.cos(pitch);
-
-        let offset = [0, 0, 1];
-        let crossed = [0, 0, 0];
-        crossVec3Dest(rotNorm, offset, crossed);
+        let x = Math.cos(getCurDay() * 10 ** 5);
+        let y = 1;
+        let z = Math.sin(getCurDay() * 10 ** 5);
+        let offset = [-x, -y, -z];
+        
+        normalizeVec3(offset);
 
         for (let i = 0; i < this.lifeSquares.length; i++) {
             copyVecValue(this.curOffset, this.lifeSquares.at(i).rootPositionVec);
-            addVectors(this.curOffset, crossed)
+            addVectors(this.curOffset, offset)
+            this.lifeSquares.at(i).posVecDir = offset;
 
-            this.lifeSquares.at(i).posVecDir = crossed;
-
-            copyVecValue(crossed, this.lifeSquares.at(i).posVecDir);
+            copyVecValue(offset, this.lifeSquares.at(i).posVecDir);
         };
         this.children.forEach((child) => child.updateDeflectionState(this.curOffset));
     }
