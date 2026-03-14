@@ -1,6 +1,6 @@
 import { getCurDay } from "../../../climate/time.js";
 import { getWindSpeedAtLocation } from "../../../climate/simulation/wind.js";
-import { copyVecValue } from "../../../climate/stars/matrix.js";
+import { addVectors, copyVecValue, crossVec3, crossVec3Dest, normalizeVec3, subtractVectors } from "../../../climate/stars/matrix.js";
 import { PlantLifeSquare } from "../../lifeSquares/PlantLifeSquare.js";
 
 
@@ -57,9 +57,25 @@ export class GrowthComponent {
 
     updateDeflectionState(startWorldOffset) {
         copyVecValue(startWorldOffset, this.curOffset);
+
+        let cr = [0, Math.sin(getCurDay() * 10 ** 5)];
+        
+        let yaw = cr[0];
+        let pitch = cr[1];
+
+        let rotNorm = [0, 0, 0];
+
+        rotNorm[0] = Math.cos(yaw) * Math.cos(pitch);
+        rotNorm[1] = Math.sin(pitch);
+        rotNorm[2] = Math.sin(yaw) * Math.cos(pitch);
+
+        let offset = [0, 0, 1];
+        let crossed = [0, 0, 0];
+        crossVec3Dest(rotNorm, offset, crossed);
+
         for (let i = 0; i < this.lifeSquares.length; i++) {
             copyVecValue(this.curOffset, this.lifeSquares.at(i).rootPositionVec);
-            this.curOffset[1] -= 1;
+            addVectors(this.curOffset, crossed)
         };
         this.children.forEach((child) => child.updateDeflectionState(this.curOffset));
     }
