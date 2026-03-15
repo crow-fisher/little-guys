@@ -7,7 +7,9 @@ const I = Math.floor
 
 export class AtmosphereHandler {
     constructor() {
-        this.au = null; // 3-D array
+        this.au = null; // 3-D map to individuals sectors of XYZ space
+        this.atmosphereUnitList = null; // 1-D array array of the same. For easy traversal
+
     }
 
     initAtmosphereUnits() {
@@ -42,6 +44,7 @@ export class AtmosphereHandler {
         if (this.au == null) {
             this.initAtmosphereUnits();
         }
+        this.atmosphereUnitList.forEach((au) => au.debugRenderBounds());
 
     }
 }
