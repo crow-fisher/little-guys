@@ -142,9 +142,9 @@ export class TopBarComponent {
 
     _textWeather() {
         if (this.compact) {
-            return getCurWeather().weatherStringShort();
+            return "sunny"
         } else {
-            return getCurWeather().weatherStringLong();
+            return "very, very, very sunny"
         }
     }
 

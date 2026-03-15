@@ -144,6 +144,7 @@ function saturationPressureOfWaterVapor(t) {
 }
 
 export function getTemperatureAtWindSquare(x, y) {
+    return 0;
     return temperatureMap[x][y];
 }
 

@@ -6,7 +6,6 @@ import { executeFunctionQueue, loadGD, saveGD, UI_CAMERA_CENTER_SELECT_POINT, UI
 import { initUI, renderMouseHover, renderWindows, resetWindowHovered, updateWindows } from "./ui/WindowManager.js";
 import { renderWindPressureMap } from "./climate/simulation/wind.js";
 import { LightingHandler } from "./lighting/lightingHandler.js";
-import { ClimateHandler } from "./climate/climateHandler.js";
 import { isLeftMouseClicked } from "./mouse.js";
 import { iterateOnSquares, resetSqColChangeMap } from "./squares/_sqOperations.js";
 import { isSaveOrLoadInProgress } from "./saveAndLoad.js";
@@ -22,11 +21,12 @@ import { executeRenderJobs } from "./rendering/rasterizer.js";
 import { StarHandler } from "./climate/stars/starHandler.js";
 import { MAIN_CONTEXT } from "./index.js";
 import { COLOR_VERY_FUCKING_RED } from "./colors.js";
+import { AtmosphereHandler } from "./climate/simulation/atmosphere/AtmosphereHandler.js";
 
 
 let starHandler;
 let lightingHandler;
-let climateHandler;
+let atmosphereHandler;
 
 export function getLightingHandler() {
     return lightingHandler;
@@ -36,14 +36,14 @@ export function getStarHandler() {
     return starHandler;
 }
 
-export function getClimateHandler() {
-    return climateHandler;
+export function getAtmosphereHandler() {
+    return atmosphereHandler;
 }
 
 function initHandlers(force) {
     starHandler = (force ? new StarHandler() : starHandler ?? new StarHandler());
     lightingHandler = (force ? new LightingHandler() : lightingHandler ?? new LightingHandler());
-    climateHandler = (force ? new ClimateHandler() : climateHandler ?? new ClimateHandler());
+    atmosphereHandler = (force ? new AtmosphereHandler() : atmosphereHandler ?? new AtmosphereHandler());
 }
 
 export function lightingExposureAdjustment() {
@@ -60,11 +60,11 @@ export function resetLighting() {
 
 export function resetClimateAndLighting() {
     resetLighting();
-    climateHandler = new ClimateHandler();
+    atmosphereHandler = new AtmosphereHandler();
 }
 
-export function resetClimate() {
-    climateHandler.reset();
+export function resetAtmosphere() {
+    atmosphereHandler.reset();
 }
 
 function gamepadAndPlayerTick() {
@@ -179,9 +179,7 @@ function squareTick() {
     doWaterFlow();
 
     if (getTimeScale() > 0) {
-        if (loadGD(UI_SIMULATION_CLOUDS)) {
-            climateHandler.climateTick();
-        }
+        atmosphereHandler.tick();
     }
 
 }
