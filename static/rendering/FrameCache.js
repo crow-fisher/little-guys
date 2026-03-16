@@ -26,7 +26,6 @@ export class FrameCache {
         this.UI_SH_STYLE_BRIGHTNESS_A = loadGD(UI_SH_STYLE_BRIGHTNESS_A);
         this.UI_SH_STYLE_SIZE_B = loadGD(UI_SH_STYLE_SIZE_B);
         this.UI_STARMAP_ZOOM = loadGD(UI_STARMAP_ZOOM)
-        
         this.UI_CAMERA_OFFSET_VEC = loadGD(UI_CAMERA_OFFSET_VEC);
         this.UI_STARMAP_VIEWMODE = loadGD(UI_STARMAP_VIEWMODE);
         this.UI_AA_PLOT_LOCALITY_SELECTMODE = loadGD(UI_AA_PLOT_LOCALITY_SELECTMODE);
@@ -34,30 +33,7 @@ export class FrameCache {
         this.UI_AA_SETUP_MULT = Math.exp(loadGD(UI_AA_SETUP_MULT));
         this.namedStarOpacityMult = 1 + Math.exp(loadGD(UI_AA_SETUP_SELECT_MULT));
         this.starMinSize = Math.exp(loadGD(UI_STARMAP_STAR_MIN_SIZE));
-
         this.cameraOffset = structuredClone(this.UI_CAMERA_OFFSET_VEC);
-        
-
-        /* Center Select Business Logic
-        *******************************
-
-        UI_CAMERA_CENTER_SELECT_POINT is a point [x, y] on the block 2D plane. 
-        UI_CAMERA_CENTER_SELECT_OFFSET is a point [x, y, z] in 3D space.
-
-        Square x/y cordinates are transformed to be relative to the center select point. 
-
-        Therefore - if we have a point of (50, 50), with a center select of (50, 50), 
-                    that point will be in 3D space at (0, 0, z).
-
-        
-
-        */
-        let offset = structuredClone(loadGD(UI_CAMERA_CENTER_SELECT_OFFSET) ?? [0, 0, 0]);
-        
-        this.cameraOffset[0] -= offset[0];
-        this.cameraOffset[1] -= offset[1];
-        this.cameraOffset[2] -= (offset[2] - 50);
-
     }
 
     prepareRenderFrameCache() {

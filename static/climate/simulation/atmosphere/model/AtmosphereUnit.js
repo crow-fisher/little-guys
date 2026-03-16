@@ -1,5 +1,6 @@
 import { COLOR_BLUE, COLOR_GREEN, COLOR_OTHER_BLUE, COLOR_RED, COLOR_WHITE } from "../../../../colors.js";
 import { debugRenderLineOffsetPoints } from "../../../../rendering/camera.js";
+import { addVectors } from "../../../stars/matrix.js";
 
 export class AtmosphereUnit {
     constructor(sector, size) { // vec3s
@@ -7,13 +8,20 @@ export class AtmosphereUnit {
         this.size = size;
     }
 
-    debugRenderBounds() {
+    debugRenderBounds(ccp) {
         this._x1 = this.sector[0];
         this._x2 = this.sector[0] + 1;
         this._y1 = this.sector[1];
         this._y2 = this.sector[1] + 1;
         this._z1 = this.sector[2];
         this._z2 = this.sector[2] + 1;
+        
+        this._x1 -= ccp[0];
+        this._x2 -= ccp[0];
+        this._y1 -= ccp[1];
+        this._y2 -= ccp[1];
+        this._z1 -= ccp[2];
+        this._z2 -= ccp[2];
 
         let lines = [
             [
