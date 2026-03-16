@@ -16,7 +16,7 @@ export class AtmosphereHandler {
     initAtmosphereUnits() {
         this.atmosphereUnitList = new Array();
         this.au = new Map();
-        this.ns = 80;
+        this.ns = 20;
         this.x = 0; //I(this.ccp[0]);
         this.y = 0; //I(this.ccp[1]);
         this.z = 0; //I(this.ccp[2]);
