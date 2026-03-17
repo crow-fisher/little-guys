@@ -71,7 +71,7 @@ export class AtmosphereHandler {
         }
     }
 
-    tick() {
+    tick() { 
         this.ccp = structuredClone(loadGD(UI_CAMERA_OFFSET_VEC));
         addVectors(this.ccp, loadGD(UI_CAMERA_CENTER_SELECT_OFFSET));
         if (this.au == null) {
