@@ -41,8 +41,20 @@ export class AtmosphereHandler {
         }
     }
 
-    indexAtmosphereUnit(a) {
-        return this.au.get(a[0]).get(a[1]).get(a[2]);
+
+    indexAtmosphereUnit(sector) {
+        return this.au
+            .get(sector[0])
+            ?.get(sector[1])
+            ?.get(sector[2]);
+    }
+
+    getSectorOffset(sector, dx, dy, dz) {
+        return this.au
+            .get(sector[0] + dx)
+            ?.get(sector[1] + dy)
+            ?.get(sector[2] + dz);
+
     }
 
     tick() {
