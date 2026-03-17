@@ -478,12 +478,7 @@ export function doZoom(deltaY) {
     recacheCanvasPositions();
 }
 export function resetZoom() {
-    saveGD(UI_CANVAS_VIEWPORT_CENTER_X, 5000);
-    saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, 5000);
-
-
-    saveGD(UI_CANVAS_SQUARES_ZOOM, 2);
-    recacheCanvasPositions();
+    saveGD(UI_CAMERA_OFFSET_VEC, [0, 0, 0, 0]);
 }
 
 

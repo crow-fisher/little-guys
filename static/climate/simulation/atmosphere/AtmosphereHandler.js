@@ -17,10 +17,10 @@ export class AtmosphereHandler {
     initAtmosphereUnits() {
         this.atmosphereUnitList = new Array();
         this.au = new Map();
-        this.ns = 2;
-        this.x = 0; //I(this.ccp[0]);
-        this.y = 0; //I(this.ccp[1]);
-        this.z = 0; //I(this.ccp[2]);
+        this.ns = 3;
+        this.x = I(this.ccp[0]);
+        this.y = I(this.ccp[1]);
+        this.z = I(this.ccp[2]);
         this.xm;
         this.ym;
         this.zm;
@@ -73,21 +73,21 @@ export class AtmosphereHandler {
 
     tick() { 
         this.ccp = structuredClone(loadGD(UI_CAMERA_OFFSET_VEC));
-        addVectors(this.ccp, loadGD(UI_CAMERA_CENTER_SELECT_OFFSET));
         if (this.au == null) {
             this.initAtmosphereUnits();
         }
         this.cu = this.indexAtmosphereUnit(this.ccp);
-
         if (this.cu != null) {
             this.gamepadInputTick();
             this.diffusionModelTick();
         }
-
+        this.indexAtmosphereUnit([-1, -1, -1])?.addPressure(.1, 1, new Set());
         this.debugRenderTick();
     }
 
     debugRenderTick() {
+        this.indexAtmosphereUnit([-1, -1, -1]).debugRender(this.ccp);
+
         this.atmosphereUnitList.forEach((au) => {
             // if (au.sector[0] % 16 == 0 &&  au.sector[1] % 16 == 0 && au.sector[2] % 16 == 0) {
                 au.debugRender(this.ccp)

@@ -4,7 +4,9 @@ import { debugRenderLineOffsetPoints } from "../../../../rendering/camera.js";
 import { CoordinateSet } from "../../../../rendering/model/CoordinateSet.js";
 import { PointLabelRenderJob } from "../../../../rendering/model/PointLabelRenderJob.js";
 import { addRenderJob } from "../../../../rendering/rasterizer.js";
-import { addVectors } from "../../../stars/matrix.js";
+import { loadEmptyScene } from "../../../../saveAndLoad.js";
+import { loadGD, UI_CAMERA_CENTER_SELECT_OFFSET } from "../../../../ui/UIData.js";
+import { addVec3Dest, addVectors } from "../../../stars/matrix.js";
 
 export class AtmosphereUnit {
     constructor(sector, size) { // vec3s
@@ -37,7 +39,6 @@ export class AtmosphereUnit {
         if (!seenSet.has(this)) { 
             seenSet.add(this);
             this.pressure += pressure;
-            console.log(this.sector, this.pressure, pressure)
             if (dist > 0) {
                 this.nt?.addPressure(pressure * 0.9, dist - 1, seenSet);
                 this.nb?.addPressure(pressure * 0.9, dist - 1, seenSet);
@@ -70,8 +71,11 @@ export class AtmosphereUnit {
         this._z1 -= ccp[2];
         this._z2 -= ccp[2];
 
-        this._center = [(this._x1 + this._x2) / 1, (this._y1 + this._y2) / 1, (this._z1 + this._z2) / 1]
-        this._tcs = new CoordinateSet(this._center);
+        // this._center = [this.sector[0] - ccp[0], this.sector[1] - ccp[1], this.sector[2] - ccp[2]]
+
+        this._tcsRoot = this._tcsRoot ?? [0, 0, 0];
+        addVec3Dest(this.sector, loadGD(UI_CAMERA_CENTER_SELECT_OFFSET), this._tcsRoot);    
+        this._tcs = new CoordinateSet(this.sector);
         this._tcs.process();
     }
     debugRenderBounds() {
@@ -150,9 +154,9 @@ export class AtmosphereUnit {
             this._tcs.renderScreen[0],
             this._tcs.renderScreen[1],
             this._tcs.screen[2],
-            4,
+            2,
             COLOR_WHITE,
-            this.pressure.toFixed(2),
+            this.pressure.toFixed(2) + "|" + this.sector,
             false));
     }
 }
