@@ -21,7 +21,8 @@ export function addRenderJob(renderJob, sort) {
 }
 export function executeRenderJobs() {
     for (let i = 0; i < noSortRenderJobs.length; i++) {
-        noSortRenderJobs.at(i).render();
+        if (noSortRenderJobs.at(i).getZ() > 0)
+            noSortRenderJobs.at(i).render();
     }
     prevNoSortRenderJobsLength = noSortRenderJobs.length;
     noSortRenderJobs.length = 0;

@@ -11,6 +11,10 @@ export class LineRenderJob extends RenderJob {
         this.z = z;
     }
 
+    getZ() {
+        return Math.min(this.v1[2], this.v2[2]);
+    }
+
     render() {
         if (this.v1[0] > 0 && this.v1[1] > 0 && this.v2[0] > 0 && this.v2[1] > 0) {
         MAIN_CONTEXT.beginPath();
@@ -20,8 +24,6 @@ export class LineRenderJob extends RenderJob {
         MAIN_CONTEXT.lineTo(this.v2[0], this.v2[1]);
         MAIN_CONTEXT.stroke();
         } 
-
-
 
     }
 }

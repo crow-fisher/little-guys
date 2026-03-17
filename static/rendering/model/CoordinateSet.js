@@ -10,6 +10,8 @@ export class CoordinateSet {
         this.renderNorm = [0, 0];
         this.renderScreen = [0, 0, 0];
         this.distToCamera = 0;
+        
+        this.process(); // why did you...not do this!!!
     }
 
     process() {
