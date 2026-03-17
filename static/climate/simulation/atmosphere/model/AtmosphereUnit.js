@@ -29,6 +29,26 @@ export class AtmosphereUnit {
         this.nb = manager.getSectorOffset(this.sector, 0, 0, 1)
     }
 
+    diffusionTick(dist, seenSet) {
+
+    }
+
+    addPressure(pressure, dist, seenSet) { 
+        if (!seenSet.has(this)) { 
+            seenSet.add(this);
+            this.pressure += pressure;
+            console.log(this.sector, this.pressure, pressure)
+            if (dist > 0) {
+                this.nt?.addPressure(pressure * 0.9, dist - 1, seenSet);
+                this.nb?.addPressure(pressure * 0.9, dist - 1, seenSet);
+                this.nl?.addPressure(pressure * 0.9, dist - 1, seenSet);
+                this.nr?.addPressure(pressure * 0.9, dist - 1, seenSet);
+                this.nf?.addPressure(pressure * 0.9, dist - 1, seenSet);
+                this.nb?.addPressure(pressure * 0.9, dist - 1, seenSet);
+            }
+        }
+    }
+
     debugRender(ccp) {
         this.debugRenderInit(ccp);
         this.debugRenderBounds();
@@ -50,10 +70,9 @@ export class AtmosphereUnit {
         this._z1 -= ccp[2];
         this._z2 -= ccp[2];
 
-        this._center = [(this._x1 + this._x2) / 2, (this._y1 + this._y2) / 2, (this._z1 + this._z2) / 2]
+        this._center = [(this._x1 + this._x2) / 1, (this._y1 + this._y2) / 1, (this._z1 + this._z2) / 1]
         this._tcs = new CoordinateSet(this._center);
         this._tcs.process();
-    
     }
     debugRenderBounds() {
         let lines = [

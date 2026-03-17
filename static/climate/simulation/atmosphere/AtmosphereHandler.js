@@ -1,4 +1,4 @@
-import { GBDR, GBSR, isButtonPressed } from "../../../gamepad.js";
+import { GBDD, GBDR, GBDU, GBSR, isButtonPressed } from "../../../gamepad.js";
 import { gfc } from "../../../rendering/camera.js";
 import { loadGD, UI_CAMERA_CENTER_SELECT_OFFSET, UI_CAMERA_OFFSET_VEC } from "../../../ui/UIData.js";
 import { addVec3Dest, addVectors } from "../../stars/matrix.js";
@@ -17,7 +17,7 @@ export class AtmosphereHandler {
     initAtmosphereUnits() {
         this.atmosphereUnitList = new Array();
         this.au = new Map();
-        this.ns = 4;
+        this.ns = 2;
         this.x = 0; //I(this.ccp[0]);
         this.y = 0; //I(this.ccp[1]);
         this.z = 0; //I(this.ccp[2]);
@@ -39,22 +39,36 @@ export class AtmosphereHandler {
                 }
             }
         }
+        this.atmosphereUnitList.forEach((au) => au.initNeighbors(this));
     }
 
 
     indexAtmosphereUnit(sector) {
         return this.au
-            .get(sector[0])
-            ?.get(sector[1])
-            ?.get(sector[2]);
+            .get(Math.floor(sector[0]))
+            ?.get(Math.floor(sector[1]))
+            ?.get(Math.floor(sector[2]));
     }
 
     getSectorOffset(sector, dx, dy, dz) {
         return this.au
-            .get(sector[0] + dx)
-            ?.get(sector[1] + dy)
-            ?.get(sector[2] + dz);
+            .get(Math.floor(sector[0]) + dx)
+            ?.get(Math.floor(sector[1]) + dy)
+            ?.get(Math.floor(sector[2]) + dz);
+    }
 
+    diffusionModelTick() {
+    }
+
+    gamepadInputTick() {
+        if (isButtonPressed(GBDU)) {
+            this.cu.addPressure(0.1, 3, new Set());
+        }
+
+        if (isButtonPressed(GBDD)) {
+            this.cu.addPressure(-0.1, 3, new Set());
+
+        }
     }
 
     tick() {
@@ -63,20 +77,22 @@ export class AtmosphereHandler {
         if (this.au == null) {
             this.initAtmosphereUnits();
         }
+        this.cu = this.indexAtmosphereUnit(this.ccp);
 
-        if (isButtonPressed(GBSR)) {
-            // this.indexAtmosphereUnit(...this.ccp).pressure += .1;
+        if (this.cu != null) {
+            this.gamepadInputTick();
+            this.diffusionModelTick();
         }
 
-        if (isButtonPressed(GBSR)) {
-            // this.indexAtmosphereUnit(...this.ccp).pressure -= .1;
-        }
+        this.debugRenderTick();
+    }
 
+    debugRenderTick() {
         this.atmosphereUnitList.forEach((au) => {
             // if (au.sector[0] % 16 == 0 &&  au.sector[1] % 16 == 0 && au.sector[2] % 16 == 0) {
                 au.debugRender(this.ccp)
             // }
         });
     }
-    
 }
+    
