@@ -38,18 +38,18 @@ export class AtmosphereUnit {
         this.nb = this.nb ?? manager.getSectorOffset(this.sector, 0, 0, 1)
     }
 
-    diffusionTick(dist, seenSet) {
-        if (!seenSet.has(this)) { 
-            seenSet.add(this);
-            this.cd = dist
-            if (dist > 0) {
-                this.nt?.diffusionTick(dist - 1, seenSet);
-                this.nb?.diffusionTick(dist - 1, seenSet);
-                this.nl?.diffusionTick(dist - 1, seenSet);
-                this.nr?.diffusionTick(dist - 1, seenSet);
-                this.nf?.diffusionTick(dist - 1, seenSet);
-                this.nb?.diffusionTick(dist - 1, seenSet);
-            }
+    bfsTraversal(dist, next, seen) {
+        if (seen.has(this))
+            return;
+        seen.add(this);
+        this.cd = structuredClone(dist)
+        if (dist > 0) {
+            next.push([this.nt, dist - 1]); 
+            next.push([this.nb, dist - 1]); 
+            next.push([this.nl, dist - 1]); 
+            next.push([this.nr, dist - 1]); 
+            next.push([this.nf, dist - 1]); 
+            next.push([this.nb, dist - 1]); 
         }
     }
 
@@ -71,7 +71,7 @@ export class AtmosphereUnit {
     debugRender(ccp) {
         this.debugRenderInit(ccp);
         this.debugRenderBounds();
-        this.debugRenderLabel();
+        // this.debugRenderLabel();
     }
 
     debugRenderInit(ccp) {
@@ -174,7 +174,7 @@ export class AtmosphereUnit {
             this._tcs.screen[2],
             2,
             COLOR_WHITE,
-            this.pressure.toFixed(2) + "|" + this.sector,
+            "|" + this.cd,
             false));
     }
 }

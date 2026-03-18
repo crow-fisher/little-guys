@@ -9,15 +9,16 @@ const I = Math.floor
 
 export class AtmosphereHandler {
     constructor() {
-        this.au = null; // 3-D map to individuals sectors of XYZ space
-        this.atmosphereUnitList = null; // 1-D array array of the same. For easy traversal
+        this.au = new Map(); // 3-D map to individuals sectors of XYZ space
+        this.fullAUList = new Array(); // 1-D array array of all live AUs
+        
+        this.dist = 3;
+        this.nearAUList = new Array(); // 1-D array of AUs within `this.dist` of the camera
 
     }
 
     initAtmosphereUnits() {
-        this.atmosphereUnitList = new Array();
-        this.au = new Map();
-        this.ns = 3;
+        this.ns = 12;
         this.x = I(this.ccp[0]);
         this.y = I(this.ccp[1]);
         this.z = I(this.ccp[2]);
@@ -36,14 +37,13 @@ export class AtmosphereHandler {
                     let sector = [this.x + i, this.y + j, this.z + k];
                     if (this.indexAtmosphereUnit(sector) == null) {
                         this.cau = new AtmosphereUnit(sector);
-                        this.atmosphereUnitList.push(this.cau);
+                        this.fullAUList.push(this.cau);
                         this.ym.set(this.z + k, this.cau);
                     }
                 }
             }
         }
     }
-
 
     indexAtmosphereUnit(sector) {
         return this.au
@@ -60,7 +60,6 @@ export class AtmosphereHandler {
     }
 
     diffusionModelTick() {
-        this.cu.diffusionTick(10, new Set());
     }
 
     gamepadInputTick() {
@@ -74,12 +73,53 @@ export class AtmosphereHandler {
         }
     }
 
+    bfsTraversalRoutine() {
+        this.dist = 12; // some UI param for simulation distance. hahaha future devin problem. fuck you. i typed that for you jackass
+        
+        this._seenSet = this._seenSet ?? new Set();
+        this._seenSet.clear()
+         
+        this._pendingNext = this._pendingNext ?? new Array();
+        this._pendingNext.length = 0;
+
+        this._next = this._next ?? new Array();
+        this._next.length = 0;
+
+        this.cu.bfsTraversal(this.dist, this._pendingNext, this._seenSet);
+        for (let i = 0; i < this._pendingNext.length; i++) {
+            if (this._pendingNext.at(i)[0] != null) {
+                this._next.push(this._pendingNext.at(i));
+            }
+        }
+        this._pendingNext.length = 0;
+
+        let arr;
+        while (this._next.length > 0) {
+            arr = this._next.shift();
+
+            arr[0].bfsTraversal(arr[1], this._pendingNext, this._seenSet);
+            for (let i = 0; i < this._pendingNext.length; i++) {
+                if (this._pendingNext.at(i)[0] != null) {
+                    this._next.push(this._pendingNext.at(i));
+                }
+            }
+            this._pendingNext.length = 0;
+        }
+    }
+
+    localityTick() {
+        this.bfsTraversalRoutine();
+        
+    }
+
     tick() { 
         this.ccp = structuredClone(loadGD(UI_CAMERA_OFFSET_VEC));
         this.initAtmosphereUnits();
         this.cu = this.indexAtmosphereUnit(this.ccp);
+        this.fullAUList.forEach((au) => au.pretick(this));
 
-        this.atmosphereUnitList.forEach((au) => au.pretick(this));
+        this.localityTick();
+
 
         if (this.cu != null) {
             this.gamepadInputTick();
@@ -92,10 +132,10 @@ export class AtmosphereHandler {
     debugRenderTick() {
         this.cu.debugRender(this.ccp);
 
-        this.atmosphereUnitList.forEach((au) => {
+        this.fullAUList.forEach((au) => {
             // if (au.sector[0] % 16 == 0 &&  au.sector[1] % 16 == 0 && au.sector[2] % 16 == 0) {
 
-            if (au.cd >= 0)
+            if (au.cd == 0)
                 au.debugRender(this.ccp)
             // }
         });
