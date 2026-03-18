@@ -13,7 +13,7 @@ export class AtmosphereUnit {
         this.sector = sector;
         this.size = size;
         this.pressure = 1;
-        this.cd = -1; // camera dist. in sectors (Manhattan)
+        this.cd = -1; // camera dist. in sectors. euclidian distance.
 
         this.nt; // neighbor top
         this.nb; //      ... bottom
@@ -23,9 +23,12 @@ export class AtmosphereUnit {
         this.nb; //      ... back
     }
 
-    pretick(manager) {
-        this.initNeighbors(manager);
-        this.cd = -1;
+    pretick(mgr) {
+        this.initNeighbors(mgr);
+        this.cd = (
+            (this.sector[0] - mgr.ccp[0]) ** 2 + 
+            (this.sector[1] - mgr.ccp[1]) ** 2 + 
+            (this.sector[2] - mgr.ccp[2]) ** 2) ** 0.5
         
     }
 
@@ -42,14 +45,13 @@ export class AtmosphereUnit {
         if (seen.has(this))
             return;
         seen.add(this);
-        this.cd = structuredClone(dist)
-        if (dist > 0) {
-            next.push([this.nt, dist - 1]); 
-            next.push([this.nb, dist - 1]); 
-            next.push([this.nl, dist - 1]); 
-            next.push([this.nr, dist - 1]); 
-            next.push([this.nf, dist - 1]); 
-            next.push([this.nb, dist - 1]); 
+        if (this.cd < dist) {
+            next.push(this.nt); 
+            next.push(this.nb); 
+            next.push(this.nl); 
+            next.push(this.nr); 
+            next.push(this.nf); 
+            next.push(this.nb); 
         }
     }
 

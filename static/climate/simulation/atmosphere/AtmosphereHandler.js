@@ -74,7 +74,7 @@ export class AtmosphereHandler {
     }
 
     bfsTraversalRoutine() {
-        this.dist = 12; // some UI param for simulation distance. hahaha future devin problem. fuck you. i typed that for you jackass
+        this.dist = 12;
         
         this._seenSet = this._seenSet ?? new Set();
         this._seenSet.clear()
@@ -93,11 +93,11 @@ export class AtmosphereHandler {
         }
         this._pendingNext.length = 0;
 
-        let arr;
+        let cur;
         while (this._next.length > 0) {
-            arr = this._next.shift();
-
-            arr[0].bfsTraversal(arr[1], this._pendingNext, this._seenSet);
+            this._next.sort((a, b) => a.cd - b.cd)
+            cur = this._next.shift();
+            cur[0].bfsTraversal(this.dist, this._pendingNext, this._seenSet);
             for (let i = 0; i < this._pendingNext.length; i++) {
                 if (this._pendingNext.at(i)[0] != null) {
                     this._next.push(this._pendingNext.at(i));
@@ -134,8 +134,7 @@ export class AtmosphereHandler {
 
         this.fullAUList.forEach((au) => {
             // if (au.sector[0] % 16 == 0 &&  au.sector[1] % 16 == 0 && au.sector[2] % 16 == 0) {
-
-            if (au.cd == 0)
+            if (au.cd < 8 && au.cd > 7)
                 au.debugRender(this.ccp)
             // }
         });
