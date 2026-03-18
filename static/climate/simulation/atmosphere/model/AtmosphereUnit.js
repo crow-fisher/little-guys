@@ -13,26 +13,44 @@ export class AtmosphereUnit {
         this.sector = sector;
         this.size = size;
         this.pressure = 1;
+        this.cd = -1; // camera dist. in sectors (Manhattan)
 
         this.nt; // neighbor top
-        this.nb; // ... bottom
-        this.nl; // ... left 
-        this.nr; // ... right 
-        this.nf; // ... front
-        this.nb; // ... back
+        this.nb; //      ... bottom
+        this.nl; //      ... left 
+        this.nr; //      ... right 
+        this.nf; //      ... front
+        this.nb; //      ... back
+    }
+
+    pretick(manager) {
+        this.initNeighbors(manager);
+        this.cd = -1;
+        
     }
 
     initNeighbors(manager) {
-        this.nt = manager.getSectorOffset(this.sector, 0, -1, 0)
-        this.nb = manager.getSectorOffset(this.sector, 0, 1, 0)
-        this.nl = manager.getSectorOffset(this.sector, -1, 0, 0)
-        this.nr = manager.getSectorOffset(this.sector, 1, 0, 0)
-        this.nf = manager.getSectorOffset(this.sector, 0, 0, -1)
-        this.nb = manager.getSectorOffset(this.sector, 0, 0, 1)
+        this.nt = this.nt ?? manager.getSectorOffset(this.sector, 0, -1, 0)
+        this.nb = this.nb ?? manager.getSectorOffset(this.sector, 0, 1, 0)
+        this.nl = this.nl ?? manager.getSectorOffset(this.sector, -1, 0, 0)
+        this.nr = this.nr ?? manager.getSectorOffset(this.sector, 1, 0, 0)
+        this.nf = this.nf ?? manager.getSectorOffset(this.sector, 0, 0, -1)
+        this.nb = this.nb ?? manager.getSectorOffset(this.sector, 0, 0, 1)
     }
 
     diffusionTick(dist, seenSet) {
-
+        if (!seenSet.has(this)) { 
+            seenSet.add(this);
+            this.cd = dist
+            if (dist > 0) {
+                this.nt?.diffusionTick(dist - 1, seenSet);
+                this.nb?.diffusionTick(dist - 1, seenSet);
+                this.nl?.diffusionTick(dist - 1, seenSet);
+                this.nr?.diffusionTick(dist - 1, seenSet);
+                this.nf?.diffusionTick(dist - 1, seenSet);
+                this.nb?.diffusionTick(dist - 1, seenSet);
+            }
+        }
     }
 
     addPressure(pressure, dist, seenSet) { 

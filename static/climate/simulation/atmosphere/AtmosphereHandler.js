@@ -33,13 +33,15 @@ export class AtmosphereHandler {
                 this.xm.set(this.y + j, this.xm.get(this.y + j) ?? new Map());
                 this.ym = this.xm.get(this.y + j);
                 for (let k = -this.ns; k < this.ns; k++) {
-                    this.cau = new AtmosphereUnit([this.x + i, this.y + j, this.z + k]);
-                    this.atmosphereUnitList.push(this.cau);
-                    this.ym.set(this.z + k, new AtmosphereUnit([this.x + i, this.y + j, this.z + k]));
+                    let sector = [this.x + i, this.y + j, this.z + k];
+                    if (this.indexAtmosphereUnit(sector) == null) {
+                        this.cau = new AtmosphereUnit(sector);
+                        this.atmosphereUnitList.push(this.cau);
+                        this.ym.set(this.z + k, this.cau);
+                    }
                 }
             }
         }
-        this.atmosphereUnitList.forEach((au) => au.initNeighbors(this));
     }
 
 
@@ -58,6 +60,7 @@ export class AtmosphereHandler {
     }
 
     diffusionModelTick() {
+        this.cu.diffusionTick(10, new Set());
     }
 
     gamepadInputTick() {
@@ -73,10 +76,11 @@ export class AtmosphereHandler {
 
     tick() { 
         this.ccp = structuredClone(loadGD(UI_CAMERA_OFFSET_VEC));
-        if (this.au == null) {
-            this.initAtmosphereUnits();
-        }
+        this.initAtmosphereUnits();
         this.cu = this.indexAtmosphereUnit(this.ccp);
+
+        this.atmosphereUnitList.forEach((au) => au.pretick(this));
+
         if (this.cu != null) {
             this.gamepadInputTick();
             this.diffusionModelTick();
@@ -86,10 +90,12 @@ export class AtmosphereHandler {
     }
 
     debugRenderTick() {
-        this.indexAtmosphereUnit([-1, -1, -1]).debugRender(this.ccp);
+        this.cu.debugRender(this.ccp);
 
         this.atmosphereUnitList.forEach((au) => {
             // if (au.sector[0] % 16 == 0 &&  au.sector[1] % 16 == 0 && au.sector[2] % 16 == 0) {
+
+            if (au.cd >= 0)
                 au.debugRender(this.ccp)
             // }
         });
