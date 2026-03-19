@@ -62,8 +62,7 @@ export class AtmosphereHandler {
 
     diffusionModelTick() {
         for (let i = 0; i < this.i; i++) {
-            cur = this.tickAUList[i];
-            cur.diffusionModel(this);
+            this.tickAUList[i].diffusionModel(this);
         }
     }
 
@@ -87,6 +86,8 @@ export class AtmosphereHandler {
             this.tickAUList[i].preTick(this);
         }
 
+        this.cu.pressure += 10;
+
         this.gamepadInputTick();
         this.diffusionModelTick();
 
@@ -98,7 +99,7 @@ export class AtmosphereHandler {
         for (let i = 0; i < this.i; i++) {
             cur = this.tickAUList[i];
             
-            if (cur.cd > 4.7 && cur.cd < 5)
+            if (cur.cd < 5)
                 cur.debugRender(this.ccp);
         }
     }

@@ -76,15 +76,27 @@ export class AtmosphereUnit {
     }
 
     diffusionModel(mgr) {
-        // hopefully 'mgr' is unused, but providing it in case it's needed
+        this._diffusionSquareTick(this.nt)
+        this._diffusionSquareTick(this.nb)
+        this._diffusionSquareTick(this.nl)
+        this._diffusionSquareTick(this.nr)
+        this._diffusionSquareTick(this.nf)
+        this._diffusionSquareTick(this.nb)
+    }
+
+    _diffusionSquareTick(neighbor) {
+        if (neighbor == null)
+            return;
+
+        this._diff = neighbor.pressure - this.pressure;
+        this._m = 0.2;
     }
 
 
 
     debugRender(ccp) {
         this.debugRenderInit(ccp);
-        this.debugRenderBounds();
-        // this.debugRenderLabel();
+        this.debugRenderLabel();
     }
 
     debugRenderInit(ccp) {
@@ -185,9 +197,9 @@ export class AtmosphereUnit {
             this._tcs.renderScreen[0],
             this._tcs.renderScreen[1],
             this._tcs.screen[2],
-            2,
+            2 * Math.log(10 + this.pressure),
             COLOR_WHITE,
-            "|" + this.cd,
+            null,
             false));
     }
 }
