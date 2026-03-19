@@ -79,13 +79,14 @@ export class AtmosphereHandler {
     }
 
     gamepadInputTick() {
+        let m = 1;
         if (isButtonPressed(GBDU)) {
-            this.cu.pressure += 100;
+            this.cu.pressure += m;
 
         }
 
         if (isButtonPressed(GBDD)) {
-            this.cu.pressure += 1000;
+            this.cu.pressure += m + m + m + m + m + m + m + m + m + m + m + m; 
         }
     }
 
@@ -109,7 +110,7 @@ export class AtmosphereHandler {
         let cur;
         for (let i = 0; i < this.i; i++) {
             cur = this.tickAUList[i];
-            if (cur.cd < 300)
+            if (cur.cd < 30)
                 cur.debugRender(this.ccp);
         }
     }

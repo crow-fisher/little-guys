@@ -160,6 +160,11 @@ export function multiplyVectorByScalar(vec, scalar) {
   }
   return vec;
 }
+export function multiplyVectorByScalarDest(vec, scalar, dest) {
+  for (let i = 0; i < vec.length; i++) {
+    dest[i] = vec[i] * scalar;
+  }
+}
 
 export function multiplyVectorsDest(v1, v2, dest) {
   for (let i = 0; i < v1.length; i++)

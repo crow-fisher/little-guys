@@ -7,7 +7,7 @@ import { PointLabelRenderJob } from "../../../../rendering/model/PointLabelRende
 import { addRenderJob } from "../../../../rendering/rasterizer.js";
 import { loadEmptyScene } from "../../../../saveAndLoad.js";
 import { loadGD, UI_CAMERA_CENTER_SELECT_OFFSET } from "../../../../ui/UIData.js";
-import { addVec3Dest, addVectors, getVec3Length, multiplyVectorByScalar, subtractVectors, subtractVectorsDest } from "../../../stars/matrix.js";
+import { addVec3Dest, addVectors, getVec3Length, multiplyVectorByScalar, multiplyVectorByScalarDest, normalizeVec3, subtractVectors, subtractVectorsDest } from "../../../stars/matrix.js";
 
 export class AtmosphereUnit {
     constructor(sector, size) { // vec3s
@@ -15,7 +15,7 @@ export class AtmosphereUnit {
         this.size = size;
         this.pressure = 1;
         this.cd = -1; // camera dist. in sectors. euclidian distance.
-        this.pd = [0, 0, 0]; // pressure delta. by x/y/z 
+        this.flow = [0, 0, 0]; // flow
 
         this.nt; // neighbor top
         this.nb; //      ... bottom
@@ -32,7 +32,7 @@ export class AtmosphereUnit {
             (this.sector[1] - mgr.ccp[1]) ** 2 + 
             (this.sector[2] - mgr.ccp[2]) ** 2) ** 0.5;
 
-        this.pd = [0, 0, 0];
+        this.flow = [0, 0, 0];
     }
 
     initNeighbors(manager) {
@@ -100,11 +100,13 @@ export class AtmosphereUnit {
         this.pressure += this._diff;
         neighbor.pressure -= this._diff;
         this._relSector = this._relSector ?? [0, 0, 0];
-        subtractVectorsDest(this.sector, neighbor.sector, this._relSector);
-        multiplyVectorByScalar(this._relSector, this._diff);
+        this._neighborFlow = this._neighborFlow ?? [0, 0, 0];
 
-        subtractVectors(this.pd, this._relSector);
-        addVectors(neighbor.pd, this._relSector);
+        subtractVectorsDest(neighbor.sector, this.sector, this._relSector);
+        multiplyVectorByScalarDest(this._relSector, this._diff, this._neighborFlow);
+
+        subtractVectors(this.flow, this._neighborFlow);
+        addVectors(neighbor.flow, this._neighborFlow);
     }
 
 
@@ -115,23 +117,26 @@ export class AtmosphereUnit {
     }
 
     debugRenderDiffusionFlow() {
-
-        if (getVec3Length(this.pd) < 1) {
-            return;
-        }
-        
-        this._tcsDiffusionFlowSector = this._tcsDiffusionFlowSector ?? [0, 0, 0];
-
-        addVec3Dest(this._tcsRoot, this.pd, this._tcsDiffusionFlowSector);
-
-        this._tcsDiffusionFlow = new CoordinateSet(this._tcsDiffusionFlowSector);
+        this._tcsRootFlow = this._tcsRootFlow ?? [0, 0, 0];
+        addVec3Dest(this._tcsRoot, this.flow, this._tcsRootFlow);
+        this._tcsFlow = new CoordinateSet(this._tcsRootFlow);
   
         addRenderJob(new LineRenderJob(
             this._tcs.renderScreen, 
-            this._tcsDiffusionFlow.renderScreen,
+            this._tcsFlow.renderScreen,
             3,
             COLOR_VERY_FUCKING_RED
         ), false);
+
+
+        addRenderJob(new PointLabelRenderJob(
+            this._tcsFlow.renderScreen[0],
+            this._tcsFlow.renderScreen[1],
+            this._tcsFlow.screen[2],
+             5,
+            COLOR_RED,
+            null),
+            false);
         
     }
 
