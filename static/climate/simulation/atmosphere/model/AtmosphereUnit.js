@@ -76,6 +76,10 @@ export class AtmosphereUnit {
     }
 
     diffusionModel(mgr) {
+
+        this._diffusionSquareTick(this.nf)
+        this._diffusionSquareTick(this.nb)
+
         this._diffusionSquareTick(this.nt)
         this._diffusionSquareTick(this.nb)
         this._diffusionSquareTick(this.nl)
@@ -87,9 +91,11 @@ export class AtmosphereUnit {
     _diffusionSquareTick(neighbor) {
         if (neighbor == null)
             return;
+        this._m = 0.08;
+        this._diff = this._m * (neighbor.pressure - this.pressure);
 
-        this._diff = neighbor.pressure - this.pressure;
-        this._m = 0.2;
+        this.pressure += this._diff;
+        neighbor.pressure -= this._diff;
     }
 
 
@@ -197,7 +203,7 @@ export class AtmosphereUnit {
             this._tcs.renderScreen[0],
             this._tcs.renderScreen[1],
             this._tcs.screen[2],
-            2 * Math.log(10 + this.pressure),
+             this.pressure,
             COLOR_WHITE,
             null,
             false));

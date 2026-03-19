@@ -61,6 +61,10 @@ export class AtmosphereHandler {
     }
 
     diffusionModelTick() {
+
+        // this.cu.diffusionModel(this);
+        // return;
+
         for (let i = 0; i < this.i; i++) {
             this.tickAUList[i].diffusionModel(this);
         }
@@ -68,12 +72,12 @@ export class AtmosphereHandler {
 
     gamepadInputTick() {
         if (isButtonPressed(GBDU)) {
-            this.cu.addPressure(0.1, 3, new Set());
+            this.cu.pressure += 100;
+
         }
 
         if (isButtonPressed(GBDD)) {
-            this.cu.addPressure(-0.1, 3, new Set());
-
+            this.cu.pressure += 1000;
         }
     }
 
@@ -86,7 +90,6 @@ export class AtmosphereHandler {
             this.tickAUList[i].preTick(this);
         }
 
-        this.cu.pressure += 10;
 
         this.gamepadInputTick();
         this.diffusionModelTick();
@@ -98,8 +101,7 @@ export class AtmosphereHandler {
         let cur;
         for (let i = 0; i < this.i; i++) {
             cur = this.tickAUList[i];
-            
-            if (cur.cd < 5)
+            if (cur.cd < 30)
                 cur.debugRender(this.ccp);
         }
     }
