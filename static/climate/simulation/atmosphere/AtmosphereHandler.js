@@ -11,9 +11,8 @@ export class AtmosphereHandler {
     constructor() {
         this.au = new Map(); // 3-D map to individuals sectors of XYZ space
         this.fullAUList = new Array(); // 1-D array array of all live AUs
-        
+        this.tickAUList = new Array();
         this.dist = 3;
-
     }
 
     initAtmosphereUnits() {
@@ -25,7 +24,8 @@ export class AtmosphereHandler {
         this.ym;
         this.zm;
         this.cau;
-
+         
+        this.i = 0;
         for (let i = -this.ns; i < this.ns; i++) {
             this.au.set(this.x + i, this.au.get(this.x + i) ?? new Map());
             this.xm = this.au.get(this.x + i);
@@ -39,9 +39,11 @@ export class AtmosphereHandler {
                         this.fullAUList.push(this.cau);
                         this.ym.set(this.z + k, this.cau);
                     }
+                    this.tickAUList[this.i] = this.ym.get(this.z + k);
+                    this.i += 1;
                 }
             }
-        }
+        };
     }
 
     indexAtmosphereUnit(sector) {
@@ -59,6 +61,10 @@ export class AtmosphereHandler {
     }
 
     diffusionModelTick() {
+        for (let i = 0; i < this.i; i++) {
+            cur = this.tickAUList[i];
+            cur.diffusionModel(this);
+        }
     }
 
     gamepadInputTick() {
@@ -72,47 +78,14 @@ export class AtmosphereHandler {
         }
     }
 
-    bfsTraversalRoutine() {
-        this.dist = 8;
-        
-        this._seenSet = this._seenSet ?? new Set();
-        this._seenSet.clear()
-         
-        this._pendingNext = this._pendingNext ?? new Array();
-        this._pendingNext.length = 0;
-
-        this._next = this._next ?? new Array();
-        this._next.length = 0;
-
-        this.cu.bfsTraversal(this, this.dist, this._pendingNext, this._seenSet);
-        for (let i = 0; i < this._pendingNext.length; i++) {
-            if (this._pendingNext.at(i) != null) {
-                this._next.push(this._pendingNext.at(i));
-            }
-        }
-        this._pendingNext.length = 0;
-
-        let cur;
-        while (this._next.length > 0) {
-            this._next.sort((a, b) => a.cd - b.cd)
-            cur = this._next.shift();
-            cur.bfsTraversal(this, this.dist, this._pendingNext, this._seenSet);
-            for (let i = 0; i < this._pendingNext.length; i++) {
-                if (this._pendingNext.at(i) != null) {
-                    this._next.push(this._pendingNext.at(i));
-                }
-            }
-            this._pendingNext.length = 0;
-        }
-    }
-
     tick() { 
         this.ccp = structuredClone(loadGD(UI_CAMERA_OFFSET_VEC));
         this.initAtmosphereUnits();
         this.cu = this.indexAtmosphereUnit(this.ccp);
-        this.fullAUList.forEach((au) => au.pretick(this));
 
-        this.bfsTraversalRoutine();
+        for (let i = 0; i < this.i; i++) {
+            this.tickAUList[i].preTick(this);
+        }
 
         this.gamepadInputTick();
         this.diffusionModelTick();
@@ -121,19 +94,13 @@ export class AtmosphereHandler {
     }
 
     debugRenderTick() {
-
-        // this.fullAUList.forEach((au) => {
-        //     // if (au.sector[0] % 16 == 0 &&  au.sector[1] % 16 == 0 && au.sector[2] % 16 == 0) {
-        //     if (au.cd < 8 && au.cd > 7)
-        //         au.debugRender(this.ccp)
-        //     // }
-        // });
-
-
-        this._seenSet.forEach((au) => {
-        // if (au.sector[0] % 16 == 0 &&  au.sector[1] % 16 == 0 && au.sector[2] % 16 == 0) {
-                au.debugRender(this.ccp)
-        });
+        let cur;
+        for (let i = 0; i < this.i; i++) {
+            cur = this.tickAUList[i];
+            
+            if (cur.cd > 4.7 && cur.cd < 5)
+                cur.debugRender(this.ccp);
+        }
     }
 }
     

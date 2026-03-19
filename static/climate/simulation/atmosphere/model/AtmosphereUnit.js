@@ -23,8 +23,12 @@ export class AtmosphereUnit {
         this.nb; //      ... back
     }
 
-    pretick(mgr) {
+    preTick(mgr) {
         this.initNeighbors(mgr);
+        this.cd = (
+            (this.sector[0] - mgr.ccp[0]) ** 2 + 
+            (this.sector[1] - mgr.ccp[1]) ** 2 + 
+            (this.sector[2] - mgr.ccp[2]) ** 2) ** 0.5;
     }
 
     initNeighbors(manager) {
@@ -44,7 +48,7 @@ export class AtmosphereUnit {
             (this.sector[0] - mgr.ccp[0]) ** 2 + 
             (this.sector[1] - mgr.ccp[1]) ** 2 + 
             (this.sector[2] - mgr.ccp[2]) ** 2) ** 0.5;
-            
+
         seen.add(this);
         if (this.cd < dist) {
             next.push(this.nf); 
@@ -71,6 +75,12 @@ export class AtmosphereUnit {
         }
     }
 
+    diffusionModel(mgr) {
+        // hopefully 'mgr' is unused, but providing it in case it's needed
+    }
+
+
+
     debugRender(ccp) {
         this.debugRenderInit(ccp);
         this.debugRenderBounds();
@@ -92,13 +102,12 @@ export class AtmosphereUnit {
         this._z1 -= ccp[2];
         this._z2 -= ccp[2];
 
-        // this._center = [this.sector[0] - ccp[0], this.sector[1] - ccp[1], this.sector[2] - ccp[2]]
-
         this._tcsRoot = this._tcsRoot ?? [0, 0, 0];
         addVec3Dest(this.sector, loadGD(UI_CAMERA_CENTER_SELECT_OFFSET), this._tcsRoot);    
         this._tcs = new CoordinateSet(this.sector);
         this._tcs.process();
     }
+
     debugRenderBounds() {
         let lines = [
             [
@@ -170,6 +179,7 @@ export class AtmosphereUnit {
             debugRenderLineOffsetPoints(start, end, color); 
         });
     }
+
     debugRenderLabel() {
         addRenderJob(new PointLabelRenderJob(
             this._tcs.renderScreen[0],
