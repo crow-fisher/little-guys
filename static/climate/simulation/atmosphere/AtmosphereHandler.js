@@ -13,7 +13,6 @@ export class AtmosphereHandler {
         this.fullAUList = new Array(); // 1-D array array of all live AUs
         
         this.dist = 3;
-        this.nearAUList = new Array(); // 1-D array of AUs within `this.dist` of the camera
 
     }
 
@@ -74,7 +73,7 @@ export class AtmosphereHandler {
     }
 
     bfsTraversalRoutine() {
-        this.dist = 12;
+        this.dist = 8;
         
         this._seenSet = this._seenSet ?? new Set();
         this._seenSet.clear()
@@ -85,9 +84,9 @@ export class AtmosphereHandler {
         this._next = this._next ?? new Array();
         this._next.length = 0;
 
-        this.cu.bfsTraversal(this.dist, this._pendingNext, this._seenSet);
+        this.cu.bfsTraversal(this, this.dist, this._pendingNext, this._seenSet);
         for (let i = 0; i < this._pendingNext.length; i++) {
-            if (this._pendingNext.at(i)[0] != null) {
+            if (this._pendingNext.at(i) != null) {
                 this._next.push(this._pendingNext.at(i));
             }
         }
@@ -97,19 +96,14 @@ export class AtmosphereHandler {
         while (this._next.length > 0) {
             this._next.sort((a, b) => a.cd - b.cd)
             cur = this._next.shift();
-            cur[0].bfsTraversal(this.dist, this._pendingNext, this._seenSet);
+            cur.bfsTraversal(this, this.dist, this._pendingNext, this._seenSet);
             for (let i = 0; i < this._pendingNext.length; i++) {
-                if (this._pendingNext.at(i)[0] != null) {
+                if (this._pendingNext.at(i) != null) {
                     this._next.push(this._pendingNext.at(i));
                 }
             }
             this._pendingNext.length = 0;
         }
-    }
-
-    localityTick() {
-        this.bfsTraversalRoutine();
-        
     }
 
     tick() { 
@@ -118,25 +112,27 @@ export class AtmosphereHandler {
         this.cu = this.indexAtmosphereUnit(this.ccp);
         this.fullAUList.forEach((au) => au.pretick(this));
 
-        this.localityTick();
+        this.bfsTraversalRoutine();
 
+        this.gamepadInputTick();
+        this.diffusionModelTick();
 
-        if (this.cu != null) {
-            this.gamepadInputTick();
-            this.diffusionModelTick();
-        }
-        this.indexAtmosphereUnit([-1, -1, -1])?.addPressure(.1, 1, new Set());
         this.debugRenderTick();
     }
 
     debugRenderTick() {
-        this.cu.debugRender(this.ccp);
 
-        this.fullAUList.forEach((au) => {
-            // if (au.sector[0] % 16 == 0 &&  au.sector[1] % 16 == 0 && au.sector[2] % 16 == 0) {
-            if (au.cd < 8 && au.cd > 7)
+        // this.fullAUList.forEach((au) => {
+        //     // if (au.sector[0] % 16 == 0 &&  au.sector[1] % 16 == 0 && au.sector[2] % 16 == 0) {
+        //     if (au.cd < 8 && au.cd > 7)
+        //         au.debugRender(this.ccp)
+        //     // }
+        // });
+
+
+        this._seenSet.forEach((au) => {
+        // if (au.sector[0] % 16 == 0 &&  au.sector[1] % 16 == 0 && au.sector[2] % 16 == 0) {
                 au.debugRender(this.ccp)
-            // }
         });
     }
 }

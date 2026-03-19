@@ -25,11 +25,6 @@ export class AtmosphereUnit {
 
     pretick(mgr) {
         this.initNeighbors(mgr);
-        this.cd = (
-            (this.sector[0] - mgr.ccp[0]) ** 2 + 
-            (this.sector[1] - mgr.ccp[1]) ** 2 + 
-            (this.sector[2] - mgr.ccp[2]) ** 2) ** 0.5
-        
     }
 
     initNeighbors(manager) {
@@ -41,16 +36,22 @@ export class AtmosphereUnit {
         this.nb = this.nb ?? manager.getSectorOffset(this.sector, 0, 0, 1)
     }
 
-    bfsTraversal(dist, next, seen) {
+    bfsTraversal(mgr, dist, next, seen) {
         if (seen.has(this))
             return;
+
+        this.cd = (
+            (this.sector[0] - mgr.ccp[0]) ** 2 + 
+            (this.sector[1] - mgr.ccp[1]) ** 2 + 
+            (this.sector[2] - mgr.ccp[2]) ** 2) ** 0.5;
+            
         seen.add(this);
         if (this.cd < dist) {
-            next.push(this.nt); 
+            next.push(this.nf); 
             next.push(this.nb); 
             next.push(this.nl); 
             next.push(this.nr); 
-            next.push(this.nf); 
+            next.push(this.nt); 
             next.push(this.nb); 
         }
     }
