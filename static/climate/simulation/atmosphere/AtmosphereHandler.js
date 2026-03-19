@@ -16,7 +16,7 @@ export class AtmosphereHandler {
     }
 
     initAtmosphereUnits() {
-        this.ns = 12;
+        this.ns = 15;
         this.x = I(this.ccp[0]);
         this.y = I(this.ccp[1]);
         this.z = I(this.ccp[2]);
@@ -44,6 +44,8 @@ export class AtmosphereHandler {
                 }
             }
         };
+        this.tickAUList.length = this.i;
+        this.tickAUList.sort((a, b) => a.cd - b.cd);
     }
 
     indexAtmosphereUnit(sector) {
@@ -101,7 +103,7 @@ export class AtmosphereHandler {
         let cur;
         for (let i = 0; i < this.i; i++) {
             cur = this.tickAUList[i];
-            if (cur.cd < 30)
+            if (cur.cd < 300)
                 cur.debugRender(this.ccp);
         }
     }
