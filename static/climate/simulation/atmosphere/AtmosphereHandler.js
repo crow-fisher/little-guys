@@ -12,11 +12,11 @@ export class AtmosphereHandler {
         this.au = new Map(); // 3-D map to individuals sectors of XYZ space
         this.fullAUList = new Array(); // 1-D array array of all live AUs
         this.tickAUList = new Array();
-        this.dist = 3;
+        this.dist = 10;
     }
 
     initAtmosphereUnits() {
-        this.ns = 15;
+        this.ns = this.dist;
         this.x = I(this.ccp[0]);
         this.y = I(this.ccp[1]);
         this.z = I(this.ccp[2]);
@@ -46,6 +46,12 @@ export class AtmosphereHandler {
         };
         this.tickAUList.length = this.i;
         this.tickAUList.sort((a, b) => a.cd - b.cd);
+
+        if (this.fullAUList.length > (this.tickAUList.length * 10)) {
+            this.au.clear();
+            this.fullAUList.length = 0;
+            this.initAtmosphereUnits();
+        }
     }
 
     indexAtmosphereUnit(sector) {

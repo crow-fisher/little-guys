@@ -7,7 +7,7 @@ import { PointLabelRenderJob } from "../../../../rendering/model/PointLabelRende
 import { addRenderJob } from "../../../../rendering/rasterizer.js";
 import { loadEmptyScene } from "../../../../saveAndLoad.js";
 import { loadGD, UI_CAMERA_CENTER_SELECT_OFFSET } from "../../../../ui/UIData.js";
-import { addVec3Dest, addVectors, getVec3Length, multiplyVectorByScalar, subtractVectorsDest } from "../../../stars/matrix.js";
+import { addVec3Dest, addVectors, getVec3Length, multiplyVectorByScalar, subtractVectors, subtractVectorsDest } from "../../../stars/matrix.js";
 
 export class AtmosphereUnit {
     constructor(sector, size) { // vec3s
@@ -102,14 +102,16 @@ export class AtmosphereUnit {
         this._relSector = this._relSector ?? [0, 0, 0];
         subtractVectorsDest(this.sector, neighbor.sector, this._relSector);
         multiplyVectorByScalar(this._relSector, this._diff);
-        addVectors(this.pd, this._relSector);
+
+        subtractVectors(this.pd, this._relSector);
+        addVectors(neighbor.pd, this._relSector);
     }
 
 
     debugRender(ccp) {
         this.debugRenderInit(ccp);
         this.debugRenderLabel();
-        // this.debugRenderDiffusionFlow();
+        this.debugRenderDiffusionFlow();
     }
 
     debugRenderDiffusionFlow() {
