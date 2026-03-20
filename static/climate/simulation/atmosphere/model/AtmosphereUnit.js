@@ -8,6 +8,7 @@ import { addRenderJob } from "../../../../rendering/rasterizer.js";
 import { loadEmptyScene } from "../../../../saveAndLoad.js";
 import { loadGD, UI_CAMERA_CENTER_SELECT_OFFSET } from "../../../../ui/UIData.js";
 import { addVec3Dest, addVectors, getVec3Length, multiplyVectorByScalar, multiplyVectorByScalarDest, normalizeVec3, subtractVectors, subtractVectorsDest } from "../../../stars/matrix.js";
+import { getCurDay } from "../../../time.js";
 
 export class AtmosphereUnit {
     constructor(sector, size) { // vec3s
@@ -117,14 +118,17 @@ export class AtmosphereUnit {
     }
 
     debugRenderDiffusionFlow() {
+        this.flow = [Math.sin(10 ** 4 * getCurDay()), 0, Math.cos(10 ** 4 * getCurDay())]
+
         this._tcsRootFlow = this._tcsRootFlow ?? [0, 0, 0];
         addVec3Dest(this._tcsRoot, this.flow, this._tcsRootFlow);
+
         this._tcsFlow = new CoordinateSet(this._tcsRootFlow);
   
         addRenderJob(new LineRenderJob(
             this._tcs.renderScreen, 
             this._tcsFlow.renderScreen,
-            3,
+            10 / this.cd,
             COLOR_VERY_FUCKING_RED
         ), false);
 
@@ -133,7 +137,7 @@ export class AtmosphereUnit {
             this._tcsFlow.renderScreen[0],
             this._tcsFlow.renderScreen[1],
             this._tcsFlow.screen[2],
-             5,
+             15 / this.cd,
             COLOR_RED,
             null),
             false);
