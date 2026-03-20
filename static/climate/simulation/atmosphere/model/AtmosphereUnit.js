@@ -82,24 +82,26 @@ export class AtmosphereUnit {
 
     diffusionModel(mgr) {
         this._diffusionSquareTick(this.nf)
-        this._diffusionSquareTick(this.nb)
-
         this._diffusionSquareTick(this.nt)
-        this._diffusionSquareTick(this.nb)
         this._diffusionSquareTick(this.nl)
-        this._diffusionSquareTick(this.nr)
-        this._diffusionSquareTick(this.nf)
-        this._diffusionSquareTick(this.nb)
+
+        // this._diffusionSquareTick(this.nb)
+
+        // this._diffusionSquareTick(this.nl)
+        // this._diffusionSquareTick(this.nr)
+        // this._diffusionSquareTick(this.nf)
+        // this._diffusionSquareTick(this.nb)
     }
 
     _diffusionSquareTick(neighbor) {
         if (neighbor == null)
             return;
-        this._m = 0.08;
+        this._m = 0.008;
         this._diff = this._m * (neighbor.pressure - this.pressure);
 
-        this.pressure += this._diff;
-        neighbor.pressure -= this._diff;
+        // this.pressure += this._diff;
+        // neighbor.pressure -= this._diff;
+
         this._relSector = this._relSector ?? [0, 0, 0];
         this._neighborFlow = this._neighborFlow ?? [0, 0, 0];
 
@@ -114,11 +116,12 @@ export class AtmosphereUnit {
     debugRender(ccp) {
         this.debugRenderInit(ccp);
         this.debugRenderLabel();
+        this.debugRenderBounds();
         this.debugRenderDiffusionFlow();
     }
 
     debugRenderDiffusionFlow() {
-        this.flow = [Math.sin(10 ** 4 * getCurDay()), 0, Math.cos(10 ** 4 * getCurDay())]
+        // this.flow = [Math.sin(10 ** 4 * getCurDay()), 0, Math.cos(10 ** 4 * getCurDay())]
 
         this._tcsRootFlow = this._tcsRootFlow ?? [0, 0, 0];
         addVec3Dest(this._tcsRoot, this.flow, this._tcsRootFlow);

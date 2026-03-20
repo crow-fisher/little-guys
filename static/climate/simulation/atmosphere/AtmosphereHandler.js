@@ -1,7 +1,7 @@
 import { GBDD, GBDR, GBDU, GBSR, isButtonPressed } from "../../../gamepad.js";
 import { gfc } from "../../../rendering/camera.js";
 import { loadGD, UI_CAMERA_CENTER_SELECT_OFFSET, UI_CAMERA_OFFSET_VEC } from "../../../ui/UIData.js";
-import { addVec3Dest, addVectors } from "../../stars/matrix.js";
+import { addVec3Dest, addVectors, copyVecValue } from "../../stars/matrix.js";
 import { AtmosphereUnit } from "./model/AtmosphereUnit.js";
 
 
@@ -69,17 +69,19 @@ export class AtmosphereHandler {
     }
 
     diffusionModelTick() {
-
-        // this.cu.diffusionModel(this);
-        // return;
-
         for (let i = 0; i < this.i; i++) {
             this.tickAUList[i].diffusionModel(this);
+        }
+        for (let i = 0; i < this.i; i++) {
+            this.tickAUList[i].pressure += this.tickAUList[i].flow[0];
+            this.tickAUList[i].pressure += this.tickAUList[i].flow[1];
+            this.tickAUList[i].pressure += this.tickAUList[i].flow[2]; 
+            // copyVecValue([0, 0, 0], this.tickAUList[i].flow);
         }
     }
 
     gamepadInputTick() {
-        let m = 1;
+        let m = 10 ** 2;
         if (isButtonPressed(GBDU)) {
             this.cu.pressure += m;
 
@@ -99,7 +101,6 @@ export class AtmosphereHandler {
             this.tickAUList[i].preTick(this);
         }
 
-
         this.gamepadInputTick();
         this.diffusionModelTick();
 
@@ -110,7 +111,7 @@ export class AtmosphereHandler {
         let cur;
         for (let i = 0; i < this.i; i++) {
             cur = this.tickAUList[i];
-            if (cur.cd < 30)
+            if (cur.cd < 4)
                 cur.debugRender(this.ccp);
         }
     }
