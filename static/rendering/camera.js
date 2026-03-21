@@ -422,15 +422,25 @@ export function rotatePointRz(point, theta) {
     return multiplyMatrixAndPoint(rotationMatrix, point);
 }
 
-export function debugRenderLineOffsetPoints(offset1, offset2, color) {
-        let camera1 = [0, 0, 0];
-        let camera2 = [0, 0, 0];
-        let screen1 = [0, 0, 0];
-        let screen2 = [0, 0, 0];
-        let renderNorm1 = [0, 0];
-        let renderNorm2 = [0, 0];
-        let renderScreen1 = [0, 0, 0];
-        let renderScreen2 = [0, 0, 0];
+
+let camera1;
+let camera2;
+let screen1;
+let screen2;
+let renderNorm1;
+let renderNorm2;
+let renderScreen1;
+let renderScreen2;
+
+export function debugRenderLineOffsetPoints(offset1, offset2, color, size=3) {
+        camera1 = [0, 0, 0];
+        camera2 = [0, 0, 0];
+        screen1 = [0, 0, 0];
+        screen2 = [0, 0, 0];
+        renderNorm1 = [0, 0];
+        renderNorm2 = [0, 0];
+        renderScreen1 = [0, 0, 0];
+        renderScreen2 = [0, 0, 0];
 
         cartesianToCamera(offset1, camera1);
         cameraToScreen(camera1, screen1);
@@ -443,7 +453,7 @@ export function debugRenderLineOffsetPoints(offset1, offset2, color) {
             gfc()._xOffset, gfc()._yOffset, gfc()._s);
 
         if (renderScreen1[2] > 0 && renderScreen2[2] > 0) {
-            addRenderJob(new LineRenderJob(renderScreen1, renderScreen2, 3, color, renderScreen2.z));
+            addRenderJob(new LineRenderJob(renderScreen1, renderScreen2, size, color, renderScreen2.z));
             addRenderJob(new PointLabelRenderJob(...renderScreen1, 2, color));
             addRenderJob(new PointLabelRenderJob(...renderScreen2, 2, color));
         }

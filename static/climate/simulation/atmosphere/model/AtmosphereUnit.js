@@ -1,3 +1,4 @@
+import { getCanvasHeight, getCanvasWidth } from "../../../../canvas.js";
 import { COLOR_BLUE, COLOR_GREEN, COLOR_OTHER_BLUE, COLOR_RED, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../../colors.js";
 import { MAIN_CONTEXT } from "../../../../index.js";
 import { debugRenderLineOffsetPoints } from "../../../../rendering/camera.js";
@@ -7,7 +8,7 @@ import { PointLabelRenderJob } from "../../../../rendering/model/PointLabelRende
 import { addRenderJob } from "../../../../rendering/rasterizer.js";
 import { loadEmptyScene } from "../../../../saveAndLoad.js";
 import { loadGD, UI_CAMERA_CENTER_SELECT_OFFSET } from "../../../../ui/UIData.js";
-import { addVec3Dest, addVectors, getVec3Length, multiplyVectorByScalar, multiplyVectorByScalarDest, normalizeVec3, subtractVectors, subtractVectorsDest } from "../../../stars/matrix.js";
+import { addVec3Dest, addVectors, getVec3Length, multiplyVectorByScalar, multiplyVectorByScalarDest, multiplyVectorsDest, normalizeVec3, subtractVectors, subtractVectorsDest } from "../../../stars/matrix.js";
 import { getCurDay } from "../../../time.js";
 
 export class AtmosphereUnit {
@@ -29,13 +30,13 @@ export class AtmosphereUnit {
     preTick(mgr) {
         this.initNeighbors(mgr);
         this.cd = (
-            (this.sector[0] - mgr.ccp[0]) ** 2 + 
-            (this.sector[1] - mgr.ccp[1]) ** 2 + 
+            (this.sector[0] - mgr.ccp[0]) ** 2 +
+            (this.sector[1] - mgr.ccp[1]) ** 2 +
             (this.sector[2] - mgr.ccp[2]) ** 2) ** 0.5;
         this.flow = [0, 0, 0];
 
         this.p = 0.90;
-        this.pressure = this.p * this.pressure + (1 - this.p) * 1; 
+        this.pressure = this.p * this.pressure + (1 - this.p) * 1;
     }
 
     initNeighbors(manager) {
@@ -52,23 +53,23 @@ export class AtmosphereUnit {
             return;
 
         this.cd = (
-            (this.sector[0] - mgr.ccp[0]) ** 2 + 
-            (this.sector[1] - mgr.ccp[1]) ** 2 + 
+            (this.sector[0] - mgr.ccp[0]) ** 2 +
+            (this.sector[1] - mgr.ccp[1]) ** 2 +
             (this.sector[2] - mgr.ccp[2]) ** 2) ** 0.5;
 
         seen.add(this);
         if (this.cd < dist) {
-            next.push(this.nf); 
-            next.push(this.nb); 
-            next.push(this.nl); 
-            next.push(this.nr); 
-            next.push(this.nt); 
-            next.push(this.nb); 
+            next.push(this.nf);
+            next.push(this.nb);
+            next.push(this.nl);
+            next.push(this.nr);
+            next.push(this.nt);
+            next.push(this.nb);
         }
     }
 
-    addPressure(pressure, dist, seenSet) { 
-        if (!seenSet.has(this)) { 
+    addPressure(pressure, dist, seenSet) {
+        if (!seenSet.has(this)) {
             seenSet.add(this);
             this.pressure += pressure;
             if (dist > 0) {
@@ -96,7 +97,7 @@ export class AtmosphereUnit {
     _diffusionSquareTick(neighbor) {
         if (neighbor == null)
             return;
-        this._m = 0.008;
+        this._m = 0.1;
         this._diff = this._m * (neighbor.pressure - this.pressure);
 
         this.pressure += this._diff;
@@ -112,24 +113,46 @@ export class AtmosphereUnit {
         addVectors(neighbor.flow, this._neighborFlow);
     }
 
+    shouldRenderDebug(ccp) {
+        if (
+            this._tcsCenter.renderScreen[0] < 0 || this._tcsCenter.renderScreen[0] > getCanvasWidth() &&
+            this._tcsCenter.renderScreen[1] < 0 && this._tcsCenter.renderScreen[1] > getCanvasHeight()) {
+            return false;
+        }
+
+        this._sectorDiff = this._sectorDiff ?? [0, 0, 0];
+        subtractVectorsDest(this._centerRoot, ccp, this._sectorDiff);
+        
+        if (Math.abs(this._sectorDiff[1]) > 2) {
+            return false;
+        }
+
+
+        return true;
+    }
 
     debugRender(ccp) {
         this.debugRenderInit(ccp);
-        this.debugRenderLabel();
-        this.debugRenderBounds();
-        this.debugRenderDiffusionFlow();
+        if (this.shouldRenderDebug(ccp)) {
+            this.debugRenderLabel();
+            this.debugRenderBounds();
+            this.debugRenderDiffusionFlow();
+        }
     }
 
     debugRenderDiffusionFlow() {
         // this.flow = [Math.sin(10 ** 4 * getCurDay()), 0, Math.cos(10 ** 4 * getCurDay())]
 
         this._tcsRootFlow = this._tcsRootFlow ?? [0, 0, 0];
-        addVec3Dest(this._tcsRoot, this.flow, this._tcsRootFlow);
+        this._flowMult = this._flowMult ?? [0, 0, 0];
+        multiplyVectorByScalarDest(this.flow, -100, this._flowMult);
+
+        addVec3Dest(this._centerRoot, this._flowMult, this._tcsRootFlow);
 
         this._tcsFlow = new CoordinateSet(this._tcsRootFlow);
-  
+
         addRenderJob(new LineRenderJob(
-            this._tcs.renderScreen, 
+            this._tcsCenter.renderScreen,
             this._tcsFlow.renderScreen,
             10 / this.cd,
             COLOR_VERY_FUCKING_RED
@@ -140,11 +163,11 @@ export class AtmosphereUnit {
             this._tcsFlow.renderScreen[0],
             this._tcsFlow.renderScreen[1],
             this._tcsFlow.screen[2],
-             15 / this.cd,
+            15 / this.cd,
             COLOR_RED,
             null),
             false);
-        
+
     }
 
     debugRenderInit(ccp) {
@@ -154,7 +177,7 @@ export class AtmosphereUnit {
         this._y2 = this.sector[1] + 1;
         this._z1 = this.sector[2];
         this._z2 = this.sector[2] + 1;
-        
+
         this._x1 -= ccp[0];
         this._x2 -= ccp[0];
         this._y1 -= ccp[1];
@@ -163,12 +186,12 @@ export class AtmosphereUnit {
         this._z2 -= ccp[2];
 
         this._tcsRoot = this._tcsRoot ?? [0, 0, 0];
-        addVec3Dest(this.sector, loadGD(UI_CAMERA_CENTER_SELECT_OFFSET), this._tcsRoot);    
+        addVec3Dest(this.sector, loadGD(UI_CAMERA_CENTER_SELECT_OFFSET), this._tcsRoot);
         this._tcs = new CoordinateSet(this._tcsRoot);
-        
+
         this._centerRoot = this._centerRoot ?? [0, 0, 0];
         addVec3Dest(this._tcsRoot, [0.5, 0.5, 0.5], this._centerRoot);
-        this._tcsCenter = new CoordinateSet(this._centerRoot); 
+        this._tcsCenter = new CoordinateSet(this._centerRoot);
     }
 
     debugRenderBounds() {
@@ -233,13 +256,13 @@ export class AtmosphereUnit {
                 [this._x2, this._y2, this._z2],
                 COLOR_OTHER_BLUE
             ]
-            ];
-    
+        ];
+
         lines.forEach((line) => {
             let start = line[0];
             let end = line[1];
             let color = line[2];
-            debugRenderLineOffsetPoints(start, end, color); 
+            debugRenderLineOffsetPoints(start, end, color, 3 / this.cd);
         });
     }
 
@@ -248,7 +271,7 @@ export class AtmosphereUnit {
             this._tcsCenter.renderScreen[0],
             this._tcsCenter.renderScreen[1],
             this._tcsCenter.screen[2],
-             Math.min(20, this.pressure * 10 / this.cd),
+            Math.min(20, this.pressure * 10 / this.cd),
             COLOR_WHITE,
             null),
             false);

@@ -96,7 +96,6 @@ export class AtmosphereHandler {
 
         this.gamepadInputTick();
         this.diffusionModelTick();
-
         this.debugRenderTick();
     }
 
@@ -104,7 +103,7 @@ export class AtmosphereHandler {
         let cur;
         for (let i = 0; i < this.i; i++) {
             cur = this.tickAUList[i];
-            if (cur.cd < 4)
+            if (cur.cd < 17)
                 cur.debugRender(this.ccp);
         }
     }

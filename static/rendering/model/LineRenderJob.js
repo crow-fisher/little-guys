@@ -16,7 +16,7 @@ export class LineRenderJob extends RenderJob {
     }
 
     render() {
-        if (this.v1[0] > 0 && this.v1[1] > 0 && this.v2[0] > 0 && this.v2[1] > 0) {
+        if (this.v1[0] > 0 && this.v1[1] > 0 || this.v2[0] > 0 && this.v2[1] > 0) {
         MAIN_CONTEXT.beginPath();
         MAIN_CONTEXT.lineWidth = this.size;
         MAIN_CONTEXT.strokeStyle = this.color;
