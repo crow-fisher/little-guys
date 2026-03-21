@@ -32,8 +32,10 @@ export class AtmosphereUnit {
             (this.sector[0] - mgr.ccp[0]) ** 2 + 
             (this.sector[1] - mgr.ccp[1]) ** 2 + 
             (this.sector[2] - mgr.ccp[2]) ** 2) ** 0.5;
-
         this.flow = [0, 0, 0];
+
+        this.p = 0.90;
+        this.pressure = this.p * this.pressure + (1 - this.p) * 1; 
     }
 
     initNeighbors(manager) {
@@ -84,13 +86,11 @@ export class AtmosphereUnit {
         this._diffusionSquareTick(this.nf)
         this._diffusionSquareTick(this.nt)
         this._diffusionSquareTick(this.nl)
-
-        // this._diffusionSquareTick(this.nb)
-
-        // this._diffusionSquareTick(this.nl)
-        // this._diffusionSquareTick(this.nr)
-        // this._diffusionSquareTick(this.nf)
-        // this._diffusionSquareTick(this.nb)
+        this._diffusionSquareTick(this.nb)
+        this._diffusionSquareTick(this.nl)
+        this._diffusionSquareTick(this.nr)
+        this._diffusionSquareTick(this.nf)
+        this._diffusionSquareTick(this.nb)
     }
 
     _diffusionSquareTick(neighbor) {
@@ -99,8 +99,8 @@ export class AtmosphereUnit {
         this._m = 0.008;
         this._diff = this._m * (neighbor.pressure - this.pressure);
 
-        // this.pressure += this._diff;
-        // neighbor.pressure -= this._diff;
+        this.pressure += this._diff;
+        neighbor.pressure -= this._diff;
 
         this._relSector = this._relSector ?? [0, 0, 0];
         this._neighborFlow = this._neighborFlow ?? [0, 0, 0];
@@ -165,6 +165,10 @@ export class AtmosphereUnit {
         this._tcsRoot = this._tcsRoot ?? [0, 0, 0];
         addVec3Dest(this.sector, loadGD(UI_CAMERA_CENTER_SELECT_OFFSET), this._tcsRoot);    
         this._tcs = new CoordinateSet(this._tcsRoot);
+        
+        this._centerRoot = this._centerRoot ?? [0, 0, 0];
+        addVec3Dest(this._tcsRoot, [0.5, 0.5, 0.5], this._centerRoot);
+        this._tcsCenter = new CoordinateSet(this._centerRoot); 
     }
 
     debugRenderBounds() {
@@ -241,10 +245,10 @@ export class AtmosphereUnit {
 
     debugRenderLabel() {
         addRenderJob(new PointLabelRenderJob(
-            this._tcs.renderScreen[0],
-            this._tcs.renderScreen[1],
-            this._tcs.screen[2],
-             Math.min(20, this.pressure / this.cd),
+            this._tcsCenter.renderScreen[0],
+            this._tcsCenter.renderScreen[1],
+            this._tcsCenter.screen[2],
+             Math.min(20, this.pressure * 10 / this.cd),
             COLOR_WHITE,
             null),
             false);

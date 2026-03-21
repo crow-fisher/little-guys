@@ -72,23 +72,16 @@ export class AtmosphereHandler {
         for (let i = 0; i < this.i; i++) {
             this.tickAUList[i].diffusionModel(this);
         }
-        for (let i = 0; i < this.i; i++) {
-            this.tickAUList[i].pressure += this.tickAUList[i].flow[0];
-            this.tickAUList[i].pressure += this.tickAUList[i].flow[1];
-            this.tickAUList[i].pressure += this.tickAUList[i].flow[2]; 
-            // copyVecValue([0, 0, 0], this.tickAUList[i].flow);
-        }
     }
 
     gamepadInputTick() {
-        let m = 10 ** 2;
         if (isButtonPressed(GBDU)) {
-            this.cu.pressure += m;
+            this.cu.pressure += 1;
 
         }
 
         if (isButtonPressed(GBDD)) {
-            this.cu.pressure += m + m + m + m + m + m + m + m + m + m + m + m; 
+            this.cu.pressure *= 0.5;
         }
     }
 
