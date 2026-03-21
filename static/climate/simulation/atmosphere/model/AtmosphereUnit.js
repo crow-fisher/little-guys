@@ -127,9 +127,9 @@ export class AtmosphereUnit {
             return false;
         }
 
-        if (Math.abs(this._sectorDiff[0]) > 2) {
-            return false;
-        }
+        // if (Math.abs(this._sectorDiff[0]) > 2) {
+        //     return false;
+        // }
 
 
         return true;

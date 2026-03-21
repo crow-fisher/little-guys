@@ -75,13 +75,17 @@ export class AtmosphereHandler {
     }
 
     gamepadInputTick() {
+        this._ccpOffset = this._ccpOffset ?? [0, 0, 0];
+        addVec3Dest(this.ccp, [1, 0, 1], this._ccpOffset);
+        this._cuOffset = this.indexAtmosphereUnit(this._ccpOffset);
+
         if (isButtonPressed(GBDU)) {
-            this.cu.pressure += .1;
+            this._cuOffset.pressure += .1;
 
         }
 
         if (isButtonPressed(GBDD)) {
-            this.cu.pressure *= 0.5;
+            this._cuOffset.pressure *= 0.5;
         }
     }
 
