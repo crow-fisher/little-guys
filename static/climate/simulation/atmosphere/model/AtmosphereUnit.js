@@ -85,13 +85,13 @@ export class AtmosphereUnit {
 
     diffusionModel(mgr) {
         this._diffusionSquareTick(this.nf)
-        this._diffusionSquareTick(this.nt)
-        this._diffusionSquareTick(this.nl)
-        this._diffusionSquareTick(this.nb)
-        this._diffusionSquareTick(this.nl)
-        this._diffusionSquareTick(this.nr)
-        this._diffusionSquareTick(this.nf)
-        this._diffusionSquareTick(this.nb)
+        // this._diffusionSquareTick(this.nt)
+        // this._diffusionSquareTick(this.nl)
+        // this._diffusionSquareTick(this.nb)
+        // this._diffusionSquareTick(this.nl)
+        // this._diffusionSquareTick(this.nr)
+        // this._diffusionSquareTick(this.nf)
+        // this._diffusionSquareTick(this.nb)
     }
 
     _diffusionSquareTick(neighbor) {
@@ -127,6 +127,10 @@ export class AtmosphereUnit {
             return false;
         }
 
+        if (Math.abs(this._sectorDiff[0]) > 2) {
+            return false;
+        }
+
 
         return true;
     }
@@ -145,7 +149,7 @@ export class AtmosphereUnit {
 
         this._tcsRootFlow = this._tcsRootFlow ?? [0, 0, 0];
         this._flowMult = this._flowMult ?? [0, 0, 0];
-        multiplyVectorByScalarDest(this.flow, -100, this._flowMult);
+        multiplyVectorByScalarDest(this.flow, -40, this._flowMult);
 
         addVec3Dest(this._centerRoot, this._flowMult, this._tcsRootFlow);
 
@@ -267,13 +271,26 @@ export class AtmosphereUnit {
     }
 
     debugRenderLabel() {
-        addRenderJob(new PointLabelRenderJob(
-            this._tcsCenter.renderScreen[0],
-            this._tcsCenter.renderScreen[1],
-            this._tcsCenter.screen[2],
-            Math.min(20, this.pressure * 10 / this.cd),
-            COLOR_WHITE,
-            null),
-            false);
+
+        this.digits = 8;
+
+        if (this.pressure > 1 + 10 ** (-this.digits))
+            addRenderJob(new PointLabelRenderJob(
+                this._tcsCenter.renderScreen[0],
+                this._tcsCenter.renderScreen[1],
+                this._tcsCenter.screen[2],
+                Math.min(20, this.pressure * 10 / this.cd),
+                COLOR_WHITE,
+                this.pressure.toFixed(this.digits) + " " + printVec3(this.flow)),
+                false);
     }
+}
+
+function printVec3(vec3) {
+    let out = "";
+    out += vec3[0].toFixed(0) + "|";
+    out += vec3[1].toFixed(0) + "|";
+    out += vec3[2].toFixed(8);
+
+    return out;
 }

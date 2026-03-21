@@ -12,7 +12,7 @@ export class AtmosphereHandler {
         this.au = new Map(); // 3-D map to individuals sectors of XYZ space
         this.fullAUList = new Array(); // 1-D array array of all live AUs
         this.tickAUList = new Array();
-        this.dist = 8;
+        this.dist = 12;
     }
 
     initAtmosphereUnits() {
@@ -76,7 +76,7 @@ export class AtmosphereHandler {
 
     gamepadInputTick() {
         if (isButtonPressed(GBDU)) {
-            this.cu.pressure += 1;
+            this.cu.pressure += .1;
 
         }
 
@@ -103,7 +103,7 @@ export class AtmosphereHandler {
         let cur;
         for (let i = 0; i < this.i; i++) {
             cur = this.tickAUList[i];
-            if (cur.cd < 17)
+            if (cur.cd < 30)
                 cur.debugRender(this.ccp);
         }
     }
