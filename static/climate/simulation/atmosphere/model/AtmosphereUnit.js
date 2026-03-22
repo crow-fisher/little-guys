@@ -8,7 +8,7 @@ import { PointLabelRenderJob } from "../../../../rendering/model/PointLabelRende
 import { addRenderJob } from "../../../../rendering/rasterizer.js";
 import { loadEmptyScene } from "../../../../saveAndLoad.js";
 import { loadGD, UI_CAMERA_CENTER_SELECT_OFFSET } from "../../../../ui/UIData.js";
-import { addVec3Dest, addVectors, getVec3Length, multiplyVectorByScalar, multiplyVectorByScalarDest, multiplyVectorsDest, normalizeVec3, subtractVectors, subtractVectorsDest } from "../../../stars/matrix.js";
+import { addVec3Dest, addVectors, copyVecValue, getVec3Length, multiplyVectorByScalar, multiplyVectorByScalarDest, multiplyVectorsDest, normalizeVec3, subtractVectors, subtractVectorsDest } from "../../../stars/matrix.js";
 import { getCurDay } from "../../../time.js";
 
 export class AtmosphereUnit {
@@ -17,8 +17,8 @@ export class AtmosphereUnit {
         this.size = size;
         this.pressure = 1;
         this.cd = -1; // camera dist. in sectors. euclidian distance.
-        this.flow = [0, 0, 0]; // flow
-
+        this.inFlows = []; // array of vec3
+        this.outFlows = [];
         this.nTop;
         this.nBottom;
         this.nLeft;
@@ -33,7 +33,14 @@ export class AtmosphereUnit {
             (this.sector[0] - mgr.ccp[0]) ** 2 +
             (this.sector[1] - mgr.ccp[1]) ** 2 +
             (this.sector[2] - mgr.ccp[2]) ** 2) ** 0.5;
-        this.flow = [0, 0, 0];
+
+        for (let i = 0; i < 10; i++) {
+            this.inFlows[i] = this.inFlows[i] ?? [0, 0, 0];
+            this.outFlows[i] = this.outFlows[i] ?? [0, 0, 0];
+            copyVecValue([0, 0, 0], this.inFlows[i])
+            copyVecValue([0, 0, 0], this.outFlows[i])
+        }
+        this.flows = [0, 0, 0];
 
         // this.p = 0.90;
         // this.pressure = this.p * this.pressure + (1 - this.p) * 1;
@@ -49,20 +56,25 @@ export class AtmosphereUnit {
     }
 
     diffusionModel() {
-
         if (this.pressure == 1) {
             return;
         }
 
-        this._diffusionSquareTick(this.nLeft);
-        this._diffusionSquareTick(this.nRight);
+        this._diffusionSquareTick(this.nLeft, 0);
+        this._diffusionSquareTick(this.nRight, 1);
+
+        // this._diffusionSquareTick(this.nLeft);
+        // this._diffusionSquareTick(this.nRight);
+        // this._diffusionSquareTick(this.nTop);
+        // this._diffusionSquareTick(this.nBottom);
+        // this._diffusionSquareTick(this.nFront);
+        // this._diffusionSquareTick(this.nBack);
     }
 
-    _diffusionSquareTick(neighbor) {
+    _diffusionSquareTick(neighbor, idx) {
         if (neighbor == null)
             return;
         
-
         if (this.pressure < neighbor.pressure) {
             return;
         }
@@ -71,15 +83,27 @@ export class AtmosphereUnit {
 
         this._relSector = this._relSector ?? [0, 0, 0];
         this._neighborFlow = this._neighborFlow ?? [0, 0, 0];
+        neighbor._neighborFlow = neighbor._neighborFlow ?? [0, 0, 0];
 
         subtractVectorsDest(neighbor.sector, this.sector, this._relSector);
         multiplyVectorByScalarDest(this._relSector, this._diff, this._neighborFlow);
 
-        // addVectors(this.flow, this._neighborFlow);
-        this.pressure += this._neighborFlow[0];
-        this.pressure += this._neighborFlow[1];
-        this.pressure += this._neighborFlow[2];
-        subtractVectors(neighbor.flow, this._neighborFlow);
+        copyVecValue(this._neighborFlow, this.outFlows[idx]);
+        copyVecValue(neighbor._neighborFlow, neighbor.inFlows[idx]);
+    }
+
+    applyFlow() {
+        for (let i = 0; i < this.outFlows.length; i++) {
+            this.pressure -= this.outFlows[i][0];
+            this.pressure -= this.outFlows[i][1];
+            this.pressure -= this.outFlows[i][2];
+        }
+
+        for (let i = 0; i < this.inFlows.length; i++) {
+            this.pressure += this.inFlows[i][0];
+            this.pressure += this.inFlows[i][1];
+            this.pressure += this.inFlows[i][2];
+        }
     }
 
     shouldRenderDebug(ccp) {

@@ -75,12 +75,8 @@ export class AtmosphereHandler {
     }
 
     applyFlow() {
-        let t, f;
         for (let i = 0; i < this.i; i++) {
-            t = this.tickAUList[i], f = t.flow;
-            t.pressure += f[0];
-            t.pressure += f[1];
-            t.pressure += f[2];
+            this.tickAUList[i].applyFlow();
         }
     }
 
