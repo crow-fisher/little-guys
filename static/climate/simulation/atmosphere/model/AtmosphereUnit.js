@@ -19,12 +19,12 @@ export class AtmosphereUnit {
         this.cd = -1; // camera dist. in sectors. euclidian distance.
         this.flow = [0, 0, 0]; // flow
 
-        this.nt; // neighbor top
-        this.nb; //      ... bottom
-        this.nl; //      ... left 
-        this.nr; //      ... right 
-        this.nf; //      ... front
-        this.nb; //      ... back
+        this.nTop;
+        this.nBottom;
+        this.nLeft;
+        this.nRight;
+        this.nFront;
+        this.nBottom;
     }
 
     preTick(mgr) {
@@ -35,73 +35,39 @@ export class AtmosphereUnit {
             (this.sector[2] - mgr.ccp[2]) ** 2) ** 0.5;
         this.flow = [0, 0, 0];
 
-        this.p = 0.90;
-        this.pressure = this.p * this.pressure + (1 - this.p) * 1;
+        // this.p = 0.90;
+        // this.pressure = this.p * this.pressure + (1 - this.p) * 1;
     }
 
     initNeighbors(manager) {
-        this.nt = this.nt ?? manager.getSectorOffset(this.sector, 0, -1, 0)
-        this.nb = this.nb ?? manager.getSectorOffset(this.sector, 0, 1, 0)
-        this.nl = this.nl ?? manager.getSectorOffset(this.sector, -1, 0, 0)
-        this.nr = this.nr ?? manager.getSectorOffset(this.sector, 1, 0, 0)
-        this.nf = this.nf ?? manager.getSectorOffset(this.sector, 0, 0, -1)
-        this.nb = this.nb ?? manager.getSectorOffset(this.sector, 0, 0, 1)
+        this.nLeft = this.nLeft ?? manager.getSectorOffset(this.sector, -1, 0, 0)
+        this.nRight = this.nRight ?? manager.getSectorOffset(this.sector, 1, 0, 0)
+        this.nTop = this.nTop ?? manager.getSectorOffset(this.sector, 0, -1, 0)
+        this.nBottom = this.nBottom ?? manager.getSectorOffset(this.sector, 0, 1, 0)
+        this.nFront = this.nFront ?? manager.getSectorOffset(this.sector, 0, 0, -1)
+        this.nBack = this.nBack ?? manager.getSectorOffset(this.sector, 0, 0, 1)
     }
 
-    bfsTraversal(mgr, dist, next, seen) {
-        if (seen.has(this))
+    diffusionModel() {
+
+        if (this.pressure == 1) {
             return;
-
-        this.cd = (
-            (this.sector[0] - mgr.ccp[0]) ** 2 +
-            (this.sector[1] - mgr.ccp[1]) ** 2 +
-            (this.sector[2] - mgr.ccp[2]) ** 2) ** 0.5;
-
-        seen.add(this);
-        if (this.cd < dist) {
-            next.push(this.nf);
-            next.push(this.nb);
-            next.push(this.nl);
-            next.push(this.nr);
-            next.push(this.nt);
-            next.push(this.nb);
         }
-    }
 
-    addPressure(pressure, dist, seenSet) {
-        if (!seenSet.has(this)) {
-            seenSet.add(this);
-            this.pressure += pressure;
-            if (dist > 0) {
-                this.nt?.addPressure(pressure * 0.9, dist - 1, seenSet);
-                this.nb?.addPressure(pressure * 0.9, dist - 1, seenSet);
-                this.nl?.addPressure(pressure * 0.9, dist - 1, seenSet);
-                this.nr?.addPressure(pressure * 0.9, dist - 1, seenSet);
-                this.nf?.addPressure(pressure * 0.9, dist - 1, seenSet);
-                this.nb?.addPressure(pressure * 0.9, dist - 1, seenSet);
-            }
-        }
-    }
-
-    diffusionModel(mgr) {
-        this._diffusionSquareTick(this.nf)
-        // this._diffusionSquareTick(this.nt)
-        // this._diffusionSquareTick(this.nl)
-        // this._diffusionSquareTick(this.nb)
-        // this._diffusionSquareTick(this.nl)
-        // this._diffusionSquareTick(this.nr)
-        // this._diffusionSquareTick(this.nf)
-        // this._diffusionSquareTick(this.nb)
+        this._diffusionSquareTick(this.nLeft);
+        this._diffusionSquareTick(this.nRight);
     }
 
     _diffusionSquareTick(neighbor) {
         if (neighbor == null)
             return;
-        this._m = 0.1;
-        this._diff = this._m * (neighbor.pressure - this.pressure);
+        
 
-        this.pressure += this._diff;
-        neighbor.pressure -= this._diff;
+        if (this.pressure < neighbor.pressure) {
+            return;
+        }
+
+        this._diff = .1 * (this.pressure - neighbor.pressure);
 
         this._relSector = this._relSector ?? [0, 0, 0];
         this._neighborFlow = this._neighborFlow ?? [0, 0, 0];
@@ -109,8 +75,8 @@ export class AtmosphereUnit {
         subtractVectorsDest(neighbor.sector, this.sector, this._relSector);
         multiplyVectorByScalarDest(this._relSector, this._diff, this._neighborFlow);
 
-        subtractVectors(this.flow, this._neighborFlow);
-        addVectors(neighbor.flow, this._neighborFlow);
+        addVectors(this.flow, this._neighborFlow);
+        subtractVectors(neighbor.flow, this._neighborFlow);
     }
 
     shouldRenderDebug(ccp) {
@@ -127,7 +93,7 @@ export class AtmosphereUnit {
             return false;
         }
 
-        // if (Math.abs(this._sectorDiff[0]) > 2) {
+        // if (Math.abs(this._sectorDiff[0]) > 4) {
         //     return false;
         // }
 
@@ -138,7 +104,7 @@ export class AtmosphereUnit {
     debugRender(ccp) {
         this.debugRenderInit(ccp);
         if (this.shouldRenderDebug(ccp)) {
-            this.debugRenderLabel();
+            // this.debugRenderLabel();
             this.debugRenderBounds();
             this.debugRenderDiffusionFlow();
         }

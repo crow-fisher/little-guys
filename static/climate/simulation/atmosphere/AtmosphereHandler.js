@@ -70,13 +70,23 @@ export class AtmosphereHandler {
 
     diffusionModelTick() {
         for (let i = 0; i < this.i; i++) {
-            this.tickAUList[i].diffusionModel(this);
+            this.tickAUList[i].diffusionModel();
+        }
+    }
+
+    applyFlow() {
+        let t, f;
+        for (let i = 0; i < this.i; i++) {
+            t = this.tickAUList[i], f = t.flow;
+            t.pressure += f[0];
+            t.pressure += f[1];
+            t.pressure += f[2];
         }
     }
 
     gamepadInputTick() {
         this._ccpOffset = this._ccpOffset ?? [0, 0, 0];
-        addVec3Dest(this.ccp, [1, 0, 1], this._ccpOffset);
+        addVec3Dest(this.ccp, [1, 0, 1], this._ccpOffset);   
         this._cuOffset = this.indexAtmosphereUnit(this._ccpOffset);
 
         if (isButtonPressed(GBDU)) {
@@ -100,6 +110,7 @@ export class AtmosphereHandler {
 
         this.gamepadInputTick();
         this.diffusionModelTick();
+        this.applyFlow();
         this.debugRenderTick();
     }
 
@@ -107,8 +118,7 @@ export class AtmosphereHandler {
         let cur;
         for (let i = 0; i < this.i; i++) {
             cur = this.tickAUList[i];
-            if (cur.cd < 30)
-                cur.debugRender(this.ccp);
+            cur.debugRender(this.ccp);
         }
     }
 }
