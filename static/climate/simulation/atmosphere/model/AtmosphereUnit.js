@@ -75,7 +75,10 @@ export class AtmosphereUnit {
         subtractVectorsDest(neighbor.sector, this.sector, this._relSector);
         multiplyVectorByScalarDest(this._relSector, this._diff, this._neighborFlow);
 
-        addVectors(this.flow, this._neighborFlow);
+        // addVectors(this.flow, this._neighborFlow);
+        this.pressure += this._neighborFlow[0];
+        this.pressure += this._neighborFlow[1];
+        this.pressure += this._neighborFlow[2];
         subtractVectors(neighbor.flow, this._neighborFlow);
     }
 
@@ -104,7 +107,7 @@ export class AtmosphereUnit {
     debugRender(ccp) {
         this.debugRenderInit(ccp);
         if (this.shouldRenderDebug(ccp)) {
-            // this.debugRenderLabel();
+            this.debugRenderLabel();
             this.debugRenderBounds();
             this.debugRenderDiffusionFlow();
         }
