@@ -77,8 +77,11 @@ export class AtmosphereUnit {
             addVectors(this.outFlow, this._sectorDiff);
             addVectors(neighbor.inFlow, this._sectorDiff);
         }
+    }
 
-
+    applyFlow() {
+        this.pressure -= getVec3Length(this.outFlow);
+        this.pressure += getVec3Length(this.inFlow);
     }
 
     shouldRenderDebug(ccp) {
@@ -106,20 +109,16 @@ export class AtmosphereUnit {
     debugRender(ccp) {
         this.debugRenderInit(ccp);
         if (this.shouldRenderDebug(ccp)) {
-            this.debugRenderLabel();
+            // this.debugRenderLabel();
             this.debugRenderBounds();
             this.debugRenderDiffusionFlow();
         }
     }
 
     debugRenderDiffusionFlow() {
-        // this.flow = [Math.sin(10 ** 4 * getCurDay()), 0, Math.cos(10 ** 4 * getCurDay())]
-
-        return;
-
         this._tcsRootFlow = this._tcsRootFlow ?? [0, 0, 0];
         this._flowMult = this._flowMult ?? [0, 0, 0];
-        multiplyVectorByScalarDest(this.flow, -40, this._flowMult);
+        multiplyVectorByScalarDest(this.outFlow, -40, this._flowMult);
 
         addVec3Dest(this._centerRoot, this._flowMult, this._tcsRootFlow);
 
