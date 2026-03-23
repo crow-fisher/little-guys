@@ -74,11 +74,6 @@ export class AtmosphereHandler {
         }
     }
 
-    applyFlow() {
-        for (let i = 0; i < this.i; i++) {
-            this.tickAUList[i].applyFlow();
-        }
-    }
 
     gamepadInputTick() {
         this._ccpOffset = this._ccpOffset ?? [0, 0, 0];
@@ -106,7 +101,6 @@ export class AtmosphereHandler {
 
         this.gamepadInputTick();
         this.diffusionModelTick();
-        this.applyFlow();
         this.debugRenderTick();
     }
 
