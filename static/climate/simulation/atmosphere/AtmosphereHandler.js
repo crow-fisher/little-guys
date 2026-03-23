@@ -74,7 +74,6 @@ export class AtmosphereHandler {
         }
     }
 
-
     gamepadInputTick() {
         this._ccpOffset = this._ccpOffset ?? [0, 0, 0];
         addVec3Dest(this.ccp, [1, 0, 1], this._ccpOffset);   

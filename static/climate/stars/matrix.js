@@ -38,6 +38,9 @@ export function multiplyMatrixAndPoint(matrix, point) {
       point[0] * matrix[0][3] + point[1] * matrix[1][3] + point[2] * matrix[2][3] + matrix[3][3]
   ];
 }
+export const VEC3 = [0, 0, 0];
+export const VEC4 = [0, 0, 0, 0];
+
 export function _multiplyMatrixAndPoint(matrix, point) {
   // Give a simple variable name to each part of the matrix, a column and row number
   const r0c0 = matrix[0][0],

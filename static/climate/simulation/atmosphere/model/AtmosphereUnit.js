@@ -8,10 +8,10 @@ import { PointLabelRenderJob } from "../../../../rendering/model/PointLabelRende
 import { addRenderJob } from "../../../../rendering/rasterizer.js";
 import { loadEmptyScene } from "../../../../saveAndLoad.js";
 import { loadGD, UI_CAMERA_CENTER_SELECT_OFFSET } from "../../../../ui/UIData.js";
-import { addVec3Dest, addVectors, copyVecValue, getVec3Length, multiplyVectorByScalar, multiplyVectorByScalarDest, multiplyVectorsDest, normalizeVec3, subtractVectors, subtractVectorsDest } from "../../../stars/matrix.js";
+import { addVec3Dest, addVectors, copyVecValue, getVec3Length, multiplyVectorByScalar, multiplyVectorByScalarDest, multiplyVectorsDest, normalizeVec3, subtractVectors, subtractVectorsDest, VEC3 } from "../../../stars/matrix.js";
 import { getCurDay } from "../../../time.js";
 
-const SIXTH = 1/6;
+
 
 export class AtmosphereUnit {
     constructor(sector, size) { // vec3s
@@ -19,9 +19,8 @@ export class AtmosphereUnit {
         this.size = size;
         this.pressure = 1;
         this.cd = -1; // camera dist. in sectors. euclidian distance.
-        this.flow = [0, 0, 0]
-        this.inFlows = []; // array of vec3
-        this.outFlows = [];
+        this.inFlow = [0, 0, 0]
+        this.outFlow = [0, 0, 0]
         this.nTop;
         this.nBottom;
         this.nLeft;
@@ -36,7 +35,8 @@ export class AtmosphereUnit {
             (this.sector[0] - mgr.ccp[0]) ** 2 +
             (this.sector[1] - mgr.ccp[1]) ** 2 +
             (this.sector[2] - mgr.ccp[2]) ** 2) ** 0.5;
-        this._pressure = this.pressure;
+        copyVecValue(VEC3, this.inFlow);
+        copyVecValue(VEC3, this.outFlow);
     }
 
     initNeighbors(manager) {
@@ -65,15 +65,20 @@ export class AtmosphereUnit {
         if (neighbor == null) {
             return;
         }
-        this.__diffusionSquareTick(this, neighbor);
-        this.__diffusionSquareTick(neighbor, this);
-    }
+        // relative position - vector
+        this._sectorDiff = this._sectorDiff ?? [0, 0, 0];
+        subtractVectorsDest(this.sector, neighbor.sector, this._sectorDiff);
+        // magnitude of flow - scalar. 
+        // if positive, pressure flows out from here to neighbor. 
+        this._neighborDiff = this.pressure - neighbor.pressure;
+        if (this._neighborDiff > 0) {
+            this._appliedDiff = this._neighborDiff * 0.1;
+            multiplyVectorByScalar(this._sectorDiff, this._appliedDiff);
+            addVectors(this.outFlow, this._sectorDiff);
+            addVectors(neighbor.inFlow, this._sectorDiff);
+        }
 
-    __diffusionSquareTick(sq1, sq2) {
-        sq1.pressure = sq1.pressure * (1 - SIXTH) + 
-            SIXTH * (
-                sq1._pressure * (1 - SIXTH) + sq2._pressure * SIXTH 
-            );
+
     }
 
     shouldRenderDebug(ccp) {
@@ -246,7 +251,7 @@ export class AtmosphereUnit {
                 this._tcsCenter.screen[2],
                 Math.min(20, this.pressure * 10 / this.cd),
                 COLOR_WHITE,
-                this.pressure.toFixed(this.digits) + " " + printVec3(this.flow)),
+                this.pressure.toFixed(this.digits)),
                 false);
     }
 }
