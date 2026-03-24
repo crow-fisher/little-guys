@@ -52,13 +52,13 @@ export class AtmosphereUnit {
         if (this.pressure == 1) {
             return;
         }
-        this._diffusionSquareTick(this.nRight);
-        this._diffusionSquareTick(this.nLeft);
-        this._diffusionSquareTick(this.nRight);
-        this._diffusionSquareTick(this.nTop);
-        this._diffusionSquareTick(this.nBottom);
-        this._diffusionSquareTick(this.nFront);
-        this._diffusionSquareTick(this.nBack);
+        this.fRight = this._diffusionSquareTick(this.nRight);
+        // this._diffusionSquareTick(this.nLeft);
+        // this._diffusionSquareTick(this.nRight);
+        // this._diffusionSquareTick(this.nTop);
+        // this._diffusionSquareTick(this.nBottom);
+        // this._diffusionSquareTick(this.nFront);
+        // this._diffusionSquareTick(this.nBack);
     }
 
     _diffusionSquareTick(neighbor) {
@@ -67,7 +67,7 @@ export class AtmosphereUnit {
         }
         // relative position - vector
         this._sectorDiff = this._sectorDiff ?? [0, 0, 0];
-        subtractVectorsDest(this.sector, neighbor.sector, this._sectorDiff);
+        subtractVectorsDest(neighbor.sector, this.sector, this._sectorDiff);
         // magnitude of flow - scalar. 
         // if positive, pressure flows out from here to neighbor. 
         this._neighborDiff = this.pressure - neighbor.pressure;
@@ -118,7 +118,7 @@ export class AtmosphereUnit {
     debugRenderDiffusionFlow() {
         this._tcsRootFlow = this._tcsRootFlow ?? [0, 0, 0];
         this._flowMult = this._flowMult ?? [0, 0, 0];
-        multiplyVectorByScalarDest(this.outFlow, -40, this._flowMult);
+        multiplyVectorByScalarDest(this.inFlow, -40, this._flowMult);
 
         addVec3Dest(this._centerRoot, this._flowMult, this._tcsRootFlow);
 
