@@ -1,16 +1,12 @@
 import { getCanvasHeight, getCanvasWidth } from "../../../../canvas.js";
-import { COLOR_BLUE, COLOR_GREEN, COLOR_OTHER_BLUE, COLOR_RED, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../../colors.js";
-import { MAIN_CONTEXT } from "../../../../index.js";
+import { COLOR_BLUE, COLOR_OTHER_BLUE, COLOR_RED, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../../colors.js";
 import { debugRenderLineOffsetPoints } from "../../../../rendering/camera.js";
 import { CoordinateSet } from "../../../../rendering/model/CoordinateSet.js";
 import { LineRenderJob } from "../../../../rendering/model/LineRenderJob.js";
 import { PointLabelRenderJob } from "../../../../rendering/model/PointLabelRenderJob.js";
 import { addRenderJob } from "../../../../rendering/rasterizer.js";
-import { loadEmptyScene } from "../../../../saveAndLoad.js";
 import { loadGD, UI_CAMERA_CENTER_SELECT_OFFSET } from "../../../../ui/UIData.js";
-import { addVec3Dest, addVectors, copyVecValue, getVec3Length, multiplyVectorByScalar, multiplyVectorByScalarDest, multiplyVectorsDest, normalizeVec3, subtractVectors, subtractVectorsDest, VEC3 } from "../../../stars/matrix.js";
-import { getCurDay } from "../../../time.js";
-
+import { addVec3Dest, addVectors, getVec3Length, multiplyVectorByScalar, multiplyVectorByScalarDest, subtractVectorsDest } from "../../../stars/matrix.js";
 
 
 export class AtmosphereUnit {
@@ -19,8 +15,7 @@ export class AtmosphereUnit {
         this.size = size;
         this.pressure = 1;
         this.cd = -1; // camera dist. in sectors. euclidian distance.
-        this.inFlow = [0, 0, 0]
-        this.outFlow = [0, 0, 0]
+        this.flow = new Map();
         this.nTop;
         this.nBottom;
         this.nLeft;
@@ -35,8 +30,48 @@ export class AtmosphereUnit {
             (this.sector[0] - mgr.ccp[0]) ** 2 +
             (this.sector[1] - mgr.ccp[1]) ** 2 +
             (this.sector[2] - mgr.ccp[2]) ** 2) ** 0.5;
-        copyVecValue(VEC3, this.inFlow);
-        copyVecValue(VEC3, this.outFlow);
+
+        this.initFlow();
+    }
+
+    sectorToFlowKey(sector) {
+        let out = 0;
+        out += Number(sector[2] ==  1) * 0b1;
+        out += Number(sector[2] == -1) * 0b01;
+        out += Number(sector[1] ==  1) * 0b001;
+        out += Number(sector[1] == -1) * 0b0001;
+        out += Number(sector[0] ==  1) * 0b00001;
+        out += Number(sector[0] == -1) * 0b000001;
+        return out;
+    }
+
+    flowKeyToSector(flowKey) {
+        switch (flowKey) {
+            case 0b1:
+                return [-1, 0, 0];
+            case 0b01:
+                return [1, 0, 0];
+            case 0b001:
+                return [0, 1, 0];
+            case 0b0001:
+                return [0, -1, 0];
+            case 0b00001:
+                return [0, 0, 1];
+            case 0b000001:
+                return [0, 0, -1];
+            default:
+                return [0xFACEFEED, 0xDEADBEEF, 0x8008135]
+        }
+    }
+
+
+    initFlow() {
+        this.flow.set(this.sectorToFlowKey([-1, 0, 0]), 0);
+        this.flow.set(this.sectorToFlowKey([1, 0, 0]), 0);
+        this.flow.set(this.sectorToFlowKey([0, 1, 0]), 0);
+        this.flow.set(this.sectorToFlowKey([0, -1, 0]), 0);
+        this.flow.set(this.sectorToFlowKey([0, 0, 1]), 0);
+        this.flow.set(this.sectorToFlowKey([0, 0, -1]), 0);
     }
 
     initNeighbors(manager) {
@@ -65,23 +100,27 @@ export class AtmosphereUnit {
         if (neighbor == null) {
             return;
         }
-        // relative position - vector
-        this._sectorDiff = this._sectorDiff ?? [0, 0, 0];
-        subtractVectorsDest(neighbor.sector, this.sector, this._sectorDiff);
-        // magnitude of flow - scalar. 
-        // if positive, pressure flows out from here to neighbor. 
+        this._sectorOffset = this._sectorOffset ?? [0, 0, 0];
+        this._sectorOffsetFlip = this._sectorOffsetFlip ?? [0, 0, 0];
+        
+        subtractVectorsDest(neighbor.sector, this.sector, this._sectorOffset);
+        multiplyVectorByScalarDest(this._sectorOffset, -1, this._sectorOffsetFlip);
+
         this._neighborDiff = this.pressure - neighbor.pressure;
         if (this._neighborDiff > 0) {
             this._appliedDiff = this._neighborDiff * 0.1;
-            multiplyVectorByScalar(this._sectorDiff, this._appliedDiff);
-            addVectors(this.outFlow, this._sectorDiff);
-            addVectors(neighbor.inFlow, this._sectorDiff);
+            this.flow.set(this.sectorToFlowKey(this._sectorOffset), this._appliedDiff);
+            neighbor.flow.set(this.sectorToFlowKey(this._sectorOffsetFlip), -this._appliedDiff);
         }
     }
 
     applyFlow() {
-        this.pressure -= getVec3Length(this.outFlow);
-        this.pressure += getVec3Length(this.inFlow);
+        this.pressure += this.flow.get(this.sectorToFlowKey([-1, 0, 0]));
+        this.pressure += this.flow.get(this.sectorToFlowKey([1, 0, 0]));
+        this.pressure += this.flow.get(this.sectorToFlowKey([0, 1, 0]));
+        this.pressure += this.flow.get(this.sectorToFlowKey([0, -1, 0]));
+        this.pressure += this.flow.get(this.sectorToFlowKey([0, 0, 1]));
+        this.pressure += this.flow.get(this.sectorToFlowKey([0, 0, -1]));
     }
 
     shouldRenderDebug(ccp) {
@@ -91,10 +130,10 @@ export class AtmosphereUnit {
             return false;
         }
 
-        this._sectorDiff = this._sectorDiff ?? [0, 0, 0];
-        subtractVectorsDest(this._centerRoot, ccp, this._sectorDiff);
+        this._sectorOffset = this._sectorOffset ?? [0, 0, 0];
+        subtractVectorsDest(this._centerRoot, ccp, this._sectorOffset);
         
-        if (Math.abs(this._sectorDiff[1]) > 2) {
+        if (Math.abs(this._sectorOffset[1]) > 2) {
             return false;
         }
 
@@ -109,37 +148,30 @@ export class AtmosphereUnit {
     debugRender(ccp) {
         this.debugRenderInit(ccp);
         if (this.shouldRenderDebug(ccp)) {
-            // this.debugRenderLabel();
+            this.debugRenderLabel();
             this.debugRenderBounds();
             this.debugRenderDiffusionFlow();
         }
     }
 
     debugRenderDiffusionFlow() {
+        this._sectorRef = this._sectorRef ?? [0, 0, 0];
         this._tcsRootFlow = this._tcsRootFlow ?? [0, 0, 0];
         this._flowMult = this._flowMult ?? [0, 0, 0];
-        multiplyVectorByScalarDest(this.inFlow, -40, this._flowMult);
+        
+        this.flow.entries().forEach((neighbor, pressure) => {
+                this._sectorRef = this.flowKeyToSector(neighbor);
+                multiplyVectorByScalarDest(neighbor, pressure, this._flowMult);
+                addVec3Dest(this._centerRoot, this._flowMult, this._tcsRootFlow);
+                this._tcsFlow = new CoordinateSet(this._tcsRootFlow);
+                addRenderJob(new LineRenderJob(
+                    this._tcsCenter.renderScreen,
+                    this._tcsFlow.renderScreen,
+                    10 / this.cd,
+                    COLOR_VERY_FUCKING_RED
+                ), false);
+        });
 
-        addVec3Dest(this._centerRoot, this._flowMult, this._tcsRootFlow);
-
-        this._tcsFlow = new CoordinateSet(this._tcsRootFlow);
-
-        addRenderJob(new LineRenderJob(
-            this._tcsCenter.renderScreen,
-            this._tcsFlow.renderScreen,
-            10 / this.cd,
-            COLOR_VERY_FUCKING_RED
-        ), false);
-
-
-        addRenderJob(new PointLabelRenderJob(
-            this._tcsFlow.renderScreen[0],
-            this._tcsFlow.renderScreen[1],
-            this._tcsFlow.screen[2],
-            15 / this.cd,
-            COLOR_RED,
-            null),
-            false);
 
     }
 

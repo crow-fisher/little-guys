@@ -12,7 +12,7 @@ export class AtmosphereHandler {
         this.au = new Map(); // 3-D map to individuals sectors of XYZ space
         this.fullAUList = new Array(); // 1-D array array of all live AUs
         this.tickAUList = new Array();
-        this.dist = 12;
+        this.dist = 3;
     }
 
     initAtmosphereUnits() {
