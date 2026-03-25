@@ -36,28 +36,29 @@ export class AtmosphereUnit {
 
     sectorToFlowKey(sector) {
         let out = 0;
-        out += Number(sector[2] ==  1) * 0b1;
-        out += Number(sector[2] == -1) * 0b01;
-        out += Number(sector[1] ==  1) * 0b001;
-        out += Number(sector[1] == -1) * 0b0001;
-        out += Number(sector[0] ==  1) * 0b00001;
-        out += Number(sector[0] == -1) * 0b000001;
+        out += Number(sector[2] ==  1) * 0b000001;
+        out += Number(sector[2] == -1) * 0b000010;
+        out += Number(sector[1] ==  1) * 0b000100;
+        out += Number(sector[1] == -1) * 0b001000;
+        out += Number(sector[0] ==  1) * 0b010000;
+        out += Number(sector[0] == -1) * 0b100000;
         return out;
     }
 
     flowKeyToSector(flowKey) {
+        // you could generalize this. if you wanted.
         switch (flowKey) {
-            case 0b1:
-                return [-1, 0, 0];
-            case 0b01:
-                return [1, 0, 0];
-            case 0b001:
-                return [0, 1, 0];
-            case 0b0001:
-                return [0, -1, 0];
-            case 0b00001:
-                return [0, 0, 1];
             case 0b000001:
+                return [-1, 0, 0];
+            case 0b000010:
+                return [1, 0, 0];
+            case 0b000100:
+                return [0, 1, 0];
+            case 0b001000:
+                return [0, -1, 0];
+            case 0b010000:
+                return [0, 0, 1];
+            case 0b100000:
                 return [0, 0, -1];
             default:
                 return [0xFACEFEED, 0xDEADBEEF, 0x8008135]
@@ -159,9 +160,9 @@ export class AtmosphereUnit {
         this._tcsRootFlow = this._tcsRootFlow ?? [0, 0, 0];
         this._flowMult = this._flowMult ?? [0, 0, 0];
         
-        this.flow.entries().forEach((neighbor, pressure) => {
-                this._sectorRef = this.flowKeyToSector(neighbor);
-                multiplyVectorByScalarDest(neighbor, pressure, this._flowMult);
+        this.flow.entries().forEach((entry) => {
+                this._sectorRef = this.flowKeyToSector(entry.at(0));
+                multiplyVectorByScalarDest(this._sectorRef, entry.at(1), this._flowMult);
                 addVec3Dest(this._centerRoot, this._flowMult, this._tcsRootFlow);
                 this._tcsFlow = new CoordinateSet(this._tcsRootFlow);
                 addRenderJob(new LineRenderJob(
