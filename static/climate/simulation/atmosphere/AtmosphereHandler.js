@@ -1,4 +1,5 @@
 import { GBDD, GBDR, GBDU, GBSR, isButtonPressed } from "../../../gamepad.js";
+import { DEBUG } from "../../../index.js";
 import { gfc } from "../../../rendering/camera.js";
 import { loadGD, UI_CAMERA_CENTER_SELECT_OFFSET, UI_CAMERA_OFFSET_VEC } from "../../../ui/UIData.js";
 import { addVec3Dest, addVectors, copyVecValue } from "../../stars/matrix.js";
@@ -12,7 +13,7 @@ export class AtmosphereHandler {
         this.au = new Map(); // 3-D map to individuals sectors of XYZ space
         this.fullAUList = new Array(); // 1-D array array of all live AUs
         this.tickAUList = new Array();
-        this.dist = 3;
+        this.dist = 6;
     }
 
     initAtmosphereUnits() {
@@ -83,7 +84,7 @@ export class AtmosphereHandler {
         this._cuOffset = this.indexAtmosphereUnit(this._ccpOffset);
 
         if (isButtonPressed(GBDU)) {
-            this.cu.pressure += .1;
+            this.cu.pressure += 10;
 
         }
 
@@ -103,7 +104,9 @@ export class AtmosphereHandler {
 
         this.gamepadInputTick();
         this.diffusionModelTick();
-        this.debugRenderTick();
+
+        if (DEBUG)
+            this.debugRenderTick();
     }
 
     debugRenderTick() {

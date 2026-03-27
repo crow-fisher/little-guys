@@ -35,34 +35,11 @@ export class AtmosphereUnit {
     }
 
     sectorToFlowKey(sector) {
-        let out = 0;
-        out += Number(sector[2] ==  1) * 0b000001;
-        out += Number(sector[2] == -1) * 0b000010;
-        out += Number(sector[1] ==  1) * 0b000100;
-        out += Number(sector[1] == -1) * 0b001000;
-        out += Number(sector[0] ==  1) * 0b010000;
-        out += Number(sector[0] == -1) * 0b100000;
-        return out;
+        return JSON.stringify(sector);
     }
 
     flowKeyToSector(flowKey) {
-        // you could generalize this. if you wanted.
-        switch (flowKey) {
-            case 0b000001:
-                return [-1, 0, 0];
-            case 0b000010:
-                return [1, 0, 0];
-            case 0b000100:
-                return [0, 1, 0];
-            case 0b001000:
-                return [0, -1, 0];
-            case 0b010000:
-                return [0, 0, 1];
-            case 0b100000:
-                return [0, 0, -1];
-            default:
-                return [0xFACEFEED, 0xDEADBEEF, 0x8008135]
-        }
+        return JSON.parse(flowKey);
     }
 
 
@@ -89,12 +66,12 @@ export class AtmosphereUnit {
             return;
         }
         this.fRight = this._diffusionSquareTick(this.nRight);
-        // this._diffusionSquareTick(this.nLeft);
-        // this._diffusionSquareTick(this.nRight);
-        // this._diffusionSquareTick(this.nTop);
-        // this._diffusionSquareTick(this.nBottom);
-        // this._diffusionSquareTick(this.nFront);
-        // this._diffusionSquareTick(this.nBack);
+        this._diffusionSquareTick(this.nLeft);
+        this._diffusionSquareTick(this.nRight);
+        this._diffusionSquareTick(this.nTop);
+        this._diffusionSquareTick(this.nBottom);
+        this._diffusionSquareTick(this.nFront);
+        this._diffusionSquareTick(this.nBack);
     }
 
     _diffusionSquareTick(neighbor) {
@@ -109,7 +86,7 @@ export class AtmosphereUnit {
 
         this._neighborDiff = this.pressure - neighbor.pressure;
         if (this._neighborDiff > 0) {
-            this._appliedDiff = this._neighborDiff * 0.1;
+            this._appliedDiff = -this._neighborDiff * 0.1;
             this.flow.set(this.sectorToFlowKey(this._sectorOffset), this._appliedDiff);
             neighbor.flow.set(this.sectorToFlowKey(this._sectorOffsetFlip), -this._appliedDiff);
         }
@@ -134,7 +111,7 @@ export class AtmosphereUnit {
         this._sectorOffset = this._sectorOffset ?? [0, 0, 0];
         subtractVectorsDest(this._centerRoot, ccp, this._sectorOffset);
         
-        if (Math.abs(this._sectorOffset[1]) > 2) {
+        if (Math.abs(this._sectorOffset[1]) > 1) {
             return false;
         }
 
@@ -276,7 +253,7 @@ export class AtmosphereUnit {
 
         this.digits = 8;
 
-        if (this.pressure > 1 + 10 ** (-this.digits))
+        // if (this.pressure > 1 + 10 ** (-this.digits))
             addRenderJob(new PointLabelRenderJob(
                 this._tcsCenter.renderScreen[0],
                 this._tcsCenter.renderScreen[1],
