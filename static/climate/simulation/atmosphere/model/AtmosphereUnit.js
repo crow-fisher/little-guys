@@ -103,9 +103,25 @@ export class AtmosphereUnit {
     }
 
     applyWindSpeed(loc, out, applyNeighbors) {
-        // fuckin.... i don't know
-        // out = [Math.sin(getCurDay() * 10 ** 4), Math.sin(getCurDay() * 10 ** 4), Math.sin(getCurDay() * 10 ** 4)]
-        copyVecValue([Math.sin(getCurDay() * 10 ** 4), Math.sin(getCurDay() * 10 ** 2), Math.cos(getCurDay() * 10 ** 5)], out);
+        this._sectorRefMidpoint = this._sectorRefMidpoint ?? [0, 0, 0];
+        this._sectorRefDelta = this._sectorRefDelta ?? [0, 0, 0];
+        this._sectorFlowMult = this._sectorFlowMult ?? [0, 0, 0];
+
+        this.flow.entries().forEach((entry) => {
+            this._sectorRef = this.flowKeyToSector(entry.at(0));
+            copyVecValue(this._sectorRef, this._sectorRefMidpoint);
+
+            this._sectorRefMidpoint[0] = (this._sectorRefMidpoint[0] == 0) ? 0.5 : this._sectorRefMidpoint[0];
+            this._sectorRefMidpoint[1] = (this._sectorRefMidpoint[1] == 0) ? 0.5 : this._sectorRefMidpoint[1];
+            this._sectorRefMidpoint[2] = (this._sectorRefMidpoint[2] == 0) ? 0.5 : this._sectorRefMidpoint[2];
+
+            addVectors(this._sectorRefMidpoint, this.sector);
+            subtractVectorsDest(loc, this._sectorRefMidpoint, this._sectorRefDelta);
+            this._sectorLocDistance = getVec3Length(this._sectorRefDelta);
+
+            multiplyVectorByScalarDest(this._sectorRef, entry.at(1) / ((1 + this._sectorLocDistance) ** 2), this._sectorFlowMult);
+            addVectors(out, this._sectorFlowMult);
+        });
     }
 
     shouldRenderDebug(ccp) {
