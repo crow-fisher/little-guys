@@ -6,10 +6,10 @@ import { addVec3Dest, addVectors, copyVecValue } from "../../stars/matrix.js";
 import { AtmosphereUnit } from "./model/AtmosphereUnit.js";
 
 
-const I = Math.floor
+const F = Math.floor
 
 export class AtmosphereHandler {
-    constructor() {
+    constructor() { 
         this.au = new Map(); // 3-D map to individuals sectors of XYZ space
         this.fullAUList = new Array(); // 1-D array array of all live AUs
         this.tickAUList = new Array();
@@ -18,9 +18,9 @@ export class AtmosphereHandler {
 
     initAtmosphereUnits() {
         this.ns = this.dist;
-        this.x = I(this.ccp[0]);
-        this.y = I(this.ccp[1]);
-        this.z = I(this.ccp[2]);
+        this.x = F(this.ccp[0]);
+        this.y = F(this.ccp[1]);
+        this.z = F(this.ccp[2]);
         this.xm;
         this.ym;
         this.zm;
@@ -57,16 +57,9 @@ export class AtmosphereHandler {
 
     indexAtmosphereUnit(sector) {
         return this.au
-            .get(Math.floor(sector[0]))
-            ?.get(Math.floor(sector[1]))
-            ?.get(Math.floor(sector[2]));
-    }
-
-    getSectorOffset(sector, dx, dy, dz) {
-        return this.au
-            .get(Math.floor(sector[0]) + dx)
-            ?.get(Math.floor(sector[1]) + dy)
-            ?.get(Math.floor(sector[2]) + dz);
+            .get(F(sector[0]))
+            ?.get(F(sector[1]))
+            ?.get(F(sector[2]));
     }
 
     diffusionModelTick() {
@@ -115,6 +108,17 @@ export class AtmosphereHandler {
             cur = this.tickAUList[i];
             cur.debugRender(this.ccp);
         }
+    }
+
+    getWindSpeedAtLocation(loc) {
+        let out = [0, 0, 0];
+        this._wslWsq = this.indexAtmosphereUnit(loc);
+        
+        if (this._wslWsq == null) {
+            return out;
+        }
+
+        this._wslWsq.applyWindSpeed(loc, out, true);
     }
 }
     

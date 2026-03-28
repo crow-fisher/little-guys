@@ -101,6 +101,10 @@ export class AtmosphereUnit {
         this.pressure += this.flow.get(this.sectorToFlowKey([0, 0, -1]));
     }
 
+    applyWindSpeed(loc, out, applyNeighbors) {
+        // fuckin.... i don't know
+    }
+
     shouldRenderDebug(ccp) {
         if (
             this._tcsCenter.renderScreen[0] < 0 || this._tcsCenter.renderScreen[0] > getCanvasWidth() &&
