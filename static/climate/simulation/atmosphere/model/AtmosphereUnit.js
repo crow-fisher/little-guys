@@ -119,7 +119,7 @@ export class AtmosphereUnit {
             subtractVectorsDest(loc, this._sectorRefMidpoint, this._sectorRefDelta);
             this._sectorLocDistance = getVec3Length(this._sectorRefDelta);
 
-            multiplyVectorByScalarDest(this._sectorRef, entry.at(1) / ((1 + this._sectorLocDistance) ** 2), this._sectorFlowMult);
+            multiplyVectorByScalarDest(this._sectorRef,  50 * entry.at(1) / ((1 + this._sectorLocDistance) ** 2), this._sectorFlowMult);
             addVectors(out, this._sectorFlowMult);
         });
     }
@@ -151,7 +151,7 @@ export class AtmosphereUnit {
         if (this.shouldRenderDebug(ccp)) {
             this.debugRenderLabel();
             this.debugRenderBounds();
-            this.debugRenderDiffusionFlow();
+            // this.debugRenderDiffusionFlow();
         }
     }
 

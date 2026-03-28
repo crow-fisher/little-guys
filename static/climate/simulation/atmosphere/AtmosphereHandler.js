@@ -150,7 +150,7 @@ export class AtmosphereHandler {
                 addRenderJob(new LineRenderJob(
                     au._startTcs.renderScreen,
                     au._endTcs.renderScreen,
-                    10,
+                    10 / au.cd,
                     COLOR_VERY_FUCKING_RED
                 ), false);
         })
