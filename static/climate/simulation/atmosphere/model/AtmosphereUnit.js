@@ -7,6 +7,7 @@ import { PointLabelRenderJob } from "../../../../rendering/model/PointLabelRende
 import { addRenderJob } from "../../../../rendering/rasterizer.js";
 import { loadGD, UI_CAMERA_CENTER_SELECT_OFFSET } from "../../../../ui/UIData.js";
 import { addVec3Dest, addVectors, getVec3Length, multiplyVectorByScalar, multiplyVectorByScalarDest, subtractVectorsDest } from "../../../stars/matrix.js";
+import { getCurDay } from "../../../time.js";
 
 
 export class AtmosphereUnit {
@@ -103,6 +104,7 @@ export class AtmosphereUnit {
 
     applyWindSpeed(loc, out, applyNeighbors) {
         // fuckin.... i don't know
+        out = [Math.sin(getCurDay() * 10 ** 4), Math.sin(getCurDay() * 10 ** 4), Math.sin(getCurDay() * 10 ** 4)]
     }
 
     shouldRenderDebug(ccp) {

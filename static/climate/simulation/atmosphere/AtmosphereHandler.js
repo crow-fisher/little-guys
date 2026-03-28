@@ -1,6 +1,10 @@
+import { COLOR_VERY_FUCKING_RED } from "../../../colors.js";
 import { GBDD, GBDR, GBDU, GBSR, isButtonPressed } from "../../../gamepad.js";
 import { DEBUG } from "../../../index.js";
 import { gfc } from "../../../rendering/camera.js";
+import { CoordinateSet } from "../../../rendering/model/CoordinateSet.js";
+import { LineRenderJob } from "../../../rendering/model/LineRenderJob.js";
+import { addRenderJob } from "../../../rendering/rasterizer.js";
 import { loadGD, UI_CAMERA_CENTER_SELECT_OFFSET, UI_CAMERA_OFFSET_VEC } from "../../../ui/UIData.js";
 import { addVec3Dest, addVectors, copyVecValue } from "../../stars/matrix.js";
 import { AtmosphereUnit } from "./model/AtmosphereUnit.js";
@@ -9,7 +13,7 @@ import { AtmosphereUnit } from "./model/AtmosphereUnit.js";
 const F = Math.floor
 
 export class AtmosphereHandler {
-    constructor() { 
+    constructor() {
         this.au = new Map(); // 3-D map to individuals sectors of XYZ space
         this.fullAUList = new Array(); // 1-D array array of all live AUs
         this.tickAUList = new Array();
@@ -25,7 +29,7 @@ export class AtmosphereHandler {
         this.ym;
         this.zm;
         this.cau;
-         
+
         this.i = 0;
         for (let i = -this.ns; i < this.ns; i++) {
             this.au.set(this.x + i, this.au.get(this.x + i) ?? new Map());
@@ -57,9 +61,16 @@ export class AtmosphereHandler {
 
     indexAtmosphereUnit(sector) {
         return this.au
-            .get(F(sector[0]))
-            ?.get(F(sector[1]))
-            ?.get(F(sector[2]));
+            .get(Math.floor(sector[0]))
+            ?.get(Math.floor(sector[1]))
+            ?.get(Math.floor(sector[2]));
+    }
+
+    getSectorOffset(sector, dx, dy, dz) {
+        return this.au
+            .get(Math.floor(sector[0]) + dx)
+            ?.get(Math.floor(sector[1]) + dy)
+            ?.get(Math.floor(sector[2]) + dz);
     }
 
     diffusionModelTick() {
@@ -73,7 +84,7 @@ export class AtmosphereHandler {
 
     gamepadInputTick() {
         this._ccpOffset = this._ccpOffset ?? [0, 0, 0];
-        addVec3Dest(this.ccp, [1, 0, 1], this._ccpOffset);   
+        addVec3Dest(this.ccp, [1, 0, 1], this._ccpOffset);
         this._cuOffset = this.indexAtmosphereUnit(this._ccpOffset);
 
         if (isButtonPressed(GBDU)) {
@@ -86,7 +97,7 @@ export class AtmosphereHandler {
         }
     }
 
-    tick() { 
+    tick() {
         this.ccp = structuredClone(loadGD(UI_CAMERA_OFFSET_VEC));
         this.initAtmosphereUnits();
         this.cu = this.indexAtmosphereUnit(this.ccp);
@@ -113,12 +124,35 @@ export class AtmosphereHandler {
     getWindSpeedAtLocation(loc) {
         let out = [0, 0, 0];
         this._wslWsq = this.indexAtmosphereUnit(loc);
-        
+
         if (this._wslWsq == null) {
             return out;
         }
 
         this._wslWsq.applyWindSpeed(loc, out, true);
+        return out;
+    }
+
+    debugRenderWindSpeedGrid() {
+        this._startLoc = [0, 0, 0];
+        this._endLoc = [0, 0, 0];
+        this._startTcs = new CoordinateSet(this._startLoc);
+        this._endTcs = new CoordinateSet(this._endLoc);
+
+        this.tickAUList.forEach((au) => {
+            addVec3Dest(au.sector, [0.5, 0.5, 0.5], this._startLoc);
+            addVec3Dest(this._startLoc, this.getWindSpeedAtLocation(this._startLoc), this._endLoc);
+            this._startTcs.world = this._startLoc;
+            this._endTcs.world = this._endLoc;
+            this._startTcs.process();
+            this._endTcs.process();
+            addRenderJob(new LineRenderJob(
+                this._startTcs.renderScreen,
+                this._endTcs.renderScreen,
+                5,
+                COLOR_VERY_FUCKING_RED,
+                Math.min(this._startTcs.screen[2], this._startTcs.screen[2])
+            ), false)
+        })
     }
 }
-    
