@@ -119,6 +119,7 @@ export class AtmosphereHandler {
             cur = this.tickAUList[i];
             cur.debugRender(this.ccp);
         }
+        this.debugRenderWindSpeedGrid();
     }
 
     getWindSpeedAtLocation(loc) {
@@ -134,25 +135,24 @@ export class AtmosphereHandler {
     }
 
     debugRenderWindSpeedGrid() {
-        this._startLoc = [0, 0, 0];
-        this._endLoc = [0, 0, 0];
-        this._startTcs = new CoordinateSet(this._startLoc);
-        this._endTcs = new CoordinateSet(this._endLoc);
-
         this.tickAUList.forEach((au) => {
-            addVec3Dest(au.sector, [0.5, 0.5, 0.5], this._startLoc);
-            addVec3Dest(this._startLoc, this.getWindSpeedAtLocation(this._startLoc), this._endLoc);
-            this._startTcs.world = this._startLoc;
-            this._endTcs.world = this._endLoc;
-            this._startTcs.process();
-            this._endTcs.process();
-            addRenderJob(new LineRenderJob(
-                this._startTcs.renderScreen,
-                this._endTcs.renderScreen,
-                5,
-                COLOR_VERY_FUCKING_RED,
-                Math.min(this._startTcs.screen[2], this._startTcs.screen[2])
-            ), false)
+            au._startLoc = [0, 0, 0];
+            au._endLoc = [0, 0, 0];
+            au._startTcs = new CoordinateSet(au._startLoc);
+            au._endTcs = new CoordinateSet(au._endLoc);
+
+            addVec3Dest(au.sector, [0.5, 0.5, 0.5], au._startLoc);
+            addVec3Dest(au._startLoc, this.getWindSpeedAtLocation(au._startLoc), au._endLoc);
+            au._startTcs.world = au._startLoc;
+            au._endTcs.world = au._endLoc;
+            au._startTcs.process();
+            au._endTcs.process();
+                addRenderJob(new LineRenderJob(
+                    au._startTcs.renderScreen,
+                    au._endTcs.renderScreen,
+                    10,
+                    COLOR_VERY_FUCKING_RED
+                ), false);
         })
     }
 }
