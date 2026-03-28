@@ -273,9 +273,7 @@ export class AtmosphereUnit {
     }
 
     debugRenderLabel() {
-
         this.digits = 8;
-
         // if (this.pressure > 1 + 10 ** (-this.digits))
             addRenderJob(new PointLabelRenderJob(
                 this._tcsCenter.renderScreen[0],
@@ -283,6 +281,17 @@ export class AtmosphereUnit {
                 this._tcsCenter.screen[2],
                 Math.min(20, this.pressure * 10 / this.cd),
                 COLOR_WHITE,
+                this.pressure.toFixed(this.digits)),
+                false);
+    }
+
+    debugRenderWindAddition() {
+        addRenderJob(new PointLabelRenderJob(
+                this._tcsCenter.renderScreen[0],
+                this._tcsCenter.renderScreen[1],
+                this._tcsCenter.screen[2],
+                Math.min(20, this.pressure * 30 / this.cd),
+                COLOR_BLUE,
                 this.pressure.toFixed(this.digits)),
                 false);
     }

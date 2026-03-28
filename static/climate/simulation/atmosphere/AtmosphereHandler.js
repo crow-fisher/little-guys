@@ -6,7 +6,7 @@ import { CoordinateSet } from "../../../rendering/model/CoordinateSet.js";
 import { LineRenderJob } from "../../../rendering/model/LineRenderJob.js";
 import { addRenderJob } from "../../../rendering/rasterizer.js";
 import { loadGD, UI_CAMERA_CENTER_SELECT_OFFSET, UI_CAMERA_OFFSET_VEC } from "../../../ui/UIData.js";
-import { addVec3Dest, addVectors, copyVecValue } from "../../stars/matrix.js";
+import { addVec3Dest, addVectors, copyVecValue, subtractVectorsDest } from "../../stars/matrix.js";
 import { AtmosphereUnit } from "./model/AtmosphereUnit.js";
 
 
@@ -90,8 +90,9 @@ export class AtmosphereHandler {
         if (isButtonPressed(GBDU)) {
             this._cuOffset.pressure += 10;
 
+            this._cuOffset.debugRenderInit(this.ccp);
+            this._cuOffset.debugRenderWindAddition();
         }
-
         if (isButtonPressed(GBDD)) {
             this._cuOffset.pressure *= 0.5;
         }
@@ -142,7 +143,7 @@ export class AtmosphereHandler {
             au._endTcs = new CoordinateSet(au._endLoc);
 
             addVec3Dest(au.sector, [0.5, 0.5, 0.5], au._startLoc);
-            addVec3Dest(au._startLoc, this.getWindSpeedAtLocation(au._startLoc), au._endLoc);
+            subtractVectorsDest(au._startLoc, this.getWindSpeedAtLocation(au._startLoc), au._endLoc);
             au._startTcs.world = au._startLoc;
             au._endTcs.world = au._endLoc;
             au._startTcs.process();
