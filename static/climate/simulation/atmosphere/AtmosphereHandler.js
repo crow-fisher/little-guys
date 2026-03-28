@@ -17,7 +17,7 @@ export class AtmosphereHandler {
         this.au = new Map(); // 3-D map to individuals sectors of XYZ space
         this.fullAUList = new Array(); // 1-D array array of all live AUs
         this.tickAUList = new Array();
-        this.dist = 6;
+        this.dist = 8;
     }
 
     initAtmosphereUnits() {
@@ -88,12 +88,12 @@ export class AtmosphereHandler {
         this._cuOffset = this.indexAtmosphereUnit(this._ccpOffset);
 
         if (isButtonPressed(GBDU)) {
-            this.cu.pressure += 10;
+            this._cuOffset.pressure += 10;
 
         }
 
         if (isButtonPressed(GBDD)) {
-            this.cu.pressure *= 0.5;
+            this._cuOffset.pressure *= 0.5;
         }
     }
 
@@ -114,11 +114,11 @@ export class AtmosphereHandler {
     }
 
     debugRenderTick() {
-        let cur;
-        for (let i = 0; i < this.i; i++) {
-            cur = this.tickAUList[i];
-            cur.debugRender(this.ccp);
-        }
+        // let cur;
+        // for (let i = 0; i < this.i; i++) {
+        //     cur = this.tickAUList[i];
+        //     cur.debugRender(this.ccp);
+        // }
         this.debugRenderWindSpeedGrid();
     }
 

@@ -6,7 +6,7 @@ import { LineRenderJob } from "../../../../rendering/model/LineRenderJob.js";
 import { PointLabelRenderJob } from "../../../../rendering/model/PointLabelRenderJob.js";
 import { addRenderJob } from "../../../../rendering/rasterizer.js";
 import { loadGD, UI_CAMERA_CENTER_SELECT_OFFSET } from "../../../../ui/UIData.js";
-import { addVec3Dest, addVectors, copyVecValue, getVec3Length, multiplyVectorByScalar, multiplyVectorByScalarDest, subtractVectorsDest } from "../../../stars/matrix.js";
+import { addVec3Dest, addVectors, copyVecValue, getVec3Length, multiplyVectorByScalar, multiplyVectorByScalarDest, subtractVectors, subtractVectorsDest } from "../../../stars/matrix.js";
 import { getCurDay } from "../../../time.js";
 
 
@@ -116,11 +116,11 @@ export class AtmosphereUnit {
             this._sectorRefMidpoint[2] = (this._sectorRefMidpoint[2] == 0) ? 0.5 : this._sectorRefMidpoint[2];
 
             addVectors(this._sectorRefMidpoint, this.sector);
-            subtractVectorsDest(loc, this._sectorRefMidpoint, this._sectorRefDelta);
+            subtractVectorsDest(this._sectorRefMidpoint, loc, this._sectorRefDelta);
             this._sectorLocDistance = getVec3Length(this._sectorRefDelta);
 
             multiplyVectorByScalarDest(this._sectorRef,  50 * entry.at(1) / ((1 + this._sectorLocDistance) ** 2), this._sectorFlowMult);
-            addVectors(out, this._sectorFlowMult);
+            subtractVectors(out, this._sectorFlowMult);
         });
     }
 
