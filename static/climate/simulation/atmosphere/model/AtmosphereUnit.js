@@ -149,7 +149,7 @@ export class AtmosphereUnit {
     debugRender(ccp) {
         this.debugRenderInit(ccp);
         if (this.shouldRenderDebug(ccp)) {
-            this.debugRenderLabel();
+            // this.debugRenderLabel();
             this.debugRenderBounds();
             // this.debugRenderDiffusionFlow();
         }

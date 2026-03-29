@@ -7,6 +7,7 @@ import { LineRenderJob } from "../../../rendering/model/LineRenderJob.js";
 import { addRenderJob } from "../../../rendering/rasterizer.js";
 import { loadGD, UI_CAMERA_CENTER_SELECT_OFFSET, UI_CAMERA_OFFSET_VEC } from "../../../ui/UIData.js";
 import { addVec3Dest, addVectors, copyVecValue, subtractVectorsDest } from "../../stars/matrix.js";
+import { getCurDay } from "../../time.js";
 import { AtmosphereUnit } from "./model/AtmosphereUnit.js";
 
 
@@ -142,7 +143,12 @@ export class AtmosphereHandler {
             au._startTcs = new CoordinateSet(au._startLoc);
             au._endTcs = new CoordinateSet(au._endLoc);
 
-            addVec3Dest(au.sector, [0.5, 0.5, 0.5], au._startLoc);
+            // addVec3Dest(au.sector, [0.5, 0.5, 0.5], au._startLoc);
+            addVec3Dest(au.sector, [
+               .1 * Math.sin(getCurDay() * 10 ** 4),
+               .1 * Math.sin(getCurDay() * 10 ** 4),
+               .1 * Math.sin(getCurDay() * 10 ** 4)
+            ], au._startLoc);
             subtractVectorsDest(au._startLoc, this.getWindSpeedAtLocation(au._startLoc), au._endLoc);
             au._startTcs.world = au._startLoc;
             au._endTcs.world = au._endLoc;
