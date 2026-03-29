@@ -88,7 +88,7 @@ export class AtmosphereHandler {
         this._cuOffset = this.indexAtmosphereUnit(this._ccpOffset);
 
         if (isButtonPressed(GBDU)) {
-            this._cuOffset.pressure += 10;
+            this._cuOffset.pressure += .01;
 
             this._cuOffset.debugRenderInit(this.ccp);
             this._cuOffset.debugRenderWindAddition();

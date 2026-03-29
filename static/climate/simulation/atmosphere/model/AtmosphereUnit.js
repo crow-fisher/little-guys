@@ -119,7 +119,7 @@ export class AtmosphereUnit {
             subtractVectorsDest(this._sectorRefMidpoint, loc, this._sectorRefDelta);
             this._sectorLocDistance = getVec3Length(this._sectorRefDelta);
 
-            multiplyVectorByScalarDest(this._sectorRef,  50 * entry.at(1) / ((1 + this._sectorLocDistance) ** 2), this._sectorFlowMult);
+            multiplyVectorByScalarDest(this._sectorRef,  500 * entry.at(1) / ((1 + this._sectorLocDistance) ** 2), this._sectorFlowMult);
             subtractVectors(out, this._sectorFlowMult);
         });
     }
