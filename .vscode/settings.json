@@ -1,3 +1,7 @@
 {
-    "javascript.inlayHints.parameterNames.enabled": "all"
+    "javascript.inlayHints.parameterNames.enabled": "all",
+    "editor.parameterHints.cycle": false,
+    "editor.suggest.showTypeParameters": false,
+    "breadcrumbs.showTypeParameters": false,
+    "outline.showTypeParameters": false
 }

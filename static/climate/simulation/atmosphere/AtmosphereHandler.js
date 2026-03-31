@@ -88,11 +88,13 @@ export class AtmosphereHandler {
         addVec3Dest(this.ccp, [1, 0, 1], this._ccpOffset);
         this._cuOffset = this.indexAtmosphereUnit(this._ccpOffset);
 
-        if (isButtonPressed(GBDU)) {
-            this._cuOffset.pressure += .01;
+        this._cuOffset.debugRenderInit(this.ccp);
+        this._cuOffset.debugRenderFlowTick();
 
-            this._cuOffset.debugRenderInit(this.ccp);
-            this._cuOffset.debugRenderWindAddition();
+        this._cuOffset.diffusionModel();
+
+        if (isButtonPressed(GBDU)) {
+            this._cuOffset.pressure += .001;
         }
         if (isButtonPressed(GBDD)) {
             this._cuOffset.pressure *= 0.5;
@@ -109,10 +111,11 @@ export class AtmosphereHandler {
         }
 
         this.gamepadInputTick();
-        this.diffusionModelTick();
+        // this.diffusionModelTick();
 
         if (DEBUG)
             this.debugRenderTick();
+
     }
 
     debugRenderTick() {

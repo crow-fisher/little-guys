@@ -35,22 +35,24 @@ export class AtmosphereUnit {
         this.initFlow();
     }
 
-    sectorToFlowKey(sector) {
+    stfk(sector) {
+        // sector to flow key
         return JSON.stringify(sector);
     }
 
-    flowKeyToSector(flowKey) {
+    fkts(flowKey) {
+        // flow key to sector
         return JSON.parse(flowKey);
     }
 
 
     initFlow() {
-        this.flow.set(this.sectorToFlowKey([-1, 0, 0]), 0);
-        this.flow.set(this.sectorToFlowKey([1, 0, 0]), 0);
-        this.flow.set(this.sectorToFlowKey([0, 1, 0]), 0);
-        this.flow.set(this.sectorToFlowKey([0, -1, 0]), 0);
-        this.flow.set(this.sectorToFlowKey([0, 0, 1]), 0);
-        this.flow.set(this.sectorToFlowKey([0, 0, -1]), 0);
+        this.flow.set(this.stfk([-1, 0, 0]), 0.7 * (this.flow.get(this.stfk([-1, 0, 0])) ?? 0));
+        this.flow.set(this.stfk([1, 0, 0]), 0.7 * (this.flow.get(this.stfk([1, 0, 0])) ?? 0));
+        this.flow.set(this.stfk([0, 1, 0]), 0.7 * (this.flow.get(this.stfk([0, 1, 0])) ?? 0));
+        this.flow.set(this.stfk([0, -1, 0]), 0.7 * (this.flow.get(this.stfk([0, -1, 0])) ?? 0));
+        this.flow.set(this.stfk([0, 0, 1]), 0.7 * (this.flow.get(this.stfk([0, 0, 1])) ?? 0));
+        this.flow.set(this.stfk([0, 0, -1]), 0.7 * (this.flow.get(this.stfk([0, 0, -1])) ?? 0));
     }
 
     initNeighbors(manager) {
@@ -66,7 +68,7 @@ export class AtmosphereUnit {
         if (this.pressure == 1) {
             return;
         }
-        this.fRight = this._diffusionSquareTick(this.nRight);
+        this._diffusionSquareTick(this.nRight);
         this._diffusionSquareTick(this.nLeft);
         this._diffusionSquareTick(this.nRight);
         this._diffusionSquareTick(this.nTop);
@@ -86,20 +88,19 @@ export class AtmosphereUnit {
         multiplyVectorByScalarDest(this._sectorOffset, -1, this._sectorOffsetFlip);
 
         this._neighborDiff = this.pressure - neighbor.pressure;
-        if (this._neighborDiff > 0) {
-            this._appliedDiff = -this._neighborDiff * 0.1;
-            this.flow.set(this.sectorToFlowKey(this._sectorOffset), this._appliedDiff);
-            neighbor.flow.set(this.sectorToFlowKey(this._sectorOffsetFlip), -this._appliedDiff);
-        }
+        this._appliedDiff = -this._neighborDiff * 0.1;
+
+        this.flow.set(this.stfk(this._sectorOffset), this.flow.get(this.stfk(this._sectorOffset)) + this._appliedDiff);
+        neighbor.flow.set(this.stfk(this._sectorOffsetFlip), this.flow.get(this.stfk(this._sectorOffsetFlip)) - this._appliedDiff);
     }
 
     applyFlow() {
-        this.pressure += this.flow.get(this.sectorToFlowKey([-1, 0, 0]));
-        this.pressure += this.flow.get(this.sectorToFlowKey([1, 0, 0]));
-        this.pressure += this.flow.get(this.sectorToFlowKey([0, 1, 0]));
-        this.pressure += this.flow.get(this.sectorToFlowKey([0, -1, 0]));
-        this.pressure += this.flow.get(this.sectorToFlowKey([0, 0, 1]));
-        this.pressure += this.flow.get(this.sectorToFlowKey([0, 0, -1]));
+        this.pressure += this.flow.get(this.stfk([-1, 0, 0]));
+        this.pressure += this.flow.get(this.stfk([1, 0, 0]));
+        this.pressure += this.flow.get(this.stfk([0, 1, 0]));
+        this.pressure += this.flow.get(this.stfk([0, -1, 0]));
+        this.pressure += this.flow.get(this.stfk([0, 0, 1]));
+        this.pressure += this.flow.get(this.stfk([0, 0, -1]));
     }
 
     applyWindSpeed(loc, out, applyNeighbors) {
@@ -108,7 +109,7 @@ export class AtmosphereUnit {
         this._sectorFlowMult = this._sectorFlowMult ?? [0, 0, 0];
 
         this.flow.entries().forEach((entry) => {
-            this._sectorRef = this.flowKeyToSector(entry.at(0));
+            this._sectorRef = this.fkts(entry.at(0));
             copyVecValue(this._sectorRef, this._sectorRefMidpoint);
 
             this._sectorRefMidpoint[0] = (this._sectorRefMidpoint[0] == 0) ? 0.5 : this._sectorRefMidpoint[0];
@@ -161,7 +162,7 @@ export class AtmosphereUnit {
         this._flowMult = this._flowMult ?? [0, 0, 0];
         
         this.flow.entries().forEach((entry) => {
-                this._sectorRef = this.flowKeyToSector(entry.at(0));
+                this._sectorRef = this.fkts(entry.at(0));
                 multiplyVectorByScalarDest(this._sectorRef, entry.at(1), this._flowMult);
                 addVec3Dest(this._centerRoot, this._flowMult, this._tcsRootFlow);
                 this._tcsFlow = new CoordinateSet(this._tcsRootFlow);
@@ -285,14 +286,21 @@ export class AtmosphereUnit {
                 false);
     }
 
-    debugRenderWindAddition() {
+    debugRenderFlowTick() {
+        this.flowString = "";
+        this.flowString += "\n" + this.flow.get(this.stfk([-1, 0, 0])).toFixed(8);
+        this.flowString += "\n" + this.flow.get(this.stfk([1, 0, 0])).toFixed(8);
+        this.flowString += "\n" + this.flow.get(this.stfk([0, 1, 0])).toFixed(8);
+        this.flowString += "\n" + this.flow.get(this.stfk([0, -1, 0])).toFixed(8);
+        this.flowString += "\n" + this.flow.get(this.stfk([0, 0, 1])).toFixed(8);
+        this.flowString += "\n" + this.flow.get(this.stfk([0, 0, -1])).toFixed(8);
         addRenderJob(new PointLabelRenderJob(
                 this._tcsCenter.renderScreen[0],
                 this._tcsCenter.renderScreen[1],
                 this._tcsCenter.screen[2],
                 Math.min(20, this.pressure * 30 / this.cd),
                 COLOR_BLUE,
-                this.pressure.toFixed(this.digits)),
+                this.flowString),
                 false);
     }
 }
