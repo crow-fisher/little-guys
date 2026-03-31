@@ -19,8 +19,6 @@ export function gamepadCameraInput() {
     let applied = [0, 0, 0, 0]; 
 
     let buttonMult = 5;
-    if (isButtonPressed(GBA))
-        offset *= buttonMult;
     if (isButtonPressed(GBX))
         offset *= buttonMult;
     if (isButtonPressed(GBB))

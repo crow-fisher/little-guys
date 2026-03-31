@@ -1,5 +1,5 @@
 import { COLOR_VERY_FUCKING_RED } from "../../../colors.js";
-import { GBDD, GBDR, GBDU, GBSR, isButtonPressed } from "../../../gamepad.js";
+import { GBA, GBDD, GBDR, GBDU, GBSR, isButtonPressed } from "../../../gamepad.js";
 import { DEBUG } from "../../../index.js";
 import { gfc } from "../../../rendering/camera.js";
 import { CoordinateSet } from "../../../rendering/model/CoordinateSet.js";
@@ -88,16 +88,15 @@ export class AtmosphereHandler {
         addVec3Dest(this.ccp, [1, 0, 1], this._ccpOffset);
         this._cuOffset = this.indexAtmosphereUnit(this._ccpOffset);
 
-        this._cuOffset.debugRenderInit(this.ccp);
-        this._cuOffset.debugRenderFlowTick();
+        // this._cuOffset.debugRenderInit(this.ccp);
+        // this._cuOffset.debugRenderFlowTick();
+        // this._cuOffset.diffusionModel();
 
-        this._cuOffset.diffusionModel();
-
-        if (isButtonPressed(GBDU)) {
-            this._cuOffset.pressure += .001;
+        if (isButtonPressed(GBA)) {
+            this.cu.pressure += 1;
         }
         if (isButtonPressed(GBDD)) {
-            this._cuOffset.pressure *= 0.5;
+            this.cu.pressure *= 0.5;
         }
     }
 
@@ -111,7 +110,7 @@ export class AtmosphereHandler {
         }
 
         this.gamepadInputTick();
-        // this.diffusionModelTick();
+        this.diffusionModelTick();
 
         if (DEBUG)
             this.debugRenderTick();
@@ -152,7 +151,7 @@ export class AtmosphereHandler {
                .1 * Math.sin(getCurDay() * 10 ** 4),
                .1 * Math.sin(getCurDay() * 10 ** 4)
             ], au._startLoc);
-            subtractVectorsDest(au._startLoc, this.getWindSpeedAtLocation(au._startLoc), au._endLoc);
+            addVec3Dest(au._startLoc, this.getWindSpeedAtLocation(au._startLoc), au._endLoc);
             au._startTcs.world = au._startLoc;
             au._endTcs.world = au._endLoc;
             au._startTcs.process();
