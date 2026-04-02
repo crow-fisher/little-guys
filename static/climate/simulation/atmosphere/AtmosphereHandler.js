@@ -92,7 +92,7 @@ export class AtmosphereHandler {
         // this._cuOffset.debugRenderFlowTick();
         // this._cuOffset.diffusionModel();
 
-        if (isButtonPressed(GBA)) {
+        if (isButtonPressed(GBA) || isButtonPressed(GBDU)) {
             this.cu.pressure += 1;
         }
         if (isButtonPressed(GBDD)) {
@@ -118,12 +118,14 @@ export class AtmosphereHandler {
     }
 
     debugRenderTick() {
-        // let cur;
-        // for (let i = 0; i < this.i; i++) {
-        //     cur = this.tickAUList[i];
-        //     cur.debugRender(this.ccp);
-        // }
+        let cur;
+        for (let i = 0; i < this.i; i++) {
+            cur = this.tickAUList[i];
+            cur.debugRender(this.ccp);
+        }
         this.debugRenderWindSpeedGrid();
+
+        this.cu.debugRenderBounds()
     }
 
     getWindSpeedAtLocation(loc) {
@@ -145,12 +147,12 @@ export class AtmosphereHandler {
             au._startTcs = new CoordinateSet(au._startLoc);
             au._endTcs = new CoordinateSet(au._endLoc);
 
-            // addVec3Dest(au.sector, [0.5, 0.5, 0.5], au._startLoc);
-            addVec3Dest(au.sector, [
-               .1 * Math.sin(getCurDay() * 10 ** 4),
-               .1 * Math.sin(getCurDay() * 10 ** 4),
-               .1 * Math.sin(getCurDay() * 10 ** 4)
-            ], au._startLoc);
+            addVec3Dest(au.sector, [0.5, 0.5, 0.5], au._startLoc);
+            // addVec3Dest(au.sector, [
+            //    .1 * Math.sin(getCurDay() * 10 ** 4),
+            //    .1 * Math.sin(getCurDay() * 10 ** 4),
+            //    .1 * Math.sin(getCurDay() * 10 ** 4)
+            // ], au._startLoc);
             addVec3Dest(au._startLoc, this.getWindSpeedAtLocation(au._startLoc), au._endLoc);
             au._startTcs.world = au._startLoc;
             au._endTcs.world = au._endLoc;

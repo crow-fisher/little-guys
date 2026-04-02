@@ -47,12 +47,20 @@ export class AtmosphereUnit {
 
 
     initFlow() {
-        this.flow.set(this.stfk([-1, 0, 0]), 0.7 * (this.flow.get(this.stfk([-1, 0, 0])) ?? 0));
-        this.flow.set(this.stfk([1, 0, 0]), 0.7 * (this.flow.get(this.stfk([1, 0, 0])) ?? 0));
-        this.flow.set(this.stfk([0, 1, 0]), 0.7 * (this.flow.get(this.stfk([0, 1, 0])) ?? 0));
-        this.flow.set(this.stfk([0, -1, 0]), 0.7 * (this.flow.get(this.stfk([0, -1, 0])) ?? 0));
-        this.flow.set(this.stfk([0, 0, 1]), 0.7 * (this.flow.get(this.stfk([0, 0, 1])) ?? 0));
-        this.flow.set(this.stfk([0, 0, -1]), 0.7 * (this.flow.get(this.stfk([0, 0, -1])) ?? 0));
+        // this.flow.set(this.stfk([-1, 0, 0]), 0.7 * (this.flow.get(this.stfk([-1, 0, 0])) ?? 0));
+        // this.flow.set(this.stfk([1, 0, 0]), 0.7 * (this.flow.get(this.stfk([1, 0, 0])) ?? 0));
+        // this.flow.set(this.stfk([0, 1, 0]), 0.7 * (this.flow.get(this.stfk([0, 1, 0])) ?? 0));
+        // this.flow.set(this.stfk([0, -1, 0]), 0.7 * (this.flow.get(this.stfk([0, -1, 0])) ?? 0));
+        // this.flow.set(this.stfk([0, 0, 1]), 0.7 * (this.flow.get(this.stfk([0, 0, 1])) ?? 0));
+        // this.flow.set(this.stfk([0, 0, -1]), 0.7 * (this.flow.get(this.stfk([0, 0, -1])) ?? 0));
+
+
+        this.flow.set(this.stfk([-1, 0, 0]), 0);
+        this.flow.set(this.stfk([1, 0, 0]), 0);
+        this.flow.set(this.stfk([0, 1, 0]), 0);
+        this.flow.set(this.stfk([0, -1, 0]), 0);
+        this.flow.set(this.stfk([0, 0, 1]), 0);
+        this.flow.set(this.stfk([0, 0, -1]), 0);
     }
 
     initNeighbors(manager) {
@@ -123,6 +131,16 @@ export class AtmosphereUnit {
             multiplyVectorByScalarDest(this._sectorRef,  500 * entry.at(1) / ((1 + this._sectorLocDistance) ** 2), this._sectorFlowMult);
             subtractVectors(out, this._sectorFlowMult);
         });
+
+        // if (applyNeighbors) {
+        //     this.nRight?.applyWindSpeed(loc, out, false)
+        //     this.nLeft?.applyWindSpeed(loc, out, false)
+        //     this.nRight?.applyWindSpeed(loc, out, false)
+        //     this.nTop?.applyWindSpeed(loc, out, false)
+        //     this.nBottom?.applyWindSpeed(loc, out, false)
+        //     this.nFront?.applyWindSpeed(loc, out, false)
+        //     this.nBack?.applyWindSpeed(loc, out, false)
+        // }
     }
 
     shouldRenderDebug(ccp) {
@@ -131,28 +149,17 @@ export class AtmosphereUnit {
             this._tcsCenter.renderScreen[1] < 0 && this._tcsCenter.renderScreen[1] > getCanvasHeight()) {
             return false;
         }
-
         this._sectorOffset = this._sectorOffset ?? [0, 0, 0];
         subtractVectorsDest(this._centerRoot, ccp, this._sectorOffset);
-        
-        if (Math.abs(this._sectorOffset[1]) > 1) {
-            return false;
-        }
-
-        // if (Math.abs(this._sectorDiff[0]) > 4) {
-        //     return false;
-        // }
-
-
-        return true;
+        return this.cd < 4;
     }
 
     debugRender(ccp) {
         this.debugRenderInit(ccp);
         if (this.shouldRenderDebug(ccp)) {
             // this.debugRenderLabel();
-            this.debugRenderBounds();
-            // this.debugRenderDiffusionFlow();
+            // this.debugRenderBounds();
+            this.debugRenderDiffusionFlow();
         }
     }
 
@@ -170,11 +177,9 @@ export class AtmosphereUnit {
                     this._tcsCenter.renderScreen,
                     this._tcsFlow.renderScreen,
                     10 / this.cd,
-                    COLOR_VERY_FUCKING_RED
+                    COLOR_BLUE
                 ), false);
         });
-
-
     }
 
     debugRenderInit(ccp) {
