@@ -116,18 +116,11 @@ export class AtmosphereUnit {
         this._sectorRefDelta = this._sectorRefDelta ?? [0, 0, 0];
         this._sectorFlowMult = this._sectorFlowMult ?? [0, 0, 0];
 
+        subtractVectorsDest(this.sector, loc, this._sectorRefDelta);
+        this._sectorLocDistance = getVec3Length(this._sectorRefDelta);
+
         this.flow.entries().forEach((entry) => {
             this._sectorRef = this.fkts(entry.at(0));
-            copyVecValue(this._sectorRef, this._sectorRefMidpoint);
-
-            this._sectorRefMidpoint[0] = (this._sectorRefMidpoint[0] == 0) ? 0.5 : this._sectorRefMidpoint[0];
-            this._sectorRefMidpoint[1] = (this._sectorRefMidpoint[1] == 0) ? 0.5 : this._sectorRefMidpoint[1];
-            this._sectorRefMidpoint[2] = (this._sectorRefMidpoint[2] == 0) ? 0.5 : this._sectorRefMidpoint[2];
-
-            addVectors(this._sectorRefMidpoint, this.sector);
-            subtractVectorsDest(this._sectorRefMidpoint, loc, this._sectorRefDelta);
-            this._sectorLocDistance = getVec3Length(this._sectorRefDelta);
-
             multiplyVectorByScalarDest(this._sectorRef,  500 * entry.at(1) / ((1 + this._sectorLocDistance) ** 2), this._sectorFlowMult);
             subtractVectors(out, this._sectorFlowMult);
         });
