@@ -96,10 +96,10 @@ export class AtmosphereUnit {
         multiplyVectorByScalarDest(this._sectorOffset, -1, this._sectorOffsetFlip);
 
         this._neighborDiff = this.pressure - neighbor.pressure;
-        this._appliedDiff = -this._neighborDiff * 0.01;
+        this._appliedDiff = -this._neighborDiff * 0.05;
 
         this.flow.set(this.stfk(this._sectorOffset), this.flow.get(this.stfk(this._sectorOffset)) + this._appliedDiff);
-        neighbor.flow.set(this.stfk(this._sectorOffsetFlip), this.flow.get(this.stfk(this._sectorOffsetFlip)) - this._appliedDiff);
+        neighbor.flow.set(this.stfk(this._sectorOffsetFlip), neighbor.flow.get(this.stfk(this._sectorOffsetFlip)) - this._appliedDiff);
     }
 
     applyFlow() {
@@ -292,7 +292,7 @@ export class AtmosphereUnit {
 
         if (neighbors) {
             this.nRight.debugRenderLabel(ccp)
-            this.nLeft.debugRenderLabel(ccp)
+            this.nLeft?.debugRenderLabel(ccp, this.cd < 4)
             this.nRight.debugRenderLabel(ccp)
             this.nTop.debugRenderLabel(ccp)
             this.nBottom.debugRenderLabel(ccp)

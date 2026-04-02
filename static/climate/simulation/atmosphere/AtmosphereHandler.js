@@ -98,6 +98,8 @@ export class AtmosphereHandler {
         if (isButtonPressed(GBDD)) {
             this.cu.pressure *= 0.5;
         }
+
+
     }
 
     tick() {
@@ -119,14 +121,11 @@ export class AtmosphereHandler {
 
     debugRenderTick() {
         let cur;
-        for (let i = 0; i < this.i; i++) {
-            cur = this.tickAUList[i];
-            cur.debugRender(this.ccp);
-        }
+        // for (let i = 0; i < this.i; i++) {
+        //     cur = this.tickAUList[i];
+        //     cur.debugRender(this.ccp);
+        // }
         this.debugRenderWindSpeedGrid();
-
-        this.cu.debugRenderBounds();
-        this.cu.debugRenderLabel(this.ccp, true);
 
     }
 
