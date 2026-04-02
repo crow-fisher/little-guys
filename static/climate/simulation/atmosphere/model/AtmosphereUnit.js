@@ -157,11 +157,11 @@ export class AtmosphereUnit {
     debugRender(ccp) {
         this.debugRenderInit(ccp);
         if (this.shouldRenderDebug(ccp)) {
-            // this.debugRenderLabel();
             // this.debugRenderBounds();
             this.debugRenderDiffusionFlow();
         }
     }
+
 
     debugRenderDiffusionFlow() {
         this._sectorRef = this._sectorRef ?? [0, 0, 0];
@@ -278,17 +278,27 @@ export class AtmosphereUnit {
         });
     }
 
-    debugRenderLabel() {
+    debugRenderLabel(ccp, neighbors=false) {
         this.digits = 8;
-        // if (this.pressure > 1 + 10 ** (-this.digits))
-            addRenderJob(new PointLabelRenderJob(
-                this._tcsCenter.renderScreen[0],
-                this._tcsCenter.renderScreen[1],
-                this._tcsCenter.screen[2],
-                Math.min(20, this.pressure * 10 / this.cd),
-                COLOR_WHITE,
-                this.pressure.toFixed(this.digits)),
-                false);
+        this.debugRenderInit(ccp)
+        addRenderJob(new PointLabelRenderJob(
+            this._tcsCenter.renderScreen[0],
+            this._tcsCenter.renderScreen[1],
+            this._tcsCenter.screen[2],
+            Math.min(20, this.pressure * 10 / this.cd),
+            COLOR_WHITE,
+            this.pressure.toFixed(this.digits)),
+            false);
+
+        if (neighbors) {
+            this.nRight.debugRenderLabel(ccp)
+            this.nLeft.debugRenderLabel(ccp)
+            this.nRight.debugRenderLabel(ccp)
+            this.nTop.debugRenderLabel(ccp)
+            this.nBottom.debugRenderLabel(ccp)
+            this.nFront.debugRenderLabel(ccp)
+            this.nBack.debugRenderLabel(ccp)
+        }
     }
 
     debugRenderFlowTick() {

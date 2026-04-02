@@ -125,7 +125,9 @@ export class AtmosphereHandler {
         }
         this.debugRenderWindSpeedGrid();
 
-        this.cu.debugRenderBounds()
+        this.cu.debugRenderBounds();
+        this.cu.debugRenderLabel(this.ccp, true);
+
     }
 
     getWindSpeedAtLocation(loc) {
