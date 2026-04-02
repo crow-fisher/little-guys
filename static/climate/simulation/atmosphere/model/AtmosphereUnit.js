@@ -121,8 +121,8 @@ export class AtmosphereUnit {
 
         this.flow.entries().forEach((entry) => {
             this._sectorRef = this.fkts(entry.at(0));
-            multiplyVectorByScalarDest(this._sectorRef,  500 * entry.at(1) / ((1 + this._sectorLocDistance) ** 2), this._sectorFlowMult);
-            subtractVectors(out, this._sectorFlowMult);
+            multiplyVectorByScalarDest(this._sectorRef,  entry.at(1), this._sectorFlowMult);
+            addVectors(out, this._sectorFlowMult);
         });
 
         // if (applyNeighbors) {
@@ -150,7 +150,7 @@ export class AtmosphereUnit {
     debugRender(ccp) {
         this.debugRenderInit(ccp);
         if (this.shouldRenderDebug(ccp)) {
-            // this.debugRenderBounds();
+            this.debugRenderBounds();
             this.debugRenderDiffusionFlow();
         }
     }
