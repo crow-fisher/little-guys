@@ -15,7 +15,7 @@ export function gamepadCameraInput() {
     let rsb = isButtonPressed(GBSR) ? .75 : 0;
     let triggers = getTriggers();
 
-    let offset = getFrameDt() / 400;
+    let offset = getFrameDt() / 1600;
     let applied = [0, 0, 0, 0]; 
 
     let buttonMult = 5;

@@ -28,9 +28,9 @@ export class AtmosphereUnit {
     preTick(mgr) {
         this.initNeighbors(mgr);
         this.cd = (
-            (this.sector[0] - mgr.ccp[0]) ** 2 +
-            (this.sector[1] - mgr.ccp[1]) ** 2 +
-            (this.sector[2] - mgr.ccp[2]) ** 2) ** 0.5;
+            ((this.sector[0] + 0.5) - mgr.ccp[0]) ** 2 +
+            ((this.sector[1] + 0.5) - mgr.ccp[1]) ** 2 +
+            ((this.sector[2] + 0.5) - mgr.ccp[2]) ** 2) ** 0.5;
 
         this.initFlow();
     }
@@ -53,8 +53,6 @@ export class AtmosphereUnit {
         // this.flow.set(this.stfk([0, -1, 0]), 0.7 * (this.flow.get(this.stfk([0, -1, 0])) ?? 0));
         // this.flow.set(this.stfk([0, 0, 1]), 0.7 * (this.flow.get(this.stfk([0, 0, 1])) ?? 0));
         // this.flow.set(this.stfk([0, 0, -1]), 0.7 * (this.flow.get(this.stfk([0, 0, -1])) ?? 0));
-
-
         this.flow.set(this.stfk([-1, 0, 0]), 0);
         this.flow.set(this.stfk([1, 0, 0]), 0);
         this.flow.set(this.stfk([0, 1, 0]), 0);
@@ -76,7 +74,7 @@ export class AtmosphereUnit {
         if (this.pressure == 1) {
             return;
         }
-        this._diffusionSquareTick(this.nRight);
+
         this._diffusionSquareTick(this.nLeft);
         this._diffusionSquareTick(this.nRight);
         this._diffusionSquareTick(this.nTop);
@@ -112,7 +110,6 @@ export class AtmosphereUnit {
     }
 
     applyWindSpeed(loc, out, applyNeighbors) {
-        this._sectorRefMidpoint = this._sectorRefMidpoint ?? [0, 0, 0];
         this._sectorRefDelta = this._sectorRefDelta ?? [0, 0, 0];
         this._sectorFlowMult = this._sectorFlowMult ?? [0, 0, 0];
 
@@ -169,7 +166,7 @@ export class AtmosphereUnit {
                 addRenderJob(new LineRenderJob(
                     this._tcsCenter.renderScreen,
                     this._tcsFlow.renderScreen,
-                    10 / this.cd,
+                    .4 / (this.cd ** 2),
                     COLOR_BLUE
                 ), false);
         });
@@ -294,14 +291,16 @@ export class AtmosphereUnit {
         }
     }
 
-    debugRenderFlowTick() {
+    debugRenderFlow(ccp, neighbors=false) {
+        this.debugRenderInit(ccp)
+
         this.flowString = "";
-        this.flowString += "\n" + this.flow.get(this.stfk([-1, 0, 0])).toFixed(8);
-        this.flowString += "\n" + this.flow.get(this.stfk([1, 0, 0])).toFixed(8);
-        this.flowString += "\n" + this.flow.get(this.stfk([0, 1, 0])).toFixed(8);
-        this.flowString += "\n" + this.flow.get(this.stfk([0, -1, 0])).toFixed(8);
-        this.flowString += "\n" + this.flow.get(this.stfk([0, 0, 1])).toFixed(8);
-        this.flowString += "\n" + this.flow.get(this.stfk([0, 0, -1])).toFixed(8);
+        this.flowString += "\n" + this.flow.get(this.stfk([-1, 0, 0])).toFixed(4);
+        this.flowString += "\n" + this.flow.get(this.stfk([1, 0, 0])).toFixed(4);
+        this.flowString += "\n" + this.flow.get(this.stfk([0, 1, 0])).toFixed(4);
+        this.flowString += "\n" + this.flow.get(this.stfk([0, -1, 0])).toFixed(4);
+        this.flowString += "\n" + this.flow.get(this.stfk([0, 0, 1])).toFixed(4);
+        this.flowString += "\n" + this.flow.get(this.stfk([0, 0, -1])).toFixed(4);
         addRenderJob(new PointLabelRenderJob(
                 this._tcsCenter.renderScreen[0],
                 this._tcsCenter.renderScreen[1],
@@ -310,6 +309,16 @@ export class AtmosphereUnit {
                 COLOR_BLUE,
                 this.flowString),
                 false);
+
+        if (neighbors) {
+            this.nRight.debugRenderFlow(ccp)
+            this.nLeft.debugRenderFlow(ccp, this.cd < 4)
+            this.nRight.debugRenderFlow(ccp)
+            this.nTop.debugRenderFlow(ccp)
+            this.nBottom.debugRenderFlow(ccp)
+            this.nFront.debugRenderFlow(ccp)
+            this.nBack.debugRenderFlow(ccp)
+        }
     }
 }
 

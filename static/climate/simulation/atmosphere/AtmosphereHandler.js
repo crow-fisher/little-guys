@@ -88,17 +88,12 @@ export class AtmosphereHandler {
         addVec3Dest(this.ccp, [1, 0, 1], this._ccpOffset);
         this._cuOffset = this.indexAtmosphereUnit(this._ccpOffset);
 
-        // this._cuOffset.debugRenderInit(this.ccp);
-        // this._cuOffset.debugRenderFlowTick();
-        // this._cuOffset.diffusionModel();
-
         if (isButtonPressed(GBA) || isButtonPressed(GBDU)) {
             this.cu.pressure += 4;
         }
         if (isButtonPressed(GBDD)) {
             this.cu.pressure *= 0.5;
         }
-
 
     }
 
@@ -127,6 +122,8 @@ export class AtmosphereHandler {
         // }
         this.debugRenderWindSpeedGrid();
         this.cu.debugRender(this.ccp)
+        // this.cu.debugRenderLabel(this.ccp, true);
+        this.cu.debugRenderFlow(this.ccp, true);
     }
 
     getWindSpeedAtLocation(loc) {
