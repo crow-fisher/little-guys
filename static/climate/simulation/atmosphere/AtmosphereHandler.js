@@ -89,7 +89,7 @@ export class AtmosphereHandler {
         addVec3Dest(this.ccp, [1, 0, 1], this._ccpOffset);
         this._cuOffset = this.indexAtmosphereUnit(this._ccpOffset);
         if (isButtonPressed(GBA) || isButtonPressed(GBDU)) {
-            this.addPressureAtLocation(this.cu.sector, 2, 4);
+            this.addPressureAtLocation(this.cu.sector, 2, 40);
         }
     }
 
@@ -131,8 +131,8 @@ export class AtmosphereHandler {
         //     cur.debugRender(this.ccp);
         // }
 
-        this.cu.debugRenderInit(this.ccp);
-        this.cu.debugRenderBounds();
+        // this.cu.debugRenderInit(this.ccp);
+        // this.cu.debugRenderBounds();
 
         this.debugRenderWindSpeedGrid();
     }
@@ -146,8 +146,10 @@ export class AtmosphereHandler {
     }
 
     debugRenderWindSpeedGrid() {
-        let range = 8; 
+        let range = 12; 
         let step = 0.5;
+
+        let startDist = 4;
 
         let co = gfc().cameraOffset;
 
@@ -163,9 +165,17 @@ export class AtmosphereHandler {
                     let el = [0, 0, 0];
 
                     addVec3Dest(cof, [i, j, k], sl);
+                    let st = new CoordinateSet (sl);
+                    
+                    
+                    if (!st.isVisibleOnScreen())
+                        continue;
+
+                    if (st.distToCamera < startDist)
+                        continue;
+
                     let wsVec = this.getWindSpeedAtLocation(sl);
                     addVec3Dest(sl, wsVec, el);
-                    let st = new CoordinateSet (sl);
                     let et = new CoordinateSet(el);
 
                     addRenderJob(new LineRenderJob(
@@ -177,45 +187,5 @@ export class AtmosphereHandler {
                 }
             }
         }
-
-        // this.tickAUList.forEach((au) => {
-        //     au._startLoc = [0, 0, 0];
-        //     au._endLoc = [0, 0, 0];
-
-        //     copyVecValue(au.sector, au._startLoc);
-        //     // addVec3Dest(au.sector, [
-        //     //    .1 * Math.sin(getCurDay() * 10 ** 4),
-        //     //    .1 * Math.sin(getCurDay() * 10 ** 4),
-        //     //    .1 * Math.sin(getCurDay() * 10 ** 4)
-        //     // ], au._startLoc);
-            
-        //     let wsVec = this.getWindSpeedAtLocation(au._startLoc);
-        //     let wsLength = getVec3Length(wsVec);
-        //     let wsTransformed = wsLength ** 0.25;
-        //     let wsFactor = wsTransformed / wsLength;
-        //     multiplyVectorByScalar(wsVec, wsFactor);
-
-        //     addVec3Dest(au._startLoc, wsVec, au._endLoc);
-            
-        //     au._startTcs = new CoordinateSet (au._startLoc);
-        //     au._endTcs = new CoordinateSet(au._endLoc);
-
-        //     addRenderJob(new LineRenderJob(
-        //         au._startTcs.renderScreen,
-        //         au._endTcs.renderScreen,
-        //         4 / au.cd,
-        //         COLOR_VERY_FUCKING_RED
-        //     ), false);
-            
-        //     if (au.cd < 2) 
-        //     addRenderJob(new PointLabelRenderJob(
-        //         au._startTcs.renderScreen[0],
-        //         au._startTcs.renderScreen[1] - 30,
-        //         au._startTcs.renderScreen[2],
-        //         4 / au.cd,
-        //         COLOR_VERY_FUCKING_RED,
-        //         vec3ToString(this.getWindSpeedAtLocation(au._startLoc), 4)  
-        //     ), false);
-        // })
     }
 }

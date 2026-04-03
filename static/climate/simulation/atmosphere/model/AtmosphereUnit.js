@@ -37,7 +37,7 @@ export class AtmosphereUnit {
         this.initFlow();
 
         if (this.pressure > 1)
-            this.pressure *= 0.99;
+            this.pressure *= 0.99999;
     }
 
     stfk(sector) {

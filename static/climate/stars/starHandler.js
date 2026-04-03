@@ -125,7 +125,7 @@ export class StarHandler {
     }
 
 
-    render() {
+    render() { 
         this.iterateOnSectors((sector) => sector.renderMain());
         this.renderConstellations();
         this.minLumensRuntime();

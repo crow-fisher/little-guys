@@ -1,4 +1,5 @@
 import { getVec3Length, subtractVectorsDest } from "../../climate/stars/matrix.js";
+import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth } from "../../index.js";
 import { cartesianToScreenInplace, gfc, screenToRenderScreen } from "../camera.js";
 
 export class CoordinateSet {
@@ -20,5 +21,13 @@ export class CoordinateSet {
             screenToRenderScreen(this.screen, this.renderNorm, this.renderScreen,
                 gfc()._xOffset, gfc()._yOffset, gfc()._s);
         this.distToCamera = getVec3Length(this.offset);
+    }
+
+    isVisibleOnScreen() {
+        return this.renderScreen[0] > 0 &&
+                this.renderScreen[0] < getTotalCanvasPixelWidth() &&
+                this.renderScreen[1] > 0 && 
+                this.renderScreen[1] < getTotalCanvasPixelHeight() && 
+                this.renderScreen[2] > 0
     }
 }
