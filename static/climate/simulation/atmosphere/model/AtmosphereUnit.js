@@ -118,19 +118,19 @@ export class AtmosphereUnit {
 
         this.flow.entries().forEach((entry) => {
             this._sectorRef = this.fkts(entry.at(0));
-            multiplyVectorByScalarDest(this._sectorRef,  entry.at(1), this._sectorFlowMult);
-            addVectors(out, this._sectorFlowMult);
+            multiplyVectorByScalarDest(this._sectorRef,  entry.at(1) / this._sectorLocDistance ** 2, this._sectorFlowMult);
+            subtractVectors(out, this._sectorFlowMult);
         });
 
-        // if (applyNeighbors) {
-        //     this.nRight?.applyWindSpeed(loc, out, false)
-        //     this.nLeft?.applyWindSpeed(loc, out, false)
-        //     this.nRight?.applyWindSpeed(loc, out, false)
-        //     this.nTop?.applyWindSpeed(loc, out, false)
-        //     this.nBottom?.applyWindSpeed(loc, out, false)
-        //     this.nFront?.applyWindSpeed(loc, out, false)
-        //     this.nBack?.applyWindSpeed(loc, out, false)
-        // }
+        if (applyNeighbors) {
+            this.nRight?.applyWindSpeed(loc, out, false)
+            this.nLeft?.applyWindSpeed(loc, out, false)
+            this.nRight?.applyWindSpeed(loc, out, false)
+            this.nTop?.applyWindSpeed(loc, out, false)
+            this.nBottom?.applyWindSpeed(loc, out, false)
+            this.nFront?.applyWindSpeed(loc, out, false)
+            this.nBack?.applyWindSpeed(loc, out, false)
+        }
     }
 
     shouldRenderDebug(ccp) {
@@ -297,10 +297,10 @@ export class AtmosphereUnit {
         this.flowString = "";
         this.flowString += "\n" + this.flow.get(this.stfk([-1, 0, 0])).toFixed(4);
         this.flowString += "\n" + this.flow.get(this.stfk([1, 0, 0])).toFixed(4);
-        this.flowString += "\n" + this.flow.get(this.stfk([0, 1, 0])).toFixed(4);
-        this.flowString += "\n" + this.flow.get(this.stfk([0, -1, 0])).toFixed(4);
-        this.flowString += "\n" + this.flow.get(this.stfk([0, 0, 1])).toFixed(4);
-        this.flowString += "\n" + this.flow.get(this.stfk([0, 0, -1])).toFixed(4);
+        // this.flowString += "\n" + this.flow.get(this.stfk([0, 1, 0])).toFixed(4);
+        // this.flowString += "\n" + this.flow.get(this.stfk([0, -1, 0])).toFixed(4);
+        // this.flowString += "\n" + this.flow.get(this.stfk([0, 0, 1])).toFixed(4);
+        // this.flowString += "\n" + this.flow.get(this.stfk([0, 0, -1])).toFixed(4);
         addRenderJob(new PointLabelRenderJob(
                 this._tcsCenter.renderScreen[0],
                 this._tcsCenter.renderScreen[1],
