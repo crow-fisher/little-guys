@@ -346,6 +346,8 @@ export class SoilSquare extends BaseSquare {
         if (this.world_tl == null) {
             return;
         }
+
+        return;
         let ah = getAtmosphereHandler();
 
         // let tc = new CoordinateSet(this.world_tl);

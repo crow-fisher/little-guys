@@ -527,10 +527,10 @@ export class BaseSquare {
         this.world_bl[2] = this.z;
         this.world_br[2] = this.z;
 
-        this._cs_tl = this._cs_tl ?? new CoordinateSet();
-        this._cs_tr = this._cs_tr ?? new CoordinateSet();
-        this._cs_bl = this._cs_bl ?? new CoordinateSet();
-        this._cs_br = this._cs_br ?? new CoordinateSet();
+        this._cs_tl = new CoordinateSet();
+        this._cs_tr = new CoordinateSet();
+        this._cs_bl = new CoordinateSet();
+        this._cs_br = new CoordinateSet();
 
         this._cs_tl.setWorld(this.world_tl)
         this._cs_tr.setWorld(this.world_tr)

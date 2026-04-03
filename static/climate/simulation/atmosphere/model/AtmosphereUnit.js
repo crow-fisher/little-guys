@@ -10,6 +10,9 @@ import { addVec3Dest, addVectors, copyVecValue, getVec3Length, multiplyVectorByS
 import { getCurDay } from "../../../time.js";
 
 
+
+export const ATMOSCALE = 1;
+
 export class AtmosphereUnit {
     constructor(sector, size) { // vec3s
         this.sector = sector;
@@ -30,14 +33,14 @@ export class AtmosphereUnit {
     preTick(mgr) {
         this.initNeighbors(mgr);
         this.cd = (
-            ((this.sector[0] + 0.5) - mgr.ccp[0]) ** 2 +
-            ((this.sector[1] + 0.5) - mgr.ccp[1]) ** 2 +
-            ((this.sector[2] + 0.5) - mgr.ccp[2]) ** 2) ** 0.5;
+            (((this.sector[0] * ATMOSCALE) + 0.5) - mgr.ccp[0]) ** 2 +
+            (((this.sector[1] * ATMOSCALE) + 0.5) - mgr.ccp[1]) ** 2 +
+            (((this.sector[2] * ATMOSCALE) + 0.5) - mgr.ccp[2]) ** 2) ** 0.5;
 
         this.initFlow();
 
         if (this.pressure > 1)
-            this.pressure *= 0.99999;
+            this.pressure *= 0.9;
     }
 
     stfk(sector) {
@@ -171,12 +174,12 @@ export class AtmosphereUnit {
     }
 
     debugRenderInit(ccp) {
-        this._x1 = this.sector[0];
-        this._x2 = this.sector[0] + 1;
-        this._y1 = this.sector[1];
-        this._y2 = this.sector[1] + 1;
-        this._z1 = this.sector[2];
-        this._z2 = this.sector[2] + 1;
+        this._x1 = ATMOSCALE * (this.sector[0]);
+        this._x2 = ATMOSCALE * (this.sector[0] + 1);
+        this._y1 = ATMOSCALE * (this.sector[1]);
+        this._y2 = ATMOSCALE * (this.sector[1] + 1);
+        this._z1 = ATMOSCALE * (this.sector[2]);
+        this._z2 = ATMOSCALE * (this.sector[2] + 1);
 
         this._x1 -= ccp[0];
         this._x2 -= ccp[0];

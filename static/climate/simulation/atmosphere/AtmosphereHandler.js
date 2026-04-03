@@ -62,6 +62,7 @@ export class AtmosphereHandler {
     }
 
     indexAtmosphereUnit(sector) {
+        let scale = 10;
         return this.au
             .get(Math.floor(sector[0]))
             ?.get(Math.floor(sector[1]))
@@ -131,8 +132,8 @@ export class AtmosphereHandler {
         //     cur.debugRender(this.ccp);
         // }
 
-        // this.cu.debugRenderInit(this.ccp);
-        // this.cu.debugRenderBounds();
+        this.cu.debugRenderInit(this.ccp);
+        this.cu.debugRenderBounds();
 
         this.debugRenderWindSpeedGrid();
     }
@@ -146,8 +147,8 @@ export class AtmosphereHandler {
     }
 
     debugRenderWindSpeedGrid() {
-        let range = 12; 
-        let step = 0.5;
+        let range = 40; 
+        let step = 2;
 
         let startDist = 0;
 
@@ -179,7 +180,7 @@ export class AtmosphereHandler {
                         et.renderScreen,
                         4 / st.distToCamera,
                         COLOR_VERY_FUCKING_RED
-                    ), false);
+                    ), true);
                 }
             }
         }
