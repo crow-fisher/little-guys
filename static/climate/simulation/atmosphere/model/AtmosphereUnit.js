@@ -17,12 +17,14 @@ export class AtmosphereUnit {
         this.pressure = 1;
         this.cd = -1; // camera dist. in sectors. euclidian distance.
         this.flow = new Map();
-        this.nTop;
-        this.nBottom;
+        this.windSpeed = [0, 0, 0];
+
         this.nLeft;
         this.nRight;
-        this.nFront;
+        this.nTop;
         this.nBottom;
+        this.nFront;
+        this.nBack;
     }
 
     preTick(mgr) {
@@ -33,6 +35,9 @@ export class AtmosphereUnit {
             ((this.sector[2] + 0.5) - mgr.ccp[2]) ** 2) ** 0.5;
 
         this.initFlow();
+
+        if (this.pressure > 1)
+            this.pressure *= 0.99;
     }
 
     stfk(sector) {
@@ -47,12 +52,6 @@ export class AtmosphereUnit {
 
 
     initFlow() {
-        // this.flow.set(this.stfk([-1, 0, 0]), 0.7 * (this.flow.get(this.stfk([-1, 0, 0])) ?? 0));
-        // this.flow.set(this.stfk([1, 0, 0]), 0.7 * (this.flow.get(this.stfk([1, 0, 0])) ?? 0));
-        // this.flow.set(this.stfk([0, 1, 0]), 0.7 * (this.flow.get(this.stfk([0, 1, 0])) ?? 0));
-        // this.flow.set(this.stfk([0, -1, 0]), 0.7 * (this.flow.get(this.stfk([0, -1, 0])) ?? 0));
-        // this.flow.set(this.stfk([0, 0, 1]), 0.7 * (this.flow.get(this.stfk([0, 0, 1])) ?? 0));
-        // this.flow.set(this.stfk([0, 0, -1]), 0.7 * (this.flow.get(this.stfk([0, 0, -1])) ?? 0));
         this.flow.set(this.stfk([-1, 0, 0]), 0);
         this.flow.set(this.stfk([1, 0, 0]), 0);
         this.flow.set(this.stfk([0, 1, 0]), 0);
@@ -121,15 +120,16 @@ export class AtmosphereUnit {
             multiplyVectorByScalarDest(this._sectorRef,  entry.at(1) / (1 + this._sectorLocDistance) ** 2, this._sectorFlowMult);
             subtractVectors(out, this._sectorFlowMult);
         });
+    }
 
-        // if (applyNeighbors) {
-        //     this.nLeft?.applyWindSpeed(loc, out, false);
-        //     this.nRight?.applyWindSpeed(loc, out, false);
-        //     this.nTop?.applyWindSpeed(loc, out, false);
-        //     this.nBottom?.applyWindSpeed(loc, out, false);
-        //     this.nFront?.applyWindSpeed(loc, out, false);
-        //     this.nBack?.applyWindSpeed(loc, out, false);
-        //     }
+    tickWindSpeed() {
+        this._sectorFlowMult = this._sectorFlowMult ?? [0, 0, 0];
+        copyVecValue([0, 0, 0], this.windSpeed);
+        this.flow.entries().forEach((entry) => {
+            this._sectorRef = this.fkts(entry.at(0));
+            multiplyVectorByScalarDest(this._sectorRef,  entry.at(1), this._sectorFlowMult);
+            subtractVectors(this.windSpeed, this._sectorFlowMult);
+        });
     }
 
     debugRender(ccp) {

@@ -110,7 +110,9 @@ export class AtmosphereHandler {
         this.gamepadInputTick();
         this.diffusionModelTick();
 
-        this.cu.pressure += 2;
+        for (let i = 0; i < this.i; i++) {
+            this.tickAUList[i].tickWindSpeed();
+        }
 
         if (DEBUG)
             this.debugRenderTick();
@@ -118,34 +120,25 @@ export class AtmosphereHandler {
     }
 
     debugRenderTick() {
-        let cur;
-        for (let i = 0; i < this.i; i++) {
-            cur = this.tickAUList[i];
-            cur.debugRender(this.ccp);
-        }
+        // let cur;
+        // for (let i = 0; i < this.i; i++) {
+        //     cur = this.tickAUList[i];
+        //     cur.debugRender(this.ccp);
+        // }
         this.debugRenderWindSpeedGrid();
     }
 
     getWindSpeedAtLocation(loc) {
-
-        // return [.1, .1, .1];
-        let out = [0, 0, 0];
-        // return multiplyVectorByScalar([Math.sin(getCurDay() * 10 **4), Math.cos(getCurDay() * 10 **4), 1], .5)
         this._wslWsq = this.indexAtmosphereUnit(loc);
-
         if (this._wslWsq == null) {
-            return out;
+            return [0, 0, 0];
         }
-
-        this._wslWsq.applyWindSpeed(loc, out, true);
-        return out;
+        return this._wslWsq.windSpeed;
     }
 
     debugRenderWindSpeedGrid() {
-
-
-        let range = 2; 
-        let step = .25;
+        let range = 5; 
+        let step = 0.5;
 
         let co = gfc().cameraOffset;
 
@@ -162,13 +155,7 @@ export class AtmosphereHandler {
 
                     addVec3Dest(cof, [i, j, k], sl);
                     let wsVec = this.getWindSpeedAtLocation(sl);
-                    let wsLength = getVec3Length(wsVec);
-                    let wsTransformed = wsLength ** 0.25;
-                    let wsFactor = wsTransformed / wsLength;
-                    multiplyVectorByScalar(wsVec, wsFactor * .25); 
-
                     addVec3Dest(sl, wsVec, el);
-
                     let st = new CoordinateSet (sl);
                     let et = new CoordinateSet(el);
 
