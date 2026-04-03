@@ -122,14 +122,14 @@ export class AtmosphereUnit {
             subtractVectors(out, this._sectorFlowMult);
         });
 
-        if (applyNeighbors) {
-            this.nLeft?.applyWindSpeed(loc, out, false);
-            this.nRight?.applyWindSpeed(loc, out, false);
-            this.nTop?.applyWindSpeed(loc, out, false);
-            this.nBottom?.applyWindSpeed(loc, out, false);
-            this.nFront?.applyWindSpeed(loc, out, false);
-            this.nBack?.applyWindSpeed(loc, out, false);
-            }
+        // if (applyNeighbors) {
+        //     this.nLeft?.applyWindSpeed(loc, out, false);
+        //     this.nRight?.applyWindSpeed(loc, out, false);
+        //     this.nTop?.applyWindSpeed(loc, out, false);
+        //     this.nBottom?.applyWindSpeed(loc, out, false);
+        //     this.nFront?.applyWindSpeed(loc, out, false);
+        //     this.nBack?.applyWindSpeed(loc, out, false);
+        //     }
     }
 
     debugRender(ccp) {
