@@ -88,14 +88,19 @@ export class AtmosphereHandler {
         this._ccpOffset = this._ccpOffset ?? [0, 0, 0];
         addVec3Dest(this.ccp, [1, 0, 1], this._ccpOffset);
         this._cuOffset = this.indexAtmosphereUnit(this._ccpOffset);
-
         if (isButtonPressed(GBA) || isButtonPressed(GBDU)) {
-            this.cu.pressure += 4;
+            this.addPressureAtLocation(this.cu.sector, 2, 4);
         }
-        if (isButtonPressed(GBDD)) {
-            this.cu.pressure *= 0.5;
-        }
+    }
 
+    addPressureAtLocation(loc, dist, amount) {
+        let cdv = [0, 0, 0];
+        for (let i = 0; i < this.i; i++) {
+            subtractVectorsDest(loc, this.tickAUList[i].sector, cdv);
+            if (getVec3Length(cdv) < dist) {
+                this.tickAUList[i].pressure += amount;
+            }
+        }
     }
 
     tick() {
@@ -125,6 +130,10 @@ export class AtmosphereHandler {
         //     cur = this.tickAUList[i];
         //     cur.debugRender(this.ccp);
         // }
+
+        this.cu.debugRenderInit(this.ccp);
+        this.cu.debugRenderBounds();
+
         this.debugRenderWindSpeedGrid();
     }
 
@@ -137,7 +146,7 @@ export class AtmosphereHandler {
     }
 
     debugRenderWindSpeedGrid() {
-        let range = 5; 
+        let range = 8; 
         let step = 0.5;
 
         let co = gfc().cameraOffset;

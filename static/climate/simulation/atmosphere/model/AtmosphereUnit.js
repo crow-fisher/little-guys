@@ -93,7 +93,7 @@ export class AtmosphereUnit {
         multiplyVectorByScalarDest(this._sectorOffset, -1, this._sectorOffsetFlip);
 
         this._neighborDiff = this.pressure - neighbor.pressure;
-        this._appliedDiff = -this._neighborDiff * 0.05;
+        this._appliedDiff = -this._neighborDiff * 0.07; // if this number is much higher than this, the entire thing breaks down
 
         this.flow.set(this.stfk(this._sectorOffset), this.flow.get(this.stfk(this._sectorOffset)) + this._appliedDiff);
         neighbor.flow.set(this.stfk(this._sectorOffsetFlip), neighbor.flow.get(this.stfk(this._sectorOffsetFlip)) - this._appliedDiff);
