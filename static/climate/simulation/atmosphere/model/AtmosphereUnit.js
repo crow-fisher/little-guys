@@ -114,7 +114,6 @@ export class AtmosphereUnit {
         this._sectorFlowMult = this._sectorFlowMult ?? [0, 0, 0];
 
         subtractVectorsDest(this.sector, loc, this._sectorRefDelta);
-        addVectors(this._sectorRefDelta, [0.5, 0.5, 0.5]);
         this._sectorLocDistance = getVec3Length(this._sectorRefDelta);
 
         this.flow.entries().forEach((entry) => {
@@ -140,9 +139,9 @@ export class AtmosphereUnit {
             this._tcsCenter.renderScreen[1] < 0 && this._tcsCenter.renderScreen[1] > getCanvasHeight()) {
             return false;
         }
-        // if (this.cd < 2) {
-        //     this.debugRenderBounds();
-        // }
+        if (this.cd < 2) {
+            this.debugRenderBounds();
+        }
         // if (this.cd < 3) {
         //     this.debugRenderDiffusionFlow();
         // }
