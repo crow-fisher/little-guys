@@ -2,7 +2,7 @@ import { BaseSquare } from "../BaseSqaure.js";
 import { addSquare, getNeighbors, getSquares } from "../_sqOperations.js";
 import { cachedGetWaterflowRate, hexToRgb, invlerp, lerp, randNumber, randRange } from "../../common.js";
 import { getCurTimeScale, getDt, getFrameDt, timeScaleFactor } from "../../climate/time.js";
-import { getPressure, getWindSpeedAtLocation, getWindSquareAbove } from "../../climate/simulation/wind.js";
+import { getPressure, getWindSquareAbove } from "../../climate/simulation/wind.js";
 import { addWaterSaturationPascals, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, temperatureHumidityFlowrateFactor } from "../../climate/simulation/temperatureHumidity.js";
 import { loadGD, UI_LIGHTING_SURFACE, UI_PALETTE_COMPOSITION, UI_PALETTE_SOILIDX, UI_PALETTE_VARIANCE, UI_SIMULATION_CLOUDS, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER } from "../../ui/UIData.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
@@ -10,6 +10,11 @@ import { addSquareByName } from "../../manipulation.js";
 import { getBaseSize } from "../../canvas.js";
 import { applyLightingFromSource, getDefaultLighting } from "../../lighting/lightingProcessing.js";
 import { getNextBlockId, getNextGroupId } from "../../globals.js";
+import { getAtmosphereHandler, getWindSpeedAtLocation } from "../../main.js";
+import { CoordinateSet } from "../../rendering/model/CoordinateSet.js";
+import { PointLabelRenderJob } from "../../rendering/model/PointLabelRenderJob.js";
+import { COLOR_VERY_FUCKING_RED } from "../../colors.js";
+import { addRenderJob } from "../../rendering/rasterizer.js";
 
 // maps in form "water containment" / "matric pressure in atmospheres"
 export const clayMatricPressureMap = [
@@ -335,13 +340,25 @@ export class SoilSquare extends BaseSquare {
         if (!Number.isFinite(this.blockHealth))
             alert("?????????");
 
-        if (!loadGD(UI_SIMULATION_CLOUDS))
-            return;
-
         if (this.linkedOrganismSquares.some((lsq) => lsq.type == "root")) {
             return;
         }
-        let ws = getWindSpeedAtLocation(this.posX, this.posY);
+        if (this.world_tl == null) {
+            return;
+        }
+        let ah = getAtmosphereHandler();
+
+        let tc = new CoordinateSet(this.world_tl);
+        addRenderJob(new PointLabelRenderJob(
+            ...tc.renderScreen,
+            3,
+            COLOR_VERY_FUCKING_RED,
+            this.world_tl
+        ), false)
+
+
+
+        let ws = getWindSpeedAtLocation(this.world_tl);
         let maxWindSpeed = 2;
 
         let wx = ws[0]; // Math.min(Math.max(ws[0], -maxWindSpeed), maxWindSpeed);

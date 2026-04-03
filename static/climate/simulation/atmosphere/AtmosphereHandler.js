@@ -19,7 +19,7 @@ export class AtmosphereHandler {
         this.au = new Map(); // 3-D map to individuals sectors of XYZ space
         this.fullAUList = new Array(); // 1-D array array of all live AUs
         this.tickAUList = new Array();
-        this.dist = 8;
+        this.dist = 16;
     }
 
     initAtmosphereUnits() {
@@ -134,7 +134,7 @@ export class AtmosphereHandler {
         // this.cu.debugRenderInit(this.ccp);
         // this.cu.debugRenderBounds();
 
-        this.debugRenderWindSpeedGrid();
+        // this.debugRenderWindSpeedGrid();
     }
 
     getWindSpeedAtLocation(loc) {

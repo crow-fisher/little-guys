@@ -201,3 +201,7 @@ function renderCenterSelect() {
         getBaseSize()
     );
 }
+
+export function getWindSpeedAtLocation(loc) {
+    return getAtmosphereHandler().getWindSpeedAtLocation(loc);
+}

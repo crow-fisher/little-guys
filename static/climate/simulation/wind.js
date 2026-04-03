@@ -400,12 +400,6 @@ function getWindDirectNeighbors(x, y) {
 
 // public methods 
 
-function getWindSpeedAtLocation(x, y) {
-    x = Math.floor(x / 4);
-    y = Math.floor(y / 4);
-    return _getWindSpeedAtLocation(x, y);
-}
-
 function _getWindSpeedAtLocation(x, y) {
     if (getPressure(x, y) < 0) {
         return [0, 0];
@@ -547,6 +541,9 @@ function isPointInBounds(x, y) {
     return x >= 0 && x < curWindSquaresX && y >= 0 && y < curWindSquaresY;
 }
 
+function getWindSpeedAtLocation(x, y) {
+    return null;
+}
 initWindPressure();
 
 export { getWindSquareAbove, setPressurebyMult, getPressure, getAirSquareDensity, getWindSpeedAtLocation, renderWindPressureMap, initWindPressure, tickWindPressureMap, updateWindPressureByMult, getAirSquareDensityTempAndHumidity, base_wind_pressure }
