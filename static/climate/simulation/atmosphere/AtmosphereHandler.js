@@ -116,11 +116,11 @@ export class AtmosphereHandler {
     }
 
     debugRenderTick() {
-        let cur;
-        for (let i = 0; i < this.i; i++) {
-            cur = this.tickAUList[i];
-            cur.debugRender(this.ccp);
-        }
+        // let cur;
+        // for (let i = 0; i < this.i; i++) {
+        //     cur = this.tickAUList[i];
+        //     cur.debugRender(this.ccp);
+        // }
         this.debugRenderWindSpeedGrid();
     }
 
@@ -143,6 +143,7 @@ export class AtmosphereHandler {
             au._endLoc = [0, 0, 0];
 
             addVec3Dest(au.sector, [0.5, 0.5, 0.5], au._startLoc);
+            copyVecValue(au.sector, au._startLoc);
             // addVec3Dest(au.sector, [
             //    .1 * Math.sin(getCurDay() * 10 ** 4),
             //    .1 * Math.sin(getCurDay() * 10 ** 4),
@@ -161,15 +162,15 @@ export class AtmosphereHandler {
                 COLOR_VERY_FUCKING_RED
             ), false);
             
-            if (au.cd < 2) 
-            addRenderJob(new PointLabelRenderJob(
-                au._startTcs.renderScreen[0],
-                au._startTcs.renderScreen[1] - 30,
-                au._startTcs.renderScreen[2],
-                4 / au.cd,
-                COLOR_VERY_FUCKING_RED,
-                vec3ToString(this.getWindSpeedAtLocation(au._startLoc), 4)  
-            ), false);
+            // if (au.cd < 2) 
+            // addRenderJob(new PointLabelRenderJob(
+            //     au._startTcs.renderScreen[0],
+            //     au._startTcs.renderScreen[1] - 30,
+            //     au._startTcs.renderScreen[2],
+            //     4 / au.cd,
+            //     COLOR_VERY_FUCKING_RED,
+            //     vec3ToString(this.getWindSpeedAtLocation(au._startLoc), 4)  
+            // ), false);
         })
     }
 }

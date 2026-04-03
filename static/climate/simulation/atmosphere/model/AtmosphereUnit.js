@@ -114,6 +114,7 @@ export class AtmosphereUnit {
         this._sectorFlowMult = this._sectorFlowMult ?? [0, 0, 0];
 
         subtractVectorsDest(this.sector, loc, this._sectorRefDelta);
+        addVectors(this._sectorRefDelta, [0.5, 0.5, 0.5]);
         this._sectorLocDistance = getVec3Length(this._sectorRefDelta);
 
         this.flow.entries().forEach((entry) => {
@@ -294,10 +295,10 @@ export class AtmosphereUnit {
         this.flowString = "";
         this.flowString += "\n" + this.flow.get(this.stfk([-1, 0, 0])).toFixed(4);
         this.flowString += "\n" + this.flow.get(this.stfk([1, 0, 0])).toFixed(4);
-        // this.flowString += "\n" + this.flow.get(this.stfk([0, 1, 0])).toFixed(4);
-        // this.flowString += "\n" + this.flow.get(this.stfk([0, -1, 0])).toFixed(4);
-        // this.flowString += "\n" + this.flow.get(this.stfk([0, 0, 1])).toFixed(4);
-        // this.flowString += "\n" + this.flow.get(this.stfk([0, 0, -1])).toFixed(4);
+        this.flowString += "\n" + this.flow.get(this.stfk([0, 1, 0])).toFixed(4);
+        this.flowString += "\n" + this.flow.get(this.stfk([0, -1, 0])).toFixed(4);
+        this.flowString += "\n" + this.flow.get(this.stfk([0, 0, 1])).toFixed(4);
+        this.flowString += "\n" + this.flow.get(this.stfk([0, 0, -1])).toFixed(4);
         addRenderJob(new PointLabelRenderJob(
                 this._tcsCenter.renderScreen[0],
                 this._tcsCenter.renderScreen[1],
