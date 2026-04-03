@@ -7,7 +7,7 @@ import { LineRenderJob } from "../../../rendering/model/LineRenderJob.js";
 import { PointLabelRenderJob } from "../../../rendering/model/PointLabelRenderJob.js";
 import { addRenderJob } from "../../../rendering/rasterizer.js";
 import { loadGD, UI_CAMERA_CENTER_SELECT_OFFSET, UI_CAMERA_OFFSET_VEC } from "../../../ui/UIData.js";
-import { addVec3Dest, addVectors, copyVecValue, multiplyVectorByScalar, subtractVectorsDest } from "../../stars/matrix.js";
+import { addVec3Dest, addVectors, copyVecValue, getVec3Length, multiplyVectorByScalar, subtractVectorsDest } from "../../stars/matrix.js";
 import { getCurDay } from "../../time.js";
 import { AtmosphereUnit, vec3ToString } from "./model/AtmosphereUnit.js";
 
@@ -149,8 +149,14 @@ export class AtmosphereHandler {
             //    .1 * Math.sin(getCurDay() * 10 ** 4),
             //    .1 * Math.sin(getCurDay() * 10 ** 4)
             // ], au._startLoc);
+            
+            let wsVec = this.getWindSpeedAtLocation(au._startLoc);
+            let wsLength = getVec3Length(wsVec);
+            let wsTransformed = wsLength ** 0.25;
+            let wsFactor = wsTransformed / wsLength;
+            multiplyVectorByScalar(wsVec, wsFactor);
 
-            addVec3Dest(au._startLoc, this.getWindSpeedAtLocation(au._startLoc), au._endLoc);
+            addVec3Dest(au._startLoc, wsVec, au._endLoc);
             
             au._startTcs = new CoordinateSet (au._startLoc);
             au._endTcs = new CoordinateSet(au._endLoc);
