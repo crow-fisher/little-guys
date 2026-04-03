@@ -118,37 +118,35 @@ export class AtmosphereUnit {
 
         this.flow.entries().forEach((entry) => {
             this._sectorRef = this.fkts(entry.at(0));
-            multiplyVectorByScalarDest(this._sectorRef,  entry.at(1) / this._sectorLocDistance ** 2, this._sectorFlowMult);
+            multiplyVectorByScalarDest(this._sectorRef,  entry.at(1) / (1 + this._sectorLocDistance) ** 2, this._sectorFlowMult);
             subtractVectors(out, this._sectorFlowMult);
         });
 
         if (applyNeighbors) {
-            this.nRight?.applyWindSpeed(loc, out, false)
-            this.nLeft?.applyWindSpeed(loc, out, false)
-            this.nRight?.applyWindSpeed(loc, out, false)
-            this.nTop?.applyWindSpeed(loc, out, false)
-            this.nBottom?.applyWindSpeed(loc, out, false)
-            this.nFront?.applyWindSpeed(loc, out, false)
-            this.nBack?.applyWindSpeed(loc, out, false)
-        }
+            this.nLeft?.applyWindSpeed(loc, out, false);
+            this.nRight?.applyWindSpeed(loc, out, false);
+            this.nTop?.applyWindSpeed(loc, out, false);
+            this.nBottom?.applyWindSpeed(loc, out, false);
+            this.nFront?.applyWindSpeed(loc, out, false);
+            this.nBack?.applyWindSpeed(loc, out, false);
+            }
     }
 
-    shouldRenderDebug(ccp) {
+    debugRender(ccp) {
+        this.debugRenderInit(ccp);
         if (
             this._tcsCenter.renderScreen[0] < 0 || this._tcsCenter.renderScreen[0] > getCanvasWidth() &&
             this._tcsCenter.renderScreen[1] < 0 && this._tcsCenter.renderScreen[1] > getCanvasHeight()) {
             return false;
         }
-        this._sectorOffset = this._sectorOffset ?? [0, 0, 0];
-        subtractVectorsDest(this._centerRoot, ccp, this._sectorOffset);
-        return this.cd < 4;
-    }
-
-    debugRender(ccp) {
-        this.debugRenderInit(ccp);
-        if (this.shouldRenderDebug(ccp)) {
-            this.debugRenderBounds();
-            this.debugRenderDiffusionFlow();
+        // if (this.cd < 2) {
+        //     this.debugRenderBounds();
+        // }
+        // if (this.cd < 3) {
+        //     this.debugRenderDiffusionFlow();
+        // }
+        if (this.cd < 2) {
+            this.debugRenderFlow(ccp);
         }
     }
 
@@ -293,7 +291,6 @@ export class AtmosphereUnit {
 
     debugRenderFlow(ccp, neighbors=false) {
         this.debugRenderInit(ccp)
-
         this.flowString = "";
         this.flowString += "\n" + this.flow.get(this.stfk([-1, 0, 0])).toFixed(4);
         this.flowString += "\n" + this.flow.get(this.stfk([1, 0, 0])).toFixed(4);
@@ -305,7 +302,7 @@ export class AtmosphereUnit {
                 this._tcsCenter.renderScreen[0],
                 this._tcsCenter.renderScreen[1],
                 this._tcsCenter.screen[2],
-                Math.min(20, this.pressure * 30 / this.cd),
+                Math.min(20, 10 / this.cd),
                 COLOR_BLUE,
                 this.flowString),
                 false);
@@ -322,11 +319,11 @@ export class AtmosphereUnit {
     }
 }
 
-function printVec3(vec3) {
+export function vec3ToString(vec3, digits) {
     let out = "";
-    out += vec3[0].toFixed(0) + "|";
-    out += vec3[1].toFixed(0) + "|";
-    out += vec3[2].toFixed(8);
+    out += vec3[0].toFixed(digits) + "|";
+    out += vec3[1].toFixed(digits) + "|";
+    out += vec3[2].toFixed(digits);
 
     return out;
 }

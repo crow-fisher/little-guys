@@ -4,11 +4,12 @@ import { DEBUG } from "../../../index.js";
 import { gfc } from "../../../rendering/camera.js";
 import { CoordinateSet } from "../../../rendering/model/CoordinateSet.js";
 import { LineRenderJob } from "../../../rendering/model/LineRenderJob.js";
+import { PointLabelRenderJob } from "../../../rendering/model/PointLabelRenderJob.js";
 import { addRenderJob } from "../../../rendering/rasterizer.js";
 import { loadGD, UI_CAMERA_CENTER_SELECT_OFFSET, UI_CAMERA_OFFSET_VEC } from "../../../ui/UIData.js";
 import { addVec3Dest, addVectors, copyVecValue, multiplyVectorByScalar, subtractVectorsDest } from "../../stars/matrix.js";
 import { getCurDay } from "../../time.js";
-import { AtmosphereUnit } from "./model/AtmosphereUnit.js";
+import { AtmosphereUnit, vec3ToString } from "./model/AtmosphereUnit.js";
 
 
 const F = Math.floor
@@ -116,14 +117,11 @@ export class AtmosphereHandler {
 
     debugRenderTick() {
         let cur;
-        // for (let i = 0; i < this.i; i++) {
-        //     cur = this.tickAUList[i];
-        //     cur.debugRender(this.ccp);
-        // }
+        for (let i = 0; i < this.i; i++) {
+            cur = this.tickAUList[i];
+            cur.debugRender(this.ccp);
+        }
         this.debugRenderWindSpeedGrid();
-        this.cu.debugRender(this.ccp)
-        // this.cu.debugRenderLabel(this.ccp, true);
-        this.cu.debugRenderFlow(this.ccp, true);
     }
 
     getWindSpeedAtLocation(loc) {
@@ -161,6 +159,16 @@ export class AtmosphereHandler {
                 au._endTcs.renderScreen,
                 4 / au.cd,
                 COLOR_VERY_FUCKING_RED
+            ), false);
+            
+            if (au.cd < 2) 
+            addRenderJob(new PointLabelRenderJob(
+                au._startTcs.renderScreen[0],
+                au._startTcs.renderScreen[1] - 30,
+                au._startTcs.renderScreen[2],
+                4 / au.cd,
+                COLOR_VERY_FUCKING_RED,
+                vec3ToString(this.getWindSpeedAtLocation(au._startLoc), 4)  
             ), false);
         })
     }
