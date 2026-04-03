@@ -27,6 +27,8 @@ import { STAGE_DEAD } from "../plants/organisms/Stages.js";
 import { cartesianToScreenInplace, gfc, screenToRenderScreen } from "../rendering/camera.js";
 import { addRenderJob } from "../rendering/rasterizer.js";
 import { QuadRenderJob } from "../rendering/model/QuadRenderJob.js";
+import { CoordinateSet } from "../rendering/model/CoordinateSet.js";
+import { copyVecValue } from "../climate/stars/matrix.js";
 
 export class BaseSquare {
     constructor(posX, posY) {
@@ -502,7 +504,6 @@ export class BaseSquare {
     }
 
     setFrameCartesians() {
-        let co = gfc().cameraOffset;
         this.selectPoint = loadGD(UI_CAMERA_CENTER_SELECT_POINT) ?? [0, 0];
         
         this.px = this.posX - this.selectPoint[0];
@@ -526,28 +527,16 @@ export class BaseSquare {
         this.world_bl[2] = this.z;
         this.world_br[2] = this.z;
 
-        this.cartesian_tl[0] = this.world_tl[0] - co[0];
-        this.cartesian_tr[0] = this.world_tr[0] - co[0];
-        this.cartesian_bl[0] = this.world_bl[0] - co[0];
-        this.cartesian_br[0] = this.world_br[0] - co[0];
-        this.cartesian_tl[1] = this.world_tl[1] - co[1];
-        this.cartesian_tr[1] = this.world_tr[1] - co[1];
-        this.cartesian_bl[1] = this.world_bl[1] - co[1];
-        this.cartesian_br[1] = this.world_br[1] - co[1];
-        this.cartesian_tl[2] = this.world_tl[2] - co[2];
-        this.cartesian_tr[2] = this.world_tr[2] - co[2];
-        this.cartesian_bl[2] = this.world_bl[2] - co[2];
-        this.cartesian_br[2] = this.world_br[2] - co[2];
+        this._cs_tl = this._cs_tl ?? new CoordinateSet();
+        this._cs_tr = this._cs_tr ?? new CoordinateSet();
+        this._cs_bl = this._cs_bl ?? new CoordinateSet();
+        this._cs_br = this._cs_br ?? new CoordinateSet();
 
-        cartesianToScreenInplace(this.cartesian_tl, this.camera_tl, this.screen_tl);
-        cartesianToScreenInplace(this.cartesian_tr, this.camera_tr, this.screen_tr);
-        cartesianToScreenInplace(this.cartesian_bl, this.camera_bl, this.screen_bl);
-        cartesianToScreenInplace(this.cartesian_br, this.camera_br, this.screen_br);
+        this._cs_tl.setWorld(this.world_tl)
+        this._cs_tr.setWorld(this.world_tr)
+        this._cs_bl.setWorld(this.world_bl)
+        this._cs_br.setWorld(this.world_br)
 
-        screenToRenderScreen(this.screen_tl, this.renderNorm_tl, this.renderScreen_tl, gfc()._xOffset, gfc()._yOffset, gfc()._s);
-        screenToRenderScreen(this.screen_tr, this.renderNorm_tr, this.renderScreen_tr, gfc()._xOffset, gfc()._yOffset, gfc()._s);
-        screenToRenderScreen(this.screen_bl, this.renderNorm_bl, this.renderScreen_bl, gfc()._xOffset, gfc()._yOffset, gfc()._s);
-        screenToRenderScreen(this.screen_br, this.renderNorm_br, this.renderScreen_br, gfc()._xOffset, gfc()._yOffset, gfc()._s);
     }
 
     updateNeighborSquares() {
@@ -557,38 +546,27 @@ export class BaseSquare {
     }
 
     prepareRenderJob() {
-        this.tl = this.tl ?? structuredClone(this.renderScreen_tl);
-        this.bl = this.bl ?? structuredClone(this.renderScreen_bl);
-        this.br = this.br ?? structuredClone(this.renderScreen_br);
-        this.tr = this.tr ?? structuredClone(this.renderScreen_tr);
+        this.tl = this.tl ?? structuredClone(this._cs_tl.renderScreen);
+        this.bl = this.bl ?? structuredClone(this._cs_tr.renderScreen);
+        this.br = this.br ?? structuredClone(this._cs_bl.renderScreen);
+        this.tr = this.tr ?? structuredClone(this._cs_br.renderScreen);
 
         this.minZ = Math.min(this.tl[2], this.bl[2], this.br[2], this.tr[2]);
+        if (this.minZ < 0) {
+            return;
+        }
 
-        this.combinePoints(this, this.lsq, this.tl, "renderScreen_tl", "renderScreen_tr");
-        this.combinePoints(this, this.lsq, this.bl, "renderScreen_bl", "renderScreen_br");
-        this.combinePoints(this, this.rsq, this.br, "renderScreen_br", "renderScreen_bl");
-        this.combinePoints(this, this.rsq, this.tr, "renderScreen_tr", "renderScreen_tl");
+        this.tl = structuredClone(this._cs_tl.renderScreen);
+        this.tr = structuredClone(this._cs_tr.renderScreen);
+        this.bl = structuredClone(this._cs_bl.renderScreen);
+        this.br = structuredClone(this._cs_br.renderScreen);
+
+        this.combinePoints(this, this.lsq, this.tl, "tl", "tl");
+        this.combinePoints(this, this.lsq, this.bl, "bl", "bl");
+        this.combinePoints(this, this.rsq, this.br, "br", "br");
+        this.combinePoints(this, this.rsq, this.tr, "tr", "tr");
 
         this.centerZ = (this.tl[2] + this.bl[2] + this.br[2] + this.tr[2]) / 4;
-
-        // if (this.minZ < 0) {
-        //     return;
-        // }
-
-        let maxDiff = 0;
-        [0, 1].forEach((p) => {
-            maxDiff = Math.max(maxDiff, this.tl[p] - this.bl[p]);
-            maxDiff = Math.max(maxDiff, this.tl[p] - this.bl[p]);
-            maxDiff = Math.max(maxDiff, this.tl[p] - this.bl[p]);
-            maxDiff = Math.max(maxDiff, this.tl[p] - this.bl[p]);
-        });
-
-        // if (maxDiff > 20) {
-        //     this.renderJob = null;
-        //     return;
-        // }
-
-
 
         if (this.renderJob == null) {
             this.renderJob = new QuadRenderJob(this.tl, this.bl, this.br, this.tr, this.cachedRgba, this.centerZ)

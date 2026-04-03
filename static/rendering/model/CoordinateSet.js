@@ -12,7 +12,14 @@ export class CoordinateSet {
         this.renderScreen = [0, 0, 0];
         this.distToCamera = 0;
         
-        this.process(); // why did you...not do this!!!
+        if (world != null) {
+            this.process();
+        }
+    }
+
+    setWorld(newWorld) {
+        this.world = newWorld;
+        this.process();
     }
 
     process() {

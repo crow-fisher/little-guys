@@ -348,13 +348,13 @@ export class SoilSquare extends BaseSquare {
         }
         let ah = getAtmosphereHandler();
 
-        let tc = new CoordinateSet(this.world_tl);
-        addRenderJob(new PointLabelRenderJob(
-            ...tc.renderScreen,
-            3,
-            COLOR_VERY_FUCKING_RED,
-            this.world_tl
-        ), false)
+        // let tc = new CoordinateSet(this.world_tl);
+        // addRenderJob(new PointLabelRenderJob(
+        //     ...tc.renderScreen,
+        //     3,
+        //     COLOR_VERY_FUCKING_RED,
+        //     this.world_tl
+        // ), false)
 
 
 

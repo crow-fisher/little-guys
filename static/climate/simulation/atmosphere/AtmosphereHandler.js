@@ -19,7 +19,7 @@ export class AtmosphereHandler {
         this.au = new Map(); // 3-D map to individuals sectors of XYZ space
         this.fullAUList = new Array(); // 1-D array array of all live AUs
         this.tickAUList = new Array();
-        this.dist = 16;
+        this.dist = 8;
     }
 
     initAtmosphereUnits() {
@@ -134,7 +134,7 @@ export class AtmosphereHandler {
         // this.cu.debugRenderInit(this.ccp);
         // this.cu.debugRenderBounds();
 
-        // this.debugRenderWindSpeedGrid();
+        this.debugRenderWindSpeedGrid();
     }
 
     getWindSpeedAtLocation(loc) {
@@ -149,7 +149,7 @@ export class AtmosphereHandler {
         let range = 12; 
         let step = 0.5;
 
-        let startDist = 4;
+        let startDist = 0;
 
         let co = gfc().cameraOffset;
 
@@ -167,11 +167,7 @@ export class AtmosphereHandler {
                     addVec3Dest(cof, [i, j, k], sl);
                     let st = new CoordinateSet (sl);
                     
-                    
                     if (!st.isVisibleOnScreen())
-                        continue;
-
-                    if (st.distToCamera < startDist)
                         continue;
 
                     let wsVec = this.getWindSpeedAtLocation(sl);
