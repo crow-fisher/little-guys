@@ -135,22 +135,25 @@ export class AtmosphereUnit {
         });
     }
 
-    debugRender(ccp) {
+    debugRender(ccp, dist) {
         this.debugRenderInit(ccp);
-        if (
-            this._tcsCenter.renderScreen[0] < 0 || this._tcsCenter.renderScreen[0] > getCanvasWidth() &&
-            this._tcsCenter.renderScreen[1] < 0 && this._tcsCenter.renderScreen[1] > getCanvasHeight()) {
-            return false;
+        if (!this._tcsCenter.isVisibleOnScreen()) {
+            return;
         }
-        if (this.cd < 2) {
+
+        if (this.cd > dist && this.cd < (dist + 1)) {
             this.debugRenderBounds();
         }
+        // if (this.cd < 2) {
+        //     this.debugRenderBounds();
+        // }
         // if (this.cd < 3) {
         //     this.debugRenderDiffusionFlow();
         // }
-        if (this.cd < 2) {
-            this.debugRenderFlow(ccp);
-        }
+        // if (this.cd < 2) {
+        //     this.debugRenderFlow(ccp);
+        // }
+
     }
 
 

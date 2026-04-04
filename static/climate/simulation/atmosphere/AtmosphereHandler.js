@@ -7,9 +7,9 @@ import { LineRenderJob } from "../../../rendering/model/LineRenderJob.js";
 import { PointLabelRenderJob } from "../../../rendering/model/PointLabelRenderJob.js";
 import { addRenderJob } from "../../../rendering/rasterizer.js";
 import { loadGD, UI_CAMERA_CENTER_SELECT_OFFSET, UI_CAMERA_OFFSET_VEC } from "../../../ui/UIData.js";
-import { addVec3Dest, addVectors, copyVecValue, getVec3Length, multiplyVectorByScalar, subtractVectorsDest } from "../../stars/matrix.js";
+import { addVec3Dest, addVectors, copyVecValue, getVec3Length, multiplyVectorByScalar, subtractVectors, subtractVectorsDest } from "../../stars/matrix.js";
 import { getCurDay } from "../../time.js";
-import { AtmosphereUnit, vec3ToString } from "./model/AtmosphereUnit.js";
+import { ATMOSCALE, AtmosphereUnit, vec3ToString } from "./model/AtmosphereUnit.js";
 
 
 const F = Math.floor
@@ -62,11 +62,10 @@ export class AtmosphereHandler {
     }
 
     indexAtmosphereUnit(sector) {
-        let scale = 10;
         return this.au
-            .get(Math.floor(sector[0]))
-            ?.get(Math.floor(sector[1]))
-            ?.get(Math.floor(sector[2]));
+            .get(Math.floor(sector[0] / ATMOSCALE))
+            ?.get(Math.floor(sector[1] / ATMOSCALE))
+            ?.get(Math.floor(sector[2] / ATMOSCALE));
     }
 
     getSectorOffset(sector, dx, dy, dz) {
@@ -90,7 +89,7 @@ export class AtmosphereHandler {
         addVec3Dest(this.ccp, [1, 0, 1], this._ccpOffset);
         this._cuOffset = this.indexAtmosphereUnit(this._ccpOffset);
         if (isButtonPressed(GBA) || isButtonPressed(GBDU)) {
-            this.addPressureAtLocation(this.cu.sector, 2, 40);
+            this.addPressureAtLocation(this.cu.sector, 6, 40);
         }
     }
 
@@ -98,8 +97,10 @@ export class AtmosphereHandler {
         let cdv = [0, 0, 0];
         for (let i = 0; i < this.i; i++) {
             subtractVectorsDest(loc, this.tickAUList[i].sector, cdv);
-            if (getVec3Length(cdv) < dist) {
-                this.tickAUList[i].pressure += amount;
+            addVectors(cdv, [0.5, 0.5, 0.5])
+            let curDist = getVec3Length(cdv)
+            if (curDist < dist) {
+                this.tickAUList[i].pressure += amount / curDist;
             }
         }
     }
@@ -126,14 +127,13 @@ export class AtmosphereHandler {
     }
 
     debugRenderTick() {
-        // let cur;
-        // for (let i = 0; i < this.i; i++) {
-        //     cur = this.tickAUList[i];
-        //     cur.debugRender(this.ccp);
-        // }
+        for (let i = 0; i < this.i; i++) {
+            let cur = this.tickAUList[i];
+            cur.debugRender(this.ccp, this.dist - 1);
+        }
 
-        this.cu.debugRenderInit(this.ccp);
-        this.cu.debugRenderBounds();
+        // this.cu.debugRenderInit(this.ccp);
+        // this.cu.debugRenderBounds();
 
         this.debugRenderWindSpeedGrid();
     }
@@ -147,21 +147,24 @@ export class AtmosphereHandler {
     }
 
     debugRenderWindSpeedGrid() {
-        let range = 40; 
-        let step = 2;
-
-        let startDist = 0;
+        let range = this.dist * ATMOSCALE; 
+        let step = 1.5;
 
         let co = gfc().cameraOffset;
 
         let cof = structuredClone(co);
-        cof[0] = Math.floor(cof[0])
-        cof[1] = Math.floor(cof[1])
-        cof[2] = Math.floor(cof[2])
+        cof[0] = Math.floor(cof[0]) + 0.5
+        cof[1] = Math.floor(cof[1]) + 0.5
+        cof[2] = Math.floor(cof[2]) + 0.5
 
         for (let i = -range; i < range; i += step) {
             for (let j = -range; j < range; j += step) {
                 for (let k = -range; k < range; k += step) {
+
+                    if (i != j && i != k && j != k) {
+                        continue;
+                    }
+
                     let sl = [0, 0, 0];
                     let el = [0, 0, 0];
 
