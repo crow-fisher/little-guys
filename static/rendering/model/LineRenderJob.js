@@ -8,7 +8,6 @@ export class LineRenderJob extends RenderJob {
         this.v2 = v2;
         this.size = size;
         this.color = color;
-        this.z = z;
     }
 
     getZ() {
@@ -16,14 +15,11 @@ export class LineRenderJob extends RenderJob {
     }
 
     render() {
-        // if (this.v1[0] > 0 && this.v1[1] > 0 || this.v2[0] > 0 && this.v2[1] > 0) {
         MAIN_CONTEXT.beginPath();
         MAIN_CONTEXT.lineWidth = this.size;
         MAIN_CONTEXT.strokeStyle = this.color;
         MAIN_CONTEXT.moveTo(this.v1[0], this.v1[1]);
         MAIN_CONTEXT.lineTo(this.v2[0], this.v2[1]);
         MAIN_CONTEXT.stroke();
-        // } 
-
     }
 }

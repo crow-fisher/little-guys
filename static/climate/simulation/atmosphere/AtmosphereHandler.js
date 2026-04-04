@@ -1,18 +1,12 @@
-import { COLOR_VERY_FUCKING_RED } from "../../../colors.js";
-import { GBA, GBDD, GBDR, GBDU, GBSR, isButtonPressed } from "../../../gamepad.js";
+import { GBA, GBDU, isButtonPressed } from "../../../gamepad.js";
 import { DEBUG } from "../../../index.js";
-import { gfc } from "../../../rendering/camera.js";
-import { CoordinateSet } from "../../../rendering/model/CoordinateSet.js";
-import { LineRenderJob } from "../../../rendering/model/LineRenderJob.js";
-import { PointLabelRenderJob } from "../../../rendering/model/PointLabelRenderJob.js";
-import { addRenderJob } from "../../../rendering/rasterizer.js";
-import { loadGD, UI_CAMERA_CENTER_SELECT_OFFSET, UI_CAMERA_OFFSET_VEC } from "../../../ui/UIData.js";
-import { addVec3Dest, addVectors, copyVecValue, getVec3Length, multiplyVectorByScalar, subtractVectors, subtractVectorsDest } from "../../stars/matrix.js";
-import { getCurDay } from "../../time.js";
-import { ATMOSCALE, AtmosphereUnit, vec3ToString } from "./model/AtmosphereUnit.js";
+import { loadGD, UI_CAMERA_OFFSET_VEC } from "../../../ui/UIData.js";
+import { addVectors, getVec3Length, subtractVectorsDest } from "../../stars/matrix.js";
+import { ATMOSCALE, AtmosphereUnit } from "./model/AtmosphereUnit.js";
 
 
 const F = Math.floor
+const A = Math.abs
 
 export class AtmosphereHandler {
     constructor() {
@@ -24,9 +18,9 @@ export class AtmosphereHandler {
 
     initAtmosphereUnits() {
         this.ns = this.dist;
-        this.x = F(this.ccp[0]);
-        this.y = F(this.ccp[1]);
-        this.z = F(this.ccp[2]);
+        this.x = F(this.ccp[0] / ATMOSCALE);
+        this.y = F(this.ccp[1] / ATMOSCALE);
+        this.z = F(this.ccp[2] / ATMOSCALE);
         this.xm;
         this.ym;
         this.zm;
@@ -41,7 +35,7 @@ export class AtmosphereHandler {
                 this.ym = this.xm.get(this.y + j);
                 for (let k = -this.ns; k < this.ns; k++) {
                     let sector = [this.x + i, this.y + j, this.z + k];
-                    if (this.indexAtmosphereUnit(sector) == null) {
+                    if (this.indexAtmosphereUnitDirect(sector) == null) {
                         this.cau = new AtmosphereUnit(sector);
                         this.fullAUList.push(this.cau);
                         this.ym.set(this.z + k, this.cau);
@@ -61,11 +55,22 @@ export class AtmosphereHandler {
         }
     }
 
-    indexAtmosphereUnit(sector) {
+    indexAtmosphereUnitDirect(sector) {
+        return this.indexAtmosphereUnitDirectParams(...sector);
+    }
+    indexAtmosphereUnitDirectParams(x, y, z) {
         return this.au
-            .get(Math.floor(sector[0] / ATMOSCALE))
-            ?.get(Math.floor(sector[1] / ATMOSCALE))
-            ?.get(Math.floor(sector[2] / ATMOSCALE));
+            .get(x)
+            ?.get(y)
+            ?.get(z);
+    }
+
+    indexAtmosphereUnit(sector) {
+        return this.indexAtmosphereUnitDirectParams(
+            Math.floor(sector[0] / ATMOSCALE), 
+            Math.floor(sector[1] / ATMOSCALE), 
+            Math.floor(sector[2] / ATMOSCALE)
+        );
     }
 
     getSectorOffset(sector, dx, dy, dz) {
@@ -85,9 +90,6 @@ export class AtmosphereHandler {
     }
 
     gamepadInputTick() {
-        this._ccpOffset = this._ccpOffset ?? [0, 0, 0];
-        addVec3Dest(this.ccp, [1, 0, 1], this._ccpOffset);
-        this._cuOffset = this.indexAtmosphereUnit(this._ccpOffset);
         if (isButtonPressed(GBA) || isButtonPressed(GBDU)) {
             this.addPressureAtLocation(this.cu.sector, 6, 40);
         }
@@ -127,15 +129,13 @@ export class AtmosphereHandler {
     }
 
     debugRenderTick() {
-        for (let i = 0; i < this.i; i++) {
-            let cur = this.tickAUList[i];
-            cur.debugRender(this.ccp, this.dist - 5);
-        }
+        // for (let i = 0; i < this.i; i++) {
+        //     let cur = this.tickAUList[i];
+        //     cur.debugRender(this.ccp, this.dist - 5);
+        // }
 
-        // this.cu.debugRenderInit(this.ccp);
-        // this.cu.debugRenderBounds();
-
-        this.debugRenderWindSpeedGrid();
+        this.cu.debugRenderInit(this.ccp);
+        this.cu.debugRenderBounds();
     }
 
     getWindSpeedAtLocation(loc) {
@@ -144,48 +144,5 @@ export class AtmosphereHandler {
             return [0, 0, 0];
         }
         return this._wslWsq.windSpeed;
-    }
-
-    debugRenderWindSpeedGrid() {
-        let range = this.dist * ATMOSCALE; 
-        let step = 1.5;
-
-        let co = gfc().cameraOffset;
-
-        let cof = structuredClone(co);
-        cof[0] = Math.floor(cof[0]) + 0.5
-        cof[1] = Math.floor(cof[1]) + 0.5
-        cof[2] = Math.floor(cof[2]) + 0.5
-
-        for (let i = -range; i < range; i += step) {
-            for (let j = -range; j < range; j += step) {
-                for (let k = -range; k < range; k += step) {
-
-                    if (i != j && i != k && j != k) {
-                        continue;
-                    }
-
-                    let sl = [0, 0, 0];
-                    let el = [0, 0, 0];
-
-                    addVec3Dest(cof, [i, j, k], sl);
-                    let st = new CoordinateSet (sl);
-                    
-                    if (!st.isVisibleOnScreen())
-                        continue;
-
-                    let wsVec = this.getWindSpeedAtLocation(sl);
-                    addVec3Dest(sl, wsVec, el);
-                    let et = new CoordinateSet(el);
-
-                    addRenderJob(new LineRenderJob(
-                        st.renderScreen,
-                        et.renderScreen,
-                        4 / st.distToCamera,
-                        COLOR_VERY_FUCKING_RED
-                    ), true);
-                }
-            }
-        }
     }
 }

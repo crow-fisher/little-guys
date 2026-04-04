@@ -140,10 +140,11 @@ export class AtmosphereUnit {
         if (!this._tcsCenter.isVisibleOnScreen()) {
             return;
         }
-
         if (this.cd > dist && this.cd < (dist + 1)) {
             this.debugRenderBounds();
+            this.debugRenderWind();
         }
+
         // if (this.cd < 2) {
         //     this.debugRenderBounds();
         // }
@@ -153,6 +154,40 @@ export class AtmosphereUnit {
         // if (this.cd < 2) {
         //     this.debugRenderFlow(ccp);
         // }
+
+    }
+
+    debugRenderWind() {
+        this._windStartCoords = this._windStartCoords ?? [0, 0, 0];
+        this._windEndCoords = this._windEndCoords ?? [0, 0, 0];
+        this._appliedWindSpeed = this._appliedWindSpeed ?? [0, 0, 0];
+
+        copyVecValue(this.sector, this._windStartCoords);
+        addVectors(this._windStartCoords, [0.5, 0.5, 0.5]);
+        multiplyVectorByScalar(this._windStartCoords, ATMOSCALE);
+
+        multiplyVectorByScalarDest(this.windSpeed, ATMOSCALE, this._appliedWindSpeed)
+        addVec3Dest(this._windStartCoords, this._appliedWindSpeed, this._windEndCoords);
+
+        this._windStartSt = this._windStartSt ?? new CoordinateSet();
+        this._windEndSt = this._windEndSt ?? new CoordinateSet();
+
+        this._windStartSt.setWorld(this._windStartCoords)
+        this._windEndSt.setWorld(this._windEndCoords)
+
+        if (this._windRenderJob == null) {
+            this._windRenderJob = new LineRenderJob(
+            this._windStartSt.renderScreen,
+            this._windEndSt.renderScreen,
+            // 4 / st.distToCamera,
+            4,
+            COLOR_VERY_FUCKING_RED);
+        } else {
+            this._windRenderJob.v1 = this._windStartSt.renderScreen;
+            this._windRenderJob.v2 = this._windEndSt.renderScreen;
+        }
+
+        addRenderJob(this._windRenderJob);
 
     }
 

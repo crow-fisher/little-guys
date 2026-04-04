@@ -31,10 +31,11 @@ export class CoordinateSet {
     }
 
     isVisibleOnScreen() {
+        return true;
         return this.renderScreen[0] > 0 &&
-                this.renderScreen[0] < getTotalCanvasPixelWidth() &&
+                this.renderScreen[0] < getTotalCanvasPixelWidth() * 10 &&
                 this.renderScreen[1] > 0 && 
-                this.renderScreen[1] < getTotalCanvasPixelHeight() && 
+                this.renderScreen[1] < getTotalCanvasPixelHeight() * 10 && 
                 this.renderScreen[2] > 0
     }
 }
