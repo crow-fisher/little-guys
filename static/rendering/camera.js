@@ -6,6 +6,7 @@ import { rgbToHex } from "../common.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CAMERA_OFFSET_VEC, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_ROTATION_VEC_DT, saveGD, UI_CAMERA_FOV, addUIFunctionMap, UI_STARMAP_ZOOM, UI_STARMAP_PREV_ZOOM } from "../ui/UIData.js";
 import { FrameCache } from "./FrameCache.js";
+import { CoordinateSet } from "./model/CoordinateSet.js";
 import { LineRenderJob } from "./model/LineRenderJob.js";
 import { PointLabelRenderJob } from "./model/PointLabelRenderJob.js";
 import { addRenderJob } from "./rasterizer.js";
@@ -431,6 +432,20 @@ let renderNorm1;
 let renderNorm2;
 let renderScreen1;
 let renderScreen2;
+
+let tcs1 = new CoordinateSet(), tcs2 = new CoordinateSet();
+export function debugRenderLine(world1, world2, color, size=3) {
+    tcs1.setWorld(world1);
+    tcs2.setWorld(world2);
+    if (tcs1.isVisibleOnScreen() || tcs2.isVisibleOnScreen()) {
+        let rs1 = structuredClone(tcs1.renderScreen);
+        let rs2 = structuredClone(tcs2.renderScreen);
+        addRenderJob(new LineRenderJob(rs1, rs2, size, color, rs1[3]));
+        addRenderJob(new PointLabelRenderJob(...rs1, size * 1.5, color));
+        addRenderJob(new PointLabelRenderJob(...rs1, size * 1.5, color));
+    }
+
+}
 
 export function debugRenderLineOffsetPoints(offset1, offset2, color, size=3) {
         camera1 = [0, 0, 0];

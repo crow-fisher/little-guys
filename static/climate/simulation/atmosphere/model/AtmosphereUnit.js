@@ -1,6 +1,6 @@
 import { getCanvasHeight, getCanvasWidth } from "../../../../canvas.js";
 import { COLOR_BLUE, COLOR_OTHER_BLUE, COLOR_RED, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../../colors.js";
-import { debugRenderLineOffsetPoints } from "../../../../rendering/camera.js";
+import { debugRenderLine, debugRenderLineOffsetPoints } from "../../../../rendering/camera.js";
 import { CoordinateSet } from "../../../../rendering/model/CoordinateSet.js";
 import { LineRenderJob } from "../../../../rendering/model/LineRenderJob.js";
 import { PointLabelRenderJob } from "../../../../rendering/model/PointLabelRenderJob.js";
@@ -180,14 +180,6 @@ export class AtmosphereUnit {
         this._y2 = ATMOSCALE * (this.sector[1] + 1);
         this._z1 = ATMOSCALE * (this.sector[2]);
         this._z2 = ATMOSCALE * (this.sector[2] + 1);
-
-        this._x1 -= ccp[0];
-        this._x2 -= ccp[0];
-        this._y1 -= ccp[1];
-        this._y2 -= ccp[1];
-        this._z1 -= ccp[2];
-        this._z2 -= ccp[2];
-
         this._tcsRoot = this._tcsRoot ?? [0, 0, 0];
         addVec3Dest(this.sector, loadGD(UI_CAMERA_CENTER_SELECT_OFFSET), this._tcsRoot);
         this._tcs = new CoordinateSet(this._tcsRoot);
@@ -265,7 +257,7 @@ export class AtmosphereUnit {
             let start = line[0];
             let end = line[1];
             let color = line[2];
-            debugRenderLineOffsetPoints(start, end, color, 3 / this.cd);
+            debugRenderLine(start, end, color, 3 / this.cd);
         });
     }
 
