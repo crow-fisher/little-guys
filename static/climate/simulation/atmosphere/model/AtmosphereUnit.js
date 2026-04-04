@@ -260,7 +260,7 @@ export class AtmosphereUnit {
             let start = line[0];
             let end = line[1];
             let color = line[2];
-            debugRenderLine(start, end, color, 3 / this.cd);
+            debugRenderLine(start, end, color, 3);
         });
     }
 

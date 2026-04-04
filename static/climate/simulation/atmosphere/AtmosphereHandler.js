@@ -129,7 +129,7 @@ export class AtmosphereHandler {
     debugRenderTick() {
         for (let i = 0; i < this.i; i++) {
             let cur = this.tickAUList[i];
-            cur.debugRender(this.ccp, this.dist - 1);
+            cur.debugRender(this.ccp, this.dist - 5);
         }
 
         // this.cu.debugRenderInit(this.ccp);
