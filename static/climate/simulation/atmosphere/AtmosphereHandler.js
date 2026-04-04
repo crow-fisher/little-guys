@@ -91,7 +91,8 @@ export class AtmosphereHandler {
 
     gamepadInputTick() {
         if (isButtonPressed(GBA) || isButtonPressed(GBDU)) {
-            this.addPressureAtLocation(this.cu.sector, 6, 40);
+            this.cu.pressure += 400;
+            // this.addPressureAtLocation(this.cu.sector, 1, 40);
         }
     }
 
@@ -99,7 +100,6 @@ export class AtmosphereHandler {
         let cdv = [0, 0, 0];
         for (let i = 0; i < this.i; i++) {
             subtractVectorsDest(loc, this.tickAUList[i].sector, cdv);
-            addVectors(cdv, [0.5, 0.5, 0.5])
             let curDist = getVec3Length(cdv)
             if (curDist < dist) {
                 this.tickAUList[i].pressure += amount / curDist;
@@ -109,7 +109,7 @@ export class AtmosphereHandler {
 
     tick() {
         this.ccp = structuredClone(loadGD(UI_CAMERA_OFFSET_VEC));
-        this.initAtmosphereUnits();
+        this.initAtmosphereUnits(); 
         this.cu = this.indexAtmosphereUnit(this.ccp);
 
         for (let i = 0; i < this.i; i++) {
@@ -129,10 +129,10 @@ export class AtmosphereHandler {
     }
 
     debugRenderTick() {
-        // for (let i = 0; i < this.i; i++) {
-        //     let cur = this.tickAUList[i];
-        //     cur.debugRender(this.ccp, this.dist - 5);
-        // }
+        for (let i = 0; i < this.i; i++) {
+            let cur = this.tickAUList[i];
+            cur.debugRender(this.ccp, this.dist - 5);
+        }
 
         this.cu.debugRenderInit(this.ccp);
         this.cu.debugRenderBounds();

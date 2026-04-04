@@ -140,7 +140,7 @@ export class AtmosphereUnit {
         if (!this._tcsCenter.isVisibleOnScreen()) {
             return;
         }
-        if (this.cd > dist && this.cd < (dist + 1)) {
+        if (this.cd > (dist - 4) && this.cd < (dist + 1)) {
             this.debugRenderBounds();
             this.debugRenderWind();
         }
