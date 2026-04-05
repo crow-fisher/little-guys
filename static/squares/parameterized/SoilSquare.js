@@ -456,6 +456,6 @@ export class SoilSquare extends BaseSquare {
     }
 
     zCascadeFunc(val) {
-        return -4 * (val ** .5);
+        return -2 * (val ** .5);
     }
 }
