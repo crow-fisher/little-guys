@@ -89,7 +89,7 @@ export class AtmosphereUnit {
     }
 
     _diffusionSquareTick(neighbor) {
-        if (neighbor == null) {
+        if (neighbor == null || neighbor.ahf != this.ahf) {
             return;
         }
         this._sectorOffset = this._sectorOffset ?? [0, 0, 0];
