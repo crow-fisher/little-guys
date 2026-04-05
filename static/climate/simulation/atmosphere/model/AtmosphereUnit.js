@@ -141,7 +141,7 @@ export class AtmosphereUnit {
             return;
         }
         if (this.cd > (dist - 4) && this.cd < (dist + 1)) {
-            this.debugRenderBounds();
+            // this.debugRenderBounds();
             this.debugRenderWind();
         }
 

@@ -347,20 +347,11 @@ export class SoilSquare extends BaseSquare {
             return;
         }
 
-        return;
-        let ah = getAtmosphereHandler();
-
-        // let tc = new CoordinateSet(this.world_tl);
-        // addRenderJob(new PointLabelRenderJob(
-        //     ...tc.renderScreen,
-        //     3,
-        //     COLOR_VERY_FUCKING_RED,
-        //     this.world_tl
-        // ), false)
-
-
-
         let ws = getWindSpeedAtLocation(this.world_tl);
+
+        if (ws[0] + ws[1] == 0) {
+            return;
+        }
         let maxWindSpeed = 2;
 
         let wx = ws[0]; // Math.min(Math.max(ws[0], -maxWindSpeed), maxWindSpeed);

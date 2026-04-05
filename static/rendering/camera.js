@@ -444,7 +444,7 @@ export function debugRenderLine(world1, world2, color, size=3) {
     if (tcs1.isVisibleOnScreen() || tcs2.isVisibleOnScreen()) {
         let rs1 = structuredClone(tcs1.renderScreen);
         let rs2 = structuredClone(tcs2.renderScreen);
-        addRenderJob(new LineRenderJob(rs1, rs2, (size1 + size2) / 2, color, rs1[3]), true);
+        addRenderJob(new LineRenderJob(rs1, rs2, (size1 + size2) / 2, color, rs1[3]), false);
         addRenderJob(new PointLabelRenderJob(...rs1, size1 * 1.5, color), true);
         addRenderJob(new PointLabelRenderJob(...rs2, rs2 * 1.5, color), true);
     }
