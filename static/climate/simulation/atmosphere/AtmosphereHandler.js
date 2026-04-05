@@ -8,6 +8,7 @@ import { ATMOSCALE, AtmosphereUnit } from "./model/AtmosphereUnit.js";
 
 const F = Math.floor
 const A = Math.abs
+export let ahf = 0; // atmosphere handler frame
 
 export class AtmosphereHandler {
     constructor() {
@@ -60,10 +61,14 @@ export class AtmosphereHandler {
         return this.indexAtmosphereUnitDirectParams(...sector);
     }
     indexAtmosphereUnitDirectParams(x, y, z) {
-        return this.au
+        let r = this.au
             .get(x)
             ?.get(y)
             ?.get(z);
+        if (r?.ahf == ahf) {
+            return r;
+        }
+        return null;
     }
 
     indexAtmosphereUnit(loc) {
@@ -75,10 +80,14 @@ export class AtmosphereHandler {
     }
 
     getSectorOffset(sector, dx, dy, dz) {
-        return this.au
+        let r = this.au
             .get(Math.floor(sector[0]) + dx)
             ?.get(Math.floor(sector[1]) + dy)
             ?.get(Math.floor(sector[2]) + dz);
+        if (r?.ahf == ahf) {
+            return r;
+        }
+        return null;
     }
 
     diffusionModelTick() {
@@ -125,9 +134,15 @@ export class AtmosphereHandler {
 
 
     tick() {
+        ahf++;
+
         this.ccp = structuredClone(loadGD(UI_CAMERA_OFFSET_VEC));
         this.initAtmosphereUnits(); 
         this.cu = this.indexAtmosphereUnit(this.ccp);
+
+        for (let i = 0; i < this.i; i++) {
+            this.tickAUList[i].ahf = ahf;
+        }
 
         for (let i = 0; i < this.i; i++) {
             this.tickAUList[i].preTick(this);
