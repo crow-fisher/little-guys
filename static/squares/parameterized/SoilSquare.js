@@ -331,6 +331,8 @@ export class SoilSquare extends BaseSquare {
             sq.speedX += sx;
             sq.speedY += sy;
             sq.group = getNextGroupId();
+            
+            
             return amount;
         }
         return 0;

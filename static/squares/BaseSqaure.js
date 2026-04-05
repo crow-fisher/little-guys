@@ -562,10 +562,15 @@ export class BaseSquare {
         this.bl = structuredClone(this._cs_bl.renderScreen);
         this.br = structuredClone(this._cs_br.renderScreen);
 
-        this.combinePoints(this, this.lsq, this.tl, "tl", "tl");
-        this.combinePoints(this, this.lsq, this.bl, "bl", "bl");
-        this.combinePoints(this, this.rsq, this.br, "br", "br");
-        this.combinePoints(this, this.rsq, this.tr, "tr", "tr");
+        // this.combinePoints(this, this.lsq, this.tl, "tl", "tl");
+        // this.combinePoints(this, this.lsq, this.bl, "bl", "bl");
+        // this.combinePoints(this, this.rsq, this.br, "br", "br");
+        // this.combinePoints(this, this.rsq, this.tr, "tr", "tr");
+        
+        this.combinePoints(this, this.lsq, this.tl, "_cs_tl", "renderScreen");
+        this.combinePoints(this, this.lsq, this.bl, "_cs_bl", "renderScreen");
+        this.combinePoints(this, this.rsq, this.br, "_cs_br", "renderScreen");
+        this.combinePoints(this, this.rsq, this.tr, "_cs_tr", "renderScreen");
 
         if (this.renderJob == null) {
             this.renderJob = new QuadRenderJob(this.tl, this.bl, this.br, this.tr, this.cachedRgba)
@@ -591,14 +596,14 @@ export class BaseSquare {
     }
 
     combinePoints(p1, p2, dest, g1, g2) {
-        if (p2 == null || p1[g1] == null || p2[g2] == null) {
-            dest[0] = (p1[g1] ?? p2[g2])[0];
-            dest[1] = (p1[g1] ?? p2[g2])[1];
-            dest[2] = (p1[g1] ?? p2[g2])[2];
+        if (p2 == null || p2[g1] == null) {
+            dest[0] = p1[g1][g2][0];
+            dest[1] = p1[g1][g2][1];
+            dest[2] = p1[g1][g2][2];
         } else {
-            dest[0] = (p1[g1][0] + p2[g2][0]) / 2;
-            dest[1] = (p1[g1][1] + p2[g2][1]) / 2;
-            dest[2] = (p1[g1][2] + p2[g2][2]) / 2;
+            dest[0] = (p1[g1][g2][0] + p2[g1][g2][0]) / 2;
+            dest[1] = (p1[g1][g2][1] + p2[g1][g2][1]) / 2;
+            dest[2] = (p1[g1][g2][2] + p2[g1][g2][2]) / 2;
         }
     }
 

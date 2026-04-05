@@ -61,14 +61,10 @@ export class AtmosphereHandler {
         return this.indexAtmosphereUnitDirectParams(...sector);
     }
     indexAtmosphereUnitDirectParams(x, y, z) {
-        let r = this.au
+        return this.au
             .get(x)
             ?.get(y)
             ?.get(z);
-        if (r?.ahf == ahf) {
-            return r;
-        }
-        return null;
     }
 
     indexAtmosphereUnit(loc) {
