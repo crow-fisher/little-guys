@@ -17,18 +17,19 @@ import { hexToRgb, hsv2rgb, randNumber, randRange, removeItemAll, rgb2hsv, rgbTo
 import { removeSquare } from "../globalOperations.js";
 import { calculateColorTemperature, getTemperatureAtWindSquare, temperatureHumidityFlowrateFactor, updateWindSquareTemperature } from "../climate/simulation/temperatureHumidity.js";
 import { getWindSquareAbove } from "../climate/simulation/wind.js";
-import { COLOR_BLACK, GROUP_BROWN, GROUP_BLUE, GROUP_MAUVE, GROUP_TAN, GROUP_GREEN, RGB_COLOR_BLUE, RGB_COLOR_RED } from "../colors.js";
+import { COLOR_BLACK, GROUP_BROWN, GROUP_BLUE, GROUP_MAUVE, GROUP_TAN, GROUP_GREEN, RGB_COLOR_BLUE, RGB_COLOR_RED, COLOR_WHITE } from "../colors.js";
 import { getCurDay, getDaylightStrengthFrameDiff, getFrameDt, getTimeScale } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasSquaresY, getCurZoom, isSquareOnCanvas, transformCanvasSquaresToPixels, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
-import { loadGD, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3, UI_VIEWMODE_DEV4, UI_VIEWMODE_DEV5, UI_PALETTE_STRENGTH, UI_LIGHTING_SURFACE, UI_PALETTE_SURFACE_MATCH, UI_VIEWMODE_3D, UI_CAMERA_CENTER_SELECT_POINT } from "../ui/UIData.js";
+import { loadGD, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3, UI_VIEWMODE_DEV4, UI_VIEWMODE_DEV5, UI_PALETTE_STRENGTH, UI_LIGHTING_SURFACE, UI_PALETTE_SURFACE_MATCH, UI_VIEWMODE_3D, UI_CAMERA_CENTER_SELECT_POINT, saveGD, UI_CAMERA_OFFSET_VEC } from "../ui/UIData.js";
 import { deregisterSquare, registerSquare } from "../waterGraph.js";
 import { STAGE_DEAD } from "../plants/organisms/Stages.js";
 import { cartesianToScreenInplace, gfc, screenToRenderScreen } from "../rendering/camera.js";
-import { addRenderJob } from "../rendering/rasterizer.js";
+import { addRenderJob, executeRenderJobs } from "../rendering/rasterizer.js";
 import { QuadRenderJob } from "../rendering/model/QuadRenderJob.js";
 import { CoordinateSet } from "../rendering/model/CoordinateSet.js";
 import { copyVecValue } from "../climate/stars/matrix.js";
+import { PointLabelRenderJob } from "../rendering/model/PointLabelRenderJob.js";
 
 export class BaseSquare {
     constructor(posX, posY) {
@@ -527,22 +528,27 @@ export class BaseSquare {
         this.world_bl[2] = this.z;
         this.world_br[2] = this.z;
 
-        this._cs_tl = new CoordinateSet();
-        this._cs_tr = new CoordinateSet();
-        this._cs_bl = new CoordinateSet();
-        this._cs_br = new CoordinateSet();
+        this._cs_tl = this._cs_tl ?? new CoordinateSet();
+        this._cs_tr = this._cs_tr ?? new CoordinateSet();
+        this._cs_bl = this._cs_bl ?? new CoordinateSet();
+        this._cs_br = this._cs_br ?? new CoordinateSet();
 
         this._cs_tl.setWorld(this.world_tl)
         this._cs_tr.setWorld(this.world_tr)
         this._cs_bl.setWorld(this.world_bl)
         this._cs_br.setWorld(this.world_br)
+    }
 
+    purgeUnderscoredValues() {
+        let keys = Object.keys(this);
+        keys.filter((key) => key.startsWith("_"))
+                .forEach((key) => this[key] = null)
     }
 
     updateNeighborSquares() {
-        this.lsq = getSquares(this.posX - 1, this.posY).find((sq) => sq.solid && sq.visible && sq.minZ > 0);
-        this.rsq = getSquares(this.posX + 1, this.posY).find((sq) => sq.solid && sq.visible && sq.minZ > 0);
-        this.tsq = getSquares(this.posX, this.posY - 1).find((sq) => sq.solid && sq.visible && sq.minZ > 0);
+        this.lsq = getSquares(this.posX - 1, this.posY).find((sq) => sq.solid && sq.visible);
+        this.rsq = getSquares(this.posX + 1, this.posY).find((sq) => sq.solid && sq.visible);
+        this.tsq = getSquares(this.posX, this.posY - 1).find((sq) => sq.solid && sq.visible);
     }
 
     prepareRenderJob() {
@@ -550,11 +556,6 @@ export class BaseSquare {
         this.bl = this.bl ?? structuredClone(this._cs_tr.renderScreen);
         this.br = this.br ?? structuredClone(this._cs_bl.renderScreen);
         this.tr = this.tr ?? structuredClone(this._cs_br.renderScreen);
-
-        this.minZ = Math.min(this.tl[2], this.bl[2], this.br[2], this.tr[2]);
-        if (this.minZ < 0) {
-            return;
-        }
 
         this.tl = structuredClone(this._cs_tl.renderScreen);
         this.tr = structuredClone(this._cs_tr.renderScreen);
@@ -566,17 +567,14 @@ export class BaseSquare {
         this.combinePoints(this, this.rsq, this.br, "br", "br");
         this.combinePoints(this, this.rsq, this.tr, "tr", "tr");
 
-        this.centerZ = (this.tl[2] + this.bl[2] + this.br[2] + this.tr[2]) / 4;
-
         if (this.renderJob == null) {
-            this.renderJob = new QuadRenderJob(this.tl, this.bl, this.br, this.tr, this.cachedRgba, this.centerZ)
+            this.renderJob = new QuadRenderJob(this.tl, this.bl, this.br, this.tr, this.cachedRgba)
         } else {
             this.renderJob.tl = this.tl;
             this.renderJob.bl = this.bl;
             this.renderJob.br = this.br;
             this.renderJob.tr = this.tr;
             this.renderJob.color = this.cachedRgba;
-            this.renderJob.z = this.centerZ;
         }
     }
 
@@ -587,7 +585,7 @@ export class BaseSquare {
         this.setFrameCartesians();
         this.prepareRenderJob();
 
-        if (this.minZ > 0) {
+        if (this.renderJob.shouldRender()) {
             addRenderJob(this.renderJob, true);
         }
     }

@@ -1,7 +1,8 @@
 import { GBA, GBDU, isButtonPressed } from "../../../gamepad.js";
 import { DEBUG } from "../../../index.js";
+import { getForwardVec } from "../../../rendering/camera.js";
 import { loadGD, UI_CAMERA_OFFSET_VEC } from "../../../ui/UIData.js";
-import { addVectors, getVec3Length, subtractVectorsDest } from "../../stars/matrix.js";
+import { addVectors, copyVecValue, getVec3Length, multiplyVectorByScalarDest, subtractVectorsDest } from "../../stars/matrix.js";
 import { ATMOSCALE, AtmosphereUnit } from "./model/AtmosphereUnit.js";
 
 
@@ -91,21 +92,39 @@ export class AtmosphereHandler {
 
     gamepadInputTick() {
         if (isButtonPressed(GBA) || isButtonPressed(GBDU)) {
-            this.cu.pressure += 400;
+            this.addPressureRay();
             // this.addPressureAtLocation(this.cu.sector, 1, 40);
         }
     }
+    addPressureRay() {
+        this._pressureRayCur = this._pressureRayCur ?? [0, 0, 0];
+        this._pressureRayCurDelta = this._pressureRayCurDelta ?? [0, 0, 0];
+        copyVecValue(this.ccp, this._pressureRayCur);
+        multiplyVectorByScalarDest(getForwardVec(), ATMOSCALE, this._pressureRayCurDelta);
 
-    addPressureAtLocation(loc, dist, amount) {
-        let cdv = [0, 0, 0];
-        for (let i = 0; i < this.i; i++) {
-            subtractVectorsDest(loc, this.tickAUList[i].sector, cdv);
-            let curDist = getVec3Length(cdv)
-            if (curDist < dist) {
-                this.tickAUList[i].pressure += amount / curDist;
-            }
+        let amount = 10;
+        this.addPressureAtLocation(this._pressureRayCur, amount);
+        
+        this._pressureRayCur[1] += ATMOSCALE * 1.5;
+
+        for (let i = -3 * ATMOSCALE; i < 3 * ATMOSCALE; i++) {
+            this._pressureRayCur[2] = i;
+            this.addPressureAtLocation(this._pressureRayCur, amount);
         }
     }
+
+
+    addPressureAtLocation(loc, amount) {
+        this._au = this.indexAtmosphereUnit(loc);
+        if (this._au != null) {
+            this._au.pressure += amount;
+            this._au.debugRenderInit(this.ccp);
+            this._au.debugRenderBounds();
+            return true;
+        }
+        return false;
+    }
+
 
     tick() {
         this.ccp = structuredClone(loadGD(UI_CAMERA_OFFSET_VEC));

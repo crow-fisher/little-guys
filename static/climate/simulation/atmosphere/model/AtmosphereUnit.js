@@ -38,7 +38,10 @@ export class AtmosphereUnit {
             (((this.sector[2] * ATMOSCALE) + 0.5) - mgr.ccp[2]) ** 2) ** 0.5 / ATMOSCALE;
 
         this.initFlow();
-
+        
+        if (isNaN(this.pressure)) {
+            this.pressure = 1;
+        }
         if (this.pressure > 1)
             this.pressure *= 0.9;
     }

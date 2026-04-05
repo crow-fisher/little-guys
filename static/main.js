@@ -120,7 +120,7 @@ function render() {
     // starHandler.render();
 
     if (selectedViewMode == UI_VIEWMODE_TEMPERATURE) {
-        renderTemperature();
+        // renderTemperature();
         renderWindPressureMap();
     }
     if (selectedViewMode == UI_VIEWMODE_WIND) {

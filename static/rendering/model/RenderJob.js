@@ -3,6 +3,10 @@ export class RenderJob {
         this.z = 0;
     }
 
+    shouldRender() {
+        return true;
+    }
+
     getZ() {
         return this.z;
     }
