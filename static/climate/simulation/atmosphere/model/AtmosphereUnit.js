@@ -143,8 +143,12 @@ export class AtmosphereUnit {
         if (!this._tcsCenter.isVisibleOnScreen()) {
             return;
         }
+        this.debugRenderBounds();
+        return;
+
+
         if (this.cd > (dist - 4) && this.cd < (dist + 1)) {
-            // this.debugRenderBounds();
+            this.debugRenderBounds();
             this.debugRenderWind();
         }
 
@@ -298,7 +302,7 @@ export class AtmosphereUnit {
             let start = line[0];
             let end = line[1];
             let color = line[2];
-            debugRenderLine(start, end, color, 10);
+            debugRenderLine(start, end, color, this.pressure);
         });
     }
 

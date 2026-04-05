@@ -66,11 +66,11 @@ export class AtmosphereHandler {
             ?.get(z);
     }
 
-    indexAtmosphereUnit(sector) {
+    indexAtmosphereUnit(loc) {
         return this.indexAtmosphereUnitDirectParams(
-            Math.floor(sector[0] / ATMOSCALE), 
-            Math.floor(sector[1] / ATMOSCALE), 
-            Math.floor(sector[2] / ATMOSCALE)
+            Math.floor(loc[0] / ATMOSCALE), 
+            Math.floor(loc[1] / ATMOSCALE), 
+            Math.floor(loc[2] / ATMOSCALE)
         );
     }
 
@@ -118,8 +118,6 @@ export class AtmosphereHandler {
         this._au = this.indexAtmosphereUnit(loc);
         if (this._au != null) {
             this._au.pressure += amount;
-            this._au.debugRenderInit(this.ccp);
-            this._au.debugRenderBounds();
             return true;
         }
         return false;
