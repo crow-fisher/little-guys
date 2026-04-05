@@ -2,6 +2,7 @@ import { getCurDay } from "../../../climate/time.js";
 import { getWindSpeedAtLocation } from "../../../climate/simulation/wind.js";
 import { addVectors, copyVecValue, crossVec3, crossVec3Dest, multiplyVectorByScalar, normalizeVec3, subtractVectors } from "../../../climate/stars/matrix.js";
 import { PlantLifeSquare } from "../../lifeSquares/PlantLifeSquare.js";
+import { getAtmosphereHandler } from "../../../main.js";
 
 
 export class GrowthComponent {
@@ -58,7 +59,8 @@ export class GrowthComponent {
     updateDeflectionState(startWorldOffset) {
         copyVecValue(startWorldOffset, this.curOffset);
 
-        this._ws = this._getNetWindSpeed();
+        // this._ws = this.getNetWindSpeed();
+        this._ws = [0, 0, 0];
         let x = this._ws[0];
         let y = 1;
         let z = this._ws[1]
@@ -81,28 +83,8 @@ export class GrowthComponent {
         this.children.forEach((child) => child.updateDeflectionState(this.curOffset));
     }
 
-    getNetWindSpeed() {
-        return this.getValueCached("getNetWindSpeed", () => {
-            let ret = this._getNetWindSpeed();
-            this.children.forEach((child) => {
-                let childWs = child.getNetWindSpeed();
-                ret[0] += childWs[0];
-                ret[1] += childWs[1];
-            });
-            return ret;
-        });
-    }
-
-    _getNetWindSpeed() {
-        // todo: project this as a vector off of the lookat plane! 
-        // like, so however you have the thing tilted is how the wind blows
-
-        // maybe instep for 3d wind? 
-        return this.getValueCached("_getNetWindSpeed", () => this.lifeSquares
-            .map((lsq) => getWindSpeedAtLocation(lsq.posVec[0], lsq.posVec[1])).reduce(
-                (accumulator, currentValue) => [accumulator[0] + currentValue[0], accumulator[1] + currentValue[1]],
-                [0, 0]
-            ));
+    getNetWindSpeed() { // this is so random...im srry
+        return getAtmosphereHandler().getWindSpeedAtLocation(this.lifeSquares.at(0).cartesian_tl);
     }
 
     getValueCached(name, calculation) {
