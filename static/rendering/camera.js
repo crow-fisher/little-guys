@@ -434,15 +434,19 @@ let renderScreen1;
 let renderScreen2;
 
 let tcs1 = new CoordinateSet(), tcs2 = new CoordinateSet();
+let size1, size2; 
 export function debugRenderLine(world1, world2, color, size=3) {
     tcs1.setWorld(world1);
     tcs2.setWorld(world2);
+    size1 = size / (tcs1.distToCamera);
+    size2 = size / (tcs2.distToCamera);
+
     if (tcs1.isVisibleOnScreen() || tcs2.isVisibleOnScreen()) {
         let rs1 = structuredClone(tcs1.renderScreen);
         let rs2 = structuredClone(tcs2.renderScreen);
-        addRenderJob(new LineRenderJob(rs1, rs2, size, color, rs1[3]));
-        addRenderJob(new PointLabelRenderJob(...rs1, size * 1.5, color));
-        addRenderJob(new PointLabelRenderJob(...rs1, size * 1.5, color));
+        addRenderJob(new LineRenderJob(rs1, rs2, (size1 + size2) / 2, color, rs1[3]), true);
+        addRenderJob(new PointLabelRenderJob(...rs1, size1 * 1.5, color), true);
+        addRenderJob(new PointLabelRenderJob(...rs2, rs2 * 1.5, color), true);
     }
 
 }

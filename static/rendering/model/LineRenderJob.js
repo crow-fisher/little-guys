@@ -2,7 +2,7 @@ import { MAIN_CONTEXT } from "../../index.js";
 import { RenderJob } from "./RenderJob.js";
 
 export class LineRenderJob extends RenderJob {
-    constructor(v1, v2, size, color, z) {
+    constructor(v1, v2, size, color) {
         super();
         this.v1 = v1;
         this.v2 = v2;

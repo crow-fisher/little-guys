@@ -11,7 +11,7 @@ import { getCurDay } from "../../../time.js";
 
 
 
-export const ATMOSCALE = 1;
+export const ATMOSCALE = 16;
 
 export class AtmosphereUnit {
     constructor(sector, size) { // vec3s
@@ -35,7 +35,7 @@ export class AtmosphereUnit {
         this.cd = (
             (((this.sector[0] * ATMOSCALE) + 0.5) - mgr.ccp[0]) ** 2 +
             (((this.sector[1] * ATMOSCALE) + 0.5) - mgr.ccp[1]) ** 2 +
-            (((this.sector[2] * ATMOSCALE) + 0.5) - mgr.ccp[2]) ** 2) ** 0.5;
+            (((this.sector[2] * ATMOSCALE) + 0.5) - mgr.ccp[2]) ** 2) ** 0.5 / ATMOSCALE;
 
         this.initFlow();
 
@@ -295,7 +295,7 @@ export class AtmosphereUnit {
             let start = line[0];
             let end = line[1];
             let color = line[2];
-            debugRenderLine(start, end, color, 3);
+            debugRenderLine(start, end, color, 10);
         });
     }
 

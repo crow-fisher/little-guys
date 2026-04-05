@@ -28,7 +28,8 @@ export function executeRenderJobs() {
     noSortRenderJobs.length = 0;
     renderJobs.sort((a, b) => b.getZ() - a.getZ());
     for (let i = 0; i < renderJobs.length; i++) {
-        renderJobs.at(i).render();
+        if (renderJobs.at(i).getZ() > 0)
+            renderJobs.at(i).render();
     }
     renderJobs.length = 0;
 }
