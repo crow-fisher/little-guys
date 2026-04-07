@@ -10,7 +10,6 @@ export class GrowthComponent {
         this.deflection_base = [theta, sin, phi];
         this.deflection_base_curve = [thetaCurve, sinCurve, phiCurve];
         this.deflection_applied = [0, 0];
-        this.curOffset = [0, 0, 0]
         this.dv = [0, 0, 0];
         this.ddv = [0, 0, 0];
         this.type = type;
@@ -55,34 +54,18 @@ export class GrowthComponent {
     }
 
     updateDeflectionState(startWorldOffset) {
-        copyVecValue(startWorldOffset, this.curOffset);
-
-        // this._ws = this.getNetWindSpeed();
-        this._ws = [0, 0, 0];
-        let x = this._ws[0];
-        let y = 1;
-        let z = this._ws[1]
-        let offset = [-x, -y, -z];
-
-        normalizeVec3(offset);
-        let offsetPerUnit = structuredClone(offset);
-        offsetPerUnit[0] /= -this.lifeSquares.length;
-        offsetPerUnit[2] /= -this.lifeSquares.length;
-
-        let curOffset = [0, -1, 0];
+        this._curOffset = this._curOffset ?? [0, 0, 0]
+        this._offsetDelta = this._offsetDelta ?? [0, -1, 0];
+        copyVecValue(startWorldOffset, this._curOffset);
+        copyVecValue([-2, -1, 0], this._offsetDelta);
+        
         for (let i = 0; i < this.lifeSquares.length; i++) {
-            curOffset[0] += offsetPerUnit[0];
-            curOffset[2] += offsetPerUnit[2];
-            normalizeVec3(curOffset);
-            copyVecValue(this.curOffset, this.lifeSquares.at(i).rootPosVec);
-            addVectors(this.curOffset, curOffset)
-            this.lifeSquares.at(i).posVecDir = structuredClone(curOffset);
+            copyVecValue(this._curOffset, this.lifeSquares.at(i).posVec);
+            copyVecValue(this._offsetDelta, this.lifeSquares.at(i).posVecDir);
+            addVectors(this._curOffset, this._offsetDelta)
+            addVectors(this._offsetDelta, [.7, 0, 0]);
         };
-        this.children.forEach((child) => child.updateDeflectionState(this.curOffset));
-    }
-
-    getNetWindSpeed() { // this is so random...im srry
-        return getAtmosphereHandler().getWindSpeedAtLocation(this.lifeSquares.at(0).cartesian_tl);
+        this.children.forEach((child) => child.updateDeflectionState(this._curOffset));
     }
 
     getValueCached(name, calculation) {

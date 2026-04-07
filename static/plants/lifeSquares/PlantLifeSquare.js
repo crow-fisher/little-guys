@@ -4,7 +4,7 @@ import { getDefaultLighting, processLighting } from "../../lighting/lightingProc
 import { rotatePoint } from "../../canvas.js";
 import { loadGD, UI_CAMERA_CENTER_SELECT_POINT, UI_CAMERA_OFFSET_VEC, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_3D, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../../ui/UIData.js";
 import { cartesianToScreenInplace, gfc, screenToRenderScreen } from "../../rendering/camera.js";
-import { addVec3Dest, addVectors, copyVecValue, crossVec3, multiplyVectorByScalar, multiplyVectorsDest, normalizeVec3, normalizeVec3Dest, subtractVectors, subtractVectorsDest } from "../../climate/stars/matrix.js";
+import { addVec3Dest, addVectors, copyVecValue, crossVec3, multiplyVectorByScalar, multiplyVectorByScalarDest, multiplyVectorsDest, normalizeVec3, normalizeVec3Dest, subtractVectors, subtractVectorsDest } from "../../climate/stars/matrix.js";
 import { QuadRenderJob } from "../../rendering/model/QuadRenderJob.js";
 import { addRenderJob } from "../../rendering/rasterizer.js";
 import { STAGE_DEAD } from "../organisms/Stages.js";
@@ -38,7 +38,7 @@ class PlantLifeSquare {
         this.posVecDir = [0, 0, 0];
 
         // Derived rendering member variables.
-        this.rootPosVec = [0, 0, 0];
+        this.offset = [0, 0, 0];
         this.startPointVec = [0, 0, 0];
         this.endPointVec = [0, 0, 0];
         this.forwardVec = [0, 0, 0];
@@ -78,7 +78,6 @@ class PlantLifeSquare {
     }
 
     setFrameCartesians() {
-        this.rootPosVec = this.rootPosVec ?? [0, 0, 0];
         this._cs_root = this._cs_root ?? new CoordinateSet();
         this._cs_tl = this._cs_tl ?? new CoordinateSet();
         this._cs_tr = this._cs_tr ?? new CoordinateSet();
@@ -87,12 +86,11 @@ class PlantLifeSquare {
         this._sp_cs = this._sp_cs ?? new CoordinateSet();
         this._ep_cs = this._ep_cs ?? new CoordinateSet();
 
-        this._cs_root.setWorld(this.rootPosVec);
-        this.offset = [0, 1, 0]
+        this._cs_root.setWorld(this.posVec);
 
-        multiplyVectorByScalar(this.offset, this.height);
+        multiplyVectorByScalarDest(this.posVecDir, this.height, this.offset);
 
-        copyVecValue(this.rootPosVec, this.startPointVec)
+        copyVecValue(this.posVec, this.startPointVec)
         addVec3Dest(this.startPointVec, this.offset, this.endPointVec);
 
         this.forwardVec = normalizeVec3(this._cs_root.offset);
