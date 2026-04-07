@@ -11,6 +11,7 @@ import { STAGE_DEAD } from "../organisms/Stages.js";
 import { CoordinateSet } from "../../rendering/model/CoordinateSet.js";
 import { sphericalToCartesian } from "../../climate/stars/starHandlerUtil.js";
 import { LineRenderJob } from "../../rendering/model/LineRenderJob.js";
+import { DEBUG } from "../../index.js";
 
 const NUTRIENT_BASE_HSV = rgb2hsv(RGB_COLOR_GREEN.r, RGB_COLOR_GREEN.g, RGB_COLOR_GREEN.b);
 class PlantLifeSquare {
@@ -94,16 +95,6 @@ class PlantLifeSquare {
         copyVecValue(this.rootPosVec, this.startPointVec)
         addVec3Dest(this.startPointVec, this.offset, this.endPointVec);
 
-        this._sp_cs.setWorld(this.startPointVec);   
-        this._ep_cs.setWorld(this.endPointVec);
-
-        addRenderJob(new LineRenderJob(
-            this._sp_cs.renderScreen,
-            this._ep_cs.renderScreen,
-            10 ** 2.8 / (this._sp_cs.distToCamera ** 2),
-            COLOR_BLUE
-        ), true);
-
         this.forwardVec = normalizeVec3(this._cs_root.offset);
         this.sideVec = normalizeVec3(crossVec3(this.offset, this.forwardVec))
 
@@ -113,7 +104,6 @@ class PlantLifeSquare {
         addVec3Dest(this.endPointVec, this.sideVec, this.cartesian_tr);
         subtractVectorsDest(this.startPointVec, this.sideVec, this.cartesian_bl);
         addVec3Dest(this.startPointVec, this.sideVec, this.cartesian_br);
-
 
         this._cs_tl = new CoordinateSet();
         this._cs_tr = new CoordinateSet();
@@ -125,6 +115,16 @@ class PlantLifeSquare {
         this._cs_bl.setWorld(this.cartesian_bl);
         this._cs_br.setWorld(this.cartesian_br);
 
+        // Debug Line
+        this._sp_cs.setWorld(this.startPointVec);   
+        this._ep_cs.setWorld(this.endPointVec);
+
+        addRenderJob(new LineRenderJob(
+            this._sp_cs.renderScreen,
+            this._ep_cs.renderScreen,
+            10 ** 2.8 / (this._sp_cs.distToCamera ** 2),
+            COLOR_BLUE
+        ), true);
 
 
     }
@@ -135,12 +135,13 @@ class PlantLifeSquare {
                 this._cs_tl.renderScreen,
                 this._cs_tr.renderScreen,
                 this._cs_bl.renderScreen,
-                this._cs_br.renderScreen, this.cachedRgba)
+                this._cs_br.renderScreen, 
+                this.cachedRgba)
         } else {
-            this.renderJob.renderScreen_tl = this._cs_tl.renderScreen;
-            this.renderJob.renderScreen_bl = this._cs_tr.renderScreen;
-            this.renderJob.renderScreen_br = this._cs_bl.renderScreen;
-            this.renderJob.renderScreen_tr = this._cs_br.renderScreen;
+            this.renderJob.tl = this._cs_tl.renderScreen;
+            this.renderJob.tr = this._cs_tr.renderScreen;
+            this.renderJob.bl = this._cs_bl.renderScreen;
+            this.renderJob.br = this._cs_br.renderScreen;
             this.renderJob.color = this.cachedRgba;
         }
     }

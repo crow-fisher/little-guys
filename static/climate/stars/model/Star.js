@@ -124,7 +124,6 @@ export class Star {
             this.renderJob.color = this.renderColor; // rgbToHex(...this.alt_color);
             this.renderJob.label = this.starLabel;
         }
-
         addRenderJob(this.renderJob, false);
     }
 }

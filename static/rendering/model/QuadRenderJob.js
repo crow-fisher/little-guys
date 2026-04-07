@@ -3,12 +3,12 @@ import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth, MAIN_CONTEXT } fro
 import { RenderJob } from "./RenderJob.js";
 
 export class QuadRenderJob extends RenderJob {
-    constructor(tl, bl, br, tr, color) {
+    constructor(tl, tr, bl, br, color) {
         super();
         this.tl = tl;
+        this.tr = tr;
         this.bl = bl;
         this.br = br;
-        this.tr = tr;
         this.color = color;
     }
 

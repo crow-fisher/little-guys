@@ -1,5 +1,5 @@
 import { getBaseUISize } from "../../canvas.js";
-import { MAIN_CONTEXT } from "../../index.js";
+import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth, MAIN_CONTEXT } from "../../index.js";
 import { RenderJob } from "./RenderJob.js";
 
 export class PointLabelRenderJob extends RenderJob {
@@ -34,5 +34,10 @@ export class PointLabelRenderJob extends RenderJob {
 
     getZ() {
         return this.z;
+    }
+
+    isVisible() {
+        // yeah....this is backwards from what it should be. oops! 
+        return this.getZ() < 0; 
     }
 }
