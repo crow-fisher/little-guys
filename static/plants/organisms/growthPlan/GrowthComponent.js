@@ -1,7 +1,5 @@
 import { getCurDay } from "../../../climate/time.js";
-import { getWindSpeedAtLocation } from "../../../climate/simulation/wind.js";
-import { addVectors, copyVecValue, crossVec3, crossVec3Dest, multiplyVectorByScalar, normalizeVec3, subtractVectors } from "../../../climate/stars/matrix.js";
-import { PlantLifeSquare } from "../../lifeSquares/PlantLifeSquare.js";
+import { addVectors, copyVecValue, normalizeVec3 } from "../../../climate/stars/matrix.js";
 import { getAtmosphereHandler } from "../../../main.js";
 
 
@@ -76,7 +74,7 @@ export class GrowthComponent {
             curOffset[0] += offsetPerUnit[0];
             curOffset[2] += offsetPerUnit[2];
             normalizeVec3(curOffset);
-            copyVecValue(this.curOffset, this.lifeSquares.at(i).rootPositionVec);
+            copyVecValue(this.curOffset, this.lifeSquares.at(i).rootPosVec);
             addVectors(this.curOffset, curOffset)
             this.lifeSquares.at(i).posVecDir = structuredClone(curOffset);
         };

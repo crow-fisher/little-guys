@@ -1,5 +1,5 @@
 import { hsv2rgb, processColorLerpBicolorArr, processRangeToOne, rgb2hsv, rgbToRgba } from "../../common.js";
-import { RGB_COLOR_GREEN } from "../../colors.js";
+import { COLOR_BLUE, RGB_COLOR_GREEN } from "../../colors.js";
 import { getDefaultLighting, processLighting } from "../../lighting/lightingProcessing.js";
 import { rotatePoint } from "../../canvas.js";
 import { loadGD, UI_CAMERA_CENTER_SELECT_POINT, UI_CAMERA_OFFSET_VEC, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_3D, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../../ui/UIData.js";
@@ -8,6 +8,9 @@ import { addVec3Dest, addVectors, copyVecValue, crossVec3, multiplyVectorByScala
 import { QuadRenderJob } from "../../rendering/model/QuadRenderJob.js";
 import { addRenderJob } from "../../rendering/rasterizer.js";
 import { STAGE_DEAD } from "../organisms/Stages.js";
+import { CoordinateSet } from "../../rendering/model/CoordinateSet.js";
+import { sphericalToCartesian } from "../../climate/stars/starHandlerUtil.js";
+import { LineRenderJob } from "../../rendering/model/LineRenderJob.js";
 
 const NUTRIENT_BASE_HSV = rgb2hsv(RGB_COLOR_GREEN.r, RGB_COLOR_GREEN.g, RGB_COLOR_GREEN.b);
 class PlantLifeSquare {
@@ -34,7 +37,7 @@ class PlantLifeSquare {
         this.posVecDir = [0, 0, 0];
 
         // Derived rendering member variables.
-        this.rootPositionVec = [0, 0, 0];
+        this.rootPosVec = [0, 0, 0];
         this.startPointVec = [0, 0, 0];
         this.endPointVec = [0, 0, 0];
         this.forwardVec = [0, 0, 0];
@@ -67,48 +70,76 @@ class PlantLifeSquare {
         this.renderScreen_br = [0, 0, 0];
     }
 
+    purgeUnderscoredValues() {
+        let keys = Object.keys(this);
+        keys.filter((key) => key.startsWith("_"))
+            .forEach((key) => this[key] = null)
+    }
+
     setFrameCartesians() {
-        this.offset = [0, 0, 0]
-        subtractVectorsDest(this.rootPositionVec, gfc().cameraOffset, this.startPointVec);
-        
-        copyVecValue(this.posVecDir, this.offset);
+        this.rootPosVec = this.rootPosVec ?? [0, 0, 0];
+        this._cs_root = this._cs_root ?? new CoordinateSet();
+        this._cs_tl = this._cs_tl ?? new CoordinateSet();
+        this._cs_tr = this._cs_tr ?? new CoordinateSet();
+        this._cs_bl = this._cs_bl ?? new CoordinateSet();
+        this._cs_br = this._cs_br ?? new CoordinateSet();
+        this._sp_cs = this._sp_cs ?? new CoordinateSet();
+        this._ep_cs = this._ep_cs ?? new CoordinateSet();
+
+        this._cs_root.setWorld(this.rootPosVec);
+        this.offset = [0, 1, 0]
+
         multiplyVectorByScalar(this.offset, this.height);
+
+        copyVecValue(this.rootPosVec, this.startPointVec)
         addVec3Dest(this.startPointVec, this.offset, this.endPointVec);
 
-        this.forwardVec = normalizeVec3(this.startPointVec);
-        this.sideVec = normalizeVec3(crossVec3(this.offset, this.forwardVec))
+        this._sp_cs.setWorld(this.startPointVec);
+        this._ep_cs.setWorld(this.endPointVec);
 
-        multiplyVectorByScalar(this.sideVec, this.width / 2);
+        addRenderJob(new LineRenderJob(
+            this._sp_cs.renderScreen,
+            this._ep_cs.renderScreen,
+            10 ** 3.8 / (this._sp_cs.distToCamera ** 2),
+            COLOR_BLUE
+        ), true);
 
-        subtractVectorsDest(this.endPointVec, this.sideVec, this.cartesian_tl);
-        addVec3Dest(this.endPointVec, this.sideVec, this.cartesian_tr);
-        subtractVectorsDest(this.startPointVec, this.sideVec, this.cartesian_bl);
-        addVec3Dest(this.startPointVec, this.sideVec, this.cartesian_br);
+        // this.forwardVec = normalizeVec3(this._cs_root.offset);
+        // this.sideVec = normalizeVec3(crossVec3(this.offset, this.forwardVec))
 
-        cartesianToScreenInplace(this.cartesian_tl, this.camera_tl, this.screen_tl);
-        cartesianToScreenInplace(this.cartesian_tr, this.camera_tr, this.screen_tr);
-        cartesianToScreenInplace(this.cartesian_bl, this.camera_bl, this.screen_bl);
-        cartesianToScreenInplace(this.cartesian_br, this.camera_br, this.screen_br);
+        // multiplyVectorByScalar(this.sideVec, this.width / 2);
 
-        screenToRenderScreen(this.screen_tl, this.renderNorm_tl, this.renderScreen_tl, gfc()._xOffset, gfc()._yOffset, gfc()._s);
-        screenToRenderScreen(this.screen_tr, this.renderNorm_tr, this.renderScreen_tr, gfc()._xOffset, gfc()._yOffset, gfc()._s);
-        screenToRenderScreen(this.screen_bl, this.renderNorm_bl, this.renderScreen_bl, gfc()._xOffset, gfc()._yOffset, gfc()._s);
-        screenToRenderScreen(this.screen_br, this.renderNorm_br, this.renderScreen_br, gfc()._xOffset, gfc()._yOffset, gfc()._s);
+        // subtractVectorsDest(this.endPointVec, this.sideVec, this.cartesian_tl);
+        // addVec3Dest(this.endPointVec, this.sideVec, this.cartesian_tr);
+        // subtractVectorsDest(this.startPointVec, this.sideVec, this.cartesian_bl);
+        // addVec3Dest(this.startPointVec, this.sideVec, this.cartesian_br);
+
+
+        // this._cs_tl = new CoordinateSet();
+        // this._cs_tr = new CoordinateSet();
+        // this._cs_bl = new CoordinateSet();
+        // this._cs_br = new CoordinateSet();
+
+        // this._cs_tl.setWorld(this.cartesian_tl);
+        // this._cs_tr.setWorld(this.cartesian_tr);
+        // this._cs_bl.setWorld(this.cartesian_bl);
+        // this._cs_br.setWorld(this.cartesian_br);
+
     }
 
     prepareRenderJob() {
         this.centerZ = (this.renderScreen_tl[2] + this.renderScreen_bl[2] + this.renderScreen_br[2] + this.renderScreen_tr[2]) / 4;
         if (this.renderJob == null) {
             this.renderJob = new QuadRenderJob(
-                this.renderScreen_tl, 
-                this.renderScreen_bl, 
-                this.renderScreen_br, 
+                this.renderScreen_tl,
+                this.renderScreen_bl,
+                this.renderScreen_br,
                 this.renderScreen_tr, this.cachedRgba, this.centerZ)
         } else {
-            this.renderJob.renderScreen_tl = this.renderScreen_tl;
-            this.renderJob.renderScreen_bl = this.renderScreen_bl;
-            this.renderJob.renderScreen_br = this.renderScreen_br;
-            this.renderJob.renderScreen_tr = this.renderScreen_tr;
+            this.renderJob.renderScreen_tl = this._cs_tl.renderScreen;
+            this.renderJob.renderScreen_bl = this._cs_tr.renderScreen;
+            this.renderJob.renderScreen_br = this._cs_bl.renderScreen;
+            this.renderJob.renderScreen_tr = this._cs_br.renderScreen;
             this.renderJob.color = this.cachedRgba;
             this.renderJob.z = this.centerZ;
         }
@@ -171,16 +202,16 @@ class PlantLifeSquare {
             this.frameOpacity *= (1 - this.linkedOrganism.deathProgress ** 6);
         }
     }
-    
+
     setFrameRenderColor() {
         if (this.frameViewMode == UI_VIEWMODE_3D) {
 
-        this.colorLighting = this.processLighting();
-        this.colorLightingApplied[0] = (this.color[0] / 255) * this.colorLighting.r;
-        this.colorLightingApplied[1] = (this.color[1] / 255) * this.colorLighting.g;
-        this.colorLightingApplied[2] = (this.color[2] / 255) * this.colorLighting.b;
+            this.colorLighting = this.processLighting();
+            this.colorLightingApplied[0] = (this.color[0] / 255) * this.colorLighting.r;
+            this.colorLightingApplied[1] = (this.color[1] / 255) * this.colorLighting.g;
+            this.colorLightingApplied[2] = (this.color[2] / 255) * this.colorLighting.b;
 
-        this.cachedRgba = rgbToRgba(...this.colorLightingApplied, this.opacity);
+            this.cachedRgba = rgbToRgba(...this.colorLightingApplied, this.opacity);
         } else {
             this.cachedRgba = rgbToRgba(...this.altColor, this.opacity);
         }
@@ -226,7 +257,7 @@ class PlantLifeSquare {
         this.moistureColor = processColorLerpBicolorArr(this.linkedOrganism.getWilt(), -1, 1, this.linkedOrganism.moistureMinColor, this.linkedOrganism.moistureMaxColor);
         this.altColor = this.moistureColor;
     }
-    
+
     viewmodeEvolution() {
         this.evolutionColor = this.evolutionColor ?? processColorLerpBicolorArr(this.linkedOrganism.evolutionParameters.at(0), 0, 1, this.linkedOrganism.evolutionMinColor, this.linkedOrganism.evolutionMaxColor);
         this.altColor = this.evolutionColor;

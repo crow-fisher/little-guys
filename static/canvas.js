@@ -303,7 +303,7 @@ export function zoomCanvasFillRectTheta3D(x, y, dx, dy, xRef, yRef, theta, z) {
         [(bls[0] / bls[2]) * cw, (bls[1] / bls[2]) * ch],
         [(tls[0] / tls[2]) * cw, (tls[1] / tls[2]) * ch]
     ]
-
+    
     fillCanvasPointArr(pArr);
 }
 

@@ -18,6 +18,10 @@ export class CoordinateSet {
     }
 
     setWorld(newWorld) {
+
+        if (newWorld.some(isNaN)) {
+            // alert("Something nan tha tshouldn't be!");
+        }
         this.world = newWorld;
         this.process();
     }

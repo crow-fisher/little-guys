@@ -1,17 +1,16 @@
 import { BaseSquare } from "./BaseSqaure.js";
-import { getSquares, iterateOnSquares, getNeighbors, addSquare } from "./_sqOperations.js";
+import { getSquares, getNeighbors, addSquare } from "./_sqOperations.js";
 import { getGroupSize, getNextGroupId, WATERFLOW_CANDIDATE_SQUARES, WATERFLOW_TARGET_SQUARES } from "../globals.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { RGB_COLOR_OTHER_BLUE } from "../colors.js";
-import { hexToRgb, hsv2rgb, randRange, rgb2hsv, rgbToRgba } from "../common.js";
-import { loadGD, UI_LIGHTING_WATER, UI_LIGHTING_WATER_HUE, UI_LIGHTING_WATER_VALUE, UI_LIGHTING_WATER_SATURATION, UI_LIGHTING_WATER_OPACITY, UI_SIMULATION_CLOUDS } from "../ui/UIData.js";
+import { hsv2rgb, randRange, rgb2hsv, rgbToRgba } from "../common.js";
+import { loadGD, UI_LIGHTING_WATER, UI_LIGHTING_WATER_HUE, UI_LIGHTING_WATER_VALUE, UI_LIGHTING_WATER_SATURATION, UI_LIGHTING_WATER_OPACITY } from "../ui/UIData.js";
 import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
 import { getActiveClimate } from "../climate/climateManager.js";
-import { applyLightingFromSource, getDefaultLighting } from "../lighting/lightingProcessing.js";
+import { applyLightingFromSource } from "../lighting/lightingProcessing.js";
 import { deregisterSquare, isGroupContiguous, registerSquare } from "../waterGraph.js";
 import { getGroupMinPosY } from "../globalOperations.js";
-import { convertMinutesToTimeUnit } from "../climate/weather/weather.js";
-import { getWindSpeedAtLocation } from "../climate/simulation/wind.js";
+import { getWindSpeedAtLocationXY } from "../main.js";
 class WaterSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);
@@ -50,10 +49,7 @@ class WaterSquare extends BaseSquare {
     }
 
     windPhysics() {
-        if (!loadGD(UI_SIMULATION_CLOUDS))
-            return;
-
-        let ws = getWindSpeedAtLocation(this.posX, this.posY);
+        let ws = getWindSpeedAtLocationXY(this.posX, this.posY);
         let maxWindSpeed = 10;
 
         let wx = Math.min(Math.max(ws[0], -maxWindSpeed), maxWindSpeed);

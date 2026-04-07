@@ -6,6 +6,7 @@ import { getBaseSize, getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, get
 import { loadGD, UI_CANVAS_SQUARES_ZOOM, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "../../ui/UIData.js";
 import { getWindThrottleVal, registerWindThrottlerOutput } from "./throttler.js";
 import { COLOR_BLACK, COLOR_VERY_FUCKING_RED } from "../../colors.js";
+import { getAtmosphereHandler } from "../../main.js";
 
 let windPressureMap;
 let windPressureMapByPressure;
@@ -541,9 +542,6 @@ function isPointInBounds(x, y) {
     return x >= 0 && x < curWindSquaresX && y >= 0 && y < curWindSquaresY;
 }
 
-function getWindSpeedAtLocation(x, y) {
-    return null;
-}
 initWindPressure();
 
-export { getWindSquareAbove, setPressurebyMult, getPressure, getAirSquareDensity, getWindSpeedAtLocation, renderWindPressureMap, initWindPressure, tickWindPressureMap, updateWindPressureByMult, getAirSquareDensityTempAndHumidity, base_wind_pressure }
+export { getWindSquareAbove, setPressurebyMult, getPressure, getAirSquareDensity, renderWindPressureMap, initWindPressure, tickWindPressureMap, updateWindPressureByMult, getAirSquareDensityTempAndHumidity, base_wind_pressure }
