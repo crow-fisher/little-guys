@@ -94,54 +94,54 @@ class PlantLifeSquare {
         copyVecValue(this.rootPosVec, this.startPointVec)
         addVec3Dest(this.startPointVec, this.offset, this.endPointVec);
 
-        this._sp_cs.setWorld(this.startPointVec);
+        this._sp_cs.setWorld(this.startPointVec);   
         this._ep_cs.setWorld(this.endPointVec);
 
         addRenderJob(new LineRenderJob(
             this._sp_cs.renderScreen,
             this._ep_cs.renderScreen,
-            10 ** 3.8 / (this._sp_cs.distToCamera ** 2),
+            10 ** 2.8 / (this._sp_cs.distToCamera ** 2),
             COLOR_BLUE
         ), true);
 
-        // this.forwardVec = normalizeVec3(this._cs_root.offset);
-        // this.sideVec = normalizeVec3(crossVec3(this.offset, this.forwardVec))
+        this.forwardVec = normalizeVec3(this._cs_root.offset);
+        this.sideVec = normalizeVec3(crossVec3(this.offset, this.forwardVec))
 
-        // multiplyVectorByScalar(this.sideVec, this.width / 2);
+        multiplyVectorByScalar(this.sideVec, this.width / 2);
 
-        // subtractVectorsDest(this.endPointVec, this.sideVec, this.cartesian_tl);
-        // addVec3Dest(this.endPointVec, this.sideVec, this.cartesian_tr);
-        // subtractVectorsDest(this.startPointVec, this.sideVec, this.cartesian_bl);
-        // addVec3Dest(this.startPointVec, this.sideVec, this.cartesian_br);
+        subtractVectorsDest(this.endPointVec, this.sideVec, this.cartesian_tl);
+        addVec3Dest(this.endPointVec, this.sideVec, this.cartesian_tr);
+        subtractVectorsDest(this.startPointVec, this.sideVec, this.cartesian_bl);
+        addVec3Dest(this.startPointVec, this.sideVec, this.cartesian_br);
 
 
-        // this._cs_tl = new CoordinateSet();
-        // this._cs_tr = new CoordinateSet();
-        // this._cs_bl = new CoordinateSet();
-        // this._cs_br = new CoordinateSet();
+        this._cs_tl = new CoordinateSet();
+        this._cs_tr = new CoordinateSet();
+        this._cs_bl = new CoordinateSet();
+        this._cs_br = new CoordinateSet();
 
-        // this._cs_tl.setWorld(this.cartesian_tl);
-        // this._cs_tr.setWorld(this.cartesian_tr);
-        // this._cs_bl.setWorld(this.cartesian_bl);
-        // this._cs_br.setWorld(this.cartesian_br);
+        this._cs_tl.setWorld(this.cartesian_tl);
+        this._cs_tr.setWorld(this.cartesian_tr);
+        this._cs_bl.setWorld(this.cartesian_bl);
+        this._cs_br.setWorld(this.cartesian_br);
+
+
 
     }
 
     prepareRenderJob() {
-        this.centerZ = (this.renderScreen_tl[2] + this.renderScreen_bl[2] + this.renderScreen_br[2] + this.renderScreen_tr[2]) / 4;
         if (this.renderJob == null) {
             this.renderJob = new QuadRenderJob(
-                this.renderScreen_tl,
-                this.renderScreen_bl,
-                this.renderScreen_br,
-                this.renderScreen_tr, this.cachedRgba, this.centerZ)
+                this._cs_tl.renderScreen,
+                this._cs_tr.renderScreen,
+                this._cs_bl.renderScreen,
+                this._cs_br.renderScreen, this.cachedRgba)
         } else {
             this.renderJob.renderScreen_tl = this._cs_tl.renderScreen;
             this.renderJob.renderScreen_bl = this._cs_tr.renderScreen;
             this.renderJob.renderScreen_br = this._cs_bl.renderScreen;
             this.renderJob.renderScreen_tr = this._cs_br.renderScreen;
             this.renderJob.color = this.cachedRgba;
-            this.renderJob.z = this.centerZ;
         }
     }
 
