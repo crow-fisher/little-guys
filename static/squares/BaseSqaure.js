@@ -572,14 +572,14 @@ export class BaseSquare {
         this.combinePoints(this, this.rsq, this.br, "_cs_br", "renderScreen");
         this.combinePoints(this, this.rsq, this.tr, "_cs_tr", "renderScreen");
 
-        if (this.renderJob == null) {
-            this.renderJob = new QuadRenderJob(this.tl, this.bl, this.br, this.tr, this.cachedRgba)
+        if (this._renderJob == null) {
+            this._renderJob = new QuadRenderJob(this.tl, this.bl, this.br, this.tr, this.cachedRgba)
         } else {
-            this.renderJob.tl = this.tl;
-            this.renderJob.bl = this.bl;
-            this.renderJob.br = this.br;
-            this.renderJob.tr = this.tr;
-            this.renderJob.color = this.cachedRgba;
+            this._renderJob.tl = this.tl;
+            this._renderJob.bl = this.bl;
+            this._renderJob.br = this.br;
+            this._renderJob.tr = this.tr;
+            this._renderJob.color = this.cachedRgba;
         }
     }
 
@@ -590,8 +590,8 @@ export class BaseSquare {
         this.setFrameCartesians();
         this.prepareRenderJob();
 
-        if (this.renderJob.shouldRender()) {
-            addRenderJob(this.renderJob, true);
+        if (this._renderJob.shouldRender()) {
+            addRenderJob(this._renderJob, true);
         }
     }
 

@@ -94,7 +94,7 @@ class PlantLifeSquare {
         addVec3Dest(this.startPointVec, this.offset, this.endPointVec);
 
         this.forwardVec = normalizeVec3(this._cs_root.offset);
-        this.sideVec = normalizeVec3(crossVec3(this.offset, this.forwardVec))
+        this.sideVec = normalizeVec3(crossVec3(this.posVecDir, this.forwardVec))
 
         multiplyVectorByScalar(this.sideVec, this.width / 2);
 
@@ -111,10 +111,7 @@ class PlantLifeSquare {
         this._cs_tl.setWorld(this.cartesian_tl);
         this._cs_tr.setWorld(this.cartesian_tr);
         this._cs_bl.setWorld(this.cartesian_bl);
-        this._cs_br.setWorld(this.cartesian_br);
-
-        // Debug Line
-        this._sp_cs.setWorld(this.startPointVec);   
+        this._cs_br.setWorld(this.cartesian_br);this.posVecDir
         this._ep_cs.setWorld(this.endPointVec);
 
         addRenderJob(new LineRenderJob(
@@ -128,19 +125,19 @@ class PlantLifeSquare {
     }
 
     prepareRenderJob() {
-        if (this.renderJob == null) {
-            this.renderJob = new QuadRenderJob(
+        if (this._renderJob == null) {
+            this._renderJob = new QuadRenderJob(
                 this._cs_tl.renderScreen,
                 this._cs_tr.renderScreen,
                 this._cs_bl.renderScreen,
                 this._cs_br.renderScreen, 
                 this.cachedRgba)
         } else {
-            this.renderJob.tl = this._cs_tl.renderScreen;
-            this.renderJob.tr = this._cs_tr.renderScreen;
-            this.renderJob.bl = this._cs_bl.renderScreen;
-            this.renderJob.br = this._cs_br.renderScreen;
-            this.renderJob.color = this.cachedRgba;
+            this._renderJob.tl = this._cs_tl.renderScreen;
+            this._renderJob.tr = this._cs_tr.renderScreen;
+            this._renderJob.bl = this._cs_bl.renderScreen;
+            this._renderJob.br = this._cs_br.renderScreen;
+            this._renderJob.color = this.cachedRgba;
         }
     }
 
@@ -179,7 +176,7 @@ class PlantLifeSquare {
 
         this.setFrameCartesians();
         this.prepareRenderJob();
-        addRenderJob(this.renderJob, true);
+        addRenderJob(this._renderJob, true);
     }
 
     render() {
