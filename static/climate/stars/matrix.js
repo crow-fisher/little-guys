@@ -122,6 +122,14 @@ export function addVectors(v1, v2) {
   return v1.slice(0, l);
 }
 
+export function addVectorsMult(v1, v2, mult) {
+  let l = Math.min(v1.length, v2.length);
+  for (let i = 0; i < l; i++) {
+    v1[i] += mult * v2[i];
+  }
+  return v1.slice(0, l);
+}
+
 export function addVec3Dest(v1, v2, dest) {
   dest[0] = (v1[0] + v2[0]);
   dest[1] = (v1[1] + v2[1]);

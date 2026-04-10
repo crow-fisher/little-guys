@@ -1,7 +1,7 @@
 import { GrowthComponent } from "./GrowthComponent.js";
 
 export class GrowthPlan {
-    constructor(required, endStage, type, theta, sin, phi, thetaCurve, sinCurve, phiCurve, strengthMult) {
+    constructor(required, endStage, type, xb, yb, zb, xbc, ybc, zbc, strengthMult) {
         this.required = required;
         this.endStage = endStage;
         this.type = type;
@@ -11,7 +11,7 @@ export class GrowthPlan {
         this.component = new GrowthComponent(
             this,
             this.steps.filter((step) => step.completed).map((step) => step.completedLsq),
-             theta, sin, phi, thetaCurve, sinCurve, phiCurve, type, strengthMult);
+            xb, -yb, zb, xbc, ybc, zbc, type, strengthMult);
     }
 
     areStepsCompleted() {

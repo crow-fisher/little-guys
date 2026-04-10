@@ -1,17 +1,15 @@
 import { getCurDay } from "../../../climate/time.js";
-import { addVectors, copyVecValue, normalizeVec3 } from "../../../climate/stars/matrix.js";
-import { getAtmosphereHandler } from "../../../main.js";
+import { addVectors, addVectorsMult, copyVecValue, normalizeVec3 } from "../../../climate/stars/matrix.js";
+import { getAtmosphereHandler, getWindSpeedAtLocation } from "../../../main.js";
 
 
 export class GrowthComponent {
-    constructor(growthPlan, lifeSquares, theta, sin, phi, thetaCurve, sinCurve, phiCurve, type, strengthMult) {
+    constructor(growthPlan, lifeSquares, xb, yb, zb, xbc, ybc, zbc, type, strengthMult) {
         this.growthPlan = growthPlan;
         this.lifeSquares = Array.from(lifeSquares);
-        this.deflection_base = [theta, sin, phi];
-        this.deflection_base_curve = [thetaCurve, sinCurve, phiCurve];
-        this.deflection_applied = [0, 0];
-        this.dv = [0, 0, 0];
-        this.ddv = [0, 0, 0];
+        this.deflection_base = [xb, yb, zb];
+        this.deflection_base_curve = [xbc, ybc, zbc];
+        this.deflection_wind_current = [0, 0, 0];
         this.type = type;
         this.strengthMult = strengthMult;
         this.children = new Array();
@@ -55,15 +53,18 @@ export class GrowthComponent {
 
     updateDeflectionState(startWorldOffset) {
         this._curOffset = this._curOffset ?? [0, 0, 0]
+        this._curOffsetDir = this._curOffsetDir ?? [0, 0, 0];
         this._offsetDelta = this._offsetDelta ?? [0, -1, 0];
+
         copyVecValue(startWorldOffset, this._curOffset);
-        copyVecValue([-2, -1, 0], this._offsetDelta);
-        
+        copyVecValue(this.deflection_base, this._curOffsetDir);
         for (let i = 0; i < this.lifeSquares.length; i++) {
             copyVecValue(this._curOffset, this.lifeSquares.at(i).posVec);
-            copyVecValue(this._offsetDelta, this.lifeSquares.at(i).posVecDir);
-            addVectors(this._curOffset, this._offsetDelta)
-            addVectors(this._offsetDelta, [.7, 0, 0]);
+            copyVecValue(this._curOffsetDir, this.lifeSquares.at(i).posVecDir);
+
+            addVectors(this._curOffsetDir, this.deflection_base_curve);
+            normalizeVec3(this._curOffsetDir);
+            addVectorsMult(this._curOffset, this._curOffsetDir, 0.8)
         };
         this.children.forEach((child) => child.updateDeflectionState(this._curOffset));
     }
