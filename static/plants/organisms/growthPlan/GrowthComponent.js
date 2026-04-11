@@ -55,31 +55,27 @@ export class GrowthComponent {
         this._curOffset = this._curOffset ?? [0, 0, 0]
         this._curOffsetDir = this._curOffsetDir ?? [0, 0, 0];
         this._offsetDelta = this._offsetDelta ?? [0, -1, 0];
+        this._curWind = this._curWind ?? [0, 0, 0];
 
         copyVecValue(startWorldOffset, this._curOffset);
         copyVecValue(this.deflection_base, this._curOffsetDir);
-        this.applyComponentWind(this._curOffsetDir);
         normalizeVec3(this._curOffsetDir);
         for (let i = 0; i < this.lifeSquares.length; i++) {
             copyVecValue(this._curOffset, this.lifeSquares.at(i).posVec);
             copyVecValue(this._curOffsetDir, this.lifeSquares.at(i).posVecDir);
-
             addVectors(this._curOffsetDir, this.deflection_base_curve);
+            this.applyComponentWind(this.lifeSquares.at(i));
+
             normalizeVec3(this._curOffsetDir);
             addVectorsMult(this._curOffset, this._curOffsetDir, 0.8)
         };
         this.children.forEach((child) => child.updateDeflectionState(this._curOffset));
     }
 
-    applyComponentWind(valueArray) {
-        let cur = this.lifeSquares.at(Math.floor(this.lifeSquares.length / 2)) ?? this.lifeSquares.at(0);
-        if (!cur) {
-            return;
-        } 
-        this._curWind = this._curWind ?? [0, 0, 0];
+    applyComponentWind(cur) {
         copyVecValue(getWindSpeedAtLocation(cur.cartesian_tl), this._curWind);
-        multiplyVectorByScalar(valueArray, 0.95);
-        addVectorsMult(valueArray, this._curWind, 3);
+        multiplyVectorByScalar(this._curOffsetDir, 0.999);
+        addVectorsMult(this._curOffsetDir, this._curWind, 1);
     }
 
     getValueCached(name, calculation) {

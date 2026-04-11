@@ -107,7 +107,7 @@ export class AtmosphereHandler {
         copyVecValue(this.ccp, this._pressureRayCur);
         multiplyVectorByScalarDest(getForwardVec(), ATMOSCALE, this._pressureRayCurDelta);
 
-        let amount = 1;
+        let amount = .03;
         this.addPressureAtLocation(this._pressureRayCur, amount);
         
         this._pressureRayCur[1] += ATMOSCALE * 1.5;

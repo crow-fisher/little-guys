@@ -11,7 +11,7 @@ import { getCurDay } from "../../../time.js";
 
 
 
-export const ATMOSCALE = 4;
+export const ATMOSCALE = 8;
 
 export class AtmosphereUnit {
     constructor(sector, size) { // vec3s

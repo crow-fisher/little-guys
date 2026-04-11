@@ -15,7 +15,7 @@ export function addRenderJob(renderJob, sort) {
     if (renderJob == null) {
         return;
     }
-    if (renderJob != null && renderJob.isVisible()) {
+    if (renderJob != null && renderJob.getZ() > 0 && renderJob.isVisible()) {
         ((sort) ? renderJobs : noSortRenderJobs).push(renderJob);
     }
 }
