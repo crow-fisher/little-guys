@@ -15,7 +15,7 @@ export class AtmosphereHandler {
         this.au = new Map(); // 3-D map to individuals sectors of XYZ space
         this.fullAUList = new Array(); // 1-D array array of all live AUs
         this.tickAUList = new Array();
-        this.dist = 4;
+        this.dist = 5;
     }
 
     initAtmosphereUnits() {
@@ -107,7 +107,7 @@ export class AtmosphereHandler {
         copyVecValue(this.ccp, this._pressureRayCur);
         multiplyVectorByScalarDest(getForwardVec(), ATMOSCALE, this._pressureRayCurDelta);
 
-        let amount = 100;
+        let amount = 1;
         this.addPressureAtLocation(this._pressureRayCur, amount);
         
         this._pressureRayCur[1] += ATMOSCALE * 1.5;

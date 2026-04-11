@@ -87,7 +87,7 @@ export class KentuckyBluegrass extends BasePlant {
         let growthPlan = new GrowthPlan(
             false, STAGE_ADULT, TYPE_STEM,
             0, 1, 0,
-            .1, 0, 0, 1)
+            0, 0, 0, 1)
         growthPlan.postConstruct = () => {
             this.originGrowth.addChild(growthPlan.component);
             this.grasses.push(this.originGrowth.getChildPath(growthPlan.component))
