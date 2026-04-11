@@ -4,7 +4,7 @@ import { COLOR_BLACK, COLOR_BLUE, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } fro
 import { hexToRgb } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
-import { loadGD, saveGD, UI_ORGANISM_CONFIGURATOR, UI_ORGANISM_GRASS_CATTAIL, UI_ORGANISM_GRASS_KBLUE, UI_ORGANISM_GRASS_WHEAT, UI_ORGANISM_SELECT } from "../UIData.js";
+import { loadGD, saveGD, UI_ORGANISM_CONFIGURATOR, UI_ORGANISM_GRASS_CATTAIL, UI_ORGANISM_GRASS_HTAIL, UI_ORGANISM_GRASS_WHEAT, UI_ORGANISM_SELECT } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export function getCurPlantConfiguratorVal() {
@@ -33,7 +33,7 @@ export class SliderGradientBackgroundPlantConfigurator extends WindowElement {
         switch (loadGD(UI_ORGANISM_SELECT)) {
             case UI_ORGANISM_GRASS_CATTAIL:
                 return this.generalBrightnessFunc(0.2);
-            case UI_ORGANISM_GRASS_KBLUE:
+            case UI_ORGANISM_GRASS_HTAIL:
                 return this.generalBrightnessFunc(0.3);
             case UI_ORGANISM_GRASS_WHEAT:
                 return this.generalBrightnessFunc(0.4);
@@ -46,7 +46,7 @@ export class SliderGradientBackgroundPlantConfigurator extends WindowElement {
         switch (loadGD(UI_ORGANISM_SELECT)) {
             case UI_ORGANISM_GRASS_CATTAIL:
                 return this.generalBrightnessFunc(0.2 + 0.6);
-            case UI_ORGANISM_GRASS_KBLUE:
+            case UI_ORGANISM_GRASS_HTAIL:
                 return this.generalBrightnessFunc(0.3 + 0.6);
             case UI_ORGANISM_GRASS_WHEAT:
                 return this.generalBrightnessFunc(0.4 + 0.6);

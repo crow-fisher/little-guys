@@ -383,7 +383,7 @@ export function loadSlotFromSave(slotData) {
     setCurDay(slotData.curDay);
     setGAMEDATA(slotData.gamedata)
 
-    sqArr.forEach((sq) => Object.setPrototypeOf(sq, ProtoMap[sq.proto]));
+        sqArr.forEach((sq) => Object.setPrototypeOf(sq, ProtoMap[sq.proto]));
     orgArr.forEach((org) => Object.setPrototypeOf(org, ProtoMap[org.proto]));
     lsqArr.forEach((lsq) => Object.setPrototypeOf(lsq, ProtoMap[lsq.proto]));
 

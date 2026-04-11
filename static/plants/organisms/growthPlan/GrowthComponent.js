@@ -10,6 +10,7 @@ export class GrowthComponent {
         this.deflection_base = [xb, yb, zb];
         this.deflection_base_curve = [xbc, ybc, zbc];
         this.deflection_wind_current = [0, 0, 0];
+        this.offset_base = [0, 0, 0];
         this.type = type;
         this.strengthMult = strengthMult;
         this.children = new Array();
@@ -52,14 +53,18 @@ export class GrowthComponent {
     }
 
     updateDeflectionState(startWorldOffset) {
-        this._curOffset = this._curOffset ?? [0, 0, 0]
+        this._curOffset = this._curOffset ?? [0, 0, 0];
         this._curOffsetDir = this._curOffsetDir ?? [0, 0, 0];
         this._offsetDelta = this._offsetDelta ?? [0, -1, 0];
         this._curWind = this._curWind ?? [0, 0, 0];
 
+
         copyVecValue(startWorldOffset, this._curOffset);
+        addVectors(this._curOffset, this.offset_base);
+
         copyVecValue(this.deflection_base, this._curOffsetDir);
         normalizeVec3(this._curOffsetDir);
+        
         for (let i = 0; i < this.lifeSquares.length; i++) {
             copyVecValue(this._curOffset, this.lifeSquares.at(i).posVec);
             copyVecValue(this._curOffsetDir, this.lifeSquares.at(i).posVecDir);

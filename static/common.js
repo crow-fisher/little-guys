@@ -324,3 +324,11 @@ export function invlerp(min, max, value) {
 export function processRangeToOne(value) {
     return (Math.atan(value) / Math.PI) + 0.5;
 }
+
+export function hash(value) {
+    return ((Math.exp(value) % 255) ** 2 / 7) % 1; 
+}
+
+export function rr(range) {
+    return randRange(-range, range)
+}
