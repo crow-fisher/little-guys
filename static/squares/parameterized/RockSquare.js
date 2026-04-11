@@ -72,8 +72,12 @@ export class RockSquare extends SoilSquare {
     }
     zRenderRoutine() {
         this._isRockTop = !getSquares(this.posX, this.posY - 1).some((sq) => sq.solid);
-        if (this.tsq?.solid) {
-            this.z = this.tsq.z;
-        }
+        this.z = this.zCascadeFunc( this.currentPressureDirect);
+        this.zd = this.z - this.zCascadeFunc(this.currentPressureDirect - 1);
+
+    }
+
+    pressureDirectFactor() {
+        return Math.cos(this._tsq.currentPressureDirect * 12);
     }
 }

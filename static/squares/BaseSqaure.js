@@ -58,7 +58,8 @@ export class BaseSquare {
         this.blockHealth = Math.min(loadGD(UI_PALETTE_STRENGTH), this.blockHealthMax); // when reaches zero, delete
         // water flow parameters
 
-        this.currentPressureDirect = 0;
+        this.currentPressureDirect = -1;
+        this.sumSurface = 0;
         this.waterContainment = 0;
         this.waterContainmentMax = 0.5;
         this.speedX = 0;
@@ -155,7 +156,7 @@ export class BaseSquare {
     };
 
     initGreeble() {
-        this.gz_tl = randRange(-this.gf, this.gf); 
+        this.gz_tl = randRange(-this.gf, this.gf);
         this.gz_bl = randRange(-this.gf, this.gf);
         this.gz_br = randRange(-this.gf, this.gf);
         this.gz_tr = randRange(-this.gf, this.gf);
@@ -524,6 +525,10 @@ export class BaseSquare {
         this.zd = 0;
     }
 
+    zPaintOffsetRoutine() {
+        this.z += this.sumSurface / 10;
+        this.zd += this.sumSurface / 10;
+    }
     setFrameCartesians() {
         this.selectPoint = loadGD(UI_CAMERA_CENTER_SELECT_POINT) ?? [0, 0];
 
@@ -545,29 +550,27 @@ export class BaseSquare {
         this.world_br[1] = this.py + 1;
 
         this.zRenderRoutine();
+        this.zPaintOffsetRoutine();
 
         this.world_bl_z = this.z;
         this.world_br_z = this.z;
-
         this.world_tl_z = this.world_bl_z - this.zd;
         this.world_tr_z = this.world_br_z - this.zd;
-         
-        // if (this.lsq) {
-        //     this.world_tl[2] = (this.lsq.world_tl_z + this.world_tl_z) / 2
-        //     this.world_bl[2] = (this.lsq.world_tr_z + this.world_tr_z) / 2
-        // }
-
-        // if (this.rsq) {
-        //     this.world_tr[2] = (this.rsq.world_tl_z + this.world_tr_z) / 2
-        //     this.world_br[2] = (this.rsq.world_bl_z + this.world_br_z) / 2
-        // }
-
 
         this.world_tl[2] = this.world_tl_z;
-        this.world_tr[2] = this.world_tr_z;
         this.world_bl[2] = this.world_bl_z;
+        this.world_tr[2] = this.world_tr_z;
         this.world_br[2] = this.world_br_z;
 
+        // if (this._lsq) {
+        //     this.world_tl[2] = (this._lsq.world_tr_z + this.world_tl_z) / 2
+        //     this.world_bl[2] = (this._lsq.world_br_z + this.world_bl_z) / 2
+        // }
+        // if (this._rsq) {
+        //     this.world_tr[2] = (this._rsq.world_tl_z + this.world_tr_z) / 2
+        //     this.world_br[2] = (this._rsq.world_bl_z + this.world_br_z) / 2
+        // }
+        
         if (this._isRockTop) {
             this.world_tl[2] -= 4;
             this.world_tr[2] -= 4;
@@ -594,14 +597,14 @@ export class BaseSquare {
     purgeUnderscoredValues() {
         let keys = Object.keys(this);
         keys.filter((key) => key.startsWith("_"))
-                .forEach((key) => this[key] = null)
+            .forEach((key) => this[key] = null)
     }
 
     updateNeighborSquares() {
-        this.lsq = getSquares(this.posX - 1, this.posY).find((sq) => sq.solid);
-        this.rsq = getSquares(this.posX + 1, this.posY).find((sq) => sq.solid);
-        this.tsq = getSquares(this.posX, this.posY - 1).find((sq) => sq.solid);
-        this.bsq = getSquares(this.posX, this.posY + 1).find((sq) => sq.solid);
+        this._lsq = getSquares(this.posX - 1, this.posY).find((sq) => sq.solid);
+        this._rsq = getSquares(this.posX + 1, this.posY).find((sq) => sq.solid);
+        this._tsq = getSquares(this.posX, this.posY - 1).find((sq) => sq.solid);
+        this._bsq = getSquares(this.posX, this.posY + 1).find((sq) => sq.solid);
     }
 
     prepareRenderJob() {
@@ -619,7 +622,7 @@ export class BaseSquare {
         // this.combinePoints(this, this.lsq, this.bl, "bl", "bl");
         // this.combinePoints(this, this.rsq, this.br, "br", "br");
         // this.combinePoints(this, this.rsq, this.tr, "tr", "tr");
-        
+
         // this.combinePoints(this, this.lsq, this.tl, "_cs_tl", "renderScreen");
         // this.combinePoints(this, this.lsq, this.bl, "_cs_bl", "renderScreen");
         // this.combinePoints(this, this.rsq, this.br, "_cs_br", "renderScreen");
@@ -1160,24 +1163,26 @@ export class BaseSquare {
     }
 
     calculateDirectPressure() {
-        if (this.gravity == 0) {
-            this.currentPressureDirect = 0;
-            return this.currentPressureDirect;
-        }
         if (
             (!isSqColChanged(this.posX) || this.posY > getSqColChangeLocation(this.posX))
-            && Math.random() < 0.95
+            && Math.random() < 0.4
             && this.currentPressureDirect != -1
         ) {
             return this.currentPressureDirect;
         }
 
-        if (this.tsq) {
-            this.currentPressureDirect = this.tsq.calculateDirectPressure() + 1;
+        if (this._tsq) {
+            this.currentPressureDirect = this._tsq.calculateDirectPressure() + this.pressureDirectFactor();
+            this.sumSurface = this.surface + this._tsq.sumSurface;
         } else {
             this.currentPressureDirect = 0;
+            this.sumSurface = this.surface;
         }
         return this.currentPressureDirect;
+    }
+
+    pressureDirectFactor() {
+        return 1;
     }
 
     transferHeat() {
