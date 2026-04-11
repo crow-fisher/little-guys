@@ -97,17 +97,19 @@ export class AtmosphereHandler {
 
     gamepadInputTick() {
         if (isButtonPressed(GBA) || isButtonPressed(GBDU)) {
-            this.addPressureRay();
+            this.addPressureRay(isButtonPressed(GBDU));
             // this.addPressureAtLocation(this.cu.sector, 1, 40);
         }
     }
-    addPressureRay() {
+    addPressureRay(stronk=false) {
         this._pressureRayCur = this._pressureRayCur ?? [0, 0, 0];
         this._pressureRayCurDelta = this._pressureRayCurDelta ?? [0, 0, 0];
         copyVecValue(this.ccp, this._pressureRayCur);
         multiplyVectorByScalarDest(getForwardVec(), ATMOSCALE, this._pressureRayCurDelta);
 
         let amount = .1;
+        if (stronk) 
+            amount = 100;
         this.addPressureAtLocation(this._pressureRayCur, amount);
         
         this._pressureRayCur[1] += ATMOSCALE * 1.5;
