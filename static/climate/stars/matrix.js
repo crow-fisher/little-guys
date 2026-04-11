@@ -91,7 +91,6 @@ export function normalizeVec3Real(vector) {
 
 
 export function normalizeVec3(vector, toLength=1) {
-  vector = structuredClone(vector);
   let length = toLength * getVec3Length(vector);
   vector[0] /= length;
   vector[1] /= length;

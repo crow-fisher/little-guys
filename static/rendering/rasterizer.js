@@ -15,7 +15,7 @@ export function addRenderJob(renderJob, sort) {
     if (renderJob == null) {
         return;
     }
-    if (renderJob != null && renderJob.getZ() > 0 && renderJob.isVisible()) {
+    if (renderJob != null && (!sort || renderJob.getZ() > 0) && renderJob.isVisible()) {
         ((sort) ? renderJobs : noSortRenderJobs).push(renderJob);
     }
 }
@@ -30,4 +30,4 @@ export function executeRenderJobs() {
         renderJobs.at(i).render();
     }
     renderJobs.length = 0;
-}
+}   

@@ -65,7 +65,6 @@ export class GrowthComponent {
             copyVecValue(this._curOffsetDir, this.lifeSquares.at(i).posVecDir);
             addVectors(this._curOffsetDir, this.deflection_base_curve);
             this.applyComponentWind(this.lifeSquares.at(i));
-
             normalizeVec3(this._curOffsetDir);
             addVectorsMult(this._curOffset, this._curOffsetDir, 0.8)
         };
