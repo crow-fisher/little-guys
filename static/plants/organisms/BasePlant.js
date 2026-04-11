@@ -290,7 +290,7 @@ class BasePlant {
         rootLsq.subtype = SUBTYPE_ROOTNODE;
         this.rootLifeSquares.push(rootLsq);
         let growthPlan = new GrowthPlan(
-            true, STAGE_JUVENILE, TYPE_HEART, 0, 0, 0,
+            true, STAGE_JUVENILE, TYPE_HEART, 0, 1, 0,
             0, 0, 0, 10 ** 8);
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,

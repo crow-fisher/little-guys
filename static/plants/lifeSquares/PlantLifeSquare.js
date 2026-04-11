@@ -35,7 +35,7 @@ class PlantLifeSquare {
         this.height = 1;
 
         this.posVec = [0, 0, 0];
-        this.posVecDir = [0, 0, 0];
+        this.posVecDir = [0, 1, 0];
 
         // Derived rendering member variables.
         this.offset = [0, 0, 0];
@@ -111,7 +111,9 @@ class PlantLifeSquare {
         this._cs_tl.setWorld(this.cartesian_tl);
         this._cs_tr.setWorld(this.cartesian_tr);
         this._cs_bl.setWorld(this.cartesian_bl);
-        this._cs_br.setWorld(this.cartesian_br);this.posVecDir
+        this._cs_br.setWorld(this.cartesian_br);
+        
+        this._sp_cs.setWorld(this.startPointVec);
         this._ep_cs.setWorld(this.endPointVec);
 
         addRenderJob(new LineRenderJob(
