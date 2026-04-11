@@ -66,7 +66,7 @@ export class KentuckyBluegrass extends BasePlant {
                 seedSquare.destroy();
             } else {
                 applyLightingFromSource(this.greenLifeSquares.at(0), orgAdded.seedLifeSquare)
-            }
+             }
             this.growthProgress -= this.seedReduction();
         }
     }
