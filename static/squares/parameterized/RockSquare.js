@@ -32,6 +32,7 @@ export class RockSquare extends SoilSquare {
         this.surface = false;
         this.waterContainment = 0;
         this.blockHealth = this.blockHealthMax;
+        this.gf = 1;
     }
     
     windPhysics() {}
@@ -69,11 +70,10 @@ export class RockSquare extends SoilSquare {
         super.doBlockOutflow();
         this.outflowNewWaterToLocation(this.posX, this.posY + 1);
     }
-
-    zCascadePhysics() {
-        let sqAbove = getSquares(this.posX, this.posY - 1).find((sq) => sq.solid);
-        if (sqAbove != null) {
-            this.z = sqAbove.z;
+    zRenderRoutine() {
+        this._isRockTop = !getSquares(this.posX, this.posY - 1).some((sq) => sq.solid);
+        if (this.tsq?.solid) {
+            this.z = this.tsq.z;
         }
     }
 }

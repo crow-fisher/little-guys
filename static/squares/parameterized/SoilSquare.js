@@ -331,11 +331,14 @@ export class SoilSquare extends BaseSquare {
             sq.speedX += sx;
             sq.speedY += sy;
             sq.group = getNextGroupId();
-            
-            
             return amount;
         }
         return 0;
+    }
+
+    zRenderRoutine() {
+        this.z = this.zCascadeFunc( this.currentPressureDirect);
+        this.zd = this.z - this.zCascadeFunc(this.currentPressureDirect - 1);
     }
 
     windPhysics() {
@@ -458,6 +461,6 @@ export class SoilSquare extends BaseSquare {
     }
 
     zCascadeFunc(val) {
-        return -2 * (val ** .5);
+        return val
     }
 }

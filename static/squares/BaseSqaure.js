@@ -58,7 +58,7 @@ export class BaseSquare {
         this.blockHealth = Math.min(loadGD(UI_PALETTE_STRENGTH), this.blockHealthMax); // when reaches zero, delete
         // water flow parameters
 
-        this.currentPressureDirect = -1;
+        this.currentPressureDirect = 0;
         this.waterContainment = 0;
         this.waterContainmentMax = 0.5;
         this.speedX = 0;
@@ -146,14 +146,20 @@ export class BaseSquare {
         this.br = [0, 0, 0];
         this.tr = [0, 0, 0];
 
-        let p = Math.sqrt(loadGD(UI_PALETTE_SIZE)) / 4;
-
-        this.gz_tl = randRange(-p, p); // "greeble-z tl"
-        this.gz_bl = randRange(-p, p);
-        this.gz_br = randRange(-p, p);
-        this.gz_tr = randRange(-p, p);
-        this.initTemperature();
+        this.gf = 0;    // "greeble factor"
+        this.gz_tl = 0; // "greeble-z tl" ('top left')
+        this.gz_bl = 0;
+        this.gz_br = 0;
+        this.gz_tr = 0;
+        this.initGreeble();
     };
+
+    initGreeble() {
+        this.gz_tl = randRange(-this.gf, this.gf); 
+        this.gz_bl = randRange(-this.gf, this.gf);
+        this.gz_br = randRange(-this.gf, this.gf);
+        this.gz_tr = randRange(-this.gf, this.gf);
+    }
 
     getSurfaceLightingFactor() {
         return Math.min(1, Math.max(0, this.surfaceLightingFactor));
@@ -510,9 +516,17 @@ export class BaseSquare {
         );
     }
 
+    zRenderRoutine() {
+        // this method sets the rendering parameters for the block 
+        // 'this.z' is the z-depth that the bottom of the block is rendered at. 
+        // 'this.zd' is the slant applied to that base to find the top. 
+        this.z = 0;
+        this.zd = 0;
+    }
+
     setFrameCartesians() {
         this.selectPoint = loadGD(UI_CAMERA_CENTER_SELECT_POINT) ?? [0, 0];
-        
+
         this.px = this.posX - this.selectPoint[0];
         this.py = this.posY - this.selectPoint[1];
 
@@ -529,10 +543,42 @@ export class BaseSquare {
         this.world_tr[1] = this.py;
         this.world_bl[1] = this.py + 1;
         this.world_br[1] = this.py + 1;
-        this.world_tl[2] = (this.tsq?.z ?? (this.z - (this.zCascadeFunc(0)))) + this.gz_tl;
-        this.world_tr[2] = (this.tsq?.z ?? (this.z - (this.zCascadeFunc(0)))) + this.gz_tr;
-        this.world_bl[2] = this.z + this.gz_bl;
-        this.world_br[2] = this.z + this.gz_br;
+
+        this.zRenderRoutine();
+
+        this.world_bl_z = this.z;
+        this.world_br_z = this.z;
+
+        this.world_tl_z = this.world_bl_z - this.zd;
+        this.world_tr_z = this.world_br_z - this.zd;
+         
+        // if (this.lsq) {
+        //     this.world_tl[2] = (this.lsq.world_tl_z + this.world_tl_z) / 2
+        //     this.world_bl[2] = (this.lsq.world_tr_z + this.world_tr_z) / 2
+        // }
+
+        // if (this.rsq) {
+        //     this.world_tr[2] = (this.rsq.world_tl_z + this.world_tr_z) / 2
+        //     this.world_br[2] = (this.rsq.world_bl_z + this.world_br_z) / 2
+        // }
+
+
+        this.world_tl[2] = this.world_tl_z;
+        this.world_tr[2] = this.world_tr_z;
+        this.world_bl[2] = this.world_bl_z;
+        this.world_br[2] = this.world_br_z;
+
+        if (this._isRockTop) {
+            this.world_tl[2] -= 4;
+            this.world_tr[2] -= 4;
+            this.world_tl[1] -= .5;
+            this.world_tr[1] -= .5;
+        }
+
+        // if (this.tsq) {
+        //     this.world_tl[2] 
+        //     this.world_tr[2]
+        // }
 
         this._cs_tl = this._cs_tl ?? new CoordinateSet();
         this._cs_tr = this._cs_tr ?? new CoordinateSet();
@@ -552,9 +598,10 @@ export class BaseSquare {
     }
 
     updateNeighborSquares() {
-        this.lsq = getSquares(this.posX - 1, this.posY).find((sq) => sq.solid && sq.visible);
-        this.rsq = getSquares(this.posX + 1, this.posY).find((sq) => sq.solid && sq.visible);
-        this.tsq = getSquares(this.posX, this.posY - 1).find((sq) => sq.solid && sq.visible);
+        this.lsq = getSquares(this.posX - 1, this.posY).find((sq) => sq.solid);
+        this.rsq = getSquares(this.posX + 1, this.posY).find((sq) => sq.solid);
+        this.tsq = getSquares(this.posX, this.posY - 1).find((sq) => sq.solid);
+        this.bsq = getSquares(this.posX, this.posY + 1).find((sq) => sq.solid);
     }
 
     prepareRenderJob() {
@@ -573,10 +620,10 @@ export class BaseSquare {
         // this.combinePoints(this, this.rsq, this.br, "br", "br");
         // this.combinePoints(this, this.rsq, this.tr, "tr", "tr");
         
-        this.combinePoints(this, this.lsq, this.tl, "_cs_tl", "renderScreen");
-        this.combinePoints(this, this.lsq, this.bl, "_cs_bl", "renderScreen");
-        this.combinePoints(this, this.rsq, this.br, "_cs_br", "renderScreen");
-        this.combinePoints(this, this.rsq, this.tr, "_cs_tr", "renderScreen");
+        // this.combinePoints(this, this.lsq, this.tl, "_cs_tl", "renderScreen");
+        // this.combinePoints(this, this.lsq, this.bl, "_cs_bl", "renderScreen");
+        // this.combinePoints(this, this.rsq, this.br, "_cs_br", "renderScreen");
+        // this.combinePoints(this, this.rsq, this.tr, "_cs_tr", "renderScreen");
 
         if (this._renderJob == null) {
             this._renderJob = new QuadRenderJob(this.tl, this.bl, this.br, this.tr, this.cachedRgba)
@@ -1073,7 +1120,6 @@ export class BaseSquare {
     }
 
     zCascadePhysics() {
-
     }
 
     physics() {
@@ -1118,7 +1164,6 @@ export class BaseSquare {
             this.currentPressureDirect = 0;
             return this.currentPressureDirect;
         }
-
         if (
             (!isSqColChanged(this.posX) || this.posY > getSqColChangeLocation(this.posX))
             && Math.random() < 0.95
@@ -1126,10 +1171,9 @@ export class BaseSquare {
         ) {
             return this.currentPressureDirect;
         }
-        let filtered = getSquares(this.posX, this.posY - 1)
-            .find((sq) => sq.proto == this.proto);
-        if (filtered != null) {
-            this.currentPressureDirect = filtered.calculateDirectPressure() + 1;
+
+        if (this.tsq) {
+            this.currentPressureDirect = this.tsq.calculateDirectPressure() + 1;
         } else {
             this.currentPressureDirect = 0;
         }
@@ -1151,7 +1195,6 @@ export class BaseSquare {
     }
 
     zCascadePhysics() {
-        this.z = -this.zCascadeFunc(this.currentPressureDirect);
     }
 
     zCascadeFunc(val) {
