@@ -59,7 +59,6 @@ export class BaseSquare {
         // water flow parameters
 
         this.currentPressureDirect = -1;
-        this.sumSurface = 0;
         this.waterContainment = 0;
         this.waterContainmentMax = 0.5;
         this.speedX = 0;
@@ -526,8 +525,8 @@ export class BaseSquare {
     }
 
     zPaintOffsetRoutine() {
-        this.z += this.sumSurface / 10;
-        this.zd += this.sumSurface / 10;
+        this.z += this.surface;
+        this.zd += this.surface;
     }
     setFrameCartesians() {
         this.selectPoint = loadGD(UI_CAMERA_CENTER_SELECT_POINT) ?? [0, 0];
@@ -1173,16 +1172,14 @@ export class BaseSquare {
 
         if (this._tsq) {
             this.currentPressureDirect = this._tsq.calculateDirectPressure() + this.pressureDirectFactor();
-            this.sumSurface = this.surface + this._tsq.sumSurface;
         } else {
             this.currentPressureDirect = 0;
-            this.sumSurface = this.surface;
         }
         return this.currentPressureDirect;
     }
 
     pressureDirectFactor() {
-        return 1;
+        return 1;   
     }
 
     transferHeat() {
