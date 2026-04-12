@@ -12,7 +12,7 @@ import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
-import { loadGD, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CLIMATE_WEATHER_TOOL_CLOUD, UI_CLIMATE_WEATHER_TOOL_DRYAIR, UI_CLIMATE_WEATHER_TOOL_MATCHEDAIR, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_STRENGTH, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_STRENGTH, UI_GODMODE_TEMPERATURE, UI_ORGANISM_SELECT, UI_SM_GODMODE, UI_PALETTE_PLANTS, UI_PALETTE_BLOCKS, UI_PALETTE_AQUIFER, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_PALETTE_SOILROCK, UI_PALETTE_WATER, UI_CLIMATE_SELECT_CLOUDS, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_CLIMATE_TOOL_SIZE, UI_PALETTE_MODE_ROCK, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, isEyedropperOrMixerClicked, UI_ORGANISM_GRASS_HTAIL, UI_CLIMATE_WEATHER_TOOL_CLOUD_HUMIDITY, UI_PALETTE_SPECIAL_CHURN, UI_PALETTE_SPECIAL_CHURN_STRENGTH, UI_PALETTE_SPECIAL_CHURN_WIDE, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_SM_BB, UI_PALETTE_SURFACE_MATCH, UI_PALETTE_CENTER_SELECT, saveGD, UI_CAMERA_CENTER_SELECT_POINT } from "./ui/UIData.js";
+import { loadGD, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CLIMATE_WEATHER_TOOL_CLOUD, UI_CLIMATE_WEATHER_TOOL_DRYAIR, UI_CLIMATE_WEATHER_TOOL_MATCHEDAIR, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_STRENGTH, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_STRENGTH, UI_GODMODE_TEMPERATURE, UI_ORGANISM_SELECT, UI_SM_GODMODE, UI_PALETTE_PLANTS, UI_PALETTE_BLOCKS, UI_PALETTE_AQUIFER, UI_PALETTE_SELECT, UI_PALETTE_SURFACE_LIGHTING_FACTOR, UI_PALETTE_SOILROCK, UI_PALETTE_WATER, UI_CLIMATE_SELECT_CLOUDS, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE, UI_CLIMATE_TOOL_SIZE, UI_PALETTE_MODE_ROCK, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, isEyedropperOrMixerClicked, UI_ORGANISM_GRASS_HTAIL, UI_CLIMATE_WEATHER_TOOL_CLOUD_HUMIDITY, UI_PALETTE_SPECIAL_CHURN, UI_PALETTE_SPECIAL_CHURN_STRENGTH, UI_PALETTE_SPECIAL_CHURN_WIDE, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_SM_BB, UI_PALETTE_SURFACE_LIGHTING_FACTOR_MATCH, UI_PALETTE_CENTER_SELECT, saveGD, UI_CAMERA_CENTER_SELECT_POINT } from "./ui/UIData.js";
 import { clearMouseHoverColorCacheMap, eyedropperBlockClick, eyedropperBlockHover, isWindowHovered, mixerBlockClick } from "./ui/WindowManager.js";
 import { randNumber, randRange } from "./common.js";
 let prevManipulationOffset;
@@ -250,29 +250,17 @@ export function doClickAdd() {
                 let mode = loadGD(UI_PALETTE_MODE);
                 let selectMode = loadGD(UI_PALETTE_SELECT);
                 if (mode == UI_PALLETE_MODE_SPECIAL) {
-                    if ((selectMode == UI_PALETTE_SURFACE && isLeftMouseClicked()) || (selectMode == UI_PALETTE_SURFACE_OFF && isRightMouseClicked())) {
+                    if ((selectMode == UI_PALETTE_SURFACE_LIGHTING_FACTOR && isLeftMouseClicked())) {
+                        doBrushFunc(px, py, (x, y) => {
+                            getSquares(x, y).filter((sq) => sq.solid).forEach((sq) => {
+                                sq.updateSurfaceLightingFactor();
+                            });
+                        });
+                    } else if (selectMode == UI_PALETTE_SURFACE) {
                         doBrushFunc(px, py, (x, y) => {
                             getSquares(x, y).filter((sq) => sq.solid).forEach((sq) => {
                                 sq.updateSurface();
-                            });
-                        });
-                    } else if ((selectMode == UI_PALETTE_SURFACE_OFF && isLeftMouseClicked()) || (selectMode == UI_PALETTE_SURFACE && isRightMouseClicked())) {
-                        doBrushFunc(px, py, (x, y) => {
-                            let squares = getSquares(x, y);
-                            if ((squares.some((sq) => sq.solid && sq.surface))) {
-                                squares.filter((sq) => !sq.solid).forEach((sq) => sq.destroy())
-                            }
-                            squares.filter((sq) => sq.solid).forEach((sq) => {
-                                sq.surface = false;
-                                sq.surfaceLightingFactor = (1 - loadGD(UI_LIGHTING_SURFACE));
-                            });
-                        });
-                    } else if (selectMode == UI_PALETTE_SURFACE_MATCH) {
-                        doBrushFunc(px, py, (x, y) => {
-                            getSquares(x, y)
-                                .filter((sq) => sq.solid)
-                                .forEach((sq) => sq.surfaceLightingFactor = 1 - loadGD(UI_LIGHTING_SURFACE));
-                        });
+                            })});
                     } else if (selectMode == UI_PALETTE_WATER) {
                         doBrushFunc(px, py, (x, y) => addSquareByName(x, y, "water"));
                     } else if (selectMode == UI_PALETTE_AQUIFER) {

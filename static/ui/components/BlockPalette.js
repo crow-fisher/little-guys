@@ -16,7 +16,7 @@ import { Text } from "../elements/Text.js";
 import { TextBackground } from "../elements/TextBackground.js";
 import { TextFunctionalBackground } from "../elements/TextFunctionalBackground.js";
 import { Toggle } from "../elements/Toggle.js";
-import { loadGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CENTER, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_PALETTE_COMPOSITION, saveGD, UI_PALETTE_SHOWPICKER, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, UI_PALETTE_SOILROCK, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_AQUIFER_FLOWRATE, UI_UI_PHONEMODE, loadUI, UI_PALLETE_MODE_PASTE, UI_PALETTE_PASTE_MODE, UI_PALETTE_PASTE_MODE_FG, UI_PALETTE_PASTE_MODE_BG, UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_RIGID, UI_PALETTE_PHYSICS_SAND, UI_PALETTE_PHYSICS_STATIC, UI_PALETTE_SPECIAL_CHURN, UI_PALETTE_SPECIAL_CHURN_WIDE, UI_PALETTE_SPECIAL_CHURN_STRENGTH, UI_PALETTE_SURFACE_MATCH, UI_PALETTE_VARIANCE, UI_PALETTE_CENTER_SELECT, UI_CAMERA_CENTER_SELECT_OFFSET } from "../UIData.js";
+import { loadGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CENTER, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_PALETTE_COMPOSITION, saveGD, UI_PALETTE_SHOWPICKER, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE_LIGHTING_FACTOR, UI_PALETTE_SOILROCK, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_AQUIFER_FLOWRATE, UI_UI_PHONEMODE, loadUI, UI_PALLETE_MODE_PASTE, UI_PALETTE_PASTE_MODE, UI_PALETTE_PASTE_MODE_FG, UI_PALETTE_PASTE_MODE_BG, UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_RIGID, UI_PALETTE_PHYSICS_SAND, UI_PALETTE_PHYSICS_STATIC, UI_PALETTE_SPECIAL_CHURN, UI_PALETTE_SPECIAL_CHURN_WIDE, UI_PALETTE_SPECIAL_CHURN_STRENGTH, UI_PALETTE_SURFACE_LIGHTING_FACTOR_MATCH, UI_PALETTE_VARIANCE, UI_PALETTE_CENTER_SELECT, UI_CAMERA_CENTER_SELECT_OFFSET } from "../UIData.js";
 import { getWaterColor, getWaterColorDark } from "./LightingComponent.js";
 
 
@@ -187,11 +187,11 @@ export class BlockPalette extends Component {
         specialContainer.addElement(new Text(this.window, sizeX, h1, UI_CENTER, "surface and lighting"))
         let surfaceRow = new Container(this.window, 0, 0);
         specialContainer.addElement(surfaceRow);
-        surfaceRow.addElement(new RadioToggleLabel(this.window, third, h1, UI_CENTER, "brush on", UI_PALETTE_SELECT, UI_PALETTE_SURFACE,
+        surfaceRow.addElement(new RadioToggleLabel(this.window, third, h1, UI_CENTER, "lighting", UI_PALETTE_SELECT, UI_PALETTE_SURFACE_LIGHTING_FACTOR,
             () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
-        surfaceRow.addElement(new RadioToggleLabel(this.window, third, h1, UI_CENTER, "brush off", UI_PALETTE_SELECT, UI_PALETTE_SURFACE_OFF,
+        surfaceRow.addElement(new RadioToggleLabel(this.window, third, h1, UI_CENTER, "depth", UI_PALETTE_SELECT, UI_PALETTE_SURFACE,
             () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive()));
-        surfaceRow.addElement(new RadioToggleLabel(this.window, third, h1, UI_CENTER, "match", UI_PALETTE_SELECT, UI_PALETTE_SURFACE_MATCH,
+        surfaceRow.addElement(new RadioToggleLabel(this.window, third, h1, UI_CENTER, "match", UI_PALETTE_SELECT, UI_PALETTE_SURFACE_LIGHTING_FACTOR_MATCH,
             () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive()));
         specialContainer.addElement(new Toggle(this.window, sizeX, h1, UI_CENTER, UI_PALETTE_SPECIAL_SHOWINDICATOR,
             "show surface indicator", () => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorTransient()));

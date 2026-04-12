@@ -64,4 +64,3 @@ export class LightingSubtree extends SubTreeComponent {
 }
 
 addUIFunctionMap(UI_LIGHTING_QUALITY, _resetLighting)
-addUIFunctionMap(UI_LIGHTING_UPDATERATE, _resetLighting)

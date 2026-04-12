@@ -35,7 +35,7 @@ export class RockSquare extends SoilSquare {
     }
 
     pressureDirectFactor() {
-        return 0.1;
+        return 0;
     }
     
     windPhysics() {}
