@@ -118,7 +118,7 @@ function render() {
     let selectedViewMode = loadGD(UI_VIEWMODE_SELECT);
     doTimeSeek();
     renderTime();
-    starHandler.render();
+    // starHandler.render();
 
     if (selectedViewMode == UI_VIEWMODE_TEMPERATURE) {
         // renderTemperature();

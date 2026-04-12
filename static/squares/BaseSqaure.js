@@ -318,7 +318,6 @@ export class BaseSquare {
         if (loadGD(UI_LIGHTING_ENABLED) && this.lighting.length == 0) {
             this.initLightingFromNeighbors();
         }
-
         let selectedViewMode = loadGD(UI_VIEWMODE_SELECT);
         if (selectedViewMode == UI_VIEWMODE_NORMAL) {
             this.renderWithVariedColors(1);
@@ -601,7 +600,6 @@ export class BaseSquare {
             this.world_br[2] = (this._bsq.world_tr_z + this.world_br_z) / 2
         }
 
-
         // if (this.tsq) {
         //     this.world_tl[2] 
         //     this.world_tr[2]
@@ -726,6 +724,10 @@ export class BaseSquare {
     prepareFillColor(opacityMult) {
         if (this.proto == "WaterSquare") {
             this.opacity = loadGD(UI_LIGHTING_WATER_OPACITY);
+        }
+
+        if (Date.now() - this.lastColorCacheTime < 1000) {
+            return;
         }
 
         this.lastColorCacheTime = Date.now();
