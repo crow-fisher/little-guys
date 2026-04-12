@@ -4,17 +4,18 @@ import { cachedGetWaterflowRate, hexToRgb, invlerp, lerp, randNumber, randRange 
 import { getCurTimeScale, getDt, getFrameDt, timeScaleFactor } from "../../climate/time.js";
 import { getPressure, getWindSquareAbove } from "../../climate/simulation/wind.js";
 import { addWaterSaturationPascals, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, temperatureHumidityFlowrateFactor } from "../../climate/simulation/temperatureHumidity.js";
-import { loadGD, UI_LIGHTING_SURFACE, UI_PALETTE_COMPOSITION, UI_PALETTE_SOILIDX, UI_PALETTE_VARIANCE, UI_SIMULATION_CLOUDS, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER } from "../../ui/UIData.js";
+import { loadGD, UI_LIGHTING_SURFACE, UI_PALETTE_COMPOSITION, UI_PALETTE_SOILIDX, UI_PALETTE_VARIANCE, UI_SIMULATION_CLOUDS, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT } from "../../ui/UIData.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { addSquareByName } from "../../manipulation.js";
 import { getBaseSize } from "../../canvas.js";
 import { applyLightingFromSource, getDefaultLighting } from "../../lighting/lightingProcessing.js";
 import { getNextBlockId, getNextGroupId } from "../../globals.js";
-import { getAtmosphereHandler, getWindSpeedAtLocation } from "../../main.js";
+import { getAtmosphereHandler, getWindSpeedAtLocation, getWindSpeedAtLocationXY } from "../../main.js";
 import { CoordinateSet } from "../../rendering/model/CoordinateSet.js";
 import { PointLabelRenderJob } from "../../rendering/model/PointLabelRenderJob.js";
 import { COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { addRenderJob } from "../../rendering/rasterizer.js";
+import { ATMOSCALE } from "../../climate/simulation/atmosphere/model/AtmosphereUnit.js";
 
 // maps in form "water containment" / "matric pressure in atmospheres"
 export const clayMatricPressureMap = [
@@ -350,12 +351,19 @@ export class SoilSquare extends BaseSquare {
             return;
         }
 
-        let ws = getWindSpeedAtLocation(this.world_tl);
+        ATMOSCALE
+
+        let ws;
+        if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_NORMAL) {
+            ws = getWindSpeedAtLocationXY(this.posX, this.posY) 
+        } else {
+            ws = getWindSpeedAtLocation(this.world_tl);
+        }
 
         if (ws[0] + ws[1] == 0) {
             return;
         }
-        let maxWindSpeed = 12;
+        let maxWindSpeed = 4;
 
         let wx = ws[0]; // Math.min(Math.max(ws[0], -maxWindSpeed), maxWindSpeed);
         let wy = ws[1]; // Math.min(Math.max(ws[1], -maxWindSpeed), maxWindSpeed);

@@ -211,7 +211,7 @@ export function getWindSpeedAtLocation(loc) {
 }
 
 export function addWindAtCanvasLocation(x, y, pressure) { 
-    let s = getAtmosphereHandler().indexAtmosphereUnit([x, y, 0]);
+    let s = getAtmosphereHandler().indexAtmosphereUnit2D(x, y);
     if (s) 
         s.pressure += pressure;
 }

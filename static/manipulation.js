@@ -254,7 +254,7 @@ export function doClickAdd() {
             let px = Math.floor(x1 + ddx * i);
             let py = Math.floor(y1 + ddy * i);
             if (loadGD(UI_CLIMATE_SELECT_CLOUDS)) {
-                doBrushFunc(px, py, (x, y) => doClimateMod(x, y));
+                doBrushFunc(px, py, (x, y) => doClimateMod(x, y), false);
             } else if (loadGD(UI_SM_GODMODE)) {
                 doBrushFunc(px, py, (x, y) => doBlockMod(x, y));
             } else if (loadGD(UI_PALETTE_BLOCKS)) {

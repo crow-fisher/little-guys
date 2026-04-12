@@ -94,7 +94,8 @@ export function getFrameXMin() { return frameXMin; }
 export function getFrameXMax() { return frameXMax; }
 export function getFrameYMin() { return frameYMin; }
 export function getFrameYMax() { return frameYMax; }
-
+export function getFrameWidth() { return frameXMax - frameXMin};
+export function getFrameHeight() { return frameYMax - frameYMin};
 function resetCornerLocations() {
     let width = getCanvasWidth() / getCurZoom() / getBaseSize();
     let height = getCanvasHeight() / getCurZoom() / getBaseSize();

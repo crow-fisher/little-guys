@@ -1,9 +1,11 @@
+import { getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, getFrameHeight, getFrameWidth, getFrameXMax, getFrameXMin, getFrameYMin } from "../../../canvas.js";
 import { GBA, GBDU, isButtonPressed } from "../../../gamepad.js";
 import { DEBUG } from "../../../index.js";
 import { getForwardVec } from "../../../rendering/camera.js";
-import { loadGD, UI_CAMERA_OFFSET_VEC } from "../../../ui/UIData.js";
+import { initAAUIFunctionMaps } from "../../../ui/components/AstronomyAtlas/modes/AstronomyAtlasUIFunctionMaps.js";
+import { loadGD, UI_CAMERA_OFFSET_VEC, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT } from "../../../ui/UIData.js";
 import { addVectors, copyVecValue, getVec3Length, multiplyVectorByScalarDest, subtractVectorsDest } from "../../stars/matrix.js";
-import { ATMOSCALE, AtmosphereUnit } from "./model/AtmosphereUnit.js";
+import { ATMOSCALE, AtmosphereUnit, sas } from "./model/AtmosphereUnit.js";
 
 
 const F = Math.floor
@@ -19,6 +21,52 @@ export class AtmosphereHandler {
     }
 
     initAtmosphereUnits() {
+        if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_NORMAL) {
+            this.initAtmosphereUnits2D();
+        } else {
+            this.initAtmosphereUnits3D();
+        }
+    }
+
+    initAtmosphereUnits2D() {
+        let ns = 20;
+        sas(Math.max(getFrameWidth() / ns, getFrameHeight() / ns));
+
+        this.x = Math.floor(getFrameXMin() / ATMOSCALE);
+        this.y = Math.floor(getFrameYMin() / ATMOSCALE);
+        this.z = 0;
+        this.i = 0;
+
+        this._nsX = getFrameWidth() / ATMOSCALE;
+        this._nsY = getFrameHeight() / ATMOSCALE;
+
+        for (let i = 0; i < this._nsX; i++) {
+            this.au.set(this.x + i, this.au.get(this.x + i) ?? new Map());
+            this.xm = this.au.get(this.x + i);
+            for (let j =  0; j < this._nsY; j++) {
+                this.xm.set(this.y + j, this.xm.get(this.y + j) ?? new Map());
+                this.ym = this.xm.get(this.y + j);
+                // now, for the special case of the 2D canvas: 
+                // we only consider single 'z' layer.
+                let sector = [this.x + i, this.y + j, this.z];
+                if (this.indexAtmosphereUnitDirect(sector) == null) {
+                    this.cau = new AtmosphereUnit(sector);
+                    this.fullAUList.push(this.cau);
+                    this.ym.set(this.z, this.cau);
+                }
+                this.tickAUList[this.i] = this.ym.get(this.z);
+                this.i += 1;
+            }
+        };
+        this.tickAUList.length = this.i;
+
+        if (this.fullAUList.length > (this.tickAUList.length * 10)) {
+            this.au.clear();
+            this.fullAUList.length = 0;
+            this.initAtmosphereUnits();
+        }
+    }
+    initAtmosphereUnits3D() {
         this.ns = this.dist;
         this.x = F(this.ccp[0] / ATMOSCALE);
         this.y = F(this.ccp[1] / ATMOSCALE);
@@ -60,6 +108,21 @@ export class AtmosphereHandler {
     indexAtmosphereUnitDirect(sector) {
         return this.indexAtmosphereUnitDirectParams(...sector);
     }
+
+    indexAtmosphereUnit2D(x, y) {
+        return this.indexAtmosphereUnit2DDirect(
+            Math.floor(x / ATMOSCALE), 
+            Math.floor(y / ATMOSCALE)
+        );
+    }
+
+    indexAtmosphereUnit2DDirect(x, y) {
+        return this.au
+            .get(x)
+            ?.get(y)
+            ?.get(0);
+    }
+
     indexAtmosphereUnitDirectParams(x, y, z) {
         return this.au
             .get(x)
@@ -74,6 +137,8 @@ export class AtmosphereHandler {
             Math.floor(loc[2] / ATMOSCALE)
         );
     }
+
+
 
     getSectorOffset(sector, dx, dy, dz) {
         let r = this.au
@@ -169,6 +234,10 @@ export class AtmosphereHandler {
     }
 
     getWindSpeedAtLocation(loc) {
+        if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_NORMAL) {
+            loc[2] = 0;
+        }
+
         this._wslWsq = this.indexAtmosphereUnit(loc);
         if (this._wslWsq == null) {
             return [0, 0, 0];
