@@ -933,10 +933,7 @@ export class BaseSquare {
         }
         if (this.solid) {
             if (!sq.solid) {
-                if (this.surface) {
-                    return !((this.waterContainment == this.waterContainmentMax || this.gravity == 0));
-                }
-                return true;
+                return (this.waterContainment != this.waterContainmentMax || this.gravity == 0);
             }
             return true;
         }
