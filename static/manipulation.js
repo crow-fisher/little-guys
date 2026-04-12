@@ -253,8 +253,7 @@ export function doClickAdd() {
                     if ((selectMode == UI_PALETTE_SURFACE && isLeftMouseClicked()) || (selectMode == UI_PALETTE_SURFACE_OFF && isRightMouseClicked())) {
                         doBrushFunc(px, py, (x, y) => {
                             getSquares(x, y).filter((sq) => sq.solid).forEach((sq) => {
-                                sq.surface = true;
-                                sq.surfaceLightingFactor = (1 - loadGD(UI_LIGHTING_SURFACE));
+                                sq.updateSurface();
                             });
                         });
                     } else if ((selectMode == UI_PALETTE_SURFACE_OFF && isLeftMouseClicked()) || (selectMode == UI_PALETTE_SURFACE && isRightMouseClicked())) {

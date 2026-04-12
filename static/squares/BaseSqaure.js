@@ -82,8 +82,10 @@ export class BaseSquare {
         this.distToFrontLastUpdated = -(10 ** 8);
         this.miscBlockPropUpdateInterval = Math.random() * 1000;
 
-        this.surface = (loadGD(UI_PALETTE_SURFACE_OFF));
-        this.surfaceLightingFactor = (1 - loadGD(UI_LIGHTING_SURFACE));
+        this.surface = 0;
+        this.surfaceLightingFactor = 0;
+        this.surfaceTotal = 0;
+        
         this.temperature = 273;
 
         this.thermalMass = 2; // e.g., '2' means one degree of this would equal 2 degrees of air temp for a wind square 
@@ -152,7 +154,23 @@ export class BaseSquare {
         this.gz_br = 0;
         this.gz_tr = 0;
         this.initGreeble();
+        this.updateSurface();
     };
+
+    updateSurface(value = loadGD(UI_LIGHTING_SURFACE)) {
+        if (value == this.surface) {
+            return;
+        }
+        this.surface = value;
+        let nbs = [this._lsq, this._rsq, this._tsq, this._bsq];
+        nbs.forEach((nb) => {
+            if (nb != null) {
+                nb.updateSurface(Math.min(nb.surface, Math.max(this.surface - 1, 0)));
+            }
+        })
+    }
+
+    
 
     initGreeble() {
         this.gz_tl = randRange(-this.gf, this.gf);
@@ -526,7 +544,6 @@ export class BaseSquare {
 
     zPaintOffsetRoutine() {
         this.z += this.surface;
-        this.zd += this.surface;
     }
     setFrameCartesians() {
         this.selectPoint = loadGD(UI_CAMERA_CENTER_SELECT_POINT) ?? [0, 0];
@@ -569,6 +586,16 @@ export class BaseSquare {
         //     this.world_tr[2] = (this._rsq.world_tl_z + this.world_tr_z) / 2
         //     this.world_br[2] = (this._rsq.world_bl_z + this.world_br_z) / 2
         // }
+
+        if (this._tsq) {
+            this.world_tl[2] = (this._tsq.world_bl_z + this.world_tl_z) / 2
+            this.world_tr[2] = (this._tsq.world_br_z + this.world_tr_z) / 2
+        }
+        if (this._bsq) {
+            this.world_bl[2] = (this._bsq.world_tl_z + this.world_bl_z) / 2
+            this.world_br[2] = (this._bsq.world_tr_z + this.world_br_z) / 2
+        }
+        
         
         if (this._isRockTop) {
             this.world_tl[2] -= 4;
