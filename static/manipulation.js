@@ -46,15 +46,16 @@ function doBrushFuncClickThrottle(x, y, func, throttle = true) {
     }
 }
 
-
+export let hoverSq;
 export function _doBrushFunc3D(centerX, centerY, func, throttle) {
     let lastMoveOffset = getLastMoveOffset();
     getFrameSimulationSquares().forEach((sq) => sq._md = getDist(...sq._cs_tl.renderScreen.slice(0, 2), lastMoveOffset.x, lastMoveOffset.y));
     getFrameSimulationSquares().sort((a, b) => a._md - b._md)
-    let clickSq = getFrameSimulationSquares().at(0);
-    if (clickSq?._md < 20) {
-        _doBrushFunc(clickSq.posX, clickSq.posY, func, throttle)
+    hoverSq = getFrameSimulationSquares().at(0);
+    if (hoverSq?._md < 20) {
+        _doBrushFunc(hoverSq.posX, hoverSq.posY, func, throttle)
     } else {
+        hoverSq = null;
         _doBrushFunc(centerX, centerY, func, throttle)
     }
 }

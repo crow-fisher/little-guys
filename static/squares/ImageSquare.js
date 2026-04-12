@@ -23,6 +23,9 @@ export class ImageSquare extends SoilSquare {
         this.clay = 1 - (this.sand + this.silt);
         this.colorBase = {r: r, g: g, b: b, a: a}
     }
+    pressureDirectFactor() {
+        return 0;
+    }
 
     getColorBase() {
         let outColor = structuredClone(this.colorBase);

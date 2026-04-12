@@ -21,7 +21,7 @@ import { COLOR_BLACK, GROUP_BROWN, GROUP_BLUE, GROUP_MAUVE, GROUP_TAN, GROUP_GRE
 import { getCurDay, getDaylightStrengthFrameDiff, getFrameDt, getTimeScale } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasSquaresY, getCurZoom, isSquareOnCanvas, transformCanvasSquaresToPixels, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
-import { loadGD, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_SURFACE_LIGHTING_FACTOR, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3, UI_VIEWMODE_DEV4, UI_VIEWMODE_DEV5, UI_PALETTE_STRENGTH, UI_LIGHTING_SURFACE, UI_PALETTE_SURFACE_LIGHTING_FACTOR_MATCH, UI_VIEWMODE_3D, UI_CAMERA_CENTER_SELECT_POINT, saveGD, UI_CAMERA_OFFSET_VEC, UI_PALETTE_SIZE, UI_BLOCK_ZDEPTH } from "../ui/UIData.js";
+import { loadGD, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_SURFACE_LIGHTING_FACTOR, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3, UI_VIEWMODE_DEV4, UI_VIEWMODE_DEV5, UI_PALETTE_STRENGTH, UI_LIGHTING_SURFACE, UI_PALETTE_SURFACE_LIGHTING_FACTOR_MATCH, UI_VIEWMODE_3D, UI_CAMERA_CENTER_SELECT_POINT, saveGD, UI_CAMERA_OFFSET_VEC, UI_PALETTE_SIZE, UI_BLOCK_ZDEPTH, UI_LIGHTING_SURFACE_LIGHTING_FACTOR, UI_LIGHTING_SURFACE_FACTOR } from "../ui/UIData.js";
 import { deregisterSquare, registerSquare } from "../waterGraph.js";
 import { STAGE_DEAD } from "../plants/organisms/Stages.js";
 import { cartesianToScreenInplace, gfc, screenToRenderScreen } from "../rendering/camera.js";
@@ -83,8 +83,8 @@ export class BaseSquare {
         this.distToFrontLastUpdated = -(10 ** 8);
         this.miscBlockPropUpdateInterval = Math.random() * 1000;
 
-        this.surface = 0;
-        this.surfaceLightingFactor = 0;
+        this.surface = loadGD(UI_LIGHTING_SURFACE);
+        this.surfaceLightingFactor = loadGD(UI_LIGHTING_SURFACE_LIGHTING_FACTOR);
         this.surfaceTotal = 0;
 
         this.temperature = 273;
@@ -159,15 +159,15 @@ export class BaseSquare {
         this.updateSurfaceLightingFactor();
     };
 
-    updateSurfaceLightingFactor(value = loadGD(UI_LIGHTING_SURFACE)) {
+    updateSurfaceLightingFactor(value = loadGD(UI_LIGHTING_SURFACE_LIGHTING_FACTOR)) {
         this.surfaceLightingFactor *= 0.9;
         this.surfaceLightingFactor += value / 10
         this.surfaceLightingFactor = value;
     }
 
     updateSurface(value = loadGD(UI_LIGHTING_SURFACE)) {
-        this.surface *= 0.99;
-        this.surface += value / 100
+        this.surface *= 0.95;
+        this.surface += value / 20;
     }
 
     initGreeble() {
@@ -540,7 +540,7 @@ export class BaseSquare {
     }
 
     zPaintOffsetRoutine() {
-        this.z += this.surface * 6;
+        this.z += this.surface * loadGD(UI_LIGHTING_SURFACE_FACTOR);
     }
     setFrameCartesians() {
         this.selectPoint = loadGD(UI_CAMERA_CENTER_SELECT_POINT) ?? [0, 0];

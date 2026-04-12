@@ -4,7 +4,7 @@ import { BlockPalette } from "./components/BlockPalette.js";
 import { BlockSubtreeComponent as BlockSubtree } from "./components/BlockSubtreeComponent.js";
 import { TopBarComponent } from "./topbar/TopBarComponent.js";
 import { ViewSubtreeComponent } from "./components/ViewSubtreeComponent.js";
-import { loadGD, UI_SM_LIGHTING, UI_PALETTE_PLANTS, UI_TOPBAR_BLOCK, UI_PALETTE_BLOCKS, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveGD, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_TIME, UI_TOPBAR_WEATHER, UI_MAIN_NEWWORLD, saveUI, UI_UI_SIZE, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_CLIMATE_SELECT_CLOUDS, UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK, UI_PALETTE_SELECT, UI_PALETTE_SOILROCK, UI_PALETTE_MODE_SOIL, UI_PALETTE_CLIPS, UI_PALETTE_CLIPS_WAYPOINT_NAME, UI_PALETTE_STRENGTH, UI_PALETTE_WATER, UI_PALETTE_SURFACE_LIGHTING_FACTOR, UI_PALETTE_SURFACE, UI_PALETTE_COMPOSITION, UI_LIGHTING_ENABLED, UI_PALETTE_AQUIFER, UI_TOPBAR_STARGAZER, UI_AA_PLOT_ACTIVE, UI_AA_PLOT_MAXPOINTS, UI_AA_PLOT_XKEY, UI_AA_PLOT_YKEY, UI_AA_PLOT_WIDTH, UI_AA_PLOT_HEIGHT, UI_AA_PLOT_POINTOPACITY, UI_STARGAZER_SETUP, UI_AA_PLOT_TOOLBOX_STAR_STYLE, UI_STARMAP_VIEWMODE, UI_STARMAP_FEH_POW, UI_STARMAP_FEH_WINDOW_SIZE, UI_STARMAP_FEH_MIN_VALUE } from "./UIData.js";
+import { loadGD, UI_SM_LIGHTING, UI_PALETTE_PLANTS, UI_TOPBAR_BLOCK, UI_PALETTE_BLOCKS, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveGD, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_TIME, UI_TOPBAR_WEATHER, UI_MAIN_NEWWORLD, saveUI, UI_UI_SIZE, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_CLIMATE_SELECT_CLOUDS, UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK, UI_PALETTE_SELECT, UI_PALETTE_SOILROCK, UI_PALETTE_MODE_SOIL, UI_PALETTE_CLIPS, UI_PALETTE_CLIPS_WAYPOINT_NAME, UI_PALETTE_STRENGTH, UI_PALETTE_WATER, UI_PALETTE_SURFACE_LIGHTING_FACTOR, UI_PALETTE_SURFACE, UI_PALETTE_COMPOSITION, UI_LIGHTING_ENABLED, UI_PALETTE_AQUIFER, UI_TOPBAR_STARGAZER, UI_AA_PLOT_ACTIVE, UI_AA_PLOT_MAXPOINTS, UI_AA_PLOT_XKEY, UI_AA_PLOT_YKEY, UI_AA_PLOT_WIDTH, UI_AA_PLOT_HEIGHT, UI_AA_PLOT_POINTOPACITY, UI_STARGAZER_SETUP, UI_AA_PLOT_TOOLBOX_STAR_STYLE, UI_STARMAP_VIEWMODE, UI_STARMAP_FEH_POW, UI_STARMAP_FEH_WINDOW_SIZE, UI_STARMAP_FEH_MIN_VALUE, UI_LIGHTING_SURFACE, UI_VIEWMODE_SELECT, UI_VIEWMODE_NORMAL, UI_LIGHTING_SURFACE_FACTOR } from "./UIData.js";
 import { getSquares } from "../squares/_sqOperations.js";
 import { ClipComponent } from "./components/ClipComponent.js";
 import { getCurMixIdx, getMixArr, getMixArrLen, getTargetMixIdx, setCurMixIdx, setTargetMixIdx } from "../globals.js";
@@ -16,7 +16,7 @@ import { TimeSkipComponent } from "./components/TimeSkipComponent.js";
 import { CloudControlComponent } from "./components/CloudControlComponent.js";
 import { getLastMouseDownStart, getLastMoveOffset, isLeftMouseClicked, isTouchActive, isTouchMode } from "../mouse.js";
 import { MAIN_CONTEXT } from "../index.js";
-import { doBrushFunc } from "../manipulation.js";
+import { hoverSq, doBrushFunc } from "../manipulation.js";
 import { hexToRgb, rgbToRgba } from "../common.js";
 import { getActiveClimate } from "../climate/climateManager.js";
 import { SoilSquare } from "../squares/parameterized/SoilSquare.js";
@@ -26,6 +26,10 @@ import { RockSquare } from "../squares/parameterized/RockSquare.js";
 import { WaterSquare } from "../squares/WaterSquare.js";
 import { StargazerComponent } from "./components/StargazerComponent.js";
 import { AstronomyAtlasComponent } from "./components/AstronomyAtlas/AstronomyAtlasComponent.js";
+import { CoordinateSet } from "../rendering/model/CoordinateSet.js";
+import { addRenderJob } from "../rendering/rasterizer.js";
+import { LineRenderJob } from "../rendering/model/LineRenderJob.js";
+import { COLOR_BLUE } from "../colors.js";
 
 let topBarComponent;
 let mainMenuComponent;
@@ -268,9 +272,26 @@ export function renderMouseHover() {
     }
 
     if (colorFunc != null) {
+        if (loadGD(UI_VIEWMODE_SELECT) != UI_VIEWMODE_NORMAL && hoverSq != null) {
+            offsetX = hoverSq.posX;
+            offsetY = hoverSq.posY;
+        }
+
+        let f = loadGD(UI_LIGHTING_SURFACE_FACTOR);
         doBrushFunc(offsetX, offsetY, (x, y) => {
-            MAIN_CONTEXT.fillStyle = getColorFromColorCacheMap(x, y, mode, colorFunc);
-            zoomCanvasFillRect(x * getBaseSize(), y * getBaseSize(), getBaseSize(), getBaseSize());
+            if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_NORMAL) {
+                MAIN_CONTEXT.fillStyle = getColorFromColorCacheMap(x, y, mode, colorFunc);
+                zoomCanvasFillRect(x * getBaseSize(), y * getBaseSize(), getBaseSize(), getBaseSize());
+            } else {
+                let tl_cs = new CoordinateSet([x, y, f * (loadGD(UI_LIGHTING_SURFACE) - 1)]);
+                let br_cs = new CoordinateSet([x + 1, y + 1, f * (loadGD(UI_LIGHTING_SURFACE) - 2)]);
+                addRenderJob(new LineRenderJob(
+                    tl_cs.renderScreen,
+                    br_cs.renderScreen,
+                    2,
+                    COLOR_BLUE
+                ), true);
+            }
         }, false);
     }
 }

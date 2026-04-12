@@ -16,7 +16,7 @@ import { Text } from "../elements/Text.js";
 import { TextBackground } from "../elements/TextBackground.js";
 import { TextFunctionalBackground } from "../elements/TextFunctionalBackground.js";
 import { Toggle } from "../elements/Toggle.js";
-import { loadGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CENTER, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_PALETTE_COMPOSITION, saveGD, UI_PALETTE_SHOWPICKER, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE_LIGHTING_FACTOR, UI_PALETTE_SOILROCK, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_AQUIFER_FLOWRATE, UI_UI_PHONEMODE, loadUI, UI_PALLETE_MODE_PASTE, UI_PALETTE_PASTE_MODE, UI_PALETTE_PASTE_MODE_FG, UI_PALETTE_PASTE_MODE_BG, UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_RIGID, UI_PALETTE_PHYSICS_SAND, UI_PALETTE_PHYSICS_STATIC, UI_PALETTE_SPECIAL_CHURN, UI_PALETTE_SPECIAL_CHURN_WIDE, UI_PALETTE_SPECIAL_CHURN_STRENGTH, UI_PALETTE_SURFACE_LIGHTING_FACTOR_MATCH, UI_PALETTE_VARIANCE, UI_PALETTE_CENTER_SELECT, UI_CAMERA_CENTER_SELECT_OFFSET } from "../UIData.js";
+import { loadGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CENTER, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_PALETTE_COMPOSITION, saveGD, UI_PALETTE_SHOWPICKER, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE_LIGHTING_FACTOR, UI_PALETTE_SOILROCK, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_AQUIFER_FLOWRATE, UI_UI_PHONEMODE, loadUI, UI_PALLETE_MODE_PASTE, UI_PALETTE_PASTE_MODE, UI_PALETTE_PASTE_MODE_FG, UI_PALETTE_PASTE_MODE_BG, UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_RIGID, UI_PALETTE_PHYSICS_SAND, UI_PALETTE_PHYSICS_STATIC, UI_PALETTE_SPECIAL_CHURN, UI_PALETTE_SPECIAL_CHURN_WIDE, UI_PALETTE_SPECIAL_CHURN_STRENGTH, UI_PALETTE_SURFACE_LIGHTING_FACTOR_MATCH, UI_PALETTE_VARIANCE, UI_PALETTE_CENTER_SELECT, UI_CAMERA_CENTER_SELECT_OFFSET, UI_LIGHTING_SURFACE_LIGHTING_FACTOR, UI_LIGHTING_SURFACE_FACTOR } from "../UIData.js";
 import { getWaterColor, getWaterColorDark } from "./LightingComponent.js";
 
 
@@ -151,6 +151,11 @@ export class BlockPalette extends Component {
         soilRockContainer.addElement(soilColorPaletteConditionalContainer);
         soilRockContainer.addElement(rockColorPaletteConditionalContainer);
 
+        soilRockContainer.addElement(new Text(this.window, sizeX, h1, UI_CENTER, "surface"))
+        soilRockContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_SURFACE, sizeX, 35, -8, 8, () => "rgba(0, 0, 0, 0)", () => "#FFFFFF",));
+        soilRockContainer.addElement(new Text(this.window, sizeX, h1, UI_CENTER, "surface lighting factor"))
+        soilRockContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_SURFACE_LIGHTING_FACTOR, sizeX, 35, -8, 8, () => "rgba(0, 0, 0, 0)", () => "#FFFFFF",));
+
         let lengthArrMapping = [[soilColorPaletteConditionalContainer, getActiveClimate().soilColors.length], [rockColorPaletteConditionalContainer, getActiveClimate().rockColors.length]];
         for (let j = 0; j < lengthArrMapping.length; j++) {
             let container = lengthArrMapping[j][0];
@@ -195,7 +200,13 @@ export class BlockPalette extends Component {
             () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive()));
         specialContainer.addElement(new Toggle(this.window, sizeX, h1, UI_CENTER, UI_PALETTE_SPECIAL_SHOWINDICATOR,
             "show surface indicator", () => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorTransient()));
+
+        specialContainer.addElement(new Text(this.window, sizeX, h1, UI_CENTER, "surface"))
         specialContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_SURFACE, sizeX, 35, -8, 8, () => "rgba(0, 0, 0, 0)", () => "#FFFFFF",));
+        specialContainer.addElement(new Text(this.window, sizeX, h1, UI_CENTER, "surface factor"))
+        specialContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_SURFACE_FACTOR, sizeX, 35, 1, 8, () => "rgba(0, 0, 0, 0)", () => "#FFFFFF",));
+        specialContainer.addElement(new Text(this.window, sizeX, h1, UI_CENTER, "surface lighting factor"))
+        specialContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_SURFACE_LIGHTING_FACTOR, sizeX, 35, -8, 8, () => "rgba(0, 0, 0, 0)", () => "#FFFFFF",));
         // end surface
 
         // water
