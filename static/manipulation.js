@@ -50,7 +50,7 @@ function doBrushFuncClickThrottle(x, y, func, throttle = true) {
 export let hoverSq;
 export function _doBrushFunc3D(centerX, centerY, func, throttle) {
     let lastMoveOffset = getLastMoveOffset();
-    getFrameSimulationSquares().forEach((sq) => sq._md = getDist(...sq._cs_tl.renderScreen.slice(0, 2), lastMoveOffset.x, lastMoveOffset.y));
+    getFrameSimulationSquares().filter((sq) => sq.solid).forEach((sq) => sq._md = getDist(...sq._cs_tl.renderScreen.slice(0, 2), lastMoveOffset.x, lastMoveOffset.y));
     getFrameSimulationSquares().sort((a, b) => a._md - b._md)
     hoverSq = getFrameSimulationSquares().at(0);
     if (hoverSq?._md < 20) {

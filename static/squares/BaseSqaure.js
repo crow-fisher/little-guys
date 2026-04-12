@@ -541,69 +541,52 @@ export class BaseSquare {
     zPaintOffsetRoutine() {
         this.z += this.surface * loadGD(UI_LIGHTING_SURFACE_FACTOR);
     }
+
+    setFrameWorld() {
+        if (this._cs_tl == null || Math.random() > 0.90 || isSqColChanged(this.posX) || isSqColChanged(this.posY)) {
+            this.selectPoint = loadGD(UI_CAMERA_CENTER_SELECT_POINT) ?? [0, 0];
+
+            this.px = this.posX - this.selectPoint[0];
+            this.py = this.posY - this.selectPoint[1];
+
+            this.world_tl = this.world_tl ?? [0, 0, 0]
+            this.world_tr = this.world_tr ?? [0, 0, 0]
+            this.world_bl = this.world_bl ?? [0, 0, 0]
+            this.world_br = this.world_br ?? [0, 0, 0]
+
+            this.world_tl[0] = this.px;
+            this.world_tr[0] = this.px + 1;
+            this.world_bl[0] = this.px;
+            this.world_br[0] = this.px + 1;
+            this.world_tl[1] = this.py;
+            this.world_tr[1] = this.py;
+            this.world_bl[1] = this.py + 1;
+            this.world_br[1] = this.py + 1;
+
+            this.zRenderRoutine();
+            this.zPaintOffsetRoutine();
+
+            this._centerPointNeighbors = new Array(5);
+            this._blNeighbors = this._blNeighbors ?? new Array(4);
+            this._brNeighbors = this._brNeighbors ?? new Array(4);
+            this._tlNeighbors = this._tlNeighbors ?? new Array(4);
+            this._trNeighbors = this._trNeighbors ?? new Array(4);
+
+            this.updateNeighborSquares();
+
+            this.world_tl_z = this.getCenterZ(this._tlNeighbors);
+            this.world_bl_z = this.getCenterZ(this._blNeighbors);
+            this.world_tr_z = this.getCenterZ(this._trNeighbors);
+            this.world_br_z = this.getCenterZ(this._brNeighbors);
+
+            this.world_tl[2] = this.world_tl_z;
+            this.world_bl[2] = this.world_bl_z;
+            this.world_tr[2] = this.world_tr_z;
+            this.world_br[2] = this.world_br_z;
+        }
+    }
     setFrameCartesians() {
-        this.selectPoint = loadGD(UI_CAMERA_CENTER_SELECT_POINT) ?? [0, 0];
-
-        this.px = this.posX - this.selectPoint[0];
-        this.py = this.posY - this.selectPoint[1];
-
-        this.world_tl = this.world_tl ?? [0, 0, 0]
-        this.world_tr = this.world_tr ?? [0, 0, 0]
-        this.world_bl = this.world_bl ?? [0, 0, 0]
-        this.world_br = this.world_br ?? [0, 0, 0]
-
-        this.world_tl[0] = this.px;
-        this.world_tr[0] = this.px + 1;
-        this.world_bl[0] = this.px;
-        this.world_br[0] = this.px + 1;
-        this.world_tl[1] = this.py;
-        this.world_tr[1] = this.py;
-        this.world_bl[1] = this.py + 1;
-        this.world_br[1] = this.py + 1;
-
-        this.zRenderRoutine();
-        this.zPaintOffsetRoutine();
-
-        this._centerPointNeighbors = new Array(5);
-        this._blNeighbors = this._blNeighbors ?? new Array(4);
-        this._brNeighbors = this._brNeighbors ?? new Array(4);
-        this._tlNeighbors = this._tlNeighbors ?? new Array(4);
-        this._trNeighbors = this._trNeighbors ?? new Array(4);
-        
-        this.updateNeighborSquares();
-
-        this.world_tl_z = this.getCenterZ(this._tlNeighbors);
-        this.world_bl_z = this.getCenterZ(this._blNeighbors);
-        this.world_tr_z = this.getCenterZ(this._trNeighbors);
-        this.world_br_z = this.getCenterZ(this._brNeighbors);
-
-        this.world_tl[2] = this.world_tl_z;
-        this.world_bl[2] = this.world_bl_z;
-        this.world_tr[2] = this.world_tr_z;
-        this.world_br[2] = this.world_br_z;
-
-        // if (this._lsq) {
-        //     this.world_tl[2] = (this._lsq.world_tr_z + this.world_tl_z) / 2
-        //     this.world_bl[2] = (this._lsq.world_br_z + this.world_bl_z) / 2
-        // }
-        // if (this._rsq) {
-        //     this.world_tr[2] = (this._rsq.world_tl_z + this.world_tr_z) / 2
-        //     this.world_br[2] = (this._rsq.world_bl_z + this.world_br_z) / 2
-        // }
-
-        if (this._tsq) {
-            this.world_tl[2] = (this._tsq.world_bl_z + this.world_tl_z) / 2
-            this.world_tr[2] = (this._tsq.world_br_z + this.world_tr_z) / 2
-        }
-        if (this._bsq) {
-            this.world_bl[2] = (this._bsq.world_tl_z + this.world_bl_z) / 2
-            this.world_br[2] = (this._bsq.world_tr_z + this.world_br_z) / 2
-        }
-
-        // if (this.tsq) {
-        //     this.world_tl[2] 
-        //     this.world_tr[2]
-        // }
+        this.setFrameWorld();
 
         this._cs_tl = this._cs_tl ?? new CoordinateSet();
         this._cs_tr = this._cs_tr ?? new CoordinateSet();
