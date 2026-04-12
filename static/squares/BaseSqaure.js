@@ -1076,10 +1076,10 @@ export class BaseSquare {
         if (getSquares(this.posX - 1, this.posY).some((sq) => sq.testCollidesWithSquare(this)) && getSquares(this.posX + 1, this.posY).some((sq) => sq.testCollidesWithSquare(this)))
             this.speedX = 0;
 
-        if (Math.abs(this.speedX) < .05)
+        if (Math.abs(this.speedX) < .0005)
             this.speedX = 0
 
-        this.speedX += (this.speedX > 0 ? this.speedX * -.1 : this.speedX * .1);
+        this.speedX += (this.speedX > 0 ? this.speedX * -.01 : this.speedX * .01);
         // end per-tick speed manipulation
 
         // within-block movement 

@@ -152,7 +152,7 @@ function doClimateMod(posX, posY) {
     switch (loadGD(UI_CLIMATE_WEATHER_TOOL_SELECT)) {
         default:
         case UI_CLIMATE_WEATHER_TOOL_DRYAIR:
-            addWindAtCanvasLocation(posX, posY, loadGD(UI_CLIMATE_WEATHER_TOOL_STRENGTH));
+            addWindAtCanvasLocation(posX, posY, Math.exp(loadGD(UI_CLIMATE_WEATHER_TOOL_STRENGTH)));
             break;
     }
 }
