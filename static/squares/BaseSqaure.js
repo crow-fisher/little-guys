@@ -85,7 +85,7 @@ export class BaseSquare {
         this.surface = 0;
         this.surfaceLightingFactor = 0;
         this.surfaceTotal = 0;
-        
+
         this.temperature = 273;
 
         this.thermalMass = 2; // e.g., '2' means one degree of this would equal 2 degrees of air temp for a wind square 
@@ -170,7 +170,7 @@ export class BaseSquare {
         })
     }
 
-    
+
 
     initGreeble() {
         this.gz_tl = randRange(-this.gf, this.gf);
@@ -543,7 +543,7 @@ export class BaseSquare {
     }
 
     zPaintOffsetRoutine() {
-        this.z += this.surface;
+        this.z += this.surface * 4;
     }
     setFrameCartesians() {
         this.selectPoint = loadGD(UI_CAMERA_CENTER_SELECT_POINT) ?? [0, 0];
@@ -568,10 +568,18 @@ export class BaseSquare {
         this.zRenderRoutine();
         this.zPaintOffsetRoutine();
 
-        this.world_bl_z = this.z;
-        this.world_br_z = this.z;
-        this.world_tl_z = this.world_bl_z - this.zd;
-        this.world_tr_z = this.world_br_z - this.zd;
+        this._centerPointNeighbors = new Array(5);
+        this._blNeighbors = this._blNeighbors ?? new Array(4);
+        this._brNeighbors = this._brNeighbors ?? new Array(4);
+        this._tlNeighbors = this._tlNeighbors ?? new Array(4);
+        this._trNeighbors = this._trNeighbors ?? new Array(4);
+        
+        this.updateNeighborSquares();
+
+        this.world_tl_z = this.getCenterZ(this._tlNeighbors);
+        this.world_bl_z = this.getCenterZ(this._blNeighbors);
+        this.world_tr_z = this.getCenterZ(this._trNeighbors);
+        this.world_br_z = this.getCenterZ(this._brNeighbors);
 
         this.world_tl[2] = this.world_tl_z;
         this.world_bl[2] = this.world_bl_z;
@@ -595,14 +603,7 @@ export class BaseSquare {
             this.world_bl[2] = (this._bsq.world_tl_z + this.world_bl_z) / 2
             this.world_br[2] = (this._bsq.world_tr_z + this.world_br_z) / 2
         }
-        
-        
-        if (this._isRockTop) {
-            this.world_tl[2] -= 4;
-            this.world_tr[2] -= 4;
-            this.world_tl[1] -= .5;
-            this.world_tr[1] -= .5;
-        }
+
 
         // if (this.tsq) {
         //     this.world_tl[2] 
@@ -631,6 +632,43 @@ export class BaseSquare {
         this._rsq = getSquares(this.posX + 1, this.posY).find((sq) => sq.solid);
         this._tsq = getSquares(this.posX, this.posY - 1).find((sq) => sq.solid);
         this._bsq = getSquares(this.posX, this.posY + 1).find((sq) => sq.solid);
+
+        this._qsq = getSquares(this.posX - 1, this.posY - 1).find((sq) => sq.solid);
+        this._esq = getSquares(this.posX + 1, this.posY - 1).find((sq) => sq.solid);
+        this._zsq = getSquares(this.posX - 1, this.posY + 1).find((sq) => sq.solid);
+        this._csq = getSquares(this.posX + 1, this.posY + 1).find((sq) => sq.solid);
+
+        this._blNeighbors[0] = this;
+        this._blNeighbors[1] = this._lsq;
+        this._blNeighbors[2] = this._zsq;
+        this._blNeighbors[3] = this._bsq;
+
+        this._brNeighbors[0] = this;
+        this._brNeighbors[1] = this._bsq;
+        this._brNeighbors[2] = this._csq;
+        this._brNeighbors[3] = this._rsq;
+
+        this._tlNeighbors[0] = this;
+        this._tlNeighbors[1] = this._lsq;
+        this._tlNeighbors[2] = this._qsq;
+        this._tlNeighbors[3] = this._tsq;
+
+        this._trNeighbors[0] = this;
+        this._trNeighbors[1] = this._tsq;
+        this._trNeighbors[2] = this._esq;
+        this._trNeighbors[3] = this._rsq;
+    }
+
+    getCenterZ(pointArr) {
+        let c = 0;
+        let s = 0;
+        for (let i = 0; i < pointArr.length; i++) {
+            if (pointArr[i] != null) {
+                s += pointArr[i].z;
+                c += 1;
+            }
+        }
+        return s / c;
     }
 
     prepareRenderJob() {
@@ -668,7 +706,6 @@ export class BaseSquare {
 
     render3D(opacityMult) {
         this.prepareFillColor(opacityMult);
-        this.updateNeighborSquares();
         this.setFrameCartesians();
         this.prepareRenderJob();
 
@@ -1206,7 +1243,7 @@ export class BaseSquare {
     }
 
     pressureDirectFactor() {
-        return 1;   
+        return 1;
     }
 
     transferHeat() {

@@ -70,11 +70,6 @@ export class RockSquare extends SoilSquare {
         super.doBlockOutflow();
         this.outflowNewWaterToLocation(this.posX, this.posY + 1);
     }
-    zRenderRoutine() {
-        this._isRockTop = !getSquares(this.posX, this.posY - 1).some((sq) => sq.solid);
-        this.z = 1; //this.calculateBlockZ();
-        this.zd = 0; //this.calculateBlockZDz();
-    }
 
     calculateBlockZ() {
         this.z = this.currentPressureDirect;

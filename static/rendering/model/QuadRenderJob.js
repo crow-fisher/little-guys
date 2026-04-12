@@ -25,7 +25,7 @@ export class QuadRenderJob extends RenderJob {
     }
 
     shouldRender() {
-        return this.getZ() > 0 && 
+        return this.getZ() > 0;
             this.getMinP(0) > 0 && 
             this.getMinP(1) > 0 && 
             this.getMaxP(0) < getTotalCanvasPixelWidth() && 
