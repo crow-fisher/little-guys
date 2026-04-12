@@ -565,8 +565,7 @@ export class BaseSquare {
 
             this.zRenderRoutine();
             this.zPaintOffsetRoutine();
-
-            this._centerPointNeighbors = new Array(5);
+            
             this._blNeighbors = this._blNeighbors ?? new Array(4);
             this._brNeighbors = this._brNeighbors ?? new Array(4);
             this._tlNeighbors = this._tlNeighbors ?? new Array(4);

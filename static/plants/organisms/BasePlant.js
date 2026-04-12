@@ -293,6 +293,7 @@ class BasePlant {
             () => {
                 let heartLsq = new PlantLifeSquare(this);
                 heartLsq.subtype = SUBTYPE_HEART;
+                heartLsq.hidden = true;
                 this.greenLifeSquares.push(heartLsq);
                 return heartLsq;
             }

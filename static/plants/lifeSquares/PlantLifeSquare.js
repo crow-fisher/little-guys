@@ -32,7 +32,7 @@ class PlantLifeSquare {
 
         // Set rendering member variables.
         this.width = 1;
-        this.height = 0;
+        this.height = 1;
 
         this.posVec = [0, 0, 0];
         this.posVecDir = [0, 1, 0];
@@ -182,8 +182,7 @@ class PlantLifeSquare {
     }
 
     render() {
-
-        if (this.posVecDir == null) {
+        if (this.hidden || this.posVecDir == null) {
             return;
         }
 

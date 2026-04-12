@@ -341,17 +341,12 @@ export class SoilSquare extends BaseSquare {
     }
 
     windPhysics() {
-        if (!Number.isFinite(this.blockHealth))
-            alert("?????????");
-
         if (this.linkedOrganismSquares.some((lsq) => lsq.type == "root")) {
             return;
         }
-        if (this.world_tl == null) {
+        if (this.world_tl == null || this.gravity == 0) {
             return;
         }
-
-        ATMOSCALE
 
         let ws;
         if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_NORMAL) {
@@ -467,6 +462,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     zCascadeFunc(x) {
+        x += 3
         let a = 0.4;
         let b = 0.2;
         let c = 12;
