@@ -355,7 +355,7 @@ export class SoilSquare extends BaseSquare {
         if (ws[0] + ws[1] == 0) {
             return;
         }
-        let maxWindSpeed = 2;
+        let maxWindSpeed = 12;
 
         let wx = ws[0]; // Math.min(Math.max(ws[0], -maxWindSpeed), maxWindSpeed);
         let wy = ws[1]; // Math.min(Math.max(ws[1], -maxWindSpeed), maxWindSpeed);
@@ -369,7 +369,7 @@ export class SoilSquare extends BaseSquare {
             return;
         }
 
-        let factor = .04;
+        let factor = .2;
 
         let projX = (wx > 0 ? 1 : -1);
         let projY = (wy > 0 ? 1 : -1);
