@@ -162,12 +162,6 @@ export class BaseSquare {
             return;
         }
         this.surface = value;
-        let nbs = [this._lsq, this._rsq, this._tsq, this._bsq];
-        nbs.forEach((nb) => {
-            if (nb != null) {
-                nb.updateSurface(Math.min(nb.surface, Math.max(this.surface - 1, 0)));
-            }
-        })
     }
 
 
@@ -539,11 +533,10 @@ export class BaseSquare {
         // 'this.z' is the z-depth that the bottom of the block is rendered at. 
         // 'this.zd' is the slant applied to that base to find the top. 
         this.z = 0;
-        this.zd = 0;
     }
 
     zPaintOffsetRoutine() {
-        this.z += this.surface * 4;
+        this.z += this.surface * 2;
     }
     setFrameCartesians() {
         this.selectPoint = loadGD(UI_CAMERA_CENTER_SELECT_POINT) ?? [0, 0];

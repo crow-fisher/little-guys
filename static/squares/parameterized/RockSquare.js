@@ -29,10 +29,13 @@ export class RockSquare extends SoilSquare {
         this.siltColorRgb = getActiveClimate().rockColorSilt;
         this.sandColorRgb = getActiveClimate().rockColorSand;
         this.rootable = false;
-        this.surface = false;
         this.waterContainment = 0;
         this.blockHealth = this.blockHealthMax;
         this.gf = 1;
+    }
+
+    pressureDirectFactor() {
+        return 0.1;
     }
     
     windPhysics() {}
@@ -73,9 +76,5 @@ export class RockSquare extends SoilSquare {
 
     calculateBlockZ() {
         this.z = this.currentPressureDirect;
-    }
-
-    calculateBlockZDz() {
-        this.zd = (this._tsq?.z ?? 0) - this.z;
     }
 }

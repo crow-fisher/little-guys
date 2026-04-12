@@ -76,7 +76,6 @@ export class SoilSquare extends BaseSquare {
         this.nitrogen = 50;
         this.phosphorus = 25;
 
-        this.surface = true;
         this.percolationFactor = 0.99;
 
         this.setVariant();
@@ -338,7 +337,6 @@ export class SoilSquare extends BaseSquare {
 
     zRenderRoutine() {
         this.z = this.zCascadeFunc( this.currentPressureDirect);
-        this.zd = this.z - this.zCascadeFunc(this.currentPressureDirect - 1);
     }
 
     windPhysics() {
