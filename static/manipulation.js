@@ -17,6 +17,7 @@ import { clearMouseHoverColorCacheMap, eyedropperBlockClick, eyedropperBlockHove
 import { getDist, randNumber, randRange } from "./common.js";
 import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth } from "./index.js";
 import { invertMat4, multiplyMatrixAndPoint } from "./climate/stars/matrix.js";
+import { addWindAtCanvasLocation } from "./main.js";
 let prevManipulationOffset;
 
 setMouseTouchStartCallback((inVal) => prevManipulationOffset = inVal);
@@ -148,19 +149,11 @@ function doClimateMod(posX, posY) {
         return;
     }
 
-    let pressure = (isRightMouseClicked() ? -1 : 1) * loadGD(UI_CLIMATE_WEATHER_TOOL_STRENGTH) ** 6;
     switch (loadGD(UI_CLIMATE_WEATHER_TOOL_SELECT)) {
+        default:
         case UI_CLIMATE_WEATHER_TOOL_DRYAIR:
-            addWindPressureDryAir(posX, posY, pressure);
+            addWindAtCanvasLocation(posX, posY, loadGD(UI_CLIMATE_WEATHER_TOOL_STRENGTH));
             break;
-        case UI_CLIMATE_WEATHER_TOOL_MATCHEDAIR:
-            addWindPerssureMaintainHumidity(posX, posY, pressure);
-            break;
-
-        case UI_CLIMATE_WEATHER_TOOL_CLOUD:
-            addWindPressureCloud(posX, posY, pressure, loadGD(UI_CLIMATE_WEATHER_TOOL_CLOUD_HUMIDITY));
-            break;
-
     }
 }
 

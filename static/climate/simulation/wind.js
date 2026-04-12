@@ -491,19 +491,7 @@ export function manipulateWindPressureMaintainHumidityBlockSquare(posX, posY, am
 }
 
 export function addWindPressureDryAir(posX, posY, amount) {
-    posX = Math.max(0, posX);
-    posY = Math.max(0, posY);
-    
-    posX = Math.min(posX, loadGD(UI_GAME_MAX_CANVAS_SQUARES_X));
-    posY = Math.min(posY, loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y));
 
-    let x = Math.floor(posX / 4);
-    let y = Math.floor(posY / 4);
-
-    let pascals = getBaseAirPressureAtYPosition(y) * amount;
-    let target = windPressureMap[x][y] + pascals;
-    windPressureMap[x][y] = Math.max(getBaseAirPressureAtYPosition(y) * 1, target);
-    windPressureMap[x][y] = Math.min(getBaseAirPressureAtYPosition(y) * 100, target);
 }
 
 export function addWindPerssureMaintainHumidity(posX, posY, amount) {
