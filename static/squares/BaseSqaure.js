@@ -587,7 +587,6 @@ export class BaseSquare {
     }
     setFrameCartesians() {
         this.setFrameWorld();
-
         this._cs_tl = this._cs_tl ?? new CoordinateSet();
         this._cs_tr = this._cs_tr ?? new CoordinateSet();
         this._cs_bl = this._cs_bl ?? new CoordinateSet();
@@ -655,20 +654,10 @@ export class BaseSquare {
         this.br = this.br ?? structuredClone(this._cs_bl.renderScreen);
         this.tr = this.tr ?? structuredClone(this._cs_br.renderScreen);
 
-        this.tl = structuredClone(this._cs_tl.renderScreen);
-        this.tr = structuredClone(this._cs_tr.renderScreen);
-        this.bl = structuredClone(this._cs_bl.renderScreen);
-        this.br = structuredClone(this._cs_br.renderScreen);
-
-        // this.combinePoints(this, this.lsq, this.tl, "tl", "tl");
-        // this.combinePoints(this, this.lsq, this.bl, "bl", "bl");
-        // this.combinePoints(this, this.rsq, this.br, "br", "br");
-        // this.combinePoints(this, this.rsq, this.tr, "tr", "tr");
-
-        // this.combinePoints(this, this.lsq, this.tl, "_cs_tl", "renderScreen");
-        // this.combinePoints(this, this.lsq, this.bl, "_cs_bl", "renderScreen");
-        // this.combinePoints(this, this.rsq, this.br, "_cs_br", "renderScreen");
-        // this.combinePoints(this, this.rsq, this.tr, "_cs_tr", "renderScreen");
+        copyVecValue(this._cs_tl.renderScreen, this.tl);
+        copyVecValue(this._cs_tr.renderScreen, this.tr);
+        copyVecValue(this._cs_bl.renderScreen, this.bl);
+        copyVecValue(this._cs_br.renderScreen, this.br);
 
         if (this._renderJob == null) {
             this._renderJob = new QuadRenderJob(this.tl, this.bl, this.br, this.tr, this.cachedRgba)
@@ -709,7 +698,7 @@ export class BaseSquare {
             this.opacity = loadGD(UI_LIGHTING_WATER_OPACITY);
         }
 
-        if (Date.now() - this.lastColorCacheTime < 1000) {
+        if (Date.now() - this.lastColorCacheTime < (Math.random() * 500)) {
             return;
         }
 
