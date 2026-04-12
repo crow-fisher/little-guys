@@ -3,7 +3,7 @@ let ERASE_RADIUS = 2;
 import { getCanvasHeight, getCanvasWidth, transformPixelsToCanvasSquares } from "./canvas.js";
 import { addTemperature, addWaterSaturationPascalsSqCoords } from "./climate/simulation/temperatureHumidity.js";
 import { addWindPerssureMaintainHumidity, addWindPressureCloud, addWindPressureDryAir } from "./climate/simulation/wind.js";
-import { removeSquare } from "./globalOperations.js";
+import { getFrameSimulationSquares, removeSquare } from "./globalOperations.js";
 import { getLastMouseDownStart, getLastMoveOffset, getLeftMouseUpEvent, isLeftMouseClicked, isMiddleMouseClicked, isRightMouseClicked, setMouseTouchStartCallback } from "./mouse.js";
 import { HorsetailFernSeedOrganism } from "./plants/organisms/ferns/HorsetailFern.js";
 import { addSquare, addSquareOverride, getSquares, removeSquarePos } from "./squares/_sqOperations.js";
@@ -12,9 +12,11 @@ import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
-import { loadGD, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CLIMATE_WEATHER_TOOL_CLOUD, UI_CLIMATE_WEATHER_TOOL_DRYAIR, UI_CLIMATE_WEATHER_TOOL_MATCHEDAIR, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_STRENGTH, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_STRENGTH, UI_GODMODE_TEMPERATURE, UI_ORGANISM_SELECT, UI_SM_GODMODE, UI_PALETTE_PLANTS, UI_PALETTE_BLOCKS, UI_PALETTE_AQUIFER, UI_PALETTE_SELECT, UI_PALETTE_SURFACE_LIGHTING_FACTOR, UI_PALETTE_SOILROCK, UI_PALETTE_WATER, UI_CLIMATE_SELECT_CLOUDS, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE, UI_CLIMATE_TOOL_SIZE, UI_PALETTE_MODE_ROCK, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, isEyedropperOrMixerClicked, UI_ORGANISM_GRASS_HTAIL, UI_CLIMATE_WEATHER_TOOL_CLOUD_HUMIDITY, UI_PALETTE_SPECIAL_CHURN, UI_PALETTE_SPECIAL_CHURN_STRENGTH, UI_PALETTE_SPECIAL_CHURN_WIDE, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_SM_BB, UI_PALETTE_SURFACE_LIGHTING_FACTOR_MATCH, UI_PALETTE_CENTER_SELECT, saveGD, UI_CAMERA_CENTER_SELECT_POINT } from "./ui/UIData.js";
+import { loadGD, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CLIMATE_WEATHER_TOOL_CLOUD, UI_CLIMATE_WEATHER_TOOL_DRYAIR, UI_CLIMATE_WEATHER_TOOL_MATCHEDAIR, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_STRENGTH, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_STRENGTH, UI_GODMODE_TEMPERATURE, UI_ORGANISM_SELECT, UI_SM_GODMODE, UI_PALETTE_PLANTS, UI_PALETTE_BLOCKS, UI_PALETTE_AQUIFER, UI_PALETTE_SELECT, UI_PALETTE_SURFACE_LIGHTING_FACTOR, UI_PALETTE_SOILROCK, UI_PALETTE_WATER, UI_CLIMATE_SELECT_CLOUDS, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE, UI_CLIMATE_TOOL_SIZE, UI_PALETTE_MODE_ROCK, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, isEyedropperOrMixerClicked, UI_ORGANISM_GRASS_HTAIL, UI_CLIMATE_WEATHER_TOOL_CLOUD_HUMIDITY, UI_PALETTE_SPECIAL_CHURN, UI_PALETTE_SPECIAL_CHURN_STRENGTH, UI_PALETTE_SPECIAL_CHURN_WIDE, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_SM_BB, UI_PALETTE_SURFACE_LIGHTING_FACTOR_MATCH, UI_PALETTE_CENTER_SELECT, saveGD, UI_CAMERA_CENTER_SELECT_POINT, UI_VIEWMODE_SELECT, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SURFACE, UI_VIEWMODE_3D } from "./ui/UIData.js";
 import { clearMouseHoverColorCacheMap, eyedropperBlockClick, eyedropperBlockHover, isWindowHovered, mixerBlockClick } from "./ui/WindowManager.js";
-import { randNumber, randRange } from "./common.js";
+import { getDist, randNumber, randRange } from "./common.js";
+import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth } from "./index.js";
+import { invertMat4, multiplyMatrixAndPoint } from "./climate/stars/matrix.js";
 let prevManipulationOffset;
 
 setMouseTouchStartCallback((inVal) => prevManipulationOffset = inVal);
@@ -43,7 +45,28 @@ function doBrushFuncClickThrottle(x, y, func, throttle = true) {
         func(x, y);
     }
 }
+
+
+export function _doBrushFunc3D(centerX, centerY, func, throttle) {
+    let lastMoveOffset = getLastMoveOffset();
+    getFrameSimulationSquares().forEach((sq) => sq._md = getDist(...sq._cs_tl.renderScreen.slice(0, 2), lastMoveOffset.x, lastMoveOffset.y));
+    getFrameSimulationSquares().sort((a, b) => a._md - b._md)
+    let clickSq = getFrameSimulationSquares().at(0);
+    if (clickSq?._md < 20) {
+        _doBrushFunc(clickSq.posX, clickSq.posY, func, throttle)
+    } else {
+        _doBrushFunc(centerX, centerY, func, throttle)
+    }
+}
+
 export function doBrushFunc(centerX, centerY, func, throttle = true) {
+    if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_3D) {
+        _doBrushFunc3D(centerX, centerY, func, throttle);
+    } else {
+        _doBrushFunc(centerX, centerY, func, throttle);
+    }
+}
+export function _doBrushFunc(centerX, centerY, func, throttle) {
     throttle = false;
     let radius = Math.floor(loadGD(UI_PALETTE_SIZE));
     if (loadGD(UI_CLIMATE_SELECT_CLOUDS)) {

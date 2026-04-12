@@ -1,10 +1,10 @@
 import { decayVec, getBaseSize, getCanvasHeight, getCanvasWidth, getCurZoom } from "../canvas.js";
-import { addVec3Dest, addVectors, crossVec3, multiplyMatrixAndPoint, multiplyMatrixAndPointInplace, multiplyVectorByScalar, normalizeVec3, subtractVectors, transposeMat4 } from "../climate/stars/matrix.js";
+import { addVectors, crossVec3, multiplyMatrixAndPoint, multiplyMatrixAndPointInplace, multiplyVectorByScalar, normalizeVec3, subtractVectors, transposeMat4 } from "../climate/stars/matrix.js";
 import { getCurDay } from "../climate/time.js";
-import { COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../colors.js";
+import { COLOR_WHITE } from "../colors.js";
 import { rgbToHex } from "../common.js";
 import { MAIN_CONTEXT } from "../index.js";
-import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CAMERA_OFFSET_VEC, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_ROTATION_VEC_DT, saveGD, UI_CAMERA_FOV, addUIFunctionMap, UI_STARMAP_ZOOM, UI_STARMAP_PREV_ZOOM } from "../ui/UIData.js";
+import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CAMERA_OFFSET_VEC, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_ROTATION_VEC_DT, saveGD, UI_CAMERA_FOV } from "../ui/UIData.js";
 import { FrameCache } from "./FrameCache.js";
 import { CoordinateSet } from "./model/CoordinateSet.js";
 import { LineRenderJob } from "./model/LineRenderJob.js";

@@ -1,11 +1,9 @@
-import { getBaseSize, getCanvasHeight, getCanvasWidth, getFrameXMax, getFrameXMin, getFrameYMax, getFrameYMin } from "../../canvas.js";
+import { getBaseSize, getFrameYMax, getFrameYMin } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { SunCalc } from "../../climate/suncalc/suncalc.js";
-import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getMoonlightBrightness, getMoonlightColor, millis_per_day } from "../../climate/time.js";
-import { COLOR_VERY_FUCKING_RED } from "../../colors.js";
-import { MAIN_CONTEXT } from "../../index.js";
+import { getCurDay, getMoonlightBrightness, getMoonlightColor, millis_per_day } from "../../climate/time.js";
 import { addTask } from "../../scheduler.js";
-import { loadGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_LIGHTING_MOON, UI_LIGHTING_QUALITY, UI_LIGHTING_SHADOW_SOFTNESS, UI_LIGHTING_UPDATERATE } from "../../ui/UIData.js";
+import { loadGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_LIGHTING_MOON, UI_LIGHTING_QUALITY, UI_LIGHTING_SHADOW_SOFTNESS, UI_LIGHTING_UPDATERATE } from "../../ui/UIData.js";
 import { LightGroup } from "./LightGroup.js";
 import { MovingLightSource } from "./MovingLightSource.js";
 

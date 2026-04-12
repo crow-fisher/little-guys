@@ -10,6 +10,10 @@ export class LineRenderJob extends RenderJob {
         this.color = color;
     }
 
+    shouldRender() {
+        return this.getZ() > 0;
+    }
+
     getZ() {
         return Math.min(this.v1[2], this.v2[2]);
     }

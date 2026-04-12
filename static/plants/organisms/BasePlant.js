@@ -1,18 +1,14 @@
 import { getCurDay, getDt } from "../../climate/time.js";
 import { STAGE_DEAD, STAGE_FLOWER, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_HEART, SUBTYPE_ROOTNODE, TYPE_HEART } from "./Stages.js";
 import { getNeighbors } from "../../squares/_sqOperations.js";
-import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
-import { loadGD, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_SIMULATION_GENS_PER_DAY, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../../ui/UIData.js";
-import { MAIN_CONTEXT } from "../../index.js";
-import { getBaseUISize, zoomCanvasFillRect } from "../../canvas.js";
+import { loadGD, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_SIMULATION_GENS_PER_DAY } from "../../ui/UIData.js";
 import { GrowthPlan } from "./growthPlan/GrowthPlan.js";
 import { GrowthPlanStep } from "./growthPlan/GrowthPlanStep.js";
 import { PlantLifeSquare } from "../lifeSquares/PlantLifeSquare.js";
 import { RootLifeSquare } from "../lifeSquares/RootLifeSquare.js";
 import { LineRenderJob } from "../../rendering/model/LineRenderJob.js";
 import { CoordinateSet } from "../../rendering/model/CoordinateSet.js";
-import { RenderJob } from "../../rendering/model/RenderJob.js";
-import { COLOR_BLUE, COLOR_BLUE_FAINT, COLOR_BROWN, COLOR_GREEN, COLOR_GREEN_FAINT, COLOR_GREY, COLOR_VERY_FUCKING_RED, COLOR_WHITE, COLOR_WHITE_FAINT } from "../../colors.js";
+import { COLOR_BLUE_FAINT, COLOR_GREEN_FAINT, COLOR_GREY, COLOR_WHITE_FAINT } from "../../colors.js";
 import { addRenderJob } from "../../rendering/rasterizer.js";
 import { copyVecValue } from "../../climate/stars/matrix.js";
 import { invlerp, lerp } from "../../common.js";
@@ -476,7 +472,6 @@ class BasePlant {
 
         this._blipEndWorld = structuredClone(this._blipStartWorld);
         this._blipEndWorld[1] -= 4 * val;
-
         this._curBlipCoordinates = this._blipCoordinates[idx];
         if (this._curBlipCoordinates == null) {
             this._blipCoordinates[idx] = [new CoordinateSet(this._blipStartWorld), new CoordinateSet(this._blipEndWorld)];
@@ -493,7 +488,7 @@ class BasePlant {
         this._blipRenderJobs[idx].v2 = this._blipCoordinates[idx][1].renderScreen;
         this._blipRenderJobs[idx].size = 10 ** 4.3 / (this._blipCoordinates[idx][0].distToCamera ** 2);
         this._blipRenderJobs[idx].color = this._blipColors[idx];
-        this._blipRenderJobs[idx].z = this._blipCoordinates[idx][0].renderScreen[2];
+        this._blipRenderJobs[idx].z = this._blipRenderJobs[idx].getZ();
 
         addRenderJob(this._blipRenderJobs[idx]);
     }

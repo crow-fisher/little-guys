@@ -21,7 +21,7 @@ class PlantLifeSquare {
         this.spawnTime = Date.now();
         // RGB Array
         this.color = [100, 100, 100];
-        this.altColor = [255, 0, 0];
+        this.altColor = [0, 0, 0];
         this.colorLightingApplied = [0, 0, 0];
         this.opacity = 1;
         // RGBA String
@@ -112,7 +112,7 @@ class PlantLifeSquare {
         this._cs_tr.setWorld(this.cartesian_tr);
         this._cs_bl.setWorld(this.cartesian_bl);
         this._cs_br.setWorld(this.cartesian_br);
-        
+
         this._sp_cs.setWorld(this.startPointVec);
         this._ep_cs.setWorld(this.endPointVec);
 
@@ -202,17 +202,11 @@ class PlantLifeSquare {
     }
 
     setFrameRenderColor() {
-        if (this.frameViewMode == UI_VIEWMODE_3D) {
-
-            this.colorLighting = this.processLighting();
-            this.colorLightingApplied[0] = (this.color[0] / 255) * this.colorLighting.r;
-            this.colorLightingApplied[1] = (this.color[1] / 255) * this.colorLighting.g;
-            this.colorLightingApplied[2] = (this.color[2] / 255) * this.colorLighting.b;
-
-            this.cachedRgba = rgbToRgba(...this.colorLightingApplied, this.opacity);
-        } else {
-            this.cachedRgba = rgbToRgba(...this.altColor, this.opacity);
-        }
+        this.colorLighting = this.processLighting();
+        this.colorLightingApplied[0] = (this.color[0] / 255) * this.colorLighting.r;
+        this.colorLightingApplied[1] = (this.color[1] / 255) * this.colorLighting.g;
+        this.colorLightingApplied[2] = (this.color[2] / 255) * this.colorLighting.b;
+        this.cachedRgba = rgbToRgba(...this.colorLightingApplied, this.opacity);
     }
 
     setFrameAltColor() {
@@ -274,7 +268,7 @@ class PlantLifeSquare {
             this.frameCacheLighting = getDefaultLighting();
             return this.frameCacheLighting;
         }
-        else
+        else 
             this.frameCacheLighting = processLighting(this.lighting);
     }
 

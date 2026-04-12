@@ -4,7 +4,7 @@ export class RenderJob {
     }
 
     shouldRender() {
-        return true;
+        return true
     }
 
     getZ() {

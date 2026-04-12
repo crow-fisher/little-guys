@@ -13,7 +13,7 @@ import {
 
 import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth, MAIN_CONTEXT } from "../index.js";
 
-import { hash, hexToRgb, hsv2rgb, randNumber, randRange, removeItemAll, rgb2hsv, rgbToHex, rgbToRgba } from "../common.js";
+import { hash, hexToRgb, hsv2rgb, processRangeToOne, randNumber, randRange, removeItemAll, rgb2hsv, rgbToHex, rgbToRgba } from "../common.js";
 import { removeSquare } from "../globalOperations.js";
 import { calculateColorTemperature, getTemperatureAtWindSquare, temperatureHumidityFlowrateFactor, updateWindSquareTemperature } from "../climate/simulation/temperatureHumidity.js";
 import { getWindSquareAbove } from "../climate/simulation/wind.js";
@@ -160,11 +160,14 @@ export class BaseSquare {
     };
 
     updateSurfaceLightingFactor(value = loadGD(UI_LIGHTING_SURFACE)) {
+        this.surfaceLightingFactor *= 0.9;
+        this.surfaceLightingFactor += value / 10
         this.surfaceLightingFactor = value;
     }
 
     updateSurface(value = loadGD(UI_LIGHTING_SURFACE)) {
-        this.surface = value;
+        this.surface *= 0.99;
+        this.surface += value / 100
     }
 
     initGreeble() {
@@ -229,7 +232,7 @@ export class BaseSquare {
     getSoilWaterPressure() { return -(10 ** 8); }
 
     getLightFilterRate() {
-        return this.surfaceLightingFactor;
+        return processRangeToOne(this.surfaceLightingFactor);
     }
 
     temperatureRoutine() {
