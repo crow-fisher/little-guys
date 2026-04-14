@@ -339,6 +339,7 @@ function placeActiveSeed(px, py) {
     switch (loadGD(UI_ORGANISM_SELECT)) {
         case UI_ORGANISM_GRASS_FGRASS:
             pProto = FlatGrassSeedOrganism;
+            break;
         default:
         case UI_ORGANISM_GRASS_GRASS:
             pProto = OriginGrassSeedOrganism;

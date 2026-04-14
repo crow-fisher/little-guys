@@ -246,7 +246,7 @@ export class OrganismComponent extends Component {
                return false;
           }
           if (loadGD(UI_ORGANISM_TYPE_SELECT) == UI_ORGANISM_TYPE_GRASS) {
-               if ([UI_ORGANISM_GRASS_CATTAIL, UI_ORGANISM_GRASS_GRASS, UI_ORGANISM_GRASS_WHEAT].includes(selected)) {
+               if ([UI_ORGANISM_GRASS_CATTAIL, UI_ORGANISM_GRASS_GRASS, UI_ORGANISM_GRASS_FGRASS].includes(selected)) {
                     return true;
                }
                return false;

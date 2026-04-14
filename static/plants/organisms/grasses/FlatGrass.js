@@ -3,7 +3,7 @@ import { randNumber, randRange, rr } from "../../../common.js";
 import { applyLightingFromSource } from "../../../lighting/lightingProcessing.js";
 import { addSquare } from "../../../squares/_sqOperations.js";
 import { SeedSquare } from "../../../squares/SeedSquare.js";
-import { loadGD, UI_ORGANISM_GRASS_GRASS } from "../../../ui/UIData.js";
+import { loadGD, UI_ORGANISM_GRASS_FGRASS, UI_ORGANISM_GRASS_GRASS } from "../../../ui/UIData.js";
 import { PlantLifeSquare } from "../../lifeSquares/PlantLifeSquare.js";
 import { RootLifeSquare } from "../../lifeSquares/RootLifeSquare.js";
 import { BasePlant, _llt_target, _llt_min, _llt_max, _llt_throttlValMax, _seedReduction, _waterPressureSoilTarget, _waterPressureOverwaterThresh, _waterPressureWiltThresh, _lightDecayValue, _lightLevelDisplayExposureAdjustment, baseOrganism_dnm } from "../BasePlant.js";
@@ -29,12 +29,12 @@ export class FlatGrass extends BasePlant {
     constructor(square, seedLifeSquare, evolutionParameters) {
         super(square, seedLifeSquare, evolutionParameters);
         this.proto = "OriginGrass";
-        this.uiRef = UI_ORGANISM_GRASS_GRASS;
-        this.targetFernShoots = 1;
+        this.uiRef = UI_ORGANISM_GRASS_FGRASS;
+        this.targetGrasses = 1;
         this.maxNumGrass = 10;
         this.targetGrassLength = 1;
         this.maxShootLength = 5;
-        this.fernShoots = [];
+        this.grasses = [];
     }
 
     process() {
@@ -68,7 +68,7 @@ export class FlatGrass extends BasePlant {
     doGreenGrowth() {
         super.doGreenGrowth();
         if (this.originGrowth != null) {
-            this.fernShoots.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
+            this.grasses.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
                 .forEach((grass) => {
                     grass.lifeSquares.forEach((lsq) => lsq.width = .3 + .3 * Math.log(1 + grass.lifeSquares.length));
 
@@ -76,7 +76,7 @@ export class FlatGrass extends BasePlant {
         }
     }
 
-    growFernShoot() {
+    growGrass() {
         let startNode = this.originGrowth.lifeSquares.at(0);
         let growthPlan = new GrowthPlan(
             false, STAGE_ADULT, TYPE_STEM,
@@ -84,7 +84,7 @@ export class FlatGrass extends BasePlant {
             randRange(-.1, .1), randRange(-.1, .1), randRange(-.1, .1), 1)
         growthPlan.postConstruct = () => {
             this.originGrowth.addChild(growthPlan.component);
-            this.fernShoots.push(this.originGrowth.getChildPath(growthPlan.component));
+            this.grasses.push(this.originGrowth.getChildPath(growthPlan.component));
             growthPlan.component.offset_base = [rr(2), rr(1) + 1.5, rr(2)]
         };
         growthPlan.steps.push(new GrowthPlanStep(
@@ -98,8 +98,8 @@ export class FlatGrass extends BasePlant {
         this.growthPlans.push(growthPlan);
     }
 
-    lengthenFernShoot() {
-        this.fernShoots
+    lengthenGrass() {
+        this.grasses
             .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .filter((grass) => grass.growthPlan.steps.length < this.targetGrassLength)
             .forEach((grass) => {
@@ -120,14 +120,14 @@ export class FlatGrass extends BasePlant {
         if (!super.planGrowth()) {
             return;
         }
-        if (this.fernShoots.length < this.targetFernShoots) {
-            this.growFernShoot();
+        if (this.grasses.length < this.targetGrasses) {
+            this.growGrass();
             return;
         }
-        if (this.fernShoots
+        if (this.grasses
             .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .some((grass) => grass.growthPlan.steps.length < this.targetGrassLength)) {
-            this.lengthenFernShoot();
+            this.lengthenGrass();
             return;
         }
 
@@ -136,8 +136,8 @@ export class FlatGrass extends BasePlant {
             return;
         }
 
-        if (this.targetFernShoots < this.maxNumGrass) {
-            this.targetFernShoots += 1;
+        if (this.targetGrasses < this.maxNumGrass) {
+            this.targetGrasses += 1;
             return;
         }
 
@@ -148,10 +148,10 @@ export class FlatGrass extends BasePlant {
     }
 
     prepareRender() {
-        this.fernShoots
+        this.grasses
             .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .forEach((grass) => {
-                let curColor = [85, 128, 109];
+                let curColor = [114, 37, 117];
                 multiplyVectorByScalar(curColor, this.lightLevelDisplayExposureAdjustment());
                 let width = 0.4;
                 grass.lifeSquares.forEach((lsq) => {
@@ -170,7 +170,7 @@ export class FlatGrassSeedOrganism extends BasePlantSeed {
     }
 
     getSproutType() {
-        return OriginGrass;
+        return FlatGrass;
     }
     getSproutTypeProto() {
         return "OriginGrass";

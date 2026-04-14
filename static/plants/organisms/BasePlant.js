@@ -126,10 +126,8 @@ class BasePlant {
     lightLevelDisplayExposureAdjustment() {
         return this.getGenericNutritionParam(_lightLevelDisplayExposureAdjustment);
     }
-
     getGrowthCycleLength() {
         return this.growthCycleLength;
-        return (this.growthCycleLength / loadGD(UI_SIMULATION_GENS_PER_DAY));
     }
 
     setEvolutionParameters(evolutionParameters) {

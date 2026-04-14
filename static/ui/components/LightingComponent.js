@@ -158,7 +158,7 @@ export class LightingComponent extends Component {
         brightnessConditionalContainer.addElement(new TextBackground(this.window, sizeX, br, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""));
 
         decayConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => "global", () => getActiveClimate().getUIColorInactiveCustom(0.64)));
-        decayConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_DECAY, sizeX, sliderSizeY, -100, 20, () => "#000000", () => "#FFF0FF"));
+        decayConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_DECAY, sizeX, sliderSizeY, -10, 0, () => "#000000", () => "#FFF0FF"));
         decayConditionalContainer.addElement(new TextBackground(this.window, sizeX, br, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""));
 
         decayConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => "water", () => getActiveClimate().getUIColorInactiveCustom(0.66)));
@@ -170,7 +170,7 @@ export class LightingComponent extends Component {
         decayConditionalContainer.addElement(new TextBackground(this.window, sizeX, br, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""));
 
         decayConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => "plant", () => getActiveClimate().getUIColorInactiveCustom(0.58)));
-        decayConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_PLANT, sizeX, sliderSizeY, -1000, 1000, getPlantColorDark, getPlantColor));
+        decayConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_PLANT, sizeX, sliderSizeY, -20, -10, getPlantColorDark, getPlantColor));
 
         plantConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => "grass", () => getActiveClimate().getUIColorInactiveCustom(0.58)));
         plantConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_PLANT_GRASS, sizeX, sliderSizeY, -2, 2, getPlantColorDark, getPlantColor));

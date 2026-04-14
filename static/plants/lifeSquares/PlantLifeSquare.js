@@ -148,7 +148,7 @@ class PlantLifeSquare {
     }
 
     getLightFilterRate() {
-        return processRangeToOne(loadGD(UI_LIGHTING_PLANT)) * this.linkedOrganism.lightDecayValue();
+        return processRangeToOne(loadGD(UI_LIGHTING_PLANT));
     }
 
     addChild(lifeSquare) {
