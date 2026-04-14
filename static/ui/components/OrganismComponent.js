@@ -3,7 +3,7 @@ import { getActiveClimate } from "../../climate/climateManager.js";
 import { calculateColor } from "../../climate/simulation/temperatureHumidity.js";
 import { hexToRgb } from "../../common.js";
 import { _lightDecayValue, _lightLevelDisplayExposureAdjustment, _llt_max, _llt_min, _llt_target, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, baseOrganism_dnm } from "../../plants/organisms/BasePlant.js";
-import { htail_dnm } from "../../plants/organisms/grasses/OriginGrass.js";
+import { grass_dnm } from "../../plants/organisms/grasses/OriginGrass.js";
 import { Component } from "../Component.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
 import { Container } from "../Container.js";
@@ -13,7 +13,7 @@ import { SliderGradientBackgroundPlantConfigurator } from "../elements/SliderGra
 import { TextBackground } from "../elements/TextBackground.js";
 import { TextFunctionalBackground } from "../elements/TextFunctionalBackground.js";
 import { Toggle } from "../elements/Toggle.js";
-import { UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_WHEAT, UI_ORGANISM_GRASS_HTAIL, UI_ORGANISM_GRASS_CATTAIL, UI_CENTER, UI_ORGANISM_TREE_PALM, UI_ORGANISM_TYPE_SELECT, UI_ORGANISM_TYPE_MOSS, UI_ORGANISM_TYPE_GRASS, UI_ORGANISM_TYPE_FLOWER, UI_ORGANISM_TYPE_TREE, loadGD, loadUI, UI_UI_PHONEMODE, UI_ORGANISM_FLOWER_CONEFLOWER, UI_ORGANISM_NUTRITION_CONFIGURATOR, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_MOSS_PLEUROCARP, UI_ORGANISM_TREE_MAGNOLIA } from "../UIData.js";
+import { UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_WHEAT, UI_ORGANISM_GRASS_GRASS, UI_ORGANISM_GRASS_CATTAIL, UI_CENTER, UI_ORGANISM_TREE_PALM, UI_ORGANISM_TYPE_SELECT, UI_ORGANISM_TYPE_MOSS, UI_ORGANISM_TYPE_GRASS, UI_ORGANISM_TYPE_FLOWER, UI_ORGANISM_TYPE_TREE, loadGD, loadUI, UI_UI_PHONEMODE, UI_ORGANISM_FLOWER_CONEFLOWER, UI_ORGANISM_NUTRITION_CONFIGURATOR, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_MOSS_PLEUROCARP, UI_ORGANISM_TREE_MAGNOLIA, UI_ORGANISM_GRASS_FGRASS } from "../UIData.js";
 
 export class OrganismComponent extends Component {
      constructor(posX, posY, padding, dir, key) {
@@ -78,14 +78,16 @@ export class OrganismComponent extends Component {
           // grass 
           // grassConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "wheat", UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_WHEAT,
           //      () => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorInactiveCustom(0.52)));
-          grassConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "grass", UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_HTAIL,
+          grassConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "grass", UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_GRASS,
+               () => getActiveClimate().getUIColorInactiveCustom(0.63), () => getActiveClimate().getUIColorInactiveCustom(0.53)));
+          grassConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "flat bladed grass", UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_FGRASS,
                () => getActiveClimate().getUIColorInactiveCustom(0.63), () => getActiveClimate().getUIColorInactiveCustom(0.53)));
           // grassConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "cattail", UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_CATTAIL,
           //      () => getActiveClimate().getUIColorInactiveCustom(0.68), () => getActiveClimate().getUIColorInactiveCustom(0.52)));
           grassConditionalContainer.addElement(new TextBackground(this.window, sizeX, br2, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""))
 
           let wheatConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_ORGANISM_SELECT) == UI_ORGANISM_GRASS_WHEAT);
-          let kblueConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_ORGANISM_SELECT) == UI_ORGANISM_GRASS_HTAIL);
+          let kblueConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_ORGANISM_SELECT) == UI_ORGANISM_GRASS_GRASS);
           let cattailConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_ORGANISM_SELECT) == UI_ORGANISM_GRASS_CATTAIL);
 
           grassConditionalContainer.addElement(wheatConditionalContainer);
@@ -244,7 +246,7 @@ export class OrganismComponent extends Component {
                return false;
           }
           if (loadGD(UI_ORGANISM_TYPE_SELECT) == UI_ORGANISM_TYPE_GRASS) {
-               if ([UI_ORGANISM_GRASS_CATTAIL, UI_ORGANISM_GRASS_HTAIL, UI_ORGANISM_GRASS_WHEAT].includes(selected)) {
+               if ([UI_ORGANISM_GRASS_CATTAIL, UI_ORGANISM_GRASS_GRASS, UI_ORGANISM_GRASS_WHEAT].includes(selected)) {
                     return true;
                }
                return false;
@@ -264,8 +266,8 @@ export class OrganismComponent extends Component {
      getDefaultNutritionMap() {
           let activeOrganism = loadGD(UI_ORGANISM_SELECT);
           switch (activeOrganism) {
-               case UI_ORGANISM_GRASS_HTAIL:
-                    return htail_dnm;
+               case UI_ORGANISM_GRASS_GRASS:
+                    return grass_dnm;
                default:
                     return baseOrganism_dnm;
           }

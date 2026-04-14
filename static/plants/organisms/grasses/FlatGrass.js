@@ -12,20 +12,20 @@ import { GrowthPlan } from "../growthPlan/GrowthPlan.js";
 import { GrowthPlanStep } from "../growthPlan/GrowthPlanStep.js";
 import { STAGE_ADULT, SUBTYPE_STEM, TYPE_STEM } from "../Stages.js";
 
-export let grass_dnm = structuredClone(baseOrganism_dnm);
+export let fgrass_dnm = structuredClone(baseOrganism_dnm);
 
-grass_dnm[_llt_target] = 1.45;
-grass_dnm[_llt_min] = 0.74;
-grass_dnm[_llt_max] = 1.43;
-grass_dnm[_llt_throttlValMax] = 5.27;
-grass_dnm[_seedReduction] = 0.10;
-grass_dnm[_waterPressureSoilTarget] = -4;
-grass_dnm[_waterPressureOverwaterThresh] = 1;
-grass_dnm[_waterPressureWiltThresh] = -1.5;
-grass_dnm[_lightDecayValue] = 4.42;
-grass_dnm[_lightLevelDisplayExposureAdjustment] = .22;
+fgrass_dnm[_llt_target] = 1.45;
+fgrass_dnm[_llt_min] = 0.74;
+fgrass_dnm[_llt_max] = 1.43;
+fgrass_dnm[_llt_throttlValMax] = 5.27;
+fgrass_dnm[_seedReduction] = 0.10;
+fgrass_dnm[_waterPressureSoilTarget] = -4;
+fgrass_dnm[_waterPressureOverwaterThresh] = 1;
+fgrass_dnm[_waterPressureWiltThresh] = -1.5;
+fgrass_dnm[_lightDecayValue] = 4.42;
+fgrass_dnm[_lightLevelDisplayExposureAdjustment] = .22;
 
-export class OriginGrass extends BasePlant {
+export class FlatGrass extends BasePlant {
     constructor(square, seedLifeSquare, evolutionParameters) {
         super(square, seedLifeSquare, evolutionParameters);
         this.proto = "OriginGrass";
@@ -43,7 +43,7 @@ export class OriginGrass extends BasePlant {
     }
 
     getDefaultNutritionMap() {
-        return grass_dnm;
+        return fgrass_dnm;
     }
 
     spawnSeed() {
@@ -163,10 +163,10 @@ export class OriginGrass extends BasePlant {
     }
 }
 
-export class OriginGrassSeedOrganism extends BasePlantSeed {
+export class FlatGrassSeedOrganism extends BasePlantSeed {
     constructor(square, evolutionParameters) {
         super(square, evolutionParameters);
-        this.proto = "OriginGrassSeedOrganism";
+        this.proto = "FlatGrassSeedOrganism";
     }
 
     getSproutType() {
