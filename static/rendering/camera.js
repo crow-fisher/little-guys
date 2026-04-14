@@ -1,4 +1,4 @@
-import { decayVec, getBaseSize, getCanvasHeight, getCanvasWidth, getCurZoom } from "../canvas.js";
+import { decayVec, getBaseSize, getCanvasHeight, getCanvasWidth, getCurZoom, getFrameHeight, getFrameWidth, getFrameXMax, getFrameYMax } from "../canvas.js";
 import { addVectors, crossVec3, multiplyMatrixAndPoint, multiplyMatrixAndPointInplace, multiplyVectorByScalar, normalizeVec3, subtractVectors, transposeMat4 } from "../climate/stars/matrix.js";
 import { getCurDay } from "../climate/time.js";
 import { COLOR_WHITE } from "../colors.js";
@@ -115,14 +115,15 @@ export function cartesianToScreen(x, y, z) {
 }
 
 export function reset3DCameraTo2DScreen() {
-    return;
-    let bs = getBaseSize();
-    let cx = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) / bs;
-    let cy = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) / bs;
-    // if mouse moves more than canvas, go closer (make cz smaller). if mouse moving less than canvas, other way 
-    let cz = 256 - 24 * (getCurZoom());
+    let cx = 0; // getFrameXMax() - (getFrameWidth() / 2);
+    let cy = 0; // getFrameYMax() - (getFrameHeight() / 2);
+    let cz = 0;
+
+    cx = -getFrameXMax() + (getFrameWidth() / 2);
+    cy = getFrameYMax() - (getFrameHeight() / 2);
+    cz = 100;
     saveGD(UI_CAMERA_OFFSET_VEC, [-cx, cy, cz, 1]);
-    saveGD(UI_CAMERA_ROTATION_VEC, [Math.PI / 2, 0, 0, 0]);
+    saveGD(UI_CAMERA_ROTATION_VEC, [-Math.PI / 2, 0, 0, 0]);
     saveGD(UI_CAMERA_OFFSET_VEC_DT, [0, 0, 0, 0]);
     saveGD(UI_CAMERA_ROTATION_VEC_DT, [0, 0, 0, 0]);
 }

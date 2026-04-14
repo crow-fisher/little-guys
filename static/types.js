@@ -8,7 +8,7 @@ import { SeedSquare } from "./squares/SeedSquare.js";
 import { AquiferSquare } from "./squares/parameterized/RainSquare.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
-import { HorsetailFern, HorsetailFernSeedOrganism } from "./plants/organisms/ferns/HorsetailFern.js";
+import { OriginGrass, OriginGrassSeedOrganism } from "./plants/organisms/grasses/OriginGrass.js";
 import { BackgroundImageSquare, ImageSquare, RigidImageSquare, StaticImageSquare } from "./squares/ImageSquare.js";
 import { RootLifeSquare } from "./plants/lifeSquares/RootLifeSquare.js";
 
@@ -27,13 +27,13 @@ export const ProtoMap = {
     "RigidImageSquare": RigidImageSquare.prototype,
 
     "BasePlant": BasePlant.prototype,
-    "HorsetailFern": HorsetailFern.prototype,
+    "OriginGrass": OriginGrass.prototype,
     "PlantLifeSquare": PlantLifeSquare.prototype,
     "RootLifeSquare": RootLifeSquare.prototype,
 
     "SeedSquare": SeedSquare.prototype,
     "SeedLifeSquare": SeedLifeSquare.prototype,
-    "HorsetailFernSeedOrganism": HorsetailFernSeedOrganism.prototype
+    "OriginGrassSeedOrganism": OriginGrassSeedOrganism.prototype
 }
 
 export const TypeMap = {

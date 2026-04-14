@@ -25,10 +25,10 @@ htail_dnm[_waterPressureWiltThresh] = -1.5;
 htail_dnm[_lightDecayValue] = 4.42;
 htail_dnm[_lightLevelDisplayExposureAdjustment] = .22;
 
-export class HorsetailFern extends BasePlant {
+export class OriginGrass extends BasePlant {
     constructor(square, seedLifeSquare, evolutionParameters) {
         super(square, seedLifeSquare, evolutionParameters);
-        this.proto = "HorsetailFern";
+        this.proto = "OriginGrass";
         this.uiRef = UI_ORGANISM_GRASS_HTAIL;
         this.targetFernShoots = 1;
         this.maxNumGrass = 10;
@@ -55,7 +55,7 @@ export class HorsetailFern extends BasePlant {
         if (seedSquare) {
             seedSquare.speedX = Math.random() > 0.5 ? -1 : 1 * randNumber(1, 2);
             seedSquare.speedY = randRange(-1.5, 1);
-            let orgAdded = new HorsetailFernSeedOrganism(seedSquare, this.getNextGenetics());
+            let orgAdded = new OriginGrassSeedOrganism(seedSquare, this.getNextGenetics());
             if (!orgAdded) {
                 seedSquare.destroy();
             } else {
@@ -163,16 +163,16 @@ export class HorsetailFern extends BasePlant {
     }
 }
 
-export class HorsetailFernSeedOrganism extends BasePlantSeed {
+export class OriginGrassSeedOrganism extends BasePlantSeed {
     constructor(square, evolutionParameters) {
         super(square, evolutionParameters);
-        this.proto = "HorsetailFernSeedOrganism";
+        this.proto = "OriginGrassSeedOrganism";
     }
 
     getSproutType() {
-        return HorsetailFern;
+        return OriginGrass;
     }
     getSproutTypeProto() {
-        return "HorsetailFern";
+        return "OriginGrass";
     }
 }

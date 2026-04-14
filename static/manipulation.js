@@ -5,7 +5,7 @@ import { addTemperature, addWaterSaturationPascalsSqCoords } from "./climate/sim
 import { addWindPerssureMaintainHumidity, addWindPressureCloud, addWindPressureDryAir } from "./climate/simulation/wind.js";
 import { getFrameSimulationSquares, removeSquare } from "./globalOperations.js";
 import { getLastMouseDownStart, getLastMoveOffset, getLeftMouseUpEvent, isLeftMouseClicked, isMiddleMouseClicked, isRightMouseClicked, setMouseTouchStartCallback } from "./mouse.js";
-import { HorsetailFernSeedOrganism } from "./plants/organisms/ferns/HorsetailFern.js";
+import { OriginGrassSeedOrganism } from "./plants/organisms/grasses/OriginGrass.js";
 import { addSquare, addSquareOverride, getSquares, removeSquarePos } from "./squares/_sqOperations.js";
 import { AquiferSquare } from "./squares/parameterized/RainSquare.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
@@ -340,7 +340,7 @@ function placeActiveSeed(px, py) {
                 let sq = addSquare(new SeedSquare(px, py));
                 let sq2 = addSquare(new WaterSquare(px, py));
                 if (sq) {
-                    let orgAdded = new HorsetailFernSeedOrganism(sq);
+                    let orgAdded = new OriginGrassSeedOrganism(sq);
                     if (!orgAdded) {
                         sq.destroy();
                     }

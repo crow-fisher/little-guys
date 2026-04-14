@@ -3,7 +3,7 @@ import { getActiveClimate } from "../../climate/climateManager.js";
 import { calculateColor } from "../../climate/simulation/temperatureHumidity.js";
 import { hexToRgb } from "../../common.js";
 import { _lightDecayValue, _lightLevelDisplayExposureAdjustment, _llt_max, _llt_min, _llt_target, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, baseOrganism_dnm } from "../../plants/organisms/BasePlant.js";
-import { htail_dnm } from "../../plants/organisms/ferns/HorsetailFern.js";
+import { htail_dnm } from "../../plants/organisms/grasses/OriginGrass.js";
 import { Component } from "../Component.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
 import { Container } from "../Container.js";
@@ -78,7 +78,7 @@ export class OrganismComponent extends Component {
           // grass 
           // grassConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "wheat", UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_WHEAT,
           //      () => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorInactiveCustom(0.52)));
-          grassConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "puzzle stick", UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_HTAIL,
+          grassConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "grass", UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_HTAIL,
                () => getActiveClimate().getUIColorInactiveCustom(0.63), () => getActiveClimate().getUIColorInactiveCustom(0.53)));
           // grassConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "cattail", UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_CATTAIL,
           //      () => getActiveClimate().getUIColorInactiveCustom(0.68), () => getActiveClimate().getUIColorInactiveCustom(0.52)));
