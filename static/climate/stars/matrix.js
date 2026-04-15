@@ -113,6 +113,10 @@ export function addVectorsCopy(v1, v2) {
   return addVectors(structuredClone(v1), v2);
 }
 
+export function addVectorsCopyMult(v1, v2, m) {
+  return addVectorsMult(structuredClone(v1), v2, m);
+}
+
 export function addVectors(v1, v2) {
   let l = Math.min(v1.length, v2.length);
   for (let i = 0; i < l; i++) {
@@ -134,9 +138,22 @@ export function addVec3Dest(v1, v2, dest) {
   dest[1] = (v1[1] + v2[1]);
   dest[2] = (v1[2] + v2[2]);
 }
+
+export function addVec3MultDest(v1, v2, m, dest) {
+  dest[0] = m * (v1[0] + v2[0]);
+  dest[1] = m * (v1[1] + v2[1]);
+  dest[2] = m * (v1[2] + v2[2]);
+}
 export function subtractVectors(v1, v2) {
   for (let i = 0; i < v1.length; i++) {
     v1[i] -= v2[i];
+  }
+  return v1;
+}
+ 
+export function subtractVectorsMult(v1, v2, m) {
+  for (let i = 0; i < v1.length; i++) {
+    v1[i] -= m * v2[i];
   }
   return v1;
 }
@@ -146,6 +163,14 @@ export function subtractVectorsDest(v1, v2, dest) {
     dest[1] = (v1[1] - v2[1]);
     dest[2] = (v1[2] - (v2[2] ?? 0));
 }
+
+
+export function subtractVectorsMultDest(v1, v2, m, dest) {
+    dest[0] = m * (v1[0] - v2[0]);
+    dest[1] = m * (v1[1] - v2[1]);
+    dest[2] = m * (v1[2] - (v2[2] ?? 0));
+}
+
 
 export function calculateDistance(v1, v2) {
   return (
@@ -181,7 +206,7 @@ export function multiplyVectorsDest(v1, v2, dest) {
     dest[i] = v1[i] + v2[i];
 }
 
-export function dotVec3Copy(v1, v2) {
+export function vec3Dot(v1, v2) {
   return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
 }
 

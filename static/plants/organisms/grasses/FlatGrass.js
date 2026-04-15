@@ -28,12 +28,12 @@ fgrass_dnm[_lightLevelDisplayExposureAdjustment] = .22;
 export class FlatGrass extends BasePlant {
     constructor(square, seedLifeSquare, evolutionParameters) {
         super(square, seedLifeSquare, evolutionParameters);
-        this.proto = "OriginGrass";
+        this.proto = "FlatGrass";
         this.uiRef = UI_ORGANISM_GRASS_FGRASS;
         this.targetGrasses = 1;
-        this.maxNumGrass = 10;
+        this.maxNumGrass = 1;
         this.targetGrassLength = 1;
-        this.maxShootLength = 5;
+        this.maxShootLength = 12;
         this.grasses = [];
     }
 
@@ -55,7 +55,7 @@ export class FlatGrass extends BasePlant {
         if (seedSquare) {
             seedSquare.speedX = Math.random() > 0.5 ? -1 : 1 * randNumber(1, 2);
             seedSquare.speedY = randRange(-1.5, 1);
-            let orgAdded = new OriginGrassSeedOrganism(seedSquare, this.getNextGenetics());
+            let orgAdded = new FlatGrassSeedOrganism(seedSquare, this.getNextGenetics());
             if (!orgAdded) {
                 seedSquare.destroy();
             } else {

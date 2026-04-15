@@ -4,7 +4,7 @@ import { getDefaultLighting, processLighting } from "../../lighting/lightingProc
 import { rotatePoint } from "../../canvas.js";
 import { loadGD, UI_CAMERA_CENTER_SELECT_POINT, UI_CAMERA_OFFSET_VEC, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_3D, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../../ui/UIData.js";
 import { cartesianToScreenInplace, gfc, screenToRenderScreen } from "../../rendering/camera.js";
-import { addVec3Dest, addVectors, copyVecValue, crossVec3, multiplyVectorByScalar, multiplyVectorByScalarDest, multiplyVectorsDest, normalizeVec3, normalizeVec3Dest, subtractVectors, subtractVectorsDest } from "../../climate/stars/matrix.js";
+import { addVec3Dest, addVectors, copyVecValue, crossVec3, vec3Dot, multiplyVectorByScalar, multiplyVectorByScalarDest, multiplyVectorsDest, normalizeVec3, normalizeVec3Dest, subtractVectors, subtractVectorsDest, subtractVectorsMultDest, addVec3MultDest, subtractVectorsMult, addVectorsMult, addVectorsCopy } from "../../climate/stars/matrix.js";
 import { QuadRenderJob } from "../../rendering/model/QuadRenderJob.js";
 import { addRenderJob } from "../../rendering/rasterizer.js";
 import { STAGE_DEAD } from "../organisms/Stages.js";
@@ -30,10 +30,7 @@ class PlantLifeSquare {
         this.frameCacheLighting = getDefaultLighting();
         this.lighting = []
 
-        // Set rendering member variables.
-        this.width = 1;
-        this.height = 1;
-
+        this.rp = [1, .1, 1, .1, 1]; // xmin, ymin, x2min, y2min, height;
         this.posVec = [0, 0, 0];
         this.posVecDir = [0, 1, 0];
 
@@ -86,22 +83,44 @@ class PlantLifeSquare {
         this._sp_cs = this._sp_cs ?? new CoordinateSet();
         this._ep_cs = this._ep_cs ?? new CoordinateSet();
 
-        this._cs_root.setWorld(this.posVec);
+        this._svx = this._svx ?? [0, 0, 0];
+        this._svy = this._svy ?? [0, 0, 0];
+        this._svx2 = this._svx ?? [0, 0, 0];
+        this._svy2 = this._svy ?? [0, 0, 0];
 
-        multiplyVectorByScalarDest(this.posVecDir, this.height, this.offset);
-
+        multiplyVectorByScalarDest(this.posVecDir, this.rp[4], this.offset);
         copyVecValue(this.posVec, this.startPointVec)
         addVec3Dest(this.startPointVec, this.offset, this.endPointVec);
 
+        this._cs_root.setWorld(this.posVec);
         this.forwardVec = normalizeVec3(this._cs_root.offset);
-        this.sideVec = normalizeVec3(crossVec3(this.posVecDir, this.forwardVec))
+        this.sideVec = normalizeVec3(crossVec3(this.posVecDir, this.forwardVec));
 
-        multiplyVectorByScalar(this.sideVec, this.width / 2);
+        multiplyVectorByScalarDest(this.sideVec, this.rp[0], this._svx);
+        multiplyVectorByScalarDest(this.sideVec, this.rp[1], this._svy);
+        multiplyVectorByScalarDest(this.sideVec, this.rp[2], this._svx2);
+        multiplyVectorByScalarDest(this.sideVec, this.rp[3], this._svy2);
+
+        this.sideMult = vec3Dot(this.forwardVec, this.offset) / vec3Dot(this.forwardVec, this.forwardVec);
 
         subtractVectorsDest(this.endPointVec, this.sideVec, this.cartesian_tl);
         addVec3Dest(this.endPointVec, this.sideVec, this.cartesian_tr);
         subtractVectorsDest(this.startPointVec, this.sideVec, this.cartesian_bl);
         addVec3Dest(this.startPointVec, this.sideVec, this.cartesian_br);
+
+        this._sp_cs.setWorld(this.startPointVec);
+        this._ep_cs.setWorld(this.endPointVec);
+
+        this._cs_svx = new CoordinateSet(addVectorsCopy(this.startPointVec, this._svx));
+        if (this._cs_svx.distToCamera < 8) {
+            this._cs_svy = new CoordinateSet(addVectorsCopy(this.startPointVec, this._svy));
+            this._cs_svx2 = new CoordinateSet(addVectorsCopy(this.endPointVec, this._svx2));
+            this._cs_svy2 = new CoordinateSet(addVectorsCopy(this.endPointVec, this._svy2));
+            this.rl(this._sp_cs.renderScreen, this._cs_svx.renderScreen, this._cs_svx.distToCamera, "rgba(121, 63, 142, .125)")
+            this.rl(this._sp_cs.renderScreen, this._cs_svy.renderScreen, this._cs_svy.distToCamera, "rgba(63, 142, 121, .125)")
+            this.rl(this._sp_cs.renderScreen, this._cs_svx2.renderScreen, this._cs_svx2.distToCamera, "rgba(121, 121, 142, .125)")
+            this.rl(this._sp_cs.renderScreen, this._cs_svy2.renderScreen, this._cs_svy2.distToCamera, "rgba(142, 63, 63, .125)")
+        }
 
         this._cs_tl = new CoordinateSet();
         this._cs_tr = new CoordinateSet();
@@ -113,17 +132,21 @@ class PlantLifeSquare {
         this._cs_bl.setWorld(this.cartesian_bl);
         this._cs_br.setWorld(this.cartesian_br);
 
-        this._sp_cs.setWorld(this.startPointVec);
-        this._ep_cs.setWorld(this.endPointVec);
 
+        // addRenderJob(new LineRenderJob(
+        //     this._sp_cs.renderScreen,
+        //     this._ep_cs.renderScreen,
+        //     10 ** 2.8 / (this._sp_cs.distToCamera ** 2),
+        //     COLOR_BLUE
+        // ), true);
+    }
+    rl(v1, v2, dtc, color=COLOR_BLUE) {
         addRenderJob(new LineRenderJob(
-            this._sp_cs.renderScreen,
-            this._ep_cs.renderScreen,
-            10 ** 2.8 / (this._sp_cs.distToCamera ** 2),
-            COLOR_BLUE
+            v1,
+            v2,
+            Math.min(10, 10 ** 2.8 / (dtc ** 2)),
+            color
         ), true);
-
-
     }
 
     prepareRenderJob() {
@@ -148,7 +171,7 @@ class PlantLifeSquare {
     }
 
     getLightFilterRate() {
-        return processRangeToOne(loadGD(UI_LIGHTING_PLANT));
+        return processRangeToOne(loadGD(UI_LIGHTING_PLANT) * this.linkedOrganism.lightDecayValue());
     }
 
     addChild(lifeSquare) {
@@ -205,7 +228,7 @@ class PlantLifeSquare {
         this.colorLightingApplied[0] = (this.color[0] / 255) * this.colorLighting.r;
         this.colorLightingApplied[1] = (this.color[1] / 255) * this.colorLighting.g;
         this.colorLightingApplied[2] = (this.color[2] / 255) * this.colorLighting.b;
-        this.cachedRgba = rgbToRgba(...this.colorLightingApplied, this.opacity);
+        this.cachedRgba = rgbToRgba(...this.colorLightingApplied, .45 * this.opacity);
     }
 
     setFrameAltColor() {

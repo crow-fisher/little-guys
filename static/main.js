@@ -19,7 +19,7 @@ import { render3DHud, tickFrameMatrix } from "./rendering/camera.js";
 import { gamepadCameraInput } from "./gamepadCameraInput.js";
 import { executeRenderJobs } from "./rendering/rasterizer.js";
 import { StarHandler } from "./climate/stars/starHandler.js";
-import { MAIN_CONTEXT } from "./index.js";
+import { MAIN_CONTEXT, NOORG } from "./index.js";
 import { COLOR_VERY_FUCKING_RED } from "./colors.js";
 import { AtmosphereHandler } from "./climate/simulation/atmosphere/AtmosphereHandler.js";
 import { CoordinateSet } from "./rendering/model/CoordinateSet.js";
@@ -118,6 +118,7 @@ function render() {
     let selectedViewMode = loadGD(UI_VIEWMODE_SELECT);
     doTimeSeek();
     renderTime();
+    
     starHandler.render();
 
     if (selectedViewMode == UI_VIEWMODE_TEMPERATURE) {
@@ -167,7 +168,7 @@ function render() {
 
 
 function orgTick() {
-    if (getTimeScale() == 0) {
+    if (NOORG || getTimeScale() == 0) {
         return;
     }
     if (!isTimeSeeking())

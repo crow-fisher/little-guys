@@ -12,6 +12,7 @@ import { COLOR_BLUE_FAINT, COLOR_GREEN_FAINT, COLOR_GREY, COLOR_WHITE_FAINT } fr
 import { addRenderJob } from "../../rendering/rasterizer.js";
 import { copyVecValue } from "../../climate/stars/matrix.js";
 import { invlerp, lerp } from "../../common.js";
+import { NOBLIP } from "../../index.js";
 
 
 export const _llt_target = "_llt_target";
@@ -436,6 +437,13 @@ class BasePlant {
     }
 
     renderBlips() {
+        if (NOBLIP) {
+            return;
+        }
+        if (this.greenLifeSquares.at(1)?._cs_tl?.distToCamera == null || this.greenLifeSquares.at(1)?._cs_tl?.distToCamera < 10) {
+            return;
+        }
+
         let values = [
             this.growthProgress,
             1 / this.lightLevelThrottleVal(),

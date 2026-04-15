@@ -31,7 +31,7 @@ export class OriginGrass extends BasePlant {
         this.proto = "OriginGrass";
         this.uiRef = UI_ORGANISM_GRASS_GRASS;
         this.targetGrasses = 1;
-        this.maxNumGrass = 10;
+        this.maxNumGrass = 1;
         this.targetGrassLength = 1;
         this.maxShootLength = 5;
         this.grasses = [];

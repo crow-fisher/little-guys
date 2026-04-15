@@ -1,4 +1,5 @@
 import { calculateStatistics, combineColorMultArr, combineColorMultArrDest, hsv2rgb, invlerp, lerp } from "../../common.js";
+import { NOSTAR } from "../../index.js";
 import { getStarHandler } from "../../main.js";
 import { frameMatrixReset, tickFrameMatrix } from "../../rendering/camera.js";
 import { LineRenderJob } from "../../rendering/model/LineRenderJob.js";
@@ -126,6 +127,9 @@ export class StarHandler {
 
 
     render() { 
+        if (NOSTAR) {
+            return;
+        }
         this.iterateOnSectors((sector) => sector.renderMain());
         this.renderConstellations();
         this.minLumensRuntime();

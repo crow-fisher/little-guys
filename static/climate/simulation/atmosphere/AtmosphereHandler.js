@@ -29,7 +29,7 @@ export class AtmosphereHandler {
     }
 
     initAtmosphereUnits2D() {
-        let ns = 40;
+        let ns = 10;
         sas(Math.max(getFrameWidth() / ns, getFrameHeight() / ns));
 
         this.x = Math.floor(getFrameXMin() / ATMOSCALE);

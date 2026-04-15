@@ -15,6 +15,9 @@ export let MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
 let params = new URLSearchParams(document.location.search);
 
 export let DEBUG = params.get("debug");
+export let NOORG = params.get("noorg");
+export let NOBLIP = params.get("noblip");
+export let NOSTAR = params.get("nostar");
 
 const body = document.getElementById("body");
 

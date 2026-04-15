@@ -465,7 +465,7 @@ export class SoilSquare extends BaseSquare {
         x += 3
         let a = 0.4;
         let b = 0.2;
-        let c = 12;
+        let c = 6;
         let d = .03;
         return c * x ** (a + d * Math.sin(x * this.posX)) + b * Math.sin(this.posX);
     }

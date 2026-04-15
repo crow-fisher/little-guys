@@ -11,7 +11,7 @@ import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { OriginGrass, OriginGrassSeedOrganism } from "./plants/organisms/grasses/OriginGrass.js";
 import { BackgroundImageSquare, ImageSquare, RigidImageSquare, StaticImageSquare } from "./squares/ImageSquare.js";
 import { RootLifeSquare } from "./plants/lifeSquares/RootLifeSquare.js";
-import { FlatGrassSeedOrganism } from "./plants/organisms/grasses/FlatGrass.js";
+import { FlatGrass, FlatGrassSeedOrganism } from "./plants/organisms/grasses/FlatGrass.js";
 
 export const ProtoMap = {
     "BaseSquare": BaseSquare.prototype,
@@ -35,7 +35,10 @@ export const ProtoMap = {
     "SeedSquare": SeedSquare.prototype,
     "SeedLifeSquare": SeedLifeSquare.prototype,
     "OriginGrassSeedOrganism": OriginGrassSeedOrganism.prototype,
-    "FlatGrassSeedOrganism": FlatGrassSeedOrganism.prototype
+    "FlatGrassSeedOrganism": FlatGrassSeedOrganism.prototype,
+
+    "OriginGrass": OriginGrass.prototype,
+    "FlatGrass": FlatGrass.prototype
 }
 
 export const TypeMap = {
