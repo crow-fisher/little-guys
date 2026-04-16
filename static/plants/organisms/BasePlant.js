@@ -1,7 +1,7 @@
 import { getCurDay, getDt } from "../../climate/time.js";
 import { STAGE_DEAD, STAGE_FLOWER, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_HEART, SUBTYPE_ROOTNODE, TYPE_HEART } from "./Stages.js";
-import { getNeighbors } from "../../squares/_sqOperations.js";
-import { loadGD, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_SIMULATION_GENS_PER_DAY } from "../../ui/UIData.js";
+import { addSquare, getNeighbors } from "../../squares/_sqOperations.js";
+import { loadGD, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA } from "../../ui/UIData.js";
 import { GrowthPlan } from "./growthPlan/GrowthPlan.js";
 import { GrowthPlanStep } from "./growthPlan/GrowthPlanStep.js";
 import { PlantLifeSquare } from "../lifeSquares/PlantLifeSquare.js";
@@ -11,8 +11,10 @@ import { CoordinateSet } from "../../rendering/model/CoordinateSet.js";
 import { COLOR_BLUE_FAINT, COLOR_GREEN_FAINT, COLOR_GREY, COLOR_WHITE_FAINT } from "../../colors.js";
 import { addRenderJob } from "../../rendering/rasterizer.js";
 import { copyVecValue } from "../../climate/stars/matrix.js";
-import { invlerp, lerp } from "../../common.js";
+import { invlerp, lerp, randNumber, randRange } from "../../common.js";
 import { NOBLIP } from "../../index.js";
+import { SeedSquare } from "../../squares/SeedSquare.js";
+import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
 
 
 export const _llt_target = "_llt_target";
@@ -46,6 +48,7 @@ class BasePlant {
         this.proto = "BasePlant";
         this.linkedSquare = square;
         this.stage = STAGE_SPROUT;
+        this.baseColor = [55, 55, 55];
         this.spawnTime = getCurDay();
         // Required color parameters for rendering. 
         // As RGB arrays.
@@ -386,10 +389,29 @@ class BasePlant {
         this.curNumRoots += 1;
     }
 
-    spawnSeed() {
-        console.log("Would spawn seed")
+    getSeedClass() {
+        alert("You need to implement this method.")
+        return;
     }
 
+    spawnSeed() {
+        if (this.originGrowth == null || (this.growthPlans.some((gp) => !gp.areStepsCompleted())) || this.targetGrassLength != this.maxShootLength)
+            return;
+        let comp = this.originGrowth.children.at(0);
+        let lsq_sq = comp.lifeSquares.at(0).linkedOrganism.linkedSquare;
+        let seedSquare = addSquare(new SeedSquare(lsq_sq.posX, lsq_sq.posY - 10));
+        if (seedSquare) {
+            seedSquare.speedX = Math.random() > 0.5 ? -1 : 1 * randNumber(1, 2);
+            seedSquare.speedY = randRange(-1.5, 1);
+            let orgAdded = new (this.getSeedClass())(seedSquare, this.getNextGenetics());
+            if (!orgAdded) {
+                seedSquare.destroy();
+            } else {
+                applyLightingFromSource(this.greenLifeSquares.at(0), orgAdded.seedLifeSquare)
+             }
+            this.growthProgress -= this.seedReduction();
+        }
+    }
     doSpawnSeed() {
         if (this.stage == STAGE_FLOWER) {
             this.spawnSeed();

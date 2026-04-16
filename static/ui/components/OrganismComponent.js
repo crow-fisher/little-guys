@@ -13,7 +13,7 @@ import { SliderGradientBackgroundPlantConfigurator } from "../elements/SliderGra
 import { TextBackground } from "../elements/TextBackground.js";
 import { TextFunctionalBackground } from "../elements/TextFunctionalBackground.js";
 import { Toggle } from "../elements/Toggle.js";
-import { UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_WHEAT, UI_ORGANISM_GRASS_GRASS, UI_ORGANISM_GRASS_CATTAIL, UI_CENTER, UI_ORGANISM_TREE_PALM, UI_ORGANISM_TYPE_SELECT, UI_ORGANISM_TYPE_MOSS, UI_ORGANISM_TYPE_GRASS, UI_ORGANISM_TYPE_FLOWER, UI_ORGANISM_TYPE_TREE, loadGD, loadUI, UI_UI_PHONEMODE, UI_ORGANISM_FLOWER_CONEFLOWER, UI_ORGANISM_NUTRITION_CONFIGURATOR, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_MOSS_PLEUROCARP, UI_ORGANISM_TREE_MAGNOLIA, UI_ORGANISM_GRASS_FGRASS } from "../UIData.js";
+import { UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_WHEAT, UI_ORGANISM_GRASS_GRASS, UI_ORGANISM_GRASS_CATTAIL, UI_CENTER, UI_ORGANISM_TREE_PALM, UI_ORGANISM_TYPE_SELECT, UI_ORGANISM_TYPE_MOSS, UI_ORGANISM_TYPE_GRASS, UI_ORGANISM_TYPE_FLOWER, UI_ORGANISM_TYPE_TREE, loadGD, loadUI, UI_UI_PHONEMODE, UI_ORGANISM_FLOWER_CONEFLOWER, UI_ORGANISM_NUTRITION_CONFIGURATOR, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_MOSS_PLEUROCARP, UI_ORGANISM_TREE_MAGNOLIA, UI_ORGANISM_GRASS_FGRASS, UI_ORGANISM_SOUP_GRASS } from "../UIData.js";
 
 export class OrganismComponent extends Component {
      constructor(posX, posY, padding, dir, key) {
@@ -82,6 +82,8 @@ export class OrganismComponent extends Component {
                () => getActiveClimate().getUIColorInactiveCustom(0.63), () => getActiveClimate().getUIColorInactiveCustom(0.53)));
           grassConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "flat bladed grass", UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_FGRASS,
                () => getActiveClimate().getUIColorInactiveCustom(0.63), () => getActiveClimate().getUIColorInactiveCustom(0.53)));
+          grassConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "soup grass", UI_ORGANISM_SELECT, UI_ORGANISM_SOUP_GRASS,
+          () => getActiveClimate().getUIColorInactiveCustom(0.63), () => getActiveClimate().getUIColorInactiveCustom(0.53)));
           // grassConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "cattail", UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_CATTAIL,
           //      () => getActiveClimate().getUIColorInactiveCustom(0.68), () => getActiveClimate().getUIColorInactiveCustom(0.52)));
           grassConditionalContainer.addElement(new TextBackground(this.window, sizeX, br2, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""))
@@ -246,7 +248,7 @@ export class OrganismComponent extends Component {
                return false;
           }
           if (loadGD(UI_ORGANISM_TYPE_SELECT) == UI_ORGANISM_TYPE_GRASS) {
-               if ([UI_ORGANISM_GRASS_CATTAIL, UI_ORGANISM_GRASS_GRASS, UI_ORGANISM_GRASS_FGRASS].includes(selected)) {
+               if ([UI_ORGANISM_GRASS_CATTAIL, UI_ORGANISM_GRASS_GRASS, UI_ORGANISM_GRASS_FGRASS, UI_ORGANISM_SOUP_GRASS].includes(selected)) {
                     return true;
                }
                return false;

@@ -3,7 +3,7 @@ import { randNumber, randRange, rr } from "../../../common.js";
 import { applyLightingFromSource } from "../../../lighting/lightingProcessing.js";
 import { addSquare } from "../../../squares/_sqOperations.js";
 import { SeedSquare } from "../../../squares/SeedSquare.js";
-import { loadGD, UI_ORGANISM_GRASS_GRASS } from "../../../ui/UIData.js";
+import { loadGD, UI_ORGANISM_GRASS_GRASS, UI_ORGANISM_SOUP_GRASS } from "../../../ui/UIData.js";
 import { PlantLifeSquare } from "../../lifeSquares/PlantLifeSquare.js";
 import { RootLifeSquare } from "../../lifeSquares/RootLifeSquare.js";
 import { BasePlant, _llt_target, _llt_min, _llt_max, _llt_throttlValMax, _seedReduction, _waterPressureSoilTarget, _waterPressureOverwaterThresh, _waterPressureWiltThresh, _lightDecayValue, _lightLevelDisplayExposureAdjustment, baseOrganism_dnm } from "../BasePlant.js";
@@ -25,11 +25,11 @@ grass_dnm[_waterPressureWiltThresh] = -1.5;
 grass_dnm[_lightDecayValue] = 4.42;
 grass_dnm[_lightLevelDisplayExposureAdjustment] = .22;
 
-export class OriginGrass extends BasePlant {
+export class SoupGrass extends BasePlant {
     constructor(square, seedLifeSquare, evolutionParameters) {
         super(square, seedLifeSquare, evolutionParameters);
-        this.proto = "OriginGrass";
-        this.uiRef = UI_ORGANISM_GRASS_GRASS;
+        this.proto = "SoupGrass";
+        this.uiRef = UI_ORGANISM_SOUP_GRASS;
         this.baseColor = [85, 128, 109];
         this.targetGrasses = 1;
         this.maxNumGrass = 1;
@@ -43,7 +43,7 @@ export class OriginGrass extends BasePlant {
     }
     
     getSeedClass() {
-        return OriginGrassSeedOrganism;
+        return SoupGrassSeedOrganism;
     }
 
 
@@ -149,16 +149,16 @@ export class OriginGrass extends BasePlant {
     }
 }
 
-export class OriginGrassSeedOrganism extends BasePlantSeed {
+export class SoupGrassSeedOrganism extends BasePlantSeed {
     constructor(square, evolutionParameters) {
         super(square, evolutionParameters);
-        this.proto = "OriginGrassSeedOrganism";
+        this.proto = "SoupGrassSeedOrganism";
     }
 
     getSproutType() {
-        return OriginGrass;
+        return SoupGrass;
     }
     getSproutTypeProto() {
-        return "OriginGrass";
+        return "SoupGrass";
     }
 }
