@@ -1,5 +1,5 @@
 import { copyVecValue, multiplyVectorByScalar, multiplyVectorByScalarDest } from "../../../climate/stars/matrix.js";
-import { randNumber, randRange, rr } from "../../../common.js";
+import { randNumber, randRange, rR, rr } from "../../../common.js";
 import { applyLightingFromSource } from "../../../lighting/lightingProcessing.js";
 import { addSquare } from "../../../squares/_sqOperations.js";
 import { SeedSquare } from "../../../squares/SeedSquare.js";
@@ -31,13 +31,30 @@ export class SoupGrass extends BasePlant {
         this.proto = "SoupGrass";
         this.uiRef = UI_ORGANISM_SOUP_GRASS;
         this.baseColor = [85, 128, 109];
+
+        this.elements = [];
     }
 
     processGenetics() {
         /* genetics rules 
-        "dna"
+        'dna' is an array of floats. 
         */ 
-        this.targetGrassLength = 0;
+
+        this._se = new Map();
+        // this member is processsing a piece of grass
+        
+        // generate a piece of grass in the genetics
+        let lm = 0.4;
+        let lM = 0.6; 
+        let l1 = rR(lm, lM);
+        this.dna = [l1, rR(lm, lM), rR(lm, lM), rR(lm, lM), l1];
+        for (let i = 0; i < this.dna.length; i++) {
+            if (this._se.get(this.dna.at(i)) != null) {
+                this._se.set(this.dna.at(i), [this._se.get(this.dna.at(i)), i])
+            } else {
+                this._se.set(this.dna.at(i), i);
+            }
+        }
 
     }
 
@@ -117,18 +134,6 @@ export class SoupGrass extends BasePlant {
     }
 
     prepareRender() {
-        this.grasses
-            .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
-            .forEach((grass) => {
-                let curColor = [85, 128, 109];
-                multiplyVectorByScalar(curColor, this.lightLevelDisplayExposureAdjustment());
-                let width = 0.4;
-                grass.lifeSquares.forEach((lsq) => {
-                    copyVecValue(curColor, lsq.color);
-                    lsq.width = width;
-                    width *= .97;
-                });
-            });
     }
 }
 
