@@ -44,7 +44,7 @@ export let baseOrganism_dnm = {
 }
 
 class BasePlant {
-    constructor(square, seedLifeSquare, evolutionParameters) {
+    constructor(square, seedLifeSquare, dna) {
         this.proto = "BasePlant";
         this.linkedSquare = square;
         this.stage = STAGE_SPROUT;
@@ -53,7 +53,7 @@ class BasePlant {
         // Required color parameters for rendering. 
         // As RGB arrays.
         this.seedLifeSquare = seedLifeSquare;
-        this.evolutionParameters = evolutionParameters;
+        this.dna = dna;
 
         this.evolutionMinColor = [63, 64, 79];
         this.evolutionMaxColor = [99, 0, 43];
@@ -81,9 +81,7 @@ class BasePlant {
 
         this.growthProgress = 0;
         this.deathProgress = 0;
-
     }
-
     getDefaultNutritionMap() {
         return baseOrganism_dnm;
     }
@@ -134,15 +132,8 @@ class BasePlant {
         return this.growthCycleLength;
     }
 
-    setEvolutionParameters(evolutionParameters) {
-        this.evolutionParameters = evolutionParameters;
-        this.processGenetics();
-    }
-
-
-    // IMPORTANT IMPLEMENTATION METHODS 
     getNextGenetics() {
-        return structuredClone(this.evolutionParameters);
+        return structuredClone(this.dna);
     }
 
     processGenetics() { } // fill this out in your implementation class!
@@ -300,7 +291,10 @@ class BasePlant {
                 return heartLsq;
             }
         ));
-        growthPlan.postConstruct = () => this.originGrowth = growthPlan.component;
+        growthPlan.postConstruct = () => {
+            this.originGrowth = growthPlan.component;
+            this.processGenetics();
+        };
         this.growthPlans.push(growthPlan);
     }
 

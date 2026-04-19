@@ -27,8 +27,8 @@ fgrass_dnm[_lightDecayValue] = 4.42;
 fgrass_dnm[_lightLevelDisplayExposureAdjustment] = .22;
 
 export class FlatGrass extends OriginGrass {
-    constructor(square, seedLifeSquare, evolutionParameters) {
-        super(square, seedLifeSquare, evolutionParameters);
+    constructor(square, seedLifeSquare, dna) {
+        super(square, seedLifeSquare, dna);
         this.proto = "FlatGrass";
         this.uiRef = UI_ORGANISM_GRASS_FGRASS;
         this.baseColor = [114, 37, 117];
@@ -49,8 +49,8 @@ export class FlatGrass extends OriginGrass {
 }
 
 export class FlatGrassSeedOrganism extends BasePlantSeed {
-    constructor(square, evolutionParameters) {
-        super(square, evolutionParameters);
+    constructor(square, dna) {
+        super(square, dna);
         this.proto = "FlatGrassSeedOrganism";
     }
 

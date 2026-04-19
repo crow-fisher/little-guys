@@ -26,8 +26,8 @@ grass_dnm[_lightDecayValue] = 4.42;
 grass_dnm[_lightLevelDisplayExposureAdjustment] = .22;
 
 export class OriginGrass extends BasePlant {
-    constructor(square, seedLifeSquare, evolutionParameters) {
-        super(square, seedLifeSquare, evolutionParameters);
+    constructor(square, seedLifeSquare, dna) {
+        super(square, seedLifeSquare, dna);
         this.proto = "OriginGrass";
         this.uiRef = UI_ORGANISM_GRASS_GRASS;
         this.baseColor = [85, 128, 109];
@@ -150,8 +150,8 @@ export class OriginGrass extends BasePlant {
 }
 
 export class OriginGrassSeedOrganism extends BasePlantSeed {
-    constructor(square, evolutionParameters) {
-        super(square, evolutionParameters);
+    constructor(square, dna) {
+        super(square, dna);
         this.proto = "OriginGrassSeedOrganism";
     }
 

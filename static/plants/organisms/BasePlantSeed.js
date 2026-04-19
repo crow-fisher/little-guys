@@ -7,14 +7,14 @@ import { randNumber } from "../../common.js";
 import { SeedLifeSquare } from "../lifeSquares/SeedLifeSquare.js";
 
 class BasePlantSeed extends BasePlant {
-    constructor(square, evolutionParameters = null) {
+    constructor(square, dna = null) {
         super(square);
         this.proto = "BasePlantSeed";
         this.sproutType = null;
         this.maxLifeTime = 10;
         this.sproutAge = null;
         this.totalSproutTime = 3 * (getTimeScale() / 86400);
-        this.evolutionParameters = (evolutionParameters ?? [Math.max(0, Math.min(1, (Math.random() - .5) * 0.25 + getCurPlantConfiguratorVal()))]);
+        this.dna = (dna ?? [Math.max(0, Math.min(1, (Math.random() - .5) * 0.25 + getCurPlantConfiguratorVal()))]);
         this.growInitialSquares();
     }
 
@@ -51,7 +51,7 @@ class BasePlantSeed extends BasePlant {
             if (this.sproutAge > this.totalSproutTime) {
                 let linkedSquareCache = this.linkedSquare;
                 this.unlinkSquare(true);
-                let newOrganism = new (this.getSproutType())(linkedSquareCache, this.seedLifeSquare, this.evolutionParameters);
+                let newOrganism = new (this.getSproutType())(linkedSquareCache, this.seedLifeSquare, this.dna);
                 linkedSquareCache.linkedOrganisms.push(newOrganism);
                 this.destroy();
                 return;

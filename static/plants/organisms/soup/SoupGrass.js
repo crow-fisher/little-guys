@@ -26,16 +26,19 @@ grass_dnm[_lightDecayValue] = 4.42;
 grass_dnm[_lightLevelDisplayExposureAdjustment] = .22;
 
 export class SoupGrass extends BasePlant {
-    constructor(square, seedLifeSquare, evolutionParameters) {
-        super(square, seedLifeSquare, evolutionParameters);
+    constructor(square, seedLifeSquare, dna) {
+        super(square, seedLifeSquare, dna);
         this.proto = "SoupGrass";
         this.uiRef = UI_ORGANISM_SOUP_GRASS;
         this.baseColor = [85, 128, 109];
-        this.targetGrasses = 1;
-        this.maxNumGrass = 1;
-        this.targetGrassLength = 1;
-        this.maxShootLength = 5;
-        this.grasses = [];
+    }
+
+    processGenetics() {
+        /* genetics rules 
+        "dna"
+        */ 
+        this.targetGrassLength = 0;
+
     }
 
     getDefaultNutritionMap() {
@@ -45,7 +48,6 @@ export class SoupGrass extends BasePlant {
     getSeedClass() {
         return SoupGrassSeedOrganism;
     }
-
 
     growGrass() {
         let startNode = this.originGrowth.lifeSquares.at(0);
@@ -91,10 +93,6 @@ export class SoupGrass extends BasePlant {
         if (!super.planGrowth()) {
             return;
         }
-        if (this.grasses.length < this.targetGrasses) {
-            this.growGrass();
-            return;
-        }
         if (this.grasses
             .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .some((grass) => grass.growthPlan.steps.length < this.targetGrassLength)) {
@@ -132,26 +130,11 @@ export class SoupGrass extends BasePlant {
                 });
             });
     }
-
-        prepareRender() {
-        this._curColor = this._curColor ?? [0, 0, 0];
-        this.grasses
-            .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
-            .forEach((grass) => {
-                multiplyVectorByScalarDest(this.baseColor, this.lightLevelDisplayExposureAdjustment(), this._curColor);
-                let width = 0.4;
-                grass.lifeSquares.forEach((lsq) => {
-                    copyVecValue(this._curColor, lsq.color);
-                    lsq.width = width;
-                    width *= .97;
-                });
-            });
-    }
 }
 
 export class SoupGrassSeedOrganism extends BasePlantSeed {
-    constructor(square, evolutionParameters) {
-        super(square, evolutionParameters);
+    constructor(square, dna) {
+        super(square, dna);
         this.proto = "SoupGrassSeedOrganism";
     }
 
