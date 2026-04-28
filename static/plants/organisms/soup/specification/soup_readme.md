@@ -52,7 +52,6 @@ we can reasonably encode hsv as 9 numbers. that leaves 6. 3 for height, 3 for wi
 then that's just a square? and we stack these on top of each other and just grow the fucker out? 
 
 and then we'll have plants that grow from dna, so we can just fix the growth patterning from there. nice. i think that works 
-
 */
 
 // E.g., the 'vec3' `01` tag may be: 
@@ -72,3 +71,9 @@ The most basic unit of this life is a `plant`.
 Various tag types are supported: 
 
 **Key Identifier** 
+
+<i>This is where the real language work comes in - deciding how to lay out the fundamental tools. 
+
+Like, what shapes do you define? What inner lines do you define? How do you set up color, strength? Depth? Size? Growth patterns?
+
+</i> 
