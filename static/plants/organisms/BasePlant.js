@@ -515,7 +515,7 @@ class BasePlant {
         this._blipRenderJobs[idx] = this._blipRenderJobs[idx] ?? new LineRenderJob();
         this._blipRenderJobs[idx].v1 = this._blipCoordinates[idx][0].renderScreen;
         this._blipRenderJobs[idx].v2 = this._blipCoordinates[idx][1].renderScreen;
-        this._blipRenderJobs[idx].size = 10 ** 4.3 / (this._blipCoordinates[idx][0].distToCamera ** 2);
+        this._blipRenderJobs[idx].size = 4; // 10 ** 4.3 / (Math.min(this._blipCoordinates[idx][0].distToCamera, this._blipCoordinates[idx][1].distToCamera) ** 2);
         this._blipRenderJobs[idx].color = this._blipColors[idx];
         this._blipRenderJobs[idx].z = this._blipRenderJobs[idx].getZ();
 

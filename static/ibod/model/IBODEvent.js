@@ -13,6 +13,6 @@ export class IBODEvent {
         this.sigNSignature = signSignature;
         this.csr = new CoordinateSet();
         this.csv = new CoordinateSet();
-        this.rj = new LineRenderJob([0, 0, 0], [0, 0, 0], 0, 4, COLOR_VERY_FUCKING_RED);
+        this.rj = new LineRenderJob([0, 0, 0], [0, 0, 0], 4, COLOR_VERY_FUCKING_RED);
     }
 }

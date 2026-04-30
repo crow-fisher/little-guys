@@ -41,6 +41,19 @@ export function IBODSeedEvent(org, seed) {
 }
 
 export function renderIBODEvents() {
+    if (ibodEvents.length == 0) {
+        return;
+    }
+    let zKey = "parentLightLevel";
+
+    let min = ibodEvents.at(0).data[zKey];
+    let max = ibodEvents.at(0).data[zKey];
+    for (let i = 0; i < ibodEvents.length; i++) {
+        min = Math.min(min, ibodEvents.at(i).data[zKey]);
+        max = Math.max(max, ibodEvents.at(i).data[zKey]);
+    }
+
+
     let ie, cz = 0, cur = [0, 0, 0];
     for (let i = 0; i < ibodEvents.length; i++) {
         ie = ibodEvents.at(i);
@@ -48,7 +61,7 @@ export function renderIBODEvents() {
         cur[2] -= cz;
         cz += 1;
         ie.csr.setWorld(cur);
-        cur[1] += ie.data.parentLightLevel * 10;
+        cur[1] += ((ie.data[zKey] - min) / (max - min)) * 10;
         ie.csv.setWorld(cur);
         copyVecValue(ie.csr.renderScreen, ie.rj.v1)
         copyVecValue(ie.csv.renderScreen, ie.rj.v2)
