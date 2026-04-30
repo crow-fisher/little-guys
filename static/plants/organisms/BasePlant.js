@@ -15,6 +15,7 @@ import { invlerp, lerp, randNumber, randRange } from "../../common.js";
 import { NOBLIP } from "../../index.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
 import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
+import { IBODEvent } from "../../ibod/model/IBODEvent.js";
 
 
 export const _llt_target = "_llt_target";
@@ -82,6 +83,7 @@ class BasePlant {
         this.growthProgress = 0;
         this.deathProgress = 0;
     }
+    
     getDefaultNutritionMap() {
         return baseOrganism_dnm;
     }
@@ -401,7 +403,8 @@ class BasePlant {
             if (!orgAdded) {
                 seedSquare.destroy();
             } else {
-                applyLightingFromSource(this.greenLifeSquares.at(0), orgAdded.seedLifeSquare)
+                applyLightingFromSource(this.greenLifeSquares.at(0), orgAdded.seedLifeSquare);
+                this.submitSeedIBODEvent(orgAdded); 
              }
             this.growthProgress -= this.seedReduction();
         }
@@ -580,6 +583,9 @@ class BasePlant {
             console.log("Plant of proto ", this.proto, ", spawnTime ", this.spawnTime, " has died");
             return;
         }
+    }
+
+    submitSeedIBODEvent(newOrg) {
     }
 
 

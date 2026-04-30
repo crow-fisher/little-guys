@@ -1,0 +1,52 @@
+import { getStarHandler } from "../../../../main.js";
+import { UI_AA_LABEL_GRAPH, UI_AA_LABEL_STARS, addUIFunctionMap, UI_AA_PLOT_XKEY, UI_AA_PLOT_YKEY, UI_AA_SETUP_COLORMODE, UI_SH_MINSIZE, UI_STARMAP_STAR_MIN_SIZE, UI_AA_SETUP_MIN, UI_AA_SELECTED_OPACITY, UI_SH_STYLE_SIZE_B, UI_SH_STYLE_SIZE_A, UI_SH_STYLE_BRIGHTNESS_A, UI_SH_STYLE_BRIGHTNESS_B, UI_CAMERA_FOV, UI_LIGHTING_WATER_HUE, UI_LIGHTING_WATER_SATURATION, UI_LIGHTING_WATER_VALUE, UI_SH_COLORSHIFT } from "../../../UIData.js";
+
+import { UI_AA_SETUP_WINDOW_SIZE, UI_AA_SETUP_POW, UI_AA_SETUP_MULT, UI_AA_SETUP_SELECT_MULT, UI_AA_PLOT_LOCALITY_SELECTMODE, UI_AA_PLOT_SELECTRADIUS, UI_AA_PLOT_SELECT_NAMED_STARS } from "../../../UIData.js";
+import { getIBODComponent } from "../../../WindowManager.js";
+
+export function resetStarStyle() {
+    getStarHandler().iterateOnSectors((sector) => sector._recalculateStarColorFlag = true);
+    getStarHandler().resetStarLabels();
+    getStarHandler().reprocessStarAltColoration();
+    getIBODComponent().plotStarScatter.triggerRecalculateColor();
+}
+
+function resetGraphStyle() {
+    getIBODComponent().plotStarScatter.triggerRecalculateColor();
+}
+
+function resetGraphPoints() {
+    getIBODComponent().plotStarScatter.flagRepreparePoints();
+}
+
+export function initAAUIFunctionMaps() {
+    addUIFunctionMap(UI_SH_MINSIZE, resetStarStyle);
+
+    addUIFunctionMap(UI_AA_LABEL_STARS, () => getStarHandler().resetStarLabels());
+    addUIFunctionMap(UI_AA_LABEL_GRAPH, () => getStarHandler().resetStarLabels());
+
+    addUIFunctionMap(UI_SH_MINSIZE, resetGraphPoints);
+    addUIFunctionMap(UI_STARMAP_STAR_MIN_SIZE, resetGraphPoints);
+
+    addUIFunctionMap(UI_AA_SETUP_COLORMODE, resetStarStyle);
+    addUIFunctionMap(UI_AA_PLOT_XKEY, resetStarStyle);
+    addUIFunctionMap(UI_AA_PLOT_YKEY, resetStarStyle);
+
+    addUIFunctionMap(UI_AA_SETUP_MIN, resetStarStyle);
+    addUIFunctionMap(UI_AA_SETUP_WINDOW_SIZE, resetStarStyle);
+    addUIFunctionMap(UI_AA_SETUP_POW, resetStarStyle);
+    addUIFunctionMap(UI_AA_SETUP_MULT, resetStarStyle);
+    addUIFunctionMap(UI_AA_SETUP_SELECT_MULT, resetStarStyle);
+    
+    addUIFunctionMap(UI_AA_PLOT_LOCALITY_SELECTMODE, resetGraphStyle);
+    addUIFunctionMap(UI_AA_PLOT_SELECTRADIUS, resetGraphStyle);
+    addUIFunctionMap(UI_AA_PLOT_SELECT_NAMED_STARS, resetGraphStyle);
+
+    addUIFunctionMap(UI_AA_SELECTED_OPACITY, resetGraphStyle);
+
+    addUIFunctionMap(UI_LIGHTING_WATER_SATURATION, resetStarStyle);
+    addUIFunctionMap(UI_LIGHTING_WATER_VALUE, resetStarStyle);
+    addUIFunctionMap(UI_LIGHTING_WATER_HUE, resetStarStyle);
+    addUIFunctionMap(UI_SH_COLORSHIFT, resetStarStyle);
+
+}
