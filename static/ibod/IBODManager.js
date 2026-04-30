@@ -1,6 +1,13 @@
+import { copyVecValue } from "../climate/stars/matrix.js";
+import { getCurDay } from "../climate/time.js";
+import { renderPoint } from "../rendering/camera.js";
+import { addRenderJob } from "../rendering/rasterizer.js";
 import { loadGD, saveUI, UI_IBOD_PLAYERUUID } from "../ui/UIData.js";
+import { IBODEvent } from "./model/IBODEvent.js";
 
 let IBODPlayerUuid, IBODPubKey, IBODPrivKey;
+
+let ibodEvents = new Array();
 
 export function initializeIBODContext() {
     if (IBODPlayerUuid != null) {
@@ -16,5 +23,36 @@ export function initializeIBODContext() {
         saveUI(UI_IBOD_PRIVKEY)
     }
 }
-export function createIBODEvent() {
+export function IBODSeedEvent(org, seed) {
+    let seedEvent = new IBODEvent(
+        IBODPlayerUuid,
+        getCurDay(),
+        structuredClone(org.greenLifeSquares.at(-1).cartesian_tl),
+        {
+            "seedId": seed.id,
+            "parentId": org.id,
+            "parentSpawnTime": org.spawnTime,
+            "parentAge": org.age,
+            "parentGrowthProgress": org.growthProgress, 
+            "parentWaterPressure": org.waterPressure,
+            "parentLightLevel": org.lightlevel
+    });
+    ibodEvents.push(seedEvent);
 }
+
+export function renderIBODEvents() {
+    let ie, cz = 0, cur = [0, 0, 0];
+    for (let i = 0; i < ibodEvents.length; i++) {
+        ie = ibodEvents.at(i);
+        copyVecValue(ie.pos, cur);
+        cur[2] -= cz;
+        cz += 1;
+        ie.csr.setWorld(cur);
+        cur[1] += ie.data.parentLightLevel * 10;
+        ie.csv.setWorld(cur);
+        copyVecValue(ie.csr.renderScreen, ie.rj.v1)
+        copyVecValue(ie.csv.renderScreen, ie.rj.v2)
+        addRenderJob(ie.rj, true);
+    }
+}
+

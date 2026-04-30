@@ -1,10 +1,10 @@
-import { getVec3Length, subtractVectorsDest } from "../../climate/stars/matrix.js";
+import { copyVecValue, getVec3Length, subtractVectorsDest } from "../../climate/stars/matrix.js";
 import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth } from "../../index.js";
 import { cartesianToScreenInplace, gfc, screenToRenderScreen } from "../camera.js";
 
 export class CoordinateSet {
     constructor(world) {
-        this.world = world;
+        this.world = [0, 0, 0];
         this.offset = [0, 0, 0];
         this.camera = [0, 0, 0];
         this.screen = [0, 0, 0];
@@ -13,16 +13,13 @@ export class CoordinateSet {
         this.distToCamera = 0;
         
         if (world != null) {
+            copyVecValue(world, this.world)
             this.process();
         }
     }
 
     setWorld(newWorld) {
-
-        if (newWorld.some(isNaN)) {
-            // alert("Something nan tha tshouldn't be!");
-        }
-        this.world = newWorld;
+        copyVecValue(newWorld, this.world);
         this.process();
     }
 

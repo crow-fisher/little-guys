@@ -1,7 +1,7 @@
 import { getCurDay, getDt } from "../../climate/time.js";
 import { STAGE_DEAD, STAGE_FLOWER, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_HEART, SUBTYPE_ROOTNODE, TYPE_HEART } from "./Stages.js";
 import { addSquare, getNeighbors } from "../../squares/_sqOperations.js";
-import { loadGD, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA } from "../../ui/UIData.js";
+import { getNextOrganismId, loadGD, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA } from "../../ui/UIData.js";
 import { GrowthPlan } from "./growthPlan/GrowthPlan.js";
 import { GrowthPlanStep } from "./growthPlan/GrowthPlanStep.js";
 import { PlantLifeSquare } from "../lifeSquares/PlantLifeSquare.js";
@@ -16,6 +16,7 @@ import { NOBLIP } from "../../index.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
 import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
 import { IBODEvent } from "../../ibod/model/IBODEvent.js";
+import { IBODSeedEvent } from "../../ibod/IBODManager.js";
 
 
 export const _llt_target = "_llt_target";
@@ -46,11 +47,14 @@ export let baseOrganism_dnm = {
 
 class BasePlant {
     constructor(square, seedLifeSquare, dna) {
+        
         this.proto = "BasePlant";
         this.linkedSquare = square;
         this.stage = STAGE_SPROUT;
         this.baseColor = [55, 55, 55];
         this.spawnTime = getCurDay();
+        this.id = getNextOrganismId();
+
         // Required color parameters for rendering. 
         // As RGB arrays.
         this.seedLifeSquare = seedLifeSquare;
@@ -168,7 +172,6 @@ class BasePlant {
 
 
         //     }).reduce((a, b) => a + b, 0);
-
         // let fd = 4;
         // console.log("Target:\t", this.waterPressureSoilTarget().toFixed(fd), "Current:\t", this.waterPressure.toFixed(fd), "Gain:\t", this._amountOfWaterPressureToGain.toFixed(fd), "\tLoss:\t", this.amountOfWaterPressureToLose.toFixed(fd))
         // this.waterPressure -= this.amountOfWaterPressureToLose;
@@ -404,7 +407,7 @@ class BasePlant {
                 seedSquare.destroy();
             } else {
                 applyLightingFromSource(this.greenLifeSquares.at(0), orgAdded.seedLifeSquare);
-                this.submitSeedIBODEvent(orgAdded); 
+                IBODSeedEvent(this, orgAdded); 
              }
             this.growthProgress -= this.seedReduction();
         }
@@ -580,12 +583,9 @@ class BasePlant {
         }
         if (this.age > this.getGrowthCycleLength() * this.numGrowthCycles) {
             this.stage = STAGE_DEAD;
-            console.log("Plant of proto ", this.proto, ", spawnTime ", this.spawnTime, " has died");
+            console.log("Plant of proto ", this.proto, ", id ", this.id, ", spawnTime ", this.spawnTime, " has died");
             return;
         }
-    }
-
-    submitSeedIBODEvent(newOrg) {
     }
 
 

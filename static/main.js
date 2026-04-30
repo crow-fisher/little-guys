@@ -23,6 +23,7 @@ import { MAIN_CONTEXT, NOORG } from "./index.js";
 import { COLOR_VERY_FUCKING_RED } from "./colors.js";
 import { AtmosphereHandler } from "./climate/simulation/atmosphere/AtmosphereHandler.js";
 import { CoordinateSet } from "./rendering/model/CoordinateSet.js";
+import { renderIBODEvents } from "./ibod/IBODManager.js";
 
 
 let starHandler;
@@ -107,6 +108,9 @@ export function scheduler_main() {
         completeActiveJobs();
         render3DHud();
         renderMainDebug();
+
+        /** BOOP BOOP */
+        renderIBODEvents();
     }
     setTimeout(scheduler_main, 0);
 }
