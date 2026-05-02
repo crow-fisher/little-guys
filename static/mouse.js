@@ -1,6 +1,9 @@
-import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, resetCanvasLastMoveOffset, resetZoom } from "./canvas.js";
+import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, resetCanvasLastMoveOffset, resetZoom, rotatePointRx, rotatePointRy } from "./canvas.js";
+import { copyVecValue } from "./climate/stars/matrix.js";
+import { sphericalToCartesian } from "./climate/stars/starHandlerUtil.js";
+import { MAIN_CANVAS } from "./index.js";
 import { setOrganismAddedThisClick, setPrevManipulationOffset } from "./manipulation.js";
-import { isEyedropperOrMixerClicked, loadGD, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER } from "./ui/UIData.js";
+import { isEyedropperOrMixerClicked, loadGD, saveGD, UI_CAMERA_ROTATION_VEC, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_VIEWMODE_3D, UI_VIEWMODE_SELECT } from "./ui/UIData.js";
 import { clearMouseHoverColorCacheMap } from "./ui/WindowManager.js";
 
 let leftMouseClicked = false;
@@ -14,9 +17,9 @@ let lastMoveEvent = null;
 let lastMoveOffset = null;
 let lastLastMoveOffset = null;
 let lastMoveEventTime = Date.now();
-
 let mouseEventCounter = new Map();
 
+let isMouse3DMode = false;
 
 export function getLastMouseUpEvent() {
     return lastMosueUpEvent;
@@ -75,6 +78,12 @@ export function handleMouseDown(e) {
     if (!isLeftMouseClicked()) {
         lastMouseDownStart = Date.now();
         mouseEventCounter.clear();
+        if (isMouse3DMode) {
+            isMouse3DMode = false;
+        } else if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_3D) {
+            isMouse3DMode = true;
+            MAIN_CANVAS.requestPointerLock({unadjustedMovement: true}); 
+        }
     }
 
     switch (e.button) {
@@ -118,6 +127,10 @@ export function handleMouseUp(e) {
 }
 
 export function handleClick(event) {
+    if (isMouse3DMode) {
+        handleMouse3DMove(event);
+        return;
+    }
     lastMoveEvent = event;
     lastMoveOffset = getOffset(event);
     lastMoveEventTime = Date.now();
@@ -125,6 +138,11 @@ export function handleClick(event) {
     if (!rightMouseClicked && mouseDown <= 0) {
         lastLastMoveOffset = lastMoveOffset;
     }
+}
+
+function handleMouse3DMove(event) {
+    loadGD(UI_CAMERA_ROTATION_VEC)[0] += event.movementX / 1500;
+    loadGD(UI_CAMERA_ROTATION_VEC)[1] += event.movementY / 1500;
 }
 
 let touchMode = false;
@@ -201,15 +219,6 @@ export function handleTouchMove(e, fromTouchStart=false) {
 }
 
 export function getOffset(evt) {
-    if (
-        (evt.pageX > (getCanvasSquaresX) * getBaseSize()) || 
-        (evt.pageY > (getCanvasSquaresY) * getBaseSize())
-    ) {
-        leftMouseClicked = false;
-        rightMouseClicked = false;
-        middleMouseClicked = false;
-    }
-
     // Check if the event is a touch or mouse event and calculate the offset accordingly
     if (evt.touches) {
         // For touch events, use the first touch
