@@ -59,7 +59,7 @@ export function renderIBODEvents() {
         ie = ibodEvents.at(i);
         copyVecValue(ie.pos, cur);
         cur[2] -= cz;
-        cz += 1;
+        cz += .01;
         ie.csr.setWorld(cur);
         cur[1] += ((ie.data[zKey] - min) / (max - min)) * 10;
         ie.csv.setWorld(cur);
