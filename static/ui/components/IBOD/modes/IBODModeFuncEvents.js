@@ -18,6 +18,4 @@ export const resetViewportButtonOffset = getBaseUISize() * 2;
 export function IBODModeFuncEvents(_this, container, sizeX, sizeY) {
     let row = new Container(_this.window, 0, 0);
     container.addElement(new IBODEventViewer(_this.window, sizeX, sizeY));
-
-    
 }

@@ -12,7 +12,7 @@ import { getCurDay } from "../../../time.js";
 
 
 
-export let ATMOSCALE = 16;
+export let ATMOSCALE = 4;
 
 
 export function sas(v) {

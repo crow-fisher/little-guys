@@ -41,6 +41,7 @@ export function IBODSeedEvent(org, seed) {
 }
 
 export function renderIBODEvents() {
+    return;
     if (ibodEvents.length == 0) {
         return;
     }

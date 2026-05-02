@@ -21,9 +21,6 @@ export class IBODEventViewer extends WindowElement {
     }
 
     render(startX, startY) {
-
-
-    
         MAIN_CONTEXT.font = this.sizeY * this.fontSizeMult + "px " + this.font;
         MAIN_CONTEXT.textBaseline = 'middle';
         MAIN_CONTEXT.fillStyle = COLOR_WHITE;

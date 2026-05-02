@@ -462,6 +462,9 @@ class BasePlant {
         if (NOBLIP) {
             return;
         }
+        if (this.id % 8 != 0) {
+            return;
+        }
         if (this.greenLifeSquares.at(1)?._cs_tl?.distToCamera == null || this.greenLifeSquares.at(1)?._cs_tl?.distToCamera < 10) {
             return;
         }
