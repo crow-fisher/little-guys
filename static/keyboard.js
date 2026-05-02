@@ -52,14 +52,14 @@ function _applyDeltaToVec(applied, offset, dx, dy, dz) {
 }
 
 function _3dViewKeymap(key) {
-    let offset = 10;
+    let offset = .1;
     let applied = [0, 0, 0, 0];
 
     if (key == 's') {
-        applied[0] += offset; 
+        applied[0] -= offset; 
     }
     if (key == 'w') { 
-        applied[0] -= offset; 
+        applied[0] += offset; 
     }
     if (key == 'd') {
         applied[1] -= offset; 

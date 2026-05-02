@@ -110,9 +110,8 @@ class PlantLifeSquare {
 
         this._sp_cs.setWorld(this.startPointVec);
         this._ep_cs.setWorld(this.endPointVec);
-
         this._cs_svx = new CoordinateSet(addVectorsCopy(this.startPointVec, this._svx));
-        if (this._cs_svx.distToCamera < 8) {
+        if ( false && this._cs_svx.distToCamera < 8) {
             this._cs_svy = new CoordinateSet(addVectorsCopy(this.startPointVec, this._svy));
             this._cs_svx2 = new CoordinateSet(addVectorsCopy(this.endPointVec, this._svx2));
             this._cs_svy2 = new CoordinateSet(addVectorsCopy(this.endPointVec, this._svy2));
