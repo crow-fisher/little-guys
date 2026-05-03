@@ -6,6 +6,7 @@ import { isPlayerRunning, playerKeyDown, playerKeyUp } from "./player/playerMain
 import { addSquareOverride } from "./squares/_sqOperations.js";
 import { loadGD, saveGD, UI_PALETTE_EYEDROPPER, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_MIXER, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_TOPBAR_BLOCK, UI_PALETTE_AQUIFER, closeEyedropperMixer, UI_PALETTE_ERASE, UI_TEXTEDIT_ACTIVE, UI_REGEX, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALETTE_PLANTS, UI_PALETTE_ROCKIDX, addUIFunctionMap, UI_PALETTE_COMPOSITION, UI_VIEWMODE_SELECT, UI_VIEWMODE_3D, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_OFFSET_VEC, UI_CAMERA_ROTATION_VEC, UI_CAMERA_ROTATION_VEC_DT, UI_STARMAP_ROTATION_VEC_DT, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Z, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CANVAS_SQUARES_ZOOM, UI_STARMAP_CONSTELATION_BRIGHTNESS, UI_CAMERA_FOV } from "./ui/UIData.js";
 import { clearMouseHoverColorCacheMap } from "./ui/WindowManager.js";
+import { isMouse3DMode } from "./mouse.js";
 
 export const KEY_CONTROL = "Control";
 export const KEY_SHIFT = "Shift";
@@ -51,26 +52,31 @@ function _applyDeltaToVec(applied, offset, dx, dy, dz) {
     return applied; 
 }
 
-function _3dViewKeymap(key) {
-    let offset = .1;
+
+export function keyboard3DRoutine() {
+    if (!isMouse3DMode()) {
+        return;
+    }
+
+    let offset = .5;
     let applied = [0, 0, 0, 0];
 
-    if (key == 's') {
+    if (isKeyPressed('s')) {
         applied[0] -= offset; 
     }
-    if (key == 'w') { 
+    if (isKeyPressed('w')) { 
         applied[0] += offset; 
     }
-    if (key == 'd') {
+    if (isKeyPressed('d')) {
         applied[1] -= offset; 
     }
-    if (key == 'a') {
+    if (isKeyPressed('a')) {
         applied[1] += offset; 
     }
-    if (key == 'q') {
+    if (isKeyPressed('q')) {
         applied[2] += offset; 
     }
-    if (key == 'e') {
+    if (isKeyPressed('e')) {
         applied[2] -= offset;
     }
 
@@ -80,51 +86,34 @@ function _3dViewKeymap(key) {
     ct[2] += applied[2];
     saveGD(UI_CAMERA_OFFSET_VEC_DT, ct)
 
-    let crd = loadGD(UI_CAMERA_ROTATION_VEC_DT);
-    offset = .01;
-    if (key == 'l') {
-        crd[0] += offset; 
-    }
-    if (key == 'j') { 
-        crd[0] -= offset; 
-    }
-    if (key == 'k') {
-        crd[1] += offset; 
-    }
-    if (key == 'i') {
-        crd[1] -= offset; 
-    }
-    saveGD(UI_CAMERA_ROTATION_VEC_DT, crd);
+    // if (key == 'u') {
+    //     saveGD(UI_STARMAP_CONSTELATION_BRIGHTNESS, loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS) - .01);
+    // }
+    // if (key === 'o') {
+    //     saveGD(UI_STARMAP_CONSTELATION_BRIGHTNESS, loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS) + .01);
+    // }
 
-    if (key == 'u') {
-        saveGD(UI_STARMAP_CONSTELATION_BRIGHTNESS, loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS) - .01);
-    }
-    if (key === 'o') {
-        saveGD(UI_STARMAP_CONSTELATION_BRIGHTNESS, loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS) + .01);
-    }
+    // if (key == '7') {
+    //     saveGD(UI_CAMERA_FOV, loadGD(UI_CAMERA_FOV) + 10);
+    // }
+    // if (key === '8') {
+    //     saveGD(UI_CAMERA_FOV, loadGD(UI_CAMERA_FOV) - 10);
+    // }
 
-    if (key == '7') {
-        saveGD(UI_CAMERA_FOV, loadGD(UI_CAMERA_FOV) + 10);
-    }
-    if (key === '8') {
-        saveGD(UI_CAMERA_FOV, loadGD(UI_CAMERA_FOV) - 10);
-    }
-
-
-    if (key == 'Escape') {
-            saveGD(UI_CANVAS_VIEWPORT_CENTER_X, 0);
-            saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, 0);
+    // if (key == 'Escape') {
+    //         saveGD(UI_CANVAS_VIEWPORT_CENTER_X, 0);
+    //         saveGD(UI_CANVAS_VIEWPORT_CENTER_Y, 0);
         
-        saveGD(UI_CAMERA_OFFSET_VEC, [0, 0, -50, 1]);
-        saveGD(UI_CAMERA_OFFSET_VEC, [0, 0, -50, 1]);
-        saveGD(UI_CAMERA_OFFSET_VEC_DT, [0, 0, 0, 0]);
-        saveGD(UI_CAMERA_ROTATION_VEC, [0, 0, 0, 0]);
-        saveGD(UI_CAMERA_ROTATION_VEC_DT, [0, 0, 0, 0]);
-    }
+    //     saveGD(UI_CAMERA_OFFSET_VEC, [0, 0, -50, 1]);
+    //     saveGD(UI_CAMERA_OFFSET_VEC, [0, 0, -50, 1]);
+    //     saveGD(UI_CAMERA_OFFSET_VEC_DT, [0, 0, 0, 0]);
+    //     saveGD(UI_CAMERA_ROTATION_VEC, [0, 0, 0, 0]);
+    //     saveGD(UI_CAMERA_ROTATION_VEC_DT, [0, 0, 0, 0]);
+    // }
 
-    if (key == ' ') {
-        reset3DCameraTo2DScreen();
-    }
+    // if (key == ' ') {
+    //     reset3DCameraTo2DScreen();
+    // }
 
 }
 
@@ -279,7 +268,6 @@ export function keydown(e) {
     }
 
     if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_3D) {
-        _3dViewKeymap(e.key)
         return;
     }
 

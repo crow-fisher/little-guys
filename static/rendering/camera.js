@@ -4,6 +4,7 @@ import { getCurDay } from "../climate/time.js";
 import { COLOR_WHITE } from "../colors.js";
 import { rgbToHex } from "../common.js";
 import { MAIN_CONTEXT } from "../index.js";
+import { keyboard3DRoutine } from "../keyboard.js";
 import { isMouse3DMode } from "../mouse.js";
 import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CAMERA_OFFSET_VEC, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_ROTATION_VEC_DT, saveGD, UI_CAMERA_FOV } from "../ui/UIData.js";
 import { FrameCache } from "./FrameCache.js";
@@ -382,6 +383,7 @@ export function canvasPan3DRoutine() {
     offset = addVectors(offset, uo);
     
     decayVec(UI_CAMERA_OFFSET_VEC_DT, isMouse3DMode() ? 0.83 : 0.93);
+    keyboard3DRoutine()
 
     _applyDerivativeVec(UI_CAMERA_OFFSET_VEC, offset, true, .1);
     _applyDerivativeVec(UI_CAMERA_ROTATION_VEC, UI_CAMERA_ROTATION_VEC_DT);

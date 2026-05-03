@@ -81,12 +81,15 @@ export function handleMouseDown(e) {
     if (!isLeftMouseClicked()) {
         lastMouseDownStart = Date.now();
         mouseEventCounter.clear();
-        if (_isMouse3DMode) {
-            _isMouse3DMode = false;
-        } else if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_3D) {
-            _isMouse3DMode = true;
-            MAIN_CANVAS.requestPointerLock({unadjustedMovement: true}); 
+        if (lastMouseDownStart - lastMosueUpEvent < 500) {
+            if (_isMouse3DMode) {
+                _isMouse3DMode = false;
+            } else if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_3D) {
+                _isMouse3DMode = true;
+                MAIN_CANVAS.requestPointerLock({unadjustedMovement: true}); 
+            }
         }
+
     }
 
     switch (e.button) {
