@@ -19,8 +19,11 @@ let lastLastMoveOffset = null;
 let lastMoveEventTime = Date.now();
 let mouseEventCounter = new Map();
 
-let isMouse3DMode = false;
+let _isMouse3DMode = false;
 
+export function isMouse3DMode() {
+    return _isMouse3DMode;
+}
 export function getLastMouseUpEvent() {
     return lastMosueUpEvent;
 }
@@ -78,10 +81,10 @@ export function handleMouseDown(e) {
     if (!isLeftMouseClicked()) {
         lastMouseDownStart = Date.now();
         mouseEventCounter.clear();
-        if (isMouse3DMode) {
-            isMouse3DMode = false;
+        if (_isMouse3DMode) {
+            _isMouse3DMode = false;
         } else if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_3D) {
-            isMouse3DMode = true;
+            _isMouse3DMode = true;
             MAIN_CANVAS.requestPointerLock({unadjustedMovement: true}); 
         }
     }
@@ -127,7 +130,7 @@ export function handleMouseUp(e) {
 }
 
 export function handleClick(event) {
-    if (isMouse3DMode) {
+    if (_isMouse3DMode) {
         handleMouse3DMove(event);
         return;
     }

@@ -52,7 +52,7 @@ function _applyDeltaToVec(applied, offset, dx, dy, dz) {
 }
 
 function _3dViewKeymap(key) {
-    let offset = 1;
+    let offset = .1;
     let applied = [0, 0, 0, 0];
 
     if (key == 's') {
