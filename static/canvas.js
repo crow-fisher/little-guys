@@ -114,6 +114,40 @@ let _c_UI_CANVAS_SQUARES_ZOOM = getCurZoom();
 let _c_UI_CANVAS_VIEWPORT_CENTER_X = loadGD(UI_CANVAS_VIEWPORT_CENTER_X);
 let _c_UI_CANVAS_VIEWPORT_CENTER_Y = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y);
 
+
+let _cz = getCurZoom();
+let _ccx = loadGD(UI_CANVAS_VIEWPORT_CENTER_X);
+let _ccy = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y);
+let _tw = getCanvasSquaresX() * getBaseSize();
+let _th = getCanvasSquaresY() * getBaseSize();
+let _ww = _tw / getCurZoom();
+let _wh = _th / getCurZoom();
+let _wws = _ccx - (_ww / 2);
+let _whs = _ccy - (_wh / 2);
+let _wwe = _ccx + (_ww / 2);
+let _whe = _ccy + (_wh / 2);
+
+// canvasLocToPixels(x, y) {
+//     this._cz = getCurZoom();
+//     this._ccx = loadGD(UI_CANVAS_VIEWPORT_CENTER_X);
+//     this._ccy = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y);
+//     this._tw = getCanvasSquaresX() * getBaseSize();
+//     this._th = getCanvasSquaresY() * getBaseSize();
+//     this._ww = this._tw / getCurZoom();
+//     this._wh = this._th / getCurZoom();
+//     this._wws = this._ccx - (this._ww / 2);
+//     this._whs = this._ccy - (this._wh / 2);
+//     this._wwe = this._ccx + (this._ww / 2);
+//     this._whe = this._ccy + (this._wh / 2);
+//     this._xpi = (x - this._wws) / this._ww;
+//     this._ypi = (y - this._whs) / this._wh;
+//     return [this._xpi * this._tw, this._ypi * this._th];
+// }
+
+function canvasLocToPixels(x, y) {
+    return [((x - _wws) / _ww) * _tw, ((y - _whs) / _wh) * _th];
+}
+
 function cameraBoundsCheck() {
     let w2 = (getCanvasWidth() / getCurZoom()) / 2;
     let h2 = (getCanvasHeight() / getCurZoom()) / 2;
@@ -135,6 +169,18 @@ export function recacheCanvasPositions() {
     _c_UI_CANVAS_VIEWPORT_CENTER_X = loadGD(UI_CANVAS_VIEWPORT_CENTER_X);
     _c_UI_CANVAS_VIEWPORT_CENTER_Y = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y);
     resetCornerLocations();
+
+    _cz = getCurZoom();
+    _ccx = loadGD(UI_CANVAS_VIEWPORT_CENTER_X);
+    _ccy = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y);
+    _tw = getCanvasSquaresX() * getBaseSize();
+    _th = getCanvasSquaresY() * getBaseSize();
+    _ww = _tw / getCurZoom();
+    _wh = _th / getCurZoom();
+    _wws = _ccx - (_ww / 2);
+    _whs = _ccy - (_wh / 2);
+    _wwe = _ccx + (_ww / 2);
+    _whe = _ccy + (_wh / 2);
 }
 
 export function isSquareOnCanvas(x, y, dx = 1, dy = 1) {

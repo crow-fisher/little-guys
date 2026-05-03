@@ -125,7 +125,6 @@ class PlantLifeSquare {
 
         MAIN_CONTEXT.fillStyle = COLOR_VERY_FUCKING_RED;
 
-
         // addRenderJob(new LineRenderJob(
         //     this._sp_cs.renderScreen,
         //     this._ep_cs.renderScreen,
