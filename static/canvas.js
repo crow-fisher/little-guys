@@ -191,6 +191,8 @@ export function zoomCanvasFillRect(x, y, dx, dy) {
 }
 
 
+
+
 export function zoomCanvasFillCircle(x, y, size) {
     let totalWidth = CANVAS_SQUARES_X * BASE_SIZE;
     let totalHeight = CANVAS_SQUARES_Y * BASE_SIZE;

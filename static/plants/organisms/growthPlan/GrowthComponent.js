@@ -71,7 +71,7 @@ export class GrowthComponent {
             addVectors(this._curOffsetDir, this.deflection_base_curve);
             this.applyComponentWind(this.lifeSquares.at(i));
             normalizeVec3(this._curOffsetDir);
-            addVectorsMult(this._curOffset, this._curOffsetDir, 0.8)
+            addVectorsMult(this._curOffset, this._curOffsetDir, 0.8 * (this.lifeSquares.at(i).height ?? 1))
         };
         this.children.forEach((child) => child.updateDeflectionState(this._curOffset));
     }

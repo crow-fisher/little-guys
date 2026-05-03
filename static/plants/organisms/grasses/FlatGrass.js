@@ -35,7 +35,7 @@ export class FlatGrass extends OriginGrass {
         this.targetGrasses = 1;
         this.maxNumGrass = 1;
         this.targetGrassLength = 1;
-        this.maxShootLength = 12;
+        this.maxGrassLength = 6;
         this.grasses = [];
     }
 

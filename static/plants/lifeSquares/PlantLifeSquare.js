@@ -1,7 +1,7 @@
 import { hsv2rgb, processColorLerpBicolorArr, processRangeToOne, rgb2hsv, rgbToRgba } from "../../common.js";
-import { COLOR_BLUE, RGB_COLOR_GREEN } from "../../colors.js";
+import { COLOR_BLUE, COLOR_VERY_FUCKING_RED, RGB_COLOR_GREEN } from "../../colors.js";
 import { getDefaultLighting, processLighting } from "../../lighting/lightingProcessing.js";
-import { rotatePoint } from "../../canvas.js";
+import { rotatePoint, zoomCanvasFillCircle, zoomCanvasFillRect } from "../../canvas.js";
 import { loadGD, UI_CAMERA_CENTER_SELECT_POINT, UI_CAMERA_OFFSET_VEC, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_3D, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../../ui/UIData.js";
 import { cartesianToScreenInplace, gfc, screenToRenderScreen } from "../../rendering/camera.js";
 import { addVec3Dest, addVectors, copyVecValue, crossVec3, vec3Dot, multiplyVectorByScalar, multiplyVectorByScalarDest, multiplyVectorsDest, normalizeVec3, normalizeVec3Dest, subtractVectors, subtractVectorsDest, subtractVectorsMultDest, addVec3MultDest, subtractVectorsMult, addVectorsMult, addVectorsCopy } from "../../climate/stars/matrix.js";
@@ -11,7 +11,7 @@ import { STAGE_DEAD } from "../organisms/Stages.js";
 import { CoordinateSet } from "../../rendering/model/CoordinateSet.js";
 import { sphericalToCartesian } from "../../climate/stars/starHandlerUtil.js";
 import { LineRenderJob } from "../../rendering/model/LineRenderJob.js";
-import { DEBUG } from "../../index.js";
+import { DEBUG, MAIN_CONTEXT } from "../../index.js";
 
 const NUTRIENT_BASE_HSV = rgb2hsv(RGB_COLOR_GREEN.r, RGB_COLOR_GREEN.g, RGB_COLOR_GREEN.b);
 class PlantLifeSquare {
@@ -77,25 +77,15 @@ class PlantLifeSquare {
         this._sp_cs = this._sp_cs ?? new CoordinateSet();
         this._ep_cs = this._ep_cs ?? new CoordinateSet();
 
-        this._svx = this._svx ?? [0, 0, 0];
-        this._svy = this._svy ?? [0, 0, 0];
-        this._svx2 = this._svx ?? [0, 0, 0];
-        this._svy2 = this._svy ?? [0, 0, 0];
+        this.height = 3;
 
-        multiplyVectorByScalarDest(this.posVecDir, this.rp[4], this.offset);
+        multiplyVectorByScalarDest(this.posVecDir, this.height, this.offset);
         copyVecValue(this.posVec, this.startPointVec)
         addVec3Dest(this.startPointVec, this.offset, this.endPointVec);
 
         this._cs_root.setWorld(this.posVec);
         this.forwardVec = normalizeVec3(this._cs_root.offset);
         this.sideVec = normalizeVec3(crossVec3(this.posVecDir, this.forwardVec));
-
-        multiplyVectorByScalarDest(this.sideVec, this.rp[0], this._svx);
-        multiplyVectorByScalarDest(this.sideVec, this.rp[1], this._svy);
-        multiplyVectorByScalarDest(this.sideVec, this.rp[2], this._svx2);
-        multiplyVectorByScalarDest(this.sideVec, this.rp[3], this._svy2);
-
-        this.sideMult = vec3Dot(this.forwardVec, this.offset) / vec3Dot(this.forwardVec, this.forwardVec);
 
         subtractVectorsDest(this.endPointVec, this.sideVec, this.cartesian_tl);
         addVec3Dest(this.endPointVec, this.sideVec, this.cartesian_tr);
@@ -104,8 +94,16 @@ class PlantLifeSquare {
 
         this._sp_cs.setWorld(this.startPointVec);
         this._ep_cs.setWorld(this.endPointVec);
-        this._cs_svx = new CoordinateSet(addVectorsCopy(this.startPointVec, this._svx));
         if ( false && this._cs_svx.distToCamera < 8) {
+            this._svx = this._svx ?? [0, 0, 0];
+            this._svy = this._svy ?? [0, 0, 0];
+            this._svx2 = this._svx ?? [0, 0, 0];
+            this._svy2 = this._svy ?? [0, 0, 0];
+            multiplyVectorByScalarDest(this.sideVec, this.rp[0], this._svx);
+            multiplyVectorByScalarDest(this.sideVec, this.rp[1], this._svy);
+            multiplyVectorByScalarDest(this.sideVec, this.rp[2], this._svx2);
+            multiplyVectorByScalarDest(this.sideVec, this.rp[3], this._svy2);
+            this._cs_svx = new CoordinateSet(addVectorsCopy(this.startPointVec, this._svx));
             this._cs_svy = new CoordinateSet(addVectorsCopy(this.startPointVec, this._svy));
             this._cs_svx2 = new CoordinateSet(addVectorsCopy(this.endPointVec, this._svx2));
             this._cs_svy2 = new CoordinateSet(addVectorsCopy(this.endPointVec, this._svy2));
@@ -124,6 +122,8 @@ class PlantLifeSquare {
         this._cs_tr.setWorld(this.cartesian_tr);
         this._cs_bl.setWorld(this.cartesian_bl);
         this._cs_br.setWorld(this.cartesian_br);
+
+        MAIN_CONTEXT.fillStyle = COLOR_VERY_FUCKING_RED;
 
 
         // addRenderJob(new LineRenderJob(
@@ -221,7 +221,7 @@ class PlantLifeSquare {
         this.colorLightingApplied[0] = (this.color[0] / 255) * this.colorLighting.r;
         this.colorLightingApplied[1] = (this.color[1] / 255) * this.colorLighting.g;
         this.colorLightingApplied[2] = (this.color[2] / 255) * this.colorLighting.b;
-        this.cachedRgba = rgbToRgba(...this.colorLightingApplied, .45 * this.opacity);
+        this.cachedRgba = rgbToRgba(...this.colorLightingApplied, .95 * this.opacity);
     }
 
     setFrameAltColor() {

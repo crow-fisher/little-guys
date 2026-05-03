@@ -14,10 +14,10 @@ import { STAGE_ADULT, SUBTYPE_STEM, TYPE_STEM } from "../Stages.js";
 
 export let grass_dnm = structuredClone(baseOrganism_dnm);
 
-grass_dnm[_llt_target] = 1.45;
+grass_dnm[_llt_target] = 0.85;
 grass_dnm[_llt_min] = 0.74;
 grass_dnm[_llt_max] = 1.43;
-grass_dnm[_llt_throttlValMax] = 5.27;
+grass_dnm[_llt_throttlValMax] = 3;
 grass_dnm[_seedReduction] = 0.10;
 grass_dnm[_waterPressureSoilTarget] = -4;
 grass_dnm[_waterPressureOverwaterThresh] = 1;
@@ -32,9 +32,9 @@ export class OriginGrass extends BasePlant {
         this.uiRef = UI_ORGANISM_GRASS_GRASS;
         this.baseColor = [85, 128, 109];
         this.targetGrasses = 1;
-        this.maxNumGrass = 1;
+        this.maxNumGrass = 3;
         this.targetGrassLength = 1;
-        this.maxShootLength = 5;
+        this.maxGrassLength = 2;
         this.grasses = [];
     }
 
@@ -102,7 +102,7 @@ export class OriginGrass extends BasePlant {
             return;
         }
 
-        if (this.targetGrassLength < this.maxShootLength) {
+        if (this.targetGrassLength < this.maxGrassLength) {
             this.targetGrassLength += 1;
             return;
         }

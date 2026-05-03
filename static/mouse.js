@@ -87,7 +87,7 @@ export function handleMouseDown(e) {
     if (!isLeftMouseClicked()) {
         lastMouseDownStart = Date.now();
         mouseEventCounter.clear();
-        if (lastMouseDownStart - lastMosueUpEvent < 500) {
+        if (false && lastMouseDownStart - lastMosueUpEvent < 500) {
             if (_isMouse3DMode) {
                 _isMouse3DMode = false;
                 if (document.pointerLockElement === MAIN_CANVAS) {

@@ -78,12 +78,12 @@ export class OrganismComponent extends Component {
           // grass 
           // grassConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "wheat", UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_WHEAT,
           //      () => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorInactiveCustom(0.52)));
-          grassConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "grass", UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_GRASS,
+          grassConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "brushy grass", UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_GRASS,
                () => getActiveClimate().getUIColorInactiveCustom(0.63), () => getActiveClimate().getUIColorInactiveCustom(0.53)));
-          grassConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "flat bladed grass", UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_FGRASS,
+          grassConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "spitter grass", UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_FGRASS,
                () => getActiveClimate().getUIColorInactiveCustom(0.63), () => getActiveClimate().getUIColorInactiveCustom(0.53)));
-          grassConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "soup grass", UI_ORGANISM_SELECT, UI_ORGANISM_SOUP_GRASS,
-          () => getActiveClimate().getUIColorInactiveCustom(0.63), () => getActiveClimate().getUIColorInactiveCustom(0.53)));
+          // grassConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "soup grass", UI_ORGANISM_SELECT, UI_ORGANISM_SOUP_GRASS,
+          // () => getActiveClimate().getUIColorInactiveCustom(0.63), () => getActiveClimate().getUIColorInactiveCustom(0.53)));
           // grassConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "cattail", UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_CATTAIL,
           //      () => getActiveClimate().getUIColorInactiveCustom(0.68), () => getActiveClimate().getUIColorInactiveCustom(0.52)));
           grassConditionalContainer.addElement(new TextBackground(this.window, sizeX, br2, offsetX, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""))
