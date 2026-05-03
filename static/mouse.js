@@ -74,6 +74,12 @@ export function getLeftMouseUpEvent() {
     return false;
 }
 
+document.addEventListener("pointerlockchange", (event) => { {
+    if (!document.pointerLockElement) {
+        _isMouse3DMode = false;
+    }
+}})
+
 export function handleMouseDown(e) {
     e.preventDefault();
     lastMoveEventTime = Date.now();
@@ -84,6 +90,9 @@ export function handleMouseDown(e) {
         if (lastMouseDownStart - lastMosueUpEvent < 500) {
             if (_isMouse3DMode) {
                 _isMouse3DMode = false;
+                if (document.pointerLockElement === MAIN_CANVAS) {
+                    document.exitPointerLock();
+                }
             } else if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_3D) {
                 _isMouse3DMode = true;
                 MAIN_CANVAS.requestPointerLock({unadjustedMovement: true}); 
