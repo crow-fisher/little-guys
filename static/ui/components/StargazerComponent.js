@@ -7,7 +7,7 @@ import { StarSpecializedValuePicker } from "../elements/StarSpecializedValuePick
 import { Text } from "../elements/Text.js";
 import { Toggle } from "../elements/Toggle.js";
 import { LockedComponent } from "../LockedComponent.js";
-import { UI_CAMERA_FOV, UI_CENTER, UI_STARMAP_CONSTELATION_BRIGHTNESS, UI_SH_MINSIZE, UI_STARMAP_ZOOM, UI_STARMAP_STAR_MIN_MAGNITUDE, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_STARMAP_VIEWMODE, UI_STARMAP_FEH_POW, UI_STARMAP_FEH_WINDOW_SIZE, UI_STARMAP_FEH_MIN_VALUE, UI_AA_PLOT_ACTIVE, UI_AA_PLOT_MAXPOINTS, UI_AA_PLOT_XKEY, UI_AA_PLOT_YKEY, UI_AA_PLOT_WIDTH, UI_AA_PLOT_HEIGHT, UI_AA_PLOT_POINTSIZE, UI_AA_PLOT_POINTOPACITY, UI_AA_PLOT_ZOOM_Y, UI_AA_PLOT_ZOOM_X, UI_AA_PLOT_RENDERGRIDLINES, UI_AA_PLOT_AXISLABELS, UI_AA_PLOT_XPADDING, UI_AA_PLOT_YPADDING, UI_AA_PLOT_OFFSET_X, UI_AA_PLOT_OFFSET_Y, UI_STARGAZER_SETUP, UI_AA_PLOT_TOOLBOX_STAR_STYLE } from "../UIData.js";
+import { UI_CAMERA_FOV, UI_CENTER, UI_STARMAP_CONSTELATION_BRIGHTNESS, UI_SH_MINSIZE, UI_STARMAP_ZOOM, UI_STARMAP_STAR_MIN_MAGNITUDE, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_STARMAP_VIEWMODE, UI_STARMAP_FEH_POW, UI_STARMAP_FEH_WINDOW_SIZE, UI_STARMAP_FEH_MIN_VALUE, UI_TOPBAR_AA, UI_AA_PLOT_MAXPOINTS, UI_AA_PLOT_XKEY, UI_AA_PLOT_YKEY, UI_AA_PLOT_WIDTH, UI_AA_PLOT_HEIGHT, UI_AA_PLOT_POINTSIZE, UI_AA_PLOT_POINTOPACITY, UI_AA_PLOT_ZOOM_Y, UI_AA_PLOT_ZOOM_X, UI_AA_PLOT_RENDERGRIDLINES, UI_AA_PLOT_AXISLABELS, UI_AA_PLOT_XPADDING, UI_AA_PLOT_YPADDING, UI_AA_PLOT_OFFSET_X, UI_AA_PLOT_OFFSET_Y, UI_STARGAZER_SETUP, UI_AA_PLOT_TOOLBOX_STAR_STYLE } from "../UIData.js";
 
 export const R_COLORS = "🎨";
 export const R_PERCOLATION_RATE = "💦";
@@ -56,8 +56,8 @@ export class StargazerComponent extends LockedComponent {
         container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "star plot"))
         let row3 = new Container(this.window, 0, 0);
         container.addElement(row3)
-        row3.addElement(new RadioToggleLabel(this.window, half, textHeight, UI_CENTER, "on", UI_AA_PLOT_ACTIVE, 1, () => COLOR_RED, () => COLOR_BLUE));
-        row3.addElement(new RadioToggleLabel(this.window, half, textHeight, UI_CENTER, "off", UI_AA_PLOT_ACTIVE, 0, () => COLOR_RED, () => COLOR_BLUE));
+        row3.addElement(new RadioToggleLabel(this.window, half, textHeight, UI_CENTER, "on", UI_TOPBAR_AA, 1, () => COLOR_RED, () => COLOR_BLUE));
+        row3.addElement(new RadioToggleLabel(this.window, half, textHeight, UI_CENTER, "off", UI_TOPBAR_AA, 0, () => COLOR_RED, () => COLOR_BLUE));
 
         container.addElement(new Text(this.window, sizeX, textHeight, UI_CENTER, "number of graph points"))
 

@@ -20,8 +20,7 @@ import {
     UI_NAME, UI_TOPBAR_WEATHER,
     loadUI,
     UI_UI_PHONEMODE,
-    UI_TOPBAR_STARGAZER,
-    UI_AA_PLOT_ACTIVE,
+    UI_TOPBAR_AA,
     UI_TOPBAR_IBOD
 } from "../UIData.js";
 import { TopBarToggle } from "./TopBarToggle.js";
@@ -66,7 +65,7 @@ export class TopBarComponent {
             this.midSpacingEl,
             new TopBarToggle(fontSize, "left", UI_TOPBAR_LIGHTING, UI_BOOLEAN, () => this.textToggleLighting()),
             this.midSpacingEl, 
-            new TopBarToggle(fontSize, "left", UI_AA_PLOT_ACTIVE, UI_BOOLEAN, () => this.textStargazer()),
+            new TopBarToggle(fontSize, "left", UI_TOPBAR_AA, UI_BOOLEAN, () => this.textStargazer()),
             this.midSpacingEl,
             new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_ZERO, () => "\u23F8\uFE0E"),
             new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_ONE, () => "▶"),

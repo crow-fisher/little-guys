@@ -31,6 +31,7 @@ import { CoordinateSet } from "../rendering/model/CoordinateSet.js";
 import { copyVecValue } from "../climate/stars/matrix.js";
 import { PointLabelRenderJob } from "../rendering/model/PointLabelRenderJob.js";
 import { setOrganismAddedThisClick } from "../manipulation.js";
+import { isSaveOrLoadInProgress } from "../saveAndLoad.js";
 
 export class BaseSquare {
     constructor(posX, posY) {
@@ -309,7 +310,7 @@ export class BaseSquare {
         zoomCanvasFillRect(this.posX * getBaseSize(), this.posY * getBaseSize(), getBaseSize(), getBaseSize());
     }
     render() {
-        if (!this.visible) {
+        if (!this.visible || isSaveOrLoadInProgress()) {
             return;
         }
 
@@ -595,12 +596,6 @@ export class BaseSquare {
         this._cs_tr.setWorld(this.world_tr)
         this._cs_bl.setWorld(this.world_bl)
         this._cs_br.setWorld(this.world_br)
-    }
-
-    purgeUnderscoredValues() {
-        let keys = Object.keys(this);
-        keys.filter((key) => key.startsWith("_"))
-            .forEach((key) => this[key] = null)
     }
 
     updateNeighborSquares() {

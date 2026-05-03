@@ -28,7 +28,7 @@ export class MainMenuComponent extends SubTreeComponent {
         this.lastClick = Date.now();
 
         subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, saveCurGame, "save game", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
-        subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, downloadSaveFile, "download save", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
+        subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, () => saveCurGame(false, true), "download save", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
         subMenuContainer.addElement(new Toggle(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, UI_MAIN_NEWWORLD, "new/edit world", 
         () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive(), 0.75, false));
 

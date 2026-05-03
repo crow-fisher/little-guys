@@ -481,12 +481,6 @@ class BasePlant {
         }
     }
 
-    purgeUnderscoredValues() {
-        let keys = Object.keys(this);
-        keys.filter((key) => key.startsWith("_"))
-                .forEach((key) => this[key] = null)
-    }
-
     renderBlip(idx, val) {
         this._blipCoordinates = this._blipCoordinates ?? new Array();
         this._blipRenderJobs = this._blipRenderJobs ?? new Array();

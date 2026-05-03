@@ -68,12 +68,6 @@ class PlantLifeSquare {
         this.renderScreen_br = [0, 0, 0];
     }
 
-    purgeUnderscoredValues() {
-        let keys = Object.keys(this);
-        keys.filter((key) => key.startsWith("_"))
-            .forEach((key) => this[key] = null)
-    }
-
     setFrameCartesians() {
         this._cs_root = this._cs_root ?? new CoordinateSet();
         this._cs_tl = this._cs_tl ?? new CoordinateSet();

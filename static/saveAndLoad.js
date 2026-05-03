@@ -161,19 +161,25 @@ export function doPeriodicSave() {
     }
 }
 
-export async function saveCurGame(reload = false) {
+export async function saveCurGame(reload = false, download=false) {
     console.log("save cur game\t", loadUI(UI_UI_CURWORLD));
-    await saveGame(loadUI(UI_UI_CURWORLD), reload);
+    await saveGame(loadUI(UI_UI_CURWORLD), reload, download);
 }
 
-export async function downloadSaveFile() {
-    saveOrLoadInProgress = true;
-    const saveObj = getFrameSaveData();
-    const saveString = JSON.stringify(saveObj);
-    const compressedSave = await compress(saveString);
+export function purgeUnderscoredValues(obj) {
+    let keys = Object.keys(obj);
+    keys.filter((key) => key.startsWith("_"))
+            .forEach((key) => obj[key] = null)
+}
 
-    downloadFile(loadGD(UI_NAME) + (new Date()).toISOString() + ".lg", compressedSave);
-    loadSlotData(saveObj);
+
+export async function downloadSaveFile() {
+    // saveOrLoadInProgress = true;
+    // const saveObj = getFrameSaveData();
+    // const saveString = JSON.stringify(saveObj);
+    // const compressedSave = await compress(saveString);
+    // downloadFile(loadGD(UI_NAME) + (new Date()).toISOString() + ".lg", compressedSave);
+    // saveOrLoadInProgress = false;
 }
 
 export async function downloadGamedataConfig() {
@@ -185,7 +191,7 @@ export async function downloadGamedataConfig() {
 
 
 
-export async function saveGame(slotName, reload) {
+export async function saveGame(slotName, reload, download) {
     saveOrLoadInProgress = true;
     const saveObj = getFrameSaveData();
     const saveString = JSON.stringify(saveObj);
@@ -195,6 +201,11 @@ export async function saveGame(slotName, reload) {
     saveUI(UI_UI_LASTSAVED, Date.now());
     purgeMaps();
     loadSlotData(saveObj);
+
+    if (download) {
+        const compressedSave = await compress(saveString);
+        downloadFile(loadGD(UI_NAME) + (new Date()).toISOString() + ".lg", compressedSave);
+    }
 }
 
 async function doSave(slotName, saveString) {
@@ -244,8 +255,7 @@ export function compressSquares(squares) {
         sq.lsq = null;
         sq.rsq = null;
         sq.tsq = null;
-
-        sq.purgeUnderscoredValues();
+        purgeUnderscoredValues(sq);
         
         sq.linkedOrganisms = Array.from(sq.linkedOrganisms.map((org) => {
             if (org.stage != STAGE_DEAD) {
@@ -262,7 +272,7 @@ export function compressSquares(squares) {
                 org.lighting = [];
                 org.linkedSquare = sqArr.indexOf(org.linkedSquare);
                 org.growthPlans = Array.from(org.growthPlans.map((gp) => growthPlanArr.indexOf(gp)));
-                org.purgeUnderscoredValues();
+                purgeUnderscoredValues(org);
                 [org.greenLifeSquares, org.rootLifeSquares, [org.seedLifeSquare]].forEach((list) => {
                     list.forEach((lsq) => {
                         lsq.lighting = [];
@@ -270,7 +280,7 @@ export function compressSquares(squares) {
                         lsq.linkedOrganism = orgArr.indexOf(lsq.linkedOrganism);
                         lsq.component = growthPlanComponentArr.indexOf(lsq.component);
                         lsq.renderJob = null;
-                        lsq.purgeUnderscoredValues();
+                        purgeUnderscoredValues(lsq);
                     })
                 });
                 org.seedLifeSquare = lsqArr.indexOf(org.seedLifeSquare);
