@@ -21,7 +21,7 @@ import { COLOR_BLACK, GROUP_BROWN, GROUP_BLUE, GROUP_MAUVE, GROUP_TAN, GROUP_GRE
 import { getCurDay, getDaylightStrengthFrameDiff, getFrameDt, getTimeScale } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasSquaresY, getCurZoom, isSquareOnCanvas, transformCanvasSquaresToPixels, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
-import { loadGD, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_SURFACE_LIGHTING_FACTOR, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3, UI_VIEWMODE_DEV4, UI_VIEWMODE_DEV5, UI_PALETTE_STRENGTH, UI_LIGHTING_SURFACE, UI_PALETTE_SURFACE_LIGHTING_FACTOR_MATCH, UI_VIEWMODE_3D, UI_CAMERA_CENTER_SELECT_POINT, saveGD, UI_CAMERA_OFFSET_VEC, UI_PALETTE_SIZE, UI_BLOCK_ZDEPTH, UI_LIGHTING_SURFACE_LIGHTING_FACTOR, UI_LIGHTING_SURFACE_FACTOR } from "../ui/UIData.js";
+import { loadGD, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_SURFACE_LIGHTING_FACTOR, UI_LIGHTING_ENABLED, UI_VIEWMODE_ORG_LIGHTING, UI_VIEWMODE_BLOCK_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_BLOCK_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_BLOCK_WATERMATRIC, UI_VIEWMODE_BLOCK_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3, UI_VIEWMODE_DEV4, UI_VIEWMODE_DEV5, UI_PALETTE_STRENGTH, UI_LIGHTING_SURFACE, UI_PALETTE_SURFACE_LIGHTING_FACTOR_MATCH, UI_VIEWMODE_3D, UI_CAMERA_CENTER_SELECT_POINT, saveGD, UI_CAMERA_OFFSET_VEC, UI_PALETTE_SIZE, UI_BLOCK_ZDEPTH, UI_LIGHTING_SURFACE_LIGHTING_FACTOR, UI_LIGHTING_SURFACE_FACTOR, UI_VIEWMODE_PROJECTION_2D, UI_VIEWMODE_PROJECTION_3D } from "../ui/UIData.js";
 import { deregisterSquare, registerSquare } from "../waterGraph.js";
 import { STAGE_DEAD } from "../plants/organisms/Stages.js";
 import { cartesianToScreenInplace, gfc, screenToRenderScreen } from "../rendering/camera.js";
@@ -309,7 +309,26 @@ export class BaseSquare {
         MAIN_CONTEXT.fillStyle = rgbToHex(...out);
         zoomCanvasFillRect(this.posX * getBaseSize(), this.posY * getBaseSize(), getBaseSize(), getBaseSize());
     }
+
+
+    setFrameViewmodeRenderColor(viewmode) {
+        this.prepareFillColor(1);
+    }
+
+    renderToProjectedCanvas() {
+        this.setFrameCartesians();
+        this.prepareRenderJob();
+        if (this._renderJob.shouldRender()) {
+            addRenderJob(this._renderJob, true);
+        }
+    }
+
+    
     render() {
+        this.setFrameViewmodeRenderColor();
+        this.renderToProjectedCanvas();
+        return
+
         if (!this.visible || isSaveOrLoadInProgress()) {
             return;
         }
@@ -327,17 +346,17 @@ export class BaseSquare {
             return;
         } else if (selectedViewMode == UI_VIEWMODE_ORGANISMS || selectedViewMode == UI_VIEWMODE_EVOLUTION || selectedViewMode == UI_VIEWMODE_NUTRIENTS) {
             this.renderWithVariedColors(0.35);
-        } else if (selectedViewMode == UI_VIEWMODE_GROUP) {
+        } else if (selectedViewMode == UI_VIEWMODE_BLOCK_GROUP) {
             this.renderGroup();
-        } else if (selectedViewMode == UI_VIEWMODE_LIGHTING) {
+        } else if (selectedViewMode == UI_VIEWMODE_ORG_LIGHTING) {
             this.renderWithVariedColors(1);
             if (this.solid)
                 this.renderLightingView();
-        } else if (selectedViewMode == UI_VIEWMODE_MOISTURE) {
+        } else if (selectedViewMode == UI_VIEWMODE_BLOCK_MOISTURE) {
             this.renderWaterSaturation();
-        } else if (selectedViewMode == UI_VIEWMODE_WATERTICKRATE) {
+        } else if (selectedViewMode == UI_VIEWMODE_BLOCK_WATERTICKRATE) {
             this.renderWaterTickrate();
-        } else if (selectedViewMode == UI_VIEWMODE_WATERMATRIC) {
+        } else if (selectedViewMode == UI_VIEWMODE_BLOCK_WATERMATRIC) {
             this.renderMatricPressure();
         }
         else if (selectedViewMode == UI_VIEWMODE_DEV3) {
@@ -643,36 +662,18 @@ export class BaseSquare {
     }
 
     prepareRenderJob() {
-        this.tl = this.tl ?? structuredClone(this._cs_tl.renderScreen);
-        this.bl = this.bl ?? structuredClone(this._cs_tr.renderScreen);
-        this.br = this.br ?? structuredClone(this._cs_bl.renderScreen);
-        this.tr = this.tr ?? structuredClone(this._cs_br.renderScreen);
-
-        copyVecValue(this._cs_tl.renderScreen, this.tl);
-        copyVecValue(this._cs_tr.renderScreen, this.tr);
-        copyVecValue(this._cs_bl.renderScreen, this.bl);
-        copyVecValue(this._cs_br.renderScreen, this.br);
-
-        if (this._renderJob == null) {
-            this._renderJob = new QuadRenderJob(this.tl, this.bl, this.br, this.tr, this.cachedRgba)
-        } else {
-            this._renderJob.tl = this.tl;
-            this._renderJob.bl = this.bl;
-            this._renderJob.br = this.br;
-            this._renderJob.tr = this.tr;
-            this._renderJob.color = this.cachedRgba;
-        }
+        this._renderJob = this._renderJob ?? new QuadRenderJob();
+        this._renderJob.tl = this._cs_tl.renderScreen;
+        this._renderJob.bl = this._cs_bl.renderScreen;
+        this._renderJob.br = this._cs_br.renderScreen;
+        this._renderJob.tr = this._cs_tr.renderScreen;
+        this._renderJob.color = this.cachedRgba;
     }
 
 
     render3D(opacityMult) {
         this.prepareFillColor(opacityMult);
-        this.setFrameCartesians();
-        this.prepareRenderJob();
 
-        if (this._renderJob.shouldRender()) {
-            addRenderJob(this._renderJob, true);
-        }
     }
 
     combinePoints(p1, p2, dest, g1, g2) {

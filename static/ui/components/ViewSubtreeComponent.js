@@ -5,14 +5,14 @@ import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
 import { TextBackground } from "../elements/TextBackground.js";
 import {
     UI_VIEWMODE_NORMAL,
-    UI_VIEWMODE_LIGHTING, UI_VIEWMODE_WIND,
+    UI_VIEWMODE_ORG_LIGHTING, UI_VIEWMODE_WIND,
     UI_VIEWMODE_TEMPERATURE,
-    UI_VIEWMODE_MOISTURE,
+    UI_VIEWMODE_ORG_MOISTURE,
     UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT,
     UI_CENTER,
-    UI_VIEWMODE_WATERTICKRATE,
-    UI_VIEWMODE_WATERMATRIC,
-    UI_VIEWMODE_GROUP,
+    UI_VIEWMODE_BLOCK_WATERTICKRATE,
+    UI_VIEWMODE_BLOCK_WATERMATRIC,
+    UI_VIEWMODE_BLOCK_GROUP,
     UI_VIEWMODE_AIRTICKRATE,
     UI_VIEWMODE_DEV1,
     UI_VIEWMODE_DEV2,
@@ -24,7 +24,11 @@ import {
     UI_VIEWMODE_3D,
     UI_VIEWMODE_PROJECTION,
     UI_VIEWMODE_PROJECTION_2D,
-    UI_VIEWMODE_PROJECTION_3D
+    UI_VIEWMODE_PROJECTION_3D,
+    UI_VIEWMODE_ORG_NORMAL,
+    UI_VIEWMODE_BLOCK_SELECT,
+    UI_VIEWMODE_BLOCK_MOISTURE,
+    UI_VIEWMODE_ORG_SELECT
 } from "../UIData.js";
 import { SubTreeComponent } from "./SubTreeComponent.js";
 export class ViewSubtreeComponent extends SubTreeComponent {
@@ -36,40 +40,22 @@ export class ViewSubtreeComponent extends SubTreeComponent {
         let textAlignOffsetX = getBaseUISize() * 0.58;
         let br = getBaseUISize() * .5;
 
-        container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.64), 0.75, "projection"));
         let projRow = new Container(this.window, 0, 0);
         container.addElement(projRow)
-
+        container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.64), 0.75, "projection"));
         projRow.addElement(new RadioToggleLabel(this.window, sizeX / 2, getBaseUISize() * 3, textAlignOffsetX,"2D",  UI_VIEWMODE_PROJECTION, UI_VIEWMODE_PROJECTION_2D,() => getActiveClimate().getUIColorInactiveCustom(0.49), () => getActiveClimate().getUIColorActive()));
         projRow.addElement(new RadioToggleLabel(this.window, sizeX / 2, getBaseUISize() * 3, textAlignOffsetX,"3D",  UI_VIEWMODE_PROJECTION, UI_VIEWMODE_PROJECTION_3D,() => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
         
-        container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.64), 0.75, "viewmode"));
-
-        container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"normal",  UI_VIEWMODE_SELECT, UI_VIEWMODE_NORMAL,() => getActiveClimate().getUIColorInactiveCustom(0.49), () => getActiveClimate().getUIColorActive()));
-        container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"lighting",  UI_VIEWMODE_SELECT, UI_VIEWMODE_LIGHTING,() => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
-        container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"organisms",  UI_VIEWMODE_SELECT, UI_VIEWMODE_ORGANISMS,() => getActiveClimate().getUIColorInactiveCustom(0.51), () => getActiveClimate().getUIColorActive()));
-        container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"evolution",  UI_VIEWMODE_SELECT, UI_VIEWMODE_EVOLUTION,() => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
-        container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"nutrients",  UI_VIEWMODE_SELECT, UI_VIEWMODE_NUTRIENTS,() => getActiveClimate().getUIColorInactiveCustom(0.53), () => getActiveClimate().getUIColorActive()));
-        container.addElement(new TextBackground(this.window, sizeX, br, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.64), 0.75, ""));
+        container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.64), 0.75, "block viewmode"));
+        container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"tickrate",  UI_VIEWMODE_BLOCK_SELECT, UI_VIEWMODE_BLOCK_WATERTICKRATE,() => getActiveClimate().getUIColorInactiveCustom(0.585), () => getActiveClimate().getUIColorActive()));
+        container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"pressure",  UI_VIEWMODE_BLOCK_SELECT, UI_VIEWMODE_BLOCK_WATERMATRIC,() => getActiveClimate().getUIColorInactiveCustom(0.54), () => getActiveClimate().getUIColorActive()));
+        container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"moisture",  UI_VIEWMODE_BLOCK_SELECT, UI_VIEWMODE_BLOCK_MOISTURE,() => getActiveClimate().getUIColorInactiveCustom(0.58), () => getActiveClimate().getUIColorActive()));
+        container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"group",  UI_VIEWMODE_BLOCK_SELECT, UI_VIEWMODE_BLOCK_GROUP,() => getActiveClimate().getUIColorInactiveCustom(0.54), () => getActiveClimate().getUIColorActive()));
         
-        container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"wind",  UI_VIEWMODE_SELECT, UI_VIEWMODE_WIND,() => getActiveClimate().getUIColorInactiveCustom(0.565), () => getActiveClimate().getUIColorActive()));
-        container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"temperature",  UI_VIEWMODE_SELECT, UI_VIEWMODE_TEMPERATURE,() => getActiveClimate().getUIColorInactive(0.51), () => getActiveClimate().getUIColorActive()));
-        
-        container.addElement(new TextBackground(this.window, sizeX, br, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.66), 0.75, ""));
-        container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"moisture",  UI_VIEWMODE_SELECT, UI_VIEWMODE_MOISTURE,() => getActiveClimate().getUIColorInactiveCustom(0.58), () => getActiveClimate().getUIColorActive()));
-        container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"pressure",  UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC,() => getActiveClimate().getUIColorInactiveCustom(0.54), () => getActiveClimate().getUIColorActive()));
-        
-        container.addElement(new TextBackground(this.window, sizeX, br, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.68), 0.75, ""));
-        container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"tickrate",  UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERTICKRATE,() => getActiveClimate().getUIColorInactiveCustom(0.585), () => getActiveClimate().getUIColorActive()));
-        container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"air tickrate",  UI_VIEWMODE_SELECT, UI_VIEWMODE_AIRTICKRATE,() => getActiveClimate().getUIColorInactiveCustom(0.53), () => getActiveClimate().getUIColorActive()));
-        
-        container.addElement(new TextBackground(this.window, sizeX, br, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.70), 0.75, ""));
-        container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"group",  UI_VIEWMODE_SELECT, UI_VIEWMODE_GROUP,() => getActiveClimate().getUIColorInactiveCustom(0.54), () => getActiveClimate().getUIColorActive()));
-        container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"candidate",  UI_VIEWMODE_SELECT, UI_VIEWMODE_DEV1,() => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorActive()));
-        container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"target",  UI_VIEWMODE_SELECT, UI_VIEWMODE_DEV2,() => getActiveClimate().getUIColorInactiveCustom(0.56), () => getActiveClimate().getUIColorActive()));
-        container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"block health",  UI_VIEWMODE_SELECT, UI_VIEWMODE_DEV3,() => getActiveClimate().getUIColorInactiveCustom(0.56), () => getActiveClimate().getUIColorActive()));
-        container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"block speed",  UI_VIEWMODE_SELECT, UI_VIEWMODE_DEV4,() => getActiveClimate().getUIColorInactiveCustom(0.56), () => getActiveClimate().getUIColorActive()));
-        container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"path history",  UI_VIEWMODE_SELECT, UI_VIEWMODE_DEV5,() => getActiveClimate().getUIColorInactiveCustom(0.56), () => getActiveClimate().getUIColorActive()));
+        container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.64), 0.75, "org viewmode"));
+        container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"normal",  UI_VIEWMODE_ORG_SELECT, UI_VIEWMODE_ORG_NORMAL,() => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
+        container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"lighting",  UI_VIEWMODE_ORG_SELECT, UI_VIEWMODE_ORG_LIGHTING,() => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
+        container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"moisture",  UI_VIEWMODE_ORG_SELECT, UI_VIEWMODE_ORG_MOISTURE,() => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
         
     }
 }

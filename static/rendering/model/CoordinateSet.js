@@ -2,7 +2,7 @@ import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, getCurZoom, zoomCanv
 import { copyVecValue, getVec3Length, subtractVectorsDest } from "../../climate/stars/matrix.js";
 import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth } from "../../index.js";
 import { loadEmptyScene } from "../../saveAndLoad.js";
-import { loadGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_VIEWMODE_3D, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT } from "../../ui/UIData.js";
+import { loadGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_VIEWMODE_3D, UI_VIEWMODE_NORMAL, UI_VIEWMODE_PROJECTION, UI_VIEWMODE_PROJECTION_3D, UI_VIEWMODE_SELECT } from "../../ui/UIData.js";
 import { cartesianToScreenInplace, gfc, screenToRenderScreen } from "../camera.js";
 
 export class CoordinateSet {
@@ -27,14 +27,15 @@ export class CoordinateSet {
     }
 
     process() {
-        if (loadGD(UI_VIEWMODE_SELECT) != UI_VIEWMODE_NORMAL) {
+        if (loadGD(UI_VIEWMODE_PROJECTION) == UI_VIEWMODE_PROJECTION_3D) {
             subtractVectorsDest(this.world, gfc().cameraOffset, this.offset);
             cartesianToScreenInplace(this.offset, this.camera, this.screen);
             screenToRenderScreen(this.screen, this.renderNorm, this.renderScreen,
                 gfc()._xOffset, gfc()._yOffset, gfc()._s);
             this.distToCamera = getVec3Length(this.offset);
         } else {
-            this.process2D();
+            copyVecValue(this.canvasLocToPixels(this.world[0] * getBaseSize(), this.world[1] * getBaseSize(), this.renderScreen[2]), this.renderScreen);
+
         }
     }
 
@@ -46,12 +47,7 @@ export class CoordinateSet {
                 this.renderScreen[1] < getTotalCanvasPixelHeight() * 10 && 
                 this.renderScreen[2] > 0
     }
-
-    process2D() {
-        copyVecValue(this.canvasLocToPixels(this.world[0] * getBaseSize(), this.world[1] * getBaseSize()), this.renderScreen);
-        this.renderScreen[2] = 1;
-    }
-    canvasLocToPixels(x, y) {
+    canvasLocToPixels(x, y, z) {
         this._cz = getCurZoom();
         this._ccx = loadGD(UI_CANVAS_VIEWPORT_CENTER_X);
         this._ccy = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y);
@@ -65,7 +61,7 @@ export class CoordinateSet {
         this._whe = this._ccy + (this._wh / 2);
         this._xpi = (x - this._wws) / this._ww;
         this._ypi = (y - this._whs) / this._wh;
-        return [this._xpi * this._tw, this._ypi * this._th];
+        return [this._xpi * this._tw, this._ypi * this._th, z];
     }
 
 }

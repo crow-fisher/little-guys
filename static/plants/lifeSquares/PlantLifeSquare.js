@@ -2,7 +2,7 @@ import { hsv2rgb, processColorLerpBicolorArr, processRangeToOne, rgb2hsv, rgbToR
 import { COLOR_BLUE, COLOR_VERY_FUCKING_RED, RGB_COLOR_GREEN } from "../../colors.js";
 import { getDefaultLighting, processLighting } from "../../lighting/lightingProcessing.js";
 import { rotatePoint, zoomCanvasFillCircle, zoomCanvasFillRect } from "../../canvas.js";
-import { loadGD, UI_CAMERA_CENTER_SELECT_POINT, UI_CAMERA_OFFSET_VEC, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_3D, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../../ui/UIData.js";
+import { loadGD, UI_CAMERA_CENTER_SELECT_POINT, UI_CAMERA_OFFSET_VEC, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_3D, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_ORG_LIGHTING, UI_VIEWMODE_ORG_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_BLOCK_WATERMATRIC, UI_VIEWMODE_BLOCK_WATERTICKRATE } from "../../ui/UIData.js";
 import { cartesianToScreenInplace, gfc, screenToRenderScreen } from "../../rendering/camera.js";
 import { addVec3Dest, addVectors, copyVecValue, crossVec3, vec3Dot, multiplyVectorByScalar, multiplyVectorByScalarDest, multiplyVectorsDest, normalizeVec3, normalizeVec3Dest, subtractVectors, subtractVectorsDest, subtractVectorsMultDest, addVec3MultDest, subtractVectorsMult, addVectorsMult, addVectorsCopy } from "../../climate/stars/matrix.js";
 import { QuadRenderJob } from "../../rendering/model/QuadRenderJob.js";
@@ -228,11 +228,11 @@ class PlantLifeSquare {
         switch (this.frameViewMode) {
             case UI_VIEWMODE_ORGANISMS:
                 return this.viewmodeOrganisms();
-            case UI_VIEWMODE_LIGHTING:
+            case UI_VIEWMODE_ORG_LIGHTING:
                 return this.viewmodeLighting();
-            case UI_VIEWMODE_MOISTURE:
-            case UI_VIEWMODE_WATERMATRIC:
-            case UI_VIEWMODE_WATERTICKRATE:
+            case UI_VIEWMODE_ORG_MOISTURE:
+            case UI_VIEWMODE_BLOCK_WATERMATRIC:
+            case UI_VIEWMODE_BLOCK_WATERTICKRATE:
                 return this.viewmodeMoisture();
             case UI_VIEWMODE_EVOLUTION:
                 return this.viewmodeEvolution();
