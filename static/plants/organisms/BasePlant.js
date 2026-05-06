@@ -1,7 +1,7 @@
 import { getCurDay, getDt } from "../../climate/time.js";
 import { STAGE_DEAD, STAGE_FLOWER, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_HEART, SUBTYPE_ROOTNODE, TYPE_HEART } from "./Stages.js";
 import { addSquare, getNeighbors } from "../../squares/_sqOperations.js";
-import { getNextOrganismId, loadGD, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA } from "../../ui/UIData.js";
+import { getNextOrganismId, loadGD, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_VIEWMODE_ORG_DENSITY, UI_VIEWMODE_ORG_GROWTH, UI_VIEWMODE_ORG_LIFETIME, UI_VIEWMODE_ORG_LIGHTING, UI_VIEWMODE_ORG_MOISTURE } from "../../ui/UIData.js";
 import { GrowthPlan } from "./growthPlan/GrowthPlan.js";
 import { GrowthPlanStep } from "./growthPlan/GrowthPlanStep.js";
 import { PlantLifeSquare } from "../lifeSquares/PlantLifeSquare.js";
@@ -47,7 +47,7 @@ export let baseOrganism_dnm = {
 
 class BasePlant {
     constructor(square, seedLifeSquare, dna) {
-        
+
         this.proto = "BasePlant";
         this.linkedSquare = square;
         this.stage = STAGE_SPROUT;
@@ -87,7 +87,7 @@ class BasePlant {
         this.growthProgress = 0;
         this.deathProgress = 0;
     }
-    
+
     getDefaultNutritionMap() {
         return baseOrganism_dnm;
     }
@@ -407,8 +407,8 @@ class BasePlant {
                 seedSquare.destroy();
             } else {
                 applyLightingFromSource(this.greenLifeSquares.at(0), orgAdded.seedLifeSquare);
-                IBODSeedEvent(this, orgAdded); 
-             }
+                IBODSeedEvent(this, orgAdded);
+            }
             this.growthProgress -= this.seedReduction();
         }
     }
@@ -462,26 +462,47 @@ class BasePlant {
         if (NOBLIP) {
             return;
         }
-        if (this.id % 8 != 0) {
+        if (this.id % loadGD(UI_VIEWMODE_ORG_DENSITY) > 1) {
             return;
         }
         if (this.greenLifeSquares.at(1)?._cs_tl?.distToCamera == null || this.greenLifeSquares.at(1)?._cs_tl?.distToCamera < 10) {
             return;
         }
 
-        let values = [
-            this.growthProgress,
-            1 / this.lightLevelThrottleVal(),
-            1,
-            this.age / this.growthCycleLength
-        ]
+        this._blipValues = this._blipValues ?? [];
+        this._blipValues.length = 0;
 
-        for (let i = 0; i < values.length; i++) {
-            this.renderBlip(i, values[i]);
+        if (loadGD(UI_VIEWMODE_ORG_GROWTH)) {
+            this._blipValues.push([
+                this.growthProgress,
+                COLOR_GREEN_FAINT
+            ]);
+        }
+        if (loadGD(UI_VIEWMODE_ORG_LIGHTING)) {
+            this._blipValues.push([
+                1 / this.lightLevelThrottleVal(),
+                COLOR_BLUE_FAINT
+            ]);
+        }
+        if (loadGD(UI_VIEWMODE_ORG_MOISTURE)) {
+            this._blipValues.push([
+                1 - Math.abs(this.getWilt()),
+                COLOR_WHITE_FAINT
+            ]);
+        }
+        if (loadGD(UI_VIEWMODE_ORG_LIFETIME )) {
+            this._blipValues.push([
+                this.age / this.growthCycleLength,
+                COLOR_GREY
+            ]);
+        }
+
+        for (let i = 0; i < this._blipValues.length; i++) {
+            this.renderBlip(i, this._blipValues[i][0], this._blipValues[i][1]);
         }
     }
 
-    renderBlip(idx, val) {
+    renderBlip(idx, val, color) {
         this._blipCoordinates = this._blipCoordinates ?? new Array();
         this._blipRenderJobs = this._blipRenderJobs ?? new Array();
         this._blipColors = [
@@ -513,7 +534,7 @@ class BasePlant {
         this._blipRenderJobs[idx].v1 = this._blipCoordinates[idx][0].renderScreen;
         this._blipRenderJobs[idx].v2 = this._blipCoordinates[idx][1].renderScreen;
         this._blipRenderJobs[idx].size = 4; // 10 ** 4.3 / (Math.min(this._blipCoordinates[idx][0].distToCamera, this._blipCoordinates[idx][1].distToCamera) ** 2);
-        this._blipRenderJobs[idx].color = this._blipColors[idx];
+        this._blipRenderJobs[idx].color = color;
         this._blipRenderJobs[idx].z = this._blipRenderJobs[idx].getZ();
 
         addRenderJob(this._blipRenderJobs[idx]);
