@@ -1,10 +1,9 @@
 import { getBaseUISize, resetZoom } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { purgeCanvasFrameLimit } from "../../globalOperations.js";
-import { DEBUG } from "../../index.js";
 import { getLastMouseDownStart } from "../../mouse.js";
 import { isPlayerRunning, startPlayerMain, stopPlayerMain } from "../../player/playerMain.js";
-import { deleteAllSaveData, deleteHiddenWorlds, downloadSaveFile, hideWorld, loadEmptyScene, loadSlot, saveCurGame, unhideWorld } from "../../saveAndLoad.js";
+import { deleteAllSaveData, deleteHiddenWorlds, hideWorld, loadEmptyScene, loadSlot, saveCurGame, unhideWorld } from "../../saveAndLoad.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
 import { Container } from "../Container.js";
 import { Button } from "../elements/Button.js";
@@ -13,7 +12,7 @@ import { RadioToggle } from "../elements/RadioToggle.js";
 import { Text } from "../elements/Text.js";
 import { TextFunctionalBackground } from "../elements/TextFunctionalBackground.js";
 import { Toggle } from "../elements/Toggle.js";
-import { loadGD, loadUI, saveUI, UI_CENTER, UI_MAIN_NEWWORLD, UI_UI_SHOWHIDDEN, UI_UI_WORLDPAGE, UI_UI_CURWORLD, UI_UI_NEXTWORLD, UI_UI_SIZE, UI_UI_WORLDHIDDEN, UI_UI_WORLDNAME, UICONFIG, UI_UI_WORLDDELETED, saveGD, UI_UI_PHONEMODE } from "../UIData.js";
+import { loadUI, saveUI, UI_CENTER, UI_MAIN_NEWWORLD, UI_UI_SHOWHIDDEN, UI_UI_WORLDPAGE, UI_UI_CURWORLD, UI_UI_NEXTWORLD, UI_UI_SIZE, UI_UI_WORLDHIDDEN, UI_UI_WORLDNAME, UICONFIG, UI_UI_WORLDDELETED, UI_UI_PHONEMODE } from "../UIData.js";
 import { SubTreeComponent } from "./SubTreeComponent.js";
 
 

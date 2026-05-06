@@ -540,40 +540,6 @@ class BasePlant {
         addRenderJob(this._blipRenderJobs[idx]);
     }
 
-    setNutrientIndicators() {
-        let compareFunc = (lsq) => {
-            let relLsqX = (this.linkedSquare.posX - lsq.posVec[0]);
-            let relLsqY = (this.linkedSquare.posY - lsq.posVec[1]);
-            let relLsqZ = (this.linkedSquare.z - lsq.posVec[2]);
-            return (relLsqX ** 2 + relLsqY ** 2 + relLsqZ ** 2) ** 0.5;
-        }
-        this.greenLifeSquares.sort((a, b) => compareFunc(a) - compareFunc(b));
-
-        let lifetimeFrac = this.age / this.getGrowthCycleLength() * this.numGrowthCycles;
-        let lightLevelMult = Math.min(2, this.lightlevel / this.growthLightLevel) * this.greenLifeSquares.length;
-        let lifetimeMult = lifetimeFrac * this.greenLifeSquares.length;
-        let growthLevelMult = this.growthProgress * this.greenLifeSquares.length;
-
-        this.greenLifeSquares.forEach((lsq) => {
-            lsq.lightlevelIndicated = 0;
-            lsq.lifetimeIndicated = 0;
-        });
-
-        for (let i = 0; i < (this.greenLifeSquares.length * 2); i++) {
-            let lsq = this.greenLifeSquares[i % this.greenLifeSquares.length];
-            let lightLevelToAdd = Math.min(lightLevelMult, 1)
-            let lifetimeToAdd = Math.min(lifetimeMult, 1)
-            let growthLevelToAdd = Math.min(growthLevelMult, 1)
-
-            lsq.lightlevelIndicated += lightLevelToAdd;
-            lsq.lifetimeIndicated += lifetimeToAdd;
-            lsq.growthLevelIndicated += growthLevelToAdd;
-
-            lightLevelMult -= lightLevelToAdd;
-            lifetimeMult -= lifetimeToAdd;
-        }
-    }
-
     doDecay() {
         if (this.stage != STAGE_DEAD) {
             return;

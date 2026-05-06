@@ -61,7 +61,7 @@ export class CoordinateSet {
         this._whe = this._ccy + (this._wh / 2);
         this._xpi = (x - this._wws) / this._ww;
         this._ypi = (y - this._whs) / this._wh;
-        return [this._xpi * this._tw, this._ypi * this._th, z];
+        return [this._xpi * this._tw, this._ypi * this._th, 1];
     }
 
 }

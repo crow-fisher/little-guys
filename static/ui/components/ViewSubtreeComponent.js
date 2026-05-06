@@ -1,6 +1,8 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
+import { reset3DCameraTo2DScreen } from "../../rendering/camera.js";
 import { Container } from "../Container.js";
+import { Button } from "../elements/Button.js";
 import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
 import { Slider } from "../elements/Slider.js";
 import { TextBackground } from "../elements/TextBackground.js";
@@ -32,6 +34,8 @@ export class ViewSubtreeComponent extends SubTreeComponent {
         container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.64), 0.75, "projection"));
         projRow.addElement(new RadioToggleLabel(this.window, sizeX / 2, getBaseUISize() * 3, textAlignOffsetX,"2D",  UI_VIEWMODE_PROJECTION, UI_VIEWMODE_PROJECTION_2D,() => getActiveClimate().getUIColorInactiveCustom(0.49), () => getActiveClimate().getUIColorActive()));
         projRow.addElement(new RadioToggleLabel(this.window, sizeX / 2, getBaseUISize() * 3, textAlignOffsetX,"3D",  UI_VIEWMODE_PROJECTION, UI_VIEWMODE_PROJECTION_3D,() => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
+        container.addElement(new Button(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, reset3DCameraTo2DScreen, "reset camera", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
+        container.addElement(new TextBackground(this.window, sizeX, br, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""));
         
         container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 3, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.64), 0.75, "block viewmode"));
         container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"normal",  UI_VIEWMODE_BLOCK_SELECT, UI_VIEWMODE_BLOCK_NORMAL,() => getActiveClimate().getUIColorInactiveCustom(0.585), () => getActiveClimate().getUIColorActive()));

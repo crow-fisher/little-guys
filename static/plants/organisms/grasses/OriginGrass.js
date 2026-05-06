@@ -115,7 +115,6 @@ export class OriginGrass extends BasePlant {
         if (this.growthProgress >= 1) {
             this.spawnSeed();
         } 
-
     }
 
     prepareRender() {
@@ -133,19 +132,19 @@ export class OriginGrass extends BasePlant {
             });
     }
 
-        prepareRender() {
-        this._curColor = this._curColor ?? [0, 0, 0];
-        this.grasses
-            .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
-            .forEach((grass) => {
-                multiplyVectorByScalarDest(this.baseColor, this.lightLevelDisplayExposureAdjustment(), this._curColor);
-                let width = 0.4;
-                grass.lifeSquares.forEach((lsq) => {
-                    copyVecValue(this._curColor, lsq.color);
-                    lsq.width = width;
-                    width *= .97;
-                });
+    prepareRender() {
+    this._curColor = this._curColor ?? [0, 0, 0];
+    this.grasses
+        .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
+        .forEach((grass) => {
+            multiplyVectorByScalarDest(this.baseColor, this.lightLevelDisplayExposureAdjustment(), this._curColor);
+            let width = 0.4;
+            grass.lifeSquares.forEach((lsq) => {
+                copyVecValue(this._curColor, lsq.color);
+                lsq.width = width;
+                width *= .97;
             });
+        });
     }
 }
 
