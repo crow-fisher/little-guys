@@ -267,7 +267,7 @@ export class BlockPalette extends Component {
         container.addElement(new Text(this.window, sizeX / 8, h1 / 4, 0, ""));
 
         palleteSelectAdvancedRow.addElement(new RadioToggleLabel(this.window, sizeX, h1, UI_CENTER, "erase", UI_PALETTE_SELECT, UI_PALETTE_ERASE,
-            () => getActiveClimate().getSurfaceOnColor(), () => getActiveClimate().getSufaceOffColor()));
+            () => getActiveClimate().getSurfaceOnColor(), () => getActiveClimate().getSurfaceOffColor()));
 
         let palletePickerConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_PALETTE_SHOWPICKER));
         container.addElement(palletePickerConditionalContainer);

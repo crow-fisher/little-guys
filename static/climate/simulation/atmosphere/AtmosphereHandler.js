@@ -10,7 +10,7 @@ import { ATMOSCALE, AtmosphereUnit, sas } from "./model/AtmosphereUnit.js";
 
 const F = Math.floor
 const A = Math.abs
-export let ahf = 0; // atmosphere handler frame
+export let ahf = 0; // 'atmosphere handler frame'. increments each tick. used so sectors only interact with active neighbors
 
 export class AtmosphereHandler {
     constructor() {
@@ -162,19 +162,15 @@ export class AtmosphereHandler {
 
     gamepadInputTick() {
         if (isButtonPressed(GBA) || isButtonPressed(GBDU)) {
-            this.addPressureRay(isButtonPressed(GBDU));
-            // this.addPressureAtLocation(this.cu.sector, 1, 40);
+            this.addPressureRay(isButtonPressed(GBDU) ? 5 : 1);
         }
     }
-    addPressureRay(stronk=false) {
+    addPressureRay(mult=1) {
         this._pressureRayCur = this._pressureRayCur ?? [0, 0, 0];
         this._pressureRayCurDelta = this._pressureRayCurDelta ?? [0, 0, 0];
         copyVecValue(this.ccp, this._pressureRayCur);
         multiplyVectorByScalarDest(getForwardVec(), ATMOSCALE, this._pressureRayCurDelta);
-
-        let amount = 50 / ATMOSCALE
-        if (stronk) 
-            amount = 100;
+        let amount = (50 * mult) / ATMOSCALE;
         this.addPressureAtLocation(this._pressureRayCur, amount);
         
         this._pressureRayCur[1] += ATMOSCALE * 1.5;

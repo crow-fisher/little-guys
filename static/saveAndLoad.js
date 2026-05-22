@@ -1,12 +1,11 @@
 import { addSquare, iterateOnSquares } from "./squares/_sqOperations.js";
 import { getTemperatureMap, getWaterSaturationMap } from "./climate/simulation/temperatureHumidity.js";
 import { getCurDay, setCurDay } from "./climate/time.js";
-import { ProtoMap, TypeMap } from "./types.js";
-import { getWindPressureMap } from "./climate/simulation/wind.js";
-import { _GAMEDATA_DEFAULT, _UI_DEFAULT, GAMEDATA, getGAMEDATA, getUICONFIG, loadGD, loadUI, saveGD, saveMapEntry, saveUI, setGAMEDATA, setUICONFIG, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_LIGHTING_ENABLED, UI_MAIN_NEWWORLD, UI_MAIN_NEWWORLD_LATITUDE, UI_MAIN_NEWWORLD_LONGITUDE, UI_MAIN_NEWWORLD_NAME, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_NAME, UI_SIMULATION_CLOUDS, UI_SIMULATION_HEIGHT, UI_SPEED, UI_SPEED_ONE, UI_TOPBAR_BLOCK, UI_TOPBAR_LIGHTING, UI_TOPBAR_MAINMENU, UI_TOPBAR_SIMULATION, UI_TOPBAR_TIME, UI_TOPBAR_VIEWMODE, UI_UI_CURWORLD, UI_UI_LASTSAVED, UI_UI_NEXTWORLD, UI_UI_SIZE, UI_UI_WORLDDELETED, UI_UI_WORLDHIDDEN, UI_UI_WORLDNAME, UI_UI_WORLDPAGE, UICONFIG } from "./ui/UIData.js";
+import { ProtoMap } from "./types.js";
+import { _GAMEDATA_DEFAULT, _UI_DEFAULT, getGAMEDATA, getUICONFIG, loadGD, loadUI, saveGD, saveMapEntry, saveUI, setGAMEDATA, setUICONFIG, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_LIGHTING_ENABLED, UI_MAIN_NEWWORLD, UI_MAIN_NEWWORLD_LATITUDE, UI_MAIN_NEWWORLD_LONGITUDE, UI_MAIN_NEWWORLD_NAME, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_NAME, UI_SIMULATION_CLOUDS, UI_SIMULATION_HEIGHT, UI_TOPBAR_BLOCK, UI_TOPBAR_LIGHTING, UI_TOPBAR_MAINMENU, UI_TOPBAR_SIMULATION, UI_TOPBAR_TIME, UI_TOPBAR_VIEWMODE, UI_UI_CURWORLD, UI_UI_LASTSAVED, UI_UI_NEXTWORLD, UI_UI_SIZE, UI_UI_WORLDDELETED, UI_UI_WORLDHIDDEN, UI_UI_WORLDNAME, UICONFIG } from "./ui/UIData.js";
 import { getTotalCanvasPixelWidth, indexCanvasSize } from "./index.js";
 import { STAGE_DEAD } from "./plants/organisms/Stages.js";
-import { getMainMenuComponent, initUI } from "./ui/WindowManager.js";
+import { initUI } from "./ui/WindowManager.js";
 import { initGroupList, purgeMaps, regSquareToGroup } from "./globals.js";
 import { getActiveClimate } from "./climate/climateManager.js";
 import { doSingleTimeMouseEvent } from "./mouse.js";
@@ -338,7 +337,6 @@ function getFrameSaveData() {
         growthPlanComponentArr: growthPlanComponentArr,
         growthPlanStepArr: growthPlanStepArr,
         curDay: getCurDay(),
-        windMap: getWindPressureMap(),
         temperatureMap: getTemperatureMap(),
         waterSaturationMap: getWaterSaturationMap(),
         gamedata: getGAMEDATA()

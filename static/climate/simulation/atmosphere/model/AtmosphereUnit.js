@@ -10,10 +10,7 @@ import { loadGD, UI_CAMERA_CENTER_SELECT_OFFSET, UI_VIEWMODE_NORMAL, UI_VIEWMODE
 import { addVec3Dest, addVectors, copyVecValue, getVec3Length, multiplyVectorByScalar, multiplyVectorByScalarDest, subtractVectors, subtractVectorsDest } from "../../../stars/matrix.js";
 import { getCurDay } from "../../../time.js";
 
-
-
 export let ATMOSCALE = 4;
-
 
 export function sas(v) {
     ATMOSCALE = Math.floor(v);
@@ -23,7 +20,7 @@ export class AtmosphereUnit {
         this.sector = sector;
         this.size = size;
         this.pressure = 1;
-        this.cd = -1; // camera dist. in sectors. euclidian distance.
+        this.cd = -1; // camera dist. in sectors. euclidean distance.
         this.flow = new Map();
         this.windSpeed = [0, 0, 0];
 

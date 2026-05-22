@@ -1,10 +1,9 @@
 import { doWaterFlow, periodicPurgeOldGroupData, physics, processOrganisms, renderCandidateMap, renderOrganisms, renderSolidSquares, renderTargetMap, renderWaterSquares, reset, setFrameCartesians } from "./globalOperations.js";
 import { doClickAdd, doClickAddEyedropperMixer } from "./manipulation.js";
-import { renderClouds, renderTemperature, renderWaterSaturation } from "./climate/simulation/temperatureHumidity.js";
-import { doTimeSeek, doTimeSkipToNow, getTimeScale, isTimeSeeking, renderTime, updateTime } from "./climate/time.js";
-import { executeFunctionQueue, loadGD, saveGD, UI_CAMERA_CENTER_SELECT_POINT, UI_CAMERA_EXPOSURE, UI_LIGHTING_GLOBAL, UI_PALETTE_SURFACE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_3D, UI_VIEWMODE_AIRTICKRATE, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_DEV5, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_WIND } from "./ui/UIData.js";
-import { initUI, renderMouseHover, renderWindows, resetWindowHovered, updateWindows } from "./ui/WindowManager.js";
-import { renderWindPressureMap } from "./climate/simulation/wind.js";
+import { renderClouds, renderWaterSaturation } from "./climate/simulation/temperatureHumidity.js";
+import { doTimeSeek, getTimeScale, isTimeSeeking, renderTime, updateTime } from "./climate/time.js";
+import { executeFunctionQueue, loadGD, saveGD, UI_CAMERA_CENTER_SELECT_POINT, UI_CAMERA_EXPOSURE, UI_LIGHTING_GLOBAL, UI_SIMULATION_CLOUDS, UI_VIEWMODE_3D, UI_VIEWMODE_AIRTICKRATE, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_DEV5, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_WIND } from "./ui/UIData.js";
+import { renderMouseHover, renderWindows, resetWindowHovered, updateWindows } from "./ui/WindowManager.js";
 import { LightingHandler } from "./lighting/lightingHandler.js";
 import { isLeftMouseClicked } from "./mouse.js";
 import { iterateOnSquares, resetSqColChangeMap } from "./squares/_sqOperations.js";
@@ -22,7 +21,6 @@ import { StarHandler } from "./climate/stars/starHandler.js";
 import { MAIN_CONTEXT, NOORG } from "./index.js";
 import { COLOR_VERY_FUCKING_RED } from "./colors.js";
 import { AtmosphereHandler } from "./climate/simulation/atmosphere/AtmosphereHandler.js";
-import { CoordinateSet } from "./rendering/model/CoordinateSet.js";
 import { renderIBODEvents } from "./ibod/IBODManager.js";
 
 
@@ -127,11 +125,9 @@ function render() {
 
     if (selectedViewMode == UI_VIEWMODE_TEMPERATURE) {
         // renderTemperature();
-        renderWindPressureMap();
     }
     if (selectedViewMode == UI_VIEWMODE_WIND) {
         renderWaterSaturation();
-        renderWindPressureMap();
     }
     if (selectedViewMode == UI_VIEWMODE_AIRTICKRATE) {
         renderThrottleMap();

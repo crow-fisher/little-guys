@@ -23,8 +23,6 @@ export class Climate {
             this.rockColors.push(this.hueShiftColorArr(rockColorBaseArr, hueShift, 0, 0));
         }
 
-        -200 + (720 / 80) * 29
-
         this.surfaceOnColorHex = "#50545e";
         this.surfaceOffColorHex = "#c3cde6";
 
@@ -66,7 +64,7 @@ export class Climate {
         return this.processColor(this.surfaceOnColor, 0.5);
     }
 
-    getSufaceOffColor() {
+    getSurfaceOffColor() {
         return this.processColor(this.surfaceOffColor, 0.5);
     }
 
