@@ -1,4 +1,4 @@
-import { getCurDay, getDt } from "../../climate/time.js";
+import { getCurDay, getDt } from "../../world/time/time.js";
 import { STAGE_DEAD, STAGE_FLOWER, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_HEART, SUBTYPE_ROOTNODE, TYPE_HEART } from "./Stages.js";
 import { addSquare, getNeighbors } from "../../squares/_sqOperations.js";
 import { getNextOrganismId, loadGD, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_VIEWMODE_ORG_DENSITY, UI_VIEWMODE_ORG_GROWTH, UI_VIEWMODE_ORG_LIFETIME, UI_VIEWMODE_ORG_LIGHTING, UI_VIEWMODE_ORG_MOISTURE } from "../../ui/UIData.js";
@@ -10,11 +10,11 @@ import { LineRenderJob } from "../../rendering/model/LineRenderJob.js";
 import { CoordinateSet } from "../../rendering/model/CoordinateSet.js";
 import { COLOR_BLUE_FAINT, COLOR_GREEN_FAINT, COLOR_GREY, COLOR_WHITE_FAINT } from "../../colors.js";
 import { addRenderJob } from "../../rendering/rasterizer.js";
-import { copyVecValue } from "../../climate/stars/matrix.js";
+import { copyVecValue } from "../../world/climate/stars/matrix.js";
 import { invlerp, lerp, randNumber, randRange } from "../../common.js";
 import { NOBLIP } from "../../index.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
-import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
+import { applyLightingFromSource } from "../../world/lighting/lightingProcessing.js";
 import { IBODEvent } from "../../ibod/model/IBODEvent.js";
 import { IBODSeedEvent } from "../../ibod/IBODManager.js";
 

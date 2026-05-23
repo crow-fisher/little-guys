@@ -1,5 +1,5 @@
 import { getBaseUISize } from "../../canvas.js";
-import { calculateColor } from "../../climate/simulation/temperatureHumidity.js";
+import { calculateColor } from "../../world/climate/simulation/temperatureHumidity.js";
 import { COLOR_BLACK, COLOR_BLUE, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { hexToRgb } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";

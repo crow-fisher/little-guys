@@ -1,6 +1,6 @@
 import { initTemperatureHumidity, restingValues, tickMaps } from "./simulation/temperatureHumidity.js";
 import { initWindThrottleMap } from "./simulation/throttler.js";
-import { AtmosphereHandler } from "./simulation/atmosphere/AtmosphereHandler.js";
+import { AtmosphereHandler } from "../atmosphere/AtmosphereHandler.js";
 
 export class ClimateHandler {   
     constructor() {

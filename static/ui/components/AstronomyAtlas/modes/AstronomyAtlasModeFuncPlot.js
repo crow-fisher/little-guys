@@ -1,5 +1,5 @@
 import { getBaseUISize } from "../../../../canvas.js";
-import { getActiveClimate } from "../../../../climate/climateManager.js";
+import { getActiveClimate } from "../../../../world/climate/climateManager.js";
 import { COLOR_BLACK, COLOR_BLUE, COLOR_RED, COLOR_WHITE } from "../../../../colors.js";
 import { ConditionalContainer } from "../../../ConditionalContainer.js";
 import { Container } from "../../../Container.js";

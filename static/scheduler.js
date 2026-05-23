@@ -1,4 +1,4 @@
-import { getFrameDt } from "./climate/time.js";
+import { getFrameDt } from "./world/time/time.js";
 
 const jobLastTimeMap = new Map();
 const activeJobArr = new Array();

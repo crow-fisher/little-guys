@@ -2,7 +2,7 @@ import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
 import { rgbToRgba } from "../common.js";
 import { getNextGroupId, isGroupGrounded } from "../globals.js";
 import { MAIN_CONTEXT } from "../index.js";
-import { applyLightingFromSource } from "../lighting/lightingProcessing.js";
+import { applyLightingFromSource } from "../world/lighting/lightingProcessing.js";
 import { addSquare } from "./_sqOperations.js";
 import { BaseSquare } from "./BaseSqaure.js";
 import { RockSquare } from "./parameterized/RockSquare.js";

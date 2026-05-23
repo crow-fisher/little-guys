@@ -1,15 +1,15 @@
 import { hsv2rgb, processColorLerpBicolorArr, processRangeToOne, rgb2hsv, rgbToRgba } from "../../common.js";
 import { COLOR_BLUE, COLOR_VERY_FUCKING_RED, RGB_COLOR_GREEN } from "../../colors.js";
-import { getDefaultLighting, processLighting } from "../../lighting/lightingProcessing.js";
+import { getDefaultLighting, processLighting } from "../../world/lighting/lightingProcessing.js";
 import { rotatePoint, zoomCanvasFillCircle, zoomCanvasFillRect } from "../../canvas.js";
 import { loadGD, UI_CAMERA_CENTER_SELECT_POINT, UI_CAMERA_OFFSET_VEC, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_3D, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_ORG_LIGHTING, UI_VIEWMODE_ORG_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_BLOCK_WATERMATRIC, UI_VIEWMODE_BLOCK_WATERTICKRATE } from "../../ui/UIData.js";
 import { cartesianToScreenInplace, gfc, screenToRenderScreen } from "../../rendering/camera.js";
-import { addVec3Dest, addVectors, copyVecValue, crossVec3, vec3Dot, multiplyVectorByScalar, multiplyVectorByScalarDest, multiplyVectorsDest, normalizeVec3, normalizeVec3Dest, subtractVectors, subtractVectorsDest, subtractVectorsMultDest, addVec3MultDest, subtractVectorsMult, addVectorsMult, addVectorsCopy } from "../../climate/stars/matrix.js";
+import { addVec3Dest, addVectors, copyVecValue, crossVec3, vec3Dot, multiplyVectorByScalar, multiplyVectorByScalarDest, multiplyVectorsDest, normalizeVec3, normalizeVec3Dest, subtractVectors, subtractVectorsDest, subtractVectorsMultDest, addVec3MultDest, subtractVectorsMult, addVectorsMult, addVectorsCopy } from "../../world/climate/stars/matrix.js";
 import { QuadRenderJob } from "../../rendering/model/QuadRenderJob.js";
 import { addRenderJob } from "../../rendering/rasterizer.js";
 import { STAGE_DEAD } from "../organisms/Stages.js";
 import { CoordinateSet } from "../../rendering/model/CoordinateSet.js";
-import { sphericalToCartesian } from "../../climate/stars/starHandlerUtil.js";
+import { sphericalToCartesian } from "../../world/climate/stars/starHandlerUtil.js";
 import { LineRenderJob } from "../../rendering/model/LineRenderJob.js";
 import { DEBUG, MAIN_CONTEXT } from "../../index.js";
 

@@ -1,4 +1,4 @@
-import { loadGD, UI_CLIMATE_DESERT, UI_CLIMATE_FANTASY, UI_CLIMATE_MIDWEST, UI_CLIMATE_SELECT } from "../ui/UIData.js";
+import { loadGD, UI_CLIMATE_DESERT, UI_CLIMATE_FANTASY, UI_CLIMATE_MIDWEST, UI_CLIMATE_SELECT } from "../../ui/UIData.js";
 import { Desert } from "./climates/desert.js";
 import { Fantasy } from "./climates/fantasy.js";
 import { Midwest } from "./climates/midwest.js"

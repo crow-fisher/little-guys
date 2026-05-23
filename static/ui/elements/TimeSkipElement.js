@@ -1,7 +1,7 @@
 import { getBaseUISize } from "../../canvas.js";
-import { getActiveClimate } from "../../climate/climateManager.js";
-import { SunCalc } from "../../climate/suncalc/suncalc.js";
-import { explicitSeek, getCurDay, getSeekTimeTarget, getSkyBackgroundColorForDay, millis_per_day } from "../../climate/time.js";
+import { getActiveClimate } from "../../world/climate/climateManager.js";
+import { SunCalc } from "../../lib/suncalc/suncalc.js";
+import { explicitSeek, getCurDay, getSeekTimeTarget, getSkyBackgroundColorForDay, millis_per_day } from "../../world/time/time.js";
 import { COLOR_BLACK } from "../../colors.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { isLeftMouseClicked } from "../../mouse.js";

@@ -1,10 +1,10 @@
-import { getFrameXMax, getFrameXMin, getFrameYMax, getFrameYMin } from "../../canvas.js";
-import { getCloudLightBlockCoef } from "../../climate/simulation/temperatureHumidity.js";
-import { getFrameXMaxWsq, getFrameXMinWsq, getFrameYMaxWsq, getFrameYMinWsq } from "../../climate/simulation/wind.js";
-import { processRangeToOne } from "../../common.js";
-import { getFrameSimulationSquares } from "../../globalOperations.js";
-import { isSaveOrLoadInProgress } from "../../saveAndLoad.js";
-import { loadGD, UI_LIGHTING_CLOUDCOVER_OPACITY, UI_LIGHTING_DECAY, UI_LIGHTING_QUALITY, UI_SIMULATION_CLOUDS } from "../../ui/UIData.js";
+import { getFrameXMax, getFrameXMin, getFrameYMax, getFrameYMin } from "../../../canvas.js";
+import { getCloudLightBlockCoef } from "../../world/climate/simulation/temperatureHumidity.js";
+import { getFrameXMaxWsq, getFrameXMinWsq, getFrameYMaxWsq, getFrameYMinWsq } from "../../world/climate/simulation/wind.js";
+import { processRangeToOne } from "../../../common.js";
+import { getFrameSimulationSquares } from "../../../globalOperations.js";
+import { isSaveOrLoadInProgress } from "../../../saveAndLoad.js";
+import { loadGD, UI_LIGHTING_CLOUDCOVER_OPACITY, UI_LIGHTING_DECAY, UI_LIGHTING_QUALITY, UI_SIMULATION_CLOUDS } from "../../../ui/UIData.js";
 
 export class MovingLightSource {
     constructor(positionFunc, brightnessFunc, colorFunc, numRays) {

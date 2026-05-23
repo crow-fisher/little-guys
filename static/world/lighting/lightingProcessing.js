@@ -1,4 +1,4 @@
-import { getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "../climate/time.js";
+import { getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "../world/climate/time.js";
 import { loadGD, UI_CAMERA_EXPOSURE, UI_LIGHTING_DISABLED_BRIGHTNESS, UI_LIGHTING_MOON, UI_LIGHTING_SUN } from "../ui/UIData.js";
 
 export function getDefaultLighting() {

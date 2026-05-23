@@ -1,5 +1,5 @@
-import { copyVecValue } from "../climate/stars/matrix.js";
-import { getCurDay } from "../climate/time.js";
+import { copyVecValue } from "../world/climate/stars/matrix.js";
+import { getCurDay } from "../world/time/time.js";
 import { renderPoint } from "../rendering/camera.js";
 import { addRenderJob } from "../rendering/rasterizer.js";
 import { loadGD, saveUI, UI_IBOD_PLAYERUUID } from "../ui/UIData.js";

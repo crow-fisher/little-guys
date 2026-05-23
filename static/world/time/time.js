@@ -1,6 +1,6 @@
-import { getBaseSize, getCanvasSquaresY, isSquareOnCanvas, zoomCanvasFillCircle } from "../canvas.js";
-import { hexToRgb, hsv2rgb, rgb2hsv, rgbToHex, rgbToRgba } from "../common.js";
-import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth, MAIN_CONTEXT, setBackgroundColor } from "../index.js";
+import { getBaseSize, getCanvasSquaresY, isSquareOnCanvas, zoomCanvasFillCircle } from "../../canvas.js";
+import { hexToRgb, hsv2rgb, rgb2hsv, rgbToHex, rgbToRgba } from "../../common.js";
+import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth, MAIN_CONTEXT, setBackgroundColor } from "../../index.js";
 import { calculateColorRGB, getFrameRelCloud } from "./simulation/temperatureHumidity.js";
 import {
     loadGD,
@@ -25,9 +25,9 @@ import {
     UI_SPEED_19,
     UI_SPEED,
     UI_SPEED_ZERO, saveGD
-} from "../ui/UIData.js";
-import { SunCalc } from "./suncalc/suncalc.js";
-import { getActiveClimate } from "./climateManager.js";
+} from "../../ui/UIData.js";
+import { SunCalc } from "../../lib/suncalc/suncalc.js";
+import { getActiveClimate } from "../climate/climateManager.js";
 
 let TIME_SCALE = 1;
 let curUIKey = UI_SPEED_ONE;

@@ -1,10 +1,10 @@
-import { getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, getFrameHeight, getFrameWidth, getFrameXMax, getFrameXMin, getFrameYMin } from "../../../canvas.js";
-import { GBA, GBDU, isButtonPressed } from "../../../gamepad.js";
-import { DEBUG } from "../../../index.js";
-import { getForwardVec } from "../../../rendering/camera.js";
-import { initAAUIFunctionMaps } from "../../../ui/components/AstronomyAtlas/modes/AstronomyAtlasUIFunctionMaps.js";
-import { loadGD, UI_CAMERA_OFFSET_VEC, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT } from "../../../ui/UIData.js";
-import { addVectors, copyVecValue, getVec3Length, multiplyVectorByScalarDest, subtractVectorsDest } from "../../stars/matrix.js";
+import { getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, getFrameHeight, getFrameWidth, getFrameXMax, getFrameXMin, getFrameYMin } from "../../canvas.js";
+import { GBA, GBDU, isButtonPressed } from "../../gamepad.js";
+import { DEBUG } from "../../index.js";
+import { getForwardVec } from "../../rendering/camera.js";
+import { initAAUIFunctionMaps } from "../../ui/components/AstronomyAtlas/modes/AstronomyAtlasUIFunctionMaps.js";
+import { loadGD, UI_CAMERA_OFFSET_VEC, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT } from "../../ui/UIData.js";
+import { addVectors, copyVecValue, getVec3Length, multiplyVectorByScalarDest, subtractVectorsDest } from "../climate/stars/matrix.js";
 import { ATMOSCALE, AtmosphereUnit, sas } from "./model/AtmosphereUnit.js";
 
 

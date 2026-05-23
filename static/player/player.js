@@ -1,6 +1,6 @@
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, getCurZoom, recacheCanvasPositions, zoomCanvasFillCircle, zoomCanvasFillRect } from "../canvas.js";
-import { addWindPressureDryAir } from "../climate/simulation/wind.js";
-import { getFrameDt } from "../climate/time.js";
+import { addWindPressureDryAir } from "../world/climate/simulation/wind.js";
+import { getFrameDt } from "../world/time/time.js";
 import { COLOR_BLACK, COLOR_GREEN, COLOR_VERY_FUCKING_RED } from "../colors.js";
 import { GBY, GBX, GBA, getLeftStick, isButtonPressed, GBB, GBDL, GBDR, GBDU, GBDD } from "../gamepad.js";
 import { getGlobalThetaBase, setGlobalThetaBase } from "../globals.js";

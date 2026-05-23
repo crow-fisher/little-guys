@@ -1,4 +1,4 @@
-import { addUIFunctionMap, UI_LIGHTING_FLATLIGHTING_BRIGHTNESS, UI_LIGHTING_FLATLIGHTING_HUE, UI_LIGHTING_FLATLIGHTING_SATURATION } from "../ui/UIData.js";
+import { addUIFunctionMap, UI_LIGHTING_FLATLIGHTING_BRIGHTNESS, UI_LIGHTING_FLATLIGHTING_HUE, UI_LIGHTING_FLATLIGHTING_SATURATION } from "../../ui/UIData.js";
 import { MoonMovingLightGroup } from "./model/MoonMovingLightGroup.js";
 import { PermanentLightGroup } from "./model/PermanentLightGroup.js";
 import { SunMovingLightGroup } from "./model/SunMovingLightGroup.js";

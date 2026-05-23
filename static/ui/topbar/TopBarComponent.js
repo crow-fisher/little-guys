@@ -25,10 +25,10 @@ import {
 } from "../UIData.js";
 import { TopBarToggle } from "./TopBarToggle.js";
 import { getLastMoveOffset } from "../../mouse.js";
-import { getCurDay, getFrameDt, getTimeScale, millis_per_day } from "../../climate/time.js";
+import { getCurDay, getFrameDt, getTimeScale, millis_per_day } from "../../world/time/time.js";
 import { TopBarText } from "./TopBarText.js";
-import { getCurWeather } from "../../climate/weather/weatherManager.js";
-import { getWindSquareAbove } from "../../climate/simulation/wind.js";
+import { getCurWeather } from "../../world/climate/weather/weatherManager.js";
+import { getWindSquareAbove } from "../../world/climate/simulation/wind.js";
 import { getSqIterationOrder } from "../../squares/_sqOperations.js";
 import { getFrameSimulationSquares } from "../../globalOperations.js";
 import { TopBarTimeSeekLabel } from "./TopBarTimeSeekLabel.js";

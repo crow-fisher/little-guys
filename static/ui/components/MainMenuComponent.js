@@ -1,5 +1,5 @@
 import { getBaseUISize, resetZoom } from "../../canvas.js";
-import { getActiveClimate } from "../../climate/climateManager.js";
+import { getActiveClimate } from "../../world/climate/climateManager.js";
 import { purgeCanvasFrameLimit } from "../../globalOperations.js";
 import { getLastMouseDownStart } from "../../mouse.js";
 import { isPlayerRunning, startPlayerMain, stopPlayerMain } from "../../player/playerMain.js";

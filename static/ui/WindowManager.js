@@ -18,9 +18,9 @@ import { getLastMouseDownStart, getLastMoveOffset, isLeftMouseClicked, isTouchAc
 import { MAIN_CONTEXT } from "../index.js";
 import { hoverSq, doBrushFunc } from "../manipulation.js";
 import { hexToRgb, rgbToRgba } from "../common.js";
-import { getActiveClimate } from "../climate/climateManager.js";
+import { getActiveClimate } from "../world/climate/climateManager.js";
 import { SoilSquare } from "../squares/parameterized/SoilSquare.js";
-import { getDefaultLighting } from "../lighting/lightingProcessing.js";
+import { getDefaultLighting } from "../world/lighting/lightingProcessing.js";
 import { WorldSetupComponent } from "./components/WorldSetupComponent.js";
 import { RockSquare } from "../squares/parameterized/RockSquare.js";
 import { WaterSquare } from "../squares/WaterSquare.js";

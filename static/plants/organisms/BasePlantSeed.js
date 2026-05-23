@@ -1,5 +1,5 @@
 import { BasePlant } from "./BasePlant.js";
-import { getDt, getTimeScale } from "../../climate/time.js";
+import { getDt, getTimeScale } from "../../world/time/time.js";
 import { loadGD, UI_SIMULATION_GENS_PER_DAY } from "../../ui/UIData.js";
 import { getCurPlantConfiguratorVal } from "../../ui/elements/SliderGradientBackgroundPlantConfigurator.js";
 import { getSquares } from "../../squares/_sqOperations.js";

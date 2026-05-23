@@ -1,5 +1,5 @@
 import { getBaseUISize } from "../../canvas.js";
-import { getActiveClimate } from "../../climate/climateManager.js";
+import { getActiveClimate } from "../../world/climate/climateManager.js";
 import { reset3DCameraTo2DScreen } from "../../rendering/camera.js";
 import { Container } from "../Container.js";
 import { Button } from "../elements/Button.js";

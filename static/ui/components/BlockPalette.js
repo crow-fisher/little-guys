@@ -1,5 +1,5 @@
 import { getBaseUISize } from "../../canvas.js";
-import { getActiveClimate } from "../../climate/climateManager.js";
+import { getActiveClimate } from "../../world/climate/climateManager.js";
 import { hueShiftColor, rgbToHex, rgbToHexObj, UI_BIGDOTHOLLOW, UI_BIGDOTSOLID } from "../../common.js";
 import { getCameraPosition } from "../../rendering/camera.js";
 import { Component } from "../Component.js";

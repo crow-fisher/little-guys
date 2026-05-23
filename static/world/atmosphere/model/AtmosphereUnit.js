@@ -1,14 +1,14 @@
-import { getCanvasHeight, getCanvasWidth, zoomCanvasFillRect, zoomCanvasFillRectTheta } from "../../../../canvas.js";
-import { COLOR_BLUE, COLOR_OTHER_BLUE, COLOR_RED, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../../colors.js";
-import { MAIN_CONTEXT } from "../../../../index.js";
-import { debugRenderLine, debugRenderLineOffsetPoints } from "../../../../rendering/camera.js";
-import { CoordinateSet } from "../../../../rendering/model/CoordinateSet.js";
-import { LineRenderJob } from "../../../../rendering/model/LineRenderJob.js";
-import { PointLabelRenderJob } from "../../../../rendering/model/PointLabelRenderJob.js";
-import { addRenderJob } from "../../../../rendering/rasterizer.js";
-import { loadGD, UI_CAMERA_CENTER_SELECT_OFFSET, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT } from "../../../../ui/UIData.js";
-import { addVec3Dest, addVectors, copyVecValue, getVec3Length, multiplyVectorByScalar, multiplyVectorByScalarDest, subtractVectors, subtractVectorsDest } from "../../../stars/matrix.js";
-import { getCurDay } from "../../../time.js";
+import { getCanvasHeight, getCanvasWidth, zoomCanvasFillRect, zoomCanvasFillRectTheta } from "../../../canvas.js";
+import { COLOR_BLUE, COLOR_OTHER_BLUE, COLOR_RED, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../colors.js";
+import { MAIN_CONTEXT } from "../../../index.js";
+import { debugRenderLine, debugRenderLineOffsetPoints } from "../../../rendering/camera.js";
+import { CoordinateSet } from "../../../rendering/model/CoordinateSet.js";
+import { LineRenderJob } from "../../../rendering/model/LineRenderJob.js";
+import { PointLabelRenderJob } from "../../../rendering/model/PointLabelRenderJob.js";
+import { addRenderJob } from "../../../rendering/rasterizer.js";
+import { loadGD, UI_CAMERA_CENTER_SELECT_OFFSET, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT } from "../../../ui/UIData.js";
+import { addVec3Dest, addVectors, copyVecValue, getVec3Length, multiplyVectorByScalar, multiplyVectorByScalarDest, subtractVectors, subtractVectorsDest } from "../../climate/stars/matrix.js";
+import { getCurDay } from "../../time/time.js";
 
 export let ATMOSCALE = 4;
 

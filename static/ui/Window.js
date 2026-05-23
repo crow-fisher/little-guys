@@ -1,5 +1,5 @@
 import { getBaseUISize, getCanvasHeight, getCanvasWidth } from "../canvas.js";
-import { getActiveClimate } from "../climate/climateManager.js";
+import { getActiveClimate } from "../world/climate/climateManager.js";
 import { COLOR_BLACK } from "../colors.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { getLastMoveOffset, isLeftMouseClicked } from "../mouse.js";

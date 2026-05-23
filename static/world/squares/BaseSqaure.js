@@ -15,11 +15,11 @@ import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth, MAIN_CONTEXT } fro
 
 import { hash, hexToRgb, hsv2rgb, processRangeToOne, randNumber, randRange, removeItemAll, rgb2hsv, rgbToHex, rgbToRgba } from "../common.js";
 import { removeSquare } from "../globalOperations.js";
-import { calculateColorTemperature, getTemperatureAtWindSquare, temperatureHumidityFlowrateFactor, updateWindSquareTemperature } from "../climate/simulation/temperatureHumidity.js";
-import { getWindSquareAbove } from "../climate/simulation/wind.js";
+import { calculateColorTemperature, getTemperatureAtWindSquare, temperatureHumidityFlowrateFactor, updateWindSquareTemperature } from "../world/climate/simulation/temperatureHumidity.js";
+import { getWindSquareAbove } from "../world/climate/simulation/wind.js";
 import { COLOR_BLACK, GROUP_BROWN, GROUP_BLUE, GROUP_MAUVE, GROUP_TAN, GROUP_GREEN, RGB_COLOR_BLUE, RGB_COLOR_RED, COLOR_WHITE } from "../colors.js";
-import { getCurDay, getDaylightStrengthFrameDiff, getFrameDt, getTimeScale } from "../climate/time.js";
-import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
+import { getCurDay, getDaylightStrengthFrameDiff, getFrameDt, getTimeScale } from "../world/climate/time.js";
+import { applyLightingFromSource, getDefaultLighting, processLighting } from "../world/lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasSquaresY, getCurZoom, isSquareOnCanvas, transformCanvasSquaresToPixels, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
 import { loadGD, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_SURFACE_LIGHTING_FACTOR, UI_LIGHTING_ENABLED, UI_VIEWMODE_ORG_LIGHTING, UI_VIEWMODE_BLOCK_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_BLOCK_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_BLOCK_WATERMATRIC, UI_VIEWMODE_BLOCK_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3, UI_VIEWMODE_DEV4, UI_VIEWMODE_DEV5, UI_PALETTE_STRENGTH, UI_LIGHTING_SURFACE, UI_PALETTE_SURFACE_LIGHTING_FACTOR_MATCH, UI_VIEWMODE_3D, UI_CAMERA_CENTER_SELECT_POINT, saveGD, UI_CAMERA_OFFSET_VEC, UI_PALETTE_SIZE, UI_BLOCK_ZDEPTH, UI_LIGHTING_SURFACE_LIGHTING_FACTOR, UI_LIGHTING_SURFACE_FACTOR, UI_VIEWMODE_PROJECTION_2D, UI_VIEWMODE_PROJECTION_3D, UI_VIEWMODE_BLOCK_SELECT, UI_VIEWMODE_BLOCK_NORMAL } from "../ui/UIData.js";
 import { deregisterSquare, registerSquare } from "../waterGraph.js";
@@ -28,7 +28,7 @@ import { cartesianToScreenInplace, gfc, screenToRenderScreen } from "../renderin
 import { addRenderJob, executeRenderJobs } from "../rendering/rasterizer.js";
 import { QuadRenderJob } from "../rendering/model/QuadRenderJob.js";
 import { CoordinateSet } from "../rendering/model/CoordinateSet.js";
-import { copyVecValue } from "../climate/stars/matrix.js";
+import { copyVecValue } from "../world/climate/stars/matrix.js";
 import { PointLabelRenderJob } from "../rendering/model/PointLabelRenderJob.js";
 import { setOrganismAddedThisClick } from "../manipulation.js";
 import { isSaveOrLoadInProgress } from "../saveAndLoad.js";

@@ -1,7 +1,7 @@
 let ERASE_RADIUS = 2;
 
 import { getCanvasHeight, getCanvasWidth, transformPixelsToCanvasSquares } from "./canvas.js";
-import { addTemperature, addWaterSaturationPascalsSqCoords } from "./climate/simulation/temperatureHumidity.js";
+import { addTemperature, addWaterSaturationPascalsSqCoords } from "./world/climate/simulation/temperatureHumidity.js";
 import { getFrameSimulationSquares, removeSquare } from "./globalOperations.js";
 import { getLastMouseDownStart, getLastMoveOffset, getLeftMouseUpEvent, isLeftMouseClicked, isMiddleMouseClicked, isRightMouseClicked, setMouseTouchStartCallback } from "./mouse.js";
 import { OriginGrassSeedOrganism } from "./plants/organisms/grasses/OriginGrass.js";

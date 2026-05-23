@@ -1,5 +1,5 @@
 import { getBaseUISize } from "../../canvas.js";
-import { getActiveClimate } from "../../climate/climateManager.js";
+import { getActiveClimate } from "../../world/climate/climateManager.js";
 import { _resetLighting, indexCanvasSize } from "../../index.js";
 import { Container } from "../Container.js";
 import { RadioToggle } from "../elements/RadioToggle.js";

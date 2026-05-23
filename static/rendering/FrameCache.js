@@ -1,5 +1,5 @@
 import { getCanvasHeight, getCanvasWidth } from "../canvas.js";
-import { getCurDay } from "../climate/time.js";
+import { getCurDay } from "../world/time/time.js";
 import { loadGD, UI_SH_MINSIZE, UI_SH_STYLE_SIZE_A , UI_SH_STYLE_BRIGHTNESS_B, UI_SH_STYLE_BRIGHTNESS_A,
 UI_SH_STYLE_SIZE_B,
 UI_STARMAP_ZOOM,

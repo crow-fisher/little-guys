@@ -1,6 +1,6 @@
 import { decayVec, getBaseSize, getCanvasHeight, getCanvasWidth, getCurZoom, getFrameHeight, getFrameWidth, getFrameXMax, getFrameYMax } from "../canvas.js";
-import { addVectors, crossVec3, multiplyMatrixAndPoint, multiplyMatrixAndPointInplace, multiplyVectorByScalar, normalizeVec3, subtractVectors, transposeMat4 } from "../climate/stars/matrix.js";
-import { getCurDay } from "../climate/time.js";
+import { addVectors, crossVec3, multiplyMatrixAndPoint, multiplyMatrixAndPointInplace, multiplyVectorByScalar, normalizeVec3, subtractVectors, transposeMat4 } from "../world/climate/stars/matrix.js";
+import { getCurDay } from "../world/time/time.js";
 import { COLOR_WHITE } from "../colors.js";
 import { rgbToHex } from "../common.js";
 import { MAIN_CONTEXT } from "../index.js";

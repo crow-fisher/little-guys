@@ -1,6 +1,6 @@
 import { getBaseUISize } from "../../canvas.js";
-import { getActiveClimate } from "../../climate/climateManager.js";
-import { calculateColor } from "../../climate/simulation/temperatureHumidity.js";
+import { getActiveClimate } from "../../world/climate/climateManager.js";
+import { calculateColor } from "../../world/climate/simulation/temperatureHumidity.js";
 import { hexToRgb } from "../../common.js";
 import { _lightDecayValue, _lightLevelDisplayExposureAdjustment, _llt_max, _llt_min, _llt_target, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, baseOrganism_dnm } from "../../plants/organisms/BasePlant.js";
 import { grass_dnm } from "../../plants/organisms/grasses/OriginGrass.js";

@@ -1,26 +1,26 @@
 import { doWaterFlow, periodicPurgeOldGroupData, physics, processOrganisms, renderCandidateMap, renderOrganisms, renderSolidSquares, renderTargetMap, renderWaterSquares, reset, setFrameCartesians } from "./globalOperations.js";
 import { doClickAdd, doClickAddEyedropperMixer } from "./manipulation.js";
-import { renderClouds, renderWaterSaturation } from "./climate/simulation/temperatureHumidity.js";
-import { doTimeSeek, getTimeScale, isTimeSeeking, renderTime, updateTime } from "./climate/time.js";
+import { renderClouds, renderWaterSaturation } from "./world/climate/simulation/temperatureHumidity.js";
+import { doTimeSeek, getTimeScale, isTimeSeeking, renderTime, updateTime } from "./world/time/time.js";
 import { executeFunctionQueue, loadGD, saveGD, UI_CAMERA_CENTER_SELECT_POINT, UI_CAMERA_EXPOSURE, UI_LIGHTING_GLOBAL, UI_SIMULATION_CLOUDS, UI_VIEWMODE_3D, UI_VIEWMODE_AIRTICKRATE, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_DEV5, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_WIND } from "./ui/UIData.js";
 import { renderMouseHover, renderWindows, resetWindowHovered, updateWindows } from "./ui/WindowManager.js";
-import { LightingHandler } from "./lighting/lightingHandler.js";
+import { LightingHandler } from "./world/lighting/lightingHandler.js";
 import { isLeftMouseClicked } from "./mouse.js";
 import { iterateOnSquares, resetSqColChangeMap } from "./squares/_sqOperations.js";
 import { isSaveOrLoadInProgress } from "./saveAndLoad.js";
-import { renderThrottleMap } from "./climate/simulation/throttler.js";
+import { renderThrottleMap } from "./world/climate/simulation/throttler.js";
 import { playerTick, renderPlayer } from "./player/playerMain.js";
 import { gamepadInputLoop } from "./gamepad.js";
-import { renderCloudsDebug } from "./climate/weather/weatherManager.js";
+import { renderCloudsDebug } from "./world/climate/weather/weatherManager.js";
 import { clearTimeouts, completeActiveJobs, prepareTickJobs } from "./scheduler.js";
 import { canvasPanRoutine, getBaseSize, zoomCanvasFillRect } from "./canvas.js";
 import { render3DHud, tickFrameMatrix } from "./rendering/camera.js";
 import { gamepadCameraInput } from "./gamepadCameraInput.js";
 import { executeRenderJobs } from "./rendering/rasterizer.js";
-import { StarHandler } from "./climate/stars/starHandler.js";
+import { StarHandler } from "./world/climate/stars/starHandler.js";
 import { MAIN_CONTEXT, NOORG } from "./index.js";
 import { COLOR_VERY_FUCKING_RED } from "./colors.js";
-import { AtmosphereHandler } from "./climate/simulation/atmosphere/AtmosphereHandler.js";
+import { AtmosphereHandler } from "./world/atmosphere/AtmosphereHandler.js";
 import { renderIBODEvents } from "./ibod/IBODManager.js";
 
 

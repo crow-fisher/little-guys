@@ -1,5 +1,5 @@
 import { getBaseUISize } from "../../canvas.js";
-import { getActiveClimate } from "../../climate/climateManager.js";
+import { getActiveClimate } from "../../world/climate/climateManager.js";
 import { Component } from "../Component.js";
 import { Container } from "../Container.js";
 import { Toggle } from "../elements/Toggle.js";

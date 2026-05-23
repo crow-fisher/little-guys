@@ -9,9 +9,9 @@ import { loadGD, saveGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_GAME_MAX_CANVAS_SQUARES
 import { indexCanvasSize, MAIN_CONTEXT, NOORG } from "./index.js";
 import { registerSquare, resetFrameGroupCache, waterGraphReset } from "./waterGraph.js";
 import { RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "./colors.js";
-import { calculateColorProvideOpacity } from "./climate/simulation/temperatureHumidity.js";
+import { calculateColorProvideOpacity } from "./world/climate/simulation/temperatureHumidity.js";
 import { getPlayerXMaxOffset, getPlayerXMinOffset } from "./player/playerMain.js";
-import { applyLightingFromSource } from "./lighting/lightingProcessing.js";
+import { applyLightingFromSource } from "./world/lighting/lightingProcessing.js";
 
 let frame_squares = null;
 let frame_simulation_squares = new Array();

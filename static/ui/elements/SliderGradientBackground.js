@@ -1,5 +1,5 @@
 import { getBaseUISize } from "../../canvas.js";
-import { calculateColor } from "../../climate/simulation/temperatureHumidity.js";
+import { calculateColor } from "../../world/climate/simulation/temperatureHumidity.js";
 import { COLOR_BLACK } from "../../colors.js";
 import { getCurBackgroundColor, MAIN_CONTEXT } from "../../index.js";
 import { DEBUG } from "../../index.js";

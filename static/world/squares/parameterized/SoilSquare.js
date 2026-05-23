@@ -1,21 +1,21 @@
 import { BaseSquare } from "../BaseSqaure.js";
 import { addSquare, getNeighbors, getSquares } from "../_sqOperations.js";
 import { cachedGetWaterflowRate, hexToRgb, invlerp, lerp, randNumber, randRange } from "../../common.js";
-import { getCurTimeScale, getDt, getFrameDt, timeScaleFactor } from "../../climate/time.js";
-import { getPressure, getWindSquareAbove } from "../../climate/simulation/wind.js";
-import { addWaterSaturationPascals, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, temperatureHumidityFlowrateFactor } from "../../climate/simulation/temperatureHumidity.js";
+import { getCurTimeScale, getDt, getFrameDt, timeScaleFactor } from "../../world/climate/time.js";
+import { getPressure, getWindSquareAbove } from "../../world/climate/simulation/wind.js";
+import { addWaterSaturationPascals, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, temperatureHumidityFlowrateFactor } from "../../world/climate/simulation/temperatureHumidity.js";
 import { loadGD, UI_LIGHTING_SURFACE, UI_PALETTE_COMPOSITION, UI_PALETTE_SOILIDX, UI_PALETTE_VARIANCE, UI_SIMULATION_CLOUDS, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT } from "../../ui/UIData.js";
-import { getActiveClimate } from "../../climate/climateManager.js";
+import { getActiveClimate } from "../../world/climate/climateManager.js";
 import { addSquareByName } from "../../manipulation.js";
 import { getBaseSize } from "../../canvas.js";
-import { applyLightingFromSource, getDefaultLighting } from "../../lighting/lightingProcessing.js";
+import { applyLightingFromSource, getDefaultLighting } from "../../world/lighting/lightingProcessing.js";
 import { getNextBlockId, getNextGroupId } from "../../globals.js";
 import { getAtmosphereHandler, getWindSpeedAtLocation, getWindSpeedAtLocationXY } from "../../main.js";
 import { CoordinateSet } from "../../rendering/model/CoordinateSet.js";
 import { PointLabelRenderJob } from "../../rendering/model/PointLabelRenderJob.js";
 import { COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { addRenderJob } from "../../rendering/rasterizer.js";
-import { ATMOSCALE } from "../../climate/simulation/atmosphere/model/AtmosphereUnit.js";
+import { ATMOSCALE } from "../../world/climate/simulation/atmosphere/model/AtmosphereUnit.js";
 
 // maps in form "water containment" / "matric pressure in atmospheres"
 export const clayMatricPressureMap = [

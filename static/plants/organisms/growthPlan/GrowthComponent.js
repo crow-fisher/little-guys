@@ -1,5 +1,5 @@
-import { getCurDay } from "../../../climate/time.js";
-import { addVectors, addVectorsMult, copyVecValue, multiplyVectorByScalar, normalizeVec3 } from "../../../climate/stars/matrix.js";
+import { getCurDay } from "../../../world/time/time.js";
+import { addVectors, addVectorsMult, copyVecValue, multiplyVectorByScalar, normalizeVec3 } from "../../../world/climate/stars/matrix.js";
 import { getAtmosphereHandler, getWindSpeedAtLocation } from "../../../main.js";
 
 

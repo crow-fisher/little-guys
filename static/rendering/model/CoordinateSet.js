@@ -1,5 +1,5 @@
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, getCurZoom, zoomCanvasFillCircle } from "../../canvas.js";
-import { copyVecValue, getVec3Length, subtractVectorsDest } from "../../climate/stars/matrix.js";
+import { copyVecValue, getVec3Length, subtractVectorsDest } from "../../world/climate/stars/matrix.js";
 import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth } from "../../index.js";
 import { loadEmptyScene } from "../../saveAndLoad.js";
 import { loadGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_VIEWMODE_3D, UI_VIEWMODE_NORMAL, UI_VIEWMODE_PROJECTION, UI_VIEWMODE_PROJECTION_3D, UI_VIEWMODE_SELECT } from "../../ui/UIData.js";

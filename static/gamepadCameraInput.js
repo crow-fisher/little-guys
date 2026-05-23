@@ -1,5 +1,5 @@
 import { reset3DCameraTo2DScreen } from "./rendering/camera.js";
-import { getFrameDt } from "./climate/time.js";
+import { getFrameDt } from "./world/time/time.js";
 import { GBA, GBB, GBDD, GBDL, GBDR, GBDU, GBSL, GBSR, GBX, GBY, getLeftStick, getRightStick, getTriggers, isButtonPressed } from "./gamepad.js";
 import { loadGD, saveGD, UI_CAMERA_FOV, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_ROTATION_VEC_DT, UI_STARMAP_CONSTELATION_BRIGHTNESS, UI_STARMAP_NORMAL_BRIGTNESS } from "./ui/UIData.js";
 

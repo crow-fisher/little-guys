@@ -1,6 +1,6 @@
 import { reset3DCameraTo2DScreen } from "./rendering/camera.js";
 import { getBaseSize, moveCamera, resetZoom, rotatePoint } from "./canvas.js";
-import { getActiveClimate } from "./climate/climateManager.js";
+import { getActiveClimate } from "./world/climate/climateManager.js";
 import { getGlobalThetaBase, setGlobalThetaBase } from "./globals.js";
 import { isPlayerRunning, playerKeyDown, playerKeyUp } from "./player/playerMain.js";
 import { addSquareOverride } from "./squares/_sqOperations.js";

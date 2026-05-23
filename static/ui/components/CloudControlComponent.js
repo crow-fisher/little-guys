@@ -1,5 +1,5 @@
 import { getBaseUISize, getCanvasSquaresY } from "../../canvas.js";
-import { getActiveClimate } from "../../climate/climateManager.js";
+import { getActiveClimate } from "../../world/climate/climateManager.js";
 import { Container } from "../Container.js";
 import { loadGD, loadUI, UI_CENTER, UI_CLIMATE_RAINFALL_DENSITY, UI_CLIMATE_TOOL_SIZE, UI_CLIMATE_WEATHER_RAIN_TOGGLE, UI_CLIMATE_WEATHER_TOOL_CLOUD_HUMIDITY, UI_SIMULATION_HEIGHT, UI_UI_PHONEMODE } from "../UIData.js";
 import { Slider } from "../elements/Slider.js";

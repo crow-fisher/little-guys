@@ -1,6 +1,6 @@
 import { getBaseUISize } from "../../canvas.js";
-import { getActiveClimate } from "../../climate/climateManager.js";
-import { getMoonlightColorRgb } from "../../climate/time.js";
+import { getActiveClimate } from "../../world/climate/climateManager.js";
+import { getMoonlightColorRgb } from "../../world/time/time.js";
 import { hexToRgb, hsv2rgb, rgb2hsv, rgbToHex, rgbToRgba } from "../../common.js";
 import { WaterSquare } from "../../squares/WaterSquare.js";
 import { Component } from "../Component.js";
