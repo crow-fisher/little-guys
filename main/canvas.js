@@ -83,8 +83,6 @@ export function transformPixelsToCanvasSquares(x, y) {
     return [canvasWindowWidthStart + xpi * canvasWindowWidth, canvasWindowHeightStart + ypi * canvasWindowHeight];
 }
 
-
-
 let frameXMin = 0;
 let frameXMax = 0;
 let frameYMin = 0;

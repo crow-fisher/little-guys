@@ -9,7 +9,7 @@ export class PastelCatalog extends CatalogHandlerBase {
     }
 
     loadData(callback) {
-        fetch("./static/climate/stars/catalogSource/pastel/pastel.dat").then((resp) => resp.text())
+        fetch("./main/climate/stars/catalogSource/pastel/pastel.dat").then((resp) => resp.text())
             .then((text) => this.loadPASTEL(text))
             .then(callback);
     }

@@ -6,7 +6,7 @@ import { getFrameSimulationSquares, removeSquare } from "./globalOperations.js";
 import { getLastMouseDownStart, getLastMoveOffset, getLeftMouseUpEvent, isLeftMouseClicked, isMiddleMouseClicked, isRightMouseClicked, setMouseTouchStartCallback } from "./mouse.js";
 import { OriginGrassSeedOrganism } from "./plants/organisms/grasses/OriginGrass.js";
 import { addSquare, addSquareOverride, getSquares, removeSquarePos } from "./squares/_sqOperations.js";
-import { AquiferSquare } from "./squares/parameterized/RainSquare.js";
+import { AquiferSquare } from "./squares/parameterized/AquiferSquare.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";

@@ -9,10 +9,10 @@ export class StellariumCatalog extends CatalogHandlerBase {
     }
 
     loadData() {
-        fetch("./static/climate/stars/catalogSource/stellarium/constellations.fab").then((resp) => resp.text())
+        fetch("./main/climate/stars/catalogSource/stellarium/constellations.fab").then((resp) => resp.text())
             .then((text) => this.loadConstellations(text))
 
-        // fetch("./static/climate/stars/catalogSource/stellarium/constelation_names_eng.fab").then((resp) => resp.text())
+        // fetch("./main/climate/stars/catalogSource/stellarium/constelation_names_eng.fab").then((resp) => resp.text())
         //     .then((text) => this.loadConstellationNames(text))
         //     .then(() => this.execCallback());
     }

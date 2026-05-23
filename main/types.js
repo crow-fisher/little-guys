@@ -5,7 +5,7 @@ import { PlantLifeSquare } from "./plants/lifeSquares/PlantLifeSquare.js";
 import { BasePlant } from "./plants/organisms/BasePlant.js";
 import { SeedLifeSquare } from "./plants/lifeSquares/SeedLifeSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
-import { AquiferSquare } from "./squares/parameterized/RainSquare.js";
+import { AquiferSquare } from "./squares/parameterized/AquiferSquare.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { OriginGrass, OriginGrassSeedOrganism } from "./plants/organisms/grasses/OriginGrass.js";

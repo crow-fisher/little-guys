@@ -12,7 +12,7 @@ export class HipparcosCatalog extends CatalogHandlerBase {
     }
 
     loadData(callback) {
-        fetch("./static/climate/stars/catalogSource/hipparcos/hip_main.dat").then((resp) => resp.text())
+        fetch("./main/climate/stars/catalogSource/hipparcos/hip_main.dat").then((resp) => resp.text())
             .then((text) => this.loadHIPStars(text))
             .then(callback);
     }
