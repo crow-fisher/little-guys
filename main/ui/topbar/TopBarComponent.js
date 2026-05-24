@@ -15,14 +15,10 @@ import {
     UI_TOPBAR_MAINMENU,
     UI_BOOLEAN, UI_TOPBAR_BLOCK, UI_TOPBAR_VIEWMODE, UI_TOPBAR_LIGHTING,
     UI_TOPBAR_TIME,
-    UI_NAME, UI_TOPBAR_WEATHER,
-    loadUI,
-    UI_UI_PHONEMODE,
-    UI_TOPBAR_AA,
+    UI_NAME, UI_TOPBAR_WEATHER, UI_TOPBAR_AA,
     UI_TOPBAR_IBOD
 } from "../UIData.js";
 import { TopBarToggle } from "./TopBarToggle.js";
-import { getLastMoveOffset } from "../../mouse.js";
 import { getCurDay, getFrameDt, getTimeScale, millis_per_day } from "../../world/time/time.js";
 import { TopBarText } from "./TopBarText.js";
 import { getFrameSimulationSquares } from "../../globalOperations.js";
@@ -35,9 +31,7 @@ export class TopBarComponent {
         this.uiManager = uiManager;
         this.hovered = false;
         this.compact = false;
-        this.phoneModeOffset = 0;
 
-        this.viewAsTwoRowsWidthCutoff = uiManager.getBaseUISize() * 135;
         this.veryCompactWidthCutoff = uiManager.getBaseUISize() * 70;
 
         this.elements = new Map();
@@ -194,49 +188,12 @@ export class TopBarComponent {
 
 
     ySize() {
-        return this.maxHeight + 3 * this.padding + this.phoneModeOffset;
+        return this.maxHeight + 3 * this.padding;
     }
 
-    render2Row() {
-        this.compact = true;
-        if (this.uiManager.getWidth() < this.veryCompactWidthCutoff) {
-            this.veryCompact = true;
-        }
-
-        let curEndX = 0;
-        let curStartY = 0;
-        let key = 0;
-
-        let elements = this.elements[key];
-        let startX = this.uiManager.getWidth() * key;
-        let totalElementsSizeX = elements.map((element) => element.measure()).map((measurements) => measurements[0] + this.padding).reduce(
-            (accumulator, currentValue) => accumulator + currentValue,
-            0,
-        );
-
-        if (key >= 0.5) {
-            startX -= totalElementsSizeX;
-        }
-
-
-        let topBarElements = elements.slice(0, 11);
-        let topBarElementsToRender = Array.from(topBarElements.filter((el) => el != this.midSpacingEl));
-        topBarElementsToRender.forEach((el) => el.textAlign = "center")
-        let step = this.uiManager.getWidth() / topBarElementsToRender.length;
-
-        for (let i = 0; i < topBarElementsToRender.length; i++) {
-            let element = topBarElementsToRender[i];
-            let measurements = element.measure();
-            element.render(startX + step/2, curStartY + this.padding + measurements[1]);
-            startX += step;
-            // startX += measurements[0] + this.padding;
-
-            this.maxHeight = Math.max(measurements[1], this.maxHeight);
-
-        }        
-    }
-
-    render1Row() {
+    render() {
+        MAIN_CONTEXT.fillStyle = COLOR_BLACK;
+        MAIN_CONTEXT.fillRect(0, 0, this.uiManager.getWidth(), this.ySize());
         let order = Array.from(Object.keys(this.elements).map(parseFloat)).sort()
         let curEndX = 0;
         order.forEach((key) => {
@@ -267,24 +224,6 @@ export class TopBarComponent {
             }
         })
     }
-    render() {
-        if (!loadGD(this.key)) {
-            return;
-        }
-        
-        this.phoneModeOffset = (loadUI(UI_UI_PHONEMODE) ? uiManager.getBaseUISize() * 3 : 0);
-
-        let shouldRenderAsTwoRows = this.uiManager.getWidth() < this.viewAsTwoRowsWidthCutoff;
-        MAIN_CONTEXT.fillStyle = COLOR_BLACK;
-        MAIN_CONTEXT.fillRect(0, this.phoneModeOffset, this.uiManager.getWidth() + 10, this.ySize() - this.phoneModeOffset);
-        this.render1Row();
-        // if (shouldRenderAsTwoRows) {
-        //     this.render2Row();
-        // } else {
-        //     this.render1Row();
-        // }
-        
-    }
 
     // yeah i'm pretty sorry about this one
     getElementXPositionFunc(elementKey, elementIdx) {
@@ -294,48 +233,48 @@ export class TopBarComponent {
         return this.elementPositions[elementKey][elementIdx] + uiManager.getBaseUISize() * 1.95   ;
     }
 
-    update() {
-        if (!loadGD(this.key)) {
-            return;
-        }
+    // update() {
+    //     if (!loadGD(this.key)) {
+    //         return;
+    //     }
         
-        let curMouseLocation = getLastMoveOffset();
-        if (curMouseLocation == null) {
-            return;
-        }
+    //     let curMouseLocation = getLastMoveOffset();
+    //     if (curMouseLocation == null) {
+    //         return;
+    //     }
         
-        let x = curMouseLocation.x;
-        let y = curMouseLocation.y - this.phoneModeOffset;
+    //     let x = curMouseLocation.x;
+    //     let y = curMouseLocation.y - this.phoneModeOffset;
 
-        if (y > this.maxHeight + (uiManager.getBaseUISize())) {
-            return;
-        }
+    //     if (y > this.maxHeight + (uiManager.getBaseUISize())) {
+    //         return;
+    //     }
 
-        let keys = Object.keys(this.elements);
-        keys.map(parseFloat).forEach((key) => {
-            let elements = this.elements[key];
-            let startX = this.uiManager.getWidth() * key;
-            let totalElementsSizeX = elements.map((element) => element.measure()).map((measurements) => measurements[0] + this.padding).reduce(
-                (accumulator, currentValue) => accumulator + currentValue,
-                0,
-            );
+    //     let keys = Object.keys(this.elements);
+    //     keys.map(parseFloat).forEach((key) => {
+    //         let elements = this.elements[key];
+    //         let startX = this.uiManager.getWidth() * key;
+    //         let totalElementsSizeX = elements.map((element) => element.measure()).map((measurements) => measurements[0] + this.padding).reduce(
+    //             (accumulator, currentValue) => accumulator + currentValue,
+    //             0,
+    //         );
 
-            if (key >= 0.5) {
-                startX -= totalElementsSizeX;
-            } else {
-                startX += this.padding * 2;
-            }
-            elements.forEach((element) => {
-                let measurements = element.measure();
-                let width = measurements[0] + this.padding;
+    //         if (key >= 0.5) {
+    //             startX -= totalElementsSizeX;
+    //         } else {
+    //             startX += this.padding * 2;
+    //         }
+    //         elements.forEach((element) => {
+    //             let measurements = element.measure();
+    //             let width = measurements[0] + this.padding;
 
-                if (x > startX && x < startX + measurements[0]) {
-                    element.hover(x - startX, y);
-                    this.hovered = true;
-                }
-                startX += width;
-            });
-        })
+    //             if (x > startX && x < startX + measurements[0]) {
+    //                 element.hover(x - startX, y);
+    //                 this.hovered = true;
+    //             }
+    //             startX += width;
+    //         });
+    //     })
 
-    }
+    // }
 }
