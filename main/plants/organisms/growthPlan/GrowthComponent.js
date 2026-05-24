@@ -1,6 +1,6 @@
 import { getCurDay } from "../../../world/time/time.js";
 import { addVectors, addVectorsMult, copyVecValue, multiplyVectorByScalar, normalizeVec3 } from "../../../world/climate/stars/matrix.js";
-import { getAtmosphereHandler, getWindSpeedAtLocation } from "../../../main.js";
+import { getAtmosphereHandler, getWindSpeedAtLocation } from "../../../main_old.js";
 
 
 export class GrowthComponent {

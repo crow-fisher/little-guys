@@ -1,10 +1,22 @@
 {
     "configurations": [
-        {
+            {
             "type": "chrome",
-            "name": "http://localhost",
+            "name": "main",
             "request": "launch",
             "url": "http://localhost?debug="
+        },
+        {
+            "type": "chrome",
+            "name": "main debug",
+            "request": "launch",
+            "url": "http://localhost?debug=1"
+        },
+        {
+            "type": "chrome",
+            "name": "test",
+            "request": "launch",
+            "url": "http://localhost/test.html"
         }
     ]
 }

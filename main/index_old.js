@@ -1,5 +1,5 @@
 import { createNewWorld, decompress, gameUserStateLoad, isSaveOrLoadInProgress, loadEmptyScene, loadSlot, loadSlotData, loadSlotFromSave, purgeGameState, saveCurGame, setSaveOrLoadInProgress } from "./saveAndLoad.js";
-import { resetClimateAndLighting, resetLighting, scheduler_main } from "./main_old.js";
+import { resetClimateAndLighting, resetLighting, scheduler_main } from "./main.js";
 import { keydown, keyup } from "./keyboard.js";
 import { getLastMoveOffset, handleClick, handleMouseDown, handleMouseUp, handleTouchEnd, handleTouchMove, handleTouchStart } from "./mouse.js";
 import { getBaseSize, getCanvasHeight, getCanvasWidth, isSquareOnCanvas, recacheCanvasPositions, resetZoom, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, transformPixelsToCanvasSquares, zoom } from "./canvas.js";
@@ -13,10 +13,13 @@ export let MAIN_CANVAS = document.getElementById("main");
 export let MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
 
 let params = new URLSearchParams(document.location.search);
+
 export let DEBUG = params.get("debug");
 export let NOORG = params.get("noorg");
 export let NOBLIP = params.get("noblip");
 export let NOSTAR = params.get("nostar");
+
+const body = document.getElementById("body");
 
 MAIN_CANVAS.addEventListener('mousemove', handleClick, false);
 MAIN_CANVAS.addEventListener('mousedown', handleMouseDown);
@@ -79,7 +82,17 @@ addUIFunctionMap(UI_SIMULATION_HEIGHT, () => {
 
 addUIFunctionMap(UI_UI_SIZE, initUI)
 
+let backgroundColor = "#FFFFFF";
+export function setBackgroundColor(hexColor) {
+    backgroundColor = hexColor;
+    body.style = "background-color: " + hexColor
+}
+export function getCurBackgroundColor() {
+    return backgroundColor;
+}
+
 window.onresize = indexCanvasSize;
+// window.onblur = saveCurGame;
 document.documentElement.style.overflow = 'hidden';  // firefox, chrome
 
 addEventListener('paste', async (e) => {
@@ -135,8 +148,13 @@ addEventListener('paste', async (e) => {
 
 async function handleFileDrop(ev) {
     setSaveOrLoadInProgress(true);
+    // purgeGameState();
+
     const newWorldRes = await createNewWorld();
+
+    // Prevent default behavior (Prevent file from being opened)
     ev.preventDefault();
+    // Use DataTransferItemList interface to access the file(s)
     let item = [...ev.dataTransfer.items].at(0);
     if (item.kind === "file") {
         const file = item.getAsFile();
