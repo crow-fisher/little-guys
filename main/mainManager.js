@@ -1,8 +1,10 @@
 import { CanvasManager } from "./rendering/canvasManager.js"
+import { UIManager } from "./ui/UIManager.js";
 
 export class MainManager {
     constructor() {
         this.canvasManager = new CanvasManager("main");
+        this.uiManager = new UIManager(this);
         this.canvasManager.addCallbacks(this);
     }
 
@@ -17,11 +19,12 @@ export class MainManager {
     }
 
     update() {
-
+        this.uiManager.update();
     }
 
     render() {
         this.canvasManager.render();
+        this.uiManager.render();
     }
 
     // Canvas Callbacks
