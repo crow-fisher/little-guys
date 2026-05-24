@@ -3,5 +3,8 @@
     "editor.parameterHints.cycle": false,
     "editor.suggest.showTypeParameters": false,
     "breadcrumbs.showTypeParameters": false,
-    "outline.showTypeParameters": false
+    "outline.showTypeParameters": false,
+    "cSpell.words": [
+        "TANGOR"
+    ]
 }

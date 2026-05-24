@@ -23,7 +23,6 @@ import { COLOR_VERY_FUCKING_RED } from "./colors.js";
 import { AtmosphereHandler } from "./world/atmosphere/AtmosphereHandler.js";
 import { renderIBODEvents } from "./ibod/IBODManager.js";
 
-
 let starHandler;
 let lightingHandler;
 let atmosphereHandler;
