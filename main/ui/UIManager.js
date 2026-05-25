@@ -5,7 +5,7 @@ export class UIManager {
     constructor(mainManager) {
         this.elements = new Array();
         this.mainManager = mainManager;
-        this.addElement("topBarComponent", new TopBarComponent(UI_TOPBAR, this, mainManager));
+        this.addElement("topBarComponent", new TopBarComponent(this, UI_TOPBAR));
     }
 
     addElement(name, element) {
@@ -23,6 +23,11 @@ export class UIManager {
 
     getBaseUISize() {
         return 8;
+    }
+
+    getContext() {
+        if (this.mainManager.canvasManager.context)
+            return this.mainManager.canvasManager.context;
     }
 
     getWidth() {

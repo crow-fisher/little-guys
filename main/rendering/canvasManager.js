@@ -5,7 +5,6 @@ export class CanvasManager {
     constructor(elementId) {
         this.canvas = document.getElementById(elementId);
         this.context = this.canvas.getContext('2d');
-        
         this.resize();
     }
 

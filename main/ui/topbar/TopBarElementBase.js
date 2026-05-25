@@ -1,14 +1,13 @@
-import { MAIN_CONTEXT } from "../../index.js";
-
 export class TopBarElementBase {
-    constructor(fontSize, textAlign) {
+    constructor(uiManager, fontSize, textAlign) {
+        this.uiManager = uiManager;
         this.fontSize = fontSize;
         this.textAlign = textAlign;
     }
     prepareStyle() {
-        MAIN_CONTEXT.font = this.fontSize + "px courier"
-        MAIN_CONTEXT.textAlign = this.textAlign;
-        MAIN_CONTEXT.textBaseline = 'alphabetic';
+        this.uiManager.getContext().font = this.fontSize + "px courier"
+        this.uiManager.getContext().textAlign = this.textAlign;
+        this.uiManager.getContext().textBaseline = 'alphabetic';
     }
     measure() { return [0, 0] }
     render() {}

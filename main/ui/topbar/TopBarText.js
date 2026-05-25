@@ -1,12 +1,8 @@
-import { COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
-import { MAIN_CONTEXT } from "../../index.js";
-import { getLastMouseDownStart, isLeftMouseClicked } from "../../mouse.js";
-import { loadGD, saveGD, UI_BOOLEAN } from "../UIData.js";
 import { TopBarElementBase } from "./TopBarElementBase.js";
 
 export class TopBarText extends TopBarElementBase{
-    constructor(fontSize, textAlign, labelFunc) {
-        super(fontSize, textAlign);
+    constructor(uiManager, fontSize, textAlign, labelFunc) {
+        super(uiManager, fontSize, textAlign);
         this.labelFunc = labelFunc;
         this.lastClick = 0;
     }
@@ -16,7 +12,7 @@ export class TopBarText extends TopBarElementBase{
             return [0, 0];
         }
         this.prepareStyle();
-        let measured = MAIN_CONTEXT.measureText(this.labelFunc());
+        let measured = this.uiManager.getContext().measureText(this.labelFunc());
         return [measured.width, measured.fontBoundingBoxAscent];
     }
 
@@ -29,18 +25,18 @@ export class TopBarText extends TopBarElementBase{
 
         let checked = false;
         if (checked)
-            MAIN_CONTEXT.fillStyle = "#FFFFFF";
+            this.uiManager.getContext().fillStyle = "#FFFFFF";
         else
-            MAIN_CONTEXT.fillStyle = "#999999";
-        MAIN_CONTEXT.fillText(this.labelFunc(), startX, startY)
+            this.uiManager.getContext().fillStyle = "#999999";
+        this.uiManager.getContext().fillText(this.labelFunc(), startX, startY)
     }
 
     hover(posX, posY) {
-        if (!isLeftMouseClicked()) {
-            return;
-        } 
-        if (this.lastClick != getLastMouseDownStart()) {
-            this.lastClick = getLastMouseDownStart();
-        }
+        // if (!isLeftMouseClicked()) {
+        //     return;
+        // } 
+        // if (this.lastClick != getLastMouseDownStart()) {
+        //     this.lastClick = getLastMouseDownStart();
+        // }
     }
 }

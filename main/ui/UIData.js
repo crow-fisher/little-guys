@@ -1,5 +1,3 @@
-import { randRange } from "../common.js";
-import { saveUserSettings } from "../saveAndLoad.js";
 
 export const UI_MODE_SOIL = "soil";
 export const UI_MODE_ROCK = "rock";
@@ -682,10 +680,7 @@ export let _GAMEDATA_DEFAULT = {
     UI_CAMERA_ROTATION_VEC_DT: [0, 0, 0, 0],
     UI_CAMERA_CENTER_SELECT_POINT: [0, 0],
     UI_CAMERA_CENTER_SELECT_OFFSET: [0, 0, 0],
-    UI_STARMAP_ROTATION_VEC: [
-        randRange(-.4, .4), 
-        randRange(-.4, .4), 
-        randRange(-.4, .4), 0],
+    UI_STARMAP_ROTATION_VEC: [0, 0, 0, 0],
     UI_STARMAP_ROTATION_VEC_DT: [0, 0, 0, 0],
     UI_STARMAP_NORMAL_BRIGTNESS: 1,
     UI_STARMAP_CONSTELATION_BRIGHTNESS: 0,
@@ -857,9 +852,6 @@ function saveGeneral(map, key, value) {
     if (!(UI_NEWWORLD_ALLOWLIST.some((k) => key == k))) {
         saveGD(UI_MAIN_NEWWORLD, false);
         saveGD(UI_TEXTEDIT_ACTIVE, null)
-    }
-    if (map == ROOT[UICONFIG]) {
-        saveUserSettings();
     }
     return value;
 }

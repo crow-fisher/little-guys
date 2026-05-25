@@ -1,13 +1,9 @@
-import { getBaseUISize } from "../../canvas.js";
-import { COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
-import { MAIN_CONTEXT } from "../../index.js";
-import { getLastMouseDownStart, isLeftMouseClicked } from "../../mouse.js";
-import { loadGD, saveGD, UI_BOOLEAN } from "../UIData.js";
+import { loadGD, UI_BOOLEAN } from "../UIData.js";
 import { TopBarElementBase } from "./TopBarElementBase.js";
 
-export class TopBarToggle extends TopBarElementBase{
-    constructor(fontSize, textAlign, key, value, labelFunc, startMaxWidth=0) {
-        super(fontSize, textAlign);
+export class TopBarToggle extends TopBarElementBase {
+    constructor(uiManager, fontSize, textAlign, key, value, labelFunc, startMaxWidth=0) {
+        super(uiManager, fontSize, textAlign);
         this.key = key;
         this.value = value;
         this.labelFunc = labelFunc;
@@ -20,7 +16,7 @@ export class TopBarToggle extends TopBarElementBase{
             return [0, 0];
         }
         this.prepareStyle();
-        let measured = MAIN_CONTEXT.measureText(this.labelFunc());
+        let measured =  this.uiManager.getContext().measureText(this.labelFunc());
         this.maxWidth = Math.max(measured.width, this.maxWidth);
         return [this.maxWidth, measured.fontBoundingBoxAscent];
     }
@@ -39,23 +35,23 @@ export class TopBarToggle extends TopBarElementBase{
             checked = loadGD(this.key) == this.value;
         }
         if (checked)
-            MAIN_CONTEXT.fillStyle = "#FFFFFF";
+             this.uiManager.getContext().fillStyle = "#FFFFFF";
         else
-            MAIN_CONTEXT.fillStyle = "#999999";
-        MAIN_CONTEXT.fillText(this.labelFunc(), startX, startY)
+             this.uiManager.getContext().fillStyle = "#999999";
+         this.uiManager.getContext().fillText(this.labelFunc(), startX, startY)
     }
 
     hover(posX, posY) {
-        if (!isLeftMouseClicked()) {
-            return;
-        } 
-        if (this.lastClick != getLastMouseDownStart()) {
-            this.lastClick = getLastMouseDownStart();
-            if (this.value == UI_BOOLEAN) {
-                saveGD(this.key, !loadGD(this.key));
-            } else {
-                saveGD(this.key, this.value);
-            }
-        }
+        // if (!isLeftMouseClicked()) {
+        //     return;
+        // } 
+        // if (this.lastClick != getLastMouseDownStart()) {
+        //     this.lastClick = getLastMouseDownStart();
+        //     if (this.value == UI_BOOLEAN) {
+        //         saveGD(this.key, !loadGD(this.key));
+        //     } else {
+        //         saveGD(this.key, this.value);
+        //     }
+        // }
     }
 }
