@@ -189,7 +189,38 @@ export class TopBarComponent {
     }
 
     update() {
+        let curMouseLocation = this.uiManager.mousePosition();
+        if (curMouseLocation == null) {
+            return;
+        }
+        
+        let x = curMouseLocation.x;
+        let y = curMouseLocation.y - this.phoneModeOffset;
+        let keys = Object.keys(this.elements);
+        keys.map(parseFloat).forEach((key) => {
+            let elements = this.elements[key];
+            let startX = this.uiManager.getWidth() * key;
+            let totalElementsSizeX = elements.map((element) => element.measure()).map((measurements) => measurements[0] + this.padding).reduce(
+                (accumulator, currentValue) => accumulator + currentValue,
+                0,
+            );
 
+            if (key >= 0.5) {
+                startX -= totalElementsSizeX;
+            } else {
+                startX += this.padding * 2;
+            }
+            elements.forEach((element) => {
+                let measurements = element.measure();
+                let width = measurements[0] + this.padding;
+
+                if (x > startX && x < startX + measurements[0]) {
+                    element.hover(x - startX, y);
+                    this.hovered = true;
+                }
+                startX += width;
+            });
+        })
     }
 
     render() {

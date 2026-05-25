@@ -36,6 +36,9 @@ export class UIManager {
     getHeight() {
         return this.mainManager.canvasManager.canvas.height;
     }
+    mousePosition() {
+        return this.mainManager.mouseManager.ms;
+    }
     frameButtonPressed(b) {
         return this.mainManager.mouseManager.frameButtonPressed(b);
     }
