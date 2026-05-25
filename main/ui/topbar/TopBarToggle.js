@@ -1,4 +1,4 @@
-import { loadGD, UI_BOOLEAN } from "../UIData.js";
+import { loadGD, saveGD, UI_BOOLEAN } from "../UIData.js";
 import { TopBarElementBase } from "./TopBarElementBase.js";
 
 export class TopBarToggle extends TopBarElementBase {
@@ -42,7 +42,7 @@ export class TopBarToggle extends TopBarElementBase {
     }
 
     hover(posX, posY) {
-        if (this.uiManager.frameButtonPressed(0)) {
+        if (!this.uiManager.frameButtonPressed(0)) {
             return;
         }
         saveGD(this.key, !loadGD(this.key));

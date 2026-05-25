@@ -5,7 +5,6 @@ export class MouseManager {
         this.mainManager = mainManager;
         this.ms = 0;
         this.pms = 0;
-        this.ppms = 0;
         this.offset = {x: 0, y: 0}
     }
 
@@ -14,7 +13,7 @@ export class MouseManager {
     }
 
     frameButtonPressed(b) {
-        return (1 << b) && (this.ms - this.ppms) == (1 << b);
+        return (1 << b) && (this.ms - this.pms) == (1 << b);
     }
 
     mousedown(e) {
@@ -30,24 +29,14 @@ export class MouseManager {
     }
 
     update() {
-        this.ppms = this.pms;
         this.pms = this.ms;
     }
 
     render() {
-        if (this.frameButtonPressed(0)) {
-            this.mainManager.canvasManager.context.fillStyle = hsvToHex(this.ms * 60, .8, .15);
-            this.mainManager.canvasManager.context.beginPath();
-            this.mainManager.canvasManager.context.arc(this.offset.x, this.offset.y, 120, 0, 2 * Math.PI, false);
-            this.mainManager.canvasManager.context.fill();
-        }
-        
         this.mainManager.canvasManager.context.fillStyle = hsvToHex(this.ms * 60, .8, .75);
         this.mainManager.canvasManager.context.beginPath();
         this.mainManager.canvasManager.context.arc(this.offset.x, this.offset.y, 8, 0, 2 * Math.PI, false);
         this.mainManager.canvasManager.context.fill();
-
-
     }
 
     getOffset(evt) {

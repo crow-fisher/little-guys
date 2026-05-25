@@ -190,7 +190,7 @@ export class TopBarComponent {
 
     update() {
         let curMouseLocation = this.uiManager.mousePosition();
-        if (curMouseLocation == null) {
+        if (curMouseLocation == null || !this.uiManager.frameButtonPressed(0)) {
             return;
         }
         
