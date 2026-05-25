@@ -14,7 +14,7 @@ export class CanvasManager {
     }
 
     render() {
-        this.context.fillStyle = hsvToHex((Date.now() / 10) % 360 + 60, .5, .8)
+        this.context.fillStyle = hsvToHex((Date.now() / 10) % 360 + 60, .2, .25)
         this.context.fillRect(
             0,
             0,

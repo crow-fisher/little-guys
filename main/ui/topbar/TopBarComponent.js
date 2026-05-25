@@ -217,7 +217,7 @@ export class TopBarComponent {
             for (let i = 0; i < elements.length; i++) {
                 let element = elements[i];
                 let measurements = element.measure();
-                element.render(startX, this.phoneModeOffset + this.padding + measurements[1]);
+                element.render(startX, this.padding + measurements[1]);
                 this.elementPositions[key][i] = startX;
                 startX += measurements[0] + this.padding;
                 curEndX = startX;

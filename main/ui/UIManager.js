@@ -31,9 +31,9 @@ export class UIManager {
     }
 
     getWidth() {
-        return this.mainManager.canvasManager.width;
+        return this.mainManager.canvasManager.canvas.width;
     }
     getHeight() {
-        return this.mainManager.canvasManager.width;
+        return this.mainManager.canvasManager.canvas.height;
     }
 }
