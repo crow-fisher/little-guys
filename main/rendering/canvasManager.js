@@ -2,9 +2,11 @@ import { HUEMAP } from "../color/hue.js";
 import { hsvToHex } from "../color/color.js";
 
 export class CanvasManager {
-    constructor(elementId) {
-        this.canvas = document.getElementById(elementId);
+    constructor(mainManager) {
+        this.mainManager = mainManager;
+        this.canvas = document.getElementById("main");
         this.context = this.canvas.getContext('2d');
+        this.addCallbacks();
         this.resize();
     }
 
@@ -26,13 +28,13 @@ export class CanvasManager {
         this.context.fillText((new Date()).toISOString(), 0,this.canvas.height / 10);
     }
 
-    addCallbacks(mainManager) {
-        this.canvas.addEventListener('mousemove', () => mainManager.mousemove, false);
-        this.canvas.addEventListener('mousedown', () => mainManager.mousedown);
-        this.canvas.addEventListener('mouseup', () => mainManager.mouseup);
+    addCallbacks() {
+        this.canvas.addEventListener('mousemove', (e) => this.mainManager.mousemove(e), false);
+        this.canvas.addEventListener('mousedown', (e) => this.mainManager.mousedown(e));
+        this.canvas.addEventListener('mouseup', (e) => this.mainManager.mouseup(e));
 
-        this.canvas.onkeydown = () => mainManager.onkeydown;
-        this.canvas.onkeyup = () => mainManager.onkeyup;
-        this.canvas.onwheel = () => mainManager.onwheel;
+        this.canvas.onkeydown = () => this.mainManager.onkeydown();
+        this.canvas.onkeyup = () => this.mainManager.onkeyup();
+        this.canvas.onwheel = () => this.mainManager.onwheel();
     }
 }

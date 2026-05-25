@@ -42,16 +42,9 @@ export class TopBarToggle extends TopBarElementBase {
     }
 
     hover(posX, posY) {
-        // if (!isLeftMouseClicked()) {
-        //     return;
-        // } 
-        // if (this.lastClick != getLastMouseDownStart()) {
-        //     this.lastClick = getLastMouseDownStart();
-        //     if (this.value == UI_BOOLEAN) {
-        //         saveGD(this.key, !loadGD(this.key));
-        //     } else {
-        //         saveGD(this.key, this.value);
-        //     }
-        // }
+        if (this.uiManager.frameButtonPressed(0)) {
+            return;
+        }
+        saveGD(this.key, !loadGD(this.key));
     }
 }

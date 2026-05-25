@@ -1,11 +1,12 @@
+import { MouseManager } from "./input/source/MouseManager.js";
 import { CanvasManager } from "./rendering/canvasManager.js"
 import { UIManager } from "./ui/UIManager.js";
 
 export class MainManager {
     constructor() {
-        this.canvasManager = new CanvasManager("main");
+        this.canvasManager = new CanvasManager(this);
+        this.mouseManager = new MouseManager(this);
         this.uiManager = new UIManager(this);
-        this.canvasManager.addCallbacks(this);
     }
 
     main() {
@@ -20,18 +21,16 @@ export class MainManager {
 
     update() {
         this.uiManager.update();
+        this.mouseManager.update();
     }
 
     render() {
         this.canvasManager.render();
+        this.mouseManager.render();
         this.uiManager.render();
     }
 
     // Canvas Callbacks
-    mousemove() { }
-    mousedown() { }
-    mouseup() { }
-
     touchstart() { }
     touchend() { }
     touchmove() { }
@@ -41,9 +40,9 @@ export class MainManager {
     onwheel() { }
 
     // Canvas Event Listeners
-    mousemove(e) { }
-    mousedown(e) { }
-    mouseup(e) { }
+    mousemove(e) { this.mouseManager.mousemove(e)}
+    mousedown(e) { this.mouseManager.mousedown(e)}
+    mouseup(e) { this.mouseManager.mouseup(e)}
 
     drop(e) { }
 
