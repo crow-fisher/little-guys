@@ -87,6 +87,9 @@ export class CameraManager {
         }
 
         points.forEach((p) => {
+            if (p.renderScreen[2] < 0) {
+                return;
+            }
             this.mainManager.canvasManager.context.fillStyle = hsvToHex(p.distToCamera % 360, .8, .75);
             this.mainManager.canvasManager.context.beginPath();
             this.mainManager.canvasManager.context.arc(p.renderScreen[0], p.renderScreen[1], 8, 0, 2 * Math.PI, false);

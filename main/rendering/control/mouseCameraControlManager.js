@@ -19,7 +19,7 @@ export class MouseCameraControlManager extends CameraControlManager {
     }
     controlRoutine() {
         this.ref = loadGD(UI_CAMERA_ROTATION_VEC);
-        this.ref[0] += this.cameraManager.getFrameMouseMove().x / 1;
+        this.ref[0] -= this.cameraManager.getFrameMouseMove().x / 1;
         this.ref[1] -= this.cameraManager.getFrameMouseMove().y / 1;
 
 
