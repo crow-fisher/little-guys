@@ -22,7 +22,7 @@ export function multiplyMatrices(matrixA, matrixB) {
   ];
 }
 
-export function multiplyMatrixAndPointInplace(matrix, point, dest) {
+export function multiplyMat4AndPointInplace(matrix, point, dest) {
     dest[0] = point[0] * matrix[0][0] + point[1] * matrix[1][0] + point[2] * matrix[2][0];
     dest[1] = point[0] * matrix[0][1] + point[1] * matrix[1][1] + point[2] * matrix[2][1];
     dest[2] = point[0] * matrix[0][2] + point[1] * matrix[1][2] + point[2] * matrix[2][2];

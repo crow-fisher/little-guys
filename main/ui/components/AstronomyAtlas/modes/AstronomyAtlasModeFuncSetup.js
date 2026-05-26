@@ -3,7 +3,7 @@ import { getBaseUISize } from "../../../../canvas.js";
 import { getActiveClimate } from "../../../../world/climate/climateManager.js";
 import { COLOR_BLACK, COLOR_WHITE } from "../../../../colors.js";
 import { lerp, processRangeToOne } from "../../../../common.js";
-import { getStarHandler } from "../../../../main_old.js";
+import { getStarManager } from "../../../../main_old.js";
 import { ConditionalContainer } from "../../../ConditionalContainer.js";
 import { Container } from "../../../Container.js";
 import { RadioToggleLabel } from "../../../elements/RadioToggleLabel.js";
@@ -29,12 +29,12 @@ unitMap.set(astronomyAtlasSetupChoices[1][1][0], "")
 unitMap.set(astronomyAtlasSetupChoices[1][2][0], "parsecs")
 
 function getDisplayValueString(displayTypeKey, targetParam, key) {
-    if ((getStarHandler())?.paramStatistics == null) {
+    if ((getStarManager())?.paramStatistics == null) {
         return;
     }
     let displayType = loadGD(displayTypeKey);
     let targetParamUnit = unitMap.get(targetParam);
-    let st = getStarHandler().paramStatistics.get(targetParam);
+    let st = getStarManager().paramStatistics.get(targetParam);
     let settingValue = loadGD(key);
     if (displayType) {
         return lerp(st[2], st[3], settingValue).toFixed(2) + " " + targetParamUnit

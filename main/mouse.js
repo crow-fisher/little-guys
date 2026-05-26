@@ -1,6 +1,6 @@
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, resetCanvasLastMoveOffset, resetZoom, rotatePointRx, rotatePointRy } from "./canvas.js";
 import { copyVecValue } from "./world/climate/stars/matrix.js";
-import { sphericalToCartesian } from "./world/climate/stars/starHandlerUtil.js";
+import { sphericalToCartesian } from "./world/climate/stars/starManagerUtil.js";
 import { MAIN_CANVAS } from "./index.js";
 import { setOrganismAddedThisClick, setPrevManipulationOffset } from "./manipulation.js";
 import { isEyedropperOrMixerClicked, loadGD, saveGD, UI_CAMERA_ROTATION_VEC, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_VIEWMODE_3D, UI_VIEWMODE_SELECT } from "./ui/UIData.js";

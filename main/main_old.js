@@ -17,13 +17,13 @@ import { canvasPanRoutine, getBaseSize, zoomCanvasFillRect } from "./canvas.js";
 import { render3DHud, tickFrameMatrix } from "./rendering/camera.js";
 import { gamepadCameraInput } from "./gamepadCameraInput.js";
 import { executeRenderJobs } from "./rendering/rasterizer.js";
-import { StarHandler } from "./world/climate/stars/starHandler.js";
+import { StarManager } from "./world/climate/stars/starManager.js";
 import { MAIN_CONTEXT, NOORG } from "./index.js";
 import { COLOR_VERY_FUCKING_RED } from "./colors.js";
 import { AtmosphereHandler } from "./world/atmosphere/AtmosphereHandler.js";
 import { renderIBODEvents } from "./ibod/IBODManager.js";
 
-let starHandler;
+let starManager;
 let lightingHandler;
 let atmosphereHandler;
 
@@ -31,8 +31,8 @@ export function getLightingHandler() {
     return lightingHandler;
 }
 
-export function getStarHandler() {
-    return starHandler;
+export function getStarManager() {
+    return starManager;
 }
 
 export function getAtmosphereHandler() {
@@ -40,7 +40,7 @@ export function getAtmosphereHandler() {
 }
 
 function initHandlers(force) {
-    starHandler = (force ? new StarHandler() : starHandler ?? new StarHandler());
+    starManager = (force ? new StarManager() : starManager ?? new StarManager());
     lightingHandler = (force ? new LightingHandler() : lightingHandler ?? new LightingHandler());
     atmosphereHandler = (force ? new AtmosphereHandler() : atmosphereHandler ?? new AtmosphereHandler());
 }
@@ -120,7 +120,7 @@ function render() {
     doTimeSeek();
     renderTime();
     
-    starHandler.render();
+    starManager.render();
 
     if (selectedViewMode == UI_VIEWMODE_TEMPERATURE) {
         // renderTemperature();

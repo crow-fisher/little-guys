@@ -3,7 +3,7 @@ import { COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../colors.js";
 import { calculateStatistics, hexToRgb, invlerp, processRangeToOne, rgbToRgba, rgbToRgbaObj } from "../../../common.js";
 import { MAIN_CONTEXT } from "../../../index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "../../../keyboard.js";
-import { getStarHandler } from "../../../main_old.js";
+import { getStarManager } from "../../../main_old.js";
 import { getLastLastMoveOffset, getLastMouseDownStart, getLastMouseUpEvent, getLastMoveOffset, isLeftMouseClicked } from "../../../mouse.js";
 import { resetViewportButtonOffset } from "../../components/AstronomyAtlas/modes/AstronomyAtlasModeFuncPlot.js";
 import { loadGD, saveGD, UI_AA_PLOT_AXISLABELS, UI_AA_PLOT_MAXPOINTS, UI_AA_PLOT_OFFSET_X, UI_AA_PLOT_OFFSET_Y, UI_AA_PLOT_POINTOPACITY, UI_AA_PLOT_POINTSIZE, UI_AA_SELECT_FILTERMODE_STARS, UI_AA_PLOT_XKEY, UI_AA_PLOT_XPADDING, UI_AA_PLOT_YKEY, UI_AA_PLOT_YPADDING, UI_AA_PLOT_ZOOM_X, UI_AA_PLOT_ZOOM_Y, UI_AA_LABEL_STARS, UI_AA_SELECT_FILTERMODE_GRAPH, UI_AA_LABEL_GRAPH, UI_STARMAP_VIEWMODE, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_DISPLAYTYPE_NAME_MULT, UI_AA_SETUP_SELECT_MULT, UI_AA_PLOT_SELECT_NAMED_STARS, UI_AA_SELECT_FILTERMODE_GRAPH_PREPARED, UI_CANVAS_VIEWPORT_CENTER_X } from "../../UIData.js";
@@ -62,13 +62,13 @@ export class PlotStarScatter extends WindowElement {
 
 
     render(startX, startY) {
-        if (getStarHandler()?.sectors == null) {
+        if (getStarManager()?.sectors == null) {
             return;
         }
         if (loadGD(UI_AA_SELECT_FILTERMODE_GRAPH) == 2) {
-            if (getStarHandler()?.frameCache?.newStarSelected) {
+            if (getStarManager()?.frameCache?.newStarSelected) {
                 this.reloadGraph();
-                getStarHandler().frameCache.newStarSelected = false;
+                getStarManager().frameCache.newStarSelected = false;
             }
         }
         if (this.xKey != loadGD(UI_AA_PLOT_XKEY) || this.yKey != loadGD(UI_AA_PLOT_YKEY)) {
@@ -94,7 +94,7 @@ export class PlotStarScatter extends WindowElement {
         let star;
         let selectNamedStars = loadGD(UI_AA_PLOT_SELECT_NAMED_STARS);
         let filteredStars = new Array();
-        getStarHandler().iterateOnSectors(((sector) => sector.loadedStars
+        getStarManager().iterateOnSectors(((sector) => sector.loadedStars
             .filter((star) => 
                 (selectNamedStars ? star.name != null : false)
                 || star.selected
@@ -189,7 +189,7 @@ export class PlotStarScatter extends WindowElement {
         }
 
         if (loadGD(UI_AA_LABEL_GRAPH)) {
-            getStarHandler().resetStarLabels();
+            getStarManager().resetStarLabels();
         }
     }
 
@@ -212,7 +212,7 @@ export class PlotStarScatter extends WindowElement {
         this.xKey = loadGD(UI_AA_PLOT_XKEY);
         this.yKey = loadGD(UI_AA_PLOT_YKEY);
 
-        if (this.xKey == null || this.yKey == null || getStarHandler().sectors.length == 0) {
+        if (this.xKey == null || this.yKey == null || getStarManager().sectors.length == 0) {
             return;
         }
 
@@ -228,7 +228,7 @@ export class PlotStarScatter extends WindowElement {
 
         let namedStars = new Array();
         let nonNamedStars = new Array();
-        getStarHandler().iterateOnSectors(((sector) => sector.loadedStars
+        getStarManager().iterateOnSectors(((sector) => sector.loadedStars
             .forEach((star) => ((star.name != null) ? namedStars : nonNamedStars).push(star))));
         this.numStars = namedStars.length + nonNamedStars.length;
         console.log("Reloading graph; ", this.numStars + " stars");
@@ -377,7 +377,7 @@ export class PlotStarScatter extends WindowElement {
         if (closestStar != null) {
             console.log("Selecting star ", closestStar.id, " ", closestStar.selected, ", with distance ", closestStarDist);
             closestStar.selected = !closestStar.selected;
-            getStarHandler().resetStarLabels();
+            getStarManager().resetStarLabels();
             this.clickCounter += 1;
         }
     }

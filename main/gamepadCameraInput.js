@@ -1,7 +1,7 @@
 import { reset3DCameraTo2DScreen } from "./rendering/camera.js";
 import { getFrameDt } from "./world/time/time.js";
 import { GBA, GBB, GBDD, GBDL, GBDR, GBDU, GBSL, GBSR, GBX, GBY, getLeftStick, getRightStick, getTriggers, isButtonPressed } from "./gamepad.js";
-import { loadGD, saveGD, UI_CAMERA_FOV, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_ROTATION_VEC_DT, UI_STARMAP_CONSTELATION_BRIGHTNESS, UI_STARMAP_NORMAL_BRIGTNESS } from "./ui/UIData.js";
+import { loadGD, saveGD, UI_CAMERA_FOV, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_ROTATION_VEC_DT, UI_STARMAP_CONSTELLATION_BRIGHTNESS, UI_STARMAP_NORMAL_BRIGTNESS } from "./ui/UIData.js";
 
 
 function boundValue(min, max, value) {
@@ -66,15 +66,15 @@ function _gamepadCameraInput_hotkeys(triggers) {
 
     offset = .07;
     if (isButtonPressed(GBDL)) {
-        saveGD(UI_STARMAP_CONSTELATION_BRIGHTNESS, loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS) - offset);
+        saveGD(UI_STARMAP_CONSTELLATION_BRIGHTNESS, loadGD(UI_STARMAP_CONSTELLATION_BRIGHTNESS) - offset);
     }
     if (isButtonPressed(GBDR)) {
-        saveGD(UI_STARMAP_CONSTELATION_BRIGHTNESS, loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS) + offset);
+        saveGD(UI_STARMAP_CONSTELLATION_BRIGHTNESS, loadGD(UI_STARMAP_CONSTELLATION_BRIGHTNESS) + offset);
     }
 }
 
 
 function _gamepadCameraInput_boundValues() {
     saveGD(UI_CAMERA_FOV, boundValue(10, 160,loadGD(UI_CAMERA_FOV)));
-    saveGD(UI_STARMAP_CONSTELATION_BRIGHTNESS, Math.max(0, loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS)));
+    saveGD(UI_STARMAP_CONSTELLATION_BRIGHTNESS, Math.max(0, loadGD(UI_STARMAP_CONSTELLATION_BRIGHTNESS)));
 }

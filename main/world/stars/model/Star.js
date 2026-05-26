@@ -1,13 +1,13 @@
 import { COLOR_BLACK, COLOR_WHITE, RGB_COLOR_BROWN, RGB_COLOR_RED } from "../../../colors.js";
 import { combineColorMult, combineColorMultArr, hsv2rgb, invlerp, lerp, rgbToHex } from "../../../common.js";
-import { getStarHandler } from "../../../main.js";
+import { getStarManager } from "../../../main.js";
 import { PointLabelRenderJob } from "../../../rendering/model/PointLabelRenderJob.js";
 import { addRenderJob } from "../../../rendering/rasterizer.js";
 import { WaterSquare } from "../../../squares/WaterSquare.js";
 import { loadGD, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_MIN, UI_AA_SETUP_MULT, UI_AA_SETUP_POW, UI_AA_SETUP_WINDOW_SIZE, UI_SH_COLORSHIFT } from "../../../ui/UIData.js";
 import { getActiveClimate } from "../../climateManager.js";
-import { getVec3Length } from "../matrix.js";
-import { brightnessValueToLumens, sphericalToCartesian } from "../starHandlerUtil.js";
+import { getVec3Length } from "../matrix_old.js";
+import { brightnessValueToLumens, sphericalToCartesian } from "../starManagerUtil.js";
 
 export class Star {
     // ascension and declination in radians

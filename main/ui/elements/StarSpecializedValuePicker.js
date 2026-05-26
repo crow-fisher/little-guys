@@ -1,7 +1,7 @@
 import { COLOR_BLACK, COLOR_BLUE, COLOR_GREEN, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../colors.js";
 import { invlerp, lerp } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
-import { getStarHandler } from "../../main_old.js";
+import { getStarManager } from "../../main_old.js";
 import { isLeftMouseClicked } from "../../mouse.js";
 import { resetStarStyle } from "../components/AstronomyAtlas/modes/AstronomyAtlasUIFunctionMaps.js";
 import { loadGD, saveGD, UI_SH_STYLE_BRIGHTNESS_A, UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, UI_SH_STYLE_BRIGHTNESS_B, UI_SH_STYLE_SIZE_B, UI_SH_STYLE_SIZE_A } from "../UIData.js";
@@ -77,7 +77,7 @@ export class StarSpecializedValuePicker extends WindowElement {
         saveGD(this.keys[idx][0], lerp(...this.valueRanges[idx][0], pX));
         saveGD(this.keys[idx][1], lerp(...this.valueRanges[idx][1], pY));
         resetStarStyle();
-        getStarHandler().resetStarLabels();
+        getStarManager().resetStarLabels();
     }
 
 }

@@ -1,5 +1,4 @@
-import { decayVec, getBaseSize, getCanvasHeight, getCanvasWidth, getCurZoom, getFrameHeight, getFrameWidth, getFrameXMax, getFrameYMax } from "../canvas.js";
-import { addVectors, crossVec3, multiplyMatrixAndPoint, multiplyMat4AndPointInplace, multiplyVectorByScalar, normalizeVec3, subtractVectors, transposeMat4 } from "../world/climate/stars/matrix.js";
+import { decayVec, getBaseSize, getCanvasHeight, getCanvasWidth, getFrameHeight, getFrameWidth, getFrameXMax, getFrameYMax } from "../canvas.js";
 import { getCurDay } from "../world/time/time.js";
 import { COLOR_WHITE } from "../colors.js";
 import { rgbToHex } from "../common.js";
@@ -12,9 +11,123 @@ import { CoordinateSet } from "./model/CoordinateSet.js";
 import { LineRenderJob } from "./model/LineRenderJob.js";
 import { PointLabelRenderJob } from "./model/PointLabelRenderJob.js";
 import { addRenderJob } from "./rasterizer.js";
+import { copyVecValue } from "../world/stars/matrix_old.js";
+import { multiplyMat3AndPointInplace, transposeMat3Inplace, transposeMat4 } from "../util/matrix.js";
 
 let params = new URLSearchParams(document.location.search);
 
+
+export class CameraManager {
+    constructor(mainManager) {
+        this.mainManager = mainManager;
+        this.cameraToWorld = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        this.worldToCamera = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        this.perspectiveMatrix = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ]
+        this.rotNorm = [0, 0, 0];
+        this.forward = [0, 0, 0];
+        this.right = [0, 0, 0];
+        this.up = [0, 0, 0];
+
+        this.setFramePerspectiveMatrix();
+    }
+
+    cartesianToScreenInplace(cartesian, camera, screen) {
+        multiplyMat3AndPointInplace(this.cameraToWorld, cartesian, camera);
+        multiplyMat3AndPointInplace(this.perspectiveMatrix, camera, screen);
+    }
+    screenToRenderScreen(screenRef, renderNormRef, renderScreenRef) {
+        renderNormRef[0] = (screenRef[0] / screenRef[2]);
+        renderNormRef[1] = (screenRef[1] / screenRef[2]);
+        renderScreenRef[0] = (renderNormRef[0] + this.xOffset) * this.s;
+        renderScreenRef[1] = (renderNormRef[1] + this.yOffset) * this.s;
+        renderScreenRef[2] = screenRef[2];
+    }
+    update() {
+        this.setFrameCameraMatrix();
+    }
+    render() {
+        this.renderDebugPoints();
+    }
+
+    renderPoint(p) {
+        this.mainManager.canvasManager.context.fillStyle = hsvToHex(60, .8, .75);
+        this.mainManager.canvasManager.context.beginPath();
+        this.mainManager.canvasManager.context.arc(p[0], p[1], 8, 0, 2 * Math.PI, false);
+        this.mainManager.canvasManager.context.fill();
+    }
+    
+    renderDebugPlane() {
+        let max = 1000;
+        let step = 10;
+        let points = new Array();
+        let i = 0;
+        for (let x = -max; x < max; x++) {
+            for (let y = -max; y < max; y++) {
+                for (let z = -max; z < max; z++) {
+                    i += 1;
+                    if (points[i] == null) {
+                        points[i] = new CoordinateSet();
+                    }
+                    points[i].setWorld([x, y, z]);
+
+                }
+            }
+        }
+    }
+
+    setFrameCameraMatrix() {
+        this.yaw = loadGD(UI_CAMERA_ROTATION_VEC)[0];
+        this.pitch = loadGD(UI_CAMERA_ROTATION_VEC)[1];
+
+        rotNorm[0] = Math.cos(yaw) * Math.cos(pitch);
+        rotNorm[1] = Math.sin(pitch);
+        rotNorm[2] = Math.sin(yaw) * Math.cos(pitch);
+
+        this.forward = normalizeVec3(subtractVectors([0, 0, 0], rotNorm));
+        this.right = normalizeVec3(crossVec3([0, 1, 0], forward));
+        this.up = normalizeVec3(crossVec3(forward, right));
+
+        copyVecValue(this.right, this.cameraToWorld[0]);
+        copyVecValue(this.up, this.cameraToWorld[1]);
+        copyVecValue(this.forward, this.cameraToWorld[2]);
+
+        transposeMat3Inplace(cameraToWorld, worldToCamera);
+        return worldToCamera;
+    }
+
+    setFramePerspectiveMatrix() {
+        let n = 1; // near clipping plane;
+        let f = 1000; // far clipping plane;
+        let fov = loadGD(UI_CAMERA_FOV);
+        let S = 1 / (Math.tan((fov / 2) * (Math.PI / 180)));
+        this.perspectiveMatrix = [
+            [S, 0, 0],
+            [0, S, 0],
+            [0, 0, -(f / (f - n))]
+        ];
+    }
+
+    setFrameCanvasRenderParams() {
+        this._cw = this.mainManager.canvasManager.canvas.width;
+        this._ch = this.mainManager.canvasManager.canvas.height;
+        this._max = Math.max(this._cw, this._ch);
+        this._yOffset = (this._max / this._cw) / 2;
+        this._xOffset = (this._max / this._ch) / 2;
+        this._s = Math.min(this._cw, this._ch);
+    }
+}
 let cameraToWorld = [
     [0, 0, 0, 0],
     [0, 0, 0, 0],
@@ -56,32 +169,7 @@ export function getCameraRotationVec() {
 // https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix.html
 // https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/lookat-function/framing-lookat-function.html
 
-export function getFrameCameraMatrix() {
-    let cr = loadGD(UI_CAMERA_ROTATION_VEC);
-    let yaw = cr[0];
-    let pitch = cr[1];
 
-    let rotNorm = [0, 0, 0];
-
-    rotNorm[0] = Math.cos(yaw) * Math.cos(pitch);
-    rotNorm[1] = Math.sin(pitch);
-    rotNorm[2] = Math.sin(yaw) * Math.cos(pitch);
-
-    let forward = normalizeVec3(subtractVectors([0, 0, 0], rotNorm));
-    let right = normalizeVec3(crossVec3([0, 1, 0], forward));
-    let up = normalizeVec3(crossVec3(forward, right));
-
-    cameraToWorld = [
-        right,
-        up,
-        forward,
-        [0, 0, 0, 1]
-    ];
-
-    worldToCamera = transposeMat4(cameraToWorld);
-    worldToCamera[3] = [0, 0, 0, 1];
-    return worldToCamera;
-}
 
 function setFramePerspectiveMatrix() {
     let n = 1; // near clipping plane;
@@ -381,7 +469,7 @@ export function canvasPan3DRoutine() {
     offset = addVectors(offset, fo);
     offset = addVectors(offset, ro);
     offset = addVectors(offset, uo);
-    
+
     decayVec(UI_CAMERA_OFFSET_VEC_DT, isMouse3DMode() ? 0.83 : 0.93);
     keyboard3DRoutine()
 
@@ -438,8 +526,8 @@ let renderScreen1;
 let renderScreen2;
 
 let tcs1 = new CoordinateSet(), tcs2 = new CoordinateSet();
-let size1, size2; 
-export function debugRenderLine(world1, world2, color, size=3) {
+let size1, size2;
+export function debugRenderLine(world1, world2, color, size = 3) {
     tcs1.setWorld(world1);
     tcs2.setWorld(world2);
     size1 = size / (tcs1.distToCamera);
@@ -455,31 +543,31 @@ export function debugRenderLine(world1, world2, color, size=3) {
 
 }
 
-export function debugRenderLineOffsetPoints(offset1, offset2, color, size=3) {
-        camera1 = [0, 0, 0];
-        camera2 = [0, 0, 0];
-        screen1 = [0, 0, 0];
-        screen2 = [0, 0, 0];
-        renderNorm1 = [0, 0];
-        renderNorm2 = [0, 0];
-        renderScreen1 = [0, 0, 0];
-        renderScreen2 = [0, 0, 0];
+export function debugRenderLineOffsetPoints(offset1, offset2, color, size = 3) {
+    camera1 = [0, 0, 0];
+    camera2 = [0, 0, 0];
+    screen1 = [0, 0, 0];
+    screen2 = [0, 0, 0];
+    renderNorm1 = [0, 0];
+    renderNorm2 = [0, 0];
+    renderScreen1 = [0, 0, 0];
+    renderScreen2 = [0, 0, 0];
 
-        cartesianToCamera(offset1, camera1);
-        cameraToScreen(camera1, screen1);
-        screenToRenderScreen(screen1, renderNorm1, renderScreen1, 
-            gfc()._xOffset, gfc()._yOffset, gfc()._s);
-        
-        cartesianToCamera(offset2, camera2);
-        cameraToScreen(camera2, screen2);
-        screenToRenderScreen(screen2, renderNorm2, renderScreen2, 
-            gfc()._xOffset, gfc()._yOffset, gfc()._s);
+    cartesianToCamera(offset1, camera1);
+    cameraToScreen(camera1, screen1);
+    screenToRenderScreen(screen1, renderNorm1, renderScreen1,
+        gfc()._xOffset, gfc()._yOffset, gfc()._s);
 
-        if (renderScreen1[2] > 0 && renderScreen2[2] > 0) {
-            addRenderJob(new LineRenderJob(renderScreen1, renderScreen2, size, color, renderScreen2.z));
-            addRenderJob(new PointLabelRenderJob(...renderScreen1, 2, color));
-            addRenderJob(new PointLabelRenderJob(...renderScreen2, 2, color));
-        }
+    cartesianToCamera(offset2, camera2);
+    cameraToScreen(camera2, screen2);
+    screenToRenderScreen(screen2, renderNorm2, renderScreen2,
+        gfc()._xOffset, gfc()._yOffset, gfc()._s);
+
+    if (renderScreen1[2] > 0 && renderScreen2[2] > 0) {
+        addRenderJob(new LineRenderJob(renderScreen1, renderScreen2, size, color, renderScreen2.z));
+        addRenderJob(new PointLabelRenderJob(...renderScreen1, 2, color));
+        addRenderJob(new PointLabelRenderJob(...renderScreen2, 2, color));
+    }
 
 }
 

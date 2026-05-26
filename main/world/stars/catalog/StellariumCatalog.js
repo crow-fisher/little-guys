@@ -1,4 +1,4 @@
-import { getStarHandler } from "../../../main.js";
+import { getStarManager } from "../../../main.js";
 import { Constellation } from "../model/Constellation.js";
 import { CatalogHandlerBase } from "./CatalogHandlerBase.js";
 

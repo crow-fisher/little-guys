@@ -1,12 +1,16 @@
 import { MouseManager } from "./input/source/MouseManager.js";
+import { CameraManager } from "./rendering/cameraManager.js";
 import { CanvasManager } from "./rendering/canvasManager.js"
 import { UIManager } from "./ui/UIManager.js";
+import { WorldManager } from "./world/worldManager.js";
 
 export class MainManager {
     constructor() {
         this.canvasManager = new CanvasManager(this);
+        this.cameraManager = new CameraManager(this);
         this.mouseManager = new MouseManager(this);
         this.uiManager = new UIManager(this);
+        this.worldManager = new WorldManager(this);
     }
 
     main() {

@@ -9,7 +9,7 @@ import { QuadRenderJob } from "../../rendering/model/QuadRenderJob.js";
 import { addRenderJob } from "../../rendering/rasterizer.js";
 import { STAGE_DEAD } from "../organisms/Stages.js";
 import { CoordinateSet } from "../../rendering/model/CoordinateSet.js";
-import { sphericalToCartesian } from "../../world/climate/stars/starHandlerUtil.js";
+import { sphericalToCartesian } from "../../world/climate/stars/starManagerUtil.js";
 import { LineRenderJob } from "../../rendering/model/LineRenderJob.js";
 import { DEBUG, MAIN_CONTEXT } from "../../index.js";
 

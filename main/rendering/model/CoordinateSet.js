@@ -1,12 +1,10 @@
-import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, getCurZoom, zoomCanvasFillCircle } from "../../canvas.js";
-import { copyVecValue, getVec3Length, subtractVectorsDest } from "../../world/climate/stars/matrix.js";
-import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth } from "../../index.js";
-import { loadEmptyScene } from "../../saveAndLoad.js";
-import { loadGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_VIEWMODE_3D, UI_VIEWMODE_NORMAL, UI_VIEWMODE_PROJECTION, UI_VIEWMODE_PROJECTION_3D, UI_VIEWMODE_SELECT } from "../../ui/UIData.js";
-import { cartesianToScreenInplace, gfc, screenToRenderScreen } from "../camera.js";
+import { loadGD, UI_CAMERA_OFFSET_VEC } from "../../ui/UIData.js";
+import { copyVecValue } from "../../util/matrix.js";
+import { getVec3Length } from "../../util/vector.js";
 
 export class CoordinateSet {
-    constructor(world) {
+    constructor(cameraManager, world) {
+        this.cameraManager = cameraManager;
         this.world = [0, 0, 0];
         this.offset = [0, 0, 0];
         this.camera = [0, 0, 0];
@@ -27,16 +25,10 @@ export class CoordinateSet {
     }
 
     process() {
-        if (loadGD(UI_VIEWMODE_PROJECTION) == UI_VIEWMODE_PROJECTION_3D) {
-            subtractVectorsDest(this.world, gfc().cameraOffset, this.offset);
-            cartesianToScreenInplace(this.offset, this.camera, this.screen);
-            screenToRenderScreen(this.screen, this.renderNorm, this.renderScreen,
-                gfc()._xOffset, gfc()._yOffset, gfc()._s);
-            this.distToCamera = getVec3Length(this.offset);
-        } else {
-            copyVecValue(this.canvasLocToPixels(this.world[0] * getBaseSize(), this.world[1] * getBaseSize(), this.renderScreen[2]), this.renderScreen);
-
-        }
+        subtractVectorsDest(this.world, loadGD(UI_CAMERA_OFFSET_VEC), this.offset);
+        this.cameraManager.cartesianToScreenInplace(this.offset, this.camera, this.screen);
+        this.cameraManager.screenToRenderScreen(this.screen, this.renderNorm, this.renderScreen);
+        this.distToCamera = getVec3Length(this.offset);
     }
 
     isVisibleOnScreen() {
@@ -46,22 +38,6 @@ export class CoordinateSet {
                 this.renderScreen[1] > 0 && 
                 this.renderScreen[1] < getTotalCanvasPixelHeight() * 10 && 
                 this.renderScreen[2] > 0
-    }
-    canvasLocToPixels(x, y, z) {
-        this._cz = getCurZoom();
-        this._ccx = loadGD(UI_CANVAS_VIEWPORT_CENTER_X);
-        this._ccy = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y);
-        this._tw = getCanvasSquaresX() * getBaseSize();
-        this._th = getCanvasSquaresY() * getBaseSize();
-        this._ww = this._tw / getCurZoom();
-        this._wh = this._th / getCurZoom();
-        this._wws = this._ccx - (this._ww / 2);
-        this._whs = this._ccy - (this._wh / 2);
-        this._wwe = this._ccx + (this._ww / 2);
-        this._whe = this._ccy + (this._wh / 2);
-        this._xpi = (x - this._wws) / this._ww;
-        this._ypi = (y - this._whs) / this._wh;
-        return [this._xpi * this._tw, this._ypi * this._th, 1];
     }
 
 }

@@ -1,22 +1,22 @@
 import { calculateStatistics, combineColorMultArr, combineColorMultArrDest, hsv2rgb, invlerp, lerp } from "../../common.js";
 import { NOSTAR } from "../../index.js";
-import { getStarHandler } from "../../main.js";
+import { getStarManager } from "../../main.js";
 import { frameMatrixReset, tickFrameMatrix } from "../../rendering/camera.js";
 import { LineRenderJob } from "../../rendering/model/LineRenderJob.js";
 import { addRenderJob, getNoSortRenderJobsLength } from "../../rendering/rasterizer.js";
 import { WaterSquare } from "../../squares/WaterSquare.js";
 import { astronomyAtlasSetupChoices } from "../../ui/components/AstronomyAtlas/modes/AstronomyAtlasModeFuncSetup.js";
-import { loadGD, saveGD, UI_AA_LABEL_GRAPH, UI_AA_LABEL_STARS, UI_AA_PLOT_SELECT_NAMED_STARS, UI_AA_PLOT_XKEY, UI_AA_PLOT_YKEY, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_MIN, UI_AA_SETUP_POW, UI_AA_SETUP_WINDOW_SIZE, UI_CAMERA_OFFSET_VEC_DT, UI_SH_COLORSHIFT, UI_SH_MINLUMINENCE, UI_SH_MINMODE, UI_SH_TARGETNUMSTARS, UI_STARMAP_CONSTELATION_BRIGHTNESS } from "../../ui/UIData.js";
+import { loadGD, saveGD, UI_AA_LABEL_GRAPH, UI_AA_LABEL_STARS, UI_AA_PLOT_SELECT_NAMED_STARS, UI_AA_PLOT_XKEY, UI_AA_PLOT_YKEY, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_MIN, UI_AA_SETUP_POW, UI_AA_SETUP_WINDOW_SIZE, UI_CAMERA_OFFSET_VEC_DT, UI_SH_COLORSHIFT, UI_SH_MINLUMINENCE, UI_SH_MINMODE, UI_SH_TARGETNUMSTARS, UI_STARMAP_CONSTELLATION_BRIGHTNESS } from "../../ui/UIData.js";
 import { HipparcosCatalog } from "./catalog/HipparcosCatalog.js";
 import { PastelCatalog } from "./catalog/PastelCatalog.js";
 import { StellariumCatalog } from "./catalog/StellariumCatalog.js";
-import { getVec3Length } from "./matrix.js";
+import { getVec3Length } from "./matrix_old.js";
 import { StarSector } from "./model/StarSector.js";
-import { adjustBoundsToIncludePoint, cartesianToSectorIndex, getSectorSize, sectorToCartesian, sectorToCartesianBounds } from "./starHandlerUtil.js";
+import { adjustBoundsToIncludePoint, cartesianToSectorIndex, getSectorSize, sectorToCartesian, sectorToCartesianBounds } from "./starManagerUtil.js";
 
-
-export class StarHandler {
-    constructor() {
+export class StarManager {
+    constructor(worldManager) {
+        this.worldManager = worldManager;
         this.sectors = new Map();
         this.constellations = new Array();
         this.stars = new Map(); // HIP id
@@ -64,7 +64,7 @@ export class StarHandler {
     }
 
     reprocessStarAltColoration() {
-        if (getStarHandler().paramStatistics == null) {
+        if (getStarManager().paramStatistics == null) {
             return;
         }
 
@@ -72,7 +72,7 @@ export class StarHandler {
         if (this._rac_curKey == null || this._rac_curKey == "default") {
             return;
         }
-        this._rac_st = getStarHandler().paramStatistics.get(this._rac_curKey);
+        this._rac_st = getStarManager().paramStatistics.get(this._rac_curKey);
 
         this._rac_minValue = loadGD(UI_AA_SETUP_MIN);
         this._rac_windowSize = loadGD(UI_AA_SETUP_WINDOW_SIZE);
@@ -237,7 +237,7 @@ export class StarHandler {
     }
 
     renderConstellations() {
-        if (loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS) == 0) {
+        if (loadGD(UI_STARMAP_CONSTELLATION_BRIGHTNESS) == 0) {
             return;
         }
 
@@ -260,7 +260,7 @@ export class StarHandler {
                     new LineRenderJob(
                         fromStar._renderScreen,
                         toStar._renderScreen,
-                        loadGD(UI_STARMAP_CONSTELATION_BRIGHTNESS),
+                        loadGD(UI_STARMAP_CONSTELLATION_BRIGHTNESS),
                         fromStar._color,
                         fromStar._screen[2]
                     ), false);

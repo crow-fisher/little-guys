@@ -1,5 +1,5 @@
 import { calculateStatistics } from "../../../common.js";
-import { getStarHandler } from "../../../main.js";
+import { getStarManager } from "../../../main.js";
 import { CatalogHandlerBase } from "./CatalogHandlerBase.js";
 
 export class PastelCatalog extends CatalogHandlerBase {
@@ -16,7 +16,7 @@ export class PastelCatalog extends CatalogHandlerBase {
 
     loadPASTEL(text) {
         let rows = text.split("\n");
-        this.sh = getStarHandler();
+        this.sh = getStarManager();
         for (let i = 0; i < rows.length; i++) {
             this.loadPASTELRow(rows.at(i));
         }

@@ -2,7 +2,7 @@ import { calculateStatistics } from "../../../common.js";
 import { astronomyAtlasSetupChoices } from "../../../ui/components/AstronomyAtlas/modes/AstronomyAtlasModeFuncSetup.js";
 import { tempToColorForStar } from "../../time.js";
 import { Star } from "../model/Star.js";
-import { calculateStarTemperature } from "../starHandlerUtil.js";
+import { calculateStarTemperature } from "../starManagerUtil.js";
 import { CatalogHandlerBase } from "./CatalogHandlerBase.js";
 
 export class HipparcosCatalog extends CatalogHandlerBase {

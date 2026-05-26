@@ -5,7 +5,7 @@ import { calculateStatistics, invlerp, lerp, processRangeToOne, rgbToRgba } from
 import { addRenderJob } from "../../../rendering/rasterizer.js";
 import { loadGD, UI_CAMERA_OFFSET_VEC, UI_SH_MINSIZE, UI_SH_DISTPOWERMULT, UI_SH_MAXLUMINENCE, UI_SH_MINLUMINENCE, UI_SH_STYLE_BRIGHTNESS_B, UI_SH_STYLE_BRIGHTNESS_A, UI_SH_STYLE_SIZE_A, UI_SH_STYLE_SIZE_B, UI_AA_PLOT_SELECTRADIUS, UI_AA_PLOT_LOCALITY_SELECTMODE, UI_TOPBAR_AA, UI_SH_STYLE_SIZE_C, UI_SH_MAXSIZE, UI_SH_STYLE_BRIGHTNESS_C, UI_CAMERA_FOV, UI_AA_SETUP_COLORMODE } from "../../../ui/UIData.js";
 import { getAstronomyAtlasComponent } from "../../../ui/WindowManager.js";
-import { addVec3Dest, getVec3Length } from "../matrix.js";
+import { addVec3Dest, getVec3Length } from "../matrix_old.js";
 import { LineRenderJob } from "../../../rendering/model/LineRenderJob.js";
 import { PointLabelRenderJob } from "../../../rendering/model/PointLabelRenderJob.js";
 
@@ -86,11 +86,6 @@ export class StarSector {
 
         if (this._curCameraDist < Math.exp(7)) {
             this.visibilityFlags = 0;
-        }
-
-        let debug = new URLSearchParams(document.location.search).get("debug");
-        if (debug && this._curCameraDist < Math.exp(loadGD(UI_AA_PLOT_SELECTRADIUS))) {
-            // this.renderSector();
         }
 
         if (this.visibilityFlags == 0) {
