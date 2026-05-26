@@ -1,7 +1,8 @@
-import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CAMERA_FOV } from "../ui/UIData.js";
+import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CAMERA_FOV, saveGD, UI_CAMERA_OFFSET_VEC } from "../ui/UIData.js";
 import { CoordinateSet } from "./model/CoordinateSet.js";
 import { multiplyMat3AndPointInplace, transposeMat3Inplace } from "../util/matrix.js";
-import { copyVecValue } from "../util/vector.js";
+import { copyVecValue, crossVec3, crossVec3Dest, normalizeVec3, subtractVectors, subtractVectorsDest } from "../util/vector.js";
+import { hsvToHex } from "../color/color.js";
 
 let params = new URLSearchParams(document.location.search);
 
@@ -45,9 +46,10 @@ export class CameraManager {
     }
     update() {
         this.setFrameCameraMatrix();
+        this.setFrameCanvasRenderParams();
     }
     render() {
-        this.renderDebugPoints();
+        this.renderDebugPlane();
     }
 
     renderPoint(p) {
@@ -58,42 +60,55 @@ export class CameraManager {
     }
     
     renderDebugPlane() {
-        let max = 1000;
+        saveGD(UI_CAMERA_OFFSET_VEC, [1, 1, 1]);
+        saveGD(UI_CAMERA_ROTATION_VEC, [0, 0, 0]);
+
+        let max = 100;
         let step = 10;
         let points = new Array();
         let i = 0;
-        for (let x = -max; x < max; x++) {
-            for (let y = -max; y < max; y++) {
-                for (let z = -max; z < max; z++) {
+        for (let x = -max; x < max; x += step) {
+            for (let y = -max; y < max; y += step) {
+                for (let z = -max; z < max; z += step) {
                     i += 1;
                     if (points[i] == null) {
-                        points[i] = new CoordinateSet();
+                        points[i] = new CoordinateSet(this);
                     }
                     points[i].setWorld([x, y, z]);
 
                 }
             }
         }
+
+        points.forEach((p) => {
+            this.mainManager.canvasManager.context.fillStyle = hsvToHex(p.distToCamera % 360, .8, .75);
+            this.mainManager.canvasManager.context.beginPath();
+            this.mainManager.canvasManager.context.arc(p.renderScreen[0], p.renderScreen[1], 8, 0, 2 * Math.PI, false);
+            this.mainManager.canvasManager.context.fill();
+        });
+
     }
 
     setFrameCameraMatrix() {
         this.yaw = loadGD(UI_CAMERA_ROTATION_VEC)[0];
         this.pitch = loadGD(UI_CAMERA_ROTATION_VEC)[1];
 
-        rotNorm[0] = Math.cos(yaw) * Math.cos(pitch);
-        rotNorm[1] = Math.sin(pitch);
-        rotNorm[2] = Math.sin(yaw) * Math.cos(pitch);
+        this.rotNorm[0] = Math.cos(this.yaw) * Math.cos(this.pitch);
+        this.rotNorm[1] = Math.sin(this.pitch);
+        this.rotNorm[2] = Math.sin(this.yaw) * Math.cos(this.pitch);
 
-        this.forward = normalizeVec3(subtractVectors([0, 0, 0], rotNorm));
-        this.right = normalizeVec3(crossVec3([0, 1, 0], forward));
-        this.up = normalizeVec3(crossVec3(forward, right));
+        subtractVectorsDest([0, 0, 0], this.rotNorm, this.forward);
+        normalizeVec3(this.forward);
+        crossVec3Dest([0, 1, 0], this.forward, this.right);
+        normalizeVec3(this.right);
+        crossVec3Dest(this.forward, this.right, this.up);
+        normalizeVec3(this.up);
 
         copyVecValue(this.right, this.cameraToWorld[0]);
         copyVecValue(this.up, this.cameraToWorld[1]);
         copyVecValue(this.forward, this.cameraToWorld[2]);
 
-        transposeMat3Inplace(cameraToWorld, worldToCamera);
-        return worldToCamera;
+        transposeMat3Inplace(this.cameraToWorld, this.worldToCamera);
     }
 
     setFramePerspectiveMatrix() {
@@ -109,11 +124,11 @@ export class CameraManager {
     }
 
     setFrameCanvasRenderParams() {
-        this._cw = this.mainManager.canvasManager.canvas.width;
-        this._ch = this.mainManager.canvasManager.canvas.height;
-        this._max = Math.max(this._cw, this._ch);
-        this._yOffset = (this._max / this._cw) / 2;
-        this._xOffset = (this._max / this._ch) / 2;
-        this._s = Math.min(this._cw, this._ch);
+        this.cw = this.mainManager.canvasManager.canvas.width;
+        this.ch = this.mainManager.canvasManager.canvas.height;
+        this.max = Math.max(this.cw, this.ch);
+        this.yOffset = (this.max / this.cw) / 2;
+        this.xOffset = (this.max / this.ch) / 2;
+        this.s = Math.min(this.cw, this.ch);
     }
 }

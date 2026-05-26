@@ -1,5 +1,5 @@
 import { loadGD, UI_CAMERA_OFFSET_VEC } from "../../ui/UIData.js";
-import { copyVecValue, getVec3Length } from "../../util/vector.js";
+import { copyVecValue, getVec3Length, subtractVectorsDest } from "../../util/vector.js";
 
 export class CoordinateSet {
     constructor(cameraManager, world) {
@@ -32,11 +32,5 @@ export class CoordinateSet {
 
     isVisibleOnScreen() {
         return true;
-        return this.renderScreen[0] > 0 &&
-                this.renderScreen[0] < getTotalCanvasPixelWidth() * 10 &&
-                this.renderScreen[1] > 0 && 
-                this.renderScreen[1] < getTotalCanvasPixelHeight() * 10 && 
-                this.renderScreen[2] > 0
     }
-
 }

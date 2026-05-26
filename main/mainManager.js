@@ -25,11 +25,13 @@ export class MainManager {
 
     update() {
         this.uiManager.update();
+        this.cameraManager.update();
         this.mouseManager.update();
     }
 
     render() {
         this.canvasManager.render();
+        this.cameraManager.render();
         this.mouseManager.render();
         this.uiManager.render();
     }
