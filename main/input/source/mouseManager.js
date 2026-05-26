@@ -5,7 +5,9 @@ export class MouseManager {
         this.mainManager = mainManager;
         this.ms = 0;
         this.pms = 0;
-        this.offset = {x: 0, y: 0}
+        this.offset = {x: 0, y: 0};
+        this.poffset = {x: 0, y: 0};
+        this.doffset = {x: 0, y: 0};
     }
 
     buttonPressed(b) {
@@ -30,6 +32,9 @@ export class MouseManager {
 
     update() {
         this.pms = this.ms;
+        this.doffset.x = this.offset.x - this.poffset.x;
+        this.doffset.y = this.offset.y - this.poffset.y;
+        this.poffset = this.offset;
     }
 
     render() {

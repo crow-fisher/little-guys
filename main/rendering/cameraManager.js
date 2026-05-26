@@ -3,6 +3,8 @@ import { CoordinateSet } from "./model/CoordinateSet.js";
 import { multiplyMat3AndPointInplace, transposeMat3Inplace } from "../util/matrix.js";
 import { copyVecValue, crossVec3, crossVec3Dest, normalizeVec3, subtractVectors, subtractVectorsDest } from "../util/vector.js";
 import { hsvToHex } from "../color/color.js";
+import { KeyboardCameraControlManager } from "./control/keyboardCameraControlManager.js";
+import { MouseCameraControlManager } from "./control/mouseCameraControlManager.js";
 
 let params = new URLSearchParams(document.location.search);
 
@@ -10,6 +12,10 @@ let params = new URLSearchParams(document.location.search);
 export class CameraManager {
     constructor(mainManager) {
         this.mainManager = mainManager;
+        this.cameraControlManagers = [
+            new KeyboardCameraControlManager(this),
+            new MouseCameraControlManager(this)
+        ]
         this.cameraToWorld = [
             [0, 0, 0],
             [0, 0, 0],
@@ -47,6 +53,7 @@ export class CameraManager {
     update() {
         this.setFrameCameraMatrix();
         this.setFrameCanvasRenderParams();
+        this.cameraControlManagers.forEach((cm) => cm.process())
     }
     render() {
         this.renderDebugPlane();
@@ -61,7 +68,6 @@ export class CameraManager {
     
     renderDebugPlane() {
         saveGD(UI_CAMERA_OFFSET_VEC, [1, 1, 1]);
-        saveGD(UI_CAMERA_ROTATION_VEC, [0, 0, 0]);
 
         let max = 100;
         let step = 10;
@@ -130,5 +136,16 @@ export class CameraManager {
         this.yOffset = (this.max / this.cw) / 2;
         this.xOffset = (this.max / this.ch) / 2;
         this.s = Math.min(this.cw, this.ch);
+    }
+
+    getFrameMouseMove() {
+        return this.mainManager.mouseManager.doffset;
+    }
+
+    triggerLockedPointer() {
+        return this.mainManager.mouseManager.buttonPressed(0) && this.mainManager.mouseManager.buttonPressed(2)
+    }
+    getCanvas() {
+        return this.mainManager.canvasManager.canvas; 
     }
 }
