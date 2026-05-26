@@ -1,6 +1,5 @@
 import { loadGD, UI_CAMERA_OFFSET_VEC } from "../../ui/UIData.js";
-import { copyVecValue } from "../../util/matrix.js";
-import { getVec3Length } from "../../util/vector.js";
+import { copyVecValue, getVec3Length } from "../../util/vector.js";
 
 export class CoordinateSet {
     constructor(cameraManager, world) {
