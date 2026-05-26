@@ -42,7 +42,7 @@ export class TopBarToggle extends TopBarElementBase {
     }
 
     hover(posX, posY) {
-        if (!this.uiManager.frameButtonPressed(0)) {
+        if (!this.uiManager.isFrameButtonPressed(0)) {
             return;
         }
         saveGD(this.key, !loadGD(this.key));

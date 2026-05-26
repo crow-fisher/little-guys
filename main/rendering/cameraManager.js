@@ -137,15 +137,19 @@ export class CameraManager {
         this.xOffset = (this.max / this.ch) / 2;
         this.s = Math.min(this.cw, this.ch);
     }
-
     getFrameMouseMove() {
-        return this.mainManager.mouseManager.doffset;
+        return this.mainManager.mouseManager.movement;
     }
-
-    triggerLockedPointer() {
-        return this.mainManager.mouseManager.buttonPressed(0) && this.mainManager.mouseManager.buttonPressed(2)
+    isFrameButtonPressed(b) {
+        return this.mainManager.mouseManager.isFrameButtonPressed(b)
     }
-    getCanvas() {
-        return this.mainManager.canvasManager.canvas; 
+    isPointerLocked() {
+        return this.mainManager.canvasManager.pointerLock;
+    }
+    lockPointer() {
+        this.mainManager.canvasManager.lockPointer();
+    }
+    unlockPointer() {
+        this.mainManager.canvasManager.unlockPointer();
     }
 }

@@ -22,4 +22,8 @@ export class CameraControlManager {
         loadGD(UI_CAMERA_ROTATION_VEC)[0] = Date.now() / 1000;
         loadGD(UI_CAMERA_ROTATION_VEC)[1] = Date.now() / 1000;
     }
+
+    isPointerLocked() {
+        return this.mainManager.canvasManager.pointerLock;
+    }
 }

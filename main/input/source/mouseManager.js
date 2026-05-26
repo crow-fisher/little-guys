@@ -8,13 +8,14 @@ export class MouseManager {
         this.offset = {x: 0, y: 0};
         this.poffset = {x: 0, y: 0};
         this.doffset = {x: 0, y: 0};
+        this.movement = {x: 0, y: 0};
     }
 
-    buttonPressed(b) {
+    isButtonPressed(b) {
         return (1 << b) && this.ms;
     }
 
-    frameButtonPressed(b) {
+    isFrameButtonPressed(b) {
         return (1 << b) && (this.ms - this.pms) == (1 << b);
     }
 
@@ -28,6 +29,11 @@ export class MouseManager {
 
     mousemove(e) {
         this.offset = this.getOffset(e);
+        if (this.mainManager.canvasManager.pointerLock) {
+            this.movement.x = e.movementX / 1500
+            this.movement.y = e.movementY / 1500
+        }
+
     }
 
     update() {
@@ -35,6 +41,9 @@ export class MouseManager {
         this.doffset.x = this.offset.x - this.poffset.x;
         this.doffset.y = this.offset.y - this.poffset.y;
         this.poffset = this.offset;
+
+        this.movement.x *= 0.9;
+        this.movement.y *= 0.9;
     }
 
     render() {

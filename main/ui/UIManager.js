@@ -39,8 +39,8 @@ export class UIManager {
     mousePosition() {
         return this.mainManager.mouseManager.offset;
     }
-    frameButtonPressed(b) {
-        return this.mainManager.mouseManager.frameButtonPressed(b);
+    isFrameButtonPressed(b) {
+        return this.mainManager.mouseManager.isFrameButtonPressed(b);
     }
     
 }

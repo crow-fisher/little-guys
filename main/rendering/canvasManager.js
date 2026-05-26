@@ -6,8 +6,21 @@ export class CanvasManager {
         this.mainManager = mainManager;
         this.canvas = document.getElementById("main");
         this.context = this.canvas.getContext('2d');
+        this.pointerLock = false;
         this.addCallbacks();
         this.resize();
+    }
+
+    lockPointer() {
+        this.canvas.requestPointerLock({unadjustedMovement: true});
+        this.pointerLock = true;
+    }
+    
+    unlockPointer() {
+        if (document.pointerLockElement == this.canvas) {
+            document.exitPointerLock();
+        }
+        this.pointerLock = false;
     }
 
     resize() {
