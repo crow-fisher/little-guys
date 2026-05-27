@@ -29,7 +29,7 @@ export class CanvasManager {
     }
 
     render() {
-        this.context.fillStyle = hsvToHex((Date.now() / 10) % 360 + 60, .2, .25)
+        this.context.fillStyle = hsvToHex((Date.now() / 20) % 360 + 60, .3, .15)
         this.context.fillRect(
             0,
             0,
@@ -46,6 +46,8 @@ export class CanvasManager {
         this.canvas.addEventListener('mousedown', (e) => this.mainManager.mousedown(e));
         this.canvas.addEventListener('mouseup', (e) => this.mainManager.mouseup(e));
 
+        this.canvas.addEventListener('onkeydown', (e) => this.mainManager.onkeydown(e));
+        this.canvas.addEventListener('onkeyup', (e) => this.mainManager.onkeyup(e));
         this.canvas.onkeydown = () => this.mainManager.onkeydown();
         this.canvas.onkeyup = () => this.mainManager.onkeyup();
         this.canvas.onwheel = () => this.mainManager.onwheel();

@@ -67,8 +67,6 @@ export class CameraManager {
     }
     
     renderDebugPlane() {
-        saveGD(UI_CAMERA_OFFSET_VEC, [1, 1, 1]);
-
         let max = 100;
         let step = 10;
         let points = new Array();

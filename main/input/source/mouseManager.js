@@ -2,7 +2,7 @@ import { hsvToHex } from "../../color/color.js";
 
 export class MouseManager {
     constructor(mainManager) {
-        this.mainManager = mainManager;
+        this.inputManager = mainManager;
         this.ms = 0;
         this.pms = 0;
         this.offset = {x: 0, y: 0};
@@ -29,11 +29,10 @@ export class MouseManager {
 
     mousemove(e) {
         this.offset = this.getOffset(e);
-        if (this.mainManager.canvasManager.pointerLock) {
+        if (this.inputManager.isPointerLocked()) {
             this.movement.x = e.movementX / 1500
             this.movement.y = e.movementY / 1500
         }
-
     }
 
     update() {
@@ -47,10 +46,10 @@ export class MouseManager {
     }
 
     render() {
-        this.mainManager.canvasManager.context.fillStyle = hsvToHex(this.ms * 60, .8, .75);
-        this.mainManager.canvasManager.context.beginPath();
-        this.mainManager.canvasManager.context.arc(this.offset.x, this.offset.y, 8, 0, 2 * Math.PI, false);
-        this.mainManager.canvasManager.context.fill();
+        this.inputManager.getContext().fillStyle = hsvToHex(this.ms * 60, .8, .75);
+        this.inputManager.getContext().beginPath();
+        this.inputManager.getContext().arc(this.offset.x, this.offset.y, 8, 0, 2 * Math.PI, false);
+        this.inputManager.getContext().fill();
     }
 
     getOffset(evt) {
