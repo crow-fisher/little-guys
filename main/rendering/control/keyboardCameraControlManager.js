@@ -1,4 +1,4 @@
-import { loadGD, UI_CAMERA_OFFSET_VEC } from "../../ui/UIData.js";
+import { loadGD, UI_CAMERA_OFFSET_VEC_DT } from "../../ui/UIData.js";
 import { CameraControlManager } from "./cameraControlManager.js";
 
 export class KeyboardCameraControlManager extends CameraControlManager {
@@ -6,25 +6,25 @@ export class KeyboardCameraControlManager extends CameraControlManager {
         return this.cameraManager.isPointerLocked();
     }
     controlRoutine() {
-        this.ref = loadGD(UI_CAMERA_OFFSET_VEC);
-        if (this.cameraManager.isKeyPressed("w")) {
-            this.ref[0] += 1;
-        }
-        if (this.cameraManager.isKeyPressed("s")) {
-            this.ref[0] -= 1;
-        }
-
-        if (this.cameraManager.isKeyPressed("a")) {
-            this.ref[1] += 1;
-        }
-        if (this.cameraManager.isKeyPressed("d")) {
-            this.ref[1] -= 1;
-        }
+        this.ref = loadGD(UI_CAMERA_OFFSET_VEC_DT);
+        this.rate = 0.3;
         if (this.cameraManager.isKeyPressed("q")) {
-            this.ref[2] += 1;
+            this.ref[1] += this.rate;
         }
         if (this.cameraManager.isKeyPressed("e")) {
-            this.ref[2] -= 1;
+            this.ref[1] -= this.rate;
+        }
+        if (this.cameraManager.isKeyPressed("d")) {
+            this.ref[0] += this.rate;
+        }
+        if (this.cameraManager.isKeyPressed("a")) {
+            this.ref[0] -= this.rate;
+        }
+        if (this.cameraManager.isKeyPressed("s")) {
+            this.ref[2] += this.rate;
+        }
+        if (this.cameraManager.isKeyPressed("w")) {
+            this.ref[2] -= this.rate;
         }
         this.ref[0] -= this.cameraManager.getFrameMouseMove().x / 1;
         this.ref[1] -= this.cameraManager.getFrameMouseMove().y / 1;

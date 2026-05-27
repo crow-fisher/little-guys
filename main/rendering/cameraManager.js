@@ -1,7 +1,7 @@
-import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CAMERA_FOV } from "../ui/UIData.js";
+import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CAMERA_FOV, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_OFFSET_VEC } from "../ui/UIData.js";
 import { CoordinateSet } from "./model/CoordinateSet.js";
 import { multiplyMat3AndPointInplace, transposeMat3Inplace } from "../util/matrix.js";
-import { copyVecValue, crossVec3Dest, normalizeVec3, subtractVectorsDest } from "../util/vector.js";
+import { addVec3MultDest, addVec3MultDestAdd, addVectors, copyVecValue, crossVec3Dest, multiplyVectorByScalar, multiplyVectorByScalarDest, multiplyVectorByScalarDestAdd, normalizeVec3, subtractVectorsDest } from "../util/vector.js";
 import { hsvToHex } from "../color/color.js";
 import { KeyboardCameraControlManager } from "./control/keyboardCameraControlManager.js";
 import { MouseCameraControlManager } from "./control/mouseCameraControlManager.js";
@@ -35,6 +35,7 @@ export class CameraManager {
         this.forward = [0, 0, 0];
         this.right = [0, 0, 0];
         this.up = [0, 0, 0];
+        this.offset = [0, 0, 0];
 
         this.setFramePerspectiveMatrix();
     }
@@ -51,9 +52,20 @@ export class CameraManager {
         renderScreenRef[2] = screenRef[2];
     }
     update() {
+        this.cameraControlManagers.forEach((cm) => cm.process())
+        this.movementTick();
         this.setFrameCameraMatrix();
         this.setFrameCanvasRenderParams();
-        this.cameraControlManagers.forEach((cm) => cm.process())
+    }
+
+    movementTick() {
+        this._ref = loadGD(UI_CAMERA_OFFSET_VEC_DT);
+        multiplyVectorByScalarDest(this.right, this._ref[0], this.offset);
+        multiplyVectorByScalarDestAdd(this.up, this._ref[1], this.offset);
+        multiplyVectorByScalarDestAdd(this.forward, this._ref[2], this.offset);
+
+        addVectors(loadGD(UI_CAMERA_OFFSET_VEC), this.offset);
+        multiplyVectorByScalar(this._ref, 0.8);
     }
     render() {
         this.renderDebugPlane();

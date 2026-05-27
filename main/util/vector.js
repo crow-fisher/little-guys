@@ -61,6 +61,11 @@ export function addVec3MultDest(v1, v2, m, dest) {
   dest[1] = m * (v1[1] + v2[1]);
   dest[2] = m * (v1[2] + v2[2]);
 }
+export function addVec3MultDestAdd(v1, v2, m, dest) {
+  dest[0] = m * (v1[0] + v2[0]);
+  dest[1] = m * (v1[1] + v2[1]);
+  dest[2] = m * (v1[2] + v2[2]);
+}
 export function subtractVectors(v1, v2) {
   for (let i = 0; i < v1.length; i++) {
     v1[i] -= v2[i];
@@ -114,6 +119,11 @@ export function multiplyVectorByScalar(vec, scalar) {
 export function multiplyVectorByScalarDest(vec, scalar, dest) {
   for (let i = 0; i < vec.length; i++) {
     dest[i] = vec[i] * scalar;
+  }
+}
+export function multiplyVectorByScalarDestAdd(vec, scalar, dest) {
+  for (let i = 0; i < vec.length; i++) {
+    dest[i] += vec[i] * scalar;
   }
 }
 
