@@ -3,6 +3,8 @@ export class KeyboardManager {
         this.inputManager = inputManager;
         this.keyPressMap = {};
     }
+    update() {}
+    render() {}
     onkeydown(e) {
         this.keyPressMap[e.key] = true;
     }

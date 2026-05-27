@@ -46,10 +46,10 @@ export class CanvasManager {
         this.canvas.addEventListener('mousedown', (e) => this.mainManager.mousedown(e));
         this.canvas.addEventListener('mouseup', (e) => this.mainManager.mouseup(e));
 
-        this.canvas.addEventListener('onkeydown', (e) => this.mainManager.onkeydown(e));
-        this.canvas.addEventListener('onkeyup', (e) => this.mainManager.onkeyup(e));
-        this.canvas.onkeydown = () => this.mainManager.onkeydown();
-        this.canvas.onkeyup = () => this.mainManager.onkeyup();
+        // this.canvas.addEventListener('onkeydown', (e) => this.mainManager.onkeydown(e));
+        // this.canvas.addEventListener('onkeyup', (e) => this.mainManager.onkeyup(e));
+        this.canvas.onkeydown = (e) => this.mainManager.onkeydown(e);
+        this.canvas.onkeyup = (e) => this.mainManager.onkeyup(e);
         this.canvas.onwheel = () => this.mainManager.onwheel();
     }
 }

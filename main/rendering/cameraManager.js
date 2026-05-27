@@ -1,7 +1,7 @@
-import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CAMERA_FOV, saveGD, UI_CAMERA_OFFSET_VEC } from "../ui/UIData.js";
+import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CAMERA_FOV } from "../ui/UIData.js";
 import { CoordinateSet } from "./model/CoordinateSet.js";
 import { multiplyMat3AndPointInplace, transposeMat3Inplace } from "../util/matrix.js";
-import { copyVecValue, crossVec3, crossVec3Dest, normalizeVec3, subtractVectors, subtractVectorsDest } from "../util/vector.js";
+import { copyVecValue, crossVec3Dest, normalizeVec3, subtractVectorsDest } from "../util/vector.js";
 import { hsvToHex } from "../color/color.js";
 import { KeyboardCameraControlManager } from "./control/keyboardCameraControlManager.js";
 import { MouseCameraControlManager } from "./control/mouseCameraControlManager.js";
@@ -139,13 +139,16 @@ export class CameraManager {
         this.s = Math.min(this.cw, this.ch);
     }
     getFrameMouseMove() {
-        return this.mainManager.mouseManager.movement;
+        return this.mainManager.inputManager.mouseManager.movement;
     }
     isFrameButtonPressed(b) {
-        return this.mainManager.mouseManager.isFrameButtonPressed(b)
+        return this.mainManager.inputManager.mouseManager.isFrameButtonPressed(b)
     }
     isPointerLocked() {
         return this.mainManager.canvasManager.pointerLock;
+    }
+    isKeyPressed(key) {
+        return this.mainManager.inputManager.isKeyPressed(key);
     }
     lockPointer() {
         this.mainManager.canvasManager.lockPointer();

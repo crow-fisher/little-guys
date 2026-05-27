@@ -11,6 +11,10 @@ export class InputManager {
         this.mouseManager.update();
         this.keyboardManager.update();
     }
+    render() {
+        this.mouseManager.render();
+        this.keyboardManager.render();
+    }
 
     getContext() {
         return this.mainManager.canvasManager.context;
@@ -18,12 +22,14 @@ export class InputManager {
     isPointerLocked() {
         return this.mainManager.canvasManager.pointerLock;
     }
+    isKeyPressed(key) {
+        return this.keyboardManager.keyPressMap[key];
+    }
 
     mousemove(e) { this.mouseManager.mousemove(e)}
     mousedown(e) { this.mouseManager.mousedown(e)}
     mouseup(e) { this.mouseManager.mouseup(e)};
 
-
-    onkeydown() { }
-    onkeyup() { }
+    onkeydown(e) { this.keyboardManager.onkeydown(e) }
+    onkeyup(e) { this.keyboardManager.onkeyup(e) }
 }

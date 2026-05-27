@@ -33,7 +33,7 @@ export class MainManager {
     render() {
         this.canvasManager.render();
         this.cameraManager.render();
-        this.mouseManager.render();
+        this.inputManager.render();
         this.uiManager.render();
     }
 
@@ -42,20 +42,20 @@ export class MainManager {
     touchend() { }
     touchmove() { }
 
-    onkeydown() { }
-    onkeyup() { }
+    onkeydown(e) { this.inputManager.onkeydown(e) }
+    onkeyup(e) { this.inputManager.onkeyup(e) }
     onwheel() { }
 
     // Canvas Event Listeners
-    mousemove(e) { this.mouseManager.mousemove(e)}
-    mousedown(e) { this.mouseManager.mousedown(e)}
-    mouseup(e) { this.mouseManager.mouseup(e)}
+    mousemove(e) { this.inputManager.mousemove(e) }
+    mousedown(e) { this.inputManager.mousedown(e) }
+    mouseup(e) { this.inputManager.mouseup(e) }
 
     drop(e) { }
 
     // Window Callbacks
     onresize() { this.canvasManager.resize() }
-    oncontextmenu() { return false ;}
+    oncontextmenu() { return false; }
 
 
 }

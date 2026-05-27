@@ -37,10 +37,10 @@ export class UIManager {
         return this.mainManager.canvasManager.canvas.height;
     }
     mousePosition() {
-        return this.mainManager.mouseManager.offset;
+        return this.mainManager.inputManager.mouseManager.offset;
     }
     isFrameButtonPressed(b) {
-        return this.mainManager.mouseManager.isFrameButtonPressed(b);
+        return this.mainManager.inputManager.mouseManager.isFrameButtonPressed(b);
     }
     
 }
