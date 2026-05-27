@@ -394,38 +394,6 @@ export function canvasPan3DRoutine() {
     return;
 }
 
-export function rotatePoint(point, rX, rY, rZ) {
-    return rotatePointRx(rotatePointRy(rotatePointRz(point, rZ), rY), rX);
-}
-
-export function rotatePointRx(point, theta) {
-    let rotationMatrix = [
-        [1, 0, 0, 0],
-        [0, Math.cos(theta), -Math.sin(theta), 0],
-        [0, Math.sin(theta), Math.cos(theta), 0],
-        [0, 0, 0, 1]
-    ];
-    return multiplyMatrixAndPoint(rotationMatrix, point);
-}
-
-export function rotatePointRy(point, theta) {
-    let rotationMatrix = [
-        [Math.cos(theta), 0, Math.sin(theta), 0],
-        [0, 1, 0, 0],
-        [-Math.sin(theta), 0, Math.cos(theta), 0],
-        [0, 0, 0, 1]
-    ]
-    return multiplyMatrixAndPoint(rotationMatrix, point);
-}
-export function rotatePointRz(point, theta) {
-    let rotationMatrix = [
-        [Math.cos(theta), -Math.sin(theta), 0, 0],
-        [Math.sin(theta), Math.cos(theta), 0, 0],
-        [0, 0, 1, 0],
-        [0, 0, 0, 1]
-    ]
-    return multiplyMatrixAndPoint(rotationMatrix, point);
-}
 
 
 let camera1;

@@ -1,7 +1,7 @@
 import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CAMERA_FOV, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_OFFSET_VEC } from "../ui/UIData.js";
 import { CoordinateSet } from "./model/CoordinateSet.js";
-import { multiplyMat3AndPointInplace, transposeMat3Inplace } from "../util/matrix.js";
-import { addVec3MultDest, addVec3MultDestAdd, addVectors, copyVecValue, crossVec3Dest, multiplyVectorByScalar, multiplyVectorByScalarDest, multiplyVectorByScalarDestAdd, normalizeVec3, subtractVectorsDest } from "../util/vector.js";
+import { multiplyMat3AndPointInplace, multiplyMatrixAndPoint, transposeMat3Inplace } from "../util/matrix.js";
+import { addVectors, copyVecValue, crossVec3Dest, multiplyVectorByScalar, multiplyVectorByScalarDest, multiplyVectorByScalarDestAdd, normalizeVec3, subtractVectorsDest } from "../util/vector.js";
 import { hsvToHex } from "../color/color.js";
 import { KeyboardCameraControlManager } from "./control/keyboardCameraControlManager.js";
 import { MouseCameraControlManager } from "./control/mouseCameraControlManager.js";
@@ -126,6 +126,7 @@ export class CameraManager {
         copyVecValue(this.right, this.cameraToWorld[0]);
         copyVecValue(this.up, this.cameraToWorld[1]);
         copyVecValue(this.forward, this.cameraToWorld[2]);
+        
         transposeMat3Inplace(this.cameraToWorld, this.worldToCamera);
     }
 
