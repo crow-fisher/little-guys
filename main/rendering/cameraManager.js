@@ -40,7 +40,7 @@ export class CameraManager {
     }
 
     cartesianToScreenInplace(cartesian, camera, screen) {
-        multiplyMat3AndPointInplace(this.cameraToWorld, cartesian, camera);
+        multiplyMat3AndPointInplace(this.worldToCamera, cartesian, camera);
         multiplyMat3AndPointInplace(this.perspectiveMatrix, camera, screen);
     }
     screenToRenderScreen(screenRef, renderNormRef, renderScreenRef) {
@@ -100,9 +100,6 @@ export class CameraManager {
         this.yaw = loadGD(UI_CAMERA_ROTATION_VEC)[0];
         this.pitch = loadGD(UI_CAMERA_ROTATION_VEC)[1];
 
-        this.yaw = 0;
-        this.pitch = 0;
-
         this.rotNorm[0] = Math.cos(this.yaw) * Math.cos(this.pitch);
         this.rotNorm[1] = Math.sin(this.pitch);
         this.rotNorm[2] = Math.sin(this.yaw) * Math.cos(this.pitch);
@@ -117,7 +114,6 @@ export class CameraManager {
         copyVecValue(this.right, this.cameraToWorld[0]);
         copyVecValue(this.up, this.cameraToWorld[1]);
         copyVecValue(this.forward, this.cameraToWorld[2]);
-
         transposeMat3Inplace(this.cameraToWorld, this.worldToCamera);
     }
 
