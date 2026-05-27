@@ -13,6 +13,19 @@ export class KeyboardCameraControlManager extends CameraControlManager {
         if (this.cameraManager.isKeyPressed("s")) {
             this.ref[0] -= 1;
         }
+
+        if (this.cameraManager.isKeyPressed("a")) {
+            this.ref[1] += 1;
+        }
+        if (this.cameraManager.isKeyPressed("d")) {
+            this.ref[1] -= 1;
+        }
+        if (this.cameraManager.isKeyPressed("q")) {
+            this.ref[2] += 1;
+        }
+        if (this.cameraManager.isKeyPressed("e")) {
+            this.ref[2] -= 1;
+        }
         this.ref[0] -= this.cameraManager.getFrameMouseMove().x / 1;
         this.ref[1] -= this.cameraManager.getFrameMouseMove().y / 1;
     }

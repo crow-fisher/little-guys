@@ -100,6 +100,9 @@ export class CameraManager {
         this.yaw = loadGD(UI_CAMERA_ROTATION_VEC)[0];
         this.pitch = loadGD(UI_CAMERA_ROTATION_VEC)[1];
 
+        this.yaw = 0;
+        this.pitch = 0;
+
         this.rotNorm[0] = Math.cos(this.yaw) * Math.cos(this.pitch);
         this.rotNorm[1] = Math.sin(this.pitch);
         this.rotNorm[2] = Math.sin(this.yaw) * Math.cos(this.pitch);
