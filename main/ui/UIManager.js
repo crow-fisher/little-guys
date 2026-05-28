@@ -42,5 +42,14 @@ export class UIManager {
     isFrameButtonPressed(b) {
         return this.mainManager.inputManager.mouseManager.isFrameButtonPressed(b);
     }
+    getCurDay() {
+        return this.mainManager.worldManager.timeManager.curDay;
+    }
+    getCurTimeScale() {
+        return this.mainManager.worldManager.timeManager.curTimeScale;
+    }
+    setCurTimeScale(val) {
+        this.mainManager.worldManager.timeManager.curTimeScale = val;
+    }
     
 }

@@ -13,7 +13,7 @@ export class MouseManager {
     }
 
     isButtonPressed(b) {
-        return (1 << b) && this.ms;
+        return (this.ms & (1 << b)) == (1 << b)
     }
 
     isFrameButtonPressed(b) {

@@ -5,6 +5,7 @@ import { addVectors, copyVecValue, crossVec3Dest, multiplyVectorByScalar, multip
 import { hsvToHex } from "../color/color.js";
 import { KeyboardCameraControlManager } from "./control/keyboardCameraControlManager.js";
 import { MouseCameraControlManager } from "./control/mouseCameraControlManager.js";
+import { isButtonPressed } from "../gamepad.js";
 
 let params = new URLSearchParams(document.location.search);
 
@@ -169,6 +170,9 @@ export class CameraManager {
     }
     isFrameButtonPressed(b) {
         return this.mainManager.inputManager.mouseManager.isFrameButtonPressed(b)
+    }
+    isButtonPressed(b) {
+        return this.mainManager.inputManager.mouseManager.isButtonPressed(b)
     }
     isPointerLocked() {
         return this.mainManager.canvasManager.pointerLock;

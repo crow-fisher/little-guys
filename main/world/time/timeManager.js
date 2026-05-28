@@ -1,6 +1,7 @@
 import { hsvToHex } from "../../color/color.js";
 import { hexToRgb, invlerp, rgbToHexObj } from "../../common.js";
 import { SunCalc } from "../../lib/suncalc/suncalc.js";
+import { MILLIS_PER_DAY } from "../../util/const.js";
 
 export class TimeManager {
     constructor(worldManager) {
@@ -14,10 +15,9 @@ export class TimeManager {
         this.lat = 41.881832;
         this.lng = -87.623177;
 
-        this.millis_per_day = 60 * 60 * 24 * 1000;
 
         this.sky_nightRGB = hexToRgb("#121622");
-        this.sky_duskRGB = hexToRgb("#5A4D41");
+        this.sky_duskRGB = hexToRgb("#272525");
         this.sky_colorEveningMorningRGB = hexToRgb("#A49F67");
         this.sky_colorNearNoonRGB = hexToRgb("#7E9FB1");
         this.sky_colorNoonRGB = hexToRgb("#84b2e2");
@@ -32,6 +32,10 @@ export class TimeManager {
             dusk: this.sky_duskRGB,
             night: this.sky_nightRGB
         }
+    }
+
+    getTimeScale() {
+        return (2.8 ** (this.curTimeScale - 1));
     }
 
     update() { 
@@ -52,15 +56,21 @@ export class TimeManager {
     seekCurDay(curDay) { }
 
     timeTick() {
-        this.curDay += .001
+        if (this.curTimeScale == 0) {
+            this.dt = 0;
+        } else {
+            this.dt = (Date.now() - this.lastTimeTick) / (MILLIS_PER_DAY / this.getTimeScale());
+            this.lastTimeTick = Date.now();
+        }
+        this.curDay += this.dt;
     };
 
     colorTick(curDay) {
         // pull out of the shit below and do that there
-        this.curMillis = this.curDay * this.millis_per_day;
+        this.curMillis = this.curDay * MILLIS_PER_DAY;
         this.curDate = new Date(this.curMillis);
-        this.nextDate = new Date(this.curMillis + this.millis_per_day);
-        this.prevDate = new Date(this.curMillis - this.millis_per_day);
+        this.nextDate = new Date(this.curMillis + MILLIS_PER_DAY);
+        this.prevDate = new Date(this.curMillis - MILLIS_PER_DAY);
 
         this.prevTimes = SunCalc.getTimes(this.prevDate, this.lat, this.lng);
         this.curTimes = SunCalc.getTimes(this.curDate, this.lat, this.lng);

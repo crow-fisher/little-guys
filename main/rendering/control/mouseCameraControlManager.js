@@ -9,7 +9,7 @@ export class MouseCameraControlManager extends CameraControlManager {
                 return false;
             }
         } else {
-            if (this.cameraManager.isFrameButtonPressed(0)) {
+            if (this.cameraManager.isFrameButtonPressed(0) && this.cameraManager.isButtonPressed(2)) {
                 this.cameraManager.lockPointer();
             } else {
                 return false;
