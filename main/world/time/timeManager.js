@@ -3,5 +3,12 @@ export class TimeManager {
         this.mainManager = 0;
         this.curDay = 0;
         this.curTimeScale = 1;
+        this.lastTimeTick = Date.now();
     }
+
+    update() {}
+
+    render() {}
+
+    seekCurDay(curDay) {}
 }

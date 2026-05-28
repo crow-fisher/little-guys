@@ -69,7 +69,7 @@ export class CameraManager {
         multiplyVectorByScalar(this._ref, 0.8);
     }
     render() {
-        this.renderDebugPlane();
+        // this.renderDebugPoints();
     }
 
     renderPoint(p) {
@@ -79,7 +79,7 @@ export class CameraManager {
         this.mainManager.canvasManager.context.fill();
     }
     
-    renderDebugPlane() {
+    renderDebugPoints() {
         let max = 300;
         let step = 10;
         let points = new Array();
