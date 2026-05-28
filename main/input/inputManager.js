@@ -32,4 +32,6 @@ export class InputManager {
 
     onkeydown(e) { this.keyboardManager.onkeydown(e) }
     onkeyup(e) { this.keyboardManager.onkeyup(e) }
+    onwheel(e) { this.mouseManager.onwheel(e) }
+
 }

@@ -44,7 +44,7 @@ export class MainManager {
 
     onkeydown(e) { this.inputManager.onkeydown(e) }
     onkeyup(e) { this.inputManager.onkeyup(e) }
-    onwheel() { }
+    onwheel(e) { this.inputManager.onwheel(e) }
 
     // Canvas Event Listeners
     mousemove(e) { this.inputManager.mousemove(e) }

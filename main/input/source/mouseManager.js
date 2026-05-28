@@ -1,4 +1,5 @@
 import { hsvToHex } from "../../color/color.js";
+import { loadGD, saveGD, UI_CAMERA_FOV } from "../../ui/UIData.js";
 
 export class MouseManager {
     constructor(mainManager) {
@@ -27,11 +28,16 @@ export class MouseManager {
         this.ms &= ~(1 << e.button); 
     }
 
+    onwheel(e) {
+        e.preventDefault();
+        saveGD(UI_CAMERA_FOV, loadGD(UI_CAMERA_FOV) + e.deltaY / 100);
+    }
+
     mousemove(e) {
         this.offset = this.getOffset(e);
         if (this.inputManager.isPointerLocked()) {
-            this.movement.x = e.movementX / 1500
-            this.movement.y = e.movementY / 1500
+            this.movement.x += e.movementX / 35000
+            this.movement.y += e.movementY / 35000
         }
     }
 
@@ -41,8 +47,8 @@ export class MouseManager {
         this.doffset.y = this.offset.y - this.poffset.y;
         this.poffset = this.offset;
 
-        this.movement.x *= 0.9;
-        this.movement.y *= 0.9;
+        this.movement.x *= 0.7;
+        this.movement.y *= 0.7;
     }
 
     render() {

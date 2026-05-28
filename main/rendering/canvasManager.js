@@ -25,7 +25,7 @@ export class CanvasManager {
 
     resize() {
         this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
+        this.canvas.height = window.innerHeight + 10;
     }
 
     render() {
@@ -50,6 +50,6 @@ export class CanvasManager {
         // this.canvas.addEventListener('onkeyup', (e) => this.mainManager.onkeyup(e));
         this.canvas.onkeydown = (e) => this.mainManager.onkeydown(e);
         this.canvas.onkeyup = (e) => this.mainManager.onkeyup(e);
-        this.canvas.onwheel = () => this.mainManager.onwheel();
+        this.canvas.onwheel = (e) => this.mainManager.onwheel(e);
     }
 }

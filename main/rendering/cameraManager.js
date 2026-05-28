@@ -56,6 +56,7 @@ export class CameraManager {
         this.movementTick();
         this.setFrameCameraMatrix();
         this.setFrameCanvasRenderParams();
+        this.setFramePerspectiveMatrix();
     }
 
     movementTick() {
@@ -79,7 +80,7 @@ export class CameraManager {
     }
     
     renderDebugPlane() {
-        let max = 100;
+        let max = 300;
         let step = 10;
         let points = new Array();
         let i = 0;
@@ -102,7 +103,7 @@ export class CameraManager {
             }
             this.mainManager.canvasManager.context.fillStyle = hsvToHex(p.distToCamera % 360, .8, .75);
             this.mainManager.canvasManager.context.beginPath();
-            this.mainManager.canvasManager.context.arc(p.renderScreen[0], p.renderScreen[1], 8, 0, 2 * Math.PI, false);
+            this.mainManager.canvasManager.context.arc(p.renderScreen[0], p.renderScreen[1], 800 / p.distToCamera, 0, 2 * Math.PI, false);
             this.mainManager.canvasManager.context.fill();
         });
 
@@ -131,15 +132,15 @@ export class CameraManager {
     }
 
     setFramePerspectiveMatrix() {
-        let n = 1; // near clipping plane;
-        let f = 1000; // far clipping plane;
-        let fov = loadGD(UI_CAMERA_FOV);
-        let S = 1 / (Math.tan((fov / 2) * (Math.PI / 180)));
-        this.perspectiveMatrix = [
-            [S, 0, 0],
-            [0, S, 0],
-            [0, 0, -(f / (f - n))]
-        ];
+        this.n = 1; // near clipping plane;
+        this.f = 1000; // far clipping plane;
+        this.fov = loadGD(UI_CAMERA_FOV);
+        this.S = 1 / (Math.tan((this.fov / 2) * (Math.PI / 180)));
+
+        this.perspectiveMatrix[0][0] = this.S;
+        this.perspectiveMatrix[1][1] = this.S;
+        this.perspectiveMatrix[2][2] = -(this.f / (this.f - this.n));
+
     }
 
     setFrameCanvasRenderParams() {
