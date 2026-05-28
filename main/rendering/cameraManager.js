@@ -96,16 +96,23 @@ export class CameraManager {
                 }
             }
         }
+        
+        let renderedPoints = 0;
 
         points.forEach((p) => {
-            if (p.renderScreen[2] < 0) {
+            if (!p.isVisibleOnScreen()) {
                 return;
             }
+            renderedPoints += 1;
             this.mainManager.canvasManager.context.fillStyle = hsvToHex(p.distToCamera % 360, .8, .75);
             this.mainManager.canvasManager.context.beginPath();
             this.mainManager.canvasManager.context.arc(p.renderScreen[0], p.renderScreen[1], 800 / p.distToCamera, 0, 2 * Math.PI, false);
             this.mainManager.canvasManager.context.fill();
         });
+
+        this.mainManager.canvasManager.context.fillStyle = hsvToHex(0, 0, 1);
+        this.mainManager.canvasManager.context.fillText(renderedPoints, 100, 400)
+
 
     }
 
@@ -150,6 +157,13 @@ export class CameraManager {
         this.yOffset = (this.max / this.cw) / 2;
         this.xOffset = (this.max / this.ch) / 2;
         this.s = Math.min(this.cw, this.ch);
+    }
+
+    getCanvasWidth() {
+        return this.mainManager.canvasManager.canvas.width;
+    }
+    getCanvasHeight() {
+        return this.mainManager.canvasManager.canvas.height;
     }
     getFrameMouseMove() {
         return this.mainManager.inputManager.mouseManager.movement;

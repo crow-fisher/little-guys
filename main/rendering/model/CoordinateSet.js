@@ -26,11 +26,17 @@ export class CoordinateSet {
     process() {
         subtractVectorsDest(this.world, loadGD(UI_CAMERA_OFFSET_VEC), this.offset);
         this.cameraManager.cartesianToScreenInplace(this.offset, this.camera, this.screen);
-        this.cameraManager.screenToRenderScreen(this.screen, this.renderNorm, this.renderScreen);
-        this.distToCamera = getVec3Length(this.offset);
+        if (this.screen[2] > 0) {
+            this.cameraManager.screenToRenderScreen(this.screen, this.renderNorm, this.renderScreen);
+            this.distToCamera = getVec3Length(this.offset);
+        }
     }
 
     isVisibleOnScreen() {
-        return true;
+        return this.screen[2] > 0 &&
+            this.renderScreen[0] > 0 &&
+            this.renderScreen[0] < this.cameraManager.getCanvasWidth() && 
+            this.renderScreen[1] > 0 && 
+            this.renderScreen[1] < this.cameraManager.getCanvasHeight();
     }
 }

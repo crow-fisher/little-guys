@@ -38,7 +38,7 @@ export class CanvasManager {
         );
         this.context.font =  this.canvas.width / 20 + "px courier";
         this.context.fillStyle = "#000000"
-        this.context.fillText((new Date()).toISOString(), 0,this.canvas.height / 10);
+        this.context.fillText((new Date()).toISOString(), 0, this.canvas.height / 10);
     }
 
     addCallbacks() {
