@@ -8,7 +8,6 @@ import { MouseCameraControlManager } from "./control/mouseCameraControlManager.j
 
 let params = new URLSearchParams(document.location.search);
 
-
 export class CameraManager {
     constructor(mainManager) {
         this.mainManager = mainManager;

@@ -11,18 +11,18 @@ import {
     UI_SPEED_FIVE,
     UI_SPEED_SIX,
     UI_SPEED_SEVEN,
-    UI_SPEED_8,
-    UI_SPEED_9,
-    UI_SPEED_10,
-    UI_SPEED_11,
-    UI_SPEED_12,
-    UI_SPEED_13,
-    UI_SPEED_14,
-    UI_SPEED_15,
-    UI_SPEED_16,
-    UI_SPEED_17,
-    UI_SPEED_18,
-    UI_SPEED_19,
+    UI_SPEED_EIGHT,
+    UI_SPEED_NINE,
+    UI_SPEED_TEN,
+    UI_SPEED_ELEVEN,
+    UI_SPEED_TWELVE,
+    UI_SPEED_THIRTTEEN,
+    UI_SPEED_FOURTTEEN,
+    UI_SPEED_FIFTEEN,
+    UI_SPEED_SIXTEEN,
+    UI_SPEED_SEVENTEEN,
+    UI_SPEED_EIGHTTEEN,
+    UI_SPEED_NINETEEEN,
     UI_SPEED,
     UI_SPEED_ZERO, saveGD
 } from "../../ui/UIData.js";
@@ -32,7 +32,6 @@ import { getActiveClimate } from "../climate/climateManager.js";
 let TIME_SCALE = 1;
 let curUIKey = UI_SPEED_ONE;
 
-export const millis_per_day = 60 * 60 * 24 * 1000;
 var curDay = 0.4;
 var prevDay = 0;
 var prevTime = 0;
@@ -134,40 +133,40 @@ export function doTimeSeek() {
             saveGD(UI_SPEED, UI_SPEED_SEVEN);
             break;
         case 8:
-            saveGD(UI_SPEED, UI_SPEED_8);
+            saveGD(UI_SPEED, UI_SPEED_EIGHT);
             break;
         case 9:
-            saveGD(UI_SPEED, UI_SPEED_9);
+            saveGD(UI_SPEED, UI_SPEED_NINE);
             break;
         case 10:
-            saveGD(UI_SPEED, UI_SPEED_10);
+            saveGD(UI_SPEED, UI_SPEED_TEN);
             break;
         case 11:
-            saveGD(UI_SPEED, UI_SPEED_11);
+            saveGD(UI_SPEED, UI_SPEED_ELEVEN);
             break;
         case 12:
-            saveGD(UI_SPEED, UI_SPEED_12);
+            saveGD(UI_SPEED, UI_SPEED_TWELVE);
             break;
         case 13:
-            saveGD(UI_SPEED, UI_SPEED_13);
+            saveGD(UI_SPEED, UI_SPEED_THIRTTEEN);
             break;
         case 14:
-            saveGD(UI_SPEED, UI_SPEED_14);
+            saveGD(UI_SPEED, UI_SPEED_FOURTTEEN);
             break;
         case 15:
-            saveGD(UI_SPEED, UI_SPEED_15);
+            saveGD(UI_SPEED, UI_SPEED_FIFTEEN);
             break;
         case 16:
-            saveGD(UI_SPEED, UI_SPEED_16);
+            saveGD(UI_SPEED, UI_SPEED_SIXTEEN);
             break;
         case 17:
-            saveGD(UI_SPEED, UI_SPEED_17);
+            saveGD(UI_SPEED, UI_SPEED_SEVENTEEN);
             break;
         case 18:
-            saveGD(UI_SPEED, UI_SPEED_18);
+            saveGD(UI_SPEED, UI_SPEED_EIGHTTEEN);
             break;
         case 19:
-            saveGD(UI_SPEED, UI_SPEED_19);
+            saveGD(UI_SPEED, UI_SPEED_NINETEEEN);
             break;
     }
 }
@@ -336,40 +335,40 @@ function updateTime() {
             case UI_SPEED_SEVEN:
                 TIME_SCALE = 7;
                 break;
-            case UI_SPEED_8:
+            case UI_SPEED_EIGHT:
                 TIME_SCALE = 8;
                 break;
-            case UI_SPEED_9:
+            case UI_SPEED_NINE:
                 TIME_SCALE = 9;
                 break;
-            case UI_SPEED_10:
+            case UI_SPEED_TEN:
                 TIME_SCALE = 10;
                 break;
-            case UI_SPEED_11:
+            case UI_SPEED_ELEVEN:
                 TIME_SCALE = 11;
                 break;
-            case UI_SPEED_12:
+            case UI_SPEED_TWELVE:
                 TIME_SCALE = 12;
                 break;
-            case UI_SPEED_13:
+            case UI_SPEED_THIRTTEEN:
                 TIME_SCALE = 13;
                 break;
-            case UI_SPEED_14:
+            case UI_SPEED_FOURTTEEN:
                 TIME_SCALE = 14;
                 break;
-            case UI_SPEED_15:
+            case UI_SPEED_FIFTEEN:
                 TIME_SCALE = 15;
                 break;
-            case UI_SPEED_16:
+            case UI_SPEED_SIXTEEN:
                 TIME_SCALE = 16;
                 break;
-            case UI_SPEED_17:
+            case UI_SPEED_SEVENTEEN:
                 TIME_SCALE = 17;
                 break;
-            case UI_SPEED_18:
+            case UI_SPEED_EIGHTTEEN:
                 TIME_SCALE = 18;
                 break;
-            case UI_SPEED_19:
+            case UI_SPEED_NINETEEEN:
                 TIME_SCALE = 19;
                 break;
         }

@@ -13,7 +13,6 @@ export class MainManager {
         this.uiManager = new UIManager(this);
         this.worldManager = new WorldManager(this);
         this.inputManager = new InputManager(this);
-        this.timeManager = new TimeManager(this);
     }
 
     main() {
@@ -30,27 +29,15 @@ export class MainManager {
         this.uiManager.update();
         this.cameraManager.update();
         this.inputManager.update();
-        this.timeManager.update();
+        this.worldManager.update();
     }
 
     render() {
         this.canvasManager.render();
-        this.timeManager.render();
+        this.worldManager.render();
         this.cameraManager.render();
         this.inputManager.render();
         this.uiManager.render();
-    }
-
-    getCurDay() {
-        return this.timeManager.curDay;
-    }
-    
-    setCurDay(curDay) {
-        this.timeManager.curDay = curDay;
-    }
-
-    seekCurDay(curDay) {
-        this.timeManager.seekCurDay(curDay);
     }
 
     // Canvas Callbacks

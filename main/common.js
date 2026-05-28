@@ -57,7 +57,7 @@ export function hexToRgbArr(hex) {
     ] : null;
 }
 export function rgbToHexObj(obj) {
-    return rgbToHex(obj.r, obj.b, obj.b);
+    return rgbToHex(obj.r, obj.g, obj.b);
 }
 
 function rgbToHex(r, g, b) {
