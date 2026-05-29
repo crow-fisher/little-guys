@@ -554,15 +554,7 @@ export function getMoonlightBrightness() {
 
 // https://www.researchgate.net/publication/328726901_Real-time_adaptable_and_coherent_rendering_for_outdoor_augmented_reality/download
 
-export function calculateTempColor(temperature) {
-    temperature = Math.max(2500, Math.min(temperature, 6500));
-    temperature /= 100;
-    return {
-        r: fbc(temp_red(temperature)),
-        g: fbc(temp_green(temperature)),
-        b: fbc(temp_blue(temperature))
-    };
-}
+
 
 let tempColorRgbaMap = new Map();
 let tempColorRgbMap = new Map();

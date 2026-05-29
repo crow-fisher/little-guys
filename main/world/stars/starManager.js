@@ -123,7 +123,7 @@ export class StarManager {
 
 
     render() { 
-        this.iterateOnSectors((sector) => sector.renderMain());
+        this.iterateOnSectors((sector) => sector.render());
         this.renderConstellations();
         this.minLumensRuntime();
     }
@@ -184,8 +184,8 @@ export class StarManager {
         this.loadedStars = new Array();
         this.loadedConstellations = new Array();
 
-        let hipCatalog = new HipparcosCatalog((star) => this.loadStar(star), (constellation) => this.loadConstellation(constellation));
-        let stelCatalog = new StellariumCatalog((star) => this.loadStar(star), (constellation) => this.loadConstellation(constellation));
+        let hipCatalog = new HipparcosCatalog(this, (star) => this.loadStar(star), (constellation) => this.loadConstellation(constellation));
+        // let stelCatalog = new StellariumCatalog((star) => this.loadStar(star), (constellation) => this.loadConstellation(constellation));
         // let pastelCatalog = new PastelCatalog
         hipCatalog.loadData(() => {
             this.processDataStar();
@@ -258,6 +258,10 @@ export class StarManager {
                 );
             }})
     };
+
+    getCameraManager() {
+        return this.worldManager.mainManager.cameraManager;
+    }
 
     
 }

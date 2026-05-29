@@ -1,3 +1,4 @@
+import { CoordinateSet } from "../../../rendering/model/CoordinateSet.js";
 import { renderPointLabel } from "../../../rendering/renderFunctions.js";
 import { getVec3Length } from "../../../util/vector.js";
 import { brightnessValueToLumens, sphericalToCartesian } from "../starManagerUtil.js";
@@ -41,6 +42,7 @@ export class Star {
         this.magnitude_absolute = (magnitude + 5) - (5 * Math.log10(this.parsecs));
         
         this.cartesian = sphericalToCartesian(-this.asc, -this.dec, this.parsecs);
+        this.cs = new CoordinateSet(this.cartesian);
         this.lumens = brightnessValueToLumens(this.magnitude);
         this.sector = null;
 
@@ -108,5 +110,9 @@ export class Star {
             this.renderColor,
             this.starLabel
         )
+    };
+    
+    process() {
+        this.cs.process();
     }
 }
