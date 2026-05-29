@@ -1,10 +1,9 @@
-import { getStarManager } from "../../../main.js";
 import { Constellation } from "../model/Constellation.js";
 import { CatalogHandlerBase } from "./CatalogHandlerBase.js";
 
 export class StellariumCatalog extends CatalogHandlerBase {
-    constructor(starCallback, constellationCallback) {
-        super(starCallback, constellationCallback);
+    constructor(starManager, starCallback, constellationCallback) {
+        super(starManager, starCallback, constellationCallback);
         this.name = "StellariumCatalog";
     }
 

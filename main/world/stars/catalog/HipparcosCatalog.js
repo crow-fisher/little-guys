@@ -1,13 +1,11 @@
-import { calculateStatistics } from "../../../common.js";
-import { astronomyAtlasSetupChoices } from "../../../ui/components/AstronomyAtlas/modes/AstronomyAtlasModeFuncSetup.js";
-import { tempToColorForStar } from "../../time.js";
+import { tempToColorForStar } from "../../../color/worldColor.js";
 import { Star } from "../model/Star.js";
 import { calculateStarTemperature } from "../starManagerUtil.js";
 import { CatalogHandlerBase } from "./CatalogHandlerBase.js";
 
 export class HipparcosCatalog extends CatalogHandlerBase {
-    constructor(starCallback, constellationCallback) {
-        super(starCallback, constellationCallback);
+    constructor(starManager, starCallback, constellationCallback) {
+        super(starManager, starCallback, constellationCallback);
         this.name = "HipparcosCatalog";
     }
 
@@ -57,6 +55,6 @@ export class HipparcosCatalog extends CatalogHandlerBase {
         if (isNaN(rowAsc) || isNaN(rowDec) || isNaN(magnitude) || isNaN(parallax)) {
             return;
         }
-        this.starCallback(new Star(id, rowAscRad, rowDecRad, magnitude, bv, color, parallax, hd_number, temperature));
+        this.starCallback(new Star(this.starManager, id, rowAscRad, rowDecRad, magnitude, bv, color, parallax, hd_number, temperature));
     }
 }

@@ -8,6 +8,7 @@ export class TimeManager {
         this.worldManager = worldManager;
         this.curDay = 100;
         this.curTimeScale = 1;
+        this.daylightStrength = 0;
         this.lastTimeTick = Date.now();
         this.colorRGB = {r: 255, g: 255, b: 255}
         this.colorHEX = "#FFFFFF";
@@ -37,6 +38,16 @@ export class TimeManager {
     getTimeScale() {
         return (3.8 ** (this.curTimeScale - 1));
     }
+
+    getDaylightStrength() {
+        this.suncalcInfo = SunCalc.getPosition(new Date(curDay * millis_per_day), this.lat, this.lng);
+        // console.log(sunData.altitude, Math.sin(sunData.altitude));
+        if (this.suncalcInfo.altitude < 0) {
+            this.daylightStrength = 0;
+        }
+        this.daylightStrength = Math.sin(this.suncalcInfo.altitude);
+    }
+    
 
     update() { 
         this.timeTick(); 

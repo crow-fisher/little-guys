@@ -557,7 +557,6 @@ export function getMoonlightBrightness() {
 export function calculateTempColor(temperature) {
     temperature = Math.max(2500, Math.min(temperature, 6500));
     temperature /= 100;
-
     return {
         r: fbc(temp_red(temperature)),
         g: fbc(temp_green(temperature)),

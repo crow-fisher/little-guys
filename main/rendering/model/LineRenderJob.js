@@ -1,4 +1,3 @@
-import { MAIN_CONTEXT } from "../../index.js";
 import { RenderJob } from "./RenderJob.js";
 
 export class LineRenderJob extends RenderJob {

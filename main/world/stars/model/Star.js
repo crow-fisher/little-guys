@@ -1,17 +1,11 @@
-import { COLOR_BLACK, COLOR_WHITE, RGB_COLOR_BROWN, RGB_COLOR_RED } from "../../../colors.js";
-import { combineColorMult, combineColorMultArr, hsv2rgb, invlerp, lerp, rgbToHex } from "../../../common.js";
-import { getStarManager } from "../../../main.js";
-import { PointLabelRenderJob } from "../../../rendering/model/PointLabelRenderJob.js";
-import { addRenderJob } from "../../../rendering/rasterizer.js";
-import { WaterSquare } from "../../../squares/WaterSquare.js";
-import { loadGD, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_MIN, UI_AA_SETUP_MULT, UI_AA_SETUP_POW, UI_AA_SETUP_WINDOW_SIZE, UI_SH_COLORSHIFT } from "../../../ui/UIData.js";
-import { getActiveClimate } from "../../climateManager.js";
-import { getVec3Length } from "../matrix_old.js";
+import { renderPointLabel } from "../../../rendering/renderFunctions.js";
+import { getVec3Length } from "../../../util/vector.js";
 import { brightnessValueToLumens, sphericalToCartesian } from "../starManagerUtil.js";
 
 export class Star {
     // ascension and declination in radians
-    constructor(id, asc, dec, magnitude, bv, color, parallax, hd_number, temperature) {
+    constructor(starManager, id, asc, dec, magnitude, bv, color, parallax, hd_number, temperature) {
+        this.starManager = starManager;
         this.id = id;
         this.asc = asc;
         this.dec = dec;
@@ -102,28 +96,17 @@ export class Star {
 
     render() {
         this._renderedThisFrame = true;
-
         if (this.renderColor == null) {
             return;
         }
-
-        if (this.renderJob == null) {
-            this.renderJob = new PointLabelRenderJob(
-                this._renderScreen[0],
-                this._renderScreen[1],
-                this._screen[2],
-                this._size,
-                this.renderColor,
-                this.starLabel,
-                false);
-        } else {
-            this.renderJob.x = this._renderScreen[0]
-            this.renderJob.y = this._renderScreen[1]
-            this.renderJob.z = this._renderScreen[2]
-            this.renderJob.size = this._size;
-            this.renderJob.color = this.renderColor; // rgbToHex(...this.alt_color);
-            this.renderJob.label = this.starLabel;
-        }
-        addRenderJob(this.renderJob, false);
+        renderPointLabel(
+            this.starManager.worldManager.getContext(),
+            this._renderScreen,
+            this._renderScreen,
+            this._screen[2],
+            this._size,
+            this.renderColor,
+            this.starLabel
+        )
     }
 }

@@ -1,19 +1,19 @@
 import { cameraToScreen, cartesianToCamera, cartesianToScreen, debugRenderLineOffsetPoints, gfc, screenToRenderScreen } from "../../../rendering/camera.js";
 import { getCanvasHeight, getCanvasWidth } from "../../../canvas.js";
-import { COLOR_BLUE, COLOR_GREEN, COLOR_OTHER_BLUE, COLOR_RED, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../../colors.js";
 import { calculateStatistics, invlerp, lerp, processRangeToOne, rgbToRgba } from "../../../common.js";
-import { addRenderJob } from "../../../rendering/rasterizer.js";
-import { loadGD, UI_CAMERA_OFFSET_VEC, UI_SH_MINSIZE, UI_SH_DISTPOWERMULT, UI_SH_MAXLUMINENCE, UI_SH_MINLUMINENCE, UI_SH_STYLE_BRIGHTNESS_B, UI_SH_STYLE_BRIGHTNESS_A, UI_SH_STYLE_SIZE_A, UI_SH_STYLE_SIZE_B, UI_AA_PLOT_SELECTRADIUS, UI_AA_PLOT_LOCALITY_SELECTMODE, UI_TOPBAR_AA, UI_SH_STYLE_SIZE_C, UI_SH_MAXSIZE, UI_SH_STYLE_BRIGHTNESS_C, UI_CAMERA_FOV, UI_AA_SETUP_COLORMODE } from "../../../ui/UIData.js";
+import { loadGD, UI_SH_MINSIZE, UI_SH_DISTPOWERMULT, UI_SH_MAXLUMINENCE, UI_SH_MINLUMINENCE, UI_SH_STYLE_BRIGHTNESS_B, UI_SH_STYLE_BRIGHTNESS_A, UI_SH_STYLE_SIZE_A, UI_SH_STYLE_SIZE_B, UI_AA_PLOT_SELECTRADIUS, UI_AA_PLOT_LOCALITY_SELECTMODE, UI_TOPBAR_AA, UI_SH_STYLE_SIZE_C, UI_SH_MAXSIZE, UI_SH_STYLE_BRIGHTNESS_C, UI_CAMERA_FOV, UI_AA_SETUP_COLORMODE } from "../../../ui/UIData.js";
 import { getAstronomyAtlasComponent } from "../../../ui/WindowManager.js";
 import { addVec3Dest, getVec3Length } from "../matrix_old.js";
-import { LineRenderJob } from "../../../rendering/model/LineRenderJob.js";
 import { PointLabelRenderJob } from "../../../rendering/model/PointLabelRenderJob.js";
+import { hsvToHex } from "../../../color/color.js";
+import { renderPointLabel } from "../../../rendering/renderFunctions.js";
 
 const Z_VISIBLE = 0b10;
 const FOV_VISIBLE = 0b01;
 
 export class StarSector {
-    constructor(sector, cartesian, cartesianBounds) {
+    constructor(starManager, sector, cartesian, cartesianBounds) {
+        this.starManager = starManager; 
         this.sector = sector;
         this.cartesian = cartesian;
         this.cartesianBounds = cartesianBounds;
@@ -254,134 +254,18 @@ export class StarSector {
         });
     }
 
-    debugRenderBounds() {
-        this._x1 = this.cartesianBounds[0];
-        this._x2 = this.cartesianBounds[3];
-        this._y1 = this.cartesianBounds[1];
-        this._y2 = this.cartesianBounds[4];
-        this._z1 = this.cartesianBounds[2];
-        this._z2 = this.cartesianBounds[5];
-
-        let lines = [
-            [
-                [this._x1, this._y1, this._z1],
-                [this._x2, this._y1, this._z1],
-                COLOR_BLUE
-            ],
-            [
-                [this._x2, this._y1, this._z1],
-                [this._x2, this._y2, this._z1],
-                COLOR_RED
-            ],
-            [
-                [this._x2, this._y2, this._z1],
-                [this._x1, this._y2, this._z1],
-                COLOR_BLUE
-            ],
-            [
-                [this._x1, this._y2, this._z1],
-                [this._x1, this._y1, this._z1],
-                COLOR_RED
-            ],
-            [
-                [this._x1, this._y1, this._z2],
-                [this._x2, this._y1, this._z2],
-                COLOR_BLUE
-            ],
-            [
-                [this._x2, this._y1, this._z2],
-                [this._x2, this._y2, this._z2],
-                COLOR_RED
-            ],
-            [
-                [this._x2, this._y2, this._z2],
-                [this._x1, this._y2, this._z2],
-                COLOR_BLUE
-            ],
-            [
-                [this._x1, this._y2, this._z2],
-                [this._x1, this._y1, this._z2],
-                COLOR_RED
-            ],
-            [
-                [this._x1, this._y1, this._z1],
-                [this._x1, this._y1, this._z2],
-                COLOR_OTHER_BLUE
-            ],
-            [
-                [this._x2, this._y1, this._z1],
-                [this._x2, this._y1, this._z2],
-                COLOR_OTHER_BLUE
-            ],
-            [
-                [this._x1, this._y2, this._z1],
-                [this._x1, this._y2, this._z2],
-                COLOR_OTHER_BLUE
-            ],
-            [
-                [this._x2, this._y2, this._z1],
-                [this._x2, this._y2, this._z2],
-                COLOR_OTHER_BLUE
-            ],
-            [
-                [this._x1, this._y1, this._z1],
-                [this._x2, this._y2, this._z2],
-                COLOR_GREEN
-            ],
-            [
-                [this._x1, this._y1, this._z1],
-                [(this._x2 + this._x1) / 2, (this._y1 + this._y2) / 2, (this._z1 + this._z2) / 2],
-                COLOR_WHITE
-            ],
-        ];
-
-        lines.forEach((line) => {
-            let start = line[0];
-            let end = line[1];
-            let color = line[2];
-            debugRenderLineOffsetPoints(start, end, color);
-        })
-
-        debugRenderLineOffsetPoints(
-            this._cameraDistRefPoint,
-            this.cartesian,
-            COLOR_VERY_FUCKING_RED
-        )
-        // debugRenderLineOffsetPoints(
-        //     [this.cartesianBounds[0], this.cartesianBounds[4], this.cartesianBounds[2]],
-        //     [this.cartesianBounds[3], this.cartesianBounds[4], this.cartesianBounds[2]]
-        // )
-        // debugRenderLineOffsetPoints(
-        //     [this.cartesianBounds[0], this.cartesianBounds[1], this.cartesianBounds[2]],
-        //     [this.cartesianBounds[0], this.cartesianBounds[4], this.cartesianBounds[5]]
-        // )
-        // debugRenderLineOffsetPoints(
-        //     [this.cartesianBounds[3], this.cartesianBounds[1], this.cartesianBounds[2]],
-        //     [this.cartesianBounds[3], this.cartesianBounds[4], this.cartesianBounds[5]]
-        // )
-
-    }
-
-
-
     renderSector() {
         if (this._renderScreen[2] > 0) {
             return;
         }
-        if (this.sectorRenderJob == null) {
-            this.sectorRenderJob = new PointLabelRenderJob();
-        }
-        this.sectorRenderJob.x = this._renderScreen[0];
-        this.sectorRenderJob.y = this._renderScreen[1];
-        this.sectorRenderJob.z = this._renderScreen[2];
-        this.sectorRenderJob.size = 10;
-        this.sectorRenderJob.color = COLOR_VERY_FUCKING_RED;
-        // this.sectorRenderJob.label = this.visibilityFlags + " | " + arrayOfVectorsToText([this.sector, this._cameraDistRefPoint]);
-        // this.sectorRenderJob.label = arrayOfNumbersToText([this._rootCameraDist, this._curCameraDist, this._relCameraDistBrightnessMult]);
-
-        addRenderJob(this.sectorRenderJob);
-
-        this.debugRenderBounds();
+        renderPointLabel(
+            this.starManager.worldManager.getContext(),
+        this._renderScreen[0],
+        this._renderScreen[1],
+        this._renderScreen[2],
+        10,
+        hsvToHex(30, 0.1, 1)
+        )
 
     }
 

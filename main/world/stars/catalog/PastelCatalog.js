@@ -1,5 +1,3 @@
-import { calculateStatistics } from "../../../common.js";
-import { getStarManager } from "../../../main.js";
 import { CatalogHandlerBase } from "./CatalogHandlerBase.js";
 
 export class PastelCatalog extends CatalogHandlerBase {

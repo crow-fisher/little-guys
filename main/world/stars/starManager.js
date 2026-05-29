@@ -1,18 +1,17 @@
-import { calculateStatistics, combineColorMultArr, combineColorMultArrDest, hsv2rgb, invlerp, lerp } from "../../common.js";
-import { NOSTAR } from "../../index.js";
-import { getStarManager } from "../../main.js";
-import { frameMatrixReset, tickFrameMatrix } from "../../rendering/camera.js";
-import { LineRenderJob } from "../../rendering/model/LineRenderJob.js";
-import { addRenderJob, getNoSortRenderJobsLength } from "../../rendering/rasterizer.js";
-import { WaterSquare } from "../../squares/WaterSquare.js";
-import { astronomyAtlasSetupChoices } from "../../ui/components/AstronomyAtlas/modes/AstronomyAtlasModeFuncSetup.js";
-import { loadGD, saveGD, UI_AA_LABEL_GRAPH, UI_AA_LABEL_STARS, UI_AA_PLOT_SELECT_NAMED_STARS, UI_AA_PLOT_XKEY, UI_AA_PLOT_YKEY, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_MIN, UI_AA_SETUP_POW, UI_AA_SETUP_WINDOW_SIZE, UI_CAMERA_OFFSET_VEC_DT, UI_SH_COLORSHIFT, UI_SH_MINLUMINENCE, UI_SH_MINMODE, UI_SH_TARGETNUMSTARS, UI_STARMAP_CONSTELLATION_BRIGHTNESS } from "../../ui/UIData.js";
+import { calculateStatistics, combineColorMultArrDest, hsv2rgb, invlerp, lerp } from "../../common.js";
+import { renderLine } from "../../rendering/renderFunctions.js";
+import { loadGD, saveGD, UI_AA_LABEL_GRAPH, UI_AA_LABEL_STARS, UI_AA_PLOT_SELECT_NAMED_STARS, UI_AA_PLOT_XKEY, UI_AA_PLOT_YKEY, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_MIN, UI_AA_SETUP_POW, UI_AA_SETUP_WINDOW_SIZE, UI_SH_COLORSHIFT, UI_SH_MINLUMINENCE, UI_SH_MINMODE, UI_SH_TARGETNUMSTARS, UI_STARMAP_CONSTELLATION_BRIGHTNESS } from "../../ui/UIData.js";
 import { HipparcosCatalog } from "./catalog/HipparcosCatalog.js";
 import { PastelCatalog } from "./catalog/PastelCatalog.js";
 import { StellariumCatalog } from "./catalog/StellariumCatalog.js";
-import { getVec3Length } from "./matrix_old.js";
 import { StarSector } from "./model/StarSector.js";
-import { adjustBoundsToIncludePoint, cartesianToSectorIndex, getSectorSize, sectorToCartesian, sectorToCartesianBounds } from "./starManagerUtil.js";
+import { adjustBoundsToIncludePoint, cartesianToSectorIndex, sectorToCartesianBounds } from "./starManagerUtil.js";
+
+export const astronomyAtlasSetupChoices = [
+    [["default", "Temperature"], ["magnitude", "Rel. Mag"], ["magnitude_absolute", "Abs. Mag"]],
+    [["p_feH", "Metallicity"], ["parallax", "Parallax"], ["parsecs_log", "Parsecs (log)"]],
+    [["bv", "B-V"], ["asc", "Ascension"], ["dec", "Declination"]]
+];
 
 export class StarManager {
     constructor(worldManager) {
@@ -23,12 +22,15 @@ export class StarManager {
         this.hdMap = new Map(); // HD id
         this.constellationStars = new Set();
 
+        this.paramStatistics = new Map();
+
         this.numSectorsArr = 1;
         this.bounds = [-1, -1, -1, 1, 1, 1]; // xMin, yMin, zMin, xMax, yMax, zMax. 
         this.loadData();
     }
 
     minLumensRuntime() {
+        return;
         if (loadGD(UI_SH_MINMODE) != 0) {
             return;
         }
@@ -53,7 +55,6 @@ export class StarManager {
         let aY = loadGD(UI_AA_PLOT_YKEY);
         let aC = loadGD(UI_AA_SETUP_COLORMODE);
 
-
         let stars = new Array();
         this.iterateOnSectors((sector) => stars.push(...sector.loadedStars));
 
@@ -64,23 +65,18 @@ export class StarManager {
     }
 
     reprocessStarAltColoration() {
-        if (getStarManager().paramStatistics == null) {
-            return;
-        }
-
         this._rac_curKey = loadGD(UI_AA_SETUP_COLORMODE);
         if (this._rac_curKey == null || this._rac_curKey == "default") {
             return;
         }
-        this._rac_st = getStarManager().paramStatistics.get(this._rac_curKey);
+        this._rac_st = this.paramStatistics.get(this._rac_curKey);
 
         this._rac_minValue = loadGD(UI_AA_SETUP_MIN);
         this._rac_windowSize = loadGD(UI_AA_SETUP_WINDOW_SIZE);
         this._rac_maxValue = lerp(this._rac_minValue, 1, this._rac_windowSize);
         this._rac_powValue = loadGD(UI_AA_SETUP_POW);
 
-        let sq = new WaterSquare(-1, -1);
-        let hsv = sq.getColorBaseHsv();
+        let hsv = [70, 0.5, 1];
         let hsv2 = [hsv[0] + loadGD(UI_SH_COLORSHIFT), hsv[1], hsv[2]];
 
         let rgb = hsv2rgb(...hsv);
@@ -127,9 +123,6 @@ export class StarManager {
 
 
     render() { 
-        if (NOSTAR) {
-            return;
-        }
         this.iterateOnSectors((sector) => sector.renderMain());
         this.renderConstellations();
         this.minLumensRuntime();
@@ -156,6 +149,7 @@ export class StarManager {
         let curSector = this.sectors.get(star.sector[0]).get(star.sector[1]);
         if (!curSector.has(star.sector[2])) {
             curSector.set(star.sector[2], new StarSector(
+                this,
                 star.sector,
                 star.cartesian,
                 sectorToCartesianBounds(this.bounds, star.sector, this.numSectorsArr)
@@ -192,10 +186,10 @@ export class StarManager {
 
         let hipCatalog = new HipparcosCatalog((star) => this.loadStar(star), (constellation) => this.loadConstellation(constellation));
         let stelCatalog = new StellariumCatalog((star) => this.loadStar(star), (constellation) => this.loadConstellation(constellation));
-        let pastelCatalog = new PastelCatalog
+        // let pastelCatalog = new PastelCatalog
         hipCatalog.loadData(() => {
             this.processDataStar();
-            pastelCatalog.loadData(() => this.processStarStatistics());
+            // pastelCatalog.loadData(() => this.processStarStatistics());
             // stelCatalog.loadData()
         })
     };
@@ -221,7 +215,6 @@ export class StarManager {
 
     processStarStatistics() {
         let params = new Array();
-        this.paramStatistics = new Map();
 
         for (let i = 0; i < astronomyAtlasSetupChoices.length; i++) {
             let row = astronomyAtlasSetupChoices[i];
@@ -256,15 +249,15 @@ export class StarManager {
                 if (fromStar._screen[2] < 0 || toStar._screen[2] < 0) {
                     return;
                 }
-                addRenderJob(
-                    new LineRenderJob(
-                        fromStar._renderScreen,
-                        toStar._renderScreen,
-                        loadGD(UI_STARMAP_CONSTELLATION_BRIGHTNESS),
-                        fromStar._color,
-                        fromStar._screen[2]
-                    ), false);
-            }
-        })
-    }
+                renderLine(
+                    this.worldManager.getContext(),
+                    fromStar._renderScreen,
+                    toStar._renderScreen,
+                    loadGD(UI_STARMAP_CONSTELLATION_BRIGHTNESS),
+                    fromStar._color
+                );
+            }})
+    };
+
+    
 }
