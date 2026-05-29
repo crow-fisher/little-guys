@@ -31,7 +31,7 @@ export class MouseManager {
     onwheel(e) {
         e.preventDefault();
         saveGD(UI_CAMERA_FOV, loadGD(UI_CAMERA_FOV) + e.deltaY / 40);
-    }
+    }   w
 
     mousemove(e) {
         this.offset = this.getOffset(e);

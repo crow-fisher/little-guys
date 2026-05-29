@@ -184,7 +184,12 @@ export class TopBarComponent {
         }
 
         let x = curMouseLocation.x;
-        let y = curMouseLocation.y - this.phoneModeOffset;
+        let y = curMouseLocation.y;
+
+        if (y > this.ySize()) {
+            return;
+        }
+        
         let keys = Object.keys(this.elements);
         keys.map(parseFloat).forEach((key) => {
             let elements = this.elements[key];

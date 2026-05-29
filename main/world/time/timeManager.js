@@ -35,7 +35,7 @@ export class TimeManager {
     }
 
     getTimeScale() {
-        return (2.8 ** (this.curTimeScale - 1));
+        return (3.8 ** (this.curTimeScale - 1));
     }
 
     update() { 
