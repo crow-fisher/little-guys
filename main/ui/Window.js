@@ -1,17 +1,14 @@
 import { getBaseUISize, getCanvasHeight, getCanvasWidth } from "../canvas.js";
 import { getActiveClimate } from "../world/climate/climateManager.js";
 import { COLOR_BLACK } from "../colors.js";
-import { MAIN_CONTEXT } from "../index.js";
-import { getLastMoveOffset, isLeftMouseClicked } from "../mouse.js";
+import { Container } from "./Container.js";
+import { hsvToHex } from "../color/color.js";
 
 export class Window {
-    constructor(posX, posY, padding, dir, grounded, renderBackground=true) {
+    constructor(uiManager, dir, grounded=false) {
+        this.uiManager = uiManager;
         this.container = null;
-        this.posX = posX;
-        this.posY = posY;
-        this.padding = padding;
         this.grounded = grounded;
-        this.renderBackground = renderBackground;
 
         this.sizeX = 0;
         this.sizeY = 0;
@@ -27,18 +24,25 @@ export class Window {
         this.clickStartY = -1;
     }
 
-    render() {
-        this.renderWindowFrame();
+    isFrameButtonPressed(b) {
+        return this.uiManager.isFrameButtonPressed(b);
+    }
+
+    getContext() {
+        return this.uiManager.getContext();
+    }
+
+    render(posX, posY) {
         let containerSize = this.container.size();
         this.sizeX = containerSize[0];
         this.sizeY = containerSize[1];
-        this.container.render(this.posX, this.posY);
+
+        this.renderWindowFrame();
+        this.container.render(posX, posY);
         this.renderWindowBorder()
     }
 
     renderWindowBorder() {
-        if (!this.renderBackground)
-            return;
         let size = getBaseUISize() * 0.8;
 
         let py = this.posY + this.sizeY;
@@ -52,10 +56,10 @@ export class Window {
         let xFactor = (((mx - px) / mx));
         let sizeXProcessed = size * xFactor;
 
-        MAIN_CONTEXT.fillStyle = getActiveClimate().getUIColorInactiveCustom(.95);
+        this.uiManager.getContext().fillStyle = getActiveClimate().getUIColorInactiveCustom(.95);
 
         // bottom rectangle
-        MAIN_CONTEXT.fillRect(
+        this.uiManager.getContext().fillRect(
             this.posX,
             this.posY + this.sizeY,
             this.sizeX,
@@ -63,35 +67,35 @@ export class Window {
         );
         // bottom triangle
 
-        MAIN_CONTEXT.beginPath();
-        MAIN_CONTEXT.moveTo(this.posX + this.sizeX, this.posY + this.sizeY);
-        MAIN_CONTEXT.lineTo(this.posX + this.sizeX + sizeXProcessed, this.posY + this.sizeY + sizeYProcessed);
-        MAIN_CONTEXT.lineTo(this.posX + this.sizeX, this.posY + this.sizeY + sizeYProcessed);
-        MAIN_CONTEXT.lineTo(this.posX + this.sizeX, this.posY + this.sizeY);
-        MAIN_CONTEXT.closePath();
-        MAIN_CONTEXT.fill();
+        this.uiManager.getContext().beginPath();
+        this.uiManager.getContext().moveTo(this.posX + this.sizeX, this.posY + this.sizeY);
+        this.uiManager.getContext().lineTo(this.posX + this.sizeX + sizeXProcessed, this.posY + this.sizeY + sizeYProcessed);
+        this.uiManager.getContext().lineTo(this.posX + this.sizeX, this.posY + this.sizeY + sizeYProcessed);
+        this.uiManager.getContext().lineTo(this.posX + this.sizeX, this.posY + this.sizeY);
+        this.uiManager.getContext().closePath();
+        this.uiManager.getContext().fill();
 
         // right side
 
-        MAIN_CONTEXT.fillStyle = getActiveClimate().getUIColorInactiveCustom((.83 - (xFactor * 0.1)));
-        MAIN_CONTEXT.fillRect(
+        this.uiManager.getContext().fillStyle = getActiveClimate().getUIColorInactiveCustom((.83 - (xFactor * 0.1)));
+        this.uiManager.getContext().fillRect(
             this.posX + this.sizeX,
             this.posY,
             sizeXProcessed,
             this.sizeY
         );
 
-        MAIN_CONTEXT.beginPath();
-        MAIN_CONTEXT.moveTo(this.posX + this.sizeX, this.posY + this.sizeY);
-        MAIN_CONTEXT.lineTo(this.posX + this.sizeX + sizeXProcessed, this.posY + this.sizeY + sizeYProcessed);
-        MAIN_CONTEXT.lineTo(this.posX + this.sizeX + sizeXProcessed, this.posY + this.sizeY);
-        MAIN_CONTEXT.lineTo(this.posX + this.sizeX, this.posY + this.sizeY);
-        MAIN_CONTEXT.closePath();
-        MAIN_CONTEXT.fill();
+        this.uiManager.getContext().beginPath();
+        this.uiManager.getContext().moveTo(this.posX + this.sizeX, this.posY + this.sizeY);
+        this.uiManager.getContext().lineTo(this.posX + this.sizeX + sizeXProcessed, this.posY + this.sizeY + sizeYProcessed);
+        this.uiManager.getContext().lineTo(this.posX + this.sizeX + sizeXProcessed, this.posY + this.sizeY);
+        this.uiManager.getContext().lineTo(this.posX + this.sizeX, this.posY + this.sizeY);
+        this.uiManager.getContext().closePath();
+        this.uiManager.getContext().fill();
     }
 
     update() {
-        let curMouseLocation = getLastMoveOffset();
+        let curMouseLocation = this.uiManager.mousePosition();
         if (curMouseLocation == null) {
             return;
         }
@@ -108,10 +112,8 @@ export class Window {
     }
 
     renderWindowFrame() {
-        if (!this.renderBackground)
-            return;
-        MAIN_CONTEXT.fillStyle = COLOR_BLACK;
-        MAIN_CONTEXT.fillRect(
+        this.uiManager.getContext().fillStyle = this.uiManager.getColorInactiveDark();
+        this.uiManager.getContext().fillRect(
             this.posX - this.padding, this.posY - this.padding, 
             this.sizeX + this.padding * 2, 
             this.sizeY + this.padding * 2);
@@ -133,7 +135,7 @@ export class Window {
         }
         this.hovered = true;
 
-        if (isLeftMouseClicked()) {
+        if (this.uiManager.isFrameButtonPressed(b)) {
             if (this.clicked) {
                 this.posX = Math.max(0, Math.min(getCanvasWidth() - this.sizeX, x - this.clickStartX));
                 this.posY = Math.max(getBaseUISize() * 3, Math.min(getCanvasHeight() - this.sizeY, y - this.clickStartY));

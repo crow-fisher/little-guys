@@ -1,19 +1,15 @@
 import { WindowElement } from "./Window.js";
 
 export class Container {
-    constructor(window, padding, dir) {
+    constructor(window, dir) {
         this.window = window;
-        this.elements = new Array();
-        this.padding = padding;
+        this.dir = dir;
 
+        this.elements = new Array();
         this.sizeX = 1;
         this.sizeY = 1;
         this.endX = 0;
         this.endY = 0;
-        this.dir = dir;
-
-        this.clickStartX = -1;
-        this.clickStartY = -1;
     }
 
     addElement(newElement) {

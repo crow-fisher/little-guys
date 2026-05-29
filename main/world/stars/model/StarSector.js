@@ -74,7 +74,7 @@ export class StarSector {
         let ret;
         this.renderPrepare();
 
-        if (this.cs.isVisibleOnScreen()) {
+        if (true || this.cs.isVisibleOnScreen()) {
             ret = this.renderStars(
                 this.getLuminanceParams(),
                 this.getSizeParams(),
@@ -106,6 +106,8 @@ export class StarSector {
     renderPrepare() {
         // this.setCurCameraPoint();
         // this.cs.setWorld(this.cameraDistRefPoint);
+
+        this.cs.process();
 
         this.curCameraDist = this.cs.distToCamera;
         this.relCameraDist = (this.curCameraDist / this.rootCameraDist);
