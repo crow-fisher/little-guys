@@ -123,7 +123,7 @@ export class StarManager {
 
 
     render() { 
-        this.iterateOnSectors((sector) => sector.render());
+        console.log("Stars rendered: ", this.iterateOnSectorsAcc((sector) => sector.render()));
         this.renderConstellations();
         this.minLumensRuntime();
     }
@@ -165,6 +165,17 @@ export class StarManager {
                     (z) => func(this.sectors.get(x).get(y).get(z))
                 )));
     }
+
+    iterateOnSectorsAcc(func) {
+        let acc = 0;
+        this.sectors.keys().forEach(
+            (x) => this.sectors.get(x).keys().forEach(
+                (y) => this.sectors.get(x).get(y).keys().forEach(
+                    (z) => acc += func(this.sectors.get(x).get(y).get(z))
+                )));
+        return acc;
+    }
+
 
     loadStar(star) {
         this.loadedStars.push(star);

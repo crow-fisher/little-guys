@@ -103,9 +103,7 @@ export class Star {
         }
         renderPointLabel(
             this.starManager.worldManager.getContext(),
-            this._renderScreen,
-            this._renderScreen,
-            this._screen[2],
+            ...this.cs.renderScreen,
             this._size,
             this.renderColor,
             this.starLabel

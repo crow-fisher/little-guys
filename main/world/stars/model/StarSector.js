@@ -10,7 +10,7 @@ const FOV_VISIBLE = 0b01;
 
 export class StarSector {
     constructor(starManager, sector, cartesian, cartesianBounds) {
-        this.starManager = starManager; 
+        this.starManager = starManager;
         this.sector = sector;
         this.cartesian = cartesian;
         this.cartesianBounds = cartesianBounds;
@@ -71,10 +71,11 @@ export class StarSector {
             return;
         }
 
+        let ret;
         this.renderPrepare();
 
         if (this.cs.isVisibleOnScreen()) {
-            this.renderStars(
+            ret = this.renderStars(
                 this.getLuminanceParams(),
                 this.getSizeParams(),
                 this.getBrightnessParams(),
@@ -91,7 +92,8 @@ export class StarSector {
                 hsvToHex(0, 0, 1),
                 ""
             )
-        }
+        };
+        return ret;
 
     }
 
@@ -102,8 +104,8 @@ export class StarSector {
     }
 
     renderPrepare() {
-        this.setCurCameraPoint();
-        this.cs.setWorld(this.cameraDistRefPoint);
+        // this.setCurCameraPoint();
+        // this.cs.setWorld(this.cameraDistRefPoint);
 
         this.curCameraDist = this.cs.distToCamera;
         this.relCameraDist = (this.curCameraDist / this.rootCameraDist);
@@ -133,45 +135,47 @@ export class StarSector {
     }
 
     renderStars(luminanceParams, sizeParams, brightnessParams, localitySelectParams, renderMode) {
+        let ret = 0;
         for (let i = 0, bucketLumens; i < this.buckets.length; i++) {
             bucketLumens = this.bucketLumensCutoffs.at(i) * this.relCameraDistBrightnessMult;
             if (bucketLumens >= luminanceParams[0]) {
-                this.prepareBucket(this.buckets.at(i));
-
-                if (this.recalculateStarColorFlag) {
-                    this.processBucketSizeColor(this.buckets.at(i), luminanceParams, sizeParams, brightnessParams, localitySelectParams, renderMode);
-                }
-
-                this.renderBucket(this.buckets.at(i), luminanceParams, renderMode);
-            } else {
+                ret += this.prepareAndRenderBucket(this.buckets.at(i), luminanceParams, sizeParams, brightnessParams, localitySelectParams, renderMode);
             }
         };
         if (this.recalculateStarColorFlag) {
             this.prevCameraDist = this.curCameraDist;
             this.recalculateStarColorFlag = false;
         }
+        return ret;
+    }
+
+    prepareAndRenderBucket(bucket, luminanceParams, sizeParams, brightnessParams, localitySelectParams, renderMode) {
+        bucket.forEach((star) => star.process());   
+        let ret = 0;
+        bucket.filter((star) => star.cs.isVisibleOnScreen()).forEach((star) => {
+            if (true || this.recalculateStarColorFlag) {
+                star._curCameraDistance = star.cs.distToCamera;
+                star._relCameraDist = (star._curCameraDistance / star._rootCameraDistance);
+                star._relCameraDistBrightnessMult = 1 / (star._relCameraDist ** luminanceParams[2]);
+
+                star._relLumens = star.lumens * star._relCameraDistBrightnessMult;
+
+                star._relLumensLog = Math.log(star._relLumens);
+                star._relLumensRange = Math.max(0, Math.min(1, invlerp(luminanceParams[0], luminanceParams[1], star._relLumens)));
+
+                star._size = this.processStarSize(star, sizeParams);
+                star.renderColor = this.processStarColor(star, brightnessParams, renderMode);
+                star.doLocalitySelect(...localitySelectParams)
+                star.starLabel = star.localitySelect ? star.id : null;
+            }
+            star.render();
+        });
+
+        return ret;
     }
 
     prepareBucket(bucket) {
         bucket.forEach((star) => star.process());
-    }
-
-    processBucketSizeColor(bucket, luminanceParams, sizeParams, brightnessParams, localitySelectParams, renderMode) {
-        bucket.forEach((star) => {
-            star._curCameraDistance = star.cs.distToCamera;
-            star._relCameraDist = (star._curCameraDistance / star._rootCameraDistance);
-            star._relCameraDistBrightnessMult = 1 / (star._relCameraDist ** luminanceParams[2]);
-
-            star._relLumens = star.lumens * star._relCameraDistBrightnessMult * this._curFovMult;
-
-            star._relLumensLog = Math.log(star._relLumens);
-            star._relLumensRange = Math.max(0, Math.min(1, invlerp(luminanceParams[0], luminanceParams[1], star._relLumens)));
-
-            star._size = this.processStarSize(star, sizeParams);
-            star.renderColor = this.processStarColor(star, brightnessParams, renderMode);
-            star.doLocalitySelect(...localitySelectParams)
-            star.starLabel = star.localitySelect ? star.id : null;
-        });
     }
 
     renderBucket(bucket, luminenceParams, renderMode) {
