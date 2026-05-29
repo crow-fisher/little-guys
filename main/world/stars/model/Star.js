@@ -42,7 +42,7 @@ export class Star {
         this.magnitude_absolute = (magnitude + 5) - (5 * Math.log10(this.parsecs));
         
         this.cartesian = sphericalToCartesian(-this.asc, -this.dec, this.parsecs);
-        this.cs = new CoordinateSet(this.cartesian);
+        this.cs = new CoordinateSet(this.starManager.getCameraManager(), this.cartesian);
         this.lumens = brightnessValueToLumens(this.magnitude);
         this.sector = null;
 

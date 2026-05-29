@@ -17,7 +17,7 @@ export class StarSector {
         this.cs = new CoordinateSet(this.starManager.getCameraManager(), this.cartesian);
 
         this.rootCameraDist = this.cs.distToCamera;
-        this.curCameraDist = this._rootCameraDist;
+        this.curCameraDist = this.rootCameraDist;
         this.prevCameraDist = 0;
         this.recalculateStarColorFlag = true;
 
@@ -70,26 +70,26 @@ export class StarSector {
         if (!this.ready) {
             return;
         }
-        this.setCurCameraPoint();
-        this.cs.setWorld(this.cameraDistRefPoint);
+
+        this.renderPrepare();
 
         if (this.cs.isVisibleOnScreen()) {
-            // this.renderStars(
-            //     this.getLuminanceParams(),
-            //     this.getSizeParams(),
-            //     this.getBrightnessParams(),
-            //     this.getLocalitySelectParams(),
-            //     this.getRenderMode()
-            // );
+            this.renderStars(
+                this.getLuminanceParams(),
+                this.getSizeParams(),
+                this.getBrightnessParams(),
+                this.getLocalitySelectParams(),
+                this.getRenderMode()
+            );
 
             renderPointLabel(
                 this.starManager.worldManager.getContext(),
                 this.cs.renderScreen[0],
                 this.cs.renderScreen[1],
                 this.cs.renderScreen[2],
-                8,
+                800 / this.cs.distToCamera,
                 hsvToHex(0, 0, 1),
-                "star sector"
+                ""
             )
         }
 
@@ -102,46 +102,13 @@ export class StarSector {
     }
 
     renderPrepare() {
-        if (loadGD(UI_TOPBAR_AA)) {
-            this.loadedStars.forEach((star) => {
-                star._renderedThisFrame = false;
-                star._preparedThisFrame = false;
-            });
-        }
-
-        this._curCameraPosition = gfc().UI_CAMERA_OFFSET_VEC;
-        this._curFovMult = 100 / loadGD(UI_CAMERA_FOV);
-        this._cw = getCanvasWidth();
-        this._ch = getCanvasHeight();
-        this._max = Math.max(this._cw, this._ch);
-        this._yOffset = (this._max / this._cw) / 2;
-        this._xOffset = (this._max / this._ch) / 2;
-        this._s = Math.min(this._cw, this._ch);
-
         this.setCurCameraPoint();
+        this.cs.setWorld(this.cameraDistRefPoint);
 
-        addVec3Dest(this.cartesian, this._curCameraPosition, this._cameraOffset);
-        cartesianToCamera(this._cameraOffset, this._camera);
-        cameraToScreen(this._camera, this._screen);
-        screenToRenderScreen(this._screen, this._renderNorm, this._renderScreen, this._xOffset, this._yOffset, this._s);
-
-        this._rootCameraDist = getVec3Length(this.cameraDistRefPoint);
-        this._curCameraDist = getVec3Length(this._cameraOffset);
-        this._relCameraDist = (this._curCameraDist / this._rootCameraDist);
-        this._relCameraDistBrightnessMult = 1 / (this._relCameraDist ** loadGD(UI_SH_DISTPOWERMULT));
-        this._recalculateStarColorFlag |= (Math.min(this._curCameraDist, this._prevCameraDist) / Math.max(this._curCameraDist, this._prevCameraDist)) < 0.97;
-        this._recalculateStarColorFlag |= (Math.min(this._curFovMult, this._prevFovMult) / Math.max(this._curFovMult, this._prevFovMult)) < 0.97;
-
-        this.visibilityFlags = 0;
-        if (this._renderScreen[0] < 0 || this._renderScreen[0] > getCanvasWidth()) {
-            this.visibilityFlags |= FOV_VISIBLE;
-        }
-        if (this._renderScreen[1] < 0 || this._renderScreen[1] > getCanvasHeight()) {
-            this.visibilityFlags |= FOV_VISIBLE;
-        }
-        if (this._renderScreen[2] > 0) {
-            this.visibilityFlags |= Z_VISIBLE;
-        }
+        this.curCameraDist = this.cs.distToCamera;
+        this.relCameraDist = (this.curCameraDist / this.rootCameraDist);
+        this.relCameraDistBrightnessMult = 1 / (this.relCameraDist ** loadGD(UI_SH_DISTPOWERMULT));
+        this.recalculateStarColorFlag |= (Math.min(this.curCameraDist, this.prevCameraDist) / Math.max(this.curCameraDist, this.prevCameraDist)) < 0.97;
     }
 
     processRange(x, a, b, c) {
@@ -165,59 +132,40 @@ export class StarSector {
         }
     }
 
-    renderStars(luminenceParams, sizeParams, brightnessParams, localitySelectParams, renderMode) {
-        let bucketLumens;
-
-        let recalculatingColor = (this._recalculateStarColorFlag);
-        if (recalculatingColor) {
-            this._recalculateStarColorFlag = false;
-            getAstronomyAtlasComponent().plotStarScatter.flagRepreparePoints();
-        }
-
-        for (let i = 0; i < this.buckets.length; i++) {
-            bucketLumens = this.bucketLumensCutoffs.at(i) * this._relCameraDistBrightnessMult * this._curFovMult;
-            if (bucketLumens >= luminenceParams[0]) {
+    renderStars(luminanceParams, sizeParams, brightnessParams, localitySelectParams, renderMode) {
+        for (let i = 0, bucketLumens; i < this.buckets.length; i++) {
+            bucketLumens = this.bucketLumensCutoffs.at(i) * this.relCameraDistBrightnessMult;
+            if (bucketLumens >= luminanceParams[0]) {
                 this.prepareBucket(this.buckets.at(i));
 
-                if (recalculatingColor) {
-                    this.processBucketSizeColor(this.buckets.at(i), luminenceParams, sizeParams, brightnessParams, localitySelectParams, renderMode);
-                    this._prevCameraDist = this._curCameraDist;
+                if (this.recalculateStarColorFlag) {
+                    this.processBucketSizeColor(this.buckets.at(i), luminanceParams, sizeParams, brightnessParams, localitySelectParams, renderMode);
                 }
 
-                this.renderBucket(this.buckets.at(i), luminenceParams, renderMode);
+                this.renderBucket(this.buckets.at(i), luminanceParams, renderMode);
             } else {
             }
         };
-        
-        if (recalculatingColor) {
-            getAstronomyAtlasComponent().plotStarScatter.flagRepreparePoints();
+        if (this.recalculateStarColorFlag) {
+            this.prevCameraDist = this.curCameraDist;
+            this.recalculateStarColorFlag = false;
         }
     }
 
     prepareBucket(bucket) {
-        bucket.forEach((star) => {
-            addVec3Dest(star.cartesian, this._curCameraPosition, star._offset);
-            cartesianToCamera(star._offset, star._camera);
-            cameraToScreen(star._camera, star._screen);
-            screenToRenderScreen(star._screen, star._renderNorm, star._renderScreen, this._xOffset, this._yOffset, this._s);
-            star._preparedThisFrame = true;
-        });
+        bucket.forEach((star) => star.process());
     }
 
-    processBucketSizeColor(bucket, luminenceParams, sizeParams, brightnessParams, localitySelectParams, renderMode) {
+    processBucketSizeColor(bucket, luminanceParams, sizeParams, brightnessParams, localitySelectParams, renderMode) {
         bucket.forEach((star) => {
-            if (renderMode && star._rac_val == null) {
-                return;
-            }
-
-            star._curCameraDistance = getVec3Length(star._offset);
+            star._curCameraDistance = star.cs.distToCamera;
             star._relCameraDist = (star._curCameraDistance / star._rootCameraDistance);
-            star._relCameraDistBrightnessMult = 1 / (star._relCameraDist ** luminenceParams[2]);
+            star._relCameraDistBrightnessMult = 1 / (star._relCameraDist ** luminanceParams[2]);
 
             star._relLumens = star.lumens * star._relCameraDistBrightnessMult * this._curFovMult;
 
             star._relLumensLog = Math.log(star._relLumens);
-            star._relLumensRange = Math.max(0, Math.min(1, invlerp(luminenceParams[0], luminenceParams[1], star._relLumens)));
+            star._relLumensRange = Math.max(0, Math.min(1, invlerp(luminanceParams[0], luminanceParams[1], star._relLumens)));
 
             star._size = this.processStarSize(star, sizeParams);
             star.renderColor = this.processStarColor(star, brightnessParams, renderMode);
@@ -227,12 +175,10 @@ export class StarSector {
     }
 
     renderBucket(bucket, luminenceParams, renderMode) {
-        let ch = getCanvasHeight(), cw = getCanvasWidth();
         bucket.forEach((star) => {
             if (renderMode && star._rac_val == null) {
                 return;
             }
-            
             if (star._renderScreen[2] < 0 && star._relLumensRange > 0) {
                 if (star._renderScreen[0] > 0 && star._renderScreen[0] < cw && star._renderScreen[1] > 0 && star._renderScreen[1] < ch) {
                     star.render();
@@ -248,7 +194,7 @@ export class StarSector {
         star.sector = this;
     }
 
-    procesLoadedStars() {
+    processLoadedStars() {
         this.lumensSt = calculateStatistics(this.loadedStars.map((star) => star.lumens));
         this.loadedStars.sort((a, b) => a.lumens - b.lumens);
 

@@ -210,7 +210,7 @@ export class StarManager {
             this.addStarToSector(star);
         });
 
-        this.iterateOnSectors((sector) => sector.procesLoadedStars());
+        this.iterateOnSectors((sector) => sector.processLoadedStars());
     }
 
     processStarStatistics() {
