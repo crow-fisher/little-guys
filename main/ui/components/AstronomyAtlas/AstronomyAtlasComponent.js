@@ -1,9 +1,6 @@
 import { Component } from "../../Component.js";
-import { Container } from "../../Container.js";
-import { Text } from "../../elements/Text.js";
 import { TextBackground } from "../../elements/TextBackground.js";
-import { Toggle } from "../../elements/Toggle.js";
-import { UI_CENTER, UI_AA_MODE_SELECT, UI_AA_MODE_PLOT, UI_AA_MODE_SETUP, UI_AA_MODE_STYLE, UI_AA_MODE_LABEL } from "../../UIData.js";
+import { UI_CENTER } from "../../UIData.js";
 
 export class AstronomyAtlasComponent extends Component {
     constructor(uiManager) {
@@ -15,14 +12,14 @@ export class AstronomyAtlasComponent extends Component {
         container.addElement(new TextBackground(this.window, this.sizeX, h1, UI_CENTER, () => this.uiManager.getColorInactive(), .75, "astronomy atlas"))
         container.addElement(new TextBackground(this.window, this.sizeX, this.uiManager.getBaseUISize() * 0.35, UI_CENTER, () => this.uiManager.getColorInactive(), 0.75, ""));
  
-        let modeSelectRow = new Container(this.window, 0);
-        container.addElement(modeSelectRow);
+        // let modeSelectRow = new Container(this.window, 0);
+        // container.addElement(modeSelectRow);
 
-        modeSelectRow.addElement(new Toggle(this.window, this.fifth, h2, UI_CENTER, UI_AA_MODE_PLOT, "plot", () => this.uiManager.getColorInactive(0.55), () => this.uiManager.getColorActive(0.55)));
-        modeSelectRow.addElement(new Toggle(this.window, this.fifth, h2, UI_CENTER, UI_AA_MODE_LABEL, "label", () => this.uiManager.getColorInactive(0.55), () => this.uiManager.getColorActive(0.55)));
-        modeSelectRow.addElement(new Toggle(this.window, this.fifth, h2, UI_CENTER, UI_AA_MODE_SETUP, "setup", () => this.uiManager.getColorInactive(0.55), () => this.uiManager.getColorActive(0.55)));
-        modeSelectRow.addElement(new Toggle(this.window, this.fifth, h2, UI_CENTER, UI_AA_MODE_STYLE, "style", () => this.uiManager.getColorInactive(0.55), () => this.uiManager.getColorActive(0.55)));
-        modeSelectRow.addElement(new Toggle(this.window, this.fifth, h2, UI_CENTER, UI_AA_MODE_SELECT, "select", () => this.uiManager.getColorInactive(0.55), () => this.uiManager.getColorActive(0.55)));
+        // modeSelectRow.addElement(new Toggle(this.window, this.fifth, h2, UI_CENTER, UI_AA_MODE_PLOT, "plot", () => this.uiManager.getColorInactive(0.55), () => this.uiManager.getColorActive(0.55)));
+        // modeSelectRow.addElement(new Toggle(this.window, this.fifth, h2, UI_CENTER, UI_AA_MODE_LABEL, "label", () => this.uiManager.getColorInactive(0.55), () => this.uiManager.getColorActive(0.55)));
+        // modeSelectRow.addElement(new Toggle(this.window, this.fifth, h2, UI_CENTER, UI_AA_MODE_SETUP, "setup", () => this.uiManager.getColorInactive(0.55), () => this.uiManager.getColorActive(0.55)));
+        // modeSelectRow.addElement(new Toggle(this.window, this.fifth, h2, UI_CENTER, UI_AA_MODE_STYLE, "style", () => this.uiManager.getColorInactive(0.55), () => this.uiManager.getColorActive(0.55)));
+        // modeSelectRow.addElement(new Toggle(this.window, this.fifth, h2, UI_CENTER, UI_AA_MODE_SELECT, "select", () => this.uiManager.getColorInactive(0.55), () => this.uiManager.getColorActive(0.55)));
 
         // let addSpacing = () => container.addElement(new Text(this.window, this.sizeX, br, UI_CENTER, ""));
 

@@ -1,7 +1,6 @@
-import { getBaseUISize } from "../../canvas.js";
-import { COLOR_BLACK, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
+import { COLOR_BLACK } from "../../colors.js";
 import { UI_BIGDOTHOLLOW, UI_BIGDOTSOLID } from "../../common.js";
-import { GAMEDATA, getMapEntry, loadGD, saveGD, saveMapEntry, UI_CENTER } from "../UIData.js";
+import { GAMEDATA, getMapEntry, saveMapEntry, UI_CENTER } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class Toggle extends WindowElement {

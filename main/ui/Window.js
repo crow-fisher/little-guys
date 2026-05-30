@@ -1,9 +1,3 @@
-import { getBaseUISize, getCanvasHeight, getCanvasWidth } from "../canvas.js";
-import { getActiveClimate } from "../world/climate/climateManager.js";
-import { COLOR_BLACK } from "../colors.js";
-import { Container } from "./Container.js";
-import { hsvToHex } from "../color/color.js";
-
 export class Window {
     constructor(uiManager, dir, grounded=false) {
         this.uiManager = uiManager;
@@ -32,6 +26,10 @@ export class Window {
         return this.uiManager.getContext();
     }
 
+    getBaseUISize() {
+        return this.uiManager.getBaseUISize();
+    }
+
     render(posX, posY) {
         let containerSize = this.container.size();
         this.sizeX = containerSize[0];
@@ -43,20 +41,20 @@ export class Window {
     }
 
     renderWindowBorder() {
-        let size = getBaseUISize() * 0.8;
+        let size = this.uiManager.getBaseUISize() * 0.8;
 
         let py = this.posY + this.sizeY;
-        let my = getCanvasHeight() * 1.5;
+        let my = this.uiManager.getHeight() * 1.5;
 
         let yFactor = ((my - py) / my);
         let sizeYProcessed = size * yFactor;
 
         let px = this.posX + this.sizeX;
-        let mx = getCanvasWidth() * 1.5; 
+        let mx = this.uiManager.getWidth() * 1.5; 
         let xFactor = (((mx - px) / mx));
         let sizeXProcessed = size * xFactor;
 
-        this.uiManager.getContext().fillStyle = getActiveClimate().getUIColorInactiveCustom(.95);
+        this.uiManager.getContext().fillStyle = this.uiManager.getColorInactive(.95);
 
         // bottom rectangle
         this.uiManager.getContext().fillRect(
@@ -77,7 +75,7 @@ export class Window {
 
         // right side
 
-        this.uiManager.getContext().fillStyle = getActiveClimate().getUIColorInactiveCustom((.83 - (xFactor * 0.1)));
+        this.uiManager.getContext().fillStyle = this.uiManager.getColorInactive((.83 - (xFactor * 0.1)));
         this.uiManager.getContext().fillRect(
             this.posX + this.sizeX,
             this.posY,
@@ -137,8 +135,8 @@ export class Window {
 
         if (this.uiManager.isFrameButtonPressed(b)) {
             if (this.clicked) {
-                this.posX = Math.max(0, Math.min(getCanvasWidth() - this.sizeX, x - this.clickStartX));
-                this.posY = Math.max(getBaseUISize() * 3, Math.min(getCanvasHeight() - this.sizeY, y - this.clickStartY));
+                this.posX = Math.max(0, Math.min(this.uiManager.getWidth() - this.sizeX, x - this.clickStartX));
+                this.posY = Math.max(this.uiManager.getBaseUISize() * 3, Math.min(this.uiManager.getHeight() - this.sizeY, y - this.clickStartY));
             } else {
                 this.clicked = true;
                 this.clickStartX = x - this.posX;
