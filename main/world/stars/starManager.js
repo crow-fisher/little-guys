@@ -123,7 +123,7 @@ export class StarManager {
 
 
     render() { 
-        console.log("Stars rendered: ", this.iterateOnSectorsAcc((sector) => sector.render()));
+        this.iterateOnSectors((sector) => sector.render())
         this.renderConstellations();
         this.minLumensRuntime();
     }

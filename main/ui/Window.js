@@ -10,12 +10,16 @@ export class Window {
         this.endY = 0;
         this.dir = dir;
 
-        this.hovered = false;
-        this.clicked = false;
-        this.locked = false;
-
         this.clickStartX = -1;
         this.clickStartY = -1;
+
+        this.userInteracting = false;
+        this.userDragging = false;
+        this.userResizing = false;
+    }
+
+    shouldRegisterMouseInput() {
+        return this.userDragging || this.userResizing;
     }
 
     isFrameButtonPressed(b) {
@@ -92,14 +96,16 @@ export class Window {
         this.uiManager.getContext().fill();
     }
 
-    update() {
-        let curMouseLocation = this.uiManager.mousePosition();
-        let x = curMouseLocation.x;
-        let y = curMouseLocation.y;
-        let relX = x - this.posX;
-        let relY = y - this.posY;
-        if (relX > 0 && relX < this.sizeX && relY > 0 && relY < this.sizeY) {
-            this.container.hover(relX, relY);
+    update(posX, posY) {
+        this._curMouseLocation = this.uiManager.mousePosition();
+        this._x = this._curMouseLocation.x;
+        this._y = this._curMouseLocation.y;
+        this._relX = this._x - posX;
+        this._relY = this._y - posY;
+
+        console.log(this._relX, this._relY);
+        if (this._relX > 0 && this._relX < this.sizeX && this._relY > 0 && this._relY < this.sizeY) {
+            this.container.hover(this._relX, this._relY);
         }
         this.hoverWindowFrame(x, y);
     }

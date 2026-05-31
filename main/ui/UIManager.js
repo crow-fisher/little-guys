@@ -54,7 +54,6 @@ export class UIManager {
         if (this.mainManager.canvasManager.context)
             return this.mainManager.canvasManager.context;
     }
-
     getWidth() {
         return this.mainManager.canvasManager.canvas.width;
     }
@@ -63,6 +62,9 @@ export class UIManager {
     }
     mousePosition() {
         return this.mainManager.inputManager.mouseManager.offset;
+    }
+    mouseMovement() {
+        return 
     }
     isFrameButtonPressed(b) {
         return this.mainManager.inputManager.mouseManager.isFrameButtonPressed(b);

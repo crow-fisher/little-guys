@@ -11,16 +11,29 @@ export class Component {
         this.window.container = this.container;
     }
  
-    // core runtime methods
+    /// core runtime methods
+    // rendering, obviously
     render() {
         this.window.render(this.gcvOffsetX(), this.gcvOffsetY());
     }
+    // input interactions
     update() {
-        this.window.update(this.gcvOffsetX(), this.gcvOffsetY());
+        // mouse input, so confirm it's valid first
+        if (this.window.shouldRegisterMouseInput() || (this.uiManager.isFrameButtonPressed(0) && this.isPointWithinBounds(this.uiManager.mousePosition())))
+            this.window.update(this.gcvOffsetX(), this.gcvOffsetY());
     }
+
+    isPointWithinBounds(x, y) {
+        return x > this.gcvOffsetX() && x < (this.gcvOffsetX() + this.gcvSizeX()) && 
+            y > this.gcvOffsetY() && y < (this.gcvOffsetY() + this.gcvSizeY())
+    }
+
+    /// core config setup methods
+    // sets up the config state in this object to have required values for any components
     configInit() {
         this.uiManager.config[this.name] = this.uiManager.config[this.name] ?? this.getDefaultConfig();
     }
+    // the method you should extend to provide all required config parameters your component needs to function
     getDefaultConfig() {
         return {
             offsetScale: [100, 100, 600, 600]
