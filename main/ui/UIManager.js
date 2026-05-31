@@ -5,30 +5,11 @@ import { loadGD, saveGD, UI_COMPONENT_DATA, UI_TOPBAR } from "./UIData.js";
 
 export class UIManager {
     constructor(mainManager) {
-        this.components = new Array();
         this.mainManager = mainManager;
-        this.addComponent(AstronomyAtlasComponent, this.astronomyAtlasDefault)
-        // this.addElement("topBarComponent", new TopBarComponent(this, UI_TOPBAR));
-        this.addElement("astronomyAtlasComponent", new AstronomyAtlasComponent(this, UI_TOPBAR));
-    }
 
-    addComponent(componentRef, defaultInit) {
-        let component = new componentRef(this);
-        if (loadGD(UI_COMPONENT_DATA)[component.name] == null) {
-            loadGD(UI_COMPONENT_DATA)[component.name] = defaultInit();
-        }
-        this.components.push(component);
-    }
+        this.config = loadGD(UI_COMPONENT_DATA);
 
-    astronomyAtlasInit() {}
-    astronomyAtlasDefault() {
-        return {
-            offsetScale: [100, 100, 600, 600]
-        }
-    }
-
-    getDataKey(name, key) {
-        return loadGD(UI_COMPONENT_DATA)[name][key]
+        this.astronomyAtlasComponent = new AstronomyAtlasComponent(this);
     }
 
     /*
@@ -51,10 +32,7 @@ export class UIManager {
         return this.getColorInactive(0.5);
     }
 
-    addElement(name, element) {
-        this.components.push(element);
-        this[name] = element;
-    }
+
 
     update() {
         this.components.forEach((window) => window.update());

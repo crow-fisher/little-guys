@@ -6,8 +6,8 @@ export class Window {
 
         this.sizeX = 0;
         this.sizeY = 0;
-        this.endX = posX;
-        this.endY = posY;
+        this.endX = 0;
+        this.endY = 0;
         this.dir = dir;
 
         this.hovered = false;

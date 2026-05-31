@@ -10,8 +10,18 @@ export class Component {
         this.container = new Container(this.window, 1);
     }
 
+    configInit() {
+        this.uiManager.config[this.name] = this.uiManager.config[this.name] ?? this.getDefaultConfig();
+    }
+
+    getDefaultConfig() {
+        return {
+            offsetScale: [100, 100, 600, 600]
+        }
+    }
+
     loadOffsetScaleSizing() {
-        this.offsetScale = this.uiManager.getDataKey(this.name, "offsetScale");
+        this.offsetScale = this.uiManager.config[this.name].offsetScale;
 
         this.h1 = this.uiManager.getBaseUISize() * 4;
         this.h2 = this.uiManager.getBaseUISize() * 3;
