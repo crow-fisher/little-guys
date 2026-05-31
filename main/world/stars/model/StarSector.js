@@ -74,7 +74,7 @@ export class StarSector {
         let ret;
         this.renderPrepare();
 
-        if (true || this.cs.isVisibleOnScreen()) {
+        if (this.cs.isVisibleOnScreenRange()) {
             ret = this.renderStars(
                 this.getLuminanceParams(),
                 this.getSizeParams(),
@@ -155,7 +155,7 @@ export class StarSector {
         bucket.forEach((star) => star.process());   
         let ret = 0;
         bucket.filter((star) => star.cs.isVisibleOnScreen()).forEach((star) => {
-            if (true || this.recalculateStarColorFlag) {
+            if (this.recalculateStarColorFlag) {
                 star._curCameraDistance = star.cs.distToCamera;
                 star._relCameraDist = (star._curCameraDistance / star._rootCameraDistance);
                 star._relCameraDistBrightnessMult = 1 / (star._relCameraDist ** luminanceParams[2]);

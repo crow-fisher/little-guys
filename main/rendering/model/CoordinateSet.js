@@ -11,7 +11,7 @@ export class CoordinateSet {
         this.renderNorm = [0, 0];
         this.renderScreen = [0, 0, 0];
         this.distToCamera = 0;
-        
+
         if (world != null) {
             copyVecValue(world, this.world)
             this.process();
@@ -35,8 +35,16 @@ export class CoordinateSet {
     isVisibleOnScreen() {
         return this.screen[2] > 0 &&
             this.renderScreen[0] > 0 &&
-            this.renderScreen[0] < this.cameraManager.getCanvasWidth() && 
-            this.renderScreen[1] > 0 && 
+            this.renderScreen[0] < this.cameraManager.getCanvasWidth() &&
+            this.renderScreen[1] > 0 &&
             this.renderScreen[1] < this.cameraManager.getCanvasHeight();
+    }
+
+    isVisibleOnScreenRange(range = 0.2) {
+        return this.screen[2] > 0 &&
+            this.renderScreen[0] > -this.cameraManager.getCanvasWidth() * range &&
+            this.renderScreen[0] < this.cameraManager.getCanvasWidth() * (1 + range) &&
+            this.renderScreen[1] > -this.cameraManager.getCanvasHeight() * range &&
+            this.renderScreen[1] < this.cameraManager.getCanvasHeight() * (1 + range);
     }
 }

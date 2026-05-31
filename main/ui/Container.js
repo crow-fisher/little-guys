@@ -1,5 +1,3 @@
-import { WindowElement } from "./Window.js";
-
 export class Container {
     constructor(window, dir) {
         this.window = window;
