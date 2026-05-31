@@ -4,21 +4,13 @@ export class WindowElement {
         this.sizeX = sizeX;
         this.sizeY = sizeY;
     }
-    updateSizeXByMult(muit) {
-        this.sizeX *= muit;
-    }
-    updateSizeX(sizeX) {
-        this.sizeX = sizeX;
-    }
-    updateSizeY(sizeY) {
-        this.sizeY = sizeY;
-    }
     render(startX, startY) {}
-
+    
+    size() {
+        return [this.sizeX(), this.sizeY()];
+    }
     hover(posX, posY) {
         this.hovered = true;
     }
-    size() {
-        return [this.sizeX, this.sizeY];
-    }
+
 }

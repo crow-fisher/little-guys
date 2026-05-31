@@ -94,15 +94,10 @@ export class Window {
 
     update() {
         let curMouseLocation = this.uiManager.mousePosition();
-        if (curMouseLocation == null) {
-            return;
-        }
         let x = curMouseLocation.x;
         let y = curMouseLocation.y;
-        
         let relX = x - this.posX;
         let relY = y - this.posY;
-
         if (relX > 0 && relX < this.sizeX && relY > 0 && relY < this.sizeY) {
             this.container.hover(relX, relY);
         }
@@ -133,7 +128,7 @@ export class Window {
         }
         this.hovered = true;
 
-        if (this.uiManager.isFrameButtonPressed(b)) {
+        if (this.uiManager.isFrameButtonPressed(0)) {
             if (this.clicked) {
                 this.posX = Math.max(0, Math.min(this.uiManager.getWidth() - this.sizeX, x - this.clickStartX));
                 this.posY = Math.max(this.uiManager.getBaseUISize() * 3, Math.min(this.uiManager.getHeight() - this.sizeY, y - this.clickStartY));

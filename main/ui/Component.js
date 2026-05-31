@@ -8,38 +8,45 @@ export class Component {
         this.uiManager = uiManager;
         this.window = new Window(uiManager);
         this.container = new Container(this.window, 1);
+        this.window.container = this.container;
     }
-
+ 
+    // core runtime methods
+    render() {
+        this.window.render(this.gcvOffsetX(), this.gcvOffsetY());
+    }
+    update() {
+        this.window.update(this.gcvOffsetX(), this.gcvOffsetY());
+    }
     configInit() {
         this.uiManager.config[this.name] = this.uiManager.config[this.name] ?? this.getDefaultConfig();
-        this.loadOffsetScaleSizing();
     }
-
     getDefaultConfig() {
         return {
             offsetScale: [100, 100, 600, 600]
         }
     }
-
     // "gco" == "get config object"
     gcoOffsetScale() {
-        return this.uiManager[this.name].offsetScale;
+        return this.uiManager.config[this.name].offsetScale;
     }
-
     // "gcv" == "get config value"
+    gcvOffsetX() {
+        return this.gcoOffsetScale()[0];
+    }
+    gcvOffsetY() {
+        return this.gcoOffsetScale()[1];
+    }
     gcvSizeX() {
         return this.gcoOffsetScale()[2];
     }
     gcvSizeY() {
         return this.gcoOffsetScale()[3];
     }
-
     // "ggv" == "get global value"
-
     ggvUISize() {
         return this.uiManager.getBaseUISize();
     }
-
     // "ggvd" == "get global value derivative"
     ggvdH1() {
         return this.ggvUISize() *  4;
@@ -53,7 +60,6 @@ export class Component {
     ggvdBr() {
         return this.ggvUISize() *  1;
     }
-
     // "gcvd" == "get config value derivative"
     gcvdHalfX() {
         return this.gcvSizeX() / 2;
@@ -84,13 +90,5 @@ export class Component {
     }
     gcvdFifthY() {
         return this.gcvSizeY() / 5;
-    }
-
-    render() {
-        this.window.render(this.posX, this.posY);
-    }
-
-    update() {
-        this.window.update(this.posX, this.posY);
     }
 }
