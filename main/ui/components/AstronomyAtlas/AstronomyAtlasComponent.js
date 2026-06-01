@@ -9,6 +9,7 @@ export class AstronomyAtlasComponent extends Component {
         this.configInit();
 
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(), .75, "astronomy atlas"))
+        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.gcvSizeY() - this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(.8)));
 
         // this.container.addElement(new TextBackground(this.window, this.sizeX, this.uiManager.getBaseUISize() * 0.35, UI_CENTER, () => this.uiManager.getColorInactive(), 0.75, " "))
         // this.container.addElement(new TextBackground(this.window, this.sizeX, this.h1, UI_CENTER, () => this.uiManager.getColorInactive(), .75, "astronomy atlas"))

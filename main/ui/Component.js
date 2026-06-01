@@ -12,15 +12,18 @@ export class Component {
     }
  
     /// core runtime methods
-    // rendering, obviously
+    // rendering
     render() {
         this.window.render(this.gcvOffsetX(), this.gcvOffsetY());
     }
     // input interactions
     update() {
-        // mouse input, so confirm it's valid first
-        if (this.window.shouldRegisterMouseInput() || (this.uiManager.isFrameButtonPressed(0) && this.isPointWithinBounds(this.uiManager.mousePosition())))
-            this.window.update(this.gcvOffsetX(), this.gcvOffsetY());
+        // shouldRegisterMouseInput asks if the window is being 'interacted', 'dragged', or 'resized'
+        // the second statement asks if the left mouse button was clicked this frame, and if it's within the window
+        if (this.window.shouldRegisterMouseInput() || 
+            (this.uiManager.isFrameButtonPressed(0) && this.isPointWithinBounds(this.uiManager.mousePosition()))) {
+                this.window.update(this.gcvOffsetX(), this.gcvOffsetY());
+            }
     }
 
     isPointWithinBounds(p) {

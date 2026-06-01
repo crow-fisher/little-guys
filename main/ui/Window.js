@@ -35,10 +35,6 @@ export class Window {
     }
 
     render(posX, posY) {
-        let containerSize = this.container.size();
-        this.sizeX = containerSize[0];
-        this.sizeY = containerSize[1];
-
         this.renderWindowFrame();
         this.container.render(posX, posY);
         this.renderWindowBorder()
@@ -101,15 +97,33 @@ export class Window {
         this.component.mcvOffsetX(this._dOffset.x);
         this.component.mcvOffsetY(this._dOffset.y);
     }
+    userResizingRoutine() {
+        this._dOffset = this.component.uiManager.mouseDOffset();
+        this.component.mcvSizeX(this._dOffset.x);
+        this.component.mcvSizeY(this._dOffset.y);
+    }
 
     update(posX, posY) {
-        this._curMouseLocation = this.component.uiManager.mousePosition();
-        if (!this.userDragging) {
+        this._cmp = this.component.uiManager.mousePosition();
+
+        this._relX = this._cmp.x - posX;    
+        this._relY = this._cmp.y - posY;
+
+        this._relXEnd = this.component.gcvSizeX() - this._relX;
+        this._relYEnd = this.component.gcvSizeY() - this._relY;
+
+        if (Math.min(this._relX, this._relY) < this.getBaseUISize() * 2) {
             this.userDragging = true;
+        }
+        if (Math.min(this._relXEnd, this._relYEnd) < this.getBaseUISize() * 2) {
+            this.userResizing = true;
         }
         
         if (this.userDragging) {
             this.userDraggingRoutine();
+        }
+        if (this.userResizing) {
+            this.userResizingRoutine();
         }
 
         if (!this.component.uiManager.isAnyMouseButtonPressed()) {
@@ -118,14 +132,6 @@ export class Window {
             this.userResizing = false;
         }
         
-        this._x = this._curMouseLocation.x;
-        this._y = this._curMouseLocation.y;
-        this._relX = this._x - posX;
-        this._relY = this._y - posY;
-
-        if (this._relX > 0 && this._relX < this.sizeX && this._relY > 0 && this._relY < this.sizeY) {
-            this.container.hover(this._relX, this._relY);
-        }
         // this.hoverWindowFrame(x, y);
     }
 

@@ -36,9 +36,9 @@ export class Container {
 
             if (!el.absolute) {
                 if (this.dir == 0) {
-                    curX += elSize[0] + this.padding;
+                    curX += elSize[0];
                 } else {
-                    curY += elSize[1] + this.padding;
+                    curY += elSize[1];
                 }
             }
         });
@@ -64,9 +64,9 @@ export class Container {
 
             if (!el.absolute) {
                 if (this.dir == 0)
-                    curX1 = curX2 + this.padding;
+                    curX1 = curX2;
                 else
-                    curY1 = curY2 + this.padding;
+                    curY1 = curY2;
             }
 
         })));
