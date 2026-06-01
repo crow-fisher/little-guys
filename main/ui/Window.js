@@ -35,21 +35,48 @@ export class Window {
     }
 
     render(posX, posY) {
-        this.renderWindowFrame();
+        // this.renderWindowFrame();
         this.container.render(posX, posY);
         this.renderWindowBorder()
     }
 
-    renderWindowBorder() {
-        let size = this.component.uiManager.getBaseUISize() * 0.8;
+    renderWindowBorderLeft() {
 
-        let py = this.posY + this.sizeY;
+    }
+    renderWindowBorderRight() {
+
+    }
+    renderWindowBorderTop() {
+
+    }
+    renderWindowBorderBottom() {
+
+    }
+    
+
+    renderWindowBorder() {
+        if (this.component.gcvOffsetX() > (this.component.uiManager.getWidth() / 2)) {
+            this.renderWindowBorderLeft();
+        }
+        else if ((this.gcvOffsetX() + this.gcvSizeX()) < (this.component.uiManager.getWidth() / 2)) {
+            this.renderWindowBorderRight();
+        }
+        if (this.component.gcvOffsetY() > (this.component.uiManager.getHeight() / 2)) {
+            this.renderWindowBorderTop();
+        }
+        else if ((this.gcvOffsetY() + this.gcvSizeY()) < (this.component.uiManager.getHeight() / 2)) {
+            this.renderWindowBorderBottom();
+        }
+        
+        let size = this.component.uiManager.getBaseUISize() * 4;
+
+        let py = this.component.gcvOffsetY() + this.component.gcvSizeY();
         let my = this.component.uiManager.getHeight() * 1.5;
 
         let yFactor = ((my - py) / my);
         let sizeYProcessed = size * yFactor;
 
-        let px = this.posX + this.sizeX;
+        let px = this.component.gcvOffsetX() + this.component.gcvSizeX();
         let mx = this.component.uiManager.getWidth() * 1.5; 
         let xFactor = (((mx - px) / mx));
         let sizeXProcessed = size * xFactor;
@@ -58,36 +85,33 @@ export class Window {
 
         // bottom rectangle
         this.component.uiManager.getContext().fillRect(
-            this.posX,
-            this.posY + this.sizeY,
-            this.sizeX,
+            this.component.gcvOffsetX(),
+            this.component.gcvOffsetY() + this.component.gcvSizeY(),
+            this.component.gcvSizeX(),
             sizeYProcessed
         );
         // bottom triangle
-
         this.component.uiManager.getContext().beginPath();
-        this.component.uiManager.getContext().moveTo(this.posX + this.sizeX, this.posY + this.sizeY);
-        this.component.uiManager.getContext().lineTo(this.posX + this.sizeX + sizeXProcessed, this.posY + this.sizeY + sizeYProcessed);
-        this.component.uiManager.getContext().lineTo(this.posX + this.sizeX, this.posY + this.sizeY + sizeYProcessed);
-        this.component.uiManager.getContext().lineTo(this.posX + this.sizeX, this.posY + this.sizeY);
+        this.component.uiManager.getContext().moveTo(this.component.gcvOffsetX() + this.component.gcvSizeX(), this.component.gcvOffsetY() + this.component.gcvSizeY());
+        this.component.uiManager.getContext().lineTo(this.component.gcvOffsetX() + this.component.gcvSizeX() + sizeXProcessed, this.component.gcvOffsetY() + this.component.gcvSizeY() + sizeYProcessed);
+        this.component.uiManager.getContext().lineTo(this.component.gcvOffsetX() + this.component.gcvSizeX(), this.component.gcvOffsetY() + this.component.gcvSizeY() + sizeYProcessed);
+        this.component.uiManager.getContext().lineTo(this.component.gcvOffsetX() + this.component.gcvSizeX(), this.component.gcvOffsetY() + this.component.gcvSizeY());
         this.component.uiManager.getContext().closePath();
         this.component.uiManager.getContext().fill();
 
         // right side
-
         this.component.uiManager.getContext().fillStyle = this.component.uiManager.getColorInactive((.83 - (xFactor * 0.1)));
         this.component.uiManager.getContext().fillRect(
-            this.posX + this.sizeX,
-            this.posY,
+            this.component.gcvOffsetX() + this.component.gcvSizeX(),
+            this.component.gcvOffsetY(),
             sizeXProcessed,
-            this.sizeY
+            this.component.gcvSizeY()
         );
-
         this.component.uiManager.getContext().beginPath();
-        this.component.uiManager.getContext().moveTo(this.posX + this.sizeX, this.posY + this.sizeY);
-        this.component.uiManager.getContext().lineTo(this.posX + this.sizeX + sizeXProcessed, this.posY + this.sizeY + sizeYProcessed);
-        this.component.uiManager.getContext().lineTo(this.posX + this.sizeX + sizeXProcessed, this.posY + this.sizeY);
-        this.component.uiManager.getContext().lineTo(this.posX + this.sizeX, this.posY + this.sizeY);
+        this.component.uiManager.getContext().moveTo(this.component.gcvOffsetX() + this.component.gcvSizeX(), this.component.gcvOffsetY() + this.component.gcvSizeY());
+        this.component.uiManager.getContext().lineTo(this.component.gcvOffsetX() + this.component.gcvSizeX() + sizeXProcessed, this.component.gcvOffsetY() + this.component.gcvSizeY() + sizeYProcessed);
+        this.component.uiManager.getContext().lineTo(this.component.gcvOffsetX() + this.component.gcvSizeX() + sizeXProcessed, this.component.gcvOffsetY() + this.component.gcvSizeY());
+        this.component.uiManager.getContext().lineTo(this.component.gcvOffsetX() + this.component.gcvSizeX(), this.component.gcvOffsetY() + this.component.gcvSizeY());
         this.component.uiManager.getContext().closePath();
         this.component.uiManager.getContext().fill();
     }
@@ -112,7 +136,10 @@ export class Window {
         this._relXEnd = this.component.gcvSizeX() - this._relX;
         this._relYEnd = this.component.gcvSizeY() - this._relY;
 
-        if (Math.min(this._relX, this._relY) < this.getBaseUISize() * 2) {
+        if (this._relY < this.getBaseUISize() * 4) {
+            this.userDragging = true;
+        }
+        if (this._relX < this.getBaseUISize() * 4) {
             this.userDragging = true;
         }
         if (Math.min(this._relXEnd, this._relYEnd) < this.getBaseUISize() * 2) {
@@ -136,11 +163,10 @@ export class Window {
     }
 
     renderWindowFrame() {
-        this.component.uiManager.getContext().fillStyle = this.component.uiManager.getColorInactiveDark();
+        this.component.uiManager.getContext().fillStyle = this.component.uiManager.getColorInactiveDark(.1);
         this.component.uiManager.getContext().fillRect(
-            this.posX - this.padding, this.posY - this.padding, 
-            this.sizeX + this.padding * 2, 
-            this.sizeY + this.padding * 2);
+            this.component.gcvOffsetX(), this.component.gcvOffsetY(), 
+            this.component.gcvSizeX(), this.component.gcvSizeY());
     }
 
     hoverWindowFrame(x, y) {
@@ -151,9 +177,9 @@ export class Window {
         let hoverP = this.padding * 2;
         if (
             x < this.posX - hoverP ||
-            x > this.posX + this.sizeX + hoverP || 
+            x > this.component.gcvOffsetX() + this.component.gcvSizeX() + hoverP || 
             y < this.posY - hoverP || 
-            y > this.posY + this.sizeY + hoverP 
+            y > this.component.gcvOffsetY() + this.component.gcvSizeY() + hoverP 
         ) {
             return;
         }
