@@ -56,19 +56,6 @@ export class Component {
     gcvSizeY() {
         return this.gcoOffsetScale()[3];
     }
-    // "scv" == "set config value"
-    scvOffsetX(v) {
-        this.gcoOffsetScale()[0] = v;
-    }
-    scvOffsetY(v) {
-        this.gcoOffsetScale()[1] = v;
-    }
-    scvSizeX(v) {
-        this.gcoOffsetScale()[2] = v;
-    }
-    scvSizeY(v) {
-        this.gcoOffsetScale()[3] = v;
-    }
     // "mcv" == "modify config value"
     mcvOffsetX(v) {
         this.gcoOffsetScale()[0] += v;
