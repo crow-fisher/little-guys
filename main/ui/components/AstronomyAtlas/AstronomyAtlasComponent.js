@@ -3,13 +3,20 @@ import { TextBackground } from "../../elements/TextBackground.js";
 import { UI_CENTER } from "../../UIData.js";
 
 export class AstronomyAtlasComponent extends Component {
+
+    getDefaultConfig() {
+        return {
+            offsetScale: [100, 100, 600, 400]
+        }
+    }
+
     constructor(uiManager) {
         super(uiManager);
         this.name = "AstronomyAtlasComponent";
         this.configInit();
 
         // this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdBr(), UI_CENTER, () => this.uiManager.getColorInactive(.5)))  
-        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(10), .75, "astronomy atlas"))  
+        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "astronomy atlas"))  
         // this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdBr(), UI_CENTER, () => this.uiManager.getColorInactive(.8)))  
         // this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.gcvSizeY() - this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(.8)));
 

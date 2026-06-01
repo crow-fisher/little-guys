@@ -1,7 +1,7 @@
 import { Container } from "./Container.js";
 import { loadGD } from "./UIData.js";
 import { Window } from "./Window.js";
-
+ 
 export class Component {
     constructor(uiManager) {
         this.name = "Component";
@@ -39,7 +39,7 @@ export class Component {
     // the method you should extend to provide all required config parameters your component needs to function
     getDefaultConfig() {
         return {
-            offsetScale: [100, 100, 600, 600]
+            offsetScale: [100, 100, 100, 100]
         }
     }
     // "gco" == "get config object"

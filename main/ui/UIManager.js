@@ -32,10 +32,6 @@ export class UIManager {
         return hsvToHex(41, .29, .29 * b);
     }
 
-    getColorInactiveDark() {
-        return this.getColorInactive(0.5);
-    }
-
     update() {
         this.components.forEach((window) => window.update());
     }
