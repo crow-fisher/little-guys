@@ -6,7 +6,7 @@ export class Component {
     constructor(uiManager) {
         this.name = "Component";
         this.uiManager = uiManager;
-        this.window = new Window(uiManager);
+        this.window = new Window(this);
         this.container = new Container(this.window, 1);
         this.window.container = this.container;
     }
@@ -23,9 +23,9 @@ export class Component {
             this.window.update(this.gcvOffsetX(), this.gcvOffsetY());
     }
 
-    isPointWithinBounds(x, y) {
-        return x > this.gcvOffsetX() && x < (this.gcvOffsetX() + this.gcvSizeX()) && 
-            y > this.gcvOffsetY() && y < (this.gcvOffsetY() + this.gcvSizeY())
+    isPointWithinBounds(p) {
+        return p.x > this.gcvOffsetX() && p.x < (this.gcvOffsetX() + this.gcvSizeX()) && 
+            p.y > this.gcvOffsetY() && p.y < (this.gcvOffsetY() + this.gcvSizeY())
     }
 
     /// core config setup methods
@@ -55,6 +55,32 @@ export class Component {
     }
     gcvSizeY() {
         return this.gcoOffsetScale()[3];
+    }
+    // "scv" == "set config value"
+    scvOffsetX(v) {
+        this.gcoOffsetScale()[0] = v;
+    }
+    scvOffsetY(v) {
+        this.gcoOffsetScale()[1] = v;
+    }
+    scvSizeX(v) {
+        this.gcoOffsetScale()[2] = v;
+    }
+    scvSizeY(v) {
+        this.gcoOffsetScale()[3] = v;
+    }
+    // "mcv" == "modify config value"
+    mcvOffsetX(v) {
+        this.gcoOffsetScale()[0] += v;
+    }
+    mcvOffsetY(v) {
+        this.gcoOffsetScale()[1] += v;
+    }
+    mcvSizeX(v) {
+        this.gcoOffsetScale()[2] += v;
+    }
+    mcvSizeY(v) {
+        this.gcoOffsetScale()[3] += v;
     }
     // "ggv" == "get global value"
     ggvUISize() {

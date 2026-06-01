@@ -36,8 +36,6 @@ export class UIManager {
         return this.getColorInactive(0.5);
     }
 
-
-
     update() {
         this.components.forEach((window) => window.update());
     }
@@ -63,11 +61,14 @@ export class UIManager {
     mousePosition() {
         return this.mainManager.inputManager.mouseManager.offset;
     }
-    mouseMovement() {
-        return 
+    mouseDOffset() {
+        return this.mainManager.inputManager.mouseManager.doffset;
     }
     isFrameButtonPressed(b) {
         return this.mainManager.inputManager.mouseManager.isFrameButtonPressed(b);
+    }
+    isAnyMouseButtonPressed() {
+        return this.mainManager.inputManager.mouseManager.ms != 0;
     }
     getCurDay() {
         return this.mainManager.worldManager.timeManager.curDay;
