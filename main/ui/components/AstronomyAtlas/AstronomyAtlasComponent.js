@@ -27,45 +27,99 @@ export class AstronomyAtlasComponent extends Component {
             style: {
                 brightnessPosX: 0.5,
                 brightnessPosY: 0.5,
+                brightnessC: 0.5,
                 opacityPosX: 0.5,
                 opacityPosY: 0.5,
-                mode: 0
+                opacityC: 0,
+                mode: 0,
+
+                minSize: 1,
+                maxSize: 8,
+                minLuminance: -17512.80219045445,
+                maxLuminance: -89,
+                distPowerMult: 1.31,
             },
             select: {}
         }
     }
-
+    // see 'StarSpecializedValuePicker'
     gcvStBrightnessPosX() {
         return this.config().style.brightnessPosX;
-    }
-    gcvStBrightnessPosY() {
-        return this.config().style.brightnessPosY;
-    }
-    gcvStOpacityPosX() {
-        return this.config().style.opacityPosX;
-    }
-    gcvStOpacityPosY() {
-        return this.config().style.opacityPosY;
-    }
-    gcvStMode() {
-        return this.config().style.mode;
     }
     scvStBrightnessPosX(v) {
         this.config().style.brightnessPosX = v;
     }
+    gcvStBrightnessPosY() {
+        return this.config().style.brightnessPosY;
+    }
     scvStBrightnessPosY(v) {
         this.config().style.brightnessPosY = v;
+    }
+    gcvStBrightnessC() {
+        return this.config().style.brightnessC;
+    }
+    scvStBrightnessC(v) {
+        this.config().style.brightnessC = v;
+    }
+    gcvStOpacityPosX() {
+        return this.config().style.opacityPosX;
     }
     scvStOpacityPosX(v) {
         this.config().style.opacityPosX = v;
     }
+    gcvStOpacityPosY() {
+        return this.config().style.opacityPosY;
+    }
     scvStOpacityPosY(v) {
         this.config().style.opacityPosY = v;
+    }
+    // allows weighting of X and Y exponent parameters for above
+    gcvStOpacityC() {
+        return this.config().style.opacityC;
+    }
+    scvStOpacityC(v) {
+        this.config().style.opacityC = v;
+    }
+    gcvStMode() {
+        return this.config().style.mode;
     }
     scvStMode(v) {
         this.config().style.mode = v;
     }
 
+    // basic star sizing
+    gcvMinSize() {
+        return this.config().style.minSize;
+    }
+    scvMinSize(v) {
+        this.config().style.minSize = v;
+    }
+    gcvMaxSize() {
+        return this.config().style.maxSize;
+    }
+    scvMinSize(v) {
+        this.config().style.minSize = v;
+    }
+
+    // star brightness and such
+    gcvMinLuminance() {
+        return this.config().style.minLuminance;
+    }
+    scvMinLuminance(v) {
+        this.config().style.minLuminance = v;
+    }
+    gcvMaxLuminance() {
+        return this.config().style.maxLuminance;
+    }
+    scvMaxLuminance(v) {
+        this.config().style.maxLuminance = v;
+    }
+    gcvDistPowerMult() {
+        return this.config().style.distPowerMult;
+    }
+    scvDistPowerMult(v) {
+        this.config().style.distPowerMult = v;
+    }
 
     constructor(uiManager) {
         super(uiManager);
@@ -73,31 +127,30 @@ export class AstronomyAtlasComponent extends Component {
         this.configInit();
 
         // this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdBr(), UI_CENTER, () => this.uiManager.getColorInactive(.5)))  
-        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "astronomy atlas"))  
+        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "astronomy atlas"))
         this.container.addElement(new StarSpecializedValuePicker(this.window, () => this.gcvSizeX(), () => this.gcvSizeY() - (3 * this.ggvdH1()), this));
-    
+
         let row = new Container(window, 0);
         this.container.addElement(row);
 
         row.addElement(new RadioToggleLabel(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER, "size",
-        () => this.gcvStMode() == 0, () => this.scvStMode(0),
-        () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));
+            () => this.gcvStMode() == 0, () => this.scvStMode(0),
+            () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));
 
         row.addElement(new RadioToggleLabel(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER, "opacity",
-        () => this.gcvStMode() == 1, () => this.scvStMode(1),
-        () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));
+            () => this.gcvStMode() == 1, () => this.scvStMode(1),
+            () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));
 
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(.6)));
-        
+
         // row.addElement(new RadioToggleLabel(window, half, textHeight, UI_CENTER, "color", UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, 1,
         //         () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));
-        
+
         // container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "brightness 'c'"))
         // container.addElement(new SliderGradientBackground(window, UI_SH_STYLE_BRIGHTNESS_C, sizeX, textHeight, 0, 1, () => COLOR_BLACK, () => COLOR_WHITE, false, resetStarStyle));
         // container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "size 'c'"))
         // container.addElement(new SliderGradientBackground(window, UI_SH_STYLE_SIZE_C, sizeX, textHeight, 0, 1, () => COLOR_BLACK, () => COLOR_WHITE, false, resetStarStyle));
-    
-        
+
 
         // this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdBr(), UI_CENTER, () => this.uiManager.getColorInactive(.8)))  
         // this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.gcvSizeY() - this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(.8)));
@@ -105,7 +158,7 @@ export class AstronomyAtlasComponent extends Component {
         // this.container.addElement(new TextBackground(this.window, this.sizeX, this.uiManager.getBaseUISize() * 0.35, UI_CENTER, () => this.uiManager.getColorInactive(), 0.75, " "))
         // this.container.addElement(new TextBackground(this.window, this.sizeX, this.h1, UI_CENTER, () => this.uiManager.getColorInactive(), .75, "astronomy atlas"))
         // this.container.addElement(new TextBackground(this.window, this.sizeX, this.uiManager.getBaseUISize() * 0.35, UI_CENTER, () => this.uiManager.getColorInactive(), 0.75, ""));
- 
+
         // let modeSelectRow = new Container(this.window, 0);
         // container.addElement(modeSelectRow);
 

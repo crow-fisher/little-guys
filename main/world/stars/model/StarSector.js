@@ -35,43 +35,57 @@ export class StarSector {
     gcvStBrightnessPosY() {
         return this.starManager.getAstronomyAtlasComponent().gcvStBrightnessPosY();
     }
+    gcvStBrightnessC() {
+        return this.starManager.getAstronomyAtlasComponent().gcvStBrightnessC();
+    }
     gcvStOpacityPosX() {
         return this.starManager.getAstronomyAtlasComponent().gcvStOpacityPosX();
     }
     gcvStOpacityPosY() {
         return this.starManager.getAstronomyAtlasComponent().gcvStOpacityPosY();
     }
+    gcvStOpacityC() {
+        return this.starManager.getAstronomyAtlasComponent().gcvStOpacityC();
+    }
+    gcvMinSize() {
+        return this.starManager.getAstronomyAtlasComponent().gcvMinSize();
+    }
+    gcvMaxSize() {
+        return this.starManager.getAstronomyAtlasComponent().gcvMaxSize();
+    }
+    gcvMinLuminance() {
+        return this.starManager.getAstronomyAtlasComponent().gcvMinLuminance();
+    }
+    gcvMaxLuminance() {
+        return this.starManager.getAstronomyAtlasComponent().gcvMaxLuminance();
+    }
+    gcvDistPowerMult() {
+        return this.starManager.getAstronomyAtlasComponent().gcvDistPowerMult();
+    }
 
     getSizeParams() {
         return [
-        this.gcvStBrightnessPosX(),
-        this.gcvStBrightnessPosY(),
-            0.5,
-            1,
-            8
+            this.gcvStBrightnessPosX(),
+            this.gcvStBrightnessPosY(),
+            this.gcvStBrightnessC(),
+            this.gcvMinSize(),
+            this.gcvMaxSize()
         ]
-        // return [
-        //     loadGD(UI_SH_STYLE_SIZE_A),
-        //     loadGD(UI_SH_STYLE_SIZE_B),
-        //     loadGD(UI_SH_STYLE_SIZE_C),
-        //     loadGD(UI_SH_MINSIZE),
-        //     loadGD(UI_SH_MAXSIZE),
-        // ];
     }
 
     getBrightnessParams() {
         return [
             this.gcvStOpacityPosX(),
             this.gcvStOpacityPosY(),
-            0.5
+            this.gcvStOpacityC()
         ];
     }
 
     getLuminanceParams() {
         return [
-            processRangeToOne(-1 * 10 ** (5 - loadGD(UI_SH_MINLUMINENCE))),
-            processRangeToOne(loadGD(UI_SH_MAXLUMINENCE)),
-            loadGD(UI_SH_DISTPOWERMULT)
+            processRangeToOne(-1 * 10 ** (5 - this.gcvMinLuminance())),
+            processRangeToOne(this.gcvMaxLuminance()),
+            this.gcvDistPowerMult()
         ];
     }
 
@@ -158,7 +172,7 @@ export class StarSector {
 
     renderStars(luminanceParams, sizeParams, brightnessParams, localitySelectParams, renderMode) {
         this.recalculateStarColorFlag = true;
-        
+
         let ret = 0;
         for (let i = 0, bucketLumens; i < this.buckets.length; i++) {
             bucketLumens = this.bucketLumensCutoffs.at(i) * this.relCameraDistBrightnessMult;
@@ -174,7 +188,7 @@ export class StarSector {
     }
 
     prepareAndRenderBucket(bucket, luminanceParams, sizeParams, brightnessParams, localitySelectParams, renderMode) {
-        bucket.forEach((star) => star.process());   
+        bucket.forEach((star) => star.process());
         let ret = 0;
         bucket.filter((star) => star.cs.isVisibleOnScreen()).forEach((star) => {
             if (this.recalculateStarColorFlag) {
