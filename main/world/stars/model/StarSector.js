@@ -3,7 +3,7 @@ import { loadGD, UI_SH_MINSIZE, UI_SH_DISTPOWERMULT, UI_SH_MAXLUMINENCE, UI_SH_M
 import { hsvToHex } from "../../../color/color.js";
 import { renderPointLabel } from "../../../rendering/renderFunctions.js";
 import { CoordinateSet } from "../../../rendering/model/CoordinateSet.js";
-import { addVec3Dest } from "../../../util/vector.js";
+import { addVec3Dest, addVec3MultDest, addVec3MultDestAdd, copyVecValue, getVec3Length, normalizeVec3 } from "../../../util/vector.js";
 
 const Z_VISIBLE = 0b10;
 const FOV_VISIBLE = 0b01;
@@ -14,14 +14,15 @@ export class StarSector {
         this.sector = sector;
         this.cartesian = cartesian;
         this.cartesianBounds = cartesianBounds;
-        this.cs = new CoordinateSet(this.starManager.getCameraManager(), this.cartesian);
+        
+        this.rootCs = new CoordinateSet(this.starManager.getCameraManager(), this.cartesian);
+        this.brightnessCs = new CoordinateSet(this.starManager.getCameraManager(), this.cartesian);
+        this.fovCs = new CoordinateSet(this.starManager.getCameraManager(), this.cartesian);
 
-        this.rootCameraDist = this.cs.distToCamera;
+        this.rootCameraDist = this.fovCs.distToCamera;
         this.curCameraDist = this.rootCameraDist;
         this.prevCameraDist = 0;
         this.recalculateStarColorFlag = true;
-
-        this.cameraDistRefPoint = [0, 0, 0];
 
         this.loadedStars = new Array();
         this.constellationStars = new Set();
@@ -105,45 +106,75 @@ export class StarSector {
             return;
         }
 
-        let ret;
+        let ret = 0;
         this.renderPrepare();
 
-        if (this.cs.isVisibleOnScreenRange()) {
-            ret = this.renderStars(
-                this.getLuminanceParams(),
-                this.getSizeParams(),
-                this.getBrightnessParams(),
-                this.getLocalitySelectParams(),
-                this.getRenderMode()
-            );
+        if (this.fovCs.isVisibleOnScreen()) {
+            // ret = this.renderStars(
+            //     this.getLuminanceParams(),
+            //     this.getSizeParams(),
+            //     this.getBrightnessParams(),
+            //     this.getLocalitySelectParams(),
+            //     this.getRenderMode()
+            // );
 
-            // renderPointLabel(
-            //     this.starManager.worldManager.getContext(),
-            //     this.cs.renderScreen[0],
-            //     this.cs.renderScreen[1],
-            //     this.cs.renderScreen[2],
-            //     800 / this.cs.distToCamera,
-            //     hsvToHex(0, 0, 1),
-            //     ""
-            // )
-        };
+            renderPointLabel(
+                this.starManager.worldManager.getContext(),
+                this.fovCs.renderScreen[0],
+                this.fovCs.renderScreen[1],
+                this.fovCs.renderScreen[2],
+                8000 / this.fovCs.distToCamera,
+                hsvToHex(this.fovCs.distToCamera + 10 * getVec3Length(this.cartesian), 1, 1),
+                ""
+            ) 
+
+            renderPointLabel(
+                this.starManager.worldManager.getContext(),
+                this.brightnessCs.renderScreen[0],
+                this.brightnessCs.renderScreen[1],
+                this.brightnessCs.renderScreen[2],
+                8000 / this.brightnessCs.distToCamera,
+                hsvToHex(0, 0, 0),
+                ""
+            )
+
+            renderPointLabel(
+                this.starManager.worldManager.getContext(),
+                this.rootCs.renderScreen[0],
+                this.rootCs.renderScreen[1],
+                this.rootCs.renderScreen[2],
+                8000 / this.rootCs.distToCamera,
+                hsvToHex(0, 0, 1),
+                ""
+            )
+        } else if (this.fovCs.screen[2] > 0 && this.fovCs.distToCamera < 100) {
+            // console.log(this.fovCs.world);
+        }
         return ret;
 
     }
 
-    setCurCameraPoint() {
-        this.cameraDistRefPoint[0] = Math.min(Math.max(this.cartesianBounds[0], -loadGD(UI_CAMERA_OFFSET_VEC)[0]), this.cartesianBounds[3]);
-        this.cameraDistRefPoint[1] = Math.min(Math.max(this.cartesianBounds[1], -loadGD(UI_CAMERA_OFFSET_VEC)[1]), this.cartesianBounds[4]);
-        this.cameraDistRefPoint[2] = Math.min(Math.max(this.cartesianBounds[2], -loadGD(UI_CAMERA_OFFSET_VEC)[2]), this.cartesianBounds[5]);
+    setBrightnessCameraPoint() { 
+        copyVecValue(loadGD(UI_CAMERA_OFFSET_VEC), this.brightnessCs.world)
+        this.brightnessCs.world[0] = Math.min(Math.max(this.cartesianBounds[0], this.brightnessCs.world[0]), this.cartesianBounds[3]);
+        this.brightnessCs.world[1] = Math.min(Math.max(this.cartesianBounds[1], this.brightnessCs.world[1]), this.cartesianBounds[4]);
+        this.brightnessCs.world[2] = Math.min(Math.max(this.cartesianBounds[2], this.brightnessCs.world[2]), this.cartesianBounds[5]);
+        this.brightnessCs.process();
+    }
+
+    setFOVCameraPoint() {
+        addVec3MultDest(loadGD(UI_CAMERA_OFFSET_VEC), this.starManager.worldManager.mainManager.cameraManager.forward, -(10 ** 8), this.fovCs.world);
+        normalizeVec3(this.fovCs.world);
+        addVec3MultDest(this.cartesian, this.fovCs.world, this.starManager.sectorSize * 2, this.fovCs.world);
+        this.fovCs.process();
     }
 
     renderPrepare() {
-        // this.setCurCameraPoint();
-        // this.cs.setWorld(this.cameraDistRefPoint);
-
-        this.cs.process();
-
-        this.curCameraDist = this.cs.distToCamera;
+        this.setBrightnessCameraPoint();
+        this.setFOVCameraPoint();
+        this.rootCs.process();
+        
+        this.curCameraDist = this.fovCs.distToCamera;
         this.relCameraDist = (this.curCameraDist / this.rootCameraDist);
         this.relCameraDistBrightnessMult = 1 / (this.relCameraDist ** loadGD(UI_SH_DISTPOWERMULT));
         this.recalculateStarColorFlag |= (Math.min(this.curCameraDist, this.prevCameraDist) / Math.max(this.curCameraDist, this.prevCameraDist)) < 0.97;

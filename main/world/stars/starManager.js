@@ -128,7 +128,8 @@ export class StarManager {
 
 
     render() { 
-        this.iterateOnSectors((sector) => sector.render())
+        // this.iterateOnSectors((sector) => sector.render())
+        console.log(this.iterateOnSectorsAcc((sector) => sector.render()))
         this.renderConstellations();
         this.minLumensRuntime();
     }
@@ -136,11 +137,11 @@ export class StarManager {
     rebuildSectors() {
         this.sectors = new Map();
 
-        let sectorSize = 100;
+        this.sectorSize = 100;
         this.numSectorsArr = [
-            (this.bounds[3] - this.bounds[0]) / sectorSize,
-            (this.bounds[4] - this.bounds[1]) / sectorSize,
-            (this.bounds[5] - this.bounds[2]) / sectorSize
+            (this.bounds[3] - this.bounds[0]) / this.sectorSize,
+            (this.bounds[4] - this.bounds[1]) / this.sectorSize,
+            (this.bounds[5] - this.bounds[2]) / this.sectorSize
         ];
 
     }
