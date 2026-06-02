@@ -10,9 +10,11 @@ export class UIManager {
         this._config = loadGD(UI_COMPONENT_DATA);
 
         this.astronomyAtlasComponent = new AstronomyAtlasComponent(this);
+        this.topBarComponent = new TopBarComponent(this);
 
         this.components = [
-            this.astronomyAtlasComponent
+            this.astronomyAtlasComponent,
+            this.topBarComponent
         ]
     }
 

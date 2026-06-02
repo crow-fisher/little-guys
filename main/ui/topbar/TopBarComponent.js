@@ -209,7 +209,7 @@ export class TopBarComponent {
                 let width = measurements[0] + this.padding;
 
                 if (x > startX && x < startX + measurements[0]) {
-                    element.hover(x - startX, y);
+                    element.interact(x - startX, y);
                     this.hovered = true;
                 }
                 startX += width;
