@@ -65,16 +65,16 @@ export class Component {
     }
     // "mcv" == "modify config value"
     mcvOffsetX(v) {
-        this.config().offsetScale.offsetX = v;
+        this.config().offsetScale.offsetX += v;
     }
     mcvOffsetY(v) {
-        this.config().offsetScale.offsetY = v;
+        this.config().offsetScale.offsetY += v;
     }
     mcvSizeX(v) {
-        this.config().offsetScale.sizeX = v;
+        this.config().offsetScale.sizeX += v;
     }
     mcvSizeY(v) {
-        this.config().offsetScale.sizeY = v;
+        this.config().offsetScale.sizeY += v;
     }
     // "ggv" == "get global value"
     ggvUISize() {
