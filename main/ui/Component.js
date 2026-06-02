@@ -18,17 +18,8 @@ export class Component {
     }
     // input interactions
     update() {
-        // shouldRegisterMouseInput asks if the window is being 'interacted', 'dragged', or 'resized'
-        // the second statement asks if the left mouse button was clicked this frame, and if it's within the window
-        if (this.window.shouldRegisterMouseInput() ||
-            (this.uiManager.isFrameButtonPressed(0) && this.isPointWithinBounds(this.uiManager.mousePosition()))) {
+        if (this.window.shouldRegisterMouseInput())
             this.window.update(this.gcvOffsetX(), this.gcvOffsetY());
-        }
-    }
-
-    isPointWithinBounds(p) {
-        return p.x > this.gcvOffsetX() && p.x < (this.gcvOffsetX() + this.gcvSizeX()) &&
-            p.y > this.gcvOffsetY() && p.y < (this.gcvOffsetY() + this.gcvSizeY())
     }
 
     /// core config setup methods

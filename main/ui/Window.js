@@ -21,7 +21,9 @@ export class Window {
     }
 
     shouldRegisterMouseInput() {
-        return this.userDragging || this.userResizing;
+        return this.userDragging || this.userResizing || this.userInteracting || (
+            this.component.uiManager.isFrameButtonPressed(0) && this.isPointWithinBounds(this.component.uiManager.mousePosition())
+        );
     }
 
     isFrameButtonPressed(b) {
@@ -34,6 +36,11 @@ export class Window {
 
     getBaseUISize() {
         return this.component.uiManager.getBaseUISize();
+    }
+
+    isPointWithinBounds(p) {
+        return p.x > (this.component.gcvOffsetX() - this._leftSize) && p.x < (this.component.gcvOffsetX() + this.component.gcvSizeX() - this._rightSize) &&
+            p.y > (this.component.gcvOffsetY() + this._topSize) && p.y < (this.component.gcvOffsetY() + this.component.gcvSizeY() - this._bottomSize)
     }
 
     render(posX, posY) {
@@ -158,10 +165,10 @@ export class Window {
         this._topBorder = this.component.gcvOffsetY() > this._heightCenter;
         this._bottomBorder = (this.component.gcvOffsetY() + this.component.gcvSizeY()) < this._heightCenter;
 
-        this._leftSize = this._borderSize * (1 - invlerp(0, this._widthCenter, this.component.gcvOffsetX()));
-        this._rightSize = this._borderSize * (invlerp(this._widthCenter, this.component.uiManager.getWidth(), this.component.gcvOffsetX() + this.component.gcvSizeX()));
-        this._topSize = this._borderSize * (1 - invlerp(0, this._heightCenter, this.component.gcvOffsetY()));
-        this._bottomSize = this._borderSize * (invlerp(this._heightCenter, this.component.uiManager.getHeight(), this.component.gcvOffsetY() + this.component.gcvSizeY()));
+        this._leftSize = !this._leftBorder ? 0 : this._borderSize * (1 - invlerp(0, this._widthCenter, this.component.gcvOffsetX()));
+        this._rightSize = !this._rightBorder ? 0 : this._borderSize * (invlerp(this._widthCenter, this.component.uiManager.getWidth(), this.component.gcvOffsetX() + this.component.gcvSizeX()));
+        this._topSize = !this._topBorder ? 0 : this._borderSize * (1 - invlerp(0, this._heightCenter, this.component.gcvOffsetY()));
+        this._bottomSize = !this._bottomBorder ? 0 : this._borderSize * (invlerp(this._heightCenter, this.component.uiManager.getHeight(), this.component.gcvOffsetY() + this.component.gcvSizeY()));
 
         if (this._leftBorder) {
             this.renderWindowBorderLeft(.8);
