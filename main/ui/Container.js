@@ -46,8 +46,7 @@ export class Container {
         this.sizeY = this.endY - startY;
     }
 
-    hover(posX, posY) {
-        this.window.hovered = true;
+    interact(posX, posY) {
         let curX1 = 0;
         let curY1 = 0;
         let curX2, curY2;

@@ -1,4 +1,5 @@
 import { COLOR_GREEN } from "../../colors.js";
+import { invlerp } from "../../common.js";
 import { WindowElement } from "../WindowElement.js";
 
 export class StarSpecializedValuePicker extends WindowElement {
@@ -32,15 +33,21 @@ export class StarSpecializedValuePicker extends WindowElement {
     }
 
     hover(posX, posY) {
-        super.hover(posX, posY);
-        this.window.locked = true;
-        let pX = invlerp(0, this.sizeXFunc, posX);
-        let pY = invlerp(0, this.sizeY, posY);
-        let idx = loadGD(UI_STARMAP_STAR_CONTROL_TOGGLE_MODE);
-        saveGD(this.keys[idx][0], lerp(...this.valueRanges[idx][0], pX));
-        saveGD(this.keys[idx][1], lerp(...this.valueRanges[idx][1], pY));
-        resetStarStyle();
-        getStarManager().resetStarLabels();
+        this.pX = invlerp(0, this.sizeXFunc(), posX);
+        this.pY = invlerp(0, this.sizeYFunc(), posY);
+
+        if (this.component.gcvStMode() == 0) {
+            this.component.scvStBrightnessPosX(this.pX)
+            this.component.scvStBrightnessPosY(this.pY)
+        } else {
+            this.component.scvStOpacityPosX(this.pX)
+            this.component.scvStOpacityPosY(this.pY)
+        }
+        console.log(this.pX, this.pY);
+        // saveGD(this.keys[idx][0], lerp(...this.valueRanges[idx][0], pX));
+        // saveGD(this.keys[idx][1], lerp(...this.valueRanges[idx][1], pY));
+        // resetStarStyle();
+        // getStarManager().resetStarLabels();
     }
 
 }

@@ -48,17 +48,17 @@ export class AstronomyAtlasComponent extends Component {
     gcvStMode() {
         return this.config().style.mode;
     }
-    mcvStBrightnessPosX(v) {
-        this.config().style.brightnessPosX += v;
+    scvStBrightnessPosX(v) {
+        this.config().style.brightnessPosX = v;
     }
-    mcvStBrightnessPosY(v) {
-        this.config().style.brightnessPosY += v;
+    scvStBrightnessPosY(v) {
+        this.config().style.brightnessPosY = v;
     }
-    mcvStOpacityPosX(v) {
-        this.config().style.opacityPosX += v;
+    scvStOpacityPosX(v) {
+        this.config().style.opacityPosX = v;
     }
-    mcvStOpacityPosY(v) {
-        this.config().style.opacityPosY += v;
+    scvStOpacityPosY(v) {
+        this.config().style.opacityPosY = v;
     }
     scvStMode(v) {
         this.config().style.mode = v;

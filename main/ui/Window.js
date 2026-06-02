@@ -1,7 +1,7 @@
 import { invlerp } from "../common.js";
 
 export class Window {
-    constructor(component, dir, grounded=false) {
+    constructor(component, dir, grounded = false) {
         this.component = component;
         this.container = null;
         this.grounded = grounded;
@@ -15,14 +15,13 @@ export class Window {
         this.clickStartX = -1;
         this.clickStartY = -1;
 
-        this.userInteracting = false;
         this.userDragging = false;
         this.userResizing = false;
     }
 
     shouldRegisterMouseInput() {
-        return this.userDragging || this.userResizing || this.userInteracting || (
-            this.component.uiManager.isFrameButtonPressed(0) && this.isPointWithinBounds(this.component.uiManager.mousePosition())
+        return this.userDragging || this.userResizing || (
+            this.component.uiManager.isButtonPressed(0) && this.isPointWithinBounds(this.component.uiManager.mousePosition())
         );
     }
 
@@ -65,7 +64,7 @@ export class Window {
             this.component.uiManager.getContext().lineTo(this.component.gcvOffsetX(), this.component.gcvOffsetY());
             this.component.uiManager.getContext().fill();
         }
- 
+
         if (this._bottomBorder) {
             this.component.uiManager.getContext().beginPath();
             this.component.uiManager.getContext().moveTo(this.component.gcvOffsetX() + this._leftSize, this.component.gcvOffsetY() + this.component.gcvSizeY());
@@ -90,7 +89,7 @@ export class Window {
             this.component.uiManager.getContext().lineTo(this.component.gcvOffsetX() + this.component.gcvSizeX(), this.component.gcvOffsetY());
             this.component.uiManager.getContext().fill();
         }
- 
+
 
         if (this._bottomBorder) {
             this.component.uiManager.getContext().beginPath();
@@ -100,7 +99,6 @@ export class Window {
             this.component.uiManager.getContext().fill();
         }
     }
-
     renderWindowBorderTop(b) {
         this.component.uiManager.getContext().fillStyle = this.component.uiManager.getColorInactive(b);
         this.component.uiManager.getContext().fillRect(
@@ -125,7 +123,7 @@ export class Window {
             this.component.uiManager.getContext().lineTo(this.component.gcvOffsetX() + this.component.gcvSizeX(), this.component.gcvOffsetY());
             this.component.uiManager.getContext().fill();
         }
-        
+
     }
     renderWindowBorderBottom(b) {
         this.component.uiManager.getContext().fillStyle = this.component.uiManager.getColorInactive(b);
@@ -193,7 +191,7 @@ export class Window {
         let sizeYProcessed = size * yFactor;
 
         let px = this.component.gcvOffsetX() + this.component.gcvSizeX();
-        let mx = this.component.uiManager.getWidth() * 1.5; 
+        let mx = this.component.uiManager.getWidth() * 1.5;
         let xFactor = (((mx - px) / mx));
         let sizeXProcessed = size * xFactor;
 
@@ -244,44 +242,52 @@ export class Window {
         this.component.mcvSizeY(this._dOffset.y);
     }
 
+    userInteractingRoutine() {
+        this.container.interact(this.relX, this.relY);
+    }
+
     update(posX, posY) {
-        this._cmp = this.component.uiManager.mousePosition();
-
-        this._relX = this._cmp.x - posX;    
-        this._relY = this._cmp.y - posY;
-
-        this._relXEnd = this.component.gcvSizeX() - this._relX;
-        this._relYEnd = this.component.gcvSizeY() - this._relY;
-
-        if (this._relY < this.getBaseUISize() * 4) {
-            this.userDragging = true;
-        }
-        if (this._relX < this.getBaseUISize() * 4) {
-            this.userDragging = true;
-        }
-        if (Math.min(this._relXEnd, this._relYEnd) < this.getBaseUISize() * 2) {
-            this.userResizing = true;
-        }
-        
-        if (this.userDragging) {
-            this.userDraggingRoutine();
-        }
-        else if (this.userResizing) {
-            this.userResizingRoutine();
-        }
-
         if (!this.component.uiManager.isAnyMouseButtonPressed()) {
             this.userDragging = false;
-            this.userInteracting = false;
             this.userResizing = false;
+            return;
+        }
+
+        this._cmp = this.component.uiManager.mousePosition();
+        this.relX = this._cmp.x - posX;
+        this.relY = this._cmp.y - posY;
+        this._relXEnd = this.component.gcvSizeX() - this.relX;
+        this._relYEnd = this.component.gcvSizeY() - this.relY;
+
+
+        if (this.component.uiManager.isFrameButtonPressed(0)) {
+            if (this.relY < this.getBaseUISize() * 4) {
+                this.userDragging = true;
+            }
+            else if (this.relX < this.getBaseUISize() * 4) {
+                this.userDragging = true;
+            }
+            else if (Math.min(this._relXEnd, this._relYEnd) < this.getBaseUISize() * 2) {
+                this.userResizing = true;
+            }
+
+        }
+
+
+        if (this.userDragging) {
+            this.userDraggingRoutine();
+        } else if (this.userResizing) {
+            this.userResizingRoutine();
+        } else {
+            this.userInteractingRoutine();
         }
     }
 
     renderWindowFrame() {
-        this.component.uiManager.getContext().fillStyle = this.component.uiManager.getColorInactive(0.8);
+        this.component.uiManager.getContext().fillStyle = this.component.uiManager.getColorInactive(0.5);
         this.component.uiManager.getContext().fillRect(
-            this.component.gcvOffsetX(), this.component.gcvOffsetY(), 
-            this.component.gcvSizeX(), this.component.gcvSizeY()); 
+            this.component.gcvOffsetX(), this.component.gcvOffsetY(),
+            this.component.gcvSizeX(), this.component.gcvSizeY());
     }
 
 }
