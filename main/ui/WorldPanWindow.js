@@ -45,7 +45,7 @@ export class WindowElement {
     }
     render(startX, startY) {}
 
-    hover(posX, posY) {
+    interact(posX, posY) {
         this.hovered = true;
     }
     size() {

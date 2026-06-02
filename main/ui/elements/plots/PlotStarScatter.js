@@ -382,7 +382,7 @@ export class PlotStarScatter extends WindowElement {
         }
     }
 
-    hover(posX, posY) {
+    interact(posX, posY) {
         if (posX < this.paddingX || posX > (this.sizeX - this.paddingX)) {
             return;
         }

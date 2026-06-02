@@ -1,6 +1,8 @@
+import { HUE_CHARTREUSE, HUE_TANGOR } from "../../../color/hue.js";
 import { Component } from "../../Component.js";
 import { Container } from "../../Container.js";
 import { RadioToggleLabel } from "../../elements/RadioToggleLabel.js";
+import { SliderGradientBackground } from "../../elements/SliderGradientBackground.js";
 import { StarSpecializedValuePicker } from "../../elements/StarSpecializedValuePicker.js";
 import { TextBackground } from "../../elements/TextBackground.js";
 import { UI_CENTER } from "../../UIData.js";
@@ -97,8 +99,8 @@ export class AstronomyAtlasComponent extends Component {
     gcvMaxSize() {
         return this.config().style.maxSize;
     }
-    scvMinSize(v) {
-        this.config().style.minSize = v;
+    scvMaxSize(v) {
+        this.config().style.maxSize = v;
     }
 
     // star brightness and such
@@ -128,7 +130,7 @@ export class AstronomyAtlasComponent extends Component {
 
         // this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdBr(), UI_CENTER, () => this.uiManager.getColorInactive(.5)))  
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "astronomy atlas"))
-        this.container.addElement(new StarSpecializedValuePicker(this.window, () => this.gcvSizeX(), () => this.gcvSizeY() - (3 * this.ggvdH1()), this));
+        this.container.addElement(new StarSpecializedValuePicker(this.window, () => this.gcvSizeX(), () => this.gcvSizeY() - (2 + 14 * this.ggvdH1()), this));
 
         let row = new Container(window, 0);
         this.container.addElement(row);
@@ -136,20 +138,41 @@ export class AstronomyAtlasComponent extends Component {
         row.addElement(new RadioToggleLabel(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER, "size",
             () => this.gcvStMode() == 0, () => this.scvStMode(0),
             () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));
-
         row.addElement(new RadioToggleLabel(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER, "opacity",
             () => this.gcvStMode() == 1, () => this.scvStMode(1),
             () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));
 
-        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(.6)));
+        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "brightness 'c'"))
+        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvStBrightnessC(), (v) => this.scvStBrightnessC(v), () => this.gcvSizeX(), () => this.ggvdH1(),
+         0, 1, 30, 0.2, false));
+
+        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "opacity 'c'"))
+        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvStOpacityC(), (v) => this.scvStOpacityC(v), () => this.gcvSizeX(), () => this.ggvdH1(),
+         0, 1, 60, 0.2, false));
+
+        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "min size"))
+        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvMinSize(), (v) => this.scvMinSize(v), () => this.gcvSizeX(), () => this.ggvdH1(),
+         0, 1, 90, 0.2, false));
+         
+        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "max size"))
+        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvMaxSize(), (v) => this.scvMaxSize(v), () => this.gcvSizeX(), () => this.ggvdH1(),
+         0, 10, 120, 0.2, false));
+
+        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "min luminance"))
+        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvMinLuminance(), (v) => this.scvMinLuminance(v), () => this.gcvSizeX(), () => this.ggvdH1(),
+         -20000, 0, 150, 0.2, false));
+         
+        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "max luminance"))
+        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvMaxLuminance(), (v) => this.scvMaxLuminance(v), () => this.gcvSizeX(), () => this.ggvdH1(),
+         -1000, 1000, 180, 0.2, false));
+
+        // this.container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "size 'c'"))
+        // this.container.addElement(new SliderGradientBackground(window, UI_SH_STYLE_SIZE_C, sizeX, textHeight, 0, 1, () => COLOR_BLACK, () => COLOR_WHITE, false, resetStarStyle));
+
 
         // row.addElement(new RadioToggleLabel(window, half, textHeight, UI_CENTER, "color", UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, 1,
         //         () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));
 
-        // container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "brightness 'c'"))
-        // container.addElement(new SliderGradientBackground(window, UI_SH_STYLE_BRIGHTNESS_C, sizeX, textHeight, 0, 1, () => COLOR_BLACK, () => COLOR_WHITE, false, resetStarStyle));
-        // container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "size 'c'"))
-        // container.addElement(new SliderGradientBackground(window, UI_SH_STYLE_SIZE_C, sizeX, textHeight, 0, 1, () => COLOR_BLACK, () => COLOR_WHITE, false, resetStarStyle));
 
 
         // this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdBr(), UI_CENTER, () => this.uiManager.getColorInactive(.8)))  

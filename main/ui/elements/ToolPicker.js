@@ -80,8 +80,8 @@ export class ToolPickerElement extends WindowElement {
        
     }
 
-    hover(posX, posY) {
-        super.hover(posX, posY);
+    interact(posX, posY) {
+        super.interact(posX, posY);
         let c = this.getSquareColor(posX, posY);
         if (c != null) {
             this.hoverColor = c;

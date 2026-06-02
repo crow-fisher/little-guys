@@ -89,7 +89,7 @@ export class WorldPanContainer {
         this.sizeY = this.endY - startY;
     }
 
-    hover(posX, posY) {
+    interact(posX, posY) {
         this.window.hovered = true;
         
         let curX1 = 0;
@@ -104,7 +104,7 @@ export class WorldPanContainer {
             curX2 = curX1 + elSize[0];
             curY2 = curY1 + elSize[1];
             if (posX > curX1 && posX < curX2 && posY > curY1 && posY < curY2) {
-                el.hover(posX - curX1, posY - curY1);
+                el.interact(posX - curX1, posY - curY1);
                 return true;
             }
             if (this.dir == 0)

@@ -44,8 +44,8 @@ export class Toggle extends WindowElement {
         return [this.sizeX, this.sizeYFunc()];
     }
 
-    hover(posX, posY) {
-        super.hover(posX, posY);
+    interact(posX, posY) {
+        super.interact(posX, posY);
         if (this.window.isFrameButtonPressed(0)) {
             saveMapEntry(this.map, this.key, !getMapEntry(this.map, this.key));
         }

@@ -33,7 +33,7 @@ export class TopBarToggleFunc extends TopBarElementBase {
          this.uiManager.getContext().fillText(this.labelFunc(), startX, startY)
     }
 
-    hover(posX, posY) {
+    interact(posX, posY) {
         if (!this.uiManager.isFrameButtonPressed(0)) {
             return;
         }

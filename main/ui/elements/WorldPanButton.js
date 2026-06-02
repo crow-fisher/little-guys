@@ -37,8 +37,8 @@ export class WorldPanButton extends WindowElement {
         return [this.sizeX, this.sizeY];
     }
 
-    hover(posX, posY) {
-        super.hover(posX, posY);
+    interact(posX, posY) {
+        super.interact(posX, posY);
         posY -= this.lastRenderOffset;
 
         if (!isLeftMouseClicked()) {

@@ -31,7 +31,7 @@ export class TopBarText extends TopBarElementBase{
         this.uiManager.getContext().fillText(this.labelFunc(), startX, startY)
     }
 
-    hover(posX, posY) {
+    interact(posX, posY) {
         // if (!isLeftMouseClicked()) {
         //     return;
         // } 

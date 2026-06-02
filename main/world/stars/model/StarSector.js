@@ -117,15 +117,15 @@ export class StarSector {
                 this.getRenderMode()
             );
 
-            renderPointLabel(
-                this.starManager.worldManager.getContext(),
-                this.cs.renderScreen[0],
-                this.cs.renderScreen[1],
-                this.cs.renderScreen[2],
-                800 / this.cs.distToCamera,
-                hsvToHex(0, 0, 1),
-                ""
-            )
+            // renderPointLabel(
+            //     this.starManager.worldManager.getContext(),
+            //     this.cs.renderScreen[0],
+            //     this.cs.renderScreen[1],
+            //     this.cs.renderScreen[2],
+            //     800 / this.cs.distToCamera,
+            //     hsvToHex(0, 0, 1),
+            //     ""
+            // )
         };
         return ret;
 

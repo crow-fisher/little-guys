@@ -33,7 +33,7 @@ export class EditableText extends WindowElement {
         return [this.sizeX, this.sizeY];
     }
 
-    hover(posX, posY) {
+    interact(posX, posY) {
         if (isLeftMouseClicked()) {
             saveGD(UI_TEXTEDIT_ACTIVE, this.key);
         }

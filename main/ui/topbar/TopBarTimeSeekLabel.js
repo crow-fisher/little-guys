@@ -38,7 +38,7 @@ export class TopBarTimeSeekLabel extends TopBarElementBase{
         MAIN_CONTEXT.fillText(this.labelFunc(), startX, startY)
     }
 
-    hover(posX, posY) {
+    interact(posX, posY) {
         if (!isLeftMouseClicked()) {
             return;
         } 

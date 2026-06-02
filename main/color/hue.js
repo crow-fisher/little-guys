@@ -1,3 +1,4 @@
+// https://bitfume.com/tools/hue-names/#x
 export const HUE_RED=0.00;
 export const HUE_CHERRY=3.75;
 export const HUE_SCARLET=7.50;

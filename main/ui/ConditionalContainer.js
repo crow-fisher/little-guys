@@ -24,9 +24,9 @@ export class ConditionalContainer extends Container {
         }
     }
 
-    hover(posX, posY) { 
+    interact(posX, posY) { 
         if (this.func()) {
-            return super.hover(posX, posY);
+            return super.interact(posX, posY);
         } else {
             return [0, 0];
         }
