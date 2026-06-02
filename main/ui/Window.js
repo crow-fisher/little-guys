@@ -259,7 +259,6 @@ export class Window {
         this._relXEnd = this.component.gcvSizeX() - this.relX;
         this._relYEnd = this.component.gcvSizeY() - this.relY;
 
-
         if (this.component.uiManager.isFrameButtonPressed(0)) {
             if (this.relY < this.getBaseUISize() * 4) {
                 this.userDragging = true;
@@ -270,9 +269,7 @@ export class Window {
             else if (Math.min(this._relXEnd, this._relYEnd) < this.getBaseUISize() * 2) {
                 this.userResizing = true;
             }
-
         }
-
 
         if (this.userDragging) {
             this.userDraggingRoutine();

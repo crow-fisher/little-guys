@@ -1,21 +1,17 @@
-import { getBaseUISize } from "../../canvas.js";
-import { COLOR_BLACK, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
+import { COLOR_BLACK } from "../../colors.js";
 import { UI_BIGDOTHOLLOW, UI_BIGDOTSOLID } from "../../common.js";
-import { MAIN_CONTEXT } from "../../index.js";
-import { getLastMouseDownStart, isLeftMouseClicked } from "../../mouse.js";
-import { loadGD, saveGD, UI_CENTER } from "../UIData.js";
-import { WindowElement } from "../Window.js";
+import { UI_CENTER } from "../UIData.js";
+import { WindowElement } from "../WindowElement.js";
 
 export class RadioToggleLabel extends WindowElement {
-    constructor(window, sizeX, sizeY, offsetX, label, key, value, colorInactiveFunc, colorActiveFunc, textSizeMult = 0.75, startChars = [UI_BIGDOTHOLLOW, UI_BIGDOTSOLID]) {
-        super(window, sizeX, sizeY);
-        this.sizeX = sizeX;
-        this.sizeY = sizeY;
+    constructor(window, sizeXFunc, sizeYFunc, offsetX, label, getter, setter, colorInactiveFunc, colorActiveFunc, textSizeMult = 0.75, startChars = [UI_BIGDOTHOLLOW, UI_BIGDOTSOLID]) {
+        super(window, sizeXFunc, sizeYFunc);
+        this.sizeXFunc = sizeXFunc;
+        this.sizeYFunc = sizeYFunc;
         this.offsetX = offsetX;
         this.label = label;
-        this.key = key;
-        this.value = value;
-        this.lastClick = 0;
+        this.getter = getter;
+        this.setter = setter;
         this.colorActiveFunc = colorActiveFunc;
         this.colorInactiveFunc = colorInactiveFunc;
         this.textSizeMult = textSizeMult;
@@ -23,38 +19,31 @@ export class RadioToggleLabel extends WindowElement {
     }
 
     render(startX, startY) {
-        MAIN_CONTEXT.font = this.sizeY * this.textSizeMult + "px courier"
-        MAIN_CONTEXT.textAlign = 'center';
-        MAIN_CONTEXT.textBaseline = 'middle';
+        this.window.getContext().font = this.sizeYFunc() * this.textSizeMult + "px courier"
+        this.window.getContext().textAlign = 'center';
+        this.window.getContext().textBaseline = 'middle';
         let startChar = this.startChars[0];
-        if (loadGD(this.key) == this.value) {
-            MAIN_CONTEXT.fillStyle = this.colorActiveFunc();
+        if (this.getter()) {
+            this.window.getContext().fillStyle = this.colorActiveFunc();
             startChar = this.startChars[1];
         } else {
-            MAIN_CONTEXT.fillStyle = this.colorInactiveFunc();
+            this.window.getContext().fillStyle = this.colorInactiveFunc();
         }
-        MAIN_CONTEXT.fillRect(startX, startY, this.sizeX, this.sizeY);
-        MAIN_CONTEXT.fillStyle = COLOR_BLACK;
+        this.window.getContext().fillRect(startX, startY, this.sizeXFunc(), this.sizeYFunc());
+        this.window.getContext().fillStyle = COLOR_BLACK;
 
         if (this.offsetX == UI_CENTER) {
-            MAIN_CONTEXT.textAlign = 'center';
-            MAIN_CONTEXT.fillText(startChar + this.label, startX + this.sizeX / 2, startY + (this.sizeY / 2))
+            this.window.getContext().textAlign = 'center';
+            this.window.getContext().fillText(startChar + this.label, startX + this.sizeXFunc() / 2, startY + (this.sizeYFunc() / 2))
         } else {
-            MAIN_CONTEXT.textAlign = 'left';
-            MAIN_CONTEXT.fillText(startChar + this.label, startX + this.offsetX, startY + (this.sizeY / 2))
+            this.window.getContext().textAlign = 'left';
+            this.window.getContext().fillText(startChar + this.label, startX + this.offsetX, startY + (this.sizeYFunc() / 2))
         }
-        return [this.sizeX, this.sizeY];
+        return [this.sizeXFunc(), this.sizeYFunc()];
     }
 
     hover(posX, posY) {
-        super.hover(posX, posY);
-        if (!isLeftMouseClicked()) {
-            return;
-        } 
-        if (this.lastClick != getLastMouseDownStart()) {
-            saveGD(this.key, this.value);
-            this.lastClick = getLastMouseDownStart();
-        }
+        this.setter();
     }
 
 }

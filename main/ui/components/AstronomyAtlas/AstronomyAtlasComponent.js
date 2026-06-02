@@ -1,4 +1,6 @@
 import { Component } from "../../Component.js";
+import { Container } from "../../Container.js";
+import { RadioToggleLabel } from "../../elements/RadioToggleLabel.js";
 import { StarSpecializedValuePicker } from "../../elements/StarSpecializedValuePicker.js";
 import { TextBackground } from "../../elements/TextBackground.js";
 import { UI_CENTER } from "../../UIData.js";
@@ -72,9 +74,29 @@ export class AstronomyAtlasComponent extends Component {
 
         // this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdBr(), UI_CENTER, () => this.uiManager.getColorInactive(.5)))  
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "astronomy atlas"))  
+        this.container.addElement(new StarSpecializedValuePicker(this.window, () => this.gcvSizeX(), () => this.gcvSizeY() - (2 * this.ggvdH1()), this));
+    
+        let row = new Container(window, 0);
+        this.container.addElement(row);
+
+        row.addElement(new RadioToggleLabel(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER, "size",
+        () => this.gcvStMode() == 0, () => this.scvStMode(0),
+        () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));
+
+        row.addElement(new RadioToggleLabel(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER, "opacity",
+        () => this.gcvStMode() == 1, () => this.scvStMode(1),
+        () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));
         
-        this.container.addElement(new StarSpecializedValuePicker(this.window, () => this.gcvSizeX(), () => this.gcvSizeY() - this.ggvdH1(), this));
+        // row.addElement(new RadioToggleLabel(window, half, textHeight, UI_CENTER, "color", UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, 1,
+        //         () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));
         
+        // container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "brightness 'c'"))
+        // container.addElement(new SliderGradientBackground(window, UI_SH_STYLE_BRIGHTNESS_C, sizeX, textHeight, 0, 1, () => COLOR_BLACK, () => COLOR_WHITE, false, resetStarStyle));
+        // container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "size 'c'"))
+        // container.addElement(new SliderGradientBackground(window, UI_SH_STYLE_SIZE_C, sizeX, textHeight, 0, 1, () => COLOR_BLACK, () => COLOR_WHITE, false, resetStarStyle));
+    
+        
+
         // this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdBr(), UI_CENTER, () => this.uiManager.getColorInactive(.8)))  
         // this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.gcvSizeY() - this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(.8)));
 
