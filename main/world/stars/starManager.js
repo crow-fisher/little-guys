@@ -29,6 +29,11 @@ export class StarManager {
         this.loadData();
     }
 
+    getAstronomyAtlasComponent() {
+        return this.worldManager.mainManager.uiManager.astronomyAtlasComponent;
+    }
+
+
     minLumensRuntime() {
         return;
         if (loadGD(UI_SH_MINMODE) != 0) {

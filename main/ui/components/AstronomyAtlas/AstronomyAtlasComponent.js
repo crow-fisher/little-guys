@@ -74,7 +74,7 @@ export class AstronomyAtlasComponent extends Component {
 
         // this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdBr(), UI_CENTER, () => this.uiManager.getColorInactive(.5)))  
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "astronomy atlas"))  
-        this.container.addElement(new StarSpecializedValuePicker(this.window, () => this.gcvSizeX(), () => this.gcvSizeY() - (2 * this.ggvdH1()), this));
+        this.container.addElement(new StarSpecializedValuePicker(this.window, () => this.gcvSizeX(), () => this.gcvSizeY() - (3 * this.ggvdH1()), this));
     
         let row = new Container(window, 0);
         this.container.addElement(row);
@@ -86,6 +86,8 @@ export class AstronomyAtlasComponent extends Component {
         row.addElement(new RadioToggleLabel(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER, "opacity",
         () => this.gcvStMode() == 1, () => this.scvStMode(1),
         () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));
+
+        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(.6)));
         
         // row.addElement(new RadioToggleLabel(window, half, textHeight, UI_CENTER, "color", UI_STARMAP_STAR_CONTROL_TOGGLE_MODE, 1,
         //         () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));

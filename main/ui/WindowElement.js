@@ -11,7 +11,7 @@ export class WindowElement {
     size() {
         return [this.sizeXFunc(), this.sizeYFunc()];
     }
-    hover(posX, posY) {
+    interact(posX, posY) {
     }
 
 }

@@ -57,7 +57,7 @@ export class Container {
             curY2 = curY1 + elSize[1];
 
             if (posX > curX1 && posX < curX2 && posY > curY1 && posY < curY2) {
-                el.hover(posX - curX1, posY - curY1);
+                el.interact(posX - curX1, posY - curY1);
                 return true;
             } 
 

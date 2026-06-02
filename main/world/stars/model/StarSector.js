@@ -29,21 +29,41 @@ export class StarSector {
         this.visibilityFlags = 0;
     }
 
+    gcvStBrightnessPosX() {
+        return this.starManager.getAstronomyAtlasComponent().gcvStBrightnessPosX();
+    }
+    gcvStBrightnessPosY() {
+        return this.starManager.getAstronomyAtlasComponent().gcvStBrightnessPosY();
+    }
+    gcvStOpacityPosX() {
+        return this.starManager.getAstronomyAtlasComponent().gcvStOpacityPosX();
+    }
+    gcvStOpacityPosY() {
+        return this.starManager.getAstronomyAtlasComponent().gcvStOpacityPosY();
+    }
+
     getSizeParams() {
         return [
-            loadGD(UI_SH_STYLE_SIZE_A),
-            loadGD(UI_SH_STYLE_SIZE_B),
-            loadGD(UI_SH_STYLE_SIZE_C),
-            loadGD(UI_SH_MINSIZE),
-            loadGD(UI_SH_MAXSIZE),
-        ];
+        this.gcvStBrightnessPosX(),
+        this.gcvStBrightnessPosY(),
+            0.5,
+            1,
+            8
+        ]
+        // return [
+        //     loadGD(UI_SH_STYLE_SIZE_A),
+        //     loadGD(UI_SH_STYLE_SIZE_B),
+        //     loadGD(UI_SH_STYLE_SIZE_C),
+        //     loadGD(UI_SH_MINSIZE),
+        //     loadGD(UI_SH_MAXSIZE),
+        // ];
     }
 
     getBrightnessParams() {
         return [
-            loadGD(UI_SH_STYLE_BRIGHTNESS_A),
-            loadGD(UI_SH_STYLE_BRIGHTNESS_B),
-            loadGD(UI_SH_STYLE_BRIGHTNESS_C)
+            this.gcvStOpacityPosX(),
+            this.gcvStOpacityPosY(),
+            0.5
         ];
     }
 
@@ -137,6 +157,8 @@ export class StarSector {
     }
 
     renderStars(luminanceParams, sizeParams, brightnessParams, localitySelectParams, renderMode) {
+        this.recalculateStarColorFlag = true;
+        
         let ret = 0;
         for (let i = 0, bucketLumens; i < this.buckets.length; i++) {
             bucketLumens = this.bucketLumensCutoffs.at(i) * this.relCameraDistBrightnessMult;

@@ -32,7 +32,7 @@ export class StarSpecializedValuePicker extends WindowElement {
         this.window.getContext().beginPath();
     }
 
-    hover(posX, posY) {
+    interact(posX, posY) {
         this.pX = invlerp(0, this.sizeXFunc(), posX);
         this.pY = invlerp(0, this.sizeYFunc(), posY);
 
@@ -43,7 +43,6 @@ export class StarSpecializedValuePicker extends WindowElement {
             this.component.scvStOpacityPosX(this.pX)
             this.component.scvStOpacityPosY(this.pY)
         }
-        console.log(this.pX, this.pY);
         // saveGD(this.keys[idx][0], lerp(...this.valueRanges[idx][0], pX));
         // saveGD(this.keys[idx][1], lerp(...this.valueRanges[idx][1], pY));
         // resetStarStyle();

@@ -42,7 +42,7 @@ export class RadioToggleLabel extends WindowElement {
         return [this.sizeXFunc(), this.sizeYFunc()];
     }
 
-    hover(posX, posY) {
+    interact(posX, posY) {
         this.setter();
     }
 
