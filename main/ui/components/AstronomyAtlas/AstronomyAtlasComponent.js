@@ -1,14 +1,69 @@
 import { Component } from "../../Component.js";
+import { StarSpecializedValuePicker } from "../../elements/StarSpecializedValuePicker.js";
 import { TextBackground } from "../../elements/TextBackground.js";
 import { UI_CENTER } from "../../UIData.js";
 
 export class AstronomyAtlasComponent extends Component {
-
     getDefaultConfig() {
         return {
-            offsetScale: [100, 100, 600, 400]
+            offsetScale: {
+                offsetX: this.ggvUISize() * 12,
+                offsetY: this.ggvUISize() * 12,
+                sizeX: this.ggvUISize() * 70,
+                sizeY: this.ggvUISize() * 58
+            },
+            submenuState: {
+                plot: false,
+                label: false,
+                setup: false,
+                style: false,
+                select: false
+            },
+            plot: {},
+            label: {},
+            setup: {},
+            style: {
+                brightnessPosX: 0.5,
+                brightnessPosY: 0.5,
+                opacityPosX: 0.5,
+                opacityPosY: 0.5,
+                mode: 0
+            },
+            select: {}
         }
     }
+
+    gcvStBrightnessPosX() {
+        return this.config().style.brightnessPosX;
+    }
+    gcvStBrightnessPosY() {
+        return this.config().style.brightnessPosY;
+    }
+    gcvStOpacityPosX() {
+        return this.config().style.opacityPosX;
+    }
+    gcvStOpacityPosY() {
+        return this.config().style.opacityPosY;
+    }
+    gcvStMode() {
+        return this.config().style.mode;
+    }
+    mcvStBrightnessPosX(v) {
+        this.config().style.brightnessPosX += v;
+    }
+    mcvStBrightnessPosY(v) {
+        this.config().style.brightnessPosY += v;
+    }
+    mcvStOpacityPosX(v) {
+        this.config().style.opacityPosX += v;
+    }
+    mcvStOpacityPosY(v) {
+        this.config().style.opacityPosY += v;
+    }
+    scvStMode(v) {
+        this.config().style.mode = v;
+    }
+
 
     constructor(uiManager) {
         super(uiManager);
@@ -17,6 +72,9 @@ export class AstronomyAtlasComponent extends Component {
 
         // this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdBr(), UI_CENTER, () => this.uiManager.getColorInactive(.5)))  
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "astronomy atlas"))  
+        
+        this.container.addElement(new StarSpecializedValuePicker(this.window, () => this.gcvSizeX(), () => this.gcvSizeY() - this.ggvdH1(), this));
+        
         // this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdBr(), UI_CENTER, () => this.uiManager.getColorInactive(.8)))  
         // this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.gcvSizeY() - this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(.8)));
 

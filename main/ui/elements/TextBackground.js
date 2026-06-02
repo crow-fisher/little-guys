@@ -3,10 +3,10 @@ import { loadGD, saveGD, UI_CENTER } from "../UIData.js";
 import { WindowElement } from "../WindowElement.js";
 
 export class TextBackground extends WindowElement {
-    constructor(window, sizeX, sizeY, textOffset, colorFunc, sizeMult, text, fontVariant = "") {
-        super(window, sizeX, sizeY);
-        this.sizeX = sizeX;
-        this.sizeY = sizeY;
+    constructor(window, sizeXFunc, sizeYFunc, textOffset, colorFunc, sizeMult, text, fontVariant = "") {
+        super(window, sizeXFunc, sizeYFunc);
+        this.sizeXFunc = sizeXFunc;
+        this.sizeYFunc = sizeYFunc;
         this.textOffset = textOffset;
         this.colorFunc = colorFunc;
         this.sizeMult = sizeMult;
@@ -15,20 +15,20 @@ export class TextBackground extends WindowElement {
     }
 
     render(startX, startY) {
-        this.window.getContext().font = this.sizeY() * this.sizeMult + "px courier" + this.variant;
+        this.window.getContext().font = this.sizeYFunc() * this.sizeMult + "px courier" + this.variant;
         this.window.getContext().textBaseline = 'middle';
         this.window.getContext().fillStyle = this.colorFunc();
-        this.window.getContext().fillRect(startX, startY, this.sizeX(), this.sizeY());
+        this.window.getContext().fillRect(startX, startY, this.sizeXFunc(), this.sizeYFunc());
         if (this.text) {
             this.window.getContext().fillStyle = "#000000"
             if (this.textOffset == UI_CENTER) {
                 this.window.getContext().textAlign = 'center';
-                this.window.getContext().fillText(this.text, startX + this.sizeX() / 2, startY + (this.sizeY() / 2))
+                this.window.getContext().fillText(this.text, startX + this.sizeXFunc() / 2, startY + (this.sizeYFunc() / 2))
             } else {
                 this.window.getContext().textAlign = 'left';
-                this.window.getContext().fillText(this.text, startX + this.textOffset, startY + (this.sizeY() / 2))
+                this.window.getContext().fillText(this.text, startX + this.textOffset, startY + (this.sizeYFunc() / 2))
             }
         }
-        return [this.sizeX(), this.sizeY()];
+        return [this.sizeXFunc(), this.sizeYFunc()];
     }
 }

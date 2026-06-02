@@ -7,7 +7,7 @@ export class UIManager {
     constructor(mainManager) {
         this.mainManager = mainManager;
 
-        this.config = loadGD(UI_COMPONENT_DATA);
+        this._config = loadGD(UI_COMPONENT_DATA);
 
         this.astronomyAtlasComponent = new AstronomyAtlasComponent(this);
 

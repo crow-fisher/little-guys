@@ -1,7 +1,7 @@
 import { Container } from "./Container.js";
 import { loadGD } from "./UIData.js";
 import { Window } from "./Window.js";
- 
+
 export class Component {
     constructor(uiManager) {
         this.name = "Component";
@@ -10,7 +10,7 @@ export class Component {
         this.container = new Container(this.window, 1);
         this.window.container = this.container;
     }
- 
+
     /// core runtime methods
     // rendering
     render() {
@@ -20,57 +20,61 @@ export class Component {
     update() {
         // shouldRegisterMouseInput asks if the window is being 'interacted', 'dragged', or 'resized'
         // the second statement asks if the left mouse button was clicked this frame, and if it's within the window
-        if (this.window.shouldRegisterMouseInput() || 
+        if (this.window.shouldRegisterMouseInput() ||
             (this.uiManager.isFrameButtonPressed(0) && this.isPointWithinBounds(this.uiManager.mousePosition()))) {
-                this.window.update(this.gcvOffsetX(), this.gcvOffsetY());
-            }
+            this.window.update(this.gcvOffsetX(), this.gcvOffsetY());
+        }
     }
 
     isPointWithinBounds(p) {
-        return p.x > this.gcvOffsetX() && p.x < (this.gcvOffsetX() + this.gcvSizeX()) && 
+        return p.x > this.gcvOffsetX() && p.x < (this.gcvOffsetX() + this.gcvSizeX()) &&
             p.y > this.gcvOffsetY() && p.y < (this.gcvOffsetY() + this.gcvSizeY())
     }
 
     /// core config setup methods
     // sets up the config state in this object to have required values for any components
     configInit() {
-        this.uiManager.config[this.name] = this.uiManager.config[this.name] ?? this.getDefaultConfig();
+        this.uiManager._config[this.name] = this.uiManager._config[this.name] ?? this.getDefaultConfig();
     }
     // the method you should extend to provide all required config parameters your component needs to function
     getDefaultConfig() {
         return {
-            offsetScale: [100, 100, 100, 100]
+            offsetScale: {
+                offsetX: this.ggvUISize() * 12,
+                offsetY: this.ggvUISize() * 12,
+                sizeX: this.ggvUISize() * 20,
+                sizeY: this.ggvUISize() * 20
+            }
         }
     }
-    // "gco" == "get config object"
-    gcoOffsetScale() {
-        return this.uiManager.config[this.name].offsetScale;
+    config() {
+        return this.uiManager._config[this.name];
     }
     // "gcv" == "get config value"
     gcvOffsetX() {
-        return this.gcoOffsetScale()[0];
+        return this.config().offsetScale.offsetX;
     }
     gcvOffsetY() {
-        return this.gcoOffsetScale()[1];
+        return this.config().offsetScale.offsetY;
     }
     gcvSizeX() {
-        return this.gcoOffsetScale()[2];
+        return this.config().offsetScale.sizeX;
     }
     gcvSizeY() {
-        return this.gcoOffsetScale()[3];
+        return this.config().offsetScale.sizeY;
     }
     // "mcv" == "modify config value"
     mcvOffsetX(v) {
-        this.gcoOffsetScale()[0] += v;
+        this.config().offsetScale.offsetX = v;
     }
     mcvOffsetY(v) {
-        this.gcoOffsetScale()[1] += v;
+        this.config().offsetScale.offsetY = v;
     }
     mcvSizeX(v) {
-        this.gcoOffsetScale()[2] += v;
+        this.config().offsetScale.sizeX = v;
     }
     mcvSizeY(v) {
-        this.gcoOffsetScale()[3] += v;
+        this.config().offsetScale.sizeY = v;
     }
     // "ggv" == "get global value"
     ggvUISize() {
@@ -78,16 +82,16 @@ export class Component {
     }
     // "ggvd" == "get global value derivative"
     ggvdH1() {
-        return this.ggvUISize() *  4;
+        return this.ggvUISize() * 4;
     }
     ggvdH2() {
-        return this.ggvUISize() *  3;
+        return this.ggvUISize() * 3;
     }
     ggvdH3() {
         return this.ggvUISize() * 2.5;
     }
     ggvdBr() {
-        return this.ggvUISize() *  1;
+        return this.ggvUISize() * 1;
     }
     // "gcvd" == "get config value derivative"
     gcvdHalfX() {

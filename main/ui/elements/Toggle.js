@@ -4,10 +4,8 @@ import { GAMEDATA, getMapEntry, saveMapEntry, UI_CENTER } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class Toggle extends WindowElement {
-    constructor(window, sizeX, sizeY, offsetX, key, label, colorInactiveFunc, colorActiveFunc, textSize = 0.75, showStartChar=true, map=GAMEDATA) {
-        super(window, sizeX, sizeY);
-        this.sizeX = sizeX;
-        this.sizeY = sizeY;
+    constructor(window, sizeXFunc, sizeYFunc, offsetX, key, label, colorInactiveFunc, colorActiveFunc, textSize = 0.75, showStartChar=true, map=GAMEDATA) {
+        super(window, sizeXFunc, sizeYFunc);
         this.offsetX = offsetX;
         this.key = key;
         this.label = label;
@@ -19,7 +17,7 @@ export class Toggle extends WindowElement {
     }
 
     render(startX, startY) {
-        this.window.getContext().font = this.sizeY * this.textSize + "px courier"
+        this.window.getContext().font = this.sizeYFunc() * this.textSize + "px courier"
         this.window.getContext().textAlign = 'center';
         this.window.getContext().textBaseline = 'middle';
         let startChar = UI_BIGDOTHOLLOW;
@@ -29,7 +27,7 @@ export class Toggle extends WindowElement {
         } else {
             this.window.getContext().fillStyle = this.colorInactiveFunc();
         }
-        this.window.getContext().fillRect(startX, startY, this.sizeX, this.sizeY);
+        this.window.getContext().fillRect(startX, startY, this.sizeXFunc(), this.sizeYFunc());
         this.window.getContext().fillStyle = COLOR_BLACK;
 
         if (!this.showStartChar) {
@@ -38,12 +36,12 @@ export class Toggle extends WindowElement {
 
         if (this.offsetX == UI_CENTER) {
             this.window.getContext().textAlign = 'center';
-            this.window.getContext().fillText(startChar + this.label, startX + this.sizeX / 2, startY + (this.sizeY / 2))
+            this.window.getContext().fillText(startChar + this.label, startX + this.sizeX / 2, startY + (this.sizeYFunc() / 2))
         } else {
             this.window.getContext().textAlign = 'left';
-            this.window.getContext().fillText(startChar + this.label, startX + this.offsetX, startY + (this.sizeY / 2))
+            this.window.getContext().fillText(startChar + this.label, startX + this.offsetX(), startY + (this.sizeYFunc() / 2))
         }
-        return [this.sizeX, this.sizeY];
+        return [this.sizeX, this.sizeYFunc()];
     }
 
     hover(posX, posY) {
