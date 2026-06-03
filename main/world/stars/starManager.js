@@ -141,7 +141,7 @@ export class StarManager {
     rebuildSectors() {
         this.sectors = new Map();
 
-        this.sectorSize = 200;
+        this.sectorSize = 2000;
         this.numSectorsArr = [
             (this.bounds[3] - this.bounds[0]) / this.sectorSize,
             (this.bounds[4] - this.bounds[1]) / this.sectorSize,

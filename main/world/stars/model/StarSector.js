@@ -32,7 +32,8 @@ export class StarSector {
         this.loadedStars = new Array();
         this.constellationStars = new Set();
 
-        this.visibilityFlags = 0;
+        this.curStarsRendered = 0;
+        this.prevStarsRendered = 0;
     }
 
     gcvStBrightnessPosX() {
@@ -116,9 +117,8 @@ export class StarSector {
             return;
         }
         this.renderPrepare();
-        if (this.prevStarsRendered > 0 || this.fovCs.isVisibleOnScreen() || this.centerCs.isVisibleOnScreen() || this.rootCs.isVisibleOnScreen() || this.cornerCs.isVisibleOnScreen()) {
+        if (this.prevStarsRendered > 0 || this.fovCs.isVisibleOnScreen()) {
             this.prevStarsRendered = this.curStarsRendered;
-            this.curStarsRendered = 0;
             this.curStarsRendered = this.renderStars(
                 this.getLuminanceParams(),
                 this.getSizeParams(),
@@ -204,9 +204,14 @@ export class StarSector {
     }
 
     renderPrepare() {
+        this.rootCs.process();
+
+        if (this.rootCs.screen[2] < -this.starManager.sectorSize) {
+            return;
+        }
+        
         this.setBrightnessCameraPoint();
         this.setFOVCameraPoint();
-        this.rootCs.process();
         this.centerCs.process();
         this.cornerCs.process();
 
