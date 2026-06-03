@@ -66,6 +66,14 @@ export function addVec3MultDestAdd(v1, v2, m, dest) {
   dest[1] = m * (v1[1] + v2[1]);
   dest[2] = m * (v1[2] + v2[2]);
 }
+
+export function addScalarMultToVec3(v1, s, m) {
+  let out = structuredClone(v1);
+  out[0] += s * m;
+  out[1] += s * m;
+  out[2] += s * m;
+  return out;
+}
 export function subtractVectors(v1, v2) {
   for (let i = 0; i < v1.length; i++) {
     v1[i] -= v2[i];

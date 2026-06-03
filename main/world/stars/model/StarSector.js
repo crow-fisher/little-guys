@@ -3,7 +3,7 @@ import { loadGD, UI_SH_MINSIZE, UI_SH_DISTPOWERMULT, UI_SH_MAXLUMINENCE, UI_SH_M
 import { hsvToHex } from "../../../color/color.js";
 import { renderPointLabel } from "../../../rendering/renderFunctions.js";
 import { CoordinateSet } from "../../../rendering/model/CoordinateSet.js";
-import { addVec3Dest, addVec3MultDest, addVec3MultDestAdd, copyVecValue, getVec3Length, normalizeVec3 } from "../../../util/vector.js";
+import { addScalarMultToVec3, addVec3Dest, addVec3MultDest, addVec3MultDestAdd, addVectors, copyVecValue, getVec3Length, normalizeVec3 } from "../../../util/vector.js";
 
 const Z_VISIBLE = 0b10;
 const FOV_VISIBLE = 0b01;
@@ -13,9 +13,11 @@ export class StarSector {
         this.starManager = starManager;
         this.sector = sector;
         this.cartesian = cartesian;
+        this.center = addScalarMultToVec3(cartesian, this.starManager.sectorSize, 0.5)
         this.cartesianBounds = cartesianBounds;
         
         this.rootCs = new CoordinateSet(this.starManager.getCameraManager(), this.cartesian);
+        this.centerCs = new CoordinateSet(this.starManager.getCameraManager(), this.center);
         this.brightnessCs = new CoordinateSet(this.starManager.getCameraManager(), this.cartesian);
         this.fovCs = new CoordinateSet(this.starManager.getCameraManager(), this.cartesian);
 
@@ -118,35 +120,55 @@ export class StarSector {
             //     this.getRenderMode()
             // );
 
+            // renderPointLabel(
+            //     this.starManager.worldManager.getContext(),
+            //     this.rootCs.renderScreen[0],
+            //     this.rootCs.renderScreen[1],
+            //     this.rootCs.renderScreen[2],
+            //     8000 / this.rootCs.distToCamera,
+            //     hsvToHex(1, 0, 0),
+            //     ""
+            // ) 
+
+            
             renderPointLabel(
                 this.starManager.worldManager.getContext(),
+                this.centerCs.renderScreen[0],
+                this.centerCs.renderScreen[1],
+                this.centerCs.renderScreen[2],
+                8000 / this.centerCs.distToCamera,
+                hsvToHex(0, 0, 1),
+                ""
+            ) 
+
+            // renderPointLabel(
+            //     this.starManager.worldManager.getContext(),
+            //     this.brightnessCs.renderScreen[0],
+            //     this.brightnessCs.renderScreen[1],
+            //     this.brightnessCs.renderScreen[2],
+            //     8000 / this.brightnessCs.distToCamera,
+            //     hsvToHex(0, 0, 0),
+            //     ""
+            // )
+
+            // renderPointLabel(
+            //     this.starManager.worldManager.getContext(),
+            //     this.rootCs.renderScreen[0],
+            //     this.rootCs.renderScreen[1],
+            //     this.rootCs.renderScreen[2],
+            //     8000 / this.rootCs.distToCamera,
+            //     hsvToHex(0, 0, 1),
+            //     ""
+            // )
+                renderPointLabel(
+        this.starManager.worldManager.getContext(),
                 this.fovCs.renderScreen[0],
                 this.fovCs.renderScreen[1],
                 this.fovCs.renderScreen[2],
                 8000 / this.fovCs.distToCamera,
                 hsvToHex(this.fovCs.distToCamera + 10 * getVec3Length(this.cartesian), 1, 1),
                 ""
-            ) 
-
-            renderPointLabel(
-                this.starManager.worldManager.getContext(),
-                this.brightnessCs.renderScreen[0],
-                this.brightnessCs.renderScreen[1],
-                this.brightnessCs.renderScreen[2],
-                8000 / this.brightnessCs.distToCamera,
-                hsvToHex(0, 0, 0),
-                ""
-            )
-
-            renderPointLabel(
-                this.starManager.worldManager.getContext(),
-                this.rootCs.renderScreen[0],
-                this.rootCs.renderScreen[1],
-                this.rootCs.renderScreen[2],
-                8000 / this.rootCs.distToCamera,
-                hsvToHex(0, 0, 1),
-                ""
-            )
+                );
         } else if (this.fovCs.screen[2] > 0 && this.fovCs.distToCamera < 100) {
             // console.log(this.fovCs.world);
         }
@@ -165,7 +187,7 @@ export class StarSector {
     setFOVCameraPoint() {
         addVec3MultDest(loadGD(UI_CAMERA_OFFSET_VEC), this.starManager.worldManager.mainManager.cameraManager.forward, -(10 ** 8), this.fovCs.world);
         normalizeVec3(this.fovCs.world);
-        addVec3MultDest(this.cartesian, this.fovCs.world, this.starManager.sectorSize * 2, this.fovCs.world);
+        addVec3MultDest(this.center, this.fovCs.world, this.starManager.sectorSize * 2, this.fovCs.world);
         this.fovCs.process();
     }
 
@@ -173,6 +195,8 @@ export class StarSector {
         this.setBrightnessCameraPoint();
         this.setFOVCameraPoint();
         this.rootCs.process();
+        this.centerCs.process();
+        
         
         this.curCameraDist = this.fovCs.distToCamera;
         this.relCameraDist = (this.curCameraDist / this.rootCameraDist);
