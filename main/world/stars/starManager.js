@@ -1,4 +1,5 @@
 import { calculateStatistics, combineColorMultArrDest, hsv2rgb, invlerp, lerp } from "../../common.js";
+import { CoordinateSet } from "../../rendering/model/CoordinateSet.js";
 import { renderLine } from "../../rendering/renderFunctions.js";
 import { loadGD, saveGD, UI_AA_LABEL_GRAPH, UI_AA_LABEL_STARS, UI_AA_PLOT_SELECT_NAMED_STARS, UI_AA_PLOT_XKEY, UI_AA_PLOT_YKEY, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_MIN, UI_AA_SETUP_POW, UI_AA_SETUP_WINDOW_SIZE, UI_CAMERA_FOV, UI_SH_COLORSHIFT, UI_SH_MINLUMINENCE, UI_SH_MINMODE, UI_SH_TARGETNUMSTARS, UI_STARMAP_CONSTELLATION_BRIGHTNESS } from "../../ui/UIData.js";
 import { HipparcosCatalog } from "./catalog/HipparcosCatalog.js";
@@ -22,6 +23,7 @@ export class StarManager {
         this.hdMap = new Map(); // HD id
         this.constellationStars = new Set();
 
+        
         this.paramStatistics = new Map();
 
         this.numSectorsArr = 1;
@@ -139,7 +141,7 @@ export class StarManager {
     rebuildSectors() {
         this.sectors = new Map();
 
-        this.sectorSize = 1000;
+        this.sectorSize = 200;
         this.numSectorsArr = [
             (this.bounds[3] - this.bounds[0]) / this.sectorSize,
             (this.bounds[4] - this.bounds[1]) / this.sectorSize,

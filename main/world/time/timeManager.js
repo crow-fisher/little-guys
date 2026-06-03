@@ -6,7 +6,7 @@ import { MILLIS_PER_DAY } from "../../util/const.js";
 export class TimeManager {
     constructor(worldManager) {
         this.worldManager = worldManager;
-        this.curDay = 100;
+        this.curDay = 100.2
         this.curTimeScale = 1;
         this.daylightStrength = 0;
         this.lastTimeTick = Date.now();
