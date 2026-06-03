@@ -7,7 +7,7 @@ export class KeyboardCameraControlManager extends CameraControlManager {
     }
     controlRoutine() {
         this.ref = loadGD(UI_CAMERA_OFFSET_VEC_DT);
-        this.rate = 0.3;
+        this.rate = 0.8;
         if (this.cameraManager.isKeyPressed("q")) {
             this.ref[1] += this.rate;
         }

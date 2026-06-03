@@ -13,7 +13,7 @@ export class UIManager {
         this.topBarComponent = new TopBarComponent(this);
 
         this.components = [
-            // this.astronomyAtlasComponent,
+            this.astronomyAtlasComponent,
             this.topBarComponent
         ]
     }

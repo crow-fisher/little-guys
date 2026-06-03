@@ -1,6 +1,6 @@
 import { calculateStatistics, combineColorMultArrDest, hsv2rgb, invlerp, lerp } from "../../common.js";
 import { renderLine } from "../../rendering/renderFunctions.js";
-import { loadGD, saveGD, UI_AA_LABEL_GRAPH, UI_AA_LABEL_STARS, UI_AA_PLOT_SELECT_NAMED_STARS, UI_AA_PLOT_XKEY, UI_AA_PLOT_YKEY, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_MIN, UI_AA_SETUP_POW, UI_AA_SETUP_WINDOW_SIZE, UI_SH_COLORSHIFT, UI_SH_MINLUMINENCE, UI_SH_MINMODE, UI_SH_TARGETNUMSTARS, UI_STARMAP_CONSTELLATION_BRIGHTNESS } from "../../ui/UIData.js";
+import { loadGD, saveGD, UI_AA_LABEL_GRAPH, UI_AA_LABEL_STARS, UI_AA_PLOT_SELECT_NAMED_STARS, UI_AA_PLOT_XKEY, UI_AA_PLOT_YKEY, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_MIN, UI_AA_SETUP_POW, UI_AA_SETUP_WINDOW_SIZE, UI_CAMERA_FOV, UI_SH_COLORSHIFT, UI_SH_MINLUMINENCE, UI_SH_MINMODE, UI_SH_TARGETNUMSTARS, UI_STARMAP_CONSTELLATION_BRIGHTNESS } from "../../ui/UIData.js";
 import { HipparcosCatalog } from "./catalog/HipparcosCatalog.js";
 import { PastelCatalog } from "./catalog/PastelCatalog.js";
 import { StellariumCatalog } from "./catalog/StellariumCatalog.js";
@@ -86,7 +86,7 @@ export class StarManager {
 
         let rgb = hsv2rgb(...hsv);
         let rgb2 = hsv2rgb(...hsv2);
-        
+
         rgb[0] *= 255;
         rgb[1] *= 255;
         rgb[2] *= 255;
@@ -97,7 +97,7 @@ export class StarManager {
         this.stars.values().forEach((star) => {
             this._rac_val = star[this._rac_curKey];
             star._rac_val = star[this._rac_curKey];
-            
+
             if (this._rac_val == null) {
                 return;
             }
@@ -127,9 +127,11 @@ export class StarManager {
     }
 
 
-    render() { 
+    render() {
         // this.iterateOnSectors((sector) => sector.render())
-        console.log(this.iterateOnSectorsAcc((sector) => sector.render()))
+        // console.log(this.iterateOnSectorsAcc((sector) => sector.render()))
+
+        this.sortAndRender();
         this.renderConstellations();
         this.minLumensRuntime();
     }
@@ -170,6 +172,33 @@ export class StarManager {
                 (y) => this.sectors.get(x).get(y).keys().forEach(
                     (z) => func(this.sectors.get(x).get(y).get(z))
                 )));
+    }
+
+    sortAndRender() {
+        this._sectorsIterArr = this._sectorsIterArr ?? new Array();
+        this._numSectors = 0;
+        this._numStarsRendered = 0;
+         
+        this.fovMult = (120 / loadGD(UI_CAMERA_FOV)) ** 2;
+
+        this.sectors.keys().forEach(
+            (x) => this.sectors.get(x).keys().forEach(
+                (y) => this.sectors.get(x).get(y).keys().forEach(
+                    (z) => {
+                        this._sectorsIterArr[this._numSectors] = this.sectors.get(x).get(y).get(z);
+                        this._numSectors += 1;
+                    }
+                )));
+        this._sectorsIterArr.length = this._numSectors;
+        this._sectorsIterArr.sort((a, b) => b.fovCs.distToCamera - a.fovCs.distToCamera);
+        this._sectorsIterArr.forEach((s) => this._numStarsRendered += s.render());
+        // if (this._numStarsRendered > 10000) {
+        //     this.getAstronomyAtlasComponent().mcvMinLuminance(.1);
+        // } else {
+        //     this.getAstronomyAtlasComponent().mcvMinLuminance(-.1);
+        // }
+        console.log(this._numStarsRendered);
+
     }
 
     iterateOnSectorsAcc(func) {
@@ -273,12 +302,13 @@ export class StarManager {
                     loadGD(UI_STARMAP_CONSTELLATION_BRIGHTNESS),
                     fromStar._color
                 );
-            }})
+            }
+        })
     };
 
     getCameraManager() {
         return this.worldManager.mainManager.cameraManager;
     }
 
-    
+
 }

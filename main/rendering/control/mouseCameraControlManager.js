@@ -21,5 +21,6 @@ export class MouseCameraControlManager extends CameraControlManager {
         this.ref = loadGD(UI_CAMERA_ROTATION_VEC);
         this.ref[0] += this.cameraManager.getFrameMouseMove().x * 10;
         this.ref[1] += this.cameraManager.getFrameMouseMove().y * 10;
+        this.cameraManager.mainManager.uiManager.astronomyAtlasComponent.dirtyConfig = true;
     }
 }

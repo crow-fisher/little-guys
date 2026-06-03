@@ -9,6 +9,7 @@ export class Component {
         this.window = new Window(this);
         this.container = new Container(this.window, 1);
         this.window.container = this.container;
+        this.dirtyConfig = false;
     }
 
     /// core runtime methods
@@ -18,6 +19,13 @@ export class Component {
     }
     // input interactions
     update() {
+        this._curConfig = JSON.stringify(this.config());
+        if (this._curConfig != this._pastConfig) {
+            this.dirtyConfig = true;
+        } else {
+            this.dirtyConfig = false;
+        }
+        this._pastConfig = this._curConfig;
         if (this.window.shouldRegisterMouseInput())
             this.window.update(this.gcvOffsetX(), this.gcvOffsetY());
     }

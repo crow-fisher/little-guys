@@ -317,7 +317,6 @@ export function compressSquares(squares) {
     return [sqArr, orgArr, lsqArr, growthPlanArr, growthPlanComponentArr, growthPlanStepArr]
 }
 
-
 function getFrameSaveData() {
     let squares = new Array();
     iterateOnSquares((sq) => squares.push(sq));

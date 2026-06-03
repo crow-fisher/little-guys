@@ -250,6 +250,7 @@ export class Window {
         if (!this.component.uiManager.isAnyMouseButtonPressed()) {
             this.userDragging = false;
             this.userResizing = false;
+            console.log(JSON.stringify(this.component.config()));
             return;
         }
 
