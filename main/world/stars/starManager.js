@@ -1,7 +1,7 @@
 import { calculateStatistics, combineColorMultArrDest, hsv2rgb, invlerp, lerp } from "../../common.js";
 import { CoordinateSet } from "../../rendering/model/CoordinateSet.js";
 import { renderLine } from "../../rendering/renderFunctions.js";
-import { loadGD, saveGD, UI_AA_LABEL_GRAPH, UI_AA_LABEL_STARS, UI_AA_PLOT_SELECT_NAMED_STARS, UI_AA_PLOT_XKEY, UI_AA_PLOT_YKEY, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_MIN, UI_AA_SETUP_POW, UI_AA_SETUP_WINDOW_SIZE, UI_CAMERA_FOV, UI_SH_COLORSHIFT, UI_SH_MINLUMINENCE, UI_SH_MINMODE, UI_SH_TARGETNUMSTARS, UI_STARMAP_CONSTELLATION_BRIGHTNESS } from "../../ui/UIData.js";
+import { loadGD, saveGD, UI_AA_LABEL_GRAPH, UI_AA_LABEL_STARS, UI_AA_PLOT_SELECT_NAMED_STARS, UI_AA_PLOT_XKEY, UI_AA_PLOT_YKEY, UI_AA_SETUP_COLORMODE, UI_AA_SETUP_MIN, UI_AA_SETUP_POW, UI_AA_SETUP_WINDOW_SIZE, UI_CAMERA_FOV, UI_CAMERA_OFFSET_VEC, UI_SH_COLORSHIFT, UI_SH_MINLUMINENCE, UI_SH_MINMODE, UI_SH_TARGETNUMSTARS, UI_STARMAP_CONSTELLATION_BRIGHTNESS } from "../../ui/UIData.js";
 import { HipparcosCatalog } from "./catalog/HipparcosCatalog.js";
 import { PastelCatalog } from "./catalog/PastelCatalog.js";
 import { StellariumCatalog } from "./catalog/StellariumCatalog.js";
@@ -141,7 +141,7 @@ export class StarManager {
     rebuildSectors() {
         this.sectors = new Map();
 
-        this.sectorSize = 2000;
+        this.sectorSize = 400;
         this.numSectorsArr = [
             (this.bounds[3] - this.bounds[0]) / this.sectorSize,
             (this.bounds[4] - this.bounds[1]) / this.sectorSize,
@@ -181,7 +181,7 @@ export class StarManager {
         this._numSectors = 0;
         this._numStarsRendered = 0;
          
-        this.fovMult = (120 / loadGD(UI_CAMERA_FOV)) ** 2;
+        this.fovMult = (120 / loadGD(UI_CAMERA_FOV)) ** 1.3
 
         this.sectors.keys().forEach(
             (x) => this.sectors.get(x).keys().forEach(

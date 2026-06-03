@@ -13,14 +13,13 @@ export class UIManager {
         this.topBarComponent = new TopBarComponent(this);
 
         this.components = [
-            // this.astronomyAtlasComponent,
+            this.astronomyAtlasComponent,
             this.topBarComponent
         ]
     }
 
     /*
     "base" colors 
-        
         "hsl(36, 81%, 37%)" active
         "hsl(41, 29%, 29%)" inactive
 

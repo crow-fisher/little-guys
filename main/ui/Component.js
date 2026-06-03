@@ -1,5 +1,5 @@
 import { Container } from "./Container.js";
-import { loadGD } from "./UIData.js";
+import { loadGD, UI_TOPBAR_AA } from "./UIData.js";
 import { Window } from "./Window.js";
 
 export class Component {
@@ -15,6 +15,9 @@ export class Component {
     /// core runtime methods
     // rendering
     render() {
+        if (!loadGD(UI_TOPBAR_AA)) {
+            return;
+        }
         this.window.render(this.gcvOffsetX(), this.gcvOffsetY());
     }
     // input interactions
