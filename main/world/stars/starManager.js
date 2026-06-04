@@ -311,6 +311,4 @@ export class StarManager {
     getCameraManager() {
         return this.worldManager.mainManager.cameraManager;
     }
-
-
 }
