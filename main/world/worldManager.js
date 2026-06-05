@@ -31,6 +31,12 @@ export class WorldManager {
     getForward() {
         return this.mainManager.cameraManager.forward;
     }
+    getCameraToWorld() {
+        return this.mainManager.cameraManager.cameraToWorld;
+    }
+    getWorldToCamera() {
+        return this.mainManager.cameraManager.worldToCamera;
+    }
     getCameraOffset() {
         return loadGD(UI_CAMERA_OFFSET_VEC);
     }

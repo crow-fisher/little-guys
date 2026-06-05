@@ -157,3 +157,11 @@ export function invertMat4(a) {
 
   return b;
 }
+
+export function copyMatValue(src, dest) {
+  for (let i = 0; i < src.length; i++) {
+    for (let j = 0; j < src[i].length; j++) {
+      dest[i][j] = src[i][j]
+    }
+  }
+}
