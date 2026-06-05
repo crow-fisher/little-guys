@@ -140,14 +140,12 @@ export class StarManager {
 
     rebuildSectors() {
         this.sectors = new Map();
-
-        this.sectorSize = 400;
+        this.sectorSize = 100;
         this.numSectorsArr = [
             (this.bounds[3] - this.bounds[0]) / this.sectorSize,
             (this.bounds[4] - this.bounds[1]) / this.sectorSize,
             (this.bounds[5] - this.bounds[2]) / this.sectorSize
         ];
-
     }
 
     addStarToSector(star) {
@@ -199,7 +197,6 @@ export class StarManager {
         // } else {
         //     this.getAstronomyAtlasComponent().mcvMinLuminance(-.1);
         // }
-        console.log(this._numStarsRendered);
 
     }
 

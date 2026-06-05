@@ -10,9 +10,9 @@ export class MainManager {
     constructor() {
         this.canvasManager = new CanvasManager(this);
         this.cameraManager = new CameraManager(this);
+        this.inputManager = new InputManager(this);
         this.uiManager = new UIManager(this);
         this.worldManager = new WorldManager(this);
-        this.inputManager = new InputManager(this);
     }
 
     main() {

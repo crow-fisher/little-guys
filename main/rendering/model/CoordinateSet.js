@@ -24,11 +24,14 @@ export class CoordinateSet {
     }
 
     process() {
-        subtractVectorsDest(this.world, loadGD(UI_CAMERA_OFFSET_VEC), this.offset);
+        subtractVectorsDest(this.world, this.cameraManager.cameraOffset, this.offset);
         this.cameraManager.cartesianToScreenInplace(this.offset, this.camera, this.screen);
+        this.distToCamera = getVec3Length(this.offset);
+
         if (this.screen[2] > 0) {
             this.cameraManager.screenToRenderScreen(this.screen, this.renderNorm, this.renderScreen);
-            this.distToCamera = getVec3Length(this.offset);
+        } else {
+            this.renderScreen[2] = this.screen[2]
         }
     }
 

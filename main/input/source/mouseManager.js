@@ -2,8 +2,9 @@ import { hsvToHex } from "../../color/color.js";
 import { loadGD, saveGD, UI_CAMERA_FOV } from "../../ui/UIData.js";
 
 export class MouseManager {
-    constructor(mainManager) {
-        this.inputManager = mainManager;
+    constructor(inputManager) {
+        this.inputManager = inputManager;
+        this.cameraManager = inputManager.mainManager.cameraManager;
         this.ms = 0;
         this.pms = 0;
         this.offset = {x: 0, y: 0};
@@ -30,7 +31,8 @@ export class MouseManager {
 
     onwheel(e) {
         e.preventDefault();
-        saveGD(UI_CAMERA_FOV, loadGD(UI_CAMERA_FOV) * (1 + e.deltaY / 4000));
+        this.cameraManager.cameraFov *= (1 + e.deltaY / 4000);
+        this.cameraManager.cameraFov = Math.min(this.cameraManager.cameraFov, 177)
     }
 
     mousemove(e) {

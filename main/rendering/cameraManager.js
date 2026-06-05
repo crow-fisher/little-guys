@@ -12,10 +12,27 @@ let params = new URLSearchParams(document.location.search);
 export class CameraManager {
     constructor(mainManager) {
         this.mainManager = mainManager;
+        this.canvasManager = mainManager.canvasManager;
+
         this.cameraControlManagers = [
             new KeyboardCameraControlManager(this),
             new MouseCameraControlManager(this)
         ]
+        
+        this.cameraOffset = [0, 0, 0];
+        this.cameraOffsetDt = [0, 0, 0];
+        this.cameraMovement = [0, 0, 0];
+        this.cameraRotation = [0, 0, 0];
+        this.cameraRotationDt = [0, 0, 0];
+        this.cameraFov = 80;
+
+
+        this.rotNorm = [0, 0, 0];
+        
+        this.right = [0, 0, 0];
+        this.up = [0, 0, 0];
+        this.forward = [0, 0, 0];
+
         this.cameraToWorld = [
             [0, 0, 0],
             [0, 0, 0],
@@ -31,11 +48,7 @@ export class CameraManager {
             [0, 0, 0],
             [0, 0, 0]
         ]
-        this.rotNorm = [0, 0, 0];
-        this.forward = [0, 0, 0];
-        this.right = [0, 0, 0];
-        this.up = [0, 0, 0];
-        this.offset = [0, 0, 0];
+
 
         this.setFramePerspectiveMatrix();
     }
@@ -60,23 +73,22 @@ export class CameraManager {
     }
 
     movementTick() {
-        this._ref = loadGD(UI_CAMERA_OFFSET_VEC_DT);
-        multiplyVectorByScalarDest(this.right, this._ref[0], this.offset);
-        multiplyVectorByScalarDestAdd(this.up, this._ref[1], this.offset);
-        multiplyVectorByScalarDestAdd(this.forward, this._ref[2], this.offset);
+        multiplyVectorByScalarDest(this.right, this.cameraOffsetDt[0], this.cameraMovement);
+        multiplyVectorByScalarDestAdd(this.up, this.cameraOffsetDt[1], this.cameraMovement);
+        multiplyVectorByScalarDestAdd(this.forward, this.cameraOffsetDt[2], this.cameraMovement);
 
-        addVectors(loadGD(UI_CAMERA_OFFSET_VEC), this.offset);
-        multiplyVectorByScalar(this._ref, 0.8);
+        addVectors(this.cameraOffset, this.cameraMovement);
+        multiplyVectorByScalar(this.cameraOffsetDt, 0.8);
     }
     render() {
         // this.renderDebugPoints();
     }
 
     renderPoint(p) {
-        this.mainManager.canvasManager.context.fillStyle = hsvToHex(60, .8, .75);
-        this.mainManager.canvasManager.context.beginPath();
-        this.mainManager.canvasManager.context.arc(p[0], p[1], 8, 0, 2 * Math.PI, false);
-        this.mainManager.canvasManager.context.fill();
+        this.canvasManager.context.fillStyle = hsvToHex(60, .8, .75);
+        this.canvasManager.context.beginPath();
+        this.canvasManager.context.arc(p[0], p[1], 8, 0, 2 * Math.PI, false);
+        this.canvasManager.context.fill();
     }
     
     renderDebugPoints() {
@@ -104,21 +116,21 @@ export class CameraManager {
                 return;
             }
             renderedPoints += 1;
-            this.mainManager.canvasManager.context.fillStyle = hsvToHex(p.distToCamera % 360, .8, .75);
-            this.mainManager.canvasManager.context.beginPath();
-            this.mainManager.canvasManager.context.arc(p.renderScreen[0], p.renderScreen[1], 800 / p.distToCamera, 0, 2 * Math.PI, false);
-            this.mainManager.canvasManager.context.fill();
+            this.canvasManager.context.fillStyle = hsvToHex(p.distToCamera % 360, .8, .75);
+            this.canvasManager.context.beginPath();
+            this.canvasManager.context.arc(p.renderScreen[0], p.renderScreen[1], 800 / p.distToCamera, 0, 2 * Math.PI, false);
+            this.canvasManager.context.fill();
         });
 
-        this.mainManager.canvasManager.context.fillStyle = hsvToHex(0, 0, 1);
-        this.mainManager.canvasManager.context.fillText(renderedPoints, 100, 400)
+        this.canvasManager.context.fillStyle = hsvToHex(0, 0, 1);
+        this.canvasManager.context.fillText(renderedPoints, 100, 400)
 
 
     }
 
     setFrameCameraMatrix() {
-        this.yaw = loadGD(UI_CAMERA_ROTATION_VEC)[0];
-        this.pitch = loadGD(UI_CAMERA_ROTATION_VEC)[1];
+        this.yaw = this.cameraRotation[0];
+        this.pitch = this.cameraRotation[1];
 
         this.rotNorm[0] = Math.cos(this.yaw) * Math.cos(this.pitch);
         this.rotNorm[1] = Math.sin(this.pitch);
@@ -141,18 +153,15 @@ export class CameraManager {
     setFramePerspectiveMatrix() {
         this.n = 1; // near clipping plane;
         this.f = 1000; // far clipping plane;
-        this.fov = loadGD(UI_CAMERA_FOV);
-        this.S = 1 / (Math.tan((this.fov / 2) * (Math.PI / 180)));
-
+        this.S = 1 / (Math.tan((this.cameraFov / 2) * (Math.PI / 180)));
         this.perspectiveMatrix[0][0] = this.S;
         this.perspectiveMatrix[1][1] = this.S;
         this.perspectiveMatrix[2][2] = -(this.f / (this.f - this.n));
-
     }
 
     setFrameCanvasRenderParams() {
-        this.cw = this.mainManager.canvasManager.canvas.width;
-        this.ch = this.mainManager.canvasManager.canvas.height;
+        this.cw = this.canvasManager.canvas.width;
+        this.ch = this.canvasManager.canvas.height;
         this.max = Math.max(this.cw, this.ch);
         this.yOffset = (this.max / this.cw) / 2;
         this.xOffset = (this.max / this.ch) / 2;
@@ -160,10 +169,10 @@ export class CameraManager {
     }
 
     getCanvasWidth() {
-        return this.mainManager.canvasManager.canvas.width;
+        return this.canvasManager.canvas.width;
     }
     getCanvasHeight() {
-        return this.mainManager.canvasManager.canvas.height;
+        return this.canvasManager.canvas.height;
     }
     getFrameMouseMove() {
         return this.mainManager.inputManager.mouseManager.movement;
@@ -175,15 +184,15 @@ export class CameraManager {
         return this.mainManager.inputManager.mouseManager.isButtonPressed(b)
     }
     isPointerLocked() {
-        return this.mainManager.canvasManager.pointerLock;
+        return this.canvasManager.pointerLock;
     }
     isKeyPressed(key) {
         return this.mainManager.inputManager.isKeyPressed(key);
     }
     lockPointer() {
-        this.mainManager.canvasManager.lockPointer();
+        this.canvasManager.lockPointer();
     }
     unlockPointer() {
-        this.mainManager.canvasManager.unlockPointer();
+        this.canvasManager.unlockPointer();
     }
 }
