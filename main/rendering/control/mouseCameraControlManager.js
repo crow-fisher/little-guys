@@ -19,7 +19,8 @@ export class MouseCameraControlManager extends CameraControlManager {
     }
     controlRoutine() {
         this.cameraManager.cameraRotation[0] += this.cameraManager.getFrameMouseMove().x * 10;
-        this.cameraManager.cameraRotation[1] += this.cameraManager.getFrameMouseMove().y * 10;
+        this.cameraManager.cameraRotation[1] += this.cameraManager.getFrameMouseMove().y * 10; 
+        this.cameraManager.cameraRotation[1] = Math.min(Math.max(this.cameraManager.cameraRotation[1], -Math.PI / 3), Math.PI / 3)
         this.cameraManager.mainManager.uiManager.astronomyAtlasComponent.dirtyConfig = true;
     }
 }

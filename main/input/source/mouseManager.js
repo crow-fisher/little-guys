@@ -32,7 +32,7 @@ export class MouseManager {
     onwheel(e) {
         e.preventDefault();
         this.cameraManager.cameraFov *= (1 + e.deltaY / 4000);
-        this.cameraManager.cameraFov = Math.min(this.cameraManager.cameraFov, 177)
+        this.cameraManager.cameraFov = Math.min(this.cameraManager.cameraFov, 160)
     }
 
     mousemove(e) {
