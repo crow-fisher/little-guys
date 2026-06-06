@@ -65,12 +65,22 @@ export class ManipulationManager {
         if (!this.inputManager.isPointerLocked()) {
             // in case i lose it..https://www.quora.com/If-theres-a-point-inside-a-square-and-I-know-the-distances-between-the-point-and-the-corners-of-the-square-how-do-I-calculate-the-area
             this._clickPos = this.inputManager.mouseManager.offset;
+            
+            
             this.upDist = ((this.upCs.renderScreen[0] - this._clickPos.x) ** 2 + (this.upCs.renderScreen[1] - this._clickPos.y) ** 2) ** 0.5; 
             this.downDist = ((this.downCs.renderScreen[0] - this._clickPos.x) ** 2 + (this.downCs.renderScreen[1] - this._clickPos.y) ** 2) ** 0.5; 
             this.leftDist = ((this.leftCs.renderScreen[0] - this._clickPos.x) ** 2 + (this.leftCs.renderScreen[1] - this._clickPos.y) ** 2) ** 0.5; 
             this.rightDist = ((this.rightCs.renderScreen[0] - this._clickPos.x) ** 2 + (this.rightCs.renderScreen[1] - this._clickPos.y) ** 2) ** 0.5;
+
+            this.upCenterDist = ((this.upCs.renderScreen[0] - this.centerCs.renderScreen[0]) ** 2 + (this.upCs.renderScreen[1] - this.centerCs.renderScreen[1]) ** 2) ** 0.5; 
+            this.downCenterDist = ((this.downCs.renderScreen[0] - this.centerCs.renderScreen[0]) ** 2 + (this.downCs.renderScreen[1] - this.centerCs.renderScreen[1]) ** 2) ** 0.5; 
+            this.leftCenterDist = ((this.leftCs.renderScreen[0] - this.centerCs.renderScreen[0]) ** 2 + (this.leftCs.renderScreen[1] - this.centerCs.renderScreen[1]) ** 2) ** 0.5; 
+            this.rightCenterDist = ((this.rightCs.renderScreen[0] - this.centerCs.renderScreen[0]) ** 2 + (this.rightCs.renderScreen[1] - this.centerCs.renderScreen[1]) ** 2) ** 0.5;
+
+            this._upDownRatio = (this.upDist + this.downDist) / (this.upCenterDist + this.downCenterDist);
+            this._leftRightRatio = (this.leftDist + this.rightDist) / (this.leftCenterDist + this.rightCenterDist);
             
-            console.log(this.upDist, this.downDist, this.leftDist, this.rightDist);
+            console.log(this._upDownRatio.toFixed(2), this._leftRightRatio.toFixed(2), this.upDist.toFixed(2), this.downDist.toFixed(2), this.leftDist.toFixed(2), this.rightDist.toFixed(2));
         }
 
     }
