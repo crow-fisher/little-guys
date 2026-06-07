@@ -2,7 +2,7 @@ import { hsvToHex } from "../../../color/color.js";
 import { CoordinateSet } from "../../../rendering/model/CoordinateSet.js";
 import { renderLine, renderPointLabel } from "../../../rendering/renderFunctions.js";
 import { copyMatValue } from "../../../util/matrix.js";
-import { addVec3MultDest, addVectorsMult, copyVecValue, vec3Dot } from "../../../util/vector.js";
+import { addVec3Mult, addVec3MultDest, addVectorsMult, copyVecValue, vec3Dot } from "../../../util/vector.js";
 
 export class ManipulationManager {
     constructor(blockManager) {
@@ -14,6 +14,12 @@ export class ManipulationManager {
         this.right = [0, 0, 0];
         this.up = [0, 0, 0];
         this.forward = [0, 0, 0];
+
+        this.dimLeft = blockManager.sectorSize;
+        this.dimRight = blockManager.sectorSize;
+        this.dimUp = blockManager.sectorSize;
+        this.dimDown = blockManager.sectorSize;
+
         this.centerCs = new CoordinateSet(this.cameraManager);
         this.upCs = new CoordinateSet(this.cameraManager);
         this.downCs = new CoordinateSet(this.cameraManager);
@@ -24,6 +30,43 @@ export class ManipulationManager {
         this.cornerTrCs = new CoordinateSet(this.cameraManager);
         this.cornerBlCs = new CoordinateSet(this.cameraManager);
         this.cornerBrCs = new CoordinateSet(this.cameraManager);
+
+        this.initRefPoints();
+    }
+
+    initRefPoints() {
+        this.refPoints = new Map();
+        for (let i = -this.dimLeft; i < this.dimRight; i++) {
+            this.refPoints.set(i, new Map());
+            for (let j = -this.dimDown; j < this.dimUp; j++) {
+                this.refPoints.get(i).set(j, new CoordinateSet(this.cameraManager));
+                this.setRefPointCoordinates(this.refPoints.get(i).get(j), i, j);
+            }
+        }
+    }
+
+    setRefPointCoordinates(cs, i, j) {
+        copyVecValue(this.centerCs.world, cs.world);
+        addVec3Mult(cs.world, this.right, i);
+        addVec3Mult(cs.world, this.up, j);
+    }
+
+    getClosestRefPoint(px, py) {
+        let curCs, curDist, closestCs, closestDist = 10;
+        for (let i = -this.dimLeft; i < this.dimRight; i++) {
+            for (let j = -this.dimDown; j < this.dimUp; j++) {
+                curCs = this.refPoints.get(i).get(j);
+                curCs.process();
+                curDist = ((px - curCs.renderScreen[0]) ** 2 + (py - curCs.renderScreen[1]) ** 2) ** 0.5;
+                if (curDist < closestDist) {
+                    closestCs = curCs;
+                    closestDist = curDist;
+                }
+            }
+        }
+        return closestCs;
+
+
     }
 
     update() {
@@ -40,16 +83,17 @@ export class ManipulationManager {
             copyVecValue(this.centerCs.world, this.leftCs.world);
             copyVecValue(this.centerCs.world, this.rightCs.world);
 
-            addVectorsMult(this.leftCs.world, this.cameraManager.right, this.blockManager.sectorSize);
-            addVectorsMult(this.rightCs.world, this.cameraManager.right, -this.blockManager.sectorSize);
-            addVectorsMult(this.upCs.world, this.cameraManager.up, this.blockManager.sectorSize);
-            addVectorsMult(this.downCs.world, this.cameraManager.up, -this.blockManager.sectorSize);
+            addVectorsMult(this.leftCs.world, this.cameraManager.right, this.dimLeft);
+            addVectorsMult(this.rightCs.world, this.cameraManager.right, -this.dimRight);
+            addVectorsMult(this.upCs.world, this.cameraManager.up, this.dimUp);
+            addVectorsMult(this.downCs.world, this.cameraManager.up, -this.dimDown);
 
             addVec3MultDest(this.leftCs.world, this.cameraManager.up, this.blockManager.sectorSize, this.cornerTlCs.world);
             addVec3MultDest(this.rightCs.world, this.cameraManager.up, this.blockManager.sectorSize, this.cornerTrCs.world);
             addVec3MultDest(this.leftCs.world, this.cameraManager.up, -this.blockManager.sectorSize, this.cornerBlCs.world);
             addVec3MultDest(this.rightCs.world, this.cameraManager.up, -this.blockManager.sectorSize, this.cornerBrCs.world);
 
+            this.initRefPoints();
         }
         this.centerCs.process();
         this.upCs.process();
@@ -64,25 +108,19 @@ export class ManipulationManager {
 
         if (!this.inputManager.isPointerLocked()) {
             // in case i lose it..https://www.quora.com/If-theres-a-point-inside-a-square-and-I-know-the-distances-between-the-point-and-the-corners-of-the-square-how-do-I-calculate-the-area
-            this._clickPos = this.inputManager.mouseManager.offset;
-            
-            
-            this.upDist = ((this.upCs.renderScreen[0] - this._clickPos.x) ** 2 + (this.upCs.renderScreen[1] - this._clickPos.y) ** 2) ** 0.5; 
-            this.downDist = ((this.downCs.renderScreen[0] - this._clickPos.x) ** 2 + (this.downCs.renderScreen[1] - this._clickPos.y) ** 2) ** 0.5; 
-            this.leftDist = ((this.leftCs.renderScreen[0] - this._clickPos.x) ** 2 + (this.leftCs.renderScreen[1] - this._clickPos.y) ** 2) ** 0.5; 
-            this.rightDist = ((this.rightCs.renderScreen[0] - this._clickPos.x) ** 2 + (this.rightCs.renderScreen[1] - this._clickPos.y) ** 2) ** 0.5;
-
-            this.upCenterDist = ((this.upCs.renderScreen[0] - this.centerCs.renderScreen[0]) ** 2 + (this.upCs.renderScreen[1] - this.centerCs.renderScreen[1]) ** 2) ** 0.5; 
-            this.downCenterDist = ((this.downCs.renderScreen[0] - this.centerCs.renderScreen[0]) ** 2 + (this.downCs.renderScreen[1] - this.centerCs.renderScreen[1]) ** 2) ** 0.5; 
-            this.leftCenterDist = ((this.leftCs.renderScreen[0] - this.centerCs.renderScreen[0]) ** 2 + (this.leftCs.renderScreen[1] - this.centerCs.renderScreen[1]) ** 2) ** 0.5; 
-            this.rightCenterDist = ((this.rightCs.renderScreen[0] - this.centerCs.renderScreen[0]) ** 2 + (this.rightCs.renderScreen[1] - this.centerCs.renderScreen[1]) ** 2) ** 0.5;
-
-            this._upDownRatio = (this.upDist + this.downDist) / (this.upCenterDist + this.downCenterDist);
-            this._leftRightRatio = (this.leftDist + this.rightDist) / (this.leftCenterDist + this.rightCenterDist);
-            
-            console.log(this._upDownRatio.toFixed(2), this._leftRightRatio.toFixed(2), this.upDist.toFixed(2), this.downDist.toFixed(2), this.leftDist.toFixed(2), this.rightDist.toFixed(2));
+            this.hoverPos = this.inputManager.mouseManager.offset;
+            this.hoverPoint = this.getClosestRefPoint(this.hoverPos.x, this.hoverPos.y);
         }
+    }
 
+    renderHoverPoint() {
+        if (this.hoverPoint)
+            renderPointLabel(
+                this.canvasManager.context,
+                ...this.hoverPoint.renderScreen,
+                this._pSize / this.hoverPoint.distToCamera,
+                hsvToHex(this.hoverPoint.distToCamera, 1, 1)
+            )
     }
 
     renderCross() {
@@ -180,5 +218,6 @@ export class ManipulationManager {
     render() {
         this.renderCross();
         this.renderCorners();
-    }   
+        this.renderHoverPoint();
+    }
 }

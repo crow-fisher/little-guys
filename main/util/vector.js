@@ -50,6 +50,12 @@ export function addVectorsMult(v1, v2, mult) {
   return v1.slice(0, l);
 }
 
+export function addVec3Mult(v1, v2, m) {
+  v1[0] += v2[0] * m;
+  v1[1] += v2[1] * m;
+  v1[2] += v2[2] * m;
+}
+
 
 export function addVec3Dest(v1, v2, dest) {
   dest[0] = (v1[0] + v2[0]);

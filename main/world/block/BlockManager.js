@@ -3,9 +3,9 @@ import { ManipulationManager } from "./manipulation/ManipulationManager.js";
 export class BlockManager {
     constructor(worldManager) {
         this.worldManager = worldManager;
+        this.sectorSize = 25;
         this.manipulationManager = new ManipulationManager(this);
         this.sectors = new Map();
-        this.sectorSize = 25;
     }
     update() { 
         this.manipulationManager.update()

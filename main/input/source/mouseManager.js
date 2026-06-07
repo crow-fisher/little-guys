@@ -57,6 +57,7 @@ export class MouseManager {
         if (this.inputManager.isPointerLocked()) {
             return;
         }
+        return;
         this.inputManager.getContext().fillStyle = hsvToHex(this.ms * 60, .8, .75);
         this.inputManager.getContext().beginPath();
         this.inputManager.getContext().arc(this.offset.x, this.offset.y, 8, 0, 2 * Math.PI, false);
