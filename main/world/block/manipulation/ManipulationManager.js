@@ -110,6 +110,9 @@ export class ManipulationManager {
             // in case i lose it..https://www.quora.com/If-theres-a-point-inside-a-square-and-I-know-the-distances-between-the-point-and-the-corners-of-the-square-how-do-I-calculate-the-area
             this.hoverPos = this.inputManager.mouseManager.offset;
             this.hoverPoint = this.getClosestRefPoint(this.hoverPos.x, this.hoverPos.y);
+            if (this.hoverPoint != null && this.inputManager.mouseManager.isButtonPressed(0)) {
+                this.blockManager.addBlockAtRef(this.hoverPoint);
+            }
         }
     }
 
