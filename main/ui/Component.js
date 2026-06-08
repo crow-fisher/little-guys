@@ -22,6 +22,9 @@ export class Component {
     }
     // input interactions
     update() {
+        if (!loadGD(UI_TOPBAR_AA)) {
+            return;
+        }
         this._curConfig = JSON.stringify(this.config());
         if (this._curConfig != this._pastConfig) {
             this.dirtyConfig = true;
