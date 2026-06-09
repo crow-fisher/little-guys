@@ -15,10 +15,10 @@ export class ManipulationManager {
         this.up = [0, 0, 0];
         this.forward = [0, 0, 0];
 
-        this.dimLeft = blockManager.sectorSize;
-        this.dimRight = blockManager.sectorSize;
-        this.dimUp = blockManager.sectorSize;
-        this.dimDown = blockManager.sectorSize;
+        this.dimLeft = blockManager.sectorSize * 10;
+        this.dimRight = blockManager.sectorSize * 10;
+        this.dimUp = blockManager.sectorSize * 10;
+        this.dimDown = blockManager.sectorSize * 10;
 
         this.centerCs = new CoordinateSet(this.cameraManager);
         this.upCs = new CoordinateSet(this.cameraManager);

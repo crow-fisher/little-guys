@@ -1,5 +1,7 @@
 import { hsvToHex } from "../../../color/color.js";
 import { CoordinateSet } from "../../../rendering/model/CoordinateSet.js";
+import { QuadRenderJob } from "../../../rendering/model/QuadRenderJob.js";
+import { RenderJob } from "../../../rendering/model/RenderJob.js";
 import { renderPointLabel, renderQuad } from "../../../rendering/renderFunctions.js";
 import { centerVec, nnnVec, nnpVec, npnVec, nppVec, pnnVec, pnpVec, ppnVec, pppVec } from "../../../util/const.js";
 
@@ -7,7 +9,7 @@ import { centerVec, nnnVec, nnpVec, npnVec, nppVec, pnnVec, pnpVec, ppnVec, pppV
 export class Block {
     constructor(blockManager, cartesian) {
         this.blockManager = blockManager;
-        this.rasterizationManager = blockManager.worldManager.rasterizationManager;
+        this.rasterizationManager = blockManager.worldManager.mainManager.rasterizationManager;
         this.cameraManager = blockManager.worldManager.mainManager.cameraManager;
         this.canvasManager = blockManager.worldManager.mainManager.canvasManager;
 
@@ -26,13 +28,18 @@ export class Block {
 
         this.frontFace = [this.pnnCs, this.pnpCs, this.pppCs, this.ppnCs]
         this.backFace = [this.nnnCs, this.nnpCs, this.nppCs, this.npnCs]
+        this.frontRenderJob = new QuadRenderJob(this.rasterizationManager)
+        this.backRenderJob = new QuadRenderJob(this.rasterizationManager)
 
         this.bottomFace = [this.npnCs, this.nppCs, this.pppCs, this.ppnCs];
         this.topFace = [this.nnnCs, this.nnpCs, this.pnpCs, this.pnnCs];
-
+        this.bottomRenderJob = new QuadRenderJob(this.rasterizationManager)
+        this.topRenderJob = new QuadRenderJob(this.rasterizationManager)
 
         this.rightFace = [this.nnpCs, this.nppCs, this.pppCs, this.pnpCs];
         this.leftFace = [this.nnnCs, this.npnCs, this.ppnCs, this.pnnCs];
+        this.rightRenderJob = new QuadRenderJob(this.rasterizationManager)
+        this.leftRenderJob = new QuadRenderJob(this.rasterizationManager)
 
         this.offsetSign = [0, 0, 0];
     }
@@ -41,14 +48,16 @@ export class Block {
         return hsvToHex(this.centerCs.distToCamera * 10, .8, .6);
     }
 
-    renderFace(face) {
-        this.rasterizationManager.renderQuad(
-            face[0].renderScreen,
-            face[1].renderScreen,
-            face[2].renderScreen,
-            face[3].renderScreen,
-            this.color()
-        )
+    renderFace(face, renderJob) {
+        if (face.every((face) => !face.isVisibleOnScreen())) {
+            return;
+        }
+        renderJob.p1 = face[0].renderScreen;
+        renderJob.p2 = face[1].renderScreen;
+        renderJob.p3 = face[2].renderScreen;
+        renderJob.p4 = face[3].renderScreen;
+        renderJob.color = this.color();
+        this.rasterizationManager.addRenderJob(renderJob);
     }
 
     update() {
@@ -97,19 +106,19 @@ export class Block {
         // this.renderPoint(this.pppCs)
 
         if (this.offsetSign[0] == 0)
-            this.renderFace(this.frontFace);
+            this.renderFace(this.frontFace, this.frontRenderJob);
         else
-            this.renderFace(this.backFace);
+            this.renderFace(this.backFace, this.backRenderJob);
 
         if (this.offsetSign[1] == 0)
-            this.renderFace(this.bottomFace);
+            this.renderFace(this.bottomFace, this.bottomRenderJob);
         else
-            this.renderFace(this.topFace);
+            this.renderFace(this.topFace, this.topRenderJob);
 
         if (this.offsetSign[2] == 0)
-            this.renderFace(this.rightFace);
+            this.renderFace(this.rightFace, this.rightRenderJob);
         else
-            this.renderFace(this.leftFace);
+            this.renderFace(this.leftFace, this.leftRenderJob);
 
 
     }

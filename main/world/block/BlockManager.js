@@ -14,7 +14,7 @@ export class BlockManager {
     addBlockAtRef(refCs) {
         let newBlock = new Block(this, refCs.world)
         this._c1 = this.getSector(newBlock.sector);
-        this._c1.blocks.push(newBlock);
+        this._c1.addBlock(newBlock);
 
         let brushSize = 2;
 
@@ -30,7 +30,7 @@ export class BlockManager {
 
                     let newBlock = new Block(this, cartesian)
                     this._c1 = this.getSector(newBlock.sector);
-                    this._c1.blocks.push(newBlock);
+                    this._c1.addBlock(newBlock);
 
                 }
             }

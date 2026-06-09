@@ -1,13 +1,11 @@
 import { loadGD, UI_CAMERA_OFFSET_VEC } from "../ui/UIData.js";
 import { BlockManager } from "./block/BlockManager.js";
-import { RasterizationManager } from "./rasterizingManager.js";
 import { StarManager } from "./stars/starManager.js";
 import { TimeManager } from "./time/timeManager.js";
 
 export class WorldManager {
     constructor(mainManager) {
         this.mainManager = mainManager;
-        this.rasterizationManager = new RasterizationManager(this);
         
         this.timeManager = new TimeManager(this);
         this.starManager = new StarManager(this);
@@ -17,14 +15,11 @@ export class WorldManager {
     update() {
         this.timeManager.update();
         this.blockManager.update();
-        this.rasterizationManager.update();
     }
     render() {
         this.timeManager.render();
         this.starManager.render();
         this.blockManager.render();
-        
-        this.rasterizationManager.render();
 
     }
     getContext() {
