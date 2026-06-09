@@ -21,3 +21,16 @@ export function renderPointLabel(context, x, y, z, size, color, label) {
         context.fillText(label, x + 24, y);
     }
 }
+
+// we assume you are only attempting to render valid quads.
+// do not render quads with an incorrect Z value. 
+export function renderQuad(context, p1, p2, p3, p4, color) {
+    context.fillStyle = color;
+    context.beginPath();
+    context.moveTo(...p1)
+    context.lineTo(...p2)
+    context.lineTo(...p3)
+    context.lineTo(...p4)
+    context.closePath();
+    context.fill();
+}

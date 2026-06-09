@@ -6,7 +6,7 @@ export class KeyboardCameraControlManager extends CameraControlManager {
         return this.cameraManager.isPointerLocked();
     }
     controlRoutine() {
-        this.rate = 0.8;
+        this.rate = 0.2;
         if (this.cameraManager.isKeyPressed("q")) {
             this.cameraManager.cameraOffsetDt[1] += this.rate;
         }

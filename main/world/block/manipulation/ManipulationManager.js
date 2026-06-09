@@ -2,7 +2,7 @@ import { hsvToHex } from "../../../color/color.js";
 import { CoordinateSet } from "../../../rendering/model/CoordinateSet.js";
 import { renderLine, renderPointLabel } from "../../../rendering/renderFunctions.js";
 import { copyMatValue } from "../../../util/matrix.js";
-import { addVec3Mult, addVec3MultDest, addVectorsMult, copyVecValue, vec3Dot } from "../../../util/vector.js";
+import { addVec3Mult, addVec3MultDest, addVec3MultFloor, addVectorsMult, copyVecValue, vec3Dot } from "../../../util/vector.js";
 
 export class ManipulationManager {
     constructor(blockManager) {
@@ -48,7 +48,7 @@ export class ManipulationManager {
     setRefPointCoordinates(cs, i, j) {
         copyVecValue(this.centerCs.world, cs.world);
         addVec3Mult(cs.world, this.right, i);
-        addVec3Mult(cs.world, this.up, j);
+        addVec3MultFloor(cs.world, this.up, j);
     }
 
     getClosestRefPoint(px, py) {

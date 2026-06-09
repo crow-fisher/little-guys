@@ -1,9 +1,11 @@
 import { loadGD, UI_CAMERA_OFFSET_VEC } from "../../ui/UIData.js";
-import { copyVecValue, getVec3Length, subtractVectorsDest } from "../../util/vector.js";
+import { addVec3Dest, copyVecValue, getVec3Length, subtractVectorsDest } from "../../util/vector.js";
 
 export class CoordinateSet {
-    constructor(cameraManager, world) {
+    constructor(cameraManager, world, worldOffset=null) {
         this.cameraManager = cameraManager;
+        this.worldOffset = worldOffset;
+
         this.world = [0, 0, 0];
         this.offset = [0, 0, 0];
         this.camera = [0, 0, 0];
@@ -13,7 +15,11 @@ export class CoordinateSet {
         this.distToCamera = 0;
 
         if (world != null) {
-            copyVecValue(world, this.world)
+            if (worldOffset == null)
+                copyVecValue(world, this.world)
+            else
+                addVec3Dest(world, worldOffset, this.world);
+
             this.process();
         }
     }
