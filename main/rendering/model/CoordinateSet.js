@@ -39,6 +39,9 @@ export class CoordinateSet {
         } else {
             this.renderScreen[2] = this.screen[2]
         }
+
+        this.renderScreen[2] = this.camera[2]
+
     }
 
     isVisibleOnScreen() {

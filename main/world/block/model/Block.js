@@ -7,6 +7,7 @@ import { centerVec, nnnVec, nnpVec, npnVec, nppVec, pnnVec, pnpVec, ppnVec, pppV
 export class Block {
     constructor(blockManager, cartesian) {
         this.blockManager = blockManager;
+        this.rasterizationManager = blockManager.worldManager.rasterizationManager;
         this.cameraManager = blockManager.worldManager.mainManager.cameraManager;
         this.canvasManager = blockManager.worldManager.mainManager.canvasManager;
 
@@ -41,8 +42,7 @@ export class Block {
     }
 
     renderFace(face) {
-        renderQuad(
-            this.canvasManager.context,
+        this.rasterizationManager.renderQuad(
             face[0].renderScreen,
             face[1].renderScreen,
             face[2].renderScreen,

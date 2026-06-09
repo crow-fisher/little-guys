@@ -1,3 +1,4 @@
+import { copyVecValue } from "../../util/vector.js";
 import { ManipulationManager } from "./manipulation/ManipulationManager.js";
 import { Block } from "./model/Block.js";
 import { BlockSector } from "./model/BlockSector.js";
@@ -14,6 +15,26 @@ export class BlockManager {
         let newBlock = new Block(this, refCs.world)
         this._c1 = this.getSector(newBlock.sector);
         this._c1.blocks.push(newBlock);
+
+        let brushSize = 2;
+
+        let cartesian = structuredClone(refCs.world);
+        for (let i = -brushSize; i < brushSize; i++) {
+            for (let j = -brushSize; j < brushSize; j++) {
+                for (let k = -brushSize; k < brushSize; k++) {
+                    copyVecValue(refCs.world, cartesian);
+                    
+                    cartesian[0] += i;
+                    cartesian[1] += j;
+                    cartesian[2] += k;
+
+                    let newBlock = new Block(this, cartesian)
+                    this._c1 = this.getSector(newBlock.sector);
+                    this._c1.blocks.push(newBlock);
+
+                }
+            }
+        }
     }
 
     getSector(sr) {
