@@ -26,30 +26,84 @@ export class Block {
         this.ppnCs = new CoordinateSet(this.cameraManager, this.cartesian, ppnVec);
         this.pppCs = new CoordinateSet(this.cameraManager, this.cartesian, pppVec);
 
-        this.frontFace = [this.pnnCs, this.pnpCs, this.pppCs, this.ppnCs]
-        this.backFace = [this.nnnCs, this.nnpCs, this.nppCs, this.npnCs]
-        this.frontRenderJob = new QuadRenderJob(this.rasterizationManager)
-        this.backRenderJob = new QuadRenderJob(this.rasterizationManager)
+        this.frontFace = [this.pnnCs, this.pnpCs, this.pppCs, this.ppnCs];
+        this.backFace = [this.nnnCs, this.nnpCs, this.nppCs, this.npnCs];
+        this.frontRenderJob = new QuadRenderJob(this.rasterizationManager);
+        this.backRenderJob = new QuadRenderJob(this.rasterizationManager);
+        this.frontNeighbor = null;
+        this.backNeighbor = null;
 
-        this.bottomFace = [this.npnCs, this.nppCs, this.pppCs, this.ppnCs];
-        this.topFace = [this.nnnCs, this.nnpCs, this.pnpCs, this.pnnCs];
-        this.bottomRenderJob = new QuadRenderJob(this.rasterizationManager)
-        this.topRenderJob = new QuadRenderJob(this.rasterizationManager)
+        this.bottomFace = [this.npnCs, this.nppCs, this.pppCs, this.ppnCs];;
+        this.topFace = [this.nnnCs, this.nnpCs, this.pnpCs, this.pnnCs];;
+        this.bottomRenderJob = new QuadRenderJob(this.rasterizationManager);
+        this.topRenderJob = new QuadRenderJob(this.rasterizationManager);
+        this.bottomNeighbor = null;
+        this.topNeighbor = null;
 
-        this.rightFace = [this.nnpCs, this.nppCs, this.pppCs, this.pnpCs];
-        this.leftFace = [this.nnnCs, this.npnCs, this.ppnCs, this.pnnCs];
-        this.rightRenderJob = new QuadRenderJob(this.rasterizationManager)
-        this.leftRenderJob = new QuadRenderJob(this.rasterizationManager)
+        this.rightFace = [this.nnpCs, this.nppCs, this.pppCs, this.pnpCs];;
+        this.leftFace = [this.nnnCs, this.npnCs, this.ppnCs, this.pnnCs];;
+        this.rightRenderJob = new QuadRenderJob(this.rasterizationManager);
+        this.leftRenderJob = new QuadRenderJob(this.rasterizationManager);
+        this.rightNeighbor = null;
+        this.leftNeighbor = null;
 
         this.offsetSign = [0, 0, 0];
+        this.linkNeighbors();
+    }
+
+    linkNeighbors() {
+        this.frontNeighbor = this.blockManager.getBlockAtCartesian(this.cartesian, [-1, 0, 0]);
+        if (this.frontNeighbor)
+            this.frontNeighbor.backNeighbor = this;
+        this.backNeighbor = this.blockManager.getBlockAtCartesian(this.cartesian, [1, 0, 0]);
+        if (this.backNeighbor)
+            this.backNeighbor.frontNeighbor = this;
+        this.bottomNeighbor = this.blockManager.getBlockAtCartesian(this.cartesian, [0, -1, 0]);
+        if (this.bottomNeighbor)
+            this.bottomNeighbor.topNeighbor = this;
+        this.topNeighbor = this.blockManager.getBlockAtCartesian(this.cartesian, [0, 1, 0]);
+        if (this.topNeighbor)
+            this.topNeighbor.bottomNeighbor = this;
+        this.rightNeighbor = this.blockManager.getBlockAtCartesian(this.cartesian, [0, 0, -1]);
+        if (this.rightNeighbor)
+            this.rightNeighbor.leftNeighbor = this;
+        this.leftNeighbor = this.blockManager.getBlockAtCartesian(this.cartesian, [0, 0, 1]);
+        if (this.leftNeighbor)
+            this.leftNeighbor.rightNeighbor = this;
+    }
+
+    unlinkNeighbors() {
+        if (this.frontNeighbor)
+            this.frontNeighbor.backNeighbor = null;
+        this.frontNeighbor = null;
+        if (this.backNeighbor)
+            this.backNeighbor.frontNeighbor = this;
+        this.backNeighbor = null;
+        if (this.bottomNeighbor)
+            this.bottomNeighbor.topNeighbor = this;
+        this.bottomNeighbor = null;
+        if (this.topNeighbor)
+            this.topNeighbor.bottomNeighbor = this;
+        this.topNeighbor = null;
+        if (this.rightNeighbor)
+            this.rightNeighbor.leftNeighbor = this;
+        this.rightNeighbor = null;
+        if (this.leftNeighbor)
+            this.leftNeighbor.rightNeighbor = this;
+        this.leftNeighbor = null;
+
     }
 
     color() {
         return hsvToHex(this.centerCs.distToCamera * 10, .8, .6);
     }
 
-    renderFace(face, renderJob) {
+    renderFace(face, renderJob, neighbor) {
         if (face.every((face) => !face.isVisibleOnScreen())) {
+            return;
+        }
+
+        if (neighbor) {
             return;
         }
         renderJob.p1 = face[0].renderScreen;
@@ -106,19 +160,19 @@ export class Block {
         // this.renderPoint(this.pppCs)
 
         if (this.offsetSign[0] == 0)
-            this.renderFace(this.frontFace, this.frontRenderJob);
+            this.renderFace(this.frontFace, this.frontRenderJob, this.frontNeighbor);
         else
-            this.renderFace(this.backFace, this.backRenderJob);
+            this.renderFace(this.backFace, this.backRenderJob, this.backNeighbor);
 
         if (this.offsetSign[1] == 0)
-            this.renderFace(this.bottomFace, this.bottomRenderJob);
+            this.renderFace(this.bottomFace, this.bottomRenderJob, this.bottomNeighbor);
         else
-            this.renderFace(this.topFace, this.topRenderJob);
+            this.renderFace(this.topFace, this.topRenderJob, this.topNeighbor);
 
         if (this.offsetSign[2] == 0)
-            this.renderFace(this.rightFace, this.rightRenderJob);
+            this.renderFace(this.rightFace, this.rightRenderJob, this.rightNeighbor);
         else
-            this.renderFace(this.leftFace, this.leftRenderJob);
+            this.renderFace(this.leftFace, this.leftRenderJob, this.leftNeighbor);
 
 
     }
