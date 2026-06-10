@@ -14,7 +14,7 @@ import { copyVecValue } from "../../world/climate/stars/matrix.js";
 import { invlerp, lerp, randNumber, randRange } from "../../common.js";
 import { NOBLIP } from "../../index.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
-import { applyLightingFromSource } from "../../world/lighting/lightingProcessing.js";
+import { applyLightingFromSource } from "../../world/_lighting/lightingProcessing.js";
 import { IBODEvent } from "../../ibod/model/IBODEvent.js";
 import { IBODSeedEvent } from "../../ibod/IBODManager.js";
 

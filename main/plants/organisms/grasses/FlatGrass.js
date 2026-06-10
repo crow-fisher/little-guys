@@ -1,6 +1,6 @@
 import { copyVecValue, multiplyVectorByScalar, multiplyVectorByScalarDest } from "../../../world/climate/stars/matrix.js";
 import { randNumber, randRange, rr } from "../../../common.js";
-import { applyLightingFromSource } from "../../../world/lighting/lightingProcessing.js";
+import { applyLightingFromSource } from "../../../world/_lighting/lightingProcessing.js";
 import { addSquare } from "../../../squares/_sqOperations.js";
 import { SeedSquare } from "../../../squares/SeedSquare.js";
 import { loadGD, UI_ORGANISM_GRASS_FGRASS, UI_ORGANISM_GRASS_GRASS } from "../../../ui/UIData.js";

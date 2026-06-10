@@ -1,5 +1,7 @@
 import { hsvToHex } from "../../../color/color.js";
 import { CoordinateSet } from "../../../rendering/model/CoordinateSet.js";
+import { LineRenderJob } from "../../../rendering/model/LineRenderJob.js";
+import { RenderJob } from "../../../rendering/model/RenderJob.js";
 import { renderLine, renderPointLabel } from "../../../rendering/renderFunctions.js";
 import { copyMatValue } from "../../../util/matrix.js";
 import { addVec3Mult, addVec3MultDest, addVec3MultFloor, addVectorsMult, copyVecValue, vec3Dot } from "../../../util/vector.js";
@@ -12,6 +14,7 @@ export class ManipulationManager {
         this.inputManager = blockManager.worldManager.mainManager.inputManager;
         this.cameraManager = blockManager.worldManager.mainManager.cameraManager;
         this.canvasManager = blockManager.worldManager.mainManager.canvasManager;
+        this.rasterizationManager = blockManager.worldManager.mainManager.rasterizationManager;
 
         this.right = [0, 0, 0];
         this.up = [0, 0, 0];
@@ -129,68 +132,97 @@ export class ManipulationManager {
     }
 
     renderCross() {
-        this._pSize = 1000;
         this._lSize = 500;
-        renderPointLabel(
-            this.canvasManager.context,
-            ...this.centerCs.renderScreen,
-            this._pSize / this.centerCs.distToCamera,
-            hsvToHex(180, 1, 1)
-        )
-        renderLine(
-            this.canvasManager.context,
-            this.centerCs.renderScreen,
-            this.leftCs.renderScreen,
-            this._lSize / this.leftCs.distToCamera,
-            hsvToHex(180, 1, 1)
-        );
+        this._leftRenderJob = this._leftRenderJob ?? new LineRenderJob(this.rasterizationManager);
+        this._upRenderJob = this._upRenderJob ?? new LineRenderJob(this.rasterizationManager);
+        this._rightRenderJob = this._rightRenderJob ?? new LineRenderJob(this.rasterizationManager);
+        this._downRenderJob = this._downRenderJob ?? new LineRenderJob(this.rasterizationManager);
 
-        renderLine(
-            this.canvasManager.context,
-            this.centerCs.renderScreen,
-            this.upCs.renderScreen,
-            this._lSize / this.upCs.distToCamera,
-            hsvToHex(180, 1, 1)
-        );
-        renderLine(
-            this.canvasManager.context,
-            this.centerCs.renderScreen,
-            this.rightCs.renderScreen,
-            this._lSize / this.rightCs.distToCamera,
-            hsvToHex(180, 1, 1)
-        );
-        renderLine(
-            this.canvasManager.context,
-            this.centerCs.renderScreen,
-            this.downCs.renderScreen,
-            this._lSize / this.downCs.distToCamera,
-            hsvToHex(180, 1, 1)
-        );
+        this._leftRenderJob.v1 = this.centerCs.renderScreen;
+        this._leftRenderJob.v2 = this.leftCs.renderScreen,
+        this._leftRenderJob.size = this._lSize / this.leftCs.distToCamera;
+        this._leftRenderJob.color = hsvToHex(180, 1, 1); 
+        this._upRenderJob.v1 = this.centerCs.renderScreen;
+        this._upRenderJob.v2 = this.upCs.renderScreen,
+        this._upRenderJob.size = this._lSize / this.upCs.distToCamera;
+        this._upRenderJob.color = hsvToHex(270, 1, 1); 
+        this._rightRenderJob.v1 = this.centerCs.renderScreen;
+        this._rightRenderJob.v2 = this.rightCs.renderScreen,
+        this._rightRenderJob.size = this._lSize / this.rightCs.distToCamera;
+        this._rightRenderJob.color = hsvToHex(180, 1, 1); 
+        this._downRenderJob.v1 = this.centerCs.renderScreen;
+        this._downRenderJob.v2 = this.downCs.renderScreen,
+        this._downRenderJob.size = this._lSize / this.downCs.distToCamera;
+        this._downRenderJob.color = hsvToHex(270, 0.5, 1); 
 
-        renderPointLabel(
-            this.canvasManager.context,
-            ...this.upCs.renderScreen,
-            this._pSize / this.upCs.distToCamera,
-            hsvToHex(0, 1, 1)
-        )
-        renderPointLabel(
-            this.canvasManager.context,
-            ...this.downCs.renderScreen,
-            this._pSize / this.downCs.distToCamera,
-            hsvToHex(60, 1, 1)
-        )
-        renderPointLabel(
-            this.canvasManager.context,
-            ...this.leftCs.renderScreen,
-            this._pSize / this.leftCs.distToCamera,
-            hsvToHex(120, 1, 1)
-        )
-        renderPointLabel(
-            this.canvasManager.context,
-            ...this.rightCs.renderScreen,
-            this._pSize / this.rightCs.distToCamera,
-            hsvToHex(180, 1, 1)
-        )
+
+        if (this._leftRenderJob.getZ() < 0) {
+            this.rasterizationManager.addRenderJob(this._leftRenderJob);
+        }
+        if (this._upRenderJob.getZ() < 0) {
+            this.rasterizationManager.addRenderJob(this._upRenderJob);
+        }
+        if (this._rightRenderJob.getZ() < 0) {
+            this.rasterizationManager.addRenderJob(this._rightRenderJob);
+        }
+        if (this._downRenderJob.getZ() < 0) {
+            this.rasterizationManager.addRenderJob(this._downRenderJob);
+        }
+
+        // renderLine(
+        //     this.canvasManager.context,
+        //     this.centerCs.renderScreen,
+        //     this.leftCs.renderScreen,
+        //     this._lSize / this.leftCs.distToCamera,
+        //     hsvToHex(180, 1, 1)
+        // );
+
+        // renderLine(
+        //     this.canvasManager.context,
+        //     this.centerCs.renderScreen,
+        //     this.upCs.renderScreen,
+        //     this._lSize / this.upCs.distToCamera,
+        //     hsvToHex(180, 1, 1)
+        // );
+        // renderLine(
+        //     this.canvasManager.context,
+        //     this.centerCs.renderScreen,
+        //     this.rightCs.renderScreen,
+        //     this._lSize / this.rightCs.distToCamera,
+        //     hsvToHex(180, 1, 1)
+        // );
+        // renderLine(
+        //     this.canvasManager.context,
+        //     this.centerCs.renderScreen,
+        //     this.downCs.renderScreen,
+        //     this._lSize / this.downCs.distToCamera,
+        //     hsvToHex(180, 1, 1)
+        // );
+
+        // renderPointLabel(
+        //     this.canvasManager.context,
+        //     ...this.upCs.renderScreen,
+        //     this._pSize / this.upCs.distToCamera,
+        //     hsvToHex(0, 1, 1)
+        // )
+        // renderPointLabel(
+        //     this.canvasManager.context,
+        //     ...this.downCs.renderScreen,
+        //     this._pSize / this.downCs.distToCamera,
+        //     hsvToHex(60, 1, 1)
+        // )
+        // renderPointLabel(
+        //     this.canvasManager.context,
+        //     ...this.leftCs.renderScreen,
+        //     this._pSize / this.leftCs.distToCamera,
+        //     hsvToHex(120, 1, 1)
+        // )
+        // renderPointLabel(
+        //     this.canvasManager.context,
+        //     ...this.rightCs.renderScreen,
+        //     this._pSize / this.rightCs.distToCamera,
+        //     hsvToHex(180, 1, 1)
+        // )
     }
 
     renderCorners() {

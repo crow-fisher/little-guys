@@ -1,6 +1,6 @@
 import { hsv2rgb, processColorLerpBicolorArr, processRangeToOne, rgb2hsv, rgbToRgba } from "../../common.js";
 import { COLOR_BLUE, COLOR_VERY_FUCKING_RED, RGB_COLOR_GREEN } from "../../colors.js";
-import { getDefaultLighting, processLighting } from "../../world/lighting/lightingProcessing.js";
+import { getDefaultLighting, processLighting } from "../../world/_lighting/lightingProcessing.js";
 import { loadGD, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_ORG_LIGHTING, UI_VIEWMODE_ORG_MOISTURE, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_BLOCK_WATERMATRIC, UI_VIEWMODE_BLOCK_WATERTICKRATE } from "../../ui/UIData.js";
 import { addVec3Dest, copyVecValue, crossVec3, multiplyVectorByScalarDest, normalizeVec3, subtractVectorsDest, addVectorsCopy } from "../../world/climate/stars/matrix.js";
 import { QuadRenderJob } from "../../rendering/model/QuadRenderJob.js";

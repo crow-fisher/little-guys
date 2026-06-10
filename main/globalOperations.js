@@ -11,7 +11,7 @@ import { registerSquare, resetFrameGroupCache, waterGraphReset } from "./waterGr
 import { RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "./colors.js";
 import { calculateColorProvideOpacity } from "./world/climate/simulation/temperatureHumidity.js";
 import { getPlayerXMaxOffset, getPlayerXMinOffset } from "./player/playerMain.js";
-import { applyLightingFromSource } from "./world/lighting/lightingProcessing.js";
+import { applyLightingFromSource } from "./world/_lighting/lightingProcessing.js";
 
 let frame_squares = null;
 let frame_simulation_squares = new Array();

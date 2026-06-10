@@ -5,8 +5,11 @@ export class RenderJob {
         this.z = 0;
     }
 
+    getZ() {
+        return 0;
+    }
     update() {
-        this.z = 0; // calculate this every frame in your implementation class.
+        this.z = this.getZ();
     }
     render() {
     }

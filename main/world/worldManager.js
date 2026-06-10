@@ -1,5 +1,6 @@
 import { loadGD, UI_CAMERA_OFFSET_VEC } from "../ui/UIData.js";
 import { BlockManager } from "./block/BlockManager.js";
+import { LightingManager } from "./lighting/LightingManager.js";
 import { StarManager } from "./stars/starManager.js";
 import { TimeManager } from "./time/timeManager.js";
 
@@ -10,11 +11,13 @@ export class WorldManager {
         this.timeManager = new TimeManager(this);
         this.starManager = new StarManager(this);
         this.blockManager = new BlockManager(this);
+        this.lightingManager = new LightingManager(this);
         
     }
     update() {
         this.timeManager.update();
         this.blockManager.update();
+        this.lightingManager.update();
     }
     render() {
         this.timeManager.render();

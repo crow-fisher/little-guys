@@ -1,8 +1,8 @@
 import { RenderJob } from "./RenderJob.js";
 
 export class QuadRenderJob extends RenderJob {
-    constructor(context, p1, p2, p3, p4, color) {
-        super(context);
+    constructor(rasterizationManager, p1, p2, p3, p4, color) {
+        super(rasterizationManager);
         this.p1 = p1;
         this.p2 = p2;
         this.p3 = p3;

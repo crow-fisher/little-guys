@@ -20,7 +20,7 @@ import { hoverSq, doBrushFunc } from "../manipulation.js";
 import { hexToRgb, rgbToRgba } from "../common.js";
 import { getActiveClimate } from "../world/climate/climateManager.js";
 import { SoilSquare } from "../squares/parameterized/SoilSquare.js";
-import { getDefaultLighting } from "../world/lighting/lightingProcessing.js";
+import { getDefaultLighting } from "../world/_lighting/lightingProcessing.js";
 import { WorldSetupComponent } from "./components/WorldSetupComponent.js";
 import { RockSquare } from "../squares/parameterized/RockSquare.js";
 import { WaterSquare } from "../squares/WaterSquare.js";

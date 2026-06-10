@@ -1,5 +1,5 @@
 import { hexToRgb, hsv2rgb, hueShiftColor, rgb2hsv, rgbToHex } from "../../common.js";
-import { getDefaultLighting } from "../lighting/lightingProcessing.js";
+import { getDefaultLighting } from "../_lighting/lightingProcessing.js";
 import { loadGD, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_HEAVYRAIN, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_CLEAR, UI_PALETTE_ROCKIDX, UI_PALETTE_SOILIDX, UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK } from "../../ui/UIData.js";
 
 export class Climate {
