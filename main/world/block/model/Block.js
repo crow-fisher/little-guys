@@ -150,29 +150,20 @@ export class Block {
         this.offsetSign[1] = (this.centerCs.offset[1] < 0) ? 0 : 1;
         this.offsetSign[2] = (this.centerCs.offset[2] < 0) ? 0 : 1;
 
-        // this.renderPoint(this.nnnCs)
-        // this.renderPoint(this.nnpCs)
-        // this.renderPoint(this.npnCs)
-        // this.renderPoint(this.nppCs)
-        // this.renderPoint(this.pnnCs)
-        // this.renderPoint(this.pnpCs)
-        // this.renderPoint(this.ppnCs)
-        // this.renderPoint(this.pppCs)
-
         if (this.offsetSign[0] == 0)
-            this.renderFace(this.frontFace, this.frontRenderJob, this.frontNeighbor);
+            this.renderFace(this.frontFace, this.frontRenderJob, this.backNeighbor);
         else
-            this.renderFace(this.backFace, this.backRenderJob, this.backNeighbor);
+            this.renderFace(this.backFace, this.backRenderJob, this.frontNeighbor);
 
         if (this.offsetSign[1] == 0)
-            this.renderFace(this.bottomFace, this.bottomRenderJob, this.bottomNeighbor);
+            this.renderFace(this.bottomFace, this.bottomRenderJob, this.topNeighbor);
         else
-            this.renderFace(this.topFace, this.topRenderJob, this.topNeighbor);
+            this.renderFace(this.topFace, this.topRenderJob, this.bottomNeighbor);
 
         if (this.offsetSign[2] == 0)
-            this.renderFace(this.rightFace, this.rightRenderJob, this.rightNeighbor);
+            this.renderFace(this.rightFace, this.rightRenderJob, this.leftNeighbor);
         else
-            this.renderFace(this.leftFace, this.leftRenderJob, this.leftNeighbor);
+            this.renderFace(this.leftFace, this.leftRenderJob, this.rightNeighbor);
 
 
     }
