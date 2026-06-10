@@ -99,31 +99,32 @@ export class Block {
     }
 
     renderFace(face, renderJob, neighbor) {
-        if (face.every((face) => !face.isVisibleOnScreen())) {
+        if (neighbor) {
             return;
         }
+        face[0].process();
+        face[1].process();
+        face[2].process();
+        face[3].process();
 
-        if (neighbor) {
+        if (face.every((face) => !face.isVisibleOnScreen())) {
             return;
         }
         renderJob.p1 = face[0].renderScreen;
         renderJob.p2 = face[1].renderScreen;
         renderJob.p3 = face[2].renderScreen;
         renderJob.p4 = face[3].renderScreen;
+
         renderJob.color = this.color();
         this.rasterizationManager.addRenderJob(renderJob);
     }
 
     update() {
+        if (this.topNeighbor && this.bottomNeighbor && this.leftNeighbor && this.rightNeighbor && this.frontNeighbor && this.backNeighbor) {
+            return;
+        }
+
         this.centerCs.process();
-        this.nnnCs.process();
-        this.nnpCs.process();
-        this.npnCs.process();
-        this.nppCs.process();
-        this.pnnCs.process();
-        this.pnpCs.process();
-        this.ppnCs.process();
-        this.pppCs.process();
     }
 
     renderPoint(pointRef) {
@@ -143,6 +144,10 @@ export class Block {
     }
 
     render() {
+        if (this.topNeighbor && this.bottomNeighbor && this.leftNeighbor && this.rightNeighbor && this.frontNeighbor && this.backNeighbor) {
+            return;
+        }
+        
         if (!this.centerCs.isVisibleOnScreen()) {
             return;
         }

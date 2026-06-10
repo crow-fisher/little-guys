@@ -26,7 +26,6 @@ export class CameraManager {
         this.cameraRotationDt = [0, 0, 0];
         this.cameraFov = 80;
 
-
         this.rotNorm = [0, 0, 0];
         
         this.right = [0, 0, 0];
@@ -49,7 +48,7 @@ export class CameraManager {
             [0, 0, 0]
         ]
 
-
+        this.frame = 0;
         this.setFramePerspectiveMatrix();
     }
 
@@ -70,6 +69,7 @@ export class CameraManager {
         this.setFrameCameraMatrix();
         this.setFrameCanvasRenderParams();
         this.setFramePerspectiveMatrix();
+        this.frame += 1;
     }
 
     movementTick() {

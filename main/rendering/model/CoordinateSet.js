@@ -30,6 +30,11 @@ export class CoordinateSet {
     }
 
     process() {
+        if (this._lastFrameProcessed == this.cameraManager.frame) {
+            return;
+        }
+        this._lastFrameProcessed = this.cameraManager.frame;
+        
         subtractVectorsDest(this.world, this.cameraManager.cameraOffset, this.offset);
         this.cameraManager.cartesianToScreenInplace(this.offset, this.camera, this.screen);
         this.distToCamera = getVec3Length(this.offset);
