@@ -116,7 +116,6 @@ export class StarSector {
         if (!this.ready) {
             return;
         }
-        return;
         this.renderPrepare();
         if (this.prevStarsRendered > 0 || this.fovCs.isVisibleOnScreen()) {
             this.prevStarsRendered = this.curStarsRendered;

@@ -8,7 +8,7 @@ export function renderLine(context, v1, v2, size, color) {
 }
 
 export function renderPointLabel(context, x, y, z, size, color, label) {
-    if (size < 0 || z < 0) {
+    if (size < 0) {
         return;
     }
     context.beginPath();

@@ -4,6 +4,8 @@ import { renderLine, renderPointLabel } from "../../../rendering/renderFunctions
 import { copyMatValue } from "../../../util/matrix.js";
 import { addVec3Mult, addVec3MultDest, addVec3MultFloor, addVectorsMult, copyVecValue, vec3Dot } from "../../../util/vector.js";
 
+const STEP = 3;
+
 export class ManipulationManager {
     constructor(blockManager) {
         this.blockManager = blockManager;
@@ -15,10 +17,10 @@ export class ManipulationManager {
         this.up = [0, 0, 0];
         this.forward = [0, 0, 0];
 
-        this.dimLeft = blockManager.sectorSize * 10;
-        this.dimRight = blockManager.sectorSize * 10;
-        this.dimUp = blockManager.sectorSize * 10;
-        this.dimDown = blockManager.sectorSize * 10;
+        this.dimLeft = blockManager.sectorSize * 3;
+        this.dimRight = blockManager.sectorSize * 3;
+        this.dimUp = blockManager.sectorSize * 3;
+        this.dimDown = blockManager.sectorSize * 3;
 
         this.centerCs = new CoordinateSet(this.cameraManager);
         this.upCs = new CoordinateSet(this.cameraManager);
@@ -36,9 +38,9 @@ export class ManipulationManager {
 
     initRefPoints() {
         this.refPoints = new Map();
-        for (let i = -this.dimLeft; i < this.dimRight; i++) {
+        for (let i = -this.dimLeft; i < this.dimRight; i += STEP) {
             this.refPoints.set(i, new Map());
-            for (let j = -this.dimDown; j < this.dimUp; j++) {
+            for (let j = -this.dimDown; j < this.dimUp; j += STEP) {
                 this.refPoints.get(i).set(j, new CoordinateSet(this.cameraManager));
                 this.setRefPointCoordinates(this.refPoints.get(i).get(j), i, j);
             }
@@ -52,9 +54,9 @@ export class ManipulationManager {
     }
 
     getClosestRefPoint(px, py) {
-        let curCs, curDist, closestCs, closestDist = 10;
-        for (let i = -this.dimLeft; i < this.dimRight; i++) {
-            for (let j = -this.dimDown; j < this.dimUp; j++) {
+        let curCs, curDist, closestCs, closestDist = 100;
+        for (let i = -this.dimLeft; i < this.dimRight; i += STEP) {
+            for (let j = -this.dimDown; j < this.dimUp; j += STEP) {
                 curCs = this.refPoints.get(i).get(j);
                 curCs.process();
                 curDist = ((px - curCs.renderScreen[0]) ** 2 + (py - curCs.renderScreen[1]) ** 2) ** 0.5;
