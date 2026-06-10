@@ -28,7 +28,7 @@ export class BlockManager {
         this._cSect1 = this.getSector(newBlock.sector);
         this._cSect1.addBlock(newBlock);
 
-        let brushSize = 3;
+        let len, brushSize = 3;
 
         let cartesian = structuredClone(refCs.world);
         for (let i = -brushSize; i < brushSize; i++) {
@@ -40,10 +40,11 @@ export class BlockManager {
                     cartesian[1] += j;
                     cartesian[2] += k;
 
-                    if (((i ** 2 + j ** 2 + k ** 2) ** 0.5) > brushSize) {
+                    len = ((i ** 2 + j ** 2 + k ** 2) ** 0.5);
+                    
+                    if (len > brushSize || len < (brushSize - 1)) {
                         continue;
                     }
-
                     let newBlock = new Block(this, cartesian)
                     this._cSect1 = this.getSector(newBlock.sector);
                     this._cSect1.addBlock(newBlock);
