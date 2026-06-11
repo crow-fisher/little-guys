@@ -1,9 +1,10 @@
-import { hsvToHex } from "../../../color/color.js";
+import { hsvToHex, rgbToHex } from "../../../color/color.js";
 import { CoordinateSet } from "../../../rendering/model/CoordinateSet.js";
 import { QuadRenderJob } from "../../../rendering/model/QuadRenderJob.js";
 import { RenderJob } from "../../../rendering/model/RenderJob.js";
 import { renderPointLabel, renderQuad } from "../../../rendering/renderFunctions.js";
 import { centerVec, nnnVec, nnpVec, npnVec, nppVec, pnnVec, pnpVec, ppnVec, pppVec } from "../../../util/const.js";
+import { addVectors, multiplyVectorsDest } from "../../../util/vector.js";
 
 
 export class Block {
@@ -15,6 +16,13 @@ export class Block {
 
         this.cartesian = cartesian;
         this.sector = blockManager.cartesianToSector(cartesian);
+
+        this.lightSource = [];
+        this.lightApplied = [1, 1, 1];
+        
+        this.colorBase = [100, 100, 100];
+        this.colorApplied = [100, 100, 100]
+        this.colorHex = "#646464";
 
         this.centerCs = new CoordinateSet(this.cameraManager, this.cartesian, centerVec);
         this.nnnCs = new CoordinateSet(this.cameraManager, this.cartesian, nnnVec);
@@ -95,7 +103,20 @@ export class Block {
     }
 
     color() {
-        return hsvToHex(this.centerCs.distToCamera * 10, .8, .6);
+        // process 'lightSource' to 'lightApplied'
+        // lightSource is an array of lightSource results like: 
+        // [[distToCamera, [rB, gB, bB]]]
+        // where 'rB', 'gB', and 'bB' are the relative brightnesses of each color (normalized at 1).
+        
+        this.lightApplied[0] = 0;
+        this.lightApplied[1] = 0;
+        this.lightApplied[2] = 0;
+        this.lightSource.forEach((ls) => addVectors(this.lightApplied, ls[1]))
+
+        // calculate final color based on 'lightApplied' and 'colorBase'
+        multiplyVectorsDest(this.colorBase, this.lightApplied, this.colorApplied);
+        this.colorHex = rgbToHex(...this.colorApplied)
+        return this.colorHex;
     }
 
     renderFace(face, renderJob, neighbor) {

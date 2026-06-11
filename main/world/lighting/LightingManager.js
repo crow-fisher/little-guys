@@ -1,3 +1,4 @@
+import { addVec3Mult } from "../../util/vector.js";
 import { LightSource } from "./model/LightSource.js";
 
 export class LightingManager {
@@ -9,7 +10,6 @@ export class LightingManager {
     update() {
         let idx = 0;
         this.lightSources.forEach((ls) => ls.updateInit(idx++));
-        
         this.worldManager.blockManager.iterateOnSectors(
             (sector) => sector.iterateOnBlocks(
                 (block) => this.lightSources.forEach(

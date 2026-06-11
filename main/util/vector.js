@@ -149,7 +149,7 @@ export function multiplyVectorByScalarDestAdd(vec, scalar, dest) {
 
 export function multiplyVectorsDest(v1, v2, dest) {
   for (let i = 0; i < v1.length; i++)
-    dest[i] = v1[i] + v2[i];
+    dest[i] = v1[i] * v2[i];
 }
 
 export function vec3Dot(v1, v2) {

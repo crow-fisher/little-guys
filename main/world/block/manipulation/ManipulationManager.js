@@ -35,7 +35,7 @@ export class ManipulationManager {
         this.cornerTrCs = new CoordinateSet(this.cameraManager);
         this.cornerBlCs = new CoordinateSet(this.cameraManager);
         this.cornerBrCs = new CoordinateSet(this.cameraManager);
-
+        
         this.initRefPoints();
     }
 
