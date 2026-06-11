@@ -4,7 +4,7 @@ export class LightSource {
     constructor(lightGroup) {
         this.lightGroup = lightGroup;
 
-        this.numBuckets = 100;
+        this.numBuckets = 200;
 
         this.position = [0, 0, 0];
         this.idx = 0

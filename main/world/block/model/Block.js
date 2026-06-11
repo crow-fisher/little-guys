@@ -63,7 +63,7 @@ export class Block {
     }
 
     getLightFilterRate() {
-        let ret = 0.99;
+        let ret = 0.997;
         let exp = 1.2;
 
         if (this.frontNeighbor) {
