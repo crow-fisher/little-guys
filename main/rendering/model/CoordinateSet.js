@@ -38,12 +38,7 @@ export class CoordinateSet {
         subtractVectorsDest(this.world, this.cameraManager.cameraOffset, this.offset);
         this.cameraManager.cartesianToScreenInplace(this.offset, this.camera, this.screen);
         this.distToCamera = getVec3Length(this.offset);
-
-        if (this.screen[2] > 0) {
-            this.cameraManager.screenToRenderScreen(this.screen, this.renderNorm, this.renderScreen);
-        } else {
-            this.renderScreen[2] = this.screen[2]
-        }
+        this.cameraManager.screenToRenderScreen(this.screen, this.renderNorm, this.renderScreen);
 
         this.renderScreen[2] = this.camera[2]
 

@@ -1,12 +1,10 @@
 import { copyVecValue, getVec3Length, multiplyVectorByScalar, normalizeVec3Dest, subtractVectorsDest } from "../../../util/vector.js";
 
 export class LightSource {
-    constructor(lightingManager) {
-        this.lightingManager = lightingManager;
-        this.cameraManager = lightingManager.worldManager.mainManager.cameraManager;
-        this.manipulationManager = lightingManager.worldManager.blockManager.manipulationManager;
+    constructor(lightGroup) {
+        this.lightGroup = lightGroup;
 
-        this.numBuckets = 5;
+        this.numBuckets = 500;
 
         this.position = [0, 0, 0];
         this.idx = 0
@@ -19,8 +17,6 @@ export class LightSource {
 
     updateInit(idx) {
         this.idx = idx;
-        // copyVecValue(this.cameraManager.cameraOffset, this.position);
-        copyVecValue(this.manipulationManager.centerCs.world, this.position);
         this.sectors.clear();
     }
 
@@ -54,7 +50,7 @@ export class LightSource {
                     subSec.sort((a, b) => a.lightSource[this.idx][0] - b.lightSource[this.idx][0]);
                     subSec.forEach((block) => {
                         copyVecValue(curLightingApplied, block.lightSource[this.idx][1]);
-                    multiplyVectorByScalar(curLightingApplied, 0.999);
+                    multiplyVectorByScalar(curLightingApplied, block.getLightFilterRate());
                     }    
                 );
             }));

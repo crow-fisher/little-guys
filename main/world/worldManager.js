@@ -21,6 +21,7 @@ export class WorldManager {
     }
     render() {
         this.timeManager.render();
+        this.lightingManager.render();
         this.starManager.render();
         this.blockManager.render();
 

@@ -59,6 +59,29 @@ export class Block {
         this.linkNeighbors();
     }
 
+    getLightFilterRate() {
+        let ret = 0.993;
+        if (this.frontNeighbor) {
+            ret = ret ** 2;
+        }
+        if (this.backNeighbor) {
+            ret = ret ** 2;
+        }
+        if (this.bottomNeighbor) {
+            ret = ret ** 2;
+        }
+        if (this.topNeighbor) {
+            ret = ret ** 2;
+        }
+        if (this.rightNeighbor) {
+            ret = ret ** 2;
+        }
+        if (this.leftNeighbor) {
+            ret = ret ** 2;
+        }
+        return ret;
+    }
+
     linkNeighbors() {
         this.frontNeighbor = this.blockManager.getBlockAtCartesian(this.cartesian, [-1, 0, 0]);
         if (this.frontNeighbor)
@@ -172,6 +195,7 @@ export class Block {
         if (!this.centerCs.isVisibleOnScreen()) {
             return;
         }
+
         this.offsetSign[0] = (this.centerCs.offset[0] < 0) ? 0 : 1;
         this.offsetSign[1] = (this.centerCs.offset[1] < 0) ? 0 : 1;
         this.offsetSign[2] = (this.centerCs.offset[2] < 0) ? 0 : 1;

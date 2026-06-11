@@ -1,43 +1,28 @@
-import { getBaseUISize } from "../../canvas.js";
-import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth, MAIN_CONTEXT } from "../../index.js";
 import { RenderJob } from "./RenderJob.js";
 
 export class PointLabelRenderJob extends RenderJob {
-    constructor(x, y, z, size, color, label) {
-        super();
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.size = Math.max(0, size);
+    constructor(rasterizationManager, pos, size, color, label) {
+        super(rasterizationManager);
+        this.uiManager = rasterizationManager.mainManager.uiManager;
+        this.pos = pos;
+        this.size = size; 
         this.color = color;
         this.label = label;
     }
     
     getZ() {
-        return this.z;
+        return this.pos[2];
     }
 
     render() {
-        if (this.size < 0) {
-            return;
-        }
-        MAIN_CONTEXT.beginPath();
-        MAIN_CONTEXT.fillStyle = this.color;
-        MAIN_CONTEXT.arc(this.x, this.y, this.size, 0, 2 * Math.PI, false);
-        MAIN_CONTEXT.fill();
-
+        this.context.beginPath();
+        this.context.fillStyle = this.color;
+        this.context.arc(this.pos[0], this.pos[1], this.size, 0, 2 * Math.PI, false);
+        this.context.fill();
         if (this.label) { 
-            MAIN_CONTEXT.font = getBaseUISize() * 3 + "px courier";
-            MAIN_CONTEXT.fillText(this.label, this.x + getBaseUISize() * 3, this.y);
+            this.context.font = this.uiManager.getBaseUISize() * 3 + "px courier";
+            this.context.fillText(this.label, this.x + this.uiManager.getBaseUISize() * 3, this.y);
         }
     }
 
-    getZ() {
-        return this.z;
-    }
-
-    isVisible() {
-        // yeah....this is backwards from what it should be. oops! 
-        return this.getZ() < 0; 
-    }
 }
