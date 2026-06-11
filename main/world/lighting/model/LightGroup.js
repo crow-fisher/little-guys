@@ -49,7 +49,7 @@ export class LightGroup {
         this.leftLightSource.updateInit(idx);
         this.rightLightSource.updateInit(idx);
 
-        this.cameraRotation = [0, 1, 0];
+        this.cameraRotation = [0, Math.PI / 2, 0];
         this.yaw = this.cameraRotation[0];
         this.pitch = this.cameraRotation[1];
 

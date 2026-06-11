@@ -1,10 +1,11 @@
 import { hsvToHex, rgbToHex } from "../../../color/color.js";
 import { CoordinateSet } from "../../../rendering/model/CoordinateSet.js";
+import { PointLabelRenderJob } from "../../../rendering/model/PointLabelRenderJob.js";
 import { QuadRenderJob } from "../../../rendering/model/QuadRenderJob.js";
 import { RenderJob } from "../../../rendering/model/RenderJob.js";
 import { renderPointLabel, renderQuad } from "../../../rendering/renderFunctions.js";
 import { centerVec, nnnVec, nnpVec, npnVec, nppVec, pnnVec, pnpVec, ppnVec, pppVec } from "../../../util/const.js";
-import { addVectors, multiplyVectorsDest } from "../../../util/vector.js";
+import { addVectors, copyVecValue, multiplyVectorsDest } from "../../../util/vector.js";
 
 
 export class Block {
@@ -25,6 +26,8 @@ export class Block {
         this.colorHex = "#646464";
 
         this.centerCs = new CoordinateSet(this.cameraManager, this.cartesian, centerVec);
+        this.centerRenderJob = new PointLabelRenderJob(this.rasterizationManager, [0, 0, 0], 0, "#646464")
+
         this.nnnCs = new CoordinateSet(this.cameraManager, this.cartesian, nnnVec);
         this.nnpCs = new CoordinateSet(this.cameraManager, this.cartesian, nnpVec);
         this.npnCs = new CoordinateSet(this.cameraManager, this.cartesian, npnVec);
@@ -60,24 +63,26 @@ export class Block {
     }
 
     getLightFilterRate() {
-        let ret = 0.993;
+        let ret = 0.99;
+        let exp = 1.2;
+
         if (this.frontNeighbor) {
-            ret = ret ** 2;
+            ret = ret ** exp;
         }
         if (this.backNeighbor) {
-            ret = ret ** 2;
+            ret = ret ** exp;
         }
         if (this.bottomNeighbor) {
-            ret = ret ** 2;
+            ret = ret ** exp;
         }
         if (this.topNeighbor) {
-            ret = ret ** 2;
+            ret = ret ** exp;
         }
         if (this.rightNeighbor) {
-            ret = ret ** 2;
+            ret = ret ** exp;
         }
         if (this.leftNeighbor) {
-            ret = ret ** 2;
+            ret = ret ** exp;
         }
         return ret;
     }
@@ -159,7 +164,7 @@ export class Block {
         renderJob.p3 = face[2].renderScreen;
         renderJob.p4 = face[3].renderScreen;
 
-        renderJob.color = this.color();
+        renderJob.color = this.colorHex;
         this.rasterizationManager.addRenderJob(renderJob);
     }
 
@@ -193,6 +198,16 @@ export class Block {
         }
         
         if (!this.centerCs.isVisibleOnScreen()) {
+            return;
+        }
+
+        this.color();
+
+        if (this.centerCs.distToCamera > 150) {
+            copyVecValue(this.centerCs.renderScreen, this.centerRenderJob.pos);
+            this.centerRenderJob.size = 1200 / this.centerCs.distToCamera;
+            this.centerRenderJob.color = this.colorHex;
+            this.rasterizationManager.addRenderJob(this.centerRenderJob);
             return;
         }
 

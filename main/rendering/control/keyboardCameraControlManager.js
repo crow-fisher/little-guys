@@ -8,7 +8,7 @@ export class KeyboardCameraControlManager extends CameraControlManager {
     controlRoutine() {
         this.rate = 0.2;
         if (this.cameraManager.isKeyPressed("Shift")) {
-            this.rate = 10;
+            this.rate = .4;
         }
         if (this.cameraManager.isKeyPressed("q")) {
             this.cameraManager.cameraOffsetDt[1] += this.rate;
