@@ -20,13 +20,14 @@ export class LightSource {
     updateInit(idx) {
         this.idx = idx;
         // copyVecValue(this.cameraManager.cameraOffset, this.position);
-
         copyVecValue(this.manipulationManager.centerCs.world, this.position);
-
         this.sectors.clear();
     }
 
     updateProcessBlock(block) {
+        if (!block.centerCs.isVisibleOnScreen()) {
+            return;
+        }
         subtractVectorsDest(this.position, block.centerCs.world, this._offset);
         subtractVectorsDest(block.centerCs.world, this.position, this._offset);
         normalizeVec3Dest(this._offset, this._offsetNorm);
@@ -53,7 +54,7 @@ export class LightSource {
                     subSec.sort((a, b) => a.lightSource[this.idx][0] - b.lightSource[this.idx][0]);
                     subSec.forEach((block) => {
                         copyVecValue(curLightingApplied, block.lightSource[this.idx][1]);
-                    multiplyVectorByScalar(curLightingApplied, 0.93);
+                    multiplyVectorByScalar(curLightingApplied, 0.999);
                     }    
                 );
             }));
