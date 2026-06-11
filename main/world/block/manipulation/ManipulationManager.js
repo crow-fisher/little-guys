@@ -132,6 +132,8 @@ export class ManipulationManager {
     }
 
     renderCross() {
+
+        return;
         this._lSize = 500;
         this._leftRenderJob = this._leftRenderJob ?? new LineRenderJob(this.rasterizationManager);
         this._upRenderJob = this._upRenderJob ?? new LineRenderJob(this.rasterizationManager);

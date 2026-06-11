@@ -6,7 +6,7 @@ export class LightSource {
         this.cameraManager = lightingManager.worldManager.mainManager.cameraManager;
         this.manipulationManager = lightingManager.worldManager.blockManager.manipulationManager;
 
-        this.numBuckets = 10;
+        this.numBuckets = 5;
 
         this.position = [0, 0, 0];
         this.idx = 0
@@ -53,7 +53,7 @@ export class LightSource {
                     subSec.sort((a, b) => a.lightSource[this.idx][0] - b.lightSource[this.idx][0]);
                     subSec.forEach((block) => {
                         copyVecValue(curLightingApplied, block.lightSource[this.idx][1]);
-                    multiplyVectorByScalar(curLightingApplied, 0.2);
+                    multiplyVectorByScalar(curLightingApplied, 0.93);
                     }    
                 );
             }));
