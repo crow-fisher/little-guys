@@ -7,6 +7,13 @@ export class LightingManager {
     }
 
     update() {
-        this.lightSources.forEach((ls) => ls.update());
+        let idx = 0;
+        this.lightSources.forEach((ls) => ls.updateInit(idx++));
+        
+        this.worldManager.blockManager.iterateOnSectors(
+            (sector) => sector.iterateOnBlocks(
+                (block) => this.lightSources.forEach(
+                    (ls) => ls.updateProcessBlock(block))));
+        this.lightSources.forEach((ls) => ls.updateProcess());
     }
 }
