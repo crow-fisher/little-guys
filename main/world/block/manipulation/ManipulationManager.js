@@ -6,8 +6,6 @@ import { renderLine, renderPointLabel } from "../../../rendering/renderFunctions
 import { copyMatValue } from "../../../util/matrix.js";
 import { addVec3Mult, addVec3MultDest, addVec3MultFloor, addVectorsMult, copyVecValue, vec3Dot } from "../../../util/vector.js";
 
-const STEP = 3;
-
 export class ManipulationManager {
     constructor(blockManager) {
         this.blockManager = blockManager;
@@ -70,8 +68,6 @@ export class ManipulationManager {
             }
         }
         return closestCs;
-
-
     }
 
     update() {
