@@ -1,11 +1,12 @@
 import { hsvToHex } from "../../../../color/color.js";
 import { CoordinateSet } from "../../../../rendering/model/CoordinateSet.js";
+import { LineRenderJob } from "../../../../rendering/model/LineRenderJob.js";
 import { PointLabelRenderJob } from "../../../../rendering/model/PointLabelRenderJob.js";
 import { RenderJob } from "../../../../rendering/model/RenderJob.js";
 import { addVec3Mult, addVec3MultFloor, copyVecValue, crossVec3Dest, normalizeVec3, subtractVectorsDest } from "../../../../util/vector.js";
 
 export class Plane {
-    constructor(manipulationManager, yaw=0, pitch=0, dimWidth=1, dimHeight=1) {
+    constructor(manipulationManager, yaw = 0, pitch = 0, dimWidth = 1, dimHeight = 1, step = 5) {
         this.manipulationManager = manipulationManager;
         this.inputManager = manipulationManager.blockManager.worldManager.mainManager.inputManager;
         this.cameraManager = manipulationManager.blockManager.worldManager.mainManager.cameraManager;
@@ -24,6 +25,7 @@ export class Plane {
 
         this.dimWidth = dimWidth;
         this.dimHeight = dimHeight;
+        this.step = step;
 
         this.processPositionUpdate();
     }
@@ -36,8 +38,34 @@ export class Plane {
         this.renderPoint(this.csTr(), this.rjTr());
         this.renderPoint(this.csBl(), this.rjBl());
         this.renderPoint(this.csBr(), this.rjBr());
-    }
 
+        let x, y, centerPoint, neighborPoint, neighborPointLineRenderJob;
+        let order = [[-1, 0], [1, 0], [0, 1], [0, -1], [-1, 1]];
+        
+        for (let i = -this.dimWidth; i <= this.dimWidth; i += this.step) {
+            for (let j = -this.dimHeight; j <= this.dimHeight; j += this.step) {
+                order.forEach((arr) => {
+                    x = arr[0] * this.step, y = arr[1] * this.step;
+
+                    centerPoint = this.refPoints.get(i).get(j);
+                    neighborPoint = this.refPoints.get(i + x)?.get(j + y);
+
+                    centerPoint.process();
+
+                    if (neighborPoint != null) {
+                        neighborPoint.process();
+                        if (centerPoint.isVisibleOnScreen() && neighborPoint.isVisibleOnScreen()) {
+                            neighborPointLineRenderJob = this.refPointLineRenderJobs.get(i + x)?.get(j + y);
+                            neighborPointLineRenderJob.v1 = centerPoint.renderScreen;
+                            neighborPointLineRenderJob.v2 = neighborPoint.renderScreen;
+                            this.rasterizationManager.addRenderJob(neighborPointLineRenderJob);
+                        }
+
+                    }
+                });
+            }
+        }
+    }
 
     processPositionUpdate() {
         this.rotNorm[0] = Math.cos(this.yaw) * Math.cos(this.pitch);
@@ -55,14 +83,16 @@ export class Plane {
     initRefPoints() {
         this.refPoints = new Map();
         this.refPointRenderJobs = new Map();
-        for (let i = -this.dimWidth; i <= this.dimWidth; i += 5) {
+        this.refPointLineRenderJobs = new Map();
+        for (let i = -this.dimWidth; i <= this.dimWidth; i += this.step) {
             this.refPoints.set(i, new Map());
             this.refPointRenderJobs.set(i, new Map());
-            for (let j = -this.dimHeight; j <= this.dimHeight; j += 5) {
+            this.refPointLineRenderJobs.set(i, new Map());
+            for (let j = -this.dimHeight; j <= this.dimHeight; j += this.step) {
                 this.refPoints.get(i).set(j, new CoordinateSet(this.cameraManager));
                 this.setRefPointCoordinates(this.refPoints.get(i).get(j), i, j);
-
                 this.refPointRenderJobs.get(i).set(j, new PointLabelRenderJob(this.rasterizationManager, [0, 0, 0], 4, hsvToHex(180, 1, 1)));
+                this.refPointLineRenderJobs.get(i).set(j, new LineRenderJob(this.rasterizationManager, [0, 0, 0], [0, 0, 0], 4, hsvToHex(270, 1, 1)));
             }
         }
     }
@@ -75,8 +105,8 @@ export class Plane {
 
     getClosestRefPoint(px, py) {
         let curCs, curDist, closestCs, closestDist = 100;
-        for (let i = -this.dimWidth; i < this.dimWidth; i += 5) {
-            for (let j = -this.dimHeight; j < this.dimHeight; j += 5) {
+        for (let i = -this.dimWidth; i < this.dimWidth; i += this.step) {
+            for (let j = -this.dimHeight; j < this.dimHeight; j += this.step) {
                 curCs = this.refPoints.get(i).get(j);
                 curCs.process();
                 curDist = ((px - curCs.renderScreen[0]) ** 2 + (py - curCs.renderScreen[1]) ** 2) ** 0.5;
@@ -88,7 +118,6 @@ export class Plane {
         }
         return closestCs;
     }
-
 
     csTl() {
         return this.refPoints.get(-this.dimWidth).get(-this.dimHeight);
@@ -121,9 +150,8 @@ export class Plane {
             return;
         }
         copyVecValue(point.renderScreen, renderJob.pos);
-        renderJob.size = 10;
+        renderJob.size = 600 / point.distToCamera;
         this.rasterizationManager.addRenderJob(renderJob);
     }
 
-    
 }

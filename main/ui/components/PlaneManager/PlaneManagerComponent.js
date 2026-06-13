@@ -33,7 +33,7 @@ export class PlaneManagerComponent extends Component {
         let row = new Container(window, 0);
         this.container.addElement(row);
 
-        row.addElement(new RadioToggleLabel(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER, "preview",
+        row.addElement(new RadioToggleLabel(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER, "follow",
             () => this.gcvPlaneZMode() == 0, () => this.scvPlaneZMode(0),
             () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));
         row.addElement(new RadioToggleLabel(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER, "lock",
@@ -71,12 +71,6 @@ export class PlaneManagerComponent extends Component {
     scvPlaneZMode(v) {
         this.config().plane.zMode = v;
     }
-    gcvPlaneZPos() {
-        return this.config().plane.zPos;
-    }
-    scvPlaneZPos(v) {
-        this.config().plane.zPos = v;
-    }
     
     getDefaultConfig() {
         return {
@@ -86,7 +80,6 @@ export class PlaneManagerComponent extends Component {
                 pitch: 0,
                 yaw: 0,
                 zMode: 0,
-                zPos: 0
             },
             offsetScale: {
                 offsetX: 56,

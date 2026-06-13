@@ -17,16 +17,16 @@ export class ManipulationManager {
         this.planeManagerComponent = blockManager.worldManager.mainManager.uiManager.planeManagerComponent;
         
         this.planes = new Array();
-
-        this.zPlane = new Plane(this,0, Math.PI / 2, 100, 100);
+        this.zPlane = new Plane(this,0, Math.PI / 2, 25, 25);
     }
 
     update() { 
         this.zPlane.centerCs.world[0] = this.cameraManager.cameraOffset[0];
         this.zPlane.centerCs.world[2] = this.cameraManager.cameraOffset[2];
+        if (this.planeManagerComponent.gcvPlaneZMode() == 0)
+            this.zPlane.centerCs.world[1] = this.cameraManager.cameraOffset[1] + 4;
+
         this.zPlane.processPositionUpdate();
-
-
     }
 
     render() {
