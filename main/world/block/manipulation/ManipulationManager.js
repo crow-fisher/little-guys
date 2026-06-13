@@ -18,10 +18,13 @@ export class ManipulationManager {
         
         this.planes = new Array();
 
-        this.zPlane = new Plane(this,0, Math.PI / 2, 10, 10);
+        this.zPlane = new Plane(this,0, Math.PI / 2, 100, 100);
     }
 
-    update() {
+    update() { 
+        this.zPlane.centerCs.world[0] = this.cameraManager.cameraOffset[0];
+        this.zPlane.centerCs.world[2] = this.cameraManager.cameraOffset[2];
+        this.zPlane.processPositionUpdate();
 
 
     }
