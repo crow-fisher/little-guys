@@ -1,5 +1,6 @@
 import { hsvToHex } from "../color/color.js";
 import { AstronomyAtlasComponent } from "./components/AstronomyAtlas/AstronomyAtlasComponent.js";
+import { PlaneManagerComponent } from "./components/PlaneManager/PlaneManagerComponent.js";
 import { TopBarComponent } from "./topbar/TopBarComponent.js";
 import { loadGD, saveGD, UI_COMPONENT_DATA, UI_TOPBAR } from "./UIData.js";
 
@@ -10,10 +11,11 @@ export class UIManager {
         this._config = loadGD(UI_COMPONENT_DATA);
 
         this.astronomyAtlasComponent = new AstronomyAtlasComponent(this);
+        this.planeManager = new PlaneManagerComponent(this);
         this.topBarComponent = new TopBarComponent(this);
 
         this.components = [
-            this.astronomyAtlasComponent,
+            this.planeManager,
             this.topBarComponent
         ]
     }
