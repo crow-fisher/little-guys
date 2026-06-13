@@ -40,10 +40,10 @@ export class Plane {
         this.renderPoint(this.csBr(), this.rjBr());
 
         let x, y, centerPoint, neighborPoint, neighborPointLineRenderJob;
-        let order = [[-1, 0], [1, 0], [0, 1], [0, -1], [-1, 1]];
-        
-        for (let i = -this.dimWidth; i <= this.dimWidth; i += this.step) {
-            for (let j = -this.dimHeight; j <= this.dimHeight; j += this.step) {
+        let order = [[-1, 0], [1, 0], [0, 1], [0, -1]];
+
+        for (let i = -this.dimWidth; i <= this.dimWidth; i += this.step * 2) {
+            for (let j = -this.dimHeight; j <= this.dimHeight; j += this.step * 2) {
                 order.forEach((arr) => {
                     x = arr[0] * this.step, y = arr[1] * this.step;
 
