@@ -5,6 +5,7 @@ import { RenderJob } from "../../../rendering/model/RenderJob.js";
 import { renderLine, renderPointLabel } from "../../../rendering/renderFunctions.js";
 import { copyMatValue } from "../../../util/matrix.js";
 import { addVec3Mult, addVec3MultDest, addVec3MultFloor, addVectorsMult, copyVecValue, vec3Dot } from "../../../util/vector.js";
+import { Plane } from "./model/Plane.js";
 
 export class ManipulationManager {
     constructor(blockManager) {
@@ -12,18 +13,20 @@ export class ManipulationManager {
         this.inputManager = blockManager.worldManager.mainManager.inputManager;
         this.cameraManager = blockManager.worldManager.mainManager.cameraManager;
         this.canvasManager = blockManager.worldManager.mainManager.canvasManager;
-        this.rasterizationManager = blockManager.worldManager.mainManager.rasterizationManager;
+        this.rasterizationManager = blockManager.worldManager.mainManager.rasterizationManager; 
+        this.planeManagerComponent = blockManager.worldManager.mainManager.uiManager.planeManagerComponent;
         
         this.planes = new Array();
+
+        this.zPlane = new Plane(this,0, Math.PI / 2, 10, 10);
     }
 
     update() {
 
+
     }
 
     render() {
-        this.renderCross();
-        this.renderCorners();
-        this.renderHoverPoint();
+        this.zPlane.render();
     }
 }

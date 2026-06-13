@@ -1,5 +1,5 @@
 import { Container } from "./Container.js";
-import { loadGD, UI_TOPBAR_AA } from "./UIData.js";
+import { loadGD, UI_TOPBAR_AA, UI_TOPBAR_BLOCK } from "./UIData.js";
 import { Window } from "./Window.js";
 
 export class Component {
@@ -15,14 +15,14 @@ export class Component {
     /// core runtime methods
     // rendering
     render() {
-        if (!loadGD(UI_TOPBAR_AA)) {
+        if (!loadGD(UI_TOPBAR_BLOCK)) {
             return;
         }
         this.window.render(this.gcvOffsetX(), this.gcvOffsetY());
     }
     // input interactions
     update() {
-        if (!loadGD(UI_TOPBAR_AA)) {
+        if (!loadGD(UI_TOPBAR_BLOCK)) {
             return;
         }
         this._curConfig = JSON.stringify(this.config());

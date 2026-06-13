@@ -10,38 +10,38 @@ import { UI_CENTER } from "../../UIData.js";
 export class AstronomyAtlasComponent extends Component {
     getDefaultConfig() {
         return {
-    offsetScale: {
-        offsetX: 87,
-        offsetY: 73,
-        sizeX: 485,
-        sizeY: 594
-    },
-    submenuState: {
-        plot: false,
-        label: false,
-        setup: false,
-        style: false,
-        select: false
-    },
-    plot: {},
-    label: {},
-    setup: {},
-    style: {
-        brightnessPosX: 0.088659793814433,
-        brightnessPosY: 0.0625,
-        brightnessC: 0.6701030927835051,
-        opacityPosX: 0.6618556701030928,
-        opacityPosY: 0.4479166666666667,
-        opacityC: 0.27010309278350514,
-        mode: 1,
-        minSize: 0.40987124463519314,
-        maxSize: 2.6180257510729614,
-        minLuminance: 2.48659793814433,
-        maxLuminance: -1.3814432989690708,
-        distPowerMult: 1.31
-    },
-    select: {}
-}
+            offsetScale: {
+                offsetX: 87,
+                offsetY: 73,
+                sizeX: 485,
+                sizeY: 594
+            },
+            submenuState: {
+                plot: false,
+                label: false,
+                setup: false,
+                style: false,
+                select: false
+            },
+            plot: {},
+            label: {},
+            setup: {},
+            style: {
+                brightnessPosX: 0.088659793814433,
+                brightnessPosY: 0.0625,
+                brightnessC: 0.6701030927835051,
+                opacityPosX: 0.6618556701030928,
+                opacityPosY: 0.4479166666666667,
+                opacityC: 0.27010309278350514,
+                mode: 1,
+                minSize: 0.40987124463519314,
+                maxSize: 2.6180257510729614,
+                minLuminance: 2.48659793814433,
+                maxLuminance: -1.3814432989690708,
+                distPowerMult: 1.31
+            },
+            select: {}
+        }
     }
     // see 'StarSpecializedValuePicker'
     gcvStBrightnessPosX() {
