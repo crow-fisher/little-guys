@@ -1,6 +1,5 @@
 export class Container {
-    constructor(window, dir) {
-        this.window = window;
+    constructor(dir) {
         this.dir = dir;
 
         this.elements = new Array();

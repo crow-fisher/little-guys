@@ -30,16 +30,51 @@ export class PlaneManagerComponent extends Component {
         */
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "z plane"))
 
-        let row = new Container(window, 0);
-        this.container.addElement(row);
-
-        row.addElement(new RadioToggleLabel(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER, "follow",
+        let zModeRow = new Container(0);
+        this.container.addElement(zModeRow);
+        zModeRow.addElement(new RadioToggleLabel(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER, "follow",
             () => this.gcvPlaneZMode() == 0, () => this.scvPlaneZMode(0),
             () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));
-        row.addElement(new RadioToggleLabel(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER, "lock",
+        zModeRow.addElement(new RadioToggleLabel(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER, "lock",
             () => this.gcvPlaneZMode() == 1, () => this.scvPlaneZMode(1),
             () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));
+
+        let newDeleteRow = new Container(0);
+        this.container.addElement(newDeleteRow);
+        newDeleteRow.addElement(new RadioToggleLabel(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER, "new",
+            () => this.gcvPlaneModMode() == 1, () => this.scvPlaneModMode(1),
+            () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));
+        newDeleteRow.addElement(new RadioToggleLabel(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER, "delete",
+            () => this.gcvPlaneModMode() == 2, () => this.scvPlaneModMode(2),
+            () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));
     }
+
+        
+    getDefaultConfig() {
+        return {
+            z: {
+                mode: 0
+            },
+            mod: {
+                mode: 0,
+                dist: 100,
+            },
+            plane: {
+                step: 4,
+                sizeX: 10,
+                sizeY: 10,
+                pitch: 0,
+                yaw: 0,
+            },
+            offsetScale: {
+                offsetX: 56,
+                offsetY: 67,
+                sizeX: 508,
+                sizeY: 480
+            }
+        }
+    }
+
 
     gcvPlaneSizeX() {
         return this.config().plane.sizeX;
@@ -66,27 +101,22 @@ export class PlaneManagerComponent extends Component {
         this.config().plane.yaw = v;
     }
     gcvPlaneZMode() {
-        return this.config().plane.zMode;
+        return this.config().z.mode;
     }
     scvPlaneZMode(v) {
-        this.config().plane.zMode = v;
+        this.config().z.mode = v;
     }
-    
-    getDefaultConfig() {
-        return {
-            plane: {
-                sizeX: 100,
-                sizeY: 100,
-                pitch: 0,
-                yaw: 0,
-                zMode: 0,
-            },
-            offsetScale: {
-                offsetX: 56,
-                offsetY: 67,
-                sizeX: 508,
-                sizeY: 480
-            }
-        }
+    gcvPlaneModMode() {
+        return this.config().mod.mode;
     }
+    scvPlaneModMode(v) {
+        this.config().mod.mode = v;
+    }
+    gcvPlaneModDist() {
+        return this.config().mod.dist;
+    }
+    scvPlaneModDist(v) {
+        this.config().mod.dist = v;
+    }
+
 }

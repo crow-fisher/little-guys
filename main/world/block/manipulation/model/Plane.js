@@ -6,7 +6,7 @@ import { RenderJob } from "../../../../rendering/model/RenderJob.js";
 import { addVec3Mult, addVec3MultFloor, copyVecValue, crossVec3Dest, normalizeVec3, subtractVectorsDest } from "../../../../util/vector.js";
 
 export class Plane {
-    constructor(manipulationManager, yaw = 0, pitch = 0, dimWidth = 1, dimHeight = 1, step = 5) {
+    constructor(manipulationManager, yaw, pitch, step, dimWidth, dimHeight) {
         this.manipulationManager = manipulationManager;
         this.inputManager = manipulationManager.blockManager.worldManager.mainManager.inputManager;
         this.cameraManager = manipulationManager.blockManager.worldManager.mainManager.cameraManager;
@@ -23,9 +23,9 @@ export class Plane {
         this.up = [0, 0, 0];
         this.forward = [0, 0, 0];
 
-        this.dimWidth = dimWidth;
-        this.dimHeight = dimHeight;
         this.step = step;
+        this.dimWidth = dimWidth * step;
+        this.dimHeight = dimHeight * step;
 
         this.processPositionUpdate();
     }
