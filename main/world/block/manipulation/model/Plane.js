@@ -3,6 +3,7 @@ import { CoordinateSet } from "../../../../rendering/model/CoordinateSet.js";
 import { LineRenderJob } from "../../../../rendering/model/LineRenderJob.js";
 import { PointLabelRenderJob } from "../../../../rendering/model/PointLabelRenderJob.js";
 import { RenderJob } from "../../../../rendering/model/RenderJob.js";
+import { isPointInsideQuad } from "../../../../util/quad.js";
 import { addVec3Mult, addVec3MultFloor, copyVecValue, crossVec3Dest, normalizeVec3, subtractVectorsDest } from "../../../../util/vector.js";
 
 export class Plane {
@@ -102,6 +103,22 @@ export class Plane {
         addVec3Mult(cs.world, this.right, i + 0.5);
         addVec3MultFloor(cs.world, this.up, j + 0.5);
     }
+    setMouseHoverPoint(offset) {
+        this.closestCs = null;
+        this.closestDist = this.step ** 2;
+        let curCs, curDist;
+        for (let i = -this.dimWidth; i < this.dimWidth; i += this.step) {
+            for (let j = -this.dimHeight; j < this.dimHeight; j += this.step) {
+                curCs = this.refPoints.get(i).get(j);
+                curCs.process();
+                curDist = ((offset.x - curCs.renderScreen[0]) ** 2 + (offset.y - curCs.renderScreen[1]) ** 2) ** 0.5;
+                if (curDist < this.closestDist) {
+                    this.closestCs = curCs;
+                    this.closestDist = curDist;
+                }
+            }
+        }
+    }
 
     getClosestRefPoint(px, py) {
         let curCs, curDist, closestCs, closestDist = 100;
@@ -117,6 +134,15 @@ export class Plane {
             }
         }
         return closestCs;
+    }
+    isPointOver(offset) {
+        return this.centerCs.isVisibleOnScreen()
+            && isPointInsideQuad(offset,
+                this.csTl().renderScreen,
+                this.csTr().renderScreen,
+                this.csBl().renderScreen,
+                this.csBr().renderScreen
+            )
     }
 
     csTl() {

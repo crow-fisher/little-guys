@@ -9,8 +9,7 @@ export function isPointInsideQuad(testOffset, rs1, rs2, rs3, rs4) {
 	// so all we need to do is make sure all results of isLeft for all
 	// four sides are the same 
 
-	let mustMatch = isLeftXZ(rs1, rs2, thePoint) -- all test results must be the same and we are ok
-									                     -- they just must be the same side.
+	let mustMatch = isLeftXZ(rs1, rs2, thePoint);
 	if (isLeftXZ(rs2, rs3, thePoint != mustMatch))
         return false 
 	if (isLeftXZ(rs3, rs4, thePoint != mustMatch))

@@ -16,10 +16,11 @@ export class ManipulationManager {
         this.rasterizationManager = blockManager.worldManager.mainManager.rasterizationManager;
         this.planeManagerComponent = blockManager.worldManager.mainManager.uiManager.planeManagerComponent;
 
-        this.planes = new Array();
 
         this.zPlane = new Plane(this, 0, Math.PI / 2, 10, 20, 20);
         this.newPlane = new Plane(this, 0, Math.PI / 2, 5, 20, 20);
+        this.planes = [this.zPlane];
+
     }
 
     update() {
@@ -29,9 +30,7 @@ export class ManipulationManager {
             this.zPlane.centerCs.world[1] = this.cameraManager.cameraOffset[1] + 4;
         }
 
-
         this.zPlane.processPositionUpdate();
-
         if (this.planeManagerComponent.gcvModMode() == 1) {
             copyVecValue(this.cameraManager.cameraOffset, this.newPlane.centerCs.world);
             addVec3Mult(this.newPlane.centerCs.world, this.cameraManager.forward, -this.planeManagerComponent.gcvModDist());
@@ -45,15 +44,30 @@ export class ManipulationManager {
             this.newPlane.yaw = this.planeManagerComponent.gcvPlaneYaw();
             this.newPlane.pitch = this.planeManagerComponent.gcvPlanePitch();
             this.newPlane.processPositionUpdate();
-        }
+        };
 
+
+
+        if (!this.inputManager.isPointerLocked()) {
+            this.planes.forEach((plane) => plane.setMouseHoverPoint(this.inputManager.mouseManager.offset));
+            this.planes.sort((a, b) => {
+                (a.closestCs?.distToCamera ?? a.centerCs.distToCamera) - (b.closestCs?.distToCamera ?? b.centerCs.distToCamera)
+            });
+
+            if (this.inputManager.mouseManager.isButtonPressed(0)) {
+                for (let p, i = 0; i < this.planes.length; i++) {
+                    p = this.planes[i];
+                    if (p.closestCs != null) {
+                        this.blockManager.addBlockAtRef(p.closestCs);
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     render() {
-        this.zPlane.render();
-
         this.planes.forEach((plane) => plane.render())
-        
         if (this.planeManagerComponent.gcvModMode() == 1) {
             this.newPlane.render();
 
