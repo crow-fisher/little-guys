@@ -68,7 +68,6 @@ export class UIManager {
     }
     isButtonPressed(b) {
         return this.mainManager.inputManager.mouseManager.isButtonPressed(b);
-
     }
     isAnyMouseButtonPressed() {
         return this.mainManager.inputManager.mouseManager.ms != 0;

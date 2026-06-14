@@ -6,12 +6,10 @@ export class WindowElement {
         this.sizeYFunc = sizeYFunc;
         this.component = component;
     }
-    render(startX, startY) {}
-    
     size() {
         return [this.sizeXFunc(), this.sizeYFunc()];
     }
-    interact(posX, posY) {
-    }
-
+    render(startX, startY) {}
+    interact(posX, posY) {}
+    interactClick(posX, posY) {}
 }

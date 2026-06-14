@@ -18,30 +18,48 @@ export class ManipulationManager {
 
         this.planes = new Array();
 
-        this.zPlane = new Plane(this, 0, Math.PI / 2, 25, 25);
-        this.newPlane = new Plane(this, 0, Math.PI / 2, 25, 25);
+        this.zPlane = new Plane(this, 0, Math.PI / 2, 5, 5, 5);
+        this.newPlane = new Plane(this, 0, Math.PI / 2, 5, 5, 5);
     }
 
     update() {
         this.zPlane.centerCs.world[0] = this.cameraManager.cameraOffset[0];
         this.zPlane.centerCs.world[2] = this.cameraManager.cameraOffset[2];
-        if (this.planeManagerComponent.gcvPlaneZMode() == 0)
+        if (this.planeManagerComponent.gcvZMode() == 0)
             this.zPlane.centerCs.world[1] = this.cameraManager.cameraOffset[1] + 4;
 
         this.zPlane.processPositionUpdate();
 
-        if (this.planeManagerComponent.gcvPlaneModMode() == 1) {
-            copyVecValue(this.cameraManager.cameraOffset, this.newPlane.world);
-            addVec3Mult(this.newPlane.world, this.cameraManager.forward, this.planeManagerComponent.gcvModDist());
-            
+        if (this.planeManagerComponent.gcvModMode() == 1) {
+            copyVecValue(this.cameraManager.cameraOffset, this.newPlane.centerCs.world);
+            addVec3Mult(this.newPlane.centerCs.world, this.cameraManager.forward, -this.planeManagerComponent.gcvModDist());
+            this.newPlane.processPositionUpdate();
         }
+
+        if (this.planeManagerComponent.dirtyConfig) {
+            this.newPlane.step = Math.round(this.planeManagerComponent.gcvPlaneStep());
+            this.newPlane.dimWidth = Math.round(this.planeManagerComponent.gcvPlaneStep()) * this.newPlane.step;
+            this.newPlane.dimHeight = Math.round(this.planeManagerComponent.gcvPlaneStep()) * this.newPlane.step;
+            this.newPlane.yaw = this.planeManagerComponent.gcvPlaneYaw();
+            this.newPlane.pitch = this.planeManagerComponent.gcvPlanePitch();
+            this.newPlane.processPositionUpdate();
+        }
+
     }
 
     render() {
-        this.zPlane.render();
+        // this.zPlane.render();
 
-        if (this.planeManagerComponent.gcvPlaneModMode() == 1) {
+        this.planes.forEach((plane) => plane.render())
+        
+        if (this.planeManagerComponent.gcvModMode() == 1) {
             this.newPlane.render();
+
+            if (this.planeManagerComponent.gcvPlaneSubmit()) {
+                this.planes.push(this.newPlane);
+                this.newPlane = new Plane(this, 0, Math.PI / 2, 5, 5, 5);
+                this.planeManagerComponent.scvPlaneSubmit(false)
+            }
 
         }
     }

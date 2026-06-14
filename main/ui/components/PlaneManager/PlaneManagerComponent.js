@@ -33,30 +33,54 @@ export class PlaneManagerComponent extends Component {
         let zModeRow = new Container(0);
         this.container.addElement(zModeRow);
         zModeRow.addElement(new RadioToggleLabel(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER, "follow",
-            () => this.gcvPlaneZMode() == 0, () => this.scvPlaneZMode(0),
+            () => this.gcvZMode() == 0, () => this.scvZMode(0),
             () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));
         zModeRow.addElement(new RadioToggleLabel(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER, "lock",
-            () => this.gcvPlaneZMode() == 1, () => this.scvPlaneZMode(1),
+            () => this.gcvZMode() == 1, () => this.scvZMode(1),
             () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));
 
         let newDeleteRow = new Container(0);
         this.container.addElement(newDeleteRow);
         newDeleteRow.addElement(new RadioToggleLabel(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER, "new",
-            () => this.gcvPlaneModMode() == 1, () => this.scvPlaneModMode(1),
+            () => this.gcvModMode() == 1, () => this.scvModMode(1),
             () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));
         newDeleteRow.addElement(new RadioToggleLabel(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER, "delete",
-            () => this.gcvPlaneModMode() == 2, () => this.scvPlaneModMode(2),
+            () => this.gcvModMode() == 2, () => this.scvModMode(2),
             () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));
+
+        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "new plane"))
+
+        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "step"))
+        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(),
+            () => this.gcvPlaneStep(), (v) => this.scvPlaneStep(v), 1, 5, 0, 0));
+        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "size x"))
+        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(),
+            () => this.gcvPlaneSizeX(), (v) => this.scvPlaneSizeX(v), 1, 5, 0, 0));
+        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "size y"))
+        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(),
+            () => this.gcvPlaneSizeY(), (v) => this.scvPlaneSizeY(v), 1, 5, 0, 0));
+        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "pitch"))
+        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(),
+            () => this.gcvPlanePitch(), (v) => this.scvPlanePitch(v), 1, 5, 0, 0));
+            this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "yaw"))
+        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(),
+            () => this.gcvPlaneYaw(), (v) => this.scvPlaneYaw(v), 1, 5, 0, 0));
+
+        this.container.addElement(new RadioToggleLabel(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, "submit",
+            () => this.gcvPlaneSubmit(), () => this.scvPlaneSubmit(true),
+            () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));
+
+            
     }
 
-        
+
     getDefaultConfig() {
         return {
             z: {
                 mode: 0
             },
             mod: {
-                mode: 0,
+                mode: 1,
                 dist: 100,
             },
             plane: {
@@ -65,17 +89,44 @@ export class PlaneManagerComponent extends Component {
                 sizeY: 10,
                 pitch: 0,
                 yaw: 0,
+                submit: false
             },
             offsetScale: {
                 offsetX: 56,
                 offsetY: 67,
                 sizeX: 508,
-                sizeY: 480
-            }
+                sizeY: 700
+            },
         }
     }
 
-
+    // 'z'
+    gcvZMode() {
+        return this.config().z.mode;
+    }
+    scvZMode(v) {
+        this.config().z.mode = v;
+    }
+    // 'mod'
+    gcvModMode() {
+        return this.config().mod.mode;
+    }
+    scvModMode(v) {
+        this.config().mod.mode = v;
+    }
+    gcvModDist() {
+        return this.config().mod.dist;
+    }
+    scvModDist(v) {
+        this.config().mod.dist = v;
+    }
+    // 'plane'
+    gcvPlaneStep() {
+        return this.config().plane.step;
+    }
+    scvPlaneStep(v) {
+        this.config().plane.step = v;
+    }
     gcvPlaneSizeX() {
         return this.config().plane.sizeX;
     }
@@ -100,23 +151,12 @@ export class PlaneManagerComponent extends Component {
     scvPlaneYaw(v) {
         this.config().plane.yaw = v;
     }
-    gcvPlaneZMode() {
-        return this.config().z.mode;
+    gcvPlaneSubmit() {
+        return this.config().plane.submit;
     }
-    scvPlaneZMode(v) {
-        this.config().z.mode = v;
+    scvPlaneSubmit(v) {
+        this.config().plane.submit = v;
     }
-    gcvPlaneModMode() {
-        return this.config().mod.mode;
-    }
-    scvPlaneModMode(v) {
-        this.config().mod.mode = v;
-    }
-    gcvPlaneModDist() {
-        return this.config().mod.dist;
-    }
-    scvPlaneModDist(v) {
-        this.config().mod.dist = v;
-    }
+
 
 }

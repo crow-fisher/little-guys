@@ -2,12 +2,10 @@ import { hsvToHex } from "../../color/color.js";
 import { WindowElement } from "../WindowElement.js";
 
 export class SliderGradientBackground extends WindowElement {
-    constructor(window, getter, setter, sizeXFunc, sizeYFunc, min, max, hue, saturation) {
+    constructor(window, sizeXFunc, sizeYFunc, getter, setter, min, max, hue, saturation) {
         super(window, sizeXFunc, sizeYFunc);
         this.getter = getter;
         this.setter = setter;
-        this.sizeXFunc = sizeXFunc;
-        this.sizeYFunc = sizeYFunc;
         this.min = min;
         this.max = max;
         this.hue = hue;

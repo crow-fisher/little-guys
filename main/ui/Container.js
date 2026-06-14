@@ -58,7 +58,7 @@ export class Container {
             if (posX > curX1 && posX < curX2 && posY > curY1 && posY < curY2) {
                 el.interact(posX - curX1, posY - curY1);
                 return true;
-            } 
+            }
 
             if (!el.absolute) {
                 if (this.dir == 0)
@@ -69,6 +69,31 @@ export class Container {
 
         })));
     }
+    interactClick(posX, posY) {
+        let curX1 = 0;
+        let curY1 = 0;
+        let curX2, curY2;
+
+        if (!(this.elements.some((el) => {
+            let elSize = el.size();
+            curX2 = curX1 + elSize[0];
+            curY2 = curY1 + elSize[1];
+
+            if (posX > curX1 && posX < curX2 && posY > curY1 && posY < curY2) {
+                el.interactClick(posX - curX1, posY - curY1);
+                return true;
+            }
+
+            if (!el.absolute) {
+                if (this.dir == 0)
+                    curX1 = curX2;
+                else
+                    curY1 = curY2;
+            }
+
+        })));
+    }
+
 
     updateSizeXByMult(mult) {
         this.elements.forEach((el) => el.updateSizeXByMult(mult));

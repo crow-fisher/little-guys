@@ -42,7 +42,7 @@ export class RadioToggleLabel extends WindowElement {
         return [this.sizeXFunc(), this.sizeYFunc()];
     }
 
-    interact(posX, posY) {
+    interactClick(posX, posY) {
         this.setter();
     }
 
