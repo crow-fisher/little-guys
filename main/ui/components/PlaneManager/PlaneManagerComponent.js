@@ -77,10 +77,10 @@ export class PlaneManagerComponent extends Component {
     getDefaultConfig() {
         return {
             z: {
-                mode: 0
+                mode: 1
             },
             mod: {
-                mode: 1,
+                mode: 0,
                 dist: 100,
             },
             plane: {

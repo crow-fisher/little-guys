@@ -18,15 +18,17 @@ export class ManipulationManager {
 
         this.planes = new Array();
 
-        this.zPlane = new Plane(this, 0, Math.PI / 2, 5, 5, 5);
-        this.newPlane = new Plane(this, 0, Math.PI / 2, 5, 5, 5);
+        this.zPlane = new Plane(this, 0, Math.PI / 2, 10, 20, 20);
+        this.newPlane = new Plane(this, 0, Math.PI / 2, 5, 20, 20);
     }
 
     update() {
-        this.zPlane.centerCs.world[0] = this.cameraManager.cameraOffset[0];
-        this.zPlane.centerCs.world[2] = this.cameraManager.cameraOffset[2];
-        if (this.planeManagerComponent.gcvZMode() == 0)
+        if (this.planeManagerComponent.gcvZMode() == 0) {
+            this.zPlane.centerCs.world[0] = this.cameraManager.cameraOffset[0];
+            this.zPlane.centerCs.world[2] = this.cameraManager.cameraOffset[2];
             this.zPlane.centerCs.world[1] = this.cameraManager.cameraOffset[1] + 4;
+        }
+
 
         this.zPlane.processPositionUpdate();
 
@@ -48,7 +50,7 @@ export class ManipulationManager {
     }
 
     render() {
-        // this.zPlane.render();
+        this.zPlane.render();
 
         this.planes.forEach((plane) => plane.render())
         
@@ -59,6 +61,13 @@ export class ManipulationManager {
                 this.planes.push(this.newPlane);
                 this.newPlane = new Plane(this, 0, Math.PI / 2, 5, 5, 5);
                 this.planeManagerComponent.scvPlaneSubmit(false)
+
+                this.newPlane.step = Math.round(this.planeManagerComponent.gcvPlaneStep());
+                this.newPlane.dimWidth = Math.round(this.planeManagerComponent.gcvPlaneStep()) * this.newPlane.step;
+                this.newPlane.dimHeight = Math.round(this.planeManagerComponent.gcvPlaneStep()) * this.newPlane.step;
+                this.newPlane.yaw = this.planeManagerComponent.gcvPlaneYaw();
+                this.newPlane.pitch = this.planeManagerComponent.gcvPlanePitch();
+                this.newPlane.processPositionUpdate();
             }
 
         }
