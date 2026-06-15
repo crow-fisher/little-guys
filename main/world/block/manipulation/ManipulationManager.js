@@ -18,7 +18,7 @@ export class ManipulationManager {
 
 
         this.zPlane = new Plane(this, 0, Math.PI / 2, 10, 20, 20);
-        this.newPlane = new Plane(this, 0, Math.PI / 2, 5, 20, 20);
+        this.newPlane = new Plane(this, 0, Math.PI / 2, 1, 20, 20);
         this.planes = [this.zPlane];
 
     }
@@ -28,9 +28,10 @@ export class ManipulationManager {
             this.zPlane.centerCs.world[0] = this.cameraManager.cameraOffset[0];
             this.zPlane.centerCs.world[2] = this.cameraManager.cameraOffset[2];
             this.zPlane.centerCs.world[1] = this.cameraManager.cameraOffset[1] + 4;
+            this.zPlane.processPositionUpdate();
+
         }
 
-        this.zPlane.processPositionUpdate();
         if (this.planeManagerComponent.gcvModMode() == 1) {
             copyVecValue(this.cameraManager.cameraOffset, this.newPlane.centerCs.world);
             addVec3Mult(this.newPlane.centerCs.world, this.cameraManager.forward, -this.planeManagerComponent.gcvModDist());
@@ -39,8 +40,8 @@ export class ManipulationManager {
 
         if (this.planeManagerComponent.dirtyConfig) {
             this.newPlane.step = Math.round(this.planeManagerComponent.gcvPlaneStep());
-            this.newPlane.dimWidth = Math.round(this.planeManagerComponent.gcvPlaneStep()) * this.newPlane.step;
-            this.newPlane.dimHeight = Math.round(this.planeManagerComponent.gcvPlaneStep()) * this.newPlane.step;
+            this.newPlane.dimWidth = Math.round(this.planeManagerComponent.gcvPlaneSizeX()) * this.newPlane.step;
+            this.newPlane.dimHeight = Math.round(this.planeManagerComponent.gcvPlaneSizeY()) * this.newPlane.step;
             this.newPlane.yaw = this.planeManagerComponent.gcvPlaneYaw();
             this.newPlane.pitch = this.planeManagerComponent.gcvPlanePitch();
             this.newPlane.processPositionUpdate();
@@ -48,19 +49,17 @@ export class ManipulationManager {
 
 
 
-        if (!this.inputManager.isPointerLocked()) {
+        if (!this.inputManager.isPointerLocked() && this.inputManager.mouseManager.isButtonPressed(0)) {
             this.planes.forEach((plane) => plane.setMouseHoverPoint(this.inputManager.mouseManager.offset));
-            this.planes.sort((a, b) => {
+            this.planes.sort((b, a) => 
                 (a.closestCs?.distToCamera ?? a.centerCs.distToCamera) - (b.closestCs?.distToCamera ?? b.centerCs.distToCamera)
-            });
+            );
 
-            if (this.inputManager.mouseManager.isButtonPressed(0)) {
-                for (let p, i = 0; i < this.planes.length; i++) {
-                    p = this.planes[i];
-                    if (p.closestCs != null) {
-                        this.blockManager.addBlockAtRef(p.closestCs);
-                        break;
-                    }
+            for (let p, i = 0; i < this.planes.length; i++) {
+                p = this.planes[i];
+                if (p.closestCs != null) {
+                    this.blockManager.addBlockAtRef(p.closestCs);
+                    break;
                 }
             }
         }

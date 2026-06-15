@@ -55,17 +55,16 @@ export class PlaneManagerComponent extends Component {
             () => this.gcvPlaneStep(), (v) => this.scvPlaneStep(v), 1, 5, 0, 0));
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "size x"))
         this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(),
-            () => this.gcvPlaneSizeX(), (v) => this.scvPlaneSizeX(v), 1, 5, 0, 0));
+            () => this.gcvPlaneSizeX(), (v) => this.scvPlaneSizeX(v), 1, 50, 0, 0));
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "size y"))
         this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(),
-            () => this.gcvPlaneSizeY(), (v) => this.scvPlaneSizeY(v), 1, 5, 0, 0));
+            () => this.gcvPlaneSizeY(), (v) => this.scvPlaneSizeY(v), 1, 50, 0, 0));
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "pitch"))
         this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(),
             () => this.gcvPlanePitch(), (v) => this.scvPlanePitch(v), 1, 5, 0, 0));
             this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "yaw"))
         this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(),
             () => this.gcvPlaneYaw(), (v) => this.scvPlaneYaw(v), 1, 5, 0, 0));
-
         this.container.addElement(new RadioToggleLabel(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, "submit",
             () => this.gcvPlaneSubmit(), () => this.scvPlaneSubmit(true),
             () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));

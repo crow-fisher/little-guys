@@ -1,6 +1,6 @@
 // credit to @cfrag: https://forum.dcs.world/topic/352600-check-if-a-point-is-within-a-quad-point-zone/
 
-export function isPointInsideQuad(testOffset, rs1, rs2, rs3, rs4) {
+export function isPointInsideQuad(offset, rs1, rs2, rs3, rs4) {
     // Inside test (only convex polygons): 
 	// point lies on the same side of each quad's vertex AB, BC, CD, DA
 	// how do we find out which side a point lies on? via the cross product
@@ -9,12 +9,12 @@ export function isPointInsideQuad(testOffset, rs1, rs2, rs3, rs4) {
 	// so all we need to do is make sure all results of isLeft for all
 	// four sides are the same 
 
-	let mustMatch = isLeftXZ(rs1, rs2, thePoint);
-	if (isLeftXZ(rs2, rs3, thePoint != mustMatch))
+	let mustMatch = isLeftXZ(rs1, rs2, offset);
+	if (isLeftXZ(rs2, rs3, offset != mustMatch))
         return false 
-	if (isLeftXZ(rs3, rs4, thePoint != mustMatch))
+	if (isLeftXZ(rs3, rs4, offset != mustMatch))
         return false
-	if (isLeftXZ(rs4, rs1, thePoint != mustMatch))
+	if (isLeftXZ(rs4, rs1, offset != mustMatch))
         return false
 	return true
 }

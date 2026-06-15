@@ -104,8 +104,11 @@ export class Plane {
         addVec3MultFloor(cs.world, this.up, j + 0.5);
     }
     setMouseHoverPoint(offset) {
+        if (!this.isPointOver(offset)) {
+            return;
+        }
         this.closestCs = null;
-        this.closestDist = this.step ** 2;
+        this.closestDist = 100;
         let curCs, curDist;
         for (let i = -this.dimWidth; i < this.dimWidth; i += this.step) {
             for (let j = -this.dimHeight; j < this.dimHeight; j += this.step) {
@@ -136,13 +139,17 @@ export class Plane {
         return closestCs;
     }
     isPointOver(offset) {
-        return this.centerCs.isVisibleOnScreen()
-            && isPointInsideQuad(offset,
-                this.csTl().renderScreen,
-                this.csTr().renderScreen,
-                this.csBl().renderScreen,
-                this.csBr().renderScreen
-            )
+        return (
+            this.csTl().isVisibleOnScreen() ||
+            this.csTr().isVisibleOnScreen() ||
+            this.csBl().isVisibleOnScreen() ||
+            this.csBr().isVisibleOnScreen()
+        ) && (isPointInsideQuad(offset,
+            this.csTl().renderScreen,
+            this.csTr().renderScreen,
+            this.csBl().renderScreen,
+            this.csBr().renderScreen
+        ));
     }
 
     csTl() {
