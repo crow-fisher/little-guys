@@ -74,28 +74,7 @@ export class Block {
     }
 
     getLightFilterRate() {
-        let ret = 0.98;
-        let exp = 1.2;
-
-        if (this.frontNeighbor) {
-            ret = ret ** exp;
-        }
-        if (this.backNeighbor) {
-            ret = ret ** exp;
-        }
-        if (this.bottomNeighbor) {
-            ret = ret ** exp;
-        }
-        if (this.topNeighbor) {
-            ret = ret ** exp;
-        }
-        if (this.rightNeighbor) {
-            ret = ret ** exp;
-        }
-        if (this.leftNeighbor) {
-            ret = ret ** exp;
-        }
-        return ret;
+        return .80;
     }
 
     linkNeighbors() {
@@ -153,7 +132,7 @@ export class Block {
             dirs[i][0][0] = 0;
             dirs[i][0][1] = 0;
             dirs[i][0][2] = 0;
-            this.lightSource.forEach((ls) => addVectorsMult(dirs[i][0], ls[1], ls[2][i]));
+            this.lightSource.forEach((ls) => addVectorsMult(dirs[i][0], ls[1], Math.abs(ls[2][i])));
         }
         // calculate final color based on 'lightApplied' and 'colorBase', for each face direction 
         multiplyVectorsDest(this.colorBase, this.lightApplied100, this.colorApplied100);

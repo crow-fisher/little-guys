@@ -1,12 +1,12 @@
 import { copyVecValue, getVec3Length, multiplyVectorByScalar, normalizeVec3, normalizeVec3Dest, subtractVectorsDest, vec3Dot } from "../../../util/vector.js";
 
 export class LightSource {
-    constructor(lightGroup) {
+    constructor(lightGroup, cs) {
         this.lightGroup = lightGroup;
+        this.cs = cs;
 
-        this.numBuckets = 200;
+        this.numBuckets = 300;
 
-        this.position = [0, 0, 0];
         this.idx = 0
 
         this._offset = [0, 0, 0];
@@ -18,14 +18,16 @@ export class LightSource {
     updateInit(idx) {
         this.idx = idx;
         this.sectors.clear();
+
+        this.numBuckets = 80 ; // + Math.floor(this.cs.distToCamera ** 2);
     }
 
     updateProcessBlock(block) {
         if (!block.centerCs.isVisibleOnScreen()) {
             return;
         }
-        subtractVectorsDest(this.position, block.centerCs.world, this._offset);
-        subtractVectorsDest(block.centerCs.world, this.position, this._offset);
+        subtractVectorsDest(this.cs.world, block.centerCs.world, this._offset);
+        // subtractVectorsDest(block.centerCs.world, this.cs.world, this._offset);
         normalizeVec3Dest(this._offset, this._offsetNorm);
 
         block.lightSource[this.idx] = block.lightSource[this.idx] ?? [0, [0, 0, 0], [0, 0, 0]];
@@ -47,14 +49,23 @@ export class LightSource {
         this.sectors.values()
             .forEach((sector) => sector.values().forEach((subSec) => {
                 let curLightingApplied = [1, 1, 1];
+                let curIncrement = 0;
+                let curSum = 1;
+                let cumSum = 1;
                 subSec.sort((a, b) => a.lightSource[this.idx][0] - b.lightSource[this.idx][0]);
                 subSec.forEach((block) => {
-                    copyVecValue(curLightingApplied, block.lightSource[this.idx][1]); 
-                    
-                    subtractVectorsDest(block.centerCs.world, this.position, block.lightSource[this.idx][2]);
+                    if (block.lightSource[this.idx][0] > (curIncrement + Math.SQRT2)) {
+                        curIncrement = block.lightSource[this.idx][0];
+                        cumSum *= curSum;
+                        curSum = 1;
+                    }
+
+                    multiplyVectorByScalar(curLightingApplied, cumSum);
+                    copyVecValue(curLightingApplied, block.lightSource[this.idx][1]);
+                    subtractVectorsDest(block.centerCs.world, this.cs.world, block.lightSource[this.idx][2]);
                     normalizeVec3(block.lightSource[this.idx][2]);
 
-                    multiplyVectorByScalar(curLightingApplied, block.getLightFilterRate());
+                    curSum *= block.getLightFilterRate();
                 });
             }));
     }

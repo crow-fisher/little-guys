@@ -7,10 +7,10 @@ export class MouseManager {
         this.cameraManager = inputManager.mainManager.cameraManager;
         this.ms = 0;
         this.pms = 0;
-        this.offset = {x: 0, y: 0};
-        this.poffset = {x: 0, y: 0};
-        this.doffset = {x: 0, y: 0};
-        this.movement = {x: 0, y: 0};
+        this.offset = { x: 0, y: 0 };
+        this.poffset = { x: 0, y: 0 };
+        this.doffset = { x: 0, y: 0 };
+        this.movement = { x: 0, y: 0 };
     }
 
     isButtonPressed(b) {
@@ -22,11 +22,15 @@ export class MouseManager {
     }
 
     mousedown(e) {
-        this.ms |= (1 << e.button); 
+        if (e.button == 1) {
+            e.preventDefault();
+
+        }
+        this.ms |= (1 << e.button);
     }
 
     mouseup(e) {
-        this.ms &= ~(1 << e.button); 
+        this.ms &= ~(1 << e.button);
     }
 
     onwheel(e) {

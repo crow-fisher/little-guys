@@ -31,6 +31,7 @@ export class BlockManager {
     addNewBlock(cartesian) {
         let newBlock = new Block(this, cartesian);
         this.getSector(newBlock.sector).addBlock(newBlock);
+        newBlock.colorBase = [71, 134, 124];
     }
 
     brushFromRef(p, refCs) {

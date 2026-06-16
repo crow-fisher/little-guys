@@ -3,6 +3,7 @@ import { CoordinateSet } from "../../../rendering/model/CoordinateSet.js";
 import { LineRenderJob } from "../../../rendering/model/LineRenderJob.js";
 import { RenderJob } from "../../../rendering/model/RenderJob.js";
 import { renderLine, renderPointLabel } from "../../../rendering/renderFunctions.js";
+import { loadGD, UI_TOPBAR_BLOCK } from "../../../ui/UIData.js";
 import { copyMatValue } from "../../../util/matrix.js";
 import { addVec3Mult, addVec3MultDest, addVec3MultFloor, addVectorsMult, copyVecValue, vec3Dot } from "../../../util/vector.js";
 import { Plane } from "./model/Plane.js";
@@ -67,6 +68,9 @@ export class ManipulationManager {
     }
 
     render() {
+        if (!loadGD(UI_TOPBAR_BLOCK)) {
+            return;
+        }
         this.planes.forEach((plane) => plane.render())
         if (this.planeManagerComponent.gcvModMode() == 1) {
             this.newPlane.render();
