@@ -21,11 +21,7 @@ export class LightSource {
     }
 
     updateProcessBlock(block) {
-        if (!block.centerCs.isVisibleOnScreen()) {
-            return;
-        }
         subtractVectorsDest(this.cs.world, block.centerCs.world, this._offset);
-        // subtractVectorsDest(block.centerCs.world, this.cs.world, this._offset);
         normalizeVec3Dest(this._offset, this._offsetNorm);
 
         block.lightSource[this.idx] = block.lightSource[this.idx] ?? [0, [0, 0, 0], [0, 0, 0]];
@@ -45,12 +41,11 @@ export class LightSource {
 
     updateProcess() {
         this.sectors.values()
-            .filter((sector) => Math.random() > 0.90)
             .forEach((sector) => sector.values().forEach((subSec) => {
                 let curLightingApplied = [1, 1, 1];
                 let curIncrement = 0;
                 let curSum = 1;
-                let cumSum = .3;
+                let cumSum = .03;
                 subSec.sort((a, b) => a.lightSource[this.idx][0] - b.lightSource[this.idx][0]);
                 subSec.forEach((block) => {
                     if (block.lightSource[this.idx][0] > (curIncrement + Math.SQRT2)) {
@@ -65,6 +60,8 @@ export class LightSource {
                     normalizeVec3(block.lightSource[this.idx][2]);
 
                     curSum *= block.getLightFilterRate();
+                    
+                    block.recalculateColorFlag = true;
                 });
             }));
     }

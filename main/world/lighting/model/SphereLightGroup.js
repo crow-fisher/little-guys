@@ -16,7 +16,7 @@ export class SphereLightGroup {
         this.centerCs = new CoordinateSet(this.cameraManager);
         this.centerRenderJob = new PointLabelRenderJob(this.rasterizationManager, [0, 0, 0], 4, "#ff00ff");
 
-        this.radius = 2;
+        this.radius = 3;
         this.lightSources = new Array();
         this.lightRenderJobs = new Array();
         this.initLightSources();

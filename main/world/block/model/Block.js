@@ -23,6 +23,8 @@ export class Block {
         this.sector = blockManager.cartesianToSector(this.cartesian);
 
         this.lightSource = [];
+
+        this.recalculateColorFlag = true;
         this.lightApplied100 = [1, 1, 1];
         this.lightApplied010 = [1, 1, 1];
         this.lightApplied001 = [1, 1, 1];
@@ -121,27 +123,30 @@ export class Block {
     }
 
     color() {
-        // process 'lightSource' to 'lightApplied'
-        // lightSource is an array of lightSource results like: 
-        // [[distToCamera, [rB, gB, bB]]]
-        // where 'rB', 'gB', and 'bB' are the relative brightnesses of each color (normalized at 1).
-        let dirs = [[this.lightApplied100, this.colorApplied100],
-        [this.lightApplied010, this.colorApplied010],
-        [this.lightApplied001, this.colorApplied001]];
-        for (let i = 0; i < 3; i++) {
-            dirs[i][0][0] = 0;
-            dirs[i][0][1] = 0;
-            dirs[i][0][2] = 0;
-            this.lightSource.forEach((ls) => addVectorsMult(dirs[i][0], ls[1], Math.abs(ls[2][i])));
-        }
-        // calculate final color based on 'lightApplied' and 'colorBase', for each face direction 
-        multiplyVectorsDest(this.colorBase, this.lightApplied100, this.colorApplied100);
-        multiplyVectorsDest(this.colorBase, this.lightApplied010, this.colorApplied010);
-        multiplyVectorsDest(this.colorBase, this.lightApplied001, this.colorApplied001);
+        if (this.recalculateColorFlag) {
+            // process 'lightSource' to 'lightApplied'
+            // lightSource is an array of lightSource results like: 
+            // [[distToCamera, [rB, gB, bB]]]
+            // where 'rB', 'gB', and 'bB' are the relative brightnesses of each color (normalized at 1).
+            let dirs = [[this.lightApplied100, this.colorApplied100],
+            [this.lightApplied010, this.colorApplied010],
+            [this.lightApplied001, this.colorApplied001]];
+            for (let i = 0; i < 3; i++) {
+                dirs[i][0][0] = 0;
+                dirs[i][0][1] = 0;
+                dirs[i][0][2] = 0;
+                this.lightSource.forEach((ls) => addVectorsMult(dirs[i][0], ls[1], Math.abs(ls[2][i])));
+            }
+            // calculate final color based on 'lightApplied' and 'colorBase', for each face direction 
+            multiplyVectorsDest(this.colorBase, this.lightApplied100, this.colorApplied100);
+            multiplyVectorsDest(this.colorBase, this.lightApplied010, this.colorApplied010);
+            multiplyVectorsDest(this.colorBase, this.lightApplied001, this.colorApplied001);
 
-        this.colorHex100 = rgbToHex(...this.colorApplied100)
-        this.colorHex010 = rgbToHex(...this.colorApplied010)
-        this.colorHex001 = rgbToHex(...this.colorApplied001)
+            this.colorHex100 = rgbToHex(...this.colorApplied100)
+            this.colorHex010 = rgbToHex(...this.colorApplied010)
+            this.colorHex001 = rgbToHex(...this.colorApplied001)
+            this.recalculateColorFlag = false;
+        }
     }
 
     renderFace(face, renderJob, neighbor, color) {
