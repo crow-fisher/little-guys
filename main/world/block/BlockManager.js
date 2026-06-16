@@ -1,4 +1,7 @@
 import { addVec3Dest, copyVecValue } from "../../util/vector.js";
+import { flatBrush } from "./brushes/flatBrush.js";
+import { pixelBrush } from "./brushes/pixelBrush.js";
+import { sphereBrush } from "./brushes/sphereBrush.js";
 import { ManipulationManager } from "./manipulation/ManipulationManager.js";
 import { Block } from "./model/Block.js";
 import { BlockSector } from "./model/BlockSector.js";
@@ -9,6 +12,8 @@ export class BlockManager {
         this.sectorSize = 25;
         this.manipulationManager = new ManipulationManager(this);
         this.sectors = new Map();
+        
+        this.curBrush = flatBrush;
     }
 
     getBlockAtCartesian(sr, o=[0, 0, 0]) {
@@ -23,35 +28,13 @@ export class BlockManager {
         return this._cSect1.getBlock(this._cVec1);
     }
 
-    addBlockAtRef(refCs) {
-        let newBlock = new Block(this, refCs.world)
-        this._cSect1 = this.getSector(newBlock.sector);
-        this._cSect1.addBlock(newBlock);
+    addNewBlock(cartesian) {
+        let newBlock = new Block(this, cartesian);
+        this.getSector(newBlock.sector).addBlock(newBlock);
+    }
 
-        let len, brushSize = 3;
-
-        let cartesian = structuredClone(refCs.world);
-        for (let i = -brushSize; i < brushSize; i++) {
-            for (let j = -brushSize; j < brushSize; j++) {
-                for (let k = -brushSize; k < brushSize; k++) {
-                    copyVecValue(refCs.world, cartesian);
-                    
-                    cartesian[0] += i;
-                    cartesian[1] += j;
-                    cartesian[2] += k;
-
-                    len = ((i ** 2 + j ** 2 + k ** 2) ** 0.5);
-                    
-                    if (len > brushSize || len < (brushSize - 1)) {
-                        continue;
-                    }
-                    let newBlock = new Block(this, cartesian)
-                    this._cSect1 = this.getSector(newBlock.sector);
-                    this._cSect1.addBlock(newBlock);
-
-                }
-            }
-        }
+    brushFromRef(p, refCs) {
+        this.curBrush(this, p, refCs);
     }
 
     getSector(sr) {

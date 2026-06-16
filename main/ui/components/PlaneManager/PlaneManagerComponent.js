@@ -50,9 +50,9 @@ export class PlaneManagerComponent extends Component {
 
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "new plane"))
 
-        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "step"))
-        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(),
-            () => this.gcvPlaneStep(), (v) => this.scvPlaneStep(v), 1, 5, 0, 0));
+        // this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "step"))
+        // this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(),
+        //     () => this.gcvPlaneStep(), (v) => this.scvPlaneStep(v), 1, 5, 0, 0));
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "size x"))
         this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(),
             () => this.gcvPlaneSizeX(), (v) => this.scvPlaneSizeX(v), 1, 50, 0, 0));
@@ -80,10 +80,10 @@ export class PlaneManagerComponent extends Component {
             },
             mod: {
                 mode: 0,
-                dist: 100,
+                dist: 20,
             },
             plane: {
-                step: 4,
+                step: 1,
                 sizeX: 10,
                 sizeY: 10,
                 pitch: 0,

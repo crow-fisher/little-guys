@@ -36,7 +36,7 @@ export class AstronomyAtlasComponent extends Component {
                 mode: 1,
                 minSize: 0.40987124463519314,
                 maxSize: 2.6180257510729614,
-                minLuminance: 2.48659793814433,
+                minLuminance: 2.8,
                 maxLuminance: -1.3814432989690708,
                 distPowerMult: 1.31
             },

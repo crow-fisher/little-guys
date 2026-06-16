@@ -100,6 +100,7 @@ export class Plane {
 
     setRefPointCoordinates(cs, i, j) {
         copyVecValue(this.centerCs.world, cs.world);
+        addVec3Mult(cs.world, this.forward, 0.5);
         addVec3Mult(cs.world, this.right, i + 0.5);
         addVec3MultFloor(cs.world, this.up, j + 0.5);
     }
@@ -108,13 +109,13 @@ export class Plane {
             return;
         }
         this.closestCs = null;
-        this.closestDist = 100;
+        this.closestDist = 10 ** 8;
         let curCs, curDist;
         for (let i = -this.dimWidth; i < this.dimWidth; i += this.step) {
             for (let j = -this.dimHeight; j < this.dimHeight; j += this.step) {
                 curCs = this.refPoints.get(i).get(j);
                 curCs.process();
-                curDist = ((offset.x - curCs.renderScreen[0]) ** 2 + (offset.y - curCs.renderScreen[1]) ** 2) ** 0.5;
+                curDist = ((offset.x - curCs.renderScreen[0]) ** 2 + (offset.y - curCs.renderScreen[1]) ** 2);
                 if (curDist < this.closestDist) {
                     this.closestCs = curCs;
                     this.closestDist = curDist;

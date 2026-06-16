@@ -5,7 +5,7 @@ import { QuadRenderJob } from "../../../rendering/model/QuadRenderJob.js";
 import { RenderJob } from "../../../rendering/model/RenderJob.js";
 import { renderPointLabel, renderQuad } from "../../../rendering/renderFunctions.js";
 import { centerVec, nnnVec, nnpVec, npnVec, nppVec, pnnVec, pnpVec, ppnVec, pppVec } from "../../../util/const.js";
-import { addVectors, copyVecValue, multiplyVectorsDest } from "../../../util/vector.js";
+import { addVectors, addVectorsMult, copyVecValue, multiplyVectorsDest, multiplyVectorsMultDest } from "../../../util/vector.js";
 
 
 export class Block {
@@ -15,15 +15,26 @@ export class Block {
         this.cameraManager = blockManager.worldManager.mainManager.cameraManager;
         this.canvasManager = blockManager.worldManager.mainManager.canvasManager;
 
-        this.cartesian = cartesian;
-        this.sector = blockManager.cartesianToSector(cartesian);
+        this.cartesian = [0, 0, 0];
+        this.cartesian[0] = Math.round(cartesian[0]);
+        this.cartesian[1] = Math.round(cartesian[1]);
+        this.cartesian[2] = Math.round(cartesian[2]);
+
+        this.sector = blockManager.cartesianToSector(this.cartesian);
 
         this.lightSource = [];
-        this.lightApplied = [1, 1, 1];
-        
+        this.lightApplied100 = [1, 1, 1];
+        this.lightApplied010 = [1, 1, 1];
+        this.lightApplied001 = [1, 1, 1];
+
         this.colorBase = [100, 100, 100];
-        this.colorApplied = [100, 100, 100]
-        this.colorHex = "#646464";
+        this.colorApplied100 = [100, 100, 100]
+        this.colorApplied010 = [100, 100, 100]
+        this.colorApplied001 = [100, 100, 100]
+
+        this.colorHex100 = "#646464";
+        this.colorHex010 = "#646464";
+        this.colorHex001 = "#646464";
 
         this.centerCs = new CoordinateSet(this.cameraManager, this.cartesian, centerVec);
         this.centerRenderJob = new PointLabelRenderJob(this.rasterizationManager, [0, 0, 0], 0, "#646464")
@@ -63,7 +74,7 @@ export class Block {
     }
 
     getLightFilterRate() {
-        let ret = 0.997;
+        let ret = 0.98;
         let exp = 1.2;
 
         if (this.frontNeighbor) {
@@ -135,19 +146,26 @@ export class Block {
         // lightSource is an array of lightSource results like: 
         // [[distToCamera, [rB, gB, bB]]]
         // where 'rB', 'gB', and 'bB' are the relative brightnesses of each color (normalized at 1).
-        
-        this.lightApplied[0] = 0;
-        this.lightApplied[1] = 0;
-        this.lightApplied[2] = 0;
-        this.lightSource.forEach((ls) => addVectors(this.lightApplied, ls[1]))
+        let dirs = [[this.lightApplied100, this.colorApplied100],
+        [this.lightApplied010, this.colorApplied010],
+        [this.lightApplied001, this.colorApplied001]];
+        for (let i = 0; i < 3; i++) {
+            dirs[i][0][0] = 0;
+            dirs[i][0][1] = 0;
+            dirs[i][0][2] = 0;
+            this.lightSource.forEach((ls) => addVectorsMult(dirs[i][0], ls[1], ls[2][i]));
+        }
+        // calculate final color based on 'lightApplied' and 'colorBase', for each face direction 
+        multiplyVectorsDest(this.colorBase, this.lightApplied100, this.colorApplied100);
+        multiplyVectorsDest(this.colorBase, this.lightApplied010, this.colorApplied010);
+        multiplyVectorsDest(this.colorBase, this.lightApplied001, this.colorApplied001);
 
-        // calculate final color based on 'lightApplied' and 'colorBase'
-        multiplyVectorsDest(this.colorBase, this.lightApplied, this.colorApplied);
-        this.colorHex = rgbToHex(...this.colorApplied)
-        return this.colorHex;
+        this.colorHex100 = rgbToHex(...this.colorApplied100)
+        this.colorHex010 = rgbToHex(...this.colorApplied010)
+        this.colorHex001 = rgbToHex(...this.colorApplied001)
     }
 
-    renderFace(face, renderJob, neighbor) {
+    renderFace(face, renderJob, neighbor, color) {
         if (neighbor) {
             return;
         }
@@ -164,7 +182,7 @@ export class Block {
         renderJob.p3 = face[2].renderScreen;
         renderJob.p4 = face[3].renderScreen;
 
-        renderJob.color = this.colorHex;
+        renderJob.color = color;
         this.rasterizationManager.addRenderJob(renderJob);
     }
 
@@ -196,7 +214,7 @@ export class Block {
         if (this.topNeighbor && this.bottomNeighbor && this.leftNeighbor && this.rightNeighbor && this.frontNeighbor && this.backNeighbor) {
             return;
         }
-        
+
         if (!this.centerCs.isVisibleOnScreen()) {
             return;
         }
@@ -206,7 +224,7 @@ export class Block {
         if (this.centerCs.distToCamera > 150) {
             copyVecValue(this.centerCs.renderScreen, this.centerRenderJob.pos);
             this.centerRenderJob.size = 1200 / this.centerCs.distToCamera;
-            this.centerRenderJob.color = this.colorHex;
+            this.centerRenderJob.color = this.colorHex100;
             this.rasterizationManager.addRenderJob(this.centerRenderJob);
             return;
         }
@@ -216,20 +234,18 @@ export class Block {
         this.offsetSign[2] = (this.centerCs.offset[2] < 0) ? 0 : 1;
 
         if (this.offsetSign[0] == 0)
-            this.renderFace(this.frontFace, this.frontRenderJob, this.backNeighbor);
+            this.renderFace(this.frontFace, this.frontRenderJob, this.backNeighbor, this.colorHex100);
         else
-            this.renderFace(this.backFace, this.backRenderJob, this.frontNeighbor);
+            this.renderFace(this.backFace, this.backRenderJob, this.frontNeighbor, this.colorHex100);
 
         if (this.offsetSign[1] == 0)
-            this.renderFace(this.bottomFace, this.bottomRenderJob, this.topNeighbor);
+            this.renderFace(this.bottomFace, this.bottomRenderJob, this.topNeighbor, this.colorHex010);
         else
-            this.renderFace(this.topFace, this.topRenderJob, this.bottomNeighbor);
+            this.renderFace(this.topFace, this.topRenderJob, this.bottomNeighbor, this.colorHex010);
 
         if (this.offsetSign[2] == 0)
-            this.renderFace(this.rightFace, this.rightRenderJob, this.leftNeighbor);
+            this.renderFace(this.rightFace, this.rightRenderJob, this.leftNeighbor, this.colorHex001);
         else
-            this.renderFace(this.leftFace, this.leftRenderJob, this.rightNeighbor);
-
-
+            this.renderFace(this.leftFace, this.leftRenderJob, this.rightNeighbor, this.colorHex001);
     }
 }

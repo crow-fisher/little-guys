@@ -1,4 +1,4 @@
-import { copyVecValue, getVec3Length, multiplyVectorByScalar, normalizeVec3Dest, subtractVectorsDest } from "../../../util/vector.js";
+import { copyVecValue, getVec3Length, multiplyVectorByScalar, normalizeVec3, normalizeVec3Dest, subtractVectorsDest, vec3Dot } from "../../../util/vector.js";
 
 export class LightSource {
     constructor(lightGroup) {
@@ -11,7 +11,7 @@ export class LightSource {
 
         this._offset = [0, 0, 0];
         this._offsetNorm = [0, 0, 0];
-        
+
         this.sectors = new Map();
     }
 
@@ -27,8 +27,8 @@ export class LightSource {
         subtractVectorsDest(this.position, block.centerCs.world, this._offset);
         subtractVectorsDest(block.centerCs.world, this.position, this._offset);
         normalizeVec3Dest(this._offset, this._offsetNorm);
-        
-        block.lightSource[this.idx] = block.lightSource[this.idx] ?? [0, [0, 0, 0]];
+
+        block.lightSource[this.idx] = block.lightSource[this.idx] ?? [0, [0, 0, 0], [0, 0, 0]];
 
         this._pitch = Math.asin(this._offsetNorm[1]);
         this._yaw = Math.atan2(this._offsetNorm[0], this._offsetNorm[2]);
@@ -42,17 +42,20 @@ export class LightSource {
 
         block.lightSource[this.idx][0] = getVec3Length(this._offset);
     }
-    
+
     updateProcess() {
         this.sectors.values()
             .forEach((sector) => sector.values().forEach((subSec) => {
-                    let curLightingApplied = [1, 1, 1];
-                    subSec.sort((a, b) => a.lightSource[this.idx][0] - b.lightSource[this.idx][0]);
-                    subSec.forEach((block) => {
-                        copyVecValue(curLightingApplied, block.lightSource[this.idx][1]);
+                let curLightingApplied = [1, 1, 1];
+                subSec.sort((a, b) => a.lightSource[this.idx][0] - b.lightSource[this.idx][0]);
+                subSec.forEach((block) => {
+                    copyVecValue(curLightingApplied, block.lightSource[this.idx][1]); 
+                    
+                    subtractVectorsDest(block.centerCs.world, this.position, block.lightSource[this.idx][2]);
+                    normalizeVec3(block.lightSource[this.idx][2]);
+
                     multiplyVectorByScalar(curLightingApplied, block.getLightFilterRate());
-                    }    
-                );
+                });
             }));
     }
 }

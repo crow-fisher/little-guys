@@ -17,7 +17,7 @@ export class ManipulationManager {
         this.planeManagerComponent = blockManager.worldManager.mainManager.uiManager.planeManagerComponent;
 
 
-        this.zPlane = new Plane(this, 0, Math.PI / 2, 10, 20, 20);
+        this.zPlane = new Plane(this, 0, Math.PI / 2, 1, 20, 20);
         this.newPlane = new Plane(this, 0, Math.PI / 2, 1, 20, 20);
         this.planes = [this.zPlane];
 
@@ -29,7 +29,6 @@ export class ManipulationManager {
             this.zPlane.centerCs.world[2] = this.cameraManager.cameraOffset[2];
             this.zPlane.centerCs.world[1] = this.cameraManager.cameraOffset[1] + 4;
             this.zPlane.processPositionUpdate();
-
         }
 
         if (this.planeManagerComponent.gcvModMode() == 1) {
@@ -51,14 +50,16 @@ export class ManipulationManager {
 
         if (!this.inputManager.isPointerLocked() && this.inputManager.mouseManager.isButtonPressed(0)) {
             this.planes.forEach((plane) => plane.setMouseHoverPoint(this.inputManager.mouseManager.offset));
-            this.planes.sort((b, a) => 
-                (a.closestCs?.distToCamera ?? a.centerCs.distToCamera) - (b.closestCs?.distToCamera ?? b.centerCs.distToCamera)
+            this.planes.sort((a, b) =>
+                ((a.closestCs?.distToCamera ?? a.centerCs.distToCamera) - (b.closestCs?.distToCamera ?? b.centerCs.distToCamera)) + (a.closestDist - b.closestDist)
             );
 
             for (let p, i = 0; i < this.planes.length; i++) {
                 p = this.planes[i];
                 if (p.closestCs != null) {
-                    this.blockManager.addBlockAtRef(p.closestCs);
+                    this.blockManager.brushFromRef(p, p.closestCs);
+                }
+                if (p.isPointOver(this.inputManager.mouseManager.offset)) {
                     break;
                 }
             }

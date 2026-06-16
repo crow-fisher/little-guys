@@ -7,8 +7,8 @@ export function normalizeVec3Real(vector) {
   return vector;
 }
 
-export function normalizeVec3(vector, toLength = 1) {
-  let length = toLength * getVec3Length(vector);
+export function normalizeVec3(vector) {
+  let length = getVec3Length(vector);
   vector[0] /= length;
   vector[1] /= length;
   vector[2] /= length;
@@ -104,7 +104,6 @@ export function subtractVectorsDest(v1, v2, dest) {
   dest[2] = (v1[2] - (v2[2] ?? 0));
 }
 
-
 export function subtractVectorsMultDest(v1, v2, m, dest) {
   dest[0] = m * (v1[0] - v2[0]);
   dest[1] = m * (v1[1] - v2[1]);
@@ -148,6 +147,10 @@ export function multiplyVectorByScalarDestAdd(vec, scalar, dest) {
 export function multiplyVectorsDest(v1, v2, dest) {
   for (let i = 0; i < v1.length; i++)
     dest[i] = v1[i] * v2[i];
+}
+export function multiplyVectorsMultDest(v1, v2, m, dest) {
+  for (let i = 0; i < v1.length; i++)
+    dest[i] = v1[i] * (m * v2[i]);
 }
 
 export function vec3Dot(v1, v2) {
