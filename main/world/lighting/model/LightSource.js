@@ -5,7 +5,7 @@ export class LightSource {
         this.lightGroup = lightGroup;
         this.cs = cs;
 
-        this.numBuckets = 300;
+        this.numBuckets = 40;
 
         this.idx = 0
 
@@ -18,8 +18,6 @@ export class LightSource {
     updateInit(idx) {
         this.idx = idx;
         this.sectors.clear();
-
-        this.numBuckets = 80 ; // + Math.floor(this.cs.distToCamera ** 2);
     }
 
     updateProcessBlock(block) {
@@ -47,11 +45,12 @@ export class LightSource {
 
     updateProcess() {
         this.sectors.values()
+            .filter((sector) => Math.random() > 0.90)
             .forEach((sector) => sector.values().forEach((subSec) => {
                 let curLightingApplied = [1, 1, 1];
                 let curIncrement = 0;
                 let curSum = 1;
-                let cumSum = 1;
+                let cumSum = .3;
                 subSec.sort((a, b) => a.lightSource[this.idx][0] - b.lightSource[this.idx][0]);
                 subSec.forEach((block) => {
                     if (block.lightSource[this.idx][0] > (curIncrement + Math.SQRT2)) {

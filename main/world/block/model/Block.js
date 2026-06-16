@@ -74,7 +74,7 @@ export class Block {
     }
 
     getLightFilterRate() {
-        return .80;
+        return 0.7;
     }
 
     linkNeighbors() {
