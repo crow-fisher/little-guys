@@ -5,15 +5,19 @@ import { sphereBrush } from "./brushes/sphereBrush.js";
 import { ManipulationManager } from "./manipulation/ManipulationManager.js";
 import { Block } from "./model/Block.js";
 import { BlockSector } from "./model/BlockSector.js";
+import { DirtBlock } from "./model/variant/DirtBlock.js";
 
 export class BlockManager {
     constructor(worldManager) {
         this.worldManager = worldManager;
+        this.blockManagerComponent = worldManager.mainManager.uiManager.blockManagerComponent;
+        
         this.sectorSize = 25;
         this.manipulationManager = new ManipulationManager(this);
         this.sectors = new Map();
         
-        this.curBrush = flatBrush;
+        this.brushes = [sphereBrush, sphereBrush, flatBrush];
+        this.materials = [Block, DirtBlock];
     }
 
     getBlockAtCartesian(sr, o=[0, 0, 0]) {
@@ -31,11 +35,15 @@ export class BlockManager {
     addNewBlock(cartesian) {
         let newBlock = new Block(this, cartesian);
         this.getSector(newBlock.sector).addBlock(newBlock);
-        newBlock.colorBase = [71, 134, 124];
     }
 
-    brushFromRef(p, refCs) {
-        this.curBrush(this, p, refCs);
+    brushFromRef(p, refCs, applyPrimary, applySecondary) {
+        if (this.applyPrimary) {
+            this.brushes.at(this.blockManagerComponent.gcvActivePrimaryBrush())(this, p, refCs, this.materials.at(this.blockManagerComponent.gcvActivePrimaryMaterial()));
+        }
+        if (this.applySecondary) {
+            this.brushes.at(this.blockManagerComponent.gcvActiveSecondaryBrush())(this, p, refCs, this.materials.at(this.blockManagerComponent.gcvActiveSecondaryMaterial()));
+        }
     }
 
     getSector(sr) {

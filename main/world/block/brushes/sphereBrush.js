@@ -1,6 +1,6 @@
 import { copyVecValue } from "../../../util/vector.js";
 
-export function sphereBrush(_this, p, refCs) {
+export function sphereBrush(_this, p, refCs, type) {
     let len, brushSize = 3;
     let cartesian = structuredClone(refCs.world);
     for (let i = -brushSize; i < brushSize; i++) {
@@ -17,8 +17,7 @@ export function sphereBrush(_this, p, refCs) {
                 if (len > brushSize || len < (brushSize - 1)) {
                     continue;
                 }
-                _this.addNewBlock(cartesian);
-
+                _this.addNewBlock(cartesian, type);
             }
         }
     }
