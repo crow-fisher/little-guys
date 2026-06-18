@@ -48,7 +48,7 @@ export class ManipulationManager {
         };
 
 
-        if (!this.inputManager.isPointerLocked() && this.inputManager.mouseManager.isButtonPressed(0) || this.inputManager.mouseManager.isButtonPressed(1)) {
+        if (!this.inputManager.isPointerLocked() && this.inputManager.mouseManager.isButtonPressed(0) || this.inputManager.mouseManager.isButtonPressed(2)) {
             this.planes.forEach((plane) => plane.setMouseHoverPoint(this.inputManager.mouseManager.offset));
             this.planes.sort((a, b) =>
                 ((a.closestCs?.distToCamera ?? a.centerCs.distToCamera) - (b.closestCs?.distToCamera ?? b.centerCs.distToCamera)) + (a.closestDist - b.closestDist)
@@ -57,7 +57,7 @@ export class ManipulationManager {
             for (let p, i = 0; i < this.planes.length; i++) {
                 p = this.planes[i];
                 if (p.closestCs != null) {
-                    this.blockManager.brushFromRef(p, p.closestCs, this.inputManager.mouseManager.isButtonPressed(0), this.inputManager.mouseManager.isButtonPressed(1));
+                    this.blockManager.brushFromRef(p, p.closestCs, this.inputManager.mouseManager.isButtonPressed(0), this.inputManager.mouseManager.isButtonPressed(2));
                 }
                 if (p.isPointOver(this.inputManager.mouseManager.offset)) {
                     break;

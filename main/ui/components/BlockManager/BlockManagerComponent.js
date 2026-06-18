@@ -13,15 +13,15 @@ export class BlockManagerComponent extends Component {
         this.name = "BlockManagerComponent";
         this.configInit();
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "block manager"))
-        
-        let blockTypeRow = new Container(0);
-        this.container.addElement(blockTypeRow);
-        blockTypeRow.addElement(new RadioToggleLabel(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER, "soil",
-            () => this.gcvModMode() == 1, () => this.scvModMode(1),
-            () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));
-        blockTypeRow.addElement(new RadioToggleLabel(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER, "base",
-            () => this.gcvModMode() == 2, () => this.scvModMode(2),
-            () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));
+
+        // let blockTypeRow = new Container(0);
+        // this.container.addElement(blockTypeRow);
+        // blockTypeRow.addElement(new RadioToggleLabel(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER, "soil",
+        //     () => this.gcvModMode() == 1, () => this.scvModMode(1),
+        //     () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));
+        // blockTypeRow.addElement(new RadioToggleLabel(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER, "base",
+        //     () => this.gcvModMode() == 2, () => this.scvModMode(2),
+        //     () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));
     }
 
     gcvActivePrimaryMaterial() {
@@ -48,7 +48,7 @@ export class BlockManagerComponent extends Component {
     scvActiveSecondaryBrush(v) {
         this.config().active.secondary.brush = v;
     }
-    
+
     getDefaultConfig() {
         return {
             active: {
@@ -57,11 +57,17 @@ export class BlockManagerComponent extends Component {
                     brush: 0
                 },
                 secondary: {
-                    material: 1, 
+                    material: 1,
                     brush: 1
                 }
+            },
+            offsetScale: {
+                offsetX: this.ggvUISize() * 12,
+                offsetY: this.ggvUISize() * 12,
+                sizeX: this.ggvUISize() * 20,
+                sizeY: this.ggvUISize() * 20
             }
-        } 
+        }
     }
 
 }

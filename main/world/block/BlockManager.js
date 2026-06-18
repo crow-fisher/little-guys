@@ -32,16 +32,16 @@ export class BlockManager {
         return this._cSect1.getBlock(this._cVec1);
     }
 
-    addNewBlock(cartesian) {
-        let newBlock = new Block(this, cartesian);
+    addNewBlock(cartesian, type) {
+        let newBlock = new type(this, cartesian);
         this.getSector(newBlock.sector).addBlock(newBlock);
     }
 
     brushFromRef(p, refCs, applyPrimary, applySecondary) {
-        if (this.applyPrimary) {
+        if (applyPrimary) {
             this.brushes.at(this.blockManagerComponent.gcvActivePrimaryBrush())(this, p, refCs, this.materials.at(this.blockManagerComponent.gcvActivePrimaryMaterial()));
         }
-        if (this.applySecondary) {
+        if (applySecondary) {
             this.brushes.at(this.blockManagerComponent.gcvActiveSecondaryBrush())(this, p, refCs, this.materials.at(this.blockManagerComponent.gcvActiveSecondaryMaterial()));
         }
     }
