@@ -5,7 +5,7 @@ import { QuadRenderJob } from "../../../rendering/model/QuadRenderJob.js";
 import { RenderJob } from "../../../rendering/model/RenderJob.js";
 import { renderPointLabel, renderQuad } from "../../../rendering/renderFunctions.js";
 import { centerVec, nnnVec, nnpVec, npnVec, nppVec, pnnVec, pnpVec, ppnVec, pppVec } from "../../../util/const.js";
-import { addVec3MultDest, addVectors, addVectorsMult, copyVecValue, multiplyVectorsDest, multiplyVectorsMultDest } from "../../../util/vector.js";
+import { addThreeVec3Dest, addVec3MultDest, addVectors, addVectorsMult, copyVecValue, multiplyVectorsDest, multiplyVectorsMultDest } from "../../../util/vector.js";
 
 
 export class Block {
@@ -257,7 +257,7 @@ export class Block {
 
     
     gravityPhysics() {
-        this.mvSpeed[1] -= (10 ** 1) * 9.8 / this.timeManager.dt; 
+        this.mvSpeed[1] -= (10 ** -2) * 9.8 / this.timeManager.dt; 
     }
     movementTick() {
         this._movementTick1(0);
@@ -269,6 +269,15 @@ export class Block {
         this._movementTick2(0);
         this._movementTick2(1);
         this._movementTick2(2);
+
+        addThreeVec3Dest(this.cartesian, nnnVec, this.mvOffset, this.nnnCs.world);
+        addThreeVec3Dest(this.cartesian, nnpVec, this.mvOffset, this.nnpCs.world);
+        addThreeVec3Dest(this.cartesian, npnVec, this.mvOffset, this.npnCs.world);
+        addThreeVec3Dest(this.cartesian, nppVec, this.mvOffset, this.nppCs.world);
+        addThreeVec3Dest(this.cartesian, pnnVec, this.mvOffset, this.pnnCs.world);
+        addThreeVec3Dest(this.cartesian, pnpVec, this.mvOffset, this.pnpCs.world);
+        addThreeVec3Dest(this.cartesian, ppnVec, this.mvOffset, this.ppnCs.world);
+        addThreeVec3Dest(this.cartesian, pppVec, this.mvOffset, this.pppCs.world);
     }
 
     _movementTick1(i) {

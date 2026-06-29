@@ -10,7 +10,7 @@ export class BlockSector {
     }
 
     removeBlock(cartesian) {
-        this.blocks.get(cartesian[0])?.get(cartesian[1])?.set(cartesian[2], null);
+        this.blocks.get(cartesian[0])?.get(cartesian[1])?.delete(cartesian[2]);
     }
 
     addBlock(block) {
