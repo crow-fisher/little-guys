@@ -5,14 +5,15 @@ export class DirtBlock extends Block {
     constructor(blockManager, cartesian) {
         super(blockManager, cartesian);
         this.colorBase = [65, 52, 18];
+        this.grounded = false;
     }
 
     update() {
         super.update();
-        this.gravityPhysics();
+        this.movementTick();
     }
 
-    gravityPhysics() {
-
+    updatePosition(x, y, z) {
+        this.unlinkNeighbors();
     }
 }

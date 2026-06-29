@@ -20,6 +20,21 @@ export class BlockManager {
         this.materials = [Block, DirtBlock];
     }
 
+    updateBlockPosition(block, newPosition) {
+        let bCur = this.getBlockAtCartesian(newPosition);
+        if (bCur) {
+            return false;
+        } else {
+            block.cartesian[0] = Math.floor(newPosition[0]);
+            block.cartesian[1] = Math.floor(newPosition[1]);
+            block.cartesian[2] = Math.floor(newPosition[2]);
+
+            this.getSector(block.sector).removeBlock(block.cartesian);
+            block.sector = this.cartesianToSector(block.cartesian);
+            this.getSector(block.sector).addBlock(block);
+        }
+    }
+
     getBlockAtCartesian(sr, o=[0, 0, 0]) {
         this._cVec1 = this._cVec1 ?? [0, 0, 0];
         this._cVec2 = this._cVec2 ?? [0, 0, 0];

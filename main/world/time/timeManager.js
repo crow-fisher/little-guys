@@ -6,7 +6,9 @@ import { MILLIS_PER_DAY } from "../../util/const.js";
 export class TimeManager {
     constructor(worldManager) {
         this.worldManager = worldManager;
-        this.curDay = 100.2
+        this.curDay = 100.2;
+        this.dt = 0;
+        this.dDay = 0; 
         this.curTimeScale = 1;
         this.daylightStrength = 0;
         this.lastTimeTick = Date.now();
@@ -67,13 +69,14 @@ export class TimeManager {
     seekCurDay(curDay) { }
 
     timeTick() {
+        this.dt = (Date.now() - this.lastTimeTick);
         if (this.curTimeScale == 0) {
-            this.dt = 0;
+            this.dDay = 0;
         } else {
-            this.dt = (Date.now() - this.lastTimeTick) / (MILLIS_PER_DAY / this.getTimeScale());
+            this.dDay = (this.dt * this.getTimeScale()) / MILLIS_PER_DAY;
             this.lastTimeTick = Date.now();
         }
-        this.curDay += this.dt;
+        this.curDay += this.dDay;
     };
 
     colorTick(curDay) {

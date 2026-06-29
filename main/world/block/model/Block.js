@@ -5,23 +5,31 @@ import { QuadRenderJob } from "../../../rendering/model/QuadRenderJob.js";
 import { RenderJob } from "../../../rendering/model/RenderJob.js";
 import { renderPointLabel, renderQuad } from "../../../rendering/renderFunctions.js";
 import { centerVec, nnnVec, nnpVec, npnVec, nppVec, pnnVec, pnpVec, ppnVec, pppVec } from "../../../util/const.js";
-import { addVectors, addVectorsMult, copyVecValue, multiplyVectorsDest, multiplyVectorsMultDest } from "../../../util/vector.js";
+import { addVec3MultDest, addVectors, addVectorsMult, copyVecValue, multiplyVectorsDest, multiplyVectorsMultDest } from "../../../util/vector.js";
 
 
 export class Block {
     constructor(blockManager, cartesian) {
         this.blockManager = blockManager;
+        this.timeManager = blockManager.worldManager.timeManager;
         this.rasterizationManager = blockManager.worldManager.mainManager.rasterizationManager;
         this.cameraManager = blockManager.worldManager.mainManager.cameraManager;
         this.canvasManager = blockManager.worldManager.mainManager.canvasManager;
 
-        this.cartesian = [0, 0, 0];
-        this.cartesian[0] = Math.round(cartesian[0]);
-        this.cartesian[1] = Math.round(cartesian[1]);
-        this.cartesian[2] = Math.round(cartesian[2]);
-
+        this.cartesian = [Math.round(cartesian[0]), Math.round(cartesian[1]), Math.round(cartesian[2])];
         this.sector = blockManager.cartesianToSector(this.cartesian);
+        
+        /// movement
+        this.grounded = true;
+        // core parameters 
+        this.mvOffset = [0, 0, 0]; 
+        this.mvSpeed = [0, 0, 0];
+        // frame computed movement parameters
+        this.mvEnd = [0, 0, 0];
+        this.mvDeltaTime = [0, 0, 0]; // millis until change of position in along each axis
+        /// end movement
 
+        /// lighting and color 
         this.lightSource = [];
 
         this.recalculateColorFlag = true;
@@ -37,6 +45,7 @@ export class Block {
         this.colorHex100 = "#646464";
         this.colorHex010 = "#646464";
         this.colorHex001 = "#646464";
+        /// end lighting and color 
 
         this.centerCs = new CoordinateSet(this.cameraManager, this.cartesian, centerVec);
         this.centerRenderJob = new PointLabelRenderJob(this.rasterizationManager, [0, 0, 0], 0, "#646464")
@@ -175,6 +184,8 @@ export class Block {
             return;
         }
 
+        this.physics();
+
         this.centerCs.process();
     }
 
@@ -232,4 +243,54 @@ export class Block {
         else
             this.renderFace(this.leftFace, this.leftRenderJob, this.rightNeighbor, this.colorHex001);
     }
+
+    physics() {
+        if (this.timeManager.dDay == 0) {
+            return;
+        };
+
+        if (!this.grounded) {
+            this.gravityPhysics();
+            this.movementTick();
+        }
+    }
+
+    
+    gravityPhysics() {
+        this.mvSpeed[1] -= (10 ** 1) * 9.8 / this.timeManager.dt; 
+    }
+    movementTick() {
+        this._movementTick1(0);
+        this._movementTick1(1);
+        this._movementTick1(2);
+
+        addVec3MultDest(this.mvOffset, this.mvSpeed, this.timeManager.dt, this.mvEnd);
+
+        this._movementTick2(0);
+        this._movementTick2(1);
+        this._movementTick2(2);
+    }
+
+    _movementTick1(i) {
+        if (this.mvSpeed[i] == 0) {
+            this.mvDeltaTime[i] = -1;
+        } else if (this.mvSpeed[i] > 0) {
+            this.mvDeltaTime[i] = (1 - this.mvOffset[i]) / this.mvSpeed[i]; 
+        } else {
+            this.mvDeltaTime[i] = -this.mvOffset[i] / this.mvSpeed[i];
+        }
+    }
+    
+    _movementTick2(i) {
+        if (this.mvDeltaTime[i] < this.timeManager.dt) {
+            if (this.blockManager.updateBlockPosition(this, this.mvEnd)) {
+                return;
+            } else {
+                this.mvSpeed[i] = 0;
+            }
+        } else {
+            this.mvOffset[i] += this.mvSpeed[i] * this.timeManager.dt;
+        }
+    }
+
 }

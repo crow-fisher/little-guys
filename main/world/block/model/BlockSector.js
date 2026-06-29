@@ -9,6 +9,10 @@ export class BlockSector {
         return this.blocks.get(cartesian[0])?.get(cartesian[1])?.get(cartesian[2]);
     }
 
+    removeBlock(cartesian) {
+        this.blocks.get(cartesian[0])?.get(cartesian[1])?.set(cartesian[2], null);
+    }
+
     addBlock(block) {
         this._bc = block.cartesian;
         this._rb = this.blocks.get(this._bc[0])?.get(this._bc[1])?.get(this._bc[2]);
