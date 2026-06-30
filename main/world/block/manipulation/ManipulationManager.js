@@ -19,8 +19,13 @@ export class ManipulationManager {
 
 
         this.zPlane = new Plane(this, 0, Math.PI / 2, 1, 20, 20);
+
+        this.zTopPlane = new Plane(this, 0, Math.PI / 2, 1, 20, 20);
+        this.zTopPlane.centerCs.world[1] -= 20;
+        this.zTopPlane.processPositionUpdate();
+
         this.newPlane = new Plane(this, 0, Math.PI / 2, 1, 20, 20);
-        this.planes = [this.zPlane];
+        this.planes = [this.zPlane, this.zTopPlane];
 
     }
 
@@ -67,9 +72,6 @@ export class ManipulationManager {
     }
 
     render() {
-        if (!loadGD(UI_TOPBAR_BLOCK)) {
-            return;
-        }
         this.planes.forEach((plane) => plane.render())
         if (this.planeManagerComponent.gcvModMode() == 1) {
             this.newPlane.render();

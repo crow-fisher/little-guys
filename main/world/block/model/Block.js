@@ -257,7 +257,7 @@ export class Block {
 
     
     gravityPhysics() {
-        this.mvSpeed[1] -= (10 ** -2) * 9.8 / this.timeManager.dt; 
+        this.mvSpeed[1] += (10 ** -3) * 9.8 / this.timeManager.dt; 
     }
     movementTick() {
         this._movementTick1(0);
@@ -291,6 +291,9 @@ export class Block {
     }
     
     _movementTick2(i) {
+        this.mvOffset[i] += this.mvSpeed[i] * this.timeManager.dt;
+        return;
+
         if (this.mvDeltaTime[i] < this.timeManager.dt) {
             if (this.blockManager.updateBlockPosition(this, this.mvEnd)) {
                 return;
