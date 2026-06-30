@@ -25,8 +25,9 @@ export class Block {
         this.mvOffset = [0, 0, 0]; 
         this.mvSpeed = [0, 0, 0];
         // frame computed movement parameters
-        this.mvEnd = [0, 0, 0];
-        this.mvDeltaTime = [0, 0, 0]; // millis until change of position in along each axis
+        this.mvEndOffset = [0, 0, 0];
+        this.mvEndPos = [0, 0, 0];
+        this.mvFlg = false;
         /// end movement
 
         /// lighting and color 
@@ -254,21 +255,21 @@ export class Block {
             this.movementTick();
         }
     }
-
     
     gravityPhysics() {
         this.mvSpeed[1] += (10 ** -3) * 9.8 / this.timeManager.dt; 
     }
     movementTick() {
-        this._movementTick1(0);
-        this._movementTick1(1);
-        this._movementTick1(2);
-
-        addVec3MultDest(this.mvOffset, this.mvSpeed, this.timeManager.dt, this.mvEnd);
+        addVec3MultDest(this.mvOffset, this.mvSpeed, this.timeManager.dt, this.mvEndOffset);
+        copyVecValue(this.cartesian, this.mvEndPos);
 
         this._movementTick2(0);
         this._movementTick2(1);
         this._movementTick2(2);
+
+        if (this.mvFlg) {
+            this.blockManager.updateBlockPosition(this, this.mvEndPos);
+        }
 
         addThreeVec3Dest(this.cartesian, nnnVec, this.mvOffset, this.nnnCs.world);
         addThreeVec3Dest(this.cartesian, nnpVec, this.mvOffset, this.nnpCs.world);
@@ -279,29 +280,16 @@ export class Block {
         addThreeVec3Dest(this.cartesian, ppnVec, this.mvOffset, this.ppnCs.world);
         addThreeVec3Dest(this.cartesian, pppVec, this.mvOffset, this.pppCs.world);
     }
-
-    _movementTick1(i) {
-        if (this.mvSpeed[i] == 0) {
-            this.mvDeltaTime[i] = -1;
-        } else if (this.mvSpeed[i] > 0) {
-            this.mvDeltaTime[i] = (1 - this.mvOffset[i]) / this.mvSpeed[i]; 
-        } else {
-            this.mvDeltaTime[i] = -this.mvOffset[i] / this.mvSpeed[i];
-        }
-    }
     
     _movementTick2(i) {
-        this.mvOffset[i] += this.mvSpeed[i] * this.timeManager.dt;
-        return;
-
-        if (this.mvDeltaTime[i] < this.timeManager.dt) {
-            if (this.blockManager.updateBlockPosition(this, this.mvEnd)) {
-                return;
-            } else {
-                this.mvSpeed[i] = 0;
-            }
-        } else {
-            this.mvOffset[i] += this.mvSpeed[i] * this.timeManager.dt;
+        if (this.mvEndOffset[i] < 0) {
+            this.mvFlg = true;
+            this.mvEndPos[i] -= 1;
+            this.mvOffset[i] += 1;
+        } else if (this.mvEndOffset[i] > 1) {
+            this.mvFlg = true;
+            this.mvEndPos[i] += 1;
+            this.mvOffset[i] -= 1;
         }
     }
 

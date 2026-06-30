@@ -25,11 +25,11 @@ export class BlockManager {
         if (bCur) {
             return false;
         } else {
+            this.getSector(block.sector).removeBlock(block.cartesian);
+
             block.cartesian[0] = Math.floor(newPosition[0]);
             block.cartesian[1] = Math.floor(newPosition[1]);
             block.cartesian[2] = Math.floor(newPosition[2]);
-
-            this.getSector(block.sector).removeBlock(block.cartesian);
             block.sector = this.cartesianToSector(block.cartesian);
             this.getSector(block.sector).addBlock(block);
         }
