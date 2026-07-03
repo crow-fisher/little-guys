@@ -5,7 +5,7 @@ import { QuadRenderJob } from "../../../rendering/model/QuadRenderJob.js";
 import { RenderJob } from "../../../rendering/model/RenderJob.js";
 import { renderPointLabel, renderQuad } from "../../../rendering/renderFunctions.js";
 import { centerVec, nnnVec, nnpVec, npnVec, nppVec, pnnVec, pnpVec, ppnVec, pppVec } from "../../../util/const.js";
-import { addThreeVec3Dest, addVec3MultDest, addVectors, addVectorsMult, copyVecValue, multiplyVectorsDest, multiplyVectorsMultDest } from "../../../util/vector.js";
+import { addThreeVec3Dest, addVec3Dest, addVec3MultDest, addVectors, addVectorsMult, copyVecValue, multiplyVectorsDest, multiplyVectorsMultDest } from "../../../util/vector.js";
 
 
 export class Block {
@@ -115,19 +115,19 @@ export class Block {
             this.frontNeighbor.backNeighbor = null;
         this.frontNeighbor = null;
         if (this.backNeighbor)
-            this.backNeighbor.frontNeighbor = this;
+            this.backNeighbor.frontNeighbor = null;
         this.backNeighbor = null;
         if (this.bottomNeighbor)
-            this.bottomNeighbor.topNeighbor = this;
+            this.bottomNeighbor.topNeighbor = null;
         this.bottomNeighbor = null;
         if (this.topNeighbor)
-            this.topNeighbor.bottomNeighbor = this;
+            this.topNeighbor.bottomNeighbor = null;
         this.topNeighbor = null;
         if (this.rightNeighbor)
-            this.rightNeighbor.leftNeighbor = this;
+            this.rightNeighbor.leftNeighbor = null;
         this.rightNeighbor = null;
         if (this.leftNeighbor)
-            this.leftNeighbor.rightNeighbor = this;
+            this.leftNeighbor.rightNeighbor = null;
         this.leftNeighbor = null;
 
     }
@@ -257,20 +257,18 @@ export class Block {
     }
     
     gravityPhysics() {
-        this.mvSpeed[1] += (10 ** -3) * 9.8 / this.timeManager.dt; 
+        this.mvSpeed[1] -= (10 ** -2) * 9.8 / this.timeManager.dt; 
     }
     movementTick() {
+        // mvEndOffset should just be mvOffset here??
         addVec3MultDest(this.mvOffset, this.mvSpeed, this.timeManager.dt, this.mvEndOffset);
         copyVecValue(this.cartesian, this.mvEndPos);
 
-        this._movementTick2(0);
-        this._movementTick2(1);
-        this._movementTick2(2);
+        this._movementTick2(0, this.frontNeighbor, this.backNeighbor);
+        this._movementTick2(1, this.bottomNeighbor, this.topNeighbor);
+        this._movementTick2(2, this.rightNeighbor, this.leftNeighbor);
 
-        if (this.mvFlg) {
-            this.blockManager.updateBlockPosition(this, this.mvEndPos);
-        }
-
+        addThreeVec3Dest(this.cartesian, centerVec, this.mvOffset, this.centerCs.world);
         addThreeVec3Dest(this.cartesian, nnnVec, this.mvOffset, this.nnnCs.world);
         addThreeVec3Dest(this.cartesian, nnpVec, this.mvOffset, this.nnpCs.world);
         addThreeVec3Dest(this.cartesian, npnVec, this.mvOffset, this.npnCs.world);
@@ -281,7 +279,7 @@ export class Block {
         addThreeVec3Dest(this.cartesian, pppVec, this.mvOffset, this.pppCs.world);
     }
     
-    _movementTick2(i) {
+    _movementTick2(i, negNeighbor, posNeighbor) {
         if (this.mvEndOffset[i] < 0) {
             this.mvFlg = true;
             this.mvEndPos[i] -= 1;
@@ -291,6 +289,7 @@ export class Block {
             this.mvEndPos[i] += 1;
             this.mvOffset[i] -= 1;
         }
+        this.blockManager.updateBlockPosition(this, this.mvEndPos);
     }
 
 }

@@ -26,12 +26,15 @@ export class BlockManager {
             return false;
         } else {
             this.getSector(block.sector).removeBlock(block.cartesian);
+            block.unlinkNeighbors();
 
-            block.cartesian[0] = Math.floor(newPosition[0]);
-            block.cartesian[1] = Math.floor(newPosition[1]);
-            block.cartesian[2] = Math.floor(newPosition[2]);
+            block.cartesian[0] = newPosition[0];
+            block.cartesian[1] = newPosition[1];
+            block.cartesian[2] = newPosition[2];
             block.sector = this.cartesianToSector(block.cartesian);
             this.getSector(block.sector).addBlock(block);
+
+            block.linkNeighbors();
         }
     }
 
