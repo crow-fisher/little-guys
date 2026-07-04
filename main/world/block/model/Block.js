@@ -18,13 +18,15 @@ export class Block {
 
         this.cartesian = [Math.round(cartesian[0]), Math.round(cartesian[1]), Math.round(cartesian[2])];
         this.sector = blockManager.cartesianToSector(this.cartesian);
-        
+
         /// movement
         this.grounded = true;
         // core parameters 
-        this.mvOffset = [0, 0, 0]; 
+        this.mvOffset = [0.5, 0.5, 0.5];
         this.mvSpeed = [0, 0, 0];
+        this.mvLast = Date.now();
         // frame computed movement parameters
+        this.mvDeltaTime = [0, 0, 0];
         this.mvEndOffset = [0, 0, 0];
         this.mvEndPos = [0, 0, 0];
         this.mvFlg = false;
@@ -255,18 +257,32 @@ export class Block {
             this.movementTick();
         }
     }
-    
+
     gravityPhysics() {
-        this.mvSpeed[1] -= (10 ** -2) * 9.8 / this.timeManager.dt; 
+        this.mvSpeed[1] -= (10 ** -2) * 9.8 / this.timeManager.dt;
     }
     movementTick() {
-        // mvEndOffset should just be mvOffset here??
-        addVec3MultDest(this.mvOffset, this.mvSpeed, this.timeManager.dt, this.mvEndOffset);
-        copyVecValue(this.cartesian, this.mvEndPos);
+        this.calculateMvDeltaTime(0);
+        this.calculateMvDeltaTime(1);
+        this.calculateMvDeltaTime(2);
+        this.blockManager.registerBlockMvTimes(this);
+    }
 
-        this._movementTick2(0, this.frontNeighbor, this.backNeighbor);
-        this._movementTick2(1, this.bottomNeighbor, this.topNeighbor);
-        this._movementTick2(2, this.rightNeighbor, this.leftNeighbor);
+    applyMovementAtTime(t) {
+        if (t - this.mvLast >= this.timeManager.dt) {
+            this.mvLast = t;
+            return;
+        }
+        addVectorsMult(this.mvOffset, this.mvSpeed, t - this.mvLast);
+        this.mvLast = t;
+        this.applyMovement();
+    }
+    applyMovement() {
+        copyVecValue(this.cartesian, this.mvEndPos);
+        
+        this.applyMvOffset(0, this.frontNeighbor, this.backNeighbor);
+        this.applyMvOffset(1, this.bottomNeighbor, this.topNeighbor);
+        this.applyMvOffset(2, this.rightNeighbor, this.leftNeighbor);
 
         addThreeVec3Dest(this.cartesian, centerVec, this.mvOffset, this.centerCs.world);
         addThreeVec3Dest(this.cartesian, nnnVec, this.mvOffset, this.nnnCs.world);
@@ -278,18 +294,39 @@ export class Block {
         addThreeVec3Dest(this.cartesian, ppnVec, this.mvOffset, this.ppnCs.world);
         addThreeVec3Dest(this.cartesian, pppVec, this.mvOffset, this.pppCs.world);
     }
-    
-    _movementTick2(i, negNeighbor, posNeighbor) {
-        if (this.mvEndOffset[i] < 0) {
+
+    applyMvOffset(i, negNeighbor, posNeighbor) {
+        if (negNeighbor && this.mvOffset[i] < 0.5) {
+            this.mvOffset[i] = 0.5;
+            return;
+        }
+        if (posNeighbor && this.mvOffset[i] > 0.5) {
+            this.mvOffset[i] = 0.5;
+            return;
+        }
+
+        if (this.mvOffset[i] < 0) {
             this.mvFlg = true;
             this.mvEndPos[i] -= 1;
             this.mvOffset[i] += 1;
-        } else if (this.mvEndOffset[i] > 1) {
+        } else if (this.mvOffset[i] > 1) {
             this.mvFlg = true;
             this.mvEndPos[i] += 1;
             this.mvOffset[i] -= 1;
         }
         this.blockManager.updateBlockPosition(this, this.mvEndPos);
     }
+
+    calculateMvDeltaTime(i) {
+        if (this.mvSpeed[i] == 0) {
+            this.mvDeltaTime[i] = -1;
+        } else if (this.mvSpeed[i] > 0) {
+            this.mvDeltaTime[i] = (1 - this.mvOffset[i]) / this.mvSpeed[i];
+        } else {
+            this.mvDeltaTime[i] = -this.mvOffset[i] / this.mvSpeed[i];
+        }
+    }
+
+
 
 }

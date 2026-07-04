@@ -7,6 +7,7 @@ export class TimeManager {
     constructor(worldManager) {
         this.worldManager = worldManager;
         this.curDay = 100.2;
+        this.curDate = Date.now();
         this.dt = 0;
         this.dDay = 0; 
         this.curTimeScale = 1;
@@ -69,7 +70,8 @@ export class TimeManager {
     seekCurDay(curDay) { }
 
     timeTick() {
-        this.dt = (Date.now() - this.lastTimeTick);
+        this.curDate = Date.now();
+        this.dt = (this.curDate - this.lastTimeTick);
         if (this.curTimeScale == 0) {
             this.dDay = 0;
         } else {
@@ -82,12 +84,12 @@ export class TimeManager {
     colorTick(curDay) {
         // pull out of the shit below and do that there
         this.curMillis = this.curDay * MILLIS_PER_DAY;
-        this.curDate = new Date(this.curMillis);
+        this.curGameDate = new Date(this.curMillis);
         this.nextDate = new Date(this.curMillis + MILLIS_PER_DAY);
         this.prevDate = new Date(this.curMillis - MILLIS_PER_DAY);
 
         this.prevTimes = SunCalc.getTimes(this.prevDate, this.lat, this.lng);
-        this.curTimes = SunCalc.getTimes(this.curDate, this.lat, this.lng);
+        this.curTimes = SunCalc.getTimes(this.curGameDate, this.lat, this.lng);
         this.nextTimes = SunCalc.getTimes(this.nextDate, this.lat, this.lng);
         this.timesArr = new Array();
 
@@ -98,7 +100,7 @@ export class TimeManager {
         this.timesArr.sort((a, b) => a[0].getTime() - b[0].getTime());
 
         // let minColor, maxColor, min, max, starBrightness;
-        this.idx = this.timesArr.findIndex((arr) => this.curDate < arr[0]);
+        this.idx = this.timesArr.findIndex((arr) => this.curGameDate < arr[0]);
         this.minArr = this.timesArr[this.idx - 1];
         this.maxArr = this.timesArr[this.idx];
         this.min = this.minArr[0];
@@ -106,7 +108,7 @@ export class TimeManager {
         this.minColor = this.minArr[1];
         this.maxColor = this.maxArr[1];
 
-        this._ps = invlerp(this.min.getTime(), this.max.getTime(), this.curDate.getTime());
+        this._ps = invlerp(this.min.getTime(), this.max.getTime(), this.curGameDate.getTime());
         this.colorRGB.r = this.minColor.r * (1 - this._ps) + this.maxColor.r * this._ps; 
         this.colorRGB.g = this.minColor.g * (1 - this._ps) + this.maxColor.g * this._ps; 
         this.colorRGB.b = this.minColor.b * (1 - this._ps) + this.maxColor.b * this._ps; 

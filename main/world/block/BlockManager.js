@@ -10,14 +10,53 @@ import { DirtBlock } from "./model/variant/DirtBlock.js";
 export class BlockManager {
     constructor(worldManager) {
         this.worldManager = worldManager;
+        this.timeManager = worldManager.timeManager;
         this.blockManagerComponent = worldManager.mainManager.uiManager.blockManagerComponent;
-        
+
         this.sectorSize = 25;
         this.manipulationManager = new ManipulationManager(this);
         this.sectors = new Map();
-        
+
         this.brushes = [sphereBrush, sphereBrush, flatBrush];
         this.materials = [Block, DirtBlock];
+
+        this.mvQueuePrecision = 100;
+        this.mvQueue = new Array();
+    }
+
+    registerBlockMvTimes(block) {
+        this._registerBlockMvTime(block, 0);
+        this._registerBlockMvTime(block, 1);
+        this._registerBlockMvTime(block, 2);
+    }
+
+    _registerBlockMvTime(block, i) {
+        if (block.mvSpeed[i] == 0) {
+            return;
+        }
+        
+        this._v1 = Math.ceil((block.mvDeltaTime[i] / this.timeManager.dt) * this.mvQueuePrecision);
+        if (this._v1 == 0)
+            return;
+
+        this.mvQueue[this._v1] = this.mvQueue[this._v1] ?? new Array();
+        this.mvQueue[this._v1].push(block);
+    }
+
+    processBlockMovement() {
+        for (let i = 0; i <= this.mvQueuePrecision; i++) {
+            if (this.mvQueue[i] != null) {
+                this.mvQueue[i].forEach((block) => block.applyMovementAtTime(this.timeManager.curDate + i / this.mvQueuePrecision))
+                this.mvQueue[i].length = 0;
+            }
+        }
+
+        for (let i = 0; i <= this.mvQueuePrecision; i++) {
+            if (this.mvQueue[i] != null) {
+                this.mvQueue[i].forEach((block) => block.applyMovementAtTime(this.timeManager.curDate + this.timeManager.dt))
+                this.mvQueue[i].length = 0;
+            }
+        }
     }
 
     updateBlockPosition(block, newPosition) {
@@ -38,10 +77,10 @@ export class BlockManager {
         }
     }
 
-    getBlockAtCartesian(sr, o=[0, 0, 0]) {
+    getBlockAtCartesian(sr, o = [0, 0, 0]) {
         this._cVec1 = this._cVec1 ?? [0, 0, 0];
         this._cVec2 = this._cVec2 ?? [0, 0, 0];
-        this._cSect1 = null; 
+        this._cSect1 = null;
 
         addVec3Dest(sr, o, this._cVec1);
         this.cartesianToSectorInplace(this._cVec1, this._cVec2);
@@ -95,18 +134,15 @@ export class BlockManager {
             cartesian[2] * this.sectorSize
         ]
     }
-
-
     update() {
         this.manipulationManager.update();
         this.iterateOnSectors((sector) => sector.update());
+        this.processBlockMovement();
     }
-
     render() {
         this.manipulationManager.render();
         this.iterateOnSectors((sector) => sector.render());
     }
-
     iterateOnSectors(func) {
         this.sectors.keys().forEach(
             (x) => this.sectors.get(x).keys().forEach(
@@ -117,6 +153,4 @@ export class BlockManager {
     rebuildSectors() {
         this.sectors = new Map();
     }
-
-
 }
