@@ -92,6 +92,7 @@ export class BlockManager {
     addNewBlock(cartesian, type) {
         let newBlock = new type(this, cartesian);
         this.getSector(newBlock.sector).addBlock(newBlock);
+        newBlock.linkNeighbors();
     }
 
     brushFromRef(p, refCs, applyPrimary, applySecondary) {

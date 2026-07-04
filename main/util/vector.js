@@ -26,6 +26,9 @@ export function getVec3Length(vector) {
   return (vector[0] ** 2 + vector[1] ** 2 + vector[2] ** 2) ** 0.5;
 }
 
+export function getVec3LengthSquared(vector) {
+  return (vector[0] ** 2 + vector[1] ** 2 + vector[2] ** 2);
+}
 export function addVectorsCopy(v1, v2) {
   return addVectors(structuredClone(v1), v2);
 }
