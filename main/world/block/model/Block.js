@@ -5,7 +5,7 @@ import { QuadRenderJob } from "../../../rendering/model/QuadRenderJob.js";
 import { RenderJob } from "../../../rendering/model/RenderJob.js";
 import { renderPointLabel, renderQuad } from "../../../rendering/renderFunctions.js";
 import { centerVec, nnnVec, nnpVec, npnVec, nppVec, pnnVec, pnpVec, ppnVec, pppVec } from "../../../util/const.js";
-import { addThreeVec3Dest, addVec3Dest, addVec3MultDest, addVectors, addVectorsMult, copyVecValue, getVec3Length, getVec3LengthSquared, multiplyVectorByScalar, multiplyVectorsDest, multiplyVectorsMultDest, normalizeVec3 } from "../../../util/vector.js";
+import { addThreeVec3Dest, addVec3Dest, addVec3MultDest, addVectors, addVectorsMult, copyVecValue, getVec3Length, getVec3LengthSquared, multiplyVectorByScalar, multiplyVectorsDest, multiplyVectorsMultDest, normalizeVec3, subtractVectors } from "../../../util/vector.js";
 
 
 export class Block {
@@ -295,6 +295,7 @@ export class Block {
             addVec3Dest(this.cartesian, this.mvMovement, this.mvEndPos);
             if (this.blockManager.updateBlockPosition(this, this.mvEndPos)) {
                 // we moved the block
+                subtractVectors(this.mvOffset, this.mvMovement);
             } else {
                 // we didn't
                 console.log("did not move block")
@@ -316,9 +317,9 @@ export class Block {
 
     calculateCartesianMovement(i) {
         if (this.mvOffset[i] < 0) {
-            this.mvMovement[i] += 1;
-        } else if (this.mvOffset[i] > 1) {
             this.mvMovement[i] -= 1;
+        } else if (this.mvOffset[i] > 1) {
+            this.mvMovement[i] += 1;
         }
     }
 

@@ -34,8 +34,8 @@ export class BlockManager {
         if (block.mvSpeed[i] == 0) {
             return;
         }
-        
-        this._v1 = Math.ceil((block.mvDeltaTime[i] / this.timeManager.dt) * this.mvQueuePrecision);
+        this._v0 = Math.ceil(this.mvQueuePrecision *(block.mvLast - this.timeManager.curDate) / this.timeManager.dt);
+        this._v1 = this._v0 + Math.ceil((block.mvDeltaTime[i] / this.timeManager.dt) * this.mvQueuePrecision);
         if (this._v1 == 0)
             return;
 
