@@ -329,9 +329,9 @@ export class Block {
 
     transformOffsetMovement(i) {
         if (this.mvMovement[i] == -1) {
-            this.mvOffset[i] = 0;
-        } else if (this.mvMovement[i] == 1) {
             this.mvOffset[i] = 1;
+        } else if (this.mvMovement[i] == 1) {
+            this.mvOffset[i] = 0;
         }
     }
 
