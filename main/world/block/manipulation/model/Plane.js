@@ -59,6 +59,8 @@ export class Plane {
                             neighborPointLineRenderJob = this.refPointLineRenderJobs.get(i + x)?.get(j + y);
                             neighborPointLineRenderJob.v1 = centerPoint.renderScreen;
                             neighborPointLineRenderJob.v2 = neighborPoint.renderScreen;
+                            neighborPointLineRenderJob.size = 10 / centerPoint.distToCamera;
+                            
                             this.rasterizationManager.addRenderJob(neighborPointLineRenderJob);
                         }
 

@@ -54,11 +54,11 @@ export class BlockManagerComponent extends Component {
             active: {
                 primary: {
                     material: 0,
-                    brush: 0
+                    brush: 2
                 },
                 secondary: {
                     material: 1,
-                    brush: 1
+                    brush: 2
                 }
             },
             offsetScale: {

@@ -7,9 +7,11 @@ import { renderPointLabel, renderQuad } from "../../../rendering/renderFunctions
 import { centerVec, nnnVec, nnpVec, npnVec, nppVec, pnnVec, pnpVec, ppnVec, pppVec } from "../../../util/const.js";
 import { addThreeVec3Dest, addVec3Dest, addVec3MultDest, addVectors, addVectorsMult, copyVecValue, getVec3Length, getVec3LengthSquared, multiplyVectorByScalar, multiplyVectorsDest, multiplyVectorsMultDest, normalizeVec3, subtractVectors } from "../../../util/vector.js";
 
+let bid = 0;
 
 export class Block {
     constructor(blockManager, cartesian) {
+        this._bid = bid++;
         this.blockManager = blockManager;
         this.timeManager = blockManager.worldManager.timeManager;
         this.rasterizationManager = blockManager.worldManager.mainManager.rasterizationManager;
@@ -27,6 +29,7 @@ export class Block {
         this.mvLast = Date.now();
         // frame computed movement parameters
         this.mvDeltaTime = [0, 0, 0];
+        this.mvDeltaStep = [0, 0, 0];
         this.mvMovement = [0, 0, 0];
         this.mvEndPos = [0, 0, 0];
         this.mvFlg = false;
@@ -259,13 +262,15 @@ export class Block {
     }
 
     gravityPhysics() {
-        this.mvSpeed[1] += (10 ** -2) * 9.8 / this.timeManager.dt;
+        this.mvSpeed[1] = .15;
+        // this.mvSpeed[1] += (10 ** -2) * 9.8 / this.timeManager.dt;
+        // this.mvSpeed[1] = .25;
     }
 
     neighborPhysics() {
         if (this.bottomNeighbor) {
             this.mvSpeed[1] = 0;
-            this.mvOffset[1] = 0.5;
+            this.mvOffset[1] = 0;
         }
     }
 
@@ -277,10 +282,6 @@ export class Block {
     }
 
     applyMovementAtTime(t) {
-        if (t - this.mvLast >= this.timeManager.dt) {
-            this.mvLast = t;
-            return;
-        }
         addVectorsMult(this.mvOffset, this.mvSpeed, .01 * (t - this.mvLast)); // time in millis
         this.mvLast = t;
         this.applyMovement();
@@ -295,13 +296,13 @@ export class Block {
             addVec3Dest(this.cartesian, this.mvMovement, this.mvEndPos);
             if (this.blockManager.updateBlockPosition(this, this.mvEndPos)) {
                 // we moved the block
-                subtractVectors(this.mvOffset, this.mvMovement);
+                this.transformOffsetMovement(0)
+                this.transformOffsetMovement(1)
+                this.transformOffsetMovement(2)
+                // subtractVectors(this.mvOffset, this.mvMovement);
             } else {
                 // we didn't
-                console.log("did not move block")
             }
-            
-            this.calculateAndSubmitMvDeltaTimes();
         }
 
         addThreeVec3Dest(this.cartesian, centerVec, this.mvOffset, this.centerCs.world);
@@ -313,6 +314,7 @@ export class Block {
         addThreeVec3Dest(this.cartesian, pnpVec, this.mvOffset, this.pnpCs.world);
         addThreeVec3Dest(this.cartesian, ppnVec, this.mvOffset, this.ppnCs.world);
         addThreeVec3Dest(this.cartesian, pppVec, this.mvOffset, this.pppCs.world);
+
     }
 
     calculateCartesianMovement(i) {
@@ -321,17 +323,29 @@ export class Block {
         } else if (this.mvOffset[i] > 1) {
             this.mvMovement[i] += 1;
         }
+
+        this.mvOffset[i] = Math.min(Math.max(0, this.mvOffset[i]), 1);
+    }
+
+    transformOffsetMovement(i) {
+        if (this.mvMovement[i] == -1) {
+            this.mvOffset[i] = 0;
+        } else if (this.mvMovement[i] == 1) {
+            this.mvOffset[i] = 1;
+        }
     }
 
     calculateMvDeltaTime(i) {
         if (this.mvSpeed[i] == 0) {
             this.mvDeltaTime[i] = -1;
+            this.mvDeltaStep[i] = -1;
         } else if (this.mvSpeed[i] > 0) {
             this.mvDeltaTime[i] = (1 - this.mvOffset[i]) / this.mvSpeed[i];
         } else {
             this.mvDeltaTime[i] = this.mvOffset[i] / this.mvSpeed[i];
         }
         this.mvDeltaTime[i] = Math.abs(this.mvDeltaTime[i]);
+        this.mvDeltaStep[i] = 1 / this.mvSpeed[1];
     }
 
 

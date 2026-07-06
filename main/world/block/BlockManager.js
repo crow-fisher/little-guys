@@ -22,6 +22,7 @@ export class BlockManager {
 
         this.mvQueuePrecision = 100;
         this.mvQueue = new Array();
+        this.mvBlocks = new Array();
     }
 
     registerBlockMvTimes(block) {
@@ -34,29 +35,29 @@ export class BlockManager {
         if (block.mvSpeed[i] == 0) {
             return;
         }
-        this._v0 = Math.ceil(this.mvQueuePrecision *(block.mvLast - this.timeManager.curDate) / this.timeManager.dt);
-        this._v1 = this._v0 + Math.ceil((block.mvDeltaTime[i] / this.timeManager.dt) * this.mvQueuePrecision);
-        if (this._v1 == 0)
-            return;
 
-        this.mvQueue[this._v1] = this.mvQueue[this._v1] ?? new Array();
-        this.mvQueue[this._v1].push(block);
+        this.mvBlocks.push(block);
+
+        if (block.mvDeltaTime[i] > (this.timeManager.dt / 1000)) {
+            // do nothing
+        } else {
+            this._v1 = Math.ceil((block.mvDeltaTime[i] / (this.timeManager.dt / 1000)) * this.mvQueuePrecision);
+            this.mvQueue[this._v1] = this.mvQueue[this._v1] ?? new Array();
+            this.mvQueue[this._v1].push(block);
+        }
+
     }
 
     processBlockMovement() {
-        for (let i = 0; i <= this.mvQueuePrecision; i++) {
-            if (this.mvQueue[i] != null) {
-                this.mvQueue[i].forEach((block) => block.applyMovementAtTime(this.timeManager.curDate + i / this.mvQueuePrecision))
-                this.mvQueue[i].length = 0;
-            }
-        }
-
-        for (let i = 0; i <= this.mvQueuePrecision; i++) {
-            if (this.mvQueue[i] != null) {
-                this.mvQueue[i].forEach((block) => block.applyMovementAtTime(this.timeManager.curDate + this.timeManager.dt))
-                this.mvQueue[i].length = 0;
-            }
-        }
+        // for (let i = 0; i <= this.mvQueuePrecision; i++) {
+        //     if (this.mvQueue[i] != null) {
+        //         this.mvQueue[i].forEach((block) => block.applyMovementAtTime(this.timeManager.curDate + i / this.mvQueuePrecision))
+        //         this.mvQueue[i].length = 0;
+        //     }
+        // }
+        // this.mvBlocks.forEach((block) => block.applyMovementAtTime(this.timeManager.curDate + this.timeManager.dt));
+        this.mvBlocks.forEach((block) => block.applyMovementAtTime(Date.now()));
+        this.mvBlocks.length = 0;
     }
 
     updateBlockPosition(block, newPosition) {
@@ -74,6 +75,7 @@ export class BlockManager {
             this.getSector(block.sector).addBlock(block);
 
             block.linkNeighbors();
+            return true;
         }
     }
 
