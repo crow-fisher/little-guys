@@ -45,21 +45,15 @@ export class LightSource {
                 let curLightingApplied = [1, 1, 1];
                 let curIncrement = 0;
                 let curSum = 1;
-                let cumSum = .03;
+                let cumSum = .05;
                 subSec.sort((a, b) => a.lightSource[this.idx][0] - b.lightSource[this.idx][0]);
                 subSec.forEach((block) => {
-                    if (block.lightSource[this.idx][0] > (curIncrement + Math.SQRT2)) {
-                        curIncrement = block.lightSource[this.idx][0];
-                        cumSum *= curSum;
-                        curSum = 1;
-                    }
-
                     multiplyVectorByScalar(curLightingApplied, cumSum);
                     copyVecValue(curLightingApplied, block.lightSource[this.idx][1]);
                     subtractVectorsDest(block.centerCs.world, this.cs.world, block.lightSource[this.idx][2]);
                     normalizeVec3(block.lightSource[this.idx][2]);
 
-                    curSum *= block.getLightFilterRate();
+                    // curSum *= block.getLightFilterRate();
                     
                     block.recalculateColorFlag = true;
                 });

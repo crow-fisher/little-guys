@@ -1,4 +1,4 @@
-import { addVec3Dest, copyVecValue } from "../../util/vector.js";
+import { addVec3Dest, copyVecValue, getVec3LengthSquared } from "../../util/vector.js";
 import { flatBrush } from "./brushes/flatBrush.js";
 import { pixelBrush } from "./brushes/pixelBrush.js";
 import { sphereBrush } from "./brushes/sphereBrush.js";
@@ -17,7 +17,7 @@ export class BlockManager {
         this.manipulationManager = new ManipulationManager(this);
         this.sectors = new Map();
 
-        this.brushes = [sphereBrush, sphereBrush, flatBrush];
+        this.brushes = [sphereBrush, pixelBrush, flatBrush];
         this.materials = [Block, DirtBlock];
 
         this.mvQueuePrecision = 100;
@@ -67,12 +67,13 @@ export class BlockManager {
         } else {
             this.getSector(block.sector).removeBlock(block.cartesian);
             block.unlinkNeighbors();
-
             block.cartesian[0] = newPosition[0];
             block.cartesian[1] = newPosition[1];
             block.cartesian[2] = newPosition[2];
             block.sector = this.cartesianToSector(block.cartesian);
-            this.getSector(block.sector).addBlock(block);
+
+            if (getVec3LengthSquared(block.cartesian) < 10000)
+                this.getSector(block.sector).addBlock(block);
 
             block.linkNeighbors();
             return true;
@@ -93,6 +94,10 @@ export class BlockManager {
 
     addNewBlock(cartesian, type) {
         let newBlock = new type(this, cartesian);
+        if (this.getSector(newBlock.sector).getBlock(cartesian)) {
+            return;
+        }
+        
         this.getSector(newBlock.sector).addBlock(newBlock);
         newBlock.linkNeighbors();
     }

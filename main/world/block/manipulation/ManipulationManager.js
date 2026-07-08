@@ -18,10 +18,11 @@ export class ManipulationManager {
         this.planeManagerComponent = blockManager.worldManager.mainManager.uiManager.planeManagerComponent;
 
 
-        this.zPlane = new Plane(this, 0, Math.PI / 2, 1, 20, 20);
+        let pSize = 20;
+        this.zPlane = new Plane(this, 0, Math.PI / 2, 1, pSize, pSize);
 
-        this.zTopPlane = new Plane(this, 0, Math.PI / 2, 1, 20, 20);
-        this.zTopPlane.centerCs.world[1] -= 20;
+        this.zTopPlane = new Plane(this, 0, Math.PI / 2, 1, pSize, pSize);
+        this.zTopPlane.centerCs.world[1] -= 15;
         this.zTopPlane.processPositionUpdate();
 
         this.newPlane = new Plane(this, 0, Math.PI / 2, 1, 20, 20);

@@ -24,7 +24,7 @@ export class Block {
         /// movement
         this.grounded = true;
         // core parameters 
-        this.mvOffset = [0.5, 0.5, 0.5];
+        this.mvOffset = [0, 0, 0];
         this.mvSpeed = [0, 0, 0];
         this.mvLast = Date.now();
         // frame computed movement parameters
@@ -90,7 +90,7 @@ export class Block {
     }
 
     getLightFilterRate() {
-        return 0.7;
+        return 0.999999999;
     }
 
     linkNeighbors() {
@@ -100,10 +100,10 @@ export class Block {
         this.backNeighbor = this.blockManager.getBlockAtCartesian(this.cartesian, [1, 0, 0]);
         if (this.backNeighbor)
             this.backNeighbor.frontNeighbor = this;
-        this.bottomNeighbor = this.blockManager.getBlockAtCartesian(this.cartesian, [0, -1, 0]);
+        this.bottomNeighbor = this.blockManager.getBlockAtCartesian(this.cartesian, [0, 1, 0]);
         if (this.bottomNeighbor)
             this.bottomNeighbor.topNeighbor = this;
-        this.topNeighbor = this.blockManager.getBlockAtCartesian(this.cartesian, [0, 1, 0]);
+        this.topNeighbor = this.blockManager.getBlockAtCartesian(this.cartesian, [0, -1, 0]);
         if (this.topNeighbor)
             this.topNeighbor.bottomNeighbor = this;
         this.rightNeighbor = this.blockManager.getBlockAtCartesian(this.cartesian, [0, 0, -1]);
@@ -142,15 +142,20 @@ export class Block {
             // lightSource is an array of lightSource results like: 
             // [[distToCamera, [rB, gB, bB]]]
             // where 'rB', 'gB', and 'bB' are the relative brightnesses of each color (normalized at 1).
-            let dirs = [[this.lightApplied100, this.colorApplied100],
-            [this.lightApplied010, this.colorApplied010],
-            [this.lightApplied001, this.colorApplied001]];
-            for (let i = 0; i < 3; i++) {
-                dirs[i][0][0] = 0;
-                dirs[i][0][1] = 0;
-                dirs[i][0][2] = 0;
-                this.lightSource.forEach((ls) => addVectorsMult(dirs[i][0], ls[1], Math.abs(ls[2][i])));
+
+            if (this.lightSource.length > 0) {
+                let dirs = [[this.lightApplied100, this.colorApplied100],
+                [this.lightApplied010, this.colorApplied010],
+                [this.lightApplied001, this.colorApplied001]];
+                for (let i = 0; i < 3; i++) {
+                    dirs[i][0][0] = 0;
+                    dirs[i][0][1] = 0;
+                    dirs[i][0][2] = 0;
+                    this.lightSource.forEach((ls) => addVectorsMult(dirs[i][0], ls[1], Math.abs(ls[2][i])));
+                }
             }
+
+
             // calculate final color based on 'lightApplied' and 'colorBase', for each face direction 
             multiplyVectorsDest(this.colorBase, this.lightApplied100, this.colorApplied100);
             multiplyVectorsDest(this.colorBase, this.lightApplied010, this.colorApplied010);
@@ -239,9 +244,9 @@ export class Block {
             this.renderFace(this.backFace, this.backRenderJob, this.frontNeighbor, this.colorHex100);
 
         if (this.offsetSign[1] == 0)
-            this.renderFace(this.bottomFace, this.bottomRenderJob, this.topNeighbor, this.colorHex010);
+            this.renderFace(this.bottomFace, this.bottomRenderJob, this.bottomNeighbor, this.colorHex010);
         else
-            this.renderFace(this.topFace, this.topRenderJob, this.bottomNeighbor, this.colorHex010);
+            this.renderFace(this.topFace, this.topRenderJob, this.topNeighbor, this.colorHex010);
 
         if (this.offsetSign[2] == 0)
             this.renderFace(this.rightFace, this.rightRenderJob, this.leftNeighbor, this.colorHex001);
@@ -262,15 +267,14 @@ export class Block {
     }
 
     gravityPhysics() {
-        this.mvSpeed[1] = .15;
         // this.mvSpeed[1] += (10 ** -2) * 9.8 / this.timeManager.dt;
-        // this.mvSpeed[1] = .25;
+        this.mvSpeed[1] += .05;
     }
 
     neighborPhysics() {
         if (this.bottomNeighbor) {
-            this.mvSpeed[1] = 0;
-            this.mvOffset[1] = 0;
+            this.mvOffset[1] = Math.min(this.mvSpeed[1], this.bottomNeighbor.mvOffset[1])
+            this.mvSpeed[1] = Math.min(this.mvSpeed[1], this.bottomNeighbor.mvSpeed[1])
         }
     }
 
@@ -347,7 +351,4 @@ export class Block {
         this.mvDeltaTime[i] = Math.abs(this.mvDeltaTime[i]);
         this.mvDeltaStep[i] = 1 / this.mvSpeed[1];
     }
-
-
-
 }

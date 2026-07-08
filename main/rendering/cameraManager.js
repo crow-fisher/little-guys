@@ -19,7 +19,7 @@ export class CameraManager {
             new MouseCameraControlManager(this)
         ]
         
-        this.cameraOffset = [-80, -40, 0];
+        this.cameraOffset = [-50, -20, 0];
         this.cameraOffsetDt = [0, 0, 0];
         this.cameraMovement = [0, 0, 0];
         this.cameraRotation = [0, .3, 0];

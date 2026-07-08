@@ -1,10 +1,11 @@
 import { hsvToHex } from "../../../../color/color.js";
+import { randRange } from "../../../../common.js";
 import { CoordinateSet } from "../../../../rendering/model/CoordinateSet.js";
 import { LineRenderJob } from "../../../../rendering/model/LineRenderJob.js";
 import { PointLabelRenderJob } from "../../../../rendering/model/PointLabelRenderJob.js";
 import { RenderJob } from "../../../../rendering/model/RenderJob.js";
 import { isPointInsideQuad } from "../../../../util/quad.js";
-import { addVec3Mult, addVec3MultFloor, copyVecValue, crossVec3Dest, normalizeVec3, subtractVectorsDest } from "../../../../util/vector.js";
+import { addVec3Mult, addVec3MultFloor, copyVecValue, crossVec3Dest, getVec3LengthSquared, normalizeVec3, subtractVectorsDest } from "../../../../util/vector.js";
 
 export class Plane {
     constructor(manipulationManager, yaw, pitch, step, dimWidth, dimHeight) {
@@ -34,14 +35,11 @@ export class Plane {
     update() {
     }
 
-    render() {
-        this.renderPoint(this.csTl(), this.rjTl());
-        this.renderPoint(this.csTr(), this.rjTr());
-        this.renderPoint(this.csBl(), this.rjBl());
-        this.renderPoint(this.csBr(), this.rjBr());
+    render(i) {
+        let x, y, centerPoint, neighborPoint, neighborPointLineRenderJob, color;
+        let order = [[-1, 1]]
 
-        let x, y, centerPoint, neighborPoint, neighborPointLineRenderJob;
-        let order = [[-1, 0], [1, 0], [0, 1], [0, -1]];
+        color = hsvToHex(i * 60 + 15, 0.8, 0.9);
 
         for (let i = -this.dimWidth; i <= this.dimWidth; i += this.step * 2) {
             for (let j = -this.dimHeight; j <= this.dimHeight; j += this.step * 2) {
@@ -59,7 +57,8 @@ export class Plane {
                             neighborPointLineRenderJob = this.refPointLineRenderJobs.get(i + x)?.get(j + y);
                             neighborPointLineRenderJob.v1 = centerPoint.renderScreen;
                             neighborPointLineRenderJob.v2 = neighborPoint.renderScreen;
-                            neighborPointLineRenderJob.size = 10 / centerPoint.distToCamera;
+
+                            neighborPointLineRenderJob.color = hsvToHex(getVec3LengthSquared(this.centerCs.world) * 10, 1, 1);
                             
                             this.rasterizationManager.addRenderJob(neighborPointLineRenderJob);
                         }
@@ -103,15 +102,15 @@ export class Plane {
     setRefPointCoordinates(cs, i, j) {
         copyVecValue(this.centerCs.world, cs.world);
         addVec3Mult(cs.world, this.forward, 0.5);
-        addVec3Mult(cs.world, this.right, i + 0.5);
-        addVec3MultFloor(cs.world, this.up, j + 0.5);
+        addVec3Mult(cs.world, this.right, i);
+        addVec3MultFloor(cs.world, this.up, j);
     }
     setMouseHoverPoint(offset) {
         if (!this.isPointOver(offset)) {
             return;
         }
         this.closestCs = null;
-        this.closestDist = 10 ** 8;
+        this.closestDist = 10 ** 3;
         let curCs, curDist;
         for (let i = -this.dimWidth; i < this.dimWidth; i += this.step) {
             for (let j = -this.dimHeight; j < this.dimHeight; j += this.step) {
@@ -178,16 +177,6 @@ export class Plane {
     }
     rjBr() {
         return this.refPointRenderJobs.get(this.dimWidth).get(this.dimHeight);
-    }
-
-    renderPoint(point, renderJob) {
-        point.process();
-        if (!point.isVisibleOnScreen()) {
-            return;
-        }
-        copyVecValue(point.renderScreen, renderJob.pos);
-        renderJob.size = 600 / point.distToCamera;
-        this.rasterizationManager.addRenderJob(renderJob);
     }
 
 }
