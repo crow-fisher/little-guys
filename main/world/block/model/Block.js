@@ -269,13 +269,25 @@ export class Block {
     gravityPhysics() {
         // this.mvSpeed[1] += (10 ** -2) * 9.8 / this.timeManager.dt;
         this.mvSpeed[1] += .05;
+        this.mvSpeed[0] += .01;
+        this.mvSpeed[2] += .01;
     }
 
     neighborPhysics() {
-        if (this.bottomNeighbor) {
-            this.mvOffset[1] = Math.min(this.mvSpeed[1], this.bottomNeighbor.mvOffset[1])
-            this.mvSpeed[1] = Math.min(this.mvSpeed[1], this.bottomNeighbor.mvSpeed[1])
+        this._neighborPhysics(this.rightNeighbor, 0, 0);
+        this._neighborPhysics(this.leftNeighbor, 0, 1);
+        this._neighborPhysics(this.bottomNeighbor, 1, 0);
+        this._neighborPhysics(this.topNeighbor, 1, 1);
+        this._neighborPhysics(this.frontNeighbor, 2, 0);
+        this._neighborPhysics(this.backNeighbor, 2, 1);
+    }
+
+    _neighborPhysics(neighbor, idx, value) {
+        if (neighbor) {
+            this.mvSpeed[idx] = 0;
+            this.mvOffset[idx] = 0;
         }
+
     }
 
     calculateAndSubmitMvDeltaTimes() {
@@ -286,9 +298,11 @@ export class Block {
     }
 
     applyMovementAtTime(t) {
-        addVectorsMult(this.mvOffset, this.mvSpeed, .01 * (t - this.mvLast)); // time in millis
+        addVectorsMult(this.mvOffset, this.mvSpeed, .01 * (t - this.mvLast)); // time in millis.
+        // console.log(this.mvOffset, this.mvSpeed, .001 * (t - this.mvLast));
         this.mvLast = t;
         this.applyMovement();
+
     }
     applyMovement() {
         copyVecValue([0, 0, 0], this.mvMovement);
@@ -327,15 +341,14 @@ export class Block {
         } else if (this.mvOffset[i] > 1) {
             this.mvMovement[i] += 1;
         }
-
-        this.mvOffset[i] = Math.min(Math.max(0, this.mvOffset[i]), 1);
+        // this.mvOffset[i] = Math.min(Math.max(0, this.mvOffset[i]), 1);
     }
 
     transformOffsetMovement(i) {
         if (this.mvMovement[i] == -1) {
-            this.mvOffset[i] = 1;
+            this.mvOffset[i] += 1;
         } else if (this.mvMovement[i] == 1) {
-            this.mvOffset[i] = 0;
+            this.mvOffset[i] -= 1;
         }
     }
 

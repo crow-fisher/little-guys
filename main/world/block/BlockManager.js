@@ -49,14 +49,22 @@ export class BlockManager {
     }
 
     processBlockMovement() {
-        // for (let i = 0; i <= this.mvQueuePrecision; i++) {
-        //     if (this.mvQueue[i] != null) {
-        //         this.mvQueue[i].forEach((block) => block.applyMovementAtTime(this.timeManager.curDate + i / this.mvQueuePrecision))
-        //         this.mvQueue[i].length = 0;
-        //     }
-        // }
+        for (let i = 0; i <= this.mvQueuePrecision; i++) {
+            // if (this.mvQueue[i] != null) {
+                // this.mvQueue[i].forEach((block) => block.applyMovementAtTime(this.timeManager.curDate + i / this.mvQueuePrecision))
+                // this.mvQueue[i].length = 0;
+                this.mvBlocks.forEach((block) => block.applyMovementAtTime(this.timeManager.curDate + (i / this.mvQueuePrecision) * this.timeManager.dt));
+                // this.mvQueue[i].forEach((block) => block.applyMovementAtTime(this.timeManager.curDate + i / this.mvQueuePrecision))
+                // this.mvQueue[i].length = 0;
+            // }
+
+            // console.log(i, Date.now(), this.timeManager.curDate, this.timeManager.curDate + (i / this.mvQueuePrecision) * this.timeManager.dt);
+        }
+
+
+
         // this.mvBlocks.forEach((block) => block.applyMovementAtTime(this.timeManager.curDate + this.timeManager.dt));
-        this.mvBlocks.forEach((block) => block.applyMovementAtTime(Date.now()));
+        // this.mvBlocks.forEach((block) => block.applyMovementAtTime(Date.now()));
         this.mvBlocks.length = 0;
     }
 
@@ -72,9 +80,10 @@ export class BlockManager {
             block.cartesian[2] = newPosition[2];
             block.sector = this.cartesianToSector(block.cartesian);
 
-            if (getVec3LengthSquared(block.cartesian) < 10000)
-                this.getSector(block.sector).addBlock(block);
+            if (getVec3LengthSquared(block.cartesian) > 10000)
+                return false;
 
+            this.getSector(block.sector).addBlock(block);
             block.linkNeighbors();
             return true;
         }

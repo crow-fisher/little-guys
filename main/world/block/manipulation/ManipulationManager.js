@@ -22,7 +22,7 @@ export class ManipulationManager {
         this.zPlane = new Plane(this, 0, Math.PI / 2, 1, pSize, pSize);
 
         this.zTopPlane = new Plane(this, 0, Math.PI / 2, 1, pSize, pSize);
-        this.zTopPlane.centerCs.world[1] -= 15;
+        this.zTopPlane.centerCs.world[1] -= 10;
         this.zTopPlane.processPositionUpdate();
 
         this.newPlane = new Plane(this, 0, Math.PI / 2, 1, 20, 20);

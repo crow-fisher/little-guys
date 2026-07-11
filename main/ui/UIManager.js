@@ -19,7 +19,7 @@ export class UIManager {
         this.components = [
             // this.astronomyAtlasComponent,
             // this.blockManagerComponent,
-            // this.planeManagerComponent,
+            this.planeManagerComponent,
             this.topBarComponent
         ]
     }
