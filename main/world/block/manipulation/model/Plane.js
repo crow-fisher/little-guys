@@ -4,6 +4,7 @@ import { CoordinateSet } from "../../../../rendering/model/CoordinateSet.js";
 import { LineRenderJob } from "../../../../rendering/model/LineRenderJob.js";
 import { PointLabelRenderJob } from "../../../../rendering/model/PointLabelRenderJob.js";
 import { RenderJob } from "../../../../rendering/model/RenderJob.js";
+import { loadGD, UI_TOPBAR_AA } from "../../../../ui/UIData.js";
 import { isPointInsideQuad } from "../../../../util/quad.js";
 import { addVec3Mult, addVec3MultFloor, copyVecValue, crossVec3Dest, getVec3LengthSquared, normalizeVec3, subtractVectorsDest } from "../../../../util/vector.js";
 
@@ -36,6 +37,10 @@ export class Plane {
     }
 
     render(i) {
+        if (loadGD(UI_TOPBAR_AA)) {
+            return;
+        }
+        
         let x, y, centerPoint, neighborPoint, neighborPointLineRenderJob, color;
         let order = [[-1, 1]]
 

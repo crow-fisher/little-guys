@@ -1,5 +1,6 @@
 import { hsvToHex, rgbToHex } from "../../../color/color.js";
 import { CoordinateSet } from "../../../rendering/model/CoordinateSet.js";
+import { LineRenderJob } from "../../../rendering/model/LineRenderJob.js";
 import { PointLabelRenderJob } from "../../../rendering/model/PointLabelRenderJob.js";
 import { QuadRenderJob } from "../../../rendering/model/QuadRenderJob.js";
 import { RenderJob } from "../../../rendering/model/RenderJob.js";
@@ -40,8 +41,8 @@ export class Block {
 
         this.recalculateColorFlag = true;
         this.lightApplied100 = [1, 1, 1];
-        this.lightApplied010 = [1, 1, 1];
-        this.lightApplied001 = [1, 1, 1];
+        this.lightApplied010 = [0.5, 0.5, 0.5];
+        this.lightApplied001 = [0.25, 0.25, 0.25];
 
         this.colorBase = [100, 100, 100];
         this.colorApplied100 = [100, 100, 100]
@@ -190,50 +191,42 @@ export class Block {
     }
 
     update() {
-        if (this.topNeighbor && this.bottomNeighbor && this.leftNeighbor && this.rightNeighbor && this.frontNeighbor && this.backNeighbor) {
-            return;
-        }
-
+        this.centerCs.process();
         this.physics();
 
-        this.centerCs.process();
     }
 
-    renderPoint(pointRef) {
-        this.offsetDiff = 0;
-        this.offsetDiff += Math.abs(this.offsetSign[0] - pointRef.worldOffset[0]);
-        this.offsetDiff += Math.abs(this.offsetSign[1] - pointRef.worldOffset[1]);
-        this.offsetDiff += Math.abs(this.offsetSign[2] - pointRef.worldOffset[2]);
-        if (this.offsetDiff > 0) {
-            renderPointLabel(
-                this.canvasManager.context,
-                ...pointRef.renderScreen,
-                100 / pointRef.distToCamera,
-                hsvToHex(pointRef.distToCamera, 1, .8)
-            )
+    renderCenterPoint(pointRef) {
+        copyVecValue(this.centerCs.renderScreen, this.centerRenderJob.pos);
+        this.centerRenderJob.size = 100 / this.centerCs.distToCamera;
+        this.centerRenderJob.color = hsvToHex(50, 1, 0.2);
+        this.rasterizationManager.addLateRenderJob(this.centerRenderJob);
+    }
+
+    renderCenterNeighbors() {
+        this.renderCenterPoint();
+        let i = 0;
+        this.renderLineToNeighbor(this.topNeighbor, i++);
+        this.renderLineToNeighbor(this.bottomNeighbor, i++);
+        this.renderLineToNeighbor(this.leftNeighbor, i++);
+        this.renderLineToNeighbor(this.rightNeighbor, i++);
+        this.renderLineToNeighbor(this.frontNeighbor, i++);
+        this.renderLineToNeighbor(this.backNeighbor, i++);
+    }
+
+    renderLineToNeighbor(neighbor, i) {
+        this._neighborLineRenderJobs = new Array();
+        if (neighbor) {
+            this._neighborLineRenderJobs[i] = this._neighborLineRenderJobs[i] ?? new LineRenderJob(this.rasterizationManager, [0, 0, 0], [0, 0, 0], 5, hsvToHex(0, 1, 0));
+            this._neighborLineRenderJobs[i].v1 = this.centerCs.renderScreen;
+            this._neighborLineRenderJobs[i].v2 = neighbor.centerCs.renderScreen;
+            this._neighborLineRenderJobs[i].color = hsvToHex(i * 60, 0.2, 0.6);
+            this.rasterizationManager.addLateRenderJob(this._neighborLineRenderJobs[i]);
         }
 
     }
 
-    render() {
-        if (this.topNeighbor && this.bottomNeighbor && this.leftNeighbor && this.rightNeighbor && this.frontNeighbor && this.backNeighbor) {
-            return;
-        }
-
-        if (!this.centerCs.isVisibleOnScreen()) {
-            return;
-        }
-
-        this.color();
-
-        if (this.centerCs.distToCamera > 150) {
-            copyVecValue(this.centerCs.renderScreen, this.centerRenderJob.pos);
-            this.centerRenderJob.size = 1200 / this.centerCs.distToCamera;
-            this.centerRenderJob.color = this.colorHex100;
-            this.rasterizationManager.addRenderJob(this.centerRenderJob);
-            return;
-        }
-
+    renderFaces() {
         this.offsetSign[0] = (this.centerCs.offset[0] < 0) ? 0 : 1;
         this.offsetSign[1] = (this.centerCs.offset[1] < 0) ? 0 : 1;
         this.offsetSign[2] = (this.centerCs.offset[2] < 0) ? 0 : 1;
@@ -254,6 +247,21 @@ export class Block {
             this.renderFace(this.leftFace, this.leftRenderJob, this.rightNeighbor, this.colorHex001);
     }
 
+    render() {
+        if (this.topNeighbor && this.bottomNeighbor && this.leftNeighbor && this.rightNeighbor && this.frontNeighbor && this.backNeighbor) {
+            return;
+        }
+
+        if (!this.centerCs.isVisibleOnScreen()) {
+            return;
+        }
+
+        this.color();
+        this.renderCenterNeighbors();
+        this.renderFaces();
+
+    }
+
     physics() {
         if (this.timeManager.dDay == 0) {
             return;
@@ -269,20 +277,23 @@ export class Block {
     gravityPhysics() {
         // this.mvSpeed[1] += (10 ** -2) * 9.8 / this.timeManager.dt;
         this.mvSpeed[1] += .05;
-        this.mvSpeed[0] += .01;
-        this.mvSpeed[2] += .01;
+        this.mvSpeed[0] += .00;
+        this.mvSpeed[2] += .0001;
     }
 
     neighborPhysics() {
-        this._neighborPhysics(this.rightNeighbor, 0, 0);
-        this._neighborPhysics(this.leftNeighbor, 0, 1);
-        this._neighborPhysics(this.bottomNeighbor, 1, 0);
-        this._neighborPhysics(this.topNeighbor, 1, 1);
-        this._neighborPhysics(this.frontNeighbor, 2, 0);
-        this._neighborPhysics(this.backNeighbor, 2, 1);
+
+        this._neighborPhysics1(this.bottomNeighbor, 1, 0);
+
+
+        // this._neighborPhysics1(this.rightNeighbor, 0, 0);
+        // this._neighborPhysics1(this.leftNeighbor, 0, 1);
+        // this._neighborPhysics1(this.topNeighbor, 1, 1);
+        // this._neighborPhysics1(this.frontNeighbor, 2, 0);
+        // this._neighborPhysics1(this.backNeighbor, 2, 1);
     }
 
-    _neighborPhysics(neighbor, idx, value) {
+    _neighborPhysics1(neighbor, idx, value) {
         if (neighbor) {
             this.mvSpeed[idx] = 0;
             this.mvOffset[idx] = 0;
