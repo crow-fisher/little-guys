@@ -170,7 +170,7 @@ export class Block {
     }
 
     renderFace(face, renderJob, neighbor, color) {
-        if (neighbor) {
+        if (getVec3LengthSquared(this.mvSpeed) == 0 && neighbor) {
             return;
         }
         face[0].process();
@@ -220,7 +220,7 @@ export class Block {
             this._neighborLineRenderJobs[i] = this._neighborLineRenderJobs[i] ?? new LineRenderJob(this.rasterizationManager, [0, 0, 0], [0, 0, 0], 5, hsvToHex(0, 1, 0));
             this._neighborLineRenderJobs[i].v1 = this.centerCs.renderScreen;
             this._neighborLineRenderJobs[i].v2 = neighbor.centerCs.renderScreen;
-            this._neighborLineRenderJobs[i].color = hsvToHex(i * 60, 0.2, 0.6);
+            this._neighborLineRenderJobs[i].color = hsvToHex(i * 60, 0.4, .6);
             this.rasterizationManager.addLateRenderJob(this._neighborLineRenderJobs[i]);
         }
 
@@ -277,8 +277,8 @@ export class Block {
     gravityPhysics() {
         // this.mvSpeed[1] += (10 ** -2) * 9.8 / this.timeManager.dt;
         this.mvSpeed[1] += .05;
-        this.mvSpeed[0] += .00;
-        this.mvSpeed[2] += .0001;
+        this.mvSpeed[0] -= .00;
+        this.mvSpeed[2] -= .0001;
     }
 
     neighborPhysics() {
@@ -347,7 +347,7 @@ export class Block {
     }
 
     calculateCartesianMovement(i) {
-        if (this.mvOffset[i] < 0) {
+        if (this.mvOffset[i] < -1) {
             this.mvMovement[i] -= 1;
         } else if (this.mvOffset[i] > 1) {
             this.mvMovement[i] += 1;
