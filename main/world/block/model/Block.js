@@ -257,7 +257,7 @@ export class Block {
         }
 
         this.color();
-        this.renderCenterNeighbors();
+        // this.renderCenterNeighbors();
         this.renderFaces();
 
     }
@@ -277,26 +277,25 @@ export class Block {
     gravityPhysics() {
         // this.mvSpeed[1] += (10 ** -2) * 9.8 / this.timeManager.dt;
         this.mvSpeed[1] += .05;
-        this.mvSpeed[0] -= .00;
-        this.mvSpeed[2] -= .0001;
+        this.mvSpeed[0] -= .0001;
+        // this.mvSpeed[2] -= .0001;
     }
 
     neighborPhysics() {
+        this._neighborPhysics(this.backNeighbor, 0, Math.min);
+        this._neighborPhysics(this.frontNeighbor, 0, Math.max);
 
-        this._neighborPhysics1(this.bottomNeighbor, 1, 0);
+        this._neighborPhysics(this.bottomNeighbor, 1, Math.min);
+        this._neighborPhysics(this.topNeighbor, 1, Math.max);
 
-
-        // this._neighborPhysics1(this.rightNeighbor, 0, 0);
-        // this._neighborPhysics1(this.leftNeighbor, 0, 1);
-        // this._neighborPhysics1(this.topNeighbor, 1, 1);
-        // this._neighborPhysics1(this.frontNeighbor, 2, 0);
-        // this._neighborPhysics1(this.backNeighbor, 2, 1);
+        this._neighborPhysics(this.leftNeighbor, 2, Math.min);
+        this._neighborPhysics(this.rightNeighbor, 2, Math.max);
     }
 
-    _neighborPhysics1(neighbor, idx, value) {
+    _neighborPhysics(neighbor, idx, func) {
         if (neighbor) {
-            this.mvSpeed[idx] = 0;
-            this.mvOffset[idx] = 0;
+            this.mvSpeed[idx] = func(this.mvSpeed[idx], neighbor.mvSpeed[idx])
+            this.mvOffset[idx] = func(this.mvOffset[idx], neighbor.mvOffset[idx])
         }
 
     }
@@ -320,6 +319,10 @@ export class Block {
         this.calculateCartesianMovement(0);
         this.calculateCartesianMovement(1);
         this.calculateCartesianMovement(2);
+
+        if (getVec3LengthSquared(this.mvOffset) > 2) {
+            copyVecValue([0, 0, 0], this.mvOffset);
+        }
 
         if (getVec3LengthSquared(this.mvMovement) > 0) {
             addVec3Dest(this.cartesian, this.mvMovement, this.mvEndPos);

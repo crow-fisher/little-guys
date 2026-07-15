@@ -19,7 +19,7 @@ export class ManipulationManager {
 
 
         let pSize = 20;
-        this.zPlane = new Plane(this, 0, Math.PI / 2, 1, pSize, pSize);
+        this.zPlane = new Plane(this, .2, Math.PI / 1.9, 1, pSize, pSize);
 
         this.zTopPlane = new Plane(this, 0, Math.PI / 2, 1, pSize, pSize);
         this.zTopPlane.centerCs.world[1] -= 10;
