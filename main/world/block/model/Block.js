@@ -277,26 +277,41 @@ export class Block {
 
     gravityPhysics() {
         // this.mvSpeed[1] += (10 ** -2) * 9.8 / this.timeManager.dt;
-        this.mvSpeed[1] += .05;
-        this.mvSpeed[0] -= .0001;
+
+        if (!this.zpzNeighbor)
+            this.mvSpeed[1] += .05;
+        // this.mvSpeed[0] -= .0001;
         // this.mvSpeed[2] -= .0001;
     }
 
     neighborPhysics() {
-        this._neighborPhysics(this.pzzNeighbor, 0, Math.min);
-        this._neighborPhysics(this.nzzNeighbor, 0, Math.max);
 
+        // this._neighborPhysics(this.znzNeighbor, 1, Math.max);
         this._neighborPhysics(this.zpzNeighbor, 1, Math.min);
-        this._neighborPhysics(this.znzNeighbor, 1, Math.max);
 
-        this._neighborPhysics(this.zzpNeighbor, 2, Math.min);
-        this._neighborPhysics(this.zznNeighbor, 2, Math.max);
+        // this._neighborPhysics(this.pzzNeighbor, 0, Math.min);
+        // this._neighborPhysics(this.nzzNeighbor, 0, Math.max);
+
+        // this._neighborPhysics(this.zpzNeighbor, 1, Math.min);
+        // this._neighborPhysics(this.znzNeighbor, 1, Math.max);
+
+        // this._neighborPhysics(this.zzpNeighbor, 2, Math.min);
+        // this._neighborPhysics(this.zznNeighbor, 2, Math.max);
     }
 
     _neighborPhysics(neighbor, idx, func) {
         if (neighbor) {
-            this.mvSpeed[idx] = func(this.mvSpeed[idx], neighbor.mvSpeed[idx])
-            this.mvOffset[idx] = func(this.mvOffset[idx], neighbor.mvOffset[idx])
+            // this.mvSpeed[idx] = func(this.mvSpeed[idx], neighbor.mvSpeed[idx])
+            // this.mvOffset[idx] = func(this.mvOffset[idx], neighbor.mvOffset[idx])
+
+            let gap = this.mvOffset[idx] - neighbor.mvOffset[idx];
+            if (gap > 0) {
+                this.mvOffset[idx] -= gap;
+                this.mvSpeed[idx] = 0;
+            } else {
+                return;
+            }
+
         }
 
     }
