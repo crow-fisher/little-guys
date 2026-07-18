@@ -66,26 +66,26 @@ export class Block {
         this.ppnCs = new CoordinateSet(this.cameraManager, this.cartesian, ppnVec);
         this.pppCs = new CoordinateSet(this.cameraManager, this.cartesian, pppVec);
 
-        this.frontFace = [this.pnnCs, this.pnpCs, this.pppCs, this.ppnCs];
-        this.backFace = [this.nnnCs, this.nnpCs, this.nppCs, this.npnCs];
-        this.frontRenderJob = new QuadRenderJob(this.rasterizationManager);
-        this.backRenderJob = new QuadRenderJob(this.rasterizationManager);
-        this.frontNeighbor = null;
-        this.backNeighbor = null;
+        this.nzzFace = [this.pnnCs, this.pnpCs, this.pppCs, this.ppnCs];
+        this.pzzFace = [this.nnnCs, this.nnpCs, this.nppCs, this.npnCs];
+        this.nzzRenderJob = new QuadRenderJob(this.rasterizationManager);
+        this.pzzRenderJob = new QuadRenderJob(this.rasterizationManager);
+        this.nzzNeighbor = null;
+        this.pzzNeighbor = null;
 
-        this.bottomFace = [this.npnCs, this.nppCs, this.pppCs, this.ppnCs];;
-        this.topFace = [this.nnnCs, this.nnpCs, this.pnpCs, this.pnnCs];;
-        this.bottomRenderJob = new QuadRenderJob(this.rasterizationManager);
-        this.topRenderJob = new QuadRenderJob(this.rasterizationManager);
-        this.bottomNeighbor = null;
-        this.topNeighbor = null;
+        this.zpzFace = [this.npnCs, this.nppCs, this.pppCs, this.ppnCs];;
+        this.znzFace = [this.nnnCs, this.nnpCs, this.pnpCs, this.pnnCs];;
+        this.zpzRenderJob = new QuadRenderJob(this.rasterizationManager);
+        this.znzRenderJob = new QuadRenderJob(this.rasterizationManager);
+        this.zpzNeighbor = null;
+        this.znzNeighbor = null;
 
-        this.rightFace = [this.nnpCs, this.nppCs, this.pppCs, this.pnpCs];;
-        this.leftFace = [this.nnnCs, this.npnCs, this.ppnCs, this.pnnCs];;
-        this.rightRenderJob = new QuadRenderJob(this.rasterizationManager);
-        this.leftRenderJob = new QuadRenderJob(this.rasterizationManager);
-        this.rightNeighbor = null;
-        this.leftNeighbor = null;
+        this.zzpFace = [this.nnpCs, this.nppCs, this.pppCs, this.pnpCs];;
+        this.zznFace = [this.nnnCs, this.npnCs, this.ppnCs, this.pnnCs];;
+        this.zzpRenderJob = new QuadRenderJob(this.rasterizationManager);
+        this.zznRenderJob = new QuadRenderJob(this.rasterizationManager);
+        this.zznNeighbor = null;
+        this.zzpNeighbor = null;
 
         this.offsetSign = [0, 0, 0];
     }
@@ -95,45 +95,46 @@ export class Block {
     }
 
     linkNeighbors() {
-        this.frontNeighbor = this.blockManager.getBlockAtCartesian(this.cartesian, [-1, 0, 0]);
-        if (this.frontNeighbor)
-            this.frontNeighbor.backNeighbor = this;
-        this.backNeighbor = this.blockManager.getBlockAtCartesian(this.cartesian, [1, 0, 0]);
-        if (this.backNeighbor)
-            this.backNeighbor.frontNeighbor = this;
-        this.bottomNeighbor = this.blockManager.getBlockAtCartesian(this.cartesian, [0, 1, 0]);
-        if (this.bottomNeighbor)
-            this.bottomNeighbor.topNeighbor = this;
-        this.topNeighbor = this.blockManager.getBlockAtCartesian(this.cartesian, [0, -1, 0]);
-        if (this.topNeighbor)
-            this.topNeighbor.bottomNeighbor = this;
-        this.rightNeighbor = this.blockManager.getBlockAtCartesian(this.cartesian, [0, 0, -1]);
-        if (this.rightNeighbor)
-            this.rightNeighbor.leftNeighbor = this;
-        this.leftNeighbor = this.blockManager.getBlockAtCartesian(this.cartesian, [0, 0, 1]);
-        if (this.leftNeighbor)
-            this.leftNeighbor.rightNeighbor = this;
+        this.nzzNeighbor = this.blockManager.getBlockAtCartesian(this.cartesian, [-1, 0, 0]);
+        if (this.nzzNeighbor)
+            this.nzzNeighbor.pzzNeighbor = this;
+        this.pzzNeighbor = this.blockManager.getBlockAtCartesian(this.cartesian, [1, 0, 0]);
+        if (this.pzzNeighbor)
+            this.pzzNeighbor.nzzNeighbor = this;
+        this.znzNeighbor = this.blockManager.getBlockAtCartesian(this.cartesian, [0, -1, 0]);
+        if (this.znzNeighbor)
+            this.znzNeighbor.zpzNeighbor = this;
+        this.zpzNeighbor = this.blockManager.getBlockAtCartesian(this.cartesian, [0, 1, 0]);
+        if (this.zpzNeighbor)
+            this.zpzNeighbor.znzNeighbor = this;
+        this.zznNeighbor = this.blockManager.getBlockAtCartesian(this.cartesian, [0, 0, -1]);
+        if (this.zznNeighbor)
+            this.zznNeighbor.zzpNeighbor = this;
+        this.zzpNeighbor = this.blockManager.getBlockAtCartesian(this.cartesian, [0, 0, 1]);
+        if (this.zzpNeighbor)
+            this.zzpNeighbor.zznNeighbor = this;
     }
 
     unlinkNeighbors() {
-        if (this.frontNeighbor)
-            this.frontNeighbor.backNeighbor = null;
-        this.frontNeighbor = null;
-        if (this.backNeighbor)
-            this.backNeighbor.frontNeighbor = null;
-        this.backNeighbor = null;
-        if (this.bottomNeighbor)
-            this.bottomNeighbor.topNeighbor = null;
-        this.bottomNeighbor = null;
-        if (this.topNeighbor)
-            this.topNeighbor.bottomNeighbor = null;
-        this.topNeighbor = null;
-        if (this.rightNeighbor)
-            this.rightNeighbor.leftNeighbor = null;
-        this.rightNeighbor = null;
-        if (this.leftNeighbor)
-            this.leftNeighbor.rightNeighbor = null;
-        this.leftNeighbor = null;
+        if (this.nzzNeighbor)
+            this.nzzNeighbor.pzzNeighbor = null;
+        this.nzzNeighbor = null;
+        if (this.pzzNeighbor)
+            this.pzzNeighbor.nzzNeighbor = null;
+        this.pzzNeighbor = null;
+        if (this.znzNeighbor)
+            this.znzNeighbor.zpzNeighbor = null;
+        this.znzNeighbor = null;
+        if (this.zpzNeighbor)
+            this.zpzNeighbor.znzNeighbor = null;
+        this.zpzNeighbor = null;
+        if (this.zznNeighbor)
+            this.zznNeighbor.zzpNeighbor = null;
+        this.zznNeighbor = null;
+        if (this.zzpNeighbor)
+            this.zzpNeighbor.zznNeighbor = null;
+        this.zzpNeighbor = null;
+
 
     }
 
@@ -170,9 +171,9 @@ export class Block {
     }
 
     renderFace(face, renderJob, neighbor, color) {
-        if (getVec3LengthSquared(this.mvSpeed) == 0 && neighbor) {
-            return;
-        }
+        // if (getVec3LengthSquared(this.mvSpeed) == 0 && neighbor) {
+        //     return;
+        // }
         face[0].process();
         face[1].process();
         face[2].process();
@@ -206,12 +207,12 @@ export class Block {
     renderCenterNeighbors() {
         this.renderCenterPoint();
         let i = 0;
-        this.renderLineToNeighbor(this.topNeighbor, i++);
-        this.renderLineToNeighbor(this.bottomNeighbor, i++);
-        this.renderLineToNeighbor(this.leftNeighbor, i++);
-        this.renderLineToNeighbor(this.rightNeighbor, i++);
-        this.renderLineToNeighbor(this.frontNeighbor, i++);
-        this.renderLineToNeighbor(this.backNeighbor, i++);
+        this.renderLineToNeighbor(this.znzNeighbor, i++);
+        this.renderLineToNeighbor(this.zpzNeighbor, i++);
+        this.renderLineToNeighbor(this.zzpNeighbor, i++);
+        this.renderLineToNeighbor(this.zznNeighbor, i++);
+        this.renderLineToNeighbor(this.nzzNeighbor, i++);
+        this.renderLineToNeighbor(this.pzzNeighbor, i++);
     }
 
     renderLineToNeighbor(neighbor, i) {
@@ -232,23 +233,23 @@ export class Block {
         this.offsetSign[2] = (this.centerCs.offset[2] < 0) ? 0 : 1;
 
         if (this.offsetSign[0] == 0)
-            this.renderFace(this.frontFace, this.frontRenderJob, this.backNeighbor, this.colorHex100);
+            this.renderFace(this.nzzFace, this.nzzRenderJob, this.pzzNeighbor, this.colorHex100);
         else
-            this.renderFace(this.backFace, this.backRenderJob, this.frontNeighbor, this.colorHex100);
+            this.renderFace(this.pzzFace, this.pzzRenderJob, this.nzzNeighbor, this.colorHex100);
 
         if (this.offsetSign[1] == 0)
-            this.renderFace(this.bottomFace, this.bottomRenderJob, this.bottomNeighbor, this.colorHex010);
+            this.renderFace(this.zpzFace, this.zpzRenderJob, this.zpzNeighbor, this.colorHex010);
         else
-            this.renderFace(this.topFace, this.topRenderJob, this.topNeighbor, this.colorHex010);
+            this.renderFace(this.znzFace, this.znzRenderJob, this.znzNeighbor, this.colorHex010);
 
         if (this.offsetSign[2] == 0)
-            this.renderFace(this.rightFace, this.rightRenderJob, this.leftNeighbor, this.colorHex001);
+            this.renderFace(this.zzpFace, this.zzpRenderJob, this.zzpNeighbor, this.colorHex001);
         else
-            this.renderFace(this.leftFace, this.leftRenderJob, this.rightNeighbor, this.colorHex001);
+            this.renderFace(this.zznFace, this.zznRenderJob, this.zznNeighbor, this.colorHex001);
     }
 
     render() {
-        if (this.topNeighbor && this.bottomNeighbor && this.leftNeighbor && this.rightNeighbor && this.frontNeighbor && this.backNeighbor) {
+        if (this.znzNeighbor && this.zpzNeighbor && this.zzpNeighbor && this.zznNeighbor && this.nzzNeighbor && this.pzzNeighbor) {
             return;
         }
 
@@ -282,14 +283,14 @@ export class Block {
     }
 
     neighborPhysics() {
-        this._neighborPhysics(this.backNeighbor, 0, Math.min);
-        this._neighborPhysics(this.frontNeighbor, 0, Math.max);
+        this._neighborPhysics(this.pzzNeighbor, 0, Math.min);
+        this._neighborPhysics(this.nzzNeighbor, 0, Math.max);
 
-        this._neighborPhysics(this.bottomNeighbor, 1, Math.min);
-        this._neighborPhysics(this.topNeighbor, 1, Math.max);
+        this._neighborPhysics(this.zpzNeighbor, 1, Math.min);
+        this._neighborPhysics(this.znzNeighbor, 1, Math.max);
 
-        this._neighborPhysics(this.leftNeighbor, 2, Math.min);
-        this._neighborPhysics(this.rightNeighbor, 2, Math.max);
+        this._neighborPhysics(this.zzpNeighbor, 2, Math.min);
+        this._neighborPhysics(this.zznNeighbor, 2, Math.max);
     }
 
     _neighborPhysics(neighbor, idx, func) {
