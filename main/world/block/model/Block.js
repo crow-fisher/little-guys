@@ -45,13 +45,19 @@ export class Block {
         this.lightApplied001 = [0.25, 0.25, 0.25];
 
         this.colorBase = [100, 100, 100];
-        this.colorApplied100 = [100, 100, 100]
-        this.colorApplied010 = [100, 100, 100]
-        this.colorApplied001 = [100, 100, 100]
-
-        this.colorHex100 = "#646464";
-        this.colorHex010 = "#646464";
-        this.colorHex001 = "#646464";
+        
+        this.pzzColorApplied = [100, 100, 100]
+        this.zpzColorApplied = [100, 100, 100]
+        this.zzpColorApplied = [100, 100, 100]
+        this.nzzColorApplied = [100, 100, 100]
+        this.znzColorApplied = [100, 100, 100]
+        this.zznColorApplied = [100, 100, 100]
+        this.pzzColorHex = "#646464";
+        this.zpzColorHex = "#646464";
+        this.zzpColorHex = "#646464";
+        this.nzzColorHex = "#646464";
+        this.znzColorHex = "#646464";
+        this.zznColorHex = "#646464";
         /// end lighting and color 
 
         this.centerCs = new CoordinateSet(this.cameraManager, this.cartesian, centerVec);
@@ -146,9 +152,9 @@ export class Block {
             // where 'rB', 'gB', and 'bB' are the relative brightnesses of each color (normalized at 1).
 
             if (this.lightSource.length > 0) {
-                let dirs = [[this.lightApplied100, this.colorApplied100],
-                [this.lightApplied010, this.colorApplied010],
-                [this.lightApplied001, this.colorApplied001]];
+                let dirs = [[this.lightApplied100, this.pzzColorApplied],
+                [this.lightApplied010, this.zpzColorApplied],
+                [this.lightApplied001, this.zzpColorApplied]];
                 for (let i = 0; i < 3; i++) {
                     dirs[i][0][0] = 0;
                     dirs[i][0][1] = 0;
@@ -159,13 +165,13 @@ export class Block {
 
 
             // calculate final color based on 'lightApplied' and 'colorBase', for each face direction 
-            multiplyVectorsDest(this.colorBase, this.lightApplied100, this.colorApplied100);
-            multiplyVectorsDest(this.colorBase, this.lightApplied010, this.colorApplied010);
-            multiplyVectorsDest(this.colorBase, this.lightApplied001, this.colorApplied001);
+            multiplyVectorsDest(this.colorBase, this.lightApplied100, this.pzzColorApplied);
+            multiplyVectorsDest(this.colorBase, this.lightApplied010, this.zpzColorApplied);
+            multiplyVectorsDest(this.colorBase, this.lightApplied001, this.zzpColorApplied);
 
-            this.colorHex100 = rgbToHex(...this.colorApplied100)
-            this.colorHex010 = rgbToHex(...this.colorApplied010)
-            this.colorHex001 = rgbToHex(...this.colorApplied001)
+            this.pzzColorHex = rgbToHex(...this.pzzColorApplied)
+            this.zpzColorHex = rgbToHex(...this.zpzColorApplied)
+            this.zzpColorHex = rgbToHex(...this.zzpColorApplied)
             this.recalculateColorFlag = false;
         }
     }
@@ -233,19 +239,19 @@ export class Block {
         this.offsetSign[2] = (this.centerCs.offset[2] < 0) ? 0 : 1;
 
         if (this.offsetSign[0] == 0)
-            this.renderFace(this.nzzFace, this.nzzRenderJob, this.pzzNeighbor, this.colorHex100);
+            this.renderFace(this.nzzFace, this.nzzRenderJob, this.pzzNeighbor, this.pzzColorHex);
         else
-            this.renderFace(this.pzzFace, this.pzzRenderJob, this.nzzNeighbor, this.colorHex100);
+            this.renderFace(this.pzzFace, this.pzzRenderJob, this.nzzNeighbor, this.pzzColorHex);
 
         if (this.offsetSign[1] == 0)
-            this.renderFace(this.zpzFace, this.zpzRenderJob, this.zpzNeighbor, this.colorHex010);
+            this.renderFace(this.zpzFace, this.zpzRenderJob, this.zpzNeighbor, this.zpzColorHex);
         else
-            this.renderFace(this.znzFace, this.znzRenderJob, this.znzNeighbor, this.colorHex010);
+            this.renderFace(this.znzFace, this.znzRenderJob, this.znzNeighbor, this.zpzColorHex);
 
         if (this.offsetSign[2] == 0)
-            this.renderFace(this.zzpFace, this.zzpRenderJob, this.zzpNeighbor, this.colorHex001);
+            this.renderFace(this.zzpFace, this.zzpRenderJob, this.zzpNeighbor, this.zzpColorHex);
         else
-            this.renderFace(this.zznFace, this.zznRenderJob, this.zznNeighbor, this.colorHex001);
+            this.renderFace(this.zznFace, this.zznRenderJob, this.zznNeighbor, this.zzpColorHex);
     }
 
     render() {
@@ -278,8 +284,7 @@ export class Block {
     gravityPhysics() {
         // this.mvSpeed[1] += (10 ** -2) * 9.8 / this.timeManager.dt;
 
-        if (!this.zpzNeighbor)
-            this.mvSpeed[1] += .05;
+        this.mvSpeed[1] += .05;
         // this.mvSpeed[0] -= .0001;
         // this.mvSpeed[2] -= .0001;
     }
@@ -303,15 +308,13 @@ export class Block {
         if (neighbor) {
             // this.mvSpeed[idx] = func(this.mvSpeed[idx], neighbor.mvSpeed[idx])
             // this.mvOffset[idx] = func(this.mvOffset[idx], neighbor.mvOffset[idx])
-
             let gap = this.mvOffset[idx] - neighbor.mvOffset[idx];
             if (gap > 0) {
                 this.mvOffset[idx] -= gap;
-                this.mvSpeed[idx] = 0;
-            } else {
-                return;
             }
-
+            if (gap > -0.01) {
+                this.mvSpeed[idx] = 0;
+            }
         }
 
     }
