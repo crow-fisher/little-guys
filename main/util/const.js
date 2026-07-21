@@ -9,3 +9,11 @@ export const pnnVec = [1, 0, 0];
 export const pnpVec = [1, 0, 1];
 export const ppnVec = [1, 1, 0];
 export const pppVec = [1, 1, 1];
+
+export const zzzVec = [0, 0, 0];
+export const pzzVec = [1, 0, 0];
+export const zpzVec = [0, 1, 0];
+export const zzpVec = [0, 0, 1];
+export const nzzVec = [-1, 0, 0];
+export const znzVec = [0, -1, 0];
+export const zznVec = [0, 0, -1];

@@ -113,6 +113,13 @@ export function subtractVectorsDest(v1, v2, dest) {
   dest[2] = (v1[2] - (v2[2] ?? 0));
 }
 
+export function subtractVectorsDestNorm(v1, v2, dest) {
+  dest[0] = (v1[0] - v2[0]);
+  dest[1] = (v1[1] - v2[1]);
+  dest[2] = (v1[2] - (v2[2] ?? 0));
+  normalizeVec3(dest);
+}
+
 export function subtractVectorsMultDest(v1, v2, m, dest) {
   dest[0] = m * (v1[0] - v2[0]);
   dest[1] = m * (v1[1] - v2[1]);

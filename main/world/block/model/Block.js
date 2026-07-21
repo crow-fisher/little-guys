@@ -5,8 +5,8 @@ import { PointLabelRenderJob } from "../../../rendering/model/PointLabelRenderJo
 import { QuadRenderJob } from "../../../rendering/model/QuadRenderJob.js";
 import { RenderJob } from "../../../rendering/model/RenderJob.js";
 import { renderPointLabel, renderQuad } from "../../../rendering/renderFunctions.js";
-import { centerVec, nnnVec, nnpVec, npnVec, nppVec, pnnVec, pnpVec, ppnVec, pppVec } from "../../../util/const.js";
-import { addThreeVec3Dest, addVec3Dest, addVec3MultDest, addVectors, addVectorsMult, copyVecValue, getVec3Length, getVec3LengthSquared, multiplyVectorByScalar, multiplyVectorsDest, multiplyVectorsMultDest, normalizeVec3, subtractVectors } from "../../../util/vector.js";
+import { centerVec, nnnVec, nnpVec, npnVec, nppVec, pnnVec, pnpVec, ppnVec, pppVec, pzzVec, zpzVec, zzpVec, nzzVec, znzVec, zznVec, zzzVec } from "../../../util/const.js";
+import { addThreeVec3Dest, addVec3Dest, addVec3MultDest, addVectors, addVectorsMult, copyVecValue, getVec3Length, getVec3LengthSquared, multiplyVectorByScalar, multiplyVectorsDest, multiplyVectorsMultDest, normalizeVec3, subtractVectors, vec3Dot } from "../../../util/vector.js";
 
 let bid = 0;
 
@@ -40,18 +40,22 @@ export class Block {
         this.lightSource = [];
 
         this.recalculateColorFlag = true;
-        this.lightApplied100 = [1, 1, 1];
-        this.lightApplied010 = [0.5, 0.5, 0.5];
-        this.lightApplied001 = [0.25, 0.25, 0.25];
+        this.pzzLightApplied = [1, 1, 1];
+        this.zpzLightApplied = [0.5, 0.5, 0.5];
+        this.zzpLightApplied = [0.25, 0.25, 0.25];
+        this.nzzLightApplied = [1, 1, 1];
+        this.znzLightApplied = [0.5, 0.5, 0.5];
+        this.zznLightApplied = [0.25, 0.25, 0.25];
 
         this.colorBase = [100, 100, 100];
-        
+
         this.pzzColorApplied = [100, 100, 100]
         this.zpzColorApplied = [100, 100, 100]
         this.zzpColorApplied = [100, 100, 100]
         this.nzzColorApplied = [100, 100, 100]
         this.znzColorApplied = [100, 100, 100]
         this.zznColorApplied = [100, 100, 100]
+
         this.pzzColorHex = "#646464";
         this.zpzColorHex = "#646464";
         this.zzpColorHex = "#646464";
@@ -97,7 +101,7 @@ export class Block {
     }
 
     getLightFilterRate() {
-        return 0.999999999;
+        return 0.8;
     }
 
     linkNeighbors() {
@@ -152,26 +156,43 @@ export class Block {
             // where 'rB', 'gB', and 'bB' are the relative brightnesses of each color (normalized at 1).
 
             if (this.lightSource.length > 0) {
-                let dirs = [[this.lightApplied100, this.pzzColorApplied],
-                [this.lightApplied010, this.zpzColorApplied],
-                [this.lightApplied001, this.zzpColorApplied]];
-                for (let i = 0; i < 3; i++) {
-                    dirs[i][0][0] = 0;
-                    dirs[i][0][1] = 0;
-                    dirs[i][0][2] = 0;
-                    this.lightSource.forEach((ls) => addVectorsMult(dirs[i][0], ls[1], Math.abs(ls[2][i])));
+                let dirs = [
+                    [this.pzzLightApplied, this.pzzColorApplied, pzzVec],
+                    [this.zpzLightApplied, this.zpzColorApplied, zpzVec],
+                    [this.zzpLightApplied, this.zzpColorApplied, zzpVec],
+                    [this.nzzLightApplied, this.nzzColorApplied, nzzVec],
+                    [this.znzLightApplied, this.znzColorApplied, znzVec],
+                    [this.zznLightApplied, this.zznColorApplied, zznVec]
+                ];
+
+                for (let i = 0; i < 6; i++) {
+                    copyVecValue(zzzVec, dirs[i][0]);
+                    this.lightSource.forEach((ls) => {
+                        let dot = vec3Dot(dirs[i][2], ls[3]);
+                        if (dot < 0) {
+                            addVectorsMult(dirs[i][0], ls[1], -dot)
+                        } else {
+                            addVectorsMult(dirs[i][0], ls[2], dot)
+                        }
+                    });
                 }
             }
 
-
             // calculate final color based on 'lightApplied' and 'colorBase', for each face direction 
-            multiplyVectorsDest(this.colorBase, this.lightApplied100, this.pzzColorApplied);
-            multiplyVectorsDest(this.colorBase, this.lightApplied010, this.zpzColorApplied);
-            multiplyVectorsDest(this.colorBase, this.lightApplied001, this.zzpColorApplied);
+            multiplyVectorsDest(this.colorBase, this.pzzLightApplied, this.pzzColorApplied);
+            multiplyVectorsDest(this.colorBase, this.zpzLightApplied, this.zpzColorApplied);
+            multiplyVectorsDest(this.colorBase, this.zzpLightApplied, this.zzpColorApplied);
+            multiplyVectorsDest(this.colorBase, this.nzzLightApplied, this.nzzColorApplied);
+            multiplyVectorsDest(this.colorBase, this.znzLightApplied, this.znzColorApplied);
+            multiplyVectorsDest(this.colorBase, this.zznLightApplied, this.zznColorApplied);
 
             this.pzzColorHex = rgbToHex(...this.pzzColorApplied)
             this.zpzColorHex = rgbToHex(...this.zpzColorApplied)
             this.zzpColorHex = rgbToHex(...this.zzpColorApplied)
+            this.nzzColorHex = rgbToHex(...this.nzzColorApplied)
+            this.znzColorHex = rgbToHex(...this.znzColorApplied)
+            this.zznColorHex = rgbToHex(...this.zznColorApplied)
+
             this.recalculateColorFlag = false;
         }
     }
@@ -241,17 +262,17 @@ export class Block {
         if (this.offsetSign[0] == 0)
             this.renderFace(this.nzzFace, this.nzzRenderJob, this.pzzNeighbor, this.pzzColorHex);
         else
-            this.renderFace(this.pzzFace, this.pzzRenderJob, this.nzzNeighbor, this.pzzColorHex);
+            this.renderFace(this.pzzFace, this.pzzRenderJob, this.nzzNeighbor, this.nzzColorHex);
 
         if (this.offsetSign[1] == 0)
             this.renderFace(this.zpzFace, this.zpzRenderJob, this.zpzNeighbor, this.zpzColorHex);
         else
-            this.renderFace(this.znzFace, this.znzRenderJob, this.znzNeighbor, this.zpzColorHex);
+            this.renderFace(this.znzFace, this.znzRenderJob, this.znzNeighbor, this.znzColorHex);
 
         if (this.offsetSign[2] == 0)
             this.renderFace(this.zzpFace, this.zzpRenderJob, this.zzpNeighbor, this.zzpColorHex);
         else
-            this.renderFace(this.zznFace, this.zznRenderJob, this.zznNeighbor, this.zzpColorHex);
+            this.renderFace(this.zznFace, this.zznRenderJob, this.zznNeighbor, this.zznColorHex);
     }
 
     render() {
