@@ -2,6 +2,7 @@ import { hsvToHex } from "../color/color.js";
 import { AstronomyAtlasComponent } from "./components/AstronomyAtlas/AstronomyAtlasComponent.js";
 import { BlockManagerComponent } from "./components/BlockManager/BlockManagerComponent.js";
 import { PlaneManagerComponent } from "./components/PlaneManager/PlaneManagerComponent.js";
+import { ToolBarComponent } from "./toolbar/ToolBarComponent.js";
 import { TopBarComponent } from "./topbar/TopBarComponent.js";
 import { loadGD, saveGD, UI_COMPONENT_DATA, UI_TOPBAR } from "./UIData.js";
 
@@ -15,12 +16,14 @@ export class UIManager {
         this.planeManagerComponent = new PlaneManagerComponent(this);
         this.blockManagerComponent = new BlockManagerComponent(this);
         this.topBarComponent = new TopBarComponent(this);
+        this.toolBarComponent = new ToolBarComponent(this);
 
         this.components = [
             // this.astronomyAtlasComponent,
             // this.blockManagerComponent,
             this.planeManagerComponent,
-            this.topBarComponent
+            this.topBarComponent,
+            this.toolBarComponent
         ]
     }
 
@@ -40,11 +43,11 @@ export class UIManager {
     }
 
     update() {
-        this.components.forEach((window) => window.update());
+        this.components.forEach((component) => component.update());
     }
 
     render() {
-        this.components.forEach((window) => window.render());
+        this.components.forEach((component) => component.render());
     }
 
     getBaseUISize() {
