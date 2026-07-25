@@ -3,10 +3,8 @@ import { CoordinateSet } from "../../../rendering/model/CoordinateSet.js";
 import { LineRenderJob } from "../../../rendering/model/LineRenderJob.js";
 import { PointLabelRenderJob } from "../../../rendering/model/PointLabelRenderJob.js";
 import { QuadRenderJob } from "../../../rendering/model/QuadRenderJob.js";
-import { RenderJob } from "../../../rendering/model/RenderJob.js";
-import { renderPointLabel, renderQuad } from "../../../rendering/renderFunctions.js";
 import { centerVec, nnnVec, nnpVec, npnVec, nppVec, pnnVec, pnpVec, ppnVec, pppVec, pzzVec, zpzVec, zzpVec, nzzVec, znzVec, zznVec, zzzVec } from "../../../util/const.js";
-import { addThreeVec3Dest, addVec3Dest, addVec3MultDest, addVectors, addVectorsMult, copyVecValue, getVec3Length, getVec3LengthSquared, multiplyVectorByScalar, multiplyVectorsDest, multiplyVectorsMultDest, normalizeVec3, subtractVectors, vec3Dot } from "../../../util/vector.js";
+import { addThreeVec3Dest, addVec3Dest, addVectorsMult, copyVecValue, getVec3LengthSquared, multiplyVectorsDest, vec3Dot } from "../../../util/vector.js";
 
 let bid = 0;
 
@@ -98,6 +96,7 @@ export class Block {
         this.zzpNeighbor = null;
 
         this.offsetSign = [0, 0, 0];
+        this.renderedFaces = new Array();
     }
 
     getLightFilterRate() {
@@ -197,7 +196,7 @@ export class Block {
         }
     }
 
-    renderFace(face, renderJob, neighbor, color) {
+    renderFace(face, renderJob, neighbor, color, vec) {
         // if (getVec3LengthSquared(this.mvSpeed) == 0 && neighbor) {
         //     return;
         // }
@@ -216,6 +215,9 @@ export class Block {
 
         renderJob.color = color;
         this.rasterizationManager.addRenderJob(renderJob);
+
+        if (this.blockManager.uiManager.toolbarConfig.activeBrushMode == 1)
+            this.renderedFaces.push([face, this, vec]);
     }
 
     update() {
@@ -258,21 +260,22 @@ export class Block {
         this.offsetSign[0] = (this.centerCs.offset[0] < 0) ? 0 : 1;
         this.offsetSign[1] = (this.centerCs.offset[1] < 0) ? 0 : 1;
         this.offsetSign[2] = (this.centerCs.offset[2] < 0) ? 0 : 1;
+        this.renderedFaces.length = 0;
 
         if (this.offsetSign[0] == 0)
-            this.renderFace(this.nzzFace, this.nzzRenderJob, this.pzzNeighbor, this.pzzColorHex);
+            this.renderFace(this.nzzFace, this.nzzRenderJob, this.pzzNeighbor, this.pzzColorHex, pzzVec);
         else
-            this.renderFace(this.pzzFace, this.pzzRenderJob, this.nzzNeighbor, this.nzzColorHex);
+            this.renderFace(this.pzzFace, this.pzzRenderJob, this.nzzNeighbor, this.nzzColorHex, nzzVec);
 
         if (this.offsetSign[1] == 0)
-            this.renderFace(this.zpzFace, this.zpzRenderJob, this.zpzNeighbor, this.zpzColorHex);
+            this.renderFace(this.zpzFace, this.zpzRenderJob, this.zpzNeighbor, this.zpzColorHex, zpzVec);
         else
-            this.renderFace(this.znzFace, this.znzRenderJob, this.znzNeighbor, this.znzColorHex);
+            this.renderFace(this.znzFace, this.znzRenderJob, this.znzNeighbor, this.znzColorHex, znzVec);
 
         if (this.offsetSign[2] == 0)
-            this.renderFace(this.zzpFace, this.zzpRenderJob, this.zzpNeighbor, this.zzpColorHex);
+            this.renderFace(this.zzpFace, this.zzpRenderJob, this.zzpNeighbor, this.zzpColorHex, zzpVec);
         else
-            this.renderFace(this.zznFace, this.zznRenderJob, this.zznNeighbor, this.zznColorHex);
+            this.renderFace(this.zznFace, this.zznRenderJob, this.zznNeighbor, this.zznColorHex, zznVec);
     }
 
     render() {

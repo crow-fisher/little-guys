@@ -5,13 +5,17 @@ import { RenderJob } from "../../../rendering/model/RenderJob.js";
 import { renderLine, renderPointLabel } from "../../../rendering/renderFunctions.js";
 import { loadGD, UI_TOPBAR_BLOCK } from "../../../ui/UIData.js";
 import { copyMatValue } from "../../../util/matrix.js";
-import { addVec3Mult, addVec3MultDest, addVec3MultFloor, addVectorsMult, copyVecValue, vec3Dot } from "../../../util/vector.js";
+import { isPointInsideQuad } from "../../../util/quad.js";
+import { addVec3Dest, addVec3Mult, addVec3MultDest, addVec3MultFloor, addVectorsMult, copyVecValue, vec3Dot } from "../../../util/vector.js";
+import { Block } from "../model/Block.js";
+import { StoneBlock } from "../model/variant/StoneBlock.js";
 import { Plane } from "./model/Plane.js";
 
 export class ManipulationManager {
     constructor(blockManager) {
         this.blockManager = blockManager;
         this.inputManager = blockManager.worldManager.mainManager.inputManager;
+        this.mouseManager = blockManager.worldManager.mainManager.inputManager.mouseManager;
         this.cameraManager = blockManager.worldManager.mainManager.cameraManager;
         this.canvasManager = blockManager.worldManager.mainManager.canvasManager;
         this.rasterizationManager = blockManager.worldManager.mainManager.rasterizationManager;
@@ -39,7 +43,21 @@ export class ManipulationManager {
     }
 
     updateBlock() {
-
+        if (!this.mouseManager.isButtonPressed(0)) {
+            return;
+        }
+        let mouseHoveredBlocks = new Array();
+        this.blockManager.iterateOnSectors((sector) => sector.iterateOnBlocks((block) => block.renderedFaces.filter((faceArr) => isPointInsideQuad(
+                    this.inputManager.mouseManager.offset, 
+                    faceArr[0][0].renderScreen,
+                    faceArr[0][1].renderScreen,
+                    faceArr[0][2].renderScreen,
+                    faceArr[0][3].renderScreen
+            )).forEach((faceArr) => {
+                let newPos = [0, 0, 0];
+                addVec3Dest(faceArr[1].cartesian, faceArr[2], newPos);
+                this.blockManager.addNewBlock(newPos, StoneBlock)
+            })));
     }
 
     updatePlane() {
