@@ -17,7 +17,6 @@ export class ManipulationManager {
         this.rasterizationManager = blockManager.worldManager.mainManager.rasterizationManager;
         this.planeManagerComponent = blockManager.worldManager.mainManager.uiManager.planeManagerComponent;
 
-
         let pSize = 20;
         this.zPlane = new Plane(this, .2, Math.PI / 1.9, 1, pSize, pSize);
 
@@ -31,6 +30,19 @@ export class ManipulationManager {
     }
 
     update() {
+        if (this.blockManager.uiManager.toolbarConfig.activeBrushMode == 0) {
+            this.updatePlane();
+        }
+        else if (this.blockManager.uiManager.toolbarConfig.activeBrushMode == 1) {
+            this.updateBlock();
+        }
+    }
+
+    updateBlock() {
+
+    }
+
+    updatePlane() {
         if (this.planeManagerComponent.gcvZMode() == 0) {
             this.zPlane.centerCs.world[0] = this.cameraManager.cameraOffset[0];
             this.zPlane.centerCs.world[2] = this.cameraManager.cameraOffset[2];
@@ -73,6 +85,14 @@ export class ManipulationManager {
     }
 
     render() {
+        if (this.blockManager.uiManager.toolbarConfig.activeBrushMode == 0) {
+            this.renderPlane();
+        }
+        else if (this.blockManager.uiManager.toolbarConfig.activeBrushMode == 1) {
+            this.renderBlock();
+        }
+    }
+    renderPlane() {
         this.planes.forEach((plane) => plane.render())
         if (this.planeManagerComponent.gcvModMode() == 1) {
             this.newPlane.render();
@@ -91,5 +111,9 @@ export class ManipulationManager {
             }
 
         }
+    }
+
+    renderBlock() {
+        
     }
 }

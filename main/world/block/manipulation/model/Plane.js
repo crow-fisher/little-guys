@@ -154,8 +154,8 @@ export class Plane {
         ) && (isPointInsideQuad(offset,
             this.csTl().renderScreen,
             this.csTr().renderScreen,
-            this.csBl().renderScreen,
-            this.csBr().renderScreen
+            this.csBr().renderScreen,
+            this.csBl().renderScreen
         ));
     }
 

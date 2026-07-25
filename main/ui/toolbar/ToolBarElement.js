@@ -1,9 +1,12 @@
 export class ToolBarElement {
-    constructor(uiManager, label) {
+    constructor(uiManager, label, getter, setter) {
         this.uiManager = uiManager;
         this.label = label;
         this.bounds = [[0, 0], [0, 0], [0, 0], [0, 0]];
-        this.active = false;
+        this.relMouse = [0, 0];
+
+        this.getter = getter;
+        this.setter = setter;
 
         // bounds in order: 
         //  ** Tl
@@ -12,8 +15,12 @@ export class ToolBarElement {
         //  ** Br
     }
 
+    interact() {
+        this.setter();
+    }
+
     prepareStyle(dY) {
-        this.uiManager.getContext().font = dY + "px courier"
+        this.uiManager.getContext().font = (dY / this.label.length ** 0.8) + "px courier"
         this.uiManager.getContext().textAlign = 'center';
         this.uiManager.getContext().textBaseline = 'alphabetic';
     }
@@ -32,7 +39,7 @@ export class ToolBarElement {
         this.bounds[3][0] = pX;
         this.bounds[3][1] = pY + dY;
 
-        this.uiManager.getContext().fillStyle = this.active ? "#259e43" : "#FF0000";
+        this.uiManager.getContext().fillStyle = this.getter() ? "#259e43" : "#FF0000";
         this.uiManager.getContext().fillRect(pX, pY, dX, dY);
         this.uiManager.getContext().fillStyle = "#0000ff";
         this.uiManager.getContext().fillText(this.label, pX + dX / 2, pY + dY / 1.3);

@@ -10,7 +10,9 @@ export class UIManager {
     constructor(mainManager) {
         this.mainManager = mainManager;
 
-        this._config = loadGD(UI_COMPONENT_DATA);
+        this._config = {} // accessed via '.config()' method within Component.js
+        this.topbarConfig = {}  // accessed directly
+        this.toolbarConfig = {} // ...
 
         this.astronomyAtlasComponent = new AstronomyAtlasComponent(this);
         this.planeManagerComponent = new PlaneManagerComponent(this);

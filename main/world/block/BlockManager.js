@@ -5,12 +5,15 @@ import { sphereBrush } from "./brushes/sphereBrush.js";
 import { ManipulationManager } from "./manipulation/ManipulationManager.js";
 import { Block } from "./model/Block.js";
 import { BlockSector } from "./model/BlockSector.js";
+import { ColorBlock } from "./model/variant/ColorBlock.js";
 import { DirtBlock } from "./model/variant/DirtBlock.js";
+import { StoneBlock } from "./model/variant/StoneBlock.js";
 
 export class BlockManager {
     constructor(worldManager) {
         this.worldManager = worldManager;
         this.timeManager = worldManager.timeManager;
+        this.uiManager = worldManager.mainManager.uiManager;
         this.blockManagerComponent = worldManager.mainManager.uiManager.blockManagerComponent;
 
         this.sectorSize = 25;
@@ -18,7 +21,7 @@ export class BlockManager {
         this.sectors = new Map();
 
         this.brushes = [sphereBrush, pixelBrush, flatBrush];
-        this.materials = [Block, DirtBlock];
+        this.materials = [StoneBlock, DirtBlock, ColorBlock];
 
         this.mvQueuePrecision = 100;
         this.mvQueue = new Array();
@@ -113,7 +116,7 @@ export class BlockManager {
 
     brushFromRef(p, refCs, applyPrimary, applySecondary) {
         if (applyPrimary) {
-            this.brushes.at(this.blockManagerComponent.gcvActivePrimaryBrush())(this, p, refCs, this.materials.at(this.blockManagerComponent.gcvActivePrimaryMaterial()));
+            this.brushes.at(this.blockManagerComponent.gcvActivePrimaryBrush())(this, p, refCs, this.materials.at(this.uiManager.toolbarConfig.activeTool));
         }
         if (applySecondary) {
             this.brushes.at(this.blockManagerComponent.gcvActiveSecondaryBrush())(this, p, refCs, this.materials.at(this.blockManagerComponent.gcvActiveSecondaryMaterial()));

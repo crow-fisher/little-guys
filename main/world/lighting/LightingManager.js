@@ -26,6 +26,6 @@ export class LightingManager {
     }
 
     render() {
-        this.lightSources.forEach((ls) => ls.render());
+        // this.lightSources.forEach((ls) => ls.render());
     }
 }

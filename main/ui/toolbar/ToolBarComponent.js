@@ -1,9 +1,15 @@
 import { isPointInsideQuad } from "../../util/quad.js";
+import { Component } from "../Component.js";
 import { ToolBarElement } from "./ToolBarElement.js";
+import { DIRT, COLOR, STONE, PLANE, BLOCK } from "./toolbarEnum.js";
+
+// not really a 'component'....a component has a window and is freely positionable. 
+// this is more like the topbar, where it lives on its own little island? 
 
 export class ToolBarComponent {
     constructor(uiManager) {
         this.uiManager = uiManager;
+        this.name = "ToolBarComponent";
         this.canvasManager = uiManager.mainManager.canvasManager;
         this.mouseManager = uiManager.mainManager.inputManager.mouseManager;
 
@@ -11,11 +17,27 @@ export class ToolBarComponent {
         this.yHeight = 0.1;
 
         this.toolBarElements = [
-            new ToolBarElement(this.uiManager, "1"),
-            new ToolBarElement(this.uiManager, "2"),
-            new ToolBarElement(this.uiManager, "3"),
+            new ToolBarElement(this.uiManager, "plane", () => this.isBrushModeActive(PLANE), () => this.setBrushModeActive(PLANE)),
+            new ToolBarElement(this.uiManager, "block", () => this.isBrushModeActive(BLOCK), () => this.setBrushModeActive(BLOCK)),
+            new ToolBarElement(this.uiManager, "¤", () => this.canvasManager.pointerLock, () => this.canvasManager.lockPointer()),
+            new ToolBarElement(this.uiManager, "d", () => this.isToolActive(DIRT), () => this.setToolActive(DIRT)),
+            new ToolBarElement(this.uiManager, "s", () => this.isToolActive(STONE), () => this.setToolActive(STONE)),
+            new ToolBarElement(this.uiManager, "p", () => this.isToolActive(COLOR), () => this.setToolActive(COLOR))
         ]
+    }
 
+    isToolActive(id) {
+        return this.uiManager.toolbarConfig.activeTool == id;
+    }
+    setToolActive(id) {
+        this.uiManager.toolbarConfig.activeTool = id;
+    }
+
+    isBrushModeActive(id) {
+        return this.uiManager.toolbarConfig.activeBrushMode == id;
+    }
+    setBrushModeActive(id) {
+        this.uiManager.toolbarConfig.activeBrushMode = id;
     }
 
     update() {
@@ -25,19 +47,18 @@ export class ToolBarComponent {
 
         // define starting x position
         this._wX = this._dX * this.toolBarElements.length;
-        this._pX = this.uiManager.getWidth() / 2 - (this._wX / 2);
+        this._pX = Math.floor(this.uiManager.getWidth() / 2 - (this._wX / 2));
 
-        // define starting y position (note - one row. don't touch this)
-        this._pY = this.uiManager.getHeight() * this.yOffset;
+        // define starting y position
+        this._pY = Math.floor(this.uiManager.getHeight() * this.yOffset);
 
         if (this.mouseManager.isFrameButtonPressed(0)) {
             this.toolBarElements
                 .filter((el) => isPointInsideQuad(this.mouseManager.offset, ...el.bounds))
-                .forEach((el) => {
-                    // console.log(isPointInsideQuad(this.mouseManager.offset, ...el.bounds));
-                    // console.log(this.mouseManager.offset, el.bounds)
-                
-                    el.active = !el.active;
+                .forEach((el) => { 
+                    el.relMouse[0] = this.mouseManager.offset.x - el.bounds[0][0];
+                    el.relMouse[1] = this.mouseManager.offset.y - el.bounds[1][1];
+                    el.interact();
                 });
         }
     }
