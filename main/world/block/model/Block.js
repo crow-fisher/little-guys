@@ -216,7 +216,7 @@ export class Block {
         renderJob.color = color;
         this.rasterizationManager.addRenderJob(renderJob);
 
-        if (this.blockManager.uiManager.toolbarConfig.activeBrushMode == 1)
+        if (this.blockManager.uiManager.toolbarConfig.activeBrushMode > 0)
             this.renderedFaces.push([face, this, vec]);
     }
 
@@ -254,6 +254,11 @@ export class Block {
             this.rasterizationManager.addLateRenderJob(this._neighborLineRenderJobs[i]);
         }
 
+    }
+
+    destroy() {
+        this.unlinkNeighbors();
+        this.blockManager.getSector(this.sector).removeBlock(this.cartesian);
     }
 
     renderFaces() {

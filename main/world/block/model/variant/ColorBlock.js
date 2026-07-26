@@ -4,8 +4,9 @@ import { Block } from "../Block.js";
 export class ColorBlock extends Block {
     constructor(blockManager, cartesian) {
         super(blockManager, cartesian);
-        this.colorBase = [169, 98, 187];
-        this.grounded = false;
+        this.colorConfig = this.blockManager.worldManager.mainManager.uiManager.colorConfig;
+        this.colorBase = structuredClone(this.colorConfig.rgbArr);
+        this.grounded = true;
         
     }
 }

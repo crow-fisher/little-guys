@@ -104,6 +104,10 @@ export class BlockManager {
         return this._cSect1.getBlock(this._cVec1);
     }
 
+    addNewBlockAtPosActiveTool(cartesian) {
+        this.addNewBlock(cartesian, this.materials.at(this.uiManager.toolbarConfig.activeTool))
+    }
+
     addNewBlock(cartesian, type) {
         let newBlock = new type(this, cartesian);
         if (this.getSector(newBlock.sector).getBlock(cartesian)) {

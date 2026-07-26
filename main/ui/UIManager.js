@@ -1,4 +1,6 @@
 import { hsvToHex } from "../color/color.js";
+import { hsv2rgb } from "../common.js";
+import { multiplyVectorByScalar } from "../util/vector.js";
 import { AstronomyAtlasComponent } from "./components/AstronomyAtlas/AstronomyAtlasComponent.js";
 import { BlockManagerComponent } from "./components/BlockManager/BlockManagerComponent.js";
 import { ColorPickerComponent } from "./components/ColorPickerComponent.js";
@@ -21,7 +23,9 @@ export class UIManager {
         this.colorConfig = {
             h: 0,
             s: 0.5,
-            v: 0.5
+            v: 0.5,
+            rgbArr: [127, 127, 127],
+            rgbArrHistory: []
         }
 
         this.astronomyAtlasComponent = new AstronomyAtlasComponent(this);
@@ -40,6 +44,12 @@ export class UIManager {
             this.toolBarComponent,
             this.colorPickerComponent
         ]
+    }
+
+    colorUpdate() {
+        this.colorConfig.rgbArrHistory.push(this.colorConfig.rgbArr);
+        this.colorConfig.rgbArr = hsv2rgb(this.colorConfig.h, this.colorConfig.s, this.colorConfig.v); // creates a new array
+        multiplyVectorByScalar(this.colorConfig.rgbArr, 255)
     }
 
     /*

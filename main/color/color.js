@@ -15,7 +15,7 @@ export function rgbToHex(r, g, b) {
     return "#" + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1);
 }
 
-export function rgbToRgba(r, g, b, a) {
+export function rgbToRgba(r, g, b, a=1) {
     return "rgba(" + r + "," + g + "," + b + "," + a + ")";
 }
 

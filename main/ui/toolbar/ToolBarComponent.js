@@ -1,7 +1,7 @@
 import { isPointInsideQuad } from "../../util/quad.js";
 import { Component } from "../Component.js";
 import { ToolBarElement } from "./ToolBarElement.js";
-import { DIRT, COLOR, STONE, PLANE, BLOCK } from "./toolbarEnum.js";
+import { DIRT, COLOR, STONE, PLANE, BLOCK, REPLACE, ERASE } from "./toolbarEnum.js";
 
 // not really a 'component'....a component has a window and is freely positionable. 
 // this is more like the topbar, where it lives on its own little island? 
@@ -19,6 +19,9 @@ export class ToolBarComponent {
         this.toolBarElements = [
             new ToolBarElement(this.uiManager, "plane", () => this.isBrushModeActive(PLANE), () => this.setBrushModeActive(PLANE)),
             new ToolBarElement(this.uiManager, "block", () => this.isBrushModeActive(BLOCK), () => this.setBrushModeActive(BLOCK)),
+            new ToolBarElement(this.uiManager, "replace", () => this.isBrushModeActive(REPLACE), () => this.setBrushModeActive(REPLACE)),
+            new ToolBarElement(this.uiManager, "erase", () => this.isBrushModeActive(ERASE), () => this.setBrushModeActive(ERASE)),
+            
             new ToolBarElement(this.uiManager, "¤", () => this.canvasManager.pointerLock, () => this.canvasManager.lockPointer()),
             new ToolBarElement(this.uiManager, "d", () => this.isToolActive(DIRT), () => this.setToolActive(DIRT)),
             new ToolBarElement(this.uiManager, "s", () => this.isToolActive(STONE), () => this.setToolActive(STONE)),

@@ -20,6 +20,7 @@ export class ManipulationManager {
         this.canvasManager = blockManager.worldManager.mainManager.canvasManager;
         this.rasterizationManager = blockManager.worldManager.mainManager.rasterizationManager;
         this.planeManagerComponent = blockManager.worldManager.mainManager.uiManager.planeManagerComponent;
+        this.colorConfig = this.blockManager.worldManager.mainManager.uiManager.colorConfig;
 
         let pSize = 20;
         this.zPlane = new Plane(this, .2, Math.PI / 1.9, 1, pSize, pSize);
@@ -40,13 +41,18 @@ export class ManipulationManager {
         else if (this.blockManager.uiManager.toolbarConfig.activeBrushMode == 1) {
             this.updateBlock();
         }
+        else if (this.blockManager.uiManager.toolbarConfig.activeBrushMode == 2) {
+            this.updateBlockReplace();
+        }
+        else if (this.blockManager.uiManager.toolbarConfig.activeBrushMode == 3) {
+            this.updateBlockErase();
+        }
     }
 
     updateBlock() {
         if (!this.mouseManager.isButtonPressed(0)) {
             return;
         }
-        let mouseHoveredBlocks = new Array();
         this.blockManager.iterateOnSectors((sector) => sector.iterateOnBlocks((block) => block.renderedFaces.filter((faceArr) => isPointInsideQuad(
                     this.inputManager.mouseManager.offset, 
                     faceArr[0][0].renderScreen,
@@ -54,9 +60,40 @@ export class ManipulationManager {
                     faceArr[0][2].renderScreen,
                     faceArr[0][3].renderScreen
             )).forEach((faceArr) => {
-                let newPos = [0, 0, 0];
-                addVec3Dest(faceArr[1].cartesian, faceArr[2], newPos);
-                this.blockManager.addNewBlock(newPos, StoneBlock)
+                let cartesian = [0, 0, 0];
+                addVec3Dest(faceArr[1].cartesian, faceArr[2], cartesian);
+                this.blockManager.addNewBlockAtPosActiveTool(cartesian)
+            })));
+    }
+
+    updateBlockReplace() {
+        if (!this.mouseManager.isButtonPressed(0)) {
+            return;
+        }
+        this.blockManager.iterateOnSectors((sector) => sector.iterateOnBlocks((block) => block.renderedFaces.filter((faceArr) => isPointInsideQuad(
+                    this.inputManager.mouseManager.offset, 
+                    faceArr[0][0].renderScreen,
+                    faceArr[0][1].renderScreen,
+                    faceArr[0][2].renderScreen,
+                    faceArr[0][3].renderScreen
+            )).forEach((faceArr) => {
+                copyVecValue(this.colorConfig.rgbArr, faceArr[1].colorBase);
+                faceArr[1].recalculateColorFlag = true;
+            })));
+    }
+
+    updateBlockErase() {
+        if (!this.mouseManager.isButtonPressed(0)) {
+            return;
+        }
+        this.blockManager.iterateOnSectors((sector) => sector.iterateOnBlocks((block) => block.renderedFaces.filter((faceArr) => isPointInsideQuad(
+                    this.inputManager.mouseManager.offset, 
+                    faceArr[0][0].renderScreen,
+                    faceArr[0][1].renderScreen,
+                    faceArr[0][2].renderScreen,
+                    faceArr[0][3].renderScreen
+            )).forEach((faceArr) => {
+                faceArr[1].destroy();
             })));
     }
 

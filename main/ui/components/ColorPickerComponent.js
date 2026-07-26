@@ -1,4 +1,5 @@
 import { Component } from "../Component.js";
+import { ColorActiveColor } from "../elements/color/ColorActiveColor.js";
 import { ColorHueSliderWheel } from "../elements/color/ColorHueSliderWheel.js";
 import { ColorInputTarget } from "../elements/color/ColorInputTarget.js";
 import { ColorSaturationValueArea } from "../elements/color/ColorSaturationValueArea.js";
@@ -20,6 +21,8 @@ export class ColorPickerComponent extends Component {
         this.container.addElement(new ColorHueSliderWheel(this.window, () => this.gcvSizeX(), () => this.gcvSizeX()));
         this.container.addElement(new ColorSaturationValueArea(this.window, () => this.gcvSizeX(), () => this.gcvSizeX()));
         this.container.addElement(new ColorInputTarget(this.window, () => this.gcvSizeX(), () => this.gcvSizeX()));
+        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "active"))
+        this.container.addElement(new ColorActiveColor(this.window, () => this.gcvSizeX(), () => this.ggvdH1()));
 
 
     }
