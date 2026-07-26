@@ -15,16 +15,10 @@ export class Component {
     /// core runtime methods
     // rendering
     render() {
-        if (!loadGD(UI_TOPBAR_BLOCK)) {
-            return;
-        }
         this.window.render(this.gcvOffsetX(), this.gcvOffsetY());
     }
     // input interactions
     update() {
-        if (!loadGD(UI_TOPBAR_BLOCK)) {
-            return;
-        }
         this._curConfig = JSON.stringify(this.config());
         if (this._curConfig != this._pastConfig) {
             this.dirtyConfig = true;

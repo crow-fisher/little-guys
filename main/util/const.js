@@ -17,3 +17,5 @@ export const zzpVec = [0, 0, 1];
 export const nzzVec = [-1, 0, 0];
 export const znzVec = [0, -1, 0];
 export const zznVec = [0, 0, -1];
+
+export const tau = Math.PI * 2;
