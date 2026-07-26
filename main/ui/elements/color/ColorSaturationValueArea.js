@@ -51,7 +51,7 @@ export class ColorSaturationValueArea extends WindowElement {
         let _p3 = [0, 0];
         let _p4 = [0, 0];
 
-        let nH = 10; // numHorizontalSubdivisions; 
+        let nH = 20; // numHorizontalSubdivisions; 
         // let nV = 10; 
 
 
@@ -73,8 +73,8 @@ export class ColorSaturationValueArea extends WindowElement {
 
             let gradient = this.window.getContext().createLinearGradient(..._p1, ..._p3);
 
-            gradient.addColorStop(0, hsvToHex(this.colorConfig.h, 0, 1));
-            gradient.addColorStop(1, hsvToHex(this.colorConfig.h, 1, 1));
+            gradient.addColorStop(0, hsvToHex(this.colorConfig.h, i / nH, 1));
+            gradient.addColorStop(1, hsvToHex(this.colorConfig.h, (i + 1) / nH, 0));
 
             this.window.getContext().fillStyle = gradient;
 

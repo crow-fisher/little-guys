@@ -24,7 +24,6 @@ export class ColorHueSliderWheel extends WindowElement {
         this.window.getContext().fillStyle = hsvToHex(this.colorConfig.h, this.colorConfig.s, this.colorConfig.v);
         this.window.getContext().fillRect(startX, startY, this.sizeXFunc(), this.sizeYFunc());
 
-
         let midpoint = [startX, startY];
         midpoint[0] += this.sizeXFunc() / 2;
         midpoint[1] += this.sizeYFunc() / 2;
@@ -72,7 +71,6 @@ export class ColorHueSliderWheel extends WindowElement {
         midpoint[1] += this.sizeYFunc() / 2;
 
         console.log(midpoint);
-
         
     }
 

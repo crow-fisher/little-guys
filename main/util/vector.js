@@ -22,6 +22,10 @@ export function normalizeVec3Dest(vector, dest, toLength = 1) {
   dest[2] = vector[2] / toLength;
 }
 
+export function getVec2Length(vector) {
+  return (vector[0] ** 2 + vector[1] ** 2) ** 0.5;
+}
+
 export function getVec3Length(vector) {
   return (vector[0] ** 2 + vector[1] ** 2 + vector[2] ** 2) ** 0.5;
 }
