@@ -43,6 +43,15 @@ export class ColorHueSliderWheel extends WindowElement {
             p4[0] = midpoint[0] + (this.sizeXFunc() / 2.5) * Math.cos(tau * ((i + 1) / this.steps));
             p4[1] = midpoint[1] + (this.sizeYFunc() / 2.5) * Math.sin(tau * ((i + 1) / this.steps));
 
+            p1[0] = Math.round(p1[0]);
+            p1[1] = Math.round(p1[1]);
+            p2[0] = Math.round(p2[0]);
+            p2[1] = Math.round(p2[1]);
+            p3[0] = Math.round(p3[0]);
+            p3[1] = Math.round(p3[1]);
+            p4[0] = Math.round(p4[0]);
+            p4[1] = Math.round(p4[1]);
+
             let gradient = this.window.getContext().createLinearGradient(...p1, ...p4);
 
             gradient.addColorStop(0, hsvToHex((i / this.steps) * 360, 1, 1));

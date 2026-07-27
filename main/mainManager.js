@@ -31,9 +31,11 @@ export class MainManager {
     update() {
         this.uiManager.update();
         this.cameraManager.update();
-        this.inputManager.update();
         this.worldManager.update();
+
         this.rasterizationManager.update();
+        this.inputManager.update();
+
     }
 
     render() {
