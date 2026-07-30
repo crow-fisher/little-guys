@@ -1,5 +1,5 @@
-import { InputManager } from "./input/InputManager.js";
-import { MouseManager } from "./input/source/MouseManager.js";
+import { InputManager } from "./input/inputManager.js";
+import { MouseManager } from "./input/source/mouseManager.js";
 import { CameraManager } from "./rendering/cameraManager.js";
 import { CanvasManager } from "./rendering/canvasManager.js"
 import { RasterizationManager } from "./rendering/rasterizationManager.js";

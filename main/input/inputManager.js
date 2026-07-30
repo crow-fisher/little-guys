@@ -1,5 +1,5 @@
-import { KeyboardManager } from "./source/KeyboardManager.js";
-import { MouseManager } from "./source/MouseManager.js";
+import { KeyboardManager } from "./source/keyboardManager.js";
+import { MouseManager } from "./source/mouseManager.js";
 
 export class InputManager {
     constructor(mainManager) {
