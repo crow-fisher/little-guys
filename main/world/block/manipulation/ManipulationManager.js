@@ -35,66 +35,61 @@ export class ManipulationManager {
     }
 
     update() {
+        if (!this.updateBlockConditional())
+            return;
+
         if (this.blockManager.uiManager.toolbarConfig.activeBrushMode == 0) {
-            this.updatePlane();
+            return this.updatePlane();
         }
-        else if (this.blockManager.uiManager.toolbarConfig.activeBrushMode == 1) {
-            this.updateBlock();
-        }
-        else if (this.blockManager.uiManager.toolbarConfig.activeBrushMode == 2) {
-            this.updateBlockReplace();
-        }
-        else if (this.blockManager.uiManager.toolbarConfig.activeBrushMode == 3) {
-            this.updateBlockErase();
+        switch (this.blockManager.uiManager.toolbarConfig.activeBrushMode) {
+            case 1:
+                return this.updateBlock((parentSurface) => this.blockManipFuncAdd(parentSurface));
+            case 2:
+                return this.updateBlock((parentSurface) => this.blockManipFuncReplace(parentSurface));
+            case 3:
+                return this.updateBlock((parentSurface) => this.blockManipFuncErase(parentSurface));
         }
     }
 
-    updateBlock() {
-        if (!this.mouseManager.isButtonPressed(0)) {
-            return;
+    updateBlockConditional() {
+        switch (this.blockManager.uiManager.toolbarConfig.clickMode) {
+            case 1:
+                return this.mouseManager.isFrameButtonPressed(0);
+            case 0:
+            default:
+                return this.mouseManager.isButtonPressed(0)
         }
-        this.blockManager.iterateOnSectors((sector) => sector.iterateOnBlocks((block) => block.renderedFaces.filter((faceArr) => isPointInsideQuad(
-                    this.inputManager.mouseManager.offset, 
-                    faceArr[0][0].renderScreen,
-                    faceArr[0][1].renderScreen,
-                    faceArr[0][2].renderScreen,
-                    faceArr[0][3].renderScreen
-            )).forEach((faceArr) => {
-                let cartesian = [0, 0, 0];
-                addVec3Dest(faceArr[1].cartesian, faceArr[2], cartesian);
-                this.blockManager.addNewBlockAtPosActiveTool(cartesian)
-            })));
     }
 
-    updateBlockReplace() {
-        if (!this.mouseManager.isButtonPressed(0)) {
+    updateBlock(appliedFunc) {
+        let bArr = new Array();
+        this.blockManager.iterateOnSectors((sector) => sector.iterateOnBlocks((block) => block.renderedFaces.filter((faceArr) => isPointInsideQuad(
+            this.inputManager.mouseManager.offset,
+            faceArr[0][0].renderScreen,
+            faceArr[0][1].renderScreen,
+            faceArr[0][2].renderScreen,
+            faceArr[0][3].renderScreen
+        )).forEach((faceArr) => bArr.push(faceArr))));
+        if (bArr.length == 0) {
             return;
         }
-        this.blockManager.iterateOnSectors((sector) => sector.iterateOnBlocks((block) => block.renderedFaces.filter((faceArr) => isPointInsideQuad(
-                    this.inputManager.mouseManager.offset, 
-                    faceArr[0][0].renderScreen,
-                    faceArr[0][1].renderScreen,
-                    faceArr[0][2].renderScreen,
-                    faceArr[0][3].renderScreen
-            )).forEach((faceArr) => {
-                copyVecValue(this.colorConfig.rgbArr, faceArr[1].colorBase);
-                faceArr[1].recalculateColorFlag = true;
-            })));
+        bArr.sort((a, b) => a[1].centerCs.distToCamera - b[1].centerCs.distToCamera);
+        appliedFunc(bArr[0]);
     }
 
-    updateBlockErase() {
-        if (!this.mouseManager.isButtonPressed(0)) {
-            return;
-        }
-        this.blockManager.iterateOnSectors((sector) => sector.iterateOnBlocks((block) => block.renderedFaces.filter((faceArr) => isPointInsideQuad(
-                    this.inputManager.mouseManager.offset, 
-                    faceArr[0][0].renderScreen,
-                    faceArr[0][1].renderScreen,
-                    faceArr[0][2].renderScreen,
-                    faceArr[0][3].renderScreen
-            )).forEach((faceArr) => {
-                faceArr[1].destroy();
-            })));
+    blockManipFuncAdd(parentSurface) {
+        let cartesian = [0, 0, 0];
+        addVec3Dest(parentSurface[1].cartesian, parentSurface[2], cartesian);
+        this.blockManager.addNewBlockAtPosActiveTool(cartesian)
+    }
+
+    blockManipFuncReplace(parentSurface) {
+        copyVecValue(this.colorConfig.rgbArr, parentSurface[1].colorBase);
+        parentSurface[1].recalculateColorFlag = true;
+    }
+
+    blockManipFuncErase(parentSurface) {
+        parentSurface[1].destroy();
     }
 
     updatePlane() {
@@ -169,6 +164,6 @@ export class ManipulationManager {
     }
 
     renderBlock() {
-        
+
     }
 }

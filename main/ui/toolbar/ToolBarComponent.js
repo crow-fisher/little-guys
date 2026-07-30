@@ -1,7 +1,7 @@
 import { isPointInsideQuad } from "../../util/quad.js";
 import { Component } from "../Component.js";
 import { ToolBarElement } from "./ToolBarElement.js";
-import { DIRT, COLOR, STONE, PLANE, BLOCK, REPLACE, ERASE } from "./toolbarEnum.js";
+import { DIRT, COLOR, STONE, PLANE, BLOCK, REPLACE, ERASE, DRAG, CLICK } from "./toolbarEnum.js";
 
 // not really a 'component'....a component has a window and is freely positionable. 
 // this is more like the topbar, where it lives on its own little island? 
@@ -17,6 +17,9 @@ export class ToolBarComponent {
         this.yHeight = 0.1;
 
         this.toolBarElements = [
+            new ToolBarElement(this.uiManager, "drag", () => this.isClickModeActive(CLICK), () => this.setClickModeActive(CLICK)),
+            new ToolBarElement(this.uiManager, "click", () => this.isClickModeActive(DRAG), () => this.setClickModeActive(DRAG)),
+
             new ToolBarElement(this.uiManager, "plane", () => this.isBrushModeActive(PLANE), () => this.setBrushModeActive(PLANE)),
             new ToolBarElement(this.uiManager, "block", () => this.isBrushModeActive(BLOCK), () => this.setBrushModeActive(BLOCK)),
             new ToolBarElement(this.uiManager, "replace", () => this.isBrushModeActive(REPLACE), () => this.setBrushModeActive(REPLACE)),
@@ -27,6 +30,14 @@ export class ToolBarComponent {
             new ToolBarElement(this.uiManager, "s", () => this.isToolActive(STONE), () => this.setToolActive(STONE)),
             new ToolBarElement(this.uiManager, "p", () => this.isToolActive(COLOR), () => this.setToolActive(COLOR))
         ]
+    }
+
+    isClickModeActive(id) {
+        return this.uiManager.toolbarConfig.clickMode == id; 
+    }
+
+    setClickModeActive(id) {
+        this.uiManager.toolbarConfig.clickMode = id;
     }
 
     isToolActive(id) {

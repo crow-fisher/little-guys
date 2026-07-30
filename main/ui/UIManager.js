@@ -19,7 +19,11 @@ export class UIManager {
 
         this._config = {} // accessed via '.config()' method within Component.js
         this.topbarConfig = {}  // accessed directly
-        this.toolbarConfig = {} // ...
+        this.toolbarConfig = { 
+            activeTool: 2,
+            activeBrushMode: 0,
+            clickMode: 1
+        } // ...
         this.colorConfig = {
             h: 0,
             s: 0.5,
