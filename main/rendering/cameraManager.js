@@ -6,6 +6,7 @@ import { hsvToHex } from "../color/color.js";
 import { KeyboardCameraControlManager } from "./control/keyboardCameraControlManager.js";
 import { MouseCameraControlManager } from "./control/mouseCameraControlManager.js";
 import { isButtonPressed } from "../gamepad.js";
+import { DO_K_RENDERMODE, DO_K_RENDERMODE_BWPRINT } from "../debugOptions.js";
 
 let params = new URLSearchParams(document.location.search);
 
@@ -19,7 +20,7 @@ export class CameraManager {
             new MouseCameraControlManager(this)
         ]
         
-        this.cameraOffset = [68.24828509232965, -149.5569017542522, 17.766594747578097];
+        this.cameraOffset = [-50, -20, 0];
         this.cameraOffsetDt = [0, 0, 0];
         this.cameraMovement = [0, 0, 0];
         this.cameraRotation = [0, .3, 0];

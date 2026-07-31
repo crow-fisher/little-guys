@@ -8,8 +8,8 @@ import { loadGD, saveGD, UI_PALETTE_EYEDROPPER, UI_PALLETE_MODE_SPECIAL, UI_PALE
 import { clearMouseHoverColorCacheMap } from "./ui/WindowManager.js";
 import { isMouse3DMode } from "./mouse.js";
 
-export const KEY_CONTROL = "Control";
-export const KEY_SHIFT = "Shift";
+export const KEY_CONTROL = "control";
+export const KEY_SHIFT = "shift";
 
 let lastKeypressTime = Date.now();
 
@@ -292,12 +292,7 @@ export function keydown(e) {
 }
 
 export function keyup(e) {
-    if (isPlayerRunning()) {
-        playerKeyUp(e.key);
-    }
-    if (e.key in keyPressMap) {
-        keyPressMap[e.key] = false;
-    }
+    keyPressMap[e.key] = false;
 }
 
 addUIFunctionMap(UI_PALETTE_ROCKIDX, clearMouseHoverColorCacheMap);

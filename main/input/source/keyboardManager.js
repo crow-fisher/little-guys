@@ -6,9 +6,9 @@ export class KeyboardManager {
     update() {}
     render() {}
     onkeydown(e) {
-        this.keyPressMap[e.key] = true;
+        this.keyPressMap[e.key.toLowerCase()] = true;
     }
     onkeyup(e) {
-        this.keyPressMap[e.key] = false;
+        this.keyPressMap[e.key.toLowerCase()] = false;
     }
 }
