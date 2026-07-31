@@ -1,4 +1,5 @@
 import { HUE_CHARTREUSE, HUE_TANGOR } from "../../../color/hue.js";
+import { DO_K_RENDERMODE, DO_K_RENDERMODE_BWPRINT } from "../../../debugOptions.js";
 import { Component } from "../../Component.js";
 import { Container } from "../../Container.js";
 import { RadioToggleLabel } from "../../elements/RadioToggleLabel.js";
@@ -9,7 +10,7 @@ import { UI_CENTER } from "../../UIData.js";
 
 export class AstronomyAtlasComponent extends Component {
     getDefaultConfig() {
-        return {
+        let dc = {
             offsetScale: {
                 offsetX: 87,
                 offsetY: 73,
@@ -41,7 +42,13 @@ export class AstronomyAtlasComponent extends Component {
                 distPowerMult: 1.31
             },
             select: {}
+        };
+
+        if (this.uiManager.mainManager.debugOptions[DO_K_RENDERMODE] == DO_K_RENDERMODE_BWPRINT) {
+            dc = { "offsetScale": { "offsetX": 131, "offsetY": 98, "sizeX": 501, "sizeY": 604 }, "submenuState": { "plot": false, "label": false, "setup": false, "style": false, "select": false }, "plot": {}, "label": {}, "setup": {}, "style": { "brightnessPosX": 0.5289421157684631, "brightnessPosY": 0.16037735849056603, "brightnessC": 0.6307385229540918, "opacityPosX": 0.09780439121756487, "opacityPosY": 0.419811320754717, "opacityC": 0.25948103792415167, "mode": 1, "minSize": 0.40987124463519314, "maxSize": 8.948453608247423, "minLuminance": 1.8922155688622755, "maxLuminance": -0.658682634730539, "distPowerMult": 1.31 }, "select": {} }
         }
+
+        return dc;
     }
     // see 'StarSpecializedValuePicker'
     gcvStBrightnessPosX() {
@@ -131,7 +138,7 @@ export class AstronomyAtlasComponent extends Component {
 
         // this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdBr(), UI_CENTER, () => this.uiManager.getColorInactive(.5)))  
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "astronomy atlas"))
-        this.container.addElement(new StarSpecializedValuePicker(this.window, () => this.gcvSizeX(), () => this.gcvSizeY() - (2 + 2 * this.ggvdH1() + 12 * this.ggvdH3()), this));
+        this.container.addElement(new StarSpecializedValuePicker(this.window, () => this.gcvSizeX(), () => this.gcvSizeY() - (8 + 2 * this.ggvdH1() + 16 * this.ggvdH3()), this));
 
         let row = new Container(window, 0);
         this.container.addElement(row);
@@ -144,27 +151,28 @@ export class AstronomyAtlasComponent extends Component {
             () => this.uiManager.getColorInactive(1.4), () => this.uiManager.getColorActive(1.4)));
 
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "brightness 'c'"))
-        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvStBrightnessC(), (v) => this.scvStBrightnessC(v), () => this.gcvSizeX(), () => this.ggvdH3(),
+
+        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcvStBrightnessC(), (v) => this.scvStBrightnessC(v),
             0, 1, 30, 0.2, false));
 
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "opacity 'c'"))
-        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvStOpacityC(), (v) => this.scvStOpacityC(v), () => this.gcvSizeX(), () => this.ggvdH3(),
+        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcvStOpacityC(), (v) => this.scvStOpacityC(v),
             0, 1, 60, 0.2, false));
 
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "min size"))
-        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvMinSize(), (v) => this.scvMinSize(v), () => this.gcvSizeX(), () => this.ggvdH3(),
+        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcvMinSize(), (v) => this.scvMinSize(v),
             0, 1, 90, 0.2, false));
 
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "max size"))
-        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvMaxSize(), (v) => this.scvMaxSize(v), () => this.gcvSizeX(), () => this.ggvdH3(),
+        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcvMaxSize(), (v) => this.scvMaxSize(v),
             0, 10, 120, 0.2, false));
 
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "min luminance"))
-        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvMinLuminance(), (v) => this.scvMinLuminance(v), () => this.gcvSizeX(), () => this.ggvdH3(),
-            0, 3, 150, 0.2, false));
+        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcvMinLuminance(), (v) => this.scvMinLuminance(v),
+            0, 4, 150, 0.2, false));
 
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "max luminance"))
-        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvMaxLuminance(), (v) => this.scvMaxLuminance(v), () => this.gcvSizeX(), () => this.ggvdH3(),
+        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcvMaxLuminance(), (v) => this.scvMaxLuminance(v),
             -10, 10, 180, 0.2, false));
 
         // this.container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "size 'c'"))

@@ -1,3 +1,4 @@
+import { DebugOptions } from "./debugOptions.js";
 import { InputManager } from "./input/inputManager.js";
 import { MouseManager } from "./input/source/mouseManager.js";
 import { CameraManager } from "./rendering/cameraManager.js";
@@ -9,6 +10,8 @@ import { WorldManager } from "./world/worldManager.js";
 
 export class MainManager {
     constructor() {
+        this.debugOptions = new DebugOptions();
+
         this.canvasManager = new CanvasManager(this);
         this.cameraManager = new CameraManager(this);
         this.rasterizationManager = new RasterizationManager(this);
@@ -16,6 +19,7 @@ export class MainManager {
         this.inputManager = new InputManager(this);
         this.uiManager = new UIManager(this);
         this.worldManager = new WorldManager(this);
+
     }
 
     main() {

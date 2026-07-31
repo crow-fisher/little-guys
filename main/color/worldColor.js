@@ -1,3 +1,6 @@
+import { DO_K_RENDERMODE_BWPRINT } from "../debugOptions.js";
+import { hsv2rgb, rgb2hsv } from "./color.js";
+
 // "floor bound color"
 export function calculateTempColor(temperature) {
     temperature = Math.max(2500, Math.min(temperature, 6500));
@@ -48,14 +51,15 @@ export function temp_blue(temperature) {
     return blue;
 }
 
-export function tempToColorForStar(temperature) {
+export function tempToColorForStar(temperature, renderMode = null) {
     let dc = calculateTempColor(temperature);
     let rgb = [dc.r, dc.g, dc.b];
     
-    // if (starValueDownwardMult != null) {
-    //     let hsv = rgb2hsv(...rgb);
-    //     hsv[2] /= starValueDownwardMult;
-    //     rgb = hsv2rgb(...hsv);
-    // }
+    if (renderMode = DO_K_RENDERMODE_BWPRINT) {
+        let hsv = rgb2hsv(...rgb);
+        hsv[2] /= 10;
+        rgb = hsv2rgb(...hsv);
+    }
+
     return rgb;
 }

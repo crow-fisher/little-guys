@@ -1,4 +1,5 @@
 import { tempToColorForStar } from "../../../color/worldColor.js";
+import { DO_K_RENDERMODE } from "../../../debugOptions.js";
 import { Star } from "../model/Star.js";
 import { calculateStarTemperature } from "../starManagerUtil.js";
 import { CatalogHandlerBase } from "./CatalogHandlerBase.js";
@@ -51,7 +52,7 @@ export class HipparcosCatalog extends CatalogHandlerBase {
         let rowDecRad = rowDec / 57.295779513;
 
         let temperature = calculateStarTemperature(bv);
-        let color = tempToColorForStar(temperature);
+        let color = tempToColorForStar(temperature, this.starManager.worldManager.mainManager.debugOptions[DO_K_RENDERMODE]);
         if (isNaN(rowAsc) || isNaN(rowDec) || isNaN(magnitude) || isNaN(parallax)) {
             return;
         }

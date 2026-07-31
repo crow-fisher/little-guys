@@ -1,7 +1,7 @@
 import { loadGD, UI_CAMERA_ROTATION_VEC, UI_CAMERA_FOV, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_OFFSET_VEC } from "../ui/UIData.js";
 import { CoordinateSet } from "./model/CoordinateSet.js";
 import { multiplyMat3AndPointInplace, multiplyMatrixAndPoint, transposeMat3Inplace } from "../util/matrix.js";
-import { addVectors, copyVecValue, crossVec3Dest, multiplyVectorByScalar, multiplyVectorByScalarDest, multiplyVectorByScalarDestAdd, normalizeVec3, subtractVectorsDest } from "../util/vector.js";
+import { addVectors, addVectorsMult, copyVecValue, crossVec3Dest, multiplyVectorByScalar, multiplyVectorByScalarDest, multiplyVectorByScalarDestAdd, normalizeVec3, subtractVectorsDest } from "../util/vector.js";
 import { hsvToHex } from "../color/color.js";
 import { KeyboardCameraControlManager } from "./control/keyboardCameraControlManager.js";
 import { MouseCameraControlManager } from "./control/mouseCameraControlManager.js";
@@ -19,7 +19,7 @@ export class CameraManager {
             new MouseCameraControlManager(this)
         ]
         
-        this.cameraOffset = [-50, -20, 0];
+        this.cameraOffset = [68.24828509232965, -149.5569017542522, 17.766594747578097];
         this.cameraOffsetDt = [0, 0, 0];
         this.cameraMovement = [0, 0, 0];
         this.cameraRotation = [0, .3, 0];
@@ -77,7 +77,7 @@ export class CameraManager {
         multiplyVectorByScalarDestAdd(this.up, this.cameraOffsetDt[1], this.cameraMovement);
         multiplyVectorByScalarDestAdd(this.forward, this.cameraOffsetDt[2], this.cameraMovement);
 
-        addVectors(this.cameraOffset, this.cameraMovement);
+        addVectorsMult(this.cameraOffset, this.cameraMovement, 5);
         multiplyVectorByScalar(this.cameraOffsetDt, 0.8);
     }
     render() {

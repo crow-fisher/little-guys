@@ -35,12 +35,15 @@ export class ManipulationManager {
     }
 
     update() {
-        if (!this.updateBlockConditional())
-            return;
+
 
         if (this.blockManager.uiManager.toolbarConfig.activeBrushMode == 0) {
             return this.updatePlane();
         }
+
+        if (!this.updateBlockConditional())
+            return;
+
         switch (this.blockManager.uiManager.toolbarConfig.activeBrushMode) {
             case 1:
                 return this.updateBlock((parentSurface) => this.blockManipFuncAdd(parentSurface));
@@ -93,12 +96,15 @@ export class ManipulationManager {
     }
 
     updatePlane() {
-        if (this.planeManagerComponent.gcvZMode() == 0) {
+        if (this.planeManagerComponent.gcvZMode() == 0 || this.mouseManager.isButtonPressed(1)) {
             this.zPlane.centerCs.world[0] = this.cameraManager.cameraOffset[0];
             this.zPlane.centerCs.world[2] = this.cameraManager.cameraOffset[2];
             this.zPlane.centerCs.world[1] = this.cameraManager.cameraOffset[1] + 4;
             this.zPlane.processPositionUpdate();
         }
+
+        if (!this.updateBlockConditional())
+            return;
 
         if (this.planeManagerComponent.gcvModMode() == 1) {
             copyVecValue(this.cameraManager.cameraOffset, this.newPlane.centerCs.world);

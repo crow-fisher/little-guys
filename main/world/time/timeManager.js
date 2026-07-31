@@ -1,5 +1,6 @@
 import { hsvToHex } from "../../color/color.js";
 import { hexToRgb, invlerp, rgbToHexObj } from "../../common.js";
+import { DO_K_RENDERMODE, DO_K_RENDERMODE_BWPRINT } from "../../debugOptions.js";
 import { SunCalc } from "../../lib/suncalc/suncalc.js";
 import { MILLIS_PER_DAY } from "../../util/const.js";
 
@@ -18,7 +19,6 @@ export class TimeManager {
 
         this.lat = 41.881832;
         this.lng = -87.623177;
-
 
         this.sky_nightRGB = hexToRgb("#121622");
         this.sky_duskRGB = hexToRgb("#272525");
@@ -53,8 +53,16 @@ export class TimeManager {
     
 
     update() { 
-        this.timeTick(); 
-        this.colorTick();
+        this.timeTick();
+        if (this.worldManager.mainManager.debugOptions[DO_K_RENDERMODE] == DO_K_RENDERMODE_BWPRINT) {
+            this.colorTickBWPrint();
+        } else {
+            this.colorTick();
+        }
+    }
+
+    colorTickBWPrint() {
+        this.colorHEX = "#FFFFFF";
     }
 
     render() {

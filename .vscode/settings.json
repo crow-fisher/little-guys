@@ -5,8 +5,10 @@
     "breadcrumbs.showTypeParameters": false,
     "outline.showTypeParameters": false,
     "cSpell.words": [
+        "BWPRINT",
         "Manip",
         "MILLIS",
+        "RENDERMODE",
         "TANGOR"
     ]
 }

@@ -41,7 +41,7 @@ export class UIManager {
         this.colorPickerComponent = new ColorPickerComponent(this);
 
         this.components = [
-            // this.astronomyAtlasComponent,
+            this.astronomyAtlasComponent,
             // this.blockManagerComponent,
             // this.planeManagerComponent,
             this.topBarComponent,
