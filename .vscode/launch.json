@@ -4,19 +4,13 @@
             "type": "chrome",
             "name": "main",
             "request": "launch",
-            "url": "http://localhost?debug="
+            "url": "http://localhost"
         },
         {
             "type": "chrome",
-            "name": "main debug",
+            "name": "bwprint",
             "request": "launch",
-            "url": "http://localhost?debug=1"
-        },
-        {
-            "type": "chrome",
-            "name": "test",
-            "request": "launch",
-            "url": "http://localhost/test.html"
+            "url": "http://localhost/?renderMode=bwprint"
         }
     ]
 }

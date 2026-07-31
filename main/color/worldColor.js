@@ -55,7 +55,7 @@ export function tempToColorForStar(temperature, renderMode = null) {
     let dc = calculateTempColor(temperature);
     let rgb = [dc.r, dc.g, dc.b];
     
-    if (renderMode = DO_K_RENDERMODE_BWPRINT) {
+    if (renderMode == DO_K_RENDERMODE_BWPRINT) {
         let hsv = rgb2hsv(...rgb);
         hsv[2] /= 10;
         rgb = hsv2rgb(...hsv);
