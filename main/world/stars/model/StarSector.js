@@ -11,18 +11,20 @@ const FOV_VISIBLE = 0b01;
 export class StarSector {
     constructor(starManager, sector, cartesian, cartesianBounds) {
         this.starManager = starManager;
+        this.cameraManager = starManager.worldManager.mainManager.cameraManager;
+
         this.sector = sector;
         this.cartesian = cartesian;
         this.center = addScalarMultToVec3(cartesian, this.starManager.sectorSize, 0.5)
         this.corner = addScalarMultToVec3(cartesian, this.starManager.sectorSize, 1)
         this.cartesianBounds = cartesianBounds;
 
-        this.rootCs = new CoordinateSet(this.starManager.getCameraManager(), this.cartesian);
-        this.centerCs = new CoordinateSet(this.starManager.getCameraManager(), this.center);
-        this.cornerCs = new CoordinateSet(this.starManager.getCameraManager(), this.corner);
-        this.brightnessCs = new CoordinateSet(this.starManager.getCameraManager(), this.cartesian);
+        this.rootCs = new CoordinateSet(this.cameraManager, this.cartesian);
+        this.centerCs = new CoordinateSet(this.cameraManager, this.center);
+        this.cornerCs = new CoordinateSet(this.cameraManager, this.corner);
+        this.brightnessCs = new CoordinateSet(this.cameraManager, this.cartesian);
 
-        this.fovCs = new CoordinateSet(this.starManager.getCameraManager(), this.cartesian);
+        this.fovCs = new CoordinateSet(this.cameraManager, this.cartesian);
 
         this.rootCameraDist = this.fovCs.distToCamera;
         this.curCameraDist = this.rootCameraDist;
@@ -189,7 +191,7 @@ export class StarSector {
     }
 
     setBrightnessCameraPoint() {
-        copyVecValue(loadGD(UI_CAMERA_OFFSET_VEC), this.brightnessCs.world)
+        copyVecValue(this.cameraManager.cameraOffset, this.brightnessCs.world)
         this.brightnessCs.world[0] = Math.min(Math.max(this.cartesianBounds[0], this.brightnessCs.world[0]), this.cartesianBounds[3]);
         this.brightnessCs.world[1] = Math.min(Math.max(this.cartesianBounds[1], this.brightnessCs.world[1]), this.cartesianBounds[4]);
         this.brightnessCs.world[2] = Math.min(Math.max(this.cartesianBounds[2], this.brightnessCs.world[2]), this.cartesianBounds[5]);
@@ -197,7 +199,7 @@ export class StarSector {
     }
 
     setFOVCameraPoint() {
-        addVec3MultDest(loadGD(UI_CAMERA_OFFSET_VEC), this.starManager.worldManager.mainManager.cameraManager.forward, -this.fovCs.distToCamera, this.fovCs.world);
+        addVec3MultDest(this.cameraManager.cameraOffset, this.cameraManager.forward, -this.fovCs.distToCamera, this.fovCs.world);
         normalizeVec3(this.fovCs.world);
         addVec3MultDest(this.center, this.fovCs.world, this.starManager.sectorSize * Math.SQRT2, this.fovCs.world);
         this.fovCs.process();
@@ -217,7 +219,7 @@ export class StarSector {
 
         this.curCameraDist = this.fovCs.distToCamera;
         this.relCameraDist = (this.curCameraDist / this.rootCameraDist);
-        this.relCameraDistBrightnessMult = 1 / (this.relCameraDist ** loadGD(UI_SH_DISTPOWERMULT));
+        this.relCameraDistBrightnessMult = 1 / (this.relCameraDist ** 2);
         this.recalculateStarColorFlag |= (Math.min(this.curCameraDist, this.prevCameraDist) / Math.max(this.curCameraDist, this.prevCameraDist)) < 0.97;
     }
 

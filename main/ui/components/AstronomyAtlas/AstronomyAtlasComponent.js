@@ -45,7 +45,8 @@ export class AstronomyAtlasComponent extends Component {
         };
 
         if (this.uiManager.mainManager.debugOptions[DO_K_RENDERMODE] == DO_K_RENDERMODE_BWPRINT) {
-            dc = { "offsetScale": { "offsetX": 131, "offsetY": 98, "sizeX": 501, "sizeY": 604 }, "submenuState": { "plot": false, "label": false, "setup": false, "style": false, "select": false }, "plot": {}, "label": {}, "setup": {}, "style": { "brightnessPosX": 0.5289421157684631, "brightnessPosY": 0.16037735849056603, "brightnessC": 0.6307385229540918, "opacityPosX": 0.09780439121756487, "opacityPosY": 0.419811320754717, "opacityC": 0.25948103792415167, "mode": 1, "minSize": 0.40987124463519314, "maxSize": 8.948453608247423, "minLuminance": 1.8922155688622755, "maxLuminance": -0.658682634730539, "distPowerMult": 1.31 }, "select": {} }
+            dc =
+                { "offsetScale": { "offsetX": 117, "offsetY": 77, "sizeX": 485, "sizeY": 594 }, "submenuState": { "plot": false, "label": false, "setup": false, "style": false, "select": false }, "plot": {}, "label": {}, "setup": {}, "style": { "brightnessPosX": 0.11958762886597939, "brightnessPosY": 0.49504950495049505, "brightnessC": 0.6307385229540918, "opacityPosX": 0.7814432989690722, "opacityPosY": 0.23267326732673269, "opacityC": 0.25948103792415167, "mode": 1, "minSize": 0.40987124463519314, "maxSize": 8.948453608247423, "minLuminance": 1.9216494845360825, "maxLuminance": -0.658682634730539, "distPowerMult": 1.31 }, "select": {} }
         }
 
         return dc;

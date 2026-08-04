@@ -190,8 +190,15 @@ export class StarManager {
                     }
                 )));
         this._sectorsIterArr.length = this._numSectors;
-        this._sectorsIterArr.sort((a, b) => b.fovCs.distToCamera - a.fovCs.distToCamera);
-        this._sectorsIterArr.forEach((s) => this._numStarsRendered += s.render());
+        // this._sectorsIterArr.sort((a, b) => b.fovCs.distToCamera - a.fovCs.distToCamera);
+        let numSectorsRendered = 0; 
+        this._sectorsIterArr.forEach((s) => {
+            let v = s.render();
+            this._numStarsRendered += v;
+        numSectorsRendered += Math.min(1, v)
+        });
+
+        console.log(numSectorsRendered, this._numStarsRendered);
         // if (this._numStarsRendered > 10000) {
         //     this.getAstronomyAtlasComponent().mcvMinLuminance(.1);
         // } else {
