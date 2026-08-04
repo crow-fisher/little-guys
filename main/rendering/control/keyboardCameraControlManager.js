@@ -6,7 +6,8 @@ export class KeyboardCameraControlManager extends CameraControlManager {
         return this.cameraManager.isPointerLocked();
     }
     controlRoutine() {
-        this.rate = .2;
+        this.rate = .002 * this.cameraManager.mainManager.worldManager.timeManager.dt;
+
         if (this.cameraManager.isKeyPressed("shift")) {
             this.rate *= 16;
         }

@@ -4,6 +4,7 @@ import { multiplyVectorByScalar } from "../util/vector.js";
 import { AstronomyAtlasComponent } from "./components/AstronomyAtlas/AstronomyAtlasComponent.js";
 import { BlockManagerComponent } from "./components/BlockManager/BlockManagerComponent.js";
 import { ColorPickerComponent } from "./components/ColorPickerComponent.js";
+import { CrosshairComponent } from "./components/CrosshairComponent.js";
 import { PlaneManagerComponent } from "./components/PlaneManager/PlaneManagerComponent.js";
 import { ToolBarComponent } from "./toolbar/ToolBarComponent.js";
 import { TopBarComponent } from "./topbar/TopBarComponent.js";
@@ -39,6 +40,7 @@ export class UIManager {
         this.toolBarComponent = new ToolBarComponent(this);
         
         this.colorPickerComponent = new ColorPickerComponent(this);
+        this.crosshairComponent = new CrosshairComponent(this);
 
         this.components = [
             this.astronomyAtlasComponent,
@@ -46,7 +48,8 @@ export class UIManager {
             // this.planeManagerComponent,
             this.topBarComponent,
             this.toolBarComponent,
-            this.colorPickerComponent
+            this.colorPickerComponent,
+            this.crosshairComponent
         ]
     }
 
@@ -71,11 +74,25 @@ export class UIManager {
         return hsvToHex(41, .29, .29 * b);
     }
 
+    requestTouch() {
+        if (!this.frameLastTouched) {
+            this.frameLastTouched = true;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     update() {
-        this.components.forEach((component) => component.update());
+        this.frameLastTouched = false;
+        this.components.sort((a, b) => (a.lastTouched ?? 0) - (b.lastTouched ?? 0))
+        for (let i = 0; i < this.components.length; i++) {
+            this.components.at(this.components.length - (1 + i)).update();
+        }
     }
 
     render() {
+        this.components.sort((a, b) => (a.lastTouched ?? 0) - (b.lastTouched ?? 0))
         this.components.forEach((component) => component.render());
     }
 

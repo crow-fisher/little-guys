@@ -5,6 +5,7 @@ export class MouseManager {
     constructor(inputManager) {
         this.inputManager = inputManager;
         this.cameraManager = inputManager.mainManager.cameraManager;
+        this.canvasManager = inputManager.mainManager.canvasManager;
         this.ms = 0;
         this.pms = 0;
         this.offset = { x: 0, y: 0 };
@@ -41,9 +42,12 @@ export class MouseManager {
 
     mousemove(e) {
         this.offset = this.getOffset(e);
-        if (this.inputManager.isPointerLocked()) {
+        if (this.canvasManager.pointerLock) {
             this.movement.x += e.movementX / 35000
             this.movement.y += e.movementY / 35000
+
+            this.offset.x = this.canvasManager.canvas.width / 2;
+            this.offset.y = this.canvasManager.canvas.height / 2;
         }
     }
 
@@ -58,7 +62,7 @@ export class MouseManager {
     }
 
     render() {
-        if (this.inputManager.isPointerLocked()) {
+        if (this.canvasManager.pointerLock) {
             return;
         }
         return;

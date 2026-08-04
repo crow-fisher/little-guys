@@ -10,6 +10,7 @@ export class Component {
         this.container = new Container(this.window, 1);
         this.window.container = this.container;
         this.dirtyConfig = false;
+        this.lastTouched = 0;
     }
 
     /// core runtime methods
@@ -27,7 +28,10 @@ export class Component {
         }
         this._pastConfig = this._curConfig;
         if (this.window.shouldRegisterMouseInput())
-            this.window.update(this.gcvOffsetX(), this.gcvOffsetY());
+            if (this.uiManager.requestTouch()) {
+                this.lastTouched = Date.now();
+                this.window.update(this.gcvOffsetX(), this.gcvOffsetY());
+            }
     }
 
     /// core config setup methods

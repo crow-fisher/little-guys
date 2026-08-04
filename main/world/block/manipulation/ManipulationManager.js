@@ -14,13 +14,14 @@ import { Plane } from "./model/Plane.js";
 export class ManipulationManager {
     constructor(blockManager) {
         this.blockManager = blockManager;
+        this.uiManager = blockManager.uiManager;
         this.inputManager = blockManager.worldManager.mainManager.inputManager;
         this.mouseManager = blockManager.worldManager.mainManager.inputManager.mouseManager;
         this.cameraManager = blockManager.worldManager.mainManager.cameraManager;
         this.canvasManager = blockManager.worldManager.mainManager.canvasManager;
         this.rasterizationManager = blockManager.worldManager.mainManager.rasterizationManager;
         this.planeManagerComponent = blockManager.worldManager.mainManager.uiManager.planeManagerComponent;
-        this.colorConfig = this.blockManager.worldManager.mainManager.uiManager.colorConfig;
+        this.colorConfig = blockManager.worldManager.mainManager.uiManager.colorConfig;
 
         let pSize = 20;
         this.zPlane = new Plane(this, 0, Math.PI / 2, 1, pSize, pSize);
@@ -35,16 +36,14 @@ export class ManipulationManager {
     }
 
     update() {
-
-
-        if (this.blockManager.uiManager.toolbarConfig.activeBrushMode == 0) {
+        if (this.uiManager.toolbarConfig.activeBrushMode == 0) {
             return this.updatePlane();
         }
 
         if (!this.updateBlockConditional())
             return;
 
-        switch (this.blockManager.uiManager.toolbarConfig.activeBrushMode) {
+        switch (this.uiManager.toolbarConfig.activeBrushMode) {
             case 1:
                 return this.updateBlock((parentSurface) => this.blockManipFuncAdd(parentSurface));
             case 2:
@@ -55,7 +54,7 @@ export class ManipulationManager {
     }
 
     updateBlockConditional() {
-        switch (this.blockManager.uiManager.toolbarConfig.clickMode) {
+        switch (this.uiManager.toolbarConfig.clickMode) {
             case 1:
                 return this.mouseManager.isFrameButtonPressed(0);
             case 0:
@@ -140,11 +139,15 @@ export class ManipulationManager {
         }
     }
 
+
     render() {
-        if (this.blockManager.uiManager.toolbarConfig.activeBrushMode == 0) {
+
+        
+
+        if (this.uiManager.toolbarConfig.activeBrushMode == 0) {
             this.renderPlane();
         }
-        else if (this.blockManager.uiManager.toolbarConfig.activeBrushMode == 1) {
+        else if (this.uiManager.toolbarConfig.activeBrushMode == 1) {
             this.renderBlock();
         }
     }

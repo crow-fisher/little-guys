@@ -197,8 +197,6 @@ export class StarManager {
             this._numStarsRendered += v;
         numSectorsRendered += Math.min(1, v)
         });
-
-        console.log(numSectorsRendered, this._numStarsRendered);
         // if (this._numStarsRendered > 10000) {
         //     this.getAstronomyAtlasComponent().mcvMinLuminance(.1);
         // } else {
