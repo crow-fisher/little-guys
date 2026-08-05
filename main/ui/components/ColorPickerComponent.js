@@ -8,8 +8,8 @@ import { UI_CENTER } from "../UIData.js";
 
 
 export class ColorPickerComponent extends Component {
-    constructor(uiManager) {
-        super(uiManager);
+    constructor(uiManager, activeFunc) {
+        super(uiManager, activeFunc);
         this.name = "ColorPickerComponent";
         this.configInit();
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "color picker"))

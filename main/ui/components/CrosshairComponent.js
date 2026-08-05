@@ -1,14 +1,13 @@
 export class CrosshairComponent {
     constructor(uiManager) {
         this.uiManager = uiManager;
+        this.activeFunc = () => this.canvasManager.pointerLock
         this.canvasManager = uiManager.mainManager.canvasManager;
         this.mouseManager = uiManager.mainManager.inputManager.mouseManager;
         this.lastTouched = Date.now() * 2;
     }
     render() {
-        if (this.canvasManager.pointerLock) {
-            this.renderCrosshair();
-        }
+        this.renderCrosshair();
     }
 
     update() {}

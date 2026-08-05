@@ -132,8 +132,8 @@ export class AstronomyAtlasComponent extends Component {
     scvDistPowerMult(v) {
         this.config().style.distPowerMult = v;
     }
-    constructor(uiManager) {
-        super(uiManager);
+    constructor(uiManager, activeFunc) {
+        super(uiManager, activeFunc);
         this.name = "AstronomyAtlasComponent";
         this.configInit();
 

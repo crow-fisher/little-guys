@@ -9,6 +9,7 @@ import { DIRT, COLOR, STONE, PLANE, BLOCK, REPLACE, ERASE, DRAG, CLICK } from ".
 export class ToolBarComponent {
     constructor(uiManager) {
         this.uiManager = uiManager;
+        this.activeFunc = () => true;
         this.name = "ToolBarComponent";
         this.canvasManager = uiManager.mainManager.canvasManager;
         this.mouseManager = uiManager.mainManager.inputManager.mouseManager;
@@ -78,9 +79,6 @@ export class ToolBarComponent {
     }
 
     render() {
-        this.uiManager.getContext().fillStyle = "#FF0000";
-        this.uiManager.getContext().fillRect(0, 0, 10, 10);
-        
         this.toolBarElements.forEach((el) => {
             el.render(this._pX, this._pY, this._dX, this._dY);
             this._pX += 2 * this._dX;

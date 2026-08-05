@@ -1,0 +1,3 @@
+export const TB_BLOCK_COLOR = "TB_BLOCK_COLOR";
+export const TB_BLOCK_ATTRIBUTE = "TB_BLOCK_ATTRIBUTE";
+export const TB_ASTRONOMY = "TB_ASTRONOMY";

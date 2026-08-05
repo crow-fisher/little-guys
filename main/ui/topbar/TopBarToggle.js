@@ -1,10 +1,10 @@
-import { loadGD, saveGD, UI_BOOLEAN } from "../UIData.js";
 import { TopBarElementBase } from "./TopBarElementBase.js";
 
 export class TopBarToggle extends TopBarElementBase {
-    constructor(uiManager, fontSize, textAlign, ref, labelFunc, startMaxWidth=0) {
+    constructor(uiManager, fontSize, textAlign, ref, key, labelFunc, startMaxWidth=0) {
         super(uiManager, fontSize, textAlign);
         this.ref = ref;
+        this.key = key;
         this.labelFunc = labelFunc;
         this.lastClick = 0;
         this.maxWidth = startMaxWidth;
@@ -25,7 +25,7 @@ export class TopBarToggle extends TopBarElementBase {
             return;
         }
         this.prepareStyle();
-        if (this.uiManager.topbarConfig[this.ref] == this.labelFunc())
+        if (this.uiManager.topbarConfig[this.ref] == this.key)
              this.uiManager.getContext().fillStyle = "#FFFFFF";
         else
              this.uiManager.getContext().fillStyle = "#999999";
@@ -37,6 +37,9 @@ export class TopBarToggle extends TopBarElementBase {
         if (!this.uiManager.isFrameButtonPressed(0)) {
             return;
         }
-        this.uiManager.topbarConfig[this.ref] = this.labelFunc();
+        if (this.uiManager.topbarConfig[this.ref] == this.key)
+            this.uiManager.topbarConfig[this.ref] = null;
+        else
+            this.uiManager.topbarConfig[this.ref] = this.key;
     }
 }

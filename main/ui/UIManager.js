@@ -8,6 +8,7 @@ import { CrosshairComponent } from "./components/CrosshairComponent.js";
 import { PlaneManagerComponent } from "./components/PlaneManager/PlaneManagerComponent.js";
 import { ToolBarComponent } from "./toolbar/ToolBarComponent.js";
 import { TopBarComponent } from "./topbar/TopBarComponent.js";
+import { TB_ASTRONOMY, TB_BLOCK_COLOR } from "./topbar/topBarEnum.js";
 import { loadGD, saveGD, UI_COMPONENT_DATA, UI_TOPBAR } from "./UIData.js";
 
 
@@ -33,13 +34,13 @@ export class UIManager {
             rgbArrHistory: []
         }
 
-        this.astronomyAtlasComponent = new AstronomyAtlasComponent(this);
+        this.astronomyAtlasComponent = new AstronomyAtlasComponent(this, () => this.topbarConfig.active == TB_ASTRONOMY);
         this.planeManagerComponent = new PlaneManagerComponent(this);
         this.blockManagerComponent = new BlockManagerComponent(this);
         this.topBarComponent = new TopBarComponent(this);
         this.toolBarComponent = new ToolBarComponent(this);
         
-        this.colorPickerComponent = new ColorPickerComponent(this);
+        this.colorPickerComponent = new ColorPickerComponent(this, () => this.topbarConfig.active == TB_BLOCK_COLOR);
         this.crosshairComponent = new CrosshairComponent(this);
 
         this.components = [
@@ -85,15 +86,13 @@ export class UIManager {
 
     update() {
         this.frameLastTouched = false;
-        this.components.sort((a, b) => (a.lastTouched ?? 0) - (b.lastTouched ?? 0))
-        for (let i = 0; i < this.components.length; i++) {
-            this.components.at(this.components.length - (1 + i)).update();
-        }
+        this.components.sort((b, a) => (a.lastTouched ?? 0) - (b.lastTouched ?? 0))
+        this.components.filter((c) => c.activeFunc()).forEach((component) => component.update());
     }
 
     render() {
         this.components.sort((a, b) => (a.lastTouched ?? 0) - (b.lastTouched ?? 0))
-        this.components.forEach((component) => component.render());
+        this.components.filter((c) => c.activeFunc()).forEach((component) => component.render());
     }
 
     getBaseUISize() {

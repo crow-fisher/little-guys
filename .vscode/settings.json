@@ -5,10 +5,14 @@
     "breadcrumbs.showTypeParameters": false,
     "outline.showTypeParameters": false,
     "cSpell.words": [
+        "BLOCKMENU",
         "BWPRINT",
+        "LIGHTINGMENU",
+        "MAINMENU",
         "Manip",
         "MILLIS",
         "RENDERMODE",
+        "STARSMENU",
         "TANGOR"
     ]
 }

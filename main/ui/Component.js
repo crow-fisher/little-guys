@@ -3,9 +3,10 @@ import { loadGD, UI_TOPBAR_AA, UI_TOPBAR_BLOCK } from "./UIData.js";
 import { Window } from "./Window.js";
 
 export class Component {
-    constructor(uiManager) {
+    constructor(uiManager, activeFunc = () => true) {
         this.name = "Component";
         this.uiManager = uiManager;
+        this.activeFunc = activeFunc;
         this.window = new Window(this);
         this.container = new Container(this.window, 1);
         this.window.container = this.container;
