@@ -13,7 +13,6 @@ export class ColorPickerComponent extends Component {
         this.name = "ColorPickerComponent";
         this.configInit();
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "color picker"))
-
         // let n = 20;
         // for (let i = 2; i < n; i++) {
         //     this.container.addElement(new ColorHueSlider(this.window, () => this.gcvSizeX(), () => this.ggvdH1() * 20 / n, i));
@@ -23,8 +22,6 @@ export class ColorPickerComponent extends Component {
         this.container.addElement(new ColorInputTarget(this.window, () => this.gcvSizeX(), () => this.gcvSizeX()));
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "active"))
         this.container.addElement(new ColorActiveColor(this.window, () => this.gcvSizeX(), () => this.ggvdH1()));
-
-
     }
 
     getDefaultConfig() {

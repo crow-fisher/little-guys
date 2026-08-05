@@ -6,7 +6,7 @@ import { WindowElement } from "../../WindowElement.js";
 
 export class ColorSaturationValueArea extends WindowElement {
     constructor(window, sizeXFunc, sizeYFunc, steps = 50) {
-        super(window, sizeXFunc, sizeYFunc); 
+        super(window, sizeXFunc, sizeYFunc);
         this.colorConfig = this.window.component.uiManager.colorConfig;
         this.steps = steps;
     }
@@ -92,8 +92,14 @@ export class ColorSaturationValueArea extends WindowElement {
             this.window.getContext().lineTo(..._p1)
             this.window.getContext().closePath();
             this.window.getContext().fill();
-            
-            }
+        }
+            this.window.getContext().beginPath()
 
+        this.window.getContext().fillStyle = "#000000";
+        this.window.getContext().arc(
+            lerp(p1[0], p3[0], 1 - this.colorConfig.s),
+            lerp(p1[1], p3[1], this.colorConfig.v),
+            4, 0, 2 * Math.PI, false);
+        this.window.getContext().fill();
     }
 }

@@ -243,11 +243,10 @@ export class Window {
     }
 
     userInteractingRoutine() {
-        if (this.isFrameButtonPressed(0)) {
+        if (this.isFrameButtonPressed(0))
             this.container.interactClick(this.relX, this.relY);
-        } else {
-            this.container.interact(this.relX, this.relY);
-        }
+        
+        this.container.interact(this.relX, this.relY);
     }
 
     update(posX, posY) {

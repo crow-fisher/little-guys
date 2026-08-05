@@ -37,6 +37,7 @@ export class TopBarToggle extends TopBarElementBase {
         if (!this.uiManager.isFrameButtonPressed(0)) {
             return;
         }
+
         if (this.uiManager.topbarConfig[this.ref] == this.key)
             this.uiManager.topbarConfig[this.ref] = null;
         else

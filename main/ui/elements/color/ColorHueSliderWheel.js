@@ -69,6 +69,16 @@ export class ColorHueSliderWheel extends WindowElement {
             this.window.getContext().closePath();
             this.window.getContext().fill();
         }
+
+        // p1 = [0, 0];
+        // p2 = [0, 0];
+        
+        // this.window.getContext().beginPath()
+        // this.window.getContext().fillStyle = "#000000";
+        // this.window.getContext().moveTo(...p1);
+        // this.window.getContext().lineTo(...p2)
+        // this.window.getContext().closePath();
+        // this.window.getContext().fill();
     }
 
     interact(posX, posY) {
