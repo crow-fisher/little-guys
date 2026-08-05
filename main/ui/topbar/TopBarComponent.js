@@ -37,38 +37,35 @@ export class TopBarComponent {
         let fontSize = this.uiManager.getBaseUISize() * 3 * 0.75;
         this.midSpacingEl = new TopBarText(this.uiManager, fontSize, "left", () => " | ")
 
-        this.elements[1] = [
-            new TopBarToggle(this.uiManager, fontSize, "left", UI_TOPBAR_IBOD, UI_BOOLEAN, () => this.textIBOD()),
-            this.midSpacingEl,
-            new TopBarText(this.uiManager, fontSize, "left", () => this.textWorldName())
-        ]
+        // this.elements[1] = [
+        //     new TopBarToggle(this.uiManager, fontSize, "left", UI_TOPBAR_IBOD, UI_BOOLEAN, () => this.textIBOD()),
+        //     this.midSpacingEl,
+        //     new TopBarText(this.uiManager, fontSize, "left", () => this.textWorldName())
+        // ]
+
+        let speedElements = [];
+        for (let i = 1; i < 10; i++) {
+            speedElements.push(new TopBarToggleFunc(this.uiManager, fontSize, "left", () => this.uiManager.getCurTimeScale() == i, () => this.uiManager.setCurTimeScale(i), () => "▶"));
+        }
 
         this.elements[0] = [
-            new TopBarToggle(this.uiManager, fontSize, "left", UI_TOPBAR_MAINMENU, UI_BOOLEAN, () => this.textMainMenu()),
+            new TopBarToggle(this.uiManager, fontSize, "left", "active", () => this.textMainMenu()),
             this.midSpacingEl,
-            new TopBarToggle(this.uiManager, fontSize, "left", UI_TOPBAR_BLOCK, UI_BOOLEAN, () => this.textBlockMenu()),
+            new TopBarToggle(this.uiManager, fontSize, "left", "active", () => this.textBlockMenu()),
             this.midSpacingEl,
-            new TopBarToggle(this.uiManager, fontSize, "left", UI_TOPBAR_VIEWMODE, UI_BOOLEAN, () => this.textViewMode()),
+            new TopBarToggle(this.uiManager, fontSize, "left", "active", () => this.textViewMode()),
             this.midSpacingEl,
-            new TopBarToggle(this.uiManager, fontSize, "left", UI_TOPBAR_LIGHTING, UI_BOOLEAN, () => this.textToggleLighting()),
+            new TopBarToggle(this.uiManager, fontSize, "left", "active", () => this.textToggleLighting()),
             this.midSpacingEl,
-            new TopBarToggle(this.uiManager, fontSize, "left", UI_TOPBAR_AA, UI_BOOLEAN, () => this.textStargazer()),
+            new TopBarToggle(this.uiManager, fontSize, "left", "active", () => this.textStargazer()),
             this.midSpacingEl,
-            new TopBarToggleFunc(this.uiManager, fontSize, "left", () => this.uiManager.getCurTimeScale() == UI_SPEED_ZERO, () => this.uiManager.setCurTimeScale(UI_SPEED_ZERO), () => "\u23F8\uFE0E"),
-            new TopBarToggleFunc(this.uiManager, fontSize, "left", () => this.uiManager.getCurTimeScale() == UI_SPEED_ONE, () => this.uiManager.setCurTimeScale(UI_SPEED_ONE), () => "▶"),
-            new TopBarToggleFunc(this.uiManager, fontSize, "left", () => this.uiManager.getCurTimeScale() == UI_SPEED_TWO, () => this.uiManager.setCurTimeScale(UI_SPEED_TWO), () => "▶"),
-            new TopBarToggleFunc(this.uiManager, fontSize, "left", () => this.uiManager.getCurTimeScale() == UI_SPEED_THREE, () => this.uiManager.setCurTimeScale(UI_SPEED_THREE), () => "▶"),
-            new TopBarToggleFunc(this.uiManager, fontSize, "left", () => this.uiManager.getCurTimeScale() == UI_SPEED_FOUR, () => this.uiManager.setCurTimeScale(UI_SPEED_FOUR), () => "▶"),
-            new TopBarToggleFunc(this.uiManager, fontSize, "left", () => this.uiManager.getCurTimeScale() == UI_SPEED_FIVE, () => this.uiManager.setCurTimeScale(UI_SPEED_FIVE), () => "▶"),
-            new TopBarToggleFunc(this.uiManager, fontSize, "left", () => this.uiManager.getCurTimeScale() == UI_SPEED_SIX, () => this.uiManager.setCurTimeScale(UI_SPEED_SIX), () => "▶"),
-            new TopBarToggleFunc(this.uiManager, fontSize, "left", () => this.uiManager.getCurTimeScale() == UI_SPEED_SEVEN, () => this.uiManager.setCurTimeScale(UI_SPEED_SEVEN), () => "▶"),
-            new TopBarToggleFunc(this.uiManager, fontSize, "left", () => this.uiManager.getCurTimeScale() == UI_SPEED_EIGHT, () => this.uiManager.setCurTimeScale(UI_SPEED_EIGHT), () => "▶"),
-            new TopBarToggleFunc(this.uiManager, fontSize, "left", () => this.uiManager.getCurTimeScale() == UI_SPEED_NINE, () => this.uiManager.setCurTimeScale(UI_SPEED_NINE), () => "▶"),
+            new TopBarToggleFunc(this.uiManager, fontSize, "left", () => this.uiManager.getCurTimeScale() == 0, () => this.uiManager.setCurTimeScale(0), () => "\u23F8\uFE0E"),
+            ...speedElements,
             // new TopBarTimeSeekLabel(fontSize,"left", () => "⏭"),
             this.midSpacingEl,
-            new TopBarToggle(this.uiManager, fontSize, "left", UI_TOPBAR_TIME, UI_BOOLEAN, () => this.textDateTime(), this.uiManager.getBaseUISize() * 26.404296875),
-            new TopBarToggle(this.uiManager, fontSize, "left", UI_TOPBAR_WEATHER, UI_BOOLEAN, () => " | " + this.textWeather()),
-            new TopBarText(this.uiManager, fontSize, "left", () => " | " + this.textFps())
+            // new TopBarToggle(this.uiManager, fontSize, "left", UI_TOPBAR_TIME, UI_BOOLEAN, () => this.textDateTime(), this.uiManager.getBaseUISize() * 26.404296875),
+            // new TopBarToggle(this.uiManager, fontSize, "left", UI_TOPBAR_WEATHER, UI_BOOLEAN, () => " | " + this.textWeather()),
+            // new TopBarText(this.uiManager, fontSize, "left", () => " | " + this.textFps())
         ];
 
         Object.keys(this.elements).forEach((key) => this.elementPositions[key] = new Array(this.elements[key].length));
