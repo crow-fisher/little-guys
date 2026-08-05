@@ -2,13 +2,14 @@ import { hsvToHex } from "../color/color.js";
 import { hsv2rgb } from "../common.js";
 import { multiplyVectorByScalar } from "../util/vector.js";
 import { AstronomyAtlasComponent } from "./components/AstronomyAtlas/AstronomyAtlasComponent.js";
+import { BlockAttributeComponent } from "./components/BlockAttributeComponent.js";
 import { BlockManagerComponent } from "./components/BlockManager/BlockManagerComponent.js";
 import { ColorPickerComponent } from "./components/ColorPickerComponent.js";
 import { CrosshairComponent } from "./components/CrosshairComponent.js";
 import { PlaneManagerComponent } from "./components/PlaneManager/PlaneManagerComponent.js";
 import { ToolBarComponent } from "./toolbar/ToolBarComponent.js";
 import { TopBarComponent } from "./topbar/TopBarComponent.js";
-import { TB_ASTRONOMY, TB_BLOCK_COLOR } from "./topbar/topBarEnum.js";
+import { TB_ASTRONOMY, TB_BLOCK_ATTRIBUTE, TB_BLOCK_COLOR } from "./topbar/topBarEnum.js";
 import { loadGD, saveGD, UI_COMPONENT_DATA, UI_TOPBAR } from "./UIData.js";
 
 
@@ -41,12 +42,14 @@ export class UIManager {
         this.toolBarComponent = new ToolBarComponent(this);
         
         this.colorPickerComponent = new ColorPickerComponent(this, () => this.topbarConfig.active == TB_BLOCK_COLOR);
+        this.blockAttributeComponent = new BlockAttributeComponent(this, () => this.topbarConfig.active == TB_BLOCK_ATTRIBUTE);
         this.crosshairComponent = new CrosshairComponent(this);
 
         this.components = [
             this.astronomyAtlasComponent,
             // this.blockManagerComponent,
             // this.planeManagerComponent,
+            this.blockAttributeComponent,
             this.topBarComponent,
             this.toolBarComponent,
             this.colorPickerComponent,
