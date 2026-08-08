@@ -2,7 +2,7 @@ import { hsvToHex } from "../../color/color.js";
 import { WindowElement } from "../WindowElement.js";
 
 export class SliderGradientBackground extends WindowElement {
-    constructor(window, sizeXFunc, sizeYFunc, getter, setter, min, max, hue, saturation) {
+    constructor(window, sizeXFunc, sizeYFunc, getter, setter, min=0, max=1, hue=0, saturation=0) {
         super(window, sizeXFunc, sizeYFunc);
         this.getter = getter;
         this.setter = setter;
@@ -24,7 +24,8 @@ export class SliderGradientBackground extends WindowElement {
         let blockSize = this.sizeYFunc();
         let invlerp = (this.getter() - this.min) / (this.max - this.min);
         let lerp = invlerp * this.sizeXFunc();
-
+        
+        this.window.getContext().beginPath()
         this.window.getContext().fillStyle = hsvToHex(this.hue, this.saturation, invlerp);
         this.window.getContext().fillRect(startX + lerp - (blockSize / 2), startY, blockSize, this.sizeYFunc());
         this.window.getContext().fill();

@@ -93,8 +93,7 @@ export class ColorSaturationValueArea extends WindowElement {
             this.window.getContext().closePath();
             this.window.getContext().fill();
         }
-            this.window.getContext().beginPath()
-
+        this.window.getContext().beginPath()
         this.window.getContext().fillStyle = "#000000";
         this.window.getContext().arc(
             lerp(p1[0], p3[0], 1 - this.colorConfig.s),
