@@ -10,16 +10,22 @@ let bid = 0;
 
 export class Block {
     constructor(blockManager, cartesian) {
-        this._bid = bid++;
         this.blockManager = blockManager;
         this.timeManager = blockManager.worldManager.timeManager;
         this.rasterizationManager = blockManager.worldManager.mainManager.rasterizationManager;
         this.cameraManager = blockManager.worldManager.mainManager.cameraManager;
         this.canvasManager = blockManager.worldManager.mainManager.canvasManager;
 
-        this.cartesian = [Math.round(cartesian[0]), Math.round(cartesian[1]), Math.round(cartesian[2])];
-        this.sector = blockManager.cartesianToSector(this.cartesian);
+        this.bid = bid++;
+        this.spawnDay = this.timeManager.curDay;
+        this.spawnDate = this.timeManager.curDate;
 
+        this.cartesian = cartesian;
+        this.sector = blockManager.cartesianToSector(cartesian);
+
+
+        // opacity
+        this.opacity = 1;
         /// movement
         this.grounded = true;
         // core parameters 

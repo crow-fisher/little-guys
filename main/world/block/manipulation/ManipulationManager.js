@@ -82,12 +82,11 @@ export class ManipulationManager {
     blockManipFuncAdd(parentSurface) {
         let cartesian = [0, 0, 0];
         addVec3Dest(parentSurface[1].cartesian, parentSurface[2], cartesian);
-        this.blockManager.addNewBlockAtPosActiveTool(cartesian)
+        this.blockManager.addNewBlock(cartesian)
     }
 
     blockManipFuncReplace(parentSurface) {
-        copyVecValue(this.colorConfig.rgbArr, parentSurface[1].colorBase);
-        parentSurface[1].recalculateColorFlag = true;
+        this.blockManager.applyBlockAttributes(parentSurface[1]);
     }
 
     blockManipFuncErase(parentSurface) {
@@ -141,9 +140,6 @@ export class ManipulationManager {
 
 
     render() {
-
-        
-
         if (this.uiManager.toolbarConfig.activeBrushMode == 0) {
             this.renderPlane();
         }

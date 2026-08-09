@@ -8,7 +8,7 @@ export class ColorInputTarget extends WindowElement {
     constructor(window, sizeXFunc, sizeYFunc) {
         super(window, sizeXFunc, sizeYFunc);
         this.uiManager = this.window.component.uiManager;
-        this.colorConfig = this.window.component.uiManager.colorConfig;
+        this.colorConfig = this.window.component.config().colorConfig;
         this.mouseManager = this.window.component.uiManager.mainManager.inputManager.mouseManager;
 
         this.midpoint = [0, 0];

@@ -43,8 +43,8 @@ export class BlockAttributeComponent extends Component {
         let r2 = new Container(0);
         this.container.addElement(r2);
         r2.addElement(new Toggle(this.window, () => this.gcvdThirdX(), () => this.ggvdH1(), UI_CENTER,
-         () => this.gcvTransparencyActive(), (v) => this.scvTransparencyActive(v), 
-         "transparency", () => "#863c3c", () => "#FFFFFF"));
+            () => this.gcvTransparencyActive(), (v) => this.scvTransparencyActive(v),
+            "transparency", () => "#863c3c", () => "#FFFFFF"));
         r2.addElement(new SliderGradientBackground(this.window, () => this.gcvdThirdX() * 2, () => this.ggvdH1(), () => this.gcvTransparencyValue(), (value) => this.scvTransparencyValue(value)))
     }
 
@@ -63,6 +63,13 @@ export class BlockAttributeComponent extends Component {
 
     getDefaultConfig() {
         return {
+            colorConfig: {
+                h: 0,
+                s: 0.5,
+                v: 0.5,
+                colorHistory: [],
+                rgbArr: [127, 127, 127]
+            },
             transparency: {
                 active: 0,
                 value: 0.5

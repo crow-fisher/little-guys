@@ -15,6 +15,7 @@ export class BlockManager {
         this.timeManager = worldManager.timeManager;
         this.uiManager = worldManager.mainManager.uiManager;
         this.blockManagerComponent = worldManager.mainManager.uiManager.blockManagerComponent;
+        this.blockConfig = this.uiManager._config["BlockAttributeComponent"];
 
         this.sectorSize = 25;
         this.manipulationManager = new ManipulationManager(this);
@@ -104,18 +105,29 @@ export class BlockManager {
         return this._cSect1.getBlock(this._cVec1);
     }
 
-    addNewBlockAtPosActiveTool(cartesian) {
-        this.addNewBlock(cartesian, this.materials.at(this.uiManager.toolbarConfig.activeTool))
-    }
-
-    addNewBlock(cartesian, type) {
-        let newBlock = new type(this, cartesian);
+    addNewBlock(cartesian) {
+        let newBlock = new Block(this, cartesian);
         if (this.getSector(newBlock.sector).getBlock(cartesian)) {
             return;
         }
-        
         this.getSector(newBlock.sector).addBlock(newBlock);
         newBlock.linkNeighbors();
+        this.applyBlockAttributes(newBlock);
+    }
+
+    applyBlockAttributes(ref) {
+        if (true) {
+            copyVecValue(this.blockConfig.colorConfig.rgbArr, ref.colorBase);
+            ref.recalculateColorFlag = true;
+        }
+        
+        if (true) {
+            if (this.blockConfig.transparency.active) {
+                ref.opacity = this.blockConfig.transparency.value;
+            } else {
+                ref.opacity = 1;
+            }
+        }
     }
 
     brushFromRef(p, refCs, applyPrimary, applySecondary) {
