@@ -1,4 +1,4 @@
-import { hsvToHex, rgbToHex } from "../../../color/color.js";
+import { hsvToHex, rgbToHex, rgbToRgba } from "../../../color/color.js";
 import { CoordinateSet } from "../../../rendering/model/CoordinateSet.js";
 import { LineRenderJob } from "../../../rendering/model/LineRenderJob.js";
 import { PointLabelRenderJob } from "../../../rendering/model/PointLabelRenderJob.js";
@@ -106,7 +106,7 @@ export class Block {
     }
 
     getLightFilterRate() {
-        return 0.5;
+        return 0.5 * this.opacity;
     }
 
     linkNeighbors() {
@@ -191,12 +191,12 @@ export class Block {
             multiplyVectorsDest(this.colorBase, this.znzLightApplied, this.znzColorApplied);
             multiplyVectorsDest(this.colorBase, this.zznLightApplied, this.zznColorApplied);
 
-            this.pzzColorHex = rgbToHex(...this.pzzColorApplied)
-            this.zpzColorHex = rgbToHex(...this.zpzColorApplied)
-            this.zzpColorHex = rgbToHex(...this.zzpColorApplied)
-            this.nzzColorHex = rgbToHex(...this.nzzColorApplied)
-            this.znzColorHex = rgbToHex(...this.znzColorApplied)
-            this.zznColorHex = rgbToHex(...this.zznColorApplied)
+            this.pzzColorHex = this.opacity == 1 ? rgbToHex(...this.pzzColorApplied) : rgbToRgba(...this.pzzColorApplied, (this.pzzNeighbor != null ? this.opacity / 100 : this.opacity));
+            this.zpzColorHex = this.opacity == 1 ? rgbToHex(...this.zpzColorApplied) : rgbToRgba(...this.zpzColorApplied, (this.zpzNeighbor != null ? this.opacity / 100 : this.opacity));
+            this.zzpColorHex = this.opacity == 1 ? rgbToHex(...this.zzpColorApplied) : rgbToRgba(...this.zzpColorApplied, (this.zzpNeighbor != null ? this.opacity / 100 : this.opacity));
+            this.nzzColorHex = this.opacity == 1 ? rgbToHex(...this.nzzColorApplied) : rgbToRgba(...this.nzzColorApplied, (this.nzzNeighbor != null ? this.opacity / 100 : this.opacity));
+            this.znzColorHex = this.opacity == 1 ? rgbToHex(...this.znzColorApplied) : rgbToRgba(...this.znzColorApplied, (this.znzNeighbor != null ? this.opacity / 100 : this.opacity));
+            this.zznColorHex = this.opacity == 1 ? rgbToHex(...this.zznColorApplied) : rgbToRgba(...this.zznColorApplied, (this.zznNeighbor != null ? this.opacity / 100 : this.opacity));
 
             this.recalculateColorFlag = false;
         }

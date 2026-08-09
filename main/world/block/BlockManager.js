@@ -107,9 +107,11 @@ export class BlockManager {
 
     addNewBlock(cartesian) {
         let newBlock = new Block(this, cartesian);
-        if (this.getSector(newBlock.sector).getBlock(cartesian)) {
+        let curBlock = this.getSector(newBlock.sector).getBlock(cartesian);
+        if (curBlock) {
+            this.applyBlockAttributes(curBlock);
             return;
-        }
+        }        
         this.getSector(newBlock.sector).addBlock(newBlock);
         newBlock.linkNeighbors();
         this.applyBlockAttributes(newBlock);

@@ -7,7 +7,7 @@ export class ColorHueSliderWheel extends WindowElement {
     constructor(window, sizeXFunc, sizeYFunc, steps=50) {
         super(window, sizeXFunc, sizeYFunc);
         this.steps = steps;
-        this.colorConfig = this.window.component.uiManager.colorConfig;
+        this.colorConfig = this.window.component.config().colorConfig;
         this.mouseManager = this.window.component.uiManager.mainManager.inputManager.mouseManager;
     }
 

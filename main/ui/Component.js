@@ -6,6 +6,7 @@ export class Component {
     constructor(uiManager, activeFunc = () => true) {
         this.name = "Component";
         this.uiManager = uiManager;
+        this.mouseManager = uiManager.mainManager.inputManager.mouseManager;
         this.activeFunc = activeFunc;
         this.window = new Window(this);
         this.container = new Container(this.window, 1);

@@ -27,14 +27,6 @@ export class UIManager {
             activeBrushMode: 0,
             clickMode: 1
         } // ...
-        this.colorConfig = {
-            h: 0,
-            s: 0.5,
-            v: 0.5,
-            colorHistory: [],
-            rgbArr: [127, 127, 127]
-        }
-
         this.astronomyAtlasComponent = new AstronomyAtlasComponent(this, () => this.topbarConfig.active == TB_ASTRONOMY);
         this.planeManagerComponent = new PlaneManagerComponent(this);
         this.blockManagerComponent = new BlockManagerComponent(this);
@@ -57,12 +49,6 @@ export class UIManager {
         ]
     }
 
-    colorUpdate() {
-        if (this.isFrameButtonPressed(0))
-            this.colorConfig.colorHistory.unshift([this.colorConfig.h, this.colorConfig.s, this.colorConfig.v]);
-        this.colorConfig.rgbArr = hsv2rgb(this.colorConfig.h, this.colorConfig.s, this.colorConfig.v); // creates a new array
-        multiplyVectorByScalar(this.colorConfig.rgbArr, 255)
-    }
 
     /*
     "base" colors 

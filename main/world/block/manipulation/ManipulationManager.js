@@ -6,7 +6,7 @@ import { renderLine, renderPointLabel } from "../../../rendering/renderFunctions
 import { loadGD, UI_TOPBAR_BLOCK } from "../../../ui/UIData.js";
 import { copyMatValue } from "../../../util/matrix.js";
 import { isPointInsideQuad } from "../../../util/quad.js";
-import { addVec3Dest, addVec3Mult, addVec3MultDest, addVec3MultFloor, addVectorsMult, copyVecValue, vec3Dot } from "../../../util/vector.js";
+import { addVec3Dest, addVec3Mult, addVec3MultDest, addVec3MultFloor, addVectorsMult, copyVecValue, copyVecValueRound, vec3Dot } from "../../../util/vector.js";
 import { Block } from "../model/Block.js";
 import { StoneBlock } from "../model/variant/StoneBlock.js";
 import { Plane } from "./model/Plane.js";
@@ -129,11 +129,13 @@ export class ManipulationManager {
             for (let p, i = 0; i < this.planes.length; i++) {
                 p = this.planes[i];
                 if (p.closestCs != null) {
-                    this.blockManager.brushFromRef(p, p.closestCs, this.inputManager.mouseManager.isButtonPressed(0), this.inputManager.mouseManager.isButtonPressed(2));
+                    let cartesian = [0, 0, 0];
+                    copyVecValueRound(p.closestCs.world, cartesian);
+                    this.blockManager.addNewBlock(cartesian);
                 }
-                if (p.isPointOver(this.inputManager.mouseManager.offset)) {
-                    break;
-                }
+                // if (p.isPointOver(this.inputManager.mouseManager.offset)) {
+                //     break;
+                // }
             }
         }
     }

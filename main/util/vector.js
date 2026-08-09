@@ -145,6 +145,11 @@ export function copyVecValue(src, dest) {
     dest[i] = src[i];
   }
 }
+export function copyVecValueRound(src, dest) {
+  for (let i = 0; i < src.length; i++) {
+    dest[i] = Math.round(src[i]);
+  }
+}
 
 export function multiplyVectorByScalar(vec, scalar) {
   for (let i = 0; i < vec.length; i++) {

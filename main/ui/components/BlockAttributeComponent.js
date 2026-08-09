@@ -1,3 +1,5 @@
+import { hsv2rgb } from "../../common.js";
+import { multiplyVectorByScalar } from "../../util/vector.js";
 import { Component } from "../Component.js";
 import { Container } from "../Container.js";
 import { Button } from "../elements/Button.js";
@@ -60,6 +62,14 @@ export class BlockAttributeComponent extends Component {
     scvTransparencyValue(value) {
         this.config().transparency.value = value;
     }
+
+    colorUpdate() {
+        if (this.mouseManager.isFrameButtonPressed(0))
+            this.config().colorConfig.colorHistory.unshift([this.config().colorConfig.h, this.config().colorConfig.s, this.config().colorConfig.v]);
+        this.config().colorConfig.rgbArr = hsv2rgb(this.config().colorConfig.h, this.config().colorConfig.s, this.config().colorConfig.v); // creates a new array
+        multiplyVectorByScalar(this.config().colorConfig.rgbArr, 255)
+    }
+
 
     getDefaultConfig() {
         return {

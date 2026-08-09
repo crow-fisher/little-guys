@@ -7,7 +7,7 @@ import { WindowElement } from "../../WindowElement.js";
 export class ColorActiveColor extends WindowElement {
     constructor(window, sizeXFunc, sizeYFunc, steps = 50) {
         super(window, sizeXFunc, sizeYFunc); 
-        this.colorConfig = this.window.component.uiManager.colorConfig;
+        this.colorConfig = this.window.component.config().colorConfig;
         this.steps = steps;
     }
 

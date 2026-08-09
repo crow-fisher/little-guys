@@ -7,14 +7,14 @@ import { WindowElement } from "../../WindowElement.js";
 export class ColorColorHistory extends WindowElement {
     constructor(window, sizeXFunc, sizeYFunc, steps = 50) {
         super(window, sizeXFunc, sizeYFunc); 
-        this.colorConfig = this.window.component.uiManager.colorConfig;
+        this.colorConfig = this.window.component.config().colorConfig;
         this.uiManager = this.window.component.uiManager;
 
         this.steps = steps;
         
-        this.colorHistory = this.window.component.uiManager.colorConfig.colorHistory;
+        this.colorHistory = this.window.component.config().colorConfig.colorHistory;
 
-        if (this.window.component.uiManager.colorConfig.colorHistory.length == 0) {
+        if (this.window.component.config().colorConfig.colorHistory.length == 0) {
             this.initColorHistory();
         }
 
@@ -59,7 +59,7 @@ export class ColorColorHistory extends WindowElement {
                     this.colorConfig.h = this.colorHistory[cur][0];
                     this.colorConfig.s = this.colorHistory[cur][1];
                     this.colorConfig.v = this.colorHistory[cur][2];
-                    this.uiManager.colorUpdate();
+                    this.window.component.colorUpdate();
                     break;
                 }
                 cur++;

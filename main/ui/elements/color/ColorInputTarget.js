@@ -25,7 +25,7 @@ export class ColorInputTarget extends WindowElement {
         if (clickLocDist > (this.sizeXFunc() / 2.5) && clickLocDist < (this.sizeXFunc() / 2)) {
             let angle = Math.atan2(clickLocRelMid[1], clickLocRelMid[0]);
             this.colorConfig.h = angle * (180 / Math.PI);
-            this.uiManager.colorUpdate();
+            this.window.component.colorUpdate();
             return;
         }
         let s = this.sizeXFunc() / 3.5;
@@ -35,7 +35,7 @@ export class ColorInputTarget extends WindowElement {
             this.colorConfig.v = 1 - invlerp(-s, s, clickLocRelMid[1]);
         }
 
-        this.uiManager.colorUpdate();
+        this.window.component.colorUpdate();
         return;
     }
 
