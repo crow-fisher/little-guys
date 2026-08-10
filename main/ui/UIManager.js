@@ -25,7 +25,7 @@ export class UIManager {
         this.toolbarConfig = { 
             activeTool: 2,
             activeBrushMode: 0,
-            clickMode: 1
+            clickMode: 0
         } // ...
         this.astronomyAtlasComponent = new AstronomyAtlasComponent(this, () => this.topbarConfig.active == TB_ASTRONOMY);
         this.planeManagerComponent = new PlaneManagerComponent(this);

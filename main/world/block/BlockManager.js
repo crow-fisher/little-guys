@@ -130,6 +130,32 @@ export class BlockManager {
                 ref.opacity = 1;
             }
         }
+
+        if (true) {
+            if (this.blockConfig.size.active) {
+                ref.size[0] = this.blockConfig.size.x;
+                ref.size[1] = this.blockConfig.size.y;
+                ref.size[2] = this.blockConfig.size.z;
+            } else {
+                ref.size[0] = 1;
+                ref.size[1] = 1;
+                ref.size[2] = 1;
+            }
+        }
+
+        if (true) {
+            if (this.blockConfig.offset.active) {
+                ref.offset[0] = this.blockConfig.offset.x;
+                ref.offset[1] = this.blockConfig.offset.y;
+                ref.offset[2] = this.blockConfig.offset.z;
+            } else {
+                ref.offset[0] = 1;
+                ref.offset[1] = 1;
+                ref.offset[2] = 1;
+            }
+        }
+
+        ref.applyMovement();
     }
 
     brushFromRef(p, refCs, applyPrimary, applySecondary) {

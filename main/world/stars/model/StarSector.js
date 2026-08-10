@@ -77,7 +77,7 @@ export class StarSector {
             this.gcvStBrightnessPosX(),
             this.gcvStBrightnessPosY(),
             this.gcvStBrightnessC(),
-            this.gcvMinSize(),
+            processRangeToOne(this.gcvMinSize()),
             this.gcvMaxSize()
         ]
     }
@@ -276,9 +276,7 @@ export class StarSector {
                     return;
                 }
 
-                star._relLumensLog = Math.log(star._relLumens);
-                star._relLumensRange = Math.max(0, Math.min(1, invlerp(luminanceParams[0], luminanceParams[1], star._relLumens)));
-
+                star._relLumensRange = Math.min(1, invlerp(luminanceParams[0], luminanceParams[1], star._relLumens));
                 star._size = this.processStarSize(star, sizeParams);
                 star.renderColor = this.processStarColor(star, brightnessParams, renderMode);
                 star.doLocalitySelect(...localitySelectParams)

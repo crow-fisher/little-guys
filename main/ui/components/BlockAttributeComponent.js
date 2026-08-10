@@ -45,22 +45,41 @@ export class BlockAttributeComponent extends Component {
         let r2 = new Container(0);
         this.container.addElement(r2);
         r2.addElement(new Toggle(this.window, () => this.gcvdThirdX(), () => this.ggvdH1(), UI_CENTER,
-            () => this.gcvTransparencyActive(), (v) => this.scvTransparencyActive(v),
+            () => this.gcoTransparency().active, (v) => this.gcoTransparency().active = v,
             "transparency", () => "#863c3c", () => "#FFFFFF"));
-        r2.addElement(new SliderGradientBackground(this.window, () => this.gcvdThirdX() * 2, () => this.ggvdH1(), () => this.gcvTransparencyValue(), (value) => this.scvTransparencyValue(value)))
-    }
+        r2.addElement(new SliderGradientBackground(this.window, () => this.gcvdThirdX() * 2, () => this.ggvdH1(), () => this.gcoTransparency().value, (v) => this.gcoTransparency().value = v))
 
-    gcvTransparencyActive() {
-        return this.config().transparency.active;
+        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "size"))
+
+        let r3 = new Container(0);
+        this.container.addElement(r3);
+        r3.addElement(new Toggle(this.window, () => this.gcvdFourthX(), () => this.ggvdH1(), UI_CENTER,
+            () => this.gcoSize().active, (v) => this.gcoSize().active = v,
+            "full on", () => "#863c3c", () => "#FFFFFF"));
+        r3.addElement(new SliderGradientBackground(this.window, () => this.gcvdFourthX(), () => this.ggvdH1(), () => this.gcoSize().x, (value) => this.gcoSize().x = value))
+        r3.addElement(new SliderGradientBackground(this.window, () => this.gcvdFourthX(), () => this.ggvdH1(), () => this.gcoSize().y, (value) => this.gcoSize().y = value))
+        r3.addElement(new SliderGradientBackground(this.window, () => this.gcvdFourthX(), () => this.ggvdH1(), () => this.gcoSize().z, (value) => this.gcoSize().z = value))
+
+        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "offset"))
+
+        let r4 = new Container(0);
+        this.container.addElement(r4);
+        r4.addElement(new Toggle(this.window, () => this.gcvdFourthX(), () => this.ggvdH1(), UI_CENTER,
+            () => this.gcoOffset().active, (v) => this.gcoOffset().active = v,
+            "full on", () => "#863c3c", () => "#FFFFFF"));
+        r4.addElement(new SliderGradientBackground(this.window, () => this.gcvdFourthX(), () => this.ggvdH1(), () => this.gcoOffset().x, (value) => this.gcoOffset().x = value, -1, 1))
+        r4.addElement(new SliderGradientBackground(this.window, () => this.gcvdFourthX(), () => this.ggvdH1(), () => this.gcoOffset().y, (value) => this.gcoOffset().y = value, -1, 1))
+        r4.addElement(new SliderGradientBackground(this.window, () => this.gcvdFourthX(), () => this.ggvdH1(), () => this.gcoOffset().z, (value) => this.gcoOffset().z = value, -1, 1))
+
     }
-    gcvTransparencyValue() {
-        return this.config().transparency.value;
+    gcoTransparency() {
+        return this.config().transparency;
     }
-    scvTransparencyActive(active) {
-        this.config().transparency.active = active;
+    gcoSize() {
+        return this.config().size;
     }
-    scvTransparencyValue(value) {
-        this.config().transparency.value = value;
+    gcoOffset() {
+        return this.config().offset;
     }
 
     colorUpdate() {
@@ -69,7 +88,6 @@ export class BlockAttributeComponent extends Component {
         this.config().colorConfig.rgbArr = hsv2rgb(this.config().colorConfig.h, this.config().colorConfig.s, this.config().colorConfig.v); // creates a new array
         multiplyVectorByScalar(this.config().colorConfig.rgbArr, 255)
     }
-
 
     getDefaultConfig() {
         return {
@@ -83,8 +101,19 @@ export class BlockAttributeComponent extends Component {
             transparency: {
                 active: 0,
                 value: 0.5
+            }, 
+            size: {
+                active: 0,
+                x: 1,
+                y: 1,
+                z: 1
             },
-
+            offset: {
+                active: 0,
+                x: 0,
+                y: 0, 
+                z: 0
+            },
             offsetScale: {
                 offsetX: this.ggvUISize() * 12,
                 offsetY: this.ggvUISize() * 12,

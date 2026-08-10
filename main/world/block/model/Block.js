@@ -4,7 +4,7 @@ import { LineRenderJob } from "../../../rendering/model/LineRenderJob.js";
 import { PointLabelRenderJob } from "../../../rendering/model/PointLabelRenderJob.js";
 import { QuadRenderJob } from "../../../rendering/model/QuadRenderJob.js";
 import { centerVec, nnnVec, nnpVec, npnVec, nppVec, pnnVec, pnpVec, ppnVec, pppVec, pzzVec, zpzVec, zzpVec, nzzVec, znzVec, zznVec, zzzVec } from "../../../util/const.js";
-import { addThreeVec3Dest, addVec3Dest, addVectorsMult, copyVecValue, getVec3LengthSquared, multiplyVectorsDest, vec3Dot } from "../../../util/vector.js";
+import { addThreeVec3Dest, addVec3Dest, addVectors, addVectorsMult, copyVecValue, getVec3LengthSquared, multiplyVectorsDest, vec3Dot } from "../../../util/vector.js";
 
 let bid = 0;
 
@@ -23,11 +23,15 @@ export class Block {
         this.cartesian = cartesian;
         this.sector = blockManager.cartesianToSector(cartesian);
 
-
+        
         // opacity
         this.opacity = 1;
         /// movement
         this.grounded = true;
+        // size 
+        this.size = [0, 0, 0];
+        this.offset = [0.5, 0.5, 0.5]
+        
         // core parameters 
         this.mvOffset = [0, 0, 0];
         this.mvSpeed = [0, 0, 0];
@@ -400,6 +404,17 @@ export class Block {
         addThreeVec3Dest(this.cartesian, pnpVec, this.mvOffset, this.pnpCs.world);
         addThreeVec3Dest(this.cartesian, ppnVec, this.mvOffset, this.ppnCs.world);
         addThreeVec3Dest(this.cartesian, pppVec, this.mvOffset, this.pppCs.world);
+
+        
+        addVectors(this.centerCs.world, this.offset);
+        addVectors(this.nnnCs.world, this.offset);
+        addVectors(this.nnpCs.world, this.offset);
+        addVectors(this.npnCs.world, this.offset);
+        addVectors(this.nppCs.world, this.offset);
+        addVectors(this.pnnCs.world, this.offset);
+        addVectors(this.pnpCs.world, this.offset);
+        addVectors(this.ppnCs.world, this.offset);
+        addVectors(this.pppCs.world, this.offset);
 
     }
 

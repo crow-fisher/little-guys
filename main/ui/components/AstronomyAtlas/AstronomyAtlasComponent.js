@@ -44,6 +44,8 @@ export class AstronomyAtlasComponent extends Component {
             select: {}
         };
 
+        dc =
+{"offsetScale":{"offsetX":193,"offsetY":71,"sizeX":461,"sizeY":595},"submenuState":{"plot":false,"label":false,"setup":false,"style":false,"select":false},"plot":{},"label":{},"setup":{},"style":{"brightnessPosX":0.8020618556701031,"brightnessPosY":0.14356435643564355,"brightnessC":0.6701030927835051,"opacityPosX":0.24078091106290672,"opacityPosY":0.4039408866995074,"opacityC":0.27010309278350514,"mode":1,"minSize":-8.134490238611713,"maxSize":3.3839479392624727,"minLuminance":2.6811279826464207,"maxLuminance":-2.10412147505423,"distPowerMult":1.31},"select":{}} 
         if (this.uiManager.mainManager.debugOptions[DO_K_RENDERMODE] == DO_K_RENDERMODE_BWPRINT) {
             dc =
                 { "offsetScale": { "offsetX": 117, "offsetY": 77, "sizeX": 485, "sizeY": 594 }, "submenuState": { "plot": false, "label": false, "setup": false, "style": false, "select": false }, "plot": {}, "label": {}, "setup": {}, "style": { "brightnessPosX": 0.11958762886597939, "brightnessPosY": 0.49504950495049505, "brightnessC": 0.6307385229540918, "opacityPosX": 0.7814432989690722, "opacityPosY": 0.23267326732673269, "opacityC": 0.25948103792415167, "mode": 1, "minSize": 0.40987124463519314, "maxSize": 8.948453608247423, "minLuminance": 1.9216494845360825, "maxLuminance": -0.658682634730539, "distPowerMult": 1.31 }, "select": {} }
@@ -162,11 +164,11 @@ export class AstronomyAtlasComponent extends Component {
 
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "min size"))
         this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcvMinSize(), (v) => this.scvMinSize(v),
-            0, 1, 90, 0.2, false));
+            -10, 10, 90, 0.2, false));
 
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "max size"))
         this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcvMaxSize(), (v) => this.scvMaxSize(v),
-            0, 10, 120, 0.2, false));
+            0, 20, 120, 0.2, false));
 
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "min luminance"))
         this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcvMinLuminance(), (v) => this.scvMinLuminance(v),
