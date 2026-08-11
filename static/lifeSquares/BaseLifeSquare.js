@@ -2,7 +2,7 @@ import { MAIN_CONTEXT } from "../index.js";
 import { hexToRgb, hsv2rgb, rgb2hsv, rgbToHex, rgbToRgba, UI_BIGDOTSOLID } from "../common.js";
 
 import { getDaylightStrengthFrameDiff } from "../climate/time.js";
-import { addSquare } from "../squares/_sqOperations.js";
+import { addSquare } from "../squares/sqOperations.js";
 
 import { RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED, RGB_COLOR_GREEN } from "../colors.js";
 import { removeSquare } from "../globalOperations.js";

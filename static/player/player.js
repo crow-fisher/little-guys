@@ -5,7 +5,7 @@ import { COLOR_BLACK, COLOR_GREEN, COLOR_VERY_FUCKING_RED } from "../colors.js";
 import { GBY, GBX, GBA, getLeftStick, isButtonPressed, GBB, GBDL, GBDR, GBDU, GBDD } from "../gamepad.js";
 import { getGlobalThetaBase, setGlobalThetaBase } from "../globals.js";
 import { MAIN_CONTEXT } from "../index.js";
-import { getSquares } from "../squares/_sqOperations.js";
+import { getSquares } from "../squares/sqOperations.js";
 import { loadGD, saveGD, UI_CAMERA_EXPOSURE, UI_CANVAS_SQUARES_ZOOM, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_LIGHTING_GLOBAL } from "../ui/UIData.js";
 
 

@@ -3,7 +3,7 @@ import { rgbToRgba } from "../common.js";
 import { getNextGroupId, isGroupGrounded } from "../globals.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { applyLightingFromSource } from "../lighting/lightingProcessing.js";
-import { addSquare } from "./_sqOperations.js";
+import { addSquare } from "./sqOperations.js";
 import { BaseSquare } from "./BaseSqaure.js";
 import { RockSquare } from "./parameterized/RockSquare.js";
 import { SoilSquare } from "./parameterized/SoilSquare.js";

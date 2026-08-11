@@ -1,5 +1,5 @@
 import { saveGroupMinHeight } from "./globalOperations.js";
-import { iterateOnSquares } from "./squares/_sqOperations.js";
+import { iterateOnSquares } from "./squares/sqOperations.js";
 import { loadGD, UI_GAME_MAX_CANVAS_SQUARES_X } from "./ui/UIData.js";
 
 let groupMap = new Map();

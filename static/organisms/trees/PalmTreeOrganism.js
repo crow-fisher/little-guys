@@ -7,7 +7,7 @@ import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
 import { BaseOrganism } from "../BaseOrganism.js";
 import { PalmTreeGreenSquare } from "../../lifeSquares/trees/PalmTreeGreenSquare.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
-import { addSquare } from "../../squares/_sqOperations.js";
+import { addSquare } from "../../squares/sqOperations.js";
 import { UI_ORGANISM_TREE_PALM } from "../../ui/UIData.js";
 
 export class PalmTreeOrganism extends BaseOrganism {

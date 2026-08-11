@@ -7,7 +7,7 @@ import { removeSquare } from "./globalOperations.js";
 import { getLastMouseDown, getLastMoveOffset, getLeftMouseUpEvent, isLeftMouseClicked, isMiddleMouseClicked, isRightMouseClicked, setMouseTouchStartCallback } from "./mouse.js";
 import { WheatSeedOrganism } from "./organisms/grasses/WheatOrganism.js";
 import { KentuckyBluegrassSeedOrganism } from "./organisms/grasses/KentuckyBluegrassOrganism.js";
-import { addSquare, addSquareOverride, getSquares, removeSquarePos } from "./squares/_sqOperations.js";
+import { addSquare, addSquareOverride, getSquares, removeSquarePos } from "./squares/sqOperations.js";
 import { AquiferSquare } from "./squares/parameterized/RainSquare.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";

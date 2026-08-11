@@ -8,7 +8,7 @@ import { renderWindPressureMap } from "./climate/simulation/wind.js";
 import { LightingHandler } from "./lighting/lightingHandler.js";
 import { ClimateHandler } from "./climate/climateHandler.js";
 import { isLeftMouseClicked } from "./mouse.js";
-import { iterateOnSquares, resetSqColChangeMap } from "./squares/_sqOperations.js";
+import { iterateOnSquares, resetSqColChangeMap } from "./squares/sqOperations.js";
 import { isSaveOrLoadInProgress } from "./saveAndLoad.js";
 import { renderThrottleMap } from "./climate/simulation/throttler.js";
 import { playerTick, renderPlayer } from "./player/playerMain.js";

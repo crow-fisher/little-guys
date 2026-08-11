@@ -1,5 +1,5 @@
 import { loadSlot, saveCurGame } from "./saveAndLoad.js";
-import { iterateOnSquares } from "./squares/_sqOperations.js";
+import { iterateOnSquares } from "./squares/sqOperations.js";
 import { removeGroupFromGraph } from "./waterGraph.js";
 
 export let ALL_SQUARES = new Map();

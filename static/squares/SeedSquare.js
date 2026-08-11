@@ -1,6 +1,6 @@
 import { BaseSquare } from "./BaseSqaure.js";
     
-import { getSquares } from "./_sqOperations.js";
+import { getSquares } from "./sqOperations.js";
 import { randNumber, randRange } from "../common.js";
 import { getWindSpeedAtLocation } from "../climate/simulation/wind.js";
 class SeedSquare extends BaseSquare {

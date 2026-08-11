@@ -27,7 +27,7 @@ import { getCurDay, getFrameDt, getTimeScale, millis_per_day } from "../../clima
 import { TopBarText } from "./TopBarText.js";
 import { getCurWeather } from "../../climate/weather/weatherManager.js";
 import { getWindSquareAbove } from "../../climate/simulation/wind.js";
-import { getSqIterationOrder } from "../../squares/_sqOperations.js";
+import { getSqIterationOrder } from "../../squares/sqOperations.js";
 import { getFrameSimulationSquares } from "../../globalOperations.js";
 import { TopBarTimeSeekLabel } from "./TopBarTimeSeekLabel.js";
 

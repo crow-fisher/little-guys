@@ -1,5 +1,5 @@
 
-import { getSquares } from "../_sqOperations.js";
+import { getSquares } from "../sqOperations.js";
 import { SoilSquare } from "./SoilSquare.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { loadGD, UI_LIGHTING_ROCK, UI_PALETTE_COMPOSITION, UI_PALETTE_ROCKIDX, UI_ROCK_COMPOSITION, UI_SOIL_COMPOSITION } from "../../ui/UIData.js";

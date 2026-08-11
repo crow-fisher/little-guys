@@ -1,4 +1,4 @@
-import { addSquare, getSquares } from "../_sqOperations.js";
+import { addSquare, getSquares } from "../sqOperations.js";
 import { WaterSquare } from "../WaterSquare.js";
 import { hexToRgb, processColorLerp, processColorLerpBicolor, randNumber } from "../../common.js";
 import { RockSquare } from "./RockSquare.js";

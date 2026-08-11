@@ -1,5 +1,5 @@
 import { BaseSquare } from "../BaseSqaure.js";
-import { addSquare, getNeighbors, getSquares } from "../_sqOperations.js";
+import { addSquare, getNeighbors, getSquares } from "../sqOperations.js";
 import { cachedGetWaterflowRate, hexToRgb, randNumber, randRange } from "../../common.js";
 import { getCurTimeScale, getDt, getFrameDt, timeScaleFactor } from "../../climate/time.js";
 import { getPressure, getWindSpeedAtLocation, getWindSquareAbove } from "../../climate/simulation/wind.js";

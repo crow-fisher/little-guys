@@ -6,7 +6,7 @@ import { WheatGreenSquare } from "../../lifeSquares/grasses/WheatGreenSquare.js"
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
 import { _lightLevelDisplayExposureAdjustment, _llt_target, BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
-import { addSquare } from "../../squares/_sqOperations.js";
+import { addSquare } from "../../squares/sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
 import { UI_ORGANISM_GRASS_WHEAT } from "../../ui/UIData.js";
 import { kblue_dnm } from "./KentuckyBluegrassOrganism.js";

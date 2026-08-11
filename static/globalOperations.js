@@ -1,5 +1,5 @@
-import { getFirstLevelSquares, getSquares, registerSqColChange, registerSqIterationRowChange } from "./squares/_sqOperations.js";
-import { iterateOnOrganisms } from "./organisms/_orgOperations.js";
+import { getFirstLevelSquares, getSquares, registerSqColChange, registerSqIterationRowChange } from "./squares/sqOperations.js";
+import { iterateOnOrganisms } from "./organisms/orgOperations.js";
 import {
     ALL_SQUARES, WATERFLOW_TARGET_SQUARES, WATERFLOW_CANDIDATE_SQUARES, resetWaterflowSquares
 } from "./globals.js";

@@ -1,5 +1,5 @@
 import { BaseSquare } from "./BaseSqaure.js";
-import { getSquares, iterateOnSquares, getNeighbors, addSquare } from "./_sqOperations.js";
+import { getSquares, iterateOnSquares, getNeighbors, addSquare } from "./sqOperations.js";
 import { getGroupSize, getNextGroupId, WATERFLOW_CANDIDATE_SQUARES, WATERFLOW_TARGET_SQUARES } from "../globals.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { RGB_COLOR_OTHER_BLUE } from "../colors.js";

@@ -29,7 +29,7 @@ import {
     UI_GAME_MAX_CANVAS_SQUARES_Y,
     UI_LIGHTING_SUN
 } from "../ui/UIData.js";
-import { iterateOnOrganisms } from "../organisms/_orgOperations.js";
+import { iterateOnOrganisms } from "../organisms/orgOperations.js";
 import { SunCalc } from "./suncalc/suncalc.js";
 import { getActiveClimate } from "./climateManager.js";
 

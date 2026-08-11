@@ -1,6 +1,6 @@
 
 
-import { getNeighbors, addSquare, getSquares, isSqColChanged, isSqRowChanged, getSqColChangeLocation } from "./_sqOperations.js";
+import { getNeighbors, addSquare, getSquares, isSqColChanged, isSqRowChanged, getSqColChangeLocation } from "./sqOperations.js";
 import {
     getNextGroupId,
     getMixArrLen,

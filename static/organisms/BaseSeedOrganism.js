@@ -3,7 +3,7 @@ import { SeedLifeSquare } from "../lifeSquares/SeedLifeSquare.js";
 import { getCurDay, getDt, getTimeScale } from "../climate/time.js";
 import { loadGD, UI_SIMULATION_GENS_PER_DAY } from "../ui/UIData.js";
 import { getCurPlantConfiguratorVal } from "../ui/elements/SliderGradientBackgroundPlantConfigurator.js";
-import { getSquares } from "../squares/_sqOperations.js";
+import { getSquares } from "../squares/sqOperations.js";
 import { randNumber } from "../common.js";
 import { isSaveOrLoadInProgress } from "../saveAndLoad.js";
 

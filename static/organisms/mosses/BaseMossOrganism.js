@@ -5,7 +5,7 @@ import { removeItemAll } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { GenericRootSquare } from "../../lifeSquares/GenericRootSquare.js";
 import { PleurocarpMossGreenSquare } from "../../lifeSquares/mosses/PleurocarpMossGreenSquare.js";
-import { getNeighbors } from "../../squares/_sqOperations.js";
+import { getNeighbors } from "../../squares/sqOperations.js";
 import { loadGD, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_SELECT, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../../ui/UIData.js";
 import {
     _llt_min,
