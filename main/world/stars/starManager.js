@@ -22,7 +22,6 @@ export class StarManager {
         this.stars = new Map(); // HIP id
         this.hdMap = new Map(); // HD id
         this.constellationStars = new Set();
-
         
         this.paramStatistics = new Map();
 
@@ -31,10 +30,13 @@ export class StarManager {
         this.loadData();
     }
 
-    getAstronomyAtlasComponent() {
-        return this.worldManager.mainManager.uiManager.astronomyAtlasComponent;
+    di() {
+        this.uiManager = this.worldManager.mainManager.uiManager;
     }
 
+    getAstronomyAtlasComponent() {
+        return this.uiManager.astronomyAtlasComponent;
+    }
 
     minLumensRuntime() {
         return;

@@ -10,6 +10,7 @@ export class CanvasManager {
         this.addCallbacks();
         this.resize();
     }
+    di() {}
 
     lockPointer() {
         this.canvas.requestPointerLock({unadjustedMovement: true});

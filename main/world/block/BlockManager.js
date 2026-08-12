@@ -12,10 +12,6 @@ import { StoneBlock } from "./model/variant/StoneBlock.js";
 export class BlockManager {
     constructor(worldManager) {
         this.worldManager = worldManager;
-        this.timeManager = worldManager.timeManager;
-        this.uiManager = worldManager.mainManager.uiManager;
-        this.blockManagerComponent = worldManager.mainManager.uiManager.blockManagerComponent;
-        this.blockConfig = this.uiManager._config["BlockAttributeComponent"];
 
         this.sectorSize = 25;
         this.manipulationManager = new ManipulationManager(this);
@@ -27,6 +23,14 @@ export class BlockManager {
         this.mvQueuePrecision = 100;
         this.mvQueue = new Array();
         this.mvBlocks = new Array();
+    }
+
+    di() {
+        this.timeManager = this.worldManager.timeManager;
+        this.lightingManager = this.worldManager.lightingManager;
+        this.uiManager = this.worldManager.mainManager.uiManager;
+        this.blockAttributeComponent = this.worldManager.mainManager.uiManager.blockAttributeComponent;
+        this.blockConfig = this.blockAttributeComponent.config();
     }
 
     registerBlockMvTimes(block) {
@@ -118,6 +122,7 @@ export class BlockManager {
     }
 
     applyBlockAttributes(ref) {
+        this.lightingManager.removeBlockFromLightModel(ref);
         if (true) {
             copyVecValue(this.blockConfig.colorConfig.rgbArr, ref.colorBase);
             ref.recalculateColorFlag = true;
@@ -154,16 +159,16 @@ export class BlockManager {
                 ref.offset[2] = 0;
             }
         }
-        ref.applyMovement();
-    }
 
-    brushFromRef(p, refCs, applyPrimary, applySecondary) {
-        if (applyPrimary) {
-            this.brushes.at(this.blockManagerComponent.gcvActivePrimaryBrush())(this, p, refCs, this.materials.at(this.uiManager.toolbarConfig.activeTool));
+        if (true) {
+            ref.lightSourceActive = this.blockConfig.lighting.active;
+            if (this.blockConfig.lighting.active) {
+                ref.lightSourceBrightness = Math.exp(this.blockConfig.lighting.brightness);
+            }
         }
-        if (applySecondary) {
-            this.brushes.at(this.blockManagerComponent.gcvActiveSecondaryBrush())(this, p, refCs, this.materials.at(this.blockManagerComponent.gcvActiveSecondaryMaterial()));
-        }
+        ref.applyMovement();
+        this.lightingManager.addBlockToLightModel(ref);
+
     }
 
     getSector(sr) {

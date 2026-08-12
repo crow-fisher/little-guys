@@ -74,6 +74,14 @@ export class BlockAttributeComponent extends Component {
         r4.addElement(new SliderGradientBackground(this.window, () => this.gcvdFourthX(), () => this.ggvdH1(), () => this.gcoOffset().y, (value) => this.gcoOffset().y = value, -1, 1))
         r4.addElement(new SliderGradientBackground(this.window, () => this.gcvdFourthX(), () => this.ggvdH1(), () => this.gcoOffset().z, (value) => this.gcoOffset().z = value, -1, 1))
 
+        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "lighting"))
+        let r5 = new Container(0);
+        this.container.addElement(r5);
+        r5.addElement(new Toggle(this.window, () => this.gcvdFourthX() / 2, () => this.ggvdH1(), UI_CENTER,
+            () => this.gcoLighting().active, (v) => this.gcoLighting().active = v,
+            "toggle on", () => "#863c3c", () => "#FFFFFF")); 
+        r5.addElement(new SliderGradientBackground(this.window, () => this.gcvdFourthX(), () => this.ggvdH1(), () => this.gcoLighting().brightness, (value) => this.gcoLighting().brightness = value, -10, 10))
+
     }
     gcoTransparency() {
         return this.config().transparency;
@@ -83,6 +91,9 @@ export class BlockAttributeComponent extends Component {
     }
     gcoOffset() {
         return this.config().offset;
+    }
+    gcoLighting() {
+        return this.config().lighting;
     }
 
     colorUpdate(unshift=false) {
@@ -116,6 +127,10 @@ export class BlockAttributeComponent extends Component {
                 x: 0,
                 y: 0, 
                 z: 0
+            },
+            lighting: {
+                active: 0,
+                brightness: 1
             },
             offsetScale: {
                 offsetX: this.ggvUISize() * 12,

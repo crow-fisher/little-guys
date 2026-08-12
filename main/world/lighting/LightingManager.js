@@ -9,6 +9,15 @@ export class LightingManager {
         this.lightSources = [new SphereLightGroup(this)];
     }
 
+    di() { }
+
+    addBlockToLightModel(block) {
+        this.lightSources.forEach((ls) => ls.updateProcessBlock(block));
+    }
+    removeBlockFromLightModel(block) {
+        this.lightSources.forEach((ls) => ls.updateRemoveBlock(block));
+    }
+
     update() {
         let idx = 0;
         if (this.inputManager.mouseManager.isButtonPressed(1)) {
@@ -22,6 +31,9 @@ export class LightingManager {
                         (ls) => ls.updateProcessBlock(block))));
             this.lightSources.forEach((ls) => ls.updateProcess());
         }
+
+
+        this.lightSources.forEach((ls) => ls.updateProcess());
 
     }
 

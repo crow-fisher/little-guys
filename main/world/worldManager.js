@@ -7,13 +7,19 @@ import { TimeManager } from "./time/timeManager.js";
 export class WorldManager {
     constructor(mainManager) {
         this.mainManager = mainManager;
-        
         this.timeManager = new TimeManager(this);
         this.starManager = new StarManager(this);
         this.blockManager = new BlockManager(this);
         this.lightingManager = new LightingManager(this);
-        
     }
+
+    di() {
+        this.timeManager.di();
+        this.starManager.di();
+        this.blockManager.di();
+        this.lightingManager.di();
+    }
+
     update() {
         this.timeManager.update();
         this.blockManager.update();

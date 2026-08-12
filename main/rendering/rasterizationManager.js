@@ -1,7 +1,6 @@
 export class RasterizationManager {
     constructor(mainManager) {
         this.mainManager = mainManager;
-        this.canvasManager = mainManager.canvasManager;
         
         this.renderJobs = new Array();
         this.renderJobsLate = new Array();
@@ -9,6 +8,10 @@ export class RasterizationManager {
         this.frameLateRenderJobs = 0;
 
         this.sortedRenderJobs = new Array();
+    }
+
+    di() {
+        this.canvasManager = this.mainManager.canvasManager;
     }
 
     addRenderJob(renderJob) {

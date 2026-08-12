@@ -29,8 +29,6 @@ export class Plane {
         this.step = step;
         this.dimWidth = dimWidth * step;
         this.dimHeight = dimHeight * step;
-
-        this.processPositionUpdate();
     }
 
     update() {

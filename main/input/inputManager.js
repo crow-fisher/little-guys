@@ -7,6 +7,9 @@ export class InputManager {
         this.mouseManager = new MouseManager(this);
         this.keyboardManager = new KeyboardManager(this);
     }
+
+    di() {}
+    
     update() {
         this.mouseManager.update();
         this.keyboardManager.update();

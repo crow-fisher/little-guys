@@ -37,6 +37,8 @@ export class TimeManager {
             night: this.sky_nightRGB
         }
     }
+    
+    di() {}
 
     getTimeScale() {
         return (3.8 ** (this.curTimeScale - 1));

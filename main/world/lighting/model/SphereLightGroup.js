@@ -8,17 +8,19 @@ import { LightSource } from "./LightSource.js";
 export class SphereLightGroup {
     constructor(lightingManager) {
         this.lightingManager = lightingManager;
-        this.canvasManager = lightingManager.worldManager.mainManager.canvasManager;
-        this.cameraManager = lightingManager.worldManager.mainManager.cameraManager;
-        this.rasterizationManager = lightingManager.worldManager.mainManager.rasterizationManager;
-
-
-        this.centerCs = new CoordinateSet(this.cameraManager);
-        this.centerRenderJob = new PointLabelRenderJob(this.rasterizationManager, [0, 0, 0], 4, "#ff00ff");
 
         this.radius = 3;
         this.lightSources = new Array();
         this.lightRenderJobs = new Array();
+    }
+
+    di() {
+        this.canvasManager = this.lightingManager.worldManager.mainManager.canvasManager;
+        this.cameraManager = this.lightingManager.worldManager.mainManager.cameraManager;
+        this.rasterizationManager = this.lightingManager.worldManager.mainManager.rasterizationManager;
+    }
+
+    postConstruct() {
         this.initLightSources();
     }
 
@@ -66,10 +68,13 @@ export class SphereLightGroup {
     }
 
     render() {
+        this.centerCs = this.centerCs ?? new CoordinateSet(this.cameraManager);
+        this.centerRenderJob = this.centerRenderJob ?? new PointLabelRenderJob(this.rasterizationManager, [0, 0, 0], 4, "#ff00ff");
+
         this.centerCs.process();
-        copyVecValue(this.centerCs.renderScreen, this.centerRenderJob.pos);
 
         if (this.centerCs.isVisibleOnScreen()) {
+            copyVecValue(this.centerCs.renderScreen, this.centerRenderJob.pos);
             this.rasterizationManager.addRenderJob(this.centerRenderJob);
             this.lightRenderJobs.forEach((lrj) => this.rasterizationManager.addRenderJob(lrj));
         }

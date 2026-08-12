@@ -1,3 +1,5 @@
+import { removeItemAll } from "../../../common.js";
+import { removeItemOnce } from "../../../util/func.js";
 import { copyVecValue, getVec3Length, multiplyVectorByScalar, multiplyVectorByScalarDest, normalizeVec3, normalizeVec3Dest, subtractVectorsDest, subtractVectorsDestNorm, vec3Dot } from "../../../util/vector.js";
 
 export class LightSource {
@@ -18,6 +20,16 @@ export class LightSource {
     updateInit(idx) {
         this.idx = idx;
         this.sectors.clear();
+    }
+
+    updateRemoveBlock(block) {
+        subtractVectorsDest(this.cs.world, block.centerCs.world, this._offset);
+        normalizeVec3Dest(this._offset, this._offsetNorm);
+        this._pitch = Math.asin(this._offsetNorm[1]);
+        this._yaw = Math.atan2(this._offsetNorm[0], this._offsetNorm[2]);
+        this._pSec = Math.floor(this._pitch * this.numBuckets);
+        this._ySec = Math.floor(this._yaw * this.numBuckets);
+        removeItemOnce(this.sectors.get(this._pSec)?.get(this._ySec), block);
     }
 
     updateProcessBlock(block) {

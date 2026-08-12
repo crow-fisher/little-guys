@@ -15,11 +15,19 @@ export class MainManager {
         this.canvasManager = new CanvasManager(this);
         this.cameraManager = new CameraManager(this);
         this.rasterizationManager = new RasterizationManager(this);
-
         this.inputManager = new InputManager(this);
         this.uiManager = new UIManager(this);
         this.worldManager = new WorldManager(this);
+    }
 
+    di() {
+        // dependency injection lifecycles
+        this.canvasManager.di();
+        this.cameraManager.di();
+        this.rasterizationManager.di();
+        this.inputManager.di();
+        this.uiManager.di();
+        this.worldManager.di();
     }
 
     main() {

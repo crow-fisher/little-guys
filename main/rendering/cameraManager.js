@@ -13,8 +13,6 @@ let params = new URLSearchParams(document.location.search);
 export class CameraManager {
     constructor(mainManager) {
         this.mainManager = mainManager;
-        this.canvasManager = mainManager.canvasManager;
-
         this.cameraControlManagers = [
             new KeyboardCameraControlManager(this),
             new MouseCameraControlManager(this)
@@ -52,6 +50,11 @@ export class CameraManager {
         this.frame = 0;
         this.setFramePerspectiveMatrix();
     }
+    
+    di() {
+        this.canvasManager = this.mainManager.canvasManager;
+    }
+
 
     cartesianToScreenInplace(cartesian, camera, screen) {
         multiplyMat3AndPointInplace(this.worldToCamera, cartesian, camera);
