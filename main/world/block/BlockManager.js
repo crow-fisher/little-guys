@@ -149,12 +149,11 @@ export class BlockManager {
                 ref.offset[1] = this.blockConfig.offset.y;
                 ref.offset[2] = this.blockConfig.offset.z;
             } else {
-                ref.offset[0] = 1;
-                ref.offset[1] = 1;
-                ref.offset[2] = 1;
+                ref.offset[0] = 0;
+                ref.offset[1] = 0;
+                ref.offset[2] = 0;
             }
         }
-
         ref.applyMovement();
     }
 

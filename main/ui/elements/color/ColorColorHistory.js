@@ -59,6 +59,7 @@ export class ColorColorHistory extends WindowElement {
                     this.colorConfig.h = this.colorHistory[cur][0];
                     this.colorConfig.s = this.colorHistory[cur][1];
                     this.colorConfig.v = this.colorHistory[cur][2];
+                    this.window.component.colorUpdate();
                     break;
                 }
                 cur++;

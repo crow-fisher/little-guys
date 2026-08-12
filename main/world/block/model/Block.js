@@ -4,7 +4,7 @@ import { LineRenderJob } from "../../../rendering/model/LineRenderJob.js";
 import { PointLabelRenderJob } from "../../../rendering/model/PointLabelRenderJob.js";
 import { QuadRenderJob } from "../../../rendering/model/QuadRenderJob.js";
 import { centerVec, nnnVec, nnpVec, npnVec, nppVec, pnnVec, pnpVec, ppnVec, pppVec, pzzVec, zpzVec, zzpVec, nzzVec, znzVec, zznVec, zzzVec } from "../../../util/const.js";
-import { addThreeVec3Dest, addVec3Dest, addVectors, addVectorsMult, copyVecValue, getVec3LengthSquared, multiplyVectorsDest, vec3Dot } from "../../../util/vector.js";
+import { addThreeVec3Dest, addTwoVec3Dest, addVec3Dest, addVec3Mult, addVec3MultDest, addVec3MultVec3, addVec3MultVec3Dest, addVectors, addVectorsMult, copyVecValue, getVec3LengthSquared, multiplyVectorsDest, vec3Dot } from "../../../util/vector.js";
 
 let bid = 0;
 
@@ -23,15 +23,15 @@ export class Block {
         this.cartesian = cartesian;
         this.sector = blockManager.cartesianToSector(cartesian);
 
-        
+
         // opacity
         this.opacity = 1;
         /// movement
         this.grounded = true;
         // size 
         this.size = [0, 0, 0];
-        this.offset = [0.5, 0.5, 0.5]
-        
+        this.offset = [0, 0, 0]
+
         // core parameters 
         this.mvOffset = [0, 0, 0];
         this.mvSpeed = [0, 0, 0];
@@ -75,14 +75,14 @@ export class Block {
         this.centerCs = new CoordinateSet(this.cameraManager, this.cartesian, centerVec);
         this.centerRenderJob = new PointLabelRenderJob(this.rasterizationManager, [0, 0, 0], 0, "#646464")
 
-        this.nnnCs = new CoordinateSet(this.cameraManager, this.cartesian, nnnVec);
-        this.nnpCs = new CoordinateSet(this.cameraManager, this.cartesian, nnpVec);
-        this.npnCs = new CoordinateSet(this.cameraManager, this.cartesian, npnVec);
-        this.nppCs = new CoordinateSet(this.cameraManager, this.cartesian, nppVec);
-        this.pnnCs = new CoordinateSet(this.cameraManager, this.cartesian, pnnVec);
-        this.pnpCs = new CoordinateSet(this.cameraManager, this.cartesian, pnpVec);
-        this.ppnCs = new CoordinateSet(this.cameraManager, this.cartesian, ppnVec);
-        this.pppCs = new CoordinateSet(this.cameraManager, this.cartesian, pppVec);
+        this.nnnCs = new CoordinateSet(this.cameraManager);
+        this.nnpCs = new CoordinateSet(this.cameraManager);
+        this.npnCs = new CoordinateSet(this.cameraManager);
+        this.nppCs = new CoordinateSet(this.cameraManager);
+        this.pnnCs = new CoordinateSet(this.cameraManager);
+        this.pnpCs = new CoordinateSet(this.cameraManager);
+        this.ppnCs = new CoordinateSet(this.cameraManager);
+        this.pppCs = new CoordinateSet(this.cameraManager);
 
         this.nzzFace = [this.pnnCs, this.pnpCs, this.pppCs, this.ppnCs];
         this.pzzFace = [this.nnnCs, this.nnpCs, this.nppCs, this.npnCs];
@@ -107,7 +107,19 @@ export class Block {
 
         this.offsetSign = [0, 0, 0];
         this.renderedFaces = new Array();
+
+        this.nnnVec = [0, 0, 0];
+        this.nnpVec = [0, 0, 0];
+        this.npnVec = [0, 0, 0];
+        this.nppVec = [0, 0, 0];
+        this.pnnVec = [0, 0, 0];
+        this.pnpVec = [0, 0, 0];
+        this.ppnVec = [0, 0, 0];
+        this.pppVec = [0, 0, 0];
+
+        this.setCorners();
     }
+
 
     getLightFilterRate() {
         return 0.5 * this.opacity;
@@ -304,6 +316,8 @@ export class Block {
 
         this.color();
         // this.renderCenterNeighbors();
+
+        this.setCorners();
         this.renderFaces();
 
     }
@@ -357,7 +371,6 @@ export class Block {
         }
 
     }
-
     calculateAndSubmitMvDeltaTimes() {
         this.calculateMvDeltaTime(0);
         this.calculateMvDeltaTime(1);
@@ -370,7 +383,8 @@ export class Block {
         // console.log(this.mvOffset, this.mvSpeed, .001 * (t - this.mvLast));
         this.mvLast = t;
         this.applyMovement();
-
+        addThreeVec3Dest(this.cartesian, centerVec, this.mvOffset, this.centerCs.world);
+        this.setCorners();
     }
     applyMovement() {
         copyVecValue([0, 0, 0], this.mvMovement);
@@ -395,27 +409,25 @@ export class Block {
             }
         }
 
-        addThreeVec3Dest(this.cartesian, centerVec, this.mvOffset, this.centerCs.world);
-        addThreeVec3Dest(this.cartesian, nnnVec, this.mvOffset, this.nnnCs.world);
-        addThreeVec3Dest(this.cartesian, nnpVec, this.mvOffset, this.nnpCs.world);
-        addThreeVec3Dest(this.cartesian, npnVec, this.mvOffset, this.npnCs.world);
-        addThreeVec3Dest(this.cartesian, nppVec, this.mvOffset, this.nppCs.world);
-        addThreeVec3Dest(this.cartesian, pnnVec, this.mvOffset, this.pnnCs.world);
-        addThreeVec3Dest(this.cartesian, pnpVec, this.mvOffset, this.pnpCs.world);
-        addThreeVec3Dest(this.cartesian, ppnVec, this.mvOffset, this.ppnCs.world);
-        addThreeVec3Dest(this.cartesian, pppVec, this.mvOffset, this.pppCs.world);
+    }
+    setCorners() {
+        addVec3MultVec3Dest(this.offset, this.size, nnnVec, this.nnnVec);
+        addVec3MultVec3Dest(this.offset, this.size, nnpVec, this.nnpVec);
+        addVec3MultVec3Dest(this.offset, this.size, npnVec, this.npnVec);
+        addVec3MultVec3Dest(this.offset, this.size, nppVec, this.nppVec);
+        addVec3MultVec3Dest(this.offset, this.size, pnnVec, this.pnnVec);
+        addVec3MultVec3Dest(this.offset, this.size, pnpVec, this.pnpVec);
+        addVec3MultVec3Dest(this.offset, this.size, ppnVec, this.ppnVec);
+        addVec3MultVec3Dest(this.offset, this.size, pppVec, this.pppVec);
 
-        
-        addVectors(this.centerCs.world, this.offset);
-        addVectors(this.nnnCs.world, this.offset);
-        addVectors(this.nnpCs.world, this.offset);
-        addVectors(this.npnCs.world, this.offset);
-        addVectors(this.nppCs.world, this.offset);
-        addVectors(this.pnnCs.world, this.offset);
-        addVectors(this.pnpCs.world, this.offset);
-        addVectors(this.ppnCs.world, this.offset);
-        addVectors(this.pppCs.world, this.offset);
-
+        addTwoVec3Dest(this.cartesian, this.mvOffset, this.nnnVec, this.nnnCs.world);
+        addTwoVec3Dest(this.cartesian, this.mvOffset, this.nnpVec, this.nnpCs.world);
+        addTwoVec3Dest(this.cartesian, this.mvOffset, this.npnVec, this.npnCs.world);
+        addTwoVec3Dest(this.cartesian, this.mvOffset, this.nppVec, this.nppCs.world);
+        addTwoVec3Dest(this.cartesian, this.mvOffset, this.pnnVec, this.pnnCs.world);
+        addTwoVec3Dest(this.cartesian, this.mvOffset, this.pnpVec, this.pnpCs.world);
+        addTwoVec3Dest(this.cartesian, this.mvOffset, this.ppnVec, this.ppnCs.world);
+        addTwoVec3Dest(this.cartesian, this.mvOffset, this.pppVec, this.pppCs.world);
     }
 
     calculateCartesianMovement(i) {

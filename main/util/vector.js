@@ -72,12 +72,28 @@ export function addVec3Dest(v1, v2, dest) {
   dest[2] = (v1[2] + v2[2]);
 }
 
+export function addTwoVec3Dest(v1, v2, v3, dest) {
+    dest[0] = (v1[0] + v2[0] + v3[0]);
+    dest[1] = (v1[1] + v2[1] + v3[1]);
+    dest[2] = (v1[2] + v2[2] + v3[2]);
+}
+
 export function addVec3MultDest(v1, v2, m, dest) {
   dest[0] = v1[0] + (m * v2[0]);
   dest[1] = v1[1] + (m * v2[1]);
   dest[2] = v1[2] + (m * v2[2]);
 }
 
+export function addVec3MultVec3(v1, v2, v3) {
+  v1[0] += v2[0] * v3[0];
+  v1[1] += v2[1] * v3[1];
+  v1[2] += v2[2] * v3[2];
+}
+export function addVec3MultVec3Dest(v1, v2, v3, dest) {
+  dest[0] = v1[0] + v2[0] * v3[0];
+  dest[1] = v1[1] + v2[1] * v3[1];
+  dest[2] = v1[2] + v2[2] * v3[2];
+}
 export function addThreeVec3Dest(v1, v2, v3, dest) {
   dest[0] = v1[0] + v2[0] + v3[0];
   dest[1] = v1[1] + v2[1] + v3[1];

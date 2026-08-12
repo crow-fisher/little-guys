@@ -64,9 +64,12 @@ export class BlockAttributeComponent extends Component {
 
         let r4 = new Container(0);
         this.container.addElement(r4);
-        r4.addElement(new Toggle(this.window, () => this.gcvdFourthX(), () => this.ggvdH1(), UI_CENTER,
+        r4.addElement(new Toggle(this.window, () => this.gcvdFourthX() / 2, () => this.ggvdH1(), UI_CENTER,
             () => this.gcoOffset().active, (v) => this.gcoOffset().active = v,
-            "full on", () => "#863c3c", () => "#FFFFFF"));
+            "full on", () => "#863c3c", () => "#FFFFFF")); 
+
+        r4.addElement(new Button(this.window, () => this.gcvdFourthX() / 2, () => this.ggvdH1(), () => {this.gcoOffset().x = 0; this.gcoOffset().y = 0; this.gcoOffset().z = 0;}, 
+            "reset", () => "#863c3c"));
         r4.addElement(new SliderGradientBackground(this.window, () => this.gcvdFourthX(), () => this.ggvdH1(), () => this.gcoOffset().x, (value) => this.gcoOffset().x = value, -1, 1))
         r4.addElement(new SliderGradientBackground(this.window, () => this.gcvdFourthX(), () => this.ggvdH1(), () => this.gcoOffset().y, (value) => this.gcoOffset().y = value, -1, 1))
         r4.addElement(new SliderGradientBackground(this.window, () => this.gcvdFourthX(), () => this.ggvdH1(), () => this.gcoOffset().z, (value) => this.gcoOffset().z = value, -1, 1))
@@ -82,8 +85,8 @@ export class BlockAttributeComponent extends Component {
         return this.config().offset;
     }
 
-    colorUpdate() {
-        if (this.mouseManager.isFrameButtonPressed(0))
+    colorUpdate(unshift=false) {
+        if (unshift && this.mouseManager.isFrameButtonPressed(0))
             this.config().colorConfig.colorHistory.unshift([this.config().colorConfig.h, this.config().colorConfig.s, this.config().colorConfig.v]);
         this.config().colorConfig.rgbArr = hsv2rgb(this.config().colorConfig.h, this.config().colorConfig.s, this.config().colorConfig.v); // creates a new array
         multiplyVectorByScalar(this.config().colorConfig.rgbArr, 255)
