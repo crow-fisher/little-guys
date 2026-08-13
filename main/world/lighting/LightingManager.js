@@ -6,18 +6,25 @@ export class LightingManager extends RuntimeComponent {
     constructor(worldManager) {
         super();
         this.worldManager = worldManager;
-        this.inputManager = worldManager.mainManager.inputManager;
-        this.cameraManager = worldManager.mainManager.cameraManager;
+        this.lightingUpdate = false;
+    }
+
+    di() {
+        this.inputManager = this.worldManager.mainManager.inputManager;
+        this.cameraManager = this.worldManager.mainManager.cameraManager;
+    }
+
+    postConstruct() {
         this.lightSources = [new SphereLightGroup(this)];
     }
 
-    di() { }
-
     addBlockToLightModel(block) {
         this.lightSources.forEach((ls) => ls.updateProcessBlock(block));
+        this.lightingUpdate = true;
     }
     removeBlockFromLightModel(block) {
         this.lightSources.forEach((ls) => ls.updateRemoveBlock(block));
+        this.lightingUpdate = true;
     }
 
     update() {
@@ -34,9 +41,10 @@ export class LightingManager extends RuntimeComponent {
             this.lightSources.forEach((ls) => ls.updateProcess());
         }
 
-
-        this.lightSources.forEach((ls) => ls.updateProcess());
-
+        if (this.lightingUpdate) {
+            this.lightingUpdate = false;
+            this.lightSources.forEach((ls) => ls.updateProcess());
+        }
     }
 
     render() {

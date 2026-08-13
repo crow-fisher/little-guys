@@ -81,6 +81,8 @@ export class Plane {
         normalizeVec3(this.right);
         crossVec3Dest(this.forward, this.right, this.up);
         normalizeVec3(this.up);
+
+        this.initRefPoints();
     }
 
     initRefPoints() {

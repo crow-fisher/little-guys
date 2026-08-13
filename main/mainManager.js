@@ -44,7 +44,6 @@ export class MainManager {
     }
 
     frameRuntime() {
-        console.log("<")
         this.frame();
         setTimeout(() => this.frameRuntime(), 0);
     }
