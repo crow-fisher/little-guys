@@ -1,4 +1,5 @@
 import { RuntimeComponent } from "../../runtimeComponent.js";
+import { removeItemOnce } from "../../util/func.js";
 import { copyVecValue } from "../../util/vector.js";
 import { SphereLightGroup } from "./model/SphereLightGroup.js";
 
@@ -16,6 +17,13 @@ export class LightingManager extends RuntimeComponent {
 
     postConstruct() {
         this.lightSources = [new SphereLightGroup(this)];
+    }
+
+    addLightToLightModel(lightSource) {
+        this.lightSources.push(lightSource);
+    }
+    removeLightFromLightModel(lightSource) {
+        removeItemOnce(this.lightSources, lightSource);
     }
 
     addBlockToLightModel(block) {

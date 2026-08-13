@@ -1,5 +1,7 @@
 import { RuntimeComponent } from "../../runtimeComponent.js";
 import { addVec3Dest, copyVecValue, getVec3LengthSquared } from "../../util/vector.js";
+import { LightSource } from "../lighting/model/LightSource.js";
+import { SphereLightGroup } from "../lighting/model/SphereLightGroup.js";
 import { flatBrush } from "./brushes/flatBrush.js";
 import { pixelBrush } from "./brushes/pixelBrush.js";
 import { sphereBrush } from "./brushes/sphereBrush.js";
@@ -32,7 +34,7 @@ export class BlockManager extends RuntimeComponent {
         this.uiManager = this.worldManager.mainManager.uiManager;
         this.blockAttributeComponent = this.worldManager.mainManager.uiManager.blockAttributeComponent;
         this.blockConfig = this.blockAttributeComponent.config();
-        
+
         this.manipulationManager.di();
     }
 
@@ -66,11 +68,11 @@ export class BlockManager extends RuntimeComponent {
     processBlockMovement() {
         for (let i = 0; i <= this.mvQueuePrecision; i++) {
             // if (this.mvQueue[i] != null) {
-                // this.mvQueue[i].forEach((block) => block.applyMovementAtTime(this.timeManager.curDate + i / this.mvQueuePrecision))
-                // this.mvQueue[i].length = 0;
-                this.mvBlocks.forEach((block) => block.applyMovementAtTime(this.timeManager.curDate + (i / this.mvQueuePrecision) * this.timeManager.dt));
-                // this.mvQueue[i].forEach((block) => block.applyMovementAtTime(this.timeManager.curDate + i / this.mvQueuePrecision))
-                // this.mvQueue[i].length = 0;
+            // this.mvQueue[i].forEach((block) => block.applyMovementAtTime(this.timeManager.curDate + i / this.mvQueuePrecision))
+            // this.mvQueue[i].length = 0;
+            this.mvBlocks.forEach((block) => block.applyMovementAtTime(this.timeManager.curDate + (i / this.mvQueuePrecision) * this.timeManager.dt));
+            // this.mvQueue[i].forEach((block) => block.applyMovementAtTime(this.timeManager.curDate + i / this.mvQueuePrecision))
+            // this.mvQueue[i].length = 0;
             // }
 
             // console.log(i, Date.now(), this.timeManager.curDate, this.timeManager.curDate + (i / this.mvQueuePrecision) * this.timeManager.dt);
@@ -122,7 +124,7 @@ export class BlockManager extends RuntimeComponent {
         if (curBlock) {
             this.applyBlockAttributes(curBlock);
             return;
-        }        
+        }
         this.getSector(newBlock.sector).addBlock(newBlock);
         newBlock.linkNeighbors();
         this.applyBlockAttributes(newBlock);
@@ -134,7 +136,7 @@ export class BlockManager extends RuntimeComponent {
             copyVecValue(this.blockConfig.colorConfig.rgbArr, ref.colorBase);
             ref.recalculateColorFlag = true;
         }
-        
+
         if (true) {
             if (this.blockConfig.transparency.active) {
                 ref.opacity = this.blockConfig.transparency.value;
@@ -165,6 +167,19 @@ export class BlockManager extends RuntimeComponent {
                 ref.offset[1] = 0;
                 ref.offset[2] = 0;
             }
+            if (this.blockConfig.lighting.active) {
+                if (ref.emitLightSource == null) {
+                    ref.emitLightSource = new SphereLightGroup(this.lightingManager);
+                    this.lightingManager.addLightToLightModel(ref.emitLightSource)
+                }
+                ref.emitLightSource.lightSources.forEach((ls) => {
+                    ls.brightness = this.blockConfig.lighting.brightness;
+                    copyVecValue(ref.colorBase, ls.color)
+                })
+            } else {
+                this.lightingManager.removeLightFromLightModel(ref.emitLightSource)
+                ref.emitLightSource = null;
+            }
         }
 
         if (true) {
@@ -173,7 +188,7 @@ export class BlockManager extends RuntimeComponent {
                 ref.lightSourceBrightness = Math.exp(this.blockConfig.lighting.brightness);
             }
         }
-        ref.applyMovement();
+        ref.applyAttributes();
         this.lightingManager.addBlockToLightModel(ref);
 
     }

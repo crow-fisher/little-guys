@@ -6,6 +6,8 @@ export class LightSource {
     constructor(lightGroup, cs) {
         this.lightGroup = lightGroup;
         this.cs = cs;
+        this.brightness = 10 ** -4;
+        this.color = [255, 255, 255];
 
         this.numBuckets = 40;
 
@@ -54,10 +56,11 @@ export class LightSource {
     updateProcess() {
         this.sectors.values()
             .forEach((sector) => sector.values().forEach((subSec) => {
-                let lightColor = [255, 255, 255];
-                let lightBrightness = 10 ** -4;
+                let lightColor = structuredClone(this.color);
+                let lightBrightness = this.brightness;
                 
-                let curLightingApplied = [1, 1, 1];
+                let curLightingApplied = new Array(3);
+                
                 subSec.sort((a, b) => a.lightSource[this.idx][0] - b.lightSource[this.idx][0]);
                 subSec.forEach((block) => {
                     multiplyVectorByScalarDest(lightColor, lightBrightness, curLightingApplied);

@@ -23,7 +23,6 @@ export class Block {
         this.cartesian = cartesian;
         this.sector = blockManager.cartesianToSector(cartesian);
 
-
         // opacity
         this.opacity = 1;
         /// movement
@@ -31,6 +30,8 @@ export class Block {
         // size 
         this.size = [0, 0, 0];
         this.offset = [0, 0, 0]
+        // emits light
+        this.emitLightSource;
 
         // core parameters 
         this.mvOffset = [0, 0, 0];
@@ -117,9 +118,12 @@ export class Block {
         this.ppnVec = [0, 0, 0];
         this.pppVec = [0, 0, 0];
 
-        this.setCorners();
     }
 
+    applyAttributes() {
+        this.setCorners();
+
+    }
 
     getLightFilterRate() {
         return 0.5 * this.opacity;
