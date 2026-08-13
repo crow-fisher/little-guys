@@ -39,37 +39,37 @@ export class StarSector {
     }
 
     gcvStBrightnessPosX() {
-        return this.starManager.getAstronomyAtlasComponent().gcvStBrightnessPosX();
+        return this.starManager.astronomyAtlasComponent.gcvStBrightnessPosX();
     }
     gcvStBrightnessPosY() {
-        return this.starManager.getAstronomyAtlasComponent().gcvStBrightnessPosY();
+        return this.starManager.astronomyAtlasComponent.gcvStBrightnessPosY();
     }
     gcvStBrightnessC() {
-        return this.starManager.getAstronomyAtlasComponent().gcvStBrightnessC();
+        return this.starManager.astronomyAtlasComponent.gcvStBrightnessC();
     }
     gcvStOpacityPosX() {
-        return this.starManager.getAstronomyAtlasComponent().gcvStOpacityPosX();
+        return this.starManager.astronomyAtlasComponent.gcvStOpacityPosX();
     }
     gcvStOpacityPosY() {
-        return this.starManager.getAstronomyAtlasComponent().gcvStOpacityPosY();
+        return this.starManager.astronomyAtlasComponent.gcvStOpacityPosY();
     }
     gcvStOpacityC() {
-        return this.starManager.getAstronomyAtlasComponent().gcvStOpacityC();
+        return this.starManager.astronomyAtlasComponent.gcvStOpacityC();
     }
     gcvMinSize() {
-        return this.starManager.getAstronomyAtlasComponent().gcvMinSize();
+        return this.starManager.astronomyAtlasComponent.gcvMinSize();
     }
     gcvMaxSize() {
-        return this.starManager.getAstronomyAtlasComponent().gcvMaxSize();
+        return this.starManager.astronomyAtlasComponent.gcvMaxSize();
     }
     gcvMinLuminance() {
-        return this.starManager.getAstronomyAtlasComponent().gcvMinLuminance();
+        return this.starManager.astronomyAtlasComponent.gcvMinLuminance();
     }
     gcvMaxLuminance() {
-        return this.starManager.getAstronomyAtlasComponent().gcvMaxLuminance();
+        return this.starManager.astronomyAtlasComponent.gcvMaxLuminance();
     }
     gcvDistPowerMult() {
-        return this.starManager.getAstronomyAtlasComponent().gcvDistPowerMult();
+        return this.starManager.astronomyAtlasComponent.gcvDistPowerMult();
     }
 
     getSizeParams() {
@@ -208,18 +208,14 @@ export class StarSector {
     renderPrepare() {
         this.rootCs.process();
 
-        if (this.rootCs.screen[2] < -this.starManager.sectorSize) {
-            return;
-        }
-        
         this.setBrightnessCameraPoint();
         this.setFOVCameraPoint();
         this.centerCs.process();
         this.cornerCs.process();
 
-        this.curCameraDist = this.fovCs.distToCamera;
+        this.curCameraDist = this.brightnessCs.distToCamera;
         this.relCameraDist = (this.curCameraDist / this.rootCameraDist);
-        this.relCameraDistBrightnessMult = 1 / (this.relCameraDist ** 2);
+        this.relCameraDistBrightnessMult = 1 / (this.relCameraDist ** this.starManager.distPowerMult);
         this.recalculateStarColorFlag |= (Math.min(this.curCameraDist, this.prevCameraDist) / Math.max(this.curCameraDist, this.prevCameraDist)) < 0.97;
     }
 
@@ -245,7 +241,7 @@ export class StarSector {
     }
 
     renderStars(luminanceParams, sizeParams, brightnessParams, localitySelectParams, renderMode) {
-        this.recalculateStarColorFlag = this.starManager.getAstronomyAtlasComponent().dirtyConfig;
+        this.recalculateStarColorFlag = this.starManager.astronomyAtlasComponent.dirtyConfig;
 
         let ret = 0;
         for (let i = 0, bucketLumens; i < this.buckets.length; i++) {
@@ -268,7 +264,7 @@ export class StarSector {
             if (this.recalculateStarColorFlag) {
                 star._curCameraDistance = star.cs.distToCamera;
                 star._relCameraDist = (star._curCameraDistance / star._rootCameraDistance);
-                star._relCameraDistBrightnessMult = 1 / (star._relCameraDist ** luminanceParams[2]);
+                star._relCameraDistBrightnessMult = 1 / (star._relCameraDist ** this.starManager.distPowerMult);
 
                 star._relLumens = star.lumens * star._relCameraDistBrightnessMult * this.starManager.fovMult;
 

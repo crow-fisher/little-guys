@@ -34,10 +34,7 @@ export class StarManager extends RuntimeComponent {
 
     di() {
         this.uiManager = this.worldManager.mainManager.uiManager;
-    }
-
-    getAstronomyAtlasComponent() {
-        return this.uiManager.astronomyAtlasComponent;
+        this.astronomyAtlasComponent = this.uiManager.astronomyAtlasComponent;
     }
 
     minLumensRuntime() {
@@ -180,32 +177,15 @@ export class StarManager extends RuntimeComponent {
 
     sortAndRender() {
         this._sectorsIterArr = this._sectorsIterArr ?? new Array();
-        this._numSectors = 0;
         this._numStarsRendered = 0;
-         
         this.fovMult = (120 / loadGD(UI_CAMERA_FOV)) ** 1.3
+        this.distPowerMult = this.astronomyAtlasComponent.gcvDistPowerMult();
 
         this.sectors.keys().forEach(
             (x) => this.sectors.get(x).keys().forEach(
                 (y) => this.sectors.get(x).get(y).keys().forEach(
-                    (z) => {
-                        this._sectorsIterArr[this._numSectors] = this.sectors.get(x).get(y).get(z);
-                        this._numSectors += 1;
-                    }
-                )));
-        this._sectorsIterArr.length = this._numSectors;
-        // this._sectorsIterArr.sort((a, b) => b.fovCs.distToCamera - a.fovCs.distToCamera);
-        let numSectorsRendered = 0; 
-        this._sectorsIterArr.forEach((s) => {
-            let v = s.render();
-            this._numStarsRendered += v;
-        numSectorsRendered += Math.min(1, v)
-        });
-        // if (this._numStarsRendered > 10000) {
-        //     this.getAstronomyAtlasComponent().mcvMinLuminance(.1);
-        // } else {
-        //     this.getAstronomyAtlasComponent().mcvMinLuminance(-.1);
-        // }
+                    (z) => this._numStarsRendered += this.sectors.get(x).get(y).get(z).render()
+        )));
 
     }
 

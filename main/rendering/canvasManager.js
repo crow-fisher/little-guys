@@ -14,10 +14,14 @@ export class CanvasManager extends RuntimeComponent {
     }
 
     lockPointer() {
-        this.canvas.requestPointerLock({unadjustedMovement: true});
-        this.pointerLock = true;
+        try {
+            this.canvas.requestPointerLock({ unadjustedMovement: true });
+            this.pointerLock = true;
+        } catch (error) {
+            console.log("NotAllowedError or something....", error)
+        }
     }
-    
+
     unlockPointer() {
         if (document.pointerLockElement == this.canvas) {
             document.exitPointerLock();
@@ -38,7 +42,7 @@ export class CanvasManager extends RuntimeComponent {
             this.canvas.width,
             this.canvas.height
         );
-        this.context.font =  this.canvas.width / 20 + "px courier";
+        this.context.font = this.canvas.width / 20 + "px courier";
         this.context.fillStyle = "#000000"
         this.context.fillText((new Date()).toISOString(), 0, this.canvas.height / 10);
     }

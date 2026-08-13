@@ -177,7 +177,10 @@ export class AstronomyAtlasComponent extends Component {
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "max luminance"))
         this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcvMaxLuminance(), (v) => this.scvMaxLuminance(v),
             -10, 10, 180, 0.2, false));
-
+         
+            this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "dist power mult"))
+        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcvDistPowerMult(), (v) => this.scvDistPowerMult(v),
+            1.1, 2, 180, 0.2, false));
         // this.container.addElement(new Text(window, sizeX, textHeight, UI_CENTER, "size 'c'"))
         // this.container.addElement(new SliderGradientBackground(window, UI_SH_STYLE_SIZE_C, sizeX, textHeight, 0, 1, () => COLOR_BLACK, () => COLOR_WHITE, false, resetStarStyle));
 
