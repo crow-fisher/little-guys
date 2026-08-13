@@ -20,6 +20,11 @@ export class LightingManager extends RuntimeComponent {
     }
 
     addLightToLightModel(lightSource) {
+        this.worldManager.blockManager.iterateOnSectors(
+            (sector) => sector.iterateOnBlocks(
+                (block) => lightSource.updateProcessBlock(block)
+            ));
+
         this.lightSources.push(lightSource);
     }
     removeLightFromLightModel(lightSource) {
@@ -35,13 +40,19 @@ export class LightingManager extends RuntimeComponent {
         this.lightingUpdate = true;
     }
 
+    updateLightPosition(lightSource, newPosition) {
+        this.worldManager.blockManager.iterateOnSectors(
+            (sector) => sector.iterateOnBlocks(
+                (block) => lightSource.updateProcessBlock(block)
+            ));
+    }
+
     update() {
         let idx = 0;
         if (this.inputManager.mouseManager.isButtonPressed(1)) {
             copyVecValue(this.cameraManager.cameraOffset, this.lightSources[0].centerCs.world);
 
             this.lightSources.forEach((ls) => ls.updateInit(idx++));
-
             this.worldManager.blockManager.iterateOnSectors(
                 (sector) => sector.iterateOnBlocks(
                     (block) => this.lightSources.forEach(

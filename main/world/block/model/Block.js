@@ -11,6 +11,7 @@ let bid = 0;
 export class Block {
     constructor(blockManager, cartesian) {
         this.blockManager = blockManager;
+        this.lightingManager = blockManager.worldManager.lightingManager;
         this.timeManager = blockManager.worldManager.timeManager;
         this.rasterizationManager = blockManager.worldManager.mainManager.rasterizationManager;
         this.cameraManager = blockManager.worldManager.mainManager.cameraManager;
@@ -192,14 +193,15 @@ export class Block {
 
                 for (let i = 0; i < 6; i++) {
                     copyVecValue(zzzVec, dirs[i][0]);
-                    this.lightSource.forEach((ls) => {
+                    for (let j = 0; j < this.lightingManager.lightSources.length; j++) {
+                        let ls = this.lightSource[j];
                         let dot = vec3Dot(dirs[i][2], ls[3]);
                         if (dot < 0) {
                             addVectorsMult(dirs[i][0], ls[1], -dot)
                         } else {
                             addVectorsMult(dirs[i][0], ls[2], dot)
                         }
-                    });
+                    }
                 }
             }
 
