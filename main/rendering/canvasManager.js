@@ -1,8 +1,10 @@
 import { HUEMAP } from "../color/hue.js";
 import { hsvToHex } from "../color/color.js";
+import { RuntimeComponent } from "../runtimeComponent.js";
 
-export class CanvasManager {
+export class CanvasManager extends RuntimeComponent {
     constructor(mainManager) {
+        super();
         this.mainManager = mainManager;
         this.canvas = document.getElementById("main");
         this.context = this.canvas.getContext('2d');
@@ -10,7 +12,6 @@ export class CanvasManager {
         this.addCallbacks();
         this.resize();
     }
-    di() {}
 
     lockPointer() {
         this.canvas.requestPointerLock({unadjustedMovement: true});

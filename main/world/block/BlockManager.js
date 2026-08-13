@@ -1,3 +1,4 @@
+import { RuntimeComponent } from "../../runtimeComponent.js";
 import { addVec3Dest, copyVecValue, getVec3LengthSquared } from "../../util/vector.js";
 import { flatBrush } from "./brushes/flatBrush.js";
 import { pixelBrush } from "./brushes/pixelBrush.js";
@@ -9,10 +10,10 @@ import { ColorBlock } from "./model/variant/ColorBlock.js";
 import { DirtBlock } from "./model/variant/DirtBlock.js";
 import { StoneBlock } from "./model/variant/StoneBlock.js";
 
-export class BlockManager {
+export class BlockManager extends RuntimeComponent {
     constructor(worldManager) {
+        super();
         this.worldManager = worldManager;
-
         this.sectorSize = 25;
         this.manipulationManager = new ManipulationManager(this);
         this.sectors = new Map();
@@ -31,6 +32,12 @@ export class BlockManager {
         this.uiManager = this.worldManager.mainManager.uiManager;
         this.blockAttributeComponent = this.worldManager.mainManager.uiManager.blockAttributeComponent;
         this.blockConfig = this.blockAttributeComponent.config();
+        
+        this.manipulationManager.di();
+    }
+
+    postConstruct() {
+        this.manipulationManager.postConstruct();
     }
 
     registerBlockMvTimes(block) {

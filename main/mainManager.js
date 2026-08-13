@@ -19,9 +19,7 @@ export class MainManager {
         this.uiManager = new UIManager(this);
         this.worldManager = new WorldManager(this);
     }
-
     di() {
-        // dependency injection lifecycles
         this.canvasManager.di();
         this.cameraManager.di();
         this.rasterizationManager.di();
@@ -30,9 +28,25 @@ export class MainManager {
         this.worldManager.di();
     }
 
+    postConstruct() {
+        this.canvasManager.postConstruct();
+        this.cameraManager.postConstruct();
+        this.rasterizationManager.postConstruct();
+        this.inputManager.postConstruct();
+        this.uiManager.postConstruct();
+        this.worldManager.postConstruct();
+    }
+
     main() {
+        this.di();
+        this.postConstruct();
+        this.frameRuntime();
+    }
+
+    frameRuntime() {
+        console.log("<")
         this.frame();
-        setTimeout(() => this.main(), 0)
+        setTimeout(() => this.frameRuntime(), 0);
     }
 
     frame() {

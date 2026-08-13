@@ -1,4 +1,5 @@
 import { hsvToHex } from "../color/color.js";
+import { RuntimeComponent } from "../runtimeComponent.js";
 import { AstronomyAtlasComponent } from "./components/AstronomyAtlas/AstronomyAtlasComponent.js";
 import { BlockAttributeComponent } from "./components/BlockAttributeComponent.js";
 import { ColorPickerComponent } from "./components/ColorPickerComponent.js";
@@ -12,8 +13,9 @@ import { TB_ASTRONOMY, TB_BLOCK_ATTRIBUTE, TB_BLOCK_COLOR } from "./topbar/topBa
 // note! instantiated *before* the world manager. 
 // for elements within this object, soft-link to your dependencies from world. (see colorHueSlider.js)
 
-export class UIManager {
+export class UIManager extends RuntimeComponent {
     constructor(mainManager) {
+        super();
         this.mainManager = mainManager;
 
         this._config = {} // accessed via '.config()' method within Component.js
@@ -41,9 +43,6 @@ export class UIManager {
             this.crosshairComponent
         ]
     }
-
-    di() {}
-
 
     /*
     "base" colors 

@@ -3,6 +3,7 @@ import { CoordinateSet } from "../../../rendering/model/CoordinateSet.js";
 import { LineRenderJob } from "../../../rendering/model/LineRenderJob.js";
 import { RenderJob } from "../../../rendering/model/RenderJob.js";
 import { renderLine, renderPointLabel } from "../../../rendering/renderFunctions.js";
+import { RuntimeComponent } from "../../../runtimeComponent.js";
 import { loadGD, UI_TOPBAR_BLOCK } from "../../../ui/UIData.js";
 import { copyMatValue } from "../../../util/matrix.js";
 import { isPointInsideQuad } from "../../../util/quad.js";
@@ -11,21 +12,25 @@ import { Block } from "../model/Block.js";
 import { StoneBlock } from "../model/variant/StoneBlock.js";
 import { Plane } from "./model/Plane.js";
 
-export class ManipulationManager {
+export class ManipulationManager extends RuntimeComponent {
     constructor(blockManager) {
+        super();
         this.blockManager = blockManager;
-        this.uiManager = blockManager.uiManager;
-        this.inputManager = blockManager.worldManager.mainManager.inputManager;
-        this.mouseManager = blockManager.worldManager.mainManager.inputManager.mouseManager;
-        this.cameraManager = blockManager.worldManager.mainManager.cameraManager;
-        this.canvasManager = blockManager.worldManager.mainManager.canvasManager;
-        this.rasterizationManager = blockManager.worldManager.mainManager.rasterizationManager;
-        this.planeManagerComponent = blockManager.worldManager.mainManager.uiManager.planeManagerComponent;
-        this.colorConfig = blockManager.worldManager.mainManager.uiManager.colorConfig;
+    }
 
+    di() {
+        this.uiManager = this.blockManager.uiManager;
+        this.inputManager = this.blockManager.worldManager.mainManager.inputManager;
+        this.mouseManager = this.blockManager.worldManager.mainManager.inputManager.mouseManager;
+        this.cameraManager = this.blockManager.worldManager.mainManager.cameraManager;
+        this.canvasManager = this.blockManager.worldManager.mainManager.canvasManager;
+        this.rasterizationManager = this.blockManager.worldManager.mainManager.rasterizationManager;
+        this.planeManagerComponent = this.blockManager.worldManager.mainManager.uiManager.planeManagerComponent;
+        this.colorConfig = this.blockManager.worldManager.mainManager.uiManager.colorConfig;
+    }
+    postConstruct() {
         let pSize = 20;
         this.zPlane = new Plane(this, 0, Math.PI / 2, 1, pSize, pSize);
-
         this.newPlane = new Plane(this, 0, Math.PI / 2, 1, 20, 20);
         this.planes = [this.zPlane];
     }

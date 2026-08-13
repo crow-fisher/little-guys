@@ -1,15 +1,15 @@
+import { RuntimeComponent } from "../runtimeComponent.js";
 import { KeyboardManager } from "./source/keyboardManager.js";
 import { MouseManager } from "./source/mouseManager.js";
 
-export class InputManager {
+export class InputManager extends RuntimeComponent {
     constructor(mainManager) {
+        super();
         this.mainManager = mainManager;
         this.mouseManager = new MouseManager(this);
         this.keyboardManager = new KeyboardManager(this);
     }
 
-    di() {}
-    
     update() {
         this.mouseManager.update();
         this.keyboardManager.update();

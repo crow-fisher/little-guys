@@ -7,11 +7,13 @@ import { KeyboardCameraControlManager } from "./control/keyboardCameraControlMan
 import { MouseCameraControlManager } from "./control/mouseCameraControlManager.js";
 import { isButtonPressed } from "../gamepad.js";
 import { DO_K_RENDERMODE, DO_K_RENDERMODE_BWPRINT } from "../debugOptions.js";
+import { RuntimeComponent } from "../runtimeComponent.js";
 
 let params = new URLSearchParams(document.location.search);
 
-export class CameraManager {
+export class CameraManager extends RuntimeComponent {
     constructor(mainManager) {
+        super();
         this.mainManager = mainManager;
         this.cameraControlManagers = [
             new KeyboardCameraControlManager(this),

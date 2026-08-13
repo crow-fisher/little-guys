@@ -1,8 +1,10 @@
+import { RuntimeComponent } from "../../runtimeComponent.js";
 import { copyVecValue } from "../../util/vector.js";
 import { SphereLightGroup } from "./model/SphereLightGroup.js";
 
-export class LightingManager {
+export class LightingManager extends RuntimeComponent {
     constructor(worldManager) {
+        super();
         this.worldManager = worldManager;
         this.inputManager = worldManager.mainManager.inputManager;
         this.cameraManager = worldManager.mainManager.cameraManager;

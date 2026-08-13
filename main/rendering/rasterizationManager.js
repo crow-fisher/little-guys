@@ -1,5 +1,8 @@
-export class RasterizationManager {
+import { RuntimeComponent } from "../runtimeComponent.js";
+
+export class RasterizationManager extends RuntimeComponent {
     constructor(mainManager) {
+        super();
         this.mainManager = mainManager;
         
         this.renderJobs = new Array();

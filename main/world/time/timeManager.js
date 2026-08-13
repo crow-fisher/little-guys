@@ -2,10 +2,12 @@ import { hsvToHex } from "../../color/color.js";
 import { hexToRgb, invlerp, rgbToHexObj } from "../../common.js";
 import { DO_K_RENDERMODE, DO_K_RENDERMODE_BWPRINT } from "../../debugOptions.js";
 import { SunCalc } from "../../lib/suncalc/suncalc.js";
+import { RuntimeComponent } from "../../runtimeComponent.js";
 import { MILLIS_PER_DAY } from "../../util/const.js";
 
-export class TimeManager {
+export class TimeManager extends RuntimeComponent {
     constructor(worldManager) {
+        super();
         this.worldManager = worldManager;
         this.curDay = 100.2;
         this.curDate = Date.now();
