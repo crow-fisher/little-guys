@@ -43,14 +43,8 @@ export class AstronomyAtlasComponent extends Component {
             },
             select: {}
         };
-
-        dc =
-{"offsetScale":{"offsetX":193,"offsetY":71,"sizeX":461,"sizeY":595},"submenuState":{"plot":false,"label":false,"setup":false,"style":false,"select":false},"plot":{},"label":{},"setup":{},"style":{"brightnessPosX":0.8020618556701031,"brightnessPosY":0.14356435643564355,"brightnessC":0.6701030927835051,"opacityPosX":0.24078091106290672,"opacityPosY":0.4039408866995074,"opacityC":0.27010309278350514,"mode":1,"minSize":-8.134490238611713,"maxSize":3.3839479392624727,"minLuminance":2.6811279826464207,"maxLuminance":-2.10412147505423,"distPowerMult":1.31},"select":{}} 
-        if (this.uiManager.mainManager.debugOptions[DO_K_RENDERMODE] == DO_K_RENDERMODE_BWPRINT) {
-            dc =
-                { "offsetScale": { "offsetX": 117, "offsetY": 77, "sizeX": 485, "sizeY": 594 }, "submenuState": { "plot": false, "label": false, "setup": false, "style": false, "select": false }, "plot": {}, "label": {}, "setup": {}, "style": { "brightnessPosX": 0.11958762886597939, "brightnessPosY": 0.49504950495049505, "brightnessC": 0.6307385229540918, "opacityPosX": 0.7814432989690722, "opacityPosY": 0.23267326732673269, "opacityC": 0.25948103792415167, "mode": 1, "minSize": 0.40987124463519314, "maxSize": 8.948453608247423, "minLuminance": 1.9216494845360825, "maxLuminance": -0.658682634730539, "distPowerMult": 1.31 }, "select": {} }
-        }
-
+        dc = 
+{"offsetScale":{"offsetX":208,"offsetY":75,"sizeX":461,"sizeY":595},"submenuState":{"plot":false,"label":false,"setup":false,"style":false,"select":false},"plot":{},"label":{},"setup":{},"style":{"brightnessPosX":0.2646420824295011,"brightnessPosY":0.5517241379310345,"brightnessC":0.46203904555314534,"opacityPosX":0.29067245119305857,"opacityPosY":0.5123152709359606,"opacityC":0.4685466377440347,"mode":0,"minSize":-5.574837310195227,"maxSize":2.8633405639913234,"minLuminance":0.42516268980477223,"maxLuminance":-1.1930585683297181,"distPowerMult":1.31},"select":{}}
         return dc;
     }
     // see 'StarSpecializedValuePicker'

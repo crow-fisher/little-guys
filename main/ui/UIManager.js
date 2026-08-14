@@ -38,9 +38,9 @@ export class UIManager extends RuntimeComponent {
             this.astronomyAtlasComponent,
             this.blockAttributeComponent,
             this.topBarComponent,
-            this.toolBarComponent,
+            // this.toolBarComponent,
             this.colorPickerComponent,
-            this.crosshairComponent
+            // this.crosshairComponent
         ]
     }
 

@@ -36,24 +36,6 @@ export class StarManager extends RuntimeComponent {
         this.uiManager = this.worldManager.mainManager.uiManager;
         this.astronomyAtlasComponent = this.uiManager.astronomyAtlasComponent;
     }
-
-    minLumensRuntime() {
-        return;
-        if (loadGD(UI_SH_MINMODE) != 0) {
-            return;
-        }
-        let targetNumStars = loadGD(UI_SH_TARGETNUMSTARS);
-        let curNumStars = getNoSortRenderJobsLength();
-
-        let frac = curNumStars / targetNumStars;
-
-        let dx = .1 * (1 - frac);
-
-        saveGD(UI_SH_MINLUMINENCE,
-            Math.min(Math.max(loadGD(UI_SH_MINLUMINENCE) - dx, 0), 5)
-        );
-    }
-
     resetStarLabels() {
         let graphLabelType = loadGD(UI_AA_LABEL_GRAPH);
         let starLabelType = loadGD(UI_AA_LABEL_STARS);
@@ -133,10 +115,8 @@ export class StarManager extends RuntimeComponent {
     render() {
         // this.iterateOnSectors((sector) => sector.render())
         // console.log(this.iterateOnSectorsAcc((sector) => sector.render()))
-
         this.sortAndRender();
         this.renderConstellations();
-        this.minLumensRuntime();
     }
 
     rebuildSectors() {
@@ -186,7 +166,6 @@ export class StarManager extends RuntimeComponent {
                 (y) => this.sectors.get(x).get(y).keys().forEach(
                     (z) => this._numStarsRendered += this.sectors.get(x).get(y).get(z).render()
         )));
-
     }
 
     iterateOnSectorsAcc(func) {

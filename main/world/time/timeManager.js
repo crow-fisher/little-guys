@@ -22,8 +22,8 @@ export class TimeManager extends RuntimeComponent {
         this.lat = 41.881832;
         this.lng = -87.623177;
 
-        this.sky_nightRGB = hexToRgb("#121622");
-        this.sky_duskRGB = hexToRgb("#272525");
+        this.sky_nightRGB = hexToRgb("#00000a");
+        this.sky_duskRGB = hexToRgb("#1b1a1a");
         this.sky_colorEveningMorningRGB = hexToRgb("#A49F67");
         this.sky_colorNearNoonRGB = hexToRgb("#7E9FB1");
         this.sky_colorNoonRGB = hexToRgb("#84b2e2");

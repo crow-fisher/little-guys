@@ -215,7 +215,7 @@ export class StarSector {
 
         this.curCameraDist = this.brightnessCs.distToCamera;
         this.relCameraDist = (this.curCameraDist / this.rootCameraDist);
-        this.relCameraDistBrightnessMult = 1 / (this.relCameraDist ** this.starManager.distPowerMult);
+        this.relCameraDistBrightnessMult = Math.max(1, 1 / (this.relCameraDist ** this.starManager.distPowerMult));
         this.recalculateStarColorFlag |= (Math.min(this.curCameraDist, this.prevCameraDist) / Math.max(this.curCameraDist, this.prevCameraDist)) < 0.97;
     }
 
@@ -259,25 +259,27 @@ export class StarSector {
 
     prepareAndRenderBucket(bucket, luminanceParams, sizeParams, brightnessParams, localitySelectParams, renderMode) {
         bucket.forEach((star) => star.process());
-        let ret = 0;
-        bucket.filter((star) => star.cs.isVisibleOnScreen()).forEach((star) => {
+        if (this.recalculateStarColorFlag) {
+            bucket.forEach((star) => {
             if (this.recalculateStarColorFlag) {
                 star._curCameraDistance = star.cs.distToCamera;
                 star._relCameraDist = (star._curCameraDistance / star._rootCameraDistance);
                 star._relCameraDistBrightnessMult = 1 / (star._relCameraDist ** this.starManager.distPowerMult);
-
                 star._relLumens = star.lumens * star._relCameraDistBrightnessMult * this.starManager.fovMult;
-
-                if (star._relLumens < luminanceParams[0]) {
-                    return;
-                }
-
                 star._relLumensRange = Math.min(1, invlerp(luminanceParams[0], luminanceParams[1], star._relLumens));
                 star._size = this.processStarSize(star, sizeParams);
                 star.renderColor = this.processStarColor(star, brightnessParams, renderMode);
                 star.doLocalitySelect(...localitySelectParams)
                 star.starLabel = star.localitySelect ? star.id : null;
+            }})
+        }
+
+        let ret = 0;
+        bucket.filter((star) => star.cs.isVisibleOnScreen()).forEach((star) => {
+            if (star._relLumens < luminanceParams[0]) {
+                return;
             }
+
             ret += 1;
             star.render();
         });
@@ -313,19 +315,18 @@ export class StarSector {
         this.lumensSt = calculateStatistics(this.loadedStars.map((star) => star.lumens));
         this.loadedStars.sort((a, b) => a.lumens - b.lumens);
 
-        let lumenBucketSize = .00004;
+        let lumenBucketSize = .0000004;
 
         this.buckets = new Array();
         this.bucketLumensCutoffs = new Array();
 
         let curBucket = 0;
-        this.bucketLumensCutoffs[0] = this.loadedStars.at(0).lumens;
-        let curLumensCutoff = this.bucketLumensCutoffs[curBucket] + lumenBucketSize;
+        let curLumensCutoff = this.loadedStars.at(0).lumens + lumenBucketSize;
         let star;
         for (let i = 0; i < this.loadedStars.length; i++) {
             star = this.loadedStars.at(i);
             if (star.lumens > curLumensCutoff) {
-                this.bucketLumensCutoffs[curBucket] = star.lumens;
+                this.bucketLumensCutoffs[curBucket] = curLumensCutoff;
                 curBucket += 1;
                 curLumensCutoff = Math.min(curLumensCutoff + lumenBucketSize, star.lumens);
             }
@@ -333,7 +334,6 @@ export class StarSector {
             this.buckets[curBucket].push(star);
             star.bucket = curBucket;
         }
-        this.bucketLumensCutoffs[curBucket] = this.loadedStars.reverse().at(0).lumens;
         this.ready = true;
     }
 
