@@ -39,7 +39,7 @@ export class ToolBarElement {
         this.bounds[3][0] = pX;
         this.bounds[3][1] = pY + dY;
 
-        this.uiManager.getContext().fillStyle = this.getter() ? "#259e43" : "#FF0000";
+        this.uiManager.getContext().fillStyle = this.getter() ? "#2bc251" : "#55645f";
         this.uiManager.getContext().fillRect(pX, pY, dX, dY);
         this.uiManager.getContext().fillStyle = "#0000ff";
         this.uiManager.getContext().fillText(this.label, pX + dX / 2, pY + dY / 1.3);

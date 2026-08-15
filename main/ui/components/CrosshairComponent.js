@@ -17,8 +17,8 @@ export class CrosshairComponent {
         let ctx = this.canvasManager.context;
         ctx.beginPath();
 
-        ctx.strokeStyle = "#FFFFFF";
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = "rgba(255, 255, 255, .1)"
+        ctx.lineWidth = .1;
 
         let cSize = 4 * this.uiManager.getBaseUISize();
 

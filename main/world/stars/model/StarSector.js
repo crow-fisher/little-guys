@@ -241,7 +241,7 @@ export class StarSector {
     }
 
     renderStars(luminanceParams, sizeParams, brightnessParams, localitySelectParams, renderMode) {
-        this.recalculateStarColorFlag = this.starManager.astronomyAtlasComponent.dirtyConfig;
+        this.recalculateStarColorFlag |= this.starManager.astronomyAtlasComponent.dirtyConfig;
 
         let ret = 0;
         for (let i = 0, bucketLumens; i < this.buckets.length; i++) {
@@ -254,24 +254,28 @@ export class StarSector {
             this.prevCameraDist = this.curCameraDist;
             this.recalculateStarColorFlag = false;
         }
+
         return ret;
+
+
     }
 
     prepareAndRenderBucket(bucket, luminanceParams, sizeParams, brightnessParams, localitySelectParams, renderMode) {
         bucket.forEach((star) => star.process());
         if (this.recalculateStarColorFlag) {
             bucket.forEach((star) => {
-            if (this.recalculateStarColorFlag) {
-                star._curCameraDistance = star.cs.distToCamera;
-                star._relCameraDist = (star._curCameraDistance / star._rootCameraDistance);
-                star._relCameraDistBrightnessMult = 1 / (star._relCameraDist ** this.starManager.distPowerMult);
-                star._relLumens = star.lumens * star._relCameraDistBrightnessMult * this.starManager.fovMult;
-                star._relLumensRange = Math.min(1, invlerp(luminanceParams[0], luminanceParams[1], star._relLumens));
-                star._size = this.processStarSize(star, sizeParams);
-                star.renderColor = this.processStarColor(star, brightnessParams, renderMode);
-                star.doLocalitySelect(...localitySelectParams)
-                star.starLabel = star.localitySelect ? star.id : null;
-            }})
+                if (this.recalculateStarColorFlag) {
+                    star._curCameraDistance = star.cs.distToCamera;
+                    star._relCameraDist = (star._curCameraDistance / star._rootCameraDistance);
+                    star._relCameraDistBrightnessMult = 1 / (star._relCameraDist ** this.starManager.distPowerMult);
+                    star._relLumens = star.lumens * star._relCameraDistBrightnessMult * this.starManager.fovMult;
+                    star._relLumensRange = Math.min(1, invlerp(luminanceParams[0], luminanceParams[1], star._relLumens));
+                    star._size = this.processStarSize(star, sizeParams);
+                    star.renderColor = this.processStarColor(star, brightnessParams, renderMode);
+                    star.doLocalitySelect(...localitySelectParams)
+                    star.starLabel = star.localitySelect ? star.id : null;
+                }
+            })
         }
 
         let ret = 0;
@@ -315,7 +319,7 @@ export class StarSector {
         this.lumensSt = calculateStatistics(this.loadedStars.map((star) => star.lumens));
         this.loadedStars.sort((a, b) => a.lumens - b.lumens);
 
-        let lumenBucketSize = .0000004;
+        let lumenBucketSize = 0.00004;
 
         this.buckets = new Array();
         this.bucketLumensCutoffs = new Array();
@@ -328,7 +332,7 @@ export class StarSector {
             if (star.lumens > curLumensCutoff) {
                 this.bucketLumensCutoffs[curBucket] = curLumensCutoff;
                 curBucket += 1;
-                curLumensCutoff = Math.min(curLumensCutoff + lumenBucketSize, star.lumens);
+                curLumensCutoff = Math.max(curLumensCutoff + lumenBucketSize, star.lumens);
             }
             this.buckets[curBucket] = this.buckets[curBucket] ?? new Array();
             this.buckets[curBucket].push(star);

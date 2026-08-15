@@ -110,8 +110,6 @@ export class StarManager extends RuntimeComponent {
 
         this.iterateOnSectors((sector) => sector._recalculateStarColorFlag = true);
     }
-
-
     render() {
         // this.iterateOnSectors((sector) => sector.render())
         // console.log(this.iterateOnSectorsAcc((sector) => sector.render()))
@@ -206,10 +204,6 @@ export class StarManager extends RuntimeComponent {
             // stelCatalog.loadData()
         })
     };
-
-    dataLoadedStar() {
-        this.processDataStar();
-    }
 
     processDataStar() {
         this.loadedStars.forEach((star) => {

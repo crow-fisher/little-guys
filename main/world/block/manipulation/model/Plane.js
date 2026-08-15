@@ -4,6 +4,7 @@ import { CoordinateSet } from "../../../../rendering/model/CoordinateSet.js";
 import { LineRenderJob } from "../../../../rendering/model/LineRenderJob.js";
 import { PointLabelRenderJob } from "../../../../rendering/model/PointLabelRenderJob.js";
 import { RenderJob } from "../../../../rendering/model/RenderJob.js";
+import { renderPointLabel } from "../../../../rendering/renderFunctions.js";
 import { RuntimeComponent } from "../../../../runtimeComponent.js";
 import { loadGD, UI_TOPBAR_AA } from "../../../../ui/UIData.js";
 import { isPointInsideQuad } from "../../../../util/quad.js";
@@ -31,6 +32,7 @@ export class Plane {
         this.dimWidth = dimWidth * step;
         this.dimHeight = dimHeight * step;
 
+        this.processPositionUpdate();
         this.initRefPoints();
     }
 
@@ -38,6 +40,13 @@ export class Plane {
     }
 
     render(i) {
+        this.centerCs.process();
+        renderPointLabel(
+            this.canvasManager.context,
+            ...this.centerCs.renderScreen,
+            5,
+            "#FF0000"
+        )
         let x, y, centerPoint, neighborPoint, neighborPointLineRenderJob, color;
         let order = [[-1, 1]]
 

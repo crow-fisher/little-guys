@@ -12,7 +12,8 @@ export class TimeManager extends RuntimeComponent {
         this.curDay = 100.2;
         this.curDate = Date.now();
         this.dt = 0;
-        this.dDay = 0; 
+        this.dDay = 0;
+        this.dtRolling = 0;
         this.curTimeScale = 1;
         this.daylightStrength = 0;
         this.lastTimeTick = Date.now();
@@ -90,6 +91,9 @@ export class TimeManager extends RuntimeComponent {
             this.dDay = (this.dt * this.getTimeScale()) / MILLIS_PER_DAY;
             this.lastTimeTick = Date.now();
         }
+
+        let m = 0.02;
+        this.dtRolling = this.dtRolling == 0 ? this.dt : (this.dtRolling * (1 - m) + m * this.dt);
         this.curDay += this.dDay;
     };
 

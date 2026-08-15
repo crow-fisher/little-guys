@@ -43,8 +43,9 @@ export class AstronomyAtlasComponent extends Component {
             },
             select: {}
         };
+
         dc = 
-{"offsetScale":{"offsetX":208,"offsetY":75,"sizeX":461,"sizeY":595},"submenuState":{"plot":false,"label":false,"setup":false,"style":false,"select":false},"plot":{},"label":{},"setup":{},"style":{"brightnessPosX":0.2646420824295011,"brightnessPosY":0.5517241379310345,"brightnessC":0.46203904555314534,"opacityPosX":0.29067245119305857,"opacityPosY":0.5123152709359606,"opacityC":0.4685466377440347,"mode":0,"minSize":-5.574837310195227,"maxSize":2.8633405639913234,"minLuminance":0.42516268980477223,"maxLuminance":-1.1930585683297181,"distPowerMult":1.31},"select":{}}
+{"offsetScale":{"offsetX":307,"offsetY":79,"sizeX":461,"sizeY":595},"submenuState":{"plot":false,"label":false,"setup":false,"style":false,"select":false},"plot":{},"label":{},"setup":{},"style":{"brightnessPosX":0.210412147505423,"brightnessPosY":0.4975369458128079,"brightnessC":0.46203904555314534,"opacityPosX":0.38611713665943603,"opacityPosY":0.270935960591133,"opacityC":0.4685466377440347,"mode":1,"minSize":-5.574837310195227,"maxSize":3.2537960954446854,"minLuminance":2.880694143167028,"maxLuminance":-1.106290672451193,"distPowerMult":1.131236442516269},"select":{}};
         return dc;
     }
     // see 'StarSpecializedValuePicker'

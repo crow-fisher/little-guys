@@ -22,7 +22,7 @@ export class UIManager extends RuntimeComponent {
         this.topbarConfig = {}  // accessed directly
         this.toolbarConfig = { 
             activeTool: 2,
-            activeBrushMode: 0,
+            activeBrushMode: 1,
             clickMode: 0
         } // ...
         this.astronomyAtlasComponent = new AstronomyAtlasComponent(this, () => this.topbarConfig.active == TB_ASTRONOMY);
@@ -38,7 +38,7 @@ export class UIManager extends RuntimeComponent {
             this.astronomyAtlasComponent,
             this.blockAttributeComponent,
             this.topBarComponent,
-            // this.toolBarComponent,
+            this.toolBarComponent,
             this.colorPickerComponent,
             // this.crosshairComponent
         ]
