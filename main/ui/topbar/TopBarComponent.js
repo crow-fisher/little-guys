@@ -33,7 +33,7 @@ export class TopBarComponent {
             this.midSpacingEl,
             new TopBarToggle(this.uiManager, fontSize, "left", "active", TB_ASTRONOMY, () => "stars"),
             this.midSpacingEl,
-            new TopBarText(this.uiManager, fontSize, "left", () => this.textFps()),
+            // new TopBarText(this.uiManager, fontSize, "left", () => this.textFps()),
             new TopBarToggleFunc(this.uiManager, fontSize, "left", () => this.uiManager.getCurTimeScale() == 0, () => this.uiManager.setCurTimeScale(0), () => "\u23F8\uFE0E"),
             ...speedElements,
             this.midSpacingEl,

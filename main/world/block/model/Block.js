@@ -193,7 +193,7 @@ export class Block {
 
                 for (let i = 0; i < 6; i++) {
                     copyVecValue(zzzVec, dirs[i][0]);
-                    for (let j = 0; j < this.lightingManager.lightSources.length; j++) {
+                    for (let j = 0; j < this.lightSource.length; j++) {
                         let ls = this.lightSource[j];
                         let dot = vec3Dot(dirs[i][2], ls[3]);
                         if (dot < 0) {
