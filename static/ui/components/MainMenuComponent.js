@@ -1,7 +1,6 @@
 import { getBaseUISize, resetZoom } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { purgeCanvasFrameLimit } from "../../globalOperations.js";
-import { DEBUG } from "../../index.js";
 import { getLastMouseDown } from "../../mouse.js";
 import { isPlayerRunning, startPlayerMain, stopPlayerMain } from "../../player/playerMain.js";
 import { deleteAllSaveData, deleteHiddenWorlds, downloadSaveFile, hideWorld, loadEmptyScene, loadSlot, saveCurGame, unhideWorld } from "../../saveAndLoad.js";
@@ -13,9 +12,12 @@ import { RadioToggle } from "../elements/RadioToggle.js";
 import { Text } from "../elements/Text.js";
 import { TextFunctionalBackground } from "../elements/TextFunctionalBackground.js";
 import { Toggle } from "../elements/Toggle.js";
-import { loadGD, loadUI, saveUI, UI_CENTER, UI_MAIN_NEWWORLD, UI_UI_SHOWHIDDEN, UI_UI_WORLDPAGE, UI_UI_CURWORLD, UI_UI_NEXTWORLD, UI_UI_SIZE, UI_UI_WORLDHIDDEN, UI_UI_WORLDNAME, UICONFIG, UI_UI_WORLDDELETED, saveGD, UI_UI_PHONEMODE } from "../UIData.js";
+import { loadGD, loadUI, saveUI, UI_CENTER, UI_MAIN_NEWWORLD, UI_UI_SHOWHIDDEN, UI_UI_WORLDPAGE, UI_UI_CURWORLD, UI_UI_NEXTWORLD, UI_UI_SIZE, UI_UI_WORLDHIDDEN, UI_UI_WORLDNAME, UICONFIG, UI_UI_WORLDDELETED, saveGD, UI_UI_PHONEMODE, getGAMEDATA } from "../UIData.js";
 import { SubTreeComponent } from "./SubTreeComponent.js";
 
+let params = new URLSearchParams(document.location.search);
+
+let DEBUG = params.get("debug");
 
 export class MainMenuComponent extends SubTreeComponent {
     constructor(posXFunc, posYFunc, padding, dir, key) {
@@ -31,7 +33,6 @@ export class MainMenuComponent extends SubTreeComponent {
         subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, downloadSaveFile, "download save", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
         subMenuContainer.addElement(new Toggle(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, UI_MAIN_NEWWORLD, "new/edit world", 
         () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive(), 0.75, false));
-
 
 
         subMenuContainer.addElement(new Text(this.window, this.sizeX, getBaseUISize() * .5, this.textAlignOffsetX, ""));
@@ -100,6 +101,9 @@ export class MainMenuComponent extends SubTreeComponent {
 
         subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, loadEmptyScene, "empty scene", () => getActiveClimate().getUIColorInactiveCustom(0.61)));
         subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, () => setTimeout(deleteAllSaveData, 100), "delete all save data", () => getActiveClimate().getUIColorInactiveCustom(0.64)));
+
+        if (DEBUG)
+            subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, () => console.log(getGAMEDATA()), "log GAMEDATA", () => getActiveClimate().getUIColorInactiveCustom(0.64)));
 
         subMenuContainer.addElement( new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, purgeCanvasFrameLimit, "purge off-screen blocks", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
         subMenuContainer.addElement( new Toggle(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, UI_UI_SHOWHIDDEN, 

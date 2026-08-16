@@ -1,3 +1,6 @@
 {
-    "javascript.inlayHints.parameterNames.enabled": "all"
+    "javascript.inlayHints.parameterNames.enabled": "all",
+    "cSpell.words": [
+        "GAMEDATA"
+    ]
 }
