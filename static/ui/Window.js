@@ -101,7 +101,7 @@ export class Window {
         let relX = x - this.posX;
         let relY = y - this.posY;
 
-        if (relX > 0 && relX < this.sizeX && relY > 0 && relY < this.sizeY) {
+        if ((relX > 0 && relX < this.sizeX && relY > 0 && relY < this.sizeY)) {
             this.container.hover(relX, relY);
         }
         this.hoverWindowFrame(x, y);

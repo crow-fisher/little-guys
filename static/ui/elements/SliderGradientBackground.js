@@ -1,6 +1,6 @@
 import { getBaseUISize } from "../../canvas.js";
 import { calculateColor } from "../../climate/simulation/temperatureHumidity.js";
-import { COLOR_BLACK } from "../../colors.js";
+import { COLOR_BLACK, COLOR_WHITE } from "../../colors.js";
 import { getCurBackgroundColor, MAIN_CONTEXT } from "../../index.js";
 import { DEBUG } from "../../index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
@@ -48,11 +48,20 @@ export class SliderGradientBackground extends WindowElement {
         MAIN_CONTEXT.strokeRect((startX + lineWidth / 2) + lerp - (blockSize / 2), startY + (lineWidth / 2), blockSize - lineWidth, this.sizeY - (lineWidth));
 
         if (DEBUG) {
+            MAIN_CONTEXT.lineWidth = lineWidth * .25
+            MAIN_CONTEXT.strokeStyle = COLOR_WHITE;
             MAIN_CONTEXT.strokeText(
-                loadGD(this.key),
+                loadGD(this.key).toFixed(2),
                 (startX + lineWidth / 2) + lerp - (blockSize / 2),
-                startY + (lineWidth / 2)
+                startY + (blockSize * .5)
             );
+            MAIN_CONTEXT.fillStyle = COLOR_BLACK;
+            MAIN_CONTEXT.fillText(
+                loadGD(this.key).toFixed(2),
+                (startX + lineWidth / 2) + lerp - (blockSize / 2),
+                startY + (blockSize * .46)
+            );
+
         }
         return [this.sizeX, this.sizeY]
     }

@@ -24,7 +24,7 @@ export const _waterPressureWiltThresh = "_waterPressureWiltThresh";
 export const _lightLevelDisplayExposureAdjustment = "_lightLevelDisplayExposureAdjustment";
 
 export let baseOrganism_dnm = {
-    _llt_target: 1,
+    _llt_target: 2.35,
     _llt_min: 0.5,
     _llt_max: 2,
     _llt_throttlValMin: 1,
@@ -69,7 +69,6 @@ class BaseOrganism {
         this.nitrogen = 0;
         this.phosphorus = 0;
         this.lightlevel = 0;
-        this.lightDamageCount = 0;
 
         this.growthNumGreen = 20;
         this.growthNumRoots = 30;
@@ -516,10 +515,8 @@ class BaseOrganism {
     }
 
     doSpawnSeed() {
-        if (this.stage == STAGE_FLOWER) {
-            if (this.nitrogen > this.growthNitrogen && this.phosphorus > this.growthPhosphorus) {
-                this.spawnSeed();
-            }
+        if (this.nitrogen > this.growthNitrogen && this.phosphorus > this.growthPhosphorus) {
+            this.spawnSeed();
         }
     }
 
