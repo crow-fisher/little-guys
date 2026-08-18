@@ -44,6 +44,11 @@ export class CattailOrganism extends BaseOrganism {
 
         this.grasses = [];
     }
+
+    getSeedType() {
+        return CattailSeedOrganism;
+    }
+
     getDefaultNutritionMap() {
         return cattail_dnm;
     }

@@ -1,6 +1,6 @@
 import { getBaseUISize } from "../../../canvas.js";
 import { COLOR_BLACK, COLOR_GREEN } from "../../../colors.js";
-import { clamp, invlerp, lerp } from "../../../common.js";
+import { clamp, hsvToHex, invlerp, lerp } from "../../../common.js";
 import { MAIN_CONTEXT } from "../../../index.js";
 import { iterateOnOrganisms } from "../../../organisms/orgOperations.js";
 import { WindowElement } from "../../Window.js";
@@ -19,11 +19,11 @@ export class Graph2DLined extends WindowElement {
         MAIN_CONTEXT.fillStyle = COLOR_BLACK;
         MAIN_CONTEXT.fillRect(startX, startY, this.sizeX, this.sizeY);
 
-        MAIN_CONTEXT.fillStyle = COLOR_GREEN;
-
         let optimals = new Map()
-
         iterateOnOrganisms((org) => {
+                if (org.__proto__.__proto__.constructor.name == "BaseSeedOrganism") {
+                    return;
+                }
                 optimals.set(org.proto, optimals.get(org.proto) ?? optimals[org.proto] ?? [0, 0, null]);
                 optimals.get(org.proto)[0] = org.growthLightLevel;
                 optimals.get(org.proto)[1] = org.waterPressureSoilTarget();
@@ -33,9 +33,13 @@ export class Graph2DLined extends WindowElement {
                 let moistureInvlerp = clamp(invlerp(org.waterPressureWiltThresh() + org.waterPressureSoilTarget(), org.waterPressureOverwaterThresh() + org.waterPressureSoilTarget(), org.waterPressure));
                 let xLightLerp = lerp(startX, startX + this.sizeX, lightInvlerp);
                 let yMoistureLerp = lerp(startY, startY + this.sizeY, moistureInvlerp);
+
+                // MAIN_CONTEXT.fillStyle = hsvToHex(org.orgInfoHue, clamp(org.evolutionParameterHistory.length / 5), 1);
+                MAIN_CONTEXT.fillStyle = org.getEvolutionColor(0.85);
                 MAIN_CONTEXT.beginPath();
                 MAIN_CONTEXT.arc(xLightLerp, yMoistureLerp, getBaseUISize() * .2, 0, 2 * Math.PI, false);
                 MAIN_CONTEXT.fill();
+
         })
 
         MAIN_CONTEXT.fillStyle = COLOR_BLACK;

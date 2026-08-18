@@ -11,6 +11,7 @@ import { SeedSquare } from "../../squares/SeedSquare.js";
 import { UI_ORGANISM_GRASS_WHEAT } from "../../ui/UIData.js";
 import { kblue_dnm } from "./KentuckyBluegrassOrganism.js";
 import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh } from "../BaseOrganism.js";
+import { HUE_GOLDENROD, HUE_ORANGE_PUMPKIN } from "../../hue.js";
 
 // ref: https://prairiecalifornian.com/wheat-growth-stages/
 
@@ -33,7 +34,8 @@ export class WheatOrganism extends BaseOrganism {
         this.uiRef = UI_ORGANISM_GRASS_WHEAT;
         this.greenType = WheatGreenSquare;
         this.rootType = GenericRootSquare;
-
+        this.orgInfoHue = HUE_GOLDENROD; // Used in 'organismVisualizer' 
+        
         this.growthCycleMaturityLength = 20 + Math.random() * 10;
         this.growthCycleLength = this.growthCycleMaturityLength * 2;
 
@@ -62,6 +64,11 @@ export class WheatOrganism extends BaseOrganism {
     getDefaultNutritionMap() {
         return kblue_dnm;
     }
+
+    getSeedType() {
+        return WheatSeedOrganism;
+    }
+    
 
     processGenetics() {
         this.evolutionParameters[0] = Math.min(Math.max(this.evolutionParameters[0], 0.00001), .99999)

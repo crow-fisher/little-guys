@@ -11,6 +11,7 @@ import { SeedSquare } from "../../squares/SeedSquare.js";
 import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
 import { UI_ORGANISM_GRASS_KBLUE } from "../../ui/UIData.js";
 import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh } from "../BaseOrganism.js";
+import { HUE_CHARTREUSE } from "../../hue.js";
 
 export let kblue_dnm = structuredClone(baseOrganism_dnm);
 kblue_dnm[_llt_target] = 1.45;
@@ -25,14 +26,15 @@ kblue_dnm[_lightDecayValue] = 4.42;
 kblue_dnm[_lightLevelDisplayExposureAdjustment] = .22;
 
 export class KentuckyBluegrassOrganism extends BaseOrganism {
-    constructor(square) {
-        super(square);
+    constructor(square, evolutionParameterHistory) {
+        super(square, evolutionParameterHistory);
         this.proto = "KentuckyBluegrassOrganism";
         this.uiRef = UI_ORGANISM_GRASS_KBLUE;
         this.greenType = KentuckyBluegrassGreenSquare;
         this.rootType = GenericRootSquare;
         this.grassGrowTimeInDays =  0.01;
         this.side = Math.random() > 0.5 ? -1 : 1;
+        this.orgInfoHue = HUE_CHARTREUSE; // Used in 'organismVisualizer' 
 
         this.targetNumGrass = 1;
         this.maxNumGrass = 2;
@@ -47,31 +49,14 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
         this.grasses = [];
     }
 
+    getSeedType() {
+        return KentuckyBluegrassSeedOrganism;
+    }
+
     getDefaultNutritionMap() {
         return kblue_dnm;
     }
     
-
-    spawnSeed() {
-        if (this.originGrowth == null || (this.growthPlans.some((gp) => !gp.areStepsCompleted())) || this.targetGrassLength != this.maxGrassLength) 
-            return;
-        let comp = this.originGrowth.children.at(randNumber(0, this.originGrowth.children.length - 1));
-        let lsq = comp.lifeSquares.at(comp.lifeSquares.length - 1);
-        let seedSquare = addSquare(new SeedSquare(lsq.getPosX(), lsq.getPosY() - 10));
-        if (seedSquare) {
-            seedSquare.speedX = Math.random() > 0.5 ? -1 : 1 * randNumber(1, 2);
-            seedSquare.speedY = randRange(-1.5, 1);
-            let orgAdded = new KentuckyBluegrassSeedOrganism(seedSquare, this.getNextGenetics());
-            if (!orgAdded) {
-                seedSquare.destroy();
-            } else {
-                applyLightingFromSource(this.lifeSquares.at(0), orgAdded.lifeSquares.at(0));
-            }
-        }
-        this.nitrogen *= (1 - this.seedReduction());
-        this.phosphorus *= (1 - this.seedReduction());
-    }
-
     processGenetics() {
         this.evolutionParameters[0] = Math.min(Math.max(this.evolutionParameters[0], 0.00001), .99999)
         let p0 = this.evolutionParameters[0];

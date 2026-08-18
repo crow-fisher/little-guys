@@ -1,16 +1,16 @@
-import { getCurDay, getDt } from "../climate/time.js";
+import { getDt } from "../climate/time.js";
 import { GrowthPlan, GrowthPlanStep } from "./GrowthPlan.js";
-import { STAGE_ADULT, STAGE_DEAD, STAGE_FLOWER, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_ROOTNODE, TYPE_HEART } from "./Stages.js";
+import { STAGE_DEAD, STAGE_FLOWER, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_ROOTNODE, TYPE_HEART } from "./Stages.js";
 import { addSquare, getNeighbors } from "../squares/sqOperations.js";
 import { PlantSquare } from "../squares/PlantSquare.js";
 import { applyLightingFromSource } from "../lighting/lightingProcessing.js";
 import { loadGD, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_SELECT, UI_SIMULATION_GENS_PER_DAY, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
 import { COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
-import { rgbToRgba } from "../common.js";
+import { randNumber, randRange, rgbToRgba } from "../common.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { zoomCanvasFillRect } from "../canvas.js";
-import { getNextBlockId } from "../globals.js";
 import { HUE_GREEN } from "../hue.js";
+import { SeedSquare } from "../squares/SeedSquare.js";
 
 export const _llt_target = "_llt_target";
 export const _llt_min = "_llt_min";
@@ -105,6 +105,10 @@ class BaseOrganism {
         this.organismViewHsvBase = [166, 95, 95];
     }
 
+    getSeedType() {
+        return null; 
+    }
+
     getDefaultNutritionMap() {
         return baseOrganism_dnm;
     }
@@ -151,7 +155,7 @@ class BaseOrganism {
     lightLevelDisplayExposureAdjustment() {
         return this.getGenericNutritionParam(_lightLevelDisplayExposureAdjustment);
     }
-    
+
 
     processColor(color1, color2, value, valueMax, opacity) {
         let frac = value / valueMax;
@@ -212,7 +216,7 @@ class BaseOrganism {
             (accumulator, currentValue) => accumulator + currentValue,
             0);
 
-        
+
         let target = this.waterPressureSoilTarget();
         let min = target + this.waterPressureWiltThresh();
         let max = target + this.waterPressureOverwaterThresh();
@@ -225,7 +229,7 @@ class BaseOrganism {
             waterPressureLossRate = (this.waterPressure - min) / (target - min);
         else if (this.waterPressure < max)
             waterPressureLossRate = 1 + (this.waterPressure - target) / (max - target);
-        else 
+        else
             waterPressureLossRate = 2;
 
         this.waterPressure -= waterPressureLossRate * this.waterPressureChangeRate;
@@ -287,7 +291,7 @@ class BaseOrganism {
         if (greenLifeSquares.length == 0) {
             return 0;
         }
-        
+
         let target = this.waterPressureSoilTarget();
         let min = target + this.waterPressureWiltThresh();
         let max = target + this.waterPressureOverwaterThresh();
@@ -310,7 +314,7 @@ class BaseOrganism {
         this.linkedSquare = square;
         square.linkOrganism(this);
     }
-    unlinkSquare(deep=true) {
+    unlinkSquare(deep = true) {
         if (deep && this.linkedSquare != null) {
             this.linkedSquare.unlinkOrganism(this);
         }
@@ -383,7 +387,7 @@ class BaseOrganism {
         return out;
     }
 
-    growGreenSquareAction(startNode, subtype, dy=0) {
+    growGreenSquareAction(startNode, subtype, dy = 0) {
         let newGrassNode = this.growPlantSquare(startNode, 0, dy);
         newGrassNode.subtype = subtype;
         return newGrassNode;
@@ -511,7 +515,23 @@ class BaseOrganism {
     }
 
     spawnSeed() {
-        console.log("Would spawn seed")
+        if (this.originGrowth == null || (this.growthPlans.some((gp) => !gp.areStepsCompleted())) || this.targetGrassLength != this.maxGrassLength)
+            return;
+        let comp = this.originGrowth.children.at(randNumber(0, this.originGrowth.children.length - 1));
+        let lsq = comp.lifeSquares.at(comp.lifeSquares.length - 1);
+        let seedSquare = addSquare(new SeedSquare(lsq.getPosX(), lsq.getPosY() - 10));
+        if (seedSquare) {
+            seedSquare.speedX = Math.random() > 0.5 ? -1 : 1 * randNumber(1, 2);
+            seedSquare.speedY = randRange(-1.5, 1);
+            let orgAdded = new (this.getSeedType())(seedSquare, this.getNextGenetics(), structuredClone(this.evolutionParameterHistory));
+            if (!orgAdded) {
+                seedSquare.destroy();
+            } else {
+                applyLightingFromSource(this.lifeSquares.at(0), orgAdded.lifeSquares.at(0));
+                this.nitrogen *= (1 - this.seedReduction());
+                this.phosphorus *= (1 - this.seedReduction());
+            }
+        }
     }
 
     doSpawnSeed() {

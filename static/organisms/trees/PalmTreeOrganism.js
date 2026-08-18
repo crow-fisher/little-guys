@@ -38,6 +38,8 @@ export class PalmTreeOrganism extends BaseOrganism {
         this.growthNumGreen = this.maxNumLeaves * (this.maxLeafLength) + this.maxStemLength;
     }
 
+    
+
     processGenetics() {
         // param 0 - shady and squat or bright and tall 
         // will also impact life cycle

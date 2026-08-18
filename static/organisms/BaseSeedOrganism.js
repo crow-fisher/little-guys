@@ -9,6 +9,9 @@ import { isSaveOrLoadInProgress } from "../saveAndLoad.js";
 
 class BaseSeedOrganism extends BaseOrganism {
     constructor(square, evolutionParameters = null, evolutionParameterHistory) {
+        if (evolutionParameters != null) {
+            evolutionParameterHistory.push(evolutionParameters);
+        }
         super(square, evolutionParameterHistory);
         this.proto = "BaseSeedOrganism";
         this.sproutType = null;
@@ -46,7 +49,7 @@ class BaseSeedOrganism extends BaseOrganism {
             this.sproutAge += getDt();
             if (this.sproutAge > this.totalSproutTime) {
                 let linkedSquareCache = this.linkedSquare;
-                this.applyEvolutionParameters(new (this.getSproutType())(linkedSquareCache));
+                this.applyEvolutionParameters(new (this.getSproutType())(linkedSquareCache, this.evolutionParameterHistory));
                 this.destroy();
                 return;
             }
