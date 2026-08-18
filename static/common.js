@@ -256,4 +256,12 @@ export {
     processColorLerpBicolor, getDist, dec2bin
 }
 
-
+export function lerp(min, max, value) {
+    return min + value * (max - min);
+}
+export function invlerp(min, max, value) {
+    return (value - min) / (max - min);
+}
+export function clamp(value, min=0, max=1) {
+    return Math.min(max, Math.max(min, value))
+}

@@ -68,13 +68,13 @@ class BaseOrganism {
         this.ph = 7;
         this.nitrogen = 0;
         this.phosphorus = 0;
-        this.lightlevel = 0;
+        this.lightLevel = 0;
 
         this.growthNumGreen = 20;
         this.growthNumRoots = 30;
         this.growthNitrogen = 50;
         this.growthPhosphorus = 25;
-        this.growthLightLevel = 1.75;
+        this.growthLightLevel = 1;
         this.growthCycleMaturityLength = 1;
         this.growthCycleLength = 1.5;
         this.numGrowthCycles = 1;
@@ -170,9 +170,6 @@ class BaseOrganism {
     getGrowthCycleMaturityLength() {
         return (this.growthCycleMaturityLength / loadGD(UI_SIMULATION_GENS_PER_DAY));
     }
-    getGrowthLightLevel() {
-        return this.growthLightLevel;
-    }
 
     setEvolutionParameters(evolutionParameters) {
         this.evolutionParameters = evolutionParameters;
@@ -183,7 +180,7 @@ class BaseOrganism {
         return Array.from(this.evolutionParameters.map((v) => {
             if (v === 1 || v === 0)
                 return v;
-            let d = Math.random() * ((this.lightlevel < this.growthLightLevel) ? -.1 : .1);
+            let d = Math.random() * ((this.lightLevel < this.growthLightLevel) ? -.1 : .1);
             return Math.min(Math.max(0.0001, v + d), 0.9999);
         }));
     }
@@ -267,12 +264,12 @@ class BaseOrganism {
             .filter((lsq) => lsq.type == "green")
             .map((lsq) => [lsq.processLighting(), lsq.lightHealth ** 4])
             .map((argb) => argb[1] * (argb[0].r + argb[0].b) / (255 * 2))
-            .forEach((lightlevel) => this.lsqLightLevel(this.llt_target() * lightlevel))
+            .forEach((lightLevel) => this.lsqLightLevel(this.llt_target() * lightLevel))
     }
 
     lsqLightLevel(val) {
         let c = this.curNumGreen;
-        this.lightlevel = this.lightlevel * (c - 1) / c + (val / c);
+        this.lightLevel = this.lightLevel * (c - 1) / c + (val / c);
     }
 
     wiltEfficiency() {
@@ -425,7 +422,7 @@ class BaseOrganism {
     }
 
     lightLevelThrottleVal() {
-        let ratio = this.lightlevel / this.growthLightLevel;
+        let ratio = this.lightLevel / this.growthLightLevel;
         if (ratio < this.llt_min()) {
             return this.llt_throttlValMax();
         } else if (ratio < 1) {
@@ -587,7 +584,7 @@ class BaseOrganism {
 
         let nitrogenMult = Math.min(1, this.nitrogen / expectedNitrogen) * this.lifeSquares.length;
         let phosphorusMult = Math.min(1, this.phosphorus / expectedPhosphorus) * this.lifeSquares.length;
-        let lightLevelMult = Math.min(2, this.lightlevel / this.growthLightLevel) * this.lifeSquares.length;
+        let lightLevelMult = Math.min(2, this.lightLevel / this.growthLightLevel) * this.lifeSquares.length;
         let lifetimeMult = lifetimeFrac * this.lifeSquares.length;
 
         this.lifeSquares.forEach((lsq) => {

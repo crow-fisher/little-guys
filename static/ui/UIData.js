@@ -35,6 +35,8 @@ export const UI_PALETTE_PLANTS = "UI_PALETTE_PLANTS";
 export const UI_SM_GODMODE = "UI_SM_GODMODE";
 export const UI_SM_CLIMATE = "UI_SM_CLIMATE";
 
+export const UI_VISUALIZER_ORGANISM = "UI_VISUALIZER_ORGANISM";
+
 export const UI_CLIPS = "UI_CLIPS";
 export const UI_CLIPS_PAGE = "UI_CLIPS_PAGE";
 export const UI_CLIPS_DENSITY = "UI_CLIPS_DENSITY";
