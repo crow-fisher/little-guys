@@ -32,8 +32,8 @@ export class PleurocarpMossOrganism extends BaseMossOrganism {
 }
 
 export class PleurocarpMossSeedOrganism extends BaseSeedOrganism {
-    constructor(square, evolutionParameters) {
-        super(square, evolutionParameters);
+    constructor(square, evolutionParameters, evolutionParameterHistory) {
+        super(square, evolutionParameters, evolutionParameterHistory);
         this.proto = "PleurocarpMossSeedOrganism";
         this.greenType = PleurocarpMossGreenSquare;
         this.rockable = true;

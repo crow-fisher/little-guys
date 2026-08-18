@@ -257,8 +257,8 @@ export class PalmTreeOrganism extends BaseOrganism {
 
 
 export class PalmTreeSeedOrganism extends BaseSeedOrganism {
-    constructor(square, evolutionParameters) {
-        super(square, evolutionParameters);
+    constructor(square, evolutionParameters, evolutionParameterHistory) {
+        super(square, evolutionParameters, evolutionParameterHistory);
         this.proto = "PalmTreeSeedOrganism";
     }
 

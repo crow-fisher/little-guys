@@ -322,8 +322,8 @@ export class WheatOrganism extends BaseOrganism {
 }
 
 export class WheatSeedOrganism extends BaseSeedOrganism {
-    constructor(square, evolutionParameters) {
-        super(square, evolutionParameters);
+    constructor(square, evolutionParameters, evolutionParameterHistory) {
+        super(square, evolutionParameters, evolutionParameterHistory);
         this.proto = "WheatSeedOrganism";
     }
 

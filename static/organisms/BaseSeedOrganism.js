@@ -8,8 +8,8 @@ import { randNumber } from "../common.js";
 import { isSaveOrLoadInProgress } from "../saveAndLoad.js";
 
 class BaseSeedOrganism extends BaseOrganism {
-    constructor(square, evolutionParameters = null) {
-        super(square);
+    constructor(square, evolutionParameters = null, evolutionParameterHistory) {
+        super(square, evolutionParameterHistory);
         this.proto = "BaseSeedOrganism";
         this.sproutType = null;
         this.maxLifeTime = 10;

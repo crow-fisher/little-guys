@@ -68,6 +68,17 @@ function rgbToRgba(r, g, b, a) {
     return "rgba(" + r + "," + g + "," + b + "," + a + ")";
 }
 
+/** copied from future/main/color/color.js  **/
+export function hsvToHex(h, s, v) {
+    let f = (n, k = (n + h / 60) % 6) => 255 * (v - v * s * Math.max(Math.min(k, 4 - k, 1), 0));
+    return "#" + (1 << 24 | f(5) << 16 | f(3) << 8 | f(1)).toString(16).slice(1);
+}
+
+export function hsvToRgba(h, s, v, o) {
+    let f = (n, k = (n + h / 60) % 6) => v - v * s * Math.max(Math.min(k, 4 - k, 1), 0);
+    return "rgba(" + f(5) + "," + f(3) + "," + f(1) + "," + o + ")";
+}
+
 
 export function hueShiftColor(hex, hueShift, saturationShift, valueShift) {
     let hsv = rgb2hsv(...hexToRgbArr(hex))

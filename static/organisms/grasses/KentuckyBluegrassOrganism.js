@@ -168,8 +168,8 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
 }
 
 export class KentuckyBluegrassSeedOrganism extends BaseSeedOrganism {
-    constructor(square, evolutionParameters) {
-        super(square, evolutionParameters);
+    constructor(square, evolutionParameters, evolutionParameterHistory) {
+        super(square, evolutionParameters, evolutionParameterHistory);
         this.proto = "KentuckyBluegrassSeedOrganism";
     }
 

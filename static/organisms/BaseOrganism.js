@@ -10,6 +10,7 @@ import { rgbToRgba } from "../common.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { zoomCanvasFillRect } from "../canvas.js";
 import { getNextBlockId } from "../globals.js";
+import { HUE_GREEN } from "../hue.js";
 
 export const _llt_target = "_llt_target";
 export const _llt_min = "_llt_min";
@@ -38,7 +39,7 @@ export let baseOrganism_dnm = {
 }
 
 class BaseOrganism {
-    constructor(square) {
+    constructor(square, evolutionParameterHistory = []) {
         this.proto = "BaseOrganism";
         this.uiRef = UI_ORGANISM_SELECT;
         this.posX = square.posX;
@@ -47,6 +48,7 @@ class BaseOrganism {
         this.originGrowth = null;
         this.spinnable = false;
 
+        this.orgInfoHue = HUE_GREEN; // Used in 'organismVisualizer' 
         this.lifeSquares = new Array();
         this._lifeSquaresCount = -1;
         this.growthPlans = [];
@@ -57,6 +59,7 @@ class BaseOrganism {
         this.greenLastGrown = 0;
 
         this.evolutionParameters = null;
+        this.evolutionParameterHistory = evolutionParameterHistory;
 
         this.greenType = null;
         this.rootType = null;
