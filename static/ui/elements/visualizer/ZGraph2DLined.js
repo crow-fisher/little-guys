@@ -25,10 +25,10 @@ export class Graph2DLined extends WindowElement {
         let yMin = -2;
         let yMax =  2;
 
-        xMin = 0;
-        xMax = 0;
-        yMin = -1;
-        yMax = 1;
+        // xMin = 0;
+        // xMax = 0;
+        // yMin = -1;
+        // yMax = 1;
 
 
         let optimals = new Map()

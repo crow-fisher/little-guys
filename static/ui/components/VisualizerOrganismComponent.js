@@ -24,7 +24,7 @@ export class VisualizerOrganismComponent extends Component {
         let container = new Container(this.window, 0, 1);
         this.window.container = container;
 
-        let sizeX = getBaseUISize() * 39;
+        let sizeX = getBaseUISize() * 50;
         let half = sizeX / 2;
         let third = sizeX / 3;
         let quarter = sizeX / 4;
@@ -34,7 +34,7 @@ export class VisualizerOrganismComponent extends Component {
         let h2 = getBaseUISize() * 2.5;
         let br = getBaseUISize() * .5;
 
-        let graphHeight = getBaseUISize() * 40;
+        let graphHeight = getBaseUISize() * 50;
 
         container.addElement(new TextBackground(this.window, sizeX, h1, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.65), 0.75, "organism visualizer"))
         container.addElement(new Graph2DLined(this.window, sizeX, graphHeight))
