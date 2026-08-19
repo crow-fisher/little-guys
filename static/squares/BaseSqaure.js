@@ -13,7 +13,7 @@ import {
 
 import { MAIN_CONTEXT } from "../index.js";
 
-import { hexToRgb, hsv2rgb, hueShiftColor, hueShiftColorArr, randNumber, randRange, removeItemAll, rgb2hsv, rgbToHex, rgbToRgba } from "../common.js";
+import { hexToRgb, hsv2rgb, hueShiftColor, hueShiftColorArr, invlerp, randNumber, randRange, removeItemAll, rgb2hsv, rgbToHex, rgbToRgba } from "../common.js";
 import { removeSquare } from "../globalOperations.js";
 import { calculateColorTemperature, getTemperatureAtWindSquare, temperatureHumidityFlowrateFactor, updateWindSquareTemperature } from "../climate/simulation/temperatureHumidity.js";
 import { getWindSquareAbove } from "../climate/simulation/wind.js";

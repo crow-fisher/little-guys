@@ -56,7 +56,7 @@ class BaseOrganism {
         this.linkSquare(square);
         this.age = 0;
         this.rootLastGrown = 0;
-        this.greenLastGrown = 0;
+        this.greenLastGrown = -100;
 
         this.evolutionParameters = null;
         this.evolutionParameterHistory = evolutionParameterHistory;
@@ -64,14 +64,8 @@ class BaseOrganism {
         this.greenType = null;
         this.rootType = null;
 
-        this.waterPressure = this.waterPressureSoilTarget();
+        this.waterPressure = 0;
         this.waterPressureChangeRate = .01;
-
-        // nutrients normalized to "pounds per acre" per farming websites
-        this.ph = 7;
-        this.nitrogen = 0;
-        this.phosphorus = 0;
-        this.lightLevel = 0;
 
         this.growthNumGreen = 20;
         this.growthNumRoots = 30;
@@ -81,6 +75,11 @@ class BaseOrganism {
         this.growthCycleMaturityLength = 1;
         this.growthCycleLength = 1.5;
         this.numGrowthCycles = 1;
+
+        this.ph = 7;
+        this.nitrogen = 0;
+        this.phosphorus = 0;
+        this.lightLevel = this.growthLightLevel;
 
         this.curNumRoots = 0;
         this.curNumGreen = 0;
@@ -259,18 +258,25 @@ class BaseOrganism {
         let targetPerRootNitrogen = mult * this.growthNitrogen;
         let targetPerRootPhosphorus = mult * this.growthPhosphorus;
 
+        let someGreen = this.lifeSquares.some((lsq) => lsq.type == "green");
+        
         this.lifeSquares
             .filter((lsq) => lsq.type == "root")
             .filter((lsq) => lsq.linkedSquare != null && lsq.linkedSquare.proto == "SoilSquare")
             .forEach((lsq) => {
                 this.nitrogen += lsq.linkedSquare.takeNitrogen(targetPerRootNitrogen, this.proto);
                 this.phosphorus += lsq.linkedSquare.takePhosphorus(targetPerRootPhosphorus, this.proto);
+                if (!someGreen) {
+                    let argb = lsq.linkedSquare.processLighting();
+                    this.lsqLightLevel(this.llt_target() * (argb.r + argb.b) / (255 * 2));
+                }
             });
 
         this.lifeSquares
             .filter((lsq) => lsq.type == "green")
-            .map((lsq) => [lsq.processLighting(), lsq.lightHealth ** 4])
-            .map((argb) => argb[1] * (argb[0].r + argb[0].b) / (255 * 2))
+            .map((lsq) => lsq.processLighting())
+            .filter((v) => v != null)
+            .map((argb) => (argb.r + argb.b) / (255 * 2))
             .forEach((lightLevel) => this.lsqLightLevel(this.llt_target() * lightLevel))
     }
 
@@ -409,6 +415,7 @@ class BaseOrganism {
                 rootSq.subtype = SUBTYPE_ROOTNODE;
                 if (this.linkedSquare != null && this.linkedSquare != -1) {
                     this.linkedSquare.linkOrganismSquare(rootSq);
+                    this.waterPressure = this.linkedSquare.getSoilWaterPressure();
                 }
                 this.addAssociatedLifeSquare(rootSq);
                 return rootSq;
@@ -674,15 +681,16 @@ class BaseOrganism {
         if (this.stage != STAGE_DEAD) {
             this.plantAgeHandling();
             this.waterPressureTick();
-            this.nutrientTick();
             this.planGrowth();
             this.doRootGrowth();
             this.doSpawnSeed();
+            this.nutrientTick();
         }
         this.updateDeflectionState();
         this.applyDeflectionStateToSquares();
         this.hasPlantLivedTooLong();
         this.doDecay();
+
         this.lifeSquares = this.lifeSquares.sort((a, b) => a.distToFront - b.distToFront);
     }
 }
