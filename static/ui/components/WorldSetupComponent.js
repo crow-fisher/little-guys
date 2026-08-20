@@ -41,21 +41,21 @@ export class WorldSetupComponent extends PopupComponent {
         let sizeRow4 =  new Container(this.window, 0, 0);
         let sizeRow5 =  new Container(this.window, 0, 0);
 
-        sizeRow1.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 75,() => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));
-        sizeRow1.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 100,() => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
-        sizeRow1.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 125,() => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorActive()));
-        sizeRow2.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 150,() => getActiveClimate().getUIColorInactiveCustom(0.58), () => getActiveClimate().getUIColorActive()));
-        sizeRow2.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 175,() => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));
-        sizeRow2.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 200,() => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
-        sizeRow3.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 225,() => getActiveClimate().getUIColorInactiveCustom(0.63), () => getActiveClimate().getUIColorActive()));
-        sizeRow3.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 250,() => getActiveClimate().getUIColorInactiveCustom(0.59), () => getActiveClimate().getUIColorActive()));
-        sizeRow3.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 275,() => getActiveClimate().getUIColorInactiveCustom(0.64), () => getActiveClimate().getUIColorActive()));
-        sizeRow4.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 300,() => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorActive()));
-        sizeRow4.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 350,() => getActiveClimate().getUIColorInactiveCustom(0.56), () => getActiveClimate().getUIColorActive()));
-        sizeRow4.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 400,() => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive()));
-        sizeRow5.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 450,() => getActiveClimate().getUIColorInactiveCustom(0.57), () => getActiveClimate().getUIColorActive()));
-        sizeRow5.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 500,() => getActiveClimate().getUIColorInactiveCustom(0.61), () => getActiveClimate().getUIColorActive()));
-        sizeRow5.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 550,() => getActiveClimate().getUIColorInactiveCustom(0.58), () => getActiveClimate().getUIColorActive()));
+        sizeRow1.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 75,() => getActiveClimate().getUIColorInactive(0.62), () => getActiveClimate().getUIColorActive()));
+        sizeRow1.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 100,() => getActiveClimate().getUIColorInactive(0.55), () => getActiveClimate().getUIColorActive()));
+        sizeRow1.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 125,() => getActiveClimate().getUIColorInactive(0.60), () => getActiveClimate().getUIColorActive()));
+        sizeRow2.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 150,() => getActiveClimate().getUIColorInactive(0.58), () => getActiveClimate().getUIColorActive()));
+        sizeRow2.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 175,() => getActiveClimate().getUIColorInactive(0.62), () => getActiveClimate().getUIColorActive()));
+        sizeRow2.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 200,() => getActiveClimate().getUIColorInactive(0.55), () => getActiveClimate().getUIColorActive()));
+        sizeRow3.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 225,() => getActiveClimate().getUIColorInactive(0.63), () => getActiveClimate().getUIColorActive()));
+        sizeRow3.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 250,() => getActiveClimate().getUIColorInactive(0.59), () => getActiveClimate().getUIColorActive()));
+        sizeRow3.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 275,() => getActiveClimate().getUIColorInactive(0.64), () => getActiveClimate().getUIColorActive()));
+        sizeRow4.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 300,() => getActiveClimate().getUIColorInactive(0.60), () => getActiveClimate().getUIColorActive()));
+        sizeRow4.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 350,() => getActiveClimate().getUIColorInactive(0.56), () => getActiveClimate().getUIColorActive()));
+        sizeRow4.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 400,() => getActiveClimate().getUIColorInactive(0.62), () => getActiveClimate().getUIColorActive()));
+        sizeRow5.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 450,() => getActiveClimate().getUIColorInactive(0.57), () => getActiveClimate().getUIColorActive()));
+        sizeRow5.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 500,() => getActiveClimate().getUIColorInactive(0.61), () => getActiveClimate().getUIColorActive()));
+        sizeRow5.addElement(new RadioToggle(this.window, third, h2, UI_CENTER, UI_MAIN_NEWWORLD_SIMHEIGHT, 550,() => getActiveClimate().getUIColorInactive(0.58), () => getActiveClimate().getUIColorActive()));
         
         container.addElement(sizeRow1);
         container.addElement(sizeRow2);
@@ -78,9 +78,9 @@ export class WorldSetupComponent extends PopupComponent {
 
         let newEditRow = new Container(this.window, padding, 0);
         let newEditRow2 = new Container(this.window, padding, 0);
-        newEditRow.addElement(new Button(this.window, half, h1, UI_CENTER, () => saveGD(UI_MAIN_NEWWORLD, false), "close", () => getActiveClimate().getUIColorInactiveCustom(0.62), 0.65));
-        newEditRow.addElement(new Button(this.window, half, h1, UI_CENTER, () => editCurrentWorld(), "edit current", () => getActiveClimate().getUIColorInactiveCustom(0.65), 0.65));
-        newEditRow2.addElement(new Button(this.window, sizeX, h1, UI_CENTER, () => createNewWorld(), "create new", () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.65));
+        newEditRow.addElement(new Button(this.window, half, h1, UI_CENTER, () => saveGD(UI_MAIN_NEWWORLD, false), "close", () => getActiveClimate().getUIColorInactive(0.62), 0.65));
+        newEditRow.addElement(new Button(this.window, half, h1, UI_CENTER, () => editCurrentWorld(), "edit current", () => getActiveClimate().getUIColorInactive(0.65), 0.65));
+        newEditRow2.addElement(new Button(this.window, sizeX, h1, UI_CENTER, () => createNewWorld(), "create new", () => getActiveClimate().getUIColorInactive(0.55), 0.65));
         container.addElement(newEditRow);
         container.addElement(newEditRow2);
     }

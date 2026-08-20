@@ -21,23 +21,23 @@ import { getWaterColor, getWaterColorDark } from "./LightingComponent.js";
 // const specialHueShift = -35;
 const specialHueShift = -295;
 function getSpecialColor(value = 0.55) {
-    let hueShifted = hueShiftColor(getActiveClimate().getUIColorInactiveCustom(value), specialHueShift, -.1, 0);
+    let hueShifted = hueShiftColor(getActiveClimate().getUIColorInactive(value), specialHueShift, -.1, 0);
     return rgbToHex(hueShifted.r, hueShifted.g, hueShifted.b);
 }
 
 function getSpecialColorDark() {
-    let hueShifted = hueShiftColor(getActiveClimate().getUIColorInactiveCustom(.25), specialHueShift, -.1, 0);
+    let hueShifted = hueShiftColor(getActiveClimate().getUIColorInactive(.25), specialHueShift, -.1, 0);
     return rgbToHex(hueShifted.r, hueShifted.g, hueShifted.b);
 }
 
 const pasteHueShift = 55;
 function getPasteColor(value = 0.55) {
-    let hueShifted = hueShiftColor(getActiveClimate().getUIColorInactiveCustom(value), pasteHueShift, -.1, 0);
+    let hueShifted = hueShiftColor(getActiveClimate().getUIColorInactive(value), pasteHueShift, -.1, 0);
     return rgbToHex(hueShifted.r, hueShifted.g, hueShifted.b);
 }
 
 function getPasteColorDark() {
-    let hueShifted = hueShiftColor(getActiveClimate().getUIColorInactiveCustom(.25), pasteHueShift, -.1, 0);
+    let hueShifted = hueShiftColor(getActiveClimate().getUIColorInactive(.25), pasteHueShift, -.1, 0);
     return rgbToHex(hueShifted.r, hueShifted.g, hueShifted.b);
 }
 
@@ -81,9 +81,9 @@ export class BlockPalette extends Component {
 
         let textAlignOffsetX = getBaseUISize() * 0.64;
 
-        container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.75), 0.75, " "))
-        container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 3.8, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.66315, "block editor"))
-        container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactiveCustom(0.85), 0.75, ""));
+        container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.75), 0.75, " "))
+        container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 3.8, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.55), 0.66315, "block editor"))
+        container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, ""));
 
         let modeSelectRow1 = new Container(this.window, 0, 0);
         let modeSelectRow2 = new Container(this.window, 0, 0);
@@ -186,13 +186,13 @@ export class BlockPalette extends Component {
         let surfaceRow = new Container(this.window, 0, 0);
         specialContainer.addElement(surfaceRow);
         surfaceRow.addElement(new RadioToggleLabel(this.window, third, h1, UI_CENTER, "brush on", UI_PALETTE_SELECT, UI_PALETTE_SURFACE,
-            () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
+            () => getActiveClimate().getUIColorInactive(0.55), () => getActiveClimate().getUIColorActive()));
         surfaceRow.addElement(new RadioToggleLabel(this.window, third, h1, UI_CENTER, "brush off", UI_PALETTE_SELECT, UI_PALETTE_SURFACE_OFF,
-            () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive()));
+            () => getActiveClimate().getUIColorInactive(0.65), () => getActiveClimate().getUIColorActive()));
         surfaceRow.addElement(new RadioToggleLabel(this.window, third, h1, UI_CENTER, "match", UI_PALETTE_SELECT, UI_PALETTE_SURFACE_MATCH,
-            () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive()));
+            () => getActiveClimate().getUIColorInactive(0.65), () => getActiveClimate().getUIColorActive()));
         specialContainer.addElement(new Toggle(this.window, sizeX, h1, UI_CENTER, UI_PALETTE_SPECIAL_SHOWINDICATOR,
-            "show surface indicator", () => getActiveClimate().getUIColorInactiveCustom(0.60), () => getActiveClimate().getUIColorTransient()));
+            "show surface indicator", () => getActiveClimate().getUIColorInactive(0.60), () => getActiveClimate().getUIColorTransient()));
         specialContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_SURFACE, sizeX, 35, 0.0, 4, () => "rgba(0, 0, 0, 0)", () => "#FFFFFF",));
         // end surface
 
@@ -215,9 +215,9 @@ export class BlockPalette extends Component {
         let specialToolRow = new Container(this.window, 0, 0);
         specialContainer.addElement(specialToolRow);
         specialToolRow.addElement(new RadioToggleLabel(this.window, half, h1, UI_CENTER, "churn", UI_PALETTE_SELECT, UI_PALETTE_SPECIAL_CHURN,
-            () => getActiveClimate().getUIColorInactiveCustom(0.55), () => getActiveClimate().getUIColorActive()));
+            () => getActiveClimate().getUIColorInactive(0.55), () => getActiveClimate().getUIColorActive()));
         specialToolRow.addElement(new RadioToggleLabel(this.window, half, h1, UI_CENTER, "wide churn", UI_PALETTE_SELECT, UI_PALETTE_SPECIAL_CHURN_WIDE,
-            () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive()));
+            () => getActiveClimate().getUIColorInactive(0.65), () => getActiveClimate().getUIColorActive()));
         specialContainer.addElement(new SliderGradientBackground(this.window, UI_PALETTE_SPECIAL_CHURN_STRENGTH, sizeX, 35, 1, 20, getWaterColorDark, getWaterColor,));
 
 
@@ -228,9 +228,9 @@ export class BlockPalette extends Component {
         pasteContainer.addElement(pasteModeRow);
 
         pasteModeRow.addElement(new RadioToggleLabel(this.window, half, h1, UI_CENTER, "foreground", UI_PALETTE_PASTE_MODE, UI_PALETTE_PASTE_MODE_FG,
-            () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive()))
+            () => getActiveClimate().getUIColorInactive(0.65), () => getActiveClimate().getUIColorActive()))
         pasteModeRow.addElement(new RadioToggleLabel(this.window, half, h1, UI_CENTER, "background", UI_PALETTE_PASTE_MODE, UI_PALETTE_PASTE_MODE_BG,
-            () => getActiveClimate().getUIColorInactiveCustom(0.61), () => getActiveClimate().getUIColorActive()))
+            () => getActiveClimate().getUIColorInactive(0.61), () => getActiveClimate().getUIColorActive()))
 
         let pastePhysicsConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_PALETTE_PASTE_MODE) == UI_PALETTE_PASTE_MODE_FG);
         pasteContainer.addElement(pastePhysicsConditionalContainer);
@@ -239,11 +239,11 @@ export class BlockPalette extends Component {
         pastePhysicsConditionalContainer.addElement(pastePhysicsRow);
 
         pastePhysicsRow.addElement(new RadioToggleLabel(this.window, third, h1, UI_CENTER, "static", UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_STATIC,
-            () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive()))
+            () => getActiveClimate().getUIColorInactive(0.65), () => getActiveClimate().getUIColorActive()))
         pastePhysicsRow.addElement(new RadioToggleLabel(this.window, third, h1, UI_CENTER, "rigid", UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_RIGID,
-            () => getActiveClimate().getUIColorInactiveCustom(0.61), () => getActiveClimate().getUIColorActive()))
+            () => getActiveClimate().getUIColorInactive(0.61), () => getActiveClimate().getUIColorActive()))
         pastePhysicsRow.addElement(new RadioToggleLabel(this.window, third, h1, UI_CENTER, "sand", UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_SAND,
-            () => getActiveClimate().getUIColorInactiveCustom(0.61), () => getActiveClimate().getUIColorActive()))
+            () => getActiveClimate().getUIColorInactive(0.61), () => getActiveClimate().getUIColorActive()))
 
 
         let palleteSelectAdvancedRow = new Container(this.window, 0, 0);

@@ -52,7 +52,7 @@ export class Window {
         let xFactor = (((mx - px) / mx));
         let sizeXProcessed = size * xFactor;
 
-        MAIN_CONTEXT.fillStyle = getActiveClimate().getUIColorInactiveCustom(.95);
+        MAIN_CONTEXT.fillStyle = getActiveClimate().getUIColorInactive(.95);
 
         // bottom rectangle
         MAIN_CONTEXT.fillRect(
@@ -73,7 +73,7 @@ export class Window {
 
         // right side
 
-        MAIN_CONTEXT.fillStyle = getActiveClimate().getUIColorInactiveCustom((.83 - (xFactor * 0.1)));
+        MAIN_CONTEXT.fillStyle = getActiveClimate().getUIColorInactive((.83 - (xFactor * 0.1)));
         MAIN_CONTEXT.fillRect(
             this.posX + this.sizeX,
             this.posY,

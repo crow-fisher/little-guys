@@ -535,7 +535,7 @@ class BaseOrganism {
         let lsq = comp.lifeSquares.at(comp.lifeSquares.length - 1);
         let seedSquare = addSquare(new SeedSquare(lsq.getPosX(), lsq.getPosY() - 10));
         if (seedSquare) {
-            seedSquare.speedX = Math.random() > 0.5 ? -1 : 1 * randNumber(1, 2);
+            seedSquare.speedX = randRange(-.2, .2);
             seedSquare.speedY = randRange(-1.5, 1);
             let orgAdded = new (this.getSeedType())(seedSquare, this.getNextGenetics(), structuredClone(this.evolutionParameterHistory));
             if (!orgAdded) {

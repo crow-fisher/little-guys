@@ -72,11 +72,9 @@ export class Climate {
         rgb = hsv2rgb(hsv[0], hsv[1], hsv[2]);
         return rgbToHex(Math.floor(rgb[0]), Math.floor(rgb[1]), Math.floor(rgb[2]));
     }
-
-    getUIColorInactiveCustom(frac) {
+    getUIColorInactive(frac) {
         return this.processColor(this.getBaseSoilColor(loadGD(UI_PALETTE_SOILIDX), 0, 0.70, 0.10), frac);
     }
-
     getUIColorStoneButton(frac) {
         return this.processColor(this.getBaseRockColor(0, 0, 0.70, 0.10), frac);
     }
@@ -87,11 +85,6 @@ export class Climate {
             return this.uci[frac];
         }
         return this.uci[frac];
-    }
-
-
-    getUIColorInactive(frac=0.6) {
-        return this.getUIColorInactiveCustom(frac);
     }
 
     getUIColorActive(frac=0.6) {

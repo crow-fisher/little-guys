@@ -29,10 +29,10 @@ export class MainMenuComponent extends SubTreeComponent {
         this.numWorldsPerPage = 5;
         this.lastClick = Date.now();
 
-        subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, saveCurGame, "save game", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
-        subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, downloadSaveFile, "download save", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
+        subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, saveCurGame, "save game", () => getActiveClimate().getUIColorInactive(0.55)));
+        subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, downloadSaveFile, "download save", () => getActiveClimate().getUIColorInactive(0.55)));
         subMenuContainer.addElement(new Toggle(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, UI_MAIN_NEWWORLD, "new/edit world", 
-        () => getActiveClimate().getUIColorInactiveCustom(0.65), () => getActiveClimate().getUIColorActive(), 0.75, false));
+        () => getActiveClimate().getUIColorInactive(0.65), () => getActiveClimate().getUIColorActive(), 0.75, false));
 
 
         subMenuContainer.addElement(new Text(this.window, this.sizeX, getBaseUISize() * .5, this.textAlignOffsetX, ""));
@@ -55,8 +55,8 @@ export class MainMenuComponent extends SubTreeComponent {
             let row = new Container(this.window, 0, 0);
             slotFilledConditionalContainer.addElement(row);
 
-            let colorFunc1 = () => (loadUI(UI_UI_CURWORLD) == this.getWorldFromI(iCopy)) ? getActiveClimate().getUIColorActive() : getActiveClimate().getUIColorInactiveCustom([0.65, 0.55, 0.62, 0.58, 0.61, 0.67][i % 6]);
-            let colorFunc2 = () => getActiveClimate().getUIColorInactiveCustom(0.1 + [0.65, 0.55, 0.62, 0.58, 0.61, 0.67][i % 6]);
+            let colorFunc1 = () => (loadUI(UI_UI_CURWORLD) == this.getWorldFromI(iCopy)) ? getActiveClimate().getUIColorActive() : getActiveClimate().getUIColorInactive([0.65, 0.55, 0.62, 0.58, 0.61, 0.67][i % 6]);
+            let colorFunc2 = () => getActiveClimate().getUIColorInactive(0.1 + [0.65, 0.55, 0.62, 0.58, 0.61, 0.67][i % 6]);
 
             row.addElement(new ButtonFunctionalText(this.window, this.sizeX * (4/5), getBaseUISize() * 3, this.textAlignOffsetX, () => loadSlot( this.getWorldFromI(iCopy)), 
                 () => loadUI(UI_UI_WORLDNAME)[this.getWorldFromI(iCopy)], colorFunc1));
@@ -69,10 +69,10 @@ export class MainMenuComponent extends SubTreeComponent {
 
         let pagesRow = new Container(this.window, 0, 0);
         subMenuContainer.addElement(pagesRow);
-        pagesRow.addElement(new Button(this.window, this.sizeX / 4, getBaseUISize() * 3, UI_CENTER, () => saveUI(UI_UI_WORLDPAGE, Math.max(0, loadUI(UI_UI_WORLDPAGE) - 1)), "-", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
+        pagesRow.addElement(new Button(this.window, this.sizeX / 4, getBaseUISize() * 3, UI_CENTER, () => saveUI(UI_UI_WORLDPAGE, Math.max(0, loadUI(UI_UI_WORLDPAGE) - 1)), "-", () => getActiveClimate().getUIColorInactive(0.55)));
         pagesRow.addElement(new TextFunctionalBackground(this.window, this.sizeX / 2, getBaseUISize() * 3, UI_CENTER,
-            () => "page " + (loadUI(UI_UI_WORLDPAGE) + 1) + " of " + (this.getNumPages() + 1), () => getActiveClimate().getUIColorInactiveCustom(0.55), 0.75));
-        pagesRow.addElement(new Button(this.window, this.sizeX / 4, getBaseUISize() * 3, UI_CENTER, () => saveUI(UI_UI_WORLDPAGE, Math.min(this.getNumPages(), loadUI(UI_UI_WORLDPAGE) + 1)), "+", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
+            () => "page " + (loadUI(UI_UI_WORLDPAGE) + 1) + " of " + (this.getNumPages() + 1), () => getActiveClimate().getUIColorInactive(0.55), 0.75));
+        pagesRow.addElement(new Button(this.window, this.sizeX / 4, getBaseUISize() * 3, UI_CENTER, () => saveUI(UI_UI_WORLDPAGE, Math.min(this.getNumPages(), loadUI(UI_UI_WORLDPAGE) + 1)), "+", () => getActiveClimate().getUIColorInactive(0.55)));
     
         subMenuContainer.addElement(new Text(this.window, this.sizeX, getBaseUISize() * .5, this.textAlignOffsetX, ""));
         subMenuContainer.addElement(new Text(this.window, this.sizeX, getBaseUISize() * 2.5, UI_CENTER, "ui scale"))
@@ -83,33 +83,33 @@ export class MainMenuComponent extends SubTreeComponent {
 
         let numUIScaleOptions = 6;
         uiScaleRow.addElement(new RadioToggle(this.window, this.sizeX / numUIScaleOptions, getBaseUISize() * 3, UI_CENTER, UI_UI_SIZE, 8, 
-                () => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive(), 0.75, UICONFIG));
+                () => getActiveClimate().getUIColorInactive(0.62), () => getActiveClimate().getUIColorActive(), 0.75, UICONFIG));
         uiScaleRow.addElement(new RadioToggle(this.window, this.sizeX / numUIScaleOptions, getBaseUISize() * 3, UI_CENTER, UI_UI_SIZE, 10, 
-        () => getActiveClimate().getUIColorInactiveCustom(0.57), () => getActiveClimate().getUIColorActive(), 0.75, UICONFIG));
+        () => getActiveClimate().getUIColorInactive(0.57), () => getActiveClimate().getUIColorActive(), 0.75, UICONFIG));
         uiScaleRow.addElement(new RadioToggle(this.window, this.sizeX / numUIScaleOptions, getBaseUISize() * 3, UI_CENTER, UI_UI_SIZE, 14, 
-        () => getActiveClimate().getUIColorInactiveCustom(0.61), () => getActiveClimate().getUIColorActive(), 0.75, UICONFIG));
+        () => getActiveClimate().getUIColorInactive(0.61), () => getActiveClimate().getUIColorActive(), 0.75, UICONFIG));
         uiScaleRow.addElement(new RadioToggle(this.window, this.sizeX / numUIScaleOptions, getBaseUISize() * 3, UI_CENTER, UI_UI_SIZE, 20, 
-        () => getActiveClimate().getUIColorInactiveCustom(0.58), () => getActiveClimate().getUIColorActive(), 0.75, UICONFIG));
+        () => getActiveClimate().getUIColorInactive(0.58), () => getActiveClimate().getUIColorActive(), 0.75, UICONFIG));
         uiScaleRow.addElement(new RadioToggle(this.window, this.sizeX / numUIScaleOptions, getBaseUISize() * 3, UI_CENTER, UI_UI_SIZE, 28, 
-        () => getActiveClimate().getUIColorInactiveCustom(0.62), () => getActiveClimate().getUIColorActive(), 0.75, UICONFIG));
+        () => getActiveClimate().getUIColorInactive(0.62), () => getActiveClimate().getUIColorActive(), 0.75, UICONFIG));
         uiScaleRow.addElement(new RadioToggle(this.window, this.sizeX / numUIScaleOptions, getBaseUISize() * 3, UI_CENTER, UI_UI_SIZE, 38, 
-        () => getActiveClimate().getUIColorInactiveCustom(0.59), () => getActiveClimate().getUIColorActive(), 0.75, UICONFIG));
+        () => getActiveClimate().getUIColorInactive(0.59), () => getActiveClimate().getUIColorActive(), 0.75, UICONFIG));
         
         subMenuContainer.addElement(new Text(this.window, this.sizeX, getBaseUISize() * .5, this.textAlignOffsetX, ""));
         subMenuContainer.addElement(new Text(this.window, this.sizeX, getBaseUISize() * 2.5, UI_CENTER, "more tools"))
         subMenuContainer.addElement(new Text(this.window, this.sizeX, getBaseUISize() * .5, this.textAlignOffsetX, ""));
 
-        subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, loadEmptyScene, "empty scene", () => getActiveClimate().getUIColorInactiveCustom(0.61)));
-        subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, () => setTimeout(deleteAllSaveData, 100), "delete all save data", () => getActiveClimate().getUIColorInactiveCustom(0.64)));
+        subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, loadEmptyScene, "empty scene", () => getActiveClimate().getUIColorInactive(0.61)));
+        subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, () => setTimeout(deleteAllSaveData, 100), "delete all save data", () => getActiveClimate().getUIColorInactive(0.64)));
 
         if (DEBUG)
-            subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, () => console.log(JSON.stringify(getGAMEDATA())), "log GAMEDATA", () => getActiveClimate().getUIColorInactiveCustom(0.64)));
+            subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, () => console.log(JSON.stringify(getGAMEDATA())), "log GAMEDATA", () => getActiveClimate().getUIColorInactive(0.64)));
 
-        subMenuContainer.addElement( new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, purgeCanvasFrameLimit, "purge off-screen blocks", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
+        subMenuContainer.addElement( new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, purgeCanvasFrameLimit, "purge off-screen blocks", () => getActiveClimate().getUIColorInactive(0.55)));
         subMenuContainer.addElement( new Toggle(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, UI_UI_SHOWHIDDEN, 
         "show hidden worlds",  () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient(), 0.75, true, UICONFIG));
-        subMenuContainer.addElement( new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, deleteHiddenWorlds, "delete hidden worlds", () => getActiveClimate().getUIColorInactiveCustom(0.55)));
-        subMenuContainer.addElement( new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, resetZoom, "reset zoom", () => getActiveClimate().getUIColorInactiveCustom(0.60)));
+        subMenuContainer.addElement( new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, deleteHiddenWorlds, "delete hidden worlds", () => getActiveClimate().getUIColorInactive(0.55)));
+        subMenuContainer.addElement( new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, resetZoom, "reset zoom", () => getActiveClimate().getUIColorInactive(0.60)));
 
         subMenuContainer.addElement( new Toggle(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, UI_UI_PHONEMODE, 
         "phone mode",  () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient(), 0.75, true, UICONFIG));
@@ -128,9 +128,9 @@ export class MainMenuComponent extends SubTreeComponent {
             }
         }, () => {
             if (isPlayerRunning()) {
-                return getActiveClimate().getUIColorInactiveCustom(0.63);
+                return getActiveClimate().getUIColorInactive(0.63);
             } else {
-                return getActiveClimate().getUIColorInactiveCustom(0.55);
+                return getActiveClimate().getUIColorInactive(0.55);
             }
         }))
 

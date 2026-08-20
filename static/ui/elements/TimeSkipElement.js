@@ -31,7 +31,7 @@ export class TimeSkipElement extends WindowElement {
     }
 
     render(startX, startY) {
-        MAIN_CONTEXT.fillStyle = getActiveClimate().getUIColorInactiveCustom(0.90);
+        MAIN_CONTEXT.fillStyle = getActiveClimate().getUIColorInactive(0.90);
         MAIN_CONTEXT.fillRect(startX, startY, this.sizeX, this.sizeY);
         this.sizeX = getBaseUISize() * (26.404296875 + 4);
         let curMillis = getCurDay() * millis_per_day;
@@ -63,9 +63,9 @@ export class TimeSkipElement extends WindowElement {
                 let time = this.times[i];
                 if (Math.abs(renderLineCurDay - time) < (.5 / this.sizeX)) {
                     if (renderLineCurDay < getCurDay())
-                        strokeStyle = getActiveClimate().getUIColorInactiveCustom(0.65);
+                        strokeStyle = getActiveClimate().getUIColorInactive(0.65);
                     else
-                        strokeStyle = getActiveClimate().getUIColorInactiveCustom(0.55);
+                        strokeStyle = getActiveClimate().getUIColorInactive(0.55);
                 }
             }
     
