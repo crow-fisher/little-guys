@@ -6,7 +6,7 @@ import { iterateOnOrganisms } from "../../../organisms/orgOperations.js";
 import { STAGE_DEAD } from "../../../organisms/Stages.js";
 import { WindowElement } from "../../Window.js";
 
-export class Graph2DLined extends WindowElement {
+export class NormalizedGraph extends WindowElement {
     constructor(window, sizeX, sizeY) {
         super(window, sizeX, sizeY);
     }
@@ -29,7 +29,6 @@ export class Graph2DLined extends WindowElement {
         // xMax = 0;
         // yMin = -1;
         // yMax = 1;
-
 
         let optimals = new Map()
             iterateOnOrganisms((org) => {
