@@ -26,8 +26,8 @@ kblue_dnm[_lightDecayValue] = 4.42;
 kblue_dnm[_lightLevelDisplayExposureAdjustment] = .22;
 
 export class KentuckyBluegrassOrganism extends BaseOrganism {
-    constructor(square, evolutionParameterHistory) {
-        super(square, evolutionParameterHistory);
+    constructor(square, parentId) {
+        super(square, parentId);
         this.proto = "KentuckyBluegrassOrganism";
         this.uiRef = UI_ORGANISM_GRASS_KBLUE;
         this.greenType = KentuckyBluegrassGreenSquare;
@@ -153,8 +153,8 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
 }
 
 export class KentuckyBluegrassSeedOrganism extends BaseSeedOrganism {
-    constructor(square, evolutionParameters, evolutionParameterHistory) {
-        super(square, evolutionParameters, evolutionParameterHistory);
+    constructor(square, evolutionParameters, parentId) {
+        super(square, evolutionParameters, parentId);
         this.proto = "KentuckyBluegrassSeedOrganism";
     }
 

@@ -6,13 +6,11 @@ import { getCurPlantConfiguratorVal } from "../ui/elements/SliderGradientBackgro
 import { getSquares } from "../squares/sqOperations.js";
 import { randNumber } from "../common.js";
 import { isSaveOrLoadInProgress } from "../saveAndLoad.js";
+import { registerLineage } from "./LineageTracking.js";
 
 class BaseSeedOrganism extends BaseOrganism {
-    constructor(square, evolutionParameters = null, evolutionParameterHistory) {
-        if (evolutionParameters != null) {
-            evolutionParameterHistory.push(evolutionParameters);
-        }
-        super(square, evolutionParameterHistory);
+    constructor(square, evolutionParameters = null, parentId=-1) {
+        super(square, parentId);
         this.proto = "BaseSeedOrganism";
         this.sproutType = null;
         this.maxLifeTime = 10;
@@ -49,7 +47,8 @@ class BaseSeedOrganism extends BaseOrganism {
             this.sproutAge += getDt();
             if (this.sproutAge > this.totalSproutTime) {
                 let linkedSquareCache = this.linkedSquare;
-                this.applyEvolutionParameters(new (this.getSproutType())(linkedSquareCache, this.evolutionParameterHistory));
+                this.applyEvolutionParameters(new (this.getSproutType())(linkedSquareCache, this.parentId));
+                registerLineage(this)
                 this.destroy();
                 return;
             }

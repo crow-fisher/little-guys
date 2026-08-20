@@ -389,8 +389,8 @@ export class ConeflowerOrganism extends BaseOrganism {
 }
 
 export class ConeflowerSeedOrganism extends BaseSeedOrganism {
-    constructor(square, evolutionParameters, evolutionParameterHistory) {
-        super(square, evolutionParameters, evolutionParameterHistory);
+    constructor(square, evolutionParameters, parentId) {
+        super(square, evolutionParameters, parentId);
         this.proto = "ConeflowerSeedOrganism";
     }
 

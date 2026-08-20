@@ -50,7 +50,7 @@ export class NormalizedGraph extends WindowElement {
                 let xLightLerp = lerp(startX, startX + this.sizeX, lightInvlerp);
                 let yMoistureLerp = lerp(startY, startY + this.sizeY, moistureInvlerp);
 
-                // MAIN_CONTEXT.fillStyle = hsvToHex(org.orgInfoHue, clamp(org.evolutionParameterHistory.length / 5), 1);
+                // MAIN_CONTEXT.fillStyle = hsvToHex(org.orgInfoHue, clamp(org.parentId.length / 5), 1);
                 MAIN_CONTEXT.fillStyle = org.getEvolutionColor(0.85);
                 MAIN_CONTEXT.beginPath();
                 MAIN_CONTEXT.arc(xLightLerp, yMoistureLerp, getBaseUISize() * .2, 0, 2 * Math.PI, false);

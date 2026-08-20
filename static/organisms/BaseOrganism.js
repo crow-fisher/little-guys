@@ -11,6 +11,7 @@ import { MAIN_CONTEXT } from "../index.js";
 import { zoomCanvasFillRect } from "../canvas.js";
 import { HUE_GREEN } from "../hue.js";
 import { SeedSquare } from "../squares/SeedSquare.js";
+import { getNextBlockId, getNextOrgId } from "../globals.js";
 
 export const _llt_target = "_llt_target";
 export const _llt_min = "_llt_min";
@@ -39,7 +40,10 @@ export let baseOrganism_dnm = {
 }
 
 class BaseOrganism {
-    constructor(square, evolutionParameterHistory = []) {
+    constructor(square, parentId) {
+        this.id = getNextOrgId();
+        this.parentId = parentId;
+
         this.proto = "BaseOrganism";
         this.uiRef = UI_ORGANISM_SELECT;
         this.posX = square.posX;
@@ -59,7 +63,6 @@ class BaseOrganism {
         this.greenLastGrown = -100;
 
         this.evolutionParameters = null;
-        this.evolutionParameterHistory = evolutionParameterHistory;
 
         this.greenType = null;
         this.rootType = null;
@@ -100,7 +103,6 @@ class BaseOrganism {
         this.evolutionMaxColor = RGB_COLOR_VERY_FUCKING_RED;
 
         this.organismColor = COLOR_BLACK;
-
         this.organismViewHsvBase = [166, 95, 95];
     }
 
@@ -537,7 +539,7 @@ class BaseOrganism {
         if (seedSquare) {
             seedSquare.speedX = randRange(-.2, .2);
             seedSquare.speedY = randRange(-1.5, 1);
-            let orgAdded = new (this.getSeedType())(seedSquare, this.getNextGenetics(), structuredClone(this.evolutionParameterHistory));
+            let orgAdded = new (this.getSeedType())(seedSquare, this.getNextGenetics(), this.id);
             if (!orgAdded) {
                 seedSquare.destroy();
             } else {

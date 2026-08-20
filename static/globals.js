@@ -1,5 +1,6 @@
 import { loadSlot, saveCurGame } from "./saveAndLoad.js";
 import { iterateOnSquares } from "./squares/sqOperations.js";
+import { loadGD, saveGD, UI_ORGANISM_CONFIGURATOR, UI_ORGANISM_ORG_ID } from "./ui/UIData.js";
 import { removeGroupFromGraph } from "./waterGraph.js";
 
 export let ALL_SQUARES = new Map();
@@ -19,6 +20,11 @@ let curBlockId = 0;
 export function getNextBlockId() {
     curBlockId += 1;
     return curBlockId;
+}
+
+export function getNextOrgId() {
+    saveGD(UI_ORGANISM_ORG_ID, loadGD(UI_ORGANISM_ORG_ID) + 1);
+    return loadGD(UI_ORGANISM_ORG_ID) + 1;
 }
 
 let mixArrLen = 3; 
