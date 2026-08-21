@@ -1,4 +1,4 @@
-import { getDt } from "../climate/time.js";
+import { getCurDay, getDt } from "../climate/time.js";
 import { GrowthPlan, GrowthPlanStep } from "./GrowthPlan.js";
 import { STAGE_DEAD, STAGE_FLOWER, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_ROOTNODE, TYPE_HEART } from "./Stages.js";
 import { addSquare, getNeighbors } from "../squares/sqOperations.js";
@@ -42,6 +42,7 @@ export let baseOrganism_dnm = {
 class BaseOrganism {
     constructor(square, parentId) {
         this.id = getNextOrgId();
+        this.spawnTime = getCurDay();
         this.parentId = parentId;
 
         this.proto = "BaseOrganism";

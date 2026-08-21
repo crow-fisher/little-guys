@@ -6,7 +6,9 @@ export function registerLineage(org) {
     let m = loadGD(UI_ORGANISM_LINEAGE_MAP)
     m[org.id] = {
         id: org.id,
+        pid: org.parentId,
         ep: org.evolutionParameters,
+        time: org.spawnTime,
         children: []
     }
     let p = m[org.parentId];

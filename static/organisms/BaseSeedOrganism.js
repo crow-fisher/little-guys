@@ -47,8 +47,9 @@ class BaseSeedOrganism extends BaseOrganism {
             this.sproutAge += getDt();
             if (this.sproutAge > this.totalSproutTime) {
                 let linkedSquareCache = this.linkedSquare;
-                this.applyEvolutionParameters(new (this.getSproutType())(linkedSquareCache, this.parentId));
-                registerLineage(this)
+                let newOrg = new (this.getSproutType())(linkedSquareCache, this.parentId);
+                this.applyEvolutionParameters(newOrg);
+                registerLineage(newOrg)
                 this.destroy();
                 return;
             }
