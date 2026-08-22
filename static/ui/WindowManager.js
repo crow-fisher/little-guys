@@ -34,6 +34,8 @@ let playerSetup;
 
 let visualizerOrganismComponent;
 
+let frameLastTouched = false;
+
 all_components = [];
 topBarComponent = new TopBarComponent("UI_TOPBAR");
 
@@ -77,14 +79,27 @@ export function getTopBarComponent() {
     return topBarComponent;
 }
 
-export function renderWindows() {
-    all_components.forEach((window) => window.render());
-    topBarComponent.render();
-
-}
 export function updateWindows() {
+    frameLastTouched = false;
+    all_components.sort((b, a) => (a.window.lastTouched ?? 0) - (b.window.lastTouched ?? 0))
     topBarComponent.update();
     all_components.forEach((window) => window.update());
+}
+
+export function renderWindows() {
+    all_components.sort((a, b) => (a.window.lastTouched ?? 0) - (b.window.lastTouched ?? 0))
+
+    all_components.forEach((window) => window.render());
+    topBarComponent.render();
+}
+
+export function requestTouch() {
+    if (!frameLastTouched) {
+        frameLastTouched = true;
+        return true;
+    } else {
+        return false;
+    }
 }
 
 export function resetWindowHovered() {

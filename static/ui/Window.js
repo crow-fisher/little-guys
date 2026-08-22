@@ -3,9 +3,10 @@ import { getActiveClimate } from "../climate/climateManager.js";
 import { COLOR_BLACK } from "../colors.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { getLastMoveOffset, isLeftMouseClicked } from "../mouse.js";
+import { requestTouch } from "./WindowManager.js";
 
 export class Window {
-    constructor(posX, posY, padding, dir, grounded, renderBackground=true) {
+    constructor(posX, posY, padding, dir, grounded, renderBackground = true) {
         this.container = null;
         this.posX = posX;
         this.posY = posY;
@@ -48,7 +49,7 @@ export class Window {
         let sizeYProcessed = size * yFactor;
 
         let px = this.posX + this.sizeX;
-        let mx = getCanvasWidth() * 1.5; 
+        let mx = getCanvasWidth() * 1.5;
         let xFactor = (((mx - px) / mx));
         let sizeXProcessed = size * xFactor;
 
@@ -95,16 +96,21 @@ export class Window {
         if (curMouseLocation == null) {
             return;
         }
+
         let x = curMouseLocation.x;
         let y = curMouseLocation.y;
-        
+
         let relX = x - this.posX;
         let relY = y - this.posY;
 
         if ((relX > 0 && relX < this.sizeX && relY > 0 && relY < this.sizeY)) {
-            this.container.hover(relX, relY);
+            if (isLeftMouseClicked()) {
+                this.lastTouched = Date.now();
+                this.container.hover(relX, relY);
+            }
         }
         this.hoverWindowFrame(x, y);
+
     }
 
     renderWindowFrame() {
@@ -112,8 +118,8 @@ export class Window {
             return;
         MAIN_CONTEXT.fillStyle = COLOR_BLACK;
         MAIN_CONTEXT.fillRect(
-            this.posX - this.padding, this.posY - this.padding, 
-            this.sizeX + this.padding * 2, 
+            this.posX - this.padding, this.posY - this.padding,
+            this.sizeX + this.padding * 2,
             this.sizeY + this.padding * 2);
     }
 
@@ -124,10 +130,12 @@ export class Window {
 
         let hoverP = this.padding * 2;
         if (
-            x < this.posX - hoverP ||
-            x > this.posX + this.sizeX + hoverP || 
-            y < this.posY - hoverP || 
-            y > this.posY + this.sizeY + hoverP 
+            !this.clicked && (
+                x < this.posX - hoverP ||
+                x > this.posX + this.sizeX + hoverP ||
+                y < this.posY - hoverP ||
+                y > this.posY + this.sizeY + hoverP
+            )
         ) {
             return;
         }
@@ -137,6 +145,7 @@ export class Window {
             if (this.clicked) {
                 this.posX = Math.max(0, Math.min(getCanvasWidth() - this.sizeX, x - this.clickStartX));
                 this.posY = Math.max(getBaseUISize() * 3, Math.min(getCanvasHeight() - this.sizeY, y - this.clickStartY));
+                return true;
             } else {
                 this.clicked = true;
                 this.clickStartX = x - this.posX;
@@ -149,13 +158,17 @@ export class Window {
     }
 }
 
-export class WindowElement { 
+export class WindowElement {
     constructor(window, sizeX, sizeY) {
         this.window = window;
-        this.sizeX = Math.floor(sizeX);
-        this.sizeY = Math.floor(sizeY);
+
+        this.origSizeX = sizeX;
+        this.origSizeY = sizeY;
+
+        this.sizeX = sizeX;
+        this.sizeY = sizeY;
     }
-    render(startX, startY) {}
+    render(startX, startY) { }
 
     hover(posX, posY) {
         this.hovered = true;
