@@ -26,7 +26,7 @@ export class VisualizerOrganismComponent extends Component {
         let container = new Container(this.window, 0, 1);
         this.window.container = container;
 
-        let sizeX = getBaseUISize() * 50;
+        let sizeX = getBaseUISize() * 100;
         let half = sizeX / 2;
         let third = sizeX / 3;
         let quarter = sizeX / 4;
