@@ -93,9 +93,6 @@ export class Window {
 
     update() {
         let curMouseLocation = getLastMoveOffset();
-        if (curMouseLocation == null) {
-            return;
-        }
 
         let x = curMouseLocation.x;
         let y = curMouseLocation.y;
@@ -103,13 +100,16 @@ export class Window {
         let relX = x - this.posX;
         let relY = y - this.posY;
 
+        let ret = false;
+
         if ((relX > 0 && relX < this.sizeX && relY > 0 && relY < this.sizeY)) {
             if (isLeftMouseClicked()) {
                 this.lastTouched = Date.now();
                 this.container.hover(relX, relY);
+                ret = true;
             }
         }
-        this.hoverWindowFrame(x, y);
+        return this.hoverWindowFrame(x, y) || ret;
 
     }
 
@@ -145,7 +145,6 @@ export class Window {
             if (this.clicked) {
                 this.posX = Math.max(0, Math.min(getCanvasWidth() - this.sizeX, x - this.clickStartX));
                 this.posY = Math.max(getBaseUISize() * 3, Math.min(getCanvasHeight() - this.sizeY, y - this.clickStartY));
-                return true;
             } else {
                 this.clicked = true;
                 this.clickStartX = x - this.posX;
@@ -154,6 +153,8 @@ export class Window {
         } else {
             this.clicked = false;
         }
+
+        return this.clicked;
 
     }
 }

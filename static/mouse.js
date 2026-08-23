@@ -10,8 +10,8 @@ let leftMouseUpEvent = true;
 let lastMouseDownStart = Date.now(); 
 let mouseDown = 0;
 let lastMoveEvent = null;
-let lastMoveOffset = null;
-let lastLastMoveOffset = null;
+let lastMoveOffset = {x: 0, y: 0};
+let lastLastMoveOffset = {x: 0, y: 0};
 let lastMoveEventTime = Date.now();
 
 let mouseEventCounter = new Map();

@@ -83,13 +83,16 @@ export function updateWindows() {
     frameLastTouched = false;
     all_components.sort((b, a) => (a.window.lastTouched ?? 0) - (b.window.lastTouched ?? 0))
     topBarComponent.update();
-    all_components.forEach((window) => window.update());
+    for (let i = 0; i < all_components.length; i++) {
+        if (all_components[i].update()) {
+            break;
+        }
+    }
 }
 
 export function renderWindows() {
     all_components.sort((a, b) => (a.window.lastTouched ?? 0) - (b.window.lastTouched ?? 0))
-
-    all_components.forEach((window) => window.render());
+    all_components.forEach((component) => component.render());
     topBarComponent.render();
 }
 

@@ -15,7 +15,7 @@ export class Component {
 
     update() {
         if (loadGD(this.key)) {
-            this.window.update();
+            return this.window.update();
         }
     }
 }
