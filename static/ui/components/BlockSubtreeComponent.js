@@ -14,10 +14,10 @@ export class BlockSubtreeComponent extends SubTreeComponent {
 
         let textAlignOffsetX = getBaseUISize() * 0.58;
 
-        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 13 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_PALETTE_BLOCKS, "blocks",() => getActiveClimate().getUIColorInactive(0.63), () => getActiveClimate().getUIColorActive()));
-        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 13 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_PALETTE_PLANTS, "plants",() => getActiveClimate().getUIColorInactive(0.55), () => getActiveClimate().getUIColorActive()));
-        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 13 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_CLIMATE_SELECT_CLOUDS, "clouds",() => getActiveClimate().getUIColorInactive(0.61), () => getActiveClimate().getUIColorActive()));
-        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 13 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_VISUALIZER_ORGANISM, "visualizer",() => getActiveClimate().getUIColorInactive(0.61), () => getActiveClimate().getUIColorActive()));
+        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 16 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_PALETTE_BLOCKS, "blocks",() => getActiveClimate().getUIColorInactive(0.63), () => getActiveClimate().getUIColorActive()));
+        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 16 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_PALETTE_PLANTS, "plants",() => getActiveClimate().getUIColorInactive(0.55), () => getActiveClimate().getUIColorActive()));
+        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 16 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_CLIMATE_SELECT_CLOUDS, "clouds",() => getActiveClimate().getUIColorInactive(0.61), () => getActiveClimate().getUIColorActive()));
+        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 16 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_VISUALIZER_ORGANISM, "visualizer",() => getActiveClimate().getUIColorInactive(0.61), () => getActiveClimate().getUIColorActive()));
     }
 
 }
