@@ -1,4 +1,4 @@
-import { loadGD } from "../UIData.js";
+import { addUIFunctionMap, loadGD } from "../UIData.js";
 import { Window } from "../Window.js";
 
 
@@ -8,6 +8,7 @@ export class SubTreeComponent {
         this.key = key;
         this.posXFunc = posXFunc;
         this.posYFunc = posYFunc;
+        addUIFunctionMap(this.key, () => this.window.lastTouched = Date.now());
     }
 
     render() {

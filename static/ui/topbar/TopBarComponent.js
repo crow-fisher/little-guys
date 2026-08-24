@@ -320,5 +320,6 @@ export class TopBarComponent {
             });
         })
 
+        return this.hovered;
     }
 }

@@ -27,14 +27,18 @@ import { WaterSquare } from "../squares/WaterSquare.js";
 import { VisualizerOrganismComponent } from "./components/VisualizerOrganismComponent.js";
 
 let topBarComponent;
-let mainMenuComponent;
 let blockPalette;
 let all_components;
 let playerSetup;
 
 let visualizerOrganismComponent;
 
-let frameLastTouched = false;
+let frameLastTouched = false; 
+
+let mainSubtree;
+let placeSubtree;
+let viewSubtree;
+let lightingSubtree;
 
 all_components = [];
 topBarComponent = new TopBarComponent("UI_TOPBAR");
@@ -48,16 +52,25 @@ export function initUI() {
 
     all_components = [];
     topBarComponent = new TopBarComponent("UI_TOPBAR");
-    mainMenuComponent = new MainMenuComponent(() => 0, () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_MAINMENU);
-    all_components.push(mainMenuComponent);
-    all_components.push(new BlockSubtree(() => topBarComponent.getElementXPositionFunc(0, 1), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_BLOCK));
+    mainSubtree = new MainMenuComponent(() => 0, () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_MAINMENU);
+    all_components.push(mainSubtree);
+
+    placeSubtree = new BlockSubtree(() => topBarComponent.getElementXPositionFunc(0, 1), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_BLOCK);
+    all_components.push(placeSubtree);
+
     all_components.push(new CloudControlComponent(getBaseUISize() * 24, palette_y_offset, 0, 0, UI_CLIMATE_SELECT_CLOUDS));
-    all_components.push(new ViewSubtreeComponent(() => topBarComponent.getElementXPositionFunc(0, 3), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_VIEWMODE));
+    
+    viewSubtree = new ViewSubtreeComponent(() => topBarComponent.getElementXPositionFunc(0, 3), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_VIEWMODE);
+    all_components.push(viewSubtree);
+
     blockPalette = new BlockPalette(getBaseUISize() * 24, palette_y_offset, 0, 0, UI_PALETTE_BLOCKS)
     all_components.push(blockPalette);
 
     all_components.push(new LightingComponent(getBaseUISize() * 63, palette_y_offset, 0, 0, UI_SM_LIGHTING));
-    all_components.push(new LightingSubtree(() => topBarComponent.getElementXPositionFunc(0, 5), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_LIGHTING));
+    
+    lightingSubtree = new LightingSubtree(() => topBarComponent.getElementXPositionFunc(0, 5), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_LIGHTING);
+    all_components.push(lightingSubtree);
+    
     all_components.push(new OrganismComponent(getBaseUISize() * 24, palette_y_offset, 0, 0, UI_PALETTE_PLANTS));
     playerSetup = new ClipComponent(getBaseUISize() * 34, getBaseUISize() * 6, 0, 0, UI_PALETTE_CLIPS);
     all_components.push(playerSetup);
@@ -72,7 +85,7 @@ export function initUI() {
 }
 
 export function getMainMenuComponent() {
-    return mainMenuComponent;
+    return mainSubtree;
 }
 
 export function getTopBarComponent() {
@@ -82,10 +95,11 @@ export function getTopBarComponent() {
 export function updateWindows() {
     frameLastTouched = false;
     all_components.sort((b, a) => (a.window.lastTouched ?? 0) - (b.window.lastTouched ?? 0))
-    topBarComponent.update();
-    for (let i = 0; i < all_components.length; i++) {
-        if (all_components[i].update()) {
-            break;
+    if (!topBarComponent.update()) {
+        for (let i = 0; i < all_components.length; i++) {
+            if (all_components[i].update()) {
+                break;
+            }
         }
     }
 }
