@@ -41,16 +41,14 @@ export class NormalizedGraph extends WindowElement {
                 }
 
                 optimals.set(org.proto, optimals.get(org.proto) ?? optimals[org.proto] ?? [0, 0, null]);
-                optimals.get(org.proto)[0] = org.getGrowthLightLevel();
-                optimals.get(org.proto)[1] = org.getWaterPressureSoilTarget();
+                optimals.get(org.proto)[0] = org.growthLightLevel;
+                optimals.get(org.proto)[1] = org.waterPressureSoilTarget();
                 optimals.get(org.proto)[2] = org;
 
                 let lightInvlerp = clamp(invlerp(org.llt_min() * org.getGrowthLightLevel() + xMin, org.llt_max() * org.getGrowthLightLevel() + xMax, org.lightLevel));
                 let moistureInvlerp = clamp(invlerp(org.waterPressureWiltThresh() + org.getWaterPressureSoilTarget() + yMin, org.waterPressureOverwaterThresh() + org.getWaterPressureSoilTarget() + yMax, org.waterPressure));
                 let xLightLerp = lerp(startX, startX + this.sizeX, lightInvlerp);
                 let yMoistureLerp = lerp(startY, startY + this.sizeY, moistureInvlerp);
-
-                // MAIN_CONTEXT.fillStyle = hsvToHex(org.orgInfoHue, clamp(org.parentId.length / 5), 1);
                 MAIN_CONTEXT.fillStyle = org.getEvolutionColor(0.85);
                 MAIN_CONTEXT.beginPath();
                 MAIN_CONTEXT.arc(xLightLerp, yMoistureLerp, getBaseUISize() * .2, 0, 2 * Math.PI, false);

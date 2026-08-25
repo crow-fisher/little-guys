@@ -2,6 +2,8 @@ import { getBaseUISize, resetZoom } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { purgeCanvasFrameLimit } from "../../globalOperations.js";
 import { getLastMouseDown } from "../../mouse.js";
+import { iterateOnOrganisms } from "../../organisms/orgOperations.js";
+import { STAGE_DEAD } from "../../organisms/Stages.js";
 import { isPlayerRunning, startPlayerMain, stopPlayerMain } from "../../player/playerMain.js";
 import { deleteAllSaveData, deleteHiddenWorlds, downloadSaveFile, hideWorld, loadEmptyScene, loadSlot, saveCurGame, unhideWorld } from "../../saveAndLoad.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
@@ -102,8 +104,10 @@ export class MainMenuComponent extends SubTreeComponent {
         subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, loadEmptyScene, "empty scene", () => getActiveClimate().getUIColorInactive(0.61)));
         subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, () => setTimeout(deleteAllSaveData, 100), "delete all save data", () => getActiveClimate().getUIColorInactive(0.64)));
 
-        if (DEBUG)
+        if (DEBUG) {
             subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, () => console.log(JSON.stringify(getGAMEDATA())), "log GAMEDATA", () => getActiveClimate().getUIColorInactive(0.64)));
+            subMenuContainer.addElement(new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, () => iterateOnOrganisms((org) => org.stage = STAGE_DEAD), "kill all plants", () => getActiveClimate().getUIColorInactive(0.62)));
+        }
 
         subMenuContainer.addElement( new Button(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, purgeCanvasFrameLimit, "purge off-screen blocks", () => getActiveClimate().getUIColorInactive(0.55)));
         subMenuContainer.addElement( new Toggle(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, UI_UI_SHOWHIDDEN, 

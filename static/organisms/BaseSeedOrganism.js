@@ -16,7 +16,7 @@ class BaseSeedOrganism extends BaseOrganism {
         this.maxLifeTime = 10;
         this.sproutAge = null;
         this.totalSproutTime = 3 * (getTimeScale() / 86400);
-        this.evolutionParameters = (evolutionParameters ?? [Math.max(0, Math.min(1, (Math.random() - .5) * 0.25 + getCurPlantConfiguratorVal()))]);
+        this.evolutionParameters = (evolutionParameters ?? [Math.max(0, Math.min(1, (Math.random() - .5) * 0.25 + getCurPlantConfiguratorVal())), 0.5]);
         this.growInitialSquares();
     }
 

@@ -58,6 +58,7 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
     }
     
     processGenetics() {
+        super.processGenetics();
         let p0 = this.evolutionParameters[0];
         // this.growthLightLevel *= (1 + 1.4 * p0);
 
