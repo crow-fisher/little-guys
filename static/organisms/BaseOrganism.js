@@ -6,7 +6,7 @@ import { PlantSquare } from "../squares/PlantSquare.js";
 import { applyLightingFromSource } from "../lighting/lightingProcessing.js";
 import { loadGD, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_SELECT, UI_SIMULATION_GENS_PER_DAY, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
 import { COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
-import { randNumber, randRange, rgbToRgba } from "../common.js";
+import { clamp, randNumber, randRange, rgbToRgba } from "../common.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { zoomCanvasFillRect } from "../canvas.js";
 import { HUE_GREEN } from "../hue.js";
@@ -64,6 +64,8 @@ class BaseOrganism {
         this.greenLastGrown = -100;
 
         this.evolutionParameters = null;
+        this.evolutionLightingOffset = 0;
+        this.evolutionMoistureOffset = 0;
 
         this.greenType = null;
         this.rootType = null;
@@ -80,24 +82,16 @@ class BaseOrganism {
         this.growthCycleLength = 1.5;
         this.numGrowthCycles = 1;
 
-        this.ph = 7;
         this.nitrogen = 0;
         this.phosphorus = 0;
-        this.lightLevel = this.growthLightLevel;
+        this.lightLevel = 0;
 
         this.curNumRoots = 0;
         this.curNumGreen = 0;
 
-        this.applyWind = false;
-        this.springCoef = 4;
-        this.startDeflectionAngle = 0;
-        this.lastDeflectionStateRollingAverage = 0;
-        this.lastDeflectionStateThetaRollingAveragePeriod = 1000;
-        this.deflectionIdx = 0;
-        this.deflectionStateTheta = 0;
         this.rootOpacity = 0.15;
         this.lighting = square.lighting;
-        this.evolutionParameters = [0.5];
+        this.evolutionParameters = [0.5, 0.5];
         this.deathProgress = 0;
 
         this.evolutionMinColor = RGB_COLOR_BLUE;
@@ -105,6 +99,10 @@ class BaseOrganism {
 
         this.organismColor = COLOR_BLACK;
         this.organismViewHsvBase = [166, 95, 95];
+    }
+
+    getGrowthLightLevel() {
+        return this.growthLightLevel + this.evolutionLightingOffset;
     }
 
     getSeedType() {
@@ -125,7 +123,7 @@ class BaseOrganism {
     }
 
     llt_target() {
-        return this.getGenericNutritionParam(_llt_target);
+        return this.getGenericNutritionParam(_llt_target) + this.evolutionLightingOffset;
     }
     llt_min() {
         return this.getGenericNutritionParam(_llt_min);
@@ -139,14 +137,14 @@ class BaseOrganism {
     llt_throttlValMax() {
         return this.getGenericNutritionParam(_llt_throttlValMax);
     }
-    waterPressureSoilTarget() {
-        return this.getGenericNutritionParam(_waterPressureSoilTarget);
-    }
     seedReduction() {
         return this.getGenericNutritionParam(_seedReduction);
     }
     lightDecayValue() {
         return this.getGenericNutritionParam(_lightDecayValue);
+    }
+    waterPressureSoilTarget() {
+        return this.getGenericNutritionParam(_waterPressureSoilTarget) + this.evolutionMoistureOffset;
     }
     waterPressureOverwaterThresh() {
         return this.getGenericNutritionParam(_waterPressureOverwaterThresh);
@@ -185,7 +183,24 @@ class BaseOrganism {
         this.processGenetics();
     }
 
+    /**
+     *  Default genetics set two parameters: 
+        - Target Light Level (`evolutionLightingOffset`)
+        - Target Moisture Level (`evolutionMoistureOffset`)
+
+        You are welcome to include as many as you like in your implementation classes.
+     */
+
+    processNextGeneticParam(start, value, ) {
+        // let value = start;
+        return clamp(value);
+    }
+
     getNextGenetics() {
+        let ret = structuredClone(this.evolutionParameters);
+        return ret;
+        // ret[0] = this.processNextGeneticParam(ret[0], this.lightLevel)
+
         return Array.from(this.evolutionParameters.map((v) => {
             if (v === 1 || v === 0)
                 return v;
@@ -194,7 +209,11 @@ class BaseOrganism {
         }));
     }
 
-    processGenetics() { } // fill this out in your implementation class!
+    processGenetics() {
+        // let p0 = this.evolutionParameters[0];
+        // this.growthLightLevel *= (1 + 1.4 * p0);
+        
+     } // fill this out in your implementation class!
 
 
     updateDeflectionState() {
@@ -277,19 +296,18 @@ class BaseOrganism {
                 this.lsqWaterPressure(lsq.linkedSquare.getSoilWaterPressure())
                 if (!someGreen) {
                     let argb = lsq.linkedSquare.processLighting();
-                    this.lsqLightLevel(this.llt_target() * (argb.r + argb.b) / (255 * 2));
+                    this.lsqLightLevel((argb.r + argb.b) / (255 * 2));
                 }
             });
 
         this.lifeSquares
             .filter((lsq) => lsq.type == "green")
             .map((lsq) => lsq.processLighting())
-            .filter((v) => v != null)
-            .map((argb) => (argb.r + argb.b) / (255 * 2))
-            .forEach((lightLevel) => this.lsqLightLevel(this.llt_target() * lightLevel))
+            .map((argb) => this.lsqLightLevel((argb.r + argb.b) / (255 * 2)));
     }
 
     lsqLightLevel(val) {
+        val *= this.llt_target();
         let c = this.curNumGreen;
         this.lightLevel = this.lightLevel * (c - 1) / c + (val / c);
     }
@@ -446,7 +464,7 @@ class BaseOrganism {
     }
 
     lightLevelThrottleVal() {
-        let ratio = this.lightLevel / this.growthLightLevel;
+        let ratio = this.lightLevel / (this.growthLightLevel);
         if (ratio < this.llt_min()) {
             return this.llt_throttlValMax();
         } else if (ratio < 1) {

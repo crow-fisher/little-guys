@@ -222,7 +222,7 @@ class BaseLifeSquare {
             this.subtypeColorUpdate();
         }
         if (this.linkedOrganism.stage == STAGE_DEAD) {
-            frameOpacity *= (1 - this.linkedOrganism.deathProgress ** 6);
+            frameOpacity *= (1 - this.linkedOrganism.deathProgress);
         }
         let selectedViewMode = loadGD(UI_VIEWMODE_SELECT);
         if (selectedViewMode != UI_VIEWMODE_NORMAL && Math.random() > 0.97) {

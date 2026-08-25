@@ -28,6 +28,7 @@ import { VisualizerOrganismComponent } from "./components/VisualizerOrganismComp
 
 let topBarComponent;
 let blockPalette;
+let organismComponent;
 let all_components;
 let playerSetup;
 
@@ -71,7 +72,8 @@ export function initUI() {
     lightingSubtree = new LightingSubtree(() => topBarComponent.getElementXPositionFunc(0, 5), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_LIGHTING);
     all_components.push(lightingSubtree);
     
-    all_components.push(new OrganismComponent(getBaseUISize() * 24, palette_y_offset, 0, 0, UI_PALETTE_PLANTS));
+    organismComponent = new OrganismComponent(getBaseUISize() * 24, palette_y_offset, 0, 0, UI_PALETTE_PLANTS);
+    all_components.push(organismComponent);
     playerSetup = new ClipComponent(getBaseUISize() * 34, getBaseUISize() * 6, 0, 0, UI_PALETTE_CLIPS);
     all_components.push(playerSetup);
     all_components.push(new TimeSkipComponent(() => topBarComponent.getElementXPositionFunc(0, 18 - 5), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_TIME));
@@ -80,9 +82,10 @@ export function initUI() {
 
     visualizerOrganismComponent = new VisualizerOrganismComponent(getBaseUISize() * 64, palette_y_offset, 0, 0, UI_VISUALIZER_ORGANISM)
     all_components.push(visualizerOrganismComponent)
-
-
 }
+
+addUIFunctionMap(UI_PALETTE_BLOCKS, () => blockPalette.window.lastTouched = Date.now());
+addUIFunctionMap(UI_PALETTE_PLANTS, () => organismComponent.window.lastTouched = Date.now());
 
 export function getMainMenuComponent() {
     return mainSubtree;

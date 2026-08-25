@@ -67,8 +67,8 @@ export function scheduler_main() {
         playerMainTick();
         orgTick();
         render();
-        renderWindows();
         updateWindows();
+        renderWindows();
         if (!isLeftMouseClicked())
             executeFunctionQueue();
         periodicPurgeOldGroupData();

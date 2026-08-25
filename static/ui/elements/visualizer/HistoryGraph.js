@@ -69,7 +69,7 @@ export class HistoryGraph extends WindowElement {
 
         this.rootsIter.forEach((root) => {
                 let sx = invlerp(this.minDepth, getCurDay(), root.time);
-                MAIN_CONTEXT.strokeStyle = this.getEvolutionColor(root.ep[this.param], sx ** 4);
+                MAIN_CONTEXT.strokeStyle = this.getEvolutionColor(root.ep[this.param], 1);
                 this.renderLineage(startX, startY, root.id, 1)
         })
     }
