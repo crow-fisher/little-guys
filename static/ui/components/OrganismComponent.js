@@ -2,7 +2,7 @@ import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { calculateColor } from "../../climate/simulation/temperatureHumidity.js";
 import { hexToRgb } from "../../common.js";
-import { _lightDecayValue, _lightLevelDisplayExposureAdjustment, _llt_max, _llt_min, _llt_target, _llt_throttlValMax, _llt_throttlValMin, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, baseOrganism_dnm } from "../../organisms/BaseOrganism.js";
+import { _lightDecayValue, _lightLevelDisplayExposureAdjustment, _llt_max, _llt_min, _llt_mult, _llt_throttlValMax, _llt_throttlValMin, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, baseOrganism_dnm } from "../../organisms/BaseOrganism.js";
 import { coneflower_dnm } from "../../organisms/flowers/ConeflowerOrganism.js";
 import { cattail_dnm } from "../../organisms/grasses/CattailOrganism.js";
 import { kblue_dnm } from "../../organisms/grasses/KentuckyBluegrassOrganism.js";
@@ -165,12 +165,12 @@ export class OrganismComponent extends Component {
           let left = sizeX * 0.8;
           let right = sizeX - left;
 
-          let c_llt_target = new Container(this.window, 0, 0);
-          nutrientConfiguratorContainer.addElement(c_llt_target);
-          c_llt_target.addElement(new TextBackground(this.window, left, h1, offsetX, () => getActiveClimate().getUIColorInactive(0.58), 0.75, "llt_target"));
-          c_llt_target.addElement(new TextFunctionalBackground(this.window, right, h1, offsetX, () => this.getGenericNutritionParam(_llt_target), () => getActiveClimate().getUIColorInactive(0.58)));
+          let c_llt_mult = new Container(this.window, 0, 0);
+          nutrientConfiguratorContainer.addElement(c_llt_mult);
+          c_llt_mult.addElement(new TextBackground(this.window, left, h1, offsetX, () => getActiveClimate().getUIColorInactive(0.58), 0.75, "llt_mult"));
+          c_llt_mult.addElement(new TextFunctionalBackground(this.window, right, h1, offsetX, () => this.getGenericNutritionParam(_llt_mult), () => getActiveClimate().getUIColorInactive(0.58)));
           nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
-               () => this.getGenericNutritionParam(_llt_target), (val) => this.setGenericNutritionParam(_llt_target, val), sizeX, h1, .25, 4, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
+               () => this.getGenericNutritionParam(_llt_mult), (val) => this.setGenericNutritionParam(_llt_mult, val), sizeX, h1, .25, 4, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
 
           let c_llt_min = new Container(this.window, 0, 0);
           nutrientConfiguratorContainer.addElement(c_llt_min);

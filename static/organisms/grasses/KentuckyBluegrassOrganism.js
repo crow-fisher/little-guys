@@ -4,7 +4,7 @@ import { STAGE_ADULT, STAGE_FLOWER, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_TRUNK }
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
-import { _lightLevelDisplayExposureAdjustment, _llt_target, BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
+import { _lightLevelDisplayExposureAdjustment, _llt_mult, BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
 import { KentuckyBluegrassGreenSquare } from "../../lifeSquares/grasses/KentuckyBluegrassGreenSquare.js";
 import { addSquare } from "../../squares/sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
@@ -14,7 +14,7 @@ import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReductio
 import { HUE_CHARTREUSE } from "../../hue.js";
 
 export let kblue_dnm = structuredClone(baseOrganism_dnm);
-kblue_dnm[_llt_target] = 1.45;
+kblue_dnm[_llt_mult] = 1.45;
 kblue_dnm[_llt_min] = 0.74;
 kblue_dnm[_llt_max] = 1.43;
 kblue_dnm[_llt_throttlValMax] = 5.27;

@@ -44,7 +44,7 @@ export class HistoryGraph extends WindowElement {
             let o = this.m[id];
             let p = this.m[pid];
             
-            this.minDepth = getCurDay() - .2;
+            this.minDepth = getCurDay() - .025;
 
             let sx = 1 - invlerp(this.minDepth, getCurDay(), o.time);
             let sy = 1 - invlerp(this.minDepth, getCurDay(), p.time);
@@ -81,7 +81,7 @@ export class HistoryGraph extends WindowElement {
 
         let optimals = new Map() 
 
-        this.num = 20;
+        this.num = 10;
         this.m = loadGD(UI_ORGANISM_LINEAGE_MAP);
         this.param = 0;
         this.seen = new Set();

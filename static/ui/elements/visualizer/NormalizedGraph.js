@@ -41,12 +41,12 @@ export class NormalizedGraph extends WindowElement {
                 }
 
                 optimals.set(org.proto, optimals.get(org.proto) ?? optimals[org.proto] ?? [0, 0, null]);
-                optimals.get(org.proto)[0] = org.growthLightLevel;
-                optimals.get(org.proto)[1] = org.waterPressureSoilTarget();
+                optimals.get(org.proto)[0] = org.getGrowthLightLevel();
+                optimals.get(org.proto)[1] = org.getWaterPressureSoilTarget();
                 optimals.get(org.proto)[2] = org;
 
-                let lightInvlerp = clamp(invlerp(org.llt_min() * org.growthLightLevel + xMin , org.llt_max() * org.growthLightLevel + xMax, org.lightLevel));
-                let moistureInvlerp = clamp(invlerp(org.waterPressureWiltThresh() + org.waterPressureSoilTarget() + yMin, org.waterPressureOverwaterThresh() + org.waterPressureSoilTarget() + yMax, org.waterPressure));
+                let lightInvlerp = clamp(invlerp(org.llt_min() * org.getGrowthLightLevel() + xMin, org.llt_max() * org.getGrowthLightLevel() + xMax, org.lightLevel));
+                let moistureInvlerp = clamp(invlerp(org.waterPressureWiltThresh() + org.getWaterPressureSoilTarget() + yMin, org.waterPressureOverwaterThresh() + org.getWaterPressureSoilTarget() + yMax, org.waterPressure));
                 let xLightLerp = lerp(startX, startX + this.sizeX, lightInvlerp);
                 let yMoistureLerp = lerp(startY, startY + this.sizeY, moistureInvlerp);
 
@@ -58,10 +58,11 @@ export class NormalizedGraph extends WindowElement {
         });
 
         MAIN_CONTEXT.fillStyle = COLOR_BLACK;
+
         optimals.values().forEach((v) => {
             let org = v[2];
-            let lightInvlerp = clamp(invlerp(org.llt_min() * org.growthLightLevel + xMin, org.llt_max() * org.growthLightLevel + xMax, v[0]));
-            let moistureInvlerp = clamp(invlerp(org.waterPressureWiltThresh() + org.waterPressureSoilTarget() + yMin, org.waterPressureOverwaterThresh() + org.waterPressureSoilTarget() + yMax, v[1]));
+            let lightInvlerp = clamp(invlerp(org.llt_min() * org.getGrowthLightLevel() + xMin, org.llt_max() * org.getGrowthLightLevel() + xMax, v[0]));
+            let moistureInvlerp = clamp(invlerp(org.waterPressureWiltThresh() + org.getWaterPressureSoilTarget() + yMin, org.waterPressureOverwaterThresh() + org.getWaterPressureSoilTarget() + yMax, v[1]));
             let xLightLerp = lerp(startX, startX + this.sizeX, lightInvlerp);
             let yMoistureLerp = lerp(startY, startY + this.sizeY, moistureInvlerp);
 

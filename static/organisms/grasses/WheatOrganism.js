@@ -5,7 +5,7 @@ import { STAGE_ADULT, STAGE_FLOWER, STAGE_JUVENILE, SUBTYPE_FLOWER, SUBTYPE_FLOW
 import { WheatGreenSquare } from "../../lifeSquares/grasses/WheatGreenSquare.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
-import { _lightLevelDisplayExposureAdjustment, _llt_target, BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
+import { _lightLevelDisplayExposureAdjustment, _llt_mult, BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
 import { addSquare } from "../../squares/sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
 import { UI_ORGANISM_GRASS_WHEAT } from "../../ui/UIData.js";
@@ -16,7 +16,7 @@ import { HUE_GOLDENROD, HUE_ORANGE_PUMPKIN } from "../../hue.js";
 // ref: https://prairiecalifornian.com/wheat-growth-stages/
 
 export let wheat_dnm = structuredClone(baseOrganism_dnm);
-wheat_dnm[_llt_target] = 0.89;
+wheat_dnm[_llt_mult] = 0.89;
 wheat_dnm[_llt_min] = 0.80;
 wheat_dnm[_llt_max] = 1.29;
 wheat_dnm[_llt_throttlValMax] = 4;

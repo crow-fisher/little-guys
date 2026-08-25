@@ -37,7 +37,7 @@ export class BaseMossGreenSquare extends BaseLifeSquare {
     }
 
     lightLevelTick() {
-        let target = this.linkedOrganism.llt_target();
+        let target = this.linkedOrganism.llt_mult();
         let min = target - this.linkedOrganism.llt_min();
         let max = target + this.linkedOrganism.llt_max();
 

@@ -13,7 +13,7 @@ import { HUE_GREEN } from "../hue.js";
 import { SeedSquare } from "../squares/SeedSquare.js";
 import { getNextBlockId, getNextOrgId } from "../globals.js";
 
-export const _llt_target = "_llt_target";
+export const _llt_mult = "_llt_mult";
 export const _llt_min = "_llt_min";
 export const _llt_max = "_llt_max";
 export const _llt_throttlValMin = "_llt_throttlValMin";
@@ -26,7 +26,7 @@ export const _waterPressureWiltThresh = "_waterPressureWiltThresh";
 export const _lightLevelDisplayExposureAdjustment = "_lightLevelDisplayExposureAdjustment";
 
 export let baseOrganism_dnm = {
-    _llt_target: 2.35,
+    _llt_mult: 2.35,
     _llt_min: 0.5,
     _llt_max: 2,
     _llt_throttlValMin: 1,
@@ -105,6 +105,10 @@ class BaseOrganism {
         return this.growthLightLevel + this.evolutionLightingOffset;
     }
 
+    getWaterPressureSoilTarget() {
+        return this.waterPressureSoilTarget() + this.evolutionMoistureOffset;
+    }
+
     getSeedType() {
         return null; 
     }
@@ -121,9 +125,8 @@ class BaseOrganism {
         }
         return configMap[name];
     }
-
-    llt_target() {
-        return this.getGenericNutritionParam(_llt_target) + this.evolutionLightingOffset;
+    llt_mult() {
+        return this.getGenericNutritionParam(_llt_mult);
     }
     llt_min() {
         return this.getGenericNutritionParam(_llt_min);
@@ -144,7 +147,7 @@ class BaseOrganism {
         return this.getGenericNutritionParam(_lightDecayValue);
     }
     waterPressureSoilTarget() {
-        return this.getGenericNutritionParam(_waterPressureSoilTarget) + this.evolutionMoistureOffset;
+        return this.getGenericNutritionParam(_waterPressureSoilTarget);
     }
     waterPressureOverwaterThresh() {
         return this.getGenericNutritionParam(_waterPressureOverwaterThresh);
@@ -183,6 +186,11 @@ class BaseOrganism {
         this.processGenetics();
     }
 
+
+    getNextEvolutionParameter(start) {
+        return clamp(start + randRange(-.2, .2));
+    }
+
     /**
      *  Default genetics set two parameters: 
         - Target Light Level (`evolutionLightingOffset`)
@@ -190,26 +198,17 @@ class BaseOrganism {
 
         You are welcome to include as many as you like in your implementation classes.
      */
-
-    processNextGeneticParam(start, value, ) {
-        // let value = start;
-        return clamp(value);
-    }
-
     getNextGenetics() {
         let ret = structuredClone(this.evolutionParameters);
+        ret[0] = this.getNextEvolutionParameter(ret[0])
+        ret[1] = this.getNextEvolutionParameter(ret[1])
         return ret;
-        // ret[0] = this.processNextGeneticParam(ret[0], this.lightLevel)
-
-        return Array.from(this.evolutionParameters.map((v) => {
-            if (v === 1 || v === 0)
-                return v;
-            let d = Math.random() * ((this.lightLevel < this.growthLightLevel) ? -.05 : .05);
-            return Math.min(Math.max(0.0001, v + d), 0.9999);
-        }));
     }
 
     processGenetics() {
+        this.evolutionLightingOffset = -.5 + this.evolutionParameters[0];
+        this.evolutionMoistureOffset = -.5 + this.evolutionParameters[1];
+
         // let p0 = this.evolutionParameters[0];
         // this.growthLightLevel *= (1 + 1.4 * p0);
         
@@ -238,7 +237,7 @@ class BaseOrganism {
             0);
 
 
-        let target = this.waterPressureSoilTarget();
+        let target = this.getWaterPressureSoilTarget();
         let min = target + this.waterPressureWiltThresh();
         let max = target + this.waterPressureOverwaterThresh();
 
@@ -260,7 +259,7 @@ class BaseOrganism {
                 .map((lsq) => {
                     let sq = lsq.linkedSquare;
                     let sqWaterPressure = sq.getSoilWaterPressure();
-                    let diffToTarget = sqWaterPressure - this.waterPressureSoilTarget();
+                    let diffToTarget = sqWaterPressure - this.getWaterPressureSoilTarget();
                     if (diffToTarget <= 0) {
                         return 0;
                     }
@@ -307,7 +306,7 @@ class BaseOrganism {
     }
 
     lsqLightLevel(val) {
-        val *= this.llt_target();
+        val *= this.llt_mult();
         let c = this.curNumGreen;
         this.lightLevel = this.lightLevel * (c - 1) / c + (val / c);
     }
@@ -325,7 +324,7 @@ class BaseOrganism {
             return 0;
         }
 
-        let target = this.waterPressureSoilTarget();
+        let target = this.getWaterPressureSoilTarget();
         let min = target + this.waterPressureWiltThresh();
         let max = target + this.waterPressureOverwaterThresh();
 
@@ -464,7 +463,7 @@ class BaseOrganism {
     }
 
     lightLevelThrottleVal() {
-        let ratio = this.lightLevel / (this.growthLightLevel);
+        let ratio = this.lightLevel / (this.getGrowthLightLevel());
         if (ratio < this.llt_min()) {
             return this.llt_throttlValMax();
         } else if (ratio < 1) {
@@ -581,8 +580,8 @@ class BaseOrganism {
         let expectedPhosphorus = curMaturityFrac ** 2 * this.growthPhosphorus;
         let scoreFunc = (sq) => {
             let sqScore = 0;
-            if (this.waterPressure < this.waterPressureTarget) {
-                sqScore += sq.getSoilWaterPressure() - this.waterPressureSoilTarget();
+            if (this.waterPressure < this.getWaterPressureSoilTarget()) {
+                sqScore += sq.getSoilWaterPressure() - this.getWaterPressureSoilTarget();
             }
             if (this.nitrogen < expectedNitrogen) {
                 sqScore += (sq.nitrogen / this.growthNitrogen) * sq.getNutrientRate(this.proto)
@@ -642,7 +641,7 @@ class BaseOrganism {
 
         let nitrogenMult = Math.min(1, this.nitrogen / expectedNitrogen) * this.lifeSquares.length;
         let phosphorusMult = Math.min(1, this.phosphorus / expectedPhosphorus) * this.lifeSquares.length;
-        let lightLevelMult = Math.min(2, this.lightLevel / this.growthLightLevel) * this.lifeSquares.length;
+        let lightLevelMult = Math.min(2, this.lightLevel / this.getGrowthLightLevel()) * this.lifeSquares.length;
         let lifetimeMult = lifetimeFrac * this.lifeSquares.length;
 
         this.lifeSquares.forEach((lsq) => {

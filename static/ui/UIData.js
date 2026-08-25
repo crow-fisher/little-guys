@@ -460,18 +460,18 @@ _GAMEDATA_DEFAULT = {
     "UI_ORGANISM_NUTRITION_CONFIGURATOR": true,
     "UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA": {
         "UI_ORGANISM_FLOWER_CONEFLOWER": {
-            "_llt_target": 0.8768491124260354,
+            "_llt_mult": 0.8768491124260354,
             "_llt_throttlValMax": 3.0695266272189348,
             "_waterPressureSoilTarget": -3.1168639053254443
         },
         "UI_ORGANISM_GRASS_CATTAIL": {
             "_llt_max": 1.4023668639053255,
             "_llt_min": 0.443491124260355,
-            "_llt_target": 1.2928994082840235,
+            "_llt_mult": 1.2928994082840235,
             "_llt_throttlValMax": 2.0177514792899407
         },
         "UI_ORGANISM_GRASS_KBLUE": {
-            "_llt_target": 1.6534763313609466,
+            "_llt_mult": 1.6534763313609466,
             "_llt_throttlValMax": 2.159763313609467,
             "_seedReduction": 0.020710059171597628,
             "_waterPressureSoilTarget": -3.1168639053254443,
@@ -481,7 +481,7 @@ _GAMEDATA_DEFAULT = {
             "_lightDecayValue": 5.016974852071006
         },
         "UI_ORGANISM_GRASS_WHEAT": {
-            "_llt_target": 1.4815088757396446
+            "_llt_mult": 1.4815088757396446
         }
     },
     "UI_ORGANISM_SELECT": "UI_ORGANISM_GRASS_KBLUE",

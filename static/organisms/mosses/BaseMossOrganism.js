@@ -17,11 +17,11 @@ import {
     _lightDecayValue,
     _waterPressureOverwaterThresh,
     _waterPressureWiltThresh,
-    _llt_target
+    _llt_mult
 } from "../BaseOrganism.js";
 
 export let baseMossOrganism_dnm = {
-    _llt_target: 1.14,
+    _llt_mult: 1.14,
     _llt_min: 0.6,
     _llt_max: 1.43,
     _llt_throttlValMin: 1,
@@ -66,8 +66,8 @@ export class BaseMossOrganism {
         }
         return configMap[name];
     }
-    llt_target() {
-        return this.getGenericNutritionParam(_llt_target);
+    llt_mult() {
+        return this.getGenericNutritionParam(_llt_mult);
     }
     llt_min() {
         return this.getGenericNutritionParam(_llt_min);
