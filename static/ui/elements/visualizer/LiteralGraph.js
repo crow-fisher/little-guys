@@ -20,15 +20,16 @@ export class LiteralGraph extends WindowElement {
         MAIN_CONTEXT.fillStyle = COLOR_BLACK;
         MAIN_CONTEXT.fillRect(startX, startY, this.sizeX, this.sizeY);
 
-        let xMin = -1;
-        let xMax =  1;
-        let yMin = -2;
-        let yMax =  2;
+        let xPadL = -1;
+        let xPadR =  1;
+        let yPadB = -2;
+        let yPadT =  2;
 
         // xMin = 0;
         // xMax = 0;
         // yMin = -1;
         // yMax = 1;
+        let xMin = 10 ** 8, xMax = 0, yMin = 10 ** 8, yMax = 0;
 
         let optimals = new Map()
             iterateOnOrganisms((org) => {
@@ -45,8 +46,8 @@ export class LiteralGraph extends WindowElement {
                 optimals.get(org.proto)[1] = org.waterPressureSoilTarget();
                 optimals.get(org.proto)[2] = org;
 
-                let lightInvlerp = clamp(invlerp(org.llt_min() * org.growthLightLevel + xMin, org.llt_max() * org.growthLightLevel + xMax, org.lightLevel));
-                let moistureInvlerp = clamp(invlerp(org.waterPressureWiltThresh() + org.waterPressureSoilTarget() + yMin, org.waterPressureOverwaterThresh() + org.waterPressureSoilTarget() + yMax, org.waterPressure));
+                let lightInvlerp = clamp(invlerp(org.llt_min() * org.growthLightLevel + xPadL, org.llt_max() * org.growthLightLevel + xPadR, org.lightLevel));
+                let moistureInvlerp = clamp(invlerp(org.waterPressureWiltThresh() + org.waterPressureSoilTarget() + yPadB, org.waterPressureOverwaterThresh() + org.waterPressureSoilTarget() + yPadT, org.waterPressure));
                 let xLightLerp = lerp(startX, startX + this.sizeX, lightInvlerp);
                 let yMoistureLerp = lerp(startY, startY + this.sizeY, moistureInvlerp);
 
@@ -55,30 +56,43 @@ export class LiteralGraph extends WindowElement {
                 MAIN_CONTEXT.beginPath();
                 MAIN_CONTEXT.arc(xLightLerp, yMoistureLerp, getBaseUISize() * .2, 0, 2 * Math.PI, false);
                 MAIN_CONTEXT.fill();
+
+                lightInvlerp = clamp(invlerp(org.llt_min() * org.getGrowthLightLevel() + xPadL, org.llt_max() * org.getGrowthLightLevel() + xPadR, org.getGrowthLightLevel()));
+                moistureInvlerp = clamp(invlerp(org.waterPressureWiltThresh() + org.getWaterPressureSoilTarget() + yPadB, org.waterPressureOverwaterThresh() + org.getWaterPressureSoilTarget() + yPadT, org.getWaterPressureSoilTarget()));
+                xLightLerp = lerp(startX, startX + this.sizeX, lightInvlerp);
+                yMoistureLerp = lerp(startY, startY + this.sizeY, moistureInvlerp);
+                
+                xMin = Math.min(xMin, xLightLerp);
+                xMax = Math.max(xMax, xLightLerp);
+
+                yMin = Math.min(yMin, yMoistureLerp);
+                yMax = Math.max(yMax, yMoistureLerp);
+
         });
 
         MAIN_CONTEXT.fillStyle = COLOR_BLACK;
 
-        optimals.values().forEach((v) => {
-            let org = v[2];
-            let lightInvlerp = clamp(invlerp(org.llt_min() * org.growthLightLevel + xMin, org.llt_max() * org.growthLightLevel + xMax, v[0]));
-            let moistureInvlerp = clamp(invlerp(org.waterPressureWiltThresh() + org.waterPressureSoilTarget() + yMin, org.waterPressureOverwaterThresh() + org.waterPressureSoilTarget() + yMax, v[1]));
-            let xLightLerp = lerp(startX, startX + this.sizeX, lightInvlerp);
-            let yMoistureLerp = lerp(startY, startY + this.sizeY, moistureInvlerp);
+        MAIN_CONTEXT.beginPath();
+        MAIN_CONTEXT.moveTo(xMin, yMin);
+        MAIN_CONTEXT.lineTo(xMax, yMax);
+        MAIN_CONTEXT.stroke();
+        
 
-            // draw a vertical line at x = 'xLightLerp'
-            MAIN_CONTEXT.beginPath();
-            MAIN_CONTEXT.moveTo(xLightLerp, startY);
-            MAIN_CONTEXT.lineTo(xLightLerp, startY + this.sizeY);
-            MAIN_CONTEXT.stroke();
-            
-            // draw a horizontal line at y = 'yMoistureLerp'
-            MAIN_CONTEXT.beginPath();
-            MAIN_CONTEXT.moveTo(startX, yMoistureLerp);
-            MAIN_CONTEXT.lineTo(startX + this.sizeX, yMoistureLerp);
-            MAIN_CONTEXT.stroke();
+        // let xMin = 10 ** 8, xMax = 0, yMin = 10 ** 8; yMax = 0;
 
-        });
+        // optimals.values().forEach((v) => {
+        //     let org = v[2];
+
+
+        //     xMin = Math.min(xMin, xLightLerp);
+        //     xMax = Math.max(xMax, xLightLerp);
+
+        //     yMin = Math.min(yMin, yMoistureLerp);
+        //     yMax = Math.max(yMax, yMoistureLerp);
+        // });
+
+        // // draw a line between our optimal points
+
 
     }
 }

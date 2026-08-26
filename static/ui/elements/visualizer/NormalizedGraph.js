@@ -58,7 +58,7 @@ export class NormalizedGraph extends WindowElement {
         MAIN_CONTEXT.fillStyle = COLOR_BLACK;
 
 
-        let xMin = 10 ** 8, xMax = 0, yMin = 10 ** 8; yMax = 0;
+        xMin = 10 ** 8, xMax = 0, yMin = 10 ** 8; yMax = 0;
         
         optimals.values().forEach((v) => {
             let org = v[2];
@@ -67,19 +67,45 @@ export class NormalizedGraph extends WindowElement {
             let xLightLerp = lerp(startX, startX + this.sizeX, lightInvlerp);
             let yMoistureLerp = lerp(startY, startY + this.sizeY, moistureInvlerp);
 
-            // draw a vertical line at x = 'xLightLerp'
-            MAIN_CONTEXT.beginPath();
-            MAIN_CONTEXT.moveTo(xLightLerp, startY);
-            MAIN_CONTEXT.lineTo(xLightLerp, startY + this.sizeY);
-            MAIN_CONTEXT.stroke();
-            
-            // draw a horizontal line at y = 'yMoistureLerp'
-            MAIN_CONTEXT.beginPath();
-            MAIN_CONTEXT.moveTo(startX, yMoistureLerp);
-            MAIN_CONTEXT.lineTo(startX + this.sizeX, yMoistureLerp);
-            MAIN_CONTEXT.stroke();
+            xMin = Math.min(xMin, xLightLerp);
+            xMax = Math.max(xMax, xLightLerp);
 
+            yMin = Math.min(yMin, yMoistureLerp);
+            yMax = Math.max(yMax, yMoistureLerp);
         });
 
+        // draw a line between our optimal points
+        MAIN_CONTEXT.beginPath();
+        MAIN_CONTEXT.moveTo(xMin, yMin);
+        MAIN_CONTEXT.lineTo(xMax, yMax);
+        MAIN_CONTEXT.stroke();
+        
+        // // draw a horizontal line at y = 'yMoistureLerp'
+        // MAIN_CONTEXT.beginPath();
+        // MAIN_CONTEXT.moveTo(startX, yMoistureLerp);
+        // MAIN_CONTEXT.lineTo(startX + this.sizeX, yMoistureLerp);
+        // MAIN_CONTEXT.stroke();
+
+
+                // optimals.values().forEach((v) => {
+        //     let org = v[2];
+        //     let lightInvlerp = clamp(invlerp(org.llt_min() * org.growthLightLevel + xMin, org.llt_max() * org.growthLightLevel + xMax, v[0]));
+        //     let moistureInvlerp = clamp(invlerp(org.waterPressureWiltThresh() + org.waterPressureSoilTarget() + yMin, org.waterPressureOverwaterThresh() + org.waterPressureSoilTarget() + yMax, v[1]));
+        //     let xLightLerp = lerp(startX, startX + this.sizeX, lightInvlerp);
+        //     let yMoistureLerp = lerp(startY, startY + this.sizeY, moistureInvlerp);
+
+        //     // draw a vertical line at x = 'xLightLerp'
+        //     MAIN_CONTEXT.beginPath();
+        //     MAIN_CONTEXT.moveTo(xLightLerp, startY);
+        //     MAIN_CONTEXT.lineTo(xLightLerp, startY + this.sizeY);
+        //     MAIN_CONTEXT.stroke();
+            
+        //     // draw a horizontal line at y = 'yMoistureLerp'
+        //     MAIN_CONTEXT.beginPath();
+        //     MAIN_CONTEXT.moveTo(startX, yMoistureLerp);
+        //     MAIN_CONTEXT.lineTo(startX + this.sizeX, yMoistureLerp);
+        //     MAIN_CONTEXT.stroke();
+
+        // });
     }
 }

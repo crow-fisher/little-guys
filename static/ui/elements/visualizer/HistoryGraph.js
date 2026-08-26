@@ -44,7 +44,7 @@ export class HistoryGraph extends WindowElement {
             let o = this.m[id];
             let p = this.m[pid];
             
-            this.minDepth = getCurDay() - .025;
+            this.minDepth = getCurDay() - .1;
 
             let sx = 1 - invlerp(this.minDepth, getCurDay(), o.time);
             let sy = 1 - invlerp(this.minDepth, getCurDay(), p.time);
