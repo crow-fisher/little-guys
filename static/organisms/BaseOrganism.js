@@ -4,7 +4,7 @@ import { STAGE_DEAD, STAGE_FLOWER, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_ROOTNOD
 import { addSquare, getNeighbors } from "../squares/sqOperations.js";
 import { PlantSquare } from "../squares/PlantSquare.js";
 import { applyLightingFromSource } from "../lighting/lightingProcessing.js";
-import { loadGD, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_SELECT, UI_SIMULATION_GENS_PER_DAY, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
+import { loadGD, UI_EVOLUTION_ACTIVE_PARAM, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_SELECT, UI_SIMULATION_GENS_PER_DAY, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
 import { COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
 import { clamp, randNumber, randRange, rgbToRgba } from "../common.js";
 import { MAIN_CONTEXT } from "../index.js";
@@ -159,7 +159,6 @@ class BaseOrganism {
         return this.getGenericNutritionParam(_lightLevelDisplayExposureAdjustment);
     }
 
-
     processColor(color1, color2, value, valueMax, opacity) {
         let frac = value / valueMax;
         let outColor = {
@@ -171,7 +170,7 @@ class BaseOrganism {
     }
 
     getEvolutionColor(opacity) {
-        return this.processColor(this.evolutionMinColor, this.evolutionMaxColor, this.evolutionParameters.at(0), 1, opacity);
+        return this.processColor(this.evolutionMinColor, this.evolutionMaxColor, this.evolutionParameters.at(loadGD(UI_EVOLUTION_ACTIVE_PARAM)), 1, opacity);
     }
 
     getGrowthCycleLength() {
@@ -187,8 +186,20 @@ class BaseOrganism {
     }
 
 
-    getNextEvolutionParameter(start) {
-        return clamp(start + randRange(-.2, .2));
+    getNextEvolutionParameter(start, cur, target) {
+        let range = 0.02; 
+        let half = range / 2;
+        if (Math.abs(cur - target) < half) {
+            // we are within the threshold of our variability. 
+            // return a nearby value.
+            return start + randRange(-half, half);
+        } else if (cur - target > 0) {
+            // our current light level is too high. 
+            // return a new, higher value.
+            return start + randRange(0, range);
+        } else {
+            return start - randRange(0, range);
+        }
     }
 
     /**
@@ -200,8 +211,8 @@ class BaseOrganism {
      */
     getNextGenetics() {
         let ret = structuredClone(this.evolutionParameters);
-        ret[0] = this.getNextEvolutionParameter(ret[0])
-        ret[1] = this.getNextEvolutionParameter(ret[1])
+        ret[0] = clamp(this.getNextEvolutionParameter(ret[0], this.lightLevel, this.getGrowthLightLevel()));
+        ret[1] = clamp(this.getNextEvolutionParameter(ret[1], this.waterPressure, this.getWaterPressureSoilTarget()));
         return ret;
     }
 

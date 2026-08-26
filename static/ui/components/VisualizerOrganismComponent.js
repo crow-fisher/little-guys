@@ -17,7 +17,7 @@ import { Toggle } from "../elements/Toggle.js";
 import { HistoryGraph } from "../elements/visualizer/HistoryGraph.js";
 import { LiteralGraph } from "../elements/visualizer/LiteralGraph.js";
 import { NormalizedGraph } from "../elements/visualizer/NormalizedGraph.js";
-import { loadGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CENTER, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_PALETTE_COMPOSITION, saveGD, UI_PALETTE_SHOWPICKER, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, UI_PALETTE_SOILROCK, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_AQUIFER_FLOWRATE, UI_UI_PHONEMODE, loadUI, UI_PALLETE_MODE_PASTE, UI_PALETTE_PASTE_MODE, UI_PALETTE_PASTE_MODE_FG, UI_PALETTE_PASTE_MODE_BG, UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_RIGID, UI_PALETTE_PHYSICS_SAND, UI_PALETTE_PHYSICS_STATIC, UI_PALETTE_SPECIAL_CHURN, UI_PALETTE_SPECIAL_CHURN_WIDE, UI_PALETTE_SPECIAL_CHURN_STRENGTH, UI_PALETTE_SURFACE_MATCH, UI_PALETTE_VARIANCE, UI_VISUALIZER_MODE, UI_VISUALIZER_MODE_NORMALIZED, UI_VISUALIZER_MODE_HISTORY, UI_VISUALIZER_MODE_LITERAL } from "../UIData.js";
+import { loadGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CENTER, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_PALETTE_COMPOSITION, saveGD, UI_PALETTE_SHOWPICKER, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SELECT, UI_PALETTE_WATER, UI_PALETTE_AQUIFER, UI_PALETTE_SURFACE, UI_PALETTE_SOILROCK, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_MODE, UI_PALETTE_MODE_SOIL, UI_PALETTE_MODE_ROCK, UI_PALLETE_MODE_SPECIAL, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_AQUIFER_FLOWRATE, UI_UI_PHONEMODE, loadUI, UI_PALLETE_MODE_PASTE, UI_PALETTE_PASTE_MODE, UI_PALETTE_PASTE_MODE_FG, UI_PALETTE_PASTE_MODE_BG, UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_RIGID, UI_PALETTE_PHYSICS_SAND, UI_PALETTE_PHYSICS_STATIC, UI_PALETTE_SPECIAL_CHURN, UI_PALETTE_SPECIAL_CHURN_WIDE, UI_PALETTE_SPECIAL_CHURN_STRENGTH, UI_PALETTE_SURFACE_MATCH, UI_PALETTE_VARIANCE, UI_VISUALIZER_MODE, UI_VISUALIZER_MODE_NORMALIZED, UI_VISUALIZER_MODE_HISTORY, UI_VISUALIZER_MODE_LITERAL, UI_EVOLUTION_ACTIVE_PARAM } from "../UIData.js";
 import { getWaterColor, getWaterColorDark } from "./LightingComponent.js";
 
 export class VisualizerOrganismComponent extends Component {
@@ -38,9 +38,22 @@ export class VisualizerOrganismComponent extends Component {
 
         let graphHeight = getBaseUISize() * 50;
         container.addElement(new TextBackground(this.window, sizeX, h1, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.65), 0.75, "organism visualizer"))
+        container.addElement(new TextBackground(this.window, sizeX, br, UI_CENTER, () => getActiveClimate().getUIColorInactive(1), 0.75, ""));
+
+        let indexSelectRow = new Container(this.window, 0, 0);
+
+
         let modeSelectRow = new Container(this.window, 0, 0);
 
+        indexSelectRow.addElement(new TextBackground(this.window, third, h1, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.65), 0.75, "active param"))
+        indexSelectRow.addElement(new RadioToggleLabel(this.window, third, h1, offsetX, "0 (light)", UI_EVOLUTION_ACTIVE_PARAM, 0,() => getActiveClimate().getUIColorInactive(0.77), () => getActiveClimate().getUIColorActive(0.53)));
+        indexSelectRow.addElement(new RadioToggleLabel(this.window, third, h1, offsetX, "1 (water)", UI_EVOLUTION_ACTIVE_PARAM, 1,() => getActiveClimate().getUIColorInactive(0.83), () => getActiveClimate().getUIColorActive(0.51)));
+        
+
+        container.addElement(indexSelectRow);
+        container.addElement(new TextBackground(this.window, sizeX, br, UI_CENTER, () => getActiveClimate().getUIColorInactive(1), 0.75, ""));
         container.addElement(modeSelectRow);
+
         modeSelectRow.addElement(new RadioToggleLabel(this.window, third, h1, offsetX, "literal", UI_VISUALIZER_MODE, UI_VISUALIZER_MODE_LITERAL,() => getActiveClimate().getUIColorInactive(0.88), () => getActiveClimate().getUIColorActive(0.55)));
         modeSelectRow.addElement(new RadioToggleLabel(this.window, third, h1, offsetX, "normalized", UI_VISUALIZER_MODE, UI_VISUALIZER_MODE_NORMALIZED,() => getActiveClimate().getUIColorInactive(0.85), () => getActiveClimate().getUIColorActive(0.52)));
         modeSelectRow.addElement(new RadioToggleLabel(this.window, third, h1, offsetX, "history", UI_VISUALIZER_MODE, UI_VISUALIZER_MODE_HISTORY,() => getActiveClimate().getUIColorInactive(0.82), () => getActiveClimate().getUIColorActive(0.58)));

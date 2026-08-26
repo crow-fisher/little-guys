@@ -81,7 +81,7 @@ export class MovingLightSource {
                 let wsqTheta = Math.atan(((x * 4) - this.posX) / ((y * 4) - this.posY));
                 let wsqThetaNormalized = wsqTheta - this.minTheta;
                 let bucket = Math.floor(wsqThetaNormalized / this.thetaStep);
-                let brightnessDrop = getCloudLightBlockCoef(x, y) ** loadGD(UI_LIGHTING_CLOUDCOVER_OPACITY);
+                let brightnessDrop = getCloudLightBlockCoef(x, y);
                 this.windSquareBrightnessMults[bucket] *= brightnessDrop;
             }
         }
@@ -95,7 +95,7 @@ export class MovingLightSource {
             return 1;
         }
         let ret = this.windSquareBrightnessMults[rayIdx];
-        let m = .5;
+        let m = loadGD(UI_LIGHTING_CLOUDCOVER_OPACITY);
         ret = (ret + m) / (m + 1);
         return ret;
     }

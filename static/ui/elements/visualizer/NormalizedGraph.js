@@ -25,10 +25,10 @@ export class NormalizedGraph extends WindowElement {
         let yMin = -2;
         let yMax =  2;
 
-        // xMin = 0;
-        // xMax = 0;
-        // yMin = -1;
-        // yMax = 1;
+        xMin = 0;
+        xMax = 0;
+        yMin = 0;
+        yMax = 0;
 
         let optimals = new Map()
             iterateOnOrganisms((org) => {
@@ -41,8 +41,8 @@ export class NormalizedGraph extends WindowElement {
                 }
 
                 optimals.set(org.proto, optimals.get(org.proto) ?? optimals[org.proto] ?? [0, 0, null]);
-                optimals.get(org.proto)[0] = org.growthLightLevel;
-                optimals.get(org.proto)[1] = org.waterPressureSoilTarget();
+                optimals.get(org.proto)[0] = org.getGrowthLightLevel();
+                optimals.get(org.proto)[1] = org.getWaterPressureSoilTarget();
                 optimals.get(org.proto)[2] = org;
 
                 let lightInvlerp = clamp(invlerp(org.llt_min() * org.getGrowthLightLevel() + xMin, org.llt_max() * org.getGrowthLightLevel() + xMax, org.lightLevel));
@@ -57,6 +57,9 @@ export class NormalizedGraph extends WindowElement {
 
         MAIN_CONTEXT.fillStyle = COLOR_BLACK;
 
+
+        let xMin = 10 ** 8, xMax = 0, yMin = 10 ** 8; yMax = 0;
+        
         optimals.values().forEach((v) => {
             let org = v[2];
             let lightInvlerp = clamp(invlerp(org.llt_min() * org.getGrowthLightLevel() + xMin, org.llt_max() * org.getGrowthLightLevel() + xMax, v[0]));

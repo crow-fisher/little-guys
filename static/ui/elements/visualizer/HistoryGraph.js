@@ -5,7 +5,7 @@ import { clamp, hsvToHex, invlerp, lerp, rgbToRgba } from "../../../common.js";
 import { MAIN_CONTEXT } from "../../../index.js";
 import { iterateOnOrganisms } from "../../../organisms/orgOperations.js";
 import { STAGE_DEAD } from "../../../organisms/Stages.js";
-import { loadGD, UI_ORGANISM_LINEAGE_MAP } from "../../UIData.js";
+import { loadGD, UI_EVOLUTION_ACTIVE_PARAM, UI_ORGANISM_LINEAGE_MAP } from "../../UIData.js";
 import { WindowElement } from "../../Window.js";
 
 export class HistoryGraph extends WindowElement {
@@ -83,7 +83,7 @@ export class HistoryGraph extends WindowElement {
 
         this.num = 10;
         this.m = loadGD(UI_ORGANISM_LINEAGE_MAP);
-        this.param = 0;
+        this.param = loadGD(UI_EVOLUTION_ACTIVE_PARAM);
         this.seen = new Set();
 
         let generations = [];

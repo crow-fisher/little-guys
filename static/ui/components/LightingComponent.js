@@ -149,9 +149,9 @@ export class LightingComponent extends Component {
         brightnessConditionalContainer.addElement(new TextBackground(this.window, sizeX, br, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, ""));
 
 
-        // brightnessConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => "cloud darkening", () => getActiveClimate().getUIColorInactive(0.53)));
-        // brightnessConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_CLOUDCOVER_OPACITY, sizeX, sliderSizeY, .01, 1, () => "#000000", () => "#FFF0FF"));
-        // brightnessConditionalContainer.addElement(new TextBackground(this.window, sizeX, br, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, ""));
+        brightnessConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => "cloud darkening", () => getActiveClimate().getUIColorInactive(0.53)));
+        brightnessConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_CLOUDCOVER_OPACITY, sizeX, sliderSizeY, .01, 5, () => "#000000", () => "#FFF0FF"));
+        brightnessConditionalContainer.addElement(new TextBackground(this.window, sizeX, br, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, ""));
 
         brightnessConditionalContainer.addElement(new TextFunctionalBackground(this.window, sizeX, h2, offsetX, () => "shadow softness", () => getActiveClimate().getUIColorInactive(0.53)));
         brightnessConditionalContainer.addElement(new SliderGradientBackground(this.window, UI_LIGHTING_SHADOW_SOFTNESS, sizeX, sliderSizeY, .001, .3, () => "#000000", () => "#FFF0FF"));
