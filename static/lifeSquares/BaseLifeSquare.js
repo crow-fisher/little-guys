@@ -1,5 +1,5 @@
 import { MAIN_CONTEXT } from "../index.js";
-import { hexToRgb, hsv2rgb, rgb2hsv, rgbToHex, rgbToRgba, UI_BIGDOTSOLID } from "../common.js";
+import { hexToRgb, hsv2rgb, hsvToRgb, hsvToRgba, rgb2hsv, rgbToHex, rgbToRgba, UI_BIGDOTSOLID } from "../common.js";
 
 import { getDaylightStrengthFrameDiff } from "../climate/time.js";
 import { addSquare } from "../squares/sqOperations.js";
@@ -387,13 +387,19 @@ class BaseLifeSquare {
                 g: (baseColor.g * 0.5 + ((altColor1.g * rand + altColor2.g * (1 - rand)) * 0.5)),
                 b: (baseColor.b * 0.5 + ((altColor1.b * rand + altColor2.b * (1 - rand)) * 0.5))
             }
+
+            let outColorHsv = rgb2hsv(outColorBase.r, outColorBase.g, outColorBase.b);
+            outColorHsv[0] += 80 * (this.linkedOrganism.evolutionParameters.at(1) - 0.5);
+
+            let outColorHsvRgb = hsvToRgb(...outColorHsv);
+
             this.frameCacheLighting = null;
             let lightingColor = this.processLighting();
             let frameLightingOffset = Math.exp(this.linkedOrganism.lightLevelDisplayExposureAdjustment());
             let outColor = {
-                r: (frameLightingOffset * lightingColor.r) * outColorBase.r / 255,
-                g: (frameLightingOffset * lightingColor.g) * outColorBase.g / 255,
-                b: (frameLightingOffset * lightingColor.b) * outColorBase.b / 255
+                r: (frameLightingOffset * lightingColor.r) * outColorHsvRgb[0] / 255,
+                g: (frameLightingOffset * lightingColor.g) * outColorHsvRgb[1] / 255,
+                b: (frameLightingOffset * lightingColor.b) * outColorHsvRgb[2] / 255
             };
             this.cachedRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), frameOpacity);
         }

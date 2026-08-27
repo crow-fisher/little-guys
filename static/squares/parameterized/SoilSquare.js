@@ -111,7 +111,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     initWaterContainment() {
-        this.waterContainment = this.getInverseMatricPressure(-3);
+        this.waterContainment = this.getInverseMatricPressure(-4);
     }
 
     getInversePressureGeneric(waterContainment, refArr) {
