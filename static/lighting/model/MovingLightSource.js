@@ -30,6 +30,8 @@ export class MovingLightSource {
         this.maxTheta = Math.PI * 2;
 
         this.ticksToNextCloudUpdate = 0;
+
+        this.rollingCloudLighting = 1;
     }
 
     calculateMinMaxTheta() {
@@ -87,7 +89,7 @@ export class MovingLightSource {
         }
     }
 
-    getWindSquareBrightnessFunc(rayIdx) {
+    getWindSquareBrightness(rayIdx) {
         if (!loadGD(UI_SIMULATION_CLOUDS)) {
             return 1;
         }
@@ -97,11 +99,14 @@ export class MovingLightSource {
         let ret = this.windSquareBrightnessMults[rayIdx];
         let m = loadGD(UI_LIGHTING_CLOUDCOVER_OPACITY);
         ret = (ret + m) / (m + 1);
+
+        this.rollingCloudLighting = this.rollingCloudLighting * 0.999 + ret * .001;
+
         return ret;
     }
 
     getBrightness() {
-        let m = this.brightnessFunc();
+        let m = this.brightnessFunc() * this.rollingCloudLighting;
         let c = this.colorFunc();
         return { r: m * c.r, g: m * c.g, b: m * c.b }
     }
@@ -171,7 +176,7 @@ export class MovingLightSource {
             curBrightness *= 1 - (p1 * p2 * p3 * p4);
 
             let _curBrightness = curBrightness;
-            let pointLightSourceFunc = () => this.getWindSquareBrightnessFunc(i) * _curBrightness;
+            let pointLightSourceFunc = () => this.getWindSquareBrightness(i) * _curBrightness;
 
             if (obj.lighting[idx] == null) {
                 obj.lighting[idx] = [[pointLightSourceFunc], this.colorFunc];
