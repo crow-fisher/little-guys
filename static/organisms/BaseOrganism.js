@@ -196,9 +196,9 @@ class BaseOrganism {
         } else if (cur - target > 0) {
             // our current light level is too high. 
             // return a new, higher value.
-            return start + randRange(0, range);
+            return start + randRange(-range / 2, range);
         } else {
-            return start - randRange(0, range);
+            return start - randRange(-range / 2, range);
         }
     }
 
@@ -566,7 +566,7 @@ class BaseOrganism {
         let lsq = comp.lifeSquares.at(comp.lifeSquares.length - 1);
         let seedSquare = addSquare(new SeedSquare(lsq.getPosX(), lsq.getPosY() - 10));
         if (seedSquare) {
-            seedSquare.speedX = randRange(-.2, .2);
+            seedSquare.speedX = randRange(-1, 1);
             seedSquare.speedY = randRange(-1.5, 1);
             let orgAdded = new (this.getSeedType())(seedSquare, this.getNextGenetics(), this.id);
             if (!orgAdded) {

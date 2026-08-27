@@ -175,15 +175,14 @@ export class MovingLightSource {
 
             curBrightness *= 1 - (p1 * p2 * p3 * p4);
 
-            let _curBrightness = curBrightness;
-            let pointLightSourceFunc = () => this.getWindSquareBrightness(i) * _curBrightness;
+            // let _curBrightness = curBrightness;
+            // let pointLightSourceFunc = () => this.getWindSquareBrightness(i) * _curBrightness;
 
             if (obj.lighting[idx] == null) {
-                obj.lighting[idx] = [[pointLightSourceFunc], this.colorFunc];
-            } else {
-                obj.lighting[idx][1] = this.colorFunc;
-                obj.lighting[idx][0][jobIdx] = pointLightSourceFunc;
+                obj.lighting[idx] = [[], null];
             }
+            obj.lighting[idx][0][jobIdx] = this.getWindSquareBrightness(i) * curBrightness;
+            obj.lighting[idx][1] = this.colorFunc;
         });
     }
 

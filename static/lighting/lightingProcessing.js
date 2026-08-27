@@ -40,7 +40,7 @@ export function getCloudRenderingLighting() {
 export function processLighting(lightingMap) {
     let outColor = { r: 0, g: 0, b: 0 }
     lightingMap.filter((light) => light != null && light.length == 2).forEach((light) => {
-        let strength = light[0].filter((f) => f != null).map((f) => f()).reduce(
+        let strength = light[0].filter((f) => f != null).reduce(
             (accumulator, currentValue) => accumulator + currentValue,
             0,
         ) * loadGD(UI_CAMERA_EXPOSURE);

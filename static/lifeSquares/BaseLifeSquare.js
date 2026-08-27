@@ -389,7 +389,7 @@ class BaseLifeSquare {
             }
 
             let outColorHsv = rgb2hsv(outColorBase.r, outColorBase.g, outColorBase.b);
-            outColorHsv[0] += 80 * (this.linkedOrganism.evolutionParameters.at(1) - 0.5);
+            outColorHsv[0] += 500 * (this.linkedOrganism.evolutionParameters.at(1) - 0.55);
 
             let outColorHsvRgb = hsvToRgb(...outColorHsv);
 
