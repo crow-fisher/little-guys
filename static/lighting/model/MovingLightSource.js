@@ -158,7 +158,7 @@ export class MovingLightSource {
         if (thetaSquares == null || thetaSquares.length == 0) {
             return;
         }
-        thetaSquares.sort((a, b) => (a[0] ** 2 + a[1] ** 2) ** 0.5 - (b[0] ** 2 + b[1] ** 2) ** 0.5);
+        thetaSquares.sort((a, b) => (a[0] ** 2 + a[1] ** 2) - (b[0] ** 2 + b[1] ** 2));
         let curBrightness = this.brightnessFunc();
         thetaSquares.forEach((arr) => {
             let obj = arr[3];

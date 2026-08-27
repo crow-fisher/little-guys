@@ -16,7 +16,7 @@ export function createMoonLightGroup() {
     return moonLightGroup;
 }
 
-export function createPermanantLightGroup() {
+export function createPermanentLightGroup() {
     permanantLightGroup = new PermanentLightGroup();
     return permanantLightGroup;
 }
