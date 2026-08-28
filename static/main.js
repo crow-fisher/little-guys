@@ -2,7 +2,7 @@ import { doWaterFlow, periodicPurgeOldGroupData, physics, processOrganisms, rend
 import { doClickAdd, doClickAddEyedropperMixer } from "./manipulation.js";
 import { renderClouds, renderTemperature, renderWaterSaturation } from "./climate/simulation/temperatureHumidity.js";
 import { doTimeSeek, doTimeSkipToNow, getTimeScale, isTimeSeeking, renderTime, updateTime } from "./climate/time.js";
-import { executeFunctionQueue, loadGD, saveGD, UI_CAMERA_EXPOSURE, UI_LIGHTING_GLOBAL, UI_SIMULATION_CLOUDS, UI_VIEWMODE_AIRTICKRATE, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_DEV5, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_WIND } from "./ui/UIData.js";
+import { executeFunctionQueue, loadGD, saveGD, UI_CAMERA_EXPOSURE, UI_LIGHTING_GLOBAL, UI_SIMULATION_CLOUDS, UI_VIEWMODE_AIRTICKRATE, UI_VIEWMODE_CANDIDATE, UI_VIEWMODE_TARGET, UI_VIEWMODE_PATH_HISTORY, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_WIND } from "./ui/UIData.js";
 import { initUI, renderMouseHover, renderWindows, resetWindowHovered, updateWindows } from "./ui/WindowManager.js";
 import { renderWindPressureMap } from "./climate/simulation/wind.js";
 import { LightingHandler } from "./lighting/lightingHandler.js";
@@ -97,10 +97,10 @@ function render() {
     if (selectedViewMode == UI_VIEWMODE_AIRTICKRATE) {
         renderThrottleMap();
     }
-    if (selectedViewMode == UI_VIEWMODE_DEV1) {
+    if (selectedViewMode == UI_VIEWMODE_CANDIDATE) {
         renderCandidateMap();
     }
-    if (selectedViewMode == UI_VIEWMODE_DEV2) {
+    if (selectedViewMode == UI_VIEWMODE_TARGET) {
         renderTargetMap();
     }
     lightingHandler.lightingTick();
@@ -110,7 +110,7 @@ function render() {
     renderOrganisms();
     renderWaterSquares();
     if (loadGD(UI_SIMULATION_CLOUDS)) {
-        if (selectedViewMode == UI_VIEWMODE_NORMAL || selectedViewMode == UI_VIEWMODE_DEV5)
+        if (selectedViewMode == UI_VIEWMODE_NORMAL || selectedViewMode == UI_VIEWMODE_PATH_HISTORY)
             renderClouds();
         if (selectedViewMode == UI_VIEWMODE_WIND)
             renderCloudsDebug();

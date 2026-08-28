@@ -37,6 +37,7 @@ export class OrganismComponent extends Component {
           let half = sizeX / 2;
           let third = sizeX / 3;
           let quarter = sizeX / 4;
+          let fifth = sizeX / 5;
           let offsetX = getBaseUISize() * 0.8;
 
           let h1 = getBaseUISize() * 3;
@@ -145,13 +146,23 @@ export class OrganismComponent extends Component {
           palmConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, offsetX, () => getActiveClimate().getUIColorInactive(0.55), 0.75, "growing time: 20 cycles"))
 
           // end
-
           let organismControlConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => this.isOrganismSelectedOnCurrentPage());
           container.addElement(organismControlConditionalContainer);
           
           organismControlConditionalContainer.addElement(new TextBackground(this.window, sizeX, br2, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, ""))
           organismControlConditionalContainer.addElement(new TextBackground(this.window, sizeX, h1, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.51), 0.75, "evolution parameters"))
           organismControlConditionalContainer.addElement(new TextBackground(this.window, sizeX, br3, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, ""))
+          
+
+          let viewmodeRow = new Container(this.window, 0, 0) ;
+          organismControlConditionalContainer.addElement(viewmodeRow);
+
+          viewmodeRow.addElement(new TextBackground(this.window, fifth, h2, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.58), 0.75, "preview mode"))
+          viewmodeRow.addElement(new TextBackground(this.window, fifth, h2, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.58), 0.75, "none"))
+          viewmodeRow.addElement(new TextBackground(this.window, fifth, h2, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.58), 0.75, "light"))
+          viewmodeRow.addElement(new TextBackground(this.window, fifth, h2, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.58), 0.75, "water"))
+          viewmodeRow.addElement(new TextBackground(this.window, fifth, h2, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.58), 0.75, "net"))
+
           
           organismControlConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.58), 0.75, "target light level"))
 

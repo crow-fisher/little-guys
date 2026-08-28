@@ -21,7 +21,7 @@ import { COLOR_BLACK, GROUP_BROWN, GROUP_BLUE, GROUP_MAUVE, GROUP_TAN, GROUP_GRE
 import { getDaylightStrengthFrameDiff, getFrameDt, getTimeScale } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, getCurZoom, getFrameYMax, isSquareOnCanvas, transformCanvasSquaresToPixels, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
-import { loadGD, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3, UI_VIEWMODE_DEV4, UI_VIEWMODE_DEV5, UI_PALETTE_STRENGTH, UI_CANVAS_SQUARES_ZOOM, UI_LIGHTING_SURFACE, UI_PALETTE_SURFACE_MATCH } from "../ui/UIData.js";
+import { loadGD, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_CANDIDATE, UI_VIEWMODE_TARGET, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_BLOCK_HEALTH, UI_VIEWMODE_BLOCK_SPEED, UI_VIEWMODE_PATH_HISTORY, UI_PALETTE_STRENGTH, UI_CANVAS_SQUARES_ZOOM, UI_LIGHTING_SURFACE, UI_PALETTE_SURFACE_MATCH } from "../ui/UIData.js";
 import { deregisterSquare, registerSquare } from "../waterGraph.js";
 import { STAGE_DEAD } from "../organisms/Stages.js";
 
@@ -258,7 +258,7 @@ export class BaseSquare {
         } else if (selectedViewMode == UI_VIEWMODE_WATERMATRIC) {
             this.renderMatricPressure();
         }
-        else if (selectedViewMode == UI_VIEWMODE_DEV3) {
+        else if (selectedViewMode == UI_VIEWMODE_BLOCK_HEALTH) {
             return this.renderBlockHealth();
         }
         if (selectedViewMode == UI_VIEWMODE_SURFACE || (loadGD(UI_PALETTE_BLOCKS) && (loadGD(UI_PALETTE_MODE) == UI_PALLETE_MODE_SPECIAL) && [UI_PALETTE_SURFACE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_SURFACE_MATCH].includes(loadGD(UI_PALETTE_SELECT)))) {
@@ -273,12 +273,12 @@ export class BaseSquare {
             this.renderTemperature();
         } else if (selectedViewMode == UI_VIEWMODE_WIND || selectedViewMode == UI_VIEWMODE_AIRTICKRATE) {
             this.renderWithVariedColors(0.25);
-        } else if (selectedViewMode == UI_VIEWMODE_DEV1 || selectedViewMode == UI_VIEWMODE_DEV2) {
+        } else if (selectedViewMode == UI_VIEWMODE_CANDIDATE || selectedViewMode == UI_VIEWMODE_TARGET) {
             this.renderWithVariedColors(0.5);
-        } else if (selectedViewMode == UI_VIEWMODE_DEV4) {
+        } else if (selectedViewMode == UI_VIEWMODE_BLOCK_SPEED) {
             this.renderSpeed(true, true);
             this.renderBlockId();
-        } else if (selectedViewMode == UI_VIEWMODE_DEV5) {
+        } else if (selectedViewMode == UI_VIEWMODE_PATH_HISTORY) {
             this.renderWithVariedColors(1);
             this.renderHistory();
         }
