@@ -218,7 +218,7 @@ class BaseOrganism {
 
     processGenetics() {
         this.evolutionLightingOffset = -.5 + this.evolutionParameters[0];
-        this.evolutionMoistureOffset = -.5 + this.evolutionParameters[1];
+        this.evolutionMoistureOffset = 0.35 * (-.5 + this.evolutionParameters[1]);
 
         // let p0 = this.evolutionParameters[0];
         // this.growthLightLevel *= (1 + 1.4 * p0);
