@@ -1,5 +1,5 @@
 import { getBaseUISize } from "../../../canvas.js";
-import { COLOR_BLACK, COLOR_GREEN } from "../../../colors.js";
+import { COLOR_BLACK, COLOR_VERY_FUCKING_GREEN } from "../../../colors.js";
 import { clamp, hsvToHex, invlerp, lerp } from "../../../common.js";
 import { MAIN_CONTEXT } from "../../../index.js";
 import { iterateOnOrganisms } from "../../../organisms/orgOperations.js";

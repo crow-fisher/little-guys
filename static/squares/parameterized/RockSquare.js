@@ -33,6 +33,10 @@ export class RockSquare extends SoilSquare {
         this.waterContainment = 0;
         this.blockHealth = this.blockHealthMax;
     }
+
+    renderSuitabilityWater() {
+        this.renderWithVariedColors(0.8);
+    }
     
     windPhysics() {}
 

@@ -47,8 +47,8 @@ class BaseOrganism {
 
         this.proto = "BaseOrganism";
         this.uiRef = UI_ORGANISM_SELECT;
-        this.posX = square.posX;
-        this.posY = square.posY;
+        this.posX = square?.posX;
+        this.posY = square?.posY;
         this.stage = STAGE_SPROUT;
         this.originGrowth = null;
         this.spinnable = false;
@@ -90,7 +90,7 @@ class BaseOrganism {
         this.curNumGreen = 0;
 
         this.rootOpacity = 0.15;
-        this.lighting = square.lighting;
+        this.lighting = square?.lighting;
         this.evolutionParameters = [0.5, 0.5];
         this.deathProgress = 0;
 
@@ -110,7 +110,7 @@ class BaseOrganism {
     }
 
     getSeedType() {
-        return null; 
+        return null;
     }
 
     getDefaultNutritionMap() {
@@ -187,7 +187,7 @@ class BaseOrganism {
 
 
     getNextEvolutionParameter(start, cur, target) {
-        let range = 0.02; 
+        let range = 0.02;
         let half = range / 2;
         if (Math.abs(cur - target) < half) {
             // we are within the threshold of our variability. 
@@ -222,8 +222,8 @@ class BaseOrganism {
 
         // let p0 = this.evolutionParameters[0];
         // this.growthLightLevel *= (1 + 1.4 * p0);
-        
-     } // fill this out in your implementation class!
+
+    } // fill this out in your implementation class!
 
 
     updateDeflectionState() {
@@ -296,7 +296,7 @@ class BaseOrganism {
         let targetPerRootPhosphorus = mult * this.growthPhosphorus;
 
         let someGreen = this.lifeSquares.some((lsq) => lsq.type == "green");
-        
+
         this.lifeSquares
             .filter((lsq) => lsq.type == "root")
             .filter((lsq) => lsq.linkedSquare != null && lsq.linkedSquare.proto == "SoilSquare")
@@ -322,6 +322,11 @@ class BaseOrganism {
         this.lightLevel = this.lightLevel * (c - 1) / c + (val / c);
     }
 
+    lsqWaterPressure(val) {
+        let c = this.curNumRoots;
+        this.waterPressure = this.waterPressure * (c - 1) / c + (val / c);
+    }
+    
     wiltEfficiency() {
         return (1 - Math.abs(this.getWilt()));
     }
@@ -354,6 +359,9 @@ class BaseOrganism {
 
     // PHYSICAL SQUARES
     linkSquare(square) {
+        if (square == null) {
+            return;
+        }
         this.linkedSquare = square;
         square.linkOrganism(this);
     }
@@ -719,7 +727,6 @@ class BaseOrganism {
     process() {
         if (this.stage != STAGE_DEAD) {
             this.plantAgeHandling();
-            // this.waterPressureTick();
             this.planGrowth();
             this.doRootGrowth();
             this.doSpawnSeed();

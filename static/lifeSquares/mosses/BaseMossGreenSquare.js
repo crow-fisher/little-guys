@@ -1,5 +1,5 @@
 import { getDaylightStrengthFrameDiff } from "../../climate/time.js";
-import { RGB_COLOR_GREEN, RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED } from "../../colors.js";
+import { RGB_COLOR_VERY_FUCKING_GREEN, RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED } from "../../colors.js";
 import { hexToRgb, rgbToRgba } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
@@ -82,11 +82,11 @@ export class BaseMossGreenSquare extends BaseLifeSquare {
 
         if (val < 0) {
             color1 = RGB_COLOR_RED;
-            color2 = RGB_COLOR_GREEN;
+            color2 = RGB_COLOR_VERY_FUCKING_GREEN;
             c1m = Math.abs(val);
             c2m = 1 + val;
         } else if (val >= 0) {
-            color1 = RGB_COLOR_GREEN;
+            color1 = RGB_COLOR_VERY_FUCKING_GREEN;
             color2 = RGB_COLOR_OTHER_BLUE;
             c1m = (1 - val);
             c2m = val;

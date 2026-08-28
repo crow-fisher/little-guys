@@ -25,6 +25,12 @@ export function setSaveOrLoadInProgress(value) {
     saveOrLoadInProgress = value;
 }
 
+export function purgeUnderscoredValues(obj) {
+    let keys = Object.keys(obj);
+    keys.filter((key) => key.startsWith("_"))
+            .forEach((key) => obj[key] = null)
+}
+
 export async function loadSlot(slotName) {
     console.log("Loading slot: ", slotName);
     slotName = "" + slotName;
@@ -239,9 +245,12 @@ export function compressSquares(squares) {
     let growthPlanComponentArr = new Array();
     let growthPlanStepArr = new Array();
         squares.forEach((sq) => {
+
+        purgeUnderscoredValues(sq);
         sq.lighting = [];
         sq.linkedOrganisms = Array.from(sq.linkedOrganisms.map((org) => {
             if (org.stage != STAGE_DEAD) {
+                purgeUnderscoredValues(org);
                 orgArr.push(org);
                 lsqArr.push(...org.lifeSquares);
                 growthPlanArr.push(...org.growthPlans);

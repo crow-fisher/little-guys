@@ -6,7 +6,7 @@ import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquare
 import { getCloudRenderingLighting } from "../../lighting/lightingProcessing.js";
 import { addSquareByName } from "../../manipulation.js";
 import { loadGD, UI_CLIMATE_WEATHER_RAIN_TOGGLE } from "../../ui/UIData.js";
-import { RGB_COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_GREEN, RGB_COLOR_RED } from "../../colors.js";
+import { RGB_COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_GREEN, RGB_COLOR_RED } from "../../colors.js";
 import { getTimeScale } from "../time.js";
 // decent reference https://web.gps.caltech.edu/~xun/course/GEOL1350/Lecture5.pdf
 
@@ -459,7 +459,7 @@ function calculateColorTemperature(val) {
         min = 20;
         max = 40;
         colorMin = RGB_COLOR_BLACK;
-        colorMax = RGB_COLOR_GREEN;
+        colorMax = RGB_COLOR_VERY_FUCKING_GREEN;
     } else {
         min = 40;
         max = 60;

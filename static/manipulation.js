@@ -6,7 +6,7 @@ import { addWindPerssureMaintainHumidity, addWindPressureCloud, addWindPressureD
 import { removeSquare } from "./globalOperations.js";
 import { getLastMouseDown, getLastMoveOffset, getLeftMouseUpEvent, isLeftMouseClicked, isMiddleMouseClicked, isRightMouseClicked, setMouseTouchStartCallback } from "./mouse.js";
 import { WheatSeedOrganism } from "./organisms/grasses/WheatOrganism.js";
-import { KentuckyBluegrassSeedOrganism } from "./organisms/grasses/KentuckyBluegrassOrganism.js";
+import { KentuckyBluegrassOrganism, KentuckyBluegrassSeedOrganism } from "./organisms/grasses/KentuckyBluegrassOrganism.js";
 import { addSquare, addSquareOverride, getSquares, removeSquarePos } from "./squares/sqOperations.js";
 import { AquiferSquare } from "./squares/parameterized/RainSquare.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
@@ -307,6 +307,13 @@ function doBlockHover(lastMoveOffset) {
     let offsetX = offsetTransformed[0];
     let offsetY = offsetTransformed[1];
     eyedropperBlockHover(offsetX, offsetY);
+}
+
+export function getPlantForRef(search) {
+    switch (search) {
+        case UI_ORGANISM_GRASS_KBLUE:
+            return KentuckyBluegrassOrganism
+    }
 }
 
 function placeActiveSeed(px, py) {

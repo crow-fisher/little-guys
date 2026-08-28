@@ -150,6 +150,16 @@ function processColorLerpBicolor(val, val_min, val_max, color1, color2) {
     }
 }
 
+export function processColorBicolorArr(color1, color2, p, a=1) {
+    return rgbToRgba(
+        Math.floor(color1.r * (1 - p) + color2.r * (p)),
+        Math.floor(color1.g * (1 - p) + color2.g * (p)),
+        Math.floor(color1.b * (1 - p) + color2.b * (p)),
+        a
+    )
+}
+
+
 function processColorStdevMulticolor(val_max, val, val_stdev, color1, color2) {
     let z = (val_max - val) / val_stdev;
     let p = getZPercent(z);
@@ -278,6 +288,6 @@ export function lerp(min, max, value) {
 export function invlerp(min, max, value) {
     return (value - min) / (max - min);
 }
-export function clamp(value, min=0, max=1) {
+export function clamp(value, min = 0, max = 1) {
     return Math.min(max, Math.max(min, value))
 }

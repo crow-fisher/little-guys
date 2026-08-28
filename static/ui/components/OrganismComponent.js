@@ -2,7 +2,7 @@ import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { calculateColor } from "../../climate/simulation/temperatureHumidity.js";
 import { hexToRgb } from "../../common.js";
-import { _lightDecayValue, _lightLevelDisplayExposureAdjustment, _llt_max, _llt_min, _llt_mult, _llt_throttlValMax, _llt_throttlValMin, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, baseOrganism_dnm } from "../../organisms/BaseOrganism.js";
+import { _lightDecayValue, _lightLevelDisplayExposureAdjustment, _llt_max, _llt_min, _llt_mult, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, baseOrganism_dnm } from "../../organisms/BaseOrganism.js";
 import { coneflower_dnm } from "../../organisms/flowers/ConeflowerOrganism.js";
 import { cattail_dnm } from "../../organisms/grasses/CattailOrganism.js";
 import { kblue_dnm } from "../../organisms/grasses/KentuckyBluegrassOrganism.js";
@@ -11,20 +11,13 @@ import { pmoss_dnm } from "../../organisms/mosses/PleurocarpMossOrganism.js";
 import { Component } from "../Component.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
 import { Container } from "../Container.js";
-import { Button } from "../elements/Button.js";
-import { RadioToggle } from "../elements/RadioToggle.js";
 import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
-import { RowedRadio } from "../elements/RowedRadio.js";
-import { SliderGradientBackground } from "../elements/SliderGradientBackground.js";
 import { SliderGradientBackgroundGetterSetter } from "../elements/SliderGradientBackgroundGetterSetter.js";
-import { SliderGradientBackgroundPlantConfigurator } from "../elements/SliderGradientBackgroundPlantConfigurator.js";
-import { Text } from "../elements/Text.js";
 import { TextBackground } from "../elements/TextBackground.js";
 import { TextFunctionalBackground } from "../elements/TextFunctionalBackground.js";
 import { Toggle } from "../elements/Toggle.js";
-import { ToggleFunctionalText } from "../elements/ToggleFunctionalText.js";
 import { TwoParameterPlantConfigurator } from "../elements/TwoParameterPlantConfigurator.js";
-import { UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_WHEAT, UI_ORGANISM_GRASS_KBLUE, UI_ORGANISM_GRASS_CATTAIL, UI_CENTER, UI_ORGANISM_TREE_PALM, saveGD, UI_ORGANISM_TYPE_SELECT, UI_ORGANISM_TYPE_MOSS, UI_ORGANISM_TYPE_GRASS, UI_ORGANISM_TYPE_FLOWER, UI_ORGANISM_TYPE_TREE, loadGD, loadUI, UI_UI_PHONEMODE, UI_ORGANISM_FLOWER_CONEFLOWER, UI_ORGANISM_NUTRITION_CONFIGURATOR, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, addUIFunctionMap, UI_ORGANISM_MOSS_PLEUROCARP, UI_ORGANISM_CONFIGURATOR } from "../UIData.js";
+import { UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_WHEAT, UI_ORGANISM_GRASS_KBLUE, UI_ORGANISM_GRASS_CATTAIL, UI_CENTER, UI_ORGANISM_TREE_PALM, UI_ORGANISM_TYPE_SELECT, UI_ORGANISM_TYPE_MOSS, UI_ORGANISM_TYPE_GRASS, UI_ORGANISM_TYPE_FLOWER, UI_ORGANISM_TYPE_TREE, loadGD, loadUI, UI_UI_PHONEMODE, UI_ORGANISM_FLOWER_CONEFLOWER, UI_ORGANISM_NUTRITION_CONFIGURATOR, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_MOSS_PLEUROCARP, UI_VIEWMODE_SELECT, UI_VIEWMODE_ORGANISM_SUIT_WATER, UI_VIEWMODE_ORGANISM_SUIT_LIGHT, UI_VIEWMODE_ORGANISM_SUIT_NET } from "../UIData.js";
 
 export class OrganismComponent extends Component {
      constructor(posX, posY, padding, dir, key) {
@@ -36,7 +29,7 @@ export class OrganismComponent extends Component {
           let sizeX = getBaseUISize() * 39;
           let half = sizeX / 2;
           let third = sizeX / 3;
-          let quarter = sizeX / 4;
+          let fourth = sizeX / 4;
           let fifth = sizeX / 5;
           let offsetX = getBaseUISize() * 0.8;
 
@@ -78,11 +71,11 @@ export class OrganismComponent extends Component {
           // moss
           mossConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "moss", UI_ORGANISM_SELECT, UI_ORGANISM_MOSS_PLEUROCARP,
                () => getActiveClimate().getUIColorInactive(0.60), () => getActiveClimate().getUIColorInactive(0.52)));
-          
+
           let pleurocarpConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_ORGANISM_SELECT) == UI_ORGANISM_MOSS_PLEUROCARP);
           mossConditionalContainer.addElement(pleurocarpConditionalContainer);
-          
-          
+
+
           pleurocarpConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.55), 0.75, "pleurocarp moss: the spready kind", "italic"))
           pleurocarpConditionalContainer.addElement(new TextBackground(this.window, sizeX, br3, offsetX, () => getActiveClimate().getUIColorInactive(0.85), 0.75, ""))
           pleurocarpConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, offsetX, () => getActiveClimate().getUIColorInactive(0.50), 0.75, "moist soils, shade"))
@@ -148,22 +141,24 @@ export class OrganismComponent extends Component {
           // end
           let organismControlConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => this.isOrganismSelectedOnCurrentPage());
           container.addElement(organismControlConditionalContainer);
-          
+
           organismControlConditionalContainer.addElement(new TextBackground(this.window, sizeX, br2, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, ""))
           organismControlConditionalContainer.addElement(new TextBackground(this.window, sizeX, h1, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.51), 0.75, "evolution parameters"))
           organismControlConditionalContainer.addElement(new TextBackground(this.window, sizeX, br3, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, ""))
-          
 
-          let viewmodeRow = new Container(this.window, 0, 0) ;
+
+          let viewmodeRow = new Container(this.window, 0, 0);
           organismControlConditionalContainer.addElement(viewmodeRow);
 
-          viewmodeRow.addElement(new TextBackground(this.window, fifth, h2, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.58), 0.75, "preview mode"))
-          viewmodeRow.addElement(new TextBackground(this.window, fifth, h2, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.58), 0.75, "none"))
-          viewmodeRow.addElement(new TextBackground(this.window, fifth, h2, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.58), 0.75, "light"))
-          viewmodeRow.addElement(new TextBackground(this.window, fifth, h2, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.58), 0.75, "water"))
-          viewmodeRow.addElement(new TextBackground(this.window, fifth, h2, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.58), 0.75, "net"))
+          viewmodeRow.addElement(new TextBackground(this.window, fourth, h2, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.58), 0.75, "preview mode"))
+          viewmodeRow.addElement(new RadioToggleLabel(this.window, fourth, h2, UI_CENTER, "light", UI_VIEWMODE_SELECT, UI_VIEWMODE_ORGANISM_SUIT_LIGHT,
+               () => getActiveClimate().getUIColorInactive(0.60), () => getActiveClimate().getUIColorInactive(0.52)));
+          viewmodeRow.addElement(new RadioToggleLabel(this.window, fourth, h2, UI_CENTER, "water", UI_VIEWMODE_SELECT, UI_VIEWMODE_ORGANISM_SUIT_WATER,
+               () => getActiveClimate().getUIColorInactive(0.60), () => getActiveClimate().getUIColorInactive(0.52)));
+          viewmodeRow.addElement(new RadioToggleLabel(this.window, fourth, h2, UI_CENTER, "net", UI_VIEWMODE_SELECT, UI_VIEWMODE_ORGANISM_SUIT_NET,
+               () => getActiveClimate().getUIColorInactive(0.60), () => getActiveClimate().getUIColorInactive(0.52)));
 
-          
+
           organismControlConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.58), 0.75, "target light level"))
 
           organismControlConditionalContainer.addElement(new TwoParameterPlantConfigurator(this.window, sizeX, h1 * 4));
@@ -171,7 +166,7 @@ export class OrganismComponent extends Component {
           // plant nutrition characteristic configurator
           organismControlConditionalContainer.addElement(new TextBackground(this.window, sizeX, br1, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, ""));
           organismControlConditionalContainer.addElement(new Toggle(this.window, sizeX, h1, UI_CENTER, UI_ORGANISM_NUTRITION_CONFIGURATOR, "configure nutrition",
-                () => getActiveClimate().getUIColorInactive(0.63), () => getActiveClimate().getUIColorInactive(0.50)));
+               () => getActiveClimate().getUIColorInactive(0.63), () => getActiveClimate().getUIColorInactive(0.50)));
 
           let nutrientConfiguratorContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_ORGANISM_NUTRITION_CONFIGURATOR) && this.isOrganismSelectedOnCurrentPage());
           organismControlConditionalContainer.addElement(nutrientConfiguratorContainer);
@@ -212,7 +207,7 @@ export class OrganismComponent extends Component {
           c_seedReduction.addElement(new TextFunctionalBackground(this.window, right, h1, offsetX, () => this.getGenericNutritionParam(_seedReduction), () => getActiveClimate().getUIColorInactive(0.58)));
           nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
                () => this.getGenericNutritionParam(_seedReduction), (val) => this.setGenericNutritionParam(_seedReduction, val), sizeX, h1, 0.05, 0.95, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
-     
+
           let c_waterTarget = new Container(this.window, 0, 0);
           nutrientConfiguratorContainer.addElement(c_waterTarget);
           c_waterTarget.addElement(new TextBackground(this.window, left, h1, offsetX, () => getActiveClimate().getUIColorInactive(0.58), 0.75, "waterPressureTarget"));
@@ -226,28 +221,28 @@ export class OrganismComponent extends Component {
           c_overwaterThresh.addElement(new TextFunctionalBackground(this.window, right, h1, offsetX, () => this.getGenericNutritionParam(_waterPressureOverwaterThresh), () => getActiveClimate().getUIColorInactive(0.58)));
           nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
                () => this.getGenericNutritionParam(_waterPressureOverwaterThresh), (val) => this.setGenericNutritionParam(_waterPressureOverwaterThresh, val), sizeX, h1, 0.1, 2, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
-     
+
           let c_wiltThresh = new Container(this.window, 0, 0);
           nutrientConfiguratorContainer.addElement(c_wiltThresh);
           c_wiltThresh.addElement(new TextBackground(this.window, left, h1, offsetX, () => getActiveClimate().getUIColorInactive(0.58), 0.75, "wiltThresh"));
           c_wiltThresh.addElement(new TextFunctionalBackground(this.window, right, h1, offsetX, () => this.getGenericNutritionParam(_waterPressureWiltThresh), () => getActiveClimate().getUIColorInactive(0.58)));
           nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
                () => this.getGenericNutritionParam(_waterPressureWiltThresh), (val) => this.setGenericNutritionParam(_waterPressureWiltThresh, val), sizeX, h1, -2, -.1, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
-                              
+
           let c_lightDecayValue = new Container(this.window, 0, 0);
           nutrientConfiguratorContainer.addElement(c_lightDecayValue);
           c_lightDecayValue.addElement(new TextBackground(this.window, left, h1, offsetX, () => getActiveClimate().getUIColorInactive(0.58), 0.75, "lightDecay"));
           c_lightDecayValue.addElement(new TextFunctionalBackground(this.window, right, h1, offsetX, () => this.getGenericNutritionParam(_lightDecayValue), () => getActiveClimate().getUIColorInactive(0.58)));
           nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
                () => this.getGenericNutritionParam(_lightDecayValue), (val) => this.setGenericNutritionParam(_lightDecayValue, val), sizeX, h1, -0.05, 8, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
-     
+
           let c_lightLevelDisplayExposureAdjustment = new Container(this.window, 0, 0);
           nutrientConfiguratorContainer.addElement(c_lightLevelDisplayExposureAdjustment);
           c_lightLevelDisplayExposureAdjustment.addElement(new TextBackground(this.window, left, h1, offsetX, () => getActiveClimate().getUIColorInactive(0.58), 0.75, "visual exposure offset"));
           c_lightLevelDisplayExposureAdjustment.addElement(new TextFunctionalBackground(this.window, right, h1, offsetX, () => this.getGenericNutritionParam(_lightLevelDisplayExposureAdjustment), () => getActiveClimate().getUIColorInactive(0.58)));
           nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
                () => this.getGenericNutritionParam(_lightLevelDisplayExposureAdjustment), (val) => this.setGenericNutritionParam(_lightLevelDisplayExposureAdjustment, val), sizeX, h1, -2, 2, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
-     
+
 
      }
 

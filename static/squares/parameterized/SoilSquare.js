@@ -1,15 +1,20 @@
 import { BaseSquare } from "../BaseSqaure.js";
 import { addSquare, getNeighbors, getSquares } from "../sqOperations.js";
-import { cachedGetWaterflowRate, hexToRgb, randNumber, randRange } from "../../common.js";
+import { cachedGetWaterflowRate, hexToRgb, invlerp, processColorBicolorArr, randNumber, randRange } from "../../common.js";
 import { getCurTimeScale, getDt, getFrameDt, timeScaleFactor } from "../../climate/time.js";
 import { getPressure, getWindSpeedAtLocation, getWindSquareAbove } from "../../climate/simulation/wind.js";
 import { addWaterSaturationPascals, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, temperatureHumidityFlowrateFactor } from "../../climate/simulation/temperatureHumidity.js";
-import { loadGD, UI_LIGHTING_SURFACE, UI_PALETTE_COMPOSITION, UI_PALETTE_SOILIDX, UI_PALETTE_VARIANCE, UI_SIMULATION_CLOUDS, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER } from "../../ui/UIData.js";
+import { loadGD, UI_LIGHTING_SURFACE, UI_ORGANISM_SELECT, UI_PALETTE_COMPOSITION, UI_PALETTE_SOILIDX, UI_PALETTE_VARIANCE, UI_SIMULATION_CLOUDS, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER } from "../../ui/UIData.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
-import { addSquareByName } from "../../manipulation.js";
-import { getBaseSize } from "../../canvas.js";
+import { addSquareByName, getPlantForRef } from "../../manipulation.js";
+import { getBaseSize, zoomCanvasFillRect } from "../../canvas.js";
 import { applyLightingFromSource, getDefaultLighting } from "../../lighting/lightingProcessing.js";
 import { getNextBlockId, getNextGroupId } from "../../globals.js";
+import { ORGANISM_UI_REF } from "../../organisms/OrganismUIRef.js";
+import { COLOR_VERY_FUCKING_BLUE, COLOR_VERY_FUCKING_RED, RGB_COLOR_VERY_FUCKING_BLUE, RGB_COLOR_VERY_FUCKING_GREEN, RGB_COLOR_VERY_FUCKING_RED } from "../../colors.js";
+import { copyVecValue } from "../../../future/main/util/vector.js";
+import { getCurPlantConfiguratorVal } from "../../ui/elements/TwoParameterPlantConfigurator.js";
+import { MAIN_CONTEXT } from "../../index.js";
 
 // maps in form "water containment" / "matric pressure in atmospheres"
 export const clayMatricPressureMap = [
@@ -76,6 +81,7 @@ export class SoilSquare extends BaseSquare {
 
         this.setVariant();
     }
+
 
     reset() {
         super.reset();
@@ -443,5 +449,29 @@ export class SoilSquare extends BaseSquare {
         let amount = Math.min(this.waterContainment, (10 * pascals) / pascalsPerWaterSquare)
         this.waterContainment -= amount;
         addWaterSaturationPascals(x, y, pascals);
+    }
+
+    renderSuitabilityWater() {
+        this._suitOrg = this._suitOrg ?? new (getPlantForRef(loadGD(UI_ORGANISM_SELECT)))(null, -1);
+        if (this._suitOrg.uiRef != loadGD(UI_ORGANISM_SELECT))
+            this._suitOrg = new (ORGANISM_UI_REF[loadGD(UI_ORGANISM_SELECT)])(this, -1);
+
+        copyVecValue(getCurPlantConfiguratorVal(), this._suitOrg.evolutionParameters);
+
+        this._suitOrg.getWaterPressureSoilTarget()
+
+        let target = this._suitOrg.getWaterPressureSoilTarget();
+        let min = target + this._suitOrg.waterPressureWiltThresh();
+        let max = target + this._suitOrg.waterPressureOverwaterThresh();
+
+        if (this.getSoilWaterPressure() < min)
+            MAIN_CONTEXT.fillStyle = COLOR_VERY_FUCKING_RED;
+        else if (this.getSoilWaterPressure() < target)
+            MAIN_CONTEXT.fillStyle = processColorBicolorArr(RGB_COLOR_VERY_FUCKING_RED, RGB_COLOR_VERY_FUCKING_GREEN, invlerp(min, target, this.getSoilWaterPressure()));
+        else if (this.getSoilWaterPressure() < max)
+            MAIN_CONTEXT.fillStyle = processColorBicolorArr(RGB_COLOR_VERY_FUCKING_GREEN, RGB_COLOR_VERY_FUCKING_BLUE, invlerp(target, max, this.getSoilWaterPressure()));
+        else
+            MAIN_CONTEXT.fillStyle = COLOR_VERY_FUCKING_BLUE;
+        zoomCanvasFillRect(this.posX * getBaseSize(), this.posY * getBaseSize(), getBaseSize(), getBaseSize());
     }
 }

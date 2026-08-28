@@ -4,7 +4,7 @@ import { hexToRgb, hsv2rgb, hsvToRgb, hsvToRgba, rgb2hsv, rgbToHex, rgbToRgba, U
 import { getDaylightStrengthFrameDiff } from "../climate/time.js";
 import { addSquare } from "../squares/sqOperations.js";
 
-import { RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED, RGB_COLOR_GREEN } from "../colors.js";
+import { RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED, RGB_COLOR_VERY_FUCKING_GREEN } from "../colors.js";
 import { removeSquare } from "../globalOperations.js";
 import { STATE_HEALTHY, STAGE_DEAD } from "../organisms/Stages.js";
 import { getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
@@ -15,7 +15,7 @@ export const LSQ_RENDERMODE_SQUARE = "LSQ_RENDERMODE_SQUARE";
 export const LSQ_RENDERMODE_CIRCLE = "LSQ_RENDERMODE_CIRCLE";
 export const LSQ_RENDERMODE_THETA = "LSQ_RENDERMODE_THETA";
 
-const NUTRIENT_BASE_HSV = rgb2hsv(RGB_COLOR_GREEN.r, RGB_COLOR_GREEN.g, RGB_COLOR_GREEN.b);
+const NUTRIENT_BASE_HSV = rgb2hsv(RGB_COLOR_VERY_FUCKING_GREEN.r, RGB_COLOR_VERY_FUCKING_GREEN.g, RGB_COLOR_VERY_FUCKING_GREEN.b);
 class BaseLifeSquare {
     constructor(square, organism) {
         this.proto = "BaseLifeSquare";
@@ -305,11 +305,11 @@ class BaseLifeSquare {
 
         if (val > 0) {
             color1 = RGB_COLOR_OTHER_BLUE;
-            color2 = RGB_COLOR_GREEN;
+            color2 = RGB_COLOR_VERY_FUCKING_GREEN;
             valMin = 0;
             valMax = 1;
         } else {
-            color1 = RGB_COLOR_GREEN;
+            color1 = RGB_COLOR_VERY_FUCKING_GREEN;
             color2 = RGB_COLOR_RED;
             valMin = -1;
             valMax = 0;

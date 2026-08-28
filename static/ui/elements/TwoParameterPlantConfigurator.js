@@ -12,12 +12,16 @@ export function getCurPlantConfiguratorVal() {
     let curKey = loadGD(UI_ORGANISM_SELECT);
     let curMap = loadGD(UI_ORGANISM_CONFIGURATOR);
     if (curMap[curKey] == null) {
-        curMap[curKey] = 0.5;
+        curMap[curKey] = [0.5, 0.5];
     }
     return curMap[curKey];
 }
 
 export function setCurPlantConfiguratorValue(v1, v2) {
+    if (v2 == null) {
+        v2 = v1[1]
+        v1 = v1[0]
+    }
     let curMap = loadGD(UI_ORGANISM_CONFIGURATOR);
     let curKey = loadGD(UI_ORGANISM_SELECT);
     curMap[curKey] = curMap[curKey] ?? [0, 0];
