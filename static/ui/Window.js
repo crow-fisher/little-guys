@@ -171,8 +171,11 @@ export class WindowElement {
     }
     render(startX, startY) { }
 
-    hover(posX, posY) {
+    hover(posX, posY, lockWindow = false) {
         this.hovered = true;
+        if (lockWindow) {
+            this.window.locked = true;
+        }
     }
     size() {
         return [this.sizeX, this.sizeY];

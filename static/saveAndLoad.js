@@ -4,7 +4,7 @@ import { getTemperatureMap, getWaterSaturationMap } from "./climate/simulation/t
 import { getCurDay, setCurDay } from "./climate/time.js";
 import { ProtoMap, TypeMap } from "./types.js";
 import { getWindPressureMap } from "./climate/simulation/wind.js";
-import { _GAMEDATA_DEFAULT, _UI_DEFAULT, getGAMEDATA, getUICONFIG, loadGD, loadUI, saveGD, saveMapEntry, saveUI, setGAMEDATA, setUICONFIG, UI_LIGHTING_ENABLED, UI_MAIN_NEWWORLD, UI_MAIN_NEWWORLD_LATITUDE, UI_MAIN_NEWWORLD_LONGITUDE, UI_MAIN_NEWWORLD_NAME, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_NAME, UI_SIMULATION_CLOUDS, UI_SIMULATION_HEIGHT, UI_TOPBAR_BLOCK, UI_TOPBAR_LIGHTING, UI_TOPBAR_MAINMENU, UI_TOPBAR_SIMULATION, UI_TOPBAR_TIME, UI_TOPBAR_VIEWMODE, UI_UI_CURWORLD, UI_UI_LASTSAVED, UI_UI_NEXTWORLD, UI_UI_SIZE, UI_UI_WORLDDELETED, UI_UI_WORLDHIDDEN, UI_UI_WORLDNAME, UI_UI_WORLDPAGE, UICONFIG } from "./ui/UIData.js";
+import { _GAMEDATA_DEFAULT, _UI_DEFAULT, getGAMEDATA, getUICONFIG, loadGD, loadUI, saveGD, saveMapEntry, saveUI, setGAMEDATA, setUICONFIG, UI_LIGHTING_ENABLED, UI_MAIN_NEWWORLD, UI_MAIN_NEWWORLD_LATITUDE, UI_MAIN_NEWWORLD_LONGITUDE, UI_MAIN_NEWWORLD_NAME, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_NAME, UI_ORGANISM_LINEAGE_MAP, UI_SIMULATION_CLOUDS, UI_SIMULATION_HEIGHT, UI_TOPBAR_BLOCK, UI_TOPBAR_LIGHTING, UI_TOPBAR_MAINMENU, UI_TOPBAR_SIMULATION, UI_TOPBAR_TIME, UI_TOPBAR_VIEWMODE, UI_UI_CURWORLD, UI_UI_LASTSAVED, UI_UI_NEXTWORLD, UI_UI_SIZE, UI_UI_WORLDDELETED, UI_UI_WORLDHIDDEN, UI_UI_WORLDNAME, UI_UI_WORLDPAGE, UICONFIG } from "./ui/UIData.js";
 import { getTotalCanvasPixelWidth, indexCanvasSize } from "./index.js";
 import { STAGE_DEAD } from "./organisms/Stages.js";
 import { getMainMenuComponent, initUI } from "./ui/WindowManager.js";
@@ -167,6 +167,7 @@ export async function saveCurGame(reload = false) {
 
 export async function downloadSaveFile() {
     saveOrLoadInProgress = true;
+    
     const saveObj = getFrameSaveData();
     const saveString = JSON.stringify(saveObj);
     const compressedSave = await compress(saveString);
@@ -178,8 +179,16 @@ export async function downloadSaveFile() {
 
 export async function saveGame(slotName, reload) {
     saveOrLoadInProgress = true;
+
+    // for now...lineage isn't saved. but at least it won't yoink it from the ui. sorry. 
+    let cache = loadGD(UI_ORGANISM_LINEAGE_MAP);
+    saveGD(UI_ORGANISM_LINEAGE_MAP, []);
+
     const saveObj = getFrameSaveData();
     const saveString = JSON.stringify(saveObj);
+
+    saveGD(UI_ORGANISM_LINEAGE_MAP, cache);
+
     console.log("Saving slot name " + slotName + " as " + loadGD(UI_NAME));
     await doSave(slotName, saveString);
     loadUI(UI_UI_WORLDNAME)[slotName] = loadGD(UI_NAME);
@@ -292,12 +301,12 @@ function getFrameSaveData() {
     let squares = new Array();
     iterateOnSquares((sq) => squares.push(sq));
     let compressed = compressSquares(squares);
-    let sqArr = compressed[0]
-    let orgArr = compressed[1]
-    let lsqArr = compressed[2]
-    let growthPlanArr = compressed[3]
-    let growthPlanComponentArr = compressed[4]
-    let growthPlanStepArr = compressed[5]
+    let sqArr = compressed[0];
+    let orgArr = compressed[1];
+    let lsqArr = compressed[2];
+    let growthPlanArr = compressed[3];
+    let growthPlanComponentArr = compressed[4];
+    let growthPlanStepArr = compressed[5];
 
     let saveObj = {
         sqArr: sqArr,
@@ -312,6 +321,7 @@ function getFrameSaveData() {
         waterSaturationMap: getWaterSaturationMap(),
         gamedata: getGAMEDATA()
     }
+
     return saveObj;
 }
 
