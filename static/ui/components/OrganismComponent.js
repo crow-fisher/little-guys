@@ -23,6 +23,7 @@ import { TextBackground } from "../elements/TextBackground.js";
 import { TextFunctionalBackground } from "../elements/TextFunctionalBackground.js";
 import { Toggle } from "../elements/Toggle.js";
 import { ToggleFunctionalText } from "../elements/ToggleFunctionalText.js";
+import { TwoParameterPlantConfigurator } from "../elements/TwoParameterPlantConfigurator.js";
 import { UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_WHEAT, UI_ORGANISM_GRASS_KBLUE, UI_ORGANISM_GRASS_CATTAIL, UI_CENTER, UI_ORGANISM_TREE_PALM, saveGD, UI_ORGANISM_TYPE_SELECT, UI_ORGANISM_TYPE_MOSS, UI_ORGANISM_TYPE_GRASS, UI_ORGANISM_TYPE_FLOWER, UI_ORGANISM_TYPE_TREE, loadGD, loadUI, UI_UI_PHONEMODE, UI_ORGANISM_FLOWER_CONEFLOWER, UI_ORGANISM_NUTRITION_CONFIGURATOR, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, addUIFunctionMap, UI_ORGANISM_MOSS_PLEUROCARP, UI_ORGANISM_CONFIGURATOR } from "../UIData.js";
 
 export class OrganismComponent extends Component {
@@ -151,9 +152,10 @@ export class OrganismComponent extends Component {
           organismControlConditionalContainer.addElement(new TextBackground(this.window, sizeX, br2, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, ""))
           organismControlConditionalContainer.addElement(new TextBackground(this.window, sizeX, h1, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.51), 0.75, "evolution parameters"))
           organismControlConditionalContainer.addElement(new TextBackground(this.window, sizeX, br3, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, ""))
+          
           organismControlConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.58), 0.75, "target light level"))
 
-          organismControlConditionalContainer.addElement(new SliderGradientBackgroundPlantConfigurator(this.window, sizeX, h1));
+          organismControlConditionalContainer.addElement(new TwoParameterPlantConfigurator(this.window, sizeX, h1 * 4));
 
           // plant nutrition characteristic configurator
           organismControlConditionalContainer.addElement(new TextBackground(this.window, sizeX, br1, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, ""));
