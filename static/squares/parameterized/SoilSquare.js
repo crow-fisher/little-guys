@@ -22,19 +22,22 @@ export const clayMatricPressureMap = [
     [0.28, -4.2],
     [0.45, -2.5],
     [0.48, -2],
-    [0.49, 0]
+    // [0.49, 0],
+    [0.50, 0]
 ];
 export const siltMatricPressureMap = [
     [0, -7],
     [0.09, -4.2],
     [0.15, -2.3],
     [0.26, -2],
-    [0.42, 0]
+    // [0.42, 0],
+    [0.50, 0]
 ];
 export const sandMatricPressureMap = [
     [0, -7],
     [0.06, -2],
-    [0.40, 0]
+    // [0.40, 0],
+    [0.50, 0]
 ]
 
 // https://docs.google.com/spreadsheets/d/1MWOde96t-ruC5k1PLL4nex0iBjdyXKOkY7g59cnaEj4/edit?gid=0#gid=0
@@ -126,7 +129,7 @@ export class SoilSquare extends BaseSquare {
     }
 
     getPressureGeneric(value, refArr) {
-        if (refArr.length === 0) {
+        if (value == 0 || refArr.length == 0) {
             return 0;
         }
         let lower = refArr[0];
@@ -175,9 +178,26 @@ export class SoilSquare extends BaseSquare {
     }
 
     percolateInnerMoisture() {
+        this.percolateInnerMoistureSide(this.neighbor_l);
+        this.percolateInnerMoistureSide(this.neighbor_r);
     }
 
-    
+    percolateInnerMoistureSide(neighbor) {
+        if (neighbor == null) {
+            return;
+        }
+        this._wp = this.getSoilWaterPressure();
+        this._np = neighbor.getSoilWaterPressure();
+        if (this._wp > this._np) {
+            this.waterContainment -= .01;
+            neighbor.waterContainment += .01;
+        }
+
+        if (this._wp < this._np) {
+            this.waterContainment += .001;
+            neighbor.waterContainment -= .001;
+        }
+    }
 
     _percolateInnerMoisture() {
         if (Math.random() < this.percolationFactor) {
@@ -476,4 +496,16 @@ export class SoilSquare extends BaseSquare {
             MAIN_CONTEXT.fillStyle = COLOR_VERY_FUCKING_BLUE;
         zoomCanvasFillRect(this.posX * getBaseSize(), this.posY * getBaseSize(), getBaseSize(), getBaseSize());
     }
+}
+
+let s = new SoilSquare(10, 10);
+
+s.clay = .33;
+s.silt = .33;
+s.sand = .34;
+
+for (let wc = 0; wc < 0.5; wc += .01) {
+    let mp = s.getMatricPressure(wc);
+    let imp = s.getInverseMatricPressure(mp);
+    console.log(wc, mp, imp)
 }
