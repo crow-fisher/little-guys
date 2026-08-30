@@ -106,7 +106,38 @@ export class BaseSquare {
         this.blockHealthGravityCoef = 2;
 
         this.initTemperature();
+
+        this.neighbor_t;
+        this.neighbor_b; 
+        this.neighbor_l;
+        this.neighbor_r;
     };
+
+    linkNeighbors() {
+        if (!this.solid) {
+            return;
+        }
+        this.neighbor_t = getSquares(this.posX, this.posY - 1).find((sq) => sq.solid);
+        this.neighbor_b = getSquares(this.posX, this.posY + 1).find((sq) => sq.solid);
+        this.neighbor_l = getSquares(this.posX - 1, this.posY).find((sq) => sq.solid);
+        this.neighbor_r = getSquares(this.posX + 1, this.posY).find((sq) => sq.solid);
+    }
+
+    unlinkNeighbors() {
+        if (this.neighbor_t)
+            this.neighbor_t.neighbor_b = null;
+        if (this.neighbor_b)
+            this.neighbor_b.neighbor_t = null; 
+        if (this.neighbor_l)
+            this.neighbor_l.neighbor_r = null;
+        if (this.neighbor_r)
+            this.neighbor_r.neighbor_l = null;
+
+        this.neighbor_t = null;
+        this.neighbor_b = null;
+        this.neighbor_l = null;
+        this.neighbor_r = null;
+    }
 
     purgeLighting() {
         this.lighting = new Array();

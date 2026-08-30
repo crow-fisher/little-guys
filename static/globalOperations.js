@@ -107,6 +107,7 @@ export function renderOrganisms() {
 export function removeSquare(sq) {
     let posX = Math.floor(sq.posX);
     let posY = Math.floor(sq.posY);
+    sq.unlinkNeighbors();
 
     let arr = removeItemAll(getSquares(posX, posY), sq);
     if (arr.length === 0) {

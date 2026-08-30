@@ -1,6 +1,6 @@
 import { BaseSquare } from "../BaseSqaure.js";
 import { addSquare, getNeighbors, getSquares } from "../sqOperations.js";
-import { cachedGetWaterflowRate, hexToRgb, invlerp, processColorBicolorArr, randNumber, randRange } from "../../common.js";
+import { cachedGetWaterflowRate, hexToRgb, invlerp, lerp, processColorBicolorArr, randNumber, randRange } from "../../common.js";
 import { getCurTimeScale, getDt, getFrameDt, timeScaleFactor } from "../../climate/time.js";
 import { getPressure, getWindSpeedAtLocation, getWindSquareAbove } from "../../climate/simulation/wind.js";
 import { addWaterSaturationPascals, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, temperatureHumidityFlowrateFactor } from "../../climate/simulation/temperatureHumidity.js";
@@ -117,40 +117,37 @@ export class SoilSquare extends BaseSquare {
     }
 
     initWaterContainment() {
-        this.waterContainment = this.getInverseMatricPressure(-4);
+        // this.waterContainment = .2; // this.getInverseMatricPressure(-4);
+        this.waterContainment = this.getInverseMatricPressure(-3);
     }
 
-    getInversePressureGeneric(waterContainment, refArr) {
-        return this.getPressureGeneric(waterContainment, Array.from(refArr.map((vec) => [vec[1], vec[0]])));
+    getInversePressureGeneric(matricPressure, refArr) {
+        return this.getPressureGeneric(matricPressure, Array.from(refArr.map((vec) => [vec[1], vec[0]])));
     }
 
-    getPressureGeneric(waterContainment, refArr) {
+    getPressureGeneric(value, refArr) {
         if (refArr.length === 0) {
             return 0;
         }
-
         let lower = refArr[0];
         let upper = refArr[refArr.length - 1];
-
-        if (waterContainment <= lower[0]) {
+        if (value <= lower[0]) {
             return lower[1];
         }
-        if (waterContainment >= upper[0]) {
+        if (value >= upper[0]) {
             return upper[1];
         }
-
         for (let i = 0; i < refArr.length; i++) {
             let entry = refArr[i];
-            if (entry[0] < waterContainment && entry[0] > lower[0]) {
+            if (entry[0] < value && entry[0] > lower[0]) {
                 lower = entry;
             }
-            if (entry[0] > waterContainment && entry[0] < upper[0]) {
+            if (entry[0] > value && entry[0] < upper[0]) {
                 upper = entry;
             }
         }
-
-        let t = (waterContainment - lower[0]) / (upper[0] - lower[0]);
-        let interpolated = lower[1] + t * (upper[1] - lower[1]);
+        let pos = invlerp(lower[0], upper[0], value);
+        let interpolated = lerp(lower[1], upper[1], pos);
         return interpolated;
     }
 
@@ -178,6 +175,11 @@ export class SoilSquare extends BaseSquare {
     }
 
     percolateInnerMoisture() {
+    }
+
+    
+
+    _percolateInnerMoisture() {
         if (Math.random() < this.percolationFactor) {
             return;
         }

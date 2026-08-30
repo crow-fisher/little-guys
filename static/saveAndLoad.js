@@ -247,6 +247,7 @@ export function compressSquares(squares) {
         squares.forEach((sq) => {
 
         purgeUnderscoredValues(sq);
+        sq.unlinkNeighbors();
         sq.lighting = [];
         sq.linkedOrganisms = Array.from(sq.linkedOrganisms.map((org) => {
             if (org.stage != STAGE_DEAD) {
@@ -409,6 +410,7 @@ export function loadSlotFromSave(slotData) {
         sq.linkedOrganisms = Array.from(sq.linkedOrganisms.filter((idx) => idx != -1).map((orgIdx) => orgArr[orgIdx]));
         sq.linkedOrganismSquares = Array.from(sq.linkedOrganismSquares.filter((idx) => idx != -1).map((lsqIdx) => lsqArr[lsqIdx]));
         regSquareToGroup(sq.group);
+        sq.linkNeighbors();
 
         sq.linkedOrganisms.forEach((org) => {
             org.linkedSquare = sq;

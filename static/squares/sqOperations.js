@@ -35,6 +35,7 @@ function addSquare(sq) {
         return false;
     }
     getSquares(sq.posX, sq.posY, true).push(sq);
+    sq.linkNeighbors();
     if ((sq.proto != "PlantSquare")) {
         registerSqIterationRowChange(sq.posY);
         registerSqColChange(sq.posX, sq.posY);
