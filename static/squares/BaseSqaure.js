@@ -21,7 +21,7 @@ import { COLOR_BLACK, GROUP_BROWN, GROUP_BLUE, GROUP_MAUVE, GROUP_TAN, GROUP_GRE
 import { getDaylightStrengthFrameDiff, getFrameDt, getTimeScale } from "../climate/time.js";
 import { applyLightingFromSource, getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCanvasSquaresY, getCurZoom, isSquareOnCanvas, transformCanvasSquaresToPixels, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
-import { loadGD, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_CANDIDATE, UI_VIEWMODE_TARGET, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_BLOCK_HEALTH, UI_VIEWMODE_BLOCK_SPEED, UI_VIEWMODE_PATH_HISTORY, UI_PALETTE_STRENGTH, UI_LIGHTING_SURFACE, UI_PALETTE_SURFACE_MATCH, UI_VIEWMODE_ORGANISM_SUIT_WATER, UI_ORGANISM_SELECT } from "../ui/UIData.js";
+import { loadGD, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_LIGHTING_ENABLED, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE_OFF, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_CANDIDATE, UI_VIEWMODE_TARGET, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_BLOCK_HEALTH, UI_VIEWMODE_BLOCK_SPEED, UI_VIEWMODE_PATH_HISTORY, UI_PALETTE_STRENGTH, UI_LIGHTING_SURFACE, UI_PALETTE_SURFACE_MATCH, UI_VIEWMODE_ORGANISM_SUIT_WATER, UI_ORGANISM_SELECT, UI_VIEWMODE_ORGANISM_SUIT_LIGHT, UI_VIEWMODE_ORGANISM_SUIT_NET } from "../ui/UIData.js";
 import { deregisterSquare, registerSquare } from "../waterGraph.js";
 import { STAGE_DEAD } from "../organisms/Stages.js";
 import { ORGANISM_UI_REF } from "../organisms/OrganismUIRef.js";
@@ -114,13 +114,22 @@ export class BaseSquare {
     };
 
     linkNeighbors() {
-        if (!this.solid) {
+        if (!this.solid || this.organic) {
             return;
         }
-        this.neighbor_t = getSquares(this.posX, this.posY - 1).find((sq) => sq.solid);
-        this.neighbor_b = getSquares(this.posX, this.posY + 1).find((sq) => sq.solid);
-        this.neighbor_l = getSquares(this.posX - 1, this.posY).find((sq) => sq.solid);
-        this.neighbor_r = getSquares(this.posX + 1, this.posY).find((sq) => sq.solid);
+        this.neighbor_t = getSquares(this.posX, this.posY - 1).find((sq) => sq.solid && !sq.organic);
+        this.neighbor_b = getSquares(this.posX, this.posY + 1).find((sq) => sq.solid && !sq.organic);
+        this.neighbor_l = getSquares(this.posX - 1, this.posY).find((sq) => sq.solid && !sq.organic);
+        this.neighbor_r = getSquares(this.posX + 1, this.posY).find((sq) => sq.solid && !sq.organic);
+
+        if (this.neighbor_t)
+            this.neighbor_t.neighbor_b = this;
+        if (this.neighbor_b)
+            this.neighbor_b.neighbor_t = this;
+        if (this.neighbor_l)
+            this.neighbor_l.neighbor_r = this;
+        if (this.neighbor_r)
+            this.neighbor_r.neighbor_l = this;
     }
 
     unlinkNeighbors() {
@@ -318,7 +327,13 @@ export class BaseSquare {
             this.renderHistory();
         } else if (selectedViewMode == UI_VIEWMODE_ORGANISM_SUIT_WATER) {
             this.renderSuitabilityWater();
+        } else if (selectedViewMode == UI_VIEWMODE_ORGANISM_SUIT_LIGHT) {
+            this.renderSuitabilityLight();
+        } else if (selectedViewMode == UI_VIEWMODE_ORGANISM_SUIT_NET) {
+            this.renderSuitabilityNet();
         }
+        // this.renderBlockId();
+
     };
 
     renderSuitabilityWater() {
@@ -326,6 +341,15 @@ export class BaseSquare {
         this.renderWithVariedColors(0.8);
     }
 
+    renderSuitabilityLight() {
+        // detailed impl in SoilSquare.js
+        this.renderWithVariedColors(0.8);
+    }
+
+    renderSuitabilityNet() {
+        // detailed impl in SoilSquare.js
+        this.renderWithVariedColors(0.8);
+    }
     
 
     renderBlockId() {
@@ -334,7 +358,7 @@ export class BaseSquare {
         MAIN_CONTEXT.textBaseline = 'middle';
         MAIN_CONTEXT.strokeStyle = "rgba(35, 35, 35, 1)";
         zoomCanvasSquareText(
-            (this.posX + 0.5) * getBaseSize(),
+            (this.posX + 0.4) * getBaseSize(),
             (this.posY + 0.5) * getBaseSize(),
             this.id % 10000);
     }

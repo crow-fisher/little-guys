@@ -34,7 +34,13 @@ export class RockSquare extends SoilSquare {
         this.blockHealth = this.blockHealthMax;
     }
 
-    renderSuitabilityWater() {
+    renderSuitabilityWater() { 
+        this.renderWithVariedColors(0.8);
+    }
+    renderSuitabilityLight() { 
+        this.renderWithVariedColors(0.8);
+    }
+    renderSuitabilityNet() { 
         this.renderWithVariedColors(0.8);
     }
     
@@ -66,7 +72,7 @@ export class RockSquare extends SoilSquare {
     }
 
     getWaterflowRate() {
-        return cachedGetWaterflowRate(0, 0, 1);
+        return 100 * cachedGetWaterflowRate(0, 0, 1);
     }
 
     doBlockOutflow() {

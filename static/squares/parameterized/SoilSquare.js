@@ -512,29 +512,86 @@ export class SoilSquare extends BaseSquare {
         addWaterSaturationPascals(x, y, pascals);
     }
 
-    renderSuitabilityWater() {
+    renderSuitabilityBase() {
         this._suitOrg = this._suitOrg ?? new (getPlantForRef(loadGD(UI_ORGANISM_SELECT)))(null, -1);
         if (this._suitOrg.uiRef != loadGD(UI_ORGANISM_SELECT))
             this._suitOrg = new (ORGANISM_UI_REF[loadGD(UI_ORGANISM_SELECT)])(this, -1);
 
         copyVecValue(getCurPlantConfiguratorVal(), this._suitOrg.evolutionParameters);
+        this._suitOrg.processGenetics();
+    }
 
-        this._suitOrg.getWaterPressureSoilTarget()
+    renderSuitabilityGenericScore(min, target, max, value) {
+        if (value < min)
+            return -1;
+        else if (value < target)
+            return -(1 - invlerp(min, target, value));
+        else if (value < max)
+            return invlerp(target, max, value);
+        else
+            return 1;
+    }
 
-        let target = this._suitOrg.getWaterPressureSoilTarget();
-        let min = target + this._suitOrg.waterPressureWiltThresh();
-        let max = target + this._suitOrg.waterPressureOverwaterThresh();
-
-        if (this.getSoilWaterPressure() < min)
+    renderSuitabilityScore(score) {
+        if (score <= -1)
             MAIN_CONTEXT.fillStyle = COLOR_VERY_FUCKING_RED;
-        else if (this.getSoilWaterPressure() < target)
-            MAIN_CONTEXT.fillStyle = processColorBicolorArr(RGB_COLOR_VERY_FUCKING_RED, RGB_COLOR_VERY_FUCKING_GREEN, invlerp(min, target, this.getSoilWaterPressure()));
-        else if (this.getSoilWaterPressure() < max)
-            MAIN_CONTEXT.fillStyle = processColorBicolorArr(RGB_COLOR_VERY_FUCKING_GREEN, RGB_COLOR_VERY_FUCKING_BLUE, invlerp(target, max, this.getSoilWaterPressure()));
+        else if (score < 0)
+            MAIN_CONTEXT.fillStyle = processColorBicolorArr(RGB_COLOR_VERY_FUCKING_RED, RGB_COLOR_VERY_FUCKING_GREEN, 1 + score);
+        else if (score < 1)
+            MAIN_CONTEXT.fillStyle = processColorBicolorArr(RGB_COLOR_VERY_FUCKING_GREEN, RGB_COLOR_VERY_FUCKING_BLUE, score);
         else
             MAIN_CONTEXT.fillStyle = COLOR_VERY_FUCKING_BLUE;
         zoomCanvasFillRect(this.posX * getBaseSize(), this.posY * getBaseSize(), getBaseSize(), getBaseSize());
     }
+
+    renderSuitabilityWater() {
+        this.renderSuitabilityBase();
+        let w_target = this._suitOrg.getWaterPressureSoilTarget();
+        let w_min = w_target + this._suitOrg.waterPressureWiltThresh();
+        let w_max = w_target + this._suitOrg.waterPressureOverwaterThresh();
+        let w_value = this.getSoilWaterPressure()
+        let w_score = this.renderSuitabilityGenericScore(w_min, w_target, w_max, w_value);
+        this.renderSuitabilityScore(w_score);
+    }
+
+    renderSuitabilityLight() {
+        this.renderSuitabilityBase();
+        let l_target = this._suitOrg.getGrowthLightLevel();
+        let l_min = l_target * this._suitOrg.llt_min();
+        let l_max = l_target * this._suitOrg.llt_max();
+        let l_arr = this.processLighting()
+        let l_value = (l_arr.r + l_arr.b) / 510; // intentionally confusing! you're welcome :3 
+
+        let l_score = this.renderSuitabilityGenericScore(l_min, l_target, l_max, l_value);
+        this.renderSuitabilityScore(l_score);
+    }
+
+    renderSuitabilityNet() {
+        this.renderSuitabilityBase();
+
+        let w_target = this._suitOrg.getWaterPressureSoilTarget();
+        let w_min = w_target + this._suitOrg.waterPressureWiltThresh();
+        let w_max = w_target + this._suitOrg.waterPressureOverwaterThresh();
+        let w_value = this.getSoilWaterPressure()
+
+        let l_target = this._suitOrg.getGrowthLightLevel();
+        let l_min = l_target * this._suitOrg.llt_min();
+        let l_max = l_target * this._suitOrg.llt_max();
+        let l_arr = this.processLighting()
+        let l_value = (l_arr.r + l_arr.b) / 510; // intentionally confusing! you're welcome :3 
+
+        let w_score = this.renderSuitabilityGenericScore(w_min, w_target, w_max, w_value);
+        let l_score = this.renderSuitabilityGenericScore(l_min, l_target, l_max, l_value);
+
+        let n_score = Math.abs(w_score) + Math.abs(l_score);
+        // n_score += (w_score > 0 ? w_score : 1 + w_score);
+        // n_score += (l_score > 0 ? l_score : 1 + l_score);
+
+        this.renderSuitabilityScore(-n_score);;
+
+    }
+
+
 }
 
 let s = new SoilSquare(10, 10);

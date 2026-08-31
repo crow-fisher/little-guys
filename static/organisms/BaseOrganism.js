@@ -321,7 +321,7 @@ class BaseOrganism {
         let c = this.curNumGreen;
         this.lightLevel = this.lightLevel * (c - 1) / c + (val / c);
     }
-
+b
     lsqWaterPressure(val) {
         let c = this.curNumRoots;
         this.waterPressure = this.waterPressure * (c - 1) / c + (val / c);
