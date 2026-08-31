@@ -39,7 +39,9 @@ export const sandMatricPressureMap = [
     // [0.40, 0],
     [0.50, 0]
 ]
-
+export const inverseClayMatricPressureMap = Array.from(clayMatricPressureMap.map((vec) => [vec[1], vec[0]]))
+export const inverseSiltMatricPressureMap = Array.from(siltMatricPressureMap.map((vec) => [vec[1], vec[0]]))
+export const inverseSandMatricPressureMap = Array.from(sandMatricPressureMap.map((vec) => [vec[1], vec[0]]))
 // https://docs.google.com/spreadsheets/d/1MWOde96t-ruC5k1PLL4nex0iBjdyXKOkY7g59cnaEj4/edit?gid=0#gid=0
 export function getBasePercolationRate(sand, silt, clay) {
     let clayRate = 2;
@@ -125,11 +127,11 @@ export class SoilSquare extends BaseSquare {
     }
 
     getInversePressureGeneric(matricPressure, refArr) {
-        return this.getPressureGeneric(matricPressure, Array.from(refArr.map((vec) => [vec[1], vec[0]])));
+        return this.getPressureGeneric(matricPressure, refArr);
     }
 
     getPressureGeneric(value, refArr) {
-        if (value == 0 || refArr.length == 0) {
+        if (refArr.length == 0) {
             return 0;
         }
         let lower = refArr[0];
@@ -156,9 +158,9 @@ export class SoilSquare extends BaseSquare {
 
     getInverseMatricPressure(waterPressure) {
         return (
-            this.clay * this.getInversePressureGeneric(waterPressure, clayMatricPressureMap)
-            + this.silt * this.getInversePressureGeneric(waterPressure, siltMatricPressureMap)
-            + this.sand * this.getInversePressureGeneric(waterPressure, sandMatricPressureMap)
+            this.clay * this.getInversePressureGeneric(waterPressure, inverseClayMatricPressureMap)
+            + this.silt * this.getInversePressureGeneric(waterPressure, inverseSiltMatricPressureMap)
+            + this.sand * this.getInversePressureGeneric(waterPressure, inverseSandMatricPressureMap)
         );
     }
 
@@ -178,25 +180,43 @@ export class SoilSquare extends BaseSquare {
     }
 
     percolateInnerMoisture() {
-        this.percolateInnerMoistureSide(this.neighbor_l);
-        this.percolateInnerMoistureSide(this.neighbor_r);
+        this.percolateInnerMoistureNeighbor(this.neighbor_l);
+        this.percolateInnerMoistureNeighbor(this.neighbor_r);
+
+        this.percolateInnerMoistureNeighbor(this.neighbor_t);
+        this.percolateInnerMoistureNeighbor(this.neighbor_b);
     }
 
-    percolateInnerMoistureSide(neighbor) {
+    percolateInnerMoistureNeighbor(neighbor) {
         if (neighbor == null) {
             return;
         }
+
+        // water flows from high moisture to low 
         this._wp = this.getSoilWaterPressure();
         this._np = neighbor.getSoilWaterPressure();
-        if (this._wp > this._np) {
-            this.waterContainment -= .01;
-            neighbor.waterContainment += .01;
+        this._mp = (this._wp + this._np) / 2;
+        
+        if (this._wp < this._np) {
+            return;
         }
 
-        if (this._wp < this._np) {
-            this.waterContainment += .001;
-            neighbor.waterContainment -= .001;
+        this._wpi = this.getInverseMatricPressure(this._wp);
+        this._npi = this.getInverseMatricPressure(this._np);
+        this._mpi = this.getInverseMatricPressure(this._mp);
+
+        this._flow = this._wpi - this._mpi;
+        if (this._flow <= 0) {
+            return;
         }
+
+        this._flow = Math.min(this._flow, this.waterContainment)
+        this._flow = Math.min(this._flow, neighbor.waterContainmentMax - neighbor.waterContainment)
+
+        // this._flow /= Math.max(this.getWaterflowRate(), neighbor.getWaterflowRate())
+
+        this.waterContainment -= this._flow;
+        neighbor.waterContainment += this._flow;
     }
 
     _percolateInnerMoisture() {
