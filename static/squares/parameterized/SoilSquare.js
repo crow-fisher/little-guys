@@ -1,6 +1,6 @@
 import { BaseSquare } from "../BaseSqaure.js";
 import { addSquare, getNeighbors, getSquares } from "../sqOperations.js";
-import { cachedGetWaterflowRate, hexToRgb, invlerp, lerp, processColorBicolorArr, randNumber, randRange } from "../../common.js";
+import { cachedGetWaterflowRate, clamp, hexToRgb, invlerp, lerp, processColorBicolorArr, randNumber, randRange } from "../../common.js";
 import { getCurTimeScale, getDt, getFrameDt, timeScaleFactor } from "../../climate/time.js";
 import { getPressure, getWindSpeedAtLocation, getWindSquareAbove } from "../../climate/simulation/wind.js";
 import { addWaterSaturationPascals, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, temperatureHumidityFlowrateFactor } from "../../climate/simulation/temperatureHumidity.js";
@@ -114,9 +114,9 @@ export class SoilSquare extends BaseSquare {
         this.silt *= (1 / sum);
         this.sand *= (1 / sum);
 
-        this.clay = Math.min(Math.max(this.clay, 0), 1);
-        this.silt = Math.min(Math.max(this.silt, 0), 1);
-        this.sand = Math.min(Math.max(this.sand, 0), 1);
+        this.clay = clamp(this.clay);
+        this.silt = clamp(this.silt);
+        this.sand = clamp(this.sand);
 
         this.initWaterContainment();
     }
@@ -180,21 +180,27 @@ export class SoilSquare extends BaseSquare {
     }
 
     percolateInnerMoisture() {
+        this._startWC = this.waterContainment;
+        
         this.percolateInnerMoistureNeighbor(this.neighbor_l);
         this.percolateInnerMoistureNeighbor(this.neighbor_r);
-
         this.percolateInnerMoistureNeighbor(this.neighbor_t);
         this.percolateInnerMoistureNeighbor(this.neighbor_b);
+
+        this.waterOutflowRoutine();
+
     }
 
+
     percolateInnerMoistureNeighbor(neighbor) {
+        this.linkNeighbors();
         if (neighbor == null) {
             return;
         }
 
         // water flows from high moisture to low 
         this._wp = this.getSoilWaterPressure();
-        this._np = neighbor.getSoilWaterPressure();
+        this._np = neighbor.getSoilWaterPressure() + (neighbor.getGravitationalPressure() - this.getGravitationalPressure());
         this._mp = (this._wp + this._np) / 2;
         
         if (this._wp < this._np) {
@@ -213,10 +219,23 @@ export class SoilSquare extends BaseSquare {
         this._flow = Math.min(this._flow, this.waterContainment)
         this._flow = Math.min(this._flow, neighbor.waterContainmentMax - neighbor.waterContainment)
 
-        // this._flow /= Math.max(this.getWaterflowRate(), neighbor.getWaterflowRate())
+        this._flow /= Math.max(this.getWaterflowRate(), neighbor.getWaterflowRate()); 
 
         this.waterContainment -= this._flow;
         neighbor.waterContainment += this._flow;
+
+        
+
+    }
+
+    waterOutflowRoutine() {
+        if (this.waterContainment < this.waterContainmentMax) {
+            return;
+        }
+
+        this.outflowNewWaterToLocation(this.posX, this.posY);
+        this.outflowNewWaterToLocation(this.posX + 1, this.posY);
+        this.outflowNewWaterToLocation(this.posX - 1, this.posY);
     }
 
     _percolateInnerMoisture() {
