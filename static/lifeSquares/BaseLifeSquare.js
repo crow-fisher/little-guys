@@ -271,7 +271,7 @@ class BaseLifeSquare {
             MAIN_CONTEXT.lineWidth = getBaseSize() * .15 * getCurZoom();
             MAIN_CONTEXT.stroke();
         } else {
-            if (selectedViewMode == UI_VIEWMODE_NORMAL && this.type == "root")
+            if (this.type == "root")
                 return;
             if (selectedViewMode.indexOf("UI_VIEWMODE_ORGANISM_SUIT") >= 0) {
                 frameOpacity = loadGD(UI_CONFIG_VIEWMODE_SUIT_OPACITY)

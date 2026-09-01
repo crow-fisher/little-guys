@@ -172,7 +172,7 @@ export class SoilSquare extends BaseSquare {
         );
     }
     getGravitationalPressure() {
-        return -0.02 * 9.8 * this.posY;
+        return -0.01 * 9.8 * this.posY;
     }
 
     getSoilWaterPressure() {
@@ -216,10 +216,10 @@ export class SoilSquare extends BaseSquare {
             return;
         }
 
+        this._flow /= Math.max(this.getWaterflowRate(), neighbor.getWaterflowRate()); 
+
         this._flow = Math.min(this._flow, this.waterContainment)
         this._flow = Math.min(this._flow, neighbor.waterContainmentMax - neighbor.waterContainment)
-
-        this._flow /= Math.max(this.getWaterflowRate(), neighbor.getWaterflowRate()); 
 
         this.waterContainment -= this._flow;
         neighbor.waterContainment += this._flow;

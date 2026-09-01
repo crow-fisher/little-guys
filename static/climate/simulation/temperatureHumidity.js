@@ -285,7 +285,6 @@ function doRain() {
         return;
     }
 
-    console.log(getFrameXMinWsq(), getFrameXMaxWsq())
     for (let x = getFrameXMinWsq(); x < getFrameXMaxWsq(); x++) {
         for (let y = getFrameYMinWsq(); y < getFrameYMaxWsq(); y++) {
 
