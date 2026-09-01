@@ -5,7 +5,7 @@ import { MAIN_CONTEXT } from "../../index.js";
 import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds, getBaseAirPressureAtYPosition, getWindPressureSquareDensity, base_wind_pressure, manipulateWindPressureMaintainHumidityWindSquare, isWindSquareBlocked, getWindSquareAbove, getWindThrottleValWindMap, getFrameXMinWsq, getFrameXMaxWsq, getFrameYMinWsq, getFrameYMaxWsq } from "./wind.js";
 import { getCloudRenderingLighting } from "../../lighting/lightingProcessing.js";
 import { addSquareByName } from "../../manipulation.js";
-import { loadGD, UI_CLIMATE_WEATHER_RAIN_TOGGLE } from "../../ui/UIData.js";
+import { loadGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CLIMATE_WEATHER_RAIN_TOGGLE } from "../../ui/UIData.js";
 import { RGB_COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_GREEN, RGB_COLOR_RED } from "../../colors.js";
 import { getTimeScale } from "../time.js";
 // decent reference https://web.gps.caltech.edu/~xun/course/GEOL1350/Lecture5.pdf
@@ -284,19 +284,21 @@ function doRain() {
     if (getTimeScale() == 0 || loadGD(UI_CLIMATE_WEATHER_RAIN_TOGGLE)) {
         return;
     }
+
+    console.log(getFrameXMinWsq(), getFrameXMaxWsq())
     for (let x = getFrameXMinWsq(); x < getFrameXMaxWsq(); x++) {
         for (let y = getFrameYMinWsq(); y < getFrameYMaxWsq(); y++) {
 
-            let posX = x * 4 + randNumber(0, 3);
-            let posY = y * 4 + randNumber(0, 3);
+            let posX = x * 4 + randNumber(0, 3)
+            let posY = y * 4 + randNumber(0, 3)
             if (!isSquareOnCanvas(posX, posY)) {
                 return;
             }
             let humidity = getHumidity(x, y);
-            if (humidity < (cloudRainThresh))
+            if (humidity < cloudRainThresh)
                 continue;
             let rainDropProbability = ((humidity - cloudRainThresh) / (cloudRainMax - cloudRainThresh));
-            rainDropProbability /= 10;
+            rainDropProbability /= ((getFrameXMaxWsq() - getFrameXMinWsq()) / 10)
             if (Math.random() > rainDropProbability) {
                 continue;
             }
@@ -304,21 +306,18 @@ function doRain() {
             let expectedPascals = saturationPressureOfWaterVapor(temperature) * cloudRainThresh;
             let pascals = waterSaturationMap[x][y];
 
-            let dropPascals = (pascals - expectedPascals) * 0.05;
+            let dropPascals = (pascals - expectedPascals) * 0.01;
 
             let usedWaterPascalsPerSquare = dropPascals / 5;
             let dropHealth = dropPascals / pascalsPerWaterSquare;
 
-            dropHealth = Math.min(1, dropHealth * 12000);
+            dropHealth = Math.min(1, dropHealth * 1200000);
 
             let sq = addSquareByName(posX, posY, "water");
             if (sq) {
                 sq.blockHealth = dropHealth;
                 sq.temperature = temperatureMap[x][y];
                 waterSaturationMap[x][y] -= usedWaterPascalsPerSquare;
-                getMapDirectNeighbors(x, y)
-                    .filter((loc) => loc[0] >= 0 && loc[0] < getWindSquaresX() && loc[1] >= 0 && loc[1] < getWindSquaresY())
-                    .forEach((loc) => waterSaturationMap[loc[0]][loc[1]] -= usedWaterPascalsPerSquare);
                 sq.speedY = 1;
             }
         }

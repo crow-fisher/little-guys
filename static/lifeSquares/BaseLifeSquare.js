@@ -9,7 +9,7 @@ import { removeSquare } from "../globalOperations.js";
 import { STATE_HEALTHY, STAGE_DEAD } from "../organisms/Stages.js";
 import { getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
 import { getBaseSize, getCurZoom, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasFillRectTheta, zoomCanvasSquareText } from "../canvas.js";
-import { loadGD, UI_CANVAS_SQUARES_ZOOM, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_NORMAL, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../ui/UIData.js";
+import { loadGD, UI_CANVAS_SQUARES_ZOOM, UI_CONFIG_VIEWMODE_SUIT_OPACITY, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_NORMAL, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISM_SUIT_NET, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../ui/UIData.js";
 
 export const LSQ_RENDERMODE_SQUARE = "LSQ_RENDERMODE_SQUARE";
 export const LSQ_RENDERMODE_CIRCLE = "LSQ_RENDERMODE_CIRCLE";
@@ -270,12 +270,12 @@ class BaseLifeSquare {
             MAIN_CONTEXT.strokeStyle = rgbToRgba(...hsv2rgb(...outlineHsv), this.lifetimeIndicated);
             MAIN_CONTEXT.lineWidth = getBaseSize() * .15 * getCurZoom();
             MAIN_CONTEXT.stroke();
-
-        }
-        else {
+        } else {
             if (selectedViewMode == UI_VIEWMODE_NORMAL && this.type == "root")
                 return;
-            if (selectedViewMode == UI_VIEWMODE_ORGANISMS) {
+            if (selectedViewMode.indexOf("UI_VIEWMODE_ORGANISM_SUIT") >= 0) {
+                frameOpacity = loadGD(UI_CONFIG_VIEWMODE_SUIT_OPACITY)
+            } else if (selectedViewMode == UI_VIEWMODE_ORGANISMS) {
                 if (this.opacity < 0.235) {
                     frameOpacity *= 4;
                 }
@@ -389,7 +389,7 @@ class BaseLifeSquare {
             }
 
             let outColorHsv = rgb2hsv(outColorBase.r, outColorBase.g, outColorBase.b);
-            outColorHsv[0] += 500 * (this.linkedOrganism.evolutionParameters.at(1) - 0.55);
+            outColorHsv[0] += 150 * (this.linkedOrganism.evolutionParameters.at(1) - 0.05);
 
             let outColorHsvRgb = hsvToRgb(...outColorHsv);
 

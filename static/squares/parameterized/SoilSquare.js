@@ -4,7 +4,7 @@ import { cachedGetWaterflowRate, clamp, hexToRgb, invlerp, lerp, processColorBic
 import { getCurTimeScale, getDt, getFrameDt, timeScaleFactor } from "../../climate/time.js";
 import { getPressure, getWindSpeedAtLocation, getWindSquareAbove } from "../../climate/simulation/wind.js";
 import { addWaterSaturationPascals, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, temperatureHumidityFlowrateFactor } from "../../climate/simulation/temperatureHumidity.js";
-import { loadGD, UI_LIGHTING_SURFACE, UI_ORGANISM_SELECT, UI_PALETTE_COMPOSITION, UI_PALETTE_SOILIDX, UI_PALETTE_VARIANCE, UI_SIMULATION_CLOUDS, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER } from "../../ui/UIData.js";
+import { loadGD, UI_CONFIG_VIEWMODE_SUIT_OPACITY, UI_LIGHTING_SURFACE, UI_ORGANISM_SELECT, UI_PALETTE_COMPOSITION, UI_PALETTE_SOILIDX, UI_PALETTE_VARIANCE, UI_SIMULATION_CLOUDS, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER } from "../../ui/UIData.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { addSquareByName, getPlantForRef } from "../../manipulation.js";
 import { getBaseSize, zoomCanvasFillRect } from "../../canvas.js";
@@ -513,6 +513,10 @@ export class SoilSquare extends BaseSquare {
     }
 
     renderSuitabilityBase() {
+        if (this.linkedOrganisms.at(0) != null) {
+            this._suitOrg = this.linkedOrganisms.at(0);
+            return;
+        }
         this._suitOrg = this._suitOrg ?? new (getPlantForRef(loadGD(UI_ORGANISM_SELECT)))(null, -1);
         if (this._suitOrg.uiRef != loadGD(UI_ORGANISM_SELECT))
             this._suitOrg = new (ORGANISM_UI_REF[loadGD(UI_ORGANISM_SELECT)])(this, -1);
@@ -552,6 +556,7 @@ export class SoilSquare extends BaseSquare {
         let w_value = this.getSoilWaterPressure()
         let w_score = this.renderSuitabilityGenericScore(w_min, w_target, w_max, w_value);
         this.renderSuitabilityScore(w_score);
+        this.renderWithVariedColors(loadGD(UI_CONFIG_VIEWMODE_SUIT_OPACITY));
     }
 
     renderSuitabilityLight() {
@@ -560,10 +565,11 @@ export class SoilSquare extends BaseSquare {
         let l_min = l_target * this._suitOrg.llt_min();
         let l_max = l_target * this._suitOrg.llt_max();
         let l_arr = this.processLighting()
-        let l_value = (l_arr.r + l_arr.b) / 510; // intentionally confusing! you're welcome :3 
+        let l_value = this._suitOrg.llt_mult() * (l_arr.r + l_arr.b) / 510; // intentionally confusing! you're welcome :3 
 
         let l_score = this.renderSuitabilityGenericScore(l_min, l_target, l_max, l_value);
         this.renderSuitabilityScore(l_score);
+        this.renderWithVariedColors(loadGD(UI_CONFIG_VIEWMODE_SUIT_OPACITY));
     }
 
     renderSuitabilityNet() {
@@ -578,7 +584,7 @@ export class SoilSquare extends BaseSquare {
         let l_min = l_target * this._suitOrg.llt_min();
         let l_max = l_target * this._suitOrg.llt_max();
         let l_arr = this.processLighting()
-        let l_value = (l_arr.r + l_arr.b) / 510; // intentionally confusing! you're welcome :3 
+        let l_value = this._suitOrg.llt_mult() * (l_arr.r + l_arr.b) / 510; // intentionally confusing! you're welcome :3 
 
         let w_score = this.renderSuitabilityGenericScore(w_min, w_target, w_max, w_value);
         let l_score = this.renderSuitabilityGenericScore(l_min, l_target, l_max, l_value);
@@ -588,6 +594,7 @@ export class SoilSquare extends BaseSquare {
         // n_score += (l_score > 0 ? l_score : 1 + l_score);
 
         this.renderSuitabilityScore(-n_score);;
+        this.renderWithVariedColors(loadGD(UI_CONFIG_VIEWMODE_SUIT_OPACITY));
 
     }
 

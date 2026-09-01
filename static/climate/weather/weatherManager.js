@@ -31,7 +31,7 @@ export function getCurWeatherInterval() {
 let curClouds = [];
 let curWinds = [];
 
-let cloudDuration = () => getTimeScale() * randRange(4, 8) / loadGD(UI_SIMULATION_GENS_PER_DAY);
+let cloudDuration = () => getTimeScale() * 4 * randRange(4, 8) / loadGD(UI_SIMULATION_GENS_PER_DAY);
 let cloudXSize = (min=0.4, max=0.8) => randRange(min, max) * (getFrameXMaxWsq() - getFrameXMinWsq());
 let cloudYSize = (min=0.1, max=0.2) => randRange(min, max) * (getFrameXMaxWsq() - getFrameXMinWsq());
 
@@ -59,7 +59,7 @@ function spawnNimbusCloud(rainFactor) {
         randRangeFactor(getFrameYMinWsq(), getFrameYMaxWsq(), 0.1),
         cloudXSize(.4, .7), cloudYSize(),
         getCurDay(), cloudDuration(),
-        2, rainFactor * randRange(.025, .04)));
+        1.35, rainFactor * randRange(.025, .04)));
 }
 
 function spawnWindGust(airPressure) {
@@ -167,6 +167,8 @@ weatherFoggy = new Weather(UI_CLIMATE_WEATHER_FOGGY, foggyHg, foggyTg, 50, foggy
 
 function generalRainyWeather(rfMin, rfMax) {
     return () => {
+        curClouds = Array.from(curClouds.filter((cloud) => cloud.targetHumidity >= 1));
+
         if (curClouds.length > 10) {
             return;
         }
@@ -178,7 +180,7 @@ function generalRainyWeather(rfMin, rfMax) {
 }
 
 weatherLightRain = new Weather(UI_CLIMATE_WEATHER_LIGHTRAIN, rainyHumidityGradient, rainyTemperatureGradient, 50, generalRainyWeather(0.1, 0.3), getCurWeatherInterval);
-weatherHeavyRain = new Weather(UI_CLIMATE_WEATHER_HEAVYRAIN, rainyHumidityGradient, rainyTemperatureGradient, 50, generalRainyWeather(0.4, 0.8), getCurWeatherInterval);
+weatherHeavyRain = new Weather(UI_CLIMATE_WEATHER_HEAVYRAIN, rainyHumidityGradient, rainyTemperatureGradient, 100, generalRainyWeather(0.4, 0.8), getCurWeatherInterval);
 
 ui_weatherMap.set(UI_CLIMATE_WEATHER_CLEAR, weatherClear)
 ui_weatherMap.set(UI_CLIMATE_WEATHER_PARTLY_CLOUDY, weatherPartlyCloudy)

@@ -1,10 +1,13 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
+import { hsvToHex } from "../../common.js";
 import { Component } from "../Component.js";
+import { ConditionalContainer } from "../ConditionalContainer.js";
 import { Container } from "../Container.js";
 import { RadioToggle } from "../elements/RadioToggle.js";
 import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
 import { RowedRadio } from "../elements/RowedRadio.js";
+import { SliderGradientBackground } from "../elements/SliderGradientBackground.js";
 import { Text } from "../elements/Text.js";
 import { TextBackground } from "../elements/TextBackground.js";
 import { Toggle } from "../elements/Toggle.js";
@@ -31,7 +34,9 @@ import {
     UI_VIEWMODE_PATH_HISTORY,
     UI_VIEWMODE_ORGANISM_SUIT_LIGHT,
     UI_VIEWMODE_ORGANISM_SUIT_WATER,
-    UI_VIEWMODE_ORGANISM_SUIT_NET
+    UI_VIEWMODE_ORGANISM_SUIT_NET,
+    loadGD,
+    UI_CONFIG_VIEWMODE_SUIT_OPACITY
 } from "../UIData.js";
 import { SubTreeComponent } from "./SubTreeComponent.js";
 export class ViewSubtreeComponent extends SubTreeComponent {
@@ -47,9 +52,13 @@ export class ViewSubtreeComponent extends SubTreeComponent {
         container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"lighting",  UI_VIEWMODE_SELECT, UI_VIEWMODE_LIGHTING,() => getActiveClimate().getUIColorInactive(0.55), () => getActiveClimate().getUIColorActive()));
         container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"organisms",  UI_VIEWMODE_SELECT, UI_VIEWMODE_ORGANISMS,() => getActiveClimate().getUIColorInactive(0.51), () => getActiveClimate().getUIColorActive()));
         container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"evolution",  UI_VIEWMODE_SELECT, UI_VIEWMODE_EVOLUTION,() => getActiveClimate().getUIColorInactive(0.55), () => getActiveClimate().getUIColorActive()));
+
         container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"light suit.",  UI_VIEWMODE_SELECT, UI_VIEWMODE_ORGANISM_SUIT_LIGHT,() => getActiveClimate().getUIColorInactive(0.50), () => getActiveClimate().getUIColorActive()));
         container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"water suit.",  UI_VIEWMODE_SELECT, UI_VIEWMODE_ORGANISM_SUIT_WATER,() => getActiveClimate().getUIColorInactive(0.56), () => getActiveClimate().getUIColorActive()));
         container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"net suit.",  UI_VIEWMODE_SELECT, UI_VIEWMODE_ORGANISM_SUIT_NET,() => getActiveClimate().getUIColorInactive(0.52), () => getActiveClimate().getUIColorActive()));
+        
+        container.addElement(new SliderGradientBackground(this.window, UI_CONFIG_VIEWMODE_SUIT_OPACITY, sizeX, getBaseUISize() * 3, 0, 1, () => hsvToHex(0, 0, 0), () => hsvToHex(0, 0, 1)));
+
         container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"evolution",  UI_VIEWMODE_SELECT, UI_VIEWMODE_EVOLUTION,() => getActiveClimate().getUIColorInactive(0.55), () => getActiveClimate().getUIColorActive()));
         container.addElement(new RadioToggleLabel(this.window, sizeX, getBaseUISize() * 3, textAlignOffsetX,"nutrients",  UI_VIEWMODE_SELECT, UI_VIEWMODE_NUTRIENTS,() => getActiveClimate().getUIColorInactive(0.53), () => getActiveClimate().getUIColorActive()));
         container.addElement(new TextBackground(this.window, sizeX, br, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.64), 0.75, ""));

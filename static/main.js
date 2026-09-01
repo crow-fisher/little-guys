@@ -110,7 +110,7 @@ function render() {
     renderOrganisms();
     renderWaterSquares();
     if (loadGD(UI_SIMULATION_CLOUDS)) {
-        if (selectedViewMode == UI_VIEWMODE_NORMAL || selectedViewMode == UI_VIEWMODE_PATH_HISTORY)
+        if (selectedViewMode == UI_VIEWMODE_NORMAL || selectedViewMode == UI_VIEWMODE_PATH_HISTORY || selectedViewMode.indexOf("UI_VIEWMODE_ORGANISM") >= 0)
             renderClouds();
         if (selectedViewMode == UI_VIEWMODE_WIND)
             renderCloudsDebug();
