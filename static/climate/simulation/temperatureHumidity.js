@@ -298,6 +298,7 @@ function doRain() {
                 continue;
             let rainDropProbability = ((humidity - cloudRainThresh) / (cloudRainMax - cloudRainThresh));
             rainDropProbability /= ((getFrameXMaxWsq() - getFrameXMinWsq()) / 10)
+
             if (Math.random() > rainDropProbability) {
                 continue;
             }
@@ -310,7 +311,7 @@ function doRain() {
             let usedWaterPascalsPerSquare = dropPascals / 5;
             let dropHealth = dropPascals / pascalsPerWaterSquare;
 
-            dropHealth = Math.min(1, dropHealth * 1200000);
+            dropHealth = Math.min(1, dropHealth * 12000);
 
             let sq = addSquareByName(posX, posY, "water");
             if (sq) {

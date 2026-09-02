@@ -36,10 +36,11 @@ import { getActiveClimate } from "./climateManager.js";
 let TIME_SCALE = 1;
 let curUIKey = UI_SPEED_1;
 
-export const millis_per_day = 60 * 60 * 24 * 1000;
+export const MILLIS_PER_DAY = 60 * 60 * 24 * 1000;
 var curDay = 0.4;
 var prevDay = 0;
 var prevTime = 0;
+var curWeatherDay = 0;
 
 let prevRealTime = Date.now();
 let dt = 0;
@@ -103,7 +104,7 @@ export function doTimeSeek() {
         return;
     }
     let dayRemaining = seekTimeTarget - getCurDay();
-    let timeRemaining = millis_per_day * (dayRemaining / getCurTimeScale());
+    let timeRemaining = MILLIS_PER_DAY * (dayRemaining / getCurTimeScale());
 
     if (timeRemaining < getFrameDt() * 2) {
         TIME_SCALE -= 1;
@@ -215,7 +216,7 @@ export function doTimeSkipToDate(dateName) {
             date.setMonth(11, 21);
             break;
     }
-    setCurDay(Math.floor(date.getTime() / millis_per_day) + (curDay % 1));
+    setCurDay(Math.floor(date.getTime() / MILLIS_PER_DAY) + (curDay % 1));
     saveGD(UI_SPEED, UI_SPEED_1);
 
 }
@@ -226,7 +227,7 @@ export function setCurDay(newCurDay) {
 }
 
 export function doTimeSkipToNow() {
-    setCurDay(Date.now() / millis_per_day);
+    setCurDay(Date.now() / MILLIS_PER_DAY);
     saveGD(UI_SPEED, UI_SPEED_1);
     return;
 }
@@ -318,8 +319,12 @@ export function getCurDay() {
     return curDay;
 }
 
-function getPrevDay() {
+export function getPrevDay() {
     return prevDay;
+}
+
+export function getCurWeatherDay() {
+    return curWeatherDay;
 }
 
 export function getCurTimeScaleVal(v) {
@@ -419,19 +424,21 @@ function updateTime() {
     dtRollingAverage = dtRollingAverage * 0.9 + dt * 0.1;
 
     if (dt < 1000) {
-        curDay += dt / (millis_per_day / getCurTimeScale());
+        curDay += dt / (MILLIS_PER_DAY / getCurTimeScale());
         _prevDaylightStrength = _cdaylightStrength;
         _cdaylightStrength = null;
         _cmoonlightStrength = null;
+
+        curWeatherDay += dt / MILLIS_PER_DAY;
     }
 }
 
 export function getSkyBackgroundColorForDay(curDay) {
     // pull out of the shit below and do that there
-    let curMillis = curDay * millis_per_day;
+    let curMillis = curDay * MILLIS_PER_DAY;
     let curDate = new Date(curMillis);
-    let nextDate = new Date(curMillis + millis_per_day);
-    let prevDate = new Date(curMillis - millis_per_day);
+    let nextDate = new Date(curMillis + MILLIS_PER_DAY);
+    let prevDate = new Date(curMillis - MILLIS_PER_DAY);
 
     let prevTimes = SunCalc.getTimes(prevDate, getActiveClimate().lat, getActiveClimate().lng);
     let curTimes = SunCalc.getTimes(curDate, getActiveClimate().lat, getActiveClimate().lng);
@@ -501,7 +508,7 @@ export function getMoonlightStrength() {
         return _cmoonlightStrength;
     }
     let curDay = getCurDay();
-    let curDate = new Date(curDay * millis_per_day);
+    let curDate = new Date(curDay * MILLIS_PER_DAY);
     let moonData = SunCalc.getMoonIllumination(curDate);
     return moonData.fraction;
 }
@@ -512,7 +519,7 @@ function getDaylightStrength() {
         return _cdaylightStrength;
     }
     let curDay = getCurDay();
-    let curDate = new Date(curDay * millis_per_day);
+    let curDate = new Date(curDay * MILLIS_PER_DAY);
     let sunData = SunCalc.getPosition(curDate, getActiveClimate().lat, getActiveClimate().lng);
     // console.log(sunData.altitude, Math.sin(sunData.altitude));
 
@@ -556,7 +563,7 @@ export function getMoonlightColorRgb() {
 export function getMoonlightBrightness() {
     return 1;
     let curDay = getCurDay();
-    let curMillis = curDay * millis_per_day;
+    let curMillis = curDay * MILLIS_PER_DAY;
     let curDate = new Date(curMillis);
     let moonTimes = SunCalc.getMoonTimes(curDate, getActiveClimate().lat, getActiveClimate().lng);
     let moonFraction = SunCalc.getMoonIllumination(curDate).fraction;
@@ -669,4 +676,4 @@ function temp_blue(temperature) {
 }
 
 
-export { getDaylightStrength, getPrevDay, getPrevTime, updateTime, renderTime, initializeStarMap }
+export { getDaylightStrength, getPrevTime, updateTime, renderTime, initializeStarMap }

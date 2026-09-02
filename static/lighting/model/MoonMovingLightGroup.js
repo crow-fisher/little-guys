@@ -1,7 +1,7 @@
 import { getBaseSize, getCanvasHeight, getCanvasWidth, getFrameXMax, getFrameXMin, getFrameYMax, getFrameYMin } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { SunCalc } from "../../climate/suncalc/suncalc.js";
-import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getMoonlightBrightness, getMoonlightColor, millis_per_day } from "../../climate/time.js";
+import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getMoonlightBrightness, getMoonlightColor, MILLIS_PER_DAY } from "../../climate/time.js";
 import { COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { addTask } from "../../scheduler.js";
@@ -33,7 +33,7 @@ export class MoonMovingLightGroup extends LightGroup {
 
     getPositionFunc(idx) {
         return () => {
-            let curMillis = getCurDay() * millis_per_day;
+            let curMillis = getCurDay() * MILLIS_PER_DAY;
             let curDate = new Date(curMillis);
 
             let moonPosition = SunCalc.getMoonPosition(curDate, getActiveClimate().lat, getActiveClimate().lng);

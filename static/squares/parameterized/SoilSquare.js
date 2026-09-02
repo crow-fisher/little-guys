@@ -3,7 +3,7 @@ import { addSquare, getNeighbors, getSquares } from "../sqOperations.js";
 import { cachedGetWaterflowRate, clamp, hexToRgb, invlerp, lerp, processColorBicolorArr, randNumber, randRange } from "../../common.js";
 import { getCurTimeScale, getDt, getFrameDt, timeScaleFactor } from "../../climate/time.js";
 import { getPressure, getWindSpeedAtLocation, getWindSquareAbove } from "../../climate/simulation/wind.js";
-import { addWaterSaturationPascals, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, temperatureHumidityFlowrateFactor } from "../../climate/simulation/temperatureHumidity.js";
+import { addWaterSaturationPascals, getHumidity, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, temperatureHumidityFlowrateFactor } from "../../climate/simulation/temperatureHumidity.js";
 import { loadGD, UI_CONFIG_VIEWMODE_SUIT_OPACITY, UI_LIGHTING_SURFACE, UI_ORGANISM_SELECT, UI_PALETTE_COMPOSITION, UI_PALETTE_SOILIDX, UI_PALETTE_VARIANCE, UI_SIMULATION_CLOUDS, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER } from "../../ui/UIData.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { addSquareByName, getPlantForRef } from "../../manipulation.js";
@@ -498,18 +498,12 @@ export class SoilSquare extends BaseSquare {
         if (x < 0 || y < 0 || this.waterContainment <= 0.01) {
             return;
         }
-        let airWaterPressure = getWaterSaturation(x, y);
-        let myVaporPressure = (this.waterContainment / this.waterContainmentMax) * saturationPressureOfWaterVapor(getTemperatureAtWindSquare(x, y));
-        if (airWaterPressure > myVaporPressure) {
+        let airHumidity = getHumidity(x, y);
+        if (airHumidity > 1 || this.getSoilWaterPressure() < -5) {
             return;
         }
-        let pascals = (myVaporPressure - airWaterPressure);
-        pascals /= (8 * temperatureHumidityFlowrateFactor());
+        this.waterContainment -= .0001 * invlerp(-5, 0, this.getSoilWaterPressure());
 
-        pascals *= Math.exp(-0.01 * (this.posY - (y * 4)));
-        let amount = Math.min(this.waterContainment, (10 * pascals) / pascalsPerWaterSquare)
-        this.waterContainment -= amount;
-        addWaterSaturationPascals(x, y, pascals);
     }
 
     renderSuitabilityBase() {

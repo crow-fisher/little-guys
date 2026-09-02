@@ -1,7 +1,7 @@
 import { getBaseSize, getFrameXMax, getFrameXMin, getFrameYMax, getFrameYMin } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { SunCalc } from "../../climate/suncalc/suncalc.js";
-import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, millis_per_day } from "../../climate/time.js";
+import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, MILLIS_PER_DAY } from "../../climate/time.js";
 import { addTask } from "../../scheduler.js";
 import { loadGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_LIGHTING_QUALITY, UI_LIGHTING_SHADOW_SOFTNESS, UI_LIGHTING_SUN, UI_LIGHTING_UPDATERATE } from "../../ui/UIData.js";
 import { LightGroup } from "./LightGroup.js";
@@ -41,14 +41,14 @@ export class SunMovingLightGroup extends LightGroup {
 
     getPositionFunc(idx) {
         return () => {
-            let curMillis = getCurDay() * millis_per_day;
+            let curMillis = getCurDay() * MILLIS_PER_DAY;
             let curDate = new Date(curMillis);
 
             let times = SunCalc.getTimes(curDate, getActiveClimate().lat, getActiveClimate().lng);
 
-            let sunrise = times["sunrise"].getTime() / millis_per_day;
-            let noon = times["solarNoon"].getTime() / millis_per_day;
-            let sunset = times["night"].getTime() / millis_per_day;
+            let sunrise = times["sunrise"].getTime() / MILLIS_PER_DAY;
+            let noon = times["solarNoon"].getTime() / MILLIS_PER_DAY;
+            let sunset = times["night"].getTime() / MILLIS_PER_DAY;
 
             let sunPos = 0;
             if (getCurDay() < noon)

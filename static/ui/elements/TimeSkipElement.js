@@ -1,7 +1,7 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { SunCalc } from "../../climate/suncalc/suncalc.js";
-import { explicitSeek, getCurDay, getSeekTimeTarget, getSkyBackgroundColorForDay, millis_per_day } from "../../climate/time.js";
+import { explicitSeek, getCurDay, getSeekTimeTarget, getSkyBackgroundColorForDay, MILLIS_PER_DAY } from "../../climate/time.js";
 import { COLOR_BLACK } from "../../colors.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
@@ -34,10 +34,10 @@ export class TimeSkipElement extends WindowElement {
         MAIN_CONTEXT.fillStyle = getActiveClimate().getUIColorInactive(0.90);
         MAIN_CONTEXT.fillRect(startX, startY, this.sizeX, this.sizeY);
         this.sizeX = getBaseUISize() * (26.404296875 + 4);
-        let curMillis = getCurDay() * millis_per_day;
+        let curMillis = getCurDay() * MILLIS_PER_DAY;
         let curDate = new Date(curMillis);
-        let nextDate = new Date(curMillis + millis_per_day);
-        let prevDate = new Date(curMillis - millis_per_day);
+        let nextDate = new Date(curMillis + MILLIS_PER_DAY);
+        let prevDate = new Date(curMillis - MILLIS_PER_DAY);
     
         let prevTimes = SunCalc.getTimes(prevDate, getActiveClimate().lat, getActiveClimate().lng);
         let curTimes = SunCalc.getTimes(curDate, getActiveClimate().lat, getActiveClimate().lng);
@@ -45,9 +45,9 @@ export class TimeSkipElement extends WindowElement {
     
         this.times = new Array();
     
-        this.labels.forEach((label) => this.times.push(prevTimes[label].getTime() / millis_per_day));
-        this.labels.forEach((label) => this.times.push(curTimes[label].getTime() / millis_per_day));
-        this.labels.forEach((label) => this.times.push(nextTimes[label].getTime() / millis_per_day));
+        this.labels.forEach((label) => this.times.push(prevTimes[label].getTime() / MILLIS_PER_DAY));
+        this.labels.forEach((label) => this.times.push(curTimes[label].getTime() / MILLIS_PER_DAY));
+        this.labels.forEach((label) => this.times.push(nextTimes[label].getTime() / MILLIS_PER_DAY));
     
         let toRender = new Array();
 

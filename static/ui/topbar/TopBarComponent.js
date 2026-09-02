@@ -23,7 +23,7 @@ import {
 } from "../UIData.js";
 import { TopBarToggle } from "./TopBarToggle.js";
 import { getLastMoveOffset } from "../../mouse.js";
-import { getCurDay, getFrameDt, getTimeScale, millis_per_day } from "../../climate/time.js";
+import { getCurDay, getFrameDt, getTimeScale, MILLIS_PER_DAY } from "../../climate/time.js";
 import { TopBarText } from "./TopBarText.js";
 import { getCurWeather } from "../../climate/weather/weatherManager.js";
 import { getWindSquareAbove } from "../../climate/simulation/wind.js";
@@ -140,7 +140,7 @@ export class TopBarComponent {
 
     textDateTime() {
         let curDay = getCurDay();
-        let dayMillis = curDay * millis_per_day;
+        let dayMillis = curDay * MILLIS_PER_DAY;
         dayMillis -= (dayMillis % 1000);
         let curDate = new Date(dayMillis);
         let curSecond = Math.floor(curDate.getSeconds());

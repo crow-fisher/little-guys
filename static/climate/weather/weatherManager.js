@@ -1,7 +1,7 @@
 import { randRange, randRangeFactor } from "../../common.js";
 import { addUIFunctionMap, UI_CLIMATE_WEATHER_CLEAR, UI_CLIMATE_WEATHER_LIGHTRAIN, UI_CLIMATE_WEATHER_HEAVYRAIN, loadGD, saveGD, UI_CLIMATE_WEATHER_PARTLY_CLOUDY, UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, UI_CLIMATE_WEATHER_FOGGY, UI_CLIMATE_WEATHER_DURATION, UI_CLIMATE_WEATHER_ACTIVE, UI_SIMULATION_GENS_PER_DAY, UI_SIMULATION_CLOUDS, UI_CLIMATE_WEATHER_NULL, UI_DEBUG_CLIMATE_WEATHER_FOREVER } from "../../ui/UIData.js";
 import { getActiveClimate } from "../climateManager.js";
-import { getCurDay, getDt, getTimeScale } from "../time.js";
+import { getCurWeatherDay, getDt, getTimeScale } from "../time.js";
 import { getFrameXMaxWsq, getFrameXMinWsq, getFrameYMaxWsq, getFrameYMinWsq } from "../simulation/wind.js";
 import { Cloud } from "./cloud.js";
 import { topbarWeatherTextReset } from "../../ui/WindowManager.js";
@@ -15,7 +15,7 @@ let weatherClear, weatherPartlyCloudy, weatherMostlyCloudy, weatherFoggy, weathe
 let ui_weatherMap = new Map();
 
 let curWeatherStartTime = 0;
-let curWeatherInterval = 1;
+let curWeatherInterval = 0;
 let curWeather = null;
 let curClimate = null;
 
@@ -23,15 +23,15 @@ export function getCurWeather() {
     return curWeather;
 }
 export function getCurWeatherInterval() {
-    let int = ((curWeatherInterval) - (getCurDay() - curWeatherStartTime)) / 0.000694444;
-    int -= getCurDay() % (0.000694444 / 60);
+    let int = ((curWeatherInterval) - (getCurWeatherDay() - curWeatherStartTime)) / 0.000694444;
+    int -= getCurWeatherDay() % (0.000694444 / 60);
     return int;
 }
 
 let curClouds = [];
 let curWinds = [];
 
-let cloudDuration = () => getTimeScale() * 4 * randRange(4, 8) / loadGD(UI_SIMULATION_GENS_PER_DAY);
+let cloudDuration = () => randRange(4, 8);
 let cloudXSize = (min=0.4, max=0.8) => randRange(min, max) * (getFrameXMaxWsq() - getFrameXMinWsq());
 let cloudYSize = (min=0.1, max=0.2) => randRange(min, max) * (getFrameXMaxWsq() - getFrameXMinWsq());
 
@@ -40,7 +40,7 @@ function spawnFogCloud() {
         randRange(getFrameXMinWsq(), getFrameXMaxWsq()),
         randRange(getFrameYMinWsq(), getFrameYMaxWsq()),
         cloudXSize(.7, 1), cloudYSize(.7, 1),
-        getCurDay(), cloudDuration(),
+        getCurWeatherDay(), cloudDuration(),
         1.2, randRange(.0001, .002)));
 }
 
@@ -49,7 +49,7 @@ function spawnCumulusCloud() {
         randRange(getFrameXMinWsq(), getFrameXMaxWsq()),
         randRangeFactor(getFrameYMinWsq(), getFrameYMaxWsq(), 0.25),
         cloudXSize(), cloudYSize(),
-        getCurDay(), cloudDuration(),
+        getCurWeatherDay(), cloudDuration(),
         2, randRange(.001, .005)));
 }
 
@@ -58,7 +58,7 @@ function spawnNimbusCloud(rainFactor) {
         randRange(getFrameXMinWsq(), getFrameXMaxWsq()),
         randRangeFactor(getFrameYMinWsq(), getFrameYMaxWsq(), 0.1),
         cloudXSize(.4, .7), cloudYSize(),
-        getCurDay(), cloudDuration(),
+        getCurWeatherDay(), cloudDuration(),
         1.35, rainFactor * randRange(.025, .04)));
 }
 
@@ -67,7 +67,7 @@ function spawnWindGust(airPressure) {
         randRange(getFrameXMinWsq(), getFrameXMaxWsq()),
         randRangeFactor(getFrameYMinWsq(), getFrameYMaxWsq(), 0.7),
         cloudXSize(), cloudYSize(),
-        getCurDay(), cloudDuration() * 4 * Math.random(),
+        getCurWeatherDay(), cloudDuration() * 4 * Math.random(),
         -1, 0.8, Math.random() * airPressure));
 }
 
@@ -194,10 +194,10 @@ function weatherChange() {
     if (!loadGD(UI_SIMULATION_CLOUDS)) {
         return;
     }
-    curWeatherStartTime = Math.min(curWeatherStartTime, getCurDay());
+    curWeatherStartTime = Math.min(curWeatherStartTime, getCurWeatherDay());
     curWeather = ui_weatherMap.get(loadGD(UI_CLIMATE_WEATHER_ACTIVE));
 
-    if (getCurDay() - getDt() < Math.min(curWeatherStartTime + curWeatherInterval)) {
+    if (getCurWeatherDay() - getDt() < Math.min(curWeatherStartTime + curWeatherInterval)) {
         return;
     }
     let curWeatherPatternMap = getActiveClimate().weatherPatternMap;
@@ -224,13 +224,12 @@ function weatherChange() {
 export function weather() {
     curClouds.forEach((cloud) => cloud.tick());
     curWinds.forEach((wind) => wind.tick());
-    curClouds = Array.from(curClouds.filter((cloud) => getCurDay() < cloud.startDay + cloud.duration));
-    curClouds = Array.from(curClouds.filter((cloud) => getCurDay() > cloud.startDay - cloud.duration));
+    curClouds = Array.from(curClouds.filter((cloud) => getCurWeatherDay() < cloud.startDay + cloud.duration));
+    curClouds = Array.from(curClouds.filter((cloud) => getCurWeatherDay() > cloud.startDay - cloud.duration));
     curClouds = Array.from(curClouds.filter((cloud) => isSquareOnCanvas(cloud.centerX * 4, cloud.centerY * 4)));
-    curWinds = Array.from(curWinds.filter((wind) => getCurDay() < wind.startDay + wind.duration));
-    curWinds = Array.from(curWinds.filter((wind) => getCurDay() > wind.startDay - wind.duration));
+    curWinds = Array.from(curWinds.filter((wind) => getCurWeatherDay() < wind.startDay + wind.duration));
+    curWinds = Array.from(curWinds.filter((wind) => getCurWeatherDay() > wind.startDay - wind.duration));
     curWinds = Array.from(curWinds.filter((wind) => isSquareOnCanvas(wind.centerX * 4, wind.centerY * 4)));
-
 
     weatherChange();
     curWeather.weather();
@@ -244,8 +243,8 @@ export function initWeather() {
 
 function applyUIWeatherChange() {
     curWeather = ui_weatherMap.get(loadGD(UI_CLIMATE_WEATHER_ACTIVE));
-    curWeatherInterval = randRange(.001, .004);
-    curWeatherStartTime = getCurDay();
+    curWeatherInterval = .25 * randRange(.001, .004)
+    curWeatherStartTime = getCurWeatherDay();
     curWeatherStartTime -= curWeatherStartTime % (0.000694444 / 60);
 
     if (loadGD(UI_DEBUG_CLIMATE_WEATHER_FOREVER))

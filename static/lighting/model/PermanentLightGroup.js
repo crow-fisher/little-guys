@@ -1,7 +1,7 @@
 import { getBaseSize, getFrameXMax, getFrameXMin, getFrameYMax, getFrameYMin } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { SunCalc } from "../../climate/suncalc/suncalc.js";
-import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getMoonlightBrightness, getMoonlightColor, millis_per_day } from "../../climate/time.js";
+import { getCurDay, getCurrentLightColorTemperature, getDaylightStrength, getMoonlightBrightness, getMoonlightColor, MILLIS_PER_DAY } from "../../climate/time.js";
 import { RGB_COLOR_RED } from "../../colors.js";
 import { hsv2rgb } from "../../common.js";
 import { addTask } from "../../scheduler.js";
