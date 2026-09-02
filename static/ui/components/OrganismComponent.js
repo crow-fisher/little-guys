@@ -1,13 +1,16 @@
+import { copyVecValue } from "../../../future/main/util/vector.js";
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { calculateColor } from "../../climate/simulation/temperatureHumidity.js";
-import { hexToRgb } from "../../common.js";
+import { hexToRgb, hsvToHex, rgbToHex } from "../../common.js";
+import { getPlantForRef } from "../../manipulation.js";
 import { _lightDecayValue, _lightLevelDisplayExposureAdjustment, _llt_max, _llt_min, _llt_mult, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, baseOrganism_dnm } from "../../organisms/BaseOrganism.js";
 import { coneflower_dnm } from "../../organisms/flowers/ConeflowerOrganism.js";
 import { cattail_dnm } from "../../organisms/grasses/CattailOrganism.js";
 import { kblue_dnm } from "../../organisms/grasses/KentuckyBluegrassOrganism.js";
 import { wheat_dnm } from "../../organisms/grasses/WheatOrganism.js";
 import { pmoss_dnm } from "../../organisms/mosses/PleurocarpMossOrganism.js";
+import { ORGANISM_UI_REF } from "../../organisms/OrganismUIRef.js";
 import { Component } from "../Component.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
 import { Container } from "../Container.js";
@@ -16,7 +19,7 @@ import { SliderGradientBackgroundGetterSetter } from "../elements/SliderGradient
 import { TextBackground } from "../elements/TextBackground.js";
 import { TextFunctionalBackground } from "../elements/TextFunctionalBackground.js";
 import { Toggle } from "../elements/Toggle.js";
-import { TwoParameterPlantConfigurator } from "../elements/TwoParameterPlantConfigurator.js";
+import { getCurPlantConfiguratorVal, TwoParameterPlantConfigurator } from "../elements/TwoParameterPlantConfigurator.js";
 import { UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_WHEAT, UI_ORGANISM_GRASS_KBLUE, UI_ORGANISM_GRASS_CATTAIL, UI_CENTER, UI_ORGANISM_TREE_PALM, UI_ORGANISM_TYPE_SELECT, UI_ORGANISM_TYPE_MOSS, UI_ORGANISM_TYPE_GRASS, UI_ORGANISM_TYPE_FLOWER, UI_ORGANISM_TYPE_TREE, loadGD, loadUI, UI_UI_PHONEMODE, UI_ORGANISM_FLOWER_CONEFLOWER, UI_ORGANISM_NUTRITION_CONFIGURATOR, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_MOSS_PLEUROCARP, UI_VIEWMODE_SELECT, UI_VIEWMODE_ORGANISM_SUIT_WATER, UI_VIEWMODE_ORGANISM_SUIT_LIGHT, UI_VIEWMODE_ORGANISM_SUIT_NET } from "../UIData.js";
 
 export class OrganismComponent extends Component {
@@ -161,7 +164,11 @@ export class OrganismComponent extends Component {
 
           organismControlConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.58), 0.75, "target light level"))
 
-          organismControlConditionalContainer.addElement(new TwoParameterPlantConfigurator(this.window, sizeX, h1 * 4));
+          let organismConfiguratorRow = new Container(this.window, 0, 0);
+          organismControlConditionalContainer.addElement(organismConfiguratorRow);
+
+          organismConfiguratorRow.addElement(new TwoParameterPlantConfigurator(this.window, sizeX - h1, h1 * 4));
+          organismConfiguratorRow.addElement(new TextBackground(this.window, h1, h1 * 4, UI_CENTER, () => this.getOrgEvolutionColor()));
 
           // plant nutrition characteristic configurator
           organismControlConditionalContainer.addElement(new TextBackground(this.window, sizeX, br1, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, ""));
@@ -329,5 +336,18 @@ export class OrganismComponent extends Component {
                }
           };
           super.render();
+     } 
+      
+     setupRefOrg() {
+          this._suitOrg = this._suitOrg ?? new (getPlantForRef(loadGD(UI_ORGANISM_SELECT)))(null, -1);
+          if (this._suitOrg.uiRef != loadGD(UI_ORGANISM_SELECT))
+               this._suitOrg = new (getPlantForRef(loadGD(UI_ORGANISM_SELECT)))(null, -1);
+          copyVecValue(getCurPlantConfiguratorVal(), this._suitOrg.evolutionParameters);
+          this._suitOrg.processGenetics();
+     }
+
+     getOrgEvolutionColor() {
+          this.setupRefOrg();
+          return rgbToHex(...this._suitOrg.colorLeaf);
      }
 }

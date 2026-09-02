@@ -6,12 +6,13 @@ import { PlantSquare } from "../squares/PlantSquare.js";
 import { applyLightingFromSource } from "../lighting/lightingProcessing.js";
 import { loadGD, UI_EVOLUTION_ACTIVE_PARAM, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_SELECT, UI_SIMULATION_GENS_PER_DAY, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
 import { COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
-import { clamp, randNumber, randRange, rgbToRgba } from "../common.js";
+import { clamp, hsv2rgbDest, randNumber, randRange, rgb2hsv, rgbToRgba } from "../common.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { zoomCanvasFillRect } from "../canvas.js";
 import { HUE_GREEN } from "../hue.js";
 import { SeedSquare } from "../squares/SeedSquare.js";
 import { getNextBlockId, getNextOrgId } from "../globals.js";
+import { copyVecValue } from "../../future/main/util/vector.js";
 
 export const _llt_mult = "_llt_mult";
 export const _llt_min = "_llt_min";
@@ -99,6 +100,12 @@ class BaseOrganism {
 
         this.organismColor = COLOR_BLACK;
         this.organismViewHsvBase = [166, 95, 95];
+
+        ////    Colors Naming Convention
+        // 'colorBase' is the raw, starting base value.
+        // 'color' is the result as processed by your evolution parameters.
+        this.colorBaseLeaf = [81, 92, 36];
+        this.colorLeaf = [81, 92, 36];
     }
 
     getGrowthLightLevel() {
@@ -185,7 +192,6 @@ class BaseOrganism {
         this.processGenetics();
     }
 
-
     getNextEvolutionParameter(start, cur, target) {
         let range = 0.02;
         let half = range / 2;
@@ -220,6 +226,10 @@ class BaseOrganism {
         this.evolutionLightingOffset = -.5 + this.evolutionParameters[0];
         this.evolutionMoistureOffset = 0.75 * (-.5 + this.evolutionParameters[1]);
 
+        let colorHsvProcessed = rgb2hsv(...this.colorBaseLeaf);
+        colorHsvProcessed[0] += 70 * (this.evolutionParameters.at(1) - 0.5);
+        hsv2rgbDest(...colorHsvProcessed, this.colorLeaf);
+
         // let p0 = this.evolutionParameters[0];
         // this.growthLightLevel *= (1 + 1.4 * p0);
 
@@ -239,57 +249,13 @@ class BaseOrganism {
     }
 
     // WATER SATURATION AND NUTRIENTS 
-
-    waterPressureTick() {
-        let roots = this.lifeSquares
-            .filter((lsq) => lsq.type == "root");
-        let numRoots = roots.map((lsq) => 1).reduce(
-            (accumulator, currentValue) => accumulator + currentValue,
-            0);
-
-
-        let target = this.getWaterPressureSoilTarget();
-        let min = target + this.waterPressureWiltThresh();
-        let max = target + this.waterPressureOverwaterThresh();
-
-        let waterPressureLossRate;
-
-        if (this.waterPressure < min)
-            waterPressureLossRate = 0;
-        else if (this.waterPressure < target)
-            waterPressureLossRate = (this.waterPressure - min) / (target - min);
-        else if (this.waterPressure < max)
-            waterPressureLossRate = 1 + (this.waterPressure - target) / (max - target);
-        else
-            waterPressureLossRate = 2;
-
-        this.waterPressure -= waterPressureLossRate * this.waterPressureChangeRate;
-
-        if (numRoots > 0)
-            this.waterPressure += (1 / numRoots) * this.waterPressureChangeRate * roots.filter((lsq) => lsq.linkedSquare != null && lsq.linkedSquare.proto == "SoilSquare")
-                .map((lsq) => {
-                    let sq = lsq.linkedSquare;
-                    let sqWaterPressure = sq.getSoilWaterPressure();
-                    let diffToTarget = sqWaterPressure - this.getWaterPressureSoilTarget();
-                    if (diffToTarget <= 0) {
-                        return 0;
-                    }
-
-                    let amount = diffToTarget;
-                    if (this.waterPressure > target)
-                        amount /= waterPressureLossRate;
-
-                    return amount;
-                })
-                .reduce((a, b) => a + b, 0);
-    }
-
     lsqWaterPressure(val) {
         let c = this.curNumRoots;
         this.waterPressure = this.waterPressure * (c - 1) / c + (val / c);
     }
 
     nutrientTick() {
+        this.processGenetics();
         let growthCycleFrac = getDt() / this.getGrowthCycleMaturityLength();
         let mult = growthCycleFrac * this.wiltEfficiency() / (2 * this.lightLevelThrottleVal() * (this.growthNumRoots ** 0.7));
         let targetPerRootNitrogen = mult * this.growthNitrogen;
@@ -628,7 +594,9 @@ b
         return true;
     }
 
-
+    processColor() {
+        this.lifeSquares.filter((lsq) => lsq.type != "root").forEach((lsq) => copyVecValue(this.colorLeaf, lsq.renderColor))
+    }
     // RENDERING
     render() {
         let mode = loadGD(UI_VIEWMODE_SELECT);
@@ -636,6 +604,7 @@ b
             this.setNutrientIndicators();
         }
         if (this.stage != STAGE_DEAD) {
+            this.processColor();
             this.lifeSquares.forEach((sp) => sp.render())
         }
 

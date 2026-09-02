@@ -32,17 +32,7 @@ class BaseLifeSquare {
         this.lightHealth = 1;
         this.prevLightHealth = 1;
 
-        this.baseColor = "#515c24";
-        this.darkColor = "#353b1a";
-        this.accentColor = "#5d6637";
-
-        this.baseColor_rgb = hexToRgb(this.baseColor);
-        this.darkColor_rgb = hexToRgb(this.darkColor);
-        this.accentColor_rgb = hexToRgb(this.accentColor);
-
-        this.baseColorAmount = 33;
-        this.darkColorAmount = 33;
-        this.accentColorAmount = 33;
+        this.renderColor = [100, 100, 100]
 
         this.spawnTime = Date.now();
 
@@ -355,51 +345,20 @@ class BaseLifeSquare {
         // if (isSqRowChanged(Math.floor(this.getPosY()))) {
         //     minTime /= 4;
         // }
-
         if (
             (frameOpacity != this.lastColorCacheOpacity) ||
             (Date.now() > this.lastColorCacheTime + minTime * Math.random()) ||
             Math.abs(getDaylightStrengthFrameDiff()) > 0.01) {
             this.lastColorCacheTime = Date.now();
             this.lastColorCacheOpacity = frameOpacity;
-            let res = this.getStaticRand(1) * this.accentColorAmount + this.darkColorAmount + this.baseColorAmount;
-            let baseColor = null;
-            let altColor1 = null;
-            let altColor2 = null;
-            if (res < this.accentColorAmount) {
-                baseColor = this.accentColor_rgb;
-                altColor1 = this.darkColor_rgb;
-                altColor2 = this.baseColor_rgb;
-            } else if (res < this.accentColorAmount + this.darkColorAmount) {
-                baseColor = this.accentColor_rgb;
-                altColor1 = this.baseColor_rgb;
-                altColor2 = this.darkColor_rgb;
-            } else {
-                altColor1 = this.accentColor_rgb;
-                altColor2 = this.darkColor_rgb;
-                baseColor = this.baseColor_rgb;
-            }
-
-            let rand = this.getStaticRand(2);
-            // the '0.1' is the base darkness
-            let outColorBase = {
-                r: (baseColor.r * 0.5 + ((altColor1.r * rand + altColor2.r * (1 - rand)) * 0.5)),
-                g: (baseColor.g * 0.5 + ((altColor1.g * rand + altColor2.g * (1 - rand)) * 0.5)),
-                b: (baseColor.b * 0.5 + ((altColor1.b * rand + altColor2.b * (1 - rand)) * 0.5))
-            }
-
-            let outColorHsv = rgb2hsv(outColorBase.r, outColorBase.g, outColorBase.b);
-            outColorHsv[0] += 150 * (this.linkedOrganism.evolutionParameters.at(1) - 0.05);
-
-            let outColorHsvRgb = hsvToRgb(...outColorHsv);
 
             this.frameCacheLighting = null;
             let lightingColor = this.processLighting();
             let frameLightingOffset = Math.exp(this.linkedOrganism.lightLevelDisplayExposureAdjustment());
             let outColor = {
-                r: (frameLightingOffset * lightingColor.r) * outColorHsvRgb[0] / 255,
-                g: (frameLightingOffset * lightingColor.g) * outColorHsvRgb[1] / 255,
-                b: (frameLightingOffset * lightingColor.b) * outColorHsvRgb[2] / 255
+                r: (frameLightingOffset * lightingColor.r) * this.renderColor[0] / 255,
+                g: (frameLightingOffset * lightingColor.g) * this.renderColor[1] / 255,
+                b: (frameLightingOffset * lightingColor.b) * this.renderColor[2] / 255
             };
             this.cachedRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), frameOpacity);
         }

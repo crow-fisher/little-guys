@@ -513,7 +513,7 @@ export class SoilSquare extends BaseSquare {
         }
         this._suitOrg = this._suitOrg ?? new (getPlantForRef(loadGD(UI_ORGANISM_SELECT)))(null, -1);
         if (this._suitOrg.uiRef != loadGD(UI_ORGANISM_SELECT))
-            this._suitOrg = new (ORGANISM_UI_REF[loadGD(UI_ORGANISM_SELECT)])(this, -1);
+            this._suitOrg = new (getPlantForRef(loadGD(UI_ORGANISM_SELECT)))(null, -1);
 
         copyVecValue(getCurPlantConfiguratorVal(), this._suitOrg.evolutionParameters);
         this._suitOrg.processGenetics();
