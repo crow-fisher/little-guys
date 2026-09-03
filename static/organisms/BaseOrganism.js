@@ -102,6 +102,7 @@ class BaseOrganism {
         this.organismViewHsvBase = [166, 95, 95];
 
         ////    Colors Naming Convention
+
         // 'colorBase' is the raw, starting base value.
         // 'color' is the result as processed by your evolution parameters.
         this.colorBaseLeaf = [81, 92, 36];
@@ -593,7 +594,7 @@ b
         return true;
     }
 
-    processColor() {
+    processLsqRendering() {
         this.lifeSquares.filter((lsq) => lsq.type != "root").forEach((lsq) => copyVecValue(this.colorLeaf, lsq.renderColor))
     }
     // RENDERING
@@ -603,7 +604,7 @@ b
             this.setNutrientIndicators();
         }
         if (this.stage != STAGE_DEAD) {
-            this.processColor();
+            this.processLsqRendering();
             this.lifeSquares.forEach((sp) => sp.render())
         }
 

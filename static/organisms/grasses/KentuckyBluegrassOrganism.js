@@ -67,15 +67,16 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
         this.growthNumRoots = this.growthNumGreen;
     }
 
-    doGreenGrowth() {
-        super.doGreenGrowth();
-        if (this.originGrowth != null) {
-            this.grasses.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
+    processLsqRendering() {
+        super.processLsqRendering();
+        this.grasses.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .forEach((grass) => {
-                grass.lifeSquares.forEach((lsq) => lsq.width = .3 + .3 * Math.log(1 + grass.lifeSquares.length));
-
+                let l = grass.lifeSquares.length;
+                grass.lifeSquares.forEach((lsq) => {
+                    lsq.width = .3 + .3 * Math.log(l - i);
+                    i += 1;
+                });
             })
-        }
     }
 
     growGrass() {

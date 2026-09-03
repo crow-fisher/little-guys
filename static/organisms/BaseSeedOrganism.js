@@ -48,7 +48,7 @@ class BaseSeedOrganism extends BaseOrganism {
             if (this.sproutAge > this.totalSproutTime) {
                 let linkedSquareCache = this.linkedSquare;
                 let newOrg = new (this.getSproutType())(linkedSquareCache, this.parentId);
-                this.applyEvolutionParameters(newOrg);
+                org.setEvolutionParameters(this.evolutionParameters);
                 registerLineage(newOrg)
                 this.destroy();
                 return;
@@ -110,13 +110,6 @@ class BaseSeedOrganism extends BaseOrganism {
         this.linkSquare(targetSq);
 
         this.sproutAge = 0;
-    }
-
-    applyEvolutionParameters(org) {
-        if (org == false || org == null || this.evolutionParameters == null) {
-            return;
-        }
-        org.setEvolutionParameters(this.evolutionParameters);
     }
 }
 

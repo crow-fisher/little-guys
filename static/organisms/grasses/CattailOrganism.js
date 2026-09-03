@@ -74,10 +74,9 @@ export class CattailOrganism extends BaseOrganism {
     }
 
     processGenetics() {
-        this.evolutionParameters[0] = Math.min(Math.max(this.evolutionParameters[0], 0.00001), .99999)
+        super.processGenetics();
         let p0 = this.evolutionParameters[0];
-        this.growthLightLevel = 1 + .7 * p0;
-        this.maxNumGrass = randNumber(1, 2);
+        this.maxNumGrass = 2;
         this.maxGrassLength = 10 + Math.floor(this.maxGrassLength * p0);
         this.growthNumGreen = this.maxNumGrass * this.maxGrassLength;
         this.growthNumRoots = this.growthNumGreen / 4;

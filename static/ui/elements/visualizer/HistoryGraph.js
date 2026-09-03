@@ -57,7 +57,7 @@ export class HistoryGraph extends WindowElement {
             MAIN_CONTEXT.moveTo(startX + this.sizeX * sx, startY + this.sizeY * o.ep[this.param]);
             MAIN_CONTEXT.lineTo(startX + this.sizeX * sy, startY + this.sizeY * p.ep[this.param]);
             MAIN_CONTEXT.stroke();
-            this.m[id].children.forEach((cid) => this.renderLineage(startX, startY, cid, depth - 1))
+            // this.m[id].children.forEach((cid) => this.renderLineage(startX, startY, cid, depth - 1))
         }
         this.renderLineage(startX, startY, pid, depth + 1)
     }
@@ -81,12 +81,14 @@ export class HistoryGraph extends WindowElement {
 
         let optimals = new Map() 
 
-        this.num = 10;
+        this.num = 30;
         this.m = loadGD(UI_ORGANISM_LINEAGE_MAP);
         this.param = loadGD(UI_EVOLUTION_ACTIVE_PARAM);
         this.seen = new Set();
 
         let generations = [];
+
+        this.roots.clear();
             iterateOnOrganisms((org) => {
                 if (org.__proto__.__proto__.constructor.name == "BaseSeedOrganism") {
                     return;

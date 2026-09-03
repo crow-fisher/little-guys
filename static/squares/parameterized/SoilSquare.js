@@ -180,6 +180,10 @@ export class SoilSquare extends BaseSquare {
     }
 
     percolateInnerMoisture() {
+        if (Math.random() > this.percolationFactor) {
+            return;
+        }
+
         this._startWC = this.waterContainment;
 
         this.percolateInnerMoistureNeighbor(this.neighbor_l);
@@ -187,8 +191,15 @@ export class SoilSquare extends BaseSquare {
         this.percolateInnerMoistureNeighbor(this.neighbor_t);
         this.percolateInnerMoistureNeighbor(this.neighbor_b);
 
-        this.waterOutflowRoutine();
+        this._endWC = this.waterContainment;
+        this._diffWC = this._startWC - this._endWC;
+        
+        let max = 0.01;
+        let minP = 0.97;
 
+        this.percolationFactor = (1 - minP) + minP * clamp(this._diffWC / max);
+
+        this.waterOutflowRoutine();
     }
 
 
@@ -197,6 +208,8 @@ export class SoilSquare extends BaseSquare {
         if (neighbor == null) {
             return;
         }
+
+
 
         // water flows from high moisture to low 
         this._wp = this.getSoilWaterPressure();
@@ -313,7 +326,6 @@ export class SoilSquare extends BaseSquare {
                 newWater.blockHealth = outflowWaterAmount;
                 this.waterContainment -= outflowWaterAmount;
                 applyLightingFromSource(this, newWater);
-                copyVecValue(this.frameCacheLighting, newWater.frameCacheLighting);
             }
         }
     }

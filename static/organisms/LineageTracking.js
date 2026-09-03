@@ -5,12 +5,12 @@ export const children = "children";
 
 export function registerLineage(org) {
     let m = loadGD(UI_ORGANISM_LINEAGE_MAP)
-    m[org.id] = {
+    m[org.id] = structuredClone({
         id: org.id,
         pid: org.parentId,
         ep: org.evolutionParameters,
         time: org.spawnTime,
         children: []
-    }
+    })
     m[org.parentId]?.children.push(org.id)
 }

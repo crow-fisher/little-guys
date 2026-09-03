@@ -1,3 +1,4 @@
+import { copyVecValue } from "../../future/main/util/vector.js";
 import { getCanvasSquaresX, getCanvasSquaresY } from "../canvas.js";
 import { getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "../climate/time.js";
 import { getStandardDeviation } from "../common.js";
@@ -63,5 +64,5 @@ export function applyLightingFromSource(source, dest) {
     source.lighting.forEach((light) => {
         dest.lighting.push([Array.from(light[0].map((x) => x)), light[1]])
     });
-    dest.frameCacheLighting = structuredClone(source.frameCacheLighting);
+    copyVecValue(source.processLighting(), dest.frameCacheLighting);
 }
