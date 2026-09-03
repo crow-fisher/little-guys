@@ -181,7 +181,7 @@ export class SoilSquare extends BaseSquare {
 
     percolateInnerMoisture() {
         this._startWC = this.waterContainment;
-        
+
         this.percolateInnerMoistureNeighbor(this.neighbor_l);
         this.percolateInnerMoistureNeighbor(this.neighbor_r);
         this.percolateInnerMoistureNeighbor(this.neighbor_t);
@@ -202,7 +202,7 @@ export class SoilSquare extends BaseSquare {
         this._wp = this.getSoilWaterPressure();
         this._np = neighbor.getSoilWaterPressure() + (neighbor.getGravitationalPressure() - this.getGravitationalPressure());
         this._mp = (this._wp + this._np) / 2;
-        
+
         if (this._wp < this._np) {
             return;
         }
@@ -216,7 +216,7 @@ export class SoilSquare extends BaseSquare {
             return;
         }
 
-        this._flow /= Math.max(this.getWaterflowRate(), neighbor.getWaterflowRate()); 
+        this._flow /= Math.max(this.getWaterflowRate(), neighbor.getWaterflowRate());
 
         this._flow = Math.min(this._flow, this.waterContainment)
         this._flow = Math.min(this._flow, neighbor.waterContainmentMax - neighbor.waterContainment)
@@ -224,7 +224,7 @@ export class SoilSquare extends BaseSquare {
         this.waterContainment -= this._flow;
         neighbor.waterContainment += this._flow;
 
-        
+
 
     }
 
@@ -302,20 +302,19 @@ export class SoilSquare extends BaseSquare {
     }
 
     outflowNewWaterToLocation(posX, posY) {
-        if (getSquares(posX, posY).some((sq) => (!sq.surface && sq.collision))) {
-            return;
-        }
         let outflowWaterAmount = (this.waterContainment - this.getInverseMatricPressure(-2)) / this.getWaterflowRate();
-        if (outflowWaterAmount < Math.random() * 0.125) {
-            return;
-        }
-        let newWater = addSquareByName(posX, posY, "water");
-        if (newWater) {
-            newWater.blockHealth = outflowWaterAmount;
+        let curWater = getSquares(posX, posY).find((sq) => (!sq.surface && sq.collision))
+        if (curWater != null) {
+            curWater.blockHealth += outflowWaterAmount;
             this.waterContainment -= outflowWaterAmount;
-            applyLightingFromSource(this, newWater);
-            newWater.frameCacheLighting = null;
-            newWater.processLighting(true);
+        } else {
+            let newWater = addSquareByName(posX, posY, "water");
+            if (newWater) {
+                newWater.blockHealth = outflowWaterAmount;
+                this.waterContainment -= outflowWaterAmount;
+                applyLightingFromSource(this, newWater);
+                copyVecValue(this.frameCacheLighting, newWater.frameCacheLighting);
+            }
         }
     }
 
@@ -509,8 +508,14 @@ export class SoilSquare extends BaseSquare {
     renderSuitabilityBase() {
         if (this.linkedOrganisms.at(0) != null) {
             this._suitOrg = this.linkedOrganisms.at(0);
+            this._suitOrgDirect = true;
             return;
         }
+        if (this._suitOrgDirect) {
+            this._suitOrgDirect = false;
+            this._suitOrg = null;
+        }
+
         this._suitOrg = this._suitOrg ?? new (getPlantForRef(loadGD(UI_ORGANISM_SELECT)))(null, -1);
         if (this._suitOrg.uiRef != loadGD(UI_ORGANISM_SELECT))
             this._suitOrg = new (getPlantForRef(loadGD(UI_ORGANISM_SELECT)))(null, -1);

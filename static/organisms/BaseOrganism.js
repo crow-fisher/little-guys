@@ -255,7 +255,6 @@ class BaseOrganism {
     }
 
     nutrientTick() {
-        this.processGenetics();
         let growthCycleFrac = getDt() / this.getGrowthCycleMaturityLength();
         let mult = growthCycleFrac * this.wiltEfficiency() / (2 * this.lightLevelThrottleVal() * (this.growthNumRoots ** 0.7));
         let targetPerRootNitrogen = mult * this.growthNitrogen;
