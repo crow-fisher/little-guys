@@ -1,5 +1,5 @@
 import { randNumber, randRange } from "../../common.js";
-import { GenericRootSquare } from "../../lifeSquares/GenericRootSquare.js";
+import { LifeSquareRoot } from "../../lifeSquares/LifeSquareRoot.js";
 import { STAGE_ADULT, SUBTYPE_FLOWER, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_TRUNK, SUBTYPE_FLOWERTIP } from "../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
@@ -10,6 +10,7 @@ import { addSquare } from "../../squares/sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
 import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
 import { UI_ORGANISM_GRASS_CATTAIL } from "../../ui/UIData.js";
+import { copyVecValue } from "../../../future/main/util/vector.js";
 
 export let cattail_dnm = structuredClone(baseOrganism_dnm);
 cattail_dnm[_llt_min] = 0.49;
@@ -29,7 +30,7 @@ export class CattailOrganism extends BaseOrganism {
         this.proto = "CattailOrganism";
         this.uiRef = UI_ORGANISM_GRASS_CATTAIL;
         this.greenType = CattailGreenSquare;
-        this.rootType = GenericRootSquare;
+        this.rootType = LifeSquareRoot;
         this.grassGrowTimeInDays = 0.01;
 
         this.targetNumGrass = 1;
@@ -82,15 +83,19 @@ export class CattailOrganism extends BaseOrganism {
         this.growthNumRoots = this.growthNumGreen / 4;
     }
 
-    doGreenGrowth() {
-        super.doGreenGrowth();
+    processLsqRendering() {
+        if (!this.orgVisualUpdateFlag)
+            return;
+
         if (this.originGrowth != null) {
             this.grasses.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .forEach((grass) => {
                 grass.lifeSquares.forEach((lsq) => {
                     if (lsq.subtype == SUBTYPE_STEM) {
                         lsq.width = .2 + .3 * Math.log(1 + grass.lifeSquares.length);
+                        copyVecValue(this.colorLeaf, lsq.renderColor)
                     } else {
+                        copyVecValue([84, 47, 31], lsq.renderColor)
                         if (lsq.subtype == SUBTYPE_FLOWERTIP) {
                             lsq.width = .2 + .25 * Math.log(1 + grass.lifeSquares.length);
                         } else {

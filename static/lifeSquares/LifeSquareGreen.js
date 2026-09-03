@@ -16,16 +16,16 @@ export const LSQ_RENDERMODE_CIRCLE = "LSQ_RENDERMODE_CIRCLE";
 export const LSQ_RENDERMODE_THETA = "LSQ_RENDERMODE_THETA";
 
 const NUTRIENT_BASE_HSV = rgb2hsv(RGB_COLOR_VERY_FUCKING_GREEN.r, RGB_COLOR_VERY_FUCKING_GREEN.g, RGB_COLOR_VERY_FUCKING_GREEN.b);
-class BaseLifeSquare {
+class LifeSquareGreen {
     constructor(square, organism) {
-        this.proto = "BaseLifeSquare";
+        this.proto = "LifeSquareGreen";
         this.posX = square.posX;
         this.posY = square.posY;
         this.xOffset = 0;
         this.yOffset = 0;
         this.xRef = 0;
         this.yRef = 0;
-        this.type = "base";
+        this.type = "green";
         this.subtype = "";
         this.theta = 0;
 
@@ -154,29 +154,11 @@ class BaseLifeSquare {
         return this.posY - (this.deflectionYOffset + yOffset);
     }
 
-    applySubtypeRenderConfig() {
-
-    }
-
     processLightHealth(rgb) {
         let hsv = rgb2hsv(rgb.r, rgb.g, rgb.b);
         hsv[1] *= this.lightHealth;
         let rgbArr = hsv2rgb(...hsv);
         return { r: rgbArr[0], g: rgbArr[1], b: rgbArr[2] };
-    }
-
-    subtypeColorUpdate() {
-        if (this.type == "root") {
-            return;
-        }
-
-        this.applySubtypeRenderConfig();
-        this.activeRenderSubtype = this.subtype;
-        this.activeRenderState = this.state;
-        this.prevLightHealth = this.lightHealth;
-        this.baseColor_rgb = this.processLightHealth(hexToRgb(this.baseColor));
-        this.darkColor_rgb = this.processLightHealth(hexToRgb(this.darkColor));
-        this.accentColor_rgb = this.processLightHealth(hexToRgb(this.accentColor));
     }
 
     renderToCanvas() {
@@ -208,9 +190,6 @@ class BaseLifeSquare {
 
     render() {
         let frameOpacity = this.opacity;
-        if (this.lightHealth != this.prevLightHealth || this.activeRenderSubtype != this.subtype || this.activeRenderState != this.state) {
-            this.subtypeColorUpdate();
-        }
         if (this.linkedOrganism.stage == STAGE_DEAD) {
             frameOpacity *= (1 - this.linkedOrganism.deathProgress);
         }
@@ -390,4 +369,4 @@ class BaseLifeSquare {
     }
 
 }
-export { BaseLifeSquare };
+export { LifeSquareGreen };

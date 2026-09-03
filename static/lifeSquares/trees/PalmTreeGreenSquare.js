@@ -1,9 +1,9 @@
-import { BaseLifeSquare, LSQ_RENDERMODE_CIRCLE, LSQ_RENDERMODE_THETA } from "../BaseLifeSquare.js";
+import { LifeSquareGreen, LSQ_RENDERMODE_CIRCLE, LSQ_RENDERMODE_THETA } from "../LifeSquareGreen.js";
 import { SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE } from "../../organisms/Stages.js";
 import { hueShiftColorArr, rgbToHex } from "../../common.js";
 import { loadGD, UI_LIGHTING_PLANT_TREE } from "../../ui/UIData.js";
 
-export class PalmTreeGreenSquare extends BaseLifeSquare {
+export class PalmTreeGreenSquare extends LifeSquareGreen {
     constructor(square, organism) {
         super(square, organism);
         this.proto = "PalmTreeGreenSquare";

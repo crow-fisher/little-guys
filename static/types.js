@@ -1,7 +1,7 @@
 import { BaseSquare } from "./squares/BaseSqaure.js";
 import { PlantSquare } from "./squares/PlantSquare.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
-import { BaseLifeSquare } from "./lifeSquares/BaseLifeSquare.js";
+import { LifeSquareGreen } from "./lifeSquares/LifeSquareGreen.js";
 import { BaseOrganism } from "./organisms/BaseOrganism.js";
 import { SeedLifeSquare } from "./lifeSquares/SeedLifeSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
@@ -9,7 +9,7 @@ import { AquiferSquare } from "./squares/parameterized/RainSquare.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { WheatGreenSquare } from "./lifeSquares/grasses/WheatGreenSquare.js";
-import { GenericRootSquare } from "./lifeSquares/GenericRootSquare.js";
+import { LifeSquareRoot } from "./lifeSquares/LifeSquareRoot.js";
 import { WheatOrganism, WheatSeedOrganism } from "./organisms/grasses/WheatOrganism.js";
 import { KentuckyBluegrassGreenSquare } from "./lifeSquares/grasses/KentuckyBluegrassGreenSquare.js";
 import { KentuckyBluegrassOrganism, KentuckyBluegrassSeedOrganism } from "./organisms/grasses/KentuckyBluegrassOrganism.js";
@@ -45,13 +45,13 @@ let ProtoMap = {
     "ConeflowerOrganism": ConeflowerOrganism.prototype,
     "PleurocarpMossOrganism": PleurocarpMossOrganism.prototype,
 
-    "BaseLifeSquare": BaseLifeSquare.prototype,
+    "LifeSquareGreen": LifeSquareGreen.prototype,
     "WheatGreenSquare": WheatGreenSquare.prototype,
     "PalmTreeGreenSquare": PalmTreeGreenSquare.prototype,
     "KentuckyBluegrassGreenSquare": KentuckyBluegrassGreenSquare.prototype,
     "CattailGreenSquare": CattailGreenSquare.prototype,
     "ConeflowerGreenSqaure": ConeflowerGreenSqaure.prototype,
-    "GenericRootSquare": GenericRootSquare.prototype,
+    "LifeSquareRoot": LifeSquareRoot.prototype,
     "PleurocarpMossGreenSquare": PleurocarpMossGreenSquare.prototype,
 
     "SeedSquare": SeedSquare.prototype,
@@ -64,7 +64,7 @@ let ProtoMap = {
 }
 
 let TypeMap = {
-    [GenericRootSquare.name]: GenericRootSquare,
+    [LifeSquareRoot.name]: LifeSquareRoot,
     [WheatGreenSquare.name] : WheatGreenSquare,
     [PalmTreeGreenSquare.name]: PalmTreeGreenSquare,
     [KentuckyBluegrassGreenSquare.name]: KentuckyBluegrassGreenSquare,
@@ -74,7 +74,7 @@ let TypeMap = {
 }
 
 let TypeNameMap = {
-    GenericRootSquare: GenericRootSquare.name,
+    LifeSquareRoot: LifeSquareRoot.name,
     WheatGreenSquare: WheatGreenSquare.name,
     PalmTreeGreenSquare: PalmTreeGreenSquare.name,
     KentuckyBluegrassGreenSquare: KentuckyBluegrassGreenSquare.name,

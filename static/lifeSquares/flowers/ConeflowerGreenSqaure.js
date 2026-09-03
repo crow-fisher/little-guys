@@ -1,8 +1,8 @@
-import { BaseLifeSquare, LSQ_RENDERMODE_CIRCLE } from "../BaseLifeSquare.js";
+import { LifeSquareGreen, LSQ_RENDERMODE_CIRCLE } from "../LifeSquareGreen.js";
 import { STATE_DEAD, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE, SUBTYPE_FLOWERTIP, SUBTYPE_FLOWERBUD } from "../../organisms/Stages.js";
 import { hsv2rgb, hueShiftColorArr, rgbToHex } from "../../common.js";
 
-export class ConeflowerGreenSqaure extends BaseLifeSquare {
+export class ConeflowerGreenSqaure extends LifeSquareGreen {
     constructor(square, organism) {
         super(square, organism);
         this.proto = "ConeflowerGreenSqaure";

@@ -1,5 +1,5 @@
 import { randNumber, randRange } from "../../common.js";
-import { GenericRootSquare } from "../../lifeSquares/GenericRootSquare.js";
+import { LifeSquareRoot } from "../../lifeSquares/LifeSquareRoot.js";
 import { STAGE_ADULT, STAGE_FLOWER, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_TRUNK } from "../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
@@ -12,6 +12,7 @@ import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
 import { UI_ORGANISM_GRASS_KBLUE } from "../../ui/UIData.js";
 import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh } from "../BaseOrganism.js";
 import { HUE_CHARTREUSE } from "../../hue.js";
+import { copyVecValue } from "../../../future/main/util/vector.js";
 
 export let kblue_dnm = structuredClone(baseOrganism_dnm);
 kblue_dnm[_llt_mult] = 1.45;
@@ -31,7 +32,7 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
         this.proto = "KentuckyBluegrassOrganism";
         this.uiRef = UI_ORGANISM_GRASS_KBLUE;
         this.greenType = KentuckyBluegrassGreenSquare;
-        this.rootType = GenericRootSquare;
+        this.rootType = LifeSquareRoot;
         this.grassGrowTimeInDays =  0.01;
         this.side = Math.random() > 0.5 ? -1 : 1;
         this.orgInfoHue = HUE_CHARTREUSE; // Used in 'organismVisualizer' 
@@ -68,13 +69,17 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
     }
 
     processLsqRendering() {
-        super.processLsqRendering();
+        if (!this.orgVisualUpdateFlag)
+            return;
+        
         this.grasses.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .forEach((grass) => {
                 let l = grass.lifeSquares.length;
+                let i = 0;
                 grass.lifeSquares.forEach((lsq) => {
-                    lsq.width = .3 + .3 * Math.log(l - i);
+                    lsq.width = .3 + .3 * Math.log(3 + l - i);
                     i += 1;
+                    copyVecValue(this.colorLeaf, lsq.renderColor);
                 });
             })
     }

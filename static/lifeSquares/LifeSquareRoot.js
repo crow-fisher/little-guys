@@ -1,10 +1,10 @@
 import { hexToRgb } from "../common.js";
-import { BaseLifeSquare } from "./BaseLifeSquare.js";
+import { LifeSquareGreen } from "./LifeSquareGreen.js";
 
-export class GenericRootSquare extends BaseLifeSquare {
+export class LifeSquareRoot extends LifeSquareGreen {
     constructor(square, organism) {
         super(square, organism);
-        this.proto = "GenericRootSquare";
+        this.proto = "LifeSquareRoot";
         this.type = "root";
         this.opacity = this.linkedOrganism.rootOpacity;
         

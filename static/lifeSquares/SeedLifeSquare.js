@@ -1,6 +1,6 @@
 
-import { BaseLifeSquare } from "./BaseLifeSquare.js";
-class SeedLifeSquare extends BaseLifeSquare {
+import { LifeSquareGreen } from "./LifeSquareGreen.js";
+class SeedLifeSquare extends LifeSquareGreen {
     constructor(square, organism) {
         super(square, organism);
         this.proto = "SeedLifeSquare";

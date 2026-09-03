@@ -1,7 +1,7 @@
-import { BaseLifeSquare } from "../BaseLifeSquare.js";
+import { LifeSquareGreen } from "../LifeSquareGreen.js";
 import { STATE_DEAD, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_FLOWER, SUBTYPE_FLOWERNODE, SUBTYPE_FLOWERTIP } from "../../organisms/Stages.js";
 
-export class CattailGreenSquare extends BaseLifeSquare {
+export class CattailGreenSquare extends LifeSquareGreen {
     constructor(square, organism) {
         super(square, organism);
         this.proto = "CattailGreenSquare";

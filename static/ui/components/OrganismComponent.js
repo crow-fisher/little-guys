@@ -153,7 +153,7 @@ export class OrganismComponent extends Component {
           let viewmodeRow = new Container(this.window, 0, 0);
           organismControlConditionalContainer.addElement(viewmodeRow);
 
-          viewmodeRow.addElement(new TextBackground(this.window, fourth, h2, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.58), 0.75, "preview mode"))
+          viewmodeRow.addElement(new TextBackground(this.window, fourth, h2, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.58), 0.75, "preview"))
           viewmodeRow.addElement(new RadioToggleLabel(this.window, fourth, h2, UI_CENTER, "light", UI_VIEWMODE_SELECT, UI_VIEWMODE_ORGANISM_SUIT_LIGHT,
                () => getActiveClimate().getUIColorInactive(0.60), () => getActiveClimate().getUIColorInactive(0.52)));
           viewmodeRow.addElement(new RadioToggleLabel(this.window, fourth, h2, UI_CENTER, "water", UI_VIEWMODE_SELECT, UI_VIEWMODE_ORGANISM_SUIT_WATER,

@@ -1,9 +1,10 @@
 import { STATE_DEAD, STATE_THIRSTY, SUBTYPE_TRUNK, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_SHOOT, SUBTYPE_SPROUT, SUBTYPE_STEM, SUBTYPE_FLOWERNODE } from "../../organisms/Stages.js";
 import { hueShiftColorArr, rgbToHex } from "../../common.js";
 import { loadGD, UI_LIGHTING_PLANT_GRASS } from "../../ui/UIData.js";
-import { BaseLifeSquare } from "../BaseLifeSquare.js";
+import { LifeSquareGreen } from "../LifeSquareGreen.js";
 
-export class KentuckyBluegrassGreenSquare extends BaseLifeSquare {
+/* DEPRECATED */ 
+export class KentuckyBluegrassGreenSquare extends LifeSquareGreen {
     constructor(square, organism) {
         super(square, organism);
         this.proto = "KentuckyBluegrassGreenSquare";

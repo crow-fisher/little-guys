@@ -13,6 +13,8 @@ import { HUE_GREEN } from "../hue.js";
 import { SeedSquare } from "../squares/SeedSquare.js";
 import { getNextBlockId, getNextOrgId } from "../globals.js";
 import { copyVecValue } from "../../future/main/util/vector.js";
+import { LifeSquareGreen } from "../lifeSquares/LifeSquareGreen.js";
+import { LifeSquareRoot } from "../lifeSquares/LifeSquareRoot.js";
 
 export const _llt_mult = "_llt_mult";
 export const _llt_min = "_llt_min";
@@ -68,8 +70,7 @@ class BaseOrganism {
         this.evolutionLightingOffset = 0;
         this.evolutionMoistureOffset = 0;
 
-        this.greenType = null;
-        this.rootType = null;
+        this.orgVisualUpdateFlag = false;
 
         this.waterPressure = 0;
         this.waterPressureChangeRate = .01;
@@ -102,7 +103,6 @@ class BaseOrganism {
         this.organismViewHsvBase = [166, 95, 95];
 
         ////    Colors Naming Convention
-
         // 'colorBase' is the raw, starting base value.
         // 'color' is the result as processed by your evolution parameters.
         this.colorBaseLeaf = [81, 92, 36];
@@ -287,7 +287,7 @@ class BaseOrganism {
         let c = this.curNumGreen;
         this.lightLevel = this.lightLevel * (c - 1) / c + (val / c);
     }
-b
+
     lsqWaterPressure(val) {
         let c = this.curNumRoots;
         this.waterPressure = this.waterPressure * (c - 1) / c + (val / c);
@@ -345,6 +345,7 @@ b
         if (this.lifeSquares.some(pred)) {
             lifeSquare.lighting = this.lifeSquares.reverse().find(pred).lighting;
         }
+        this.orgVisualUpdateFlag = true;
     }
     removeAssociatedLifeSquare(lifeSquare) {
         this.lifeSquares = Array.from(this.lifeSquares.filter((lsq) => lsq != lifeSquare));
@@ -355,7 +356,7 @@ b
     growPlantSquare(parentSquare, dx, dy) {
         let newPlantSquare = new PlantSquare(parentSquare.posX + dx, parentSquare.posY - dy);
         if (addSquare(newPlantSquare)) {
-            let newGreenSquare = new this.greenType(newPlantSquare, this);
+            let newGreenSquare = new LifeSquareGreen(newPlantSquare, this);
             this.addAssociatedLifeSquare(newGreenSquare);
             newGreenSquare.linkSquare(newPlantSquare);
             parentSquare.addChild(newPlantSquare);
@@ -421,7 +422,7 @@ b
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
             () => {
-                let rootSq = new this.rootType(this.linkedSquare, this);
+                let rootSq = new LifeSquareRoot(this.linkedSquare, this);
                 rootSq.linkSquare(this.linkedSquare);
                 rootSq.subtype = SUBTYPE_ROOTNODE;
                 if (this.linkedSquare != null && this.linkedSquare != -1) {
@@ -523,7 +524,7 @@ b
             return;
         }
 
-        let newRootLifeSquare = new this.rootType(targetSquare, this);
+        let newRootLifeSquare = new LifeSquareRoot(targetSquare, this);
         this.addAssociatedLifeSquare(newRootLifeSquare);
         newRootLifeSquare.linkSquare(targetSquare);
         targetSquareParent.addChild(newRootLifeSquare)
@@ -595,7 +596,8 @@ b
     }
 
     processLsqRendering() {
-        this.lifeSquares.filter((lsq) => lsq.type != "root").forEach((lsq) => copyVecValue(this.colorLeaf, lsq.renderColor))
+        if (this.orgVisualUpdateFlag)
+            this.lifeSquares.filter((lsq) => lsq.type != "root").forEach((lsq) => copyVecValue(this.colorLeaf, lsq.renderColor))
     }
     // RENDERING
     render() {

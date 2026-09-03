@@ -3,11 +3,11 @@ import { RGB_COLOR_VERY_FUCKING_GREEN, RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED } fro
 import { hexToRgb, rgbToRgba } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
-import { BaseLifeSquare } from "../BaseLifeSquare.js";
+import { LifeSquareGreen } from "../LifeSquareGreen.js";
 
 
 
-export class BaseMossGreenSquare extends BaseLifeSquare {
+export class BaseMossGreenSquare extends LifeSquareGreen {
     constructor(square, organism) {
         super(square, organism);
         square.linkOrganismSquare(this);
