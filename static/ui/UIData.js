@@ -410,18 +410,18 @@ export let _GAMEDATA_DEFAULT = {
 
 _GAMEDATA_DEFAULT = {
     "UI_CONFIG_VIEWMODE_SUIT_OPACITY": 0.5,
-    "UI_ORGANISM_LINEAGE_MAP": {},
-    "UI_ORGANISM_ORG_ID": 0,
+    "UI_ORGANISM_LINEAGE_MAP": [],
+    "UI_ORGANISM_ORG_ID": 35909,
     "GAMEDATA": false,
-    "UI_CAMERA_EXPOSURE": 0.9280802701022838,
+    "UI_CAMERA_EXPOSURE": 0.30587327207276777,
     "UI_CANVAS_SQUARES_ZOOM": 1,
-    "UI_CANVAS_VIEWPORT_CENTER_X": 5215,
-    "UI_CANVAS_VIEWPORT_CENTER_Y": 4988,
+    "UI_CANVAS_VIEWPORT_CENTER_X": 5156,
+    "UI_CANVAS_VIEWPORT_CENTER_Y": 5083,
     "UI_CLIMATE_RAINFALL_DENSITY": 2,
     "UI_CLIMATE_SELECT": "UI_CLIMATE_MIDWEST",
     "UI_CLIMATE_SELECT_CLOUDS": false,
     "UI_CLIMATE_TOOL_SIZE": 335.1625,
-    "UI_CLIMATE_WEATHER_ACTIVE": "light rain",
+    "UI_CLIMATE_WEATHER_ACTIVE": "clear",
     "UI_CLIMATE_WEATHER_DURATION": 0.24999983999999997,
     "UI_CLIMATE_WEATHER_RAIN_TOGGLE": false,
     "UI_CLIMATE_WEATHER_TOOL_CLOUD_HUMIDITY": 1.01,
@@ -461,7 +461,16 @@ _GAMEDATA_DEFAULT = {
     "UI_MAIN_NEWWORLD_SIMHEIGHT": 125,
     "UI_MAIN_NEWWORLD_TYPE_SELECT": "UI_MAIN_NEWWORLD_TYPE_PLANTS",
     "UI_NAME": "little guys",
-    "UI_ORGANISM_CONFIGURATOR": {},
+    "UI_ORGANISM_CONFIGURATOR": {
+        "UI_ORGANISM_GRASS_KBLUE": [
+            0.8854166666666666,
+            0.4479166666666667
+        ],
+        "UI_ORGANISM_GRASS_CATTAIL": [
+            0.5,
+            0.5
+        ]
+    },
     "UI_ORGANISM_NUTRITION_CONFIGURATOR": true,
     "UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA": {
         "UI_ORGANISM_FLOWER_CONEFLOWER": {
@@ -472,18 +481,25 @@ _GAMEDATA_DEFAULT = {
         "UI_ORGANISM_GRASS_CATTAIL": {
             "_llt_max": 1.4023668639053255,
             "_llt_min": 0.443491124260355,
-            "_llt_mult": 1.2928994082840235,
-            "_llt_throttlValMax": 2.0177514792899407
+            "_llt_mult": 1.0016642011834318,
+            "_llt_throttlValMax": 2.0177514792899407,
+            "_waterPressureSoilTarget": -0.7573964497041423,
+            "_lsqColorVarianceSpeed": 4.230769230769232,
+            "_lsqColorVarianceMult": 12.892011834319526
         },
         "UI_ORGANISM_GRASS_KBLUE": {
-            "_llt_mult": 1.6534763313609466,
+            "_llt_mult": 0.8907174556213016,
             "_llt_throttlValMax": 2.159763313609467,
-            "_seedReduction": 0.020710059171597628,
-            "_waterPressureSoilTarget": -3.1168639053254443,
+            "_seedReduction": 0.20710059171597628,
+            "_waterPressureSoilTarget": -3.8084319526627217,
             "_llt_min": 0.527810650887574,
             "_llt_max": 1.533284023668639,
             "_waterPressureOverwaterThresh": 1.4013313609467453,
-            "_lightDecayValue": 5.016974852071006
+            "_lightDecayValue": 2.992566568047337,
+            "_lightLevelDisplayExposureAdjustment": 0.029585798816567976,
+            "_lsqColorVarianceMult": 12.781065088757394,
+            "_lsqColorVarianceSpeed": 6.671597633136097,
+            "_waterPressureWiltThresh": -1.5559171597633137
         },
         "UI_ORGANISM_GRASS_WHEAT": {
             "_llt_mult": 1.4815088757396446
@@ -497,9 +513,9 @@ _GAMEDATA_DEFAULT = {
     "UI_PALETTE_CLIPS_WAYPOINT_NAME": "new waypoint",
     "UI_PALETTE_CLIPS_WAYPOINT_SELECT": -1,
     "UI_PALETTE_COMPOSITION": [
-        0.13247863247863242,
-        0.3841880341880342,
-        0.4833333333333334
+        0.28131410256410255,
+        0.38868589743589743,
+        0.33
     ],
     "UI_PALETTE_MODE": "UI_PALETTE_MODE_ROCK",
     "UI_PALETTE_PASTE_MODE": "UI_PALETTE_PASTE_MODE_FG",
@@ -507,7 +523,7 @@ _GAMEDATA_DEFAULT = {
     "UI_PALETTE_PLANTS": false,
     "UI_PALETTE_ROCKIDX": 0,
     "UI_PALETTE_SELECT": "UI_PALETTE_SOILROCK",
-    "UI_PALETTE_SIZE": 6,
+    "UI_PALETTE_SIZE": 14.945945945945946,
     "UI_PALETTE_SOILIDX": 3,
     "UI_PALETTE_SPECIAL_CHURN_STRENGTH": 5,
     "UI_PALETTE_STRENGTH": 1,
@@ -521,7 +537,7 @@ _GAMEDATA_DEFAULT = {
     "UI_SM_LIGHTING": false,
     "UI_SOIL_INITALWATER": -2,
     "UI_SOIL_VIEWMODE": "🎨",
-    "UI_SPEED": "UI_SPEED_3",
+    "UI_SPEED": "UI_SPEED_1",
     "UI_TEXTEDIT_ACTIVE": null,
     "UI_TOPBAR": true,
     "UI_TOPBAR_BLOCK": false,
@@ -530,12 +546,14 @@ _GAMEDATA_DEFAULT = {
     "UI_TOPBAR_SIMULATION": false,
     "UI_TOPBAR_TIME": false,
     "UI_TOPBAR_VIEWMODE": false,
-    "UI_VIEWMODE_SELECT": "UI_VIEWMODE_NORMAL",
+    "UI_VIEWMODE_SELECT": "UI_VIEWMODE_ORGANISM_SUIT_LIGHT",
     "UI_WORLDPAN": true,
-    "UI_VISUALIZER_ORGANISM": true,
-    "UI_VISUALIZER_MODE": "UI_VISUALIZER_MODE_LITERAL"
-
+    "UI_VISUALIZER_ORGANISM": false,
+    "UI_VISUALIZER_MODE": "UI_VISUALIZER_MODE_LITERAL",
+    "UI_CLIMATE_SELECT_WEATHER": false,
+    "UI_DEBUG_CLIMATE_WEATHER_FOREVER": true
 };
+
 export let _UI_DEFAULT = {
     UI_UI_SIZE: 12,
     UI_UI_NEXTWORLD: 0,

@@ -60,7 +60,7 @@ class LifeSquareGreen {
         this.height = 1;
         this.strength = 1;
         this.xOffset = 0;
-        this.randoms = [];
+        this.randoms = {};
 
         this.cachedRgba = null;
 
@@ -136,12 +136,6 @@ class LifeSquareGreen {
         this.lighting = [];
     }
 
-    getStaticRand(randIdx) {
-        while (randIdx > this.randoms.length - 1) {
-            this.randoms.push(Math.random());
-        }
-        return this.randoms[randIdx];
-    }
 
     calculateWidthXOffset() {
         return -(0.5 - (this.width / 2));

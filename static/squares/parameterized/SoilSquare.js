@@ -122,8 +122,8 @@ export class SoilSquare extends BaseSquare {
     }
 
     initWaterContainment() {
-        // this.waterContainment = .2; // this.getInverseMatricPressure(-4);
-        this.waterContainment = this.getInverseMatricPressure(-3);
+        this.renderSuitabilityBase();
+        this.waterContainment = this.getInverseMatricPressure(this._suitOrg.getWaterPressureSoilTarget());
     }
 
     getInversePressureGeneric(matricPressure, refArr) {
@@ -172,7 +172,7 @@ export class SoilSquare extends BaseSquare {
         );
     }
     getGravitationalPressure() {
-        return -0.01 * 9.8 * this.posY;
+        return -0.005 * 9.8 * this.posY;
     }
 
     getSoilWaterPressure() {
@@ -229,7 +229,7 @@ export class SoilSquare extends BaseSquare {
             return;
         }
 
-        this._flow /= Math.max(this.getWaterflowRate(), neighbor.getWaterflowRate());
+        this._flow /= (Math.max(this.getWaterflowRate(), neighbor.getWaterflowRate()) ** .2);
 
         this._flow = Math.min(this._flow, this.waterContainment)
         this._flow = Math.min(this._flow, neighbor.waterContainmentMax - neighbor.waterContainment)
@@ -334,7 +334,7 @@ export class SoilSquare extends BaseSquare {
         if (this.waterContainmentMax == 0 || this.waterContainment >= this.waterContainmentMax) {
             return 0;
         }
-        let maxWaterflowRate = (this.waterContainmentMax) / (this.getWaterflowRate());
+        let maxWaterflowRate = (this.waterContainmentMax) / (this.getWaterflowRate() ** 0.1);
         let amountToPercolate = Math.min(this.waterContainmentMax - this.waterContainment, Math.min(waterBlock.blockHealth), maxWaterflowRate);
         this.waterContainment += amountToPercolate;
         return amountToPercolate;
@@ -503,6 +503,8 @@ export class SoilSquare extends BaseSquare {
     }
 
     waterEvaporationRoutine() {
+        this.waterContainment -= .0001 * invlerp(-5, 0, this.getSoilWaterPressure());
+
         let adjacentWindSquare = getWindSquareAbove(this.posX, this.posY);
         let x = adjacentWindSquare[0];
         let y = adjacentWindSquare[1];
@@ -513,7 +515,6 @@ export class SoilSquare extends BaseSquare {
         if (airHumidity > 1 || this.getSoilWaterPressure() < -5) {
             return;
         }
-        this.waterContainment -= .0001 * invlerp(-5, 0, this.getSoilWaterPressure());
 
     }
 

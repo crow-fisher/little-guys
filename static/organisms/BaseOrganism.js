@@ -27,6 +27,8 @@ export const _lightDecayValue = "_lightDecayValue";
 export const _waterPressureOverwaterThresh = "_waterPressureOverwaterThresh";
 export const _waterPressureWiltThresh = "_waterPressureWiltThresh";
 export const _lightLevelDisplayExposureAdjustment = "_lightLevelDisplayExposureAdjustment";
+export const _lsqColorVarianceMult = "_lsqColorVarianceMult";
+export const _lsqColorVarianceSpeed = "_lsqColorVarianceSpeed";
 
 export let baseOrganism_dnm = {
     _llt_mult: 2.35,
@@ -39,7 +41,9 @@ export let baseOrganism_dnm = {
     _lightDecayValue: 1,
     _waterPressureOverwaterThresh: 1,
     _waterPressureWiltThresh: -1,
-    _lightLevelDisplayExposureAdjustment: -.16
+    _lightLevelDisplayExposureAdjustment: -.16,
+    _lsqColorVarianceMult: 20,
+    _lsqColorVarianceSpeed: 3
 }
 
 class BaseOrganism {
@@ -102,6 +106,7 @@ class BaseOrganism {
         this.organismColor = COLOR_BLACK;
         this.organismViewHsvBase = [166, 95, 95];
 
+        this.randoms = {}
         ////    Colors Naming Convention
         // 'colorBase' is the raw, starting base value.
         // 'color' is the result as processed by your evolution parameters.
@@ -166,6 +171,12 @@ class BaseOrganism {
     lightLevelDisplayExposureAdjustment() {
         return this.getGenericNutritionParam(_lightLevelDisplayExposureAdjustment);
     }
+    lsqColorVarianceMult() {
+        return this.getGenericNutritionParam(_lsqColorVarianceMult);
+    }
+    lsqColorVarianceSpeed() {
+        return this.getGenericNutritionParam(_lsqColorVarianceSpeed);
+    }
 
     processColor(color1, color2, value, valueMax, opacity) {
         let frac = value / valueMax;
@@ -225,10 +236,10 @@ class BaseOrganism {
 
     processGenetics() {
         this.evolutionLightingOffset = -.5 + this.evolutionParameters[0];
-        this.evolutionMoistureOffset = 0.75 * (-.5 + this.evolutionParameters[1]);
+        this.evolutionMoistureOffset = 3 * (-.5 + this.evolutionParameters[1]);
 
         let colorHsvProcessed = rgb2hsv(...this.colorBaseLeaf);
-        colorHsvProcessed[0] += 70 * (this.evolutionParameters.at(1) - 0.5);
+        colorHsvProcessed[0] += 60 * (this.evolutionParameters.at(1) - 0.5);
         hsv2rgbDest(...colorHsvProcessed, this.colorLeaf);
 
         // let p0 = this.evolutionParameters[0];
@@ -292,7 +303,7 @@ class BaseOrganism {
         let c = this.curNumRoots;
         this.waterPressure = this.waterPressure * (c - 1) / c + (val / c);
     }
-    
+
     wiltEfficiency() {
         return (1 - Math.abs(this.getWilt()));
     }
@@ -383,14 +394,14 @@ class BaseOrganism {
         return null;
     }
 
-    getAllComponentsofType(componentType) {
-        return this._getAllComponentsofType(componentType, this.originGrowth);
+    getAllComponentsOfType(componentType) {
+        return this._getAllComponentsOfType(componentType, this.originGrowth);
     }
 
-    _getAllComponentsofType(componentType, component) {
+    _getAllComponentsOfType(componentType, component) {
         let out = [];
         out.push(...component.children.filter((child) => child.type === componentType));
-        component.children.forEach((child) => out.push(...this._getAllComponentsofType(componentType, child)));
+        component.children.forEach((child) => out.push(...this._getAllComponentsOfType(componentType, child)));
         return out;
     }
 
@@ -595,9 +606,23 @@ class BaseOrganism {
         return true;
     }
 
+    applyColor(color, x, dest) {
+        for (let i = 0; i < color.length; i++) {
+            dest[i] = color[i] + Math.sin((this.getStaticRand(x * 3 + i)) * this.lsqColorVarianceSpeed()) * this.lsqColorVarianceMult()
+        }
+    }
+
+    getStaticRand(randIdx) {
+        this.randoms = this.randoms ?? {}
+        this.randoms[randIdx] = this.randoms[randIdx] ?? Math.random()
+        return this.randoms[randIdx];
+    }
+
+
     processLsqRendering() {
-        if (this.orgVisualUpdateFlag)
+        if (this.orgVisualUpdateFlag) {
             this.lifeSquares.filter((lsq) => lsq.type != "root").forEach((lsq) => copyVecValue(this.colorLeaf, lsq.renderColor))
+        }
     }
     // RENDERING
     render() {

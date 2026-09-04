@@ -1002,16 +1002,8 @@ export class BaseSquare {
             this.gravityPhysics();
             this.windPhysics();
             this.percolateInnerMoisture();
-            if (this.speedY > 0) {
-                if (loadGD(UI_SIMULATION_CLOUDS)) {
-                    this.waterEvaporationRoutine();
-                    // this.temperatureRoutine();
-                }
-                if (loadGD(UI_LIGHTING_ENABLED)) {
-                    // this.transferHeat();
-                    // this.processFrameLightingTemperature();
-                }
-            }
+            this.waterEvaporationRoutine();
+
             if (!isSquareOnCanvas(this.posX + this.speedX, this.posY + this.speedY))
                 this.destroy();
         }

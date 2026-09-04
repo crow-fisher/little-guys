@@ -33,9 +33,9 @@ export class Climate {
         this.surfaceOffColor = hexToRgb(this.surfaceOffColorHex);
 
         this.weatherPatternMap = new Map();
-        this.weatherPatternMap.set(UI_CLIMATE_WEATHER_CLEAR, 15);
-        this.weatherPatternMap.set(UI_CLIMATE_WEATHER_PARTLY_CLOUDY, 10);
-        this.weatherPatternMap.set(UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, 10);
+        // this.weatherPatternMap.set(UI_CLIMATE_WEATHER_CLEAR, 15);
+        // this.weatherPatternMap.set(UI_CLIMATE_WEATHER_PARTLY_CLOUDY, 10);
+        // this.weatherPatternMap.set(UI_CLIMATE_WEATHER_MOSTLY_CLOUDY, 10);
         this.weatherPatternMap.set(UI_CLIMATE_WEATHER_FOGGY, 5);
         this.weatherPatternMap.set(UI_CLIMATE_WEATHER_LIGHTRAIN, 45);
         this.weatherPatternMap.set(UI_CLIMATE_WEATHER_HEAVYRAIN, 25);

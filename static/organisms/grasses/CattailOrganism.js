@@ -87,15 +87,18 @@ export class CattailOrganism extends BaseOrganism {
         if (!this.orgVisualUpdateFlag)
             return;
 
+        let i = 0;
+
         if (this.originGrowth != null) {
             this.grasses.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .forEach((grass) => {
                 grass.lifeSquares.forEach((lsq) => {
+                    i += 1;
                     if (lsq.subtype == SUBTYPE_STEM) {
                         lsq.width = .2 + .3 * Math.log(1 + grass.lifeSquares.length);
-                        copyVecValue(this.colorLeaf, lsq.renderColor)
+                        this.applyColor(this.colorLeaf, i, lsq.renderColor);
                     } else {
-                        copyVecValue([84, 47, 31], lsq.renderColor)
+                        this.applyColor([84, 47, 31], i, lsq.renderColor);
                         if (lsq.subtype == SUBTYPE_FLOWERTIP) {
                             lsq.width = .2 + .25 * Math.log(1 + grass.lifeSquares.length);
                         } else {

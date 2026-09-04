@@ -71,7 +71,6 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
     processLsqRendering() {
         if (!this.orgVisualUpdateFlag)
             return;
-        
         this.grasses.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .forEach((grass) => {
                 let l = grass.lifeSquares.length;
@@ -79,7 +78,7 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
                 grass.lifeSquares.forEach((lsq) => {
                     lsq.width = .3 + .3 * Math.log(3 + l - i);
                     i += 1;
-                    copyVecValue(this.colorLeaf, lsq.renderColor);
+                    this.applyColor(this.colorLeaf, i, lsq.renderColor);
                 });
             })
     }
@@ -91,7 +90,7 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
             startRootNode.posX, startRootNode.posY, 
             false, STAGE_ADULT, randRange(-Math.PI, Math.PI), baseDeflection, 0, 
             baseDeflection, 
-            randRange(0, 0.3), TYPE_TRUNK, .025, 15);
+            randRange(-.15, .15), TYPE_TRUNK, .025, 15);
         growthPlan.postConstruct = () => {
             this.originGrowth.addChild(growthPlan.component);
             this.grasses.push(this.originGrowth.getChildPath(growthPlan.component))

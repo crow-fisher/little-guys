@@ -4,7 +4,7 @@ import { getActiveClimate } from "../../climate/climateManager.js";
 import { calculateColor } from "../../climate/simulation/temperatureHumidity.js";
 import { hexToRgb, hsvToHex, rgbToHex } from "../../common.js";
 import { getPlantForRef } from "../../manipulation.js";
-import { _lightDecayValue, _lightLevelDisplayExposureAdjustment, _llt_max, _llt_min, _llt_mult, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, baseOrganism_dnm } from "../../organisms/BaseOrganism.js";
+import { _lightDecayValue, _lightLevelDisplayExposureAdjustment, _llt_max, _llt_min, _llt_mult, _llt_throttlValMax, _lsqColorVarianceMult, _lsqColorVarianceSpeed, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, baseOrganism_dnm } from "../../organisms/BaseOrganism.js";
 import { coneflower_dnm } from "../../organisms/flowers/ConeflowerOrganism.js";
 import { cattail_dnm } from "../../organisms/grasses/CattailOrganism.js";
 import { kblue_dnm } from "../../organisms/grasses/KentuckyBluegrassOrganism.js";
@@ -250,6 +250,19 @@ export class OrganismComponent extends Component {
           nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
                () => this.getGenericNutritionParam(_lightLevelDisplayExposureAdjustment), (val) => this.setGenericNutritionParam(_lightLevelDisplayExposureAdjustment, val), sizeX, h1, -2, 2, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
 
+          let c_lsqColorVarianceMult = new Container(this.window, 0, 0);
+          nutrientConfiguratorContainer.addElement(c_lsqColorVarianceMult);
+          c_lsqColorVarianceMult.addElement(new TextBackground(this.window, left, h1, offsetX, () => getActiveClimate().getUIColorInactive(0.58), 0.75, "color variance mult"));
+          c_lsqColorVarianceMult.addElement(new TextFunctionalBackground(this.window, right, h1, offsetX, () => this.getGenericNutritionParam(_lsqColorVarianceMult), () => getActiveClimate().getUIColorInactive(0.58)));
+          nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
+               () => this.getGenericNutritionParam(_lsqColorVarianceMult), (val) => this.setGenericNutritionParam(_lsqColorVarianceMult, val), sizeX, h1, 0, 30, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
+
+          let c_lsqColorVarianceSpeed = new Container(this.window, 0, 0);
+          nutrientConfiguratorContainer.addElement(c_lsqColorVarianceSpeed);
+          c_lsqColorVarianceSpeed.addElement(new TextBackground(this.window, left, h1, offsetX, () => getActiveClimate().getUIColorInactive(0.58), 0.75, "color variance speed"));
+          c_lsqColorVarianceSpeed.addElement(new TextFunctionalBackground(this.window, right, h1, offsetX, () => this.getGenericNutritionParam(_lsqColorVarianceSpeed), () => getActiveClimate().getUIColorInactive(0.58)));
+          nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
+               () => this.getGenericNutritionParam(_lsqColorVarianceSpeed), (val) => this.setGenericNutritionParam(_lsqColorVarianceSpeed, val), sizeX, h1, 0, 20, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
 
      }
 

@@ -140,24 +140,24 @@ function windyWeather(windAmount, airPressure) {
 
 function cloudyWeather(cloudCount) {
     return () => {
+        windyWeather(10, .2);
         if (curClouds.length > cloudCount) {
             return;
         }
         if (spawnRateThrottle()) {
             spawnCumulusCloud();
         }
-        windyWeather(10, .2);
     }
 }
 
 function foggyWeather() {
+    windyWeather(10, .2);
     if (curClouds.length > 20) {
         return;
     }
     if (spawnRateThrottle()) {
         spawnFogCloud();
     }
-    windyWeather(10, .2);
 }
 
 weatherPartlyCloudy = new Weather(UI_CLIMATE_WEATHER_PARTLY_CLOUDY, cloudyHg, cloudyTg, 50, cloudyWeather(6), getCurWeatherInterval);
@@ -168,6 +168,7 @@ weatherFoggy = new Weather(UI_CLIMATE_WEATHER_FOGGY, foggyHg, foggyTg, 50, foggy
 function generalRainyWeather(rfMin, rfMax) {
     return () => {
         curClouds = Array.from(curClouds.filter((cloud) => cloud.targetHumidity >= 1));
+        windyWeather(10, 3 * rfMin);
 
         if (curClouds.length > 10) {
             return;
@@ -175,7 +176,6 @@ function generalRainyWeather(rfMin, rfMax) {
         if (spawnRateThrottle()) {
             spawnNimbusCloud(randRange(rfMin, rfMax));
         }
-        windyWeather(10, 3 * rfMin);
     }
 }
 
