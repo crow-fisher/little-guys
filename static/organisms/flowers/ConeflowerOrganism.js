@@ -51,6 +51,9 @@ export class ConeflowerOrganism extends BaseOrganism {
         this.targetStemLength = 1;
         this.targetFlowerLength = this.maxFlowerLength;
 
+        this.curNumStems = 0;
+        this.curNumLeaves = 0;
+
         this.numPetals = 4;
 
         this.growthNumGreen = this.maxNumNodes * (this.maxStemLength + this.maxLeafLength);
@@ -98,6 +101,7 @@ export class ConeflowerOrganism extends BaseOrganism {
             }
         ))
         this.growthPlans.push(growthPlan);
+        this.curNumStems += 1;
     }
 
     growLeaf(parent, startNode) {
@@ -175,7 +179,7 @@ export class ConeflowerOrganism extends BaseOrganism {
             .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .filter((stem) => stem.growthPlan.steps.length < this.targetStemLength)
             .forEach((stem) => {
-                let startNode = stem.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_NODE);
+                let startNode = stem.lifeSquares.at(stem.lifeSquares.length - 1);
                 if (startNode == null) {
                     // reason for this - 
                     // we rely on lambda post-construct functions to register these built objects as part of the organism
@@ -188,7 +192,7 @@ export class ConeflowerOrganism extends BaseOrganism {
                 for (let i = 0; i < this.targetStemLength - n; i++) {
                     stem.growthPlan.steps.push(new GrowthPlanStep(
                         stem.growthPlan,
-                        () => this.growGreenSquareAction(startNode, SUBTYPE_NODE)
+                        () => this.growGreenSquareAction(startNode, SUBTYPE_NODE, 1)
                     ))
                 };
             });
@@ -322,8 +326,6 @@ export class ConeflowerOrganism extends BaseOrganism {
     }
 
     adultGrowthPlanning() {
-        this.doGreenGrowth();
-        
         if (this.stems.length < this.targetNumStems) {
             this.adultGrowStem();
             return;
@@ -336,35 +338,35 @@ export class ConeflowerOrganism extends BaseOrganism {
             return;
         }
 
-        if (this.leaves.length < this.targetNumLeaves) {
-            this.adultGrowLeaf();
-        }
+        // if (this.leaves.length < this.targetNumLeaves) {
+        //     this.adultGrowLeaf();
+        // }
 
-        if (this.leaves
-            .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
-            .some((leaf) => leaf.growthPlan.steps.length < Math.min(this.targetStemLength * (this.maxLeafLength / this.maxStemLength), this.targetLeafLength))) {
-            this.lengthenLeaves();
-        }
+        // if (this.leaves
+        //     .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
+        //     .some((leaf) => leaf.growthPlan.steps.length < Math.min(this.targetStemLength * (this.maxLeafLength / this.maxStemLength), this.targetLeafLength))) {
+        //     this.lengthenLeaves();
+        // }
 
-        if (this.targetNumStems < this.maxNumNodes) {
-            this.targetNumStems += 1;
-            this.targetNumLeaves += 1;
-            this.targetLeafLength = Math.min(this.targetLeafLength + 1, this.maxLeafLength);
-            return;
-        }
-        if (this.targetLeafLength < this.maxLeafLength) {
-            this.targetLeafLength += 1;
-            return;
-        }
-        if (this.targetStemLength < this.maxStemLength && this.targetLeafLength == this.maxLeafLength) {
-            this.targetStemLength += 1;
-            return;
-        }
+        // if (this.targetNumStems < this.maxNumNodes) {
+        //     this.targetNumStems += 1;
+        //     this.targetNumLeaves += 1;
+        //     this.targetLeafLength = Math.min(this.targetLeafLength + 1, this.maxLeafLength);
+        //     return;
+        // }
+        // if (this.targetLeafLength < this.maxLeafLength) {
+        //     this.targetLeafLength += 1;
+        //     return;
+        // }
+        // if (this.targetStemLength < this.maxStemLength && this.targetLeafLength == this.maxLeafLength) {
+        //     this.targetStemLength += 1;
+        //     return;
+        // }
 
-        if (this.flower == null && (this.curNumGreen > this.growthNumGreen * .9)) {
-            this.growFlower();
-            return;
-        }
+        // if (this.flower == null && (this.curNumGreen > this.growthNumGreen * .9)) {
+        //     this.growFlower();
+        //     return;
+        // }
 
 
     }
