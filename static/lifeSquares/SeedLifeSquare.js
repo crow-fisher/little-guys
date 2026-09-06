@@ -1,8 +1,8 @@
 
 import { LifeSquareGreen } from "./LifeSquareGreen.js";
 class SeedLifeSquare extends LifeSquareGreen {
-    constructor(square, organism) {
-        super(square, organism);
+    constructor(organism, posX, posY) {
+        super(organism, posX, posY);
         this.proto = "SeedLifeSquare";
         this.type = "seed";
         this.height = 0.25;

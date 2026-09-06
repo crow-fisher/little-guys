@@ -12,9 +12,9 @@ import { zoomCanvasFillRect } from "../canvas.js";
 import { HUE_GREEN } from "../hue.js";
 import { SeedSquare } from "../squares/SeedSquare.js";
 import { getNextBlockId, getNextOrgId } from "../globals.js";
-import { copyVecValue } from "../../future/main/util/vector.js";
 import { LifeSquareGreen } from "../lifeSquares/LifeSquareGreen.js";
 import { LifeSquareRoot } from "../lifeSquares/LifeSquareRoot.js";
+import { copyVecValue } from "../util/vector.js";
 
 export const _llt_mult = "_llt_mult";
 export const _llt_min = "_llt_min";
@@ -358,6 +358,7 @@ class BaseOrganism {
         }
         this.orgVisualUpdateFlag = true;
     }
+
     removeAssociatedLifeSquare(lifeSquare) {
         this.lifeSquares = Array.from(this.lifeSquares.filter((lsq) => lsq != lifeSquare));
         lifeSquare.destroy();
@@ -365,33 +366,28 @@ class BaseOrganism {
 
     // COMPONENT GROWTH
     growPlantSquare(parentSquare, dx, dy) {
-        let newPlantSquare = new PlantSquare(parentSquare.posX + dx, parentSquare.posY - dy);
-        if (addSquare(newPlantSquare)) {
-            let newGreenSquare = new LifeSquareGreen(newPlantSquare, this);
-            this.addAssociatedLifeSquare(newGreenSquare);
-            newGreenSquare.linkSquare(newPlantSquare);
-            parentSquare.addChild(newPlantSquare);
-            newGreenSquare.lighting = new Array();
+        let posX = parentSquare.posX + dx, posY = parentSquare.posY - dy;
+        let newGreenSquare = new LifeSquareGreen(this, posX, posY);
+        this.addAssociatedLifeSquare(newGreenSquare);
+        newGreenSquare.lighting = new Array();
 
-            let refSquare = null;
-            if (parentSquare.lighting.length > 0) {
-                refSquare = parentSquare;
-            } else {
-                for (let i = this.lifeSquares.length - 1; i >= 0; i--) {
-                    let lsq = this.lifeSquares.at(i);
-                    if (lsq.lighting.length > 0) {
-                        refSquare = lsq;
-                        break;
-                    }
-                }
-                if (refSquare == null) {
-                    refSquare = this.linkedSquare;
+        let refSquare = null;
+        if (parentSquare.lighting.length > 0) {
+            refSquare = parentSquare;
+        } else {
+            for (let i = this.lifeSquares.length - 1; i >= 0; i--) {
+                let lsq = this.lifeSquares.at(i);
+                if (lsq.lighting.length > 0) {
+                    refSquare = lsq;
+                    break;
                 }
             }
-            applyLightingFromSource(refSquare, newGreenSquare);
-            return newGreenSquare;
+            if (refSquare == null) {
+                refSquare = this.linkedSquare;
+            }
         }
-        return null;
+        applyLightingFromSource(refSquare, newGreenSquare);
+        return newGreenSquare;
     }
 
     getAllComponentsOfType(componentType) {
@@ -701,6 +697,7 @@ class BaseOrganism {
         if (this.linkedSquare != null && this.linkedSquare != -1) {
             this.linkedSquare.unlinkOrganism(this);
         }
+        this.lifeSquares = [];
     }
 
     hasPlantLivedTooLong() {

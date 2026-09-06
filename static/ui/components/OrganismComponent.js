@@ -1,4 +1,3 @@
-import { copyVecValue } from "../../../future/main/util/vector.js";
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { calculateColor } from "../../climate/simulation/temperatureHumidity.js";
@@ -11,6 +10,7 @@ import { kblue_dnm } from "../../organisms/grasses/KentuckyBluegrassOrganism.js"
 import { wheat_dnm } from "../../organisms/grasses/WheatOrganism.js";
 import { pmoss_dnm } from "../../organisms/mosses/PleurocarpMossOrganism.js";
 import { ORGANISM_UI_REF } from "../../organisms/OrganismUIRef.js";
+import { copyVecValue } from "../../util/vector.js";
 import { Component } from "../Component.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
 import { Container } from "../Container.js";

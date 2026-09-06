@@ -10,7 +10,6 @@ import { addSquare } from "../../squares/sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
 import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
 import { UI_ORGANISM_GRASS_CATTAIL } from "../../ui/UIData.js";
-import { copyVecValue } from "../../../future/main/util/vector.js";
 
 export let cattail_dnm = structuredClone(baseOrganism_dnm);
 cattail_dnm[_llt_min] = 0.49;

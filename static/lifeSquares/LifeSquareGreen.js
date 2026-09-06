@@ -17,10 +17,10 @@ export const LSQ_RENDERMODE_THETA = "LSQ_RENDERMODE_THETA";
 
 const NUTRIENT_BASE_HSV = rgb2hsv(RGB_COLOR_VERY_FUCKING_GREEN.r, RGB_COLOR_VERY_FUCKING_GREEN.g, RGB_COLOR_VERY_FUCKING_GREEN.b);
 class LifeSquareGreen {
-    constructor(square, organism) {
+    constructor(organism, posX, posY) {
         this.proto = "LifeSquareGreen";
-        this.posX = square.posX;
-        this.posY = square.posY;
+        this.posX = posX;
+        this.posY = posY;
         this.xOffset = 0;
         this.yOffset = 0;
         this.xRef = 0;
@@ -40,17 +40,8 @@ class LifeSquareGreen {
         this.deflectionXOffset = 0;
         this.deflectionYOffset = 0;
 
-        this.linkedSquare = square;
         this.linkedOrganism = organism;
         this.spawnedEntityId = organism.spawnedEntityId;
-        this.childLifeSquares = new Array();
-
-        if (square.organic) {
-            square.spawnedEntityId = organism.spawnedEntityId;
-            square.linkOrganismSquare(this);
-        }
-
-        this.strength = 1;
 
         this.state = STATE_HEALTHY;
         this.activeRenderState = null;
@@ -58,7 +49,6 @@ class LifeSquareGreen {
         this.opacity = 1;
         this.width = 1;
         this.height = 1;
-        this.strength = 1;
         this.xOffset = 0;
         this.randoms = {};
 
@@ -70,7 +60,6 @@ class LifeSquareGreen {
         this.LSQ_RENDER_SIZE_MULT = Math.SQRT2;
 
         this.lighting = [];
-        this.touchingGround = null;
         this.renderMode = LSQ_RENDERMODE_THETA;
 
         this.lsqLightDecayValue = 1;
@@ -87,38 +76,6 @@ class LifeSquareGreen {
             return 1;
         }
     }
-
-    makeRandomsSimilar(otherSquare) {
-        for (let i = 0; i < this.randoms.length; i++) {
-            this.randoms[i] = otherSquare.randoms[i] * 0.9 + this.randoms[i] * 0.1;
-        }
-    }
-
-    updatePositionDifferential(dx, dy) {
-        removeSquare(this.linkedSquare);
-        this.posX += dx;
-        this.posY += dy;
-        addSquare(this.linkedSquare);
-    }
-
-    shiftUp() {
-        this.updatePositionDifferential(0, -1);
-    }
-
-    dist(testX, testY) { // manhattan
-        return Math.abs(this.posX - testX) + Math.abs(this.posY - testY);
-    }
-
-    addChild(lifeSquare) {
-        lifeSquare.deflectionXOffset = this.deflectionXOffset;
-        lifeSquare.deflectionYOffset = this.deflectionYOffset;
-        lifeSquare.lighting = this.lighting;
-    }
-
-    removeChild(lifeSquare) {
-        this.childLifeSquares = Array.from(this.childLifeSquares.filter((lsq) => lsq != lifeSquare));
-    }
-
     linkSquare(square) {
         this.linkedSquare = square;
     }
@@ -127,11 +84,7 @@ class LifeSquareGreen {
     }
     destroy() {
         if (this.linkedSquare != null) {
-            if (this.linkedSquare.organic) {
-                this.linkedSquare.destroy();
-            } else {
                 this.linkedSquare.unlinkOrganismSquare(this);
-            }
         }
         this.lighting = [];
     }

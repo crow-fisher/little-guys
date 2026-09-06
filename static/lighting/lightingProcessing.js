@@ -1,9 +1,9 @@
-import { copyVecValue } from "../../future/main/util/vector.js";
 import { getCanvasSquaresX, getCanvasSquaresY } from "../canvas.js";
 import { getCurrentLightColorTemperature, getDaylightStrength, getMoonlightColor } from "../climate/time.js";
 import { getStandardDeviation } from "../common.js";
 import { getSquares } from "../squares/sqOperations.js";
 import { loadGD, saveGD, UI_CAMERA_EXPOSURE, UI_LIGHTING_DISABLED_BRIGHTNESS, UI_LIGHTING_GLOBAL, UI_LIGHTING_MOON, UI_LIGHTING_SUN } from "../ui/UIData.js";
+import { copyVecValue } from "../util/vector.js";
 
 export function getDefaultLighting() {
     let brightness = getDaylightStrength();

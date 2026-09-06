@@ -12,7 +12,6 @@ import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
 import { UI_ORGANISM_GRASS_KBLUE } from "../../ui/UIData.js";
 import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh } from "../BaseOrganism.js";
 import { HUE_CHARTREUSE } from "../../hue.js";
-import { copyVecValue } from "../../../future/main/util/vector.js";
 
 export let kblue_dnm = structuredClone(baseOrganism_dnm);
 kblue_dnm[_llt_mult] = 1.45;
