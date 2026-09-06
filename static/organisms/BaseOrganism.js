@@ -534,7 +534,6 @@ class BaseOrganism {
         let newRootLifeSquare = new LifeSquareRoot(targetSquare, this);
         this.addAssociatedLifeSquare(newRootLifeSquare);
         newRootLifeSquare.linkSquare(targetSquare);
-        targetSquareParent.addChild(newRootLifeSquare)
         targetSquare.linkOrganismSquare(newRootLifeSquare);
 
         this.rootLastGrown = this.age;

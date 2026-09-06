@@ -3,7 +3,7 @@ import { LifeSquareGreen } from "./LifeSquareGreen.js";
 
 export class LifeSquareRoot extends LifeSquareGreen {
     constructor(square, organism) {
-        super(organism);
+        super(organism, square.posX, square.posY);
         this.linkedSquare = square;
         square.linkOrganismSquare(this);
 

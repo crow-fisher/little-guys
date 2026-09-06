@@ -139,7 +139,7 @@ export class GrowthComponent {
 
         this.lifeSquares.filter((llsq) => llsq.proto == newLsq.proto && llsq.posX == newLsq.posX && llsq.posY <= newLsq.posY)
             .forEach((llsq) => {
-                llsq.shiftUp();
+                llsq.posY -= 1;
             });
 
         this.lifeSquares.push(newLsq);
@@ -346,7 +346,7 @@ export class GrowthComponent {
         let prevX = -1;
         let prevY = -1;
 
-        this.lifeSquares.forEach((lsq) => {
+        this.lifeSquares.filter((lsq) => lsq.type != "root").forEach((lsq) => {
             // relative to origin
             let relLsqX = 0.85 * (this.posX - lsq.posX);
             let relLsqY = 0.85 * (this.posY - lsq.posY);
