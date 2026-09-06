@@ -470,11 +470,11 @@ class BaseOrganism {
         }
     }
     doGreenGrowth() {
-        if (this.age < this.greenLastGrown + this.lightLevelThrottleVal() * (this.getGrowthCycleMaturityLength() / this.growthNumGreen)) {
-            return false;
-        }
-        if (Math.abs(this.getWilt()) > .5)
-            return false;
+        // if (this.age < this.greenLastGrown + this.lightLevelThrottleVal() * (this.getGrowthCycleMaturityLength() / this.growthNumGreen)) {
+        //     return false;
+        // }
+        // if (Math.abs(this.getWilt()) > .5)
+        //     return false;
 
         let somethingDone = false;
         this.growthPlans.filter((gp) => !gp.areStepsCompleted()).forEach((growthPlan) => {

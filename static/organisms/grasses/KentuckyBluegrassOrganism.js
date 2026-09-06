@@ -56,13 +56,13 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
     getDefaultNutritionMap() {
         return kblue_dnm;
     }
-    
+
     processGenetics() {
         super.processGenetics();
         let p0 = this.evolutionParameters[0];
-        // this.growthLightLevel *= (1 + 1.4 * p0);
         this.maxNumGrass = 2;
         this.maxGrassLength = 5 + Math.floor(this.maxGrassLength * p0);
+
         this.growthNumGreen = this.maxNumGrass * this.maxGrassLength;
         this.growthNumRoots = this.growthNumGreen;
     }
@@ -110,6 +110,9 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
             .forEach((grass) => {
                 let startNode = grass.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_STEM);
                 if (startNode == null) {
+                    // reason for this - 
+                    // we rely on lambda post-construct functions to register these built objects as part of the organism
+                    // these lambdas are not preserved when serialized and deserialized to/from json 
                     this.growthPlans = Array.from(this.growthPlans.filter((gp) => gp != grass.growthPlan));
                     this.leaves = Array.from(this.leaves.filter((le) => this.originGrowth.getChildFromPath(le) != grass));
                     return;

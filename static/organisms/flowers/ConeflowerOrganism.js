@@ -4,22 +4,23 @@ import { STAGE_ADULT, STAGE_FLOWER, STAGE_JUVENILE, SUBTYPE_FLOWER, SUBTYPE_FLOW
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
-import { _lightDecayValue, _lightLevelDisplayExposureAdjustment, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
+import { _lightDecayValue, _lightLevelDisplayExposureAdjustment, _llt_max, _llt_min, _llt_mult, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
 import { addSquare } from "../../squares/sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
 import { ConeflowerGreenSqaure } from "../../lifeSquares/flowers/ConeflowerGreenSqaure.js";
 import { loadGD, UI_ORGANISM_FLOWER_CONEFLOWER, UI_PLANT_CONEFLOWER_HUESHIFT, UI_PLANT_CONEFLOWER_PEDALANGLESHIFT } from "../../ui/UIData.js";
 
 export let coneflower_dnm = structuredClone(baseOrganism_dnm);
-coneflower_dnm[_llt_min] = 0.84;
-coneflower_dnm[_llt_max] = 1.52;
-coneflower_dnm[_llt_throttlValMax] = 7.49;
+coneflower_dnm[_llt_mult] = 1.45;
+coneflower_dnm[_llt_min] = 0.74;
+coneflower_dnm[_llt_max] = 1.43;
+coneflower_dnm[_llt_throttlValMax] = 5.27;
 coneflower_dnm[_seedReduction] = 0.10;
 coneflower_dnm[_waterPressureSoilTarget] = -4;
 coneflower_dnm[_waterPressureOverwaterThresh] = 1;
-coneflower_dnm[_waterPressureWiltThresh] = -1.96;
-coneflower_dnm[_lightDecayValue] = 4.36;
-coneflower_dnm[_lightLevelDisplayExposureAdjustment] = -.40;
+coneflower_dnm[_waterPressureWiltThresh] = -1.5;
+coneflower_dnm[_lightDecayValue] = 4.42;
+coneflower_dnm[_lightLevelDisplayExposureAdjustment] = .22;
 
 // ref: https://prairiecalifornian.com/wheat-growth-stages/
 export class ConeflowerOrganism extends BaseOrganism {
@@ -60,13 +61,13 @@ export class ConeflowerOrganism extends BaseOrganism {
     }
 
     processGenetics() {
+        super.processGenetics();
         this.evolutionParameters[0] = Math.min(Math.max(this.evolutionParameters[0], 0.00001), .99999)
         let p0 = this.evolutionParameters[0];
-        this.growthLightLevel *= (1 + .7 * p0);
 
         this.maxNumNodes = 1 + Math.round(this.maxNumNodes * p0);
         this.targetNumLeaves = -1;
-        this.maxStemLength = 1 + Math.round(this.maxStemLength * p0);
+        this.maxStemLength = 10 + 1 + Math.round(this.maxStemLength * p0);
         this.maxLeafLength = 3 + Math.round(this.maxLeafLength * p0);
 
         this.growthNumGreen = this.maxNumNodes * (this.maxStemLength + this.maxLeafLength);
@@ -141,7 +142,7 @@ export class ConeflowerOrganism extends BaseOrganism {
         this.growLeaf(parent, parent.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_NODE));
     }
 
-    lengthenStems() {
+    _lengthenStems() {
         let stem = this.stems
             .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .filter((stem) => stem.growthPlan.steps.length < this.targetStemLength).at(0);
@@ -167,6 +168,30 @@ export class ConeflowerOrganism extends BaseOrganism {
             }
         }
 
+    }
+
+    lengthenStems() {
+        this.stems
+            .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
+            .filter((stem) => stem.growthPlan.steps.length < this.targetStemLength)
+            .forEach((stem) => {
+                let startNode = stem.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_NODE);
+                if (startNode == null) {
+                    // reason for this - 
+                    // we rely on lambda post-construct functions to register these built objects as part of the organism
+                    // these lambdas are not preserved when serialized and deserialized to/from json 
+                    this.growthPlans = Array.from(this.growthPlans.filter((gp) => gp != stem.growthPlan));
+                    this.leaves = Array.from(this.leaves.filter((le) => this.originGrowth.getChildFromPath(le) != stem));
+                    return;
+                }
+                let n = stem.growthPlan.steps.length;
+                for (let i = 0; i < this.targetStemLength - n; i++) {
+                    stem.growthPlan.steps.push(new GrowthPlanStep(
+                        stem.growthPlan,
+                        () => this.growGreenSquareAction(startNode, SUBTYPE_NODE)
+                    ))
+                };
+            });
     }
     lengthenLeaves() {
         this.leaves
@@ -297,6 +322,8 @@ export class ConeflowerOrganism extends BaseOrganism {
     }
 
     adultGrowthPlanning() {
+        this.doGreenGrowth();
+        
         if (this.stems.length < this.targetNumStems) {
             this.adultGrowStem();
             return;
@@ -370,13 +397,14 @@ export class ConeflowerOrganism extends BaseOrganism {
 
     planGrowth() {
         if (!super.planGrowth()) {
-            return;
+            // return;
         }
         if (this.originGrowth == null) {
             return;
         }
         if (this.stage == STAGE_JUVENILE) {
             this.juvenileGrowthPlanning();
+            return;
         }
         if (this.stage == STAGE_ADULT) {
             this.adultGrowthPlanning();
