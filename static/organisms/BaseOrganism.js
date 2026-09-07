@@ -85,7 +85,7 @@ class BaseOrganism {
         this.growthPhosphorus = 25;
 
         this.growthLightLevel = 1;
-        
+
         this.numGrowthCycles = 1;
         this.growthCycleMaturityLength = 12 + 7 * (Math.random());
         this.growthCycleLength = this.growthCycleMaturityLength * 2.65;
@@ -367,28 +367,15 @@ class BaseOrganism {
     }
 
     // COMPONENT GROWTH
-    growPlantSquare(parentSquare, dx, dy) {
-        let posX = parentSquare.posX + dx, posY = parentSquare.posY - dy;
+    growPlantSquare(parentLsq, dx, dy) {
+        let posX = parentLsq.posX + dx, posY = parentLsq.posY - dy;
         let newGreenSquare = new LifeSquareGreen(this, posX, posY);
         this.addAssociatedLifeSquare(newGreenSquare);
-        newGreenSquare.lighting = new Array();
-
-        let refSquare = null;
-        if (parentSquare.lighting.length > 0) {
-            refSquare = parentSquare;
+        if (parentLsq.type == "root") {
+            applyLightingFromSource(parentLsq.linkedSquare, newGreenSquare);
         } else {
-            for (let i = this.lifeSquares.length - 1; i >= 0; i--) {
-                let lsq = this.lifeSquares.at(i);
-                if (lsq.lighting.length > 0) {
-                    refSquare = lsq;
-                    break;
-                }
-            }
-            if (refSquare == null) {
-                refSquare = this.linkedSquare;
-            }
+            applyLightingFromSource(parentLsq, newGreenSquare);
         }
-        applyLightingFromSource(refSquare, newGreenSquare);
         return newGreenSquare;
     }
 
@@ -599,10 +586,14 @@ class BaseOrganism {
         }
         if (this.growthPlans.some((gp) => !gp.areStepsCompleted())) {
             this.doGreenGrowth();
-            return false;
+            return;
         }
         if (this.stage == STAGE_SPROUT) {
             this.addSproutGrowthPlan();
+            return;
+        }
+        if (this.originGrowth == null) {
+            return;
         }
         return true;
     }

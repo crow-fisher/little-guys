@@ -1,5 +1,5 @@
 import { randNumber, randRange } from "../../common.js";
-import { STAGE_ADULT, STAGE_FLOWER, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_TRUNK } from "../Stages.js";
+import { STAGE_ADULT, STAGE_FLOWER, SUBTYPE_GRASS, TYPE_GRASS } from "../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
@@ -76,7 +76,7 @@ export class BaseGrassOrganism extends BaseOrganism {
             startRootNode.posX, startRootNode.posY, 
             false, STAGE_ADULT, randRange(-Math.PI, Math.PI), baseDeflection, 
             0, baseDeflection, randRange(0, .15),
-            TYPE_TRUNK, .025, 15);
+            TYPE_GRASS, .025, 15);
 
         growthPlan.postConstruct = () => {
             this.originGrowth.addChild(growthPlan.component);
@@ -84,7 +84,7 @@ export class BaseGrassOrganism extends BaseOrganism {
         };
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
-            () => this.growGreenSquareAction(startRootNode, SUBTYPE_STEM)
+            () => this.growGreenSquareAction(startRootNode, SUBTYPE_GRASS)
         ))
         this.growthPlans.push(growthPlan);
         this.curNumGrass += 1;
@@ -95,19 +95,17 @@ export class BaseGrassOrganism extends BaseOrganism {
             .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .filter((grass) => grass.growthPlan.steps.length < this.targetGrassLength)
             .forEach((grass) => {
-                let startNode = grass.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_STEM);
+                let startNode = grass.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_GRASS);
                 if (startNode == null) {
-                    // bad state - this grass doesn't have a valid life square to extend from
-                    // kill it. organism should create a new one
                     this.growthPlans = Array.from(this.growthPlans.filter((gp) => gp != grass.growthPlan));
-                    this.leaves = Array.from(this.leaves.filter((le) => this.originGrowth.getChildFromPath(le) != grass));
+                    this.grasses = Array.from(this.grasses.filter((le) => this.originGrowth.getChildFromPath(le) != grass));
                     this.curNumGrass -= 1;
                     return;
                 }
                 for (let i = 0; i < this.targetGrassLength - grass.growthPlan.steps.length; i++) {
                     grass.growthPlan.steps.push(new GrowthPlanStep(
                         grass.growthPlan,
-                        () => this.growGreenSquareAction(startNode, SUBTYPE_STEM)
+                        () => this.growGreenSquareAction(startNode, SUBTYPE_GRASS)
                     ))
                 };
             });
@@ -115,9 +113,6 @@ export class BaseGrassOrganism extends BaseOrganism {
 
     planGrowth() {
         if (!super.planGrowth()) {
-            return;
-        }
-        if (this.originGrowth == null) {
             return;
         }
 
@@ -145,10 +140,6 @@ export class BaseGrassOrganism extends BaseOrganism {
         if (this.targetGrassLength < this.maxGrassLength) {
             this.targetGrassLength += 1;
             return;
-        }
-
-        if (this.curNumGreen > this.growthNumGreen * .9) {
-            this.stage = STAGE_FLOWER;
         }
     }
 }

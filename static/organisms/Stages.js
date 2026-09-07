@@ -7,6 +7,7 @@ export const STAGE_DEAD = "STAGE_DEAD";
 
 export const TYPE_ROOT = "TYPE_ROOT";
 export const TYPE_HEART = "TYPE_HEART";
+export const TYPE_GRASS = "TYPE_GRASS";
 export const TYPE_STEM = "TYPE_STEM";
 export const TYPE_TRUNK = "TYPE_TRUNK";
 export const TYPE_LEAF = "TYPE_LEAF";
@@ -21,6 +22,7 @@ export const SUBTYPE_STEM = "SUBTYPE_STEM";
 export const SUBTYPE_TRUNK = "SUBTYPE_TRUNK";
 export const SUBTYPE_LEAFSTEM = "SUBTYPE_LEAFSTEM";
 export const SUBTYPE_LEAF = "SUBTYPE_LEAF";
+export const SUBTYPE_GRASS = "SUBTYPE_GRASS";
 export const SUBTYPE_FLOWER = "SUBTYPE_FLOWER";
 export const SUBTYPE_FLOWERTIP = "SUBTYPE_FLOWERTIP";
 export const SUBTYPE_FLOWERNODE = "SUBTYPE_FLOWERNODE";
