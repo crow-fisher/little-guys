@@ -5,9 +5,9 @@ import { hexToRgb, hsvToHex, rgbToHex } from "../../common.js";
 import { getPlantForRef } from "../../manipulation.js";
 import { _lightDecayValue, _lightLevelDisplayExposureAdjustment, _llt_max, _llt_min, _llt_mult, _llt_throttlValMax, _lsqColorVarianceMult, _lsqColorVarianceSpeed, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, baseOrganism_dnm } from "../../organisms/BaseOrganism.js";
 import { coneflower_dnm } from "../../organisms/flowers/ConeflowerOrganism.js";
-import { cattail_dnm } from "../../organisms/grasses/CattailOrganism.js";
-import { grass_dnm } from "../../organisms/grasses/BaseGrassOrganism.js";
-import { wheat_dnm } from "../../organisms/grasses/WheatOrganism.js";
+import { grass_dnm } from "../../organisms/grass/BaseGrassOrganism.js";
+import { cattail_dnm } from "../../organisms/grass/CattailGrassOrganism.js";
+import { wheat_dnm } from "../../organisms/grass/WheatOrganism.js";
 import { pmoss_dnm } from "../../organisms/mosses/PleurocarpMossOrganism.js";
 import { ORGANISM_UI_REF } from "../../organisms/OrganismUIRef.js";
 import { copyVecValue } from "../../util/vector.js";
@@ -55,7 +55,7 @@ export class OrganismComponent extends Component {
 
           modeSelectRow1.addElement(new RadioToggleLabel(this.window, half, h1, offsetX, "mosses", UI_ORGANISM_TYPE_SELECT, UI_ORGANISM_TYPE_MOSS,
                () => getActiveClimate().getUIColorInactive(0.57), () => getActiveClimate().getUIColorInactive(0.50)));
-          modeSelectRow1.addElement(new RadioToggleLabel(this.window, half, h1, offsetX, "grasses", UI_ORGANISM_TYPE_SELECT, UI_ORGANISM_TYPE_GRASS,
+          modeSelectRow1.addElement(new RadioToggleLabel(this.window, half, h1, offsetX, "grass", UI_ORGANISM_TYPE_SELECT, UI_ORGANISM_TYPE_GRASS,
                () => getActiveClimate().getUIColorInactive(0.61), () => getActiveClimate().getUIColorInactive(0.50)));
           modeSelectRow2.addElement(new RadioToggleLabel(this.window, half, h1, offsetX, "flowers", UI_ORGANISM_TYPE_SELECT, UI_ORGANISM_TYPE_FLOWER,
                () => getActiveClimate().getUIColorInactive(0.64), () => getActiveClimate().getUIColorInactive(0.50)));
@@ -136,7 +136,7 @@ export class OrganismComponent extends Component {
           treeConditionalContainer.addElement(palmConditionalContainer);
           treeConditionalContainer.addElement(new TextBackground(this.window, sizeX, br2, offsetX, () => getActiveClimate().getUIColorInactive(0.85), 0.75, ""))
 
-          palmConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.55), 0.75, "palms: technically grasses", "italic"))
+          palmConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.55), 0.75, "palms: technically grass", "italic"))
           palmConditionalContainer.addElement(new TextBackground(this.window, sizeX, br3, offsetX, () => getActiveClimate().getUIColorInactive(0.85), 0.75, ""))
           palmConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, offsetX, () => getActiveClimate().getUIColorInactive(0.50), 0.75, "wet soils, full sun"))
           palmConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, offsetX, () => getActiveClimate().getUIColorInactive(0.55), 0.75, "growing time: 20 cycles"))

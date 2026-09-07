@@ -5,22 +5,22 @@ import { STAGE_ADULT, SUBTYPE_FLOWER, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_TRUNK
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
 import { _lightDecayValue, _lightLevelDisplayExposureAdjustment, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
-import { CattailGreenSquare } from "../../lifeSquares/grasses/CattailGreenSquare.js";
+import { CattailGreenSquare } from "../../lifeSquares/grass/CattailGreenSquare.js";
 import { addSquare } from "../../squares/sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
 import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
 import { UI_ORGANISM_GRASS_CATTAIL } from "../../ui/UIData.js";
 
-export let cattail_dnm = structuredClone(baseOrganism_dnm);
-cattail_dnm[_llt_min] = 0.49;
-cattail_dnm[_llt_max] = 1.29;
-cattail_dnm[_llt_throttlValMax] = 5.35;
-cattail_dnm[_seedReduction] = 0.08;
-cattail_dnm[_waterPressureSoilTarget] = -2.07;
-cattail_dnm[_waterPressureOverwaterThresh] = 1;
-cattail_dnm[_waterPressureWiltThresh] = -.25;
-cattail_dnm[_lightDecayValue] = 5.23;
-cattail_dnm[_lightLevelDisplayExposureAdjustment] = -.37;
+// export let cattail_dnm = structuredClone(baseOrganism_dnm);
+// cattail_dnm[_llt_min] = 0.49;
+// cattail_dnm[_llt_max] = 1.29;
+// cattail_dnm[_llt_throttlValMax] = 5.35;
+// cattail_dnm[_seedReduction] = 0.08;
+// cattail_dnm[_waterPressureSoilTarget] = -2.07;
+// cattail_dnm[_waterPressureOverwaterThresh] = 1;
+// cattail_dnm[_waterPressureWiltThresh] = -.25;
+// cattail_dnm[_lightDecayValue] = 5.23;
+// cattail_dnm[_lightLevelDisplayExposureAdjustment] = -.37;
 
 
 export class CattailOrganism extends BaseOrganism {
@@ -42,7 +42,7 @@ export class CattailOrganism extends BaseOrganism {
         this.growthCycleMaturityLength = 7 + 7 * (Math.random());
         this.growthCycleLength = this.growthCycleMaturityLength * 2.65;
 
-        this.grasses = [];
+        this.grass = [];
     }
 
     getSeedType() {
@@ -89,7 +89,7 @@ export class CattailOrganism extends BaseOrganism {
         let i = 0;
 
         if (this.originGrowth != null) {
-            this.grasses.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
+            this.grass.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .forEach((grass) => {
                 grass.lifeSquares.forEach((lsq) => {
                     i += 1;
@@ -107,8 +107,8 @@ export class CattailOrganism extends BaseOrganism {
                 });
             });
 
-            if (this.grasses.length >= 2) {
-                let grass = this.grasses.map((parentPath) => this.originGrowth.getChildFromPath(parentPath)).at(1);
+            if (this.grass.length >= 2) {
+                let grass = this.grass.map((parentPath) => this.originGrowth.getChildFromPath(parentPath)).at(1);
                 let glsq = grass.lifeSquares;
                 if (glsq.length < 9) {
                     return;
@@ -137,7 +137,7 @@ export class CattailOrganism extends BaseOrganism {
             randRange(0, 0.25), TYPE_TRUNK, .08);
         growthPlan.postConstruct = () => {
             this.originGrowth.addChild(growthPlan.component);
-            this.grasses.push(this.originGrowth.getChildPath(growthPlan.component))
+            this.grass.push(this.originGrowth.getChildPath(growthPlan.component))
             growthPlan.component.xOffset = 3 * (Math.random() - 0.5);
             growthPlan.component.yOffset = randRange(-growthPlan.component.xOffset, 0) - 1;
         };
@@ -149,7 +149,7 @@ export class CattailOrganism extends BaseOrganism {
     }
 
     lengthenGrass() {
-        this.grasses
+        this.grass
             .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .filter((grass) => grass.growthPlan.steps.length < this.targetGrassLength)
             .forEach((grass) => {
@@ -170,12 +170,12 @@ export class CattailOrganism extends BaseOrganism {
         if (this.originGrowth == null) {
             return;
         }
-        if (this.grasses.length < this.targetNumGrass) {
+        if (this.grass.length < this.targetNumGrass) {
             this.growGrass();
             return;
         }
 
-        if (this.grasses
+        if (this.grass
             .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .some((grass) => grass.growthPlan.steps.length < this.targetGrassLength)) {
             this.lengthenGrass();

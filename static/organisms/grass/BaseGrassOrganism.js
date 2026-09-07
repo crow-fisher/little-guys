@@ -70,13 +70,16 @@ export class BaseGrassOrganism extends BaseOrganism {
     }
 
     growGrass() {
+        if (this.curNumGrass > (this.curNumRoots / 2)) {
+            return;
+        }
         let startRootNode = this.getRootOrigin()
-        let baseDeflection = randRange(0, .25);
+        let baseDeflection = randRange(0, .15);
         let growthPlan = new GrowthPlan(
             startRootNode.posX, startRootNode.posY, 
             false, STAGE_ADULT, randRange(-Math.PI, Math.PI), baseDeflection, 
             0, baseDeflection, randRange(0, .15),
-            TYPE_GRASS, .025, 15);
+            TYPE_GRASS, .055, 15);
 
         growthPlan.postConstruct = () => {
             this.originGrowth.addChild(growthPlan.component);
