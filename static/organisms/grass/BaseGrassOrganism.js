@@ -70,7 +70,7 @@ export class BaseGrassOrganism extends BaseOrganism {
     }
 
     growGrass() {
-        if (this.curNumGrass > (this.curNumRoots / 2)) {
+        if (this.curNumGrass > (this.curNumRoots / 4)) {
             return;
         }
         let startRootNode = this.getRootOrigin()

@@ -517,7 +517,6 @@ export class BaseSquare {
         if (this.proto == "WaterSquare") {
             this.opacity = loadGD(UI_LIGHTING_WATER_OPACITY);
         }
-
         let minTime = getFrameDt() * 128;
         if (isSqColChanged(this.posX)) {
             minTime /= 4;
@@ -550,7 +549,7 @@ export class BaseSquare {
                 this.posY * getBaseSize(),
                 getBaseSize() * Math.max(this.blockHealth, 0.3));
         } else {
-            let size = (this.blockHealth ** 0.5);
+            let size = Math.min(1, (this.blockHealth ** 0.5));
 
             zoomCanvasFillRect(
                 this.posX * getBaseSize(),

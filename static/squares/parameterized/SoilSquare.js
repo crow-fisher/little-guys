@@ -318,6 +318,7 @@ export class SoilSquare extends BaseSquare {
         let outflowWaterAmount = (this.waterContainment - this.getInverseMatricPressure(-2)) / this.getWaterflowRate();
         let curWater = getSquares(posX, posY).find((sq) => (!sq.surface && sq.collision))
         if (curWater != null) {
+            outflowWaterAmount = Math.min(curWater.waterContainmentMax - curWater.waterContainment, outflowWaterAmount)
             curWater.blockHealth += outflowWaterAmount;
             this.waterContainment -= outflowWaterAmount;
         } else {

@@ -124,7 +124,7 @@ class WaterSquare extends BaseSquare {
     physics() {
         super.physics();
         this.doNeighborPercolation();
-        // this.combineAdjacentNeighbors();
+        this.combineAdjacentNeighbors();
         this.calculateCandidateFlows();
     }
 
