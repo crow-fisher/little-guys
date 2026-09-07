@@ -244,10 +244,16 @@ export class GrowthComponent {
     }
 
     getDeflectionXAtPosition(posX, posY) {
+        if (this.parentComponent == null) {
+            return 0;
+        }
         return this.lifeSquares.filter((lsq) => lsq.posX == posX && lsq.posY == posY).map((lsq) => lsq.deflectionXOffset).at(0);
     }
 
     getDeflectionYAtPosition(posX, posY) {
+        if (this.parentComponent == null) {
+            return 0;
+        }
         return this.lifeSquares.filter((lsq) => lsq.posX == posX && lsq.posY == posY).map((lsq) => lsq.deflectionYOffset).at(0);
     }
 

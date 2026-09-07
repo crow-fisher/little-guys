@@ -1,67 +1,53 @@
 import { randNumber, randRange } from "../../common.js";
-import { LifeSquareRoot } from "../../lifeSquares/LifeSquareRoot.js";
 import { STAGE_ADULT, STAGE_FLOWER, SUBTYPE_ROOTNODE, SUBTYPE_STEM, TYPE_TRUNK } from "../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
 import { _lightLevelDisplayExposureAdjustment, _llt_mult, BaseOrganism, baseOrganism_dnm } from "../BaseOrganism.js";
-import { KentuckyBluegrassGreenSquare } from "../../lifeSquares/grasses/KentuckyBluegrassGreenSquare.js";
-import { addSquare } from "../../squares/sqOperations.js";
-import { SeedSquare } from "../../squares/SeedSquare.js";
-import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
-import { UI_ORGANISM_GRASS_KBLUE } from "../../ui/UIData.js";
+import { UI_ORGANISM_GRASS_BASE } from "../../ui/UIData.js";
 import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh } from "../BaseOrganism.js";
-import { HUE_CHARTREUSE } from "../../hue.js";
 
-export let kblue_dnm = structuredClone(baseOrganism_dnm);
-kblue_dnm[_llt_mult] = 1.45;
-kblue_dnm[_llt_min] = 0.74;
-kblue_dnm[_llt_max] = 1.43;
-kblue_dnm[_llt_throttlValMax] = 5.27;
-kblue_dnm[_seedReduction] = 0.10;
-kblue_dnm[_waterPressureSoilTarget] = -4;
-kblue_dnm[_waterPressureOverwaterThresh] = 1;
-kblue_dnm[_waterPressureWiltThresh] = -1.5;
-kblue_dnm[_lightDecayValue] = 4.42;
-kblue_dnm[_lightLevelDisplayExposureAdjustment] = .22;
+export let grass_dnm = structuredClone(baseOrganism_dnm);
+grass_dnm[_llt_mult] = 1.45;
+grass_dnm[_llt_min] = 0.74;
+grass_dnm[_llt_max] = 1.43;
+grass_dnm[_llt_throttlValMax] = 5.27;
+grass_dnm[_seedReduction] = 0.10;
+grass_dnm[_waterPressureSoilTarget] = -4;
+grass_dnm[_waterPressureOverwaterThresh] = 1;
+grass_dnm[_waterPressureWiltThresh] = -1.5;
+grass_dnm[_lightDecayValue] = 4.42;
+grass_dnm[_lightLevelDisplayExposureAdjustment] = .22;
 
-export class KentuckyBluegrassOrganism extends BaseOrganism {
+export class BaseGrassOrganism extends BaseOrganism {
     constructor(square, parentId) {
         super(square, parentId);
-        this.proto = "KentuckyBluegrassOrganism";
-        this.uiRef = UI_ORGANISM_GRASS_KBLUE;
-        this.greenType = KentuckyBluegrassGreenSquare;
-        this.rootType = LifeSquareRoot;
-        this.grassGrowTimeInDays =  0.01;
-        this.side = Math.random() > 0.5 ? -1 : 1;
-        this.orgInfoHue = HUE_CHARTREUSE; // Used in 'organismVisualizer' 
+        this.proto = "BaseGrassOrganism";
+        this.uiRef = UI_ORGANISM_GRASS_BASE;
 
-        this.targetNumGrass = 1;
         this.maxNumGrass = 2;
-
-        this.targetGrassLength = 1;
         this.maxGrassLength = 5;
 
-        this.numGrowthCycles = 1; 
-        this.growthCycleMaturityLength = 12 + 7 * (Math.random());
-        this.growthCycleLength = this.growthCycleMaturityLength * 2.65;
+        this.curNumGrass = 0;
+        this.targetNumGrass = 0;
+        this.targetGrassLength = 0;
 
         this.grasses = [];
     }
 
     getSeedType() {
-        return KentuckyBluegrassSeedOrganism;
+        return BaseGrassSeedOrganism;
     }
 
     getDefaultNutritionMap() {
-        return kblue_dnm;
+        return grass_dnm;
     }
 
     processGenetics() {
         super.processGenetics();
         let p0 = this.evolutionParameters[0];
-        this.maxNumGrass = 2;
-        this.maxGrassLength = 5 + Math.floor(this.maxGrassLength * p0);
+        this.maxNumGrass = randNumber(3, 5);
+        this.maxGrassLength = this.maxGrassLength + Math.floor(this.maxGrassLength * p0);
 
         this.growthNumGreen = this.maxNumGrass * this.maxGrassLength;
         this.growthNumRoots = this.growthNumGreen;
@@ -79,28 +65,29 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
                     i += 1;
                     this.applyColor(this.colorLeaf, i, lsq.renderColor);
                 });
+                grass.lifeSquares[0].theta = grass.lifeSquares[1]?.theta ?? grass.lifeSquares[0].theta;
             })
     }
 
     growGrass() {
-        let startRootNode = this.getOriginsForNewGrowth(SUBTYPE_ROOTNODE).at(0);
+        let startRootNode = this.getRootOrigin()
         let baseDeflection = randRange(0, .25);
         let growthPlan = new GrowthPlan(
             startRootNode.posX, startRootNode.posY, 
-            false, STAGE_ADULT, randRange(-Math.PI, Math.PI), baseDeflection, 0, 
-            baseDeflection, 
-            randRange(-.15, .15), TYPE_TRUNK, .025, 15);
+            false, STAGE_ADULT, randRange(-Math.PI, Math.PI), baseDeflection, 
+            0, baseDeflection, randRange(0, .15),
+            TYPE_TRUNK, .025, 15);
+
         growthPlan.postConstruct = () => {
             this.originGrowth.addChild(growthPlan.component);
             this.grasses.push(this.originGrowth.getChildPath(growthPlan.component))
-            growthPlan.component.xOffset = 3 * (Math.random() - 0.5);
-            growthPlan.component.yOffset = randRange(-growthPlan.component.xOffset, 0) - 1;
         };
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
             () => this.growGreenSquareAction(startRootNode, SUBTYPE_STEM)
         ))
         this.growthPlans.push(growthPlan);
+        this.curNumGrass += 1;
     }
 
     lengthenGrass() {
@@ -110,11 +97,11 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
             .forEach((grass) => {
                 let startNode = grass.lifeSquares.find((lsq) => lsq.subtype == SUBTYPE_STEM);
                 if (startNode == null) {
-                    // reason for this - 
-                    // we rely on lambda post-construct functions to register these built objects as part of the organism
-                    // these lambdas are not preserved when serialized and deserialized to/from json 
+                    // bad state - this grass doesn't have a valid life square to extend from
+                    // kill it. organism should create a new one
                     this.growthPlans = Array.from(this.growthPlans.filter((gp) => gp != grass.growthPlan));
                     this.leaves = Array.from(this.leaves.filter((le) => this.originGrowth.getChildFromPath(le) != grass));
+                    this.curNumGrass -= 1;
                     return;
                 }
                 for (let i = 0; i < this.targetGrassLength - grass.growthPlan.steps.length; i++) {
@@ -133,18 +120,26 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
         if (this.originGrowth == null) {
             return;
         }
-        if (this.grasses.length < this.targetNumGrass) {
-            this.growGrass();
-            return;
-        }
+
         if (this.grasses
             .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .some((grass) => grass.growthPlan.steps.length < this.targetGrassLength)) {
             this.lengthenGrass();
             return;
         }
+
+        if (this.targetGrassLength < (this.maxGrassLength / 2)) {
+            this.targetGrassLength += 1;
+            return;
+        }
+
         if (this.targetNumGrass < this.maxNumGrass) {
             this.targetNumGrass += 1;
+            return;
+        }
+
+        if (this.curNumGrass < this.targetNumGrass) {
+            this.growGrass();
             return;
         }
         if (this.targetGrassLength < this.maxGrassLength) {
@@ -158,16 +153,16 @@ export class KentuckyBluegrassOrganism extends BaseOrganism {
     }
 }
 
-export class KentuckyBluegrassSeedOrganism extends BaseSeedOrganism {
+export class BaseGrassSeedOrganism extends BaseSeedOrganism {
     constructor(square, evolutionParameters, parentId) {
         super(square, evolutionParameters, parentId);
-        this.proto = "KentuckyBluegrassSeedOrganism";
+        this.proto = "BaseGrassSeedOrganism";
     }
 
     getSproutType() {
-        return KentuckyBluegrassOrganism;
+        return BaseGrassOrganism;
     }
     getSproutTypeProto() {
-        return "KentuckyBluegrassOrganism";
+        return "BaseGrassOrganism";
     }
 }

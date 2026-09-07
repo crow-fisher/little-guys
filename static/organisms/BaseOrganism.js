@@ -83,10 +83,12 @@ class BaseOrganism {
         this.growthNumRoots = 30;
         this.growthNitrogen = 50;
         this.growthPhosphorus = 25;
+
         this.growthLightLevel = 1;
-        this.growthCycleMaturityLength = 1;
-        this.growthCycleLength = 1.5;
+        
         this.numGrowthCycles = 1;
+        this.growthCycleMaturityLength = 12 + 7 * (Math.random());
+        this.growthCycleLength = this.growthCycleMaturityLength * 2.65;
 
         this.nitrogen = 0;
         this.phosphorus = 0;
@@ -401,6 +403,10 @@ class BaseOrganism {
         return out;
     }
 
+    getRootOrigin() {
+        return this.lifeSquares.filter((lsq) => lsq.type == "root").at(randNumber(0, this.curNumRoots - 1));
+    }
+
     getOriginsForNewGrowth(subtype) {
         return this._getOriginForNewGrowth(subtype, this.originGrowth);
     }
@@ -412,7 +418,7 @@ class BaseOrganism {
         return out;
     }
 
-    growGreenSquareAction(startNode, subtype, dy = 0) {
+    growGreenSquareAction(startNode, subtype, dy = 1) {
         let newGrassNode = this.growPlantSquare(startNode, 0, dy);
         newGrassNode.subtype = subtype;
         return newGrassNode;
@@ -473,8 +479,8 @@ class BaseOrganism {
         if (this.age < this.greenLastGrown + this.lightLevelThrottleVal() * (this.getGrowthCycleMaturityLength() / this.growthNumGreen)) {
             return false;
         }
-        // if (Math.abs(this.getWilt()) > .5)
-        //     return false;
+        if (Math.abs(this.getWilt()) > .5)
+            return false;
 
         let somethingDone = false;
         this.growthPlans.filter((gp) => !gp.areStepsCompleted()).forEach((growthPlan) => {

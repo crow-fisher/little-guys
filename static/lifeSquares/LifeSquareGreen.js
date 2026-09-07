@@ -187,14 +187,15 @@ class LifeSquareGreen {
             MAIN_CONTEXT.lineWidth = getBaseSize() * .15 * getCurZoom();
             MAIN_CONTEXT.stroke();
         } else {
-            if (this.type == "root")
-                return;
             if (selectedViewMode.indexOf("UI_VIEWMODE_ORGANISM_SUIT") >= 0) {
                 frameOpacity = loadGD(UI_CONFIG_VIEWMODE_SUIT_OPACITY)
             } else if (selectedViewMode == UI_VIEWMODE_ORGANISMS) {
                 if (this.opacity < 0.235) {
                     frameOpacity *= 4;
                 }
+            } else {
+                if (this.type == "root")
+                    return;
             }
             this.renderWithVariedColors(frameOpacity);
         }

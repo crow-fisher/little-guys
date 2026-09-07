@@ -1,7 +1,7 @@
 import { LifeSquareRoot } from "../../lifeSquares/LifeSquareRoot.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
 import { _llt_mult, baseOrganism_dnm } from "../BaseOrganism.js";
-import { UI_ORGANISM_GRASS_KBLUE, UI_ORGANISM_MOSS_PLEUROCARP } from "../../ui/UIData.js";
+import { UI_ORGANISM_GRASS_BASE, UI_ORGANISM_MOSS_PLEUROCARP } from "../../ui/UIData.js";
 import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh } from "../BaseOrganism.js";
 import { PleurocarpMossGreenSquare } from "../../lifeSquares/mosses/PleurocarpMossGreenSquare.js";
 import { BaseMossOrganism } from "./BaseMossOrganism.js";

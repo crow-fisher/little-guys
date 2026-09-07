@@ -9,7 +9,7 @@ import { _lightLevelDisplayExposureAdjustment, _llt_mult, BaseOrganism, baseOrga
 import { addSquare } from "../../squares/sqOperations.js";
 import { SeedSquare } from "../../squares/SeedSquare.js";
 import { UI_ORGANISM_GRASS_WHEAT } from "../../ui/UIData.js";
-import { kblue_dnm } from "./KentuckyBluegrassOrganism.js";
+import { grass_dnm } from "./BaseGrassOrganism.js";
 import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh } from "../BaseOrganism.js";
 import { HUE_GOLDENROD, HUE_ORANGE_PUMPKIN } from "../../hue.js";
 
@@ -62,7 +62,7 @@ export class WheatOrganism extends BaseOrganism {
     }
 
     getDefaultNutritionMap() {
-        return kblue_dnm;
+        return grass_dnm;
     }
 
     getSeedType() {
