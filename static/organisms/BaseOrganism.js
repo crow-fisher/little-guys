@@ -250,8 +250,6 @@ class BaseOrganism {
     } // fill this out in your implementation class!
 
 
-    growMember() {}
-
     updateDeflectionState() {
         if (this.originGrowth != null) {
             this.originGrowth.updateDeflectionState();
