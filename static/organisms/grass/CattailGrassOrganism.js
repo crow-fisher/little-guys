@@ -53,33 +53,40 @@ export class CattailGrassOrganism extends BaseGrassOrganism {
         this.growthNumRoots = this.growthNumGreen / 4;
     }
 
+    planGrowth() {
+        super.planGrowth();
+        if (this.curNumGreen > this.growthNumGreen * 0.95) {
+            this.stage = STAGE_FLOWER;
+        }
+    }
 
     processLsqRendering() {
         if (!this.orgVisualUpdateFlag)
             return;
 
-        let i = 0;
-
         if (this.originGrowth != null) {
             this.grasses.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
-            .forEach((grass) => {
-                grass.lifeSquares.forEach((lsq) => {
-                    i += 1;
-                    if (lsq.subtype == SUBTYPE_GRASS) {
-                        lsq.width = .2 + .3 * Math.log(1 + grass.lifeSquares.length);
-                        this.applyColor(this.colorLeaf, i, lsq.renderColor);
-                    } else {
-                        this.applyColor([84, 47, 31], i, lsq.renderColor);
-                        if (lsq.subtype == SUBTYPE_FLOWERTIP) {
-                            lsq.width = .2 + .25 * Math.log(1 + grass.lifeSquares.length);
+                .forEach((grass) => {
+                    grass.lifeSquares.forEach((lsq) => {
+                        let l = grass.lifeSquares.length;
+                        let i = 0;
+                        if (lsq.subtype == SUBTYPE_GRASS) {
+                            lsq.width = .3 * Math.log( 1 + l - i);
+                            this.applyColor(this.colorLeaf, i, lsq.renderColor);
                         } else {
-                            lsq.width = .2 + .4 * Math.log(1 + grass.lifeSquares.length);
+                            this.applyColor([84, 47, 31], i, lsq.renderColor);
+                            if (lsq.subtype == SUBTYPE_FLOWERTIP) {
+                                lsq.width = .2 + .25 * Math.log(1 + grass.lifeSquares.length);
+                            } else {
+                                lsq.width = .2 + .4 * Math.log(1 + grass.lifeSquares.length);
+                            }
                         }
-                    }
-                });
-            });
 
-            if (this.grasses.length >= 2) {
+                        i += 1;
+                    });
+                });
+
+            if (this.stage == STAGE_FLOWER) {
                 let grass = this.grasses.map((parentPath) => this.originGrowth.getChildFromPath(parentPath)).at(1);
                 let glsq = grass.lifeSquares;
                 if (glsq.length < 9) {
@@ -92,7 +99,7 @@ export class CattailGrassOrganism extends BaseGrassOrganism {
                         glsq[i].subtype = SUBTYPE_GRASS;
                     else if (i < max)
                         glsq[i].subtype = SUBTYPE_FLOWER;
-                    else 
+                    else
                         glsq[i].subtype = SUBTYPE_FLOWERTIP;
                 }
             }
