@@ -9,7 +9,6 @@ import { AquiferSquare } from "./squares/parameterized/RainSquare.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { LifeSquareRoot } from "./lifeSquares/LifeSquareRoot.js";
-import { WheatOrganism, WheatSeedOrganism } from "./organisms/grass/WheatOrganism.js";
 import { BaseGrassOrganism, BaseGrassSeedOrganism } from "./organisms/grass/BaseGrassOrganism.js";
 import { PalmTreeOrganism, PalmTreeSeedOrganism } from "./organisms/trees/PalmTreeOrganism.js";
 import { ConeflowerOrganism, ConeflowerSeedOrganism } from "./organisms/flowers/ConeflowerOrganism.js";
@@ -33,7 +32,6 @@ let ProtoMap = {
     "RigidImageSquare": RigidImageSquare.prototype,
 
     "BaseOrganism": BaseOrganism.prototype,
-    "WheatOrganism": WheatOrganism.prototype,
     "PalmTreeOrganism": PalmTreeOrganism.prototype,
     "BaseGrassOrganism": BaseGrassOrganism.prototype,
     "ConeflowerOrganism": ConeflowerOrganism.prototype,
@@ -45,7 +43,6 @@ let ProtoMap = {
 
     "SeedSquare": SeedSquare.prototype,
     "SeedLifeSquare": SeedLifeSquare.prototype,
-    "WheatSeedOrganism": WheatSeedOrganism.prototype,
     "PalmTreeSeedOrganism": PalmTreeSeedOrganism.prototype,
     "ConeflowerSeedOrganism": ConeflowerSeedOrganism.prototype,
 

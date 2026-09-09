@@ -52,13 +52,6 @@ export class BaseGrassOrganism extends BaseOrganism {
 
         this.growthNumGreen = this.maxNumGrass * this.maxGrassLength;
         this.growthNumRoots = this.growthNumGreen;
-
-        this.grassTwist = randRange(.01, .3);
-        this.grassBaseRotation = 0;
-        this.grassBaseDeflection = randRange(.01, .3);;
-        this.grassBaseCurve = 0;
-        this.grassStrengthMult = .15;
-        this.grassRollingAveragePeriod = 150;
     }
 
     processLsqRendering() {
@@ -77,10 +70,20 @@ export class BaseGrassOrganism extends BaseOrganism {
             })
     }
 
+    prepareGrassGrowthPlanParams() {
+        this.grassTwist = randRange(.01, .3);
+        this.grassBaseRotation = 0;
+        this.grassBaseDeflection = randRange(.01, .3);;
+        this.grassBaseCurve = 0;
+        this.grassStrengthMult = .15;
+        this.grassRollingAveragePeriod = 150;
+    }
+
     growGrass() {
         if (this.curNumGrass > (this.curNumRoots / 4)) {
             return;
         }
+        this.prepareGrassGrowthPlanParams();
         let startRootNode = this.getRootOrigin()
         let growthPlan = new GrowthPlan(
             startRootNode.posX, startRootNode.posY, 

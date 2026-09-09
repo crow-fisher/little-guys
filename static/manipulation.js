@@ -5,7 +5,6 @@ import { addTemperature, addWaterSaturationPascalsSqCoords } from "./climate/sim
 import { addWindPerssureMaintainHumidity, addWindPressureCloud, addWindPressureDryAir } from "./climate/simulation/wind.js";
 import { removeSquare } from "./globalOperations.js";
 import { getLastMouseDown, getLastMoveOffset, getLeftMouseUpEvent, isLeftMouseClicked, isMiddleMouseClicked, isRightMouseClicked, setMouseTouchStartCallback } from "./mouse.js";
-import { WheatOrganism, WheatSeedOrganism } from "./organisms/grass/WheatOrganism.js";
 import { BaseGrassOrganism, BaseGrassSeedOrganism } from "./organisms/grass/BaseGrassOrganism.js";
 import { addSquare, addSquareOverride, getSquares, removeSquarePos } from "./squares/sqOperations.js";
 import { AquiferSquare } from "./squares/parameterized/RainSquare.js";
@@ -313,8 +312,6 @@ export function getPlantForRef(search) {
     switch (search) {
         case UI_ORGANISM_GRASS_BASE:
             return BaseGrassOrganism;
-        case UI_ORGANISM_GRASS_WHEAT:
-            return WheatOrganism;
         case UI_ORGANISM_GRASS_CATTAIL:
             return CattailGrassOrganism;
         case UI_ORGANISM_TREE_PALM:

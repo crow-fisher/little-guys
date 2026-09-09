@@ -1,15 +1,13 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { calculateColor } from "../../climate/simulation/temperatureHumidity.js";
-import { hexToRgb, hsvToHex, rgbToHex } from "../../common.js";
+import { hexToRgb, rgbToHex } from "../../common.js";
 import { getPlantForRef } from "../../manipulation.js";
 import { _lightDecayValue, _lightLevelDisplayExposureAdjustment, _llt_max, _llt_min, _llt_mult, _llt_throttlValMax, _lsqColorVarianceMult, _lsqColorVarianceSpeed, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, baseOrganism_dnm } from "../../organisms/BaseOrganism.js";
 import { coneflower_dnm } from "../../organisms/flowers/ConeflowerOrganism.js";
 import { grass_dnm } from "../../organisms/grass/BaseGrassOrganism.js";
 import { cattail_dnm } from "../../organisms/grass/CattailGrassOrganism.js";
-import { wheat_dnm } from "../../organisms/grass/WheatOrganism.js";
 import { pmoss_dnm } from "../../organisms/mosses/PleurocarpMossOrganism.js";
-import { ORGANISM_UI_REF } from "../../organisms/OrganismUIRef.js";
 import { copyVecValue } from "../../util/vector.js";
 import { Component } from "../Component.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
@@ -305,8 +303,6 @@ export class OrganismComponent extends Component {
                     return coneflower_dnm;
                case UI_ORGANISM_GRASS_BASE:
                     return grass_dnm;
-               case UI_ORGANISM_GRASS_WHEAT:
-                    return wheat_dnm;
                case UI_ORGANISM_GRASS_CATTAIL:
                     return cattail_dnm;
                case UI_ORGANISM_MOSS_PLEUROCARP:
