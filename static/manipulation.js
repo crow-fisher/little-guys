@@ -12,13 +12,14 @@ import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
-import { loadGD, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CLIMATE_WEATHER_TOOL_CLOUD, UI_CLIMATE_WEATHER_TOOL_DRYAIR, UI_CLIMATE_WEATHER_TOOL_MATCHEDAIR, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_STRENGTH, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_STRENGTH, UI_GODMODE_TEMPERATURE, UI_ORGANISM_SELECT, UI_SM_GODMODE, UI_PALETTE_PLANTS, UI_PALETTE_BLOCKS, UI_PALETTE_AQUIFER, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_PALETTE_SOILROCK, UI_PALETTE_WATER, UI_CLIMATE_SELECT_CLOUDS, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_CLIMATE_TOOL_SIZE, UI_PALETTE_MODE_ROCK, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, isEyedropperOrMixerClicked, UI_ORGANISM_GRASS_WHEAT, UI_ORGANISM_GRASS_BASE, UI_ORGANISM_GRASS_CATTAIL, UI_ORGANISM_TREE_PALM, UI_ORGANISM_FLOWER_CONEFLOWER, UI_ORGANISM_MOSS_PLEUROCARP, UI_CLIMATE_WEATHER_TOOL_CLOUD_HUMIDITY, UI_PALETTE_SPECIAL_CHURN, UI_PALETTE_SPECIAL_CHURN_STRENGTH, UI_PALETTE_SPECIAL_CHURN_WIDE, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_SM_BB, UI_PALETTE_SURFACE_MATCH } from "./ui/UIData.js";
+import { loadGD, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CLIMATE_WEATHER_TOOL_CLOUD, UI_CLIMATE_WEATHER_TOOL_DRYAIR, UI_CLIMATE_WEATHER_TOOL_MATCHEDAIR, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_STRENGTH, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_STRENGTH, UI_GODMODE_TEMPERATURE, UI_ORGANISM_SELECT, UI_SM_GODMODE, UI_PALETTE_PLANTS, UI_PALETTE_BLOCKS, UI_PALETTE_AQUIFER, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_PALETTE_SOILROCK, UI_PALETTE_WATER, UI_CLIMATE_SELECT_CLOUDS, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_CLIMATE_TOOL_SIZE, UI_PALETTE_MODE_ROCK, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, isEyedropperOrMixerClicked, UI_ORGANISM_GRASS_WHEAT, UI_ORGANISM_GRASS_BASE, UI_ORGANISM_GRASS_CATTAIL, UI_ORGANISM_TREE_PALM, UI_ORGANISM_FLOWER_CONEFLOWER, UI_ORGANISM_MOSS_PLEUROCARP, UI_CLIMATE_WEATHER_TOOL_CLOUD_HUMIDITY, UI_PALETTE_SPECIAL_CHURN, UI_PALETTE_SPECIAL_CHURN_STRENGTH, UI_PALETTE_SPECIAL_CHURN_WIDE, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_SM_BB, UI_PALETTE_SURFACE_MATCH, UI_ORGANISM_FLOWER_LEAFNODE } from "./ui/UIData.js";
 import { clearMouseHoverColorCacheMap, eyedropperBlockClick, eyedropperBlockHover, isWindowHovered, mixerBlockClick } from "./ui/WindowManager.js";
 import { PalmTreeOrganism, PalmTreeSeedOrganism } from "./organisms/trees/PalmTreeOrganism.js";
 import { ConeflowerOrganism, ConeflowerSeedOrganism } from "./organisms/flowers/ConeflowerOrganism.js";
 import { PleurocarpMossSeedOrganism } from "./organisms/mosses/PleurocarpMossOrganism.js";
 import { randNumber, randRange } from "./common.js";
 import { CattailGrassOrganism, CattailGrassSeedOrganism } from "./organisms/grass/CattailGrassOrganism.js";
+import { BaseLeafNodeFlower } from "./organisms/flowers/leafNode/BaseLeafNodeFlower.js";
 let prevManipulationOffset;
 
 setMouseTouchStartCallback((inVal) => prevManipulationOffset = inVal);
@@ -93,7 +94,7 @@ export function addSquareByName(posX, posY, name) {
 
             if (prevWaterContainment != null)
                 square.waterContainment = prevWaterContainment;
-            
+
             break;
         case "water":
             square = addSquare(new WaterSquare(posX, posY));
@@ -270,9 +271,9 @@ export function doClickAdd() {
                         });
                     } else if (selectMode == UI_PALETTE_SURFACE_MATCH) {
                         doBrushFunc(px, py, (x, y) => {
-                             getSquares(x, y)
-                            .filter((sq) => sq.solid)
-                            .forEach((sq) => sq.surfaceLightingFactor = 1 - loadGD(UI_LIGHTING_SURFACE));
+                            getSquares(x, y)
+                                .filter((sq) => sq.solid)
+                                .forEach((sq) => sq.surfaceLightingFactor = 1 - loadGD(UI_LIGHTING_SURFACE));
                         });
                     } else if (selectMode == UI_PALETTE_WATER) {
                         doBrushFunc(px, py, (x, y) => addSquareByName(x, y, "water"));
@@ -314,85 +315,22 @@ export function getPlantForRef(search) {
             return BaseGrassOrganism;
         case UI_ORGANISM_GRASS_CATTAIL:
             return CattailGrassOrganism;
-        case UI_ORGANISM_TREE_PALM:
-            return PalmTreeOrganism;
-        case UI_ORGANISM_FLOWER_CONEFLOWER:
-            return ConeflowerOrganism;
+        case UI_ORGANISM_FLOWER_LEAFNODE:
+            return BaseLeafNodeFlower;
     }
 }
 
 function placeActiveSeed(px, py) {
     let chance = Math.random();
-    switch (loadGD(UI_ORGANISM_SELECT)) {
-        case UI_ORGANISM_GRASS_WHEAT:
-            if (chance > 0.99) {
-                let sq = addSquare(new SeedSquare(px, py));
-                if (sq) {
-                    let orgAdded = new WheatSeedOrganism(sq);
-                    if (!orgAdded) {
-                        sq.destroy();
-                    }
-                }
+    if (chance > 0.99) {
+        let sq = addSquare(new SeedSquare(px, py));
+        if (sq) {
+            let o = new (getPlantForRef(loadGD(UI_ORGANISM_SELECT)));
+            let orgAdded = new (o.getSeedType())(sq);
+            if (!orgAdded) {
+                sq.destroy();
             }
-            break;
-        case UI_ORGANISM_GRASS_BASE:
-            if (chance > 0.95) {
-                let sq = addSquare(new SeedSquare(px, py));
-                if (sq) {
-                    let orgAdded = new BaseGrassSeedOrganism(sq);
-                    if (!orgAdded) {
-                        sq.destroy();
-                    }
-                }
-            }
-            break;
-        case UI_ORGANISM_GRASS_CATTAIL:
-            if (chance > 0.95) {
-                let sq = addSquare(new SeedSquare(px, py));
-                if (sq) {
-                    let orgAdded = new CattailGrassSeedOrganism(sq);
-                    if (!orgAdded) {
-                        sq.destroy();
-                    }
-                }
-            }
-            break;
-
-        case UI_ORGANISM_MOSS_PLEUROCARP:
-            if (chance > 0.95) {
-                let sq = addSquare(new SeedSquare(px, py));
-                if (sq) {
-                    let orgAdded = new PleurocarpMossSeedOrganism(sq);
-                    if (!orgAdded) {
-                        sq.destroy();
-                    }
-                }
-            }
-            break;
-
-        case UI_ORGANISM_FLOWER_CONEFLOWER:
-            if (chance > 0.95) {
-                let sq = addSquare(new SeedSquare(px, py));
-                if (sq) {
-                    let orgAdded = new ConeflowerSeedOrganism(sq);
-                    if (!orgAdded) {
-                        sq.destroy();
-                    }
-                }
-            }
-            break;
-
-        case UI_ORGANISM_TREE_PALM:
-        default:
-            if (chance > 0.95) {
-                let sq = addSquare(new SeedSquare(px, py));
-                if (sq) {
-                    let orgAdded = new PalmTreeSeedOrganism(sq);
-                    if (!orgAdded) {
-                        sq.destroy();
-                    }
-                }
-            }
-            break;
+        }
     }
+    return;
 }

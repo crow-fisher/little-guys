@@ -18,7 +18,7 @@ import { TextBackground } from "../elements/TextBackground.js";
 import { TextFunctionalBackground } from "../elements/TextFunctionalBackground.js";
 import { Toggle } from "../elements/Toggle.js";
 import { getCurPlantConfiguratorVal, TwoParameterPlantConfigurator } from "../elements/TwoParameterPlantConfigurator.js";
-import { UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_WHEAT, UI_ORGANISM_GRASS_BASE, UI_ORGANISM_GRASS_CATTAIL, UI_CENTER, UI_ORGANISM_TREE_PALM, UI_ORGANISM_TYPE_SELECT, UI_ORGANISM_TYPE_MOSS, UI_ORGANISM_TYPE_GRASS, UI_ORGANISM_TYPE_FLOWER, UI_ORGANISM_TYPE_TREE, loadGD, loadUI, UI_UI_PHONEMODE, UI_ORGANISM_FLOWER_CONEFLOWER, UI_ORGANISM_NUTRITION_CONFIGURATOR, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_MOSS_PLEUROCARP, UI_VIEWMODE_SELECT, UI_VIEWMODE_ORGANISM_SUIT_WATER, UI_VIEWMODE_ORGANISM_SUIT_LIGHT, UI_VIEWMODE_ORGANISM_SUIT_NET } from "../UIData.js";
+import { UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_WHEAT, UI_ORGANISM_GRASS_BASE, UI_ORGANISM_GRASS_CATTAIL, UI_CENTER, UI_ORGANISM_TREE_PALM, UI_ORGANISM_TYPE_SELECT, UI_ORGANISM_TYPE_MOSS, UI_ORGANISM_TYPE_GRASS, UI_ORGANISM_TYPE_FLOWER, UI_ORGANISM_TYPE_TREE, loadGD, loadUI, UI_UI_PHONEMODE, UI_ORGANISM_NUTRITION_CONFIGURATOR, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_MOSS_PLEUROCARP, UI_VIEWMODE_SELECT, UI_VIEWMODE_ORGANISM_SUIT_WATER, UI_VIEWMODE_ORGANISM_SUIT_LIGHT, UI_VIEWMODE_ORGANISM_SUIT_NET, UI_ORGANISM_FLOWER_LEAFNODE } from "../UIData.js";
 
 export class OrganismComponent extends Component {
      constructor(posX, posY, padding, dir, key) {
@@ -113,14 +113,14 @@ export class OrganismComponent extends Component {
           cattailConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, offsetX, () => getActiveClimate().getUIColorInactive(0.50), 0.75, "wet soils, partial sun"))
           cattailConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, offsetX, () => getActiveClimate().getUIColorInactive(0.55), 0.75, "growing time: 4 cycles"))
           // flower 
-          flowerConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "coneflower", UI_ORGANISM_SELECT, UI_ORGANISM_FLOWER_CONEFLOWER,
+          flowerConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "leaf node flower", UI_ORGANISM_SELECT, UI_ORGANISM_FLOWER_LEAFNODE,
                () => getActiveClimate().getUIColorInactive(0.60), () => getActiveClimate().getUIColorInactive(0.52)));
           flowerConditionalContainer.addElement(new TextBackground(this.window, sizeX, br2, offsetX, () => getActiveClimate().getUIColorInactive(0.85), 0.75, ""))
 
-          let coneflowerConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_ORGANISM_SELECT) == UI_ORGANISM_FLOWER_CONEFLOWER);
+          let coneflowerConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_ORGANISM_SELECT) == UI_ORGANISM_FLOWER_LEAFNODE);
           flowerConditionalContainer.addElement(coneflowerConditionalContainer);
 
-          coneflowerConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.55), 0.75, "coneflowers: darlings of the cone"))
+          coneflowerConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.55), 0.75, "leaf node flower"))
           coneflowerConditionalContainer.addElement(new TextBackground(this.window, sizeX, br3, offsetX, () => getActiveClimate().getUIColorInactive(0.85), 0.75, ""))
           coneflowerConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, offsetX, () => getActiveClimate().getUIColorInactive(0.50), 0.75, "drained soils, partial sun"))
           coneflowerConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, offsetX, () => getActiveClimate().getUIColorInactive(0.55), 0.75, "growing time: 1 cycle"))
@@ -267,7 +267,7 @@ export class OrganismComponent extends Component {
      isOrganismSelectedOnCurrentPage() {
           let selected = loadGD(UI_ORGANISM_SELECT);
           if (loadGD(UI_ORGANISM_TYPE_SELECT) == UI_ORGANISM_TYPE_FLOWER) {
-               if ([UI_ORGANISM_FLOWER_CONEFLOWER].includes(selected)) {
+               if ([UI_ORGANISM_FLOWER_LEAFNODE].includes(selected)) {
                     return true;
                }
                return false;
@@ -299,7 +299,7 @@ export class OrganismComponent extends Component {
      getDefaultNutritionMap() {
           let activeOrganism = loadGD(UI_ORGANISM_SELECT);
           switch (activeOrganism) {
-               case UI_ORGANISM_FLOWER_CONEFLOWER:
+               case UI_ORGANISM_FLOWER_LEAFNODE:
                     return coneflower_dnm;
                case UI_ORGANISM_GRASS_BASE:
                     return grass_dnm;
