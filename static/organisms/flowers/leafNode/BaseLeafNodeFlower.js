@@ -27,8 +27,8 @@ export class BaseLeafNodeFlower extends BaseOrganism {
 
 
         this.maxNumStem = 1;
-        this.maxStemLength = 5;
-        this.maxLeafLength = 10;
+        this.maxStemLength = 25;
+        this.maxLeafLength = 5;
 
         this.curNumGrass = 0;
         this.targetNumGrass = 1;
@@ -96,8 +96,8 @@ export class BaseLeafNodeFlower extends BaseOrganism {
     prepareStemGrowthPlanParams() {
         this.stemTwist = 0;
         this.stemBaseRotation = 0;
-        this.stemBaseDeflection = 0;
-        this.stemBaseCurve = 0;
+        this.stemBaseDeflection = randRange(-.1, .1);
+        this.stemBaseCurve = randRange(-.05, .05);
         this.stemStrengthMult = .35;
         this.stemRollingAveragePeriod = 150;
     }
@@ -182,7 +182,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                         continue;
                     }
                     c.leafNode = 1;
-                    this.growLeafAtNode(c, (i & 1) ? 1 : -1); 
+                    this.growLeafAtNode(stem, c, (i & 1) ? 1 : -1); 
                 }
             })
         
@@ -191,14 +191,14 @@ export class BaseLeafNodeFlower extends BaseOrganism {
 
     prepareLeafGrowthParams(side) {
         this.leafTwist = 0;
-        this.leafBaseRotation = 0;
-        this.leafBaseDeflection = 1;
-        this.leafBaseCurve = .125;
+        this.leafBaseRotation = Math.PI / 2;
+        this.leafBaseDeflection = Math.PI / 2;
+        this.leafBaseCurve = 0;
         this.leafStrengthMult = .35;
         this.leafRollingAveragePeriod = 150;
     }
 
-    growLeafAtNode(startNode, side) {
+    growLeafAtNode(stem, startNode, side) {
         this.prepareLeafGrowthParams(side);
         let growthPlan = new GrowthPlan(
             startNode.posX, startNode.posY,
@@ -209,7 +209,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             TYPE_STEM, this.leafStrengthMult, this.leafRollingAveragePeriod);
 
         growthPlan.postConstruct = () => {
-            this.originGrowth.addChild(growthPlan.component);
+            stem.addChild(growthPlan.component);
             this.leaves.push(this.originGrowth.getChildPath(growthPlan.component))
         };
         growthPlan.steps.push(new GrowthPlanStep(

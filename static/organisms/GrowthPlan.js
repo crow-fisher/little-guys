@@ -2,7 +2,7 @@ import { getCurDay, getFrameDt } from "../climate/time.js";
 import { getWindSpeedAtLocation } from "../climate/simulation/wind.js";
 import { STATE_DESTROYED, TYPE_HEART } from "./Stages.js";
 import { getGlobalThetaBase } from "../globals.js";
-import { removeItemAll } from "../common.js";
+import { clamp, removeItemAll } from "../common.js";
 
 export class GrowthPlan {
     constructor(posX, posY, required, endStage, theta, twist, baseRotation, baseDeflection, baseCurve, type, strengthMult, rollingAveragePeriod = 200) {
@@ -123,16 +123,6 @@ export class GrowthComponent {
         return this.strengthMult;
     }
 
-    setBaseDeflectionOverTime(deflectionOverTimeList) {
-        this.deflectionOverTimeList = deflectionOverTimeList;
-        this.growthPlan.deflectionOverTimeList = deflectionOverTimeList;
-    }
-
-    setBaseRotationOverTime(rotationOverTimeList) {
-        this.rotationOverTimeList = rotationOverTimeList;
-        this.growthPlan.rotationOverTimeList = rotationOverTimeList;
-    }
-
     addLifeSquare(newLsq) {
         this.children.filter((child) => child.posX == newLsq.posX && child.posY <= newLsq.posY)
             .forEach((child) => child.shiftUp());
@@ -164,7 +154,7 @@ export class GrowthComponent {
 
     shiftUp() {
         this.posY -= 1;
-        this.lifeSquares.forEach((lsq) => lsq.shiftUp());
+        this.lifeSquares.forEach((lsq) => lsq.posY -= 1);
         this.children.forEach((child) => child.shiftUp());
     }
 
@@ -257,14 +247,6 @@ export class GrowthComponent {
         return this.lifeSquares.filter((lsq) => lsq.posX == posX && lsq.posY == posY).map((lsq) => lsq.deflectionYOffset).at(0);
     }
 
-    getCurrentDeflection() {
-        if (this.parentComponent == null) {
-            return this.currentDeflection + this.baseDeflection;
-        } else {
-            return this.currentDeflection + this.baseDeflection + this.parentComponent.getCurrentDeflection();
-        }
-    }
-
     getBaseRotation() {
         let ret = this._getBaseRotation();
         if (this.parentComponent != null) {
@@ -277,9 +259,6 @@ export class GrowthComponent {
         if (this.rotationOverTimeList == null) {
             return this.baseRotation;
         } else {
-            if (this.rotationOverTimeList.length != 2) {
-                alert("just fyi, this is not implemented yet. just send 2 for now and update them through your growth cycles");
-            }
             let mapped = this.rotationOverTimeList.map((l) => l[0]);
 
             let min = Math.min(...mapped);
@@ -435,49 +414,13 @@ export class GrowthComponent {
         }
     }
     getStartSpringForce() {
-        return Math.sin(this.getBaseDeflection() - this.deflectionRollingAverage) * this.getTotalStrength();
-    }
-
-    getBaseDeflection() {
-        if (this.parentComponent == null) {
-            return this._getBaseDeflection();
-        } else {
-            return this._getBaseDeflection() + this.parentComponent.getBaseDeflection();
-        }
-    }
-
-    _getBaseDeflection() {
-        if (this.deflectionOverTimeList == null) {
-            return this.baseDeflection;
-        } else {
-            if (this.deflectionOverTimeList.length != 2) {
-                alert("just fyi, this is not implemented yet. just send 2 for now and update them through your growth cycles");
-            }
-            let mapped = this.deflectionOverTimeList.map((l) => l[0]);
-
-            let min = Math.min(...mapped);
-            let max = Math.max(...mapped);
-
-            let ot = getCurDay() - this.spawnTime;
-
-            if (ot > max) {
-                return this.deflectionOverTimeList[this.deflectionOverTimeList.length - 1][1];
-            }
-            if (ot < min) {
-                return this.deflectionOverTimeList[0][1];
-            } else {
-                let rel = (ot - min) / (max - min);
-                return this.deflectionOverTimeList[0][1] * (1 - rel) + this.deflectionOverTimeList[1][1] * rel;
-            }
-        }
+        return Math.sin(this.baseDeflection - this.currentDeflection) * this.getTotalStrength();
     }
 
     setCurrentDeflection(deflection) {
         let limit = Math.PI / 12;
         deflection = Math.min(Math.max(deflection, -limit), limit);
-
         let period = 12;
-
         this.currentDeflection = this.currentDeflection * (1 - (1 / period)) + deflection * (1 / period)
         if (this.deflectionRollingAverage == 0) {
             this.deflectionRollingAverage = deflection;
