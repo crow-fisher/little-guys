@@ -1,5 +1,5 @@
 import { randNumber, randRange } from "../../../common.js";
-import { STAGE_ADULT, STAGE_FLOWER, SUBTYPE_GRASS, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_STEM, TYPE_GRASS, TYPE_STEM } from "../../Stages.js";
+import { STAGE_ADULT, STAGE_FLOWER, SUBTYPE_FLOWER, SUBTYPE_FLOWERBUD, SUBTYPE_FLOWERNODE, SUBTYPE_FLOWERTIP, SUBTYPE_GRASS, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_STEM, TYPE_FLOWERNODE, TYPE_FLOWERPETAL, TYPE_GRASS, TYPE_STEM } from "../../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep } from "../../GrowthPlan.js";
 import { BaseSeedOrganism } from "../../BaseSeedOrganism.js";
@@ -27,7 +27,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
 
 
         this.maxNumStem = 1;
-        this.maxStemLength = 25;
+        this.maxStemLength = 12;
         this.maxLeafLength = 5;
 
         this.curNumGrass = 0;
@@ -35,13 +35,27 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.targetGrassLength = 3;
 
         this.curNumStem = 0;
+        this.curNumFlower = 0;
         this.targetNumStem = 0;
 
         this.targetStemLength = this.maxStemLength;
         this.targetLeafLength = this.maxLeafLength;;
 
+        this.maxFlowerLength = 3;
+        this.targetFlowerLength = this.maxFlowerLength;
+
+        this.numPetals = 24;
+        this.petalAngleShift = 0; // randRange(0, 0.1 * Math.PI);
+
         this.stems = [];
         this.leaves = [];
+        this.flowers = [];
+
+        this.colorFlowerInner = [70, 54, 26]
+        this.colorFlowerOuter = [129, 129, 87]
+
+        // rgb(129, 129, 87)
+
     }
 
 
@@ -79,8 +93,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                 stem.lifeSquares[0].theta = stem.lifeSquares[1]?.theta ?? stem.lifeSquares[0].theta;
             })
 
-
-    this.leaves.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
+        this.leaves.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .forEach((stem) => {
                 let l = stem.lifeSquares.length;
                 let i = 0;
@@ -91,6 +104,17 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                 });
                 stem.lifeSquares[0].theta = stem.lifeSquares[1]?.theta ?? stem.lifeSquares[0].theta;
             })
+
+        this.flowers.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
+            .forEach((flower) => {
+                let i = 0;
+                flower.children.forEach((child) => child.lifeSquares.forEach((lsq) => {
+                    this.applyColor((lsq.subtype == SUBTYPE_FLOWER ? this.colorFlowerInner : this.colorFlowerOuter), i, lsq.renderColor);
+                    i += 1;
+                    lsq.width = 0.5;
+                }));
+            })
+
     }
 
     prepareStemGrowthPlanParams() {
@@ -173,21 +197,23 @@ export class BaseLeafNodeFlower extends BaseOrganism {
 
     leafStems() {
         // adds 'leaves' to the stem at some interval
+
+        let side = 1;
         this.stems
             .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .forEach((stem) => {
-                for (let i = 0; i < stem.lifeSquares.length; i++) {
+                for (let i = 0; i < stem.lifeSquares.length - 2; i += 3) {
                     let c = stem.lifeSquares[i];
                     if (c.leafNode == 1) {
                         continue;
                     }
                     c.leafNode = 1;
-                    this.growLeafAtNode(stem, c, (i & 1) ? 1 : -1); 
+                    this.growLeafAtNode(stem, c, side);
+                    side *= -1;
                 }
             })
-        
-    }
 
+    }
 
     prepareLeafGrowthParams(side) {
         this.leafTwist = 0;
@@ -219,6 +245,82 @@ export class BaseLeafNodeFlower extends BaseOrganism {
 
         this.growthPlans.push(growthPlan);
     }
+
+    growFlower() {
+        let stem = this.originGrowth.getChildFromPath(this.stems[this.curNumFlower]);
+        let startNode = stem.lifeSquares.at(stem.lifeSquares.length - 1);
+        let i = this.curNumFlower;
+
+        let growthPlan = new GrowthPlan(
+            startNode.posX, startNode.posY,
+            false, STAGE_FLOWER,
+
+        0,
+        Math.PI / 2,
+        0,
+        0,
+            0, 
+            TYPE_FLOWERNODE
+            , 10 ** 8);
+
+        growthPlan.postConstruct = () => {
+            stem.addChild(growthPlan.component);
+            this.flowers[i] = this.originGrowth.getChildPath(growthPlan.component);
+        };
+        growthPlan.steps.push(new GrowthPlanStep(
+            growthPlan,
+            () => {
+                let ret = this.growGreenSquareAction(startNode, SUBTYPE_FLOWERBUD, 0);
+                startNode.opacity = 0;
+                return ret;
+            }
+        ));
+        this.growthPlans.push(growthPlan);
+        this.curNumFlower += 1;
+    }
+
+    growFlowerPetals() {
+        this.flowers.map((path) => this.originGrowth.getChildFromPath(path)).forEach((flowerNodeComponent) => {
+            if (flowerNodeComponent.children.length >= this.numPetals) {
+                this.lengthenFlowerPetals();
+            } else {
+                let startTheta = randRange(0, 2 * Math.PI);
+                let startNode = flowerNodeComponent.lifeSquares.at(0);
+                for (let i = 0; i < this.numPetals; i++) {
+                    let petalGrowthPlan = new GrowthPlan(
+                        startNode.posX, startNode.posY,
+                        false, STAGE_FLOWER,
+                        startTheta + (i * (2 * Math.PI) / this.numPetals),
+                        startTheta + (i * (2 * Math.PI) / this.numPetals), Math.PI * randRange(0.1, 0.2) + this.petalAngleShift, 0,
+                        0, TYPE_FLOWERPETAL, 10 ** 8);
+                    petalGrowthPlan.postConstruct = () => {
+                        flowerNodeComponent.addChild(petalGrowthPlan.component);
+                        startNode.subtype = SUBTYPE_FLOWERNODE;
+                    }
+                    petalGrowthPlan.steps.push(new GrowthPlanStep(
+                        petalGrowthPlan,
+                        () => this.growGreenSquareAction(startNode, SUBTYPE_FLOWER)
+                    ));
+                    this.growthPlans.push(petalGrowthPlan);
+                };
+            }
+        })
+    }
+
+
+    lengthenFlowerPetals() {
+        this.flowers.map((path) => this.originGrowth.getChildFromPath(path)).forEach((flowerNodeComponent) =>
+            flowerNodeComponent.children.forEach((child) => {
+                if (child.growthPlan.steps.length < this.targetFlowerLength) {
+                    child.growthPlan.steps.push(new GrowthPlanStep(
+                        child.growthPlan,
+                        () => this.growGreenSquareAction(child.lifeSquares.at(child.lifeSquares.length - 1), SUBTYPE_FLOWERTIP)
+                    ));
+                }
+            })
+        );
+    }
+
 
     planGrowth() {
         if (!super.planGrowth()) {
@@ -252,6 +354,12 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             this.targetStemLength += 1;
             return;
         }
+        if (this.curNumFlower < this.maxNumStem) {
+            this.growFlower();
+            return;
+        }
+        this.growFlowerPetals();
+        this.lengthenFlowerPetals();
     }
 }
 

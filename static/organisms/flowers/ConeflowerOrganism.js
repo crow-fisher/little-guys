@@ -54,10 +54,9 @@ export class ConeflowerOrganism extends BaseOrganism {
         this.curNumStems = 0;
         this.curNumLeaves = 0;
 
-        this.numPetals = 4;
 
         this.growthNumGreen = this.maxNumNodes * (this.maxStemLength + this.maxLeafLength);
-
+        this.numPetals = 4;
         this.flowerHueShift = randRange(-100, 100);
         this.petalAngleShift = randRange(0, 0.1 * Math.PI);
 

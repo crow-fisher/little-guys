@@ -15,6 +15,7 @@ export let MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
 let params = new URLSearchParams(document.location.search);
 
 export let DEBUG = params.get("debug");
+export let FASTGROW = params.get("fastgrow");
 
 const body = document.getElementById("body");
 

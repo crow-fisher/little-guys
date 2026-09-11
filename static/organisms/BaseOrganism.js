@@ -7,7 +7,7 @@ import { applyLightingFromSource } from "../lighting/lightingProcessing.js";
 import { loadGD, UI_EVOLUTION_ACTIVE_PARAM, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_SELECT, UI_SIMULATION_GENS_PER_DAY, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
 import { COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
 import { clamp, hsv2rgbDest, randNumber, randRange, rgb2hsv, rgbToRgba } from "../common.js";
-import { MAIN_CONTEXT } from "../index.js";
+import { FASTGROW, MAIN_CONTEXT } from "../index.js";
 import { zoomCanvasFillRect } from "../canvas.js";
 import { HUE_GREEN } from "../hue.js";
 import { SeedSquare } from "../squares/SeedSquare.js";
@@ -406,9 +406,9 @@ class BaseOrganism {
     }
 
     growGreenSquareAction(startNode, subtype, dy = 1) {
-        let newGrassNode = this.growPlantSquare(startNode, 0, dy);
-        newGrassNode.subtype = subtype;
-        return newGrassNode;
+        let newPlantSquare = this.growPlantSquare(startNode, 0, dy);
+        newPlantSquare.subtype = subtype;
+        return newPlantSquare;
     }
 
     addSproutGrowthPlan() {
@@ -463,11 +463,14 @@ class BaseOrganism {
         }
     }
     doGreenGrowth() {
-        if (this.age < this.greenLastGrown + this.lightLevelThrottleVal() * (this.getGrowthCycleMaturityLength() / this.growthNumGreen)) {
-            return false;
+
+        if (!FASTGROW) {
+            if (this.age < this.greenLastGrown + this.lightLevelThrottleVal() * (this.getGrowthCycleMaturityLength() / this.growthNumGreen)) {
+                return false;
+            }
+            if (Math.abs(this.getWilt()) > .5)
+                return false;
         }
-        if (Math.abs(this.getWilt()) > .5)
-            return false;
 
         let somethingDone = false;
         this.growthPlans.filter((gp) => !gp.areStepsCompleted()).forEach((growthPlan) => {
