@@ -6,7 +6,6 @@ import { BaseSeedOrganism } from "../../BaseSeedOrganism.js";
 import { _lightLevelDisplayExposureAdjustment, _llt_mult, BaseOrganism, baseOrganism_dnm } from "../../BaseOrganism.js";
 import { UI_ORGANISM_FLOWER_LEAFNODE } from "../../../ui/UIData.js";
 import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh } from "../../BaseOrganism.js";
-import { LSQ_RENDERMODE_NORMAL } from "../../../lifeSquares/LifeSquareGreen.js";
 
 export let leafNodeFlower_dnm = structuredClone(baseOrganism_dnm);
 leafNodeFlower_dnm[_llt_mult] = 1.45;
@@ -25,8 +24,6 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         super(square, parentId);
         this.proto = "BaseLeafNodeFlower";
         this.uiRef = UI_ORGANISM_FLOWER_LEAFNODE;
-
-
         this.maxNumStem = 1;
         this.maxStemLength = 12;
         this.maxLeafLength = 5;
@@ -42,7 +39,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.targetStemLength = this.maxStemLength;
         this.targetLeafLength = this.maxLeafLength;;
 
-        this.maxFlowerLength = 3;
+        this.maxFlowerLength = 2;
         this.targetFlowerLength = this.maxFlowerLength;
 
         this.numPetals = 24;
@@ -109,9 +106,16 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.flowers.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .forEach((flower) => {
                 flower.lifeSquares.forEach((lsq) => {
+                    let v = Math.min(Math.sin(flower.getTheta()), 0.7);
+                    // when at -1 or 1, we are viewing the flower from the side 
+                    // we are looking at these flower pieces as a flat disc
                     this.applyColor(this.colorFlowerInner, 0, lsq.renderColor);
-                    lsq.width = Math.sin(lsq.component.getTheta());
-                    lsq.height = Math.sin(lsq.component.getTwist());
+                    
+                    lsq.width = 3 *  (2 - Math.abs(v));
+                    lsq.height =  3 * (2 - Math.abs(v));
+                    
+                    // lsq.width = Math.sin(lsq.component.getTheta());
+                    // lsq.height = Math.sin(lsq.component.getTwist());
                 });
                 // let i = 0;
                 // flower.children.forEach((child) => child.lifeSquares.forEach((lsq) => {
@@ -208,7 +212,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.stems
             .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .forEach((stem) => {
-                for (let i = 0; i < stem.lifeSquares.length - 2; i += 3) {
+                for (let i = 0; i < stem.lifeSquares.length - 2; i += 1) {
                     let c = stem.lifeSquares[i];
                     if (c.leafNode == 1) {
                         continue;
@@ -235,7 +239,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         let growthPlan = new GrowthPlan(
             startNode.posX, startNode.posY,
             false, STAGE_ADULT,
-            side * Math.PI * Math.random(),
+            randRange(0, 12),
             this.leafTwist,
             this.leafBaseRotation, this.leafBaseDeflection, this.leafBaseCurve,
             TYPE_STEM, this.leafStrengthMult, this.leafRollingAveragePeriod);
@@ -257,15 +261,16 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         let startNode = stem.lifeSquares.at(stem.lifeSquares.length - 1);
         let i = this.curNumFlower;
 
+        this.prepareLeafGrowthParams();
+
         let growthPlan = new GrowthPlan(
             startNode.posX, startNode.posY,
             false, STAGE_FLOWER,
-
-        0,
-        Math.PI / 2,
-        0,
-        0,
-            0, 
+            Math.PI * Math.random(),
+            this.leafTwist,
+            this.leafBaseRotation, 
+            this.leafBaseDeflection,
+             this.leafBaseCurve,
             TYPE_FLOWERNODE
             , 10 ** 8);
 
@@ -277,6 +282,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             growthPlan,
             () => {
                 let ret = this.growGreenSquareAction(startNode, SUBTYPE_FLOWERBUD);
+                // ret.opacity = 0;
                 return ret;
             }
         ));
@@ -312,6 +318,17 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         })
     }
 
+    lengthenFlower() {
+        this.flowers.map((path) => this.originGrowth.getChildFromPath(path)).forEach((flower) => {
+            if (flower.growthPlan.steps.length < this.targetFlowerLength) {
+                flower.growthPlan.steps.push(new GrowthPlanStep(
+                    flower.growthPlan,
+                    () => this.growGreenSquareAction(flower.lifeSquares.at(flower.lifeSquares.length - 1), SUBTYPE_FLOWERTIP)
+                ));
+            }
+        }
+        )
+    };
 
     lengthenFlowerPetals() {
         this.flowers.map((path) => this.originGrowth.getChildFromPath(path)).forEach((flowerNodeComponent) =>
@@ -363,6 +380,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             this.growFlower();
             return;
         }
+        this.lengthenFlower();
         // this.growFlowerPetals();
         // this.lengthenFlowerPetals();
     }
