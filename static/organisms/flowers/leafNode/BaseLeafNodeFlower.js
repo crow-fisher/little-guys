@@ -40,7 +40,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.targetStemLength = this.maxStemLength;
         this.targetLeafLength = this.maxLeafLength;;
 
-        this.maxFlowerLength = 3;
+        this.maxFlowerLength = 4;
         this.targetFlowerLength = this.maxFlowerLength;
 
         this.numPetals = 24;
@@ -50,14 +50,15 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.leaves = [];
         this.flowers = [];
 
-        this.colorFlowerBack = [21, 26, 6];
+        this.colorFlowerBack =  [21, 26,   6];
         this.colorFlowerInner = [104, 89, 20];
         this.colorFlowerOuter = [145, 52, 12];
         this.colorFlowerPetal = [252, 195, 6];
 
-        // rgb(168, 144, 58)
-        // rgb(184, 100, 49)
-        // rgb(252, 195, 6)
+        // rgb(21, 26,   6)
+        // rgb(104, 89, 20)
+        // rgb(145, 52, 12)
+        // rgb(167, 139, 49)
 
     }
 
@@ -111,8 +112,8 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.flowers.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .forEach((flower) => {
                 // let cMap = [this.colorFlowerOuter, this.colorFlowerInner];
-                let cMap = [this.colorFlowerBack, this.colorFlowerOuter, this.colorFlowerInner];
-                let sMap = [5,6,3];
+                let cMap = [this.colorFlowerBack, this.colorFlowerPetal, this.colorFlowerOuter, this.colorFlowerInner];
+                let sMap = [5,8,4,3];
                 let i = 0;
                 flower.lifeSquares.forEach((lsq) => {
                     // let v = Math.max(.3, Math.min(Math.cos(flower.getTheta()), 0.7));
@@ -128,7 +129,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                     lsq.ty = 1;
                     lsq.distToFront -= 1;
 
-                    i = (i + 1) % 3;
+                    i += 1;
                     // lsq.width = Math.sin(lsq.component.getTheta());
                     // lsq.height = Math.sin(lsq.component.getTwist());
                 });
@@ -316,7 +317,8 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                         startNode.posX, startNode.posY,
                         false, STAGE_FLOWER,
                         startTheta + (i * (2 * Math.PI) / this.numPetals),
-                        startTheta + (i * (2 * Math.PI) / this.numPetals), Math.PI * randRange(0.1, 0.2) + this.petalAngleShift, 0,
+                        startTheta + (i * (2 * Math.PI) / this.numPetals), 
+                        0, 0,
                         0, TYPE_FLOWERPETAL, 10 ** 8);
                     petalGrowthPlan.postConstruct = () => {
                         flowerNodeComponent.addChild(petalGrowthPlan.component);
@@ -324,7 +326,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                     }
                     petalGrowthPlan.steps.push(new GrowthPlanStep(
                         petalGrowthPlan,
-                        () => this.growGreenSquareAction(startNode, SUBTYPE_FLOWER)
+                        () => this.growGreenSquareAction(startNode, SUBTYPE_FLOWER), 4
                     ));
                     this.growthPlans.push(petalGrowthPlan);
                 };
