@@ -6,6 +6,7 @@ import { BaseSeedOrganism } from "../../BaseSeedOrganism.js";
 import { _lightLevelDisplayExposureAdjustment, _llt_mult, BaseOrganism, baseOrganism_dnm } from "../../BaseOrganism.js";
 import { UI_ORGANISM_FLOWER_LEAFNODE } from "../../../ui/UIData.js";
 import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh } from "../../BaseOrganism.js";
+import { LSQ_RENDERMODE_NORMAL } from "../../../lifeSquares/LifeSquareGreen.js";
 
 export let leafNodeFlower_dnm = structuredClone(baseOrganism_dnm);
 leafNodeFlower_dnm[_llt_mult] = 1.45;
@@ -107,12 +108,17 @@ export class BaseLeafNodeFlower extends BaseOrganism {
 
         this.flowers.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .forEach((flower) => {
-                let i = 0;
-                flower.children.forEach((child) => child.lifeSquares.forEach((lsq) => {
-                    this.applyColor((lsq.subtype == SUBTYPE_FLOWER ? this.colorFlowerInner : this.colorFlowerOuter), i, lsq.renderColor);
-                    i += 1;
-                    lsq.width = 0.5;
-                }));
+                flower.lifeSquares.forEach((lsq) => {
+                    this.applyColor(this.colorFlowerInner, 0, lsq.renderColor);
+                    lsq.width = Math.sin(lsq.component.getTheta());
+                    lsq.height = Math.sin(lsq.component.getTwist());
+                });
+                // let i = 0;
+                // flower.children.forEach((child) => child.lifeSquares.forEach((lsq) => {
+                //     this.applyColor((lsq.subtype == SUBTYPE_FLOWER ? this.colorFlowerInner : this.colorFlowerOuter), i, lsq.renderColor);
+                //     i += 1;
+                //     lsq.width = 0.5;
+                // }));
             })
 
     }
@@ -270,8 +276,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
             () => {
-                let ret = this.growGreenSquareAction(startNode, SUBTYPE_FLOWERBUD, 0);
-                startNode.opacity = 0;
+                let ret = this.growGreenSquareAction(startNode, SUBTYPE_FLOWERBUD);
                 return ret;
             }
         ));
@@ -358,8 +363,8 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             this.growFlower();
             return;
         }
-        this.growFlowerPetals();
-        this.lengthenFlowerPetals();
+        // this.growFlowerPetals();
+        // this.lengthenFlowerPetals();
     }
 }
 

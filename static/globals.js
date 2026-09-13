@@ -15,11 +15,16 @@ export function purgeMaps() {
     ALL_SQUARES = new Map();
 }
 
-let curBlockId = 0;
+let curBlockId = 0, curLsqId = 0;
 
 export function getNextBlockId() {
     curBlockId += 1;
     return curBlockId;
+}
+
+export function getNextLsqId() {
+    curLsqId += 1;
+    return curLsqId;
 }
 
 export function getNextOrgId() {

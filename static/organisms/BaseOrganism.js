@@ -404,7 +404,7 @@ class BaseOrganism {
         component.children.forEach((child) => out.push(...this._getOriginForNewGrowth(subtype, child)));
         return out;
     }
-
+    
     growGreenSquareAction(startNode, subtype, dy = 1) {
         let newPlantSquare = this.growPlantSquare(startNode, 0, dy);
         newPlantSquare.subtype = subtype;
