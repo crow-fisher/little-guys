@@ -40,7 +40,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.targetStemLength = this.maxStemLength;
         this.targetLeafLength = this.maxLeafLength;;
 
-        this.maxFlowerLength = 2;
+        this.maxFlowerLength = 3;
         this.targetFlowerLength = this.maxFlowerLength;
 
         this.numPetals = 24;
@@ -50,10 +50,14 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.leaves = [];
         this.flowers = [];
 
-        this.colorFlowerInner = [70, 54, 26]
-        this.colorFlowerOuter = [129, 129, 87]
+        this.colorFlowerBack = [21, 26, 6];
+        this.colorFlowerInner = [104, 89, 20];
+        this.colorFlowerOuter = [145, 52, 12];
+        this.colorFlowerPetal = [252, 195, 6];
 
-        // rgb(129, 129, 87)
+        // rgb(168, 144, 58)
+        // rgb(184, 100, 49)
+        // rgb(252, 195, 6)
 
     }
 
@@ -106,16 +110,25 @@ export class BaseLeafNodeFlower extends BaseOrganism {
 
         this.flowers.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .forEach((flower) => {
+                // let cMap = [this.colorFlowerOuter, this.colorFlowerInner];
+                let cMap = [this.colorFlowerBack, this.colorFlowerOuter, this.colorFlowerInner];
+                let sMap = [5,6,3];
+                let i = 0;
                 flower.lifeSquares.forEach((lsq) => {
-                    let v = Math.min(Math.sin(flower.getTheta()), 0.7);
+                    // let v = Math.max(.3, Math.min(Math.cos(flower.getTheta()), 0.7));
+                    let v = Math.cos(flower.getTheta());
                     // when at -1 or 1, we are viewing the flower from the side 
                     // we are looking at these flower pieces as a flat disc
-                    this.applyColor(this.colorFlowerInner, 0, lsq.renderColor);
                     
-                    lsq.width = 3 *  (2 - Math.abs(v));
-                    lsq.height =  3 * (2 - Math.abs(v));
+                    lsq.width = sMap[i];
+                    this.applyColor(cMap[i], i, lsq.renderColor);
+                    
                     lsq.renderMode = LSQ_RENDERMODE_ELLIPSE;
-                    
+                    lsq.tx = v;
+                    lsq.ty = 1;
+                    lsq.distToFront -= 1;
+
+                    i = (i + 1) % 3;
                     // lsq.width = Math.sin(lsq.component.getTheta());
                     // lsq.height = Math.sin(lsq.component.getTwist());
                 });
@@ -214,7 +227,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.stems
             .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .forEach((stem) => {
-                for (let i = 0; i < stem.lifeSquares.length - 2; i += 1) {
+                for (let i = 0; i < stem.lifeSquares.length - 4; i += 1) {
                     let c = stem.lifeSquares[i];
                     if (c.leafNode == 1) {
                         continue;
@@ -270,7 +283,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             false, STAGE_FLOWER,
             Math.PI * Math.random(),
             this.leafTwist,
-            this.leafBaseRotation, 
+            this.leafBaseRotation + stem.endTheta, 
             this.leafBaseDeflection,
              this.leafBaseCurve,
             TYPE_FLOWERNODE
@@ -283,8 +296,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
             () => {
-                let ret = this.growGreenSquareAction(startNode, SUBTYPE_FLOWERBUD);
-                // ret.opacity = 0;
+                let ret = this.growGreenSquareAction(startNode, SUBTYPE_FLOWERBUD, 0.3);
                 return ret;
             }
         ));
@@ -325,7 +337,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             if (flower.growthPlan.steps.length < this.targetFlowerLength) {
                 flower.growthPlan.steps.push(new GrowthPlanStep(
                     flower.growthPlan,
-                    () => this.growGreenSquareAction(flower.lifeSquares.at(flower.lifeSquares.length - 1), SUBTYPE_FLOWERTIP)
+                    () => this.growGreenSquareAction(flower.lifeSquares.at(flower.lifeSquares.length - 1), SUBTYPE_FLOWERTIP, 0.1)
                 ));
             }
         }

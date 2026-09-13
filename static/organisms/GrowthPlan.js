@@ -321,12 +321,12 @@ export class GrowthComponent {
 
         let curve = this.baseCurve + Math.sin(this.currentDeflection) * 0.06 * (this.ySizeCur() - 1) / this.getTotalStrength();
 
-        let startTheta = this.deflectionRollingAverage + this.getParentDeflection() + this.getBaseRotation();
-        let endTheta = this.currentDeflection + curve + this.getParentDeflection() - this.baseCurve * this.getWilt() + this.getBaseRotation();
+        this.startTheta = this.deflectionRollingAverage + this.getParentDeflection() + this.getBaseRotation();
+        this.endTheta = this.currentDeflection + curve + this.getParentDeflection() - this.baseCurve * this.getWilt() + this.getBaseRotation();
 
         let length = this.ySizeCur();
 
-        let thetaDelta = endTheta - startTheta;
+        let thetaDelta = this.endTheta - this.startTheta;
 
         let prevX = -1;
         let prevY = -1;
@@ -336,7 +336,7 @@ export class GrowthComponent {
             let relLsqX = 0.85 * (this.posX - lsq.posX);
             let relLsqY = 0.85 * (this.posY - lsq.posY);
             let lsqDist = (relLsqX ** 2 + relLsqY ** 2) ** 0.5;
-            let currentTheta = startTheta + (lsqDist / length) * thetaDelta;
+            let currentTheta = this.startTheta + (lsqDist / length) * thetaDelta;
 
             let offsetX = relLsqX * Math.cos(currentTheta) - relLsqY * Math.sin(currentTheta);
             let offsetY = relLsqY * Math.cos(currentTheta) + relLsqX * Math.sin(currentTheta);

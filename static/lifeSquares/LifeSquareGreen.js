@@ -132,7 +132,9 @@ class LifeSquareGreen {
             zoomCanvasFillCircleEllipse(
                 (this.getPosX() + 0.5) * getBaseSize(),
                 (this.getPosY() + 0.5) * getBaseSize(),
-                Math.max(this.width, this.height) * getBaseSize() / 2
+                this.width * getBaseSize() / 2,
+                this.tx,
+                this.ty
             )
         } else {
             zoomCanvasFillRect(
