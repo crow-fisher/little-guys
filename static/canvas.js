@@ -201,6 +201,28 @@ export function zoomCanvasFillCircle(x, y, size) {
     MAIN_CONTEXT.fill();
 }
 
+export function zoomCanvasFillCircleEllipse(x, y, size) {
+    let totalWidth = CANVAS_SQUARES_X * BASE_SIZE;
+    let totalHeight = CANVAS_SQUARES_Y * BASE_SIZE;
+
+    let windowWidth = totalWidth / getCurZoom();
+    let windowHeight = totalHeight / getCurZoom();
+
+    let windowWidthStart = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) - (windowWidth / 2);
+    let windowHeightStart = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) - (windowHeight / 2);
+
+    let windowWidthEnd = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) + (windowWidth / 2);
+    let windowHeightEnd = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) + (windowHeight / 2);
+
+    let xpi = (x - windowWidthStart) / (windowWidthEnd - windowWidthStart);
+    let ypi = (y - windowHeightStart) / (windowHeightEnd - windowHeightStart);
+    let xpl = xpi * totalWidth;
+    let ypl = ypi * totalHeight;
+    MAIN_CONTEXT.beginPath();
+    MAIN_CONTEXT.arc(xpl, ypl, size * getCurZoom(), 0, 2 * Math.PI, false);
+    MAIN_CONTEXT.fill();
+}
+
 export function transformCanvasSquaresToPixels(x, y) {
     let totalWidth = CANVAS_SQUARES_X * BASE_SIZE;
     let totalHeight = CANVAS_SQUARES_Y * BASE_SIZE;

@@ -6,6 +6,7 @@ import { BaseSeedOrganism } from "../../BaseSeedOrganism.js";
 import { _lightLevelDisplayExposureAdjustment, _llt_mult, BaseOrganism, baseOrganism_dnm } from "../../BaseOrganism.js";
 import { UI_ORGANISM_FLOWER_LEAFNODE } from "../../../ui/UIData.js";
 import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh } from "../../BaseOrganism.js";
+import { LSQ_RENDERMODE_ELLIPSE } from "../../../lifeSquares/LifeSquareGreen.js";
 
 export let leafNodeFlower_dnm = structuredClone(baseOrganism_dnm);
 leafNodeFlower_dnm[_llt_mult] = 1.45;
@@ -113,6 +114,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                     
                     lsq.width = 3 *  (2 - Math.abs(v));
                     lsq.height =  3 * (2 - Math.abs(v));
+                    lsq.renderMode = LSQ_RENDERMODE_ELLIPSE;
                     
                     // lsq.width = Math.sin(lsq.component.getTheta());
                     // lsq.height = Math.sin(lsq.component.getTwist());
