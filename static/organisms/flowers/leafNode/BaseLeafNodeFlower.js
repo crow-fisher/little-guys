@@ -6,7 +6,7 @@ import { BaseSeedOrganism } from "../../BaseSeedOrganism.js";
 import { _lightLevelDisplayExposureAdjustment, _llt_mult, BaseOrganism, baseOrganism_dnm } from "../../BaseOrganism.js";
 import { UI_ORGANISM_FLOWER_LEAFNODE } from "../../../ui/UIData.js";
 import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh } from "../../BaseOrganism.js";
-import { LSQ_RENDERMODE_ELLIPSE, LSQ_RENDERMODE_THETA } from "../../../lifeSquares/LifeSquareGreen.js";
+import { LSQ_RENDERMODE_ELLIPSE, LSQ_RENDERMODE_THETA, LSQ_RENDERMODE_THETA_SLOPE } from "../../../lifeSquares/LifeSquareGreen.js";
 
 export let leafNodeFlower_dnm = structuredClone(baseOrganism_dnm);
 leafNodeFlower_dnm[_llt_mult] = 1.45;
@@ -43,7 +43,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.maxFlowerLength = 5;
         this.targetFlowerLength = this.maxFlowerLength;
 
-        this.numPetals = 30;
+        this.numPetals = 5;
         this.petalAngleShift = 0; // randRange(0, 0.1 * Math.PI);
 
         this.stems = [];
@@ -58,51 +58,48 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         // rgb(56, 63, 19);
         // rgb(46, 53, 16);
 
-        this.colorFlowerC = [25, 24, 24];
-        this.colorFlowerR1 = [44, 14, 15];
-        this.colorFlowerR2 = [224, 160, 45];
-        this.colorFlowerR3 = [233, 201, 57];
+        this.flowerColorC =  [25, 24, 24];
+        this.flowerColorR1 = [44, 14, 15];
+        this.flowerColorR2 = [224, 160, 45];
+        this.flowerColorR3 = [233, 201, 57];
 
         // rgb(25, 24,   24)
         // rgb(44, 14,   15)
         // rgb(224, 160, 45)
         // rgb(233, 201, 57)
 
-        this.colorFlowerR1D = -0.1;
-        this.colorFlowerR2D = -0.0;
-        this.colorFlowerR3D = 0.2;
-        this.colorFlowerR4D = 0.4;
+        this.flowerR1D = -0.1;
+        this.flowerR2D = -0.0;
+        this.flowerR3D = 0.2;
+        this.flowerR4D = 0.4;
 
-        this.colorFlowerR1W = 0.1;
-        this.colorFlowerR2W = 0.7;
-        this.colorFlowerR3W = 1;
-        this.colorFlowerR4W = 1;
+        this.flowerR1W = 0.1;
+        this.flowerR2W = 0.7;
+        this.flowerR3W = 1;
+        this.flowerR4W = 1;
+        this.flowerR5W = 1;
 
-        this.colorFlower = [
-            this.colorFlowerC,
-            this.colorFlowerR1,
-            this.colorFlowerR2,
-            this.colorFlowerR3
+        this.flowerColor = [
+            this.flowerColorC,
+            this.flowerColorR1,
+            this.flowerColorR2,
+            this.flowerColorR3
         ]
 
-        this.colorFlowerD = [
-            this.colorFlowerR1D,
-            this.colorFlowerR2D,
-            this.colorFlowerR3D,
-            this.colorFlowerR4D
+        this.flowerD = [
+            this.flowerR1D,
+            this.flowerR2D,
+            this.flowerR3D,
+            this.flowerR4D
         ]
 
-        this.colorFlowerRW = [
-            this.colorFlowerR1W,
-            this.colorFlowerR2W,
-            this.colorFlowerR3W,
-            this.colorFlowerR4W
+        this.flowerW = [
+            this.flowerR1W,
+            this.flowerR2W,
+            this.flowerR3W,
+            this.flowerR4W,
+            this.flowerR5W
         ]
-
-
-
-
-
     }
 
 
@@ -157,92 +154,65 @@ export class BaseLeafNodeFlower extends BaseOrganism {
 
         this.flowers.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .forEach((flower) => {
-                // let cMap = [this.colorFlowerOuter, this.colorFlowerInner];
-                this.baseColorFlowerDarkGreen = [21, 26, 6];
+                flower.lifeSquares.forEach((lsq) => lsq.opacity = 0);
                 let i = 0;
-                flower.lifeSquares.forEach((lsq) => {
-                    // let v = Math.max(.3, Math.min(Math.cos(flower.getTheta()), 0.7));
-                    let v = Math.cos(flower.getTheta());
-                    // when at -1 or 1, we are viewing the flower from the side 
-                    // we are looking at these flower pieces as a flat disc
-                    lsq.width = 1; //sMap[i];
-
-                    lsq.opacity = 0;
-                    lsq.renderMode = LSQ_RENDERMODE_THETA
-                    // lsq.renderMode = LSQ_RENDERMODE_ELLIPSE;
-                    // lsq.tx = v;
-                    // lsq.ty = 1;
-                    lsq.distToFront -= 1;
-
-                    i += 1;
-                    // lsq.width = Math.sin(lsq.component.getTheta());
-                    // lsq.height = Math.sin(lsq.component.getTwist());
-                });
-                i = 0;
-
-                this.colorFlowerC = [25, 24, 24];
-                this.colorFlowerR1 = [43, 18, 21];
-                this.colorFlowerR2 = [141, 134, 32];
-                this.colorFlowerR3 = [167, 143, 41];
-
                 // rgb(25, 24,   24)
                 // rgb(43, 18, 21)
                 // rgb(141, 134, 32)
                 // rgb(167, 143, 41)
 
+                this.baseColorFlowerDarkGreen = [21, 26, 6];
+                this.flowerColorC = [25, 24, 24];
+                this.flowerColorR1 = [43, 18, 21];
+                this.flowerColorR2 = [141, 134, 32];
+                this.flowerColorR3 = [167, 143, 41];
 
-                this.colorFlowerR1D = 0.3;
-                this.colorFlowerR2D = .7;
-                this.colorFlowerR3D = .8;
-                this.colorFlowerR4D = 1;
+                this.flowerR1D = 0.3;
+                this.flowerR2D = .7;
+                this.flowerR3D = .8;
+                this.flowerR4D = 1;
 
-                this.colorFlowerR1W = 0.8;
-                this.colorFlowerR2W = 0.7;
-                this.colorFlowerR3W = 0.65;
-                this.colorFlowerR4W = 0.6;
+                this.flowerR1W = 0.9;
+                this.flowerR2W = 0.7;
+                this.flowerR3W = 0.5;
+                this.flowerR4W = 0.3;
+                this.flowerR5W = 0.1;
 
-
-                this.colorFlower = [
-                    this.colorFlowerC,
-                    this.colorFlowerR1,
-                    this.colorFlowerR2,
-                    this.colorFlowerR3
+                this.flowerColor = [
+                    this.flowerColorC,
+                    this.flowerColorR1,
+                    this.flowerColorR2,
+                    this.flowerColorR3
                 ]
 
-                this.colorFlowerD = [
-                    this.colorFlowerR1D,
-                    this.colorFlowerR2D,
-                    this.colorFlowerR3D,
-                    this.colorFlowerR4D,
+                this.flowerD = [
+                    this.flowerR1D,
+                    this.flowerR2D,
+                    this.flowerR3D,
+                    this.flowerR4D,
                 ]
 
                 this.colorFlowerW = [
-                    this.colorFlowerR1W,
-                    this.colorFlowerR2W,
-                    this.colorFlowerR3W,
-                    this.colorFlowerR4W,
+                    this.flowerR1W,
+                    this.flowerR2W,
+                    this.flowerR3W,
+                    this.flowerR4W,
+                    this.flowerR5W
                 ]
-
                 flower.parentComponent.lifeSquares.slice(flower.parentComponent.lifeSquares.length - 2).forEach((lsq) => this.applyColor(this.baseColorFlowerDarkGreen, 0, lsq.renderColor));
-                // this.applyColor(this.baseColorFlowerDarkGreen, 0, flower.parentComponent.lifeSquares.at(flower.parentComponent.lifeSquares - 1).renderColor)
+
                 flower.children.forEach((child) => child.lifeSquares.forEach((lsq) => {
                     let p = 1 - invlerp(child.posY - this.maxFlowerLength, child.posY, lsq.posY);
-
                     let i = 0, j = 0;
-                    while (p > this.colorFlowerD[i]) {
+                    while (p > this.flowerD[i]) {
                         i += 1;
                     }
+                    let col = this.flowerColor[i];
+                    lsq.w1 = this.colorFlowerW[i];
+                    lsq.w2 = this.colorFlowerW[i + 1];
+                    lsq.renderMode = LSQ_RENDERMODE_THETA_SLOPE;
 
-                    if (Math.random() > .9999) {
-                        console.log(p);
-                    }
-
-                    let col = this.colorFlower[i];
-                    lsq.width = this.colorFlowerW[i];
                     this.applyColor(col, j, lsq.renderColor);
-
-                    // this.applyColor(hsvToRgb(Math.sin(Date.now() / 300 + i) * 20 + 270, Math.sin(Date.now() / 1000) * 0.1 + 0.5, 0.8), i, lsq.renderColor, false, 50)
-                    // this.applyColor(hsvToRgb(270, 0.5, 1), i, lsq.renderColor, false, 45)
                     j += 1;
                 }));
 

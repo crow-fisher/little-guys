@@ -334,7 +334,7 @@ export class GrowthComponent {
                 lsq.theta = Math.atan((lsq.getPosY() - plsq.getPosY(this.yOffset)) / (lsq.getPosX() - plsq.getPosX(this.xOffset))) + Math.PI / 2;
             }
             if (prevX != -1) {
-                lsq.theta = Math.atan((lsq.getPosY() - prevY) / (lsq.getPosX() - prevX)) + Math.PI / 2;
+                lsq.theta = Math.atan((lsq.getPosY() - prevY) / (lsq.getPosX() - prevX))
             }
 
             prevX = lsq.getPosX();

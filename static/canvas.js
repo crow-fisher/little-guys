@@ -1,3 +1,4 @@
+import { COLOR_VERY_FUCKING_RED } from "./colors.js";
 import { reset } from "./globalOperations.js";
 import { MAIN_CONTEXT } from "./index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "./keyboard.js";
@@ -218,7 +219,7 @@ export function zoomCanvasFillCircleEllipse(x, y, size, tx, ty) {
     let ypi = (y - windowHeightStart) / (windowHeightEnd - windowHeightStart);
     let xpl = xpi * totalWidth / tx;
     let ypl = ypi * totalHeight / ty;
-    
+
     MAIN_CONTEXT.beginPath();
     MAIN_CONTEXT.scale (tx, ty);   
     MAIN_CONTEXT.arc(xpl, ypl, size * getCurZoom(), 0, 2 * Math.PI, false);
@@ -303,15 +304,84 @@ export function zoomCanvasFillRectTheta(x, y, dx, dy, xRef, yRef, theta) {
     MAIN_CONTEXT.lineTo(xRef + p1xR, yRef + p1yR);
     MAIN_CONTEXT.closePath();
     MAIN_CONTEXT.fill();
-
-    // MAIN_CONTEXT.arc(xRef, yRef, 10, 0, 2 * Math.PI, false);
-
-    // MAIN_CONTEXT.stroke();
-
-
 }
 
+export function zoomCanvasFillRectThetaSlope(x, y, dx1, dx2, dy, x1Ref, yRef, theta, flip) {
+    dx1 *= (getCurZoom());
+    dx2 *= (getCurZoom());
+    dy *= (getCurZoom());
 
+    let totalWidth = CANVAS_SQUARES_X * BASE_SIZE;
+    let totalHeight = CANVAS_SQUARES_Y * BASE_SIZE;
+
+    let windowWidth = totalWidth / getCurZoom();
+    let windowHeight = totalHeight / getCurZoom();
+
+    let windowWidthStart = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) - (windowWidth / 2);
+    let windowHeightStart = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) - (windowHeight / 2);
+
+    let windowWidthEnd = loadGD(UI_CANVAS_VIEWPORT_CENTER_X) + (windowWidth / 2);
+    let windowHeightEnd = loadGD(UI_CANVAS_VIEWPORT_CENTER_Y) + (windowHeight / 2);
+
+    let xpi = (x - windowWidthStart) / (windowWidthEnd - windowWidthStart);
+    let ypi = (y - windowHeightStart) / (windowHeightEnd - windowHeightStart);
+
+    let xpl = xpi * totalWidth;
+    let ypl = ypi * totalHeight;
+
+    let x2Ref;
+
+    x1Ref = xpl + dx1 / 2;
+    x2Ref = xpl + dx2 / 2;
+    yRef =  ypl + dy / 2;
+
+    let p1x = xpl - x2Ref;
+    let p2x = xpl + dx2 - x2Ref;
+    let p3x = xpl + dx1 - x1Ref;
+    let p4x = xpl - x1Ref;
+
+    let p1y = ypl - yRef;
+    let p2y = ypl - yRef;
+    let p3y = ypl + dy - yRef;
+    let p4y = ypl + dy - yRef;
+
+
+    let p1xR = p1x * Math.cos(theta) - p1y * Math.sin(theta);
+    let p1yR = p1y * Math.cos(theta) + p1x * Math.sin(theta);
+    let p2xR = p2x * Math.cos(theta) - p2y * Math.sin(theta);
+    let p2yR = p2y * Math.cos(theta) + p2x * Math.sin(theta);
+    let p3xR = p3x * Math.cos(theta) - p3y * Math.sin(theta);
+    let p3yR = p3y * Math.cos(theta) + p3x * Math.sin(theta);
+    let p4xR = p4x * Math.cos(theta) - p4y * Math.sin(theta);
+    let p4yR = p4y * Math.cos(theta) + p4x * Math.sin(theta);
+
+    theta += Math.PI / 2;
+    if (flip) {
+        // MAIN_CONTEXT.fillStyle = COLOR_VERY_FUCKING_RED;
+    } else {
+
+        theta -= Math.PI;
+    }
+
+    p1xR = p1x * Math.cos(theta) - p1y * Math.sin(theta);
+    p1yR = p1y * Math.cos(theta) + p1x * Math.sin(theta);
+    p2xR = p2x * Math.cos(theta) - p2y * Math.sin(theta);
+    p2yR = p2y * Math.cos(theta) + p2x * Math.sin(theta);
+    p3xR = p3x * Math.cos(theta) - p3y * Math.sin(theta);
+    p3yR = p3y * Math.cos(theta) + p3x * Math.sin(theta);
+    p4xR = p4x * Math.cos(theta) - p4y * Math.sin(theta);
+    p4yR = p4y * Math.cos(theta) + p4x * Math.sin(theta);
+
+    
+    MAIN_CONTEXT.beginPath()
+    MAIN_CONTEXT.moveTo(x1Ref + p1xR, yRef + p1yR);
+    MAIN_CONTEXT.lineTo(x1Ref + p2xR, yRef + p2yR);
+    MAIN_CONTEXT.lineTo(x1Ref + p3xR, yRef + p3yR);
+    MAIN_CONTEXT.lineTo(x1Ref + p4xR, yRef + p4yR);
+    MAIN_CONTEXT.lineTo(x1Ref + p1xR, yRef + p1yR);
+    MAIN_CONTEXT.closePath();
+    MAIN_CONTEXT.fill();
+}
 
 export function zoomCanvasSquareText(x, y, text) {
     let dx = getCurZoom();

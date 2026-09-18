@@ -8,13 +8,14 @@ import { RGB_COLOR_OTHER_BLUE, RGB_COLOR_RED, RGB_COLOR_VERY_FUCKING_GREEN } fro
 import { removeSquare } from "../globalOperations.js";
 import { STATE_HEALTHY, STAGE_DEAD } from "../organisms/Stages.js";
 import { getDefaultLighting, processLighting } from "../lighting/lightingProcessing.js";
-import { getBaseSize, getCurZoom, zoomCanvasFillCircle, zoomCanvasFillCircleEllipse, zoomCanvasFillRect, zoomCanvasFillRectTheta } from "../canvas.js";
+import { getBaseSize, getCurZoom, zoomCanvasFillCircle, zoomCanvasFillCircleEllipse, zoomCanvasFillRect, zoomCanvasFillRectTheta, zoomCanvasFillRectThetaSlope } from "../canvas.js";
 import { loadGD, UI_CONFIG_VIEWMODE_SUIT_OPACITY, UI_LIGHTING_ENABLED, UI_LIGHTING_PLANT, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_MOISTURE, UI_VIEWMODE_NITROGEN, UI_VIEWMODE_NORMAL, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT, UI_VIEWMODE_WATERMATRIC, UI_VIEWMODE_WATERTICKRATE } from "../ui/UIData.js";
 import { getNextLsqId } from "../globals.js";
 
 export const LSQ_RENDERMODE_SQUARE = "LSQ_RENDERMODE_SQUARE";
 export const LSQ_RENDERMODE_CIRCLE = "LSQ_RENDERMODE_CIRCLE";
 export const LSQ_RENDERMODE_THETA = "LSQ_RENDERMODE_THETA";
+export const LSQ_RENDERMODE_THETA_SLOPE = "LSQ_RENDERMODE_THETA_SLOPE";
 export const LSQ_RENDERMODE_ELLIPSE = "LSQ_RENDERMODE_ELLIPSE";
 
 const NUTRIENT_BASE_HSV = rgb2hsv(RGB_COLOR_VERY_FUCKING_GREEN.r, RGB_COLOR_VERY_FUCKING_GREEN.g, RGB_COLOR_VERY_FUCKING_GREEN.b);
@@ -96,6 +97,9 @@ class LifeSquareGreen {
     calculateWidthXOffset() {
         return -(0.5 - (this.width / 2));
     }
+    calculateW1XOffset() {
+        return -(0.5 - (this.w1 / 2));
+    }
     getPosX(xOffset = this.xOffset) {
         return this.posX - (this.deflectionXOffset + xOffset);
     }
@@ -122,6 +126,21 @@ class LifeSquareGreen {
                 this.yRef,
                 this.theta
             );
+        } else if (this.renderMode == LSQ_RENDERMODE_THETA_SLOPE) {
+            zoomCanvasFillRectThetaSlope(
+                this.getPosX() * getBaseSize() - getBaseSize() * this.calculateW1XOffset(),
+                this.getPosY() * getBaseSize(),
+                this.w1 * getBaseSize() * this.getLsqRenderSizeMult(),
+                this.w2 * getBaseSize() * this.getLsqRenderSizeMult(),
+                this.height * getBaseSize() * this.getLsqRenderSizeMult(),
+                this.xRef,
+                this.yRef, 
+                this.theta,
+        Math.sin(this.component.getTheta()) > 0
+            );
+
+            let a = 1;
+
         } else if (this.renderMode == LSQ_RENDERMODE_CIRCLE) {
             zoomCanvasFillCircle(
                 (this.getPosX() + 0.5) * getBaseSize(),
