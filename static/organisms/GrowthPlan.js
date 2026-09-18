@@ -254,7 +254,7 @@ export class GrowthComponent {
         }
         return ret;
     }
-    
+
     getDistToFront() {
         if (this.parentComponent == null) {
             return this.distToFront;
@@ -318,11 +318,11 @@ export class GrowthComponent {
             let offsetX = relLsqX * Math.cos(currentTheta) - relLsqY * Math.sin(currentTheta);
             let offsetY = relLsqY; //  * Math.cos(currentTheta) + relLsqX * Math.sin(currentTheta);
 
-            this.distToFront = offsetX * Math.cos(this.getTheta());
+            this.distToFront = offsetX * Math.cos(this.getTheta()) * Math.sin(this.getBaseRotation());
             lsq.distToFront = this.getDistToFront();
             offsetX *= Math.sin(this.getTheta());
             offsetY *= Math.cos(this.getTwist());
-
+            
             let endX = startDeflectionXOffset + offsetX;
             let endY = startDeflectionYOffset + offsetY;
 

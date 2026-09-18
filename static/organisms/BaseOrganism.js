@@ -114,6 +114,8 @@ class BaseOrganism {
         // 'color' is the result as processed by your evolution parameters.
         this.colorBaseLeaf = [81, 92, 36];
         this.colorLeaf = [81, 92, 36];
+        this.colorStem = [5, 58, 25];
+        "rgb(5, 58, 25)"
     }
 
     getGrowthLightLevel() {
@@ -601,9 +603,9 @@ class BaseOrganism {
         return true;
     }
 
-    applyColor(color, x, dest, v=true, m=1) {
+    applyColor(color, x, dest, v=true, m=1, vm=1) {
         for (let i = 0; i < color.length; i++) {
-            dest[i] = m * (color[i] + (v ? Math.sin((this.getStaticRand(x * 3 + i)) * this.lsqColorVarianceSpeed()) * this.lsqColorVarianceMult() : 0))
+            dest[i] = m * (color[i] + (v ? Math.sin((this.getStaticRand(x * 3 + i)) * this.lsqColorVarianceSpeed()) * this.lsqColorVarianceMult() * vm : 0))
         }
     }
 
