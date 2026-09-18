@@ -287,6 +287,8 @@ export function zoomCanvasFillRectTheta(x, y, dx, dy, xRef, yRef, theta) {
     let p4x = xpl - xRef;
     let p4y = ypl + dy - yRef;
 
+    theta += Math.PI / 2;
+
     let p1xR = p1x * Math.cos(theta) - p1y * Math.sin(theta);
     let p1yR = p1y * Math.cos(theta) + p1x * Math.sin(theta);
     let p2xR = p2x * Math.cos(theta) - p2y * Math.sin(theta);
@@ -306,7 +308,7 @@ export function zoomCanvasFillRectTheta(x, y, dx, dy, xRef, yRef, theta) {
     MAIN_CONTEXT.fill();
 }
 
-export function zoomCanvasFillRectThetaSlope(x, y, dx1, dx2, dy, x1Ref, yRef, theta, flip) {
+export function zoomCanvasFillRectThetaSlope(x, y, dx1, dx2, dy, xRef, yRef, theta, flip) {
     dx1 *= (getCurZoom());
     dx2 *= (getCurZoom());
     dy *= (getCurZoom());
@@ -331,14 +333,14 @@ export function zoomCanvasFillRectThetaSlope(x, y, dx1, dx2, dy, x1Ref, yRef, th
 
     let x2Ref;
 
-    x1Ref = xpl + dx1 / 2;
+    xRef = xpl + dx1 / 2;
     x2Ref = xpl + dx2 / 2;
     yRef =  ypl + dy / 2;
 
     let p1x = xpl - x2Ref;
     let p2x = xpl + dx2 - x2Ref;
-    let p3x = xpl + dx1 - x1Ref;
-    let p4x = xpl - x1Ref;
+    let p3x = xpl + dx1 - xRef;
+    let p4x = xpl - xRef;
 
     let p1y = ypl - yRef;
     let p2y = ypl - yRef;
@@ -356,13 +358,9 @@ export function zoomCanvasFillRectThetaSlope(x, y, dx1, dx2, dy, x1Ref, yRef, th
     let p4yR = p4y * Math.cos(theta) + p4x * Math.sin(theta);
 
     theta += Math.PI / 2;
-    if (flip) {
-        // MAIN_CONTEXT.fillStyle = COLOR_VERY_FUCKING_RED;
-    } else {
-
+    if (!flip) {
         theta -= Math.PI;
     }
-
     p1xR = p1x * Math.cos(theta) - p1y * Math.sin(theta);
     p1yR = p1y * Math.cos(theta) + p1x * Math.sin(theta);
     p2xR = p2x * Math.cos(theta) - p2y * Math.sin(theta);
@@ -374,11 +372,11 @@ export function zoomCanvasFillRectThetaSlope(x, y, dx1, dx2, dy, x1Ref, yRef, th
 
     
     MAIN_CONTEXT.beginPath()
-    MAIN_CONTEXT.moveTo(x1Ref + p1xR, yRef + p1yR);
-    MAIN_CONTEXT.lineTo(x1Ref + p2xR, yRef + p2yR);
-    MAIN_CONTEXT.lineTo(x1Ref + p3xR, yRef + p3yR);
-    MAIN_CONTEXT.lineTo(x1Ref + p4xR, yRef + p4yR);
-    MAIN_CONTEXT.lineTo(x1Ref + p1xR, yRef + p1yR);
+    MAIN_CONTEXT.moveTo(xRef + p1xR, yRef + p1yR);
+    MAIN_CONTEXT.lineTo(xRef + p2xR, yRef + p2yR);
+    MAIN_CONTEXT.lineTo(xRef + p3xR, yRef + p3yR);
+    MAIN_CONTEXT.lineTo(xRef + p4xR, yRef + p4yR);
+    MAIN_CONTEXT.lineTo(xRef + p1xR, yRef + p1yR);
     MAIN_CONTEXT.closePath();
     MAIN_CONTEXT.fill();
 }

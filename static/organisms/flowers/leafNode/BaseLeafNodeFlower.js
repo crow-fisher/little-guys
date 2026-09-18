@@ -173,9 +173,9 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                 this.flowerR4D = 1;
 
                 this.flowerR1W = 0.9;
-                this.flowerR2W = 0.7;
-                this.flowerR3W = 0.5;
-                this.flowerR4W = 0.3;
+                this.flowerR2W = 0.9;
+                this.flowerR3W = 0.9;
+                this.flowerR4W = 0.5;
                 this.flowerR5W = 0.1;
 
                 this.flowerColor = [

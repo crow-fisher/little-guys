@@ -340,7 +340,7 @@ export class GrowthComponent {
             prevX = lsq.getPosX();
             prevY = lsq.getPosY();
 
-            lsq.xRef = 1;
+            lsq.xRef = Math.sin(Date.now() / 100);
             lsq.yRef = 0.5;
         })
 
