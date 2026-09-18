@@ -319,7 +319,7 @@ export class GrowthComponent {
             let offsetY = relLsqY; //  * Math.cos(currentTheta) + relLsqX * Math.sin(currentTheta);
 
             this.distToFront = offsetX * Math.cos(this.getTheta()) * Math.sin(this.getBaseRotation());
-            lsq.distToFront = this.getDistToFront();
+            lsq.distToFront = this.getDistToFront() + 1.9 * Math.sin(relLsqY * 4);
             offsetX *= Math.sin(this.getTheta());
             offsetY *= Math.cos(this.getTwist());
             
