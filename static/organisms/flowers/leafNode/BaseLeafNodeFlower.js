@@ -43,7 +43,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.maxFlowerLength = 5;
         this.targetFlowerLength = this.maxFlowerLength;
 
-        this.numPetals = 5;
+        this.numPetals = 25;
         this.petalAngleShift = 0; // randRange(0, 0.1 * Math.PI);
 
         this.stems = [];
@@ -137,7 +137,8 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                 stem.lifeSquares[0].theta = stem.lifeSquares[1]?.theta ?? stem.lifeSquares[0].theta;
             })
 
-        let sMap = [0.8, 1.2, 0.9, 0.6]
+        let sMap = [0.8, 1.2, 0.9, 0.2]
+        let j = 0;
         this.leaves.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .forEach((leaf) => {
                 let l = leaf.lifeSquares.length;
@@ -145,8 +146,13 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                 leaf.lifeSquares.forEach((lsq) => {
                     // lsq.width = .3 + .3 * Math.log(3 + l - i);
                     lsq.width = sMap[i];
+                    lsq.w1 = sMap[i];
+                    lsq.w2 = sMap[i + 1];
+                    lsq.height = 0.7;
+                    lsq.renderMode = LSQ_RENDERMODE_THETA_SLOPE;
                     i += 1;
-                    this.applyColor(this.colorLeaf, i, lsq.renderColor, true, 1, 0.3);
+                    j += 1;
+                    this.applyColor(this.colorLeaf, j, lsq.renderColor, true, .8, 2);
                 });
                 leaf.lifeSquares[0].theta = leaf.lifeSquares[1]?.theta ?? leaf.lifeSquares[0].theta;
             })
@@ -156,15 +162,15 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             .forEach((flower) => {
                 flower.lifeSquares.forEach((lsq) => lsq.opacity = 0);
                 let i = 0;
-                // rgb(25, 24,   24)
-                // rgb(43, 18, 21)
-                // rgb(141, 134, 32)
+                // rgb(25, 24, 24)
+                // rgb(36, 21, 15)
+                // rgb(117, 111, 23)
                 // rgb(167, 143, 41)
 
                 this.baseColorFlowerDarkGreen = [21, 26, 6];
-                this.flowerColorC = [25, 24, 24];
-                this.flowerColorR1 = [43, 18, 21];
-                this.flowerColorR2 = [141, 134, 32];
+                this.flowerColorC =  [25, 24, 24];
+                this.flowerColorR1 = [36, 21, 15];
+                this.flowerColorR2 = [117, 111, 23];
                 this.flowerColorR3 = [167, 143, 41];
 
                 this.flowerR1D = 0.3;
@@ -177,6 +183,11 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                 this.flowerR3W = 0.9;
                 this.flowerR4W = 0.5;
                 this.flowerR5W = 0.1;
+
+                this.flowerR1H = 0.30;
+                this.flowerR2H = 0.70;
+                this.flowerR3H = 0.70;
+                this.flowerR4H = 0.90;
 
                 this.flowerColor = [
                     this.flowerColorC,
@@ -192,26 +203,35 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                     this.flowerR4D,
                 ]
 
-                this.colorFlowerW = [
+                this.flowerW = [
                     this.flowerR1W,
                     this.flowerR2W,
                     this.flowerR3W,
                     this.flowerR4W,
                     this.flowerR5W
                 ]
+
+                this.flowerH = [
+                    this.flowerR1H,
+                    this.flowerR2H,
+                    this.flowerR3H,
+                    this.flowerR4H,
+                ]
                 flower.parentComponent.lifeSquares.slice(flower.parentComponent.lifeSquares.length - 2).forEach((lsq) => this.applyColor(this.baseColorFlowerDarkGreen, 0, lsq.renderColor));
 
+                let j = 0;
                 flower.children.forEach((child) => child.lifeSquares.forEach((lsq) => {
                     let p = 1 - invlerp(child.posY - this.maxFlowerLength, child.posY, lsq.posY);
-                    let i = 0, j = 0;
+                    let i = 0;
                     while (p > this.flowerD[i]) {
                         i += 1;
                     }
                     let col = this.flowerColor[i];
-                    lsq.w1 = this.colorFlowerW[i];
-                    lsq.w2 = this.colorFlowerW[i + 1];
-                    lsq.renderMode = LSQ_RENDERMODE_THETA_SLOPE;
+                    lsq.w1 = this.flowerW[i];
+                    lsq.w2 = this.flowerW[i + 1];
+                    lsq.height = this.flowerH[i];
 
+                    lsq.renderMode = LSQ_RENDERMODE_THETA_SLOPE;
                     this.applyColor(col, j, lsq.renderColor);
                     j += 1;
                 }));
