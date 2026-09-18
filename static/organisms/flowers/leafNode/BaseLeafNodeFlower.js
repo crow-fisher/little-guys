@@ -421,7 +421,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                 let startTheta = randRange(0, 2 * Math.PI);
                 let startNode = flowerNodeComponent.lifeSquares.at(0);
                 for (let i = 0; i < this.numPetals; i++) {
-                    let a = startTheta + (i * (2 * Math.PI) / this.numPetals);
+                    let a = startTheta + (i * (2 * Math.PI) / this.numPetals) + randRange(-.03, .03);
                     let petalGrowthPlan = new GrowthPlan(
                         startNode.posX, startNode.posY,
                         false, STAGE_FLOWER,
