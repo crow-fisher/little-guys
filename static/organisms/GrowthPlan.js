@@ -248,36 +248,13 @@ export class GrowthComponent {
     }
 
     getBaseRotation() {
-        let ret = this._getBaseRotation();
+        let ret = this.baseRotation;
         if (this.parentComponent != null) {
             ret += this.parentComponent.getBaseRotation();
         }
         return ret;
     }
-
-    _getBaseRotation() {
-        if (this.rotationOverTimeList == null) {
-            return this.baseRotation;
-        } else {
-            let mapped = this.rotationOverTimeList.map((l) => l[0]);
-
-            let min = Math.min(...mapped);
-            let max = Math.max(...mapped);
-
-            let ot = getCurDay() - this.spawnTime;
-
-            if (ot > max) {
-                return this.rotationOverTimeList[this.rotationOverTimeList.length - 1][1];
-            }
-            if (ot < min) {
-                return this.rotationOverTimeList[0][1];
-            } else { // assuming this has two entries at the moment
-                let rel = (ot - min) / (max - min);
-                return this.rotationOverTimeList[0][1] * (1 - rel) + this.rotationOverTimeList[1][1] * rel;
-            }
-        }
-    }
-
+    
     getDistToFront() {
         if (this.parentComponent == null) {
             return this.distToFront;
@@ -339,7 +316,7 @@ export class GrowthComponent {
             let currentTheta = this.startTheta + (lsqDist / length) * thetaDelta;
 
             let offsetX = relLsqX * Math.cos(currentTheta) - relLsqY * Math.sin(currentTheta);
-            let offsetY = relLsqY * Math.cos(currentTheta) + relLsqX * Math.sin(currentTheta);
+            let offsetY = relLsqY; //  * Math.cos(currentTheta) + relLsqX * Math.sin(currentTheta);
 
             this.distToFront = offsetX * Math.cos(this.getTheta());
             lsq.distToFront = this.getDistToFront();

@@ -601,9 +601,9 @@ class BaseOrganism {
         return true;
     }
 
-    applyColor(color, x, dest) {
+    applyColor(color, x, dest, v=true, m=1) {
         for (let i = 0; i < color.length; i++) {
-            dest[i] = color[i] + Math.sin((this.getStaticRand(x * 3 + i)) * this.lsqColorVarianceSpeed()) * this.lsqColorVarianceMult()
+            dest[i] = m * (color[i] + (v ? Math.sin((this.getStaticRand(x * 3 + i)) * this.lsqColorVarianceSpeed()) * this.lsqColorVarianceMult() : 0))
         }
     }
 
