@@ -27,6 +27,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.uiRef = UI_ORGANISM_FLOWER_LEAFNODE;
         this.maxNumStem = 1;
         this.maxStemLength = 14;
+        this.maxLeafStemLength = 2;
         this.maxLeafLength = 4;
 
         this.curNumGrass = 0;
@@ -38,6 +39,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.targetNumStem = 0;
 
         this.targetStemLength = this.maxStemLength;
+        this.targetLeafStemLength = this.maxLeafStemLength;
         this.targetLeafLength = this.maxLeafLength;
 
         this.maxFlowerLength = 5;
@@ -50,34 +52,30 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.leaves = [];
         this.flowers = [];
 
-        this.baseColorFlowerDarkGreen = [21, 26, 6];
-
         this.colorLeaf = [56, 63, 19];
         this.colorStem = [46, 53, 16];
+        this.colorStemFlowerBase = [21, 26, 6];
 
-        // rgb(56, 63, 19);
-        // rgb(46, 53, 16);
+        this.flowerColorC = [25, 24, 24];
+        this.flowerColorR1 = [36, 21, 15];
+        this.flowerColorR2 = [117, 111, 23];
+        this.flowerColorR3 = [167, 143, 41];
 
-        this.flowerColorC =  [25, 24, 24];
-        this.flowerColorR1 = [44, 14, 15];
-        this.flowerColorR2 = [224, 160, 45];
-        this.flowerColorR3 = [233, 201, 57];
+        this.flowerR1D = 0.3;
+        this.flowerR2D = .7;
+        this.flowerR3D = .8;
+        this.flowerR4D = 1;
 
-        // rgb(25, 24,   24)
-        // rgb(44, 14,   15)
-        // rgb(224, 160, 45)
-        // rgb(233, 201, 57)
+        this.flowerR1W = 0.9;
+        this.flowerR2W = 0.9;
+        this.flowerR3W = 0.9;
+        this.flowerR4W = 0.5;
+        this.flowerR5W = 0.1;
 
-        this.flowerR1D = -0.1;
-        this.flowerR2D = -0.0;
-        this.flowerR3D = 0.2;
-        this.flowerR4D = 0.4;
-
-        this.flowerR1W = 0.1;
-        this.flowerR2W = 0.7;
-        this.flowerR3W = 1;
-        this.flowerR4W = 1;
-        this.flowerR5W = 1;
+        this.flowerR1H = 0.30;
+        this.flowerR2H = 0.70;
+        this.flowerR3H = 0.70;
+        this.flowerR4H = 0.90;
 
         this.flowerColor = [
             this.flowerColorC,
@@ -90,7 +88,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             this.flowerR1D,
             this.flowerR2D,
             this.flowerR3D,
-            this.flowerR4D
+            this.flowerR4D,
         ]
 
         this.flowerW = [
@@ -99,6 +97,13 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             this.flowerR3W,
             this.flowerR4W,
             this.flowerR5W
+        ]
+
+        this.flowerH = [
+            this.flowerR1H,
+            this.flowerR2H,
+            this.flowerR3H,
+            this.flowerR4H,
         ]
     }
 
@@ -123,8 +128,8 @@ export class BaseLeafNodeFlower extends BaseOrganism {
     }
 
     processLsqRendering() {
-        // if (!this.orgVisualUpdateFlag)
-        // return;
+        if (!this.orgVisualUpdateFlag)
+            return;
         this.stems.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .forEach((stem) => {
                 let l = stem.lifeSquares.length;
@@ -161,63 +166,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.flowers.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .forEach((flower) => {
                 flower.lifeSquares.forEach((lsq) => lsq.opacity = 0);
-                let i = 0;
-                // rgb(25, 24, 24)
-                // rgb(36, 21, 15)
-                // rgb(117, 111, 23)
-                // rgb(167, 143, 41)
-
-                this.baseColorFlowerDarkGreen = [21, 26, 6];
-                this.flowerColorC =  [25, 24, 24];
-                this.flowerColorR1 = [36, 21, 15];
-                this.flowerColorR2 = [117, 111, 23];
-                this.flowerColorR3 = [167, 143, 41];
-
-                this.flowerR1D = 0.3;
-                this.flowerR2D = .7;
-                this.flowerR3D = .8;
-                this.flowerR4D = 1;
-
-                this.flowerR1W = 0.9;
-                this.flowerR2W = 0.9;
-                this.flowerR3W = 0.9;
-                this.flowerR4W = 0.5;
-                this.flowerR5W = 0.1;
-
-                this.flowerR1H = 0.30;
-                this.flowerR2H = 0.70;
-                this.flowerR3H = 0.70;
-                this.flowerR4H = 0.90;
-
-                this.flowerColor = [
-                    this.flowerColorC,
-                    this.flowerColorR1,
-                    this.flowerColorR2,
-                    this.flowerColorR3
-                ]
-
-                this.flowerD = [
-                    this.flowerR1D,
-                    this.flowerR2D,
-                    this.flowerR3D,
-                    this.flowerR4D,
-                ]
-
-                this.flowerW = [
-                    this.flowerR1W,
-                    this.flowerR2W,
-                    this.flowerR3W,
-                    this.flowerR4W,
-                    this.flowerR5W
-                ]
-
-                this.flowerH = [
-                    this.flowerR1H,
-                    this.flowerR2H,
-                    this.flowerR3H,
-                    this.flowerR4H,
-                ]
-                flower.parentComponent.lifeSquares.slice(flower.parentComponent.lifeSquares.length - 2).forEach((lsq) => this.applyColor(this.baseColorFlowerDarkGreen, 0, lsq.renderColor));
+                flower.parentComponent.lifeSquares.slice(flower.parentComponent.lifeSquares.length - 2).forEach((lsq) => this.applyColor(this.colorStemFlowerBase, 0, lsq.renderColor));
 
                 let j = 0;
                 flower.children.forEach((child) => child.lifeSquares.forEach((lsq) => {
@@ -302,19 +251,40 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             });
     }
 
+    lengthenLeafStems() {
+        this.leaves
+            .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
+            .filter((leafStem) => leafStem.growthPlan.steps.length < this.targetLeafStemLength)
+            .forEach((leafStem) => {
+                let startNode = leafStem.lifeSquares.at(leafStem.lifeSquares.length - 1)
+                if (startNode == null) {
+                    this.growthPlans = Array.from(this.growthPlans.filter((gp) => gp != leafStem.growthPlan));
+                    this.leaves = Array.from(this.leaves.filter((le) => this.originGrowth.getChildFromPath(le) != leafStem));
+                    return;
+                }
+                for (let i = 0; i < this.targetLeafLength - leafStem.growthPlan.steps.length; i++) {
+                    leafStem.growthPlan.steps.push(new GrowthPlanStep(
+                        leafStem.growthPlan,
+                        () => this.growGreenSquareAction(startNode, SUBTYPE_LEAF)
+                    ))
+                };
+            });
+    }
+
     lengthenLeaves() {
         this.leaves
             .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
-            .filter((leaf) => leaf.growthPlan.steps.length < this.targetLeafLength)
-            .forEach((leaf) => {
+            .map((leafStem) => [leafStem, leafStem?.children.at(0)])
+            .filter((leafArr) => leafArr[1] != null && leafArr[1].growthPlan.steps.length < this.targetLeafLength)
+            .forEach((leafArr) => {
+                let leafStem = leafArr[0];
+                let leaf = leafArr[1];
                 let startNode = leaf.lifeSquares.at(leaf.lifeSquares.length - 1)
                 if (startNode == null) {
-                    this.growthPlans = Array.from(this.growthPlans.filter((gp) => gp != leaf.growthPlan));
-                    this.leaves = Array.from(this.leaves.filter((le) => this.originGrowth.getChildFromPath(le) != leaf));
-                    this.curNumStem -= 1;
+                    leafStem.children = [];
                     return;
                 }
-                for (let i = 0; i < this.targetLeafLength - leaf.growthPlan.steps.length; i++) {
+                for (let i = 0; i < this.targetLeaf - leaf.growthPlan.steps.length; i++) {
                     leaf.growthPlan.steps.push(new GrowthPlanStep(
                         leaf.growthPlan,
                         () => this.growGreenSquareAction(startNode, SUBTYPE_LEAF)
@@ -356,6 +326,10 @@ export class BaseLeafNodeFlower extends BaseOrganism {
 
         this.leafStrengthMult = .35;
         this.leafRollingAveragePeriod = 150;
+    }
+
+    growLeafStemAtNode(stem, startNode, side) {
+        // DOOKIE DOOOOO
     }
 
     growLeafAtNode(stem, startNode, side) {
