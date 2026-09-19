@@ -1,5 +1,5 @@
 import { hsvToRgb, invlerp, randNumber, randRange } from "../../../common.js";
-import { STAGE_ADULT, STAGE_FLOWER, SUBTYPE_FLOWER, SUBTYPE_FLOWERBUD, SUBTYPE_FLOWERNODE, SUBTYPE_FLOWERTIP, SUBTYPE_GRASS, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_STEM, TYPE_FLOWERNODE, TYPE_FLOWERPETAL, TYPE_GRASS, TYPE_STEM } from "../../Stages.js";
+import { STAGE_ADULT, STAGE_FLOWER, SUBTYPE_FLOWER, SUBTYPE_FLOWERBUD, SUBTYPE_FLOWERNODE, SUBTYPE_FLOWERTIP, SUBTYPE_GRASS, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_STEM, TYPE_FLOWERNODE, TYPE_FLOWERPETAL, TYPE_GRASS, TYPE_LEAF, TYPE_STEM } from "../../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep } from "../../GrowthPlan.js";
 import { BaseSeedOrganism } from "../../BaseSeedOrganism.js";
@@ -27,7 +27,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.uiRef = UI_ORGANISM_FLOWER_LEAFNODE;
         this.maxNumStem = 1;
         this.maxStemLength = 14;
-        this.maxLeafStemLength = 2;
+        this.maxLeafStemLength = 3;
         this.maxLeafLength = 4;
 
         this.curNumGrass = 0;
@@ -128,8 +128,8 @@ export class BaseLeafNodeFlower extends BaseOrganism {
     }
 
     processLsqRendering() {
-        if (!this.orgVisualUpdateFlag)
-            return;
+        // if (!this.orgVisualUpdateFlag)
+        //     return;
         this.stems.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .forEach((stem) => {
                 let l = stem.lifeSquares.length;
@@ -145,21 +145,33 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         let sMap = [0.8, 1.2, 0.9, 0.2]
         let j = 0;
         this.leaves.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
-            .forEach((leaf) => {
-                let l = leaf.lifeSquares.length;
+            .map((leafStem) => [leafStem, leafStem?.children.at(0)])
+            .forEach((leafArr) => {
+                let leafStem = leafArr[0];
+                leafStem.lifeSquares.forEach((lsq) => {
+                    lsq.renderMode = LSQ_RENDERMODE_THETA;
+                    lsq.width = 0.3;
+                    this.applyColor(this.colorLeaf, j, lsq.renderColor, true, .8, 2);
+
+                });
+                leafStem.lifeSquares[0].theta = leafStem.lifeSquares[1]?.theta ?? leafStem.lifeSquares[0].theta;
+                
+                if (leafArr[1] == null) {
+                    return;
+                }
+                let leaf = leafArr[1];
+
                 let i = 0;
                 leaf.lifeSquares.forEach((lsq) => {
-                    // lsq.width = .3 + .3 * Math.log(3 + l - i);
-                    lsq.width = sMap[i];
                     lsq.w1 = sMap[i];
                     lsq.w2 = sMap[i + 1];
+
                     lsq.height = 0.7;
                     lsq.renderMode = LSQ_RENDERMODE_THETA_SLOPE;
                     i += 1;
                     j += 1;
                     this.applyColor(this.colorLeaf, j, lsq.renderColor, true, .8, 2);
                 });
-                leaf.lifeSquares[0].theta = leaf.lifeSquares[1]?.theta ?? leaf.lifeSquares[0].theta;
             })
 
 
@@ -262,7 +274,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                     this.leaves = Array.from(this.leaves.filter((le) => this.originGrowth.getChildFromPath(le) != leafStem));
                     return;
                 }
-                for (let i = 0; i < this.targetLeafLength - leafStem.growthPlan.steps.length; i++) {
+                for (let i = 0; i < this.targetLeafStemLength - leafStem.growthPlan.steps.length; i++) {
                     leafStem.growthPlan.steps.push(new GrowthPlanStep(
                         leafStem.growthPlan,
                         () => this.growGreenSquareAction(startNode, SUBTYPE_LEAF)
@@ -284,7 +296,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                     leafStem.children = [];
                     return;
                 }
-                for (let i = 0; i < this.targetLeaf - leaf.growthPlan.steps.length; i++) {
+                for (let i = 0; i < this.targetLeafLength - leaf.growthPlan.steps.length; i++) {
                     leaf.growthPlan.steps.push(new GrowthPlanStep(
                         leaf.growthPlan,
                         () => this.growGreenSquareAction(startNode, SUBTYPE_LEAF)
@@ -295,18 +307,25 @@ export class BaseLeafNodeFlower extends BaseOrganism {
 
     leafStems() {
         // adds 'leaves' to the stem at some interval
-
         let side = 1;
+        let idx = -1;
+
         this.stems
             .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .forEach((stem) => {
                 for (let i = 0; i < stem.lifeSquares.length - 4; i += 1) {
+                    idx += 1;
+
                     let c = stem.lifeSquares[i];
-                    if (c.leafNode == 1) {
+                    if (c.leafNode == 1 && this.leaves[idx] != null) {
+                        let leafStem = this.originGrowth.getChildFromPath(this.leaves[idx]);
+                        if (leafStem.children.length == 0 && leafStem.lifeSquares.length == this.targetLeafStemLength) {
+                            this.growLeafAtNode(leafStem, leafStem.lifeSquares.at(leafStem.lifeSquares.length - 1), side)
+                        }
                         continue;
                     }
                     c.leafNode = 1;
-                    this.growLeafAtNode(stem, c, side);
+                    this.growLeafStemAtNode(stem, c, side);
                     side *= -1;
                 }
             })
@@ -328,8 +347,42 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.leafRollingAveragePeriod = 150;
     }
 
+
+    prepareLeafStemGrowthParams(side) {
+        this.leafStemTwist = 0; //= Math.PI / 2 + .1;
+        this.leafStemBaseRotation = 0; //= Math.PI / 2;
+        this.leafStemBaseDeflection = 0; //= Math.PI / 2;
+        this.leafStemBaseCurve = 0; //= 1;
+
+        this.leafStemTwist = 0;
+        this.leafStemBaseRotation = Math.PI / 2;
+        this.leafStemBaseDeflection = 0
+        this.leafStemBaseCurve = 0;
+
+        this.leafStemStrengthMult = .35;
+        this.leafStemRollingAveragePeriod = 150;
+    }
+
     growLeafStemAtNode(stem, startNode, side) {
-        // DOOKIE DOOOOO
+        this.prepareLeafStemGrowthParams(side);
+        let growthPlan = new GrowthPlan(
+            startNode.posX, startNode.posY,
+            false, STAGE_ADULT,
+            randRange(0, Math.PI * 2),
+            this.leafStemTwist,
+            this.leafStemBaseRotation, this.leafStemBaseDeflection, this.leafStemBaseCurve,
+            TYPE_STEM, this.leafStemStrengthMult, this.leafStemRollingAveragePeriod);
+
+        growthPlan.postConstruct = () => {
+            stem.addChild(growthPlan.component);
+            this.leaves.push(this.originGrowth.getChildPath(growthPlan.component))
+        };
+        growthPlan.steps.push(new GrowthPlanStep(
+            growthPlan,
+            () => this.growGreenSquareAction(startNode, SUBTYPE_LEAF)
+        ))
+
+        this.growthPlans.push(growthPlan);
     }
 
     growLeafAtNode(stem, startNode, side) {
@@ -340,11 +393,10 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             randRange(0, Math.PI * 2),
             this.leafTwist,
             this.leafBaseRotation, this.leafBaseDeflection, this.leafBaseCurve,
-            TYPE_STEM, this.leafStrengthMult, this.leafRollingAveragePeriod);
+            TYPE_LEAF, this.leafStrengthMult, this.leafRollingAveragePeriod);
 
         growthPlan.postConstruct = () => {
             stem.addChild(growthPlan.component);
-            this.leaves.push(this.originGrowth.getChildPath(growthPlan.component))
         };
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
@@ -460,7 +512,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         if (this.leafStems()) {
             return;
         }
-
+        this.lengthenLeafStems();
         this.lengthenLeaves();
 
         if (this.curNumStem < this.targetNumStem) {
