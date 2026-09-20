@@ -107,6 +107,11 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         ]
     }
 
+    leafShapeFunc(x) {
+        // any function with domain [0, 1] and range [0, 1]
+        return Math.sin(Math.PI * x - 5) + 1.2 * x - .2;
+    }
+
 
     getSeedType() {
         return BaseLeafNodeFlowerSeedOrganism;
@@ -141,8 +146,6 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                 });
                 stem.lifeSquares[0].theta = stem.lifeSquares[1]?.theta ?? stem.lifeSquares[0].theta;
             })
-
-        let sMap = [0.8, 1.2, 0.9, 0.2]
         let j = 0;
         this.leaves.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .map((leafStem) => [leafStem, leafStem?.children.at(0)])
@@ -155,7 +158,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
 
                 });
                 leafStem.lifeSquares[0].theta = leafStem.lifeSquares[1]?.theta ?? leafStem.lifeSquares[0].theta;
-                
+
                 if (leafArr[1] == null) {
                     return;
                 }
@@ -163,8 +166,9 @@ export class BaseLeafNodeFlower extends BaseOrganism {
 
                 let i = 0;
                 leaf.lifeSquares.forEach((lsq) => {
-                    lsq.w1 = sMap[i];
-                    lsq.w2 = sMap[i + 1];
+
+                    lsq.w1 = 1.5 * this.leafShapeFunc((i + 1) / leaf.lifeSquares.length);
+                    lsq.w2 = 1.5 * this.leafShapeFunc((i) / leaf.lifeSquares.length);
 
                     lsq.height = 0.7;
                     lsq.renderMode = LSQ_RENDERMODE_THETA_SLOPE;
@@ -172,6 +176,9 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                     j += 1;
                     this.applyColor(this.colorLeaf, j, lsq.renderColor, true, .8, 2);
                 });
+
+                leaf.lifeSquares[0].theta = leaf.lifeSquares[1]?.theta ?? leaf.lifeSquares[0].theta;
+
             })
 
 
