@@ -327,7 +327,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.stems
             .map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .forEach((stem) => {
-                for (let i = 0; i < stem.lifeSquares.length - 4; i += 1) {
+                for (let i = 0; i < stem.lifeSquares.length - (2 + this.maxLeafStemLength); i += 1) {
                     idx += 1;
 
                     let c = stem.lifeSquares[i];
