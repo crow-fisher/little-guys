@@ -16,8 +16,12 @@ export class SunflowerLeafNodeFlower extends BaseLeafNodeFlower {
         this.maxFlowerLength = 5;
         this.numPetals = 25;
 
+        
+        this.stemLsqHeight = 1;
+        this.leafStemLsqHeight = 1;
+        this.leafLsqHeight = 0.4;
         this.leafStemDy = 0.7;
-        this.leafDy = 0.8;
+        this.leafDy = .7;
 
         this.colorLeaf = [56, 63, 19];
         this.colorStem = [46, 53, 16];
@@ -56,7 +60,7 @@ export class SunflowerLeafNodeFlower extends BaseLeafNodeFlower {
     prepareStemGrowthPlanParams() {
         this.stemTwist = 0;
         this.stemBaseRotation = 0;
-        this.stemBaseDeflection = randRange(-.1, .1);
+        this.stemBaseDeflection = randRange(.1, .2);
         this.stemBaseCurve = randRange(-.05, .05);
         this.stemStrengthMult = .35;
         this.stemRollingAveragePeriod = 150;
@@ -78,11 +82,10 @@ export class SunflowerLeafNodeFlower extends BaseLeafNodeFlower {
     }
 
     prepareLeafGrowthParams(side) {
-        this.leafTwist = Math.PI;
-        this.leafBaseRotation = 1;
+        this.leafTwist = randRange(2, Math.PI);
+        this.leafBaseRotation = randRange(0, Math.PI);
         this.leafBaseDeflection = 1
         this.leafBaseCurve = 0;
-
         this.leafStrengthMult = .35;
         this.leafRollingAveragePeriod = 150;
     }

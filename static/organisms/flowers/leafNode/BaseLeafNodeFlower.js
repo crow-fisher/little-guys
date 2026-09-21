@@ -30,6 +30,9 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.maxLeafStemLength = 3;
         this.maxLeafLength = 4;
 
+        this.stemLsqHeight = 1;
+        this.leafStemLsqHeight = 1;
+        this.leafLsqHeight = 0.7;
         this.leafStemDy = 0.7;
         this.leafDy = 1;
 
@@ -148,6 +151,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                 let i = 0;
                 stem.lifeSquares.forEach((lsq) => {
                     lsq.width = .1 + .2 * Math.log(3 + l - i);
+                    lsq.height = this.stemLsqHeight;
                     i += 1;
                     this.applyColor(this.colorStem, i, lsq.renderColor);
                 });
@@ -161,6 +165,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                 leafStem.lifeSquares.forEach((lsq) => {
                     lsq.renderMode = LSQ_RENDERMODE_THETA;
                     lsq.width = 0.3;
+                    lsq.height = this.leafStemLsqHeight;
                     this.applyColor(this.colorLeaf, j, lsq.renderColor, true, .8, 2);
 
                 });
@@ -177,7 +182,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                     lsq.w1 = 1.5 * this.leafShapeFunc((i) / leaf.lifeSquares.length);
                     lsq.w2 = 1.5 * this.leafShapeFunc((i + 1) / leaf.lifeSquares.length);
 
-                    lsq.height = 0.7;
+                    lsq.height = this.leafLsqHeight;
                     lsq.renderMode = LSQ_RENDERMODE_THETA_SLOPE;
                     i += 1;
                     j += 1;
@@ -414,7 +419,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         };
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
-            () => this.growGreenSquareAction(startNode, SUBTYPE_LEAF, this.leafDy)
+            () => this.growGreenSquareAction(startNode, SUBTYPE_LEAF, .001)
         ))
 
         this.growthPlans.push(growthPlan);
