@@ -30,6 +30,9 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.maxLeafStemLength = 3;
         this.maxLeafLength = 4;
 
+        this.leafStemDy = 0.7;
+        this.leafDy = 1;
+
         this.curNumGrass = 0;
         this.targetNumGrass = 1;
         this.targetGrassLength = 3;
@@ -38,15 +41,9 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.curNumFlower = 0;
         this.targetNumStem = 0;
 
-        this.targetStemLength = this.maxStemLength;
-        this.targetLeafStemLength = this.maxLeafStemLength;
-        this.targetLeafLength = this.maxLeafLength;
-
         this.maxFlowerLength = 5;
-        this.targetFlowerLength = this.maxFlowerLength;
 
         this.numPetals = 25;
-        this.petalAngleShift = 0; // randRange(0, 0.1 * Math.PI);
 
         this.stems = [];
         this.leaves = [];
@@ -76,7 +73,13 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.flowerR2H = 0.70;
         this.flowerR3H = 0.70;
         this.flowerR4H = 0.90;
+    }
+    
+    getSeedType() {
+        return BaseLeafNodeFlowerSeedOrganism;
+    }
 
+    initFlowerParamArr() {
         this.flowerColor = [
             this.flowerColorC,
             this.flowerColorR1,
@@ -113,9 +116,6 @@ export class BaseLeafNodeFlower extends BaseOrganism {
     }
 
 
-    getSeedType() {
-        return BaseLeafNodeFlowerSeedOrganism;
-    }
 
     getDefaultNutritionMap() {
         return leafNodeFlower_dnm;
@@ -123,13 +123,20 @@ export class BaseLeafNodeFlower extends BaseOrganism {
 
     processGenetics() {
         super.processGenetics();
+        this.initFlowerParamArr();
+
+        this.targetStemLength = this.maxStemLength;
+        this.targetLeafStemLength = this.maxLeafStemLength;
+        this.targetLeafLength = this.maxLeafLength;
+        this.targetFlowerLength = this.maxFlowerLength;
+
         let p0 = this.evolutionParameters[0];
 
         this.maxNumStem = 1;
         this.maxStemLength = this.maxStemLength + Math.floor(this.maxStemLength * p0);
 
-        this.growthNumGreen = this.maxStemLength * this.maxNumStem;
-        this.growthNumRoots = this.growthNumGreen;
+        this.growthNumGreen = this.maxStemLength * this.maxNumStem + ((this.maxLeafStemLength + this.maxLeafLength) * this.maxNumStem / 3) + (this.numPetals * this.maxFlowerLength)
+        this.growthNumRoots = this.growthNumGreen * .1;
     }
 
     processLsqRendering() {
@@ -167,8 +174,8 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                 let i = 0;
                 leaf.lifeSquares.forEach((lsq) => {
 
-                    lsq.w1 = 1.5 * this.leafShapeFunc((i + 1) / leaf.lifeSquares.length);
-                    lsq.w2 = 1.5 * this.leafShapeFunc((i) / leaf.lifeSquares.length);
+                    lsq.w1 = 1.5 * this.leafShapeFunc((i) / leaf.lifeSquares.length);
+                    lsq.w2 = 1.5 * this.leafShapeFunc((i + 1) / leaf.lifeSquares.length);
 
                     lsq.height = 0.7;
                     lsq.renderMode = LSQ_RENDERMODE_THETA_SLOPE;
@@ -284,7 +291,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                 for (let i = 0; i < this.targetLeafStemLength - leafStem.growthPlan.steps.length; i++) {
                     leafStem.growthPlan.steps.push(new GrowthPlanStep(
                         leafStem.growthPlan,
-                        () => this.growGreenSquareAction(startNode, SUBTYPE_LEAF)
+                        () => this.growGreenSquareAction(startNode, SUBTYPE_LEAF, this.leafStemDy)
                     ))
                 };
             });
@@ -306,7 +313,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                 for (let i = 0; i < this.targetLeafLength - leaf.growthPlan.steps.length; i++) {
                     leaf.growthPlan.steps.push(new GrowthPlanStep(
                         leaf.growthPlan,
-                        () => this.growGreenSquareAction(startNode, SUBTYPE_LEAF)
+                        () => this.growGreenSquareAction(startNode, SUBTYPE_LEAF, this.leafDy)
                     ))
                 };
             });
@@ -386,7 +393,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         };
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
-            () => this.growGreenSquareAction(startNode, SUBTYPE_LEAF)
+            () => this.growGreenSquareAction(startNode, SUBTYPE_LEAF, this.leafStemDy)
         ))
 
         this.growthPlans.push(growthPlan);
@@ -407,7 +414,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         };
         growthPlan.steps.push(new GrowthPlanStep(
             growthPlan,
-            () => this.growGreenSquareAction(startNode, SUBTYPE_LEAF)
+            () => this.growGreenSquareAction(startNode, SUBTYPE_LEAF, this.leafDy)
         ))
 
         this.growthPlans.push(growthPlan);
