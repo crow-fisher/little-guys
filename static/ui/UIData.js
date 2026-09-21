@@ -96,6 +96,7 @@ export const UI_ORGANISM_GRASS_CATTAIL = "UI_ORGANISM_GRASS_CATTAIL"
 export const UI_ORGANISM_TREE_PALM = "UI_ORGANISM_TREE_PALM"
 
 export const UI_ORGANISM_FLOWER_LEAFNODE = "UI_ORGANISM_FLOWER_LEAFNODE";
+export const UI_ORGANISM_FLOWER_LEAFNODE_SUNFLOWER = "UI_ORGANISM_FLOWER_LEAFNODE_SUNFLOWER";
 
 export const UI_ORGANISM_FLOWER_CONEFLOWER = "UI_ORGANISM_FLOWER_CONEFLOWER";
 
@@ -319,22 +320,22 @@ function getCurTimeScaleVal(v) {
 export let _GAMEDATA_DEFAULT = {
     "UI_CONFIG_VIEWMODE_SUIT_OPACITY": 0.5,
     "UI_ORGANISM_LINEAGE_MAP": [],
-    "UI_ORGANISM_ORG_ID": 235846,
+    "UI_ORGANISM_ORG_ID": 10453677,
     "GAMEDATA": false,
-    "UI_CAMERA_EXPOSURE": 0.39414949393255994,
+    "UI_CAMERA_EXPOSURE": 0.31531727053537395,
     "UI_CANVAS_SQUARES_ZOOM": 3,
-    "UI_CANVAS_VIEWPORT_CENTER_X": 5032,
-    "UI_CANVAS_VIEWPORT_CENTER_Y": 5091,
+    "UI_CANVAS_VIEWPORT_CENTER_X": 4942,
+    "UI_CANVAS_VIEWPORT_CENTER_Y": 4982,
     "UI_CLIMATE_RAINFALL_DENSITY": 2,
     "UI_CLIMATE_SELECT": "UI_CLIMATE_MIDWEST",
     "UI_CLIMATE_SELECT_CLOUDS": false,
-    "UI_CLIMATE_TOOL_SIZE": 335.1625,
-    "UI_CLIMATE_WEATHER_ACTIVE": "light rain",
+    "UI_CLIMATE_TOOL_SIZE": 31.7734375,
+    "UI_CLIMATE_WEATHER_ACTIVE": "mostly cloudy",
     "UI_CLIMATE_WEATHER_DURATION": 0.24999983999999997,
     "UI_CLIMATE_WEATHER_RAIN_TOGGLE": false,
     "UI_CLIMATE_WEATHER_TOOL_CLOUD_HUMIDITY": 1.01,
     "UI_CLIMATE_WEATHER_TOOL_SELECT": "dry air",
-    "UI_CLIMATE_WEATHER_TOOL_STRENGTH": 56.88863732240948,
+    "UI_CLIMATE_WEATHER_TOOL_STRENGTH": 9.403658141295276,
     "UI_GAME_MAX_CANVAS_SQUARES_X": 2000,
     "UI_GAME_MAX_CANVAS_SQUARES_Y": 2000,
     "UI_GODMODE_STRENGTH": 0.5,
@@ -370,13 +371,33 @@ export let _GAMEDATA_DEFAULT = {
     "UI_MAIN_NEWWORLD_TYPE_SELECT": "UI_MAIN_NEWWORLD_TYPE_PLANTS",
     "UI_NAME": "little guys",
     "UI_ORGANISM_CONFIGURATOR": {
-        "UI_ORGANISM_GRASS_BASE": [
+        "UI_ORGANISM_GRASS_KBLUE": [
             0.5451388888888888,
             0.0625
         ],
         "UI_ORGANISM_GRASS_CATTAIL": [
-            0.5763888888888888,
-            0.9895833333333334
+            0.5416666666666666,
+            0.6041666666666666
+        ],
+        "UI_ORGANISM_FLOWER_CONEFLOWER": [
+            0.5,
+            0.5
+        ],
+        "UI_ORGANISM_GRASS_WHEAT": [
+            0.5,
+            0.5
+        ],
+        "UI_ORGANISM_GRASS_BASE": [
+            0.8333333333333334,
+            0.14583333333333334
+        ],
+        "UI_ORGANISM_FLOWER_LEAFNODE": [
+            0.6458333333333334,
+            0.28125
+        ],
+        "UI_ORGANISM_FLOWER_LEAFNODE_SUNFLOWER": [
+            0.53125,
+            0.46875
         ]
     },
     "UI_ORGANISM_NUTRITION_CONFIGURATOR": true,
@@ -392,14 +413,14 @@ export let _GAMEDATA_DEFAULT = {
             "_llt_mult": 0.7381656804733727,
             "_llt_throttlValMax": 4.090236686390533,
             "_waterPressureSoilTarget": -0.43195266272189414,
-            "_lsqColorVarianceSpeed": 5.340236686390534,
-            "_lsqColorVarianceMult": 7.011834319526626,
+            "_lsqColorVarianceSpeed": 7.928994082840237,
+            "_lsqColorVarianceMult": 10.340236686390531,
             "_waterPressureWiltThresh": -1.612130177514793,
             "_waterPressureOverwaterThresh": 2.061834319526627,
             "_lightDecayValue": 4.749038461538461,
             "_seedReduction": 0.2903106508875739
         },
-        "UI_ORGANISM_GRASS_BASE": {
+        "UI_ORGANISM_GRASS_KBLUE": {
             "_llt_mult": 0.8907174556213016,
             "_llt_throttlValMax": 2.2928994082840237,
             "_seedReduction": 0.020710059171597628,
@@ -415,21 +436,45 @@ export let _GAMEDATA_DEFAULT = {
         },
         "UI_ORGANISM_GRASS_WHEAT": {
             "_llt_mult": 1.4815088757396446
+        },
+        "UI_ORGANISM_GRASS_BASE": {
+            "_llt_mult": 1.168084319526627,
+            "_lsqColorVarianceMult": 8.343195266272188,
+            "_lightDecayValue": 6.743676035502959,
+            "_lightLevelDisplayExposureAdjustment": 0.2958579881656802,
+            "_llt_min": 0.46789940828402365,
+            "_llt_max": 2.809171597633136
+        },
+        "UI_ORGANISM_FLOWER_LEAFNODE": {
+            "_llt_mult": 1.0016642011834318,
+            "_llt_throttlValMax": 1.8047337278106508,
+            "_lightLevelDisplayExposureAdjustment": -0.014792899408283766,
+            "_waterPressureOverwaterThresh": 1.7807692307692307,
+            "_waterPressureWiltThresh": -2.0267011834319524,
+            "_llt_min": 0.3702662721893491,
+            "_llt_max": 2.7758875739644973,
+            "_lsqColorVarianceMult": 5.680473372781064,
+            "_lsqColorVarianceSpeed": 3.1213017751479297,
+            "_lightDecayValue": 5.314681952662722
+        },
+        "UI_ORGANISM_FLOWER_LEAFNODE_SUNFLOWER": {
+            "_llt_mult": 0.7242973372781065,
+            "_waterPressureSoilTarget": -5.069526627218935
         }
     },
-    "UI_ORGANISM_SELECT": "UI_ORGANISM_GRASS_BASE",
-    "UI_ORGANISM_TYPE_SELECT": "UI_ORGANISM_TYPE_GRASS",
+    "UI_ORGANISM_SELECT": "UI_ORGANISM_FLOWER_LEAFNODE_SUNFLOWER",
+    "UI_ORGANISM_TYPE_SELECT": "UI_ORGANISM_TYPE_FLOWER",
     "UI_PALETTE_AQUIFER_FLOWRATE": 0.5,
     "UI_PALETTE_BLOCKS": false,
     "UI_PALETTE_CLIPS_WAYPOINT_DATAMAP": {},
     "UI_PALETTE_CLIPS_WAYPOINT_NAME": "new waypoint",
     "UI_PALETTE_CLIPS_WAYPOINT_SELECT": -1,
     "UI_PALETTE_COMPOSITION": [
-        0.1214529914529914,
-        0.20521367521367517,
-        0.6733333333333335
+        0.22446581196581195,
+        0.14220085470085467,
+        0.6333333333333334
     ],
-    "UI_PALETTE_MODE": "UI_PALETTE_MODE_ROCK",
+    "UI_PALETTE_MODE": "UI_PALETTE_MODE_SOIL",
     "UI_PALETTE_PASTE_MODE": "UI_PALETTE_PASTE_MODE_FG",
     "UI_PALETTE_PHYSICS": "UI_PALETTE_PHYSICS_STATIC",
     "UI_PALETTE_PLANTS": false,
@@ -449,22 +494,22 @@ export let _GAMEDATA_DEFAULT = {
     "UI_SM_LIGHTING": false,
     "UI_SOIL_INITALWATER": -2,
     "UI_SOIL_VIEWMODE": "🎨",
-    "UI_SPEED": "UI_SPEED_3",
+    "UI_SPEED": "UI_SPEED_1",
     "UI_TEXTEDIT_ACTIVE": null,
     "UI_TOPBAR": true,
     "UI_TOPBAR_BLOCK": false,
     "UI_TOPBAR_LIGHTING": false,
-    "UI_TOPBAR_MAINMENU": false,
+    "UI_TOPBAR_MAINMENU": true,
     "UI_TOPBAR_SIMULATION": false,
     "UI_TOPBAR_TIME": false,
     "UI_TOPBAR_VIEWMODE": false,
-    "UI_VIEWMODE_SELECT": "UI_VIEWMODE_NORMAL",
+    "UI_VIEWMODE_SELECT": "UI_VIEWMODE_ORGANISM_SUIT_WATER",
     "UI_WORLDPAN": true,
     "UI_VISUALIZER_ORGANISM": false,
     "UI_VISUALIZER_MODE": "UI_VISUALIZER_MODE_NORMALIZED",
     "UI_CLIMATE_SELECT_WEATHER": false,
     "UI_DEBUG_CLIMATE_WEATHER_FOREVER": false
-};
+}
 
 export let _UI_DEFAULT = {
     UI_UI_SIZE: 12,

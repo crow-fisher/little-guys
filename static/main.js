@@ -56,7 +56,6 @@ function playerMainTick() {
 
 export function scheduler_main() {
     if (!isSaveOrLoadInProgress()) {
-
         resetSqColChangeMap();
         updateTime();
         doClickAdd();

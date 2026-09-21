@@ -1,16 +1,14 @@
 import { BaseSquare } from "../BaseSqaure.js";
 import { addSquare, getNeighbors, getSquares } from "../sqOperations.js";
-import { cachedGetWaterflowRate, clamp, hexToRgb, invlerp, lerp, processColorBicolorArr, randNumber, randRange } from "../../common.js";
-import { getCurTimeScale, getDt, getFrameDt, timeScaleFactor } from "../../climate/time.js";
-import { getPressure, getWindSpeedAtLocation, getWindSquareAbove } from "../../climate/simulation/wind.js";
-import { addWaterSaturationPascals, getHumidity, getTemperatureAtWindSquare, getWaterSaturation, pascalsPerWaterSquare, saturationPressureOfWaterVapor, temperatureHumidityFlowrateFactor } from "../../climate/simulation/temperatureHumidity.js";
-import { loadGD, UI_CONFIG_VIEWMODE_SUIT_OPACITY, UI_LIGHTING_SURFACE, UI_ORGANISM_SELECT, UI_PALETTE_COMPOSITION, UI_PALETTE_SOILIDX, UI_PALETTE_VARIANCE, UI_SIMULATION_CLOUDS, UI_SOIL_COMPOSITION, UI_SOIL_INITALWATER } from "../../ui/UIData.js";
+import { cachedGetWaterflowRate, clamp, hexToRgb, invlerp, lerp, processColorBicolorArr, randRange } from "../../common.js";
+import { getWindSpeedAtLocation, getWindSquareAbove } from "../../climate/simulation/wind.js";
+import { getHumidity } from "../../climate/simulation/temperatureHumidity.js";
+import { loadGD, UI_CONFIG_VIEWMODE_SUIT_OPACITY, UI_ORGANISM_SELECT, UI_PALETTE_COMPOSITION, UI_PALETTE_SOILIDX, UI_PALETTE_VARIANCE, UI_SIMULATION_CLOUDS } from "../../ui/UIData.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { addSquareByName, getPlantForRef } from "../../manipulation.js";
 import { getBaseSize, zoomCanvasFillRect } from "../../canvas.js";
-import { applyLightingFromSource, getDefaultLighting } from "../../lighting/lightingProcessing.js";
-import { getNextBlockId, getNextGroupId } from "../../globals.js";
-import { ORGANISM_UI_REF } from "../../organisms/OrganismUIRef.js";
+import { applyLightingFromSource } from "../../lighting/lightingProcessing.js";
+import { getNextGroupId } from "../../globals.js";
 import { COLOR_VERY_FUCKING_BLUE, COLOR_VERY_FUCKING_RED, RGB_COLOR_VERY_FUCKING_BLUE, RGB_COLOR_VERY_FUCKING_GREEN, RGB_COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { copyVecValue } from "../../util/vector.js";
 import { getCurPlantConfiguratorVal } from "../../ui/elements/TwoParameterPlantConfigurator.js";
@@ -122,7 +120,13 @@ export class SoilSquare extends BaseSquare {
     }
 
     initWaterContainment() {
-        this.renderSuitabilityBase();
+        if (this._suitOrg == null) {
+            this._suitOrg = 1;
+            this.waterContainment = this.getInverseMatricPressure(-4);
+            return;
+        } else if (this._suitOrg == 1) {
+            this.renderSuitabilityBase();
+        }
         this.waterContainment = this.getInverseMatricPressure(this._suitOrg.getWaterPressureSoilTarget());
     }
 

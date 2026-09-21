@@ -17,6 +17,7 @@ import { PleurocarpMossOrganism } from "./organisms/mosses/PleurocarpMossOrganis
 import { BackgroundImageSquare, ImageSquare, RigidImageSquare, StaticImageSquare } from "./squares/ImageSquare.js";
 import { CattailGrassOrganism, CattailGrassSeedOrganism } from "./organisms/grass/CattailGrassOrganism.js";
 import { BaseLeafNodeFlower, BaseLeafNodeFlowerSeedOrganism } from "./organisms/flowers/leafNode/BaseLeafNodeFlower.js";
+import { SunflowerLeafNodeFlower, SunflowerLeafNodeFlowerSeedOrganism } from "./organisms/flowers/leafNode/SunflowerLeafNodeFlower.js";
 
 let ProtoMap = {
     "BaseSquare": BaseSquare.prototype,
@@ -40,6 +41,9 @@ let ProtoMap = {
 
     "BaseLeafNodeFlower": BaseLeafNodeFlower.prototype,
     "BaseLeafNodeFlowerSeedOrganism": BaseLeafNodeFlowerSeedOrganism.prototype,
+
+    "SunflowerLeafNodeFlower": SunflowerLeafNodeFlower.prototype,
+    "SunflowerLeafNodeFlowerSeedOrganism": SunflowerLeafNodeFlowerSeedOrganism.prototype,
 
     "LifeSquareGreen": LifeSquareGreen.prototype,
     "LifeSquareRoot": LifeSquareRoot.prototype,

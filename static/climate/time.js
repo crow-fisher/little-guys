@@ -46,6 +46,7 @@ let prevRealTime = Date.now();
 let dt = 0;
 let dtRollingAverage = dt;
 
+
 export function getFrameDt() {
     return dtRollingAverage;
 }
