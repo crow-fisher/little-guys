@@ -33,6 +33,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.stemLsqHeight = 1;
         this.leafStemLsqHeight = 1;
         this.leafLsqHeight = 0.7;
+        this.flowerLsqHeight = 0.7;
         this.leafStemDy = 0.7;
         this.leafDy = 1;
 
@@ -77,7 +78,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.flowerR3H = 0.70;
         this.flowerR4H = 0.90;
     }
-    
+
     getSeedType() {
         return BaseLeafNodeFlowerSeedOrganism;
     }
@@ -85,8 +86,11 @@ export class BaseLeafNodeFlower extends BaseOrganism {
     initFlowerParamArr() {
         this.flowerColor = [
             this.flowerColorC,
+            this.flowerColorC,
+            this.flowerColorR1,
             this.flowerColorR1,
             this.flowerColorR2,
+            this.flowerColorR3,
             this.flowerColorR3
         ]
 
@@ -114,11 +118,12 @@ export class BaseLeafNodeFlower extends BaseOrganism {
     }
 
     leafShapeFunc(x) {
-        // any function with domain [0, 1] and range [0, 1]
-        return Math.sin(Math.PI * x - 5) + 1.2 * x - .2;
+        return Math.sin(.4 * Math.PI * x - 4.6) + 1.2 * x - .2;
     }
 
-
+    flowerShapeFunc(x) {
+        return Math.sin(8 * Math.PI * x)
+    }
 
     getDefaultNutritionMap() {
         return leafNodeFlower_dnm;
@@ -177,12 +182,16 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                 let leaf = leafArr[1];
 
                 let i = 0;
+
+                this.leafLsqHeight = 0.7;
+                let m = Math.abs(Math.sin(leaf.parentComponent.getTheta()) * Math.sin(leaf.getTwist()));
+
                 leaf.lifeSquares.forEach((lsq) => {
 
-                    lsq.w1 = 1.5 * this.leafShapeFunc((i) / leaf.lifeSquares.length);
-                    lsq.w2 = 1.5 * this.leafShapeFunc((i + 1) / leaf.lifeSquares.length);
+                    lsq.w1 = 1 * this.leafShapeFunc((i) / (leaf.lifeSquares.length + 1));
+                    lsq.w2 = 1 * this.leafShapeFunc((i + 1) / (leaf.lifeSquares.length + 1));
+                    lsq.height = this.leafLsqHeight * m + 0.2
 
-                    lsq.height = this.leafLsqHeight;
                     lsq.renderMode = LSQ_RENDERMODE_THETA_SLOPE;
                     i += 1;
                     j += 1;
@@ -193,29 +202,36 @@ export class BaseLeafNodeFlower extends BaseOrganism {
 
             })
 
+        this.flowerLsqHeight = 0.5;
 
         this.flowers.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .forEach((flower) => {
                 flower.lifeSquares.forEach((lsq) => lsq.opacity = 0);
                 flower.parentComponent.lifeSquares.slice(flower.parentComponent.lifeSquares.length - 2).forEach((lsq) => this.applyColor(this.colorStemFlowerBase, 0, lsq.renderColor));
 
+
                 let j = 0;
-                flower.children.forEach((child) => child.lifeSquares.forEach((lsq) => {
-                    let p = 1 - invlerp(child.posY - this.maxFlowerLength, child.posY, lsq.posY);
-                    let i = 0;
-                    while (p > this.flowerD[i]) {
+                flower.children.forEach((petal) => {
+                    let i = -1;
+                    petal.lifeSquares.forEach((lsq) => {
                         i += 1;
-                    }
-                    let col = this.flowerColor[i];
-                    lsq.w1 = this.flowerW[i];
-                    lsq.w2 = this.flowerW[i + 1];
-                    lsq.height = this.flowerH[i];
+                        let col = this.flowerColor[i] ?? [0, 0, 0];
+                        lsq.w1 = this.flowerShapeFunc((i) / (petal.lifeSquares.length + 1));
+                        lsq.w2 = this.flowerShapeFunc((i + 1) / (petal.lifeSquares.length + 1));
 
-                    lsq.renderMode = LSQ_RENDERMODE_THETA_SLOPE;
-                    this.applyColor(col, j, lsq.renderColor);
-                    j += 1;
-                }));
+                        let m = Math.max((1 - Math.abs(Math.cos(petal.getTheta()))), (Math.abs(Math.cos(petal.getTwist()))))
 
+                        lsq.height = this.flowerLsqHeight * m + 0.4;
+
+                        lsq.renderMode = LSQ_RENDERMODE_THETA_SLOPE;
+                        this.applyColor(col, j, lsq.renderColor);
+                        j += 1;
+                    });
+                    petal.lifeSquares[0].theta = petal.lifeSquares[1]?.theta ?? petal.lifeSquares[0].theta;
+
+                    petal.lifeSquares[0].w1 = .2;
+                    petal.lifeSquares[0].w2 = .2;
+                });
             })
 
     }

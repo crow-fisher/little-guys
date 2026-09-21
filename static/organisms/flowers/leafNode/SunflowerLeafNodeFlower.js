@@ -11,12 +11,11 @@ export class SunflowerLeafNodeFlower extends BaseLeafNodeFlower {
 
         this.maxNumStem = 1;
         this.maxStemLength = 14;
-        this.maxLeafStemLength = 5;
+        this.maxLeafStemLength = 4;
         this.maxLeafLength = 3;
-        this.maxFlowerLength = 5;
-        this.numPetals = 25;
+        this.maxFlowerLength = 6;
+        this.numPetals = 36;
 
-        
         this.stemLsqHeight = 1;
         this.leafStemLsqHeight = 1;
         this.leafLsqHeight = 0.4;
@@ -57,6 +56,10 @@ export class SunflowerLeafNodeFlower extends BaseLeafNodeFlower {
         return Math.sin(Math.PI * x - 5) + 1.2 * x - .2;
     }
 
+    flowerShapeFunc(x) {
+        return Math.abs(Math.sin(Math.PI * 8 * x)) * .6
+    }
+
     prepareStemGrowthPlanParams() {
         this.stemTwist = 0;
         this.stemBaseRotation = 0;
@@ -82,7 +85,7 @@ export class SunflowerLeafNodeFlower extends BaseLeafNodeFlower {
     }
 
     prepareLeafGrowthParams(side) {
-        this.leafTwist = randRange(2, Math.PI);
+        this.leafTwist = randRange(1, 2);
         this.leafBaseRotation = randRange(0, Math.PI);
         this.leafBaseDeflection = 1
         this.leafBaseCurve = 0;
