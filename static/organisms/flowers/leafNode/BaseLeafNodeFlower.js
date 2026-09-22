@@ -91,6 +91,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             this.flowerColorR1,
             this.flowerColorR2,
             this.flowerColorR3,
+            this.flowerColorR3,
             this.flowerColorR3
         ]
 
@@ -184,13 +185,15 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                 let i = 0;
 
                 this.leafLsqHeight = 0.7;
-                let m = Math.abs(Math.sin(leaf.parentComponent.getTheta()) * Math.sin(leaf.getTwist()));
+                // let m = Math.abs(Math.sin(leaf.parentComponent.getTheta()) * Math.sin(leaf.getTwist()));
+
+                let m = Math.max((1 - Math.abs(Math.cos(leaf.getTheta()))), (Math.abs(Math.sin(leaf.getTwist()))))
 
                 leaf.lifeSquares.forEach((lsq) => {
 
                     lsq.w1 = 1 * this.leafShapeFunc((i) / (leaf.lifeSquares.length + 1));
                     lsq.w2 = 1 * this.leafShapeFunc((i + 1) / (leaf.lifeSquares.length + 1));
-                    lsq.height = this.leafLsqHeight * m + 0.2
+                    lsq.height = this.leafLsqHeight * m + 0.1
 
                     lsq.renderMode = LSQ_RENDERMODE_THETA_SLOPE;
                     i += 1;
@@ -208,7 +211,6 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             .forEach((flower) => {
                 flower.lifeSquares.forEach((lsq) => lsq.opacity = 0);
                 flower.parentComponent.lifeSquares.slice(flower.parentComponent.lifeSquares.length - 2).forEach((lsq) => this.applyColor(this.colorStemFlowerBase, 0, lsq.renderColor));
-
 
                 let j = 0;
                 flower.children.forEach((petal) => {
@@ -231,6 +233,11 @@ export class BaseLeafNodeFlower extends BaseOrganism {
 
                     petal.lifeSquares[0].w1 = .2;
                     petal.lifeSquares[0].w2 = .2;
+
+                    // let last = petal.lifeSquares[petal.lifeSquares.length - 1];
+                    // last.height = 0.2;
+                    // last.w2 = Math.max(last.w1 - .1, .05)
+
                 });
             })
 

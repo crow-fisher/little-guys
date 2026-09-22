@@ -18,9 +18,9 @@ export class SunflowerLeafNodeFlower extends BaseLeafNodeFlower {
 
         this.stemLsqHeight = 1;
         this.leafStemLsqHeight = 1;
-        this.leafLsqHeight = 0.4;
+        this.leafLsqHeight = 0.6;
         this.leafStemDy = 0.7;
-        this.leafDy = .7;
+        this.leafDy = 1;
 
         this.colorLeaf = [56, 63, 19];
         this.colorStem = [46, 53, 16];
@@ -46,6 +46,11 @@ export class SunflowerLeafNodeFlower extends BaseLeafNodeFlower {
         this.flowerR2H = 0.70;
         this.flowerR3H = 0.70;
         this.flowerR4H = 0.90;
+    }
+
+    processGenetics() {
+        super.processGenetics();
+        this.maxStemLength = randRange(24, 56)
     }
 
     getSeedType() {
@@ -77,7 +82,7 @@ export class SunflowerLeafNodeFlower extends BaseLeafNodeFlower {
     prepareLeafStemGrowthParams(side) {
         this.leafStemTwist = 0;
         this.leafStemBaseRotation = 0;
-        this.leafStemBaseDeflection = 0;
+        this.leafStemBaseDeflection = 1;
         this.leafStemBaseCurve = 1;
 
         this.leafStemStrengthMult = .35;
@@ -85,8 +90,8 @@ export class SunflowerLeafNodeFlower extends BaseLeafNodeFlower {
     }
 
     prepareLeafGrowthParams(side) {
-        this.leafTwist = randRange(1, 2);
-        this.leafBaseRotation = randRange(0, Math.PI);
+        this.leafTwist = randRange(1.5, 2.5);
+        this.leafBaseRotation = randRange(1.5, 2.5);
         this.leafBaseDeflection = 1
         this.leafBaseCurve = 0;
         this.leafStrengthMult = .35;
