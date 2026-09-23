@@ -59,71 +59,32 @@ export class BaseLeafNodeFlower extends BaseOrganism {
 
         this.flowerColorC = [25, 24, 24];
         this.flowerColorR1 = [36, 21, 15];
-        this.flowerColorR2 = [117, 111, 23];
+        this.flowerColorR2 = [131, 112, 26];
         this.flowerColorR3 = [167, 143, 41];
+        this.flowerColorR4 = [180, 159, 66];
 
-        this.flowerR1D = 0.3;
-        this.flowerR2D = .7;
-        this.flowerR3D = .8;
-        this.flowerR4D = 1;
-
-        this.flowerR1W = 0.9;
-        this.flowerR2W = 0.9;
-        this.flowerR3W = 0.9;
-        this.flowerR4W = 0.5;
-        this.flowerR5W = 0.1;
-
-        this.flowerR1H = 0.30;
-        this.flowerR2H = 0.70;
-        this.flowerR3H = 0.70;
-        this.flowerR4H = 0.90;
+        this.flowerColor = [
+            this.flowerColorC,
+            this.flowerColorC,
+            this.flowerColorR1,
+            this.flowerColorR2,
+            this.flowerColorR2,
+            this.flowerColorR4,
+            this.flowerColorR4,
+            this.flowerColorR4
+        ]
     }
 
     getSeedType() {
         return BaseLeafNodeFlowerSeedOrganism;
     }
 
-    initFlowerParamArr() {
-        this.flowerColor = [
-            this.flowerColorC,
-            this.flowerColorC,
-            this.flowerColorR1,
-            this.flowerColorR1,
-            this.flowerColorR2,
-            this.flowerColorR3,
-            this.flowerColorR3,
-            this.flowerColorR3
-        ]
-
-        this.flowerD = [
-            this.flowerR1D,
-            this.flowerR2D,
-            this.flowerR3D,
-            this.flowerR4D,
-        ]
-
-        this.flowerW = [
-            this.flowerR1W,
-            this.flowerR2W,
-            this.flowerR3W,
-            this.flowerR4W,
-            this.flowerR5W
-        ]
-
-        this.flowerH = [
-            this.flowerR1H,
-            this.flowerR2H,
-            this.flowerR3H,
-            this.flowerR4H,
-        ]
-    }
-
     leafShapeFunc(x) {
-        return Math.sin(.4 * Math.PI * x - 4.6) + 1.2 * x - .2;
+        return Math.sin(Math.PI * x - 5) + 1.2 * x - .2;
     }
 
     flowerShapeFunc(x) {
-        return Math.sin(8 * Math.PI * x)
+        return Math.abs(Math.sin(Math.PI * 8 * x)) * .6
     }
 
     getDefaultNutritionMap() {
@@ -132,7 +93,6 @@ export class BaseLeafNodeFlower extends BaseOrganism {
 
     processGenetics() {
         super.processGenetics();
-        this.initFlowerParamArr();
 
         this.targetStemLength = this.maxStemLength;
         this.targetLeafStemLength = this.maxLeafStemLength;

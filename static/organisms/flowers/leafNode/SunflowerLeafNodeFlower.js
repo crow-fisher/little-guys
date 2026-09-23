@@ -28,24 +28,20 @@ export class SunflowerLeafNodeFlower extends BaseLeafNodeFlower {
 
         this.flowerColorC = [25, 24, 24];
         this.flowerColorR1 = [36, 21, 15];
-        this.flowerColorR2 = [117, 111, 23];
+        this.flowerColorR2 = [131, 112, 26];
         this.flowerColorR3 = [167, 143, 41];
+        this.flowerColorR4 = [180, 159, 66];
 
-        this.flowerR1D = 0.3;
-        this.flowerR2D = .7;
-        this.flowerR3D = .8;
-        this.flowerR4D = 1;
-
-        this.flowerR1W = 0.9;
-        this.flowerR2W = 0.9;
-        this.flowerR3W = 0.9;
-        this.flowerR4W = 0.5;
-        this.flowerR5W = 0.1;
-
-        this.flowerR1H = 0.30;
-        this.flowerR2H = 0.70;
-        this.flowerR3H = 0.70;
-        this.flowerR4H = 0.90;
+        this.flowerColor = [
+            this.flowerColorC,
+            this.flowerColorR1,
+            this.flowerColorR1,
+            this.flowerColorR4,
+            this.flowerColorR3,
+            this.flowerColorR3,
+            this.flowerColorR4,
+            this.flowerColorR3
+        ]
     }
 
     processGenetics() {
@@ -58,11 +54,11 @@ export class SunflowerLeafNodeFlower extends BaseLeafNodeFlower {
     }
 
     leafShapeFunc(x) {
-        return Math.sin(Math.PI * x - 5) + 1.2 * x - .2;
+        return super.leafShapeFunc(x);
     }
 
     flowerShapeFunc(x) {
-        return Math.abs(Math.sin(Math.PI * 8 * x)) * .6
+        return super.flowerShapeFunc(x);
     }
 
     prepareStemGrowthPlanParams() {
