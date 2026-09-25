@@ -30,6 +30,10 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.maxLeafStemLength = 3;
         this.maxLeafLength = 4;
 
+
+        this.growthCycleMaturityLength = 15 + 7 * (Math.random());
+        this.growthCycleLength = this.growthCycleMaturityLength * 4;
+
         this.stemLsqHeight = 1;
         this.leafStemLsqHeight = 1;
         this.leafLsqHeight = 0.7;
@@ -94,10 +98,10 @@ export class BaseLeafNodeFlower extends BaseOrganism {
     processGenetics() {
         super.processGenetics();
 
-        this.targetStemLength = this.maxStemLength;
+        this.targetStemLength = 2;
         this.targetLeafStemLength = this.maxLeafStemLength;
-        this.targetLeafLength = this.maxLeafLength;
-        this.targetFlowerLength = this.maxFlowerLength;
+        this.targetLeafLength = 2;
+        this.targetFlowerLength = 2;
 
         let p0 = this.evolutionParameters[0];
 
@@ -526,15 +530,30 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             this.targetNumStem += 1;
             return;
         }
-
         if (this.targetStemLength < this.maxStemLength) {
             this.targetStemLength += 1;
             return;
         }
-        if (this.curNumFlower < this.maxNumStem) {
+        if (this.curNumFlower < this.stems.length) {
             this.growFlower();
             return;
         }
+
+        if (this.targetLeafLength < this.maxLeafLength) {
+            this.targetLeafLength += 1;
+            return;
+        }
+        
+        if (this.targetFlowerLength < this.maxFlowerLength) {
+            this.targetFlowerLength += 1;
+            return;
+        }
+
+        if (this.targetLeafStemLength < this.maxLeafStemLength) {
+            this.targetLeafStemLength += 1;
+            return;
+        }
+
         this.lengthenFlower();
         this.growFlowerPetals();
         // this.lengthenFlowerPetals();

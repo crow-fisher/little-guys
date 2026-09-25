@@ -45,20 +45,20 @@ export class OrganismComponent extends Component {
           container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, ""));
 
           let modeSelectRow1 = new Container(this.window, 0, 0);
-          let modeSelectRow2 = new Container(this.window, 0, 0);
+          // let modeSelectRow2 = new Container(this.window, 0, 0);
 
           container.addElement(modeSelectRow1);
-          container.addElement(modeSelectRow2);
+          // container.addElement(modeSelectRow2);
           container.addElement(new TextBackground(this.window, sizeX, br2, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, ""));
 
-          modeSelectRow1.addElement(new RadioToggleLabel(this.window, half, h1, offsetX, "mosses", UI_ORGANISM_TYPE_SELECT, UI_ORGANISM_TYPE_MOSS,
-               () => getActiveClimate().getUIColorInactive(0.57), () => getActiveClimate().getUIColorInactive(0.50)));
+          // modeSelectRow1.addElement(new RadioToggleLabel(this.window, half, h1, offsetX, "mosses", UI_ORGANISM_TYPE_SELECT, UI_ORGANISM_TYPE_MOSS,
+               // () => getActiveClimate().getUIColorInactive(0.57), () => getActiveClimate().getUIColorInactive(0.50)));
           modeSelectRow1.addElement(new RadioToggleLabel(this.window, half, h1, offsetX, "grass", UI_ORGANISM_TYPE_SELECT, UI_ORGANISM_TYPE_GRASS,
                () => getActiveClimate().getUIColorInactive(0.61), () => getActiveClimate().getUIColorInactive(0.50)));
-          modeSelectRow2.addElement(new RadioToggleLabel(this.window, half, h1, offsetX, "flowers", UI_ORGANISM_TYPE_SELECT, UI_ORGANISM_TYPE_FLOWER,
+          modeSelectRow1.addElement(new RadioToggleLabel(this.window, half, h1, offsetX, "flowers", UI_ORGANISM_TYPE_SELECT, UI_ORGANISM_TYPE_FLOWER,
                () => getActiveClimate().getUIColorInactive(0.64), () => getActiveClimate().getUIColorInactive(0.50)));
-          modeSelectRow2.addElement(new RadioToggleLabel(this.window, half, h1, offsetX, "trees", UI_ORGANISM_TYPE_SELECT, UI_ORGANISM_TYPE_TREE,
-               () => getActiveClimate().getUIColorInactive(0.59), () => getActiveClimate().getUIColorInactive(0.50)));
+          // modeSelectRow2.addElement(new RadioToggleLabel(this.window, half, h1, offsetX, "trees", UI_ORGANISM_TYPE_SELECT, UI_ORGANISM_TYPE_TREE,
+               // () => getActiveClimate().getUIColorInactive(0.59), () => getActiveClimate().getUIColorInactive(0.50)));
 
           let mossConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_ORGANISM_TYPE_SELECT) == UI_ORGANISM_TYPE_MOSS);
           let grassConditionalContainer = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_ORGANISM_TYPE_SELECT) == UI_ORGANISM_TYPE_GRASS);
@@ -82,8 +82,8 @@ export class OrganismComponent extends Component {
           pleurocarpConditionalContainer.addElement(new TextBackground(this.window, sizeX, h2, offsetX, () => getActiveClimate().getUIColorInactive(0.50), 0.75, "moist soils, shade"))
 
           // grass 
-          grassConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "wheat", UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_WHEAT,
-               () => getActiveClimate().getUIColorInactive(0.60), () => getActiveClimate().getUIColorInactive(0.52)));
+          // grassConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "wheat", UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_WHEAT,
+          //      () => getActiveClimate().getUIColorInactive(0.60), () => getActiveClimate().getUIColorInactive(0.52)));
           grassConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "base grass", UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_BASE,
                () => getActiveClimate().getUIColorInactive(0.63), () => getActiveClimate().getUIColorInactive(0.53)));
           grassConditionalContainer.addElement(new RadioToggleLabel(this.window, sizeX, h1, offsetX, "cattail", UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_CATTAIL,

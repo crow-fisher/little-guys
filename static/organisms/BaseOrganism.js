@@ -539,7 +539,7 @@ class BaseOrganism {
     }
 
     spawnSeed() {
-        if (this.originGrowth == null || (this.growthPlans.some((gp) => !gp.areStepsCompleted())) || this.targetGrassLength != this.maxGrassLength)
+        if (this.originGrowth == null || (this.growthPlans.some((gp) => !gp.areStepsCompleted())))
             return;
         let comp = this.originGrowth.children.at(randNumber(0, this.originGrowth.children.length - 1));
         let lsq = comp.lifeSquares.at(comp.lifeSquares.length - 1);

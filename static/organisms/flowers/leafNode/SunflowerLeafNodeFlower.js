@@ -46,7 +46,8 @@ export class SunflowerLeafNodeFlower extends BaseLeafNodeFlower {
 
     processGenetics() {
         super.processGenetics();
-        this.maxStemLength = randRange(24, 56)
+        this.maxStemLength = randRange(14, 25)
+        this.maxFlowerLength = randRange(4, 6);
     }
 
     getSeedType() {
