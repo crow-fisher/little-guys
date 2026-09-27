@@ -44,6 +44,8 @@ export class SunflowerLeafNodeFlower extends BaseLeafNodeFlower {
         ]
     }
 
+    
+
     processGenetics() {
         super.processGenetics();
         this.maxStemLength = randRange(24, 56)
