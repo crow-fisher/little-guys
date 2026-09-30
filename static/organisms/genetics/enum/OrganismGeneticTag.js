@@ -10,3 +10,4 @@ export const OG_T_NUMBER            = 0b00100001;
 export const OG_T_NUMBER_FLOAT      = 0b00100010;
 export const OG_T_NUMBER_INT        = 0b00100011;
 export const OG_T_NUMBER_VALUE      = 0b00100100;
+
