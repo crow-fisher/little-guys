@@ -55,14 +55,6 @@ export class SunflowerLeafNodeFlower extends BaseLeafNodeFlower {
         return SunflowerLeafNodeFlowerSeedOrganism;
     }
 
-    leafShapeFunc(x) {
-        return super.leafShapeFunc(x);
-    }
-
-    flowerShapeFunc(x) {
-        return super.flowerShapeFunc(x);
-    }
-
     prepareStemGrowthPlanParams() {
         this.stemTwist = 0;
         this.stemBaseRotation = 0;
