@@ -19,7 +19,7 @@
 function dec2bin(dec) {
   return (dec >>> 0).toString(2);
 }
-const SC_KEY_FLAG_WIDTH = 19;
+const SC_KEY_FLAG_WIDTH = 19;git 
 
 export const SKF_ORGROOT = 1;
 
