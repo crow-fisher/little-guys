@@ -1,6 +1,7 @@
 import { randRange } from "../../../common.js";
 import { UI_ORGANISM_FLOWER_LEAFNODE_SUNFLOWER } from "../../../ui/UIData.js";
 import { BaseSeedOrganism } from "../../BaseSeedOrganism.js";
+import { OrganismGeneticCode } from "../../genetics/OrganismGeneticCode.js";
 import { BaseLeafNodeFlower } from "./BaseLeafNodeFlower.js";
 
 export class SunflowerLeafNodeFlower extends BaseLeafNodeFlower {
@@ -43,8 +44,6 @@ export class SunflowerLeafNodeFlower extends BaseLeafNodeFlower {
             this.flowerColorR3
         ]
     }
-
-    
 
     processGenetics() {
         super.processGenetics();

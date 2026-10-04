@@ -7,6 +7,8 @@ import { _lightLevelDisplayExposureAdjustment, _llt_mult, BaseOrganism, baseOrga
 import { UI_ORGANISM_FLOWER_LEAFNODE } from "../../../ui/UIData.js";
 import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh } from "../../BaseOrganism.js";
 import { LSQ_RENDERMODE_ELLIPSE, LSQ_RENDERMODE_THETA, LSQ_RENDERMODE_THETA_SLOPE } from "../../../lifeSquares/LifeSquareGreen.js";
+import { OrganismGeneticCode } from "../../genetics/OrganismGeneticCode.js";
+import { SKSO_LEAFNODE } from "../../genetics/enum/namespace/vanilla/keySpecifiers.js";
 
 export let leafNodeFlower_dnm = structuredClone(baseOrganism_dnm);
 leafNodeFlower_dnm[_llt_mult] = 1.45;
@@ -73,6 +75,11 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             this.flowerColorR4,
             this.flowerColorR4
         ]
+    }
+
+    generateGeneticCode() {
+        let code = new OrganismGeneticCode(SKSO_LEAFNODE);
+        
     }
 
     getSeedType() {

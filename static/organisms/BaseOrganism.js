@@ -118,6 +118,10 @@ class BaseOrganism {
         "rgb(5, 58, 25)"
     }
 
+    generateGeneticCode() {
+        return "";
+    }
+
     getGrowthLightLevel() {
         return this.growthLightLevel + this.evolutionLightingOffset;
     }
