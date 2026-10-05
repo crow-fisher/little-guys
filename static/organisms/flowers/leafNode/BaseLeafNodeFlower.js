@@ -8,7 +8,8 @@ import { UI_ORGANISM_FLOWER_LEAFNODE } from "../../../ui/UIData.js";
 import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh } from "../../BaseOrganism.js";
 import { LSQ_RENDERMODE_ELLIPSE, LSQ_RENDERMODE_THETA, LSQ_RENDERMODE_THETA_SLOPE } from "../../../lifeSquares/LifeSquareGreen.js";
 import { OrganismGeneticCode } from "../../genetics/OrganismGeneticCode.js";
-import { SKSO_LEAFNODE } from "../../genetics/enum/namespace/vanilla/keySpecifiers.js";
+import { SKSA_THETA, SKSA_TWIST, SKSA_DEFLECTION, SKSA_CURVE, SKSA_STRENGTH, SKSA_PERIOD, SKSM_STEM, SKSO_LEAFNODE } from "../../genetics/enum/namespace/vanilla/keySpecifiers.js";
+import { SKF_ATTRIBUTE, SKF_MEMBER } from "../../genetics/enum/namespace/vanilla/keyFlags.js";
 
 export let leafNodeFlower_dnm = structuredClone(baseOrganism_dnm);
 leafNodeFlower_dnm[_llt_mult] = 1.45;
@@ -75,11 +76,88 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             this.flowerColorR4,
             this.flowerColorR4
         ]
+
+        this.stemThetaMin = 0;
+        this.stemThetaMax = Math.PI * 2;
+        this.stemTwistMin = 0;
+        this.stemTwistMax = 0;
+        this.stemRotationMin = 0;
+        this.stemRotationMax = 0;
+        this.stemDeflectionMin = 0.1;
+        this.stemDeflectionMax = 0.2;
+        this.stemCurveMin = -.05;
+        this.stemCurveMax = .05;
+        this.stemStrengthMin = 0.35;
+        this.stemStrengthMax = 0.35;
+        this.stemPeriodMin = 150;
+        this.stemPeriodMax = 150;
+
+        this.leafStemThetaMin = 0;
+        this.leafStemThetaMax = Math.PI * 2;
+        this.leafStemTwistMin = 0;
+        this.leafStemTwistMax = 0;
+        this.leafStemRotationMin = 0;
+        this.leafStemRotationMax = 0;
+        this.leafStemDeflectionMin = 1;
+        this.leafStemDeflectionMax = 1;
+        this.leafStemCurveMin = 1;
+        this.leafStemCurveMax = 1;
+        this.leafStemStrengthMin = 0.35;
+        this.leafStemStrengthMax = 0.35;
+        this.leafStemPeriodMin = 150;
+        this.leafStemPeriodMax = 150;
+
+        this.leafThetaMin = 0;
+        this.leafThetaMax = Math.PI * 2;
+        this.leafTwistMin = 1.5;
+        this.leafTwistMax = 2.5;
+        this.leafRotationMin = 1.5;
+        this.leafRotationMax = 2.5;
+        this.leafDeflectionMin = 1;
+        this.leafDeflectionMax = 1;
+        this.leafCurveMin = 0;
+        this.leafCurveMax = 0;
+        this.leafStrengthMin = 0.35;
+        this.leafStrengthMax = 0.35;
+        this.leafPeriodMin = 150;
+        this.leafPeriodMax = 150;
+    }
+
+    prepareStemGrowthPlanParams() {
+        this.stemTheta = randRange(this.stemThetaMin, this.stemThetaMax);
+        this.stemTwist = randRange(this.stemTwistMin, this.stemTwistMax);
+        this.stemBaseRotation = randRange(this.stemRotationMin, this.stemRotationMax);
+        this.stemBaseDeflection = randRange(this.stemDeflectionMin, this.stemDeflectionMax)
+        this.stemBaseCurve = randRange(this.stemCurveMin, this.stemCurveMax)
+        this.stemStrengthMult = randRange(this.stemStrengthMin, this.stemStrengthMax);
+        this.stemRollingAveragePeriod = randRange(this.stemPeriodMin, this.stemPeriodMax);
+    }
+
+    prepareLeafStemGrowthParams(side) {
+        this.leafStemTheta = randRange(this.leafStemThetaMin, this.leafStemThetaMax);
+        this.leafStemTwist = randRange(this.leafStemTwistMin, this.leafStemTwistMax);
+        this.leafStemBaseRotation = randRange(this.leafStemRotationMin, this.leafStemRotationMax);
+        this.leafStemBaseDeflection = randRange(this.leafStemDeflectionMin, this.leafStemDeflectionMax)
+        this.leafStemBaseCurve = randRange(this.leafStemCurveMin, this.leafStemCurveMax)
+        this.leafStemStrengthMult = randRange(this.leafStemStrengthMin, this.leafStemStrengthMax);
+        this.leafStemRollingAveragePeriod = randRange(this.leafStemPeriodMin, this.leafStemPeriodMax);
+    }
+
+    prepareLeafGrowthParams(side) {
+        this.leafTheta = randRange(this.leafThetaMin, this.leafThetaMax);
+        this.leafTwist = randRange(this.leafTwistMin, this.leafTwistMax);
+        this.leafBaseRotation = randRange(this.leafRotationMin, this.leafRotationMax);
+        this.leafBaseDeflection = randRange(this.leafDeflectionMin, this.leafDeflectionMax)
+        this.leafBaseCurve = randRange(this.leafCurveMin, this.leafCurveMax)
+        this.leafStrengthMult = randRange(this.leafStrengthMin, this.leafStrengthMax);
+        this.leafRollingAveragePeriod = randRange(this.leafPeriodMin, this.leafPeriodMax);
     }
 
     generateGeneticCode() {
         let code = new OrganismGeneticCode(SKSO_LEAFNODE);
-        
+        code.addTagIndex(SKF_MEMBER, SKSM_STEM, 0);
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_THETA, )
+
     }
 
     getSeedType() {
@@ -210,20 +288,6 @@ export class BaseLeafNodeFlower extends BaseOrganism {
 
     }
 
-    prepareStemGrowthPlanParams() {
-        this.stemTwist = 0;
-        this.stemBaseRotation = 0;
-        this.stemBaseDeflection = randRange(-.1, .1);
-        this.stemBaseCurve = randRange(-.05, .05);
-        this.stemStrengthMult = .35;
-        this.stemRollingAveragePeriod = 150;
-
-        this.stemTwist = 0;
-        this.stemBaseRotation = 0;
-        this.stemBaseDeflection = 0;
-        this.stemBaseCurve = -.2
-    }
-
     growStem() {
         this.prepareStemGrowthPlanParams();
         let startRootNode = this.originGrowth.lifeSquares.at(0);
@@ -341,36 +405,6 @@ export class BaseLeafNodeFlower extends BaseOrganism {
 
     }
 
-    prepareLeafGrowthParams(side) {
-        this.leafTwist = 0; //= Math.PI / 2 + .1;
-        this.leafBaseRotation = 0; //= Math.PI / 2;
-        this.leafBaseDeflection = 0; //= Math.PI / 2;
-        this.leafBaseCurve = 0; //= 1;
-
-        this.leafTwist = Math.PI / 2 + randRange(0.3, 0.7);
-        this.leafBaseRotation = Math.PI / 2;
-        this.leafBaseDeflection = 0
-        this.leafBaseCurve = .7;
-
-        this.leafStrengthMult = .35;
-        this.leafRollingAveragePeriod = 150;
-    }
-
-
-    prepareLeafStemGrowthParams(side) {
-        this.leafStemTwist = 0; //= Math.PI / 2 + .1;
-        this.leafStemBaseRotation = 0; //= Math.PI / 2;
-        this.leafStemBaseDeflection = 0; //= Math.PI / 2;
-        this.leafStemBaseCurve = 0; //= 1;
-
-        this.leafStemTwist = 0;
-        this.leafStemBaseRotation = Math.PI / 2;
-        this.leafStemBaseDeflection = 0
-        this.leafStemBaseCurve = 0;
-
-        this.leafStemStrengthMult = .35;
-        this.leafStemRollingAveragePeriod = 150;
-    }
 
     growLeafStemAtNode(stem, startNode, side) {
         this.prepareLeafStemGrowthParams(side);

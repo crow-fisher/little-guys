@@ -54,39 +54,6 @@ export class SunflowerLeafNodeFlower extends BaseLeafNodeFlower {
         return SunflowerLeafNodeFlowerSeedOrganism;
     }
 
-    prepareStemGrowthPlanParams() {
-        this.stemTwist = 0;
-        this.stemBaseRotation = 0;
-        this.stemBaseDeflection = randRange(.1, .2);
-        this.stemBaseCurve = randRange(-.05, .05);
-        this.stemStrengthMult = .35;
-        this.stemRollingAveragePeriod = 150;
-
-        this.stemTwist = 0;
-        this.stemBaseRotation = 0;
-        this.stemBaseDeflection = 0;
-        this.stemBaseCurve = -.2
-    }
-
-    prepareLeafStemGrowthParams(side) {
-        this.leafStemTwist = 0;
-        this.leafStemBaseRotation = 0;
-        this.leafStemBaseDeflection = 1;
-        this.leafStemBaseCurve = 1;
-
-        this.leafStemStrengthMult = .35;
-        this.leafStemRollingAveragePeriod = 150;
-    }
-
-    prepareLeafGrowthParams(side) {
-        this.leafTwist = randRange(1.5, 2.5);
-        this.leafBaseRotation = randRange(1.5, 2.5);
-        this.leafBaseDeflection = 1
-        this.leafBaseCurve = 0;
-        this.leafStrengthMult = .35;
-        this.leafRollingAveragePeriod = 150;
-    }
-
 
 }
 

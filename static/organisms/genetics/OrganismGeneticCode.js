@@ -10,5 +10,14 @@ export class OrganismGeneticCode {
     addTag(keyFlag, keySpecifier) {
         this.code.append(compositeSoupKey(keyFlag, keySpecifier));
     }
+    addTagIndex(keyFlag, keySpecifier, index) {
+        this.code.append(compositeSoupKey(keyFlag, keySpecifier | index));
+    }
+    addTagValue(keyFlag, keySpecifier, value) {
+        this.code.append(compositeSoupKey(keyFlag, keySpecifier));
+        this.code.append(value);
+    }
+
+    
 }
 
