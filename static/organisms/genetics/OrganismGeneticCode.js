@@ -7,8 +7,8 @@ export class OrganismGeneticCode {
         this.code.push(compositeSoupKey(SKF_ORIGIN, specifier));
 
     }
-    addTag(tag) {
-        this.code.append(tag);
+    addTag(keyFlag, keySpecifier) {
+        this.code.append(compositeSoupKey(keyFlag, keySpecifier));
     }
 }
 
