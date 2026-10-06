@@ -203,8 +203,6 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         code.addTagValue(SKF_ATTRIBUTE, SKSA_PERIOD, 0, this.leafStemPeriodMin)
         code.addTagValue(SKF_ATTRIBUTE, SKSA_PERIOD, 1, this.leafStemPeriodMax)
 
-
-
     }
 
     getSeedType() {
