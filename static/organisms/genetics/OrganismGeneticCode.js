@@ -13,8 +13,8 @@ export class OrganismGeneticCode {
     addTagIndex(keyFlag, keySpecifier, index) {
         this.code.append(compositeSoupKey(keyFlag, keySpecifier | index));
     }
-    addTagValue(keyFlag, keySpecifier, value) {
-        this.code.append(compositeSoupKey(keyFlag, keySpecifier));
+    addTagIndexValue(keyFlag, keySpecifier, index, value) {
+        this.code.append(compositeSoupKey(keyFlag, keySpecifier | index));
         this.code.append(value);
     }
 

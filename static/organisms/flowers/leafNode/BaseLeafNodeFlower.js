@@ -8,7 +8,7 @@ import { UI_ORGANISM_FLOWER_LEAFNODE } from "../../../ui/UIData.js";
 import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh } from "../../BaseOrganism.js";
 import { LSQ_RENDERMODE_ELLIPSE, LSQ_RENDERMODE_THETA, LSQ_RENDERMODE_THETA_SLOPE } from "../../../lifeSquares/LifeSquareGreen.js";
 import { OrganismGeneticCode } from "../../genetics/OrganismGeneticCode.js";
-import { SKSA_THETA, SKSA_TWIST, SKSA_DEFLECTION, SKSA_CURVE, SKSA_STRENGTH, SKSA_PERIOD, SKSM_STEM, SKSO_LEAFNODE } from "../../genetics/enum/namespace/vanilla/keySpecifiers.js";
+import { SKSA_THETA, SKSA_TWIST, SKSA_DEFLECTION, SKSA_CURVE, SKSA_STRENGTH, SKSA_PERIOD, SKSM_STEM, SKSO_LEAFNODE, SKSM_LEAF, SKSM_LEAFSTEM } from "../../genetics/enum/namespace/vanilla/keySpecifiers.js";
 import { SKF_ATTRIBUTE, SKF_MEMBER } from "../../genetics/enum/namespace/vanilla/keyFlags.js";
 
 export let leafNodeFlower_dnm = structuredClone(baseOrganism_dnm);
@@ -156,7 +156,54 @@ export class BaseLeafNodeFlower extends BaseOrganism {
     generateGeneticCode() {
         let code = new OrganismGeneticCode(SKSO_LEAFNODE);
         code.addTagIndex(SKF_MEMBER, SKSM_STEM, 0);
-        code.addTagValue(SKF_ATTRIBUTE, SKSA_THETA, )
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_THETA, 0, this.stemThetaMin)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_THETA, 1, this.stemThetaMax)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_TWIST, 0, this.stemTwistMin)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_TWIST, 1, this.stemTwistMax)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_ROTATION, 0, this.stemRotationMin)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_ROTATION, 1, this.stemRotationMax)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_DEFLECTION, 0, this.stemDeflectionMin)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_DEFLECTION, 1, this.stemDeflectionMax)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_CURVE, 0, this.stemCurveMin)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_CURVE, 1, this.stemCurveMax)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_STRENGTH, 0, this.stemStrengthMin)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_STRENGTH, 1, this.stemStrengthMax)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_PERIOD, 0, this.stemPeriodMin)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_PERIOD, 1, this.stemPeriodMax)
+
+        code.addTagIndex(SKF_MEMBER, SKSM_LEAF, 0);
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_THETA, 0, this.leafThetaMin)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_THETA, 1, this.leafThetaMax)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_TWIST, 0, this.leafTwistMin)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_TWIST, 1, this.leafTwistMax)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_ROTATION, 0, this.leafRotationMin)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_ROTATION, 1, this.leafRotationMax)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_DEFLECTION, 0, this.leafDeflectionMin)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_DEFLECTION, 1, this.leafDeflectionMax)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_CURVE, 0, this.leafCurveMin)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_CURVE, 1, this.leafCurveMax)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_STRENGTH, 0, this.leafStrengthMin)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_STRENGTH, 1, this.leafStrengthMax)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_PERIOD, 0, this.leafPeriodMin)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_PERIOD, 1, this.leafPeriodMax) 
+
+        code.addTagIndex(SKF_MEMBER, SKSM_LEAFSTEM, 0);
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_THETA, 0, this.leafStemThetaMin)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_THETA, 1, this.leafStemThetaMax)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_TWIST, 0, this.leafStemTwistMin)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_TWIST, 1, this.leafStemTwistMax)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_ROTATION, 0, this.leafStemRotationMin)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_ROTATION, 1, this.leafStemRotationMax)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_DEFLECTION, 0, this.leafStemDeflectionMin)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_DEFLECTION, 1, this.leafStemDeflectionMax)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_CURVE, 0, this.leafStemCurveMin)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_CURVE, 1, this.leafStemCurveMax)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_STRENGTH, 0, this.leafStemStrengthMin)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_STRENGTH, 1, this.leafStemStrengthMax)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_PERIOD, 0, this.leafStemPeriodMin)
+        code.addTagValue(SKF_ATTRIBUTE, SKSA_PERIOD, 1, this.leafStemPeriodMax)
+
+
 
     }
 
