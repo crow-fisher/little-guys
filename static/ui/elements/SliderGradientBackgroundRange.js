@@ -1,8 +1,9 @@
 import { getBaseUISize } from "../../canvas.js";
 import { calculateColor } from "../../climate/simulation/temperatureHumidity.js";
 import { COLOR_BLACK, COLOR_BLUE, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
+import { invlerp } from "../../common.js";
 import { getCurBackgroundColor, MAIN_CONTEXT } from "../../index.js";
-import { isLeftMouseClicked } from "../../mouse.js";
+import { getLastMouseDown, isLeftMouseClicked } from "../../mouse.js";
 import { loadGD, saveGD } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
@@ -18,10 +19,12 @@ export class SliderGradientBackgroundRange extends WindowElement {
         this.minColorFunc = minColorFunc;
         this.maxColorFunc = maxColorFunc;
         this.renderSkyBackground = renderSkyBackground;
-        
+
         let range = (max - min);
         this.min -= (sizeY / sizeX) * range;
         this.max += (sizeY / sizeX) * range;
+
+        this.minStep = range / 5;
     }
 
     renderBackground(startX, startY) {
@@ -38,7 +41,7 @@ export class SliderGradientBackgroundRange extends WindowElement {
 
     renderBlockValue(startX, startY, value) {
         let blockSize = this.sizeY;
-        let invlerp = (this.ref1() - this.min) / (this.max - this.min);
+        let invlerp = (value - this.min) / (this.max - this.min);
         let lerp = invlerp * this.sizeX;
 
         if (!this.renderSkyBackground) {
@@ -63,15 +66,32 @@ export class SliderGradientBackgroundRange extends WindowElement {
     }
 
     hover(posX, posY) {
-        this.hoverBlock(posX, posY, this.ref1)
-        this.hoverBlock(posX, posY, this.ref2)
+        if (this._lmd != getLastMouseDown()) {
+            this.aRef = null;
+            this._lmd = getLastMouseDown();
+        }
+
+        if (this.aRef != null) {
+            this.hoverBlock(posX, posY, this.aRef);
+        } else {
+            this._r1i = this.getClickDistToRef(posX, posY, this.ref1)
+            this._r2i = this.getClickDistToRef(posX, posY, this.ref2)
+            this.aRef = (this._r1i < this._r2i) ? this.ref1 : this.ref2;
+
+            console.log(this._r1i, this._r2i);
+        }
+        // this.hoverBlock(posX, posY, this.ref1);
+        // this.hoverBlock(posX, posY, this.ref2);
+
+        this.ref1(Math.min(this.ref1(), this.ref2() - this.minStep));
+    }
+
+    getClickDistToRef(posX, posY, ref) {
+        return Math.abs((posX / this.sizeX) - (invlerp(this.min, this.max, ref())));
     }
 
     hoverBlock(posX, posY, ref) {
         super.hover(posX, posY);
-        if (!isLeftMouseClicked()) {
-            return;
-        }
         this.window.locked = true;
         let min = 0;
         let max = this.sizeX;

@@ -36,13 +36,24 @@ export class GeneticsComponent extends Component {
           // It's a getter that is also a setter. "cursed shorthand"
           let ch = (r) => (v) => (v == null ? r : (r = v));
           container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, "stem"));
-          container.addElement(new SliderGradientBackgroundRange(this.window,ch(this.refOrg.stemThetaMin), ch(this.refOrg.stemThetaMax), sizeX, h1, 0, Math.PI, () => "#9b9b9b", () => "#566b68"));
+          
+          let s1 = [
+               [ch(this.refOrg.stemThetaMin), ch(this.refOrg.stemThetaMax), 0, Math.PI * 2],
+               [ch(this.refOrg.stemTwistMin), ch(this.refOrg.stemTwistMax), 0, Math.PI * 2],
+               [ch(this.refOrg.stemRotationMin), ch(this.refOrg.stemRotationMax), 0, Math.PI * 2],
+               [ch(this.refOrg.stemDeflectionMin), ch(this.refOrg.stemDeflectionMax), 0, Math.PI * 2],
+               [ch(this.refOrg.stemCurveMin), ch(this.refOrg.stemCurveMax), 0, Math.PI * 2],
+               [ch(this.refOrg.stemStrengthMin), ch(this.refOrg.stemStrengthMax), 0, Math.PI * 2],
+               [ch(this.refOrg.stemPeriodMin), ch(this.refOrg.stemPeriodMax), 0, Math.PI * 2],
+          ]
+          
+          container.addElement(new SliderGradientBackgroundRange(this.window,ch(this.refOrg.stemThetaMin), ch(this.refOrg.stemThetaMax), sizeX, h1, 0, Math.PI * 3, () => "#9b9b9b", () => "#566b68"));
           container.addElement(new SliderGradientBackgroundRange(this.window,ch(this.refOrg.stemTwistMin), ch(this.refOrg.stemTwistMax), sizeX, h1, 0, Math.PI, () => "#56666b", () => "#5a99ac"));
           container.addElement(new SliderGradientBackgroundRange(this.window,ch(this.refOrg.stemRotationMin), ch(this.refOrg.stemRotationMax), sizeX, h1, 0, Math.PI, () => "#99aac5", () => "#2d466e"));
           container.addElement(new SliderGradientBackgroundRange(this.window,ch(this.refOrg.stemDeflectionMin), ch(this.refOrg.stemDeflectionMax), sizeX, h1, 0, Math.PI, () => "#8681b3", () => "#38307e"));
           container.addElement(new SliderGradientBackgroundRange(this.window,ch(this.refOrg.stemCurveMin), ch(this.refOrg.stemCurveMax), sizeX, h1, 0, Math.PI, () => "#9a81b1", () => "#791779"));
           container.addElement(new SliderGradientBackgroundRange(this.window,ch(this.refOrg.stemStrengthMin), ch(this.refOrg.stemStrengthMax), sizeX, h1, 0, Math.PI, () => "#a17191", () => "#6f2b75"));
-          container.addElement(new SliderGradientBackgroundRange(this.window,ch(this.refOrg.stemPeriodMin), ch(this.refOrg.stemPeriodMax), sizeX, h1, 0, Math.PI, () => "#d19cbf", () => "#8f1919"));
+          container.addElement(new SliderGradientBackgroundRange(this.window,ch(this.refOrg.stemPeriodMin), ch(this.refOrg.stemPeriodMax), sizeX, h1, 0, 200, () => "#d19cbf", () => "#8f1919"));
                
           console.log(this.refOrg.generateGeneticCode().serialize());
      }
