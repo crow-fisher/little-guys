@@ -4,7 +4,7 @@ import { BlockPalette } from "./components/BlockPalette.js";
 import { BlockSubtreeComponent as BlockSubtree } from "./components/BlockSubtreeComponent.js";
 import { TopBarComponent } from "./topbar/TopBarComponent.js";
 import { ViewSubtreeComponent } from "./components/ViewSubtreeComponent.js";
-import { loadGD, UI_SM_LIGHTING, UI_PALETTE_PLANTS, UI_TOPBAR_BLOCK, UI_PALETTE_BLOCKS, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveGD, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_TIME, UI_TOPBAR_WEATHER, UI_MAIN_NEWWORLD, saveUI, UI_UI_SIZE, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_CLIMATE_SELECT_CLOUDS, UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK, UI_PALETTE_SELECT, UI_PALETTE_SOILROCK, UI_PALETTE_MODE_SOIL, UI_PALETTE_CLIPS, UI_PALETTE_CLIPS_WAYPOINT_NAME, UI_PALETTE_STRENGTH, UI_PALETTE_WATER, UI_PALETTE_SURFACE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_COMPOSITION, UI_LIGHTING_ENABLED, UI_PALETTE_AQUIFER, UI_VISUALIZER_ORGANISM } from "./UIData.js";
+import { loadGD, UI_SM_LIGHTING, UI_PALETTE_PLANTS, UI_TOPBAR_BLOCK, UI_PALETTE_BLOCKS, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveGD, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_TIME, UI_TOPBAR_WEATHER, UI_MAIN_NEWWORLD, saveUI, UI_UI_SIZE, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_CLIMATE_SELECT_CLOUDS, UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK, UI_PALETTE_SELECT, UI_PALETTE_SOILROCK, UI_PALETTE_MODE_SOIL, UI_PALETTE_CLIPS, UI_PALETTE_CLIPS_WAYPOINT_NAME, UI_PALETTE_STRENGTH, UI_PALETTE_WATER, UI_PALETTE_SURFACE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_COMPOSITION, UI_LIGHTING_ENABLED, UI_PALETTE_AQUIFER, UI_VISUALIZER_ORGANISM, UI_PALETTE_GENETICS } from "./UIData.js";
 import { getSquares } from "../squares/sqOperations.js";
 import { ClipComponent } from "./components/ClipComponent.js";
 import { getCurMixIdx, getMixArr, getMixArrLen, getTargetMixIdx, setCurMixIdx, setTargetMixIdx } from "../globals.js";
@@ -25,10 +25,12 @@ import { WorldSetupComponent } from "./components/WorldSetupComponent.js";
 import { RockSquare } from "../squares/parameterized/RockSquare.js";
 import { WaterSquare } from "../squares/WaterSquare.js";
 import { VisualizerOrganismComponent } from "./components/VisualizerOrganismComponent.js";
+import { GeneticsComponent } from "./components/GeneticsComponent.js";
 
 let topBarComponent;
 let blockPalette;
 let organismComponent;
+let geneticsComponent;
 let all_components;
 let playerSetup;
 
@@ -74,6 +76,10 @@ export function initUI() {
     
     organismComponent = new OrganismComponent(getBaseUISize() * 24, palette_y_offset, 0, 0, UI_PALETTE_PLANTS);
     all_components.push(organismComponent);
+
+    geneticsComponent = new GeneticsComponent(getBaseUISize() * 24, palette_y_offset, 0, 0, UI_PALETTE_GENETICS);
+    all_components.push(geneticsComponent);
+
     playerSetup = new ClipComponent(getBaseUISize() * 34, getBaseUISize() * 6, 0, 0, UI_PALETTE_CLIPS);
     all_components.push(playerSetup);
     all_components.push(new TimeSkipComponent(() => topBarComponent.getElementXPositionFunc(0, 18 - 5), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_TIME));
@@ -86,6 +92,7 @@ export function initUI() {
 
 addUIFunctionMap(UI_PALETTE_BLOCKS, () => blockPalette.window.lastTouched = Date.now());
 addUIFunctionMap(UI_PALETTE_PLANTS, () => organismComponent.window.lastTouched = Date.now());
+addUIFunctionMap(UI_PALETTE_GENETICS, () => organismComponent.window.lastTouched = Date.now());
 
 export function getMainMenuComponent() {
     return mainSubtree;

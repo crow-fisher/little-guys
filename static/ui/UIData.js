@@ -32,6 +32,7 @@ export const UI_SOIL_INITALWATER = "UI_SOIL_INITALWATER";
 export const UI_SM_BB = "UI_SM_BB";
 export const UI_SM_LIGHTING = "UI_SM_LIGHTING";
 export const UI_PALETTE_PLANTS = "UI_PALETTE_PLANTS";
+export const UI_PALETTE_GENETICS = "UI_PALETTE_GENETICS";
 export const UI_SM_GODMODE = "UI_SM_GODMODE";
 export const UI_SM_CLIMATE = "UI_SM_CLIMATE";
 
