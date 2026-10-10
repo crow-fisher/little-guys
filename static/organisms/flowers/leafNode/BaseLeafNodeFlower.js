@@ -1,7 +1,7 @@
 import { hsvToRgb, invlerp, randNumber, randRange } from "../../../common.js";
 import { STAGE_ADULT, STAGE_FLOWER, SUBTYPE_FLOWER, SUBTYPE_FLOWERBUD, SUBTYPE_FLOWERNODE, SUBTYPE_FLOWERTIP, SUBTYPE_GRASS, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_STEM, TYPE_FLOWERNODE, TYPE_FLOWERPETAL, TYPE_GRASS, TYPE_LEAF, TYPE_STEM } from "../../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../../GrowthPlan.js";
-import { GrowthPlan, GrowthPlanStep } from "../../GrowthPlan.js";
+import { GrowthPlan, GrowthPlanStep, ThetaMin, ThetaMax, TwistMin, TwistMax, RotationMin, RotationMax, DeflectionMin, DeflectionMax, CurveMin, CurveMax, StrengthMin, StrengthMax, PeriodMin, PeriodMax } from "../../GrowthPlan.js";
 import { BaseSeedOrganism } from "../../BaseSeedOrganism.js";
 import { _lightLevelDisplayExposureAdjustment, _llt_mult, BaseOrganism, baseOrganism_dnm } from "../../BaseOrganism.js";
 import { UI_ORGANISM_FLOWER_LEAFNODE } from "../../../ui/UIData.js";
@@ -77,50 +77,56 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             this.flowerColorR4
         ]
 
-        this.stemThetaMin = -Math.PI;
-        this.stemThetaMax = Math.PI;
-        this.stemTwistMin = 0;
-        this.stemTwistMax = 0;
-        this.stemRotationMin = 0;
-        this.stemRotationMax = 0;
-        this.stemDeflectionMin = 0.1;
-        this.stemDeflectionMax = 0.2;
-        this.stemCurveMin = -.05;
-        this.stemCurveMax = .05;
-        this.stemStrengthMin = 0.35;
-        this.stemStrengthMax = 0.35;
-        this.stemPeriodMin = 150;
-        this.stemPeriodMax = 150;
+        this.stemParams = {
+            ThetaMin: -Math.PI,
+            ThetaMax: Math.PI,
+            TwistMin: 0.0,
+            TwistMax: 0.0,
+            RotationMin: 0.0,
+            RotationMax: 0.0,
+            DeflectionMin: 0.1,
+            DeflectionMax: 0.2,
+            CurveMin: -.05,
+            CurveMax: .05,
+            StrengthMin: 0.35,
+            StrengthMax: 0.35,
+            PeriodMin: 150.0,
+            PeriodMax: 150.0
+        }
 
-        this.leafStemThetaMin = 0;
-        this.leafStemThetaMax = Math.PI * 2;
-        this.leafStemTwistMin = 0;
-        this.leafStemTwistMax = 0;
-        this.leafStemRotationMin = 0;
-        this.leafStemRotationMax = 0;
-        this.leafStemDeflectionMin = 1;
-        this.leafStemDeflectionMax = 1;
-        this.leafStemCurveMin = 1;
-        this.leafStemCurveMax = 1;
-        this.leafStemStrengthMin = 0.35;
-        this.leafStemStrengthMax = 0.35;
-        this.leafStemPeriodMin = 150;
-        this.leafStemPeriodMax = 150;
+        this.leafStemParams = {
+            ThetaMin: -Math.PI,
+            ThetaMax: Math.PI,
+            TwistMin: 0.0,
+            TwistMax: 0.0,
+            RotationMin: 0.0,
+            RotationMax: 0.0,
+            DeflectionMin: 0.8,
+            DeflectionMax: 1.2,
+            CurveMin: 0.8,
+            CurveMax: 1.2,
+            StrengthMin: 0.35,
+            StrengthMax: 0.35,
+            PeriodMin: 150.0,
+            PeriodMax: 150.0
+        }
 
-        this.leafThetaMin = 0;
-        this.leafThetaMax = Math.PI * 2;
-        this.leafTwistMin = 1.5;
-        this.leafTwistMax = 2.5;
-        this.leafRotationMin = 1.5;
-        this.leafRotationMax = 2.5;
-        this.leafDeflectionMin = 1;
-        this.leafDeflectionMax = 1;
-        this.leafCurveMin = 0;
-        this.leafCurveMax = 0;
-        this.leafStrengthMin = 0.35;
-        this.leafStrengthMax = 0.35;
-        this.leafPeriodMin = 150;
-        this.leafPeriodMax = 150;
+        this.leafParams = {
+            ThetaMin: -Math.PI,
+            ThetaMax: Math.PI,
+            TwistMin: 1.5,
+            TwistMax: 2.5,
+            RotationMin: 1.5,
+            RotationMax: 2.5,
+            DeflectionMin: 0.8,
+            DeflectionMax: 1.2,
+            CurveMin: 0,
+            CurveMax: 0,
+            StrengthMin: 0.35,
+            StrengthMax: 0.35,
+            PeriodMin: 150.0,
+            PeriodMax: 150.0
+        }
     }
 
     prepareStemGrowthPlanParams() {
