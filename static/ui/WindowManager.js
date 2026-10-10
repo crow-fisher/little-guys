@@ -102,6 +102,10 @@ export function getTopBarComponent() {
     return topBarComponent;
 }
 
+export function getGeneticsComponent() {
+    return geneticsComponent;
+}
+
 export function updateWindows() {
     frameLastTouched = false;
     all_components.sort((b, a) => (a.window.lastTouched ?? 0) - (b.window.lastTouched ?? 0))

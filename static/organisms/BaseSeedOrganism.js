@@ -9,8 +9,8 @@ import { registerLineage } from "./LineageTracking.js";
 import { getCurPlantConfiguratorVal } from "../ui/elements/TwoParameterPlantConfigurator.js";
 
 class BaseSeedOrganism extends BaseOrganism {
-    constructor(square, evolutionParameters = null, parentId=-1) {
-        super(square, parentId);
+    constructor(square, genetics=null, evolutionParameters = null, parentId=-1) {
+        super(square, genetics, parentId);
         this.proto = "BaseSeedOrganism";
         this.sproutType = null;
         this.maxLifeTime = 10;
@@ -47,7 +47,7 @@ class BaseSeedOrganism extends BaseOrganism {
             this.sproutAge += getDt();
             if (this.sproutAge > this.totalSproutTime) {
                 let linkedSquareCache = this.linkedSquare;
-                let newOrg = new (this.getSproutType())(linkedSquareCache, this.parentId);
+                let newOrg = new (this.getSproutType())(linkedSquareCache, this.genetics, this.parentId);
                 newOrg.setEvolutionParameters(this.evolutionParameters);
                 registerLineage(newOrg)
                 this.destroy();

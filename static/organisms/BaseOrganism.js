@@ -47,9 +47,10 @@ export let baseOrganism_dnm = {
 }
 
 class BaseOrganism {
-    constructor(square, parentId) {
+    constructor(square, genetics, parentId) {
         this.id = getNextOrgId();
         this.spawnTime = getCurDay();
+        this.genetics = genetics;
         this.parentId = parentId;
 
         this.proto = "BaseOrganism";

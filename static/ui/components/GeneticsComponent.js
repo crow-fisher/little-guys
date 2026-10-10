@@ -40,13 +40,13 @@ export class GeneticsComponent extends Component {
           container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, "stem"));
           
           let s1 = [
-               [ch(this.refOrg.stemThetaMin), ch(this.refOrg.stemThetaMax), 0, Math.PI * 2],
-               [ch(this.refOrg.stemTwistMin), ch(this.refOrg.stemTwistMax), 0, Math.PI * 2],
-               [ch(this.refOrg.stemRotationMin), ch(this.refOrg.stemRotationMax), 0, Math.PI * 2],
-               [ch(this.refOrg.stemDeflectionMin), ch(this.refOrg.stemDeflectionMax), 0, Math.PI * 2],
-               [ch(this.refOrg.stemCurveMin), ch(this.refOrg.stemCurveMax), 0, Math.PI * 2],
-               [ch(this.refOrg.stemStrengthMin), ch(this.refOrg.stemStrengthMax), 0, Math.PI * 2],
-               [ch(this.refOrg.stemPeriodMin), ch(this.refOrg.stemPeriodMax), 0, Math.PI * 2],
+               [ch(this.refOrg.stemThetaMin), ch(this.refOrg.stemThetaMax), -Math.PI, Math.PI],
+               [ch(this.refOrg.stemTwistMin), ch(this.refOrg.stemTwistMax), 0, Math.PI],
+               [ch(this.refOrg.stemRotationMin), ch(this.refOrg.stemRotationMax), 0, Math.PI],
+               [ch(this.refOrg.stemDeflectionMin), ch(this.refOrg.stemDeflectionMax), 0, Math.PI],
+               [ch(this.refOrg.stemCurveMin), ch(this.refOrg.stemCurveMax), 0, Math.PI],
+               [ch(this.refOrg.stemStrengthMin), ch(this.refOrg.stemStrengthMax), 0, 1],
+               [ch(this.refOrg.stemPeriodMin), ch(this.refOrg.stemPeriodMax), 10, 200],
           ]
           
           let h = 50, s, v, o = 0, i = 0;
