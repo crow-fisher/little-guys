@@ -23,7 +23,7 @@ const SC_KEY_FLAG_WIDTH = 19;
 
 export const SKF_ORGROOT = 1;
 
-export function compositeSoupKey(keyFlag, keySpecifier)  {
+export function compositeSoupKey(keyFlag, keySpecifier=0)  {
   return keyFlag << SC_KEY_FLAG_WIDTH | keySpecifier;
 }
 

@@ -1,12 +1,14 @@
 import { SKF_ORIGIN } from "./enum/namespace/vanilla/keyFlags.js";
 import { compositeSoupKey } from "./enum/soupEnum.js";
 
+export const SEP = "|";
+
 export class OrganismGeneticCode {
-    constructor(specifier) {
+    constructor(sourceString) {
         this.valueScale = 10 ** 5;
-        this.code = new Array();
-        this.code.push(compositeSoupKey(SKF_ORIGIN, specifier));
+        this.code = sourceString == null ? new Array() : Array.from(sourceString.split(SEP).map((v) => Number.parseInt(v, 36)));
     }
+
     addTag(keyFlag, keySpecifier) {
         this.code.push(compositeSoupKey(keyFlag, keySpecifier));
     }
@@ -24,7 +26,7 @@ export class OrganismGeneticCode {
         return intValue / this.valueScale;
     }
     serialize() {
-        return this.code.map((val) => val.toString(36)).reduce((a, b) => a + "|" + b, "");
+        return this.code.map((val) => val.toString(36)).reduce((a, b) => a + (a == "" ? '' : SEP) + b, "");
     }
 
 }

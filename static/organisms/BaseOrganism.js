@@ -53,6 +53,8 @@ class BaseOrganism {
         this.genetics = genetics;
         this.parentId = parentId;
 
+        this.parseGenetics();
+
         this.proto = "BaseOrganism";
         this.uiRef = UI_ORGANISM_SELECT;
         this.posX = square?.posX;
@@ -121,6 +123,10 @@ class BaseOrganism {
 
     generateGeneticCode() {
         return "";
+    }
+
+    parseGenetics() {
+        // apply 'this.genetics' to your implementation class's configured parameters here
     }
 
     getGrowthLightLevel() {
