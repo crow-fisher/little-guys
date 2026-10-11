@@ -128,6 +128,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             PeriodMin: 150.0,
             PeriodMax: 150.0
         }
+
     }
 
     getNextParams(map) {
@@ -187,29 +188,86 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             return;
         }
 
-        for (let i = 0; i < 3; i++) {
-            ot = code.code[++i];
+
+        for (let j = 0; j < 3; j++) {
+            i += 1;
+            ot = code.code[i];
             otks = ot & ~(compositeSoupKey(SKF_MEMBER));
             switch (otks) {
                 case SKSM_STEM:
                     // parse for stem
+                    i += this.parseMemberGroup(this.stemParams, code, i);
                     break;
                 case SKSM_LEAF:
-                    // parse for leaf
+                    i += this.parseMemberGroup(this.leafParams, code, i);
                     break;
                 case SKSM_LEAFSTEM:
-                    // parse for leafstem
+                    i += this.parseMemberGroup(this.leafStemParams, code, i);
                     break;
                 default:
-                    console.warn("Unable to parse member genetics with this implementation class:", this.proto, this.genetics)
+                    break;
+            }
+        }
+        console.log(this.stemParams);
+        console.log(this.leafParams);
+        console.log(this.leafStemParams);
+    }
+
+    parseMemberGroup(map, code, i) {
+        let j = 0;
+        i += 1;
+
+        for (; j < Object.keys(this.stemParams).length * 2; j += 2) {
+            let key = code.code[i + j];
+            let value = code.intValueToNumber(code.code[i + j]);
+            switch (key) {
+                case compositeSoupKey(SKF_ATTRIBUTE, SKSA_THETA | 0):
+                    map[ThetaMin] = value;
+                    break;
+                case compositeSoupKey(SKF_ATTRIBUTE, SKSA_THETA | 1):
+                    map[ThetaMax] = value;
+                    break;
+                case compositeSoupKey(SKF_ATTRIBUTE, SKSA_TWIST | 0):
+                    map[TwistMin] = value;
+                    break;
+                case compositeSoupKey(SKF_ATTRIBUTE, SKSA_TWIST | 1):
+                    map[TwistMax] = value;
+                    break;
+                case compositeSoupKey(SKF_ATTRIBUTE, SKSA_ROTATION | 0):
+                    map[RotationMin] = value;
+                    break;
+                case compositeSoupKey(SKF_ATTRIBUTE, SKSA_ROTATION | 1):
+                    map[RotationMax] = value;
+                    break;
+                case compositeSoupKey(SKF_ATTRIBUTE, SKSA_DEFLECTION | 0):
+                    map[DeflectionMin] = value;
+                    break;
+                case compositeSoupKey(SKF_ATTRIBUTE, SKSA_DEFLECTION | 1):
+                    map[DeflectionMax] = value;
+                    break;
+                case compositeSoupKey(SKF_ATTRIBUTE, SKSA_CURVE | 0):
+                    map[CurveMin] = value;
+                    break;
+                case compositeSoupKey(SKF_ATTRIBUTE, SKSA_CURVE | 1):
+                    map[CurveMax] = value;
+                    break;
+                case compositeSoupKey(SKF_ATTRIBUTE, SKSA_STRENGTH | 0):
+                    map[StrengthMin] = value;
+                    break;
+                case compositeSoupKey(SKF_ATTRIBUTE, SKSA_STRENGTH | 1):
+                    map[StrengthMax] = value;
+                    break;
+                case compositeSoupKey(SKF_ATTRIBUTE, SKSA_PERIOD | 0):
+                    map[PeriodMin] = value;
+                    break;
+                case compositeSoupKey(SKF_ATTRIBUTE, SKSA_PERIOD | 1):
+                    map[PeriodMax] = value; 
+                    break;
+                default:
+                    console.log("Failed parse in parseMemberGroup, key ", key);
                     return;
             }
-
-
-
         }
-
-        
     }
 
     getSeedType() {
@@ -243,6 +301,9 @@ export class BaseLeafNodeFlower extends BaseOrganism {
 
         this.growthNumGreen = this.maxStemLength * this.maxNumStem + ((this.maxLeafStemLength + this.maxLeafLength) * this.maxNumStem / 3) + (this.numPetals * this.maxFlowerLength)
         this.growthNumRoots = this.growthNumGreen * .1;
+
+
+        this.parseGenetics();
 
         console.log(this.genetics);
     }
