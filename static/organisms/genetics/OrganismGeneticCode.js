@@ -23,7 +23,6 @@ export class OrganismGeneticCode {
     intValueToNumber(intValue) {
         return intValue / this.valueScale;
     }
-
     serialize() {
         return this.code.map((val) => val.toString(36)).reduce((a, b) => a + "|" + b, "");
     }

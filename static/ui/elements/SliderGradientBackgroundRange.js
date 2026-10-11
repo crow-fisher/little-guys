@@ -8,8 +8,9 @@ import { loadGD, saveGD } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class SliderGradientBackgroundRange extends WindowElement {
-    constructor(window, ref1, ref2, sizeX, sizeY, min, max, minColorFunc, maxColorFunc, renderSkyBackground=false) {
+    constructor(window, refObjFunc, ref1, ref2, sizeX, sizeY, min, max, minColorFunc, maxColorFunc, renderSkyBackground=false) {
         super(window, sizeX, sizeY);
+        this.refObjFunc = refObjFunc;
         this.ref1 = ref1;
         this.ref2 = ref2;
         this.sizeX = sizeX;
@@ -61,8 +62,8 @@ export class SliderGradientBackgroundRange extends WindowElement {
 
     render(startX, startY) {
         this.renderBackground(startX, startY);
-        this.renderBlockValue(startX, startY, this.ref1());
-        this.renderBlockValue(startX, startY, this.ref2());
+        this.renderBlockValue(startX, startY, this.refObjFunc()[this.ref1]);
+        this.renderBlockValue(startX, startY, this.refObjFunc()[this.ref2]);
     }
 
     hover(posX, posY) {
@@ -74,8 +75,8 @@ export class SliderGradientBackgroundRange extends WindowElement {
         if (this.aRef != null) {
             this.hoverBlock(posX, posY, this.aRef);
         } else {
-            this._r1i = this.getClickDistToRef(posX, posY, this.ref1)
-            this._r2i = this.getClickDistToRef(posX, posY, this.ref2)
+            this._r1i = this.getClickDistToRef(posX, posY, this.refObjFunc()[this.ref1])
+            this._r2i = this.getClickDistToRef(posX, posY, this.refObjFunc()[this.ref2])
             this.aRef = (this._r1i < this._r2i) ? this.ref1 : this.ref2;
 
             console.log(this._r1i, this._r2i);
@@ -83,11 +84,11 @@ export class SliderGradientBackgroundRange extends WindowElement {
         // this.hoverBlock(posX, posY, this.ref1);
         // this.hoverBlock(posX, posY, this.ref2);
 
-        this.ref1(Math.min(this.ref1(), this.ref2() - this.minStep));
+        // this.ref1(Math.min(this.ref1(), this.ref2() - this.minStep));
     }
 
     getClickDistToRef(posX, posY, ref) {
-        return Math.abs((posX / this.sizeX) - (invlerp(this.min, this.max, ref())));
+        return Math.abs((posX / this.sizeX) - (invlerp(this.min, this.max, ref)));
     }
 
     hoverBlock(posX, posY, ref) {
@@ -99,6 +100,6 @@ export class SliderGradientBackgroundRange extends WindowElement {
         posX = Math.min(this.sizeX - (this.sizeY / 2), posX);
         let p = (posX - min) / (max - min);
         p = Math.min(Math.max(0, p), 1)
-        ref(this.min + (p * (this.max - this.min)));
+        this.refObjFunc()[ref] = (this.min + (p * (this.max - this.min)));
     }
 }

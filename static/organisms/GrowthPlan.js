@@ -20,7 +20,7 @@ export const PeriodMin = "PeriodMin";
 export const PeriodMax = "PeriodMax";
 
 export class GrowthPlan {
-    constructor(posX, posY, required, endStage, theta, twist, baseRotation, baseDeflection, baseCurve, type, strengthMult, rollingAveragePeriod = 200) {
+    constructor(posX, posY, required, type, endStage, theta, twist, baseRotation, baseDeflection, baseCurve,strengthMult, rollingAveragePeriod = 200) {
         this.posX = posX;
         this.posY = posY;
         this.required = required;

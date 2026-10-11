@@ -1,5 +1,5 @@
 import { hsvToRgb, invlerp, randNumber, randRange } from "../../../common.js";
-import { STAGE_ADULT, STAGE_FLOWER, SUBTYPE_FLOWER, SUBTYPE_FLOWERBUD, SUBTYPE_FLOWERNODE, SUBTYPE_FLOWERTIP, SUBTYPE_GRASS, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_STEM, TYPE_FLOWERNODE, TYPE_FLOWERPETAL, TYPE_GRASS, TYPE_LEAF, TYPE_STEM } from "../../Stages.js";
+import { STAGE_ADULT, STAGE_FLOWER, SUBTYPE_FLOWER, SUBTYPE_FLOWERBUD, SUBTYPE_FLOWERNODE, SUBTYPE_FLOWERTIP, SUBTYPE_GRASS, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_STEM, TYPE_FLOWERNODE, TYPE_FLOWERPETAL, TYPE_GRASS, TYPE_LEAF, TYPE_LEAFSTEM, TYPE_STEM } from "../../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep, ThetaMin, ThetaMax, TwistMin, TwistMax, RotationMin, RotationMax, DeflectionMin, DeflectionMax, CurveMin, CurveMax, StrengthMin, StrengthMax, PeriodMin, PeriodMax } from "../../GrowthPlan.js";
 import { BaseSeedOrganism } from "../../BaseSeedOrganism.js";
@@ -129,54 +129,41 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         }
     }
 
-    prepareStemGrowthPlanParams() {
-        this.stemTheta = randRange(this.stemThetaMin, this.stemThetaMax);
-        this.stemTwist = randRange(this.stemTwistMin, this.stemTwistMax);
-        this.stemBaseRotation = randRange(this.stemRotationMin, this.stemRotationMax);
-        this.stemBaseDeflection = randRange(this.stemDeflectionMin, this.stemDeflectionMax)
-        this.stemBaseCurve = randRange(this.stemCurveMin, this.stemCurveMax)
-        this.stemStrengthMult = randRange(this.stemStrengthMin, this.stemStrengthMax);
-        this.stemRollingAveragePeriod = randRange(this.stemPeriodMin, this.stemPeriodMax);
+    getNextParams(map) {
+        return [randRange(map[ThetaMin], map[ThetaMax]),
+        randRange(map[TwistMin], map[TwistMax]),
+        randRange(map[RotationMin], map[RotationMax]),
+        randRange(map[DeflectionMin], map[DeflectionMax]),
+        randRange(map[CurveMin], map[CurveMax]),
+        randRange(map[StrengthMin], map[StrengthMax]),
+        randRange(map[PeriodMin], map[PeriodMax])]
     }
 
-    prepareLeafStemGrowthParams(side) {
-        this.leafStemTheta = randRange(this.leafStemThetaMin, this.leafStemThetaMax);
-        this.leafStemTwist = randRange(this.leafStemTwistMin, this.leafStemTwistMax);
-        this.leafStemBaseRotation = randRange(this.leafStemRotationMin, this.leafStemRotationMax);
-        this.leafStemBaseDeflection = randRange(this.leafStemDeflectionMin, this.leafStemDeflectionMax)
-        this.leafStemBaseCurve = randRange(this.leafStemCurveMin, this.leafStemCurveMax)
-        this.leafStemStrengthMult = randRange(this.leafStemStrengthMin, this.leafStemStrengthMax);
-        this.leafStemRollingAveragePeriod = randRange(this.leafStemPeriodMin, this.leafStemPeriodMax);
-    }
-
-    prepareLeafGrowthParams(side) {
-        this.leafTheta = randRange(this.leafThetaMin, this.leafThetaMax);
-        this.leafTwist = randRange(this.leafTwistMin, this.leafTwistMax);
-        this.leafBaseRotation = randRange(this.leafRotationMin, this.leafRotationMax);
-        this.leafBaseDeflection = randRange(this.leafDeflectionMin, this.leafDeflectionMax)
-        this.leafBaseCurve = randRange(this.leafCurveMin, this.leafCurveMax)
-        this.leafStrengthMult = randRange(this.leafStrengthMin, this.leafStrengthMax);
-        this.leafRollingAveragePeriod = randRange(this.leafPeriodMin, this.leafPeriodMax);
+    addMemberGroup(code, map, keySpecifier, index) {
+        code.addTagIndex(SKF_MEMBER, keySpecifier, index);
+        code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_THETA, 0, map[ThetaMin])
+        code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_THETA, 1, map[ThetaMax])
+        code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_TWIST, 0, map[TwistMin])
+        code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_TWIST, 1, map[TwistMax])
+        code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_ROTATION, 0, map[RotationMin])
+        code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_ROTATION, 1, map[RotationMax])
+        code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_DEFLECTION, 0, map[DeflectionMin])
+        code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_DEFLECTION, 1, map[DeflectionMax])
+        code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_CURVE, 0, map[CurveMin])
+        code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_CURVE, 1, map[CurveMax])
+        code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_STRENGTH, 0, map[StrengthMin])
+        code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_STRENGTH, 1, map[StrengthMax])
+        code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_PERIOD, 0, map[PeriodMin])
+        code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_PERIOD, 1, map[PeriodMax])
     }
 
     generateGeneticCode() {
         let code = new OrganismGeneticCode(SKSO_LEAFNODE);
-        code.addTagIndex(SKF_MEMBER, SKSM_STEM, 0);
-        code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_THETA, 0, this.stemThetaMin)
-        code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_THETA, 1, this.stemThetaMax)
-        code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_TWIST, 0, this.stemTwistMin)
-        code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_TWIST, 1, this.stemTwistMax)
-        code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_ROTATION, 0, this.stemRotationMin)
-        code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_ROTATION, 1, this.stemRotationMax)
-        code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_DEFLECTION, 0, this.stemDeflectionMin)
-        code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_DEFLECTION, 1, this.stemDeflectionMax)
-        code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_CURVE, 0, this.stemCurveMin)
-        code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_CURVE, 1, this.stemCurveMax)
-        code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_STRENGTH, 0, this.stemStrengthMin)
-        code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_STRENGTH, 1, this.stemStrengthMax)
-        code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_PERIOD, 0, this.stemPeriodMin)
-        code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_PERIOD, 1, this.stemPeriodMax)
 
+        this.addMemberGroup(code, this.stemParams, SKSM_STEM, 0);
+        this.addMemberGroup(code, this.leafParams, SKSM_LEAF, 0);
+        this.addMemberGroup(code, this.leafStemParams, SKSM_LEAFSTEM, 0);
+        
         // code.addTagIndex(SKF_MEMBER, SKSM_LEAF, 0);
         // code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_THETA, 0, this.leafThetaMin)
         // code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_THETA, 1, this.leafThetaMax)
@@ -343,19 +330,14 @@ export class BaseLeafNodeFlower extends BaseOrganism {
     }
 
     growStem() {
-        this.prepareStemGrowthPlanParams();
         let startRootNode = this.originGrowth.lifeSquares.at(0);
-
         if (this.curNumStem > 1)
             startRootNode = this.getRootOrigin();
 
         let growthPlan = new GrowthPlan(
             startRootNode.posX, startRootNode.posY,
-            false, STAGE_ADULT,
-            this.stemTheta,
-            this.stemTwist,
-            this.stemBaseRotation, this.stemBaseDeflection, this.stemBaseCurve,
-            TYPE_STEM, this.stemStrengthMult, this.stemRollingAveragePeriod);
+            false, TYPE_STEM, STAGE_ADULT,
+            ...this.getNextParams(this.stemParams));
 
         growthPlan.postConstruct = () => {
             this.originGrowth.addChild(growthPlan.component);
@@ -461,14 +443,10 @@ export class BaseLeafNodeFlower extends BaseOrganism {
 
 
     growLeafStemAtNode(stem, startNode, side) {
-        this.prepareLeafStemGrowthParams(side);
         let growthPlan = new GrowthPlan(
             startNode.posX, startNode.posY,
-            false, STAGE_ADULT,
-            this.leafStemTheta,
-            this.leafStemTwist,
-            this.leafStemBaseRotation, this.leafStemBaseDeflection, this.leafStemBaseCurve,
-            TYPE_STEM, this.leafStemStrengthMult, this.leafStemRollingAveragePeriod);
+            false, TYPE_LEAFSTEM, STAGE_ADULT,
+        ...this.getNextParams(this.leafStemParams));
 
         growthPlan.postConstruct = () => {
             stem.addChild(growthPlan.component);
@@ -483,14 +461,10 @@ export class BaseLeafNodeFlower extends BaseOrganism {
     }
 
     growLeafAtNode(stem, startNode, side) {
-        this.prepareLeafGrowthParams(side);
         let growthPlan = new GrowthPlan(
             startNode.posX, startNode.posY,
-            false, STAGE_ADULT,
-            this.leafTheta,
-            this.leafTwist,
-            this.leafBaseRotation, this.leafBaseDeflection, this.leafBaseCurve,
-            TYPE_LEAF, this.leafStrengthMult, this.leafRollingAveragePeriod);
+            false, TYPE_LEAF, STAGE_ADULT,
+        ...this.getNextParams(this.leafStemParams));
 
         growthPlan.postConstruct = () => {
             stem.addChild(growthPlan.component);
@@ -507,8 +481,6 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         let stem = this.originGrowth.getChildFromPath(this.stems[this.curNumFlower]);
         let startNode = stem.lifeSquares.at(stem.lifeSquares.length - 1);
         let i = this.curNumFlower;
-
-        this.prepareLeafGrowthParams();
 
         let growthPlan = new GrowthPlan(
             startNode.posX, startNode.posY,
@@ -560,7 +532,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                     }
                     petalGrowthPlan.steps.push(new GrowthPlanStep(
                         petalGrowthPlan,
-                        () => this.growGreenSquareAction(startNode, SUBTYPE_FLOWER), 4
+                        () => this.growGreenSquareAction(startNode, SUBTYPE_FLOWER)
                     ));
                     this.growthPlans.push(petalGrowthPlan);
                 };
