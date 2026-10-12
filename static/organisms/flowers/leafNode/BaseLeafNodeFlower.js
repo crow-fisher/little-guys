@@ -120,7 +120,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             RotationMin: 1.5,
             RotationMax: 2.5,
             DeflectionMin: 0.8,
-            DeflectionMax: 1.2,
+            DeflectionMax: 1.2, 
             CurveMin: 0,
             CurveMax: 0,
             StrengthMin: 0.35,
@@ -276,7 +276,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             "leaf stem": this.leafStemParams
         }
     }
-    
+
     getSeedType() {
         return BaseLeafNodeFlowerSeedOrganism;
     }
