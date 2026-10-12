@@ -188,24 +188,25 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             return;
         }
 
-
         for (let j = 0; j < 3; j++) {
             i += 1;
             ot = code.code[i];
+            console.log(ot);
             otks = ot & ~(compositeSoupKey(SKF_MEMBER));
+            console.log(otks);
             switch (otks) {
                 case SKSM_STEM:
                     // parse for stem
-                    i += this.parseMemberGroup(this.stemParams, code, i);
-                    break;
+                    i = this.parseMemberGroup(this.stemParams, code, i);
+                    continue;
                 case SKSM_LEAF:
-                    i += this.parseMemberGroup(this.leafParams, code, i);
-                    break;
+                    i = this.parseMemberGroup(this.leafParams, code, i);
+                    continue;
                 case SKSM_LEAFSTEM:
-                    i += this.parseMemberGroup(this.leafStemParams, code, i);
-                    break;
+                    i = this.parseMemberGroup(this.leafStemParams, code, i);
+                    continue;
                 default:
-                    break;
+                    continue;
             }
         }
         console.log(this.stemParams);
@@ -216,58 +217,59 @@ export class BaseLeafNodeFlower extends BaseOrganism {
     parseMemberGroup(map, code, i) {
         let j = 0;
         i += 1;
-
         for (; j < Object.keys(this.stemParams).length * 2; j += 2) {
             let key = code.code[i + j];
-            let value = code.intValueToNumber(code.code[i + j]);
+            let value = code.intValueToNumber(code.code[i + j + 1]);
+            console.log(key, value);
             switch (key) {
                 case compositeSoupKey(SKF_ATTRIBUTE, SKSA_THETA | 0):
                     map[ThetaMin] = value;
-                    break;
+                    continue;
                 case compositeSoupKey(SKF_ATTRIBUTE, SKSA_THETA | 1):
                     map[ThetaMax] = value;
-                    break;
+                    continue;
                 case compositeSoupKey(SKF_ATTRIBUTE, SKSA_TWIST | 0):
                     map[TwistMin] = value;
-                    break;
+                    continue;
                 case compositeSoupKey(SKF_ATTRIBUTE, SKSA_TWIST | 1):
                     map[TwistMax] = value;
-                    break;
+                    continue;
                 case compositeSoupKey(SKF_ATTRIBUTE, SKSA_ROTATION | 0):
                     map[RotationMin] = value;
-                    break;
+                    continue;
                 case compositeSoupKey(SKF_ATTRIBUTE, SKSA_ROTATION | 1):
                     map[RotationMax] = value;
-                    break;
+                    continue;
                 case compositeSoupKey(SKF_ATTRIBUTE, SKSA_DEFLECTION | 0):
                     map[DeflectionMin] = value;
-                    break;
+                    continue;
                 case compositeSoupKey(SKF_ATTRIBUTE, SKSA_DEFLECTION | 1):
                     map[DeflectionMax] = value;
-                    break;
+                    continue;
                 case compositeSoupKey(SKF_ATTRIBUTE, SKSA_CURVE | 0):
                     map[CurveMin] = value;
-                    break;
+                    continue;
                 case compositeSoupKey(SKF_ATTRIBUTE, SKSA_CURVE | 1):
                     map[CurveMax] = value;
-                    break;
+                    continue;
                 case compositeSoupKey(SKF_ATTRIBUTE, SKSA_STRENGTH | 0):
                     map[StrengthMin] = value;
-                    break;
+                    continue;
                 case compositeSoupKey(SKF_ATTRIBUTE, SKSA_STRENGTH | 1):
                     map[StrengthMax] = value;
-                    break;
+                    continue;
                 case compositeSoupKey(SKF_ATTRIBUTE, SKSA_PERIOD | 0):
                     map[PeriodMin] = value;
-                    break;
+                    continue;
                 case compositeSoupKey(SKF_ATTRIBUTE, SKSA_PERIOD | 1):
                     map[PeriodMax] = value; 
-                    break;
+                    continue;
                 default:
                     console.log("Failed parse in parseMemberGroup, key ", key);
-                    return;
+                    return 10 ** 8;
             }
         }
+        return i + j;
     }
 
     getSeedType() {

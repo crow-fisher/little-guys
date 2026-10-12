@@ -19,9 +19,10 @@
 function dec2bin(dec) {
   return (dec >>> 0).toString(2);
 }
-const SC_KEY_FLAG_WIDTH = 19;
 
 export const SKF_ORGROOT = 1;
+
+const SC_KEY_FLAG_WIDTH = 19;
 
 export function compositeSoupKey(keyFlag, keySpecifier=0)  {
   return keyFlag << SC_KEY_FLAG_WIDTH | keySpecifier;
