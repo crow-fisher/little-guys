@@ -83,8 +83,6 @@ export class SliderGradientBackgroundRange extends WindowElement {
             this._r1i = this.getClickDistToRef(posX, posY, this.refObjFunc()[this.ref1])
             this._r2i = this.getClickDistToRef(posX, posY, this.refObjFunc()[this.ref2])
             this.aRef = (this._r1i < this._r2i) ? this.ref1 : this.ref2;
-
-            console.log(this._r1i, this._r2i);
         }
     }
 

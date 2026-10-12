@@ -1,4 +1,4 @@
-import { hsvToRgb, invlerp, randNumber, randRange } from "../../../common.js";
+import { dec2bin, hsvToRgb, invlerp, randNumber, randRange } from "../../../common.js";
 import { STAGE_ADULT, STAGE_FLOWER, SUBTYPE_FLOWER, SUBTYPE_FLOWERBUD, SUBTYPE_FLOWERNODE, SUBTYPE_FLOWERTIP, SUBTYPE_GRASS, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_STEM, TYPE_FLOWERNODE, TYPE_FLOWERPETAL, TYPE_GRASS, TYPE_LEAF, TYPE_LEAFSTEM, TYPE_STEM } from "../../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep, ThetaMin, ThetaMax, TwistMin, TwistMax, RotationMin, RotationMax, DeflectionMin, DeflectionMax, CurveMin, CurveMax, StrengthMin, StrengthMax, PeriodMin, PeriodMax } from "../../GrowthPlan.js";
@@ -49,7 +49,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.curNumFlower = 0;
         this.targetNumStem = 0;
 
-        this.maxFlowerLength = 5;
+        this.maxFlowerLength = 6;
 
         this.numPetals = 25;
 
@@ -188,12 +188,10 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             return;
         }
 
+        i += 1;
         for (let j = 0; j < 3; j++) {
-            i += 1;
             ot = code.code[i];
-            console.log(ot);
             otks = ot & ~(compositeSoupKey(SKF_MEMBER));
-            console.log(otks);
             switch (otks) {
                 case SKSM_STEM:
                     // parse for stem
@@ -217,7 +215,6 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         for (; j < Object.keys(this.stemParams).length * 2; j += 2) {
             let key = code.code[i + j];
             let value = code.intValueToNumber(code.code[i + j + 1]);
-            console.log(key, value);
             switch (key) {
                 case compositeSoupKey(SKF_ATTRIBUTE, SKSA_THETA | 0):
                     map[ThetaMin] = value;
@@ -272,8 +269,8 @@ export class BaseLeafNodeFlower extends BaseOrganism {
     getGeneticsConfig() {
         return {
             "stem": this.stemParams,
-            "leaf": this.leafParams,
-            "leaf stem": this.leafStemParams
+            "leaf stem": this.leafStemParams,
+            "leaf": this.leafParams
         }
     }
 
@@ -332,10 +329,6 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             })
 
 
-        return;
-
-
-        
         let j = 0;
         this.leaves.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .map((leafStem) => [leafStem, leafStem?.children.at(0)])
@@ -366,7 +359,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
 
                     lsq.w1 = 1 * this.leafShapeFunc((i) / (leaf.lifeSquares.length + 1));
                     lsq.w2 = 1 * this.leafShapeFunc((i + 1) / (leaf.lifeSquares.length + 1));
-                    lsq.height = this.leafLsqHeight * m + 0.1
+                    lsq.height = this.leafLsqHeight; // * m + 0.1
 
                     lsq.renderMode = LSQ_RENDERMODE_THETA_SLOPE;
                     i += 1;
@@ -551,7 +544,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         let growthPlan = new GrowthPlan(
             startNode.posX, startNode.posY,
             false, TYPE_LEAF, STAGE_ADULT,
-        ...this.getNextParams(this.leafStemParams));
+        ...this.getNextParams(this.leafParams));
 
         growthPlan.postConstruct = () => {
             stem.addChild(growthPlan.component);
@@ -571,14 +564,13 @@ export class BaseLeafNodeFlower extends BaseOrganism {
 
         let growthPlan = new GrowthPlan(
             startNode.posX, startNode.posY,
-            false, STAGE_FLOWER,
+            false, TYPE_FLOWERNODE, STAGE_FLOWER,
             0,
             0,
             Math.PI / 2,
             0,
             0,
-            TYPE_FLOWERNODE
-            , 10 ** 8);
+            10 ** 8);
 
         growthPlan.postConstruct = () => {
             stem.addChild(growthPlan.component);
@@ -606,13 +598,13 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                     let a = startTheta + (i * (2 * Math.PI) / this.numPetals) + randRange(-.03, .03);
                     let petalGrowthPlan = new GrowthPlan(
                         startNode.posX, startNode.posY,
-                        false, STAGE_FLOWER,
+                        false, TYPE_FLOWERPETAL, STAGE_FLOWER,
                         a,
                         a,
                         0,
                         0,
                         0,
-                        TYPE_FLOWERPETAL, 10 ** 8);
+                        10 ** 8);
                     petalGrowthPlan.postConstruct = () => {
                         flowerNodeComponent.addChild(petalGrowthPlan.component);
                         startNode.subtype = SUBTYPE_FLOWERNODE;
@@ -665,11 +657,11 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             return;
         }
 
-        // if (this.leafStems()) {
-        //     return;
-        // }
-        // this.lengthenLeafStems();
-        // this.lengthenLeaves();
+        if (this.leafStems()) {
+            return;
+        }
+        this.lengthenLeafStems();
+        this.lengthenLeaves();
 
         if (this.curNumStem < this.targetNumStem) {
             this.growStem();
@@ -685,13 +677,13 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             this.targetStemLength += 1;
             return;
         }
-        // if (this.curNumFlower < this.maxNumStem) {
-        //     this.growFlower();
-        //     return;
-        // }
-        // this.lengthenFlower();
-        // this.growFlowerPetals();
-        // this.lengthenFlowerPetals();
+        if (this.curNumFlower < this.maxNumStem) {
+            this.growFlower();
+            return;
+        }
+        this.lengthenFlower();
+        this.growFlowerPetals();
+        this.lengthenFlowerPetals();
     }
 }
 

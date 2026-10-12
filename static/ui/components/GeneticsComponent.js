@@ -4,6 +4,7 @@ import { hsvToHex } from "../../common.js";
 import { BaseLeafNodeFlower } from "../../organisms/flowers/leafNode/BaseLeafNodeFlower.js";
 import { ThetaMin, ThetaMax, TwistMin, TwistMax, RotationMin, RotationMax, DeflectionMin, DeflectionMax, CurveMin, CurveMax, StrengthMin, StrengthMax, PeriodMin, PeriodMax } from "../../organisms/GrowthPlan.js";
 import { iterateOnOrganisms } from "../../organisms/orgOperations.js";
+import { STAGE_DEAD } from "../../organisms/Stages.js";
 import { Component } from "../Component.js";
 import { Container } from "../Container.js";
 import { Button } from "../elements/Button.js";
@@ -36,9 +37,6 @@ export class GeneticsComponent extends Component {
           container.addElement(new TextBackground(this.window,2 * sizeX, getBaseUISize() * 3.8, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.55), 0.66315, "gene editor"))
           container.addElement(new TextBackground(this.window,2 * sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, ""));
 
-
-
-
           let r1 = new Container(this.window, 0, 0);
 
           container.addElement(r1);
@@ -49,11 +47,8 @@ export class GeneticsComponent extends Component {
           r1.addElement(r1c1);
           r1.addElement(r1c2);
 
-
           r1c1.addElement(new Button(this.window, sizeX, h1, UI_CENTER, () => this.refOrg = new BaseLeafNodeFlower(), "reset configurator", () => getActiveClimate().getUIColorInactive(0.55)));
           r1c2.addElement(new Button(this.window, sizeX, h1, UI_CENTER, () => iterateOnOrganisms((org) => org.stage = STAGE_DEAD), "kill all plants", () => getActiveClimate().getUIColorInactive(0.65)));
-
-                  
 
           this.refOrg = new BaseLeafNodeFlower();
 
