@@ -330,6 +330,12 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                 });
                 stem.lifeSquares[0].theta = stem.lifeSquares[1]?.theta ?? stem.lifeSquares[0].theta;
             })
+
+
+        return;
+
+
+        
         let j = 0;
         this.leaves.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .map((leafStem) => [leafStem, leafStem?.children.at(0)])
@@ -659,11 +665,11 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             return;
         }
 
-        if (this.leafStems()) {
-            return;
-        }
-        this.lengthenLeafStems();
-        this.lengthenLeaves();
+        // if (this.leafStems()) {
+        //     return;
+        // }
+        // this.lengthenLeafStems();
+        // this.lengthenLeaves();
 
         if (this.curNumStem < this.targetNumStem) {
             this.growStem();
@@ -679,12 +685,12 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             this.targetStemLength += 1;
             return;
         }
-        if (this.curNumFlower < this.maxNumStem) {
-            this.growFlower();
-            return;
-        }
-        this.lengthenFlower();
-        this.growFlowerPetals();
+        // if (this.curNumFlower < this.maxNumStem) {
+        //     this.growFlower();
+        //     return;
+        // }
+        // this.lengthenFlower();
+        // this.growFlowerPetals();
         // this.lengthenFlowerPetals();
     }
 }

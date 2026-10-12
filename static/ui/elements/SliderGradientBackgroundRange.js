@@ -8,9 +8,10 @@ import { loadGD, saveGD } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class SliderGradientBackgroundRange extends WindowElement {
-    constructor(window, refObjFunc, ref1, ref2, sizeX, sizeY, min, max, minColorFunc, maxColorFunc, renderSkyBackground=false) {
+    constructor(window, refGeneticsComponent, refKey, ref1, ref2, sizeX, sizeY, min, max, minColorFunc, maxColorFunc, renderSkyBackground=false) {
         super(window, sizeX, sizeY);
-        this.refObjFunc = refObjFunc;
+        this.refGeneticsComponent = refGeneticsComponent;
+        this.refKey = refKey;
         this.ref1 = ref1;
         this.ref2 = ref2;
         this.sizeX = sizeX;
@@ -26,6 +27,10 @@ export class SliderGradientBackgroundRange extends WindowElement {
         this.max += (sizeY / sizeX) * range;
 
         this.minStep = range / 5;
+    }
+
+    refObjFunc() {
+        return this.refGeneticsComponent.refOrg.getGeneticsConfig()[this.refKey]
     }
 
     renderBackground(startX, startY) {

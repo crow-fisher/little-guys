@@ -6,7 +6,7 @@ export const SEP = "|";
 export class OrganismGeneticCode {
     constructor(sourceString) {
         this.valueScale = 10 ** 5;
-        this.radix = 10;
+        this.radix = 36;
         this.code = sourceString == null ? new Array() : Array.from(sourceString.split(SEP).map((v) => Number.parseInt(v, this.radix)));
     }
 

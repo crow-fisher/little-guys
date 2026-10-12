@@ -3,10 +3,13 @@ import { getActiveClimate } from "../../climate/climateManager.js";
 import { hsvToHex } from "../../common.js";
 import { BaseLeafNodeFlower } from "../../organisms/flowers/leafNode/BaseLeafNodeFlower.js";
 import { ThetaMin, ThetaMax, TwistMin, TwistMax, RotationMin, RotationMax, DeflectionMin, DeflectionMax, CurveMin, CurveMax, StrengthMin, StrengthMax, PeriodMin, PeriodMax } from "../../organisms/GrowthPlan.js";
+import { iterateOnOrganisms } from "../../organisms/orgOperations.js";
 import { Component } from "../Component.js";
 import { Container } from "../Container.js";
+import { Button } from "../elements/Button.js";
 import { SliderGradientBackgroundRange } from "../elements/SliderGradientBackgroundRange.js";
 import { TextBackground } from "../elements/TextBackground.js";
+import { TextBackgroundFunctional } from "../elements/TextBackgroundFunctional.js";
 import { UI_CENTER } from "../UIData.js";
 
 export class GeneticsComponent extends Component {
@@ -29,15 +32,30 @@ export class GeneticsComponent extends Component {
           let br2 = getBaseUISize() * .5;
           let br3 = getBaseUISize() * .25;
 
-          container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.75), 0.75, " "))
-          container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 3.8, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.55), 0.66315, "gene editor"))
-          container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, ""));
+          container.addElement(new TextBackground(this.window,2 * sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.75), 0.75, " "))
+          container.addElement(new TextBackground(this.window,2 * sizeX, getBaseUISize() * 3.8, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.55), 0.66315, "gene editor"))
+          container.addElement(new TextBackground(this.window,2 * sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, ""));
+
+
+
+
+          let r1 = new Container(this.window, 0, 0);
+
+          container.addElement(r1);
+
+          let r1c1 = new Container(this.window, 0, 1);
+          let r1c2 = new Container(this.window, 0, 1);
+          
+          r1.addElement(r1c1);
+          r1.addElement(r1c2);
+
+
+          r1c1.addElement(new Button(this.window, sizeX, h1, UI_CENTER, () => this.refOrg = new BaseLeafNodeFlower(), "reset configurator", () => getActiveClimate().getUIColorInactive(0.55)));
+          r1c2.addElement(new Button(this.window, sizeX, h1, UI_CENTER, () => iterateOnOrganisms((org) => org.stage = STAGE_DEAD), "kill all plants", () => getActiveClimate().getUIColorInactive(0.65)));
+
+                  
 
           this.refOrg = new BaseLeafNodeFlower();
-
-          // It's a getter that is also a setter. "cursed shorthand"
-          let ch = (r) => (v) => (v == null ? r : (r = v));
-
 
           let s1 = [
                [ThetaMin, ThetaMax, -Math.PI, Math.PI],
@@ -51,7 +69,7 @@ export class GeneticsComponent extends Component {
 
           let gc = this.refOrg.getGeneticsConfig();
           Object.keys((gc)).forEach((key) => {
-               container.addElement(new TextBackground(this.window, sizeX, h1, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, key));
+               r1c1.addElement(new TextBackground(this.window, sizeX, h1, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, key));
                let h = 50, s, v, o = 0, i = 0;
                s1.forEach((row) => {
                     s = .2 + .3 * Math.sin(o);
@@ -61,12 +79,20 @@ export class GeneticsComponent extends Component {
                          cmap.reverse();
                     }
                     let _h = h, _s = s, _v = v;
-                    container.addElement(new SliderGradientBackgroundRange(this.window, () => gc[key], row[0], row[1], sizeX, h1, row[2], row[3], ...cmap));
+                    r1c1.addElement(new SliderGradientBackgroundRange(this.window, this, key, row[0], row[1], sizeX, h1, row[2], row[3], ...cmap));
                     h += 50;
                     o += .2;
                     i += 1;
                })
-          })
+          });
+
+
+          let rWidth = 27;
+
+          for (let i = 0; i < 24; i++) {
+               r1c2.addElement(new TextBackgroundFunctional(this.window, sizeX, h1, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85 + 0.1 * (i % 2 - 3)),  0.75, () => this.refOrg.generateGeneticCode().serialize().slice(i * rWidth, (i + 1) * rWidth)));
+
+          }
      }
 
 }
