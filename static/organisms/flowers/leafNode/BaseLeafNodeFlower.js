@@ -209,9 +209,6 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                     continue;
             }
         }
-        console.log(this.stemParams);
-        console.log(this.leafParams);
-        console.log(this.leafStemParams);
     }
 
     parseMemberGroup(map, code, i) {
@@ -272,6 +269,14 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         return i + j;
     }
 
+    getGeneticsConfig() {
+        return {
+            "stem": this.stemParams,
+            "leaf": this.leafParams,
+            "leaf stem": this.leafStemParams
+        }
+    }
+    
     getSeedType() {
         return BaseLeafNodeFlowerSeedOrganism;
     }

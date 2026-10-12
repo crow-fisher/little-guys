@@ -38,8 +38,7 @@ export class GeneticsComponent extends Component {
           // It's a getter that is also a setter. "cursed shorthand"
           let ch = (r) => (v) => (v == null ? r : (r = v));
 
-          container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, "stem"));
-          
+
           let s1 = [
                [ThetaMin, ThetaMax, -Math.PI, Math.PI],
                [TwistMin, TwistMax, 0, Math.PI],
@@ -49,24 +48,25 @@ export class GeneticsComponent extends Component {
                [StrengthMin, StrengthMax, 0, 1],
                [PeriodMin, PeriodMax, 10, 200],
           ]
-          
-          let h = 50, s, v, o = 0, i = 0;
-          s1.forEach((row) => {
-               s = .2 + .3 * Math.sin(o);
-               v = .7 + .3 * Math.cos(o);
-               let cmap = [() => hsvToHex(_h, _s, _v), () => hsvToHex(_h, 1 - _s, 0.4 + 0.4 * (1 - _v))];
-               if (i % 2 == 0) {
-                    cmap.reverse();
-               }
-               let _h = h, _s = s, _v = v;
-               container.addElement(new SliderGradientBackgroundRange(this.window, () => this.refOrg.stemParams, row[0], row[1], sizeX, h1, row[2], row[3], ...cmap));
-               h += 50;
-               o += .2;
-               i += 1;
 
+          let gc = this.refOrg.getGeneticsConfig();
+          Object.keys((gc)).forEach((key) => {
+               container.addElement(new TextBackground(this.window, sizeX, h1, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, key));
+               let h = 50, s, v, o = 0, i = 0;
+               s1.forEach((row) => {
+                    s = .2 + .3 * Math.sin(o);
+                    v = .7 + .3 * Math.cos(o);
+                    let cmap = [() => hsvToHex(_h, _s, _v), () => hsvToHex(_h, 1 - _s, 0.4 + 0.4 * (1 - _v))];
+                    if (i % 2 == 0) {
+                         cmap.reverse();
+                    }
+                    let _h = h, _s = s, _v = v;
+                    container.addElement(new SliderGradientBackgroundRange(this.window, () => gc[key], row[0], row[1], sizeX, h1, row[2], row[3], ...cmap));
+                    h += 50;
+                    o += .2;
+                    i += 1;
+               })
           })
-
-          console.log(this.refOrg.generateGeneticCode().serialize());
      }
 
 }

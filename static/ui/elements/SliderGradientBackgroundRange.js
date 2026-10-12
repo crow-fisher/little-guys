@@ -81,10 +81,6 @@ export class SliderGradientBackgroundRange extends WindowElement {
 
             console.log(this._r1i, this._r2i);
         }
-        // this.hoverBlock(posX, posY, this.ref1);
-        // this.hoverBlock(posX, posY, this.ref2);
-
-        // this.ref1(Math.min(this.ref1(), this.ref2() - this.minStep));
     }
 
     getClickDistToRef(posX, posY, ref) {

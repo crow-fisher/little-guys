@@ -109,6 +109,8 @@ function randNumber(min, max) {
 }
 
 function randRange(min, max) {
+    if (max < min) 
+        return randRange(max, min);
     return Math.random() * (max - min) + min;
 }
 
