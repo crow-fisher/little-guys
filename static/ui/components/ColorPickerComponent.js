@@ -4,10 +4,11 @@ import { loadEmptyScene } from "../../saveAndLoad.js";
 import { Component } from "../Component.js";
 import { Container } from "../Container.js";
 import { ColorHueSliderWheel } from "../elements/color/ColorHueSliderWheel.js";
+import { ColorInputTarget } from "../elements/color/ColorInputTarget.js";
 import { ColorSaturationValueArea } from "../elements/color/ColorSaturationValueArea.js";
+// import { ColorSaturationValueArea } from "../elements/color/ColorSaturationValueArea.js";
 import { TextBackground } from "../elements/TextBackground.js";
 import { loadGD, saveGD, UI_CENTER, UI_COLORPICKER_CONFIG } from "../UIData.js";
-
 
 export class ColorPickerComponent extends Component {
     constructor(posX, posY, padding, dir, key) {
@@ -27,8 +28,8 @@ export class ColorPickerComponent extends Component {
         container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, ""));
 
         container.addElement(new ColorHueSliderWheel(this.window, sizeX, sizeX));
-        // container.addElement(new ColorSaturationValueArea(this.window, () => this.gcvSizeX(), () => this.gcvSizeX()));
-        // this.container.addElement(new ColorInputTarget(this.window, () => this.gcvSizeX(), () => this.gcvSizeX()));
+        container.addElement(new ColorSaturationValueArea(this.window, sizeX, sizeX));
+        container.addElement(new ColorInputTarget(this.window, sizeX, sizeX));
         // this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "active"))
         // this.container.addElement(new ColorActiveColor(this.window, () => this.gcvSizeX(), () => this.ggvdH1()));
     }
