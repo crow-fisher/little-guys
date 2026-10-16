@@ -30,6 +30,10 @@ export class OrganismGeneticCode {
     serialize() {
         return this.code.map((val) => val.toString(this.radix)).reduce((a, b) => a + (a == "" ? '' : SEP) + b, "");
     }
+    
+    addRgbafValue(r, g, b, a, f) {
+        this.code.push(this.rgbafToSoup(r, g, b, a, f))
+    }
 
     rgbafToSoup(r, g, b, a, f, out=0) { 
       r = Math.round(r), g = Math.round(g), b = Math.round(b), a = Math.round(a * (2 ** 7 ) - 1);

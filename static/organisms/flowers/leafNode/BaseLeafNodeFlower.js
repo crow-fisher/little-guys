@@ -8,8 +8,8 @@ import { UI_ORGANISM_FLOWER_LEAFNODE } from "../../../ui/UIData.js";
 import { _lightDecayValue, _llt_max, _llt_min, _llt_throttlValMax, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh } from "../../BaseOrganism.js";
 import { LSQ_RENDERMODE_ELLIPSE, LSQ_RENDERMODE_THETA, LSQ_RENDERMODE_THETA_SLOPE } from "../../../lifeSquares/LifeSquareGreen.js";
 import { OrganismGeneticCode } from "../../genetics/OrganismGeneticCode.js";
-import { SKSA_THETA, SKSA_TWIST, SKSA_DEFLECTION, SKSA_CURVE, SKSA_STRENGTH, SKSA_PERIOD, SKSM_STEM, SKSO_LEAFNODE, SKSM_LEAF, SKSM_LEAFSTEM, SKSA_ROTATION } from "../../genetics/enum/namespace/vanilla/keySpecifiers.js";
-import { SKF_ATTRIBUTE, SKF_MEMBER, SKF_ORIGIN } from "../../genetics/enum/namespace/vanilla/keyFlags.js";
+import { SKSA_THETA, SKSA_TWIST, SKSA_DEFLECTION, SKSA_CURVE, SKSA_STRENGTH, SKSA_PERIOD, SKSM_STEM, SKSO_LEAFNODE, SKSM_LEAF, SKSM_LEAFSTEM, SKSA_ROTATION, SKSC_FLOWER } from "../../genetics/enum/namespace/vanilla/keySpecifiers.js";
+import { SKF_ATTRIBUTE, SKF_COLOR, SKF_MEMBER, SKF_ORIGIN } from "../../genetics/enum/namespace/vanilla/keyFlags.js";
 import { compositeSoupKey } from "../../genetics/enum/soupEnum.js";
 
 export let leafNodeFlower_dnm = structuredClone(baseOrganism_dnm);
@@ -62,14 +62,14 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.colorStemFlowerBase = [21, 26, 6];
         
         this.flowerColor = [
-            [[25, 24, 24]],
-            [[25, 24, 24]],
-            [[36, 21, 15]],
-            [[131, 112, 26]],
-            [[131, 112, 26]],
-            [[167, 143, 41]],
-            [[167, 143, 41]],
-            [[180, 159, 66]]
+            [[25, 24, 24, 1]],
+            [[25, 24, 24, 1]],
+            [[36, 21, 15, 1]],
+            [[131, 112, 26, 1]],
+            [[131, 112, 26, 1]],
+            [[167, 143, 41, 1]],
+            [[167, 143, 41, 1]],
+            [[180, 159, 66, 1]]
         ]
 
         this.stemParams = {
@@ -153,12 +153,26 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_PERIOD, 1, map[PeriodMax])
     }
 
+    addColors(code, arr) {
+        code.addTag(SKF_COLOR, SKSC_FLOWER);
+        let f = 0;
+        for (let i = 0; i < arr.length; i++) {
+            f = 1;
+            for (let j = 0; j < arr[i].length; j++) {
+                code.addTag(...arr[i][j], f);
+                f = 0;
+            }
+        }
+    }
+
     generateGeneticCode() {
         let code = new OrganismGeneticCode();
         code.addTag(SKF_ORIGIN, SKSO_LEAFNODE);
         this.addMemberGroup(code, this.stemParams, SKSM_STEM, 0);
         this.addMemberGroup(code, this.leafParams, SKSM_LEAF, 0);
         this.addMemberGroup(code, this.leafStemParams, SKSM_LEAFSTEM, 0);
+
+        this.addColors(code, this.flowerColor);
         return code;
     }
 

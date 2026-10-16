@@ -17,6 +17,7 @@ export class OrgColorEditor extends WindowElement {
     }
 
     render(startX, startY) {
+        return;
         MAIN_CONTEXT.font = this.sizeY * this.sizeMult + "px courier" + this.variant;
         MAIN_CONTEXT.textBaseline = 'middle';
         MAIN_CONTEXT.fillStyle = this.colorFunc();
