@@ -8,6 +8,7 @@ import { STAGE_DEAD } from "../../organisms/Stages.js";
 import { Component } from "../Component.js";
 import { Container } from "../Container.js";
 import { Button } from "../elements/Button.js";
+import { OrgColorEditor } from "../elements/OrgColorEditor.js";
 import { SliderGradientBackgroundRange } from "../elements/SliderGradientBackgroundRange.js";
 import { TextBackground } from "../elements/TextBackground.js";
 import { TextBackgroundFunctional } from "../elements/TextBackgroundFunctional.js";
@@ -47,9 +48,11 @@ export class GeneticsComponent extends Component {
           r1.addElement(r1c1);
           r1.addElement(r1c2);
 
+          //////////////////////////// headers
           r1c1.addElement(new Button(this.window, sizeX, h1, UI_CENTER, () => this.refOrg = new BaseLeafNodeFlower(), "reset configurator", () => getActiveClimate().getUIColorInactive(0.55)));
           r1c2.addElement(new Button(this.window, sizeX, h1, UI_CENTER, () => iterateOnOrganisms((org) => org.stage = STAGE_DEAD), "kill all plants", () => getActiveClimate().getUIColorInactive(0.65)));
 
+          //////////////////////////// left column
           this.refOrg = new BaseLeafNodeFlower();
 
           let s1 = [
@@ -58,7 +61,7 @@ export class GeneticsComponent extends Component {
                [RotationMin, RotationMax, 0, Math.PI],
                [DeflectionMin, DeflectionMax, 0, Math.PI],
                [CurveMin, CurveMax, 0, Math.PI],
-               [StrengthMin, StrengthMax, 0, 1],
+               [StrengthMin, StrengthMax, 0, 1], 
                [PeriodMin, PeriodMax, 10, 200],
           ]
 
@@ -81,12 +84,15 @@ export class GeneticsComponent extends Component {
                })
           });
 
+          r1c1.addElement(new TextBackground(this.window, sizeX, h1, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, "flower colors"));
+          r1c1.addElement(new OrgColorEditor(this.window, sizeX, h1 * 4))
+          
+          
+          //////////////////////////// right column  
 
           let rWidth = 27;
-
           for (let i = 0; i < 24; i++) {
                r1c2.addElement(new TextBackgroundFunctional(this.window, sizeX, h1, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85 + 0.1 * (i % 2 - 3)),  0.75, () => this.refOrg.generateGeneticCode().serialize().slice(i * rWidth, (i + 1) * rWidth)));
-
           }
      }
 

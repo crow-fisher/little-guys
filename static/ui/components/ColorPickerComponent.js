@@ -15,8 +15,6 @@ export class ColorPickerComponent extends Component {
         super(posX, posY, padding, dir, key);
         let sizeX = getBaseUISize() * 39;
 
-        this.gcvSizeX = () => sizeX;
-        this.ggvdH1 = () => getBaseUISize() * 3;
 
         let container = new Container(this.window, 0, 1);
         this.window.container = container;
@@ -30,8 +28,9 @@ export class ColorPickerComponent extends Component {
         container.addElement(new ColorHueSliderWheel(this.window, sizeX, sizeX));
         container.addElement(new ColorSaturationValueArea(this.window, sizeX, sizeX));
         container.addElement(new ColorInputTarget(this.window, sizeX, sizeX));
-        // this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "active"))
-        // this.container.addElement(new ColorActiveColor(this.window, () => this.gcvSizeX(), () => this.ggvdH1()));
+        
+        // this.container.addElement(new TextBackground(window, sizeX, getBaseUISize() * 3, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.55), .75, "active"))
+        // this.container.addElement(new ColorActiveColor(window, () => this.gcvSizeX(), () => this.ggvdH1()));
     }
 
     initColorConfig() {

@@ -97,8 +97,8 @@ export function initUI() {
 
 addUIFunctionMap(UI_PALETTE_BLOCKS, () => blockPalette.window.lastTouched = Date.now());
 addUIFunctionMap(UI_PALETTE_PLANTS, () => organismComponent.window.lastTouched = Date.now());
-addUIFunctionMap(UI_PALETTE_GENETICS, () => {organismComponent.window.lastTouched = Date.now(); saveGD(UI_COLORPICKER_COMPONENT, loadGD(UI_PALETTE_GENETICS))});
-
+addUIFunctionMap(UI_PALETTE_GENETICS, () => geneticsComponent.window.lastTouched = Date.now());
+addUIFunctionMap(UI_COLORPICKER_COMPONENT, () => colorPickerComponent.window.lastTouched = Date.now());
 
 export function getMainMenuComponent() {
     return mainSubtree;

@@ -60,22 +60,16 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.colorLeaf = [56, 63, 19];
         this.colorStem = [46, 53, 16];
         this.colorStemFlowerBase = [21, 26, 6];
-
-        this.flowerColorC = [25, 24, 24];
-        this.flowerColorR1 = [36, 21, 15];
-        this.flowerColorR2 = [131, 112, 26];
-        this.flowerColorR3 = [167, 143, 41];
-        this.flowerColorR4 = [180, 159, 66];
-
+        
         this.flowerColor = [
-            this.flowerColorC,
-            this.flowerColorC,
-            this.flowerColorR1,
-            this.flowerColorR2,
-            this.flowerColorR2,
-            this.flowerColorR4,
-            this.flowerColorR4,
-            this.flowerColorR4
+            [[25, 24, 24]],
+            [[25, 24, 24]],
+            [[36, 21, 15]],
+            [[131, 112, 26]],
+            [[131, 112, 26]],
+            [[167, 143, 41]],
+            [[167, 143, 41]],
+            [[180, 159, 66]]
         ]
 
         this.stemParams = {
@@ -379,11 +373,14 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                 flower.parentComponent.lifeSquares.slice(flower.parentComponent.lifeSquares.length - 2).forEach((lsq) => this.applyColor(this.colorStemFlowerBase, 0, lsq.renderColor));
 
                 let j = 0;
+                let pidx = -1;
+
                 flower.children.forEach((petal) => {
+                    pidx += 1;
                     let i = -1;
                     petal.lifeSquares.forEach((lsq) => {
                         i += 1;
-                        let col = this.flowerColor[i] ?? [0, 0, 0];
+                        let col = this.flowerColor[i][(pidx % this.flowerColor[i].length)] ?? [0, 0, 0];
                         lsq.w1 = this.flowerShapeFunc((i) / (petal.lifeSquares.length + 1));
                         lsq.w2 = this.flowerShapeFunc((i + 1) / (petal.lifeSquares.length + 1));
 
