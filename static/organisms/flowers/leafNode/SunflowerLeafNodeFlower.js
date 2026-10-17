@@ -13,7 +13,7 @@ export class SunflowerLeafNodeFlower extends BaseLeafNodeFlower {
         this.maxStemLength = 14;
         this.maxLeafStemLength = 4;
         this.maxLeafLength = 3;
-        this.maxFlowerLength = 6;
+        this.maxFlowerPetalLength = 6;
         this.numPetals = 36;
 
         this.stemLsqHeight = 1;

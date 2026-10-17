@@ -16,48 +16,75 @@ export class OrgColorEditor extends WindowElement {
     }
 
     hover(posX, posY) {
-        let sx = clamp(Math.floor(posX / this.rw), 0, this.numCols);
-        let sy = clamp(Math.floor(posY / this.rh), 0, this.numRows);
+        this.sx = clamp(Math.floor(posX / this.rw), 0, this.numCols - 1);
+        this.sy = clamp(Math.floor(posY / this.rh), 0, this.numRows - 1);
 
-        if (isLeftMouseClicked()) {
-            if (sx >= this.cmap[sy].length) {
-                for (let i = this.cmap[sy].length; i < sx; i++) {
-                    this.cmap[sy][i] = this.cmap[sy][i % this.cmap[sy].length];
+        if (isLeftMouseClicked() || isRightMouseClicked()) {
+            if (this.sx >= this.cmap[this.sy].length) {
+                for (let i = this.cmap[this.sy].length; i < this.sx; i++) {
+                    this.cmap[this.sy][i] = this.cmap[this.sy][i % this.cmap[this.sy].length];
                 }
             }
         }
 
         if (isRightMouseClicked()) {
-            console.log(this.cmap[sy])
-            this.cmap[sy].length = Math.min(this.cmap[sy].length, sx);
-            console.log(this.cmap[sy])
+            console.log(this.cmap[this.sy])
+            this.cmap[this.sy].length = Math.min(this.cmap[this.sy].length, this.sx);
+            console.log(this.cmap[this.sy])
         }
 
-        console.log(sx, sy);
+        console.log(this.sx, this.sy);
     }
 
     render(startX, startY) {
         this.cmap = this.refOrgFunc()[this.orgAttribute];
         let dl = getDefaultLightingArr(), c = new Array(4);
 
-        this.numRows = 6; // eg, flower petal length
-        this.numCols = 25; // eg, num flower petals
+        this.numRows = this.refOrgFunc().maxFlowerPetalLength;
+        this.numCols = this.refOrgFunc().numPetals;
+    
+        this.rh = Math.floor(this.sizeY / this.numRows);
+        this.rw = Math.ceil(this.sizeX / this.numCols);
 
-        this.rh = this.sizeY / this.numRows;
-        this.rw = this.sizeX / this.numCols;
+        let lw1 = Math.floor(getBaseUISize() * 0.25);
+        let lw2 = Math.floor(getBaseUISize() * 0.125);
+        let lw4 = Math.floor(getBaseUISize() * 0.0625);
 
-        for (let i = 0; i < this.numRows; i++) {
+        for (let i = 0; i < this.numRows; i++) { // layer 0
             for (let j = 0; j < this.numCols; j++) {
                 multiplyVectorsMultDest(dl, this.cmap[i][j % this.cmap[i].length], 0.9, c);
                 MAIN_CONTEXT.fillStyle = rgbToRgba(...c);
                 MAIN_CONTEXT.fillRect(startX + (this.rw * j), (startY + this.rh * i), this.rw, this.rh)
-
-                MAIN_CONTEXT.fillStyle = "#222222";
-                MAIN_CONTEXT.fillRect(Math.floor(startX + (this.rw * j)), (startY + this.rh * i), Math.floor(getBaseUISize() * .125), this.rh);
-
             }
-            MAIN_CONTEXT.fillStyle = "#000000";
-            MAIN_CONTEXT.fillRect(Math.floor(startX + (this.rw * this.cmap[i].length)), (startY + this.rh * i), Math.floor(getBaseUISize() * .25), this.rh);
+        }
+
+        for (let i = 0; i < this.numRows; i++) { // layer 1
+            for (let j = 0; j < this.numCols; j++) {
+
+
+
+                if (this.cmap[i].length == j) {
+                    MAIN_CONTEXT.fillStyle = "rgba(197, 197, 197, 0.6)";
+                } else {
+                    MAIN_CONTEXT.fillStyle = "rgba(40, 40, 40, 0.2)";
+                }
+                MAIN_CONTEXT.fillRect(Math.floor(startX + (this.rw * (j + 1))) - lw1, (startY + this.rh * i), lw1, this.rh);
+
+                MAIN_CONTEXT.fillStyle = "#000000";
+                let selected = (this.sx == j && this.sy == i);
+                if (selected) {
+                    MAIN_CONTEXT.fillRect(Math.floor(startX + (this.rw * j)), (startY + this.rh * i), lw1, this.rh);
+
+                    if (!(this.cmap[i].length == j))
+                    MAIN_CONTEXT.fillRect(Math.floor(startX + (this.rw * (j + 1))) - lw1, (startY + this.rh * i), lw1, this.rh);
+
+                    MAIN_CONTEXT.fillRect(Math.floor(startX + (this.rw * j)), (startY + this.rh * i), this.rw, lw1);
+                    MAIN_CONTEXT.fillRect(Math.floor(startX + (this.rw * j)), (startY + this.rh * (i + 1)) - lw1, this.rw, lw1);
+
+                }
+
+                
+            }
         }
         return [this.sizeX, this.sizeY];
     }

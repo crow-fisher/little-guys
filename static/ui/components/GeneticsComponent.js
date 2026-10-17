@@ -1,6 +1,7 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { hsvToHex } from "../../common.js";
+import { updateClipboard } from "../../index.js";
 import { BaseLeafNodeFlower } from "../../organisms/flowers/leafNode/BaseLeafNodeFlower.js";
 import { ThetaMin, ThetaMax, TwistMin, TwistMax, RotationMin, RotationMax, DeflectionMin, DeflectionMax, CurveMin, CurveMax, StrengthMin, StrengthMax, PeriodMin, PeriodMax } from "../../organisms/GrowthPlan.js";
 import { iterateOnOrganisms } from "../../organisms/orgOperations.js";
@@ -14,7 +15,8 @@ import { SliderGradientBackgroundRange } from "../elements/SliderGradientBackgro
 import { TextBackground } from "../elements/TextBackground.js";
 import { TextBackgroundFunctional } from "../elements/TextBackgroundFunctional.js";
 import { Toggle } from "../elements/Toggle.js";
-import { loadGD, UI_CENTER, UI_COLORPICKER_COMPONENT } from "../UIData.js";
+import { ToggleTwoKey } from "../elements/ToggleTwoKey.js";
+import { loadGD, UI_CENTER, UI_COLORPICKER_COMPONENT, UI_GENETICS_CONTAINER_SELECT } from "../UIData.js";
 
 export class GeneticsComponent extends Component {
      constructor(posX, posY, padding, dir, key) {
@@ -36,9 +38,9 @@ export class GeneticsComponent extends Component {
           let br2 = getBaseUISize() * .5;
           let br3 = getBaseUISize() * .25;
 
-          container.addElement(new TextBackground(this.window,2 * sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.75), 0.75, " "))
-          container.addElement(new TextBackground(this.window,2 * sizeX, getBaseUISize() * 3.8, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.55), 0.66315, "gene editor"))
-          container.addElement(new TextBackground(this.window,2 * sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, ""));
+          container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.75), 0.75, " "))
+          container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 3.8, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.55), 0.66315, "gene editor"))
+          container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, ""));
 
           let r1 = new Container(this.window, 0, 0);
 
@@ -48,11 +50,10 @@ export class GeneticsComponent extends Component {
           let r1c2 = new Container(this.window, 0, 1);
           
           r1.addElement(r1c1);
-          r1.addElement(r1c2);
+          // r1.addElement(r1c2);
 
           //////////////////////////// headers
           r1c1.addElement(new Button(this.window, sizeX, h1, UI_CENTER, () => this.refOrg = new BaseLeafNodeFlower(), "reset configurator", () => getActiveClimate().getUIColorInactive(0.55)));
-          r1c2.addElement(new Button(this.window, sizeX, h1, UI_CENTER, () => iterateOnOrganisms((org) => org.stage = STAGE_DEAD), "kill all plants", () => getActiveClimate().getUIColorInactive(0.65)));
 
           //////////////////////////// left column
           this.refOrg = new BaseLeafNodeFlower();
@@ -69,8 +70,11 @@ export class GeneticsComponent extends Component {
 
           let gc = this.refOrg.getGeneticsGrowthPlanConfig();
           Object.keys((gc)).forEach((key) => {
-               r1c1.addElement(new TextBackground(this.window, sizeX, h1, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, key));
+               let cc = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_GENETICS_CONTAINER_SELECT)[key])
+               r1c1.addElement(new ToggleTwoKey(this.window, sizeX, h1, UI_CENTER, UI_GENETICS_CONTAINER_SELECT, key, key,
+                     () => getActiveClimate().getUIColorInactive(0.85),() => getActiveClimate().getUIColorInactive(0.85)));
                let h = 50, s, v, o = 0, i = 0;
+               r1c1.addElement(cc);
                s1.forEach((row) => {
                     s = .2 + .3 * Math.sin(o);
                     v = .7 + .3 * Math.cos(o);
@@ -79,7 +83,7 @@ export class GeneticsComponent extends Component {
                          cmap.reverse();
                     }
                     let _h = h, _s = s, _v = v;
-                    r1c1.addElement(new SliderGradientBackgroundRange(this.window, this, key, row[0], row[1], sizeX, h1, row[2], row[3], ...cmap));
+                    cc.addElement(new SliderGradientBackgroundRange(this.window, this, key, row[0], row[1], sizeX, h1, row[2], row[3], ...cmap));
                     h += 50;
                     o += .2;
                     i += 1;
@@ -99,6 +103,9 @@ export class GeneticsComponent extends Component {
                ccc.addElement(new OrgColorEditor(this.window, sizeX, h1 * 4, () => this.refOrg, gc[key]));
           });
           
+          r1c1.addElement(new Button(this.window, sizeX, h1, UI_CENTER, () => iterateOnOrganisms((org) => org.stage = STAGE_DEAD), "kill all plants", () => getActiveClimate().getUIColorInactive(0.65)));
+          r1c1.addElement(new Button(this.window, sizeX, h1, UI_CENTER, () => updateClipboard(this.refOrg.generateGeneticCode().serialize()), "copy soup", () => getActiveClimate().getUIColorInactive(0.65))); // todo: "soup copied!"
+
           //////////////////////////// right column  
 
           let rWidth = 27;

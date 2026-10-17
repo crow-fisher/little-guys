@@ -49,7 +49,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.curNumFlower = 0;
         this.targetNumStem = 0;
 
-        this.maxFlowerLength = 6;
+        this.maxFlowerPetalLength = 6;
 
         this.numPetals = 25;
 
@@ -319,14 +319,14 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.targetStemLength = this.maxStemLength;
         this.targetLeafStemLength = this.maxLeafStemLength;
         this.targetLeafLength = this.maxLeafLength;
-        this.targetFlowerLength = this.maxFlowerLength;
+        this.targetFlowerLength = this.maxFlowerPetalLength;
 
         let p0 = this.evolutionParameters[0];
 
         this.maxNumStem = 1;
         this.maxStemLength = this.maxStemLength + Math.floor(this.maxStemLength * p0);
 
-        this.growthNumGreen = this.maxStemLength * this.maxNumStem + ((this.maxLeafStemLength + this.maxLeafLength) * this.maxNumStem / 3) + (this.numPetals * this.maxFlowerLength)
+        this.growthNumGreen = this.maxStemLength * this.maxNumStem + ((this.maxLeafStemLength + this.maxLeafLength) * this.maxNumStem / 3) + (this.numPetals * this.maxFlowerPetalLength)
         this.growthNumRoots = this.growthNumGreen * .1;
 
 
