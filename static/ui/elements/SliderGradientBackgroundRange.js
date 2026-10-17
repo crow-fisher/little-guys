@@ -30,7 +30,7 @@ export class SliderGradientBackgroundRange extends WindowElement {
     }
 
     refObjFunc() {
-        return this.refGeneticsComponent.refOrg.getGeneticsConfig()[this.refKey]
+        return this.refGeneticsComponent.refOrg.getGeneticsGrowthPlanConfig()[this.refKey]
     }
 
     renderBackground(startX, startY) {

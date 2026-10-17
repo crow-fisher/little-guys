@@ -6,13 +6,15 @@ import { ThetaMin, ThetaMax, TwistMin, TwistMax, RotationMin, RotationMax, Defle
 import { iterateOnOrganisms } from "../../organisms/orgOperations.js";
 import { STAGE_DEAD } from "../../organisms/Stages.js";
 import { Component } from "../Component.js";
+import { ConditionalContainer } from "../ConditionalContainer.js";
 import { Container } from "../Container.js";
 import { Button } from "../elements/Button.js";
 import { OrgColorEditor } from "../elements/OrgColorEditor.js";
 import { SliderGradientBackgroundRange } from "../elements/SliderGradientBackgroundRange.js";
 import { TextBackground } from "../elements/TextBackground.js";
 import { TextBackgroundFunctional } from "../elements/TextBackgroundFunctional.js";
-import { UI_CENTER } from "../UIData.js";
+import { Toggle } from "../elements/Toggle.js";
+import { loadGD, UI_CENTER, UI_COLORPICKER_COMPONENT } from "../UIData.js";
 
 export class GeneticsComponent extends Component {
      constructor(posX, posY, padding, dir, key) {
@@ -65,7 +67,7 @@ export class GeneticsComponent extends Component {
                [PeriodMin, PeriodMax, 10, 200],
           ]
 
-          let gc = this.refOrg.getGeneticsConfig();
+          let gc = this.refOrg.getGeneticsGrowthPlanConfig();
           Object.keys((gc)).forEach((key) => {
                r1c1.addElement(new TextBackground(this.window, sizeX, h1, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, key));
                let h = 50, s, v, o = 0, i = 0;
@@ -84,9 +86,18 @@ export class GeneticsComponent extends Component {
                })
           });
 
-          r1c1.addElement(new TextBackground(this.window, sizeX, h1, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, "flower colors"));
-          r1c1.addElement(new OrgColorEditor(this.window, sizeX, h1 * 4))
-          
+          r1c1.addElement(new Toggle(this.window, sizeX, h1, UI_CENTER, UI_COLORPICKER_COMPONENT, "colors", 
+               () => getActiveClimate().getUIColorInactive(0.85), () => getActiveClimate().getUIColorInactive(0.65), 0.75));
+
+          gc = this.refOrg.getGeneticsColorConfig();
+
+          let ccc = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_COLORPICKER_COMPONENT));
+          r1c1.addElement(ccc);
+
+          Object.keys((gc)).forEach((key) => {
+               ccc.addElement(new TextBackground(this.window, sizeX, h1, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, key));
+               ccc.addElement(new OrgColorEditor(this.window, sizeX, h1 * 4, () => this.refOrg, gc[key]));
+          });
           
           //////////////////////////// right column  
 

@@ -67,9 +67,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             [[36, 21, 15, 1]],
             [[131, 112, 26, 1]],
             [[131, 112, 26, 1]],
-            [[167, 143, 41, 1]],
-            [[167, 143, 41, 1]],
-            [[180, 159, 66, 1]]
+            [[167, 143, 41, 1]]
         ]
 
         this.stemParams = {
@@ -153,14 +151,11 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         code.addTagIndexValue(SKF_ATTRIBUTE, SKSA_PERIOD, 1, map[PeriodMax])
     }
 
-    addColors(code, arr) {
-        code.addTag(SKF_COLOR, SKSC_FLOWER);
-        let f = 0;
+    addColors(code, keySpecifier, arr) {
+        code.addTag(SKF_COLOR, keySpecifier);
         for (let i = 0; i < arr.length; i++) {
-            f = 1;
             for (let j = 0; j < arr[i].length; j++) {
-                code.addTag(...arr[i][j], f);
-                f = 0;
+                code.addTag(...arr[i][j], (j == (arr[i].length - 1)) ? 1 : 0);
             }
         }
     }
@@ -171,8 +166,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.addMemberGroup(code, this.stemParams, SKSM_STEM, 0);
         this.addMemberGroup(code, this.leafParams, SKSM_LEAF, 0);
         this.addMemberGroup(code, this.leafStemParams, SKSM_LEAFSTEM, 0);
-
-        this.addColors(code, this.flowerColor);
+        this.addColors(code, SKSC_FLOWER, this.flowerColor);
         return code;
     }
 
@@ -214,6 +208,17 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                 default:
                     continue;
             }
+        }
+
+        for (let j = 0; j < 1; j++) {
+            ot = code.code[i];
+            otks = ot & ~(compositeSoupKey(SKF_COLOR));
+            switch (otks) {
+                default:
+                case SKSC_FLOWER:
+                    i = this.parseColor(this.flowerColor, code, i)
+            }
+
         }
     }
 
@@ -274,12 +279,22 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         return i + j;
     }
 
-    getGeneticsConfig() {
+    parseColor(arr, code, i) {
+    }
+
+    getGeneticsGrowthPlanConfig() {
         return {
             "stem": this.stemParams,
             "leaf stem": this.leafStemParams,
             "leaf": this.leafParams
         }
+    }
+
+    getGeneticsColorConfig() {
+        return {
+            "flower": "flowerColor" // referencing "this.flowerColor"
+        }
+
     }
 
     getSeedType() {

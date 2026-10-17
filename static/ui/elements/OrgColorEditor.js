@@ -1,38 +1,42 @@
-import { COLOR_BLACK, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
+import { getBaseUISize } from "../../canvas.js";
+import { rgbToRgba } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
-import { isLeftMouseClicked } from "../../mouse.js";
-import { loadGD, saveGD, UI_CENTER } from "../UIData.js";
+import { getDefaultLightingArr } from "../../lighting/lightingProcessing.js";
+import { multiplyVectorsMultDest } from "../../util/vector.js";
 import { WindowElement } from "../Window.js";
 
 export class OrgColorEditor extends WindowElement {
-    constructor(window, sizeX, sizeY, offsetX, colorFunc, sizeMult, textFunc, variant = "") {
+    constructor(window, sizeX, sizeY, refOrgFunc, orgAttribute) {
         super(window, sizeX, sizeY);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
-        this.offsetX = offsetX;
-        this.colorFunc = colorFunc;
-        this.sizeMult = sizeMult;
-        this.textFunc = textFunc;
-        this.variant = variant;
+        this.refOrgFunc = refOrgFunc;
+        this.orgAttribute = orgAttribute;
+    }
+
+    hover(posX, posY) {
+        return;
     }
 
     render(startX, startY) {
-        return;
-        MAIN_CONTEXT.font = this.sizeY * this.sizeMult + "px courier" + this.variant;
-        MAIN_CONTEXT.textBaseline = 'middle';
-        MAIN_CONTEXT.fillStyle = this.colorFunc();
-        MAIN_CONTEXT.fillRect(startX, startY, this.sizeX, this.sizeY);
-        MAIN_CONTEXT.fillStyle = "#000000"
-        MAIN_CONTEXT.strokeStyle = "#000000"
+        this.numRows = 6; // eg, flower petal length
+        this.numCols = 25; // eg, num flower petals
 
-        if (this.offsetX == UI_CENTER) {
-            MAIN_CONTEXT.textAlign = 'center';
-            MAIN_CONTEXT.fillText(this.textFunc(), startX + this.sizeX / 2, startY + (this.sizeY / 2))
-        } else {
-            MAIN_CONTEXT.textAlign = 'left';
-            MAIN_CONTEXT.fillText(this.textFunc(), startX + this.offsetX, startY + (this.sizeY / 2))
+        this.rh = this.sizeY / this.numRows;
+        this.rw = this.sizeX / this.numCols;
+
+        let cmap = this.refOrgFunc()[this.orgAttribute];
+        let dl = getDefaultLightingArr(), c = new Array(4);
+
+        for (let i = 0; i < this.numRows; i++) {
+            for (let j = 0; j < this.numCols; j++) {
+                multiplyVectorsMultDest(dl, cmap[i][j % cmap[i].length], 0.9, c);
+                MAIN_CONTEXT.fillStyle = rgbToRgba(...c);
+                MAIN_CONTEXT.fillRect(startX + (this.rw * j), (startY + this.rh * i), this.rw, this.rh)
+            }
+            MAIN_CONTEXT.fillStyle = "#000000";
+            MAIN_CONTEXT.fillRect(Math.floor(startX + (this.rw * cmap[i].length)), (startY + this.rh * i), Math.floor(getBaseUISize() * .5), this.rh);
         }
-
         return [this.sizeX, this.sizeY];
     }
 }
