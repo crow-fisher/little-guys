@@ -102,7 +102,7 @@ export class GeneticsComponent extends Component {
           //////////////////////////// right column  
 
           let rWidth = 27;
-          for (let i = 0; i < 24; i++) {
+          for (let i = 0; i < 30; i++) {
                r1c2.addElement(new TextBackgroundFunctional(this.window, sizeX, h1, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85 + 0.1 * (i % 2 - 3)),  0.75, () => this.refOrg.generateGeneticCode().serialize().slice(i * rWidth, (i + 1) * rWidth)));
           }
      }
