@@ -51,7 +51,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
 
         this.maxFlowerPetalLength = 6;
 
-        this.numPetals = 25;
+        this.numPetals = 5;
 
         this.stems = [];
         this.leaves = [];
@@ -409,16 +409,16 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                 flower.parentComponent.lifeSquares.slice(flower.parentComponent.lifeSquares.length - 2).forEach((lsq) => this.applyColor(this.colorStemFlowerBase, 0, lsq.renderColor));
 
                 let j = 0;
-                let pidx = -1;
+                let petalIdx = -1;
 
                 flower.children.forEach((petal) => {
-                    pidx += 1;
-                    let i = -1;
+                    petalIdx += 1;
+                    let petalDepth = -1;
                     petal.lifeSquares.forEach((lsq) => {
-                        i += 1;
-                        let col = this.flowerColor[i][(pidx % this.flowerColor[i].length)] ?? [0, 0, 0];
-                        lsq.w1 = this.flowerShapeFunc((i) / (petal.lifeSquares.length + 1));
-                        lsq.w2 = this.flowerShapeFunc((i + 1) / (petal.lifeSquares.length + 1));
+                        petalDepth += 1;
+                        let col = this.flowerColor[petalDepth][petalIdx];
+                        lsq.w1 = this.flowerShapeFunc((petalDepth) / (petal.lifeSquares.length + 1));
+                        lsq.w2 = this.flowerShapeFunc((petalDepth + 1) / (petal.lifeSquares.length + 1));
 
                         let m = Math.max((1 - Math.abs(Math.cos(petal.getTheta()))), (Math.abs(Math.cos(petal.getTwist()))))
 
@@ -429,13 +429,8 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                         j += 1;
                     });
                     petal.lifeSquares[0].theta = petal.lifeSquares[1]?.theta ?? petal.lifeSquares[0].theta;
-
                     petal.lifeSquares[0].w1 = .2;
                     petal.lifeSquares[0].w2 = .2;
-
-                    // let last = petal.lifeSquares[petal.lifeSquares.length - 1];
-                    // last.height = 0.2;
-                    // last.w2 = Math.max(last.w1 - .1, .05)
 
                 });
             })
