@@ -1,6 +1,6 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
-import { hsvaToRgba } from "../../common.js";
+import { clamp, hsvaToRgba } from "../../common.js";
 import { loadEmptyScene } from "../../saveAndLoad.js";
 import { Component } from "../Component.js";
 import { Container } from "../Container.js";
@@ -34,7 +34,7 @@ export class ColorPickerComponent extends Component {
             () => loadGD(UI_COLORPICKER_CONFIG).a, 
             (v) => {
                 let cc = loadGD(UI_COLORPICKER_CONFIG);
-                cc.a = v;
+                cc.a = clamp(v);
                 cc.rgbaArr = hsvaToRgba(cc.h, cc.s, cc.v, cc.a);
             }, sizeX, getBaseUISize() * 3, 
         0, 1, 

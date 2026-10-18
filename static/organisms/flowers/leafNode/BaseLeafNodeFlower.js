@@ -11,6 +11,7 @@ import { OrganismGeneticCode } from "../../genetics/OrganismGeneticCode.js";
 import { SKSA_THETA, SKSA_TWIST, SKSA_DEFLECTION, SKSA_CURVE, SKSA_STRENGTH, SKSA_PERIOD, SKSM_STEM, SKSO_LEAFNODE, SKSM_LEAF, SKSM_LEAFSTEM, SKSA_ROTATION, SKSC_FLOWER } from "../../genetics/enum/namespace/vanilla/keySpecifiers.js";
 import { SKF_ATTRIBUTE, SKF_COLOR, SKF_MEMBER, SKF_ORIGIN } from "../../genetics/enum/namespace/vanilla/keyFlags.js";
 import { compositeSoupKey } from "../../genetics/enum/soupEnum.js";
+import { addVec3MultDest, addVectorsCopy, addVectorsCopyPost } from "../../../util/vector.js";
 
 export let leafNodeFlower_dnm = structuredClone(baseOrganism_dnm);
 leafNodeFlower_dnm[_llt_mult] = 1.45;
@@ -49,9 +50,9 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.curNumFlower = 0;
         this.targetNumStem = 0;
 
-        this.maxFlowerPetalLength = 6;
+        this.maxFlowerPetalLength = 8;
 
-        this.numPetals = 5;
+        this.numPetals = 100;
 
         this.stems = [];
         this.leaves = [];
@@ -61,14 +62,12 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.colorStem = [46, 53, 16];
         this.colorStemFlowerBase = [21, 26, 6];
 
-        this.flowerColor = [
-            [[25, 24, 24, 1]],
-            [[25, 24, 24, 1]],
-            [[36, 21, 15, 1]],
-            [[131, 112, 26, 1]],
-            [[131, 112, 26, 1]],
-            [[167, 143, 41, 1]]
-        ]
+        this.flowerColor = [];
+        
+        let cur = [0, 0, 0, 1];
+        for (let i = 0; i < this.numPetals; i++) {
+            this.flowerColor.push([addVectorsCopyPost(cur, [10, 10, 10, 0])]);
+        }
 
         this.stemParams = {
             ThetaMin: -Math.PI,
@@ -155,7 +154,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         code.addTag(SKF_COLOR, keySpecifier);
         for (let i = 0; i < arr.length; i++) {
             for (let j = 0; j < arr[i].length; j++) {
-                code.addRgbafValue(...arr[i][j]);
+                code.addRgbaValue(...arr[i][j]);
             }
         }
     }
@@ -206,7 +205,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                     i = this.parseMemberGroup(this.leafStemParams, code, i);
                     continue;
                 default:
-                    continue;
+                    break;
             }
         }
 
@@ -214,11 +213,11 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             ot = code.code[i];
             otks = ot & ~(compositeSoupKey(SKF_COLOR));
             switch (otks) {
-                default:
                 case SKSC_FLOWER:
                     i = this.parseColor(this.flowerColor, code, i)
+                default:
+                    break;
             }
-
         }
     }
 
@@ -280,11 +279,9 @@ export class BaseLeafNodeFlower extends BaseOrganism {
     }
 
     parseColor(arr, code, _i) {
-        // _i += 1;
         for (let i = 0; i < this.maxFlowerPetalLength; i++) {
             for (let j = 0; j < this.numPetals; j++) {
                 arr[i][j] = code.popRgbaValue(++_i);
-                // _i++;
             }
         }
         return _i;

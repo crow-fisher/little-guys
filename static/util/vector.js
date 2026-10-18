@@ -35,6 +35,9 @@ export function getVec3LengthSquared(vector) {
 export function addVectorsCopy(v1, v2) {
   return addVectors(structuredClone(v1), v2);
 }
+export function addVectorsCopyPost(v1, v2) {
+  return structuredClone(addVectors(v1, v2));
+}
 
 export function addVectorsCopyMult(v1, v2, m) {
   return addVectorsMult(structuredClone(v1), v2, m);

@@ -166,6 +166,12 @@ class LifeSquareGreen {
     }
 
     render() {
+
+        if ((this.renderColor[3] ?? 1) < .01) {
+            return;
+        }
+
+
         let frameOpacity = this.opacity;
         if (this.linkedOrganism.stage == STAGE_DEAD) {
             frameOpacity *= (1 - this.linkedOrganism.deathProgress);
@@ -317,7 +323,7 @@ class LifeSquareGreen {
                 g: (frameLightingOffset * lightingColor.g) * this.renderColor[1] / 255,
                 b: (frameLightingOffset * lightingColor.b) * this.renderColor[2] / 255
             };
-            this.cachedRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), frameOpacity);
+            this.cachedRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), frameOpacity * (this.renderColor[3] ?? 1));
         }
         MAIN_CONTEXT.fillStyle = this.cachedRgba;
         this.renderToCanvas();

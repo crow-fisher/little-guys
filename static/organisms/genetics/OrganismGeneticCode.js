@@ -9,7 +9,7 @@ export class OrganismGeneticCode {
     constructor(sourceString) {
         this.valueScale = 10 ** 5;
         this.radix = 36;
-        this.code = sourceString == null ? new Array() : Array.from(sourceString.split(SEP).map((v) => Number.parseInt(v, this.radix)));
+        this.code = (sourceString == null || sourceString == -1) ? new Array() : Array.from(sourceString.split(SEP).map((v) => Number.parseInt(v, this.radix)));
     }
 
     addTag(keyFlag, keySpecifier) {
@@ -32,8 +32,8 @@ export class OrganismGeneticCode {
         return this.code.map((val) => val.toString(this.radix)).reduce((a, b) => a + (a == "" ? '' : SEP) + b, "");
     }
     
-    addRgbafValue(r, g, b, a, f) {
-        this.code.push(this.rgbafToSoup(r, g, b, a / 256))
+    addRgbaValue(r, g, b, a) {
+        this.code.push(this.rgbafToSoup(r, g, b, a))
     }
 
     popRgbaValue(i) {
@@ -42,7 +42,7 @@ export class OrganismGeneticCode {
 
     rgbafToSoup(r, g, b, a, out=0) { 
       r = Math.round(r), g = Math.round(g), b = Math.round(b), a = Math.round(a * (2 ** 8) - 1);
-      out += a;
+      out += Math.abs(a);
       out += b << 8;
       out += g << 16;
       out += r << 24;
@@ -54,7 +54,7 @@ export class OrganismGeneticCode {
     let r = (soup >> 24) & ((2 ** 8) - 1) 
     let g = (soup >> 16) & ((2 ** 8) - 1) 
     let b = (soup >> 8) & ((2 ** 8) - 1) 
-    return [r, g, b, a];
+    return [r, g, b, a / (2 ** 8)];
     }
 
 }
