@@ -1,9 +1,11 @@
 import { getBaseUISize } from "../../canvas.js";
-import { clamp, rgbToRgba } from "../../common.js";
+import { clamp, invlerp, rgbToRgba } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { getDefaultLightingArr } from "../../lighting/lightingProcessing.js";
 import { isLeftMouseClicked, isRightMouseClicked } from "../../mouse.js";
-import { multiplyVectorsMultDest } from "../../util/vector.js";
+import { loadEmptyScene } from "../../saveAndLoad.js";
+import { addTwoVec3Dest, addVec3Mult, addVec4Mult, getVec2Length, multiplyVectorByScalar, multiplyVectorsMultDest } from "../../util/vector.js";
+import { loadGD, UI_COLORPICKER_CONFIG } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
 export class OrgColorEditor extends WindowElement {
@@ -13,27 +15,46 @@ export class OrgColorEditor extends WindowElement {
         this.sizeY = sizeY;
         this.refOrgFunc = refOrgFunc;
         this.orgAttribute = orgAttribute;
+        this.reinitOrg = true;
     }
 
     hover(posX, posY) {
-        this.sx = clamp(Math.floor(posX / this.rw), 0, this.numCols - 1);
-        this.sy = clamp(Math.floor(posY / this.rh), 0, this.numRows - 1);
+        let cs = loadGD(UI_COLORPICKER_CONFIG);
 
-        if (isLeftMouseClicked() || isRightMouseClicked()) {
-            if (this.sx >= this.cmap[this.sy].length) {
-                for (let i = this.cmap[this.sy].length; i < this.sx; i++) {
-                    this.cmap[this.sy][i] = this.cmap[this.sy][i % this.cmap[this.sy].length];
+
+        if (this.reinitOrg) {
+            this.reinitOrg = false;
+            for (let i = 0; i < this.numCols; i++) {
+                for (let j = 0; j < this.numRows; j++) {
+                    this.cmap[j][i] = this.cmap[j][i] ?? structuredClone(this.cmap[j][i - 1]);
                 }
             }
+
         }
 
-        if (isRightMouseClicked()) {
-            console.log(this.cmap[this.sy])
-            this.cmap[this.sy].length = Math.min(this.cmap[this.sy].length, this.sx);
-            console.log(this.cmap[this.sy])
-        }
+        if (isLeftMouseClicked()) {
+            this.window.locked = true;
+            for (let i = 0; i < this.numRows; i++) {
+                for (let j = 0; j < this.numCols; j++) {
+                    let dy = (i * this.rh) - posY;
+                    let dx = (j * this.rw) - posX;
 
-        console.log(this.sx, this.sy);
+                    let l = dx ** 2 + dy ** 2;
+
+                    if (l > 3000) {
+                        continue;
+                    }
+
+                    let min = 30;
+                    let max = 300;
+                    l = clamp(min, max, l);
+                    let intensity = 0.4 * (1 - invlerp(min, max, l));
+                    multiplyVectorByScalar(this.cmap[i][j], 1 - intensity);
+                    addVec4Mult(this.cmap[i][j], cs.rgbaArr, intensity * 255);
+                }
+            }
+
+        }
     }
 
     render(startX, startY) {
@@ -42,7 +63,7 @@ export class OrgColorEditor extends WindowElement {
 
         this.numRows = this.refOrgFunc().maxFlowerPetalLength;
         this.numCols = this.refOrgFunc().numPetals;
-    
+
         this.rh = Math.floor(this.sizeY / this.numRows);
         this.rw = Math.ceil(this.sizeX / this.numCols);
 
@@ -55,35 +76,6 @@ export class OrgColorEditor extends WindowElement {
                 multiplyVectorsMultDest(dl, this.cmap[i][j % this.cmap[i].length], 0.9, c);
                 MAIN_CONTEXT.fillStyle = rgbToRgba(...c);
                 MAIN_CONTEXT.fillRect(startX + (this.rw * j), (startY + this.rh * i), this.rw, this.rh)
-            }
-        }
-
-        for (let i = 0; i < this.numRows; i++) { // layer 1
-            for (let j = 0; j < this.numCols; j++) {
-
-
-
-                if (this.cmap[i].length == j) {
-                    MAIN_CONTEXT.fillStyle = "rgba(197, 197, 197, 0.6)";
-                } else {
-                    MAIN_CONTEXT.fillStyle = "rgba(40, 40, 40, 0.2)";
-                }
-                MAIN_CONTEXT.fillRect(Math.floor(startX + (this.rw * (j + 1))) - lw1, (startY + this.rh * i), lw1, this.rh);
-
-                MAIN_CONTEXT.fillStyle = "#000000";
-                let selected = (this.sx == j && this.sy == i);
-                if (selected) {
-                    MAIN_CONTEXT.fillRect(Math.floor(startX + (this.rw * j)), (startY + this.rh * i), lw1, this.rh);
-
-                    if (!(this.cmap[i].length == j))
-                    MAIN_CONTEXT.fillRect(Math.floor(startX + (this.rw * (j + 1))) - lw1, (startY + this.rh * i), lw1, this.rh);
-
-                    MAIN_CONTEXT.fillRect(Math.floor(startX + (this.rw * j)), (startY + this.rh * i), this.rw, lw1);
-                    MAIN_CONTEXT.fillRect(Math.floor(startX + (this.rw * j)), (startY + this.rh * (i + 1)) - lw1, this.rw, lw1);
-
-                }
-
-                
             }
         }
         return [this.sizeX, this.sizeY];

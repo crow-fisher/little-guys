@@ -42,7 +42,7 @@ export class ColorPickerComponent extends Component {
                 s: 0.5,
                 v: 0.5,
                 colorHistory: [],
-                rgbArr: [127, 127, 127]
+                rgbaArr: [127, 127, 127, 1]
             }
         );
     }
