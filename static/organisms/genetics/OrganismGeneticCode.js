@@ -1,4 +1,5 @@
 import { clamp } from "../../common.js";
+import { copyVecValue } from "../../util/vector.js";
 import { SKF_ORIGIN } from "./enum/namespace/vanilla/keyFlags.js";
 import { compositeSoupKey } from "./enum/soupEnum.js";
 
@@ -32,26 +33,28 @@ export class OrganismGeneticCode {
     }
     
     addRgbafValue(r, g, b, a, f) {
-        this.code.push(this.rgbafToSoup(r, g, b, a, f))
+        this.code.push(this.rgbafToSoup(r, g, b, a / 256))
     }
 
-    rgbafToSoup(r, g, b, a, f, out=0) { 
-      r = Math.round(r), g = Math.round(g), b = Math.round(b), a = Math.round(a * (2 ** 7 ) - 1);
+    popRgbaValue(i) {
+        return this.soupToRgba(this.code.at(i));
+    }
+
+    rgbafToSoup(r, g, b, a, out=0) { 
+      r = Math.round(r), g = Math.round(g), b = Math.round(b), a = Math.round(a * (2 ** 8) - 1);
       out += a;
-      out += b << 7;
-      out += g << 15;
-      out += r << 23;
-      out += f << 31;
+      out += b << 8;
+      out += g << 16;
+      out += r << 24;
       return out;
     }
 
-    soupToRgbaf(soup) {
-    let f = -(soup >> 31);
-    let a = (soup >> 0) & (2 ** 7 - 1)
-    let r = (soup >> 23) & ((2 ** 8) - 1) 
-    let g = (soup >> 15) & ((2 ** 8) - 1) 
-    let b = (soup >> 7) & ((2 ** 8) - 1) 
-    return [r, g, b, a, f];
+    soupToRgba(soup) {
+    let a = (soup >> 0) & (2 ** 8 - 1)
+    let r = (soup >> 24) & ((2 ** 8) - 1) 
+    let g = (soup >> 16) & ((2 ** 8) - 1) 
+    let b = (soup >> 8) & ((2 ** 8) - 1) 
+    return [r, g, b, a];
     }
 
 }

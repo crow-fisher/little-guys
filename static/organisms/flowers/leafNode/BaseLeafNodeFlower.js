@@ -155,7 +155,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         code.addTag(SKF_COLOR, keySpecifier);
         for (let i = 0; i < arr.length; i++) {
             for (let j = 0; j < arr[i].length; j++) {
-                code.addTag(...arr[i][j], (j == (arr[i].length - 1)) ? 1 : 0);
+                code.addRgbafValue(...arr[i][j]);
             }
         }
     }
@@ -279,7 +279,14 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         return i + j;
     }
 
-    parseColor(arr, code, i) {
+    parseColor(arr, code, _i) {
+        _i += 1;
+        for (let i = 0; i < this.numPetals; i++) {
+            for (let j = 0; j < this.maxFlowerPetalLength; j++) {
+                arr[j][i] = code.popRgbaValue(_i++);
+            }
+        }
+        return _i;
     }
 
     getGeneticsGrowthPlanConfig() {

@@ -53,6 +53,7 @@ export class GeneticsComponent extends Component {
           // r1.addElement(r1c2);
 
           //////////////////////////// headers
+          r1c1.addElement(new Button(this.window, sizeX, h1, UI_CENTER, () => iterateOnOrganisms((org) => org.stage = STAGE_DEAD), "kill all plants", () => getActiveClimate().getUIColorInactive(0.65)));
           r1c1.addElement(new Button(this.window, sizeX, h1, UI_CENTER, () => this.refOrg = new BaseLeafNodeFlower(), "reset configurator", () => getActiveClimate().getUIColorInactive(0.55)));
 
           //////////////////////////// left column
@@ -103,7 +104,6 @@ export class GeneticsComponent extends Component {
                ccc.addElement(new OrgColorEditor(this.window, sizeX, h1 * 4, () => this.refOrg, gc[key]));
           });
           
-          r1c1.addElement(new Button(this.window, sizeX, h1, UI_CENTER, () => iterateOnOrganisms((org) => org.stage = STAGE_DEAD), "kill all plants", () => getActiveClimate().getUIColorInactive(0.65)));
           r1c1.addElement(new Button(this.window, sizeX, h1, UI_CENTER, () => updateClipboard(this.refOrg.generateGeneticCode().serialize()), "copy soup", () => getActiveClimate().getUIColorInactive(0.65))); // todo: "soup copied!"
 
           //////////////////////////// right column  

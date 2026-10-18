@@ -20,16 +20,10 @@ export class OrgColorEditor extends WindowElement {
 
     hover(posX, posY) {
         let cs = loadGD(UI_COLORPICKER_CONFIG);
-
-
-        if (this.reinitOrg) {
-            this.reinitOrg = false;
-            for (let i = 0; i < this.numCols; i++) {
-                for (let j = 0; j < this.numRows; j++) {
-                    this.cmap[j][i] = this.cmap[j][i] ?? structuredClone(this.cmap[j][i - 1]);
-                }
+        for (let i = 0; i < this.numCols; i++) {
+            for (let j = 0; j < this.numRows; j++) {
+                this.cmap[j][i] = this.cmap[j][i] ?? structuredClone(this.cmap[j][i - 1]);
             }
-
         }
 
         if (isLeftMouseClicked()) {
@@ -38,17 +32,14 @@ export class OrgColorEditor extends WindowElement {
                 for (let j = 0; j < this.numCols; j++) {
                     let dy = (i * this.rh) - posY;
                     let dx = (j * this.rw) - posX;
-
                     let l = dx ** 2 + dy ** 2;
-
                     if (l > 3000) {
                         continue;
                     }
-
-                    let min = 30;
-                    let max = 300;
+                    let min = 3;
+                    let max = 2500;
                     l = clamp(min, max, l);
-                    let intensity = 0.4 * (1 - invlerp(min, max, l));
+                    let intensity = 0.25 * (1 - invlerp(min, max, l));
                     multiplyVectorByScalar(this.cmap[i][j], 1 - intensity);
                     addVec4Mult(this.cmap[i][j], cs.rgbaArr, intensity * 255);
                 }
