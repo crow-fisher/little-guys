@@ -426,7 +426,10 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                         lsq.height = this.flowerLsqHeight * m + 0.4;
 
                         lsq.renderMode = LSQ_RENDERMODE_THETA_SLOPE;
-                        this.applyColor(col, j, lsq.renderColor);
+
+                        lsq.renderColor = col;
+
+                        // this.applyColor(col, j, lsq.renderColor);
                         j += 1;
                     });
                     petal.lifeSquares[0].theta = petal.lifeSquares[1]?.theta ?? petal.lifeSquares[0].theta;

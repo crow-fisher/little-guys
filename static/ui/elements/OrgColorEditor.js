@@ -1,6 +1,6 @@
 import { getBaseUISize } from "../../canvas.js";
 import { clamp, invlerp, rgbToRgba } from "../../common.js";
-import { MAIN_CONTEXT } from "../../index.js";
+import { getCurBackgroundColor, MAIN_CONTEXT } from "../../index.js";
 import { getDefaultLightingArr } from "../../lighting/lightingProcessing.js";
 import { isLeftMouseClicked, isRightMouseClicked } from "../../mouse.js";
 import { loadEmptyScene } from "../../saveAndLoad.js";
@@ -30,8 +30,8 @@ export class OrgColorEditor extends WindowElement {
             this.window.locked = true;
             for (let i = 0; i < this.numRows; i++) {
                 for (let j = 0; j < this.numCols; j++) {
-                    let dy = (i * this.rh) - posY;
-                    let dx = (j * this.rw) - posX;
+                    let dy = (i + 0.5) * this.rh - posY;
+                    let dx = (j + 0.5) * this.rw - posX;
                     let l = dx ** 2 + dy ** 2;
                     if (l > 3000) {
                         continue;
@@ -41,7 +41,7 @@ export class OrgColorEditor extends WindowElement {
                     l = clamp(min, max, l);
                     let intensity = 0.25 * (1 - invlerp(min, max, l));
                     multiplyVectorByScalar(this.cmap[i][j], 1 - intensity);
-                    addVec4Mult(this.cmap[i][j], cs.rgbaArr, intensity * 255);
+                    addVec4Mult(this.cmap[i][j], cs.rgbaArr, intensity);
                 }
             }
 
@@ -58,15 +58,15 @@ export class OrgColorEditor extends WindowElement {
         this.rh = Math.floor(this.sizeY / this.numRows);
         this.rw = Math.ceil(this.sizeX / this.numCols);
 
-        let lw1 = Math.floor(getBaseUISize() * 0.25);
-        let lw2 = Math.floor(getBaseUISize() * 0.125);
-        let lw4 = Math.floor(getBaseUISize() * 0.0625);
-
         for (let i = 0; i < this.numRows; i++) { // layer 0
             for (let j = 0; j < this.numCols; j++) {
+
+                MAIN_CONTEXT.fillStyle = getCurBackgroundColor();
+                MAIN_CONTEXT.fillRect(startX + (this.rw * j), (startY + this.rh * i), this.rw, this.rh);
+
                 multiplyVectorsMultDest(dl, this.cmap[i][j % this.cmap[i].length], 0.9, c);
                 MAIN_CONTEXT.fillStyle = rgbToRgba(...c);
-                MAIN_CONTEXT.fillRect(startX + (this.rw * j), (startY + this.rh * i), this.rw, this.rh)
+                MAIN_CONTEXT.fillRect(startX + (this.rw * j), (startY + this.rh * i), this.rw, this.rh);
             }
         }
         return [this.sizeX, this.sizeY];

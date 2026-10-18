@@ -22,7 +22,7 @@ export class ColorInputTarget extends WindowElement {
         if (clickLocDist > (this.sizeX / 2.5) && clickLocDist < (this.sizeX / 2)) {
             let angle = Math.atan2(clickLocRelMid[1], clickLocRelMid[0]);
             this.colorConfig.h = angle * (180 / Math.PI);
-            this.colorConfig.rgbaArr = hsvaToRgba(this.colorConfig.h, this.colorConfig.s, this.colorConfig.v, this.colorConfig.a ?? 1);
+            this.colorConfig.rgbaArr = hsvaToRgba(this.colorConfig.h, this.colorConfig.s, this.colorConfig.v, this.colorConfig.a);
 
             return;
         }
@@ -32,7 +32,7 @@ export class ColorInputTarget extends WindowElement {
             this.colorConfig.s = clamp(invlerp(-s, s, clickLocRelMid[0]));
             this.colorConfig.v = clamp(1 - invlerp(-s, s, clickLocRelMid[1]));
         }
-        this.colorConfig.rgbaArr = hsvaToRgba(this.colorConfig.h, this.colorConfig.s, this.colorConfig.v, this.colorConfig.a ?? 1);
+        this.colorConfig.rgbaArr = hsvaToRgba(this.colorConfig.h, this.colorConfig.s, this.colorConfig.v, this.colorConfig.a);
         return;
     }
 
