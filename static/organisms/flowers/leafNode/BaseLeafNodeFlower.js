@@ -60,7 +60,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.colorLeaf = [56, 63, 19];
         this.colorStem = [46, 53, 16];
         this.colorStemFlowerBase = [21, 26, 6];
-        
+
         this.flowerColor = [
             [[25, 24, 24, 1]],
             [[25, 24, 24, 1]],
@@ -112,7 +112,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             RotationMin: 1.5,
             RotationMax: 2.5,
             DeflectionMin: 0.8,
-            DeflectionMax: 1.2, 
+            DeflectionMax: 1.2,
             CurveMin: 0,
             CurveMax: 0,
             StrengthMin: 0.35,
@@ -184,7 +184,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
 
         err |= (ot & compositeSoupKey(SKF_ORIGIN)) != compositeSoupKey(SKF_ORIGIN);
         err |= otks != SKSO_LEAFNODE;
-        
+
         if (err) {
             console.warn("Unable to parse origin genetics with this implementation class:", this.proto, this.genetics)
             return;
@@ -269,7 +269,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                     map[PeriodMin] = value;
                     continue;
                 case compositeSoupKey(SKF_ATTRIBUTE, SKSA_PERIOD | 1):
-                    map[PeriodMax] = value; 
+                    map[PeriodMax] = value;
                     continue;
                 default:
                     console.log("Failed parse in parseMemberGroup, key ", key);
@@ -280,10 +280,11 @@ export class BaseLeafNodeFlower extends BaseOrganism {
     }
 
     parseColor(arr, code, _i) {
-        _i += 1;
-        for (let i = 0; i < this.numPetals; i++) {
-            for (let j = 0; j < this.maxFlowerPetalLength; j++) {
-                arr[j][i] = code.popRgbaValue(_i++);
+        // _i += 1;
+        for (let i = 0; i < this.maxFlowerPetalLength; i++) {
+            for (let j = 0; j < this.numPetals; j++) {
+                arr[i][j] = code.popRgbaValue(++_i);
+                // _i++;
             }
         }
         return _i;
@@ -554,7 +555,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         let growthPlan = new GrowthPlan(
             startNode.posX, startNode.posY,
             false, TYPE_LEAFSTEM, STAGE_ADULT,
-        ...this.getNextParams(this.leafStemParams));
+            ...this.getNextParams(this.leafStemParams));
 
         growthPlan.postConstruct = () => {
             stem.addChild(growthPlan.component);
@@ -572,7 +573,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         let growthPlan = new GrowthPlan(
             startNode.posX, startNode.posY,
             false, TYPE_LEAF, STAGE_ADULT,
-        ...this.getNextParams(this.leafParams));
+            ...this.getNextParams(this.leafParams));
 
         growthPlan.postConstruct = () => {
             stem.addChild(growthPlan.component);
