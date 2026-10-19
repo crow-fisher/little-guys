@@ -50,9 +50,9 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.curNumFlower = 0;
         this.targetNumStem = 0;
 
-        this.maxFlowerPetalLength = 8;
+        this.maxFlowerPetalLength = 6;
 
-        this.numPetals = 100;
+        this.numPetals = 25;
 
         this.stems = [];
         this.leaves = [];

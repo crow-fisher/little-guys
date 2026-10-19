@@ -4,6 +4,7 @@ import { getCurBackgroundColor, MAIN_CONTEXT } from "../../index.js";
 import { getDefaultLightingArr } from "../../lighting/lightingProcessing.js";
 import { isLeftMouseClicked, isRightMouseClicked } from "../../mouse.js";
 import { loadEmptyScene } from "../../saveAndLoad.js";
+import { processRangeToOne } from "../../util/func.js";
 import { addTwoVec3Dest, addVec3Mult, addVec4Mult, getVec2Length, multiplyVectorByScalar, multiplyVectorsMultDest } from "../../util/vector.js";
 import { loadGD, UI_COLORPICKER_CONFIG } from "../UIData.js";
 import { WindowElement } from "../Window.js";
@@ -32,17 +33,19 @@ export class OrgColorEditor extends WindowElement {
                 for (let j = 0; j < this.numCols; j++) {
                     let dy = (i + 0.5) * this.rh - posY;
                     let dx = (j + 0.5) * this.rw - posX;
-                    let l = dx ** 2 + dy ** 2;
-                    if (l > 3000) {
+                    let l = (dx ** 2 + dy ** 2) ** 0.5;
+
+                    let min = cs.brushMin;
+                    let max = cs.brushMax;
+
+                    if (l > max) {
                         continue;
                     }
-                    let min = 3;
-                    let max = 2500;
-                    l = clamp(min, max, l);
-                    let intensity = 0.25 * (1 - invlerp(min, max, l));
+
+                    let intensity = clamp(processRangeToOne(cs.brushStrength) * (1 - 4 * invlerp(min, max, l)));
                     multiplyVectorByScalar(this.cmap[i][j], 1 - intensity);
                     addVec4Mult(this.cmap[i][j], cs.rgbaArr, intensity);
-                }
+                }   
             }
 
         }
@@ -56,7 +59,7 @@ export class OrgColorEditor extends WindowElement {
         this.numCols = this.refOrgFunc().numPetals;
 
         this.rh = Math.floor(this.sizeY / this.numRows);
-        this.rw = Math.ceil(this.sizeX / this.numCols);
+        this.rw = Math.floor(this.sizeX / this.numCols);
 
         for (let i = 0; i < this.numRows; i++) { // layer 0
             for (let j = 0; j < this.numCols; j++) {

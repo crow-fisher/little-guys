@@ -10,13 +10,18 @@ import { Component } from "../Component.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
 import { Container } from "../Container.js";
 import { Button } from "../elements/Button.js";
+import { ButtonFunctionalText } from "../elements/ButtonFunctionalText.js";
 import { OrgColorEditor } from "../elements/OrgColorEditor.js";
 import { SliderGradientBackgroundRange } from "../elements/SliderGradientBackgroundRange.js";
 import { TextBackground } from "../elements/TextBackground.js";
 import { TextBackgroundFunctional } from "../elements/TextBackgroundFunctional.js";
 import { Toggle } from "../elements/Toggle.js";
 import { ToggleTwoKey } from "../elements/ToggleTwoKey.js";
-import { loadGD, UI_CENTER, UI_COLORPICKER_COMPONENT, UI_GENETICS_CONTAINER_SELECT } from "../UIData.js";
+import { loadGD, UI_CENTER, UI_COLORPICKER_COMPONENT, UI_FASTGROW, UI_GENETICS_CONTAINER_SELECT } from "../UIData.js";
+
+
+let copySoupButtonText = "copy soup";
+let pasteSoupButtonText = "paste soup";
 
 export class GeneticsComponent extends Component {
      constructor(posX, posY, padding, dir, key) {
@@ -53,6 +58,7 @@ export class GeneticsComponent extends Component {
           // r1.addElement(r1c2);
 
           //////////////////////////// headers
+          r1c1.addElement(new Toggle(this.window, sizeX, h1, UI_CENTER, UI_FASTGROW, "fastgrow", () => getActiveClimate().getUIColorInactive(0.65), () => getActiveClimate().getUIColorInactive(.45)));
           r1c1.addElement(new Button(this.window, sizeX, h1, UI_CENTER, () => iterateOnOrganisms((org) => org.stage = STAGE_DEAD), "kill all plants", () => getActiveClimate().getUIColorInactive(0.65)));
           r1c1.addElement(new Button(this.window, sizeX, h1, UI_CENTER, () => this.refOrg = new BaseLeafNodeFlower(), "reset configurator", () => getActiveClimate().getUIColorInactive(0.55)));
 
@@ -104,7 +110,26 @@ export class GeneticsComponent extends Component {
                ccc.addElement(new OrgColorEditor(this.window, sizeX, h1 * 4, () => this.refOrg, gc[key]));
           });
           
-          r1c1.addElement(new Button(this.window, sizeX, h1, UI_CENTER, () => updateClipboard(this.refOrg.generateGeneticCode().serialize()), "copy soup", () => getActiveClimate().getUIColorInactive(0.65))); // todo: "soup copied!"
+
+          let r1c1r1 = new Container(this.window, 0, 0);
+          r1c1.addElement(r1c1r1);
+
+          r1c1r1.addElement(new ButtonFunctionalText(this.window, sizeX / 2, h1, UI_CENTER, () => {
+               updateClipboard(this.refOrg.generateGeneticCode().serialize());
+               copySoupButtonText = "soup copied!";
+               setTimeout(() => copySoupButtonText = "copy soup", 2000);
+          }, () => copySoupButtonText, () => getActiveClimate().getUIColorInactive(0.65))); // todo: "soup copied!"
+
+          r1c1r1.addElement(new ButtonFunctionalText(this.window, sizeX / 2, h1, UI_CENTER, () => {
+                 navigator.clipboard
+                    .readText()
+                    .then((clipText) => {
+                         this.refOrg.genetics = clipText;
+                         this.refOrg.parseGenetics();
+                    });
+               pasteSoupButtonText = "soup pasted!";
+               setTimeout(() => pasteSoupButtonText = "paste soup", 2000);
+          }, () => pasteSoupButtonText, () => getActiveClimate().getUIColorInactive(0.65))); // todo: "soup copied!"
 
           //////////////////////////// right column  
 
