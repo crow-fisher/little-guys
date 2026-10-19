@@ -556,7 +556,7 @@ class BaseOrganism {
         if (seedSquare) {
             seedSquare.speedX = randRange(-1, 1);
             seedSquare.speedY = randRange(-1.5, 1);
-            let orgAdded = new (this.getSeedType())(seedSquare, this.getNextGenetics(), this.id);
+            let orgAdded = new (this.getSeedType())(seedSquare, this.generateGeneticCode().serialize(), this.getNextGenetics(), this.id);
             if (!orgAdded) {
                 seedSquare.destroy();
             } else {
