@@ -15,7 +15,6 @@ export let MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
 let params = new URLSearchParams(document.location.search);
 
 export let DEBUG = params.get("debug");
-export let FASTGROW = params.get("fastgrow");
 
 const body = document.getElementById("body");
 
@@ -141,6 +140,9 @@ addEventListener('paste', async (e) => {
             }
             loadUI(UI_CLIPS).push(squares);
         }
+
+        if (clipboardItem.type.startsWith('text/plain')) {
+        }
     }
 });
 
@@ -177,3 +179,15 @@ window.addEventListener("drop", (e) => {
 MAIN_CANVAS.addEventListener("drop", handleFileDrop);
 
 setTimeout(scheduler_main, 0);
+
+// https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Interact_with_the_clipboard
+export function updateClipboard(newClip) {
+    navigator.clipboard.writeText(newClip).then(
+        () => {
+            /* clipboard successfully set */
+        },
+        () => {
+            /* clipboard write failed */
+        },
+    );
+}

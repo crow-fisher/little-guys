@@ -2,7 +2,7 @@ import { getBaseUISize, getCanvasHeight, getCanvasWidth } from "../canvas.js";
 import { getActiveClimate } from "../climate/climateManager.js";
 import { COLOR_BLACK } from "../colors.js";
 import { MAIN_CONTEXT } from "../index.js";
-import { getLastMoveOffset, isLeftMouseClicked } from "../mouse.js";
+import { getLastMoveOffset, isLeftMouseClicked, isRightMouseClicked } from "../mouse.js";
 import { requestTouch } from "./WindowManager.js";
 
 export class Window {
@@ -103,7 +103,7 @@ export class Window {
         let ret = false;
 
         if ((relX > 0 && relX < this.sizeX && relY > 0 && relY < this.sizeY)) {
-            if (isLeftMouseClicked()) {
+            if (isLeftMouseClicked() || isRightMouseClicked()) {
                 this.lastTouched = Date.now();
                 this.container.hover(relX, relY);
                 ret = true;

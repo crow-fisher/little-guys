@@ -35,6 +35,9 @@ export function getVec3LengthSquared(vector) {
 export function addVectorsCopy(v1, v2) {
   return addVectors(structuredClone(v1), v2);
 }
+export function addVectorsCopyPost(v1, v2) {
+  return structuredClone(addVectors(v1, v2));
+}
 
 export function addVectorsCopyMult(v1, v2, m) {
   return addVectorsMult(structuredClone(v1), v2, m);
@@ -58,6 +61,13 @@ export function addVec3Mult(v1, v2, m) {
   v1[0] += v2[0] * m;
   v1[1] += v2[1] * m;
   v1[2] += v2[2] * m;
+}
+
+export function addVec4Mult(v1, v2, m) {
+  v1[0] += v2[0] * m;
+  v1[1] += v2[1] * m;
+  v1[2] += v2[2] * m;
+  v1[3] += v2[3] * m;
 }
 
 export function addVec3MultFloor(v1, v2, m) {

@@ -4,8 +4,23 @@ import { STATE_DESTROYED, TYPE_HEART } from "./Stages.js";
 import { getGlobalThetaBase } from "../globals.js";
 import { clamp, removeItemAll } from "../common.js";
 
+export const ThetaMin = "ThetaMin";
+export const ThetaMax = "ThetaMax";
+export const TwistMin = "TwistMin";
+export const TwistMax = "TwistMax";
+export const RotationMin = "RotationMin";
+export const RotationMax = "RotationMax";
+export const DeflectionMin = "DeflectionMin";
+export const DeflectionMax = "DeflectionMax";
+export const CurveMin = "CurveMin";
+export const CurveMax = "CurveMax";
+export const StrengthMin = "StrengthMin";
+export const StrengthMax = "StrengthMax";
+export const PeriodMin = "PeriodMin";
+export const PeriodMax = "PeriodMax";
+
 export class GrowthPlan {
-    constructor(posX, posY, required, endStage, theta, twist, baseRotation, baseDeflection, baseCurve, type, strengthMult, rollingAveragePeriod = 200) {
+    constructor(posX, posY, required, type, endStage, theta, twist, baseRotation, baseDeflection, baseCurve,strengthMult, rollingAveragePeriod = 200) {
         this.posX = posX;
         this.posY = posY;
         this.required = required;

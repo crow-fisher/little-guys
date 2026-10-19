@@ -4,10 +4,10 @@ import { STAGE_DEAD, STAGE_FLOWER, STAGE_JUVENILE, STAGE_SPROUT, SUBTYPE_ROOTNOD
 import { addSquare, getNeighbors } from "../squares/sqOperations.js";
 import { PlantSquare } from "../squares/PlantSquare.js";
 import { applyLightingFromSource } from "../lighting/lightingProcessing.js";
-import { loadGD, UI_EVOLUTION_ACTIVE_PARAM, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_SELECT, UI_SIMULATION_GENS_PER_DAY, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
+import { loadGD, UI_EVOLUTION_ACTIVE_PARAM, UI_FASTGROW, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_SELECT, UI_SIMULATION_GENS_PER_DAY, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
 import { COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
 import { clamp, hsv2rgbDest, randNumber, randRange, rgb2hsv, rgbToRgba } from "../common.js";
-import { FASTGROW, MAIN_CONTEXT } from "../index.js";
+import { MAIN_CONTEXT } from "../index.js";
 import { zoomCanvasFillRect } from "../canvas.js";
 import { HUE_GREEN } from "../hue.js";
 import { SeedSquare } from "../squares/SeedSquare.js";
@@ -47,9 +47,10 @@ export let baseOrganism_dnm = {
 }
 
 class BaseOrganism {
-    constructor(square, parentId) {
+    constructor(square, genetics, parentId) {
         this.id = getNextOrgId();
         this.spawnTime = getCurDay();
+        this.genetics = genetics;
         this.parentId = parentId;
 
         this.proto = "BaseOrganism";
@@ -116,6 +117,14 @@ class BaseOrganism {
         this.colorLeaf = [81, 92, 36];
         this.colorStem = [5, 58, 25];
         "rgb(5, 58, 25)"
+    }
+
+    generateGeneticCode() {
+        return "";
+    }
+
+    parseGenetics() {
+        // apply 'this.genetics' to your implementation class's configured parameters here
     }
 
     getGrowthLightLevel() {
@@ -466,7 +475,7 @@ class BaseOrganism {
     }
     doGreenGrowth() {
 
-        if (!FASTGROW) {
+        if (!loadGD(UI_FASTGROW)) {
             if (this.age < this.greenLastGrown + this.lightLevelThrottleVal() * (this.getGrowthCycleMaturityLength() / this.growthNumGreen)) {
                 return false;
             }

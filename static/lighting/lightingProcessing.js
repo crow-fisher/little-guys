@@ -23,8 +23,11 @@ export function getDefaultLighting() {
     out.b *= (255 * 3 * mult) / midstepSum;
 
     return out;
+}
 
-    
+export function getDefaultLightingArr() {
+    let dl = getDefaultLighting();
+    return [dl.r / 255, dl.g / 255, dl.b / 255, 1];
 }
 
 export function getCloudRenderingLighting() {

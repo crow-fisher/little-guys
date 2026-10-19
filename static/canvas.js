@@ -24,7 +24,6 @@ export function getCurZoom() {
     return zoom_arr.at(loadGD(UI_CANVAS_SQUARES_ZOOM));
 }
 
-
 export function getBaseSize() {
     return BASE_SIZE;
 }
@@ -73,7 +72,6 @@ export function transformPixelsToCanvasSquares(x, y) {
 
     return [canvasWindowWidthStart + xpi * canvasWindowWidth, canvasWindowHeightStart + ypi * canvasWindowHeight];
 }
-
 
 
 let frameXMin = 0;

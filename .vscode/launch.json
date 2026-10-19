@@ -17,13 +17,6 @@
             "name": "debug",
             "url": "http://localhost/?debug=1",
             "webRoot": "${workspaceFolder}"
-        },
-        {
-            "type": "chrome",
-            "request": "launch",
-            "name": "debug fastgrow",
-            "url": "http://localhost/?debug=1&fastgrow=1",
-            "webRoot": "${workspaceFolder}"
         }
     ]
 }

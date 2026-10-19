@@ -1,14 +1,23 @@
 {
     "javascript.inlayHints.parameterNames.enabled": "all",
     "cSpell.words": [
+        "cmap",
+        "COLORPICKER",
+        "decomposite",
         "FLOWERBUD",
         "FLOWERNODE",
         "GAMEDATA",
         "KBLUE",
         "LEAFNODE",
+        "LEAFSTEM",
         "Lookback",
         "MILLIS",
         "optimals",
-        "Overwater"
+        "Overwater",
+        "Rgbaf",
+        "SKSA",
+        "SKSC",
+        "SKSM",
+        "SKSO"
     ]
 }

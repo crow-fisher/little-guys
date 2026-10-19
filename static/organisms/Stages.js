@@ -9,10 +9,13 @@ export const TYPE_ROOT = "TYPE_ROOT";
 export const TYPE_HEART = "TYPE_HEART";
 export const TYPE_GRASS = "TYPE_GRASS";
 export const TYPE_STEM = "TYPE_STEM";
-export const TYPE_TRUNK = "TYPE_TRUNK";
+export const TYPE_LEAFSTEM = "TYPE_LEAFSTEM";
 export const TYPE_LEAF = "TYPE_LEAF";
 export const TYPE_FLOWERNODE = "TYPE_FLOWERNODE";
 export const TYPE_FLOWERPETAL = "TYPE_FLOWERPETAL";
+
+
+export const TYPE_TRUNK = "TYPE_TRUNK";
 
 export const SUBTYPE_SPROUT = "SUBTYPE_SPROUT";
 export const SUBTYPE_ROOTNODE = "SUBTYPE_ROOTNODE";

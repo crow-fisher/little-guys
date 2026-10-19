@@ -84,6 +84,11 @@ export function hsvToRgb(h, s, v) {
     return [f(5), f(3), f(1)]
 }
 
+export function hsvaToRgba(h, s, v, a) {
+    let f = (n, k = (n + h / 60) % 6) => v - v * s * Math.max(Math.min(k, 4 - k, 1), 0);
+    return [f(5) * 256, f(3) * 256, f(1) * 256, a]
+}
+
 
 export function hueShiftColor(hex, hueShift, saturationShift, valueShift) {
     let hsv = rgb2hsv(...hexToRgbArr(hex))
@@ -109,6 +114,8 @@ function randNumber(min, max) {
 }
 
 function randRange(min, max) {
+    if (max < min) 
+        return randRange(max, min);
     return Math.random() * (max - min) + min;
 }
 
