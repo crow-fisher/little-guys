@@ -67,7 +67,7 @@ export class OrgColorEditor extends WindowElement {
                 MAIN_CONTEXT.fillStyle = getCurBackgroundColor();
                 MAIN_CONTEXT.fillRect(startX + (this.rw * j), (startY + this.rh * i), this.rw, this.rh);
 
-                multiplyVectorsMultDest(dl, this.cmap[i][j % this.cmap[i].length], 0.9, c);
+                multiplyVectorsMultDest(dl, this.cmap[i][j % this.cmap[i].length], 0.8, c);
                 MAIN_CONTEXT.fillStyle = rgbToRgba(...c);
                 MAIN_CONTEXT.fillRect(startX + (this.rw * j), (startY + this.rh * i), this.rw, this.rh);
             }
