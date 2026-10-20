@@ -358,6 +358,10 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                     this.applyColor(this.colorStem, i, lsq.renderColor);
                 });
                 stem.lifeSquares[0].theta = stem.lifeSquares[1]?.theta ?? stem.lifeSquares[0].theta;
+
+                if (this.flowers.length > 0) {
+                    stem.lifeSquares[stem.lifeSquares.length - 1].height = 0.15;
+                }
             })
 
 
@@ -436,7 +440,6 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                     petal.lifeSquares[0].theta = petal.lifeSquares[1]?.theta ?? petal.lifeSquares[0].theta;
                     petal.lifeSquares[0].w1 = .2;
                     petal.lifeSquares[0].w2 = .2;
-
                 });
             })
 

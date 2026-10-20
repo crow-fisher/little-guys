@@ -64,6 +64,10 @@ function rgbToHex(r, g, b) {
     return "#" + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1);
 }
 
+export function rgbToHexMult(r, g, b, m) {
+    return "#" + (1 << 24 | r * m << 16 | g * m << 8 | b * m).toString(16).slice(1);
+}
+
 function rgbToRgba(r, g, b, a) {
     return "rgba(" + r + "," + g + "," + b + "," + a + ")";
 }

@@ -30,6 +30,7 @@ import { getWindSquareAbove } from "../../climate/simulation/wind.js";
 import { getSqIterationOrder } from "../../squares/sqOperations.js";
 import { getFrameSimulationSquares } from "../../globalOperations.js";
 import { TopBarTimeSeekLabel } from "./TopBarTimeSeekLabel.js";
+import { TopBarThetaSlider } from "./TopBarThetaSlider.js";
 
 export class TopBarComponent {
     constructor(key) {
@@ -52,6 +53,7 @@ export class TopBarComponent {
         this.midSpacingEl = new TopBarText(fontSize, "left", () => " | ")
         
         this.elements[0] = [
+            
             new TopBarToggle(fontSize, "left", UI_TOPBAR_MAINMENU, UI_BOOLEAN, () => this.textMainMenu()),
             this.midSpacingEl,
             new TopBarToggle(fontSize, "left", UI_TOPBAR_BLOCK, UI_BOOLEAN, () => this.textBlockMenu()),
@@ -59,6 +61,8 @@ export class TopBarComponent {
             new TopBarToggle(fontSize, "left", UI_TOPBAR_VIEWMODE, UI_BOOLEAN, () => this.textViewMode()),
             this.midSpacingEl,
             new TopBarToggle(fontSize, "left", UI_TOPBAR_LIGHTING, UI_BOOLEAN, () => this.textToggleLighting()),
+            this.midSpacingEl,
+            new TopBarThetaSlider(getBaseUISize() * 8, getBaseUISize() * 3),
             this.midSpacingEl,
             new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_0, () => "\u23F8\uFE0E"),
             new TopBarToggle(fontSize,"left", UI_SPEED, UI_SPEED_1, () => "▶"),
@@ -76,7 +80,7 @@ export class TopBarComponent {
             new TopBarToggle(fontSize, "left", UI_TOPBAR_WEATHER, UI_BOOLEAN, () => " | " + this.textWeather()),
             new TopBarText(fontSize, "left", () => " | " + this.textFps())
         ];
-
+        
         Object.keys(this.elements).forEach((key) => this.elementPositions[key] = new Array(this.elements[key].length));
 
         this.maxHeight = 0;

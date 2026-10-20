@@ -3,7 +3,6 @@ import { addWindPressureDryAir } from "../climate/simulation/wind.js";
 import { getFrameDt } from "../climate/time.js";
 import { COLOR_BLACK, COLOR_VERY_FUCKING_GREEN, COLOR_VERY_FUCKING_RED } from "../colors.js";
 import { GBY, GBX, GBA, getLeftStick, isButtonPressed, GBB, GBDL, GBDR, GBDU, GBDD } from "../gamepad.js";
-import { getGlobalThetaBase, setGlobalThetaBase } from "../globals.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { getSquares } from "../squares/sqOperations.js";
 import { loadGD, saveGD, UI_CAMERA_EXPOSURE, UI_CANVAS_SQUARES_ZOOM, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_LIGHTING_GLOBAL } from "../ui/UIData.js";
@@ -142,9 +141,9 @@ export class Player {
             this.applyZoom(1);
 
         if (isButtonPressed(GBDL))
-            setGlobalThetaBase(getGlobalThetaBase() + .1);
+            // setGlobalThetaBase(getGlobalThetaBase() + .1);
         if (isButtonPressed(GBDR))
-            setGlobalThetaBase(getGlobalThetaBase() - .1);
+            // setGlobalThetaBase(getGlobalThetaBase() - .1);
         if (isButtonPressed(GBDU)) 
             saveGD(UI_LIGHTING_GLOBAL, loadGD(UI_LIGHTING_GLOBAL) + .003);
         if (isButtonPressed(GBDD)) {

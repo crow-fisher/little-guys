@@ -9,6 +9,7 @@ export let NUM_GROUPS = 0;
 export let WATERFLOW_TARGET_SQUARES = new Map();
 export let WATERFLOW_CANDIDATE_SQUARES = new Map();
 export let LIGHT_SOURCES = new Array();
+
 export let global_theta_base = 0;
 
 export function purgeMaps() {

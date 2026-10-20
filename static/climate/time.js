@@ -27,7 +27,9 @@ import {
     UI_SPEED_0, saveGD,
     UI_GAME_MAX_CANVAS_SQUARES_X,
     UI_GAME_MAX_CANVAS_SQUARES_Y,
-    UI_LIGHTING_SUN
+    UI_LIGHTING_SUN,
+    UI_GLOBAL_THETA_BASE,
+    UI_GLOBAL_THETA_BASE_DT
 } from "../ui/UIData.js";
 import { iterateOnOrganisms } from "../organisms/orgOperations.js";
 import { SunCalc } from "./suncalc/suncalc.js";
@@ -426,11 +428,15 @@ function updateTime() {
 
     if (dt < 1000) {
         curDay += dt / (MILLIS_PER_DAY / getCurTimeScale());
+        curWeatherDay += dt / MILLIS_PER_DAY;
+
         _prevDaylightStrength = _cdaylightStrength;
         _cdaylightStrength = null;
         _cmoonlightStrength = null;
 
-        curWeatherDay += dt / MILLIS_PER_DAY;
+        saveGD(UI_GLOBAL_THETA_BASE, loadGD(UI_GLOBAL_THETA_BASE) + loadGD(UI_GLOBAL_THETA_BASE_DT) * dt);
+        saveGD(UI_GLOBAL_THETA_BASE_DT, loadGD(UI_GLOBAL_THETA_BASE_DT) * 0.85);
+
     }
 }
 
