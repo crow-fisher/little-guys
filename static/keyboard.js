@@ -173,11 +173,7 @@ export function keydown(e) {
     let mode = loadGD(UI_PALETTE_MODE);
     let selectMode = loadGD(UI_PALETTE_SELECT);
 
-    if (mode == UI_PALETTE_MODE_ROCK) {
-        rockKeymap(e.key);
-    } else {
-        toollessKeyMap(e.key);
-    }
+    toollessKeyMap(e.key);
 
     // if (e.key == "s") {
     //     doZoom(-0.1);
