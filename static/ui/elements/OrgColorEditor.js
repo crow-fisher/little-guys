@@ -55,8 +55,8 @@ export class OrgColorEditor extends WindowElement {
         this.cmap = this.refOrgFunc()[this.orgAttribute];
         let dl = getDefaultLightingArr(), c = new Array(4);
 
-        this.numRows = this.refOrgFunc().maxFlowerPetalLength;
-        this.numCols = this.refOrgFunc().numPetals;
+        this.numRows = this.refOrgFunc().colorAttribute[this.orgAttribute].x();
+        this.numCols = this.refOrgFunc().colorAttribute[this.orgAttribute].y();
 
         this.rh = Math.floor(this.sizeY / this.numRows);
         this.rw = Math.floor(this.sizeX / this.numCols);

@@ -130,10 +130,10 @@ function rockKeymap(key) {
 
 function toollessKeyMap(key) {
     if (key == "q") {
-        saveGD(UI_GLOBAL_THETA_BASE_DT, loadGD(UI_GLOBAL_THETA_BASE_DT) + .01);
+        saveGD(UI_GLOBAL_THETA_BASE_DT, loadGD(UI_GLOBAL_THETA_BASE_DT) + .001);
     }
     if (key == "e") {
-        saveGD(UI_GLOBAL_THETA_BASE_DT, loadGD(UI_GLOBAL_THETA_BASE_DT) - .01);
+        saveGD(UI_GLOBAL_THETA_BASE_DT, loadGD(UI_GLOBAL_THETA_BASE_DT) - .001);
     }
 
     if (key == "w") {

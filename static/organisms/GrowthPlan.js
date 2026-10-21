@@ -271,9 +271,14 @@ export class GrowthComponent {
 
     getDistToFront() {
         if (this.parentComponent == null) {
-            return this.distToFront;
+            return 0;
         } else {
-            return this.distToFront + this.parentComponent.getDistToFront();
+            return this.distToFront - this.parentComponent.lifeSquares.find(
+                (lsq) => 
+                    (lsq.getPosX() - this.lifeSquares.at(0).getPosX()) ** 2 + 
+                    (lsq.getPosX() - this.lifeSquares.at(0).getPosX()) ** 2
+                    < .1
+                )?.distToFront ?? 0;
         }
     }
 
@@ -332,8 +337,7 @@ export class GrowthComponent {
             let offsetX = relLsqX * Math.cos(currentTheta) - relLsqY * Math.sin(currentTheta);
             let offsetY = relLsqY; //  * Math.cos(currentTheta) + relLsqX * Math.sin(currentTheta);
 
-            this.distToFront = offsetX * Math.cos(this.getTheta()) * Math.sin(this.getBaseRotation());
-            lsq.distToFront = this.getDistToFront() + 1.9 * Math.sin(relLsqY * 4);
+            lsq.distToFront = offsetX * Math.cos(this.getTheta()) + this.parentComponent.getDistToFront();
             offsetX *= Math.sin(this.getTheta());
             offsetY *= Math.cos(this.getTwist());
             

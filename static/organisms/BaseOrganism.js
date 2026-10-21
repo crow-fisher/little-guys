@@ -474,7 +474,6 @@ class BaseOrganism {
         }
     }
     doGreenGrowth() {
-
         if (!loadGD(UI_FASTGROW)) {
             if (this.age < this.greenLastGrown + this.lightLevelThrottleVal() * (this.getGrowthCycleMaturityLength() / this.growthNumGreen)) {
                 return false;
@@ -595,7 +594,7 @@ class BaseOrganism {
     // ** PLAN GROWTH METHOD IMPLEMENTED BY ORGANISMS 
     // for green growth, roots are handled generically (for now)
     planGrowth() {
-        if (this.getWilt() <= -0.5) {
+        if (this.getWilt() <= -0.5 && !loadGD(UI_FASTGROW)) {
             return;
         }
         if (this.growthPlans.some((gp) => !gp.areStepsCompleted())) {
@@ -613,7 +612,7 @@ class BaseOrganism {
     }
 
     applyColor(color, x, dest, v=true, m=1, vm=1) {
-        for (let i = 0; i < color.length; i++) {
+        for (let i = 0; i < dest.length; i++) {
             dest[i] = m * (color[i] + (v ? Math.sin((this.getStaticRand(x * 3 + i)) * this.lsqColorVarianceSpeed()) * this.lsqColorVarianceMult() * vm : 0))
         }
     }
