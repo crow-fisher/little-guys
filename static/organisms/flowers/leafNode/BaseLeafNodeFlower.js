@@ -1,4 +1,4 @@
-import { dec2bin, hsvToRgb, invlerp, randNumber, randRange } from "../../../common.js";
+import { dec2bin, hsvaToRgba, hsvToRgb, invlerp, randNumber, randRange } from "../../../common.js";
 import { STAGE_ADULT, STAGE_FLOWER, SUBTYPE_FLOWER, SUBTYPE_FLOWERBUD, SUBTYPE_FLOWERNODE, SUBTYPE_FLOWERTIP, SUBTYPE_GRASS, SUBTYPE_LEAF, SUBTYPE_NODE, SUBTYPE_STEM, TYPE_FLOWERNODE, TYPE_FLOWERPETAL, TYPE_GRASS, TYPE_LEAF, TYPE_LEAFSTEM, TYPE_STEM } from "../../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep, ThetaMin, ThetaMax, TwistMin, TwistMax, RotationMin, RotationMax, DeflectionMin, DeflectionMax, CurveMin, CurveMax, StrengthMin, StrengthMax, PeriodMin, PeriodMax } from "../../GrowthPlan.js";
@@ -11,7 +11,7 @@ import { OrganismGeneticCode } from "../../genetics/OrganismGeneticCode.js";
 import { SKSA_THETA, SKSA_TWIST, SKSA_DEFLECTION, SKSA_CURVE, SKSA_STRENGTH, SKSA_PERIOD, SKSM_STEM, SKSO_LEAFNODE, SKSM_LEAF, SKSM_LEAFSTEM, SKSA_ROTATION, SKSC_FLOWER, SKSC_LEAF, SKSC_LEAFSTEM, SKSC_STEM } from "../../genetics/enum/namespace/vanilla/keySpecifiers.js";
 import { SKF_ATTRIBUTE, SKF_COLOR, SKF_MEMBER, SKF_ORIGIN } from "../../genetics/enum/namespace/vanilla/keyFlags.js";
 import { compositeSoupKey } from "../../genetics/enum/soupEnum.js";
-import { addVec3MultDest, addVectorsCopy, addVectorsCopyPost } from "../../../util/vector.js";
+import { addVec3MultDest, addVectorsCopy, addVectorsCopyMult, addVectorsCopyPost } from "../../../util/vector.js";
 
 export let leafNodeFlower_dnm = structuredClone(baseOrganism_dnm);
 leafNodeFlower_dnm[_llt_mult] = 1.45;
@@ -31,7 +31,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.proto = "BaseLeafNodeFlower";
         this.uiRef = UI_ORGANISM_FLOWER_LEAFNODE;
         this.maxNumStem = 1;
-        this.maxStemLength = 14;
+        this.maxStemLength = 35;
         this.maxLeafStemLength = 3;
         this.maxLeafLength = 4;
 
@@ -66,35 +66,42 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.colorStem = [46, 53, 16];
         this.colorStemFlowerBase = [21, 26, 6];
 
-        this.flowerColor = [];
-        
-        let cur = [0, 0, 0, 1];
-        for (let i = 0; i < this.numPetals; i++) {
-            this.flowerColor.push([addVectorsCopyPost(cur, [10, 10, 10, 0])]);
-        }
-
-        this.stemColor =     [[[10, 10, 10, 1]]];
-        this.leafColor =     [[[10, 10, 10, 1]]];
-        this.leafStemColor = [[[10, 10, 10, 1]]];
+        this.flowerColor   = []
+        this.stemColor     = []
+        this.leafColor     = []
+        this.leafStemColor = []
 
         this.colorAttribute = {
-            t: {
+            flowerColor: {
                 x: () => this.maxFlowerPetalLength,
                 y: () => this.numPetals
             },
             stemColor: {
-                x: () => this.maxNumStem,
-                y: () => this.maxStemLength
+                x: () => this.maxStemLength,
+                y: () => this.maxNumStem
             },
             leafStemColor: {
-                x: () => this.maxNumStem,
+                x: () => this.maxStemLength,
                 y: () => this.maxLeafStemLength
             },
             leafColor: {
-                x: () => this.maxNumStem,
+                x: () => this.maxStemLength,
                 y: () => this.maxLeafLength
             }
         }
+
+        let x = 0;
+        Object.keys(this.colorAttribute).forEach((key) => {
+            for (let i = 0; i < this.colorAttribute[key].x(); i++) {
+                this[key][i] = [];
+                for (let j = 0; j < this.colorAttribute[key].y(); j++) {
+                    this[key][i].push(
+                        hsvaToRgba(
+                            (20 * x++) % 360,
+                            0.35, 0.75, 1));
+                }
+            }
+        })
 
         this.stemParams = {
             ThetaMin: -Math.PI,
@@ -319,7 +326,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         return i + j;
     }
 
-    parseColor(arr, code, _i, x=1, y=1) {
+    parseColor(arr, code, _i, x = 1, y = 1) {
         for (let i = 0; i < x; i++) {
             for (let j = 0; j < y; j++) {
                 arr[i][j] = code.popRgbaValue(++_i);
@@ -338,9 +345,9 @@ export class BaseLeafNodeFlower extends BaseOrganism {
 
     getGeneticsColorConfig() {
         return {
-            "flower": "flowerColor", // referencing "this.flowerColor", 
-            "stem": "stemColor", 
-            "leafStem": "leafStemColor", 
+            "flower": "flowerColor",
+            "stem": "stemColor",
+            "leafStem": "leafStemColor",
             "leaf": "leafColor"
         }
 
@@ -373,7 +380,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         let p0 = this.evolutionParameters[0];
 
         this.maxNumStem = 1;
-        this.maxStemLength = this.maxStemLength + Math.floor(this.maxStemLength * p0);
+        this.maxStemLength = this.maxStemLength * (.7 + .3 * Math.floor(this.maxStemLength * Math.abs((.5 - p0))));
 
         this.growthNumGreen = this.maxStemLength * this.maxNumStem + ((this.maxLeafStemLength + this.maxLeafLength) * this.maxNumStem / 3) + (this.numPetals * this.maxFlowerPetalLength)
         this.growthNumRoots = this.growthNumGreen * .1;
@@ -384,37 +391,41 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         console.log(this.genetics);
     }
 
+
+
     processLsqRendering() {
-            // if (!this.orgVisualUpdateFlag)
+        // if (!this.orgVisualUpdateFlag)
         //     return;
+
+        let sIdx = 0;
         this.stems.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .forEach((stem) => {
                 let l = stem.lifeSquares.length;
-                let i = 0;
-                stem.lifeSquares.forEach((lsq) => {
-                    lsq.width = .1 + .2 * Math.log(3 + l - i);
+                for (let lsqIdx = 0; lsqIdx < stem.lifeSquares.length; lsqIdx++) {
+                    let lsq = stem.lifeSquares.at(lsqIdx);
+                    lsq.width = .1 + .2 * Math.log(3 + l - lsqIdx);
                     lsq.height = this.stemLsqHeight;
-                    i += 1;
-                    this.applyColor(this.stemColor[0][0], i, lsq.renderColor);
-                });
-                stem.lifeSquares[0].theta = stem.lifeSquares[1]?.theta ?? stem.lifeSquares[0].theta;
-
+                    this.applyColor(this.stemColor[lsqIdx][sIdx], lsqIdx, lsq.renderColor);
+                }
                 if (this.flowers.length > 0) {
                     stem.lifeSquares[stem.lifeSquares.length - 1].height = 0.15;
                 }
-            })
-
+                stem.lifeSquares[0].theta = stem.lifeSquares[1]?.theta ?? stem.lifeSquares[0].theta;
+                sIdx += 1;
+            });
 
         let j = 0;
+        let leafIdx = 0;
         this.leaves.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .map((leafStem) => [leafStem, leafStem?.children.at(0)])
             .forEach((leafArr) => {
                 let leafStem = leafArr[0];
+                let leafstemLsqIdx = 0;
                 leafStem.lifeSquares.forEach((lsq) => {
                     lsq.renderMode = LSQ_RENDERMODE_THETA;
                     lsq.width = 0.3;
                     lsq.height = this.leafStemLsqHeight;
-                    this.applyColor(this.leafStemColor[0][0], j, lsq.renderColor, true, .8, 2);
+                    this.applyColor(this.leafStemColor[leafIdx][leafstemLsqIdx++], j, lsq.renderColor, true, .8, 2);
 
                 });
                 leafStem.lifeSquares[0].theta = leafStem.lifeSquares[1]?.theta ?? leafStem.lifeSquares[0].theta;
@@ -431,6 +442,8 @@ export class BaseLeafNodeFlower extends BaseOrganism {
 
                 let m = Math.max((1 - Math.abs(Math.cos(leaf.getTheta()))), (Math.abs(Math.sin(leaf.getTwist()))))
 
+                let leafLsqIdx = 0;
+
                 leaf.lifeSquares.forEach((lsq) => {
 
                     lsq.w1 = 1 * this.leafShapeFunc((i) / (leaf.lifeSquares.length + 1));
@@ -440,7 +453,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                     lsq.renderMode = LSQ_RENDERMODE_THETA_SLOPE;
                     i += 1;
                     j += 1;
-                    this.applyColor(this.leafColor[0][0], j, lsq.renderColor, true, .8, 2);
+                    this.applyColor(this.leafColor[leafIdx][leafLsqIdx], j, lsq.renderColor, true, .8, 2);
                 });
 
                 leaf.lifeSquares[0].theta = leaf.lifeSquares[1]?.theta ?? leaf.lifeSquares[0].theta;
@@ -761,7 +774,7 @@ export class BaseLeafNodeFlower extends BaseOrganism {
             this.targetLeafLength += 1;
             return;
         }
-        
+
         if (this.targetFlowerLength < this.maxFlowerLength) {
             this.targetFlowerLength += 1;
             return;

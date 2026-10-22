@@ -104,11 +104,35 @@ export class GeneticsComponent extends Component {
 
           let ccc = new ConditionalContainer(this.window, 0, 1, () => loadGD(UI_COLORPICKER_COMPONENT));
           r1c1.addElement(ccc);
+          
+          let cccR1 = new Container(this.window, 0, 0);
+          
+          let cMid = 0.5;
+          let dGap = getBaseUISize() * 3;
 
-          Object.keys((gc)).forEach((key) => {
-               ccc.addElement(new TextBackground(this.window, sizeX, h1, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, key));
-               ccc.addElement(new OrgColorEditor(this.window, sizeX, h1 * 4, () => this.refOrg, gc[key]));
-          });
+          key = "flowerColor";
+          ccc.addElement(new OrgColorEditor(this.window, sizeX, h1 * 4, () => this.refOrg, key));
+
+          ccc.addElement(cccR1);
+          let cccR1C1 = new Container(this.window, 0, 1);
+          let cccR1C2 = new Container(this.window, 0, 1);
+               
+          cccR1.addElement(cccR1C1);
+          cccR1.addElement(new TextBackground(this.window, dGap, 0))
+          cccR1.addElement(cccR1C2);
+
+          // left column 
+          // leaves
+          key = "leafColor"
+          cccR1C1.addElement(new OrgColorEditor(this.window, sizeX * cMid, h1 * 4, () => this.refOrg, key));
+          
+          key = "leafStemColor"
+          cccR1C1.addElement(new OrgColorEditor(this.window, sizeX * cMid, h1 * 4, () => this.refOrg, key));
+          
+          // right column
+          // stems
+          key = "stemColor"
+          cccR1C2.addElement(new OrgColorEditor(this.window, sizeX * cMid - dGap, h1 * 8, () => this.refOrg, key));
           
 
           let r1c1r1 = new Container(this.window, 0, 0);
