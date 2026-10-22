@@ -78,21 +78,21 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         this.leafStemColor = [[[10, 10, 10, 1]]];
 
         this.colorAttribute = {
-            flowerColor: {
+            t: {
                 x: () => this.maxFlowerPetalLength,
                 y: () => this.numPetals
             },
             stemColor: {
-                x: () => 1,
-                y: () => 1
+                x: () => this.maxNumStem,
+                y: () => this.maxStemLength
             },
             leafStemColor: {
-                x: () => 1,
-                y: () => 1
+                x: () => this.maxNumStem,
+                y: () => this.maxLeafStemLength
             },
             leafColor: {
-                x: () => 1,
-                y: () => 1
+                x: () => this.maxNumStem,
+                y: () => this.maxLeafLength
             }
         }
 
