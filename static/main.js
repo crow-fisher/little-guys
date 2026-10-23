@@ -19,10 +19,15 @@ import { canvasPanRoutine } from "./canvas.js";
 initUI();
 let lightingHandler = new LightingHandler();
 let climateHandler = new ClimateHandler();
+let starHandler = null;
 doTimeSkipToNow();
 
 export function getLightingHandler() {
     return lightingHandler;
+}
+
+export function getStarHandler() {
+    return starHandler;
 }
 
 export function lightingExposureAdjustment() {

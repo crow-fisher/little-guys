@@ -184,12 +184,7 @@ export function keydown(e) {
 }
 
 export function keyup(e) {
-    if (isPlayerRunning()) {
-        playerKeyUp(e.key);
-    }
-    if (e.key in keyPressMap) {
-        keyPressMap[e.key] = false;
-    }
+    keyPressMap[e.key] = false;
 }
 
 addUIFunctionMap(UI_PALETTE_ROCKIDX, clearMouseHoverColorCacheMap);
