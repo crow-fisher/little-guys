@@ -5,19 +5,16 @@ import { addTemperature, addWaterSaturationPascalsSqCoords } from "./climate/sim
 import { addWindPerssureMaintainHumidity, addWindPressureCloud, addWindPressureDryAir } from "./climate/simulation/wind.js";
 import { removeSquare } from "./globalOperations.js";
 import { getLastMouseDown, getLastMoveOffset, getLeftMouseUpEvent, isLeftMouseClicked, isMiddleMouseClicked, isRightMouseClicked, setMouseTouchStartCallback } from "./mouse.js";
-import { BaseGrassOrganism } from "./organisms/grass/BaseGrassOrganism.js";
 import { addSquare, addSquareOverride, getSquares, removeSquarePos } from "./squares/sqOperations.js";
 import { AquiferSquare } from "./squares/parameterized/RainSquare.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { SeedSquare } from "./squares/SeedSquare.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
-import { loadGD, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CLIMATE_WEATHER_TOOL_CLOUD, UI_CLIMATE_WEATHER_TOOL_DRYAIR, UI_CLIMATE_WEATHER_TOOL_MATCHEDAIR, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_STRENGTH, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_STRENGTH, UI_GODMODE_TEMPERATURE, UI_SM_GODMODE, UI_PALETTE_PLANTS, UI_PALETTE_BLOCKS, UI_PALETTE_AQUIFER, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_PALETTE_SOILROCK, UI_PALETTE_WATER, UI_CLIMATE_SELECT_CLOUDS, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_CLIMATE_TOOL_SIZE, UI_PALETTE_MODE_ROCK, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, isEyedropperOrMixerClicked, UI_ORGANISM_GRASS_BASE, UI_ORGANISM_GRASS_CATTAIL, UI_CLIMATE_WEATHER_TOOL_CLOUD_HUMIDITY, UI_PALETTE_SPECIAL_CHURN, UI_PALETTE_SPECIAL_CHURN_STRENGTH, UI_PALETTE_SPECIAL_CHURN_WIDE, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_SM_BB, UI_PALETTE_SURFACE_MATCH, UI_ORGANISM_FLOWER_LEAFNODE, UI_ORGANISM_FLOWER_LEAFNODE_SUNFLOWER, UI_PALETTE_GENETICS } from "./ui/UIData.js";
+import { loadGD, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CLIMATE_WEATHER_TOOL_CLOUD, UI_CLIMATE_WEATHER_TOOL_DRYAIR, UI_CLIMATE_WEATHER_TOOL_MATCHEDAIR, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_STRENGTH, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_STRENGTH, UI_GODMODE_TEMPERATURE, UI_SM_GODMODE, UI_PALETTE_PLANTS, UI_PALETTE_BLOCKS, UI_PALETTE_AQUIFER, UI_PALETTE_SELECT, UI_PALETTE_SURFACE, UI_PALETTE_SOILROCK, UI_PALETTE_WATER, UI_CLIMATE_SELECT_CLOUDS, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE_OFF, UI_CLIMATE_TOOL_SIZE, UI_PALETTE_MODE_ROCK, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, isEyedropperOrMixerClicked, UI_CLIMATE_WEATHER_TOOL_CLOUD_HUMIDITY, UI_PALETTE_SPECIAL_CHURN, UI_PALETTE_SPECIAL_CHURN_STRENGTH, UI_PALETTE_SPECIAL_CHURN_WIDE, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_SM_BB, UI_PALETTE_SURFACE_MATCH, UI_ORGANISM_FLOWER_LEAFNODE, UI_PALETTE_GENETICS } from "./ui/UIData.js";
 import { clearMouseHoverColorCacheMap, eyedropperBlockClick, eyedropperBlockHover, getGeneticsComponent, isWindowHovered, mixerBlockClick } from "./ui/WindowManager.js";
 import { randNumber, randRange } from "./common.js";
-import { CattailGrassOrganism } from "./organisms/grass/CattailGrassOrganism.js";
 import { BaseLeafNodeFlower } from "./organisms/flowers/leafNode/BaseLeafNodeFlower.js";
-import { SunflowerLeafNodeFlower } from "./organisms/flowers/leafNode/SunflowerLeafNodeFlower.js";
 let prevManipulationOffset;
 
 setMouseTouchStartCallback((inVal) => prevManipulationOffset = inVal);
@@ -308,15 +305,10 @@ function doBlockHover(lastMoveOffset) {
 }
 
 export function getPlantForRef(search) {
-    switch (search) {
-        case UI_ORGANISM_GRASS_BASE:
-            return BaseGrassOrganism;
-        case UI_ORGANISM_GRASS_CATTAIL:
-            return CattailGrassOrganism;
+    switch (search) { 
+        default:
         case UI_ORGANISM_FLOWER_LEAFNODE:
             return BaseLeafNodeFlower;
-        case UI_ORGANISM_FLOWER_LEAFNODE_SUNFLOWER:
-            return SunflowerLeafNodeFlower;
     }
 }
 

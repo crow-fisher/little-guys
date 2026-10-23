@@ -1,17 +1,19 @@
-import { createNewWorld, decompress, gameUserStateLoad, loadSlotFromSave, setSaveOrLoadInProgress } from "./saveAndLoad.js";
-import { resetClimateAndLighting, resetLighting, scheduler_main } from "./main.js";
-import { keydown, keyup } from "./keyboard.js";
-import { getLastMoveOffset, handleClick, handleMouseDown, handleMouseUp, handleTouchEnd, handleTouchMove, handleTouchStart } from "./mouse.js";
 import { getBaseSize, getCanvasHeight, getCanvasWidth, recacheCanvasPositions, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, transformPixelsToCanvasSquares } from "./canvas.js";
+import { zoom } from "./canvasUtil.js";
+import { keydown, keyup } from "./keyboard.js";
+import { resetClimateAndLighting, resetLighting, scheduler_main } from "./main.js";
+import { getLastMoveOffset, handleClick, handleMouseDown, handleMouseUp, handleTouchEnd, handleTouchMove, handleTouchStart } from "./mouse.js";
+import { createNewWorld, decompress, gameUserStateLoad, loadSlotFromSave, setSaveOrLoadInProgress } from "./saveAndLoad.js";
+import { BackgroundImageSquare, ImageSquare, RigidImageSquare, StaticImageSquare } from "./squares/ImageSquare.js";
+import { addSquare } from "./squares/sqOperations.js";
 import { addUIFunctionMap, loadGD, loadUI, saveGD, UI_CLIPS, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_NAME, UI_PALETTE_PASTE_MODE, UI_PALETTE_PASTE_MODE_BG, UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_RIGID, UI_PALETTE_PHYSICS_STATIC, UI_SIMULATION_HEIGHT, UI_UI_CURWORLD, UI_UI_SIZE, UI_UI_WORLDNAME } from "./ui/UIData.js";
 import { initUI } from "./ui/WindowManager.js";
-import { addSquare } from "./squares/sqOperations.js";
 import { waterGraphReset } from "./waterGraph.js";
-import { BackgroundImageSquare, ImageSquare, RigidImageSquare, StaticImageSquare } from "./squares/ImageSquare.js";
-import { zoom } from "./canvasUtil.js";
 
 export let MAIN_CANVAS = document.getElementById("main");
 export let MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
+
+export let LOADED = false;
 
 let params = new URLSearchParams(document.location.search);
 
@@ -38,7 +40,10 @@ window.oncontextmenu = () => false;
 window.onload = function () {
     document.addEventListener('keydown', keydown);
     document.addEventListener('keyup', keyup);
+    LOADED = true;
+    indexInit();
     gameUserStateLoad();
+    setTimeout(scheduler_main, 0);
 }
 
 let width = 0;
@@ -52,6 +57,9 @@ export function _resetLighting() {
 }
 
 export function indexCanvasSize(shouldInitUIClimateAndLighting = true) {
+    if (!LOADED) {
+        return;
+    }
     let margin = 0;
     width = Math.floor(window.innerWidth - margin);
     height = Math.floor(window.innerHeight - margin);
@@ -73,12 +81,13 @@ export function indexCanvasSize(shouldInitUIClimateAndLighting = true) {
     recacheCanvasPositions();
 }
 
-addUIFunctionMap(UI_SIMULATION_HEIGHT, () => {
-    saveGD(UI_MAIN_NEWWORLD_SIMHEIGHT, loadGD(UI_SIMULATION_HEIGHT));
-    indexCanvasSize(false);
-});
-
-addUIFunctionMap(UI_UI_SIZE, initUI)
+function indexInit() {
+    addUIFunctionMap(UI_SIMULATION_HEIGHT, () => {
+        saveGD(UI_MAIN_NEWWORLD_SIMHEIGHT, loadGD(UI_SIMULATION_HEIGHT));
+        indexCanvasSize(false);
+    });
+    addUIFunctionMap(UI_UI_SIZE, initUI)
+}
 
 let backgroundColor = "#FFFFFF";
 export function setBackgroundColor(hexColor) {
@@ -178,8 +187,6 @@ window.addEventListener("drop", (e) => {
 });
 
 MAIN_CANVAS.addEventListener("drop", handleFileDrop);
-
-setTimeout(scheduler_main, 0);
 
 // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Interact_with_the_clipboard
 export function updateClipboard(newClip) {

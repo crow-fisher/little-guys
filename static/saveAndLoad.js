@@ -112,7 +112,6 @@ export async function gameUserStateLoad() {
         } else {
             saveMapEntry(UICONFIG, UI_UI_SIZE, 12);
         }
-        initUI();
     }
 }
 export async function saveUserSettings() {

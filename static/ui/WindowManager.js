@@ -6,7 +6,6 @@ import { TopBarComponent } from "./topbar/TopBarComponent.js";
 import { ViewSubtreeComponent } from "./components/ViewSubtreeComponent.js";
 import { loadGD, UI_SM_LIGHTING, UI_PALETTE_PLANTS, UI_TOPBAR_BLOCK, UI_PALETTE_BLOCKS, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveGD, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_TIME, UI_TOPBAR_WEATHER, UI_MAIN_NEWWORLD, saveUI, UI_UI_SIZE, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_CLIMATE_SELECT_CLOUDS, UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK, UI_PALETTE_SELECT, UI_PALETTE_SOILROCK, UI_PALETTE_MODE_SOIL, UI_PALETTE_CLIPS, UI_PALETTE_CLIPS_WAYPOINT_NAME, UI_PALETTE_STRENGTH, UI_PALETTE_WATER, UI_PALETTE_SURFACE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_COMPOSITION, UI_LIGHTING_ENABLED, UI_PALETTE_AQUIFER, UI_VISUALIZER_ORGANISM, UI_PALETTE_GENETICS, UI_COLORPICKER_COMPONENT, UI_AA_PLOT_ACTIVE } from "./UIData.js";
 import { getSquares } from "../squares/sqOperations.js";
-import { ClipComponent } from "./components/ClipComponent.js";
 import { getCurMixIdx, getMixArr, getMixArrLen, getTargetMixIdx, setCurMixIdx, setTargetMixIdx } from "../globals.js";
 import { MainMenuComponent } from "./components/MainMenuComponent.js";
 import { LightingSubtree } from "./components/LightingSubtree.js";
@@ -48,12 +47,13 @@ let viewSubtree;
 let lightingSubtree;
 
 all_components = [];
-topBarComponent = new TopBarComponent("UI_TOPBAR");
 
 export function initUI() {
     if (getBaseUISize() * 40 > getCanvasHeight() && getCanvasHeight() > 500) {
         saveUI(UI_UI_SIZE, 8);
     }
+
+    topBarComponent = new TopBarComponent("UI_TOPBAR");
 
     const palette_y_offset = getBaseUISize() * 4;
 
@@ -84,7 +84,6 @@ export function initUI() {
     geneticsComponent = new GeneticsComponent(getBaseUISize() * 24, palette_y_offset, 0, 0, UI_PALETTE_GENETICS);
     all_components.push(geneticsComponent);
 
-    playerSetup = new ClipComponent(getBaseUISize() * 34, getBaseUISize() * 6, 0, 0, UI_PALETTE_CLIPS);
     all_components.push(playerSetup);
     all_components.push(new TimeSkipComponent(() => topBarComponent.getElementXPositionFunc(0, 18 - 5), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_TIME));
     all_components.push(new WeatherSelectionComponent(() => topBarComponent.getElementXPositionFunc(0, 20 - 5), () => topBarComponent.ySize(), 0, 0, UI_TOPBAR_WEATHER));
@@ -98,8 +97,6 @@ export function initUI() {
 
     astronomyAtlas = new AstronomyAtlasComponent(getBaseUISize() * 90, getBaseUISize() * 30, 0, 0, UI_AA_PLOT_ACTIVE) 
     all_components.push(astronomyAtlas);
-
-    
 }
 
 addUIFunctionMap(UI_PALETTE_BLOCKS, () => blockPalette.window.lastTouched = Date.now());

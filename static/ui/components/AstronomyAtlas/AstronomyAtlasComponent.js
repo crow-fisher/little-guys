@@ -1,27 +1,18 @@
 import { getBaseUISize } from "../../../canvas.js";
 import { getActiveClimate } from "../../../climate/climateManager.js";
-import { COLOR_BLACK, COLOR_BLUE, COLOR_OTHER_BLUE, COLOR_RED, COLOR_WHITE } from "../../../colors.js";
 import { Component } from "../../Component.js";
 import { ConditionalContainer } from "../../ConditionalContainer.js";
 import { Container } from "../../Container.js";
-import { Button } from "../../elements/Button.js";
-import { ButtonFunctionalText } from "../../elements/ButtonFunctionalText.js";
-import { PlotStarScatter } from "../../elements/plots/PlotStarScatter.js";
-import { RadioToggle } from "../../elements/RadioToggle.js";
-import { RadioToggleLabel } from "../../elements/RadioToggleLabel.js";
-import { SliderGradientBackground } from "../../elements/SliderGradientBackground.js";
 import { Text } from "../../elements/Text.js";
 import { TextBackground } from "../../elements/TextBackground.js";
 import { Toggle } from "../../elements/Toggle.js";
-import { loadGD, UI_CENTER, saveGD, UI_AA_PLOT_WIDTH, UI_AA_PLOT_HEIGHT, UI_AA_SELECT_FILTERMODE_STARS, UI_AA_LABEL_STARS, UI_AA_PLOT_SELECTRADIUS, UI_AA_PLOT_LOCALITY_SELECTMODE, UI_AA_SELECT_FILTERMODE_GRAPH, UI_AA_LABEL_GRAPH, UI_AA_PLOT_HIDECONTROLS, UI_AA_PLOT_TOOLBOX_STAR_STYLE, UI_AA_MODE_SELECT, UI_AA_MODE_PLOT, UI_AA_MODE_SETUP, UI_AA_MODE_STYLE, UI_AA_MODE_LABEL } from "../../UIData.js";
-import { getAstronomyAtlasComponent } from "../../WindowManager.js";
+import { loadGD, UI_CENTER, UI_AA_PLOT_WIDTH, UI_AA_PLOT_HEIGHT, UI_AA_MODE_SELECT, UI_AA_MODE_PLOT, UI_AA_MODE_SETUP, UI_AA_MODE_STYLE, UI_AA_MODE_LABEL } from "../../UIData.js";
 import { AstronomyAtlasModeFuncLabel } from "./modes/AstronomyAtlasModeFuncLabel.js";
 import { AstronomyAtlasModeFuncPlot } from "./modes/AstronomyAtlasModeFuncPlot.js";
 import { AstronomyAtlasModeFuncSelect } from "./modes/AstronomyAtlasModeFuncSelect.js";
 import { AstronomyAtlasModeFuncSetup } from "./modes/AstronomyAtlasModeFuncSetup.js";
 import { AstronomyAtlasModeFuncStyle } from "./modes/AstronomyAtlasModeFuncStyle.js";
 import { initAAUIFunctionMaps } from "./modes/AstronomyAtlasUIFunctionMaps.js";
-import { addPlotStarStyleToContainer } from "./PlotStarStyle.js";
 
 export class AstronomyAtlasComponent extends Component {
     constructor(posX, posY, padding, dir, key) {

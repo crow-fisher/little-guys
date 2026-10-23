@@ -16,14 +16,11 @@ import { gamepadInputLoop } from "./gamepad.js";
 import { renderCloudsDebug } from "./climate/weather/weatherManager.js";
 import { clearTimeouts, completeActiveJobs, prepareTickJobs } from "./scheduler.js";
 import { canvasPanRoutine } from "./canvasUtil.js";
-// import { StarHandler } from "./climate/stars/starHandler.js";
+import { StarHandler } from "./climate/stars/starHandler.js";
 
-let lightingHandler = new LightingHandler();
-let climateHandler = new ClimateHandler();
-let starHandler = null ;//new StarHandler();
-
-initUI();
-doTimeSkipToNow();
+let starHandler;
+let lightingHandler;
+let climateHandler;
 
 export function getLightingHandler() {
     return lightingHandler;
@@ -32,6 +29,17 @@ export function getLightingHandler() {
 export function getStarHandler() {
     return starHandler;
 }
+
+export function getAtmosphereHandler() {
+    return climateHandler;
+}
+
+function initHandlers(force) {
+    starHandler = (force ? new StarHandler() : starHandler ?? new StarHandler());
+    lightingHandler = (force ? new LightingHandler() : lightingHandler ?? new LightingHandler());
+    climateHandler = (force ? new ClimateHandler() : climateHandler ?? new ClimateHandler());
+}
+
 
 export function lightingExposureAdjustment() {
     let mult = loadGD(UI_LIGHTING_GLOBAL) / lightingHandler.plantAvailableLighting;
@@ -63,6 +71,7 @@ function playerMainTick() {
 
 export function scheduler_main() {
     if (!isSaveOrLoadInProgress()) {
+        initHandlers();
         resetSqColChangeMap();
         updateTime();
         doClickAdd();
