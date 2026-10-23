@@ -12,7 +12,7 @@ import { initGroupList, purgeMaps, regSquareToGroup } from "./globals.js";
 import { getActiveClimate } from "./climate/climateManager.js";
 import { doSingleTimeMouseEvent } from "./mouse.js";
 import { downloadFile, MOUSEEVENT_UNHIDE } from "./common.js";
-import { resetZoom } from "./canvas.js";
+import { resetZoom } from "./canvasUtil.js";
 
 
 let saveOrLoadInProgress = false;

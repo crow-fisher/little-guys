@@ -614,18 +614,4 @@ export class SoilSquare extends BaseSquare {
         this.renderWithVariedColors(loadGD(UI_CONFIG_VIEWMODE_SUIT_OPACITY));
 
     }
-
-
-}
-
-let s = new SoilSquare(10, 10);
-
-s.clay = .33;
-s.silt = .33;
-s.sand = .34;
-
-for (let wc = 0; wc < 0.5; wc += .01) {
-    let mp = s.getMatricPressure(wc);
-    let imp = s.getInverseMatricPressure(mp);
-    console.log(wc, mp, imp)
 }

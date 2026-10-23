@@ -1,4 +1,5 @@
-import { getBaseUISize, resetZoom } from "../../canvas.js";
+import { getBaseUISize } from "../../canvas.js";
+import { resetZoom } from "../../canvasUtil.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { purgeCanvasFrameLimit } from "../../globalOperations.js";
 import { getLastMouseDown } from "../../mouse.js";

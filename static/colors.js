@@ -2,6 +2,7 @@ import { hexToRgb, hexToRgbArr, rgbToHex } from "./common.js";
 
 export const COLOR_RED = "#8E4162";
 export const COLOR_OTHER_BLUE = "#1053A5";
+export const COLOR_GREEN = "#56d125";
 export const COLOR_BLUE = "#0093AF";
 export const COLOR_BROWN = "#AF6E4D";
 export const COLOR_BLACK = "#1B1B1B";

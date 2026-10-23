@@ -4,7 +4,6 @@ import { calculateColor } from "../../climate/simulation/temperatureHumidity.js"
 import { hexToRgb, rgbToHex } from "../../common.js";
 import { getPlantForRef } from "../../manipulation.js";
 import { _lightDecayValue, _lightLevelDisplayExposureAdjustment, _llt_max, _llt_min, _llt_mult, _llt_throttlValMax, _lsqColorVarianceMult, _lsqColorVarianceSpeed, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, baseOrganism_dnm } from "../../organisms/BaseOrganism.js";
-import { coneflower_dnm } from "../../organisms/flowers/ConeflowerOrganism.js";
 import { grass_dnm } from "../../organisms/grass/BaseGrassOrganism.js";
 import { cattail_dnm } from "../../organisms/grass/CattailGrassOrganism.js";
 import { pmoss_dnm } from "../../organisms/mosses/PleurocarpMossOrganism.js";
@@ -314,7 +313,6 @@ export class OrganismComponent extends Component {
           let activeOrganism = loadGD(UI_ORGANISM_SELECT);
           switch (activeOrganism) {
                case UI_ORGANISM_FLOWER_LEAFNODE:
-                    return coneflower_dnm;
                case UI_ORGANISM_GRASS_BASE:
                     return grass_dnm;
                case UI_ORGANISM_GRASS_CATTAIL:

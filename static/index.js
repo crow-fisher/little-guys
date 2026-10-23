@@ -1,13 +1,14 @@
-import { createNewWorld, decompress, gameUserStateLoad, isSaveOrLoadInProgress, loadEmptyScene, loadSlot, loadSlotData, loadSlotFromSave, purgeGameState, saveCurGame, setSaveOrLoadInProgress } from "./saveAndLoad.js";
+import { createNewWorld, decompress, gameUserStateLoad, loadSlotFromSave, setSaveOrLoadInProgress } from "./saveAndLoad.js";
 import { resetClimateAndLighting, resetLighting, scheduler_main } from "./main.js";
 import { keydown, keyup } from "./keyboard.js";
 import { getLastMoveOffset, handleClick, handleMouseDown, handleMouseUp, handleTouchEnd, handleTouchMove, handleTouchStart } from "./mouse.js";
-import { getBaseSize, getCanvasHeight, getCanvasWidth, isSquareOnCanvas, recacheCanvasPositions, resetZoom, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, transformPixelsToCanvasSquares, zoom } from "./canvas.js";
-import { addUIFunctionMap, GAMEDATA, loadGD, loadUI, saveGD, setGAMEDATA, UI_CLIPS, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_NAME, UI_PALETTE_PASTE_MODE, UI_PALETTE_PASTE_MODE_BG, UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_RIGID, UI_PALETTE_PHYSICS_STATIC, UI_PALLETE_MODE_PASTE, UI_SIMULATION_HEIGHT, UI_UI_CURWORLD, UI_UI_SIZE, UI_UI_WORLDNAME } from "./ui/UIData.js";
+import { getBaseSize, getCanvasHeight, getCanvasWidth, recacheCanvasPositions, setBaseSize, setCanvasSquaresX, setCanvasSquaresY, transformPixelsToCanvasSquares } from "./canvas.js";
+import { addUIFunctionMap, loadGD, loadUI, saveGD, UI_CLIPS, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_MAIN_NEWWORLD_SIMHEIGHT, UI_NAME, UI_PALETTE_PASTE_MODE, UI_PALETTE_PASTE_MODE_BG, UI_PALETTE_PHYSICS, UI_PALETTE_PHYSICS_RIGID, UI_PALETTE_PHYSICS_STATIC, UI_SIMULATION_HEIGHT, UI_UI_CURWORLD, UI_UI_SIZE, UI_UI_WORLDNAME } from "./ui/UIData.js";
 import { initUI } from "./ui/WindowManager.js";
 import { addSquare } from "./squares/sqOperations.js";
 import { waterGraphReset } from "./waterGraph.js";
 import { BackgroundImageSquare, ImageSquare, RigidImageSquare, StaticImageSquare } from "./squares/ImageSquare.js";
+import { zoom } from "./canvasUtil.js";
 
 export let MAIN_CANVAS = document.getElementById("main");
 export let MAIN_CONTEXT = MAIN_CANVAS.getContext('2d');
