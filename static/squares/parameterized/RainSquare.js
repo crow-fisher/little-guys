@@ -2,7 +2,7 @@ import { addSquare, getSquares } from "../sqOperations.js";
 import { WaterSquare } from "../WaterSquare.js";
 import { hexToRgb, processColorLerp, processColorLerpBicolor, randNumber } from "../../common.js";
 import { RockSquare } from "./RockSquare.js";
-import { BaseSquare } from "../BaseSqaure.js";
+import { BaseSquare } from "../BaseSquare.js";
 import { loadGD, UI_PALETTE_BLOCKS, UI_PALETTE_AQUIFER, UI_PALETTE_AQUIFER_FLOWRATE, UI_PALETTE_ERASE, UI_PALETTE_SELECT } from "../../ui/UIData.js";
 import { MAIN_CONTEXT } from "../../index.js";
 import { getActiveClimate } from "../../climate/climateManager.js";

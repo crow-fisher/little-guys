@@ -1,4 +1,4 @@
-import { BaseSquare } from "./BaseSqaure.js";
+import { BaseSquare } from "./BaseSquare.js";
 class PlantSquare extends BaseSquare {
     constructor(posX, posY) {
         super(posX, posY);

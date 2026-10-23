@@ -4,7 +4,6 @@ import { purgeCanvasFrameLimit } from "../../globalOperations.js";
 import { getLastMouseDown } from "../../mouse.js";
 import { iterateOnOrganisms } from "../../organisms/orgOperations.js";
 import { STAGE_DEAD } from "../../organisms/Stages.js";
-import { isPlayerRunning, startPlayerMain, stopPlayerMain } from "../../player/playerMain.js";
 import { deleteAllSaveData, deleteHiddenWorlds, downloadSaveFile, hideWorld, loadEmptyScene, loadSlot, saveCurGame, unhideWorld } from "../../saveAndLoad.js";
 import { ConditionalContainer } from "../ConditionalContainer.js";
 import { Container } from "../Container.js";
@@ -122,26 +121,6 @@ export class MainMenuComponent extends SubTreeComponent {
 
         subMenuContainer.addElement(new Toggle(this.window, this.sizeX, getBaseUISize() * 3, this.textAlignOffsetX, UI_UI_PHONEMODE,
             "phone mode", () => getActiveClimate().getUIColorInactive(), () => getActiveClimate().getUIColorTransient(), 0.75, true, UICONFIG));
-
-        subMenuContainer.addElement(new ButtonFunctionalText(this.window, this.sizeX, getBaseUISize() * 3, UI_CENTER, () => {
-            if (isPlayerRunning()) {
-                stopPlayerMain();
-            } else {
-                startPlayerMain();
-            }
-        }, () => {
-            if (isPlayerRunning()) {
-                return "stop player";
-            } else {
-                return "start player";
-            }
-        }, () => {
-            if (isPlayerRunning()) {
-                return getActiveClimate().getUIColorInactive(0.63);
-            } else {
-                return getActiveClimate().getUIColorInactive(0.55);
-            }
-        }))
 
     }
 

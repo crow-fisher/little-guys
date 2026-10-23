@@ -1,4 +1,4 @@
-import { BaseSquare } from "./squares/BaseSqaure.js";
+import { BaseSquare } from "./squares/BaseSquare.js";
 import { PlantSquare } from "./squares/PlantSquare.js";
 import { WaterSquare } from "./squares/WaterSquare.js";
 import { LifeSquareGreen } from "./lifeSquares/LifeSquareGreen.js";
@@ -9,15 +9,8 @@ import { AquiferSquare } from "./squares/parameterized/RainSquare.js";
 import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
 import { LifeSquareRoot } from "./lifeSquares/LifeSquareRoot.js";
-import { BaseGrassOrganism, BaseGrassSeedOrganism } from "./organisms/grass/BaseGrassOrganism.js";
-import { PalmTreeOrganism, PalmTreeSeedOrganism } from "./organisms/trees/PalmTreeOrganism.js";
-import { ConeflowerOrganism, ConeflowerSeedOrganism } from "./organisms/flowers/ConeflowerOrganism.js";
-import { PleurocarpMossGreenSquare } from "./lifeSquares/mosses/PleurocarpMossGreenSquare.js";
-import { PleurocarpMossOrganism } from "./organisms/mosses/PleurocarpMossOrganism.js";
 import { BackgroundImageSquare, ImageSquare, RigidImageSquare, StaticImageSquare } from "./squares/ImageSquare.js";
-import { CattailGrassOrganism, CattailGrassSeedOrganism } from "./organisms/grass/CattailGrassOrganism.js";
 import { BaseLeafNodeFlower, BaseLeafNodeFlowerSeedOrganism } from "./organisms/flowers/leafNode/BaseLeafNodeFlower.js";
-import { SunflowerLeafNodeFlower, SunflowerLeafNodeFlowerSeedOrganism } from "./organisms/flowers/leafNode/SunflowerLeafNodeFlower.js";
 
 let ProtoMap = {
     "BaseSquare": BaseSquare.prototype,
@@ -34,44 +27,24 @@ let ProtoMap = {
     "RigidImageSquare": RigidImageSquare.prototype,
 
     "BaseOrganism": BaseOrganism.prototype,
-    "PalmTreeOrganism": PalmTreeOrganism.prototype,
-    "BaseGrassOrganism": BaseGrassOrganism.prototype,
-    "ConeflowerOrganism": ConeflowerOrganism.prototype,
-    "PleurocarpMossOrganism": PleurocarpMossOrganism.prototype,
-
     "BaseLeafNodeFlower": BaseLeafNodeFlower.prototype,
     "BaseLeafNodeFlowerSeedOrganism": BaseLeafNodeFlowerSeedOrganism.prototype,
 
-    "SunflowerLeafNodeFlower": SunflowerLeafNodeFlower.prototype,
-    "SunflowerLeafNodeFlowerSeedOrganism": SunflowerLeafNodeFlowerSeedOrganism.prototype,
-
     "LifeSquareGreen": LifeSquareGreen.prototype,
     "LifeSquareRoot": LifeSquareRoot.prototype,
-    "PleurocarpMossGreenSquare": PleurocarpMossGreenSquare.prototype,
 
     "SeedSquare": SeedSquare.prototype,
     "SeedLifeSquare": SeedLifeSquare.prototype,
-    "PalmTreeSeedOrganism": PalmTreeSeedOrganism.prototype,
-    "ConeflowerSeedOrganism": ConeflowerSeedOrganism.prototype,
-
-    "BaseGrassOrganism": BaseGrassOrganism.prototype,
-    "BaseGrassSeedOrganism": BaseGrassSeedOrganism.prototype,
-    "CattailGrassOrganism": CattailGrassOrganism.prototype, 
-    "CattailGrassSeedOrganism": CattailGrassSeedOrganism.prototype
-
 }
 
 let TypeMap = {
     [LifeSquareRoot.name]: LifeSquareRoot,
     [LifeSquareGreen.name]: LifeSquareGreen,
-    [PleurocarpMossGreenSquare.name]: PleurocarpMossGreenSquare
 }
 
 let TypeNameMap = {
     LifeSquareRoot: LifeSquareRoot.name,
     LifeSquareGreen: LifeSquareGreen.name,
-
-    PleurocarpMossGreenSquare: PleurocarpMossGreenSquare.name
 }
 
 export { ProtoMap, TypeMap, TypeNameMap}

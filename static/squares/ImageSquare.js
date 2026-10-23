@@ -4,7 +4,7 @@ import { getNextGroupId, isGroupGrounded } from "../globals.js";
 import { MAIN_CONTEXT } from "../index.js";
 import { applyLightingFromSource } from "../lighting/lightingProcessing.js";
 import { addSquare } from "./sqOperations.js";
-import { BaseSquare } from "./BaseSqaure.js";
+import { BaseSquare } from "./BaseSquare.js";
 import { RockSquare } from "./parameterized/RockSquare.js";
 import { SoilSquare } from "./parameterized/SoilSquare.js";
 

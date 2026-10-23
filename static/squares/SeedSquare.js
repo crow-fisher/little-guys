@@ -1,4 +1,4 @@
-import { BaseSquare } from "./BaseSqaure.js";
+import { BaseSquare } from "./BaseSquare.js";
     
 import { getSquares } from "./sqOperations.js";
 import { randNumber, randRange } from "../common.js";

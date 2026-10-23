@@ -1,4 +1,4 @@
-import { BaseSquare } from "./BaseSqaure.js";
+import { BaseSquare } from "./BaseSquare.js";
 import { getSquares, iterateOnSquares, getNeighbors, addSquare } from "./sqOperations.js";
 import { getGroupSize, getNextGroupId, WATERFLOW_CANDIDATE_SQUARES, WATERFLOW_TARGET_SQUARES } from "../globals.js";
 import { MAIN_CONTEXT } from "../index.js";

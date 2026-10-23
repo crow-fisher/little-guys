@@ -1,24 +1,9 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
-import { calculateColor } from "../../climate/simulation/temperatureHumidity.js";
-import { hexToRgb, rgbToHex } from "../../common.js";
-import { getPlantForRef } from "../../manipulation.js";
-import { _lightDecayValue, _lightLevelDisplayExposureAdjustment, _llt_max, _llt_min, _llt_mult, _llt_throttlValMax, _lsqColorVarianceMult, _lsqColorVarianceSpeed, _seedReduction, _waterPressureOverwaterThresh, _waterPressureSoilTarget, _waterPressureWiltThresh, baseOrganism_dnm } from "../../organisms/BaseOrganism.js";
-import { coneflower_dnm } from "../../organisms/flowers/ConeflowerOrganism.js";
-import { grass_dnm } from "../../organisms/grass/BaseGrassOrganism.js";
-import { cattail_dnm } from "../../organisms/grass/CattailGrassOrganism.js";
-import { pmoss_dnm } from "../../organisms/mosses/PleurocarpMossOrganism.js";
-import { copyVecValue } from "../../util/vector.js";
 import { Component } from "../Component.js";
-import { ConditionalContainer } from "../ConditionalContainer.js";
 import { Container } from "../Container.js";
-import { RadioToggleLabel } from "../elements/RadioToggleLabel.js";
-import { SliderGradientBackgroundGetterSetter } from "../elements/SliderGradientBackgroundGetterSetter.js";
 import { TextBackground } from "../elements/TextBackground.js";
-import { TextFunctionalBackground } from "../elements/TextFunctionalBackground.js";
-import { Toggle } from "../elements/Toggle.js";
-import { getCurPlantConfiguratorVal, TwoParameterPlantConfigurator } from "../elements/TwoParameterPlantConfigurator.js";
-import { UI_ORGANISM_SELECT, UI_ORGANISM_GRASS_WHEAT, UI_ORGANISM_GRASS_BASE, UI_ORGANISM_GRASS_CATTAIL, UI_CENTER, UI_ORGANISM_TREE_PALM, UI_ORGANISM_TYPE_SELECT, UI_ORGANISM_TYPE_MOSS, UI_ORGANISM_TYPE_GRASS, UI_ORGANISM_TYPE_FLOWER, UI_ORGANISM_TYPE_TREE, loadGD, loadUI, UI_UI_PHONEMODE, UI_ORGANISM_NUTRITION_CONFIGURATOR, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_MOSS_PLEUROCARP, UI_VIEWMODE_SELECT, UI_VIEWMODE_ORGANISM_SUIT_WATER, UI_VIEWMODE_ORGANISM_SUIT_LIGHT, UI_VIEWMODE_ORGANISM_SUIT_NET, UI_ORGANISM_FLOWER_LEAFNODE, UI_ORGANISM_FLOWER_LEAFNODE_SUNFLOWER } from "../UIData.js";
+import { UI_CENTER } from "../UIData.js";
 
 export class OrganismComponent extends Component {
      constructor(posX, posY, padding, dir, key) {
@@ -44,6 +29,7 @@ export class OrganismComponent extends Component {
           container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 3.8, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.55), 0.66315, "plant editor"))
           container.addElement(new TextBackground(this.window, sizeX, getBaseUISize() * 0.35, UI_CENTER, () => getActiveClimate().getUIColorInactive(0.85), 0.75, ""));
 
+          /*
           let modeSelectRow1 = new Container(this.window, 0, 0);
           // let modeSelectRow2 = new Container(this.window, 0, 0);
 
@@ -276,101 +262,95 @@ export class OrganismComponent extends Component {
           nutrientConfiguratorContainer.addElement(new SliderGradientBackgroundGetterSetter(this.window,
                () => this.getGenericNutritionParam(_lsqColorVarianceSpeed), (val) => this.setGenericNutritionParam(_lsqColorVarianceSpeed, val), sizeX, h1, 0, 20, () => this.generalBrightnessFunc(0), () => this.generalBrightnessFunc(1)));
 
+          */
      }
 
-     isOrganismSelectedOnCurrentPage() {
-          let selected = loadGD(UI_ORGANISM_SELECT);
-          if (loadGD(UI_ORGANISM_TYPE_SELECT) == UI_ORGANISM_TYPE_FLOWER) {
-               if ([UI_ORGANISM_FLOWER_LEAFNODE, UI_ORGANISM_FLOWER_LEAFNODE_SUNFLOWER].includes(selected)) {
-                    return true;
-               }
-               return false;
-          }
-          if (loadGD(UI_ORGANISM_TYPE_SELECT) == UI_ORGANISM_TYPE_MOSS) {
-               if ([UI_ORGANISM_MOSS_PLEUROCARP].includes(selected)) {
-                    return true;
-               }
-               return false;
-          }
-          if (loadGD(UI_ORGANISM_TYPE_SELECT) == UI_ORGANISM_TYPE_GRASS) {
-               if ([UI_ORGANISM_GRASS_CATTAIL, UI_ORGANISM_GRASS_BASE, UI_ORGANISM_GRASS_WHEAT].includes(selected)) {
-                    return true;
-               }
-               return false;
-          }
-          if (loadGD(UI_ORGANISM_TYPE_SELECT) == UI_ORGANISM_TYPE_TREE) {
-               if ([UI_ORGANISM_TREE_PALM].includes(selected)) {
-                    return true;
-               }
-               return false;
-          }
-     }
+     // isOrganismSelectedOnCurrentPage() {
+     //      let selected = loadGD(UI_ORGANISM_SELECT);
+     //      if (loadGD(UI_ORGANISM_TYPE_SELECT) == UI_ORGANISM_TYPE_FLOWER) {
+     //           if ([UI_ORGANISM_FLOWER_LEAFNODE, UI_ORGANISM_FLOWER_LEAFNODE_SUNFLOWER].includes(selected)) {
+     //                return true;
+     //           }
+     //           return false;
+     //      }
+     //      if (loadGD(UI_ORGANISM_TYPE_SELECT) == UI_ORGANISM_TYPE_MOSS) {
+     //           if ([UI_ORGANISM_MOSS_PLEUROCARP].includes(selected)) {
+     //                return true;
+     //           }
+     //           return false;
+     //      }
+     //      if (loadGD(UI_ORGANISM_TYPE_SELECT) == UI_ORGANISM_TYPE_GRASS) {
+     //           if ([UI_ORGANISM_GRASS_CATTAIL, UI_ORGANISM_GRASS_BASE, UI_ORGANISM_GRASS_WHEAT].includes(selected)) {
+     //                return true;
+     //           }
+     //           return false;
+     //      }
+     //      if (loadGD(UI_ORGANISM_TYPE_SELECT) == UI_ORGANISM_TYPE_TREE) {
+     //           if ([UI_ORGANISM_TREE_PALM].includes(selected)) {
+     //                return true;
+     //           }
+     //           return false;
+     //      }
+     // }
 
-     generalBrightnessFunc(brightness) {
-          return calculateColor(brightness, 0, 1, hexToRgb("#000000"), hexToRgb("#FFFFFF"));
-     }
+     // generalBrightnessFunc(brightness) {
+     //      return calculateColor(brightness, 0, 1, hexToRgb("#000000"), hexToRgb("#FFFFFF"));
+     // }
 
-     getDefaultNutritionMap() {
-          let activeOrganism = loadGD(UI_ORGANISM_SELECT);
-          switch (activeOrganism) {
-               case UI_ORGANISM_FLOWER_LEAFNODE:
-                    return coneflower_dnm;
-               case UI_ORGANISM_GRASS_BASE:
-                    return grass_dnm;
-               case UI_ORGANISM_GRASS_CATTAIL:
-                    return cattail_dnm;
-               case UI_ORGANISM_MOSS_PLEUROCARP:
-                    return pmoss_dnm;
-               default:
-                    return baseOrganism_dnm;
-          }
-     }
+     // getDefaultNutritionMap() {
+     //      let activeOrganism = loadGD(UI_ORGANISM_SELECT);
+     //      switch (activeOrganism) {
+     //           default:
+     //           case UI_ORGANISM_FLOWER_LEAFNODE:
+     //                return leafNodeFlower_dnm;
+     //      }
+     // }
 
-     getGenericNutritionParam(name) {
-          let defaultMap = this.getDefaultNutritionMap();
-          let activeOrganism = loadGD(UI_ORGANISM_SELECT);
+     // getGenericNutritionParam(name) {
+     //      let defaultMap = this.getDefaultNutritionMap();
+     //      let activeOrganism = loadGD(UI_ORGANISM_SELECT);
 
-          let configMap = loadGD(UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA)[activeOrganism];
-          if (configMap == null || configMap[name] == null) {
-               return defaultMap[name].toFixed(2);
-          }
-          return configMap[name].toFixed(2);
-     }
+     //      let configMap = loadGD(UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA)[activeOrganism];
+     //      if (configMap == null || configMap[name] == null) {
+     //           return defaultMap[name].toFixed(2);
+     //      }
+     //      return configMap[name].toFixed(2);
+     // }
 
-     setGenericNutritionParam(name, value) {
-          let activeOrganism = loadGD(UI_ORGANISM_SELECT);
-          let configMap = loadGD(UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA)[activeOrganism];
-          if (configMap == null) {
-               loadGD(UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA)[activeOrganism] = {};
-          }
-          loadGD(UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA)[activeOrganism][name] = value;
-     }
+     // setGenericNutritionParam(name, value) {
+     //      let activeOrganism = loadGD(UI_ORGANISM_SELECT);
+     //      let configMap = loadGD(UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA)[activeOrganism];
+     //      if (configMap == null) {
+     //           loadGD(UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA)[activeOrganism] = {};
+     //      }
+     //      loadGD(UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA)[activeOrganism][name] = value;
+     // }
 
-     render() {
-          if (loadUI(UI_UI_PHONEMODE)) {
-               if (this.phoneModeOffset == 0) {
-                    this.phoneModeOffset = getBaseUISize() * 3;
-                    this.window.posY += this.phoneModeOffset;
-               }
-          } else {
-               if (this.phoneModeOffset != 0) {
-                    this.window.posY -= this.phoneModeOffset;
-                    this.phoneModeOffset = 0;
-               }
-          };
-          super.render();
-     } 
+     // render() {
+     //      if (loadUI(UI_UI_PHONEMODE)) {
+     //           if (this.phoneModeOffset == 0) {
+     //                this.phoneModeOffset = getBaseUISize() * 3;
+     //                this.window.posY += this.phoneModeOffset;
+     //           }
+     //      } else {
+     //           if (this.phoneModeOffset != 0) {
+     //                this.window.posY -= this.phoneModeOffset;
+     //                this.phoneModeOffset = 0;
+     //           }
+     //      };
+     //      super.render();
+     // } 
       
-     setupRefOrg() {
-          this._suitOrg = this._suitOrg ?? new (getPlantForRef(loadGD(UI_ORGANISM_SELECT)))(null, -1);
-          if (this._suitOrg.uiRef != loadGD(UI_ORGANISM_SELECT))
-               this._suitOrg = new (getPlantForRef(loadGD(UI_ORGANISM_SELECT)))(null, -1);
-          copyVecValue(getCurPlantConfiguratorVal(), this._suitOrg.evolutionParameters);
-          this._suitOrg.processGenetics();
-     }
+     // setupRefOrg() {
+     //      this._suitOrg = this._suitOrg ?? new (getPlantForRef(loadGD(UI_ORGANISM_SELECT)))(null, -1);
+     //      if (this._suitOrg.uiRef != loadGD(UI_ORGANISM_SELECT))
+     //           this._suitOrg = new (getPlantForRef(loadGD(UI_ORGANISM_SELECT)))(null, -1);
+     //      copyVecValue(getCurPlantConfiguratorVal(), this._suitOrg.evolutionParameters);
+     //      this._suitOrg.processGenetics();
+     // }
 
-     getOrgEvolutionColor() {
-          this.setupRefOrg();
-          return rgbToHex(...this._suitOrg.colorLeaf);
-     }
+     // getOrgEvolutionColor() {
+     //      this.setupRefOrg();
+     //      return rgbToHex(...this._suitOrg.colorLeaf);
+     // }
 }

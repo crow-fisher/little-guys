@@ -1,4 +1,4 @@
-import { BaseSquare } from "../BaseSqaure.js";
+import { BaseSquare } from "../BaseSquare.js";
 import { addSquare, getNeighbors, getSquares } from "../sqOperations.js";
 import { cachedGetWaterflowRate, clamp, hexToRgb, invlerp, lerp, processColorBicolorArr, randRange } from "../../common.js";
 import { getWindSpeedAtLocation, getWindSquareAbove } from "../../climate/simulation/wind.js";

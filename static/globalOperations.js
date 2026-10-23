@@ -11,7 +11,6 @@ import { indexCanvasSize, MAIN_CONTEXT } from "./index.js";
 import { registerSquare, resetFrameGroupCache, waterGraphReset } from "./waterGraph.js";
 import { RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "./colors.js";
 import { calculateColorProvideOpacity } from "./climate/simulation/temperatureHumidity.js";
-import { getPlayerXMaxOffset, getPlayerXMinOffset } from "./player/playerMain.js";
 import { applyLightingFromSource } from "./lighting/lightingProcessing.js";
 
 let frame_squares = null;
@@ -54,11 +53,11 @@ export function reset() {
     resetFrameGroupCache();
 
     frame_simulation_squares.forEach((sq) => sq.reset());
-    
+
     frame_simulation_squares = new Array();
     frame_simulation_organisms = new Array();
 
-    for (let i = getFrameXMin() - getPlayerXMinOffset(); i < getFrameXMax() + getPlayerXMaxOffset(); i++) {
+    for (let i = getFrameXMin(); i < getFrameXMax(); i++) {
         let firstLevel = getFirstLevelSquares(i);
         if (firstLevel.size == 0)
             continue;

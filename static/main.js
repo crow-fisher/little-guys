@@ -11,7 +11,6 @@ import { isLeftMouseClicked } from "./mouse.js";
 import { iterateOnSquares, resetSqColChangeMap } from "./squares/sqOperations.js";
 import { isSaveOrLoadInProgress } from "./saveAndLoad.js";
 import { renderThrottleMap } from "./climate/simulation/throttler.js";
-import { playerTick, renderPlayer } from "./player/playerMain.js";
 import { gamepadInputLoop } from "./gamepad.js";
 import { renderCloudsDebug } from "./climate/weather/weatherManager.js";
 import { clearTimeouts, completeActiveJobs, prepareTickJobs } from "./scheduler.js";
@@ -47,13 +46,6 @@ export function resetClimate() {
     climateHandler.reset();
 }
 
-function playerMainTick() {
-    if (getTimeScale() > 0) {
-        gamepadInputLoop();
-        playerTick();
-    }
-}
-
 export function scheduler_main() {
     if (!isSaveOrLoadInProgress()) {
         resetSqColChangeMap();
@@ -63,7 +55,6 @@ export function scheduler_main() {
         resetWindowHovered();
         canvasPanRoutine();
         squareTick();
-        playerMainTick();
         orgTick();
         render();
         updateWindows();
@@ -71,7 +62,6 @@ export function scheduler_main() {
         if (!isLeftMouseClicked())
             executeFunctionQueue();
         periodicPurgeOldGroupData();
-        renderPlayer();
         prepareTickJobs();
         completeActiveJobs();
     }
