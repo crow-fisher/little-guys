@@ -397,6 +397,20 @@ export class BaseLeafNodeFlower extends BaseOrganism {
         // if (!this.orgVisualUpdateFlag)
         //     return;
 
+        let x = 0;
+        Object.keys(this.colorAttribute).forEach((key) => {
+            for (let i = 0; i <= this.colorAttribute[key].x(); i++) {
+                this[key][i] = [];
+                for (let j = 0; j <= this.colorAttribute[key].y(); j++) {
+                    this[key][i].push(
+                        hsvaToRgba(
+                            ((x++ * 20) + Date.now() / 10000 * 360),
+                            0.35, 0.75, 1));
+                }
+            }
+        })
+
+
         let sIdx = 0;
         this.stems.map((parentPath) => this.originGrowth.getChildFromPath(parentPath))
             .forEach((stem) => {
