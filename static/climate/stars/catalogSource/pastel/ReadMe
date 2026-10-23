@@ -1,0 +1,98 @@
+// https://cdsarc.cds.unistra.fr/viz-bin/qcat?J/A+A/515/A111#/browse
+// https://ui.adsabs.harvard.edu/abs/2010A%26A...515A.111S/abstract
+
+B/pastel     The PASTEL catalogue                            (Soubiran+, 2016-)
+================================================================================
+The PASTEL catalogue : 2020 version.
+     Soubiran C., Le Campion J.-F., Brouillet N., Chemin L.
+     <Astron. Astrophys., 591, A118 (2016)>
+     =2016A&A...591A.118S
+================================================================================
+ADC_Keywords: Abundances ; Abundances, [Fe/H] ; Effective temperatures
+Keywords: catalogues - stars: abundances - stars: atmospheres -
+          stars: fundamental parameters
+
+Description:
+    PASTEL is a bibliographical catalogue compiling determinations of
+    stellar atmospheric parameters. It provides (Teff, logg, [Fe/H])
+    determinations obtained from detailed analyses of high resolution,
+    high signal to noise spectra, carried out with the help of model
+    atmospheres. It also provides effective temperatures Teff from various
+    methods. PASTEL is regularly updated. The catalogue supersedes the two
+    previous versions of the [Fe/H] catalogue (Cayrel de Strobel et al.,
+    1997 [Cat. III/200], 2001 [Cat. III/221]).
+    PASTEL is regularly updated.
+
+File Summary:
+--------------------------------------------------------------------------------
+ FileName  Lrecl  Records  Explanations
+--------------------------------------------------------------------------------
+ReadMe        80        .   This file
+pastel.dat   223    81362   The catalogue of stellar atmospheric parameters
+                             (Version 2020-01-30)
+--------------------------------------------------------------------------------
+
+See also:
+    III/200 : Catalogue of [Fe/H] (Cayrel de Strobel+, 1997)
+    III/221 : Catalogue of [Fe/H] of F, G, K stars (Cayrel de Strobel+, 2001)
+
+Byte-by-byte Description of file: pastel.dat
+--------------------------------------------------------------------------------
+   Bytes Format Units     Label     Explanations
+--------------------------------------------------------------------------------
+   1- 33  A33   ---       ID        Designation
+  35- 49 F15.11 deg       RAdeg     ? Right Ascension (J2000)
+                                     from Simbad or 2MASS
+  51- 65 F15.11 deg       DEdeg     ? Declination (J2000)
+                                     from Simbad or 2MASS
+      67  A1    ---     o_coo       [ST?] Origin of coordinates (1)
+  69- 74  F6.3  mag       Bmag      ? Johnson B magnitude from Simbad
+  76- 80  F5.3  mag     e_Bmag      ? Standard error on Bmag
+  83- 88  F6.3  mag       Vmag      ? Johnson V magnitude from Simbad
+  90- 94  F5.3  mag     e_Vmag      ? Standard error on Vmag
+  97-102  F6.3  mag       Jmag      ? 2MASS J apparent magnitude
+ 103-108  F6.3  mag     e_Jmag      ? 2MASS J total magnitude uncertainty
+ 111-116  F6.3  mag       Hmag      ? 2MASS H apparent magnitude
+ 118-123  F6.3  mag     e_Hmag      ? 2MASS H total magnitude uncertainty
+ 126-131  F6.3  mag       Ksmag     ? 2MASS Ks apparent magnitude
+ 132-137  F6.3  mag     e_Ksmag     ? 2MASS Ks total magnitude uncertainty
+ 141-145  I5    K         Teff      ? Effective temperature
+ 147-151  I5    K       e_Teff      ? Standard error on effective temperature
+ 153-158  F6.3  [cm/s2]   logg      ? Logarithm of gravity
+ 161-165  F5.3  [cm/s2] e_logg      ? Standard error on the logarithm of gravity
+ 167-172  F6.3  [Sun]     [Fe/H]    ? Iron abundance relative to the Sun
+ 175-179  F5.3  [Sun]   e_[Fe/H]    ? Standard error on iron abundance
+     181  A1    ---     n_[Fe/H]    ? [2M] Metal abundance, Fe2 (2)
+     182  A1    ---     f_[Fe/H]    ? [N] NLTE analysis (3)
+ 184-203  A20   ---       Author    First author of the analysis
+ 205-223  A19   ---       bibcode   Bibcode of publication
+--------------------------------------------------------------------------------
+Note (1): Origin of coordinates as follows:
+   S = coordinates come from SIMBAD
+   T = coordinates are from 2MASS
+   ? = coordinates not available
+Note (2): Metal abundance, ionised iron, flag as follows:
+   M = [M/H] is given instead of [Fe/H]
+   2 = [FeII/H] is given
+Note (3): N = NLTE analysis of iron
+--------------------------------------------------------------------------------
+
+Acknowledgements:
+   Caroline Soubiran, caroline.soubiran(at)u-bordeaux.fr
+   Philippe Prugniel (Observatoire de Lyon) is thanked for his contribution 
+   to the 2020 version of PASTEL
+
+References:
+    SIMBAD at http://simbad.u-strasbg.fr
+
+History:
+  * 08-Apr-2010: Version 30151 records.
+  * 20-Apr-2011: Version 31724 records.
+  * 02-May-2013: Version 52045 records.
+  * 18-Mar-2016: Version 64083 records.
+  * 02-May-2016: Version 64082 records, some IDs corrected in multiple systems
+  * 13-Jan-2020: Version 80230 records
+  * 30-Jan-2020: Version 81362 records, 1 reference added
+
+================================================================================
+(End)     C. Soubiran [Laboratoire d'Astrophysique de Bordeaux]      30-Jan-2020

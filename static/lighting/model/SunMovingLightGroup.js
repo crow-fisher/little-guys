@@ -12,7 +12,6 @@ export class SunMovingLightGroup extends LightGroup {
         super();
         this.dist = 10000;
         this.numNodes = loadGD(UI_LIGHTING_QUALITY);
-        this.init();
         this.idxCompletionMap = new Map();
     }
 

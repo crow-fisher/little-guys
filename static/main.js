@@ -15,16 +15,31 @@ import { playerTick, renderPlayer } from "./player/playerMain.js";
 import { gamepadInputLoop } from "./gamepad.js";
 import { renderCloudsDebug } from "./climate/weather/weatherManager.js";
 import { clearTimeouts, completeActiveJobs, prepareTickJobs } from "./scheduler.js";
-import { canvasPanRoutine } from "./canvas.js";
+import { canvasPanRoutine } from "./canvasUtil.js";
+import { StarHandler } from "./climate/stars/starHandler.js";
 
-initUI();
-let lightingHandler = new LightingHandler();
-let climateHandler = new ClimateHandler();
-doTimeSkipToNow();
+let starHandler;
+let lightingHandler;
+let climateHandler;
 
 export function getLightingHandler() {
     return lightingHandler;
 }
+
+export function getStarHandler() {
+    return starHandler;
+}
+
+export function getAtmosphereHandler() {
+    return climateHandler;
+}
+
+function initHandlers(force) {
+    starHandler = (force ? new StarHandler() : starHandler ?? new StarHandler());
+    lightingHandler = (force ? new LightingHandler() : lightingHandler ?? new LightingHandler());
+    climateHandler = (force ? new ClimateHandler() : climateHandler ?? new ClimateHandler());
+}
+
 
 export function lightingExposureAdjustment() {
     let mult = loadGD(UI_LIGHTING_GLOBAL) / lightingHandler.plantAvailableLighting;
@@ -56,6 +71,7 @@ function playerMainTick() {
 
 export function scheduler_main() {
     if (!isSaveOrLoadInProgress()) {
+        initHandlers();
         resetSqColChangeMap();
         updateTime();
         doClickAdd();
@@ -82,6 +98,8 @@ function render() {
     let selectedViewMode = loadGD(UI_VIEWMODE_SELECT);
     doTimeSeek();
     renderTime();
+
+    starHandler.render();
 
     if (selectedViewMode == UI_VIEWMODE_TEMPERATURE) {
         renderTemperature();

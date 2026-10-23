@@ -107,7 +107,7 @@ export class GeneticsComponent extends Component {
           
           let cccR1 = new Container(this.window, 0, 0);
           
-          let cMid = 0.5;
+          let cWidth = 1/3;
           let dGap = getBaseUISize() * 3;
 
           key = "flowerColor";
@@ -116,23 +116,26 @@ export class GeneticsComponent extends Component {
           ccc.addElement(cccR1);
           let cccR1C1 = new Container(this.window, 0, 1);
           let cccR1C2 = new Container(this.window, 0, 1);
+          let cccR1C3 = new Container(this.window, 0, 1);
                
           cccR1.addElement(cccR1C1);
-          cccR1.addElement(new TextBackground(this.window, dGap, 0))
           cccR1.addElement(cccR1C2);
+          cccR1.addElement(cccR1C3);
 
           // left column 
-          // leaves
+          // leaf
           key = "leafColor"
-          cccR1C1.addElement(new OrgColorEditor(this.window, sizeX * cMid, h1 * 4, () => this.refOrg, key));
+          cccR1C1.addElement(new OrgColorEditor(this.window, sizeX * cWidth, h1 * 8, () => this.refOrg, key));
           
+          // middle column 
+          // leaf stem
           key = "leafStemColor"
-          cccR1C1.addElement(new OrgColorEditor(this.window, sizeX * cMid, h1 * 4, () => this.refOrg, key));
+          cccR1C2.addElement(new OrgColorEditor(this.window, sizeX * cWidth, h1 * 8, () => this.refOrg, key));
           
           // right column
-          // stems
+          // stem
           key = "stemColor"
-          cccR1C2.addElement(new OrgColorEditor(this.window, sizeX * cMid - dGap, h1 * 8, () => this.refOrg, key));
+          cccR1C3.addElement(new OrgColorEditor(this.window, sizeX * cWidth, h1 * 8, () => this.refOrg, key));
           
 
           let r1c1r1 = new Container(this.window, 0, 0);

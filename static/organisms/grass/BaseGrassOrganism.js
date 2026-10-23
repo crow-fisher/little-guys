@@ -1,5 +1,5 @@
 import { randNumber, randRange } from "../../common.js";
-import { STAGE_ADULT, STAGE_FLOWER, SUBTYPE_GRASS, TYPE_GRASS } from "../Stages.js";
+import { STAGE_ADULT, SUBTYPE_GRASS, TYPE_GRASS } from "../Stages.js";
 // import { GrowthPlan, GrowthPlanStep } from "../../../GrowthPlan.js";
 import { GrowthPlan, GrowthPlanStep } from "../GrowthPlan.js";
 import { BaseSeedOrganism } from "../BaseSeedOrganism.js";
