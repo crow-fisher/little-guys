@@ -11,3 +11,8 @@
 ./music/util/raw_to_final/in/*
 
 *.pdf
+
+node_modules/
+node_modules/*
+package*.json
+*.svg
