@@ -1,7 +1,7 @@
 import { getBaseUISize } from "../../canvas.js";
 import { COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { MAIN_CONTEXT } from "../../index.js";
-import { getLastMouseDown, isLeftMouseClicked } from "../../mouse.js";
+import { getLastMouseDownStart, isLeftMouseClicked } from "../../mouse.js";
 import { loadGD, saveGD, UI_BOOLEAN } from "../UIData.js";
 import { TopBarElementBase } from "./TopBarElementBase.js";
 
@@ -49,8 +49,8 @@ export class TopBarToggle extends TopBarElementBase{
         if (!isLeftMouseClicked()) {
             return;
         } 
-        if (this.lastClick != getLastMouseDown()) {
-            this.lastClick = getLastMouseDown();
+        if (this.lastClick != getLastMouseDownStart()) {
+            this.lastClick = getLastMouseDownStart();
             if (this.value == UI_BOOLEAN) {
                 saveGD(this.key, !loadGD(this.key));
             } else {

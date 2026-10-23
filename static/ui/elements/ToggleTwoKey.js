@@ -2,7 +2,7 @@ import { getBaseUISize } from "../../canvas.js";
 import { COLOR_BLACK, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { UI_BIGDOTHOLLOW, UI_BIGDOTSOLID } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
-import { getLastMouseDown, isLeftMouseClicked } from "../../mouse.js";
+import { getLastMouseDownStart, isLeftMouseClicked } from "../../mouse.js";
 import { GAMEDATA, getMapEntry, loadGD, saveGD, saveMapEntry, UI_CENTER } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
@@ -56,9 +56,9 @@ export class ToggleTwoKey extends WindowElement {
         if (!isLeftMouseClicked()) {
             return;
         } 
-        if (this.lastClick != getLastMouseDown()) {
+        if (this.lastClick != getLastMouseDownStart()) {
             getMapEntry(this.map, this.key1)[this.key2] = !getMapEntry(this.map, this.key1)[this.key2];
-            this.lastClick = getLastMouseDown();
+            this.lastClick = getLastMouseDownStart();
         }
     }
 

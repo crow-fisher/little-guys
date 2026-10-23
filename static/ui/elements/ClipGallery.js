@@ -1,7 +1,7 @@
 import { COLOR_BLACK, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { rgbToHex, UI_TINYDOT } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
-import { getLastMouseDown, isLeftMouseClicked } from "../../mouse.js";
+import { getLastMouseDownStart, isLeftMouseClicked } from "../../mouse.js";
 import { loadGD, loadUI, saveGD, UI_CENTER, UI_CLIPS, UI_CLIPS_DENSITY, UI_CLIPS_PAGE } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 

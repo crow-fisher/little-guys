@@ -1,7 +1,7 @@
 import { COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { hsv2rgb, rgbToHex, rgbToHexMult } from "../../common.js";
 import { MAIN_CONTEXT } from "../../index.js";
-import { getLastMouseDown, isLeftMouseClicked } from "../../mouse.js";
+import { getLastMouseDownStart, isLeftMouseClicked } from "../../mouse.js";
 import { loadSlot } from "../../saveAndLoad.js";
 import { loadGD, saveGD, UI_BOOLEAN, UI_GLOBAL_THETA_BASE } from "../UIData.js";
 import { TopBarElementBase } from "./TopBarElementBase.js";

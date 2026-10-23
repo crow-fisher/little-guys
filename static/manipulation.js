@@ -4,7 +4,7 @@ import { getCanvasHeight, getCanvasWidth, transformPixelsToCanvasSquares } from 
 import { addTemperature, addWaterSaturationPascalsSqCoords } from "./climate/simulation/temperatureHumidity.js";
 import { addWindPerssureMaintainHumidity, addWindPressureCloud, addWindPressureDryAir } from "./climate/simulation/wind.js";
 import { removeSquare } from "./globalOperations.js";
-import { getLastMouseDown, getLastMoveOffset, getLeftMouseUpEvent, isLeftMouseClicked, isMiddleMouseClicked, isRightMouseClicked, setMouseTouchStartCallback } from "./mouse.js";
+import { getLastMouseDownStart, getLastMoveOffset, getLeftMouseUpEvent, isLeftMouseClicked, isMiddleMouseClicked, isRightMouseClicked, setMouseTouchStartCallback } from "./mouse.js";
 import { addSquare, addSquareOverride, getSquares, removeSquarePos } from "./squares/sqOperations.js";
 import { AquiferSquare } from "./squares/parameterized/RainSquare.js";
 import { RockSquare } from "./squares/parameterized/RockSquare.js";
@@ -27,9 +27,9 @@ function doBrushFuncClickThrottle(x, y, func, throttle = true) {
         func(x, y);
         return;
     }
-    if (prevClickTime != getLastMouseDown()) {
+    if (prevClickTime != getLastMouseDownStart()) {
         prevClickMap = new Map();
-        prevClickTime = getLastMouseDown();
+        prevClickTime = getLastMouseDownStart();
     }
     if (prevClickMap[x] == null)
         prevClickMap[x] = new Map();

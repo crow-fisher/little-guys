@@ -93,6 +93,22 @@ export function hsvaToRgba(h, s, v, a) {
     return [f(5) * 256, f(3) * 256, f(1) * 256, a]
 }
 
+export function calculateStatistics(array) {
+    array = array.filter((v) => v != null && isFinite(v));
+    const n = array.length;
+    const mean = array.reduce((a, b) => a + b, 0) / n;
+    return [
+        mean,
+        Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) / n), // stdev
+        array.reduce((a, b) => Math.min(a, b), array[0]), // min
+        array.reduce((a, b) => Math.max(a, b), array[0])] // max
+}
+
+export function combineColorMultArrDest(color1, color2, p, dest) {
+    dest[0] = (color1[0] * (1 - p) + color2[0] * (p));
+    dest[1] = (color1[1] * (1 - p) + color2[1] * (p));
+    dest[2] = (color1[2] * (1 - p) + color2[2] * (p));
+}
 
 export function hueShiftColor(hex, hueShift, saturationShift, valueShift) {
     let hsv = rgb2hsv(...hexToRgbArr(hex))
@@ -306,4 +322,10 @@ export function invlerp(min, max, value) {
 }
 export function clamp(value, min = 0, max = 1) {
     return Math.min(max, Math.max(min, value))
+}
+export function processRangeToOne(value) {
+    return (Math.atan(value) / Math.PI) + 0.5;
+}
+export function rgbToRgbaObj(obj, a) {
+    return "rgba(" + obj.r + "," + obj.g + "," + obj.b + "," + a + ")";
 }

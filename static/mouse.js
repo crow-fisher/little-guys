@@ -8,14 +8,22 @@ let rightMouseClicked = false;
 let middleMouseClicked = false;
 let leftMouseUpEvent = true;
 let lastMouseDownStart = Date.now(); 
+let lastMosueUpEvent = Date.now();
 let mouseDown = 0;
 let lastMoveEvent = null;
-let lastMoveOffset = {x: 0, y: 0};
-let lastLastMoveOffset = {x: 0, y: 0};
+let lastMoveOffset = null;
+let lastLastMoveOffset = null;
 let lastMoveEventTime = Date.now();
 
 let mouseEventCounter = new Map();
 
+
+export function getLastMouseUpEvent() {
+    return lastMosueUpEvent;
+}
+export function getLastMoveEvent() {
+    return lastMoveEvent;
+} 
 export function getLastMoveEventTime() {
     return lastMoveEventTime;
 }
@@ -48,7 +56,7 @@ export function isRightMouseClicked() {
     return rightMouseClicked;
 }
 
-export function getLastMouseDown() {
+export function getLastMouseDownStart() {
     return lastMouseDownStart;
 }
 
@@ -89,6 +97,7 @@ export function handleMouseUp(e) {
     e.preventDefault();
     clearMouseHoverColorCacheMap();
     let leftMouseWasClicked = leftMouseClicked;
+    lastMosueUpEvent = Date.now();
     setPrevManipulationOffset(null);
     switch (e.button) {
         case 2: 

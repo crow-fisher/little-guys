@@ -3,7 +3,7 @@ import { calculateColor } from "../../climate/simulation/temperatureHumidity.js"
 import { COLOR_BLACK, COLOR_BLUE, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { invlerp } from "../../common.js";
 import { getCurBackgroundColor, MAIN_CONTEXT } from "../../index.js";
-import { getLastMouseDown, isLeftMouseClicked } from "../../mouse.js";
+import { getLastMouseDownStart, isLeftMouseClicked } from "../../mouse.js";
 import { loadGD, saveGD } from "../UIData.js";
 import { WindowElement } from "../Window.js";
 
@@ -72,9 +72,9 @@ export class SliderGradientBackgroundRange extends WindowElement {
     }
 
     hover(posX, posY) {
-        if (this._lmd != getLastMouseDown()) {
+        if (this._lmd != getLastMouseDownStart()) {
             this.aRef = null;
-            this._lmd = getLastMouseDown();
+            this._lmd = getLastMouseDownStart();
         }
 
         if (this.aRef != null) {
