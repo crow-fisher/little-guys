@@ -1,0 +1,80 @@
+import { reset3DCameraTo2DScreen } from "./rendering/camera.js";
+import { getFrameDt } from "./world/time/time.js";
+import { GBA, GBB, GBDD, GBDL, GBDR, GBDU, GBSL, GBSR, GBX, GBY, getLeftStick, getRightStick, getTriggers, isButtonPressed } from "./gamepad.js";
+import { loadGD, saveGD, UI_CAMERA_FOV, UI_CAMERA_OFFSET_VEC_DT, UI_CAMERA_ROTATION_VEC_DT, UI_STARMAP_CONSTELLATION_BRIGHTNESS, UI_STARMAP_NORMAL_BRIGTNESS } from "./ui/UIData.js";
+
+
+function boundValue(min, max, value) {
+    return Math.min(max, Math.max(min, value));
+}
+
+export function gamepadCameraInput() {
+    let ls = getLeftStick();
+    let rs = getRightStick();
+    let lsb = isButtonPressed(GBSL) ? .75 : 0;
+    let rsb = isButtonPressed(GBSR) ? .75 : 0;
+    let triggers = getTriggers();
+
+    let offset = getFrameDt() / 200;
+    let applied = [0, 0, 0, 0]; 
+
+    let buttonMult = 5;
+    if (isButtonPressed(GBX))
+        offset *= buttonMult;
+    if (isButtonPressed(GBB))
+        offset *= buttonMult;
+    if (isButtonPressed(GBY))
+        offset *= buttonMult;
+
+    applied[0] -= offset * ls[1];
+    applied[1] += offset * ls[0];
+    applied[2] -= offset * rsb;
+    applied[2] += offset * lsb;
+
+    let ct = loadGD(UI_CAMERA_OFFSET_VEC_DT);
+    ct[0] += applied[0];
+    ct[1] -= applied[1];
+    ct[2] += applied[2];
+    saveGD(UI_CAMERA_OFFSET_VEC_DT, ct)
+
+    let crd = loadGD(UI_CAMERA_ROTATION_VEC_DT);
+    offset = loadGD(UI_CAMERA_FOV) * .00003 * (getFrameDt() / 10);
+    crd[0] += offset * rs[0];
+    crd[1] += offset * rs[1];
+    saveGD(UI_CAMERA_ROTATION_VEC_DT, crd)
+
+    _gamepadCameraInput_hotkeys(triggers);
+    _gamepadCameraInput_boundValues();
+}
+
+function _gamepadCameraInput_hotkeys(triggers) {
+    if (triggers[0] > 0) {
+        saveGD(UI_CAMERA_FOV, loadGD(UI_CAMERA_FOV) + triggers[0]);
+    }
+
+    if (triggers[1] > 0) {
+        saveGD(UI_CAMERA_FOV, loadGD(UI_CAMERA_FOV) - triggers[1]);
+    }
+
+    let offset = 0.05;
+    if (isButtonPressed(GBDU)) {
+        saveGD(UI_STARMAP_NORMAL_BRIGTNESS, loadGD(UI_STARMAP_NORMAL_BRIGTNESS) + offset);
+    }
+    if (isButtonPressed(GBDD)) {
+        saveGD(UI_STARMAP_NORMAL_BRIGTNESS, loadGD(UI_STARMAP_NORMAL_BRIGTNESS) - offset);
+    }
+
+    offset = .07;
+    if (isButtonPressed(GBDL)) {
+        saveGD(UI_STARMAP_CONSTELLATION_BRIGHTNESS, loadGD(UI_STARMAP_CONSTELLATION_BRIGHTNESS) - offset);
+    }
+    if (isButtonPressed(GBDR)) {
+        saveGD(UI_STARMAP_CONSTELLATION_BRIGHTNESS, loadGD(UI_STARMAP_CONSTELLATION_BRIGHTNESS) + offset);
+    }
+}
+
+
+function _gamepadCameraInput_boundValues() {
+    saveGD(UI_CAMERA_FOV, boundValue(10, 160,loadGD(UI_CAMERA_FOV)));
+    saveGD(UI_STARMAP_CONSTELLATION_BRIGHTNESS, Math.max(0, loadGD(UI_STARMAP_CONSTELLATION_BRIGHTNESS)));
+}

@@ -1,6 +1,6 @@
 import { getBaseUISize, getCanvasWidth } from "../../canvas.js";
 import { COLOR_BLACK } from "../../colors.js";
-import { MAIN_CONTEXT } from "../../index.js";
+import { MAIN_CONTEXT } from "../../_index.js";
 import {
     loadGD,
     UI_SPEED_1,

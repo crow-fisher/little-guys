@@ -1,7 +1,7 @@
 import { getBaseUISize } from "../../canvas.js";
 import { COLOR_BLACK, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { UI_BIGDOTHOLLOW, UI_BIGDOTSOLID } from "../../common.js";
-import { MAIN_CONTEXT } from "../../index.js";
+import { MAIN_CONTEXT } from "../../_index.js";
 import { getLastMouseDownStart, isLeftMouseClicked } from "../../mouse.js";
 import { GAMEDATA, getMapEntry, loadGD, saveGD, saveMapEntry, UI_CENTER } from "../UIData.js";
 import { WindowElement } from "../Window.js";

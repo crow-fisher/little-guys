@@ -4,7 +4,7 @@ import { hexToRgb, processColorLerp, processColorLerpBicolor, randNumber } from 
 import { RockSquare } from "./RockSquare.js";
 import { BaseSquare } from "../BaseSquare.js";
 import { loadGD, UI_PALETTE_BLOCKS, UI_PALETTE_AQUIFER, UI_PALETTE_AQUIFER_FLOWRATE, UI_PALETTE_ERASE, UI_PALETTE_SELECT } from "../../ui/UIData.js";
-import { MAIN_CONTEXT } from "../../index.js";
+import { MAIN_CONTEXT } from "../../_index.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { getWaterColor, getWaterColorDark } from "../../ui/components/LightingComponent.js";
 import { getBaseSize, getBaseUISize, zoomCanvasFillRect } from "../../canvas.js";

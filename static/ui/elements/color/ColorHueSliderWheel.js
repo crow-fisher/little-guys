@@ -1,5 +1,5 @@
 import { hsvToHex } from "../../../common.js";
-import { MAIN_CONTEXT } from "../../../index.js";
+import { MAIN_CONTEXT } from "../../../_index.js";
 import { tau } from "../../../util/const.js";
 import { WindowElement } from "../../Window.js";
 

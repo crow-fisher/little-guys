@@ -1,7 +1,7 @@
 import { getBaseUISize } from "../../canvas.js";
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { hsvToHex } from "../../common.js";
-import { updateClipboard } from "../../index.js";
+import { updateClipboard } from "../../_index.js";
 import { BaseLeafNodeFlower } from "../../organisms/flowers/leafNode/BaseLeafNodeFlower.js";
 import { ThetaMin, ThetaMax, TwistMin, TwistMax, RotationMin, RotationMax, DeflectionMin, DeflectionMax, CurveMin, CurveMax, StrengthMin, StrengthMax, PeriodMin, PeriodMax } from "../../organisms/GrowthPlan.js";
 import { iterateOnOrganisms } from "../../organisms/orgOperations.js";

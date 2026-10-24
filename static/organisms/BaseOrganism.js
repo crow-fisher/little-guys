@@ -7,7 +7,7 @@ import { applyLightingFromSource } from "../lighting/lightingProcessing.js";
 import { loadGD, UI_EVOLUTION_ACTIVE_PARAM, UI_FASTGROW, UI_ORGANISM_NUTRITION_CONFIGURATOR_DATA, UI_ORGANISM_SELECT, UI_SIMULATION_GENS_PER_DAY, UI_VIEWMODE_LIGHTING, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_ORGANISMS, UI_VIEWMODE_SELECT } from "../ui/UIData.js";
 import { COLOR_BLACK, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../colors.js";
 import { clamp, hsv2rgbDest, randNumber, randRange, rgb2hsv, rgbToRgba } from "../common.js";
-import { MAIN_CONTEXT } from "../index.js";
+import { MAIN_CONTEXT } from "../_index.js";
 import { zoomCanvasFillRect } from "../canvas.js";
 import { HUE_GREEN } from "../hue.js";
 import { SeedSquare } from "../squares/SeedSquare.js";

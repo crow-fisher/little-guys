@@ -1,0 +1,25 @@
+import { getBaseUISize } from "../../canvas.js";
+import { getActiveClimate } from "../../climate/climateManager.js";
+import { Component } from "../Component.js";
+import { Container } from "../Container.js";
+import { Toggle } from "../elements/Toggle.js";
+import { UI_SM_BB, UI_SM_CLIMATE, UI_SM_GODMODE, UI_SM_LIGHTING, UI_PALETTE_PLANTS, UI_PALETTE_BLOCKS, UI_CLIMATE_SELECT_CLOUDS, UI_PALETTE_CLIPS, UI_VISUALIZER_ORGANISM, UI_PALETTE_GENETICS, UI_COLORPICKER_COMPONENT } from "../UIData.js";
+import { SubTreeComponent } from "./SubTreeComponent.js";
+
+export class BlockSubtreeComponent extends SubTreeComponent {
+    constructor(posXFunc, posYFunc, padding, dir, key) {
+        super(posXFunc, posYFunc, padding, dir, key);
+        let subMenuContainer = new Container(this.window, 0, 1);
+        this.window.container = subMenuContainer;
+
+        let textAlignOffsetX = getBaseUISize() * 0.58;
+
+        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 16 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_PALETTE_BLOCKS, "blocks",() => getActiveClimate().getUIColorInactive(0.63), () => getActiveClimate().getUIColorActive()));
+        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 16 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_PALETTE_PLANTS, "plants",() => getActiveClimate().getUIColorInactive(0.55), () => getActiveClimate().getUIColorActive()));
+        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 16 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_PALETTE_GENETICS, "genetics",() => getActiveClimate().getUIColorInactive(0.55), () => getActiveClimate().getUIColorActive()));
+        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 16 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_CLIMATE_SELECT_CLOUDS, "clouds",() => getActiveClimate().getUIColorInactive(0.61), () => getActiveClimate().getUIColorActive()));
+        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 16 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_VISUALIZER_ORGANISM, "visualizer",() => getActiveClimate().getUIColorInactive(0.61), () => getActiveClimate().getUIColorActive()));
+        subMenuContainer.addElement(new Toggle(this.window, getBaseUISize() * 16 + textAlignOffsetX, getBaseUISize() * 3, textAlignOffsetX, UI_COLORPICKER_COMPONENT, "colors",() => getActiveClimate().getUIColorInactive(0.61), () => getActiveClimate().getUIColorActive()));
+    }
+
+}

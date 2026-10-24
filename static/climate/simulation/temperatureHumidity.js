@@ -1,7 +1,7 @@
 import { hexToRgb, randNumber, rgbToRgba } from "../../common.js";
 import { getSquares } from "../../squares/sqOperations.js";
 import { getBaseSize, isSquareOnCanvas, zoomCanvasFillRect } from "../../canvas.js";
-import { MAIN_CONTEXT } from "../../index.js";
+import { MAIN_CONTEXT } from "../../_index.js";
 import { getPressure, updateWindPressureByMult, setPressurebyMult, getWindSquaresY, getWindSquaresX, isPointInWindBounds, getBaseAirPressureAtYPosition, getWindPressureSquareDensity, base_wind_pressure, manipulateWindPressureMaintainHumidityWindSquare, isWindSquareBlocked, getWindSquareAbove, getWindThrottleValWindMap, getFrameXMinWsq, getFrameXMaxWsq, getFrameYMinWsq, getFrameYMaxWsq } from "./wind.js";
 import { getCloudRenderingLighting } from "../../lighting/lightingProcessing.js";
 import { addSquareByName } from "../../manipulation.js";

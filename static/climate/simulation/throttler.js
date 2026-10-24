@@ -1,6 +1,6 @@
 import { getBaseSize, zoomCanvasFillRectTheta } from "../../canvas.js";
 import { rgbToRgba } from "../../common.js";
-import { MAIN_CONTEXT } from "../../index.js";
+import { MAIN_CONTEXT } from "../../_index.js";
 import { getFrameXMaxWsq, getFrameXMinWsq, getFrameYMaxWsq, getFrameYMinWsq, getWindSquaresX, getWindSquaresY, getWindThrottleValWindMap, getWindThrottleValWindMapVal } from "./wind.js";
 
 let windThrottleMap = new Map();

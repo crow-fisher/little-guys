@@ -1,7 +1,7 @@
 import { BaseSquare } from "./BaseSquare.js";
 import { getSquares, iterateOnSquares, getNeighbors, addSquare } from "./sqOperations.js";
 import { getGroupSize, getNextGroupId, WATERFLOW_CANDIDATE_SQUARES, WATERFLOW_TARGET_SQUARES } from "../globals.js";
-import { MAIN_CONTEXT } from "../index.js";
+import { MAIN_CONTEXT } from "../_index.js";
 import { RGB_COLOR_OTHER_BLUE } from "../colors.js";
 import { hexToRgb, hsv2rgb, randRange, rgb2hsv, rgbToRgba } from "../common.js";
 import { loadGD, UI_LIGHTING_WATER, UI_LIGHTING_WATER_HUE, UI_LIGHTING_WATER_VALUE, UI_LIGHTING_WATER_SATURATION, UI_LIGHTING_WATER_OPACITY, UI_SIMULATION_CLOUDS } from "../ui/UIData.js";

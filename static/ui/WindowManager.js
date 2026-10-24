@@ -14,7 +14,7 @@ import { WeatherSelectionComponent } from "./components/WeatherSelectionComponen
 import { TimeSkipComponent } from "./components/TimeSkipComponent.js";
 import { CloudControlComponent } from "./components/CloudControlComponent.js";
 import { getLastMouseDownStart, getLastMoveOffset, isLeftMouseClicked, isTouchActive, isTouchMode } from "../mouse.js";
-import { MAIN_CONTEXT } from "../index.js";
+import { MAIN_CONTEXT } from "../_index.js";
 import { doBrushFunc } from "../manipulation.js";
 import { hexToRgb, rgbToRgba } from "../common.js";
 import { getActiveClimate } from "../climate/climateManager.js";

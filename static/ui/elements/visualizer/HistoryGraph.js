@@ -2,7 +2,7 @@ import { getBaseUISize } from "../../../canvas.js";
 import { getCurDay } from "../../../climate/time.js";
 import { COLOR_BLACK, COLOR_VERY_FUCKING_GREEN, RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "../../../colors.js";
 import { clamp, hsvToHex, invlerp, lerp, rgbToRgba } from "../../../common.js";
-import { MAIN_CONTEXT } from "../../../index.js";
+import { MAIN_CONTEXT } from "../../../_index.js";
 import { iterateOnOrganisms } from "../../../organisms/orgOperations.js";
 import { STAGE_DEAD } from "../../../organisms/Stages.js";
 import { loadGD, UI_EVOLUTION_ACTIVE_PARAM, UI_ORGANISM_LINEAGE_MAP } from "../../UIData.js";

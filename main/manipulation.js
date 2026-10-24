@@ -1,0 +1,370 @@
+let ERASE_RADIUS = 2;
+
+import { getCanvasHeight, getCanvasWidth, transformPixelsToCanvasSquares } from "./canvas.js";
+import { addTemperature, addWaterSaturationPascalsSqCoords } from "./world/climate/simulation/temperatureHumidity.js";
+import { getFrameSimulationSquares, removeSquare } from "./globalOperations.js";
+import { getLastMouseDownStart, getLastMoveOffset, getLeftMouseUpEvent, isLeftMouseClicked, isMiddleMouseClicked, isRightMouseClicked, setMouseTouchStartCallback } from "./mouse.js";
+import { OriginGrassSeedOrganism } from "./plants/organisms/grasses/OriginGrass.js";
+import { addSquare, addSquareOverride, getSquares, removeSquarePos } from "./squares/_sqOperations.js";
+import { AquiferSquare } from "./squares/parameterized/AquiferSquare.js";
+import { RockSquare } from "./squares/parameterized/RockSquare.js";
+import { SoilSquare } from "./squares/parameterized/SoilSquare.js";
+import { SeedSquare } from "./squares/SeedSquare.js";
+import { WaterSquare } from "./squares/WaterSquare.js";
+import { loadGD, UI_PALETTE_EYEDROPPER, UI_PALETTE_MIXER, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_CLIMATE_WEATHER_TOOL_DRYAIR, UI_CLIMATE_WEATHER_TOOL_SELECT, UI_CLIMATE_WEATHER_TOOL_STRENGTH, UI_GODMODE_KILL, UI_GODMODE_MOISTURE, UI_GODMODE_SELECT, UI_GODMODE_STRENGTH, UI_GODMODE_TEMPERATURE, UI_ORGANISM_SELECT, UI_SM_GODMODE, UI_PALETTE_PLANTS, UI_PALETTE_BLOCKS, UI_PALETTE_AQUIFER, UI_PALETTE_SELECT, UI_PALETTE_SURFACE_LIGHTING_FACTOR, UI_PALETTE_SOILROCK, UI_PALETTE_WATER, UI_CLIMATE_SELECT_CLOUDS, UI_LIGHTING_SURFACE, UI_PALETTE_ERASE, UI_PALETTE_SURFACE, UI_CLIMATE_TOOL_SIZE, UI_PALETTE_MODE_ROCK, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, isEyedropperOrMixerClicked, UI_ORGANISM_GRASS_GRASS, UI_PALETTE_SPECIAL_CHURN, UI_PALETTE_SPECIAL_CHURN_STRENGTH, UI_PALETTE_SPECIAL_CHURN_WIDE, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_SM_BB, UI_PALETTE_CENTER_SELECT, saveGD, UI_CAMERA_CENTER_SELECT_POINT, UI_VIEWMODE_SELECT, UI_VIEWMODE_3D, UI_ORGANISM_GRASS_FGRASS, UI_ORGANISM_SOUP_GRASS } from "./ui/UIData.js";
+import { clearMouseHoverColorCacheMap, eyedropperBlockClick, eyedropperBlockHover, isWindowHovered, mixerBlockClick } from "./ui/WindowManager.js";
+import { getDist, randNumber, randRange } from "./common.js";
+import { addWindAtCanvasLocation } from "./main_old.js";
+import { FlatGrassSeedOrganism } from "./plants/organisms/grasses/FlatGrass.js";
+import { SoupGrassSeedOrganism } from "./plants/organisms/soup/SoupGrass.js";
+let prevManipulationOffset;
+
+setMouseTouchStartCallback((inVal) => prevManipulationOffset = inVal);
+
+let prevClickTime = 0;
+let prevClickMap = new Map();
+
+function doBrushFuncClickThrottle(x, y, func, throttle = true) {
+    if (!throttle) {
+        func(x, y);
+        return;
+    }
+    if (prevClickTime != getLastMouseDownStart()) {
+        prevClickMap = new Map();
+        prevClickTime = getLastMouseDownStart();
+    }
+    if (prevClickMap[x] == null)
+        prevClickMap[x] = new Map();
+
+    if (prevClickMap[x][y]) {
+        if (Math.random() > 0.90) {
+            func(x, y);
+        }
+    } else {
+        prevClickMap[x][y] = true;
+        func(x, y);
+    }
+}
+
+export let hoverSq;
+export function _doBrushFunc3D(centerX, centerY, func, throttle) {
+    let lastMoveOffset = getLastMoveOffset();
+    getFrameSimulationSquares().filter((sq) => sq.solid).forEach((sq) => sq._md = getDist(...sq._cs_tl.renderScreen.slice(0, 2), lastMoveOffset.x, lastMoveOffset.y));
+    getFrameSimulationSquares().sort((a, b) => a._md - b._md)
+    hoverSq = getFrameSimulationSquares().at(0);
+    if (hoverSq?._md < 20) {
+        _doBrushFunc(hoverSq.posX, hoverSq.posY, func, throttle)
+    } else {
+        hoverSq = null;
+        _doBrushFunc(centerX, centerY, func, throttle)
+    }
+}
+
+export function doBrushFunc(centerX, centerY, func, throttle = true) {
+    if (loadGD(UI_VIEWMODE_SELECT) == UI_VIEWMODE_3D) {
+        _doBrushFunc3D(centerX, centerY, func, throttle);
+    } else {
+        _doBrushFunc(centerX, centerY, func, throttle);
+    }
+}
+export function _doBrushFunc(centerX, centerY, func, throttle) {
+    throttle = false;
+    let radius = Math.floor(loadGD(UI_PALETTE_SIZE));
+    if (loadGD(UI_CLIMATE_SELECT_CLOUDS)) {
+        radius = loadGD(UI_CLIMATE_TOOL_SIZE);
+    }
+    for (let i = -radius; i <= radius; i++) {
+        for (let j = -radius; j <= radius; j++) {
+            if (Math.ceil((i ** 2 + j ** 2) * 0.5) > radius) {
+                continue;
+            }
+            if (throttle && Math.random() > loadGD(UI_PALETTE_STRENGTH) ** 2) {
+                continue;
+            }
+            doBrushFuncClickThrottle(centerX + i, centerY + j, func, throttle);
+        }
+    }
+}
+
+export function addActivePaletteToolSquare(posX, posY) {
+    if (loadGD(UI_PALETTE_MODE) == UI_PALETTE_MODE_ROCK) {
+        addSquareOverride(new RockSquare(posX, posY));
+    } else {
+        addSquareOverride(new SoilSquare(posX, posY));
+    }
+}
+
+export function addSquareByName(posX, posY, name) {
+    let square;
+    switch (name) {
+        case "rock":
+            square = addSquareOverride(new RockSquare(posX, posY));
+            break;
+        case "soil":
+            let prevSurfaceLightingFactor = (1 - loadGD(UI_LIGHTING_SURFACE));
+            let prevWaterContainment = null;
+            getSquares(posX, posY).filter((sq) => sq.proto == "SoilSquare" || sq.proto == "WaterSquare").forEach((sq) => {
+                prevSurfaceLightingFactor = sq.surfaceLightingFactor;
+                prevWaterContainment = sq.waterContainment;
+                removeSquare(sq);
+            });
+            square = addSquare(new SoilSquare(posX, posY));
+            square.surfaceLightingFactor = prevSurfaceLightingFactor;
+
+            if (prevWaterContainment != null)
+                square.waterContainment = prevWaterContainment;
+
+            break;
+        case "water":
+            square = addSquare(new WaterSquare(posX, posY));
+            break;
+        case "aquifer":
+            square = addSquare(new AquiferSquare(posX, posY));
+            break;
+    };
+    return square;
+}
+
+function doBlockMod(posX, posY) {
+    if (loadGD(UI_GODMODE_SELECT) == UI_GODMODE_TEMPERATURE) {
+        if (!isRightMouseClicked())
+            addTemperature(posX, posY, .5);
+        else
+            addTemperature(posX, posY, -0.5);
+    }
+    if (loadGD(UI_GODMODE_SELECT) == UI_GODMODE_MOISTURE) {
+        if (!isRightMouseClicked())
+            addWaterSaturationPascalsSqCoords(posX, posY, 10 * loadGD(UI_GODMODE_STRENGTH));
+        else
+            addWaterSaturationPascalsSqCoords(posX, posY, -10 * loadGD(UI_GODMODE_STRENGTH));
+    }
+    if (loadGD(UI_GODMODE_SELECT) == UI_GODMODE_KILL) {
+        killOrganismsAtSquare(posX, posY);
+    }
+}
+
+function doClimateMod(posX, posY) {
+    if (posX < 0 || posY < 0 || posX >= loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) || posY >= loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y)) {
+        return;
+    }
+
+    switch (loadGD(UI_CLIMATE_WEATHER_TOOL_SELECT)) {
+        default:
+        case UI_CLIMATE_WEATHER_TOOL_DRYAIR:
+            addWindAtCanvasLocation(posX, posY, Math.exp(loadGD(UI_CLIMATE_WEATHER_TOOL_STRENGTH)));
+            break;
+    }
+}
+
+export function doClickAddEyedropperMixer() {
+    if (!getLeftMouseUpEvent()) {
+        return;
+    }
+    let lastMoveOffset = getLastMoveOffset();
+    if (lastMoveOffset == null || isMiddleMouseClicked() || isWindowHovered()) {
+        return;
+    }
+    if (lastMoveOffset.x > getCanvasWidth() || lastMoveOffset > getCanvasHeight()) {
+        return;
+    }
+    let offsetTransformed = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);
+    let offsetX = offsetTransformed[0];
+    let offsetY = offsetTransformed[1];
+
+    if (loadGD(UI_PALETTE_SELECT) == UI_PALETTE_EYEDROPPER) {
+        eyedropperBlockClick(offsetX, offsetY);
+        return;
+    }
+    if (loadGD(UI_PALETTE_SELECT) == UI_PALETTE_MIXER) {
+        mixerBlockClick(offsetX, offsetY);
+        return;
+    }
+}
+
+export function setPrevManipulationOffset(inLoc) {
+    prevManipulationOffset = inLoc;
+}
+
+function churnBlocks(x, y, wide = false) {
+    getSquares(x, y)
+        .filter((sq) => sq.linkedOrganismSquares.length == 0 && sq.linkedOrganisms.length == 0 && sq.physicsEnabled && sq.gravity > 0)
+        .forEach((sq) => {
+            let st = .5 * loadGD(UI_PALETTE_SPECIAL_CHURN_STRENGTH);
+            sq.spawnParticle(0, randNumber(-40, -10), (wide ? 100 : 10) * randRange(-.1, .1), .1 * st * randRange(.95, 1.05), Math.min(sq.blockHealth, randRange(.1, .4)));
+        });
+}
+
+function centerSelect(x, y) {
+    saveGD(UI_CAMERA_CENTER_SELECT_POINT, [x, y]);
+}
+
+export function doClickAdd() {
+    let lastMoveOffset = getLastMoveOffset();
+    if (lastMoveOffset == null || isMiddleMouseClicked() || isWindowHovered()) {
+        return;
+    }
+
+    if (isLeftMouseClicked() || isRightMouseClicked()) {
+        if (lastMoveOffset.x > getCanvasWidth() || lastMoveOffset > getCanvasHeight()) {
+            return;
+        }
+        clearMouseHoverColorCacheMap();
+        let offsetTransformed = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);
+        let offsetX = offsetTransformed[0];
+        let offsetY = offsetTransformed[1];
+
+        if (loadGD(UI_PALETTE_BLOCKS) && isEyedropperOrMixerClicked()) {
+            return;
+        }
+
+        let prevOffsetX;
+        let prevOffsetY;
+
+        if (prevManipulationOffset == null) {
+            prevOffsetX = offsetX;
+            prevOffsetY = offsetY;
+        } else {
+            let prevOffsets = transformPixelsToCanvasSquares(prevManipulationOffset.x, prevManipulationOffset.y);
+            prevOffsetX = prevOffsets[0];
+            prevOffsetY = prevOffsets[1];
+        }
+
+        // point slope motherfuckers 
+
+        let x1 = prevOffsetX;
+        let x2 = offsetX;
+        let y1 = prevOffsetY;
+        let y2 = offsetY;
+
+        let dx = x2 - x1;
+        let dy = y2 - y1;
+        let dz = Math.pow(dx ** 2 + dy ** 2, 0.5);
+
+        let totalCount = Math.max(1, Math.round(dz));
+        let ddx = dx / totalCount;
+        let ddy = dy / totalCount;
+
+        let iAdd = 0.5;
+        if (loadGD(UI_CLIMATE_SELECT_CLOUDS)) {
+            iAdd *= 32;
+        }
+
+        for (let i = 0; i < totalCount; i += iAdd) {
+            let px = Math.floor(x1 + ddx * i);
+            let py = Math.floor(y1 + ddy * i);
+            if (loadGD(UI_CLIMATE_SELECT_CLOUDS)) {
+                doBrushFunc(px, py, (x, y) => doClimateMod(x, y), false);
+            } else if (loadGD(UI_SM_GODMODE)) {
+                doBrushFunc(px, py, (x, y) => doBlockMod(x, y));
+            } else if (loadGD(UI_PALETTE_BLOCKS)) {
+                if (loadGD(UI_PALETTE_PLANTS)) {
+                    placeActiveSeed(px, py);
+                } else if (loadGD(UI_SM_BB)) {
+
+                }
+
+                let mode = loadGD(UI_PALETTE_MODE);
+                let selectMode = loadGD(UI_PALETTE_SELECT);
+                if (mode == UI_PALLETE_MODE_SPECIAL) {
+                    if ((selectMode == UI_PALETTE_SURFACE_LIGHTING_FACTOR && isLeftMouseClicked())) {
+                        doBrushFunc(px, py, (x, y) => {
+                            getSquares(x, y).filter((sq) => sq.solid).forEach((sq) => {
+                                sq.updateSurfaceLightingFactor();
+                            });
+                        });
+                    } else if (selectMode == UI_PALETTE_SURFACE) {
+                        doBrushFunc(px, py, (x, y) => {
+                            getSquares(x, y).filter((sq) => sq.solid).forEach((sq) => {
+                                sq.updateSurface();
+                            })});
+                    } else if (selectMode == UI_PALETTE_WATER) {
+                        doBrushFunc(px, py, (x, y) => addSquareByName(x, y, "water"));
+                    } else if (selectMode == UI_PALETTE_AQUIFER) {
+                        addSquareByName(px, py, "aquifer")
+                    } else if (selectMode == UI_PALETTE_SPECIAL_CHURN) {
+                        doBrushFunc(px, py, (x, y) => churnBlocks(x, y));
+                    } else if (selectMode == UI_PALETTE_SPECIAL_CHURN_WIDE) {
+                        doBrushFunc(px, py, (x, y) => churnBlocks(x, y, true));
+                    } else if (selectMode == UI_PALETTE_CENTER_SELECT) {
+                        doBrushFunc(px, py, (x, y) => centerSelect(x, y));
+                    }
+                }
+                else if (selectMode == UI_PALETTE_SOILROCK) {
+                    if (selectMode == UI_PALETTE_ERASE || isRightMouseClicked()) {
+                        doBrushFunc(px, py, (x, y) => removeSquarePos(x, y));
+                    } else {
+                        doBrushFunc(px, py, (x, y) => addActivePaletteToolSquare(x, y));
+                    }
+                }
+            }
+            if (loadGD(UI_PALETTE_PLANTS)) {
+                placeActiveSeed(px, py);
+            }
+            prevManipulationOffset = lastMoveOffset;
+        }
+    }
+}
+
+
+function doBlockHover(lastMoveOffset) {
+    let offsetTransformed = transformPixelsToCanvasSquares(lastMoveOffset.x, lastMoveOffset.y);
+    let offsetX = offsetTransformed[0];
+    let offsetY = offsetTransformed[1];
+    eyedropperBlockHover(offsetX, offsetY);
+}
+
+let hasOrganismBeenAddedThisClick = false;
+export function setOrganismAddedThisClick(val) {
+    hasOrganismBeenAddedThisClick = val;
+}
+
+function addOrgSingleClick(seedOrganismProto, px, py) {
+    if (hasOrganismBeenAddedThisClick)
+        return;
+    hasOrganismBeenAddedThisClick = true;
+
+    let sq = addSquare(new SeedSquare(px, py));
+    if (sq) {
+        let orgAdded = new seedOrganismProto(sq);
+        if (!orgAdded) {
+            sq.destroy();
+        }
+    }
+}
+function placeActiveSeed(px, py) {
+    let chance = Math.random();
+    let pProto, cProto;
+    switch (loadGD(UI_ORGANISM_SELECT)) {
+        case UI_ORGANISM_SOUP_GRASS:
+            pProto = SoupGrassSeedOrganism;
+            break;
+        case UI_ORGANISM_GRASS_FGRASS:
+            pProto = FlatGrassSeedOrganism;
+            break;
+        default:
+        case UI_ORGANISM_GRASS_GRASS:
+            pProto = OriginGrassSeedOrganism;
+    }
+    if (pProto != null) {
+        if (chance > 0.95) {
+            let sq = addSquare(new SeedSquare(px, py));
+            addSquare(new WaterSquare(px, py));
+            if (sq) {
+                let orgAdded = new pProto(sq);
+                if (!orgAdded) {
+                    sq.destroy();
+                }
+            }
+        } 
+    }
+    if (cProto != null) {
+        let sq = addSquare(new SeedSquare(px, py));
+        addSquare(new WaterSquare(px, py));
+        if (sq) {
+            let orgAdded = cProto(sq);
+            if (!orgAdded) {
+                sq.destroy();
+            }
+        }
+    }
+};

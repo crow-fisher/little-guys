@@ -1,9 +1,8 @@
 import { getBaseUISize, getCanvasHeight, getCanvasWidth } from "../canvas.js";
 import { getActiveClimate } from "../climate/climateManager.js";
 import { COLOR_BLACK } from "../colors.js";
-import { MAIN_CONTEXT } from "../index.js";
+import { MAIN_CONTEXT } from "../_index.js";
 import { getLastMoveOffset, isLeftMouseClicked, isRightMouseClicked } from "../mouse.js";
-import { requestTouch } from "./WindowManager.js";
 
 export class Window {
     constructor(posX, posY, padding, dir, grounded, renderBackground = true) {

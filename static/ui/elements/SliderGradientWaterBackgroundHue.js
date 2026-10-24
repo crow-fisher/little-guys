@@ -1,7 +1,7 @@
 import { getBaseUISize } from "../../canvas.js";
 import { calculateColor } from "../../climate/simulation/temperatureHumidity.js";
 import { COLOR_BLACK, COLOR_BLUE, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
-import { getCurBackgroundColor, MAIN_CONTEXT } from "../../index.js";
+import { getCurBackgroundColor, MAIN_CONTEXT } from "../../_index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
 import { getWaterColorTransformed, NULL } from "../components/LightingComponent.js";
 import { loadGD, saveGD } from "../UIData.js";

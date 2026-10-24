@@ -1,0 +1,30 @@
+* {
+    padding: 0px;
+    margin: 0px;
+    border: 0px
+   }
+   
+@font-face {
+    font-family: 'courier';
+    src: url('./fonts/VeraMono.ttf')
+}
+
+@font-face {
+    font-family: 'courierItalic';
+    src: url('./fonts/VeraMoIt.ttf')
+}
+
+@font-face {
+    font-family: 'courierBold';
+    src: url('./fonts/VeraMoBd.ttf')
+}
+
+@font-face {
+    font-family: 'courierBoldItalic';
+    src: url('./fonts/VeraMoBI.ttf')
+}
+
+
+html { scrollbar-width: none; } /* Firefox */
+body { -ms-overflow-style: none; } /* IE and Edge */
+body::-webkit-scrollbar, body::-webkit-scrollbar-button { display: none; } /* Chrome */

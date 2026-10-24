@@ -1,6 +1,6 @@
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, getFrameXMax, getFrameXMin, getFrameYMax, getFrameYMin, isSquareOnCanvas, zoomCanvasFillCircle } from "../canvas.js";
 import { hexToRgb, hsv2rgb, randNumber, randRange, rgb2hsv, rgbToHex, rgbToRgba } from "../common.js";
-import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth, MAIN_CONTEXT, setBackgroundColor } from "../index.js";
+import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth, MAIN_CONTEXT, setBackgroundColor } from "../_index.js";
 import { calculateColorRGB, getFrameRelCloud } from "./simulation/temperatureHumidity.js";
 import {
     loadGD, 

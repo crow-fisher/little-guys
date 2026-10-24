@@ -1,6 +1,6 @@
 import { getBaseUISize } from "../../canvas.js";
 import { clamp, invlerp, rgbToRgba } from "../../common.js";
-import { getCurBackgroundColor, MAIN_CONTEXT } from "../../index.js";
+import { getCurBackgroundColor, MAIN_CONTEXT } from "../../_index.js";
 import { getDefaultLightingArr } from "../../lighting/lightingProcessing.js";
 import { isLeftMouseClicked, isRightMouseClicked } from "../../mouse.js";
 import { loadEmptyScene } from "../../saveAndLoad.js";

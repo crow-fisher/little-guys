@@ -1,6 +1,6 @@
 import { hexToRgb, rgbToRgba } from "../../common.js";
 import { getSquares } from "../../squares/sqOperations.js";
-import {  MAIN_CONTEXT } from "../../index.js";
+import {  MAIN_CONTEXT } from "../../_index.js";
 import { addWaterSaturation, addWaterSaturationPascals, calculateColor, getHumidity, getTemperatureAtWindSquare, getWaterSaturation, initTemperatureHumidity, setWaterSaturation, setWaterSaturationMap, updateWindSquareTemperature } from "./temperatureHumidity.js";
 import { getBaseSize, getCanvasHeight, getCanvasSquaresX, getCanvasSquaresY, getCanvasWidth, getFrameXMax, getFrameXMin, getFrameYMax, getFrameYMin, zoomCanvasFillRect, zoomCanvasFillRectTheta } from "../../canvas.js";
 import { loadGD, UI_CANVAS_SQUARES_ZOOM, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "../../ui/UIData.js";

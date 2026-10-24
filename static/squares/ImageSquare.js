@@ -1,7 +1,7 @@
 import { getBaseSize, zoomCanvasFillRect } from "../canvas.js";
 import { rgbToRgba } from "../common.js";
 import { getNextGroupId, isGroupGrounded } from "../globals.js";
-import { MAIN_CONTEXT } from "../index.js";
+import { MAIN_CONTEXT } from "../_index.js";
 import { applyLightingFromSource } from "../lighting/lightingProcessing.js";
 import { addSquare } from "./sqOperations.js";
 import { BaseSquare } from "./BaseSquare.js";

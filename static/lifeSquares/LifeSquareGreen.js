@@ -1,4 +1,4 @@
-import { MAIN_CONTEXT } from "../index.js";
+import { MAIN_CONTEXT } from "../_index.js";
 import { hexToRgb, hsv2rgb, rgb2hsv, rgbToHex, rgbToRgba } from "../common.js";
 
 import { getDaylightStrengthFrameDiff } from "../climate/time.js";

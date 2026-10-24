@@ -3,7 +3,7 @@ import { getActiveClimate } from "../../climate/climateManager.js";
 import { SunCalc } from "../../climate/suncalc/suncalc.js";
 import { explicitSeek, getCurDay, getSeekTimeTarget, getSkyBackgroundColorForDay, MILLIS_PER_DAY } from "../../climate/time.js";
 import { COLOR_BLACK } from "../../colors.js";
-import { MAIN_CONTEXT } from "../../index.js";
+import { MAIN_CONTEXT } from "../../_index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
 import { WindowElement } from "../Window.js";
 

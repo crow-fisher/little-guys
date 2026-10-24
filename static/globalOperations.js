@@ -7,7 +7,7 @@ import {
 import { removeItemAll } from "./common.js";
 import { getBaseSize, getCanvasSquaresX, getCanvasSquaresY, getFrameXMax, getFrameXMin, getFrameYMax, getFrameYMin, zoomCanvasFillRect } from "./canvas.js";
 import { loadGD, saveGD, UI_CANVAS_VIEWPORT_CENTER_X, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y } from "./ui/UIData.js";
-import { indexCanvasSize, MAIN_CONTEXT } from "./index.js";
+import { indexCanvasSize, MAIN_CONTEXT } from "./_index.js";
 import { registerSquare, resetFrameGroupCache, waterGraphReset } from "./waterGraph.js";
 import { RGB_COLOR_BLUE, RGB_COLOR_VERY_FUCKING_RED } from "./colors.js";
 import { calculateColorProvideOpacity } from "./climate/simulation/temperatureHumidity.js";

@@ -1,4 +1,4 @@
-import { MAIN_CONTEXT } from "../../index.js";
+import { MAIN_CONTEXT } from "../../_index.js";
 
 export class TopBarElementBase {
     constructor(fontSize, textAlign) {

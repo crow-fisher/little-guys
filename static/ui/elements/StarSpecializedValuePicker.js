@@ -1,6 +1,6 @@
 import { COLOR_BLACK, COLOR_BLUE, COLOR_VERY_FUCKING_GREEN, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED, COLOR_WHITE } from "../../colors.js";
 import { invlerp, lerp } from "../../common.js";
-import { MAIN_CONTEXT } from "../../index.js";
+import { MAIN_CONTEXT } from "../../_index.js";
 import { getStarHandler } from "../../main.js";
 import { isLeftMouseClicked } from "../../mouse.js";
 import { resetStarStyle } from "../components/AstronomyAtlas/modes/AstronomyAtlasUIFunctionMaps.js";

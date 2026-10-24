@@ -1,5 +1,5 @@
 import { getCanvasHeight, getCanvasWidth } from "../canvas.js";
-import { MAIN_CONTEXT } from "../index.js";
+import { MAIN_CONTEXT } from "../_index.js";
 import { loadGD } from "./UIData.js";
 import { Window } from "./Window.js";
 

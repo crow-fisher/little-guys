@@ -1,9 +1,6 @@
-import { COLOR_VERY_FUCKING_RED } from "./colors.js";
-import { reset } from "./globalOperations.js";
-import { MAIN_CONTEXT } from "./index.js";
+import { MAIN_CONTEXT } from "./_index.js";
 import { isKeyPressed, KEY_CONTROL, KEY_SHIFT } from "./keyboard.js";
-import { getLastLastMoveOffset, getLastMoveOffset, isMiddleMouseClicked } from "./mouse.js";
-import { iterateOnOrganisms } from "./organisms/orgOperations.js";
+import { getLastMoveOffset, isMiddleMouseClicked } from "./mouse.js";
 import { loadGD, saveGD, UI_PALETTE_SIZE, UI_PALETTE_STRENGTH, UI_UI_SIZE, UI_PALETTE_BLOCKS, loadUI, UI_PALETTE_SURFACE, UI_LIGHTING_SURFACE, UI_PALETTE_SELECT, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_CANVAS_VIEWPORT_CENTER_X, UI_CANVAS_VIEWPORT_CENTER_Y, UI_CANVAS_SQUARES_ZOOM } from "./ui/UIData.js";
 
 let BASE_SIZE = 4;

@@ -1,7 +1,7 @@
 import { addWaterSaturationPascals, getHumidity, getWaterSaturation } from "../simulation/temperatureHumidity.js";
 import { getCurDay, timeScaleFactor } from "../time.js";
 import { addWindPressureDryAir, addWindPressureDryAirWindSquare, getBaseAirPressureAtYPosition, getPressure, isPointInWindBounds, manipulateWindPressureMaintainHumidityWindSquare } from "../simulation/wind.js";
-import { MAIN_CONTEXT } from "../../index.js";
+import { MAIN_CONTEXT } from "../../_index.js";
 import { getBaseSize, zoomCanvasFillRect } from "../../canvas.js";
 import { hexToRgbArr, hsv2rgb, rgb2hsv, rgbToHex, rgbToRgba } from "../../common.js";
 

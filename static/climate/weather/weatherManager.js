@@ -6,7 +6,7 @@ import { getFrameXMaxWsq, getFrameXMinWsq, getFrameYMaxWsq, getFrameYMinWsq } fr
 import { Cloud } from "./cloud.js";
 import { topbarWeatherTextReset } from "../../ui/WindowManager.js";
 import { isSquareOnCanvas } from "../../canvas.js";
-import { MAIN_CONTEXT } from "../../index.js";
+import { MAIN_CONTEXT } from "../../_index.js";
 import { COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { Weather } from "./weather.js";
 

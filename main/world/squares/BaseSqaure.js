@@ -1,0 +1,1236 @@
+
+
+import { getNeighbors, addSquare, getSquares, isSqColChanged, isSqRowChanged, getSqColChangeLocation } from "./_sqOperations.js";
+import {
+    getNextGroupId,
+    getMixArrLen,
+    getTargetMixIdx,
+    setGroupGrounded,
+    isGroupGrounded,
+    regSquareToGroup,
+    getNextBlockId
+} from "../globals.js";
+
+import { getTotalCanvasPixelHeight, getTotalCanvasPixelWidth, MAIN_CONTEXT } from "../index.js";
+
+import { hash, hexToRgb, hsv2rgb, processRangeToOne, randNumber, randRange, removeItemAll, rgb2hsv, rgbToHex, rgbToRgba } from "../common.js";
+import { removeSquare } from "../globalOperations.js";
+import { calculateColorTemperature, getTemperatureAtWindSquare, temperatureHumidityFlowrateFactor, updateWindSquareTemperature } from "../world/climate/simulation/temperatureHumidity.js";
+import { getWindSquareAbove } from "../world/climate/simulation/wind.js";
+import { COLOR_BLACK, GROUP_BROWN, GROUP_BLUE, GROUP_MAUVE, GROUP_TAN, GROUP_GREEN, RGB_COLOR_BLUE, RGB_COLOR_RED, COLOR_WHITE } from "../colors.js";
+import { getCurDay, getDaylightStrengthFrameDiff, getFrameDt, getTimeScale } from "../world/climate/time.js";
+import { applyLightingFromSource, getDefaultLighting, processLighting } from "../world/lighting/lightingProcessing.js";
+import { getBaseSize, getCanvasSquaresY, getCurZoom, isSquareOnCanvas, transformCanvasSquaresToPixels, zoomCanvasFillCircle, zoomCanvasFillRect, zoomCanvasSquareText } from "../canvas.js";
+import { loadGD, UI_PALETTE_BLOCKS, UI_PALETTE_SELECT, UI_PALETTE_SURFACE_LIGHTING_FACTOR, UI_LIGHTING_ENABLED, UI_VIEWMODE_ORG_LIGHTING, UI_VIEWMODE_BLOCK_MOISTURE, UI_VIEWMODE_NORMAL, UI_VIEWMODE_SELECT, UI_VIEWMODE_SURFACE, UI_VIEWMODE_TEMPERATURE, UI_VIEWMODE_ORGANISMS, UI_LIGHTING_WATER_OPACITY, UI_VIEWMODE_WIND, UI_PALETTE_SURFACE, UI_GAME_MAX_CANVAS_SQUARES_X, UI_GAME_MAX_CANVAS_SQUARES_Y, UI_VIEWMODE_BLOCK_WATERTICKRATE, UI_SIMULATION_CLOUDS, UI_VIEWMODE_BLOCK_WATERMATRIC, UI_VIEWMODE_BLOCK_GROUP, UI_PALETTE_SPECIAL_SHOWINDICATOR, UI_PALETTE_MODE, UI_PALLETE_MODE_SPECIAL, UI_VIEWMODE_DEV1, UI_VIEWMODE_DEV2, UI_VIEWMODE_EVOLUTION, UI_VIEWMODE_NUTRIENTS, UI_VIEWMODE_AIRTICKRATE, UI_CAMERA_EXPOSURE, UI_VIEWMODE_DEV3, UI_VIEWMODE_DEV4, UI_VIEWMODE_DEV5, UI_PALETTE_STRENGTH, UI_LIGHTING_SURFACE, UI_PALETTE_SURFACE_LIGHTING_FACTOR_MATCH, UI_VIEWMODE_3D, UI_CAMERA_CENTER_SELECT_POINT, saveGD, UI_CAMERA_OFFSET_VEC, UI_PALETTE_SIZE, UI_BLOCK_ZDEPTH, UI_LIGHTING_SURFACE_LIGHTING_FACTOR, UI_LIGHTING_SURFACE_FACTOR, UI_VIEWMODE_PROJECTION_2D, UI_VIEWMODE_PROJECTION_3D, UI_VIEWMODE_BLOCK_SELECT, UI_VIEWMODE_BLOCK_NORMAL } from "../ui/UIData.js";
+import { deregisterSquare, registerSquare } from "../waterGraph.js";
+import { STAGE_DEAD } from "../plants/organisms/Stages.js";
+import { cartesianToScreenInplace, gfc, screenToRenderScreen } from "../rendering/camera.js";
+import { addRenderJob, executeRenderJobs } from "../rendering/rasterizer.js";
+import { QuadRenderJob } from "../rendering/model/QuadRenderJob.js";
+import { CoordinateSet } from "../rendering/model/CoordinateSet.js";
+import { copyVecValue } from "../world/climate/stars/matrix.js";
+import { PointLabelRenderJob } from "../rendering/model/PointLabelRenderJob.js";
+import { setOrganismAddedThisClick } from "../manipulation.js";
+import { isSaveOrLoadInProgress } from "../saveAndLoad.js";
+
+export class BaseSquare {
+    constructor(posX, posY) {
+        this.proto = "BaseSquare";
+        this.posX = posX;
+        this.posY = posY;
+        this.z = 0;
+
+        this.id = getNextBlockId();
+
+        this.posHistoryRetentionLength = 10;
+        this.posHistoryMap = new Array(this.posHistoryRetentionLength);
+        this.posHistoryCur = this.posHistoryRetentionLength;
+        for (let i = 0; i < this.posHistoryRetentionLength; i++)
+            this.posHistoryMap[i] = [this.posX, this.posY];
+
+        this.color = hexToRgb("#00FFFF");
+
+        this.solid = true;
+        this.spawnedEntityId = 0;
+        // block properties - overridden by block type
+        this.physicsEnabled = true;
+        this.gravity = 1;
+        this.hasBonked = false;
+        this.blockHealthMax = 1;
+        this.blockHealth = Math.min(loadGD(UI_PALETTE_STRENGTH), this.blockHealthMax); // when reaches zero, delete
+        // water flow parameters
+
+        this.currentPressureDirect = -1;
+        this.waterContainment = 0;
+        this.waterContainmentMax = 0.5;
+        this.speedX = 0;
+        this.speedY = 0;
+        this.rootable = false;
+        this.group = -1;
+        this.groupSetThisFrame = false;
+        this.organic = false;
+        this.collision = true;
+        this.visible = true;
+        this.darken = true;
+        this.special = false;
+        this.randoms = [];
+        this.linkedOrganisms = new Array();
+        this.linkedOrganismSquares = new Array();
+        this.lighting = new Array();
+        this.spawnTime = Date.now();
+        this.opacity = 1;
+        this.cachedRgba = null;
+        this.distToFront = 0;
+        this.distToFrontLastUpdated = -(10 ** 8);
+        this.miscBlockPropUpdateInterval = Math.random() * 1000;
+
+        this.surface = loadGD(UI_LIGHTING_SURFACE);
+        this.surfaceLightingFactor = loadGD(UI_LIGHTING_SURFACE_LIGHTING_FACTOR);
+        this.surfaceTotal = 0;
+
+        this.temperature = 273;
+
+        this.thermalMass = 2; // e.g., '2' means one degree of this would equal 2 degrees of air temp for a wind square 
+
+        this.state = 0; // 0 = solid, 1 = liquid
+        this.fusionHeat = 10 ** 8; // kJ/mol
+        this.vaporHeat = 10 ** 8; // kJ/mol
+        this.fusionTemp = 0; // freezing point 
+        this.vaporTemp = 10 ** 8; // boiling point
+
+        this.water_fusionHeat = 6;
+        this.water_vaporHeat = .000047;
+        this.water_fusionTemp = 273;
+        this.water_vaporTemp = 373;
+
+        this.lastColorCacheTime = 0;
+        this.lastColorCacheOpacity = 1;
+        this.colorCacheHoldTime = 0.10;
+
+        this.blockHealth_color1 = RGB_COLOR_RED;
+        this.blockHealth_color2 = RGB_COLOR_BLUE;
+        this.mixIdx = -1;
+
+        this.lastTickUpdate = getCurDay();
+
+        this.blockHealthGravityCoef = 2;
+
+        this.world_tl = [0, 0, 0];
+        this.world_tr = [0, 0, 0];
+        this.world_bl = [0, 0, 0];
+        this.world_br = [0, 0, 0];
+
+        this.cartesian_tl = [0, 0, 0];
+        this.cartesian_tr = [0, 0, 0];
+        this.cartesian_bl = [0, 0, 0];
+        this.cartesian_br = [0, 0, 0];
+
+        this.camera_tl = [0, 0, 0];
+        this.camera_tr = [0, 0, 0];
+        this.camera_bl = [0, 0, 0];
+        this.camera_br = [0, 0, 0];
+
+        this.screen_tl = [0, 0, 0];
+        this.screen_tr = [0, 0, 0];
+        this.screen_bl = [0, 0, 0];
+        this.screen_br = [0, 0, 0];
+
+        this.renderNorm_tl = [0, 0];
+        this.renderNorm_tr = [0, 0];
+        this.renderNorm_bl = [0, 0];
+        this.renderNorm_br = [0, 0];
+
+        this.renderScreen_tl = [0, 0, 0];
+        this.renderScreen_tr = [0, 0, 0];
+        this.renderScreen_bl = [0, 0, 0];
+        this.renderScreen_br = [0, 0, 0];
+
+        this.tl = [0, 0, 0];
+        this.bl = [0, 0, 0];
+        this.br = [0, 0, 0];
+        this.tr = [0, 0, 0];
+
+        this.gf = 0;    // "greeble factor"
+        this.gz_tl = 0; // "greeble-z tl" ('top left')
+        this.gz_bl = 0;
+        this.gz_br = 0;
+        this.gz_tr = 0;
+        this.initGreeble();
+        this.updateSurface();
+        this.updateSurfaceLightingFactor();
+    };
+
+    updateSurfaceLightingFactor(value = loadGD(UI_LIGHTING_SURFACE_LIGHTING_FACTOR)) {
+        this.surfaceLightingFactor *= 0.9;
+        this.surfaceLightingFactor += value / 10
+        this.surfaceLightingFactor = value;
+    }
+
+    updateSurface(value = loadGD(UI_LIGHTING_SURFACE)) {
+        this.surface *= 0.95;
+        this.surface += value / 20;
+    }
+
+    initGreeble() {
+        this.gz_tl = randRange(-this.gf, this.gf);
+        this.gz_bl = randRange(-this.gf, this.gf);
+        this.gz_br = randRange(-this.gf, this.gf);
+        this.gz_tr = randRange(-this.gf, this.gf);
+    }
+
+    getSurfaceLightingFactor() {
+        return Math.min(1, Math.max(0, this.surfaceLightingFactor));
+    }
+
+    purgeLighting() {
+        this.lighting = new Array();
+        this.linkedOrganisms.forEach((org) => {
+            org.lighting = new Array();
+            org.greenLifeSquares.forEach((lsq) => lsq.lighting = new Array());
+        });
+    }
+    mossSpaceRemaining() {
+        return 1 - this.linkedOrganismSquares
+            .filter((lsq) => lsq.type == "moss")
+            .map((lsq) => lsq.opacity)
+            .reduce((a, b) => a + b, 0);
+    }
+
+    initLightingFromNeighbors() {
+        return;
+        let neighbor = getNeighbors(this.posX, this.posY).find((sq) => sq.lighting.length > 0);
+        let curY = this.posY + 1;
+        while (neighbor == null) {
+            neighbor = getSquares(this.posX, curY).find((sq) => sq.lighting.length > 0);
+            curY += 1;
+            if (curY > getCanvasSquaresY()) {
+                this.lighting = [];
+                return;
+            }
+        }
+        applyLightingFromSource(neighbor, this);
+    }
+
+    initTemperature() {
+        this.temperature = 273 + 25;
+    }
+
+    processFrameLightingTemperature() {
+        let tickFrac = 4;
+        if (Math.random() < 1 - (1 / tickFrac)) {
+            return;
+        }
+        let lightingColor = this.processLighting();
+        let lightingApplied = Math.max(0, lightingColor.r + lightingColor.g / 2 + lightingColor.b / 4);
+
+        if (isNaN(lightingApplied)) {
+            return;
+        }
+        lightingApplied /= (15000 / tickFrac);
+        this.temperature = Math.min(370, this.temperature + lightingApplied);
+    }
+
+    getSoilWaterPressure() { return -(10 ** 8); }
+
+    getLightFilterRate() {
+        return processRangeToOne(this.surfaceLightingFactor);
+    }
+
+    temperatureRoutine() {
+        if (this.organic) {
+            return;
+        }
+        let adjacentWindSquare = getWindSquareAbove(this.posX, this.posY);
+
+        let x = adjacentWindSquare[0];
+        let y = adjacentWindSquare[1];
+
+        if (x < 0 || y < 0) {
+            return;
+        }
+        let adjacentTemp = getTemperatureAtWindSquare(x, y);
+        let diff = (adjacentTemp - this.temperature);
+        diff /= temperatureHumidityFlowrateFactor();
+        diff /= 50;
+        diff /= Math.max(1, (1 + this.currentPressureDirect));
+        this.temperature += diff;
+        updateWindSquareTemperature(x, y, getTemperatureAtWindSquare(x, y) - (diff / 4));
+    }
+
+    waterEvaporationRoutine() {
+    }
+
+    destroy(deep = false) {
+        if (deep) {
+            this.linkedOrganisms.forEach((org) => org.destroy());
+            this.linkedOrganismSquares.forEach((lsq) => lsq.destroy());
+        }
+        removeSquare(this);
+        this.lighting = [];
+        this.linkedOrganismSquares = [];
+    }
+    linkOrganism(organism) {
+        this.linkedOrganisms.push(organism);
+    }
+    unlinkOrganism(organism) {
+        this.linkedOrganisms = removeItemAll(this.linkedOrganisms, organism);
+    }
+    linkOrganismSquare(organismSquare) {
+        this.linkedOrganismSquares.push(organismSquare);
+    }
+    unlinkOrganismSquare(organismSquare) {
+        this.linkedOrganismSquares = removeItemAll(this.linkedOrganismSquares, organismSquare);
+    }
+    reset() {
+        if (this.blockHealth <= 0) {
+            removeSquare(this);
+        }
+
+        if (Math.random() > 0.5) {
+            this.groupSetThisFrame = false;
+        }
+
+        if (Math.random() > 0.99) // yeahh....this is a hack. :( 
+            this.linkedOrganismSquares = Array.from(this.linkedOrganismSquares.filter((lsq) => lsq.linkedOrganism.stage != STAGE_DEAD));
+
+
+    }
+
+    spawnParticle(dx, dy, sx, sy, blockHealth) {
+        return 0;
+    }
+
+
+    renderBlockHealth() {
+        let base = this.getColorBase();
+        let hsv = rgb2hsv(base.r, base.g, base.b);
+        hsv[0] += 360 * this.blockHealth;
+        let out = hsv2rgb(...hsv);
+        MAIN_CONTEXT.fillStyle = rgbToHex(...out);
+        zoomCanvasFillRect(this.posX * getBaseSize(), this.posY * getBaseSize(), getBaseSize(), getBaseSize());
+    }
+
+
+    setFrameViewmodeRenderColor() {
+        switch (loadGD(UI_VIEWMODE_BLOCK_SELECT)) {
+            case UI_VIEWMODE_BLOCK_NORMAL:
+                return this.prepareFillColor(1);
+            case UI_VIEWMODE_BLOCK_MOISTURE:
+                return this.renderWaterSaturation();
+            case UI_VIEWMODE_BLOCK_WATERMATRIC:
+                return this.renderMatricPressure();
+            case UI_VIEWMODE_BLOCK_WATERTICKRATE:
+                return this.renderWaterTickrate();
+        }
+    }
+
+    renderToProjectedCanvas() {
+        this.setFrameCartesians();
+        this.prepareRenderJob();
+        if (this._renderJob.shouldRender()) {
+            addRenderJob(this._renderJob, true);
+        }
+    }
+
+    
+    render() {
+        this.setFrameViewmodeRenderColor();
+        this.renderToProjectedCanvas();
+        return
+
+        if (!this.visible || isSaveOrLoadInProgress()) {
+            return;
+        }
+
+        this.lastTickUpdate = getCurDay();
+
+        if (loadGD(UI_LIGHTING_ENABLED) && this.lighting.length == 0) {
+            this.initLightingFromNeighbors();
+        }
+        let selectedViewMode = loadGD(UI_VIEWMODE_SELECT);
+        if (selectedViewMode == UI_VIEWMODE_NORMAL) {
+            this.renderWithVariedColors(1);
+        } else if (selectedViewMode == UI_VIEWMODE_3D) {
+            this.render3D(1);
+            return;
+        } else if (selectedViewMode == UI_VIEWMODE_ORGANISMS || selectedViewMode == UI_VIEWMODE_EVOLUTION || selectedViewMode == UI_VIEWMODE_NUTRIENTS) {
+            this.renderWithVariedColors(0.35);
+        } else if (selectedViewMode == UI_VIEWMODE_BLOCK_GROUP) {
+            this.renderGroup();
+        } else if (selectedViewMode == UI_VIEWMODE_ORG_LIGHTING) {
+            this.renderWithVariedColors(1);
+            if (this.solid)
+                this.renderLightingView();
+        } else if (selectedViewMode == UI_VIEWMODE_BLOCK_MOISTURE) {
+            ;
+        } else if (selectedViewMode == UI_VIEWMODE_BLOCK_WATERTICKRATE) {
+            this.renderWaterTickrate();
+        } else if (selectedViewMode == UI_VIEWMODE_BLOCK_WATERMATRIC) {
+            this.renderMatricPressure();
+        }
+        else if (selectedViewMode == UI_VIEWMODE_DEV3) {
+            return this.renderBlockHealth();
+        }
+        if (selectedViewMode == UI_VIEWMODE_SURFACE || (loadGD(UI_PALETTE_BLOCKS) && (loadGD(UI_PALETTE_MODE) == UI_PALLETE_MODE_SPECIAL) && [UI_PALETTE_SURFACE_LIGHTING_FACTOR, UI_PALETTE_SURFACE, UI_PALETTE_SURFACE_LIGHTING_FACTOR_MATCH].includes(loadGD(UI_PALETTE_SELECT)))) {
+            if (this.solid) {
+                this.renderWithVariedColors(1);
+                this.renderSurface();
+            } else {
+                this.renderWithVariedColors(0.25);
+            }
+        }
+        else if (selectedViewMode == UI_VIEWMODE_TEMPERATURE) {
+            this.renderTemperature();
+        } else if (selectedViewMode == UI_VIEWMODE_WIND || selectedViewMode == UI_VIEWMODE_AIRTICKRATE) {
+            this.renderWithVariedColors(0.25);
+        } else if (selectedViewMode == UI_VIEWMODE_DEV1 || selectedViewMode == UI_VIEWMODE_DEV2) {
+            this.renderWithVariedColors(0.5);
+        } else if (selectedViewMode == UI_VIEWMODE_DEV4) {
+            this.renderSpeed(true, true);
+            this.renderBlockId();
+        } else if (selectedViewMode == UI_VIEWMODE_DEV5) {
+            this.renderWithVariedColors(1);
+            this.renderHistory();
+        }
+    };
+
+    renderBlockId() {
+        MAIN_CONTEXT.font = .35 * getBaseSize() * getCurZoom() + "px courier"
+        MAIN_CONTEXT.textAlign = 'center';
+        MAIN_CONTEXT.textBaseline = 'middle';
+        MAIN_CONTEXT.strokeStyle = "rgba(35, 35, 35, 1)";
+        zoomCanvasSquareText(
+            (this.posX + 0.5) * getBaseSize(),
+            (this.posY + 0.5) * getBaseSize(),
+            this.id % 10000);
+    }
+
+    renderSpeed(x = true, y = true) {
+        let res = 0;
+
+        if (x)
+            res += this.speedX;
+        if (y)
+            res += this.speedY;
+
+        let base = this.getColorBase();
+        let hsv = rgb2hsv(base.r, base.g, base.b);
+        hsv[0] += 360.0 * res;
+        let out = hsv2rgb(...hsv);
+        MAIN_CONTEXT.fillStyle = rgbToRgba(...out, 0.1);
+
+        if (this.linkedOrganismSquares.length > 0)
+            MAIN_CONTEXT.fillStyle = rgbToRgba(225, 35, 10, .8);
+
+        zoomCanvasFillRect(this.posX * getBaseSize(), this.posY * getBaseSize(), getBaseSize(), getBaseSize());
+    }
+
+    renderGroup() {
+        let colorArr = [
+            GROUP_BROWN,
+            GROUP_MAUVE,
+            GROUP_BLUE,
+            GROUP_GREEN,
+            GROUP_TAN
+        ]
+        MAIN_CONTEXT.fillStyle = colorArr[this.group % colorArr.length];
+        zoomCanvasFillRect(
+            this.posX * getBaseSize(),
+            this.posY * getBaseSize(),
+            getBaseSize(),
+            getBaseSize()
+        );
+
+    }
+
+    renderTemperature() {
+        MAIN_CONTEXT.fillStyle = calculateColorTemperature(this.temperature);
+        zoomCanvasFillRect(
+            this.posX * getBaseSize(),
+            this.posY * getBaseSize(),
+            getBaseSize(),
+            getBaseSize()
+        );
+    }
+
+    renderSurface() {
+        if (!loadGD(UI_PALETTE_SPECIAL_SHOWINDICATOR)) {
+            return;
+        }
+        if (!this.surface) {
+            MAIN_CONTEXT.fillStyle = "rgba(90, 71, 97, 0.3)"
+            zoomCanvasFillRect(
+                (this.posX) * getBaseSize(),
+                (this.posY) * getBaseSize(),
+                getBaseSize(),
+                getBaseSize()
+            );
+        } else {
+            this.renderSpecialViewModeLinearOpacity({ r: 255, g: 255, b: 255 }, { r: 0, g: 0, b: 0 }, 1 - this.surfaceLightingFactor, 1, 0.3);
+        }
+
+    }
+
+    renderAsGrey() {
+        MAIN_CONTEXT.fillStyle = "rgba(50, 50, 50, 0.2)";
+        zoomCanvasFillRect(
+            (this.posX) * getBaseSize(),
+            (this.posY) * getBaseSize(),
+            getBaseSize(),
+            getBaseSize()
+        );
+    }
+
+    renderWaterSaturation() {
+        this.renderSpecialViewModeLinear(this.blockHealth_color1, this.blockHealth_color2, this.waterContainment, this.waterContainmentMax);
+    }
+
+    renderWaterTickrate() {
+        if (this.percolationFactor != null) {
+            this.renderSpecialViewModeLinear(this.blockHealth_color1, this.blockHealth_color2, this.percolationFactor, 1);
+        }
+    }
+
+    renderMatricPressure() {
+        if (this.proto == "SoilSquare" || this.proto == "RockSquare") {
+            let sp = Math.abs(this.getSoilWaterPressure());
+            this.renderSpecialViewModeLinear(this.blockHealth_color2, this.blockHealth_color1, sp, 5);
+        }
+    }
+
+    renderSpecialViewModeLinear(color1, color2, value, valueMax) {
+        this.renderSpecialViewModeLinearOpacity(color1, color2, value, valueMax, 0.4)
+    }
+
+    renderSpecialViewModeLinearOpacity(color1, color2, value, valueMax, opacity) {
+        let frac = value / valueMax;
+        let outColor = {
+            r: color1.r * frac + color2.r * (1 - frac),
+            g: color1.g * frac + color2.g * (1 - frac),
+            b: color1.b * frac + color2.b * (1 - frac)
+        }
+        this.cachedRgba = rgbToRgba(Math.floor(outColor.r), Math.floor(outColor.g), Math.floor(outColor.b), opacity);
+    }
+
+    getStaticRand(randIdx) {
+        while (randIdx > this.randoms.length - 1) {
+            this.randoms.push(Math.random());
+        }
+        return this.randoms[randIdx];
+    }
+
+    getColorBase() {
+        return this.color;
+    }
+
+    processLighting(override = false) {
+        if (this.frameCacheLighting != null && !override) {
+            return this.frameCacheLighting;
+        }
+        if (!loadGD(UI_LIGHTING_ENABLED)) {
+            this.frameCacheLighting = getDefaultLighting();
+            return this.frameCacheLighting;
+        }
+        this.frameCacheLighting = processLighting(this.lighting);
+        return this.frameCacheLighting;
+    }
+
+    renderLightingView() {
+        if (this.frameCacheLighting == null) {
+            this.processLighting();
+        }
+        let outRgba = rgbToRgba(
+            Math.floor(this.frameCacheLighting.r / loadGD(UI_CAMERA_EXPOSURE)),
+            Math.floor(this.frameCacheLighting.g / loadGD(UI_CAMERA_EXPOSURE)),
+            Math.floor(this.frameCacheLighting.b / loadGD(UI_CAMERA_EXPOSURE)),
+            0.5);
+        MAIN_CONTEXT.fillStyle = outRgba;
+        zoomCanvasFillRect(
+            this.posX * getBaseSize(),
+            this.posY * getBaseSize(),
+            getBaseSize(),
+            getBaseSize()
+        );
+    }
+
+    zRenderRoutine() {
+        // this method sets the rendering parameters for the block 
+        // 'this.z' is the z-depth that the bottom of the block is rendered at. 
+        // 'this.zd' is the slant applied to that base to find the top. 
+        this.z = 0;
+    }
+
+    zPaintOffsetRoutine() {
+        this.z += this.surface * loadGD(UI_LIGHTING_SURFACE_FACTOR);
+    }
+
+    setFrameWorld() {
+        if (this._cs_tl == null || Math.random() > 0.90 || isSqColChanged(this.posX) || isSqColChanged(this.posY)) {
+            this.selectPoint = loadGD(UI_CAMERA_CENTER_SELECT_POINT) ?? [0, 0];
+
+            this.px = this.posX - this.selectPoint[0];
+            this.py = this.posY - this.selectPoint[1];
+
+            this.world_tl = this.world_tl ?? [0, 0, 0]
+            this.world_tr = this.world_tr ?? [0, 0, 0]
+            this.world_bl = this.world_bl ?? [0, 0, 0]
+            this.world_br = this.world_br ?? [0, 0, 0]
+
+            this.world_tl[0] = this.px;
+            this.world_tr[0] = this.px + 1;
+            this.world_bl[0] = this.px;
+            this.world_br[0] = this.px + 1;
+            this.world_tl[1] = this.py;
+            this.world_tr[1] = this.py;
+            this.world_bl[1] = this.py + 1;
+            this.world_br[1] = this.py + 1;
+
+            this.zRenderRoutine();
+            this.zPaintOffsetRoutine();
+            
+            this._blNeighbors = this._blNeighbors ?? new Array(4);
+            this._brNeighbors = this._brNeighbors ?? new Array(4);
+            this._tlNeighbors = this._tlNeighbors ?? new Array(4);
+            this._trNeighbors = this._trNeighbors ?? new Array(4);
+
+            this.updateNeighborSquares();
+
+            this.world_tl_z = this.getCenterZ(this._tlNeighbors);
+            this.world_bl_z = this.getCenterZ(this._blNeighbors);
+            this.world_tr_z = this.getCenterZ(this._trNeighbors);
+            this.world_br_z = this.getCenterZ(this._brNeighbors);
+
+            this.world_tl[2] = this.world_tl_z;
+            this.world_bl[2] = this.world_bl_z;
+            this.world_tr[2] = this.world_tr_z;
+            this.world_br[2] = this.world_br_z;
+        }
+    }
+    setFrameCartesians() {
+        this.setFrameWorld();
+        this._cs_tl = this._cs_tl ?? new CoordinateSet();
+        this._cs_tr = this._cs_tr ?? new CoordinateSet();
+        this._cs_bl = this._cs_bl ?? new CoordinateSet();
+        this._cs_br = this._cs_br ?? new CoordinateSet();
+
+        this._cs_tl.setWorld(this.world_tl)
+        this._cs_tr.setWorld(this.world_tr)
+        this._cs_bl.setWorld(this.world_bl)
+        this._cs_br.setWorld(this.world_br)
+    }
+
+    updateNeighborSquares() {
+        this._lsq = getSquares(this.posX - 1, this.posY).find((sq) => sq.solid);
+        this._rsq = getSquares(this.posX + 1, this.posY).find((sq) => sq.solid);
+        this._tsq = getSquares(this.posX, this.posY - 1).find((sq) => sq.solid);
+        this._bsq = getSquares(this.posX, this.posY + 1).find((sq) => sq.solid);
+
+        this._qsq = getSquares(this.posX - 1, this.posY - 1).find((sq) => sq.solid);
+        this._esq = getSquares(this.posX + 1, this.posY - 1).find((sq) => sq.solid);
+        this._zsq = getSquares(this.posX - 1, this.posY + 1).find((sq) => sq.solid);
+        this._csq = getSquares(this.posX + 1, this.posY + 1).find((sq) => sq.solid);
+
+        this._blNeighbors[0] = this;
+        this._blNeighbors[1] = this._lsq;
+        this._blNeighbors[2] = this._zsq;
+        this._blNeighbors[3] = this._bsq;
+
+        this._brNeighbors[0] = this;
+        this._brNeighbors[1] = this._bsq;
+        this._brNeighbors[2] = this._csq;
+        this._brNeighbors[3] = this._rsq;
+
+        this._tlNeighbors[0] = this;
+        this._tlNeighbors[1] = this._lsq;
+        this._tlNeighbors[2] = this._qsq;
+        this._tlNeighbors[3] = this._tsq;
+
+        this._trNeighbors[0] = this;
+        this._trNeighbors[1] = this._tsq;
+        this._trNeighbors[2] = this._esq;
+        this._trNeighbors[3] = this._rsq;
+    }
+
+    getCenterZ(pointArr) {
+        let c = 0;
+        let s = 0;
+        for (let i = 0; i < pointArr.length; i++) {
+            if (pointArr[i] != null) {
+                s += pointArr[i].z;
+                c += 1;
+            }
+        }
+        return s / c;
+    }
+
+    prepareRenderJob() {
+        this._renderJob = this._renderJob ?? new QuadRenderJob();
+        this._renderJob.tl = this._cs_tl.renderScreen;
+        this._renderJob.bl = this._cs_bl.renderScreen;
+        this._renderJob.br = this._cs_br.renderScreen;
+        this._renderJob.tr = this._cs_tr.renderScreen;
+        this._renderJob.color = this.cachedRgba;
+    }
+
+
+    render3D(opacityMult) {
+        this.prepareFillColor(opacityMult);
+
+    }
+
+    combinePoints(p1, p2, dest, g1, g2) {
+        if (p2 == null || p2[g1] == null) {
+            dest[0] = p1[g1][g2][0];
+            dest[1] = p1[g1][g2][1];
+            dest[2] = p1[g1][g2][2];
+        } else {
+            dest[0] = (p1[g1][g2][0] + p2[g1][g2][0]) / 2;
+            dest[1] = (p1[g1][g2][1] + p2[g1][g2][1]) / 2;
+            dest[2] = (p1[g1][g2][2] + p2[g1][g2][2]) / 2;
+        }
+    }
+
+    prepareFillColor(opacityMult) {
+        if (this.proto == "WaterSquare") {
+            this.opacity = loadGD(UI_LIGHTING_WATER_OPACITY);
+        }
+
+        if (Date.now() - this.lastColorCacheTime < (Math.random() * 500)) {
+            return;
+        }
+
+        this.lastColorCacheTime = Date.now();
+        let outColorBase = this.getColorBase();
+        let lightingColor = this.processLighting(true);
+        this.frameCacheLighting = lightingColor;
+        this.outColor = { r: lightingColor.r * outColorBase.r / 255, g: lightingColor.g * outColorBase.g / 255, b: lightingColor.b * outColorBase.b / 255 };
+        this.lastColorCacheOpacity = opacityMult;
+        this.cachedRgba = rgbToRgba(Math.floor(this.outColor.r), Math.floor(this.outColor.g), Math.floor(this.outColor.b), opacityMult * this.opacity * this.blockHealth ** 0.2);
+    }
+
+    renderWithVariedColors(opacityMult) {
+        this.prepareFillColor(opacityMult);
+        MAIN_CONTEXT.fillStyle = this.cachedRgba;
+
+        if (this.blockHealth < 0.5 && this.getMovementSpeed() > 0.5) {
+            let size = this.blockHealth;
+            if (size < 0.3) {
+                size = 20 * (this.blockHealth);
+            }
+            zoomCanvasFillCircle(
+                this.posX * getBaseSize(),
+                this.posY * getBaseSize(),
+                getBaseSize() * Math.max(this.blockHealth, 0.3));
+        } else {
+            let size = (this.blockHealth ** 0.5);
+
+            zoomCanvasFillRect(
+                this.posX * getBaseSize(),
+                (this.posY + (1 - size)) * getBaseSize(),
+                getBaseSize() * (size > 0.5 ? 1 : size),
+                getBaseSize() * (size)
+            );
+        }
+
+        if (this.mixIdx >= (getTargetMixIdx() - getMixArrLen())) {
+            MAIN_CONTEXT.font = getBaseSize() + "px courier"
+            MAIN_CONTEXT.textAlign = 'center';
+            MAIN_CONTEXT.textBaseline = 'middle';
+            MAIN_CONTEXT.fillStyle = COLOR_BLACK;
+            zoomCanvasSquareText(
+                (this.posX + 0.5) * getBaseSize(),
+                (this.posY + 0.5) * getBaseSize(),
+                this.mixIdx % getMixArrLen());
+        }
+    }
+    updatePosition(newPosX, newPosY) {
+        if (newPosX == this.posX && newPosY == this.posY) {
+            return true;
+        }
+        if (getSquares(newPosX, newPosY).some((sq) => this.testCollidesWithSquare(sq))) {
+            return false;
+        }
+
+        if (newPosX < 0 || newPosX >= loadGD(UI_GAME_MAX_CANVAS_SQUARES_X) || newPosY >= loadGD(UI_GAME_MAX_CANVAS_SQUARES_Y)) {
+            this.destroy();
+            return;
+        }
+
+        removeSquare(this);
+        this.posX = newPosX;
+        this.posY = newPosY;
+        addSquare(this);
+
+        this.lastColorCacheTime = 0;
+        return true;
+    }
+
+    renderHistory() {
+        if (this.speedX == 0 && this.speedY == 0 && this.renderCountDown == 0)
+            return;
+
+        this.renderCountDown = this.posHistoryRetentionLength * 2;
+        this.posHistoryMap[(this.posHistoryCur % this.posHistoryRetentionLength)] = [this.posX, this.posY];
+        this.posHistoryCur += 1;
+
+        MAIN_CONTEXT.lineWidth = 4 * Math.max(0.5, this.blockHealth);
+        MAIN_CONTEXT.beginPath();
+
+        let p = this.posHistoryMap[(this.posHistoryCur - 1 + this.posHistoryRetentionLength) % this.posHistoryRetentionLength];
+
+        let start = transformCanvasSquaresToPixels(p[0] * getBaseSize(), p[1] * getBaseSize());
+
+        // console.log("START: ", p);
+
+        let init = this.posHistoryCur - 1;
+        let min = this.posHistoryCur - this.posHistoryRetentionLength;
+        let thickEnd = Math.ceil(this.posHistoryCur - (this.posHistoryRetentionLength * 0.05));
+
+        MAIN_CONTEXT.strokeStyle = rgbToRgba(this.outColor.r, this.outColor.g, this.outColor.b, 1)
+
+        MAIN_CONTEXT.moveTo(start[0], start[1]);
+        for (let i = init; i >= min; i--) {
+            let loc = this.posHistoryMap[i % this.posHistoryRetentionLength];
+            if (!isSquareOnCanvas(...loc)) {
+                return;
+            }
+            let p2 = transformCanvasSquaresToPixels(loc[0] * getBaseSize(), loc[1] * getBaseSize());
+            MAIN_CONTEXT.lineTo(p2[0], p2[1]);
+
+            if (i == thickEnd) {
+                MAIN_CONTEXT.stroke();
+                MAIN_CONTEXT.lineTo(p2[0], p2[1]);
+                MAIN_CONTEXT.lineWidth = 1 * Math.max(0.5, this.blockHealth);
+            }
+
+            // console.log("POINT: ", loc);
+        }
+        MAIN_CONTEXT.stroke();
+        // console.log("END!")
+
+        this.renderCountDown -= 1;
+    }
+
+    _percolateGroup(origGroup = null) {
+        if (origGroup != null) {
+            if (getNeighbors(this.posX, this.posY).some((sq) => sq.group == origGroup)) {
+                return false;
+            }
+        }
+
+        let toVisit = new Set();
+        let visited = new Set();
+
+        getNeighbors(this.posX, this.posY)
+            .filter((sq) => sq.proto == this.proto)
+            .filter((sq) => sq.posY <= this.posY)
+            .filter((sq) => !sq.groupSetThisFrame)
+            .forEach((sq) => toVisit.add(sq));
+
+        toVisit.forEach((sq) => {
+            if (sq == null || sq in visited) {
+                return;
+            } else {
+                sq.updateGroup(this.group);
+                visited.add(sq);
+                getNeighbors(sq.posX, sq.posY)
+                    .filter((ssq) => ssq.proto == sq.proto)
+                    .filter((sq) => !sq.solid || sq.posY <= this.posY)
+                    .filter((sq) => !sq.groupSetThisFrame)
+                    .forEach((ssq) => toVisit.add(ssq));
+            }
+        });
+        return true;
+    }
+
+    updateGroup(newGroup) {
+        regSquareToGroup(this.group, -1);
+        deregisterSquare(this.posX, this.posY, this.group);
+        this.group = newGroup;
+        this.groupSetThisFrame = true;
+        regSquareToGroup(this.group);
+        registerSquare(this.posX, this.posY, this.group);
+    }
+
+    calculateGroup() {
+        if (this.proto == "SoilSquare") {
+            return;
+        }
+        if (this.group != -1) {
+            return;
+        }
+        this.updateGroup(getNextGroupId());
+        regSquareToGroup(this.group);
+        this._percolateGroup();
+        if (this.proto == "RockSquare") {
+            setGroupGrounded(this.group)
+        }
+    }
+
+    percolateInnerMoisture() { }
+
+    getMovementSpeed() {
+        return (this.speedX ** 2 + this.speedY ** 2) ** 0.5;
+    }
+    testCollidesWithSquare(sq) {
+        if (!this.collision || !sq.collision) {
+            return false;
+        }
+        if (this.proto == "SeedSquare" && sq.proto == "SeedSquare") {
+            return false;
+        }
+        if (this.proto == "WaterSquare" && sq.proto == "WaterSquare" && (getSquares(this.posX, this.posY).filter((sq) => sq.proto == "WaterSquare").map((sq) => sq.blockHealth).reduce((a, b) => a + b, sq.blockHealth) < 1)) {
+            return false;
+        }
+
+        // if (this.proto == sq.proto && (this.blockHealth + sq.blockHealth) < 1 && this.getMovementSpeed() > 0.1 && sq.getMovementSpeed() > 0.1) {
+        //     return false;
+        // }
+
+        if (this.organic) {
+            if (!sq.solid) {
+                return false;
+            }
+            if (!sq.surface && sq.collision) {
+                return true;
+            }
+            if (sq.collision && sq.currentPressureDirect > 0 && Math.random() > 0.9) {
+                return true;
+            }
+            return false;
+        }
+        if (sq.proto === this.proto) {
+            return true;
+        }
+        if (this.solid) {
+            if (!sq.solid) {
+                return (this.waterContainment != this.waterContainmentMax || this.gravity == 0);
+            }
+            return true;
+        }
+        if (!this.solid) {
+            if (sq.organic) {
+                return false;
+            }
+            if ((!sq.solid) && (!this.hasBonked || !sq.hasBonked || this.speedY > 0 || sq.speedY > 0)) {
+                return false;
+            }
+            if (!sq.collision) {
+                return false;
+            }
+            if (!sq.solid) {
+                return true;
+            } else {
+                if ((sq.surface && (sq.waterContainment == sq.waterContainmentMax || sq.gravity == 0))) {
+                    return false;
+                }
+                return true;
+            }
+        }
+        return true;
+    }
+
+    getNutrientRate(proto) {
+        if (this.cachedNutrientRateSquares == this.linkedOrganismSquares.length) {
+            return this.cachedNutrientRate;
+        } else {
+            this.cachedNutrientRate = 2 / (this.linkedOrganismSquares
+                .filter((lsq) => lsq != null && lsq.linkedOrganism.proto == proto)
+                .map((lsq) => 1)
+                .reduce((a, b) => a + b, 1));
+            this.cachedNutrientRateSquares = this.linkedOrganismSquares.length;
+            return this.cachedNutrientRate;
+        }
+    }
+
+    shouldFallThisFrame() {
+        if (!this.physicsEnabled) {
+            return false;
+        }
+        if (this.gravity == 0) {
+            return false;
+        }
+        if (this.proto == "SoilSquare" && (this.linkedOrganismSquares.some((lsq) => lsq.type == "root"))) {
+            return false;
+        }
+        return true;
+    }
+
+    getNextPath() {
+        let gnpf = (v) => Math.max(1, Math.abs(v));
+        let f = gnpf(this.speedX) * gnpf(this.speedY);
+
+        let dsx = this.speedX / f;
+        let dsy = this.speedY / f;
+
+        let csx = 0;
+        let csy = 0;
+
+        let rcsx = 0;
+        let rcsy = 0;
+
+        let last, collSquare;
+
+        let pathArr = new Array();
+        pathArr.push([this.posX, this.posY]);
+
+        for (let i = 0; i < f; i++) {
+            csx += dsx;
+            csy += dsy;
+
+            rcsx = csx + this.posX;
+            rcsy = csy + this.posY;
+
+            last = pathArr[pathArr.length - 1];
+
+            if (rcsx == last[0] && rcsy == last[1])
+                continue;
+
+            collSquare = getSquares(rcsx, rcsy).find((sq) => sq != this && sq.testCollidesWithSquare(this));
+
+            if (collSquare != null) {
+                return [collSquare, pathArr];
+            }
+
+            pathArr.push([rcsx, rcsy]);
+        }
+
+        return [null, pathArr];
+    }
+
+    consumeParticle(incomingSq) {
+        let startBlockHeatlh = this.blockHealth;
+        this.blockHealth = Math.min(1, this.blockHealth + incomingSq.blockHealth);
+        let colSqHeatlhAdded = this.blockHealth - startBlockHeatlh;
+        let res = colSqHeatlhAdded == incomingSq.blockHealth;
+        incomingSq.blockHealth -= colSqHeatlhAdded;
+        return [res, startBlockHeatlh, colSqHeatlhAdded];
+    }
+
+
+    gravityPhysics() {
+        if (!this.shouldFallThisFrame()) {
+            return;
+        }
+        // per-tick speed manipulation
+        if (getTimeScale() != 0) {
+            let sqBelow = getSquares(this.posX, this.posY + 1).find((sq) => sq.testCollidesWithSquare(this));
+            if (sqBelow != null && sqBelow.speedX == 0 && sqBelow.speedY == 0) {
+                if (Math.random() > .9) {
+                    this.speedX = 0;
+                    this.speedY = 0;
+                }
+
+            } else {
+                this.speedY += (1 / (this.gravity / Math.max(.1, this.blockHealth) ** (this.blockHealthGravityCoef)));
+            }
+        }
+
+        let shouldResetGroup = false;
+        if (isGroupGrounded(this.group) && this.currentPressureDirect > 10) {
+            if ((Math.random() * 1.5) < 1 - (1 / this.currentPressureDirect) && !getSquares(this.posX, this.posY + 2).some((sq) => sq.testCollidesWithSquare(this))) {
+                return;
+            }
+            shouldResetGroup = true;
+        }
+
+        if (this.speedX == 0 && this.speedY == 0)
+            return;
+
+        let maxSpeed = 9;
+        this.speedX = Math.min(maxSpeed, Math.max(-maxSpeed, this.speedX));
+        this.speedY = Math.min(maxSpeed, Math.max(-maxSpeed, this.speedY));
+
+        if (getSquares(this.posX - 1, this.posY).some((sq) => sq.testCollidesWithSquare(this)) && getSquares(this.posX + 1, this.posY).some((sq) => sq.testCollidesWithSquare(this)))
+            this.speedX = 0;
+
+        if (Math.abs(this.speedX) < .0005)
+            this.speedX = 0
+
+        this.speedX += (this.speedX > 0 ? this.speedX * -.01 : this.speedX * .01);
+        // end per-tick speed manipulation
+
+        // within-block movement 
+        let isWithinSquareX = false;
+        let isWithinSquareY = false;
+        if (Math.floor(this.posX + this.speedX) == Math.floor(this.posX)) {
+            isWithinSquareX = true;
+        }
+        if (Math.floor(this.posY + this.speedY) == Math.floor(this.posY)) {
+            isWithinSquareY = true;
+        }
+        if (isWithinSquareX && isWithinSquareY) {
+            this.updatePosition(this.posX + this.speedX, this.posY + this.speedY);
+            return;
+        }
+
+        // end case of within-block movement
+
+        // standard movement 
+
+        let nextPathRes = this.getNextPath();
+
+        let colSq = nextPathRes[0];
+        let nextPath = nextPathRes[1];
+
+        if (colSq != null) {
+            if (this.blockHealth < 1 && colSq.proto == this.proto) {
+                let res = colSq.consumeParticle(this);
+                if (res == null)
+                    return;
+
+                if (res[0]) {
+                    this.destroy();
+                    return;
+                }
+
+                if (res[2] == 0 && nextPath.length == 1) {
+                    // error state - overlapping squares that cannot be merged 
+                    let amount = colSq.spawnParticle(randNumber(-2, 2), randNumber(-2, 2), randRange(-1, 1), randRange(-1, 1), this.blockHealth);
+                    if (amount == this.blockHealth) {
+                        colSq.blockHealth += this.blockHealth;
+                        this.destroy();
+                    }
+                }
+            }
+            this.speedX = colSq.speedX;
+            this.speedY = colSq.speedY;
+            this.hasBonked = true;
+
+            if (this.getMovementSpeed() == 0) {
+                this.posX = Math.floor(this.posX);
+                this.posY = Math.floor(this.posY);
+            }
+        }
+
+        let nextPos = nextPath.at(nextPath.length - 1);
+
+        let finalXPos = nextPos[0];
+        let finalYPos = nextPos[1];
+
+        if (finalXPos != this.posX || this.posY != finalYPos) {
+            this.updatePosition(finalXPos, finalYPos);
+
+            if (!this.solid) {
+                shouldResetGroup = true;
+            }
+
+            if (shouldResetGroup) {
+                let origGroup = this.group;
+                this.group = getNextGroupId();
+                if (!this._percolateGroup(origGroup)) {
+                    this.group = origGroup;
+                };
+            }
+        }
+    }
+
+    slopePhysics() { }
+
+    windPhysics() { }
+
+    compactionPhysics() {
+        if (this.speedX != 0 || this.speedY != 0)
+            return;
+        if (this.blockHealth < 1) {
+            let neighbSquare = getSquares(this.posX + randNumber(-1, 1), this.posY - randNumber(1, 2)).find((sq) => sq.proto == this.proto);
+            if (neighbSquare != null && this.linkedOrganismSquares.length == 0 && this.linkedOrganismSquares.length == 0) {
+                let amount = Math.min(1 - this.blockHealth, neighbSquare.blockHealth);
+                this.blockHealth += amount;
+                neighbSquare.blockHealth -= amount;
+                if (neighbSquare.blockHealth == 0) {
+                    neighbSquare.destroy();
+                }
+            }
+        } else {
+            if (this.speedX == 0 && this.speedY == 0) {
+                this.posX = Math.floor(this.posX);
+                this.posY = Math.floor(this.posY);
+            }
+        }
+    }
+
+    zCascadePhysics() {
+    }
+
+    physics() {
+        if (!isSquareOnCanvas(this.posX, this.posY) || this.blockHealth <= 0) {
+            return;
+        }
+
+        if (getTimeScale() != 0) {
+            this.slopePhysics();
+            this.compactionPhysics();
+            this.gravityPhysics();
+            this.zCascadePhysics();
+            this.windPhysics();
+            this.percolateInnerMoisture();
+            if (this.speedY > 0) {
+                if (loadGD(UI_SIMULATION_CLOUDS)) {
+                    // this.waterEvaporationRoutine();
+                    // this.temperatureRoutine();
+                }
+                if (loadGD(UI_LIGHTING_ENABLED)) {
+                    // this.transferHeat();
+                    // this.processFrameLightingTemperature();
+                }
+            }
+            if (!isSquareOnCanvas(this.posX + this.speedX, this.posY + this.speedY))
+                this.destroy();
+        }
+    }
+
+    /* Called before physics(), with blocks in strict order from top left to bottom right. */
+    physicsBefore() {
+        this.calculateGroup();
+        this.calculateDirectPressure();
+    }
+
+    percolateFromWater(waterBlock) {
+        return 0;
+    }
+
+    calculateDirectPressure() {
+        if (
+            (!isSqColChanged(this.posX) || this.posY > getSqColChangeLocation(this.posX))
+            && Math.random() < 0.4
+            && this.currentPressureDirect != -1
+        ) {
+            return this.currentPressureDirect;
+        }
+
+        if (this._tsq) {
+            this.currentPressureDirect = this._tsq.calculateDirectPressure() + this.pressureDirectFactor();
+        } else {
+            this.currentPressureDirect = 0;
+        }
+        return this.currentPressureDirect;
+    }
+
+    pressureDirectFactor() {
+        return 1;
+    }
+
+    transferHeat() {
+        if (Math.random() < 0.75) {
+            return;
+        }
+        getNeighbors(this.posX, this.posY)
+            .filter((sq) => sq.collision)
+            .forEach((sq) => {
+                let diff = this.temperature - sq.temperature;
+                diff /= 8;
+                this.temperature -= diff / this.thermalMass;
+                sq.temperature += diff / sq.thermalMass;
+            })
+    }
+
+    zCascadePhysics() {
+    }
+
+    zCascadeFunc(val) {
+        return 0
+    }
+
+}
+

@@ -4,7 +4,7 @@ import { calculateColor } from "../../climate/simulation/temperatureHumidity.js"
 import { COLOR_BLACK, COLOR_BLUE, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_GREEN, COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { hexToRgb, hsvToHex, invlerp } from "../../common.js";
 import { HUE_CHARTREUSE } from "../../hue.js";
-import { MAIN_CONTEXT } from "../../index.js";
+import { MAIN_CONTEXT } from "../../_index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
 import { loadGD, saveGD, UI_ORGANISM_CONFIGURATOR, UI_ORGANISM_GRASS_CATTAIL, UI_ORGANISM_GRASS_BASE, UI_ORGANISM_GRASS_WHEAT, UI_ORGANISM_SELECT } from "../UIData.js";
 import { WindowElement } from "../Window.js";

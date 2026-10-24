@@ -1,7 +1,7 @@
 import { getActiveClimate } from "../../climate/climateManager.js";
 import { COLOR_BLACK } from "../../colors.js";
 import { rgbToHex } from "../../common.js";
-import { MAIN_CONTEXT } from "../../index.js";
+import { MAIN_CONTEXT } from "../../_index.js";
 import { isLeftMouseClicked } from "../../mouse.js";
 import { loadGD, saveGD, UI_PALETTE_COMPOSITION, UI_PALETTE_ROCKIDX, UI_PALETTE_SOILIDX } from "../UIData.js";
 import { WindowElement } from "../Window.js";

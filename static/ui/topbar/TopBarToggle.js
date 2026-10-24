@@ -1,6 +1,6 @@
 import { getBaseUISize } from "../../canvas.js";
 import { COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
-import { MAIN_CONTEXT } from "../../index.js";
+import { MAIN_CONTEXT } from "../../_index.js";
 import { getLastMouseDownStart, isLeftMouseClicked } from "../../mouse.js";
 import { loadGD, saveGD, UI_BOOLEAN } from "../UIData.js";
 import { TopBarElementBase } from "./TopBarElementBase.js";

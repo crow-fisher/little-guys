@@ -12,7 +12,7 @@ import { getNextGroupId } from "../../globals.js";
 import { COLOR_VERY_FUCKING_BLUE, COLOR_VERY_FUCKING_RED, RGB_COLOR_VERY_FUCKING_BLUE, RGB_COLOR_VERY_FUCKING_GREEN, RGB_COLOR_VERY_FUCKING_RED } from "../../colors.js";
 import { copyVecValue } from "../../util/vector.js";
 import { getCurPlantConfiguratorVal } from "../../ui/elements/TwoParameterPlantConfigurator.js";
-import { MAIN_CONTEXT } from "../../index.js";
+import { MAIN_CONTEXT } from "../../_index.js";
 
 // maps in form "water containment" / "matric pressure in atmospheres"
 export const clayMatricPressureMap = [
