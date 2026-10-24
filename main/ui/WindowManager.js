@@ -2,7 +2,7 @@ import { getBaseSize, getBaseUISize, getCanvasHeight, getCanvasWidth, transformP
 import { OrganismComponent } from "./components/OrganismComponent.js";
 import { BlockPalette } from "./components/BlockPalette.js";
 import { BlockSubtreeComponent as BlockSubtree } from "./components/BlockSubtreeComponent.js";
-import { TopBarComponent } from "./topbar/TopBarComponent.js";
+import { TopBarComponent } from "./topbar_old/TopBarComponent.js";
 import { ViewSubtreeComponent } from "./components/ViewSubtreeComponent.js";
 import { loadGD, UI_SM_LIGHTING, UI_PALETTE_PLANTS, UI_TOPBAR_BLOCK, UI_PALETTE_BLOCKS, UI_TOPBAR_MAINMENU, UI_TOPBAR_VIEWMODE, saveGD, UI_PALETTE_MIXER, addUIFunctionMap, UI_TOPBAR_LIGHTING, UI_TOPBAR_TIME, UI_TOPBAR_WEATHER, UI_MAIN_NEWWORLD, saveUI, UI_UI_SIZE, UI_PALETTE_SOILIDX, UI_PALETTE_ROCKIDX, UI_CLIMATE_SELECT_CLOUDS, UI_PALETTE_MODE, UI_PALETTE_MODE_ROCK, UI_PALETTE_SELECT, UI_PALETTE_SOILROCK, UI_PALETTE_MODE_SOIL, UI_PALETTE_STRENGTH, UI_PALETTE_WATER, UI_PALETTE_SURFACE, UI_PALETTE_SURFACE_OFF, UI_PALETTE_COMPOSITION, UI_LIGHTING_ENABLED, UI_PALETTE_AQUIFER, UI_VISUALIZER_ORGANISM, UI_PALETTE_GENETICS, UI_COLORPICKER_COMPONENT } from "./UIData.js";
 import { getSquares } from "../squares/sqOperations.js";

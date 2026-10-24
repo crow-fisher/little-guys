@@ -16,6 +16,7 @@ export class MainManager {
         this.rasterizationManager = new RasterizationManager();
         this.inputManager = new InputManager();
         this.uiManager = new UIManager();
+        this.timeManager = new TimeManager();
 
     }
     di() {
@@ -23,6 +24,8 @@ export class MainManager {
         this.cameraManager.di(this);
         this.rasterizationManager.di(this);
         this.inputManager.di(this);
+        this.uiManager.di(this);
+        this.timeManager.di(this);
     }
 
     postConstruct() {

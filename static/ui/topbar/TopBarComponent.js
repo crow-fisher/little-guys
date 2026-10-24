@@ -53,7 +53,6 @@ export class TopBarComponent {
         this.midSpacingEl = new TopBarText(fontSize, "left", () => " | ")
         
         this.elements[0] = [
-            
             new TopBarToggle(fontSize, "left", UI_TOPBAR_MAINMENU, UI_BOOLEAN, () => this.textMainMenu()),
             this.midSpacingEl,
             new TopBarToggle(fontSize, "left", UI_TOPBAR_BLOCK, UI_BOOLEAN, () => this.textBlockMenu()),

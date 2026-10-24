@@ -12,7 +12,7 @@ export class Block {
     constructor(blockManager, cartesian) {
         this.blockManager = blockManager;
         this.lightingManager = blockManager.worldManager.lightingManager;
-        this.timeManager = blockManager.worldManager.timeManager;
+        this.timeManager = blockManager.mainManager.timeManager;
         this.rasterizationManager = blockManager.worldManager.mainManager.rasterizationManager;
         this.cameraManager = blockManager.worldManager.mainManager.cameraManager;
         this.canvasManager = blockManager.worldManager.mainManager.canvasManager;

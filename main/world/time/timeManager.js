@@ -6,9 +6,8 @@ import { RuntimeComponent } from "../../runtimeComponent.js";
 import { MILLIS_PER_DAY } from "../../util/const.js";
 
 export class TimeManager extends RuntimeComponent {
-    constructor(worldManager) {
+    constructor() {
         super();
-        this.worldManager = worldManager;
         this.curDay = 100.2;
         this.curDate = Date.now();
         this.dt = 0;
@@ -41,7 +40,11 @@ export class TimeManager extends RuntimeComponent {
         }
     }
     
-    di() {}
+    di(mainManager) {
+        super.di(mainManager);
+        this.worldManager = this.mainManager.worldManager;
+
+    }
 
     getTimeScale() {
         return (3.8 ** (this.curTimeScale - 1));

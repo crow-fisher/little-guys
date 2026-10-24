@@ -29,7 +29,7 @@ export class BlockManager extends RuntimeComponent {
     }
 
     di() {
-        this.timeManager = this.worldManager.timeManager;
+        this.timeManager = this.mainManager.timeManager;
         this.lightingManager = this.worldManager.lightingManager;
         this.uiManager = this.worldManager.mainManager.uiManager;
         this.blockAttributeComponent = this.worldManager.mainManager.uiManager.blockAttributeComponent;

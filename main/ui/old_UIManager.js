@@ -108,13 +108,13 @@ export class UIManager extends RuntimeComponent {
         return this.mainManager.inputManager.mouseManager.ms != 0;
     }
     getCurDay() {
-        return this.mainManager.worldManager.timeManager.curDay;
+        return this.mainManager.timeManager.curDay;
     }
     getCurTimeScale() {
-        return this.mainManager.worldManager.timeManager.curTimeScale;
+        return this.mainManager.timeManager.curTimeScale;
     }
     setCurTimeScale(val) {
-        this.mainManager.worldManager.timeManager.curTimeScale = val;
+        this.mainManager.timeManager.curTimeScale = val;
     }
     
 }
