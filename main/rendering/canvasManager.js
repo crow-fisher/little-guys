@@ -3,14 +3,16 @@ import { hsvToHex } from "../color/color.js";
 import { RuntimeComponent } from "../runtimeComponent.js";
 
 export class CanvasManager extends RuntimeComponent {
-    constructor(mainManager) {
+    constructor() {
         super();
-        this.mainManager = mainManager;
         this.canvas = document.getElementById("main");
-        this.context = this.canvas.getContext('2d');
         this.pointerLock = false;
         this.addCallbacks();
         this.resize();
+    }
+
+    postConstruct() {
+        this.context = this.canvas.getContext('2d');
     }
 
     lockPointer() {
@@ -48,14 +50,14 @@ export class CanvasManager extends RuntimeComponent {
     }
 
     addCallbacks() {
-        this.canvas.addEventListener('mousemove', (e) => this.mainManager.mousemove(e), false);
-        this.canvas.addEventListener('mousedown', (e) => this.mainManager.mousedown(e));
-        this.canvas.addEventListener('mouseup', (e) => this.mainManager.mouseup(e));
+        // this.canvas.addEventListener('mousemove', (e) => this.mainManager.mousemove(e), false);
+        // this.canvas.addEventListener('mousedown', (e) => this.mainManager.mousedown(e));
+        // this.canvas.addEventListener('mouseup', (e) => this.mainManager.mouseup(e));
 
-        // this.canvas.addEventListener('onkeydown', (e) => this.mainManager.onkeydown(e));
-        // this.canvas.addEventListener('onkeyup', (e) => this.mainManager.onkeyup(e));
-        this.canvas.onkeydown = (e) => this.mainManager.onkeydown(e);
-        this.canvas.onkeyup = (e) => this.mainManager.onkeyup(e);
-        this.canvas.onwheel = (e) => this.mainManager.onwheel(e);
+        // // this.canvas.addEventListener('onkeydown', (e) => this.mainManager.onkeydown(e));
+        // // this.canvas.addEventListener('onkeyup', (e) => this.mainManager.onkeyup(e));
+        // this.canvas.onkeydown = (e) => this.mainManager.onkeydown(e);
+        // this.canvas.onkeyup = (e) => this.mainManager.onkeyup(e);
+        // this.canvas.onwheel = (e) => this.mainManager.onwheel(e);
     }
 }

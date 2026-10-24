@@ -1,4 +1,6 @@
 export class RuntimeComponent {
-    di() {}
+    di(mainManager) { this.mainManager = mainManager }
     postConstruct() {}
+    update() {}
+    render() {}
 }

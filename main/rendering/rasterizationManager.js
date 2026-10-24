@@ -1,10 +1,8 @@
 import { RuntimeComponent } from "../runtimeComponent.js";
 
 export class RasterizationManager extends RuntimeComponent {
-    constructor(mainManager) {
+    constructor() {
         super();
-        this.mainManager = mainManager;
-        
         this.renderJobs = new Array();
         this.renderJobsLate = new Array();
         this.frameRenderJobs = 0;
@@ -13,7 +11,8 @@ export class RasterizationManager extends RuntimeComponent {
         this.sortedRenderJobs = new Array();
     }
 
-    di() {
+    di(mainManager) {
+        super.di(mainManager);
         this.canvasManager = this.mainManager.canvasManager;
     }
 

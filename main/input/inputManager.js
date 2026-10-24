@@ -3,9 +3,8 @@ import { KeyboardManager } from "./source/keyboardManager.js";
 import { MouseManager } from "./source/mouseManager.js";
 
 export class InputManager extends RuntimeComponent {
-    constructor(mainManager) {
+    constructor() {
         super();
-        this.mainManager = mainManager;
         this.mouseManager = new MouseManager(this);
         this.keyboardManager = new KeyboardManager(this);
     }

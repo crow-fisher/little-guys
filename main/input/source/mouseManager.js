@@ -4,14 +4,19 @@ import { loadGD, saveGD, UI_CAMERA_FOV } from "../../ui/UIData.js";
 export class MouseManager {
     constructor(inputManager) {
         this.inputManager = inputManager;
-        this.cameraManager = inputManager.mainManager.cameraManager;
-        this.canvasManager = inputManager.mainManager.canvasManager;
+
         this.ms = 0;
         this.pms = 0;
         this.offset = { x: 0, y: 0 };
         this.poffset = { x: 0, y: 0 };
         this.doffset = { x: 0, y: 0 };
         this.movement = { x: 0, y: 0 };
+    }
+
+    di(mainManager) {
+        super.di(mainManager);
+        this.cameraManager = this.mainManager.cameraManager;
+        this.canvasManager = this.mainManager.canvasManager;
     }
 
     isButtonPressed(b) {

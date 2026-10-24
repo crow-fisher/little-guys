@@ -4,23 +4,30 @@ import { MouseManager } from "./input/source/mouseManager.js";
 import { CameraManager } from "./rendering/cameraManager.js";
 import { CanvasManager } from "./rendering/canvasManager.js"
 import { RasterizationManager } from "./rendering/rasterizationManager.js";
+import { RuntimeComponent } from "./runtimeComponent.js";
 import { UIManager } from "./ui/UIManager.js";
 import { TimeManager } from "./world/time/timeManager.js";
 
 export class MainManager {
     constructor() {
         this.debugOptions = new DebugOptions();
-        this.canvasManager = new CanvasManager(this);
-        this.cameraManager = new CameraManager(this);
-        this.rasterizationManager = new RasterizationManager(this);
-        this.inputManager = new InputManager(this);
-        this.uiManager = new UIManager(this);
+        this.canvasManager = new CanvasManager();
+        this.cameraManager = new CameraManager();
+        this.rasterizationManager = new RasterizationManager();
+        this.inputManager = new InputManager();
+        this.uiManager = new UIManager();
+
+        // this.cameraManager = new RuntimeComponent(this);
+        // this.rasterizationManager = new RuntimeComponent(this);
+        // this.inputManager = new RuntimeComponent(this);
+        // this.uiManager = new RuntimeComponent(this);
+
     }
     di() {
-        this.canvasManager.di();
-        this.cameraManager.di();
-        this.rasterizationManager.di();
-        this.inputManager.di();
+        this.canvasManager.di(this);
+        this.cameraManager.di(this);
+        this.rasterizationManager.di(this);
+        this.inputManager.di(this);
     }
 
     postConstruct() {
