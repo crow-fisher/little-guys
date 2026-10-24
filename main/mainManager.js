@@ -17,11 +17,6 @@ export class MainManager {
         this.inputManager = new InputManager();
         this.uiManager = new UIManager();
 
-        // this.cameraManager = new RuntimeComponent(this);
-        // this.rasterizationManager = new RuntimeComponent(this);
-        // this.inputManager = new RuntimeComponent(this);
-        // this.uiManager = new RuntimeComponent(this);
-
     }
     di() {
         this.canvasManager.di(this);

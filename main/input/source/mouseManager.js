@@ -78,16 +78,9 @@ export class MouseManager {
     }
 
     getOffset(evt) {
-        // Check if the event is a touch or mouse event and calculate the offset accordingly
-        if (evt.touches) {
-            // For touch events, use the first touch
-            let touch = evt.touches[0];
-            return { x: touch.pageX - evt.target.offsetLeft, y: touch.pageY - evt.target.offsetTop };
-        } else if (evt.offsetX != undefined) {
-            // For mouse events
+         if (evt.offsetX != undefined) {
             return { x: evt.offsetX, y: evt.offsetY };
         } else {
-            // Fallback for older browsers
             let el = evt.target;
             let offset = { x: 0, y: 0 };
             while (el.offsetParent) {
