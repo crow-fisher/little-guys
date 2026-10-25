@@ -4,10 +4,15 @@ import { TopBarComponent } from "./topbar/TopBarComponent.js";
 export class UIManager extends RuntimeComponent {
     constructor() {
         super();
-        this.topBarComponent = new TopBarComponent(this);
-        this.components = [this.topBarComponent];
+
         this._config = {} // accessed via '.config()' method within Component.js
         this.topbarConfig = {}  // accessed directly
+
+        this.topBarComponent = new TopBarComponent(this);
+        this.components = [this.topBarComponent];
+
+        this.subtreeElements = [
+        ]
     }
 
     requestTouch() {
