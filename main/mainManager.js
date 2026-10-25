@@ -60,6 +60,7 @@ export class MainManager {
     update() {
         this.uiManager.update();
         this.cameraManager.update();
+        this.timeManager.update();
 
         this.rasterizationManager.update();
         this.inputManager.update();
@@ -68,13 +69,14 @@ export class MainManager {
 
     render() {
         this.canvasManager.render();
-        this.rasterizationManager.render();
-
+        this.timeManager.render();
         // this.cameraManager.render();
         // this.inputManager.render();
-        
-        this.uiManager.render();
+
         this.worldManager.render();
+        this.rasterizationManager.render();
+        this.uiManager.render();
+
     }
 
     // Canvas Callbacks
