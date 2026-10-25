@@ -1,5 +1,3 @@
-import { HUE_CHARTREUSE, HUE_TANGOR } from "../../../color/hue.js";
-import { DO_K_RENDERMODE, DO_K_RENDERMODE_BWPRINT } from "../../../debugOptions.js";
 import { Component } from "../../Component.js";
 import { Container } from "../../Container.js";
 import { RadioToggleLabel } from "../../elements/RadioToggleLabel.js";

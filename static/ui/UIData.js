@@ -1,6 +1,3 @@
-import { randRange } from "../common.js";
-import { saveUserSettings } from "../saveAndLoad.js";
-
 export const UI_MODE_SOIL = "soil";
 export const UI_MODE_ROCK = "rock";
 export const UI_BB_MODE = "UI_BB_MODE";
@@ -859,7 +856,6 @@ function saveGeneral(map, key, value) {
         saveGD(UI_TEXTEDIT_ACTIVE, null)
     }
     if (map == ROOT[UICONFIG]) {
-        saveUserSettings();
     }
 }
 

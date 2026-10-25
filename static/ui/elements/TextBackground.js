@@ -1,42 +1,34 @@
 import { COLOR_BLACK, COLOR_OTHER_BLUE, COLOR_VERY_FUCKING_RED } from "../../colors.js";
-import { MAIN_CONTEXT } from "../../_index.js";
-import { isLeftMouseClicked } from "../../mouse.js";
 import { loadGD, saveGD, UI_CENTER } from "../UIData.js";
-import { WindowElement } from "../Window.js";
+import { WindowElement } from "../WindowElement.js";
 
 export class TextBackground extends WindowElement {
-    constructor(window, sizeX, sizeY, offsetX, colorFunc, sizeMult, text, variant = "") {
-        super(window, sizeX, sizeY);
-        this.sizeX = sizeX;
-        this.sizeY = sizeY;
-        this.offsetX = offsetX;
+    constructor(window, sizeXFunc, sizeYFunc, textOffset, colorFunc, sizeMult, text, fontVariant = "") {
+        super(window, sizeXFunc, sizeYFunc);
+        this.sizeXFunc = sizeXFunc;
+        this.sizeYFunc = sizeYFunc;
+        this.textOffset = textOffset;
         this.colorFunc = colorFunc;
         this.sizeMult = sizeMult;
         this.text = text;
-        this.variant = variant;
+        this.variant = fontVariant;
     }
 
     render(startX, startY) {
-        if (this.offsetX == null) {
-            return [this.sizeX, this.sizeY]
-        }
-        MAIN_CONTEXT.font = this.sizeY * this.sizeMult + "px courier" + this.variant;
-        MAIN_CONTEXT.textBaseline = 'middle';
-        MAIN_CONTEXT.fillStyle = this.colorFunc();
-        MAIN_CONTEXT.fillRect(startX, startY, this.sizeX, this.sizeY);
-        MAIN_CONTEXT.fillStyle = "#000000"
-        MAIN_CONTEXT.strokeStyle = "#000000"
-
+        this.window.getContext().font = this.sizeYFunc() * this.sizeMult + "px courier" + this.variant;
+        this.window.getContext().textBaseline = 'middle';
+        this.window.getContext().fillStyle = this.colorFunc();
+        this.window.getContext().fillRect(startX, startY, this.sizeXFunc(), this.sizeYFunc());
         if (this.text) {
-            if (this.offsetX == UI_CENTER) {
-                MAIN_CONTEXT.textAlign = 'center';
-                MAIN_CONTEXT.fillText(this.text, startX + this.sizeX / 2, startY + (this.sizeY / 2))
+            this.window.getContext().fillStyle = "#000000"
+            if (this.textOffset == UI_CENTER) {
+                this.window.getContext().textAlign = 'center';
+                this.window.getContext().fillText(this.text, startX + this.sizeXFunc() / 2, startY + (this.sizeYFunc() / 2))
             } else {
-                MAIN_CONTEXT.textAlign = 'left';
-                MAIN_CONTEXT.fillText(this.text, startX + this.offsetX, startY + (this.sizeY / 2))
+                this.window.getContext().textAlign = 'left';
+                this.window.getContext().fillText(this.text, startX + this.textOffset, startY + (this.sizeYFunc() / 2))
             }
         }
-
-        return [this.sizeX, this.sizeY];
+        return [this.sizeXFunc(), this.sizeYFunc()];
     }
 }

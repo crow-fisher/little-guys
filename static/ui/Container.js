@@ -1,19 +1,12 @@
-import { WindowElement } from "./Window.js";
-
 export class Container {
-    constructor(window, padding, dir) {
-        this.window = window;
-        this.elements = new Array();
-        this.padding = padding;
+    constructor(dir) {
+        this.dir = dir;
 
+        this.elements = new Array();
         this.sizeX = 1;
         this.sizeY = 1;
         this.endX = 0;
         this.endY = 0;
-        this.dir = dir;
-
-        this.clickStartX = -1;
-        this.clickStartY = -1;
     }
 
     addElement(newElement) {
@@ -33,46 +26,76 @@ export class Container {
 
         this.elements.forEach((el) => {
             let elSize = el.size()
-            if (elSize[0] == 0 || isNaN(elSize[0] || isNaN(elSize[1]))) {
+            if (isNaN(elSize[0] || isNaN(elSize[1]))) {
                 return;
             }
             el.render(curX, curY);
             this.endX = Math.max(curX + elSize[0], this.endX);
             this.endY = Math.max(curY + elSize[1], this.endY);
-            if (this.dir == 0) {
-                curX += elSize[0] + this.padding;
-            } else {
-                curY += elSize[1] + this.padding;
+
+            if (!el.absolute) {
+                if (this.dir == 0) {
+                    curX += elSize[0];
+                } else {
+                    curY += elSize[1];
+                }
             }
         });
         this.sizeX = this.endX - startX;
         this.sizeY = this.endY - startY;
     }
 
-    hover(posX, posY) {
-        this.window.hovered = true;
-        
+    interact(posX, posY) {
         let curX1 = 0;
         let curY1 = 0;
         let curX2, curY2;
 
         if (!(this.elements.some((el) => {
             let elSize = el.size();
-            if (elSize[0] == 0) {
-                return;
-            }
             curX2 = curX1 + elSize[0];
             curY2 = curY1 + elSize[1];
+
             if (posX > curX1 && posX < curX2 && posY > curY1 && posY < curY2) {
-                el.hover(posX - curX1, posY - curY1);
+                el.interact(posX - curX1, posY - curY1);
                 return true;
             }
-            if (this.dir == 0)
-                curX1 = curX2 + this.padding;
-            else
-                curY1 = curY2 + this.padding;
+
+            if (!el.absolute) {
+                if (this.dir == 0)
+                    curX1 = curX2;
+                else
+                    curY1 = curY2;
+            }
+
+        })));
+    }
+    interactClick(posX, posY) {
+        let curX1 = 0;
+        let curY1 = 0;
+        let curX2, curY2;
+
+        if (!(this.elements.some((el) => {
+            let elSize = el.size();
+            curX2 = curX1 + elSize[0];
+            curY2 = curY1 + elSize[1];
+
+            if (posX > curX1 && posX < curX2 && posY > curY1 && posY < curY2) {
+                el.interactClick(posX - curX1, posY - curY1);
+                return true;
+            }
+
+            if (!el.absolute) {
+                if (this.dir == 0)
+                    curX1 = curX2;
+                else
+                    curY1 = curY2;
+            }
+
         })));
     }
 
-    
+
+    updateSizeXByMult(mult) {
+        this.elements.forEach((el) => el.updateSizeXByMult(mult));
+    }
 }

@@ -1,3 +1,4 @@
+import { AstronomyAtlasComponent } from "./components/AstronomyAtlas/AstronomyAtlasComponent.js"
 import { RuntimeComponent } from "../runtimeComponent.js";
 import { TopBarComponent } from "./topbar/TopBarComponent.js";
 
@@ -9,10 +10,12 @@ export class UIManager extends RuntimeComponent {
         this.topbarConfig = {}  // accessed directly
 
         this.topBarComponent = new TopBarComponent(this);
+        this.astronomyAtlasComponent = new AstronomyAtlasComponent(this)
         this.components = [this.topBarComponent];
 
         this.subtreeElements = [
         ]
+        
     }
 
     requestTouch() {
