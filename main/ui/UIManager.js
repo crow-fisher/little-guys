@@ -1,6 +1,7 @@
 import { AstronomyAtlasComponent } from "./components/AstronomyAtlas/AstronomyAtlasComponent.js"
 import { RuntimeComponent } from "../runtimeComponent.js";
 import { TopBarComponent } from "./topbar/TopBarComponent.js";
+import { hsvToHex } from "../color/color.js";
 
 export class UIManager extends RuntimeComponent {
     constructor() {
@@ -11,11 +12,16 @@ export class UIManager extends RuntimeComponent {
 
         this.topBarComponent = new TopBarComponent(this);
         this.astronomyAtlasComponent = new AstronomyAtlasComponent(this)
-        this.components = [this.topBarComponent];
+        this.components = [this.topBarComponent, this.astronomyAtlasComponent];
 
         this.subtreeElements = [
         ]
         
+    }
+
+    di(mainManager) {
+        super.di(mainManager);
+        this.components.forEach((c) => c.di(mainManager));
     }
 
     requestTouch() {
@@ -36,6 +42,14 @@ export class UIManager extends RuntimeComponent {
     render() {
         this.components.sort((a, b) => (a.lastTouched ?? 0) - (b.lastTouched ?? 0))
         this.components.filter((c) => c.activeFunc()).forEach((component) => component.render());
+    }
+
+    getColorActive(b=1) {
+        return hsvToHex(36, .81, .37 * b);
+    }
+
+    getColorInactive(b=1) {
+        return hsvToHex(41, .29, .29 * b);
     }
 
     getBaseUISize() {

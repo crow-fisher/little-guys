@@ -4,9 +4,11 @@ import { MILLIS_PER_DAY } from "../../util/const.js";
 import { TopBarToggleFunc } from "./TopBarToggleFunc.js";
 import { hsvToHex } from "../../color/color.js";
 import { TOPBAR_MAINMENU, TOPBAR_BLOCK, TOPBAR_LIGHTING, TOPBAR_VIEWMODE, TOPBAR_SIMULATION, TOPBAR_TIME, TOPBAR_WEATHER, TOPBAR_ASTRONOMY } from "./topBarEnum.js";
+import { RuntimeComponent } from "../../../future/main/runtimeComponent.js";
 
-export class TopBarComponent {
+export class TopBarComponent extends RuntimeComponent {
     constructor(uiManager, key) {
+        super();
         this.uiManager = uiManager;
         this.activeFunc = () => true;
         this.key = key;
