@@ -10,9 +10,10 @@ export class LightingManager extends RuntimeComponent {
         this.lightingUpdate = false;
     }
 
-    di() {
-        this.inputManager = this.worldManager.mainManager.inputManager;
-        this.cameraManager = this.worldManager.mainManager.cameraManager;
+    di(mainManager) {
+        super.di(mainManager);
+        this.inputManager = this.mainManager.inputManager;
+        this.cameraManager = this.mainManager.cameraManager;
     }
 
     postConstruct() {

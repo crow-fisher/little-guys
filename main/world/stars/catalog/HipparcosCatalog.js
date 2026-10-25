@@ -52,7 +52,7 @@ export class HipparcosCatalog extends CatalogHandlerBase {
         let rowDecRad = rowDec / 57.295779513;
 
         let temperature = calculateStarTemperature(bv);
-        let color = tempToColorForStar(temperature, this.starManager.worldManager.mainManager.debugOptions[DO_K_RENDERMODE]);
+        let color = tempToColorForStar(temperature);
         if (isNaN(rowAsc) || isNaN(rowDec) || isNaN(magnitude) || isNaN(parallax)) {
             return;
         }

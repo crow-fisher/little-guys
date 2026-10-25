@@ -7,6 +7,7 @@ import { RasterizationManager } from "./rendering/rasterizationManager.js";
 import { RuntimeComponent } from "./runtimeComponent.js";
 import { UIManager } from "./ui/UIManager.js";
 import { TimeManager } from "./world/time/timeManager.js";
+import { WorldManager } from "./world/worldManager.js";
 
 export class MainManager {
     constructor() {
@@ -17,6 +18,7 @@ export class MainManager {
         this.inputManager = new InputManager();
         this.uiManager = new UIManager();
         this.timeManager = new TimeManager();
+        this.worldManager = new WorldManager();
 
     }
     di() {
@@ -26,6 +28,7 @@ export class MainManager {
         this.inputManager.di(this);
         this.uiManager.di(this);
         this.timeManager.di(this);
+        this.worldManager.di(this);
     }
 
     postConstruct() {
@@ -34,6 +37,8 @@ export class MainManager {
         this.rasterizationManager.postConstruct();
         this.inputManager.postConstruct();
         this.uiManager.postConstruct();
+        this.worldManager.postConstruct();
+
     }
 
     main() {
@@ -69,6 +74,7 @@ export class MainManager {
         // this.inputManager.render();
         
         this.uiManager.render();
+        this.worldManager.render();
     }
 
     // Canvas Callbacks

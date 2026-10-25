@@ -29,13 +29,23 @@ export class StarManager extends RuntimeComponent {
 
         this.numSectorsArr = 1;
         this.bounds = [-1, -1, -1, 1, 1, 1]; // xMin, yMin, zMin, xMax, yMax, zMax. 
+
+        this.loadedStars = new Array();
+        this.loadedConstellations = new Array();
+
+    }
+
+    di(mainManager) { 
+        super.di(mainManager); 
+        this.uiManager = this.mainManager.uiManager;
+        this.cameraManager = this.mainManager.cameraManager;
+        this.astronomyAtlasComponent = this.uiManager.astronomyAtlasComponent;
+    }
+
+    postConstruct() {
         this.loadData();
     }
 
-    di() {
-        this.uiManager = this.worldManager.mainManager.uiManager;
-        this.astronomyAtlasComponent = this.uiManager.astronomyAtlasComponent;
-    }
     resetStarLabels() {
         let graphLabelType = loadGD(UI_AA_LABEL_GRAPH);
         let starLabelType = loadGD(UI_AA_LABEL_STARS);
@@ -192,8 +202,6 @@ export class StarManager extends RuntimeComponent {
     }
 
     loadData() {
-        this.loadedStars = new Array();
-        this.loadedConstellations = new Array();
 
         let hipCatalog = new HipparcosCatalog(this, (star) => this.loadStar(star), (constellation) => this.loadConstellation(constellation));
         // let stelCatalog = new StellariumCatalog((star) => this.loadStar(star), (constellation) => this.loadConstellation(constellation));
@@ -266,8 +274,4 @@ export class StarManager extends RuntimeComponent {
             }
         })
     };
-
-    getCameraManager() {
-        return this.worldManager.mainManager.cameraManager;
-    }
 }

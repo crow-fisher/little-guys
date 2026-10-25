@@ -11,7 +11,7 @@ const FOV_VISIBLE = 0b01;
 export class StarSector {
     constructor(starManager, sector, cartesian, cartesianBounds) {
         this.starManager = starManager;
-        this.cameraManager = starManager.worldManager.mainManager.cameraManager;
+        this.cameraManager = starManager.mainManager.cameraManager;
 
         this.sector = sector;
         this.cartesian = cartesian;
