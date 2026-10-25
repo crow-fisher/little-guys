@@ -9,6 +9,12 @@ export class InputManager extends RuntimeComponent {
         this.keyboardManager = new KeyboardManager(this);
     }
 
+    di(mainManager) {
+        super.di(mainManager);
+        this.mouseManager.di(mainManager);
+        this.keyboardManager.di(mainManager);
+    }
+
     update() {
         this.mouseManager.update();
         this.keyboardManager.update();

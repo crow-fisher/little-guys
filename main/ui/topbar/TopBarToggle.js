@@ -25,7 +25,7 @@ export class TopBarToggle extends TopBarElementBase {
             return;
         }
         this.prepareStyle();
-        if (this.uiManager.topbarConfig[this.ref] == this.key)
+        if (this.uiManager.topbarConfig[this.key])
              this.uiManager.getContext().fillStyle = "#FFFFFF";
         else
              this.uiManager.getContext().fillStyle = "#999999";
@@ -38,9 +38,9 @@ export class TopBarToggle extends TopBarElementBase {
             return;
         }
 
-        if (this.uiManager.topbarConfig[this.ref] == this.key)
-            this.uiManager.topbarConfig[this.ref] = null;
+        if (this.uiManager.topbarConfig[this.key] == 1)
+            this.uiManager.topbarConfig[this.key] = null;
         else
-            this.uiManager.topbarConfig[this.ref] = this.key;
+            this.uiManager.topbarConfig[this.key] = 1;
     }
 }

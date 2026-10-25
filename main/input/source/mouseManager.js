@@ -1,8 +1,10 @@
 import { hsvToHex } from "../../color/color.js";
+import { RuntimeComponent } from "../../runtimeComponent.js";
 import { loadGD, saveGD, UI_CAMERA_FOV } from "../../ui/UIData.js";
 
-export class MouseManager {
+export class MouseManager extends RuntimeComponent {
     constructor(inputManager) {
+        super();
         this.inputManager = inputManager;
 
         this.ms = 0;

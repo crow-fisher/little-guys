@@ -1,8 +1,12 @@
-export class KeyboardManager {
+import { RuntimeComponent } from "../../runtimeComponent.js";
+
+export class KeyboardManager extends RuntimeComponent {
     constructor(inputManager) {
+        super();
         this.inputManager = inputManager;
         this.keyPressMap = {};
     }
+
     update() {}
     render() {}
     onkeydown(e) {
