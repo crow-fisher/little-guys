@@ -34,10 +34,7 @@ export class ManipulationManager extends RuntimeComponent {
         }
 
         if (this.mouseManager.isButtonPressed(0)) {
-        let px = Math.floor((mo.x - ap.offsetX) / ap.blockSize);
-        let py = Math.floor((mo.y - ap.offsetY) / ap.blockSize);
-
-        this.activePlaneManager.activePlane.addSquare(new Square(), px, py);
+        this.activePlaneManager.activePlane.addSquare(new Square(), mo.x - ap.offsetX, mo.y - ap.offsetY);
         }
 
     }

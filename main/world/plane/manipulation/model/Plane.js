@@ -6,7 +6,6 @@ export class Plane {
         this.boxes = new Map();
         this.offsetX = 0;
         this.offsetY = 0;
-        this.blockSize = 8;
     }
 
     addSquare(square, px, py) {
@@ -16,14 +15,13 @@ export class Plane {
     }
 
     render() {
-        for (let i = 0; i < 1000; i++) {
-            for (let j = 0; j < 1000; j++) {
-                let b = this.boxes.get(i)?.get(j);
-                if (b != null) {
-                    b.render(this.manipulationManager.canvasManager, i * this.blockSize + this.offsetX, j * this.blockSize + this.offsetY, this.blockSize);
-                }
+        for (let i = 0; i < this.manipulationManager.canvasManager.canvas.width; i++) {
+            if (this.boxes.get(i - this.offsetX) == null)
+                continue;
+            for (let j = 0; j < this.manipulationManager.canvasManager.canvas.height; j++) {
+                let b = this.boxes.get(i - this.offsetX)?.get(j - this.offsetY);
+                b?.render(this.manipulationManager.canvasManager, i, j, 16);
             }
         }
     }
-
 }
