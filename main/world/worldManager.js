@@ -14,6 +14,11 @@ export class WorldManager extends RuntimeComponent {
     di(mainManager) {
         super.di(mainManager);
         this.starManager.di(mainManager);
+        this.staticPlaneManager.di(mainManager);
+        this.manipulationManager.di(mainManager);
+        
+        this.uiManager = this.mainManager.uiManager;
+        this.manipulationComponent = this.uiManager.manipulationComponent;
     }
     postConstruct() {
         this.starManager.postConstruct();
@@ -21,9 +26,15 @@ export class WorldManager extends RuntimeComponent {
 
     update() {
         this.starManager.update();
+        if (this.manipulationComponent.gcoDefault().active) {
+            this.manipulationManager.active = this.staticPlaneManager;
+            this.manipulationManager.update();
+        }
+        
     }
     render() {
         this.starManager.render();
+        this.staticPlaneManager.render();
     }
     getContext() {
         return this.mainManager.canvasManager.context;

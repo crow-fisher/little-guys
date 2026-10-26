@@ -64,7 +64,8 @@ export class MainManager {
 
         this.rasterizationManager.update();
         this.inputManager.update();
-
+        this.worldManager.update(); 
+        
     }
 
     render() {

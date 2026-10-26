@@ -17,7 +17,6 @@ export class ManipulationManager extends RuntimeComponent {
     }
 
     update() {
-      
     }
 
     render() {
