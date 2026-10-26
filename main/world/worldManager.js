@@ -1,10 +1,14 @@
 import { RuntimeComponent } from "../runtimeComponent.js";
+import { ManipulationManager } from "./plane/manipulation/ManipulationManager.js";
+import { StaticPlaneManager } from "./plane/StaticPlaneManager.js";
 import { StarManager } from "./stars/starManager.js";
 
 export class WorldManager extends RuntimeComponent {
     constructor() {
         super();
         this.starManager = new StarManager(this);
+        this.staticPlaneManager = new StaticPlaneManager(this);
+        this.manipulationManager = new ManipulationManager(this);
     }
 
     di(mainManager) {
@@ -20,7 +24,6 @@ export class WorldManager extends RuntimeComponent {
     }
     render() {
         this.starManager.render();
-
     }
     getContext() {
         return this.mainManager.canvasManager.context;
