@@ -2,6 +2,8 @@ import { AstronomyAtlasComponent } from "./components/AstronomyAtlas/AstronomyAt
 import { RuntimeComponent } from "../runtimeComponent.js";
 import { TopBarComponent } from "./topbar/TopBarComponent.js";
 import { hsvToHex } from "../color/color.js";
+import { ManipulationComponent } from "./components/manipulation/ManipulationComponent.js";
+import { TOPBAR_ASTRONOMY, TOPBAR_BLOCK } from "./topbar/topBarEnum.js";
 
 export class UIManager extends RuntimeComponent {
     constructor() {
@@ -11,8 +13,10 @@ export class UIManager extends RuntimeComponent {
         this.topbarConfig = {}  // accessed directly
 
         this.topBarComponent = new TopBarComponent(this);
-        this.astronomyAtlasComponent = new AstronomyAtlasComponent(this)
-        this.components = [this.topBarComponent, this.astronomyAtlasComponent];
+        this.astronomyAtlasComponent = new AstronomyAtlasComponent(this, () => this.topbarConfig[TOPBAR_ASTRONOMY])
+        this.manipulationComponent = new ManipulationComponent(this, () => this.topbarConfig[TOPBAR_BLOCK]);
+
+        this.components = [this.topBarComponent, this.astronomyAtlasComponent, this.manipulationComponent];
 
         this.subtreeElements = [
         ]
