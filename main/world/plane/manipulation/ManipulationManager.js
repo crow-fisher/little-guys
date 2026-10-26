@@ -13,6 +13,7 @@ export class ManipulationManager extends RuntimeComponent {
         this.uiManager = this.mainManager.uiManager;
         this.inputManager = this.mainManager.inputManager;
         this.mouseManager = this.mainManager.inputManager.mouseManager;
+        this.canvasManager = this.mainManager.canvasManager;
     }
 
     postConstruct() {
@@ -31,7 +32,9 @@ export class ManipulationManager extends RuntimeComponent {
         let mo = this.mouseManager.offset;
 
         let px = Math.floor((mo.x - ap.offsetX) / ap.blockSize);
-        let py = Math.floor((mo.x - ap.offsetX) / ap.blockSize);
+        let py = Math.floor((mo.y - ap.offsetY) / ap.blockSize);
+
+        this.activePlaneManager.activePlane.addSquare(new Square(), px, py);
     }
 
     render() {
