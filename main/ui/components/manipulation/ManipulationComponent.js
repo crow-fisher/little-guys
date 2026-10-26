@@ -10,6 +10,7 @@ import { ColorInputTarget } from "../../elements/color/ColorInputTarget.js";
 import { ColorSaturationValueArea } from "../../elements/color/ColorSaturationValueArea.js";
 import { hsv2rgb } from "../../../common.js";
 import { multiplyVectorByScalar } from "../../../util/vector.js";
+import { SliderGradientBackground } from "../../elements/SliderGradientBackground.js";
 
 export class ManipulationComponent extends Component {
     constructor(uiManager, activeFunc) {
@@ -29,10 +30,24 @@ export class ManipulationComponent extends Component {
         this.container.addElement(new ColorInputTarget(this.window, () => this.gcvSizeX(), () => this.gcvSizeX()));
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "active"))
         this.container.addElement(new ColorActiveColor(this.window, () => this.gcvSizeX(), () => this.ggvdH1()));
+
+
+        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "brush size"))
+        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcoBrush().brushSize, (v) => this.gcoBrush().brushSize = v,
+            0, 12, 150, 0.2));
+
+        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "block size"))
+        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcoBrush().blockSize, (v) => this.gcoBrush().blockSize = Math.round(v),
+            1, 24, 150, 0.2));
+
     }
 
     gcoDefault() {
         return this.config().default;
+    }
+
+    gcoBrush() {
+        return this.config().brush;
     }
 
     colorUpdate(unshift = false) {
@@ -51,12 +66,16 @@ export class ManipulationComponent extends Component {
                 colorHistory: [],
                 rgbArr: [127, 127, 127]
             },
+            brush: {
+                blockSize: 8,
+                brushSize: 8
+            },
             default: {},
             offsetScale: {
                 offsetX: this.ggvUISize() * 12,
                 offsetY: this.ggvUISize() * 12,
                 sizeX: this.ggvUISize() * 80,
-                sizeY: this.ggvUISize() * 90
+                sizeY: this.ggvUISize() * 128
             }
         }
     }
