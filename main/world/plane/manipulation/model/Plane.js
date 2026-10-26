@@ -20,7 +20,7 @@ export class Plane {
             for (let j = 0; j < 1000; j++) {
                 let b = this.boxes.get(i)?.get(j);
                 if (b != null) {
-                    b.render(this.manipulationManager.canvasManager, i, j, this.blockSize);
+                    b.render(this.manipulationManager.canvasManager, i * this.blockSize + this.offsetX, j * this.blockSize + this.offsetY, this.blockSize);
                 }
             }
         }

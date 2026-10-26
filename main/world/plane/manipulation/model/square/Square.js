@@ -9,6 +9,6 @@ export class Square {
 
     render(canvasManager, posX, posY, blockSize) {
         canvasManager.context.fillStyle = rgbToHex(...this.renderColor);
-        canvasManager.context.fillRect(posX * blockSize, posY * blockSize, this.width * blockSize, this.height * blockSize);
+        canvasManager.context.fillRect(posX, posY, this.width * blockSize, this.height * blockSize);
     }
 }
