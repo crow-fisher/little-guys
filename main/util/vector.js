@@ -167,8 +167,8 @@ export function copyVecValueRound(src, dest) {
   }
 }
 
-export function multiplyVectorByScalar(vec, scalar) {
-  for (let i = 0; i < vec.length; i++) {
+export function multiplyVectorByScalar(vec, scalar, nm=3) {
+  for (let i = 0; i < Math.min(vec.length, nm); i++) {
     vec[i] *= scalar;
   }
   return vec;

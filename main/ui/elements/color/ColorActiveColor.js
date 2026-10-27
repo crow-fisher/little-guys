@@ -12,7 +12,7 @@ export class ColorActiveColor extends WindowElement {
     }
 
     render(startX, startY) {
-        this.window.getContext().fillStyle = rgbToRgba(...this.colorConfig.rgbArr);
+        this.window.getContext().fillStyle = rgbToRgba(...this.colorConfig.rgbaArr);
         this.window.getContext().fillRect(startX, startY, this.sizeXFunc(), this.sizeYFunc());
     }
 

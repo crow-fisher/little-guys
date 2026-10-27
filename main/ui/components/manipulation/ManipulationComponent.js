@@ -8,7 +8,7 @@ import { ColorActiveColor } from "../../elements/color/ColorActiveColor.js";
 import { ColorHueSliderWheel } from "../../elements/color/ColorHueSliderWheel.js";
 import { ColorInputTarget } from "../../elements/color/ColorInputTarget.js";
 import { ColorSaturationValueArea } from "../../elements/color/ColorSaturationValueArea.js";
-import { hsv2rgb } from "../../../common.js";
+import { hsv2rgb, hsv2rgba } from "../../../common.js";
 import { multiplyVectorByScalar } from "../../../util/vector.js";
 import { SliderGradientBackground } from "../../elements/SliderGradientBackground.js";
 
@@ -30,7 +30,8 @@ export class ManipulationComponent extends Component {
         this.container.addElement(new ColorInputTarget(this.window, () => this.gcvSizeX(), () => this.gcvSizeX()));
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "active"))
         this.container.addElement(new ColorActiveColor(this.window, () => this.gcvSizeX(), () => this.ggvdH1()));
-
+        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcoColorConfig().a, (v) => this.gcoColorConfig().a = Math.max(0, Math.min(1, v)),
+            -.1, 1.1, 150, 0.2));
 
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "brush size"))
         this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcoBrush().brushSize, (v) => this.gcoBrush().brushSize = v,
@@ -39,7 +40,6 @@ export class ManipulationComponent extends Component {
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "block size"))
         this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcoBrush().blockSize, (v) => this.gcoBrush().blockSize = Math.round(v),
             1, 24, 150, 0.2));
-
     }
 
     gcoDefault() {
@@ -49,12 +49,13 @@ export class ManipulationComponent extends Component {
     gcoBrush() {
         return this.config().brush;
     }
+    gcoColorConfig() {
+        return this.config().colorConfig;
+    }
 
-    colorUpdate(unshift = false) {
-        if (unshift && this.mouseManager.isFrameButtonPressed(0))
-            this.config().colorConfig.colorHistory.unshift([this.config().colorConfig.h, this.config().colorConfig.s, this.config().colorConfig.v]);
-        this.config().colorConfig.rgbArr = hsv2rgb(this.config().colorConfig.h, this.config().colorConfig.s, this.config().colorConfig.v); // creates a new array
-        multiplyVectorByScalar(this.config().colorConfig.rgbArr, 255)
+    colorUpdate() {
+        this.gcoColorConfig().rgbaArr = hsv2rgba(this.gcoColorConfig().h, this.gcoColorConfig().s, this.gcoColorConfig().v, this.gcoColorConfig().a); // creates a new array
+        multiplyVectorByScalar(this.gcoColorConfig().rgbaArr, 255)
     }
 
     getDefaultConfig() {
@@ -63,8 +64,9 @@ export class ManipulationComponent extends Component {
                 h: 0,
                 s: 0.5,
                 v: 0.5,
+                a: 1,
                 colorHistory: [],
-                rgbArr: [127, 127, 127]
+                rgbaArr: [127, 127, 127, 1]
             },
             brush: {
                 blockSize: 8,

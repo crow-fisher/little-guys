@@ -37,19 +37,14 @@ export class ManipulationManager extends RuntimeComponent {
         }
 
         if (this.mouseManager.isButtonPressed(0)) {
-            this.traceLineBetweenPoints(this.mouseManager.offset, this.mouseManager.doffset, mcc.brush.blockSize, mcc.colorConfig.rgbArr)
+            this.traceLineBetweenPoints(this.mouseManager.offset, this.mouseManager.doffset, mcc.brush.blockSize, mcc.colorConfig.rgbaArr)
         }
 
     }
 
     traceLineBetweenPoints(pv, pd, blockSize, color) {
         let d = (pd.x ** 2 + pd.y ** 2) ** 0.5;
-
-        
         let f = blockSize / 2;
-
-
-
         let cx = pv.x, cy = pv.y;
 
         let steps = Math.ceil(d / f);
@@ -59,15 +54,16 @@ export class ManipulationManager extends RuntimeComponent {
 
         let bs = d * 3;
 
+        let px, py;
+
         for (let i = 0; i < steps; i++) {
-            this.activePlaneManager.activePlane.addSquare(new Square(bs, color),
-                cx - this.activePlaneManager.activePlane.offsetX - (bs / 2), 
-                cy - this.activePlaneManager.activePlane.offsetY - (bs / 2)) ;
+            px = cx - this.activePlaneManager.activePlane.offsetX - (bs / 2);
+            py = cy - this.activePlaneManager.activePlane.offsetY - (bs / 2);
+
+            this.activePlaneManager.activePlane.addSquare(new Square(bs, px, py, color)) ;
 
             cx += dx;
             cy += dy;
-
-            console.log(cx, cy, i, steps);
 
             if (pd.x > 0 && cx > pv.x + pd.x) {
                 break;
