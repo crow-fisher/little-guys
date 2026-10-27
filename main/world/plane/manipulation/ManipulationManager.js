@@ -44,22 +44,42 @@ export class ManipulationManager extends RuntimeComponent {
 
     traceLineBetweenPoints(pv, pd, blockSize, color) {
         let d = (pd.x ** 2 + pd.y ** 2) ** 0.5;
+
         
-        let dx = pd.x / blockSize;
-        let dy = pd.y / blockSize;
+        let f = blockSize / 2;
+
+
 
         let cx = pv.x, cy = pv.y;
-        
-        do {
-            this.activePlaneManager.activePlane.addSquare(new Square(blockSize, color),
+
+        let steps = Math.ceil(d / f);
+
+        let dx = pd.x / steps;
+        let dy = pd.y / steps;
+
+        for (let i = 0; i < steps; i++) {
+            this.activePlaneManager.activePlane.addSquare(new Square(d, color),
                 cx - this.activePlaneManager.activePlane.offsetX, 
                 cy - this.activePlaneManager.activePlane.offsetY);
+
             cx += dx;
             cy += dy;
-            if (Math.random() > 0.9) 
+
+            console.log(cx, cy, i, steps);
+
+            if (pd.x > 0 && cx > pv.x + pd.x) {
                 break;
+            }
+            if (pd.x < 0 && cx < pv.x + pd.x) {
+                break;
+            }
+            if (pd.y > 0 && cy > pv.y + pd.y) {
+                break;
+            }
+            if (pd.y < 0 && cy < pv.y + pd.y) {
+                break;
+            }
         }
-        while ((pv.x - cx) ** 2 + (pv.y - cy) ** 2 > blockSize);
     }
 
     render() {
