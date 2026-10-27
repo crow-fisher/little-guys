@@ -9,6 +9,7 @@ export class Plane {
     }
 
     addSquare(square, px, py) {
+        px = Math.round(px), py = Math.round(py);
         this.boxes.set(px, this.boxes.get(px) ?? new Map());
         this.boxes.get(px).set(py, this.boxes.get(px).get(py) ?? new Box());
         this.boxes.get(px).get(py).addSquare(square);

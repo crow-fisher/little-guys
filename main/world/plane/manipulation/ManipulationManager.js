@@ -57,10 +57,12 @@ export class ManipulationManager extends RuntimeComponent {
         let dx = pd.x / steps;
         let dy = pd.y / steps;
 
+        let bs = d * 3;
+
         for (let i = 0; i < steps; i++) {
-            this.activePlaneManager.activePlane.addSquare(new Square(d, color),
-                cx - this.activePlaneManager.activePlane.offsetX, 
-                cy - this.activePlaneManager.activePlane.offsetY);
+            this.activePlaneManager.activePlane.addSquare(new Square(bs, color),
+                cx - this.activePlaneManager.activePlane.offsetX - (bs / 2), 
+                cy - this.activePlaneManager.activePlane.offsetY - (bs / 2)) ;
 
             cx += dx;
             cy += dy;
