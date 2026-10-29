@@ -1,8 +1,7 @@
 import { rgbToHex, rgbToRgba } from "../../../../../color/color.js";
 
 export class Square {
-    constructor(blockSize, posX, posY, color) {
-        this.blockSize = blockSize;
+    constructor(posX, posY, color) {
         this.posX = posX;
         this.posY = posY;
         this.renderColor = structuredClone(color);
@@ -12,6 +11,6 @@ export class Square {
 
     render(canvasManager) {
         canvasManager.context.fillStyle = rgbToRgba(...this.renderColor);
-        canvasManager.renderSquare2D(this.posX, this.posY, this.width * this.blockSize, this.height * this.blockSize);
+        canvasManager.renderSquare2D(this.posX, this.posY, this.width, this.height);
     }
 }

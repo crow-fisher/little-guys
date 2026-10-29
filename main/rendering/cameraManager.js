@@ -19,8 +19,17 @@ export class CameraManager extends RuntimeComponent {
             new MouseCamera2ControlManager(this),
         ]
         
-        this.camera2Offset = [0, 0];
+        this.camera2ViewportCenter = [0, 0];
         this.camera2Zoom = 1;
+
+        this.totalWidth = 0;
+        this.totalHeight = 0;
+        this.windowWidth = 0;
+        this.windowHeight = 0;
+        this.windowWidthStart = 0;
+        this.windowHeightStart = 0;
+        this.windowWidthEnd = 0;
+        this.windowHeightEnd = 0;
         
         this.camera3Offset = [0, 0, 0];
         this.camera3OffsetDt = [0, 0, 0];
@@ -61,6 +70,17 @@ export class CameraManager extends RuntimeComponent {
         this.mouseManager = this.mainManager.inputManager.mouseManager;
     }
 
+    canvasTick2D() {
+        this.totalWidth = this.canvasManager.canvas.width;
+        this.totalHeight = this.canvasManager.canvas.height;
+        this.windowWidth = this.totalWidth / this.camera2Zoom;
+        this.windowHeight = this.totalHeight / this.camera2Zoom;
+        this.windowWidthStart = this.camera2ViewportCenter[0] - (this.windowWidth / 2);
+        this.windowHeightStart = this.camera2ViewportCenter[1] - (this.windowHeight / 2);
+        this.windowWidthEnd = this.camera2ViewportCenter[0] + (this.windowWidth / 2);
+        this.windowHeightEnd = this.camera2ViewportCenter[1] + (this.windowHeight / 2);
+    }
+
 
     cartesianToScreenInplace(cartesian, camera, screen) {
         multiplyMat3AndPointInplace(this.worldToCamera, cartesian, camera);
@@ -76,6 +96,9 @@ export class CameraManager extends RuntimeComponent {
     update() {
         this.camera2ControlManagers.forEach((cm) => cm.process())
         this.camera3ControlManagers.forEach((cm) => cm.process())
+        
+        this.canvasTick2D();
+        
         this.movementTick();
         this.setFrameCameraMatrix();
         this.setFrameCanvasRenderParams();

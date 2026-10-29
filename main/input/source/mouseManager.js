@@ -63,8 +63,8 @@ export class MouseManager extends RuntimeComponent {
         this.doffset.x = this.offset.x - this.poffset.x;
         this.doffset.y = this.offset.y - this.poffset.y;
         this.poffset = this.offset;
-        
-        this.wheel *= 0.90;
+
+        this.wheel = 0;
 
         this.movement.x *= 0.7;
         this.movement.y *= 0.7;

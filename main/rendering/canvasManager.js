@@ -17,20 +17,18 @@ export class CanvasManager extends RuntimeComponent {
     }
 
     renderSquare2D(px, py, sx, sy) {
-
-        // given a canvas width of 'this.canvas.width', and a camera position of 'this.cameraManager.can
-
-        px *= this.cameraManager.camera2Zoom;
-        py *= this.cameraManager.camera2Zoom;
         sx *= this.cameraManager.camera2Zoom;
         sy *= this.cameraManager.camera2Zoom;
 
-        px += this.cameraManager.camera2Offset[0];
-        py += this.cameraManager.camera2Offset[1];
+        let xpi = (px - this.cameraManager.windowWidthStart) / (this.cameraManager.windowWidthEnd - this.cameraManager.windowWidthStart);
+        let ypi = (py - this.cameraManager.windowHeightStart) / (this.cameraManager.windowHeightEnd - this.cameraManager.windowHeightStart);
+
+        let xpl = xpi * this.cameraManager.totalWidth;
+        let ypl = ypi * this.cameraManager.totalHeight;
 
         this.context.fillRect(
-            px,
-            py,
+            xpl,
+            ypl,
             sx,
             sy
         );

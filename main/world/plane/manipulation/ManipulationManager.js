@@ -37,11 +37,11 @@ export class ManipulationManager extends RuntimeComponent {
         }
 
         if (this.mouseManager.isButtonPressed(0)) {
-            this.traceLineBetweenPoints(this.mouseManager.offset, this.mouseManager.doffset, this.mcc.brush.blockSize, this.mcc.colorConfig.rgbaArr)
+            this.traceLineBetweenPoints(this.mouseManager.offset, this.mouseManager.doffset, this.mcc.colorConfig.rgbaArr)
         }
     }
 
-    doBrushAtPoint(bs, sx, sy, color) {
+    doBrushAtPoint(sx, sy, color) {
         let s = this.mcc.brush.brushSize;
 
         for (let i = 0; i < s; i++) {
@@ -49,11 +49,11 @@ export class ManipulationManager extends RuntimeComponent {
                 this._sx = sx + i - (s / 2);
                 this._sy = sy + j - (s / 2);
 
-                this.__sx = this._sx - this._sx % bs;
-                this.__sy = this._sy - this._sy % bs;
+                this.__sx = Math.floor(this._sx);
+                this.__sy = Math.floor(this._sy);
                 
                 this._ab = this.activePlaneManager.activePlane.getBox(this.__sx, this.__sy);
-                this._ab.sqStatic = this._ab.sqStatic ?? new Square(bs, this.__sx, this.__sy, color);
+                this._ab.sqStatic = this._ab.sqStatic ?? new Square(this.__sx, this.__sy, color);
 
                 let d = (i - (s / 2)) ** 2 + (j - (s / 2)) ** 2;
                 let fv = d / (s ** 2) * processRangeToOne(this.mcc.brush.brushStrength * 10);
@@ -66,12 +66,11 @@ export class ManipulationManager extends RuntimeComponent {
 
     }
 
-    traceLineBetweenPoints(pv, pd, blockSize, color) {
+    traceLineBetweenPoints(pv, pd, color) {
         let d = (pd.x ** 2 + pd.y ** 2) ** 0.5;
-        let f = blockSize / 2;
         let cx = pv.x, cy = pv.y;
 
-        let steps = Math.ceil(d / f);
+        let steps = Math.ceil(d);
 
         let dx = pd.x / steps;
         let dy = pd.y / steps;
@@ -81,13 +80,13 @@ export class ManipulationManager extends RuntimeComponent {
         let bs = 24;
 
         for (let i = 0; i < steps; i++) {
-            px = cx - this.cameraManager.camera2Offset[0] - (bs / 2);
-            py = cy - this.cameraManager.camera2Offset[1] - (bs / 2);
+            px = cx - this.cameraManager.camera2ViewportCenter[0] - (bs / 2);
+            py = cy - this.cameraManager.camera2ViewportCenter[1] - (bs / 2);
 
-            sx = px - px % bs;
-            sy = py - py % bs;
+            sx = Math.floor(px);
+            sy = Math.floor(py);
 
-            this.doBrushAtPoint(bs, sx, sy, color);
+            this.doBrushAtPoint(sx, sy, color);
 
             cx += dx;
             cy += dy;
