@@ -1,6 +1,6 @@
-import { getDist } from "../../../common.js";
+import { getDist, processRangeToOne } from "../../../common.js";
 import { RuntimeComponent } from "../../../runtimeComponent.js";
-import { copyVecValue, getVec2Length } from "../../../util/vector.js";
+import { addVec3Mult, copyVecValue, getVec2Length, multiplyVectorByScalar } from "../../../util/vector.js";
 import { Square } from "./model/square/Square.js";
 
 export class ManipulationManager extends RuntimeComponent {
@@ -27,19 +27,42 @@ export class ManipulationManager extends RuntimeComponent {
             return;
         }
 
-        let ap = this.activePlaneManager.activePlane;
-        let mo = this.mouseManager.offset;
-        let mdo = this.mouseManager.doffset;
-        let mcc = this.uiManager.manipulationComponent.config();
+        this.ap = this.activePlaneManager.activePlane;
+        this.mdo = this.mouseManager.doffset;
+        this.mcc = this.uiManager.manipulationComponent.config();
 
         if (this.mouseManager.isButtonPressed(1)) {
-            ap.offsetX += mdo.x;
-            ap.offsetY += mdo.y;
+            this.ap.offsetX += this.mdo.x;
+            this.ap.offsetY += this.mdo.y;
         }
 
         if (this.mouseManager.isButtonPressed(0)) {
-            this.traceLineBetweenPoints(this.mouseManager.offset, this.mouseManager.doffset, mcc.brush.blockSize, mcc.colorConfig.rgbaArr)
+            this.traceLineBetweenPoints(this.mouseManager.offset, this.mouseManager.doffset, this.mcc.brush.blockSize, this.mcc.colorConfig.rgbaArr)
         }
+    }
+
+    doBrushAtPoint(bs, sx, sy, color) {
+        let s = this.mcc.brush.brushSize;
+
+        for (let i = 0; i < s; i++) {
+            for (let j = 0; j < s; j++) {
+                this._sx = sx + i - (s / 2);
+                this._sy = sy + j - (s / 2);
+
+                this.__sx = this._sx - this._sx % bs;
+                this.__sy = this._sy - this._sy % bs;
+                
+                this._ab = this.activePlaneManager.activePlane.getBox(this.__sx, this.__sy);
+                this._ab.sqStatic = this._ab.sqStatic ?? new Square(bs, this.__sx, this.__sy, color);
+
+                let d = (i - (s / 2)) ** 2 + (j - (s / 2)) ** 2;
+                let fv = d / (s ** 2) * processRangeToOne(this.mcc.brush.brushStrength);
+
+                multiplyVectorByScalar(this._ab.sqStatic.renderColor, (1 - fv));
+                addVec3Mult(this._ab.sqStatic.renderColor, color, fv);
+            }
+        }
+
 
     }
 
@@ -64,9 +87,7 @@ export class ManipulationManager extends RuntimeComponent {
             sx = px - px % bs;
             sy = py - py % bs;
 
-            ab = this.activePlaneManager.activePlane.getBox(sx, sy);
-            ab.sqStatic = ab.sqStatic ?? new Square(bs, sx, sy, color);
-            copyVecValue(color, ab.sqStatic.renderColor);
+            this.doBrushAtPoint(bs, sx, sy, color);
 
             cx += dx;
             cy += dy;

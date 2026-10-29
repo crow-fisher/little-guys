@@ -35,11 +35,15 @@ export class ManipulationComponent extends Component {
 
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "brush size"))
         this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcoBrush().brushSize, (v) => this.gcoBrush().brushSize = v,
-            0, 12, 150, 0.2));
+            0, 120, 150, 0.2));
 
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "block size"))
         this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcoBrush().blockSize, (v) => this.gcoBrush().blockSize = Math.round(v),
             1, 24, 150, 0.2));
+
+        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "brush strength"))
+        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcoBrush().brushStrength, (v) => this.gcoBrush().brushStrength = v,
+            -100, -10, 150, 0.2));
     }
 
     gcoDefault() {
@@ -70,7 +74,8 @@ export class ManipulationComponent extends Component {
             },
             brush: {
                 blockSize: 8,
-                brushSize: 8
+                brushSize: 8,
+                brushStrength: 10
             },
             default: {},
             offsetScale: {
