@@ -75,12 +75,22 @@ export class CameraManager extends RuntimeComponent {
         this.totalHeight = this.canvasManager.canvas.height;
         this.windowWidth = this.totalWidth / this.camera2Zoom;
         this.windowHeight = this.totalHeight / this.camera2Zoom;
+
+        this.windowWidth -= this.windowWidth % this.camera2Zoom;
+        this.windowHeight -= this.windowHeight % this.camera2Zoom;
+
         this.windowWidthStart = this.camera2ViewportCenter[0] - (this.windowWidth / 2);
         this.windowHeightStart = this.camera2ViewportCenter[1] - (this.windowHeight / 2);
         this.windowWidthEnd = this.camera2ViewportCenter[0] + (this.windowWidth / 2);
         this.windowHeightEnd = this.camera2ViewportCenter[1] + (this.windowHeight / 2);
-    }
 
+        this.windowWidth = Math.floor(this.windowWidth);
+        this.windowHeight = Math.floor(this.windowHeight);
+        this.windowWidthStart = Math.floor(this.windowWidthStart);
+        this.windowHeightStart = Math.floor(this.windowHeightStart);
+        this.windowWidthEnd = Math.floor(this.windowWidthEnd);
+        this.windowHeightEnd = Math.floor(this.windowHeightEnd);
+    }
 
     cartesianToScreenInplace(cartesian, camera, screen) {
         multiplyMat3AndPointInplace(this.worldToCamera, cartesian, camera);
@@ -115,7 +125,11 @@ export class CameraManager extends RuntimeComponent {
         multiplyVectorByScalar(this.camera3OffsetDt, 0.8);
     }
     render() {
-        // this.renderDebugPoints();
+        this.render2DViewportDebug();
+    }
+
+    render2DViewportDebug() {
+
     }
 
     renderPoint(p) {

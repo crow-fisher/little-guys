@@ -11,6 +11,7 @@ export class PlaneManager extends RuntimeComponent {
         this.inputManager = this.mainManager.inputManager;
         this.mouseManager = this.mainManager.inputManager.mouseManager;
         this.canvasManager = this.mainManager.canvasManager;
+        this.cameraManager = this.mainManager.cameraManager;
     }
     
     render() {

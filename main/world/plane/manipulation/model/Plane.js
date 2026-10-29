@@ -1,11 +1,9 @@
 import { Box } from "./Box.js";
 
 export class Plane {
-    constructor(manipulationManager) {
-        this.manipulationManager = manipulationManager;
+    constructor(planeManager) {
+        this.planeManager = planeManager;
         this.boxes = new Map();
-        this.offsetX = 0;
-        this.offsetY = 0;
     }
 
     addSquare(square) {
@@ -23,20 +21,19 @@ export class Plane {
     }
 
     render() {
-        this.renderSquares = this.renderSquares ?? [];
-        this.renderSquares.length = 0;
-        for (let i = 0; i < this.manipulationManager.canvasManager.canvas.width; i++) {
-            if (this.boxes.get(i - this.offsetX) == null)
+        this.renderBoxes = this.renderBoxes ?? [];
+        this.renderBoxes.length = 0;
+        for (let i = this.planeManager.cameraManager.windowWidthStart; i < this.planeManager.cameraManager.windowWidthEnd; i++) {
+            if (this.boxes.get(i) == null)
                 continue;
-            for (let j = 0; j < this.manipulationManager.canvasManager.canvas.height; j++) {
-                let b = this.boxes.get(i - this.offsetX)?.get(j - this.offsetY);
-                
+            for (let j = this.planeManager.cameraManager.windowHeightStart; j < this.planeManager.cameraManager.windowHeightEnd; j++) {
+                let b = this.boxes.get(i)?.get(j);
                 if (b) {
-                    this.renderSquares.push(b);
+                    this.renderBoxes.push(b);
                 }
             }
         }
-        this.renderSquares.sort((a, b) => a.lastTouched - b.lastTouched);
-        this.renderSquares.forEach((b) => b.render(this.manipulationManager.canvasManager, this.offsetX, this.offsetY));
+        this.renderBoxes.sort((a, b) => a.lastTouched - b.lastTouched);
+        this.renderBoxes.forEach((b) => b.render(this.planeManager.canvasManager));
     }
 }

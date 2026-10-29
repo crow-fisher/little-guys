@@ -1,6 +1,7 @@
 import { HUEMAP } from "../color/hue.js";
 import { hsvToHex } from "../color/color.js";
 import { RuntimeComponent } from "../runtimeComponent.js";
+import { invlerp } from "../common.js";
 
 export class CanvasManager extends RuntimeComponent {
     constructor() {
@@ -20,15 +21,15 @@ export class CanvasManager extends RuntimeComponent {
         sx *= this.cameraManager.camera2Zoom;
         sy *= this.cameraManager.camera2Zoom;
 
-        let xpi = (px - this.cameraManager.windowWidthStart) / (this.cameraManager.windowWidthEnd - this.cameraManager.windowWidthStart);
-        let ypi = (py - this.cameraManager.windowHeightStart) / (this.cameraManager.windowHeightEnd - this.cameraManager.windowHeightStart);
-
-        let xpl = xpi * this.cameraManager.totalWidth;
-        let ypl = ypi * this.cameraManager.totalHeight;
+        px -= this.cameraManager.windowWidthStart;
+        px *= this.cameraManager.camera2Zoom;
+        
+        py -= this.cameraManager.windowHeightStart;
+        py *= this.cameraManager.camera2Zoom;
 
         this.context.fillRect(
-            xpl,
-            ypl,
+            px,
+            py,
             sx,
             sy
         );
