@@ -56,7 +56,7 @@ export class ManipulationManager extends RuntimeComponent {
                 this._ab.sqStatic = this._ab.sqStatic ?? new Square(bs, this.__sx, this.__sy, color);
 
                 let d = (i - (s / 2)) ** 2 + (j - (s / 2)) ** 2;
-                let fv = d / (s ** 2) * processRangeToOne(this.mcc.brush.brushStrength);
+                let fv = d / (s ** 2) * processRangeToOne(this.mcc.brush.brushStrength * 10);
 
                 multiplyVectorByScalar(this._ab.sqStatic.renderColor, (1 - fv));
                 addVec3Mult(this._ab.sqStatic.renderColor, color, fv);
