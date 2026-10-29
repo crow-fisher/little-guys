@@ -12,7 +12,14 @@ export class Plane {
         let px = Math.round(square.posX), py = Math.round(square.posY);
         this.boxes.set(px, this.boxes.get(px) ?? new Map());
         this.boxes.get(px).set(py, this.boxes.get(px).get(py) ?? new Box());
-        this.boxes.get(px).get(py).addSquare(square);
+
+        this.boxes.get(px).get(py).addSquare(square, px, py);
+    }
+
+    getBox(px, py) {
+        this.boxes.set(px, this.boxes.get(px) ?? new Map());
+        this.boxes.get(px).set(py, this.boxes.get(px).get(py) ?? new Box());
+        return this.boxes.get(px).get(py);
     }
 
     render() {

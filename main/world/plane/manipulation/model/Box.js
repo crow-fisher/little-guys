@@ -3,14 +3,10 @@ export class Box {
     constructor() {
         this.squares = [];
         this.lastTouched = Date.now();
+        this.sqStatic = null;
     }
 
-    addSquare(square) {
-        this.squares.push(square);
-        this.lastTouched = Date.now();
-    }
-
-    render(canvasManager, posX, posY, sizeX) {
-        this.squares.forEach((sq) => sq.render(canvasManager, posX, posY, sizeX))
+    render(canvasManager, ox, oy) {
+        this.sqStatic?.render(canvasManager, ox, oy);
     }
 }

@@ -1,6 +1,6 @@
 import { getDist } from "../../../common.js";
 import { RuntimeComponent } from "../../../runtimeComponent.js";
-import { getVec2Length } from "../../../util/vector.js";
+import { copyVecValue, getVec2Length } from "../../../util/vector.js";
 import { Square } from "./model/square/Square.js";
 
 export class ManipulationManager extends RuntimeComponent {
@@ -52,15 +52,20 @@ export class ManipulationManager extends RuntimeComponent {
         let dx = pd.x / steps;
         let dy = pd.y / steps;
 
-        let bs = Math.min(d * 3, 38);
-
-        let px, py;
+        let px, py, ab;
+        let sx, sy;
+        let bs = 24;
 
         for (let i = 0; i < steps; i++) {
             px = cx - this.activePlaneManager.activePlane.offsetX - (bs / 2);
             py = cy - this.activePlaneManager.activePlane.offsetY - (bs / 2);
 
-            this.activePlaneManager.activePlane.addSquare(new Square(bs, px, py, color)) ;
+            sx = px - px % bs;
+            sy = py - py % bs;
+
+            ab = this.activePlaneManager.activePlane.getBox(sx, sy);
+            ab.sqStatic = ab.sqStatic ?? new Square(bs, sx, sy, color);
+            copyVecValue(color, ab.sqStatic.renderColor);
 
             cx += dx;
             cy += dy;
