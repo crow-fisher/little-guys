@@ -1,4 +1,4 @@
-import { getDist, processRangeToOne } from "../../../common.js";
+import { getDist, invlerp, processRangeToOne } from "../../../common.js";
 import { RuntimeComponent } from "../../../runtimeComponent.js";
 import { addVec3Mult, copyVecValue, getVec2Length, multiplyVectorByScalar } from "../../../util/vector.js";
 import { Square } from "./model/square/Square.js";
@@ -41,13 +41,17 @@ export class ManipulationManager extends RuntimeComponent {
         }
     }
 
-    doBrushAtPoint(sx, sy, color) {
+    doBrushAtPoint(px, py, color) {
+        // 'px' and 'py' here refer to canvas pixel locations
         let s = this.mcc.brush.brushSize;
+
+        let cx = this.cameraManager.windowWidthStart + (px / this.cameraManager.totalWidth) * this.cameraManager.windowWidth;
+        let cy = this.cameraManager.windowHeightStart + (py / this.cameraManager.totalHeight) * this.cameraManager.windowHeight;
 
         for (let i = 0; i < s; i++) {
             for (let j = 0; j < s; j++) {
-                this._sx = sx + i - (s / 2);
-                this._sy = sy + j - (s / 2);
+                this._sx = cx + i - (s / 2);
+                this._sy = cy + j - (s / 2);
 
                 this.__sx = Math.floor(this._sx);
                 this.__sy = Math.floor(this._sy);
@@ -70,39 +74,13 @@ export class ManipulationManager extends RuntimeComponent {
         let d = (pd.x ** 2 + pd.y ** 2) ** 0.5;
         let cx = pv.x, cy = pv.y;
 
-        let steps = Math.ceil(d);
+        let dx = pd.x / d;
+        let dy = pd.y / d;
 
-        let dx = pd.x / steps;
-        let dy = pd.y / steps;
-
-        let px, py, ab;
-        let sx, sy;
-        let bs = 24;
-
-        for (let i = 0; i < steps; i++) {
-            px = cx - this.cameraManager.camera2ViewportCenter[0] - (bs / 2);
-            py = cy - this.cameraManager.camera2ViewportCenter[1] - (bs / 2);
-
-            sx = Math.floor(px);
-            sy = Math.floor(py);
-
-            this.doBrushAtPoint(sx, sy, color);
-
+        for (let i = 0; i < d; i++) {
+            this.doBrushAtPoint(cx, cy, color);
             cx += dx;
             cy += dy;
-
-            if (pd.x > 0 && cx > pv.x + pd.x) {
-                break;
-            }
-            if (pd.x < 0 && cx < pv.x + pd.x) {
-                break;
-            }
-            if (pd.y > 0 && cy > pv.y + pd.y) {
-                break;
-            }
-            if (pd.y < 0 && cy < pv.y + pd.y) {
-                break;
-            }
         }
     }
 

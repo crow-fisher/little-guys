@@ -23,10 +23,10 @@ export class Plane {
     render() {
         this.renderBoxes = this.renderBoxes ?? [];
         this.renderBoxes.length = 0;
-        for (let i = this.planeManager.cameraManager.windowWidthStart; i < this.planeManager.cameraManager.windowWidthEnd; i++) {
+        for (let i = this.planeManager.cameraManager.windowWidthStart; i <= this.planeManager.cameraManager.windowWidthEnd; i++) {
             if (this.boxes.get(i) == null)
                 continue;
-            for (let j = this.planeManager.cameraManager.windowHeightStart; j < this.planeManager.cameraManager.windowHeightEnd; j++) {
+            for (let j = this.planeManager.cameraManager.windowHeightStart; j <= this.planeManager.cameraManager.windowHeightEnd; j++) {
                 let b = this.boxes.get(i)?.get(j);
                 if (b) {
                     this.renderBoxes.push(b);

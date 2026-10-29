@@ -13,11 +13,11 @@ export class MouseCamera2ControlManager extends CameraControlManager {
     controlRoutine() {
 
         if (this.cameraManager.mouseManager.isButtonPressed(1)) {
-            this.cameraManager.camera2ViewportCenter[0] -= this.cameraManager.mouseManager.doffset.x;
-            this.cameraManager.camera2ViewportCenter[1] -= this.cameraManager.mouseManager.doffset.y;
+            this.cameraManager.camera2ViewportCenter[0] -= Math.round(this.cameraManager.mouseManager.doffset.x / this.cameraManager.camera2Zoom);
+            this.cameraManager.camera2ViewportCenter[1] -= Math.round(this.cameraManager.mouseManager.doffset.y / this.cameraManager.camera2Zoom);
         }
 
         this.cameraManager.camera2Zoom -= Math.round(this.cameraManager.mouseManager.wheel / 100);
-        this.cameraManager.camera2Zoom = clamp(this.cameraManager.camera2Zoom, 1, 12);
+        this.cameraManager.camera2Zoom = clamp(this.cameraManager.camera2Zoom, 1, 48);
     }
 }
