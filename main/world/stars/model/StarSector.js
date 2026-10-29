@@ -191,7 +191,7 @@ export class StarSector {
     }
 
     setBrightnessCameraPoint() {
-        copyVecValue(this.cameraManager.cameraOffset, this.brightnessCs.world)
+        copyVecValue(this.cameraManager.camera3Offset, this.brightnessCs.world)
         this.brightnessCs.world[0] = Math.min(Math.max(this.cartesianBounds[0], this.brightnessCs.world[0]), this.cartesianBounds[3]);
         this.brightnessCs.world[1] = Math.min(Math.max(this.cartesianBounds[1], this.brightnessCs.world[1]), this.cartesianBounds[4]);
         this.brightnessCs.world[2] = Math.min(Math.max(this.cartesianBounds[2], this.brightnessCs.world[2]), this.cartesianBounds[5]);
@@ -199,7 +199,7 @@ export class StarSector {
     }
 
     setFOVCameraPoint() {
-        addVec3MultDest(this.cameraManager.cameraOffset, this.cameraManager.forward, -this.fovCs.distToCamera, this.fovCs.world);
+        addVec3MultDest(this.cameraManager.camera3Offset, this.cameraManager.forward, -this.fovCs.distToCamera, this.fovCs.world);
         normalizeVec3(this.fovCs.world);
         addVec3MultDest(this.center, this.fovCs.world, this.starManager.sectorSize * Math.SQRT2, this.fovCs.world);
         this.fovCs.process();

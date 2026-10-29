@@ -11,6 +11,27 @@ export class CanvasManager extends RuntimeComponent {
         this.resize();
     }
 
+    di(mainManager) {
+        super.di(mainManager);
+        this.cameraManager = mainManager.cameraManager;
+    }
+
+    renderSquare2D(px, py, sx, sy) {
+
+        // given a canvas width of 'this.canvas.width', and a camera position of 'this.cameraManager.can
+
+        px -= this.cameraManager.cameraOffset[0];
+        py -= this.cameraManager.cameraOffset[2];
+
+        this.context.fillRect(
+            px,
+            py,
+            sx,
+            sy
+        );
+
+    }
+
     postConstruct() {
         this.context = this.canvas.getContext('2d');
     }

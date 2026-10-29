@@ -2,24 +2,30 @@ import { CoordinateSet } from "./model/CoordinateSet.js";
 import { multiplyMat3AndPointInplace, transposeMat3Inplace } from "../util/matrix.js";
 import { addVectorsMult, copyVecValue, crossVec3Dest, multiplyVectorByScalar, multiplyVectorByScalarDest, multiplyVectorByScalarDestAdd, normalizeVec3, subtractVectorsDest } from "../util/vector.js";
 import { hsvToHex } from "../color/color.js";
-import { KeyboardCameraControlManager } from "./control/keyboardCameraControlManager.js";
-import { MouseCameraControlManager } from "./control/mouseCameraControlManager.js";
+import { KeyboardCamera3ControlManager } from "./control/keyboard3CameraControlManager.js";
+import { MouseCamera3ControlManager } from "./control/mouseCamera3ControlManager.js";
 import { RuntimeComponent } from "../runtimeComponent.js";
 
 export class CameraManager extends RuntimeComponent {
     constructor() {
         super();
-        this.cameraControlManagers = [
-            new KeyboardCameraControlManager(this),
-            new MouseCameraControlManager(this)
+        this.camera3ControlManagers = [
+            new KeyboardCamera3ControlManager(this),
+            new MouseCamera3ControlManager(this)
         ]
+
+        this.camera2ControlManagers = [
+        ]
+
+        this.camera2Offset = [0, 0];
+        this.camera2Zoom = 1;
         
-        this.cameraOffset = [-50, -20, 0];
-        this.cameraOffsetDt = [0, 0, 0];
-        this.cameraMovement = [0, 0, 0];
-        this.cameraRotation = [0, .3, 0];
-        this.cameraRotationDt = [0, 0, 0];
-        this.cameraFov = 80;
+        this.camera3Offset = [0, 0, 0];
+        this.camera3OffsetDt = [0, 0, 0];
+        this.camera3Movement = [0, 0, 0];
+        this.camera3Rotation = [0, .3, 0];
+        this.camera3RotationDt = [0, 0, 0];
+        this.camera3Fov = 80;
 
         this.rotNorm = [0, 0, 0];
         
@@ -27,7 +33,7 @@ export class CameraManager extends RuntimeComponent {
         this.up = [0, 0, 0];
         this.forward = [0, 0, 0];
 
-        this.cameraToWorld = [
+        this.camera3ToWorld = [
             [0, 0, 0],
             [0, 0, 0],
             [0, 0, 0]
@@ -65,7 +71,7 @@ export class CameraManager extends RuntimeComponent {
         renderScreenRef[2] = screenRef[2];
     }
     update() {
-        this.cameraControlManagers.forEach((cm) => cm.process())
+        this.camera3ControlManagers.forEach((cm) => cm.process())
         this.movementTick();
         this.setFrameCameraMatrix();
         this.setFrameCanvasRenderParams();
@@ -74,12 +80,12 @@ export class CameraManager extends RuntimeComponent {
     }
 
     movementTick() {
-        multiplyVectorByScalarDest(this.right, this.cameraOffsetDt[0], this.cameraMovement);
-        multiplyVectorByScalarDestAdd(this.up, this.cameraOffsetDt[1], this.cameraMovement);
-        multiplyVectorByScalarDestAdd(this.forward, this.cameraOffsetDt[2], this.cameraMovement);
+        multiplyVectorByScalarDest(this.right, this.camera3OffsetDt[0], this.camera3Movement);
+        multiplyVectorByScalarDestAdd(this.up, this.camera3OffsetDt[1], this.camera3Movement);
+        multiplyVectorByScalarDestAdd(this.forward, this.camera3OffsetDt[2], this.camera3Movement);
 
-        addVectorsMult(this.cameraOffset, this.cameraMovement, 5);
-        multiplyVectorByScalar(this.cameraOffsetDt, 0.8);
+        addVectorsMult(this.camera3Offset, this.camera3Movement, 5);
+        multiplyVectorByScalar(this.camera3OffsetDt, 0.8);
     }
     render() {
         // this.renderDebugPoints();
@@ -130,8 +136,8 @@ export class CameraManager extends RuntimeComponent {
     }
 
     setFrameCameraMatrix() {
-        this.yaw = this.cameraRotation[0];
-        this.pitch = this.cameraRotation[1];
+        this.yaw = this.camera3Rotation[0];
+        this.pitch = this.camera3Rotation[1];
 
         this.rotNorm[0] = Math.cos(this.yaw) * Math.cos(this.pitch);
         this.rotNorm[1] = Math.sin(this.pitch);
@@ -144,17 +150,17 @@ export class CameraManager extends RuntimeComponent {
         crossVec3Dest(this.forward, this.right, this.up);
         normalizeVec3(this.up);
 
-        copyVecValue(this.right, this.cameraToWorld[0]);
-        copyVecValue(this.up, this.cameraToWorld[1]);
-        copyVecValue(this.forward, this.cameraToWorld[2]);
+        copyVecValue(this.right, this.camera3ToWorld[0]);
+        copyVecValue(this.up, this.camera3ToWorld[1]);
+        copyVecValue(this.forward, this.camera3ToWorld[2]);
         
-        transposeMat3Inplace(this.cameraToWorld, this.worldToCamera);
+        transposeMat3Inplace(this.camera3ToWorld, this.worldToCamera);
     }
 
     setFramePerspectiveMatrix() {
         this.n = 1; // near clipping plane;
         this.f = 1000; // far clipping plane;
-        this.S = 1 / (Math.tan((this.cameraFov / 2) * (Math.PI / 180)));
+        this.S = 1 / (Math.tan((this.camera3Fov / 2) * (Math.PI / 180)));
         this.perspectiveMatrix[0][0] = this.S;
         this.perspectiveMatrix[1][1] = this.S;
         this.perspectiveMatrix[2][2] = -(this.f / (this.f - this.n));

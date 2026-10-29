@@ -1,7 +1,7 @@
 import { loadGD, UI_CAMERA_ROTATION_VEC } from "../../ui/UIData.js";
 import { CameraControlManager } from "./cameraControlManager.js";
 
-export class MouseCameraControlManager extends CameraControlManager {
+export class MouseCamera3ControlManager extends CameraControlManager {
     isActive() {
         if (this.cameraManager.isPointerLocked()) {
             if (this.cameraManager.isFrameButtonPressed(2)) {
@@ -18,9 +18,9 @@ export class MouseCameraControlManager extends CameraControlManager {
         return true;
     }
     controlRoutine() {
-        this.cameraManager.cameraRotation[0] += this.cameraManager.getFrameMouseMove().x * 10;
-        this.cameraManager.cameraRotation[1] += this.cameraManager.getFrameMouseMove().y * 10; 
-        this.cameraManager.cameraRotation[1] = Math.min(Math.max(this.cameraManager.cameraRotation[1], -Math.PI / 2), Math.PI / 2)
+        this.cameraManager.camera3Rotation[0] += this.cameraManager.getFrameMouseMove().x * 10;
+        this.cameraManager.camera3Rotation[1] += this.cameraManager.getFrameMouseMove().y * 10; 
+        this.cameraManager.camera3Rotation[1] = Math.min(Math.max(this.cameraManager.camera3Rotation[1], -Math.PI / 2), Math.PI / 2)
         this.cameraManager.mainManager.uiManager.astronomyAtlasComponent.dirtyConfig = true;
     }
 }

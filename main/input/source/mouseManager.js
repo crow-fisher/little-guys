@@ -43,8 +43,8 @@ export class MouseManager extends RuntimeComponent {
 
     onwheel(e) {
         e.preventDefault();
-        this.cameraManager.cameraFov *= (1 + e.deltaY / 4000);
-        this.cameraManager.cameraFov = Math.min(this.cameraManager.cameraFov, 160)
+        this.cameraManager.camera3Fov *= (1 + e.deltaY / 4000);
+        this.cameraManager.camera3Fov = Math.min(this.cameraManager.camera3Fov, 160)
     }
 
     mousemove(e) {
