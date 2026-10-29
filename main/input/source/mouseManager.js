@@ -13,6 +13,7 @@ export class MouseManager extends RuntimeComponent {
         this.poffset = { x: 0, y: 0 };
         this.doffset = { x: 0, y: 0 };
         this.movement = { x: 0, y: 0 };
+        this.wheel = 0;
     }
 
     di(mainManager) {
@@ -43,8 +44,7 @@ export class MouseManager extends RuntimeComponent {
 
     onwheel(e) {
         e.preventDefault();
-        this.cameraManager.camera3Fov *= (1 + e.deltaY / 4000);
-        this.cameraManager.camera3Fov = Math.min(this.cameraManager.camera3Fov, 160)
+        this.wheel = e.deltaY;
     }
 
     mousemove(e) {
@@ -63,6 +63,8 @@ export class MouseManager extends RuntimeComponent {
         this.doffset.x = this.offset.x - this.poffset.x;
         this.doffset.y = this.offset.y - this.poffset.y;
         this.poffset = this.offset;
+        
+        this.wheel *= 0.90;
 
         this.movement.x *= 0.7;
         this.movement.y *= 0.7;

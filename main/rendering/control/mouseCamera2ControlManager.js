@@ -6,13 +6,16 @@ export class MouseCamera2ControlManager extends CameraControlManager {
         if (this.cameraManager.isPointerLocked()) {
             return false;
         }
-        if (!this.cameraManager.mouseManager.isButtonPressed(1)) {
-            return false;
-        }
+
         return true;
     }
     controlRoutine() {
-        this.cameraManager.camera2Offset[0] += this.cameraManager.mouseManager.doffset.x;
-        this.cameraManager.camera2Offset[1] += this.cameraManager.mouseManager.doffset.y;
+
+        if (this.cameraManager.mouseManager.isButtonPressed(1)) {
+            this.cameraManager.camera2Offset[0] += this.cameraManager.mouseManager.doffset.x;
+            this.cameraManager.camera2Offset[1] += this.cameraManager.mouseManager.doffset.y;
+        }
+
+        this.cameraManager.camera2Zoom += this.cameraManager.mouseManager.wheel / 10000;
     }
 }

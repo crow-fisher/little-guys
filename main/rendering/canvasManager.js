@@ -20,6 +20,11 @@ export class CanvasManager extends RuntimeComponent {
 
         // given a canvas width of 'this.canvas.width', and a camera position of 'this.cameraManager.can
 
+        px *= this.cameraManager.camera2Zoom;
+        py *= this.cameraManager.camera2Zoom;
+        sx *= this.cameraManager.camera2Zoom;
+        sy *= this.cameraManager.camera2Zoom;
+
         px += this.cameraManager.camera2Offset[0];
         py += this.cameraManager.camera2Offset[1];
 

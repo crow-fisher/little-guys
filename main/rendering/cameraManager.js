@@ -18,7 +18,7 @@ export class CameraManager extends RuntimeComponent {
         this.camera2ControlManagers = [
             new MouseCamera2ControlManager(this),
         ]
-
+        
         this.camera2Offset = [0, 0];
         this.camera2Zoom = 1;
         
