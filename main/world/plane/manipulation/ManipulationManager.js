@@ -16,6 +16,7 @@ export class ManipulationManager extends RuntimeComponent {
         this.inputManager = this.mainManager.inputManager;
         this.mouseManager = this.mainManager.inputManager.mouseManager;
         this.canvasManager = this.mainManager.canvasManager;
+        this.cameraManager = this.mainManager.cameraManager;
     }
 
     postConstruct() {
@@ -57,8 +58,8 @@ export class ManipulationManager extends RuntimeComponent {
         let bs = 24;
 
         for (let i = 0; i < steps; i++) {
-            px = cx - this.activePlaneManager.activePlane.offsetX - (bs / 2);
-            py = cy - this.activePlaneManager.activePlane.offsetY - (bs / 2);
+            px = cx - this.cameraManager.camera2Offset[0] - (bs / 2);
+            py = cy - this.cameraManager.camera2Offset[1] - (bs / 2);
 
             sx = px - px % bs;
             sy = py - py % bs;

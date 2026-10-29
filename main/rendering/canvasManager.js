@@ -20,8 +20,8 @@ export class CanvasManager extends RuntimeComponent {
 
         // given a canvas width of 'this.canvas.width', and a camera position of 'this.cameraManager.can
 
-        px -= this.cameraManager.cameraOffset[0];
-        py -= this.cameraManager.cameraOffset[2];
+        px += this.cameraManager.camera2Offset[0];
+        py += this.cameraManager.camera2Offset[1];
 
         this.context.fillRect(
             px,

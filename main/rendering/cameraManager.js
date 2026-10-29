@@ -5,6 +5,7 @@ import { hsvToHex } from "../color/color.js";
 import { KeyboardCamera3ControlManager } from "./control/keyboard3CameraControlManager.js";
 import { MouseCamera3ControlManager } from "./control/mouseCamera3ControlManager.js";
 import { RuntimeComponent } from "../runtimeComponent.js";
+import { MouseCamera2ControlManager } from "./control/mouseCamera2ControlManager.js";
 
 export class CameraManager extends RuntimeComponent {
     constructor() {
@@ -15,6 +16,7 @@ export class CameraManager extends RuntimeComponent {
         ]
 
         this.camera2ControlManagers = [
+            new MouseCamera2ControlManager(this),
         ]
 
         this.camera2Offset = [0, 0];
@@ -56,6 +58,7 @@ export class CameraManager extends RuntimeComponent {
     di(mainManager) {
         this.mainManager = mainManager;
         this.canvasManager = this.mainManager.canvasManager;
+        this.mouseManager = this.mainManager.inputManager.mouseManager;
     }
 
 
@@ -71,6 +74,7 @@ export class CameraManager extends RuntimeComponent {
         renderScreenRef[2] = screenRef[2];
     }
     update() {
+        this.camera2ControlManagers.forEach((cm) => cm.process())
         this.camera3ControlManagers.forEach((cm) => cm.process())
         this.movementTick();
         this.setFrameCameraMatrix();
