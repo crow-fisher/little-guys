@@ -52,7 +52,7 @@ export class ManipulationManager extends RuntimeComponent {
         let dx = pd.x / steps;
         let dy = pd.y / steps;
 
-        let bs = d * 3;
+        let bs = Math.min(d * 3, 38);
 
         let px, py;
 

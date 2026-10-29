@@ -30,6 +30,6 @@ export class Plane {
             }
         }
         this.renderSquares.sort((a, b) => a.lastTouched - b.lastTouched);
-        this.renderSquares.forEach((b) => b.render(this.manipulationManager.canvasManager, 16));
+        this.renderSquares.forEach((b) => b.render(this.manipulationManager.canvasManager, this.offsetX, this.offsetY));
     }
 }

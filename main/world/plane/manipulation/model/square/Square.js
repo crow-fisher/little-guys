@@ -10,8 +10,8 @@ export class Square {
         this.height = 1;
     }
 
-    render(canvasManager) {
+    render(canvasManager, ox, oy) {
         canvasManager.context.fillStyle = rgbToRgba(...this.renderColor);
-        canvasManager.context.fillRect(this.posX, this.posY, this.width * this.blockSize, this.height * this.blockSize);
+        canvasManager.context.fillRect(this.posX + ox, this.posY + oy, this.width * this.blockSize, this.height * this.blockSize);
     }
 }
