@@ -26,7 +26,7 @@ export class WorldManager extends RuntimeComponent {
 
     update() {
         // this.starManager.update();
-        if (this.manipulationComponent.gcoDefault().active) {
+        if (this.manipulationComponent.gcoBrush().brushMaterial == 0) {
             this.manipulationManager.activePlaneManager = this.staticPlaneManager;
             this.manipulationManager.update();
         }

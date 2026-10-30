@@ -1,4 +1,5 @@
 import { hsvToHex } from "../../color/color.js";
+import { clamp } from "../../util/func.js";
 import { WindowElement } from "../WindowElement.js";
 
 export class SliderGradientBackground extends WindowElement {
@@ -46,7 +47,7 @@ export class SliderGradientBackground extends WindowElement {
         posX = Math.min(this.sizeXFunc() - (this.sizeYFunc() / 2), posX);
         let p = (posX - min) / (max - min);
         p = Math.min(Math.max(0, p), 1)
-        this.setter(this.min + (p * (this.max - this.min)))
+        this.setter(clamp(this.min + (p * (this.max - this.min)), this.min, this.max))
     }
 
 }

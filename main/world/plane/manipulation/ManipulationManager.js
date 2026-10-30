@@ -1,5 +1,6 @@
 import { getDist, invlerp, processRangeToOne } from "../../../common.js";
 import { RuntimeComponent } from "../../../runtimeComponent.js";
+import { clamp } from "../../../util/func.js";
 import { addVec3Mult, addVec4Mult, copyVecValue, getVec2Length, multiplyVectorByScalar } from "../../../util/vector.js";
 import { Square } from "./model/square/Square.js";
 
@@ -36,7 +37,7 @@ export class ManipulationManager extends RuntimeComponent {
             this.ap.offsetY += this.mdo.y;
         }
 
-        if (this.mouseManager.isButtonPressed(0)) {
+        if (this.mouseManager.isButtonPressed(0) || this.mouseManager.isButtonPressed(2)) {
             this.traceLineBetweenPoints(this.mouseManager.offset, this.mouseManager.doffset, this.mcc.colorConfig.rgbaArr)
         }
     }
@@ -53,6 +54,10 @@ export class ManipulationManager extends RuntimeComponent {
 
         for (let i = 0; i < s; i++) {
             for (let j = 0; j < s; j++) {
+                let d = (i - (s / 2)) ** 2 + (j - (s / 2)) ** 2;
+                if (d > s)
+                    continue;
+
                 this._sx = cx + i - (s / 2);
                 this._sy = cy + j - (s / 2);
 
@@ -62,9 +67,15 @@ export class ManipulationManager extends RuntimeComponent {
                 this._ab = this.activePlaneManager.activePlane.getBox(this.__sx, this.__sy);
                 this._ab.sqStatic = this._ab.sqStatic ?? new Square(this.__sx, this.__sy, colorNewSquare);
 
-                let d = (i - (s / 2)) ** 2 + (j - (s / 2)) ** 2;
-                let fv = (s ** 2) / d * processRangeToOne(this.mcc.brush.brushStrength * 10);
+                if (this._ab.sqStatic && this.mouseManager.isButtonPressed(2)) {
+                    this._ab.sqStatic.renderColor[3] -= .01; 
+                    if (this._ab.sqStatic.renderColor[3] < 0) {
+                        this._ab.sqStatic = null;
+                        continue;
+                    }
+                }
 
+                let fv = clamp((s ** 2) / d * processRangeToOne(this.mcc.brush.brushStrength * 10));
                 multiplyVectorByScalar(this._ab.sqStatic.renderColor, (1 - fv), 4);
                 addVec4Mult(this._ab.sqStatic.renderColor, color, fv);
             }
