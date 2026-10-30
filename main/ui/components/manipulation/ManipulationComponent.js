@@ -11,6 +11,7 @@ import { ColorSaturationValueArea } from "../../elements/color/ColorSaturationVa
 import { hsv2rgb, hsv2rgba } from "../../../common.js";
 import { multiplyVectorByScalar } from "../../../util/vector.js";
 import { SliderGradientBackground } from "../../elements/SliderGradientBackground.js";
+import { clamp } from "../../../util/func.js";
 
 export class ManipulationComponent extends Component {
     constructor(uiManager, activeFunc) {
@@ -30,7 +31,7 @@ export class ManipulationComponent extends Component {
         this.container.addElement(new ColorInputTarget(this.window, () => this.gcvSizeX(), () => this.gcvSizeX()));
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "active"))
         this.container.addElement(new ColorActiveColor(this.window, () => this.gcvSizeX(), () => this.ggvdH1()));
-        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcoColorConfig().a, (v) => this.gcoColorConfig().a = Math.max(0, Math.min(1, v)),
+        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcoColorConfig().a, (a) => this.setOpacity(clamp(a)),
             -.1, 1.1, 150, 0.2));
 
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "brush size"))
@@ -55,6 +56,11 @@ export class ManipulationComponent extends Component {
     }
     gcoColorConfig() {
         return this.config().colorConfig;
+    }
+
+    setOpacity(a) {
+        this.gcoColorConfig().a = a;
+        this.colorUpdate();
     }
 
     colorUpdate() {
