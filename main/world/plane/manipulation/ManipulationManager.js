@@ -49,7 +49,7 @@ export class ManipulationManager extends RuntimeComponent {
             if (this.clickIdx > 1) {
                 this.traceLineBetweenPoints(this.clickPoints[this.clickIdx - 1], this.clickPoints[this.clickIdx], this.mcc.colorConfig.rgbaArr)
             }
-            
+
             this.clickIdx++;
         }
         
@@ -99,17 +99,19 @@ export class ManipulationManager extends RuntimeComponent {
 
     }
 
-    traceLineBetweenPoints(pv, pd, color) {
-        let d = (pd.x ** 2 + pd.y ** 2) ** 0.5;
-        let cx = pv.x, cy = pv.y;
+    traceLineBetweenPoints(p1, p2, color) {
+        let dx = (p2.x - p1.x)
+        let dy = (p2.y - p1.y)
 
-        let dx = pd.x / d;
-        let dy = pd.y / d;
+        let d = (dx ** 2 + dy ** 2) ** 0.5;
+        let cx = p1.x, cy = p1.y;
+
+        
 
         for (let i = 0; i < d; i++) {
             this.doBrushAtPoint(cx, cy, color);
-            cx += dx;
-            cy += dy;
+            cx += (dx / d);
+            cy += (dy / d);
         }
     }
 

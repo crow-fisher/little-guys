@@ -28,7 +28,7 @@ export class WorldManager extends RuntimeComponent {
     }
 
     update() {
-        // this.starManager.update();
+        this.starManager.update();
         if (this.manipulationComponent.gcoBrush().brushMaterial == 0) {
             this.manipulationManager.activePlaneManager = this.staticPlaneManager;
             this.manipulationManager.update();
@@ -40,7 +40,7 @@ export class WorldManager extends RuntimeComponent {
         
     }
     render() {
-        // this.starManager.render();
+        this.starManager.render();
         this.staticPlaneManager.render();
     }
     getContext() {
