@@ -1,4 +1,5 @@
 import { RuntimeComponent } from "../runtimeComponent.js";
+import { LivePlaneManager } from "./plane/LivePlaneManager.js";
 import { ManipulationManager } from "./plane/manipulation/ManipulationManager.js";
 import { StaticPlaneManager } from "./plane/StaticPlaneManager.js";
 import { StarManager } from "./stars/starManager.js";
@@ -8,6 +9,7 @@ export class WorldManager extends RuntimeComponent {
         super();
         this.starManager = new StarManager(this);
         this.staticPlaneManager = new StaticPlaneManager(this);
+        this.livePlaneManager = new LivePlaneManager(this);
         this.manipulationManager = new ManipulationManager(this);
     }
 
@@ -21,12 +23,17 @@ export class WorldManager extends RuntimeComponent {
         this.manipulationComponent = this.uiManager.manipulationComponent;
     }
     postConstruct() {
+        this.manipulationManager.postConstruct();
         this.starManager.postConstruct();
     }
 
     update() {
         // this.starManager.update();
         if (this.manipulationComponent.gcoBrush().brushMaterial == 0) {
+            this.manipulationManager.activePlaneManager = this.staticPlaneManager;
+            this.manipulationManager.update();
+        }
+        if (this.manipulationComponent.gcoBrush().brushMaterial == 1) {
             this.manipulationManager.activePlaneManager = this.staticPlaneManager;
             this.manipulationManager.update();
         }

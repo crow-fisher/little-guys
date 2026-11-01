@@ -6,7 +6,7 @@ export class MouseManager extends RuntimeComponent {
     constructor(inputManager) {
         super();
         this.inputManager = inputManager;
-
+        this.time = Date.now();
         this.ms = 0;
         this.pms = 0;
         this.offset = { x: 0, y: 0 };
@@ -59,6 +59,9 @@ export class MouseManager extends RuntimeComponent {
     }
 
     update() {
+        if (this.pms != this.ms)
+            this.time = Date.now();
+
         this.pms = this.ms;
         this.doffset.x = this.offset.x - this.poffset.x;
         this.doffset.y = this.offset.y - this.poffset.y;

@@ -6,18 +6,10 @@ export class Plane {
         this.boxes = new Map();
     }
 
-    addSquare(square) {
-        let px = Math.round(square.posX), py = Math.round(square.posY);
-        this.boxes.set(px, this.boxes.get(px) ?? new Map());
-        this.boxes.get(px).set(py, this.boxes.get(px).get(py) ?? new Box());
-
-        this.boxes.get(px).get(py).addSquare(square, px, py);
-    }
-
-    getBox(px, py) {
-        this.boxes.set(px, this.boxes.get(px) ?? new Map());
-        this.boxes.get(px).set(py, this.boxes.get(px).get(py) ?? new Box());
-        return this.boxes.get(px).get(py);
+    getBox(px, py, _px=Math.floor(px), _py=Math.floor(py)) {
+        this.boxes.set(_px, this.boxes.get(_px) ?? new Map());
+        this.boxes.get(_px).set(_py, this.boxes.get(_px).get(_py) ?? new Box());
+        return this.boxes.get(_px).get(_py);
     }
 
     render() {

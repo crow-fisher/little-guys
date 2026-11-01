@@ -1,6 +1,9 @@
 
 export class Box {
-    constructor() {
+    constructor(posX, posY) {
+        this.posX = posX;
+        this.posY = posY;
+        
         this.squares = [];
         this.lastTouched = Date.now();
         this.sqStatic = null;

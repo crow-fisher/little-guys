@@ -20,7 +20,7 @@ export class CameraManager extends RuntimeComponent {
         ]
         
         this.camera2ViewportCenter = [0, 0];
-        this.camera2Zoom = 1;
+        this.camera2Zoom = 12;
 
         this.totalWidth = 0;
         this.totalHeight = 0;

@@ -21,6 +21,9 @@ export class ManipulationManager extends RuntimeComponent {
     }
 
     postConstruct() {
+        this.clickTime = 0;
+        this.clickPoints = [];
+        this.clickIdx = -1;
     }
 
     update() {
@@ -28,18 +31,29 @@ export class ManipulationManager extends RuntimeComponent {
             return;
         }
 
-        this.ap = this.activePlaneManager.activePlane;
-        this.mdo = this.mouseManager.doffset;
         this.mcc = this.uiManager.manipulationComponent.config();
 
-        if (this.mouseManager.isButtonPressed(1)) {
-            this.ap.offsetX += this.mdo.x;
-            this.ap.offsetY += this.mdo.y;
+        if (this.mouseManager.isButtonPressed(0) || this.mouseManager.isButtonPressed(2)) {
+            // this.traceLineBetweenPoints(this.mouseManager.offset, this.mouseManager.doffset, this.mcc.colorConfig.rgbaArr)
         }
 
         if (this.mouseManager.isButtonPressed(0) || this.mouseManager.isButtonPressed(2)) {
-            this.traceLineBetweenPoints(this.mouseManager.offset, this.mouseManager.doffset, this.mcc.colorConfig.rgbaArr)
+            if (this.clickTime != this.mouseManager.time) {
+                this.clickTime = this.mouseManager.time;
+                this.clickIdx = 0;
+            }
+            this.clickPoints[this.clickIdx] = this.clickPoints[this.clickIdx] ?? structuredClone(this.mouseManager.offset);
+            this.clickPoints[this.clickIdx].x = this.mouseManager.offset.x;
+            this.clickPoints[this.clickIdx].y = this.mouseManager.offset.y;
+            
+            if (this.clickIdx > 1) {
+                this.traceLineBetweenPoints(this.clickPoints[this.clickIdx - 1], this.clickPoints[this.clickIdx], this.mcc.colorConfig.rgbaArr)
+            }
+            
+            this.clickIdx++;
         }
+        
+
     }
 
     doBrushAtPoint(px, py, color) {
@@ -65,6 +79,7 @@ export class ManipulationManager extends RuntimeComponent {
                 this.__sy = Math.floor(this._sy);
                 
                 this._ab = this.activePlaneManager.activePlane.getBox(this.__sx, this.__sy);
+
                 this._ab.sqStatic = this._ab.sqStatic ?? new Square(this.__sx, this.__sy, colorNewSquare);
 
                 if (this._ab.sqStatic && this.mouseManager.isButtonPressed(2)) {
