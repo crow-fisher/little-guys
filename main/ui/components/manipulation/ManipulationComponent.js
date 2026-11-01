@@ -49,7 +49,7 @@ export class ManipulationComponent extends Component {
 
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "brush strength"))
         this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcoBrush().brushStrength, (v) => this.gcoBrush().brushStrength = v,
-            -100, -10, 150, 0.2));
+            -1000, -10, 150, 0.2));
     }
 
     gcoDefault() {

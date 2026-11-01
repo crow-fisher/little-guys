@@ -34,10 +34,6 @@ export class ManipulationManager extends RuntimeComponent {
         this.mcc = this.uiManager.manipulationComponent.config();
 
         if (this.mouseManager.isButtonPressed(0) || this.mouseManager.isButtonPressed(2)) {
-            // this.traceLineBetweenPoints(this.mouseManager.offset, this.mouseManager.doffset, this.mcc.colorConfig.rgbaArr)
-        }
-
-        if (this.mouseManager.isButtonPressed(0) || this.mouseManager.isButtonPressed(2)) {
             if (this.clickTime != this.mouseManager.time) {
                 this.clickTime = this.mouseManager.time;
                 this.clickIdx = 0;
@@ -90,7 +86,7 @@ export class ManipulationManager extends RuntimeComponent {
                     }
                 }
 
-                let fv = clamp((s ** 2) / d * processRangeToOne(this.mcc.brush.brushStrength * 10));
+                let fv = clamp((s ** 2) / d * processRangeToOne(this.mcc.brush.brushStrength * 100));
                 multiplyVectorByScalar(this._ab.sqStatic.renderColor, (1 - fv), 4);
                 addVec4Mult(this._ab.sqStatic.renderColor, color, fv);
             }
