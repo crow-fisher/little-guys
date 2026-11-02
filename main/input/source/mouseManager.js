@@ -73,17 +73,6 @@ export class MouseManager extends RuntimeComponent {
         this.movement.y *= 0.7;
     }
 
-    render() {
-        if (this.canvasManager.pointerLock) {
-            return;
-        }
-        return;
-        this.inputManager.getContext().fillStyle = hsvToHex(this.ms * 60, .8, .75);
-        this.inputManager.getContext().beginPath();
-        this.inputManager.getContext().arc(this.offset.x, this.offset.y, 8, 0, 2 * Math.PI, false);
-        this.inputManager.getContext().fill();
-    }
-
     getOffset(evt) {
          if (evt.offsetX != undefined) {
             return { x: evt.offsetX, y: evt.offsetY };

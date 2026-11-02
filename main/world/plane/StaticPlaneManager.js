@@ -5,6 +5,5 @@ export class StaticPlaneManager extends PlaneManager {
     constructor(blockManager) {
         super();
         this.blockManager = blockManager;
-        this.backPlane = new Plane();
     }
 }

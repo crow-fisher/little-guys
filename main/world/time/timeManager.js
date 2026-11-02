@@ -43,6 +43,7 @@ export class TimeManager extends RuntimeComponent {
     di(mainManager) {
         super.di(mainManager);
         this.worldManager = this.mainManager.worldManager;
+        this.canvasManager = this.mainManager.canvasManager;
 
     }
 
@@ -74,12 +75,12 @@ export class TimeManager extends RuntimeComponent {
     }
 
     render() {
-        this.worldManager.getContext().fillStyle = this.colorHEX;
-        this.worldManager.getContext().fillRect(
+        this.canvasManager.context.fillStyle = this.colorHEX;
+        this.canvasManager.context.fillRect(
             0,
             0,
-            this.worldManager.getCanvasWidth(),
-            this.worldManager.getCanvasHeight()
+            this.canvasManager.canvas.width,
+            this.canvasManager.canvas.height
         );
     }
 

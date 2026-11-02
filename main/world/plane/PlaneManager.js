@@ -4,7 +4,7 @@ import { Plane } from "./manipulation/model/Plane.js";
 export class PlaneManager extends RuntimeComponent {
     constructor() {
         super();
-        this.activePlane = new Plane(this);
+        this.plane = new Plane();
     }
     di(mainManager) {
         super.di(mainManager);
@@ -13,8 +13,5 @@ export class PlaneManager extends RuntimeComponent {
         this.canvasManager = this.mainManager.canvasManager;
         this.cameraManager = this.mainManager.cameraManager;
     }
-    
-    render() {
-        this.activePlane.render();
-    }
+
 }

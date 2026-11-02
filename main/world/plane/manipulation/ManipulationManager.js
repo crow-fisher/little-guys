@@ -48,12 +48,23 @@ export class ManipulationManager extends RuntimeComponent {
 
             this.clickIdx++;
         }
-        
-
     }
 
+    traceLineBetweenPoints(p1, p2, color) {
+        let dx = (p2.x - p1.x)
+        let dy = (p2.y - p1.y)
+
+        let d = (dx ** 2 + dy ** 2) ** 0.5;
+        let cx = p1.x, cy = p1.y;
+
+        for (let i = 0; i < d; i++) {
+            this.doBrushAtPoint(cx, cy, color);
+            cx += (dx / d);
+            cy += (dy / d);
+        }
+    }
+    
     doBrushAtPoint(px, py, color) {
-        // 'px' and 'py' here refer to canvas pixel locations
         let s = this.mcc.brush.brushSize;
 
         let cx = this.cameraManager.windowWidthStart + (px / this.cameraManager.totalWidth) * this.cameraManager.windowWidth;
@@ -91,27 +102,6 @@ export class ManipulationManager extends RuntimeComponent {
                 addVec4Mult(this._ab.sqStatic.renderColor, color, fv);
             }
         }
-
-
-    }
-
-    traceLineBetweenPoints(p1, p2, color) {
-        let dx = (p2.x - p1.x)
-        let dy = (p2.y - p1.y)
-
-        let d = (dx ** 2 + dy ** 2) ** 0.5;
-        let cx = p1.x, cy = p1.y;
-
-        
-
-        for (let i = 0; i < d; i++) {
-            this.doBrushAtPoint(cx, cy, color);
-            cx += (dx / d);
-            cy += (dy / d);
-        }
-    }
-
-    render() {
     }
 
 }

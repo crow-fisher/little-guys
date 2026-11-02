@@ -8,9 +8,10 @@ export class WorldManager extends RuntimeComponent {
     constructor() {
         super();
         this.starManager = new StarManager(this);
+
+        this.manipulationManager = new ManipulationManager(this);
         this.staticPlaneManager = new StaticPlaneManager(this);
         this.livePlaneManager = new LivePlaneManager(this);
-        this.manipulationManager = new ManipulationManager(this);
     }
 
     di(mainManager) {
@@ -29,36 +30,14 @@ export class WorldManager extends RuntimeComponent {
 
     update() {
         this.starManager.update();
-        if (this.manipulationComponent.gcoBrush().brushMaterial == 0) {
-            this.manipulationManager.activePlaneManager = this.staticPlaneManager;
-            this.manipulationManager.update();
-        }
-        if (this.manipulationComponent.gcoBrush().brushMaterial == 1) {
-            this.manipulationManager.activePlaneManager = this.staticPlaneManager;
-            this.manipulationManager.update();
-        }
+        this.manipulationManager.update();
+        this.staticPlaneManager.update();
+        this.livePlaneManager.update();
         
     }
     render() {
         this.starManager.render();
         this.staticPlaneManager.render();
-    }
-    getContext() {
-        return this.mainManager.canvasManager.context;
-    }
-    getCanvasWidth() {
-        return this.mainManager.canvasManager.canvas.width;
-    }
-    getCanvasHeight() {
-        return this.mainManager.canvasManager.canvas.height;
-    }
-    getForward() {
-        return this.mainManager.cameraManager.forward;
-    }
-    getWorldToCamera() {
-        return this.mainManager.cameraManager.worldToCamera;
-    }
-    getCameraManager() {
-        return this.mainManager.cameraManager;
+        this.livePlaneManager.render();
     }
 }
