@@ -1,4 +1,4 @@
-import { rgbToHex, rgbToRgba } from "../../../../../color/color.js";
+import { rgbToHex, rgbToRgba } from "../../../../color/color.js";
 
 export class Square {
     constructor(posX, posY, color) {

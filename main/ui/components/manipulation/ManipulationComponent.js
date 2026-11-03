@@ -8,7 +8,7 @@ import { ColorActiveColor } from "../../elements/color/ColorActiveColor.js";
 import { ColorHueSliderWheel } from "../../elements/color/ColorHueSliderWheel.js";
 import { ColorInputTarget } from "../../elements/color/ColorInputTarget.js";
 import { ColorSaturationValueArea } from "../../elements/color/ColorSaturationValueArea.js";
-import { hsv2rgb, hsv2rgba } from "../../../common.js";
+import { hsv2rgba } from "../../../common.js";
 import { multiplyVectorByScalar } from "../../../util/vector.js";
 import { SliderGradientBackground } from "../../elements/SliderGradientBackground.js";
 import { clamp } from "../../../util/func.js";
@@ -22,18 +22,13 @@ export class ManipulationComponent extends Component {
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "manipulation"))
         let r1 = new Container(0);
         this.container.addElement(r1);
-        r1.addElement(new Toggle(this.window, () => this.gcvdThirdX(), () => this.ggvdH1(), UI_CENTER,
-            () => this.gcoDefault().brushMaterial == 0, (v) => this.gcoDefault().brushMaterial = 0,
+        r1.addElement(new Toggle(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER,
+            () => this.gcoPlane().active == 0, (v) => this.gcoPlane().active = 0,
             "static", () => "#863c3c", () => "#FFFFFF"));
 
-        r1.addElement(new Toggle(this.window, () => this.gcvdThirdX(), () => this.ggvdH1(), UI_CENTER,
-            () => this.gcoDefault().brushMaterial == 1, (v) => this.gcoDefault().brushMaterial = 1,
+        r1.addElement(new Toggle(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER,
+            () => this.gcoPlane().active == 1, (v) => this.gcoPlane().active = 1,
             "rock", () => "#863c3c", () => "#FFFFFF"));
-
-        r1.addElement(new Toggle(this.window, () => this.gcvdThirdX(), () => this.ggvdH1(), UI_CENTER,
-            () => this.gcoDefault().brushMaterial == 2, (v) => this.gcoDefault().brushMaterial = 2,
-            "soil", () => "#863c3c", () => "#FFFFFF"));
-             
 
         this.container.addElement(new ColorHueSliderWheel(this.window, () => this.gcvSizeX(), () => this.gcvSizeX()));
         this.container.addElement(new ColorSaturationValueArea(this.window, () => this.gcvSizeX(), () => this.gcvSizeX()));
@@ -52,8 +47,8 @@ export class ManipulationComponent extends Component {
             -1000, -10, 150, 0.2));
     }
 
-    gcoDefault() {
-        return this.config().default;
+    gcoPlane() {
+        return this.config().plane;
     }
 
     gcoBrush() {
@@ -85,8 +80,12 @@ export class ManipulationComponent extends Component {
             },
             brush: {
                 brushSize: 20,
-                brushStrength: -20,
-                brushMaterial: 0,
+                brushStrength: -20
+            },
+            plane: {
+                active: 0,
+                staticIdx: 0,
+                liveIdx: 0
             },
             default: {},
             offsetScale: {
