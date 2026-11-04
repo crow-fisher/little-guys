@@ -40,7 +40,7 @@ export class PlaneManager extends RuntimeComponent {
             this.clickPoints[this.clickIdx].y = this.mouseManager.offset.y;
 
             if (this.clickIdx > 1) {
-                this.traceLineBetweenPoints(this.clickPoints[this.clickIdx - 1], this.clickPoints[this.clickIdx], this.mcc.colorConfig.rgbaArr)
+                this.traceLineBetweenPoints(this.clickPoints[this.clickIdx - 1], this.clickPoints[this.clickIdx])
             }
 
             this.clickIdx++;
@@ -50,6 +50,7 @@ export class PlaneManager extends RuntimeComponent {
 
     update() {
         this.mcc = this.uiManager.manipulationComponent.config();
+        this.prepareBrushes();
         this.clickRoutine();
         this.staticPlanes.forEach((plane) => plane.update());
         this.livePlanes.forEach((plane) => plane.update());
@@ -71,7 +72,48 @@ export class PlaneManager extends RuntimeComponent {
         }
     }
 
-    traceLineBetweenPoints(p1, p2, color) {
+    brush(box) {
+        if (this.mcc.plane.active == 0) {
+            return this.staticBrush(box);
+        }
+        if (this.mcc.plane.active == 1) {
+            return this.liveBrush(box);
+        }
+    }
+
+    prepareBrushes() {
+        this.prepareStaticBrush();
+    }
+
+    prepareStaticBrush() {
+        this._sbColor = this.mcc.colorConfig.rgbaArr;
+        this._sbColorNewSquare = structuredClone(this.mcc.colorConfig.rgbaArr);
+        this._sbColorNewSquare[3] = 0;
+    }
+
+    staticBrush(box) {
+        box.sqStatic = box.sqStatic ?? new Square(this.__sx, this.__sy, this._sbColorNewSquare);
+
+        if (box.sqStatic && this.mouseManager.isButtonPressed(2)) {
+            box.sqStatic.renderColor[3] -= .01;
+            if (box.sqStatic.renderColor[3] < 0) {
+                box.sqStatic = null;
+                return;
+            }
+        }
+
+        if (this.mouseManager.isButtonPressed(0)) {
+            let fv = clamp((this._s ** 2) / this._d * processRangeToOne(this.mcc.brush.brushStrength * 100));
+            multiplyVectorByScalar(box.sqStatic.renderColor, (1 - fv), 4);
+            addVec4Mult(box.sqStatic.renderColor, this._sbColor, fv);
+        }
+    }
+
+    liveBrush(box) {
+
+    }
+
+    traceLineBetweenPoints(p1, p2) {
         let dx = (p2.x - p1.x)
         let dy = (p2.y - p1.y)
 
@@ -79,48 +121,31 @@ export class PlaneManager extends RuntimeComponent {
         let cx = p1.x, cy = p1.y;
 
         for (let i = 0; i < d; i++) {
-            this.doBrushAtPoint(cx, cy, color);
+            this.doBrushAtPoint(cx, cy);
             cx += (dx / d);
             cy += (dy / d);
         }
     }
 
-    doBrushAtPoint(px, py, color) {
-        let s = this.mcc.brush.brushSize;
+    doBrushAtPoint(px, py) {
+        this._s = this.mcc.brush.brushSize;
 
         let cx = this.cameraManager.windowWidthStart + (px / this.cameraManager.totalWidth) * this.cameraManager.windowWidth;
         let cy = this.cameraManager.windowHeightStart + (py / this.cameraManager.totalHeight) * this.cameraManager.windowHeight;
 
-        let colorNewSquare = structuredClone(color);
-        colorNewSquare[3] = 0;
-
-        for (let i = 0; i < s; i++) {
-            for (let j = 0; j < s; j++) {
-                let d = (i - (s / 2)) ** 2 + (j - (s / 2)) ** 2;
-                if (d > s)
+        for (let i = 0; i < this._s; i++) {
+            for (let j = 0; j < this._s; j++) {
+                this._d = (i - (this._s / 2)) ** 2 + (j - (this._s / 2)) ** 2;
+                if (this._d > this._s)
                     continue;
 
-                this._sx = cx + i - (s / 2);
-                this._sy = cy + j - (s / 2);
+                this._sx = cx + i - (this._s / 2);
+                this._sy = cy + j - (this._s / 2);
 
                 this.__sx = Math.floor(this._sx);
                 this.__sy = Math.floor(this._sy);
 
-                this._ab = this.activePlane().getBox(this.__sx, this.__sy);
-
-                this._ab.sqStatic = this._ab.sqStatic ?? new Square(this.__sx, this.__sy, colorNewSquare);
-
-                if (this._ab.sqStatic && this.mouseManager.isButtonPressed(2)) {
-                    this._ab.sqStatic.renderColor[3] -= .01;
-                    if (this._ab.sqStatic.renderColor[3] < 0) {
-                        this._ab.sqStatic = null;
-                        continue;
-                    }
-                }
-
-                let fv = clamp((s ** 2) / d * processRangeToOne(this.mcc.brush.brushStrength * 100));
-                multiplyVectorByScalar(this._ab.sqStatic.renderColor, (1 - fv), 4);
-                addVec4Mult(this._ab.sqStatic.renderColor, color, fv);
+                this.brush(this.activePlane().getBox(this.__sx, this.__sy));
             }
         }
     }

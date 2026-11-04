@@ -1,14 +1,9 @@
-import { rgbToHex, rgbToRgba } from "../../../../../color/color.js";
+import { rgbToRgba } from "../../../../../color/color.js";
+import { Square } from "./Square.js";
 
-export class LiveSquare {
+export class LiveSquare extends Square {
     constructor(posX, posY, color) {
-        this.posX = posX;
-        this.posY = posY;
-        this.renderColor = structuredClone(color);
-        this.width = 1;
-        this.height = 1;
-
-        // simulation parameters
+        super(posX, posY, color);
         this.spGravity = false;
     }
 
