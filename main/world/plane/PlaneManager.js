@@ -92,20 +92,20 @@ export class PlaneManager extends RuntimeComponent {
     }
 
     staticBrush(box) {
-        box.sqStatic = box.sqStatic ?? new Square(this.__sx, this.__sy, this._sbColorNewSquare);
+        box.squares[this.mcc.plane.active] = box.squares[this.mcc.plane.active] ?? new Square(this.__sx, this.__sy, this._sbColorNewSquare);
 
-        if (box.sqStatic && this.mouseManager.isButtonPressed(2)) {
-            box.sqStatic.renderColor[3] -= .01;
-            if (box.sqStatic.renderColor[3] < 0) {
-                box.sqStatic = null;
+        if (box.squares[this.mcc.plane.active] && this.mouseManager.isButtonPressed(2)) {
+            box.squares[this.mcc.plane.active].renderColor[3] -= .01;
+            if (box.squares[this.mcc.plane.active].renderColor[3] < 0) {
+                box.squares[this.mcc.plane.active] = null;
                 return;
             }
         }
 
         if (this.mouseManager.isButtonPressed(0)) {
             let fv = clamp((this._s ** 2) / this._d * processRangeToOne(this.mcc.brush.brushStrength * 100));
-            multiplyVectorByScalar(box.sqStatic.renderColor, (1 - fv), 4);
-            addVec4Mult(box.sqStatic.renderColor, this._sbColor, fv);
+            multiplyVectorByScalar(box.squares[this.mcc.plane.active].renderColor, (1 - fv), 4);
+            addVec4Mult(box.squares[this.mcc.plane.active].renderColor, this._sbColor, fv);
         }
     }
 
