@@ -83,16 +83,16 @@ export class BaseLeafNodeFlower extends BaseOrganism {
                 y: () => this.numPetals
             },
             stemColor: {
-                x: () => this.maxNumStem,
-                y: () => this.maxStemLength
+                x: () => 1,
+                y: () => 1,
             },
             leafStemColor: {
-                x: () => this.maxNumStem,
-                y: () => this.maxLeafStemLength
+                x: () => 1,
+                y: () => 1,
             },
             leafColor: {
-                x: () => this.maxNumStem,
-                y: () => this.maxLeafLength
+                x: () => 1,
+                y: () => 1,
             }
         }
 
