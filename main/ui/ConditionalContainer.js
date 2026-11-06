@@ -1,10 +1,8 @@
 import { Container } from "./Container.js";
-import { loadGD } from "./UIData.js";
-import { WindowElement } from "./Window.js";
 
 export class ConditionalContainer extends Container {
-    constructor(window, padding, dir, func) {
-        super(window, padding, dir);
+    constructor(dir, func) {
+        super(dir);
         this.func = func;
     }
 
@@ -17,18 +15,12 @@ export class ConditionalContainer extends Container {
     }
 
     render(startX, startY) {
-        if (this.func()) {
+        if (this.func())
             return super.render(startX, startY);
-        } else {
-            return [0, 0];
-        }
     }
 
-    hover(posX, posY) { 
-        if (this.func()) {
-            return super.hover(posX, posY);
-        } else {
-            return [0, 0];
-        }
+    interact(posX, posY) {
+        if (this.func())
+            return super.interact(posX, posY);
     }
 }

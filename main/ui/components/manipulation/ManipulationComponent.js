@@ -12,6 +12,7 @@ import { hsv2rgba } from "../../../common.js";
 import { multiplyVectorByScalar } from "../../../util/vector.js";
 import { SliderGradientBackground } from "../../elements/SliderGradientBackground.js";
 import { clamp } from "../../../util/func.js";
+import { ConditionalContainer } from "../../ConditionalContainer.js"
 
 export class ManipulationComponent extends Component {
     constructor(uiManager, activeFunc) {
@@ -29,13 +30,16 @@ export class ManipulationComponent extends Component {
         r1.addElement(new Toggle(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER,
             () => this.gcoPlane().active == 1, (v) => this.gcoPlane().active = 1,
             "rock", () => "#863c3c", () => "#FFFFFF"));
+        
+        this.staticCC = new ConditionalContainer(1, () => this.gcoPlane().active == 0)
+        this.container.addElement(this.staticCC);
 
-        this.container.addElement(new ColorHueSliderWheel(this.window, () => this.gcvSizeX(), () => this.gcvSizeX()));
-        this.container.addElement(new ColorSaturationValueArea(this.window, () => this.gcvSizeX(), () => this.gcvSizeX()));
-        this.container.addElement(new ColorInputTarget(this.window, () => this.gcvSizeX(), () => this.gcvSizeX()));
-        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "active"))
-        this.container.addElement(new ColorActiveColor(this.window, () => this.gcvSizeX(), () => this.ggvdH1()));
-        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcoColorConfig().a, (a) => this.setOpacity(clamp(a)),
+        this.staticCC.addElement(new ColorHueSliderWheel(this.window, () => this.gcvSizeX(), () => this.gcvSizeX()));
+        this.staticCC.addElement(new ColorSaturationValueArea(this.window, () => this.gcvSizeX(), () => this.gcvSizeX()));
+        this.staticCC.addElement(new ColorInputTarget(this.window, () => this.gcvSizeX(), () => this.gcvSizeX()));
+        this.staticCC.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "active"))
+        this.staticCC.addElement(new ColorActiveColor(this.window, () => this.gcvSizeX(), () => this.ggvdH1()));
+        this.staticCC.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcoColorConfig().a, (a) => this.setOpacity(clamp(a)),
             -.1, 1.1, 150, 0.2));
 
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "brush size"))
