@@ -3,6 +3,7 @@ import { getActiveClimate } from "../../climate/climateManager.js";
 import { hsvToHex } from "../../common.js";
 import { updateClipboard } from "../../index.js";
 import { BaseLeafNodeFlower } from "../../organisms/flowers/leafNode/BaseLeafNodeFlower.js";
+import { leafNodeSample_ceres } from "../../organisms/flowers/leafNode/leafNodeSamples.js";
 import { ThetaMin, ThetaMax, TwistMin, TwistMax, RotationMin, RotationMax, DeflectionMin, DeflectionMax, CurveMin, CurveMax, StrengthMin, StrengthMax, PeriodMin, PeriodMax } from "../../organisms/GrowthPlan.js";
 import { iterateOnOrganisms } from "../../organisms/orgOperations.js";
 import { STAGE_DEAD } from "../../organisms/Stages.js";
@@ -64,6 +65,9 @@ export class GeneticsComponent extends Component {
 
           //////////////////////////// left column
           this.refOrg = new BaseLeafNodeFlower();
+
+          this.refOrg.genetics = leafNodeSample_ceres;
+          this.refOrg.parseGenetics();
 
           let s1 = [
                [ThetaMin, ThetaMax, -Math.PI, Math.PI],
