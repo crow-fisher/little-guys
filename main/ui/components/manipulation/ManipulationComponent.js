@@ -21,18 +21,29 @@ export class ManipulationComponent extends Component {
         this.configInit();
         // this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdBr(), UI_CENTER, () => this.uiManager.getColorInactive(.5)))  
         this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH1(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "manipulation"))
-        let r1 = new Container(0);
-        this.container.addElement(r1);
-        r1.addElement(new Toggle(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER,
+
+        
+        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "brush size"))
+        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcoBrush().brushSize, (v) => this.gcoBrush().brushSize = v,
+            0, 120, 150, 0.2));
+
+        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "brush strength"))
+        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcoBrush().brushStrength, (v) => this.gcoBrush().brushStrength = v,
+            -1000, -10, 150, 0.2));
+        let rowActivePlane = new Container(0);
+        this.container.addElement(rowActivePlane);
+        rowActivePlane.addElement(new Toggle(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER,
             () => this.gcoPlane().active == 0, (v) => this.gcoPlane().active = 0,
             "static", () => "#863c3c", () => "#FFFFFF"));
 
-        r1.addElement(new Toggle(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER,
+        rowActivePlane.addElement(new Toggle(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER,
             () => this.gcoPlane().active == 1, (v) => this.gcoPlane().active = 1,
-            "rock", () => "#863c3c", () => "#FFFFFF"));
+            "live", () => "#863c3c", () => "#FFFFFF"));
         
         this.staticCC = new ConditionalContainer(1, () => this.gcoPlane().active == 0)
+        this.liveCC = new ConditionalContainer(1, () => this.gcoPlane().active == 1)
         this.container.addElement(this.staticCC);
+        this.container.addElement(this.liveCC);
 
         this.staticCC.addElement(new ColorHueSliderWheel(this.window, () => this.gcvSizeX(), () => this.gcvSizeX()));
         this.staticCC.addElement(new ColorSaturationValueArea(this.window, () => this.gcvSizeX(), () => this.gcvSizeX()));
@@ -42,13 +53,15 @@ export class ManipulationComponent extends Component {
         this.staticCC.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcoColorConfig().a, (a) => this.setOpacity(clamp(a)),
             -.1, 1.1, 150, 0.2));
 
-        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "brush size"))
-        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcoBrush().brushSize, (v) => this.gcoBrush().brushSize = v,
-            0, 120, 150, 0.2));
+        let rowLiveMaterial = new Container(0);
+        this.liveCC.addElement(rowLiveMaterial);
+        rowLiveMaterial.addElement(new Toggle(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER,
+            () => this.gcoLive().material == 0, (v) => this.gcoLive().material = 0,
+            "soil", () => "#744b22", () => "#9b6630"));
 
-        this.container.addElement(new TextBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), UI_CENTER, () => this.uiManager.getColorInactive(1.4), .75, "brush strength"))
-        this.container.addElement(new SliderGradientBackground(this.window, () => this.gcvSizeX(), () => this.ggvdH3(), () => this.gcoBrush().brushStrength, (v) => this.gcoBrush().brushStrength = v,
-            -1000, -10, 150, 0.2));
+        rowLiveMaterial.addElement(new Toggle(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER,
+            () => this.gcoLive().material == 1, (v) => this.gcoLive().material = 1,
+            "rock", () => "#5c5752", () => "#d3c7bb"));
     }
 
     gcoPlane() {
@@ -60,6 +73,12 @@ export class ManipulationComponent extends Component {
     }
     gcoColorConfig() {
         return this.config().colorConfig;
+    }
+    gcoLive() {
+        return this.config().static;
+    }
+    gcoLive() {
+        return this.config().live;
     }
 
     setOpacity(a) {
@@ -85,6 +104,10 @@ export class ManipulationComponent extends Component {
             brush: {
                 brushSize: 20,
                 brushStrength: -20
+            },
+            static: {},
+            live: {
+                material: 0    
             },
             plane: {
                 active: 0,
