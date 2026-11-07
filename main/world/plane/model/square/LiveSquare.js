@@ -7,12 +7,10 @@ export class LiveSquare extends Square {
         this.spGravity = false;
     }
 
-    update() {
-
+    update(planeManager) {
     }
 
     render(canvasManager) {
-        canvasManager.context.fillStyle = rgbToRgba(...this.renderColor);
-        canvasManager.renderSquare2D(this.posX, this.posY, this.width, this.height);
+        super.render(canvasManager);
     }
 }

@@ -8,9 +8,15 @@ export class Box {
         this.lastTouched = Date.now();
     }
 
-    render(canvasManager) {
+    update(planeManager) {
         for (let i = 0; i < this.squares.length; i++) {
-            this.squares.at(i)?.render(canvasManager);
+            this.squares.at(i)?.update(planeManager);
+        }
+    }
+
+    render(planeManager) {
+        for (let i = 0; i < this.squares.length; i++) {
+            this.squares.at(i)?.render(planeManager);
         }
     }
 }

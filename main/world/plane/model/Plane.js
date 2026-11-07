@@ -1,8 +1,8 @@
 import { Box } from "./Box.js";
 
 export class Plane {
-    constructor(manipulationManager) {
-        this.manipulationManager = manipulationManager;
+    constructor(planeManager) {
+        this.planeManager = planeManager;
         this.boxes = new Map();
         this.tickBoxes = [];
     }
@@ -14,11 +14,15 @@ export class Plane {
     }
 
     update() {
+        this.updateTickBoxes();
+    }
+
+    updateTickBoxes() {
         this.tickBoxes.length = 0;
-        for (let i = this.manipulationManager.cameraManager.windowWidthStart; i <= this.manipulationManager.cameraManager.windowWidthEnd; i++) {
+        for (let i = this.planeManager.cameraManager.windowWidthStart; i <= this.planeManager.cameraManager.windowWidthEnd; i++) {
             if (this.boxes.get(i) == null)
                 continue;
-            for (let j = this.manipulationManager.cameraManager.windowHeightStart; j <= this.manipulationManager.cameraManager.windowHeightEnd; j++) {
+            for (let j = this.planeManager.cameraManager.windowHeightStart; j <= this.planeManager.cameraManager.windowHeightEnd; j++) {
                 let b = this.boxes.get(i)?.get(j);
                 if (b) {
                     this.tickBoxes.push(b);
@@ -27,7 +31,11 @@ export class Plane {
         }
     }
 
+    updateBoxes() {
+        this.tickBoxes.forEach((b) => b.update(this.planeManager));
+    }
+
     render() {
-        this.tickBoxes.forEach((b) => b.render(this.manipulationManager.canvasManager));
+        this.tickBoxes.forEach((b) => b.render(this.planeManager));
     }
 }
