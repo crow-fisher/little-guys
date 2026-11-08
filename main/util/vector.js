@@ -179,6 +179,13 @@ export function multiplyVectorByScalar(vec, scalar, nm=3) {
   }
   return vec;
 }
+export function multiplyVectorByScalarCopy(vecIn, scalar, nm=3) {
+  let vec = structuredClone(vecIn);
+  for (let i = 0; i < Math.min(vec.length, nm); i++) {
+    vec[i] *= scalar;
+  }
+  return vec;
+}
 export function multiplyVectorByScalarDest(vec, scalar, dest) {
   for (let i = 0; i < vec.length; i++) {
     dest[i] = vec[i] * scalar;

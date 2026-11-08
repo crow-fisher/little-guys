@@ -4,6 +4,8 @@ import { clamp } from "../../util/func.js";
 import { addVec4Mult, multiplyVectorByScalar } from "../../util/vector.js";
 import { Square } from "./model/square/Square.js";
 import { Plane } from "./model/Plane.js";
+import { LiveSquare } from "./model/square/LiveSquare.js";
+import { StaticSquare } from "./model/square/StaticSquare.js";
 
 export class PlaneManager extends RuntimeComponent {
     constructor(blockManager) {
@@ -92,7 +94,7 @@ export class PlaneManager extends RuntimeComponent {
     }
 
     staticBrush(box) {
-        box.squares[this.mcc.plane.active] = box.squares[this.mcc.plane.active] ?? new Square(this.__sx, this.__sy, this._sbColorNewSquare);
+        box.squares[this.mcc.plane.active] = box.squares[this.mcc.plane.active] ?? new StaticSquare(this.__sx, this.__sy, this._sbColorNewSquare);
 
         if (box.squares[this.mcc.plane.active] && this.mouseManager.isButtonPressed(2)) {
             box.squares[this.mcc.plane.active].renderColor[3] -= .01;
@@ -107,10 +109,12 @@ export class PlaneManager extends RuntimeComponent {
             multiplyVectorByScalar(box.squares[this.mcc.plane.active].renderColor, (1 - fv), 4);
             addVec4Mult(box.squares[this.mcc.plane.active].renderColor, this._sbColor, fv);
         }
+
+        box.squares[this.mcc.plane.active].updateColor();
     }
 
     liveBrush(box) {
-
+        box.squares[this.mcc.plane.active] = box.squares[this.mcc.plane.active] ?? new LiveSquare(this.__sx, this.__sy, this.mcc.live.materialConfig);
     }
 
     traceLineBetweenPoints(p1, p2) {

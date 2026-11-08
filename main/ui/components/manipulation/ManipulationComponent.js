@@ -56,11 +56,11 @@ export class ManipulationComponent extends Component {
         let rowLiveMaterial = new Container(0);
         this.liveCC.addElement(rowLiveMaterial);
         rowLiveMaterial.addElement(new Toggle(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER,
-            () => this.gcoLive().material == 0, (v) => this.gcoLive().material = 0,
+            () => this.gcoLive().materialConfig.type == 0, (v) => this.gcoLive().materialConfig.type = 0,
             "soil", () => "#744b22", () => "#9b6630"));
 
         rowLiveMaterial.addElement(new Toggle(this.window, () => this.gcvdHalfX(), () => this.ggvdH1(), UI_CENTER,
-            () => this.gcoLive().material == 1, (v) => this.gcoLive().material = 1,
+            () => this.gcoLive().materialConfig.type == 1, (v) => this.gcoLive().materialConfig.type = 1,
             "rock", () => "#5c5752", () => "#d3c7bb"));
     }
 
@@ -107,7 +107,15 @@ export class ManipulationComponent extends Component {
             },
             static: {},
             live: {
-                material: 0    
+                materialConfig: {
+                    type: 0,
+                    sand: 0.33,
+                    silt: 0.33,
+                    clay: 0.34,
+                    offsetHue: 0,
+                    offsetSaturation: 0,
+                    offsetValue: 0
+                }
             },
             plane: {
                 active: 0,

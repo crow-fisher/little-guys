@@ -88,9 +88,9 @@ export function hsvToRgb(h, s, v) {
     return [f(5), f(3), f(1)]
 }
 
-export function hsvaToRgba(h, s, v, a) {
+export function hsvaToRgba(h, s, v, a, m=256) {
     let f = (n, k = (n + h / 60) % 6) => v - v * s * Math.max(Math.min(k, 4 - k, 1), 0);
-    return [f(5) * 256, f(3) * 256, f(1) * 256, a]
+    return [f(5) * m, f(3) * m, f(1) * m, a]
 }
 
 export function calculateStatistics(array) {
