@@ -1,6 +1,7 @@
 import { hsvaToRgba } from "../../../../../OLD_GAME/common.js";
 import { rgbToRgba } from "../../../../color/color.js";
 import { rgb2hsv } from "../../../../common.js";
+import { clamp } from "../../../../util/func.js";
 import { addVectors, multiplyVectorByScalar, multiplyVectorByScalarCopy } from "../../../../util/vector.js";
 import { Square } from "./Square.js";
 
@@ -35,25 +36,24 @@ export class LiveSquare extends Square {
     }
 
     randomize() {
-        let rand1 = (Math.random() - 0.5) * 1; // loadGD(UI_PALETTE_VARIANCE);
-        let rand2 = (Math.random() - 0.5) * 1; // loadGD(UI_PALETTE_VARIANCE);
-        let rand3 = (Math.random() - 0.5) * 1; // loadGD(UI_PALETTE_VARIANCE);
+        let rand1 = (Math.random() - 0.5) * 0.4;
+        let rand2 = (Math.random() - 0.5) * 0.4;
+        let rand3 = (Math.random() - 0.5) * 0.4;
         this.clay *= (1 + rand1);
         this.silt *= (1 + rand2);
         this.sand *= (1 + rand3);
-
         let sum = this.clay + this.silt + this.sand;
-
         this.clay *= (1 / sum);
         this.silt *= (1 / sum);
         this.sand *= (1 / sum);
-
-        this.clay = Math.min(Math.max(this.clay, 0), 1);
-        this.silt = Math.min(Math.max(this.silt, 0), 1);
-        this.sand = Math.min(Math.max(this.sand, 0), 1);
+        this.clay = clamp(this.clay);
+        this.silt = clamp(this.silt);
+        this.sand = 1 - (this.clay + this.silt);
 
     }
     update(planeManager) {
+        gravityPhysics();
+        slopePhysics();
     }
 
     render(canvasManager) {

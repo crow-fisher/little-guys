@@ -9,8 +9,18 @@ export class Plane {
 
     getBox(px, py, _px = Math.floor(px), _py = Math.floor(py)) {
         this.boxes.set(_px, this.boxes.get(_px) ?? new Map());
-        this.boxes.get(_px).set(_py, this.boxes.get(_px).get(_py) ?? new Box(_px, _py));
+        this.boxes.get(_px).set(_py, this.boxes.get(_px).get(_py) ?? this.newBox(_px, _py));
         return this.boxes.get(_px).get(_py);
+    }
+
+    newBox(px, py) {
+        let box = new Box(px, py); 
+        // box.nbTopTop = this.getBox(px, py + 2)
+        // box.nbTop = this.getBox(px, py + 1)
+        // box.nbLeft = this.getBox(px - 1, py)
+        // box.nbRight = this.getBox(px + 1, py)
+        // box.nbBot = this.getBox(px, py - 1)
+        return box;
     }
 
     update() {

@@ -6,6 +6,12 @@ export class Box {
         
         this.squares = [];
         this.lastTouched = Date.now();
+
+        this.nbTopTop;
+        this.nbTop;
+        this.nbLeft;
+        this.nbRight;
+        this.nbBot;
     }
 
     update(planeManager) {
