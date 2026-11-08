@@ -8,16 +8,16 @@ export class LiveSquare extends Square {
     constructor(posX, posY, materialConfig) {
         super(posX, posY);
         this.colorBaseArr = [[[201, 144, 98], [61, 45, 33], [139, 76, 51]], [[60, 71, 134], [3, 0, 3], [130, 130, 151]]]; 
-
         this.processMaterialConfig(materialConfig);
-
     }
-
     processMaterialConfig(materialConfig) {
         this.type = materialConfig.type;
         this.sand = materialConfig.sand;
         this.silt = materialConfig.silt;
         this.clay = materialConfig.clay;
+        this.randomize();
+
+
         this.offsetHue = materialConfig.offsetHue;
         this.offsetSaturation = materialConfig.offsetSaturation;
         this.offsetValue = materialConfig.offsetValue;
@@ -34,6 +34,25 @@ export class LiveSquare extends Square {
         this.renderColor = rgbToRgba(...hsvaToRgba(...this.colorHsvAdj, 1, 1))
     }
 
+    randomize() {
+        let rand1 = (Math.random() - 0.5) * 1; // loadGD(UI_PALETTE_VARIANCE);
+        let rand2 = (Math.random() - 0.5) * 1; // loadGD(UI_PALETTE_VARIANCE);
+        let rand3 = (Math.random() - 0.5) * 1; // loadGD(UI_PALETTE_VARIANCE);
+        this.clay *= (1 + rand1);
+        this.silt *= (1 + rand2);
+        this.sand *= (1 + rand3);
+
+        let sum = this.clay + this.silt + this.sand;
+
+        this.clay *= (1 / sum);
+        this.silt *= (1 / sum);
+        this.sand *= (1 / sum);
+
+        this.clay = Math.min(Math.max(this.clay, 0), 1);
+        this.silt = Math.min(Math.max(this.silt, 0), 1);
+        this.sand = Math.min(Math.max(this.sand, 0), 1);
+
+    }
     update(planeManager) {
     }
 
